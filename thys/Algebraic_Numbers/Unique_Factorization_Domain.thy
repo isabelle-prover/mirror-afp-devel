@@ -228,14 +228,21 @@ sublocale factorial_monoid M by(rule factorial)
 
 end
 
+(* Isabelle 2015-style gcd-class without normalization and factors *)
+class comm_ring_gcd = gcd + comm_ring_1 + 
+  assumes gcd_dvd1_2015[iff]: "gcd a b dvd a"
+    and   gcd_dvd2_2015 [iff]: "gcd a b dvd b"
+    and   gcd_greatest_2015: "c dvd a \<Longrightarrow> c dvd b \<Longrightarrow> c dvd gcd a b"
+
 definition ufd_gcd :: "'a :: ufd \<Rightarrow> 'a \<Rightarrow> 'a" where
   "ufd_gcd x y = (if x = 0 then y else if y = 0 then x else somegcd mk_monoid x y)"
 
-interpretation ufd_gcd: ring_gcd "1::'a::ufd" 0 "op *" ufd_gcd what_ever "op +" "op -" uminus
-proof
+interpretation ufd_gcd: comm_ring_gcd "1::'a::ufd" 0 "op *" ufd_gcd ufd_lcm "op +" 
+  "op -" uminus
+proof 
   interpret ufd_loc.
-  fix a b c :: 'a
   note d = dvd.dvd_def ufd_gcd_def carrier_0
+  fix a b c :: 'a
   show "dvd.dvd op * (ufd_gcd a b) a" 
   proof (cases "a = 0 \<or> b = 0")
     case True
@@ -271,7 +278,7 @@ qed
 lemma ufd_gcd_dvd1 [iff]: "ufd_gcd a b dvd a"
     and ufd_gcd_dvd2 [iff]: "ufd_gcd a b dvd b"
     and ufd_gcd_greatest: "c dvd a \<Longrightarrow> c dvd b \<Longrightarrow> c dvd ufd_gcd a b"
-  using ufd_gcd.gcd_dvd1[of a b] ufd_gcd.gcd_dvd2[of a b] ufd_gcd.gcd_greatest[of c a b]
+  using ufd_gcd.gcd_dvd1_2015[of a b] ufd_gcd.gcd_dvd2_2015[of a b] ufd_gcd.gcd_greatest_2015[of c a b]
   unfolding dvd.dvd_def dvd_def by blast+
 
 lemma ufd_gcd_greatest_mult: assumes "c dvd a * d" "c dvd b * d"
@@ -318,9 +325,7 @@ proof (induct xs)
 qed (simp add: listgcd_simps)
 
 lemma listgcd_greatest: "(\<And> x. x \<in> set xs \<Longrightarrow> y dvd x) \<Longrightarrow> y dvd listgcd xs"
-  using listgcd_greatest_mult[of xs y 1] by auto
-
-interpretation embed_ff: inj_ring_hom embed_ff by (rule embed_ff)
+  using listgcd_greatest_mult[of xs y 1] by (metis mult.right_neutral)
 
 definition divides_ff :: "'b::idom fract \<Rightarrow> 'b fract \<Rightarrow> bool"
   where "divides_ff x y = (\<exists> r. y = embed_ff r * x)" 
@@ -350,6 +355,8 @@ definition gcd_ff_list :: "'a::ufd fract list \<Rightarrow> 'a fract \<Rightarro
   "gcd_ff_list X g = (
      (\<forall> x \<in> set X. divides_ff g x) \<and> 
      (\<forall> d. (\<forall> x \<in> set X. divides_ff d x) \<longrightarrow> divides_ff d g))"
+
+interpretation embed_ff: inj_ring_hom embed_ff by (rule embed_ff)
 
 lemma gcd_ff_list_exists: "\<exists> g. gcd_ff_list (X :: 'a::ufd fract list) g"
 proof -

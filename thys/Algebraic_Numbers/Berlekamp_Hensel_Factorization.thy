@@ -17,6 +17,7 @@ theory Berlekamp_Hensel_Factorization
 imports 
   Gauss_Jordan_Field
   Polynomial_Field
+  Divmod_Int
   "../Sqrt_Babylonian/Sqrt_Babylonian"
   Square_Free_Factorization
   Prime_Factorization
@@ -24,8 +25,6 @@ imports
   Gauss_Lemma
 begin
 
-hide_const (open) CauchysMeanTheorem.listprod
-hide_const (open) CauchysMeanTheorem.listsum
 hide_const (open) Module.smult
 hide_const (open) Divisibility.prime
 
@@ -274,16 +273,40 @@ definition sublists_length :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a list l
 definition normalize_content_f :: "int poly_f \<Rightarrow> int poly_f" where
   "normalize_content_f f = (let ct = list_gcd f in map (\<lambda> x. x div ct) f)" 
 
-(* TODO: avoid rational conversion *)
-definition div_int_poly_f :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f" where
-  "div_int_poly_f x y = map int_of_rat (div_poly_f rational_ops (map of_int x) (map of_int y))"
+definition cCons_int :: "int \<Rightarrow> int poly_f \<Rightarrow> int poly_f" where
+  "cCons_int x xs = (if xs = [] \<and> x = 0 then [] else x # xs)"
 
-(* TODO: avoid rational conversion *)
+definition "smult_poly_int (a :: int) pp = (if a = 0 then [] else map (op * a) pp)"
+
+definition coeff_poly_int :: "int poly_f \<Rightarrow> nat \<Rightarrow> int" where
+  "coeff_poly_int = nth_default 0"
+
+definition uminus_poly_int :: "int poly_f \<Rightarrow> int poly_f" where
+  "uminus_poly_int = map (\<lambda> x. - x)"
+
+fun minus_poly_int :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f" where
+  "minus_poly_int (x # xs) (y # ys) = cCons_int (x - y) (minus_poly_int xs ys)"
+| "minus_poly_int xs [] = xs"
+| "minus_poly_int [] ys = uminus_poly_int ys"
+
+text \<open>The following division algorithm assumes that the second argument is a non-zero
+  polynomial.\<close>
+definition div_int_poly_ff :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f option" where
+  "div_int_poly_ff pp q = (let n = degree_poly_f q; qn = coeff_poly_int q n in case (foldr (\<lambda> a sro.
+    case sro of None \<Rightarrow> None | Some (s,r) \<Rightarrow>
+      let
+        ar = cCons_int a r;
+        (b,m) = divmod_int (coeff_poly_int ar n) qn
+      in if m = 0 then Some (cCons_int b s, minus_poly_int ar (smult_poly_int b q)) else None)
+      pp (Some (zero_poly_f, zero_poly_f))) of None \<Rightarrow> None | Some (d,m) \<Rightarrow> if m = zero_poly_f then
+        Some d else None)"
+
+definition div_int_poly_f :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f" where
+  "div_int_poly_f p q = (case div_int_poly_ff p q of Some d \<Rightarrow> d | None \<Rightarrow> 
+    Code.abort (STR ''integer poly division error'') (\<lambda> _. []))"
+
 definition dvd_int_poly_f :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> bool" where
-  "dvd_int_poly_f p q \<equiv> let rp = map rat_of_int p;
-    rq = map rat_of_int q 
-    in (case divmod_poly_f rational_ops rq rp of (d,m) \<Rightarrow> 
-      m = zero_poly_f \<and> (\<forall> c \<in> set d. is_int_rat c))"
+  "dvd_int_poly_f p q = (case div_int_poly_ff q p of None \<Rightarrow> False | Some _ \<Rightarrow> True)"
 
 context fixes
   m :: int

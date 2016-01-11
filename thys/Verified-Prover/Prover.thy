@@ -2,9 +2,6 @@ theory Prover
 imports Main
 begin
 
-abbreviation infinite :: "'a set \<Rightarrow> bool"
-  where "infinite S \<equiv> \<not> finite S"
-
 subsection "Formulas"
 
 type_synonym pred = nat

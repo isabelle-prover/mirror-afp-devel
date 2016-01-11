@@ -7,8 +7,10 @@ imports
 begin
 (*>*)
 
-declare [[bnf_note_all]]
-datatype ('a, 'b, 'k) var0 = PMF "('a \<times> 'b) pmf" | BPS "('a \<times> 'b) set['k]"
+context notes [[bnf_internals]]
+begin
+  datatype ('a, 'b, 'k) var0 = PMF "('a \<times> 'b) pmf" | BPS "('a \<times> 'b) set['k]"
+end
 
 inductive var_eq :: "('a, 'b, 'k) var0 \<Rightarrow> ('a, 'b, 'k) var0 \<Rightarrow> bool" (infixl "\<sim>" 65) where
   var_eq_reflp[intro]: "x \<sim> x"

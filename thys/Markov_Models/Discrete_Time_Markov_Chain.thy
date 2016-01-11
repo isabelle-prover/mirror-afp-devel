@@ -341,7 +341,7 @@ lemma countable_acc: "countable X \<Longrightarrow> countable (acc `` X)"
   done
 
 context
-  notes [[inductive_defs]]
+  notes [[inductive_internals]]
 begin
 
 coinductive enabled where

@@ -21,9 +21,6 @@ imports
   "../Sqrt_Babylonian/Sqrt_Babylonian"
 begin
 
-hide_const (open) CauchysMeanTheorem.listprod
-hide_const (open) CauchysMeanTheorem.listsum
-
 lemma roots0: assumes p: "p \<noteq> 0" and p0: "degree p = 0" 
   shows "{x. poly p x = 0} = {}"
   using degree0_coeffs[OF p0] p by auto

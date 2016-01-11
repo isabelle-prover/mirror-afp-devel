@@ -31,22 +31,22 @@ adhoc_overloading Applicative.ap ap_pmf
 
 context begin interpretation applicative_syntax .
 
-lemma ap_pmf_id: "pure_pmf (\<lambda>x. x) \<diamond> x = x"
+lemma ap_pmf_id: "pure_pmf (\<lambda>x. x) \<diamondop> x = x"
 by(simp add: ap_pmf_def pair_return_pmf1 pmf.map_comp o_def)
 
-lemma ap_pmf_comp: "pure_pmf op \<circ> \<diamond> u \<diamond> v \<diamond> w = u \<diamond> (v \<diamond> w)"
+lemma ap_pmf_comp: "pure_pmf op \<circ> \<diamondop> u \<diamondop> v \<diamondop> w = u \<diamondop> (v \<diamondop> w)"
 by(simp add: ap_pmf_def pair_return_pmf1 pair_map_pmf1 pair_map_pmf2 pmf.map_comp o_def split_def pair_pair_pmf)
 
-lemma ap_pmf_homo: "pure_pmf f \<diamond> pure_pmf x = pure_pmf (f x)"
+lemma ap_pmf_homo: "pure_pmf f \<diamondop> pure_pmf x = pure_pmf (f x)"
 by(simp add: ap_pmf_def pair_return_pmf1)
 
-lemma ap_pmf_interchange: "u \<diamond> pure_pmf x = pure_pmf (\<lambda>f. f x) \<diamond> u"
+lemma ap_pmf_interchange: "u \<diamondop> pure_pmf x = pure_pmf (\<lambda>f. f x) \<diamondop> u"
 by(simp add: ap_pmf_def pair_return_pmf1 pair_return_pmf2 pmf.map_comp o_def)
 
-lemma ap_pmf_K: "return_pmf (\<lambda>x _. x) \<diamond> x \<diamond> y = x"
+lemma ap_pmf_K: "return_pmf (\<lambda>x _. x) \<diamondop> x \<diamondop> y = x"
 by(simp add: ap_pmf_def pair_map_pmf1 pmf.map_comp pair_return_pmf1 o_def split_def map_fst_pair_pmf)
 
-lemma ap_pmf_C: "return_pmf (\<lambda>f x y. f y x) \<diamond> f \<diamond> x \<diamond> y = f \<diamond> y \<diamond> x"
+lemma ap_pmf_C: "return_pmf (\<lambda>f x y. f y x) \<diamondop> f \<diamondop> x \<diamondop> y = f \<diamondop> y \<diamondop> x"
 apply(simp add: ap_pmf_def pair_map_pmf1 pmf.map_comp pair_return_pmf1 pair_pair_pmf o_def split_def)
 apply(subst (2) pair_commute_pmf)
 apply(simp add: pair_map_pmf2 pmf.map_comp o_def split_def)

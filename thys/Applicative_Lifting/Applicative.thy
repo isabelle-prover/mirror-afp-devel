@@ -55,7 +55,7 @@ consts pure :: "'a \<Rightarrow> 'b"
 
 consts ap :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 locale applicative_syntax begin
-  notation ap (infixl "\<diamond>" 70)
+  notation ap (infixl "\<diamondop>" 70)
 end
 hide_const (open) ap
 

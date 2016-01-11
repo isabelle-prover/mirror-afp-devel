@@ -434,14 +434,14 @@ private fun rai_list_hd_intern :: "rai_intern list \<Rightarrow> rai_intern" whe
 | "rai_list_hd_intern Nil = None"
 
 private lift_definition rai_list_hd :: "rai_list \<Rightarrow> real_alg_intern" is rai_list_hd_intern
-proof -
-  case (goal1 xs)
+proof (goal_cases)
+  case (1 xs)
   thus ?case by (cases xs, auto)
 qed
 
 private lift_definition rai_list_tl :: "rai_list \<Rightarrow> rai_list" is tl 
-proof -
-  case (goal1 xs)
+proof (goal_cases)
+  case (1 xs)
   thus ?case by (cases xs, auto)
 qed
 

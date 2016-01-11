@@ -16,7 +16,7 @@ imports
   Polynomial_Divisibility
   Missing_Polynomial
   Order_Polynomial
-  "$AFP/Matrix/Utility"
+  "../Matrix/Utility"
 begin
 
 hide_const Coset.order
@@ -961,8 +961,8 @@ proof -
   hence dvd: "q ^ Suc i dvd ?prod" by auto
   {
     assume "q ^ Suc (Suc i) dvd ?prod"
-    hence "q dvd ?prod div q ^ Suc i" 
-      by (metis div_mult_self1_is_id dvd_times_left_cancel_iff local.id  power_Suc power_commutes power_not_zero q0)
+    hence "q dvd ?prod div q ^ Suc i"
+      by (metis dvd dvd_0_left_iff dvd_div_iff_mult p0 power_Suc)
     also have "?prod div q ^ Suc i = b ^ Suc i * ?rem"
       unfolding id by (rule div_mult_self1_is_id, insert q0, auto)
     finally have "q dvd b \<or> q dvd ?rem"

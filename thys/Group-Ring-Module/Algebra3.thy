@@ -61,15 +61,15 @@ definition
   "s_top G H K = {z. \<exists>x \<in> H. \<exists>y \<in> K. (x \<cdot>\<^bsub>G\<^esub> y = z)}"
 
 abbreviation
-  S_TOP :: "['a set, ('a, 'm) Group_scheme, 'a set] \<Rightarrow> 'a set"
-    ("(3_ \<struct>\<^bsub>_\<^esub> _)" [66,66,67]66) where
-  "H \<struct>\<^bsub>G\<^esub> K == s_top G H K" 
+  S_TOP :: "[('a, 'm) Group_scheme, 'a set, 'a set] \<Rightarrow> 'a set"
+    ("(3_ \<diamondop>\<index> _)" [66,67]66) where
+  "H \<diamondop>\<^bsub>G\<^esub> K == s_top G H K" 
 
 lemma (in Group) s_top_induced:"\<lbrakk>G \<guillemotright> L; H \<subseteq> L; K \<subseteq> L\<rbrakk> \<Longrightarrow> 
-                                        H \<struct>\<^bsub>(Gp G L)\<^esub> K =  H \<struct>\<^bsub>G\<^esub> K"
+                                        H \<diamondop>\<^bsub>Gp G L\<^esub> K =  H \<diamondop>\<^bsub>G\<^esub> K"
 by (simp add:s_top_def Gp_def) 
 
-lemma (in Group) s_top_l_unit:"G \<guillemotright> K \<Longrightarrow> {\<one>} \<struct>\<^bsub>G\<^esub> K = K"
+lemma (in Group) s_top_l_unit:"G \<guillemotright> K \<Longrightarrow> {\<one>} \<diamondop>\<^bsub>G\<^esub> K = K"
 apply (rule equalityI)
  apply (rule subsetI, simp add:s_top_def, erule bexE,
         frule_tac h = y in sg_subset_elem[of "K"], assumption+,
@@ -80,7 +80,7 @@ apply (rule equalityI)
         frule_tac a = x in l_unit, blast)
 done
 
-lemma (in Group) s_top_r_unit:"G \<guillemotright> K \<Longrightarrow> K \<struct>\<^bsub>G\<^esub> {\<one>} = K" 
+lemma (in Group) s_top_r_unit:"G \<guillemotright> K \<Longrightarrow> K \<diamondop>\<^bsub>G\<^esub> {\<one>} = K" 
 apply (rule equalityI)
 apply (rule subsetI, simp add:s_top_def, erule bexE,
        frule_tac h = xa in sg_subset_elem[of "K"], assumption+,
@@ -91,7 +91,7 @@ apply (rule subsetI,
        frule_tac a = x in r_unit, blast)
 done
 
-lemma (in Group) s_top_sub:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K\<rbrakk> \<Longrightarrow>  H \<struct>\<^bsub>G\<^esub> K \<subseteq> carrier G"
+lemma (in Group) s_top_sub:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K\<rbrakk> \<Longrightarrow>  H \<diamondop>\<^bsub>G\<^esub> K \<subseteq> carrier G"
 apply (rule subsetI) apply (simp add:s_top_def)
 apply (erule bexE)+
 apply (frule_tac h = xa in sg_subset_elem [of "H"], assumption+,
@@ -99,7 +99,7 @@ apply (frule_tac h = xa in sg_subset_elem [of "H"], assumption+,
        frule_tac a = xa and b = y in mult_closed, assumption+, simp)
 done
 
-lemma (in Group) sg_inc_set_mult:"\<lbrakk>G \<guillemotright> L; H \<subseteq> L; K \<subseteq> L\<rbrakk> \<Longrightarrow> H \<struct>\<^bsub>G\<^esub> K \<subseteq> L"
+lemma (in Group) sg_inc_set_mult:"\<lbrakk>G \<guillemotright> L; H \<subseteq> L; K \<subseteq> L\<rbrakk> \<Longrightarrow> H \<diamondop>\<^bsub>G\<^esub> K \<subseteq> L"
 apply (rule subsetI)
 apply (simp add:s_top_def, (erule bexE)+)
 apply (frule_tac c = xa in subsetD [of "H" "L"], assumption+,
@@ -109,7 +109,7 @@ apply simp
 done
 
 lemma (in Group) s_top_sub1:"\<lbrakk>H \<subseteq> (carrier G); K \<subseteq> (carrier G)\<rbrakk> \<Longrightarrow>  
-                               H \<struct>\<^bsub>G\<^esub> K \<subseteq> carrier G"
+                               H \<diamondop>\<^bsub>G\<^esub> K \<subseteq> carrier G"
 apply (rule subsetI)
 apply (simp add:s_top_def)
 apply (erule bexE)+
@@ -118,22 +118,22 @@ apply (frule_tac c = xa in subsetD[of "H" "carrier G"], assumption+,
        frule_tac a = xa and b = y in mult_closed, assumption+, simp)
 done
 
-lemma (in Group) s_top_elem:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K; a \<in> H; b \<in> K\<rbrakk> \<Longrightarrow> a \<cdot> b \<in> H \<struct>\<^bsub>G\<^esub> K"
+lemma (in Group) s_top_elem:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K; a \<in> H; b \<in> K\<rbrakk> \<Longrightarrow> a \<cdot> b \<in> H \<diamondop>\<^bsub>G\<^esub> K"
 by (simp add:s_top_def, blast)
 
 lemma (in Group) s_top_elem1:"\<lbrakk>H \<subseteq> carrier G; K \<subseteq> carrier G; a \<in> H; b \<in> K\<rbrakk> \<Longrightarrow>
-                    a \<cdot> b \<in> H \<struct>\<^bsub>G\<^esub> K "
+                    a \<cdot> b \<in> H \<diamondop>\<^bsub>G\<^esub> K "
 by (simp add:s_top_def, blast)
 
-lemma (in Group) mem_s_top:"\<lbrakk>H \<subseteq> carrier G; K \<subseteq> carrier G; u \<in> H \<struct>\<^bsub>G\<^esub> K\<rbrakk> \<Longrightarrow>
+lemma (in Group) mem_s_top:"\<lbrakk>H \<subseteq> carrier G; K \<subseteq> carrier G; u \<in> H \<diamondop>\<^bsub>G\<^esub> K\<rbrakk> \<Longrightarrow>
                  \<exists>a \<in> H. \<exists>b \<in> K. (a \<cdot> b = u)"
 by (simp add:s_top_def)
 
 lemma (in Group) s_top_mono:"\<lbrakk>H \<subseteq> carrier G; K \<subseteq> carrier G; H1 \<subseteq> H; K1 \<subseteq> K\<rbrakk>
-       \<Longrightarrow>  H1 \<struct>\<^bsub>G\<^esub> K1 \<subseteq> H \<struct>\<^bsub>G\<^esub> K"
+       \<Longrightarrow>  H1 \<diamondop>\<^bsub>G\<^esub> K1 \<subseteq> H \<diamondop>\<^bsub>G\<^esub> K"
 by (rule subsetI, simp add:s_top_def, blast)
 
-lemma (in Group) s_top_unit_closed:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K\<rbrakk> \<Longrightarrow>  \<one> \<in> H \<struct>\<^bsub>G\<^esub> K"
+lemma (in Group) s_top_unit_closed:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K\<rbrakk> \<Longrightarrow>  \<one> \<in> H \<diamondop>\<^bsub>G\<^esub> K"
 apply (frule sg_unit_closed [of "H"], 
        frule sg_unit_closed [of "K"])
 apply (cut_tac unit_closed,
@@ -141,8 +141,8 @@ apply (cut_tac unit_closed,
 apply (simp add:s_top_def, blast)
 done
 
-lemma (in Group) s_top_commute:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K; K \<struct>\<^bsub>G\<^esub> H = H \<struct>\<^bsub>G\<^esub> K;
-       u \<in> H \<struct>\<^bsub>G\<^esub> K;  v \<in>  H \<struct>\<^bsub>G\<^esub> K\<rbrakk> \<Longrightarrow>  u \<cdot> v \<in> H \<struct>\<^bsub>G\<^esub> K"
+lemma (in Group) s_top_commute:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K; K \<diamondop>\<^bsub>G\<^esub> H = H \<diamondop>\<^bsub>G\<^esub> K;
+       u \<in> H \<diamondop>\<^bsub>G\<^esub> K;  v \<in>  H \<diamondop>\<^bsub>G\<^esub> K\<rbrakk> \<Longrightarrow>  u \<cdot> v \<in> H \<diamondop>\<^bsub>G\<^esub> K"
 apply (frule sg_subset[of "H"], frule sg_subset[of "K"],
        frule mem_s_top[of "H" "K" "u"], assumption+, (erule bexE)+,
        frule mem_s_top[of "H" "K" "v"], assumption+, (erule bexE)+)
@@ -155,7 +155,7 @@ apply (frule_tac h = a in sg_subset_elem[of "H"], assumption+,
        frule_tac h = ba in sg_subset_elem[of "K"], assumption+)
 apply (simp add:tOp_assocTr41[THEN sym], simp add:tOp_assocTr42)
 apply (frule_tac a = b and b = aa in s_top_elem1[of "K" "H"], assumption+,
-       simp, thin_tac "K \<struct>\<^bsub>G\<^esub> H = H \<struct>\<^bsub>G\<^esub> K")
+       simp, thin_tac "K \<diamondop>\<^bsub>G\<^esub> H = H \<diamondop>\<^bsub>G\<^esub> K")
 apply (frule_tac u = "b \<cdot> aa" in mem_s_top[of "H" "K"], assumption+,
        (erule bexE)+, frule sym, thin_tac "ab \<cdot> bb = b \<cdot> aa", simp,
         thin_tac "b \<cdot> aa = ab \<cdot> bb")
@@ -167,8 +167,8 @@ apply (frule_tac x = a and y = ab in sg_mult_closed[of "H"], assumption+,
        simp add:s_top_elem1)
 done
 
-lemma (in Group) s_top_commute1:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K; K \<struct>\<^bsub>G\<^esub> H = H \<struct>\<^bsub>G\<^esub> K;
-                                        u \<in> H \<struct>\<^bsub>G\<^esub> K\<rbrakk> \<Longrightarrow> (\<rho> u) \<in> H \<struct>\<^bsub>G\<^esub> K"
+lemma (in Group) s_top_commute1:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K; K \<diamondop>\<^bsub>G\<^esub> H = H \<diamondop>\<^bsub>G\<^esub> K;
+                                        u \<in> H \<diamondop>\<^bsub>G\<^esub> K\<rbrakk> \<Longrightarrow> (\<rho> u) \<in> H \<diamondop>\<^bsub>G\<^esub> K"
 apply (frule sg_subset[of "H"], frule sg_subset[of "K"],
        frule mem_s_top[of "H" "K" "u"], assumption+, (erule bexE)+)
  apply (frule_tac h = a in sg_subset_elem[of "H"], assumption+,
@@ -182,8 +182,8 @@ apply (frule sg_subset[of "H"], frule sg_subset[of "K"],
          assumption+, simp)
 done
 
-lemma (in Group) s_top_commute_sg:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K; K \<struct>\<^bsub>G\<^esub> H = H \<struct>\<^bsub>G\<^esub> K\<rbrakk> \<Longrightarrow>
-                                     G \<guillemotright> (H \<struct>\<^bsub>G\<^esub> K)"
+lemma (in Group) s_top_commute_sg:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K; K \<diamondop>\<^bsub>G\<^esub> H = H \<diamondop>\<^bsub>G\<^esub> K\<rbrakk> \<Longrightarrow>
+                                     G \<guillemotright> (H \<diamondop>\<^bsub>G\<^esub> K)"
 apply (subst sg_def)
 apply (frule s_top_unit_closed[of "H" "K"], assumption,
        simp add:nonempty, simp add:s_top_sub)
@@ -194,7 +194,7 @@ apply ((rule ballI)+,
 done
 
 lemma (in Group) s_top_assoc:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K; G \<guillemotright> L\<rbrakk> \<Longrightarrow>
-                                 (H \<struct>\<^bsub>G\<^esub> K) \<struct>\<^bsub>G\<^esub> L =  H \<struct>\<^bsub>G\<^esub> (K \<struct>\<^bsub>G\<^esub> L)"
+                                 (H \<diamondop>\<^bsub>G\<^esub> K) \<diamondop>\<^bsub>G\<^esub> L =  H \<diamondop>\<^bsub>G\<^esub> (K \<diamondop>\<^bsub>G\<^esub> L)"
 apply (rule equalityI)
  apply (rule subsetI, simp add:s_top_def) apply (erule exE)
  apply (erule conjE)
@@ -218,7 +218,7 @@ apply (frule_tac h = xa in sg_subset_elem[of "H"], assumption+,
 done
 
 lemma (in Group) s_topTr6:"\<lbrakk>G \<guillemotright> H1; G \<guillemotright> H2; G \<guillemotright> K; H1 \<subseteq> K\<rbrakk> \<Longrightarrow>
-                               (H1 \<struct>\<^bsub>G\<^esub> H2) \<inter> K = H1 \<struct>\<^bsub>G\<^esub> (H2 \<inter> K)" 
+                               (H1 \<diamondop>\<^bsub>G\<^esub> H2) \<inter> K = H1 \<diamondop>\<^bsub>G\<^esub> (H2 \<inter> K)" 
 apply (rule equalityI)
  apply (rule subsetI,
         simp add:s_top_def, erule conjE, (erule bexE)+,
@@ -244,7 +244,7 @@ apply (rule equalityI)
 done
 
 lemma (in Group) s_topTr6_1:"\<lbrakk>G \<guillemotright> H1; G \<guillemotright> H2; G \<guillemotright> K; H2 \<subseteq> K\<rbrakk> \<Longrightarrow>
-                              (H1 \<struct>\<^bsub>G\<^esub> H2) \<inter> K = (H1 \<inter> K) \<struct>\<^bsub>G\<^esub> H2" 
+                              (H1 \<diamondop>\<^bsub>G\<^esub> H2) \<inter> K = (H1 \<inter> K) \<diamondop>\<^bsub>G\<^esub> H2" 
 apply (rule equalityI)
 apply (rule subsetI)
 apply (simp add:s_top_def, erule conjE, (erule bexE)+)
@@ -265,7 +265,7 @@ apply (rule subsetI, simp add:s_top_def, (erule bexE)+,
        blast)
 done
 
-lemma (in Group) l_sub_smult:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K\<rbrakk> \<Longrightarrow> H \<subseteq> H \<struct>\<^bsub>G\<^esub> K"
+lemma (in Group) l_sub_smult:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K\<rbrakk> \<Longrightarrow> H \<subseteq> H \<diamondop>\<^bsub>G\<^esub> K"
 apply (rule subsetI,
        simp add:s_top_def)
 apply (frule sg_unit_closed[of "K"],
@@ -274,7 +274,7 @@ apply (frule sg_unit_closed[of "K"],
 apply blast
 done
 
-lemma (in Group) r_sub_smult:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K\<rbrakk> \<Longrightarrow> K \<subseteq> H \<struct>\<^bsub>G\<^esub> K"
+lemma (in Group) r_sub_smult:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K\<rbrakk> \<Longrightarrow> K \<subseteq> H \<diamondop>\<^bsub>G\<^esub> K"
 apply (rule subsetI,
        simp add:s_top_def)
 apply (frule sg_unit_closed[of "H"],
@@ -283,11 +283,11 @@ apply (frule sg_unit_closed[of "H"],
 apply blast
 done
 
-lemma (in Group) s_topTr8:"G \<guillemotright> H \<Longrightarrow> H = H \<struct>\<^bsub>G\<^esub> H"
+lemma (in Group) s_topTr8:"G \<guillemotright> H \<Longrightarrow> H = H \<diamondop>\<^bsub>G\<^esub> H"
 apply (frule l_sub_smult[of "H" "H"], assumption)
 apply (rule equalityI, assumption)
 apply (rule subsetI)
-apply (thin_tac "H \<subseteq> H \<struct>\<^bsub>G\<^esub> H",
+apply (thin_tac "H \<subseteq> H \<diamondop>\<^bsub>G\<^esub> H",
        simp add:s_top_def, (erule bexE)+) 
 apply (frule_tac x = xa and y = y in sg_mult_closed[of "H"], assumption+,
        simp)
@@ -365,17 +365,17 @@ apply (rule_tac a = a and h = h in Group.nsgPr1_1[of "\<natural>K" "K1"], assump
        simp add:Gp_carrier, assumption)
 done 
 
-lemma (in Group) lcs_sub_s_mult:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> N; a \<in> H\<rbrakk> \<Longrightarrow> a \<diamondsuit> N \<subseteq> H \<struct>\<^bsub>G\<^esub> N"
+lemma (in Group) lcs_sub_s_mult:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> N; a \<in> H\<rbrakk> \<Longrightarrow> a \<diamondsuit> N \<subseteq> H \<diamondop>\<^bsub>G\<^esub> N"
 apply (rule subsetI)
 apply (simp add:lcs_def s_top_def, blast)
 done
 
-lemma (in Group) rcs_sub_smult:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> N; a \<in> H\<rbrakk> \<Longrightarrow> N \<bullet> a \<subseteq> N \<struct>\<^bsub>G\<^esub> H"
+lemma (in Group) rcs_sub_smult:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> N; a \<in> H\<rbrakk> \<Longrightarrow> N \<bullet> a \<subseteq> N \<diamondop>\<^bsub>G\<^esub> H"
 apply (rule subsetI)
  apply (simp add:rcs_def s_top_def, blast)
 done
 
-lemma (in Group) smult_commute_sg_nsg:"\<lbrakk>G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> H \<struct>\<^bsub>G\<^esub> N = N \<struct>\<^bsub>G\<^esub> H"
+lemma (in Group) smult_commute_sg_nsg:"\<lbrakk>G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> H \<diamondop>\<^bsub>G\<^esub> N = N \<diamondop>\<^bsub>G\<^esub> H"
 apply (frule nsg_sg[of "N"])
 apply (rule equalityI)
  apply (rule subsetI,
@@ -406,34 +406,34 @@ apply (rule equalityI)
  apply blast
 done  
 
-lemma (in Group) smult_sg_nsg:"\<lbrakk>G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> G \<guillemotright> H \<struct>\<^bsub>G\<^esub> N"
+lemma (in Group) smult_sg_nsg:"\<lbrakk>G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> G \<guillemotright> H \<diamondop>\<^bsub>G\<^esub> N"
 apply (frule  smult_commute_sg_nsg[of "H" "N"], assumption+,
        frule nsg_sg[of "N"],
        rule s_top_commute_sg[of "H" "N"], assumption+,
        rule sym, assumption)
 done
          
-lemma (in Group) smult_nsg_sg:"\<lbrakk>G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> G \<guillemotright> N \<struct>\<^bsub>G\<^esub> H"
+lemma (in Group) smult_nsg_sg:"\<lbrakk>G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> G \<guillemotright> N \<diamondop>\<^bsub>G\<^esub> H"
 apply (frule smult_commute_sg_nsg[THEN sym, of "H" "N"], assumption+)
 apply (simp add:smult_sg_nsg)
 done
 
-lemma (in Group) Gp_smult_sg_nsg:"\<lbrakk>G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> Group (Gp G (H \<struct>\<^bsub>G\<^esub> N))"
+lemma (in Group) Gp_smult_sg_nsg:"\<lbrakk>G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> Group (Gp G (H \<diamondop>\<^bsub>G\<^esub> N))"
 apply (frule smult_sg_nsg[of "H" "N"], assumption+)
 apply (simp add:Group_Gp)
 done  
 
-lemma (in Group) N_sg_HN:"\<lbrakk>G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> Gp G (H \<struct>\<^bsub>G\<^esub> N) \<guillemotright> N"
+lemma (in Group) N_sg_HN:"\<lbrakk>G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> Gp G (H \<diamondop>\<^bsub>G\<^esub> N) \<guillemotright> N"
 apply (frule smult_sg_nsg[of "H" "N"], assumption+,
        frule nsg_sg[of "N"],
        frule r_sub_smult[of "H" "N"], assumption+)
-apply (rule sg_sg[of "H \<struct>\<^bsub>G\<^esub> N" "N"], assumption+)
+apply (rule sg_sg[of "H \<diamondop>\<^bsub>G\<^esub> N" "N"], assumption+)
 done
 
-lemma (in Group) K_absorb_HK:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K; H \<subseteq> K\<rbrakk> \<Longrightarrow>  H \<struct>\<^bsub>G\<^esub> K = K"
+lemma (in Group) K_absorb_HK:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> K; H \<subseteq> K\<rbrakk> \<Longrightarrow>  H \<diamondop>\<^bsub>G\<^esub> K = K"
 apply (frule r_sub_smult[of "H" "K"], assumption+)
 apply (rule equalityI)
-apply (thin_tac "K \<subseteq> H \<struct>\<^bsub>G\<^esub> K",
+apply (thin_tac "K \<subseteq> H \<diamondop>\<^bsub>G\<^esub> K",
        rule subsetI, simp add:s_top_def, (erule bexE)+,
        frule_tac c = xa in subsetD[of "H" "K"], assumption+,
        frule_tac x = xa and y = y in sg_mult_closed[of "K"], assumption+,
@@ -455,27 +455,27 @@ apply (rule_tac a = a and h = h in nsgPr1_1[of "N"], assumption+,
        rule_tac h = a in sg_subset_elem[of "H"], assumption+)
 done
 
-lemma (in Group) Gp_smult_nsg:"\<lbrakk>G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> Gp G (H \<struct>\<^bsub>G\<^esub> N) \<triangleright> N"
+lemma (in Group) Gp_smult_nsg:"\<lbrakk>G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> Gp G (H \<diamondop>\<^bsub>G\<^esub> N) \<triangleright> N"
 apply (frule smult_sg_nsg[of "H" "N"], assumption+,
        frule nsg_sg[of "N"],
        frule N_sg_HN[of "H" "N"], assumption+,
        frule Gp_smult_sg_nsg[of "H" "N"], assumption+,
-       rule Group.cond_nsg[of "\<natural>(H \<struct>\<^bsub>G\<^esub> N)" "N"], assumption+)
+       rule Group.cond_nsg[of "\<natural>(H \<diamondop>\<^bsub>G\<^esub> N)" "N"], assumption+)
 apply ((rule ballI)+,
-       frule_tac a = a in Group.i_closed[of "\<natural>(H \<struct>\<^bsub>G\<^esub> N)"], assumption+,
+       frule_tac a = a in Group.i_closed[of "\<natural>(H \<diamondop>\<^bsub>G\<^esub> N)"], assumption+,
        simp add:Gp_carrier) 
 
 apply (frule r_sub_smult[of "H" "N"], assumption+,
-       frule_tac c = h in subsetD[of "N" "H \<struct>\<^bsub>G\<^esub> N"], assumption+,
-       simp add:Gp_mult_induced[of "H \<struct>\<^bsub>G\<^esub> N"] sg_i_induced[of "H \<struct>\<^bsub>G\<^esub> N"])
-apply (frule_tac x = a and y = h in sg_mult_closed[of "H \<struct>\<^bsub>G\<^esub> N"], assumption+,
+       frule_tac c = h in subsetD[of "N" "H \<diamondop>\<^bsub>G\<^esub> N"], assumption+,
+       simp add:Gp_mult_induced[of "H \<diamondop>\<^bsub>G\<^esub> N"] sg_i_induced[of "H \<diamondop>\<^bsub>G\<^esub> N"])
+apply (frule_tac x = a and y = h in sg_mult_closed[of "H \<diamondop>\<^bsub>G\<^esub> N"], assumption+,
        simp add:Gp_mult_induced)
 apply (rule_tac a = a and h = h in nsgPr1_1[of "N"], assumption+,
-       frule sg_subset[of "H \<struct>\<^bsub>G\<^esub> N"], frule_tac c = a in subsetD[of "H \<struct>\<^bsub>G\<^esub> N"
+       frule sg_subset[of "H \<diamondop>\<^bsub>G\<^esub> N"], frule_tac c = a in subsetD[of "H \<diamondop>\<^bsub>G\<^esub> N"
        "carrier G"], assumption+)
 done 
 
-lemma (in Group) Gp_smult_nsg1:"\<lbrakk>G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> Gp G (N \<struct>\<^bsub>G\<^esub> H) \<triangleright> N"
+lemma (in Group) Gp_smult_nsg1:"\<lbrakk>G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> Gp G (N \<diamondop>\<^bsub>G\<^esub> H) \<triangleright> N"
 apply (simp add:smult_commute_sg_nsg[THEN sym, of "H" "N"],
        simp only:Gp_smult_nsg)
 done
@@ -495,7 +495,7 @@ apply (simp add:Gp_def)
 done
 
 lemma (in Group) ZassenhausTr1:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1;
-       Gp G H \<triangleright> H1; Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K1) = (H \<inter> K1) \<struct>\<^bsub>G\<^esub> H1"
+       Gp G H \<triangleright> H1; Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K1) = (H \<inter> K1) \<diamondop>\<^bsub>G\<^esub> H1"
 apply (frule Group_Gp[of "H"],
        frule Group.nsg_sg[of "\<natural>H" "H1"], assumption,
        frule Group.sg_subset[of "\<natural>H" "H1"], assumption, simp add:Gp_carrier)
@@ -534,20 +534,20 @@ apply (frule_tac a = xa in i_closed,
 done
 
 lemma (in Group) ZassenhausTr1_1:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1;
-       Gp G H \<triangleright> H1; Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> G \<guillemotright> (H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K1))"
+       Gp G H \<triangleright> H1; Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> G \<guillemotright> (H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K1))"
 apply (rule s_top_commute_sg, assumption)
 apply (simp add:inter_sgs[of "H" "K1"])
 apply (rule ZassenhausTr1 [THEN sym, of "H" "H1" "K" "K1"], assumption+)
 done
 
 lemma (in Group) ZassenhausTr2:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; Gp G H \<triangleright> H1\<rbrakk> \<Longrightarrow>
-                                  H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K) = (H \<inter> K) \<struct>\<^bsub>G\<^esub> H1"
+                                  H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K) = (H \<inter> K) \<diamondop>\<^bsub>G\<^esub> H1"
 apply (frule special_nsg_G1[of "K"])
 apply (simp add: ZassenhausTr1 [of "H" "H1" "K" "K"])
 done
 
 lemma (in Group) ZassenhausTr2_1:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; Gp G H \<triangleright> H1\<rbrakk>
-  \<Longrightarrow> G \<guillemotright> H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K)"
+  \<Longrightarrow> G \<guillemotright> H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K)"
 apply (frule ZassenhausTr2 [of "H" "H1" "K"], assumption+,
        frule inter_sgs [of "H" "K"], assumption+,
        rule s_top_commute_sg, assumption+)
@@ -555,7 +555,7 @@ apply (rule sym, assumption)
 done
 
 lemma (in Group) ZassenhausTr2_2:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1;
-       Gp G H \<triangleright> H1; Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K1) \<subseteq>  H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K)"  
+       Gp G H \<triangleright> H1; Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K1) \<subseteq>  H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K)"  
 apply (frule Group_Gp[of "K"],
        frule Group.nsg_sg[of "\<natural>K" "K1"], assumption,
        frule Group.sg_subset[of "\<natural>K" "K1"], assumption, simp add:Gp_carrier,
@@ -570,7 +570,7 @@ done
 
 lemma (in Group) ZassenhausTr2_5:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1; Gp G H \<triangleright> H1; 
       Gp G K \<triangleright> K1; a\<in> H1; b \<in> H \<inter> K1; c \<in> H1\<rbrakk> \<Longrightarrow>
-                      a \<cdot> b \<cdot> c \<in> H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K1)"
+                      a \<cdot> b \<cdot> c \<in> H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K1)"
 apply (simp, erule conjE)
 apply (frule sg_subset_elem[of "H1" "a"], assumption+, 
        frule sg_subset_elem[of "H1" "c"], assumption+,
@@ -580,7 +580,7 @@ apply (frule sg_subset_elem[of "H1" "a"], assumption+,
        frule mult_closed[of "a \<cdot> b" "c"], assumption+,
        frule tassoc[of "a \<cdot> b \<cdot> c" "\<rho> b" "b"], assumption+,
        simp add:l_i r_unit)
-apply (rule eq_elem_in[of "a \<cdot> b \<cdot> c \<cdot> \<rho> b \<cdot> b" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K1" "a \<cdot> b \<cdot> c"],
+apply (rule eq_elem_in[of "a \<cdot> b \<cdot> c \<cdot> \<rho> b \<cdot> b" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K1" "a \<cdot> b \<cdot> c"],
        thin_tac "a \<cdot> b \<cdot> c \<cdot> \<rho> b \<cdot> b = a \<cdot> b \<cdot> c",
        frule inter_sgs[of "H" "K1"], assumption+,
        rule s_top_elem[of "H1" "H \<inter> K1" "a \<cdot> b \<cdot> c \<cdot> \<rho> b " "b"], assumption+,
@@ -632,24 +632,24 @@ apply (simp add:tOp_assocTr41[of "a" "x" "\<rho> a" "a \<cdot> y \<cdot> (\<rho>
 done
 
 lemma (in Group) ZassenhausTr3:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1; Gp G H \<triangleright> H1; 
-              Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow>  Gp G (H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K)) \<triangleright> (H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K1))"
+              Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow>  Gp G (H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K)) \<triangleright> (H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K1))"
 apply (frule ZassenhausTr2_1 [of "H" "H1" "K"], assumption+,
        frule ZassenhausTr2_1 [of "H" "H1" "K1"], assumption+,
        frule ZassenhausTr2_2 [of "H" "H1" "K" "K1"], assumption+,
-       frule sg_sg [of "H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K)" "H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K1)"], assumption+,
-       frule Group_Gp[of "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K"])
-apply (rule Group.cond_nsg[of "\<natural>(H1 \<struct>\<^bsub>G\<^esub> H \<inter> K)" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K1"], assumption+,
+       frule sg_sg [of "H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K)" "H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K1)"], assumption+,
+       frule Group_Gp[of "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K"])
+apply (rule Group.cond_nsg[of "\<natural>(H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K)" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K1"], assumption+,
        (rule ballI)+,
        simp add:Gp_carrier)
- apply (frule_tac c = h in subsetD[of "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K1" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K"],
+ apply (frule_tac c = h in subsetD[of "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K1" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K"],
             assumption+,
-        simp add:Gp_mult_induced[of "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K"],
-        simp add:sg_i_induced[of "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K"],
-        frule_tac x = a in sg_i_closed[of "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K"], assumption+,
-        frule_tac x = a and y = h in sg_mult_closed[of "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K"], 
+        simp add:Gp_mult_induced[of "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K"],
+        simp add:sg_i_induced[of "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K"],
+        frule_tac x = a in sg_i_closed[of "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K"], assumption+,
+        frule_tac x = a and y = h in sg_mult_closed[of "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K"], 
         assumption+,
-        simp add:Gp_mult_induced[of "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K"],
-        thin_tac "\<rho> a \<in> H1 \<struct>\<^bsub>G\<^esub> H \<inter> K", thin_tac "a \<cdot> h \<in> H1 \<struct>\<^bsub>G\<^esub> H \<inter> K")
+        simp add:Gp_mult_induced[of "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K"],
+        thin_tac "\<rho> a \<in> H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K", thin_tac "a \<cdot> h \<in> H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K")
  apply (simp add:s_top_def[of "G" "H1" "H \<inter> K"], (erule bexE)+,
         simp add:s_top_def[of "G" "H1" "H \<inter> K1"], fold s_top_def,
        (erule bexE)+, thin_tac "xa \<cdot> ya = h", (erule conjE)+,
@@ -691,7 +691,7 @@ apply (simp add:s_top_def[of "G" "H1" "H \<inter> K1"])
 done
 
 lemma (in Group) ZassenhausTr3_2:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1; Gp G H \<triangleright> H1; 
-              Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> G \<guillemotright> H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K1) \<struct>\<^bsub>G\<^esub> (H \<inter> K)" 
+              Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> G \<guillemotright> H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K1) \<diamondop>\<^bsub>G\<^esub> (H \<inter> K)" 
 apply (frule s_top_assoc[of "H1" "H \<inter> K1" "H \<inter> K"],
        (simp add:inter_sgs)+,
        frule inter_sgs[of "H" "K1"], assumption+,
@@ -702,7 +702,7 @@ apply (frule s_top_assoc[of "H1" "H \<inter> K1" "H \<inter> K"],
 done
 
 lemma (in Group) ZassenhausTr3_3:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1; Gp G H \<triangleright> H1; 
-       Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> (H1 \<inter> K) \<struct>\<^bsub>G\<^esub> (H \<inter> K1) = (K1 \<inter> H) \<struct>\<^bsub>G\<^esub> (K \<inter> H1)"
+       Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> (H1 \<inter> K) \<diamondop>\<^bsub>G\<^esub> (H \<inter> K1) = (K1 \<inter> H) \<diamondop>\<^bsub>G\<^esub> (K \<inter> H1)"
 apply (rule equalityI)
  apply (rule subsetI, simp add:s_top_def, (erule bexE)+)
  apply (frule sym, thin_tac "xa \<cdot> y = x", simp, (erule conjE)+)
@@ -754,7 +754,7 @@ apply (rule ZassenhausTr2_4[of "K" "K1" "g" "h"], assumption+)
 done
 
 lemma (in Group) ZassenhausTr3_5:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1; Gp G H \<triangleright> H1; 
-       Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> (Gp G (H \<inter> K)) \<triangleright> (H1 \<inter> K) \<struct>\<^bsub>G\<^esub> (H \<inter> K1)"
+       Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> (Gp G (H \<inter> K)) \<triangleright> (H1 \<inter> K) \<diamondop>\<^bsub>G\<^esub> (H \<inter> K1)"
 apply (frule inter_sgs[of "H" "K"], assumption,
        frule inter_sgs[of "H1" "K"], assumption,
        frule inter_sgs[of "K" "H"], assumption,
@@ -775,17 +775,17 @@ apply (frule ZassenhausTr3[of "H \<inter> K" "H1 \<inter> K" "K \<inter> H" "H \
 done
 
 lemma (in Group) ZassenhausTr4:"\<lbrakk>G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1; Gp G H \<triangleright> H1; 
-     Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> (H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K1)) \<struct>\<^bsub>G\<^esub> (H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K)) = H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K)"
+     Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> (H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K1)) \<diamondop>\<^bsub>G\<^esub> (H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K)) = H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K)"
 apply (frule ZassenhausTr2 [of "H" "H1" "K"], assumption+,
        frule ZassenhausTr2 [of "H" "H1" "K1"], assumption+,
        frule ZassenhausTr1_1 [of "H" "H1" "K" "K1"], assumption+,
        frule ZassenhausTr2_1 [of "H" "H1" "K"], assumption+,
        frule ZassenhausTr2_2 [of "H" "H1" "K" "K1"], assumption+)
-apply (rule K_absorb_HK[of "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K1" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K"], assumption+)
+apply (rule K_absorb_HK[of "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K1" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K"], assumption+)
 done
 
 lemma (in Group) ZassenhausTr4_0: "\<lbrakk>G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1; Gp G H \<triangleright> H1; 
-     Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow>  H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K) = (H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K1)) \<struct>\<^bsub>G\<^esub> (H \<inter> K)"
+     Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow>  H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K) = (H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K1)) \<diamondop>\<^bsub>G\<^esub> (H \<inter> K)"
 apply (frule inter_sgs [of "H" "K1"], assumption+,
        frule inter_sgs [of "H" "K"], assumption+)
 apply (subst s_top_assoc [of "H1" "H \<inter> K1" "H \<inter> K"], assumption+,
@@ -796,7 +796,7 @@ apply simp+
 done
 
 lemma (in Group) ZassenhausTr4_1:"\<lbrakk>G \<guillemotright> H; (Gp G H) \<triangleright> H1; (Gp G H) \<guillemotright> (H \<inter> K)\<rbrakk>
-                           \<Longrightarrow> (Gp G (H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K))) \<triangleright> H1" 
+                           \<Longrightarrow> (Gp G (H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K))) \<triangleright> H1" 
 apply (frule Group_Gp [of "H"],
        frule Group.nsg_sg[of "Gp G H" "H1"], assumption+,
        frule Group.Gp_smult_nsg1[of "\<natural>H" "H \<inter> K" "H1"], assumption+,
@@ -806,8 +806,8 @@ apply (frule Group_Gp [of "H"],
        frule Group.smult_nsg_sg[of "\<natural>H" "H \<inter> K" "H1"], assumption+,
        frule Group.s_top_sub[of "\<natural>H" "H1" "H \<inter> K"], assumption+)
 apply (simp only: Gp_carrier s_top_induced [of "H" "H1" "H \<inter> K"])
-apply (frule subg_sg_sg[of "H" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K"], assumption+,
-       simp add:Gp_inherited[of "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K" "H"])
+apply (frule subg_sg_sg[of "H" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K"], assumption+,
+       simp add:Gp_inherited[of "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K" "H"])
 done
 
 section "Homomorphism"
@@ -1467,7 +1467,7 @@ apply (simp add:Gp_def)
 done
      
 lemma iotahom:"\<lbrakk>Group G; G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> 
-                \<iota>\<^bsub>(Gp G H)\<^esub> \<in> gHom (Gp G H) (Gp G (H \<struct>\<^bsub>G\<^esub> N))" 
+                \<iota>\<^bsub>(Gp G H)\<^esub> \<in> gHom (Gp G H) (Gp G (H \<diamondop>\<^bsub>G\<^esub> N))" 
 apply (simp add:gHom_def)
 apply (rule conjI)
  apply (simp add:iota_def extensional_def)
@@ -1483,14 +1483,14 @@ apply (rule ballI)+
  apply (frule Group.smult_sg_nsg[of "G" "H" "N"], assumption+,
         frule Group.l_sub_smult[of "G" "H" "N"], assumption+,
         simp add:Group.nsg_sg,
-        frule_tac c = x in subsetD[of "H" "H \<struct>\<^bsub>G\<^esub> N"], assumption+,
-        frule_tac c = y in subsetD[of "H" "H \<struct>\<^bsub>G\<^esub> N"], assumption+)
+        frule_tac c = x in subsetD[of "H" "H \<diamondop>\<^bsub>G\<^esub> N"], assumption+,
+        frule_tac c = y in subsetD[of "H" "H \<diamondop>\<^bsub>G\<^esub> N"], assumption+)
  apply (simp add:Group.Gp_mult_induced[of "G"])
   apply (simp add:Group.sg_mult_closed)
 done
 
 lemma iotaTr0: "\<lbrakk>Group G; G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> 
-               ginj\<^bsub>(Gp G H),(Gp G (H \<struct>\<^bsub>G\<^esub> N))\<^esub> (\<iota>\<^bsub>(Gp G H)\<^esub>)"
+               ginj\<^bsub>(Gp G H),(Gp G (H \<diamondop>\<^bsub>G\<^esub> N))\<^esub> (\<iota>\<^bsub>(Gp G H)\<^esub>)"
 apply (simp add:ginjec_def)
 apply (simp add:iotahom)
 apply (simp add:inj_on_def iota_def Gp_def)
@@ -1817,14 +1817,14 @@ apply (simp add:isomorphic_def gbijec_def, blast)
 done
 
 lemma (in Group) homom3Tr1:"\<lbrakk>G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow> H \<inter> N =  
-gker\<^bsub>(Gp G H),((Gp G (H \<struct>\<^bsub>G\<^esub> N))/N)\<^esub> 
-               ((Pj (Gp G (H \<struct>\<^bsub>G\<^esub> N)) N) \<circ>\<^bsub>(Gp G H)\<^esub> (\<iota>\<^bsub>(Gp G H)\<^esub>))"  
+gker\<^bsub>(Gp G H),((Gp G (H \<diamondop>\<^bsub>G\<^esub> N))/N)\<^esub> 
+               ((Pj (Gp G (H \<diamondop>\<^bsub>G\<^esub> N)) N) \<circ>\<^bsub>(Gp G H)\<^esub> (\<iota>\<^bsub>(Gp G H)\<^esub>))"  
 apply (simp add:gkernel_def, frule nsg_sg,
        simp add:Gp_carrier[of "H"],
        frule smult_sg_nsg, assumption+,
        frule Gp_smult_nsg[of "H" "N"], assumption,
-       frule Group_Gp [of "H \<struct>\<^bsub>G\<^esub> N"])
- apply (simp add:Group.Qg_one[of "Gp G (H \<struct>\<^bsub>G\<^esub> N)" "N"],
+       frule Group_Gp [of "H \<diamondop>\<^bsub>G\<^esub> N"])
+ apply (simp add:Group.Qg_one[of "Gp G (H \<diamondop>\<^bsub>G\<^esub> N)" "N"],
         simp add:iota_def Gp_carrier, simp add:cmpghom_def compose_def,
         simp add:Gp_carrier) 
 apply (rule equalityI)
@@ -1833,23 +1833,23 @@ apply (rule subsetI, simp, erule conjE)
         subst Group.Pj_mem, assumption+,
         simp add:Gp_carrier,
         frule l_sub_smult[of "H" "N"], assumption+,
-        rule_tac c = x in subsetD[of "H" "H \<struct>\<^bsub>G\<^esub> N"], assumption+)
+        rule_tac c = x in subsetD[of "H" "H \<diamondop>\<^bsub>G\<^esub> N"], assumption+)
   apply (frule r_sub_smult[of "H" "N"], assumption+,
-         frule_tac c = x in subsetD[of "N" "H \<struct>\<^bsub>G\<^esub> N"], assumption+,
-         simp add:Gp_rcs[of "N" "H \<struct>\<^bsub>G\<^esub> N"])
+         frule_tac c = x in subsetD[of "N" "H \<diamondop>\<^bsub>G\<^esub> N"], assumption+,
+         simp add:Gp_rcs[of "N" "H \<diamondop>\<^bsub>G\<^esub> N"])
   apply (simp add:rcs_fixed2)
 
 apply (rule subsetI, simp, erule conjE, simp)
  apply (frule_tac h = x in sg_subset_elem[of "H"], assumption+)
  apply (frule l_sub_smult[of "H" "N"], assumption+,
         frule r_sub_smult[of "H" "N"], assumption+)
- apply (frule_tac x = x in Group.Pj_mem[of "Gp G (H \<struct>\<^bsub>G\<^esub> N)" "N"], assumption+)
+ apply (frule_tac x = x in Group.Pj_mem[of "Gp G (H \<diamondop>\<^bsub>G\<^esub> N)" "N"], assumption+)
        apply (simp add:Gp_carrier)
        apply (
-        rule_tac c = x in subsetD[of "H" "H \<struct>\<^bsub>G\<^esub> N"], assumption+)
- apply (frule_tac c = x in subsetD[of "H" "H \<struct>\<^bsub>G\<^esub> N"], assumption+)
+        rule_tac c = x in subsetD[of "H" "H \<diamondop>\<^bsub>G\<^esub> N"], assumption+)
+ apply (frule_tac c = x in subsetD[of "H" "H \<diamondop>\<^bsub>G\<^esub> N"], assumption+)
  apply (simp only:Group.Gp_rcs)
- apply (simp only:Gp_rcs[of "N" "H \<struct>\<^bsub>G\<^esub> N"])
+ apply (simp only:Gp_rcs[of "N" "H \<diamondop>\<^bsub>G\<^esub> N"])
  apply (frule_tac a = x in a_in_rcs[of "N"], assumption+, simp)
 done     
 
@@ -2090,24 +2090,24 @@ section "Zassenhaus"
 
 text{* we show @{text "H \<rightarrow> H N/N"} is gsurjective *}
 
-lemma (in Group) homom4Tr1:"\<lbrakk>G \<triangleright> N; G \<guillemotright> H\<rbrakk> \<Longrightarrow>  Group ((Gp G (H \<struct>\<^bsub>G\<^esub> N)) / N)" 
+lemma (in Group) homom4Tr1:"\<lbrakk>G \<triangleright> N; G \<guillemotright> H\<rbrakk> \<Longrightarrow>  Group ((Gp G (H \<diamondop>\<^bsub>G\<^esub> N)) / N)" 
 apply (frule Gp_smult_sg_nsg[of "H" "N"], assumption+)
 apply (frule Gp_smult_nsg [of "H" "N"], assumption+)
  apply (simp add:Group.Group_Qg)
 done
 
 lemma homom3Tr2:"\<lbrakk>Group G; G \<guillemotright> H; G \<triangleright> N\<rbrakk> \<Longrightarrow>  
- gsurj\<^bsub>(Gp G H),((Gp G (H \<struct>\<^bsub>G\<^esub> N))/N)\<^esub> 
-                      ((Pj (Gp G (H \<struct>\<^bsub>G\<^esub> N)) N) \<circ>\<^bsub>(Gp G H)\<^esub> (\<iota>\<^bsub>(Gp G H)\<^esub>))"
+ gsurj\<^bsub>(Gp G H),((Gp G (H \<diamondop>\<^bsub>G\<^esub> N))/N)\<^esub> 
+                      ((Pj (Gp G (H \<diamondop>\<^bsub>G\<^esub> N)) N) \<circ>\<^bsub>(Gp G H)\<^esub> (\<iota>\<^bsub>(Gp G H)\<^esub>))"
  apply (frule iotahom[of "G" "H" "N"], assumption+,
         frule Group.Gp_smult_nsg[of "G" "H" "N"], assumption+,
         frule Group.smult_sg_nsg[of "G" "H" "N"], assumption+,
         frule Group.Gp_smult_sg_nsg[of "G" "H" "N"], assumption+,
-        frule Group.Pj_gsurjec [of "Gp G (H \<struct>\<^bsub>G\<^esub> N)" "N"], assumption,
+        frule Group.Pj_gsurjec [of "Gp G (H \<diamondop>\<^bsub>G\<^esub> N)" "N"], assumption,
         frule Group.Group_Gp[of "G" "H"], assumption+,
-        frule Group.Group_Qg[of "Gp G (H \<struct>\<^bsub>G\<^esub> N)" "N"], assumption+,
-        frule gHomcomp[of "Gp G H" "Gp G (H \<struct>\<^bsub>G\<^esub> N)" "(Gp G (H \<struct>\<^bsub>G\<^esub> N)) / N" 
-        "\<iota>\<^bsub>(\<natural>\<^bsub>G\<^esub>H)\<^esub>" "Pj (Gp G (H \<struct>\<^bsub>G\<^esub> N)) N"], assumption+) 
+        frule Group.Group_Qg[of "Gp G (H \<diamondop>\<^bsub>G\<^esub> N)" "N"], assumption+,
+        frule gHomcomp[of "Gp G H" "Gp G (H \<diamondop>\<^bsub>G\<^esub> N)" "(Gp G (H \<diamondop>\<^bsub>G\<^esub> N)) / N" 
+        "\<iota>\<^bsub>(\<natural>\<^bsub>G\<^esub>H)\<^esub>" "Pj (Gp G (H \<diamondop>\<^bsub>G\<^esub> N)) N"], assumption+) 
   apply (simp add:gsurjec_def)
  apply (subst gsurjec_def, simp)
 
@@ -2115,42 +2115,42 @@ lemma homom3Tr2:"\<lbrakk>Group G; G \<guillemotright> H; G \<triangleright> N\<
         simp add:gHom_def)
 
  apply (rule ballI)
- apply (simp add:Group.Qg_carrier[of "Gp G (H \<struct>\<^bsub>G\<^esub> N)" "N"],
+ apply (simp add:Group.Qg_carrier[of "Gp G (H \<diamondop>\<^bsub>G\<^esub> N)" "N"],
         simp add:set_rcs_def, erule bexE,
         frule Group.nsg_sg[of "G" "N"], assumption,
         frule Group.r_sub_smult[of "G" "H" "N"], assumption+,
         simp add:Group.Gp_carrier)
- apply (simp add:Group.Gp_rcs[of "G" "N" "H \<struct>\<^bsub>G\<^esub> N"])
+ apply (simp add:Group.Gp_rcs[of "G" "N" "H \<diamondop>\<^bsub>G\<^esub> N"])
  
- apply (thin_tac "\<iota>\<^bsub>(\<natural>\<^bsub>G\<^esub>H)\<^esub> \<in> gHom (\<natural>\<^bsub>G\<^esub>H) (\<natural>\<^bsub>G\<^esub>(H \<struct>\<^bsub>G\<^esub> N))",
-        thin_tac "gsurj\<^bsub>(Gp G (H \<struct>\<^bsub>G\<^esub> N)),((\<natural>\<^bsub>G\<^esub>(H \<struct>\<^bsub>G\<^esub> N)) / N)\<^esub> Pj (\<natural>\<^bsub>G\<^esub>(H \<struct>\<^bsub>G\<^esub> N)) N",
-        thin_tac "Pj (\<natural>\<^bsub>G\<^esub>(H \<struct>\<^bsub>G\<^esub> N)) N \<circ>\<^bsub>(\<natural>\<^bsub>G\<^esub>H)\<^esub> \<iota>\<^bsub>(\<natural>\<^bsub>G\<^esub>H)\<^esub> \<in> gHom (\<natural>\<^bsub>G\<^esub>H) ((\<natural>\<^bsub>G\<^esub>(H \<struct>\<^bsub>G\<^esub> N)) / N)")
+ apply (thin_tac "\<iota>\<^bsub>(\<natural>\<^bsub>G\<^esub>H)\<^esub> \<in> gHom (\<natural>\<^bsub>G\<^esub>H) (\<natural>\<^bsub>G\<^esub>(H \<diamondop>\<^bsub>G\<^esub> N))",
+        thin_tac "gsurj\<^bsub>(Gp G (H \<diamondop>\<^bsub>G\<^esub> N)),((\<natural>\<^bsub>G\<^esub>(H \<diamondop>\<^bsub>G\<^esub> N)) / N)\<^esub> Pj (\<natural>\<^bsub>G\<^esub>(H \<diamondop>\<^bsub>G\<^esub> N)) N",
+        thin_tac "Pj (\<natural>\<^bsub>G\<^esub>(H \<diamondop>\<^bsub>G\<^esub> N)) N \<circ>\<^bsub>(\<natural>\<^bsub>G\<^esub>H)\<^esub> \<iota>\<^bsub>(\<natural>\<^bsub>G\<^esub>H)\<^esub> \<in> gHom (\<natural>\<^bsub>G\<^esub>H) ((\<natural>\<^bsub>G\<^esub>(H \<diamondop>\<^bsub>G\<^esub> N)) / N)")
  apply (simp add:cmpghom_def compose_def,
         simp add:Group.Gp_carrier iota_def,
         frule Group.smult_commute_sg_nsg[of "G" "H" "N"], assumption+,
-        frule_tac a = a in eq_set_inc[of _ "H \<struct>\<^bsub>G\<^esub> N" "N \<struct>\<^bsub>G\<^esub> H"], assumption+,
-        thin_tac "H \<struct>\<^bsub>G\<^esub> N = N \<struct>\<^bsub>G\<^esub> H")
+        frule_tac a = a in eq_set_inc[of _ "H \<diamondop>\<^bsub>G\<^esub> N" "N \<diamondop>\<^bsub>G\<^esub> H"], assumption+,
+        thin_tac "H \<diamondop>\<^bsub>G\<^esub> N = N \<diamondop>\<^bsub>G\<^esub> H")
  apply (simp add:s_top_def[of "G" "N" "H"], (erule bexE)+,
        rotate_tac -1, frule sym, thin_tac "x \<cdot>\<^bsub>G\<^esub> y = a", 
        frule_tac h = y in Group.sg_subset_elem[of "G" "H"], assumption+,
        simp add:Group.rcs_fixed1[THEN sym])
  apply (frule Group.l_sub_smult[of "G" "H" "N"], assumption+,
-        frule_tac x1 = y in Group.Pj_mem[THEN sym, of "Gp G (H \<struct>\<^bsub>G\<^esub> N)" "N"],
+        frule_tac x1 = y in Group.Pj_mem[THEN sym, of "Gp G (H \<diamondop>\<^bsub>G\<^esub> N)" "N"],
         assumption+, simp add:Group.Gp_carrier, simp add: subsetD)
-apply (frule_tac c = y in subsetD[of "H" "H \<struct>\<^bsub>G\<^esub> N"], assumption+,
-       simp add:Group.Gp_rcs[of "G" "N" "H \<struct>\<^bsub>G\<^esub> N"], blast)
+apply (frule_tac c = y in subsetD[of "H" "H \<diamondop>\<^bsub>G\<^esub> N"], assumption+,
+       simp add:Group.Gp_rcs[of "G" "N" "H \<diamondop>\<^bsub>G\<^esub> N"], blast)
 done
 
 
-theorem homom4:"\<lbrakk>Group G; G \<triangleright> N; G \<guillemotright> H\<rbrakk> \<Longrightarrow>gbij\<^bsub>((Gp G H)/(H \<inter> N)),((Gp G (H \<struct>\<^bsub>G\<^esub> N)) / N)\<^esub> (((Pj (Gp G (H \<struct>\<^bsub>G\<^esub> N)) N) \<circ>\<^bsub>(Gp G H)\<^esub> (\<iota>\<^bsub>(Gp G H)\<^esub>))\<dieresis>\<^bsub>(Gp G H),((Gp G (H \<struct>\<^bsub>G\<^esub> N)) / N)\<^esub>)"
+theorem homom4:"\<lbrakk>Group G; G \<triangleright> N; G \<guillemotright> H\<rbrakk> \<Longrightarrow>gbij\<^bsub>((Gp G H)/(H \<inter> N)),((Gp G (H \<diamondop>\<^bsub>G\<^esub> N)) / N)\<^esub> (((Pj (Gp G (H \<diamondop>\<^bsub>G\<^esub> N)) N) \<circ>\<^bsub>(Gp G H)\<^esub> (\<iota>\<^bsub>(Gp G H)\<^esub>))\<dieresis>\<^bsub>(Gp G H),((Gp G (H \<diamondop>\<^bsub>G\<^esub> N)) / N)\<^esub>)"
             
 apply (frule homom3Tr2 [of "G" "H" "N"], assumption+)
 apply (frule Group.Gp_smult_sg_nsg, assumption+)
 apply (frule Group.homom4Tr1[of "G" "N" "H"], assumption+)
 apply (frule Group.Group_Gp [of "G" "H"], assumption+)
-apply (frule induced_ghom_ginjec [of "Gp G H" "(Gp G (H \<struct>\<^bsub>G\<^esub> N)/N)" "(Pj (Gp G (H \<struct>\<^bsub>G\<^esub> N)) N) \<circ>\<^bsub>(Gp G H)\<^esub> (\<iota>\<^bsub>(Gp G H)\<^esub>)"], assumption+) 
+apply (frule induced_ghom_ginjec [of "Gp G H" "(Gp G (H \<diamondop>\<^bsub>G\<^esub> N)/N)" "(Pj (Gp G (H \<diamondop>\<^bsub>G\<^esub> N)) N) \<circ>\<^bsub>(Gp G H)\<^esub> (\<iota>\<^bsub>(Gp G H)\<^esub>)"], assumption+) 
  apply (simp add:gsurjec_def)
-apply (frule inducedhomgsurjec [of "Gp G H" "(Gp G (H \<struct>\<^bsub>G\<^esub> N))/N" "(Pj (Gp G (H \<struct>\<^bsub>G\<^esub> N)) N) \<circ>\<^bsub>(Gp G H)\<^esub> (\<iota>\<^bsub>(Gp G H)\<^esub>)"], assumption+)
+apply (frule inducedhomgsurjec [of "Gp G H" "(Gp G (H \<diamondop>\<^bsub>G\<^esub> N))/N" "(Pj (Gp G (H \<diamondop>\<^bsub>G\<^esub> N)) N) \<circ>\<^bsub>(Gp G H)\<^esub> (\<iota>\<^bsub>(Gp G H)\<^esub>)"], assumption+)
  apply (frule Group.homom3Tr1[of "G" "H" "N"], assumption+)
  apply simp
 apply (simp add:gbijec_def)   
@@ -2162,7 +2162,7 @@ by (frule Group_Gp[of "H"],
     rule Group.Group_Qg, assumption+)
 
 lemma isom4:"\<lbrakk>Group G; G \<triangleright> N; G \<guillemotright> H\<rbrakk> \<Longrightarrow>
-                 ((Gp G H)/(H \<inter> N)) \<cong>  ((Gp G (N \<struct>\<^bsub>G\<^esub> H)) / N)"
+                 ((Gp G H)/(H \<inter> N)) \<cong>  ((Gp G (N \<diamondop>\<^bsub>G\<^esub> H)) / N)"
 apply (frule homom4 [of "G" "N" "H"], assumption+,
        frule Group.smult_sg_nsg[of "G" "H" "N"], assumption+,
        frule Group.smult_commute_sg_nsg[of "G" "H" "N"], assumption+)
@@ -2171,17 +2171,17 @@ done
 
 lemma ZassenhausTr5:"\<lbrakk>Group G; G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1; Gp G H \<triangleright> H1; 
       Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow>
-   ((Gp G (H \<inter> K))/((H1 \<inter> K) \<struct>\<^bsub>G\<^esub> (H \<inter> K1))) \<cong> 
-                          ((Gp G (H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K)))/(H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K1)))"
+   ((Gp G (H \<inter> K))/((H1 \<inter> K) \<diamondop>\<^bsub>G\<^esub> (H \<inter> K1))) \<cong> 
+                          ((Gp G (H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K)))/(H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K1)))"
 apply (frule Group.ZassenhausTr2_1 [of "G" "H" "H1" "K"], assumption+,
-       frule Group.Group_Gp [of "G" "H1 \<struct>\<^bsub>G\<^esub> (H \<inter> K)"], assumption+,
+       frule Group.Group_Gp [of "G" "H1 \<diamondop>\<^bsub>G\<^esub> (H \<inter> K)"], assumption+,
        frule Group.ZassenhausTr3 [of "G" "H" "H1" "K" "K1"], assumption+,
        frule Group.inter_sgs [of "G" "H" "K"], assumption+,
        frule Group.r_sub_smult[of "G" "H1" "H \<inter> K"], assumption+,
-       frule Group.sg_sg[of "G" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K" "H \<inter> K"], assumption+,
-       frule isom4 [of "Gp G (H1 \<struct>\<^bsub>G\<^esub> H \<inter> K)" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K1" "H \<inter> K"], 
+       frule Group.sg_sg[of "G" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K" "H \<inter> K"], assumption+,
+       frule isom4 [of "Gp G (H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K)" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K1" "H \<inter> K"], 
                                                              assumption+)
-apply (simp add:Int_commute[of "H \<inter> K" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K1"])
+apply (simp add:Int_commute[of "H \<inter> K" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K1"])
 apply (frule Group.Group_Gp[of "G" "H"], assumption,
        frule Group.Group_Gp[of "G" "K"], assumption,
        frule Group.nsg_sg[of "Gp G H" "H1"], assumption+,
@@ -2196,40 +2196,40 @@ apply (simp add:Group.s_topTr6_1[of "G" "H1" "H \<inter> K1" "H \<inter> K"],
        simp add:Int_assoc[THEN sym, of "H1" "H" "K"]) 
   
 apply (simp add:Int_absorb2[of "H1" "H"],
-       simp add:Group.Gp_inherited[of "G" "H \<inter> K" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K"])
+       simp add:Group.Gp_inherited[of "G" "H \<inter> K" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K"])
  apply (frule Group.s_top_mono[of "G" "H1" "H \<inter> K" "H1" "H \<inter> K1"],
         frule Group.sg_subset[of "G" "H"], assumption+,
         rule subset_trans[of "H1" "H" "carrier G"], assumption+)
   apply (rule Group.sg_subset[of "G" "H \<inter> K"], assumption+, simp,
          simp,
          (frule Group.ZassenhausTr2_1[of "G" "H" "H1" "K"], assumption+,
-          frule Group.subg_sg_sg[of "G" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K1"],
+          frule Group.subg_sg_sg[of "G" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K1"],
                                   assumption+, simp add:Group.nsg_sg))
-  apply (simp add:Group.s_top_induced[of "G" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K1" "H \<inter> K"],
+  apply (simp add:Group.s_top_induced[of "G" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K1" "H \<inter> K"],
          simp add:Group.s_top_assoc[of "G" "H1" "H \<inter> K1" "H \<inter> K"],
          cut_tac subset_self[of "H"],
          frule Int_mono[of "H" "H" "K1" "K"], assumption)
   apply (simp add:Group.K_absorb_HK[of "G" "H \<inter> K1" "H \<inter> K"])
-  apply (cut_tac subset_self[of "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K"],
-         simp add:Group.Gp_inherited[of "G" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K"])
+  apply (cut_tac subset_self[of "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K"],
+         simp add:Group.Gp_inherited[of "G" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K"])
 done
 
 lemma ZassenhausTr5_1:"\<lbrakk>Group G; G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1; Gp G H \<triangleright> H1; 
-       Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow>   ((Gp G (K \<inter> H))/((K1 \<inter> H) \<struct>\<^bsub>G\<^esub> (K \<inter> H1))) \<cong> 
-                          ((Gp G (K1 \<struct>\<^bsub>G\<^esub> (K \<inter> H)))/(K1 \<struct>\<^bsub>G\<^esub> (K \<inter> H1)))"
+       Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow>   ((Gp G (K \<inter> H))/((K1 \<inter> H) \<diamondop>\<^bsub>G\<^esub> (K \<inter> H1))) \<cong> 
+                          ((Gp G (K1 \<diamondop>\<^bsub>G\<^esub> (K \<inter> H)))/(K1 \<diamondop>\<^bsub>G\<^esub> (K \<inter> H1)))"
 (* thm ZassenhausTr5 [of "G" "K" "K1" "H" "H1"] *)
 apply (simp add:ZassenhausTr5 [of "G" "K" "K1" "H" "H1"]) 
 done
 
 lemma ZassenhausTr5_2: "\<lbrakk>Group G; G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1; Gp G H \<triangleright> H1; 
        Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow>
-      ((Gp G (H \<inter> K))/((H1 \<inter> K) \<struct>\<^bsub>G\<^esub> (H \<inter> K1))) = 
-                       ((Gp G (K \<inter> H))/((K1 \<inter> H) \<struct>\<^bsub>G\<^esub> (K \<inter> H1)))"
+      ((Gp G (H \<inter> K))/((H1 \<inter> K) \<diamondop>\<^bsub>G\<^esub> (H \<inter> K1))) = 
+                       ((Gp G (K \<inter> H))/((K1 \<inter> H) \<diamondop>\<^bsub>G\<^esub> (K \<inter> H1)))"
 by (simp add:Group.ZassenhausTr3_3[of "G" "H" "H1" "K" "K1"],
        simp add:Int_commute[of "H" "K"])
 
 lemma ZassenhausTr6_1:"\<lbrakk>Group G; G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1; Gp G H \<triangleright> H1; 
-       Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> Group  (Gp G (H \<inter> K) / (H1 \<inter> K \<struct>\<^bsub>G\<^esub> H \<inter> K1))"
+       Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> Group  (Gp G (H \<inter> K) / (H1 \<inter> K \<diamondop>\<^bsub>G\<^esub> H \<inter> K1))"
 apply (frule Group.inter_sgs [of "G" "H" "K"], assumption+,
        frule Group.Group_Gp [of "G" "H \<inter> K"], assumption+,
        frule Group.ZassenhausTr3_5 [of "G" "H" "H1" "K" "K1"], assumption+)
@@ -2237,35 +2237,35 @@ apply (rule Group.Group_Qg, assumption+)
 done
 
 lemma ZassenhausTr6_2:"\<lbrakk>Group G; G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1; Gp G H \<triangleright> H1; 
-       Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> Group (Gp G (H1 \<struct>\<^bsub>G\<^esub> H \<inter> K) / (H1 \<struct>\<^bsub>G\<^esub> H \<inter> K1))"
+       Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> Group (Gp G (H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K) / (H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K1))"
 apply (frule Group.ZassenhausTr2_1 [of "G" "H" "H1" "K"], assumption+,
-       frule Group.Group_Gp [of "G" "H1 \<struct>\<^bsub>G\<^esub> H \<inter> K"], assumption+,
+       frule Group.Group_Gp [of "G" "H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K"], assumption+,
        frule Group.ZassenhausTr3 [of "G" "H" "H1" "K" "K1"], assumption+)
 apply (simp add:Group.Group_Qg)
 done
 
 lemma ZassenhausTr6_3:"\<lbrakk>Group G; G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1; Gp G H \<triangleright> H1; 
-       Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> Group (Gp G (K1 \<struct>\<^bsub>G\<^esub> K \<inter> H) / (K1 \<struct>\<^bsub>G\<^esub> K \<inter> H1))"
+       Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> Group (Gp G (K1 \<diamondop>\<^bsub>G\<^esub> K \<inter> H) / (K1 \<diamondop>\<^bsub>G\<^esub> K \<inter> H1))"
 apply (frule Group.ZassenhausTr2_1 [of "G" "K" "K1" "H"], assumption+,
-       frule Group.Group_Gp [of "G" "K1 \<struct>\<^bsub>G\<^esub> K \<inter> H"], assumption+,
+       frule Group.Group_Gp [of "G" "K1 \<diamondop>\<^bsub>G\<^esub> K \<inter> H"], assumption+,
        frule Group.ZassenhausTr3[of "G" "K" "K1" "H" "H1"], assumption+)
 apply (simp add:Group.Group_Qg)
 done
 
 theorem Zassenhaus:"\<lbrakk>Group G; G \<guillemotright> H; G \<guillemotright> H1; G \<guillemotright> K; G \<guillemotright> K1; Gp G H \<triangleright> H1; 
-       Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> (Gp G (H1 \<struct>\<^bsub>G\<^esub> H \<inter> K) / (H1 \<struct>\<^bsub>G\<^esub> H \<inter> K1)) \<cong> 
-                              (Gp G (K1 \<struct>\<^bsub>G\<^esub> K \<inter> H) / (K1 \<struct>\<^bsub>G\<^esub> K \<inter> H1))" 
+       Gp G K \<triangleright> K1\<rbrakk> \<Longrightarrow> (Gp G (H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K) / (H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K1)) \<cong> 
+                              (Gp G (K1 \<diamondop>\<^bsub>G\<^esub> K \<inter> H) / (K1 \<diamondop>\<^bsub>G\<^esub> K \<inter> H1))" 
 apply (frule ZassenhausTr6_1[of "G" "K" "K1" "H" "H1"], assumption+)
 apply (frule ZassenhausTr6_3 [of "G" "H" "H1" "K" "K1"], assumption+)
 apply (frule ZassenhausTr6_2 [of "G" "H" "H1" "K" "K1"], assumption+)
-apply (rule isomTr2[of "(\<natural>\<^bsub>G\<^esub>(H1 \<struct>\<^bsub>G\<^esub> H \<inter> K)) / (H1 \<struct>\<^bsub>G\<^esub> H \<inter> K1)" 
-             "(\<natural>\<^bsub>G\<^esub>(K \<inter> H)) / (K1 \<inter> H \<struct>\<^bsub>G\<^esub> K \<inter> H1)"
-             "(\<natural>\<^bsub>G\<^esub>(K1 \<struct>\<^bsub>G\<^esub> K \<inter> H)) / (K1 \<struct>\<^bsub>G\<^esub> K \<inter> H1)"], assumption+)
+apply (rule isomTr2[of "(\<natural>\<^bsub>G\<^esub>(H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K)) / (H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K1)" 
+             "(\<natural>\<^bsub>G\<^esub>(K \<inter> H)) / (K1 \<inter> H \<diamondop>\<^bsub>G\<^esub> K \<inter> H1)"
+             "(\<natural>\<^bsub>G\<^esub>(K1 \<diamondop>\<^bsub>G\<^esub> K \<inter> H)) / (K1 \<diamondop>\<^bsub>G\<^esub> K \<inter> H1)"], assumption+)
 apply (frule ZassenhausTr5_1[of "G" "K" "K1" "H" "H1"], assumption+)
 apply (simp add:Int_commute[of "K" "H"])
 apply (simp add:Group.ZassenhausTr3_3[THEN sym, of "G" "H" "H1" "K" "K1"])
-apply (rule isomTr1[of  "(\<natural>\<^bsub>G\<^esub>(H \<inter> K)) / (H1 \<inter> K \<struct>\<^bsub>G\<^esub> H \<inter> K1)" 
-                        "(\<natural>\<^bsub>G\<^esub>(H1 \<struct>\<^bsub>G\<^esub> H \<inter> K)) / (H1 \<struct>\<^bsub>G\<^esub> H \<inter> K1)"], assumption+)
+apply (rule isomTr1[of  "(\<natural>\<^bsub>G\<^esub>(H \<inter> K)) / (H1 \<inter> K \<diamondop>\<^bsub>G\<^esub> H \<inter> K1)" 
+                        "(\<natural>\<^bsub>G\<^esub>(H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K)) / (H1 \<diamondop>\<^bsub>G\<^esub> H \<inter> K1)"], assumption+)
 apply (rule ZassenhausTr5_1[of "G" "H" "H1" "K" "K1"], assumption+)
 done
 
@@ -4389,7 +4389,7 @@ done
 lemma (in Group) rfn_tool16:"\<lbrakk>0 < r; 0 < s; i \<le> (s * r - Suc 0); 
  G \<guillemotright> f (i div s); (Gp G (f (i div s))) \<triangleright> f (Suc (i div s)); 
  (Gp G (f (i div s))) \<guillemotright> (f (i div s) \<inter> g (s - Suc 0))\<rbrakk>  \<Longrightarrow> 
- (Gp G ((f (Suc (i div s)) \<struct>\<^bsub>G\<^esub> (f (i div s) \<inter> g (s - Suc 0))))) \<triangleright> 
+ (Gp G ((f (Suc (i div s)) \<diamondop>\<^bsub>G\<^esub> (f (i div s) \<inter> g (s - Suc 0))))) \<triangleright> 
                                                    (f (Suc (i div s)))"
 apply (rule ZassenhausTr4_1 [of "f (i div s)" "f (Suc (i div s))" "g (s - Suc 0)"], assumption+)
 done
@@ -4623,12 +4623,12 @@ done
 definition
   cmp_rfn :: "[_ , nat, nat \<Rightarrow> 'a set, nat, nat \<Rightarrow> 'a set] \<Rightarrow> (nat \<Rightarrow> 'a set)" where
   "cmp_rfn G r f s g = (\<lambda>i. (if i < s * r then  
-      f (Suc (i div s)) \<struct>\<^bsub>G\<^esub> (f (i div s) \<inter> g (i mod s)) else {\<one>\<^bsub>G\<^esub>}))"
+      f (Suc (i div s)) \<diamondop>\<^bsub>G\<^esub> (f (i div s) \<inter> g (i mod s)) else {\<one>\<^bsub>G\<^esub>}))"
 
  (** refinement of compseries G r f by a compseries G s g **) 
 
 lemma (in Group) cmp_rfn0:"\<lbrakk>0 < r; 0 < s; compseries G r f; compseries G s g; 
- i \<le> (r - 1); j \<le> (s - 1)\<rbrakk> \<Longrightarrow> G \<guillemotright> f (Suc i) \<struct>\<^bsub>G\<^esub> ((f i ) \<inter> (g j))"
+ i \<le> (r - 1); j \<le> (s - 1)\<rbrakk> \<Longrightarrow> G \<guillemotright> f (Suc i) \<diamondop>\<^bsub>G\<^esub> ((f i ) \<inter> (g j))"
 apply (rule ZassenhausTr2_1[of "f i" "f (Suc i)" "g j"], simp,
        rule compseriesTr0[of "r" "f" "i"], assumption+,
        frule_tac le_less_trans[of i "r - Suc 0" r], simp+)
@@ -4639,7 +4639,7 @@ apply (frule compseries_is_tW_cmpser[of "r" "f"], assumption+,
 done
 
 lemma (in Group) cmp_rfn1:"\<lbrakk>0 < r; 0 < s; compseries G r f; compseries G s g\<rbrakk>
-  \<Longrightarrow> f (Suc 0) \<struct>\<^bsub>G\<^esub> ((f 0 ) \<inter> (g 0)) = carrier G"
+  \<Longrightarrow> f (Suc 0) \<diamondop>\<^bsub>G\<^esub> ((f 0 ) \<inter> (g 0)) = carrier G"
 apply (frule compseriesTr2 [of "r" "f"])
 apply (frule compseriesTr2 [of "s" "g"])
 apply (frule compseriesTr0 [of _ "f" "Suc 0"])
@@ -4758,7 +4758,7 @@ apply (rule allI, rule impI)
         frule_tac H = "f (Suc (Suc (i div s)))" and K = "f (Suc (i div s))" in
         K_absorb_HK, assumption+,
         simp, 
-        thin_tac "f (Suc (Suc (i div s))) \<struct>\<^bsub>G\<^esub> (f (Suc (i div s))) = 
+        thin_tac "f (Suc (Suc (i div s))) \<diamondop>\<^bsub>G\<^esub> (f (Suc (i div s))) = 
                                                          f (Suc (i div s))")
 apply (rule rfn_tool16 [of "r" "s" _], simp+,
        cut_tac x = "Suc i" and y = "s * r" and z = "Suc (s *r)" in 
@@ -4876,7 +4876,7 @@ lemma rfn_tool17:"(a::nat) = b \<Longrightarrow> a - c = b - c"
 by simp
 
 lemma isom4b:"\<lbrakk>Group G; G \<triangleright> N; G \<guillemotright> H\<rbrakk> \<Longrightarrow> 
-                  (Gp G (N \<struct>\<^bsub>G\<^esub> H) / N) \<cong> (Gp G H / (H \<inter> N))"
+                  (Gp G (N \<diamondop>\<^bsub>G\<^esub> H) / N) \<cong> (Gp G H / (H \<inter> N))"
 apply (frule isom4 [of "G" "N" "H"], assumption+)
 apply (rule isomTr1)
  apply (simp add:Group.homom4_2)
@@ -5024,7 +5024,7 @@ apply (cut_tac n_in_Nsetn[of "r * s - Suc 0"])
 apply (simp add:inj_on_def)
 done
 
-lemma JHS_Tr1_1:"\<lbrakk>Group G; 0 < r; 0 < s; compseries G r f; compseries G s g\<rbrakk> \<Longrightarrow> f (Suc ((r * s - Suc 0) div s)) \<struct>\<^bsub>G\<^esub> (f ((r * s - Suc 0) div s) \<inter> g ((r * s - Suc 0) mod s)) = f (r - Suc 0) \<inter> g (s - Suc 0)"
+lemma JHS_Tr1_1:"\<lbrakk>Group G; 0 < r; 0 < s; compseries G r f; compseries G s g\<rbrakk> \<Longrightarrow> f (Suc ((r * s - Suc 0) div s)) \<diamondop>\<^bsub>G\<^esub> (f ((r * s - Suc 0) div s) \<inter> g ((r * s - Suc 0) mod s)) = f (r - Suc 0) \<inter> g (s - Suc 0)"
 apply (frule r_s_div_s [of "r" "s"], assumption+)
 apply (frule r_s_mod_s [of "r" "s"], assumption+)
 apply simp 
@@ -5039,10 +5039,10 @@ apply (rule Group.s_top_l_unit, assumption+)
 done
 
 lemma JHS_Tr1_2:"\<lbrakk>Group G; 0 < r; 0 < s; compseries G r f; compseries G s g;
- k < r - Suc 0\<rbrakk> \<Longrightarrow> ((Gp G (f (Suc k) \<struct>\<^bsub>G\<^esub> (f k \<inter> g (s - Suc 0)))) / 
-                               (f (Suc (Suc k)) \<struct>\<^bsub>G\<^esub> (f (Suc k) \<inter> g 0))) \<cong>
-               ((Gp G (g s \<struct>\<^bsub>G\<^esub> (g (s - Suc 0) \<inter> f k))) /
-                          (g s \<struct>\<^bsub>G\<^esub> (g (s - Suc 0) \<inter> f (Suc k))))"
+ k < r - Suc 0\<rbrakk> \<Longrightarrow> ((Gp G (f (Suc k) \<diamondop>\<^bsub>G\<^esub> (f k \<inter> g (s - Suc 0)))) / 
+                               (f (Suc (Suc k)) \<diamondop>\<^bsub>G\<^esub> (f (Suc k) \<inter> g 0))) \<cong>
+               ((Gp G (g s \<diamondop>\<^bsub>G\<^esub> (g (s - Suc 0) \<inter> f k))) /
+                          (g s \<diamondop>\<^bsub>G\<^esub> (g (s - Suc 0) \<inter> f (Suc k))))"
 apply (frule Group.compseriesTr0 [of "G" "r" "f" "k"], assumption+)
 apply (frule less_trans [of "k" "r - Suc 0" "r"]) apply simp
 apply simp 
@@ -5080,22 +5080,22 @@ apply (rule Group.sg_sg, assumption+)
  apply simp
  apply (frule Group.s_top_induced[of "G" "f k" "f (Suc k)" "f k \<inter> g (s - Suc 0)"], assumption+)
  apply (simp add:Int_lower1) apply simp 
-  apply (thin_tac "f (Suc k) \<struct>\<^bsub>(\<natural>\<^bsub>G\<^esub>(f k))\<^esub> (f k \<inter> g (s - Suc 0)) =
-     f (Suc k) \<struct>\<^bsub>G\<^esub> (f k \<inter> g (s - Suc 0))")
+  apply (thin_tac "f (Suc k) \<diamondop>\<^bsub>\<natural>\<^bsub>G\<^esub>(f k)\<^esub> (f k \<inter> g (s - Suc 0)) =
+     f (Suc k) \<diamondop>\<^bsub>G\<^esub> (f k \<inter> g (s - Suc 0))")
   apply (frule Suc_pos [of "Suc k" "r"])
  apply (frule Group.cmp_rfn0 [of "G" "r" "s" "f" "g" "k" "s - Suc 0"], assumption+) 
  apply simp 
  apply simp
  apply (frule Group.sg_inc_set_mult[of "G" "f k" "f (Suc k)" "f k \<inter> g (s - Suc 0)"], assumption+) apply (simp add:Int_lower1)
 
- apply (simp add:Group.Gp_inherited [of "G" "f (Suc k) \<struct>\<^bsub>G\<^esub> (f k \<inter> g (s - Suc 0))" "f k"])
+ apply (simp add:Group.Gp_inherited [of "G" "f (Suc k) \<diamondop>\<^bsub>G\<^esub> (f k \<inter> g (s - Suc 0))" "f k"])
   apply (frule Group.inter_sgs [of "G" "f k" "g (s - Suc 0)"], assumption+)
 apply (frule Group.Gp_inherited [of "G" "f k \<inter> g (s - Suc 0)" "f k"], assumption+)
 apply (rule Int_lower1) apply simp
  apply (thin_tac "(Gp (Gp G (f k)) ((f k) \<inter> (g (s - Suc 0)))) =
                                         (Gp G ((f k) \<inter> (g (s - Suc 0))))")
- apply (thin_tac "f (Suc k) \<struct>\<^bsub>G\<^esub> f k \<inter> g (s - Suc 0) \<subseteq> f k")
- apply (thin_tac "G \<guillemotright> f (Suc k) \<struct>\<^bsub>G\<^esub> f k \<inter> g (s - Suc 0)")
+ apply (thin_tac "f (Suc k) \<diamondop>\<^bsub>G\<^esub> f k \<inter> g (s - Suc 0) \<subseteq> f k")
+ apply (thin_tac "G \<guillemotright> f (Suc k) \<diamondop>\<^bsub>G\<^esub> f k \<inter> g (s - Suc 0)")
  apply (simp add:Int_assoc [of "f k" "g (s - Suc 0)" "f (Suc k)"])
  apply (simp add:Int_commute [of "g (s - Suc 0)" "f (Suc k)"])
  apply (simp add:Int_assoc [of "f k" "f (Suc k)" "g (s - Suc 0)", THEN sym])
@@ -5106,8 +5106,8 @@ done
 lemma JHS_Tr1_3:"\<lbrakk>Group G; 0 < r; 0 < s; compseries G r f; compseries G s g;
        i \<le> s * r - Suc 0; Suc (rtos r s i) < s * r; Suc i < s * r;
        i mod s < s - Suc 0; Suc i div s \<le> r - Suc 0; i div s = r - Suc 0\<rbrakk>
-    \<Longrightarrow> Group (Gp G (f r \<struct>\<^bsub>G\<^esub> (f (r - Suc 0) \<inter> g (i mod s))) /
-        (f r \<struct>\<^bsub>G\<^esub> (f (r - Suc 0) \<inter> g (Suc (i mod s)))))"
+    \<Longrightarrow> Group (Gp G (f r \<diamondop>\<^bsub>G\<^esub> (f (r - Suc 0) \<inter> g (i mod s))) /
+        (f r \<diamondop>\<^bsub>G\<^esub> (f (r - Suc 0) \<inter> g (Suc (i mod s)))))"
 apply (frule nat_eq_le[of "i div s" "r - Suc 0"])
 apply (frule Group.compser_nsg [of "G" "r" "f" "i div s"], assumption+)
  apply simp
@@ -5126,7 +5126,7 @@ apply (frule Group.cmp_rfn0 [of "G" "r" "s" "f" "g" "i div s" "i mod s"],
        assumption+, simp, simp) 
 apply (frule  Group.ZassenhausTr3 [of "G" "f (r - Suc 0)" "f r" "g (i mod s)" 
        "g (Suc (i mod s))"], assumption+, simp, simp)
-apply (cut_tac Group.Group_Gp [of "G" "f r \<struct>\<^bsub>G\<^esub> (f (r - Suc 0) \<inter> g (i mod s))"])
+apply (cut_tac Group.Group_Gp [of "G" "f r \<diamondop>\<^bsub>G\<^esub> (f (r - Suc 0) \<inter> g (i mod s))"])
 apply (rule Group.Group_Qg, assumption+)
 apply simp
 done
@@ -5134,8 +5134,8 @@ done
 lemma JHS_Tr1_4:"\<lbrakk>Group G; 0 < r; 0 < s; compseries G r f; compseries G s g;
        i \<le> s * r - Suc 0; Suc (rtos r s i) < s * r; Suc i < s * r;
        i mod s < s - Suc 0; Suc i div s \<le> r - Suc 0; i div s = r - Suc 0\<rbrakk> \<Longrightarrow> 
-      Group (Gp G (g (Suc (i mod s)) \<struct>\<^bsub>G\<^esub> (g (i mod s) \<inter> f (r - Suc 0))) /
-       (g (Suc (Suc (i mod s))) \<struct>\<^bsub>G\<^esub> (g (Suc (i mod s)) \<inter> f 0)))"
+      Group (Gp G (g (Suc (i mod s)) \<diamondop>\<^bsub>G\<^esub> (g (i mod s) \<inter> f (r - Suc 0))) /
+       (g (Suc (Suc (i mod s))) \<diamondop>\<^bsub>G\<^esub> (g (Suc (i mod s)) \<inter> f 0)))"
 apply (subst Group.compseriesTr2 [of "G" "r" "f"], assumption+)
 apply (frule Group.compseriesTr0 [of "G" "s" "g" "Suc (i mod s)"], assumption+)
 apply (frule Suc_mono [of "i mod s" "s - Suc 0"], simp)
@@ -5170,10 +5170,10 @@ done
 lemma JHS_Tr1_5:"\<lbrakk>Group G; 0 < r; 0 < s; compseries G r f; compseries G s g;
       i \<le> s * r - Suc 0; Suc (rtos r s i) < s * r; Suc i < s * r;
       i mod s < s - Suc 0; i div s < r - Suc 0\<rbrakk>
- \<Longrightarrow> (Gp G (f (Suc (i div s)) \<struct>\<^bsub>G\<^esub> (f (i div s) \<inter> g (i mod s))) /
-        (f (Suc (i div s)) \<struct>\<^bsub>G\<^esub> (f (i div s) \<inter> g (Suc (i mod s))))) \<cong>
-     (Gp G (g (Suc (i mod s)) \<struct>\<^bsub>G\<^esub> (g (i mod s) \<inter> f (i div s))) /
-       (g (Suc (Suc (rtos r s i) div r)) \<struct>\<^bsub>G\<^esub> 
+ \<Longrightarrow> (Gp G (f (Suc (i div s)) \<diamondop>\<^bsub>G\<^esub> (f (i div s) \<inter> g (i mod s))) /
+        (f (Suc (i div s)) \<diamondop>\<^bsub>G\<^esub> (f (i div s) \<inter> g (Suc (i mod s))))) \<cong>
+     (Gp G (g (Suc (i mod s)) \<diamondop>\<^bsub>G\<^esub> (g (i mod s) \<inter> f (i div s))) /
+       (g (Suc (Suc (rtos r s i) div r)) \<diamondop>\<^bsub>G\<^esub> 
               (g (Suc (rtos r s i) div r) \<inter> f (Suc (rtos r s i) mod r))))"
 apply (frule Group.compseriesTr0 [of "G" "s" "g" "i mod s"], assumption+)
  apply simp 
@@ -5200,9 +5200,9 @@ done
 lemma JHS_Tr1_6:" \<lbrakk>Group G; 0 < r; 0 < s; compseries G r f; compseries G s g;
  i \<le> r * s - Suc 0; Suc (rtos r s i) < r * s\<rbrakk> \<Longrightarrow>
   ((Gp G (cmp_rfn G r f s g i)) / (cmp_rfn G r f s g (Suc i))) \<cong>
-  ((Gp G (g (Suc (rtos r s i div r)) \<struct>\<^bsub>G\<^esub> 
+  ((Gp G (g (Suc (rtos r s i div r)) \<diamondop>\<^bsub>G\<^esub> 
       (g (rtos r s i div r) \<inter> f (rtos r s i mod r)))) /
-      (g (Suc (Suc (rtos r s i) div r)) \<struct>\<^bsub>G\<^esub>
+      (g (Suc (Suc (rtos r s i) div r)) \<diamondop>\<^bsub>G\<^esub>
               (g (Suc (rtos r s i) div r) \<inter> f (Suc (rtos r s i) mod r))))"
 apply (simp add:cmp_rfn_def)
  apply (frule le_less_trans [of "i" "r * s - Suc 0" "r * s"], simp)

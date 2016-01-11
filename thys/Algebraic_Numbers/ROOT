@@ -6,9 +6,6 @@ session Algebraic_Numbers (AFP) = Algebraic_Numbers_Matrix +
   theories
     "Missing_Multiset"
     "Missing_List"
-    "Set_Impl_Fix"
-    "Compare_Rat"
-    "Compare_Real"
     "Compare_Complex"
     "Improved_Code_Equations"
     "Precomputation"
@@ -35,11 +32,12 @@ session Algebraic_Numbers (AFP) = Algebraic_Numbers_Matrix +
     "root.bib"
     "root.tex"
 
-
 session Algebraic_Numbers_Matrix (AFP) = "JNF-AFP-Lib" +
   description {* Theories from other AFP-entries and Extended Theories for Matrices *}
   options [timeout = 600, document = false]
   theories
+    "../Deriving/Comparator_Generator/Compare_Rat"
+    "../Deriving/Comparator_Generator/Compare_Real"
     "../Jordan_Normal_Form/Determinant_Impl"
     "../Jordan_Normal_Form/Matrix_IArray_Impl"
     "../Jordan_Normal_Form/Char_Poly"

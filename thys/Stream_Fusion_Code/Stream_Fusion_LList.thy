@@ -65,7 +65,7 @@ subsection {* Conversions to @{typ "'a llist"} *}
 subsubsection {* Infinitely many consecutive @{term Skip}s *}
 
 context fixes g :: "('a, 's) lgenerator"
-  notes [[function_defs]]
+  notes [[function_internals]]
 begin
 
 partial_function (llist) lunstream :: "'s \<Rightarrow> 'a llist"

@@ -100,15 +100,15 @@ where "stern_brocot_recurse = tree_recurse (recip \<circ> succ \<circ> recip) su
 lemma stern_brocot_unfold:
   "stern_brocot_recurse =
    Node (1, 1)
-        (pure recip \<diamond> (pure succ \<diamond> (pure recip \<diamond> stern_brocot_recurse)))
-        (pure succ \<diamond> stern_brocot_recurse)"
+        (pure recip \<diamondop> (pure succ \<diamondop> (pure recip \<diamondop> stern_brocot_recurse)))
+        (pure succ \<diamondop> stern_brocot_recurse)"
 unfolding stern_brocot_recurse_def
 by (rule tree_recurse_unique[symmetric])(subst tree_recurse_unfold, simp add: map_tree_ap_tree_pure_tree o_def)+
 
 lemma stern_brocot_simps [simp]:
   "root stern_brocot_recurse = (1, 1)"
-  "left stern_brocot_recurse = pure recip \<diamond> (pure succ \<diamond> (pure recip \<diamond> stern_brocot_recurse))"
-  "right stern_brocot_recurse = pure succ \<diamond> stern_brocot_recurse"
+  "left stern_brocot_recurse = pure recip \<diamondop> (pure succ \<diamondop> (pure recip \<diamondop> stern_brocot_recurse))"
+  "right stern_brocot_recurse = pure succ \<diamondop> stern_brocot_recurse"
 by (subst stern_brocot_unfold, simp)+
 
 subsection {* Basic properties *}
@@ -150,7 +150,7 @@ where "rat_of \<equiv> \<lambda>(x, y). Fract (int x) (int y)"
 
 theorem stern_brocot_rationals:
   "\<lbrakk> m > 0; n > 0 \<rbrakk> \<Longrightarrow>
-  root (traverse_tree (mk_path m n) (pure rat_of \<diamond> stern_brocot_recurse)) = Fract (int m) (int n)"
+  root (traverse_tree (mk_path m n) (pure rat_of \<diamondop> stern_brocot_recurse)) = Fract (int m) (int n)"
 proof(induction m n rule: mk_path_induct)
   case (less m n)
   with stern_brocot_denominator_non_zero[where path="mk_path (Suc m) (n - m)"]
@@ -431,8 +431,8 @@ proof -
 qed
 
 theorem stern_brocot_rationals_not_repeated:
-  assumes "root (traverse_tree path (pure rat_of \<diamond> stern_brocot_recurse))
-         = root (traverse_tree path' (pure rat_of \<diamond> stern_brocot_recurse))"
+  assumes "root (traverse_tree path (pure rat_of \<diamondop> stern_brocot_recurse))
+         = root (traverse_tree path' (pure rat_of \<diamondop> stern_brocot_recurse))"
   shows "path = path'"
 using assms
 using stern_brocot_coprime[where path=path]
@@ -494,7 +494,7 @@ lemma tree_chop_pure_tree [simp]:
 by(coinduction rule: tree.coinduct_strong) auto
 
 lemma tree_chop_ap_tree [simp]:
-  "tree_chop (f \<diamond> x) = tree_chop f \<diamond> tree_chop x"
+  "tree_chop (f \<diamondop> x) = tree_chop f \<diamondop> tree_chop x"
 by(coinduction arbitrary: f x rule: tree.coinduct_strong) auto
 
 lemma tree_chop_plus: "tree_chop (t + t') = tree_chop t + tree_chop t'"
@@ -510,7 +510,7 @@ text{* @{const "stream"} is an idiom homomorphism. *}
 lemma stream_pure [simp]: "stream (pure x) = pure x"
 by coinduction auto
 
-lemma stream_ap [simp]: "stream (f \<diamond> x) = stream f \<diamond> stream x"
+lemma stream_ap [simp]: "stream (f \<diamondop> x) = stream f \<diamondop> stream x"
 by(coinduction arbitrary: f x) auto
 
 lemma stream_plus [simp]: "stream (t + t') = stream t + stream t'"
@@ -534,10 +534,10 @@ by(induct n)(simp_all only: numeral.simps stream_plus stream_1)
 subsection {* Split the Stern-Brocot tree into numerators and denumerators *}
 
 definition num :: "nat tree"
-where "num = pure fst \<diamond> stern_brocot_recurse"
+where "num = pure fst \<diamondop> stern_brocot_recurse"
 
 definition den :: "nat tree"
-where "den = pure snd \<diamond> stern_brocot_recurse"
+where "den = pure snd \<diamondop> stern_brocot_recurse"
 
 lemma num_unfold: "num = Node 1 num (num + den)"
 unfolding num_def den_def
@@ -564,7 +564,7 @@ lemma den_simps [simp]:
 by (subst den_unfold, simp)+
 
 lemma stern_brocot_num_den:
-  "pure_tree Pair \<diamond> num \<diamond> den = stern_brocot_recurse"
+  "pure_tree Pair \<diamondop> num \<diamondop> den = stern_brocot_recurse"
 unfolding stern_brocot_recurse_def
 apply(rule tree_recurse_unique)
 apply(subst den_unfold)
@@ -594,10 +594,10 @@ text{*
 
 lemma mod_tree_lemma1:
   fixes x :: "nat tree"
-  assumes "pure (op < 0) \<diamond> y = pure True"
+  assumes "pure (op < 0) \<diamondop> y = pure True"
   shows "x mod (x + y) = x"
 proof -
-  have "x mod (x + y) = pure (\<lambda>b x. if b then x else 0) \<diamond> (pure (op < 0) \<diamond> y) \<diamond> x"
+  have "x mod (x + y) = pure (\<lambda>b x. if b then x else 0) \<diamondop> (pure (op < 0) \<diamondop> y) \<diamondop> x"
     by applicative_lifting simp
   also have "\<dots> = x" unfolding assms by applicative_lifting simp
   finally show ?thesis .
@@ -612,13 +612,13 @@ lemma set_tree_pathD: "x \<in> set_tree t \<Longrightarrow> \<exists>p. x = root
 by(induct rule: set_tree_induct)(auto intro: exI[where x="[]"] exI[where x="L # p" for p] exI[where x="R # p" for p])
 
 lemma eq_pure_tree_TrueI:
-  "(\<And>x. x \<in> set_tree t \<Longrightarrow> P x) \<Longrightarrow> pure P \<diamond> t = pure True"
+  "(\<And>x. x \<in> set_tree t \<Longrightarrow> P x) \<Longrightarrow> pure P \<diamondop> t = pure True"
 proof(coinduction arbitrary: t)
   case (Eq_tree t)
   thus ?case by(cases t) auto
 qed
 
-lemma den_gt_0: "pure (op < 0) \<diamond> den = pure True"
+lemma den_gt_0: "pure (op < 0) \<diamondop> den = pure True"
 proof(rule eq_pure_tree_TrueI)
   fix x
   assume "x \<in> set_tree den"
@@ -637,9 +637,9 @@ proof -
     by(metis Divides.mod_less_eq_dividend add_le_mono mod_le_divisor mult_2)
 
   text {* We switch to @{typ int} such that all cancellation laws are available. *}
-  def den' \<equiv> "pure int \<diamond> den"
-  def num' \<equiv> "pure int \<diamond> num"
-  def num_mod_den' \<equiv> "pure int \<diamond> num_mod_den"
+  def den' \<equiv> "pure int \<diamondop> den"
+  def num' \<equiv> "pure int \<diamondop> num"
+  def num_mod_den' \<equiv> "pure int \<diamondop> num_mod_den"
 
   have [simp]: "root num' = 1" "left num' = num'" unfolding den'_def num'_def by simp_all
   have [simp]: "right num' = num' + den'" unfolding den'_def num'_def ap_tree.sel pure_tree_simps num_simps
@@ -648,7 +648,7 @@ proof -
   have num_mod_den'_simps [simp]: "root num_mod_den' = 0" "left num_mod_den' = num'" "right num_mod_den' = num_mod_den'"
     by(simp_all add: num_mod_den'_def num'_def)
   have den'_eq_chop_num': "den' = tree_chop num'" by(simp add: den'_def num'_def den_eq_chop_num)
-  have den'_gt_0: "pure (op < 0) \<diamond> den' = pure True"
+  have den'_gt_0: "pure (op < 0) \<diamondop> den' = pure True"
     unfolding den'_def den_gt_0[symmetric] by applicative_nf simp
   have num_mod_den'2_unique: "\<And>x. x = Node 0 (2 * num') x \<Longrightarrow> x = 2 * num_mod_den'"
   proof(coinduction rule: tree.coinduct_strong)
@@ -659,20 +659,20 @@ proof -
   have num'_plus_den'_minus_chop_den': "num' + den' - tree_chop den' = 2 * num_mod_den'"
     by(rule num_mod_den'2_unique)(rule tree.expand, simp add: tree_chop_plus den'_eq_chop_num')
 
-  have "tree_chop den = pure nat \<diamond> (tree_chop den')"
+  have "tree_chop den = pure nat \<diamondop> (tree_chop den')"
     unfolding den_def tree_chop_ap_tree tree_chop_pure_tree den'_def by applicative_nf simp
   also have "tree_chop den' = num' + den' - tree_chop den' + tree_chop den' - 2 * num_mod_den'"
     by(subst num'_plus_den'_minus_chop_den') simp
   also have "\<dots> = num' + den' - 2 * (num' mod den')"
     unfolding num_mod_den'_def num'_def den'_def num_mod_den[symmetric]
     by applicative_lifting(simp add: zmod_int)
-  also have "\<dots> = pure (\<lambda>n d b. if b then n + d - 2 * (n mod d) else 0) \<diamond> num' \<diamond> den' \<diamond> pure True"
+  also have "\<dots> = pure (\<lambda>n d b. if b then n + d - 2 * (n mod d) else 0) \<diamondop> num' \<diamondop> den' \<diamondop> pure True"
     by applicative_lifting simp
-  also have "\<dots> = pure (\<lambda>n d b. if b then n + d - 2 * (n mod d) else 0) \<diamond> num' \<diamond> den' \<diamond> (pure (op < 0) \<diamond> den')"
+  also have "\<dots> = pure (\<lambda>n d b. if b then n + d - 2 * (n mod d) else 0) \<diamondop> num' \<diamondop> den' \<diamondop> (pure (op < 0) \<diamondop> den')"
     unfolding den'_gt_0 ..
-  also have "\<dots> = pure int \<diamond> (num + den - 2 * (num mod den))" unfolding num'_def den'_def
+  also have "\<dots> = pure int \<diamondop> (num + den - 2 * (num mod den))" unfolding num'_def den'_def
     by applicative_lifting(clarsimp simp add: zdiff_int[symmetric] int_mult zmod_int le)
-  also have "pure nat \<diamond> \<dots> = num + den - 2 * (num mod den)" by(applicative_nf) simp
+  also have "pure nat \<diamondop> \<dots> = num + den - 2 * (num mod den)" by(applicative_nf) simp
   finally show ?thesis .
 qed
 
@@ -730,7 +730,7 @@ proof(coinduction arbitrary: xs x)
   then show ?case by(subst (1 2) Eq_stream) auto
 qed
 
-lemma fusc_fusc'_iterate: "pure Pair \<diamond> fusc \<diamond> fusc' = siterate step (1, 1)"
+lemma fusc_fusc'_iterate: "pure Pair \<diamondop> fusc \<diamondop> fusc' = siterate step (1, 1)"
 apply(rule siterate_unique)
 apply(rule stream.expand; simp add: step_def)
 apply(applicative_lifting; simp)
@@ -744,17 +744,17 @@ proof -
   have [simp]: "shd xs = 1" "stl xs = xs'"
     "shd xs' = 1" "stl xs' = xs + xs' - 2 * (xs mod xs')"
     using assms by (metis Stream.stream.sel)+
-  have eq: "pure Pair \<diamond> xs \<diamond> xs' = pure Pair \<diamond> fusc \<diamond> fusc'"
+  have eq: "pure Pair \<diamondop> xs \<diamondop> xs' = pure Pair \<diamondop> fusc \<diamondop> fusc'"
     unfolding fusc_fusc'_iterate
     apply(rule siterate_unique)
     apply(rule stream.expand; simp add: step_def)
     apply(applicative_lifting; simp)
     done
-  have "xs = pure fst \<diamond> (pure Pair \<diamond> xs \<diamond> xs')" by applicative_lifting simp
+  have "xs = pure fst \<diamondop> (pure Pair \<diamondop> xs \<diamondop> xs')" by applicative_lifting simp
   also have "\<dots> = fusc" unfolding eq by applicative_lifting simp
   finally show "xs = fusc" .
 
-  have "xs' = pure snd \<diamond> (pure Pair \<diamond> xs \<diamond> xs')" by applicative_lifting simp
+  have "xs' = pure snd \<diamondop> (pure Pair \<diamondop> xs \<diamondop> xs')" by applicative_lifting simp
   also have "\<dots> = fusc'" unfolding eq by applicative_lifting simp
   finally show "xs' = fusc'" .
 qed
@@ -773,8 +773,8 @@ qed
 theorem stern_brocot_loopless:
   "stream stern_brocot_recurse = stern_brocot_loopless" (is "?lhs = ?rhs")
 proof -
-  have "?lhs = stream (pure_tree Pair \<diamond> num \<diamond> den)" by (simp only: stern_brocot_num_den)
-  also have "\<dots> = pure Pair \<diamond> fusc \<diamond> fusc'" by (simp add: fusc_num fusc'_den)
+  have "?lhs = stream (pure_tree Pair \<diamondop> num \<diamondop> den)" by (simp only: stern_brocot_num_den)
+  also have "\<dots> = pure Pair \<diamondop> fusc \<diamondop> fusc'" by (simp add: fusc_num fusc'_den)
   also have "\<dots> = ?rhs" by (simp add: stern_brocot_loopless_def step_def fusc_fusc'_iterate)
   finally show ?thesis .
 qed

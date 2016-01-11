@@ -31,18 +31,18 @@ for
 proof -
   interpret applicative_syntax .
   { fix x :: "'a option"
-    show "pure (\<lambda>x. x) \<diamond> x = x" by (cases x) simp_all
+    show "pure (\<lambda>x. x) \<diamondop> x = x" by (cases x) simp_all
   next
     fix g :: "('c \<Rightarrow> 'b) option" and f :: "('a \<Rightarrow> 'c) option" and x
-    show "pure (\<lambda>g f x. g (f x)) \<diamond> g \<diamond> f \<diamond> x = g \<diamond> (f \<diamond> x)"
+    show "pure (\<lambda>g f x. g (f x)) \<diamondop> g \<diamondop> f \<diamondop> x = g \<diamondop> (f \<diamondop> x)"
       by (cases g f x rule: option.exhaust[case_product option.exhaust, case_product option.exhaust]) simp_all
   next
     fix f :: "('c \<Rightarrow> 'b \<Rightarrow> 'a) option" and x y
-    show "pure (\<lambda>f x y. f y x) \<diamond> f \<diamond> x \<diamond> y = f \<diamond> y \<diamond> x"
+    show "pure (\<lambda>f x y. f y x) \<diamondop> f \<diamondop> x \<diamondop> y = f \<diamondop> y \<diamondop> x"
       by (cases f x y rule: option.exhaust[case_product option.exhaust, case_product option.exhaust]) simp_all
   next
     fix f :: "('b \<Rightarrow> 'b \<Rightarrow> 'a) option" and x
-    show "pure (\<lambda>f x. f x x) \<diamond> f \<diamond> x = f \<diamond> x \<diamond> x"
+    show "pure (\<lambda>f x. f x x) \<diamondop> f \<diamondop> x = f \<diamondop> x \<diamondop> x"
       by (cases f x rule: option.exhaust[case_product option.exhaust]) simp_all
   }
 qed (simp_all add: some_ap_option ap_some_option)

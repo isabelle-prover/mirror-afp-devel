@@ -62,26 +62,9 @@ lists. We then define sum and product operations over these lists. *}
 
 subsubsection {* Sum and product definitions *}
 
-definition
-  listsum :: "(real list) \<Rightarrow> real" ("\<Sum>:_" [999] 998) where
-  "listsum xs = foldr op+ xs 0"
+notation (input) listsum ("\<Sum>:_" [999] 998)
 
-definition
-  listprod :: "(real list) \<Rightarrow> real" ("\<Prod>:_" [999] 998) where
-  "listprod xs = foldr op* xs 1"
-
-lemma listsum_empty [simp]: "\<Sum>:[] = 0"
-  unfolding listsum_def by simp
-
-lemma listsum_cons [simp]: "\<Sum>:(a#b) = a + \<Sum>:b"
-  unfolding listsum_def by (induct b) simp_all
-
-lemma listprod_empty [simp]: "\<Prod>:[] = 1"
-  unfolding listprod_def by simp
-
-lemma listprod_cons [simp]: "\<Prod>:(a#b) = a * \<Prod>:b"
-  unfolding listprod_def by (induct b) simp_all
-
+notation (input) listprod ("\<Prod>:_" [999] 998)
 
 subsubsection {* Properties of sum and product *}
 
@@ -162,14 +145,14 @@ text {* If $a$ is in $C$ then the sum of the collection $D$ where $D$
 is $C$ with $a$ removed is the sum of $C$ minus $a$. *}
 
 lemma listsum_rmv1:
-  "a \<in> set xs \<Longrightarrow> \<Sum>:(remove1 a xs) = \<Sum>:xs - a"
+  "a \<in> set xs \<Longrightarrow> \<Sum>:(remove1 a xs) = \<Sum>:xs - (a :: 'a :: ab_group_add)"
 by (induct xs) auto
 
 text {* A handy addition and division distribution law over collection
 sums. *}
 
 lemma list_sum_distrib_aux:
-  shows "(\<Sum>:xs/n + \<Sum>:xs) = (1 + (1/n)) * \<Sum>:xs"
+  shows "(\<Sum>:xs/(n :: 'a :: archimedean_field) + \<Sum>:xs) = (1 + (1/n)) * \<Sum>:xs"
 proof (induct xs)
   case Nil show ?case by simp
 next
@@ -198,7 +181,7 @@ next
 qed
 
 lemma remove1_retains_prod:
-  fixes a::real and xs::"real list"
+  fixes a and xs::"'a :: comm_ring_1 list"
   shows "a : set xs \<longrightarrow> \<Prod>:xs = \<Prod>:(remove1 a xs) * a"
   (is "?P xs")
 proof (induct xs)
@@ -249,7 +232,7 @@ are positive and non-zero then the product of these elements is also
 positive and non-zero. *}
 
 lemma el_gt0_imp_prod_gt0 [rule_format]:
-  fixes xs::"real list"
+  fixes xs::"'a :: archimedean_field list"
   shows "\<forall>y. y : set xs \<longrightarrow> y > 0 \<Longrightarrow> \<Prod>:xs > 0"
 proof (induct xs)
   case Nil show ?case by simp
@@ -386,7 +369,7 @@ proof
   with ld of_nat_add of_int_1 mean_def
   have "mean ((mean xs)#xs) = (\<Sum>:xs/len + \<Sum>:xs) / (1+len)"
     by simp
-  also from list_sum_distrib_aux have
+  also from list_sum_distrib_aux[of xs] have
     "\<dots> = (1 + (1/len))*\<Sum>:xs / (1+len)" by simp
   also with lnez have
     "\<dots> = (len + 1)*\<Sum>:xs / (len * (1+len))"
@@ -897,7 +880,7 @@ lemma new_list_gt_gmean:
 proof -
   from pos_xs pos_imp_ne have
     pos_els: "\<forall>y. y : set xs \<longrightarrow> y > 0" by (unfold pos_def, simp)
-  with el_gt0_imp_prod_gt0 have pos_asm: "\<Prod>:xs > 0" by simp
+  with el_gt0_imp_prod_gt0[of xs] have pos_asm: "\<Prod>:xs > 0" by simp
   from neq het_gt_0 het_gt_0_imp_noteq_ne m have
     neqne: "noteq \<noteq> []" by simp
 
@@ -974,7 +957,7 @@ proof -
     moreover from nl have
       "\<Prod>:new_list = \<Prod>:left_over * (m*b)" by auto
     moreover
-    from lo \<alpha>_mem \<beta>_mem mem remove1_retains_prod have
+    from lo \<alpha>_mem \<beta>_mem mem remove1_retains_prod[where 'a = real] have
       xsprod: "\<Prod>:xs = \<Prod>:left_over * (\<alpha>*\<beta>)" by auto
     moreover from xsne have
       "xs \<noteq> []" .

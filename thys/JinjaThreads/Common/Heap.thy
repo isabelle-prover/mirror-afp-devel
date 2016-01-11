@@ -59,7 +59,7 @@ where
   "h \<unlhd> h' \<equiv> typeof_addr h \<subseteq>\<^sub>m typeof_addr h'"
 
 context
-  notes [[inductive_defs]]
+  notes [[inductive_internals]]
 begin
 
 inductive addr_loc_type :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr \<Rightarrow> addr_loc \<Rightarrow> ty \<Rightarrow> bool"
