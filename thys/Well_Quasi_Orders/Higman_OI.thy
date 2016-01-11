@@ -97,7 +97,7 @@ proof
       have neq: "f i \<noteq> lexmin C i" and eq: "\<forall>j<i. f j = lexmin C j" by auto
     obtain h where "h \<in> eq_upto C (lexmin C) (Suc i)" and "h \<in> C"
       using eq_upto_lexmin_non_empty [OF *] by (auto simp: eq_upto_def)
-    then have [simp]: "h i = lexmin C i" "\<And>j. j < i \<Longrightarrow> h j = lexmin C j" by auto
+    then have [simp]: "\<And>j. j < Suc i \<Longrightarrow> h j = lexmin C j" by auto
     with lb and \<open>h \<in> C\<close> have "LEX P f h" using neq by (auto simp: lb_def)
     then have "P (f i) (h i)"
       using neq and eq and \<open>C \<subseteq> SEQ A\<close> and \<open>h \<in> C\<close> by (intro lex) auto
