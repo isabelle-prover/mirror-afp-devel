@@ -61,5 +61,10 @@ fun show_rai_info :: "int \<Rightarrow> rat poly \<times> nat \<Rightarrow> stri
         else (''('' @ show (-p2) @ (if n = 1 then ''-'' else ''+'') @ sqrt @ '')''))
     else ''(num in ('' @ show fl @ '','' @ show (fl + 1) @ ''), root #'' @ show n @ '' of '' @ show p @ '')'')" 
 
-defs show_real_alg[code]: "show_real_alg x \<equiv> show_rai_info (floor x) (real_alg_info x)"
+overloading show_real_alg \<equiv> show_real_alg
+begin
+  definition show_real_alg[code]:
+    "show_real_alg x \<equiv> show_rai_info (floor x) (real_alg_info x)"
+end
+
 end
