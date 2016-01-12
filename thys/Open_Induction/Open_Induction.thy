@@ -109,7 +109,7 @@ lemma dc_on_reflclp:
 by (auto simp: dc_on_def chain_on_reflclp glb_reflclp)
 
 
-subsection \<open>The Open Induction Schema\<close>
+subsection \<open>The Open Induction Principle\<close>
 
 lemma open_induct_on [consumes 4, case_names less]:
   assumes qo: "qo_on P A" and "dc_on P A" and "open_on P Q A"
@@ -152,7 +152,7 @@ proof (rule ccontr)
 qed
 
 
-subsection \<open>Universal Open Induction Schemas\<close>
+subsection \<open>Open Induction on Universal Domains\<close>
 
 text \<open>Open induction on quasi-orders (i.e., @{class preorder}).\<close>
 lemma (in preorder) dc_open_induct [consumes 2, case_names less]:
@@ -170,11 +170,8 @@ qed
 subsection \<open>Type Class of Downward Complete Orders\<close>
 
 class dcorder = preorder +
-  assumes dc: "\<lbrakk>chain_on (op \<le>) C UNIV; C \<noteq> {}\<rbrakk> \<Longrightarrow> \<exists>x. glb (op \<le>) C x"
+  assumes dc_on_UNIV: "dc_on (op \<le>) UNIV"
 begin
-
-lemma dc_on_UNIV: "dc_on (op \<le>) UNIV"
-using dc unfolding dc_on_def by blast
 
 text \<open>Open induction on downward-complete orders.\<close>
 lemmas open_induct [consumes 1, case_names less] = dc_open_induct [OF dc_on_UNIV]
