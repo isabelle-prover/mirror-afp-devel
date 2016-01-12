@@ -36,7 +36,7 @@ text {*
   purpose is to avoid silly use of the @{term Intensional} syntax.
 *}
 
-subsection{* Abstract Syntax *}
+subsection{* Abstract Syntax and Definitions *}
 
 
 type_synonym ('w,'a) expr = "'w \<Rightarrow> 'a"         
@@ -46,13 +46,24 @@ text {* The intention is that @{typ 'a} will be used for unlifted
 types (class @{term type}), while @{typ 'w} is lifted (class @{term world}). 
 *}
 
-consts
-  Valid    :: "('w::world) form \<Rightarrow> bool"
-  const    :: "'a \<Rightarrow> ('w::world, 'a) expr"
-  lift     :: "['a \<Rightarrow> 'b, ('w::world, 'a) expr] \<Rightarrow> ('w,'b) expr"
-  lift2    :: "['a \<Rightarrow> 'b \<Rightarrow> 'c, ('w::world,'a) expr, ('w,'b) expr] \<Rightarrow> ('w,'c) expr"
-  lift3    :: "['a \<Rightarrow> 'b => 'c \<Rightarrow> 'd, ('w::world,'a) expr, ('w,'b) expr, ('w,'c) expr] \<Rightarrow> ('w,'d) expr"
-  lift4    :: "['a \<Rightarrow> 'b => 'c \<Rightarrow> 'd \<Rightarrow> 'e, ('w::world,'a) expr, ('w,'b) expr, ('w,'c) expr,('w,'d) expr] \<Rightarrow> ('w,'e) expr"
+
+definition Valid :: "('w::world) form \<Rightarrow> bool"
+  where "Valid A \<equiv> \<forall>w. A w"
+
+definition const :: "'a \<Rightarrow> ('w::world, 'a) expr"
+  where unl_con: "const c w \<equiv> c"
+
+definition lift :: "['a \<Rightarrow> 'b, ('w::world, 'a) expr] \<Rightarrow> ('w,'b) expr"
+  where unl_lift: "lift f x w \<equiv> f (x w)"
+
+definition lift2 :: "['a \<Rightarrow> 'b \<Rightarrow> 'c, ('w::world,'a) expr, ('w,'b) expr] \<Rightarrow> ('w,'c) expr"
+  where unl_lift2: "lift2 f x y w \<equiv> f (x w) (y w)"
+
+definition lift3 :: "['a \<Rightarrow> 'b => 'c \<Rightarrow> 'd, ('w::world,'a) expr, ('w,'b) expr, ('w,'c) expr] \<Rightarrow> ('w,'d) expr"
+  where unl_lift3: "lift3 f x y z w \<equiv> f (x w) (y w) (z w)"
+
+definition lift4 :: "['a \<Rightarrow> 'b => 'c \<Rightarrow> 'd \<Rightarrow> 'e, ('w::world,'a) expr, ('w,'b) expr, ('w,'c) expr,('w,'d) expr] \<Rightarrow> ('w,'e) expr"
+  where unl_lift4: "lift4 f x y z zz w \<equiv> f (x w) (y w) (z w) (zz w)"
 
 text {* 
   @{term "Valid F"} asserts that the lifted formula @{term F} holds everywhere.
@@ -61,10 +72,14 @@ text {*
   is no way to define a generic lifting operator for functions of arbitrary arity.)
 *}
 
-consts
-  RAll     :: "('a \<Rightarrow> ('w::world) form) \<Rightarrow> 'w form"      (binder "Rall " 10)
-  REx      :: "('a \<Rightarrow> ('w::world) form) \<Rightarrow> 'w form"      (binder "Rex " 10)
-  REx1     :: "('a \<Rightarrow> ('w::world) form) \<Rightarrow> 'w form"      (binder "Rex! " 10)
+definition RAll :: "('a \<Rightarrow> ('w::world) form) \<Rightarrow> 'w form"  (binder "Rall " 10)
+  where unl_Rall: "(Rall x. A x) w \<equiv> \<forall>x. A x w"
+
+definition REx :: "('a \<Rightarrow> ('w::world) form) \<Rightarrow> 'w form"  (binder "Rex " 10)
+  where unl_Rex: "(Rex x. A x) w \<equiv> \<exists>x. A x w"
+
+definition REx1 :: "('a \<Rightarrow> ('w::world) form) \<Rightarrow> 'w form"  (binder "Rex! " 10)
+  where unl_Rex1: "(Rex! x. A x) w \<equiv> \<exists>!x. A x w"
 
 text {* 
   @{term RAll}, @{term REx} and @{term REx1} introduces ``rigid'' quantification
@@ -72,6 +87,16 @@ text {*
   is universal quantification, @{term REx} is existential quantifcation.
   @{term REx1} requires unique existence.
 *}
+
+text {*
+  We declare the ``unlifting rules'' as rewrite rules that will be applied
+  automatically.
+*}
+
+lemmas intensional_rews[simp] = 
+  unl_con unl_lift unl_lift2 unl_lift3 unl_lift4 
+  unl_Rall unl_Rex unl_Rex1
+
 
 
 subsection{* Concrete Syntax *}
@@ -215,30 +240,6 @@ syntax (xsymbols)
   "_liftMem"    :: "[lift, lift] \<Rightarrow> lift"                ("(_/ \<in> _)" [50, 51] 50)
   "_liftNotMem" :: "[lift, lift] \<Rightarrow> lift"                ("(_/ \<notin> _)" [50, 51] 50)
 
-
-subsection {* Definitions *}
-
-defs
-  Valid_def:   "\<turnstile> A    \<equiv>  \<forall>w. w \<Turnstile> A"
-  unl_con:     "LIFT #c w  \<equiv>  c"
-  unl_lift:    "(LIFT f<x>) w \<equiv> f (x w)"
-  unl_lift2:   "LIFT f<x, y> w \<equiv> f (x w) (y w)"
-  unl_lift3:   "LIFT f<x, y, z> w \<equiv> f (x w) (y w) (z w)"
-  unl_lift4:   "LIFT f<x, y, z, zz> w \<equiv> f (x w) (y w) (z w) (zz w)"
-
-defs
-  unl_Rall:    "w \<Turnstile> \<forall>x. A x   \<equiv>  \<forall>x. (w \<Turnstile> A x)"
-  unl_Rex:     "w \<Turnstile> \<exists>x. A x   \<equiv>  \<exists>x. (w \<Turnstile> A x)"
-  unl_Rex1:    "w \<Turnstile> \<exists>!x. A x  \<equiv>  \<exists>! x. (w \<Turnstile> A x)"
-
-text {*
-  We declare the ``unlifting rules'' as rewrite rules that will be applied
-  automatically.
-*}
-
-lemmas intensional_rews[simp] = 
-  unl_con unl_lift unl_lift2 unl_lift3 unl_lift4 
-  unl_Rall unl_Rex unl_Rex1
 
 subsection {* Lemmas and Tactics *}
 
