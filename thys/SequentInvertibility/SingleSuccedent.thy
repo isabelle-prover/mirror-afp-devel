@@ -68,13 +68,23 @@ primrec seq_size :: "'a sequent \<Rightarrow> nat" where "seq_size (Sequent ant 
 text{*
 \noindent When we come to extend a sequent, say $\Gamma \Rightarrow C$, with another sequent, say $\Gamma' \Rightarrow C'$, we only ``overwrite'' the succedent if $C$ is the empty formula:
 *}
-defs extend_def : "extend forms seq \<equiv> if (succ seq = Em) 
-                  then (antec forms + antec seq) \<Rightarrow>* (succ forms) 
-                  else (antec forms + antec seq \<Rightarrow>* succ seq)"
+overloading
+  extend \<equiv> extend
+  extendRule \<equiv> extendRule
+begin
+
+definition extend
+  where "extend forms seq \<equiv>
+    if (succ seq = Em) 
+    then (antec forms + antec seq) \<Rightarrow>* (succ forms) 
+    else (antec forms + antec seq \<Rightarrow>* succ seq)"
+
+definition extendRule
+  where "extendRule forms R \<equiv> (map (extend forms) (fst R), extend forms (snd R))"
+
+end
 
 (*<*)
-defs extendRule_def : "extendRule forms R \<equiv> (map (extend forms) (fst R), extend forms (snd R))"
-
 (* The formulation of various rule sets *)
 
 (* Ax is the set containing all identity RULES and LBot *)
@@ -170,11 +180,20 @@ qed
 (* definition of invertible rule and invertible set of rules.  It's a bit nasty, but all it really says is
    If a rule is in the given set, and if any extension of that rule is derivable at n, then the
    premisses of the extended rule are derivable at height at most n.  *)
-defs invertible_def : "invertible r R \<equiv> \<forall> n S. (r \<in> R \<and> (snd (extendRule S r),n) \<in> derivable R*) \<longrightarrow>
-                                          (\<forall> p \<in> set (fst (extendRule S r)). \<exists> m \<le> n. (p,m) \<in> derivable R*)"
+overloading
+  invertible \<equiv> invertible
+  invertible_set \<equiv> invertible_set
+begin
 
-defs invertible_set_def : "invertible_set R \<equiv> \<forall> (ps,c) \<in> R. invertible (ps,c) R"
+definition invertible
+  where "invertible r R \<equiv>
+    \<forall> n S. (r \<in> R \<and> (snd (extendRule S r),n) \<in> derivable R*) \<longrightarrow>
+    (\<forall> p \<in> set (fst (extendRule S r)). \<exists> m \<le> n. (p,m) \<in> derivable R*)"
 
+definition invertible_set
+  where "invertible_set R \<equiv> \<forall> (ps,c) \<in> R. invertible (ps,c) R"
+
+end
 
 (* Characterisation of a sequent *)
 lemma characteriseSeq:

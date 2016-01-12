@@ -170,10 +170,18 @@ Given a sequent $C$, we extend it with another sequent $S$ by adding the two ant
 *}
 
 (* Extend a sequent, and then a rule by adding seq to all premisses and the conclusion *)
-defs extend_def : "extend forms seq \<equiv> 
-                   (antec forms + antec seq) \<Rightarrow>* (succ forms + succ seq)"
-defs extendRule_def : "extendRule forms R \<equiv> 
-                       (map (extend forms) (fst R), extend forms (snd R))"
+overloading
+  extend \<equiv> extend
+  extendRule \<equiv> extendRule
+begin
+
+definition extend
+  where "extend forms seq \<equiv> (antec forms + antec seq) \<Rightarrow>* (succ forms + succ seq)"
+
+definition extendRule
+  where "extendRule forms R \<equiv> (map (extend forms) (fst R), extend forms (snd R))"
+
+end
 
 text{*
 \noindent Given a rule set $\mathcal{R}$, the \textit{extension} of $\mathcal{R}$, called $\mathcal{R}^{\star}$, is then defined as another inductive set:
@@ -190,8 +198,14 @@ text{*
 
 (* The unique conclusion property.  A set of rules has unique conclusion property if for any pair of rules,
    the conclusions being the same means the rules are the same*)
-defs uniqueConclusion_def : "uniqueConclusion R \<equiv> \<forall> r1 \<in> R. \<forall> r2 \<in> R. 
-                             (snd r1 = snd r2) \<longrightarrow> (r1 = r2)"
+overloading uniqueConclusion \<equiv> uniqueConclusion
+begin
+
+definition uniqueConclusion :: "'a rule set \<Rightarrow> bool"
+  where "uniqueConclusion R \<equiv> \<forall> r1 \<in> R. \<forall> r2 \<in> R. (snd r1 = snd r2) \<longrightarrow> (r1 = r2)"
+
+end
+
 (* --------------------------------------------
    --------------------------------------------
                G3cp EXAMPLE
@@ -1386,11 +1400,20 @@ qed
 text{*
 A rule is invertible iff every premiss is derivable at a height lower than that of the conclusion.  A set of rules is invertible iff every rule is invertible.  These definitions are easily formalised: *}
 
-defs invertible_def : "invertible r R \<equiv> 
+overloading
+  invertible \<equiv> invertible
+  invertible_set \<equiv> invertible_set
+begin
+
+definition invertible
+  where "invertible r R \<equiv>
        \<forall> n S. (r \<in> R \<and> (snd (extendRule S r),n) \<in> derivable R*) \<longrightarrow>
        (\<forall> p \<in> set (fst (extendRule S r)). \<exists> m \<le> n. (p,m) \<in> derivable R*)"
 
-defs invertible_set_def : "invertible_set R \<equiv> \<forall> (ps,c) \<in> R. invertible (ps,c) R"
+definition invertible_set
+  where "invertible_set R \<equiv> \<forall> (ps,c) \<in> R. invertible (ps,c) R"
+
+end
 
 text{*
 \noindent A set of multisuccedent \SC rules is invertible if each rule has a different conclusion.  \textbf{G3cp} has the unique conclusion property (as shown in \S\ref{isarules}).  Thus, \textbf{G3cp} is an invertible set of rules:

@@ -33,13 +33,17 @@ text{* Check if the literal is member of a clause, clause is a member
   of a formula or the literal is a member of a formula *}
 consts member  :: "'a \<Rightarrow> 'b \<Rightarrow> bool" (infixl "el" 55)
 
-defs (overloaded)
-literalElClause_def [simp]: "((literal::Literal) el (clause::Clause)) == literal \<in> set clause"
-defs (overloaded)
-clauseElFormula_def [simp]: "((clause::Clause) el (formula::Formula)) == clause \<in> set formula"
+overloading literalElClause \<equiv> "member :: Literal \<Rightarrow> Clause \<Rightarrow> bool"
+begin
+  definition [simp]: "((literal::Literal) el (clause::Clause)) == literal \<in> set clause"
+end
 
-overloading
-  el_literal \<equiv> "op el :: Literal \<Rightarrow> Formula \<Rightarrow> bool"
+overloading clauseElFormula \<equiv> "member :: Clause \<Rightarrow> Formula \<Rightarrow> bool"
+begin
+  definition [simp]: "((clause::Clause) el (formula::Formula)) == clause \<in> set formula"
+end
+
+overloading el_literal \<equiv> "op el :: Literal \<Rightarrow> Formula \<Rightarrow> bool"
 begin
 
 primrec el_literal where
@@ -77,12 +81,22 @@ where
   "varsFormula [] = {}"
 | "varsFormula (clause # formula) = (varsClause clause) \<union> (varsFormula formula)"
 
-consts vars           :: "'a \<Rightarrow> Variable set"
-defs (overloaded)
-vars_def_clause  [simp]: "vars (clause::Clause) == varsClause clause"
-vars_def_formula [simp]: "vars (formula::Formula) == varsFormula formula"
-vars_def_set     [simp]: "vars (s::Literal set) == {vbl. \<exists> l. l \<in> s \<and> var l = vbl}"
+consts vars :: "'a \<Rightarrow> Variable set"
 
+overloading vars_clause \<equiv> "vars :: Clause \<Rightarrow> Variable set"
+begin
+  definition [simp]: "vars (clause::Clause) == varsClause clause"
+end
+
+overloading vars_formula \<equiv> "vars :: Formula \<Rightarrow> Variable set"
+begin
+  definition [simp]: "vars (formula::Formula) == varsFormula formula"
+end
+
+overloading vars_set \<equiv> "vars :: Literal set \<Rightarrow> Variable set"
+begin
+  definition [simp]: "vars (s::Literal set) == {vbl. \<exists> l. l \<in> s \<and> var l = vbl}"
+end
 
 lemma clauseContainsItsLiteralsVariable: 
   fixes literal :: Literal and clause :: Clause
@@ -1049,9 +1063,18 @@ subsubsection{* Models and satisfiability *}
 
 text{* Model of a formula is a consistent valuation under which formula/clause is true*}
 consts model :: "Valuation \<Rightarrow> 'a \<Rightarrow> bool"
-defs (overloaded)
-modelFormula_def [simp]: "model valuation (formula::Formula)== consistent valuation \<and> (formulaTrue formula valuation)"
-modelClause_def [simp]: "model valuation (clause::Clause) == consistent valuation \<and> (clauseTrue clause valuation)"
+
+overloading modelFormula \<equiv> "model :: Valuation \<Rightarrow> Formula \<Rightarrow> bool"
+begin
+  definition [simp]: "model valuation (formula::Formula) ==
+    consistent valuation \<and> (formulaTrue formula valuation)"
+end
+
+overloading modelClause \<equiv> "model :: Valuation \<Rightarrow> Clause \<Rightarrow> bool"
+begin
+  definition [simp]: "model valuation (clause::Clause) ==
+    consistent valuation \<and> (clauseTrue clause valuation)"
+end
 
 text{* Checks if a formula has a model *}
 definition satisfiable :: "Formula \<Rightarrow> bool"

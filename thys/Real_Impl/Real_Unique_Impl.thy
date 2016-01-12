@@ -331,10 +331,15 @@ lift_definition ma_show_real :: "mini_alg \<Rightarrow> string" is
 
 lift_definition mau_show_real :: "mini_alg_unique \<Rightarrow> string" is ma_show_real .
 
-defs show_real: "show_real x \<equiv> (if (\<exists> y. x = real_of_u y) then mau_show_real (THE y. x = real_of_u y) else [])"
+overloading show_real \<equiv> show_real
+begin
+  definition show_real
+    where "show_real x \<equiv>
+      (if (\<exists> y. x = real_of_u y) then mau_show_real (THE y. x = real_of_u y) else [])"
+end
 
 lemma mau_show_real: "show_real (real_of_u x) = mau_show_real x"
-  unfolding show_real by simp
+  unfolding show_real_def by simp
 
 lemmas mau_code_eqns = mau_floor mau_0 mau_1 mau_uminus mau_inverse mau_sqrt mau_plus mau_times mau_equal mau_ge_0 mau_is_rat
   mau_show_real comparison_impl

@@ -956,10 +956,10 @@ proof cases
       and ABms: "\<And>n. \<forall>i\<in>S. A i \<inter> B n \<in> measurable_sets M" .
   
     have Bun: "(\<lambda>n. B n)\<up>UNIV"
-    proof (unfold set_mon_conv, rule)
+    proof (unfold mon_conv_set_def, rule)
       { fix n
         from uf have um: "u n \<le> u (Suc n)" 
-          by (simp add: realfun_mon_conv)
+          by (simp add: mon_conv_real_fun_def)
         { 
           fix w
           assume "z*s w \<le> u n w"
@@ -1027,7 +1027,7 @@ proof cases
         by auto
       moreover
       from Bun have "(\<lambda>n. A j \<inter> B n)\<up>(A j)" 
-        by (auto simp add: set_mon_conv)
+        by (auto simp add: mon_conv_set_def)
       ultimately have "(\<lambda>n. measure M (A j \<inter> B n)) \<longlonglongrightarrow> measure M (A j)" 
         by (rule measure_mon_conv)
       
@@ -1042,7 +1042,7 @@ proof cases
       by (simp add: tendsto_const tendsto_mult)
     
     with 1 xy base have "z*r \<le> y" 
-      by (auto simp add: LIMSEQ_le real_mon_conv) 
+      by (auto simp add: LIMSEQ_le mon_conv_real_def) 
   }
   hence zr: "\<And>z. 0 < z \<Longrightarrow> z < 1 \<Longrightarrow> z * r \<le> y" .
   thus ?thesis by (rule real_le_mult_sustain)
@@ -1067,11 +1067,11 @@ lemma sfis_nnfis:
   shows "a \<in> nnfis f M"
 (*<*)proof -
   { fix t
-    have "(\<lambda>n. f t)\<up>f t" by (simp add: real_mon_conv tendsto_const)
+    have "(\<lambda>n. f t)\<up>f t" by (simp add: mon_conv_real_def tendsto_const)
   } hence "(\<lambda>n. f)\<up>f" by (simp add: realfun_mon_conv_iff)
   also 
   from s have "\<And>n. a \<in> sfis f M" .
-  moreover have "(\<lambda>n. a)\<up>a" by (simp add: real_mon_conv tendsto_const)
+  moreover have "(\<lambda>n. a)\<up>a" by (simp add: mon_conv_real_def tendsto_const)
   
   ultimately show ?thesis by (rule nnfis.base)
 qed(*>*)
@@ -1132,7 +1132,7 @@ proof (cases)
         by (rule sfis_mon_conv_mono)
     }
     with ms base_u base show "a \<le> b" 
-      by (auto simp add: real_mon_conv LIMSEQ_le_const2)
+      by (auto simp add: mon_conv_real_def LIMSEQ_le_const2)
   qed
 qed
 
@@ -1291,7 +1291,7 @@ proof -
         from Suc have "muh n u m t \<le> f n t" 
           by (simp add: le_fun_def)
         also from fh have "f n t \<le> f (Suc n) t" 
-          by (simp add: realfun_mon_conv_iff real_mon_conv)
+          by (simp add: realfun_mon_conv_iff mon_conv_real_def)
         also from uf have "(\<lambda>m. u m (Suc n) t)\<up>(f (Suc n) t)" 
           by (simp add: realfun_mon_conv_iff)
         hence "u m (Suc n) t \<le> f (Suc n) t" 
@@ -1311,7 +1311,7 @@ proof -
     hence pos1: "\<And>m n. muh n u m t \<le> muh (Suc n) u m t" .
 
     from uf have uiso: "\<And>m n. u m n t \<le> u (Suc m) n t"
-      by (simp add: realfun_mon_conv_iff real_mon_conv)
+      by (simp add: realfun_mon_conv_iff mon_conv_real_def)
 
     have iso: "\<And>n. mu u n t \<le> mu u (Suc n) t"
     proof (unfold mon_upclose_def)
@@ -1372,15 +1372,15 @@ proof -
       hence "\<exists>N. \<forall>m. N \<le> m \<longrightarrow> u m n t \<le> mu u m t"
         by blast
       also from uf have "(\<lambda>m. u m n t) \<longlonglongrightarrow> f n t" 
-        by (simp add: realfun_mon_conv_iff real_mon_conv)
+        by (simp add: realfun_mon_conv_iff mon_conv_real_def)
       moreover 
       from conv have "(\<lambda>n. mu u n t) \<longlonglongrightarrow> l"
-        by (simp add: real_mon_conv)
+        by (simp add: mon_conv_real_def)
       ultimately have "f n t \<le> l" 
         by (simp add: LIMSEQ_le)
     } 
     also from fh have "(\<lambda>n. f n t) \<longlonglongrightarrow> h t" 
-      by (simp add: realfun_mon_conv_iff real_mon_conv)
+      by (simp add: realfun_mon_conv_iff mon_conv_real_def)
     ultimately have "h t \<le> l" 
       by (simp add: LIMSEQ_le_const2)
     
@@ -1432,7 +1432,7 @@ proof -
   also
   { fix m note ms also
     from up have "mu urev m \<le> mu urev (Suc m)" 
-      by (simp add: realfun_mon_conv)
+      by (simp add: mon_conv_real_fun_def)
     moreover from sf2 have "c m \<in> sfis (mu urev m) M" 
       and "c (Suc m) \<in> sfis (mu urev (Suc m)) M" 
       by fast+
@@ -1454,7 +1454,7 @@ proof -
     with ms xf[of n] int have "x n \<le> l" 
       by (rule nnfis_mono)
   } with xy have "y \<le> l" 
-    by (auto simp add: real_mon_conv LIMSEQ_le_const2)
+    by (auto simp add: mon_conv_real_def LIMSEQ_le_const2)
 
   with ly have "l=y" 
     by simp
@@ -1475,7 +1475,7 @@ proof cases
       hence "nonnegative (u n)" by (rule sfis_nn)
       hence "0 \<le> u n t" by (simp add: nonnegative_def)
     }
-    also from base have "(\<lambda>n. u n t)\<longlonglongrightarrow>f t" by (simp add: realfun_mon_conv_iff real_mon_conv)
+    also from base have "(\<lambda>n. u n t)\<longlonglongrightarrow>f t" by (simp add: realfun_mon_conv_iff mon_conv_real_def)
     ultimately have "0 \<le> f t" by (simp add: LIMSEQ_le_const)
   } thus ?thesis by (simp add: nonnegative_def)
 qed(*>*)(*>*)
@@ -1806,7 +1806,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
         by fast
 
       from n0mc have "(\<lambda>n. u (n+n0) t) \<longlonglongrightarrow> c"
-        by (simp add: real_mon_conv)
+        by (simp add: mon_conv_real_def)
       hence lim: "(\<lambda>n. u n t) \<longlonglongrightarrow> c"
         by (subst limseq_shift_iff[THEN sym])
 
@@ -1848,7 +1848,7 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
         by simp
 
       with uSuc have "(\<lambda>n. u n t)\<up> f t"
-        by (simp add: real_mon_conv)
+        by (simp add: mon_conv_real_def)
     }
     thus ?thesis 
       by (simp add: realfun_mon_conv_iff)
@@ -1881,7 +1881,7 @@ proof (cases)
       by (simp add: nnfis_mono)
     
     from uf have "u n \<le> u (Suc n)" 
-      by (simp only: realfun_mon_conv)
+      by (simp only: mon_conv_real_fun_def)
     with ms xu[of n] xu[of "Suc n"] have "x n \<le> x (Suc n)" 
       by (simp add: sfis_mono) 
     note this le

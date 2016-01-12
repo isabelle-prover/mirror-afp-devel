@@ -216,13 +216,13 @@ lemma mkdisjoint_mon_conv:
   { fix x assume "x \<in> (\<Union>i. mkdisjoint A i)"
     then obtain i where "x \<in> mkdisjoint A i" by auto
     hence "x \<in> A i" by (cases i) simp_all
-    with mc have "x \<in> B" by (auto simp add: set_mon_conv)
+    with mc have "x \<in> B" by (auto simp add: mon_conv_set_def)
   }
   thus "(\<Union>i. mkdisjoint A i) \<subseteq> B" by fast
      
   { fix x assume "x \<in> B"
-    with mc obtain i where "x \<in> A i" by (auto simp add: set_mon_conv)
-    also from mc have "\<And>n. A n \<subseteq> A (Suc n)" by (simp only: set_mon_conv)
+    with mc obtain i where "x \<in> A i" by (auto simp add: mon_conv_set_def)
+    also from mc have "\<And>n. A n \<subseteq> A (Suc n)" by (simp only: mon_conv_set_def)
     hence "A i = (\<Union>r\<in>{..i}. mkdisjoint A r)" by (rule mkdisjoint_un)
     also have "\<dots> \<subseteq> (\<Union>r. mkdisjoint A r)" by auto
     finally have "x \<in> (\<Union>i. mkdisjoint A i)".
@@ -252,7 +252,7 @@ theorem measure_mon_conv:
 proof -
   
   from AB have up: "\<And>n. A n \<subseteq> A (Suc n)" 
-    by (simp only: set_mon_conv)
+    by (simp only: mon_conv_set_def)
   
   { fix i
     have "mkdisjoint A i \<in> measurable_sets M" 
