@@ -67,7 +67,7 @@ definition root_poly_Im :: "rat poly \<Rightarrow> rat poly list" where
 context inj_field_hom_0
 begin
 lemma map_poly_pderiv: 
-  "map_poly hom (Square_Free_Factorization.pderiv p) = Square_Free_Factorization.pderiv (map_poly hom p)"
+  "map_poly hom (pderiv p) = pderiv (map_poly hom p)"
 proof (induct p rule: pderiv.induct)
   case (1 a p)
   show ?case
@@ -77,9 +77,9 @@ proof (induct p rule: pderiv.induct)
   next
     case False
     hence id: "(p = 0) = False" "(map_poly hom p = 0) = False" by auto
-    have id': "map_poly hom (pCons 0 (Square_Free_Factorization.pderiv p))
-      = pCons 0 (map_poly hom (Square_Free_Factorization.pderiv p))" 
-      by (cases "Square_Free_Factorization.pderiv p = 0", auto)
+    have id': "map_poly hom (pCons 0 (pderiv p))
+      = pCons 0 (map_poly hom (pderiv p))" 
+      by (cases "pderiv p = 0", auto)
     show ?thesis 
       unfolding pderiv.simps map_poly_pCons[OF disjI2[OF False]] 1[OF False, symmetric] id id' if_False map_poly_add
       by auto
@@ -117,17 +117,6 @@ lemma alg_poly_square_free_poly_eq[simp]: "alg_poly x (square_free_poly p) = alg
 
 lemma alg_poly_square_free_poly: "alg_poly x p \<Longrightarrow> alg_poly x (square_free_poly p)"
   by simp
-
-lemma alg_poly_mult_rat: fixes x :: rat assumes x: "x \<noteq> 0"
-  and y: "alg_poly y q"
-  shows "alg_poly (of_rat x * y) (poly_mult_rat x q)"
-proof -
-  from alg_polyD[OF y] have q0: "q \<noteq> 0" and y: "rpoly q y = 0" by auto
-  have "rpoly (poly_mult_rat x q) (of_rat x * y) = 0"
-    unfolding rpoly_mult_rat using y x by (auto simp: field_simps)
-  moreover have "poly_mult_rat x q \<noteq> 0" using q0 x by simp
-  ultimately show ?thesis unfolding alg_poly_def by simp
-qed
 
 lemma alg_poly_root_poly: assumes "rpoly p x = 0" and p: "p \<noteq> 0"
   shows 

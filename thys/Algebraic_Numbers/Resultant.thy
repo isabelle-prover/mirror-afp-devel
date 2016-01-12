@@ -202,7 +202,7 @@ proof -
       using degree_mult_le[of "monom 1 (n-Suc i)" p]
       unfolding l_def m_def
       unfolding degree_monom_eq[OF one_neq_zero] using i by auto
-    from poly_as_sum_of_monoms2[OF this]
+    from poly_as_sum_of_monoms'[OF this]
     have "(\<Sum>j\<le>l. ?g j) = ?r".
   finally show ?thesis.
 qed
@@ -241,7 +241,7 @@ proof -
       using degree_mult_le[of "monom 1 (m+n-1-i)" q]
       unfolding l_def n_def[symmetric]
       unfolding degree_monom_eq[OF one_neq_zero] using ni imn by auto
-    from poly_as_sum_of_monoms2[OF this]
+    from poly_as_sum_of_monoms'[OF this]
     have "(\<Sum>j\<le>l. ?g j) = ?r".
   finally show ?thesis.
 qed

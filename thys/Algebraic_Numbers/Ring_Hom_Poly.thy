@@ -209,7 +209,7 @@ lemma (in semiring_hom) map_poly_hom_as_monom_sum:
 proof -
   interpret rhm: semiring_hom "map_poly hom" by(unfold_locales,auto)
   show ?thesis
-    apply(subst(6) poly_as_sum_of_monoms2[OF le_refl, symmetric])
+    apply(subst(6) poly_as_sum_of_monoms'[OF le_refl, symmetric])
     using monom_hom by auto
 qed
 

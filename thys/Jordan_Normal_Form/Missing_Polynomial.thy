@@ -16,13 +16,6 @@ begin
 
 subsection \<open>Basic Properties\<close>
 
-lemma divides_degree: (* duplicate, relaxed from complex *)
-  assumes pq: "p dvd (q :: 'a :: idom poly)"
-  shows "degree p \<le> degree q \<or> q = 0"
-  by (metis dvd_imp_degree_le pq)
-
-lemma poly_0_coeff_0: "poly p 0 = coeff p 0" by (cases p, auto)
-
 lemma degree_0_id: assumes "degree p = 0"
   shows "[: coeff p 0 :] = p" 
 proof -
@@ -59,9 +52,6 @@ proof -
   finally show ?thesis by simp
 qed
 
-lemma poly_setprod: "poly (\<Prod>k\<in>A. p k) x = (\<Prod>k\<in>A. poly (p k) x)"
-  by (induct A rule: infinite_finite_induct) simp_all
-
 lemma linear_poly_root: "(a :: 'a :: comm_ring_1) \<in> set as \<Longrightarrow> poly (\<Prod> a \<leftarrow> as. [: - a, 1:]) a = 0"
 proof (induct as)
   case (Cons b as)
@@ -71,14 +61,6 @@ proof (induct as)
     with Cons have "a \<in> set as" by auto
     from Cons(1)[OF this] show ?thesis by simp
   qed simp
-qed simp
-
-lemma degree_setsum_le: "finite S \<Longrightarrow> (\<And> p . p \<in> S \<Longrightarrow> degree (f p) \<le> n)
-  \<Longrightarrow> degree (setsum f S) \<le> n"
-proof (induct S rule: finite_induct)
-  case (insert p S)
-  hence "degree (setsum f S) \<le> n" "degree (f p) \<le> n" by auto
-  thus ?case unfolding setsum.insert[OF insert(1-2)] by (metis degree_add_le)
 qed simp
 
 lemma degree_lcoeff_setsum: assumes deg: "degree (f q) = n"
@@ -114,13 +96,6 @@ next
       by (subst setsum.remove[OF _ q], unfold id, insert fin, auto)
   qed
 qed
-
-lemma degree_setprod_setsum_le: "finite S \<Longrightarrow> degree (setprod f S) \<le> setsum (degree o f) S"
-proof (induct S rule: finite_induct)
-  case (insert a S)
-  show ?case unfolding setprod.insert[OF insert(1-2)] setsum.insert[OF insert(1-2)]
-    by (rule le_trans[OF degree_mult_le], insert insert, auto)
-qed simp
 
 lemma degree_listsum_le: "(\<And> p . p \<in> set ps \<Longrightarrow> degree p \<le> n)
   \<Longrightarrow> degree (listsum ps) \<le> n"
@@ -163,23 +138,10 @@ lemma (in comm_monoid_mult) listprod_map_remove1:
   "x \<in> set xs \<Longrightarrow> listprod (map f xs) = f x * listprod (map f (remove1 x xs))"
   by (induct xs) (auto simp add: ac_simps)
 
-(* a variant is given only for real poly *)
 lemma poly_as_setsum:
   fixes p :: "'a::comm_semiring_1 poly"
   shows "poly p x = (\<Sum>i\<le>degree p. x ^ i * coeff p i)"
-proof (induct p)
-  case (pCons a p)
-    show ?case
-    proof(cases "p = 0")
-      case True show ?thesis unfolding True by simp
-      next case False show ?thesis
-        unfolding degree_pCons_eq[OF False]
-        unfolding setsum_atMost_Suc_shift
-        unfolding poly_pCons
-        unfolding pCons(2)
-        unfolding setsum_right_distrib by (simp add: mult.assoc)
-    qed
-qed simp
+  unfolding poly_altdef by (simp add: ac_simps)
 
 lemma poly_setprod_0: "finite ps \<Longrightarrow> poly (setprod f ps) x = (0 :: 'a :: field) \<longleftrightarrow> (\<exists> p \<in> ps. poly (f p) x = 0)"
   by (induct ps rule: finite_induct, auto)
@@ -201,32 +163,6 @@ proof (cases "d \<le> i")
     finally show ?thesis using True by auto
 qed
 
-lemma poly_as_sum_of_monoms': assumes n: "degree p \<le> n" shows "(\<Sum>i\<le>n. monom (coeff p i) i) = p"
-proof -
-  have eq: "\<And>i. {..n} \<inter> {i} = (if i \<le> n then {i} else {})"
-    by auto
-  show ?thesis
-    using n by (simp add: poly_eq_iff coeff_setsum coeff_eq_0 setsum.If_cases eq 
-                  if_distrib[where f="\<lambda>x. x * a" for a])
-qed
-
-lemma poly_as_sum_of_monoms: "(\<Sum>i\<le>degree p. monom (coeff p i) i) = p"
-  by (intro poly_as_sum_of_monoms' order_refl)
-
-lemma poly_as_sum_of_monoms2:
-  assumes n: "degree p \<le> n"
-  shows "(\<Sum>i\<le>n. monom (coeff p i) i) = p" (is "setsum ?f _ = ?r")
-proof -
-  let ?A = "{..degree p}"
-  let ?B = "{Suc (degree p) .. n}"
-  have "{..n} = ?A \<union> ?B" using n by auto
-  also have "setsum ?f (?A \<union> ?B) = setsum ?f ?A + setsum ?f ?B"
-    by(rule setsum.union_disjoint, auto)
-  also have "\<And>i. i \<in> ?B \<Longrightarrow> ?f i = 0" using coeff_eq_0[of p] by auto
-    hence "setsum ?f ?B = 0" by auto
-  finally show ?thesis unfolding poly_as_sum_of_monoms by simp
-qed
-
 lemma poly_eqI2:
   assumes "degree p = degree q" and "\<And>i. i \<le> degree p \<Longrightarrow> coeff p i = coeff q i"
   shows "p = q"
@@ -235,9 +171,6 @@ lemma poly_eqI2:
 text {*
   A nicer condition for 'a @{type poly} to be @{class ring_char_0} over @{class linordered_field}
 *}
-
-lemma of_nat_poly: "(of_nat n :: 'a :: comm_ring_1 poly) = [: (of_nat n :: 'a) :]"
-  by (induct n, auto simp: one_poly_def)
 
 instance poly :: ("{ring_char_0,idom}") ring_char_0
 proof
@@ -248,8 +181,6 @@ proof
     thus "x = y" unfolding of_nat_poly by auto
   qed
 qed
-
-instance poly :: (idom) idom..
 
 text {* A nice extension rule for polynomials. *}
 lemma poly_ext[intro]:
@@ -280,8 +211,6 @@ done
 
 subsection \<open>Polynomial Composition\<close>
 
-notation pcompose (infixl "\<circ>\<^sub>p" 71)
-
 lemmas [simp] = pcompose_pCons
 
 lemma pcompose_eq_0: fixes q :: "'a :: idom poly"
@@ -307,81 +236,7 @@ next
   qed
 qed
 
-lemma degree_pcompose[simp]:
-  fixes p q :: "'a :: idom poly"
-  shows "degree (p \<circ>\<^sub>p q) = degree p * degree q"
-proof(cases "degree q = 0")
-  case True
-    then obtain b where q: "q = [:b:]" using degree0_coeffs by auto
-    show ?thesis
-      proof (induct p)
-        case 0 show ?case by auto
-        next case (pCons a p)
-          hence "degree (q * (p \<circ>\<^sub>p q)) = 0"
-            using degree_mult_le[of q "p \<circ>\<^sub>p q"] unfolding True unfolding q by auto
-          from degree_add_le_max[of "[:a:]" "q * (p \<circ>\<^sub>p q)", unfolded this]
-          show ?case unfolding True pcompose_pCons by auto
-      qed
-  next case False note q = this
-    hence q0: "q \<noteq> 0" by auto
-    show ?thesis
-    proof (induct p)
-      case (pCons a p)
-        show ?case
-        proof (cases "p = 0")
-          case False
-            note pq0 = this[folded pcompose_eq_0[OF q, of p]]
-            show ?thesis
-            unfolding degree_pCons_eq[OF False]
-            unfolding pcompose_pCons
-            apply (subst degree_add_eq_right)
-            unfolding degree_mult_eq[OF q0 pq0]
-              using False q apply force
-            using pCons by auto
-        qed simp
-    qed simp
-qed
-
-lemma pcompose_1:
-  fixes p :: "'a :: comm_semiring_1 poly"
-  shows "1 \<circ>\<^sub>p p = 1"
-  unfolding one_poly_def by auto
-
-lemma pcompose_add:
-  fixes p q r :: "'a :: comm_ring_1 poly"
-  shows "(p + q) \<circ>\<^sub>p r = p \<circ>\<^sub>p r + q \<circ>\<^sub>p r"
-proof(induct p arbitrary: q)
-  case 0 show ?case by simp
-  next case (pCons a p) note IH1 = this(2)
-    show ?case apply(induct q,simp)
-    unfolding add_pCons
-    unfolding pcompose_pCons
-    unfolding IH1
-    unfolding ring_distribs by auto
-qed
-
-lemma pcompose_smult:
-  fixes a :: "'a :: comm_semiring_1"
-  shows "smult a p \<circ>\<^sub>p q = smult a (p \<circ>\<^sub>p q)"
-  apply (induct p arbitrary:q)
-  unfolding smult_pCons unfolding pcompose_pCons
-  unfolding smult_add_right by auto
-
-lemma pcompose_mult: (* I guess it holds on comm_ring_1 but gave up. *)
-  fixes p q r :: "'a :: {idom,ring_char_0} poly"
-  shows "(p * q) \<circ>\<^sub>p r = p \<circ>\<^sub>p r * q \<circ>\<^sub>p r"
-  apply(intro poly_ext) by (simp add: poly_pcompose)
-
-lemma pcompose_uminus:
-  fixes p q :: "'a :: comm_ring_1 poly"
-  shows "- p \<circ>\<^sub>p q = - (p \<circ>\<^sub>p q)"
-  by(induct p;simp)
-
-lemma pcompose_idR[simp]:
-  fixes p :: "'a :: comm_semiring_1 poly"
-  shows "p \<circ>\<^sub>p [: 0, 1 :] = p"
-  by (induct p; simp)
-
+declare degree_pcompose[simp]
 
 subsection \<open>Monic Polynomials\<close>
 

@@ -317,7 +317,7 @@ proof(cases "p = 0")
     unfolding monom_0
     unfolding rh.monom_hom
     unfolding rhm.hom_setsum[symmetric]
-    apply(subst poly_as_sum_of_monoms2)
+    apply(subst poly_as_sum_of_monoms')
       apply(subst Max_ge,simp,simp,force,simp)
     apply(rule cong[of "\<lambda>x. map_poly coeff_lift a + x", OF refl])
     unfolding image_Suc_atLeastAtMost[symmetric]

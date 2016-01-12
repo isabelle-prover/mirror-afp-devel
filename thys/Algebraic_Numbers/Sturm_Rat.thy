@@ -1,10 +1,10 @@
 section \<open>Separation of Roots: Sturm\<close>
 
-text \<open>We adadt the existing theory on Sturm's theorem to work on rational numbers instead of real 
+text \<open>We adapt the existing theory on Sturm's theorem to work on rational numbers instead of real 
   numbers. The reason is that we want to implement real numbers as real algebraic numbers with the
   help of Sturm's theorem to separate the roots. To this end, we just copy the definitions of
   of the algorithms w.r.t. Sturm and let them be executed on rational numbers. We then
-  prove that corresponds to a homomorphis and therefore can transfer the existing soundness results.\<close>
+  prove that corresponds to a homomorphism and therefore can transfer the existing soundness results.\<close>
 
 theory Sturm_Rat
 imports 
@@ -112,22 +112,22 @@ proof (induct p q rule: sturm_aux_rat.induct)
     using 1 by (cases "degree q = 0", auto)
 qed
 
-lemma pderiv_rat: "pderiv (real_of_rat_poly p) = real_of_rat_poly (Square_Free_Factorization.pderiv p)"
+lemma pderiv_rat: "pderiv (real_of_rat_poly p) = real_of_rat_poly (pderiv p)"
 proof (induct p rule: pderiv.induct)
   case (1 a p)
   show ?case 
-    unfolding Poly_Deriv.pderiv.simps Square_Free_Factorization.pderiv.simps
+    unfolding pderiv.simps
       rpoly.map_poly_pCons_hom
       rpoly.map_poly_0_iff using 1 by (cases "p = 0", auto)
 qed
 
-definition sturm_rat where "sturm_rat p = sturm_aux_rat p (Square_Free_Factorization.pderiv p)"
+definition sturm_rat where "sturm_rat p = sturm_aux_rat p (pderiv p)"
 
 lemma sturm_rat: "sturm (real_of_rat_poly p) = map real_of_rat_poly (sturm_rat p)"
   unfolding sturm_rat_def sturm_def pderiv_rat sturm_aux_rat ..
 
 definition sturm_squarefree_rat where
-  "sturm_squarefree_rat p = sturm_rat (p div (gcd p (Square_Free_Factorization.pderiv p)))"
+  "sturm_squarefree_rat p = sturm_rat (p div (gcd p (pderiv p)))"
 
 lemma sturm_squarefree_rat: "sturm_squarefree (real_of_rat_poly p) 
   = map real_of_rat_poly (sturm_squarefree_rat p)"
