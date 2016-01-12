@@ -101,6 +101,9 @@ locale sc_random_scheduler =
 sublocale sc_random_scheduler < sc_random_scheduler_base .
 
 text {* No spurious wake-ups in generated code *}
-defs sc_spurious_wakeups [code]: "sc_spurious_wakeups \<equiv> False"
+overloading sc_spurious_wakeups \<equiv> sc_spurious_wakeups
+begin
+  definition sc_spurious_wakeups [code]: "sc_spurious_wakeups \<equiv> False"
+end
 
 end

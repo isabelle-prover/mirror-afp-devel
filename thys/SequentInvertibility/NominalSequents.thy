@@ -67,12 +67,24 @@ primrec set_of_prem :: "sequent list \<Rightarrow> form set" where
 | "set_of_prem (p # ps) = set_of_seq p \<union> set_of_prem ps"
 
 (* Extend a sequent, and then a rule by adding seq to all premisses and the conclusion *)
-defs extend_def : "extend forms seq \<equiv> (antec forms + antec seq) \<Rightarrow>* (succ forms + succ seq)"
-defs extendRule_def : "extendRule forms R \<equiv> (map (extend forms) (fst R), extend forms (snd R))"
+overloading
+  extend \<equiv> extend
+  extendRule \<equiv> extendRule
+  uniqueConclusion \<equiv> uniqueConclusion
+begin
+
+definition extend
+  where "extend forms seq \<equiv> (antec forms + antec seq) \<Rightarrow>* (succ forms + succ seq)"
+
+definition extendRule
+  where "extendRule forms R \<equiv> (map (extend forms) (fst R), extend forms (snd R))"
 
 (* The unique conclusion property.  A set of rules has unique conclusion property if for any pair of rules,
    the conclusions being the same means the rules are the same*)
-defs uniqueConclusion_def : "uniqueConclusion R \<equiv> \<forall> r1 \<in> R. \<forall> r2 \<in> R. (snd r1 = snd r2) \<longrightarrow> (r1 =r2)"
+definition uniqueConclusion :: "rule set \<Rightarrow> bool"
+  where "uniqueConclusion R \<equiv> \<forall> r1 \<in> R. \<forall> r2 \<in> R. (snd r1 = snd r2) \<longrightarrow> (r1 =r2)"
+
+end
 
 primrec sequentMinus :: "sequent \<Rightarrow> form \<Rightarrow> sequent" ("_ - _" [100,100]100) where
   "(\<Gamma> \<Rightarrow>* \<Delta>) - A = (\<Gamma> \<ominus> A \<Rightarrow>* \<Delta> \<ominus> A)"

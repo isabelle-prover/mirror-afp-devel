@@ -14,6 +14,13 @@ subsection {* Stream views -- joining streams and intervals *}
 
 subsubsection {* Basic definitions *}
 
+primrec
+  f_join_aux :: "'a list \<Rightarrow> nat \<Rightarrow> iT \<Rightarrow> 'a list"
+where
+  "f_join_aux [] n I = []"
+| "f_join_aux (x # xs) n I = 
+    (if n \<in> I then [x] else []) @ f_join_aux xs (Suc n) I"
+
 text {* 
   The functions @{text "f_join"} and @{text "i_join"}
   deliver views of finite and infinite streams through intervals 
@@ -21,9 +28,11 @@ text {*
   A stream view contains only the elements of the original stream
   at positions, which are contained in the interval.
   For instance, @{text "f_join [0,10,20,30,40] {1,4} = [10,40]"} *}
-consts
-  f_join :: "'a list \<Rightarrow> iT \<Rightarrow> 'a list"      (infixl "\<Join>\<^sub>f" 100)
-  i_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a ilist"    (infixl "\<Join>\<^sub>i" 100)
+definition f_join :: "'a list \<Rightarrow> iT \<Rightarrow> 'a list"      (infixl "\<Join>\<^sub>f" 100)
+  where "xs \<Join>\<^sub>f I \<equiv> f_join_aux xs 0 I"
+definition i_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a ilist"    (infixl "\<Join>\<^sub>i" 100)
+  where "f \<Join>\<^sub>i I \<equiv> \<lambda>n. (f (I \<rightarrow> n))"
+
 notation (xsymbols)
   f_join  (infixl "\<Join>\<^sub>" 100) and
   i_join  (infixl "\<Join>\<^sub>" 100)
@@ -37,8 +46,8 @@ text {*
   The function @{text i_f_join} in contrast 
   cuts the resulting stream at this position
   and returns a finite stream. *}
-consts
-  i_f_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a list"    (infixl "\<Join>\<^bsub>i-f\<^esub>" 100)
+definition i_f_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a list"    (infixl "\<Join>\<^bsub>i-f\<^esub>" 100)
+  where "f \<Join>\<^bsub>i-f\<^esub> I \<equiv> f \<Down> Suc (Max I) \<Join>\<^sub>f I"
 notation (xsymbols)
   i_f_join  (infixl "\<Join>\<^sub>" 100)
 
@@ -50,19 +59,6 @@ text {*
   using @{text i_join} would deliver an infinite stream,
   ending with an infinite sequence of elements equal to
   @{text "s (Max I)"}. *}
-
-primrec
-  f_join_aux :: "'a list \<Rightarrow> nat \<Rightarrow> iT \<Rightarrow> 'a list"
-where
-  "f_join_aux [] n I = []"
-| "f_join_aux (x # xs) n I = 
-    (if n \<in> I then [x] else []) @ f_join_aux xs (Suc n) I"
-
-defs
-  f_join_def : "xs \<Join>\<^sub>f I \<equiv> f_join_aux xs 0 I"
-  i_join_def : "f \<Join>\<^sub>i I \<equiv> \<lambda>n. (f (I \<rightarrow> n))"
-  i_f_join_def : "f \<Join>\<^bsub>i-f\<^esub> I \<equiv> f \<Down> Suc (Max I) \<Join>\<^sub>f I"
-
 
 
 subsubsection {* Basic results *}

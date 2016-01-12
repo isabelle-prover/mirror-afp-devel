@@ -39,15 +39,20 @@ text {*Now the foundations are laid for the definition of monotone
 
 consts
   mon_conv:: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a::ord \<Rightarrow> bool" ("_\<up>_" [60,61] 60) 
+overloading
+  mon_conv_real \<equiv> "mon_conv :: _ \<Rightarrow> real \<Rightarrow> bool"
+  mon_conv_real_fun \<equiv> "mon_conv :: _ \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> bool"
+  mon_conv_set \<equiv> "mon_conv :: _ \<Rightarrow> 'a set \<Rightarrow> bool"
+begin
 
-defs (overloaded)
-  real_mon_conv: "x\<up>(y::real) \<equiv> (\<forall>n. x n \<le> x (Suc n)) \<and> x \<longlonglongrightarrow> y"
-  realfun_mon_conv: 
-  "u\<up>(f::'a \<Rightarrow> real) \<equiv> (\<forall>n. u n \<le> u (Suc n)) \<and>  (\<forall>w. (\<lambda>n. u n w) \<longlonglongrightarrow> f w)"
-  set_mon_conv: "A\<up>(B::'a set) \<equiv> (\<forall>n. A n \<le> A (Suc n)) \<and> B = (\<Union>n. A n)"
+definition "x\<up>(y::real) \<equiv> (\<forall>n. x n \<le> x (Suc n)) \<and> x \<longlonglongrightarrow> y"
+definition "u\<up>(f::'a \<Rightarrow> real) \<equiv> (\<forall>n. u n \<le> u (Suc n)) \<and>  (\<forall>w. (\<lambda>n. u n w) \<longlonglongrightarrow> f w)"
+definition "A\<up>(B::'a set) \<equiv> (\<forall>n. A n \<le> A (Suc n)) \<and> B = (\<Union>n. A n)"
+
+end
 
 theorem realfun_mon_conv_iff: "(u\<up>f) = (\<forall>w. (\<lambda>n. u n w)\<up>((f w)::real))"
-  by (auto simp add: real_mon_conv realfun_mon_conv le_fun_def)
+  by (auto simp add: mon_conv_real_def mon_conv_real_fun_def le_fun_def)
 
 text {* The long arrow signifies convergence of real sequences as
   defined in the theory @{text SEQ} \cite{Fleuriot:2000:MNR}. Monotone convergence
@@ -70,7 +75,7 @@ next
   case (Suc n)
   also 
   from mon_conv have "x (n+i) \<le> x (Suc n+i)" 
-    by (simp add: real_mon_conv)              
+    by (simp add: mon_conv_real_def)
   finally show ?case .
 qed(*>*)
 
@@ -92,7 +97,7 @@ theorem assumes mon_conv: "x\<up>(y::real)"
   shows real_mon_conv_le: "x i \<le> y"
 proof -
   from mon_conv have "(\<lambda>m. x (m+i)) \<longlonglongrightarrow> y" 
-    by (simp add: real_mon_conv limseq_shift_iff)
+    by (simp add: mon_conv_real_def limseq_shift_iff)
   also from mon_conv have "\<forall>m\<ge>0. x i \<le> x (m+i)" by (simp add: mon_conv_mon)
   ultimately show ?thesis by (rule LIMSEQ_le_const[OF _ exI[where x=0]])
 qed
@@ -118,7 +123,7 @@ proof -
   have "\<exists>n.\<forall>m. n \<le> m \<longrightarrow> \<bar>x m - y\<bar> < y - z"
   proof -
     from mon_conv have aux: "\<And>r. r > 0 \<Longrightarrow> \<exists>n. \<forall>m. n \<le> m \<longrightarrow> \<bar>x m - y\<bar> < r"
-    unfolding real_mon_conv lim_sequentially dist_real_def by auto
+    unfolding mon_conv_real_def lim_sequentially dist_real_def by auto
     with less' show "\<exists>n. \<forall>m. n \<le> m \<longrightarrow> \<bar>x m - y\<bar> < y - z" by auto
   qed
   also
@@ -141,10 +146,10 @@ theorem real_mon_conv_times:
   shows "(\<lambda>m. z*x m)\<up>(z*y)"
 (*<*)proof -
   from assms have "\<And>n. z*x n \<le> z*x (Suc n)"
-    by (simp add: real_mon_conv mult_left_mono)
+    by (simp add: mon_conv_real_def mult_left_mono)
   also from xy have "(\<lambda>m. z*x m)\<longlonglongrightarrow>(z*y)"
-    by (simp add: real_mon_conv tendsto_const tendsto_mult)
-  ultimately show ?thesis by (simp add: real_mon_conv)
+    by (simp add: mon_conv_real_def tendsto_const tendsto_mult)
+  ultimately show ?thesis by (simp add: mon_conv_real_def)
 qed(*>*)
 
 
@@ -164,12 +169,12 @@ theorem real_mon_conv_add:
 (*<*)proof - 
   { fix n
     from assms have "x n \<le> x (Suc n)" and "a n \<le> a (Suc n)"
-      by (simp_all add: real_mon_conv)
+      by (simp_all add: mon_conv_real_def)
     hence "x n + a n \<le> x (Suc n) + a (Suc n)"
       by simp
   }
-  also from assms have "(\<lambda>m. x m + a m)\<longlonglongrightarrow>(y + b)" by (simp add: real_mon_conv tendsto_add)
-  ultimately show ?thesis by (simp add: real_mon_conv)
+  also from assms have "(\<lambda>m. x m + a m)\<longlonglongrightarrow>(y + b)" by (simp add: mon_conv_real_def tendsto_add)
+  ultimately show ?thesis by (simp add: mon_conv_real_def)
 qed(*>*)
 
 theorem realfun_mon_conv_add:
@@ -194,7 +199,7 @@ proof -
   with bound have "l \<le> x"
     by (intro LIMSEQ_le_const2) auto
   ultimately show ?thesis
-    by (auto simp: real_mon_conv mon)
+    by (auto simp: mon_conv_real_def mon)
 qed
 
 theorem real_mon_conv_dom:
@@ -242,7 +247,7 @@ where
 | "mk_mon A (Suc n) = A (Suc n) \<union> mk_mon A n"
 
 lemma "mk_mon A \<up> (\<Union>i. A i)"
-proof (unfold set_mon_conv)
+proof (unfold mon_conv_set_def)
   { fix n
     have "mk_mon A n \<subseteq> mk_mon A (Suc n)"
       by auto

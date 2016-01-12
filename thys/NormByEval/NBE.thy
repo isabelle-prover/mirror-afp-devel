@@ -1133,8 +1133,10 @@ lemma comp_pat_C_Nil[simp]: "comp_pat(C nm) = C\<^sub>U nm []"
 by(simp add:comp_pat.simps)
 
 
-defs compR_def:
- "compR \<equiv> (\<lambda>(nm,ts,t). (nm, map comp_pat (rev ts), comp_open t)) ` R"
+overloading compR \<equiv> compR
+begin
+  definition "compR \<equiv> (\<lambda>(nm,ts,t). (nm, map comp_pat (rev ts), comp_open t)) ` R"
+end
 
 
 lemma fv_ML_comp_open: "pure t \<Longrightarrow> fv\<^sub>M\<^sub>L(comp_open t) = fv t"

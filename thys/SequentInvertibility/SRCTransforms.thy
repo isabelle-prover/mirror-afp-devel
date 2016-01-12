@@ -52,12 +52,24 @@ primrec mset :: "'a sequent \<Rightarrow> 'a form multiset" where "mset (Sequent
 primrec seq_size :: "'a sequent \<Rightarrow> nat" where "seq_size (Sequent ant suc) = size ant + size suc"
 
 (* Extend a sequent, and then a rule by adding seq to all premisses and the conclusion *)
-defs extend_def : "extend forms seq \<equiv> (antec forms + antec seq) \<Rightarrow>* (succ forms + succ seq)"
-defs extendRule_def : "extendRule forms R \<equiv> (map (extend forms) (fst R), extend forms (snd R))"
+overloading
+  extend \<equiv> extend
+  extendRule \<equiv> extendRule
+  uniqueConclusion \<equiv> uniqueConclusion
+begin
+
+definition extend
+  where "extend forms seq \<equiv> (antec forms + antec seq) \<Rightarrow>* (succ forms + succ seq)"
+
+definition extendRule
+  where "extendRule forms R \<equiv> (map (extend forms) (fst R), extend forms (snd R))"
 
 (* The unique conclusion property.  A set of rules has unique conclusion property if for any pair of rules,
    the conclusions being the same means the rules are the same*)
-defs uniqueConclusion_def : "uniqueConclusion R \<equiv> \<forall> r1 \<in> R. \<forall> r2 \<in> R. (snd r1 = snd r2) \<longrightarrow> (r1 =r2)"
+definition uniqueConclusion :: "'a rule set \<Rightarrow> bool"
+  where "uniqueConclusion R \<equiv> \<forall> r1 \<in> R. \<forall> r2 \<in> R. (snd r1 = snd r2) \<longrightarrow> (r1 =r2)"
+
+end
 
 primrec max_list :: "nat list \<Rightarrow> nat" where
   "max_list [] = 0"
@@ -166,10 +178,20 @@ qed
 (* definition of invertible rule and invertible set of rules.  It's a bit nasty, but all it really says is
    If a rule is in the given set, and if any extension of that rule is derivable at n, then the
    premisses of the extended rule are derivable at height at most n.  *)
-defs invertible_def : "invertible r R \<equiv> \<forall> n S. (r \<in> R \<and> (snd (extendRule S r),n) \<in> derivable R*) \<longrightarrow>
-                                          (\<forall> p \<in> set (fst (extendRule S r)). \<exists> m \<le> n. (p,m) \<in> derivable R*)"
+overloading
+  invertible \<equiv> invertible
+  invertible_set \<equiv> invertible_set
+begin
 
-defs invertible_set_def : "invertible_set R \<equiv> \<forall> (ps,c) \<in> R. invertible (ps,c) R"
+definition invertible
+  where "invertible r R \<equiv>
+    \<forall> n S. (r \<in> R \<and> (snd (extendRule S r),n) \<in> derivable R*) \<longrightarrow>
+    (\<forall> p \<in> set (fst (extendRule S r)). \<exists> m \<le> n. (p,m) \<in> derivable R*)"
+
+definition invertible_set
+  where "invertible_set R \<equiv> \<forall> (ps,c) \<in> R. invertible (ps,c) R"
+
+end
 
 
 (* Characterisation of a sequent *)

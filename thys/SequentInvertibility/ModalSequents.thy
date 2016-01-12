@@ -182,20 +182,42 @@ primrec seq_size :: "('a,'b) sequent \<Rightarrow> nat" where
   "seq_size (Sequent ant suc) = size ant + size suc"
 
 (* Extend a sequent, and then a rule by adding seq to all premisses and the conclusion *)
-defs extend_def : "extend forms seq \<equiv> (antec forms + antec seq) \<Rightarrow>* (succ forms + succ seq)"
-defs extendRule_def : "extendRule forms R \<equiv> (map (extend forms) (fst R), extend forms (snd R))"
-defs extendRule2_def : "extendRule2 S1 S2 r \<equiv> (map (extend S1) (fst r), extend S2 (snd r))"
+overloading
+  extend \<equiv> extend
+  extendRule \<equiv> extendRule
+  extendRule2 \<equiv> extendRule2
+begin
 
+definition extend
+  where "extend forms seq \<equiv> (antec forms + antec seq) \<Rightarrow>* (succ forms + succ seq)"
+
+definition extendRule
+  where "extendRule forms R \<equiv> (map (extend forms) (fst R), extend forms (snd R))"
+
+definition extendRule2 :: "('a,'b) sequent \<Rightarrow> ('a,'b) sequent \<Rightarrow> ('a,'b) rule \<Rightarrow> ('a,'b) rule"
+  where "extendRule2 S1 S2 r \<equiv> (map (extend S1) (fst r), extend S2 (snd r))"
+
+end
+
+(*>*)
 
 (* The unique conclusion property.  A set of rules has unique conclusion property if for any pair of rules,
    the conclusions being the same means the rules are the same*)
-defs uniqueConclusion_def : "uniqueConclusion R \<equiv> \<forall> r1 \<in> R. \<forall> r2 \<in> R. (snd r1 = snd r2) \<longrightarrow> (r1 =r2)"
-(*>*)
+overloading
+  uniqueConclusion \<equiv> uniqueConclusion
+  modaliseMultiset \<equiv> modaliseMultiset
+begin
+
+definition uniqueConclusion :: "('a,'b) rule set \<Rightarrow> bool"
+  where "uniqueConclusion R \<equiv> \<forall> r1 \<in> R. \<forall> r2 \<in> R. (snd r1 = snd r2) \<longrightarrow> (r1 =r2)"
+
 text{*
 \noindent Modalising multisets is relatively straightforward.  We use the notation $!\cdot \Gamma$, where $!$ is a modal operator and $\Gamma$ is a multiset of formulae:
 *}
-defs modaliseMultiset_def:
-  "(a :: 'b) \<cdot> (\<Gamma> :: ('a,'b) form multiset) \<equiv> {# Modal a [p]. p :# \<Gamma> #}"
+definition modaliseMultiset :: "'b \<Rightarrow> ('a,'b) form multiset \<Rightarrow> ('a,'b) form multiset"
+  where "modaliseMultiset a \<Gamma> \<equiv> {# Modal a [p]. p :# \<Gamma> #}"
+
+end
 
 (*<*) 
 (* The formulation of various rule sets *)
@@ -230,7 +252,13 @@ inductive_set p_e :: "('a,'b) rule set \<Rightarrow> 'b \<Rightarrow> 'b \<Right
 text{*
 \noindent We need a method for extending the conclusion of a rule without extending the premisses.  Again, this is simple:*}
 
-defs extendConc_def: "extendConc S r \<equiv> (fst r, extend S (snd r))"
+overloading extendConc \<equiv> extendConc
+begin
+
+definition extendConc :: "('a,'b) sequent \<Rightarrow> ('a,'b) rule \<Rightarrow> ('a,'b) rule"
+  where "extendConc S r \<equiv> (fst r, extend S (snd r))"
+
+end
 
 text{* \noindent  The extension of a rule set is now more complicated; the inductive definition has four clauses, depending on the type of rule:
 *}

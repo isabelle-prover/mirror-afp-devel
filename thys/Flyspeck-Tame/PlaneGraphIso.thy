@@ -47,8 +47,10 @@ subsection{* Equivalence of faces *}
 
 text{* Two faces are equivalent modulo rotation: *}
 
-defs (overloaded) congs_def:
- "F\<^sub>1 \<cong> (F\<^sub>2::'a list) \<equiv> \<exists>n. F\<^sub>2 = rotate n F\<^sub>1"
+overloading "congs" \<equiv> "pr_isomorphic :: 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
+begin
+  definition "F\<^sub>1 \<cong> (F\<^sub>2::'a list) \<equiv> \<exists>n. F\<^sub>2 = rotate n F\<^sub>1"
+end
 
 lemma congs_refl[iff]: "(xs::'a list) \<cong> xs"
 apply(simp add:congs_def)

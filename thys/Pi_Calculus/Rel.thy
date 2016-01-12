@@ -6,8 +6,8 @@ theory Rel
   imports Agent
 begin
 
-consts eqvt :: "(('a::pt_name) \<times> ('a::pt_name)) set \<Rightarrow> bool"
-defs eqvt_def: "eqvt Rel \<equiv> (\<forall>x (perm::name prm). x \<in> Rel \<longrightarrow> perm \<bullet> x \<in> Rel)"
+definition eqvt :: "(('a::pt_name) \<times> ('a::pt_name)) set \<Rightarrow> bool"
+  where "eqvt Rel \<equiv> (\<forall>x (perm::name prm). x \<in> Rel \<longrightarrow> perm \<bullet> x \<in> Rel)"
 
 lemma eqvtRelI:
   fixes Rel  :: "('a::pt_name \<times> 'a) set"

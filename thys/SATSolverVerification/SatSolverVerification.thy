@@ -2643,7 +2643,7 @@ next
             `vars (elements M) = insert v V'` 
             `\<not> v \<in> V'`
           have "vars (elements (M' @ M'')) = V'"
-            by (auto simp del: vars_def_clause)
+            by (auto simp del: vars_clause_def)
           ultimately
           show ?thesis
             by simp
@@ -2675,7 +2675,7 @@ next
           by simp
         from * ** `vars (elements (M' @ M'')) = V'`
         have "vars (elements M) = insert v V'"
-          by (auto simp del: vars_def_clause)
+          by (auto simp del: vars_clause_def)
         moreover
         from *
           `var l = v` 

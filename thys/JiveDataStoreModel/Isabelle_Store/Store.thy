@@ -141,8 +141,10 @@ following term
 text {* In the following, the definitions of the five store interface functions and some lemmas 
 about them are given. *}
 
-defs alive_def:
-"alive x s \<equiv> aliveImpl x (Rep_Store s)"
+overloading alive \<equiv> alive
+begin
+  definition alive where "alive x s \<equiv> aliveImpl x (Rep_Store s)"
+end
 
 lemma alive_trivial_simps [simp,intro]:
 "alive (boolV b) s"
@@ -152,35 +154,46 @@ lemma alive_trivial_simps [simp,intro]:
 "alive nullV     s"
   by (simp_all add: alive_def aliveImpl_def)
 
-defs access_def:
-"access s l \<equiv> vals (Rep_Store s) l"
+overloading
+  access \<equiv> access
+  update \<equiv> update
+  alloc \<equiv> alloc
+  new \<equiv> new
+begin
 
-defs update_def:
-"update s l v \<equiv> if alive (ref l) s \<and> alive v s \<and> typeof v \<le> ltype l 
-                then Abs_Store ((Rep_Store s)\<lparr>vals:=(vals (Rep_Store s))(l:=v)\<rparr>)
-                else s"
+definition access
+  where "access s l \<equiv> vals (Rep_Store s) l"
 
-defs alloc_def:
-"alloc s t \<equiv> 
-  (case t of 
-     new_instance C 
-      \<Rightarrow> Abs_Store 
-          ((Rep_Store s)\<lparr>newOID := \<lambda> D. if C=D 
-                            then Suc (newOID (Rep_Store s) C) 
-                            else newOID (Rep_Store s) D\<rparr>)
-   | new_array T l
-      \<Rightarrow> Abs_Store
-          ((Rep_Store s)\<lparr>newAID := \<lambda> S. if T=S 
-                           then Suc (newAID (Rep_Store s) T)
-                           else newAID (Rep_Store s) S,
-                         vals :=  (vals (Rep_Store s))
-                                    (arrLenLoc T (newAID (Rep_Store s) T) 
-                                      := intgV (int l))\<rparr>))"
+definition update
+  where "update s l v \<equiv>
+    if alive (ref l) s \<and> alive v s \<and> typeof v \<le> ltype l 
+    then Abs_Store ((Rep_Store s)\<lparr>vals:=(vals (Rep_Store s))(l:=v)\<rparr>)
+    else s"
 
-defs new_def:
-"new s t \<equiv> (case t of
-              new_instance C \<Rightarrow> objV C (newOID (Rep_Store s) C)
-            | new_array T l  \<Rightarrow> arrV T (newAID (Rep_Store s) T))"
+definition alloc
+  where "alloc s t \<equiv>
+    (case t of 
+       new_instance C 
+        \<Rightarrow> Abs_Store 
+            ((Rep_Store s)\<lparr>newOID := \<lambda> D. if C=D 
+                              then Suc (newOID (Rep_Store s) C) 
+                              else newOID (Rep_Store s) D\<rparr>)
+     | new_array T l
+        \<Rightarrow> Abs_Store
+            ((Rep_Store s)\<lparr>newAID := \<lambda> S. if T=S 
+                             then Suc (newAID (Rep_Store s) T)
+                             else newAID (Rep_Store s) S,
+                           vals :=  (vals (Rep_Store s))
+                                      (arrLenLoc T (newAID (Rep_Store s) T) 
+                                        := intgV (int l))\<rparr>))"
+
+definition new
+  where "new s t \<equiv>
+    (case t of
+      new_instance C \<Rightarrow> objV C (newOID (Rep_Store s) C)
+    | new_array T l  \<Rightarrow> arrV T (newAID (Rep_Store s) T))"
+
+end
 
 text {* The predicate @{text "wts"} tests whether the store is well-typed. *}
 

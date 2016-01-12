@@ -89,11 +89,14 @@ Strong equality is inherited from the OCL core, but we have to consider
 the case of the strict equality. We decide to overload strict equality in the
 same way we do for other value's in OCL:*}
 
-defs (overloaded)  StrictRefEq\<^sub>P\<^sub>a\<^sub>i\<^sub>r :
-      "((x::('\<AA>,'\<alpha>::null,'\<beta>::null)Pair) \<doteq> y) \<equiv> (\<lambda> \<tau>. if (\<upsilon> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
-                                                       then (x \<triangleq> y)\<tau>
-                                                       else invalid \<tau>)"
-
+overloading
+  StrictRefEq \<equiv> "StrictRefEq :: [('\<AA>,'\<alpha>::null,'\<beta>::null)Pair,('\<AA>,'\<alpha>::null,'\<beta>::null)Pair] \<Rightarrow> ('\<AA>)Boolean"
+begin
+  definition StrictRefEq\<^sub>P\<^sub>a\<^sub>i\<^sub>r :
+    "((x::('\<AA>,'\<alpha>::null,'\<beta>::null)Pair) \<doteq> y) \<equiv> (\<lambda> \<tau>. if (\<upsilon> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
+                                                     then (x \<triangleq> y)\<tau>
+                                                     else invalid \<tau>)"
+end
 
 text{* Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}*}
 interpretation  StrictRefEq\<^sub>P\<^sub>a\<^sub>i\<^sub>r : profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v "\<lambda> x y. (x::('\<AA>,'\<alpha>::null,'\<beta>::null)Pair) \<doteq> y" 

@@ -49,26 +49,6 @@ text {*
 consts
   is_NoMsg :: "'a \<Rightarrow> bool"
 
-(*
-primrec 
-  is_NoMsg_message_af :: "'a message_af \<Rightarrow> bool" 
-where
-  "is_NoMsg_message_af \<NoMsg> = True"
-| "is_NoMsg_message_af (\<Msg> x) = False"
-*)
-
-(*
-primrec 
-  "is_NoMsg \<NoMsg> = True"
-  "is_NoMsg (\<Msg> x) = False"
-
-defs (overloaded)
-  is_NoMsg_tuple_def  : "is_NoMsg (p::'a \<times> 'b) \<equiv> (is_NoMsg (fst p) \<and> is_NoMsg (snd p))"
-  is_NoMsg_set_def    : "is_NoMsg (A::'a set) \<equiv> (\<forall>x\<in>A. is_NoMsg x)"
-  is_NoMsg_SomeRecordExample_def : "is_NoMsg (r::SomeRecordExample) \<equiv>
-    Field1 r = \<NoMsg> \<and> Field2 r = \<NoMsg> \<and> Field3 r = \<NoMsg>"
-*)
-
 overloading 
   is_NoMsg \<equiv> "is_NoMsg :: 'a message_af \<Rightarrow> bool"
 begin
@@ -1688,7 +1668,6 @@ lemma i_shrink_last_commute: "f \<div>\<^bsub>il\<^esub> a \<div>\<^bsub>il\<^es
 by (simp add: i_shrink_last_assoc mult.commute[of a])
 
 
-
 text {* 
   Shrinking a message stream with @{text last_message} as aggregation function 
   corresponds to shrinking the stream holding last message in each cycle
@@ -1701,7 +1680,5 @@ by (simp add: list_eq_iff f_shrink_length f_shrink_last_length f_shrink_nth_eq_f
 lemma i_shrink_eq_i_last_message_hold_shrink_last: "
   0 < k \<Longrightarrow> f \<div>\<^sub>i k = f \<longmapsto>\<^sub>i k \<div>\<^bsub>il\<^esub> k"
 by (simp add: ilist_eq_iff i_shrink_last_nth i_shrink_nth_eq_i_last_message_hold_nth)
-
-
 
 end

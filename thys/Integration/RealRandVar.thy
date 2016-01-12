@@ -699,7 +699,7 @@ proof -
       also 
       { assume "\<And>i. u i w \<le> a"
         also from up have "(\<lambda>n. u n w) \<longlonglongrightarrow> f w" 
-          by (simp only: real_mon_conv)
+          by (simp only: mon_conv_real_def)
         ultimately have "f w \<le> a" 
           by (simp add: LIMSEQ_le_const2)
       }
