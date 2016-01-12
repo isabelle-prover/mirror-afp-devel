@@ -73,10 +73,14 @@ Strong equality is inherited from the OCL core, but we have to consider
 the case of the strict equality. We decide to overload strict equality in the
 same way we do for other value's in OCL:*}
 
-defs (overloaded)   StrictRefEq\<^sub>S\<^sub>e\<^sub>q :
-      "((x::('\<AA>,'\<alpha>::null)Sequence) \<doteq> y) \<equiv> (\<lambda> \<tau>. if (\<upsilon> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
-                                                  then (x \<triangleq> y)\<tau>
-                                                  else invalid \<tau>)"
+overloading
+  StrictRefEq \<equiv> "StrictRefEq :: [('\<AA>,'\<alpha>::null)Sequence,('\<AA>,'\<alpha>::null)Sequence] \<Rightarrow> ('\<AA>)Boolean"
+begin
+  definition StrictRefEq\<^sub>S\<^sub>e\<^sub>q :
+    "((x::('\<AA>,'\<alpha>::null)Sequence) \<doteq> y) \<equiv> (\<lambda> \<tau>. if (\<upsilon> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
+                                                then (x \<triangleq> y)\<tau>
+                                                else invalid \<tau>)"
+end
 
 text_raw{* \isatagafp *}
 text{* One might object here that for the case of objects, this is an empty definition.

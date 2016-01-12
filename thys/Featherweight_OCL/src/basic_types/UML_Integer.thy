@@ -51,10 +51,13 @@ subsection{* Fundamental Predicates on Integers: Strict Equality \label{sec:inte
 text{* The last basic operation belonging to the fundamental infrastructure
 of a value-type in OCL is the weak equality, which is defined similar
 to the @{typ "('\<AA>)Boolean"}-case as strict extension of the strong equality:*}
-defs (overloaded)   StrictRefEq\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r[code_unfold] :
-      "(x::('\<AA>)Integer) \<doteq> y \<equiv> \<lambda> \<tau>. if (\<upsilon> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
-                                    then (x \<triangleq> y) \<tau>
-                                    else invalid \<tau>"
+overloading StrictRefEq \<equiv> "StrictRefEq :: [('\<AA>)Integer,('\<AA>)Integer] \<Rightarrow> ('\<AA>)Boolean"
+begin
+  definition StrictRefEq\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r[code_unfold] :
+    "(x::('\<AA>)Integer) \<doteq> y \<equiv> \<lambda> \<tau>. if (\<upsilon> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
+                                  then (x \<triangleq> y) \<tau>
+                                  else invalid \<tau>"
+end
 
 text{* Property proof in terms of @{term "profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v"}*}
 interpretation  StrictRefEq\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r : profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^sub>q_\<^sub>v_\<^sub>v "\<lambda> x y. (x::('\<AA>)Integer) \<doteq> y" 

@@ -52,10 +52,13 @@ text{*
   the strict extension of the logical
   equality:
 *}
-defs (overloaded)   StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n[code_unfold] :
-      "(x::('\<AA>)Boolean) \<doteq> y \<equiv> \<lambda> \<tau>. if (\<upsilon> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
-                                    then (x \<triangleq> y)\<tau>
-                                    else invalid \<tau>"
+overloading StrictRefEq \<equiv> "StrictRefEq :: [('\<AA>)Boolean,('\<AA>)Boolean] \<Rightarrow> ('\<AA>)Boolean"
+begin
+  definition StrictRefEq\<^sub>B\<^sub>o\<^sub>o\<^sub>l\<^sub>e\<^sub>a\<^sub>n[code_unfold] :
+    "(x::('\<AA>)Boolean) \<doteq> y \<equiv> \<lambda> \<tau>. if (\<upsilon> x) \<tau> = true \<tau> \<and> (\<upsilon> y) \<tau> = true \<tau>
+                                  then (x \<triangleq> y)\<tau>
+                                  else invalid \<tau>"
+end
 
 text{* which implies elementary properties like: *}
 lemma [simp,code_unfold] : "(true \<doteq> false) = false"
