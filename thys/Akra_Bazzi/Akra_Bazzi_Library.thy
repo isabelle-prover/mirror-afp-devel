@@ -2,7 +2,7 @@
   File:   Akra_Bazzi_Library.thy
   Author: Manuel Eberl <eberlm@in.tum.de>
 
-  Lemma bucket for the Akra–Bazzi theorem.
+  Lemma bucket for the Akra-Bazzi theorem.
 *)
 
 section {* Auxiliary lemmas *}
