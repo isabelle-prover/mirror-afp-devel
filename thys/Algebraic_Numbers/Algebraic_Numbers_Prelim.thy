@@ -47,8 +47,40 @@ lemma real_of_rat_poly_0[simp]: "real_of_rat_poly p = 0 \<longleftrightarrow> p 
 
 section \<open>Algebraic Numbers\<close>
 
-definition algebraic :: "'a :: field_char_0 \<Rightarrow> bool" where
-  "algebraic x = (\<exists> p. rpoly p x = 0 \<and> p \<noteq> 0)"
+lemma algebraic_altdef_rpoly: 
+  fixes x :: "'a :: field_char_0"
+  shows "algebraic x \<longleftrightarrow> (\<exists>p. rpoly p x = 0 \<and> p \<noteq> 0)"
+unfolding algebraic_altdef
+proof (safe, goal_cases)
+  case (1 p)
+  def the_rat \<equiv> "\<lambda>x::'a. THE r. x = of_rat r"
+  def p' \<equiv> "map_poly the_rat p"
+  have of_rat_the_rat: "of_rat (the_rat x) = x" if "x \<in> \<rat>" for x
+    unfolding the_rat_def by (rule sym, rule theI') (insert that, auto simp: Rats_def)
+  have the_rat_0_iff: "the_rat x = 0 \<longleftrightarrow> x = 0" if "x \<in> \<rat>"
+    using of_rat_the_rat[OF that] by auto
+  
+  have "map_poly of_rat p' = map_poly (of_rat \<circ> the_rat) p"
+      by (simp add: p'_def map_poly_map_poly)
+  also from 1 of_rat_the_rat have "\<dots> = p"
+    by (subst poly_eq_iff) (auto simp: coeff_map_poly)
+  finally have p_p': "map_poly of_rat p' = p" .
+
+  show ?case
+  proof (intro exI conjI notI)
+    from 1 show "rpoly p' x = 0"
+      by (simp add: rpoly.poly_map_poly_eval_poly [symmetric] p_p')
+  next
+    assume "p' = 0"
+    hence "p = 0" by (simp add: p_p' [symmetric])
+    with \<open>p \<noteq> 0\<close> show False by contradiction
+  qed
+next
+  case (2 p)
+  thus ?case
+    by (intro exI[of _ "map_poly of_rat p"]) 
+       (auto simp: rpoly.poly_map_poly_eval_poly)
+qed  
 
 definition alg_poly :: "'a :: field_char_0 \<Rightarrow> rat poly \<Rightarrow> bool" where
   "alg_poly x p = (rpoly p x = 0 \<and> p \<noteq> 0)"
@@ -201,7 +233,7 @@ proof -
   let ?p = "\<lambda> p. alg_poly x p \<and> monic p \<and> irreducible p"
   note irrD = irreducibleD
   from assms obtain p where
-    "alg_poly x p" unfolding algebraic_def alg_poly_def by auto
+    "alg_poly x p" unfolding algebraic_altdef_rpoly alg_poly_def by auto
   from alg_poly_factors_rat_poly[OF this] obtain p where
     p: "?p p" by auto
   show ?thesis
@@ -406,7 +438,7 @@ lemma irreducible_preservation: assumes irr: "irreducible p" and mon: "monic p"
   shows "irreducible q"
 proof (rule ccontr)
   have dq: "degree q \<noteq> 0" using y by (rule alg_poly_degree)
-  from x have ax: "algebraic x" unfolding algebraic_def alg_poly_def by blast
+  from x have ax: "algebraic x" unfolding algebraic_altdef_rpoly alg_poly_def by blast
   assume "\<not> ?thesis"
   from this[unfolded irreducible_def] dq obtain r where 
     r: "degree r \<noteq> 0" "degree r < degree q" and "r dvd q"

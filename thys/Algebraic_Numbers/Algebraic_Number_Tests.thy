@@ -102,5 +102,3 @@ definition "test_ev_show_approx = (let sh = (\<lambda> x. ''~ '' @ show (rat_of_
 value (code) test_ev_show_approx
 
 end
-
-  

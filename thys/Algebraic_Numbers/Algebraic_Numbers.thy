@@ -691,10 +691,10 @@ hide_const x_y
 subsection \<open>Summary: Closure Properties of Algebraic Numbers\<close>
 
 lemma algebraic_alg_polyI: "alg_poly x p \<Longrightarrow> algebraic x"
-  unfolding alg_poly_def algebraic_def by auto
+  unfolding alg_poly_def algebraic_altdef_rpoly by auto
 
 lemma algebraic_alg_polyE: "algebraic x \<Longrightarrow> (\<And> p. alg_poly x p \<Longrightarrow> P) \<Longrightarrow> P"
-  unfolding algebraic_def alg_poly_def by auto
+  unfolding algebraic_altdef_rpoly alg_poly_def by auto
 
 lemma algebraic_of_rat: "algebraic (of_rat x)"
   by (rule algebraic_alg_polyI[OF alg_poly_of_rat])

@@ -1045,7 +1045,7 @@ proof -
           and rty: "rpoly p2 ?ry = 0" by auto
         from rty rcy(10) un
         have algy: "alg_poly ?ry p2 \<and> irreducible p2 \<and> monic p2" unfolding alg_poly_def by (auto simp: poly_type_cond_def)
-        from algx have "algebraic ?rx" unfolding algebraic_def by auto
+        from algx have "algebraic ?rx" unfolding algebraic_altdef_rpoly by auto
         note unique = alg_poly_irreducible_unique[OF this]
         from eq have same: "?rx = ?ry" unfolding id by simp
         def xx \<equiv> "?rx"
