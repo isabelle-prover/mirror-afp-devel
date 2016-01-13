@@ -81,9 +81,12 @@ next
             qed
           finally have c_coeff: "c * coeff q (degree q - n) = setsum T {0..<degree p} 
               + coeff k (degree k - n)" .
-          moreover have "n\<noteq>0\<Longrightarrow>c dvd setsum T {0..<degree p}" 
+          show ?case
+          proof (cases "n = 0")
+            assume "n \<noteq> 0"
+            have "c dvd setsum T {0..<degree p}" 
             proof (rule dvd_setsum)
-              fix i assume i:"i \<in> {0..<degree p}" and "n\<noteq>0"
+              fix i assume i:"i \<in> {0..<degree p}"
               hence "(n+i-degree p)\<le>degree k" using `n \<le> degree k` by auto
               moreover have "n + i - degree p <n" using i `n\<noteq>0` by auto 
               ultimately have "c dvd coeff k (degree k - (n+i-degree p))"
@@ -93,16 +96,17 @@ next
                   le_diff_conv add.commute ordered_cancel_comm_monoid_diff_class.diff_diff_right)
               thus "c dvd T i" unfolding T_def by auto
             qed
-          moreover have "n=0 \<Longrightarrow>?case"
-            proof -
-              assume "n=0"
-              hence "\<forall>i\<in>{0..<degree p}. coeff k (degree p + degree k - n - i) =0" 
-                using coeff_eq_0[of k] by simp
-              hence "c * coeff q (degree q - n) = coeff k (degree k - n)"
-                using c_coeff unfolding T_def by auto
-              thus ?thesis by (metis dvdI)
-            qed
-          ultimately show ?case using dvd_add_cancel1 by (metis dvd_triv_left)
+            moreover have "c dvd setsum T {0..<degree p} + coeff k (degree k - n)"
+              by (subst c_coeff [symmetric]) simp
+            ultimately show ?case by (subst (asm) dvd_add_right_iff)
+          next
+            assume "n=0"
+            hence "\<forall>i\<in>{0..<degree p}. coeff k (degree p + degree k - n - i) =0" 
+              using coeff_eq_0[of k] by simp
+            hence "c * coeff q (degree q - n) = coeff k (degree k - n)"
+              using c_coeff unfolding T_def by auto
+            thus ?thesis by (metis dvdI)
+          qed
         qed
     qed
   hence "\<forall>n. c dvd coeff k n"
