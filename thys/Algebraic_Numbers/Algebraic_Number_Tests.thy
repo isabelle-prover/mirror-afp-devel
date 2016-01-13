@@ -10,7 +10,6 @@ text \<open>We provide a sequence of examples which demonstrate what can be done
 
 theory Algebraic_Number_Tests
 imports
-  "../Jordan_Normal_Form/Matrix_IArray_Impl"
   "../Jordan_Normal_Form/Char_Poly"
   "../Show/Show_Complex"
   "~~/src/HOL/Library/Code_Char"

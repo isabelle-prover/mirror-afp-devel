@@ -11,7 +11,7 @@ text \<open>This theory contains not-completely naive algorithms to test primali
 
 theory Prime_Factorization
 imports
-  "~~/src/Number_Theory/UniqueFactorization"
+  "~~/src/HOL/Number_Theory/UniqueFactorization"
   Missing_List
   Missing_Multiset
 begin

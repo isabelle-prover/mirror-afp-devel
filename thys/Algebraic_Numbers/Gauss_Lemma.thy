@@ -19,7 +19,7 @@ text \<open>We formalized Gauss Lemma, that the content of a product of two poly
 theory Gauss_Lemma
 imports 
   "../Jordan_Normal_Form/Missing_Unsorted"
-  "~~/src/Number_Theory/Primes"
+  "~~/src/HOL/Number_Theory/Primes"
   Ring_Hom_Poly
 begin
 
