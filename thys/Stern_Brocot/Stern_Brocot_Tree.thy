@@ -279,7 +279,7 @@ proof -
   from DX DY have *: "(x12 * x21) * (y12 + y22) < (x11 * x22) * (y12 + y22)"
     by(simp add: X Y Det_def)(cases y12, simp_all add: field_simps)
   from DX DY MX F show ?thesis
-    apply (simp add: split_def zmult_int X Y)
+    apply (simp add: split_def X Y int_mult[symmetric] del: of_nat_mult)
     apply (clarsimp simp: Det_def times_matrix_def LL_def UR_def mediant_def split_def)
     using * by (simp add: field_simps)
 qed
@@ -295,7 +295,7 @@ proof -
   obtain x11 x12 x21 x22 where X: "X = ((x11, x12), (x21, x22))" by(cases X) auto
   obtain y11 y12 y21 y22 where Y: "Y = ((y11, y12), (y21, y22))" by(cases Y) auto
   show ?thesis using DX DY MX F
-    apply (simp add: X Y split_def zmult_int)
+    apply (simp add: X Y split_def int_mult[symmetric] del: of_nat_mult)
     apply (simp add: Det_def times_matrix_def LL_def UR_def mediant_def split_def algebra_simps)
     apply (simp add: add_mult_distrib2[symmetric] mult.assoc[symmetric])
     apply (cases y21; simp)

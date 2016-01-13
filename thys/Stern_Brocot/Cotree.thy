@@ -159,7 +159,7 @@ declare map_tree_ap_tree_pure_tree[symmetric, applicative_unfold]
 lemma ap_tree_strong_extensional:
   "(\<And>x. f \<diamondop> pure x = g \<diamondop> pure x) \<Longrightarrow> f = g"
 proof(coinduction arbitrary: f g)
-  case (Eq_tree f g)[rule_format]
+  case [rule_format]: (Eq_tree f g)
   have "root f = root g"
   proof
     fix x
