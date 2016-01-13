@@ -152,7 +152,8 @@ instance stream :: (comm_semiring_1) comm_semiring_1 ..
 
 instance stream :: (semiring_1_cancel) semiring_1_cancel ..
 
-instance stream :: (comm_semiring_1_cancel) comm_semiring_1_cancel ..
+instance stream :: (comm_semiring_1_cancel) comm_semiring_1_cancel
+by(intro_classes; applicative_lifting, rule right_diff_distrib')
 
 instance stream :: (ring) ring ..
 
