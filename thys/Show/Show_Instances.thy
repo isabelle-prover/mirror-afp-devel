@@ -42,13 +42,17 @@ primrec pshowsp_prod :: "(shows \<times> shows) showsp"
 where
   "pshowsp_prod p (x, y) = shows_string ''('' o x o shows_string '', '' o y o shows_string '')''"
 
+(*NOTE: in order to be compatible with automatically generated show funtions,
+show-arguments of "map"-functions need to get precedence 1 (which may lead to
+redundant parentheses in the output, but seems unavoidable in the current setup,
+i.e., pshowsp via primrec followed by defining showsp via pshowsp composed with map).*)
 definition showsp_prod :: "'a showsp \<Rightarrow> 'b showsp \<Rightarrow> ('a \<times> 'b) showsp"
 where
-  [code del]: "showsp_prod s1 s2 p = pshowsp_prod p o map_prod (s1 0) (s2 0)"
+  [code del]: "showsp_prod s1 s2 p = pshowsp_prod p o map_prod (s1 1) (s2 1)"
 
 lemma showsp_prod_simps [simp, code]:
   "showsp_prod s1 s2 p (x, y) =
-    shows_string ''('' o s1 0 x o shows_string '', '' o s2 0 y o shows_string '')''"
+    shows_string ''('' o s1 1 x o shows_string '', '' o s2 1 y o shows_string '')''"
   by (simp add: showsp_prod_def)
 
 lemma show_law_prod [show_law_intros]:
