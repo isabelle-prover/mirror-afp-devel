@@ -79,7 +79,8 @@ datatype "instantiation" = Instantiation string (* name *)
                                          string (* name in definition *)
                                          semi__term
 
-datatype "defs" = Defs_overloaded string (* name *) semi__term (* content *)
+datatype "overloading" = Overloading string (* name consts *) semi__term
+                                     string (* name def *) semi__term (* content *)
 
 datatype "consts" = Consts string (* name *)
                            semi__typ
@@ -186,7 +187,7 @@ datatype semi__theory = Theory_datatype "datatype"
                       | Theory_type_synonym "type_synonym"
                       | Theory_type_notation "type_notation"
                       | Theory_instantiation "instantiation"
-                      | Theory_defs "defs"
+                      | Theory_overloading "overloading"
                       | Theory_consts "consts"
                       | Theory_definition "definition"
                       | Theory_lemmas "lemmas"
@@ -281,7 +282,10 @@ definition "Consts_raw0 s l e o_arg = Consts s l (String.replace_chars (\<lambda
                 Consts_value @@ (S.flatten (L.map (\<lambda>_. \<open>,\<close> @@ Consts_value) (L.upto 2 arg))))))"
 definition "Ty_arrow = Typ_apply_bin \<open>\<Rightarrow>\<close>"
 definition "Ty_times = Typ_apply_bin \<open>\<times>\<close>"
+definition "Ty_arrow' x = Ty_arrow x (Typ_base \<open>_\<close>)"
+definition "Ty_paren = Typ_apply_paren \<open>(\<close> \<open>)\<close>"
 definition "Consts' s l e = Consts_raw0 s (Ty_arrow (Typ_base \<open>'\<alpha>\<close>) l) e None"
+definition "Overloading' n ty = Overloading n (Term_annot (Term_basic [n]) ty)"
 
 locale M
 begin
