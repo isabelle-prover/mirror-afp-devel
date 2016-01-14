@@ -417,8 +417,11 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
          Class.intro_classes_tac ctxt [] THEN ALLGOALS (Proof_Context.fact_tac ctxt thms))
     |-> K I
      end)
-| Theory_defs (Defs_overloaded (n, e)) => in_theory
-   (Isar_Cmd.add_defs ((false, true), [((To_sbinding n, of_semi__term e), [])]))
+| Theory_overloading (Overloading (n_c, e_c, n, e)) => in_theory
+   (fn thy => thy
+    |> Overloading.overloading_cmd [(To_string0 n_c, of_semi__term e_c, true)]
+    |> snd o Specification.definition_cmd (NONE, ((To_sbinding n, []), of_semi__term e)) false
+    |> Local_Theory.exit_global)
 | Theory_consts (Consts (n, ty, symb)) => in_theory
    (Sign.add_consts_cmd [( To_sbinding n
                         , of_semi__typ ty
