@@ -77,10 +77,11 @@ record SomeRecordExample =
   Field2 :: "int message_af"
   Field3 :: "int message_af"
 overloading
-  is_NoMsg \<equiv> "is_NoMsg :: SomeRecordExample \<Rightarrow> bool"
+  is_NoMsg \<equiv> "is_NoMsg :: 'a SomeRecordExample_scheme \<Rightarrow> bool"
 begin
 definition is_NoMsg_SomeRecordExample_def :
-  "is_NoMsg (r::SomeRecordExample) \<equiv> Field1 r = \<NoMsg> \<and> Field2 r = \<NoMsg> \<and> Field3 r = \<NoMsg>"
+  "is_NoMsg (r:: 'a SomeRecordExample_scheme) \<equiv>
+    Field1 r = \<NoMsg> \<and> Field2 r = \<NoMsg> \<and> Field3 r = \<NoMsg>"
 end
 
 definition is_Msg :: "'a \<Rightarrow> bool" where
