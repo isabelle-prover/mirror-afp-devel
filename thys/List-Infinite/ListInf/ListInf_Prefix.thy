@@ -9,8 +9,6 @@ theory ListInf_Prefix
 imports "~~/src/HOL/Library/Sublist" ListInf
 begin
 
-
-
 subsection {* Additional list prefix results *}
 
 lemma prefixeq_eq_prefix_take_ex: "prefixeq xs ys = (\<exists>n. ys \<down> n = xs)"
@@ -26,7 +24,7 @@ lemma prefixeq_eq_prefix_take: "prefixeq xs ys = (ys \<down> (length xs) = xs)"
 by (simp only: prefixeq_eq_prefix_take_ex prefix_take_eq_prefix_take_ex)
 
 lemma strict_prefix_take_eq_strict_prefix_take_ex: "
-  (ys \<down> (length xs) = xs \<and> xs \<noteq> ys) = 
+  (ys \<down> (length xs) = xs \<and> xs \<noteq> ys) =
   ((\<exists>n. ys \<down> n = xs) \<and> xs \<noteq> ys)"
 by (simp add: prefix_take_eq_prefix_take_ex)
 
@@ -36,7 +34,7 @@ lemma prefix_eq_strict_prefix_take: "prefix xs ys = (ys \<down> (length xs) = xs
 by (simp only: prefix_eq_strict_prefix_take_ex strict_prefix_take_eq_strict_prefix_take_ex)
 
 
- 
+
 lemma take_imp_prefixeq: "prefixeq (xs \<down> n) xs"
 by (rule take_is_prefixeq)
 
@@ -103,25 +101,20 @@ lemma prefixeq_antisym: "\<lbrakk> prefixeq xs ys; prefixeq (ys::'a list) xs \<r
 by (rule prefix_order.antisym)
 
 
-
 subsection {* Counting equal pairs *}
 text {* Counting number of equal elements in two lists *}
 
-definition
-  mirror_pair :: "('a \<times> 'b) \<Rightarrow> ('b \<times> 'a)"
-where
-  "mirror_pair p \<equiv> (snd p, fst p)"
+definition mirror_pair :: "('a \<times> 'b) \<Rightarrow> ('b \<times> 'a)"
+  where "mirror_pair p \<equiv> (snd p, fst p)"
 
 lemma zip_mirror[rule_format]: "
   \<lbrakk> i < min (length xs) (length ys);
-    p1 = (zip xs ys) ! i; p2 = (zip ys xs) ! i \<rbrakk> \<Longrightarrow> 
+    p1 = (zip xs ys) ! i; p2 = (zip ys xs) ! i \<rbrakk> \<Longrightarrow>
   mirror_pair p1 = p2"
 by (simp add: mirror_pair_def)
 
-definition
-  equal_pair :: "('a \<times> 'a) \<Rightarrow> bool"
-where
-  "equal_pair p \<equiv> (fst p = snd p)"
+definition equal_pair :: "('a \<times> 'a) \<Rightarrow> bool"
+  where "equal_pair p \<equiv> (fst p = snd p)"
 
 lemma mirror_pair_equal: "equal_pair (mirror_pair p) = (equal_pair p)"
 by (fastforce simp: mirror_pair_def equal_pair_def)
@@ -143,12 +136,12 @@ lemma equal_pair_count_0: "
 by (case_tac ps, simp_all)
 
 lemma equal_pair_count_Suc: "
-  equal_pair_count ((a, a) # ps) = Suc (equal_pair_count ps)" 
+  equal_pair_count ((a, a) # ps) = Suc (equal_pair_count ps)"
 by simp
 
 
 lemma equal_pair_count_eq_pairwise[rule_format]: "
-  \<lbrakk> length ps1 = length ps2; 
+  \<lbrakk> length ps1 = length ps2;
     \<forall>i<length ps2. equal_pair (ps1 ! i) = equal_pair(ps2 ! i) \<rbrakk>
   \<Longrightarrow> equal_pair_count ps1 = equal_pair_count ps2"
 apply (induct rule: list_induct2)
@@ -157,11 +150,10 @@ apply (fastforce simp add: equal_pair_def)
 done
 
 lemma equal_pair_count_mirror_pairwise[rule_format]: "
-  \<lbrakk> length ps1 = length ps2; 
+  \<lbrakk> length ps1 = length ps2;
     \<forall>i<length ps2. ps1 ! i = mirror_pair (ps2 ! i) \<rbrakk>
   \<Longrightarrow> equal_pair_count ps1 = equal_pair_count ps2"
 apply (rule equal_pair_count_eq_pairwise, assumption)
-thm mirror_pair_equal
 apply (simp add: mirror_pair_equal)
 done
 
@@ -176,21 +168,19 @@ apply (split split_if_asm)
 apply (case_tac i)
 apply (simp add: equal_pair_def)+
 done
-thm equal_pair_count_correct
 
 (* For @{text "i = equal_pair_count ps"} holds:
   either @{text "ps ! i"} not an equal pair,
   or all pairs are equal (@{text "equal_pair_count = length ps"}) *)
-lemma equal_pair_count_maximality_aux[rule_format]: "\<And>i. 
+lemma equal_pair_count_maximality_aux[rule_format]: "\<And>i.
   i = equal_pair_count ps \<Longrightarrow> length ps = i \<or> \<not> equal_pair (ps ! i)"
 apply (induct ps)
  apply simp
 apply (simp add: equal_pair_def)
 done
-thm equal_pair_count_maximality_aux
+
 corollary equal_pair_count_maximality1a[rule_format]: "
   equal_pair_count ps = length ps \<or> \<not> equal_pair (ps!equal_pair_count ps)"
-thm equal_pair_count_maximality_aux[of "equal_pair_count ps" ps, simplified]
 apply (insert equal_pair_count_maximality_aux[of "equal_pair_count ps" ps])
 apply clarsimp
 done
@@ -205,9 +195,9 @@ lemma equal_pair_count_maximality2a[rule_format]: "
   (\<forall>i\<ge>equal_pair_count ps.(\<exists>j\<le>i. \<not>equal_pair (ps ! j)))"
 apply clarsimp
 apply (rule_tac x="equal_pair_count ps" in exI)
-thm equal_pair_count_maximality1b equal_pair_count_le
 apply (simp add: equal_pair_count_maximality1b equal_pair_count_le)
 done
+
 corollary equal_pair_count_maximality2b[rule_format]: "
   equal_pair_count ps \<noteq> length ps \<Longrightarrow>
   \<forall>i\<ge>equal_pair_count ps.(\<exists>j\<le>i. \<not>equal_pair (ps!j))"
@@ -216,21 +206,14 @@ by (insert equal_pair_count_maximality2a[of ps], simp)
 lemmas equal_pair_count_maximality =
   equal_pair_count_maximality1a equal_pair_count_maximality1b
   equal_pair_count_maximality2a equal_pair_count_maximality2b
-thm 
-  equal_pair_count_correct[no_vars]
-  equal_pair_count_maximality[no_vars]
-
-
-
 
 
 subsection {* Prefix length *}
 
 text {* Length of the prefix infimum *}
-definition
-  inf_prefix_length :: "'a list \<Rightarrow> 'a list \<Rightarrow> nat"
-where
-  "inf_prefix_length xs ys \<equiv> equal_pair_count (zip xs ys)"
+
+definition inf_prefix_length :: "'a list \<Rightarrow> 'a list \<Rightarrow> nat"
+  where "inf_prefix_length xs ys \<equiv> equal_pair_count (zip xs ys)"
 
 value "int (inf_prefix_length [1::int,2,3,4,7,8,15] [1::int,2,3,4,7,15])"
 value "int (inf_prefix_length [1::int,2,3,4] [1::int,2,3,4,7,15])"
@@ -240,30 +223,29 @@ value "int (inf_prefix_length [1::int,2,3,4,5] [1::int,2,3,4,5])"
 lemma inf_prefix_length_commute[rule_format]:
   "inf_prefix_length xs ys = inf_prefix_length ys xs"
 apply (unfold inf_prefix_length_def)
-thm equal_pair_count_mirror_pairwise
 apply (insert equal_pair_count_mirror_pairwise[of "zip xs ys" "zip ys xs"])
 apply (simp add: equal_pair_count_mirror_pairwise[of "zip xs ys" "zip ys xs"] mirror_pair_def)
 done
 
-lemma inf_prefix_length_leL[intro]: 
+lemma inf_prefix_length_leL[intro]:
   "inf_prefix_length xs ys \<le> length xs"
 apply (unfold inf_prefix_length_def)
 apply (insert equal_pair_count_le[of "zip xs ys"])
 apply simp
 done
+
 corollary inf_prefix_length_leR[intro]:
   "inf_prefix_length xs ys \<le> length ys"
-thm inf_prefix_length_commute[of xs ys]
 by (simp add: inf_prefix_length_commute[of xs] inf_prefix_length_leL)
+
 lemmas inf_prefix_length_le =
-  inf_prefix_length_leL 
+  inf_prefix_length_leL
   inf_prefix_length_leR
 
 lemma inf_prefix_length_le_min[rule_format]:
   "inf_prefix_length xs ys \<le> min (length xs) (length ys)"
 by (simp add: inf_prefix_length_le)
 
-thm equal_pair_count_0
 lemma hd_inf_prefix_length_0: "
   hd xs \<noteq> hd ys \<Longrightarrow> inf_prefix_length xs ys = 0"
 apply (unfold inf_prefix_length_def)
@@ -277,15 +259,12 @@ by (simp add: inf_prefix_length_def)
 lemma inf_prefix_length_NilR[simp]: "inf_prefix_length xs [] = 0"
 by (simp add: inf_prefix_length_def)
 
-thm equal_pair_count_Suc
 lemma inf_prefix_length_Suc[simp]: "
   inf_prefix_length (a # xs) (a # ys) = Suc (inf_prefix_length xs ys)"
 by (simp add: inf_prefix_length_def)
 
-thm equal_pair_count_correct
 lemma inf_prefix_length_correct: "
   i < inf_prefix_length xs ys \<Longrightarrow> xs ! i = ys ! i"
-thm order_less_le_trans[OF _ inf_prefix_length_leL]
 apply (frule order_less_le_trans[OF _ inf_prefix_length_leL])
 apply (frule order_less_le_trans[OF _ inf_prefix_length_leR])
 apply (unfold inf_prefix_length_def)
@@ -299,23 +278,18 @@ apply (rule ccontr)
 apply (simp add: inf_prefix_length_correct)
 done
 
-
-thm equal_pair_count_maximality1b
 lemma inf_prefix_length_maximality1[rule_format]: "
   inf_prefix_length xs ys \<noteq> min (length xs) (length ys) \<Longrightarrow>
   xs ! (inf_prefix_length xs ys) \<noteq> ys ! (inf_prefix_length xs ys)"
-thm equal_pair_count_maximality1b[of "zip xs ys"]
-thm equal_pair_count_maximality1b[of "zip xs ys", folded inf_prefix_length_def]
 apply (insert equal_pair_count_maximality1b[of "zip xs ys", folded inf_prefix_length_def], simp)
 apply (drule neq_le_trans)
  apply (simp add: inf_prefix_length_le)
 apply (simp add:  inf_prefix_length_def equal_pair_def)
 done
 
-thm equal_pair_count_maximality2b
 corollary inf_prefix_length_maximality2[rule_format]: "
   \<lbrakk> inf_prefix_length xs ys \<noteq> min (length xs) (length ys);
-    inf_prefix_length xs ys \<le> i \<rbrakk> \<Longrightarrow> 
+    inf_prefix_length xs ys \<le> i \<rbrakk> \<Longrightarrow>
   \<exists>j\<le>i. xs ! j \<noteq> ys ! j"
 apply (rule_tac x="inf_prefix_length xs ys" in exI)
 apply (simp add: inf_prefix_length_maximality1 inf_prefix_length_le_min)
@@ -342,19 +316,15 @@ done
 lemma inf_prefix_length_0_imp_hd_neq: "
   \<lbrakk> xs \<noteq> []; ys \<noteq> []; inf_prefix_length xs ys = 0 \<rbrakk> \<Longrightarrow> hd xs \<noteq> hd ys"
 apply (rule ccontr)
-thm inf_prefix_length_maximality2[of xs ys 0]
 apply (insert inf_prefix_length_maximality2[of xs ys 0])
 apply (simp add: hd_eq_first)
 done
 
 
-
 subsection {* Prefix infimum *}
 
-definition
-  inf_prefix :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"  (infixl "\<sqinter>" 70)
-where
-  "xs \<sqinter> ys \<equiv> xs \<down> (inf_prefix_length xs ys)"
+definition inf_prefix :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"  (infixl "\<sqinter>" 70)
+  where "xs \<sqinter> ys \<equiv> xs \<down> (inf_prefix_length xs ys)"
 
 lemma length_inf_prefix: "length (xs \<sqinter> ys) = inf_prefix_length xs ys"
 by (simp add: inf_prefix_def min_eqR inf_prefix_length_leL)
@@ -364,48 +334,46 @@ by (simp add: inf_prefix_def inf_prefix_length_commute[of ys] inf_prefix_length_
 
 lemma inf_prefix_takeL: "xs \<sqinter> ys = xs \<down> (inf_prefix_length xs ys)"
 by (simp add: inf_prefix_def)
+
 lemma inf_prefix_takeR: "xs \<sqinter> ys = ys \<down> (inf_prefix_length xs ys)"
 by (subst inf_prefix_commute, subst inf_prefix_length_commute, rule inf_prefix_takeL)
 
-thm inf_prefix_length_correct
 lemma inf_prefix_correct: "i < length (xs \<sqinter> ys) \<Longrightarrow> xs ! i = ys ! i"
 by (simp add: length_inf_prefix inf_prefix_length_correct)
+
 corollary inf_prefix_correctL: "
   i < length (xs \<sqinter> ys) \<Longrightarrow> (xs \<sqinter> ys) ! i = xs ! i"
 by (simp add: inf_prefix_takeL)
+
 corollary inf_prefix_correctR: "
   i < length (xs \<sqinter> ys) \<Longrightarrow> (xs \<sqinter> ys) ! i = ys ! i"
 by (simp add: inf_prefix_takeR)
 
-thm inf_prefix_length_take_correct
 lemma inf_prefix_take_correct: "
   n \<le> length (xs \<sqinter> ys) \<Longrightarrow> xs \<down> n = ys \<down> n"
 by (simp add: length_inf_prefix inf_prefix_length_take_correct)
 
 lemma is_inf_prefix[rule_format]: "
-  \<lbrakk> length zs = length (xs \<sqinter> ys); 
+  \<lbrakk> length zs = length (xs \<sqinter> ys);
     \<And>i. i < length (xs \<sqinter> ys) \<Longrightarrow> zs ! i = xs ! i \<and> zs ! i = ys ! i \<rbrakk> \<Longrightarrow>
   zs = xs \<sqinter> ys"
 by (simp add: list_eq_iff inf_prefix_def)
 
-thm hd_inf_prefix_length_0
 lemma hd_inf_prefix_Nil: "hd xs \<noteq> hd ys \<Longrightarrow> xs \<sqinter> ys = []"
 by (simp add: inf_prefix_def hd_inf_prefix_length_0)
 
-thm inf_prefix_length_0_imp_hd_neq
 lemma inf_prefix_Nil_imp_hd_neq: "
   \<lbrakk> xs \<noteq> []; ys \<noteq> []; xs \<sqinter> ys = [] \<rbrakk> \<Longrightarrow> hd xs \<noteq> hd ys"
 by (simp add: inf_prefix_def inf_prefix_length_0_imp_hd_neq)
 
 lemma length_inf_prefix_append[simp]: "
-  length ((zs @ xs) \<sqinter> (zs @ ys)) = 
+  length ((zs @ xs) \<sqinter> (zs @ ys)) =
   length zs + length (xs \<sqinter> ys)"
 by (simp add: length_inf_prefix)
 
 lemma inf_prefix_append[simp]: "(zs @ xs) \<sqinter> (zs @ ys) = zs @ (xs \<sqinter> ys)"
 apply (rule is_inf_prefix[symmetric], simp)
 apply (clarsimp simp: nth_append)
-thm inf_prefix_correctL inf_prefix_correctR
 apply (intro conjI inf_prefix_correctL inf_prefix_correctR, simp+)
 done
 
@@ -413,35 +381,34 @@ lemma hd_neq_inf_prefix_append: "
   hd xs \<noteq> hd ys \<Longrightarrow> (zs @ xs) \<sqinter> (zs @ ys) = zs"
 by (simp add: hd_inf_prefix_Nil)
 
-
-
-thm inf_prefix_length_NilL
 lemma inf_prefix_NilL[simp]: "[] \<sqinter> ys = []"
 by (simp del: length_0_conv add: length_0_conv[symmetric] length_inf_prefix)
+
 corollary inf_prefix_NilR[simp]: "xs \<sqinter> [] = []"
 by (simp add: inf_prefix_commute)
+
 lemmas inf_prefix_Nil = inf_prefix_NilL inf_prefix_NilR
-thm inf_prefix_Nil
 
 lemma inf_prefix_Cons[simp]: "(a # xs) \<sqinter> (a # ys) = a # xs \<sqinter> ys"
 by (insert inf_prefix_append[of "[a]" xs ys], simp)
+
 corollary inf_prefix_hd[simp]: "hd ((a # xs) \<sqinter> (a # ys)) = a"
 by simp
 
 
 lemma inf_prefixeq_le1: "prefixeq (xs \<sqinter> ys) xs"
 by (simp add: inf_prefix_takeL take_imp_prefixeq)
+
 lemma inf_prefixeq_le2: "prefixeq (xs \<sqinter> ys) ys"
 by (simp add: inf_prefix_takeR take_imp_prefixeq)
 
-thm min_le_iff_conj
 lemma le_inf_prefix_iff: "prefixeq x (y \<sqinter> z) = (prefixeq x y \<and> prefixeq x z)"
 apply (rule iffI)
  apply (blast intro: prefix_order.order_trans inf_prefixeq_le1 inf_prefixeq_le2)
 apply (clarsimp simp: prefixeq_def)
 done
+
 lemma le_imp_le_inf_prefixeq: "\<lbrakk> prefixeq x y; prefixeq x z \<rbrakk> \<Longrightarrow> prefixeq x (y \<sqinter> z)"
-thm le_inf_prefix_iff[THEN iffD2]
 by (rule le_inf_prefix_iff[THEN iffD2], simp)
 
 interpretation prefix:
@@ -457,27 +424,19 @@ apply (rule le_imp_le_inf_prefixeq, assumption+)
 done
 
 
-
 subsection {* Prefices for infinite lists *}
 
-thm prefixeq_def
-term "\<lambda>x y. prefixeq x (y::'a list)"
-definition
-  iprefix :: "'a list \<Rightarrow> 'a ilist \<Rightarrow> bool" (infixl "\<sqsubseteq>" 50)
-where
-  "xs \<sqsubseteq> f \<equiv> \<exists>g. f = xs \<frown> g"
+definition iprefix :: "'a list \<Rightarrow> 'a ilist \<Rightarrow> bool"  (infixl "\<sqsubseteq>" 50)
+  where "xs \<sqsubseteq> f \<equiv> \<exists>g. f = xs \<frown> g"
 
-thm prefixeq_eq_prefix_take
 lemma iprefix_eq_iprefix_take: "(xs \<sqsubseteq> f) = (f \<Down> length xs = xs)"
 apply (unfold iprefix_def)
 apply (rule iffI)
  apply clarsimp
 apply (rule_tac x="f \<Up> (length xs)" in exI)
-thm i_append_i_take_i_drop_id
 apply (subst i_append_i_take_i_drop_id[where n="length xs", symmetric], simp)
 done
 
-thm prefix_take_eq_prefix_take_ex
 lemma iprefix_take_eq_iprefix_take_ex: "
   (f \<Down> length xs = xs) = (\<exists>n. f \<Down> n = xs)"
 apply (rule iffI)
@@ -485,59 +444,43 @@ apply (rule iffI)
 apply clarsimp
 done
 
-thm prefixeq_eq_prefix_take_ex
 lemma iprefix_eq_iprefix_take_ex: "(xs \<sqsubseteq> f) = (\<exists>n. f \<Down> n = xs)"
 by (simp add: iprefix_eq_iprefix_take iprefix_take_eq_iprefix_take_ex)
 
-thm take_imp_prefixeq
 lemma i_take_imp_iprefix[intro]: "f \<Down> n \<sqsubseteq> f"
 by (simp add: iprefix_eq_iprefix_take)
 
-thm take_prefixeq_le_conv
 lemma i_take_prefixeq_le_conv: "prefixeq (f \<Down> a) (f \<Down> b) = (a \<le> b)"
 by (fastforce simp: prefixeq_eq_prefix_take list_eq_iff)
 
-thm append_imp_prefixeq
 lemma i_append_imp_iprefix[simp,intro]: "xs \<sqsubseteq> xs \<frown> f"
 by (simp add: iprefix_def)
 
-thm prefixeq_imp_take_eq
 lemma iprefix_imp_take_eq: "
   \<lbrakk> n \<le> length xs; xs \<sqsubseteq> f \<rbrakk> \<Longrightarrow> xs \<down> n = f \<Down> n"
 by (clarsimp simp: iprefix_eq_iprefix_take_ex min_eqR)
 
-thm prefixeq_refl
-thm prefixeq_trans
-thm prefixeq_antisym
 lemma prefixeq_iprefix_trans: "\<lbrakk> prefixeq xs ys; ys \<sqsubseteq> f \<rbrakk> \<Longrightarrow> xs \<sqsubseteq> f"
 by (fastforce simp: iprefix_eq_iprefix_take_ex prefixeq_eq_prefix_take_ex)
 
-thm take_length_prefixeq_conv
 lemma i_take_length_prefix_conv: "prefixeq (f \<Down> length xs) xs = (xs \<sqsubseteq> f)"
-thm prefixeq_length_le_eq_conv
 by (simp add: iprefix_eq_iprefix_take prefixeq_length_le_eq_conv[symmetric])
 
-thm Sublist.prefixeqI
 lemma iprefixI[intro?]: "f = xs \<frown> g \<Longrightarrow> xs \<sqsubseteq> f"
 by (unfold iprefix_def, simp)
-thm Sublist.prefixeqE
+
 lemma iprefixE[elim?]: "\<lbrakk> xs \<sqsubseteq> f; \<And>g. f = xs \<frown> g \<Longrightarrow> C \<rbrakk> \<Longrightarrow> C"
 by (unfold iprefix_def, blast)
 
-
-thm Sublist.Nil_prefixeq
 lemma Nil_iprefix[iff]: "[] \<sqsubseteq> f"
 by (unfold iprefix_def, simp)
 
-thm Sublist.same_prefixeq_prefixeq
 lemma same_prefix_iprefix[simp]: "(xs @ ys \<sqsubseteq> xs \<frown> f) = (ys \<sqsubseteq> f)"
 by (simp add: iprefix_eq_iprefix_take)
 
-thm Sublist.prefixeq_prefixeq
 lemma prefix_iprefix[simp]: "prefixeq xs ys \<Longrightarrow> xs \<sqsubseteq> ys \<frown> f"
 by (clarsimp simp: prefixeq_def iprefix_def i_append_assoc[symmetric] simp del: i_append_assoc)
 
-thm Sublist.append_prefixeqD
 lemma append_iprefixD: "xs @ ys \<sqsubseteq> f \<Longrightarrow> xs \<sqsubseteq> f"
 by (clarsimp simp: iprefix_def i_append_assoc[symmetric] simp del: i_append_assoc)
 
@@ -545,7 +488,6 @@ lemma iprefix_length_le_imp_prefixeq: "
   \<lbrakk> xs \<sqsubseteq> ys \<frown> f; length xs \<le> length ys \<rbrakk> \<Longrightarrow> prefixeq xs ys"
 by (clarsimp simp: iprefix_eq_iprefix_take_ex take_is_prefixeq)
 
-thm Sublist.prefixeq_append
 lemma iprefix_i_append: "
   (xs \<sqsubseteq> ys \<frown> f) = (prefixeq xs ys \<or> (\<exists>zs. xs = ys @ zs \<and> zs \<sqsubseteq> f))"
 apply (rule iffI)
@@ -565,14 +507,12 @@ lemma iprefix_same_length_le: "
   \<lbrakk> xs \<sqsubseteq> f; ys \<sqsubseteq> f; length xs \<le> length ys \<rbrakk> \<Longrightarrow> prefixeq xs ys"
 by (clarsimp simp: iprefix_eq_iprefix_take_ex i_take_prefixeq_le_conv)
 
-thm Sublist.prefixeq_same_cases
 lemma iprefix_same_cases: "
   \<lbrakk> xs \<sqsubseteq> f; ys \<sqsubseteq> f \<rbrakk> \<Longrightarrow> prefixeq xs ys \<or> prefixeq ys xs"
 apply (case_tac "length xs \<le> length ys")
 apply (simp add: iprefix_same_length_le)+
 done
 
-thm Sublist.set_mono_prefixeq
 lemma set_mono_iprefix: "xs \<sqsubseteq> f \<Longrightarrow> set xs \<subseteq> range f"
 by (unfold iprefix_def, fastforce)
 

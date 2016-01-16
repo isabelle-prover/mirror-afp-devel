@@ -3,7 +3,6 @@
     Author:     David Trachtenherz
 *)
 
-
 section {* Order and linear order: min and max *}
 
 theory Util_MinMax
@@ -12,7 +11,6 @@ begin
 
 subsection {* Additional lemmata about @{term min} and @{term max} *}
 
-thm min_less_iff_conj
 lemma min_less_imp_conj: "(z::'a::linorder) < min x y \<Longrightarrow> z < x \<and> z < y" by simp
 lemma conj_less_imp_min: "\<lbrakk> z < x; z < y \<rbrakk> \<Longrightarrow> (z::'a::linorder) < min x y" by simp
 
@@ -22,16 +20,12 @@ lemma min_le_imp_conj: "(z::'a::linorder) \<le> min x y \<Longrightarrow> z \<le
 (*lemma conj_le_imp_min: "\<lbrakk> z \<le> x; z \<le> y \<rbrakk> \<Longrightarrow> (z::'a::linorder) \<le> min x y"*)
 lemmas conj_le_imp_min = min.boundedI
 
-
-thm min.absorb1
 (*lemma min_eqL:"\<lbrakk> (x::('a::linorder)) \<le> y \<rbrakk> \<Longrightarrow> min x y = x"*)
 lemmas min_eqL = min.absorb1
 (*lemma min_eqR:"\<lbrakk> (y::('a::linorder)) \<le> x \<rbrakk> \<Longrightarrow> min x y = y"*)
 lemmas min_eqR = min.absorb2
 lemmas min_eq = min_eqL min_eqR
-thm min_eq
 
-thm max_less_iff_conj
 lemma max_less_imp_conj:"max x y < b \<Longrightarrow> x < (b::('a::linorder)) \<and> y < b" by simp
 lemma conj_less_imp_max:"\<lbrakk> x < (b::('a::linorder)); y < b \<rbrakk> \<Longrightarrow> max x y < b" by simp
 
@@ -41,30 +35,23 @@ lemma max_le_imp_conj:"max x y \<le> b \<Longrightarrow> x \<le> (b::('a::linord
 (*lemma conj_le_imp_max:"\<lbrakk> x \<le> (b::('a::linorder)); y \<le> b \<rbrakk> \<Longrightarrow> max x y \<le> b"*)
 lemmas conj_le_imp_max =  max.boundedI
 
-thm max.absorb1
 (*lemma max_eqL:"\<lbrakk> (y::('a::linorder)) \<le> x \<rbrakk> \<Longrightarrow> max x y = x"*)
 lemmas max_eqL = max.absorb1
 (*lemma max_eqR:"\<lbrakk> (x::('a::linorder)) \<le> y \<rbrakk> \<Longrightarrow> max x y = y"*)
 lemmas max_eqR =  max.absorb2
 lemmas max_eq = max_eqL max_eqR
-thm max_eq
 
-
-
-thm 
-  max.cobounded1
-  max.cobounded2
 (*lemma le_minI1:"min x y \<le> (x::('a::linorder))"*)
 lemmas le_minI1 = min.cobounded1
 (*lemma le_minI2:"min x y \<le> (y::('a::linorder))"*)
 lemmas le_minI2 = min.cobounded2
 
 
-lemma 
+lemma
   min_le_monoR: "(a::'a::linorder) \<le> b \<Longrightarrow> min x a \<le> min x b" and
-  min_le_monoL: "(a::'a::linorder) \<le> b \<Longrightarrow> min a x \<le> min b x" 
+  min_le_monoL: "(a::'a::linorder) \<le> b \<Longrightarrow> min a x \<le> min b x"
 by (fastforce simp: min.mono min_def)+
-lemma 
+lemma
   max_le_monoR: "(a::'a::linorder) \<le> b \<Longrightarrow> max x a \<le> max x b" and
   max_le_monoL: "(a::'a::linorder) \<le> b \<Longrightarrow> max a x \<le> max b x"
 by (fastforce simp: max.mono max_def)+

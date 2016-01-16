@@ -9,14 +9,13 @@ theory InfiniteSet2
 imports SetInterval2
 begin
 
-subsection {* Set operations with @{typ enat} *} 
+subsection {* Set operations with @{typ enat} *}
 
 subsubsection {* Basic definitions *}
 
-definition
-  icard :: "'a set \<Rightarrow> enat"
-where
-  "icard A \<equiv> if finite A then enat (card A) else \<infinity>"
+definition icard :: "'a set \<Rightarrow> enat"
+  where "icard A \<equiv> if finite A then enat (card A) else \<infinity>"
+
 
 subsection {* Results for @{text icard} *}
 
@@ -81,50 +80,41 @@ apply (rule iffI)
 apply fastforce
 done
 
-
-
-thm Finite_Set.card_insert_disjoint
 lemma icard_insert_disjoint: "x \<notin> A \<Longrightarrow> icard (insert x A) = eSuc (icard A)"
 apply (case_tac "finite A")
  apply (simp add: icard_finite eSuc_enat card_insert_disjoint)
 apply (simp add: infinite_insert)
 done
-thm Finite_Set.card_insert_if
+
 lemma icard_insert_if: "icard (insert x A) = (if x \<in> A then icard A else eSuc (icard A))"
 apply (case_tac "x \<in> A")
  apply (simp add: insert_absorb)
 apply (simp add: icard_insert_disjoint)
 done
-thm Finite_Set.card_0_eq
+
 lemmas icard_0_eq = icard_empty_iff
 
-thm Finite_Set.card_Suc_Diff1
 lemma icard_Suc_Diff1: "x \<in> A \<Longrightarrow> eSuc (icard (A - {x})) = icard A"
 apply (case_tac "finite A")
  apply (simp add: icard_finite eSuc_enat in_imp_not_empty not_empty_card_gr0_conv[THEN iffD1])
 apply (simp add: Diff_infinite_finite[OF singleton_finite])
 done
 
-thm Finite_Set.card_Diff_singleton
 lemma icard_Diff_singleton: "x \<in> A \<Longrightarrow> icard (A - {x}) = icard A - 1"
 apply (rule eSuc_inject[THEN iffD1])
 apply (frule in_imp_not_empty, drule icard_not_empty_iff[THEN iffD2])
 apply (simp add: icard_Suc_Diff1 eSuc_pred_enat one_eSuc)
 done
 
-thm Finite_Set.card_Diff_singleton_if
 lemma icard_Diff_singleton_if: "icard (A - {x}) = (if x \<in> A then icard A - 1 else icard A)"
 by (simp add: icard_Diff_singleton)
 
-thm Finite_Set.card_insert
 lemma icard_insert: "icard (insert x A) = eSuc (icard (A - {x}))"
 by (metis icard_Diff_singleton_if icard_Suc_Diff1 icard_insert_disjoint insert_absorb)
 
-thm Finite_Set.card_insert_le
 lemma icard_insert_le: "icard A \<le> icard (insert x A)"
 by (simp add: icard_insert_if)
 
-thm Finite_Set.card_mono
 lemma icard_mono: "A \<subseteq> B \<Longrightarrow> icard A \<le> icard B"
 apply (case_tac "finite B")
  apply (frule subset_finite_imp_finite, simp)
@@ -132,59 +122,47 @@ apply (case_tac "finite B")
 apply simp
 done
 
-thm Finite_Set.card_seteq
 lemma not_icard_seteq: "\<exists>(A::nat set) B. (A \<subseteq> B \<and> icard B \<le> icard A \<and> \<not> A = B)"
 apply (rule_tac x="{1..}" in exI)
 apply (rule_tac x="{0..}" in exI)
 apply (fastforce simp add: infinite_atLeast)
 done
 
-thm Finite_Set.psubset_card_mono
 lemma not_psubset_icard_mono: "\<exists>(A::nat set) B. A \<subset> B \<and> \<not> icard A < icard B"
 apply (rule_tac x="{1..}" in exI)
 apply (rule_tac x="{0..}" in exI)
 apply (fastforce simp add: infinite_atLeast)
 done
 
-thm Finite_Set.card_Un_Int
 lemma icard_Un_Int: "icard A + icard B = icard (A \<union> B) + icard (A \<inter> B)"
 apply (case_tac "finite A", case_tac "finite B")
- thm card_Un_Int
  apply (simp add: icard_finite card_Un_Int[of A])
 apply simp_all
 done
 
-thm Finite_Set.card_Un_disjoint
 lemma icard_Un_disjoint: "A \<inter> B = {} \<Longrightarrow> icard (A \<union> B) = icard A + icard B"
 by (simp add: icard_Un_Int[of A])
 
-thm Finite_Set.card_Diff_subset
 lemma not_icard_Diff_subset: "\<exists>(A::nat set) B. B \<subseteq> A \<and> \<not> icard (A - B) = icard A - icard B"
 apply (rule_tac x="{0..}" in exI)
 apply (rule_tac x="{1..}" in exI)
 apply (simp add: set_diff_eq linorder_not_le icard_UNIV_nat eSuc_enat)
 done
 
-
-thm 
-  Finite_Set.card_Diff1_less
-  Finite_Set.card_Diff2_less
 lemma not_icard_Diff1_less: "\<exists>(A::nat set)x. x \<in> A \<and> \<not> icard (A - {x}) < icard A"
 by (rule_tac x="{0..}" in exI, simp)
+
 lemma not_icard_Diff2_less: "\<exists>(A::nat set)x y. x \<in> A \<and> y \<in> A \<and> \<not> icard (A - {x} - {y}) < icard A"
 by (rule_tac x="{0..}" in exI, simp)
 
-thm Finite_Set.card_Diff1_le
 lemma icard_Diff1_le: "icard (A - {x}) \<le> icard A"
 by (rule icard_mono, rule Diff_subset)
 
-thm Finite_Set.card_psubset
 lemma icard_psubset: "\<lbrakk> A \<subseteq> B; icard A < icard B \<rbrakk> \<Longrightarrow> A \<subset> B"
 by (metis less_le psubset_eq)
 
-thm SetInterval2.card_partition
 lemma icard_partition: "
-  \<lbrakk> \<And>c. c \<in> C \<Longrightarrow> icard c = k; \<And>c1 c2. \<lbrakk>c1 \<in> C; c2 \<in> C; c1 \<noteq> c2\<rbrakk> \<Longrightarrow> c1 \<inter> c2 = {} \<rbrakk> \<Longrightarrow> 
+  \<lbrakk> \<And>c. c \<in> C \<Longrightarrow> icard c = k; \<And>c1 c2. \<lbrakk>c1 \<in> C; c2 \<in> C; c1 \<noteq> c2\<rbrakk> \<Longrightarrow> c1 \<inter> c2 = {} \<rbrakk> \<Longrightarrow>
   icard (\<Union>C) = k * icard C"
 apply (case_tac "C = {}", simp)
 apply (case_tac "k = 0")
@@ -196,12 +174,9 @@ apply (case_tac k, rename_tac k1)
   apply simp
  apply (case_tac "finite C")
   apply (simp add: icard_finite)
-  thm SetInterval2.card_partition
-  thm icard_eq_enat_imp_card
   apply (subgoal_tac "\<And>c. c \<in> C \<Longrightarrow> card c = k1")
    prefer 2
    apply (rule icard_eq_enat_imp_card, simp)
-  thm SetInterval2.card_partition
   apply (frule_tac C=C and k=k1 in SetInterval2.card_partition, simp+)
   apply (subgoal_tac "finite (\<Union>C)")
    prefer 2
@@ -210,34 +185,28 @@ apply (case_tac k, rename_tac k1)
   apply (simp add: icard_finite)
  apply simp
  apply (rule icard_infinite)
- thm finite_UnionD
  apply (rule ccontr, simp)
  apply (drule finite_UnionD, simp)
 apply (frule icard_not_empty_iff[THEN iffD2])
 apply (simp add: icard_infinite_conv)
 apply (frule not_empty_imp_ex, erule exE, rename_tac c)
-thm Union_upper
 apply (frule Union_upper)
-thm infinite_super
 apply (rule infinite_super, assumption)
 apply simp
 done
- 
-thm Finite_Set.card_image_le
+
 lemma icard_image_le: "icard (f ` A) \<le> icard A"
 apply (case_tac "finite A")
  apply (simp add: icard_finite card_image_le)
 apply simp
 done
- 
-thm Finite_Set.card_image
+
 lemma icard_image: "inj_on f A \<Longrightarrow> icard (f ` A) = icard A"
 apply (case_tac "finite A")
  apply (simp add: icard_finite card_image)
 apply (simp add: icard_infinite_conv inj_on_imp_infinite_image)
 done
 
-thm Finite_Set.eq_card_imp_inj_on
 lemma not_eq_icard_imp_inj_on: "\<exists>(f::nat\<Rightarrow>nat) (A::nat set). icard (f ` A) = icard A \<and> \<not> inj_on f A"
 apply (rule_tac x="\<lambda>n. (if n = 0 then Suc 0 else n)" in exI)
 apply (rule_tac x="{0..}" in exI)
@@ -252,22 +221,17 @@ apply (simp add: inj_on_def)
 apply blast
 done
 
-thm Finite_Set.inj_on_iff_eq_card
 lemma not_inj_on_iff_eq_icard: "\<exists>(f::nat\<Rightarrow>nat) (A::nat set). \<not> (inj_on f A = (icard (f ` A) = icard A))"
 by (insert not_eq_icard_imp_inj_on, blast)
 
-thm Finite_Set.card_inj_on_le
 lemma icard_inj_on_le: "\<lbrakk> inj_on f A; f ` A \<subseteq> B \<rbrakk> \<Longrightarrow> icard A \<le> icard B"
 apply (case_tac "finite B")
  apply (metis icard_image icard_mono)
 apply simp
 done
 
-
-thm Finite_Set.card_bij_eq
-thm Finite_Set.card_bij_eq[no_vars]
 lemma icard_bij_eq: "
-  \<lbrakk> inj_on f A; f ` A \<subseteq> B; inj_on g B; g ` B \<subseteq> A \<rbrakk> \<Longrightarrow> 
+  \<lbrakk> inj_on f A; f ` A \<subseteq> B; inj_on g B; g ` B \<subseteq> A \<rbrakk> \<Longrightarrow>
   icard A = icard B"
 by (simp add: order_eq_iff icard_inj_on_le)
 
@@ -277,39 +241,18 @@ apply clarsimp
 apply (case_tac "finite A \<and> finite B")
  apply (simp add: icard_finite)
 apply (simp only: de_Morgan_conj, erule disjE)
-apply (simp_all add: 
+apply (simp_all add:
   icard_not_empty_iff[symmetric]
   cartesian_product_infiniteL_imp_infinite cartesian_product_infiniteR_imp_infinite)
 done
 
-thm card_cartesian_product_singleton
 lemma icard_cartesian_product_singleton: "icard ({x} \<times> A) = icard A"
 by (simp add: icard_cartesian_product mult_eSuc)
 
-thm card_cartesian_product_singleton_right
 lemma icard_cartesian_product_singleton_right: "icard (A \<times> {x}) = icard A"
 by (simp add: icard_cartesian_product mult_eSuc_right)
 
-
-
-thm Power.card_Pow
-
-thm Finite_Set.dvd_partition
-
-thm Equiv_Relations.equiv_imp_dvd_card
-
-thm Equiv_Relations.card_quotient_disjoint
-
-
-
-thm
-  Set_Interval.card_lessThan
-  Set_Interval.card_atMost
-  Set_Interval.card_atLeastLessThan
-  Set_Interval.card_atLeastAtMost
-  Set_Interval.card_greaterThanAtMost
-  Set_Interval.card_greaterThanLessThan
-lemma 
+lemma
   icard_lessThan: "icard {..<u} = enat u" and
   icard_atMost: "icard {..u} = enat (Suc u)" and
   icard_atLeastLessThan: "icard {l..<u} = enat (u - l)" and
@@ -320,17 +263,11 @@ by (simp_all add: icard_finite)
 
 lemma icard_atLeast: "icard {(u::nat)..} = \<infinity>"
 by (simp add: infinite_atLeast)
+
 lemma icard_greaterThan: "icard {(u::nat)<..} = \<infinity>"
 by (simp add: infinite_greaterThan)
 
-
-
-thm 
-  Set_Interval.card_atLeastZeroLessThan_int
-  Set_Interval.card_atLeastLessThan_int
-  Set_Interval.card_atLeastAtMost_int
-  Set_Interval.card_greaterThanAtMost_int
-lemma 
+lemma
   icard_atLeastZeroLessThan_int: "icard {0..<u} = enat (nat u)" and
   icard_atLeastLessThan_int: "icard {l..<u} = enat (nat (u - l))" and
   icard_atLeastAtMost_int: "icard {l..u} = enat (nat (u - l + 1))" and

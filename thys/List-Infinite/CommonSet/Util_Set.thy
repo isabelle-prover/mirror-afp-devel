@@ -9,32 +9,31 @@ theory Util_Set
 imports Main
 begin
 
-
 subsection {* Some auxiliary results for HOL rules *}
 
 lemma conj_disj_absorb: "(P \<and> Q \<or> Q) = Q" by blast
 lemma disj_eq_distribL: "((a \<or> b) = (a \<or> c)) = (a \<or> (b = c))" by blast
 lemma disj_eq_distribR: "((a \<or> c) = (b \<or> c)) = ((a = b) \<or> c)" by blast
 
+
 subsubsection {* Some auxiliary results for  @{text Let} *}
 
 lemma Let_swap: "f (let x=a in g x) = (let x=a in f (g x))" by simp
 
+
 subsubsection {* Some auxiliary @{text "if"}-rules *}
 
-thm if_P
 lemma if_P': "\<lbrakk> P; x = z \<rbrakk> \<Longrightarrow> (if P then x else y) = z" by simp
-thm if_not_P
 lemma if_not_P': "\<lbrakk> \<not> P; y = z \<rbrakk> \<Longrightarrow> (if P then x else y) = z" by simp
 
 lemma if_P_both: "\<lbrakk> Q x; Q y \<rbrakk> \<Longrightarrow> Q (if P then x else y)" by simp
 lemma if_P_both_in_set: "\<lbrakk> x \<in> s; y \<in> s \<rbrakk> \<Longrightarrow> (if P then x else y) \<in> s" by simp
 
+
 subsubsection {* Some auxiliary rules for function composition *}
 
 lemma comp2_conv: "f1 \<circ> f2 = (\<lambda>x. f1 (f2 x))" by (simp add: comp_def)
 lemma comp3_conv: "f1 \<circ> f2 \<circ> f3 = (\<lambda>x. f1 (f2 (f3 x)))" by (simp add: comp_def)
-
 
 
 subsection {* Some auxiliary lemmata for quantifiers *}
@@ -69,8 +68,6 @@ lemma ex_imp_eqI: "
 by blast
 
 
-
-
 subsubsection {* Auxiliary results for @{text empty} sets *}
 
 lemma empty_imp_not_in: "x \<notin> {}" by blast
@@ -80,24 +77,16 @@ lemma not_empty_imp_ex: "A \<noteq> {} \<Longrightarrow> \<exists>x. x \<in> A" 
 lemma not_ex_in_conv: "(\<not> (\<exists>x. x \<in> A)) = (A = {})" by blast
 
 
-
-
 subsubsection {* Some auxiliary results for subset and membership relation *}
 
 lemma bex_subset_imp_bex: "\<lbrakk> \<exists>x\<in>A. P x; A \<subseteq> B \<rbrakk> \<Longrightarrow> \<exists>x\<in>B. P x" by blast
 lemma bex_imp_ex: "\<exists>x\<in>A. P x \<Longrightarrow> \<exists>x. P x" by blast
 lemma ball_subset_imp_ball: "\<lbrakk> \<forall>x\<in>B. P x; A \<subseteq> B \<rbrakk> \<Longrightarrow> \<forall>x\<in>A. P x" by blast
-thm 
-  ball_subset_imp_ball
-  ball_subset_imp_ball[rule_format]
 lemma all_imp_ball: "\<forall>x. P x \<Longrightarrow> \<forall>x\<in>A. P x" by blast
 
-thm mem_Collect_eq
 lemma mem_Collect_eq_not: "(a \<notin> {x. P x}) = (\<not> P a)" by blast
 lemma Collect_not_in_imp_not: "a \<notin> {x. P x} \<Longrightarrow> \<not> P a" by blast
 lemma Collect_not_imp_not_in: "\<not> P a \<Longrightarrow> a \<notin> {x. P x}" by blast
 lemma Collect_is_subset: "{x \<in> A. P x} \<subseteq> A" by blast
-
-
 
 end

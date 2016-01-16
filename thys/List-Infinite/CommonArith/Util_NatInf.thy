@@ -9,9 +9,7 @@ theory Util_NatInf
 imports "~~/src/HOL/Library/Extended_Nat"
 begin
 
-
-
-subsection {* Arithmetic operations with @{typ enat} *} 
+subsection {* Arithmetic operations with @{typ enat} *}
 
 subsubsection {* Additional definitions *}
 
@@ -20,13 +18,13 @@ begin
 
 definition
   div_enat_def [code del]: "
-  a div b \<equiv> (case a of 
-    (enat x) \<Rightarrow> (case b of (enat y) \<Rightarrow> enat (x div y) | \<infinity> \<Rightarrow> 0) | 
+  a div b \<equiv> (case a of
+    (enat x) \<Rightarrow> (case b of (enat y) \<Rightarrow> enat (x div y) | \<infinity> \<Rightarrow> 0) |
     \<infinity> \<Rightarrow> (case b of (enat y) \<Rightarrow> ((case y of 0 \<Rightarrow> 0 | Suc n \<Rightarrow> \<infinity>)) | \<infinity> \<Rightarrow> \<infinity> ))"
 definition
   mod_enat_def [code del]: "
-  a mod b \<equiv> (case a of 
-    (enat x) \<Rightarrow> (case b of (enat y) \<Rightarrow> enat (x mod y) | \<infinity> \<Rightarrow> a) | 
+  a mod b \<equiv> (case a of
+    (enat x) \<Rightarrow> (case b of (enat y) \<Rightarrow> enat (x mod y) | \<infinity> \<Rightarrow> a) |
     \<infinity> \<Rightarrow> \<infinity>)"
 
 instance ..
@@ -34,7 +32,7 @@ instance ..
 end
 
 
-lemmas enat_arith_defs = 
+lemmas enat_arith_defs =
   zero_enat_def one_enat_def
   plus_enat_def diff_enat_def times_enat_def div_enat_def mod_enat_def
 declare zero_enat_def[simp]
@@ -50,7 +48,7 @@ subsubsection {* Addition, difference, order *}
 lemma diff_eq_conv_nat: "(x - y = (z::nat)) = (if y < x then x = y + z else z = 0)"
 by auto
 lemma idiff_eq_conv: "
-  (x - y = (z::enat)) = 
+  (x - y = (z::enat)) =
   (if y < x then x = y + z else if x \<noteq> \<infinity> then z = 0 else z = \<infinity>)"
 by (case_tac x, case_tac y, case_tac z, auto, case_tac z, auto)
 lemmas idiff_eq_conv_enat = idiff_eq_conv[unfolded zero_enat_def]
@@ -75,7 +73,7 @@ by (simp only: add.commute[of m] ile_add1)
 lemma iadd_iless_mono: "\<lbrakk> (i::enat) < j; k < l \<rbrakk> \<Longrightarrow> i + k < j + l"
 by (case_tac i, case_tac k, case_tac j, case_tac l, simp_all)
 
-lemma trans_ile_iadd1: "i \<le> (j::enat) \<Longrightarrow> i \<le> j + m" 
+lemma trans_ile_iadd1: "i \<le> (j::enat) \<Longrightarrow> i \<le> j + m"
 by (rule order_trans[OF _ ile_add1])
 lemma trans_ile_iadd2: "i \<le> (j::enat) \<Longrightarrow> i \<le> m + j"
 by (rule order_trans[OF _ ile_add2])
@@ -85,24 +83,22 @@ by (rule order_less_le_trans[OF _ ile_add1])
 lemma trans_iless_iadd2: "i < (j::enat) \<Longrightarrow> i < m + j"
 by (rule order_less_le_trans[OF _ ile_add2])
 
-thm add_leD1[no_vars]
 lemma iadd_ileD1: "m + k \<le> (n::enat) \<Longrightarrow> m \<le> n"
 by (case_tac m, case_tac n, case_tac k, simp_all)
+
 lemma iadd_ileD2: "m + k \<le> (n::enat) \<Longrightarrow> k \<le> n"
 by (rule iadd_ileD1, simp only: add.commute[of m])
 
 
-thm diff_le_mono
 lemma idiff_ile_mono: "m \<le> (n::enat) \<Longrightarrow> m - l \<le> n - l"
 by (case_tac m, case_tac n, case_tac l, simp_all)
-thm diff_le_mono2
+
 lemma idiff_ile_mono2: "m \<le> (n::enat) \<Longrightarrow> l - n \<le> l - m"
 by (case_tac m, case_tac n, case_tac l, simp_all, case_tac l, simp_all)
 
-thm diff_less_mono
 lemma idiff_iless_mono: "\<lbrakk> m < (n::enat); l \<le> m \<rbrakk> \<Longrightarrow> m - l < n - l"
 by (case_tac m, case_tac n, case_tac l, simp_all, case_tac l, simp_all)
-thm diff_less_mono2
+
 lemma idiff_iless_mono2: "\<lbrakk> m < (n::enat); m < l \<rbrakk> \<Longrightarrow> l - n \<le> l - m"
 by (case_tac m, case_tac n, case_tac l, simp_all, case_tac l, simp_all)
 
@@ -114,11 +110,13 @@ lemmas imult_infinity_right_enat[simp] = imult_infinity_right[unfolded zero_enat
 
 lemma idiv_enat_enat[simp, code]: "enat a div enat b = enat (a div b)"
 unfolding div_enat_def by simp
+
 lemma idiv_infinity: "0 < n \<Longrightarrow> (\<infinity>::enat) div n = \<infinity>"
 unfolding div_enat_def
 apply (case_tac n, simp_all)
 apply (rename_tac n1, case_tac n1, simp_all)
 done
+
 lemmas idiv_infinity_enat[simp] = idiv_infinity[unfolded zero_enat_def]
 
 lemma idiv_infinity_right[simp]: "n \<noteq> \<infinity> \<Longrightarrow> n div (\<infinity>::enat) = 0"
@@ -153,7 +151,6 @@ lemma idiv_0: "0 div (a::enat) = 0"
 unfolding div_enat_def by (case_tac a, simp_all)
 lemmas idiv_0_enat[simp, code] = idiv_0[unfolded zero_enat_def]
 
-thm mod_by_0
 lemma imod_by_0: "(a::enat) mod 0 = a"
 unfolding mod_enat_def by (case_tac a, simp_all)
 lemmas imod_by_0_enat[simp, code] = imod_by_0[unfolded zero_enat_def]
@@ -168,16 +165,6 @@ lemma imod_infinity[simp, code]: "\<infinity> mod n = (\<infinity>::enat)"
 unfolding mod_enat_def by simp
 lemma imod_infinity_right[simp, code]: "n mod (\<infinity>::enat) = n"
 unfolding mod_enat_def by (case_tac n) simp_all
-
-(*<*)
-thm mult_Suc
-(*lemma imult_Suc: "eSuc m * n = n + m * n"*)
-(*lemmas imult_Suc = mult_eSuc*)
-
-thm mult_Suc_right
-(*lemma imult_Suc_right: "m * eSuc n = m + m * n"*)
-(*lemmas imult_Suc_right mult_eSuc_right*)
-(*>*)
 
 lemma idiv_self: "\<lbrakk> 0 < (n::enat); n \<noteq> \<infinity> \<rbrakk> \<Longrightarrow> n div n = 1"
 by (case_tac n, simp_all add: one_enat_def)
@@ -196,7 +183,6 @@ by (case_tac m, simp_all) (case_tac n, simp_all)
 lemma idiv_ile_dividend: "(m::enat) div n \<le> m"
 by (case_tac m, simp_all) (case_tac n, simp_all)
 
-thm div_mult2_eq
 lemma idiv_imult2_eq: "(a::enat) div (b * c) = a div b div c"
 apply (case_tac a, case_tac b, case_tac c, simp_all add: div_mult2_eq)
 apply (simp add: imult_infinity_if)
@@ -205,8 +191,6 @@ apply (case_tac "c = 0", simp)
 apply (simp add: idiv_infinity[OF enat_0_less_mult_iff[THEN iffD2]])
 done
 
-
-thm mult_le_mono
 lemma imult_ile_mono: "\<lbrakk> (i::enat) \<le> j; k \<le> l \<rbrakk> \<Longrightarrow> i * k \<le> j * l"
 apply (case_tac i, case_tac j, case_tac k, case_tac l, simp_all add: mult_le_mono)
 apply (case_tac k, case_tac l, simp_all)
@@ -215,7 +199,7 @@ done
 
 lemma imult_ile_mono1: "(i::enat) \<le> j \<Longrightarrow> i * k \<le> j * k"
 by (rule imult_ile_mono[OF _ order_refl])
-thm mult_le_mono2
+
 lemma imult_ile_mono2: "(i::enat) \<le> j \<Longrightarrow> k * i \<le> k * j"
 by (rule imult_ile_mono[OF order_refl])
 
@@ -254,6 +238,5 @@ apply (case_tac n)
  apply (simp add: div_le_mono2)
 apply simp
 done
-
 
 end

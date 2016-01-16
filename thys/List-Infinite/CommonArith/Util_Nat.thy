@@ -11,10 +11,9 @@ begin
 
 subsection {* Some convenience arithmetic lemmata *}
 
-thm Nat.add_Suc_right
 lemma add_1_Suc_conv: "m + 1 = Suc m" by simp
 lemma sub_Suc0_sub_Suc_conv: "b - a - Suc 0 = b - Suc a" by simp
-thm Nat.Suc_pred
+
 lemma Suc_diff_Suc: "m < n \<Longrightarrow> Suc (n - Suc m) = n - m"
 apply (rule subst[OF sub_Suc0_sub_Suc_conv])
 apply (rule Suc_pred)
@@ -23,45 +22,34 @@ done
 
 lemma nat_grSuc0_conv: "(Suc 0 < n) = (n \<noteq> 0 \<and> n \<noteq> Suc 0)"
 by fastforce
+
 lemma nat_geSucSuc0_conv: "(Suc (Suc 0) \<le> n) = (n \<noteq> 0 \<and> n \<noteq> Suc 0)"
 by fastforce
 
 lemma nat_lessSucSuc0_conv: "(n < Suc (Suc 0)) = (n = 0 \<or> n = Suc 0)"
 by fastforce
+
 lemma nat_leSuc0_conv: "(n \<le> Suc 0) = (n = 0 \<or> n = Suc 0)"
 by fastforce
 
-
-
-thm Nat.mult_Suc
-lemma mult_pred: "(m - Suc 0) * n = m * n - n" 
+lemma mult_pred: "(m - Suc 0) * n = m * n - n"
 by (simp add: diff_mult_distrib)
-thm Nat.mult_Suc_right
+
 lemma mult_pred_right: "m * (n - Suc 0) = m * n - m"
 by (simp add: diff_mult_distrib2)
 
 lemma gr_implies_gr0: "m < (n::nat) \<Longrightarrow> 0 < n" by simp
 
-
-thm 
-  Nat.mult_cancel1
-  Nat.mult_cancel1
 corollary mult_cancel1_gr0: "
   (0::nat) < k \<Longrightarrow> (k * m = k * n) = (m = n)" by simp
 corollary mult_cancel2_gr0: "
   (0::nat) < k \<Longrightarrow> (m * k = n * k) = (m = n)" by simp
 
-thm
-  Nat.mult_le_cancel1
-  Nat.mult_le_cancel2
 corollary mult_le_cancel1_gr0: "
   (0::nat) < k \<Longrightarrow> (k * m \<le> k * n) = (m \<le> n)" by simp
 corollary mult_le_cancel2_gr0: "
   (0::nat) < k \<Longrightarrow> (m * k \<le> n * k) = (m \<le> n)" by simp
 
-
-
-thm mult_le_mono
 lemma gr0_imp_self_le_mult1: "0 < (k::nat) \<Longrightarrow> m \<le> m * k"
 by (drule Suc_leI, drule mult_le_mono[OF order_refl], simp)
 
@@ -77,7 +65,6 @@ apply (simp only: Suc_pred[OF nat_0_less_mult_iff[THEN iffD2, OF conjI, OF zero_
 apply (rule less_imp_Suc_mult_le, assumption)
 done
 
-thm Nat.zero_less_diff
 lemma ord_zero_less_diff: "(0 < (b::'a::ordered_ab_group_add) - a) = (a < b)"
 by (simp add: less_diff_eq)
 
@@ -88,29 +75,23 @@ text {* @{text diff_diff_right} in rule format *}
 lemmas diff_diff_right = Nat.diff_diff_right[rule_format]
 
 
-
-
-thm Nat.le_add1 Nat.le_add2
 lemma less_add1: "(0::nat) < j \<Longrightarrow> i < i + j" by simp
 lemma less_add2: "(0::nat) < j \<Longrightarrow> i < j + i" by simp
 
-thm Nat.add_leD1 Nat.add_leD2
-thm Nat.add_lessD1
 lemma add_lessD2: "i + j < (k::nat) \<Longrightarrow> j < k" by simp
 
-thm Nat.add_le_mono1
 lemma add_le_mono2: "i \<le> (j::nat) \<Longrightarrow> k + i \<le> k + j" by simp
-thm Nat.add_less_mono1
+
 lemma add_less_mono2: "i < (j::nat) \<Longrightarrow> k + i < k + j" by simp
 
-thm Nat.diff_le_self
+
 lemma diff_less_self: "\<lbrakk> (0::nat) < i;  0 < j \<rbrakk> \<Longrightarrow> i - j < i" by simp
 
-lemma 
+lemma
   ge_less_neq_conv: "((a::'a::linorder) \<le> n) = (\<forall>x. x < a \<longrightarrow> n \<noteq> x)" and
   le_greater_neq_conv: "(n \<le> (a::'a::linorder)) = (\<forall>x. a < x \<longrightarrow> n \<noteq> x)"
 by (subst linorder_not_less[symmetric], blast)+
-lemma 
+lemma
   greater_le_neq_conv: "((a::'a::linorder) < n) = (\<forall>x. x \<le> a \<longrightarrow> n \<noteq> x)" and
   less_ge_neq_conv: "(n < (a::'a::linorder)) = (\<forall>x. a \<le> x \<longrightarrow> n \<noteq> x)"
 by (subst linorder_not_le[symmetric], blast)+
@@ -125,7 +106,6 @@ lemma leq_neg_imp_abs_geq: "\<lbrakk> (a::'a::ordered_ab_group_add_abs) \<le> 0;
 by simp
 lemma abs_range: "\<lbrakk> 0 \<le> (a::'a::{ordered_ab_group_add_abs,abs_if}); -a \<le> x; x \<le> a \<rbrakk> \<Longrightarrow> \<bar>x\<bar> \<le> a"
 apply (clarsimp simp: abs_if)
-thm neg_le_iff_le[THEN iffD1]
 apply (rule neg_le_iff_le[THEN iffD1], simp)
 done
 
@@ -143,58 +123,34 @@ lemma sgn_mono: "a \<le> b \<Longrightarrow> sgn (a::'a::{linordered_idom,linord
 by (auto simp add: sgn_if)
 
 
-
-
-
-
-
 subsection {* Additional facts about inequalities *}
 
-thm Nat.le_add_diff
 lemma add_diff_le: "k \<le> n \<Longrightarrow> m + k - n \<le> (m::nat)"
 by (case_tac "m + k < n", simp_all)
-thm 
-  Nat.le_add_diff
-  add_diff_le
 
 lemma less_add_diff: "k < (n::nat) \<Longrightarrow> m < n + m - k"
-thm add_less_imp_less_right[of _ k]
+
 by (rule add_less_imp_less_right[of _ k], simp)
-thm add_diff_le
+
 lemma add_diff_less: "\<lbrakk> k < n; 0 < m \<rbrakk> \<Longrightarrow> m + k - n < (m::nat)"
 by (case_tac "m + k < n", simp_all)
-thm 
-  Nat.le_add_diff
-  add_diff_le
-  less_add_diff
-  add_diff_less
 
 
-
-thm Nat.less_diff_conv
 lemma add_le_imp_le_diff1: "i + k \<le> j \<Longrightarrow> i \<le> j - (k::nat)"
 by (case_tac "k \<le> j", simp_all)
+
 lemma add_le_imp_le_diff2: "k + i \<le> j \<Longrightarrow> i \<le> j - (k::nat)" by simp
-thm 
-  Nat.less_diff_conv[symmetric]
-  Nat.le_diff_conv2[symmetric]
-  add_le_imp_le_diff1
-  add_le_imp_le_diff2
 
-
-thm 
-  Nat.le_diff_conv Nat.le_diff_conv2 
-  Nat.less_diff_conv
 lemma diff_less_imp_less_add: "j - (k::nat) < i \<Longrightarrow> j < i + k" by simp
-thm Nat.le_diff_conv
-lemma diff_less_conv: "0 < i \<Longrightarrow> (j - (k::nat) < i) = (j < i + k)" 
+
+lemma diff_less_conv: "0 < i \<Longrightarrow> (j - (k::nat) < i) = (j < i + k)"
 by (safe, simp_all)
 
 lemma le_diff_swap: "\<lbrakk> i \<le> (k::nat); j \<le> k \<rbrakk> \<Longrightarrow> (k - j \<le> i) = (k - i \<le> j)"
 by (safe, simp_all)
 
 lemma diff_less_imp_swap: "\<lbrakk> 0 < (i::nat); k - i < j \<rbrakk> \<Longrightarrow> (k - j < i)" by simp
-lemma diff_less_swap: "\<lbrakk> 0 < (i::nat); 0 < j \<rbrakk> \<Longrightarrow> (k - j < i) = (k - i < j)" 
+lemma diff_less_swap: "\<lbrakk> 0 < (i::nat); 0 < j \<rbrakk> \<Longrightarrow> (k - j < i) = (k - i < j)"
 by (blast intro: diff_less_imp_swap)
 
 lemma less_diff_imp_less: "(i::nat) < j - m \<Longrightarrow> i < j" by simp
@@ -203,32 +159,24 @@ lemma le_diff_imp_le: "(i::nat) \<le> j - m \<Longrightarrow> i \<le> j" by simp
 lemma less_diff_le_imp_less: "\<lbrakk> (i::nat) < j - m; n \<le> m \<rbrakk> \<Longrightarrow> i < j - n" by simp
 lemma le_diff_le_imp_le: "\<lbrakk> (i::nat) \<le> j - m; n \<le> m \<rbrakk> \<Longrightarrow> i \<le> j - n" by simp
 
-thm Nat.less_imp_diff_less
 lemma le_imp_diff_le: "(j::nat) \<le> k \<Longrightarrow> j - n \<le> k" by simp
-
 
 
 subsection {* Inequalities for Suc and pred *}
 
-thm Nat.less_Suc_eq_le
 corollary less_eq_le_pred: "0 < (n::nat) \<Longrightarrow> (m < n) = (m \<le> n - Suc 0)"
 by (safe, simp_all)
+
 corollary less_imp_le_pred: "m < n \<Longrightarrow> m \<le> n - Suc 0" by simp
 corollary le_pred_imp_less: "\<lbrakk> 0 < n; m \<le> n - Suc 0 \<rbrakk> \<Longrightarrow> m < n" by simp
 
-thm Nat.Suc_le_eq
-corollary pred_less_eq_le: "0 < m \<Longrightarrow> (m - Suc 0 < n) = (m \<le> n)" 
+corollary pred_less_eq_le: "0 < m \<Longrightarrow> (m - Suc 0 < n) = (m \<le> n)"
 by (safe, simp_all)
 corollary pred_less_imp_le: "m - Suc 0 < n \<Longrightarrow> m \<le> n" by simp
 corollary le_imp_pred_less: "\<lbrakk> 0 < m; m \<le> n \<rbrakk> \<Longrightarrow> m - Suc 0 < n" by simp
 
-
-
-
-thm Nat.diff_add_inverse
 lemma diff_add_inverse_Suc: "n < m \<Longrightarrow> n + (m - Suc n) = m - Suc 0" by simp
 
-thm Nat.Suc_mono
 lemma pred_mono: "\<lbrakk> m < n; 0 < m \<rbrakk> \<Longrightarrow> m - Suc 0 < n - Suc 0" by simp
 corollary pred_Suc_mono: "\<lbrakk> m < Suc n; 0 < m \<rbrakk> \<Longrightarrow> m - Suc 0 < n" by simp
 
@@ -237,20 +185,10 @@ lemma Suc_le_pred_conv: "0 < n \<Longrightarrow> (Suc m \<le> n) = (m \<le> n - 
 lemma Suc_le_imp_le_pred: "Suc m \<le> n \<Longrightarrow> m \<le> n - Suc 0" by simp
 
 
-
 subsection {* Additional facts about cancellation in (in-)equalities *}
 
 lemma diff_cancel_imp_eq: "\<lbrakk> 0 < (n::nat);  n + i - j = n \<rbrakk> \<Longrightarrow> i = j" by simp
 
-thm
-  Nat.nat_add_left_cancel_less
-  Nat.nat_add_left_cancel_le
-  Nat.nat_add_right_cancel
-  Nat.nat_add_left_cancel
-  Nat.diff_diff_eq
-  Nat.eq_diff_iff
-  Nat.less_diff_iff
-  Nat.le_diff_iff
 lemma nat_diff_left_cancel_less: "k - m < k - (n::nat) \<Longrightarrow> n < m" by simp
 lemma nat_diff_right_cancel_less: "n - k < (m::nat) - k \<Longrightarrow> n < m" by simp
 
@@ -266,17 +204,15 @@ lemma nat_diff_left_cancel_eq2: "\<lbrakk> k - m = k - (n::nat); n < k \<rbrakk>
 lemma nat_diff_right_cancel_eq1: "\<lbrakk> m - k = n - (k::nat); k < m \<rbrakk> \<Longrightarrow> m = n" by simp
 lemma nat_diff_right_cancel_eq2: "\<lbrakk> m - k = n - (k::nat); k < n \<rbrakk> \<Longrightarrow> m = n" by simp
 
-thm eq_diff_iff
-lemma eq_diff_left_iff: "\<lbrakk> (m::nat) \<le> k; n \<le> k\<rbrakk> \<Longrightarrow> (k - m = k - n) = (m = n)" 
+lemma eq_diff_left_iff: "\<lbrakk> (m::nat) \<le> k; n \<le> k\<rbrakk> \<Longrightarrow> (k - m = k - n) = (m = n)"
 by (safe, simp_all)
 
-thm Nat.nat_add_right_cancel Nat.nat_add_left_cancel
-thm Nat.diff_le_mono
 lemma eq_imp_diff_eq: "m = (n::nat) \<Longrightarrow> m - k = n - k" by simp
+
 
 text {* List of definitions and lemmas *}
 
-thm 
+thm
   Nat.add_Suc_right
   add_1_Suc_conv
   sub_Suc0_sub_Suc_conv
@@ -287,7 +223,7 @@ thm
   mult_cancel1_gr0
   mult_cancel2_gr0
 
-thm 
+thm
   Nat.add_lessD1
   add_lessD2
 
@@ -302,10 +238,10 @@ thm
   less_add_diff
   add_diff_less
 
-thm 
-  Nat.le_diff_conv Nat.le_diff_conv2 
+thm
+  Nat.le_diff_conv Nat.le_diff_conv2
   Nat.less_diff_conv
-  diff_less_imp_less_add 
+  diff_less_imp_less_add
   diff_less_conv
 
 thm
@@ -363,11 +299,11 @@ thm
   nat_diff_right_cancel_eq1
   nat_diff_right_cancel_eq2
 
-thm 
+thm
   Nat.eq_diff_iff
   eq_diff_left_iff
 
-thm 
+thm
   Nat.nat_add_right_cancel Nat.nat_add_left_cancel
   Nat.diff_le_mono
   eq_imp_diff_eq
