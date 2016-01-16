@@ -48,21 +48,17 @@ datatype
          | Crypt  key msg   --{*Encryption, public- or shared-key*}
 
 
-text{*Concrete syntax: messages appear as {|A,B,NA|}, etc...*}
+text{*Concrete syntax: messages appear as \<lbrace>A,B,NA\<rbrace>, etc...*}
 syntax
-  "_MTuple"      :: "['a, args] => 'a * 'b"       ("(2{|_,/ _|})")
-
-syntax (xsymbols)
-  "_MTuple"      :: "['a, args] => 'a * 'b"       ("(2\<lbrace>_,/ _\<rbrace>)")
-
+  "_MTuple" :: "['a, args] => 'a * 'b"  ("(2\<lbrace>_,/ _\<rbrace>)")
 translations
-  "{|x, y, z|}"   == "{|x, {|y, z|}|}"
-  "{|x, y|}"      == "CONST MPair x y"
+  "\<lbrace>x, y, z\<rbrace>"   == "\<lbrace>x, \<lbrace>y, z\<rbrace>\<rbrace>"
+  "\<lbrace>x, y\<rbrace>"      == "CONST MPair x y"
 
 
 definition HPair :: "[msg,msg] => msg" ("(4Hash[_] /_)" [0, 1000]) where
     --{*Message Y paired with a MAC computed with the help of X*}
-    "Hash[X] Y == {| Hash{|X,Y|}, Y|}"
+    "Hash[X] Y == \<lbrace> Hash\<lbrace>X,Y\<rbrace>, Y\<rbrace>"
 
 definition keysFor :: "msg set => key set" where
     --{*Keys useful to decrypt elements of a message set*}
@@ -76,8 +72,8 @@ inductive_set
   for H :: "msg set"
   where
     Inj [intro]:               "X \<in> H ==> X \<in> parts H"
-  | Fst:         "{|X,Y|}   \<in> parts H ==> X \<in> parts H"
-  | Snd:         "{|X,Y|}   \<in> parts H ==> Y \<in> parts H"
+  | Fst:         "\<lbrace>X,Y\<rbrace>   \<in> parts H ==> X \<in> parts H"
+  | Snd:         "\<lbrace>X,Y\<rbrace>   \<in> parts H ==> Y \<in> parts H"
   | Body:        "Crypt K X \<in> parts H ==> X \<in> parts H"
 
 
@@ -136,7 +132,7 @@ by (unfold keysFor_def, auto)
 lemma keysFor_insert_Hash [simp]: "keysFor (insert (Hash X) H) = keysFor H"
 by (unfold keysFor_def, auto)
 
-lemma keysFor_insert_MPair [simp]: "keysFor (insert {|X,Y|} H) = keysFor H"
+lemma keysFor_insert_MPair [simp]: "keysFor (insert \<lbrace>X,Y\<rbrace> H) = keysFor H"
 by (unfold keysFor_def, auto)
 
 lemma keysFor_insert_Crypt [simp]: 
@@ -153,7 +149,7 @@ by (unfold keysFor_def, blast)
 subsection{*Inductive relation "parts"*}
 
 lemma MPair_parts:
-     "[| {|X,Y|} \<in> parts H;        
+     "[| \<lbrace>X,Y\<rbrace> \<in> parts H;        
          [| X \<in> parts H; Y \<in> parts H |] ==> P |] ==> P"
 by (blast dest: parts.Fst parts.Snd) 
 
@@ -294,8 +290,8 @@ apply (blast intro: parts.Body)
 done
 
 lemma parts_insert_MPair [simp]:
-     "parts (insert {|X,Y|} H) =  
-          insert {|X,Y|} (parts (insert X (insert Y H)))"
+     "parts (insert \<lbrace>X,Y\<rbrace> H) =  
+          insert \<lbrace>X,Y\<rbrace> (parts (insert X (insert Y H)))"
 apply (rule equalityI)
 apply (rule subsetI)
 apply (erule parts.induct, auto)
@@ -330,8 +326,8 @@ inductive_set
   for H :: "msg set"
   where
     Inj [intro,simp] :    "X \<in> H ==> X \<in> analz H"
-  | Fst:     "{|X,Y|} \<in> analz H ==> X \<in> analz H"
-  | Snd:     "{|X,Y|} \<in> analz H ==> Y \<in> analz H"
+  | Fst:     "\<lbrace>X,Y\<rbrace> \<in> analz H ==> X \<in> analz H"
+  | Snd:     "\<lbrace>X,Y\<rbrace> \<in> analz H ==> Y \<in> analz H"
   | Decrypt [dest]: 
              "[|Crypt K X \<in> analz H; Key(invKey K): analz H|] ==> X \<in> analz H"
 
@@ -345,7 +341,7 @@ done
 
 text{*Making it safe speeds up proofs*}
 lemma MPair_analz [elim!]:
-     "[| {|X,Y|} \<in> analz H;        
+     "[| \<lbrace>X,Y\<rbrace> \<in> analz H;        
              [| X \<in> analz H; Y \<in> analz H |] ==> P   
           |] ==> P"
 by (blast dest: analz.Fst analz.Snd)
@@ -426,8 +422,8 @@ apply (erule analz.induct, auto)
 done
 
 lemma analz_insert_MPair [simp]:
-     "analz (insert {|X,Y|} H) =  
-          insert {|X,Y|} (analz (insert X (insert Y H)))"
+     "analz (insert \<lbrace>X,Y\<rbrace> H) =  
+          insert \<lbrace>X,Y\<rbrace> (analz (insert X (insert Y H)))"
 apply (rule equalityI)
 apply (rule subsetI)
 apply (erule analz.induct, auto)
@@ -539,7 +535,7 @@ by (force simp only: insert_def intro!: analz_cong)
 
 text{*If there are no pairs or encryptions then analz does nothing*}
 lemma analz_trivial:
-     "[| \<forall>X Y. {|X,Y|} \<notin> H;  \<forall>X K. Crypt K X \<notin> H |] ==> analz H = H"
+     "[| \<forall>X Y. \<lbrace>X,Y\<rbrace> \<notin> H;  \<forall>X K. Crypt K X \<notin> H |] ==> analz H = H"
 apply safe
 apply (erule analz.induct, blast+)
 done
@@ -570,7 +566,7 @@ inductive_set
   | Agent  [intro]:   "Agent agt \<in> synth H"
   | Number [intro]:   "Number n  \<in> synth H"
   | Hash   [intro]:   "X \<in> synth H ==> Hash X \<in> synth H"
-  | MPair  [intro]:   "[|X \<in> synth H;  Y \<in> synth H|] ==> {|X,Y|} \<in> synth H"
+  | MPair  [intro]:   "[|X \<in> synth H;  Y \<in> synth H|] ==> \<lbrace>X,Y\<rbrace> \<in> synth H"
   | Crypt  [intro]:   "[|X \<in> synth H;  Key(K) \<in> H|] ==> Crypt K X \<in> synth H"
 
 text{*Monotonicity*}
@@ -584,7 +580,7 @@ inductive_simps synth_simps [iff]:
  "Nonce n \<in> synth H"
  "Key K \<in> synth H"
  "Hash X \<in> synth H"
- "{|X,Y|} \<in> synth H"
+ "\<lbrace>X,Y\<rbrace> \<in> synth H"
  "Crypt K X \<in> synth H"
 
 lemma synth_increasing: "H \<subseteq> synth(H)"
@@ -705,7 +701,7 @@ by (blast intro: analz_subset_parts [THEN subsetD])
 text{*Without this equation, other rules for synth and analz would yield
   redundant cases*}
 lemma MPair_synth_analz [iff]:
-     "({|X,Y|} \<in> synth (analz H)) =  
+     "(\<lbrace>X,Y\<rbrace> \<in> synth (analz H)) =  
       (X \<in> synth (analz H) & Y \<in> synth (analz H))"
 by blast
 
@@ -717,7 +713,7 @@ by blast
 
 lemma Hash_synth_analz [simp]:
      "X \<notin> synth (analz H)  
-      ==> (Hash{|X,Y|} \<in> synth (analz H)) = (Hash{|X,Y|} \<in> analz H)"
+      ==> (Hash\<lbrace>X,Y\<rbrace> \<in> synth (analz H)) = (Hash\<lbrace>X,Y\<rbrace> \<in> analz H)"
 by blast
 
 
@@ -753,11 +749,11 @@ lemma HPair_eq [iff]: "(Hash[X'] Y' = Hash[X] Y) = (X' = X & Y'=Y)"
 by (simp add: HPair_def)
 
 lemma MPair_eq_HPair [iff]:
-     "({|X',Y'|} = Hash[X] Y) = (X' = Hash{|X,Y|} & Y'=Y)"
+     "(\<lbrace>X',Y'\<rbrace> = Hash[X] Y) = (X' = Hash\<lbrace>X,Y\<rbrace> & Y'=Y)"
 by (simp add: HPair_def)
 
 lemma HPair_eq_MPair [iff]:
-     "(Hash[X] Y = {|X',Y'|}) = (X' = Hash{|X,Y|} & Y'=Y)"
+     "(Hash[X] Y = \<lbrace>X',Y'\<rbrace>) = (X' = Hash\<lbrace>X,Y\<rbrace> & Y'=Y)"
 by (auto simp add: HPair_def)
 
 
@@ -768,18 +764,18 @@ by (simp add: HPair_def)
 
 lemma parts_insert_HPair [simp]: 
     "parts (insert (Hash[X] Y) H) =  
-     insert (Hash[X] Y) (insert (Hash{|X,Y|}) (parts (insert Y H)))"
+     insert (Hash[X] Y) (insert (Hash\<lbrace>X,Y\<rbrace>) (parts (insert Y H)))"
 by (simp add: HPair_def)
 
 lemma analz_insert_HPair [simp]: 
     "analz (insert (Hash[X] Y) H) =  
-     insert (Hash[X] Y) (insert (Hash{|X,Y|}) (analz (insert Y H)))"
+     insert (Hash[X] Y) (insert (Hash\<lbrace>X,Y\<rbrace>) (analz (insert Y H)))"
 by (simp add: HPair_def)
 
 lemma HPair_synth_analz [simp]:
      "X \<notin> synth (analz H)  
     ==> (Hash[X] Y \<in> synth (analz H)) =  
-        (Hash {|X, Y|} \<in> analz H & Y \<in> synth (analz H))"
+        (Hash \<lbrace>X, Y\<rbrace> \<in> analz H & Y \<in> synth (analz H))"
 by (auto simp add: HPair_def)
 
 
@@ -825,14 +821,14 @@ inductive_set
   | Number: "Number N \<in> keyfree"
   | Nonce:  "Nonce N \<in> keyfree"
   | Hash:   "Hash X \<in> keyfree"
-  | MPair:  "[|X \<in> keyfree;  Y \<in> keyfree|] ==> {|X,Y|} \<in> keyfree"
+  | MPair:  "[|X \<in> keyfree;  Y \<in> keyfree|] ==> \<lbrace>X,Y\<rbrace> \<in> keyfree"
   | Crypt:  "[|X \<in> keyfree|] ==> Crypt K X \<in> keyfree"
 
 
 declare keyfree.intros [intro] 
 
 inductive_cases keyfree_KeyE: "Key K \<in> keyfree"
-inductive_cases keyfree_MPairE: "{|X,Y|} \<in> keyfree"
+inductive_cases keyfree_MPairE: "\<lbrace>X,Y\<rbrace> \<in> keyfree"
 inductive_cases keyfree_CryptE: "Crypt K X \<in> keyfree"
 
 lemma parts_keyfree: "parts (keyfree) \<subseteq> keyfree"
