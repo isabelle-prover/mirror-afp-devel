@@ -8,9 +8,9 @@ theory SetCat
 imports Functors Universe
 begin
 
-notation (xsymbols) Elem (infixl "|\<in>|" 70)
-notation (xsymbols) HOLZF.subset (infixl "|\<subseteq>|" 71)
-notation (xsymbols) CartProd (infixl "|\<times>|" 75)
+notation Elem (infixl "|\<in>|" 70)
+notation HOLZF.subset (infixl "|\<subseteq>|" 71)
+notation CartProd (infixl "|\<times>|" 75)
 
 definition 
   ZFfun :: "ZF \<Rightarrow> ZF \<Rightarrow> (ZF \<Rightarrow> ZF) \<Rightarrow> ZF" where

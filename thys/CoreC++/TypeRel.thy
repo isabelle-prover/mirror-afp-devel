@@ -19,7 +19,7 @@ where
 | widen_subcls:    "P \<turnstile> Path C to D unique \<Longrightarrow> P \<turnstile> Class C \<le> Class D"
 | widen_null[iff]: "P \<turnstile> NT \<le> Class C"
 
-abbreviation (xsymbols)
+abbreviation
   widens :: "prog \<Rightarrow> ty list \<Rightarrow> ty list \<Rightarrow> bool"
     ("_ \<turnstile> _ [\<le>] _" [71,71,71] 70) where
   "widens P Ts Ts' \<equiv> list_all2 (widen P) Ts Ts'"

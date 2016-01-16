@@ -435,7 +435,7 @@ lemma fun_comp_eq_conv: "f o g = fg \<longleftrightarrow> (\<forall>x. f (g x) =
 abbreviation comp2 (infixl "oo" 55) where "f oo g \<equiv> \<lambda>x. f o (g x)"
 abbreviation comp3 (infixl "ooo" 55) where "f ooo g \<equiv> \<lambda>x. f oo (g x)"
 
-notation (xsymbols)
+notation
   comp2  (infixl "\<circ>\<circ>" 55) and
   comp3  (infixl "\<circ>\<circ>\<circ>" 55)
 

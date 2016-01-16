@@ -46,19 +46,15 @@ where
 
 declare alllsts.cases [case_names LNil LCons, cases set: alllsts]
 
-definition inflsts :: "'a set \<Rightarrow> 'a llist set"
-where "inflsts A \<equiv>  A\<^sup>\<infinity> - UNIV\<^sup>\<star>"
+definition inflsts :: "'a set \<Rightarrow> 'a llist set"  ("(_\<^sup>\<omega>)" [1000] 999)
+where "A\<^sup>\<omega> \<equiv>  A\<^sup>\<infinity> - UNIV\<^sup>\<star>"
 
-definition fpslsts :: "'a set \<Rightarrow> 'a llist set"
-where "fpslsts A \<equiv> A\<^sup>\<star> - {LNil}"
+definition fpslsts :: "'a set \<Rightarrow> 'a llist set"  ("(_\<^sup>\<clubsuit>)" [1000] 999)
+where "A\<^sup>\<clubsuit> \<equiv> A\<^sup>\<star> - {LNil}"
 
-definition poslsts :: "'a set \<Rightarrow> 'a llist set"
-where "poslsts A \<equiv> A\<^sup>\<infinity> - {LNil}"
+definition poslsts :: "'a set \<Rightarrow> 'a llist set"  ("(_\<^sup>\<spadesuit>)" [1000] 999)
+where "A\<^sup>\<spadesuit> \<equiv> A\<^sup>\<infinity> - {LNil}"
 
-notation (xsymbols)
-  inflsts ("(_\<^sup>\<omega>)" [1000] 999) and
-  fpslsts ("(_\<^sup>\<clubsuit>)" [1000] 999) and
-  poslsts ("(_\<^sup>\<spadesuit>)" [1000] 999)
 
 subsubsection{*Facts about all llists*}
 
@@ -418,19 +414,15 @@ where
   "l!!0 = (case l of LNil \<Rightarrow> None | x ## xs \<Rightarrow> Some x)"
 | "l!!(Suc i) = (case l of LNil \<Rightarrow> None | x ## xs \<Rightarrow> xs!!i)"
 
-primrec ltake :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a llist"
+primrec ltake :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a llist"  (infixl "\<down>" 110)
 where
-  "ltake l 0     = LNil"
-| "ltake l (Suc i) = (case l of LNil \<Rightarrow> LNil | x ## xs \<Rightarrow> x ## ltake xs i)"
+  "l \<down> 0     = LNil"
+| "l \<down> Suc i = (case l of LNil \<Rightarrow> LNil | x ## xs \<Rightarrow> x ## ltake xs i)"
 
-primrec ldrop :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a llist"
+primrec ldrop :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a llist"  (infixl "\<up>" 110)
 where
-  "ldrop l 0     = l"
-| "ldrop l (Suc i) = (case l of LNil \<Rightarrow> LNil | x ## xs \<Rightarrow> ldrop xs i)"
-
-notation (xsymbols)
-  ltake (infixl "\<down>" 110) and
-  ldrop (infixl "\<up>" 110)
+  "l \<up> 0     = l"
+| "l \<up> Suc i = (case l of LNil \<Rightarrow> LNil | x ## xs \<Rightarrow> ldrop xs i)"
 
 definition lset :: "'a llist \<Rightarrow> 'a set"
 where "lset l \<equiv> ran (ll2f l)"

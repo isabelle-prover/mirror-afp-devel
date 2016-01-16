@@ -267,7 +267,7 @@ where
     if n mod (Suc k) = 0 then f (n div (Suc k)) else \<NoMsg>)"
 
 
-notation (xsymbols)
+notation
   f_expand  (infixl "\<odot>" 100) and
   i_expand  (infixl "\<odot>" 100)
 
@@ -824,7 +824,7 @@ where
   "i_shrink f k \<equiv> i_aggregate f k last_message"
 
 
-notation (xsymbols)
+notation
   f_shrink  (infixl "\<div>" 100) and
   i_shrink  (infixl "\<div>" 100)
 
@@ -1332,7 +1332,7 @@ definition
 where
   "i_last_message_hold f k \<equiv> \<lambda>n. last_message (f \<Up> (n - n mod k) \<Down> Suc (n mod k))"
 
-notation (xsymbols)
+notation
   f_last_message_hold  (infixl "\<longmapsto>" 100) and
   i_last_message_hold  (infixl "\<longmapsto>" 100)
 
@@ -1500,7 +1500,7 @@ definition
 where
   "i_shrink_last f k \<equiv> i_aggregate f k last"
 
-notation (xsymbols)
+notation
   f_shrink_last  (infixl "\<div>\<^sub>l" 100) and
   i_shrink_last  (infixl "\<div>\<^sub>l" 100)
 

@@ -117,9 +117,10 @@ lemma [simp]: "[f x. x <- xs, P x] = [f x. x <- [x \<leftarrow> xs. P x]]"
 
 subsubsection {* @{const concat} *}
 
-syntax (xsymbols)
+syntax
   "_concat" :: "idt => 'a list => 'a list \<Rightarrow> 'a list"  ("\<Squnion>\<^bsub>_\<in> _\<^esub> _" 10)
-translations "\<Squnion>\<^bsub>x\<in>xs\<^esub> f" == "CONST concat [f. x <- xs]" 
+translations
+  "\<Squnion>\<^bsub>x\<in>xs\<^esub> f" == "CONST concat [f. x <- xs]" 
 
 
 subsubsection {* List product *}
