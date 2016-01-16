@@ -33,7 +33,7 @@ definition f_join :: "'a list \<Rightarrow> iT \<Rightarrow> 'a list"      (infi
 definition i_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a ilist"    (infixl "\<Join>\<^sub>i" 100)
   where "f \<Join>\<^sub>i I \<equiv> \<lambda>n. (f (I \<rightarrow> n))"
 
-notation (xsymbols)
+notation
   f_join  (infixl "\<Join>\<^sub>" 100) and
   i_join  (infixl "\<Join>\<^sub>" 100)
 
@@ -48,7 +48,7 @@ text {*
   and returns a finite stream. *}
 definition i_f_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a list"    (infixl "\<Join>\<^bsub>i-f\<^esub>" 100)
   where "f \<Join>\<^bsub>i-f\<^esub> I \<equiv> f \<Down> Suc (Max I) \<Join>\<^sub>f I"
-notation (xsymbols)
+notation
   i_f_join  (infixl "\<Join>\<^sub>" 100)
 
 text {* 
