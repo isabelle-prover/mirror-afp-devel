@@ -338,8 +338,8 @@ corollary (in itrace_top) unique_convergence:
   "\<lbrakk> x \<in> carrier;
      y \<in> carrier;
      F \<in> Filters ;
-     F -\<longrightarrow> x;
-     F -\<longrightarrow> y \<rbrakk> \<Longrightarrow> x = y"
+     F \<longlongrightarrow> x;
+     F \<longlongrightarrow> y \<rbrakk> \<Longrightarrow> x = y"
   apply (rule T2.unique_convergence)
   prefer 2
   apply (rule filter.intro)

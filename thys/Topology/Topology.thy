@@ -1527,14 +1527,14 @@ proof-
     by (rule R)
 qed
 
+
 subsection {* Convergence *}
 
-
 definition
-  converges :: "'a top \<Rightarrow> 'a set set \<Rightarrow> 'a \<Rightarrow> bool" ("(_ -\<longrightarrow>\<index> _)" [55, 55] 55) where
+  converges :: "'a top \<Rightarrow> 'a set set \<Rightarrow> 'a \<Rightarrow> bool" ("(_ \<longlongrightarrow>\<index> _)" [55, 55] 55) where
   "converges T F x \<longleftrightarrow> nhd T x \<subseteq> F"
 
-notation (xsymbols)
+notation
   converges  ("(_ \<turnstile> _ \<longrightarrow> _)" [55, 55, 55] 55)
 
 definition
@@ -1551,27 +1551,27 @@ definition
 
 
 lemma (in carrier) convergesI [intro]:
-  "nhds x \<subseteq> F \<Longrightarrow> F -\<longrightarrow> x"
+  "nhds x \<subseteq> F \<Longrightarrow> F \<longlongrightarrow> x"
   by (auto simp: converges_def)
 
 lemma (in carrier) convergesE [elim]:
-  "\<lbrakk> F -\<longrightarrow> x; nhds x \<subseteq> F \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
+  "\<lbrakk> F \<longlongrightarrow> x; nhds x \<subseteq> F \<Longrightarrow> R \<rbrakk> \<Longrightarrow> R"
   by (auto simp: converges_def)
 
 lemma (in carrier) convergentI [intro?]:
-  "\<lbrakk> F -\<longrightarrow> x; x \<in> carrier \<rbrakk> \<Longrightarrow> F convergent"
+  "\<lbrakk> F \<longlongrightarrow> x; x \<in> carrier \<rbrakk> \<Longrightarrow> F convergent"
   by (auto simp: cnvgnt_def)
 
 lemma (in carrier) convergentE [elim]:
    "\<lbrakk> F convergent;
-     \<And> x. \<lbrakk> F -\<longrightarrow> x; x \<in> carrier \<rbrakk> \<Longrightarrow> R
+     \<And> x. \<lbrakk> F \<longlongrightarrow> x; x \<in> carrier \<rbrakk> \<Longrightarrow> R
     \<rbrakk> \<Longrightarrow> R"
   by (auto simp: cnvgnt_def)
 
 lemma (in continuous) fimage_converges:
   assumes   xpoint: "x \<in> carrier"
-  and       conv:   "F -\<longrightarrow>\<^bsub>S\<^esub> x"
-  shows    "fimage F -\<longrightarrow>\<^bsub>T\<^esub> (f x)"
+  and       conv:   "F \<longlongrightarrow>\<^bsub>S\<^esub> x"
+  shows    "fimage F \<longlongrightarrow>\<^bsub>T\<^esub> (f x)"
 proof (rule, rule)
   fix v assume vnhd: "v \<in> nhds\<^bsub>T\<^esub> (f x)"
   then obtain m where v_subset_carrier: "v \<subseteq> carrier\<^bsub>T\<^esub>"
@@ -1594,7 +1594,7 @@ lemma (in topology) closure_convergent_filter:
 assumes xclosure: "x \<in> closure A"
   and xpoint: "x \<in> carrier"
   and asub: "A \<subseteq> carrier"
-  and H: "\<And>F. \<lbrakk> F \<in> Filters; F -\<longrightarrow> x; A \<in> F\<rbrakk> \<Longrightarrow> R"
+  and H: "\<And>F. \<lbrakk> F \<in> Filters; F \<longlongrightarrow> x; A \<in> F\<rbrakk> \<Longrightarrow> R"
   shows "R"
 proof-
   let ?F = "{v. v \<subseteq> carrier \<and> (\<exists> u \<in> nhds x. u \<inter> A \<subseteq> v)}"
@@ -1622,7 +1622,7 @@ proof-
     moreover from uA ab have "(u \<union> b) \<inter> A \<subseteq> b" by auto
     ultimately show "b \<in> ?F" by auto
   qed
-  moreover have "?F -\<longrightarrow> x"
+  moreover have "?F \<longlongrightarrow> x"
     by auto
   moreover from asub xpoint have "A \<in> ?F"
     by blast
@@ -1634,7 +1634,7 @@ qed
 lemma convergent_filter_closure:
   fixes F and T (structure)
   assumes "filter F T"
-  assumes converge: "F -\<longrightarrow> x"
+  assumes converge: "F \<longlongrightarrow> x"
   and   xpoint: "x \<in> carrier"
   and   AF: "A \<in> F"
   shows "x \<in> closure A"
@@ -1860,8 +1860,8 @@ lemmas T2E2 = T2.neqE2
 lemma (in T2) unique_convergence:
 fixes F assumes "filter F T"
 assumes points: "x \<in> carrier" "y \<in> carrier"
-  and   Fx:    "F -\<longrightarrow> x"
-  and   Fy:    "F -\<longrightarrow> y"
+  and   Fx:    "F \<longlongrightarrow> x"
+  and   Fy:    "F \<longlongrightarrow> y"
   shows "x = y"
 proof -
   interpret filter F T by fact
@@ -1880,7 +1880,7 @@ qed
 lemma (in topology) unique_convergence_implies_T2 [rule_format]:
   assumes unique_convergence: 
   "\<And>x y F.\<lbrakk> x \<in> carrier; y \<in> carrier; F\<in>Filters; 
-    F -\<longrightarrow> x; F -\<longrightarrow> y \<rbrakk> \<Longrightarrow> x = y"
+    F \<longlongrightarrow> x; F \<longlongrightarrow> y \<rbrakk> \<Longrightarrow> x = y"
   shows "T2 T"
 
 proof (rule T2I)
@@ -1914,7 +1914,7 @@ next
       with b_sub_carrier nhds show "b \<in> ?E" by blast
     qed
 
-    moreover have "?E -\<longrightarrow> x"
+    moreover have "?E \<longlongrightarrow> x"
     proof (rule, rule)
       fix w assume "w \<in> nhds x"
       moreover have "carrier \<in> nhds y" using `y \<in> carrier` ..
@@ -1922,7 +1922,7 @@ next
       ultimately show "w \<in> ?E" by auto
     qed
 
-    moreover have "?E -\<longrightarrow> y"
+    moreover have "?E \<longlongrightarrow> y"
     proof (rule, rule)
       fix w assume "w \<in> nhds y"
       moreover have "carrier \<in> nhds x" using `x \<in> carrier` ..
@@ -1939,7 +1939,7 @@ qed
 lemma (in T2) limI [simp]:
   assumes filter: "F \<in> Filters"
   and      point: "x \<in> carrier"
-  and  converges: "F -\<longrightarrow> x"
+  and  converges: "F \<longlongrightarrow> x"
   shows "lim F = x"
   using filter converges point
   by (auto simp: limes_def dest: unique_convergence [OF filter.intro])
@@ -1947,7 +1947,7 @@ lemma (in T2) limI [simp]:
 lemma (in T2) convergent_limE:
   assumes convergent: "F convergent"
   and filter: "F \<in> Filters"
-  and R: "\<lbrakk>  lim F \<in> carrier; F -\<longrightarrow> lim F \<rbrakk> \<Longrightarrow> R"
+  and R: "\<lbrakk>  lim F \<in> carrier; F \<longlongrightarrow> lim F \<rbrakk> \<Longrightarrow> R"
   shows "R"
   using convergent filter
   by (force intro!: R)
