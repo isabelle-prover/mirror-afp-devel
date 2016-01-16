@@ -11,7 +11,7 @@ text \<open>We formalized Lagrange interpolation, i.e., a method to interpolate 
 
 theory Lagrange_Interpolation
 imports 
-  Missing_Polynomial
+  "../Jordan_Normal_Form/Missing_Polynomial"
   Ring_Hom_Poly
   Is_Rat_To_Rat
 begin

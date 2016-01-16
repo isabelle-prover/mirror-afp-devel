@@ -5,11 +5,11 @@ text \<open>This theory contains Kronecker's factorization algorithm to factor
 
 theory Kronecker_Factorization
 imports 
-  Missing_Polynomial
+  "../Jordan_Normal_Form/Missing_Polynomial"
+  "../Jordan_Normal_Form/Missing_Unsorted"
   Missing_List
   Ring_Hom_Poly
   Prime_Factorization
-  "../Jordan_Normal_Form/Missing_Unsorted"
   Precomputation
   Lagrange_Interpolation
   Gauss_Lemma

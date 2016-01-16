@@ -17,7 +17,7 @@ text \<open>We provide algorithms which use the explicit formulas to
 
 theory Explicit_Roots
 imports   
-  Missing_Polynomial
+  "../Jordan_Normal_Form/Missing_Polynomial"
   "../Sqrt_Babylonian/Sqrt_Babylonian"
 begin
 

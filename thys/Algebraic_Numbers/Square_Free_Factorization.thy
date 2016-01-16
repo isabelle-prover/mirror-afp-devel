@@ -13,10 +13,10 @@ square-free factorization.\<close>
 
 theory Square_Free_Factorization
 imports 
-  Polynomial_Divisibility
-  Missing_Polynomial
-  Order_Polynomial
+  "../Jordan_Normal_Form/Missing_Polynomial"
   "../Matrix/Utility"
+  Polynomial_Divisibility
+  Order_Polynomial
 begin
 
 hide_const Coset.order

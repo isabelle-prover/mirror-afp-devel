@@ -10,9 +10,9 @@ text \<open>In this theory we prove that the polynomials over a unique factoriza
 theory Unique_Factorization_Poly
 imports 
   "~~/src/HOL/Library/Polynomial"
-  Missing_Unsorted
+  "../Jordan_Normal_Form/Missing_Unsorted"
+  "../Jordan_Normal_Form/Missing_Fraction_Field"
   Polynomial_Divisibility
-  Missing_Fraction_Field
   Unique_Factorization_Domain
   Ring_Hom_Poly
 begin
