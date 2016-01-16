@@ -16,16 +16,12 @@ subsubsection {* Lambda expressions *}
 definition restrict :: "['a => 'b, 'a set] => ('a => 'b)" where
  "restrict f A = (%x. if x : A then f x else (@ y. True))"
 
-syntax
+syntax (ASCII)
   "_lambda_in" :: "[pttrn, 'a set, 'a => 'b] => ('a => 'b)"  ("(3%_:_./ _)" [0, 0, 3] 3)
-
-
-syntax (xsymbols)
+syntax
   "_lambda_in" :: "[pttrn, 'a set, 'a => 'b] => ('a => 'b)"  ("(3\<lambda>_\<in>_./ _)" [0, 0, 3] 3)
-
 translations 
   "\<lambda>x\<in>A. f"  == "CONST restrict (%x. f) A"
-  "%x:A. f"  == "CONST restrict (%x. f) A"
 
 
 subsubsection {* Maps *}                  
