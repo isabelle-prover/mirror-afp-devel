@@ -141,6 +141,7 @@ LTL_to_GBA
 Markov_Models
 Marriage
 Matrix
+Matrix_Tensor
 Max-Card-Matching
 MiniML
 MonoBoolTranAlgebra

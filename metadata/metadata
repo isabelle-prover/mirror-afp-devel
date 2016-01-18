@@ -1449,6 +1449,18 @@ extra-history =
   Change history:
   [2010-09-17]: Moved theory on arbitrary (ordered) semirings to Abstract Rewriting.
 
+[Matrix_Tensor]
+title = Tensor Product of Matrices
+topic = Computer Science/Data Structures, Mathematics/Algebra
+date = 2016-01-18
+author = T.V.H. Prathamesh <mailto:prathamesh@imsc.res.in>
+abstract =
+ In this work, the Kronecker tensor product of matrices and the proofs of
+ some of its properties are formalized. Properties which have been formalized
+ include associativity of the tensor product and the mixed-product
+ property.
+depends-on = Matrix
+
 [Huffman]
 title = The Textbook Proof of Huffman's Algorithm
 author = Jasmin Christian Blanchette <http://www4.in.tum.de/~blanchet>
