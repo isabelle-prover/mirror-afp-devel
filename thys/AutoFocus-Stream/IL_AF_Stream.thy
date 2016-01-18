@@ -14,22 +14,23 @@ subsection {* Stream views -- joining streams and intervals *}
 
 subsubsection {* Basic definitions *}
 
-primrec
-  f_join_aux :: "'a list \<Rightarrow> nat \<Rightarrow> iT \<Rightarrow> 'a list"
+primrec f_join_aux :: "'a list \<Rightarrow> nat \<Rightarrow> iT \<Rightarrow> 'a list"
 where
   "f_join_aux [] n I = []"
-| "f_join_aux (x # xs) n I = 
+| "f_join_aux (x # xs) n I =
     (if n \<in> I then [x] else []) @ f_join_aux xs (Suc n) I"
 
-text {* 
+text {*
   The functions @{text "f_join"} and @{text "i_join"}
-  deliver views of finite and infinite streams through intervals 
+  deliver views of finite and infinite streams through intervals
   (more exactly: arbitrary natural sets).
   A stream view contains only the elements of the original stream
   at positions, which are contained in the interval.
   For instance, @{text "f_join [0,10,20,30,40] {1,4} = [10,40]"} *}
+
 definition f_join :: "'a list \<Rightarrow> iT \<Rightarrow> 'a list"      (infixl "\<Join>\<^sub>f" 100)
   where "xs \<Join>\<^sub>f I \<equiv> f_join_aux xs 0 I"
+
 definition i_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a ilist"    (infixl "\<Join>\<^sub>i" 100)
   where "f \<Join>\<^sub>i I \<equiv> \<lambda>n. (f (I \<rightarrow> n))"
 
@@ -43,19 +44,20 @@ text {*
   The function @{text i_join} would then deliver
   an infinite stream, whose elements after position @{text "card I"}
   are equal to initial stream's element at position @{text "Max I"}.
-  The function @{text i_f_join} in contrast 
+  The function @{text i_f_join} in contrast
   cuts the resulting stream at this position
   and returns a finite stream. *}
+
 definition i_f_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a list"    (infixl "\<Join>\<^bsub>i-f\<^esub>" 100)
   where "f \<Join>\<^bsub>i-f\<^esub> I \<equiv> f \<Down> Suc (Max I) \<Join>\<^sub>f I"
 notation
   i_f_join  (infixl "\<Join>\<^sub>" 100)
 
-text {* 
+text {*
   The function @{text i_f_join} should be used
   only for finite sets in order to deliver well-defined results.
   The function @{text i_join} should be used for infinite sets,
-  because joining an infinite stream @{text s} and a finite set @{text I} 
+  because joining an infinite stream @{text s} and a finite set @{text I}
   using @{text i_join} would deliver an infinite stream,
   ending with an infinite sequence of elements equal to
   @{text "s (Max I)"}. *}
@@ -84,9 +86,7 @@ apply (case_tac "n \<in> I")
  prefer 2
  apply (simp add: nth_Cons')
  apply (subgoal_tac "Suc n \<le> (I \<inter> {Suc n..<Suc (n + length xs)}) \<rightarrow> i", simp)
- thm order_trans[OF _ iMin_le[OF inext_nth_closed]]
  apply (rule order_trans[OF _ iMin_le[OF inext_nth_closed]])
-  thm order_trans[OF _ iMin_Int_ge2]
   apply (rule order_trans[OF _ iMin_Int_ge2])
    apply (subgoal_tac "n < n + length xs")
     prefer 2
@@ -96,7 +96,6 @@ apply (case_tac "n \<in> I")
 apply simp
 apply (case_tac "I \<inter> {Suc n..<Suc (n + length xs)} = {}", simp)
 apply (case_tac i)
- thm iMin_insert
  apply (simp add: iMin_insert)
 apply (subgoal_tac "Suc n \<le> iMin {Suc n..<Suc (n + length xs)}")
  prefer 2
@@ -106,18 +105,14 @@ apply (subgoal_tac "Suc n \<le> iMin {Suc n..<Suc (n + length xs)}")
  apply (simp add: iMin_atLeastLessThan)
 apply (rename_tac i1)
 apply (simp del: inext_nth.simps)
-thm inext_nth_insert_Suc
 apply (subst inext_nth_insert_Suc)
    apply simp
   apply (rule Suc_le_lessD)
-  thm order_trans[OF _ iMin_Int_ge2]
   apply (rule order_trans[OF _ iMin_Int_ge2])
   apply assumption+
 apply (simp add: nth_Cons')
 apply (subgoal_tac "Suc n \<le> (I \<inter> {Suc n..<Suc (n + length xs)}) \<rightarrow> i1", simp)
- thm order_trans[OF _ iMin_le[OF inext_nth_closed]]
 apply (rule order_trans[OF _ iMin_le[OF inext_nth_closed]])
- thm order_trans[OF _ iMin_Int_ge2]
  apply (rule order_trans[OF _ iMin_Int_ge2])
  apply assumption+
 done
@@ -139,23 +134,25 @@ by (simp add: f_join_def f_join_aux_length atLeast0LessThan cut_less_Int_conv)
 lemma f_join_nth: "n < length (xs \<Join>\<^sub>f I) \<Longrightarrow> (xs \<Join>\<^sub>f I) ! n = xs ! (I \<rightarrow> n)"
 apply (simp add: f_join_length)
 apply (unfold f_join_def)
-thm f_join_aux_nth[of n I 0 xs]
-thm back_subst[OF _ cut_less_Int_conv]
 apply (drule back_subst[OF _ cut_less_Int_conv])
 apply (simp add: f_join_aux_nth atLeast0LessThan cut_less_Int_conv[symmetric] inext_nth_cut_less_eq)
 done
+
 lemma f_join_nth2: "n < card (I \<down>< length xs) \<Longrightarrow> (xs \<Join>\<^sub>f I) ! n = xs ! (I \<rightarrow> n)"
 by (simp add: f_join_nth f_join_length)
 
-
 lemma f_join_empty: "xs \<Join>\<^sub>f {} = []"
 by (simp add: length_0_conv[symmetric] f_join_length cut_less_empty del: length_0_conv)
+
 lemma f_join_Nil: "[] \<Join>\<^sub>f I = []"
 by (simp add: length_0_conv[symmetric] f_join_length cut_less_0_empty del: length_0_conv)
+
 lemma f_join_Nil_conv: "(xs \<Join>\<^sub>f I = []) = (I \<down>< length xs = {})"
 by (simp add: length_0_conv[symmetric] f_join_length card_0_eq[OF nat_cut_less_finite] del: length_0_conv)
+
 lemma f_join_Nil_conv': "(xs \<Join>\<^sub>f I = []) = (\<forall>i<length xs. i \<notin> I)"
 by (fastforce simp: f_join_Nil_conv)
+
 lemma f_join_all_conv: "(xs \<Join>\<^sub>f I = xs) = ({..<length xs} \<subseteq> I)"
 apply (case_tac "length xs = 0", simp add: f_join_Nil)
 apply (rule iffI)
@@ -165,7 +162,6 @@ apply (rule iffI)
  apply (subgoal_tac "I \<down>< length xs \<subset> {..<length xs}")
   prefer 2
   apply blast
- thm psubset_card_mono[OF finite_lessThan]
  apply (drule psubset_card_mono[OF finite_lessThan])
  apply simp
 apply (subgoal_tac "length (xs \<Join>\<^sub>f I) = length xs")
@@ -176,18 +172,18 @@ apply (rule arg_cong[where f="op ! xs"])
 apply (subgoal_tac "I \<down>< length xs = {..<length xs}")
  prefer 2
  apply fastforce
-thm inext_nth_cut_less_eq
 apply (subst inext_nth_cut_less_eq[where t="length xs", symmetric], simp)
 apply (simp add: inext_nth_lessThan)
 done
 
 lemma f_join_all: "{..<length xs} \<subseteq> I \<Longrightarrow> xs \<Join>\<^sub>f I = xs"
 by (rule f_join_all_conv[THEN iffD2])
+
 corollary f_join_UNIV: "xs \<Join>\<^sub>f UNIV = xs"
 by (simp add: f_join_all)
 
 lemma f_join_union: "
-  \<lbrakk> finite A; Max A < iMin B \<rbrakk> \<Longrightarrow> xs \<Join>\<^sub>f (A \<union> B) = xs \<Join>\<^sub>f A @ (xs \<Join>\<^sub>f B)" 
+  \<lbrakk> finite A; Max A < iMin B \<rbrakk> \<Longrightarrow> xs \<Join>\<^sub>f (A \<union> B) = xs \<Join>\<^sub>f A @ (xs \<Join>\<^sub>f B)"
 apply (case_tac "A = {}", simp add: f_join_empty)
 apply (case_tac "B = {}", simp add: f_join_empty)
 apply (frule Max_less_iMin_imp_disjoint, assumption)
@@ -201,7 +197,6 @@ apply (subst f_join_nth)
  apply (simp add: f_join_length cut_less_Un)
 apply (simp add: nth_append f_join_length del: Max_less_iff, intro conjI impI)
  apply (simp add: f_join_nth f_join_length del: Max_less_iff)
- thm inext_nth_card_append_eq1
    apply (rule ssubst[OF inext_nth_card_append_eq1], assumption)
   apply (rule order_less_le_trans[OF _ cut_less_card], assumption+)
  apply simp
@@ -255,7 +250,7 @@ lemma f_join_snoc: "
   xs \<Join>\<^sub>f I @ (if length xs \<in> I then [x] else [])"
 apply (simp add: list_eq_iff f_join_length)
 apply (subgoal_tac "
-  card (I \<down>< Suc (length xs)) = 
+  card (I \<down>< Suc (length xs)) =
   card (I \<down>< length xs) + (if length xs \<in> I then Suc 0 else 0)")
  prefer 2
  apply (simp add: nat_cut_le_less_conv[symmetric] cut_le_less_conv_if)
@@ -305,24 +300,19 @@ done
 lemma take_f_join_eq1: "
   n < card (I \<down>< length xs) \<Longrightarrow>
   (xs \<Join>\<^sub>f I) \<down> n = xs \<Join>\<^sub>f (I \<down>< (I \<rightarrow> n))"
-thm less_card_cut_less_imp_inext_nth_less
 apply (frule less_card_cut_less_imp_inext_nth_less)
 apply (simp add: list_eq_iff f_join_length cut_cut_less min_eqR)
 apply (subgoal_tac "n < card I \<or> infinite I")
  prefer 2
  apply (case_tac "finite I")
  apply (drule order_less_le_trans[OF _ cut_less_card], simp+)
-thm cut_less_inext_nth_card_eq1
 apply (simp add: min_eqL cut_less_inext_nth_card_eq1)
 apply clarify
-thm f_join_nth
 apply (subst f_join_nth)
  apply (simp add: f_join_length)
 apply (subst f_join_nth)
  apply (simp add: f_join_length cut_cut_less min_eqL)
- thm cut_less_inext_nth_card_eq1
  apply (simp add: cut_less_inext_nth_card_eq1)
-thm inext_nth_cut_less_eq
 apply (simp add: cut_less_inext_nth_card_eq1 inext_nth_cut_less_eq)
 done
 
@@ -330,7 +320,7 @@ lemma take_f_join_eq2: "
   card (I \<down>< length xs) \<le> n \<Longrightarrow> (xs \<Join>\<^sub>f I) \<down> n = xs \<Join>\<^sub>f I"
 by (simp add: f_join_length)
 lemma take_f_join_if: "
-  (xs \<Join>\<^sub>f I) \<down> n = 
+  (xs \<Join>\<^sub>f I) \<down> n =
   (if n < card (I \<down>< length xs) then xs \<Join>\<^sub>f (I \<down>< (I \<rightarrow> n)) else xs \<Join>\<^sub>f I)"
 by (simp add: take_f_join_eq1 take_f_join_eq2)
 
@@ -362,9 +352,11 @@ apply (subst f_join_union[OF nat_cut_less_finite, symmetric])
  apply (simp add: nat_cut_less_finite i_cut_mem_iff iMin_gr_iff)
 apply (simp add: cut_less_cut_ge_ident)
 done
+
 lemma drop_f_join_eq2: "
   card (I \<down>< length xs) \<le> n \<Longrightarrow> (xs \<Join>\<^sub>f I) \<up> n = []"
 by (simp add: f_join_length)
+
 lemma drop_f_join_if: "
   (xs \<Join>\<^sub>f I) \<up> n =
   (if n < card (I \<down>< length xs) then xs \<Join>\<^sub>f (I \<down>\<ge> (I \<rightarrow> n)) else [])"
@@ -375,12 +367,9 @@ apply (clarsimp simp: list_eq_iff f_join_length cut_cut_less min.commute)
 apply (simp add: f_join_nth f_join_length cut_cut_less min.commute)
 apply (case_tac "n < length xs")
  apply (simp add: min_eqL inext_nth_cut_less_eq)
- thm less_card_cut_less_imp_inext_nth_less
  apply (simp add: less_card_cut_less_imp_inext_nth_less)
 apply (simp add: min_eqR linorder_not_less)
-thm inext_nth_cut_less_eq
 apply (subst inext_nth_cut_less_eq)
-thm card_mono[OF nat_cut_less_finite cut_less_mono]
 apply (rule order_less_le_trans, assumption)
 apply (rule card_mono[OF nat_cut_less_finite cut_less_mono], assumption)
 apply simp
@@ -408,6 +397,7 @@ apply (rule subst[OF inext_nth_cut_less_eq, of _ A "length xs"], simp)
 apply (rule subst[OF inext_nth_cut_less_eq, of _ B "length xs"], simp)
 apply simp
 done
+
 corollary f_join_cut_less_eq: "
   length xs \<le> t \<Longrightarrow> xs \<Join>\<^sub>f (I \<down>< t) = xs \<Join>\<^sub>f I"
 apply (rule cut_less_eq_imp_f_join_eq)
@@ -423,7 +413,6 @@ apply (simp add: list_eq_iff f_join_length)
 apply (case_tac "length xs < Suc (Max I)")
  apply (case_tac "length ys < Suc (Max I)")
   apply (clarsimp simp: min_eqL, rename_tac i)
-  thm f_join_nth2
   apply (simp add: f_join_nth2)
   apply (drule_tac x="I \<rightarrow> i" in spec)
   apply (subgoal_tac "I \<rightarrow> i < length ys")
@@ -444,6 +433,7 @@ apply (subgoal_tac "I \<rightarrow> i < Suc (Max I)")
  apply (simp add: less_Suc_eq_le inext_nth_closed)
 apply (simp del: Max_less_iff)
 done
+
 corollary f_join_take_Suc_Max_eq: "
   finite I \<Longrightarrow> xs \<down> Suc (Max I) \<Join>\<^sub>f I = xs \<Join>\<^sub>f I"
 by (rule take_Suc_Max_eq_imp_f_join_eq, simp+)
@@ -453,12 +443,12 @@ text {* Joining infinite streams and infinite intervals *}
 
 lemma i_join_nth: "(f \<Join>\<^sub>i I) n = f (I \<rightarrow> n)"
 by (simp add: i_join_def)
+
 lemma i_join_UNIV: "f \<Join>\<^sub>i UNIV = f"
 by (simp add: ilist_eq_iff i_join_nth inext_nth_UNIV)
 
-thm f_join_union
 lemma i_join_union: "
-  \<lbrakk> finite A; Max A < iMin B; B \<noteq> {} \<rbrakk> \<Longrightarrow> 
+  \<lbrakk> finite A; Max A < iMin B; B \<noteq> {} \<rbrakk> \<Longrightarrow>
   f \<Join>\<^sub>i (A \<union> B) = (f \<Down> Suc (Max A) \<Join>\<^sub>f A) \<frown> (f \<Join>\<^sub>i B)"
 apply (case_tac "A = {}")
  apply (simp add: f_join_empty)
@@ -469,9 +459,7 @@ apply (subgoal_tac "A \<down>< Suc (Max A) = A")
  apply (simp add: nat_cut_le_less_conv[symmetric] cut_le_Max_all)
 apply (simp del: Max_less_iff, intro conjI impI)
  apply (simp add: inext_nth_card_append_eq1)
- thm f_join_nth f_join_length i_take_length
  apply (simp add: f_join_nth f_join_length)
- thm less_card_cut_less_imp_inext_nth_less
  apply (simp add: less_card_cut_less_imp_inext_nth_less)
 apply (simp add: inext_nth_card_append_eq2)
 done
@@ -480,10 +468,9 @@ lemma i_join_singleton: "f \<Join>\<^sub>i {a} = (\<lambda>n. f a)"
 by (simp add: ilist_eq_iff i_join_nth inext_nth_singleton)
 
 lemma i_join_insert: "
-  f \<Join>\<^sub>i (insert n I) = 
+  f \<Join>\<^sub>i (insert n I) =
   (f \<Down> n) \<Join>\<^sub>f (I \<down>< n) \<frown> [f n] \<frown> (
     if I \<down>> n = {} then (\<lambda>x. f n) else f \<Join>\<^sub>i (I \<down>> n))"
-thm ssubst[OF insert_eq_cut_less_cut_greater]
 apply (rule ssubst[OF insert_eq_cut_less_cut_greater])
 apply (case_tac "I \<down>< n = {}")
  apply (simp add: f_join_empty, intro conjI impI)
@@ -492,9 +479,7 @@ apply (case_tac "I \<down>< n = {}")
   prefer 2
   apply (simp add: cut_greater_Min_greater)
  apply simp
- thm insert_is_Un
  apply (subst insert_is_Un)
- thm i_join_union[OF singleton_finite]
  apply (subst i_join_union[OF singleton_finite])
  apply (simp add: f_join_singleton_if)+
 apply (intro conjI impI)
@@ -502,7 +487,6 @@ apply (intro conjI impI)
   prefer 2
   apply (simp add: nat_cut_less_Max_less)
  apply (rule_tac t="insert n (I \<down>< n)" and s="(I \<down>< n) \<union> {n}" in subst, simp)
- thm i_join_union[OF nat_cut_less_finite _ singleton_not_empty]
  apply (subst i_join_union[OF nat_cut_less_finite _ singleton_not_empty], simp)
  apply (simp add: i_join_singleton)
  apply (rule_tac s="\<lambda>x. f n" and t="[f n] \<frown> (\<lambda>x. f n)" in subst)
@@ -540,7 +524,6 @@ apply (subgoal_tac "I \<oplus>- length xs \<noteq> {}")
  apply (simp add: iT_Plus_neg_empty_iff infinite_imp_nonempty)
 apply (simp add: iT_Plus_neg_inext_nth)
 apply (case_tac "I \<down>< length xs = {}")
- thm cut_less_empty_iff[THEN iffD1, THEN cut_ge_all_iff[THEN iffD2]]
  apply (frule cut_less_empty_iff[THEN iffD1, THEN cut_ge_all_iff[THEN iffD2]])
  apply simp
 apply (rule subst[OF inext_nth_card_append_eq2, OF nat_cut_less_finite], simp+)
@@ -576,11 +559,10 @@ apply (simp add: i_join_nth iT_Plus_inext_nth add.commute[of _ n])
 done
 
 
-
-
 lemma i_join_finite_nth_ge_card_eq_nth_Max: "
   \<lbrakk> finite I; I \<noteq> {}; card I \<le> Suc n \<rbrakk> \<Longrightarrow> (f \<Join>\<^sub>i I) n = f (Max I)"
 by (simp add: i_join_nth inext_nth_card_Max)
+
 lemma i_join_finite_i_drop_card_eq_const_nth_Max: "
   \<lbrakk> finite I; I \<noteq> {} \<rbrakk> \<Longrightarrow> (f \<Join>\<^sub>i I) \<Up> (card I) = (\<lambda>n. f (Max I))"
 by (simp add: ilist_eq_iff i_join_finite_nth_ge_card_eq_nth_Max)
@@ -593,13 +575,11 @@ apply (subgoal_tac "I \<down>< (Suc (Max I)) = I")
  apply (simp add: nat_cut_le_less_conv[symmetric] cut_le_Max_all)
 apply (simp add: i_append_nth i_join_nth f_join_length)
 apply (intro conjI impI)
- thm f_join_nth f_join_length i_take_length
  apply (simp add: f_join_nth f_join_length)
  apply (rule sym, rule i_take_nth)
  apply (simp add: less_card_cut_less_imp_inext_nth_less)
 apply (simp add: inext_nth_card_Max)
 done
-
 
 
 text {* Joining infinite streams and finite intervals *}
@@ -613,7 +593,6 @@ lemma i_f_join_nth: "n < card I \<Longrightarrow> f \<Join>\<^bsub>i-f\<^esub> I
 apply (frule card_gr0_imp_finite[OF gr_implies_gr0])
 apply (frule card_gr0_imp_not_empty[OF gr_implies_gr0])
 apply (simp add: i_f_join_def)
-thm i_take_nth[ of "I \<rightarrow> n" "Suc (Max I)" f]
 apply (subst i_take_nth[ of "I \<rightarrow> n" "Suc (Max I)" f, symmetric])
  apply (rule le_imp_less_Suc)
  apply (simp add: Max_ge[OF _ inext_nth_closed])
@@ -646,9 +625,8 @@ done
 lemma i_f_join_singleton: "f \<Join>\<^bsub>i-f\<^esub> {n} = [f n]"
 by (simp add: i_f_join_def f_join_singleton_if)
 
-thm f_join_insert
 lemma i_f_join_insert: "
-  finite I \<Longrightarrow> 
+  finite I \<Longrightarrow>
   f \<Join>\<^bsub>i-f\<^esub> insert n I = f \<Join>\<^bsub>i-f\<^esub> (I \<down>< n) @ f n # f \<Join>\<^bsub>i-f\<^esub> (I \<down>> n)"
 apply (case_tac "I = {}")
  apply (simp add: i_f_join_singleton i_cut_empty i_f_join_empty)
@@ -669,7 +647,6 @@ apply (case_tac "I \<down>> n = {}")
  apply (rule arg_cong[where f="\<lambda>x. f \<Down> x"])
  apply simp
  apply (rule min_eqR, rule max.coboundedI1, rule less_imp_le)
- thm nat_cut_less_Max_less
  apply (simp add: nat_cut_less_Max_less)
 apply (simp add: cut_greater_Max_eq)
 apply (subgoal_tac "n < Max I")
@@ -765,7 +742,6 @@ lemma i_take_i_join_eq_i_f_join: "
 apply (frule infinite_imp_nonempty)
 apply (case_tac "n = 0")
  apply (simp add: cut_less_Min_empty i_f_join_empty)
-thm inext_nth_gr_Min_conv_infinite
 apply (frule inext_nth_gr_Min_conv_infinite[THEN iffD2], simp)
 apply (simp add: i_take_i_join i_f_join_def)
 apply (subgoal_tac "Suc (Max (I \<down>< (I \<rightarrow> n))) \<le> I \<rightarrow> n")
@@ -774,11 +750,9 @@ apply (subgoal_tac "Suc (Max (I \<down>< (I \<rightarrow> n))) \<le> I \<rightar
  apply (rule nat_cut_less_Max_less)
  apply (simp add: cut_less_Min_not_empty)
 apply (simp add: f_join_cut_less_eq)
-thm i_join_i_take
 apply (simp add: i_join_i_take)
 apply (rule arg_cong[where f="\<lambda>x. f \<Join>\<^sub>i I \<Down> card x"])
 apply (clarsimp simp: gr0_conv_Suc)
-thm cut_le_less_inext_conv[OF inext_nth_closed]
 apply (simp add: cut_le_less_inext_conv[OF inext_nth_closed, symmetric])
 apply (simp add: nat_cut_le_less_conv[symmetric])
 apply (rule arg_cong[where f="\<lambda>x. I \<down>\<le> x"])
@@ -791,7 +765,6 @@ subsubsection {* Results for intervals from @{text IL_Interval} *}
 
 lemma f_join_iFROM: "xs \<Join>\<^sub>f [n\<dots>] = xs \<up> n"
 apply (clarsimp simp: list_eq_iff f_join_length iFROM_cut_less iIN_card Suc_diff_Suc)
-thm f_join_nth2
 apply (subst f_join_nth2)
  apply (simp add: iFROM_cut_less iIN_card)
 apply (simp add: iFROM_inext_nth)
@@ -802,9 +775,9 @@ by (simp add: ilist_eq_iff i_join_nth iFROM_inext_nth)
 
 lemma f_join_iIN: "xs \<Join>\<^sub>f [n\<dots>,d] = xs \<up> n \<down> Suc d"
 apply (simp add: list_eq_iff f_join_length iIN_cut_less iIN_card Suc_diff_Suc min_eq)
-thm f_join_nth2
 apply (simp add: f_join_nth2 iIN_cut_less iIN_card iIN_inext_nth)
 done
+
 lemma i_f_join_iIN: "f \<Join>\<^bsub>i-f\<^esub> [n\<dots>,d] = f \<Up> n \<Down> Suc d"
 by (simp add: i_f_join_def f_join_iIN iIN_Max i_take_drop)
 
@@ -851,14 +824,11 @@ apply (subgoal_tac "Suc (length xs) - k \<le> length xs - length xs mod k")
  apply (case_tac "length xs < k", simp)
  apply (simp add: Suc_diff_le linorder_not_less)
  apply (rule Suc_leI)
- thm diff_less_mono2
  apply (rule diff_less_mono2, simp)
  apply (rule order_less_le_trans[OF mod_less_divisor], assumption+)
 apply (rule context_conjI)
  apply (simp add: iT_Plus_cut_less iT_Div_cut_less2 iT_Plus_card)
- thm iT_Div_card_inj_on
  apply (subst iT_Div_card_inj_on)
-  thm mod_eq_imp_div_right_inj_on
   apply (rule mod_eq_imp_div_right_inj_on)
   apply clarsimp+
  apply (rule arg_cong[where f=card])
@@ -871,15 +841,11 @@ apply (rule context_conjI)
  apply simp
 apply (clarsimp simp: f_join_nth f_join_length f_shrink_length)
 apply (simp add: iT_Plus_inext_nth iT_Plus_not_empty)
-thm iT_Div_mod_inext_nth
 apply (simp add: iT_Div_mod_inext_nth)
-thm f_shrink_nth_eq_f_last_message_hold_nth
 apply (subst f_shrink_nth_eq_f_last_message_hold_nth)
  apply (drule sym, simp, thin_tac "card x = card y" for x y)
  apply (simp add: iT_Plus_cut_less iT_Plus_card)
  apply (rule less_mult_imp_div_less)
- thm less_card_cut_less_imp_inext_nth_less
- thm less_le_trans[OF less_card_cut_less_imp_inext_nth_less]
  apply (rule less_le_trans[OF less_card_cut_less_imp_inext_nth_less], assumption)
  apply (simp add: div_mult_cancel)
 apply (simp add: div_mult_cancel inext_nth_closed)
@@ -942,13 +908,11 @@ apply (rule_tac t=I and s="I \<oplus>- (k - 1) \<oplus> (k - 1)" in subst)
  apply (simp add: iMinI_ex2)+
 apply (subgoal_tac "\<And>x. x + k - Suc 0 \<in> I \<Longrightarrow> x mod k = 0")
  prefer 2
- thm mod_add_eq_imp_mod_0[THEN iffD1]
  apply (rule mod_add_eq_imp_mod_0[THEN iffD1, of "k - Suc 0"])
  apply (simp add: add.commute[of k])
 apply (subst iT_Plus_Div_distrib_mod_less)
  apply (clarsimp simp: iT_Plus_neg_mem_iff)
 apply (simp add: iT_Plus_0)
-thm f_join_f_shrink_iT_Plus_iT_Div_mod[unfolded One_nat_def]
 apply (rule f_join_f_shrink_iT_Plus_iT_Div_mod[unfolded One_nat_def], simp)
 apply (simp add: iT_Plus_neg_mem_iff)
 done
@@ -959,7 +923,6 @@ lemma i_join_i_shrink_iT_Div_mod: "
 apply (simp (no_asm) add: ilist_eq_iff, clarify)
 apply (simp add: i_join_nth)
 apply (simp add: i_shrink_nth_eq_i_last_message_hold_nth)
-thm iT_Div_mod_inext_nth
 apply (simp add: iT_Div_mod_inext_nth)
 apply (drule_tac x="I \<rightarrow> x" in bspec)
  apply (rule inext_nth_closed, assumption)
@@ -999,6 +962,7 @@ done
 lemma f_join_f_expand_iMODb: "
   0 < k \<Longrightarrow> xs \<odot>\<^sub>f k \<Join>\<^sub>f [n * k, mod k, d] = xs \<Join>\<^sub>f [n\<dots>,d]"
 by (subst iIN_mult[symmetric], rule f_join_f_expand_iT_Mult)
+
 corollary f_join_f_expand_iMODb_0: "
   0 < k \<Longrightarrow> xs \<odot>\<^sub>f k \<Join>\<^sub>f [0, mod k, n] = xs \<Join>\<^sub>f [\<dots>n]"
 apply (drule f_join_f_expand_iMODb[of k xs 0 n])
@@ -1008,6 +972,7 @@ done
 lemma i_join_i_expand_iMOD: "
   0 < k \<Longrightarrow> f \<odot>\<^sub>i k \<Join>\<^sub>i [n * k, mod k] = f \<Join>\<^sub>i [n\<dots>]"
 by (subst iFROM_mult[symmetric], rule i_join_i_expand_iT_Mult[OF _ iFROM_not_empty])
+
 corollary i_join_i_expand_iMOD_0: "
   0 < k \<Longrightarrow> f \<odot>\<^sub>i k \<Join>\<^sub>i [0, mod k] = f"
 apply (drule i_join_i_expand_iMOD[of k f 0])
@@ -1017,6 +982,7 @@ done
 lemma i_join_i_expand_iMODb: "
   0 < k \<Longrightarrow> f \<odot>\<^sub>i k \<Join>\<^sub>i [n * k, mod k, d] = f \<Join>\<^sub>i [n\<dots>,d]"
 by (subst iIN_mult[symmetric], rule i_join_i_expand_iT_Mult[OF _ iIN_not_empty])
+
 corollary i_join_i_expand_iMODb_0: "
   0 < k \<Longrightarrow> f \<odot>\<^sub>i k \<Join>\<^sub>i [0, mod k, n] = f \<Join>\<^sub>i [\<dots>n]"
 apply (drule i_join_i_expand_iMODb[of k f 0 n])
@@ -1034,22 +1000,24 @@ apply (simp add: iIN_0_iTILL_conv)
 done
 
 
-
 lemma f_join_f_shrink_iMOD: "
   0 < k \<Longrightarrow> (xs \<longmapsto>\<^sub>f k) \<Join>\<^sub>f [n * k + (k - 1), mod k] = xs \<div>\<^sub>f k \<Join>\<^sub>f [n\<dots>]"
 apply (rule f_join_f_shrink_iT_Plus_iT_Div_mod_subst[where I="[n * k, mod k]"])
 apply (simp add: iMOD_iff iMOD_add iMOD_div_ge)+
 done
+
 corollary f_join_f_shrink_iMOD_0: "
   0 < k \<Longrightarrow> (xs \<longmapsto>\<^sub>f k) \<Join>\<^sub>f [k - 1, mod k] = xs \<div>\<^sub>f k"
 apply (frule f_join_f_shrink_iMOD[of k xs 0])
 apply (simp add: iFROM_0 f_join_UNIV)
 done
+
 lemma f_join_f_shrink_iMODb: "
   0 < k \<Longrightarrow> (xs \<longmapsto>\<^sub>f k) \<Join>\<^sub>f [n * k + (k - 1), mod k, d] = xs \<div>\<^sub>f k \<Join>\<^sub>f [n\<dots>,d]"
 apply (rule f_join_f_shrink_iT_Plus_iT_Div_mod_subst[where I="[n * k, mod k, d]"])
 apply (simp add: iMODb_iff iMODb_add iMODb_div_ge)+
 done
+
 corollary f_join_f_shrink_iMODb_0: "
   0 < k \<Longrightarrow> (xs \<longmapsto>\<^sub>f k) \<Join>\<^sub>f [k - 1, mod k, n] = xs \<div>\<^sub>f k \<Join>\<^sub>f [\<dots>n]"
 apply (frule f_join_f_shrink_iMODb[of k xs 0 n])
@@ -1061,16 +1029,19 @@ lemma i_join_i_shrink_iMOD: "
 apply (rule i_join_i_shrink_iT_Plus_iT_Div_mod_subst[where I="[n * k, mod k]"])
 apply (simp add: iMOD_not_empty iMOD_iff iMOD_add iMOD_div_ge)+
 done
+
 corollary i_join_i_shrink_iMOD_0: "
   0 < k \<Longrightarrow> (f \<longmapsto>\<^sub>i k) \<Join>\<^sub>i [k - 1, mod k] = f \<div>\<^sub>i k"
 apply (frule i_join_i_shrink_iMOD[of k f 0])
 apply (simp add: iFROM_0 i_join_UNIV)
 done
+
 lemma i_f_join_i_shrink_iMODb: "
   0 < k \<Longrightarrow> (f \<longmapsto>\<^sub>i k) \<Join>\<^bsub>i-f\<^esub> [n * k + (k - 1), mod k, d] = f \<div>\<^sub>i k \<Join>\<^bsub>i-f\<^esub> [n\<dots>,d]"
 apply (rule i_f_join_i_shrink_iT_Plus_iT_Div_mod_subst[where I="[n * k, mod k, d]"])
 apply (simp add: iMODb_finite iMODb_iff iMODb_add iMODb_div_ge)+
 done
+
 corollary i_f_join_i_shrink_iMODb_0: "
   0 < k \<Longrightarrow> (f \<longmapsto>\<^sub>i k) \<Join>\<^bsub>i-f\<^esub> [k - 1, mod k, n] = f \<div>\<^sub>i k \<Join>\<^bsub>i-f\<^esub> [\<dots>n]"
 apply (frule i_f_join_i_shrink_iMODb[of k f 0 n])
@@ -1078,13 +1049,8 @@ apply (simp add: iIN_0_iTILL_conv i_join_UNIV)
 done
 
 
-
-
-
 subsection {* Streams and temporal operators *}
 
-
-thm last_message_NoMsg_conv
 lemma i_shrink_eq_NoMsg_iAll_conv: "
   0 < k \<Longrightarrow> ((s \<div>\<^sub>i k) t = \<NoMsg>) = (\<box> t1 [t * k\<dots>,k - Suc 0]. s t1 = \<NoMsg>)"
 apply (simp add: i_shrink_nth last_message_NoMsg_conv iAll_def Ball_def iIN_iff)
@@ -1096,15 +1062,15 @@ apply (clarify, rename_tac i)
 apply (drule_tac x="t * k + i" in spec)
 apply simp
 done
+
 lemma i_shrink_eq_NoMsg_iAll_conv2: "
   0 < k \<Longrightarrow> ((s \<div>\<^sub>i k) t = \<NoMsg>) = (\<box> t1 [\<dots>k - 1] \<oplus> (t * k). s t1 = \<NoMsg>)"
 by (simp add: iT_add i_shrink_eq_NoMsg_iAll_conv)
 
-thm last_message_conv
 lemma i_shrink_eq_Msg_iEx_iAll_conv: "
   \<lbrakk> 0 < k; m \<noteq> \<NoMsg> \<rbrakk> \<Longrightarrow>
-  ((s \<div>\<^sub>i k) t = m) = 
-  (\<diamond> t1 [t * k\<dots>,k - Suc 0]. s t1 = m \<and> 
+  ((s \<div>\<^sub>i k) t = m) =
+  (\<diamond> t1 [t * k\<dots>,k - Suc 0]. s t1 = m \<and>
     (\<box> t2 [Suc t1\<dots>]. t2 \<le> t * k + k - Suc 0 \<longrightarrow> s t2 = \<NoMsg>))"
 apply (simp add: i_shrink_nth last_message_conv)
 apply (simp add: iAll_def iEx_def Ball_def Bex_def iIN_iff iFROM_iff)
@@ -1119,44 +1085,45 @@ apply (clarsimp, rename_tac i)
 apply (rule_tac x="i - t * k" in exI)
 apply simp
 done
+
 lemma i_shrink_eq_Msg_iEx_iAll_conv2: "
   \<lbrakk> 0 < k; m \<noteq> \<NoMsg> \<rbrakk> \<Longrightarrow>
-  ((s \<div>\<^sub>i k) t = m) = 
-  (\<diamond> t1 [\<dots>k - 1] \<oplus> (t * k). s t1 = m \<and> 
+  ((s \<div>\<^sub>i k) t = m) =
+  (\<diamond> t1 [\<dots>k - 1] \<oplus> (t * k). s t1 = m \<and>
     (\<box> t2 [1\<dots>] \<oplus> t1 . t2 \<le> t * k + k - 1 \<longrightarrow> s t2 = \<NoMsg>))"
 by (simp add: iT_add i_shrink_eq_Msg_iEx_iAll_conv)
 
 lemma i_shrink_eq_Msg_iEx_iAll_cut_greater_conv: "
   \<lbrakk> 0 < k; m \<noteq> \<NoMsg> \<rbrakk> \<Longrightarrow>
-  ((s \<div>\<^sub>i k) t = m) = 
-  (\<diamond> t1 [t * k\<dots>,k - Suc 0]. s t1 = m \<and> 
+  ((s \<div>\<^sub>i k) t = m) =
+  (\<diamond> t1 [t * k\<dots>,k - Suc 0]. s t1 = m \<and>
     (\<box> t2 [t * k\<dots>,k - Suc 0] \<down>> t1. s t2 = \<NoMsg>))"
 apply (simp add: i_shrink_eq_Msg_iEx_iAll_conv)
 apply (simp add: iIN_cut_greater iEx_def)
 apply (rule bex_cong2[OF subset_refl])
 apply (force simp: iAll_def Ball_def iT_iff)
 done
+
 lemma i_shrink_eq_Msg_iEx_iAll_cut_greater_conv2: "
   \<lbrakk> 0 < k; m \<noteq> \<NoMsg> \<rbrakk> \<Longrightarrow>
-  ((s \<div>\<^sub>i k) t = m) = 
-  (\<diamond> t1 [\<dots>k - 1] \<oplus> (t * k). s t1 = m \<and> 
+  ((s \<div>\<^sub>i k) t = m) =
+  (\<diamond> t1 [\<dots>k - 1] \<oplus> (t * k). s t1 = m \<and>
     (\<box> t2 ([\<dots>k - 1] \<oplus> (t * k)) \<down>> t1. s t2 = \<NoMsg>))"
 by (simp add: iT_add i_shrink_eq_Msg_iEx_iAll_cut_greater_conv)
 
 lemma i_shrink_eq_Msg_iSince_conv: "
   \<lbrakk> 0 < k; m \<noteq> \<NoMsg> \<rbrakk> \<Longrightarrow>
-  ((s \<div>\<^sub>i k) t = m) = 
+  ((s \<div>\<^sub>i k) t = m) =
   (s t2 = \<NoMsg>. t2 \<S> t1 [t * k\<dots>,k - Suc 0]. s t1 = m)"
 by (simp add: iSince_def iIN_cut_greater i_shrink_eq_Msg_iEx_iAll_cut_greater_conv)
 lemma i_shrink_eq_Msg_iSince_conv2: "
   \<lbrakk> 0 < k; m \<noteq> \<NoMsg> \<rbrakk> \<Longrightarrow>
-  ((s \<div>\<^sub>i k) t = m) = 
+  ((s \<div>\<^sub>i k) t = m) =
   (s t2 = \<NoMsg>. t2 \<S> t1 [\<dots>k - 1] \<oplus> (t * k). s t1 = m)"
 by (simp add: iT_add i_shrink_eq_Msg_iSince_conv)
 
 
-
-lemma iT_Mult_iAll_i_expand_nth_iff: 
+lemma iT_Mult_iAll_i_expand_nth_iff:
   "0 < k \<Longrightarrow> (\<box> t (I \<otimes> k). P ((f \<odot>\<^sub>i k) t)) = (\<box> t I. P (f t))"
 apply (rule iffI)
  apply clarify
@@ -1167,12 +1134,11 @@ apply (fastforce simp: iT_Mult_mem_iff mult.commute[of k] i_expand_nth_mod_eq_0)
 done
 
 
-
 text {* Streams and temporal operators cycle start/finish events *}
 
 lemma i_shrink_eq_NoMsg_iAll_start_event_conv: "
-  \<lbrakk> 0 < k; \<And>t. event t = (t mod k = 0); t0 = t * k \<rbrakk> \<Longrightarrow> 
-  ((s \<div>\<^sub>i k) t = \<NoMsg>) = 
+  \<lbrakk> 0 < k; \<And>t. event t = (t mod k = 0); t0 = t * k \<rbrakk> \<Longrightarrow>
+  ((s \<div>\<^sub>i k) t = \<NoMsg>) =
   (s t0 = \<NoMsg> \<and> (\<bigcirc> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 ([0\<dots>] \<oplus> t'). event t2)))"
 apply (case_tac "k = Suc 0")
  apply (simp add: iT_add iT_not_empty iNext_True)
@@ -1192,23 +1158,20 @@ apply (drule_tac y=x1 in order_le_imp_less_or_eq, erule disjE)
 apply (drule_tac x=x1 in spec)
 apply (simp add: mult.commute[of k])
 apply (drule Suc_le_lessD)
-thm less_mod_eq_imp_add_divisor_le
 apply (drule_tac y="q * k" and m=k in less_mod_eq_imp_add_divisor_le, simp)
 apply simp
 done
 
-thm i_shrink_eq_Msg_iSince_conv
 lemma i_shrink_eq_Msg_iUntil_start_event_conv: "
-  \<lbrakk> 0 < k; m \<noteq> \<NoMsg>; \<And>t. event t = (t mod k = 0); t0 = t * k \<rbrakk> \<Longrightarrow> 
+  \<lbrakk> 0 < k; m \<noteq> \<NoMsg>; \<And>t. event t = (t mod k = 0); t0 = t * k \<rbrakk> \<Longrightarrow>
   ((s \<div>\<^sub>i k) t = m) = (
   (s t0 = m \<and> (\<bigcirc> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 ([0\<dots>] \<oplus> t'). event t2))) \<or>
   (\<bigcirc> t' t0 [0\<dots>]. (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t'). (
-    s t2 = m \<and> \<not> event t2 \<and> (\<bigcirc> t'' t2 [0\<dots>]. 
+    s t2 = m \<and> \<not> event t2 \<and> (\<bigcirc> t'' t2 [0\<dots>].
       (s t3 = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t''). event t4))))))"
 apply (case_tac "k = Suc 0")
  apply (simp add: iT_add iT_not_empty iNext_iff)
 apply (drule neq_le_trans[OF not_sym], simp)
-thm i_shrink_eq_Msg_iSince_conv
 apply (simp add: i_shrink_eq_Msg_iSince_conv iTL_defs iT_add iT_cut_greater iT_cut_less Ball_def Bex_def iT_iff iFROM_inext)
 apply (rule_tac t="Suc (t * k + k - 2)" and s="t * k + k - Suc 0" in subst, simp)
 apply (rule iffI)
@@ -1245,7 +1208,6 @@ apply (rule iffI)
   apply clarsimp
   apply (subgoal_tac "0 < i mod k")
    prefer 2
-   thm between_imp_mod_gr0[OF Suc_le_lessD]
    apply (simp add: mult.commute[of t])
    apply (rule between_imp_mod_gr0[OF Suc_le_lessD], simp+)
   apply (rule conjI)
@@ -1259,7 +1221,6 @@ apply (rule iffI)
  apply (subgoal_tac "Suc (Suc 0) < k")
   prefer 2
   apply simp
- thm mod_0_imp_mod_pred
  apply (simp add: mod_0_imp_mod_pred)
  apply (rule conjI, blast)
  apply clarify
@@ -1323,10 +1284,8 @@ apply (case_tac "i1 = Suc i")
    apply (drule pred_less_imp_le)+
    apply clarsimp
   apply simp
-  thm le_imp_less_or_eq
   apply (drule_tac x=i in le_imp_less_or_eq, erule disjE)
    apply simp
-   thm between_imp_mod_between[of "k - Suc (Suc 0)" k t "Suc 0" i]
    apply (cut_tac b="k - Suc (Suc 0)" and m=k and k=t and a="Suc 0" and n=i in between_imp_mod_between)
    apply (simp add: mult.commute[of k])+
    apply clarsimp+
@@ -1335,7 +1294,6 @@ apply (simp add: mult.commute[of k])
 apply (subgoal_tac "Suc t \<le> q")
  prefer 2
  apply (rule Suc_leI)
- thm mult_less_cancel2[THEN iffD1, THEN conjunct2]
  apply (rule mult_less_cancel2[where k=k, THEN iffD1, THEN conjunct2])
  apply (rule Suc_le_lessD)
  apply simp
@@ -1352,8 +1310,8 @@ apply simp
 done
 
 lemma i_shrink_eq_NoMsg_iAll_finish_event_conv: "
-  \<lbrakk> 1 < k; \<And>t. event t = (t mod k = k - 1); t0 = t * k \<rbrakk> \<Longrightarrow> 
-  ((s \<div>\<^sub>i k) t = \<NoMsg>) = 
+  \<lbrakk> 1 < k; \<And>t. event t = (t mod k = k - 1); t0 = t * k \<rbrakk> \<Longrightarrow>
+  ((s \<div>\<^sub>i k) t = \<NoMsg>) =
   (s t0 = \<NoMsg> \<and> (\<bigcirc> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 ([0\<dots>] \<oplus> t'). (event t2 \<and> s t2 = \<NoMsg>))))"
 apply (simp add: i_shrink_eq_NoMsg_iAll_conv iT_add)
 apply (unfold iTL_defs Ball_def Bex_def)
@@ -1399,7 +1357,7 @@ apply (drule_tac x="t * k + k - Suc 0" and y=t2 in order_le_imp_less_or_eq, erul
 done
 
 lemma i_shrink_eq_Msg_iUntil_finish_event_conv: "
-  \<lbrakk> 1 < k; m \<noteq> \<NoMsg>; \<And>t. event t = (t mod k = k - 1); t0 = t * k \<rbrakk> \<Longrightarrow> 
+  \<lbrakk> 1 < k; m \<noteq> \<NoMsg>; \<And>t. event t = (t mod k = k - 1); t0 = t * k \<rbrakk> \<Longrightarrow>
   ((s \<div>\<^sub>i k) t = m) = (
   (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t0). event t2 \<and> s t2 = m) \<or>
   (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t0). (\<not> event t2 \<and> s t2 = m \<and> (
@@ -1441,8 +1399,7 @@ apply (erule disjE)
   apply (rule ccontr)
   apply (drule_tac x="t * k + k - Suc 0" in spec)
   apply (simp add: mod_pred)
- thm le_mod_add_eq_imp_add_mod_le[OF less_imp_le, rule_format, of "t * k" _ "k - Suc 0" k]
- apply (frule_tac a="t * k" and b=t1 and k="k - Suc 0" and m=k 
+ apply (frule_tac a="t * k" and b=t1 and k="k - Suc 0" and m=k
    in le_mod_add_eq_imp_add_mod_le[OF less_imp_le, rule_format])
   apply (simp add: add.commute[of "t * k"] mod_pred)
  apply (rule_tac x=t1 in exI)
@@ -1467,7 +1424,6 @@ apply (drule_tac y=t1 in order_le_imp_less_or_eq, erule disjE)
   apply (rule ccontr)
   apply (simp add: linorder_not_le)
   apply (drule_tac m=t2 in less_imp_le_pred)
-  thm between_imp_mod_le[of "k - Suc (Suc 0)" k t _, OF diff_Suc_less, OF gr_implies_gr0]
   apply (simp only: mult.commute[of t])
   apply (frule_tac n=t2 in between_imp_mod_le[of "k - Suc (Suc 0)" k t _, OF diff_Suc_less, OF gr_implies_gr0])
    apply simp+
@@ -1494,7 +1450,6 @@ apply (case_tac "Suc t1 = t2")
    prefer 2
    apply simp
   apply (simp only: mult.commute[of t])
-  thm between_imp_mod_le[of "k - Suc 0 - Suc 0" k t "Suc t1"]
   apply (drule_tac n="Suc t1" in between_imp_mod_le[of "k - Suc 0 - Suc 0" k t])
   apply simp_all
 apply (simp add: iIN_iff)
@@ -1521,10 +1476,8 @@ apply (drule_tac P="t3 \<le> t2" in meta_mp)
 apply (subgoal_tac "t * k + (k - Suc 0) \<le> t2")
  prefer 2
  apply (simp only: mult.commute[of t])
- thm mult_divisor_le_mod_ge_imp_ge
  apply (rule mult_divisor_le_mod_ge_imp_ge)
  apply simp_all
 done
-
 
 end

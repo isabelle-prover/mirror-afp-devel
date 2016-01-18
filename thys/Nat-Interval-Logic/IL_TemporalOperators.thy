@@ -9,10 +9,7 @@ theory IL_TemporalOperators
 imports IL_IntervalOperators
 begin
 
-
-
 text {* Bool : some additional properties  *}
-
 
 instantiation bool :: "{ord, zero, one, plus, times, order}"
 begin
@@ -23,19 +20,18 @@ definition add_bool_def: "a + b \<equiv> a \<or> b"
 definition mult_bool_def: "a * b \<equiv> a \<and> b"
 
 instance ..
+
 end
 
 value "False < True"
 value "True < True"
 value "True \<le> True"
-thm le_bool_def
 
 lemmas bool_op_rel_defs =
   add_bool_def 
   mult_bool_def
   less_bool_def
   le_bool_def
-thm bool_op_rel_defs
 
 instance bool :: wellorder
 apply (rule wf_wellorderI)
@@ -52,10 +48,7 @@ apply blast+
 done
 
 
-
 subsection {* Basic definitions *}
-
-typ iT
 
 (* 
 Symbols: 
@@ -65,51 +58,40 @@ Symbols:
   bigcirc: \<bigcirc>
 *)
 
-thm Ex_def
-thm All_def
-
-term All
-term Ball
 lemma UNIV_nat: "\<nat> = (UNIV::nat set)"
 by (simp add: Nats_def)
 
 text {* Universal temporal operator: Always/Globally *}
-definition
- iAll :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Always" 
-where
-  "iAll I P \<equiv> \<forall>t\<in>I. P t"
+definition iAll :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Always"
+  where "iAll I P \<equiv> \<forall>t\<in>I. P t"
 
 text {* Existential temporal operator: Eventually/Finally *}
-definition
-  iEx :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Eventually"
-where
-  iEx_def  : "iEx I P  \<equiv> \<exists>t\<in>I. P t"
+definition iEx :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Eventually"
+  where "iEx I P \<equiv> \<exists>t\<in>I. P t"
 
 
 syntax (xsymbols)
   "_iAll" :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<box> _ _./ _)" [0, 0, 10] 10)
   "_iEx" ::  "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<diamond> _ _./ _)" [0, 0, 10] 10)
 translations
-   "\<box> t I. P" \<rightleftharpoons> "CONST iAll I (\<lambda>t. P)"
-   "\<diamond> t I. P" \<rightleftharpoons> "CONST iEx I (\<lambda>t. P)"
+  "\<box> t I. P" \<rightleftharpoons> "CONST iAll I (\<lambda>t. P)"
+  "\<diamond> t I. P" \<rightleftharpoons> "CONST iEx I (\<lambda>t. P)"
 
 text {* Future temporal operator: Next *}
-definition
-  iNext     :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Next"
-where
-  "iNext t0 I P \<equiv> P (inext t0 I)"
+definition iNext :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Next"
+  where "iNext t0 I P \<equiv> P (inext t0 I)"
+
 text {* Past temporal operator: Last/Previous *}
-definition
-  iLast     :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Last"
-where
-  "iLast t0 I P \<equiv> P (iprev t0 I)"
+definition iLast :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Last"
+  where "iLast t0 I P \<equiv> P (iprev t0 I)"
 
 syntax (xsymbols)
   "_iNext" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<bigcirc> _ _ _./ _)" [0, 0, 10] 10)
   "_iLast" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus> _ _ _./ _)" [0, 0, 10] 10)
 translations
-   "\<bigcirc> t t0 I. P" \<rightleftharpoons> "CONST iNext t0 I (\<lambda>t. P)"
-   "\<ominus> t t0 I. P" \<rightleftharpoons> "CONST iLast t0 I (\<lambda>t. P)"
+  "\<bigcirc> t t0 I. P" \<rightleftharpoons> "CONST iNext t0 I (\<lambda>t. P)"
+  "\<ominus> t t0 I. P" \<rightleftharpoons> "CONST iLast t0 I (\<lambda>t. P)"
+
 lemma "\<bigcirc> t 10 [0\<dots>]. (t + 10 > 10)"
 by (simp add: iNext_def iT_inext_if)
 
@@ -117,23 +99,17 @@ text {* The following versions of Next and Last operator differ in the cases
   where no next/previous element exists or specified time point is not in interval:
   the weak versions return @{term True} and the strong versions return @{term False}. *}
 
-definition
-  iNextWeak     :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Weak Next"
-where
-  "iNextWeak t0 I P   \<equiv> (\<box> t {inext t0 I} \<down>> t0. P t)"
-definition
-  iNextStrong   :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Strong Next"
-where
-  "iNextStrong t0 I P \<equiv> (\<diamond> t {inext t0 I} \<down>> t0. P t)"
+definition iNextWeak :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Weak Next"
+  where "iNextWeak t0 I P  \<equiv> (\<box> t {inext t0 I} \<down>> t0. P t)"
 
-definition
-  iLastWeak     :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Weak Last"
-where
-  "iLastWeak t0 I P   \<equiv> (\<box> t {iprev t0 I} \<down>< t0. P t)"
-definition
-  iLastStrong   :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Strong Last"
-where
-  "iLastStrong t0 I P \<equiv> (\<diamond> t {iprev t0 I} \<down>< t0. P t)"
+definition iNextStrong :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Strong Next"
+  where "iNextStrong t0 I P \<equiv> (\<diamond> t {inext t0 I} \<down>> t0. P t)"
+
+definition iLastWeak :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Weak Last"
+  where "iLastWeak t0 I P   \<equiv> (\<box> t {iprev t0 I} \<down>< t0. P t)"
+
+definition iLastStrong :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Strong Last"
+  where "iLastStrong t0 I P \<equiv> (\<diamond> t {iprev t0 I} \<down>< t0. P t)"
 
 syntax (xsymbols)
   "_iNextWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<bigcirc>\<^sub>W _ _ _./ _)" [0, 0, 10] 10)
@@ -141,30 +117,28 @@ syntax (xsymbols)
   "_iLastWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus>\<^sub>W _ _ _./ _)" [0, 0, 10] 10)
   "_iLastStrong" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus>\<^sub>S _ _ _./ _)" [0, 0, 10] 10)
 translations
-   "\<bigcirc>\<^sub>W t t0 I. P" \<rightleftharpoons> "CONST iNextWeak t0 I (\<lambda>t. P)"
-   "\<bigcirc>\<^sub>S t t0 I. P" \<rightleftharpoons> "CONST iNextStrong t0 I (\<lambda>t. P)"
-   "\<ominus>\<^sub>W t t0 I. P" \<rightleftharpoons> "CONST iLastWeak t0 I (\<lambda>t. P)"
-   "\<ominus>\<^sub>S t t0 I. P" \<rightleftharpoons> "CONST iLastStrong t0 I (\<lambda>t. P)"
+  "\<bigcirc>\<^sub>W t t0 I. P" \<rightleftharpoons> "CONST iNextWeak t0 I (\<lambda>t. P)"
+  "\<bigcirc>\<^sub>S t t0 I. P" \<rightleftharpoons> "CONST iNextStrong t0 I (\<lambda>t. P)"
+  "\<ominus>\<^sub>W t t0 I. P" \<rightleftharpoons> "CONST iLastWeak t0 I (\<lambda>t. P)"
+  "\<ominus>\<^sub>S t t0 I. P" \<rightleftharpoons> "CONST iLastStrong t0 I (\<lambda>t. P)"
 
 
 text {* Some examples for Next and Last operator *}
+
 lemma "\<bigcirc> t 5 [0\<dots>,10]. ([0::int,10,20,30,40,50,60,70,80,90] ! t < 80)"
 by (simp add: iNext_def iIN_inext)
+
 lemma "\<ominus> t 5 [0\<dots>,10]. ([0::int,10,20,30,40,50,60,70,80,90] ! t < 80)"
 by (simp add: iLast_def iIN_iprev)
 
 
 text {* Temporal Until operator *}
-definition
-  iUntil    :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Until"
-where
-  "iUntil I P Q \<equiv> \<diamond> t I. Q t \<and> (\<box> t' (I \<down>< t). P t')"
+definition iUntil :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Until"
+  where "iUntil I P Q \<equiv> \<diamond> t I. Q t \<and> (\<box> t' (I \<down>< t). P t')"
 
 text {* Temporal Since operator (past operator corresponding to Until) *}
-definition
-  iSince    :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Since"
-where
-  "iSince I P Q \<equiv> \<diamond> t I. Q t \<and> (\<box> t' (I \<down>> t). P t')"
+definition iSince :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Since"
+  where "iSince I P Q \<equiv> \<diamond> t I. Q t \<and> (\<box> t' (I \<down>> t). P t')"
 
 syntax (xsymbols)
   "_iUntil" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
@@ -172,18 +146,14 @@ syntax (xsymbols)
   "_iSince" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
     ("(_./ _ (3\<S> _ _)./ _)" [10, 0, 0, 0, 10] 10)
 translations
-   "P. t \<U> t' I. Q" \<rightleftharpoons> "CONST iUntil I (\<lambda>t. P) (\<lambda>t'. Q)"
-   "P. t \<S> t' I. Q" \<rightleftharpoons> "CONST iSince I (\<lambda>t. P) (\<lambda>t'. Q)"
+  "P. t \<U> t' I. Q" \<rightleftharpoons> "CONST iUntil I (\<lambda>t. P) (\<lambda>t'. Q)"
+  "P. t \<S> t' I. Q" \<rightleftharpoons> "CONST iSince I (\<lambda>t. P) (\<lambda>t'. Q)"
 
-definition
-  iWeakUntil    :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Weak Until/Wating-for/Unless"
-where
-  "iWeakUntil I P Q \<equiv> (\<box> t I. P t) \<or> (\<diamond> t I. Q t \<and> (\<box> t' (I \<down>< t). P t'))"
+definition iWeakUntil :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Weak Until/Wating-for/Unless"
+  where "iWeakUntil I P Q \<equiv> (\<box> t I. P t) \<or> (\<diamond> t I. Q t \<and> (\<box> t' (I \<down>< t). P t'))"
 
-definition
-  iWeakSince    :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Weak Since/Back-to"
-where
-  "iWeakSince I P Q \<equiv> (\<box> t I. P t) \<or> (\<diamond> t I. Q t \<and> (\<box> t' (I \<down>> t). P t'))"
+definition iWeakSince :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Weak Since/Back-to"
+  where "iWeakSince I P Q \<equiv> (\<box> t I. P t) \<or> (\<diamond> t I. Q t \<and> (\<box> t' (I \<down>> t). P t'))"
 
 syntax (xsymbols)
   "_iWeakUntil" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
@@ -191,20 +161,15 @@ syntax (xsymbols)
   "_iWeakSince" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
     ("(_./ _ (3\<B> _ _)./ _)" [10, 0, 0, 0, 10] 10)
 translations
-   "P. t \<W> t' I. Q" \<rightleftharpoons> "CONST iWeakUntil I (\<lambda>t. P) (\<lambda>t'. Q)"
-   "P. t \<B> t' I. Q" \<rightleftharpoons> "CONST iWeakSince I (\<lambda>t. P) (\<lambda>t'. Q)"
+  "P. t \<W> t' I. Q" \<rightleftharpoons> "CONST iWeakUntil I (\<lambda>t. P) (\<lambda>t'. Q)"
+  "P. t \<B> t' I. Q" \<rightleftharpoons> "CONST iWeakSince I (\<lambda>t. P) (\<lambda>t'. Q)"
 
 
+definition iRelease :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Release"
+  where "iRelease I P Q \<equiv> (\<box> t I. Q t) \<or> (\<diamond> t I. P t \<and> (\<box> t' (I \<down>\<le> t). Q t'))"
 
-definition
-  iRelease    :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Release"
-where
-  iRelease_def : "iRelease I P Q \<equiv> (\<box> t I. Q t) \<or> (\<diamond> t I. P t \<and> (\<box> t' (I \<down>\<le> t). Q t'))"
-
-definition
-  iTrigger    :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Trigger"
-where
-  iTrigger_def : "iTrigger I P Q \<equiv> (\<box> t I. Q t) \<or> (\<diamond> t I. P t \<and> (\<box> t' (I \<down>\<ge> t). Q t'))"
+definition iTrigger :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Trigger"
+  where "iTrigger I P Q \<equiv> (\<box> t I. Q t) \<or> (\<diamond> t I. P t \<and> (\<box> t' (I \<down>\<ge> t). Q t'))"
 
 syntax (xsymbols)
   "_iRelease" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
@@ -212,10 +177,8 @@ syntax (xsymbols)
   "_iTrigger" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
     ("(_./ _ (3\<T> _ _)./ _)" [10, 0, 0, 0, 10] 10)
 translations
-   "P. t \<R> t' I. Q" \<rightleftharpoons> "CONST iRelease I (\<lambda>t. P) (\<lambda>t'. Q)"
-   "P. t \<T> t' I. Q" \<rightleftharpoons> "CONST iTrigger I (\<lambda>t. P) (\<lambda>t'. Q)"
-
-
+  "P. t \<R> t' I. Q" \<rightleftharpoons> "CONST iRelease I (\<lambda>t. P) (\<lambda>t'. Q)"
+  "P. t \<T> t' I. Q" \<rightleftharpoons> "CONST iTrigger I (\<lambda>t. P) (\<lambda>t'. Q)"
 
 
 lemmas iTL_Next_defs =
@@ -235,13 +198,6 @@ print_translation {*
   Syntax_Trans.preserve_binder_abs2_tr' @{const_syntax iEx} @{syntax_const "_iEx"}]
 *}
 
-(* Test that the syntax translations work properly for Always and Eventually *)
-term "\<box> t I. P t"
-term "\<diamond> t I. P t"
-
-
-term "P1 t1. t1 \<U> t2 I. P2 t2"
-term "P1 t1. t1 \<S> t2 I. P2 t2"
 print_translation {*
 let
   fun btr' syn [i,Abs abs,Abs abs'] =
@@ -254,10 +210,6 @@ in
   (@{const_syntax "iSince"}, K (btr' "_iSince"))]
 end
 *}
-
-(* Test that the syntax translations work properly for Until and Since*)
-term "P t1. t1 \<U> t2 I. Q t2"
-term "P t1. t1 \<S> t2 I. Q t2"
 
 print_translation {*
 let
@@ -272,10 +224,6 @@ in
 end
 *}
 
-(* Test that the syntax translations work properly for Weak Until and Weak Since/Back-To*)
-term "P t1. t1 \<W> t2 I. Q t2"
-term "P t1. t1 \<B> t2 I. Q t2"
-
 print_translation {*
 let
   fun btr' syn [i,Abs abs,Abs abs'] =
@@ -289,24 +237,17 @@ in
 end
 *}
 
-(* Test that the syntax translations work properly for Release and Trigger*)
-term "P t1. t1 \<R> t2 I. Q t2"
-term "P t1. t1 \<T> t2 I. Q t2"
-
-
-
-
 
 subsection {* Basic lemmata for temporal operators *}
 
 subsubsection {* Intro/elim rules *}
 
-thm bexI rev_bexI
 lemma 
   iexI[intro]:      "\<lbrakk> P t; t \<in> I \<rbrakk> \<Longrightarrow> \<diamond> t I. P t" and
   rev_iexI[intro?]: "\<lbrakk> t \<in> I; P t \<rbrakk> \<Longrightarrow> \<diamond> t I. P t" and
   iexE[elim!]:      "\<lbrakk> \<diamond> t I. P t; \<And>t. \<lbrakk> t \<in> I; P t \<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
 by (unfold iEx_def, blast+)
+
 lemma
   iallI[intro!]: "(\<And>t. t \<in> I \<Longrightarrow> P t) \<Longrightarrow> \<box> t I. P t" and
   ispec[dest?]: "\<lbrakk> \<box> t I. P t; t \<in> I \<rbrakk> \<Longrightarrow> P t" and
@@ -319,12 +260,12 @@ lemma
   rev_iuntilI[intro?]: "
     \<lbrakk> t \<in> I; Q t; (\<And>t'. t' \<in> I \<down>< t\<Longrightarrow> P t') \<rbrakk> \<Longrightarrow> P t'. t' \<U> t I. Q t"
 by (unfold iUntil_def, blast+)
+
 lemma
   iuntilE[elim]: "
     \<lbrakk> P' t'. t' \<U> t I. P t; \<And>t. \<lbrakk> t \<in> I; P t \<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
 by (unfold iUntil_def, blast)
 
-thm iSince_def
 lemma
   isinceI[intro]: "
     \<lbrakk> Q t; (\<And>t'. t' \<in> I \<down>> t\<Longrightarrow> P t'); t \<in> I \<rbrakk> \<Longrightarrow> P t'. t' \<S> t I. Q t" and
@@ -337,14 +278,11 @@ lemma
 by (unfold iSince_def, blast)
 
 
-
-
 subsubsection {* Rewrite rules for trivial simplification *}
 
-thm ball_triv
 lemma iall_triv[simp]: "(\<box> t I. P) = ((\<exists>t. t \<in> I) \<longrightarrow> P)"
 by (simp add: iAll_def)
-thm bex_triv
+
 lemma iex_triv[simp]: "(\<diamond> t I. P) = ((\<exists>t. t \<in> I) \<and> P)"
 by (simp add: iEx_def)
 
@@ -352,18 +290,22 @@ lemma iex_conjL1: "
   (\<diamond> t1 I1. (P1 t1 \<and> (\<diamond> t2 I2. P2 t1 t2))) = 
   (\<diamond> t1 I1. \<diamond> t2 I2. P1 t1 \<and> P2 t1 t2)"
 by blast
+
 lemma iex_conjR1: "
   (\<diamond> t1 I1. ((\<diamond> t2 I2. P2 t1 t2) \<and> P1 t1)) =
   (\<diamond> t1 I1. \<diamond> t2 I2. P2 t1 t2 \<and> P1 t1)"
 by blast
+
 lemma iex_conjL2: "
   (\<diamond> t1 I1. (P1 t1 \<and> (\<diamond> t2 (I2 t1). P2 t1 t2))) = 
   (\<diamond> t1 I1. \<diamond> t2 (I2 t1). P1 t1 \<and> P2 t1 t2)"
 by blast
+
 lemma iex_conjR2: "
   (\<diamond> t1 I1. ((\<diamond> t2 (I2 t1). P2 t1 t2) \<and> P1 t1)) = 
   (\<diamond> t1 I1. \<diamond> t2 (I2 t1). P2 t1 t2 \<and> P1 t1)"
 by blast
+
 lemma iex_commute: "
   (\<diamond> t1 I1. \<diamond> t2 I2. P t1 t2) = 
   (\<diamond> t2 I2. \<diamond> t1 I1. P t1 t2)"
@@ -374,30 +316,34 @@ lemma iall_conjL1: "
   (\<box> t1 I1. (P1 t1 \<and> (\<box> t2 I2. P2 t1 t2))) = 
   (\<box> t1 I1. \<box> t2 I2. P1 t1 \<and> P2 t1 t2)"
 by blast
+
 lemma iall_conjR1: "
   I2 \<noteq> {} \<Longrightarrow>
   (\<box> t1 I1. ((\<box> t2 I2. P2 t1 t2) \<and> P1 t1)) =
   (\<box> t1 I1. \<box> t2 I2. P2 t1 t2 \<and> P1 t1)"
 by blast
+
 lemma iall_conjL2: "
   \<box> t1 I1. I2 t1 \<noteq> {} \<Longrightarrow>
   (\<box> t1 I1. (P1 t1 \<and> (\<box> t2 (I2 t1). P2 t1 t2))) = 
   (\<box> t1 I1. \<box> t2 (I2 t1). P1 t1 \<and> P2 t1 t2)"
 by blast
+
 lemma iall_conjR2: "
   \<box> t1 I1. I2 t1 \<noteq> {} \<Longrightarrow>
   (\<box> t1 I1. ((\<box> t2 (I2 t1). P2 t1 t2) \<and> P1 t1)) = 
   (\<box> t1 I1. \<box> t2 (I2 t1). P2 t1 t2 \<and> P1 t1)"
 by blast
+
 lemma iall_commute: "
   (\<box> t1 I1. \<box> t2 I2. P t1 t2) = 
   (\<box> t2 I2. \<box> t1 I1. P t1 t2)"
 by blast
 
-
 lemma iall_conj_distrib: "
   (\<box> t I. P t \<and> Q t) = ((\<box> t I. P t) \<and> (\<box> t I. Q t))"
 by blast
+
 lemma iex_disj_distrib: "
   (\<diamond> t I. P t \<or> Q t) = ((\<diamond> t I. P t) \<or> (\<diamond> t I. Q t))"
 by blast
@@ -406,6 +352,7 @@ lemma iall_conj_distrib2: "
   (\<box> t1 I1. \<box> t2 (I2 t1). P t1 t2 \<and> Q t1 t2) = 
   ((\<box> t1 I1. \<box> t2 (I2 t1). P t1 t2) \<and> (\<box> t1 I1. \<box> t2 (I2 t1). Q t1 t2))"
 by blast
+
 lemma iex_disj_distrib2: "
   (\<diamond> t1 I1. \<diamond> t2 (I2 t1). P t1 t2 \<or> Q t1 t2) = 
   ((\<diamond> t1 I1. \<diamond> t2 (I2 t1). P t1 t2) \<or> (\<diamond> t1 I1. \<diamond> t2 (I2 t1). Q t1 t2))"
@@ -414,20 +361,20 @@ by blast
 lemma iUntil_disj_distrib: "
   (P t1. t1 \<U> t2 I. (Q1 t2 \<or> Q2 t2)) = ((P t1. t1 \<U> t2 I. Q1 t2) \<or> (P t1. t1 \<U> t2 I. Q2 t2))"
 unfolding iUntil_def by blast
+
 lemma iSince_disj_distrib: "
   (P t1. t1 \<S> t2 I. (Q1 t2 \<or> Q2 t2)) = ((P t1. t1 \<S> t2 I. Q1 t2) \<or> (P t1. t1 \<S> t2 I. Q2 t2))"
 unfolding iSince_def by blast
 
-thm iNextWeak_def
 lemma 
-  iNext_iff       : "(\<bigcirc> t t0 I. P t) = (\<box> t [\<dots>0] \<oplus> (inext t0 I). P t)" and
-  iLast_iff       : "(\<ominus> t t0 I. P t) = (\<box> t [\<dots>0] \<oplus> (iprev t0 I). P t)"
-by (fastforce simp: iTL_Next_defs iT_add iIN_0)+
-lemma 
-  iNext_iEx_iff   : "(\<bigcirc> t t0 I. P t) = (\<diamond> t [\<dots>0] \<oplus> (inext t0 I). P t)" and
-  iLast_iEx_iff   : "(\<ominus> t t0 I. P t) = (\<diamond> t [\<dots>0] \<oplus> (iprev t0 I). P t)"
+  iNext_iff: "(\<bigcirc> t t0 I. P t) = (\<box> t [\<dots>0] \<oplus> (inext t0 I). P t)" and
+  iLast_iff: "(\<ominus> t t0 I. P t) = (\<box> t [\<dots>0] \<oplus> (iprev t0 I). P t)"
 by (fastforce simp: iTL_Next_defs iT_add iIN_0)+
 
+lemma 
+  iNext_iEx_iff: "(\<bigcirc> t t0 I. P t) = (\<diamond> t [\<dots>0] \<oplus> (inext t0 I). P t)" and
+  iLast_iEx_iff: "(\<ominus> t t0 I. P t) = (\<diamond> t [\<dots>0] \<oplus> (iprev t0 I). P t)"
+by (fastforce simp: iTL_Next_defs iT_add iIN_0)+
 
 
 lemma inext_singleton_cut_greater_not_empty_iff: "
@@ -438,10 +385,10 @@ apply (case_tac "t0 \<in> I")
  apply (simp add: not_in_inext_fix)
 apply simp
 apply (case_tac "I \<down>> t0 = {}")
- thm inext_all_le_fix
  apply (simp add: cut_greater_empty_iff inext_all_le_fix)
 apply (simp add: cut_greater_not_empty_iff inext_mono2)
 done
+
 lemma iprev_singleton_cut_less_not_empty_iff: "
   ({iprev t0 I} \<down>< t0 \<noteq> {}) = (I \<down>< t0 \<noteq> {} \<and> t0 \<in> I)"
 apply (simp add: cut_less_singleton)
@@ -450,41 +397,39 @@ apply (case_tac "t0 \<in> I")
  apply (simp add: not_in_iprev_fix)
 apply simp
 apply (case_tac "I \<down>< t0 = {}")
- thm iprev_all_ge_fix
  apply (simp add: cut_less_empty_iff iprev_all_ge_fix)
 apply (simp add: cut_less_not_empty_iff iprev_mono2)
 done
+
 lemma inext_singleton_cut_greater_empty_iff: "
   ({inext t0 I} \<down>> t0 = {}) = (I \<down>> t0 = {} \<or> t0 \<notin> I)"
 apply (subst Not_eq_iff[symmetric])
-thm inext_singleton_cut_greater_not_empty_iff
 apply (simp add: inext_singleton_cut_greater_not_empty_iff)
 done
+
 lemma iprev_singleton_cut_less_empty_iff: "
   ({iprev t0 I} \<down>< t0 = {}) = (I \<down>< t0 = {} \<or> t0 \<notin> I)"
 apply (subst Not_eq_iff[symmetric])
-thm iprev_singleton_cut_less_not_empty_iff
 apply (simp add: iprev_singleton_cut_less_not_empty_iff)
 done
 
 lemma iNextWeak_iff : "(\<bigcirc>\<^sub>W t t0 I. P t) = ((\<bigcirc> t t0 I. P t) \<or> (I \<down>> t0 = {}) \<or> t0 \<notin> I)"
 apply (unfold iTL_defs)
-thm inext_singleton_cut_greater_empty_iff[symmetric]
 apply (simp add: inext_singleton_cut_greater_empty_iff[symmetric] cut_greater_singleton)
 done
+
 lemma iNextStrong_iff : "(\<bigcirc>\<^sub>S t t0 I. P t) = ((\<bigcirc> t t0 I. P t) \<and> (I \<down>> t0 \<noteq> {}) \<and> t0 \<in> I)"
 apply (unfold iTL_defs)
-thm inext_singleton_cut_greater_not_empty_iff[symmetric]
 apply (simp add: inext_singleton_cut_greater_not_empty_iff[symmetric] cut_greater_singleton)
 done
+
 lemma iLastWeak_iff : "(\<ominus>\<^sub>W t t0 I. P t) = ((\<ominus> t t0 I. P t) \<or> (I \<down>< t0 = {}) \<or> t0 \<notin> I)"
 apply (unfold iTL_defs)
-thm iprev_singleton_cut_less_empty_iff[symmetric]
 apply (simp add: iprev_singleton_cut_less_empty_iff[symmetric] cut_less_singleton)
 done
+
 lemma iLastStrong_iff : "(\<ominus>\<^sub>S t t0 I. P t) = ((\<ominus> t t0 I. P t) \<and> (I \<down>< t0 \<noteq> {}) \<and> t0 \<in> I)"
 apply (unfold iTL_defs)
-thm iprev_singleton_cut_less_not_empty_iff[symmetric]
 apply (simp add: iprev_singleton_cut_less_not_empty_iff[symmetric] cut_less_singleton)
 done
 
@@ -492,8 +437,6 @@ lemmas iTL_Next_iff =
   iNext_iff iLast_iff
   iNextWeak_iff iNextStrong_iff
   iLastWeak_iff iLastStrong_iff
-
-
 
 
 lemma 
@@ -527,14 +470,15 @@ lemma empty_iff_iAll_False:   "(I = {}) = (\<box> t I. False)" by blast
 lemma not_empty_iff_iEx_True: "(I \<noteq> {}) = (\<diamond> t I. True)" by blast
 
 lemma 
-  iNext_True:        "\<bigcirc> t t0 I. True" and
-  iNextWeak_True:    "(\<bigcirc>\<^sub>W t t0 I. True)" and
-  iNext_False:       "\<not> (\<bigcirc> t t0 I. False)" and
+  iNext_True: "\<bigcirc> t t0 I. True" and
+  iNextWeak_True: "(\<bigcirc>\<^sub>W t t0 I. True)" and
+  iNext_False: "\<not> (\<bigcirc> t t0 I. False)" and
   iNextStrong_False: "\<not> (\<bigcirc>\<^sub>S t t0 I. False)"
 by (simp_all add: iTL_defs)
+
 lemma
-  iNextStrong_True:  "(\<bigcirc>\<^sub>S t t0 I. True) = (I \<down>> t0 \<noteq> {} \<and> t0 \<in> I)" and
-  iNextWeak_False:   "(\<not> (\<bigcirc>\<^sub>W t t0 I. False)) = (I \<down>> t0 \<noteq> {} \<and> t0 \<in> I)"
+  iNextStrong_True: "(\<bigcirc>\<^sub>S t t0 I. True) = (I \<down>> t0 \<noteq> {} \<and> t0 \<in> I)" and
+  iNextWeak_False: "(\<not> (\<bigcirc>\<^sub>W t t0 I. False)) = (I \<down>> t0 \<noteq> {} \<and> t0 \<in> I)"
 by (simp_all add: iTL_defs ex_in_conv inext_singleton_cut_greater_not_empty_iff)
 
 
@@ -544,6 +488,7 @@ lemma
   iLast_False:       "\<not> (\<ominus> t t0 I. False)" and
   iLastStrong_False: "\<not> (\<ominus>\<^sub>S t t0 I. False)"
 by (simp_all add: iTL_defs)
+
 lemma
   iLastStrong_True:  "(\<ominus>\<^sub>S t t0 I. True) = (I \<down>< t0 \<noteq> {} \<and> t0 \<in> I)" and
   iLastWeak_False:   "(\<not> (\<ominus>\<^sub>W t t0 I. False)) = (I \<down>< t0 \<noteq> {} \<and> t0 \<in> I)"
@@ -551,6 +496,7 @@ by (simp_all add: iTL_defs ex_in_conv iprev_singleton_cut_less_not_empty_iff)
 
 lemma iUntil_True_left[simp]: "(True. t' \<U> t I. Q t) = (\<diamond> t I. Q t)" 
 by blast
+
 lemma iUntil_True[simp]: "(P t'. t' \<U> t I. True) = (I \<noteq> {})"
 apply (unfold iTL_defs)
 apply (rule iffI)
@@ -558,6 +504,7 @@ apply (rule iffI)
 apply (rule_tac x="iMin I" in bexI)
 apply (simp add: cut_less_Min_empty iMinI_ex2)+
 done
+
 lemma iUntil_False_left[simp]: "(False. t' \<U> t I. Q t) = (I \<noteq> {} \<and> Q (iMin I))"
 apply (case_tac "I = {}", blast)
 apply (simp add: iTL_defs)
@@ -570,11 +517,13 @@ apply (rule_tac x="iMin I" in bexI)
  apply (simp add: cut_less_Min_empty)
 apply (simp add: iMinI_ex2)
 done
+
 lemma iUntil_False[simp]: "\<not> (P t'. t' \<U> t I. False)" 
 by blast
 
 lemma iSince_True_left[simp]: "(True. t' \<S> t I. Q t) = (\<diamond> t I. Q t)" 
 by blast
+
 lemma iSince_True_if: "
   (P t'. t' \<S> t I. True) = 
   (if finite I then I \<noteq> {} else \<diamond> t1 I. \<box> t2 (I \<down>> t1). P t2)"
@@ -582,12 +531,13 @@ apply (clarsimp simp: iTL_defs)
 apply (rule iffI)
  apply clarsimp
 apply (rule_tac x="Max I" in bexI)
- thm cut_greater_Max_empty
  apply (simp add: cut_greater_Max_empty)
 apply simp
 done
+
 corollary iSince_True_finite[simp]: "finite I \<Longrightarrow> (P t'. t' \<S> t I. True) = (I \<noteq> {})"
 by (simp add: iSince_True_if)
+
 lemma iSince_False_left[simp]: "(False. t' \<S> t I. Q t) = (finite I \<and> I \<noteq> {} \<and> Q (Max I))"
 apply (simp add: iTL_defs)
 apply (case_tac "I = {}", simp)
@@ -603,11 +553,13 @@ apply (rule_tac x="Max I" in bexI)
  apply (simp add: cut_greater_Max_empty)
 apply simp
 done
+
 lemma iSince_False[simp]: "\<not> (P t'. t' \<S> t I. False)"
 by blast
 
 lemma iWeakUntil_True_left[simp]: "True. t' \<W> t I. Q t"
 by (simp add: iWeakUntil_def)
+
 lemma iWeakUntil_True[simp]: "P t'. t' \<W> t I. True"
 apply (simp add: iTL_defs)
 apply (case_tac "I = {}", simp)
@@ -616,6 +568,7 @@ apply (rule_tac x="iMin I" in bexI)
  apply (simp add: cut_less_Min_empty)
 apply (simp add: iMinI_ex2)
 done
+
 lemma iWeakUntil_False_left[simp]: "(False. t' \<W> t I. Q t) = (I = {} \<or> Q (iMin I))"
 apply (simp add: iTL_defs)
 apply (case_tac "I = {}", simp)
@@ -627,15 +580,18 @@ apply (rule_tac x="iMin I" in bexI)
  apply (simp add: cut_less_Min_empty)
 apply (simp add: iMinI_ex2)
 done
+
 lemma iWeakUntil_False[simp]: "(P t'. t' \<W> t I. False) = (\<box> t I. P t)"
 by (simp add: iWeakUntil_def)
 
 lemma iWeakSince_True_left[simp]: "True. t' \<B> t I. Q t"
 by (simp add: iTL_defs)
+
 lemma iWeakSince_True_disj: "
   (P t'. t' \<B> t I. True) = 
   (I = {} \<or> (\<diamond> t1 I. \<box> t2 (I \<down>> t1). P t2))"
 unfolding iTL_defs by blast
+
 lemma iWeakSince_True_finite[simp]: "finite I \<Longrightarrow> (P t'. t' \<B> t I. True)"
 apply (simp add: iTL_defs)
 apply (case_tac "I = {}", simp)
@@ -644,6 +600,7 @@ apply (rule_tac x="Max I" in bexI)
  apply (simp add: cut_greater_Max_empty)
 apply simp
 done
+
 lemma iWeakSince_False_left[simp]: "(False. t' \<B> t I. Q t) = (I = {} \<or> (finite I \<and> Q (Max I)))"
 apply (simp add: iTL_defs)
 apply (case_tac "I = {}", simp)
@@ -660,6 +617,7 @@ apply (rule_tac x="Max I" in bexI)
  apply (simp add: cut_greater_Max_empty)
 apply simp
 done
+
 lemma iWeakSince_False[simp]: "(P t'. t' \<B> t I. False) = (\<box> t I. P t)"
 by (simp add: iWeakSince_def)
 
@@ -678,19 +636,25 @@ apply (rule_tac x="iMin I" in bexI)
  apply fastforce
 apply (simp add: iMinI_ex2)
 done
+
 lemma iRelease_True[simp]: "P t'. t' \<R> t I. True"
 by (simp add: iTL_defs)
+
 lemma iRelease_False_left[simp]: "(False. t' \<R> t I. Q t) = (\<box> t I. Q t)"
 by (simp add: iTL_defs)
+
 lemma iRelease_False[simp]: "(P t'. t' \<R> t I. False) = (I = {})"
 unfolding iTL_defs by blast
 
 lemma iTrigger_True_left[simp]: "(True. t' \<T> t I. Q t) = (I = {} \<or> (\<diamond> t1 I. \<box> t2 (I \<down>\<ge> t1). Q t2))"
 unfolding iTL_defs by blast
+
 lemma iTrigger_True[simp]: "P t'. t' \<T> t I. True"
 by (simp add: iTL_defs)
+
 lemma iTrigger_False_left[simp]: "(False. t' \<T> t I. Q t) = (\<box> t I. Q t)"
 by (simp add: iTL_defs)
+
 lemma iTrigger_False[simp]: "(P t'. t' \<T> t I. False) = (I = {})"
 unfolding iTL_defs by blast
 
@@ -704,14 +668,11 @@ lemma
 by (simp_all add: iTL_defs ex_in_conv)
 
 
-
-
 subsubsection {* Empty sets and singletons *}
 
 lemma iAll_empty[simp]: "\<box> t {}. P t" by blast
 lemma iEx_empty[simp]: "\<not> (\<diamond> t {}. P t)" by blast
 
-thm iAll_empty iEx_empty
 lemma iUntil_empty[simp]: "\<not> (P t0. t0 \<U> t1 {}. Q t1)" by blast
 lemma iSince_empty[simp]: "\<not> (P t0. t0 \<S> t1 {}. Q t1)" by blast
 lemma iWeakUntil_empty[simp]: "P t0. t0 \<W> t1 {}. Q t1" by (simp add: iWeakUntil_def)
@@ -731,16 +692,19 @@ lemma iEx_singleton[simp]: "(\<diamond> t' {t}. P t') = P t" by blast
 
 lemma iUntil_singleton[simp]: "(P t0. t0 \<U> t1 {t}. Q t1) = Q t"
 by (simp add: iUntil_def cut_less_singleton)
+
 lemma iSince_singleton[simp]: "(P t0. t0 \<S> t1 {t}. Q t1) = Q t"
 by (simp add: iSince_def cut_greater_singleton)
 
 lemma iWeakUntil_singleton[simp]: "(P t0. t0 \<W> t1 {t}. Q t1) = (P t \<or> Q t)"
 by (simp add: iWeakUntil_def cut_less_singleton)
+
 lemma iWeakSince_singleton[simp]: "(P t0. t0 \<B> t1 {t}. Q t1) = (P t \<or> Q t)"
 by (simp add: iWeakSince_def cut_greater_singleton)
 
 lemma iRelease_singleton[simp]: "(P t0. t0 \<R> t1 {t}. Q t1) = Q t"
 unfolding iRelease_def by blast
+
 lemma iTrigger_singleton[simp]: "(P t0. t0 \<T> t1 {t}. Q t1) = Q t"
 unfolding iTrigger_def by blast
 
@@ -749,7 +713,6 @@ lemmas iTL_singleton =
   iUntil_singleton iSince_singleton
   iWeakUntil_singleton iWeakSince_singleton
   iRelease_singleton iTrigger_singleton
-thm iTL_singleton
 
 
 subsubsection {* Conversions between temporal operators *}
@@ -765,26 +728,29 @@ lemma iSince_iEx_conv: "(True. t' \<S> t I. P t) = (\<diamond> t I. P t)" by bla
 
 lemma iRelease_iAll_conv: "(False. t' \<R> t I. P t) = (\<box> t I. P t)"
 by (simp add: iRelease_def)
+
 lemma iTrigger_iAll_conv: "(False. t' \<T> t I. P t) = (\<box> t I. P t)"
 by (simp add: iTrigger_def)
 
 lemma iWeakUntil_iUntil_conv: "(P t'. t' \<W> t I. Q t) = ((P t'. t' \<U> t I. Q t) \<or> (\<box> t I. P t))"
 unfolding iWeakUntil_def iUntil_def by blast
+
 lemma iWeakSince_iSince_conv: "(P t'. t' \<B> t I. Q t) = ((P t'. t' \<S> t I. Q t) \<or> (\<box> t I. P t))"
 unfolding iWeakSince_def iSince_def by blast
 
 lemma iUntil_iWeakUntil_conv: "(P t'. t' \<U> t I. Q t) = ((P t'. t' \<W> t I. Q t) \<and> (\<diamond> t I. Q t))"
 by (subst iWeakUntil_iUntil_conv, blast)
+
 lemma iSince_iWeakSince_conv: "(P t'. t' \<S> t I. Q t) = ((P t'. t' \<B> t I. Q t) \<and> (\<diamond> t I. Q t))"
 by (subst iWeakSince_iSince_conv, blast)
 
 
-thm iRelease_def iWeakUntil_def
 lemma iRelease_iWeakUntil_conv: "(P t'. t' \<R> t I. Q t) = (Q t'. t' \<W> t I. (Q t \<and> P t))"
 apply (unfold iRelease_def iWeakUntil_def)
 apply (simp add: cut_le_less_conv_if)
 apply blast
 done
+
 lemma iRelease_iUntil_conv: "(P t'. t' \<R> t I. Q t) = ((\<box> t I. Q t) \<or> (Q t'. t' \<U> t I. (Q t \<and> P t)))"
 by (fastforce simp: iRelease_iWeakUntil_conv iWeakUntil_iUntil_conv)
 
@@ -793,6 +759,7 @@ apply (unfold iTrigger_def iWeakSince_def)
 apply (simp add: cut_ge_greater_conv_if)
 apply blast
 done
+
 lemma iTrigger_iSince_conv: "(P t'. t' \<T> t I. Q t) = ((\<box> t I. Q t) \<or> (Q t'. t' \<S> t I. (Q t \<and> P t)))"
 by (fastforce simp: iTrigger_iWeakSince_conv iWeakSince_iSince_conv)
 
@@ -851,10 +818,10 @@ apply (clarsimp simp: cut_ge_mem_iff, rename_tac t1 t2)
 apply (drule_tac t=t2 in ispec, assumption)
 apply (clarsimp simp: cut_greater_mem_iff, rename_tac t')
 apply (frule_tac z=t' in order_le_less_trans, assumption)
-thm not_greater_Max[rotated 1]
 apply (drule_tac A="{t \<in> I. P t}" in not_greater_Max[rotated 1])
 apply simp+
 done
+
 lemma iSince_not_iTrigger_conv: "finite I \<Longrightarrow> (P t'. t' \<S> t I. Q t) = (\<not> (\<not> P t'. t' \<T> t I. \<not> Q t))"
 by (simp add: iTrigger_not_iSince_conv)
 
@@ -863,6 +830,7 @@ lemma not_iUntil: "
   (\<not> (P t1. t1 \<U> t2 I. Q t2)) =
   (\<box> t I. (Q t \<longrightarrow> (\<diamond> t' (I \<down>< t). \<not> P t')))"
 unfolding iTL_defs by blast
+
 lemma not_iSince: "
   (\<not> (P t1. t1 \<S> t2 I. Q t2)) =
   (\<box> t I. (Q t \<longrightarrow> (\<diamond> t' (I \<down>> t). \<not> P t')))"
@@ -872,6 +840,7 @@ unfolding iTL_defs by blast
 lemma iWeakUntil_conj_iUntil_conv: "
   (P t1. t1 \<W> t2 I. (P t2 \<and> Q t2)) = (\<not> (\<not> Q t1. t1 \<U> t2 I. \<not> P t2))"
 by (simp add: iRelease_not_iUntil_conv[symmetric] iRelease_iWeakUntil_conv)
+
 lemma iUntil_disj_iUntil_conv: "
   (P t1 \<or> Q t1. t1 \<U> t2 I. Q t2) = 
   (P t1. t1 \<U> t2 I. Q t2)"
@@ -891,10 +860,10 @@ apply (rule_tac t="iMin {t \<in> I. Q t}" in iexI)
   apply (rule order_less_le_trans, assumption)
   apply (simp add: Collect_iMin_le)
  apply blast
-thm subsetD[OF _ iMinI]
 apply (rule subsetD[OF _ iMinI])
 apply blast+
 done
+
 lemma iWeakUntil_disj_iWeakUntil_conv: "
   (P t1 \<or> Q t1. t1 \<W> t2 I. Q t2) = 
   (P t1. t1 \<W> t2 I. Q t2)"
@@ -917,6 +886,7 @@ apply (subgoal_tac "\<not> Q t2")
  apply (simp add: cut_less_mem_iff)
 apply blast
 done
+
 lemma iWeakUntil_iUntil_conj_conv: "
   (P t1. t1 \<W> t2 I. Q t2) = 
   (\<not> (\<not> Q t1. t1 \<U> t2 I. (\<not> P t2 \<and> \<not> Q t2)))"
@@ -927,12 +897,8 @@ apply (simp add: conj_disj_distribR conj_disj_absorb)
 done
 
 
-
-
-
 text {* Negation and temporal operators *}
  
-thm iNext_iff
 lemma 
   not_iNext[simp]: "(\<not> (\<bigcirc> t t0 I. P t)) = (\<bigcirc> t t0 I. \<not> P t)" and
   not_iNextWeak[simp]: "(\<not> (\<bigcirc>\<^sub>W t t0 I. P t)) = (\<bigcirc>\<^sub>S t t0 I. \<not> P t)" and
@@ -941,9 +907,6 @@ lemma
   not_iLastWeak[simp]: "(\<not> (\<ominus>\<^sub>W t t0 I. P t)) = (\<ominus>\<^sub>S t t0 I. \<not> P t)" and
   not_iLastStrong[simp]: "(\<not> (\<ominus>\<^sub>S t t0 I. P t)) = (\<ominus>\<^sub>W t t0 I. \<not> P t)"
 by (simp_all add: iTL_Next_defs)
-
-thm not_iUntil
-thm not_iSince
 
 lemma not_iWeakUntil: "
   (\<not> (P t1. t1 \<W> t2 I. Q t2)) =
@@ -958,23 +921,19 @@ lemma not_iRelease: "
   (\<not> (P t'. t' \<R> t I. Q t)) = 
   ((\<diamond> t I. \<not> Q t) \<and> (\<box> t I. P t \<longrightarrow> (\<diamond> t I \<down>\<le> t. \<not> Q t)))"
 by (simp add: iRelease_def)
+
 lemma not_iRelease_iUntil_conv: "
   (\<not> (P t'. t' \<R> t I. Q t)) = (\<not> P t'. t' \<U> t I. \<not> Q t)"
 by (simp add: iUntil_not_iRelease_conv)
+
 lemma not_iTrigger: "
   (\<not> (P t'. t' \<T> t I. Q t)) = 
   ((\<diamond> t I. \<not> Q t) \<and> (\<box> t I. \<not> P t \<or> (\<diamond> t I \<down>\<ge> t. \<not> Q t)))"
 by (simp add: iTrigger_def)
+
 lemma not_iTrigger_iSince_conv: "
   finite I \<Longrightarrow> (\<not> (P t'. t' \<T> t I. Q t)) = (\<not> P t'. t' \<S> t I. \<not> Q t)"
 by (simp add: iSince_not_iTrigger_conv)
-
-
-
-
-
-
-
 
 
 subsubsection {* Some implication results *}
@@ -985,18 +944,18 @@ lemma bex_imp_lex:  "\<diamond> t I. P t \<Longrightarrow> \<exists>x. P x" by b
 lemma iAll_imp_iEx: "I \<noteq> {} \<Longrightarrow> \<box> t I. P t \<Longrightarrow> \<diamond> t I. P t" by blast
 lemma i_set_iAll_imp_iEx: "I \<in> i_set \<Longrightarrow> \<box> t I. P t \<Longrightarrow> \<diamond> t I. P t"
 by (rule iAll_imp_iEx, rule i_set_imp_not_empty)
+
 lemmas iT_iAll_imp_iEx = iT_not_empty[THEN iAll_imp_iEx]
-thm iT_iAll_imp_iEx
 
 lemma iUntil_imp_iEx: "P t1. t1 \<U> t2 I. Q t2 \<Longrightarrow> \<diamond> t I. Q t"
 unfolding iTL_defs  by blast
+
 lemma iSince_imp_iEx: "P t1. t1 \<S> t2 I. Q t2 \<Longrightarrow> \<diamond> t I. Q t"
 unfolding iTL_defs  by blast
 
-thm ball_subset_imp_ball
 lemma iall_subset_imp_iall: "\<lbrakk> \<box> t B. P t; A \<subseteq> B \<rbrakk> \<Longrightarrow> \<box> t A. P t"
 by blast
-thm bex_subset_imp_bex
+
 lemma iex_subset_imp_iex: "\<lbrakk> \<diamond> t A. P t; A \<subseteq> B \<rbrakk> \<Longrightarrow> \<diamond> t B. P t"
 by blast
 
@@ -1007,18 +966,23 @@ lemma iex_mp: "\<lbrakk> \<box> t I. P t \<longrightarrow> Q t; \<diamond> t I. 
 lemma iUntil_imp: "
   \<lbrakk> P1 t1. t1 \<U> t2 I. Q t2; \<box> t I. P1 t \<longrightarrow> P2 t \<rbrakk> \<Longrightarrow> P2 t1. t1 \<U> t2 I. Q t2"
 unfolding iTL_defs  by blast
+
 lemma iSince_imp: "
   \<lbrakk> P1 t1. t1 \<S> t2 I. Q t2; \<box> t I. P1 t \<longrightarrow> P2 t \<rbrakk> \<Longrightarrow> P2 t1. t1 \<S> t2 I. Q t2"
 unfolding iTL_defs  by blast
+
 lemma iWeakUntil_imp: "
   \<lbrakk> P1 t1. t1 \<W> t2 I. Q t2; \<box> t I. P1 t \<longrightarrow> P2 t \<rbrakk> \<Longrightarrow> P2 t1. t1 \<W> t2 I. Q t2"
 unfolding iTL_defs  by blast
+
 lemma iWeakSince_imp: "
   \<lbrakk> P1 t1. t1 \<B> t2 I. Q t2; \<box> t I. P1 t \<longrightarrow> P2 t \<rbrakk> \<Longrightarrow> P2 t1. t1 \<B> t2 I. Q t2"
 unfolding iTL_defs  by blast
+
 lemma iRelease_imp: "
   \<lbrakk> P1 t1. t1 \<R> t2 I. Q t2; \<box> t I. P1 t \<longrightarrow> P2 t \<rbrakk> \<Longrightarrow> P2 t1. t1 \<R> t2 I. Q t2"
 unfolding iTL_defs  by blast
+
 lemma iTrigger_imp: "
   \<lbrakk> P1 t1. t1 \<T> t2 I. Q t2; \<box> t I. P1 t \<longrightarrow> P2 t \<rbrakk> \<Longrightarrow> P2 t1. t1 \<T> t2 I. Q t2"
 unfolding iTL_defs  by blast
@@ -1031,6 +995,7 @@ apply (rule_tac t="iMin I" in iexI)
  apply (simp add: cut_less_Min_empty)
 apply (blast intro: iMinI_ex2)
 done
+
 lemma Max_imp_iSince: "
   \<lbrakk> finite I; I \<noteq> {}; Q (Max I) \<rbrakk> \<Longrightarrow> P t'. t' \<S> t I. Q t"
 apply (unfold iSince_def)
@@ -1040,14 +1005,14 @@ apply (blast intro: Max_in)
 done
 
 
-
 subsubsection {* Congruence rules for temporal operators' predicates *}
 
-thm arg_cong
 lemma iAll_cong: "\<box> t I. f t = g t \<Longrightarrow> (\<box> t I. P (f t) t) = (\<box> t I. P (g t) t)"
 unfolding iTL_defs by simp
+
 lemma iEx_cong: "\<box> t I. f t = g t \<Longrightarrow> (\<diamond> t I. P (f t) t) = (\<diamond> t I. P (g t) t)"
 unfolding iTL_defs by simp
+
 lemma iUntil_cong1: "
   \<box> t I. f t = g t \<Longrightarrow> 
   (P (f t1) t1. t1 \<U> t2 I. Q t2) = (P (g t1) t1. t1 \<U> t2 I. Q t2)"
@@ -1060,6 +1025,7 @@ apply (rule iallI, rename_tac t')
 apply (drule_tac t=t' in ispec)
 apply simp+
 done
+
 lemma iUntil_cong2: "
   \<box> t I. f t = g t \<Longrightarrow> 
   (P t1. t1 \<U> t2 I. Q (f t2) t2) = (P t1. t1 \<U> t2 I. Q (g t2) t2)"
@@ -1069,7 +1035,7 @@ apply (rule iallI, rename_tac t)
 apply (drule_tac t=t in ispec)
 apply simp+
 done
-thm subst
+
 lemma iSince_cong1: "
   \<box> t I. f t = g t \<Longrightarrow> 
   (P (f t1) t1. t1 \<S> t2 I. Q t2) = (P (g t1) t1. t1 \<S> t2 I. Q t2)"
@@ -1082,6 +1048,7 @@ apply (rule iallI, rename_tac t')
 apply (drule_tac t=t' in ispec)
 apply simp+
 done
+
 lemma iSince_cong2: "
   \<box> t I. f t = g t \<Longrightarrow> 
   (P t1. t1 \<S> t2 I. Q (f t2) t2) = (P t1. t1 \<S> t2 I. Q (g t2) t2)"
@@ -1091,24 +1058,24 @@ apply (rule iallI, rename_tac t)
 apply (drule_tac t=t in ispec)
 apply simp+
 done
-thm iAll_cong
 
 
 lemma bex_subst: "
   \<forall>x\<in>A. P x \<longrightarrow> (Q x = Q' x) \<Longrightarrow>
   (\<exists>x\<in>A. P x \<and> Q x) = (\<exists>x\<in>A. P x \<and> Q' x)" 
 by blast
+
 lemma iEx_subst: "
   \<box> t I. P t \<longrightarrow> (Q t = Q' t) \<Longrightarrow>
   (\<diamond> t I. P t \<and> Q t) = (\<diamond> t I. P t \<and> Q' t)"
 by blast
 
 
-
 subsubsection {* Temporal operators with set unions/intersections and subsets *}
 
 lemma iAll_subset: "\<lbrakk> A \<subseteq> B; \<box> t B. P t \<rbrakk> \<Longrightarrow> \<box> t A. P t"
 by (rule iall_subset_imp_iall)
+
 lemma iEx_subset: "\<lbrakk> A \<subseteq> B; \<diamond> t A. P t \<rbrakk> \<Longrightarrow> \<diamond> t B. P t"
 by (rule iex_subset_imp_iex)
 
@@ -1117,14 +1084,13 @@ lemma iUntil_append: "
   P t1. t1 \<U> t2 A. Q t2 \<Longrightarrow> P t1. t1 \<U> t2 (A \<union> B). Q t2"
 apply (case_tac "A = {}", simp)
 apply (unfold iUntil_def)
-thm iEx_subset[OF Un_upper1]
 apply (rule iEx_subset[OF Un_upper1])
-thm subst[OF iEx_cong, rule_format]
 apply (rule_tac f="\<lambda>t. A \<down>< t" and g="\<lambda>t. (A \<union> B) \<down>< t" in subst[OF iEx_cong, rule_format])
  apply (clarsimp simp: cut_less_Un, rename_tac t t')
  apply (cut_tac t=t and I=B in cut_less_Min_empty)
  apply simp+
 done
+
 lemma iSince_prepend: "
   \<lbrakk> finite A; Max A \<le> iMin B \<rbrakk> \<Longrightarrow>
   P t1. t1 \<S> t2 B. Q t2 \<Longrightarrow> P t1. t1 \<S> t2 (A \<union> B). Q t2"
@@ -1141,11 +1107,14 @@ lemma
   iAll_union: "\<lbrakk> \<box> t A. P t; \<box> t B. P t \<rbrakk> \<Longrightarrow> \<box> t (A \<union> B). P t" and
   iAll_union_conv: "(\<box> t A \<union> B. P t) = ((\<box> t A. P t) \<and> (\<box> t B. P t))"
 by blast+
+
 lemma 
   iEx_union: "(\<diamond> t A. P t) \<or> (\<diamond> t B. P t) \<Longrightarrow> \<diamond> t (A \<union> B). P t" and
   iEx_union_conv: "(\<diamond> t (A \<union> B). P t) = ((\<diamond> t A. P t) \<or> (\<diamond> t B. P t))" 
 by blast+
+
 lemma iAll_inter: "(\<box> t A. P t) \<or> (\<box> t B. P t) \<Longrightarrow> \<box> t (A \<inter> B). P t" by blast
+
 lemma not_iEx_inter: "
   \<exists>A B P. (\<diamond> t A. P t) \<and> (\<diamond> t B. P t) \<and> \<not> (\<diamond> t (A \<inter> B). P t)"
 by (rule_tac x="{0}" in exI, rule_tac x="{Suc 0}" in exI, blast)
@@ -1154,23 +1123,18 @@ lemma
   iAll_insert: "\<lbrakk> P t; \<box> t I. P t \<rbrakk> \<Longrightarrow> \<box> t' (insert t I). P t'" and
   iAll_insert_conv: "(\<box> t' (insert t I). P t') = (P t \<and> (\<box> t' I. P t'))"
 by blast+
+
 lemma 
   iEx_insert: "\<lbrakk> P t \<or> (\<diamond> t I. P t) \<rbrakk> \<Longrightarrow> \<diamond> t' (insert t I). P t'" and
   iEx_insert_conv: "(\<diamond> t' (insert t I). P t') = (P t \<or> (\<diamond> t' I. P t'))"
 by blast+
 
 
-
-
 subsection {* Further results for temporal operators *}
 
-
-thm Collect_minI_ex
-thm Collect_minI_ex_cut
 lemma Collect_minI_iEx: "\<diamond> t I. P t \<Longrightarrow> \<diamond> t I. P t \<and> (\<box> t' (I \<down>< t). \<not> P t')"
 by (unfold iAll_def iEx_def, rule Collect_minI_ex_cut)
 
-thm iUntil_def
 lemma iUntil_disj_conv1: "
   I \<noteq> {} \<Longrightarrow>
   (P t'. t' \<U> t I. Q t) = (Q (iMin I) \<or> (P t'. t' \<U> t I. Q t \<and> iMin I < t))"
@@ -1178,6 +1142,7 @@ apply (case_tac "Q (iMin I)")
  apply (simp add: iMin_imp_iUntil)
 apply (unfold iUntil_def, blast)
 done
+
 lemma iSince_disj_conv1: "
   \<lbrakk> finite I; I \<noteq> {} \<rbrakk> \<Longrightarrow>
   (P t'. t' \<S> t I. Q t) = (Q (Max I) \<or> (P t'. t' \<S> t I. Q t \<and> t < Max I))"
@@ -1215,6 +1180,7 @@ apply (rule inext_induct[of _ I])
  apply (simp add: iNext_def)
 apply assumption
 done
+
 lemma iNext_induct: "
   \<lbrakk> P (iMin I); \<box> t I. (P t \<longrightarrow> (\<bigcirc> t' t I. P t')) \<rbrakk> \<Longrightarrow> \<box> t I. P t"
 by (rule iallI, rule iNext_induct_rule)
@@ -1227,10 +1193,10 @@ apply (rule iprev_induct[of _ I])
  apply (simp add: iLast_def)
 apply assumption+
 done
+
 lemma iLast_induct: "
   \<lbrakk> P (Max I); \<box> t I. (P t \<longrightarrow> (\<ominus> t' t I. P t')); finite I \<rbrakk> \<Longrightarrow> \<box> t I. P t"
 by (rule iallI, rule iLast_induct_rule)
-
 
 
 lemma iUntil_conj_not: "((P t1 \<and> \<not> Q t1). t1 \<U> t2 I. Q t2) = (P t1. t1 \<U> t2 I. Q t2)"
@@ -1251,10 +1217,8 @@ apply (rule_tac t="iMin {x \<in> I. Q x}" in iexI)
  apply (subgoal_tac "t1 \<in> {x \<in> I. Q x}")
   prefer 2
   apply blast
- thm iMin_le
  apply (drule_tac k=t1 and I="{x \<in> I. Q x}" in iMin_le)
  apply simp
-thm subsetD[OF _ iMinI]
 apply (blast intro: subsetD[OF _ iMinI])
 done
 
@@ -1273,7 +1237,6 @@ apply (subgoal_tac "finite {x \<in> I. Q x}")
  apply fastforce
 apply (rule_tac t="Max {x \<in> I. Q x}" in iexI)
  apply (rule conjI)
-  thm MaxI2
   apply (blast intro: MaxI2)
  apply (clarsimp simp: cut_greater_mem_iff, rename_tac t1)
  apply (subgoal_tac "t \<le> Max {x \<in> I. Q x}")
@@ -1285,15 +1248,13 @@ apply (rule_tac t="Max {x \<in> I. Q x}" in iexI)
  apply (subgoal_tac "t1 \<in> {x \<in> I. Q x}")
   prefer 2
   apply blast
- thm not_greater_Max
  apply (drule  not_greater_Max[rotated 1], simp+)
-thm subsetD[OF _ MaxI]
 apply (rule subsetD[OF _ MaxI], fastforce+)
 done
+
 lemma iWeakSince_conj_not: "finite I \<Longrightarrow>
   ((P t1 \<and> \<not> Q t1). t1 \<B> t2 I. Q t2) = (P t1. t1 \<B> t2 I. Q t2)"
 by (simp only: iWeakSince_iSince_conv iSince_conj_not, blast)
-
 
 
 lemma iNextStrong_imp_iNextWeak: "(\<bigcirc>\<^sub>S t t0 I. P t) \<longrightarrow> (\<bigcirc>\<^sub>W t t0 I. P t)"
@@ -1317,10 +1278,12 @@ lemma
   not_in_iNext_eq: "t0 \<notin> I \<Longrightarrow> (\<bigcirc> t t0 I. P t) = (P t0)" and
   not_in_iLast_eq: "t0 \<notin> I \<Longrightarrow> (\<ominus> t t0 I. P t) = (P t0)"
 by (simp_all add: iTL_defs not_in_inext_fix not_in_iprev_fix)
+
 lemma 
   not_in_iNextWeak_eq: "t0 \<notin> I \<Longrightarrow> (\<bigcirc>\<^sub>W t t0 I. P t)" and
   not_in_iLastWeak_eq: "t0 \<notin> I \<Longrightarrow> (\<ominus>\<^sub>W t t0 I. P t)"
 by (simp_all add: iNextWeak_iff iLastWeak_iff)
+
 lemma 
   not_in_iNextStrong_eq: "t0 \<notin> I \<Longrightarrow> \<not> (\<bigcirc>\<^sub>S t t0 I. P t)" and
   not_in_iLastStrong_eq: "t0 \<notin> I \<Longrightarrow> \<not> (\<ominus>\<^sub>S t t0 I. P t)"
@@ -1331,6 +1294,7 @@ lemma
   iNextWeak_UNIV: "(\<bigcirc>\<^sub>W t t0 UNIV. P t) = P (Suc t0)" and
   iNextStrong_UNIV: "(\<bigcirc>\<^sub>S t t0 UNIV. P t) = P (Suc t0)"
 by (simp_all add: iTL_Next_defs inext_UNIV cut_greater_singleton)
+
 lemma 
   iLast_UNIV: "(\<ominus> t t0 UNIV. P t) = P (t0 - Suc 0)" and
   iLastWeak_UNIV: "(\<ominus>\<^sub>W t t0 UNIV. P t) = (if 0 < t0 then P (t0 - Suc 0) else True)" and
@@ -1343,19 +1307,17 @@ lemmas iTL_Next_UNIV =
 
 lemma inext_nth_iNext_Suc: "(\<bigcirc> t (I \<rightarrow> n) I. P t) = P (I \<rightarrow> Suc n)"
 by (simp add: iNext_def)
+
 lemma iprev_nth_iLast_Suc: "(\<ominus> t (I \<leftarrow> n) I. P t) = P (I \<leftarrow> Suc n)"
 by (simp add: iLast_def)
 
 
-
 subsection {* Temporal operators and arithmetic interval operators *}
-
 
 text {* 
   Shifting intervals through addition and subtraction of constants. 
   Mirroring intervals through subtraction of intervals from constants. 
   Expanding and compressing intervals through multiplication and division by constants. *}
-
 
 text {* Always operator *}
 lemma iT_Plus_iAll_conv: "(\<box> t I \<oplus> k. P t) = (\<box> t I. P (t + k))"
@@ -1368,6 +1330,7 @@ apply (clarify, rename_tac x)
 apply (drule_tac x="x - k" in spec)
 apply (simp add: iT_Plus_mem_iff)
 done
+
 lemma iT_Mult_iAll_conv: "(\<box> t I \<otimes> k. P t) = (\<box> t I. P (t * k))"
 apply (unfold iAll_def Ball_def)
 apply (case_tac "I = {}")
@@ -1382,6 +1345,7 @@ apply (clarify, rename_tac x)
 apply (drule_tac x="x div k" in spec)
 apply (simp add: iT_Mult_mem_iff mod_0_div_mult_cancel)
 done
+
 lemma iT_Plus_neg_iAll_conv: "(\<box> t I \<oplus>- k. P t) = (\<box> t (I \<down>\<ge> k). P (t - k))"
 apply (unfold iAll_def Ball_def)
 apply (rule iffI)
@@ -1392,6 +1356,7 @@ apply (clarify, rename_tac x)
 apply (drule_tac x="x + k" in spec)
 apply (simp add: iT_Plus_neg_mem_iff cut_ge_mem_iff)
 done
+
 lemma iT_Minus_iAll_conv: "(\<box> t k \<ominus> I. P t) = (\<box> t (I \<down>\<le> k). P (k - t))"
 apply (unfold iAll_def Ball_def)
 apply (rule iffI)
@@ -1402,6 +1367,7 @@ apply (clarify, rename_tac x)
 apply (drule_tac x="k - x" in spec)
 apply (simp add: iT_Minus_mem_iff cut_le_mem_iff)
 done
+
 lemma iT_Div_iAll_conv: "(\<box> t I \<oslash> k. P t) = (\<box> t I. P (t div k))"
 apply (case_tac "I = {}")
  apply (simp add: iT_Div_empty)
@@ -1431,9 +1397,12 @@ lemma
   iT_Div_iEx_conv: "(\<diamond> t I \<oslash> k. P t) = (\<diamond> t I. P (t div k))"
 by (simp_all only: iEx_iAll_conv iT_arith_iAll_conv)
 
+
 text {* Until and Since operators *}
+
 lemma iT_Plus_iUntil_conv: "(P t1. t1 \<U> t2 (I \<oplus> k). Q t2) = (P (t1 + k). t1 \<U> t2 I. Q (t2 + k))"
 by (simp add: iUntil_def iT_Plus_iAll_conv iT_Plus_iEx_conv iT_Plus_cut_less2)
+
 lemma iT_Mult_iUntil_conv: "(P t1. t1 \<U> t2 (I \<otimes> k). Q t2) = (P (t1 * k). t1 \<U> t2 I. Q (t2 * k))"
 apply (case_tac "I = {}")
  apply (simp add: iT_Mult_empty)
@@ -1441,15 +1410,17 @@ apply (case_tac "k = 0")
  apply (force simp add: iT_Mult_0 iTILL_0)
 apply (simp add: iUntil_def iT_Mult_iAll_conv iT_Mult_iEx_conv iT_Mult_cut_less2)
 done
+
 lemma iT_Plus_neg_iUntil_conv: "(P t1. t1 \<U> t2 (I \<oplus>- k). Q t2) = (P (t1 - k). t1 \<U> t2 (I \<down>\<ge> k). Q (t2 - k))"
 apply (simp add: iUntil_def iT_Plus_neg_iAll_conv iT_Plus_neg_iEx_conv iT_Plus_neg_cut_less2)
-thm i_cut_commute_disj[of "op \<down><" "op \<down>\<ge>", simplified]
 apply (simp add: i_cut_commute_disj)
 done
+
 lemma iT_Minus_iUntil_conv: "(P t1. t1 \<U> t2 (k \<ominus> I). Q t2) = (P (k - t1). t1 \<S> t2 (I \<down>\<le> k). Q (k - t2))"
 apply (simp add: iUntil_def iSince_def iT_Minus_iAll_conv iT_Minus_iEx_conv iT_Minus_cut_less2)
 apply (simp add: i_cut_commute_disj)
 done
+
 lemma iT_Div_iUntil_conv: "(P t1. t1 \<U> t2 (I \<oslash> k). Q t2) = (P (t1 div k). t1 \<U> t2 I. Q (t2 div k))"
 apply (case_tac "I = {}")
  apply (simp add: iT_Div_empty)
@@ -1481,7 +1452,6 @@ apply (rule iffI)
     apply (simp add: sub_mod_div_eq_div)
    apply (rule div_le_mono, assumption)
   apply (clarsimp, rename_tac t1)
-  thm cut_less_cut_ge_ident[OF order_refl]
   apply (subgoal_tac "t1 \<in> I \<down>< (t - t mod k) \<union> I \<down>\<ge> (t - t mod k)")
    prefer 2
    apply (simp add: cut_less_cut_ge_ident)
@@ -1489,7 +1459,6 @@ apply (rule iffI)
    prefer 2
    apply (blast dest: not_less_iMin)
   apply blast
- thm subsetD[OF _ iMinI_ex2]
  apply (blast intro: subsetD[OF _ iMinI_ex2])
 apply (clarsimp, rename_tac t)
 apply (rule_tac t=t in iexI)
@@ -1500,9 +1469,8 @@ apply simp+
 done
 
 
-
 text {* Until and Since operators can be converted into each other through substraction of intervals from constants *}
-thm iT_Minus_iUntil_conv
+
 lemma iUntil_iSince_conv: "
   \<lbrakk> finite I; Max I \<le> k \<rbrakk> \<Longrightarrow> 
   (P t1. t1 \<U> t2 I. Q t2) = (P (k - t1). t1 \<S> t2 (k \<ominus> I). Q (k - t2))"
@@ -1516,19 +1484,17 @@ apply (subgoal_tac "iMin (k \<ominus> I) \<le> k")
  prefer 2
  apply (rule order_trans[OF iMin_le_Max])
  apply (simp add: iT_Minus_finite iT_Minus_empty_iff del: Max_le_iff)+
-thm iT_Minus_iUntil_conv
 apply (rule_tac t="P t1. t1 \<U> t2 I. Q t2" and s="P t1. t1 \<U> t2 (k \<ominus> (k \<ominus> I)). Q t2" in subst)
  apply (simp add: iT_Minus_Minus_eq)
-thm iT_Minus_iUntil_conv
 apply (simp add: iT_Minus_iUntil_conv cut_le_Max_all iT_Minus_finite)
 done
+
 lemma iSince_iUntil_conv: "
   \<lbrakk> finite I; Max I \<le> k \<rbrakk> \<Longrightarrow> 
   (P t1. t1 \<S> t2 I. Q t2) = (P (k - t1). t1 \<U> t2 (k \<ominus> I). Q (k - t2))"
 apply (case_tac "I = {}")
  apply (simp add: iT_Minus_empty)
 apply (simp (no_asm_simp) add: iT_Minus_iUntil_conv)
-thm cut_less_Max_all
 apply (simp (no_asm_simp) add: cut_le_Max_all)
 apply (unfold iSince_def)
 apply (rule iffI)
@@ -1548,11 +1514,12 @@ apply (rule_tac t=t in iexI)
 done
 
 
-
 lemma iT_Plus_iSince_conv: "(P t1. t1 \<S> t2 (I \<oplus> k). Q t2) = (P (t1 + k). t1 \<S> t2 I. Q (t2 + k))"
 by (simp add: iSince_def iT_Plus_iAll_conv iT_Plus_iEx_conv iT_Plus_cut_greater2)
+
 lemma iT_Mult_iSince_conv: "0 < k \<Longrightarrow> (P t1. t1 \<S> t2 (I \<otimes> k). Q t2) = (P (t1 * k). t1 \<S> t2 I. Q (t2 * k))"
 by (simp add: iSince_def iT_Mult_iAll_conv iT_Mult_iEx_conv iT_Mult_cut_greater2)
+
 lemma iT_Plus_neg_iSince_conv: "(P t1. t1 \<S> t2 (I \<oplus>- k). Q t2) = (P (t1 - k). t1 \<S> t2 (I \<down>\<ge> k). Q (t2 - k))"
 apply (simp add: iSince_def iT_Plus_neg_iAll_conv iT_Plus_neg_iEx_conv)
 apply (rule iffI)
@@ -1578,9 +1545,7 @@ apply (case_tac "I = {}")
  apply (simp add: iT_Minus_empty cut_le_empty)
 apply (case_tac "I \<down>\<le> k = {}")
  apply (simp add: iT_Minus_image_conv)
-thm iT_Minus_cut_eq[OF order_refl]
 apply (subst iT_Minus_cut_eq[OF order_refl, symmetric])
-thm iSince_iUntil_conv
 apply (subst iSince_iUntil_conv[where k=k])
   apply (rule iT_Minus_finite)
  apply (subst iT_Minus_Max)
@@ -1589,6 +1554,7 @@ apply (subst iSince_iUntil_conv[where k=k])
  apply simp
 apply (simp add: iT_Minus_Minus_cut_eq)
 done
+
 lemma iT_Div_iSince_conv: "
   0 < k \<Longrightarrow> (P t1. t1 \<S> t2 (I \<oslash> k). Q t2) = (P (t1 div k). t1 \<S> t2 I. Q (t2 div k))"
 apply (case_tac "I = {}")
@@ -1599,7 +1565,6 @@ apply (subgoal_tac "\<forall>t. t \<le> t div k * k + (k - Suc 0)")
  prefer 2
  apply clarsimp
  apply (simp add: div_mult_cancel add.commute[of _ k])
- thm le_add_diff Suc_mod_le_divisor
  apply (simp add: le_add_diff Suc_mod_le_divisor)
 apply (rule iffI)
  apply (clarsimp, rename_tac t)
@@ -1649,55 +1614,73 @@ done
 
 
 text {* Weak Until and Weak Since operators *}
+
 lemma iT_Plus_iWeakUntil_conv: "(P t1. t1 \<W> t2 (I \<oplus> k). Q t2) = (P (t1 + k). t1 \<W> t2 I. Q (t2 + k))"
 by (simp add: iWeakUntil_iUntil_conv iT_Plus_iUntil_conv iT_Plus_iAll_conv)
+
 lemma iT_Mult_iWeakUntil_conv: "(P t1. t1 \<W> t2 (I \<otimes> k). Q t2) = (P (t1 * k). t1 \<W> t2 I. Q (t2 * k))"
 by (simp add: iWeakUntil_iUntil_conv iT_Mult_iUntil_conv iT_Mult_iAll_conv)
+
 lemma iT_Plus_neg_iWeakUntil_conv: "(P t1. t1 \<W> t2 (I \<oplus>- k). Q t2) = (P (t1 - k). t1 \<W> t2 (I \<down>\<ge> k). Q (t2 - k))"
 by (simp add: iWeakUntil_iUntil_conv iT_Plus_neg_iUntil_conv iT_Plus_neg_iAll_conv)
+
 lemma iT_Minus_iWeakUntil_conv: "(P t1. t1 \<W> t2 (k \<ominus> I). Q t2) = (P (k - t1). t1 \<B> t2 (I \<down>\<le> k). Q (k - t2))"
 by (simp add: iWeakUntil_iUntil_conv iWeakSince_iSince_conv iT_Minus_iUntil_conv iT_Minus_iAll_conv)
+
 lemma iT_Div_iWeakUntil_conv: "(P t1. t1 \<W> t2 (I \<oslash> k). Q t2) = (P (t1 div k). t1 \<W> t2 I. Q (t2 div k))"
 by (simp add: iWeakUntil_iUntil_conv iT_Div_iUntil_conv iT_Div_iAll_conv)
 
 
 lemma iT_Plus_iWeakSince_conv: "(P t1. t1 \<B> t2 (I \<oplus> k). Q t2) = (P (t1 + k). t1 \<B> t2 I. Q (t2 + k))"
 by (simp add: iWeakSince_iSince_conv iT_Plus_iSince_conv iT_Plus_iAll_conv)
+
 lemma iT_Mult_iWeakSince_conv: "0 < k \<Longrightarrow> (P t1. t1 \<B> t2 (I \<otimes> k). Q t2) = (P (t1 * k). t1 \<B> t2 I. Q (t2 * k))"
 by (simp add: iWeakSince_iSince_conv iT_Mult_iSince_conv iT_Mult_iAll_conv)
+
 lemma iT_Plus_neg_iWeakSince_conv: "(P t1. t1 \<B> t2 (I \<oplus>- k). Q t2) = (P (t1 - k). t1 \<B> t2 (I \<down>\<ge> k). Q (t2 - k))"
 by (simp add: iWeakSince_iSince_conv iT_Plus_neg_iSince_conv iT_Plus_neg_iAll_conv)
+
 lemma iT_Minus_iWeakSince_conv: "
   (P t1. t1 \<B> t2 (k \<ominus> I). Q t2) = (P (k - t1). t1 \<W> t2 (I \<down>\<le> k). Q (k - t2))"
-thm iT_Minus_iWeakUntil_conv[symmetric]
 by (simp add: iWeakSince_iSince_conv iT_Minus_iSince_conv iT_Minus_iAll_conv iWeakUntil_iUntil_conv)
+
 lemma iT_Div_iWeakSince_conv: "
   0 < k \<Longrightarrow> (P t1. t1 \<B> t2 (I \<oslash> k). Q t2) = (P (t1 div k). t1 \<B> t2 I. Q (t2 div k))"
 by (simp add: iWeakSince_iSince_conv iT_Div_iSince_conv iT_Div_iAll_conv)
 
 
 text {* Release and Trigger operators *}
+
 lemma iT_Plus_iRelease_conv: "(P t1. t1 \<R> t2 (I \<oplus> k). Q t2) = (P (t1 + k). t1 \<R> t2 I. Q (t2 + k))"
 by (simp add: iRelease_iWeakUntil_conv iT_Plus_iWeakUntil_conv)
+
 lemma iT_Mult_iRelease_conv: "(P t1. t1 \<R> t2 (I \<otimes> k). Q t2) = (P (t1 * k). t1 \<R> t2 I. Q (t2 * k))"
 by (simp add: iRelease_iWeakUntil_conv iT_Mult_iWeakUntil_conv)
+
 lemma iT_Plus_neg_iRelease_conv: "(P t1. t1 \<R> t2 (I \<oplus>- k). Q t2) = (P (t1 - k). t1 \<R> t2 (I \<down>\<ge> k). Q (t2 - k))"
 by (simp add: iRelease_iWeakUntil_conv iT_Plus_neg_iWeakUntil_conv)
+
 lemma iT_Minus_iRelease_conv: "(P t1. t1 \<R> t2 (k \<ominus> I). Q t2) = (P (k - t1). t1 \<T> t2 (I \<down>\<le> k). Q (k - t2))"
 by (simp add: iRelease_iWeakUntil_conv iT_Minus_iWeakUntil_conv 
   iTrigger_iSince_conv iWeakSince_iSince_conv disj_commute)
+
 lemma iT_Div_iRelease_conv: "(P t1. t1 \<R> t2 (I \<oslash> k). Q t2) = (P (t1 div k). t1 \<R> t2 I. Q (t2 div k))"
 by (simp add: iRelease_iWeakUntil_conv iT_Div_iWeakUntil_conv)
 
+
 lemma iT_Plus_iTrigger_conv: "(P t1. t1 \<T> t2 (I \<oplus> k). Q t2) = (P (t1 + k). t1 \<T> t2 I. Q (t2 + k))"
 by (simp add: iTrigger_iWeakSince_conv iT_Plus_iWeakSince_conv)
+
 lemma iT_Mult_iTrigger_conv: "0 < k \<Longrightarrow> (P t1. t1 \<T> t2 (I \<otimes> k). Q t2) = (P (t1 * k). t1 \<T> t2 I. Q (t2 * k))"
 by (simp add: iTrigger_iWeakSince_conv iT_Mult_iWeakSince_conv)
+
 lemma iT_Plus_neg_iTrigger_conv: "(P t1. t1 \<T> t2 (I \<oplus>- k). Q t2) = (P (t1 - k). t1 \<T> t2 (I \<down>\<ge> k). Q (t2 - k))"
 by (simp add: iTrigger_iWeakSince_conv iT_Plus_neg_iWeakSince_conv)
+
 lemma iT_Minus_iTrigger_conv: "
   (P t1. t1 \<T> t2 (k \<ominus> I). Q t2) = (P (k - t1). t1 \<R> t2 (I \<down>\<le> k). Q (k - t2))"
 by (fastforce simp add: iTrigger_iWeakSince_conv iT_Minus_iWeakSince_conv iRelease_iUntil_conv iWeakUntil_iUntil_conv)
+
 lemma iT_Div_iTrigger_conv: "
   0 < k \<Longrightarrow> (P t1. t1 \<T> t2 (I \<oslash> k). Q t2) = (P (t1 div k). t1 \<T> t2 I. Q (t2 div k))"
 by (simp add: iTrigger_iWeakSince_conv iT_Div_iWeakSince_conv)

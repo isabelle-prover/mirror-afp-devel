@@ -894,14 +894,6 @@ lemma strict_mono_on_singleton: "strict_mono_on f {a}"
 unfolding strict_mono_on_def by blast
 
 
-
-text {* Auxiliary results for @{text empty} sets *}
-
-thm empty_imp_not_in
-thm ex_imp_not_empty
-thm in_imp_not_empty
-
-
 subsubsection {* Auxiliary results for @{text finite} and @{text infinite} sets *}
 
 lemma infinite_imp_not_singleton: "infinite A \<Longrightarrow> \<not> (\<exists>a. A = {a})" by blast
