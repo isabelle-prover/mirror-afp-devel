@@ -38,7 +38,7 @@ datatype
          | Crypt  key msg   --{*Encryption, public- or shared-key*}
 
 
-text{*Concrete syntax: messages appear as \<lbrace>A,B,NA\<rbrace>, etc...*}
+text{*Concrete syntax: messages appear as \<open>\<lbrace>A,B,NA\<rbrace>\<close>, etc...*}
 syntax
   "_MTuple"      :: "['a, args] => 'a * 'b"       ("(2\<lbrace>_,/ _\<rbrace>)")
 translations
