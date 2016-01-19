@@ -862,11 +862,8 @@ next
   qed
 qed
 
-abbreviation postfix :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
+abbreviation postfix :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_/ \<bind> _)" [51, 50] 50) where
   "postfix xs ys \<equiv> suffixeq ys xs"
-
-notation (xsymbols) 
-  postfix ("(_/ \<bind> _)" [51, 50] 50)
 
 lemma postfix_conv_eq_length_drop: 
   "ST' \<bind> ST \<longleftrightarrow> length ST \<le> length ST' \<and> drop (length ST' - length ST) ST' = ST"

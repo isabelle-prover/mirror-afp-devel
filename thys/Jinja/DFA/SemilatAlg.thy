@@ -16,16 +16,14 @@ definition lesubstep_type :: "(nat \<times> 's) set \<Rightarrow> 's ord \<Right
 notation (ASCII)
   lesubstep_type  ("(_ /{<='__} _)" [50, 0, 51] 50)
 
-primrec pluslussub :: "'a list \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a" 
+primrec pluslussub :: "'a list \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a"  ("(_ /\<Squnion>\<^bsub>_\<^esub> _)" [65, 0, 66] 65)
 where
   "pluslussub [] f y = y"
 | "pluslussub (x#xs) f y = pluslussub xs f (x \<squnion>\<^sub>f y)"
 (*<*)
-notation
+notation (ASCII)
   pluslussub  ("(_ /++'__ _)" [65, 1000, 66] 65)
 (*>*)
-notation (xsymbols)
-  pluslussub  ("(_ /\<Squnion>\<^bsub>_\<^esub> _)" [65, 0, 66] 65)
 
 definition bounded :: "'s step_type \<Rightarrow> nat \<Rightarrow> bool"
 where

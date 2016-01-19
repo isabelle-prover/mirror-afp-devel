@@ -14,20 +14,21 @@ begin
 
 context JVM_heap_base begin
 
-definition confT :: "'c prog \<Rightarrow> 'heap \<Rightarrow> 'addr val \<Rightarrow> ty err \<Rightarrow> bool" ("_,_ |- _ :<=T _" [51,51,51,51] 50)
+definition confT :: "'c prog \<Rightarrow> 'heap \<Rightarrow> 'addr val \<Rightarrow> ty err \<Rightarrow> bool"
+    ("_,_ \<turnstile> _ :\<le>\<^sub>\<top> _" [51,51,51,51] 50)
 where
-  "P,h |- v :<=T E \<equiv> case E of Err \<Rightarrow> True | OK T \<Rightarrow> P,h \<turnstile> v :\<le> T"
+  "P,h \<turnstile> v :\<le>\<^sub>\<top> E \<equiv> case E of Err \<Rightarrow> True | OK T \<Rightarrow> P,h \<turnstile> v :\<le> T"
 
-notation (xsymbols) 
-  confT ("_,_ \<turnstile> _ :\<le>\<^sub>\<top> _" [51,51,51,51] 50)
+notation (ASCII) 
+  confT  ("_,_ |- _ :<=T _" [51,51,51,51] 50)
 
 abbreviation confTs :: "'c prog \<Rightarrow> 'heap \<Rightarrow> 'addr val list \<Rightarrow> ty\<^sub>l \<Rightarrow> bool"
-            ("_,_ |- _ [:<=T] _" [51,51,51,51] 50)
+  ("_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _" [51,51,51,51] 50)
 where
-  "P,h |- vs [:<=T] Ts \<equiv> list_all2 (confT P h) vs Ts"
+  "P,h \<turnstile> vs [:\<le>\<^sub>\<top>] Ts \<equiv> list_all2 (confT P h) vs Ts"
 
-notation (xsymbols)
-  confTs ("_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _" [51,51,51,51] 50)
+notation (ASCII)
+  confTs  ("_,_ |- _ [:<=T] _" [51,51,51,51] 50)
 
 definition conf_f :: "'addr jvm_prog \<Rightarrow> 'heap \<Rightarrow> ty\<^sub>i \<Rightarrow> 'addr bytecode \<Rightarrow> 'addr frame \<Rightarrow> bool"
 where
@@ -56,7 +57,6 @@ end
 context JVM_heap_conf_base begin
 
 definition correct_state :: "[ty\<^sub>P,'thread_id,('addr, 'heap) jvm_state] \<Rightarrow> bool"
-                  ("_ |- _:_ [ok]"  [61,0,0] 61)
 where
   "correct_state \<Phi> t \<equiv> \<lambda>(xp,h,frs).
         P,h \<turnstile> t \<surd>t \<and> hconf h \<and> preallocated h \<and>
@@ -70,8 +70,11 @@ where
                     conf_f P h \<tau> is f \<and> conf_fs P h \<Phi> M (size Ts) T fs \<and>
                     conf_xcp P h xp (is ! pc) ))"
 
-notation (xsymbols)
- correct_state ("_ \<turnstile> _:_ \<surd>"  [61,0,0] 61)
+notation
+  correct_state  ("_ \<turnstile> _:_ \<surd>"  [61,0,0] 61)
+
+notation (ASCII)
+  correct_state  ("_ |- _:_ [ok]"  [61,0,0] 61)
 
 end
 
