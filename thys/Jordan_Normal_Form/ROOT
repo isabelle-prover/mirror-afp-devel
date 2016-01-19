@@ -9,6 +9,7 @@ session "Jordan_Normal_Form" (AFP) = "JNF-AFP-Lib" +
     Missing_Permutations
   theories
     Matrix_Impl
+    Strassen_Algorithm_Code
     Matrix_Complexity
     Jordan_Normal_Form_Existence
   document_files
