@@ -637,6 +637,15 @@ definition SN_rel_ext :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel \<Rig
     \<and> (INFM i. t i \<in> {top_s,top_ns})
     \<and> (INFM i. t i \<in> {top_s,normal_s})))"
 
+lemma SN_rel_ext_step_mono: assumes "P \<subseteq> P'" "Pw \<subseteq> Pw'" "R \<subseteq> R'" "Rw \<subseteq> Rw'"
+  shows "SN_rel_ext_step P Pw R Rw t \<subseteq> SN_rel_ext_step P' Pw' R' Rw' t"
+  using assms
+  by (cases t, auto)
+
+lemma SN_rel_ext_mono: assumes subset: "P \<subseteq> P'" "Pw \<subseteq> Pw'" "R \<subseteq> R'" "Rw \<subseteq> Rw'" and
+  SN: "SN_rel_ext P' Pw' R' Rw' M" shows "SN_rel_ext P Pw R Rw M"
+  using SN_rel_ext_step_mono[OF subset] SN unfolding SN_rel_ext_def by blast
+
 lemma SN_rel_ext_trans:
   fixes P Pw R Rw :: "'a rel" and M :: "'a \<Rightarrow> bool"
   defines M': "M' \<equiv> {(s,t). M t}"
@@ -1387,5 +1396,205 @@ proof -
   finally show ?thesis .
 qed
 
+
+text \<open>An explicit version of @{const relto} which mentions all intermediate terms\<close>
+inductive relto_fun :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> 'a \<times> 'a \<Rightarrow> bool" where
+  relto_fun: "as 0 = a \<Longrightarrow> as m = b \<Longrightarrow> 
+  (\<And> i. i < m \<Longrightarrow>
+    (sel i \<longrightarrow> (as i, as (Suc i)) \<in> A) \<and> (\<not> sel i \<longrightarrow> (as i, as (Suc i)) \<in> B))
+  \<Longrightarrow> n = card { i . i < m \<and> sel i} 
+  \<Longrightarrow> (n = 0 \<longleftrightarrow> m = 0) \<Longrightarrow> relto_fun A B n as sel m (a,b)"
+
+lemma relto_funD: assumes "relto_fun A B n as sel m (a,b)"
+  shows "as 0 = a" "as m = b"
+  "\<And> i. i < m \<Longrightarrow> sel i \<Longrightarrow> (as i, as (Suc i)) \<in> A"
+  "\<And> i. i < m \<Longrightarrow> \<not> sel i \<Longrightarrow> (as i, as (Suc i)) \<in> B"
+  "n = card { i . i < m \<and> sel i}"
+  "n = 0 \<longleftrightarrow> m = 0"
+  using assms[unfolded relto_fun.simps] by blast+
+
+lemma relto_fun_refl: "\<exists> as sel. relto_fun A B 0 as sel 0 (a,a)"
+  by (rule exI[of _ "\<lambda> _. a"], rule exI, rule relto_fun, auto)
+
+lemma relto_into_relto_fun: assumes "(a,b) \<in> relto A B"
+  shows "\<exists> as sel m. relto_fun A B (Suc 0) as sel m (a,b)"
+proof -
+  from assms obtain a' b' where aa: "(a,a') \<in> B^*" and ab: "(a',b') \<in> A"
+  and bb: "(b',b) \<in> B^*" by auto
+  from aa[unfolded rtrancl_fun_conv] obtain f1 n1 where 
+    f1: "f1 0 = a" "f1 n1 = a'" "\<And> i. i<n1 \<Longrightarrow> (f1 i, f1 (Suc i)) \<in> B" by auto
+  from bb[unfolded rtrancl_fun_conv] obtain f2 n2 where 
+    f2: "f2 0 = b'" "f2 n2 = b" "\<And> i. i<n2 \<Longrightarrow> (f2 i, f2 (Suc i)) \<in> B" by auto
+  let ?gen = "\<lambda> aa ab bb i. if i < n1 then aa i else if i = n1 then ab else bb (i - Suc n1)"
+  let ?f = "?gen f1 a' f2"
+  let ?sel = "?gen (\<lambda> _. False) True (\<lambda> _. False)"
+  let ?m = "Suc (n1 + n2)"
+  show ?thesis
+  proof (rule exI[of _ ?f], rule exI[of _ ?sel], rule exI[of _ ?m], rule relto_fun)
+    fix i
+    assume i: "i < ?m"
+    show "(?sel i \<longrightarrow> (?f i, ?f (Suc i)) \<in> A) \<and> (\<not> ?sel i \<longrightarrow> (?f i, ?f (Suc i)) \<in> B)"
+    proof (cases "i < n1")
+      case True
+      with f1(3)[OF this] f1(2) show ?thesis by (cases "Suc i = n1", auto)
+    next
+      case False note nle = this
+      show ?thesis
+      proof (cases "i > n1")
+        case False
+        with nle have "i = n1" by auto
+        thus ?thesis using f1 f2 ab by auto
+      next
+        case True
+        def j \<equiv> "i - Suc n1"
+        have i: "i = Suc n1 + j" and j: "j < n2" using i True unfolding j_def by auto
+        thus ?thesis using f2 by auto
+      qed
+    qed
+  qed (insert f1 f2, auto)
+qed
+
+lemma relto_fun_trans: assumes ab: "relto_fun A B n1 as1 sel1 m1 (a,b)"
+  and bc: "relto_fun A B n2 as2 sel2 m2 (b,c)"
+  shows "\<exists> as sel. relto_fun A B (n1 + n2) as sel (m1 + m2) (a,c)"
+proof -
+  from relto_funD[OF ab]
+  have 1: "as1 0 = a" "as1 m1 = b"
+    "\<And> i. i < m1 \<Longrightarrow> (sel1 i \<longrightarrow> (as1 i, as1 (Suc i)) \<in> A) \<and> (\<not> sel1 i \<longrightarrow> (as1 i, as1 (Suc i)) \<in> B)"
+    "n1 = 0 \<longleftrightarrow> m1 = 0" and card1: "n1 = card {i. i < m1 \<and> sel1 i}" by blast+
+  from relto_funD[OF bc]
+  have 2: "as2 0 = b" "as2 m2 = c"
+    "\<And> i. i < m2 \<Longrightarrow> (sel2 i \<longrightarrow> (as2 i, as2 (Suc i)) \<in> A) \<and> (\<not> sel2 i \<longrightarrow> (as2 i, as2 (Suc i)) \<in> B)"
+    "n2 = 0 \<longleftrightarrow> m2 = 0" and card2: "n2 = card {i. i < m2 \<and> sel2 i}" by blast+
+  let ?as = "\<lambda> i. if i < m1 then as1 i else as2 (i - m1)"
+  let ?sel = "\<lambda> i. if i < m1 then sel1 i else sel2 (i - m1)"
+  let ?m = "m1 + m2"
+  let ?n = "n1 + n2"
+  show ?thesis
+  proof (rule exI[of _ ?as], rule exI[of _ ?sel], rule relto_fun)
+    have id: "{ i . i < ?m \<and> ?sel i} = { i . i < m1 \<and> sel1 i} \<union> (op + m1) ` { i. i < m2 \<and> sel2 i}"
+      (is "_ = ?A \<union> ?f ` ?B")
+      by force
+    have "card (?A \<union> ?f ` ?B) = card ?A + card (?f ` ?B)"
+      by (rule card_Un_disjoint, auto)
+    also have "card (?f ` ?B) = card ?B"
+      by (rule card_image, auto simp: inj_on_def)
+    finally show "?n = card { i . i < ?m \<and> ?sel i}" unfolding card1 card2 id by simp
+  next
+    fix i
+    assume i: "i < ?m"
+    show "(?sel i \<longrightarrow> (?as i, ?as (Suc i)) \<in> A) \<and> (\<not> ?sel i \<longrightarrow> (?as i, ?as (Suc i)) \<in> B)"       
+    proof (cases "i < m1")
+      case True
+      from 1 2 have [simp]: "as2 0 = as1 m1" by simp
+      from True 1(3)[of i] 1(2) show ?thesis by (cases "Suc i = m1", auto)
+    next
+      case False 
+      def j \<equiv> "i - m1"
+      have i: "i = m1 + j" and j: "j < m2" using i False unfolding j_def by auto
+      thus ?thesis using False 2(3)[of j] by auto
+    qed
+  qed (insert 1 2, auto)
+qed
+
+lemma reltos_into_relto_fun: assumes "(a,b) \<in> (relto A B)^^n"
+  shows "\<exists> as sel m. relto_fun A B n as sel m (a,b)"
+  using assms
+proof (induct n arbitrary: b)
+  case (0 b)
+  hence b: "b = a" by auto
+  show ?case unfolding b using relto_fun_refl[of A B a] by blast
+next
+  case (Suc n c)
+  from relpow_Suc_E[OF Suc(2)]
+  obtain b where ab: "(a,b) \<in> (relto A B)^^n" and bc: "(b,c) \<in> relto A B" by auto
+  from Suc(1)[OF ab] obtain as sel m where
+    IH: "relto_fun A B n as sel m (a, b)" by auto
+  from relto_into_relto_fun[OF bc] obtain as sel m where "relto_fun A B (Suc 0) as sel m (b,c)" by blast
+  from relto_fun_trans[OF IH this] show ?case by auto
+qed
+
+lemma relto_fun_into_reltos: assumes "relto_fun A B n as sel m (a,b)"
+  shows "(a,b) \<in> (relto A B)^^n"
+proof -
+  note * = relto_funD[OF assms]
+  {
+    fix m'
+    let ?c = "\<lambda> m'. card {i. i < m' \<and> sel i}"
+    assume "m' \<le> m"
+    hence "(?c m' > 0 \<longrightarrow> (as 0, as m') \<in> (relto A B)^^ ?c m') \<and> (?c m' = 0 \<longrightarrow> (as 0, as m') \<in> B^*)"
+    proof (induct m')
+      case (Suc m')
+      let ?x = "as 0"
+      let ?y = "as m'"
+      let ?z = "as (Suc m')"
+      let ?C = "?c (Suc m')"
+      have C: "?C = ?c m' + (if (sel m') then 1 else 0)"
+      proof -
+        have id: "{i. i < Suc m' \<and> sel i} = {i. i < m' \<and> sel i} \<union> (if sel m' then {m'} else {})"
+          by (cases "sel m'", auto, case_tac "x = m'", auto)
+        show ?thesis unfolding id by auto
+      qed
+      from Suc(2) have m': "m' \<le> m" and lt: "m' < m" by auto
+      from Suc(1)[OF m'] have IH: "?c m' > 0 \<Longrightarrow> (?x, ?y) \<in> (relto A B) ^^ ?c m'" 
+        "?c m' = 0 \<Longrightarrow> (?x, ?y) \<in> B^*" by auto
+      from *(3-4)[OF lt] have yz: "sel m' \<Longrightarrow> (?y, ?z) \<in> A" "\<not> sel m' \<Longrightarrow> (?y, ?z) \<in> B" by auto
+      show ?case
+      proof (cases "?c m' = 0")
+        case True note c = this
+        from IH(2)[OF this] have xy: "(?x, ?y) \<in> B^*" by auto
+        show ?thesis
+        proof (cases "sel m'")
+          case False
+          from xy yz(2)[OF False] have xz: "(?x, ?z) \<in> B^*" by auto
+          from False c have C: "?C = 0" unfolding C by simp
+          from xz show ?thesis unfolding C by auto
+        next
+          case True
+          from xy yz(1)[OF True] have xz: "(?x,?z) \<in> relto A B" by auto
+          from True c have C: "?C = 1" unfolding C by simp
+          from xz show ?thesis unfolding C by auto
+        qed
+      next
+        case False 
+        hence c: "?c m' > 0" "(?c m' = 0) = False" by arith+
+        from IH(1)[OF c(1)] have xy: "(?x, ?y) \<in> (relto A B) ^^ ?c m'" .
+        show ?thesis
+        proof (cases "sel m'")
+          case False
+          from c obtain k where ck: "?c m' = Suc k" by (cases "?c m'", auto) 
+          from relpow_Suc_E[OF xy[unfolded this]] obtain
+            u where xu: "(?x, u) \<in> (relto A B) ^^ k" and uy: "(u, ?y) \<in> relto A B" by auto
+          from uy yz(2)[OF False] have uz: "(u, ?z) \<in> relto A B" by force
+          with xu have xz: "(?x,?z) \<in> (relto A B) ^^ ?c m'" unfolding ck by auto
+          from False c have C: "?C = ?c m'" unfolding C by simp
+          from xz show ?thesis unfolding C c by auto
+        next
+          case True
+          from xy yz(1)[OF True] have xz: "(?x,?z) \<in> (relto A B) ^^ (Suc (?c m'))" by auto
+          from c True have C: "?C = Suc (?c m')" unfolding C by simp
+          from xz show ?thesis unfolding C by auto
+        qed
+      qed
+    qed simp
+  }
+  from this[of m] * show ?thesis by auto
+qed
+    
+lemma relto_relto_fun_conv: "((a,b) \<in> (relto A B)^^n) = (\<exists> as sel m. relto_fun A B n as sel m (a,b))"
+  using relto_fun_into_reltos[of A B n _ _ _ a b] reltos_into_relto_fun[of a b n B A] by blast
+
+lemma relto_fun_intermediate: assumes "A \<subseteq> C" and "B \<subseteq> C" 
+  and rf: "relto_fun A B n as sel m (a,b)"
+  shows "i \<le> m \<Longrightarrow> (a,as i) \<in> C^*"
+proof (induct i)
+  case 0
+  from relto_funD[OF rf] show ?case by simp
+next
+  case (Suc i)
+  hence IH: "(a, as i) \<in> C^*" and im: "i < m" by auto
+  from relto_funD(3-4)[OF rf im] assms have "(as i, as (Suc i)) \<in> C" by auto
+  with IH show ?case by auto
+qed
 
 end
