@@ -16,35 +16,6 @@ size(r)+1$), to implement flexible arrays. Paulson \cite{Paulson}
 implemented priority queues via Braun trees. This theory verifies
 Paulsons's implementation, including the logarithmic bounds.  *}
 
-(* FIXME mv to Tree *)
-
-fun height :: "'a tree \<Rightarrow> nat" where
-"height Leaf = 0" |
-"height (Node l x r) = max (height l) (height r) + 1"
-
-lemma size1_height: "size t + 1 \<le> 2 ^ height t"
-proof(induction t)
-  case (Node l a r)
-  show ?case
-  proof (cases "height l \<le> height r")
-    case True
-    have "size(Node l a r) + 1 = (size l + 1) + (size r + 1)" by simp
-    also have "size l + 1 \<le> 2 ^ height l" by(rule Node.IH(1))
-    also have "size r + 1 \<le> 2 ^ height r" by(rule Node.IH(2))
-    also have "(2::nat) ^ height l \<le> 2 ^ height r" using True by simp
-    finally show ?thesis using True by (auto simp: max_def mult_2)
-  next
-    case False
-    have "size(Node l a r) + 1 = (size l + 1) + (size r + 1)" by simp
-    also have "size l + 1 \<le> 2 ^ height l" by(rule Node.IH(1))
-    also have "size r + 1 \<le> 2 ^ height r" by(rule Node.IH(2))
-    also have "(2::nat) ^ height r \<le> 2 ^ height l" using False by simp
-    finally show ?thesis using False by (auto simp: max_def mult_2)
-  qed
-qed simp
-
-(* eomv *)
-
 
 subsection {* Braun predicate *}
 
