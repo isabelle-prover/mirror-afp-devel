@@ -14,20 +14,20 @@ begin
 
 
 definition confT :: "'c prog \<Rightarrow> heap \<Rightarrow> val \<Rightarrow> ty err \<Rightarrow> bool" 
-           ("_,_ |- _ :<=T _" [51,51,51,51] 50)
+    ("_,_ \<turnstile> _ :\<le>\<^sub>\<top> _" [51,51,51,51] 50)
 where
-  "P,h |- v :<=T E \<equiv> case E of Err \<Rightarrow> True | OK T \<Rightarrow> P,h \<turnstile> v :\<le> T"
+  "P,h \<turnstile> v :\<le>\<^sub>\<top> E \<equiv> case E of Err \<Rightarrow> True | OK T \<Rightarrow> P,h \<turnstile> v :\<le> T"
 
-notation (xsymbols)
-  confT  ("_,_ \<turnstile> _ :\<le>\<^sub>\<top> _" [51,51,51,51] 50)
+notation (ASCII)
+  confT  ("_,_ |- _ :<=T _" [51,51,51,51] 50)
 
 abbreviation
   confTs :: "'c prog \<Rightarrow> heap \<Rightarrow> val list \<Rightarrow> ty\<^sub>l \<Rightarrow> bool" 
-            ("_,_ |- _ [:<=T] _" [51,51,51,51] 50) where
-  "P,h |- vs [:<=T] Ts \<equiv> list_all2 (confT P h) vs Ts"
+      ("_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _" [51,51,51,51] 50) where
+  "P,h \<turnstile> vs [:\<le>\<^sub>\<top>] Ts \<equiv> list_all2 (confT P h) vs Ts"
 
-notation (xsymbols)
-  confTs  ("_,_ \<turnstile> _ [:\<le>\<^sub>\<top>] _" [51,51,51,51] 50)
+notation (ASCII)
+  confTs  ("_,_ |- _ [:<=T] _" [51,51,51,51] 50)
 
 definition conf_f  :: "jvm_prog \<Rightarrow> heap \<Rightarrow> ty\<^sub>i \<Rightarrow> bytecode \<Rightarrow> frame \<Rightarrow> bool"
 where

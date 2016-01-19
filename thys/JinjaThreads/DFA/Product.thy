@@ -23,18 +23,15 @@ definition esl :: "'a esl \<Rightarrow> 'b esl \<Rightarrow> ('a \<times> 'b ) e
 where
   "esl = (\<lambda>(A,r\<^sub>A,f\<^sub>A) (B,r\<^sub>B,f\<^sub>B). (A \<times> B, le r\<^sub>A r\<^sub>B, sup f\<^sub>A f\<^sub>B))"
 
-(*<*)
 abbreviation
-  lesubprod1 :: "'a \<times> 'b \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool"
-    ("(_ /<='(_,_') _)" [50, 0, 0, 51] 50) where
-  "p <=(rA,rB) q == p \<sqsubseteq>\<^bsub>Product.le rA rB\<^esub> q"
-(*>*)
-
-abbreviation (xsymbols)
   lesubprod :: "'a \<times> 'b \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<times> 'b \<Rightarrow> bool"
     ("(_ /\<sqsubseteq>'(_,_') _)" [50, 0, 0, 51] 50) where
   "p \<sqsubseteq>(rA,rB) q == p \<sqsubseteq>\<^bsub>Product.le rA rB\<^esub> q"
 
+(*<*)
+notation
+  lesubprod  ("(_ /<='(_,_') _)" [50, 0, 0, 51] 50)
+(*>*)
 
 lemma unfold_lesub_prod: "x \<sqsubseteq>(r\<^sub>A,r\<^sub>B) y = le r\<^sub>A r\<^sub>B x y"
 (*<*) by (simp add: lesub_def) (*>*)

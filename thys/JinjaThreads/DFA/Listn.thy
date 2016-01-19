@@ -19,25 +19,19 @@ definition le :: "'a ord \<Rightarrow> ('a list)ord"
 where
   "le r = list_all2 (\<lambda>x y. x \<sqsubseteq>\<^sub>r y)"
 
-(*<*)
 abbreviation
-  lesublist1 :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[<=_] _)" [50, 0, 51] 50) where
-  "x [<=r] y == x <=_(Listn.le r) y"
-
-abbreviation
-  lesssublist1 :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[<_] _)" [50, 0, 51] 50) where
-  "x [<r] y == x <_(Listn.le r) y"
-(*>*)
-
-abbreviation (xsymbols)
   lesublist :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[\<sqsubseteq>\<^bsub>_\<^esub>] _)" [50, 0, 51] 50) where
   "x [\<sqsubseteq>\<^bsub>r\<^esub>] y == x <=_(Listn.le r) y"
 
-abbreviation (xsymbols)
+abbreviation
   lesssublist :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[\<sqsubset>\<^bsub>_\<^esub>] _)" [50, 0, 51] 50) where
   "x [\<sqsubset>\<^bsub>r\<^esub>] y == x <_(Listn.le r) y"
 
 (*<*)
+notation (ASCII)
+  lesublist  ("(_ /[<=_] _)" [50, 0, 51] 50) and
+  lesssublist  ("(_ /[<_] _)" [50, 0, 51] 50)
+
 abbreviation (input)
   lesublist2 :: "'a list \<Rightarrow> 'a ord \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_ /[\<sqsubseteq>\<^sub>_] _)" [50, 0, 51] 50) where
   "x [\<sqsubseteq>\<^sub>r] y == x [\<sqsubseteq>\<^bsub>r\<^esub>] y"
@@ -51,19 +45,15 @@ definition map2 :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'a list
 where
   "map2 f = (\<lambda>xs ys. map (case_prod f) (zip xs ys))"
 
-(*<*)
 abbreviation
-  plussublist1 :: "'a list \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'b list \<Rightarrow> 'c list"
-    ("(_ /[+_] _)" [65, 0, 66] 65) where
-  "x [+f] y == x \<squnion>\<^bsub>map2 f\<^esub> y"
-(*>*)
-
-abbreviation (xsymbols)
   plussublist :: "'a list \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'b list \<Rightarrow> 'c list"
     ("(_ /[\<squnion>\<^bsub>_\<^esub>] _)" [65, 0, 66] 65) where
   "x [\<squnion>\<^bsub>f\<^esub>] y == x \<squnion>\<^bsub>map2 f\<^esub> y"
 
 (*<*)
+notation
+  plussublist  ("(_ /[+_] _)" [65, 0, 66] 65)
+
 abbreviation (input)
   plussublist2 :: "'a list \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'b list \<Rightarrow> 'c list"
     ("(_ /[\<squnion>\<^sub>_] _)" [65, 0, 66] 65) where
