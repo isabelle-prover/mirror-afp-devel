@@ -10,7 +10,7 @@ property(distributivity) of the tensor product.*}
 section{*Tensor Product of Matrices*}
 
 theory Matrix_Tensor
-imports "../Matrix/Utility" "../Matrix/Matrix_Arith"
+imports "$AFP/Matrix/Utility" "$AFP/Matrix/Matrix_Arith"
 begin
 
 
@@ -485,24 +485,15 @@ proof(induct M)
         "length (vec_vec_Tensor v a) = (length v)*(row_length (a#M))" 
            using row_length_def  list.distinct(1) 
            by auto
-    with 2 have 
-        "(x \<in> (set [vec_vec_Tensor v a])) 
-                \<longrightarrow> (vec ((length v)*(row_length (a#M))) x)" 
-           by auto
-    with 1 have 5:
-         "(x \<in> set (vec_mat_Tensor v (a#M))) 
-               \<longrightarrow> vec ((length v)*(row_length (a#M))) x" 
-           by auto
     have 6: "length (vec_mat_Tensor v (a#M)) = (length (a#M))" 
            using vec_mat_Tensor_length by auto
-    from this have 
-        "mat 
-              (row_length (a#M) * length v) 
-              (length (vec_mat_Tensor v (a#M))) 
-              (vec_mat_Tensor v (a#M))"
-          using mat_def Ball_def 1 3 4  hd_set in_set_insert insert_Nil 
-                length_code   not_Cons_self2 vec_vec_Tensor_length vec_def
-          by (smt mult.commute)
+    hence "mat (length (vec_vec_Tensor v a)) (length (a # M)) [vec_vec_Tensor v a]"
+      by (simp add: Nil mat_def vec_def)
+    hence
+        "mat (row_length (a#M) * length v) 
+             (length (vec_mat_Tensor v (a#M))) 
+             (vec_mat_Tensor v (a#M))"
+      using 1 4 6 by (simp add: mult.commute)
     then show ?thesis using 6 by auto
    next 
    case (Cons b L)
