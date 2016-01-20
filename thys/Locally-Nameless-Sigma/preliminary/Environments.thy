@@ -15,14 +15,11 @@ datatype 'a environment =
 (* Adding an entry to an environment. Overwriting an entry switches to the error state*)
 primrec
   add :: "('a environment) \<Rightarrow> string \<Rightarrow> 'a \<Rightarrow> 'a environment"    
-  ("_<_:_>" [90, 50, 0] 91)
+  ("_\<lparr>_:_\<rparr>" [90, 0, 0] 91)
 where
-  add_def: "(Env e)<x:a> = 
+  add_def: "(Env e)\<lparr>x:a\<rparr> = 
      (if (x \<notin> dom e) then (Env (e(x \<mapsto> a))) else Malformed)" 
-| add_mal: "Malformed<x:a> = Malformed"
-
-notation (xsymbols)
-  add  ("_\<lparr>_:_\<rparr>" [90, 0, 0] 91)
+| add_mal: "Malformed\<lparr>x:a\<rparr> = Malformed"
 
 (* domains of environments, i.e. the set of used variable names *)
 primrec
@@ -336,7 +333,7 @@ lemma env_add_dom:
   assumes "ok e" and "x \<notin> env_dom e" 
   shows "env_dom (e\<lparr>x:X\<rparr>) = env_dom e \<union> {x}"
 proof (auto simp: in_add[OF ok_add_ok[OF assms]], rule ccontr)
-  fix y assume "y \<in> env_dom (e<x:X>)" and "y \<notin> env_dom e" and "y \<noteq> x"
+  fix y assume "y \<in> env_dom (e\<lparr>x:X\<rparr>)" and "y \<notin> env_dom e" and "y \<noteq> x"
   from in_env_smaller[OF this(1) this(3)] this(2) show False by simp
 next
   fix y assume "y \<in> env_dom e"

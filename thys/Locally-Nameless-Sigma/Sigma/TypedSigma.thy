@@ -564,7 +564,7 @@ proof -
         T_Obj[OF ok_add_ok[OF `ok env` `x \<notin> env_dom env`] 
                  `dom f = do Ta` this(1)]
         this(2)
-      show "env<x:X> \<turnstile> Obj f Ta : Ta"
+      show "env\<lparr>x:X\<rparr> \<turnstile> Obj f Ta : Ta"
         unfolding pred_cof_def
         by simp
     qed
@@ -586,7 +586,7 @@ proof -
     show ?case
     proof (intro strip)
       fix x X assume "x \<notin> env_dom env"
-      thus "\<exists>L. finite L \<and> pred_cof L (env<x:X>) t Ta l"
+      thus "\<exists>L. finite L \<and> pred_cof L (env\<lparr>x:X\<rparr>) t Ta l"
       proof (rule_tac x = "L \<union> {x}" in exI, simp add: `finite L`, 
           unfold pred_cof_def, auto)
         fix s p

@@ -46,23 +46,11 @@ lemma (in su_rel_fun) repr: "(f A = B) = ((A,B)\<in>F)" using repr1 repr2
 
 subsection {* Abbreviations for list order *}
 
-abbreviation ileq :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
-  "ileq \<equiv> op \<le>"
+abbreviation ileq :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"  (infix "\<preceq>" 50) where
+  "op \<preceq> \<equiv> op \<le>"
 
-abbreviation ilt :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
-  "ilt \<equiv> op <"
-
-notation (xsymbols)
-  ileq (infix "\<preceq>" 50)
-
-notation (output)
-  ileq (infix "\<preceq>" 50)
-
-notation (xsymbols)
-  ilt (infix "\<prec>" 50)
-
-notation (output)
-  ilt (infix "\<prec>" 50)
+abbreviation ilt :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"  (infix "\<prec>" 50) where
+  "op \<prec> \<equiv> op <"
 
 
 subsection {* Sets *}
