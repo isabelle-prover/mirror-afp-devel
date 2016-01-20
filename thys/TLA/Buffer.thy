@@ -52,7 +52,7 @@ where "ISpec ic q oc \<equiv> TEMP BInit ic q oc
 
 -- {* external specification: buffer hidden *}
 definition Spec :: "'a statefun \<Rightarrow> 'a statefun \<Rightarrow> temporal"
-where "Spec ic oc == TEMP (EEX q. ISpec ic q oc)"
+where "Spec ic oc == TEMP (\<exists>\<exists> q. ISpec ic q oc)"
 
 subsection "Properties of the buffer"
 

@@ -79,14 +79,19 @@ subsubsection "Concrete Syntax"
 text{* This is the concrete syntax for the (abstract) operators above. *}
 
 syntax
- "_always" :: "lift \<Rightarrow> lift" ("([]_)" [90] 90)
- "_nexts" :: "lift \<Rightarrow> lift" ("(Next _)" [90] 90)
- "_action" :: "[lift,lift] \<Rightarrow> lift" ("([][_]'_(_))" [20,1000] 90)
+ "_always" :: "lift \<Rightarrow> lift" ("(\<box>_)" [90] 90) 
+ "_nexts" :: "lift \<Rightarrow> lift" ("(\<circ>_)" [90] 90) 
+ "_action" :: "[lift,lift] \<Rightarrow> lift" ("(\<box>[_]'_(_))" [20,1000] 90)
  "_before"    :: "lift \<Rightarrow> lift"  ("($_)" [100] 99)
  "_after"     :: "lift \<Rightarrow> lift"  ("(_$)" [100] 99)
  "_prime"     :: "lift \<Rightarrow> lift"  ("(_`)" [100] 99)  
  "_unch"     :: "lift \<Rightarrow> lift"  ("(Unchanged _)" [100] 99) 
  "TEMP"  :: "lift \<Rightarrow> 'b" ("(TEMP _)")
+
+syntax (ASCII)
+ "_always" :: "lift \<Rightarrow> lift" ("([]_)" [90] 90)
+ "_nexts" :: "lift \<Rightarrow> lift" ("(Next _)" [90] 90)
+ "_action" :: "[lift,lift] \<Rightarrow> lift" ("([][_]'_(_))" [20,1000] 90)
 
 translations
  "_always" \<rightleftharpoons> "CONST always"
@@ -98,10 +103,6 @@ translations
  "_unch"     \<rightleftharpoons> "CONST unch" 
  "TEMP F" \<rightharpoonup> "(F:: (nat \<Rightarrow> _) \<Rightarrow> _)"
 
-syntax (xsymbols)
- "_always" :: "lift \<Rightarrow> lift" ("(\<box>_)" [90] 90) 
- "_nexts" :: "lift \<Rightarrow> lift" ("(\<circ>_)" [90] 90) 
- "_action" :: "[lift,lift] \<Rightarrow> lift" ("(\<box>[_]'_(_))" [20,1000] 90)
 
 subsection "Abbreviations"
 
@@ -124,12 +125,18 @@ where "leadsto P Q \<equiv> LIFT \<box>(P \<longrightarrow> eventually Q)"
 
 subsubsection "Concrete Syntax"
 
-syntax
+syntax (ASCII)
   "_actrans" :: "[lift,lift] \<Rightarrow> lift" ("([_]'_(_))"  [20,1000] 90)
   "_eventually" :: "lift \<Rightarrow> lift" ("(<>_)" [90] 90)
   "_angle_action" :: "[lift,lift] \<Rightarrow> lift" ("(<><_>'_(_))" [20,1000] 90)
   "_angle_actrans" :: "[lift,lift] \<Rightarrow> lift" ("(<_>'_(_))" [20,1000] 90)
   "_leadsto" :: "[lift,lift] \<Rightarrow> lift" ("(_ ~> _)" [26,25] 25)
+
+syntax
+  "_eventually" :: "lift \<Rightarrow> lift" ("(\<diamond>_)" [90] 90)
+  "_angle_action" :: "[lift,lift] \<Rightarrow> lift" ("(\<diamond>\<langle>_\<rangle>'_(_))" [20,1000] 90)
+  "_angle_actrans" :: "[lift,lift] \<Rightarrow> lift" ("(\<langle>_\<rangle>'_(_))" [20,1000] 90)
+  "_leadsto" :: "[lift,lift] \<Rightarrow> lift" ("(_ \<leadsto> _)" [26,25] 25)
 
 translations 
   "_actrans" \<rightleftharpoons> "CONST actrans"
@@ -138,11 +145,6 @@ translations
   "_angle_actrans" \<rightleftharpoons> "CONST angle_actrans"
   "_leadsto" \<rightleftharpoons> "CONST leadsto"
 
-syntax (xsymbols)
-  "_eventually" :: "lift \<Rightarrow> lift" ("(\<diamond>_)" [90] 90)
-  "_angle_action" :: "[lift,lift] \<Rightarrow> lift" ("(\<diamond>\<langle>_\<rangle>'_(_))" [20,1000] 90)
-  "_angle_actrans" :: "[lift,lift] \<Rightarrow> lift" ("(\<langle>_\<rangle>'_(_))" [20,1000] 90)
-  "_leadsto" :: "[lift,lift] \<Rightarrow> lift" ("(_ \<leadsto> _)" [26,25] 25)
 
 subsection "Properties of Operators"
 

@@ -176,16 +176,12 @@ consts
   AAll       :: "('a statefun \<Rightarrow> temporal) \<Rightarrow> temporal"       (binder "Aall " 10)
 
 syntax
- "_EEx"     :: "[idts, lift] \<Rightarrow> lift"                ("(3EEX _./ _)" [0,10] 10)
-  "_AAll"    :: "[idts, lift] \<Rightarrow> lift"                ("(3AALL _./ _)" [0,10] 10)
-
+  "_EEx"     :: "[idts, lift] => lift"                ("(3\<exists>\<exists> _./ _)" [0,10] 10)
+  "_AAll"    :: "[idts, lift] => lift"                ("(3\<forall>\<forall> _./ _)" [0,10] 10)
 translations
   "_EEx v A"  ==   "Eex v. A"
   "_AAll v A" ==   "Aall v. A"
 
-syntax (xsymbols)
-  "_EEx"     :: "[idts, lift] => lift"                ("(3\<exists>\<exists> _./ _)" [0,10] 10)
-  "_AAll"    :: "[idts, lift] => lift"                ("(3\<forall>\<forall> _./ _)" [0,10] 10)
 
 axiomatization where
      eexI: "\<turnstile> F x \<longrightarrow> (\<exists>\<exists> x. F x)"

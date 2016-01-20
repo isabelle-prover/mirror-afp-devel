@@ -119,8 +119,8 @@ syntax
   "_constrain"  :: "[lift, type] \<Rightarrow> lift"                ("(_::_)" [4, 0] 3)
   ""            :: "lift \<Rightarrow> liftargs"                    ("_")
   "_liftargs"   :: "[lift, liftargs] \<Rightarrow> liftargs"        ("_,/ _")
-  "_Valid"      :: "lift \<Rightarrow> bool"                        ("(|- _)" 5)
-  "_holdsAt"    :: "['a, lift] \<Rightarrow> bool"                  ("(_ |= _)" [100,10] 10)
+  "_Valid"      :: "lift \<Rightarrow> bool"                        ("(\<turnstile> _)" 5)
+  "_holdsAt"    :: "['a, lift] \<Rightarrow> bool"                  ("(_ \<Turnstile> _)" [100,10] 10)
 
   (* Syntax for lifted expressions outside the scope of \<turnstile> or \<Turnstile>.*)
   "LIFT"        :: "lift \<Rightarrow> 'a"                          ("LIFT _")
@@ -134,11 +134,11 @@ syntax
 
   (* concrete syntax for common infix functions: reuse same symbol *)
   "_liftEqu"    :: "[lift, lift] \<Rightarrow> lift"                ("(_ =/ _)" [50,51] 50)
-  "_liftNeq"    :: "[lift, lift] \<Rightarrow> lift"                ("(_ ~=/ _)" [50,51] 50)
-  "_liftNot"    :: "lift \<Rightarrow> lift"                        ("(~ _)" [90] 90)
-  "_liftAnd"    :: "[lift, lift] \<Rightarrow> lift"                ("(_ &/ _)" [36,35] 35)
-  "_liftOr"     :: "[lift, lift] \<Rightarrow> lift"                ("(_ |/ _)" [31,30] 30)
-  "_liftImp"    :: "[lift, lift] \<Rightarrow> lift"                ("(_ -->/ _)" [26,25] 25)
+  "_liftNeq"    :: "[lift, lift] \<Rightarrow> lift"                (infixl "\<noteq>" 50)
+  "_liftNot"    :: "lift \<Rightarrow> lift"                        ("\<not> _" [90] 90)
+  "_liftAnd"    :: "[lift, lift] \<Rightarrow> lift"                (infixr "\<and>" 35)
+  "_liftOr"     :: "[lift, lift] \<Rightarrow> lift"                (infixr "\<or>" 30)
+  "_liftImp"    :: "[lift, lift] \<Rightarrow> lift"                (infixr "\<longrightarrow>" 25)
   "_liftIf"     :: "[lift, lift, lift] \<Rightarrow> lift"          ("(if (_)/ then (_)/ else (_))" 10)
   "_liftPlus"   :: "[lift, lift] \<Rightarrow> lift"                ("(_ +/ _)" [66,65] 65)
   "_liftMinus"  :: "[lift, lift] \<Rightarrow> lift"                ("(_ -/ _)" [66,65] 65)
@@ -146,9 +146,9 @@ syntax
   "_liftDiv"    :: "[lift, lift] \<Rightarrow> lift"                ("(_ div _)" [71,70] 70)
   "_liftMod"    :: "[lift, lift] \<Rightarrow> lift"                ("(_ mod _)" [71,70] 70)
   "_liftLess"   :: "[lift, lift] \<Rightarrow> lift"                ("(_/ < _)"  [50, 51] 50)
-  "_liftLeq"    :: "[lift, lift] \<Rightarrow> lift"                ("(_/ <= _)" [50, 51] 50)
-  "_liftMem"    :: "[lift, lift] \<Rightarrow> lift"                ("(_/ : _)" [50, 51] 50)
-  "_liftNotMem" :: "[lift, lift] \<Rightarrow> lift"                ("(_/ ~: _)" [50, 51] 50)
+  "_liftLeq"    :: "[lift, lift] \<Rightarrow> lift"                ("(_/ \<le> _)" [50, 51] 50)
+  "_liftMem"    :: "[lift, lift] \<Rightarrow> lift"                ("(_/ \<in> _)" [50, 51] 50)
+  "_liftNotMem" :: "[lift, lift] \<Rightarrow> lift"                ("(_/ \<notin> _)" [50, 51] 50)
   "_liftFinset" :: "liftargs => lift"                    ("{(_)}")
   (** TODO: syntax for lifted collection / comprehension **)
   "_liftPair"   :: "[lift,liftargs] \<Rightarrow> lift"                   ("(1'(_,/ _'))")
@@ -161,9 +161,9 @@ syntax
   "_ARAll"  :: "[idts, lift] \<Rightarrow> lift"                    ("(3! _./ _)" [0, 10] 10)
   "_AREx"   :: "[idts, lift] \<Rightarrow> lift"                    ("(3? _./ _)" [0, 10] 10)
   "_AREx1"  :: "[idts, lift] \<Rightarrow> lift"                    ("(3?! _./ _)" [0, 10] 10)
-  "_RAll" :: "[idts, lift] \<Rightarrow> lift"                      ("(3ALL _./ _)" [0, 10] 10)
-  "_REx"  :: "[idts, lift] \<Rightarrow> lift"                      ("(3EX _./ _)" [0, 10] 10)
-  "_REx1" :: "[idts, lift] \<Rightarrow> lift"                      ("(3EX! _./ _)" [0, 10] 10)
+  "_RAll"       :: "[idts, lift] \<Rightarrow> lift"                ("(3\<forall>_./ _)" [0, 10] 10)
+  "_REx"        :: "[idts, lift] \<Rightarrow> lift"                ("(3\<exists>_./ _)" [0, 10] 10)
+  "_REx1"       :: "[idts, lift] \<Rightarrow> lift"                ("(3\<exists>!_./ _)" [0, 10] 10)
 
 translations
   "_const"        \<rightleftharpoons>  "CONST const"
@@ -185,7 +185,7 @@ translations
   "_AREx"         \<rightharpoonup> "_REx"
   "_AREx1"        \<rightharpoonup> "_REx1"
 
-  "w |= A"        \<rightharpoonup> "A w"
+  "w \<Turnstile> A"        \<rightharpoonup> "A w"
   "LIFT A"        \<rightharpoonup> "A::_\<Rightarrow>_"
 
 translations
@@ -216,29 +216,29 @@ translations
   "_liftList (_liftargs x xs)"   \<rightleftharpoons> "_liftCons x (_liftList xs)"
   "_liftList x"                  \<rightleftharpoons> "_liftCons x (_const [])"
 
-  "w |= ~A"       \<leftharpoondown>  "_liftNot A w"
-  "w |=  A & B"   \<leftharpoondown> "_liftAnd A B w"
-  "w |= A | B"    \<leftharpoondown> "_liftOr A B w"
-  "w |= A --> B"  \<leftharpoondown> "_liftImp A B w"
-  "w |= u = v"    \<leftharpoondown> "_liftEqu u v w"
-  "w |= ALL x. A" \<leftharpoondown> "_RAll x A w"
-  "w |= EX x. A"  \<leftharpoondown> "_REx x A w"
-  "w |= EX! x. A" \<leftharpoondown> "_REx1 x A w"
+  "w \<Turnstile> \<not> A" \<leftharpoondown> "_liftNot A w"
+  "w \<Turnstile> A \<and> B" \<leftharpoondown> "_liftAnd A B w"
+  "w \<Turnstile> A \<or> B" \<leftharpoondown> "_liftOr A B w"
+  "w \<Turnstile> A \<longrightarrow> B" \<leftharpoondown> "_liftImp A B w"
+  "w \<Turnstile> u = v" \<leftharpoondown> "_liftEqu u v w"
+  "w \<Turnstile> \<forall>x. A" \<leftharpoondown> "_RAll x A w"
+  "w \<Turnstile> \<exists>x. A" \<leftharpoondown> "_REx x A w"
+  "w \<Turnstile> \<exists>!x. A" \<leftharpoondown> "_REx1 x A w"
 
-syntax (xsymbols)
-  "_Valid"      :: "lift \<Rightarrow> bool"                        ("(\<turnstile> _)" 5)
-  "_holdsAt"    :: "['a, lift] \<Rightarrow> bool"                  ("(_ \<Turnstile> _)" [100,10] 10)
-  "_liftNeq"    :: "[lift, lift] \<Rightarrow> lift"                (infixl "\<noteq>" 50)
-  "_liftNot"    :: "lift \<Rightarrow> lift"                        ("\<not> _" [90] 90)
-  "_liftAnd"    :: "[lift, lift] \<Rightarrow> lift"                (infixr "\<and>" 35)
-  "_liftOr"     :: "[lift, lift] \<Rightarrow> lift"                (infixr "\<or>" 30)
-  "_liftImp"    :: "[lift, lift] \<Rightarrow> lift"                (infixr "\<longrightarrow>" 25)
-  "_RAll"       :: "[idts, lift] \<Rightarrow> lift"                ("(3\<forall>_./ _)" [0, 10] 10)
-  "_REx"        :: "[idts, lift] \<Rightarrow> lift"                ("(3\<exists>_./ _)" [0, 10] 10)
-  "_REx1"       :: "[idts, lift] \<Rightarrow> lift"                ("(3\<exists>!_./ _)" [0, 10] 10)
-  "_liftLeq"    :: "[lift, lift] \<Rightarrow> lift"                ("(_/ \<le> _)" [50, 51] 50)
-  "_liftMem"    :: "[lift, lift] \<Rightarrow> lift"                ("(_/ \<in> _)" [50, 51] 50)
-  "_liftNotMem" :: "[lift, lift] \<Rightarrow> lift"                ("(_/ \<notin> _)" [50, 51] 50)
+syntax (ASCII)
+  "_Valid"      :: "lift \<Rightarrow> bool"                        ("(|- _)" 5)
+  "_holdsAt"    :: "['a, lift] \<Rightarrow> bool"                  ("(_ |= _)" [100,10] 10)
+  "_liftNeq"    :: "[lift, lift] \<Rightarrow> lift"                ("(_ ~=/ _)" [50,51] 50)
+  "_liftNot"    :: "lift \<Rightarrow> lift"                        ("(~ _)" [90] 90)
+  "_liftAnd"    :: "[lift, lift] \<Rightarrow> lift"                ("(_ &/ _)" [36,35] 35)
+  "_liftOr"     :: "[lift, lift] \<Rightarrow> lift"                ("(_ |/ _)" [31,30] 30)
+  "_liftImp"    :: "[lift, lift] \<Rightarrow> lift"                ("(_ -->/ _)" [26,25] 25)
+  "_liftLeq"    :: "[lift, lift] \<Rightarrow> lift"                ("(_/ <= _)" [50, 51] 50)
+  "_liftMem"    :: "[lift, lift] \<Rightarrow> lift"                ("(_/ : _)" [50, 51] 50)
+  "_liftNotMem" :: "[lift, lift] \<Rightarrow> lift"                ("(_/ ~: _)" [50, 51] 50)
+  "_RAll" :: "[idts, lift] \<Rightarrow> lift"                      ("(3ALL _./ _)" [0, 10] 10)
+  "_REx"  :: "[idts, lift] \<Rightarrow> lift"                      ("(3EX _./ _)" [0, 10] 10)
+  "_REx1" :: "[idts, lift] \<Rightarrow> lift"                      ("(3EX! _./ _)" [0, 10] 10)
 
 
 subsection {* Lemmas and Tactics *}
