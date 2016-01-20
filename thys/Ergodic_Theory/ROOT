@@ -9,4 +9,6 @@ session "Ergodic_Theory" (AFP) = "HOL-Probability" +
     Recurrence
     Invariants
     Ergodicity
+    Fekete
+    Kingman
   document_files "root.tex"

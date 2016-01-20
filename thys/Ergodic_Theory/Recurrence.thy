@@ -1235,7 +1235,7 @@ proof
     then have "n \<in> {1..}" by auto
 
     have itB_meas: "\<And>i. ((induced_map A)^^i)-` B \<inter> B \<in> sets M"
-      using B_meas iterates_measurable[OF induced_map_meas[OF A_meas]] by (metis Int_assoc measurable_sets sets.Int sets.Int_space_eq1)
+      using B_meas measurable_compose_n[OF induced_map_meas[OF A_meas]] by (metis Int_assoc measurable_sets sets.Int sets.Int_space_eq1)
     then have "(\<Union>i\<in>{1..}. ((induced_map A)^^i)-` B \<inter> B) \<in> sets M" by measurable
     moreover have "(T^^n)-`B \<inter> B \<subseteq> (\<Union>i\<in>{1..}. ((induced_map A)^^i)-` B \<inter> B)" using inc `n \<in> {1..}` by force
     ultimately have "emeasure M (\<Union>i\<in>{1..}. ((induced_map A)^^i)-` B \<inter> B) > 0"
@@ -2024,7 +2024,7 @@ proof -
     moreover have "(indicator (Y m) x::ereal) \<le> (indicator (Y n) x::ereal)" using Y_inc
       apply (auto simp add: incseq_def)  using `m \<le> n` by blast
     ultimately show "min (f x) m * (indicator (Y m) x::ereal) \<le> min (f x) n * (indicator (Y n) x::ereal)"
-      using mult_mono_ereal' f_pos by auto
+      using ereal_mult_mono' f_pos by auto
   qed
   hence "\<And>x. incseq (\<lambda>n. F n x * indicator (\<Union>n. (T^^n)--`A) x)"
     by (auto simp add: indicator_def incseq_def)
@@ -2038,9 +2038,7 @@ proof -
     fix x
     assume "x \<in> space M"
     def G \<equiv> "\<lambda>(n::nat). min (f x) n"
-    have "incseq G" using G_def by (auto simp add: incseq_def min_le_iff_disj)
-    moreover have "(SUP n. G n) = f x" unfolding G_def using SUP_truncation_ereal[of "f x"] by simp
-    ultimately have l: "G \<longlonglongrightarrow> f x" using LIMSEQ_SUP by fastforce
+    have l: "G \<longlonglongrightarrow> f x" unfolding G_def using ereal_truncation_top by fastforce
     obtain N where "x \<in> Y N" using Y_full `x \<in> space M` by auto
     hence "\<And>n. n > N \<Longrightarrow> x \<in> Y n" using Y_inc incseq_def less_imp_le by (metis subsetCE)
     hence "\<And>n. n > N \<Longrightarrow> F n x = G n" unfolding F_def G_def by auto

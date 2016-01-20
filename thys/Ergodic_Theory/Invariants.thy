@@ -1,4 +1,4 @@
-(*  Author:  Sébastien Gouëzel   sebastien.gouezel@univ-rennes1.fr 
+(*  Author:  Sébastien Gouëzel   sebastien.gouezel@univ-rennes1.fr
     License: BSD
 *)
 
@@ -607,7 +607,7 @@ Applying the same result to $-f$ gives $S_n f/n \to E(f|I)$.
 context fmpt
 begin
 
-lemma birkhoff_lemma1:
+lemma birkhoff_aux1:
   fixes f::"'a \<Rightarrow> real"
   assumes [measurable]: "integrable M f"
   defines "A \<equiv> {x \<in> space M. limsup (\<lambda>n. ereal(birkhoff_sum f n x)) = \<infinity>}"
@@ -746,7 +746,7 @@ proof -
   then show "(\<integral>x. f x * indicator A x \<partial>M) \<ge> 0" using lim by (simp add: LIMSEQ_le_const)
 qed
 
-lemma birkhoff_lemma2:
+lemma birkhoff_aux2:
   fixes f::"'a \<Rightarrow> real"
   assumes [measurable]: "integrable M f"
    shows "AE x in M. limsup (\<lambda>n. ereal(birkhoff_sum f n x / n)) \<le> real_cond_exp M Invariants f x"
@@ -757,7 +757,7 @@ proof -
     then have intg: "integrable M g" using assms real_cond_exp_int(1) assms by auto
     def A \<equiv> "{x \<in> space M. limsup (\<lambda>n. ereal(birkhoff_sum g n x)) = \<infinity>}"
     have Ag: "A \<in> sets Invariants" "(\<integral>x. g x * indicator A x \<partial>M) \<ge> 0"
-      using birkhoff_lemma1[where ?f = g, OF intg] A_def by auto
+      unfolding A_def by (rule birkhoff_aux1[where ?f = g, OF intg])+
     then have [measurable]: "A \<in> sets M" by (simp add: Invariants_in_sets)
 
     have eq: "(\<integral>x. indicator A x * real_cond_exp M Invariants f x \<partial>M) = (\<integral>x. indicator A x * f x \<partial>M)"
@@ -853,11 +853,39 @@ proof -
       using i by (simp add: limsup_le_liminf_real)
   } note * = this
   moreover have "AE x in M. limsup (\<lambda>n. ereal(birkhoff_sum f n x /n )) \<le> real_cond_exp M Invariants f x"
-    using birkhoff_lemma2 assms by simp
+    using birkhoff_aux2 assms by simp
   moreover have "AE x in M. limsup (\<lambda>n. ereal(birkhoff_sum (\<lambda>x. -f x) n x / n )) \<le> real_cond_exp M Invariants (\<lambda>x. -f x) x"
-    using birkhoff_lemma2 assms by simp
+    using birkhoff_aux2 assms by simp
   moreover have "AE x in M. real_cond_exp M Invariants (\<lambda>x. -f x) x = - real_cond_exp M Invariants f x"
     using real_cond_exp_cmult[where ?c = "-1"] assms by force
+  ultimately show ?thesis by auto
+qed
+
+text {*FIXME: The proof we give of the next lemma is not the "good" one. The good argument is to say
+that $f$ is integrable, hence $\mu\{|f|> n\epsilon\}$ is summable (for any fixed $\epsilon$), thanks
+to the formula *: $\int |f| d\mu = \int \mu\{|f|>t\} dt$. The conclusion then follows from Borel-Cantelli.
+However, * is not available yet (it needs an integration by parts formula for measures other than
+Lebesgue).*}
+
+lemma limit_foTn_over_n:
+  fixes f::"'a \<Rightarrow> real"
+  assumes "integrable M f"
+  shows "AE x in M. (\<lambda>n. f((T^^n) x) / n) \<longlonglongrightarrow> 0"
+proof -
+  {
+    fix x assume *: "(\<lambda>n. birkhoff_sum f n x / n) \<longlonglongrightarrow> real_cond_exp M Invariants f x"
+    have **: "(\<lambda>n. birkhoff_sum f (n+1) x / n) \<longlonglongrightarrow> real_cond_exp M Invariants f x"
+      using tendsto_shift_1_over_n[OF *, of 1] by simp
+
+    have "birkhoff_sum f (n+1) x/n - birkhoff_sum f n x/n = f ((T^^n) x) /n" for n
+       unfolding birkhoff_sum_def by (auto simp add: divide_simps)
+    moreover have "(\<lambda>n. birkhoff_sum f (n+1) x / n - birkhoff_sum f n x / n) \<longlonglongrightarrow>
+      real_cond_exp M Invariants f x - real_cond_exp M Invariants f x"
+      apply (rule tendsto_diff) using * ** by auto
+    ultimately have "(\<lambda>n. f ((T^^n) x) /n) \<longlonglongrightarrow> 0" by auto
+  }
+  moreover have "AE x in M. (\<lambda>n. birkhoff_sum f n x / n) \<longlonglongrightarrow> real_cond_exp M Invariants f x"
+    using birkhoff_theorem_AE_nonergodic[OF assms] by auto
   ultimately show ?thesis by auto
 qed
 
