@@ -19,9 +19,11 @@ definition HF :: "hf set \<Rightarrow> hf"
 definition hinsert :: "hf \<Rightarrow> hf \<Rightarrow> hf"
   where "hinsert a b = HF (insert a (hfset b))"
 
-definition hmem :: "hf \<Rightarrow> hf \<Rightarrow> bool"     (infixl "<:" 50)
+definition hmem :: "hf \<Rightarrow> hf \<Rightarrow> bool"  (infixl "\<^bold>\<in>" 50)
   where "hmem a b \<longleftrightarrow> a \<in> hfset b"
 
+notation (ASCII)
+  hmem (infixl "<:" 50)
 
 instantiation hf :: zero
 begin
@@ -35,18 +37,14 @@ lemma Abs_hf_0 [simp]: "Abs_hf 0 = 0"
 
 text {* HF Set enumerations *}
 
-syntax
+abbreviation inserthf :: "hf \<Rightarrow> hf \<Rightarrow> hf"  (infixl "\<triangleleft>" 60)
+  where "y \<triangleleft> x \<equiv> hinsert x y"
+
+syntax (ASCII)
   "_HFinset" :: "args \<Rightarrow> hf"      ("{|(_)|}")
-
-syntax (xsymbols)
+syntax
   "_HFinset" :: "args \<Rightarrow> hf"      ("\<lbrace>_\<rbrace>")
-  "_inserthf" :: "hf \<Rightarrow> hf \<Rightarrow> hf"  (infixl "\<triangleleft>" 60)
-
-notation (xsymbols)
-  hmem             (infixl "\<^bold>\<in>" 50)
-
 translations
-  "y \<triangleleft> x"    == "CONST hinsert x y"
   "{|x, y|}" == "\<lbrace>y\<rbrace> \<triangleleft> x"
   "{|x|}"    == "0 \<triangleleft> x"
 
@@ -171,12 +169,12 @@ definition hsplit :: "[[hf, hf] \<Rightarrow> 'a, hf] \<Rightarrow> 'a::{}"  --{
 text {* Ordered Pairs, from ZF/ZF.thy *}
 
 nonterminal hfs
+syntax (ASCII)
+  "_Tuple"    :: "[hf, hfs] \<Rightarrow> hf"              ("<(_,/ _)>")
+  "_hpattern" :: "[pttrn, patterns] \<Rightarrow> pttrn"   ("<_,/ _>")
 syntax
   ""          :: "hf \<Rightarrow> hfs"                    ("_")
   "_Enum"     :: "[hf, hfs] \<Rightarrow> hfs"             ("_,/ _")
-  "_Tuple"    :: "[hf, hfs] \<Rightarrow> hf"              ("<(_,/ _)>")
-  "_hpattern" :: "[pttrn, patterns] \<Rightarrow> pttrn"   ("<_,/ _>")
-syntax (xsymbols)
   "_Tuple"    :: "[hf, hfs] \<Rightarrow> hf"              ("\<langle>(_,/ _)\<rangle>")
   "_hpattern" :: "[pttrn, patterns] \<Rightarrow> pttrn"   ("\<langle>_,/ _\<rangle>")
 translations
@@ -240,9 +238,9 @@ qed
 definition HCollect :: "(hf \<Rightarrow> bool) \<Rightarrow> hf \<Rightarrow> hf" -- "comprehension"
   where "HCollect P A = (THE z. \<forall>u. u \<^bold>\<in> z = (P u & u \<^bold>\<in> A))"
 
-syntax
+syntax (ASCII)
   "_HCollect" :: "idt \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> hf"    ("(1\<lbrace>_ <:/ _./ _\<rbrace>)")
-syntax (xsymbols)
+syntax
   "_HCollect" :: "idt \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> hf"    ("(1\<lbrace>_ \<^bold>\<in>/ _./ _\<rbrace>)")
 translations
   "\<lbrace>x <: A. P\<rbrace>" == "CONST HCollect (%x. P) A"
@@ -378,12 +376,12 @@ definition RepFun :: "hf \<Rightarrow> (hf \<Rightarrow> hf) \<Rightarrow> hf"
   where "RepFun A f = Replace A (\<lambda>x y. y = f x)"
 
 
-syntax
+syntax (ASCII)
   "_HReplace"  :: "[pttrn, pttrn, hf, bool] \<Rightarrow> hf" ("(1{|_ ./ _<: _, _|})")
   "_HRepFun"   :: "[hf, pttrn, hf] \<Rightarrow> hf"          ("(1{|_ ./ _<: _|})" [51,0,51])
   "_HINTER"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          ("(3INT _<:_./ _)" 10)
   "_HUNION"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          ("(3UN _<:_./ _)" 10)
-syntax (xsymbols)
+syntax
   "_HReplace"  :: "[pttrn, pttrn, hf, bool] \<Rightarrow> hf" ("(1\<lbrace>_ ./ _ \<^bold>\<in> _, _\<rbrace>)")
   "_HRepFun"   :: "[hf, pttrn, hf] \<Rightarrow> hf"          ("(1\<lbrace>_ ./ _ \<^bold>\<in> _\<rbrace>)" [51,0,51])
   "_HUNION"    :: "[pttrn, hf, hf] \<Rightarrow> hf"          ("(3\<Squnion>_\<^bold>\<in>_./ _)" 10)
@@ -691,11 +689,11 @@ definition HBall :: "hf \<Rightarrow> (hf \<Rightarrow> bool) \<Rightarrow> bool
 definition HBex :: "hf \<Rightarrow> (hf \<Rightarrow> bool) \<Rightarrow> bool" where
   "HBex A P \<longleftrightarrow> (\<exists>x. x <: A \<and> P x)"   -- "bounded existential quantifiers"
 
-syntax
+syntax (ASCII)
   "_HBall"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3ALL _<:_./ _)" [0, 0, 10] 10)
   "_HBex"        :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3EX _<:_./ _)"  [0, 0, 10] 10)
   "_HBex1"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3EX! _<:_./ _)" [0, 0, 10] 10)
-syntax (xsymbols)
+syntax
   "_HBall"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<forall>_\<^bold>\<in>_./ _)"  [0, 0, 10] 10)
   "_HBex"        :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<exists>_\<^bold>\<in>_./ _)"  [0, 0, 10] 10)
   "_HBex1"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3\<exists>!_\<^bold>\<in>_./ _)" [0, 0, 10] 10)
@@ -889,11 +887,11 @@ definition HPi :: "hf \<Rightarrow> (hf \<Rightarrow> hf) \<Rightarrow> hf"
   where "HPi A B = \<lbrace> f \<^bold>\<in> HPow(HSigma A B). A \<le> hdomain(f) & hfunction(f)\<rbrace>"
 
 
-syntax
+syntax (ASCII)
   "_PROD"     :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3PROD _<:_./ _)" 10)
   "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3SUM _<:_./ _)" 10)
   "_lam"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3lam _<:_./ _)" 10)
-syntax (xsymbols)
+syntax
   "_PROD"     :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Pi>_\<^bold>\<in>_./ _)" 10)
   "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Sigma>_\<^bold>\<in>_./ _)" 10)
   "_lam"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<lambda>_\<^bold>\<in>_./ _)" 10)
