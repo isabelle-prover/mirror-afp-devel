@@ -19,6 +19,7 @@ theory Determinant_Impl
 imports
   Determinant
   Missing_Unsorted
+  Missing_Polynomial
 begin
 
 type_synonym 'a det_selection_fun = "(nat \<times> 'a)list \<Rightarrow> nat"
@@ -30,47 +31,12 @@ definition det_selection_fun :: "'a det_selection_fun \<Rightarrow> bool" where
 lemma det_selection_funD: "det_selection_fun f \<Longrightarrow> xs \<noteq> [] \<Longrightarrow> f xs \<in> fst ` set xs"
   unfolding det_selection_fun_def by auto
 
-definition fst_sel_fun :: "'a det_selection_fun" where
-  "fst_sel_fun x = fst (hd x)" 
-
-lemma fst_sel_fun[simp]: "det_selection_fun fst_sel_fun"
-  unfolding det_selection_fun_def fst_sel_fun_def by auto
+definition mute_fun :: "('a :: comm_ring_1 \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a) \<Rightarrow> bool" where
+  "mute_fun f = (\<forall> x y x' y' g. f x y = (x',y',g) \<longrightarrow> y \<noteq> 0 
+   \<longrightarrow> x = x' * g \<and> y * x' = x * y')"
 
 context
-  fixes measure :: "'a \<Rightarrow> nat" 
-begin
-private fun select_min_main where 
-  "select_min_main m i ((j,p) # xs) = (let n = measure p in if n < m then select_min_main n j xs
-    else select_min_main m i xs)"
-| "select_min_main m i [] = i"
-
-definition select_min :: "(nat \<times> 'a) list \<Rightarrow> nat" where
-  "select_min xs = (case xs of ((i,p) # ys) \<Rightarrow> (select_min_main (measure p) i ys))"
-
-lemma select_min[simp]: "det_selection_fun select_min"
-  unfolding det_selection_fun_def 
-proof (intro allI impI)
-  fix xs :: "(nat \<times> 'a)list"
-  assume "xs \<noteq> []"
-  then obtain i p ys where xs: "xs = ((i,p) # ys)" by (cases xs, auto)
-  then obtain m where id: "select_min xs = select_min_main m i ys" unfolding select_min_def by auto
-  have "i \<in> fst ` set xs" "set ys \<subseteq> set xs" unfolding xs by auto
-  thus "select_min xs \<in> fst ` set xs" unfolding id
-  proof (induct ys arbitrary: m i )
-    case (Cons jp ys m i)
-    obtain j p where jp: "jp = (j,p)" by force
-    obtain k n where res: "select_min_main m i (jp # ys) = select_min_main n k ys" 
-      and k: "k \<in> fst ` set xs"
-      using Cons(2-) unfolding jp by (cases "measure p < m"; force simp: Let_def)
-    from Cons(1)[OF k, of n] Cons(3) 
-    show ?case unfolding res by auto
-  qed simp
-qed
-end
-
-
-context
-  fixes sel_fun :: "'a ::{ring_div,ring_gcd} det_selection_fun"
+  fixes sel_fun :: "'a ::idom_divide det_selection_fun"
 begin
 
 subsection {* Properties of triangular matrices *}
@@ -133,23 +99,26 @@ lemma triangle_trans: "triangular_to k A \<Longrightarrow> k > k' \<Longrightarr
 
 subsection {* Algorithms for Triangulization *}
 
-
+context 
+  fixes mf :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a"
+begin
 
 private fun mute :: "'a \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a \<times> 'a mat \<Rightarrow> 'a \<times> 'a mat" where
   "mute A_ll k l (r,A) = (let p = A $$ (k,l) in if p = 0 then (r,A) else 
-    let g = gcd A_ll p; q' = A_ll div g; p' = p div g  
-     in (r * q', addrow (-p') k l (multrow k q' A)))"
+    case mf A_ll p of (q',p',g) \<Rightarrow> 
+      (r * q', addrow (-p') k l (multrow k q' A)))" 
 
 lemma mute_preserves_dimensions:
   assumes "mute q k l (r,A) = (r',A')"
   shows [simp]: "dim\<^sub>r A' = dim\<^sub>r A" and [simp]: "dim\<^sub>c A' = dim\<^sub>c A"
-using assms by (auto simp: Let_def split: if_splits)
+using assms by (auto simp: Let_def split: if_splits prod.splits)
 
 text {*
   Algorithm @{term "mute k l"} makes $k$-th row $l$-th column element to 0.
 *}
 
 lemma mute_makes_0 :
+ assumes mute_fun: "mute_fun mf"
  assumes "mute (A $$ (l,l)) k l (r,A) = (r',A')"
  "l < dim\<^sub>r A"
  "l < dim\<^sub>c A"
@@ -159,10 +128,11 @@ lemma mute_makes_0 :
 proof -
   def a \<equiv> "A $$ (l, l)"
   def b \<equiv> "A $$ (k, l)"
-  have "a div gcd a b * b = b div gcd a b * a"
-    by (simp add: div_mult_swap mult.commute)
-  with assms show ?thesis
-  unfolding mat_addrow_def by (auto simp: Let_def a_def b_def split: if_splits)
+  let ?mf = "mf (A $$ (l, l)) (A $$ (k, l))"
+  obtain q' p' g where id: "?mf = (q',p',g)" by (cases ?mf, auto)
+  note mf = mute_fun[unfolded mute_fun_def, rule_format, OF id]
+  from assms show ?thesis
+  unfolding mat_addrow_def using mf id by (auto simp: ac_simps Let_def split: if_splits)
 qed
 
 text {* It will not touch unexpected rows. *}
@@ -174,7 +144,7 @@ lemma mute_preserves:
    k < dim\<^sub>r A \<Longrightarrow>
    i \<noteq> k \<Longrightarrow>
    A' $$ (i,j) = A $$ (i,j)"
-   by (auto simp: Let_def split: if_splits)
+   by (auto simp: Let_def split: if_splits prod.splits)
 
 text {* It preserves $0$s in the touched row. *}
 lemma mute_preserves_0:
@@ -186,7 +156,7 @@ lemma mute_preserves_0:
    A $$ (i,j) = 0 \<Longrightarrow>
    A $$ (l,j) = 0 \<Longrightarrow>
    A' $$ (i,j) = 0"
-   by (auto simp: Let_def split: if_splits)
+   by (auto simp: Let_def split: if_splits prod.splits)
 
 text {* Hence, it will respect partially triangular matrix. *}
 lemma mute_preserves_triangle:
@@ -275,6 +245,9 @@ proof -
   qed (insert assms,auto)
 qed
 
+context
+  assumes mf: "mute_fun mf"
+begin
 lemma sub1_makes_0s:
   assumes "sub1 (A $$ (l,l)) k l (r,A) = (r',A')"
   and lr: "l < dim\<^sub>r A"
@@ -306,7 +279,7 @@ proof -
       case True {
         have l: "Suc (l + k) \<noteq> l" by auto
         show ?thesis
-          using mute_makes_0[OF rA''[unfolded AA'] lr' lc' Slkr' l] ir il rA'
+          using mute_makes_0[OF mf rA''[unfolded AA'] lr' lc' Slkr' l] ir il rA'
           by (simp add:True)
       } next
       case False {
@@ -358,6 +331,7 @@ proof -
     using sub1_triangulizes_column[OF rA'] assms by auto
   ultimately show ?thesis by (rule triangle_growth)
 qed
+end
 
 subsection {* Finding Non-Zero Elements *}
 
@@ -483,7 +457,8 @@ proof -
 qed
 
 lemma sub2_grows_triangle:
-  assumes rA': "sub2 (dim\<^sub>r A) l (r,A) = (r',A')"
+  assumes mf: "mute_fun mf"
+  and rA': "sub2 (dim\<^sub>r A) l (r,A) = (r',A')"
   and tri: "triangular_to l A"
   and lc: "l < dim\<^sub>c A"
   and lr: "l < dim\<^sub>r A"
@@ -536,7 +511,7 @@ proof (rule triangle_growth)
         have rA'2: "sub1 (?A $$ (l,l)) (dim\<^sub>r ?A - Suc l) l (-r, ?A) = (r',A')"
           using lm Some rA' by (simp add: Let_def)
         show ?thesis
-          using sub1_triangulizes_column[OF rA'2 tri2] r0 lr lc by auto
+          using sub1_triangulizes_column[OF mf rA'2 tri2] r0 lr lc by auto
       }
     qed
 qed
@@ -548,7 +523,7 @@ text {*
   Now we recursively apply @{const sub2} to make the entire matrix to be triangular.
 *}
 
-private fun sub3 :: "nat \<Rightarrow> nat \<Rightarrow> 'a::{ring_div,ring_gcd} \<times> 'a mat \<Rightarrow> 'a \<times> 'a mat"
+private fun sub3 :: "nat \<Rightarrow> nat \<Rightarrow> 'a \<times> 'a mat \<Rightarrow> 'a \<times> 'a mat"
   where "sub3 d 0 rA = rA"
   | "sub3 d (Suc l) rA = sub2 d l (sub3 d l rA)"
 
@@ -568,7 +543,8 @@ lemma sub3_closed[simp]:
   unfolding mat_carrier_def by auto
 
 lemma sub3_makes_triangle:
-  assumes sel_fun: "det_selection_fun sel_fun"
+  assumes mf: "mute_fun mf"
+  and sel_fun: "det_selection_fun sel_fun"
   and "sub3 (dim\<^sub>r A) l (r,A) = (r',A')"
   and "l \<le> dim\<^sub>r A"
   and "l \<le> dim\<^sub>c A"
@@ -591,13 +567,13 @@ proof -
       then have rA': "sub2 (dim\<^sub>r A'') l (r'',A'') = (r',A')"
         using rA'' by auto
       show "triangular_to (Suc l) A'"
-        using sub2_grows_triangle[OF sel_fun rA'] lr lc rA'' IH by auto
+        using sub2_grows_triangle[OF sel_fun mf rA'] lr lc rA'' IH by auto
   qed auto
 qed
 
 subsection {* Triangulization *}
 
-definition triangulize :: "'a::{ring_div,ring_gcd} mat \<Rightarrow> 'a \<times> 'a mat"
+definition triangulize :: "'a mat \<Rightarrow> 'a \<times> 'a mat"
 where "triangulize A = sub3 (dim\<^sub>r A) (dim\<^sub>r A) (1,A)"
 
 lemma triangulize_preserves_dimensions[simp]:
@@ -610,7 +586,8 @@ lemma triangulize_closed[simp]:
   unfolding mat_carrier_def by auto
 
 context
-  assumes sel_fun: "det_selection_fun sel_fun"
+  assumes mf: "mute_fun mf"
+  and sel_fun: "det_selection_fun sel_fun"
 begin
 
 theorem triangulized:
@@ -625,7 +602,7 @@ proof (cases "0<n")
     using assms by auto
     thus ?thesis
       unfolding triangular_to_triangular
-      using sub3_makes_triangle[OF sel_fun rA'] True by auto
+      using sub3_makes_triangle[OF mf sel_fun rA'] True by auto
     next
   case False
     then have nr':"dim\<^sub>r A' = 0" using assms by auto
@@ -654,23 +631,24 @@ proof -
     case (Suc k)
       obtain r'' A'' where rA'': "sub1 q k l (r, A) = (r'', A'')" by force
       then have IH: "r'' \<noteq> 0" using Suc by auto
-      def fact \<equiv> "if A'' $$ (Suc (l+k),l) = 0 then 1 else q div gcd q (A'' $$ (Suc (l + k), l))"
+      obtain q' l' g where mf_id: "mf q (A'' $$ (Suc (l + k), l)) = (q',l',g)" by (rule prod_cases3)      
+      def fact \<equiv> "if A'' $$ (Suc (l+k),l) = 0 then 1 else q'"
+      note mf = mf[unfolded mute_fun_def, rule_format, OF mf_id]
       have All: "q \<noteq> 0"
         using sub1_preserves_diagnal[OF rA'' lc] All Suc by auto
-      moreover have "fact \<noteq> 0" unfolding fact_def using All
-        by (auto split: if_splits, metis dvd_div_mult_self gcd_dvd1 mult_zero_left)
+      moreover have "fact \<noteq> 0" unfolding fact_def using All mf by auto
       moreover assume "sub1 q (Suc k) l (r,A) = (r',A')"
         then have "mute q (Suc (l + k)) l (r'',A'') = (r',A')"
           using rA'' by auto
         hence "r'' * fact = r'"
-          unfolding mute.simps fact_def Let_def using IH by (auto split: if_splits)
+          unfolding mute.simps fact_def Let_def mf_id using IH by (auto split: if_splits)
       ultimately show "r' \<noteq> 0" using IH by auto
   qed (insert r0, simp)
 qed
 
 text {* The algorithm @{term "sub2"} will not require such a condition. *}
 lemma sub2_divisor [simp]:
-  assumes rA': "sub2 k l (r, (A ::'a :: {ring_div,ring_gcd} mat)) = (r',A')"
+  assumes rA': "sub2 k l (r, A) = (r',A')"
   and lk: "l < k"
   and kr: "k \<le> dim\<^sub>r A"
   and lc: "l < dim\<^sub>c A"
@@ -689,7 +667,7 @@ proof (cases "find_non0 l A") {
 } qed auto
 
 lemma sub3_divisor [simp]:
-  assumes "sub3 d l (r,(A ::'a mat)) = (r'',A'')"
+  assumes "sub3 d l (r,A) = (r'',A'')"
   and "l \<le> d"
   and "d \<le> dim\<^sub>r A"
   and "l \<le> dim\<^sub>c A"
@@ -716,7 +694,7 @@ proof -
 qed
 
 theorem triangulize_divisor:
-  assumes A: "(A :: 'a  mat) \<in> carrier\<^sub>m d d"
+  assumes A: "A \<in> carrier\<^sub>m d d"
   shows "triangulize A = (r',A') \<Longrightarrow> r' \<noteq> 0"
 unfolding triangulize_def
 proof -
@@ -743,21 +721,21 @@ proof (cases "A $$ (k,l) = 0")
   thus ?thesis using assms by auto
 next
   case False
-  def gc \<equiv> "gcd q (A $$ (k, l))"
-  let ?All = "q div gc"
-  let ?Akl = "- (A $$ (k,l) div gc)"
+  obtain p' q' g where mf_id: "mf q (A $$ (k,l)) = (q',p',g)" by (rule prod_cases3)
+  let ?All = "q'"
+  let ?Akl = "- p'"
   let ?B = "multrow k ?All A"
   let ?C = "addrow ?Akl k l ?B"
-  have "r * det A' = r * det ?C"  using assms by (simp add: Let_def gc_def False)
+  have "r * det A' = r * det ?C"  using assms by (simp add: Let_def mf_id False)
   also have "det ?C = det ?B" using assms by (auto simp: det_addrow)
   also have "\<dots> = ?All * det A" using assms det_multrow by auto
   also have "r * \<dots> = (r * ?All) * det A" by simp
-  also have r: "r * ?All = r'" using assms by (simp add: Let_def gc_def False)
+  also have r: "r * ?All = r'" using assms by (simp add: Let_def mf_id False)
   finally show ?thesis.
 qed
 
 lemma sub1_det:
-  assumes A: "(A :: 'a mat) \<in> carrier\<^sub>m n n"
+  assumes A: "A \<in> carrier\<^sub>m n n"
   and "sub1 q k l (r,A) = (r'',A'')"
   and r0: "r \<noteq> 0"
   and All0: "q \<noteq> 0"
@@ -778,15 +756,15 @@ proof -
       using assms Suc A' mute_det[OF A' rA''] by auto
     hence "r * r' * det A'' = r * r'' * det A'" by auto
       also from IH have "... = r'' * r' * det A" by auto
-      finally have "r * r' * det A'' div r' = r'' * r' * det A div r'" by auto
+      finally have "r * r' * det A'' div r' = r'' * r' * det A div r'" by presburger
     moreover have "r' \<noteq> 0"
       using r0 sub1_divisor[OF rA'] All0 Suc A by auto
-    ultimately show ?case by auto
+    ultimately show ?case using \<open>r * r' * det A'' = r'' * r' * det A\<close> by auto
   qed auto
 qed
 
 lemma sub2_det:
-  assumes A: "(A :: 'a mat) \<in> carrier\<^sub>m d d"
+  assumes A: "A \<in> carrier\<^sub>m d d"
   and rA': "sub2 d l (r,A) = (r',A')"
   and r0: "r \<noteq> 0"
   and ld: "l < d"
@@ -813,7 +791,7 @@ proof (cases "find_non0 l A")
 qed
 
 lemma sub3_det:
-  assumes A:"(A :: 'a mat) \<in> carrier\<^sub>m d d"
+  assumes A:"A \<in> carrier\<^sub>m d d"
   and "sub3 d l (r,A) = (r'',A'')"
   and r0: "r \<noteq> 0"
   and "l \<le> d"
@@ -834,13 +812,15 @@ proof -
         using Suc r'0 A by(subst sub2_det[OF A' rA''],auto)
       also have "r * ... = r'' * (r * det A')" by auto
       also have "r * det A' = r' * det A" using Suc rA' by auto
-      also have "r'' * ... div r' = r'' * r' * det A div r'" by auto
-      finally show "r * det A'' = r'' * det A" using r'0 by auto
+      also have "r'' * ... div r' = r'' * r' * det A div r'" by (simp add: ac_simps)
+      finally show "r * det A'' = r'' * det A" using r'0 
+        by (metis \<open>r * det A' = r' * det A\<close> \<open>r' * det A'' = r'' * det A'\<close> 
+          mult.left_commute mult_cancel_left)
   qed simp
 qed
 
 theorem triangulize_det:
-  assumes A: "(A :: 'a  mat) \<in> carrier\<^sub>m d d"
+  assumes A: "A \<in> carrier\<^sub>m d d"
   and rA': "triangulize A = (r',A')"
   shows "det A * r' = det A'"
 proof -
@@ -868,15 +848,16 @@ definition det_code :: "'a mat \<Rightarrow> 'a" where
    else 0)"
 
 lemma det_code[simp]: assumes sel_fun: "det_selection_fun sel_fun"
+  and mf: "mute_fun mf"
   shows "det_code A = det A"
   using det_code_def[simp]
 proof (cases "dim\<^sub>r A = dim\<^sub>c A")
   case True
   then have A: "A \<in> carrier\<^sub>m (dim\<^sub>r A) (dim\<^sub>r A)" unfolding mat_carrier_def by auto
   obtain r' A' where rA': "triangulize A = (r',A')" by force
-  from triangulize_divisor[OF sel_fun A] rA' have r'0: "r' \<noteq> 0" by auto
-  from triangulize_det[OF sel_fun A rA'] have det': "det A * r' = det A'" by auto
-  from triangulized[OF sel_fun A, unfolded rA'] have tri': "upper_triangular A'" by simp
+  from triangulize_divisor[OF mf sel_fun A] rA' have r'0: "r' \<noteq> 0" by auto
+  from triangulize_det[OF mf sel_fun A rA'] have det': "det A * r' = det A'" by auto
+  from triangulized[OF mf sel_fun A, unfolded rA'] have tri': "upper_triangular A'" by simp
   have A': "A' \<in> carrier\<^sub>m (dim\<^sub>r A') (dim\<^sub>r A')"
     using triangulize_closed[OF rA' A] by auto
   from tri' have tr: "triangular_to (dim\<^sub>r A') A'" by auto
@@ -889,12 +870,92 @@ proof (cases "dim\<^sub>r A = dim\<^sub>c A")
 qed (simp add: det_def)
 
 end
+end
 
-text \<open>Now we can select an arbitrary selection function. This will be important for computing
+text \<open>Now we can select an arbitrary selection and mute function. This will be important for computing
   resultants over polynomials, where usually a polynomial with small degree is preferable.
 
   The default however is to use the first element.\<close>
 
-lemma det_code_fst_sel_fun[code]: "det A = det_code fst_sel_fun A" by simp
+definition trivial_mute_fun :: "'a :: comm_ring_1 \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a" where
+  "trivial_mute_fun x y = (x,y,1)"
+
+lemma trivial_mute_fun[simp,intro]: "mute_fun trivial_mute_fun"
+  unfolding mute_fun_def trivial_mute_fun_def by auto
+
+definition fst_sel_fun :: "'a det_selection_fun" where
+  "fst_sel_fun x = fst (hd x)" 
+
+lemma fst_sel_fun[simp]: "det_selection_fun fst_sel_fun"
+  unfolding det_selection_fun_def fst_sel_fun_def by auto
+
+context
+  fixes measure :: "'a \<Rightarrow> nat" 
+begin
+private fun select_min_main where 
+  "select_min_main m i ((j,p) # xs) = (let n = measure p in if n < m then select_min_main n j xs
+    else select_min_main m i xs)"
+| "select_min_main m i [] = i"
+
+definition select_min :: "(nat \<times> 'a) list \<Rightarrow> nat" where
+  "select_min xs = (case xs of ((i,p) # ys) \<Rightarrow> (select_min_main (measure p) i ys))"
+
+lemma select_min[simp]: "det_selection_fun select_min"
+  unfolding det_selection_fun_def 
+proof (intro allI impI)
+  fix xs :: "(nat \<times> 'a)list"
+  assume "xs \<noteq> []"
+  then obtain i p ys where xs: "xs = ((i,p) # ys)" by (cases xs, auto)
+  then obtain m where id: "select_min xs = select_min_main m i ys" unfolding select_min_def by auto
+  have "i \<in> fst ` set xs" "set ys \<subseteq> set xs" unfolding xs by auto
+  thus "select_min xs \<in> fst ` set xs" unfolding id
+  proof (induct ys arbitrary: m i )
+    case (Cons jp ys m i)
+    obtain j p where jp: "jp = (j,p)" by force
+    obtain k n where res: "select_min_main m i (jp # ys) = select_min_main n k ys" 
+      and k: "k \<in> fst ` set xs"
+      using Cons(2-) unfolding jp by (cases "measure p < m"; force simp: Let_def)
+    from Cons(1)[OF k, of n] Cons(3) 
+    show ?case unfolding res by auto
+  qed simp
+qed
+end
+
+text \<open>For the code equation we use the trivial mute and selection function as this does
+  not impose any further class restrictions.\<close>
+
+lemma det_code_fst_sel_fun[code]: "det A = det_code fst_sel_fun trivial_mute_fun A" by simp
+
+text \<open>But we also provide specialiced functions for more specific carriers.\<close>
+
+definition field_mute_fun :: "'a :: field \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a" where
+  "field_mute_fun x y = (x/y,1,y)"
+
+lemma field_mute_fun[simp,intro]: "mute_fun field_mute_fun"
+  unfolding mute_fun_def field_mute_fun_def by auto
+
+definition det_field :: "'a :: field mat \<Rightarrow> 'a" where 
+  "det_field A = det_code fst_sel_fun field_mute_fun A"
+
+lemma det_field[simp]: "det_field = det"
+  by (intro ext, auto simp: det_field_def)
+
+definition gcd_mute_fun :: "'a :: ring_gcd \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a" where
+  "gcd_mute_fun x y = (let g = gcd x y in (x div g, y div g,g))"
+
+lemma gcd_mute_fun[simp,intro]: "mute_fun gcd_mute_fun"
+  unfolding mute_fun_def gcd_mute_fun_def by (auto simp: Let_def div_mult_swap mult.commute)
+
+definition det_int :: "int mat \<Rightarrow> int" where 
+  "det_int A = det_code (select_min (\<lambda> x. nat (abs x))) gcd_mute_fun A"
+
+lemma det_int[simp]: "det_int = det"
+  by (intro ext, auto simp: det_int_def)
+
+definition det_field_poly :: "'a :: field poly mat \<Rightarrow> 'a poly" where
+  "det_field_poly A = det_code (select_min degree) gcd_mute_fun A"
+
+lemma det_field_poly[simp]: "det_field_poly = det"
+  by (intro ext, auto simp: det_field_poly_def)
 
 end

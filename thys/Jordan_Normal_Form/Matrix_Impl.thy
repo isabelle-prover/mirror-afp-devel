@@ -17,13 +17,11 @@ imports
   "../Show/Show_Instances"
 begin
 
-text \<open>For determinants we require class @{class ring_div}, so integers, rationals, etc. can be used.\<close>
+text \<open>For determinants we require class @{class idom_divide}, so integers, rationals, etc. can be used.\<close>
 value[code] "det (mat_of_rows_list 4 [[1 :: int, 4, 9, -1], [-3, -1, 5, 4], [4, 2, 0,2], [8,-9, 5,7]])"
-text \<open>TODO: currently also class @{class ring_gcd} is required, so rational numbers do not work. 
-  This will be generalized soonish.\<close>
-(* value[code] "det (mat_of_rows_list 4 [[1 :: rat, 4, 9, -1], [-3, -1, 5, 4], [4, 2, 0,2], [8,-9, 5,7]])" *)
+value[code] "det (mat_of_rows_list 4 [[1 :: rat, 4, 9, -1], [-3, -1, 5, 4], [4, 2, 0,2], [8,-9, 5,7]])"
 
-text \<open>Since polynomials require @{class field} elements to be in class @{class ring_div}, the implementation
+text \<open>Since polynomials require @{class field} elements to be in class @{class idom_divide}, the implementation
   of characteristic polynomials is not applicable for integer matrices, but it is for rational and real matrices.\<close>
 
 value[code] "char_poly (mat_of_rows_list 4 [[1 :: real, 4, 9, -1], [-3, -1, 5, 4], [4, 2, 0,2], [8,-9, 5,7]])"
