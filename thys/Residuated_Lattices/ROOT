@@ -4,8 +4,8 @@ session Residuated_Lattices (AFP) = Relation_Algebra +
   theories
     Residuated_Lattices
     Residuated_Boolean_Algebras
-	Involutive_Residuated
-	Residuated_Relation_Algebra
+    Involutive_Residuated
+    Residuated_Relation_Algebra
   document_files
     "root.tex"
-	"root.bib"
+    "root.bib"
