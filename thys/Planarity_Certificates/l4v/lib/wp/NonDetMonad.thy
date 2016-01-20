@@ -93,7 +93,7 @@ subsection "Nondeterminism"
 text {*
   Basic nondeterministic functions. @{text "select A"} chooses an element 
   of the set @{text A}, does not change the state, and does not fail
-  (even if the set is empty). @{text "f OR g"} executes @{text f} or
+  (even if the set is empty). @{text "f \<sqinter> g"} executes @{text f} or
   executes @{text g}. It retuns the union of results of @{text f} and
   @{text g}, and may have failed if either may have failed.  
 *}
@@ -104,12 +104,9 @@ definition
 definition
   alternative :: "('s,'a) nondet_monad \<Rightarrow> ('s,'a) nondet_monad \<Rightarrow> 
                   ('s,'a) nondet_monad" 
-  (infixl "OR" 20)
+  (infixl "\<sqinter>" 20)
 where
-  "f OR g \<equiv> \<lambda>s. (fst (f s) \<union> fst (g s), snd (f s) \<or> snd (g s))"
-
-text {* Alternative notation for @{text OR} *}
-notation (xsymbols)  alternative (infixl "\<sqinter>" 20)
+  "f \<sqinter> g \<equiv> \<lambda>s. (fst (f s) \<union> fst (g s), snd (f s) \<or> snd (g s))"
 
 
 text {* A variant of @{text select} that takes a pair. The first component
@@ -406,16 +403,15 @@ definition
 nonterminal
   dobinds and dobind and nobind
 
-syntax
+syntax (ASCII)
   "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ <-/ _)" 10)
+syntax
+  "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ \<leftarrow>/ _)" 10)
   ""           :: "dobind => dobinds"                 ("_")
   "_nobind"    :: "'a => dobind"                      ("_")
   "_dobinds"   :: "[dobind, dobinds] => dobinds"      ("(_);//(_)")
 
   "_do"        :: "[dobinds, 'a] => 'a"               ("(do ((_);//(_))//od)" 100)
-syntax (xsymbols)
-  "_dobind"    :: "[pttrn, 'a] => dobind"             ("(_ \<leftarrow>/ _)" 10)
-
 translations
   "_do (_dobinds b bs) e"  == "_do b (_do bs e)"
   "_do (_nobind b) e"      == "b >>= (CONST K_bind e)"
