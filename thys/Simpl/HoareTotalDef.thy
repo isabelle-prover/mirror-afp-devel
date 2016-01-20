@@ -48,7 +48,7 @@ where
 
 
 
-notation (ascii)
+notation (ASCII)
   validt  ("_|=t'/_/ _ _ _,_"  [61,60,1000, 20, 1000,1000] 60) and
   cvalidt  ("_,_|=t'/_ / _ _ _,_"  [61,60,60,1000, 20, 1000,1000] 60)
 

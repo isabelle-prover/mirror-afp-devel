@@ -90,7 +90,7 @@ text {*
  The assertions of the Hoare tuple are
  ordinary Isabelle sets. As we usually want to refer to the state space
  in the assertions, we provide special brackets for them. They can be written 
- as {\verb+{| |}+} in ASCII or @{text "\<lbrace> \<rbrace>"} with X-symbols. Internally
+ as {\verb+{| |}+} in ASCII or @{text "\<lbrace> \<rbrace>"} with symbols. Internally
  marking variables has two effects. First of all we refer to the implicit
  state and secondary we get rid of the suffix @{text "_'"}.
  So the assertion @{term "{|\<acute>N = 5|}"} internally gets expanded to 
