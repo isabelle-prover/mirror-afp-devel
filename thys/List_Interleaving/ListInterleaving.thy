@@ -69,12 +69,10 @@ fun interleaves ::
 "interleaves _ [] _ (_ # _) = False" |
 "interleaves _ [] [] [] = True"
 
-syntax (xsymbols) "_interleaves" ::
- "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> ('a \<Rightarrow> 'a list \<Rightarrow> bool) \<Rightarrow> bool"
-("(_ \<simeq> {_, _, _})" [60, 60, 60] 51)
-
-translations
-"xs \<simeq> {ys, zs, P}" \<rightleftharpoons> "CONST interleaves P xs ys zs"
+abbreviation interleaves_syntax ::
+    "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> ('a \<Rightarrow> 'a list \<Rightarrow> bool) \<Rightarrow> bool" 
+    ("(_ \<simeq> {_, _, _})" [60, 60, 60] 51)
+  where "xs \<simeq> {ys, zs, P} \<equiv> interleaves P xs ys zs"
 
 text {*
 \null
@@ -528,12 +526,10 @@ fun Interleaves ::
 "Interleaves _ [] _ (_ # _) = False" |
 "Interleaves _ [] [] [] = True"
 
-syntax (xsymbols) "_Interleaves" ::
- "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> ('a \<Rightarrow> 'a list \<Rightarrow> bool) \<Rightarrow> bool"
-("(_ \<cong> {_, _, _})" [60, 60, 60] 51)
-
-translations
-"xs \<cong> {ys, zs, P}" \<rightleftharpoons> "CONST Interleaves P xs ys zs"
+abbreviation Interleaves_syntax ::
+    "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> ('a \<Rightarrow> 'a list \<Rightarrow> bool) \<Rightarrow> bool"
+    ("(_ \<cong> {_, _, _})" [60, 60, 60] 51)
+  where "xs \<cong> {ys, zs, P} \<equiv> Interleaves P xs ys zs"
 
 text {*
 \null

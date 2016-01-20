@@ -1517,11 +1517,8 @@ text{* Some syntactic sugar for @{text "inner_dirsum"}, borrowed from theory @{t
 
 syntax 
   "_inner_dirsum" :: "pttrn => 'a list => 'b => 'b"
-  ("(3OPLUS _<-_. _)" [0, 51, 10] 10)
-syntax (xsymbols)
-  "_inner_dirsum" :: "pttrn => 'a list => 'b => 'b" ("(3\<Oplus>_\<leftarrow>_. _)" [0, 51, 10] 10)
+  ("(3\<Oplus>_\<leftarrow>_. _)" [0, 51, 10] 10)
 translations -- {* Beware of argument permutation! *}
-  "OPLUS M<-Ms. b" == "CONST inner_dirsum (CONST map (%M. b) Ms)"
   "\<Oplus>M\<leftarrow>Ms. b" == "CONST inner_dirsum (CONST map (%M. b) Ms)"
 
 abbreviation inner_dirsum_double ::

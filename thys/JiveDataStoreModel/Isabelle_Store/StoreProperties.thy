@@ -463,11 +463,8 @@ in \cite[p. 54]{Poetzsch-Heffter97specification} because now arrays are handled 
 *}
 
 definition rreach:: "Store \<Rightarrow> Value \<Rightarrow> Value \<Rightarrow> bool" 
-  ("_|-Ref _ reachable'_from _" [91,91,91]90) where
-"s|-Ref y reachable_from x = (\<exists> l. s\<turnstile> l reachable_from x \<and> y = ref l)"
-
-notation (xsymbols)
-  rreach  ("_\<turnstile>Ref _ reachable'_from _" [91,91,91]90)
+  ("_\<turnstile>Ref _ reachable'_from _" [91,91,91]90) where
+"s\<turnstile>Ref y reachable_from x = (\<exists> l. s\<turnstile> l reachable_from x \<and> y = ref l)"
 
 
 subsection {* Disjointness of Reachable Locations *}
@@ -575,10 +572,8 @@ definition xeq:: "Value \<Rightarrow> Store \<Rightarrow> Store \<Rightarrow> bo
              (\<forall> l. s\<turnstile> l reachable_from x \<longrightarrow> s@@l = t@@l))"
 
 abbreviation xeq_syntax :: "Store \<Rightarrow> Value \<Rightarrow> Store \<Rightarrow> bool"
-  ("_/ (==[_])/ _" [900,0,900] 900)
-where "s ==[x] t == xeq x s t"
-
-notation (xsymbols) xeq_syntax  ("_/ (\<equiv>[_])/ _" [900,0,900] 900) 
+  ("_/ (\<equiv>[_])/ _" [900,0,900] 900)
+where "s \<equiv>[x] t == xeq x s t"
 
 
 lemma xeqI: "\<lbrakk>alive x s = alive x t;  
@@ -761,12 +756,8 @@ The stores have to be X-equivalent for the references of the
 first store that are alive, and the values of the static fields have to be the same in both stores.
 *}
 
-definition lessalive:: "Store \<Rightarrow> Store \<Rightarrow> bool" ("_/ << _" [70,71] 70)
+definition lessalive:: "Store \<Rightarrow> Store \<Rightarrow> bool" ("_/ \<lless> _" [70,71] 70)
   where "lessalive s t = ((\<forall> x. alive x s \<longrightarrow> s \<equiv>[x] t) \<and> (\<forall> f. s@@staticLoc f = t@@staticLoc f))"
-
-abbreviation (xsymbols)
-  lessalive_syntax :: "Store \<Rightarrow> Store \<Rightarrow> bool" ("_/ \<lless> _" [70,71] 70)
-  where "s \<lless> t == lessalive s t"
 
 text {* We define an introduction rule for the new operator. *}
 

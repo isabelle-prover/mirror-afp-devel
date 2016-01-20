@@ -42,38 +42,32 @@ primrec bitval :: "bit => nat" where
     "bitval \<zero> = 0"
   | "bitval \<one> = 1"
 
-primrec bitnot :: "bit => bit" where
-    bitnot_zero: "(bitnot \<zero>) = \<one>"
-  | bitnot_one : "(bitnot \<one>)  = \<zero>"
+primrec bitnot :: "bit => bit"  ("\<not>\<^sub>b _" [40] 40) where
+    bitnot_zero: "(\<not>\<^sub>b \<zero>) = \<one>"
+  | bitnot_one : "(\<not>\<^sub>b \<one>) = \<zero>"
 
-primrec bitand :: "bit => bit => bit" (infixr "bitand" 35) where
-    bitand_zero: "(\<zero> bitand y) = \<zero>"
-  | bitand_one:  "(\<one> bitand y) = y"
+primrec bitand :: "bit => bit => bit"  (infixr "\<and>\<^sub>b" 35) where
+    bitand_zero: "(\<zero> \<and>\<^sub>b y) = \<zero>"
+  | bitand_one:  "(\<one> \<and>\<^sub>b y) = y"
 
-primrec bitor  :: "bit => bit => bit" (infixr "bitor"  30) where
-    bitor_zero: "(\<zero> bitor y) = y"
-  | bitor_one:  "(\<one> bitor y) = \<one>"
+primrec bitor :: "bit => bit => bit"  (infixr "\<or>\<^sub>b" 30) where
+    bitor_zero: "(\<zero> \<or>\<^sub>b y) = y"
+  | bitor_one:  "(\<one> \<or>\<^sub>b y) = \<one>"
 
-primrec bitxor :: "bit => bit => bit" (infixr "bitxor" 30) where
-    bitxor_zero: "(\<zero> bitxor y) = y"
-  | bitxor_one:  "(\<one> bitxor y) = (bitnot y)"
-
-notation (xsymbols)
-  bitnot ("\<not>\<^sub>b _" [40] 40) and
-  bitand (infixr "\<and>\<^sub>b" 35) and
-  bitor  (infixr "\<or>\<^sub>b" 30) and
-  bitxor (infixr "\<oplus>\<^sub>b" 30)
+primrec bitxor :: "bit => bit => bit"  (infixr "\<oplus>\<^sub>b" 30) where
+    bitxor_zero: "(\<zero> \<oplus>\<^sub>b y) = y"
+  | bitxor_one:  "(\<one> \<oplus>\<^sub>b y) = (bitnot y)"
 
 lemma bitnot_bitnot [simp]: "(bitnot (bitnot b)) = b"
   by (cases b) simp_all
 
-lemma bitand_cancel [simp]: "(b bitand b) = b"
+lemma bitand_cancel [simp]: "(b \<and>\<^sub>b b) = b"
   by (cases b) simp_all
 
-lemma bitor_cancel [simp]: "(b bitor b) = b"
+lemma bitor_cancel [simp]: "(b \<or>\<^sub>b b) = b"
   by (cases b) simp_all
 
-lemma bitxor_cancel [simp]: "(b bitxor b) = \<zero>"
+lemma bitxor_cancel [simp]: "(b \<oplus>\<^sub>b b) = \<zero>"
   by (cases b) simp_all
 
 

@@ -70,7 +70,7 @@ definition iEx :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool
   where "iEx I P \<equiv> \<exists>t\<in>I. P t"
 
 
-syntax (xsymbols)
+syntax
   "_iAll" :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<box> _ _./ _)" [0, 0, 10] 10)
   "_iEx" ::  "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<diamond> _ _./ _)" [0, 0, 10] 10)
 translations
@@ -85,7 +85,7 @@ text {* Past temporal operator: Last/Previous *}
 definition iLast :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Last"
   where "iLast t0 I P \<equiv> P (iprev t0 I)"
 
-syntax (xsymbols)
+syntax
   "_iNext" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<bigcirc> _ _ _./ _)" [0, 0, 10] 10)
   "_iLast" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus> _ _ _./ _)" [0, 0, 10] 10)
 translations
@@ -111,7 +111,7 @@ definition iLastWeak :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow>
 definition iLastStrong :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Strong Last"
   where "iLastStrong t0 I P \<equiv> (\<diamond> t {iprev t0 I} \<down>< t0. P t)"
 
-syntax (xsymbols)
+syntax
   "_iNextWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<bigcirc>\<^sub>W _ _ _./ _)" [0, 0, 10] 10)
   "_iNextStrong" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<bigcirc>\<^sub>S _ _ _./ _)" [0, 0, 10] 10)
   "_iLastWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus>\<^sub>W _ _ _./ _)" [0, 0, 10] 10)
@@ -140,7 +140,7 @@ text {* Temporal Since operator (past operator corresponding to Until) *}
 definition iSince :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Since"
   where "iSince I P Q \<equiv> \<diamond> t I. Q t \<and> (\<box> t' (I \<down>> t). P t')"
 
-syntax (xsymbols)
+syntax
   "_iUntil" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
     ("(_./ _ (3\<U> _ _)./ _)" [10, 0, 0, 0, 10] 10)
   "_iSince" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
@@ -155,7 +155,7 @@ definition iWeakUntil :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarro
 definition iWeakSince :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Weak Since/Back-to"
   where "iWeakSince I P Q \<equiv> (\<box> t I. P t) \<or> (\<diamond> t I. Q t \<and> (\<box> t' (I \<down>> t). P t'))"
 
-syntax (xsymbols)
+syntax
   "_iWeakUntil" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
     ("(_./ _ (3\<W> _ _)./ _)" [10, 0, 0, 0, 10] 10)
   "_iWeakSince" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
@@ -171,7 +171,7 @@ definition iRelease :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow>
 definition iTrigger :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      -- "Trigger"
   where "iTrigger I P Q \<equiv> (\<box> t I. Q t) \<or> (\<diamond> t I. P t \<and> (\<box> t' (I \<down>\<ge> t). Q t'))"
 
-syntax (xsymbols)
+syntax
   "_iRelease" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
     ("(_./ _ (3\<R> _ _)./ _)" [10, 0, 0, 0, 10] 10)
   "_iTrigger" ::  "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" 
