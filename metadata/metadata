@@ -2653,6 +2653,21 @@ topic = Mathematics/Topology
 abstract = This entry contains two theories. The first, <tt>Topology</tt>, develops the basic notions of general topology. The second, which can be viewed as a demonstration of the first, is called <tt>LList_Topology</tt>. It develops the topology of lazy lists.
 depends-on = Lazy-Lists-II
 
+[Knot_Theory]
+title = Knot Theory
+author = T.V.H. Prathamesh <mailto:prathamesh@imsc.res.in>
+date = 2016-01-20
+topic = Mathematics/Topology
+abstract =
+ This work contains a formalization of some topics in knot theory.
+ The concepts that were formalized include definitions of tangles, links,
+ framed links and link/tangle equivalence. The formalization is based on a
+ formulation of links in terms of tangles. We further construct and prove the
+ invariance of the Bracket polynomial. Bracket polynomial is an invariant of
+ framed links closely linked to the Jones polynomial. This is perhaps the first
+ attempt to formalize any aspect of knot theory in an interactive proof assistant.
+depends-on = Matrix_Tensor
+
 [Graph_Theory]
 title = Graph Theory
 author = Lars Noschinski <http://www21.in.tum.de/~noschinl/>
