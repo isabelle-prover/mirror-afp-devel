@@ -15,8 +15,7 @@ text \<open>This theory defines the Sylvester matrix and the resultant and conta
 theory Resultant
 imports
   "../Jordan_Normal_Form/Matrix_IArray_Impl"
-  "../Jordan_Normal_Form/Determinant_Impl"
-  "../Jordan_Normal_Form/Column_Operations"
+  "../Jordan_Normal_Form/Determinant"
   Rational_Factorization
   Unique_Factorization_Poly
   Bivariate_Polynomials

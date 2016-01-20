@@ -13,6 +13,7 @@ text \<open>This theory contains the remaining field operations for algebraic nu
 
 theory Algebraic_Numbers
 imports 
+  "../Jordan_Normal_Form/Determinant_Impl"
   Algebraic_Numbers_Prelim
   Resultant
 begin
@@ -97,7 +98,7 @@ lemma (in map_poly_ring_hom) map_poly_x_minus_y:
 definition poly_add :: "'a :: comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
   [code del]: "poly_add p q = resultant (poly_x_minus_y p) (poly_lift q)"
 
-lemma poly_add_code[code]: "poly_add p q = det_code (select_min degree) (sylvester_mat (poly_x_minus_y p) (poly_lift q))"
+lemma poly_add_code[code]: "poly_add p q = det_field_poly (sylvester_mat (poly_x_minus_y p) (poly_lift q))"
   unfolding poly_add_def resultant_def by simp
 
 lemma poly_add:
@@ -471,7 +472,7 @@ definition poly_mult' :: "'a :: field poly \<Rightarrow> 'a poly \<Rightarrow> '
   [code del]: "poly_mult' p q = resultant (poly_x_div_y p) (poly_lift q)"
 
 lemma poly_mult_code[code]: 
-  "poly_mult' p q = det_code (select_min degree) (sylvester_mat (poly_x_div_y p) (poly_lift q))"
+  "poly_mult' p q = det_field_poly (sylvester_mat (poly_x_div_y p) (poly_lift q))"
   unfolding poly_mult'_def resultant_def by simp
 
 definition poly_mult :: "'a :: field poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
