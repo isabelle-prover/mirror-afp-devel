@@ -226,13 +226,6 @@ syntax
   ""           :: "basic \<Rightarrow> basics"             ("_")
   "_basics"    :: "[basic, basics] \<Rightarrow> basics" ("_,/ _")
 
-(* Experimental coloring for ProofGeneral; fails to run through latex*)
-(*<*)
-syntax (ProofGeneral output)
-  "_guarantee"     :: "'s set \<Rightarrow> grd"       ("F_A" [1000] 1000)
-  "_guaranteeStrip":: "'s set \<Rightarrow> grd"       ("B_A" [1000] 1000)
-(*>*)
-
 syntax (ascii)
   "_While_guard"       :: "grds => 'a bexp => bdy \<Rightarrow> ('a,'p,'f) com"
         ("(0WHILE (_|-> /_) /_)"  [0,0,1000] 71)

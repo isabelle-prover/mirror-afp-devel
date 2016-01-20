@@ -38,12 +38,12 @@ where
 
 -- "reflexive transitive closure:"
 definition exec_all :: "jvm_prog \<Rightarrow> jvm_state \<Rightarrow> jvm_state \<Rightarrow> bool"
-              ("_ |-/ _ -jvm->/ _" [61,61,61]60) where
+    ("(_ \<turnstile>/ _ -jvm\<rightarrow>/ _)" [61,61,61]60) where
 (* FIXME exec_all \<rightarrow> exec_star, also in Def.JVM *)
-  exec_all_def1: "P |- \<sigma> -jvm-> \<sigma>' \<longleftrightarrow> (\<sigma>,\<sigma>') \<in> (exec_1 P)\<^sup>*"
+  exec_all_def1: "P \<turnstile> \<sigma> -jvm\<rightarrow> \<sigma>' \<longleftrightarrow> (\<sigma>,\<sigma>') \<in> (exec_1 P)\<^sup>*"
 
-notation (xsymbols)
-  exec_all  ("(_ \<turnstile>/ _ -jvm\<rightarrow>/ _)" [61,61,61]60)
+notation (ASCII)
+  exec_all  ("_ |-/ _ -jvm->/ _" [61,61,61]60)
 
 
 lemma exec_1_eq:
