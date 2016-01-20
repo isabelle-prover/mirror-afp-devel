@@ -244,8 +244,12 @@ proof -
       have pq: "\<And> x. rpoly p x = 0 \<longleftrightarrow> poly q x = 0" unfolding q_def by (simp add: eval_poly_def)      
       from True have 2: "degree q - card {x. poly q x = 0} = 2" unfolding pq[symmetric] 
         by (simp add: degree_map_poly count_roots_rat q_def)
-      from True have l: "?l = of_real ` {x. poly q x = 0} \<union> set (croots2 ?c2)"
-        unfolding d rr_def rts_def using True real_roots_of_rat_poly3[OF p] pq by (auto simp: q_def)
+      from True have id: "degree p = count_roots_rat p \<longleftrightarrow> False" 
+        "degree p - count_roots_rat p = 2 \<longleftrightarrow> True" by auto
+      have l: "?l = of_real ` {x. poly q x = 0} \<union> set (croots2 ?c2)"
+        unfolding d rr_def rts_def id if_False if_True 
+        using real_roots_of_rat_poly3[OF p] pq 
+        by (auto simp: q_def)
       have dist: "distinct rr" unfolding rr_def by simp
       from arg_cong[OF real_roots_of_rat_poly3[OF p, unfolded pq], of card] dist 
       have len_rr: "length rr = card {x. poly q x = 0}" unfolding rr_def by (simp add: List.card_set)
