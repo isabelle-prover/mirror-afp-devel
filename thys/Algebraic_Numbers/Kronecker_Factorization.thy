@@ -13,15 +13,11 @@ imports
   Precomputation
   Lagrange_Interpolation
   Gauss_Lemma
+  Dvd_Int_Poly
   "../Sqrt_Babylonian/Sqrt_Babylonian_Auxiliary"
 begin
 
-subsection \<open>Definitions\<close>
-definition dvd_poly_int :: "int poly \<Rightarrow> int poly \<Rightarrow> bool" where
-  "dvd_poly_int p q \<equiv> coeff p 0 dvd coeff q 0 \<and> (let rp = map_poly rat_of_int p;
-    rq = map_poly rat_of_int q 
-    in (case pdivmod rq rp of (d,m) \<Rightarrow> m = 0 \<and> (\<forall> c \<in> set (coeffs d). is_int_rat c)))"
-  
+subsection \<open>Definitions\<close>  
 context 
   fixes df :: "int \<Rightarrow> int list"
   and dp :: "int \<Rightarrow> int list"
@@ -44,7 +40,7 @@ definition kronecker_factorization_main :: "int poly \<Rightarrow> int poly opti
      Some j \<Rightarrow> Some ([:- j, 1 :])
    | None \<Rightarrow> let djs = map (\<lambda> (v,j). map (Pair j) (if j = 0 then dp v else df v)) cjs in 
      map_option the (find_map_filter lagrange_interpolation_poly_int 
-     (\<lambda> go. case go of None \<Rightarrow> False | Some g \<Rightarrow> dvd_poly_int g p \<and> degree g \<ge> 1) 
+     (\<lambda> go. case go of None \<Rightarrow> False | Some g \<Rightarrow> dvd_int_poly_non_0 g p \<and> degree g \<ge> 1) 
        (concat_lists djs)))"
 
 definition kronecker_factorization_rat_main :: "rat poly \<Rightarrow> rat poly option" where
@@ -102,38 +98,6 @@ proof -
     assms[unfolded rat_to_normalized_int_poly_def ri split] 
   show "c \<in> \<int>" "p \<noteq> 0 \<Longrightarrow> c = of_int (content p) \<and> q = normalize_content p" 
     by (auto split: if_splits)
-qed
-
-lemma dvd_poly_int[simp]: "dvd_poly_int = op dvd"
-proof (intro ext)
-  fix x y
-  let ?r = "rat_of_int"
-  let ?rp = "map_poly ?r"
-  obtain d m where dm: "pdivmod (?rp y) (?rp x) = (d,m)" by force
-  from dm have d: "d = ?rp y div ?rp x" 
-    and m: "m = ?rp y mod ?rp x" unfolding pdivmod_def by auto
-  have "(m = 0) = (?rp x dvd ?rp y)" unfolding m by presburger
-  note d = dvd_poly_int_def[of x y, unfolded Let_def dm split this d]
-  show "dvd_poly_int x y = (x dvd y)"
-  proof
-    assume "x dvd y"
-    then obtain z where y: "y = x * z" unfolding dvd_def by auto
-    from arg_cong[OF y, of "\<lambda> x. coeff x 0"] have dvd: "coeff x 0 dvd coeff y 0"
-      unfolding coeff_mult by auto
-    with arg_cong[OF y, of ?rp, unfolded ri.map_poly_mult]      
-    show "dvd_poly_int x y" unfolding d by (auto simp: ri.coeffs_map_poly)
-  next  
-    def z \<equiv> "?rp y div ?rp x"
-    assume "dvd_poly_int x y"
-    from this[unfolded d] have prod: "?rp x dvd ?rp y" and z: "Ball (set (coeffs z)) is_int_rat" 
-      unfolding z_def by auto
-    from prod have prod: "?rp y = ?rp x * z" unfolding z_def by simp
-    have "z = ?rp (map_poly int_of_rat z)"
-      by (rule sym, subst map_poly_compose, force+, rule map_poly_eqI, insert z, auto)
-    with prod have "?rp y = ?rp x * ?rp (map_poly int_of_rat z)" by auto
-    from ri.map_poly_inj[OF this[folded ri.map_poly_mult]]
-    show "x dvd y" by auto
-  qed
 qed
 
 lemma dvd_poly_int_content_1: assumes c_x: "content x = 1"
@@ -199,6 +163,10 @@ lemma kronecker_samples: "distinct (kronecker_samples n)" "length (kronecker_sam
   unfolding kronecker_samples_def Let_def length_upto_add_nat by auto
 
 
+lemma dvd_int_poly_non_0_degree_1[simp]: "degree q \<ge> 1 \<Longrightarrow> dvd_int_poly_non_0 q p = (q dvd p)"
+  by (intro dvd_int_poly_non_0, auto)
+
+
 context fixes df dp :: "int \<Rightarrow> int list"
   and bnd :: nat
 begin
@@ -216,7 +184,7 @@ proof -
   def P \<equiv> "normalize_content p"
   have degP: "degree P = degree p" unfolding P_def by simp
   def js \<equiv> "kronecker_samples bnd"
-  def filt \<equiv> "(case_option False (\<lambda>g. dvd_poly_int g P \<and> 1 \<le> degree g))"
+  def filt \<equiv> "(case_option False (\<lambda>g. dvd_int_poly_non_0 g P \<and> 1 \<le> degree g))"
   def tests \<equiv> "concat_lists (map (\<lambda>(v, j). map (Pair j) (if j = 0 then dp v else df v)) (map (\<lambda>j. (poly P j, j)) js))"
   note res = res[folded P_def, folded js_def filt_def, folded tests_def]
   let ?zero = "map (\<lambda>j. (poly P j, j)) js"
@@ -304,7 +272,7 @@ proof -
   def P \<equiv> "normalize_content p"
   have degP: "degree P = degree p" unfolding P_def by simp
   def js \<equiv> "kronecker_samples bnd"
-  def filt \<equiv> "(case_option False (\<lambda>g. dvd_poly_int g P \<and> 1 \<le> degree g))"
+  def filt \<equiv> "(case_option False (\<lambda>g. dvd_int_poly_non_0 g P \<and> 1 \<le> degree g))"
   def tests \<equiv> "concat_lists (map (\<lambda>(v, j). map (Pair j) (if j = 0 then dp v else df v)) (map (\<lambda>j. (poly P j, j)) js))"
   note res = res[folded P_def, folded js_def filt_def, folded tests_def]
   let ?zero = "map (\<lambda>j. (poly P j, j)) js"
