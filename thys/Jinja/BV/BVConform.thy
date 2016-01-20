@@ -54,8 +54,7 @@ where
     conf_f P h (ST, LT) is f \<and> conf_fs P h \<Phi> M (size Ts) T frs))"
 
 
-definition correct_state :: "[jvm_prog,ty\<^sub>P,jvm_state] \<Rightarrow> bool"
-                  ("_,_ |- _ [ok]"  [61,0,0] 61)
+definition correct_state :: "[jvm_prog,ty\<^sub>P,jvm_state] \<Rightarrow> bool"  ("_,_ \<turnstile> _ \<surd>"  [61,0,0] 61)
 where
   "correct_state P \<Phi> \<equiv> \<lambda>(xp,h,frs).
   case xp of
@@ -69,9 +68,8 @@ where
                     conf_f P h \<tau> is f \<and> conf_fs P h \<Phi> M (size Ts) T fs))
   | Some x \<Rightarrow> frs = []" 
 
-notation (xsymbols)
- correct_state  ("_,_ \<turnstile> _ \<surd>"  [61,0,0] 61)
-
+notation
+  correct_state  ("_,_ |- _ [ok]"  [61,0,0] 61)
 
 
 subsection {* Values and @{text "\<top>"} *}

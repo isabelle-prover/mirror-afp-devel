@@ -136,11 +136,11 @@ where
 
 -- "reflexive transitive closure:"
 definition exec_all_d :: "jvm_prog \<Rightarrow> jvm_state type_error \<Rightarrow> jvm_state type_error \<Rightarrow> bool" 
-                   ("_ |- _ -jvmd-> _" [61,61,61]60) where
-  exec_all_d_def1: "P |- \<sigma> -jvmd-> \<sigma>' \<longleftrightarrow> (\<sigma>,\<sigma>') \<in> (exec_1_d P)\<^sup>*"
+    ("_ \<turnstile> _ -jvmd\<rightarrow> _" [61,61,61]60) where
+  exec_all_d_def1: "P \<turnstile> \<sigma> -jvmd\<rightarrow> \<sigma>' \<longleftrightarrow> (\<sigma>,\<sigma>') \<in> (exec_1_d P)\<^sup>*"
 
-notation (xsymbols)
-  "exec_all_d"   ("_ \<turnstile> _ -jvmd\<rightarrow> _" [61,61,61]60)
+notation (ASCII)
+  "exec_all_d"  ("_ |- _ -jvmd-> _" [61,61,61]60)
 
 lemma exec_1_d_eq:
   "exec_1_d P = {(s,t). \<exists>\<sigma>. s = Normal \<sigma> \<and> t = TypeError \<and> exec_d P \<sigma> = TypeError} \<union> 
