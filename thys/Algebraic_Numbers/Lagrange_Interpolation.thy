@@ -32,6 +32,11 @@ definition lagrange_interpolation_poly_int :: "(int \<times> int)list \<Rightarr
      in if (\<forall> x \<in> set (coeffs rp). is_int_rat x) then
        Some (map_poly int_of_rat rp) else None"
 
+lemma [code]: 
+  "lagrange_basis_poly xs xj = (let ys = filter (\<lambda> x. x \<noteq> xj) xs
+    in listprod (map (\<lambda> xi. let ii = inverse (xj - xi) in [: - ii * xi, ii :]) ys))"
+  unfolding lagrange_basis_poly_def Let_def by simp
+
 lemma uniqueness_of_interpolation: fixes p :: "'a :: idom poly" 
   assumes cS: "card S = Suc n"
   and "degree p \<le> n" and "degree q \<le> n" and
