@@ -47,36 +47,34 @@ subsection \<open>Definitions\<close>
 
 text \<open>Two elements are \emph{joinable} (and then have in the joinability relation)
 w.r.t.\ @{term "A"}, iff they have a common reduct.\<close>
-definition join :: "'a rel \<Rightarrow> 'a rel" where
-  "join A = A\<^sup>* O (A\<inverse>)\<^sup>*"
+definition join :: "'a rel \<Rightarrow> 'a rel"  ("(_\<^sup>\<down>)" [1000] 999) where
+  "A\<^sup>\<down> = A\<^sup>* O (A\<inverse>)\<^sup>*"
 
 text \<open>Two elements are \emph{meetable} (and then have in the meetability relation)
 w.r.t.\ @{term "A"}, iff they have a common ancestor.\<close>
-definition meet :: "'a rel \<Rightarrow> 'a rel" where
-  "meet A = (A\<inverse>)\<^sup>* O A\<^sup>*"
+definition meet :: "'a rel \<Rightarrow> 'a rel"  ("(_\<^sup>\<up>)" [1000] 999) where
+  "A\<^sup>\<up> = (A\<inverse>)\<^sup>* O A\<^sup>*"
 
 text \<open>The \emph{symmetric closure} of a relation allows steps in both directions.\<close>
-abbreviation symcl :: "'a rel \<Rightarrow> 'a rel" ("(_^<->)" [1000] 999) where
-  "A^<-> \<equiv> A \<union> A\<inverse>"
+abbreviation symcl :: "'a rel \<Rightarrow> 'a rel"  ("(_\<^sup>\<leftrightarrow>)" [1000] 999) where
+  "A\<^sup>\<leftrightarrow> \<equiv> A \<union> A\<inverse>"
 
 text \<open>A \emph{conversion} is a (possibly empty) sequence of steps in the symmetric closure.\<close>
-definition conversion :: "'a rel \<Rightarrow> 'a rel" ("(_^<->*)" [1000] 999) where
-  "A^<->* = (A^<->)\<^sup>*"
+definition conversion :: "'a rel \<Rightarrow> 'a rel"  ("(_\<^sup>\<leftrightarrow>\<^sup>*)" [1000] 999) where
+  "A\<^sup>\<leftrightarrow>\<^sup>* = (A\<^sup>\<leftrightarrow>)\<^sup>*"
 
 text \<open>The set of \emph{normal forms} of an ARS constitutes all the elements that do
 not have any successors.\<close>
 definition NF :: "'a rel \<Rightarrow> 'a set" where
   "NF A = {a. A `` {a} = {}}"
 
-definition normalizability :: "'a rel \<Rightarrow> 'a rel" ("(_^!)" [1000] 999) where
-  "A^! = {(a, b). (a, b) \<in> A\<^sup>* \<and> b \<in> NF A}"
+definition normalizability :: "'a rel \<Rightarrow> 'a rel"  ("(_\<^sup>!)" [1000] 999) where
+  "A\<^sup>! = {(a, b). (a, b) \<in> A\<^sup>* \<and> b \<in> NF A}"
 
-notation (xsymbols)
-  join ("(_\<^sup>\<down>)" [1000] 999) and
-  meet ("(_\<^sup>\<up>)" [1000] 999) and
-  symcl ("(_\<^sup>\<leftrightarrow>)" [1000] 999) and
-  conversion ("(_\<^sup>\<leftrightarrow>\<^sup>*)" [1000] 999) and
-  normalizability ("(_\<^sup>!)" [1000] 999)
+notation (ASCII)
+  symcl  ("(_^<->)" [1000] 999) and
+  conversion  ("(_^<->*)" [1000] 999) and
+  normalizability  ("(_^!)" [1000] 999)
 
 lemma symcl_converse:
   "(A\<^sup>\<leftrightarrow>)\<inverse> = A\<^sup>\<leftrightarrow>" by auto
