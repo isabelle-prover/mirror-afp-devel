@@ -658,7 +658,6 @@ next
       REVSPLIT: "ch={#[entry fg q]#}+ceh" "{#s2'#}+ce2' = ce21'+ce22'" "w2\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" "mon fg q \<inter> (mon_c fg ceh \<union> mon_ww fg w22)={}" "mon_c fg ceh \<inter> (mon fg q \<union> mon_ww fg w21) = {}"
       "({#[entry fg q]#},w21,{#s1'#}+ce21')\<in>trcl (ntr fg)" "(ceh,w22,ce22')\<in>trcl (ntr fg)" 
     proof -
-      case goal1
       from ntr_reverse_split[of ch w2 s1' "{#s2'#}+ce2'"] ntrp_valid_preserve_s[OF SPLIT(1), simplified] C2'FMT LESPLIT(4)
       obtain seh ceh w21 w22 ce21' ce22' where 
         "ch={#seh#}+ceh" "{#s2'#}+ce2' = ce21'+ce22'" "w2\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" "mon_s fg seh \<inter> (mon_c fg ceh \<union> mon_ww fg w22)={}" "mon_c fg ceh \<inter> (mon_s fg seh \<union> mon_ww fg w21) = {}"
@@ -666,7 +665,7 @@ next
       moreover from this(1) CHFMT[of seh] obtain q where "seh=[entry fg q]" by auto
       ultimately have "ch={#[entry fg q]#}+ceh" "{#s2'#}+ce2' = ce21'+ce22'" "w2\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" "mon fg q \<inter> (mon_c fg ceh \<union> mon_ww fg w22)={}" "mon_c fg ceh \<inter> (mon fg q \<union> mon_ww fg w21) = {}"
         "({#[entry fg q]#},w21,{#s1'#}+ce21')\<in>trcl (ntr fg)" "(ceh,w22,ce22')\<in>trcl (ntr fg)" by auto
-      thus ?thesis using goal1 by (blast)
+      thus thesis using that by (blast)
     qed
         -- "For applying the induction hypothesis, it will be handy to have the reaching path in loc/env format:"
     from ntrs.gtr2gtrp[where c="{#}", simplified, OF REVSPLIT(6)] obtain sq' csp_q ww21 where 
@@ -690,12 +689,12 @@ next
       case right' -- "The nodes are reached from different threads"
       from R_STACKS(2,3) have ATUV: "atU U ({#sq'#}+csp_q)" "atU V ce22'" by (-) (subst R_CONV(1)[symmetric], simp, subst right'(1), simp)
       -- "We have to reverse-split the second path again, to extract the second interesting thread"
-      obtain q' w22' ce22e' where REVSPLIT': "[entry fg q'] :# ceh" "w22'\<preceq>w22" "ce22e' \<le># ce22'" "atU V ce22e'" "({#[entry fg q']#},w22',ce22e')\<in>trcl (ntr fg)" proof -
-        case goal1
+      obtain q' w22' ce22e' where REVSPLIT': "[entry fg q'] :# ceh" "w22'\<preceq>w22" "ce22e' \<le># ce22'" "atU V ce22e'" "({#[entry fg q']#},w22',ce22e')\<in>trcl (ntr fg)"
+      proof -
         from ntr_reverse_split_atU[OF _ ATUV(2) REVSPLIT(7)] ntrp_valid_preserve_s[OF SPLIT(1), simplified] REVSPLIT(1) obtain sq'' w22' ce22e' where 
           "sq'' :# ceh" "w22'\<preceq>w22" "ce22e' \<le># ce22'" "atU V ce22e'" "({#sq''#},w22',ce22e')\<in>trcl (ntr fg)" by (auto simp add: valid_unconc)
         moreover from CHFMT[of sq''] REVSPLIT(1) this(1) obtain q' where "sq''=[entry fg q']" by auto 
-        ultimately show ?thesis using goal1 by blast 
+        ultimately show thesis using that by blast 
       qed
       from ntrs.gtr2gtrp[where c="{#}", simplified, OF REVSPLIT'(5)] obtain sq'' ce22ee' ww22' where R_CONV': "ce22e' = {#sq''#}+ce22ee'" "w22'=map le_rem_s ww22'" "(([entry fg q'],{#}),ww22',(sq'',ce22ee'))\<in>trcl (ntrp fg)" by blast
       -- "From the soundness of the RU-constraint system, we get the corresponding entries"
@@ -726,8 +725,8 @@ next
   next
     case lr -- "The first node is reached from the local thread, the second one from a spawned thread"
     from RU_sound[OF DECOMP_LOC(2), of U] lr(1) DECOMP_LOC(1) obtain Ml Me h where RU: "(v, Ml, Me, h) \<in> RU_cs fg U" "Ml \<subseteq> mon_loc fg w1" "Me \<subseteq> mon_env fg w1" "h \<le> \<alpha>ah (map (\<alpha>nl fg) w1)" by auto
-    obtain Ml' Me' h' q' where RV: "[entry fg q'] :# ch" "(entry fg q', Ml', Me', h') \<in> RU_cs fg V" "Ml' \<subseteq> mon_ww fg w2" "Me' \<subseteq> mon_ww fg w2" "h' \<le> \<alpha>ah (map (\<alpha>n fg) w2)" proof -
-      case goal1
+    obtain Ml' Me' h' q' where RV: "[entry fg q'] :# ch" "(entry fg q', Ml', Me', h') \<in> RU_cs fg V" "Ml' \<subseteq> mon_ww fg w2" "Me' \<subseteq> mon_ww fg w2" "h' \<le> \<alpha>ah (map (\<alpha>n fg) w2)"
+    proof -
       -- {* We have to extract the interesting thread from the spawned threads in order to get an entry in @{term "RU fg V"} *}
       obtain q' w2' c2i' where REVSPLIT: "[entry fg q'] :# ch" "w2'\<preceq>w2" "c2i' \<le># c2'" "atU V c2i'" "({#[entry fg q']#},w2',c2i')\<in>trcl (ntr fg)"
         using ntr_reverse_split_atU[OF _ lr(2) LESPLIT(4)] ntrp_valid_preserve_s[OF SPLIT(1), simplified] CHFMT by (simp add: valid_unconc) blast
@@ -735,7 +734,7 @@ next
       from RU_sound[OF R_CONV(3), of V] REVSPLIT(4) R_CONV(1) obtain Ml' Me' h' where RV: "(entry fg q', Ml', Me', h') \<in> RU_cs fg V" "Ml' \<subseteq> mon_loc fg ww2'" "Me' \<subseteq> mon_env fg ww2'" "h' \<le> \<alpha>ah (map (\<alpha>nl fg) ww2')" by auto
       moreover have "mon_loc fg ww2' \<subseteq> mon_ww fg w2" "mon_env fg ww2' \<subseteq> mon_ww fg w2" using mon_ww_ileq[OF REVSPLIT(2), of fg] R_CONV(2) by (auto simp add: mon_ww_of_le_rem)
       moreover have "\<alpha>ah (map (\<alpha>nl fg) ww2') \<le> \<alpha>ah (map (\<alpha>n fg) w2)" using REVSPLIT(2) R_CONV(2) by (auto simp add: \<alpha>n_\<alpha>nl[symmetric] le_list_map map_map[symmetric] simp del: map_map intro: \<alpha>ah_ileq del: predicate2I)
-      ultimately show ?thesis using goal1 REVSPLIT(1) by (blast intro: order_trans)
+      ultimately show thesis using that REVSPLIT(1) by (blast intro: order_trans)
     qed
     from S_ENTRY_PAT[of "{#q'#}", simplified] RV(1) have S_ENTRY: "(v, mon_w fg w, {#q'#}) \<in> S_cs fg 1" by simp
     have "(u, mon fg p \<union> mon_w fg w \<union> Ml, Me \<union> Ml' \<union> Me') \<in> RUV_cs fg U V" proof (rule RUV_split_le[OF FS_FMT(2,4) S_ENTRY _ RU(1) RV(2)])
@@ -750,8 +749,8 @@ next
   next
     case rl -- "The second node is reached from the local thread, the first one from a spawned thread. This case is symmetric to the previous one"
     from RU_sound[OF DECOMP_LOC(2), of V] rl(1) DECOMP_LOC(1) obtain Ml Me h where RV: "(v, Ml, Me, h) \<in> RU_cs fg V" "Ml \<subseteq> mon_loc fg w1" "Me \<subseteq> mon_env fg w1" "h \<le> \<alpha>ah (map (\<alpha>nl fg) w1)" by auto
-    obtain Ml' Me' h' q' where RU: "[entry fg q'] :# ch" "(entry fg q', Ml', Me', h') \<in> RU_cs fg U" "Ml' \<subseteq> mon_ww fg w2" "Me' \<subseteq> mon_ww fg w2" "h' \<le> \<alpha>ah (map (\<alpha>n fg) w2)" proof -
-      case goal1
+    obtain Ml' Me' h' q' where RU: "[entry fg q'] :# ch" "(entry fg q', Ml', Me', h') \<in> RU_cs fg U" "Ml' \<subseteq> mon_ww fg w2" "Me' \<subseteq> mon_ww fg w2" "h' \<le> \<alpha>ah (map (\<alpha>n fg) w2)"
+    proof -
       -- {* We have to extract the interesting thread from the spawned threads in order to get an entry in @{term "RU fg V"} *}
       obtain q' w2' c2i' where REVSPLIT: "[entry fg q'] :# ch" "w2'\<preceq>w2" "c2i' \<le># c2'" "atU U c2i'" "({#[entry fg q']#},w2',c2i')\<in>trcl (ntr fg)"
         using ntr_reverse_split_atU[OF _ rl(2) LESPLIT(4)] ntrp_valid_preserve_s[OF SPLIT(1), simplified] CHFMT by (simp add: valid_unconc) blast
@@ -759,7 +758,7 @@ next
       from RU_sound[OF R_CONV(3), of U] REVSPLIT(4) R_CONV(1) obtain Ml' Me' h' where RU: "(entry fg q', Ml', Me', h') \<in> RU_cs fg U" "Ml' \<subseteq> mon_loc fg ww2'" "Me' \<subseteq> mon_env fg ww2'" "h' \<le> \<alpha>ah (map (\<alpha>nl fg) ww2')" by auto
       moreover have "mon_loc fg ww2' \<subseteq> mon_ww fg w2" "mon_env fg ww2' \<subseteq> mon_ww fg w2" using mon_ww_ileq[OF REVSPLIT(2), of fg] R_CONV(2) by (auto simp add: mon_ww_of_le_rem)
       moreover have "\<alpha>ah (map (\<alpha>nl fg) ww2') \<le> \<alpha>ah (map (\<alpha>n fg) w2)" using REVSPLIT(2) R_CONV(2) by (auto simp add: \<alpha>n_\<alpha>nl[symmetric] le_list_map map_map[symmetric] simp del: map_map intro: \<alpha>ah_ileq del: predicate2I)
-      ultimately show ?thesis using goal1 REVSPLIT(1) by (blast intro: order_trans)
+      ultimately show thesis using that REVSPLIT(1) by (blast intro: order_trans)
     qed
     from S_ENTRY_PAT[of "{#q'#}", simplified] RU(1) have S_ENTRY: "(v, mon_w fg w, {#q'#}) \<in> S_cs fg 1" by simp
     have "(u, mon fg p \<union> mon_w fg w \<union> Ml, Me \<union> Ml' \<union> Me') \<in> RUV_cs fg U V" proof (rule RUV_split_el[OF FS_FMT(2,4) S_ENTRY _ RV(1) RU(2)])

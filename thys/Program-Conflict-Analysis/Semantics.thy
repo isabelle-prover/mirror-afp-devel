@@ -639,12 +639,12 @@ next
     ultimately have ?case by auto
   }
   moreover have "(\<exists>u. rh=u#r') \<or> ?case"
-  proof (rule trss.cases[OF SPLIT2], simp_all) -- "Cases for base- and spawn edge are discharged automatically"
+  proof (rule trss.cases[OF SPLIT2], simp_all, goal_cases) -- "Cases for base- and spawn edge are discharged automatically"
       -- "Case: call-edge"
-    case (goal1 ca p r u vv) with SPLIT1 SPLIT2 show ?case by fastforce 
+    case (1 ca p r u vv) with SPLIT1 SPLIT2 show ?case by fastforce 
   next
       -- "Case: return edge"
-    case (goal2 q r ca) note CC=this
+    case CC: (2 q r ca)
     hence [simp]: "rh=(return fg q)#v#r'" by simp
     with IHP(1)[of w "(return fg q)" "v#r'" ch, OF _ SPLIT1[simplified]] obtain rt ct wa wb where 
       IHAPP: "w = wa @ LCall q # wb" "(([sp], c), wa, rt, ct) \<in> trcl (trss fg)" "((rt, ct), LCall q, entry fg q # v # r', ct) \<in> trss fg"

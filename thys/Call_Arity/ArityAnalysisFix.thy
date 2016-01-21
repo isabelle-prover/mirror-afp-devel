@@ -81,16 +81,18 @@ lemma Afix_join_fresh: "ae' ` (domA \<Delta>) \<subseteq> {\<bottom>}  \<Longrig
 lemma Afix_restr_fresh:
   assumes "atom ` S \<sharp>* \<Gamma>"
   shows "Afix \<Gamma>\<cdot>ae f|` (- S) = Afix \<Gamma>\<cdot>(ae  f|` (- S)) f|` (- S)"
-unfolding Afix_eq
-proof (rule parallel_fix_ind[where P = "\<lambda> x y . x f|` (- S) = y  f|` (- S)"])
-  case goal1 show ?case by simp
+  unfolding Afix_eq
+proof (rule parallel_fix_ind[where P = "\<lambda> x y . x f|` (- S) = y  f|` (- S)"], goal_cases)
+  case 1
+  show ?case by simp
 next
-  case goal2 show ?case..
+  case 2
+  show ?case ..
 next
-  case (goal3 aeL aeR)
+  case prems: (3 aeL aeR)
   have "(ABinds \<Gamma>\<cdot>aeL \<squnion> ae) f|` (- S) = ABinds \<Gamma>\<cdot>aeL  f|` (- S) \<squnion> ae  f|` (- S)" by (simp add: env_restr_join)
   also have "\<dots> = ABinds \<Gamma>\<cdot>(aeL  f|` (- S)) f|` (- S) \<squnion> ae  f|` (- S)" by (rule arg_cong[OF ABinds_restr_fresh[OF assms]])
-  also have "\<dots> = ABinds \<Gamma>\<cdot>(aeR  f|` (- S)) f|` (- S) \<squnion> ae  f|` (- S)" unfolding goal3..
+  also have "\<dots> = ABinds \<Gamma>\<cdot>(aeR  f|` (- S)) f|` (- S) \<squnion> ae  f|` (- S)" unfolding prems ..
   also have "\<dots> = ABinds \<Gamma>\<cdot>aeR f|` (- S) \<squnion> ae  f|` (- S)" by (rule arg_cong[OF ABinds_restr_fresh[OF assms, symmetric]])
   also have "\<dots> = (ABinds \<Gamma>\<cdot>aeR \<squnion> ae f|` (- S)) f|` (- S)" by (simp add: env_restr_join)
   finally show ?case by simp
@@ -129,34 +131,37 @@ lemma Afix_subst_approx:
   assumes "x \<notin> domA \<Gamma>"
   assumes "y \<notin> domA \<Gamma>"
   shows "Afix \<Gamma>[y::h= x]\<cdot>(ae(y := \<bottom>, x := up\<cdot>0)) \<sqsubseteq> (Afix \<Gamma>\<cdot>ae)(y := \<bottom>, x := up\<cdot>0)"
-unfolding Afix_eq
-proof (rule parallel_fix_ind[where P = "\<lambda> aeL aeR . aeL \<sqsubseteq> aeR(y := \<bottom>, x := up\<cdot>0)"])
-  case goal1 show ?case by simp
+  unfolding Afix_eq
+proof (rule parallel_fix_ind[where P = "\<lambda> aeL aeR . aeL \<sqsubseteq> aeR(y := \<bottom>, x := up\<cdot>0)"], goal_cases)
+  case 1
+  show ?case by simp
 next
-  case goal2 show ?case..
+  case 2
+  show ?case..
 next
-  case (goal3 aeL aeR)
+  case (3 aeL aeR)
   hence "ABinds \<Gamma>[y::h=x]\<cdot>aeL \<sqsubseteq> ABinds \<Gamma>[y::h=x]\<cdot>(aeR (y := \<bottom>, x := up\<cdot>0))" by (rule monofun_cfun_arg)
   also have "\<dots>  \<sqsubseteq> (ABinds \<Gamma>\<cdot>aeR)(y := \<bottom>, x := up\<cdot>0)"
-  using assms
-  proof(induction  rule: ABinds.induct)
-  case goal1 thus ?case by simp
+    using assms
+  proof (induction rule: ABinds.induct, goal_cases)
+    case 1
+    thus ?case by simp
   next
-  case (goal2 v e \<Gamma>)
-    have "\<And> n. Aexp e[y::=x]\<cdot>n \<sqsubseteq> (Aexp e\<cdot>n)(y := \<bottom>, x := up\<cdot>0)" using goal2(2)[where v = v] by auto
+    case prems: (2 v e \<Gamma>)
+    have "\<And>n. Aexp e[y::=x]\<cdot>n \<sqsubseteq> (Aexp e\<cdot>n)(y := \<bottom>, x := up\<cdot>0)" using prems(2)[where v = v] by auto
     hence IH1: "\<And> n. fup\<cdot>(Aexp e[y::=x])\<cdot>n \<sqsubseteq> (fup\<cdot>(Aexp e)\<cdot>n)(y := \<bottom>, x := up\<cdot>0)"  by (case_tac n) auto
 
     have "ABinds (delete v \<Gamma>)[y::h=x]\<cdot>(aeR(y := \<bottom>, x := up\<cdot>0)) \<sqsubseteq> (ABinds (delete v \<Gamma>)\<cdot>aeR)(y := \<bottom>, x := up\<cdot>0)"
-      apply (rule goal2) using goal2(2,3,4) by fastforce+
+      apply (rule prems) using prems(2,3,4) by fastforce+
     hence IH2: "ABinds (delete v \<Gamma>[y::h=x])\<cdot>(aeR(y := \<bottom>, x := up\<cdot>0)) \<sqsubseteq> (ABinds (delete v \<Gamma>)\<cdot>aeR)(y := \<bottom>, x := up\<cdot>0)"
        unfolding subst_heap_delete.
     
-    have [simp]: "(aeR(y := \<bottom>, x := up\<cdot>0)) v = aeR v" using goal2(3,4) by auto
+    have [simp]: "(aeR(y := \<bottom>, x := up\<cdot>0)) v = aeR v" using prems(3,4) by auto
    
     show ?case by (simp del: fun_upd_apply join_comm) (rule join_mono[OF IH1 IH2])
   qed
-  finally
-  have "ABinds \<Gamma>[y::h=x]\<cdot>aeL \<sqsubseteq> (ABinds \<Gamma>\<cdot>aeR)(y := \<bottom>, x := up\<cdot>0)" by this simp
+  finally have "ABinds \<Gamma>[y::h=x]\<cdot>aeL \<sqsubseteq> (ABinds \<Gamma>\<cdot>aeR)(y := \<bottom>, x := up\<cdot>0)"
+    by this simp
   thus ?case
     by (auto simp add: join_below_iff elim: below_trans)
 qed

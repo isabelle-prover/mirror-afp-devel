@@ -152,16 +152,17 @@ lemma Abinds_cong[fundef_cong]:
   "\<lbrakk> (\<And> e. e \<in> snd ` set heap2 \<Longrightarrow> aexp1 e = aexp2 e) ; heap1 = heap2 \<rbrakk>
       \<Longrightarrow> ArityAnalysis.ABinds aexp1 heap1 = ArityAnalysis.ABinds aexp2 heap2"    
 proof (induction heap1 arbitrary:heap2 rule:ArityAnalysis.ABinds.induct)
-case goal1 thus ?case by (auto simp add: ArityAnalysis.ABinds.simps)
+  case 1
+  thus ?case by (auto simp add: ArityAnalysis.ABinds.simps)
 next
-case (goal2  v e as heap2)
+  case prems: (2 v e as heap2)
   have "snd ` set (delete v as) \<subseteq> snd ` set as" by (rule dom_delete_subset)
   also have "\<dots> \<subseteq> snd `set ((v, e) # as)" by auto
-  also note goal2(3)
+  also note prems(3)
   finally
-  have "(\<And>e. e \<in> snd ` set (delete v as) \<Longrightarrow> aexp1 e = aexp2 e)" by -(rule goal2, auto)
-  note goal2(1)[OF this refl] with goal2
-  show ?case by (auto simp add: ArityAnalysis.ABinds.simps ArityAnalysis.ABind_def)
+  have "(\<And>e. e \<in> snd ` set (delete v as) \<Longrightarrow> aexp1 e = aexp2 e)" by -(rule prems, auto)
+  from prems prems(1)[OF this refl] show ?case
+    by (auto simp add: ArityAnalysis.ABinds.simps ArityAnalysis.ABind_def)
 qed
 
 context EdomArityAnalysis

@@ -133,10 +133,10 @@ lemma (in env_no_step) rev_cases_p[cases set, case_names loc spawn env]:
               ((ss,{#s'#}+ce),e,(ss',csp+({#s'#}+ce)))\<in>gtrs \<rbrakk> 
            \<Longrightarrow> P"
   shows "P"
-proof (rule gtr_rev_cases[OF STEP])
-  case goal1 thus ?thesis using LOC by auto
+proof (rule gtr_rev_cases[OF STEP], goal_cases)
+  case 1 thus ?thesis using LOC by auto
 next
-  case goal2 note CASE=this 
+  case CASE: (2 cc ss ss' ce)
   hence CASE': "c = {#ss#} + ce" "ce' = {#ss'#} + cc" "((ss, ce), e, ss', {#s'#} + cc) \<in> gtrs" by simp_all
   from env_no_step_s[OF CASE'(3)] obtain csp where EQ: "{#s'#}+cc = csp + ce" by blast
   thus ?thesis proof (cases rule: mset_unplusm_dist_cases)

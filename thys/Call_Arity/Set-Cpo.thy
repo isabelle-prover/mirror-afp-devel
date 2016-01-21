@@ -33,7 +33,8 @@ lemma set_contI:
   assumes  "\<And> Y. chain Y \<Longrightarrow> f (\<Squnion> i. Y i) = \<Union> (f ` range Y)"
   shows "cont f"
 proof(rule contI)
-  case (goal1 Y)
+  fix Y :: "nat \<Rightarrow> 'a"
+  assume "chain Y"
   hence "f (\<Squnion> i. Y i) = \<Union> (f ` range Y)" by (rule assms)
   also have "\<dots> = \<Union> (range (\<lambda>i. f (Y i)))" by simp
   finally

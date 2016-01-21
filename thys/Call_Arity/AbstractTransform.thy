@@ -41,29 +41,30 @@ begin
         (transform (PropLetBody (AnalLet \<Gamma> e a)) e)"
   | "transform a (Bool b) = (Bool b)"
   | "transform a (scrut ? e1 : e2)  = (transform (PropIfScrut a) scrut ? transform a e1 : transform a e2)"
-proof-
-case goal1
+proof goal_cases
+  case 1
   note PropApp_eqvt[eqvt_raw] PropLam_eqvt[eqvt_raw] PropLetBody_eqvt[eqvt_raw] PropLetHeap_eqvt[eqvt_raw] AnalLet_eqvt[eqvt_raw] TransVar_eqvt[eqvt]  TransApp_eqvt[eqvt]  TransLam_eqvt[eqvt] TransLet_eqvt[eqvt]
   show ?case
-  unfolding eqvt_def transform_graph_aux_def
+    unfolding eqvt_def transform_graph_aux_def
     apply rule
     apply perm_simp
     apply (rule refl)
     done
-  case (goal3 P x)
-    show ?case
-    proof (cases x)
-      fix a b
-      assume "x = (a, b)"
-      thus ?case
-      using goal3
+next
+  case prems: (3 P x)
+  show ?case
+  proof (cases x)
+    fix a b
+    assume "x = (a, b)"
+    thus ?case
+      using prems
       apply (cases b rule:Terms.exp_strong_exhaust)
       apply auto
       done
-    qed
-  next
-case (goal10 a x e a' x' e')
-  from goal10(5)
+  qed
+next
+  case prems: (10 a x e a' x' e')
+  from prems(5)
   have "a' = a" and  "Lam [x]. e = Lam [x']. e'" by simp_all
   from this(2)
   show ?case
@@ -73,7 +74,7 @@ case (goal10 a x e a' x' e')
 
     have "supp (TransLam a x (transform_sumC (PropLam a, e))) \<subseteq> supp (Lam [x]. e)"
       apply (rule subset_trans[OF SuppTransLam])
-      apply (auto simp add:  exp_assn.supp supp_Pair supp_at_base pure_supp exp_assn.fsupp dest!: set_mp[OF supp_eqvt_at[OF goal10(1)], rotated])
+      apply (auto simp add:  exp_assn.supp supp_Pair supp_at_base pure_supp exp_assn.fsupp dest!: set_mp[OF supp_eqvt_at[OF prems(1)], rotated])
       done
     moreover
     assume "supp \<pi> \<sharp>* (Lam [x]. e)" 
@@ -86,7 +87,7 @@ case (goal10 a x e a' x' e')
         = TransLam a (\<pi> \<bullet> x) (transform_sumC (\<pi> \<bullet>  (PropLam a, e)))"
       by perm_simp rule
     also have "\<dots> = TransLam a (\<pi> \<bullet> x) (\<pi> \<bullet> transform_sumC (PropLam a, e))"
-      unfolding eqvt_at_apply'[OF goal10(1)]..
+      unfolding eqvt_at_apply'[OF prems(1)] ..
     also have "\<dots> = \<pi> \<bullet> (TransLam a x (transform_sumC (PropLam a, e)))"
       by simp
     also have "\<dots> = TransLam a x (transform_sumC (PropLam a, e))"
@@ -94,16 +95,16 @@ case (goal10 a x e a' x' e')
     finally show "TransLam a (\<pi> \<bullet> x) (transform_sumC (PropLam a, \<pi> \<bullet> e)) = TransLam a x (transform_sumC (PropLam a, e))" by simp
   qed
 next
-case (goal19 a as body a' as' body')
+  case prems: (19 a as body a' as' body')
   note PropApp_eqvt[eqvt_raw] PropLam_eqvt[eqvt_raw] PropLetBody_eqvt[eqvt_raw]  AnalLet_eqvt[eqvt_raw] PropLetHeap_eqvt[eqvt_raw] TransVar_eqvt[eqvt]  TransApp_eqvt[eqvt]  TransLam_eqvt[eqvt] TransLet_eqvt[eqvt]
 
-  from supp_eqvt_at[OF goal19(1)]
+  from supp_eqvt_at[OF prems(1)]
   have "\<And> x e a. (x, e) \<in> set as \<Longrightarrow> supp (transform_sumC (a, e)) \<subseteq> supp e"
     by (auto simp add: exp_assn.fsupp supp_Pair pure_supp)
   hence supp_map: "\<And>ae. supp (map_transform (\<lambda>x0 x1. transform_sumC (x0, x1)) ae as) \<subseteq> supp as"
     by (rule supp_map_transform_step)
 
-  from goal19(9)
+  from prems(9)
   have "a' = a" and  "Terms.Let as body = Terms.Let as' body'" by simp_all
   from this(2)
   show ?case
@@ -111,7 +112,7 @@ case (goal19 a as body a' as' body')
   proof (rule eqvt_let_case)
     have "supp (TransLet (AnalLet as body a) (map_transform (\<lambda>x0 x1. transform_sumC (x0, x1)) (PropLetHeap (AnalLet as body a)) as) (transform_sumC (PropLetBody (AnalLet as body a), body))) \<subseteq> supp (Let as body)"
       by (auto simp add: Let_supp supp_Pair pure_supp exp_assn.fsupp
-               dest!: set_mp[OF supp_eqvt_at[OF goal19(2)], rotated] set_mp[OF SuppTransLet] set_mp[OF supp_map])
+               dest!: set_mp[OF supp_eqvt_at[OF prems(2)], rotated] set_mp[OF SuppTransLet] set_mp[OF supp_map])
     moreover
     fix \<pi> :: perm
     assume "supp \<pi> \<sharp>* Terms.Let as body"
@@ -121,7 +122,7 @@ case (goal19 a as body a' as' body')
 
     have "TransLet (AnalLet (\<pi> \<bullet> as) (\<pi> \<bullet> body) a) (map_transform (\<lambda>x0 x1. (\<pi> \<bullet> transform_sumC) (x0, x1)) (PropLetHeap (AnalLet (\<pi> \<bullet> as) (\<pi> \<bullet> body) a)) (\<pi> \<bullet> as)) ((\<pi> \<bullet> transform_sumC) (PropLetBody (AnalLet (\<pi> \<bullet> as) (\<pi> \<bullet> body) a), \<pi> \<bullet> body)) = 
         \<pi> \<bullet> TransLet (AnalLet as body a) (map_transform (\<lambda>x0 x1. transform_sumC (x0, x1)) (PropLetHeap (AnalLet as body a)) as) (transform_sumC (PropLetBody (AnalLet as body a), body))"
-       by (simp del: Let_eq_iff Pair_eqvt add:  eqvt_at_apply[OF goal19(2)])
+       by (simp del: Let_eq_iff Pair_eqvt add:  eqvt_at_apply[OF prems(2)])
     also have "\<dots> = TransLet (AnalLet as body a) (map_transform (\<lambda>x0 x1. transform_sumC (x0, x1)) (PropLetHeap (AnalLet as body a)) as) (transform_sumC (PropLetBody (AnalLet as body a), body))"
       by (rule perm_supp_eq[OF *])
     also
@@ -130,11 +131,11 @@ case (goal19 a as body a' as' body')
         apply (rule map_transform_fundef_cong[OF _ refl refl])
         apply (subst (asm) set_eqvt[symmetric])
         apply (subst (asm) mem_permute_set)
-        apply (auto simp add: permute_self  dest: eqvt_at_apply''[OF goal19(1)[where aa = "(- \<pi> \<bullet> a)" for a], where p = \<pi>, symmetric])
+        apply (auto simp add: permute_self  dest: eqvt_at_apply''[OF prems(1)[where aa = "(- \<pi> \<bullet> a)" for a], where p = \<pi>, symmetric])
         done
     moreover
     have "(\<pi> \<bullet> transform_sumC) (PropLetBody (AnalLet (\<pi> \<bullet> as) (\<pi> \<bullet> body) a), \<pi> \<bullet> body) = transform_sumC (PropLetBody (AnalLet (\<pi> \<bullet> as) (\<pi> \<bullet> body) a), \<pi> \<bullet> body)"
-      using eqvt_at_apply''[OF goal19(2), where p = \<pi>] by perm_simp
+      using eqvt_at_apply''[OF prems(2), where p = \<pi>] by perm_simp
     ultimately
     show "TransLet (AnalLet (\<pi> \<bullet> as) (\<pi> \<bullet> body) a) (map_transform (\<lambda>x0 x1. transform_sumC (x0, x1)) (PropLetHeap (AnalLet (\<pi> \<bullet> as) (\<pi> \<bullet> body) a)) (\<pi> \<bullet> as)) (transform_sumC (PropLetBody (AnalLet (\<pi> \<bullet> as) (\<pi> \<bullet> body) a), \<pi> \<bullet> body)) =
           TransLet (AnalLet as body a) (map_transform (\<lambda>x0 x1. transform_sumC (x0, x1)) (PropLetHeap (AnalLet as body a)) as) (transform_sumC (PropLetBody (AnalLet as body a), body))" by metis
@@ -194,16 +195,16 @@ begin
       "(\<lambda> a. App)"
       "(\<lambda> a. Terms.Lam)"
       "(\<lambda> b \<Gamma> e . Let (map_transform trans (PropLetHeapTrans b) \<Gamma>) e)"
-  proof-
-  note PropApp_eqvt[eqvt_raw] PropLam_eqvt[eqvt_raw] PropLetBody_eqvt[eqvt_raw] PropLetHeap_eqvt[eqvt_raw] PropIfScrut_eqvt[eqvt_raw]
-      AnalLet_eqvt[eqvt_raw] PropLetHeapTrans_eqvt[eqvt] TransBound_eqvt[eqvt]
-  case goal1
-  show ?case
-  apply standard
-  apply ((perm_simp, rule)+)[4]
-  apply (auto simp add: exp_assn.supp supp_at_base)[1]
-  apply (auto simp add: Let_supp supp_Pair supp_at_base dest: set_mp[OF supp_map_transform])[1]
-  done
+  proof goal_cases
+    case 1
+    note PropApp_eqvt[eqvt_raw] PropLam_eqvt[eqvt_raw] PropLetBody_eqvt[eqvt_raw] PropLetHeap_eqvt[eqvt_raw] PropIfScrut_eqvt[eqvt_raw]
+        AnalLet_eqvt[eqvt_raw] PropLetHeapTrans_eqvt[eqvt] TransBound_eqvt[eqvt]
+    show ?case
+      apply standard
+      apply ((perm_simp, rule)+)[4]
+      apply (auto simp add: exp_assn.supp supp_at_base)[1]
+      apply (auto simp add: Let_supp supp_Pair supp_at_base dest: set_mp[OF supp_map_transform])[1]
+      done
   qed
 
   lemma isLam_transform[simp]:
@@ -224,18 +225,18 @@ begin
       "(\<lambda> a. App)"
       "(\<lambda> a. Terms.Lam)"
       "(\<lambda> b \<Gamma> e . Let (map_transform trans (PropLetHeapTrans b) \<Gamma>) e)"
-  proof-
-  note PropApp_eqvt[eqvt_raw] PropLam_eqvt[eqvt_raw] PropLetBody_eqvt[eqvt_raw] PropLetHeap_eqvt[eqvt_raw] PropIfScrut_eqvt[eqvt_raw]
-       TransBound_eqvt[eqvt]
-  case goal1
-  show ?case
-  apply standard
-  apply simp_all[3]
-  apply (simp del: Let_eq_iff)
-  apply (rule arg_cong[where f = "\<lambda> x. Let x y" for y])
-  apply (rule subst_map_transform)
-  apply (simp add: TransBound_subst)
-  done
+  proof goal_cases
+    case 1
+    note PropApp_eqvt[eqvt_raw] PropLam_eqvt[eqvt_raw] PropLetBody_eqvt[eqvt_raw] PropLetHeap_eqvt[eqvt_raw] PropIfScrut_eqvt[eqvt_raw]
+         TransBound_eqvt[eqvt]
+    show ?case
+      apply standard
+      apply simp_all[3]
+      apply (simp del: Let_eq_iff)
+      apply (rule arg_cong[where f = "\<lambda> x. Let x y" for y])
+      apply (rule subst_map_transform)
+      apply (simp add: TransBound_subst)
+      done
   qed
 end
 

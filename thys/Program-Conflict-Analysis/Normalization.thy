@@ -575,11 +575,10 @@ lemma ntrs_xchange_context_s:
 proof -
   obtain p r u u' v w where S: "s=u#r" "ee=LCall p#w" "s'=v#u'#r" "((u#r,c),LCall p,(entry fg p#u'#r,c))\<in>trss fg" "(([entry fg p],c),w,([v],csp+c))\<in>trcl (trss fg)" 
   proof -
-    case goal1 moreover
     from ntrs.cases[OF A, simplified] obtain ce ce' p r u u' v w where "s = u # r" "c = ce" "ee = LCall p # w" "s' = v # u' # r" "csp + ce = ce'" "((u # r, ce), LCall p, entry fg p # u' # r, ce) \<in> trss fg" 
       "(([entry fg p], ce), w, [v], ce') \<in> trcl (trss fg)" .
     hence "s=u#r" "ee=LCall p#w" "s'=v#u'#r" "((u#r,c),LCall p,(entry fg p#u'#r,c))\<in>trss fg" "(([entry fg p],c),w,([v],csp+c))\<in>trcl (trss fg)" by auto
-    ultimately show ?thesis .
+    then show ?thesis ..
   qed
   from ntrs_step[simplified, OF trss_xchange_context_s[where csp="{#}", simplified, OF S(4) B] trss_xchange_context[OF S(5) B]] S show ?thesis by simp
 qed
@@ -1139,8 +1138,10 @@ proof -
     case empty thus ?case by simp 
   next
     -- "The first macrostep of the combined path was taken from the left operand of the interleaving"
-    case (left e w' w1' w2) thus ?case proof (intro allI impI) 
-      case (goal1 ca cb) hence I: "w' \<in> w1' \<otimes>\<^bsub>\<alpha>n fg\<^esub> w2" "fst (\<alpha>n fg e) \<inter> mon_pl (map (\<alpha>n fg) w2) = {}" 
+    case (left e w' w1' w2) thus ?case
+    proof (intro allI impI, goal_cases) 
+      case (1 ca cb)
+      hence I: "w' \<in> w1' \<otimes>\<^bsub>\<alpha>n fg\<^esub> w2" "fst (\<alpha>n fg e) \<inter> mon_pl (map (\<alpha>n fg) w2) = {}" 
         "!!ca cb.
            \<lbrakk>(ca, w1', ca') \<in> trcl (ntr fg);
            (cb, w2, cb') \<in> trcl (ntr fg);
@@ -1165,8 +1166,10 @@ proof -
     qed
   next
     -- "The first macrostep of the combined path was taken from the right path -- this case is done completely analogous"
-    case (right e w' w2' w1) thus ?case proof (intro allI impI) 
-      case (goal1 ca cb) hence I: "w' \<in> w1 \<otimes>\<^bsub>\<alpha>n fg\<^esub> w2'" "fst (\<alpha>n fg e) \<inter> mon_pl (map (\<alpha>n fg) w1) = {}" 
+    case (right e w' w2' w1) thus ?case
+    proof (intro allI impI, goal_cases) 
+      case (1 ca cb)
+      hence I: "w' \<in> w1 \<otimes>\<^bsub>\<alpha>n fg\<^esub> w2'" "fst (\<alpha>n fg e) \<inter> mon_pl (map (\<alpha>n fg) w1) = {}" 
         "!!ca cb.
            \<lbrakk>(ca, w1, ca') \<in> trcl (ntr fg);
            (cb, w2', cb') \<in> trcl (ntr fg);
@@ -1207,8 +1210,11 @@ proof -
     proof (induct rule: cil_set_induct_fix\<alpha>)
       case empty thus ?case by simp
     next
-      case (left e w' w1' w2) thus ?case proof (intro allI impI)
-        case (goal1 s ca cb wb) hence I: "w' \<in> w1' \<otimes>\<^bsub>\<alpha>nl fg\<^esub> w2" "fst (\<alpha>nl fg e) \<inter> mon_pl (map (\<alpha>nl fg) w2) = {}"
+      case (left e w' w1' w2)
+      thus ?case
+      proof (intro allI impI, goal_cases)
+        case (1 s ca cb wb)
+        hence I: "w' \<in> w1' \<otimes>\<^bsub>\<alpha>nl fg\<^esub> w2" "fst (\<alpha>nl fg e) \<inter> mon_pl (map (\<alpha>nl fg) w2) = {}"
           "!!s ca cb wb. \<lbrakk>
             w2 = map ENV wb;
             ((s, ca), w1', s', ca') \<in> trcl (ntrp fg);
@@ -1232,8 +1238,11 @@ proof -
         finally show ?case .
       qed
     next
-      case (right ee w' w2' w1) thus ?case proof (intro allI impI)
-        case (goal1 s ca cb wb) hence I: "w' \<in> w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> w2'" "fst (\<alpha>nl fg ee) \<inter> mon_pl (map (\<alpha>nl fg) w1) = {}"
+      case (right ee w' w2' w1)
+      thus ?case
+      proof (intro allI impI, goal_cases)
+        case (1 s ca cb wb)
+        hence I: "w' \<in> w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> w2'" "fst (\<alpha>nl fg ee) \<inter> mon_pl (map (\<alpha>nl fg) w1) = {}"
           "!!s ca cb wb. \<lbrakk>
             w2' = map ENV wb;
             ((s, ca), w1, s', ca') \<in> trcl (ntrp fg);

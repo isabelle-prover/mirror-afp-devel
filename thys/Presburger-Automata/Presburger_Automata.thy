@@ -3656,8 +3656,8 @@ lemma int_encode_bound: "dioph_is_node ks l m \<Longrightarrow>
 
 interpretation dioph_dfs: DFS "dioph_succs n ks" "dioph_is_node ks l"
   "dioph_invariant ks l" dioph_ins dioph_memb "dioph_empt ks l"
-proof
-  case goal1
+proof (standard, goal_cases)
+  case (1 x y)
   then show ?case
     apply (simp add: dioph_memb_def dioph_ins_def split_beta dioph_invariant_def)
     apply (cases "x = y")
@@ -3665,11 +3665,11 @@ proof
     apply (simp add: inj_eq [OF inj_int_encode])
     done
 next
-  case goal2
+  case 2
   then show ?case
     by (simp add: dioph_memb_def dioph_empt_def int_encode_bound)
 next
-  case goal3
+  case 3
   then show ?case
     apply (simp add: dioph_succs_def map_filter_def list_all_iff dioph_is_node_def)
     apply (rule allI impI)+
@@ -3678,15 +3678,15 @@ next
     apply assumption
     done
 next
-  case goal4
+  case 4
   then show ?case
     by (simp add: dioph_invariant_def dioph_empt_def)
 next
-  case goal5
+  case 5
   then show ?case
     by (simp add: dioph_invariant_def dioph_ins_def split_beta)
 next
-  case goal6
+  case 6
   then show ?case
     apply (rule bounded_int_set_is_finite [of _ "max \<bar>l\<bar> (\<Sum>k\<leftarrow>ks. \<bar>k\<bar>) + 1"])
     apply (rule ballI)
@@ -4053,8 +4053,8 @@ definition
 
 interpretation dioph_ineq_dfs: DFS "dioph_ineq_succs n ks" "dioph_is_node ks l"
   "dioph_invariant ks l" dioph_ins dioph_memb "dioph_empt ks l"
-proof
-  case goal1
+proof (standard, goal_cases)
+  case (1 x y)
   then show ?case
     apply (simp add: dioph_memb_def dioph_ins_def split_beta dioph_invariant_def)
     apply (cases "x = y")
@@ -4062,11 +4062,11 @@ proof
     apply (simp add: inj_eq [OF inj_int_encode])
     done
 next
-  case goal2
+  case 2
   then show ?case
     by (simp add: dioph_memb_def dioph_empt_def int_encode_bound)
 next
-  case goal3
+  case 3
   then show ?case
     apply (simp add: dioph_ineq_succs_def map_filter_def list_all_iff dioph_is_node_def)
     apply (rule ballI)
@@ -4075,15 +4075,15 @@ next
     apply assumption
     done
 next
-  case goal4
+  case 4
   then show ?case
     by (simp add: dioph_invariant_def dioph_empt_def)
 next
-  case goal5
+  case 5
   then show ?case
     by (simp add: dioph_invariant_def dioph_ins_def split_beta)
 next
-  case goal6
+  case 6
   then show ?case
     apply (rule bounded_int_set_is_finite [of _ "max \<bar>l\<bar> (\<Sum>k\<leftarrow>ks. \<bar>k\<bar>) + 1"])
     apply (rule ballI)
