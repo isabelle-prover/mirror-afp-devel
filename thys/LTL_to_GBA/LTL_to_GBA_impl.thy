@@ -118,12 +118,12 @@ lemma rec_ltln_param[param, autoref_rules]:
                         \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv \<rightarrow> Rv \<rightarrow> Rv)
                           \<rightarrow> (\<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv \<rightarrow> Rv \<rightarrow> Rv)
                             \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> Rv"
-proof clarsimp
-  case goal1
-  from goal1(10)
+proof (clarsimp, goal_cases)
+  case prems: 1
+  from prems(10)
   show ?case 
     apply (induction)
-    using goal1(1-9)
+    using prems(1-9)
     apply simp_all
     apply parametricity+
     done

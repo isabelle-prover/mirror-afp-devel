@@ -288,7 +288,7 @@ lemma expand_body_mono: "trimono expand_body" by refine_mono
 definition expand :: "('a node \<times> ('a node set)) \<Rightarrow> (node_name \<times> 'a node set) nres"
   where "expand \<equiv> REC expand_body"
 
-lemma REC_rule_old: (* TODO: Adapt proofs below, have fun with goal27 ...*)
+lemma REC_rule_old: (* TODO: Adapt proofs below, have fun with subgoal 27 ...*)
   fixes x::"'x"
   assumes M: "trimono body"
   assumes I0: "\<Phi> x"
@@ -368,23 +368,25 @@ lemma expand_name_propag:
                                     \<and> expand_rslt_name n_ns r
                                     \<and> expand_name_ident (snd r))"
       (is "expand _ \<le> SPEC (?P n_ns)")
-using assms
-proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg)
-  case (goal1 _ _ n ns)
+  using assms
+proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg, goal_cases)
+  case prems: (1 _ _ n ns)
   then have Q: "?Q (n, ns)" by fast
   let ?nds = "upd_incoming n ns"
 
-  have "\<forall>q\<in>?nds. name q < name n" using goal1
+  from prems have "\<forall>q\<in>?nds. name q < name n"
     by (rule_tac upd_incoming__ident) auto
   moreover
   have "\<forall>q\<in>?nds. \<forall>nm'\<in>incoming q. nm' < name n" (is "\<forall>q\<in>_. ?sg q")
   proof
     fix q
     assume q_in:"q\<in>?nds"
-    { assume "q\<in>ns"
-      then have "?sg q" using goal1 by auto }
-    moreover
-    { assume "q\<notin>ns"
+    show "?sg q"
+    proof (cases "q\<in>ns")
+      case True
+      with prems show ?thesis by auto
+    next
+      case False
       with upd_incoming__elem[OF q_in]
       obtain nd' where
         nd'_def:"nd'\<in>ns \<and> q = nd'\<lparr>incoming := incoming n \<union> incoming nd'\<rparr>"
@@ -400,74 +402,77 @@ proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg)
           with Q nd'_def have "nm' < name n" by auto }
         ultimately have "nm' < name n" using nd'_def by auto }
 
-      then have "?sg q" by fast }
-    ultimately show "?sg q" by fast
+      then show ?thesis by fast
+    qed
   qed
   moreover
   have "expand_name_ident ?nds"
-  proof (rule_tac upd_incoming__ident)
-    case goal1 show ?case
-      proof
-        fix q
-        assume "q\<in>ns"
+  proof (rule upd_incoming__ident, goal_cases)
+    case 1
+    show ?case
+    proof
+      fix q
+      assume "q\<in>ns"
 
-        with Q have "\<exists>!q'\<in>ns. name q = name q'" by auto
-        then obtain q' where "q'\<in>ns" and "name q = name q'"
-                         and q'_all: "\<forall>q''\<in>ns. name q' = name q'' \<longrightarrow> q' = q''"
-          by auto
-        let ?q' = "upd_incoming_f n q'"
-        have P_a: "?q'\<in>?nds \<and> name q = name ?q'"
-          using \<open>q'\<in>ns\<close> \<open>name q = name q'\<close> q'_all
-          unfolding upd_incoming_def by auto
+      with Q have "\<exists>!q'\<in>ns. name q = name q'" by auto
+      then obtain q' where "q'\<in>ns" and "name q = name q'"
+                       and q'_all: "\<forall>q''\<in>ns. name q' = name q'' \<longrightarrow> q' = q''"
+        by auto
+      let ?q' = "upd_incoming_f n q'"
+      have P_a: "?q'\<in>?nds \<and> name q = name ?q'"
+        using \<open>q'\<in>ns\<close> \<open>name q = name q'\<close> q'_all
+        unfolding upd_incoming_def by auto
 
-        have P_all: "\<forall>q''\<in>?nds. name ?q' = name q'' \<longrightarrow> ?q' = q''"
-        proof(clarify)
-          fix q''
-          assume "q''\<in>?nds" and q''_name_eq: "name ?q' = name q''"
-          { assume "q''\<notin>ns"
-            with upd_incoming__elem[OF \<open>q''\<in>?nds\<close>]
-            obtain nd'' where
-              "nd''\<in>ns"
-              and q''_is: "q'' = nd''\<lparr>incoming := incoming n \<union> incoming nd''\<rparr>
-                            \<and> old nd'' = old n \<and> next nd'' = next n"
-              by auto
-            then have "name nd'' = name q'"
-              using q''_name_eq
-              by (cases "old q' = old n \<and> next q' = next n") auto
-            with \<open>nd''\<in>ns\<close> q'_all have "nd'' = q'" by auto
-            then have "?q' = q''" using q''_is by simp }
+      have P_all: "\<forall>q''\<in>?nds. name ?q' = name q'' \<longrightarrow> ?q' = q''"
+      proof(clarify)
+        fix q''
+        assume "q''\<in>?nds" and q''_name_eq: "name ?q' = name q''"
+        { assume "q''\<notin>ns"
+          with upd_incoming__elem[OF \<open>q''\<in>?nds\<close>]
+          obtain nd'' where
+            "nd''\<in>ns"
+            and q''_is: "q'' = nd''\<lparr>incoming := incoming n \<union> incoming nd''\<rparr>
+                          \<and> old nd'' = old n \<and> next nd'' = next n"
+            by auto
+          then have "name nd'' = name q'"
+            using q''_name_eq
+            by (cases "old q' = old n \<and> next q' = next n") auto
+          with \<open>nd''\<in>ns\<close> q'_all have "nd'' = q'" by auto
+          then have "?q' = q''" using q''_is by simp }
+        moreover
+        { assume "q''\<in>ns"
           moreover
-          { assume "q''\<in>ns"
-            moreover
-            have "name q' = name q''"
-              using q''_name_eq
-              by (cases "old q' = old n \<and> next q' = next n") auto
-            moreover
-            then have "incoming n \<subseteq> incoming q''
-              \<Longrightarrow> incoming q'' = incoming n \<union> incoming q''"
-              by auto
-            ultimately have "?q' = q''"
-              using upd_incoming__ident_node[OF \<open>q''\<in>?nds\<close>] q'_all
-              by auto
-          }
-          ultimately show "?q' = q''" by fast
-        qed
-
-        show "\<exists>!q'\<in>upd_incoming n ns. name q = name q'"
-        proof(rule_tac ex1I[of _ ?q'])
-          case goal1 then show ?case using P_a by simp
-        next
-          case goal2 then show ?case
-            using P_all unfolding P_a[THEN conjunct2, THEN sym]
-            by blast
-        qed
+          have "name q' = name q''"
+            using q''_name_eq
+            by (cases "old q' = old n \<and> next q' = next n") auto
+          moreover
+          then have "incoming n \<subseteq> incoming q''
+            \<Longrightarrow> incoming q'' = incoming n \<union> incoming q''"
+            by auto
+          ultimately have "?q' = q''"
+            using upd_incoming__ident_node[OF \<open>q''\<in>?nds\<close>] q'_all
+            by auto
+        }
+        ultimately show "?q' = q''" by fast
       qed
+
+      show "\<exists>!q'\<in>upd_incoming n ns. name q = name q'"
+      proof(rule ex1I[of _ ?q'], goal_cases)
+        case 1
+        then show ?case using P_a by simp
+      next
+        case 2
+        then show ?case
+          using P_all unfolding P_a[THEN conjunct2, THEN sym]
+          by blast
+      qed
+    qed
   qed simp
-  ultimately show ?case using goal1 by auto
+  ultimately show ?case using prems by auto
 next
-  case (goal2 f _ n ns)
+  case prems: (2 f x n ns)
   then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)" by simp
-  have Q: "?Q (n, ns)" using goal2 by auto
+  from prems have Q: "?Q (n, ns)" by auto
 
   show ?case unfolding \<open>x = (n, ns)\<close>
   proof (rule_tac SPEC_rule_param2[where P = "?P"], rule_tac step, goal_cases)
@@ -482,35 +487,35 @@ next
       using prems' by auto
   qed
 next
-  case goal3
-  then show ?case using goal3 by auto
-next
-  case (goal4 f)
-  then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)"
-    by simp_all
-  show ?case using goal4
-    by (rule_tac SPEC_rule_param2, rule_tac step) auto
-next
-  case (goal5 f)
-  then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)"
-    by simp_all
-  show ?case
-    using goal5 by (rule_tac SPEC_rule_param2, rule_tac step) auto
-next
-  case goal6
+  case 3
   then show ?case by auto
 next
-  case (goal7 f)
+  case prems: (4 f)
   then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)"
     by simp_all
-  show ?case
-    using goal7 by (rule_tac SPEC_rule_param2, rule_tac step) auto
+  with prems show ?case
+    by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
-  case (goal8 f x n ns \<psi>)
+  case prems: (5 f)
+  then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)"
+    by simp_all
+  from prems show ?case
+    by (rule_tac SPEC_rule_param2, rule_tac step) auto
+next
+  case 6
+  then show ?case by auto
+next
+  case prems: (7 f)
+  then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)"
+    by simp_all
+  from prems show ?case
+    by (rule_tac SPEC_rule_param2, rule_tac step) auto
+next
+  case prems: (8 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
     by (cases \<psi>) auto
-  have Q: "?Q (n, ns)" and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)"
-    using goal8 by simp+
+  from prems have Q: "?Q (n, ns)" and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)"
+    by simp_all
   show ?case
     using goal_assms Q
     unfolding case_prod_unfold \<open>x = (n, ns)\<close>
@@ -552,10 +557,11 @@ lemma expand_rslt_exist_eq:
   shows "expand n_ns \<le> SPEC (expand_rslt_exist_eq n_ns)"
     (is "_ \<le> SPEC (?P n_ns)")
   using assms
-proof (rule_tac expand_rec_rule[where \<Phi>="\<lambda>_. True"], simp, intro refine_vcg)
-  case (goal1 f _ n ns)
+proof (rule_tac expand_rec_rule[where \<Phi>="\<lambda>_. True"], simp, intro refine_vcg, goal_cases)
+  case prems: (1 f x n ns)
   let ?r = "(name n, upd_incoming n ns)"
-  have "expand_rslt_exist_eq (n, ns) ?r" unfolding snd_conv
+  have "expand_rslt_exist_eq (n, ns) ?r"
+    unfolding snd_conv
   proof
     fix n'
     assume "n'\<in>ns"
@@ -572,56 +578,58 @@ proof (rule_tac expand_rec_rule[where \<Phi>="\<lambda>_. True"], simp, intro re
     ultimately show "\<exists>nd\<in>upd_incoming n ns. expand_rslt_exist_eq__node n' nd"
       by force
   qed
-  then show ?case using goal1 by auto
+  with prems show ?case by auto
 next
-  case (goal2 f)
+  case prems: (2 f)
   then have step: "\<And>x. f x \<le> SPEC (?P x)" by simp
-  show ?case using goal2 by (rule_tac SPEC_rule_param2, rule_tac step) auto
+  with prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
-  case goal3 then show ?case by auto
+  case 3 then show ?case by auto
 next
-  case (goal4 f)
+  case prems: (4 f)
   then have step: "\<And>x. f x \<le> SPEC (?P x)" by simp
-  show ?case using goal4 by (rule_tac SPEC_rule_param2, rule_tac step) auto
+  with prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
-  case (goal5 f)
+  case prems: (5 f)
   then have step: "\<And>x. f x \<le> SPEC (?P x)" by simp
-  show ?case using goal5 by (rule_tac SPEC_rule_param2, rule_tac step) auto
+  with prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
-  case goal6 then show ?case by auto
+  case 6 then show ?case by auto
 next
-  case (goal7 f)
+  case prems: (7 f)
   then have step: "\<And>x. f x \<le> SPEC (?P x)" by simp
-  show ?case using goal7 by (rule_tac SPEC_rule_param2, rule_tac step) auto
+  with prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
-  case (goal8 f x n ns)
-  have step: "\<And>x. f x \<le> SPEC (?P x)" using goal8 by simp
+  case prems: (8 f x n ns)
+  then have step: "\<And>x. f x \<le> SPEC (?P x)" by simp
 
-  show ?case using goal8
-  proof (rule_tac SPEC_rule_nested2)
-    case goal1
-    then show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
+  show ?case
+  proof (rule_tac SPEC_rule_nested2, goal_cases)
+    case 1
+    with prems show ?case
+      by (rule_tac SPEC_rule_param2, rule_tac step) auto
   next
-    case (goal2 nm nds)
-    have P_x: "?P (n, ns) (nm, nds)" using goal2 by fast
-    show ?case unfolding case_prod_unfold \<open>x = (n, ns)\<close>
-    proof (rule_tac SPEC_rule_param2[where P = "?P"])
-      case goal1
+    case (2 nm nds)
+    with prems have P_x: "?P (n, ns) (nm, nds)" by fast
+    show ?case
+      unfolding case_prod_unfold \<open>x = (n, ns)\<close>
+    proof (rule_tac SPEC_rule_param2[where P = "?P"], goal_cases)
+      case 1
       then show ?case by (rule_tac step)
     next
-      case (goal2 nm' nds')
+      case prems': (2 nm' nds')
       {
         fix n'
         assume "n'\<in>ns"
         with P_x obtain nd where "nd\<in>nds" and n'_split: "expand_rslt_exist_eq__node n' nd"
           by auto
-        with goal2 obtain nd' where "nd'\<in>nds'" and "expand_rslt_exist_eq__node nd nd'"
+        with prems' obtain nd' where "nd'\<in>nds'" and "expand_rslt_exist_eq__node nd nd'"
           by auto
         then have "\<exists>nd'\<in>nds'. expand_rslt_exist_eq__node n' nd'"
           using n'_split subset_trans[of "incoming n'"] by auto
       }
       then have "expand_rslt_exist_eq (n, ns) (nm', nds')" by auto
-      then show ?case using goal2 by auto
+      with prems show ?case by auto
     qed
   qed
 qed
@@ -630,8 +638,8 @@ lemma expand_prop_exist:
   "expand n_ns \<le> SPEC (\<lambda>r. expand_assm_exist \<xi> n_ns \<longrightarrow> expand_rslt_exist \<xi> n_ns r)"
   (is "_ \<le> SPEC (?P n_ns)")
   using assms
-proof (rule_tac expand_rec_rule[where \<Phi>="\<lambda>_. True"], simp, intro refine_vcg)
-  case (goal1 f _ n ns)
+proof (rule_tac expand_rec_rule[where \<Phi>="\<lambda>_. True"], simp, intro refine_vcg, goal_cases)
+  case prems: (1 f x n ns)
   let ?nds = "upd_incoming n ns"
   let ?r = "(name n, ?nds)"
   { assume Q: "expand_assm_exist \<xi> (n, ns)"
@@ -648,139 +656,151 @@ proof (rule_tac expand_rec_rule[where \<Phi>="\<lambda>_. True"], simp, intro re
     ultimately have "expand_rslt_exist \<xi> (n, ns) ?r"
       unfolding fst_conv snd_conv by blast
   }
-  then show ?case using goal1 by auto
+  with prems show ?case
+    by auto
 next
-  case (goal2 f x n ns)
+  case prems: (2 f x n ns)
   then have step: "\<And>x. f x \<le> SPEC (?P x)"
     and f_sup: "\<And>x. f x \<le> expand x" by auto
-  show ?case unfolding \<open>x = (n, ns)\<close>
-  proof (rule_tac SPEC_rule_weak[where Q = "expand_rslt_exist_eq"])
-    case goal1 then show ?case
+  show ?case
+    unfolding \<open>x = (n, ns)\<close>
+  proof (rule_tac SPEC_rule_weak[where Q = "expand_rslt_exist_eq"], goal_cases)
+    case 1
+    then show ?case
       by (rule_tac order_trans, rule_tac f_sup, rule_tac expand_rslt_exist_eq)
   next
-    case goal2 then show ?case by (rule_tac step)
+    case 2
+    then show ?case by (rule_tac step)
   next
-    case (goal3 nm nds)
-    then have "name ` ns \<subseteq> name ` nds" using goal3 by auto
+    case prems': (3 nm nds)
+    then have "name ` ns \<subseteq> name ` nds" by auto
     moreover
     { assume assm_ex: "expand_assm_exist \<xi> (n, ns)"
-      then obtain nd where "nd\<in>nds" and "expand_rslt_exist_eq__node n nd"
-      using goal3 by force+
+      with prems' obtain nd where "nd\<in>nds" and "expand_rslt_exist_eq__node n nd"
+        by force+
       then have "expand_rslt_exist__node_prop \<xi> n nd"
        using assm_ex \<open>new n = {}\<close> by auto
       then have "expand_rslt_exist \<xi> (n, ns) (nm, nds)" using \<open>nd\<in>nds\<close> by auto }
-    ultimately show ?case using expand_new_name_step[of n] goal3 by auto
+    ultimately show ?case
+      using expand_new_name_step[of n] prems' by auto
   qed
 next
-  case (goal3 f x n ns \<psi>)
+  case prems: (3 f x n ns \<psi>)
   { assume "expand_assm_exist \<xi> (n, ns)"
-    then have "\<xi> \<Turnstile>\<^sub>n \<psi>" and "\<xi> \<Turnstile>\<^sub>n frml_neg \<psi>" using goal3 by auto
-    then have "False" using goal3 by auto }
-  then show ?case using goal3 by auto
+    with prems have "\<xi> \<Turnstile>\<^sub>n \<psi>" and "\<xi> \<Turnstile>\<^sub>n frml_neg \<psi>" by auto
+    with prems have False by auto }
+  with prems show ?case by auto
 next
-  case (goal4 f x n ns \<psi>)
+  case prems: (4 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>q. \<psi> = prop\<^sub>n(q) \<or> \<psi> = nprop\<^sub>n(q))"
-    and step: "\<And>x. f x \<le> SPEC (?P x)" by simp+
-  show ?case using goal_assms unfolding \<open>x = (n, ns)\<close>
-  proof (rule_tac SPEC_rule_param2, rule_tac step)
-     case (goal1 nm nds)
-       { assume "expand_assm_exist \<xi> (n, ns)"
-         then have "expand_rslt_exist \<xi> (n, ns) (nm, nds)" using goal1 by auto }
-       then show ?case by auto
+    and step: "\<And>x. f x \<le> SPEC (?P x)" by simp_all
+  show ?case
+    using goal_assms unfolding \<open>x = (n, ns)\<close>
+  proof (rule_tac SPEC_rule_param2, rule_tac step, goal_cases)
+    case prems': (1 nm nds)
+    { assume "expand_assm_exist \<xi> (n, ns)"
+      with prems' have "expand_rslt_exist \<xi> (n, ns) (nm, nds)" by auto }
+    then show ?case by auto
   qed
 next
-  case (goal5 f x n ns \<psi>)
+  case prems: (5 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n \<and> \<psi> = true\<^sub>n"
-    and step: "\<And>x. f x \<le> SPEC (?P x)" by simp+
-  show ?case using goal_assms unfolding \<open>x = (n, ns)\<close>
-  proof (rule_tac SPEC_rule_param2, rule_tac step)
-     case (goal1 nm nds)
-       { assume "expand_assm_exist \<xi> (n, ns)"
-         then have "expand_rslt_exist \<xi> (n, ns) (nm, nds)" using goal1 by auto }
-       then show ?case by auto
+    and step: "\<And>x. f x \<le> SPEC (?P x)" by simp_all
+  show ?case
+    using goal_assms unfolding \<open>x = (n, ns)\<close>
+  proof (rule_tac SPEC_rule_param2, rule_tac step, goal_cases)
+    case prems': (1 nm nds)
+    { assume "expand_assm_exist \<xi> (n, ns)"
+      with prems' have "expand_rslt_exist \<xi> (n, ns) (nm, nds)" by auto }
+    then show ?case by auto
   qed
 next
-  case (goal6 f x n ns \<psi>)
+  case prems: (6 f x n ns \<psi>)
   { assume "expand_assm_exist \<xi> (n, ns)"
-    then have "\<xi> \<Turnstile>\<^sub>n false\<^sub>n" using goal6 by auto }
-  then show ?case using goal6 by auto
+    with prems have "\<xi> \<Turnstile>\<^sub>n false\<^sub>n" by auto }
+  with prems show ?case by auto
 next
-  case (goal7 f x n ns \<psi>)
+  case prems: (7 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>n \<mu> \<or> \<psi> = X\<^sub>n \<nu>)"
-    and step: "\<And>x. f x \<le> SPEC (?P x)" by simp+
-  show ?case using goal_assms unfolding \<open>x = (n, ns)\<close>
-  proof (rule_tac SPEC_rule_param2, rule_tac step)
-     case (goal1 nm nds)
-       { assume "expand_assm_exist \<xi> (n, ns)"
-         then have "expand_rslt_exist \<xi> (n, ns) (nm, nds)" using goal1 by auto }
-       then show ?case by auto
+    and step: "\<And>x. f x \<le> SPEC (?P x)" by simp_all
+  show ?case
+    using goal_assms unfolding \<open>x = (n, ns)\<close>
+  proof (rule_tac SPEC_rule_param2, rule_tac step, goal_cases)
+    case prems': (1 nm nds)
+    { assume "expand_assm_exist \<xi> (n, ns)"
+      with prems' have "expand_rslt_exist \<xi> (n, ns) (nm, nds)" by auto }
+    then show ?case by auto
   qed
 next
-  case (goal8 f x n ns \<psi>)
+  case prems: (8 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
     by (cases \<psi>) auto
-  have step: "\<And>x. f x \<le> SPEC (?P x)"
-    and f_sup: "\<And>x. f x \<le> expand x" using goal8 by auto
+  from prems have step: "\<And>x. f x \<le> SPEC (?P x)"
+    and f_sup: "\<And>x. f x \<le> expand x" by auto
   let ?x1 = "(n\<lparr>new := new n - {\<psi>}, new := new1 \<psi> \<union> new (n\<lparr>new := new n - {\<psi>}\<rparr>),
                 old := {\<psi>} \<union> old n, next := next1 \<psi> \<union> next n\<rparr>, ns)"
 
   let ?new1_assm_sel = "\<lambda>\<psi>. (case \<psi> of \<mu> U\<^sub>n \<eta> => \<eta> | \<mu> V\<^sub>n \<eta> \<Rightarrow> \<mu> | \<mu> or\<^sub>n \<eta> \<Rightarrow> \<eta>)"
 
   { assume new1_assm: "\<not> (\<xi> \<Turnstile>\<^sub>n (?new1_assm_sel \<psi>))"
-    then have ?case using goal_assms unfolding \<open>x = (n, ns)\<close>
-    proof (rule_tac SPEC_rule_nested2)
-      case goal1 then show ?case
-        proof (rule_tac SPEC_rule_param2, rule_tac step)
-          case (goal1 nm nds)
-            { assume "expand_assm_exist \<xi> (n, ns)"
-              with goal1 have "expand_assm_exist \<xi> ?x1" unfolding fst_conv
-              proof (cases \<psi>)
-                case (goal8 \<mu> \<eta>)
-                  then have "\<xi> \<Turnstile>\<^sub>n \<mu> U\<^sub>n \<eta>" by fast
-                  then have "\<xi> \<Turnstile>\<^sub>n \<mu>" and "\<xi> \<Turnstile>\<^sub>n X\<^sub>n (\<mu> U\<^sub>n \<eta>)"
-                    using goal8 ltln_expand_Until[of \<xi> \<mu> \<eta>] by auto
-                  then show ?case using goal8 by auto
-              next
-                case (goal9 \<mu> \<eta>)
-                  then have "\<xi> \<Turnstile>\<^sub>n \<mu> V\<^sub>n \<eta>" by fast
-                  moreover then have "\<xi> \<Turnstile>\<^sub>n \<eta>" and "\<xi> \<Turnstile>\<^sub>n X\<^sub>n (\<mu> V\<^sub>n \<eta>)"
-                    using goal9 ltln_expand_Release[of \<xi> \<mu> \<eta>] by auto
-                  ultimately show ?case using goal9 by auto
-              qed auto
-              then have "expand_rslt_exist \<xi> (n, ns) (nm, nds)" using goal1 by force }
-            then show ?case using goal1 by auto
-        qed
+    then have ?case
+      using goal_assms unfolding \<open>x = (n, ns)\<close>
+    proof (rule_tac SPEC_rule_nested2, goal_cases)
+      case prems': 1
+      then show ?case
+      proof (rule_tac SPEC_rule_param2, rule_tac step, goal_cases)
+        case prems'': (1 nm nds)
+        { assume "expand_assm_exist \<xi> (n, ns)"
+          with prems'' have "expand_assm_exist \<xi> ?x1"
+            unfolding fst_conv
+          proof (cases \<psi>, goal_cases)
+            case \<psi>: (8 \<mu> \<eta>)
+            then have "\<xi> \<Turnstile>\<^sub>n \<mu> U\<^sub>n \<eta>" by fast
+            then have "\<xi> \<Turnstile>\<^sub>n \<mu>" and "\<xi> \<Turnstile>\<^sub>n X\<^sub>n (\<mu> U\<^sub>n \<eta>)"
+              using \<psi> ltln_expand_Until[of \<xi> \<mu> \<eta>] by auto
+            with \<psi> show ?case by auto
+          next
+            case \<psi>: (9 \<mu> \<eta>)
+            then have *: "\<xi> \<Turnstile>\<^sub>n \<mu> V\<^sub>n \<eta>" by fast
+            with \<psi> have "\<xi> \<Turnstile>\<^sub>n \<eta>" and "\<xi> \<Turnstile>\<^sub>n X\<^sub>n (\<mu> V\<^sub>n \<eta>)"
+              using ltln_expand_Release[of \<xi> \<mu> \<eta>] by auto
+            with \<psi> * show ?case by auto
+          qed auto
+          with prems'' have "expand_rslt_exist \<xi> (n, ns) (nm, nds)" by force }
+        with prems'' show ?case by auto
+      qed
     next
-      case (goal2 nm nds)
-        then have P_x: "?P (n, ns) (nm, nds)" by fast
+      case prems': (2 nm nds)
+      then have P_x: "?P (n, ns) (nm, nds)" by fast
 
-        show ?case unfolding case_prod_unfold
-        proof (rule_tac
-            SPEC_rule_weak[where P = "?P" and Q = "expand_rslt_exist_eq"])
-          case goal1 then show ?case
-            by (rule_tac order_trans,
-              rule_tac f_sup,
-              rule_tac expand_rslt_exist_eq)
-        next
-          case goal2 then show ?case by (rule_tac step)
-        next
-          case (goal3 nm' nds')
-            { assume "expand_assm_exist \<xi> (n, ns)"
-              with P_x have "expand_rslt_exist \<xi> (n, ns) (nm, nds)" by simp
-              then obtain nd where
-                "nd\<in>nds" and "expand_rslt_exist__node_prop \<xi> n nd"
-              using goal_assms by auto
-              moreover
-              with goal3 obtain nd' where
-                "nd'\<in>nds'" and "expand_rslt_exist_eq__node nd nd'"
-                by force
-              ultimately have "expand_rslt_exist__node_prop \<xi> n nd'"
-              using subset_trans[of "incoming n" "incoming nd"] by auto
-              then have "expand_rslt_exist \<xi> (n,ns) (nm', nds')"
-                using \<open>nd'\<in>nds'\<close> goal_assms by auto }
-            then show ?case by fast
-        qed
-    qed }
+      show ?case
+        unfolding case_prod_unfold
+      proof (rule_tac SPEC_rule_weak[where P = "?P" and Q = "expand_rslt_exist_eq"], goal_cases)
+        case 1
+        then show ?case
+          by (rule_tac order_trans,
+            rule_tac f_sup,
+            rule_tac expand_rslt_exist_eq)
+      next
+        case 2
+        then show ?case by (rule_tac step)
+      next
+        case prems'': (3 nm' nds')
+        { assume "expand_assm_exist \<xi> (n, ns)"
+          with P_x have "expand_rslt_exist \<xi> (n, ns) (nm, nds)" by simp
+          then obtain nd where nd: "nd\<in>nds" "expand_rslt_exist__node_prop \<xi> n nd"
+            using goal_assms by auto
+          with prems'' obtain nd' where
+            "nd'\<in>nds'" and "expand_rslt_exist_eq__node nd nd'"
+            by force
+          with nd have "expand_rslt_exist__node_prop \<xi> n nd'"
+            using subset_trans[of "incoming n" "incoming nd"] by auto
+          then have "expand_rslt_exist \<xi> (n,ns) (nm', nds')"
+            using \<open>nd'\<in>nds'\<close> goal_assms by auto }
+        then show ?case by fast
+      qed
+    qed
+  }
   moreover
   { assume new1_assm: "\<xi> \<Turnstile>\<^sub>n (?new1_assm_sel \<psi>)"
     let ?x2f = "\<lambda>(nm::node_name, nds::'a node set). (
@@ -795,27 +815,30 @@ next
       let ?x2 = "?x2f r"
 
       assume assm: "(?P ?x1) r"
-      have  "f ?x2 \<le> SPEC (?P (n, ns))" unfolding case_prod_unfold fst_conv
-      proof(rule_tac SPEC_rule_param2, rule_tac step)
-        case (goal1 nm' nds')
-          { assume "expand_assm_exist \<xi> (n, ns)"
-            with new1_assm goal_assms have "expand_assm_exist \<xi> ?x2"
-            proof (cases r, cases \<psi>)
-              case (goal9 _ _ \<mu> \<eta>)
-                then have "\<xi> \<Turnstile>\<^sub>n \<mu> V\<^sub>n \<eta>" unfolding fst_conv by fast
-                moreover with ltln_expand_Release[of \<xi> \<mu> \<eta>] have "\<xi> \<Turnstile>\<^sub>n \<eta>" by auto
-                ultimately show ?case using goal9 by auto
-            qed auto
-            with goal1 have "expand_rslt_exist \<xi> ?x2 (nm', nds')"
-              unfolding case_prod_unfold fst_conv snd_conv by fast
-            then have "expand_rslt_exist \<xi> (n, ns) (nm', nds')" by (cases r, auto) }
-          then show ?case by simp
-      qed }
+      have "f ?x2 \<le> SPEC (?P (n, ns))"
+        unfolding case_prod_unfold fst_conv
+      proof (rule_tac SPEC_rule_param2, rule_tac step, goal_cases)
+        case prems': (1 nm' nds')
+        { assume "expand_assm_exist \<xi> (n, ns)"
+          with new1_assm goal_assms have "expand_assm_exist \<xi> ?x2"
+          proof (cases r, cases \<psi>, goal_cases)
+            case prems'': (9 _ _ \<mu> \<eta>)
+            then have *: "\<xi> \<Turnstile>\<^sub>n \<mu> V\<^sub>n \<eta>" unfolding fst_conv by fast
+            with ltln_expand_Release[of \<xi> \<mu> \<eta>] have "\<xi> \<Turnstile>\<^sub>n \<eta>" by auto
+            with prems'' * show ?case by auto
+          qed auto
+          with prems' have "expand_rslt_exist \<xi> ?x2 (nm', nds')"
+            unfolding case_prod_unfold fst_conv snd_conv by fast
+          then have "expand_rslt_exist \<xi> (n, ns) (nm', nds')" by (cases r, auto) }
+        then show ?case by simp
+      qed
+    }
     then have "SPEC (?P ?x1)
       \<le> SPEC (\<lambda>r. (case r of (nm, nds) =>
           f (?x2f (nm, nds))) \<le> SPEC (?P (n, ns)))"
       using goal_assms by (rule_tac SPEC_rule) force
-    finally have ?case unfolding case_prod_unfold \<open>x = (n, ns)\<close> by simp }
+    finally have ?case unfolding case_prod_unfold \<open>x = (n, ns)\<close> by simp
+  }
   ultimately show ?case by fast
 qed
 
@@ -1021,21 +1044,18 @@ lemma expand_term_prop:
     \<and> expand_inv_result \<phi> nds)"
   (is "_ \<Longrightarrow> _ \<le> SPEC (?P n_ns)")
   unfolding expand\<^sub>T_def
-  apply (rule_tac RECT_rule[where
-    pre="\<lambda>(n, ns). expand_inv \<phi> (n, ns)" and
-    V="expand_ord \<phi>"
-    ])
+  apply (rule_tac RECT_rule[where pre="\<lambda>(n, ns). expand_inv \<phi> (n, ns)" and V="expand_ord \<phi>"])
   apply (refine_mono)
   apply simp
   apply simp
-proof (intro refine_vcg)
-  case (goal1 _ _  n ns)
+proof (intro refine_vcg, goal_cases)
+  case prems: (1 _ _ n ns)
   have "old_next_pair ` ns \<subseteq> old_next_pair ` (upd_incoming n ns)"
     by (rule equalityD1[OF upd_incoming_eq_old_next_pair])
-  then show ?case
-    using expand_inv_upd_incoming[of \<phi> n ns] goal1 by auto
+  with prems show ?case
+    using expand_inv_upd_incoming[of \<phi> n ns] by auto
 next
-  case (goal2 expand _ n ns)
+  case prems: (2 expand x n ns)
   let ?n' = "\<lparr>
     name = expand_new_name (name n),
     incoming = {name n},
@@ -1043,48 +1063,50 @@ next
     old = {},
     next = {}\<rparr>"
   let ?ns' = "{n} \<union> ns"
-  have SPEC_sub:"SPEC (?P (?n', ?ns')) \<le> SPEC (?P x)"
-    using goal2 by (rule_tac SPEC_rule) auto
-  from goal2 have "old_next_pair n\<notin>old_next_pair ` ns" by auto
-  moreover then have subset_next_pair:
+  from prems have SPEC_sub:"SPEC (?P (?n', ?ns')) \<le> SPEC (?P x)"
+    by (rule_tac SPEC_rule) auto
+  from prems have *: "old_next_pair n\<notin>old_next_pair ` ns"
+    by auto
+  then have subset_next_pair:
     "old_next_pair ` ns \<subset> old_next_pair ` (insert n ns)"
     by auto
-  ultimately have "((?n', ?ns'), (n, ns))\<in>expand_ord \<phi>" using goal2
-    by (auto simp add:expand_ord_def expand_inv_def finite_psupset_def)
-  moreover have "expand_inv \<phi> (?n', ?ns')"
-    using goal2 unfolding expand_inv_def by auto
+  with prems * have "((?n', ?ns'), (n, ns))\<in>expand_ord \<phi>"
+    by (auto simp add: expand_ord_def expand_inv_def finite_psupset_def)
+  moreover from prems have "expand_inv \<phi> (?n', ?ns')"
+    unfolding expand_inv_def by auto
   ultimately have "expand (?n', ?ns') \<le> SPEC (?P (?n', ?ns'))"
-    using goal2 by fast
-  with SPEC_sub show ?case by (rule_tac order_trans) fast+
+    using prems by fast
+  with SPEC_sub show ?case
+    by (rule_tac order_trans) fast+
 next
-  case goal3
+  case 3
   then show ?case by (auto simp add:expand_inv_def)
 next
-  case goal4
+  case 4
   then show ?case
     apply (rule_tac expand_term_prop_help[OF expand_inv_impl])
     apply (simp add: expand_inv_def)+
     apply force
     done
 next
-  case goal5
+  case 5
   then show ?case
     apply (rule_tac expand_term_prop_help[OF expand_inv_impl])
     apply (simp add: expand_inv_def)+
     apply force
     done
 next
-  case goal6
+  case 6
   then show ?case by (simp add: expand_inv_def)
 next
-  case goal7
+  case 7
   then show ?case
     apply (rule_tac expand_term_prop_help[OF expand_inv_impl])
     apply (simp add: expand_inv_def)+
     apply force
     done
 next
-  case goal8
+  case prems: (8 f x a b xa)
   let ?n' = "a\<lparr>
     new := new1 xa \<union> (new a - {xa}),
     old := insert xa (old a),
@@ -1094,20 +1116,18 @@ next
     new := new2 xa \<union> (new a - {xa}),
     old := insert xa (old a)\<rparr>"
   have step:"((?n', b), (a, b)) \<in> expand_ord \<phi> \<and> expand_inv \<phi> (?n', b)"
-    using goal8
-    by (rule_tac expand_inv_impl) (auto simp add:expand_inv_def)
-  then have assm1: "f (?n', b) \<le> SPEC (?P (a, b))"
-    using goal8 by auto
+    using prems by (rule_tac expand_inv_impl) (auto simp add: expand_inv_def)
+  with prems have assm1: "f (?n', b) \<le> SPEC (?P (a, b))"
+    by auto
   moreover
   {
     fix nm::node_name and nds::"'a node set"
     assume assm1: "old_next_pair ` b \<subseteq> old_next_pair ` nds"
       and assm2: "expand_inv_result \<phi> nds"
-    then have "((?n'' nm, nds), (a, b)) \<in> expand_ord \<phi>
-      \<and> expand_inv \<phi> (?n'' nm, nds)"
-      using goal8 step
+    with prems step have "((?n'' nm, nds), (a, b)) \<in> expand_ord \<phi> \<and> expand_inv \<phi> (?n'' nm, nds)"
       by (rule_tac expand_inv_impl) auto
-    then have "f (?n'' nm, nds) \<le> SPEC (?P (?n'' nm, nds))" using goal8 by auto
+    with prems have "f (?n'' nm, nds) \<le> SPEC (?P (?n'' nm, nds))"
+      by auto
     moreover
     have "SPEC (?P (?n'' nm, nds)) \<le> SPEC (?P (a, b))"
       using assm2 subset_trans[OF assm1] by auto
@@ -1117,8 +1137,8 @@ next
   then have assm2: "SPEC (?P (a, b))
     \<le> SPEC (\<lambda>r. (case r of (nm, nds) \<Rightarrow> f (?n'' nm, nds)) \<le> SPEC (?P (a, b)))"
     by (rule_tac SPEC_rule) auto
-  from order_trans[OF assm1 assm2] show ?case
-    using goal8 by auto
+  from prems order_trans[OF assm1 assm2] show ?case
+    by auto
 qed
 
 lemma expand_eq_expand\<^sub>T:
@@ -1236,13 +1256,13 @@ lemma expand_incoming_name_exist:
   apply (rule_tac expand_rec_rule[where \<Phi>="\<lambda>n_ns. ?Q n_ns \<and> ?P (snd n_ns)"])
   apply simp
   apply (intro refine_vcg)
-proof -
-  case (goal1 f x n ns)
+proof goal_cases
+  case (1 f x n ns)
   then show ?case
-  proof (simp, clarify)
-    case (goal1 _ _ nd)
+  proof (simp, clarify, goal_cases)
+    case prems: (1 _ _ nd)
     { assume "nd\<in>ns"
-      then have ?case using goal1 by auto }
+      with prems have ?case by auto }
     moreover
     { assume "nd\<notin>ns"
       with upd_incoming__elem[OF \<open>nd\<in>upd_incoming n ns\<close>]
@@ -1250,54 +1270,59 @@ proof -
         incoming n \<union> incoming nd'\<rparr> \<and>
         old nd' = old n \<and>
         next nd' = next n" by auto
-      then have ?case using goal1 by auto }
+      with prems have ?case by auto }
     ultimately show ?case by fast
   qed
 next
-  case (goal2 f x n ns)
+  case (2 f x n ns)
   then have step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x. ?P (snd x))"
     and QP: "?Q (n, ns) \<and> ?P ns"
     and f_sup: "\<And>x. f x \<le> expand x" by auto
-  show ?case unfolding \<open>x = (n, ns)\<close> using QP expand_new_name_expand_init
-  proof (rule_tac step)
-    case goal1
-    then have name_less: "name n < expand_new_name (name n)" by auto
-    moreover then have "\<forall>nm\<in>incoming n. nm < expand_new_name (name n)"
-      using goal1 by auto
-    moreover have "\<forall>q\<in>ns.
-    name q < expand_new_name (name n) \<and>
-    (\<forall>nm\<in>incoming q.
-        nm < expand_new_name (name n))" using name_less goal1 by force
-    moreover have "\<exists>!q'. (q' = n \<or> q' \<in> ns) \<and> name n = name q'" using QP
+  show ?case
+    unfolding \<open>x = (n, ns)\<close>
+    using QP expand_new_name_expand_init
+  proof (rule_tac step, goal_cases)
+    case prems: 1
+    then have name_less: "name n < expand_new_name (name n)"
+      by auto
+    moreover
+    from prems name_less have "\<forall>nm\<in>incoming n. nm < expand_new_name (name n)"
+      by auto
+    moreover
+    from prems name_less have **: "\<forall>q\<in>ns. name q < expand_new_name (name n) \<and>
+      (\<forall>nm\<in>incoming q. nm < expand_new_name (name n))"
       by force
-    moreover have "\<forall>q\<in>ns.
-   \<exists>!q'.
+    moreover
+    from QP have "\<exists>!q'. (q' = n \<or> q' \<in> ns) \<and> name n = name q'"
+      by force
+    moreover
+    have "\<forall>q\<in>ns. \<exists>!q'.
       (q' = n \<or> q' \<in> ns) \<and>
       name q = name q' " using QP by auto
-    ultimately show ?case using goal1  by simp
+    ultimately show ?case using prems by simp
   qed
 next
-  case goal3
+  case 3
   then show ?case by simp
 next
-  case goal4
+  case 4
   then show ?case by simp
 next
-  case goal5
+  case 5
   then show ?case by simp
 next
-  case goal6
+  case 6
   then show ?case by simp
 next
-  case goal7
+  case 7
   then show ?case by simp
 next
-  case (goal8 f x n ns \<psi>)
+  case prems: (8 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
     by (cases \<psi>) auto
-  then have QP: "?Q (n, ns) \<and> ?P ns"
+  with prems have QP: "?Q (n, ns) \<and> ?P ns"
     and step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))"
-    and f_sup: "\<And>x. f x \<le> expand x" using goal8 by auto
+    and f_sup: "\<And>x. f x \<le> expand x" by auto
   let ?x = "(n\<lparr>new := new n - {\<psi>}, new := new1 \<psi> \<union> new (n\<lparr>new := new n - {\<psi>}\<rparr>),
         old := {\<psi>} \<union> old (n\<lparr>new := new n - {\<psi>}\<rparr>),
         next := next1 \<psi> \<union> next (n\<lparr>new := new n - {\<psi>}\<rparr>)\<rparr>, ns)"
@@ -1307,21 +1332,21 @@ next
 
   show ?case
     using goal_assms QP unfolding case_prod_unfold \<open>x = (n, ns)\<close>
-  proof (rule_tac SPEC_rule_weak_nested2[where Q = "?props ?x"])
-    case goal1
+  proof (rule_tac SPEC_rule_weak_nested2[where Q = "?props ?x"], goal_cases)
+    case 1
     then show ?case
       by (rule_tac order_trans, rule_tac f_sup, rule_tac expand_name_propag) simp
   next
-    case goal2
+    case 2
     then show ?case
       by (rule_tac SPEC_rule_param2[where P = "\<lambda>x r. ?P (snd r)"], rule_tac step)
         auto
   next
-    case (goal3 nm nds)
+    case (3 nm nds)
     then show ?case
     proof (rule_tac SPEC_rule_weak[where P = "\<lambda>x r. ?P (snd r)"
-        and Q = "\<lambda>x r. expand_rslt_exist_eq x r \<and> ?props x r"])
-      case goal1
+        and Q = "\<lambda>x r. expand_rslt_exist_eq x r \<and> ?props x r"], goal_cases)
+      case 1
       then show ?case
         by (rule_tac SPEC_rule_conjI,
                rule_tac order_trans,
@@ -1331,12 +1356,12 @@ next
                rule_tac f_sup,
                rule_tac expand_name_propag) force
     next
-      case goal2
+      case 2
       then show ?case
         by (rule_tac SPEC_rule_param2[where P = "\<lambda>x r. ?P (snd r)"],
           rule_tac step) force
     next
-      case (goal3 nm' nds')
+      case (3 nm' nds')
       then show ?case
         by simp
     qed
@@ -1374,11 +1399,11 @@ lemma expand_prop_all:
   apply (rule_tac expand_rec_rule[where \<Phi>="?Q"])
   apply simp
   apply (intro refine_vcg)
-proof -
-  case goal1
+proof goal_cases
+  case 1
   then show ?case by (simp, rule_tac upd_incoming__ident) simp_all
 next
-  case (goal2 f x n ns)
+  case (2 f x n ns)
   then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)"
     and Q: "?Q (n, ns)"
     and f_sup: "\<And>x. f x \<le> expand x" by auto
@@ -1390,8 +1415,8 @@ next
   proof (rule_tac SPEC_rule_weak[where
       Q = "\<lambda>p r.
       (expand_assm_exist (suffix 1 \<xi>) ?x \<longrightarrow> expand_rslt_exist (suffix 1 \<xi>) ?x r)
-      \<and> expand_rslt_exist_eq p r \<and> (expand_name_ident (snd r))"])
-    case goal1
+      \<and> expand_rslt_exist_eq p r \<and> (expand_name_ident (snd r))"], goal_cases)
+    case 1
     then show ?case
     proof (rule_tac SPEC_rule_conjI,
            rule_tac order_trans,
@@ -1403,22 +1428,23 @@ next
            rule_tac expand_rslt_exist_eq,
            rule_tac order_trans,
            rule_tac f_sup,
-           rule_tac expand_name_propag__name_ident)
-      case goal1
+           rule_tac expand_name_propag__name_ident,
+           goal_cases)
+      case 1
       then show ?case using Q name_le by force
     qed
   next
-    case goal2
+    case 2
     then show ?case using Q name_le by (rule_tac step) force
   next
-    case (goal3 nm nds)
+    case prems: (3 nm nds)
     then obtain n' where "n'\<in>nds"
       and eq_node: "expand_rslt_exist_eq__node n n'" by auto
-    with goal3 have ex1_name: "\<exists>!q\<in>nds. name n = name q" by auto
+    with prems have ex1_name: "\<exists>!q\<in>nds. name n = name q" by auto
     then have nds_eq: "nds = {n'} \<union> {x \<in> nds. name n \<noteq> name x}"
       using eq_node \<open>n'\<in>nds\<close> by blast
     have name_notin: "name n \<notin> name ` ns" using Q by auto
-    have P_x: "expand_rslt_all \<xi> ?x (nm, nds)" using goal3 by fast
+    from prems have P_x: "expand_rslt_all \<xi> ?x (nm, nds)" by fast
     show ?case
       unfolding snd_conv
     proof clarify
@@ -1430,7 +1456,7 @@ next
       proof (cases "name nd = name n")
         case True
         with nds_eq eq_node \<open>nd\<in>nds\<close> have "nd = n'" by auto
-        with goal3(1)[THEN conjunct1, simplified]
+        with prems(1)[THEN conjunct1, simplified]
           nd_old_equiv nd_next_equiv eq_node
         show ?thesis by simp
       next
@@ -1441,29 +1467,30 @@ next
     qed
   qed
 next
-  case goal3
+  case 3
   then show ?case by auto
 next
-  case (goal4 f)
+  case prems: (4 f)
   then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)" by simp
-  show ?case using goal4 by (rule_tac SPEC_rule_param2, rule_tac step) auto
+  from prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
-  case (goal5 f)
+  case prems: (5 f)
   then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)" by simp
-  show ?case using goal5 by (rule_tac SPEC_rule_param2, rule_tac step) auto
+  from prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
-  case goal6 then show ?case by auto
+  case 6
+  then show ?case by auto
 next
-  case (goal7 f)
+  case prems: (7 f)
   then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)" by simp
-  show ?case using goal7 by (rule_tac SPEC_rule_param2, rule_tac step) auto
+  from prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
-  case (goal8 f x n ns \<psi>)
+  case prems: (8 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
     by (cases \<psi>) auto
-  have Q: "?Q (n, ns)"
-   and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)"
-   and f_sup: "\<And>x. f x \<le> expand x" using goal8 by auto
+  from prems have Q: "?Q (n, ns)"
+    and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC (?P x)"
+    and f_sup: "\<And>x. f x \<le> expand x" by auto
   let ?x = "(n\<lparr>new := new n - {\<psi>}, new := new1 \<psi> \<union> new (n\<lparr>new := new n - {\<psi>}\<rparr>),
           old := {\<psi>} \<union> old (n\<lparr>new := new n - {\<psi>}\<rparr>),
                             next := next1 \<psi> \<union> next (n\<lparr>new := new n - {\<psi>}\<rparr>)
@@ -1472,22 +1499,23 @@ next
     \<and> expand_rslt_name x r
     \<and> expand_name_ident (snd r)"
   show ?case
-    using goal_assms Q unfolding case_prod_unfold \<open>x = (n, ns)\<close>
-  proof (rule_tac SPEC_rule_weak_nested2[where Q = "?props ?x"])
-    case goal1
+    using goal_assms Q
+    unfolding case_prod_unfold \<open>x = (n, ns)\<close>
+  proof (rule_tac SPEC_rule_weak_nested2[where Q = "?props ?x"], goal_cases)
+    case 1
     then show ?case
       by (rule_tac order_trans, rule_tac f_sup, rule_tac expand_name_propag) simp
   next
-    case goal2
+    case 2
     then show ?case
       by (rule_tac SPEC_rule_param2[where P = "?P"], rule_tac step) auto
   next
-    case (goal3 nm nds)
+    case prems: (3 nm nds)
     then show ?case
     proof (rule_tac SPEC_rule_weak[where
         P = "?P" and
-        Q = "\<lambda>x r. expand_rslt_exist_eq x r \<and> ?props x r"])
-      case goal1
+        Q = "\<lambda>x r. expand_rslt_exist_eq x r \<and> ?props x r"], goal_cases)
+      case 1
       then show ?case
         by (rule_tac SPEC_rule_conjI,
                rule_tac order_trans,
@@ -1497,11 +1525,11 @@ next
                rule_tac f_sup,
                rule_tac expand_name_propag) auto
     next
-      case goal2
+      case 2
       then show ?case
         by (rule_tac SPEC_rule_param2[where P = "?P"], rule_tac step) auto
     next
-      case (goal3 nm' nds')
+      case prems': (3 nm' nds')
       then have P_x: "?P (n, ns) (nm, nds)"
         and P_x': "?P (n, nds) (nm', nds')" by simp_all
       show ?case
@@ -1516,26 +1544,26 @@ next
         proof (cases "name nd \<in> name ` nds")
           case True
           then obtain n' where "n' \<in> nds" and "name nd = name n'" by auto
-          then obtain nd' where "nd'\<in>nds'"
+          with prems' obtain nd' where "nd'\<in>nds'"
             and nd'_eq: "expand_rslt_exist_eq__node n' nd'"
-            using goal3 by auto
-          moreover have "\<forall>q\<in>nds'. \<exists>!q'\<in>nds'. name q = name q'"
-            using goal3 by simp
-          ultimately have "nd' = nd" using \<open>name nd = name n'\<close> \<open>nd \<in> nds'\<close>
             by auto
+          moreover from prems' have "\<forall>q\<in>nds'. \<exists>!q'\<in>nds'. name q = name q'"
+            by simp
+          ultimately have "nd' = nd"
+            using \<open>name nd = name n'\<close> \<open>nd \<in> nds'\<close> by auto
           with nd'_eq have n'_eq: "expand_rslt_exist_eq__node n' nd"
             by simp
-          then have "name n'\<notin>name ` ns"
-            and "\<forall>\<psi>\<in>old n'. \<xi> \<Turnstile>\<^sub>n \<psi>" and "\<forall>\<psi>\<in>next n'. \<xi> \<Turnstile>\<^sub>n X\<^sub>n \<psi>"
+          then have "name n'\<notin>name ` ns" and "\<forall>\<psi>\<in>old n'. \<xi> \<Turnstile>\<^sub>n \<psi>" and "\<forall>\<psi>\<in>next n'. \<xi> \<Turnstile>\<^sub>n X\<^sub>n \<psi>"
             using name_nd_notin old_equiv next_equiv \<open>n' \<in> nds\<close>
             by auto
           then have "expand_rslt_all__ex_equiv \<xi> n' nds"  (is "\<exists>nd'\<in>nds. ?sthm n' nd'")
             using P_x \<open>n' \<in> nds\<close> unfolding snd_conv by blast
-          then obtain sucnd where "sucnd\<in>nds" and sthm: "?sthm n' sucnd"
+          then obtain sucnd where sucnd: "sucnd\<in>nds" and sthm: "?sthm n' sucnd"
             by blast
-          moreover then obtain sucnd' where "sucnd'\<in>nds'"
-            and sucnd'_eq: "expand_rslt_exist_eq__node sucnd sucnd'"
-            using goal3 by auto
+          moreover
+          from prems' sucnd sthm obtain sucnd' where "sucnd'\<in>nds'"
+              and sucnd'_eq: "expand_rslt_exist_eq__node sucnd sucnd'"
+            by auto
           ultimately have "?sthm n' sucnd'" by auto
           then show ?thesis
             using \<open>sucnd' \<in> nds'\<close>
@@ -1676,40 +1704,42 @@ lemma expand_and_propag:
   shows "expand n_ns \<le> SPEC (\<lambda>nm_nds. ?P (snd nm_nds))"
   using assms
 proof (rule_tac expand_rec_rule[where \<Phi>="\<lambda>x. ?Q x \<and> ?P (snd x)"],
-    simp, intro refine_vcg)
-  case goal1 then show ?case by (simp, rule_tac upd_incoming__ident) auto
+    simp, intro refine_vcg, goal_cases)
+  case 1
+  then show ?case by (simp, rule_tac upd_incoming__ident) auto
 next
-  case (goal4 f x n ns)
-    then have step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))" by simp
-    then show ?case using goal4 by (rule_tac step) auto
+  case prems: (4 f x n ns)
+  then have step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))" by simp
+  with prems show ?case by (rule_tac step) auto
 next
-  case (goal5 f x n ns)
-    then have step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))" by simp
-    then show ?case using goal5 by (rule_tac step) auto
+  case prems: (5 f x n ns)
+  then have step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))" by simp
+  with prems show ?case by (rule_tac step) auto
 next
-  case (goal6 f x n ns) then show ?case by auto
+  case (6 f x n ns)
+  then show ?case by auto
 next
-  case (goal7 f x n ns)
-    then have step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))" by simp
-    then show ?case using goal7 by (rule_tac step) auto
+  case prems: (7 f x n ns)
+  then have step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))" by simp
+  with prems show ?case by (rule_tac step) auto
 next
-  case (goal8 f x n ns \<psi>)
+  case prems: (8 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n
     \<and> \<not> (\<exists>q. \<psi> = prop\<^sub>n(q) \<or> \<psi> = nprop\<^sub>n(q))
     \<and> \<psi> \<noteq> true\<^sub>n \<and> \<psi> \<noteq> false\<^sub>n
     \<and> \<not> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>n \<mu> \<or> \<psi> = X\<^sub>n \<nu>)
     \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
     by (cases \<psi>) auto
-  have QP: "?Q (n, ns) \<and> ?P ns"
+  from prems have QP: "?Q (n, ns) \<and> ?P ns"
     and step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))"
-    using goal8 by simp+
+    by simp_all
   show ?case
     using goal_assms QP unfolding case_prod_unfold \<open>x = (n, ns)\<close>
-  proof (rule_tac SPEC_rule_nested2)
-    case goal1
+  proof (rule_tac SPEC_rule_nested2, goal_cases)
+    case 1
     then show ?case by (rule_tac step) auto
   next
-    case goal2
+    case 2
     then show ?case by (rule_tac step) auto
   qed
 qed auto
@@ -1727,34 +1757,35 @@ lemma expand_or_propag:
   shows "expand n_ns \<le> SPEC (\<lambda>nm_nds. ?P (snd nm_nds))"
   using assms
 proof (rule_tac expand_rec_rule[where \<Phi>="\<lambda>x. ?Q x \<and> ?P (snd x)"],
-    simp, intro refine_vcg)
-  case goal1
+    simp, intro refine_vcg, goal_cases)
+  case 1
   then show ?case by (simp, rule_tac upd_incoming__ident) auto
 next
-  case (goal4 f x n ns)
+  case prems: (4 f x n ns)
   then have step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))" by simp
-  then show ?case using goal4 by (rule_tac step) auto
+  with prems show ?case by (rule_tac step) auto
 next
-  case (goal5 f x n ns)
+  case prems: (5 f x n ns)
   then have step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))" by simp
-  then show ?case using goal5 by (rule_tac step) auto
+  with prems show ?case by (rule_tac step) auto
 next
-  case (goal6 f x n ns) then show ?case by auto
+  case (6 f x n ns)
+  then show ?case by auto
 next
-  case (goal7 f x n ns)
+  case prems: (7 f x n ns)
   then have step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))" by simp
-  then show ?case using goal7 by (rule_tac step) auto
+  with prems show ?case by (rule_tac step) auto
 next
-  case (goal8 f x n ns \<psi>)
+  case prems: (8 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n
     \<and> \<not> (\<exists>q. \<psi> = prop\<^sub>n(q) \<or> \<psi> = nprop\<^sub>n(q))
     \<and> \<psi> \<noteq> true\<^sub>n \<and> \<psi> \<noteq> false\<^sub>n
     \<and> \<not> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>n \<mu> \<or> \<psi> = X\<^sub>n \<nu>)
     \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
     by (cases \<psi>) auto
-  have QP: "?Q (n, ns) \<and> ?P ns"
+  from prems have QP: "?Q (n, ns) \<and> ?P ns"
     and step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>x'. ?P (snd x'))"
-    using goal8 by simp+
+    by simp_all
   show ?case
     using goal_assms QP
     unfolding case_prod_unfold \<open>x = (n, ns)\<close>
@@ -1792,18 +1823,18 @@ lemma expand_next_propag:
   shows "expand n_ns \<le> SPEC (\<lambda>r. next_propag__rslt \<mu> (snd r))"
     (is "_ \<le> SPEC ?P")
   using assms
-proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg)
-  case (goal1 f x n ns)
+proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg, goal_cases)
+  case (1 f x n ns)
   then show ?case
-  proof (simp, rule_tac upd_incoming__ident)
-    case goal1
+  proof (simp, rule_tac upd_incoming__ident, goal_cases)
+    case prems: 1
     {
       fix nd :: "'a node" and nd' :: "'a node"
       assume "nd\<in>ns" and nd'_elem: "nd'\<in>upd_incoming n ns"
       have "\<mu> \<in> old nd'" if *: "X\<^sub>n \<mu> \<in> old nd" and **: "name nd \<in> incoming nd'"
       proof (cases "nd'\<in>ns")
         case True
-        with * ** show ?thesis using \<open>nd\<in>ns\<close> goal1 by auto
+        with prems * ** show ?thesis using \<open>nd\<in>ns\<close> by auto
       next
         case False
         with upd_incoming__elem[of nd' n ns] nd'_elem * **
@@ -1813,81 +1844,81 @@ proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg)
         have "\<mu> \<in> old nd'"
         proof (cases "name nd \<in> incoming n")
           case True
-          with * \<open>nd\<in>ns\<close> have "\<mu> \<in> old n" using goal1 by auto
+          with prems * \<open>nd\<in>ns\<close> have "\<mu> \<in> old n" by auto
           then show ?thesis using nd'_eq old_eq by simp
         next
           case False
           then have "name nd \<in> incoming nd''"
             using \<open>name nd \<in>incoming nd'\<close> nd'_eq by simp
           then show ?thesis
-            unfolding nd'_eq using \<open>nd\<in>ns\<close> \<open>nd''\<in>ns\<close> * goal1 by auto
+            unfolding nd'_eq using \<open>nd\<in>ns\<close> \<open>nd''\<in>ns\<close> * prems by auto
         qed
         then show ?thesis by auto
       qed
     }
     then show ?case by auto
   next
-    case goal2
+    case 2
     then show ?case by simp
   qed
 next
-  case (goal2 f x n ns)
+  case prems: (2 f x n ns)
   then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
     and f_sup: "\<And>x. f x \<le> expand x" by auto
-  have Q: "?Q (n, ns)" using goal2 by auto
+  from prems have Q: "?Q (n, ns)" by auto
   from Q have name_le: "name n < expand_new_name (name n)" by auto
   let ?x' = "(\<lparr>name = expand_new_name (name n),
                incoming = {name n}, new = next n,
                old = {}, next = {}\<rparr>, {n} \<union> ns)"
   have Q'1: "expand_assm_incoming ?x'\<and> expand_name_ident (snd ?x')"
-  using \<open>new n = {}\<close> Q[THEN conjunct2, THEN conjunct2] name_le by force
+    using \<open>new n = {}\<close> Q[THEN conjunct2, THEN conjunct2] name_le by force
   have Q'2: "next_propag__assm \<mu> ?x' \<and> next_propag__rslt \<mu> (snd ?x')"
     using Q \<open>new n = {}\<close> by auto
   show ?case
     using \<open>new n = {}\<close>
     unfolding \<open>x = (n, ns)\<close>
   proof (rule_tac SPEC_rule_weak[where
-      Q = "\<lambda>_ r. expand_name_ident (snd r)" and P = "\<lambda>_. ?P"])
-    case goal1
+      Q = "\<lambda>_ r. expand_name_ident (snd r)" and P = "\<lambda>_. ?P"], goal_cases)
+    case 1
     then show ?case
     using Q'1
       by (rule_tac order_trans,
         rule_tac f_sup,
         rule_tac expand_name_propag__name_ident) auto
   next
-    case goal2
+    case 2
     then show ?case
       using Q'1 Q'2 by (rule_tac step) simp
   next
-    case (goal3 nm nds)
+    case (3 nm nds)
     then show ?case by simp
   qed
 next
-  case goal3
+  case 3
   then show ?case by auto
 next
-  case (goal4 f)
+  case prems: (4 f)
   then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" by simp
-  show ?case using goal4 by (rule_tac SPEC_rule_param2, rule_tac step) auto
+  from prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
-  case (goal5 f)
+  case prems: (5 f)
   then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" by simp
-  show ?case using goal5 by (rule_tac SPEC_rule_param2, rule_tac step) auto
+  from prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
-  case goal6
+  case 6
   then show ?case by auto
 next
-  case (goal7 f)
+  case prems: (7 f)
   then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" by simp
-  show ?case using goal7 by (rule_tac SPEC_rule_param2, rule_tac step) auto
+  from prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
-  case (goal8 f x n ns \<psi>)
+  case prems: (8 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
     by (cases \<psi>) auto
-  have Q: "?Q (n, ns)"
-   and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
-   and f_sup: "\<And>x. f x \<le> expand x"
-   using goal8 by auto
+  from prems have Q: "?Q (n, ns)"
+      and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
+      and f_sup: "\<And>x. f x \<le> expand x"
+    by auto
   let ?x = "(n\<lparr>new := new n - {\<psi>}, new := new1 \<psi> \<union> new (n\<lparr>new := new n - {\<psi>}\<rparr>),
         old := {\<psi>} \<union> old (n\<lparr>new := new n - {\<psi>}\<rparr>),
                             next := next1 \<psi> \<union> next (n\<lparr>new := new n - {\<psi>}\<rparr>)
@@ -1896,8 +1927,8 @@ next
     \<and> expand_rslt_incoming r \<and> expand_rslt_name x r \<and> expand_name_ident (snd r)"
   show ?case
     using goal_assms Q unfolding case_prod_unfold \<open>x = (n, ns)\<close>
-  proof (rule_tac SPEC_rule_weak_nested2[where Q = "?props ?x"])
-    case goal1 then
+  proof (rule_tac SPEC_rule_weak_nested2[where Q = "?props ?x"], goal_cases)
+    case 1 then
     show ?case
       by (rule_tac SPEC_rule_conjI,
              rule_tac order_trans,
@@ -1907,54 +1938,54 @@ next
              rule_tac f_sup,
              rule_tac expand_name_propag) simp+
   next
-    case goal2
+    case 2
     then show ?case
       by (rule_tac SPEC_rule_param2[where P = "\<lambda>_. ?P"], rule_tac step) auto
   next
-    case (goal3 nm nds)
+    case prems': (3 nm nds)
     let ?x' = "(n\<lparr>new := new n - {\<psi>},
        name := fst (nm, nds),
        new := new2 \<psi> \<union> new (n\<lparr>new := new n - {\<psi>}\<rparr>),
        old := {\<psi>} \<union> old (n\<lparr>new := new n - {\<psi>}\<rparr>)\<rparr>, nds)"
-    show ?case using goal3
-    proof (rule_tac step)
-      case goal1
-        then have "expand_assm_incoming ?x'" by auto
-        moreover
-        have nds_ident: "expand_name_ident (snd ?x')" using goal1 by simp
-        moreover
-        have "X\<^sub>n \<mu> \<in> old (fst ?x') \<longrightarrow> \<mu>\<in>next (fst ?x')"
-        using Q[THEN conjunct1] goal_assms by auto
-        moreover
-        have "next_propag__rslt \<mu> (snd ?x')" using goal1 by simp
-        moreover
-        have name_nds_eq:
-          "name ` nds = name ` ns \<union> name ` {nd\<in>nds. name nd \<ge> name n}"
-          using goal1 by auto
-        have "\<forall>nd\<in>nds. (X\<^sub>n \<mu> \<in> old nd \<and> name nd \<in> incoming (fst ?x'))
-                         \<longrightarrow> \<mu>\<in>old (fst ?x')\<union>new (fst ?x')"
-         (is "\<forall>nd\<in>nds. ?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd")
-        proof
-          fix nd
-          assume "nd\<in>nds"
-          { assume loc_assm: "name nd\<in>name ` ns"
-            then obtain n' where "n'\<in>ns" and "name n' = name nd" by auto
-            moreover then obtain nd' where "nd'\<in>nds"
-              and n'_nd'_eq: "expand_rslt_exist_eq__node n' nd'"
-              using goal1 by auto
-            ultimately have "nd = nd'"
-              using nds_ident \<open>nd\<in>nds\<close> loc_assm by auto
-            moreover from goal1 have "?assm n n' \<longrightarrow> ?concl n n'"
-              using \<open>n'\<in>ns\<close> by auto
-            ultimately have "?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd"
-              using n'_nd'_eq by auto }
+    from prems' show ?case
+    proof (rule_tac step, goal_cases)
+      case prems'': 1
+      then have "expand_assm_incoming ?x'" by auto
+      moreover
+      from prems'' have nds_ident: "expand_name_ident (snd ?x')" by simp
+      moreover
+      have "X\<^sub>n \<mu> \<in> old (fst ?x') \<longrightarrow> \<mu>\<in>next (fst ?x')"
+      using Q[THEN conjunct1] goal_assms by auto
+      moreover
+      from prems'' have "next_propag__rslt \<mu> (snd ?x')" by simp
+      moreover
+      from prems'' have name_nds_eq: "name ` nds = name ` ns \<union> name ` {nd\<in>nds. name nd \<ge> name n}"
+        by auto
+      have "\<forall>nd\<in>nds. (X\<^sub>n \<mu> \<in> old nd \<and> name nd \<in> incoming (fst ?x'))
+                       \<longrightarrow> \<mu>\<in>old (fst ?x')\<union>new (fst ?x')"
+       (is "\<forall>nd\<in>nds. ?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd")
+      proof
+        fix nd
+        assume "nd\<in>nds"
+        { assume loc_assm: "name nd\<in>name ` ns"
+          then obtain n' where n': "n'\<in>ns" "name n' = name nd" by auto
           moreover
-          { assume "name nd\<notin>name ` ns"
-            with name_nds_eq \<open>nd\<in>nds\<close> have "name nd \<ge> name n" by auto
-            then have "\<not> (?assm (fst ?x') nd)" using goal1 by auto }
-          ultimately show "?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd" by auto
-        qed
-        ultimately show ?case by simp
+          from prems'' n' obtain nd' where "nd'\<in>nds"
+              and n'_nd'_eq: "expand_rslt_exist_eq__node n' nd'"
+            by auto
+          ultimately have "nd = nd'"
+            using nds_ident \<open>nd\<in>nds\<close> loc_assm by auto
+          moreover from prems'' have "?assm n n' \<longrightarrow> ?concl n n'"
+            using \<open>n'\<in>ns\<close> by auto
+          ultimately have "?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd"
+            using n'_nd'_eq by auto }
+        moreover
+        { assume "name nd\<notin>name ` ns"
+          with name_nds_eq \<open>nd\<in>nds\<close> have "name nd \<ge> name n" by auto
+          with prems'' have "\<not> (?assm (fst ?x') nd)" by auto }
+        ultimately show "?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd" by auto
+      qed
+      ultimately show ?case by simp
     qed
   qed
 qed
@@ -1994,173 +2025,182 @@ lemma expand_release_propag:
   shows "expand n_ns \<le> SPEC (\<lambda>r. release_propag__rslt \<mu> \<eta> (snd r))"
     (is "_ \<le> SPEC ?P")
   using assms
-proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg)
-  case (goal1 f x n ns)
+proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg, goal_cases)
+  case (1 f x n ns)
+  then show ?case
+  proof (simp, rule_tac upd_incoming__ident, goal_cases)
+    case prems: 1
+    { fix nd :: "'a node" and nd' :: "'a node"
+      let ?V_prop = "\<mu> V\<^sub>n \<eta> \<in> old nd \<and> name nd \<in> incoming nd'
+        \<longrightarrow> {\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old nd'"
+      assume "nd\<in>ns" and nd'_elem: "nd'\<in>upd_incoming n ns"
+      { assume "nd'\<in>ns"
+        with prems have ?V_prop using \<open>nd\<in>ns\<close> by auto }
+      moreover
+      { assume "nd'\<notin>ns"
+          and V_in_nd: "\<mu> V\<^sub>n \<eta> \<in> old nd" and "name nd \<in>incoming nd'"
+        with upd_incoming__elem[of nd' n ns] nd'_elem
+        obtain nd'' where "nd''\<in>ns"
+          and nd'_eq: "nd' = nd''\<lparr>incoming := incoming n \<union> incoming nd''\<rparr>"
+          and old_eq: "old nd'' = old n"
+          by auto
+        { assume "name nd \<in> incoming n"
+          with prems V_in_nd \<open>nd\<in>ns\<close>
+          have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old n"
+            by auto
+          then have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old nd'"
+            using nd'_eq old_eq by simp }
+        moreover
+        { assume "name nd \<notin> incoming n"
+          then have "name nd \<in> incoming nd''"
+            using \<open>name nd \<in>incoming nd'\<close> nd'_eq by simp
+          then have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old nd'"
+            unfolding nd'_eq
+            using prems \<open>nd\<in>ns\<close> \<open>nd''\<in>ns\<close> V_in_nd by auto }
+        ultimately have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old nd'"
+          by fast
+      }
+      ultimately have ?V_prop by auto
+    }
+    then show ?case by auto
+  next
+    case 2
+    then show ?case by simp
+  qed
+next
+  case prems: (2 f x n ns)
+  then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
+    and f_sup: "\<And>x. f x \<le> expand x" by auto
+  from prems have Q: "?Q (n, ns)" by auto
+  from Q have name_le: "name n < expand_new_name (name n)" by auto
+  let ?x' = "(\<lparr>name = expand_new_name (name n),
+               incoming = {name n}, new = next n,
+               old = {}, next = {}\<rparr>, {n} \<union> ns)"
+  have Q'1: "expand_assm_incoming ?x'\<and> expand_name_ident (snd ?x')"
+  using \<open>new n = {}\<close> Q[THEN conjunct2, THEN conjunct2] name_le by force
+  have Q'2: "release_propag__assm \<mu> \<eta> ?x' \<and> release_propag__rslt \<mu> \<eta> (snd ?x')"
+    using Q \<open>new n = {}\<close> by auto
+
+  show ?case using \<open>new n = {}\<close> unfolding \<open>x = (n, ns)\<close>
+
+  proof (rule_tac SPEC_rule_weak[where
+      Q = "\<lambda>_ r. expand_name_ident (snd r)" and P = "\<lambda>_. ?P"], goal_cases)
+    case 1
+    then show ?case using Q'1
+      by (rule_tac order_trans,
+        rule_tac f_sup,
+        rule_tac expand_name_propag__name_ident) auto
+  next
+    case 2
+    then show ?case using Q'1 Q'2 by (rule_tac step) simp
+  next
+    case (3 nm nds)
+    then show ?case by simp
+  qed
+next
+  case 3 then show ?case by auto
+next
+  case prems: (4 f x n ns \<psi>)
+  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>q. \<psi> = prop\<^sub>n(q) \<or> \<psi> = nprop\<^sub>n(q))" by simp
+  from prems have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" and Q: "?Q (n, ns)"
+    by simp_all
+  show ?case
+    using Q goal_assms by (rule_tac SPEC_rule_param2, rule_tac step) auto
+next
+  case prems: (5 f x n ns \<psi>)
+  then have goal_assms: "\<psi> \<in> new n \<and> \<psi> = true\<^sub>n" by simp
+  from prems have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" and Q: "?Q (n, ns)"
+    by simp_all
+  show ?case using Q goal_assms by (rule_tac SPEC_rule_param2, rule_tac step) auto
+next
+  case 6
+  then show ?case by auto
+next
+  case prems: (7 f x n ns \<psi>)
+  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>n \<mu> \<or> \<psi> = X\<^sub>n \<nu>)" by simp
+  from prems have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" and Q: "?Q (n, ns)"
+    by simp_all
+  show ?case using Q goal_assms by (rule_tac SPEC_rule_param2, rule_tac step) auto
+next
+  case prems: (8 f x n ns \<psi>)
+  then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
+    by (cases \<psi>) auto
+  from prems have Q: "?Q (n, ns)"
+    and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
+    and f_sup: "\<And>x. f x \<le> expand x" by auto
+  let ?x = "(n\<lparr>new := new n - {\<psi>}, new := new1 \<psi> \<union> new (n\<lparr>new := new n - {\<psi>}\<rparr>),
+        old := {\<psi>} \<union> old (n\<lparr>new := new n - {\<psi>}\<rparr>),
+                            next := next1 \<psi> \<union> next (n\<lparr>new := new n - {\<psi>}\<rparr>)
+      \<rparr>, ns)"
+  let ?props = "\<lambda>x r. expand_rslt_exist_eq x r
+    \<and> expand_rslt_incoming r \<and> expand_rslt_name x r \<and> expand_name_ident (snd r)"
+
+  show ?case using goal_assms Q unfolding case_prod_unfold \<open>x = (n, ns)\<close>
+
+  proof (rule_tac SPEC_rule_weak_nested2[where Q = "?props ?x"], goal_cases)
+    case 1
     then show ?case
-    proof (simp, rule_tac upd_incoming__ident)
-      case goal1
-        { fix nd :: "'a node" and nd' :: "'a node"
-          let ?V_prop = "\<mu> V\<^sub>n \<eta> \<in> old nd \<and> name nd \<in> incoming nd'
-            \<longrightarrow> {\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old nd'"
-          assume "nd\<in>ns" and nd'_elem: "nd'\<in>upd_incoming n ns"
-          { assume "nd'\<in>ns"
-            then have ?V_prop using \<open>nd\<in>ns\<close> goal1 by auto }
-          moreover
-          { assume "nd'\<notin>ns"
-            and V_in_nd: "\<mu> V\<^sub>n \<eta> \<in> old nd" and "name nd \<in>incoming nd'"
-            with upd_incoming__elem[of nd' n ns] nd'_elem
-            obtain nd'' where "nd''\<in>ns"
-              and nd'_eq: "nd' = nd''\<lparr>incoming := incoming n \<union> incoming nd''\<rparr>"
-              and old_eq: "old nd'' = old n"
-              by auto
-            { assume "name nd \<in> incoming n"
-              with V_in_nd \<open>nd\<in>ns\<close>
-              have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old n"
-                using goal1 by auto
-              then have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old nd'"
-                using nd'_eq old_eq by simp }
-            moreover
-            { assume "name nd \<notin> incoming n"
-              then have "name nd \<in> incoming nd''"
-                using \<open>name nd \<in>incoming nd'\<close> nd'_eq by simp
-              then have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old nd'"
-                unfolding nd'_eq
-              using \<open>nd\<in>ns\<close> \<open>nd''\<in>ns\<close> V_in_nd goal1 by auto }
-            ultimately have "{\<mu>, \<eta>} \<subseteq> old nd \<or> \<eta> \<in> old nd \<and> \<mu> V\<^sub>n \<eta> \<in> old nd'"
-              by fast }
-          ultimately have ?V_prop by auto }
-        then show ?case by auto
-    next
-      case goal2 then show ?case by simp
+      by (rule_tac SPEC_rule_conjI,
+             rule_tac order_trans,
+             rule_tac f_sup,
+             rule_tac expand_rslt_exist_eq,
+             rule_tac order_trans,
+             rule_tac f_sup,
+             rule_tac expand_name_propag) simp+
+  next
+    case 2
+    then show ?case
+      by (rule_tac SPEC_rule_param2[where P = "\<lambda>_. ?P"], rule_tac step) auto
+  next
+    case prems': (3 nm nds)
+    let ?x' = "(n\<lparr>new := new n - {\<psi>},
+       name := fst (nm, nds),
+       new := new2 \<psi> \<union> new (n\<lparr>new := new n - {\<psi>}\<rparr>),
+       old := {\<psi>} \<union> old (n\<lparr>new := new n - {\<psi>}\<rparr>)\<rparr>, nds)"
+    from prems' show ?case
+    proof (rule_tac step, goal_cases)
+      case prems'': 1
+      then have "expand_assm_incoming ?x'" by auto
+      moreover
+      from prems'' have nds_ident: "expand_name_ident (snd ?x')" by simp
+      moreover
+      have "(\<mu> V\<^sub>n \<eta> \<in> old (fst ?x')
+             \<longrightarrow> ({\<mu>, \<eta>}\<subseteq>old (fst ?x') \<union> new (fst ?x')
+                  \<or> (\<eta>\<in>old (fst ?x')\<union>new (fst ?x')
+                     \<and> \<mu> V\<^sub>n \<eta> \<in> next (fst ?x'))))"
+        using Q[THEN conjunct1] goal_assms by auto
+      moreover
+      from prems'' have "release_propag__rslt \<mu> \<eta> (snd ?x')" by simp
+      moreover
+      from prems'' have name_nds_eq: "name ` nds = name ` ns \<union> name ` {nd\<in>nds. name nd \<ge> name n}"
+        by auto
+      have "\<forall>nd\<in>nds. (\<mu> V\<^sub>n \<eta> \<in> old nd \<and> name nd \<in> incoming (fst ?x'))
+                 \<longrightarrow> ({\<mu>, \<eta>}\<subseteq>old nd
+                      \<or> (\<eta>\<in>old nd \<and> \<mu> V\<^sub>n \<eta> \<in>old (fst ?x')\<union>new (fst ?x')))"
+       (is "\<forall>nd\<in>nds. ?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd")
+      proof
+        fix nd
+        assume "nd\<in>nds"
+        { assume loc_assm: "name nd\<in>name ` ns"
+          then obtain n' where n': "n'\<in>ns" "name n' = name nd" by auto
+          with prems'' obtain nd' where "nd'\<in>nds"
+            and n'_nd'_eq: "expand_rslt_exist_eq__node n' nd'"
+            by auto
+          with n' have "nd = nd'" using nds_ident \<open>nd\<in>nds\<close> loc_assm
+            by auto
+          moreover from prems'' have "?assm n n' \<longrightarrow> ?concl n n'"
+            using \<open>n'\<in>ns\<close> by auto
+          ultimately have "?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd"
+            using n'_nd'_eq by auto }
+        moreover
+        { assume "name nd\<notin>name ` ns"
+          with name_nds_eq \<open>nd\<in>nds\<close> have "name nd \<ge> name n" by auto
+          with prems'' have "\<not> (?assm (fst ?x') nd)" by auto }
+        ultimately show "?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd" by auto
+      qed
+      ultimately show ?case by simp
     qed
-next
-  case (goal2 f x n ns)
-    then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
-      and f_sup: "\<And>x. f x \<le> expand x" by auto
-    have Q: "?Q (n, ns)" using goal2 by auto
-    from Q have name_le: "name n < expand_new_name (name n)" by auto
-    let ?x' = "(\<lparr>name = expand_new_name (name n),
-                 incoming = {name n}, new = next n,
-                 old = {}, next = {}\<rparr>, {n} \<union> ns)"
-    have Q'1: "expand_assm_incoming ?x'\<and> expand_name_ident (snd ?x')"
-    using \<open>new n = {}\<close> Q[THEN conjunct2, THEN conjunct2] name_le by force
-    have Q'2: "release_propag__assm \<mu> \<eta> ?x' \<and> release_propag__rslt \<mu> \<eta> (snd ?x')"
-      using Q \<open>new n = {}\<close> by auto
-
-    show ?case using \<open>new n = {}\<close> unfolding \<open>x = (n, ns)\<close>
-
-    proof (rule_tac SPEC_rule_weak[where
-        Q = "\<lambda>_ r. expand_name_ident (snd r)" and P = "\<lambda>_. ?P"])
-      case goal1 then show ?case using Q'1
-        by (rule_tac order_trans,
-          rule_tac f_sup,
-          rule_tac expand_name_propag__name_ident) auto
-    next
-      case goal2 then show ?case using Q'1 Q'2 by (rule_tac step) simp
-    next
-      case (goal3 nm nds) then show ?case by simp
-    qed
-next
-  case goal3 then show ?case by auto
-next
-  case (goal4 f x n ns \<psi>)
-    then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>q. \<psi> = prop\<^sub>n(q) \<or> \<psi> = nprop\<^sub>n(q))" by simp
-    have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
-      and Q: "?Q (n, ns)" using goal4 by simp+
-    show ?case using Q goal_assms by (rule_tac SPEC_rule_param2, rule_tac step) auto
-next
-  case (goal5 f x n ns \<psi>)
-    then have goal_assms: "\<psi> \<in> new n \<and> \<psi> = true\<^sub>n" by simp
-    have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
-      and Q: "?Q (n, ns)" using goal5 by simp+
-    show ?case using Q goal_assms by (rule_tac SPEC_rule_param2, rule_tac step) auto
-next
-  case goal6 then show ?case by auto
-next
-  case (goal7 f x n ns \<psi>)
-    then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>n \<mu> \<or> \<psi> = X\<^sub>n \<nu>)" by simp
-    have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
-      and Q: "?Q (n, ns)" using goal7 by simp+
-    show ?case using Q goal_assms by (rule_tac SPEC_rule_param2, rule_tac step) auto
-next
-  case (goal8 f x n ns \<psi>)
-    then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
-      by (cases \<psi>) auto
-    have Q: "?Q (n, ns)"
-     and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
-     and f_sup: "\<And>x. f x \<le> expand x" using goal8 by auto
-    let ?x = "(n\<lparr>new := new n - {\<psi>}, new := new1 \<psi> \<union> new (n\<lparr>new := new n - {\<psi>}\<rparr>),
-          old := {\<psi>} \<union> old (n\<lparr>new := new n - {\<psi>}\<rparr>),
-                              next := next1 \<psi> \<union> next (n\<lparr>new := new n - {\<psi>}\<rparr>)
-        \<rparr>, ns)"
-    let ?props = "\<lambda>x r. expand_rslt_exist_eq x r
-      \<and> expand_rslt_incoming r \<and> expand_rslt_name x r \<and> expand_name_ident (snd r)"
-
-    show ?case using goal_assms Q unfolding case_prod_unfold \<open>x = (n, ns)\<close>
-
-    proof (rule_tac SPEC_rule_weak_nested2[where Q = "?props ?x"])
-      case goal1 then show ?case
-        by (rule_tac SPEC_rule_conjI,
-               rule_tac order_trans,
-               rule_tac f_sup,
-               rule_tac expand_rslt_exist_eq,
-               rule_tac order_trans,
-               rule_tac f_sup,
-               rule_tac expand_name_propag) simp+
-    next
-      case goal2 then show ?case
-        by (rule_tac SPEC_rule_param2[where P = "\<lambda>_. ?P"], rule_tac step) auto
-    next
-      case (goal3 nm nds)
-        let ?x' = "(n\<lparr>new := new n - {\<psi>},
-           name := fst (nm, nds),
-           new := new2 \<psi> \<union> new (n\<lparr>new := new n - {\<psi>}\<rparr>),
-           old := {\<psi>} \<union> old (n\<lparr>new := new n - {\<psi>}\<rparr>)\<rparr>, nds)"
-        show ?case using goal3
-        proof (rule_tac step)
-          case goal1
-            then have "expand_assm_incoming ?x'" by auto
-            moreover
-            have nds_ident: "expand_name_ident (snd ?x')" using goal1 by simp
-            moreover
-            have "(\<mu> V\<^sub>n \<eta> \<in> old (fst ?x')
-                   \<longrightarrow> ({\<mu>, \<eta>}\<subseteq>old (fst ?x') \<union> new (fst ?x')
-                        \<or> (\<eta>\<in>old (fst ?x')\<union>new (fst ?x')
-                           \<and> \<mu> V\<^sub>n \<eta> \<in> next (fst ?x'))))"
-            using Q[THEN conjunct1] goal_assms by auto
-            moreover
-            have "release_propag__rslt \<mu> \<eta> (snd ?x')" using goal1 by simp
-            moreover
-            have name_nds_eq:
-              "name ` nds = name ` ns \<union> name ` {nd\<in>nds. name nd \<ge> name n}"
-              using goal1 by auto
-            have "\<forall>nd\<in>nds. (\<mu> V\<^sub>n \<eta> \<in> old nd \<and> name nd \<in> incoming (fst ?x'))
-                       \<longrightarrow> ({\<mu>, \<eta>}\<subseteq>old nd
-                            \<or> (\<eta>\<in>old nd \<and> \<mu> V\<^sub>n \<eta> \<in>old (fst ?x')\<union>new (fst ?x')))"
-             (is "\<forall>nd\<in>nds. ?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd")
-            proof
-              fix nd
-              assume "nd\<in>nds"
-              { assume loc_assm: "name nd\<in>name ` ns"
-                then obtain n' where "n'\<in>ns" and "name n' = name nd" by auto
-                moreover then obtain nd' where "nd'\<in>nds"
-                  and n'_nd'_eq: "expand_rslt_exist_eq__node n' nd'"
-                  using goal1 by auto
-                ultimately have "nd = nd'" using nds_ident \<open>nd\<in>nds\<close> loc_assm
-                  by auto
-                moreover from goal1 have "?assm n n' \<longrightarrow> ?concl n n'"
-                  using \<open>n'\<in>ns\<close> by auto
-                ultimately have "?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd"
-                  using n'_nd'_eq by auto }
-              moreover
-              { assume "name nd\<notin>name ` ns"
-                with name_nds_eq \<open>nd\<in>nds\<close> have "name nd \<ge> name n" by auto
-                then have "\<not> (?assm (fst ?x') nd)" using goal1 by auto }
-              ultimately show "?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd" by auto
-            qed
-            ultimately show ?case by simp
-        qed
-    qed
+  qed
 qed
 
 lemma release_propag_on_create_graph:
@@ -2194,94 +2234,99 @@ lemma expand_until_propag:
            \<and> expand_name_ident (snd n_ns)" (is "?Q n_ns")
   shows "expand n_ns \<le> SPEC (\<lambda>r. until_propag__rslt \<mu> \<eta> (snd r))"
     (is "_ \<le> SPEC ?P")
-using assms
-proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg)
-  case (goal1 f x n ns)
-    then show ?case
-    proof (simp, rule_tac upd_incoming__ident)
-      case goal1
-        { fix nd :: "'a node" and nd' :: "'a node"
-          let ?U_prop = "\<mu> U\<^sub>n \<eta> \<in> old nd \<and> name nd \<in> incoming nd'
-                               \<longrightarrow> \<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>n \<eta> \<in> old nd'"
-          assume "nd\<in>ns" and nd'_elem: "nd'\<in>upd_incoming n ns"
-          { assume "nd'\<in>ns"
-            then have ?U_prop using \<open>nd\<in>ns\<close> goal1 by auto }
-          moreover
-          { assume "nd'\<notin>ns" and
-            U_in_nd: "\<mu> U\<^sub>n \<eta> \<in> old nd" and "name nd \<in>incoming nd'"
-            with upd_incoming__elem[of nd' n ns] nd'_elem
-            obtain nd'' where "nd''\<in>ns"
-              and nd'_eq: "nd' = nd''\<lparr>incoming := incoming n \<union> incoming nd''\<rparr>"
-              and old_eq: "old nd'' = old n" by auto
-            { assume "name nd \<in> incoming n"
-              with U_in_nd \<open>nd\<in>ns\<close>
-              have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>n \<eta> \<in> old n" using goal1 by auto
-              then have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>n \<eta> \<in> old nd'"
-                using nd'_eq old_eq by simp }
-            moreover
-            { assume "name nd \<notin> incoming n"
-              then have "name nd \<in> incoming nd''"
-                using \<open>name nd \<in>incoming nd'\<close> nd'_eq by simp
-              then have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>n \<eta> \<in> old nd'" unfolding nd'_eq
-              using \<open>nd\<in>ns\<close> \<open>nd''\<in>ns\<close> U_in_nd goal1 by auto }
-            ultimately have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>n \<eta> \<in> old nd'" by fast }
-          ultimately have ?U_prop by auto }
-        then show ?case by auto
-    next
-      case goal2 then show ?case by simp
-    qed
+  using assms
+proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg, goal_cases)
+  case prems: (1 f x n ns)
+  then show ?case
+  proof (simp, rule_tac upd_incoming__ident, goal_cases)
+    case prems': 1
+    { fix nd :: "'a node" and nd' :: "'a node"
+      let ?U_prop = "\<mu> U\<^sub>n \<eta> \<in> old nd \<and> name nd \<in> incoming nd'
+                           \<longrightarrow> \<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>n \<eta> \<in> old nd'"
+      assume "nd\<in>ns" and nd'_elem: "nd'\<in>upd_incoming n ns"
+      { assume "nd'\<in>ns"
+        with prems' have ?U_prop using \<open>nd\<in>ns\<close> by auto }
+      moreover
+      { assume "nd'\<notin>ns" and
+        U_in_nd: "\<mu> U\<^sub>n \<eta> \<in> old nd" and "name nd \<in>incoming nd'"
+        with upd_incoming__elem[of nd' n ns] nd'_elem
+        obtain nd'' where "nd''\<in>ns"
+          and nd'_eq: "nd' = nd''\<lparr>incoming := incoming n \<union> incoming nd''\<rparr>"
+          and old_eq: "old nd'' = old n" by auto
+        { assume "name nd \<in> incoming n"
+          with prems' U_in_nd \<open>nd\<in>ns\<close>
+          have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>n \<eta> \<in> old n" by auto
+          then have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>n \<eta> \<in> old nd'"
+            using nd'_eq old_eq by simp }
+        moreover
+        { assume "name nd \<notin> incoming n"
+          then have "name nd \<in> incoming nd''"
+            using \<open>name nd \<in>incoming nd'\<close> nd'_eq by simp
+          then have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>n \<eta> \<in> old nd'"
+            unfolding nd'_eq
+            using prems' \<open>nd\<in>ns\<close> \<open>nd''\<in>ns\<close> U_in_nd by auto }
+        ultimately have "\<eta> \<in> old nd \<or> \<mu> \<in> old nd \<and> \<mu> U\<^sub>n \<eta> \<in> old nd'" by fast }
+      ultimately have ?U_prop by auto }
+    then show ?case by auto
+  next
+    case 2
+    then show ?case by simp
+  qed
 next
-  case (goal2 f x n ns)
-  then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
-    and f_sup: "\<And>x. f x \<le> expand x" by auto
-  have Q: "?Q (n, ns)" using goal2 by auto
+  case prems: (2 f x n ns)
+  then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" and f_sup: "\<And>x. f x \<le> expand x"
+    by auto
+  from prems have Q: "?Q (n, ns)" by auto
   from Q have name_le: "name n < expand_new_name (name n)" by auto
   let ?x' = "(\<lparr>name = expand_new_name (name n),
                incoming = {name n}, new = next n,
                old = {}, next = {}\<rparr>, {n} \<union> ns)"
   have Q'1: "expand_assm_incoming ?x'\<and> expand_name_ident (snd ?x')"
-  using \<open>new n = {}\<close> Q[THEN conjunct2, THEN conjunct2] name_le by force
+    using \<open>new n = {}\<close> Q[THEN conjunct2, THEN conjunct2] name_le by force
   have Q'2: "until_propag__assm \<mu> \<eta> ?x' \<and> until_propag__rslt \<mu> \<eta> (snd ?x')"
     using Q \<open>new n = {}\<close> by auto
 
-  show ?case using \<open>new n = {}\<close> unfolding \<open>x = (n, ns)\<close>
-
+  show ?case
+    using \<open>new n = {}\<close> unfolding \<open>x = (n, ns)\<close>
   proof (rule_tac SPEC_rule_weak[where
-      Q = "\<lambda>_ r. expand_name_ident (snd r)" and P = "\<lambda>_. ?P"])
-    case goal1 then show ?case using Q'1
+      Q = "\<lambda>_ r. expand_name_ident (snd r)" and P = "\<lambda>_. ?P"], goal_cases)
+    case 1
+    then show ?case using Q'1
       by (rule_tac order_trans,
         rule_tac f_sup,
         rule_tac expand_name_propag__name_ident) auto
   next
-    case goal2 then show ?case using Q'1 Q'2 by (rule_tac step) simp
+    case 2
+    then show ?case using Q'1 Q'2 by (rule_tac step) simp
   next
-    case (goal3 nm nds) then show ?case by simp
+    case (3 nm nds)
+    then show ?case by simp
   qed
 next
-  case goal3
+  case 3
   then show ?case by auto
 next
-  case (goal4 f)
-  then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" by simp+
-  show ?case using goal4 by (rule_tac SPEC_rule_param2, rule_tac step) auto
+  case prems: (4 f)
+  then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" by simp_all
+  from prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
-  case (goal5 f)
-  then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" by simp+
-  show ?case using goal5 by (rule_tac SPEC_rule_param2, rule_tac step) auto
+  case prems: (5 f)
+  then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" by simp_all
+  from prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
-  case goal6
+  case 6
   then show ?case by auto
 next
-  case (goal7 f)
-  then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" by simp+
-  show ?case using goal7 by (rule_tac SPEC_rule_param2, rule_tac step) auto
+  case prems: (7 f)
+  then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" by simp_all
+  from prems show ?case by (rule_tac SPEC_rule_param2, rule_tac step) auto
 next
-  case (goal8 f x n ns \<psi>)
+  case prems: (8 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
     by (cases \<psi>) auto
-  have Q: "?Q (n, ns)"
-   and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
-   and f_sup: "\<And>x. f x \<le> expand x" using goal8 by auto
+  from prems have Q: "?Q (n, ns)"
+    and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
+    and f_sup: "\<And>x. f x \<le> expand x" by auto
   let ?x = "(n\<lparr>new := new n - {\<psi>}, new := new1 \<psi> \<union> new (n\<lparr>new := new n - {\<psi>}\<rparr>),
         old := {\<psi>} \<union> old (n\<lparr>new := new n - {\<psi>}\<rparr>),
                             next := next1 \<psi> \<union> next (n\<lparr>new := new n - {\<psi>}\<rparr>)
@@ -2291,8 +2336,9 @@ next
 
   show ?case
     using goal_assms Q unfolding case_prod_unfold \<open>x = (n, ns)\<close>
-  proof (rule_tac SPEC_rule_weak_nested2[where Q = "?props ?x"])
-    case goal1 then show ?case
+  proof (rule_tac SPEC_rule_weak_nested2[where Q = "?props ?x"], goal_cases)
+    case 1
+    then show ?case
       by (rule_tac SPEC_rule_conjI,
              rule_tac order_trans,
              rule_tac f_sup,
@@ -2301,23 +2347,22 @@ next
              rule_tac f_sup,
              rule_tac expand_name_propag) simp+
   next
-    case goal2
+    case 2
     then show ?case
       by (rule_tac SPEC_rule_param2[where P = "\<lambda>_. ?P"], rule_tac step) auto
   next
-    case (goal3 nm nds)
+    case prems: (3 nm nds)
     let ?x' = "(n\<lparr>new := new n - {\<psi>},
        name := fst (nm, nds),
        new := new2 \<psi> \<union> new (n\<lparr>new := new n - {\<psi>}\<rparr>),
        old := {\<psi>} \<union> old (n\<lparr>new := new n - {\<psi>}\<rparr>)\<rparr>, nds)"
-    show ?case
-      using goal3
-    proof (rule_tac step)
-      case goal1
+    from prems show ?case
+    proof (rule_tac step, goal_cases)
+      case prems': 1
       then have "expand_assm_incoming ?x'" by auto
       moreover
-      have nds_ident: "expand_name_ident (snd ?x')"
-        using goal1 by simp
+      from prems' have nds_ident: "expand_name_ident (snd ?x')"
+        by simp
       moreover
       have "(\<mu> U\<^sub>n \<eta> \<in> old (fst ?x')
              \<longrightarrow> (\<eta>\<in>old (fst ?x')\<union>new (fst ?x')
@@ -2325,12 +2370,12 @@ next
                      \<and> \<mu> U\<^sub>n \<eta> \<in> next (fst ?x'))))"
         using Q[THEN conjunct1] goal_assms by auto
       moreover
-      have "until_propag__rslt \<mu> \<eta> (snd ?x')"
-        using goal1 by simp
+      from prems' have "until_propag__rslt \<mu> \<eta> (snd ?x')"
+        by simp
       moreover
-      have name_nds_eq:
+      from prems' have name_nds_eq:
         "name ` nds = name ` ns \<union> name ` {nd\<in>nds. name nd \<ge> name n}"
-        using goal1 by auto
+        by auto
       have "\<forall>nd\<in>nds. (\<mu> U\<^sub>n \<eta> \<in> old nd \<and> name nd \<in> incoming (fst ?x'))
         \<longrightarrow> (\<eta>\<in>old nd \<or> (\<mu>\<in>old nd \<and> \<mu> U\<^sub>n \<eta> \<in>old (fst ?x')\<union>new (fst ?x')))"
        (is "\<forall>nd\<in>nds. ?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd")
@@ -2338,20 +2383,21 @@ next
         fix nd
         assume "nd\<in>nds"
         { assume loc_assm: "name nd\<in>name ` ns"
-          then obtain n' where "n'\<in>ns" and "name n' = name nd" by auto
-          moreover then obtain nd' where "nd'\<in>nds"
+          then obtain n' where n': "n'\<in>ns" "name n' = name nd" by auto
+          moreover
+          from prems' n' obtain nd' where "nd'\<in>nds"
             and n'_nd'_eq: "expand_rslt_exist_eq__node n' nd'"
-            using goal1 by auto
+            by auto
           ultimately have "nd = nd'"
             using nds_ident \<open>nd\<in>nds\<close> loc_assm by auto
-          moreover from goal1 have "?assm n n' \<longrightarrow> ?concl n n'"
+          moreover from prems' have "?assm n n' \<longrightarrow> ?concl n n'"
             using \<open>n'\<in>ns\<close> by auto
           ultimately have "?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd"
             using n'_nd'_eq by auto }
         moreover
         { assume "name nd\<notin>name ` ns"
           with name_nds_eq \<open>nd\<in>nds\<close> have "name nd \<ge> name n" by auto
-          then have "\<not> (?assm (fst ?x') nd)" using goal1 by auto }
+          with prems' have "\<not> (?assm (fst ?x') nd)" by auto }
         ultimately show "?assm (fst ?x') nd \<longrightarrow> ?concl (fst ?x') nd" by auto
       qed
       ultimately show ?case by simp
@@ -2389,53 +2435,54 @@ lemma expand_all_subfrmls_propag:
   shows "expand n_ns \<le> SPEC (\<lambda>r. \<forall>nd\<in>snd r. all_subfrmls nd \<subseteq> B)"
     (is "_ \<le> SPEC ?P")
   using assms
-proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg)
-  case goal1
+proof (rule_tac expand_rec_rule[where \<Phi>="?Q"], simp, intro refine_vcg, goal_cases)
+  case 1
   then show ?case
-  proof (simp, rule_tac upd_incoming__ident)
-    case goal1
+  proof (simp, rule_tac upd_incoming__ident, goal_cases)
+    case 1
     then show ?case by auto
   next
-    case goal2
+    case 2
     then show ?case by (simp add: all_subfrmls_def)
   qed
 next
-  case goal2
+  case 2
   then show ?case by (auto simp add: all_subfrmls_def)
 next
-  case goal3
+  case 3
   then show ?case by (auto simp add: all_subfrmls_def)
 next
-  case (goal4 f)
-  then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" by simp+
-  show ?case using goal4 by (rule_tac step) (auto simp add:all_subfrmls_def)
+  case prems: (4 f)
+  then have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" by simp_all
+  from prems show ?case by (rule_tac step) (auto simp add: all_subfrmls_def)
 next
-  case (goal5 f _ n ns \<psi>)
+  case prems: (5 f _ n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n \<and> \<psi> = true\<^sub>n" by simp
-  have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
-    and Q: "?Q (n, ns)" using goal5 by simp+
+  from prems have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" and Q: "?Q (n, ns)"
+    by simp_all
   show ?case using Q goal_assms
-    by (rule_tac step) (auto dest:all_subfrmls__UnionD simp add:all_subfrmls_def)
+    by (rule_tac step) (auto dest: all_subfrmls__UnionD simp add: all_subfrmls_def)
 next
-  case goal6
+  case 6
   then show ?case by auto
 next
-  case (goal7 f x n ns \<psi>)
+  case prems: (7 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>n \<mu> \<or> \<psi> = X\<^sub>n \<nu>)" by simp
-  have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
-    and Q: "?Q (n, ns)" using goal7 by simp+
-  show ?case using Q goal_assms
-    by (rule_tac step) (auto dest:all_subfrmls__UnionD simp add:all_subfrmls_def)
+  from prems have step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P" and Q: "?Q (n, ns)"
+    by simp_all
+  show ?case
+    using Q goal_assms
+    by (rule_tac step) (auto dest: all_subfrmls__UnionD simp add: all_subfrmls_def)
 next
-  case (goal8 f x n ns \<psi>)
+  case prems: (8 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n
     \<and> \<not> (\<exists>q. \<psi> = prop\<^sub>n(q) \<or> \<psi> = nprop\<^sub>n(q))
     \<and> \<psi> \<noteq> true\<^sub>n \<and> \<psi> \<noteq> false\<^sub>n
     \<and>  \<not> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>n \<mu> \<or> \<psi> = X\<^sub>n \<nu>)
     \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
     by (cases \<psi>) auto
-  have Q: "?Q (n, ns)" and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
-    using goal8 by simp_all
+  from prems have Q: "?Q (n, ns)" and step: "\<And>x. ?Q x \<Longrightarrow> f x \<le> SPEC ?P"
+    by simp_all
   show ?case
     using goal_assms Q unfolding case_prod_unfold \<open>x = (n, ns)\<close>
   proof (rule_tac SPEC_rule_nested2, goal_cases)
@@ -2749,8 +2796,8 @@ lemma expand_expand_init_propag:
   using assms
 proof (rule_tac expand_rec_rule[where \<Phi>="\<lambda>x. ?Q x \<and> ?P (snd x)"],
     simp,
-    intro refine_vcg)
-  case (goal1 f x n ns)
+    intro refine_vcg, goal_cases)
+  case prems: (1 f x n ns)
   then have goal_assms: "new n = {} \<and> ?Q (n, ns) \<and> ?P ns" by simp
   { fix nd nm
     assume "nd\<in>upd_incoming n ns" and "nm\<in>incoming n'" and "nm\<in>incoming nd"
@@ -2773,54 +2820,51 @@ proof (rule_tac expand_rec_rule[where \<Phi>="\<lambda>x. ?Q x \<and> ?P (snd x)
           by auto }
       ultimately have "new n' \<subseteq> old nd" using \<open>nm\<in>incoming nd\<close> nd_eq by auto }
     ultimately have "new n' \<subseteq> old nd" by fast }
-  then show ?case using goal1 by auto
+  with prems show ?case by auto
 next
-  case (goal2 f x n ns)
-  then have goal_assms: "new n = {} \<and> ?Q (n, ns) \<and> ?P ns"
-    and step: "\<And>x. ?Q x \<and> ?P (snd x)
+  case prems: (2 f x n ns)
+  then have goal_assms: "new n = {} \<and> ?Q (n, ns) \<and> ?P ns" and step: "\<And>x. ?Q x \<and> ?P (snd x)
       \<Longrightarrow> f x \<le> SPEC (\<lambda>r. name n' \<le> fst r \<and> ?P (snd r))"
-    by simp+
-
+    by simp_all
   then show ?case
-  proof (rule_tac step)
-    case goal1
-      have expand_new_name_less: "name n < expand_new_name (name n)" by auto
-      moreover have "name n \<notin> incoming n'" using goal_assms by auto
-      ultimately show ?case using goal1 by auto
+  proof (rule_tac step, goal_cases)
+    case prems': 1
+    have expand_new_name_less: "name n < expand_new_name (name n)"
+      by auto
+    moreover have "name n \<notin> incoming n'"
+      using goal_assms by auto
+    ultimately show ?case using prems' by auto
   qed
 next
-  case goal3 then show ?case by auto
+  case 3 then show ?case by auto
 next
-  case (goal4 f x n ns)
-  then have step: "\<And>x. ?Q x \<and> ?P (snd x)
-    \<Longrightarrow> f x \<le> SPEC (\<lambda>r. name n' \<le> fst r \<and> ?P (snd r))"
-    by simp+
-  show ?case using goal4 by (rule_tac step) auto
+  case prems: (4 f x n ns)
+  then have step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>r. name n' \<le> fst r \<and> ?P (snd r))"
+    by simp
+  from prems show ?case by (rule_tac step) auto
 next
-  case (goal5 f x n ns)
-  then have step: "\<And>x. ?Q x \<and> ?P (snd x)
-    \<Longrightarrow> f x \<le> SPEC (\<lambda>r. name n' \<le> fst r \<and> ?P (snd r))"
-    by simp+
-  show ?case using goal5 by (rule_tac step) auto
+  case prems: (5 f x n ns)
+  then have step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>r. name n' \<le> fst r \<and> ?P (snd r))"
+    by simp
+  from prems show ?case by (rule_tac step) auto
 next
-  case goal6 then show ?case by auto
+  case 6 then show ?case by auto
 next
-  case (goal7 f x n ns)
-  then have step:
-    "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>r. name n' \<le> fst r \<and> ?P (snd r))"
-    by simp+
-  show ?case using goal7 by (rule_tac step) auto
+  case prems: (7 f x n ns)
+  then have step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>r. name n' \<le> fst r \<and> ?P (snd r))"
+    by simp
+  from prems show ?case by (rule_tac step) auto
 next
-  case (goal8 f x n ns \<psi>)
+  case prems: (8 f x n ns \<psi>)
   then have goal_assms: "\<psi> \<in> new n
     \<and> \<not> (\<exists>q. \<psi> = prop\<^sub>n(q) \<or> \<psi> = nprop\<^sub>n(q))
     \<and> \<psi> \<noteq> true\<^sub>n \<and> \<psi> \<noteq> false\<^sub>n
     \<and> \<not> (\<exists>\<nu> \<mu>. \<psi> = \<nu> and\<^sub>n \<mu> \<or> \<psi> = X\<^sub>n \<nu>)
     \<and> (\<exists>\<nu> \<mu>. \<psi> = \<nu> or\<^sub>n \<mu> \<or> \<psi> = \<nu> U\<^sub>n \<mu> \<or> \<psi> = \<nu> V\<^sub>n \<mu>)"
     by (cases \<psi>) auto
-  have QP: "?Q (n, ns) \<and> ?P ns" and
+  from prems have QP: "?Q (n, ns) \<and> ?P ns" and
     step: "\<And>x. ?Q x \<and> ?P (snd x) \<Longrightarrow> f x \<le> SPEC (\<lambda>r. name n' \<le> fst r \<and> ?P (snd r))"
-    using goal8 by simp_all
+    by simp_all
   show ?case
     using goal_assms QP unfolding case_prod_unfold \<open>x = (n, ns)\<close>
   proof (rule_tac SPEC_rule_nested2, goal_cases)

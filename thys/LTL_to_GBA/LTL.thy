@@ -1104,17 +1104,16 @@ next
     using LTLOr by auto
     then show ?case by auto
 next
-  case (goal7 \<phi> \<xi> \<psi>)
+  case (LTLNext \<phi> \<xi> \<psi>)
     then have "ltl_pushneg \<psi> = X \<phi>" by auto
     with subformula_on_ltl_pushneg[of \<phi> \<psi>]
     obtain \<mu>
      where "\<phi> = ltl_pushneg \<mu>"
         by (auto intro: subfrml.intros)
-    with goal7 have "suffix 1 \<xi> \<Turnstile> \<phi> = suffix 1 \<xi> \<Turnstile>\<^sub>n ltl_to_ltln \<phi>"
-      by auto
+    with LTLNext(1) have "suffix 1 \<xi> \<Turnstile> \<phi> = suffix 1 \<xi> \<Turnstile>\<^sub>n ltl_to_ltln \<phi>" .
     then show ?case by auto
 next
-  case (goal8 f g \<xi> \<psi>)
+  case (LTLUntil f g \<xi> \<psi>)
     then have frml_eq: "ltl_pushneg \<psi> = f U g" by auto
     with subformula_on_ltl_pushneg[of _ \<psi>]
     obtain \<mu>
@@ -1128,10 +1127,10 @@ next
     ultimately
     have "\<forall>i. suffix i \<xi> \<Turnstile> f = suffix i \<xi> \<Turnstile>\<^sub>n ltl_to_ltln f"
      and "\<forall>i. suffix i \<xi> \<Turnstile> g = suffix i \<xi> \<Turnstile>\<^sub>n ltl_to_ltln g"
-    using goal8 by auto
+    using LTLUntil(1,2) by blast+
     then show ?case by auto
 next   
-  case (goal9 f g \<xi> \<psi>)
+  case (LTLRelease f g \<xi> \<psi>)
     then have frml_eq: "ltl_pushneg \<psi> = f V g" by auto
     with subformula_on_ltl_pushneg[of _ \<psi>]
     obtain \<mu>
@@ -1145,7 +1144,7 @@ next
     ultimately
     have "\<forall>i. suffix i \<xi> \<Turnstile> f = suffix i \<xi> \<Turnstile>\<^sub>n ltl_to_ltln f"
      and "\<forall>i. suffix i \<xi> \<Turnstile> g = suffix i \<xi> \<Turnstile>\<^sub>n ltl_to_ltln g"
-    using goal9 by auto
+    using LTLRelease(1,2) by blast+
     then show ?case by auto
 qed
 

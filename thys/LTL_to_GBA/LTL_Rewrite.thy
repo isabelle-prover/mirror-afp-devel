@@ -22,37 +22,38 @@ where
 theorem ltln_pure_eventual_frmls_equiv:
   assumes "\<psi> \<in> ltln_pure_eventual_frmls"
   shows "\<xi> \<Turnstile>\<^sub>n \<phi> U\<^sub>n \<psi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
-using assms proof (induct \<psi> arbitrary:\<xi> \<phi>)
-  case goal1 
+  using assms
+proof (induct \<psi> arbitrary:\<xi> \<phi>)
+  case 1 
   then show ?case 
     by force
 next
-  case (goal2 _ _ \<xi> \<phi>) show ?case using goal2(2)[of \<xi> \<phi>] goal2(4)[of \<xi> \<phi>]
+  case prems: 2 show ?case using prems(2)[of \<xi> \<phi>] prems(4)[of \<xi> \<phi>]
     by (auto, metis less_nat_zero_code suffix_0)
 next
-  case (goal3 _ _ \<xi>) show ?case
-    using goal3(2)[of \<xi> \<phi>] goal3(4)[of \<xi> \<phi>] by auto
+  case prems: 3 show ?case
+    using prems(2)[of \<xi> \<phi>] prems(4)[of \<xi> \<phi>] by auto
 next
-  case (goal4 \<nu> \<mu> \<xi>)
+  case prems: (4 \<nu> \<mu>)
     let ?\<psi> = "\<nu> U\<^sub>n \<mu>"
     { assume "\<xi> \<Turnstile>\<^sub>n \<phi> U\<^sub>n ?\<psi>"
       then obtain i where "suffix i \<xi> \<Turnstile>\<^sub>n ?\<psi>" and "\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<phi>"
         by auto
-      moreover with goal4(4)[of "suffix i \<xi>" \<nu>] have "suffix i \<xi> \<Turnstile>\<^sub>n \<mu>" 
-        by auto
-      ultimately have "\<xi> \<Turnstile>\<^sub>n ?\<psi>" using goal4(4)[of \<xi> \<phi>] goal4(4)[of \<xi> \<nu>] 
+      moreover with prems(4)[of "suffix i \<xi>" \<nu>] have "suffix i \<xi> \<Turnstile>\<^sub>n \<mu>" 
+        by blast
+      ultimately have "\<xi> \<Turnstile>\<^sub>n ?\<psi>" using prems(4)[of \<xi> \<phi>] prems(4)[of \<xi> \<nu>] 
         by auto }
     moreover
     { assume "\<xi> \<Turnstile>\<^sub>n ?\<psi>"
-      with goal4 have "\<xi> \<Turnstile>\<^sub>n \<phi> U\<^sub>n \<mu>" by auto
+      with prems have "\<xi> \<Turnstile>\<^sub>n \<phi> U\<^sub>n \<mu>" by auto
       then obtain i where "suffix i \<xi> \<Turnstile>\<^sub>n \<mu>" and "\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<phi>" 
         by auto
-      moreover with goal4(4)[of "suffix i \<xi>" \<nu>] have "suffix i \<xi> \<Turnstile>\<^sub>n \<nu> U\<^sub>n \<mu>" 
-        by auto
+      moreover with prems(4)[of "suffix i \<xi>" \<nu>] have "suffix i \<xi> \<Turnstile>\<^sub>n \<nu> U\<^sub>n \<mu>" 
+        by blast
       ultimately have "\<xi> \<Turnstile>\<^sub>n \<phi> U\<^sub>n ?\<psi>" by auto }
     ultimately show ?case by fast
 next
-  case (goal5 \<nu> \<mu>)
+  case prems: (5 \<nu> \<mu>)
     let ?\<psi> = "\<nu> V\<^sub>n \<mu>"
     { assume "\<xi> \<Turnstile>\<^sub>n \<phi> U\<^sub>n ?\<psi>"
       then obtain i where 
@@ -68,7 +69,8 @@ next
         then have "suffix (i-k) (suffix k \<xi>) \<Turnstile>\<^sub>n \<mu>" 
           and "\<forall>j<i-k. suffix j (suffix k \<xi>) \<Turnstile>\<^sub>n \<phi>"
         using V_suf_i phi_all_less_i \<mu>_suf_i by auto
-        then show "suffix k \<xi> \<Turnstile>\<^sub>n \<mu>" using goal5(4)[of "suffix k \<xi>" \<phi>] by auto
+        then show "suffix k \<xi> \<Turnstile>\<^sub>n \<mu>" using prems(4)[of "suffix k \<xi>" \<phi>]
+          using ltln_semantics.simps(8) by blast
       qed
       have "\<xi> \<Turnstile>\<^sub>n ?\<psi>"
       proof -
@@ -113,19 +115,20 @@ where
 theorem ltln_pure_universal_frmls_equiv:
   assumes "\<psi> \<in> ltln_pure_universal_frmls"
   shows "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n \<psi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
-using assms proof (induct \<psi> arbitrary:\<xi> \<phi>)
-  case goal1 
+  using assms
+proof (induct \<psi> arbitrary:\<xi> \<phi>)
+  case 1 
   then show ?case by force
 next
-  case (goal2 _ _ \<xi> \<phi>) 
+  case prems: 2 
   show ?case 
-    using goal2(2)[of \<xi> \<phi>] goal2(4)[of \<xi> \<phi>] by auto
+    using prems(2)[of \<xi> \<phi>] prems(4)[of \<xi> \<phi>] by auto
 next
-  case (goal3 _ _ \<xi>) show ?case
-    using goal3(2)[of \<xi> \<phi>] goal3(4)[of \<xi> \<phi>] 
+  case prems: 3 show ?case
+    using prems(2)[of \<xi> \<phi>] prems(4)[of \<xi> \<phi>] 
     by (auto, metis less_nat_zero_code suffix_0)
 next
-  case (goal4 \<nu> \<mu> \<xi>)
+  case prems: (4 \<nu> \<mu>)
     let ?\<psi> = "\<nu> U\<^sub>n \<mu>"
     { assume assm: "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n ?\<psi>"
       { assume "\<xi> \<Turnstile>\<^sub>n \<box>\<^sub>n ?\<psi>"
@@ -150,16 +153,16 @@ next
         \<mu>_suf_i: "suffix i \<xi> \<Turnstile>\<^sub>n \<mu>" 
         and \<nu>_less_i: "\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<nu>" 
         by auto
-      with goal4(4)[of "suffix i \<xi>"] \<mu>_suf_i 
+      with prems(4)[of "suffix i \<xi>"] \<mu>_suf_i 
       have "suffix i \<xi> \<Turnstile>\<^sub>n \<box>\<^sub>n \<mu> or\<^sub>n (\<mu> U\<^sub>n (\<phi> and\<^sub>n \<mu>))"
-        using ltln_Release_alterdef[of "suffix i \<xi>" \<phi> \<mu>] by auto
+        using ltln_Release_alterdef[of "suffix i \<xi>" \<phi> \<mu>] by blast
       moreover
       { assume "suffix i \<xi> \<Turnstile>\<^sub>n \<box>\<^sub>n \<mu>"
         then have \<psi>_suf_i: "suffix i \<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n ?\<psi>" 
           by auto (metis ac_simps ltln_expand_Until ltln_semantics.simps)
         from \<nu>_less_i have \<psi>_less_i: "\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>n ?\<psi>"
-        proof(clarify)
-          case (goal1 j)
+        proof(clarify, goal_cases)
+          case (1 j)
             then obtain j' where "i = j + j'" by (metis less_imp_add_positive)
             then have "suffix j' (suffix j \<xi>) \<Turnstile>\<^sub>n \<mu>" 
               and "\<forall>k<j'. suffix k (suffix j \<xi>) \<Turnstile>\<^sub>n \<nu>"
@@ -187,15 +190,15 @@ next
                         and "suffix (i+k) \<xi> \<Turnstile>\<^sub>n \<mu>"
                         and "\<forall>j<k. suffix j (suffix i \<xi>) \<Turnstile>\<^sub>n \<mu>" by auto
         then have "\<forall>j\<le>i+k. suffix j \<xi> \<Turnstile>\<^sub>n ?\<psi>"
-        proof(clarify)
-          case (goal1 j)
+        proof(clarify, goal_cases)
+          case prems: (1 j)
             { assume "j < i"
               then obtain j' where "i = j + j'" by (metis less_imp_add_positive)
               with \<mu>_suf_i \<nu>_less_i have ?case by auto }
             moreover
             { assume "j \<ge> i" 
               then obtain i' where "j = i + i'" by (metis Nat.le_iff_add)
-              with goal1 have ?case 
+              with prems have ?case 
                 by (auto, metis (full_types) add.comm_neutral add_Suc_right
                   le_neq_implies_less less_nat_zero_code) }
             ultimately show ?case by (metis less_or_eq_imp_le linorder_neqE_nat)
@@ -205,13 +208,13 @@ next
       ultimately have "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n ?\<psi>" by auto }
     ultimately show ?case by fast
 next
-  case (goal5 \<nu> \<mu> \<xi>)
+  case prems: (5 \<nu> \<mu>)
     let ?\<psi> = "\<nu> V\<^sub>n \<mu>"
     { assume "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n ?\<psi>"
       moreover
       { assume "\<xi> \<Turnstile>\<^sub>n \<box>\<^sub>n ?\<psi>"
         then have "\<xi> \<Turnstile>\<^sub>n ?\<psi>" 
-          by (metis goal5(4) ltln_semantics.simps(2) ltln_semantics.simps(9)) }
+          by (metis prems(4) ltln_semantics.simps(2) ltln_semantics.simps(9)) }
       moreover
       { assume "\<xi> \<Turnstile>\<^sub>n ?\<psi> U\<^sub>n (\<phi> and\<^sub>n ?\<psi>)"
         then obtain i where "suffix i \<xi> \<Turnstile>\<^sub>n ?\<psi>" and "\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>n ?\<psi>" 
@@ -226,15 +229,15 @@ next
       { assume assm: "\<not> \<xi> \<Turnstile>\<^sub>n \<box>\<^sub>n \<mu>"
         then have "\<xi> \<Turnstile>\<^sub>n \<mu> U\<^sub>n (\<nu> and\<^sub>n \<mu>)" 
           using ltln_Release_alterdef[of \<xi> \<nu> \<mu>] \<open>\<xi> \<Turnstile>\<^sub>n ?\<psi>\<close> by auto
-        then have "\<xi> \<Turnstile>\<^sub>n \<mu>" using \<open>\<xi> \<Turnstile>\<^sub>n ?\<psi>\<close>  by (auto, metis calculation(1) goal5(4))
-        with goal5(4)[of \<xi> \<phi>] have "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n \<mu>" by auto
+        then have "\<xi> \<Turnstile>\<^sub>n \<mu>" using \<open>\<xi> \<Turnstile>\<^sub>n ?\<psi>\<close>  by (auto, metis calculation(1) prems(4))
+        with prems(4)[of \<xi> \<phi>] have "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n \<mu>" by auto
         then have "\<xi> \<Turnstile>\<^sub>n \<mu> U\<^sub>n (\<phi> and\<^sub>n \<mu>)" 
           using assm ltln_Release_alterdef[of \<xi> \<phi> \<mu>] by auto
         then obtain i 
           where "suffix i \<xi> \<Turnstile>\<^sub>n \<phi> and\<^sub>n \<mu>" and "\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<mu>" 
           by auto
         moreover then have "\<forall>j\<le>i. suffix j \<xi> \<Turnstile>\<^sub>n \<nu> V\<^sub>n \<mu>"
-          by (metis \<open>\<xi> \<Turnstile>\<^sub>n \<mu>\<close> assm goal5(4))
+          by (metis \<open>\<xi> \<Turnstile>\<^sub>n \<mu>\<close> assm prems(4))
         ultimately have "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n ?\<psi>" by (auto, metis linorder_not_le) }
       ultimately have "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n ?\<psi>" by fast }
     ultimately show ?case by fast
@@ -267,17 +270,17 @@ where
 lemma ltln_rewrite_step__size_less:
   assumes "ltln_rewrite_step \<psi> \<noteq> \<psi>"
   shows "size (ltln_rewrite_step \<psi>) < size \<psi>"
-  using assms proof (cases \<psi>)
-  case (goal8 \<nu> \<mu>) 
-  then show ?case 
+proof (cases \<psi>)
+  case (LTLnUntil \<nu> \<mu>)
+  with assms show ?thesis
     by (cases \<mu>, cases \<nu>) (auto split:ltln.split, 
       metis+, cases \<nu>, auto split:ltln.split, metis+)
 next
-  case (goal9 \<nu> \<mu>) 
-  then show ?case 
+  case (LTLnRelease \<nu> \<mu>)
+  with assms show ?thesis
     by (cases \<mu>, cases \<nu>) (auto split:ltln.split, 
       metis+, cases \<nu>, auto split:ltln.split, metis+)
-qed (auto split:ltln.split)
+qed (insert assms, auto split:ltln.split)
 
 lemma ltln_rewrite_step__size_leq:
   "size (ltln_rewrite_step \<psi>) \<le> size \<psi>"
@@ -288,44 +291,52 @@ lemma ltln_rewrite_step__size_leq:
 theorem ltln_rewrite_step__equiv:
   "\<xi> \<Turnstile>\<^sub>n ltln_rewrite_step \<psi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
 proof (cases \<psi>)
-  case (goal5 \<nu> \<mu>) then show ?case
+  case \<psi>: (LTLnAnd \<nu> \<mu>)
+  show ?thesis
   proof (cases \<nu>)
-    case goal8 then show ?case
+    case \<nu>: LTLnUntil
+    show ?thesis
     proof (cases \<mu>)
-      case goal8 then show ?case by (auto, metis nat_neq_iff order_less_trans)
-    qed auto
-  qed (auto split:ltln.split)
+      case \<mu>: LTLnUntil
+      with \<psi> \<nu> \<mu> show ?thesis by (auto, metis nat_neq_iff order_less_trans)
+    qed (insert \<psi> \<nu>, auto)
+  qed (insert \<psi>, auto split:ltln.split)
 next
-  case (goal6 \<nu> \<mu>) then show ?case
+  case \<psi>: (LTLnOr \<nu> \<mu>)
+  show ?thesis
   proof (cases \<nu>)
-    case goal9 then show ?case
+    case \<nu>: LTLnRelease
+    show ?thesis
     proof (cases \<mu>)
-      case goal9 then show ?case by (auto, metis nat_neq_iff order_less_trans)
-    qed auto
-  qed (auto split:ltln.split)
+      case LTLnRelease
+      with \<psi> \<nu> show ?thesis by (auto, metis nat_neq_iff order_less_trans)
+    qed (insert \<psi> \<nu>, auto)
+  qed (insert \<psi>, auto split:ltln.split)
 next
-  case (goal8 \<nu> \<mu>) then show ?case
+  case \<psi>: (LTLnUntil \<nu> \<mu>)
+  show ?thesis
   proof(cases "\<mu> \<noteq> true\<^sub>n \<and> \<not> (\<nu> = true\<^sub>n \<and> (\<exists>\<nu>' \<mu>'. \<mu> = \<nu>' U\<^sub>n \<mu>')) \<and> \<nu> \<noteq> \<mu>")
-    case goal1
-      then have "\<xi> \<Turnstile>\<^sub>n (if \<mu> \<in> ltln_pure_eventual_frmls then \<mu> else \<psi>) \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
+    case True
+      with \<psi> have "\<xi> \<Turnstile>\<^sub>n (if \<mu> \<in> ltln_pure_eventual_frmls then \<mu> else \<psi>) \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
       using ltln_pure_eventual_frmls_equiv by auto
-      then show ?case using goal1 by (cases \<mu>) (cases \<nu>, auto split:ltln.split)+
+      with \<psi> True show ?thesis by (cases \<mu>) (cases \<nu>, auto split:ltln.split)+
   next
-    case goal2 
-    then show ?case 
+    case False
+    with \<psi> show ?thesis 
       by (cases \<mu>, auto split:ltln.split) (metis less_nat_zero_code neq0_conv
         suffix_0 add.comm_neutral add_0)+
   qed
 next
-  case (goal9 \<nu> \<mu>) then show ?case
+  case \<psi>: (LTLnRelease \<nu> \<mu>)
+  show ?thesis
   proof(cases "\<mu> \<noteq> false\<^sub>n \<and> \<not> (\<nu> = false\<^sub>n \<and> (\<exists>\<nu>' \<mu>'. \<mu> = \<nu>' V\<^sub>n \<mu>')) \<and> \<nu> \<noteq> \<mu>")
-    case goal1
-      then have "\<xi> \<Turnstile>\<^sub>n (if \<mu> \<in> ltln_pure_universal_frmls then \<mu> else \<psi>) \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
+    case True
+      with \<psi> have "\<xi> \<Turnstile>\<^sub>n (if \<mu> \<in> ltln_pure_universal_frmls then \<mu> else \<psi>) \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
       using ltln_pure_universal_frmls_equiv by auto
-      then show ?case using goal1 by (cases \<mu>) (cases \<nu>, auto split:ltln.split)+
+      with \<psi> True show ?thesis by (cases \<mu>) (cases \<nu>, auto split:ltln.split)+
   next
-    case goal2 
-    then show ?case 
+    case False
+    with \<psi> show ?thesis 
       by (cases \<mu>, auto split:ltln.split) (metis less_nat_zero_code neq0_conv
         suffix_0 add.comm_neutral add_0)+
   qed
@@ -363,57 +374,77 @@ declare ltln_rewrite_rec.simps [simp del]
 lemma ltln_rewrite_rec__size_less:
   assumes "ltln_rewrite_rec \<psi> \<noteq> \<psi>"
   shows "size (ltln_rewrite_rec \<psi>) < size \<psi>"
-using assms proof (induct "ltln_rewrite_rec \<psi>" arbitrary:\<psi>)
-  case goal1 then show ?case 
+  using assms
+proof (induct "ltln_rewrite_rec \<psi>" arbitrary: \<psi>)
+  case LTLnTrue
+  then show ?case 
     using ltln_rewrite_step__size_less[of \<psi>] ltln_rewrite_rec.simps[of \<psi>]
     by (cases "ltln_rewrite_step \<psi>") auto
 next
-  case goal2 then show ?case 
+  case LTLnFalse
+  then show ?case 
     using ltln_rewrite_step__size_less[of \<psi>] ltln_rewrite_rec.simps[of \<psi>]
     by (cases "ltln_rewrite_step \<psi>") auto
 next
-  case goal3 then show ?case 
+  case LTLnProp
+  then show ?case 
     using ltln_rewrite_step__size_less[of \<psi>] ltln_rewrite_rec.simps[of \<psi>]
     by (cases "ltln_rewrite_step \<psi>") auto
 next
-  case goal4 then show ?case 
+  case LTLnNProp
+  then show ?case 
     using ltln_rewrite_step__size_less[of \<psi>] ltln_rewrite_rec.simps[of \<psi>]
     by (cases "ltln_rewrite_step \<psi>") auto
 next
-  case (goal5 \<nu> \<mu>) then show ?case using ltln_rewrite_step__size_less[of \<psi>]
+  case (LTLnAnd \<nu> \<mu>)
+  show ?case
   proof (cases "ltln_rewrite_step \<psi>")
-    case (goal5 \<nu>' \<mu>') then show ?case 
-      unfolding goal5(6) ltln_rewrite_rec.simps[of \<psi>]
-      apply (cases "\<nu>' and\<^sub>n \<mu>' = \<psi>") 
-      by fastforce+
-  qed (auto simp add: ltln_rewrite_rec.simps[of \<psi>])
+    case \<psi>: (LTLnAnd \<nu>' \<mu>')
+    show ?thesis
+      using LTLnAnd ltln_rewrite_step__size_less[of \<psi>]
+      unfolding \<psi> ltln_rewrite_rec.simps[of \<psi>]
+      by (cases "\<nu>' and\<^sub>n \<mu>' = \<psi>") fastforce+
+  qed (insert LTLnAnd, auto simp add: ltln_rewrite_rec.simps[of \<psi>])
 next
-  case (goal6 \<nu> \<mu>) then show ?case using ltln_rewrite_step__size_less[of \<psi>]
+  case (LTLnOr \<nu> \<mu>)
+  show ?case
   proof (cases "ltln_rewrite_step \<psi>")
-    case (goal6 \<nu>' \<mu>') then show ?case 
-      unfolding goal6(6) ltln_rewrite_rec.simps[of \<psi>]
-      by (cases "\<nu>' or\<^sub>n \<mu>' = \<psi>") (fastforce+)
-  qed (auto simp add: ltln_rewrite_rec.simps[of \<psi>])
+    case \<psi>: (LTLnOr \<nu>' \<mu>')
+    show ?thesis
+      using LTLnOr ltln_rewrite_step__size_less[of \<psi>]
+      unfolding \<psi> ltln_rewrite_rec.simps[of \<psi>]
+      by (cases "\<nu>' or\<^sub>n \<mu>' = \<psi>") fastforce+
+  qed (insert LTLnOr, auto simp add: ltln_rewrite_rec.simps[of \<psi>])
 next
-  case (goal7 \<nu>) then show ?case using ltln_rewrite_step__size_less[of \<psi>]
+  case (LTLnNext \<nu>)
+  show ?case
   proof (cases "ltln_rewrite_step \<psi>")
-    case (goal7 \<nu>') then show ?case unfolding goal7(5) ltln_rewrite_rec.simps[of \<psi>]
-      by (cases "X\<^sub>n \<nu>' = \<psi>") (fastforce+)
-  qed (auto simp add: ltln_rewrite_rec.simps[of \<psi>])
+    case \<psi>: (LTLnNext \<nu>')
+    show ?thesis
+      using LTLnNext ltln_rewrite_step__size_less[of \<psi>]
+      unfolding \<psi> ltln_rewrite_rec.simps[of \<psi>]
+      by (cases "X\<^sub>n \<nu>' = \<psi>") fastforce+
+  qed (insert LTLnNext, auto simp add: ltln_rewrite_rec.simps[of \<psi>])
 next
-  case (goal8 \<nu> \<mu>) then show ?case using ltln_rewrite_step__size_less[of \<psi>]
+  case (LTLnUntil \<nu> \<mu>)
+  show ?case
   proof (cases "ltln_rewrite_step \<psi>")
-    case (goal8 \<nu>' \<mu>') 
-    then show ?case unfolding goal8(6) ltln_rewrite_rec.simps[of \<psi>]
-      by (cases "\<nu>' U\<^sub>n \<mu>' = \<psi>") (fastforce+)
-  qed (auto simp add: ltln_rewrite_rec.simps[of \<psi>])
+    case \<psi>: (LTLnUntil \<nu>' \<mu>') 
+    show ?thesis
+      using LTLnUntil ltln_rewrite_step__size_less[of \<psi>]
+      unfolding \<psi> ltln_rewrite_rec.simps[of \<psi>]
+      by (cases "\<nu>' U\<^sub>n \<mu>' = \<psi>") fastforce+
+  qed (insert LTLnUntil, auto simp add: ltln_rewrite_rec.simps[of \<psi>])
 next
-  case (goal9 \<nu> \<mu>) then show ?case using ltln_rewrite_step__size_less[of \<psi>]
+  case (LTLnRelease \<nu> \<mu>)
+  show ?case
   proof (cases "ltln_rewrite_step \<psi>")
-    case (goal9 \<nu>' \<mu>') 
-    then show ?case unfolding goal9(6) ltln_rewrite_rec.simps[of \<psi>]
-      by (cases "\<nu>' V\<^sub>n \<mu>' = \<psi>") (fastforce+)
-  qed (auto simp add: ltln_rewrite_rec.simps[of \<psi>])
+    case \<psi>: (LTLnRelease \<nu>' \<mu>') 
+    show ?thesis
+      using LTLnRelease ltln_rewrite_step__size_less[of \<psi>]
+      unfolding \<psi> ltln_rewrite_rec.simps[of \<psi>]
+      by (cases "\<nu>' V\<^sub>n \<mu>' = \<psi>") fastforce+
+  qed (insert LTLnRelease, auto simp add: ltln_rewrite_rec.simps[of \<psi>])
 qed
 
 lemma ltln_rewrite_rec__size_leq:
@@ -421,67 +452,70 @@ lemma ltln_rewrite_rec__size_leq:
 using ltln_rewrite_rec__size_less[of \<psi>] by (cases "ltln_rewrite_rec \<psi> = \<psi>") auto
 
 
-theorem ltln_rewrite_rec__equiv:
-  "\<xi> \<Turnstile>\<^sub>n ltln_rewrite_rec \<psi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
-proof (induct "ltln_rewrite_rec \<psi>" arbitrary:\<xi> \<psi>)
-  case goal1
-    then show ?case 
-      using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
+theorem ltln_rewrite_rec__equiv: "\<xi> \<Turnstile>\<^sub>n ltln_rewrite_rec \<psi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
+proof (induct "ltln_rewrite_rec \<psi>" arbitrary: \<xi> \<psi>)
+  case LTLnTrue
+  then show ?case 
+    using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
     by (cases "ltln_rewrite_step \<psi>") auto
 next
-  case goal2
-    then show ?case 
-      using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
+  case LTLnFalse
+  then show ?case 
+    using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
     by (cases "ltln_rewrite_step \<psi>") auto
 next
-  case goal3
-    then show ?case 
-      using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
+  case LTLnProp
+  then show ?case
+    using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
     by (cases "ltln_rewrite_step \<psi>") auto
 next
-  case goal4
-    then show ?case 
-      using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
+  case LTLnNProp
+  then show ?case 
+    using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
     by (cases "ltln_rewrite_step \<psi>") auto
 next
-  case goal5
-    then show ?case 
-      using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
+  case LTLnAnd
+  then show ?case 
+    using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
     by (cases "ltln_rewrite_step \<psi>") auto
 next
-  case goal6
-    then show ?case 
-      using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
+  case LTLnOr
+  then show ?case 
+    using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
     by (cases "ltln_rewrite_step \<psi>") auto
 next
-  case goal7
-    then show ?case 
-      using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
+  case LTLnNext
+  then show ?case 
+    using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
     by (cases "ltln_rewrite_step \<psi>") auto
 next
-  case goal8
-    then show ?case 
-      using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
+  case LTLnUntil
+  then show ?case 
+    using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
     by (cases "ltln_rewrite_step \<psi>") auto
 next
-  case goal9
-    then show ?case 
-      using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
+  case LTLnRelease
+  then show ?case 
+    using ltln_rewrite_step__equiv[of _ \<psi>] ltln_rewrite_rec.simps[of \<psi>]
     by (cases "ltln_rewrite_step \<psi>") auto
 qed
 
 
 function ltln_rewrite
 where
-  "ltln_rewrite \<psi>
-    = (let \<phi> = ltln_rewrite_rec \<psi> in
-         if \<phi> \<noteq> \<psi> then ltln_rewrite \<phi> else \<psi>)"
+  "ltln_rewrite \<psi> =
+    (let \<phi> = ltln_rewrite_rec \<psi>
+     in if \<phi> \<noteq> \<psi> then ltln_rewrite \<phi> else \<psi>)"
 by pat_completeness auto
+
 termination
-proof(relation "inv_image less_than size")
-  case goal1 then show ?case by auto
+proof (relation "inv_image less_than size", goal_cases)
+  case 1
+  show ?case by auto
 next
-  case (goal2 \<psi>) then show ?case using ltln_rewrite_rec__size_less[of \<psi>] by auto
+  case (2 \<psi>)
+  then show ?case
+    using ltln_rewrite_rec__size_less[of \<psi>] by auto
 qed
 
 declare ltln_rewrite.simps [simp del]
@@ -490,31 +524,36 @@ declare ltln_rewrite.simps [simp del]
 lemma ltln_rewrite__size_less:
   assumes "ltln_rewrite \<psi> \<noteq> \<psi>"
   shows "size (ltln_rewrite \<psi>) < size \<psi>"
-using assms proof (induct \<psi> rule: ltln_rewrite.induct)
-  case (goal1 \<psi>)
-    { assume "ltln_rewrite_rec \<psi> = \<psi>"
-      then have ?case using goal1(2) unfolding ltln_rewrite.simps[of \<psi>] by auto }
-    moreover
-    { assume assm: "ltln_rewrite_rec \<psi> \<noteq> \<psi>"
-      then have rw_\<psi>_eq: "ltln_rewrite \<psi> = ltln_rewrite (ltln_rewrite_rec \<psi>)" 
-        unfolding ltln_rewrite.simps[of \<psi>] by auto
-      from goal1(1)[OF refl assm, folded rw_\<psi>_eq] 
-        and ltln_rewrite_rec__size_less[OF assm]
-      have ?case by (cases "ltln_rewrite \<psi> = ltln_rewrite_rec \<psi>") auto }
-    ultimately show ?case by fast
+  using assms
+proof (induct \<psi> rule: ltln_rewrite.induct)
+  case prems: (1 \<psi>)
+  show ?case
+  proof (cases "ltln_rewrite_rec \<psi> = \<psi>")
+    case True
+    then show ?thesis
+      using prems(2) unfolding ltln_rewrite.simps[of \<psi>] by auto
+  next
+    case False
+    then have rw_\<psi>_eq: "ltln_rewrite \<psi> = ltln_rewrite (ltln_rewrite_rec \<psi>)" 
+      unfolding ltln_rewrite.simps[of \<psi>] by auto
+    from prems(1)[OF refl False, folded rw_\<psi>_eq] 
+      and ltln_rewrite_rec__size_less[OF False]
+    show ?thesis
+      by (cases "ltln_rewrite \<psi> = ltln_rewrite_rec \<psi>") auto
+  qed
 qed
 
-lemma ltln_rewrite__size_leq:
-  "size (ltln_rewrite \<psi>) \<le> size \<psi>"
-using ltln_rewrite__size_less[of \<psi>] by (cases "ltln_rewrite \<psi> = \<psi>") auto
+lemma ltln_rewrite__size_leq: "size (ltln_rewrite \<psi>) \<le> size \<psi>"
+  using ltln_rewrite__size_less[of \<psi>] by (cases "ltln_rewrite \<psi> = \<psi>") auto
 
 
-lemma ltln_rewrite__equiv:
-  "\<xi> \<Turnstile>\<^sub>n ltln_rewrite \<psi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
+lemma ltln_rewrite__equiv: "\<xi> \<Turnstile>\<^sub>n ltln_rewrite \<psi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
 proof (induct \<psi> rule: ltln_rewrite.induct)
-  case (goal1 \<psi>)
-    show ?case using goal1[OF refl] ltln_rewrite_rec__equiv[of \<xi> \<psi>]
-    unfolding ltln_rewrite.simps[of \<psi>] by (cases "ltln_rewrite_rec \<psi> = \<psi>") auto
+  case prems: (1 \<psi>)
+    show ?case
+      using prems[OF refl] ltln_rewrite_rec__equiv[of \<xi> \<psi>]
+      unfolding ltln_rewrite.simps[of \<psi>]
+      by (cases "ltln_rewrite_rec \<psi> = \<psi>") auto
 qed
 
 
@@ -538,13 +577,14 @@ proof
   assume ?lhs
   then show ?rhs
   proof (induct rule: ltln_pure_eventual_frmls.induct)
-    case goal4 then show ?case by (cases "\<nu> = true\<^sub>n") (cases \<nu>, auto)+
+    case (4 \<nu>)
+    then show ?case by (cases "\<nu> = true\<^sub>n") (cases \<nu>, auto)+
   qed auto
 next
   assume ?rhs
   then show ?lhs
   proof (induct \<phi>)
-    case (goal8 \<nu> \<mu>) 
+    case (LTLnUntil \<nu> \<mu>) 
     then show ?case 
       by (cases "\<nu> = true\<^sub>n") (cases \<nu>, 
         auto intro: ltln_pure_eventual_frmls.intros)+
@@ -571,16 +611,16 @@ proof
   assume ?lhs
   then show ?rhs
   proof (induct rule: ltln_pure_universal_frmls.induct)
-    case goal5 then show ?case by (cases "\<nu> = false\<^sub>n") (cases \<nu>, auto)+
+    case (5 \<nu>)
+    then show ?case by (cases "\<nu> = false\<^sub>n") (cases \<nu>, auto)+
   qed auto
 next
   assume ?rhs
   then show ?lhs
   proof (induct \<phi>)
-    case (goal9 \<nu> \<mu>) 
+    case (LTLnRelease \<nu> \<mu>) 
     then show ?case 
-      by (cases "\<nu> = false\<^sub>n") (cases \<nu>, 
-        auto intro: ltln_pure_universal_frmls.intros)+
+      by (cases "\<nu> = false\<^sub>n") (cases \<nu>, auto intro: ltln_pure_universal_frmls.intros)+
   qed (auto intro: ltln_pure_universal_frmls.intros)
 qed
 

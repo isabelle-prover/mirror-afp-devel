@@ -507,10 +507,13 @@ lemma And_prop_entailment:
 lemma And_propos:
   "propos (And xs) = \<Union>{propos x| x. x \<in> set xs}"
 proof (cases xs)
-  case (goal2 x)
+  case Nil
+    thus ?thesis by simp
+next
+  case (Cons x xs)
     thus ?thesis
       using propos_foldl[of LTLAnd x] by auto
-qed simp
+qed
 
 lemma And_semantics:
   "w \<Turnstile> And xs = (\<forall>x \<in> set xs. w \<Turnstile> x)"
@@ -585,10 +588,13 @@ lemma Or_prop_entailment:
 lemma Or_propos:
   "propos (Or xs) = \<Union>{propos x| x. x \<in> set xs}"
 proof (cases xs)
-  case (goal2 x)
+  case Nil
+    thus ?thesis by simp
+next
+  case (Cons x xs)
     thus ?thesis
       using propos_foldl[of LTLOr x] by auto
-qed simp
+qed
 
 lemma Or_semantics:
   "w \<Turnstile> Or xs = (\<exists>x \<in> set xs. w \<Turnstile> x)"
@@ -704,37 +710,37 @@ lemma sat_models_finite_image:
   assumes "finite P"
   shows "finite (sat_models ` {Abs \<phi> | \<phi>. nested_propos \<phi> \<subseteq> P})"
 proof -
-  have "\<And>\<phi>. nested_propos \<phi> \<subseteq> P \<Longrightarrow> sat_models (Abs \<phi>) = {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}"
+  have "sat_models (Abs \<phi>) = {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}" (is "?lhs = ?rhs")
+    if "nested_propos \<phi> \<subseteq> P" for \<phi>
   proof
-    case (goal2 \<phi>)
-      have "\<And>A B. A \<in> sat_models (Abs \<phi>) \<Longrightarrow> A \<union> B \<in> sat_models (Abs \<phi>)"
-        unfolding sat_models_invariant by blast
-      moreover
-      have "{A | A. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi>} \<subseteq> sat_models (Abs \<phi>)"
-        using sat_models_invariant by fast
-      ultimately
-      show ?case
-        by blast
+    have "\<And>A B. A \<in> sat_models (Abs \<phi>) \<Longrightarrow> A \<union> B \<in> sat_models (Abs \<phi>)"
+      unfolding sat_models_invariant by blast
+    moreover
+    have "{A | A. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi>} \<subseteq> sat_models (Abs \<phi>)"
+      using sat_models_invariant by fast
+    ultimately
+    show "?rhs \<subseteq> ?lhs"
+      by blast
   next
-    case (goal1 \<phi>)
-      hence "propos \<phi> \<subseteq> P"
-        using propos_subset by blast
-      have "\<And>A. A \<in> sat_models (Abs \<phi>) \<Longrightarrow> A \<in> {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}"
-      proof
-        case (goal1 A)
-          then have "A \<Turnstile>\<^sub>P \<phi>"
-            using sat_models_invariant by blast
-          then obtain C D where "C = (A \<inter> P)" and "D = A - P" and "A = C \<union> D"
-            by blast
-          then have "C \<Turnstile>\<^sub>P \<phi>" and "C \<subseteq> P" and "D \<subseteq> UNIV - P"
-            using `A \<Turnstile>\<^sub>P \<phi>` LTL_prop_entailment_restrict_to_propos `propos \<phi> \<subseteq> P` by blast+
-          then have "C \<union> D \<in> {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}"
-            by blast
-          thus ?case
-            using `A = C \<union> D` by simp
-      qed
-      thus ?case 
-        by blast
+    have "propos \<phi> \<subseteq> P"
+      using that propos_subset by blast
+    have "A \<in> {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}"
+      if "A \<in> sat_models (Abs \<phi>)" for A
+    proof (standard, goal_cases prems)
+      case prems
+        then have "A \<Turnstile>\<^sub>P \<phi>"
+          using that sat_models_invariant by blast
+        then obtain C D where "C = (A \<inter> P)" and "D = A - P" and "A = C \<union> D"
+          by blast
+        then have "C \<Turnstile>\<^sub>P \<phi>" and "C \<subseteq> P" and "D \<subseteq> UNIV - P"
+          using `A \<Turnstile>\<^sub>P \<phi>` LTL_prop_entailment_restrict_to_propos `propos \<phi> \<subseteq> P` by blast+
+        then have "C \<union> D \<in> {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}"
+          by blast
+        thus ?case
+          using `A = C \<union> D` by simp
+    qed
+    thus "?lhs \<subseteq> ?rhs"
+      by blast
   qed
   hence Equal: "{sat_models (Abs \<phi>) | \<phi>. nested_propos \<phi> \<subseteq> P} = {{A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P} | \<phi>. nested_propos \<phi> \<subseteq> P}"
     by (metis (lifting, no_types))
@@ -759,18 +765,19 @@ proof -
 
     have "S' \<subseteq> {?map P A | A. A \<in> S}"
     proof
-      case (goal1 A)
-        then obtain \<phi> where "nested_propos \<phi> \<subseteq> P" 
-          and "A = {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}"
-          using S'_def by blast
-        then have "?map P {A | A. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi>} = A"
-          by simp
-        moreover
-        have "{A | A. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi>} \<in> S"
-          using `nested_propos \<phi> \<subseteq> P` S_def by auto
-        ultimately
-        show ?case
-          by blast
+      fix A
+      assume "A \<in> S'"
+      then obtain \<phi> where "nested_propos \<phi> \<subseteq> P" 
+        and "A = {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}"
+        using S'_def by blast
+      then have "?map P {A | A. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi>} = A"
+        by simp
+      moreover
+      have "{A | A. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi>} \<in> S"
+        using `nested_propos \<phi> \<subseteq> P` S_def by auto
+      ultimately
+      show "A \<in> {?map P A | A. A \<in> S}"
+        by blast
     qed
 
     show ?thesis
