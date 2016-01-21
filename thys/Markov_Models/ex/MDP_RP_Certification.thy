@@ -1,4 +1,4 @@
-header \<open>Certification of Reachability Problems on MDPs\<close>
+section \<open>Certification of Reachability Problems on MDPs\<close>
 
 theory MDP_RP_Certification
 imports

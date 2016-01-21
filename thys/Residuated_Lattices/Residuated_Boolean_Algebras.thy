@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-header {* Residuated Boolean Algebras *}
+section {* Residuated Boolean Algebras *}
 
 theory Residuated_Boolean_Algebras
   imports Residuated_Lattices

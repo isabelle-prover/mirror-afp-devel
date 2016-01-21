@@ -1,7 +1,7 @@
 (*  Title:      Containers/Compatibility_Containers_Regular_Sets.thy
     Author:     Andreas Lochbihler, ETH Zurich *)
 
-header {* Compatibility with Regular-Sets *}
+section {* Compatibility with Regular-Sets *}
 
 theory Compatibility_Containers_Regular_Sets imports
   Containers

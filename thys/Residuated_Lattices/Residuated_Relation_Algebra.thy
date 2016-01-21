@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-header {* Residuated Relation Algebras *}
+section {* Residuated Relation Algebras *}
 
 theory Residuated_Relation_Algebra
   imports Residuated_Boolean_Algebras "../Relation_Algebra/Relation_Algebra"

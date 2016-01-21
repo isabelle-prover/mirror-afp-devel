@@ -3,7 +3,7 @@
    Maintainer: Victor Gomes <vborgesferreiragomes1 at sheffield.ac.uk>
 *)
 
-header {* Involutive Residuated Structures *}
+section {* Involutive Residuated Structures *}
 
 theory Involutive_Residuated
   imports Residuated_Lattices
