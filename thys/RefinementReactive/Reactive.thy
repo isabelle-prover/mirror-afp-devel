@@ -13,15 +13,15 @@ begin
     *}
 
   definition "HAVOC = [:x \<leadsto> y . True:]"
-  definition "ASSERT_LIVE = {. \<box> \<diamondsuit> (\<lambda> x . x 0).}"
-  definition "GUARANTY_LIVE = [:x \<leadsto> y . \<box> \<diamondsuit> (\<lambda> y . y 0):]"
+  definition "ASSERT_LIVE = {. \<box> \<diamond> (\<lambda> x . x 0).}"
+  definition "GUARANTY_LIVE = [:x \<leadsto> y . \<box> \<diamond> (\<lambda> y . y 0):]"
   definition "AE = ASSERT_LIVE o HAVOC"
   definition "SKIP = [:x \<leadsto> y . x = y:]"
 
   lemma [simp]: "SKIP = id"
     by (auto simp add: fun_eq_iff SKIP_def demonic_def)
 
-  definition "REQ_RESP = [: \<box>(\<lambda> xs ys . xs (0::nat) \<longrightarrow> (\<diamondsuit> (\<lambda> ys . ys (0::nat))) ys) :]"
+  definition "REQ_RESP = [: \<box>(\<lambda> xs ys . xs (0::nat) \<longrightarrow> (\<diamond> (\<lambda> ys . ys (0::nat))) ys) :]"
   definition "FAIL = \<bottom>"
 
   lemma "HAVOC o ASSERT_LIVE = FAIL"
@@ -759,19 +759,19 @@ begin
   definition "prec_ex u u' x = (-1 \<le> u \<and> u \<le> 3)"
 
   definition "LIVE = [:x \<leadsto> u, x' . u (0::nat) = 0 \<and> x = x':] o {.u, x . prec_st prec_ex rel_ex u x.} 
-    o [:u, x \<leadsto> y . (\<box>(\<lambda> u x y . rel_ex (u 0) (u 1) (x 0) (y 0))) u x y  \<and> (\<box> (\<diamondsuit> (\<lambda> y . y 0))) y :]"
+    o [:u, x \<leadsto> y . (\<box>(\<lambda> u x y . rel_ex (u 0) (u 1) (x 0) (y 0))) u x y  \<and> (\<box> (\<diamond> (\<lambda> y . y 0))) y :]"
 
 thm fusion_spec_local_a
 
-  lemma LIVE_fusion: "LIVE = (SymSystem {u . u 0 = 0} prec_ex rel_ex) \<parallel> [:x \<leadsto> y . (\<box> (\<diamondsuit> (\<lambda> y . y 0))) y:]"
+  lemma LIVE_fusion: "LIVE = (SymSystem {u . u 0 = 0} prec_ex rel_ex) \<parallel> [:x \<leadsto> y . (\<box> (\<diamond> (\<lambda> y . y 0))) y:]"
     proof -
       def B: init == "{u . u (0::nat) = (0::int)}"
       then have A: "(\<lambda> i::nat . 0::int) \<in> init"
         by simp
       then have "([: x \<leadsto> (u, y). u \<in> init \<and> x = y :] \<circ> {.(x, y). prec_st prec_ex rel_ex x y .} \<circ> [: \<lambda>(x, y). (\<box> lft_rel_st rel_ex) x y :]) \<parallel>
-          [: \<lambda>x. \<box> \<diamondsuit> (\<lambda>y. y 0) :] =
+          [: \<lambda>x. \<box> \<diamond> (\<lambda>y. y 0) :] =
           [: x \<leadsto> (u, y). u \<in> init \<and> x = y :] \<circ> {. (x, y). prec_st prec_ex rel_ex x y .} \<circ>
-          [: (u, x) \<leadsto> y. (\<box> lft_rel_st rel_ex) u x y \<and> (\<box> \<diamondsuit> (\<lambda>y. y 0)) y :]"
+          [: (u, x) \<leadsto> y. (\<box> lft_rel_st rel_ex) u x y \<and> (\<box> \<diamond> (\<lambda>y. y 0)) y :]"
         by (unfold fusion_spec_local_a, auto)
       from B and this show ?thesis 
         apply (simp add: SymSystem_def)
@@ -841,7 +841,7 @@ thm fusion_spec_local_a
           from 1 2 3 A B C D have "\<exists>b . x (a + b)"
             by (simp, metis diff_0 int_one_le_iff_zero_less le_less not_le zle_diff1_eq)
       }
-      then show "(\<box> \<diamondsuit> (\<lambda>y . y 0)) x"
+      then show "(\<box> \<diamond> (\<lambda>y . y 0)) x"
         by (simp add: always_def eventually_def preca_ex_def at_fun_def rel_ex_def lft_rel_st_def)
    qed
   end

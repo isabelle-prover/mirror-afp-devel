@@ -1010,7 +1010,7 @@ context LTL_Syntax begin
     and LTLnUntil     ("_ U\<^sub>n _" [84,84] 83)
     and LTLnRelease   ("_ V\<^sub>n _" [84,84] 83)
 
-  abbreviation ltln_eventuality :: "'a ltln \<Rightarrow> 'a ltln" ("\<diamondsuit>\<^sub>n _" [88] 87)
+  abbreviation ltln_eventuality :: "'a ltln \<Rightarrow> 'a ltln" ("\<diamond>\<^sub>n _" [88] 87)
     where "ltln_eventuality \<phi> \<equiv> true\<^sub>n U\<^sub>n \<phi>" 
 
   abbreviation ltln_universality :: "'a ltln \<Rightarrow> 'a ltln" ("\<box>\<^sub>n _" [88] 87)

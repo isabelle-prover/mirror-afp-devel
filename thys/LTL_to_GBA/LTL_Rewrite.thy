@@ -9,7 +9,7 @@ context begin interpretation LTL_Syntax .
 
 inductive_set ltln_pure_eventual_frmls :: "'a ltln set"
 where
-  "\<diamondsuit>\<^sub>n \<phi> \<in> ltln_pure_eventual_frmls"
+  "\<diamond>\<^sub>n \<phi> \<in> ltln_pure_eventual_frmls"
 | "\<lbrakk> \<nu> \<in> ltln_pure_eventual_frmls; \<mu> \<in> ltln_pure_eventual_frmls \<rbrakk>
       \<Longrightarrow> \<nu> and\<^sub>n \<mu> \<in> ltln_pure_eventual_frmls"
 | "\<lbrakk> \<nu> \<in> ltln_pure_eventual_frmls; \<mu> \<in> ltln_pure_eventual_frmls \<rbrakk>
@@ -96,7 +96,7 @@ qed
 
 corollary ltln_pure_eventual_frmls_equiv_diamond:
   assumes "\<psi> \<in> ltln_pure_eventual_frmls"
-  shows "\<xi> \<Turnstile>\<^sub>n \<diamondsuit>\<^sub>n \<psi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
+  shows "\<xi> \<Turnstile>\<^sub>n \<diamond>\<^sub>n \<psi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n \<psi>"
 by (rule ltln_pure_eventual_frmls_equiv[OF assms])
 
 
@@ -559,7 +559,7 @@ qed
 
 fun ltln_pure_eventual_frmls_impl
 where
-  "ltln_pure_eventual_frmls_impl (\<diamondsuit>\<^sub>n \<phi>) = True"
+  "ltln_pure_eventual_frmls_impl (\<diamond>\<^sub>n \<phi>) = True"
 | "ltln_pure_eventual_frmls_impl (\<nu> and\<^sub>n \<mu>) 
   = (ltln_pure_eventual_frmls_impl \<nu> \<and> ltln_pure_eventual_frmls_impl \<mu>)"
 | "ltln_pure_eventual_frmls_impl (\<nu> or\<^sub>n \<mu>) 

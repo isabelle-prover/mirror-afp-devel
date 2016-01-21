@@ -24,7 +24,7 @@ definition "\<Phi> = All1 x (Ex1 y (Lt x y))"
 
 abbreviation Globally ("\<box>_" [40] 40) where
  "Globally P t ==  All1 z (Imp (Not (Lt t z)) (P z))"
-abbreviation Future ("\<diamondsuit>_" [40] 40) where
+abbreviation Future ("\<diamond>_" [40] 40) where
   "Future P t == Ex1 z (And (Not (Lt t z)) (P z))"
 abbreviation IMP (infixr "\<rightarrow>" 50) where "IMP P1 P2 t == Imp (P1 t) (P2 t)"
 

@@ -51,8 +51,8 @@ begin
       definition always :: "'a \<Rightarrow> 'a"  ("\<box> (_)" [900] 900) where
         "\<box> p = (INF i . p !! i)"
 
-      definition eventually :: "'a \<Rightarrow> 'a"  ("\<diamondsuit> (_)" [900] 900) where
-        "\<diamondsuit> p = (SUP i . p !! i)"
+      definition eventually :: "'a \<Rightarrow> 'a"  ("\<diamond> (_)" [900] 900) where
+        "\<diamond> p = (SUP i . p !! i)"
 
       definition "next" :: "'a \<Rightarrow> 'a"  ("\<Odot> (_)" [900] 900) where
         "\<Odot> p = p !! (Suc 0)"
@@ -127,7 +127,7 @@ text{*
       lemma always_and: "\<box> (p \<sqinter> q) = (\<box> p) \<sqinter> (\<box> q)"
         by (simp add: always_def INF_inf_distrib)
 
-      lemma eventually_or: "\<diamondsuit> (p \<squnion> q) = (\<diamondsuit> p) \<squnion> (\<diamondsuit> q)"
+      lemma eventually_or: "\<diamond> (p \<squnion> q) = (\<diamond> p) \<squnion> (\<diamond> q)"
         by (simp add: eventually_def SUP_sup_distrib)
 
       lemma neg_until_always: "-(p until -p) = \<box> p"
@@ -144,13 +144,13 @@ text{*
             by (rule INF_greatest, simp)
         qed
 
-      lemma neg_always_eventually: "\<box> p = - \<diamondsuit> (- p)"
+      lemma neg_always_eventually: "\<box> p = - \<diamond> (- p)"
         by (simp add: fun_eq_iff always_def eventually_def until_def uminus_SUP)
         
       lemma neg_true_until_always: "-(\<top> until -p) = \<box> p"
         by (simp add: fun_eq_iff always_def until_def uminus_SUP uminus_INF)
 
-      lemma true_until_eventually: "(\<top> until p) = \<diamondsuit> p"
+      lemma true_until_eventually: "(\<top> until p) = \<diamond> p"
         by (cut_tac p = "-p" in neg_always_eventually, cut_tac p = "-p" in neg_true_until_always, simp)
     end
 

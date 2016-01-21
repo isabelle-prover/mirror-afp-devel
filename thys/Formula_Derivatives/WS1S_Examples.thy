@@ -67,7 +67,7 @@ lemma "Thm (Abs_idx (0, 0)) \<Phi>"
   by eval
 
 abbreviation Globally ("\<box>_" [40] 40) where "Globally P == %n. FAll FO (FImp (FNot (FBase (Less None (n+1) 0))) (P 0))"
-abbreviation Future ("\<diamondsuit>_" [40] 40) where "Future P == %n. FEx FO (FAnd (FNot (FBase (Less None (n+1) 0))) (P 0))"
+abbreviation Future ("\<diamond>_" [40] 40) where "Future P == %n. FEx FO (FAnd (FNot (FBase (Less None (n+1) 0))) (P 0))"
 abbreviation IMP (infixr "\<rightarrow>" 50) where "IMP P1 P2 == %n. FImp (P1 n) (P2 n)"
 
 definition \<Psi> :: "nat \<Rightarrow> formula" where

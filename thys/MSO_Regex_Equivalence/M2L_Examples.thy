@@ -53,7 +53,7 @@ lemma "Thm TYPE(Enum.finite_1) 0 Comm_Lemma"
 *)
 
 abbreviation Globally ("\<box>_" [40] 40) where "Globally P == %n. All (Imp (FNot (FLess (n+1) 0)) (P 0))"
-abbreviation Future ("\<diamondsuit>_" [40] 40) where "Future P == %n. FExists (FAnd (FNot (FLess (n+1) 0)) (P 0))"
+abbreviation Future ("\<diamond>_" [40] 40) where "Future P == %n. FExists (FAnd (FNot (FLess (n+1) 0)) (P 0))"
 abbreviation IMP (infixr "\<rightarrow>" 50) where "IMP P1 P2 == %n. Imp (P1 n) (P2 n)"
 
 abbreviation "FOR xs n \<equiv> rexp_of_list FOr FALSE (map (\<lambda>x. FQ x n) xs)"
