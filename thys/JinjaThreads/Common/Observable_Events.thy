@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Observable events in JinjaThreads} *}
+section {* Observable events in JinjaThreads *}
 
 theory Observable_Events
 imports 

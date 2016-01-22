@@ -2,7 +2,8 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-header {* \isaheader{Progress of Small Step Semantics} *}
+section {* Progress of Small Step Semantics *}
+
 theory Progress
 imports
   WellTypeRT

@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-header {* \isaheader{Program annotation} *}
+section {* Program annotation *}
 
 theory Annotate
 imports

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Non-speculative prefixes of executions } *}
+section {* Non-speculative prefixes of executions *}
 
 theory Non_Speculative imports
   "JMM_Spec"
@@ -11,7 +11,7 @@ begin
 
 declare addr_locsI [simp]
 
-section {* Previously written values *}
+subsection {* Previously written values *}
 
 fun w_value :: 
   "'m prog \<Rightarrow> (('addr \<times> addr_loc) \<Rightarrow> 'addr val set) \<Rightarrow> ('addr, 'thread_id) obs_event action
@@ -111,7 +111,7 @@ apply(auto dest!: w_values_new_actionD[where ?vs0.0=vs0 and P=P] w_values_WriteM
 apply blast
 done
 
-section {* Coinductive version of non-speculative prefixes *}
+subsection {* Coinductive version of non-speculative prefixes *}
 
 coinductive non_speculative :: 
   "'m prog \<Rightarrow> ('addr \<times> addr_loc \<Rightarrow> 'addr val set) \<Rightarrow> ('addr, 'thread_id) obs_event action llist \<Rightarrow> bool"

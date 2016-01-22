@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Various notions of bisimulation} *}
+section {* Various notions of bisimulation *}
 
 theory Bisimulation
 imports

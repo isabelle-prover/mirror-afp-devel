@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Various Operations for Exception Tables} *}
+section {* Various Operations for Exception Tables *}
 
 theory Exception_Tables imports
   Compiler2

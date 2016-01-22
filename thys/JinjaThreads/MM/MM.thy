@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \chapter{Memory Models} *}
+chapter {* Memory Models *}
 
 theory MM
 imports

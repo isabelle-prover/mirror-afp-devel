@@ -2,7 +2,8 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{String representation of types} *}
+section {* String representation of types *}
+
 theory ToString imports
   "../J/Expr"
   "../JVM/JVMInstructions"

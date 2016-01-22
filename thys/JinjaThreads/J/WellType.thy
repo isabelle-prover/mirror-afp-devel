@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-header {* \isaheader{Well-typedness of Jinja expressions} *}
+section {* Well-typedness of Jinja expressions *}
 
 theory WellType
 imports

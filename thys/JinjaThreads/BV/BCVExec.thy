@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Code generation for the byte code verifier} *}
+section {* Code generation for the byte code verifier *}
 
 theory BCVExec
 imports

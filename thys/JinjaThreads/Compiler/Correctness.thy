@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Correctness of both stages} *}
+section {* Correctness of both stages *}
 
 theory Correctness 
 imports

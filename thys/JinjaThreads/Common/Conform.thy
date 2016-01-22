@@ -4,7 +4,7 @@
     Based on the Jinja theory Common/Conform.thy by David von Oheimb and Tobias Nipkow
 *)
 
-header {* \isaheader{Conformance Relations for Type Soundness Proofs} *}
+section {* Conformance Relations for Type Soundness Proofs *}
 
 theory Conform
 imports
@@ -132,7 +132,7 @@ lemmas hconf_heap_ops_mono =
 
 end
 
-section{* Value conformance @{text":\<le>"} *}
+subsection{* Value conformance @{text":\<le>"} *}
 
 context heap_base begin
 
@@ -193,7 +193,7 @@ by(auto intro: conf_hext dest: hext_heap_ops)
 
 end
 
-section{* Value list conformance @{text"[:\<le>]"} *}
+subsection{* Value list conformance @{text"[:\<le>]"} *}
 
 context heap_base begin
 
@@ -225,7 +225,7 @@ by (erule list_all2_mono, erule conf_hext, assumption)
 
 end
 
-section {* Local variable conformance *}
+subsection {* Local variable conformance *}
 
 context heap_base begin
 
@@ -248,7 +248,7 @@ unfolding lconf_def by(fast elim: conf_hext)
 
 end
 
-section {* Thread object conformance *}
+subsection {* Thread object conformance *}
 
 context heap_base begin
 
@@ -305,7 +305,7 @@ by clarsimp
 
 end
 
-section {* Well-formed start state *}
+subsection {* Well-formed start state *}
 
 context heap_base begin
 

@@ -1,7 +1,8 @@
 (*  Title:      JinjaThreads/J/DefAssPreservation.thy
     Author:     Andreas Lochbihler, Tobias Nipkow
 *)
-header {* \isaheader{Preservation of definite assignment} *}
+
+section {* Preservation of definite assignment *}
 
 theory DefAssPreservation
 imports

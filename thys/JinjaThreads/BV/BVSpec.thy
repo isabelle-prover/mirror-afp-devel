@@ -4,7 +4,7 @@
     Based on the theory Jinja/BV/BVSpec
 *)
 
-header {* \isaheader{The Bytecode Verifier}\label{sec:BVSpec} *}
+section {* The Bytecode Verifier \label{sec:BVSpec} *}
 
 theory BVSpec
 imports

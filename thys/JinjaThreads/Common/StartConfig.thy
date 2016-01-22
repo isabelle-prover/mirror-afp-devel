@@ -2,9 +2,8 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* 
-  \isaheader{The initial configuration}
-*}
+section {* The initial configuration *}
+
 theory StartConfig
 imports
   Exceptions

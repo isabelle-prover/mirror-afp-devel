@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, Tobias Nipkow
 *)
 
-header {* \isaheader{Compilation Stage 2} *}
+section {* Compilation Stage 2 *}
 
 theory Compiler2
 imports PCompiler J1State "../JVM/JVMInstructions"

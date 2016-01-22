@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Sequential consistency with efficient data structures} *}
+section {* Sequential consistency with efficient data structures *}
 
 theory SC_Collections
 imports

@@ -2,7 +2,7 @@
     Author:     Gerwin Klein, Andreas Lochbihler
 *)
 
-header {* \isaheader{Type rules for the intermediate language} *}
+section {* Type rules for the intermediate language *}
 
 theory J1WellType imports
   J1State

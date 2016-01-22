@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Specialize type safety for JMM heap implementation 2} *}
+section {* Specialize type safety for JMM heap implementation 2 *}
 
 theory JMM_Typesafe2
 imports

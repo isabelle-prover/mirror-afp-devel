@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Semantics of the intermediate language} *}
+section {* Semantics of the intermediate language *}
 
 theory J1 imports
   "J1State"
@@ -441,7 +441,7 @@ by(auto elim!: Red1.cases dest: red1_hext_incr)
 
 end
 
-section {* Silent moves *}
+subsection {* Silent moves *}
 
 context J1_heap_base begin 
 

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Semantics of method calls that cannot be defined inside JinjaThreads} *}
+section {* Semantics of method calls that cannot be defined inside JinjaThreads *}
 
 theory ExternalCall
 imports

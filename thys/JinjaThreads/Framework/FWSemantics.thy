@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{The multithreaded semantics} *}
+section {* The multithreaded semantics *}
 
 theory FWSemantics
 imports

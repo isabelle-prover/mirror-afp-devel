@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{JMM Instantiation with Jinja -- common parts} *}
+section {* JMM Instantiation with Jinja -- common parts *}
 
 theory JMM_Common
 imports

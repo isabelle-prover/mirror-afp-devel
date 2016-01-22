@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-header {* \isaheader{Small Step Semantics} *}
+section {* Small Step Semantics *}
 
 theory SmallStep
 imports

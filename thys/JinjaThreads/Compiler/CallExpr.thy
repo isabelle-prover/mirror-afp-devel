@@ -2,10 +2,9 @@
     Author:     Andreas Lochbihler
 *)
 
-header {*
-  \chapter{Compilation}\label{cha:comp}
-  \isaheader{Method calls in expressions} 
-*}
+chapter {* Compilation \label{cha:comp} *}
+
+section {* Method calls in expressions *}
 
 theory CallExpr imports 
   "../J/Expr"

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Correctness of Stage 2: From JVM to intermediate language} *}
+section {* Correctness of Stage 2: From JVM to intermediate language *}
 
 theory JVMJ1 imports
   J1JVMBisim

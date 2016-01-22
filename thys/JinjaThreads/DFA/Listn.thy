@@ -5,7 +5,7 @@
 Lists of a fixed length.
 *)
 
-header {* \isaheader{Fixed Length Lists} *}
+section {* Fixed Length Lists *}
 
 theory Listn
 imports Err

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Semantics of the thread actions for purely conditional purpose such as Join} *}
+section {* Semantics of the thread actions for purely conditional purpose such as Join *}
 
 theory FWCondAction
 imports

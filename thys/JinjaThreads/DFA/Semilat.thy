@@ -5,10 +5,9 @@
 Semilattices.
 *)
 
-header {* 
-  \chapter{Data Flow Analysis Framework}\label{cha:bv}
-  \isaheader{Semilattices} 
-*}
+chapter {* Data Flow Analysis Framework \label{cha:bv} *}
+
+section {* Semilattices *}
 
 theory Semilat
 imports Main "~~/src/HOL/Library/While_Combinator"

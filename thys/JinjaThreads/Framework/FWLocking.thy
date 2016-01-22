@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Semantics of the thread actions for locking} *}
+section {* Semantics of the thread actions for locking *}
 
 theory FWLocking
 imports

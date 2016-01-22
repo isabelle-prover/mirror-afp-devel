@@ -2,7 +2,7 @@
     Author:     Gerwin Klein, Andreas Lochbihler
 *)
 
-header {* \isaheader{A Defensive JVM} *}
+section {* A Defensive JVM *}
 
 theory JVMDefensive
 imports JVMExec "../Common/ExternalCallWF"

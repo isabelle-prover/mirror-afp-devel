@@ -5,7 +5,7 @@
 Products as semilattices.
 *)
 
-header {* \isaheader{Products as Semilattices} *}
+section {* Products as Semilattices *}
 
 theory Product
 imports Err

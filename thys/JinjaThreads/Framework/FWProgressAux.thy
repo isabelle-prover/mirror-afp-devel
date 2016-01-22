@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Auxiliary definitions for the progress theorem for the multithreaded semantics} *}
+section {* Auxiliary definitions for the progress theorem for the multithreaded semantics *}
 
 theory FWProgressAux
 imports

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, Tobias Nipkow
 *)
 
-header {* \isaheader{Well-Formedness of Intermediate Language} *}
+section {* Well-Formedness of Intermediate Language *}
 
 theory J1WellForm imports
   "../J/DefAss"

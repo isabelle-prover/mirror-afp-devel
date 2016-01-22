@@ -2,9 +2,8 @@
     Author:     Andreas Lochbihler
 *)
 
-header {*
-  \isaheader{The JinjaThreads source language with explicit call stacks}
-*}
+section {* The JinjaThreads source language with explicit call stacks *}
+
 theory J0 imports
   "../J/WWellForm"
   "../J/WellType"
@@ -196,7 +195,7 @@ apply(auto split: split_if_asm simp add: synthesized_call_def)
 apply(fastforce)
 done
 
-section {* Silent moves *}
+subsection {* Silent moves *}
 
 primrec  \<tau>move0 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('a, 'b, 'addr) exp \<Rightarrow> bool"
   and \<tau>moves0 :: "'m prog \<Rightarrow> 'heap \<Rightarrow> ('a, 'b, 'addr) exp list \<Rightarrow> bool"

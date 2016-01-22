@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Unobservable steps for the JVM} *}
+section {* Unobservable steps for the JVM *}
 
 theory JVMTau imports
   TypeComp

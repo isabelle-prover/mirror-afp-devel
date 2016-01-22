@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Round robin scheduler} *}
+section {* Round robin scheduler *}
 
 theory Round_Robin
 imports
@@ -14,7 +14,7 @@ text {*
   Currently, this is only possible if there is only one such by using @{term Predicate.the}.
 *}
 
-section {* Concrete schedulers *}
+subsection {* Concrete schedulers *}
 
 subsection {* Round-robin schedulers *}
 

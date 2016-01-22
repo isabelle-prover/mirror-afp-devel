@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-header {* \isaheader{Well-formedness Constraints} *}
+section {* Well-formedness Constraints *}
 
 theory JWellForm
 imports

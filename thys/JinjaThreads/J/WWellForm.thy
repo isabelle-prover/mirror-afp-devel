@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-header {* \isaheader{Weak well-formedness of Jinja programs} *}
+section {* Weak well-formedness of Jinja programs *}
 
 theory WWellForm
 imports

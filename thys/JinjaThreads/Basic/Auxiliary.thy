@@ -4,9 +4,7 @@
     Based on the Jinja theory Common/Aux.thy by David von Oheimb and Tobias Nipkow
 *)
 
-header {* 
-  \isaheader{Auxiliary Definitions and Lemmata}
-*}
+section {* Auxiliary Definitions and Lemmata *}
 
 theory Auxiliary
 imports

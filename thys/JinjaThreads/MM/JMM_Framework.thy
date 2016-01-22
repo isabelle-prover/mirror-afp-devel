@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Combination of locales for heap operations and interleaving} *}
+section {* Combination of locales for heap operations and interleaving *}
 
 theory JMM_Framework
 imports
@@ -86,7 +86,7 @@ by(rule vs_confI)(rule w_values_start_heap_obs_typeable)
 end
 
 
-section {* JMM traces for Jinja semantics *}
+subsection {* JMM traces for Jinja semantics *}
 
 context multithreaded_base begin
 

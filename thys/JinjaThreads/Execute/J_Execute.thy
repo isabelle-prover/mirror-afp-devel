@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Executable semantics for J} *}
+section {* Executable semantics for J *}
 
 theory J_Execute
 imports

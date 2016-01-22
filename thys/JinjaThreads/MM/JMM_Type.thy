@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{JMM heap implementation 1} *}
+section {* JMM heap implementation 1 *}
 
 theory JMM_Type
 imports 
@@ -11,7 +11,7 @@ imports
   JMM_Heap
 begin
 
-section {* Definitions *}
+subsection {* Definitions *}
 
 text {*
   The JMM heap only stores type information.
@@ -89,7 +89,7 @@ notation jmm'.addr_loc_type ("_,_ \<turnstile>jmm' _@_ : _" [50, 50, 50, 50, 50]
 notation jmm'.confs ("_,_ \<turnstile>jmm' _ [:\<le>] _"  [51,51,51,51] 50)
 notation jmm'.tconf ("_,_ \<turnstile>jmm' _ \<surd>t" [51,51,51] 50)
 
-section {* Heap locale interpretations *}
+subsection {* Heap locale interpretations *}
 
 subsection {* Locale @{text heap} *}
 

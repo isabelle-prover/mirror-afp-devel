@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Unlocking a sync block never fails} *}
+section {* Unlocking a sync block never fails *}
 
 theory Correctness1Threaded imports 
   J0J1Bisim

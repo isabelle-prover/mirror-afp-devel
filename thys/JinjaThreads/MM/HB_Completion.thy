@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Happens-before consistent completion of executions in the JMM} *}
+section {* Happens-before consistent completion of executions in the JMM *}
 
 theory HB_Completion imports
   "Non_Speculative"

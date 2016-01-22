@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Semantics of the thread actions for wait, notify and interrupt} *}
+section {* Semantics of the thread actions for wait, notify and interrupt *}
 
 theory FWWait
 imports

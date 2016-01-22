@@ -2,7 +2,8 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Setup for converter Java2Jinja} *}
+section {* Setup for converter Java2Jinja *}
+
 theory Java2Jinja 
 imports
   Code_Generation

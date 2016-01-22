@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-header {* \isaheader{Program Compilation} *}
+section {* Program Compilation *}
 
 theory PCompiler
 imports
@@ -208,7 +208,7 @@ lemma [simp]: "field (compP f P) F D = field P F D"
 (*<*)by(simp add:field_def)(*>*)
 
 
-section{*Invariance of @{term wf_prog} under compilation *}
+subsection{*Invariance of @{term wf_prog} under compilation *}
 
 lemma [iff]: "distinct_fst (classes (compP f P)) = distinct_fst (classes P)"
 (*<*)

@@ -1,10 +1,9 @@
 (*  Title:      HOL/MicroJava/BV/JVM.thy
-
     Author:     Tobias Nipkow, Gerwin Klein
     Copyright   2000 TUM
 *)
 
-header {* \isaheader{LBV for the JVM}\label{sec:JVM} *}
+section {* LBV for the JVM \label{sec:JVM} *}
 
 theory LBVJVM
 imports

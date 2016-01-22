@@ -2,7 +2,7 @@
     Author:     Gerwin Klein, Andreas Lochbihler
 *)
 
-header {* \isaheader{Welltyped Programs produce no Type Errors} *}
+section {* Welltyped Programs produce no Type Errors *}
 
 theory BVNoTypeError
 imports

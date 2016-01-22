@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{JVM Semantics for the delay bisimulation proof from intermediate language to byte code} *}
+section {* JVM Semantics for the delay bisimulation proof from intermediate language to byte code *}
 
 theory Execs imports JVMTau begin
 

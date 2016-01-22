@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Synthetic first and last actions for each thread} *}
+section {* Synthetic first and last actions for each thread *}
 
 theory FWInitFinLift
 imports

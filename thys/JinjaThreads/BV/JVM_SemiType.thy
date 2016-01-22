@@ -4,10 +4,9 @@
     Based on the theory Jinja/BV/JVM_SemiType
 *)
 
-header {* 
-  \chapter{Bytecode verifier}
-  \isaheader{The JVM Type System as Semilattice} 
-*}
+chapter {* Bytecode verifier *}
+
+section {* The JVM Type System as Semilattice *}
 
 theory JVM_SemiType
 imports
@@ -70,7 +69,7 @@ notation (ASCII)
   sup_state_opt ("_ |- _ <=' _"  [71,71,71] 70) and
   sup_loc ("_ |- _ [<=T] _"  [71,71,71] 70)
 
-section "Unfolding"
+subsection "Unfolding"
 
 lemma JVM_states_unfold: 
   "states P mxs mxl \<equiv> err(opt((Union {list n (types P) |n. n <= mxs}) \<times>
@@ -111,7 +110,7 @@ lemma err_le_unfold [iff]:
  by (simp add: Err.le_def lesub_def) 
   
 
-section {* Semilattice *}
+subsection {* Semilattice *}
 
 lemma order_sup_state_opt [intro, simp]: 
   "wf_prog wf_mb P \<Longrightarrow> order (sup_state_opt P)"   
@@ -128,7 +127,7 @@ lemma acc_JVM [intro]:
   "wf_prog wf_mb P \<Longrightarrow> acc (JVM_SemiType.states P mxs mxl) (JVM_SemiType.le P mxs mxl)"
 by(unfold JVM_le_unfold JVM_states_unfold) blast
 
-section {* Widening with @{text "\<top>"} *}
+subsection {* Widening with @{text "\<top>"} *}
 
 lemma widen_refl[iff]: "widen P t t"  by (simp add: fun_of_def) 
 
@@ -167,7 +166,7 @@ lemma sup_ty_opt_trans [intro?, trans]:
            simp add: sup_ty_opt_def Err.le_def lesub_def fun_of_def
            split: err.splits) 
 
-section "Stack and Registers"
+subsection "Stack and Registers"
 
 lemma stk_convert:
   "P \<turnstile> ST [\<le>] ST' = Listn.le (widen P) ST ST'"
@@ -190,7 +189,7 @@ lemma sup_loc_trans [intro?, trans]:
   "\<lbrakk>P \<turnstile> a [\<le>\<^sub>\<top>] b; P \<turnstile> b [\<le>\<^sub>\<top>] c\<rbrakk> \<Longrightarrow> P \<turnstile> a [\<le>\<^sub>\<top>] c"
  by (rule list_all2_trans, rule sup_ty_opt_trans) 
 
-section "State Type"
+subsection "State Type"
 
 lemma sup_state_conv [iff]:
   "P \<turnstile> (ST,LT) \<le>\<^sub>i (ST',LT') = (P \<turnstile> ST [\<le>] ST' \<and> P \<turnstile> LT [\<le>\<^sub>\<top>] LT')"

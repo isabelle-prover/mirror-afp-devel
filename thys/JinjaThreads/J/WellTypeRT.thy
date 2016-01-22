@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-header {* \isaheader{Runtime Well-typedness} *}
+section {* Runtime Well-typedness *}
 
 theory WellTypeRT
 imports 

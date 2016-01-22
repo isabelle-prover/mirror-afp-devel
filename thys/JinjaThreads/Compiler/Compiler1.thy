@@ -4,7 +4,7 @@
     Based on Jinja/Compiler/Compiler1
 *)
 
-header {* \isaheader{Compilation Stage 1} *}
+section {* Compilation Stage 1 *}
 
 theory Compiler1 imports
   PCompiler

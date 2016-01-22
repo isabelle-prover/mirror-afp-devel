@@ -3,7 +3,7 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{Correctness of the LBV} *}
+section {* Correctness of the LBV *}
 
 theory LBVCorrect
 imports LBVSpec Typing_Framework

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{JMM type safety for bytecode} *}
+section {* JMM type safety for bytecode *}
 
 theory JMM_JVM_Typesafe
 imports

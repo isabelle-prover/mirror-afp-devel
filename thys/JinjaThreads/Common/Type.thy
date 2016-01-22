@@ -4,10 +4,9 @@
     Based on the Jinja theory Common/Type.thy by David von Oheimb and Tobias Nipkow
 *)
 
-header {*
-  \chapter{Concepts for all JinjaThreads Languages}\label{cha:j}
-  \isaheader{JinjaThreads types}
-*}
+chapter {* Concepts for all JinjaThreads Languages \label{cha:j} *}
+
+section {* JinjaThreads types *}
 
 theory Type
 imports

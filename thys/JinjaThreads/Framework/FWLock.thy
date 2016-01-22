@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{All about a managing a single lock} *}
+section {* All about a managing a single lock *}
 
 theory FWLock
 imports

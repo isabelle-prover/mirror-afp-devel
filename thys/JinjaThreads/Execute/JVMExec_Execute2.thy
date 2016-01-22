@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{An optimized JVM} *}
+section {* An optimized JVM *}
 
 theory JVMExec_Execute2
 imports

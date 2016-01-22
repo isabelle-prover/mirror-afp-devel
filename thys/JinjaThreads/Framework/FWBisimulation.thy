@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Bisimulation relations for the multithreaded semantics } *}
+section {* Bisimulation relations for the multithreaded semantics *}
 
 theory FWBisimulation
 imports

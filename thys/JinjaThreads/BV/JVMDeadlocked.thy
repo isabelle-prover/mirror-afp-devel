@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header{* \isaheader{Preservation of deadlock for the JVMs} *}
+section {* Preservation of deadlock for the JVMs *}
 
 theory JVMDeadlocked
 imports

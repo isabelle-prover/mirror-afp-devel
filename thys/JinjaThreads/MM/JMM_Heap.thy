@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Locales for heap operations with set of allocated addresses} *}
+section {* Locales for heap operations with set of allocated addresses *}
 
 theory JMM_Heap 
 imports

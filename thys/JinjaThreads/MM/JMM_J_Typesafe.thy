@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{JMM type safety for source code} *}
+section {* JMM type safety for source code *}
 
 theory JMM_J_Typesafe imports
   JMM_Typesafe2

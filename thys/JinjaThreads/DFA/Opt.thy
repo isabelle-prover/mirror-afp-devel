@@ -5,7 +5,7 @@
 More about options.
 *)
 
-header {* \isaheader{More about Options} *}
+section {* More about Options *}
 
 theory Opt
 imports

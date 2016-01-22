@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-header {* \isaheader{Expressions} *}
+section {* Expressions *}
 
 theory Expr
 imports

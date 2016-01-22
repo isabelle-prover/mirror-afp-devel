@@ -3,7 +3,7 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-header {* \isaheader{The Lightweight Bytecode Verifier} *}
+section {* The Lightweight Bytecode Verifier *}
 
 theory LBVSpec
 imports SemilatAlg Opt
@@ -99,7 +99,7 @@ lemma cert_okD4 [intro?]:
 
 declare Let_def [simp]
 
-section "more semilattice lemmas"
+subsection "more semilattice lemmas"
 
 
 lemma (in lbv) sup_top [simp, elim]:
@@ -136,7 +136,7 @@ lemma (in lbv) le_bottom [simp]: "x \<sqsubseteq>\<^sub>r \<bottom> = (x = \<bot
   by (blast intro: antisym_r)
 
 
-section "merge"
+subsection "merge"
 
 lemma (in lbv) merge_Nil [simp]:
   "merge c pc [] x = x" by (simp add: mrg_def)
@@ -238,7 +238,7 @@ proof -
 qed
 (*>*)
 
-section "wtl-inst-list"
+subsection "wtl-inst-list"
 
 lemmas [iff] = not_Err_eq
 
@@ -321,7 +321,7 @@ proof -
 qed
 (*>*)
 
-section "preserves-type"
+subsection "preserves-type"
 
 lemma (in lbv) merge_pres:
   assumes s0: "snd`set ss \<subseteq> A" and x: "x \<in> A"

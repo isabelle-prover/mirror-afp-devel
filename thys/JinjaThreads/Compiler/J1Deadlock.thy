@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Deadlock perservation for the intermediate language} *}
+section {* Deadlock perservation for the intermediate language *}
 
 theory J1Deadlock imports
   J1

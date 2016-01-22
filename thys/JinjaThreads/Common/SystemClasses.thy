@@ -4,7 +4,7 @@
     Based on the Jinja theory Common/SystemClasses.thy by Gerwin Klein
 *)
 
-header {* \isaheader{System Classes} *}
+section {* System Classes *}
 
 theory SystemClasses
 imports

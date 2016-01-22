@@ -2,10 +2,9 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 
     Based on the Jinja theory Common/Type.thy by Tobias Nipkow
-
 *)
 
-header {* \isaheader{Relations between Jinja Types} *}
+section {* Relations between Jinja Types *}
 
 theory TypeRel
 imports

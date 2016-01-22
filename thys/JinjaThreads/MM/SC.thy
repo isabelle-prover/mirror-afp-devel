@@ -4,7 +4,7 @@
     Based on the Jinja theories Common/Objects.thy and Common/Conform by David von Oheimb
 *)
 
-header {* \isaheader{Sequential consistency} *}
+section {* Sequential consistency *}
 
 theory SC
 imports 

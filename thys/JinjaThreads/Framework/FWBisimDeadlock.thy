@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Preservation of deadlock across bisimulations} *}
+section {* Preservation of deadlock across bisimulations *}
 
 theory FWBisimDeadlock
 imports

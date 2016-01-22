@@ -2,7 +2,8 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Code generator setup} *}
+section {* Code generator setup *}
+
 theory Code_Generation 
 imports
   "J_Execute"

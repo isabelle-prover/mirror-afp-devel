@@ -2,9 +2,7 @@
     Author:     Tobias Nipkow, Gerwin Klein, Andreas Lochbihler
 *)
 
-header {* 
-  \isaheader{The Jinja Type System as a Semilattice} 
-*}
+section {* The Jinja Type System as a Semilattice *}
 
 theory SemiType
 imports

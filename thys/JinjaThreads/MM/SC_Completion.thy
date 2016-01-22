@@ -2,14 +2,14 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Sequentially consistent completion of executions in the JMM} *}
+section {* Sequentially consistent completion of executions in the JMM *}
 
 theory SC_Completion 
 imports
   "Non_Speculative"
 begin
 
-section {* Most recently written values *}
+subsection {* Most recently written values *}
 
 fun mrw_value :: 
   "'m prog \<Rightarrow> (('addr \<times> addr_loc) \<rightharpoonup> ('addr val \<times> bool)) \<Rightarrow> ('addr, 'thread_id) obs_event action
@@ -239,7 +239,7 @@ next
   ultimately show ?case by simp
 qed
 
-section {* Coinductive version of sequentially consistent prefixes *}
+subsection {* Coinductive version of sequentially consistent prefixes *}
 
 coinductive ta_seq_consist :: 
   "'m prog \<Rightarrow> ('addr \<times> addr_loc \<rightharpoonup> 'addr val \<times> bool) \<Rightarrow> ('addr, 'thread_id) obs_event action llist \<Rightarrow> bool"
@@ -710,7 +710,7 @@ proof(intro exI conjI)
   qed(rule tsa_ok)
 qed
 
-section {* Cut-and-update and sequentially consistent completion *}
+subsection {* Cut-and-update and sequentially consistent completion *}
 
 inductive foldl_list_all2 ::
   "('b \<Rightarrow> 'c \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('b \<Rightarrow> 'c \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> 'c \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'b list \<Rightarrow> 'c list \<Rightarrow> 'a \<Rightarrow> bool"

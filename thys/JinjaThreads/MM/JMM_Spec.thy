@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Axiomatic specification of the JMM} *}
+section {* Axiomatic specification of the JMM *}
 
 theory JMM_Spec
 imports
@@ -11,7 +11,7 @@ imports
   "../../Coinductive/Coinductive_List"
 begin
 
-section {* Definitions *}
+subsection {* Definitions *}
 
 type_synonym JMM_action = nat
 type_synonym ('addr, 'thread_id) execution = "('thread_id \<times> ('addr, 'thread_id) obs_event action) llist"
@@ -293,7 +293,7 @@ where
   "sequentially_consistent P (E, ws) \<longleftrightarrow> (\<forall>r \<in> read_actions E. P,E \<turnstile> r \<leadsto>mrw ws r)"
 
 
-section {* Actions *}
+subsection {* Actions *}
 
 inductive_cases is_new_action_cases [elim!]:
   "is_new_action (NormalAction (ExternalCall a M vs v))"
@@ -480,7 +480,7 @@ lemma addr_locsI:
   "\<lbrakk> hT = Array_type T n; n' < n \<rbrakk> \<Longrightarrow> ACell n' \<in> addr_locs P hT"
 by(cases hT)(auto dest: has_field_decl_above)
 
-section {* Orders *}
+subsection {* Orders *}
 subsection {* Action order *}
 
 lemma action_orderI:
@@ -694,7 +694,7 @@ lemma consistent_program_order_sync_with:
   "order_consistent (program_order E) (sync_with P E)"
 by(rule order_consistent_subset[OF consistent_program_order_sync_order])(blast elim: sync_withE)+
 
-section {* Happens before *}
+subsection {* Happens before *}
 
 lemma porder_happens_before:
   "porder_on (actions E) (happens_before P E)"
@@ -764,7 +764,7 @@ lemma external_actions_not_new:
   "\<lbrakk> a \<in> external_actions E; is_new_action (action_obs E a) \<rbrakk> \<Longrightarrow> False"
 by(erule external_actions.cases)(simp)
 
-section {* Most recent writes and sequential consistency *}
+subsection {* Most recent writes and sequential consistency *}
 
 lemma most_recent_write_for_fun:
   "\<lbrakk> P,E \<turnstile> ra \<leadsto>mrw wa; P,E \<turnstile> ra \<leadsto>mrw wa' \<rbrakk> \<Longrightarrow> wa = wa'"
@@ -873,7 +873,7 @@ using assms by simp
 
 declare sequentially_consistent.simps [simp del]
 
-section {* Similar actions *}
+subsection {* Similar actions *}
 
 text {* Similar actions differ only in the values written/read *}
 
@@ -993,7 +993,7 @@ lemma eq_into_sim_actions:
 unfolding sim_actions_def assms
 by(rule llist_all2_reflI)(auto)
 
-section {* Well-formedness conditions for execution sets *}
+subsection {* Well-formedness conditions for execution sets *}
 
 locale executions_base =
   fixes \<E> :: "('addr, 'thread_id) execution set"
@@ -1040,7 +1040,7 @@ locale jmm_consistent =
   for \<E> :: "('addr, 'thread_id) execution set"
   and P :: "'m prog"
 
-section {* Legal executions *}
+subsection {* Legal executions *}
 
 record ('addr, 'thread_id) pre_justifying_execution =
   committed :: "JMM_action set"
@@ -1669,7 +1669,7 @@ proof(intro conjI strip)
   thus "wf_action_translation E (?J n)" using assms by(simp add: wf_action_translations_def)
 qed auto
 
-section {* Executions with common prefix *}
+subsection {* Executions with common prefix *}
 
 lemma actions_change_prefix:
   assumes read: "a \<in> actions E"

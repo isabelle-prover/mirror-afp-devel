@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-header {* \isaheader{Definite assignment} *}
+section {* Definite assignment *}
 
 theory DefAss
 imports 

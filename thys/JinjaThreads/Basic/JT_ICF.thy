@@ -1,4 +1,4 @@
-header {* Adapting the Isabelle Collection Framework for Jinja Threads *}
+section {* Adapting the Isabelle Collection Framework for Jinja Threads *}
 theory JT_ICF
 imports "../../Collections/ICF/CollectionsV1"
 begin

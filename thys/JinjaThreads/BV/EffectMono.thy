@@ -2,7 +2,7 @@
     Author:     Gerwin Klein, Andreas Lochbihler
 *)
 
-header {* \isaheader{Monotonicity of eff and app} *}
+section {* Monotonicity of eff and app *}
 
 theory EffectMono
 imports

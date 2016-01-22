@@ -1,7 +1,8 @@
 (*  Title:      JinjaThreads/BV/JVMDeadlocked.thy
     Author:     Andreas Lochbihler
 *)
-header{* \isaheader{Progress result for both of the multithreaded JVMs} *}
+
+section {* Progress result for both of the multithreaded JVMs *}
 
 theory BVProgressThreaded
 imports

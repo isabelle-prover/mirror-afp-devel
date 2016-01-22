@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Type-safety proof for the Java memory model} *}
+section {* Type-safety proof for the Java memory model *}
 
 theory JMM_Typesafe 
 imports

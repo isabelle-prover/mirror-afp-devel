@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Sequentially consistent executions are legal} *}
+section {* Sequentially consistent executions are legal *}
 
 theory SC_Legal imports
   JMM_Spec

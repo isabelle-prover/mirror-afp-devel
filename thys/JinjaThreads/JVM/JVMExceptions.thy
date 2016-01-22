@@ -2,7 +2,7 @@
     Author:     Gerwin Klein, Martin Strecker, Andreas Lochbihler
 *)
 
-header {* \isaheader{Exception handling in the JVM} *}
+section {* Exception handling in the JVM *}
 
 theory JVMExceptions
 imports

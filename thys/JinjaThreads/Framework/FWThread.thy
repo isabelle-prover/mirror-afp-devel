@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Semantics of the thread actions for thread creation} *}
+section {* Semantics of the thread actions for thread creation *}
 
 theory FWThread
 imports

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{The multithreaded semantics as a labelled transition system} *}
+section {* The multithreaded semantics as a labelled transition system *}
 
 theory FWLTS
 imports

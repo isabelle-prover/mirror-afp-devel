@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-header {* \isaheader{Preservation of Well-Typedness in Stage 2} *}
+section {* Preservation of Well-Typedness in Stage 2 *}
 
 theory TypeComp
 imports 

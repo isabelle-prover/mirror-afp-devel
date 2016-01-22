@@ -2,7 +2,7 @@
     Author:     Gerwin Klein, Andreas Lochbihler
 *)
 
-header {* \isaheader{Instructions of the JVM} *}
+section {* Instructions of the JVM *}
 
 theory JVMInstructions
 imports

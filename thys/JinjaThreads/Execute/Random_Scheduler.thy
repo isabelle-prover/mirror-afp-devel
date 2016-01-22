@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Random scheduler} *}
+section {* Random scheduler *}
 
 theory Random_Scheduler
 imports

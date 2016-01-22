@@ -2,10 +2,9 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-header {*
-  \chapter{JinjaThreads source language}
-  \isaheader{Program State} 
-*}
+chapter {* JinjaThreads source language *}
+
+section {* Program State *}
 
 theory State
 imports

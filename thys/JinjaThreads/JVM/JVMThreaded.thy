@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header{* \isaheader{Instantiating the framework semantics with the JVM} *}
+section {* Instantiating the framework semantics with the JVM *}
 
 theory JVMThreaded
 imports

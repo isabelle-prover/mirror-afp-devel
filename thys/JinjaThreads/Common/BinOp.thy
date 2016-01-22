@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header{* \isaheader{ Binary Operators } *}
+section {* Binary Operators *}
 
 theory BinOp
 imports
@@ -28,7 +28,7 @@ datatype bop =  -- "names of binary operations"
   | ShiftRightZeros
   | ShiftRightSigned
 
-section{* The semantics of binary operators *}
+subsection{* The semantics of binary operators *}
 
 type_synonym 'addr binop_ret = "'addr val + 'addr" -- "a value or the address of an exception"
 
@@ -294,7 +294,7 @@ by(cases "(v1, v2)" rule: binop_Div.cases) auto
 
 end
 
-section {* Typing for binary operators *}
+subsection {* Typing for binary operators *}
 
 inductive WT_binop :: "'m prog \<Rightarrow> ty \<Rightarrow> bop \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _\<guillemotleft>_\<guillemotright>_ :: _" [51,0,0,0,51] 50)
 where

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header{* \isaheader{ Properties of external calls in well-formed programs } *}
+section {* Properties of external calls in well-formed programs *}
 
 theory ExternalCallWF
 imports

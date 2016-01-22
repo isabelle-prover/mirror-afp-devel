@@ -2,7 +2,7 @@
     Author:     Cornelia Pusch, Gerwin Klein, Andreas Lochbihler
 *)
 
-header {* \isaheader{JVM Instruction Semantics} *}
+section {* JVM Instruction Semantics *}
 
 theory JVMExecInstr
 imports

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Abstract heap locales for byte code programs} *}
+section {* Abstract heap locales for byte code programs *}
 
 theory JVMHeap
 imports

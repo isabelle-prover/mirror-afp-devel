@@ -2,17 +2,16 @@
     Author:     Cornelia Pusch, Gerwin Klein, Andreas Lochbihler
 *)
 
-header {* 
-  \chapter{Jinja Virtual Machine}\label{cha:jvm}
-  \isaheader{State of the JVM} 
-*}
+chapter {* Jinja Virtual Machine \label{cha:jvm} *}
+
+section {* State of the JVM *}
 
 theory JVMState
 imports
   "../Common/Observable_Events"
 begin
 
-section {* Frame Stack *}
+subsection {* Frame Stack *}
 
 type_synonym 
   pc = nat
@@ -44,7 +43,7 @@ print_translation {*
 *}
 typ "'addr frame"
 
-section {* Runtime State *}
+subsection {* Runtime State *}
 type_synonym
   ('addr, 'heap) jvm_state = "'addr option \<times> 'heap \<times> 'addr frame list"  
   -- "exception flag, heap, frames"

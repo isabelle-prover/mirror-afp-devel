@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Wellformedness conditions for the multithreaded state } *}
+section {* Wellformedness conditions for the multithreaded state *}
 
 theory FWWellform
 imports

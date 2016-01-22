@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header{* \isaheader{Conformance for threads} *}
+section {* Conformance for threads *}
 
 theory ConformThreaded
 imports

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Abstract heap locales for J1 programs} *}
+section {* Abstract heap locales for J1 programs *}
 
 theory J1Heap imports
   "J1State"

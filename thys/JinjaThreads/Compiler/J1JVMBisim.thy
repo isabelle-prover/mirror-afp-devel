@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{The delay bisimulation between intermediate language and JVM} *}
+section {* The delay bisimulation between intermediate language and JVM *}
 
 theory J1JVMBisim imports 
   Execs

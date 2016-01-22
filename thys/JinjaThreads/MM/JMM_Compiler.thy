@@ -4,7 +4,7 @@
     Compiler correctness for the JMM
 *)
 
-header {* \isaheader{Compiler correctness for the JMM} *}
+section {* Compiler correctness for the JMM *}
 
 theory JMM_Compiler imports
   JMM_J

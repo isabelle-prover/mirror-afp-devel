@@ -2,7 +2,7 @@
     Author:     Gerwin Klein, Andreas Lochbihler
 *)
 
-header {* \isaheader{Effect of Instructions on the State Type} *}
+section {* Effect of Instructions on the State Type *}
 
 theory Effect
 imports

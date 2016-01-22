@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-header {* \isaheader{Indexing variables in variable lists} *}
+section {* Indexing variables in variable lists *}
 
 theory ListIndex imports Main begin
 

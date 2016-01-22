@@ -2,7 +2,7 @@
     Author:     Cornelia Pusch, Gerwin Klein, Andreas Lochbihler
 *)
 
-header {* \isaheader{Program Execution in the JVM} *}
+section {* Program Execution in the JVM *}
 
 theory JVMExec
 imports
@@ -14,7 +14,7 @@ begin
 abbreviation instrs_of :: "'addr jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> 'addr instr list"
 where "instrs_of P C M == fst(snd(snd(the(snd(snd(snd(method P C M)))))))"
 
-section "single step execution"
+subsection "single step execution"
 
 context JVM_heap_base begin
 
@@ -38,7 +38,7 @@ fun exec :: "'addr jvm_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'heap
 | "exec P t (None, h, (stk, loc, C, M, pc) # frs) = exec_instr (instrs_of P C M ! pc) P t h stk loc C M pc frs"
 | "exec P t (\<lfloor>a\<rfloor>, h, fr # frs) = {(\<epsilon>, exception_step P a h fr frs)}"
 
-section "relational view"
+subsection "relational view"
 
 inductive exec_1 :: 
   "'addr jvm_prog \<Rightarrow> 'thread_id \<Rightarrow> ('addr, 'heap) jvm_state

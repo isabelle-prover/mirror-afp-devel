@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{JMM Instantiation for J} *}
+section {* JMM Instantiation for J *}
 
 theory DRF_J
 imports

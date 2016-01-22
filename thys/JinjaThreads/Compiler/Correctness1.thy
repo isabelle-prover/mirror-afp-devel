@@ -4,7 +4,7 @@
     reminiscent of the Jinja theory Compiler/Correctness1
 *)
 
-header {* \isaheader{Semantic Correctness of Stage 1} *}
+section {* Semantic Correctness of Stage 1 *}
 
 theory Correctness1 imports
   J0J1Bisim

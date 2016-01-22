@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{JMM Instantiation for bytecode} *}
+section {* JMM Instantiation for bytecode *}
 
 theory DRF_JVM
 imports

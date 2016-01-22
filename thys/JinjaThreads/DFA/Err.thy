@@ -5,7 +5,7 @@
 The error type.
 *)
 
-header {* \isaheader{The Error Type} *}
+section {* The Error Type *}
 
 theory Err
 imports Semilat
@@ -197,7 +197,7 @@ lemma Err_in_err [iff]: "Err : err A"
 lemma Ok_in_err [iff]: "(OK x \<in> err A) = (x\<in>A)"
 (*<*) by (auto simp add: err_def') (*>*)
 
-section {* lift *}
+subsection {* lift *}
 
 lemma lift_in_errI:
   "\<lbrakk> e \<in> err S; \<forall>x\<in>S. e = OK x \<longrightarrow> f x \<in> err S \<rbrakk> \<Longrightarrow> lift f e \<in> err S"
@@ -218,7 +218,7 @@ lemma OK_lift2_OK [simp]: "OK x \<squnion>\<^bsub>lift2 f\<^esub> OK y = x \<squ
 (*<*) by (simp add: lift2_def plussub_def split: err.split) (*>*)
 
 
-section {* sup *}
+subsection {* sup *}
 
 lemma Err_sup_Err [simp]: "Err \<squnion>\<^bsub>sup f\<^esub> x = Err"
 (*<*) by (simp add: plussub_def sup_def lift2_def) (*>*)
@@ -247,7 +247,7 @@ apply (simp split: err.split)
 done 
 (*>*)
 
-section {* semilat (err A) (le r) f *}
+subsection {* semilat (err A) (le r) f *}
 
 lemma semilat_le_err_Err_plus [simp]:
   "\<lbrakk> x\<in> err A; semilat(err A, le r, f) \<rbrakk> \<Longrightarrow> Err \<squnion>\<^sub>f x = Err"
@@ -321,7 +321,7 @@ proof -
 qed
 (*>*)
 
-section {* semilat (err(Union AS)) *}
+subsection {* semilat (err(Union AS)) *}
 
 (* FIXME? *)
 lemma all_bex_swap_lemma [iff]:

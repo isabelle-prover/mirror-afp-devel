@@ -2,10 +2,9 @@
     Author:     David von Oheimb, Tobias Nipkow, Andreas Lochbihler
 
     Based on the Jinja theory Common/Value.thy by David von Oheimb and Tobias Nipkow
-
 *)
 
-header {* \isaheader{Jinja Values} *}
+section {* Jinja Values *}
 
 theory Value
 imports

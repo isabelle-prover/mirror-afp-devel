@@ -2,7 +2,7 @@
     Author:     Cornelia Pusch, Gerwin Klein, Andreas Lochbihler
 *)
 
-header {* \isaheader{BV Type Safety Proof}\label{sec:BVSpecTypeSafe} *}
+section {* BV Type Safety Proof \label{sec:BVSpecTypeSafe} *}
 
 theory BVSpecTypeSafe
 imports
@@ -17,7 +17,7 @@ text {*
   verifier only admits type safe programs.  
 *}
 
-section {* Preliminaries *}
+subsection {* Preliminaries *}
 
 text {*
   Simp and intro setup for the type safety proof:
@@ -28,7 +28,7 @@ lemmas widen_rules [intro] = conf_widen confT_widen confs_widens confTs_widen
 
 end
   
-section {* Exception Handling *}
+subsection {* Exception Handling *}
 
 
 text {*
@@ -140,10 +140,10 @@ qed
 
 end
 
-section {* Single Instructions *}
+subsection {* Single Instructions *}
 
 text {*
-  In this section we prove for each single (welltyped) instruction
+  In this subsection we prove for each single (welltyped) instruction
   that the state after execution of the instruction still conforms.
   Since we have already handled raised exceptions above, we can now assume that
   no exception has been raised in this step.
@@ -1416,7 +1416,7 @@ declare defs1 [simp del]
 
 end
 
-section {* Main *}
+subsection {* Main *}
 
 lemma (in JVM_conf_read) BV_correct_1 [rule_format]:
 "\<And>\<sigma>. \<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; \<Phi> \<turnstile> t: \<sigma>\<surd>\<rbrakk> \<Longrightarrow> P,t \<turnstile> \<sigma> -tas-jvm\<rightarrow> \<sigma>' \<longrightarrow> \<Phi> \<turnstile> t: \<sigma>'\<surd>"

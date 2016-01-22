@@ -4,7 +4,7 @@
     Tabulation for lookup functions
 *)
 
-header {* \isaheader{Tabulation for lookup functions} *}
+section {* Tabulation for lookup functions *}
 
 theory TypeRelRefine
 imports

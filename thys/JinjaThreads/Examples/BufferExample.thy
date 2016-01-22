@@ -2,7 +2,8 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Buffer example} *}
+section {* Buffer example *}
+
 theory BufferExample imports 
   "../Execute/Code_Generation"
 begin

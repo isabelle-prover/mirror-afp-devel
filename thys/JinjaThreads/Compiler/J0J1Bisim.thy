@@ -4,7 +4,7 @@
     Reminiscent of the Jinja theory Compiler/Correctness1
 *)
 
-header {* \isaheader{The bisimulation relation betwenn source and intermediate language} *}
+section {* The bisimulation relation betwenn source and intermediate language *}
 
 theory J0J1Bisim imports
   "J1"
@@ -14,7 +14,7 @@ theory J0J1Bisim imports
   "J0"
 begin
 
-section{*Correctness of program compilation *}
+subsection{*Correctness of program compilation *}
 
 primrec unmod :: "'addr expr1 \<Rightarrow> nat \<Rightarrow> bool"
   and unmods :: "'addr expr1 list \<Rightarrow> nat \<Rightarrow> bool"
@@ -120,7 +120,7 @@ apply(insert fin)
 apply(auto simp add: is_vals_conv)
 done
 
-section {* The delay bisimulation relation *}
+subsection {* The delay bisimulation relation *}
 
 text {* Delay bisimulation for expressions *}
 

@@ -2,9 +2,8 @@
     Author:     Andreas Lochbihler
 *)
 
-header {*
-  \isaheader{Bisimulation proof for between source code small step semantics with and without callstacks for single threads}
-*}
+section {* Bisimulation proof for between source code small step semantics
+  with and without callstacks for single threads *}
 
 theory J0Bisim imports
   J0

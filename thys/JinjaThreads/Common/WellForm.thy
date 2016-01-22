@@ -4,7 +4,7 @@
     Based on the Jinja theory Common/WellForm.thy by Tobias Nipkow
 *)
 
-header {* \isaheader{Generic Well-formedness of programs} *}
+section {* Generic Well-formedness of programs *}
 
 theory WellForm
 imports

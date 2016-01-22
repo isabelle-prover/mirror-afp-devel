@@ -2,8 +2,10 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \chapter{Examples}
-          \isaheader{Apprentice challenge} *}
+chapter {* Examples *}
+
+section {* Apprentice challenge *}
+
 theory ApprenticeChallenge 
 imports
   "../Execute/Code_Generation"

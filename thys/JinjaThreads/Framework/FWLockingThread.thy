@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Semantics of the thread action ReleaseAcquire for the thread state} *}
+section {* Semantics of the thread action ReleaseAcquire for the thread state *}
 
 theory FWLockingThread
 imports

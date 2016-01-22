@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Labelled transition systems} *}
+section {* Labelled transition systems *}
 
 theory LTS
 imports

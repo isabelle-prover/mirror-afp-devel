@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Correctness of Stage 2: The multithreaded setting} *}
+section {* Correctness of Stage 2: The multithreaded setting *}
 
 theory Correctness2
 imports

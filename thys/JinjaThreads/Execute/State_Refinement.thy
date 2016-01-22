@@ -2,8 +2,9 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \chapter{Schedulers}
-          \isaheader{Refinement for multithreaded states} *}
+chapter {* Schedulers *}
+
+section {* Refinement for multithreaded states *}
 
 theory State_Refinement
 imports

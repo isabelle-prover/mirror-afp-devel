@@ -4,9 +4,7 @@
     Reminiscent of the Jinja theory Common/Objects.thy
 *)
 
-header {* 
-  \isaheader{An abstract heap model}
-*}
+section {*  An abstract heap model *}
 
 theory Heap
 imports 

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{The data race free guarantee of the JMM} *}
+section {* The data race free guarantee of the JMM *}
 
 theory JMM_DRF
 imports

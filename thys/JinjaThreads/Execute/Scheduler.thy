@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Abstract scheduler} *}
+section {* Abstract scheduler *}
 
 theory Scheduler
 imports

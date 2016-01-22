@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Lifting of thread-local properties to the multithreaded case} *}
+section {* Lifting of thread-local properties to the multithreaded case *}
 
 theory FWLifting
 imports

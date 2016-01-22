@@ -2,9 +2,9 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* 
-  \chapter{The generic multithreaded semantics}
-  \isaheader{State of the multithreaded semantics} *}
+chapter {* The generic multithreaded semantics *}
+
+section {* State of the multithreaded semantics *}
 
 theory FWState
 imports 

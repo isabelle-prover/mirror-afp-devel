@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{The intermediate language J1} *}
+section {* The intermediate language J1 *}
 
 theory J1State imports
   "../J/State"

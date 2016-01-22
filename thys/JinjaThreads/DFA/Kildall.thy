@@ -5,7 +5,7 @@
 Kildall's algorithm.
 *)
 
-header {* \isaheader{Kildall's Algorithm}\label{sec:Kildall} *}
+section {* Kildall's Algorithm \label{sec:Kildall} *}
 
 theory Kildall
 imports SemilatAlg "../Basic/Auxiliary"

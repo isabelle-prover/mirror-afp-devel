@@ -4,7 +4,7 @@
     Based on the Jinja theory Common/Exceptions.thy by Gerwin Klein and Martin Strecker
 *)
 
-header {* \isaheader{Exceptions} *}
+section {* Exceptions *}
 
 theory Exceptions
 imports
@@ -53,7 +53,7 @@ where [code_unfold]: "sys_xcpts = set sys_xcpts_list"
 definition wf_syscls :: "'m prog \<Rightarrow> bool"
 where "wf_syscls P \<equiv> (\<forall>C \<in> {Object, Throwable, Thread}. is_class P C) \<and> (\<forall>C \<in> sys_xcpts. P \<turnstile> C \<preceq>\<^sup>* Throwable)"
 
-section "System exceptions"
+subsection "System exceptions"
 
 lemma [simp]:
   "NullPointer \<in> sys_xcpts \<and> 
@@ -149,7 +149,7 @@ by(simp_all add: Thread_def NullPointer_def ClassCast_def OutOfMemory_def ArrayI
 
 lemmas Thread_neq_sys_xcpts = Thread_neq_sys_xcpts_aux Thread_neq_sys_xcpts_aux[symmetric]
 
-section {* Well-formedness for system classes and exceptions *}
+subsection {* Well-formedness for system classes and exceptions *}
 
 lemma
   assumes "wf_syscls P"

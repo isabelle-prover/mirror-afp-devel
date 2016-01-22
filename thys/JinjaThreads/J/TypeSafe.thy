@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-header {* \isaheader{Type Safety Proof} *}
+section {* Type Safety Proof *}
 
 theory TypeSafe
 imports

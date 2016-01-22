@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Progress theorem for the multithreaded semantics} *}
+section {* Progress theorem for the multithreaded semantics *}
 
 theory FWProgress
 imports

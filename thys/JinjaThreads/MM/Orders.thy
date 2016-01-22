@@ -2,14 +2,14 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Orders as predicates} *}
+section {* Orders as predicates *}
 
 theory Orders
 imports
   Main
 begin
 
-section {* Preliminaries *}
+subsection {* Preliminaries *}
 
 text {* transfer @{term "refl_on"} et al. from @{theory Relation} to predicates *}
 
@@ -131,7 +131,7 @@ by(rule symI)(blast)
 lemma symPD: "\<lbrakk> symP r; r x y \<rbrakk> \<Longrightarrow> r y x"
 by(blast dest: symD)
 
-section {* Easy properties *}
+subsection {* Easy properties *}
 
 lemma porder_onI:
   "\<lbrakk> refl_onP A r; antisymP r; transP r \<rbrakk> \<Longrightarrow> porder_on A r"
@@ -167,7 +167,7 @@ lemma total_onPD:
   "\<lbrakk> total_onP A r; x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> r x y \<or> x = y \<or> r y x"
 by(drule (2) total_onD) blast
 
-section {* Order consistency *}
+subsection {* Order consistency *}
 
 lemma order_consistentI:
   "(\<And>a a'. \<lbrakk> r a a'; s a' a \<rbrakk> \<Longrightarrow> a = a') \<Longrightarrow> order_consistent r s"
@@ -399,7 +399,7 @@ proof(rule porder_onI)
   show "transP ?rt^++" by(rule transP_tranclp)
 qed
 
-section {* Order restrictions *}
+subsection {* Order restrictions *}
 
 lemma restrictPI [intro!, simp]:
   "\<lbrakk> r a b; a \<in> A; b \<in> A \<rbrakk> \<Longrightarrow> (r |` A) a b"

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Semantic properties of lifted predicates} *}
+section {* Semantic properties of lifted predicates *}
 
 theory FWLiftingSem
 imports

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Deadlock formalisation} *}
+section {* Deadlock formalisation *}
 
 theory FWDeadlock
 imports

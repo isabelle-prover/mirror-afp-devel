@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Semantics of the thread actions for interruption} *}
+section {* Semantics of the thread actions for interruption *}
 
 theory FWInterrupt
 imports

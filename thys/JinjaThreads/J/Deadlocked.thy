@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header{* \isaheader{Preservation of Deadlock} *}
+section {* Preservation of Deadlock *}
 
 theory Deadlocked
 imports

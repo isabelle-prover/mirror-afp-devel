@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{JMM heap implementation 2} *}
+section {* JMM heap implementation 2 *}
 
 theory JMM_Type2
 imports 
@@ -11,7 +11,7 @@ imports
   JMM_Heap
 begin
 
-section {* Definitions *}
+subsection {* Definitions *}
 
 datatype addr = Address htype nat   -- "heap type and sequence number"
 
@@ -158,7 +158,7 @@ where "jmm'_confs P \<equiv> jmm'.confs TYPE('m) P P"
 abbreviation jmm'_tconf :: "'m prog \<Rightarrow> JMM_heap \<Rightarrow> addr \<Rightarrow> bool" ("_,_ \<turnstile>jmm' _ \<surd>t" [51,51,51] 50)
 where "jmm'_tconf P \<equiv> jmm'.tconf TYPE('m) P P"
 
-section {* Heap locale interpretations *}
+subsection {* Heap locale interpretations *}
 
 subsection {* Locale @{text heap} *}
 

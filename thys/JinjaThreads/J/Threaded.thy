@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header{* \isaheader{The source language as an instance of the framework} *}
+section {* The source language as an instance of the framework *}
 
 theory Threaded
 imports
@@ -139,7 +139,7 @@ end
 sublocale J_heap < red_tconf: lifting_wf final_expr "mred P" convert_RA "\<lambda>t ex h. P,h \<turnstile> t \<surd>t"
 by(rule lifting_wf_tconf)
 
-section {* Towards agreement between the framework semantics' lock state and the locks stored in the expressions *}
+subsection {* Towards agreement between the framework semantics' lock state and the locks stored in the expressions *}
 
 primrec sync_ok :: "('a,'b,'addr) exp \<Rightarrow> bool"
   and sync_oks :: "('a,'b,'addr) exp list \<Rightarrow> bool"
@@ -322,7 +322,7 @@ apply(drule WT_expr_locks)
 apply(simp add: expr_locks_blocks)
 done
 
-section {* Preservation of lock state agreement *}
+subsection {* Preservation of lock state agreement *}
 
 fun upd_expr_lock_action :: "int \<Rightarrow> lock_action \<Rightarrow> int"
 where
@@ -705,7 +705,7 @@ by simp
 
 end
 
-section {* Determinism *}
+subsection {* Determinism *}
 
 context J_heap_base begin
 

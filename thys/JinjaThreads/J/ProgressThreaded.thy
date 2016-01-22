@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-header {* \isaheader{Progress and type safety theorem for the multithreaded system} *}
+section {* Progress and type safety theorem for the multithreaded system *}
 
 theory ProgressThreaded 
 imports 
@@ -29,7 +29,7 @@ proof -
   with tst show ?thesis by auto
 qed
 
-section {* Preservation lemmata *}
+subsection {* Preservation lemmata *}
 
 subsection {* Definite assignment *}
 
@@ -540,7 +540,7 @@ proof(rule redT_progress_deadlock)
     by(auto simp add: red_mthr.deadlocked'_def)
 qed
 
-section {* Type safety proof *}
+subsection {* Type safety proof *}
 
 theorem TypeSafetyT:
   fixes C and M and ttas and Es

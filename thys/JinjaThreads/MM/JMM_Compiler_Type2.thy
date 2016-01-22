@@ -1,7 +1,8 @@
-(* Title: JinjaThreads/MM/JMM_Compiler_Type2.thy
-   Author: Andreas Lochbihler *)
+(*  Title:      JinjaThreads/MM/JMM_Compiler_Type2.thy
+    Author:     Andreas Lochbihler
+*)
 
-header {* \isaheader{Compiler correctness for JMM heap implementation 2} *}
+section {* Compiler correctness for JMM heap implementation 2 *}
 
 theory JMM_Compiler_Type2
 imports

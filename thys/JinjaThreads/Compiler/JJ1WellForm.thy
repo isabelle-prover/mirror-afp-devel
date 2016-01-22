@@ -4,8 +4,7 @@
     Reminiscent of the Jinja theory Compiler/Correctness1
 *)
 
-header {* \isaheader{Preservation of well-formedness from source code to intermediate language} *}
-
+section {* Preservation of well-formedness from source code to intermediate language *}
 
 theory JJ1WellForm imports
   "../J/JWellForm"
