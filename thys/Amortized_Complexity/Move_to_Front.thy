@@ -1,16 +1,21 @@
-section "Online Algorithms and List Update"
+(* Author: Tobias Nipkow *)
+
+section "Deterministic List Update"
 
 theory Move_to_Front
-imports Complex_Main Inversion
+imports
+  Swaps
+  On_Off
 begin
 
 declare Let_def[simp]
 
 subsection "Function @{text mtf}"
 
-definition "mtf x xs =
-  (if x \<in> set xs then x # (take (index xs x) xs) @ drop (index xs x + 1) xs
-   else xs)"
+definition mtf :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
+"mtf x xs =
+ (if x \<in> set xs then x # (take (index xs x) xs) @ drop (index xs x + 1) xs
+  else xs)"
 
 lemma mtf_id[simp]: "x \<notin> set xs \<Longrightarrow> mtf x xs = xs"
 by(simp add: mtf_def)
@@ -47,109 +52,17 @@ lemma distinct_mtf[simp]: "distinct (mtf x xs) = distinct xs"
 by (metis length_mtf set_mtf card_distinct distinct_card)
 
 
-subsection "Function @{text swapSuc}"
-
-definition "swapSuc n xs =
-  (if Suc n < size xs then xs[n := xs!Suc n, Suc n := xs!n] else xs)"
-
-lemma length_swapSuc[simp]: "length(swapSuc i xs) = length xs"
-by(simp add: swapSuc_def)
-
-lemma swapSuc_id[simp]: "Suc n \<ge> size xs \<Longrightarrow> swapSuc n xs = xs"
-by(simp add: swapSuc_def)
-
-lemma distinct_swapSuc[simp]:
-  "distinct(swapSuc i xs) = distinct xs"
-by(simp add: swapSuc_def)
-
-lemma swapSuc_Suc[simp]: "swapSuc (Suc n) (a # xs) = a # swapSuc n xs"
-by(induction xs) (auto simp: swapSuc_def)
-
-lemma index_swapSuc_distinct:
-  "distinct xs \<Longrightarrow> Suc n < length xs \<Longrightarrow>
-  index (swapSuc n xs) x =
-  (if x = xs!n then Suc n else if x = xs!Suc n then n else index xs x)"
-by(auto simp add: swapSuc_def index_swap_if_distinct)
-
-lemma set_swapSuc[simp]: "set(swapSuc n xs) = set xs"
-by(auto simp add: swapSuc_def set_conv_nth nth_list_update) metis
-
-lemma nth_swapSuc_id[simp]: "Suc i < length xs \<Longrightarrow> swapSuc i xs ! i = xs!(i+1)"
-by(simp add: swapSuc_def)
-
-lemma before_in_swapSuc:
- "dist_perm xs ys \<Longrightarrow> Suc n < size xs \<Longrightarrow>
-  x < y in (swapSuc n xs) \<longleftrightarrow>
-  x < y in xs \<and> \<not> (x = xs!n \<and> y = xs!Suc n) \<or> x = xs!Suc n \<and> y = xs!n"
-by(simp add:before_in_def index_swapSuc_distinct)
-  (metis Suc_lessD Suc_lessI index_less_size_conv index_nth_id less_Suc_eq n_not_Suc_n nth_index)
-
-lemma Inv_swap: assumes "dist_perm xs ys"
-shows "Inv xs (swapSuc n ys) = 
-  (if Suc n < size xs
-   then if ys!n < ys!Suc n in xs
-        then Inv xs ys \<union> {(ys!n, ys!Suc n)}
-        else Inv xs ys - {(ys!Suc n, ys!n)}
-   else Inv xs ys)"
-proof-
-  have "length xs = length ys" using assms by (metis distinct_card)
-  with assms show ?thesis
-    by(simp add: Inv_def set_eq_iff)
-      (metis before_in_def not_before_in before_in_swapSuc)
-qed
-
-
-abbreviation swapSucs where "swapSucs == foldr swapSuc"
-
-lemma swapSucs_inv[simp]:
-  "set (swapSucs sws xs) = set xs \<and>
-  size(swapSucs sws xs) = size xs \<and>
-  distinct(swapSucs sws xs) = distinct xs"
-by (induct sws arbitrary: xs) (simp_all add: swapSuc_def)
-
-lemma swapSucs_eq_Nil_iff[simp]: "swapSucs acts xs = [] \<longleftrightarrow> xs = []"
-by(induction acts)(auto simp: swapSuc_def)
-
-lemma swapSucs_map_Suc[simp]:
-  "swapSucs (map Suc sws) (a # xs) = a # swapSucs sws xs"
-by(induction sws arbitrary: xs) auto
-
-lemma card_Inv_swapSucs_le:
-  "distinct xs \<Longrightarrow> card (Inv xs (swapSucs sws xs)) \<le> length sws"
-by(induction sws) (auto simp: Inv_swap card_insert_if card_Diff_singleton_if)
-
-lemma nth_swapSucs: "\<forall>i\<in>set is. j < i \<Longrightarrow> swapSucs is xs ! j = xs ! j"
-by(induction "is")(simp_all add: swapSuc_def)
-
-lemma not_before0[simp]: "~ x < xs ! 0 in xs"
-apply(cases "xs = []")
-by(auto simp: before_in_def neq_Nil_conv)
-
-lemma before_id[simp]: "\<lbrakk> distinct xs; i < size xs; j < size xs \<rbrakk> \<Longrightarrow>
-  xs ! i < xs ! j in xs \<longleftrightarrow> i < j"
-by(simp add: before_in_def index_nth_id)
-
-lemma before_swapSucs:
-  "\<lbrakk> distinct is; \<forall>i\<in>set is. Suc i < size xs; distinct xs; i \<notin> set is; i < j; j < size xs \<rbrakk> \<Longrightarrow>
-  swapSucs is xs ! i < swapSucs is xs ! j in xs"
-apply(induction "is" arbitrary: i j)
- apply simp
-apply(auto simp: swapSuc_def nth_list_update)
-done
-
-lemma card_Inv_swapSucs:
-  "\<lbrakk> distinct is; \<forall>i\<in>set is. Suc i < size xs; distinct xs \<rbrakk> \<Longrightarrow>
-  card(Inv xs (swapSucs is xs)) = length is"
-apply(induction "is")
- apply simp
-apply(simp add: Inv_swap before_swapSucs card_insert_if)
-apply(simp add: Inv_def)
-done
-
 subsection "Function @{text mtf2}"
 
 definition mtf2 :: "nat \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-"mtf2 n x xs = (if x : set xs then swapSucs [index xs x - n..<index xs x] xs else xs)"
+"mtf2 n x xs =
+ (if x : set xs then swaps [index xs x - n..<index xs x] xs else xs)"
+
+lemma mtf_eq_mtf2: "mtf x xs = mtf2 (length xs) x xs"
+by(auto simp: mtf_def mtf2_def swaps_eq_nth_take_drop index_le_size)
+
+lemma mtf20[simp]: "mtf2 0 x xs = xs"
+by(auto simp add: mtf2_def)
 
 lemma length_mtf2[simp]: "length (mtf2 n x xs) = length xs"
 by (auto simp: mtf2_def index_less_size_conv[symmetric]
@@ -162,9 +75,8 @@ by (auto simp: mtf2_def index_less_size_conv[symmetric]
 lemma distinct_mtf2[simp]: "distinct (mtf2 n x xs) = distinct xs"
 by (metis length_mtf2 set_mtf2 card_distinct distinct_card)
 
-
 lemma card_Inv_mtf2: "xs!j = ys!0 \<Longrightarrow> j < length xs \<Longrightarrow> dist_perm xs ys \<Longrightarrow>
-   card (Inv (swapSucs [i..<j] xs) ys) = card (Inv xs ys) - int(j-i)"
+   card (Inv (swaps [i..<j] xs) ys) = card (Inv xs ys) - int(j-i)"
 proof(induction j arbitrary: xs)
   case (Suc j)
   show ?case
@@ -181,9 +93,9 @@ proof(induction j arbitrary: xs)
         by (metis Suc_lessD before_id lessI)
     qed
     have 2: "card(Inv ys xs) \<noteq> 0" using 1 by auto
-    have "int(card (Inv (swapSucs [i..<Suc j] xs) ys)) =
-          card (Inv (swapSuc j xs) ys) - int (j-i)" using Suc by simp
-    also have "\<dots> = card (Inv ys (swapSuc j xs)) - int (j-i)"
+    have "int(card (Inv (swaps [i..<Suc j] xs) ys)) =
+          card (Inv (swap j xs) ys) - int (j-i)" using Suc by simp
+    also have "\<dots> = card (Inv ys (swap j xs)) - int (j-i)"
       by(simp add: card_Inv_sym)
     also have "\<dots> = card (Inv ys xs - {(ys ! 0, xs ! j)}) - int (j - i)"
       using Suc.prems 0 by(simp add: Inv_swap)
@@ -196,110 +108,22 @@ proof(induction j arbitrary: xs)
 qed simp
 
 
-subsection "Function @{text mtf1}"
-
-definition "mtf1 x xs = mtf2 (length xs) x xs"
-
-lemma swapSucs_eq_nth_take_drop: "i < length xs \<Longrightarrow>
-    swapSucs [0..<i] xs = xs!i # take i xs @ drop (Suc i) xs"
-apply(induction i arbitrary: xs)
-apply (auto simp add: neq_Nil_conv swapSuc_def drop_update_swap
-  take_Suc_conv_app_nth Cons_nth_drop_Suc[symmetric])
-done
-
-lemma mtf1_eq_mtf: "mtf1 x xs = mtf x xs"
-by(auto simp: mtf1_def mtf_def mtf2_def swapSucs_eq_nth_take_drop index_le_size)
-
-
-subsection "Locales for Online/Offline Algorithms"
-
-locale On_Off =
-fixes step :: "'state \<Rightarrow> 'query \<Rightarrow> 'action \<Rightarrow> 'state"
-fixes t :: "'state \<Rightarrow> 'query \<Rightarrow> 'action \<Rightarrow> nat"
-begin
-
-type_synonym ('s,'q,'a)alg_off = "'s \<Rightarrow> 'q list \<Rightarrow> 'a list"
-type_synonym ('s,'q,'a)alg_on = "'q list \<Rightarrow> 's \<Rightarrow> 'q \<Rightarrow> 'a"
-
-fun T :: "'state \<Rightarrow> 'query list \<Rightarrow> 'action list \<Rightarrow> nat" where
-"T s [] [] = 0" |
-"T s (q#qs) (a#as) = t s q a + T (step s q a) qs as"
-
-fun off :: "('state,'query,'action) alg_on \<Rightarrow> 'query list \<Rightarrow> ('state,'query,'action) alg_off" where
-"off A h s [] = []" |
-"off A h s (q#qs) = A h s q # off A (q#h) (step s q (A h s q)) qs"
-
-abbreviation T_off :: "('state,'query,'action) alg_off \<Rightarrow> 'state \<Rightarrow> 'query list \<Rightarrow> nat" where
-"T_off A init qs == T init qs (A init qs)"
-
-abbreviation T_on :: "('state,'query,'action) alg_on \<Rightarrow> 'query list \<Rightarrow> 'state \<Rightarrow> 'query list \<Rightarrow> nat" where
-"T_on A h == T_off (off A h)"
-
-definition T_opt :: "'state \<Rightarrow> 'query list \<Rightarrow> nat" where
-"T_opt s qs = Inf {T s qs as | as. size as = size qs}"
-
-definition compet :: "('state,'query,'action) alg_on \<Rightarrow> real \<Rightarrow> 'state set \<Rightarrow> bool" where
-"compet A c S0 = (\<exists>b \<ge> 0. \<forall>s0\<in>S0. \<forall>qs. real(T_on A [] s0 qs) \<le> c * T_opt s0 qs + b)"
-
-lemma length_off[simp]: "length(off A h s qs) = length qs"
-by (induction qs arbitrary: h s) auto
-
-lemma compet_mono: assumes "compet A c S0" and "c \<le> c'"
-shows "compet A c' S0"
-proof-
-  let ?compt = "\<lambda>s0 qs b (c::real). T_on A [] s0 qs \<le> c * T_opt s0 qs + b"
-  from assms(1) obtain b where "b \<ge> 0" and 1: "\<forall>s0\<in>S0. \<forall>qs. ?compt s0 qs b c"
-    by(auto simp: compet_def)
-  { fix s0 qs assume "s0 \<in> S0"
-    hence "?compt s0 qs b c" using 1 by auto
-    hence "?compt s0 qs b c'"
-      using mult_right_mono[OF assms(2) of_nat_0_le_iff[of "T_opt s0 qs"]]
-      by arith }
-  thus ?thesis using `b\<ge>0` by(auto simp add: compet_def)
-qed
-
-lemma competE: fixes c :: real
-assumes "compet A c S0" "c \<ge> 0" "\<forall>s0 qs. size(aoff s0 qs) = length qs"
-shows "\<exists>b\<ge>0. \<forall>s0\<in>S0. \<forall>qs. T_on A [] s0 qs \<le> c * T_off aoff s0 qs + b"
-proof -
-  from assms(1) obtain b where "b\<ge>0" and
-    1: "\<forall>s0\<in>S0. \<forall>qs. T_on A [] s0 qs \<le> c * T_opt s0 qs + b"
-    by(auto simp add: compet_def)
-  { fix s0 qs assume "s0 \<in> S0"
-    hence 2: "real(T_on A [] s0 qs) \<le> c * Inf {T s0 qs as | as. size as = size qs} + b"
-      (is "_ \<le> _ * real(Inf ?T) + _")
-      using 1 by(auto simp add: T_opt_def)
-    have "Inf ?T \<le> T_off aoff s0 qs"
-      using assms(3) by (intro cInf_lower) auto
-    from mult_left_mono[OF of_nat_le_iff[THEN iffD2, OF this] assms(2)]
-    have "T_on A [] s0 qs \<le> c * T_off aoff s0 qs + b" using 2 by arith
-  }
-  thus ?thesis using `b\<ge>0` by(auto simp: compet_def)
-qed
-
-end
-
-
 subsection "List Update as Online/Offline Algorithm"
-
-lemma mtf20[simp]: "mtf2 0 x xs = xs"
-by(auto simp add: mtf2_def)
-
 
 type_synonym 'a state = "'a list"
 type_synonym 'a action = "nat * nat list"
 
 definition step :: "'a state \<Rightarrow> 'a \<Rightarrow> 'a action \<Rightarrow> 'a state" where
 "step s q a =
-  (let (k,sws) = a in mtf2 k q (swapSucs sws s))"
+  (let (k,sws) = a in mtf2 k q (swaps sws s))"
 
 definition t :: "'a state \<Rightarrow> 'a \<Rightarrow> 'a action \<Rightarrow> nat" where
-"t s q a = (let (mf,sws) = a in index (swapSucs sws s) q + 1 + size sws)"
+"t s q a = (let (mf,sws) = a in index (swaps sws s) q + 1 + size sws)"
 
 interpretation On_Off step t .
 
 type_synonym 'a alg_off = "'a state \<Rightarrow> 'a list \<Rightarrow> 'a action list"
-type_synonym 'a alg_on = "'a list \<Rightarrow> 'a state \<Rightarrow> 'a \<Rightarrow> 'a action"
+type_synonym 'a alg_on = "'a state \<Rightarrow> 'a \<Rightarrow> 'a action"
 
 lemma T_ge_len: "length as = length qs \<Longrightarrow> T s qs as \<ge> length qs"
 by(induction arbitrary: s rule: list_induct2)
@@ -330,8 +154,8 @@ by (auto simp: step_def split_def)
 
 subsection "Online Algorithm Move-to-Front is 2-Competitive"
 
-definition MTF :: "'a list \<Rightarrow> 'a state \<Rightarrow> 'a \<Rightarrow> 'a action" where
-"MTF h s q = (size s,[])"
+definition MTF :: "'a state \<Rightarrow> 'a \<Rightarrow> 'a action" where
+"MTF s q = (size s,[])"
 
 text{* It was first proved by Sleator and Tarjan~\cite{SleatorT-CACM85} that
 the Move-to-Front algorithm is 2-competitive. *}
@@ -471,10 +295,10 @@ definition T_mtf :: "nat \<Rightarrow> int" where
 "T_mtf n = (\<Sum>i<n. t_mtf i)"
 
 definition c_A :: "nat \<Rightarrow> int" where
-"c_A n = index (swapSucs (sw_A!n) (s_A n)) (qs!n) + 1"
+"c_A n = index (swaps (sw_A!n) (s_A n)) (qs!n) + 1"
 
 definition f_A :: "nat \<Rightarrow> int" where
-"f_A n = min (mtf_A!n) (index (swapSucs (sw_A!n) (s_A n)) (qs!n))"
+"f_A n = min (mtf_A!n) (index (swaps (sw_A!n) (s_A n)) (qs!n))"
 
 definition p_A :: "nat \<Rightarrow> int" where
 "p_A n = size(sw_A!n)"
@@ -513,7 +337,7 @@ by(simp add: Phi_def)
 lemma mtf_ub: "t_mtf n + Phi (n+1) - Phi n \<le> 2 * c_A n - 1 + p_A n - f_A n"
 proof -
   let ?xs = "s_A n" let ?ys = "s_mtf n" let ?x = "qs!n"
-  let ?xs' = "swapSucs (sw_A!n) ?xs" let ?ys' = "mtf ?x ?ys"
+  let ?xs' = "swaps (sw_A!n) ?xs" let ?ys' = "mtf ?x ?ys"
   show ?thesis
   proof cases
   assume xin: "?x \<in> set ?ys"
@@ -530,7 +354,7 @@ proof -
     also have "card(Inv ?xs' ?xs) = card(Inv ?xs ?xs')"
       by (rule card_Inv_sym)
     also have "card(Inv ?xs ?xs') \<le> size(sw_A!n)"
-      by (metis card_Inv_swapSucs_le dist_s_A)
+      by (metis card_Inv_swaps_le dist_s_A)
     finally show ?thesis by(fastforce simp: Phi_def)
   qed
   have phi_free: "card(Inv ?xs' ?ys') - Phi (Suc n) = f_A n" using xin
@@ -541,10 +365,10 @@ proof -
     assume notin: "?x \<notin> set ?ys"
     have "int (card (Inv ?xs' ?ys)) - card (Inv ?xs ?ys) \<le> card(Inv ?xs ?xs')"
       using card_Inv_tri_ineq[OF _ dperm_inv, of ?xs' n]
-            swapSucs_inv[of "sw_A!n" "s_A n"]
+            swaps_inv[of "sw_A!n" "s_A n"]
       by(simp add: card_Inv_sym)
     also have "\<dots> \<le> size(sw_A!n)"
-      by(simp add: card_Inv_swapSucs_le dperm_inv)
+      by(simp add: card_Inv_swaps_le dperm_inv)
     finally show ?thesis using notin
       by(simp add: t_mtf_def step_def c_A_def p_A_def f_A_def Phi_def mtf2_def)
   qed
@@ -626,20 +450,19 @@ qed
 lemma T_A_eq: "T_A (length qs) = T init qs acts"
 using T_A_eq_lem by(simp add: T_A_def atLeast0LessThan)
 
-lemma nth_off_MTF: "n < length qs \<Longrightarrow> off MTF h s qs ! n = (size s,[])"
-by(induction qs arbitrary: h s n)(auto simp add: MTF_def nth_Cons')
+lemma nth_off_MTF: "n < length qs \<Longrightarrow> off MTF s qs ! n = (size s,[])"
+by(induction qs arbitrary: s n)(auto simp add: MTF_def nth_Cons')
 
 lemma t_mtf_MTF: "n < length qs \<Longrightarrow>
-  t_mtf n = int (t (s_mtf n) (qs ! n) (off MTF h s qs ! n))"
+  t_mtf n = int (t (s_mtf n) (qs ! n) (off MTF s qs ! n))"
 by(simp add: t_mtf_def t_def nth_off_MTF)
 
 lemma mtf_MTF: "n < length qs \<Longrightarrow> length s = length init \<Longrightarrow> mtf (qs ! n) s =
-       step s (qs ! n) (off MTF [] init qs ! n)"
-using mtf1_def[symmetric, of s "qs!n"]
-by(auto simp add: nth_off_MTF step_def mtf1_eq_mtf)
+       step s (qs ! n) (off MTF init qs ! n)"
+by(auto simp add: nth_off_MTF step_def mtf_eq_mtf2)
 
 lemma T_mtf_eq_lem: "(\<Sum>i=0..<length qs. t_mtf i) =
-  T (s_mtf 0) (drop 0 qs) (drop 0 (off MTF [] init qs))"
+  T (s_mtf 0) (drop 0 qs) (drop 0 (off MTF init qs))"
 proof(induction rule: zero_induct[of _ "size qs"])
   case 1 thus ?case by (simp add: len_acts)
 next
@@ -649,32 +472,32 @@ next
     assume "n < length qs"
     thus ?case using 2
       by(simp add: Cons_nth_drop_Suc[symmetric,where i=n] len_acts setsum_head_upt_Suc
-        t_mtf_MTF[where h="[]" and s=init] mtf_A_def sw_A_def mtf_MTF)
+        t_mtf_MTF[where s=init] mtf_A_def sw_A_def mtf_MTF)
   next
     assume "\<not> n < length qs" thus ?case by (simp add: len_acts)
   qed
 qed
 
-lemma T_mtf_eq: "T_mtf (length qs) = T_on MTF [] init qs"
+lemma T_mtf_eq: "T_mtf (length qs) = T_on MTF init qs"
 using T_mtf_eq_lem by(simp add: T_mtf_def atLeast0LessThan)
 
 corollary MTF_competitive2: "init \<noteq> [] \<Longrightarrow> \<forall>i<length qs. qs!i \<in> set init \<Longrightarrow>
-  T_on MTF [] init qs \<le> (2 - 1/(size init)) * T init qs acts"
+  T_on MTF init qs \<le> (2 - 1/(size init)) * T init qs acts"
 by (metis T_mtf_competitive T_A_eq T_mtf_eq of_int_of_nat_eq)
 
 end
 
 theorem compet_MTF: assumes "init \<noteq> []" "distinct init" "set qs \<subseteq> set init"
-shows "T_on MTF [] init qs \<le> (2 - 1/(size init)) * T_opt init qs"
+shows "T_on MTF init qs \<le> (2 - 1/(size init)) * T_opt init qs"
 proof-
   from assms(3) have 1: "\<forall>i < length qs. qs!i \<in> set init" by auto
   { fix acts :: "'a action list" assume len: "length acts = length qs"
     interpret MTF_Off acts qs init proof qed (auto simp: assms(2) len)
     from MTF_competitive2[OF assms(1) 1] assms(1)
-    have "T_on MTF [] init qs / (2 - 1 / (length init)) \<le> of_int(T init qs acts)"
+    have "T_on MTF init qs / (2 - 1 / (length init)) \<le> of_int(T init qs acts)"
       by(simp add: field_simps length_greater_0_conv[symmetric]
         del: length_greater_0_conv) }
-  hence "T_on MTF [] init qs / (2 - 1/(size init)) \<le> T_opt init qs"
+  hence "T_on MTF init qs / (2 - 1/(size init)) \<le> T_opt init qs"
     apply(simp add: T_opt_def Inf_nat_def)
     apply(rule LeastI2_wellorder)
     using length_replicate[of "length qs" undefined] apply fastforce
@@ -683,6 +506,7 @@ proof-
   thus ?thesis using assms by(simp add: field_simps
     length_greater_0_conv[symmetric] del: length_greater_0_conv)
 qed
+
 
 subsection "Lower Bound for Competitiveness"
 
@@ -741,7 +565,7 @@ qed
 
 lemma compet_lb0:
 fixes a Aon Aoff cruel 
-defines "f s0 qs == real(T_on Aon [] s0 qs)"
+defines "f s0 qs == real(T_on Aon s0 qs)"
 defines "g s0 qs == real(T_off Aoff s0 qs)"
 assumes "\<And>qs s0. size(Aoff s0 qs) = length qs" and "\<And>n. cruel n \<noteq> []"
 assumes "compet Aon c S0" and "c\<ge>0" and "s0 \<in> S0"
@@ -754,16 +578,16 @@ proof-
   have g': "LIM n sequentially. g s0 (cruel n) + a :> at_top"
     using filterlim_tendsto_add_at_top[OF tendsto_const g]
     by (simp add: ac_simps)
-  from competE[OF assms(5) `c\<ge>0`] assms(3) obtain b where
-    "\<forall>qs.\<forall>s0\<in>S0. qs \<noteq> [] \<longrightarrow> ?h b s0 qs \<le> c "
+  from competE[OF assms(5) `c\<ge>0` _ `s0 \<in> S0`] assms(3) obtain b where
+    "\<forall>qs. qs \<noteq> [] \<longrightarrow> ?h b s0 qs \<le> c "
     by (fastforce simp del: neq0_conv simp: neq0_conv[symmetric]
         field_simps f_def g_def T_off_neq0[of Aoff, OF assms(3)])
-  hence "\<forall>s0\<in>S0.\<forall>n. (?h b s0 o cruel) n \<le> c" using assms(4) by simp
+  hence "\<forall>n. (?h b s0 o cruel) n \<le> c" using assms(4) by simp
   with rat_fun_lem[OF sequentially_bot `l>0` _ _ g', of "f s0 o cruel" "-b" "- a" c] assms(7) l
   show "l \<le> c" by (auto)
 qed
 
-subsubsection "Sorting"
+text {* Sorting *}
 
 fun ins_sws where
 "ins_sws k x [] = []" |
@@ -783,58 +607,46 @@ proof(induction xs)
     using length_ins_sws[of k x "sort_key k xs"] by (simp add: numeral_eq_Suc)
 qed simp
 
-lemma swapSucs_ins_sws:
-  "swapSucs (ins_sws k x xs) (x#xs) = insort_key k x xs"
-by(induction xs)(auto simp: swapSuc_def[of 0] )
+lemma swaps_ins_sws:
+  "swaps (ins_sws k x xs) (x#xs) = insort_key k x xs"
+by(induction xs)(auto simp: swap_def[of 0] )
 
-lemma swapSucs_sort_sws[simp]:
-  "swapSucs (sort_sws k xs) xs = sort_key k xs"
-by(induction xs)(auto simp: swapSucs_ins_sws)
+lemma swaps_sort_sws[simp]:
+  "swaps (sort_sws k xs) xs = sort_key k xs"
+by(induction xs)(auto simp: swaps_ins_sws)
 
-fun cruel :: "'a alg_on \<Rightarrow> 'a list \<Rightarrow> 'a state \<Rightarrow> nat \<Rightarrow> 'a list" where
-"cruel A h s 0 = []" |
-"cruel A h s (Suc n) = last s # cruel A (last s # h) (step s (last s) (A h s (last s))) n"
+text{* The cruel adversary: *}
+
+fun cruel :: "'a alg_on \<Rightarrow> 'a state \<Rightarrow> nat \<Rightarrow> 'a list" where
+"cruel A s 0 = []" |
+"cruel A s (Suc n) = last s # cruel A (step s (last s) (A s (last s))) n"
 
 definition adv :: "'a alg_on \<Rightarrow> ('a::linorder) alg_off" where
 "adv A s qs = (if qs=[] then [] else
-  let crs = cruel A [last s] (step s (last s) (A [] s (last s))) (size qs - 1)
+  let crs = cruel A (step s (last s) (A s (last s))) (size qs - 1)
   in (0,sort_sws (\<lambda>x. size qs - 1 - count_list crs x) s) # replicate (size qs - 1) (0,[]))"
 
 definition wf_on :: "'a alg_on \<Rightarrow> bool" where
-"wf_on A = (\<forall>h s q. \<forall>n \<in> set(snd(A h s q)). n+1 < length s)"
+"wf_on A = (\<forall>s q. \<forall>n \<in> set(snd(A s q)). n+1 < length s)"
 
-lemma set_cruel: "wf_on A \<Longrightarrow> s \<noteq> [] \<Longrightarrow> set(cruel A h s n) \<subseteq> set s"
-apply(induction n arbitrary: s h)
+lemma set_cruel: "wf_on A \<Longrightarrow> s \<noteq> [] \<Longrightarrow> set(cruel A s n) \<subseteq> set s"
+apply(induction n arbitrary: s)
 apply(auto simp: step_def wf_on_def split: prod.split)
-by (metis empty_iff swapSucs_inv last_in_set list.set(1) rev_subsetD set_mtf2)
-
-lemma index_swapSucs_size: "distinct s \<Longrightarrow>
-  index s q \<le> index (swapSucs sws s) q + length sws"
-apply(induction sws arbitrary: s)
-apply simp
- apply (fastforce simp: swapSuc_def index_swap_if_distinct index_nth_id)
-done
-
-lemma index_swapSucs_last_size: "distinct s \<Longrightarrow>
-  size s \<le> index (swapSucs sws s) (last s) + length sws + 1"
-apply(cases "s = []")
- apply simp
-using index_swapSucs_size[of s "last s" sws] by simp
+by (metis empty_iff swaps_inv last_in_set list.set(1) rev_subsetD set_mtf2)
 
 (* Do not convert into structured proof - eta conversion screws it up! *)
 lemma T_on_cruel:
-  "wf_on A \<Longrightarrow> s \<noteq> [] \<Longrightarrow> distinct s \<Longrightarrow> T_on A h s (cruel A h s n) \<ge> n*(length s)"
-apply(induction n arbitrary: s h)
+  "wf_on A \<Longrightarrow> s \<noteq> [] \<Longrightarrow> distinct s \<Longrightarrow> T_on A s (cruel A s n) \<ge> n*(length s)"
+apply(induction n arbitrary: s)
  apply(simp)
-apply(erule_tac x = "step s (last s) (A h s (last s))" in meta_allE)
-apply(erule_tac x = "last s # h" in meta_allE)
-apply(frule_tac sws = "snd(A h s (last s))" in index_swapSucs_last_size)
+apply(erule_tac x = "step s (last s) (A s (last s))" in meta_allE)
+apply(frule_tac sws = "snd(A s (last s))" in index_swaps_last_size)
 apply(simp add: distinct_step t_def split_def wf_on_def
         length_greater_0_conv[symmetric] del: length_greater_0_conv)
 done
 
-lemma length_cruel[simp]: "length (cruel A h s n) = n"
-by (induction n arbitrary: s h) (auto)
+lemma length_cruel[simp]: "length (cruel A s n) = n"
+by (induction n arbitrary: s) (auto)
 
 lemma t_sort_sws: "t s q (mf, sort_sws k s) \<le> size s ^ 2 + size s + 1"
 using length_sort_sws_le[of k s] index_le_size[of "sort_key k s" q]
@@ -871,13 +683,13 @@ next
 qed
 
 lemma T_adv: assumes "wf_on A" "l \<noteq> 0"
-shows "T_off (adv A) [0..<l] (cruel A [] [0..<l] (Suc n))
+shows "T_off (adv A) [0..<l] (cruel A [0..<l] (Suc n))
   \<le> l\<^sup>2 + l + 1 + (l + 1) * (n+1) div 2"  (is "?l \<le> ?r")
 proof-
   let ?s = "[0..<l]"
   let ?q = "last ?s"
-  let ?s' = "step ?s ?q (A [] ?s ?q)"
-  let ?cr = "cruel A [?q] ?s' n"
+  let ?s' = "step ?s ?q (A ?s ?q)"
+  let ?cr = "cruel A ?s' n"
   let ?c = "count_list ?cr"
   let ?k = "\<lambda>x. n - ?c x"
   let ?sort = "sort_key ?k ?s"
@@ -902,15 +714,15 @@ proof-
     by (simp add: algebra_simps)
   also(ord_eq_le_subst) have "\<dots> \<le> (l+1) * (\<Sum>x\<in>{0..<l}. ?c (?sort ! x)) div 2"
     apply(rule sorted_weighted_gauss_Ico_div2)
-    apply(erule sorted_asc[where k = "\<lambda>x. n - count_list (cruel A [last ?s] ?s' n) x"])
+    apply(erule sorted_asc[where k = "\<lambda>x. n - count_list (cruel A ?s' n) x"])
     apply(auto simp add: index_nth_id dest!: 3)
-    using assms(2) [[linarith_split_limit = 20]] apply simp by arith
+    using assms(2) [[linarith_split_limit = 20]] by simp
   also have "(\<Sum>x\<in>{0..<l}. ?c (?sort ! x)) = (\<Sum>x\<in>{0..<l}. ?c (?sort ! (index ?sort x)))"
     by(rule setsum.reindex_bij_betw[where ?h = "index ?sort", symmetric])
       (simp add: bij_betw_imageI inj_on_index2 index_image)
   also have "\<dots> = (\<Sum>x\<in>{0..<l}. ?c x)" by(simp)
   also have "\<dots> = length ?cr"
-    using set_cruel[OF assms(1), of ?s' "[last ?s]" n] assms(2) 1
+    using set_cruel[OF assms(1), of ?s' n] assms(2) 1
     by(auto simp: setsum_count_set)
   also have "\<dots> = n" by simp
   also have "t ?s (last ?s) (0, sort_sws ?k ?s) \<le> (length ?s)^2 + length ?s + 1"
@@ -921,14 +733,16 @@ proof-
   finally show ?thesis .
 qed
 
+text {* The main theorem: *}
+
 theorem compet_lb2:
 assumes "wf_on A" and "compet A c {xs::nat list. size xs = l}" and "l \<noteq> 0" and "c \<ge> 0"
 shows "c \<ge> 2*l/(l+1)"
 proof (rule compet_lb0[OF _ _ assms(2) `c\<ge>0`])
   let ?S0 = "{xs::nat list. size xs = l}"
   let ?s0 = "[0..<l]"
-  let ?cruel = "cruel A [] ?s0 o Suc"
-  let ?on = "\<lambda>n. T_on A [] ?s0 (?cruel n)"
+  let ?cruel = "cruel A ?s0 o Suc"
+  let ?on = "\<lambda>n. T_on A ?s0 (?cruel n)"
   let ?off = "\<lambda>n. T_off (adv A) ?s0 (?cruel n)"
   show "\<And>s0 qs. length (adv A s0 qs) = length qs" by(simp add: adv_def)
   show "\<And>n. ?cruel n \<noteq> []" by auto
