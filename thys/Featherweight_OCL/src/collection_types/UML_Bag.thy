@@ -1050,7 +1050,7 @@ Assert   "(\<tau> \<Turnstile> (Bag{\<lambda>_. \<lfloor>x\<rfloor>} \<doteq> Ba
 instantiation Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (equal)equal
 begin
   definition "HOL.equal k l \<longleftrightarrow>  (k::('a::equal)Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e) =  l"
-  instance   by default (rule equal_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def)
+  instance   by standard (rule equal_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def)
 end
 
 lemma equal_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_code [code]:

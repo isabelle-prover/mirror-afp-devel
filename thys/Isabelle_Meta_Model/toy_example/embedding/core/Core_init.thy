@@ -54,12 +54,13 @@ begin
  definition "n \<le> m \<longleftrightarrow> n_of_internal_oid n \<le> n_of_internal_oid m"
  definition "n < m \<longleftrightarrow> n_of_internal_oid n < n_of_internal_oid m"
  instance
-   apply(default)
+   apply standard
    apply (metis less_eq_internal_oid_def less_imp_le less_internal_oid_def not_less)
    apply (metis less_eq_internal_oid_def order_refl)
    apply (metis less_eq_internal_oid_def order.trans)
-   apply(simp add: less_eq_internal_oid_def n_of_internal_oid_def, case_tac x, case_tac y, simp)
- by (metis le_cases less_eq_internal_oid_def)
+   apply (simp add: less_eq_internal_oid_def n_of_internal_oid_def, case_tac x, case_tac y, simp)
+   apply (metis le_cases less_eq_internal_oid_def)
+   done
 end
 
 

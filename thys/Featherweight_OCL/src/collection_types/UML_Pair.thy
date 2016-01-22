@@ -194,7 +194,7 @@ Assert   "(\<tau> \<Turnstile> (Pair{\<lambda>_. \<lfloor>x\<rfloor>,\<lambda>_.
 instantiation Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (equal,equal)equal
 begin
   definition "HOL.equal k l \<longleftrightarrow>  (k::('a::equal,'b::equal)Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e) =  l"
-  instance   by default (rule equal_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def)
+  instance   by standard (rule equal_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def)
 end
 
 lemma equal_Pair\<^sub>b\<^sub>a\<^sub>s\<^sub>e_code [code]:

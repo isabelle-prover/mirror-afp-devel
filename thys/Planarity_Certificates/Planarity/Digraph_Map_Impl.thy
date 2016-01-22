@@ -273,7 +273,7 @@ end
 
 definition "gen_succ \<equiv> \<lambda>as xs. [b. (a,b) <- as, a \<in> set xs]"
 interpretation RTLI: set_access_gen set "\<lambda>x xs. x \<in> set xs" "[]" "\<lambda>xs ys. remdups (xs @ ys)" "gen_succ"
-  by default (auto simp: gen_succ_def)
+  by standard (auto simp: gen_succ_def)
 hide_const (open) gen_succ
 
 text \<open>

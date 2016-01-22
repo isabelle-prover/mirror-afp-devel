@@ -3147,7 +3147,7 @@ Assert   "(\<tau> \<Turnstile> (Set{\<lambda>_. \<lfloor>x\<rfloor>} \<doteq> Se
 instantiation Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (equal)equal
 begin
   definition "HOL.equal k l \<longleftrightarrow>  (k::('a::equal)Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e) =  l"
-  instance   by default (rule equal_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def)
+  instance   by standard (rule equal_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def)
 end
 
 lemma equal_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_code [code]:

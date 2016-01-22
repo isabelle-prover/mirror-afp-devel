@@ -549,7 +549,7 @@ Assert   "(\<tau> \<Turnstile> (Sequence{\<lambda>_. \<lfloor>x\<rfloor>} \<dote
 instantiation Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e  :: (equal)equal
 begin
   definition "HOL.equal k l \<longleftrightarrow>  (k::('a::equal)Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e) =  l"
-  instance   by default (rule equal_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def)
+  instance   by standard (rule equal_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def)
 end
 
 lemma equal_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_code [code]:
