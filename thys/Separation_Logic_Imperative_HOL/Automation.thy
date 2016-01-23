@@ -513,7 +513,7 @@ struct
       addsimprocs [assn_simproc] 
       addsimps @{thms norm_assertion_simps}
       addsimps (Named_Theorems.get ctxt @{named_theorems sep_dflt_simps})
-      |> fold Splitter.del_split @{thms split_if_asm split_if}
+      |> fold Splitter.del_split @{thms split_if}
     );
 
   (***********************************)
@@ -704,6 +704,10 @@ end;
 
 simproc_setup assn_simproc ("h\<Turnstile>P" | "P\<Longrightarrow>\<^sub>AQ" | "<P> c <R>" | "(P::assn) = Q") 
   = {*K Seplogic_Auto.assn_simproc_fun*}
+
+method_setup assn_simp ={* Scan.succeed (fn ctxt => (SIMPLE_METHOD' (
+  CHANGED o Seplogic_Auto.dflt_tac ctxt
+))) *} "Seplogic: Simplification of assertions"
 
 method_setup frame_inference = {* Scan.succeed (fn ctxt => (SIMPLE_METHOD' (
   CHANGED o Seplogic_Auto.frame_inference_tac ctxt

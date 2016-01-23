@@ -221,6 +221,12 @@ instantiation assn :: times begin
   instance ..
 end
 
+lemma mod_star_conv: "h\<Turnstile>A*B 
+  \<longleftrightarrow> (\<exists>hr as1 as2. h=(hr,as1\<union>as2) \<and> as1\<inter>as2={} \<and> (hr,as1)\<Turnstile>A \<and> (hr,as2)\<Turnstile>B)"
+  using assms unfolding times_assn_def
+  apply (cases h)
+  by (auto simp: Abs_assn_inverse)
+
 lemma star_assnI:
   assumes "(h,as)\<Turnstile>P" and "(h,as')\<Turnstile>Q" and "as\<inter>as'={}"
   shows "(h,as\<union>as')\<Turnstile>P*Q"
@@ -363,6 +369,7 @@ abbreviation uminus_assn::"assn \<Rightarrow> assn" ("\<not>\<^sub>A _" [81] 80)
 
 text {* Now we prove some relations between the Boolean algebra operations
   and the (empty heap,separation conjunction) monoid *}
+
 lemma star_false_left[simp]: "false * P = false"
   unfolding times_assn_def bot_assn_def
   apply rule
@@ -603,6 +610,36 @@ lemma mod_h_bot_iff[simp]:
   apply (simp add: ex_assn_def Abs_assn_inverse)
   done
 
+(* FIXME: The next two lemmas should be proven earlier, but the current proof
+  depends on the models-predicate *)
+lemma assn_basic_inequalities[simp, intro!]:
+  "true \<noteq> emp" "emp \<noteq> true"
+  "false \<noteq> emp" "emp \<noteq> false"
+  "true \<noteq> false" "false \<noteq> true"
+proof -
+  def neh \<equiv> "(\<lparr> arrays = undefined, refs=undefined, lim = 1 \<rparr>, {0::nat})"
+  have [simp]: "in_range neh" unfolding neh_def 
+    by (simp add: in_range.simps)
+
+  have "neh \<Turnstile> true" by simp
+  moreover have "\<not>(neh \<Turnstile> false)" by simp
+  moreover have "\<not>(neh \<Turnstile> emp)" by (simp add: mod_emp neh_def)
+  moreover have "h\<^sub>\<bottom> \<Turnstile> emp" by simp
+  moreover have "\<not>(h\<^sub>\<bottom> \<Turnstile> false)" by simp
+  ultimately show 
+    "true \<noteq> emp" "emp \<noteq> true"
+    "false \<noteq> emp" "emp \<noteq> false"
+    "true \<noteq> false" "false \<noteq> true"
+    by metis+
+qed
+
+lemma pure_assn_eq_conv[simp]: "\<up>P = \<up>Q \<longleftrightarrow> P=Q"
+  apply (cases P, simp_all)
+  apply (cases Q, simp_all)
+  apply (cases Q, simp_all)
+  done
+
+
 subsection {* Entailment *}
 definition entails :: "assn \<Rightarrow> assn \<Rightarrow> bool" (infix "\<Longrightarrow>\<^sub>A" 10)
   where "P \<Longrightarrow>\<^sub>A Q \<equiv> \<forall>h. h\<Turnstile>P \<longrightarrow> h\<Turnstile>Q"
@@ -722,6 +759,9 @@ lemma ent_disjI2:
 
 lemma ent_disjE: "\<lbrakk> A\<Longrightarrow>\<^sub>AC; B\<Longrightarrow>\<^sub>AC \<rbrakk> \<Longrightarrow> A\<or>\<^sub>AB \<Longrightarrow>\<^sub>AC"
   unfolding entails_def by auto
+
+lemma ent_conjI: "\<lbrakk> A\<Longrightarrow>\<^sub>AB; A\<Longrightarrow>\<^sub>AC \<rbrakk> \<Longrightarrow> A \<Longrightarrow>\<^sub>A B \<and>\<^sub>A C"  
+  unfolding entails_def by (auto simp: mod_and_dist)
 
 lemma ent_conjE1: "\<lbrakk>A\<Longrightarrow>\<^sub>AC\<rbrakk> \<Longrightarrow> A\<and>\<^sub>AB\<Longrightarrow>\<^sub>AC"
   unfolding entails_def by (auto simp: mod_and_dist)

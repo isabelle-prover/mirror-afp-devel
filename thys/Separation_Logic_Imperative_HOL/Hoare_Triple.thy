@@ -64,6 +64,14 @@ text {*
 *}
 subsubsection {* Basic Rules *}
 
+lemma hoare_triple_preI: 
+  assumes "\<And>h. h\<Turnstile>P \<Longrightarrow> <P> c <Q>"
+  shows "<P> c <Q>"
+  using assms
+  unfolding hoare_triple_def
+  by auto
+
+
 lemma frame_rule: 
   assumes A: "<P> c <Q>"
   shows "<P*R> c <\<lambda>x. Q x * R>"
@@ -115,6 +123,11 @@ proof -
     apply blast
     done
 qed
+
+
+lemma false_rule[simp, intro!]: "<false> c <Q>"
+  unfolding hoare_triple_def by simp
+
   
 lemma cons_rule:
   assumes CPRE: "P \<Longrightarrow>\<^sub>A P'"
@@ -127,9 +140,6 @@ lemma cons_rule:
 
 lemmas cons_pre_rule = cons_rule[OF _ ent_refl]
 lemmas cons_post_rule = cons_rule[OF ent_refl, rotated]
-
-lemma false_rule[simp, intro!]: "<false> c <Q>"
-  unfolding hoare_triple_def by simp
 
 lemma norm_pre_ex_rule:
   assumes A: "\<And>x. <P x> f <Q>"
@@ -156,6 +166,10 @@ lemma norm_pre_pure_rule2:
   "\<lbrakk> b \<Longrightarrow> <emp> f <Q> \<rbrakk> \<Longrightarrow> <\<up>b> f <Q>" by simp
 
 lemmas norm_pre_pure_rule = norm_pre_pure_rule1 norm_pre_pure_rule2
+
+lemma post_exI_rule: "<P> c <\<lambda>r. Q r x> \<Longrightarrow> <P> c <\<lambda>r. \<exists>\<^sub>Ax. Q r x>"
+  by (blast intro: cons_post_rule ent_ex_postI ent_refl)
+
 
 subsubsection {* Rules for Atomic Commands*}
 lemma ref_rule:

@@ -127,8 +127,8 @@ ML {*
           |> map (fn thm =>
                let
                  val tidx = Thm.maxidx_of thm
-                 val t = Thm.incr_indexes maxidx thm |> Thm.concl_of
-               in (maxidx + tidx,t) end)
+                 val t = Thm.incr_indexes (maxidx + 1) thm |> Thm.concl_of
+               in (maxidx + tidx + 1,t) end)
 
         fun unifies (idx,t)
           = can (Pattern.unify (Context.Proof ctxt) (t, concl)) (Envir.empty idx)

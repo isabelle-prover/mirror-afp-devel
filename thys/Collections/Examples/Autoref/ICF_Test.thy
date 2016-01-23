@@ -10,8 +10,7 @@ subsection "Array Hash Map Tests"
 
 schematic_goal
   "(?f::?'c, [{1::nat} |-> {2::nat}]) \<in> ?R"
-  apply (autoref (keep_goal))
-  done
+  by (autoref (keep_goal))
 
 schematic_goal
   "(?f::?'c, \<lambda>m. (m)(1::nat\<mapsto>2::nat)) \<in> ?R"
