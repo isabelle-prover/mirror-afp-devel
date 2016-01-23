@@ -55,7 +55,7 @@ proof
   fix x y z :: "'a rel"
   show "omega x \<subseteq> x O omega x"
     by (auto elim: omega_cases)
-  show "y \<subseteq> z \<union> x O y \<longrightarrow> y \<subseteq> omega x \<union> x\<^sup>* O z"
+  show "y \<subseteq> z \<union> x O y \<Longrightarrow> y \<subseteq> omega x \<union> x\<^sup>* O z"
     apply auto
     apply (rule omega_weak_coinduct[where X="\<lambda>a b. (a, b) \<in> x O y \<and> (a, b) \<notin> x\<^sup>* O z"])
      apply (metis UnE in_mono relcompI rtrancl_refl)

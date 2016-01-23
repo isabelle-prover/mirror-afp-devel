@@ -1,9 +1,7 @@
 (*
-
 Title: Binary Multirelations
 Author: Hitoshi Furusawa, Georg Struth
 Maintainer: <g.struth at sheffield.ac.uk>
-
 *)
 
 section {* Multirelations*}
@@ -812,7 +810,7 @@ proof clarify
   hence "\<exists>C. C \<subseteq> A \<and> (a,C) \<in> R \<cdot> S"     
     by (clarsimp simp: mr_simp)
   thus "(a,A) \<in> (R \<cdot> S) \<parallel> U"
-by (simp add: U_par_st)
+    by (simp add: U_par_st)
 qed
 
 lemma pe_pa_sim: "(R \<cdot> S) \<parallel> U = R \<otimes> (S \<parallel> U)"
@@ -830,6 +828,5 @@ text {* Corollary 15.3. *}
 
 lemma up_closed_par_is_meet: "(R \<parallel> U) \<parallel> (S \<parallel> U) = (R \<parallel> U) \<inter> (S \<parallel> U)"
   by (auto simp: mr_simp)
- 
-end        
-     
+
+end

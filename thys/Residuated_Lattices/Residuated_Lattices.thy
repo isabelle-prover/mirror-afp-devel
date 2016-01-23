@@ -7,24 +7,6 @@ theory Residuated_Lattices
   imports "../Kleene_Algebra/Signatures"
 begin
 
-section {* Introduction *}
-
-text {*
-  These theory files formalise algebraic residuated structures. They are briefly and sparsely
-  commented. More information can be found in the books by Galatos and \emph{al.}~\cite{Galatos07},
-  or the originals papers by Wart and Dilworth~\cite{Ward39}, 
-  Jonsson and Tsinakis~\cite{Jonsson93}, and Maddux~\cite{Maddux96}.
-  
-  The mathematical components for residuated lattices are linked to the AFP entry for relation algebra.  
-  Residuated lattices are also important in the context of Pratt's action algebras, which are currently
-  formalised whitin the AFP entry for Kleene algebra.
-  We are planning to link Kleene algebras and action algebras with this entry in the future.
-  
-  Isabelle/HOL default notation for lattices is used whenever possible. 
-  Nevertheless, we use $\cdot$ as the multiplicative symbol instead of $*$,
-  which is the one used in Isabelle libraries.
-*}
-
 notation
   times (infixl "\<cdot>" 70)
   
@@ -349,6 +331,12 @@ text {*
   Most of the lemmas below come in pairs; they are related by opposition duality.
   Formalising this duality is left for future work.
 *}
+
+class residual_r_op =
+  fixes residual_r :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<rightarrow>" 60)
+
+class residual_l_op =
+  fixes residual_l :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<leftarrow>" 60)
   
 class residuated_pogroupoid = order + times + residual_l_op + residual_r_op +
   assumes resl_galois: "x \<le> z \<leftarrow> y \<longleftrightarrow> x \<cdot> y \<le> z"

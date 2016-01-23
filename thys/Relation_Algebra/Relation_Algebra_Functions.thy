@@ -100,7 +100,7 @@ lemma total_comp:
 by (metis assms inf_top_left le_iff_inf mult.assoc mult.right_neutral one_conv ra_2 is_total_def)
 
 lemma total_add_var: "1' \<le> x\<^sup>\<smile> ; x  \<Longrightarrow> 1' \<le> (x + y)\<^sup>\<smile> ; (x + y)"
-by (metis add_ub1 conv_add mult_isol_var order_trans)
+by (metis local.conv_add local.inf.absorb2 local.inf.coboundedI1 local.join_interchange local.le_sup_iff)
 
 lemma sur_comp:
   assumes "is_sur x" and "is_sur y"
@@ -301,11 +301,11 @@ definition antidom :: "'a \<Rightarrow> 'a" ("a")
 definition dom :: "'a \<Rightarrow> 'a" ("d")
   where "d x = a (a x)"
 
-lemma antidom_test_comp [simp]: "a x = (x ; 1)\<^sup>\<dagger>"
-by (metis antidom_def test_compl_def)
+lemma antidom_test_comp [simp]: "a x = tc (x ; 1)"
+by (metis antidom_def tc_def)
 
 lemma dom_def_aux: "d x = 1' \<cdot> x ; 1"
-by (metis antidom_test_comp dom_def double_compl inf_top_left mult.left_neutral one_compl ra_1 test_compl_def)
+by (metis antidom_test_comp dom_def double_compl inf_top_left mult.left_neutral one_compl ra_1 tc_def)
 
 lemma dom_def_aux_var: "d x = 1' \<cdot> x ; x\<^sup>\<smile>"
 by (metis dom_def_aux one_conv)
@@ -317,10 +317,10 @@ lemma dom_antidom [simp]: "d (a x) = a x"
 by (metis antidom_dom dom_def)
 
 lemma dom_verystrict: "d x = 0 \<longleftrightarrow> x = 0"
-by (metis annil dom_def_aux eq_iff inf_top_left maddux_20 mult.left_neutral ra_1 zero_least)
+using dom_def_aux_var local.schroeder_2 by force
 
 lemma a_1 [simp]: "a x ; x = 0"
-by (metis antidom_test_comp galois_aux2 maddux_20 mult.left_neutral one_compl ra_1 test_compl_def)
+by (metis antidom_test_comp galois_aux2 maddux_20 mult.left_neutral one_compl ra_1 tc_def)
 
 lemma a_2: "a (x ; y) = a (x ; d y)"
 by (metis antidom_test_comp dom_def_aux inf_top_left mult.assoc mult.left_neutral ra_1)

@@ -1,4 +1,4 @@
-(* Title:      Kleene Algebra
+(* Title:      Models of Kleene Algebra
    Author:     Alasdair Armstrong, Georg Struth, Tjark Weber
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
                Tjark Weber <tjark.weber at it.uu.se>
@@ -30,22 +30,22 @@ algebras. *}
 context dioid_one_zero
 begin
 
-lemma power_inductl: "z + x \<cdot> y \<le> y \<longrightarrow> (x ^ n) \<cdot> z \<le> y"
+lemma power_inductl: "z + x \<cdot> y \<le> y \<Longrightarrow> (x ^ n) \<cdot> z \<le> y"
 proof (induct n)
   case 0 show ?case
-    by (metis add_lub mult_onel power_0)
+    using "0.prems" by auto
   case Suc thus ?case
-    by (auto, metis add_lub mult.assoc mult_isol order_trans)
+    by (auto, metis mult.assoc mult_isol order_trans)
 qed
 
-lemma power_inductr: "z + y \<cdot> x \<le> y \<longrightarrow> z \<cdot> (x ^ n) \<le> y"
+lemma power_inductr: "z + y \<cdot> x \<le> y \<Longrightarrow> z \<cdot> (x ^ n) \<le> y"
 proof (induct n)
   case 0 show ?case
-    by (metis add_lub mult_oner power_0)
+    using "0.prems" by auto
   case Suc
   {
     fix n
-    assume "z + y \<cdot> x \<le> y \<longrightarrow> z \<cdot> x ^ n \<le> y"
+    assume "z + y \<cdot> x \<le> y \<Longrightarrow> z \<cdot> x ^ n \<le> y"
       and "z + y \<cdot> x \<le> y"
     hence "z \<cdot> x ^ n \<le> y"
       by auto
@@ -56,7 +56,7 @@ proof (induct n)
     moreover have "... \<le> y \<cdot> x"
       by (metis calculation(1) mult_isor)
     moreover have "... \<le> y"
-      by (metis `z + y \<cdot> x \<le> y` add_lub)
+      using `z + y \<cdot> x \<le> y` by auto
     ultimately have "z \<cdot> x ^ Suc n \<le> y" by auto
   }
   thus ?case
@@ -102,10 +102,16 @@ begin
       finally show ?thesis
         by (metis subset_refl)
     qed
-    show "Z + X \<cdot> Y \<subseteq> Y \<longrightarrow> X\<^sup>\<star> \<cdot> Z \<subseteq> Y"
-      by (simp add: star_contr SUP_le_iff, metis power_inductl)
-    show "Z + Y \<cdot> X \<subseteq> Y \<longrightarrow> Z \<cdot> X\<^sup>\<star> \<subseteq> Y"
-      by (simp add: star_contl SUP_le_iff, metis power_inductr)
+  next
+    fix X Y Z :: "'a set"
+    assume hyp: "Z + X \<cdot> Y \<subseteq> Y"
+    show  "X\<^sup>\<star> \<cdot> Z \<subseteq> Y"
+      by (simp add: star_contr SUP_le_iff) (meson hyp dioid_one_zero_class.power_inductl)
+  next
+    fix X Y Z :: "'a set"
+    assume hyp: "Z + Y \<cdot> X \<subseteq> Y"
+    show  "Z \<cdot> X\<^sup>\<star> \<subseteq> Y"
+      by (simp add: star_contl SUP_le_iff) (meson dioid_one_zero_class.power_inductr hyp) 
   qed
 
 end (* instantiation *)
@@ -211,9 +217,9 @@ begin
       by transfer (metis pre_dioid_class.subdistl)
     show "1 + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
       by transfer (metis star_unfoldl)
-    show "z + x \<cdot> y \<le> y \<longrightarrow> x\<^sup>\<star> \<cdot> z \<le> y"
+    show "z + x \<cdot> y \<le> y \<Longrightarrow> x\<^sup>\<star> \<cdot> z \<le> y"
       by transfer (metis star_inductl)
-    show "z + y \<cdot> x \<le> y \<longrightarrow> z \<cdot> x\<^sup>\<star> \<le> y"
+    show "z + y \<cdot> x \<le> y \<Longrightarrow> z \<cdot> x\<^sup>\<star> \<le> y"
       by transfer (metis star_inductr)
   qed
 
@@ -251,9 +257,15 @@ proof
   fix x y z :: "'a rel"
   show "Id \<union> x O x\<^sup>* \<subseteq> x\<^sup>*"
     by (metis order_refl r_comp_rtrancl_eq rtrancl_unfold)
-  show "z \<union> x O y \<subseteq> y \<longrightarrow> x\<^sup>* O z \<subseteq> y"
+next
+  fix x y z :: "'a rel"
+  assume "z \<union> x O y \<subseteq> y"
+  thus "x\<^sup>* O z \<subseteq> y"
     by (simp only: rel_star_contr, metis (lifting) SUP_le_iff rel_dioid.power_inductl)
-  show "z \<union> y O x \<subseteq> y \<longrightarrow> z O x\<^sup>* \<subseteq> y"
+next
+  fix x y z :: "'a rel"
+  assume "z \<union> y O x \<subseteq> y"
+  thus "z O x\<^sup>* \<subseteq> y"
     by (simp only: rel_star_contl, metis (lifting) SUP_le_iff rel_dioid.power_inductr)
 qed
 
@@ -288,9 +300,9 @@ proof
       finally show ?thesis
         by (metis subset_refl)
     qed
-  show "Z \<union> t_prod X Y \<subseteq> Y \<longrightarrow> t_prod (t_star X) Z \<subseteq> Y"
+  show "Z \<union> t_prod X Y \<subseteq> Y \<Longrightarrow> t_prod (t_star X) Z \<subseteq> Y"
     by (simp only: ball_UNIV t_star_contr SUP_le_iff) (metis trace_dioid.power_inductl)
-  show "Z \<union> t_prod Y X \<subseteq> Y \<longrightarrow> t_prod Z (t_star X) \<subseteq> Y"
+  show "Z \<union> t_prod Y X \<subseteq> Y \<Longrightarrow> t_prod Z (t_star X) \<subseteq> Y"
     by (simp only: ball_UNIV t_star_contl SUP_le_iff) (metis trace_dioid.power_inductr)
 qed
 
@@ -335,9 +347,9 @@ proof
       finally show ?thesis
         by (metis subset_refl)
     qed
-  show "Z \<union> p_prod X Y \<subseteq> Y \<longrightarrow> p_prod (p_star X) Z \<subseteq> Y"
+  show "Z \<union> p_prod X Y \<subseteq> Y \<Longrightarrow> p_prod (p_star X) Z \<subseteq> Y"
     by (simp only: ball_UNIV p_star_contr SUP_le_iff) (metis path_dioid.power_inductl)
-  show "Z \<union> p_prod Y X \<subseteq> Y \<longrightarrow> p_prod Z (p_star X) \<subseteq> Y"
+  show "Z \<union> p_prod Y X \<subseteq> Y \<Longrightarrow> p_prod Z (p_star X) \<subseteq> Y"
     by (simp only: ball_UNIV p_star_contl SUP_le_iff) (metis path_dioid.power_inductr)
 qed
 
@@ -370,9 +382,9 @@ proof
       finally show ?thesis
         by (metis subset_refl)
     qed
-  show "Z \<union> pp_prod X Y \<subseteq> Y \<longrightarrow> pp_prod (pp_star X) Z \<subseteq> Y"
+  show "Z \<union> pp_prod X Y \<subseteq> Y \<Longrightarrow> pp_prod (pp_star X) Z \<subseteq> Y"
     by (simp only: ball_UNIV pp_star_contr SUP_le_iff) (metis ppath_dioid.power_inductl)
-  show "Z \<union> pp_prod Y X \<subseteq> Y \<longrightarrow> pp_prod Z (pp_star X) \<subseteq> Y"
+  show "Z \<union> pp_prod Y X \<subseteq> Y \<Longrightarrow> pp_prod Z (pp_star X) \<subseteq> Y"
     by (simp only: ball_UNIV pp_star_contl SUP_le_iff) (metis ppath_dioid.power_inductr)
 qed
 
@@ -390,9 +402,9 @@ proof
   fix x y z :: 'a
   show "sup top (inf x (bdl_star x)) \<le> bdl_star x"
     by (simp add: bdl_star_def)
-  show "sup z (inf x y) \<le> y \<longrightarrow> inf (bdl_star x) z \<le> y"
+  show "sup z (inf x y) \<le> y \<Longrightarrow> inf (bdl_star x) z \<le> y"
     by (simp add: bdl_star_def)
-  show "sup z (inf y x) \<le> y \<longrightarrow> inf z (bdl_star x) \<le> y"
+  show "sup z (inf y x) \<le> y \<Longrightarrow> inf z (bdl_star x) \<le> y"
     by (simp add: bdl_star_def)
 qed
 
@@ -417,10 +429,10 @@ begin
     fix x y z :: pnat
     show "1 + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
       by (metis star_pnat_def zero_pnat_top)
-    show "z + x \<cdot> y \<le> y \<longrightarrow> x\<^sup>\<star> \<cdot> z \<le> y"
-      by (metis join_semilattice_class.add_lub monoid_mult_class.mult_1_left star_pnat_def)
-    show "z + y \<cdot> x \<le> y \<longrightarrow> z \<cdot> x\<^sup>\<star> \<le> y"
-      by (metis join_semilattice_class.add_lub monoid_mult_class.mult_1_right star_pnat_def)
+    show "z + x \<cdot> y \<le> y \<Longrightarrow> x\<^sup>\<star> \<cdot> z \<le> y"
+      by (simp add: star_pnat_def)
+    show "z + y \<cdot> x \<le> y \<Longrightarrow> z \<cdot> x\<^sup>\<star> \<le> y"
+      by (simp add: star_pnat_def)
     show "x \<cdot> y = y \<cdot> x"
       unfolding times_pnat_def by (cases x, cases y, simp_all)
   qed

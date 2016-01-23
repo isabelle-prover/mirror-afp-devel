@@ -1,4 +1,4 @@
-(* Title:      Kleene Algebra
+(* Title:      Formal Power Series Model of Kleene Algebra
    Author:     Alasdair Armstrong, Georg Struth, Tjark Weber
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
                Tjark Weber <tjark.weber at it.uu.se>
@@ -224,7 +224,7 @@ proof (rule fps_ext)
     also have "... \<longleftrightarrow> (\<forall>a b. n = a @ b \<longrightarrow> f $ a * 1 $ b \<le> z)"
       unfolding splitset_def by simp
     also have "... \<longleftrightarrow> (f $ n * 1 $ [] \<le> z)"
-      by (metis append_Nil2 fps_one_nth_Cons fps_one_nth_Nil mult_zero_right neq_Nil_conv zero_least)
+      by (simp add: one_fps_def)
     finally have "(f * 1) $ n \<le> z \<longleftrightarrow> f $ n \<le> z"
       by simp
   }
@@ -385,6 +385,7 @@ begin
       apply (case_tac n)
        apply (auto simp add: times_fps_def)
       apply (simp add: add_star_eq mult.assoc[THEN sym] Setsum_splitlist_nonempty)
+      apply (simp add: add_star_eq join.sup_commute)
     done
     thus "1 + f \<cdot> f\<^sup>\<star> \<le> f\<^sup>\<star>"
       by (metis order_refl)
@@ -409,7 +410,7 @@ begin
           apply (induct_tac "y" rule: length_induct)
           apply (case_tac "xs")
            apply (simp add: "2")
-          apply (auto simp add: mult.assoc setsum_distr)
+          using "2" apply (auto simp add: mult.assoc setsum_distr)
           apply (rule_tac y="(f $ [])\<^sup>\<star> \<cdot> g $ (a # list @ z)" in order_trans)
            prefer 2
            apply (rule "2")
@@ -422,8 +423,8 @@ begin
           apply (metis "1" append_Cons append_assoc)
         done
       qed
-    thus "h + f \<cdot> g \<le> g \<longrightarrow> f\<^sup>\<star> \<cdot> h \<le> g"
-      by (metis (hide_lams, no_types) add_lub mult_isol order_trans)
+    thus "h + f \<cdot> g \<le> g \<Longrightarrow> f\<^sup>\<star> \<cdot> h \<le> g"
+      by (metis (no_types, lifting) distrib_left join.sup.bounded_iff less_eq_def)
     have "g \<cdot> f \<le> g \<longrightarrow> g \<cdot> f\<^sup>\<star> \<le> g"
       -- "this property is dual to the previous one; the proof is slightly different"
       proof
@@ -460,11 +461,10 @@ begin
           apply (metis append_assoc)
         done
       qed
-    thus "h + g \<cdot> f \<le> g \<longrightarrow> h \<cdot> f\<^sup>\<star> \<le> g"
-      by (metis (hide_lams, no_types) add_lub mult_isor order_trans)
+    thus "h + g \<cdot> f \<le> g \<Longrightarrow> h \<cdot> f\<^sup>\<star> \<le> g"
+      by (metis (no_types, lifting) distrib_right' join.sup.bounded_iff order_prop)
   qed
 
 end (* instantiation *)
 
 end
-

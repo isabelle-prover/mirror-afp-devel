@@ -39,7 +39,7 @@ proof (rule antisym)
 qed
 
 lemma test_sum: "\<lbrakk>is_test x; is_test y\<rbrakk> \<Longrightarrow> is_test (x + y)"
-by (metis add_lub is_test_def)
+by (simp add: is_test_def)
 
 lemma test_prod: "\<lbrakk>is_test x; is_test y\<rbrakk> \<Longrightarrow> is_test (x \<cdot> y)"
 by (metis le_infI2 is_test_def)
@@ -123,29 +123,29 @@ subsection {* Test Complements *}
 text {* Text complements are complements of elements that are ``pushed below''
 the multiplicative unit. *}
 
-definition test_compl :: "'a \<Rightarrow> 'a" ("(_ \<^sup>\<dagger>)" [1000] 999)
-  where "x\<^sup>\<dagger> = 1' \<cdot> -x"
+definition tc :: "'a \<Rightarrow> 'a" 
+  where "tc x = 1' \<cdot> -x"
 
-lemma test_compl_1 [simp]: "is_test x \<Longrightarrow> x + x\<^sup>\<dagger> = 1'"
-  by (metis aux4 inf_absorb2 test_compl_def is_test_def)
+lemma test_compl_1 [simp]: "is_test x \<Longrightarrow> x + tc x = 1'"
+  by (metis is_test_def local.aux4 local.inf.absorb_iff1 local.inf_commute tc_def)
 
-lemma test_compl_2 [simp]: "is_test x \<Longrightarrow> x \<cdot> x\<^sup>\<dagger> = 0"
-  by (metis galois_aux inf.commute inf_le2 test_compl_def)
+lemma test_compl_2 [simp]: "is_test x \<Longrightarrow> x \<cdot> tc x = 0"
+  by (metis galois_aux inf.commute inf_le2 tc_def)
 
-lemma test_test_compl: "is_test x \<Longrightarrow> is_test (x\<^sup>\<dagger>)"
-  by (metis add_ub2 test_compl_1 is_test_def)
+lemma test_test_compl: "is_test x \<Longrightarrow> is_test (tc x)"
+  by (simp add: is_test_def tc_def)
 
-lemma test_compl_de_morgan_1: "(x + y)\<^sup>\<dagger> = x\<^sup>\<dagger> \<cdot> y\<^sup>\<dagger>"
-  by (metis compl_sup inf.left_commute inf.left_idem meet_assoc test_compl_def)
+lemma test_compl_de_morgan_1: "tc (x + y) = tc x \<cdot> tc y"
+  by (metis compl_sup inf.left_commute inf.left_idem meet_assoc tc_def)
 
-lemma test_compl_de_morgan_2: "(x \<cdot> y)\<^sup>\<dagger> = x\<^sup>\<dagger> + y\<^sup>\<dagger>"
-  by (metis compl_inf inf_sup_distrib1 test_compl_def)
+lemma test_compl_de_morgan_2: "tc (x \<cdot> y) = tc x + tc y"
+  by (metis compl_inf inf_sup_distrib1 tc_def)
 
-lemma test_compl_three [simp]: "((x\<^sup>\<dagger>)\<^sup>\<dagger>)\<^sup>\<dagger> = x\<^sup>\<dagger>"
-  by (metis aux4 aux6 de_morgan_3 inf.commute inf_sup_absorb test_compl_def)
+lemma test_compl_three [simp]: "tc (tc (tc x)) = tc x"
+  by (metis aux4 aux6 de_morgan_3 inf.commute inf_sup_absorb tc_def)
 
-lemma test_compl_double [simp]: "is_test x \<Longrightarrow> (x\<^sup>\<dagger>)\<^sup>\<dagger> = x"
-  by (metis aux6_var compl_inf double_compl inf.commute le_iff_inf test_compl_def is_test_def)
+lemma test_compl_double [simp]: "is_test x \<Longrightarrow> tc (tc x) = x"
+  by (metis aux6_var compl_inf double_compl inf.commute le_iff_inf tc_def is_test_def)
 
 end (* relation_algebra *)
 

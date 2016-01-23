@@ -1,4 +1,4 @@
-(* Title:      Kleene Algebra
+(* Title:      Infinite Matrix Model of Kleene Algebra
    Author:     Alasdair Armstrong, Georg Struth, Tjark Weber
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
                Tjark Weber <tjark.weber at it.uu.se>
@@ -35,11 +35,11 @@ definition mat_zero :: "('a, 'b, 'c::dioid_one_zero) matrix" ("\<delta>") where
 definition mat_add :: "('a, 'b, 'c::dioid_one_zero) matrix \<Rightarrow> ('a, 'b, 'c) matrix \<Rightarrow> ('a, 'b, 'c) matrix" (infixl "\<oplus>" 70) where
   "(f \<oplus> g)  \<equiv> \<lambda>i j. (f i j) + (g i j)"
 
-lemma mat_add_assoc: "(f \<oplus> g) \<oplus> h =  f \<oplus>  (g \<oplus> h)"
-  by (auto simp add: mat_add_def)
+lemma mat_add_assoc: "(f \<oplus> g) \<oplus> h =  f \<oplus> (g \<oplus> h)"
+  by (auto simp add: mat_add_def join.sup_assoc)
 
 lemma mat_add_comm: "f \<oplus> g = g \<oplus> f"
-  by (auto simp add: mat_add_def)
+  by (auto simp add: mat_add_def join.sup_commute)
 
 lemma mat_add_idem[simp]: "f \<oplus> f = f"
   by (auto simp add: mat_add_def)

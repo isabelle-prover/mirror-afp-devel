@@ -1,4 +1,4 @@
-(* Title:      Kleene Algebra
+(* Title:      Models of Dioids
    Author:     Alasdair Armstrong, Georg Struth, Tjark Weber
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
                Tjark Weber <tjark.weber at it.uu.se>
@@ -220,7 +220,7 @@ lemma first_t_fusion [simp]: "last x = first y \<Longrightarrow> first (t_fusion
   by (simp add: first_def t_fusion_def)
 
 lemma last_t_fusion [simp]: "last x = first y \<Longrightarrow> last (t_fusion x y) = last y"
-  by (metis (lifting) Dioid_Models.last_append first_def t_fusion_def prod.collapse)
+  by (simp add: first_def t_fusion_def)
 
 text {* Next we show that fusion of traces is associative. *}
 
@@ -257,11 +257,11 @@ lemma t_prod_iff:
 
 lemma t_prod_intro [simp, intro]:
   "\<lbrakk> u \<in> X; v \<in> Y; last u = first v \<rbrakk> \<Longrightarrow> t_fusion u v \<in> X\<cdot>Y"
-  by (metis t_prod_iff)
+  by (meson t_prod_iff)
 
 lemma t_prod_elim [elim]:
   "w \<in> X\<cdot>Y \<Longrightarrow> \<exists>u v. w = t_fusion u v \<and> u \<in> X \<and> v \<in> Y \<and> last u = first v"
-  by (metis t_prod_iff)
+  by (meson t_prod_iff)
 
 text {* Finally we prove the interpretation statement that sets of traces
 under union and the complex product based on trace fusion together
@@ -309,13 +309,20 @@ lemma p_fusion_assoc:
   "p_fusion ps (p_fusion qs rs) = p_fusion (p_fusion ps qs) rs"
 proof (induct rs)
   case Nil show ?case
-    by (metis list.exhaust p_fusion.simps(1) p_fusion.simps(2))
+    by (metis p_fusion.elims p_fusion.simps(2))
   case Cons show ?case
   proof (induct qs)
     case Nil show ?case
       by (metis neq_Nil_conv p_fusion.simps(1) p_fusion.simps(2))
     case Cons show ?case
-      by (metis append_Cons append_assoc list.exhaust p_fusion.simps(1) p_fusion.simps(3))
+      proof -
+        have "\<forall>ps. ([] = ps \<or> hd ps # tl ps = ps) \<and> ((\<forall>q qs. q # qs \<noteq> ps) \<or> [] \<noteq> ps)"
+          using list.collapse by fastforce
+        moreover hence "\<forall>ps q qs. p_fusion ps (q # qs) = ps @ qs \<or> [] = ps"
+          by (metis p_fusion.simps(3))
+        ultimately show ?thesis
+          by (metis (no_types) Cons_eq_appendI append_eq_appendI p_fusion.simps(1) p_fusion.simps(3))
+      qed
   qed
 qed
 
@@ -448,7 +455,7 @@ proof
   show "x \<union> x = x"
     by auto
   show "x \<cdot> (y \<union> z) = x \<cdot> y \<union> x \<cdot> z"
-    by (metis p_prod_distl)
+    by (fact p_prod_distl)
 qed
 
 no_notation
@@ -849,4 +856,3 @@ begin
 end (* instantiation *)
 
 end
-

@@ -1,4 +1,4 @@
-(* Title:      Kleene Algebra
+(* Title:      Models of Action Algebra
    Author:     Alasdair Armstrong, Georg Struth, Tjark Weber
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
                Tjark Weber <tjark.weber at it.uu.se>
@@ -7,7 +7,7 @@
 section {* Models of Action Algebras *}
 
 theory Action_Algebra_Models
-imports Action_Algebra Kleene_Algebra_Models
+imports Action_Algebra "../Kleene_Algebra/Kleene_Algebra_Models"
 begin
 
 subsection {* The Powerset Action Algebra over a Monoid *}
@@ -22,7 +22,7 @@ quite similar. One could, perhaps, abstract out common reasoning. *}
 
 subsection {* The Powerset Action Algebra over a Monoid *}
 
-instantiation set :: (monoid_mult) residuated_join_semilattice
+instantiation set :: (monoid_mult) residuated_sup_lgroupoid
 begin
 
   definition residual_r_set where
@@ -81,9 +81,9 @@ begin
   proof
     fix x y :: "'a set"
     show "1 + x\<^sup>\<star> \<cdot> x\<^sup>\<star> + x \<subseteq> x\<^sup>\<star>"
-      by (metis join_semilattice_class.add_lub left_near_kleene_algebra_class.star_plus_one left_near_kleene_algebra_class.star_trans_eq left_pre_kleene_algebra_class.star_ext subset_refl)
-    show  "1 + y \<cdot> y + x \<subseteq> y \<longrightarrow> x\<^sup>\<star> \<subseteq> y"
-      by (metis join_semilattice_class.add_comm join_semilattice_class.add_left_comm left_pre_kleene_algebra_class.star_rtc_least)
+      by simp
+    show  "1 + y \<cdot> y + x \<subseteq> y \<Longrightarrow> x\<^sup>\<star> \<subseteq> y"
+      by (simp add: left_pre_kleene_algebra_class.star_rtc_least)
   qed
 
 end (* instantiation *)
@@ -97,7 +97,7 @@ definition limp_lan :: "'a lan \<Rightarrow> 'a lan \<Rightarrow> 'a lan" where
 definition rimp_lan :: "'a lan \<Rightarrow> 'a lan \<Rightarrow> 'a lan" where
   "rimp_lan X Z = {y. \<forall>x \<in> X. x @ y \<in> Z}"
 
-interpretation lan_residuated_join_semilattice: residuated_join_semilattice "op +" "op \<subseteq>" "op \<subset>" "op \<cdot>" limp_lan rimp_lan
+interpretation lan_residuated_join_semilattice: residuated_sup_lgroupoid "op +" "op \<subseteq>" "op \<subset>" "op \<cdot>" limp_lan rimp_lan
 proof
   fix x y z :: "'a lan"
   show "x \<subseteq> limp_lan z y \<longleftrightarrow> x \<cdot> y \<subseteq> z"
@@ -106,13 +106,13 @@ proof
     by (auto simp add: c_prod_def rimp_lan_def times_list_def)
 qed
 
-interpretation lan_action_algebra: action_algebra "op +" "op \<subseteq>" "op \<subset>" "op \<cdot>" limp_lan rimp_lan 1 0 star
+interpretation lan_action_algebra: action_algebra "op +" "op \<cdot>" 1 0 "op \<subseteq>" "op \<subset>" "op +" limp_lan rimp_lan star
 proof
   fix x y :: "'a lan"
   show "1 + x\<^sup>\<star> \<cdot> x\<^sup>\<star> + x \<subseteq> x\<^sup>\<star>"
-    by (metis left_near_kleene_algebra_class.star_plus_one left_near_kleene_algebra_class.star_trans left_near_kleene_algebra_class.star_trans_eq left_near_kleene_algebra_class.sum_star_closure left_pre_kleene_algebra_class.star_ext)
-  show "1 + y \<cdot> y + x \<subseteq> y \<longrightarrow> x\<^sup>\<star> \<subseteq> y"
-    by (metis join_semilattice_class.add_lub left_near_kleene_algebra_class.star_iso left_pre_kleene_algebra_class.star_rtc2)
+    by simp
+  show "1 + y \<cdot> y + x \<subseteq> y \<Longrightarrow> x\<^sup>\<star> \<subseteq> y"
+    by (simp add: action_algebra_class.star_rtc_2)
 qed
 
 
@@ -124,7 +124,7 @@ definition limp_rel :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where
 definition rimp_rel :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where
   "rimp_rel R T = {(y,z) | y z. \<forall>x. (x,y) \<in> R \<longrightarrow> (x,z) \<in> T}"
 
-interpretation rel_residuated_join_semilattice: residuated_join_semilattice "op \<union>" "op \<subseteq>" "op \<subset>" "op O" limp_rel rimp_rel
+interpretation rel_residuated_join_semilattice: residuated_sup_lgroupoid "op \<union>" "op \<subseteq>" "op \<subset>" "op O" limp_rel rimp_rel
 proof
   fix x y z :: "'a rel"
   show "x \<subseteq> limp_rel z y \<longleftrightarrow> x O y \<subseteq> z"
@@ -133,13 +133,13 @@ proof
     by (auto simp add: rimp_rel_def)
 qed
 
-interpretation rel_action_algebra: action_algebra "op \<union>" "op \<subseteq>" "op \<subset>" "op O" limp_rel rimp_rel Id "{}" rtrancl
+interpretation rel_action_algebra: action_algebra "op \<union>" "op O" Id "{}" "op \<subseteq>" "op \<subset>" "op \<union>" limp_rel rimp_rel rtrancl
 proof
   fix x y :: "'a rel"
   show "Id \<union> x\<^sup>* O x\<^sup>* \<union> x \<subseteq> x\<^sup>*"
     by auto
-  show "Id \<union> y O y \<union> x \<subseteq> y \<longrightarrow> x\<^sup>* \<subseteq> y"
-    by (metis le_supE rel_kleene_algebra.star_rtc2 rtrancl_mono)
+  show "Id \<union> y O y \<union> x \<subseteq> y \<Longrightarrow> x\<^sup>* \<subseteq> y"
+    by (simp add: rel_kleene_algebra.star_rtc_least)
 qed
 
 
@@ -151,7 +151,7 @@ definition limp_trace :: "('p, 'a) trace set \<Rightarrow> ('p, 'a) trace set \<
 definition rimp_trace :: "('p, 'a) trace set \<Rightarrow> ('p, 'a) trace set \<Rightarrow> ('p, 'a) trace set" where
   "rimp_trace X Z = \<Union> {Y. t_prod X Y \<subseteq> Z}"
 
-interpretation trace_residuated_join_semilattice: residuated_join_semilattice "op \<union>" "op \<subseteq>" "op \<subset>" t_prod limp_trace rimp_trace
+interpretation trace_residuated_join_semilattice: residuated_sup_lgroupoid "op \<union>" "op \<subseteq>" "op \<subset>" t_prod limp_trace rimp_trace
 proof
   fix X Y Z :: "('a,'b) trace set"
   show "X \<subseteq> limp_trace Z Y \<longleftrightarrow> t_prod X Y \<subseteq> Z"
@@ -192,13 +192,13 @@ proof
     qed
 qed
 
-interpretation trace_action_algebra: action_algebra "op \<union>" "op \<subseteq>" "op \<subset>" t_prod limp_trace rimp_trace t_one t_zero t_star
+interpretation trace_action_algebra: action_algebra "op \<union>" t_prod t_one t_zero "op \<subseteq>" "op \<subset>" "op \<union>" limp_trace rimp_trace t_star
 proof
   fix X Y :: "('a,'b) trace set"
   show "t_one \<union> t_prod (t_star X) (t_star X) \<union> X \<subseteq> t_star X"
-    by (metis Un_least order_refl trace_kleene_algebra.star_ext trace_kleene_algebra.star_plus_one trace_kleene_algebra.star_trans_eq)
-  show "t_one \<union> t_prod Y Y \<union> X \<subseteq> Y \<longrightarrow> t_star X \<subseteq> Y"
-    by (metis Un_commute le_iff_sup trace_dioid.add_lub trace_kleene_algebra.boffa_var trace_kleene_algebra.star_subdist)
+    by auto
+  show "t_one \<union> t_prod Y Y \<union> X \<subseteq> Y \<Longrightarrow> t_star X \<subseteq> Y"
+    by (simp add: trace_kleene_algebra.star_rtc_least)
 qed
 
 
@@ -212,7 +212,7 @@ definition limp_path :: "'a path set \<Rightarrow> 'a path set \<Rightarrow> 'a 
 definition rimp_path :: "'a path set \<Rightarrow> 'a path set \<Rightarrow> 'a path set" where
   "rimp_path X Z = \<Union> {Y. p_prod X Y \<subseteq> Z}"
 
-interpretation path_residuated_join_semilattice: residuated_join_semilattice "op \<union>" "op \<subseteq>" "op \<subset>" p_prod limp_path rimp_path
+interpretation path_residuated_join_semilattice: residuated_sup_lgroupoid "op \<union>" "op \<subseteq>" "op \<subset>" p_prod limp_path rimp_path
 proof
   fix X Y Z :: "'a path set"
   show "X \<subseteq> limp_path Z Y \<longleftrightarrow> p_prod X Y \<subseteq> Z"
@@ -253,13 +253,13 @@ proof
     qed
 qed
 
-interpretation path_action_algebra: action_algebra "op \<union>" "op \<subseteq>" "op \<subset>" p_prod limp_path rimp_path p_one "{}" p_star
+interpretation path_action_algebra: action_algebra "op \<union>" p_prod p_one "{}" "op \<subseteq>" "op \<subset>" "op \<union>" limp_path rimp_path  p_star
 proof
   fix X Y :: "'a path set"
   show "p_one \<union> p_prod (p_star X) (p_star X) \<union> X \<subseteq> p_star X"
-    by (metis Un_least order_refl path_kleene_algebra.star_ext path_kleene_algebra.star_plus_one path_kleene_algebra.star_trans_eq)
-  show "p_one \<union> p_prod Y Y \<union> X \<subseteq> Y \<longrightarrow> p_star X \<subseteq> Y"
-    by (metis Un_commute le_iff_sup path_dioid.add_lub path_kleene_algebra.boffa_var path_kleene_algebra.star_subdist)
+    by auto
+  show "p_one \<union> p_prod Y Y \<union> X \<subseteq> Y \<Longrightarrow> p_star X \<subseteq> Y"
+    by (simp add: path_kleene_algebra.star_rtc_least)    
 qed
 
 text {* We now consider a notion of paths that does not include the
@@ -271,7 +271,7 @@ definition limp_ppath :: "'a ppath set \<Rightarrow> 'a ppath set \<Rightarrow> 
 definition rimp_ppath :: "'a ppath set \<Rightarrow> 'a ppath set \<Rightarrow> 'a ppath set" where
   "rimp_ppath X Z = \<Union> {Y. pp_prod X Y \<subseteq> Z}"
 
-interpretation ppath_residuated_join_semilattice: residuated_join_semilattice "op \<union>" "op \<subseteq>" "op \<subset>" pp_prod limp_ppath rimp_ppath
+interpretation ppath_residuated_join_semilattice: residuated_sup_lgroupoid "op \<union>" "op \<subseteq>" "op \<subset>" pp_prod limp_ppath rimp_ppath
 proof
   fix X Y Z :: "'a ppath set"
   show "X \<subseteq> limp_ppath Z Y \<longleftrightarrow> pp_prod X Y \<subseteq> Z"
@@ -312,13 +312,13 @@ proof
     qed
 qed
 
-interpretation ppath_action_algebra: action_algebra "op \<union>" "op \<subseteq>" "op \<subset>" pp_prod limp_ppath rimp_ppath pp_one "{}" pp_star
+interpretation ppath_action_algebra: action_algebra "op \<union>" pp_prod pp_one "{}" "op \<subseteq>" "op \<subset>" "op \<union>" limp_ppath rimp_ppath pp_star
 proof
   fix X Y :: "'a ppath set"
   show "pp_one \<union> pp_prod (pp_star X) (pp_star X) \<union> X \<subseteq> pp_star X"
-    by (metis Un_least order_refl ppath_kleene_algebra.star_ext ppath_kleene_algebra.star_plus_one ppath_kleene_algebra.star_trans_eq)
-  show "pp_one \<union> pp_prod Y Y \<union> X \<subseteq> Y \<longrightarrow> pp_star X \<subseteq> Y"
-    by (metis Un_commute le_iff_sup ppath_dioid.add_lub ppath_kleene_algebra.boffa_var ppath_kleene_algebra.star_subdist)
+    by auto
+  show "pp_one \<union> pp_prod Y Y \<union> X \<subseteq> Y \<Longrightarrow> pp_star X \<subseteq> Y"
+    by (simp add: ppath_kleene_algebra.star_rtc_least)   
 qed
 
 
@@ -336,7 +336,24 @@ begin
 
 end
 
-instantiation pnat :: residuated_join_semilattice
+instantiation pnat :: semilattice_sup
+begin
+  definition sup_pnat: "sup_pnat x y \<equiv> pnat_min x y" 
+  instance
+  proof
+    fix x y z :: pnat
+    show "x \<le> x \<squnion> y"
+      by (metis (no_types) sup_pnat join_semilattice_class.order_prop plus_pnat_def)
+    show "y \<le> x \<squnion> y"
+      by (metis add.left_commute less_eq_pnat_def linear plus_pnat_def sup_pnat)
+    show "y \<le> x \<Longrightarrow> z \<le> x \<Longrightarrow> y \<squnion> z \<le> x"
+      by (metis add.commute add.left_commute less_eq_pnat_def plus_pnat_def sup_pnat)  
+qed
+
+end
+
+
+instantiation pnat :: residuated_sup_lgroupoid
 begin
 
   definition residual_r_pnat where
@@ -366,9 +383,9 @@ text {* The Kleene star for type~@{typ pnat} has already been defined in theory
   proof
     fix x y :: pnat
     show "1 + x\<^sup>\<star> \<cdot> x\<^sup>\<star> + x \<le> x\<^sup>\<star>"
-      by (metis star_pnat_def zero_pnat_top)
-    show "1 + y \<cdot> y + x \<le> y \<longrightarrow> x\<^sup>\<star> \<le> y"
-      by (metis join_semilattice_class.add_lub star_pnat_def)
+      by auto
+    show "1 + y \<cdot> y + x \<le> y \<Longrightarrow> x\<^sup>\<star> \<le> y"
+      by (simp add: star_pnat_def)
   qed
 
 end (* instantiation *)

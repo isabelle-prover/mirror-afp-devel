@@ -52,8 +52,10 @@ lemma power_minor_var:
   assumes "\<forall>w\<in>X. k\<le>|w|"
   shows "\<forall>w\<in>X\<^bsup>Suc n\<^esup>. n*k\<le>|w|"
   using assms
-  by (auto simp add: l_prod_elim length_lang_pow_lb trans_le_add2 algebra_simps)
-
+  apply (auto simp add: l_prod_elim)
+  using length_lang_pow_lb trans_le_add2
+  by (simp add: length_lang_pow_lb trans_le_add2 mult.commute)
+ 
 lemma power_lb: "(\<forall>w\<in>X. k\<le>|w| ) \<longrightarrow> (\<forall>w. w\<in>X\<^bsup>Suc n\<^esup> \<longrightarrow> n*k\<le>|w| )"
   by (metis power_minor_var)
 
@@ -145,7 +147,7 @@ lemma arden_r:
   shows "x = z \<cdot> y\<^sup>\<star>"
 proof (rule antisym)
   show one: "z \<cdot> y\<^sup>\<star> \<le> x"
-    by (metis assms(2) join_semilattice_class.add_comm kleene_algebra_class.star_inductr_eq)
+    by (metis assms(2) join.sup_commute kleene_algebra_class.star_inductr_var order_refl)
   show "x \<le> z \<cdot> y\<^sup>\<star>"
   proof (cases "x = 0")
     show "x = 0 \<Longrightarrow> x \<le> z \<cdot> y\<^sup>\<star>"  
@@ -279,9 +281,9 @@ next
   thus "P(t1 +\<^sub>r t2)"
     apply (subst P_def, transfer)
     apply (rule_tac x="t1' +\<^sub>r t2'" in exI)
-    apply auto
-    done
-next
+    apply clarsimp
+    by (metis (no_types, lifting) add.left_commute join.sup_assoc join.sup_left_idem rexp.distinct(2))
+ next
   fix t1 t2
   assume "P(t1)" "P(t2)"
   then obtain t1' t2' 
@@ -355,7 +357,7 @@ next
       by (metis regexp_ewp)
     ultimately show ?thesis
       apply (transfer, auto)
-      apply (metis (full_types) join_semilattice_class.add_comm lang.simps(2) rexp.distinct(1) rexp_ewp_l_ewp)
+      apply (metis (full_types) lang.simps(2) rexp.distinct(1) rexp_ewp_l_ewp)
       apply (metis lan_salomaa_l.EWP)
     done
   qed

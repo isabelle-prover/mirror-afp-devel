@@ -1,4 +1,4 @@
-(* Title:      Kleene Algebra
+(* Title:      From Semilattices to Dioids
    Author:     Alasdair Armstrong, Georg Struth, Tjark Weber
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
                Tjark Weber <tjark.weber at it.uu.se>
@@ -10,7 +10,7 @@ theory Dioid
 imports Signatures
 begin
 
-subsection {* Join Semilattices *}
+subsection {* Join Semilattices *} 
 
 text {* Join semilattices can be axiomatised order-theoretically or
 algebraically. A join semilattice (or upper semilattice) is either a
@@ -35,17 +35,15 @@ subclasses of {\em join\_semilattice}. Hence the primed name.
 *}
 
 class join_semilattice = plus_ord +
-  assumes add_assoc' [simp]: "(x + y) + z = x + (y + z)"
-  and add_comm [simp]: "x + y = y + x"
+  assumes add_assoc' [ac_simps]: "(x + y) + z = x + (y + z)"
+  and add_comm [ac_simps] : "x + y = y + x"
   and add_idem [simp]: "x + x = x"
 begin
 
-lemma add_left_comm [simp]:
-  "b + (a + c) = a + (b + c)"
-  unfolding add_assoc' [symmetric] by simp
+lemma add_left_comm [ac_simps]: "y + (x + z) = x + (y + z)"
+  using local.add_assoc' local.add_comm by auto
 
-lemma add_left_idem [simp]:
-  "a + (a + b) = a + b"
+lemma add_left_idem [ac_simps]: "x + (x + y) = x + y"
   unfolding add_assoc' [symmetric] by simp
 
 text {* The definition @{term "x \<le> y \<longleftrightarrow> x + y = y"} of the order is
@@ -58,61 +56,48 @@ subclass order
 proof
   fix x y z :: 'a
   show "x < y \<longleftrightarrow> x \<le> y \<and> \<not> y \<le> x"
-    by (metis add_comm less_def less_eq_def)
+    using local.add_comm local.less_def local.less_eq_def by force
   show "x \<le> x"
-    by (metis add_idem less_eq_def)
+    by (simp add: local.less_eq_def)
   show "x \<le> y \<Longrightarrow> y \<le> z \<Longrightarrow> x \<le> z"
     by (metis add_assoc' less_eq_def)
   show "x \<le> y \<Longrightarrow> y \<le> x \<Longrightarrow> x = y"
-    by (metis add_comm less_eq_def)
+    by (simp add: local.add_comm local.less_eq_def)
 qed
 
 text {* Next we show that joins are least upper bounds. *}
 
-lemma add_ub1 [simp]: "x \<le> x + y"
-  by (metis add_assoc' add_idem less_eq_def)
-
-lemma add_ub2 [simp]: "y \<le> x + y"
-  by (metis add_assoc' add_comm add_idem less_eq_def)
-
-lemma add_lub_var: "x \<le> z \<longrightarrow> y \<le> z \<longrightarrow> x + y \<le> z"
-  by (metis add_assoc' less_eq_def)
-
-lemma add_lub: "x + y \<le> z \<longleftrightarrow> x \<le> z \<and> y \<le> z"
-  by (metis add_lub_var add_ub1 add_ub2 order_trans)
+sublocale join: semilattice_sup "op +"
+  by (unfold_locales; simp add: ac_simps local.less_eq_def)
 
 text {* Next we prove that joins are isotone (order preserving). *}
 
-lemma add_iso: "x \<le> y \<longrightarrow> x + z \<le> y + z"
-  by (metis add_lub add_ub2 less_eq_def)
+lemma add_iso: "x \<le> y \<Longrightarrow> x + z \<le> y + z"
+  using join.sup_mono by blast
 
-lemma add_iso_var: "x \<le> y \<longrightarrow> u \<le> v \<longrightarrow> x + u \<le> y + v"
-  by (metis add_comm add_iso add_lub)
-
-text {* The next lemma links the definition of order as @{term "x \<le> y
-\<longleftrightarrow> x + y = y"}
-with a perhaps more conventional one known, e.g., from
-arithmetics. *}
+text {*
+  The next lemma links the definition of order as @{term "x \<le> y \<longleftrightarrow> x + y = y"}
+  with a perhaps more conventional one known, e.g., from arithmetics.
+*}
 
 lemma order_prop: "x \<le> y \<longleftrightarrow> (\<exists>z. x + z = y)"
 proof
   assume "x \<le> y"
   hence "x + y = y"
-    by (metis less_eq_def)
+    by (simp add: less_eq_def)
   thus "\<exists>z. x + z = y"
     by auto
 next
   assume "\<exists>z. x + z = y"
   then obtain c where "x + c = y"
     by auto
-  also have "x + c \<le> y"
-    by (metis calculation eq_refl)
+  hence "x + c \<le> y"
+    by simp
   thus "x \<le> y"
-    by (metis add_ub1 calculation)
+    by simp
 qed
 
 end (* join_semilattice *)
-
 
 
 subsection {* Join Semilattices with an Additive Unit *}
@@ -124,28 +109,19 @@ called \emph{bounded}. *}
 
 class join_semilattice_zero = join_semilattice + zero +
   assumes add_zero_l [simp]: "0 + x = x"
+
 begin
 
 subclass comm_monoid_add
-  apply unfold_locales
-  apply auto
-  apply (metis add_comm add_zero_l)
-  done
+  by (unfold_locales, simp_all add: add_assoc') (simp add: add_comm)
 
-lemma zero_least [simp]: "0 \<le> x"
-  by (metis add_zero_l less_eq_def)
-
-lemma add_zero_r [simp]: "x + 0 = x"
-  by (metis add_comm add_zero_l)
-
-lemma zero_unique [simp]: "x \<le> 0 \<longleftrightarrow> x = 0"
-  by (metis zero_least eq_iff)
-
-lemma no_trivial_inverse: "x \<noteq> 0 \<longrightarrow> \<not>(\<exists>y. x + y = 0)"
-  by (metis zero_unique order_prop)
+sublocale join: bounded_semilattice_sup_bot "op +" "op \<le>" "op <" 0
+  by unfold_locales (simp add: local.order_prop)
+  
+lemma no_trivial_inverse: "x \<noteq> 0 \<Longrightarrow> \<not>(\<exists>y. x + y = 0)"
+  by (metis local.add_0_right local.join.sup_left_idem)
 
 end (* join_semilattice_zero *)
-
 
 
 subsection {* Near Semirings *}
@@ -163,12 +139,14 @@ We only consider near semirings in which addition is commutative, and
 in which the right distributivity law holds. We call such near
 semirings \emph{abelian}. *}
 
-class ab_near_semiring = ab_semigroup_add + semigroup_mult +
-  assumes distrib_right': "(x + y) \<cdot> z = x \<cdot> z + y \<cdot> z"
+class ab_near_semiring = ab_semigroup_add + semigroup_mult +  
+  assumes distrib_right' [simp]: "(x + y) \<cdot> z = x \<cdot> z + y \<cdot> z"
 
 subclass (in semiring) ab_near_semiring
   by (unfold_locales, metis distrib_right)
 
+class ab_pre_semiring = ab_near_semiring +
+  assumes subdistl_eq: "z \<cdot> x + z \<cdot> (x + y) = z \<cdot> (x + y)"
 
 subsection {* Variants of Dioids *}
 
@@ -184,6 +162,7 @@ in Gondran and Minoux's book~\cite{gondran10graphs}. *}
 
 class near_dioid = ab_near_semiring + plus_ord +
   assumes add_idem' [simp]: "x + x = x"
+
 begin
 
 text {* Since addition is idempotent, the additive (commutative)
@@ -191,26 +170,24 @@ semigroup reduct of a near dioid is a semilattice. Near dioids are
 therefore ordered by the semilattice order. *}
 
 subclass join_semilattice
-by unfold_locales (auto simp add: add.commute add.left_commute)
+  by unfold_locales (auto simp add: add.commute add.left_commute)
 
 text {* It follows that multiplication is right-isotone (but not
 necessarily left-isotone). *}
 
-lemma mult_isor: "x \<le> y \<longrightarrow> x \<cdot> z \<le> y \<cdot> z"
-proof
+lemma mult_isor: "x \<le> y \<Longrightarrow> x \<cdot> z \<le> y \<cdot> z"
+proof -
   assume "x \<le> y"
   hence "x + y = y"
-    by (metis less_eq_def)
-  also have "x \<cdot> z + y \<cdot> z = (x + y) \<cdot> z"
-    by (metis distrib_right')
-  moreover have "... = y \<cdot> z"
-    by (metis calculation)
+    by (simp add: less_eq_def)
+  hence "(x + y) \<cdot> z = y \<cdot> z"
+    by simp
   thus "x \<cdot> z \<le> y \<cdot> z"
-    by (metis calculation less_eq_def)
+    by (simp add: less_eq_def)
 qed
 
-lemma "x \<le> y \<longrightarrow> z \<cdot> x \<le> z \<cdot> y"
-  nitpick [expect=genuine] -- "3-element counterexample"
+lemma "x \<le> y \<Longrightarrow> z \<cdot> x \<le> z \<cdot> y"
+  (* nitpick [expect=genuine] -- "3-element counterexample" *)
 oops
 
 text {* The next lemma states that, in every near dioid, left
@@ -218,9 +195,15 @@ isotonicity and left subdistributivity are equivalent. *}
 
 lemma mult_isol_equiv_subdistl:
   "(\<forall>x y z. x \<le> y \<longrightarrow> z \<cdot> x \<le> z \<cdot> y) \<longleftrightarrow> (\<forall>x y z. z \<cdot> x \<le> z \<cdot> (x + y))"
-  by (metis add_ub1 less_eq_def)
+  by (metis local.join.sup_absorb2 local.join.sup_ge1)
+
+text {* The following lemma is relevant to propositional Hoare logic. *}
+
+lemma phl_cons1: "x \<le> w \<Longrightarrow> w \<cdot> y \<le> y \<cdot> z \<Longrightarrow> x \<cdot> y \<le> y \<cdot> z"
+  using dual_order.trans mult_isor by blast
 
 end (* near_dioid *)
+
 
 text {* We now make multiplication in near dioids left isotone, which
 is equivalent to left subdistributivity, as we have seen. The
@@ -234,32 +217,90 @@ for them. *}
 
 class pre_dioid = near_dioid +
   assumes subdistl: "z \<cdot> x \<le> z \<cdot> (x + y)"
+
 begin
 
-text {* Now, obviously, left isotonicity follows from left
-subdistributivity. *}
+text {* Now, obviously, left isotonicity follows from left subdistributivity. *}
 
 lemma subdistl_var: "z \<cdot> x + z \<cdot> y \<le> z \<cdot> (x + y)"
-  by (metis add.commute add_lub subdistl)
+  using local.mult_isol_equiv_subdistl local.subdistl by auto
 
-lemma mult_isol: "x \<le> y \<longrightarrow> z \<cdot> x \<le> z \<cdot> y"
-proof
+subclass ab_pre_semiring
+  apply unfold_locales
+  by (simp add: local.join.sup_absorb2 local.subdistl)
+
+lemma mult_isol: "x \<le> y \<Longrightarrow> z \<cdot> x \<le> z \<cdot> y"
+proof -
   assume "x \<le> y"
   hence "x + y = y"
-    by (metis less_eq_def)
+    by (simp add: less_eq_def)
   also have "z \<cdot> x + z \<cdot> y \<le> z \<cdot> (x + y)"
-    by (metis subdistl_var)
+    using subdistl_var by blast
   moreover have "... = z \<cdot> y"
-    by (metis calculation)
-  thus "z \<cdot> x \<le> z \<cdot> y"
-    by (metis add_ub1 calculation order_trans)
+    by (simp add: calculation)
+  ultimately show "z \<cdot> x \<le> z \<cdot> y"
+    by auto
 qed
 
-lemma mult_isol_var: "u \<le> x \<and> v \<le> y \<longrightarrow> u \<cdot> v \<le> x \<cdot> y"
-  by (metis mult_isol mult_isor order_trans)
+lemma mult_isol_var: "u \<le> x \<Longrightarrow> v \<le> y \<Longrightarrow> u \<cdot> v \<le> x \<cdot> y"
+  by (meson local.dual_order.trans local.mult_isor mult_isol)
 
-lemma mult_double_iso: "x \<le> y \<longrightarrow> w \<cdot> x \<cdot> z \<le> w \<cdot> y \<cdot> z"
-  by (metis mult_isol mult_isor)
+lemma mult_double_iso: "x \<le> y \<Longrightarrow> w \<cdot> x \<cdot> z \<le> w \<cdot> y \<cdot> z"
+  by (simp add: local.mult_isor mult_isol)
+
+text {* The following lemmas are relevant to propositional Hoare logic. *}
+
+lemma phl_cons2: "w \<le> x \<Longrightarrow> z \<cdot> y \<le> y \<cdot> w \<Longrightarrow> z \<cdot> y \<le> y \<cdot> x"
+  using local.order_trans mult_isol by blast
+
+lemma phl_seq: 
+assumes "p \<cdot> x \<le> x \<cdot> r"
+and "r \<cdot> y \<le> y \<cdot> q" 
+shows "p \<cdot> (x \<cdot> y) \<le> x \<cdot> y \<cdot> q"
+proof -
+  have "p \<cdot> x \<cdot> y \<le> x \<cdot> r \<cdot> y"
+    using assms(1) mult_isor by blast
+  thus ?thesis
+    by (metis assms(2) order_prop order_trans subdistl mult_assoc)
+qed
+
+lemma phl_cond: 
+assumes "u \<cdot> v \<le> v \<cdot> u \<cdot> v" and "u \<cdot> w \<le> w \<cdot> u \<cdot> w" 
+and "\<And>x y. u \<cdot> (x + y) \<le> u \<cdot> x + u \<cdot> y"
+and "u \<cdot> v \<cdot> x \<le> x \<cdot> z" and "u \<cdot> w \<cdot> y \<le> y \<cdot> z" 
+shows "u \<cdot> (v \<cdot> x + w \<cdot> y) \<le> (v \<cdot> x + w \<cdot> y) \<cdot> z"
+proof -
+  have a: "u \<cdot> v \<cdot> x \<le> v \<cdot> x \<cdot> z" and b: "u \<cdot> w \<cdot> y \<le> w \<cdot> y \<cdot> z"
+    by (metis assms mult_assoc phl_seq)+
+  have  "u \<cdot> (v \<cdot> x + w \<cdot> y) \<le> u \<cdot> v \<cdot> x + u \<cdot> w \<cdot> y"
+    using assms(3) mult_assoc by auto
+  also have "... \<le> v \<cdot> x \<cdot> z + w \<cdot> y \<cdot> z"
+    using a b join.sup_mono by blast
+  finally show ?thesis
+    by simp
+qed
+
+lemma phl_export1:
+assumes "x \<cdot> y \<le> y \<cdot> x \<cdot> y"
+and "(x \<cdot> y) \<cdot> z \<le> z \<cdot> w"
+shows "x \<cdot> (y \<cdot> z) \<le> (y \<cdot> z) \<cdot> w"
+proof -
+  have "x \<cdot> y \<cdot> z \<le> y \<cdot> x \<cdot> y \<cdot> z"
+    by (simp add: assms(1) mult_isor)
+  thus ?thesis
+    using assms(1) assms(2) mult_assoc phl_seq by auto 
+qed
+
+lemma phl_export2: 
+assumes "z \<cdot> w \<le> w \<cdot> z \<cdot> w"
+and "x \<cdot> y \<le> y \<cdot> z"
+shows "x \<cdot> (y \<cdot> w) \<le> y \<cdot> w \<cdot> (z \<cdot> w)"
+proof -
+  have "x \<cdot> y \<cdot> w \<le> y \<cdot> z \<cdot> w"
+    using assms(2) mult_isor by blast
+  thus ?thesis
+    by (metis assms(1) dual_order.trans order_prop subdistl mult_assoc)
+qed
 
 end (* pre_dioid *)
 
@@ -271,8 +312,7 @@ idempotent semirings. *}
 class dioid = near_dioid + semiring
 
 subclass (in dioid) pre_dioid
-  by (unfold_locales, metis order_prop distrib_left)
-
+  by unfold_locales (simp add: local.distrib_left)
 
 subsection {* Families of Nearsemirings with a Multiplicative Unit *}
 
@@ -284,14 +324,26 @@ for this. *}
 class ab_near_semiring_one = ab_near_semiring + one +
   assumes mult_onel [simp]: "1 \<cdot> x = x"
   and mult_oner [simp]: "x \<cdot> 1 = x"
+
 begin
 
 subclass monoid_mult
-by (unfold_locales, simp_all)
+  by (unfold_locales, simp_all)
 
 end (* ab_near_semiring_one *)
 
+class ab_pre_semiring_one = ab_near_semiring_one + ab_pre_semiring
+
 class near_dioid_one = near_dioid + ab_near_semiring_one
+
+begin
+
+text {* The following lemma is relevant to propositional Hoare logic. *}
+
+lemma phl_skip: "x \<cdot> 1 \<le> 1 \<cdot> x"
+  by simp
+
+end
 
 text {* For near dioids with one, it would be sufficient to require
 $1+1=1$. This implies @{term "x+x=x"} for arbitray~@{term x} (but that
@@ -323,19 +375,37 @@ class ab_near_semiring_one_zerol = ab_near_semiring_one + zero +
   assumes add_zerol [simp]: "0 + x = x"
   and annil [simp]: "0 \<cdot> x = 0"
 
-begin (* ab_near_semiring_one_zerol *)
+begin 
 
 text {* Note that we do not require~$0 \neq 1$.  *}
 
 lemma add_zeror [simp]: "x + 0 = x"
-  by (metis add.commute add_zerol)
+  by (subst add_commute) simp
 
 end (* ab_near_semiring_one_zerol *)
+
+class ab_pre_semiring_one_zerol = ab_near_semiring_one_zerol + ab_pre_semiring
+
+begin
+
+text {* The following lemma shows that there is no point defining pre-semirings separately from dioids. *}
+
+lemma "1 + 1 = 1"
+proof -
+  have "1 + 1 = 1 \<cdot> 1 + 1 \<cdot> (1 + 0)"
+    by simp
+  also have "... = 1 \<cdot> (1 + 0)"
+    using subdistl_eq by presburger
+  finally show ?thesis
+    by simp
+qed
+
+end (* ab_pre_semiring_one_zerol *)
 
 class near_dioid_one_zerol = near_dioid_one + ab_near_semiring_one_zerol
 
 subclass (in near_dioid_one_zerol) join_semilattice_zero
-  by (unfold_locales, metis add_zerol)
+  by (unfold_locales, simp)
 
 class pre_dioid_one_zerol = pre_dioid_one + ab_near_semiring_one_zerol
 
@@ -366,7 +436,6 @@ subclass (in dioid_one_zero) pre_dioid_one_zero ..
 
 subclass (in dioid_one_zero) semiring_one_zero ..
 
-
 subsection {* Duality by Opposition *}
 
 text {*
@@ -380,11 +449,11 @@ definition (in times) opp_mult (infixl "\<odot>" 70)
 
 lemma (in semiring_1) dual_semiring_1:
   "class.semiring_1 1 (op \<odot>) (op +) 0"
-by unfold_locales (auto simp add: opp_mult_def mult.assoc distrib_right distrib_left)
+  by unfold_locales (auto simp add: opp_mult_def mult.assoc distrib_right distrib_left)
 
 lemma (in dioid_one_zero) dual_dioid_one_zero:
   "class.dioid_one_zero (op +) (op \<odot>) 1 0 (op \<le>) (op <)"
-by unfold_locales (auto simp add: opp_mult_def mult.assoc distrib_right distrib_left)
+  by unfold_locales (auto simp add: opp_mult_def mult.assoc distrib_right distrib_left)
 
 subsection {* Selective Near Semirings *}
 
@@ -394,26 +463,26 @@ min-plus semirings, have that property. *}
 
 class selective_near_semiring = ab_near_semiring + plus_ord +
   assumes select: "x + y = x \<or> x + y = y"
+
 begin
 
 lemma select_alt: "x + y \<in> {x,y}"
-  by (metis insert_iff select)
+  by (simp add: local.select)
 
-text {* It follows immediately that every selective near semiring is a
-near dioid. *}
+text {* It follows immediately that every selective near semiring is a near dioid. *}
 
 subclass near_dioid
-  by (unfold_locales, metis select)
+  by (unfold_locales, meson select)
 
-text {* Moreover, the order in a selective near semiring is obviously
-linear. *}
+text {* Moreover, the order in a selective near semiring is obviously linear. *}
 
 subclass linorder
-  by (unfold_locales, metis add.commute add_ub1 select)
+  by (unfold_locales, metis add.commute join.sup.orderI select)
 
 end (*selective_near_semiring*)
 
 class selective_semiring = selective_near_semiring + semiring_one_zero
+
 begin
 
 subclass dioid_one_zero ..
