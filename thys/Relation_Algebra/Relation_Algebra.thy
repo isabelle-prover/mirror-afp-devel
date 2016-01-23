@@ -40,7 +40,7 @@ treat the zero (the minimal element of the boolean reduct) since the proof of
 the annihilation laws is rather tricky to automate. Following Maddux we derive
 them from properties of Boolean algebras with operators. *}
 
-sublocale relation_algebra < dioid_one "op +" "op ;" "op \<le> " "op <" "1'"
+sublocale relation_algebra \<subseteq> dioid_one "op +" "op ;" "op \<le> " "op <" "1'"
 proof
   fix x y z :: 'a
   show "x ; y ; z = x ; (y ; z)"
@@ -74,7 +74,7 @@ lemma meet_interchange: "(w \<cdot> x) ; (y \<cdot> z) \<le> w ; y \<cdot> x ; z
 by (metis inf_le1 inf_le2 le_infI mult_isol_var)
 
 lemma join_interchange: "w ; x + y ; z \<le> (w + y) ; (x + z)"
-by (metis add_lub_var mult_isol_var sup_ge1 sup_ge2)
+using local.mult_isol_var local.sup.bounded_iff local.sup.cobounded2 local.sup_ge1 by presburger
 
 text {* We now prove some simple facts about conversion. *}
 
@@ -175,7 +175,6 @@ lemma modular_1': "x ; y \<cdot> z = x ; (y \<cdot> x\<^sup>\<smile> ; z) \<cdot
 by (metis schroeder_1_var modular_1)
 
 lemma modular_2': "y ; x \<cdot> z = (y \<cdot> z ; x\<^sup>\<smile>) ; x \<cdot> z"
-(* by (smt aux4 distrib_right inf.commute inf_sup_distrib1 sup_bot_right modular_2_aux') *)
 proof -
   have "y ; x \<cdot> z = (y \<cdot> z ; x\<^sup>\<smile>) ; x \<cdot> z + (y \<cdot> -(z ; x\<^sup>\<smile>)) ; x \<cdot> z"
     by (metis aux4 distrib_right inf.commute inf_sup_distrib1)
@@ -278,7 +277,9 @@ lemma maddux_21: "x \<le> 1 ; x"
 by (metis mult_isor mult_onel top_greatest)
 
 lemma maddux_23: "x ; y \<cdot> -(x ; z) = x ; (y \<cdot> -z) \<cdot> -(x ; z)"
-by (rule antisym) (metis add_ub2 aux9 galois_1 inf.commute distrib_left)+
+apply (rule antisym)
+apply (metis local.aux6 local.aux6_var local.aux9 local.compl_inf_bot local.compl_sup_top local.compl_unique local.distrib_left local.galois_2 local.sup_ge2)
+using local.meet_iso local.mult_subdistl by blast
 
 lemma maddux_24: "-(x ; y) + x ; z = -(x ; (y \<cdot> -z)) + x ; z"
 by (metis de_morgan_3 double_compl maddux_23)

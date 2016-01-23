@@ -17,7 +17,7 @@ lemma (in star_dioid)
   and "\<And>x. 1 + x\<^sup>\<star> \<cdot> x =  x\<^sup>\<star>"
   and "\<And>x. x \<cdot> x = x \<Longrightarrow> x\<^sup>\<star> = 1 + x"
   shows "\<And>x y. (x + y)\<^sup>\<star> = x\<^sup>\<star> \<cdot> (y \<cdot> x\<^sup>\<star>)\<^sup>\<star>"
-  nitpick [expect=genuine] --"5-element counterexample"
+(*  nitpick [expect=genuine] --"5-element counterexample"*)
 oops
 
 lemma (in star_dioid) 
@@ -25,7 +25,7 @@ lemma (in star_dioid)
   and "\<And>x. 1 + x\<^sup>\<star> \<cdot> x =  x\<^sup>\<star>"
   and "\<And>x. x \<cdot> x = x \<Longrightarrow> x\<^sup>\<star> = 1 + x"
   shows "\<And>x y. x \<le> y \<longrightarrow> x\<^sup>\<star> \<le> y\<^sup>\<star>"
-  nitpick [expect=genuine] --"5-element counterexample"
+(*  nitpick [expect=genuine] --"5-element counterexample"*)
 oops 
 
 lemma (in star_dioid) 
@@ -54,7 +54,7 @@ lemma (in star_dioid)
   and "\<And>x. 1 + x\<^sup>\<star> \<cdot> x =  x\<^sup>\<star>"
   and "\<And>x y z. x \<cdot> y = y \<cdot> z \<Longrightarrow> x\<^sup>\<star> \<cdot> y = y \<cdot> z\<^sup>\<star>"
   shows "1\<^sup>\<star> = 1"
-  nitpick -- "3-element counterexample"
+(*  nitpick -- "3-element counterexample"*)
 oops
 
 lemma (in star_dioid) 
@@ -63,7 +63,7 @@ lemma (in star_dioid)
   and "\<And>x y z. x \<cdot> y \<le> y \<cdot> z \<Longrightarrow> x\<^sup>\<star> \<cdot> y \<le> y \<cdot> z\<^sup>\<star>"
   and "\<And>x y z. y \<cdot> x \<le> z \<cdot> y \<Longrightarrow> y \<cdot> x\<^sup>\<star> \<le> z\<^sup>\<star> \<cdot> y"
   shows "1\<^sup>\<star> = 1"
-  nitpick [expect=genuine] -- "3-element counterexample"
+(*  nitpick [expect=genuine] -- "3-element counterexample"*)
 oops
 
 lemma (in star_dioid) 
@@ -83,13 +83,15 @@ class C3r_var = conway_dioid +
 class C3_var = C3l_var + C3r_var
 
 sublocale C3l_var \<subseteq> C3l_algebra
-  by (unfold_locales, metis C3l_var add_lub_var order_refl)
+  apply unfold_locales
+  by (simp add: local.C3l_var)
 
 sublocale C3l_algebra \<subseteq> C3l_var
   by (unfold_locales, metis star_inductl_var)
 
 sublocale C3_var \<subseteq> C3_algebra
-  by (unfold_locales, metis C3r_var add_lub_var order_refl)
+  apply unfold_locales
+  by (simp add: local.C3r_var)
 
 sublocale C3_algebra \<subseteq> C3_var
   by (unfold_locales, metis star_inductr_var)
@@ -102,22 +104,22 @@ sublocale B2_algebra \<subseteq> Brtc_algebra
 proof 
   fix x y
   show "1 + x\<^sup>\<star> \<cdot> x\<^sup>\<star> + x \<le> x\<^sup>\<star>"
-    by (metis B21 R_lemma add_lub star_plus_one star_trans_eq)
+    by (simp add: local.star_ext)
   show "1 + x + y \<cdot> y \<le> y \<Longrightarrow> x\<^sup>\<star> \<le> y"
-    by (metis B23 add_lub eq_iff mult_1_right subdistl)
+    by (metis B23 local.join.le_sup_iff eq_iff mult_1_right subdistl)
 qed
 
 sublocale Brtc_algebra \<subseteq> B2_algebra
 proof 
   fix x y
   show "1 + x \<le> x\<^sup>\<star>"
-    by (metis rtc1 add_lub)
+    by (metis rtc1 join.le_sup_iff)
   show "x\<^sup>\<star> \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
   proof (rule antisym)
     show "x\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
-      by (metis rtc1 add_lub)
+      by (metis rtc1 join.le_sup_iff)
     show "x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> x\<^sup>\<star>"
-      by (metis rtc1 add.commute add_lub less_eq_def mult_isor mult_onel)
+      by (metis rtc1 add.commute join.le_sup_iff less_eq_def mult_isor mult_onel)
   qed
   show "\<lbrakk> 1 + x \<le> y; y \<cdot> y = y \<rbrakk> \<Longrightarrow> x\<^sup>\<star> \<le> y"
     by (metis rtc2 eq_refl less_eq_def)
@@ -137,7 +139,7 @@ proof unfold_locales
   fix x :: 'a
   assume "x \<cdot> x \<le> x"
   hence "x \<cdot> (1 + x) = x"
-    using distrib_left less_eq_def by simp
+    by (simp add: local.distrib_left local.join.sup_absorb1)
   hence "(1 + x) \<cdot> (1 + x) = 1 + x"
     using add.left_commute distrib_right' by simp
   thus "x\<^sup>\<star> = 1 + x"

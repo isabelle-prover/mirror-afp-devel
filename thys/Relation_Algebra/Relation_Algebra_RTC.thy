@@ -18,8 +18,12 @@ class relation_algebra_rtc = relation_algebra + star_op +
     and rtc_inductl: "z + x ; y \<le> y \<longrightarrow> x\<^sup>\<star> ; z \<le> y"
     and rtc_inductr: "z + y ; x \<le> y \<longrightarrow> z ; x\<^sup>\<star> \<le> y"
 
-sublocale relation_algebra_rtc < kleene_algebra "op +" "op ;" "1'" 0 "op \<le>" "op <" star
-by (unfold_locales, rule rtc_unfoldl, rule rtc_inductl, rule rtc_inductr)
+sublocale relation_algebra_rtc \<subseteq> kleene_algebra "op +" "op ;" "1'" 0 "op \<le>" "op <" star
+apply (unfold_locales)
+  apply (rule rtc_unfoldl)
+ apply (simp add: local.rtc_inductl)
+apply (simp add: rtc_inductr)
+done
 
 context relation_algebra_rtc
 begin
@@ -30,7 +34,7 @@ converse is captured by the axioms. *}
 lemma star_conv: "(x\<^sup>\<star>)\<^sup>\<smile> = (x\<^sup>\<smile>)\<^sup>\<star>"
 proof (rule antisym)
   show "(x\<^sup>\<smile>)\<^sup>\<star> \<le> (x\<^sup>\<star>)\<^sup>\<smile>"
-    by (metis star_inductl_one add_lub_var conv_contrav conv_e conv_iso less_eq_def star_1l star_plus_one star_slide_var)
+    by (metis local.conv_add local.conv_contrav local.conv_e local.conv_iso local.star_rtc1 local.star_rtc_least)
   show "(x\<^sup>\<star>)\<^sup>\<smile> \<le> (x\<^sup>\<smile>)\<^sup>\<star>"
     by (metis boffa_var conv_add conv_contrav conv_e conv_invol conv_iso star_denest star_ext star_iso star_plus_one sup.idem)
 qed
@@ -39,9 +43,8 @@ text {* Next we provide an example to show how facts from Kleene algebra are
 picked up in relation algebra. *}
 
 lemma rel_church_rosser: "(x\<^sup>\<smile>)\<^sup>\<star> ; x\<^sup>\<star> \<le> x\<^sup>\<star> ; (x\<^sup>\<smile>)\<^sup>\<star> \<Longrightarrow> (x + x\<^sup>\<smile>)\<^sup>\<star> = x\<^sup>\<star> ; (x\<^sup>\<smile>)\<^sup>\<star>"
-by (metis church_rosser)
+by (fact church_rosser)
 
 end (* relation_algebra_rtc *)
 
 end
-

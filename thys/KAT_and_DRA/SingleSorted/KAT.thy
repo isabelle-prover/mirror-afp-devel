@@ -6,7 +6,7 @@
 section {* Kleene Algebra with Tests *}
 
 theory KAT
-  imports "../DRA_Base" Test_Dioids
+  imports "../../Kleene_Algebra/Kleene_Algebra" Conway_Tests
 begin
 
 text {*
@@ -14,75 +14,103 @@ text {*
   These structures can be expanded to demonic refinement algebras.
 *}
 
-class left_kat_zerol =  left_kleene_algebra_zerol + dioid_tests_zerol
+class left_kat_zerol =  left_kleene_algebra_zerol + test_semiring_zerol
 begin
 
-lemma star_test_export1: "test p \<Longrightarrow> (p\<cdot>x)\<^sup>\<star>\<cdot>p \<le> p\<cdot>x\<^sup>\<star>"
-  by (metis mult_isol mult_oner star_iso star_slide test_eq3 test_one_var)
+lemma star_n_export1: "(n x \<cdot> y)\<^sup>\<star> \<cdot> n x \<le> n x \<cdot> y\<^sup>\<star>"
+  by (simp add: local.n_restrictr local.star_sim1)
 
-lemma star_test_export2: "test p \<Longrightarrow> (p\<cdot>x)\<^sup>\<star>\<cdot>p \<le> x\<^sup>\<star>\<cdot>p"
-  by (metis mult_isor star2 star_denest star_invol star_iso star_slide star_subdist_var_2 star_subid test_ub_var)
+lemma star_test_export1: "test p \<Longrightarrow> (p \<cdot> x)\<^sup>\<star> \<cdot> p \<le> p \<cdot> x\<^sup>\<star>"
+  using star_n_export1 by auto
 
-lemma star_test_export_left: "\<lbrakk>test p; x\<cdot>p \<le> p\<cdot>x\<rbrakk> \<Longrightarrow> x\<^sup>\<star>\<cdot>p = p\<cdot>(x\<cdot>p)\<^sup>\<star>"
-  apply (rule antisym)
-  apply (metis mult.assoc mult_isol_var star_sim1 test_double_comp_var test_mult_idem_var test_mult_lb1)
-  by (metis star_slide star_test_export2)
+lemma star_n_export2: "(n x \<cdot> y)\<^sup>\<star> \<cdot> n x \<le> y\<^sup>\<star> \<cdot> n x"
+  by (simp add: local.mult_isor local.n_restrictl local.star_iso)
 
-lemma star_test_export_right: "\<lbrakk>test p; x\<cdot>p \<le> p\<cdot>x\<rbrakk> \<Longrightarrow> x\<^sup>\<star>\<cdot>p = (p\<cdot>x)\<^sup>\<star>\<cdot>p"
-  by (metis star_slide star_test_export_left)
+lemma star_test_export2: "test p \<Longrightarrow> (p \<cdot> x)\<^sup>\<star> \<cdot> p \<le> x\<^sup>\<star> \<cdot> p"
+  using star_n_export2 by auto
 
-lemma star_test_export2_left: "\<lbrakk>test p; p\<cdot>x = x\<cdot>p\<rbrakk> \<Longrightarrow> x\<^sup>\<star>\<cdot>p = p\<cdot>(p\<cdot>x)\<^sup>\<star>"
-  by (metis order_refl star_test_export_left)
-
-lemma star_test_export2_right: "\<lbrakk>test p; p\<cdot>x = x\<cdot>p\<rbrakk> \<Longrightarrow> x\<^sup>\<star>\<cdot>p = (x\<cdot>p)\<^sup>\<star>\<cdot>p"
-  by (metis star_slide star_test_export2_left)
-
-lemma star_test_folk: "\<lbrakk>test p; p\<cdot>x = x\<cdot>p; p\<cdot>y = y\<cdot>p\<rbrakk> \<Longrightarrow> (p\<cdot>x + !p\<cdot>y)\<^sup>\<star>\<cdot>p = p\<cdot>(p\<cdot>x)\<^sup>\<star>"
-proof -
-  assume assms: "test p" "p\<cdot>x = x\<cdot>p" "p\<cdot>y = y\<cdot>p"
-  hence "(p\<cdot>x + !p\<cdot>y)\<^sup>\<star>\<cdot>p = p\<cdot>(p\<cdot>p\<cdot>x + p\<cdot>!p\<cdot>y)\<^sup>\<star>"
-    by (metis comm_add_var test_comp_closed_var star_test_export2_left distrib_left mult.assoc)
-  thus ?thesis
-    by (metis assms(1) test_double_comp_var test_mult_comp test_mult_idem_var add_zeror annil)
+lemma star_n_export_left: "x \<cdot> n y \<le> n y \<cdot> x \<Longrightarrow> x\<^sup>\<star> \<cdot> n y = n y \<cdot> (x \<cdot> n y)\<^sup>\<star>"
+proof (rule antisym)
+  assume a1: "x \<cdot> n y \<le> n y \<cdot> x"
+  hence "x \<cdot> n y = n y \<cdot> x \<cdot> n y"
+    by (simp add: local.n_kat_2_opp)
+  thus "x\<^sup>\<star> \<cdot> n y \<le> n y \<cdot> (x \<cdot> n y)\<^sup>\<star>"
+    by (simp add: local.star_sim1 mult_assoc)
+next
+  assume a1: "x \<cdot> n y \<le> n y \<cdot> x"
+  thus "n y \<cdot> (x \<cdot> n y)\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> n y"
+using local.star_slide star_n_export2 by force
 qed
 
+lemma star_test_export_left: "test p \<Longrightarrow> x \<cdot> p \<le> p \<cdot> x \<longrightarrow> x\<^sup>\<star> \<cdot> p = p \<cdot> (x \<cdot> p)\<^sup>\<star>"
+  using star_n_export_left by auto
+
+lemma star_n_export_right: "x \<cdot> n y \<le> n y \<cdot> x \<Longrightarrow> x\<^sup>\<star> \<cdot> n y = (n y \<cdot> x)\<^sup>\<star> \<cdot> n y"
+  by (simp add: local.star_slide star_n_export_left)
+
+lemma star_test_export_right: "test p \<Longrightarrow> x \<cdot> p \<le> p \<cdot> x \<longrightarrow> x\<^sup>\<star> \<cdot> p = (p \<cdot> x)\<^sup>\<star> \<cdot> p"
+  using star_n_export_right by auto
+
+lemma star_n_folk: "n z \<cdot> x = x \<cdot> n z \<Longrightarrow> n z \<cdot> y = y \<cdot> n z \<Longrightarrow> (n z \<cdot> x + t z \<cdot> y)\<^sup>\<star> \<cdot> n z = n z \<cdot> (n z \<cdot> x)\<^sup>\<star>"
+proof -
+assume a: "n z \<cdot> x = x \<cdot> n z" and b: "n z \<cdot> y = y \<cdot> n z"
+  hence "n z \<cdot> (n z \<cdot> x + t z \<cdot> y) = (n z \<cdot> x + t z \<cdot> y) \<cdot> n z"
+    using local.comm_add_var local.t_n_closed local.test_def by blast
+  hence "(n z \<cdot> x + t z \<cdot> y)\<^sup>\<star> \<cdot> n z = n z \<cdot> ((n z \<cdot> x + t z \<cdot> y) \<cdot> n z)\<^sup>\<star>"
+    using local.order_refl star_n_export_left by presburger
+  also have "... = n z \<cdot> (n z \<cdot> x \<cdot> n z + t z \<cdot> y \<cdot> n z)\<^sup>\<star>"
+    by simp
+  also have "... = n z \<cdot> (n z \<cdot> n z \<cdot> x + t z \<cdot> n z \<cdot> y)\<^sup>\<star>"
+    by (simp add: a b mult_assoc)
+ also have "... = n z \<cdot> (n z \<cdot> x + 0 \<cdot> y)\<^sup>\<star>"
+  by (simp add: local.n_mult_comm)
+  finally show "(n z \<cdot> x + t z \<cdot> y)\<^sup>\<star> \<cdot> n z = n z \<cdot> (n z \<cdot> x)\<^sup>\<star>"
+    by simp
+qed
+
+lemma star_test_folk: "test p \<Longrightarrow> p \<cdot> x = x \<cdot> p \<longrightarrow> p \<cdot> y = y \<cdot> p \<longrightarrow> (p \<cdot> x + !p \<cdot> y)\<^sup>\<star> \<cdot> p = p \<cdot> (p \<cdot> x)\<^sup>\<star>"
+  using star_n_folk by auto
+
 end
 
-class kat_zerol = kleene_algebra_zerol + dioid_tests_zerol
+class kat_zerol = kleene_algebra_zerol + test_semiring_zerol
 begin
 
-subclass left_kat_zerol
-  by (unfold_locales)
+sublocale conway: near_conway_zerol_tests star ..
 
-lemma star_sim_right: "\<lbrakk>test p; p\<cdot>x = x\<cdot>p\<rbrakk> \<Longrightarrow> p\<cdot>x\<^sup>\<star> = (p\<cdot>x)\<^sup>\<star>\<cdot>p"
-  by (metis mult.assoc star_sim3 test_mult_idem_var)
+lemma n_star_sim_right: "n y \<cdot> x = x \<cdot> n y \<Longrightarrow> n y \<cdot> x\<^sup>\<star> = (n y \<cdot> x)\<^sup>\<star> \<cdot> n y"
+  by (metis local.n_mult_idem local.star_sim3 mult_assoc)
 
-lemma star_sim_left: "\<lbrakk>test p; p\<cdot>x = x\<cdot>p\<rbrakk> \<Longrightarrow> p\<cdot>x\<^sup>\<star> = p\<cdot>(x\<cdot>p)\<^sup>\<star>"
-  by (metis star_sim_right star_slide)
+lemma star_sim_right: "test p \<Longrightarrow> p \<cdot> x = x \<cdot> p \<longrightarrow> p \<cdot> x\<^sup>\<star> = (p \<cdot> x)\<^sup>\<star> \<cdot> p"
+  using n_star_sim_right by auto
 
-lemma comm_star: "\<lbrakk>test p; p\<cdot>x = x\<cdot>p; p\<cdot>y = y\<cdot>p\<rbrakk> \<Longrightarrow> p\<cdot>x\<cdot>(p\<cdot>y)\<^sup>\<star> = p\<cdot>x\<cdot>y\<^sup>\<star>"
-  by (metis star_sim_right mult.assoc star_slide)
+lemma n_star_sim_left: "n y \<cdot> x = x \<cdot> n y \<Longrightarrow> n y \<cdot> x\<^sup>\<star> = n y \<cdot> (x \<cdot> n y)\<^sup>\<star>"
+  by (metis local.star_slide n_star_sim_right)
 
-lemma star_sim_right_var: "\<lbrakk>test p; p\<cdot>x = x\<cdot>p\<rbrakk> \<Longrightarrow> x\<^sup>\<star>\<cdot>p = p\<cdot>(x\<cdot>p)\<^sup>\<star>"
-  by (metis mult.assoc star_sim3 test_mult_idem_var)
+lemma star_sim_left: "test p \<Longrightarrow> p \<cdot> x = x \<cdot> p \<longrightarrow> p \<cdot> x\<^sup>\<star> = p \<cdot> (x \<cdot> p)\<^sup>\<star>"
+  using n_star_sim_left by auto
 
-lemma star_folk_var[simp]: "\<lbrakk>test p; p\<cdot>x = x\<cdot>p; p\<cdot>y = y\<cdot>p\<rbrakk> \<Longrightarrow> (p\<cdot>x + !p\<cdot>y)\<^sup>\<star>\<cdot>p = p\<cdot>x\<^sup>\<star>"
-  by (metis star_test_folk comm_star mult_onel mult_oner)
+lemma n_comm_star: "n z \<cdot> x = x \<cdot> n z \<Longrightarrow>  n z \<cdot> y = y \<cdot> n z \<Longrightarrow> n z \<cdot> x \<cdot> (n z \<cdot> y)\<^sup>\<star> = n z \<cdot> x \<cdot> y\<^sup>\<star>"
+  using mult_assoc n_star_sim_left by presburger
 
-lemma star_folk_var2[simp]: "\<lbrakk>test p; !p\<cdot>x = x\<cdot>!p; !p\<cdot>y = y\<cdot>!p\<rbrakk> \<Longrightarrow> (p\<cdot>x + !p\<cdot>y)\<^sup>\<star>\<cdot>!p = !p\<cdot>y\<^sup>\<star>"
-  by (metis star_folk_var add.commute test_def)
+lemma comm_star: "test p \<Longrightarrow> p \<cdot> x = x \<cdot> p \<longrightarrow>  p \<cdot> y = y \<cdot> p \<longrightarrow> p \<cdot> x \<cdot> (p \<cdot> y)\<^sup>\<star> = p \<cdot> x \<cdot> y\<^sup>\<star>"
+  using n_comm_star by auto
+
+lemma n_star_sim_right_var: "n y \<cdot> x = x \<cdot> n y \<Longrightarrow> x\<^sup>\<star> \<cdot> n y = n y \<cdot> (x \<cdot> n y)\<^sup>\<star>"
+  using local.star_sim3 n_star_sim_left by force
+
+lemma star_sim_right_var: "test p \<Longrightarrow> p \<cdot> x = x \<cdot> p \<longrightarrow> x\<^sup>\<star> \<cdot> p = p \<cdot> (x \<cdot> p)\<^sup>\<star>"
+  using n_star_sim_right_var by auto
+
 end
 
-text {*
-  Finally, we define Kleene algebra with tests.
-*}
+text {* Finally, we define Kleene algebra with tests. *}
 
-class kat = kleene_algebra + dioid_tests
+class kat = kleene_algebra + test_semiring
+
 begin
 
-subclass kat_zerol
-  apply (unfold_locales)
-  by (metis star_inductr)
+sublocale conway: test_pre_conway star ..
 
 end
 

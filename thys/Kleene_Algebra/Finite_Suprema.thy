@@ -1,4 +1,4 @@
-(* Title:      Kleene Algebra
+(* Title:      Finite Suprema
    Author:     Alasdair Armstrong, Georg Struth, Tjark Weber
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
                Tjark Weber <tjark.weber at it.uu.se>
@@ -45,7 +45,7 @@ lemma setsum_sup:
 proof (induct rule: finite_induct[OF assms])
   fix z ::'a
   show "(\<Sum>{} \<le> z) = (\<forall>a \<in> {}. a \<le> z)"
-    by (metis setsum.empty zero_least Int_empty_right disjoint_iff_not_equal)
+    by simp
 next
   fix x z :: 'a and F :: "'a set"
   assume finF: "finite F"
@@ -56,7 +56,7 @@ next
     have "\<Sum>(insert x F) \<le> z \<longleftrightarrow> (x + \<Sum>F) \<le> z"
       by (metis finF setsum.insert xnF)
     also have "... \<longleftrightarrow> x \<le> z \<and> \<Sum>F \<le> z"
-      by (metis add_lub)
+      by simp
     also have "... \<longleftrightarrow> x \<le> z \<and> (\<forall>a \<in> F. a \<le> z)"
       by (metis (lifting) indhyp)
     also have "... \<longleftrightarrow> (\<forall>a \<in> insert x F. a \<le> z)"
@@ -74,7 +74,6 @@ lemma setsum_less_eqI:
  apply (case_tac "finite A")
   apply (erule finite_induct)
    apply simp_all
- apply (metis add_lub)
 done
 
 lemma setsum_less_eqE:
@@ -82,7 +81,7 @@ lemma setsum_less_eqE:
  apply (erule rev_mp)
  apply (erule rev_mp)
  apply (erule finite_induct)
-  apply (auto simp add: add_lub)
+  apply auto
 done
 
 lemma setsum_fun_image_sup:
@@ -110,7 +109,7 @@ lemma setsum_union:
   shows "\<Sum>(A \<union> B) = \<Sum>A + \<Sum>B"
 proof -
     have "\<forall>z. \<Sum>(A \<union> B) \<le> z \<longleftrightarrow> (\<Sum>A + \<Sum>B \<le> z)"
-      by (auto simp add: assms setsum_sup add_lub)
+      by (auto simp add: assms setsum_sup)
   thus ?thesis
     by (simp add: eq_iff)
 qed
@@ -200,7 +199,7 @@ proof -
   {
     fix z:: 'b
     have "\<Sum>((\<lambda>x. f x + g x) ` A) \<le> z \<longleftrightarrow> \<Sum>(f ` A) + \<Sum>(g ` A) \<le> z"
-      by (auto simp add: assms setsum_fun_image_sup add_lub)
+      by (auto simp add: assms setsum_fun_image_sup)
   }
   thus ?thesis
     by (simp add: eq_iff)
@@ -339,6 +338,54 @@ lemma dioid_setsum_prod:
   assumes "finite (A :: 'a set)"
   shows "(\<Sum>{f x |x. x \<in> A}) \<cdot> (\<Sum>{g x |x. x \<in> A}) = \<Sum>{f x \<cdot> g y |x y. x \<in> A \<and> y \<in> A}"
   by (simp add: assms dioid_setsum_prod_var fset_to_im)
+
+lemma setsum_image:
+  fixes f :: "'a \<Rightarrow> 'b::join_semilattice_zero"
+  assumes "finite X"
+  shows "setsum f X = \<Sum>(f ` X)"
+using assms 
+proof (induct rule: finite_induct)
+  case empty thus ?case by simp
+next
+  case insert thus ?case
+    by (metis setsum.insert setsum_fun_insert)
+qed
+
+lemma setsum_interval_cong:
+  "\<lbrakk> \<And> i. \<lbrakk> m \<le> i; i \<le> n \<rbrakk> \<Longrightarrow> P(i) = Q(i) \<rbrakk> \<Longrightarrow> (\<Sum>i=m..n. P(i)) = (\<Sum>i=m..n. Q(i))"
+  by (auto intro: setsum.cong)
+
+lemma setsum_interval_distl:
+  fixes f :: "nat \<Rightarrow> 'a::dioid_one_zero"
+  assumes "m \<le> n"
+  shows "x \<cdot> (\<Sum>i=m..n. f(i)) = (\<Sum>i=m..n. (x \<cdot> f(i)))"
+proof -
+  have "x \<cdot> (\<Sum>i=m..n. f(i)) = x \<cdot> \<Sum>(f ` {m..n})"
+    by (metis finite_atLeastAtMost setsum_image)
+  also have "... = \<Sum>{x \<cdot> y |y. y \<in> f ` {m..n}}"
+    by (metis finite_atLeastAtMost fset_to_im image_image setsum_fun_distl)
+  also have "... = \<Sum>((\<lambda>i. x \<cdot> f i) ` {m..n})"
+    by (metis fset_to_im image_image)
+  also have "... = (\<Sum>i=m..n. (x \<cdot> f(i)))"
+    by (metis finite_atLeastAtMost setsum_image)
+  finally show ?thesis .
+qed
+
+lemma setsum_interval_distr:
+  fixes f :: "nat \<Rightarrow> 'a::dioid_one_zero"
+  assumes "m \<le> n"
+  shows "(\<Sum>i=m..n. f(i)) \<cdot> y = (\<Sum>i=m..n. (f(i) \<cdot> y))"
+  proof -
+  have "(\<Sum>i=m..n. f(i)) \<cdot> y = \<Sum>(f ` {m..n}) \<cdot> y"
+    by (metis finite_atLeastAtMost setsum_image)
+  also have "... = \<Sum>{x \<cdot> y |x. x \<in> f ` {m..n}}"
+    by (metis calculation finite_atLeastAtMost finite_imageI fset_to_im setsum_distr)
+  also have "... = \<Sum>((\<lambda>i. f(i) \<cdot> y) ` {m..n})"
+    by (auto intro: setsum.cong)
+  also have "... = (\<Sum>i=m..n. (f(i) \<cdot> y))"
+    by (metis finite_atLeastAtMost setsum_image)
+  finally show ?thesis .
+qed
 
 text {* There are interesting theorems for finite sums in Kleene
 algebras; we leave them for future consideration. *}

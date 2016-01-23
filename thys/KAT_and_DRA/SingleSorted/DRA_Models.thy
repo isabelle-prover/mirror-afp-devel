@@ -6,7 +6,7 @@
 section {* Models for Demonic Refinement Algebra with Tests *}
 
 theory DRA_Models
-  imports DRAT Test_Dioids
+  imports DRAT
 begin
 
 text {*
@@ -124,20 +124,26 @@ begin
     apply (auto simp: o_def fun_union_def fun_order_def bot_def mono_def)
     apply (metis set_mp)
     apply (metis set_mp)
-    by (metis (hide_lams, no_types) Un_left_commute sup_assoc)
+    apply (rule ext)
+    by (metis (no_types, lifting) semilattice_sup_class.sup.assoc semilattice_sup_class.sup.left_commute)
 
   instance
     by standard (transfer, auto simp: fun_order_def fun_strict_order_def fun_union_def bot_def)+
 
 end
 
-instantiation bool_op :: (type) dioid_tests_zerol 
+instantiation bool_op :: (type) test_semiring_zerol 
 begin
-  lift_definition comp_op_bool_op :: "'a bool_op \<Rightarrow> 'a bool_op" is "N"
+  lift_definition n_op_bool_op :: "'a bool_op \<Rightarrow> 'a bool_op" is "N"
     by (auto simp: N_def fun_inter_def adjoint_def bot_def fun_union_def mono_def)
 
   instance
-    by standard (transfer, auto simp: N_def fun_inter_def adjoint_def bot_def fun_union_def)+
+  apply standard
+  apply (transfer, clarsimp simp add: N_def adjoint_def bot_def id_def comp_def fun_inter_def)
+  apply (transfer, clarsimp simp add: N_def adjoint_def bot_def id_def comp_def fun_inter_def fun_union_def mono_def, blast)
+  apply (transfer, clarsimp simp add: N_def adjoint_def bot_def comp_def mono_def fun_union_def fun_inter_def)
+  by (transfer, clarsimp simp add: N_def adjoint_def bot_def comp_def mono_def fun_union_def fun_inter_def, blast)
+
 end
 
 definition fun_star :: "'a bfun \<Rightarrow> 'a bfun" where
@@ -150,6 +156,5 @@ text {*
   Verifying the iteration laws is left for future work. This could be obtained by integrating
   Preoteasa's approach~\cite{Preoteasa11}.
 *}
-
 
 end

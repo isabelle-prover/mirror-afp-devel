@@ -6,7 +6,7 @@
 section {* Two sorted Demonic Refinement Algebras *}
 
 theory DRAT2
-  imports "../DRA"
+  imports "../../Kleene_Algebra/DRA"
 begin
 
 text {*
@@ -16,8 +16,6 @@ text {*
 *}
 
 syntax "_dra" :: "'a \<Rightarrow> 'a" ("`_`")
-
-named_theorems kat_hom "KAT test homomorphism rules"
 
 ML {*
 val dra_test_vars = ["p","q","r","s","t","p'","q'","r'","s'","t'","p''","q''","r''","s''","t''"]
@@ -32,14 +30,19 @@ fun map_ast_variables ast =
   | (Ast.Appl []) => Ast.Appl []
   | (Ast.Appl (f :: xs)) => Ast.Appl (f :: map map_ast_variables xs)
 
+structure DRAHomRules = Named_Thms
+  (val name = @{binding "kat_hom"}
+   val description = "KAT test homomorphism rules")
+
 fun dra_hom_tac ctxt n =
   let
-    val rev_rules =
-      map (fn thm => thm RS @{thm sym}) (Named_Theorems.get ctxt @{named_theorems kat_hom})
+    val rev_rules = map (fn thm => thm RS @{thm sym}) (DRAHomRules.get ctxt)
   in
     asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps rev_rules) n
   end
 *}
+
+setup {* DRAHomRules.setup *}
 
 method_setup kat_hom = {*
   Scan.succeed (fn ctxt => SIMPLE_METHOD (CHANGED (dra_hom_tac ctxt 1)))
@@ -51,16 +54,18 @@ let
 in [(@{syntax_const "_dra"}, dra_tr)] end
 *}
 
-named_theorems vcg "verification condition generator rules"
-
 ML {*
+structure VCGRules = Named_Thms
+  (val name = @{binding "vcg"}
+   val description = "verification condition generator rules")
+
 fun vcg_tac ctxt n =
   let
     fun vcg' [] = no_tac
       | vcg' (r :: rs) = resolve_tac ctxt [r] n ORELSE vcg' rs;
   in REPEAT (CHANGED
        (dra_hom_tac ctxt n
-        THEN REPEAT (vcg' (rev (Named_Theorems.get ctxt @{named_theorems vcg})))
+        THEN REPEAT (vcg' (VCGRules.get ctxt))
         THEN dra_hom_tac ctxt n
         THEN TRY (resolve_tac ctxt @{thms order_refl} n ORELSE asm_full_simp_tac (put_simpset HOL_basic_ss ctxt) n)))
   end
@@ -69,6 +74,8 @@ fun vcg_tac ctxt n =
 method_setup vcg = {*
   Scan.succeed (fn ctxt => SIMPLE_METHOD (CHANGED (vcg_tac ctxt 1)))
 *}
+
+setup {* VCGRules.setup *}
 
 locale drat =
   fixes test :: "'a::boolean_algebra \<Rightarrow> 'b::dra"
@@ -86,6 +93,8 @@ notation test ("\<iota>")
 
 lemma test_eq [kat_hom]: "p = q \<longleftrightarrow> `p = q`"
   by (metis eq_iff test_iso_eq)
+
+ML_val {* map (fn thm => thm RS @{thm sym}) (DRAHomRules.get @{context}) *}
 
 lemma test_iso: "p \<le> q \<Longrightarrow> `p \<le> q`"
   by (simp add: test_iso_eq)
@@ -117,8 +126,7 @@ lemma test_eq1: "`y \<le> x` \<longleftrightarrow> `p\<cdot>y \<le> x` \<and> `!
   apply (metis mult_isol_var mult_onel test_not test_one_top)
   apply (subgoal_tac "`(p + !p)\<cdot>y \<le> x`")
   apply (metis mult_onel sup_compl_top test_not test_sup test_top)
-  apply (metis add_lub distrib_right')
-  done
+  by (metis distrib_right' join.sup.bounded_iff)
 
 lemma "`p\<cdot>x = p\<cdot>x\<cdot>q` \<Longrightarrow> `p\<cdot>x\<cdot>!q = 0`"
   nitpick oops
@@ -137,15 +145,14 @@ lemma test4: "`!p\<cdot>q\<cdot>p = 0`"
 
 lemma total_correctness: "`p\<cdot>x\<cdot>!q = 0` \<longleftrightarrow> `x\<cdot>!q \<le> !p\<cdot>\<top>`"
   apply standard
-  apply (metis mult.assoc test_eq1 top_elim zero_least)
-  apply (metis annil test_comp_mult2 zero_unique mult.assoc mult_isol)
-  done
+  apply (metis join.bot.extremum mult.assoc test_eq1 top_elim)
+  by (metis (no_types, hide_lams) add_zeror annil less_eq_def mult.assoc mult_isol test_comp_mult2)
 
 lemma test_iteration_sim: "`p\<cdot>x \<le> x\<cdot>p` \<Longrightarrow> `p\<cdot>x\<^sup>\<infinity> \<le> x\<^sup>\<infinity>\<cdot>p`"
   by (metis iteration_sim)
 
 lemma test_iteration_annir: "`!p\<cdot>(p\<cdot>x)\<^sup>\<infinity> = !p`"
-  by (metis (no_types) monoid_add_class.add.left_neutral double_compl iteration_idep monoid_mult_class.mult.right_neutral test_comp_add2 test_inf test_not top_elim total_correctness)
+  by (metis annil iteration_idep mult.assoc test_comp_mult1)
 
 end
 

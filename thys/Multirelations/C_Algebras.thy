@@ -1,9 +1,7 @@
 (*
-
 Title: Binary Multirelations
 Author: Hitoshi Furusawa, Georg Struth
 Maintainer: <g.struth at sheffield.ac.uk>
-
 *)
 
 section {* C-Algebras*}
@@ -15,9 +13,9 @@ begin
 no_notation
   times (infixl "\<cdot>" 70)
 
-subsection{* C-Monoids *}
+subsection {* C-Monoids *}
 
-text {* We start with the c-monoid axioms. These can be found in Section 4 of~\cite{FurusawaS15a}.  *}
+text {* We start with the c-monoid axioms. These can be found in Section~4 of~\cite{FurusawaS15a}. *}
 
 class proto_monoid = 
   fixes s_id :: "'a" ("1\<^sub>\<sigma>")
@@ -229,7 +227,7 @@ class proto_dioid = join_semilattice_zero + proto_monoid +
 begin
 
 lemma s_prod_isol: "x \<le> y \<Longrightarrow> z \<cdot> x \<le> z \<cdot> y"
-  by (metis add_lub less_eq_def s_prod_subdistl)
+  by (metis join.sup.boundedE order_prop s_prod_subdistl)
 
 lemma s_prod_isor: "x \<le> y \<Longrightarrow> x \<cdot> z \<le> y \<cdot> z"
   using local.order_prop local.s_prod_distr by auto
@@ -338,11 +336,11 @@ text{* We verify the algebraic conditions in Proposition 5.3. *}
 lemma d_absorb1 [simp]: "d x + (d x \<cdot> d y) = d x"
 proof (rule antisym)
   have "d x + (d x \<cdot> d y) \<le> d x + (d x \<cdot> 1\<^sub>\<sigma>)"
-    using d_sub_id_ax local.add_lub_var local.s_prod_idr local.s_prod_isol by fastforce
+    by (metis d_sub_id_ax c2_d d_def join.sup.bounded_iff join.sup.semilattice_axioms join.sup_ge1 s_prod_isol semilattice.idem)
   thus "d x + (d x \<cdot> d y) \<le> d x"
     by simp
   show "d x \<le> d x + ((d x) \<cdot> (d y))"
-    using local.add_ub1 by blast
+    using join.sup_ge1 by blast
 qed
 
 lemma d_absorb2 [simp]: "d x \<cdot> (d x + d y) = d x"
@@ -440,7 +438,7 @@ oops
 text {* Lemma 5.4 *} 
 
 lemma d_lb1: "d x \<cdot> d y \<le> d x"
-  by (simp add: local.less_eq_def)
+  by (simp add: less_eq_def add_commute)
 
 lemma d_lb2: "d x \<cdot> d y \<le> d y"
   using d_lb1 local.d_comm_ax by fastforce
@@ -500,19 +498,13 @@ class pbl_monoid = proto_trioid +
 begin
 
 sublocale lattice "op \<sqinter>" "op \<le>" "op <" "op +"
-proof 
+proof
   show a: "\<And>x y. x \<sqinter> y \<le> x"
-    by (simp add: local.absorp2 local.less_eq_def)
+    by (simp add: local.absorp2 local.less_eq_def add_commute)
   show b: " \<And>x y. x \<sqinter> y \<le> y"
     using a local.meet_comm by fastforce
   show " \<And>x y z. x \<le> y \<Longrightarrow> x \<le> z \<Longrightarrow> x \<le> y \<sqinter> z"
     by (metis b local.absorp1 local.less_eq_def local.meet_assoc)
-  show "\<And>x y. x \<le> x + y"
-    by simp
-  show " \<And>y x. y \<le> x + y"
-    by simp
-  show "\<And>y x z. y \<le> x \<Longrightarrow> z \<le> x \<Longrightarrow> y + z \<le> x"
-    by (simp add: local.add_lub)
 qed
 
 lemma meet_glb: "z \<le> x \<and> z \<le> y \<Longrightarrow> z \<le> x \<sqinter> y"
@@ -529,14 +521,14 @@ class pbdl_monoid = pbl_monoid +
 begin
 
 lemma lat_dist2: "(x \<sqinter> y) + z = (x + z) \<sqinter> (y + z)"
-  by (simp add: local.lat_dist1)
+  by (simp add: local.lat_dist1 add_commute)
 
 lemma lat_dist3: "x \<sqinter> (y + z) = (x \<sqinter> y) + (x \<sqinter> z)"
 proof -
   have "\<And>x y z. x \<sqinter> ((x + y) \<sqinter> z) = x \<sqinter> z"
     by (metis local.absorp1 local.meet_assoc)
   thus ?thesis
-    using lat_dist2 local.absorp2 by force
+    using lat_dist2 local.absorp2 add_commute by force
 qed
 
 lemma lat_dist4: "(x + y) \<sqinter> z = (x \<sqinter> z) + (y \<sqinter> z)"
@@ -677,7 +669,7 @@ proof -
   have "x = x \<sqinter> U"
     using local.U_def local.inf.absorb_iff1 by auto
   also have "... = x \<sqinter> (nc + 1\<^sub>\<pi>)"
-    by simp
+    by (simp add: add_commute)
   finally show ?thesis
     by (metis local.lat_dist3)
 qed
@@ -819,7 +811,7 @@ proof -
   have "1\<^sub>\<sigma> \<sqinter> x \<cdot> y = 1\<^sub>\<sigma> \<sqinter> ((x \<sqinter> nc) \<cdot> y + x \<cdot> 0)"
     using x_y_split by presburger
   also have "... = (1\<^sub>\<sigma> \<sqinter> (x \<sqinter> nc) \<cdot> y) + (1\<^sub>\<sigma> \<sqinter> x \<cdot> 0)"
-    by (simp add: local.lat_dist3)  
+    by (simp add: local.lat_dist3 add_commute)  
   finally show ?thesis
     by (metis local.add_zeror s_x_zero) 
 qed
@@ -827,7 +819,7 @@ qed
 lemma s_nc_U: "1\<^sub>\<sigma> \<sqinter> x \<cdot> nc = 1\<^sub>\<sigma> \<sqinter> x \<cdot> U"
 proof -
   have "1\<^sub>\<sigma> \<sqinter> x \<cdot> U = 1\<^sub>\<sigma> \<sqinter> (x \<cdot> nc + x \<cdot> 1\<^sub>\<pi>)"
-    by simp
+    by (simp add: add_commute)
   also have "... = (1\<^sub>\<sigma> \<sqinter> x \<cdot> nc) + (1\<^sub>\<sigma> \<sqinter> x \<cdot> 1\<^sub>\<pi>)"
     using local.lat_dist3 by blast
   finally show ?thesis
@@ -841,7 +833,7 @@ proof -
   hence "1\<^sub>\<sigma> \<sqinter> x \<parallel> nc + 1\<^sub>\<sigma> \<sqinter> x = (x \<parallel> nc + x \<sqinter> nc) \<sqinter> 1\<^sub>\<sigma>"
     using local.inf.commute local.inf.left_commute local.lat_dist4 by auto
   thus ?thesis
-    by (metis (no_types) local.inf.commute local.sup.absorb_iff1 meet_le_par)
+    by (metis (no_types) local.inf.commute local.join.sup.absorb_iff1 meet_le_par)
 qed
 
 lemma s_nc_par_U: "1\<^sub>\<sigma> \<sqinter> x \<parallel> nc = 1\<^sub>\<sigma> \<sqinter> x \<parallel> U"
@@ -866,7 +858,7 @@ proof -
   also have "... = (x \<sqinter> nc) \<cdot> nc + (x \<sqinter> nc) \<cdot> 1\<^sub>\<pi> + (x \<cdot> 0) \<parallel> nc + x \<cdot> 0"
     by (metis add_commute c_nc_comp1 local.cl1 local.combine_common_factor local.mult_1_right local.mult_commute)
   also have "... = (x \<cdot> 1\<^sub>\<pi>) \<parallel> nc + x \<cdot> 1\<^sub>\<pi>"
-    by (metis local.add.left_commute local.add_assoc' x_c_nc_split x_y_split)
+    by (metis local.add_ac(1) local.add_commute x_c_nc_split x_y_split)
   thus ?thesis
     by (metis c_nc_comp1 calculation local.add_comm local.distrib_left local.mult_oner)
 qed
@@ -925,7 +917,7 @@ proof -
   have "1\<^sub>\<sigma> \<sqinter> (x \<cdot> 1\<^sub>\<pi>) \<parallel> nc = 1\<^sub>\<sigma> \<sqinter> ((x \<sqinter> nc) \<cdot> 1\<^sub>\<pi> + x \<cdot> 0) \<parallel> nc"
     using x_y_split by presburger
   also have "... = (1\<^sub>\<sigma> \<sqinter> ((x \<sqinter> nc) \<cdot> 1\<^sub>\<pi>) \<parallel> nc) + (1\<^sub>\<sigma> \<sqinter> (x \<cdot> 0) \<parallel> nc)"
-    by (simp add: local.lat_dist3 local.mult_commute local.p_prod_distl)
+    by (simp add: local.lat_dist3 local.mult_commute local.p_prod_distl add_commute)
   also have "... = d (x \<sqinter> nc) + d (x \<cdot> 0)"
     by (metis add_commute c_0 cl10_d_var1 local.add_zerol local.annil local.c2_d local.d_def local.mult_commute local.mult_onel local.zero_p_id_prop x_split)
   finally show ?thesis
@@ -947,7 +939,7 @@ proof -
   also have "... = (x \<sqinter> nc) \<cdot> nc + (x \<sqinter> nc) \<cdot> 1\<^sub>\<pi>"
     by simp
   finally show ?thesis
-    by simp
+    by (simp add: add_commute)
 qed
 
 lemma ax5_0 [simp]: "d (x \<cdot> 0) \<cdot> U = (x \<cdot> 0) \<parallel> U"
@@ -1082,7 +1074,7 @@ qed
 text {* Proposition 9.4 *}
 
 lemma nc_zero_closed [simp]: "0 \<sqinter> nc = 0"
-  using local.inf.absorb_iff1 local.zero_least by blast
+  by (simp add: local.inf.commute local.inf_absorb2)
 
 lemma nc_s [simp]: "1\<^sub>\<sigma> \<sqinter> nc = 1\<^sub>\<sigma>"
   using local.inf.absorb_iff1 s_le_nc by blast
@@ -1442,11 +1434,11 @@ lemma nu_par_aux4 [simp]: "\<nu> (\<tau> x \<parallel> \<tau> y) = 0"
 lemma nu_par: "\<nu> (x \<parallel> y) = d (\<tau> x) \<cdot> \<nu> y + d (\<tau> y) \<cdot> \<nu> x + \<nu> x \<parallel> \<nu> y"
 proof -
   have "\<nu> (x \<parallel> y) = \<nu> (\<nu> x \<parallel> \<nu> y) + \<nu> (\<nu> x \<parallel> \<tau> y) + \<nu> (\<tau> x \<parallel> \<nu> y) + \<nu> (\<tau> x \<parallel> \<tau> y)"
-    by (metis add_commute local.add.left_commute local.distrib_left local.distrib_right nu_add nu_def tau_def x_split_var)
+    by (metis local.distrib_left local.distrib_right nu_add nu_def tau_def x_split_var join.sup.commute join.sup.left_commute)
   also have "\<nu> (x \<parallel> y) = \<nu> x \<parallel> \<nu> y  + \<nu> x \<parallel> \<tau> y + \<tau> x \<parallel> \<nu> y"
     by (simp add: calculation local.c_prod_comm)
   thus ?thesis
-    by (metis add_commute local.add.left_commute local.mult_commute nu_par_aux1)
+    using local.join.sup_assoc local.join.sup_commute local.mult_commute nu_par_aux1 by auto
 qed
 
 text {* Lemma 11.5. *}
@@ -1461,7 +1453,7 @@ proof -
   also have "... = (d (\<tau> x) \<cdot> \<nu> y + d (\<tau> y) \<cdot> \<nu> x + \<nu> x \<parallel> \<nu> y) + \<tau> x \<parallel> \<tau> y"
     by (simp add: nu_par)
   thus ?thesis
-    using add_assoc calculation by force
+    using add_assoc add_commute calculation by force
 qed
 
 text {* We now verify some additional properties which are not mentioned in the paper. *}
@@ -1510,11 +1502,11 @@ lemma alpha_par_prod [simp]: "\<nu> (x \<parallel> \<nu> y) = x \<parallel> \<nu
 lemma p_prod_tau_alpha: "x \<parallel> y = x \<parallel> \<nu> y + \<nu> x \<parallel> y + \<tau> x \<parallel> \<tau> y"
 proof -
   have "x \<parallel> y = (\<nu> x + \<tau> x) \<parallel> (\<nu> y + \<tau> y)"
-    using x_alpha_tau by presburger
+    using x_alpha_tau by simp
   also have "... = \<nu> x \<parallel> \<nu> y  + \<nu> x \<parallel> \<tau> y + \<tau> x \<parallel> \<nu> y + \<tau> x \<parallel> \<tau> y"
     by (metis add_commute local.combine_common_factor local.p_prod_distl)
   also have "... = (\<nu> x \<parallel> \<nu> y  + \<nu> x \<parallel> \<tau> y) + (\<nu> x  \<parallel> \<nu> y + \<tau> x \<parallel> \<nu> y) + \<tau> x \<parallel> \<tau> y"
-    by simp
+    by (simp add: add_ac)
   thus ?thesis
     by (metis calculation local.add_comm local.distrib_left local.distrib_right x_alpha_tau)
 qed
@@ -1527,7 +1519,7 @@ proof -
   have  "\<nu> (x \<parallel> y) = \<nu> (x \<parallel> \<nu> y) + \<nu> (\<nu> x \<parallel> y) + \<nu> (\<tau> (x \<parallel> y))"
     by (metis nu_add p_prod_tau_alpha_var)
   thus ?thesis
-    by (simp add: local.mult_commute)
+    by (simp add: local.mult_commute add_ac)
 qed
 
 lemma alpha_tau [simp]: "\<nu> (x \<cdot> \<tau> y) = 0"
@@ -1636,7 +1628,7 @@ proof -
     by simp
 qed
 
-text{* We prove the congruence properties of Corollary 11.11. *}
+text{* We prove the congruence properties of Corollary~11.11. *}
 
 definition tcg :: "'a \<Rightarrow> 'a \<Rightarrow> bool"  where 
   "tcg x y = (\<tau> x \<le> \<tau> y \<and> \<tau> y \<le> \<tau> x)"
@@ -1693,7 +1685,7 @@ end
 
 subsection {* Powers in C-Algebras *}
 
-text {* We define the power functions from Section 6 in~\cite{FurusawaS15a} after Lemma 12.4. *}
+text {* We define the power functions from Section~6 in~\cite{FurusawaS15a} after Lemma~12.4. *}
 
 context proto_dioid
 begin
@@ -1710,7 +1702,7 @@ primrec power_sq :: "'a  \<Rightarrow> nat \<Rightarrow> 'a"  where
  "power_sq x 0       = 1\<^sub>\<sigma>" |
  "power_sq x (Suc n) = 1\<^sub>\<sigma> + x \<cdot> power_sq x n"
 
-text {* Lemma 12.5 *}
+text {* Lemma~12.5 *}
 
 lemma power_rd_chain: "power_rd x n \<le> power_rd x (n + 1)"
   by (induct n, simp, metis Suc_eq_plus1 local.add_comm local.add_iso local.s_prod_isol power_rd.simps(2))
@@ -1732,35 +1724,35 @@ proof (induct n)
   also have "... = 1\<^sub>\<sigma> + x \<cdot> p_power (1\<^sub>\<sigma> + x) n + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)"
     using Suc.hyps by auto
   finally show ?case
-proof -
-  have f1: "p_power (1\<^sub>\<sigma> + x) (Suc n + 1) = 1\<^sub>\<sigma> + x \<cdot> p_power (1\<^sub>\<sigma> + x) n + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)"
-    using Suc_eq_plus1 `p_power (1\<^sub>\<sigma> + x) (Suc (n + 1)) = 1\<^sub>\<sigma> + x \<cdot> p_power (1\<^sub>\<sigma> + x) n + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)` by presburger
-  have "x \<cdot> p_power (1\<^sub>\<sigma> + x) (Suc n) = x \<cdot> p_power (1\<^sub>\<sigma> + x) n + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)"
-    using Suc_eq_plus1 local.less_eq_def local.s_prod_isol pow_chain by presburger
-  thus ?thesis
-    using f1 by simp
-qed
+  proof -
+    have f1: "p_power (1\<^sub>\<sigma> + x) (Suc n + 1) = 1\<^sub>\<sigma> + x \<cdot> p_power (1\<^sub>\<sigma> + x) n + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)"
+      using Suc_eq_plus1 `p_power (1\<^sub>\<sigma> + x) (Suc (n + 1)) = 1\<^sub>\<sigma> + x \<cdot> p_power (1\<^sub>\<sigma> + x) n + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)` by simp
+    have "x \<cdot> p_power (1\<^sub>\<sigma> + x) (Suc n) = x \<cdot> p_power (1\<^sub>\<sigma> + x) n + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)"
+      using Suc_eq_plus1 local.less_eq_def local.s_prod_isol pow_chain by simp
+    thus ?thesis
+      using f1 by (simp add: add_ac)
+  qed
 qed
 
-text {* Next we verify facts from the proofs of Lemma 12.6. *}
+text {* Next we verify facts from the proofs of Lemma~12.6. *}
 
 lemma power_rd_le_sq: "power_rd x n \<le> power_sq x n"
-  by (induct n, simp, simp add: local.add_iso_var local.s_prod_isol)
+  by (induct n, simp, simp add: local.join.le_supI2 local.s_prod_isol)
 
 lemma power_sq_le_rd: "power_sq x n \<le> power_rd x (Suc n)"
-  by (induct n, simp, simp add: local.add_iso_var local.s_prod_isol)
+  by (induct n, simp, simp add: local.join.le_supI2 local.s_prod_isol)
 
 lemma power_sq_power: "power_sq x n = p_power (1\<^sub>\<sigma> + x) n"
   apply (induct n)
   apply (simp)
-  using Suc_eq_plus1 pow_prop power_sq.simps(2) by presburger
+  using Suc_eq_plus1 pow_prop power_sq.simps(2) by simp
 
 end
 
 subsection {* C-Kleene Algebras *}
 
-text {* The definition of c-Kleene algebra is slightly different from that in Section 6 of~\cite{FurusawaS15a}. 
-It is used to prove properties from Section 6 and Section 12. *}
+text {* The definition of c-Kleene algebra is slightly different from that in Section~6
+of~\cite{FurusawaS15a}. It is used to prove properties from Section~6 and Section~12. *}
 
 class c_kleene_algebra = c_lattice + star_op +
   assumes star_unfold: "1\<^sub>\<sigma> + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
@@ -1769,16 +1761,16 @@ class c_kleene_algebra = c_lattice + star_op +
 begin
 
 lemma star_irr: "1\<^sub>\<sigma> \<le> x\<^sup>\<star>"
-  using local.add_lub local.star_unfold by auto
+  using local.star_unfold by auto
 
 lemma star_unfold_part: "x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
-  using local.add_lub local.star_unfold by force
+  using local.star_unfold by auto
 
 lemma star_ext_aux: "x \<le> x \<cdot> x\<^sup>\<star>"
   using local.s_prod_isol star_irr by fastforce
 
 lemma star_ext: "x \<le> x\<^sup>\<star>"
-  using local.add_lub local.order_trans local.star_unfold star_ext_aux by blast
+  using local.order_trans star_ext_aux star_unfold_part by blast
 
 lemma star_co_trans: "x\<^sup>\<star> \<le>  x\<^sup>\<star> \<cdot> x\<^sup>\<star>"
   using local.s_prod_isol star_irr by fastforce
@@ -1801,7 +1793,7 @@ proof (rule antisym)
   show a: "1\<^sub>\<sigma> + x \<cdot> x\<^sup>\<star> \<le>  x\<^sup>\<star>"
     using local.star_unfold by blast
   have "1\<^sub>\<sigma> + x \<cdot> (1\<^sub>\<sigma> + x \<cdot> x\<^sup>\<star>) \<le> 1\<^sub>\<sigma> + x \<cdot> x\<^sup>\<star>"
-    by (meson a local.add_iso_var local.eq_iff local.s_prod_isol)
+    by (meson local.eq_refl local.join.sup_mono local.s_prod_isol local.star_unfold)
   thus "x\<^sup>\<star> \<le> 1\<^sub>\<sigma> + x \<cdot> x\<^sup>\<star>"
     by (simp add: local.star_induct)
 qed
@@ -1829,9 +1821,9 @@ proof -
   have "(\<nu> x)\<^sup>\<star> \<cdot> (1\<^sub>\<sigma> + \<tau> x) \<le> x\<^sup>\<star> \<cdot> (1\<^sub>\<sigma> + \<tau> x)"
     using local.nu_int local.s_prod_isor star_iso by blast
   also have "... \<le>  x\<^sup>\<star> \<cdot> (1\<^sub>\<sigma> + x)"
-    using local.s_prod_isol local.sup_mono local.tau_int by blast
+    using local.s_prod_isol local.join.sup_mono local.tau_int by blast
   also have "... \<le> x\<^sup>\<star> \<cdot> x\<^sup>\<star>"
-    by (simp add: local.add_lub_var local.s_prod_isol star_ext star_irr)
+    by (simp add: local.s_prod_isol star_ext star_irr)
   finally show ?thesis
     using assms local.order_trans by blast
 qed
@@ -1901,9 +1893,9 @@ assume a: "x \<cdot> d z \<le> d z \<cdot> y"
     have f1: "x \<cdot> (y\<^sup>\<star> \<parallel> (z \<cdot> 1\<^sub>\<pi>)) \<le> z \<cdot> 1\<^sub>\<pi> \<parallel> (y \<cdot> y\<^sup>\<star>)"
       using b local.c2_d local.mult_commute by auto
     have "\<exists>a. (a + z \<cdot> 1\<^sub>\<pi>) \<parallel> (y \<cdot> y\<^sup>\<star>) \<le> y\<^sup>\<star> \<parallel> (z \<cdot> 1\<^sub>\<pi>)"
-      by (metis (no_types) local.eq_refl local.mult_commute local.mult_isol_var local.sup_idem star_unfold_part)
+      by (metis (no_types) local.eq_refl local.mult_commute local.mult_isol_var local.join.sup_idem star_unfold_part)
     hence "x \<cdot> (y\<^sup>\<star> \<parallel> (z \<cdot> 1\<^sub>\<pi>)) \<le> y\<^sup>\<star> \<parallel> (z \<cdot> 1\<^sub>\<pi>)"
-      using f1 by (metis (no_types) local.distrib_right' local.dual_order.trans local.sup.cobounded2)
+      using f1 by (metis (no_types) local.distrib_right' local.dual_order.trans local.join.sup.cobounded2)
     thus ?thesis
       using local.c2_d local.mult_commute by auto
   qed
@@ -1991,7 +1983,7 @@ proof -
   also have "... =  (\<nu> x)\<^sup>\<omega> + \<tau> x + \<nu> x \<cdot> (\<nu> x)\<^sup>\<star> \<cdot> \<tau> x"
     using add_assoc local.s_prod_distr local.s_prod_idl by presburger
   also have "... = \<tau> x + \<nu> x \<cdot> (\<nu> x)\<^sup>\<omega> + \<nu> x \<cdot> (\<nu> x)\<^sup>\<star> \<cdot> \<tau> x"
-    by simp
+    by (simp add: add_ac)
   also have "... \<le> \<tau> x + \<nu> x \<cdot> ((\<nu> x)\<^sup>\<omega> + (\<nu> x)\<^sup>\<star> \<cdot> \<tau> x)"
     by (metis add_assoc local.cl5 local.lat_dist1 local.inf.absorb_iff1 local.s_prod_subdistl local.tau_def)
   also have "... = x \<cdot> ((\<nu> x)\<^sup>\<omega> + (\<nu> x)\<^sup>\<star> \<cdot> \<tau> x)"
@@ -2099,7 +2091,7 @@ lemma wf_eq_defl: "(\<forall>y. d y \<le> d (x \<cdot> y) \<longrightarrow> d y 
   by (metis local.c2_d local.c4 local.d_def local.mult_commute local.mult_onel local.p_rpd_annir local.s_prod_isor)
 
 lemma defl_eq_om_trivial: "x\<^sup>\<omega> = 0 \<longleftrightarrow> (\<forall>y. y \<le> x \<cdot> y \<longrightarrow> y = 0)"
-  using local.om_coinduct local.om_unfold local.zero_unique by blast
+  using local.join.bot_unique local.om_coinduct by auto
 
 lemma wf_eq_om_trivial: "x\<^sup>\<omega> = 0  \<longleftrightarrow> (\<forall>y. d y \<le> d (x \<cdot> y) \<longrightarrow> d y = 0)"
   by (simp add: defl_eq_om_trivial wf_eq_defl)
@@ -2187,7 +2179,7 @@ lemma lfp_le_gfp: "mono (f:: 'a \<Rightarrow> 'a :: proto_quantale)  \<Longright
   by (simp add: gfp_upperbound lfp_lemma3)
 
 lemma mono_aux: "mono (\<lambda>y. sup (z:: 'a :: proto_quantale) (x \<cdot> y))"
-  by (rule monoI, meson order_refl pd.add_iso_var pd.s_prod_isol)
+  by (meson mono_def order_refl pd.s_prod_isol sup.mono)
 
 lemma gfp_lfp_prop: "sup (gfp (\<lambda>(y :: 'a :: proto_quantale). x \<cdot> y)) (lfp (\<lambda>y. sup z (x \<cdot> y))) \<le> gfp (\<lambda>y. sup z  (x \<cdot> y))"
   apply (simp, rule conjI)
@@ -2195,7 +2187,3 @@ lemma gfp_lfp_prop: "sup (gfp (\<lambda>(y :: 'a :: proto_quantale). x \<cdot> y
   by (simp add: lfp_le_gfp mono_aux)
 
 end
-
-
-
-

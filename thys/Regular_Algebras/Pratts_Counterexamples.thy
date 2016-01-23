@@ -268,8 +268,7 @@ next
     apply (auto simp add:star_pratt1_def one_pratt1_def times_pratt1_def less_eq_pratt1_def plus_pratt1_def)
     apply (rename_tac n, case_tac n)
     apply (simp_all)
-    apply (metis nat.exhaust plusl_zero_infty pratt1.distinct(7) pratt1_max.simps(7) pratt1_plus.simps(14))
-  done
+    by (metis not0_implies_Suc plusl_zero_infty pratt1.distinct(7) pratt1_max.simps(6) pratt1_plus.simps(14))
 qed
 
 instance pratt2 :: K1l_algebra

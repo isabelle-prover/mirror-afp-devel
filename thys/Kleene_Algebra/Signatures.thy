@@ -1,4 +1,4 @@
-(* Title:      Kleene Algebra
+(* Title:      Signatures for Kleene Algebra
    Author:     Alasdair Armstrong, Georg Struth, Tjark Weber
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
                Tjark Weber <tjark.weber at it.uu.se>
@@ -36,11 +36,13 @@ class star_op =
 class omega_op =
   fixes omega :: "'a \<Rightarrow> 'a" ("_\<^sup>\<omega>" [101] 100)
 
+(*
 class residual_r_op =
   fixes residual_r :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<rightarrow>" 60)
 
 class residual_l_op =
   fixes residual_l :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<leftarrow>" 60)
+*)
 
 text {*
 We define a type class that combines addition and the definition of

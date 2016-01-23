@@ -1,4 +1,4 @@
-(* Title:      Kleene Algebra
+(* Title:      Matrix Model of Kleene Algebra
    Author:     Alasdair Armstrong, Georg Struth, Tjark Weber
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
                Tjark Weber <tjark.weber at it.uu.se>

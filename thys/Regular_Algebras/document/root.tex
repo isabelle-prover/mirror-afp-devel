@@ -1,7 +1,27 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
 \usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
 \usepackage[english]{babel}
+  %option greek for \<euro>
+  %option english (default language) for \<guillemotleft>, \<guillemotright>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
 
 % this should be the last package used
 \usepackage{pdfsetup}
@@ -9,6 +29,9 @@
 % urls in roman style, theory text in math-similar italics
 \urlstyle{rm}
 \isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
 
 
 \begin{document}
@@ -26,16 +49,23 @@
   the smallest class (Salomaa's) and obtain completeness of the 
   largest one (Boffa's) relative to a deep result by Krob. In 
   addition we provide a large collection of regular identities 
-  in the general setting of Boffa's axiom. Our regular algebra 
-  hierarchy is orthogonal to the Kleene algebra hierarchy in the 
-  Archive of Formal Proofs~\cite{ArmstrongStruthWeberArchive}; we 
-  have not aimed at an integration for pragmatic reasons.
+  in the general setting of Boffa's axiom. 
 \end{abstract}
 
 \tableofcontents
 
 % sane default for proof documents
 \parindent 0pt\parskip 0.5ex
+
+\section{Introductory Remarks}
+
+These Isabelle theories complement the article on \emph{On the
+  Fine-Structure of Regular Algebra}~\cite{FosterS15}.  For an
+introduction to the topic, conceptual explanations and references we
+refer to this article. Our regular algebra hierarchy is orthogonal to
+the Kleene algebra hierarchy in the Archive of Formal
+Proofs~\cite{ArmstrongStruthWeberArchive}; we have not aimed at an
+integration for pragmatic reasons.
 
 % generated text of all theories
 \input{session}
