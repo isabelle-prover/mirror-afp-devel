@@ -822,7 +822,7 @@ val compiler = let open Export_code_env in
                   " console" ]
                 "true"
             val stdout =
-              case SOME (File.read stdout_file) handle _ => NONE of
+              case try File.read stdout_file of
                 SOME s => let val () = File.rm stdout_file in s end
               | NONE => "" in
             (l, (stdout, if List.exists (fn (err, _) =>
