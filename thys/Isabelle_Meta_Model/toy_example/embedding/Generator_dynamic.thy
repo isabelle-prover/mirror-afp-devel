@@ -755,8 +755,8 @@ val compiler = let open Export_code_env in
   , let val ml_ext_thy = "thy"
         val ml_ext_ml = "ML" in
     ( "SML", ml_ext_ml, File, SML.Filename.function
-    , check [ let open Path val isa = "isabelle" in
-              ( implode (expand (append (variable "ISABELLE_HOME") (make ["bin", isa]))) ^ " version"
+    , check [ let val isa = "isabelle" in
+              ( Path.implode (Path.expand (Path.append (Path.variable "ISABELLE_HOME") (Path.make ["bin", isa]))) ^ " version"
               , isa ^ " is not installed (required for compiling a SML project)")
               end ]
     , fn mk_fic => fn ml_module => fn mk_free => fn thy =>
@@ -808,17 +808,17 @@ val compiler = let open Export_code_env in
              , [ "end" ]]))
          end
     , fn tmp_export_code => fn tmp_file =>
-        let open Path
+        let
             val stdout_file = Isabelle_System.create_tmp_path "stdout_file" "thy"
-            val () = File.write (append tmp_export_code (make [SML.Filename.stdout ml_ext_ml]))
-                                (implode (expand stdout_file))
+            val () = File.write (Path.append tmp_export_code (Path.make [SML.Filename.stdout ml_ext_ml]))
+                                (Path.implode (Path.expand stdout_file))
             val (l, (_, exit_st)) =
               compile
-                [ "mv " ^ tmp_file ^ " " ^ implode (append tmp_export_code
-                                                           (make [SML.Filename.argument ml_ext_ml]))
-                , "cd " ^ implode tmp_export_code ^
+                [ "mv " ^ tmp_file ^ " " ^ Path.implode (Path.append tmp_export_code
+                                                           (Path.make [SML.Filename.argument ml_ext_ml]))
+                , "cd " ^ Path.implode tmp_export_code ^
                   " && echo 'use_thy \"" ^ SML.main ^ "\";' | " ^
-                  implode (expand (append (variable "ISABELLE_HOME") (make ["bin", "isabelle"]))) ^
+                  Path.implode (Path.expand (Path.append (Path.variable "ISABELLE_HOME") (Path.make ["bin", "isabelle"]))) ^
                   " console" ]
                 "true"
             val stdout =
