@@ -591,7 +591,7 @@ proof -
         have id: "(\<Prod>a\<leftarrow>x # pi. case a of (a, i) \<Rightarrow> a ^ i)  = p ^ n * (\<Prod>(a, i)\<leftarrow>pi. a ^ i)"
           unfolding x by simp      
         show ?case unfolding id precond IH y by (auto simp: ac_simps)
-      qed simp
+      qed (simp add: one_poly_def)
       show ?thesis using irr unfolding p c qis id using True by auto
     next
       case False
