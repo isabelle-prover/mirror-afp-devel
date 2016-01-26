@@ -52,7 +52,7 @@ lemma [code, code del]:
   ..
   
 code_printing
-constant "divmod_integer :: integer => _ => _" \<rightharpoonup> (SML) "(IntInf.quotRem ((_),(_)))"
+constant "divmod_integer :: integer => _ => _" \<rightharpoonup> (SML) "(IntInf.divMod ((_),(_)))"
 
 subsubsection{*Examples*}
 
