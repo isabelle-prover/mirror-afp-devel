@@ -327,7 +327,7 @@ proof -
     from find_map_filter_None[OF res] t 
     have nfilt: "\<not> filt ((interpolation_poly_int Newton) t)" by auto
     have qt: "\<And>x y. (x, y) \<in> set t \<Longrightarrow> poly q x = y" unfolding t_def by auto
-    from interpolation_poly_int_None[OF dist _ qt degq] have
+    from interpolation_poly_int_None[OF dist _ qt degq, of Newton] have
       "(interpolation_poly_int Newton) t \<noteq> None" by auto
     then obtain g where lt: "(interpolation_poly_int Newton) t = Some g" by auto
     from interpolation_poly_int_Some[OF dist lt] 

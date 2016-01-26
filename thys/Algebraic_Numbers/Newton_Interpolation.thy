@@ -12,9 +12,11 @@ text \<open>We proved soundness of Newton interpolation, i.e., a method to inter
   We further proved soundness of Neville-Aitken's polynomial interpolation\<close>
 theory Newton_Interpolation
 imports 
+  "~~/src/HOL/Library/Monad_Syntax"
+  "../Matrix/Utility"
   Polynomial
   Lagrange_Interpolation
-  "../Matrix/Utility"
+  Divmod_Int
 begin
 
 context
@@ -87,6 +89,108 @@ text \<open>For Newton interpolation, we start with an efficient implementation 
   implementation.
 
   The implementation is based on divided differences and the Horner schema.\<close>
+
+fun horner_composition :: "'a :: comm_ring_1 list \<Rightarrow> 'a list \<Rightarrow> 'a poly" where
+  "horner_composition [cn] xis = [:cn:]"
+| "horner_composition (ci # cs) (xi # xis) = horner_composition cs xis * [:- xi, 1:] + [:ci:]"
+| "horner_composition _ _ = 0"
+
+lemma (in ring_hom) horner_composition_hom: 
+  "horner_composition (map hom cs) (map hom xs) = map_poly hom (horner_composition cs xs)"
+  by (induct cs xs rule: horner_composition.induct, auto simp: map_poly_minus)
+
+lemma horner_coeffs_ints: assumes len: "length cs \<le> Suc (length ys)"
+  shows "(set (coeffs (horner_composition cs (map rat_of_int ys))) \<subseteq> \<int>) = (set cs \<subseteq> \<int>)"
+proof -
+  let ?ir = "int_of_rat"
+  let ?ri = "rat_of_int"
+  let ?mir = "map ?ir"
+  let ?mri = "map ?ri"
+  show ?thesis
+  proof
+    def ics \<equiv> "map ?ir cs"
+    assume "set cs \<subseteq> \<int>"
+    hence ics: "cs = ?mri ics" unfolding ics_def map_map o_def
+      by (simp add: map_idI subset_code(1))      
+    show "set (coeffs (horner_composition cs (?mri ys))) \<subseteq> \<int>"
+      unfolding ics ri.horner_composition_hom ri.coeffs_map_poly by auto
+  next
+    assume "set (coeffs (horner_composition cs (?mri ys))) \<subseteq> \<int>"
+    thus "set cs \<subseteq> \<int>" using len
+    proof (induct cs arbitrary: ys)
+      case (Cons c cs xs)
+      show ?case
+      proof (cases "cs = [] \<or> xs = []")
+        case True
+        with Cons show ?thesis by (cases "c = 0"; cases cs, auto)
+      next
+        case False
+        then obtain d ds and y ys where cs: "cs = d # ds" and xs: "xs = y # ys" 
+          by (cases cs, auto, cases xs, auto)
+        let ?q = "horner_composition cs (?mri ys)"
+        def q \<equiv> ?q
+        def p \<equiv> "q * [:- ?ri y, 1:] + [:c:]"
+        have id: "horner_composition (c # cs) (?mri xs) = p" 
+          unfolding cs xs q_def p_def by simp
+        from Cons(2)[unfolded id] have coeff: "\<And> i. coeff p i \<in> \<int>" using range_coeff[of p] by force
+        {
+          fix i
+          let ?f = "\<lambda> j. coeff [:- ?ri y, 1:] j * coeff q (Suc i - j)"
+          have "coeff p (Suc i) = coeff ([: -?ri y, 1 :] * q) (Suc i)" unfolding p_def by simp
+          also have "\<dots> = (\<Sum>j\<le>Suc i. ?f j)" unfolding coeff_mult by simp
+          also have "\<dots> = ?f 0 + ?f 1 + (\<Sum>j\<in>{..Suc i} - {0} - {Suc 0}. ?f j)"
+            by (subst setsum.remove[of _ 0], force+, subst setsum.remove[of _ 1], force+)
+          also have "(\<Sum>j\<in>{..Suc i} - {0} - {Suc 0}. ?f j) = 0"
+          proof (rule setsum.neutral, auto, goal_cases)
+            case (1 x)
+            thus ?case by (cases x, auto, cases "x - 1", auto)
+          qed
+          also have "?f 0 = - ?ri y * coeff q (Suc i)" by simp
+          also have "?f 1 = coeff q i" by simp
+          finally have int: "coeff q i - ?ri y * coeff q (Suc i) \<in> \<int>" using coeff[of "Suc i"] by auto
+          assume "coeff q (Suc i) \<in> \<int>"
+          hence "?ri y * coeff q (Suc i) \<in> \<int>" by simp
+          hence "coeff q i \<in> \<int>" using int Ints_diff Ints_minus by force
+        } note coeff_q = this
+        {
+          fix i
+          assume "i \<le> degree q"
+          hence "coeff q (degree q - i) \<in> \<int>"
+          proof (induct i)
+            case 0
+            from coeff_q[of "degree q"] show ?case
+              by (metis Ints_0 Suc_n_not_le_n diff_zero le_degree)
+          next
+            case (Suc i)
+            with coeff_q[of i] show ?case
+              by (metis Suc_diff_Suc Suc_leD Suc_n_not_le_n coeff_q le_less)
+          qed
+        } note coeff_q = this
+        {
+          fix i
+          have "coeff q i \<in> \<int>"
+          proof (cases "i \<le> degree q")
+            case True
+            with coeff_q[of "degree q - i"] show ?thesis by auto
+          next
+            case False
+            hence "coeff q i = 0" using le_degree by blast
+            thus ?thesis by simp
+          qed
+        } note coeff_q = this
+        hence "set (coeffs q) \<subseteq> \<int>" using range_coeff[of q] by force
+        from Cons(1)[OF this[unfolded q_def]] Cons(3) xs have IH: "set cs \<subseteq> \<int>" by auto
+        def r \<equiv> "coeff q 0 * (- ?ri y)"
+        have r: "r \<in> \<int>" using coeff_q[of 0] unfolding r_def by auto
+        have "coeff p 0 \<in> \<int>" by fact
+        also have "coeff p 0 = r + c" unfolding p_def r_def by simp
+        finally have c: "c \<in> \<int>" using r using Ints_diff by force
+        with IH show ?thesis by auto
+      qed
+    qed simp
+  qed
+qed
+
 context
 fixes 
   ty :: "'a :: field itself"
@@ -95,32 +199,26 @@ fixes
 begin
 
 
-private fun combine_rows :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-  "combine_rows [] fj xj xis = [fj]"
-| "combine_rows (xi_j1 # x_j1s) fj xj (xi # xis) = (let 
-    x_js = combine_rows x_j1s fj xj xis;
+fun divides_differences_impl :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
+  "divides_differences_impl (xi_j1 # x_j1s) fj xj (xi # xis) = (let 
+    x_js = divides_differences_impl x_j1s fj xj xis;
     new = (hd x_js - xi_j1) / (xj - xi)
     in new # x_js)"
-    
+| "divides_differences_impl [] fj xj xis = [fj]"
 
-qualified fun newton_coefficients_main :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list list" where
+fun newton_coefficients_main :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list list" where
   "newton_coefficients_main [fj] xjs = [[fj]]"
 | "newton_coefficients_main (fj # fjs) (xj # xjs) = (
     let rec = newton_coefficients_main fjs xjs; row = hd rec;
-      new_row = combine_rows row fj xj xs
+      new_row = divides_differences_impl row fj xj xs
     in new_row # rec)"
 | "newton_coefficients_main _ _ = []"
 
-qualified definition newton_coefficients :: "'a list" where
+definition newton_coefficients :: "'a list" where
   "newton_coefficients = map hd (newton_coefficients_main (rev fs) (rev xs))"
 
-qualified fun newton_composition :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a poly" where
-  "newton_composition [cn] xis = [:cn:]"
-| "newton_composition (ci # cs) (xi # xis) = newton_composition cs xis * [:- xi, 1:] + [:ci:]"
-| "newton_composition _ _ = 0"
-
 definition newton_poly_impl :: "'a poly" where
-  "newton_poly_impl = newton_composition (rev newton_coefficients) xs"
+  "newton_poly_impl = horner_composition (rev newton_coefficients) xs"
 
 qualified definition "x i = xs ! i"
 qualified definition "f i = fs ! i"
@@ -422,7 +520,7 @@ next
     def nn \<equiv> "0 :: nat"
     def m \<equiv> "Suc k - nn"
     have prems: "m = Suc k - nn" "nn < Suc (Suc k)" unfolding m_def nn_def by auto
-    have "?case = (combine_rows (map ((\<lambda>j. xij_f j k)) [nn..< Suc k]) (f (Suc k)) (x (Suc k)) (map x [nn ..< n]) =
+    have "?case = (divides_differences_impl (map ((\<lambda>j. xij_f j k)) [nn..< Suc k]) (f (Suc k)) (x (Suc k)) (map x [nn ..< n]) =
       map ((\<lambda>j. xij_f j (Suc k))) [nn..<Suc (Suc k)])"
       unfolding nn_def xs[symmetric] by simp
     also have "\<dots>" using prems
@@ -441,7 +539,7 @@ next
         by (auto simp: upt_rec)
       from Suc(2-) have "m = Suc k - Suc nn" "Suc nn < Suc (Suc k)" by auto
       note IH = Suc(1)[OF this]
-      show ?case unfolding id list.simps combine_rows.simps IH Let_def
+      show ?case unfolding id list.simps divides_differences_impl.simps IH Let_def
         unfolding id2 list.simps 
         using le
         by (simp add: xij_f.simps[of nn "Suc k"] xd_def)
@@ -478,7 +576,7 @@ proof -
   have xs: "map x [0..<n] = xs" using xs
     by (intro nth_equalityI, auto simp: x_def)
   have "i \<le> nn" unfolding i_def by simp
-  hence "newton_composition (map c [i..<Suc nn]) (map x [i..<Suc nn]) = b i nn"
+  hence "horner_composition (map c [i..<Suc nn]) (map x [i..<Suc nn]) = b i nn"
   proof (induct i nn rule: b.induct)
     case (1 i n)
     show ?case
@@ -493,7 +591,7 @@ proof -
       have bi: "b i n = b (Suc i) n * X i + [:c i:]" using False by (simp add: b.simps)    
       from False have id: "[i ..< Suc n] = i # [Suc i ..< Suc n]" by (simp add: upt_rec)
       from False have id2: "[Suc i ..< Suc n] = Suc i # [Suc (Suc i) ..< Suc n]" by (simp add: upt_rec)
-      show ?thesis unfolding id bi list.simps newton_composition.simps id2
+      show ?thesis unfolding id bi list.simps horner_composition.simps id2
         unfolding IH[unfolded id2 list.simps] by (simp add: X_def)
     qed
   qed
@@ -504,10 +602,307 @@ qed
 end
 end
 
+context 
+  fixes xs fs :: "int list"
+begin
+
+private fun divides_differences_impl_int :: "int list \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int list \<Rightarrow> int list option" where
+  "divides_differences_impl_int (xi_j1 # x_j1s) fj xj (xi # xis) = (
+     case divides_differences_impl_int x_j1s fj xj xis of None \<Rightarrow> None
+   | Some x_js \<Rightarrow> let (new,m) = divmod_int (hd x_js - xi_j1) (xj - xi)
+     in if m = 0 then Some (new # x_js) else None)"
+| "divides_differences_impl_int [] fj xj xis = Some [fj]"
+   
+qualified fun newton_coefficients_main_int :: "int list \<Rightarrow> int list \<Rightarrow> int list list option" where
+  "newton_coefficients_main_int [fj] xjs = Some [[fj]]"
+| "newton_coefficients_main_int (fj # fjs) (xj # xjs) = (do {
+    rec \<leftarrow> newton_coefficients_main_int fjs xjs;
+    let row = hd rec;
+    new_row \<leftarrow> divides_differences_impl_int row fj xj xs;
+    Some (new_row # rec)})"
+| "newton_coefficients_main_int _ _ = Some []"
+
+qualified definition newton_coefficients_int :: "int list option" where
+  "newton_coefficients_int = map_option (map hd) (newton_coefficients_main_int (rev fs) (rev xs))"
+
+lemma divides_differences_impl_int_Some:
+  "length gs \<le> length ys 
+  \<Longrightarrow> divides_differences_impl_int gs g x ys = Some res
+  \<Longrightarrow> divides_differences_impl (map rat_of_int gs) (rat_of_int g) (rat_of_int x) (map rat_of_int ys) = map rat_of_int res
+    \<and> length res = Suc (length gs)"
+proof (induct gs g x ys arbitrary: res rule: divides_differences_impl_int.induct)
+  case (1 xi_j1 x_j1s fj xj xi xis)
+  note some = 1(3)
+  from 1(2) have len: "length x_j1s \<le> length xis" by auto
+  from some obtain x_js where rec: "divides_differences_impl_int x_j1s fj xj xis = Some x_js"
+    by (auto split: option.splits)
+  note IH = 1(1)[OF len rec]
+  have id: "hd (map rat_of_int x_js) = rat_of_int (hd x_js)" using IH by (cases x_js, auto)
+  from some[simplified, unfolded rec divmod_int_def] have mod: "(hd x_js - xi_j1) mod (xj - xi) = 0"
+    and res: "res = (hd x_js - xi_j1) div (xj - xi) # x_js" by (auto split: if_splits)
+  have "rat_of_int ((hd x_js - xi_j1) div (xj - xi)) = rat_of_int (hd x_js - xi_j1) / rat_of_int (xj - xi)"
+    using mod by force
+  hence "(rat_of_int (hd x_js) - rat_of_int xi_j1) / (rat_of_int xj - rat_of_int xi) = 
+    rat_of_int ((hd x_js - xi_j1) div (xj - xi))"
+    by simp
+  thus ?case by (simp add: IH Let_def res id)
+next
+  case (2 fj xj xis res)
+  hence res: "res = [fj]" by simp
+  thus ?case by simp
+qed simp
+
+lemma div_Ints_mod_0: assumes "rat_of_int a / rat_of_int b \<in> \<int>" "b \<noteq> 0"
+  shows "a mod b = 0"
+proof -
+  def c \<equiv> "int_of_rat (rat_of_int a / rat_of_int b)"
+  have "rat_of_int a / rat_of_int b = rat_of_int c" unfolding c_def using assms(1) by simp
+  hence "rat_of_int a = rat_of_int b * rat_of_int c" using assms(2)
+    by (metis divide_cancel_right nonzero_mult_divide_cancel_left of_int_eq_0_iff)
+  hence a: "a = b * c" by (simp add: ri.hom_inj)
+  from div_mod_equality[of a b 0] show "a mod b = 0" unfolding a by simp
+qed
+
+lemma divides_differences_impl_int_None:
+  "length gs \<le> length ys 
+  \<Longrightarrow> divides_differences_impl_int gs g x ys = None
+  \<Longrightarrow> x \<notin> set (take (length gs) ys)
+  \<Longrightarrow> hd (divides_differences_impl (map rat_of_int gs) (rat_of_int g) (rat_of_int x) (map rat_of_int ys)) \<notin> \<int>"
+proof (induct gs g x ys rule: divides_differences_impl_int.induct)
+  case (1 xi_j1 x_j1s fj xj xi xis)
+  note none = 1(3)
+  from 1(2,4) have len: "length x_j1s \<le> length xis" and xj: "xj \<notin> set (take (length x_j1s) xis)" and xji: "xj \<noteq> xi" by auto
+  def d \<equiv> "divides_differences_impl (map rat_of_int x_j1s) (rat_of_int fj) (rat_of_int xj) (map rat_of_int xis)"
+  note IH = 1(1)[OF len _ xj]
+  show ?case
+  proof (cases "divides_differences_impl_int x_j1s fj xj xis")
+    case None
+    from IH[OF None] have d: "hd d \<notin> \<int>" unfolding d_def by auto
+    {
+      let ?x = "(hd d - rat_of_int xi_j1) / (rat_of_int xj - rat_of_int xi)"
+      assume "?x \<in> \<int>"
+      hence "?x * (of_int (xj - xi)) + rat_of_int xi_j1 \<in> \<int>"
+        using Ints_mult Ints_add Ints_of_int by blast
+      also have "?x * (of_int (xj - xi)) = hd d - rat_of_int xi_j1" using xji by auto
+      also have "\<dots> + rat_of_int xi_j1 = hd d" by simp
+      finally have False using d by simp
+    }
+    thus ?thesis 
+      by (auto simp: Let_def d_def[symmetric])
+  next
+    case (Some res)
+    from divides_differences_impl_int_Some[OF len Some]
+    have id: "divides_differences_impl (map rat_of_int x_j1s) (rat_of_int fj) (rat_of_int xj) (map rat_of_int xis) =
+      map rat_of_int res" and res: "res \<noteq> []" by auto
+    have hd: "hd (map rat_of_int res) = of_int (hd res)" using res by (cases res, auto)
+    def a \<equiv> "(hd res - xi_j1)"
+    def b \<equiv> "xj - xi"
+    from none[simplified, unfolded Some divmod_int_def] 
+    have mod: "a mod b \<noteq> 0"
+      by (auto split: if_splits simp: a_def b_def)
+    {
+      assume "(rat_of_int (hd res) - rat_of_int xi_j1) / (rat_of_int xj - rat_of_int xi) \<in> \<int>"
+      hence "rat_of_int a / rat_of_int b \<in> \<int>" unfolding a_def b_def by simp
+      moreover have "b \<noteq> 0" using xji unfolding b_def by simp
+      ultimately have False using mod div_Ints_mod_0 by auto
+    }
+    thus ?thesis 
+      by (auto simp: id Let_def hd)
+  qed
+qed auto
+  
+lemma newton_coefficients_main_int_Some:
+  "length gs = length ys \<Longrightarrow> length ys \<le> length xs  
+  \<Longrightarrow> newton_coefficients_main_int gs ys = Some res
+  \<Longrightarrow> newton_coefficients_main (map rat_of_int xs) (map rat_of_int gs) (map rat_of_int ys) = map (map rat_of_int) res
+    \<and> (\<forall> x \<in> set res. x \<noteq> [] \<and> length x \<le> length ys) \<and> length res = length gs"
+proof (induct gs ys arbitrary: res rule: newton_coefficients_main_int.induct)
+  case (2 fv v va xj xjs res)
+  from 2(2,3) have len: "length (v # va) = length xjs" "length xjs \<le> length xs" by auto
+  note some = 2(4)
+  let ?n = "newton_coefficients_main_int (v # va) xjs"
+  let ?ri = rat_of_int
+  let ?mri = "map ?ri"
+  from some obtain rec where n: "?n = Some rec"
+    by (cases ?n, auto)
+  note some = some[simplified, unfolded n]
+  let ?d = "divides_differences_impl_int (hd rec) fv xj xs"
+  from some obtain dd where d: "?d = Some dd" and res: "res = dd # rec" 
+    by (cases ?d, auto)
+  note IH = 2(1)[OF len n]
+  from IH have lenn: "length (hd rec) \<le> length xjs" by (cases rec, auto)
+  with len have "length (hd rec) \<le> length xs" by auto
+  note dd = divides_differences_impl_int_Some[OF this d]
+  have hd: "hd (map ?mri rec) = ?mri (hd rec)" using IH by (cases rec, auto)
+  show ?case unfolding newton_coefficients_main.simps list.simps
+    IH[THEN conjunct1, unfolded list.simps] Let_def hd
+    dd[THEN conjunct1] res 
+  proof (intro conjI)
+    show "length (dd # rec) = length (fv # v # va)" using len
+      IH[THEN conjunct2] dd[THEN conjunct2] by auto
+    show "\<forall>x\<in>insert dd (set rec). x \<noteq> [] \<and> length x \<le> length (xj # xjs)"
+      using len IH[THEN conjunct2] dd[THEN conjunct2] lenn by auto
+  qed auto
+qed auto
+
+lemma newton_coefficients_main_int_None: assumes dist: "distinct xs"
+  shows "length gs = length ys \<Longrightarrow> length ys \<le> length xs  
+  \<Longrightarrow> newton_coefficients_main_int gs ys = None
+  \<Longrightarrow> ys = drop (length xs - length ys) (rev xs)
+  \<Longrightarrow> \<exists> row \<in> set (newton_coefficients_main (map rat_of_int xs) (map rat_of_int gs) (map rat_of_int ys)). hd row \<notin> \<int>"
+proof (induct gs ys rule: newton_coefficients_main_int.induct)
+  case (2 fv v va xj xjs)
+  from 2(2,3) have len: "length (v # va) = length xjs" "length xjs \<le> length xs" by auto
+  from arg_cong[OF 2(5), of tl] 2(3)
+  have xjs: "xjs = drop (length xs - length xjs) (rev xs)"
+    by (metis 2(5) butlast_snoc butlast_take length_drop rev.simps(2) rev_drop rev_rev_ident rev_take)
+  note none = 2(4)
+  let ?n = "newton_coefficients_main_int (v # va) xjs"
+  let ?n' = "newton_coefficients_main (map rat_of_int xs) (map rat_of_int (v # va)) (map rat_of_int xjs)"
+  let ?ri = rat_of_int
+  let ?mri = "map ?ri"
+  show ?case
+  proof (cases ?n)
+    case None
+    from 2(1)[OF len None xjs] obtain row where 
+      row: "row\<in>set ?n'" and "hd row \<notin> \<int>" by auto
+    thus ?thesis by (intro bexI[of _ row], auto simp: Let_def)
+  next
+    case (Some rec)
+    note some = newton_coefficients_main_int_Some[OF len this]
+    hence len': "length (hd rec) \<le> length xjs" by (cases rec, auto)
+    hence lenn: "length (hd rec) \<le> length xs" using len by auto
+    have hd: "hd (map ?mri rec) = ?mri (hd rec)" using some by (cases rec, auto)
+    let ?d = "divides_differences_impl_int (hd rec) fv xj xs"
+    from none[simplified, unfolded Some]
+    have none: "?d = None" by (cases ?d, auto)
+    have "xj \<notin> set (take (length (hd rec)) xs)"
+    proof
+      assume "xj \<in> set (take (length (hd rec)) xs)"
+      then obtain i where "i < length (hd rec)" and xj: "xj = xs ! i" 
+        unfolding in_set_conv_nth by auto
+      with len' have i: "i < length xjs" by simp
+      have "Suc (length xjs) \<le> length xs" using 2(3) by auto
+      with i have i0: "i \<noteq> 0"
+        by (metis 2(5) Suc_diff_Suc Suc_le_lessD diff_less dist distinct_conv_nth 
+          hd_drop_conv_nth length_Cons length_drop length_greater_0_conv length_rev less_le_trans 
+          list.sel(1) list.simps(3) nat_neq_iff rev_nth xj xjs)      
+      have "xj \<in> set xjs" 
+        by (subst xjs, unfold xj in_set_conv_nth, rule exI[of _ "length xjs - Suc i"], insert i 2(3) i0,
+           auto simp: rev_nth)
+      hence ndist: "\<not> distinct (xj # xjs)" by auto
+      from dist have "distinct (rev xs)" by simp
+      from distinct_drop[OF this] have "distinct (xj # xjs)" using 2(5) by metis
+      with ndist
+      show False ..
+    qed
+    note dd = divides_differences_impl_int_None[OF lenn none this]
+    show ?thesis
+      by (rule bexI, rule dd, insert some hd, auto)
+  qed
+qed auto
+
+
+lemma newton_coefficients_int: assumes dist: "distinct xs"
+  and len: "length xs = length fs"
+  shows "newton_coefficients_int = (let cs = newton_coefficients (map rat_of_int xs) (map of_int fs)
+    in if set cs \<subseteq> \<int> then Some (map int_of_rat cs) else None)" 
+proof -
+  from len have len: "length (rev fs) = length (rev xs)" "length (rev xs) \<le> length xs" by auto
+  show ?thesis
+  proof (cases "newton_coefficients_main_int (rev fs) (rev xs)")
+    case (Some res)
+    have rev: "\<And> xs. map rat_of_int (rev xs) = rev (map of_int xs)" unfolding rev_map ..
+    note n = newton_coefficients_main_int_Some[OF len Some, unfolded rev]
+    {
+      fix row
+      assume "row \<in> set res"
+      with n have "row \<noteq> []" by auto
+      hence id: "hd (map rat_of_int row) = rat_of_int (hd row)" by (cases row, auto)
+      also have "\<dots> \<in> \<int>" by auto
+      finally have int: "hd (map rat_of_int row) \<in> \<int>" by auto
+      have "hd row = int_of_rat (hd (map rat_of_int row))" unfolding id by simp
+      note this int
+    } 
+    thus ?thesis unfolding newton_coefficients_int_def Some newton_coefficients_def n[THEN conjunct1] Let_def option.simps
+      by (auto simp: o_def)
+  next
+    case None
+    have "rev xs = drop (length xs - length (rev xs)) (rev xs)" by simp
+    from newton_coefficients_main_int_None[OF dist len None this]
+    show ?thesis unfolding newton_coefficients_int_def newton_coefficients_def None by (auto simp: Let_def rev_map)
+  qed
+qed
+
+definition newton_poly_impl_int :: "int poly option" where
+  "newton_poly_impl_int \<equiv> case newton_coefficients_int of None \<Rightarrow> None 
+     | Some nc \<Rightarrow> Some (horner_composition (rev nc) xs)"
+
+lemma newton_poly_impl_int: assumes len: "length xs = length fs" 
+  and dist: "distinct xs"
+  shows "newton_poly_impl_int = (let p = newton_poly_impl (map rat_of_int xs) (map of_int fs)
+    in if set (coeffs p) \<subseteq> \<int> then Some (map_poly int_of_rat p) else None)"
+proof -
+  let ?ir = "int_of_rat"
+  let ?ri = "rat_of_int"
+  let ?mir = "map ?ir"
+  let ?mri = "map ?ri"
+  let ?nc = "newton_coefficients (?mri xs) (?mri fs)"
+  have id: "newton_poly_impl_int = (if set ?nc \<subseteq> \<int>
+    then Some (horner_composition (rev (?mir ?nc)) xs) else None)" 
+    unfolding newton_poly_impl_int_def newton_coefficients_int[OF dist len] Let_def by simp
+  have len: "length (rev ?nc) \<le> Suc (length xs)" 
+    unfolding length_rev
+    by (subst newton_coefficients[OF refl], insert len, auto) 
+  show ?thesis unfolding id
+    unfolding newton_poly_impl_def
+    unfolding Let_def set_rev rev_map horner_coeffs_ints[OF len]
+  proof (rule if_cong[OF refl _ refl], rule arg_cong[of _ _ Some])
+    def cs \<equiv> "rev ?nc"
+    def ics \<equiv> "map ?ir cs"
+    assume "set ?nc \<subseteq> \<int>"
+    hence "set cs \<subseteq> \<int>" unfolding cs_def by auto
+    hence ics: "cs = ?mri ics" unfolding ics_def map_map o_def
+      by (simp add: map_idI subset_code(1))      
+    have id: "horner_composition (rev ?nc) (?mri xs) = map_poly ?ri (horner_composition ics xs)"
+      unfolding cs_def[symmetric] ics
+      by (rule ri.horner_composition_hom)
+    show "horner_composition (?mir (rev ?nc)) xs
+      = map_poly ?ir (horner_composition (rev ?nc) (?mri xs))"
+      unfolding id unfolding cs_def[symmetric] ics_def[symmetric]
+      by (subst map_poly_compose, auto simp: o_def map_poly_eqI)
+  qed
+qed
+end
+
 definition newton_interpolation_poly :: "('a :: field \<times> 'a)list \<Rightarrow> 'a poly" where
   "newton_interpolation_poly x_fs = (let 
     xs = map fst x_fs; fs = map snd x_fs in
     newton_poly_impl xs fs)"
+
+definition newton_interpolation_poly_int :: "(int \<times> int)list \<Rightarrow> int poly option" where
+  "newton_interpolation_poly_int x_fs = (let 
+    xs = map fst x_fs; fs = map snd x_fs in
+    newton_poly_impl_int xs fs)"
+
+lemma newton_interpolation_poly_int: assumes dist: "distinct (map fst xs_ys)"
+  shows "newton_interpolation_poly_int xs_ys = (let 
+     rxs_ys = map (\<lambda> (x,y). (of_int x, of_int y)) xs_ys;
+     rp = newton_interpolation_poly rxs_ys
+     in if (\<forall> x \<in> set (coeffs rp). is_int_rat x) then
+       Some (map_poly int_of_rat rp) else None)"
+proof -
+  have id1: "map fst (map (\<lambda>(x, y). (rat_of_int x, rat_of_int y)) xs_ys) = map rat_of_int (map fst xs_ys)"
+    by (induct xs_ys, auto)
+  have id2: "map snd (map (\<lambda>(x, y). (rat_of_int x, rat_of_int y)) xs_ys) = map rat_of_int (map snd xs_ys)"
+    by (induct xs_ys, auto)
+  have id3: "length (map fst xs_ys) = length (map snd xs_ys)" by auto
+  show ?thesis
+    unfolding newton_interpolation_poly_def  newton_interpolation_poly_int_def Let_def newton_poly_impl_int[OF id3 dist]
+    unfolding id1 id2
+    by (rule sym, rule if_cong, auto simp: is_int_rat[abs_def])
+qed
+   
 
 lemma newton_interpolation_poly: assumes dist: "distinct (map fst xs_ys)"
   and p: "p = newton_interpolation_poly xs_ys"
@@ -555,5 +950,4 @@ qed
 hide_const 
   Newton_Interpolation.x
   Newton_Interpolation.f
-
 end

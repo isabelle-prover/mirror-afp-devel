@@ -20,12 +20,24 @@ fun interpolation_poly :: "interpolation_algorithm \<Rightarrow> ('a :: field \<
   "interpolation_poly Newton = newton_interpolation_poly"
 | "interpolation_poly Lagrange = lagrange_interpolation_poly"
 
-definition interpolation_poly_int :: "interpolation_algorithm \<Rightarrow> (int \<times> int)list \<Rightarrow> int poly option" where
-  "interpolation_poly_int alg xs_ys \<equiv> let 
+value (code) "interpolation_poly Newton [(-1,3 :: rat),(0,1),(1,1),(3,7)]"
+value (code) "newton_interpolation_poly_int [(-1,3),(0,1),(1,1),(3,7)]"
+
+fun interpolation_poly_int :: "interpolation_algorithm \<Rightarrow> (int \<times> int)list \<Rightarrow> int poly option" where
+  "interpolation_poly_int Newton xs_ys = newton_interpolation_poly_int xs_ys"
+| "interpolation_poly_int Lagrange xs_ys = (let 
+     rxs_ys = map (\<lambda> (x,y). (of_int x, of_int y)) xs_ys;
+     rp = lagrange_interpolation_poly rxs_ys
+     in if (\<forall> x \<in> set (coeffs rp). is_int_rat x) then
+       Some (map_poly int_of_rat rp) else None)"
+
+lemma interpolation_poly_int_def: "distinct (map fst xs_ys) \<Longrightarrow>
+  interpolation_poly_int alg xs_ys = (let 
      rxs_ys = map (\<lambda> (x,y). (of_int x, of_int y)) xs_ys;
      rp = interpolation_poly alg rxs_ys
      in if (\<forall> x \<in> set (coeffs rp). is_int_rat x) then
-       Some (map_poly int_of_rat rp) else None"
+       Some (map_poly int_of_rat rp) else None)"
+  by (cases alg, auto simp: newton_interpolation_poly_int)
 
 lemma interpolation_poly: assumes dist: "distinct (map fst xs_ys)"
   and p: "p = interpolation_poly alg xs_ys"
@@ -108,15 +120,15 @@ proof -
 qed
 
 
-lemma interpolation_poly_int_Some: assumes dist: "distinct (map fst xs_ys)"
+lemma interpolation_poly_int_Some: assumes dist': "distinct (map fst xs_ys)"
   and p: "interpolation_poly_int alg xs_ys = Some p"
   shows "\<And> x y. (x,y) \<in> set xs_ys \<Longrightarrow> poly p x = y" "degree p \<le> length xs_ys - 1"
 proof -
   let ?r = "rat_of_int"
   def rxs_ys \<equiv> "map (\<lambda>(x, y). (?r x, ?r y)) xs_ys"
-  have dist: "distinct (map fst rxs_ys)" using dist unfolding distinct_map rxs_ys_def inj_on_def by force
+  have dist: "distinct (map fst rxs_ys)" using dist' unfolding distinct_map rxs_ys_def inj_on_def by force
   obtain rp where rp: "rp = interpolation_poly alg rxs_ys" by blast
-  from p[unfolded interpolation_poly_int_def Let_def, folded rxs_ys_def rp]
+  from p[unfolded interpolation_poly_int_def[OF dist'] Let_def, folded rxs_ys_def rp]
   have p: "p = map_poly int_of_rat rp" and ball: "Ball (set (coeffs rp)) is_int_rat"
     by (auto split: if_splits)
   have id: "rp = map_poly ?r p" unfolding p
@@ -152,7 +164,7 @@ proof -
   have id: "rp = ?rp q"
     by (rule uniqueness_of_interpolation_point_list[OF dist' interpolation_poly[OF dist' rp]],
     insert q' dq degrp, auto simp: rxs_ys_def)
-  from p[unfolded interpolation_poly_int_def Let_def, folded rxs_ys_def rp]
+  from p[unfolded interpolation_poly_int_def[OF dist] Let_def, folded rxs_ys_def rp]
   have "\<exists> c \<in> set (coeffs rp). c \<notin> \<int>" by (auto split: if_splits)
   from this[unfolded id ri.coeffs_map_poly] show False by auto
 qed
