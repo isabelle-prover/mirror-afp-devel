@@ -70,7 +70,7 @@ definition strategy_attracts_via :: "Player \<Rightarrow> 'a Strategy \<Rightarr
 lemma (in vmc_path) strategy_attracts_viaE:
   assumes "strategy_attracts_via p \<sigma> v0 A W"
   shows "visits_via P A W"
-  using strategy_attracts_via_def assms vmc_path by blast
+  using strategy_attracts_via_def assms vmc_path_axioms by blast
 
 lemma (in vmc_path) strategy_attracts_via_SucE:
   assumes "strategy_attracts_via p \<sigma> v0 A W" "v0 \<notin> W"
@@ -96,7 +96,7 @@ proof-
   obtain P where "vmc_path G P v0 p \<sigma>" using strategy_conforming_path_exists_single assms by blast
   then interpret vmc_path G P v0 p \<sigma> .
   obtain n where n: "enat n < llength P" "P $ n \<in> W" "lset (ltake (enat n) P) \<subseteq> A"
-    using \<sigma>(2)[unfolded strategy_attracts_via_def visits_via_def] vmc_path by blast
+    using \<sigma>(2)[unfolded strategy_attracts_via_def visits_via_def] vmc_path_axioms by blast
   show ?thesis proof (cases "n = 0")
     case True thus ?thesis using n(2) by simp
   next

@@ -191,7 +191,8 @@ proof-
         thus ?thesis
           unfolding P'_def using P_0 `\<not>lfinite P` by (simp add: infinite_small_llength lhd_ldropn)
       qed
-      ultimately have "winning_path p P'" unfolding winning_strategy_def using P'.vmc_path by blast
+      ultimately have "winning_path p P'" unfolding winning_strategy_def
+        using P'.vmc_path_axioms by blast
       moreover have "\<not>lfinite P'" using `\<not>lfinite P` P'_def by simp
       ultimately show False using contra winning_path_drop_add[OF P_valid] by auto
     qed

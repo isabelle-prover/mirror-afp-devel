@@ -48,7 +48,6 @@ text {*
 *}
 locale vmc_path = vm_path +
   fixes p \<sigma> assumes P_conforms [simp]: "path_conforms_with_strategy p P \<sigma>"
-lemma (in vmc_path) vmc_path [simp]: "vmc_path G P v0 p \<sigma>" by unfold_locales
 
 text {*
   Similary, define a locale for valid maximal paths that conform to given strategies for both
@@ -56,7 +55,6 @@ text {*
 *}
 locale vmc2_path = comp?: vmc_path G P v0 "p**" \<sigma>' + vmc_path G P v0 p \<sigma>
   for G P v0 p \<sigma> \<sigma>'
-lemma (in vmc2_path) vmc2_path [simp]: "vmc2_path G P v0 p \<sigma> \<sigma>'" by unfold_locales
 
 
 subsection {* An Arbitrary Strategy *}
@@ -506,7 +504,6 @@ text {*
 locale vmc_path_no_deadend = vmc_path +
   assumes v0_no_deadend [simp]: "\<not>deadend v0"
 begin
-lemma vmc_path_no_deadend [simp]: "vmc_path_no_deadend G P v0 p \<sigma>" by unfold_locales
 definition "w0 \<equiv> lhd (ltl P)"
 
 lemma Ptl_not_null [simp]: "\<not>lnull (ltl P)"
@@ -558,7 +555,7 @@ lemma vmc_path_lset_induction [consumes 1, case_names base step]:
   shows "lset P \<subseteq> S"
 proof
   fix v assume "v \<in> lset P"
-  thus "v \<in> S" using vmc_path assms(1,2) proof (induct arbitrary: v0 rule: llist_set_induct)
+  thus "v \<in> S" using vmc_path_axioms assms(1,2) proof (induct arbitrary: v0 rule: llist_set_induct)
     case (find P)
     then interpret vmc_path G P v0 p \<sigma> by blast
     show ?case by (simp add: find.prems(3))
@@ -575,7 +572,7 @@ proof
         using vmc_path_lnull_ltl_no_deadend by blast
       show "v \<in> S"
         using step.hyps(3)
-              step_assumption[OF vmc_path_no_deadend `v0 \<in> S` `Q P`]
+              step_assumption[OF vmc_path_no_deadend_axioms `v0 \<in> S` `Q P`]
               vmc_path_ltl
         by blast
     qed

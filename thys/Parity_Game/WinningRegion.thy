@@ -38,7 +38,7 @@ lemma (in vmc_path) paths_stay_in_winning_region:
   shows "lset P \<subseteq> winning_region p"
 proof
   fix x assume "x \<in> lset P"
-  thus "x \<in> winning_region p" using assms vmc_path
+  thus "x \<in> winning_region p" using assms vmc_path_axioms
   proof (induct arbitrary: v0 rule: llist_set_induct)
     case (find P v0)
     interpret vmc_path G P v0 p \<sigma> using find.prems(4) .
@@ -89,7 +89,7 @@ proof-
     using path_conforms_with_strategy_irrelevant_updates P'.P_conforms
     by blast
   then interpret P': vmc_path G P' "P $ n" p \<sigma>' using P'.conforms_to_another_strategy by blast
-  have "winning_path p P'" using \<sigma>'(2) n(2) P'.vmc_path winning_strategy_def by blast
+  have "winning_path p P'" using \<sigma>'(2) n(2) P'.vmc_path_axioms winning_strategy_def by blast
   thus "winning_path p P" unfolding P'_def using winning_path_drop_add n(1) P_valid by blast
 qed
 

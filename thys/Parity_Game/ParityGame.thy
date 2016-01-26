@@ -32,13 +32,6 @@ locale Digraph =
   fixes G (structure)
   assumes valid_edge_set: "E \<subseteq> V \<times> V"
 begin
-text {*
-  When we define a locale, we usually add a simplification lemma of the same name.
-  Otherwise @{term "Digraph G"} would not easily be available in proofs, although here the proof
-  is trivial.
-*}
-lemma Digraph [simp]: "Digraph G" by unfold_locales
-
 lemma edges_are_in_V [intro]: "v\<rightarrow>w \<Longrightarrow> v \<in> V" "v\<rightarrow>w \<Longrightarrow> w \<in> V" using valid_edge_set by blast+
 
 text {* A node without successors is a \emph{deadend}. *}
@@ -255,8 +248,6 @@ locale ParityGame = Digraph G for G :: "('a, 'b) ParityGame_scheme" (structure) 
   assumes valid_player0_set: "V0 \<subseteq> V"
     and priorities_finite: "finite (\<omega> ` V)"
 begin
-lemma ParityGame [simp]: "ParityGame G" by unfold_locales
-
 text {* @{text "VV p"} is the set of nodes belonging to player @{term p}. *}
 abbreviation VV :: "Player \<Rightarrow> 'a set" where "VV p \<equiv> (if p = Even then V0 else V - V0)"
 lemma VVp_to_V [intro]: "v \<in> VV p \<Longrightarrow> v \<in> V" using valid_player0_set by (cases p) auto
@@ -540,8 +531,6 @@ locale vm_path = ParityGame +
       and P_maximal  [simp]: "maximal_path P"
       and P_v0       [simp]: "lhd P = v0"
 begin
-lemma vm_path [simp]: "vm_path G P v0" by unfold_locales
-
 lemma P_LCons: "P = LCons v0 (ltl P)" using lhd_LCons_ltl[OF P_not_null] by simp
 
 lemma P_len [simp]: "enat 0 < llength P" by (simp add: lnull_0_llength)

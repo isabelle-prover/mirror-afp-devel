@@ -102,7 +102,7 @@ proof-
           moreover have "\<omega>\<^bsub>G'\<^esub> ` V\<^bsub>G'\<^esub> \<subseteq> \<omega> ` V" unfolding G'_def by simp
           ultimately show ?thesis by (metis priorities_finite psubsetI psubset_card_mono)
         qed
-        thus ?thesis using IH[of G'] `v \<in> V\<^bsub>G'\<^esub>` G'_no_deadends G'.ParityGame by blast
+        thus ?thesis using IH[of G'] `v \<in> V\<^bsub>G'\<^esub>` G'_no_deadends G'.ParityGame_axioms by blast
       qed
 
       text {*
@@ -175,7 +175,8 @@ proof-
               by blast
             moreover have "G'.VV p**** \<subseteq> VV p****" using subgame_VV_subset G'_def by blast
             ultimately show False
-              using G'.winning_path_supergame[of "p**"] `\<omega>\<^bsub>G'\<^esub> = \<omega>` `\<not>winning_path p** P` ParityGame
+              using G'.winning_path_supergame[of "p**"] `\<omega>\<^bsub>G'\<^esub> = \<omega>`
+                    `\<not>winning_path p** P` ParityGame_axioms
               by blast
           qed
         qed
@@ -384,10 +385,10 @@ proof-
         have "G'.winning_strategy p \<sigma>2 (lhd P')"
           using `lset P' \<subseteq> V'` `\<not>lnull P'` \<sigma>2(2)[of "lhd P'"] `V\<^bsub>G'\<^esub> = V'` llist.set_sel(1)
           by blast
-        hence "G'.winning_path p P'" using G'.winning_strategy_def vmc_path by blast
+        hence "G'.winning_path p P'" using G'.winning_strategy_def vmc_path_axioms by blast
         moreover have "G'.VV p** \<subseteq> VV p**" unfolding G'_def using subgame_VV by simp
         ultimately have "winning_path p P'"
-          using G'.winning_path_supergame[of p P' G] `\<omega>\<^bsub>G'\<^esub> = \<omega>` ParityGame by blast
+          using G'.winning_path_supergame[of p P' G] `\<omega>\<^bsub>G'\<^esub> = \<omega>` ParityGame_axioms by blast
         thus ?thesis
           unfolding P'_def
           using infinite_small_llength[OF `\<not>lfinite P`]
@@ -443,7 +444,7 @@ subsection {* Positional Determinacy without Deadends *}
 theorem positional_strategy_exists_without_deadends:
   assumes "v \<in> V" "\<And>v. v \<in> V \<Longrightarrow> \<not>deadend v"
   shows "\<exists>p. v \<in> winning_region p"
-  using assms ParityGame
+  using assms ParityGame_axioms
   by (induct "card (\<omega> ` V)" arbitrary: G v rule: nat_less_induct)
      (rule ParityGame.positional_strategy_induction_step, simp_all)
 
@@ -568,9 +569,9 @@ proof-
       qed
       then interpret vmc_path G' P v0 p \<sigma> using conforms_to_another_strategy by blast
       have "G'.winning_path p P"
-        using \<sigma>(2)[unfolded G'.winning_strategy_def] vmc_path by blast
+        using \<sigma>(2)[unfolded G'.winning_strategy_def] vmc_path_axioms by blast
       from `\<not>winning_path p P`
-           G'.winning_path_supergame[OF this ParityGame, unfolded G'_def]
+           G'.winning_path_supergame[OF this ParityGame_axioms, unfolded G'_def]
            subgame_VV_subset[of "p**" V']
            subgame_\<omega>[of V']
         show False by blast

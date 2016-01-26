@@ -29,7 +29,7 @@ lemma (in vmc_path) paths_hits_winning_strategy_is_winning:
 proof-
   obtain n where n: "enat n < llength P" "P $ n = v" using v by (meson in_lset_conv_lnth)
   interpret P': vmc_path G "ldropn n P" v p \<sigma> using n vmc_path_ldropn by blast
-  have "winning_path p (ldropn n P)" using \<sigma> by (simp add: winning_strategy_def)
+  have "winning_path p (ldropn n P)" using \<sigma> by (simp add: winning_strategy_def P'.vmc_path_axioms)
   thus ?thesis using winning_path_drop_add P_valid n(1) by blast
 qed
 
@@ -60,7 +60,7 @@ proof-
   then interpret vmc_path G P v p \<sigma> .
   have "P = LCons v LNil" using P_deadend_v0_LCons `deadend v` by blast
   hence "\<not>winning_path p P" unfolding winning_path_def using `v \<in> VV p` by auto
-  thus ?thesis using winning_strategy_def by fastforce
+  thus ?thesis using winning_strategy_def vmc_path_axioms by blast
 qed
 
 lemma winning_strategy_on_deadends:
