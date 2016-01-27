@@ -7,7 +7,11 @@ section \<open>Polynomial Interpolation\<close>
 
 text \<open>We combine the Newton interpolation and the Lagrange interpolation to a combined
   interpolation algorithm which is parametric. This parametric algorithm is then
-  further extend from fields to also perform interpolation of integer polynomials.\<close>
+  further extend from fields to also perform interpolation of integer polynomials.
+  
+  In experiments it is revealed that Newton's algorithm performs better than the one
+  of Lagrange. Moreover, on the integer numbers, only Newton's algorithm has been
+  optimized with fast failure capabilities.\<close>
 theory Polynomial_Interpolation
 imports 
   Newton_Interpolation
@@ -19,9 +23,6 @@ datatype interpolation_algorithm = Newton | Lagrange
 fun interpolation_poly :: "interpolation_algorithm \<Rightarrow> ('a :: field \<times> 'a)list \<Rightarrow> 'a poly" where
   "interpolation_poly Newton = newton_interpolation_poly"
 | "interpolation_poly Lagrange = lagrange_interpolation_poly"
-
-value (code) "interpolation_poly Newton [(-1,3 :: rat),(0,1),(1,1),(3,7)]"
-value (code) "newton_interpolation_poly_int [(-1,3),(0,1),(1,1),(3,7)]"
 
 fun interpolation_poly_int :: "interpolation_algorithm \<Rightarrow> (int \<times> int)list \<Rightarrow> int poly option" where
   "interpolation_poly_int Newton xs_ys = newton_interpolation_poly_int xs_ys"
@@ -168,5 +169,11 @@ proof -
   have "\<exists> c \<in> set (coeffs rp). c \<notin> \<int>" by (auto split: if_splits)
   from this[unfolded id ri.coeffs_map_poly] show False by auto
 qed
+
+lemmas newton_interpolation_poly_int_Some = 
+  interpolation_poly_int_Some[where alg = Newton, unfolded interpolation_poly_int.simps]
+
+lemmas newton_interpolation_poly_int_None = 
+  interpolation_poly_int_None[where alg = Newton, unfolded interpolation_poly_int.simps]
 
 end

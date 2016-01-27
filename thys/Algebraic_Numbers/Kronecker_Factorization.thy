@@ -39,7 +39,7 @@ definition kronecker_factorization_main :: "int poly \<Rightarrow> int poly opti
    in (case map_of cjs 0 of 
      Some j \<Rightarrow> Some ([:- j, 1 :])
    | None \<Rightarrow> let djs = map (\<lambda> (v,j). map (Pair j) (if j = 0 then dp v else df v)) cjs in 
-     map_option the (find_map_filter (interpolation_poly_int Newton)
+     map_option the (find_map_filter newton_interpolation_poly_int
      (\<lambda> go. case go of None \<Rightarrow> False | Some g \<Rightarrow> dvd_int_poly_non_0 g p \<and> degree g \<ge> 1) 
        (concat_lists djs)))"
 
@@ -189,7 +189,7 @@ proof -
   note res = res[folded P_def, folded js_def filt_def, folded tests_def]
   let ?zero = "map (\<lambda>j. (poly P j, j)) js"
   from res have res: "(case map_of ?zero 0 of
-     None \<Rightarrow> map_option the (find_map_filter (interpolation_poly_int Newton) filt tests) | Some j \<Rightarrow> Some [:- j, 1:]) =
+     None \<Rightarrow> map_option the (find_map_filter newton_interpolation_poly_int filt tests) | Some j \<Rightarrow> Some [:- j, 1:]) =
      Some q" by auto
   have "degree q \<ge> 1 \<and> degree q \<le> bnd \<and> q dvd P"
   proof (cases "map_of ?zero 0")
@@ -206,16 +206,16 @@ proof -
   next
     case None
     from res[unfolded None] 
-    have res: "map_option the (find_map_filter (interpolation_poly_int Newton) filt tests) = Some q" by auto
+    have res: "map_option the (find_map_filter newton_interpolation_poly_int filt tests) = Some q" by auto
     then obtain qq where 
-      res: "find_map_filter (interpolation_poly_int Newton) filt tests = Some qq" and q: "q = the qq" 
+      res: "find_map_filter newton_interpolation_poly_int filt tests = Some qq" and q: "q = the qq" 
       by (auto split: option.splits)
     from find_map_filter_Some[OF res] 
-    have filt: "filt qq" and tests: "qq \<in> (interpolation_poly_int Newton) ` set tests" by auto
+    have filt: "filt qq" and tests: "qq \<in> newton_interpolation_poly_int ` set tests" by auto
     from filt[unfolded filt_def] q obtain g where dvd: "g dvd P" and dg: "1 \<le> degree g" and qq: "qq = Some g" 
       by (cases qq, auto)
     from q qq have gq: "g = q" by auto
-    from tests obtain t where t: "t \<in> set tests" and l: "(interpolation_poly_int Newton) t = Some g" unfolding qq 
+    from tests obtain t where t: "t \<in> set tests" and l: "newton_interpolation_poly_int t = Some g" unfolding qq 
       by auto
     from t[unfolded tests_def]
     have lent: "length t = length js" and "\<And> i. i < length js \<Longrightarrow> map fst t ! i = js ! i" by auto
@@ -223,7 +223,7 @@ proof -
       by (intro nth_equalityI, auto)
     have dist: "distinct js" and lenj: "length js = Suc bnd" unfolding js_def degP
       using kronecker_samples by auto
-    from interpolation_poly_int_Some[OF dist[folded id] l, unfolded lent lenj]
+    from newton_interpolation_poly_int_Some[OF dist[folded id] l, unfolded lent lenj]
     have "degree g \<le> bnd" by auto
     with dvd dg show ?thesis unfolding gq by auto
   qed note main = this
@@ -277,10 +277,10 @@ proof -
   note res = res[folded P_def, folded js_def filt_def, folded tests_def]
   let ?zero = "map (\<lambda>j. (poly P j, j)) js"
   from res have res: "(case map_of ?zero 0 of
-     None \<Rightarrow> map_option the (find_map_filter (interpolation_poly_int Newton) filt tests) | Some j \<Rightarrow> Some [:- j, 1:]) =
+     None \<Rightarrow> map_option the (find_map_filter newton_interpolation_poly_int filt tests) | Some j \<Rightarrow> Some [:- j, 1:]) =
      None" by auto
   hence zero: "map_of ?zero 0 = None" by (auto split: option.splits)
-  with res have res: "find_map_filter (interpolation_poly_int Newton) filt tests = None" by auto
+  with res have res: "find_map_filter newton_interpolation_poly_int filt tests = None" by auto
   {
     fix qq
     assume qq: "1 \<le> degree qq" "degree qq \<le> bnd" and dvd: "qq dvd p"
@@ -325,12 +325,12 @@ proof -
     with dist have dist: "distinct (map fst t)" by simp
     from lenj q degP have degq: "degree q < length t" unfolding t_def by auto
     from find_map_filter_None[OF res] t 
-    have nfilt: "\<not> filt ((interpolation_poly_int Newton) t)" by auto
+    have nfilt: "\<not> filt (newton_interpolation_poly_int t)" by auto
     have qt: "\<And>x y. (x, y) \<in> set t \<Longrightarrow> poly q x = y" unfolding t_def by auto
     from interpolation_poly_int_None[OF dist _ qt degq, of Newton] have
-      "(interpolation_poly_int Newton) t \<noteq> None" by auto
-    then obtain g where lt: "(interpolation_poly_int Newton) t = Some g" by auto
-    from interpolation_poly_int_Some[OF dist lt] 
+      "newton_interpolation_poly_int t \<noteq> None" by auto
+    then obtain g where lt: "newton_interpolation_poly_int t = Some g" by auto
+    from newton_interpolation_poly_int_Some[OF dist lt] 
     have gt: "\<And> x y. (x, y) \<in> set t \<Longrightarrow> poly g x = y" and degg: "degree g < length t" 
       using degq by auto
     from uniqueness_of_interpolation_point_list[OF dist qt degq gt degg]

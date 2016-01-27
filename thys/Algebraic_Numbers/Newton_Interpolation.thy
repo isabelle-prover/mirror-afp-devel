@@ -199,18 +199,18 @@ fixes
 begin
 
 
-fun divides_differences_impl :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-  "divides_differences_impl (xi_j1 # x_j1s) fj xj (xi # xis) = (let 
-    x_js = divides_differences_impl x_j1s fj xj xis;
+fun divided_differences_impl :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
+  "divided_differences_impl (xi_j1 # x_j1s) fj xj (xi # xis) = (let 
+    x_js = divided_differences_impl x_j1s fj xj xis;
     new = (hd x_js - xi_j1) / (xj - xi)
     in new # x_js)"
-| "divides_differences_impl [] fj xj xis = [fj]"
+| "divided_differences_impl [] fj xj xis = [fj]"
 
 fun newton_coefficients_main :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list list" where
   "newton_coefficients_main [fj] xjs = [[fj]]"
 | "newton_coefficients_main (fj # fjs) (xj # xjs) = (
     let rec = newton_coefficients_main fjs xjs; row = hd rec;
-      new_row = divides_differences_impl row fj xj xs
+      new_row = divided_differences_impl row fj xj xs
     in new_row # rec)"
 | "newton_coefficients_main _ _ = []"
 
@@ -225,7 +225,8 @@ qualified definition "f i = fs ! i"
 
 private definition "xd i j = x i - x j"
 
-lemma [simp]: "xd i i = 0" "xd i j + xd j k = xd i k" "xd i j + xd k i = xd k j" unfolding xd_def by simp_all
+lemma [simp]: "xd i i = 0" "xd i j + xd j k = xd i k" "xd i j + xd k i = xd k j" 
+  unfolding xd_def by simp_all
 
 (* divided differences [xi,..,xj]f *)
 private function xij_f :: "nat \<Rightarrow> nat \<Rightarrow> 'a" where
@@ -520,7 +521,7 @@ next
     def nn \<equiv> "0 :: nat"
     def m \<equiv> "Suc k - nn"
     have prems: "m = Suc k - nn" "nn < Suc (Suc k)" unfolding m_def nn_def by auto
-    have "?case = (divides_differences_impl (map ((\<lambda>j. xij_f j k)) [nn..< Suc k]) (f (Suc k)) (x (Suc k)) (map x [nn ..< n]) =
+    have "?case = (divided_differences_impl (map ((\<lambda>j. xij_f j k)) [nn..< Suc k]) (f (Suc k)) (x (Suc k)) (map x [nn ..< n]) =
       map ((\<lambda>j. xij_f j (Suc k))) [nn..<Suc (Suc k)])"
       unfolding nn_def xs[symmetric] by simp
     also have "\<dots>" using prems
@@ -539,7 +540,7 @@ next
         by (auto simp: upt_rec)
       from Suc(2-) have "m = Suc k - Suc nn" "Suc nn < Suc (Suc k)" by auto
       note IH = Suc(1)[OF this]
-      show ?case unfolding id list.simps divides_differences_impl.simps IH Let_def
+      show ?case unfolding id list.simps divided_differences_impl.simps IH Let_def
         unfolding id2 list.simps 
         using le
         by (simp add: xij_f.simps[of nn "Suc k"] xd_def)
@@ -606,35 +607,35 @@ context
   fixes xs fs :: "int list"
 begin
 
-private fun divides_differences_impl_int :: "int list \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int list \<Rightarrow> int list option" where
-  "divides_differences_impl_int (xi_j1 # x_j1s) fj xj (xi # xis) = (
-     case divides_differences_impl_int x_j1s fj xj xis of None \<Rightarrow> None
+private fun divided_differences_impl_int :: "int list \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int list \<Rightarrow> int list option" where
+  "divided_differences_impl_int (xi_j1 # x_j1s) fj xj (xi # xis) = (
+     case divided_differences_impl_int x_j1s fj xj xis of None \<Rightarrow> None
    | Some x_js \<Rightarrow> let (new,m) = divmod_int (hd x_js - xi_j1) (xj - xi)
      in if m = 0 then Some (new # x_js) else None)"
-| "divides_differences_impl_int [] fj xj xis = Some [fj]"
+| "divided_differences_impl_int [] fj xj xis = Some [fj]"
    
 qualified fun newton_coefficients_main_int :: "int list \<Rightarrow> int list \<Rightarrow> int list list option" where
   "newton_coefficients_main_int [fj] xjs = Some [[fj]]"
 | "newton_coefficients_main_int (fj # fjs) (xj # xjs) = (do {
     rec \<leftarrow> newton_coefficients_main_int fjs xjs;
     let row = hd rec;
-    new_row \<leftarrow> divides_differences_impl_int row fj xj xs;
+    new_row \<leftarrow> divided_differences_impl_int row fj xj xs;
     Some (new_row # rec)})"
 | "newton_coefficients_main_int _ _ = Some []"
 
 qualified definition newton_coefficients_int :: "int list option" where
   "newton_coefficients_int = map_option (map hd) (newton_coefficients_main_int (rev fs) (rev xs))"
 
-lemma divides_differences_impl_int_Some:
+lemma divided_differences_impl_int_Some:
   "length gs \<le> length ys 
-  \<Longrightarrow> divides_differences_impl_int gs g x ys = Some res
-  \<Longrightarrow> divides_differences_impl (map rat_of_int gs) (rat_of_int g) (rat_of_int x) (map rat_of_int ys) = map rat_of_int res
+  \<Longrightarrow> divided_differences_impl_int gs g x ys = Some res
+  \<Longrightarrow> divided_differences_impl (map rat_of_int gs) (rat_of_int g) (rat_of_int x) (map rat_of_int ys) = map rat_of_int res
     \<and> length res = Suc (length gs)"
-proof (induct gs g x ys arbitrary: res rule: divides_differences_impl_int.induct)
+proof (induct gs g x ys arbitrary: res rule: divided_differences_impl_int.induct)
   case (1 xi_j1 x_j1s fj xj xi xis)
   note some = 1(3)
   from 1(2) have len: "length x_j1s \<le> length xis" by auto
-  from some obtain x_js where rec: "divides_differences_impl_int x_j1s fj xj xis = Some x_js"
+  from some obtain x_js where rec: "divided_differences_impl_int x_j1s fj xj xis = Some x_js"
     by (auto split: option.splits)
   note IH = 1(1)[OF len rec]
   have id: "hd (map rat_of_int x_js) = rat_of_int (hd x_js)" using IH by (cases x_js, auto)
@@ -663,19 +664,19 @@ proof -
   from div_mod_equality[of a b 0] show "a mod b = 0" unfolding a by simp
 qed
 
-lemma divides_differences_impl_int_None:
+lemma divided_differences_impl_int_None:
   "length gs \<le> length ys 
-  \<Longrightarrow> divides_differences_impl_int gs g x ys = None
+  \<Longrightarrow> divided_differences_impl_int gs g x ys = None
   \<Longrightarrow> x \<notin> set (take (length gs) ys)
-  \<Longrightarrow> hd (divides_differences_impl (map rat_of_int gs) (rat_of_int g) (rat_of_int x) (map rat_of_int ys)) \<notin> \<int>"
-proof (induct gs g x ys rule: divides_differences_impl_int.induct)
+  \<Longrightarrow> hd (divided_differences_impl (map rat_of_int gs) (rat_of_int g) (rat_of_int x) (map rat_of_int ys)) \<notin> \<int>"
+proof (induct gs g x ys rule: divided_differences_impl_int.induct)
   case (1 xi_j1 x_j1s fj xj xi xis)
   note none = 1(3)
   from 1(2,4) have len: "length x_j1s \<le> length xis" and xj: "xj \<notin> set (take (length x_j1s) xis)" and xji: "xj \<noteq> xi" by auto
-  def d \<equiv> "divides_differences_impl (map rat_of_int x_j1s) (rat_of_int fj) (rat_of_int xj) (map rat_of_int xis)"
+  def d \<equiv> "divided_differences_impl (map rat_of_int x_j1s) (rat_of_int fj) (rat_of_int xj) (map rat_of_int xis)"
   note IH = 1(1)[OF len _ xj]
   show ?case
-  proof (cases "divides_differences_impl_int x_j1s fj xj xis")
+  proof (cases "divided_differences_impl_int x_j1s fj xj xis")
     case None
     from IH[OF None] have d: "hd d \<notin> \<int>" unfolding d_def by auto
     {
@@ -691,8 +692,8 @@ proof (induct gs g x ys rule: divides_differences_impl_int.induct)
       by (auto simp: Let_def d_def[symmetric])
   next
     case (Some res)
-    from divides_differences_impl_int_Some[OF len Some]
-    have id: "divides_differences_impl (map rat_of_int x_j1s) (rat_of_int fj) (rat_of_int xj) (map rat_of_int xis) =
+    from divided_differences_impl_int_Some[OF len Some]
+    have id: "divided_differences_impl (map rat_of_int x_j1s) (rat_of_int fj) (rat_of_int xj) (map rat_of_int xis) =
       map rat_of_int res" and res: "res \<noteq> []" by auto
     have hd: "hd (map rat_of_int res) = of_int (hd res)" using res by (cases res, auto)
     def a \<equiv> "(hd res - xi_j1)"
@@ -726,13 +727,13 @@ proof (induct gs ys arbitrary: res rule: newton_coefficients_main_int.induct)
   from some obtain rec where n: "?n = Some rec"
     by (cases ?n, auto)
   note some = some[simplified, unfolded n]
-  let ?d = "divides_differences_impl_int (hd rec) fv xj xs"
+  let ?d = "divided_differences_impl_int (hd rec) fv xj xs"
   from some obtain dd where d: "?d = Some dd" and res: "res = dd # rec" 
     by (cases ?d, auto)
   note IH = 2(1)[OF len n]
   from IH have lenn: "length (hd rec) \<le> length xjs" by (cases rec, auto)
   with len have "length (hd rec) \<le> length xs" by auto
-  note dd = divides_differences_impl_int_Some[OF this d]
+  note dd = divided_differences_impl_int_Some[OF this d]
   have hd: "hd (map ?mri rec) = ?mri (hd rec)" using IH by (cases rec, auto)
   show ?case unfolding newton_coefficients_main.simps list.simps
     IH[THEN conjunct1, unfolded list.simps] Let_def hd
@@ -773,7 +774,7 @@ proof (induct gs ys rule: newton_coefficients_main_int.induct)
     hence len': "length (hd rec) \<le> length xjs" by (cases rec, auto)
     hence lenn: "length (hd rec) \<le> length xs" using len by auto
     have hd: "hd (map ?mri rec) = ?mri (hd rec)" using some by (cases rec, auto)
-    let ?d = "divides_differences_impl_int (hd rec) fv xj xs"
+    let ?d = "divided_differences_impl_int (hd rec) fv xj xs"
     from none[simplified, unfolded Some]
     have none: "?d = None" by (cases ?d, auto)
     have "xj \<notin> set (take (length (hd rec)) xs)"
@@ -796,7 +797,7 @@ proof (induct gs ys rule: newton_coefficients_main_int.induct)
       with ndist
       show False ..
     qed
-    note dd = divides_differences_impl_int_None[OF lenn none this]
+    note dd = divided_differences_impl_int_None[OF lenn none this]
     show ?thesis
       by (rule bexI, rule dd, insert some hd, auto)
   qed
@@ -883,26 +884,7 @@ definition newton_interpolation_poly :: "('a :: field \<times> 'a)list \<Rightar
 definition newton_interpolation_poly_int :: "(int \<times> int)list \<Rightarrow> int poly option" where
   "newton_interpolation_poly_int x_fs = (let 
     xs = map fst x_fs; fs = map snd x_fs in
-    newton_poly_impl_int xs fs)"
-
-lemma newton_interpolation_poly_int: assumes dist: "distinct (map fst xs_ys)"
-  shows "newton_interpolation_poly_int xs_ys = (let 
-     rxs_ys = map (\<lambda> (x,y). (of_int x, of_int y)) xs_ys;
-     rp = newton_interpolation_poly rxs_ys
-     in if (\<forall> x \<in> set (coeffs rp). is_int_rat x) then
-       Some (map_poly int_of_rat rp) else None)"
-proof -
-  have id1: "map fst (map (\<lambda>(x, y). (rat_of_int x, rat_of_int y)) xs_ys) = map rat_of_int (map fst xs_ys)"
-    by (induct xs_ys, auto)
-  have id2: "map snd (map (\<lambda>(x, y). (rat_of_int x, rat_of_int y)) xs_ys) = map rat_of_int (map snd xs_ys)"
-    by (induct xs_ys, auto)
-  have id3: "length (map fst xs_ys) = length (map snd xs_ys)" by auto
-  show ?thesis
-    unfolding newton_interpolation_poly_def  newton_interpolation_poly_int_def Let_def newton_poly_impl_int[OF id3 dist]
-    unfolding id1 id2
-    by (rule sym, rule if_cong, auto simp: is_int_rat[abs_def])
-qed
-   
+    newton_poly_impl_int xs fs)"   
 
 lemma newton_interpolation_poly: assumes dist: "distinct (map fst xs_ys)"
   and p: "p = newton_interpolation_poly xs_ys"
@@ -946,6 +928,31 @@ next
     by (rule newton_poly_impl[OF _ _ Suc], auto)
   show ?thesis unfolding id using newton_poly_degree[of ?xs ?fs nn] Suc by simp
 qed
+
+text \<open>For @{const newton_interpolation_poly_int} at this point we just prove that it 
+  is equivalent to perfom an interpolation on the rational numbers, and then check
+  whether all resulting coefficients are integers. That this corresponds to a 
+  sound and complete interpolation algorithm on the integers is proven in the theory
+  Polynomial-Interpolation, cf.\ lemmas newton-interpolation-poly-int-Some/None.\<close>
+
+lemma newton_interpolation_poly_int: assumes dist: "distinct (map fst xs_ys)"
+  shows "newton_interpolation_poly_int xs_ys = (let 
+     rxs_ys = map (\<lambda> (x,y). (rat_of_int x, rat_of_int y)) xs_ys;
+     rp = newton_interpolation_poly rxs_ys
+     in if (\<forall> x \<in> set (coeffs rp). is_int_rat x) then
+       Some (map_poly int_of_rat rp) else None)"
+proof -
+  have id1: "map fst (map (\<lambda>(x, y). (rat_of_int x, rat_of_int y)) xs_ys) = map rat_of_int (map fst xs_ys)"
+    by (induct xs_ys, auto)
+  have id2: "map snd (map (\<lambda>(x, y). (rat_of_int x, rat_of_int y)) xs_ys) = map rat_of_int (map snd xs_ys)"
+    by (induct xs_ys, auto)
+  have id3: "length (map fst xs_ys) = length (map snd xs_ys)" by auto
+  show ?thesis
+    unfolding newton_interpolation_poly_def  newton_interpolation_poly_int_def Let_def newton_poly_impl_int[OF id3 dist]
+    unfolding id1 id2
+    by (rule sym, rule if_cong, auto simp: is_int_rat[abs_def])
+qed
+
 
 hide_const 
   Newton_Interpolation.x
