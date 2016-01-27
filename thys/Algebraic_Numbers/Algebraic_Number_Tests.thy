@@ -80,25 +80,15 @@ definition "testmat = mat_of_rows_list 3 [
   [7,1,5 :: rat]
   ]"
 
-definition "test_ev_show_floor = show ([ floor (cmod ev). ev \<leftarrow> eigenvalues testmat])"
 definition "test_ev_show_precise = show ([ cmod ev. ev \<leftarrow> eigenvalues testmat])"
 value (code) "char_poly testmat"
-value (code) test_ev_show_floor
 value (code) test_ev_show_precise
 
-text \<open>In a generated Haskell program for the eigenvalue test, the evaluation with floors
-  needs below 1 second. In contrast, the one which computes the floors required 
-  195 seconds 
-  where 99.5\,\% of the time is spend on validating the factorization of the
-  oracle -- a task which is required for the precise show-function. This indicates that as future work, 
-  a fully verified efficient factorization algorithm would be valuable. Alternatively one
-  can use theory \textit{Show-Real-Approx} instead of @{theory Show_Real_Precise}.
-  Then a non-injective show function which displays numbers approximatively is used,
-  and the Haskell program needs less than a second for its execution.\<close>
-
-definition "test_ev_show_approx = (let sh = (\<lambda> x. ''~ '' @ show (rat_of_int (floor (1000 * x)) / 1000))
-    in show (map sh ([ cmod ev. ev \<leftarrow> eigenvalues testmat])))"
-
-value (code) test_ev_show_approx
+text \<open>Since the precise show function requires validation of the factorization
+  provided by the oracle, it is usually much slower than the approximative one
+  in  theory \textit{Show-Real-Approx}
+  which displays the result up to a certain number of digits. 
+  This indicates that as future work, 
+  a fully verified efficient factorization algorithm would be valuable.\<close>
 
 end
