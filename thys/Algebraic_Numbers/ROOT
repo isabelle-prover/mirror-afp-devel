@@ -26,6 +26,7 @@ session Algebraic_Numbers (AFP) = Algebraic_Numbers_Matrix +
     "Rational_Factorization"
   theories
     "Real_Factorization"
+    "Show_Real_Approx"
   theories
     "Algebraic_Number_Tests"
   document_files
