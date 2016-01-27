@@ -5,8 +5,8 @@
 *)
 section \<open>Polynomial Interpolation\<close>
 
-text \<open>We combine the Newton interpolation and the Lagrange interpolation to a combined
-  interpolation algorithm which is parametric. This parametric algorithm is then
+text \<open>We combine Newton's, Lagrange's, and Neville-Aitken's interpolation algorithms 
+  to a combined interpolation algorithm which is parametric. This parametric algorithm is then
   further extend from fields to also perform interpolation of integer polynomials.
   
   In experiments it is revealed that Newton's algorithm performs better than the one
@@ -16,19 +16,21 @@ theory Polynomial_Interpolation
 imports 
   Newton_Interpolation
   Lagrange_Interpolation
+  Neville_Aitken_Interpolation
 begin
 
-datatype interpolation_algorithm = Newton | Lagrange
+datatype interpolation_algorithm = Newton | Lagrange | Neville_Aitken
 
 fun interpolation_poly :: "interpolation_algorithm \<Rightarrow> ('a :: field \<times> 'a)list \<Rightarrow> 'a poly" where
   "interpolation_poly Newton = newton_interpolation_poly"
 | "interpolation_poly Lagrange = lagrange_interpolation_poly"
+| "interpolation_poly Neville_Aitken = neville_aitken_interpolation_poly"
 
 fun interpolation_poly_int :: "interpolation_algorithm \<Rightarrow> (int \<times> int)list \<Rightarrow> int poly option" where
   "interpolation_poly_int Newton xs_ys = newton_interpolation_poly_int xs_ys"
-| "interpolation_poly_int Lagrange xs_ys = (let 
+| "interpolation_poly_int alg xs_ys = (let 
      rxs_ys = map (\<lambda> (x,y). (of_int x, of_int y)) xs_ys;
-     rp = lagrange_interpolation_poly rxs_ys
+     rp = interpolation_poly alg rxs_ys
      in if (\<forall> x \<in> set (coeffs rp). is_int_rat x) then
        Some (map_poly int_of_rat rp) else None)"
 
@@ -49,13 +51,17 @@ proof (cases alg)
   thus ?thesis using newton_interpolation_poly[OF dist _ xy] p by simp
 next
   case Lagrange
-  thus ?thesis using lagrange_interpolation[OF dist _ xy] p by simp
+  thus ?thesis using lagrange_interpolation_poly[OF dist _ xy] p by simp
+next
+  case Neville_Aitken
+  thus ?thesis using neville_aitken_interpolation_poly[OF dist _ xy] p by simp
 qed
 
 lemma degree_interpolation_poly:  
   shows "degree (interpolation_poly alg xs_ys) \<le> length xs_ys - 1"
   using degree_lagrange_interpolation_poly[of xs_ys]
     degree_newton_interpolation_poly[of xs_ys]
+    degree_neville_aitken_interpolation_poly[of xs_ys]
   by (cases alg, auto)
 
 lemma uniqueness_of_interpolation: fixes p :: "'a :: idom poly" 

@@ -69,7 +69,7 @@ proof -
     by simp
 qed
 
-lemma lagrange_interpolation: assumes dist: "distinct (map fst xs_ys)"
+lemma lagrange_interpolation_poly: assumes dist: "distinct (map fst xs_ys)"
   and p: "p = lagrange_interpolation_poly xs_ys"
   shows "\<And> x y. (x,y) \<in> set xs_ys \<Longrightarrow> poly p x = y"
 proof -

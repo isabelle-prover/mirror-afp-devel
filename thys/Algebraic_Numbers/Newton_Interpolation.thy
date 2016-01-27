@@ -7,9 +7,7 @@ section \<open>Newton Interpolation\<close>
 
 text \<open>We proved soundness of Newton interpolation, i.e., a method to interpolate a polynomial $p$
   from a list of points $(x_1,p(x_1)), (x_2, p(x_2)), \ldots$. In experiments it performs
-  much faster than Lagrange-interpolation.
-
-  We further proved soundness of Neville-Aitken's polynomial interpolation\<close>
+  much faster than Lagrange-interpolation.\<close>
 theory Newton_Interpolation
 imports 
   "~~/src/HOL/Library/Monad_Syntax"
@@ -18,70 +16,6 @@ imports
   Lagrange_Interpolation
   Divmod_Int
 begin
-
-context
-  fixes x :: "nat \<Rightarrow> 'a :: field"
-  and f :: "nat \<Rightarrow> 'a"
-begin
-
-private definition Xp :: "nat \<Rightarrow> 'a poly" where [code_unfold]: "Xp i = [:-x i, 1:]"
-
-function neville_aitken_main :: "nat \<Rightarrow> nat \<Rightarrow> 'a poly" where
-  "neville_aitken_main i j = (if i < j then 
-      (smult (inverse (x j - x i)) (Xp i * neville_aitken_main (i + 1) j -
-      Xp j * neville_aitken_main i (j - 1))) 
-    else [:f i:])"
-  by pat_completeness auto
-
-termination by (relation "measure (\<lambda> (i,j). j - i)", auto)
-
-definition neville_aitken :: "nat \<Rightarrow> 'a poly" where
-  "neville_aitken = neville_aitken_main 0"
-
-declare neville_aitken_main.simps[simp del]
-
-lemma neville_aitken_main: assumes dist: "\<And> i j. i < j \<Longrightarrow> j \<le> n \<Longrightarrow> x i \<noteq> x j"
-  shows "i \<le> k \<Longrightarrow> k \<le> j \<Longrightarrow> j \<le> n \<Longrightarrow> poly (neville_aitken_main i j) (x k) = (f k)"
-proof (induct i j arbitrary: k rule: neville_aitken_main.induct)
-  case (1 i j k)
-  note neville_aitken_main.simps[of i j, simp]
-  show ?case
-  proof (cases "i < j")
-    case False
-    with 1(3-) have "k = i" by auto
-    with False show ?thesis by auto
-  next
-    case True note ij = this
-    from dist[OF True 1(5)] have diff: "x i \<noteq> x j" by auto
-    from True have id: "neville_aitken_main i j = 
-      (smult (inverse (x j - x i)) (Xp i * neville_aitken_main (i + 1) j - Xp j * neville_aitken_main i (j - 1)))" by simp
-    note IH = 1(1-2)[OF True]
-    show ?thesis
-    proof (cases "k = i")
-      case True
-      show ?thesis unfolding id True poly_smult using IH(2)[of i] ij 1(3-) diff
-        by (simp add: Xp_def field_simps)
-    next
-      case False note ki = this
-      show ?thesis 
-      proof (cases "k = j")
-        case True
-        show ?thesis unfolding id True poly_smult using IH(1)[of j] ij 1(3-) diff
-          by (simp add: Xp_def field_simps)
-      next
-        case False
-        with ki show ?thesis unfolding id poly_smult using IH(1-2)[of k] ij 1(3-) diff
-          by (simp add: Xp_def field_simps)
-      qed
-    qed
-  qed
-qed
-end
-
-lemma neville_aitken: assumes "\<And> i j. i < j \<Longrightarrow> j \<le> n \<Longrightarrow> x i \<noteq> x j"
-  shows "j \<le> n \<Longrightarrow> poly (neville_aitken x f n) (x j) = (f j)"
-  unfolding neville_aitken_def
-  by (rule neville_aitken_main[OF assms, of n], auto)
 
 text \<open>For Newton interpolation, we start with an efficient implementation (which in prior examples
   we used as an uncertified oracle). Later on, a more abstract definition of the algorithm
