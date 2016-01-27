@@ -58,8 +58,13 @@ definition mtf2 :: "nat \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a 
 "mtf2 n x xs =
  (if x : set xs then swaps [index xs x - n..<index xs x] xs else xs)"
 
-lemma mtf_eq_mtf2: "mtf x xs = mtf2 (length xs) x xs"
-by(auto simp: mtf_def mtf2_def swaps_eq_nth_take_drop index_le_size)
+lemma mtf_eq_mtf2: "mtf x xs = mtf2 (length xs - 1) x xs"
+proof -
+  have "x : set xs \<Longrightarrow> index xs x - (size xs - Suc 0) = 0"
+    by (auto simp: less_Suc_eq_le[symmetric])
+  thus ?thesis
+    by(auto simp: mtf_def mtf2_def swaps_eq_nth_take_drop)
+qed
 
 lemma mtf20[simp]: "mtf2 0 x xs = xs"
 by(auto simp add: mtf2_def)
@@ -155,7 +160,7 @@ by (auto simp: step_def split_def)
 subsection "Online Algorithm Move-to-Front is 2-Competitive"
 
 definition MTF :: "'a state \<Rightarrow> 'a \<Rightarrow> 'a action" where
-"MTF s q = (size s,[])"
+"MTF s q = (size s - 1,[])"
 
 text{* It was first proved by Sleator and Tarjan~\cite{SleatorT-CACM85} that
 the Move-to-Front algorithm is 2-competitive. *}
@@ -450,7 +455,7 @@ qed
 lemma T_A_eq: "T_A (length qs) = T init qs acts"
 using T_A_eq_lem by(simp add: T_A_def atLeast0LessThan)
 
-lemma nth_off_MTF: "n < length qs \<Longrightarrow> off MTF s qs ! n = (size s,[])"
+lemma nth_off_MTF: "n < length qs \<Longrightarrow> off MTF s qs ! n = (size s - 1,[])"
 by(induction qs arbitrary: s n)(auto simp add: MTF_def nth_Cons')
 
 lemma t_mtf_MTF: "n < length qs \<Longrightarrow>
