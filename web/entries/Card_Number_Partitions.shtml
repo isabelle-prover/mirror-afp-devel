@@ -24,41 +24,47 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">A</font>lgebraic
-<font class="first">N</font>umbers
-in
-<font class="first">I</font>sabelle/HOL
+<h1><font class="first">C</font>ardinality
+of
+<font class="first">N</font>umber
+<font class="first">P</font>artitions
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Algebraic Numbers in Isabelle/HOL</td></tr>
+        <td class="data" width="80%">Cardinality of Number Partitions</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at) and Akihisa Yamada (akihisa /dot/ yamada /at/ uibk /dot/ ac /dot/ at)</td></tr>
+        <td class="data">Lukas Bulwahn (lukas /dot/ bulwahn /at/ gmail /dot/ com)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2015-12-22</td></tr>
+        <td class="data">2016-01-14</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-Based on existing libraries for matrices and Sturm's theorem, we formalized algebraic numbers in Isabelle/HOL. Our development serves as an implementation for real and complex numbers, and it admits to compute roots and completely factorize rational, real, and complex polynomials, provided that all coefficients are rational numbers. Moreover, we provide two implementations to display algebraic numbers, an injective and expensive one, or a faster but approximative version.
-</p><p>
-To this end, we formalized Gauss's Lemma and the rational root test, and we integrated several factorization algorithms: Yun, Kronecker, and Berlekamp-Hensel. Moreover, we defined and mechanized several results on resultants, which also required us to prove that polynomials over a unique factorization domain form again a unique factorization domain.
-</p>
+
+This entry provides a basic library for number partitions, defines the
+two-argument partition function through its recurrence relation and relates
+this partition function to the cardinality of number partitions. The main
+proof shows that the recursively-defined partition function with arguments
+n and k equals the cardinality of number partitions of n with exactly k parts.
+The combinatorial proof follows the proof sketch of Theorem 2.4.1 in
+Mazur's textbook `Combinatorics: A Guided Tour`. This entry can serve as
+starting point for various more intrinsic properties about number partitions,
+the partition function and related recurrence relations.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Algebraic_Numbers-AFP,
-  author  = {René Thiemann and Akihisa Yamada},
-  title   = {Algebraic Numbers in Isabelle/HOL},
+			<pre>@article{Card_Number_Partitions-AFP,
+  author  = {Lukas Bulwahn},
+  title   = {Cardinality of Number Partitions},
   journal = {Archive of Formal Proofs},
-  month   = dec,
-  year    = 2015,
-  note    = {\url{http://afp.sf.net/entries/Algebraic_Numbers.shtml},
+  month   = jan,
+  year    = 2016,
+  note    = {\url{http://afp.sf.net/entries/Card_Number_Partitions.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -66,10 +72,6 @@ To this end, we formalized Gauss's Lemma and the rational root test, and we inte
 
     <tr><td class="datahead">License:</td>
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
-
-
-    <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="Sturm_Sequences.shtml">Sturm_Sequences</a>, <a href="Partial_Function_MR.shtml">Partial_Function_MR</a>, <a href="Sqrt_Babylonian.shtml">Sqrt_Babylonian</a>, <a href="Show.shtml">Show</a>, <a href="Jordan_Normal_Form.shtml">Jordan_Normal_Form</a>, <a href="Deriving.shtml">Deriving</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
@@ -82,7 +84,7 @@ To this end, we formalized Gauss's Lemma and the rational root test, and we inte
 
 <p></p>
 
-<!--#set var="name" value="Algebraic_Numbers" -->
+<!--#set var="name" value="Card_Number_Partitions" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->

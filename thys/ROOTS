@@ -21,6 +21,7 @@ Bondy
 Boolean_Expression_Checkers
 Bounded_Deducibility_Security
 BytecodeLogicJmlTypes
+Card_Number_Partitions
 CCS
 Call_Arity
 Case_Labeling
@@ -119,6 +120,7 @@ Jordan_Normal_Form
 KAT_and_DRA
 KBPs
 Kleene_Algebra
+Knot_Theory
 Koenigsberg_Friendship
 Lam-ml-Normalization
 Landau_Symbols
@@ -141,6 +143,7 @@ LTL_to_GBA
 Markov_Models
 Marriage
 Matrix
+Matrix_Tensor
 Max-Card-Matching
 MiniML
 MonoBoolTranAlgebra

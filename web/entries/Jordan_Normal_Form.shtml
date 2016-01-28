@@ -60,6 +60,12 @@ All the results have been applied to improve CeTA, our certifier to validate ter
 </p>
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2016-01-07]: Added Schur-decomposition, Gram-Schmidt orthogonalization, uniqueness of Jordan normal forms
+        </td></tr>
+
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Jordan_Normal_Form-AFP,

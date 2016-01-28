@@ -1,0 +1,11 @@
+chapter AFP
+
+session Matrix_Tensor (AFP) = Matrix +
+  options [timeout = 600]
+  theories [document = false]
+    "../Matrix/Utility"
+    "../Matrix/Matrix_Arith"  
+  theories
+    Matrix_Tensor
+  document_files
+    "root.tex"

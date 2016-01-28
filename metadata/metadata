@@ -86,6 +86,22 @@ abstract =
   and Wikipedia, and unravels the full details and implicit reasoning steps
   of these explanations.
 
+[Card_Number_Partitions]
+title = Cardinality of Number Partitions
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+date = 2016-01-14
+topic = Mathematics/Combinatorics
+abstract =
+  This entry provides a basic library for number partitions, defines the
+  two-argument partition function through its recurrence relation and relates
+  this partition function to the cardinality of number partitions. The main
+  proof shows that the recursively-defined partition function with arguments
+  n and k equals the cardinality of number partitions of n with exactly k parts.
+  The combinatorial proof follows the proof sketch of Theorem 2.4.1 in
+  Mazur's textbook `Combinatorics: A Guided Tour`. This entry can serve as
+  starting point for various more intrinsic properties about number partitions,
+  the partition function and related recurrence relations.
+
 [Multirelations]
 title = Binary Multirelations
 author = Hitoshi Furusawa <http://www.sci.kagoshima-u.ac.jp/~furusawa/>, Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
@@ -1449,6 +1465,18 @@ extra-history =
   Change history:
   [2010-09-17]: Moved theory on arbitrary (ordered) semirings to Abstract Rewriting.
 
+[Matrix_Tensor]
+title = Tensor Product of Matrices
+topic = Computer Science/Data Structures, Mathematics/Algebra
+date = 2016-01-18
+author = T.V.H. Prathamesh <mailto:prathamesh@imsc.res.in>
+abstract =
+ In this work, the Kronecker tensor product of matrices and the proofs of
+ some of its properties are formalized. Properties which have been formalized
+ include associativity of the tensor product and the mixed-product
+ property.
+depends-on = Matrix
+
 [Huffman]
 title = The Textbook Proof of Huffman's Algorithm
 author = Jasmin Christian Blanchette <http://www4.in.tum.de/~blanchet>
@@ -2643,6 +2671,21 @@ date = 2004-04-26
 topic = Mathematics/Topology
 abstract = This entry contains two theories. The first, <tt>Topology</tt>, develops the basic notions of general topology. The second, which can be viewed as a demonstration of the first, is called <tt>LList_Topology</tt>. It develops the topology of lazy lists.
 depends-on = Lazy-Lists-II
+
+[Knot_Theory]
+title = Knot Theory
+author = T.V.H. Prathamesh <mailto:prathamesh@imsc.res.in>
+date = 2016-01-20
+topic = Mathematics/Topology
+abstract =
+ This work contains a formalization of some topics in knot theory.
+ The concepts that were formalized include definitions of tangles, links,
+ framed links and link/tangle equivalence. The formalization is based on a
+ formulation of links in terms of tangles. We further construct and prove the
+ invariance of the Bracket polynomial. Bracket polynomial is an invariant of
+ framed links closely linked to the Jones polynomial. This is perhaps the first
+ attempt to formalize any aspect of knot theory in an interactive proof assistant.
+depends-on = Matrix_Tensor
 
 [Graph_Theory]
 title = Graph Theory

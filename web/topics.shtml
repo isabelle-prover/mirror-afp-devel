@@ -117,6 +117,7 @@
 <a href="entries/List-Index.shtml">List-Index</a> &nbsp;
 <a href="entries/List-Infinite.shtml">List-Infinite</a> &nbsp;
 <a href="entries/Matrix.shtml">Matrix</a> &nbsp;
+<a href="entries/Matrix_Tensor.shtml">Matrix_Tensor</a> &nbsp;
 <a href="entries/Huffman.shtml">Huffman</a> &nbsp;
 <a href="entries/Lazy-Lists-II.shtml">Lazy-Lists-II</a> &nbsp;
 <a href="entries/IEEE_Floating_Point.shtml">IEEE_Floating_Point</a> &nbsp;
@@ -306,6 +307,7 @@
 <a href="entries/LatticeProperties.shtml">LatticeProperties</a> &nbsp;
 <a href="entries/Impossible_Geometry.shtml">Impossible_Geometry</a> &nbsp;
 <a href="entries/Gauss-Jordan-Elim-Fun.shtml">Gauss-Jordan-Elim-Fun</a> &nbsp;
+<a href="entries/Matrix_Tensor.shtml">Matrix_Tensor</a> &nbsp;
 <a href="entries/Kleene_Algebra.shtml">Kleene_Algebra</a> &nbsp;
 <a href="entries/KAT_and_DRA.shtml">KAT_and_DRA</a> &nbsp;
 <a href="entries/Regular_Algebras.shtml">Regular_Algebras</a> &nbsp;
@@ -390,6 +392,7 @@
 
 <div class="list">
 <a href="entries/Topology.shtml">Topology</a> &nbsp;
+<a href="entries/Knot_Theory.shtml">Knot_Theory</a> &nbsp;
 </div>
 
 <h3>Graph Theory</h3>
@@ -410,6 +413,7 @@
 
 <div class="list">
 <a href="entries/Card_Partitions.shtml">Card_Partitions</a> &nbsp;
+<a href="entries/Card_Number_Partitions.shtml">Card_Number_Partitions</a> &nbsp;
 <a href="entries/Well_Quasi_Orders.shtml">Well_Quasi_Orders</a> &nbsp;
 <a href="entries/Marriage.shtml">Marriage</a> &nbsp;
 <a href="entries/Bondy.shtml">Bondy</a> &nbsp;
