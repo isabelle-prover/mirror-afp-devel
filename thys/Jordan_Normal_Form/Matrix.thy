@@ -19,7 +19,7 @@ theory Matrix
 imports
   Missing_Ring
   "~~/src/HOL/Algebra/Module"
-  Ring_Hom
+  "../Polynomial_Interpolation/Ring_Hom"
 begin
 
 subsection\<open>Vectors\<close>
