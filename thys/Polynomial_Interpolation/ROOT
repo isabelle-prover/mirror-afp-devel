@@ -1,0 +1,16 @@
+chapter AFP
+
+session "Polynomial_Interpolation" (AFP) = HOL +
+  options [timeout = 600]
+  theories [document = false]
+    "~~/src/HOL/Library/Polynomial"
+    "~~/src/HOL/Library/Monad_Syntax"
+    "../Sqrt_Babylonian/Sqrt_Babylonian_Auxiliary"
+  theories
+    Is_Rat_To_Rat
+    Divmod_Int
+    Improved_Code_Equations
+    Polynomial_Interpolation
+  document_files
+    "root.bib"
+    "root.tex"

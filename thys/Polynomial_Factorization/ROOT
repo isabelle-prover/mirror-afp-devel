@@ -1,0 +1,40 @@
+chapter AFP
+
+session Polynomial_Factorization (AFP) = Pre_Polynomial_Factorization + 
+  description {* Algebraic Numbers *}
+  options [timeout = 600]
+  theories
+    "Missing_Multiset"
+    "Missing_List"
+    "Precomputation"
+    "Order_Polynomial"
+  theories
+    "Explicit_Roots"
+    "Dvd_Int_Poly"
+  theories
+    "Rational_Root_Test"
+  theories
+    "Kronecker_Factorization"
+  theories
+    "Square_Free_Factorization"
+  theories
+    "Berlekamp_Hensel_Factorization"
+  theories
+    "Rational_Factorization"
+  document_files
+    "root.bib"
+    "root.tex"
+
+session Pre_Polynomial_Factorization (AFP) = "JNF-AFP-Lib" +
+  description {* Theories from other AFP-entries and Extended Theories for Matrices *}
+  options [timeout = 600, document = false]
+  theories
+    "../Jordan_Normal_Form/Gauss_Jordan"
+    "../Jordan_Normal_Form/Missing_Fraction_Field"
+    "../Jordan_Normal_Form/Missing_Unsorted"
+    "../Partial_Function_MR/Partial_Function_MR"
+    "../Polynomial_Interpolation/Polynomial_Interpolation"
+    "../Sqrt_Babylonian/Sqrt_Babylonian"
+    "../Show/Show_Poly"
+    "~~/src/HOL/Library/RBT_Mapping"
+    "~~/src/HOL/Library/Poly_Deriv"
