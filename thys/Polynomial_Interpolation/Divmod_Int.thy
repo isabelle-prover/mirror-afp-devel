@@ -3,7 +3,7 @@
                  Akihisa Yamada
     License:     BSD
 *)
-subsection \<open>Divmod-Int\<close>
+section \<open>Divmod-Int\<close>
 
 text \<open>We provide the divmod-operation on type int for efficiency reasons.\<close>
 

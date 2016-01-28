@@ -3,7 +3,7 @@
                  Akihisa Yamada
     License:     BSD
 *)
-subsection \<open>Connecting Polynomials with Homomorphism Locales\<close>
+section \<open>Connecting Polynomials with Homomorphism Locales\<close>
 
 theory Ring_Hom_Poly
 imports 

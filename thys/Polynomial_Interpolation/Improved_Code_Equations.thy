@@ -3,7 +3,7 @@
                  Akihisa Yamada
     License:     BSD
 *)
-subsection \<open>Improved Code Equations\<close>
+section \<open>Improved Code Equations\<close>
 
 text \<open>This theory contains improved code equations for certain algorithms.\<close>
 
@@ -14,7 +14,7 @@ imports
   Binomial
 begin
 
-subsubsection \<open>@{const divmod_integer}.\<close>
+subsection \<open>@{const divmod_integer}.\<close>
 
 text \<open>We improve @{thm divmod_integer_code} by deleting @{const sgn}-expressions.\<close>
 
@@ -69,7 +69,7 @@ code_printing
     and (Scala) "!((k: BigInt) => (l: BigInt) =>/ if (l == 0)/ (BigInt(0), k) else/ (k '/% l))"
     and (Eval) "Integer.div'_mod/ ( _ )/ ( _ )"
 
-subsubsection \<open>@{const Divides.divmod_nat}.\<close>
+subsection \<open>@{const Divides.divmod_nat}.\<close>
 text \<open>We implement @{const Divides.divmod_nat} via @{const divmod_integer}
   instead of invoking both division and modulo separately, 
   and we further simplify the case-analysis which is
@@ -104,7 +104,7 @@ lemma divmod_nat_code'[code]: "Divides.divmod_nat m n = (
   unfolding divmod_nat_code Let_def divmod_integer_code'' 
   by (simp split: if_splits add: int_of_nat_gt_zero)
 
-subsubsection \<open>@{const pdivmod}.\<close>
+subsection \<open>@{const pdivmod}.\<close>
 
 text \<open>We improve @{thm pdivmod_fold_coeffs} by only doing one division.\<close>
 
@@ -116,7 +116,7 @@ lemma pdivmod_fold_coeffs_code[code]: "pdivmod p q = (if q = 0 then (0, p)
    ) p (0, 0))"
    unfolding pdivmod_fold_coeffs by (simp add: Let_def divide_inverse)
 
-subsubsection \<open>@{const binomial}\<close>
+subsection \<open>@{const binomial}\<close>
 
 lemma binomial_code[code]:
   "n choose k = (if k \<le> n then fact n div (fact k * fact (n - k)) else 0)"

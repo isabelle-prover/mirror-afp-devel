@@ -1,0 +1,66 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{amssymb}
+\usepackage{xspace}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\isafor{\textsf{IsaFoR}}
+\newcommand\ceta{\textsf{Ce\kern-.18emT\kern-.18emA}}
+\newcommand\rats{\mathbb{Q}}
+\newcommand\ints{\mathbb{Z}}
+\newcommand\reals{\mathbb{R}}
+\newcommand\complex{\mathbb{C}}
+
+\newcommand\rai{real algebraic number\xspace}
+\newcommand\rais{real algebraic numbers\xspace}
+
+\begin{document}
+
+\title{Polynomial Interpolation\footnote{Supported by FWF (Austrian Science Fund) project Y757.}}
+\author{Ren\'e Thiemann and Akihisa Yamada}
+\maketitle
+
+\begin{abstract}
+We formalized three algorithms for polynomial interpolation over arbitrary fields: 
+Kronecker's explicit expression,
+the recursive algorithm of Neville-Aitken, and Newton interpolation in combination with an
+efficient implementation of divided differences. All algorithms are also available in a variant
+for integer polynomials, where sometimes the interpolation can fail: there obviously is no
+integer polynomial $p$ such that $p(0) = 0$ and $p(2) = 1$. Moreover, for
+Newton interpolation over the integers we proved that also all intermediate 
+results that are computed during the algorithm must be integers. This admits a fast failure in the 
+implementation, and theoretically implies that
+there is no integer polynomial $p$ at all satisfying $p(0) = 0$ and $p(2) = 1$, regardless
+of the degree of the polynomial.
+
+Finally, we proved uniqueness of polynomial interpolation.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+All of the algorithms have been taken from Wikipedia.
+TODO: find some algebra book where all of the algorithms are described and \cite{it}.
+
+TODO: write some more text, also included side-products, like improved code equations for
+division.
+
+
+
+% include generated text of all theories
+\input{session}
+
+
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
