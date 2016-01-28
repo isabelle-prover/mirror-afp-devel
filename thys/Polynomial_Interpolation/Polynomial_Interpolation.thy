@@ -183,4 +183,49 @@ lemmas newton_interpolation_poly_int_Some =
 lemmas newton_interpolation_poly_int_None = 
   interpolation_poly_int_None[where alg = Newton, unfolded interpolation_poly_int.simps]
 
+text \<open>We can also use Newton's improved algorithm for integer polynomials to show that
+    there is no polynomial $p$ over the integers such that $p(0) = 0$ and $p(2) = 1$.
+    The reason is that the intermediate result for computing the linear interpolant for these
+    two point fails, and so adding further points (which corresponds to increasing the degree)
+    will also fail. Of course, this can be generalized, showing that whenever you cannot
+    interpolate a set of $n$ points with an integer polynomial of degree $n-1$, then you
+    cannot interpolate this set of points with any integer polynomial. However, we did not
+    formally prove this more general fact.\<close>
+
+lemma impossible_p_0_is_0_and_p_2_is_1: "\<not> (\<exists> p. poly p 0 = 0 \<and> poly p 2 = (1 :: int))"
+proof
+  assume "\<exists> p. poly p 0 = 0 \<and> poly p 2 = (1 :: int)"
+  then obtain p where p: "poly p 0 = 0" "poly p 2 = (1 :: int)" by auto
+  def xs_ys \<equiv> "map (\<lambda> i. (int i, poly p (int i))) [ 3 ..< 3 + degree p]"
+  let ?l = "\<lambda> xs. (0,0) # (2 :: int,1 :: int) # xs" 
+  let ?xs_ys = "?l xs_ys"
+  def list \<equiv> "map fst ?xs_ys"
+  have dist: "distinct (map fst ?xs_ys)" unfolding xs_ys_def by (auto simp: o_def distinct_map inj_on_def)
+  have p: "\<And> x y. (x,y) \<in> set ?xs_ys \<Longrightarrow> poly p x = y" unfolding xs_ys_def using p by auto
+  have deg: "degree p < length ?xs_ys" unfolding xs_ys_def by simp
+  have "newton_coefficients_main_int list (rev (map snd ?xs_ys)) (rev (map fst ?xs_ys)) = None"
+  proof (induct xs_ys rule: rev_induct)
+    case Nil
+    show ?case unfolding list_def by (simp add: divmod_int_def)
+  next
+    case (snoc xy xs_ys) note IH = this
+    obtain x y where xy: "xy = (x,y)" by force
+    show ?case
+    proof (cases xs_ys rule: rev_cases)
+      case Nil
+      show ?thesis unfolding Nil xy
+        by (simp add: list_def divmod_int_def)
+    next
+      case (snoc xs_ys' xy')
+      obtain x' y' where xy': "xy' = (x',y')" by force
+      show ?thesis using IH unfolding xy' snoc xy by simp
+    qed
+  qed
+  hence newton: "newton_interpolation_poly_int ?xs_ys = None"
+    unfolding newton_interpolation_poly_int_def Let_def newton_poly_impl_int_def
+      Newton_Interpolation.newton_coefficients_int_def list_def by simp
+  from newton_interpolation_poly_int_None[OF dist newton p deg]
+  show False .
+qed
+    
 end

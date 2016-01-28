@@ -540,14 +540,14 @@ context
   fixes xs fs :: "int list"
 begin
 
-private fun divided_differences_impl_int :: "int list \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int list \<Rightarrow> int list option" where
+fun divided_differences_impl_int :: "int list \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int list \<Rightarrow> int list option" where
   "divided_differences_impl_int (xi_j1 # x_j1s) fj xj (xi # xis) = (
      case divided_differences_impl_int x_j1s fj xj xis of None \<Rightarrow> None
    | Some x_js \<Rightarrow> let (new,m) = divmod_int (hd x_js - xi_j1) (xj - xi)
      in if m = 0 then Some (new # x_js) else None)"
 | "divided_differences_impl_int [] fj xj xis = Some [fj]"
    
-qualified fun newton_coefficients_main_int :: "int list \<Rightarrow> int list \<Rightarrow> int list list option" where
+fun newton_coefficients_main_int :: "int list \<Rightarrow> int list \<Rightarrow> int list list option" where
   "newton_coefficients_main_int [fj] xjs = Some [[fj]]"
 | "newton_coefficients_main_int (fj # fjs) (xj # xjs) = (do {
     rec \<leftarrow> newton_coefficients_main_int fjs xjs;
@@ -556,7 +556,7 @@ qualified fun newton_coefficients_main_int :: "int list \<Rightarrow> int list \
     Some (new_row # rec)})"
 | "newton_coefficients_main_int _ _ = Some []"
 
-qualified definition newton_coefficients_int :: "int list option" where
+definition newton_coefficients_int :: "int list option" where
   "newton_coefficients_int = map_option (map hd) (newton_coefficients_main_int (rev fs) (rev xs))"
 
 lemma divided_differences_impl_int_Some:
