@@ -11,10 +11,9 @@ text \<open>We proved soundness of Newton interpolation, i.e., a method to inter
 theory Newton_Interpolation
 imports 
   "~~/src/HOL/Library/Monad_Syntax"
-  "../Matrix/Utility"
-  Polynomial
-  Lagrange_Interpolation
+  Ring_Hom_Poly
   Divmod_Int
+  Is_Rat_To_Rat
 begin
 
 text \<open>For Newton interpolation, we start with an efficient implementation (which in prior examples
@@ -266,7 +265,7 @@ proof -
   from assms have id: "[0 ..< Suc n] = [0 ..< Suc j] @ [Suc j ..< Suc n]" 
     by (metis Suc_le_mono le_Suc_ex less_eq_nat.simps(1) upt_add_eq_append)
   have id2: "(\<Sum>i\<leftarrow>[Suc j..< Suc n]. c i * poly (N i) (x j)) = 0"
-    by (rule listsum_0, unfold poly_N_xi_cond, auto)
+    by (rule listsum_neutral, unfold poly_N_xi_cond, auto)
   show ?thesis unfolding poly_newton_poly id map_append listsum_append id2 by simp
 qed
 
@@ -500,8 +499,8 @@ next
   show ?thesis
     unfolding newton_coefficients_def
       newton_coefficients_main[OF nn, unfolded fs xs]
-    unfolding sn rev_map[symmetric] map_map o_def map_upt_Suc
-    by (rule arg_cong[of _ _ rev], intro nth_equalityI, auto simp: c_def)
+    unfolding sn rev_map[symmetric] map_map o_def 
+    by (rule arg_cong[of _ _ rev], subst upt_rec, intro nth_equalityI, auto simp: c_def)
 qed
 
 lemma newton_poly_impl: assumes "n = Suc nn"

@@ -19,7 +19,7 @@ imports
   Missing_Unsorted
   Missing_Fraction_Field
   Column_Operations
-  Ring_Hom
+  "../Polynomial_Interpolation/Ring_Hom"
 begin
 
 definition det:: "'a mat \<Rightarrow> 'a :: comm_ring_1" where

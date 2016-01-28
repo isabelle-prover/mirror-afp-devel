@@ -10,8 +10,8 @@ text \<open>This theory provides an injective mapping from rings into the corres
 
 theory Missing_Fraction_Field
 imports 
-  Ring_Hom
   "~~/src/HOL/Library/Fraction_Field"
+  "../Polynomial_Interpolation/Ring_Hom"
 begin
 
 context

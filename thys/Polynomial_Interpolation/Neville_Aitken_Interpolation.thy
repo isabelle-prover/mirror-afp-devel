@@ -11,7 +11,7 @@ text \<open>We prove soundness of Neville-Aitken's polynomial interpolation algo
 
 theory Neville_Aitken_Interpolation
 imports 
-  Polynomial
+  "~~/src/HOL/Library/Polynomial"
 begin
 
 context

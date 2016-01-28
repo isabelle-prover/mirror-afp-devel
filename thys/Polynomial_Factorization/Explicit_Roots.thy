@@ -7,17 +7,11 @@ section \<open>Explicit Formulas for Roots\<close>
 
 text \<open>We provide algorithms which use the explicit formulas to 
   compute the roots of polynomials of degree up to 2. We also define the formula for 
-  polynomials of degree 3, but did not (yet) prove anything about it, as it will not be 
-  executable.
-
-  There are also safe partial variants of the root finding algorithms which take into
-  account that not all operations are executable. For instance the roots of $x^2 - \sqrt{2}$
-  which are $2^{1/4}$ and $-2^{1/4}$ are currently not representable in the implementation
-  of the real numbers w.r.t.\ the AFP-entry Real-Impl.\<close>  
+  polynomials of degree 3, but did not (yet) prove anything about it.\<close>  
 
 theory Explicit_Roots
 imports   
-  "../Jordan_Normal_Form/Missing_Polynomial"
+  "../Polynomial_Interpolation/Missing_Polynomial"
   "../Sqrt_Babylonian/Sqrt_Babylonian"
 begin
 
@@ -63,21 +57,6 @@ definition croots2 :: "complex poly \<Rightarrow> complex list" where
 definition complex_rat :: "complex \<Rightarrow> bool" where
   "complex_rat x = (Re x \<in> \<rat> \<and> Im x \<in> \<rat>)"
 
-text \<open>Ensure that @{const csqrt} will not require computation of
-  square roots of irrational numbers. (This is not supported by the
-  current implementation.)\<close>
-
-definition complex_sqrt_able :: "complex \<Rightarrow> bool" where
-  "complex_sqrt_able x = (complex_rat x \<and> complex_rat (cmod x))"
-
-definition croots2_no_sqrt :: "complex poly \<Rightarrow> complex list" where
-  "croots2_no_sqrt p = (let a = coeff p 2; b = coeff p 1; c = coeff p 0; b2a = b / (2 * a);
-    bac = b2a^2 - c/a
-  in if complex_sqrt_able bac then
-    let e = csqrt bac 
-    in
-     remdups [- b2a + e, - b2a - e] else [])"
-
 lemma croots2: assumes "degree p = 2"
   shows "{x. poly p x = 0} = set (croots2 p)"
 proof -
@@ -109,23 +88,6 @@ definition rat_roots2 :: "rat poly \<Rightarrow> rat list" where
   "rat_roots2 p = (let a = coeff p 2; b = coeff p 1; c = coeff p 0; b2a = b / (2 * a);
     bac = b2a^2 - c/a
   in map (\<lambda> e. - b2a + e) (sqrt_rat bac))"
-
-lemma croots2_no_sqrt: assumes d2: "degree p = 2"
-  shows 
-  "set (croots2_no_sqrt p) \<subseteq> {x. poly p x = 0}"
-  "a = coeff p 2 \<Longrightarrow> b = coeff p 1 \<Longrightarrow> c = coeff p 0 \<Longrightarrow> complex_sqrt_able ((b / (2 * a))^2 - c / a) \<Longrightarrow>
-    set (croots2_no_sqrt p) = {x. poly p x = 0}"
-  unfolding croots2[OF d2]
-  unfolding croots2_def Let_def croots2_no_sqrt_def 
-  by auto
-
-definition rroots2_no_sqrt :: "real poly \<Rightarrow> real list" where
-  "rroots2_no_sqrt p = (let a = coeff p 2; b = coeff p 1; c = coeff p 0; b2a = b / (2 * a);
-    bac = b2a^2 - c/a
-  in if bac = 0 then [- b2a] else if bac < 0 \<or> bac \<notin> \<rat> then []
-    else let e = sqrt bac 
-    in
-     [- b2a + e, - b2a - e])"
 
 lemma rroots2: assumes "degree p = 2"
   shows "{x. poly p x = 0} = set (rroots2 p)"
@@ -164,40 +126,18 @@ proof -
     by (auto simp: power2_eq_square)
 qed
 
-lemma rroots2_no_sqrt: assumes d2: "degree p = 2"
-  shows 
-  "set (rroots2_no_sqrt p) \<subseteq> {x. poly p x = 0}"
-  "a = coeff p 2 \<Longrightarrow> b = coeff p 1 \<Longrightarrow> c = coeff p 0 \<Longrightarrow> (b / (2 * a))^2 - c / a \<in> \<rat> \<Longrightarrow>
-  set (rroots2_no_sqrt p) = {x. poly p x = 0}"
-  unfolding rroots2[OF d2]
-  unfolding rroots2_def Let_def rroots2_no_sqrt_def 
-  by auto
 
-
-text \<open>Determinining roots of complex polynomials of degree up to 2.
-  We use @{const croots2_no_sqrt} so that the algorithm will yield no
-  runtime errors.\<close>
+text \<open>Determinining roots of complex polynomials of degree up to 2.\<close>
 
 definition croots :: "complex poly \<Rightarrow> complex list" where
   "croots p = (if p = 0 \<or> degree p > 2 then [] 
     else (if degree p = 0 then [] else if degree p = 1 then [roots1 p]
     else croots2 p))"
 
-definition croots_no_sqrt :: "complex poly \<Rightarrow> complex list" where
-  "croots_no_sqrt p = (if p = 0 \<or> degree p > 2 then [] 
-    else (if degree p = 0 then [] else if degree p = 1 then [roots1 p]
-    else croots2_no_sqrt p))"
-
 lemma croots: assumes "p \<noteq> 0" "degree p \<le> 2"
   shows "set (croots p) = {x. poly p x = 0}"
   using assms unfolding croots_def
   using roots0[of p] roots1[of p] croots2[of p]
-  by (auto split: if_splits)
-
-lemma croots_no_sqrt: assumes "p \<noteq> 0" "degree p \<le> 2"
-  shows "set (croots_no_sqrt p) \<subseteq> {x. poly p x = 0}"
-  using assms unfolding croots_no_sqrt_def
-  using roots0[of p] roots1[of p] croots2_no_sqrt[of p]
   by (auto split: if_splits)
 
 text \<open>Determinining roots of real polynomials of degree up to 2.\<close>
@@ -207,29 +147,16 @@ definition rroots :: "real poly \<Rightarrow> real list" where
     else (if degree p = 0 then [] else if degree p = 1 then [roots1 p]
     else rroots2 p))"
 
-definition rroots_no_sqrt :: "real poly \<Rightarrow> real list" where
-  "rroots_no_sqrt p = (if p = 0 \<or> degree p > 2 then [] 
-    else (if degree p = 0 then [] else if degree p = 1 then [roots1 p]
-    else rroots2_no_sqrt p))"
-
 lemma rroots: assumes "p \<noteq> 0" "degree p \<le> 2"
   shows "set (rroots p) = {x. poly p x = 0}"
   using assms unfolding rroots_def
   using roots0[of p] roots1[of p] rroots2[of p]
   by (auto split: if_splits)
 
-lemma rroots_no_sqrt: assumes "p \<noteq> 0" "degree p \<le> 2"
-  shows "set (rroots_no_sqrt p) \<subseteq> {x. poly p x = 0}"
-  using assms unfolding rroots_no_sqrt_def
-  using roots0[of p] roots1[of p] rroots2_no_sqrt[of p]
-  by (auto split: if_splits)
-
-
 text \<open>Although there is a closed form for cubic roots, 
-  which is specified below, we did not integrate it into the
+  which is specified below, we did not yet integrate it into the
  @{const croots} and @{const rroots} algorithms.
- The reason is that currently cubic roots on complex and real numbers
- are not executable. Moreover, for complex numbers, the cubic root is not
+ One obstracle is that for complex numbers, the cubic root is not
  even defined. Therefore, we also did not proof soundness of the croots3 algorithm.\<close>
 
 context

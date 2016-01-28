@@ -18,8 +18,7 @@ which eased the proof.\<close>
 
 theory Polynomial_Divisibility
 imports
-  "~~/src/HOL/Algebra/Divisibility"
-  "../Jordan_Normal_Form/Missing_Polynomial"
+  "../Polynomial_Interpolation/Missing_Polynomial"
   Unique_Factorization_Domain
 begin
 

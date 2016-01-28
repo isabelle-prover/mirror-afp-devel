@@ -13,9 +13,9 @@ text \<open>This theory contains the remaining field operations for algebraic nu
 
 theory Algebraic_Numbers
 imports 
-  "../Jordan_Normal_Form/Determinant_Impl"
   Algebraic_Numbers_Prelim
   Resultant
+  "../Jordan_Normal_Form/Determinant_Impl"
 begin
 
 subsection \<open>Addition of Algebraic Numbers\<close>

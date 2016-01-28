@@ -11,7 +11,6 @@ text \<open>The theory contains some basic results on polynomials which have not
 theory Missing_Polynomial
 imports 
   "~~/src/HOL/Library/Polynomial"
-  "~~/src/HOL/Library/Fundamental_Theorem_Algebra"
 begin
 
 subsection \<open>Basic Properties\<close>
@@ -764,35 +763,6 @@ proof -
   have "q = smult c p" unfolding q k by simp
   with `c \<noteq> 0` show ?thesis by auto
 qed
-
-lemma fundamental_theorem_algebra_factorized: fixes p :: "complex poly"
-  shows "\<exists> as. [:coeff p (degree p):] * (\<Prod> a \<leftarrow> as. [:- a, 1:]) = p"
-proof -
-  def n \<equiv> "degree p"
-  have "degree p = n" unfolding n_def by simp
-  thus ?thesis
-  proof (induct n arbitrary: p)
-    case (0 p)
-    hence "\<exists> c. p = [: c :]" by (cases p, auto split: if_splits)
-    thus ?case by (intro exI[of _ Nil], auto)
-  next
-    case (Suc n p)
-    have dp: "degree p = Suc n" by fact
-    hence "\<not> constant (poly p)" by (simp add: constant_degree)
-    from fundamental_theorem_of_algebra[OF this] obtain c where rt: "poly p c = 0" by auto
-    hence "[:-c,1 :] dvd p" by (simp add: dvd_iff_poly_eq_0)
-    then obtain q where p: "p = q * [: -c,1 :]" by (metis dvd_def mult.commute)
-    from `degree p = Suc n` have dq: "degree q = n" using p
-      by (metis One_nat_def Suc_eq_plus1 `\<not> constant (poly p)` add_right_cancel constant_degree 
-        degree_0 degree_1 degree_mult_eq degree_pCons_eq mult_eq_0_iff one_neq_zero one_poly_def)
-    from Suc(1)[OF this] obtain as where q: "[:coeff q (degree q):] * (\<Prod>a\<leftarrow>as. [:- a, 1:]) = q" by auto
-    have dc: "degree p = degree q + degree [: -c, 1 :]" unfolding dq dp by simp
-    have cq: "coeff q (degree q) = coeff p (degree p)" unfolding dc unfolding p coeff_mult_degree_sum unfolding dq by simp
-    show ?case using p[unfolded q[unfolded cq, symmetric]] 
-      by (intro exI[of _ "c # as"], auto simp: ac_simps)
-  qed
-qed
-
 
 subsection \<open>Map over Polynomial Coefficients\<close>
 

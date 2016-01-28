@@ -23,12 +23,11 @@ text \<open>The results are taken from the textbook \cite[pages 329ff]{AlgNumber
 
 theory Real_Algebraic_Numbers
 imports 
-  Algebraic_Numbers
-  Sturm_Rat
   "../Abstract-Rewriting/SN_Order_Carrier"
   "../Deriving/Comparator_Generator/Compare_Rat"
   "../Deriving/Comparator_Generator/Compare_Real"
-  Improved_Code_Equations
+  Algebraic_Numbers
+  Sturm_Rat
 begin
 
 (* **************************************************************** *)

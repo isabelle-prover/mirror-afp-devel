@@ -18,9 +18,9 @@ text \<open>We formalized Gauss Lemma, that the content of a product of two poly
 
 theory Gauss_Lemma
 imports 
-  "../Jordan_Normal_Form/Missing_Unsorted"
   "~~/src/HOL/Number_Theory/Primes"
-  Ring_Hom_Poly
+  "../Jordan_Normal_Form/Missing_Unsorted"
+  "../Polynomial_Interpolation/Ring_Hom_Poly"
 begin
 
 definition content :: "'a :: semiring_gcd poly \<Rightarrow> 'a" where 

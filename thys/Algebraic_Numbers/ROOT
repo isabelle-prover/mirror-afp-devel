@@ -1,6 +1,6 @@
 chapter AFP
 
-session Algebraic_Numbers (AFP) = Algebraic_Numbers_Matrix +
+session Algebraic_Numbers (AFP) = Pre_Algebraic_Numbers +
   description {* Algebraic Numbers *}
   options [timeout = 600]
   theories
@@ -33,7 +33,7 @@ session Algebraic_Numbers (AFP) = Algebraic_Numbers_Matrix +
     "root.bib"
     "root.tex"
 
-session Algebraic_Numbers_Matrix (AFP) = "JNF-AFP-Lib" +
+session Pre_Algebraic_Numbers (AFP) = "Polynomial_Factorization" +
   description {* Theories from other AFP-entries and Extended Theories for Matrices *}
   options [timeout = 600, document = false]
   theories
@@ -44,7 +44,5 @@ session Algebraic_Numbers_Matrix (AFP) = "JNF-AFP-Lib" +
     "../Jordan_Normal_Form/Char_Poly"
     "../Jordan_Normal_Form/Show_Matrix"
     "../Sturm_Sequences/Sturm_Theorem"
-    "../Partial_Function_MR/Partial_Function_MR"
-    "../Sqrt_Babylonian/Sqrt_Babylonian"
-    "../Show/Show_Poly"
-    "~~/src/HOL/Library/RBT_Mapping"
+    "../Show/Show_Real"
+    "../Show/Show_Complex"

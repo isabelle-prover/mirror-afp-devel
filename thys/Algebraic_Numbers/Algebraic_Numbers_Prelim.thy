@@ -24,7 +24,8 @@ text \<open>The results are taken from the textbook \cite[pages 317ff]{AlgNumber
 
 theory Algebraic_Numbers_Prelim
 imports
-  Rational_Factorization
+  "~~/src/HOL/Library/Fundamental_Theorem_Algebra"
+  "../Polynomial_Factorization/Rational_Factorization"
 begin
 
 subsection \<open>Polynomial Evaluation of Rational Polynomials in Fields.\<close>

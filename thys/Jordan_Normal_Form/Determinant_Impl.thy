@@ -17,9 +17,9 @@ text \<open>We compute determinants on arbitrary rings by applying elementary ro
 
 theory Determinant_Impl
 imports
+  "../Polynomial_Interpolation/Missing_Polynomial"
   Determinant
   Missing_Unsorted
-  Missing_Polynomial
 begin
 
 type_synonym 'a det_selection_fun = "(nat \<times> 'a)list \<Rightarrow> nat"

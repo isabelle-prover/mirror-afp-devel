@@ -15,13 +15,13 @@ text \<open>This theory contains the Berlekamp factorization algorithm in combin
 
 theory Berlekamp_Hensel_Factorization
 imports 
+  "../Polynomial_Interpolation/Divmod_Int"
+  "../Sqrt_Babylonian/Sqrt_Babylonian"
+  "../Polynomial_Interpolation/Is_Rat_To_Rat"
   Gauss_Jordan_Field
   Polynomial_Field
-  Divmod_Int
-  "../Sqrt_Babylonian/Sqrt_Babylonian"
   Square_Free_Factorization
   Prime_Factorization
-  Is_Rat_To_Rat
   Gauss_Lemma
 begin
 

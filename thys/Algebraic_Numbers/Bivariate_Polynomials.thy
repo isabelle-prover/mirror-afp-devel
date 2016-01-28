@@ -7,8 +7,7 @@ section \<open>Bivariate Polynomials\<close>
 
 theory Bivariate_Polynomials
 imports 
-  "../Jordan_Normal_Form/Missing_Polynomial" 
-  Ring_Hom_Poly
+  "../Polynomial_Interpolation/Ring_Hom_Poly"
 begin
 
 subsection \<open>Evaluation of Bivariate Polynomials\<close>

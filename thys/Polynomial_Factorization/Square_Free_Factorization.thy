@@ -13,7 +13,6 @@ square-free factorization.\<close>
 
 theory Square_Free_Factorization
 imports 
-  "../Jordan_Normal_Form/Missing_Polynomial"
   "../Matrix/Utility"
   Polynomial_Divisibility
   Order_Polynomial

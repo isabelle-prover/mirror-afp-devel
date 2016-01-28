@@ -7,8 +7,9 @@ subsection \<open>Connecting Polynomials with Homomorphism Locales\<close>
 
 theory Ring_Hom_Poly
 imports 
-  "../Jordan_Normal_Form/Ring_Hom"
-  "../Jordan_Normal_Form/Missing_Polynomial"
+  Ring_Hom
+  Missing_Polynomial
+  Rat
 begin
 
 text{* @{term poly} as a homomorphism *}

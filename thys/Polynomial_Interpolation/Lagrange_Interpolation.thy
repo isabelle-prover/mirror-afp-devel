@@ -11,9 +11,7 @@ text \<open>We formalized Lagrange interpolation, i.e., a method to interpolate 
 
 theory Lagrange_Interpolation
 imports 
-  "../Jordan_Normal_Form/Missing_Polynomial"
-  Ring_Hom_Poly
-  Is_Rat_To_Rat
+  Missing_Polynomial
 begin
 
 definition lagrange_basis_poly :: "'a :: field list \<Rightarrow> 'a \<Rightarrow> 'a poly" where

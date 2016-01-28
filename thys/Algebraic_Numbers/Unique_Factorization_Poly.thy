@@ -12,9 +12,8 @@ imports
   "~~/src/HOL/Library/Polynomial"
   "../Jordan_Normal_Form/Missing_Unsorted"
   "../Jordan_Normal_Form/Missing_Fraction_Field"
-  Polynomial_Divisibility
-  Unique_Factorization_Domain
-  Ring_Hom_Poly
+  "../Polynomial_Factorization/Polynomial_Divisibility"
+  "../Polynomial_Factorization/Unique_Factorization_Domain"
 begin
 
 lemmas irreducible_def = Divisibility.irreducible_def

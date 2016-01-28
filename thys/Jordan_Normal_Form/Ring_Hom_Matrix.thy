@@ -15,7 +15,7 @@ theory Ring_Hom_Matrix
 imports 
   Matrix
   Real
-  Ring_Hom
+  "../Polynomial_Interpolation/Ring_Hom"
 begin
 
 locale ord_ring_hom = semiring_hom hom for 

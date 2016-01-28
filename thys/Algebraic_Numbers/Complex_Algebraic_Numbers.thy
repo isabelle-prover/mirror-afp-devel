@@ -19,6 +19,7 @@ imports
   Real_Roots
   Complex_Roots_Real_Poly
   Compare_Complex
+  "../Jordan_Normal_Form/Char_Poly"
 begin
 
 subsection \<open>Complex Roots\<close>

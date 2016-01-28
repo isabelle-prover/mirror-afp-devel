@@ -12,7 +12,7 @@ polynomial.\<close>
 theory Order_Polynomial
 imports 
   "../Jordan_Normal_Form/Missing_Unsorted"
-  "../Jordan_Normal_Form/Missing_Polynomial"
+  "../Polynomial_Interpolation/Missing_Polynomial"
   "~~/src/HOL/Library/Poly_Deriv"
 begin
 

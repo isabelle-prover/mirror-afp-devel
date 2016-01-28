@@ -13,7 +13,8 @@ text \<open>We combine Newton's, Lagrange's, and Neville-Aitken's interpolation 
   of Lagrange. Moreover, on the integer numbers, only Newton's algorithm has been
   optimized with fast failure capabilities.\<close>
 theory Polynomial_Interpolation
-imports 
+imports
+  Improved_Code_Equations
   Newton_Interpolation
   Lagrange_Interpolation
   Neville_Aitken_Interpolation

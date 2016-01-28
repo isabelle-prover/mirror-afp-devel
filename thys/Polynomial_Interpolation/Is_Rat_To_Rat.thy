@@ -8,7 +8,9 @@ subsection \<open>Conversions to Rational Numbers\<close>
 text \<open>We define a class which provides tests whether a number is rational, and
   a conversion from to rational numbers. 
   These conversion functions are principle the inverse functions of $of-rat$, but
-  they can be implemented for individual types more efficiently.\<close>
+  they can be implemented for individual types more efficiently.
+  
+  Similarly, we define tests and conversions between integer and rational numbers.\<close>
 
 theory Is_Rat_To_Rat
 imports 

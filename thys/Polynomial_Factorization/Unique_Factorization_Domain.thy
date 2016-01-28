@@ -14,8 +14,8 @@ imports
   "~~/src/HOL/Number_Theory/Primes"
   "../Jordan_Normal_Form/Missing_Unsorted"
   "../Jordan_Normal_Form/Missing_Fraction_Field"
-  Ring_Hom_Poly
-  Divisibility
+  "../Polynomial_Interpolation/Ring_Hom_Poly"
+  "~~/src/HOL/Algebra/Divisibility"
 begin
 
 lemma dvd_field: "((x :: 'a :: field) dvd y) = (x = 0 \<longrightarrow> y = 0)"

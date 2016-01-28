@@ -5,7 +5,6 @@ session "Jordan_Normal_Form" (AFP) = "JNF-AFP-Lib" +
   theories
     Missing_Unsorted
     Missing_Ring
-    Missing_Polynomial
     Missing_Permutations
   theories
     Matrix_Impl
@@ -62,3 +61,5 @@ session "JNF-AFP-Lib" = "JNF-HOL-Lib" +
     "../Abstract-Rewriting/Relative_Rewriting"
     "../Show/Show_Instances"
     "../VectorSpace/VectorSpace"
+    "../Polynomial_Interpolation/Missing_Polynomial"
+    "../Polynomial_Interpolation/Ring_Hom"

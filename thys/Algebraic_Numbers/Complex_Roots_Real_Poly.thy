@@ -15,9 +15,10 @@ text \<open>We provide conversion functions between polynomials over the real an
 
 theory Complex_Roots_Real_Poly
 imports 
-  Order_Polynomial
-  Ring_Hom_Poly
-  Explicit_Roots
+  "~~/src/HOL/Library/Fundamental_Theorem_Algebra"
+  "../Polynomial_Factorization/Order_Polynomial"
+  "../Polynomial_Factorization/Explicit_Roots"
+  "../Polynomial_Interpolation/Ring_Hom_Poly"
 begin
 
 lemma real_poly_real_coeff: assumes "set (coeffs p) \<subseteq> \<real>"
