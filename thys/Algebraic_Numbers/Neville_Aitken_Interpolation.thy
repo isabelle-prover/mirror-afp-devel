@@ -112,7 +112,8 @@ fun neville_aitken_merge :: "('a \<times> 'a \<times> 'a poly) list \<Rightarrow
   "neville_aitken_merge ((xi,xj,p_ij) # (xsi,xsj,p_sisj) # rest) = 
      (xi,xsj, smult (inverse (xsj - xi)) ([:-xi,1:] * p_sisj
       + [:xsj,-1:] * p_ij)) # neville_aitken_merge ((xsi,xsj,p_sisj) # rest)"
-| "neville_aitken_merge xs = []"
+| "neville_aitken_merge [_] = []"
+| "neville_aitken_merge [] = []"
 
 lemma length_neville_aitken_merge[termination_simp]: "length (neville_aitken_merge xs) = length xs - 1"
   by (induct xs rule: neville_aitken_merge.induct, auto)
