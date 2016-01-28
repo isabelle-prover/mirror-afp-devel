@@ -30,18 +30,19 @@
 \begin{abstract}
 We formalized three algorithms for polynomial interpolation over arbitrary fields: 
 Kronecker's explicit expression,
-the recursive algorithm of Neville-Aitken, and Newton interpolation in combination with an
-efficient implementation of divided differences. All algorithms are also available in a variant
-for integer polynomials, where sometimes the interpolation can fail: there obviously is no
+the recursive algorithm of Neville and Aitken,
+and the Newton interpolation in combination with an efficient implementation of divided differences.
+Variants of these algorithms for integer polynomials are also available,
+where sometimes the interpolation can fail; e.g., there is no
 linear integer polynomial $p$ such that $p(0) = 0$ and $p(2) = 1$. Moreover, for
-Newton interpolation over the integers we proved that also all intermediate 
-results that are computed during the algorithm must be integers. This admits a fast failure in the 
-implementation, and theoretically implies that
-there is no integer polynomial $p$ satisfying $p(0) = 0$ and $p(2) = 1$ at all, regardless
+the Newton interpolation for integer polynomials, we proved that all intermediate 
+results that are computed during the algorithm must be integers.
+This admits an early failure detection in the implementation, and theoretically implies that
+there is no integer polynomial $p$ satisfying $p(0) = 0$ and $p(2) = 1$, regardless
 of the degree of the polynomial.
-Finally, we proved uniqueness of polynomial interpolation.
+Finally, we proved the uniqueness of polynomial interpolation.
 
-The development also contains improved code equations to speed up division of integer numbers
+The development also contains improved code equations to speed up the division of integers
 in target languages.
 \end{abstract}
 
