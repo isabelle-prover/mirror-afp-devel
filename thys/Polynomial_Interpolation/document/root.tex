@@ -33,14 +33,16 @@ Kronecker's explicit expression,
 the recursive algorithm of Neville-Aitken, and Newton interpolation in combination with an
 efficient implementation of divided differences. All algorithms are also available in a variant
 for integer polynomials, where sometimes the interpolation can fail: there obviously is no
-integer polynomial $p$ such that $p(0) = 0$ and $p(2) = 1$. Moreover, for
+linear integer polynomial $p$ such that $p(0) = 0$ and $p(2) = 1$. Moreover, for
 Newton interpolation over the integers we proved that also all intermediate 
 results that are computed during the algorithm must be integers. This admits a fast failure in the 
 implementation, and theoretically implies that
-there is no integer polynomial $p$ at all satisfying $p(0) = 0$ and $p(2) = 1$, regardless
+there is no integer polynomial $p$ satisfying $p(0) = 0$ and $p(2) = 1$ at all, regardless
 of the degree of the polynomial.
-
 Finally, we proved uniqueness of polynomial interpolation.
+
+The development also contains improved code equations to speed up division of integer numbers
+in target languages.
 \end{abstract}
 
 \tableofcontents
