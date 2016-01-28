@@ -31,19 +31,19 @@
 
 \begin{abstract}
 Based on existing libraries for polynomial interpolation and matrices,
-we formalized several factorization algorithms for polynomials: 
-Kronecker's algorithm for polynomials over the integers, Yun's square-free factorization algorithm over fields, as well as Berlekamp's
-factorization algorithm over finite fields which is combined with Hensel-lifting to 
-efficiently factorize polynomials over the integers. 
-We further mechanized Gauss' lemma to lift polynomial factorizations over the integers to
-factorizations over the rational numbers.
-Finally, we assembled a combined factorization algorithm for polynomials over the rational numbers.
-It combines all mentioned algorithms and additionally uses the explicit formula for roots 
-of a quadratic polynomials and the rational root test.
+we formalized several factorization algorithms for polynomials, including
+Kronecker's algorithm for integer polynomials,
+Yun's square-free factorization algorithm for field polynomials, and
+Berlekamp's algorithm for polynomials over finite fields.
+By combining the last one with Hensel's lifting,
+we derive an efficient factorization algorithm for the integer polynomials,
+which is then lifted for rational polynomials by mechanizing Gauss' lemma.
+Finally, we assembled a combined factorization algorithm for rational polynomials,
+which combines all the mentioned algorithms and additionally uses the explicit formula for roots 
+of quadratic polynomials and a rational root test.
 
-As side products, we developed a division algorithm for polynomials over integers as
-well as algorithms for prime numbers, i.e., a primality test,
-and a prime-factorization algorithm.
+As side products, we developed a division algorithm for integer polynomials,
+as well as primality-testing and prime-factorization algorithms for integers.
 \end{abstract}
 
 \tableofcontents
