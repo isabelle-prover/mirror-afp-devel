@@ -1,0 +1,124 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{amssymb}
+\usepackage{xspace}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\isafor{\textsf{IsaFoR}}
+\newcommand\ceta{\textsf{Ce\kern-.18emT\kern-.18emA}}
+\newcommand\rats{\mathbb{Q}}
+\newcommand\ints{\mathbb{Z}}
+\newcommand\nats{\mathbb{N}}
+\newcommand\reals{\mathbb{R}}
+\newcommand\mod{\mathit{mod}}
+\newcommand\complex{\mathbb{C}}
+
+\newcommand\rai{real algebraic number\xspace}
+\newcommand\rais{real algebraic numbers\xspace}
+
+\begin{document}
+
+\title{Polynomial Factorization\footnote{Supported by FWF (Austrian Science Fund) project Y757.}}
+\author{Ren\'e Thiemann and Akihisa Yamada}
+\maketitle
+
+\begin{abstract}
+Based on existing libraries for polynomial interpolation and matrices,
+we formalized several factorization algorithms for polynomials: 
+Kronecker's algorithm for polynomials over the integers, Yun's square-free factorization algorithm over fields, as well as Berlekamp's
+factorization algorithm over finite fields which is combined with Hensel-lifting to 
+efficiently factorize polynomials over the integers. 
+We further mechanized Gauss' lemma to lift polynomial factorizations over the integers to
+factorizations over the rational numbers.
+Finally, we assembled a combined factorization algorithm for polynomials over the rational numbers.
+It combines all mentioned algorithms and additionally uses the explicit formula for roots 
+of a quadratic polynomials and the rational root test.
+
+As a side product, we also developed algorithms for prime numbers, i.e., a primality test,
+and a prime-factorization algorithm.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+The details of the factorization algorithms have mostly been extracted 
+from Knuth's Art of Computer Programming
+\cite{Knuth}. Also Wikipedia provided valuable help.
+
+\medskip
+As a first fast
+preprocessing for factorization we integrated Yun's factorization algorithm which identifies duplicate
+factors \cite{Yun}. In contrast to the existing formalized result that the GCD of $p$ and $p'$ has no
+duplicate factors (and the same roots as $p$), Yun's algorithm decomposes a polynomial $p$ into
+$p_1^1 \cdot \ldots \cdot p_n^n$ such that no $p_i$ has a duplicate factor and there is no common
+factor of $p_i$ and $p_j$ for $i \neq j$. As a comparison, the GCD of $p$ and $p'$ is exactly
+$p_1 \cdot \ldots \cdot p_n$, but without decomposing this product into the list of $p_i$'s.
+
+Factorization over $\rats$ is reduced to factorization over $\ints$ 
+with the help of Gauss' Lemma.
+
+Kronecker's algorithm for factorization over $\ints$ requires both
+polynomial interpolation over $\ints$ and prime-factorization over $\nats$. Whereas the former
+is available as a separate AFP-entry, for prime-factorization we mechanized a simple algorithm depicted
+in \cite{Knuth}: it is not completely naive, since it only iterates until $\sqrt n$, it uses
+a precomputed set of small primes (all primes up to 1000), 
+and for a given number $n$ with $n\ \mod\ 30 = 11$, 
+the next test-candidates in the range $[n,n+30)$ 
+are only the 8 numbers $n,n+2,n+6,n+8,n+12,n+18,n+20,n+26$.
+
+However, in theory and praxis it turned out that Kronecker's algorithm is too inefficient. 
+Therefore, we implemented the much faster Berlekamp-factorization algorithm which works over finite fields \cite{Berlekamp}, and
+then lifts the factorization to $\ints$ via Hensel-lifting \cite{Hensel}. However, the Berlekamp-Hensel
+factorization is only available as oracle: it is only checked at runtime that the resulting
+factorization is valid (the input polynomial is the same as the product of factors), 
+but no results on the optimality are provided (all factors are irreducible). 
+Therefore, if irreducibility of the resulting factors has to be formally ensured, 
+Kronecker's algorithm is applied to validate irreducibility of the generated factors.
+
+Although only being an oracle, we tried to include several certified parts in the implementation
+of Berlekamp-Hensel's algorithm.
+\begin{itemize}
+\item In Berlekamp's algorithm, a basis for a set of vectors over some finite field has to be determined.
+  To this end, we generalized the certified Gauss-Jordan algorithm from \cite{JNF-AFP} so that 
+  it takes the field-operations like addition, multiplication, and inverse as parameter. 
+  As a consequence, we can just invoke the certified algorithm 
+  where we pass the addition, multiplication, and
+  inverse-functions for finite fields. Intuitively, then nothing can go wrong, although this is not
+  formally stated, since the soundness of Gauss-Jordan was proven for type-based operations, whereas
+  soundness of the finite-field operations can only be proven set-based, since the cardinality of the
+  carrier has to be dynamically determined at runtime.
+\item For operations on polynomials, we took a similar but not identical approach. Instead of 
+  generalizing the algorithms on polynomials to take the basic field operations as parameters, we just
+  copied the generated code for polynomials and manually replaced all basic operations by parameters.
+  So, the algorithms indeed should be sound, although nothing has been proven about it.
+  
+  As a side effect, we inspected all the generated code equations for polynomials and optimized some of them,
+  cf.\ \texttt{Improved-Code-Equations} in \texttt{../Polynomial-Interpolation}.
+\end{itemize}
+
+Finally, the combined factorization algorithm first factorizes the polynomial
+via Yun and Berlekamp-Hensel. And for each constructed factor, the algorithm 
+certifies irreducibility as
+follows. For polynomials of degree 2, the 
+closed form for roots of quadratic polynomials is applied. For polynomials of degree 3, 
+the rational root test determines whether the polynomial is irreducible or not, and finally
+for degree 4 and higher, Kronecker's factorization algorithm is applied.
+
+As future work it would be beneficial to perform a full formalization of 
+Berlekamp-Hensel's factorization algorithm as it it by far more efficient than Kronecker's algorithm.
+\input{session}
+
+
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
