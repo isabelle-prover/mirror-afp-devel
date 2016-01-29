@@ -70,9 +70,9 @@ begin
 
    text{*Invariant violations do not disappear if we add more flows. *}
    lemma sinvar_mono_imp_negative_mono:
-   "sinvar_mono \<Longrightarrow> wf_graph \<lparr> nodes = N, edges = E \<rparr> \<Longrightarrow>  E' \<subseteq> E \<Longrightarrow> \<not> sinvar \<lparr> nodes = N, edges = E' \<rparr> nP \<Longrightarrow> \<not> sinvar \<lparr> nodes = N, edges = E \<rparr> nP"
-   apply (unfold sinvar_mono_def)
-   by(blast)
+   "sinvar_mono \<Longrightarrow> wf_graph \<lparr> nodes = N, edges = E \<rparr> \<Longrightarrow>  E' \<subseteq> E \<Longrightarrow>
+   \<not> sinvar \<lparr> nodes = N, edges = E' \<rparr> nP \<Longrightarrow> \<not> sinvar \<lparr> nodes = N, edges = E \<rparr> nP"
+   unfolding sinvar_mono_def by(blast)
 
   corollary sinvar_mono_imp_negative_delete_edge_mono:
    "sinvar_mono \<Longrightarrow> wf_graph G \<Longrightarrow> X \<subseteq> Y \<Longrightarrow> \<not> sinvar (delete_edges G Y) nP \<Longrightarrow> \<not> sinvar (delete_edges G X) nP "
@@ -628,72 +628,54 @@ subsection {* Monotonicity of offending flows *}
       obtain Eadd where Eadd_prop: "E' \<union> Eadd = E" and "E' \<inter> Eadd = {}" using a2 by blast
 
       have Fadd_notinE': "\<And>Fadd. Fadd \<inter> E' = {} \<Longrightarrow>  E' - (F' \<union> Fadd) =  E' - F'" by blast
-      from `F' \<subseteq> E'` a1[simplified wf_graph_def] a2 have FinV1: "fst ` F' \<subseteq> V" and FinV2: "snd ` F' \<subseteq> V" 
-          apply (simp_all)
-         apply(erule conjE)+
-         apply(drule image_mono[of _ _ "fst"])+
-         apply(drule dual_order.trans[of "fst ` E" "V" "fst ` E'"])
-          apply(simp_all)
-        apply(erule conjE)+
-        apply(drule image_mono[of _ _ "snd"])+
-        apply(drule dual_order.trans[of "snd ` E" "V" "snd ` E'"])
-         by(simp_all)
-      hence "\<forall> (e1, e2) \<in> F'. add_edge e1 e2 \<lparr>nodes = V, edges = E'\<rparr> = \<lparr>nodes = V, edges = E' \<union> {(e1, e2)}\<rparr>"
-        by(auto simp add: add_edge_def)
+      from `F' \<subseteq> E'` a1[simplified wf_graph_def] a2 have FinV1: "fst ` F' \<subseteq> V" and FinV2: "snd ` F' \<subseteq> V"
+      proof -
+        from a1 have "fst ` E \<subseteq> V" by(simp add: wf_graph_def)
+        with `F' \<subseteq> E'` a2 show "fst ` F' \<subseteq> V" by fast
+        from a1 have "snd ` E \<subseteq> V" by(simp add: wf_graph_def)
+        with `F' \<subseteq> E'` a2 show "snd ` F' \<subseteq> V" by fast
+      qed
+      hence insert_e1_e2_V: "\<forall> (e1, e2) \<in> F'. insert e1 (insert e2 V) = V" by auto
       hence add_edge_F: "\<forall> (e1, e2) \<in> F'. add_edge e1 e2 \<lparr>nodes = V, edges = E' - F' \<rparr> =  \<lparr>nodes = V, edges = (E' - F') \<union> {(e1, e2)}\<rparr>"
-        by(auto simp add: add_edge_def)
-      from FinV1 FinV2 have insert_e1_e2_V: "\<forall> (e1, e2) \<in> F'. insert e1 (insert e2 V) = V" by auto
-      have "\<And> Fadd. (Fadd \<inter> E' = {}) \<Longrightarrow> 
-       \<forall>(e1, e2)\<in>F'. \<not> sinvar \<lparr>nodes = V, edges = (E - (F' \<union> Fadd)) \<union> {(e1, e2)}\<rparr> nP"
-       proof -
-        fix Fadd
-         assume f1: "(Fadd \<inter> E' = {})"
+        by(simp add: add_edge_def)
          
-         have Fadd_notinE': "\<And>Fadd. Fadd \<inter> E' = {} \<Longrightarrow>  E' - (F' \<union> Fadd) =  E' - F'" by blast
-          from `F' \<subseteq> E'` this have Fadd_notinF: "\<And>Fadd. Fadd \<inter> E' = {} \<Longrightarrow>  F' \<inter> Fadd = {}" by blast
-   
-         have Fadd_subseteq_Eadd: "\<And>Fadd. (Fadd \<inter> E' = {} \<and> Fadd \<subseteq> E) = (Fadd \<subseteq> Eadd)"
-           apply(rule)
-            using Eadd_prop a2 apply blast
-           using Eadd_prop a2 by (metis `E' \<inter> Eadd = {}` equalityE inf_commute inf_mono le_supI2 subset_empty)
-   
-         from a4 have "(\<forall>(e1, e2)\<in>F'. \<not> sinvar (add_edge e1 e2 \<lparr>nodes = V, edges = E' - F'\<rparr>) nP)"
-          by(simp add: set_offending_flows_def is_offending_flows_min_set_def delete_edges_simp2)
-        from this add_edge_F have noteval_F: "\<forall>(e1, e2)\<in>F'. \<not> sinvar \<lparr>nodes = V, edges = (E' - F') \<union> {(e1, e2)}\<rparr> nP"
-           by fastforce 
+      have Fadd_notinE': "\<And>Fadd. Fadd \<inter> E' = {} \<Longrightarrow>  E' - (F' \<union> Fadd) =  E' - F'" by blast
+       from `F' \<subseteq> E'` this have Fadd_notinF: "\<And>Fadd. Fadd \<inter> E' = {} \<Longrightarrow>  F' \<inter> Fadd = {}" by blast
  
-         (*proof rule that preserves the tuple*)
-         have tupleBallI: "\<And>A P. (\<And>e1 e2. (e1, e2)\<in>A \<Longrightarrow> P (e1, e2)) \<Longrightarrow> ALL (e1, e2):A. P (e1, e2)" by force
-         show "\<forall>(e1, e2)\<in>F'. \<not> sinvar \<lparr>nodes = V, edges = (E - (F' \<union> Fadd)) \<union> {(e1, e2)}\<rparr> nP"
-          proof(rule tupleBallI)
-           fix e1 e2
-           assume f2: "(e1, e2) \<in> F'"
-              from a4 have "\<And> Fadd. (Fadd \<inter> E' = {}) \<Longrightarrow> 
-                  (\<forall>(e1, e2)\<in>F'. \<not> sinvar (add_edge e1 e2 \<lparr>nodes = V, edges = E' - (F' \<union> Fadd)\<rparr>) nP)"
-               by(simp add: set_offending_flows_def is_offending_flows_min_set_def delete_edges_simp2 Fadd_notinE')
-               from this have "\<And> Fadd. (Fadd \<inter> E' = {}) \<Longrightarrow> 
-                 \<forall>(e1, e2)\<in>F'.  \<not> sinvar \<lparr>nodes = V, edges = (E' - (F' \<union> Fadd)) \<union> {(e1, e2)}\<rparr> nP"
-                using insert_e1_e2_V by (metis Fadd_notinE' noteval_F)
-              from this[OF f1] f2 have gFadd1: "\<not> sinvar \<lparr>nodes = V, edges = (E' - (F' \<union> Fadd)) \<union> {(e1, e2)}\<rparr> nP" by simp
-       
-              from a1 FinV1 FinV2 f1 f2 have gFadd2: 
-                  "wf_graph \<lparr>nodes = V, edges = (E - (F' \<union> Fadd)) \<union> {(e1, e2)}\<rparr>"
-                  by(auto simp add: wf_graph_def)
-       
-              from a2 f1 f2 have gFadd3: 
-                   "(E' - (F' \<union> Fadd)) \<union> {(e1, e2)} \<subseteq> (E - (F' \<union> Fadd)) \<union> {(e1, e2)}" by fast
-               
-              from sinvar_mono_imp_negative_mono[where E="(E - (F' \<union> Fadd)) \<union> {(e1, e2)}" and E'="(E' - (F' \<union> Fadd)) \<union> {(e1, e2)}" and N="V" and nP="nP"]
-                   sinvar_monoI gFadd2 gFadd3 gFadd1
-              show "\<not> sinvar \<lparr>nodes = V, edges = (E - (F' \<union> Fadd)) \<union> {(e1, e2)}\<rparr> nP" .
-          qed
+      have Fadd_subseteq_Eadd: "\<And>Fadd. (Fadd \<inter> E' = {} \<and> Fadd \<subseteq> E) = (Fadd \<subseteq> Eadd)"
+        proof(rule iffI, goal_cases)
+        case 1 thus ?case using Eadd_prop a2 by blast
+        next
+        case 2 thus ?case using Eadd_prop a2 `E' \<inter> Eadd = {}` by blast
+        qed
+ 
+      from a4 have "(\<forall>(e1, e2)\<in>F'. \<not> sinvar (add_edge e1 e2 \<lparr>nodes = V, edges = E' - F'\<rparr>) nP)"
+        by(simp add: set_offending_flows_def is_offending_flows_min_set_def delete_edges_simp2)
+      with add_edge_F have noteval_F: "\<forall>(e1, e2)\<in>F'. \<not> sinvar \<lparr>nodes = V, edges = (E' - F') \<union> {(e1, e2)}\<rparr> nP"
+        by fastforce 
+
+      (*proof rule that preserves the tuple*)
+      have tupleBallI: "\<And>A P. (\<And>e1 e2. (e1, e2)\<in>A \<Longrightarrow> P (e1, e2)) \<Longrightarrow> ALL (e1, e2):A. P (e1, e2)" by force
+      have "\<forall>(e1, e2)\<in>F'. \<not> sinvar \<lparr>nodes = V, edges = (E - (F' \<union> Fadd)) \<union> {(e1, e2)}\<rparr> nP"
+      proof(rule tupleBallI)
+        fix e1 e2
+        assume f2: "(e1, e2) \<in> F'"
+           with a3 have gFadd1: "\<not> sinvar \<lparr>nodes = V, edges = (E' - (F' \<union> Fadd)) \<union> {(e1, e2)}\<rparr> nP"
+           using Fadd_notinE' noteval_F by fastforce
+     
+           from a1 FinV1 FinV2 a3 f2 have gFadd2: 
+             "wf_graph \<lparr>nodes = V, edges = (E - (F' \<union> Fadd)) \<union> {(e1, e2)}\<rparr>"
+             by(auto simp add: wf_graph_def)
+           from a2 a3 f2 have gFadd3: 
+                "(E' - (F' \<union> Fadd)) \<union> {(e1, e2)} \<subseteq> (E - (F' \<union> Fadd)) \<union> {(e1, e2)}" by blast
+             
+           from mono_sinvar[OF gFadd2 gFadd3] gFadd1
+           show "\<not> sinvar \<lparr>nodes = V, edges = (E - (F' \<union> Fadd)) \<union> {(e1, e2)}\<rparr> nP" by blast 
        qed
-       hence mono_delete_edges_minimal: "\<And> Fadd. (Fadd \<inter> E' = {}) \<Longrightarrow> 
-          (\<forall>(e1, e2)\<in>F'. \<not> sinvar (add_edge e1 e2 (delete_edges \<lparr>nodes = V, edges = E \<rparr> (F' \<union> Fadd))) nP)"
+       thus ?thesis
         apply(simp add: delete_edges_simp2 Fadd_notinE' add_edge_def)
         apply(clarify)
         using insert_e1_e2_V by fastforce
-        from this[OF a3] show ?thesis .
     qed
 
     text{* The minimality condition of the offending flows also holds if we increase the graph.  *}
@@ -743,7 +725,7 @@ subsection {* Monotonicity of offending flows *}
           apply(subgoal_tac "E - (F' \<union> Eadd) = E' - F'")
            apply(simp)
           apply(subst Eadd_prop[symmetric])
-          using `E' \<inter> Eadd = {}` by auto
+          using `E' \<inter> Eadd = {}` Eadd_prop by auto
   
   
         show "\<exists> F \<in> set_offending_flows \<lparr> nodes = V, edges = E \<rparr> nP. F' \<subseteq> F"
@@ -751,11 +733,11 @@ subsection {* Monotonicity of offending flows *}
           assume assumption_new_violation: "\<not> sinvar \<lparr>nodes = V, edges = E' - F' \<union> Eadd\<rparr> nP"
           from a1 have "finite Eadd"
             apply(simp add: wf_graph_def)
-            using Eadd_prop by (metis finite_Un)
+            using Eadd_prop wf_graph.finiteE by blast
           from this obtain Eadd_list where Eadd_list_prop: "set Eadd_list = Eadd" and "distinct Eadd_list" by (metis finite_distinct_list)
           from a1 have "finite E'"
             apply(simp add: wf_graph_def)
-            using Eadd_prop by (metis finite_Un)
+            using Eadd_prop by blast
           from this obtain E'_list where E'_list_prop: "set E'_list = E'" and "distinct E'_list" by (metis finite_distinct_list)
           from `finite E'` `F' \<subseteq> E'` obtain F'_list where "set F'_list = F'" and "distinct F'_list" by (metis finite_distinct_list rev_finite_subset)
     
@@ -763,10 +745,9 @@ subsection {* Monotonicity of offending flows *}
             apply(simp add: is_offending_flows_def E'_list_prop Eadd_list_prop Eadd_prop delete_edges_simp2)
             apply(rule conjI)
              apply(fact assumption_new_violation)
-            apply(subgoal_tac "E' - F' \<union> Eadd - Eadd = E' - F'", simp)
-             apply(simp add: eval_E_minus_FEadd_simp)
-            using  Eadd_prop `E' \<inter> Eadd = {}` `F' \<subseteq> E'` apply blast
-            done
+            apply(subgoal_tac "E' - F' \<union> Eadd - Eadd = E' - F'")
+             apply(simp add: eval_E_minus_FEadd_simp; fail)
+            using  Eadd_prop `E' \<inter> Eadd = {}` `F' \<subseteq> E'` by blast
         
         
           from minimalize_offending_overapprox_sound[OF wf2 this _ `distinct Eadd_list`]
@@ -777,7 +758,7 @@ subsection {* Monotonicity of offending flows *}
           obtain Fadd where Fadd_prop: "is_offending_flows_min_set Fadd \<lparr>nodes = V, edges = E' - F' \<union> Eadd\<rparr> nP" and "Fadd \<subseteq> Eadd" by auto
         
           have graph_edges_simp_helper: "E' - F' \<union> Eadd - Fadd =  E - (F' \<union> Fadd)"
-              using `E' \<inter> Eadd = {}` Eadd_prop `F' \<subseteq> E'` by blast
+            using `E' \<inter> Eadd = {}` Eadd_prop `F' \<subseteq> E'` by blast
         
           from Fadd_prop[simplified is_offending_flows_min_set_def is_offending_flows_def] have
               "Fadd \<subseteq> Eadd" and 
@@ -789,7 +770,7 @@ subsection {* Monotonicity of offending flows *}
                apply(thin_tac "\<not> sinvar X y" for X y)
                apply(thin_tac "\<forall> x\<in> Fadd. X x" for X)
                apply(insert graph_edges_simp_helper, simp)
-              apply(erule conjE)+
+              apply(elim conjE)
               apply(thin_tac "\<not> sinvar X y" for X y)
               apply(thin_tac "sinvar X y" for X y)
               apply(simp add: delete_edges_simp2)
@@ -883,23 +864,12 @@ subsection {* Monotonicity of offending flows *}
 
        from sinvar_no_offending a2 have goal_not_eval: "\<not> sinvar \<lparr>nodes = V, edges = insert e E\<rparr> nP" by blast
 
+       obtain a b where e: "e = (a,b)" by (cases e) blast
+       with wfG have insert_e_V: "insert a (insert b V) = V" by(auto simp add: wf_graph_def)
+
        from a1' a2' have min_set_e: "is_offending_flows_min_set {e} \<lparr>nodes = V, edges = insert e E\<rparr> nP"
-        apply(simp add: is_offending_flows_min_set_def is_offending_flows_def delete_edges_simp2 add_edge_def)
-        apply(rule conjI)
-         apply(clarify)
-        apply(rule conjI)
-         apply(simp add: goal_eval)
-        apply(case_tac e)
-        apply(simp)
-        apply(subgoal_tac "insert a (insert b V) = V")
-         apply(simp)
-         using goal_not_eval apply fastforce
-        apply(thin_tac "\<forall>F \<subseteq> E. X F" for X)
-        apply(thin_tac "\<exists>F \<subseteq> E. X F" for E X)
-        apply(insert wfG)
-        apply(simp add: wf_graph_def)
-        apply(fastforce)
-        done
+        apply(simp add: is_offending_flows_min_set_def is_offending_flows_def add_edge_def delete_edges_simp2 goal_not_eval goal_eval)
+        using goal_not_eval by(simp add: e insert_e_V)
 
        thus "{e} \<in> set_offending_flows \<lparr>nodes = V, edges = insert e E\<rparr> nP"
         by(simp add: set_offending_flows_def)
