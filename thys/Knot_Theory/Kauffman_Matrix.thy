@@ -29,12 +29,6 @@ words, it is the type of rational functions *}
 
 type_synonym rat_poly = "intpoly fract"
 
-lemma "Fract (x*x) x = Fract x 1"
- unfolding Fract_def by auto
-
-lemma "(p::rat_poly) + (q + r) = (p + q) + r"
- by auto
-
 text{*A is defined to be x/1, while B is defined to be 1/x*}
 
 definition var_def1:"A =  Fract x 1"

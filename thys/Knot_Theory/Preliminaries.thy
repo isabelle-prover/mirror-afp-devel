@@ -1,6 +1,6 @@
 header{*Preliminaries: Definitions of tangles and links*}
 theory Preliminaries
-imports  Main Typedef 
+imports Main
 begin
 
 text{* This theory contains the definition of a link. A link is defined as link diagrams upto 
