@@ -1,7 +1,7 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage{isabelle,isabellesym}
 
-\usepackage{amssymb}
+\usepackage{amssymb,amsmath}
 \usepackage{xspace}
 
 % this should be the last package used
@@ -29,7 +29,7 @@
 
 \begin{abstract}
 We formalized three algorithms for polynomial interpolation over arbitrary fields: 
-Kronecker's explicit expression,
+Lagrange's explicit expression,
 the recursive algorithm of Neville and Aitken,
 and the Newton interpolation in combination with an efficient implementation of divided differences.
 Variants of these algorithms for integer polynomials are also available,
@@ -50,12 +50,38 @@ in target languages.
 
 \section{Introduction}
 
+We formalize several algorithms for interpolation for field polynomials and integer polynomials.
 All of the algorithms have been taken from Wikipedia.
 TODO: find some algebra book where all of the algorithms are described and \cite{it}.
 
-TODO: write some more text, also included side-products, like improved code equations for
-division.
+Given distinct inputs $x_0,\dots,x_n$ and corresponding outputs $y_0,\dots,y_n$,
+\emph{polynomial interpolation} is to provide a polynomial $p$ (of degree at most $n$)
+such that $p(x_i) = y_i$ for every $i < n$.
 
+The first solution we formalize is Lagrange's explicit expression:
+\[
+	p(x) = \sum_{i<n}
+		\Bigl(y_i \cdot \prod_{\substack{j<n\\j \neq i}}\frac{x-x_j}{x_i-x_j}
+		\Bigr)
+\]
+which is however expensive since the computation involves a number of multiplications and additions of polynomials.
+Hence we formalize other algorithms, namely, the recursive algorithms of Neville and Aitken,
+and the Newton interpolation.
+We also show that a polynomial interpolation of degree at most $n$ is unique.
+
+
+Further, we consider a variant of the interpolation problem where the base type is restricted to \isa{int}.
+In this case the result must be an integer polynomial (i.e., the coefficients are integers),
+which does not necessarily exist even if the specified inputs and outputs are integers.
+For instance, there exists no linear integer polynomial $p$ such that $p(0) = 0$ and $p(2) = 1$.
+
+We prove that, for the Newton interpolation to produce integer polynomials, the intermediate coefficients computed in the procedure must be always integers.
+This result, in practice allows the implementation to detect failure as early as possible,
+and in theory shows that there is no integer polynomial $p$ satisfying $p(0) = 0$ and $p(2) = 1$,
+regardless of the degree of the polynomial.
+
+%TODO: write some more text, also included side-products, like improved code equations for division.
+The formalization also contains an improved code equations for integer division.
 
 
 % include generated text of all theories
