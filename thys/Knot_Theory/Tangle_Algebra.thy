@@ -303,7 +303,7 @@ theorem is_tangle_make_vert_right:
           \<Longrightarrow> is_tangle_diagram (xs \<otimes> (basic (make_vert_block n)))"
 proof(induct xs)
  case (basic xs)
-  show ?case using tensor_def by auto
+  show ?case by auto
  next
  case (prod x xs)
   have ?case 
@@ -375,7 +375,7 @@ theorem is_tangle_make_vert_left:
  "(is_tangle_diagram xs) \<Longrightarrow> is_tangle_diagram ((basic (make_vert_block n)) \<otimes> xs)"
 proof(induct xs)
  case (basic xs)
-  show ?case using tensor_def by auto
+  show ?case by auto
  next
  case (prod x xs)
   have ?case 
