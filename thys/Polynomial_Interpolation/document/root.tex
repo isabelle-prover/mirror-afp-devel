@@ -37,9 +37,7 @@ where sometimes the interpolation can fail; e.g., there is no
 linear integer polynomial $p$ such that $p(0) = 0$ and $p(2) = 1$. Moreover, for
 the Newton interpolation for integer polynomials, we proved that all intermediate 
 results that are computed during the algorithm must be integers.
-This admits an early failure detection in the implementation, and theoretically implies that
-there is no integer polynomial $p$ satisfying $p(0) = 0$ and $p(2) = 1$, regardless
-of the degree of the polynomial.
+This admits an early failure detection in the implementation.
 Finally, we proved the uniqueness of polynomial interpolation.
 
 The development also contains improved code equations to speed up the division of integers
@@ -50,9 +48,11 @@ in target languages.
 
 \section{Introduction}
 
-We formalize several algorithms for interpolation for field polynomials and integer polynomials.
-All of the algorithms have been taken from Wikipedia.
-TODO: find some algebra book where all of the algorithms are described and \cite{it}.
+We formalize three basic algorithms for interpolation for univariate 
+field polynomials and integer polynomials which can be found in 
+various textbooks or on Wikipedia. However, this formalization covers 
+only basic results, e.g., compared to a specialized textbook on 
+interpolation \cite{interpolation}, we only cover results of the first of the eight chapters.
 
 Given distinct inputs $x_0,\dots,x_n$ and corresponding outputs $y_0,\dots,y_n$,
 \emph{polynomial interpolation} is to provide a polynomial $p$ (of degree at most $n$)
