@@ -3182,9 +3182,15 @@ abstract =
  <li>An executable implementation of all the theory.</li>
  <li>Examples, ranging from an aircraft cabin data network to the analysis
   of a large real-world firewall.</li>
+ <li>More examples: A fully automated translation of high-level security goals to both 
+ firewall and SDN configurations (see Examples/Distributed_WebApp.thy).</li>
  </ul>
  For a detailed description, see
  <ul>
+ <li>C. Diekmann, A. Korsten, and G. Carle. 
+  <a href="http://www.net.in.tum.de/fileadmin/bibtex/publications/papers/diekmann2015mansdnnfv.pdf">Demonstrating 
+  topoS: Theorem-prover-based synthesis of secure network configurations.</a> 
+  In 2nd International Workshop on Management of SDN and NFV Systems, manSDN/NFV, Barcelona, Spain, November 2015.</li>
  <li>C. Diekmann, S.-A. Posselt, H. Niedermayer, H. Kinkelin, O. Hanka, and G. Carle.
   <a href="http://www.net.in.tum.de/pub/diekmann/forte14.pdf">Verifying Security Policies using Host Attributes.</a>
   In FORTE, 34th IFIP International Conference on Formal Techniques for Distributed Objects,
