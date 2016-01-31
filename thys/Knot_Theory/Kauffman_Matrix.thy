@@ -732,7 +732,7 @@ where
 |"kauff_mat (w*ws) = rat_poly.matrix_mult (blockmat w) (kauff_mat ws)"
 
 text{*The following theorem tells us  that if a wall
-represents a tangle diagram, then its Kauffman matrix is a `valid’ matrix.*}
+represents a tangle diagram, then its Kauffman matrix is a `valid' matrix.*}
 theorem matrix_kauff_mat:
 "((is_tangle_diagram ws) 
  \<Longrightarrow> (rat_poly.row_length (kauff_mat ws)) = 2^(nat (domain_wall ws))
