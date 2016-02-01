@@ -147,10 +147,10 @@ by(simp add: step_def split_def)
 lemma step_Nil_iff[simp]: "step xs r act = [] \<longleftrightarrow> xs = []"
 by(auto simp add: step_def mtf2_def split: prod.splits)
 
-lemma set_step2: "\<forall>n \<in> set sws. n+1 < length s \<Longrightarrow> set(step s r (mf,sws)) = set s"
+lemma set_step2: "set(step s r (mf,sws)) = set s"
 by(auto simp add: step_def)
 
-lemma set_step: "\<forall>n \<in> set(snd act). n+1 < length s \<Longrightarrow> set(step s r act) = set s"
+lemma set_step: "set(step s r act) = set s"
 by(cases act)(simp add: set_step2)
 
 lemma distinct_step: "s \<noteq> [] \<Longrightarrow> distinct(step s r as) = distinct s"
@@ -631,22 +631,19 @@ definition adv :: "'a alg_on \<Rightarrow> ('a::linorder) alg_off" where
   let crs = cruel A (step s (last s) (A s (last s))) (size rs - 1)
   in (0,sort_sws (\<lambda>x. size rs - 1 - count_list crs x) s) # replicate (size rs - 1) (0,[]))"
 
-definition wf_on :: "'a alg_on \<Rightarrow> bool" where
-"wf_on A = (\<forall>s r. \<forall>n \<in> set(snd(A s r)). n+1 < length s)"
-
-lemma set_cruel: "wf_on A \<Longrightarrow> s \<noteq> [] \<Longrightarrow> set(cruel A s n) \<subseteq> set s"
+lemma set_cruel: "s \<noteq> [] \<Longrightarrow> set(cruel A s n) \<subseteq> set s"
 apply(induction n arbitrary: s)
-apply(auto simp: step_def wf_on_def split: prod.split)
+apply(auto simp: step_def split: prod.split)
 by (metis empty_iff swaps_inv last_in_set list.set(1) rev_subsetD set_mtf2)
 
 (* Do not convert into structured proof - eta conversion screws it up! *)
 lemma T_on_cruel:
-  "wf_on A \<Longrightarrow> s \<noteq> [] \<Longrightarrow> distinct s \<Longrightarrow> T_on A s (cruel A s n) \<ge> n*(length s)"
+  "s \<noteq> [] \<Longrightarrow> distinct s \<Longrightarrow> T_on A s (cruel A s n) \<ge> n*(length s)"
 apply(induction n arbitrary: s)
  apply(simp)
 apply(erule_tac x = "step s (last s) (A s (last s))" in meta_allE)
 apply(frule_tac sws = "snd(A s (last s))" in index_swaps_last_size)
-apply(simp add: distinct_step t_def split_def wf_on_def
+apply(simp add: distinct_step t_def split_def
         length_greater_0_conv[symmetric] del: length_greater_0_conv)
 done
 
@@ -687,7 +684,7 @@ next
   thus ?thesis by linarith
 qed
 
-lemma T_adv: assumes "wf_on A" "l \<noteq> 0"
+lemma T_adv: assumes "l \<noteq> 0"
 shows "T_off (adv A) [0..<l] (cruel A [0..<l] (Suc n))
   \<le> l\<^sup>2 + l + 1 + (l + 1) * (n+1) div 2"  (is "?l \<le> ?r")
 proof-
@@ -698,15 +695,14 @@ proof-
   let ?c = "count_list ?cr"
   let ?k = "\<lambda>x. n - ?c x"
   let ?sort = "sort_key ?k ?s"
-  have 1: "set ?s' = {0..<l}"
-    apply(subst set_step) using assms(1) by(fastforce simp: wf_on_def)+
+  have 1: "set ?s' = {0..<l}" by(simp add: set_step)
   have 3: "\<And>x. x < l \<Longrightarrow> ?c x \<le> n"
     by(simp) (metis count_le_length length_cruel)
   have "?l = t ?s (last ?s) (0, sort_sws ?k ?s) + (\<Sum>x\<in>set ?s'. ?c x * (index ?sort x + 1))"
-    using assms(1,2)
+    using assms
     apply(simp add:  adv_def T_noop listsum_map_eq_setsum_count2[OF set_cruel])
     apply(subst (3) step_def)
-    apply(simp add: wf_on_def)
+    apply(simp)
     done
   also have "(\<Sum>x\<in>set ?s'. ?c x * (index ?sort x + 1)) = (\<Sum>x\<in>{0..<l}. ?c x * (index ?sort x + 1))"
     by (simp add: 1)
@@ -721,13 +717,13 @@ proof-
     apply(rule sorted_weighted_gauss_Ico_div2)
     apply(erule sorted_asc[where k = "\<lambda>x. n - count_list (cruel A ?s' n) x"])
     apply(auto simp add: index_nth_id dest!: 3)
-    using assms(2) [[linarith_split_limit = 20]] by simp
+    using assms [[linarith_split_limit = 20]] by simp
   also have "(\<Sum>x\<in>{0..<l}. ?c (?sort ! x)) = (\<Sum>x\<in>{0..<l}. ?c (?sort ! (index ?sort x)))"
     by(rule setsum.reindex_bij_betw[where ?h = "index ?sort", symmetric])
       (simp add: bij_betw_imageI inj_on_index2 index_image)
   also have "\<dots> = (\<Sum>x\<in>{0..<l}. ?c x)" by(simp)
   also have "\<dots> = length ?cr"
-    using set_cruel[OF assms(1), of ?s' n] assms(2) 1
+    using set_cruel[of ?s' _ n] assms 1
     by(auto simp: setsum_count_set)
   also have "\<dots> = n" by simp
   also have "t ?s (last ?s) (0, sort_sws ?k ?s) \<le> (length ?s)^2 + length ?s + 1"
@@ -741,9 +737,9 @@ qed
 text {* The main theorem: *}
 
 theorem compet_lb2:
-assumes "wf_on A" and "compet A c {xs::nat list. size xs = l}" and "l \<noteq> 0" and "c \<ge> 0"
+assumes "compet A c {xs::nat list. size xs = l}" and "l \<noteq> 0" and "c \<ge> 0"
 shows "c \<ge> 2*l/(l+1)"
-proof (rule compet_lb0[OF _ _ assms(2) `c\<ge>0`])
+proof (rule compet_lb0[OF _ _ assms(1) `c\<ge>0`])
   let ?S0 = "{xs::nat list. size xs = l}"
   let ?s0 = "[0..<l]"
   let ?cruel = "cruel A ?s0 o Suc"
@@ -764,7 +760,7 @@ proof (rule compet_lb0[OF _ _ assms(2) `c\<ge>0`])
       by (simp del: One_nat_def)
     also have "\<dots> = 2*real(l*(n+1)) / ((l+1)*(n+1))" by simp
     also have "l * (n+1) \<le> ?on n"
-      using T_on_cruel[OF assms(1), of ?s0 "Suc n"] `l \<noteq> 0`
+      using T_on_cruel[of ?s0 "Suc n"] `l \<noteq> 0`
       by (simp add: ac_simps)
     also have "2*real(?on n) / ((l+1)*(n+1)) \<le> 2*real(?on n)/(2*(?off n + ?a))"
     proof -
@@ -777,7 +773,7 @@ proof (rule compet_lb0[OF _ _ assms(2) `c\<ge>0`])
       hence 2: "real_of_int(2*(?off n + ?a)) > 0"
         by(simp only: of_int_0_less_iff zero_less_mult_iff zero_less_numeral simp_thms)
       have "?off n + ?a \<le> (l+1)*(n+1) div 2"
-        using T_adv[OF assms(1) `l\<noteq>0`, of n]
+        using T_adv[OF `l\<noteq>0`, of A n]
         by (simp only: o_apply of_nat_add of_nat_le_iff)
       hence "2*(?off n + ?a) \<le> (l+1)*(n+1)"
         by (simp add: zdiv_int)
