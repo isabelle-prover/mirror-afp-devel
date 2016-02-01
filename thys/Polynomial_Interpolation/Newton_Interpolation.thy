@@ -5,9 +5,9 @@
 *)
 section \<open>Newton Interpolation\<close>
 
-text \<open>We proved soundness of Newton interpolation, i.e., a method to interpolate a polynomial $p$
+text \<open>We proved the soundness of the Newton interpolation, i.e., a method to interpolate a polynomial $p$
   from a list of points $(x_1,p(x_1)), (x_2, p(x_2)), \ldots$. In experiments it performs
-  much faster than Lagrange-interpolation.\<close>
+  much faster than the Lagrange interpolation.\<close>
 theory Newton_Interpolation
 imports 
   "~~/src/HOL/Library/Monad_Syntax"
@@ -16,7 +16,7 @@ imports
   Is_Rat_To_Rat
 begin
 
-text \<open>For Newton interpolation, we start with an efficient implementation (which in prior examples
+text \<open>For the Newton interpolation, we start with an efficient implementation (which in prior examples
   we used as an uncertified oracle). Later on, a more abstract definition of the algorithm
   is described for which soundness is proven, and which is provably equivalent to the efficient
   implementation.

@@ -91,11 +91,7 @@ lemma trefoil:
 "kauff_mat ([cup,cup]*[vert,over,vert]*[vert,over,vert]*[vert,over,vert]
               *(basic [cap,cap]))
           = [[trefoil_polynomial]]"
- apply(simp add:mat_multI_def)
- apply(simp add:matT_vec_multI_def)
- apply(auto simp add:replicate_def rat_poly.row_length_def)
- apply(auto simp add:scalar_prod)
- apply(simp add:trefoil_polynomial_def)
- done
+ by(simp add: mat_multI_def matT_vec_multI_def rat_poly.row_length_def
+   scalar_prod trefoil_polynomial_def)
 
 end

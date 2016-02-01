@@ -264,8 +264,8 @@ qed
 locale MTF_Off =
 fixes as :: "'a answer list"
 fixes rs :: "'a list"
-fixes init :: "'a list"
-assumes dist_init[simp]: "distinct init"
+fixes s0 :: "'a list"
+assumes dist_s0[simp]: "distinct s0"
 assumes len_as: "length as = length rs"
 begin
 
@@ -276,21 +276,21 @@ definition sw_A :: "nat list list" where
 "sw_A = map snd as"
 
 fun s_A :: "nat \<Rightarrow> 'a list" where
-"s_A 0 = init" |
+"s_A 0 = s0" |
 "s_A(Suc n) = step (s_A n) (rs!n) (mtf_A!n, sw_A!n)"
 
-lemma length_s_A[simp]: "length(s_A n) = length init"
+lemma length_s_A[simp]: "length(s_A n) = length s0"
 by (induction n) simp_all
 
 lemma dist_s_A[simp]: "distinct(s_A n)" 
 by(induction n) (simp_all add: step_def)
 
-lemma set_s_A[simp]: "set(s_A n) = set init"
+lemma set_s_A[simp]: "set(s_A n) = set s0"
 by(induction n) (simp_all add: step_def)
 
 
 fun s_mtf :: "nat \<Rightarrow> 'a list" where
-"s_mtf 0 = init" |
+"s_mtf 0 = s0" |
 "s_mtf (Suc n) = mtf (rs!n) (s_mtf n)"
 
 definition t_mtf :: "nat \<Rightarrow> int" where
@@ -314,7 +314,7 @@ definition t_A :: "nat \<Rightarrow> int" where
 definition T_A :: "nat \<Rightarrow> int" where
 "T_A n = (\<Sum>i<n. t_A i)"
 
-lemma length_s_mtf[simp]: "length(s_mtf n) = length init"
+lemma length_s_mtf[simp]: "length(s_mtf n) = length s0"
 by (induction n) simp_all
 
 lemma dist_s_mtf[simp]: "distinct(s_mtf n)"
@@ -324,7 +324,7 @@ apply (auto simp: mtf_def index_take set_drop_if_index)
 apply (metis set_drop_if_index index_take less_Suc_eq_le linear)
 done
 
-lemma set_s_mtf[simp]: "set (s_mtf n) = set init"
+lemma set_s_mtf[simp]: "set (s_mtf n) = set s0"
 by (induction n) (simp_all)
 
 lemma dperm_inv: "dist_perm (s_A n) (s_mtf n)"
@@ -393,7 +393,7 @@ qed
 lemma T_A_nneg: "0 \<le> T_A n"
 by(auto simp add: setsum_nonneg T_A_def t_A_def c_A_def p_A_def)
 
-lemma T_mtf_ub: "\<forall>i<n. rs!i \<in> set init \<Longrightarrow> T_mtf n \<le> n * size init"
+lemma T_mtf_ub: "\<forall>i<n. rs!i \<in> set s0 \<Longrightarrow> T_mtf n \<le> n * size s0"
 proof(induction n)
   case 0 show ?case by(simp add: T_mtf_def)
 next
@@ -402,10 +402,10 @@ next
       by(simp add: T_mtf_def t_mtf_def less_Suc_eq del: index_less)
 qed
 
-corollary T_mtf_competitive: assumes "init \<noteq> []" and "\<forall>i<n. rs!i \<in> set init"
-shows "T_mtf n \<le> (2 - 1/(size init)) * T_A n"
+corollary T_mtf_competitive: assumes "s0 \<noteq> []" and "\<forall>i<n. rs!i \<in> set s0"
+shows "T_mtf n \<le> (2 - 1/(size s0)) * T_A n"
 proof cases
-  assume 0: "real_of_int(T_A n) \<le> n * (size init)"
+  assume 0: "real_of_int(T_A n) \<le> n * (size s0)"
   have "T_mtf n \<le> 2 * T_A n - n"
   proof -
     have "T_mtf n \<le> (\<Sum>i<n. 2*c_A i + p_A i - f_A i) - n" by(rule Sleator_Tarjan)
@@ -415,19 +415,19 @@ proof cases
     finally show ?thesis by simp
   qed
   hence "real_of_int(T_mtf n) \<le> 2 * of_int(T_A n) - n" by simp
-  also have "\<dots> = 2 * of_int(T_A n) - (n * size init) / size init"
+  also have "\<dots> = 2 * of_int(T_A n) - (n * size s0) / size s0"
     using assms(1) by simp
-  also have "\<dots> \<le> 2 * real_of_int(T_A n) - T_A n / size init"
+  also have "\<dots> \<le> 2 * real_of_int(T_A n) - T_A n / size s0"
     by(rule diff_left_mono[OF divide_right_mono[OF 0]]) simp
-  also have "\<dots> = (2 - 1 / size init) * T_A n" by algebra
+  also have "\<dots> = (2 - 1 / size s0) * T_A n" by algebra
   finally show ?thesis .
 next
-  assume 0: "\<not> real_of_int(T_A n) \<le> n * (size init)"
-  have "2 - 1 / size init \<ge> 1" using assms(1)
+  assume 0: "\<not> real_of_int(T_A n) \<le> n * (size s0)"
+  have "2 - 1 / size s0 \<ge> 1" using assms(1)
     by (auto simp add: field_simps neq_Nil_conv)
-  have "real_of_int (T_mtf n) \<le> n * size init" using T_mtf_ub[OF assms(2)] by linarith
+  have "real_of_int (T_mtf n) \<le> n * size s0" using T_mtf_ub[OF assms(2)] by linarith
   also have "\<dots> < of_int(T_A n)" using 0 by simp
-  also have "\<dots> \<le> (2 - 1 / size init) * T_A n" using assms(1) T_A_nneg[of n]
+  also have "\<dots> \<le> (2 - 1 / size s0) * T_A n" using assms(1) T_A_nneg[of n]
     by(auto simp add: mult_le_cancel_right1 field_simps neq_Nil_conv)
   finally show ?thesis by linarith
 qed
@@ -452,7 +452,7 @@ next
   qed
 qed
 
-lemma T_A_eq: "T_A (length rs) = T init rs as"
+lemma T_A_eq: "T_A (length rs) = T s0 rs as"
 using T_A_eq_lem by(simp add: T_A_def atLeast0LessThan)
 
 lemma nth_off_MTF: "n < length rs \<Longrightarrow> off MTF s rs ! n = (size s - 1,[])"
@@ -462,12 +462,12 @@ lemma t_mtf_MTF: "n < length rs \<Longrightarrow>
   t_mtf n = int (t (s_mtf n) (rs ! n) (off MTF s rs ! n))"
 by(simp add: t_mtf_def t_def nth_off_MTF)
 
-lemma mtf_MTF: "n < length rs \<Longrightarrow> length s = length init \<Longrightarrow> mtf (rs ! n) s =
-       step s (rs ! n) (off MTF init rs ! n)"
+lemma mtf_MTF: "n < length rs \<Longrightarrow> length s = length s0 \<Longrightarrow> mtf (rs ! n) s =
+       step s (rs ! n) (off MTF s0 rs ! n)"
 by(auto simp add: nth_off_MTF step_def mtf_eq_mtf2)
 
 lemma T_mtf_eq_lem: "(\<Sum>i=0..<length rs. t_mtf i) =
-  T (s_mtf 0) (drop 0 rs) (drop 0 (off MTF init rs))"
+  T (s_mtf 0) (drop 0 rs) (drop 0 (off MTF s0 rs))"
 proof(induction rule: zero_induct[of _ "size rs"])
   case 1 thus ?case by (simp add: len_as)
 next
@@ -477,32 +477,32 @@ next
     assume "n < length rs"
     thus ?case using 2
       by(simp add: Cons_nth_drop_Suc[symmetric,where i=n] len_as setsum_head_upt_Suc
-        t_mtf_MTF[where s=init] mtf_A_def sw_A_def mtf_MTF)
+        t_mtf_MTF[where s=s0] mtf_A_def sw_A_def mtf_MTF)
   next
     assume "\<not> n < length rs" thus ?case by (simp add: len_as)
   qed
 qed
 
-lemma T_mtf_eq: "T_mtf (length rs) = T_on MTF init rs"
+lemma T_mtf_eq: "T_mtf (length rs) = T_on MTF s0 rs"
 using T_mtf_eq_lem by(simp add: T_mtf_def atLeast0LessThan)
 
-corollary MTF_competitive2: "init \<noteq> [] \<Longrightarrow> \<forall>i<length rs. rs!i \<in> set init \<Longrightarrow>
-  T_on MTF init rs \<le> (2 - 1/(size init)) * T init rs as"
+corollary MTF_competitive2: "s0 \<noteq> [] \<Longrightarrow> \<forall>i<length rs. rs!i \<in> set s0 \<Longrightarrow>
+  T_on MTF s0 rs \<le> (2 - 1/(size s0)) * T s0 rs as"
 by (metis T_mtf_competitive T_A_eq T_mtf_eq of_int_of_nat_eq)
 
 end
 
-theorem compet_MTF: assumes "init \<noteq> []" "distinct init" "set rs \<subseteq> set init"
-shows "T_on MTF init rs \<le> (2 - 1/(size init)) * T_opt init rs"
+theorem compet_MTF: assumes "s0 \<noteq> []" "distinct s0" "set rs \<subseteq> set s0"
+shows "T_on MTF s0 rs \<le> (2 - 1/(size s0)) * T_opt s0 rs"
 proof-
-  from assms(3) have 1: "\<forall>i < length rs. rs!i \<in> set init" by auto
+  from assms(3) have 1: "\<forall>i < length rs. rs!i \<in> set s0" by auto
   { fix as :: "'a answer list" assume len: "length as = length rs"
-    interpret MTF_Off as rs init proof qed (auto simp: assms(2) len)
+    interpret MTF_Off as rs s0 proof qed (auto simp: assms(2) len)
     from MTF_competitive2[OF assms(1) 1] assms(1)
-    have "T_on MTF init rs / (2 - 1 / (length init)) \<le> of_int(T init rs as)"
+    have "T_on MTF s0 rs / (2 - 1 / (length s0)) \<le> of_int(T s0 rs as)"
       by(simp add: field_simps length_greater_0_conv[symmetric]
         del: length_greater_0_conv) }
-  hence "T_on MTF init rs / (2 - 1/(size init)) \<le> T_opt init rs"
+  hence "T_on MTF s0 rs / (2 - 1/(size s0)) \<le> T_opt s0 rs"
     apply(simp add: T_opt_def Inf_nat_def)
     apply(rule LeastI2_wellorder)
     using length_replicate[of "length rs" undefined] apply fastforce
@@ -614,7 +614,7 @@ qed simp
 
 lemma swaps_ins_sws:
   "swaps (ins_sws k x xs) (x#xs) = insort_key k x xs"
-by(induction xs)(auto simp: swap_def[of 0] )
+by(induction xs)(auto simp: swap_def[of 0])
 
 lemma swaps_sort_sws[simp]:
   "swaps (sort_sws k xs) xs = sort_key k xs"

@@ -800,6 +800,9 @@ lemma (in ring_hom) resultant_map_poly:
     and "m' \<noteq> m \<Longrightarrow> n' \<noteq> n \<Longrightarrow> hom r = 0"
   using resultant_map_poly_all unfolding assms by auto
 
+lemma (in inj_ring_hom) resultant_hom: "resultant (map_poly hom p) (map_poly hom q) = hom (resultant p q)"
+  by (subst resultant_map_poly(1), auto)
+  
 subsubsection\<open>Resultant as Polynomial Expression\<close>
 context begin
 text {* This context provides notions for proving Lemma 7.2.1 of the textbook. *}

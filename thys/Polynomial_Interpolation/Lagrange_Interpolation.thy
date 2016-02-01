@@ -5,7 +5,7 @@
 *)
 section \<open>Lagrange Interpolation\<close>
 
-text \<open>We formalized Lagrange interpolation, i.e., a method to interpolate a polynomial $p$
+text \<open>We formalized the Lagrange interpolation, i.e., a method to interpolate a polynomial $p$
   from a list of points $(x_1,p(x_1)), (x_2, p(x_2)), \ldots$. The interpolation algorithm is proven
   to be sound and complete.\<close>
 
