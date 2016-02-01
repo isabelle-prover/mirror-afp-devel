@@ -694,6 +694,160 @@ lemma resultant_const[simp]:
   fixes a :: "'a :: comm_ring_1"
   shows "resultant [:a:] q = a ^ (degree q)"
   unfolding resultant_def unfolding sylvester_mat_const by simp
+  
+lemma resultant_swap: "resultant f g = 
+  (if even (degree f) \<or> even (degree g) then resultant g f else - resultant g f)"
+proof -
+  def sw \<equiv> "\<lambda> (A :: 'a mat) xs. fold (\<lambda> (i,j). swaprows i j) xs A"
+  {
+    fix xs and A
+    have "dim\<^sub>r (sw A xs) = dim\<^sub>r A" "dim\<^sub>c (sw A xs) = dim\<^sub>c A"
+      unfolding sw_def by (induct xs arbitrary: A, auto)
+  } note dim_sw[simp] = this
+  {
+    fix xs and A :: "'a mat"
+    assume "dim\<^sub>r A = dim\<^sub>c A" "\<And> i j. (i,j) \<in> set xs \<Longrightarrow> i < dim\<^sub>c A \<and> j < dim\<^sub>c A \<and> i \<noteq> j"
+    hence "det (sw A xs) = (if even (length xs) then det A else - det A)"
+      unfolding sw_def
+    proof (induct xs arbitrary: A)
+      case (Cons xy xs A)
+      obtain x y where xy: "xy = (x,y)" by force
+      from Cons(3)[unfolded xy, of x y] Cons(2)
+      have [simp]: "det (swaprows x y A) = - det A"
+        by (intro det_swaprows, auto)
+      show ?case unfolding xy by (simp, insert Cons(2-), (subst Cons(1), auto)+)
+    qed simp
+  } note sw = this
+  def swb \<equiv> "\<lambda> A i n. sw A (map (\<lambda> j. (j,Suc j)) [i ..< i + n])"
+  {
+    fix k n and A :: "'a mat"
+    assume k_n: "k + n < dim\<^sub>r A"
+    hence "swb A k n = mat (dim\<^sub>r A) (dim\<^sub>c A) (\<lambda> (i,j). let r = 
+      (if i < k \<or> i > k + n then i else if i = k + n then k else Suc i)
+      in A $$ (r,j))"
+    proof (induct n)
+      case 0
+      show ?case unfolding swb_def sw_def by (rule mat_eqI, auto)
+    next
+      case (Suc n)
+      hence dim: "k + n < dim\<^sub>r A" by auto
+      have id: "swb A k (Suc n) = swaprows (k + n) (Suc k + n) (swb A k n)" unfolding swb_def sw_def by simp
+      show ?case unfolding id Suc(1)[OF dim]
+        by (rule mat_eqI, insert Suc(2), auto)
+    qed
+  } note swb = this
+  def swbl \<equiv> "\<lambda> A k n. fold (\<lambda> i A. swb A i n) (rev [0 ..< k]) A"
+  {
+    fix k n and A :: "'a mat"
+    assume k_n: "k + n \<le> dim\<^sub>r A"
+    hence "swbl A k n = mat (dim\<^sub>r A) (dim\<^sub>c A) (\<lambda> (i,j). let r = 
+      (if i < n then i + k else if i < k + n then i - n else i)
+      in A $$ (r,j))"
+    proof (induct k arbitrary: A)
+      case 0
+      thus ?case unfolding swbl_def by (intro mat_eqI, auto simp: swb)
+    next
+      case (Suc k)
+      hence dim: "k + n < dim\<^sub>r A" by auto
+      have id: "swbl A (Suc k) n = swbl (swb A k n) k n" unfolding swbl_def by simp
+      show ?case unfolding id swb[OF dim]
+        by (subst Suc(1), insert dim, force, intro mat_eqI, auto simp: less_Suc_eq_le) 
+    qed
+  } note swbl = this
+  {
+    fix k n and A :: "'a mat"
+    assume k_n: "k + n \<le> dim\<^sub>c A" "dim\<^sub>r A = dim\<^sub>c A" 
+    hence "det (swbl A k n) = (if even (k * n) then det A else - det A)"
+    proof (induct k arbitrary: A)
+      case 0
+      thus ?case unfolding swbl_def by auto
+    next
+      case (Suc k)
+      hence dim: "k + n < dim\<^sub>r A" by auto
+      have id: "swbl A (Suc k) n = swbl (swb A k n) k n" unfolding swbl_def by simp
+      have det: "det (swb A k n) = (if even n then det A else - det A)" unfolding swb_def
+        by (subst sw, insert Suc(2-), auto)
+      show ?case unfolding id 
+        by (subst Suc(1), insert Suc(2-), auto simp: det, auto simp: swb)
+    qed
+  } note det_swbl = this
+  let ?dg = "degree g" let ?df = "degree f"
+  have le: "?dg + ?df \<le> dim\<^sub>r (sylvester_mat f g)" by simp
+  have gf: "sylvester_mat g f = swbl (sylvester_mat f g) ?dg ?df"
+    unfolding swbl[OF le]
+    by (rule mat_eqI, auto simp: sylvester_mat_def sylvester_mat_sub_def ac_simps)
+  have gf: "resultant g f = (if even (?dg * ?df) then resultant f g else - resultant f g)"
+    unfolding resultant_def gf
+    by (subst det_swbl, auto)
+  show ?thesis unfolding gf by auto
+qed
+    
+lemma resultant_smult: assumes "(c :: 'a :: idom) \<noteq> 0" 
+  shows "resultant (smult c f) g = c ^ (degree g) * resultant f g"
+proof -
+  let ?df = "degree f"
+  let ?dg = "degree g"
+  let ?d = "?df + ?dg"
+  from `c \<noteq> 0` have deg: "degree (smult c f) = ?df" by simp
+  def list \<equiv> "[0..< ?dg]"
+  let ?S = "sylvester_mat f g"
+  let ?cS = "sylvester_mat (smult c f) g"
+  let ?fS' = "\<lambda> xs. fold (\<lambda> i A. mat_multrow i c A) xs ?S"
+  let ?fS = "?fS' [0..< ?dg]"
+  def dg \<equiv> ?dg  
+  def S \<equiv> ?S
+  have dim: "dim\<^sub>r ?S = ?d" "dim\<^sub>c ?S = ?d"  "dim\<^sub>r ?cS = ?d" "dim\<^sub>c ?cS = ?d" using deg by auto
+  {
+    fix list
+    have "dim\<^sub>r (?fS' list) = degree f + degree g"
+      "dim\<^sub>c (?fS' list) = degree f + degree g"
+      using dim(1-2) unfolding S_def[symmetric]
+      by (induct list arbitrary: S, auto)
+  } note dim_f = this
+  have dim': "dim\<^sub>r ?fS = ?d" "dim\<^sub>c ?fS = ?d" by (auto simp: dim_f)
+  have id: "?cS = ?fS"
+  proof (rule mat_eqI, unfold dim dim')
+    fix i j
+    assume ij: "i < ?d" "j < ?d"
+    {
+      fix A :: "'a mat" and xs
+      assume "A \<in> carrier\<^sub>m ?d ?d" "i \<notin> set xs"
+      hence "(fold (\<lambda> i A. mat_multrow i c A) xs A) $$ (i,j) = A $$ (i,j)"
+        by (induct xs arbitrary: A, insert ij, auto)
+    } note nmem = this
+    have cS: "?cS $$ (i,j) = (if i < ?dg then c * ?S $$ (i,j) else ?S $$ (i,j))" 
+      by (subst sylvester_mat_index, unfold deg, rule ij(1), rule ij(2), unfold sylvester_mat_index[OF ij]) auto
+    also have "\<dots> = ?fS $$ (i,j)"
+    proof (cases "i < ?dg")
+      case False
+      show ?thesis
+        by (subst nmem, insert False, auto)
+    next
+      case True
+      hence list: "list = [0..<i] @ [i] @ [Suc i ..< ?dg]" unfolding list_def
+        by (metis append_Cons append_self_conv2 le0 less_imp_add_positive upt_add_eq_append upt_rec)
+      have "?fS $$ (i,j) = (mat_multrow i c (?fS' [0 ..<i])) $$ (i,j)"
+        unfolding list_def[symmetric] list fold_append o_def
+        by (subst nmem, auto simp: dim_f)
+      also have "\<dots> = c * ?fS' [0 ..< i] $$ (i,j)"
+        by (subst mat_index_multrow, insert ij, auto simp: dim_f)
+      also have "?fS' [0 ..< i] $$ (i,j) = ?S $$ (i,j)"
+        by (subst nmem, auto)
+      finally show ?thesis using True by simp
+    qed
+    finally show "?cS $$ (i,j) = ?fS $$ (i,j)" by simp
+  qed auto
+  have dg: "dg = length list" and sq: "dim\<^sub>r S = dim\<^sub>c S" and list: "set list \<subseteq> {0 ..< dim\<^sub>c S}" 
+    unfolding dg_def list_def S_def by auto
+  from list sq show ?thesis 
+    unfolding resultant_def id list_def[symmetric] S_def[symmetric] unfolding dg_def[symmetric] dg
+  proof (induct list arbitrary: S)
+    case (Cons i list)
+    show ?case
+      by (simp, subst Cons(1), insert Cons(2-) `c \<noteq> 0`, auto intro!: det_multrow)
+  qed simp
+qed
+
 
 subsubsection \<open>Homomorphism and Resultant\<close>
 
