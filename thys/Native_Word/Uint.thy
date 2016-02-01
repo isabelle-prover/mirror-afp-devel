@@ -208,8 +208,8 @@ type Word = Data.Word.Word;
 dflt_size :: Prelude.Integer;
 dflt_size = Prelude.toInteger (bitSize_aux (0::Word))
   where {
-    bitSize_aux :: (Data.Bits.FiniteBits a, Prelude.Bounded a) => a -> Uint.Int;
-    bitSize_aux = Data.Bits.finiteBitSize
+    bitSize_aux :: (Data.Bits.Bits a, Prelude.Bounded a) => a -> Uint.Int;
+    bitSize_aux = Data.Bits.bitSize
   };
 *}
   and (Haskell_Quickcheck)
@@ -223,11 +223,11 @@ type Int = Data.Int.Int;
 
 type Word = Data.Word.Word;
 
-dflt_size :: Prelude.Integer;
-dflt_size = Prelude.toInteger (bitSize_aux (0::Word))
+dflt_size :: Prelude.Int;
+dflt_size = bitSize_aux (0::Word)
   where {
-    bitSize_aux :: (Data.Bits.FiniteBits a, Prelude.Bounded a) => a -> Uint.Int;
-    bitSize_aux = Data.Bits.finiteBitSize
+    bitSize_aux :: (Data.Bits.Bits a, Prelude.Bounded a) => a -> Uint.Int;
+    bitSize_aux = Data.Bits.bitSize
   };
 *}
 code_reserved Haskell Uint dflt_size
