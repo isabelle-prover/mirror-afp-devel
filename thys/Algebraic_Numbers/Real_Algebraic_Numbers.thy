@@ -2242,9 +2242,30 @@ proof -
   qed simp
 qed
 
+definition normalize_rat_poly :: "rat poly \<Rightarrow> rat poly" where
+  "normalize_rat_poly p = map_poly of_int (snd (rat_to_int_poly p))"
+
+lemma normalize_rat_poly[simp]: "alg_poly x (normalize_rat_poly p) = alg_poly x p" 
+  "rpoly (normalize_rat_poly p) y = 0 \<longleftrightarrow> rpoly p y = 0" "normalize_rat_poly p = 0 \<longleftrightarrow> p = 0"
+proof -
+  obtain d q where ri: "rat_to_int_poly p = (d,q)" by force
+  from rat_to_int_poly[OF this] obtain d where p: "p = smult (inverse d) (map_poly of_int q)" and d: "d \<noteq> 0" by auto
+  from arg_cong[OF p, of "smult d"] d have q: "map_poly of_int q = smult d p" by simp
+  hence id: "normalize_rat_poly p = smult d p" using ri unfolding normalize_rat_poly_def by auto
+  show rp: "\<And> y. rpoly (normalize_rat_poly p) y = 0 \<longleftrightarrow> rpoly p y = 0" unfolding id
+    by (metis (no_types, lifting) inverse_zero of_rat_inverse p poly_smult_zero_iff rpoly.map_poly_smult rpoly.poly_map_poly_eval_poly)
+  show norm: "normalize_rat_poly p = 0 \<longleftrightarrow> p = 0" unfolding id using d by auto
+  show "alg_poly x (normalize_rat_poly p) = alg_poly x p" unfolding alg_poly_def norm rp by auto
+qed
+
+lemma normalize_rat_poly2[simp]: "root_info_cond r (normalize_rat_poly p) = root_info_cond r p"
+  "unique_root (normalize_rat_poly p, x, y) = unique_root (p, x, y)"
+  "the_unique_root (normalize_rat_poly p,x,y) = the_unique_root (p,x,y)"
+  unfolding root_info_cond_def root_cond_def unique_root_def the_unique_root_def by auto
+
 private fun add_rai_fun :: "rai_intern \<Rightarrow> rai_intern \<Rightarrow> rai_intern" where
   "add_rai_fun (Some (un1,ri1,p1,l1,r1)) (Some (un2,ri2,p2,l2,r2)) = (
-    let p = poly_add p1 p2;
+    let p = poly_add (normalize_rat_poly p1) (normalize_rat_poly p2);
       ri = count_roots_interval_rat p;
       cr = root_info.l_r ri;
       (l,r) = tighten_poly_bounds_binary (root_info.l_r ri1) (root_info.l_r ri2) cr 
@@ -2274,25 +2295,28 @@ next
     obtain un2 ri2 p2 l2 r2 where yt: "y = Some (un2,ri2,p2,l2,r2)" unfolding yt by (cases yt, auto)
     let ?x = "rai_real (Some (un1, ri1, p1, l1, r1))"
     let ?y = "rai_real (Some (un2, ri2, p2, l2, r2))"
-    let ?p = "poly_add p1 p2"    
+    let ?p1 = "normalize_rat_poly p1"
+    let ?p2 = "normalize_rat_poly p2"
+    let ?p = "poly_add ?p1 ?p2"    
     let ?ri = "count_roots_interval_rat ?p"
     let ?lr = "root_info.l_r"
     obtain l r where tb: "tighten_poly_bounds_binary (?lr ri1) (?lr ri2) (?lr ?ri)
       (\<lambda>l1 r1 l2 r2. (l1 + l2, r1 + r2)) l1 r1 l2 r2 = (l,r)" by force
     note x = rai_condD[OF x[unfolded xt]]
     note y = rai_condD[OF y[unfolded yt]]
-    from x(1,5) have ax: "alg_poly ?x p1" unfolding root_cond_def alg_poly_def by simp
-    from y(1,5) have ay: "alg_poly ?y p2" unfolding root_cond_def alg_poly_def by simp
+    from x(1,5) have ax: "alg_poly ?x ?p1" unfolding root_cond_def alg_poly_def by simp
+    from y(1,5) have ay: "alg_poly ?y ?p2" unfolding root_cond_def alg_poly_def by simp
     from alg_poly_add_real[OF ax ay] have axy: "alg_poly (?x + ?y) ?p" .
     from alg_polyD[OF this] have p: "?p \<noteq> 0" and rt: "rpoly ?p (?x + ?y) = 0" .
-    have bnd: "\<And>l1 r1 l2 r2. root_cond (p1, l1, r1) ?x \<Longrightarrow>
-      root_cond (p2, l2, r2) ?y \<Longrightarrow> root_cond (?p, l1 + l2, r1 + r2) (?x + ?y)"
+    have bnd: "\<And>l1 r1 l2 r2. root_cond (?p1, l1, r1) ?x \<Longrightarrow>
+      root_cond (?p2, l2, r2) ?y \<Longrightarrow> root_cond (?p, l1 + l2, r1 + r2) (?x + ?y)"
       unfolding root_cond_def split using rt by auto
     note ri = count_roots_interval_rat[OF p]
     have xy: "?x = the_unique_root (p1,l1,r1)" "?y = the_unique_root (p2,l2,r2)" by (auto simp: rai_real_def)
+    hence xy: "?x = the_unique_root (?p1,l1,r1)" "?y = the_unique_root (?p2,l2,r2)" by auto
     have "root_cond (?p,l,r) (?x + ?y) \<and> unique_root (?p,l,r)"
-      by (rule tighten_poly_bounds_binary(1)[OF x(9) refl y(9) refl ri refl x(7) y(7) xy
-      bnd p tb], auto simp: field_simps)
+      by (rule tighten_poly_bounds_binary(1)[OF _ refl _ refl ri refl _ _ xy bnd p tb], insert x(7,9) y(7,9),
+        auto simp: field_simps)
     hence rc: "root_cond (?p,l,r) (?x + ?y)" and ur: "unique_root (?p,l,r)" by auto
     from the_unique_root(5)[OF ur rc] have xy: " ?x + ?y = the_unique_root (?p,l,r)" by auto
     let ?ri = "count_roots_interval_rat ?p"
@@ -2472,7 +2496,7 @@ qed
 
 private fun mult_rai_fun_pos :: "rai_intern_flat \<Rightarrow> rai_intern_flat \<Rightarrow> rai_intern_flat" where
   "mult_rai_fun_pos (un1,ri1,p1,l1,r1) (un2,ri2,p2,l2,r2) = (
-    let p = poly_mult p1 p2;
+    let p = poly_mult (normalize_rat_poly p1) (normalize_rat_poly p2);
       ri = count_roots_interval_rat p;
       (l,r) = tighten_poly_bounds_binary (root_info.l_r ri1) (root_info.l_r ri2) (root_info.l_r ri) 
         (\<lambda> l1 r1 l2 r2. (l1 * l2, r1 * r2)) l1 r1 l2 r2;
@@ -2564,15 +2588,17 @@ proof -
   let ?x = "rai_real (Some (un1, ri1, p1, l1, r1))"
   let ?y = "rai_real (Some (un2, ri2, p2, l2, r2))"
   let ?r = "real_of_rat"
-  let ?p = "poly_mult p1 p2"
+  let ?p1 = "normalize_rat_poly p1"
+  let ?p2 = "normalize_rat_poly p2"
+  let ?p = "poly_mult ?p1 ?p2"
   let ?ri = "count_roots_interval_rat ?p"
   let ?lr = "root_info.l_r"
   obtain l r where tb: "tighten_poly_bounds_binary (?lr ri1) (?lr ri2) (?lr ?ri)
       (\<lambda>l1 r1 l2 r2. (l1 * l2, r1 * r2)) l1 r1 l2 r2 = (l,r)" by force
   note x = rai_condD[OF x[unfolded xt]]
   note y = rai_condD[OF y[unfolded yt]]
-  from x(1,5) have ax: "alg_poly ?x p1" unfolding root_cond_def alg_poly_def by simp
-  from y(1,5) have ay: "alg_poly ?y p2" unfolding root_cond_def alg_poly_def by simp
+  from x(1,5) have ax: "alg_poly ?x ?p1" unfolding root_cond_def alg_poly_def by simp
+  from y(1,5) have ay: "alg_poly ?y ?p2" unfolding root_cond_def alg_poly_def by simp
   from alg_poly_mult_real[OF ax ay] pos[unfolded xt yt] have axy: "alg_poly (?x * ?y) ?p" by auto
   from alg_polyD[OF this] have p: "?p \<noteq> 0" and rt: "rpoly ?p (?x * ?y) = 0" .
   from x(1) pos(1)[unfolded xt] have "?r r1 > 0" unfolding root_cond_def split by arith
@@ -2585,7 +2611,7 @@ proof -
   hence l2_pos: "l2 > 0" unfolding sgn_rat_def by (cases "l2 = 0"; cases "l2 < 0"; auto)
   {
     fix l1 r1 l2 r2 :: rat
-    assume pos: "l1 > 0" "l2 > 0" and rc: "root_cond (p1, l1, r1) ?x" "root_cond (p2, l2, r2) ?y"
+    assume pos: "l1 > 0" "l2 > 0" and rc: "root_cond (?p1, l1, r1) ?x" "root_cond (?p2, l2, r2) ?y"
     from rc(1)[unfolded root_cond_def] have 1: "?r l1 \<le> ?x" "?x \<le> ?r r1" by auto
     from rc(2)[unfolded root_cond_def] have 2: "?r l2 \<le> ?y" "?y \<le> ?r r2" by auto
     from pos have pos: "?r l1 \<ge> 0" "?r l2 \<ge> 0" by auto
@@ -2599,7 +2625,7 @@ proof -
       unfolding root_cond_def split using rt l r by auto
   } note bnd = this
   note ri = count_roots_interval_rat[OF p]
-  have xy: "?x = the_unique_root (p1,l1,r1)" "?y = the_unique_root (p2,l2,r2)" by (auto simp: rai_real_def)
+  have xy: "?x = the_unique_root (?p1,l1,r1)" "?y = the_unique_root (?p2,l2,r2)" by (auto simp: rai_real_def)
   {
     fix l1 r1 l2 r2 l1' r1' l2' r2' l l' r r' :: rat
     let ?m1 = "(l1+r1)/2" let ?m2 = "(l2+r2)/2"
@@ -2645,8 +2671,10 @@ proof -
   } note decr = this
   have I_mono: "\<And> l l' :: rat. l > 0 \<Longrightarrow> l \<le> l' \<Longrightarrow> l' > 0" by auto
   note z = z[unfolded xt yt, simplified, unfolded Let_def tb split]
+  from x(7) y(7) have ur: "unique_root (?p1,l1,r1)" "unique_root (?p2,l2,r2)" by auto
+  from x(9) y(9) have ric: "root_info_cond ri1 ?p1" "root_info_cond ri2 ?p2" by auto
   note tb = tighten_poly_bounds_binary[where I = "\<lambda> x. x > (0 :: rat)", 
-    OF x(9) refl y(9) refl ri refl x(7) y(7) xy bnd p tb decr I_mono l1_pos l2_pos]
+    OF ric(1) refl ric(2) refl ri refl ur xy bnd p tb decr I_mono l1_pos l2_pos]
   have "root_cond (?p,l,r) (?x * ?y) \<and> unique_root (?p,l,r)"
     by (rule tb(1))
   hence rc: "root_cond (?p,l,r) (?x * ?y)" and ur: "unique_root (?p,l,r)" by auto
