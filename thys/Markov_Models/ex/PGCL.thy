@@ -22,9 +22,9 @@ primrec wp :: "'s pgcl \<Rightarrow> ('s \<Rightarrow> ereal) \<Rightarrow> ('s 
 | "wp (Assign u) f    = f \<circ> u"
 | "wp (Seq c\<^sub>1 c\<^sub>2) f    = wp c\<^sub>1 (wp c\<^sub>2 f)"
 | "wp (If b c\<^sub>1 c\<^sub>2) f   = (\<lambda>s. if b s then wp c\<^sub>1 f s else wp c\<^sub>2 f s)"
-| "wp (Par c\<^sub>1 c\<^sub>2) f    = inf (wp c\<^sub>1 f) (wp c\<^sub>2 f)"
+| "wp (Par c\<^sub>1 c\<^sub>2) f    = wp c\<^sub>1 f \<sqinter> wp c\<^sub>2 f"
 | "wp (Prob p c\<^sub>1 c\<^sub>2) f = (\<lambda>s. pmf p True * wp c\<^sub>1 f s + pmf p False * wp c\<^sub>2 f s)"
-| "wp (While b c) f   = lfp (\<lambda>X s. if b s then wp c (sup (\<lambda>_.0) X) s else f s)"
+| "wp (While b c) f   = lfp (\<lambda>X s. if b s then wp c ((\<lambda>_. 0) \<squnion> X) s else f s)"
 
 lemma wp_mono: "mono (wp c)"
   by (induction c)

@@ -853,6 +853,19 @@ proof eventually_elim
   qed
 qed
 
+lemma AE_T_ev_HLD':
+  assumes exiting: "\<And>s. s \<notin> X \<Longrightarrow> \<exists>t\<in>X. (s, t) \<in> accessible"
+  assumes fin: "finite (-X)"
+  shows "AE \<omega> in T s. ev (HLD X) \<omega>"
+proof (rule AE_T_ev_HLD)
+  show "\<And>t. (s, t) \<in> (SIGMA s:UNIV. set_pmf (K s) - X)\<^sup>* \<Longrightarrow> \<exists>t'\<in>X. (t, t') \<in> accessible"
+    using exiting by (auto elim: rtrancl.cases)
+  have "((SIGMA s:UNIV. set_pmf (K s) - X)\<^sup>* `` {s}) \<subseteq> -X \<union> {s}"
+    by (auto elim: rtrancl.cases)
+  with fin show "finite ((SIGMA s:UNIV. set_pmf (K s) - X)\<^sup>* `` {s})"
+    by (auto dest: finite_subset)
+qed
+
 lemma AE_T_max_sfirst:
   assumes [measurable]: "Measurable.pred S X"
   assumes AE: "AE \<omega> in T c. sfirst X (c ## \<omega>) < \<infinity>" and "0 < e"
