@@ -57,7 +57,7 @@ proof (induct lst arbitrary: a)
   thus ?case using foldr_Cons by simp
 qed (insert f'_inj, auto)
 
-abbreviation rp :: "int poly \<Rightarrow> rat poly" where 
+abbreviation (input) rp :: "int poly \<Rightarrow> rat poly" where 
   "rp \<equiv> map_poly rat_of_int"
 
 (* fully transitive proof, right to left also holds without the precondition: 
