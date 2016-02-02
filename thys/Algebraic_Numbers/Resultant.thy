@@ -694,6 +694,19 @@ lemma resultant_const[simp]:
   fixes a :: "'a :: comm_ring_1"
   shows "resultant [:a:] q = a ^ (degree q)"
   unfolding resultant_def unfolding sylvester_mat_const by simp
+
+lemma resultant_right_const: "resultant f [:a:] = (a ^ degree f)" 
+proof -
+  def d \<equiv> "degree f"
+  have id: "(\<lambda>(i, j). if i \<le> j \<and> j \<le> i then coeff [:a:] (i - j) else 0) = (\<lambda> (i,j). if i = j then a else 0)"
+    by (rule ext, auto)
+  have id2: "(\<Prod>i\<leftarrow>[0..<d]. mat d d (\<lambda>(i, j). if i = j then a else 0) $$ (i, i)) = (\<Prod>i\<leftarrow>[0..<d]. a)"
+    by (rule arg_cong[of _ _ listprod], rule nth_equalityI, auto)
+  show ?thesis
+    unfolding resultant_def sylvester_mat_def sylvester_mat_sub_def
+    by (simp, subst det_upper_triangular, auto simp: id mat_diag_def d_def[symmetric] id2, induct d, auto)
+qed
+
   
 lemma resultant_swap: "resultant f g = 
   (if even (degree f) \<or> even (degree g) then resultant g f else - resultant g f)"
@@ -782,8 +795,8 @@ proof -
   show ?thesis unfolding gf by auto
 qed
     
-lemma resultant_smult: assumes "(c :: 'a :: idom) \<noteq> 0" 
-  shows "resultant (smult c f) g = c ^ (degree g) * resultant f g"
+lemma resultant_smult_left: assumes "(c :: 'a :: idom) \<noteq> 0" 
+  shows "resultant (smult c f) g = c ^ degree g * resultant f g"
 proof -
   let ?df = "degree f"
   let ?dg = "degree g"
@@ -847,6 +860,11 @@ proof -
       by (simp, subst Cons(1), insert Cons(2-) `c \<noteq> 0`, auto intro!: det_multrow)
   qed simp
 qed
+
+lemma resultant_smult_right: assumes c: "(c :: 'a :: idom) \<noteq> 0" 
+  shows "resultant f (smult c g) = c ^ degree f * resultant f g"
+  unfolding resultant_swap[of f] unfolding resultant_smult_left[OF c] using c
+  by simp
 
 
 subsubsection \<open>Homomorphism and Resultant\<close>
