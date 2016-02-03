@@ -124,7 +124,7 @@ proof -
     from arg_cong[OF this, of "\<lambda> p. coeff p (degree p)"]
     have "coeff ?p (degree ?p) = coeff (smult d ?q) (degree (smult d ?q))" .
     also have "coeff ?p (degree ?p) = ?c (coeff p (degree p))"
-      by (subst degree_map_poly, force, subst coeff_map_poly, auto)
+      by (subst degree_map_poly, simp, simp, auto simp: subst coeff_map_poly)
     also have "coeff (smult d ?q) (degree (smult d ?q)) = d * coeff ?q (degree ?q)"
       by simp
     also have "monic ?q" by (rule monic_listprod_pow)

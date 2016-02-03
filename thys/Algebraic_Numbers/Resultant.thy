@@ -15,7 +15,8 @@ text \<open>This theory defines the Sylvester matrix and the resultant and conta
 theory Resultant
 imports
   "../Jordan_Normal_Form/Matrix_IArray_Impl"
-  "../Jordan_Normal_Form/Determinant"
+  "../Jordan_Normal_Form/Determinant_Impl"
+  "../Jordan_Normal_Form/Char_Poly"
   "../Polynomial_Factorization/Rational_Factorization"
   Unique_Factorization_Poly
   Bivariate_Polynomials
@@ -117,6 +118,11 @@ lemma sylvester_mat_0[simp]: "sylvester_mat 0 q = \<zero>\<^sub>m (degree q) (de
 lemma sylvester_mat_const[simp]:
   fixes a :: "'a :: semiring_1"
   shows "sylvester_mat [:a:] q = a \<odot>\<^sub>m \<one>\<^sub>m (degree q)"
+  by(auto simp: sylvester_mat_index)
+
+lemma sylvester_mat_const2[simp]:
+  fixes a :: "'a :: semiring_1"
+  shows "sylvester_mat p [:a:] = a \<odot>\<^sub>m \<one>\<^sub>m (degree p)"
   by(auto simp: sylvester_mat_index)
 
 definition vec_of_poly_rev_shifted where
@@ -690,24 +696,98 @@ subsection \<open>Resultant\<close>
 definition resultant :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a :: comm_ring_1" where
   "resultant p q = det (sylvester_mat p q)"
 
+definition "resultant_sub m n p q = det (sylvester_mat_sub m n p q)"
+
+lemma cofactor_sylvester_too_big_upper:
+  assumes m: "m \<ge> degree p"
+  shows "cofactor (sylvester_mat_sub (Suc m) n p q) n 0 = (- 1) ^ n * resultant_sub m n p q"
+  unfolding cofactor_def
+  using sylvester_mat_sub_too_big_upper[OF m]
+  unfolding resultant_sub_def by auto
+
+lemma resultant_sub_too_big_upper:
+  assumes m: "m \<ge> degree p"
+  shows "resultant_sub (Suc m) n p q = (- 1) ^ n * coeff q n * resultant_sub m n p q" (is "?l = ?r")
+proof -
+  have hint: "coeff p (Suc m) = 0" using m using le_degree less_le_trans not_le by blast
+  let ?S = "sylvester_mat_sub (Suc m) n p q"
+  have "?l = det ?S" unfolding resultant_sub_def by auto
+  also have "... =  (\<Sum>i<Suc m + n. ?S $$ (i,0) * cofactor ?S i 0)"
+        (is "_ = setsum ?f ?I")
+    apply(subst laplace_expansion_column[OF sylvester_mat_sub_carrier,of 0],simp)
+    unfolding sylvester_mat_sub_dim..
+  also have "?I = insert n (?I - {n})" by auto
+  also have "setsum ?f ... = ?f n + setsum ?f (?I-{n})" by (simp add: setsum.insert_remove)
+  also have "?f n = ?r"
+    unfolding cofactor_sylvester_too_big_upper[OF m]
+    by(subst sylvester_mat_sub_index,auto)
+  also have "setsum ?f (?I-{n}) = 0"
+    apply (rule setsum.neutral) using hint by (auto simp: sylvester_mat_sub_index)
+  finally show ?thesis by auto
+qed
+
+lemma resultant_sub_trim_upper:
+  shows "resultant_sub (degree p + m) n p q = ((-1)^n * coeff q n)^m * resultant_sub (degree p) n p q"
+  by (induct "m"; simp add: resultant_sub_too_big_upper)
+
+lemma cofactor_sylvester_too_big_lower:
+  assumes n: "n \<ge> degree q"
+  shows "cofactor (sylvester_mat_sub m (Suc n) p q) 0 0 = resultant_sub m n p q"
+  unfolding cofactor_def
+  using sylvester_mat_sub_too_big_lower[OF n]
+  unfolding resultant_sub_def by auto
+
+lemma resultant_sub_too_big_lower:
+  assumes n: "n \<ge> degree q"
+  shows "resultant_sub m (Suc n) p q = coeff p m * resultant_sub m n p q" (is "?l = ?r")
+proof -
+  have hint: "coeff q (Suc n) = 0" using n using le_degree less_le_trans not_le by blast
+  let ?S = "sylvester_mat_sub m (Suc n) p q"
+  have "?l = det ?S" unfolding resultant_sub_def by auto
+  also have "... =  (\<Sum>i<Suc m + n. ?S $$ (i,0) * cofactor ?S i 0)"
+        (is "_ = setsum ?f ?I")
+    apply(subst laplace_expansion_column[OF sylvester_mat_sub_carrier,of 0],simp)
+    unfolding sylvester_mat_sub_dim by auto
+  also have "?I = insert 0 (?I - {0})" by auto
+  also have "setsum ?f ... = ?f 0 + setsum ?f (?I-{0})" by (simp add: setsum.insert_remove)
+  also have "?f 0 = ?r"
+    unfolding cofactor_sylvester_too_big_lower[OF n]
+    by(subst sylvester_mat_sub_index,auto)
+  also have "setsum ?f (?I-{0}) = 0"
+    apply (rule setsum.neutral) using hint by (auto simp: sylvester_mat_sub_index)
+  finally show ?thesis by auto
+qed
+
+lemma resultant_sub_trim_lower:
+  shows "resultant_sub m (degree q + n) p q = coeff p m ^ n * resultant_sub m (degree q) p q"
+  by (induct "n"; simp add: resultant_sub_too_big_lower)
+
+
 lemma resultant_const[simp]:
   fixes a :: "'a :: comm_ring_1"
   shows "resultant [:a:] q = a ^ (degree q)"
   unfolding resultant_def unfolding sylvester_mat_const by simp
 
-lemma resultant_right_const: "resultant f [:a:] = (a ^ degree f)" 
+lemma resultant_right_const[simp]:
+  fixes a :: "'a :: comm_ring_1"
+  shows "resultant p [:a:] = a ^ (degree p)"
+  unfolding resultant_def unfolding sylvester_mat_const2 by simp
+
+lemma resultant_1[simp]:
+  fixes p :: "'a :: comm_ring_1 poly"
+  shows "resultant 1 p = 1" "resultant p 1 = 1"
+  unfolding one_poly_def by auto
+
+lemma resultant_0[simp]:
+  fixes p :: "'a :: comm_ring_1 poly"
+  assumes "degree p > 0"
+  shows "resultant 0 p = 0" "resultant p 0 = 0"
 proof -
-  def d \<equiv> "degree f"
-  have id: "(\<lambda>(i, j). if i \<le> j \<and> j \<le> i then coeff [:a:] (i - j) else 0) = (\<lambda> (i,j). if i = j then a else 0)"
-    by (rule ext, auto)
-  have id2: "(\<Prod>i\<leftarrow>[0..<d]. mat d d (\<lambda>(i, j). if i = j then a else 0) $$ (i, i)) = (\<Prod>i\<leftarrow>[0..<d]. a)"
-    by (rule arg_cong[of _ _ listprod], rule nth_equalityI, auto)
-  show ?thesis
-    unfolding resultant_def sylvester_mat_def sylvester_mat_sub_def
-    by (simp, subst det_upper_triangular, auto simp: id mat_diag_def d_def[symmetric] id2, induct d, auto)
+  have "resultant [:0:] p = 0" "resultant p [:0:] = 0"
+    unfolding resultant_const resultant_right_const using assms zero_power by auto
+  thus "resultant 0 p = 0" "resultant p 0 = 0" by auto
 qed
 
-  
 lemma resultant_swap: "resultant f g = 
   (if even (degree f) \<or> even (degree g) then resultant g f else - resultant g f)"
 proof -
@@ -868,6 +948,19 @@ lemma resultant_smult_right: assumes c: "(c :: 'a :: idom) \<noteq> 0"
 
 
 subsubsection \<open>Homomorphism and Resultant\<close>
+
+lemma(in ring_hom) resultant_sub_map_poly:
+  fixes p q :: "'a poly"
+  shows "hom (resultant_sub m n p q) = resultant_sub m n (map_poly hom p) (map_poly hom q)"
+    (is "?l = ?r'")
+proof -
+  let ?mh = "map_poly hom"
+  have "?l = det (sylvester_mat_sub m n (?mh p) (?mh q))"
+    unfolding resultant_sub_def
+    apply(subst sylvester_mat_sub_map[symmetric]) by auto
+  thus ?thesis unfolding resultant_sub_def.
+qed
+
 
 text \<open>Here we prove Lemma~7.3.1 of the textbook.\<close>
 
@@ -1366,6 +1459,34 @@ end
 subsubsection \<open>Resultant as Nonzero Polynomial Expression\<close>
 
 lemma resultant_zero:
+  fixes p q :: "'a :: idom poly"
+  assumes deg: "degree p > 0 \<or> degree q > 0"
+      and xp: "poly p x = 0" and xq: "poly q x = 0"
+  shows "resultant p q = 0"
+proof -
+  { assume degp: "degree p > 0" and degq: "degree q > 0"
+    obtain p' q' where "[: resultant p q :] = p' * p + q' * q"
+      using resultant_as_poly[OF degp degq] by force
+    hence "resultant p q = poly (p' * p + q' * q) x"
+      using mpoly_base_conv(2)[of "resultant p q"] by auto
+    also have "... = poly p x * poly p' x + poly q x * poly q' x"
+      unfolding poly2_def by simp
+    finally have ?thesis using xp xq by simp
+  } moreover
+  { assume degp: "degree p = 0"
+    have p: "p = [:0:]" using xp degree_0_id[OF degp,symmetric] by (metis mpoly_base_conv(2))
+    have ?thesis unfolding p using degp deg unfolding resultant_const by simp
+  } moreover
+  { assume degq: "degree q = 0"
+    have q: "q = [:0:]" using xq degree_0_id[OF degq,symmetric] by (metis mpoly_base_conv(2))
+    have ?thesis unfolding q using degq deg unfolding resultant_right_const by simp
+  }
+  ultimately show ?thesis by auto
+qed
+
+
+
+lemma poly_resultant_zero:
   fixes p q :: "'a :: idom poly poly"
   assumes degp: "degree p > 0" and degq: "degree q > 0"
       and y: "poly2 p x y = 0 \<and> poly2 q x y = 0"
@@ -1479,23 +1600,44 @@ text\<open>Corresponds to Lemma 7.2.3 of the textbook\<close>
 
 lemma resultant_zero_imp_common_factor:
   fixes p q :: "'a :: ufd poly"
-  assumes degp: "degree p > 0" and degq: "degree q > 0" and r0: "resultant p q = 0"
+  assumes deg: "degree p > 0 \<or> degree q > 0" and r0: "resultant p q = 0"
   shows "\<not> coprime\<^sub>I p q"
   unfolding neq0_conv[symmetric]
-proof (rule)
-  have p0: "p \<noteq> 0" using degp by auto
-  have q0: "q \<noteq> 0" using degq by auto
-  assume cop: "coprime\<^sub>I p q"
-  obtain p' q' where "p' * p + q' * q = 0"
-    and p': "degree p' < degree q" and q': "degree q' < degree p"
-    and p'0: "p' \<noteq> 0" and q'0: "q' \<noteq> 0"
-    using resultant_as_nonzero_poly[OF degp degq] r0 by auto
-  hence "p' * p = - q' * q" by (simp add: eq_neg_iff_add_eq_0)
-  from coprime_mult_cross_dvd[OF cop this p0 q0]
-  have "p dvd q'" by auto
-  from dvd_imp_degree_le[OF this q'0]
-  have "degree p \<le> degree q'" by auto
-  thus False using q' by auto
+proof -
+  { assume degp: "degree p > 0" and degq: "degree q > 0"
+    have p0: "p \<noteq> 0" using degp by auto
+    have q0: "q \<noteq> 0" using degq by auto
+    assume cop: "coprime\<^sub>I p q"
+    obtain p' q' where "p' * p + q' * q = 0"
+      and p': "degree p' < degree q" and q': "degree q' < degree p"
+      and p'0: "p' \<noteq> 0" and q'0: "q' \<noteq> 0"
+      using resultant_as_nonzero_poly[OF degp degq] r0 by auto
+    hence "p' * p = - q' * q" by (simp add: eq_neg_iff_add_eq_0)
+    from coprime_mult_cross_dvd[OF cop this p0 q0]
+    have "p dvd q'" by auto
+    from dvd_imp_degree_le[OF this q'0]
+    have "degree p \<le> degree q'" by auto
+    hence False using q' by auto
+  }
+  moreover
+  { assume degp: "degree p = 0"
+    then obtain x where "p = [:x:]" by (elim degree_eq_zeroE)
+    moreover hence "resultant p q = x ^ degree q" using resultant_const by auto
+      hence "x = 0" using r0 by auto
+    ultimately have "p = 0" by auto
+    hence ?thesis unfolding not_coprime_iff_common_factor
+      by (metis deg degp dvd_0_right dvd_refl less_numeral_extra(3) poly_dvd_1)
+  }
+  moreover
+  { assume degq: "degree q = 0"
+    then obtain x where "q = [:x:]" by (elim degree_eq_zeroE)
+    moreover hence "resultant p q = x ^ degree p" using resultant_const by auto
+      hence "x = 0" using r0 by auto
+    ultimately have "q = 0" by auto
+    hence ?thesis unfolding not_coprime_iff_common_factor
+      by (metis deg degq dvd_0_right dvd_refl less_numeral_extra(3) poly_dvd_1)
+  }
+  ultimately show ?thesis by auto
 qed
 
 end

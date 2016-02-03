@@ -850,6 +850,11 @@ proof (intro allI impI)
   qed
 qed
 
+lemma not_coprime_iff_common_factor:
+  fixes p q :: "'a :: ufd"
+  shows "\<not> coprime\<^sub>I p q \<longleftrightarrow> (\<exists>r. r dvd p \<and> r dvd q \<and> \<not> r dvd 1)"
+  unfolding coprime_idom_def by auto
+
 hide_const irreducible
 hide_fact irreducible_def
 

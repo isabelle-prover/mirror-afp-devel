@@ -243,10 +243,16 @@ end
 lemma degree_map_poly_le: "degree (map_poly h p) \<le> degree p"
   by(induct p;auto)
 
-lemma degree_map_poly: assumes h: "\<And> x. x \<in> range (coeff p) \<Longrightarrow> h x = 0 \<longleftrightarrow> x = 0" 
-  shows "degree (map_poly h p) = degree p"
-  unfolding degree_def
-  by (subst coeff_map_poly, auto simp: h, auto simp: h range_coeff)
+lemma degree_map_poly:
+  assumes h0: "h 0 = 0" and lead: "h (coeff p (degree p)) = 0 \<Longrightarrow> p = 0"
+  shows "degree (map_poly h p) = degree p" (is "degree ?p = _")
+proof (cases "p = 0")
+  case True thus ?thesis by auto
+  next case False
+    hence "coeff ?p (degree p) \<noteq> 0" unfolding coeff_map_poly[of h, OF h0] using lead by auto
+    hence "degree ?p \<ge> degree p" using le_degree by auto
+    thus ?thesis using degree_map_poly_le[of h p] by auto
+qed
 
 lemma map_poly_inj: assumes id: "map_poly f p = map_poly f q"
   and f: "\<And> x y. f x = f y \<Longrightarrow> x = y"
@@ -262,7 +268,7 @@ lemma coeffs_map_poly: assumes h: "\<And> x. x \<in> range (coeff p) \<Longright
 proof -
   have h0: "h 0 = 0" using h by (auto simp: range_coeff)
   have deg: "degree (map_poly h p) = degree p"
-    by (rule degree_map_poly[OF h])
+    apply (rule degree_map_poly[of h, OF h0]) using h by auto
   show ?thesis
     unfolding coeffs_def deg using coeff_map_poly[of h, OF h0]
     by (auto simp: poly_eq_iff h)

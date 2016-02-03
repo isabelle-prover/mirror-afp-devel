@@ -116,12 +116,12 @@ proof -
   def z == "x+y"
   have "poly2 (poly_x_minus_y p) z (z-x) = 0"
    and "poly2 (poly_lift q) z y = 0" using x y by simp+
-  thus ?thesis unfolding poly_add_def using resultant_zero[OF degp degq] by force
+  thus ?thesis unfolding poly_add_def using poly_resultant_zero[OF degp degq] by force
 qed
 
 lemma (in ring_hom) degree_map_poly_map_poly:  assumes zero: "\<forall>x. hom x = 0 \<longrightarrow> x = 0"
    shows "degree (map_poly (map_poly hom) p) = degree p"
-  by (rule degree_map_poly, rule map_poly_zero, insert zero, auto)
+  by (rule degree_map_poly, insert zero, auto)
 
 lemma (in ring_hom) poly_lift_hom: "poly_lift (map_poly hom q) = map_poly (map_poly hom) (poly_lift q)"
 proof -
@@ -153,18 +153,8 @@ proof(rule poly_eqI2)
   interpret rh: ring_hom_coeff_lift.
   show deg: "degree ?l = degree p"
     unfolding degree_poly_lift
-  proof(rule degree_map_poly)
-    fix x assume "x \<in> range (coeff p)"
-    then obtain i where x: "x = coeff p i" by auto
-    have "degree x = 0"
-    proof (cases "i \<le> degree p")
-      case True thus ?thesis unfolding x using const by auto
-      next case False
-        thus ?thesis unfolding x using coeff_eq_0[of p i] by auto
-    qed
-    from degree_0_id[OF this]
-    show "coeff x 0 = 0 \<longleftrightarrow> x = 0" by auto
-  qed
+    apply(rule degree_map_poly,simp)
+    using leading_coeff_0_iff[of "coeff p (degree p)"] const by auto
   fix i
   assume "i \<le> degree ?l"
   from this[unfolded deg] const have "degree (coeff p i) = 0" by auto
@@ -327,7 +317,7 @@ proof
   have degqq: "degree ?q = degree q" by auto
   assume 0: "poly_add p q = 0"
   hence r0: "resultant ?p ?q = 0" unfolding poly_add_def.
-  with resultant_zero_imp_common_factor[OF degp[folded degpp] degq[folded degqq]]
+  with resultant_zero_imp_common_factor[of ?p] degp[folded degpp]
   have "\<not> coprime\<^sub>I ?p ?q" by auto
   with poly_x_minus_y_poly_lift_coprime_complex[OF degp degq]
   show False by auto
@@ -547,7 +537,7 @@ proof -
   hence yzx: "y = z / x" using x0 by auto
   hence 1: "poly2 (poly_x_div_y p) z (z / x) = 0"
    and 2: "poly2 (poly_lift q) z (z / x) = 0" using x y y0 by (auto simp: poly2_poly_x_div_y dp)
-  show ?thesis unfolding poly_mult'_def using resultant_zero[OF degp degq conjI[OF 1 2]] 
+  show ?thesis unfolding poly_mult'_def using poly_resultant_zero[OF degp degq conjI[OF 1 2]] 
     by (simp add: z_def)
 qed
 
@@ -585,7 +575,7 @@ proof
   have degqq: "degree ?q = degree q" by auto
   assume 0: "poly_mult' p q = 0"
   hence r0: "resultant ?p ?q = 0" unfolding poly_mult'_def.
-  with resultant_zero_imp_common_factor[OF degp[folded degpp] degq[folded degqq]]
+  with resultant_zero_imp_common_factor degp[folded degpp]
   have "\<not> coprime\<^sub>I ?p ?q" by auto
   with poly_x_div_y_poly_lift_coprime_complex[OF degp degq q00] 
   show False by auto

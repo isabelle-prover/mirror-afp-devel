@@ -15,6 +15,9 @@ subsection \<open>Evaluation of Bivariate Polynomials\<close>
 definition poly2 :: "'a::comm_semiring_1 poly poly \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
   where "poly2 p x y = poly (poly p [: y :]) x"
 
+lemma poly2_by_map: "poly2 p x = poly (map_poly (\<lambda>c. poly c x) p)"
+  apply (rule ext) unfolding poly2_def by (induct p; simp)
+
 named_theorems poly2_morphs
 
 lemma poly2_0[poly2_morphs]: "poly2 0 x y = 0" unfolding poly2_def by simp
@@ -414,7 +417,7 @@ proof(induct p)
             have dega: "degree ?a = degree a" by auto
             have degp: "degree (poly_y_x p) = degree a"
               using equal[unfolded dega]
-              using degree_map_poly[of "poly_y_x p" "pCons 0"] by auto
+              using degree_map_poly[of "pCons 0" "poly_y_x p"] by auto
             have *: "degree (?a + ?p) = degree a"
             proof(cases "a = 0")
               case True show ?thesis using equal unfolding True by auto
