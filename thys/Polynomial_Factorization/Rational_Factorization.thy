@@ -20,16 +20,36 @@ imports
   Square_Free_Factorization
   Berlekamp_Hensel_Factorization
   Rational_Root_Test
+  Polynomial_Division
 begin
 
 function roots_of_rat_poly_main :: "rat poly \<Rightarrow> rat list" where 
-  "roots_of_rat_poly_main p = (let n = degree p in if n = 0 then [] else if n = 1 then [roots1 p]
+  [code del]: "roots_of_rat_poly_main p = (let n = degree p in if n = 0 then [] else if n = 1 then [roots1 p]
   else if n = 2 then rat_roots2 p else 
   case rational_root_test p of None \<Rightarrow> [] | Some x \<Rightarrow> x # roots_of_rat_poly_main (p div [:-x,1:]))"
   by pat_completeness auto
 
 termination by (relation "measure degree", 
   auto dest: rational_root_test(1) intro!: degree_div_less simp: poly_eq_0_iff_dvd)
+
+lemma roots_of_rat_poly_main_code[code]: "roots_of_rat_poly_main p = (let n = degree p in if n = 0 then [] else if n = 1 then [roots1 p]
+  else if n = 2 then rat_roots2 p else 
+  case rational_root_test p of None \<Rightarrow> [] | Some x \<Rightarrow> x # roots_of_rat_poly_main (exact_div p [:-x,1:]))"
+proof -
+  note d = roots_of_rat_poly_main.simps[of p] Let_def
+  show ?thesis
+  proof (cases "rational_root_test p")
+    case (Some x)
+    let ?x = "[:-x,1:]"
+    from rational_root_test(1)[OF Some] have  "?x dvd p" 
+      by (simp add: poly_eq_0_iff_dvd)
+    from dvd_mult_div_cancel[OF this]
+    have pp: "exact_div p ?x = exact_div (?x * (p div ?x)) ?x" by simp
+    also have "\<dots> = p div ?x"
+      by (rule exact_div_left, auto)
+    finally show ?thesis unfolding d Some by auto
+  qed (simp add: d)
+qed
 
 lemma roots_of_rat_poly_main: "p \<noteq> 0 \<Longrightarrow> set (roots_of_rat_poly_main p) = {x. poly p x = 0}"
 proof (induct p rule: roots_of_rat_poly_main.induct)

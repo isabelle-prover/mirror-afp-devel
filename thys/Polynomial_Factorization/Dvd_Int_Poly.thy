@@ -6,9 +6,8 @@
 
 section \<open>Division of Polynomials over Integers\<close>
 
-text \<open>This theory contains an algorithm to compute polynomial long division
-  of integer polynomials, if this is possible. It can be also be used to check
-  divisability of two integer polynomials.\<close>
+text \<open>This theory contains an algorithm to efficiently compute
+  divisibility of two integer polynomials.\<close>
 
 theory Dvd_Int_Poly
 imports
