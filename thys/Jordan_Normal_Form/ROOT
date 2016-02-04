@@ -3,7 +3,6 @@ chapter AFP
 session "Jordan_Normal_Form" (AFP) = "JNF-AFP-Lib" +
   options [timeout = 600]
   theories
-    Missing_Unsorted
     Missing_Ring
     Missing_Permutations
   theories

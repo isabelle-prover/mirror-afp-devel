@@ -12,6 +12,7 @@ session Algebraic_Numbers (AFP) = Pre_Algebraic_Numbers +
     "Is_Rat_To_Rat"
     "Ring_Hom_Poly"
     "Order_Polynomial"
+    "Binary_Exponentiation"
   theories
     "Explicit_Roots"
   theories

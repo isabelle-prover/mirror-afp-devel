@@ -11,6 +11,7 @@ text \<open>The theory contains some basic results on polynomials which have not
 theory Missing_Polynomial
 imports 
   "~~/src/HOL/Library/Polynomial"
+  Missing_Unsorted
 begin
 
 subsection \<open>Basic Properties\<close>
@@ -941,5 +942,22 @@ proof -
   }
   thus ?thesis by auto
 qed
+
+lemma degree_listprod_eq: assumes "\<And> p. p \<in> set ps \<Longrightarrow> (p :: 'a :: idom poly) \<noteq> 0"
+  shows "degree (listprod ps) = listsum (map degree ps)" using assms
+proof (induct ps)
+  case (Cons p ps)
+  show ?case unfolding listprod.Cons
+    by (subst degree_mult_eq, insert Cons, auto simp: listprod_zero_iff)
+qed simp
+
+lemma degree_power_eq: assumes p: "p \<noteq> 0"
+  shows "degree (p ^ n) = degree (p :: 'a :: idom poly) * n"
+proof (induct n)
+  case (Suc n)
+  from p have pn: "p ^ n \<noteq> 0" by auto
+  show ?case using degree_mult_eq[OF p pn] Suc by auto
+qed simp
+
 
 end

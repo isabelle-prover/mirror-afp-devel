@@ -16,10 +16,10 @@ is non-empty is available for integral domains, not just for fields.\<close>
 theory Determinant
 imports 
   Missing_Permutations
-  Missing_Unsorted
   Missing_Fraction_Field
   Column_Operations
   "../Polynomial_Interpolation/Ring_Hom"
+  "../Polynomial_Interpolation/Missing_Unsorted"
 begin
 
 definition det:: "'a mat \<Rightarrow> 'a :: comm_ring_1" where
@@ -842,9 +842,9 @@ proof -
   next
     assume ?l
     then obtain v where v: "v \<in> carrier\<^sub>v n" and v0: "v \<noteq> \<zero>\<^sub>v n" and Av: "?A \<otimes>\<^sub>m\<^sub>v v = \<zero>\<^sub>v n" by auto
-    have "\<forall> i. \<exists> a b. v $ i = Fract a b \<and> b \<noteq> 0" using Fract_cases[of "v $ i" for i] by metis
-    from choice[OF this] obtain a where "\<forall> i. \<exists> b. v $ i = Fract (a i) b \<and> b \<noteq> 0" by metis
-    from choice[OF this] obtain b where vi: "\<And> i. v $ i = Fract (a i) (b i)" and bi: "\<And> i. b i \<noteq> 0" by auto
+    have "\<forall> i. \<exists> a b. v $ i = Fraction_Field.Fract a b \<and> b \<noteq> 0" using Fract_cases[of "v $ i" for i] by metis
+    from choice[OF this] obtain a where "\<forall> i. \<exists> b. v $ i = Fraction_Field.Fract (a i) b \<and> b \<noteq> 0" by metis
+    from choice[OF this] obtain b where vi: "\<And> i. v $ i = Fraction_Field.Fract (a i) (b i)" and bi: "\<And> i. b i \<noteq> 0" by auto
     def m \<equiv> "listprod (map b [0..<n])"
     let ?m = "?h m"
     have m0: "m \<noteq> 0" unfolding m_def hom_0_iff listprod_zero_iff using bi by auto

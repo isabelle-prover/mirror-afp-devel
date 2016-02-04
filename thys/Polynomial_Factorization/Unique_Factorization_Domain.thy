@@ -12,7 +12,6 @@ text\<open>This theory provides a definition of a unique factorization domain (U
 theory Unique_Factorization_Domain
 imports
   "~~/src/HOL/Number_Theory/Primes"
-  "../Jordan_Normal_Form/Missing_Unsorted"
   "../Jordan_Normal_Form/Missing_Fraction_Field"
   "../Polynomial_Interpolation/Ring_Hom_Poly"
   "~~/src/HOL/Algebra/Divisibility"
@@ -331,12 +330,12 @@ definition divides_ff :: "'b::idom fract \<Rightarrow> 'b fract \<Rightarrow> bo
   where "divides_ff x y = (\<exists> r. y = embed_ff r * x)" 
 
 lemma ff_list_pairs: 
-  "\<exists> xs. X = map (\<lambda> (x,y). Fract x y) xs \<and> 0 \<notin> snd ` set xs"
+  "\<exists> xs. X = map (\<lambda> (x,y). Fraction_Field.Fract x y) xs \<and> 0 \<notin> snd ` set xs"
 proof (induct X)
   case (Cons a X)
-  from Cons(1) obtain xs where X: "X = map (\<lambda> (x,y). Fract x y)  xs" and xs: "0 \<notin> snd ` set xs"
+  from Cons(1) obtain xs where X: "X = map (\<lambda> (x,y). Fraction_Field.Fract x y)  xs" and xs: "0 \<notin> snd ` set xs"
     by auto
-  obtain x y where a: "a = Fract x y" and y: "y \<noteq> 0" by (cases a, auto)
+  obtain x y where a: "a = Fraction_Field.Fract x y" and y: "y \<noteq> 0" by (cases a, auto)
   show ?case unfolding X a using xs y
     by (intro exI[of _ "(x,y) # xs"], auto)
 qed auto
@@ -360,7 +359,7 @@ interpretation embed_ff: inj_ring_hom embed_ff by (rule embed_ff)
 
 lemma gcd_ff_list_exists: "\<exists> g. gcd_ff_list (X :: 'a::ufd fract list) g"
 proof -
-  from ff_list_pairs[of X] obtain xs where X: "X = map (\<lambda> (x,y). Fract x y) xs"
+  from ff_list_pairs[of X] obtain xs where X: "X = map (\<lambda> (x,y). Fraction_Field.Fract x y) xs"
     and xs: "0 \<notin> snd ` set xs" by auto
   def r \<equiv> "listprod (map snd xs)"
   have r: "r \<noteq> 0" unfolding r_def listprod_zero_iff using xs by auto
@@ -374,7 +373,7 @@ proof -
     hence y_mem: "y \<in> set (map snd xs)" by force
     with xs have y: "y \<noteq> 0" by force
     from i have id1: "ys ! i = x * listprod (remove1 y (map snd xs))" unfolding ys_def using xsi by auto
-    from i xsi have id2: "X ! i = Fract x y" unfolding X by auto
+    from i xsi have id2: "X ! i = Fraction_Field.Fract x y" unfolding X by auto
     have lp: "listprod (remove1 y (map snd xs)) * y = r" unfolding r_def
       by (rule listprod_remove1[OF y_mem])
     have "ys ! i \<in> set ys" using i unfolding ys_def by auto
@@ -384,7 +383,7 @@ proof -
     ultimately have "ys ! i \<in> set ys" "embed_ff (ys ! i) = embed_ff r * (X ! i)" .
   } note ys = this
   def G \<equiv> "listgcd ys"
-  def g \<equiv> "embed_ff G * Fract 1 r"
+  def g \<equiv> "embed_ff G * Fraction_Field.Fract 1 r"
   have len: "length X = length ys" unfolding X ys_def by auto
   show ?thesis
   proof (rule exI[of _ g], unfold gcd_ff_list_def, intro ballI conjI impI allI)
@@ -395,11 +394,11 @@ proof -
       and ysi: "ys ! i \<in> set ys" unfolding x by auto
     from listgcd[OF ysi] have "G dvd ys ! i" unfolding G_def .
     then obtain d where ysi: "ys ! i = G * d" unfolding dvd_def by auto
-    have "embed_ff d * (embed_ff G * Fract 1 r) = x * (embed_ff r * Fract 1 r)" 
+    have "embed_ff d * (embed_ff G * Fraction_Field.Fract 1 r) = x * (embed_ff r * Fraction_Field.Fract 1 r)" 
       using id[unfolded ysi]
       by (simp add: ac_simps)
     also have "\<dots> = x" using r unfolding embed_ff_def by (simp add: eq_fract One_fract_def)
-    finally have "embed_ff d * (embed_ff G * Fract 1 r) = x" by simp
+    finally have "embed_ff d * (embed_ff G * Fraction_Field.Fract 1 r) = x" by simp
     thus "divides_ff g x" unfolding divides_ff_def g_def 
       by (intro exI[of _ d], auto)
   next
@@ -411,13 +410,13 @@ proof -
     also have "(\<lambda> x. embed_ff r * x) ` set X = embed_ff ` set ys"
       unfolding set_conv_nth using ys len by force
     finally have dvd: "Ball (set ys) (\<lambda> y. divides_ff (embed_ff r * d) (embed_ff y))" by auto
-    obtain nd dd where d: "d = Fract nd dd" and dd: "dd \<noteq> 0" by (cases d, auto)
+    obtain nd dd where d: "d = Fraction_Field.Fract nd dd" and dd: "dd \<noteq> 0" by (cases d, auto)
     {
       fix y
       assume "y \<in> set ys"
       hence "divides_ff (embed_ff r * d) (embed_ff y)" using dvd by auto
       from this[unfolded divides_ff_def d embed_ff_def mult_fract]
-      obtain ra where "Fract y 1 = Fract (ra * (r * nd)) dd" by auto
+      obtain ra where "Fraction_Field.Fract y 1 = Fraction_Field.Fract (ra * (r * nd)) dd" by auto
       hence "y * dd = ra * (r * nd)" by (simp add: eq_fract dd)
       hence "r * nd dvd y * dd" by auto
     }

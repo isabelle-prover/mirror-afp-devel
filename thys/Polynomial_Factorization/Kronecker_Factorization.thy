@@ -5,7 +5,6 @@ text \<open>This theory contains Kronecker's factorization algorithm to factor
 
 theory Kronecker_Factorization
 imports 
-  "../Jordan_Normal_Form/Missing_Unsorted"
   "../Polynomial_Interpolation/Polynomial_Interpolation"
   "../Sqrt_Babylonian/Sqrt_Babylonian_Auxiliary"
   Missing_List

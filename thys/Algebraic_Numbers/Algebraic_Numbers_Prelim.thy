@@ -46,7 +46,7 @@ lemma poly_real_of_rat_poly: "poly (real_of_rat_poly p) = rpoly p"
 lemma real_of_rat_poly_0[simp]: "real_of_rat_poly p = 0 \<longleftrightarrow> p = 0"
   by (rule rpoly.map_poly_0_iff)
 
-section \<open>Algebraic Numbers\<close>
+subsection \<open>Algebraic Numbers -- Definition, Inverse, and Roots\<close>
 
 lemma algebraic_altdef_rpoly: 
   fixes x :: "'a :: field_char_0"
@@ -114,22 +114,6 @@ lemma rpoly_smult_0_iff: assumes c: "c \<noteq> 0"
 
 definition factors_of_rat_poly :: "factorization_mode \<Rightarrow> rat poly \<Rightarrow> rat poly list" where
   "factors_of_rat_poly mode p = map fst (snd (factorize_rat_poly mode p))"
-
-lemma degree_listprod_eq: assumes "\<And> p. p \<in> set ps \<Longrightarrow> (p :: 'a :: idom poly) \<noteq> 0"
-  shows "degree (listprod ps) = listsum (map degree ps)" using assms
-proof (induct ps)
-  case (Cons p ps)
-  show ?case unfolding listprod.Cons
-    by (subst degree_mult_eq, insert Cons, auto simp: listprod_zero_iff)
-qed simp
-
-lemma degree_power_eq: assumes p: "p \<noteq> 0"
-  shows "degree (p ^ n) = degree (p :: 'a :: idom poly) * n"
-proof (induct n)
-  case (Suc n)
-  from p have pn: "p ^ n \<noteq> 0" by auto
-  show ?case using degree_mult_eq[OF p pn] Suc by auto
-qed simp
 
 lemma factors_of_rat_poly:  
   defines "rp \<equiv> rpoly :: rat poly \<Rightarrow> 'a :: field_char_0 \<Rightarrow> 'a"

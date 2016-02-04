@@ -19,7 +19,6 @@ theory Determinant_Impl
 imports
   "../Polynomial_Interpolation/Missing_Polynomial"
   Determinant
-  Missing_Unsorted
 begin
 
 type_synonym 'a det_selection_fun = "(nat \<times> 'a)list \<Rightarrow> nat"

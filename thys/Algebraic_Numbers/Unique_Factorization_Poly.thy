@@ -10,8 +10,8 @@ text \<open>In this theory we prove that the polynomials over a unique factoriza
 theory Unique_Factorization_Poly
 imports 
   "~~/src/HOL/Library/Polynomial"
-  "../Jordan_Normal_Form/Missing_Unsorted"
   "../Jordan_Normal_Form/Missing_Fraction_Field"
+  "../Polynomial_Interpolation/Missing_Unsorted"
   "../Polynomial_Factorization/Polynomial_Divisibility"
   "../Polynomial_Factorization/Unique_Factorization_Domain"
 begin

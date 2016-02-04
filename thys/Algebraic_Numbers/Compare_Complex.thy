@@ -11,7 +11,7 @@ text \<open>We define some code equations for complex numbers, provide a compara
 theory Compare_Complex
 imports 
   Complex
-  "../Jordan_Normal_Form/Missing_Unsorted"
+  "../Polynomial_Interpolation/Missing_Unsorted"
   "../Deriving/Comparator_Generator/Compare_Real"
   "../Containers/Set_Impl"
 begin

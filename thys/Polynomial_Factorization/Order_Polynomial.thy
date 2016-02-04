@@ -11,7 +11,6 @@ polynomial.\<close>
 
 theory Order_Polynomial
 imports 
-  "../Jordan_Normal_Form/Missing_Unsorted"
   "../Polynomial_Interpolation/Missing_Polynomial"
   "~~/src/HOL/Library/Poly_Deriv"
 begin

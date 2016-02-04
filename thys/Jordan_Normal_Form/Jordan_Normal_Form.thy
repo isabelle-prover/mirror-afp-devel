@@ -14,7 +14,7 @@ imports
   Matrix
   Char_Poly
   Binomial
-  Missing_Unsorted
+  "../Polynomial_Interpolation/Missing_Unsorted"
 begin
 
 definition jordan_block :: "nat \<Rightarrow> 'a :: {zero,one} \<Rightarrow> 'a mat" where 

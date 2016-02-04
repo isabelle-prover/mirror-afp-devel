@@ -31,7 +31,6 @@ session Pre_Polynomial_Factorization (AFP) = "JNF-AFP-Lib" +
   theories
     "../Jordan_Normal_Form/Gauss_Jordan"
     "../Jordan_Normal_Form/Missing_Fraction_Field"
-    "../Jordan_Normal_Form/Missing_Unsorted"
     "../Partial_Function_MR/Partial_Function_MR"
     "../Polynomial_Interpolation/Polynomial_Interpolation"
     "../Sqrt_Babylonian/Sqrt_Babylonian"
