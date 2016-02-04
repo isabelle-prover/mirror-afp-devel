@@ -23,6 +23,7 @@ imports
   Square_Free_Factorization
   Prime_Factorization
   Gauss_Lemma
+  Factorization_Oracle
 begin
 
 hide_const (open) Module.smult
@@ -368,5 +369,13 @@ definition berlekamp_hensel_factorization_rat :: "rat poly \<Rightarrow> rat \<t
      sanity = True (* (p = smult b (listprod (map (\<lambda> (q,i). q^i) factors))) *)
    in if sanity then (b,factors) else Code.abort (String.implode
        (''error in berlekamp_hensel_factorization_rat on input '' @ show (coeffs p))) (\<lambda> _. (b,factors)))"
+
+       
+overloading factorization_oracle \<equiv> factorization_oracle
+begin
+
+definition factorization_oracle[code]: "factorization_oracle x \<equiv> berlekamp_hensel_factorization_rat x"
+
+end
 
 end

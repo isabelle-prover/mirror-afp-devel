@@ -12,11 +12,12 @@ theory Algebraic_Number_Tests
 imports
   "../Jordan_Normal_Form/Char_Poly"
   "../Show/Show_Complex"
+  "../Polynomial_Factorization/Berlekamp_Hensel_Factorization"
   "~~/src/HOL/Library/Code_Char"
   "~~/src/HOL/Library/Code_Target_Nat"
   "~~/src/HOL/Library/Code_Target_Int"
   Real_Factorization
-  Show_Real_Precise
+  Show_Real_Precise  
 begin
 
 subsection \<open>Stand-Alone Examples\<close>

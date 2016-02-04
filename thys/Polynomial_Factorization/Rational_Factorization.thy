@@ -5,22 +5,26 @@
 *)
 section \<open>Rational Factorization\<close>
 
-text \<open>We combine the rational root test, the factorization oracle of Berlekamp-Hensel, the
+text \<open>We combine the rational root test, the factorization oracle, the
   formulas for explicit roots, and the Kronecker's factorization algorithm to provide a
   factorization algorithm for polynomial over rational numbers. Moreover, also the roots
   of a rational polynomial can be determined.
 
   The factorization provides three modes: one where an uncertified factorization is performed,
-  one which tests on irreducibility, and one which combines the previous two modes.\<close>
+  one which tests on irreducibility, and one which combines the previous two modes.
+  
+  Note that in order to use this theory, one also has to load an factorization oracle, e.g., 
+  the one in theory Berlekamp-Hensel-Factorization.\<close>
 
 theory Rational_Factorization
 imports
   Explicit_Roots
   Kronecker_Factorization
   Square_Free_Factorization
-  Berlekamp_Hensel_Factorization
+  Factorization_Oracle
   Rational_Root_Test
   Polynomial_Division
+  "../Show/Show_Poly"
 begin
 
 function roots_of_rat_poly_main :: "rat poly \<Rightarrow> rat list" where 
@@ -457,7 +461,7 @@ qed
 datatype factorization_mode = Uncertified_Factorization | Full_Factorization | Check_Irreducible
   | Check_Root_Free
 
-text \<open>@{const Uncertified_Factorization}: just apply oracle @{const berlekamp_hensel_factorization_rat}, 
+text \<open>@{const Uncertified_Factorization}: just apply oracle @{const factorization_oracle}, 
      result will be a factorization, but not guaranteed into irreducible factors.
 
   @{const Full_Factorization}: first apply oracle, and then factor in a certified (and slow) way into
@@ -480,18 +484,18 @@ definition initial_factorization_rat :: "rat poly \<Rightarrow> rat \<times> (ra
   "initial_factorization_rat p = (
     if mode = Check_Irreducible \<or> mode = Check_Root_Free then (if p = 0 then (0,[]) else (1,[(p,1)]))
     else 
-    case berlekamp_hensel_factorization_rat p of 
+    case factorization_oracle p of 
       (c,pis) \<Rightarrow> if p = smult c ((\<Prod>(q, i)\<leftarrow>pis. q ^ i)) \<and> list_all (\<lambda> (p,i). i \<noteq> 0 \<and> p \<noteq> 0) pis 
       then (c,pis) 
-      else Code.abort (String.implode (''error in berlekamp_hensel_factorization_rat on input '' @
+      else Code.abort (String.implode (''error in factorization-oracle on input '' @
         show_poly p)) (\<lambda> _. case yun_factorization p of 
         (c,pis) \<Rightarrow> (c, map (\<lambda> (p,i). (p, Suc i)) pis)))"
 
 lemma initial_factorization_rat: assumes res: "initial_factorization_rat p = (c,qis)"
   shows "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" "(q,i) \<in> set qis \<Longrightarrow> i \<noteq> 0 \<and> q \<noteq> 0"
 proof -
-  obtain d pis where bhf: "berlekamp_hensel_factorization_rat p = (d,pis)" by force
-  note res = res[unfolded initial_factorization_rat_def bhf split]
+  obtain d pis where fo: "factorization_oracle p = (d,pis)" by force
+  note res = res[unfolded initial_factorization_rat_def fo split]
   have "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i) \<and> ((q,i) \<in> set qis \<longrightarrow> i \<noteq> 0 \<and> q \<noteq> 0)" 
   proof (cases "mode = Check_Irreducible \<or> mode = Check_Root_Free")
     case True
@@ -696,57 +700,60 @@ qed
   
 
 definition factorize_rat_poly :: "rat poly \<Rightarrow> rat \<times> (rat poly \<times> nat) list" where
-  "factorize_rat_poly p = (let 
+  "factorize_rat_poly p = (if p = 0 then (0,[]) else (let 
       main = factorize_rat_poly_start p 
-    in if mode = Check_Root_Free then main else normalize_factorization main)"
+    in if mode = Check_Root_Free then main else normalize_factorization main))"
                                                              
 lemma factorize_rat_poly: assumes fp: "factorize_rat_poly p = (c,qis)"
   shows 
-  "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" 
+  "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" (is "?one") 
   "\<And> q i. (q,i) \<in> set qis \<Longrightarrow> 
     (mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q) \<and> 
-    (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> i \<noteq> 0 \<and> monic q"
+    (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> i \<noteq> 0 \<and> monic q" 
 proof -
   obtain d pis where fps: "factorize_rat_poly_start p = (d,pis)" by force
   note fp = fp[unfolded factorize_rat_poly_def fps Let_def]
   note fact = factorize_rat_poly_start[OF fps]
-  have "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i) \<and> (\<forall> q i. (q,i) \<in> set qis \<longrightarrow>
+  {
+    assume p0: "p \<noteq> 0"
+    have "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i) \<and> (\<forall> q i. (q,i) \<in> set qis \<longrightarrow>
+      (mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q) \<and> 
+      (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> i \<noteq> 0 \<and> monic q)"
+    proof (cases "mode = Check_Root_Free")
+      case True
+      with fp fact p0 show ?thesis by auto
+    next
+      case False
+      with fp p0 have nf: "normalize_factorization (d, pis) = (c, qis)" by auto
+      with fact 
+      have p: "p = smult d (\<Prod>(q, i)\<leftarrow>pis. q ^ i)"
+        and irr: "\<And> q i. (q, i) \<in> set pis \<Longrightarrow> (mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow>  irreducible q) \<and> i \<noteq> 0" 
+        and nz: "\<And> q i. (q,i) \<in> set pis \<Longrightarrow> q \<noteq> 0" by auto
+      from normalize_factorization[OF nf nz]
+      have id: "smult d (\<Prod>(q, i)\<leftarrow>pis. q ^ i) = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)"
+        and qis: "\<And> q i. (q, i) \<in> set qis \<Longrightarrow> monic q \<and> (\<exists>p a. (p, i) \<in> set pis \<and> q = smult a p \<and> a \<noteq> 0)"
+        by force+
+      have p: "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" unfolding p id ..
+      {
+        fix q i
+        assume "(q,i) \<in> set qis"
+        from qis[OF this] obtain p a where m: "monic q" and
+          mem: "(p, i) \<in> set pis" and q: "q = smult a p" and a: "a \<noteq> 0" by auto
+        from irr[OF mem] have irr: "mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible p" and i: "i \<noteq> 0" by auto
+        have "mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q" unfolding q using irr a by auto
+      }
+      with p False qis irr
+      show ?thesis by auto
+    qed 
+  } note main = this
+  show "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" using main fp by (cases "p = 0", auto)
+  show "\<And> q i. (q,i) \<in> set qis \<Longrightarrow> 
     (mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q) \<and> 
-    (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> i \<noteq> 0 \<and> monic q)"
-  proof (cases "mode = Check_Root_Free")
-    case True
-    with fp fact show ?thesis by auto
-  next
-    case False
-    with fp have nf: "normalize_factorization (d, pis) = (c, qis)" by auto
-    with fact 
-    have p: "p = smult d (\<Prod>(q, i)\<leftarrow>pis. q ^ i)"
-      and irr: "\<And> q i. (q, i) \<in> set pis \<Longrightarrow> (mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow>  irreducible q) \<and> i \<noteq> 0" 
-      and nz: "\<And> q i. (q,i) \<in> set pis \<Longrightarrow> q \<noteq> 0" by auto
-    from normalize_factorization[OF nf nz]
-    have id: "smult d (\<Prod>(q, i)\<leftarrow>pis. q ^ i) = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)"
-      and qis: "\<And> q i. (q, i) \<in> set qis \<Longrightarrow> monic q \<and> (\<exists>p a. (p, i) \<in> set pis \<and> q = smult a p \<and> a \<noteq> 0)"
-      by force+
-    have p: "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" unfolding p id ..
-    {
-      fix q i
-      assume "(q,i) \<in> set qis"
-      from qis[OF this] obtain p a where m: "monic q" and
-        mem: "(p, i) \<in> set pis" and q: "q = smult a p" and a: "a \<noteq> 0" by auto
-      from irr[OF mem] have irr: "mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible p" and i: "i \<noteq> 0" by auto
-      have "mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q" unfolding q using irr a by auto
-    }
-    with p False qis irr
-    show ?thesis by auto
-  qed note main = this
-  thus "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" 
-    "\<And> q i. (q,i) \<in> set qis \<Longrightarrow> 
-    (mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q) \<and> 
-    (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> i \<noteq> 0 \<and> monic q" by auto
+    (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> i \<noteq> 0 \<and> monic q" using main fp by (cases "p = 0", auto)
 qed  
     
-lemma factorize_rat_poly_0[simp]: "factorize_rat_poly 0 = (0,[])"
-  by (cases mode, auto, code_simp+)
+lemma factorize_rat_poly_0[simp]: "factorize_rat_poly 0 = (0,[])" 
+  unfolding factorize_rat_poly_def by simp
 
 end
 end
