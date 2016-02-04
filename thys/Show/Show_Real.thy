@@ -16,8 +16,6 @@ begin
 
 consts show_real :: "real \<Rightarrow> string"
 
-definition "show_real_dummy = show_real"
-
 definition showsp_real :: "real showsp"
 where
   "showsp_real p x y =

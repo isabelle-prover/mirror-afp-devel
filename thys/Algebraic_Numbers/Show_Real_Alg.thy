@@ -17,7 +17,6 @@ imports
 begin
 
 consts show_real_alg :: "real_alg \<Rightarrow> string"
-definition "show_real_alg_dummy = show_real_alg"
 
 definition showsp_real_alg :: "real_alg showsp" where
   "showsp_real_alg p x y = (show_real_alg x @ y)"
