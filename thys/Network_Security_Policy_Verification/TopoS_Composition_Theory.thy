@@ -538,7 +538,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
 
    subsection{* More Lemmata *}
      lemma (in configured_SecurityInvariant) c_sinvar_valid_imp_no_offending_flows: 
-      "c_sinvar m G \<Longrightarrow> \<forall>x\<in>c_offending_flows m G. x = {}"
+      "c_sinvar m G \<Longrightarrow> c_offending_flows m G = {}"
         by(simp add: valid_c_offending_flows)
 
      lemma all_security_requirements_fulfilled_imp_no_offending_flows:
@@ -630,6 +630,45 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
         from this IH show ?case by(simp add: get_offending_flows_def)
       qed
 
-      
+ 
+
+
+
+
+ (*ENF has uniquely defined offending flows*)
+ lemma "valid_reqs M \<Longrightarrow> wf_graph G \<Longrightarrow> 
+      \<forall>m \<in> set M. \<exists>P. \<forall>G. c_sinvar m G = (\<forall>e \<in> edges G. P e) \<Longrightarrow> 
+      \<forall>m \<in> set M. \<forall>G. \<not> c_sinvar m G \<longrightarrow>  (\<exists>OFF. c_offending_flows m G = {OFF})"
+ apply -
+ apply(induction M)
+  apply(simp)
+ apply(rename_tac m M)
+ apply(frule valid_reqs1)
+ apply(drule valid_reqs2)
+ apply(simp)
+ apply(elim conjE)
+ apply(erule_tac x=m in ballE)
+  apply(simp_all; fail)
+ apply(erule exE, rename_tac P)
+ apply(drule_tac P=P in enf_offending_flows)
+  apply(simp; fail)
+ apply(simp; fail)
+ done
+
+ lemma assumes "configured_SecurityInvariant m"
+       and "\<forall>G. \<not> c_sinvar m G \<longrightarrow> (\<exists>OFF. c_offending_flows m G = {OFF})"
+       shows "\<exists>OFF_P. \<forall>G. c_offending_flows m G = (if c_sinvar m G then {} else {OFF_P G})"
+ proof -
+   from assms have "\<exists>OFF_P. 
+          c_offending_flows m G = (if c_sinvar m G then {} else {OFF_P G})" for G
+     apply(erule_tac x=G in allE)
+     apply(cases "c_sinvar m G")
+      apply(drule configured_SecurityInvariant.c_sinvar_valid_imp_no_offending_flows, simp)
+      apply(simp; fail)
+     apply(simp)
+     by meson
+   with assms show ?thesis by metis
+ qed
+ (*TODO: generate_valid_topology_max_topo for sinvars with unique offending flows in general*)
 
 end
