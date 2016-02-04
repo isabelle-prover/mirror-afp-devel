@@ -370,18 +370,25 @@ qed
 text \<open>The proof that the resultant will be nonzero relies upon the fact that the input
   polynomials do not have 0 as root. Hence, we will eliminate zero divisors before.\<close>
 
-function eliminate_zero_divisors :: "'a :: field poly \<Rightarrow> 'a poly" where
+function eliminate_zero_divisors :: "'a :: idom_div poly \<Rightarrow> 'a poly" where
   "eliminate_zero_divisors p = (if coeff p 0 = 0 \<and> p \<noteq> 0 then 
-    eliminate_zero_divisors (p div [:0,1:]) else p)"
+    eliminate_zero_divisors (exact_div p [:0,1:]) else p)"
   by pat_completeness auto
 
 termination 
 proof -
   {
-    fix p :: "'a :: field poly"
-    assume p: "p \<noteq> 0" and p0: "coeff p 0 = 0"
+    fix p :: "'a :: idom_div poly"
+    let ?x = "[:0,1 :: 'a:]"
+    assume p: "p \<noteq> 0" and p0: "coeff p 0 = 0"    
     from coeff_0_0_implies_x_dvd[OF p0]
-    have "degree (p div [:0, 1:]) < degree p" by (simp add: p degree_div_less)
+    have "?x dvd p" by auto
+    then obtain k where pxk: "p = ?x * k" unfolding dvd_def by auto
+    with p have x0: "?x \<noteq> 0" and k0: "k \<noteq> 0" by auto
+    from degree_mult_eq[OF this, folded pxk] have kp: "degree k < degree p" by auto
+    from arg_cong[OF pxk, of "\<lambda> x. exact_div x ?x", unfolded exact_div_left[OF x0]]
+    have k: "exact_div p ?x = k" .
+    hence "degree (exact_div p ?x) < degree p" using kp by simp 
   } note main = this
   show ?thesis
     by (relation "measure degree", auto simp: main)
@@ -399,21 +406,23 @@ proof (induct p rule: eliminate_zero_divisors.induct)
     case True
     note IH = 1[OF this]
     def xx \<equiv> "[:0 :: rat, 1:]"
+    have xx0: "xx \<noteq> 0" unfolding xx_def by auto
     have mult: "\<And> p q. rpoly (p * q) x = rpoly p x * rpoly q x"
       by (metis poly_mult rpoly.map_poly_mult rpoly.poly_map_poly_eval_poly)
     from True have "coeff p 0 = 0" by auto
-    from coeff_0_0_implies_x_dvd[OF this] have p: "p = [:0,1:] * (p div [:0,1:])" 
-      unfolding xx_def[symmetric] by force
-    have id2: "rpoly p x = 0 \<longleftrightarrow> rpoly (p div [:0,1:]) x = 0"
-      unfolding arg_cong[OF p, of "\<lambda> p. rpoly p x = 0", unfolded mult] using x 
+    from coeff_0_0_implies_x_dvd[OF this] obtain k where p: "p = xx * k" unfolding xx_def dvd_def by auto
+    from arg_cong[OF p, of "\<lambda> x. exact_div x xx", unfolded exact_div_left[OF xx0]] 
+    have k: "k = exact_div p xx" by simp 
+    have id2: "rpoly p x = 0 \<longleftrightarrow> rpoly k x = 0"
+      unfolding arg_cong[OF p, of "\<lambda> p. rpoly p x = 0", unfolded mult] using x xx_def 
       by (simp add: eval_poly_def)
-    from True have id: "eliminate_zero_divisors p = eliminate_zero_divisors (p div [:0,1:])"
-      by simp
-    show ?thesis unfolding id IH using id2 by simp
+    from True have id: "eliminate_zero_divisors p = eliminate_zero_divisors k"
+      by (simp add: k xx_def)
+    show ?thesis unfolding id using IH id2 by (simp add: k xx_def)
   qed auto
 qed 
 
-lemma eliminate_zero_divisors_0: "(p :: 'a :: field poly) \<noteq> 0 \<Longrightarrow> 
+lemma eliminate_zero_divisors_0: "(p :: 'a :: idom_div poly) \<noteq> 0 \<Longrightarrow> 
   eliminate_zero_divisors p \<noteq> 0 \<and> poly (eliminate_zero_divisors p) 0 \<noteq> 0"
 proof (induct p rule: eliminate_zero_divisors.induct)
   case (1 p)
@@ -424,13 +433,15 @@ proof (induct p rule: eliminate_zero_divisors.induct)
     case True
     note IH = 1(1)[OF this]
     def xx \<equiv> "[:0 :: 'a, 1:]"
+    have xx0: "xx \<noteq> 0" unfolding xx_def by auto
     from True have "coeff p 0 = 0" by auto
-    from coeff_0_0_implies_x_dvd[OF this] have idp: "p = [:0,1:] * (p div [:0,1:])" 
-      unfolding xx_def[symmetric] by force
-    with p have "p div [:0,1:] \<noteq> 0" by auto
-    note IH = IH[OF this]
-    from True have id: "eliminate_zero_divisors p = eliminate_zero_divisors (p div [:0,1:])"
-      by simp
+    from coeff_0_0_implies_x_dvd[OF this] obtain k where p: "p = xx * k" unfolding xx_def dvd_def by auto
+    from arg_cong[OF p, of "\<lambda> x. exact_div x xx", unfolded exact_div_left[OF xx0]] 
+    have k: "k = exact_div p xx" by simp 
+    with p 1(2) have "k \<noteq> 0" by auto
+    note IH = IH[folded k xx_def, OF this]
+    from True have id: "eliminate_zero_divisors p = eliminate_zero_divisors k"
+      by (simp add: k xx_def)
     show ?thesis unfolding id using IH by auto
   next
     case False
@@ -454,10 +465,10 @@ proof -
   finally show ?thesis .
 qed
 
-definition poly_mult' :: "'a :: field poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
+definition poly_mult' :: "'a :: comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
   "poly_mult' p q = resultant (poly_x_div_y p) (poly_lift q)"
 
-definition poly_mult :: "'a :: field poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
+definition poly_mult :: "'a :: idom_div poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
   "poly_mult p q = poly_mult' (eliminate_zero_divisors p) (eliminate_zero_divisors q)"
 
 lemma poly2_poly_x_div_y: fixes p :: "'a :: field poly"
