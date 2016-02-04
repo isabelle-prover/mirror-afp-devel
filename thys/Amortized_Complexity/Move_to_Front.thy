@@ -686,7 +686,7 @@ qed
 
 lemma T_adv: assumes "l \<noteq> 0"
 shows "T_off (adv A) [0..<l] (cruel A [0..<l] (Suc n))
-  \<le> l\<^sup>2 + l + 1 + (l + 1) * (n+1) div 2"  (is "?l \<le> ?r")
+  \<le> l\<^sup>2 + l + 1 + (l + 1) * n div 2"  (is "?l \<le> ?r")
 proof-
   let ?s = "[0..<l]"
   let ?r = "last ?s"
@@ -729,9 +729,7 @@ proof-
   also have "t ?s (last ?s) (0, sort_sws ?k ?s) \<le> (length ?s)^2 + length ?s + 1"
     by(rule t_sort_sws)
   also have "\<dots> = l^2 + l + 1" by simp
-  finally have "?l \<le> l\<^sup>2 + l + 1 + (l + 1) * n div 2" by auto
-  also have "\<dots> \<le> l\<^sup>2 + l + 1 + (l + 1) * (n+1) div 2" by auto
-  finally show ?thesis .
+  finally show "?l \<le> l\<^sup>2 + l + 1 + (l + 1) * n div 2" by auto
 qed
 
 text {* The main theorem: *}
@@ -772,10 +770,11 @@ proof (rule compet_lb0[OF _ _ assms(1) `c\<ge>0`])
       hence "?off n + ?a > 0" using `n \<ge> l^2 + l + 1` by linarith
       hence 2: "real_of_int(2*(?off n + ?a)) > 0"
         by(simp only: of_int_0_less_iff zero_less_mult_iff zero_less_numeral simp_thms)
-      have "?off n + ?a \<le> (l+1)*(n+1) div 2"
+      have "?off n + ?a \<le> (l+1)*(n) div 2"
         using T_adv[OF `l\<noteq>0`, of A n]
         by (simp only: o_apply of_nat_add of_nat_le_iff)
-      hence "2*(?off n + ?a) \<le> (l+1)*(n+1)"
+      also have "\<dots> \<le> (l+1)*(n+1) div 2" by (simp)
+      finally have "2*(?off n + ?a) \<le> (l+1)*(n+1)"
         by (simp add: zdiv_int)
       hence "of_int(2*(?off n + ?a)) \<le> real((l+1)*(n+1))" by (simp only: of_int_le_iff)
       from divide_left_mono[OF this 0 mult_pos_pos[OF 1 2]] show ?thesis .
