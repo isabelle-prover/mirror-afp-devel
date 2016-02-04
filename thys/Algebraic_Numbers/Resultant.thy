@@ -16,7 +16,6 @@ theory Resultant
 imports
   "../Jordan_Normal_Form/Matrix_IArray_Impl"
   "../Jordan_Normal_Form/Determinant_Impl"
-  "../Jordan_Normal_Form/Char_Poly"
   "../Polynomial_Factorization/Rational_Factorization"
   Unique_Factorization_Poly
   Bivariate_Polynomials
@@ -1639,5 +1638,336 @@ proof -
   }
   ultimately show ?thesis by auto
 qed
+
+subsubsection \<open>Computation of Resultants\<close>
+
+definition deletion_mat :: "nat \<Rightarrow> nat \<Rightarrow> 'a :: idom poly \<Rightarrow> 'a mat" where
+    "deletion_mat n m q = (let dq = degree q in mat (n+m) (n+m) (\<lambda> (i,j). if i = j then 1 else 
+      if i \<ge> m then 0 else if j \<ge> m + i then (let sub = j - m - i in if sub \<le> n - m then coeff q (n - m - sub) else 0)
+        else 0))"
+        
+lemma dim_deletion_mat[simp]: "dim\<^sub>r (deletion_mat n m q) = n + m"
+  "dim\<^sub>c (deletion_mat n m q) = n + m"
+  "deletion_mat n m q \<in> carrier\<^sub>m (n + m) (n + m)"
+  unfolding deletion_mat_def Let_def by auto
+
+lemma upper_triangular_deletion_mat: "upper_triangular (deletion_mat n m q)"
+  by (standard, auto simp: deletion_mat_def Let_def)
+  
+lemma det_deletion_mat: "det (deletion_mat n m q) = 1" 
+  by (subst det_upper_triangular[OF upper_triangular_deletion_mat dim_deletion_mat(3)], 
+  rule listprod_neutral, auto simp: deletion_mat_def Let_def mat_diag_def)
+  
+lemma deletion_mat_sylvester_mat_sub: assumes m: "m \<ge> degree (g * q + r)" 
+  and n: "n \<ge> degree g"
+  and nm: "degree q + n \<le> m"
+  shows "sylvester_mat_sub m n (g * q + r) g = 
+  deletion_mat m n q \<otimes>\<^sub>m sylvester_mat_sub m n r g" (is "?A = ?r")
+proof -
+  let ?mn = "m + n"
+  let ?f = "g * q + r"
+  have dim: "dim\<^sub>r ?A = ?mn" "dim\<^sub>c ?A = ?mn" "dim\<^sub>r ?r = ?mn" "dim\<^sub>c ?r = ?mn" by auto
+  show ?thesis
+  proof (rule mat_eqI; unfold dim)
+    fix i j
+    let ?D = "deletion_mat m n q"
+    let ?B = "sylvester_mat_sub m n r g"
+    assume i: "i < ?mn" and j: "j < ?mn"
+    hence r: "?r $$ (i,j) = row ?D i \<bullet> col ?B j"
+      by simp
+    show "?A $$ (i,j) = ?r $$ (i,j)" 
+    proof (cases "i < n")
+      case False
+      have id: "row ?D i = unit\<^sub>v ?mn i"
+        by (rule vec_eqI, insert i j False, auto simp: deletion_mat_def Let_def)
+      have "?r $$ (i,j) = ?B $$ (i,j)" unfolding r id
+        by (subst scalar_prod_left_unit, insert i j, auto simp: col_def)
+      also have "\<dots> = ?A $$ (i,j)" using i j False
+        by (auto simp: sylvester_mat_sub_def)
+      finally show ?thesis ..
+    next
+      case True note i_n = this
+      let ?dq = "degree q"
+      def r_ij \<equiv> "(if i \<le> j \<and> j - i \<le> m then coeff r (m + i - j) else 0)"
+      def gq_ij \<equiv> "(if i \<le> j \<and> j - i \<le> m then coeff (g * q) (m + i - j) else 0)"
+      have A: "?A $$ (i,j) = r_ij + gq_ij"
+        by (subst sylvester_mat_sub_index[OF i j], insert True, auto simp: r_ij_def gq_ij_def)
+      let ?d = "\<lambda> j. if i = j then 1 else if n + i \<le> j \<and> j - n - i \<le> m - n
+        then coeff q (m - (j - i)) else 0"
+      let ?b = "\<lambda> i. if i < n then if i \<le> j \<and> j - i \<le> m  then coeff r (m + i - j) else 0
+                   else if i - n \<le> j \<and> j \<le> i then coeff g (i - j) else 0"
+      have row: "row ?D i = vec ?mn ?d" unfolding deletion_mat_def Let_def using i True
+        by (intro vec_eqI, auto)
+      have col: "col ?B j = vec ?mn ?b"
+        by (rule vec_eqI, unfold sylvester_mat_sub_def, insert i j True, auto)
+      let ?prod = "\<lambda> i. ?d i * ?b i"
+      def prod \<equiv> ?prod
+      let ?sum = "setsum prod {0..<?mn}"
+      have "?r $$ (i,j) = ?sum" unfolding r row col scalar_prod_def prod_def by auto
+      also have "{0 ..< ?mn} = {0 ..< i} \<union> {i} \<union> {Suc i ..< ?mn}" using i by auto
+      also have "setsum prod \<dots> = setsum prod {0 ..< i} + prod i + setsum prod {Suc i ..< ?mn}"      
+        by (subst setsum.union_disjoint, (auto)[3], subst setsum.union_disjoint, auto)
+      also have "prod i = ?b i" unfolding prod_def by simp
+      also have "\<dots> = r_ij" using True by (simp add: r_ij_def)
+      also have "setsum prod {0 ..< i} = 0" unfolding prod_def
+        by (rule setsum.neutral, auto)
+      also have "setsum prod {Suc i ..< ?mn} = gq_ij" 
+      proof -
+        let ?Diff = "{n + i .. m + i} \<inter> {j .. j+n}"
+        let ?I = "({Suc i ..< ?mn} \<inter> ?Diff)"
+        let ?D = "({Suc i ..< ?mn} - ?Diff)"
+        def prod' \<equiv> "\<lambda> k. coeff q (m + i - k) * coeff g (k - j)"
+        have "setsum prod {Suc i ..< ?mn} = setsum prod (?I \<union> ?D)"
+          by (rule arg_cong[of _ _ "setsum prod"], auto)
+        also have "\<dots> = setsum prod ?I + setsum prod ?D"
+          by (subst setsum.union_disjoint, auto)
+        also have "setsum prod ?D = 0"
+          by (rule setsum.neutral, insert nm, auto simp: prod_def)
+        also have "setsum prod ?I = setsum prod' ?I" 
+          unfolding prod_def prod'_def by (rule setsum.cong, auto simp: ac_simps)
+        also have "\<dots> = gq_ij" 
+        proof (cases "i \<le> j \<and> j - i \<le> m")
+          case False
+          hence "gq_ij = 0" unfolding gq_ij_def by auto
+          moreover have "setsum prod' ?I = 0" unfolding prod'_def
+            by (rule setsum.neutral, insert False n m nm, auto simp: prod'_def intro!: coeff_eq_0)
+          ultimately show ?thesis by simp
+        next
+          case True note ij = this
+          have eq: "{0..m + i - j} = (\<lambda>k. k - j) ` {j..m + i}" (is "?l = ?r")
+          proof -
+            {
+              fix k
+              assume "k \<in> ?l"
+              hence "k + j \<in> {j..m+i}" using True by auto
+              hence "(k + j) - j \<in> ?r" by blast
+            }          
+            thus ?thesis by auto
+          qed
+          from True have "gq_ij = coeff (g * q) (m + i - j)" unfolding gq_ij_def by auto
+          also have "\<dots> = setsum (\<lambda> k. coeff q (m + i - j - k) * coeff g k) {0 .. m + i - j}" 
+            unfolding coeff_mult by (rule setsum.cong, auto simp add: ac_simps)
+          also have "\<dots> = setsum prod' {j .. m + i}" unfolding prod'_def
+            by (rule setsum.reindex_cong[of "\<lambda> k. k - j"], insert eq True, auto simp: inj_on_def)
+          also have "\<dots> = setsum prod' (?I \<union> ({j .. m + i} - ?I))" 
+            by (rule setsum.cong, auto)
+          also have "\<dots> = setsum prod' ?I + setsum prod' ({j .. m + i} - ?I)"
+            by (subst setsum.union_disjoint, auto)
+          also have "setsum prod' ({j .. m + i} - ?I) = 0"
+          proof (rule setsum.neutral, clarify, goal_cases)
+            case (1 k)
+            hence k1: "k \<ge> j" "k \<le> m + i" by auto
+            show ?case
+            proof (cases "k > j + degree g \<or> n = 0")
+              case True
+              thus ?thesis using 1 ij i_n unfolding prod'_def by (auto simp: coeff_eq_0)
+            next
+              case False
+              hence k2: "k \<le> j + degree g" "k < i + n" "k < j + n" "j \<le> m + i" "i \<le> j" "n > 0"
+                using 1 True i_n n ij i_n j k1 by auto
+              note * = k1 k2 i_n
+              def kk \<equiv> "k - j"
+              from * i_n nm
+              have id: "m + i - k = m + i - j - kk" "k - j = kk"
+                and k12: "kk \<le> m + i - j" "kk \<le> degree g" "kk < i - j + n" "kk < n" "j \<le> m + i" "i \<le> j"
+                unfolding kk_def by auto
+              note ** = n m nm
+              have "m + i \<ge> j + kk" using k12 ** by auto
+              from k12(3,6) have "n + i - j > kk"
+                by (simp add: add.commute diff_less_mono k1 k2 kk_def)
+              thus ?thesis unfolding prod'_def id using k12 ** by (auto intro: coeff_eq_0)                
+            qed
+          qed
+          finally show ?thesis by simp
+        qed
+        finally show ?thesis by simp
+      qed
+      finally show ?thesis unfolding A r by simp
+    qed
+  qed auto
+qed
+
+hide_const deletion_mat
+
+lemma resultant_sub_mod: assumes m: "m \<ge> degree (g * q + r)" 
+  and n: "n \<ge> degree (g :: 'a :: idom poly)"
+  and nm: "degree q + n \<le> m"
+  shows "resultant_sub m n (g * q + r) g = resultant_sub m n r g"
+proof -
+  show ?thesis unfolding resultant_def sylvester_mat_def resultant_sub_def
+    by (subst deletion_mat_sylvester_mat_sub[OF m n nm],
+    subst det_mult[OF dim_deletion_mat(3)], auto simp: det_deletion_mat assms)
+qed
+  
+lemma resultant_mod: assumes f: "f = g * q + (r :: 'a :: idom poly)"
+  and deg: "degree f \<ge> degree g" "degree g > degree r"
+  and ex: "ex = degree g * (degree f - degree r)"
+  shows "resultant f g = (-1)^ex * coeff g (degree g)^(degree f - degree r) * resultant r g" 
+proof -
+  def diff \<equiv> "degree f - degree r"
+  have df: "degree f = degree r + diff" using deg unfolding diff_def by auto
+  show ?thesis unfolding resultant_def sylvester_mat_def resultant_sub_def[symmetric] f
+  proof (subst resultant_sub_mod[OF le_refl le_refl]; unfold f[symmetric])
+    show "resultant_sub (degree f) (degree g) r g =
+      (-1)^ex * coeff g (degree g) ^ (degree f - degree r) * resultant_sub (degree r) (degree g) r g"
+      unfolding df resultant_sub_trim_upper power_mult_distrib power_mult[symmetric]
+      by (auto simp: ex diff_def)
+    show "degree q + degree g \<le> degree f" using deg unfolding f
+      by (metis (no_types, lifting) add.commute add.right_neutral 
+        deg(1) degree_0 degree_add_eq_left degree_mult_eq f 
+        leD le_less_trans less_or_eq_imp_le not_le_imp_less)
+  qed
+qed
+  
+lemma resultant_computation_pseudo_divmod: assumes 
+    res: "pseudo_divmod f g = (q,r)"
+  and c: "c = coeff g (degree (g :: 'a :: idom_div poly))"
+  and e1: "e1 = pseudo_exponent f g * degree g"
+  and e2: "e2 = degree f - degree r"
+  and e3: "e3 = degree g * (degree f - degree r)"
+  and degg: "degree g > degree r" "degree f \<ge> degree g"
+  shows "resultant f g = exact_div ((- 1) ^ e3 * resultant r g) (c ^ (e1 - e2))"
+proof -
+  from degg have g: "g \<noteq> 0" by auto
+  let ?c = "coeff g (degree g)"
+  let ?m = "(-1)^e3"
+  let ?e = "pseudo_exponent f g"
+  let ?e1 = "?e * degree g"
+  let ?e2 = "if q = 0 then 0 else degree g + degree q - degree r"
+  from g have "?c \<noteq> 0" by auto
+  hence ce: "?c ^ ?e \<noteq> 0" and c0: "\<And> m. c ^ m \<noteq> 0" by (auto simp: c)
+  from pseudo_divmod[OF g res] have id: "smult (?c ^ ?e) f = g * q + r" and rg: "r = 0 \<or> degree r < degree g" by auto
+  have deg_f: "degree f = degree (g * q + r)" 
+    using arg_cong[OF id, of degree] unfolding degree_smult_eq using ce by (simp split: if_splits)
+  from arg_cong[OF id, of "\<lambda> x. resultant x g", unfolded resultant_smult_left[OF ce]]
+  have "c ^ e1 * resultant f g = resultant (g * q + r) g" 
+    by (simp add: power_mult e1 c)
+  also have "\<dots> = ?m * ?c ^ (degree (g * q + r) - degree r) * resultant r g" 
+    by (rule resultant_mod[OF refl degg(2,1)[unfolded deg_f] e3[unfolded deg_f]])
+  also have deg: "degree (g * q + r) - degree r = e2" unfolding deg_f[symmetric] e2 by simp
+  finally have id: "c ^ e1 * resultant f g = c ^ e2 * ?m * resultant r g" unfolding c by simp
+
+  have deg': "degree (g * q + r) = (if q = 0 then degree r else degree g + degree q)"
+  proof (cases "q = 0")
+    case False
+    with g(1) have add: "degree (g * q) = degree g + degree q" by (simp add: degree_mult_eq)
+    also have "\<dots> > degree r \<or> r = 0" using rg by auto
+    finally show ?thesis using False
+      by (metis add add_0_iff degree_add_eq_left)
+  qed auto
+  hence e2': "e2 = (if q = 0 then 0 else degree g + degree q - degree r)"
+    unfolding e2 deg_f by auto
+  from degg have e21: "e2 \<le> e1" using deg' e1 e2 deg_f deg unfolding pseudo_exponent_def by (cases "degree g", auto)
+  hence e1: "c ^ e1 = c ^ (e2 + (e1 - e2))" by simp
+  from e21 arg_cong[OF id, of "\<lambda> x. exact_div (exact_div x (c ^ e2)) (c ^ (e1 - e2))", 
+    unfolded this power_add mult.assoc exact_div_left[OF c0]]
+  show ?thesis by simp
+qed
+  
+text \<open>For the implementation function, we require @{class semiring_gcd} for computing GCDs,
+  which rules out integer polynomials as carrier at the moment. This should be changed in the 
+  future. Note that even the current proof does not require optimality of the GCD, any divisor
+  would do.\<close>
+
+function resultant_impl :: "'a :: {semiring_div,semiring_gcd,idom_div} poly \<Rightarrow> 'a poly \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a" where
+  "resultant_impl f g df dg = (
+    if dg = 0 then coeff g 0 ^ df 
+    else let 
+       cg = content g;
+       pg = div_poly cg g;
+       (q,r) = pseudo_divmod f pg;
+       dr = degree r;
+       c = coeff pg dg;
+       e1 = (Suc df - dg) * dg;
+       e2 = df - dr;
+       rgr = resultant_impl pg r dg dr;
+       rrg = (if even dg \<or> even dr then rgr else - rgr);
+       vrrg = (if even dg \<or> even e2 then rrg else - rrg)
+     in  
+       cg ^ df * (exact_div vrrg (c ^ (e1 - e2))))" 
+  by pat_completeness auto
+
+termination 
+proof (relation "measures [(\<lambda> (f,g,df,dg). if dg = degree g then 0 else 1), 
+  (\<lambda> (f,g,df,dg). degree g)]", goal_cases)
+  case (2 f g df dg cg pg qr q r dr)
+  let ?pg = "div_poly (content g) g"
+  from 2 have pd: "pseudo_divmod f ?pg = (q,r)" and dg: "dg \<noteq> 0" by auto
+  from 2 have dr: "dr = degree r" by auto
+  show ?case
+  proof (cases "dg = degree g")
+    case True
+    with dg have g: "g \<noteq> 0" "degree g \<noteq> 0" by auto
+    from g have cg0: "content g \<noteq> 0" by simp
+    have "g = smult (content g) ?pg" using cg0 content_dvd[of _ g]
+      by (simp add: smult_div_poly)
+    from arg_cong[OF this, of degree]
+    have deg: "degree ?pg = degree g" using cg0 degree_smult_eq[of "content g" g]  
+      by simp
+    with g have pg: "?pg \<noteq> 0" by auto
+    from pseudo_divmod[OF pg pd, unfolded deg] g
+    show ?thesis by (auto simp: dr)
+  qed (auto simp: dr)
+qed simp
+
+lemma resultant_impl: "df = degree f \<Longrightarrow> dg = degree g \<Longrightarrow> df \<ge> dg 
+  \<Longrightarrow> resultant_impl f g df dg = resultant f g"
+proof (induct f g df dg rule: resultant_impl.induct)
+  case (1 f g df dg)
+  note dfg = 1(2-3)
+  let ?df = "degree f"
+  let ?dg = "degree g"
+  show ?case
+  proof (cases "?dg = 0")
+    case True note dg = this
+    from degree0_coeffs[OF dg] obtain a where g: "g = [:a:]" by auto
+    from g dfg have r: "resultant_impl f g df dg = a ^ ?df" by auto
+    also have "\<dots> = resultant f g" unfolding g resultant_right_const ..
+    finally show ?thesis by simp
+  next
+    case False
+    obtain cg where cg: "cg = content g" by blast
+    obtain pg where pg: "pg = div_poly cg g" by blast
+    obtain q r where div: "pseudo_divmod f pg = (q,r)" by force
+    let ?dr = "degree r"
+    obtain c where c: "c = coeff pg dg" by blast
+    obtain e1 where e1: "e1 = pseudo_exponent f g * dg" by blast
+    obtain e2 where e2: "e2 = degree f - degree r" by blast
+    obtain rgr where rgr: "rgr = resultant_impl pg r dg ?dr" by blast
+    obtain rrg where rrg: "rrg = (if even ?dg \<or> even ?dr then rgr else - rgr)" by blast
+    obtain vrrg where vrrg: "vrrg = (if even ?dg \<or> even e2 then rrg else -rrg)" by blast
+    have cg0: "cg \<noteq> 0" unfolding cg content_0_iff using False by auto
+    have id: "g = smult cg pg" unfolding pg using cg0 content_dvd[of _ g]
+      by (simp add: cg smult_div_poly)
+    have deg[simp]: "degree pg = degree g" unfolding id using cg0 by auto
+    hence dpg: "dg = degree pg" unfolding dfg ..
+    from False have g: "pg \<noteq> 0" using deg cg0 id by fastforce
+    from False have dpg0: "degree pg \<noteq> 0" by simp
+    with pseudo_divmod[OF g div] have dr: "degree r < degree pg" "degree r \<le> dg" unfolding dpg by auto
+    note IH = 1(1)[OF False[folded dfg] cg pg refl div[symmetric] refl c refl refl dpg refl dr(2)]
+    have e1': "e1 = pseudo_exponent f pg * dg" by (auto simp: e1 dpg pseudo_exponent_def)
+    have r: "resultant_impl f g df dg = cg ^ ?df * exact_div vrrg (c ^ (e1 - e2))" 
+      unfolding Let_def e1 e2 c rgr rrg div[unfolded pg cg] vrrg split pseudo_exponent_def 
+        cg pg resultant_impl.simps[of f g] dfg
+      using False by auto
+    also have "vrrg = (if even dg \<or> even e2 then rrg else -rrg)" unfolding vrrg 
+      by (simp add: dfg)
+    also have "\<dots> = (-1)^(dg * e2) * rrg" by simp
+    also have "\<dots> = (-1)^(dg * e2) * resultant r pg" unfolding rrg rgr IH
+      by (subst resultant_swap[of r pg], simp)
+    also have "exact_div \<dots> (c ^ (e1 - e2)) = resultant f pg"
+      by (subst resultant_computation_pseudo_divmod[OF div, folded dpg, OF c e1' e2  _ dr(1)[folded dpg] 
+          1(4)[unfolded dfg(1)]], auto simp: e2)
+    also have "cg ^ ?df * \<dots> = resultant f g" unfolding id resultant_smult_right[OF cg0] by simp
+    finally show ?thesis .
+  qed
+qed
+
+lemma resultant_code[code]: "resultant f g = (let df = degree f; dg = degree g
+  in if df \<ge> dg then resultant_impl f g df dg else let gf = resultant_impl g f dg df in
+   if even df \<or> even dg then gf else - gf)"
+   using resultant_impl[OF refl refl, of f g] resultant_impl[OF refl refl, of g f] 
+   unfolding Let_def using resultant_swap[of f g] by auto
+
 
 end

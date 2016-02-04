@@ -15,7 +15,6 @@ theory Algebraic_Numbers
 imports 
   Algebraic_Numbers_Prelim
   Resultant
-  "../Jordan_Normal_Form/Determinant_Impl"
 begin
 
 subsection \<open>Addition of Algebraic Numbers\<close>
@@ -96,10 +95,7 @@ lemma (in map_poly_ring_hom) map_poly_x_minus_y:
   by (induct p;simp)
 
 definition poly_add :: "'a :: comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
-  [code del]: "poly_add p q = resultant (poly_x_minus_y p) (poly_lift q)"
-
-lemma poly_add_code[code]: "poly_add p q = det_field_poly (sylvester_mat (poly_x_minus_y p) (poly_lift q))"
-  unfolding poly_add_def resultant_def by simp
+  "poly_add p q = resultant (poly_x_minus_y p) (poly_lift q)"
 
 lemma poly_add:
   fixes p q :: "'a ::{ring_char_0,idom} poly"
@@ -459,11 +455,7 @@ proof -
 qed
 
 definition poly_mult' :: "'a :: field poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
-  [code del]: "poly_mult' p q = resultant (poly_x_div_y p) (poly_lift q)"
-
-lemma poly_mult_code[code]: 
-  "poly_mult' p q = det_field_poly (sylvester_mat (poly_x_div_y p) (poly_lift q))"
-  unfolding poly_mult'_def resultant_def by simp
+  "poly_mult' p q = resultant (poly_x_div_y p) (poly_lift q)"
 
 definition poly_mult :: "'a :: field poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
   "poly_mult p q = poly_mult' (eliminate_zero_divisors p) (eliminate_zero_divisors q)"
