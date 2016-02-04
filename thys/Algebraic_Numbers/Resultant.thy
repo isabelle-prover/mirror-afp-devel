@@ -20,6 +20,7 @@ imports
   Unique_Factorization_Poly
   Bivariate_Polynomials
   Algebraic_Numbers_Prelim
+  Binary_Exponentiation
 begin
 
 
@@ -1864,7 +1865,8 @@ proof -
   show ?thesis by simp
 qed
   
-text \<open>For the implementation function, we require @{class semiring_gcd} for computing GCDs,
+text \<open>For the implementation function, we require @{class semiring_gcd} for computing GCDs
+  in the @{const content},
   which rules out integer polynomials as carrier at the moment. This should be changed in the 
   future. Note that even the current proof does not require optimality of the GCD, any divisor
   would do.\<close>
@@ -1881,10 +1883,9 @@ function resultant_impl :: "'a :: {semiring_div,semiring_gcd,idom_div} poly \<Ri
        e1 = (Suc df - dg) * dg;
        e2 = df - dr;
        rgr = resultant_impl pg r dg dr;
-       rrg = (if even dg \<or> even dr then rgr else - rgr);
-       vrrg = (if even dg \<or> even e2 then rrg else - rrg)
+       rrg = (if even dg \<or> (even dr = even e2) then rgr else - rgr)
      in  
-       cg ^ df * (exact_div vrrg (c ^ (e1 - e2))))" 
+       cg ^ df * (exact_div rrg (c ^ (e1 - e2))))" 
   by pat_completeness auto
 
 termination 
