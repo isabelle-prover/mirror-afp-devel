@@ -380,15 +380,14 @@ proof -
   {
     fix p :: "'a :: idom_div poly"
     let ?x = "[:0,1 :: 'a:]"
+    let ?q = "exact_div p ?x"
     assume p: "p \<noteq> 0" and p0: "coeff p 0 = 0"    
     from coeff_0_0_implies_x_dvd[OF p0]
     have "?x dvd p" by auto
-    then obtain k where pxk: "p = ?x * k" unfolding dvd_def by auto
-    with p have x0: "?x \<noteq> 0" and k0: "k \<noteq> 0" by auto
-    from degree_mult_eq[OF this, folded pxk] have kp: "degree k < degree p" by auto
-    from arg_cong[OF pxk, of "\<lambda> x. exact_div x ?x", unfolded exact_div_left[OF x0]]
-    have k: "exact_div p ?x = k" .
-    hence "degree (exact_div p ?x) < degree p" using kp by simp 
+    from exact_div_dvdD[OF this] have id: "?x * ?q = p" .
+    with p have "?x \<noteq> 0" "?q \<noteq> 0" by auto
+    from degree_mult_eq[OF this, unfolded id]
+    have "degree (exact_div p ?x) < degree p" by simp 
   } note main = this
   show ?thesis
     by (relation "measure degree", auto simp: main)
@@ -405,20 +404,19 @@ proof (induct p rule: eliminate_zero_divisors.induct)
   proof (cases "coeff p 0 = 0 \<and> p \<noteq> 0")
     case True
     note IH = 1[OF this]
-    def xx \<equiv> "[:0 :: rat, 1:]"
-    have xx0: "xx \<noteq> 0" unfolding xx_def by auto
+    let ?xx = "[:0 :: rat, 1:]"
+    def q \<equiv> "exact_div p ?xx"
     have mult: "\<And> p q. rpoly (p * q) x = rpoly p x * rpoly q x"
       by (metis poly_mult rpoly.map_poly_mult rpoly.poly_map_poly_eval_poly)
     from True have "coeff p 0 = 0" by auto
-    from coeff_0_0_implies_x_dvd[OF this] obtain k where p: "p = xx * k" unfolding xx_def dvd_def by auto
-    from arg_cong[OF p, of "\<lambda> x. exact_div x xx", unfolded exact_div_left[OF xx0]] 
-    have k: "k = exact_div p xx" by simp 
-    have id2: "rpoly p x = 0 \<longleftrightarrow> rpoly k x = 0"
-      unfolding arg_cong[OF p, of "\<lambda> p. rpoly p x = 0", unfolded mult] using x xx_def 
-      by (simp add: eval_poly_def)
-    from True have id: "eliminate_zero_divisors p = eliminate_zero_divisors k"
-      by (simp add: k xx_def)
-    show ?thesis unfolding id using IH id2 by (simp add: k xx_def)
+    from exact_div_dvdD[OF coeff_0_0_implies_x_dvd[OF this]]
+    have id: "p = ?xx * q" unfolding q_def by auto 
+    have id2: "rpoly p x = 0 \<longleftrightarrow> rpoly q x = 0"
+      unfolding arg_cong[OF id, of "\<lambda> p. rpoly p x = 0", unfolded mult] using x  
+      by (simp add: eval_poly_def q_def)
+    from True have id: "eliminate_zero_divisors p = eliminate_zero_divisors q"
+      by (simp add: q_def)
+    show ?thesis unfolding id using IH id2 by (simp add: q_def)
   qed auto
 qed 
 
@@ -432,16 +430,15 @@ proof (induct p rule: eliminate_zero_divisors.induct)
   proof (cases "coeff p 0 = 0 \<and> p \<noteq> 0")
     case True
     note IH = 1(1)[OF this]
-    def xx \<equiv> "[:0 :: 'a, 1:]"
-    have xx0: "xx \<noteq> 0" unfolding xx_def by auto
+    let ?xx = "[:0 :: 'a, 1:]"
+    def q \<equiv> "exact_div p ?xx"
     from True have "coeff p 0 = 0" by auto
-    from coeff_0_0_implies_x_dvd[OF this] obtain k where p: "p = xx * k" unfolding xx_def dvd_def by auto
-    from arg_cong[OF p, of "\<lambda> x. exact_div x xx", unfolded exact_div_left[OF xx0]] 
-    have k: "k = exact_div p xx" by simp 
-    with p 1(2) have "k \<noteq> 0" by auto
-    note IH = IH[folded k xx_def, OF this]
-    from True have id: "eliminate_zero_divisors p = eliminate_zero_divisors k"
-      by (simp add: k xx_def)
+    from exact_div_dvdD[OF coeff_0_0_implies_x_dvd[OF this]]
+    have id: "p = ?xx * q" unfolding q_def by auto 
+    with p 1(2) have "q \<noteq> 0" by auto
+    note IH = IH[folded id q_def, OF this]
+    from True have id: "eliminate_zero_divisors p = eliminate_zero_divisors q"
+      by (simp add: q_def)
     show ?thesis unfolding id using IH by auto
   next
     case False
@@ -595,7 +592,7 @@ proof -
     unfolding coeff_map_poly_hom monom_hom mh.rh.monom_hom by simp
 qed
 
-lemma (in inj_field_hom) poly_mult'_hom: 
+lemma (in inj_ring_hom) poly_mult'_hom: 
   "poly_mult' (map_poly hom p) (map_poly hom q) = map_poly hom (poly_mult' p q)"
 proof -
   have zero: "\<forall>x. hom x = 0 \<longrightarrow> x = 0" by simp
@@ -605,6 +602,57 @@ proof -
   show ?thesis unfolding poly_mult'_def
     by (subst mh.rh.resultant_map_poly, force simp: deg, force simp: deg, 
       rule cong[OF poly_x_div_y_hom poly_lift_hom])
+qed
+
+lemma eliminate_zero_divisors_hom:  
+  assumes "inj_ring_hom (h :: 'a :: idom_div \<Rightarrow> 'b :: idom_div)"
+  shows "eliminate_zero_divisors (map_poly h p) = map_poly h (eliminate_zero_divisors p)"
+proof -
+  interpret inj_ring_hom h by fact
+  show ?thesis
+  proof (induct p rule: eliminate_zero_divisors.induct)
+    case (1 p)
+    let ?h = "map_poly h"
+    let ?p = "?h p"
+    note simp = eliminate_zero_divisors.simps
+    note simp = simp[of p] simp[of ?p]
+    show ?case
+    proof (cases "coeff p 0 = 0 \<and> p \<noteq> 0")
+      case True
+      note IH = 1(1)[OF this]
+      let ?x = "[:0, 1 :: 'a:]"
+      let ?hx = "[:0, 1 :: 'b:]"
+      def q \<equiv> "exact_div p ?x"
+      def hq \<equiv> "exact_div ?p ?hx"
+      from True have "coeff p 0 = 0" by auto
+      from exact_div_dvdD[OF coeff_0_0_implies_x_dvd[OF this]]
+      have id: "p = ?x * q" unfolding q_def by auto 
+      from arg_cong[OF id, of ?h] have id': "?p = ?hx * (?h q)" by auto
+      have hx: "?hx \<noteq> 0" by simp
+      from True have "coeff ?p 0 = 0" by auto
+      from exact_div_dvdD[OF coeff_0_0_implies_x_dvd[OF this]]
+      have "?p = ?hx * hq" unfolding hq_def by auto
+      with id' have "?hx * (?h q) = ?hx * hq" by auto
+      from arg_cong[OF this, of "\<lambda> x. exact_div x ?hx", unfolded exact_div_left[OF hx]]
+      have id: "?h q = hq" .
+      have "?thesis = (eliminate_zero_divisors (exact_div ?p ?hx)
+        = ?h (eliminate_zero_divisors (exact_div p ?x)))"
+        unfolding simp using True by auto
+      also have "?h (eliminate_zero_divisors (exact_div p ?x)) 
+        = eliminate_zero_divisors (?h (exact_div p ?x))" using IH by simp
+      also have "?h (exact_div p ?x) = exact_div ?p (?h ?x)" using id
+        by (simp add: q_def hq_def)
+      finally show ?thesis by simp
+    qed (insert simp, auto)
+  qed
+qed
+
+lemma poly_mult_hom:  
+  assumes h: "inj_ring_hom h"
+  shows "poly_mult (map_poly h p) (map_poly h q) = map_poly h (poly_mult p q)"
+proof -
+  interpret inj_ring_hom h by fact
+  show ?thesis unfolding poly_mult'_hom poly_mult_def eliminate_zero_divisors_hom[OF h] ..
 qed
 
 lemma alg_poly_mult'_complex:

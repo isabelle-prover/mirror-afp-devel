@@ -27,6 +27,16 @@ class idom_div = idom +
 begin
 lemma exact_div_left[simp]: "b \<noteq> 0 \<Longrightarrow> exact_div (b * a) b = a" unfolding mult.commute[of b a]
   by (rule exact_div_right)
+
+lemma exact_div_dvdD[dest]: assumes a: "a dvd b"
+  shows "a * exact_div b a = b"
+proof (cases "a = 0")
+  case True
+  thus ?thesis using a unfolding dvd_def by auto
+next
+  case False
+  thus ?thesis using exact_div_right[OF False] a[unfolded dvd_def] by auto
+qed
 end
 
 definition pseudo_exponent :: "'a :: semiring_0 poly \<Rightarrow> 'a poly \<Rightarrow> nat" where

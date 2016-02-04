@@ -3576,4 +3576,40 @@ declare real_code_dels[code, code del]
 declare real_code_unfold_dels[code_unfold del]
 declare real_alg_code_eqns[code]
 
+subsection \<open>Computing Resultants via Integer Polynomials\<close>
+
+text \<open>We provide two code-unfold equations that -- when activated -- 
+  change the implementation of real algebraic numbers such resultants of integer
+  polynomials have to be computed instead of rational polymonials. At the moment
+  they are not activated, since the resultant algorithm currently is not available
+  for integers, as there is no GCD-algorithm for integer polynomials available.
+  Once, the situation changes, one just has to declare the unfold-equation as 
+  code-unfold.\<close>
+
+lemma poly_add_via_int_polys_unfold: "poly_add (normalize_rat_poly p1) (normalize_rat_poly p2)
+  = map_poly rat_of_int (poly_add (snd (rat_to_int_poly p1)) (snd (rat_to_int_poly p2)))"
+proof -
+  def q1 \<equiv> "snd (rat_to_int_poly p1)"
+  def q2 \<equiv> "snd (rat_to_int_poly p2)"
+  show ?thesis unfolding normalize_rat_poly_def q1_def[symmetric] q2_def[symmetric]
+    by (rule ri.poly_add_hom)
+qed
+
+lemma poly_mult_via_int_polys_unfold: "poly_mult (normalize_rat_poly p1) (normalize_rat_poly p2)
+  = map_poly rat_of_int (poly_mult (snd (rat_to_int_poly p1)) (snd (rat_to_int_poly p2)))"
+proof -
+  def q1 \<equiv> "snd (rat_to_int_poly p1)"
+  def q2 \<equiv> "snd (rat_to_int_poly p2)"
+  show ?thesis unfolding normalize_rat_poly_def q1_def[symmetric] q2_def[symmetric]
+    by (rule poly_mult_hom, standard)
+qed
+
+lemmas use_integer_resultants =
+  poly_add_via_int_polys_unfold
+  poly_mult_via_int_polys_unfold 
+
+(*
+declare use_integer_resultants[code_unfold]
+*)
+
 end
