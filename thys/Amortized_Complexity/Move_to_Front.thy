@@ -116,19 +116,19 @@ qed simp
 subsection "List Update as Online/Offline Algorithm"
 
 type_synonym 'a state = "'a list"
-type_synonym 'a answer = "nat * nat list"
+type_synonym answer = "nat * nat list"
 
-definition step :: "'a state \<Rightarrow> 'a \<Rightarrow> 'a answer \<Rightarrow> 'a state" where
+definition step :: "'a state \<Rightarrow> 'a \<Rightarrow> answer \<Rightarrow> 'a state" where
 "step s r a =
   (let (k,sws) = a in mtf2 k r (swaps sws s))"
 
-definition t :: "'a state \<Rightarrow> 'a \<Rightarrow> 'a answer \<Rightarrow> nat" where
+definition t :: "'a state \<Rightarrow> 'a \<Rightarrow> answer \<Rightarrow> nat" where
 "t s r a = (let (mf,sws) = a in index (swaps sws s) r + 1 + size sws)"
 
 interpretation On_Off step t .
 
-type_synonym 'a alg_off = "'a state \<Rightarrow> 'a list \<Rightarrow> 'a answer list"
-type_synonym 'a alg_on = "'a state \<Rightarrow> 'a \<Rightarrow> 'a answer"
+type_synonym 'a alg_off = "'a state \<Rightarrow> 'a list \<Rightarrow> answer list"
+type_synonym ('a,'is) alg_on = "('a state,'is,'a,answer) alg_on"
 
 lemma T_ge_len: "length as = length rs \<Longrightarrow> T s rs as \<ge> length rs"
 by(induction arbitrary: s rule: list_induct2)
@@ -159,8 +159,8 @@ by (auto simp: step_def split_def)
 
 subsection "Online Algorithm Move-to-Front is 2-Competitive"
 
-definition MTF :: "'a state \<Rightarrow> 'a \<Rightarrow> 'a answer" where
-"MTF s r = (size s - 1,[])"
+definition MTF :: "('a,unit) alg_on" where
+"MTF = (\<lambda>_. (), \<lambda>s r. ((size (fst s) - 1,[]), ()))"
 
 text{* It was first proved by Sleator and Tarjan~\cite{SleatorT-CACM85} that
 the Move-to-Front algorithm is 2-competitive. *}
@@ -262,7 +262,7 @@ proof-
 qed
 
 locale MTF_Off =
-fixes as :: "'a answer list"
+fixes as :: "answer list"
 fixes rs :: "'a list"
 fixes s0 :: "'a list"
 assumes dist_s0[simp]: "distinct s0"
@@ -455,12 +455,12 @@ qed
 lemma T_A_eq: "T_A (length rs) = T s0 rs as"
 using T_A_eq_lem by(simp add: T_A_def atLeast0LessThan)
 
-lemma nth_off_MTF: "n < length rs \<Longrightarrow> off MTF s rs ! n = (size s - 1,[])"
-by(induction rs arbitrary: s n)(auto simp add: MTF_def nth_Cons')
+lemma nth_off_MTF: "n < length rs \<Longrightarrow> off2 (snd MTF) s rs ! n = (size(fst s) - 1,[])"
+by(induction rs arbitrary: s n)(auto simp add: MTF_def nth_Cons' Step_def)
 
 lemma t_mtf_MTF: "n < length rs \<Longrightarrow>
   t_mtf n = int (t (s_mtf n) (rs ! n) (off MTF s rs ! n))"
-by(simp add: t_mtf_def t_def nth_off_MTF)
+by(simp add: t_mtf_def t_def nth_off_MTF split: prod.split)
 
 lemma mtf_MTF: "n < length rs \<Longrightarrow> length s = length s0 \<Longrightarrow> mtf (rs ! n) s =
        step s (rs ! n) (off MTF s0 rs ! n)"
@@ -496,7 +496,7 @@ theorem compet_MTF: assumes "s0 \<noteq> []" "distinct s0" "set rs \<subseteq> s
 shows "T_on MTF s0 rs \<le> (2 - 1/(size s0)) * T_opt s0 rs"
 proof-
   from assms(3) have 1: "\<forall>i < length rs. rs!i \<in> set s0" by auto
-  { fix as :: "'a answer list" assume len: "length as = length rs"
+  { fix as :: "answer list" assume len: "length as = length rs"
     interpret MTF_Off as rs s0 proof qed (auto simp: assms(2) len)
     from MTF_competitive2[OF assms(1) 1] assms(1)
     have "T_on MTF s0 rs / (2 - 1 / (length s0)) \<le> of_int(T s0 rs as)"
@@ -563,8 +563,7 @@ proof (rule dense_le_bounded[OF `0 < l`])
      also note u
      finally show "x \<le> u" by simp
    qed
-   then show "x \<le> u"
-     by (auto simp: eventually_const)
+   then show "x \<le> u" by auto
 qed
 
 
@@ -622,28 +621,30 @@ by(induction xs)(auto simp: swaps_ins_sws)
 
 text{* The cruel adversary: *}
 
-fun cruel :: "'a alg_on \<Rightarrow> 'a state \<Rightarrow> nat \<Rightarrow> 'a list" where
+fun cruel :: "('a,'is) alg_on \<Rightarrow> 'a state * 'is \<Rightarrow> nat \<Rightarrow> 'a list" where
 "cruel A s 0 = []" |
-"cruel A s (Suc n) = last s # cruel A (step s (last s) (A s (last s))) n"
+"cruel A s (Suc n) = last (fst s) # cruel A (Step (snd A) s (last (fst s))) n"
 
-definition adv :: "'a alg_on \<Rightarrow> ('a::linorder) alg_off" where
+definition adv :: "('a,'is) alg_on \<Rightarrow> ('a::linorder) alg_off" where
 "adv A s rs = (if rs=[] then [] else
-  let crs = cruel A (step s (last s) (A s (last s))) (size rs - 1)
+  let crs = cruel A (Step (snd A) (s, fst A s) (last s)) (size rs - 1)
   in (0,sort_sws (\<lambda>x. size rs - 1 - count_list crs x) s) # replicate (size rs - 1) (0,[]))"
 
-lemma set_cruel: "s \<noteq> [] \<Longrightarrow> set(cruel A s n) \<subseteq> set s"
-apply(induction n arbitrary: s)
-apply(auto simp: step_def split: prod.split)
+lemma set_cruel: "s \<noteq> [] \<Longrightarrow> set(cruel A (s,is) n) \<subseteq> set s"
+apply(induction n arbitrary: s "is")
+apply(auto simp: step_def Step_def split: prod.split)
 by (metis empty_iff swaps_inv last_in_set list.set(1) rev_subsetD set_mtf2)
 
 (* Do not convert into structured proof - eta conversion screws it up! *)
-lemma T_on_cruel:
-  "s \<noteq> [] \<Longrightarrow> distinct s \<Longrightarrow> T_on A s (cruel A s n) \<ge> n*(length s)"
-apply(induction n arbitrary: s)
+lemma T_cruel:
+  "s \<noteq> [] \<Longrightarrow> distinct s \<Longrightarrow>
+  T s (cruel A (s,is) n) (off2 (snd A) (s,is) (cruel A (s,is) n)) \<ge> n*(length s)"
+apply(induction n arbitrary: s "is")
  apply(simp)
-apply(erule_tac x = "step s (last s) (A s (last s))" in meta_allE)
-apply(frule_tac sws = "snd(A s (last s))" in index_swaps_last_size)
-apply(simp add: distinct_step t_def split_def
+apply(erule_tac x = "fst(Step (snd A) (s, is) (last s))" in meta_allE)
+apply(erule_tac x = "snd(Step (snd A) (s, is) (last s))" in meta_allE)
+apply(frule_tac sws = "snd(fst(snd A (s,is) (last s)))" in index_swaps_last_size)
+apply(simp add: distinct_step t_def split_def Step_def
         length_greater_0_conv[symmetric] del: length_greater_0_conv)
 done
 
@@ -685,22 +686,25 @@ next
 qed
 
 lemma T_adv: assumes "l \<noteq> 0"
-shows "T_off (adv A) [0..<l] (cruel A [0..<l] (Suc n))
+shows "T_off (adv A) [0..<l] (cruel A ([0..<l],fst A [0..<l]) (Suc n))
   \<le> l\<^sup>2 + l + 1 + (l + 1) * n div 2"  (is "?l \<le> ?r")
 proof-
   let ?s = "[0..<l]"
   let ?r = "last ?s"
-  let ?s' = "step ?s ?r (A ?s ?r)"
-  let ?cr = "cruel A ?s' n"
+  let ?S' = "Step (snd A) (?s,fst A ?s) ?r"
+  let ?s' = "fst ?S'"
+  let ?cr = "cruel A ?S' n"
   let ?c = "count_list ?cr"
   let ?k = "\<lambda>x. n - ?c x"
   let ?sort = "sort_key ?k ?s"
-  have 1: "set ?s' = {0..<l}" by(simp add: set_step)
+  have 1: "set ?s' = {0..<l}"
+    by(simp add: set_step Step_def split: prod.split)
   have 3: "\<And>x. x < l \<Longrightarrow> ?c x \<le> n"
     by(simp) (metis count_le_length length_cruel)
   have "?l = t ?s (last ?s) (0, sort_sws ?k ?s) + (\<Sum>x\<in>set ?s'. ?c x * (index ?sort x + 1))"
     using assms
-    apply(simp add:  adv_def T_noop listsum_map_eq_setsum_count2[OF set_cruel])
+    apply(simp add:  adv_def T_noop listsum_map_eq_setsum_count2[OF set_cruel] Step_def
+      split: prod.split)
     apply(subst (3) step_def)
     apply(simp)
     done
@@ -715,7 +719,7 @@ proof-
     by (simp add: algebra_simps)
   also(ord_eq_le_subst) have "\<dots> \<le> (l+1) * (\<Sum>x\<in>{0..<l}. ?c (?sort ! x)) div 2"
     apply(rule sorted_weighted_gauss_Ico_div2)
-    apply(erule sorted_asc[where k = "\<lambda>x. n - count_list (cruel A ?s' n) x"])
+    apply(erule sorted_asc[where k = "\<lambda>x. n - count_list (cruel A ?S' n) x"])
     apply(auto simp add: index_nth_id dest!: 3)
     using assms [[linarith_split_limit = 20]] by simp
   also have "(\<Sum>x\<in>{0..<l}. ?c (?sort ! x)) = (\<Sum>x\<in>{0..<l}. ?c (?sort ! (index ?sort x)))"
@@ -723,8 +727,8 @@ proof-
       (simp add: bij_betw_imageI inj_on_index2 index_image)
   also have "\<dots> = (\<Sum>x\<in>{0..<l}. ?c x)" by(simp)
   also have "\<dots> = length ?cr"
-    using set_cruel[of ?s' _ n] assms 1
-    by(auto simp: setsum_count_set)
+    using set_cruel[of ?s' A _ n] assms 1
+    by(auto simp add: setsum_count_set Step_def split: prod.split)
   also have "\<dots> = n" by simp
   also have "t ?s (last ?s) (0, sort_sws ?k ?s) \<le> (length ?s)^2 + length ?s + 1"
     by(rule t_sort_sws)
@@ -740,7 +744,7 @@ shows "c \<ge> 2*l/(l+1)"
 proof (rule compet_lb0[OF _ _ assms(1) `c\<ge>0`])
   let ?S0 = "{xs::nat list. size xs = l}"
   let ?s0 = "[0..<l]"
-  let ?cruel = "cruel A ?s0 o Suc"
+  let ?cruel = "cruel A (?s0,fst A ?s0) o Suc"
   let ?on = "\<lambda>n. T_on A ?s0 (?cruel n)"
   let ?off = "\<lambda>n. T_off (adv A) ?s0 (?cruel n)"
   show "\<And>s0 rs. length (adv A s0 rs) = length rs" by(simp add: adv_def)
@@ -758,7 +762,7 @@ proof (rule compet_lb0[OF _ _ assms(1) `c\<ge>0`])
       by (simp del: One_nat_def)
     also have "\<dots> = 2*real(l*(n+1)) / ((l+1)*(n+1))" by simp
     also have "l * (n+1) \<le> ?on n"
-      using T_on_cruel[of ?s0 "Suc n"] `l \<noteq> 0`
+      using T_cruel[of ?s0 "Suc n"] `l \<noteq> 0`
       by (simp add: ac_simps)
     also have "2*real(?on n) / ((l+1)*(n+1)) \<le> 2*real(?on n)/(2*(?off n + ?a))"
     proof -
