@@ -18,7 +18,10 @@ fun T :: "'state \<Rightarrow> 'request list \<Rightarrow> 'answer list \<Righta
 "T s [] [] = 0" |
 "T s (r#rs) (a#as) = t s r a + T (step s r a) rs as"
 
-definition Step where
+definition Step ::
+  "('state * 'istate \<Rightarrow> 'request \<Rightarrow> 'answer * 'istate)
+   \<Rightarrow> 'state * 'istate \<Rightarrow> 'request \<Rightarrow> 'state * 'istate"
+where
 "Step stp s r = (let (a,is') = stp s r in (step (fst s) r a, is'))"
 
 fun off2 :: "('state * 'is \<Rightarrow> 'request \<Rightarrow> 'answer * 'is) \<Rightarrow> ('state * 'is,'request,'answer) alg_off" where
