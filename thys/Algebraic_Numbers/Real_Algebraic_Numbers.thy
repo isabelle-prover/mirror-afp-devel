@@ -3578,38 +3578,48 @@ declare real_alg_code_eqns[code]
 
 subsection \<open>Computing Resultants via Integer Polynomials\<close>
 
-text \<open>We provide two code-unfold equations that -- when activated -- 
-  change the implementation of real algebraic numbers such resultants of integer
-  polynomials have to be computed instead of rational polymonials. At the moment
-  they are not activated, since the resultant algorithm currently is not available
-  for integers, as there is no GCD-algorithm for integer polynomials available.
-  Once, the situation changes, one just has to declare the unfold-equation as 
-  code-unfold.\<close>
+text \<open>In order to compute resultants (over rational polynomials with integer coefficients), it 
+  is better to directly compute resultants over integer polynomials and then use the 
+  specialized @{const resultant_int_poly} algorithm.\<close>
 
-lemma poly_add_via_int_polys_unfold: "poly_add (normalize_rat_poly p1) (normalize_rat_poly p2)
-  = map_poly rat_of_int (poly_add (snd (rat_to_int_poly p1)) (snd (rat_to_int_poly p2)))"
+definition poly_add_int :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly" where
+  "poly_add_int = poly_add"
+
+definition poly_mult_int :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly" where
+  "poly_mult_int = poly_mult"
+
+definition poly_mult'_int :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly" where
+  "poly_mult'_int = poly_mult'"
+  
+lemma poly_add_int_code[code]: 
+  "poly_add_int p q = resultant_int_poly (poly_x_minus_y p) (poly_lift q)"
+  unfolding poly_add_int_def poly_add_def by simp
+
+lemma poly_mult'_int_code[code]: 
+  "poly_mult'_int p q = resultant_int_poly (poly_x_div_y p) (poly_lift q)"
+  unfolding poly_mult'_int_def poly_mult'_def by simp
+
+lemma poly_mult_int_code[code]: 
+  "poly_mult_int p q = poly_mult'_int (eliminate_zero_divisors p) (eliminate_zero_divisors q)"
+  unfolding poly_mult_int_def poly_mult_def poly_mult'_int_def ..
+
+lemma poly_add_via_int_polys_unfold[code_unfold]: "poly_add (normalize_rat_poly p1) (normalize_rat_poly p2)
+  = map_poly rat_of_int (poly_add_int (snd (rat_to_int_poly p1)) (snd (rat_to_int_poly p2)))"
 proof -
   def q1 \<equiv> "snd (rat_to_int_poly p1)"
   def q2 \<equiv> "snd (rat_to_int_poly p2)"
-  show ?thesis unfolding normalize_rat_poly_def q1_def[symmetric] q2_def[symmetric]
+  show ?thesis unfolding normalize_rat_poly_def q1_def[symmetric] q2_def[symmetric] poly_add_int_def
     by (rule ri.poly_add_hom)
 qed
 
-lemma poly_mult_via_int_polys_unfold: "poly_mult (normalize_rat_poly p1) (normalize_rat_poly p2)
-  = map_poly rat_of_int (poly_mult (snd (rat_to_int_poly p1)) (snd (rat_to_int_poly p2)))"
+lemma poly_mult_via_int_polys_unfold[code_unfold]: "poly_mult (normalize_rat_poly p1) (normalize_rat_poly p2)
+  = map_poly rat_of_int (poly_mult_int (snd (rat_to_int_poly p1)) (snd (rat_to_int_poly p2)))"
 proof -
   def q1 \<equiv> "snd (rat_to_int_poly p1)"
   def q2 \<equiv> "snd (rat_to_int_poly p2)"
-  show ?thesis unfolding normalize_rat_poly_def q1_def[symmetric] q2_def[symmetric]
+  show ?thesis unfolding normalize_rat_poly_def q1_def[symmetric] q2_def[symmetric] poly_mult_int_def
     by (rule poly_mult_hom, standard)
 qed
 
-lemmas use_integer_resultants =
-  poly_add_via_int_polys_unfold
-  poly_mult_via_int_polys_unfold 
-
-(*
-declare use_integer_resultants[code_unfold]
-*)
 
 end

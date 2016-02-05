@@ -1797,39 +1797,92 @@ text \<open>For the implementation function, we require @{class semiring_gcd} fo
   future. Note that even the current proof does not require optimality of the GCD, any divisor
   would do.\<close>
 
-function resultant_impl :: "'a :: {semiring_div,semiring_gcd,idom_div} poly \<Rightarrow> 'a poly \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a" where
-  "resultant_impl f g df dg = (
+definition exact_div_poly :: "'a :: idom_div poly \<Rightarrow> 'a \<Rightarrow> 'a poly" where
+  "exact_div_poly p a = (map_poly (\<lambda> c. exact_div c a) p)"  
+  
+lemma smult_exact_div_poly: assumes "\<And> c. c \<in> set (coeffs p) \<Longrightarrow> a dvd c"
+  shows "smult a (exact_div_poly p a) = p" 
+  unfolding smult_map_poly exact_div_poly_def 
+  by (subst map_poly_compose, force+, subst map_poly_eqI, insert assms, auto)
+
+typedef (overloaded) 'a common_divisor = "{f. \<forall> x y :: 'a :: idom_div. f x y dvd x \<and> f x y dvd y}"
+  by (rule exI[of _ "\<lambda> _ _. 1"], auto)
+  
+setup_lifting type_definition_common_divisor
+
+lift_definition common_divisor :: "'a common_divisor \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a :: idom_div" is "\<lambda> x. x" .
+
+lemma common_divisor: "common_divisor f x y dvd x" "common_divisor f x y dvd y"
+  by (transfer, auto)+
+  
+definition common_divisor_list :: "'a common_divisor \<Rightarrow> 'a list \<Rightarrow> 'a :: idom_div" where
+  "common_divisor_list f xs = (let cd = common_divisor f in foldr cd xs 0)"
+
+lemma common_divisor_list_simps: "common_divisor_list cd [] = 0" 
+  "common_divisor_list cd (x # xs) = common_divisor cd x (common_divisor_list cd xs)"
+  by (auto simp: common_divisor_list_def Let_def)
+    
+lemma common_divisor_list: "x \<in> set xs \<Longrightarrow> common_divisor_list f xs dvd x" 
+proof (induct xs)
+  case (Cons y ys)
+  show ?case
+  proof (cases "x = y")
+    case False
+    with Cons have "common_divisor_list f ys dvd x" by auto
+    thus ?thesis unfolding common_divisor_list_simps using dvd_trans common_divisor(2) by metis
+  next
+    case True
+    thus ?thesis unfolding common_divisor_list_simps using common_divisor(1) by metis
+  qed
+qed simp
+
+lemma common_divisor_list_non0: assumes mem: "x \<in> set xs" and x: "x \<noteq> 0"
+  shows "common_divisor_list cd xs \<noteq> 0"
+  using common_divisor_list[OF mem, of cd] x by auto
+  
+lemma common_divisor_list_poly_non0: assumes "p \<noteq> 0"
+  shows "common_divisor_list cd (coeffs p) \<noteq> 0"
+  by (rule common_divisor_list_non0[OF _ leading_coeff_neq_0[of p]], insert assms) 
+   (metis last_coeffs_eq_coeff_degree last_in_set not_0_coeffs_not_Nil)
+
+  
+context fixes
+  cdf :: "'a :: idom_div common_divisor"
+begin
+function resultant_impl_main :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a" where
+  "resultant_impl_main f g df dg = (
     if dg = 0 then coeff g 0 ^ df 
     else let 
-       cg = content g;
-       pg = div_poly cg g;
+       cd = common_divisor_list cdf (coeffs g);
+       pg = exact_div_poly g cd;
        (q,r) = pseudo_divmod f pg;
        dr = degree r;
        c = coeff pg dg;
        e1 = (Suc df - dg) * dg;
        e2 = df - dr;
-       rgr = resultant_impl pg r dg dr;
+       rgr = resultant_impl_main pg r dg dr;
        rrg = (if even dg \<or> (even dr = even e2) then rgr else - rgr)
      in  
-       cg ^ df * (exact_div rrg (c ^ (e1 - e2))))" 
+       cd ^ df * (exact_div rrg (c ^ (e1 - e2))))" 
   by pat_completeness auto
 
 termination 
 proof (relation "measures [(\<lambda> (f,g,df,dg). if dg = degree g then 0 else 1), 
   (\<lambda> (f,g,df,dg). degree g)]", goal_cases)
   case (2 f g df dg cg pg qr q r dr)
-  let ?pg = "div_poly (content g) g"
+  let ?cd = "common_divisor_list cdf (coeffs g)"
+  let ?pg = "exact_div_poly g  ?cd"
   from 2 have pd: "pseudo_divmod f ?pg = (q,r)" and dg: "dg \<noteq> 0" by auto
   from 2 have dr: "dr = degree r" by auto
   show ?case
   proof (cases "dg = degree g")
     case True
-    with dg have g: "g \<noteq> 0" "degree g \<noteq> 0" by auto
-    from g have cg0: "content g \<noteq> 0" by simp
-    have "g = smult (content g) ?pg" using cg0 content_dvd[of _ g]
-      by (simp add: smult_div_poly)
+    with dg have g: "g \<noteq> 0" "degree g \<noteq> 0" by auto    
+    have cg0: "?cd \<noteq> 0" by (rule common_divisor_list_poly_non0[OF g(1)])
+    have "g = smult ?cd ?pg" 
+      by (rule sym, rule smult_exact_div_poly, rule common_divisor_list)
     from arg_cong[OF this, of degree]
-    have deg: "degree ?pg = degree g" using cg0 degree_smult_eq[of "content g" g]  
+    have deg: "degree ?pg = degree g" using cg0 degree_smult_eq[of ?cd g]  
       by simp
     with g have pg: "?pg \<noteq> 0" by auto
     from pseudo_divmod[OF pg pd, unfolded deg] g
@@ -1837,9 +1890,9 @@ proof (relation "measures [(\<lambda> (f,g,df,dg). if dg = degree g then 0 else 
   qed (auto simp: dr)
 qed simp
 
-lemma resultant_impl: "df = degree f \<Longrightarrow> dg = degree g \<Longrightarrow> df \<ge> dg 
-  \<Longrightarrow> resultant_impl f g df dg = resultant f g"
-proof (induct f g df dg rule: resultant_impl.induct)
+lemma resultant_impl_main: "df = degree f \<Longrightarrow> dg = degree g \<Longrightarrow> df \<ge> dg 
+  \<Longrightarrow> resultant_impl_main f g df dg = resultant f g"
+proof (induct f g df dg rule: resultant_impl_main.induct)
   case (1 f g df dg)
   note dfg = 1(2-3)
   let ?df = "degree f"
@@ -1848,24 +1901,24 @@ proof (induct f g df dg rule: resultant_impl.induct)
   proof (cases "?dg = 0")
     case True note dg = this
     from degree0_coeffs[OF dg] obtain a where g: "g = [:a:]" by auto
-    from g dfg have r: "resultant_impl f g df dg = a ^ ?df" by auto
+    from g dfg have r: "resultant_impl_main f g df dg = a ^ ?df" by auto
     also have "\<dots> = resultant f g" unfolding g by simp
     finally show ?thesis by simp
   next
     case False
-    obtain cg where cg: "cg = content g" by blast
-    obtain pg where pg: "pg = div_poly cg g" by blast
+    obtain cg where cg: "cg = common_divisor_list cdf (coeffs g)" by blast
+    obtain pg where pg: "pg = exact_div_poly g cg" by blast
     obtain q r where div: "pseudo_divmod f pg = (q,r)" by force
     let ?dr = "degree r"
     obtain c where c: "c = coeff pg dg" by blast
     obtain e1 where e1: "e1 = pseudo_exponent f g * dg" by blast
     obtain e2 where e2: "e2 = degree f - degree r" by blast
-    obtain rgr where rgr: "rgr = resultant_impl pg r dg ?dr" by blast
+    obtain rgr where rgr: "rgr = resultant_impl_main pg r dg ?dr" by blast
     obtain rrg where rrg: "rrg = (if even ?dg \<or> even ?dr then rgr else - rgr)" by blast
     obtain vrrg where vrrg: "vrrg = (if even ?dg \<or> even e2 then rrg else -rrg)" by blast
-    have cg0: "cg \<noteq> 0" unfolding cg content_0_iff using False by auto
-    have id: "g = smult cg pg" unfolding pg using cg0 content_dvd[of _ g]
-      by (simp add: cg smult_div_poly)
+    have cg0: "cg \<noteq> 0" unfolding cg by (rule common_divisor_list_poly_non0, insert False, auto)
+    have id: "g = smult cg pg" unfolding pg cg
+      by (rule sym, rule smult_exact_div_poly, rule common_divisor_list)
     have deg[simp]: "degree pg = degree g" unfolding id using cg0 by auto
     hence dpg: "dg = degree pg" unfolding dfg ..
     from False have g: "pg \<noteq> 0" using deg cg0 id by fastforce
@@ -1873,9 +1926,9 @@ proof (induct f g df dg rule: resultant_impl.induct)
     with pseudo_divmod[OF g div] have dr: "degree r < degree pg" "degree r \<le> dg" unfolding dpg by auto
     note IH = 1(1)[OF False[folded dfg] cg pg refl div[symmetric] refl c refl refl dpg refl dr(2)]
     have e1': "e1 = pseudo_exponent f pg * dg" by (auto simp: e1 dpg pseudo_exponent_def)
-    have r: "resultant_impl f g df dg = cg ^ ?df * exact_div vrrg (c ^ (e1 - e2))" 
+    have r: "resultant_impl_main f g df dg = cg ^ ?df * exact_div vrrg (c ^ (e1 - e2))" 
       unfolding Let_def e1 e2 c rgr rrg div[unfolded pg cg] vrrg split pseudo_exponent_def 
-        cg pg resultant_impl.simps[of f g] dfg
+        cg pg resultant_impl_main.simps[of f g] dfg
       using False by auto
     also have "vrrg = (if even dg \<or> even e2 then rrg else -rrg)" unfolding vrrg 
       by (simp add: dfg)
@@ -1890,11 +1943,45 @@ proof (induct f g df dg rule: resultant_impl.induct)
   qed
 qed
 
-lemma resultant_code[code]: "resultant f g = (let df = degree f; dg = degree g
-  in if df \<ge> dg then resultant_impl f g df dg else let gf = resultant_impl g f dg df in
+definition resultant_impl :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a" where
+  "resultant_impl f g = (let df = degree f; dg = degree g
+  in if df \<ge> dg then resultant_impl_main f g df dg else let gf = resultant_impl_main g f dg df in
    if even df \<or> even dg then gf else - gf)"
-   using resultant_impl[OF refl refl, of f g] resultant_impl[OF refl refl, of g f] 
-   unfolding Let_def using resultant_swap[of f g] by auto
 
+lemma resultant_impl[simp]: "resultant_impl f g = resultant f g"
+   using resultant_impl_main[OF refl refl, of f g] resultant_impl_main[OF refl refl, of g f] 
+   unfolding Let_def resultant_impl_def using resultant_swap[of f g] by auto
+end
+  
+
+lift_definition int_poly_common_divisor :: "int poly common_divisor" is int_poly_gcd
+  using int_poly_gcd[OF refl] by auto       
+  
+lift_definition gcd_divisor :: "'a :: {idom_div,semiring_gcd} common_divisor" is gcd
+  by auto
+
+definition resultant_int_poly :: "int poly poly \<Rightarrow> int poly poly \<Rightarrow> int poly" where
+  [simp]: "resultant_int_poly x y = resultant x y"
+
+lemma resultant_int_poly_code[code]: "resultant_int_poly = resultant_impl int_poly_common_divisor"
+  by (intro ext, auto)
+  
+lemma resultant_code[code]: "resultant x y = resultant_impl gcd_divisor x y"
+  by simp
+
+instantiation rat :: ring_gcd
+begin
+definition gcd_rat :: "rat \<Rightarrow> rat \<Rightarrow> rat" where
+  "gcd_rat x y = (if x = 0 \<and> y = 0 then 0 else 1)"
+definition lcm_rat :: "rat \<Rightarrow> rat \<Rightarrow> rat" where
+  "lcm_rat x y = (if x = 0 \<or> y = 0 then 0 else 1)"
+definition unit_factor_rat :: "rat \<Rightarrow> rat" where
+  "unit_factor_rat x = x"
+definition normalize_rat :: "rat \<Rightarrow> rat" where 
+  "normalize_rat x = (if x = 0 then 0 else 1)"
+instance 
+by (standard, insert const_poly_dvd_1 is_unit_pCons_iff, 
+  (force simp: dvd_unit_imp_unit unit_factor_rat_def normalize_rat_def gcd_rat_def lcm_rat_def)+)
+end
 
 end
