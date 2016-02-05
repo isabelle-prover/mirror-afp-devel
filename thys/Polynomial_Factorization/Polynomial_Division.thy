@@ -9,12 +9,16 @@ text \<open>This theory contains two algorithms to compute (pseudo) polynomial l
   of polynomials over integral domains. The one for pseudo division of $f$ and $g$ computes 
   a quotient and remainder such that $cf = qg + r$ for a suitable constant $c$. The latter
   one implements standard polynomial long division where it is guaranteed that division of
-  $fg$ by $g$ yields $f$.\<close>
+  $fg$ by $g$ yields $f$.
+  
+  Moreover, there is an algorithm to compute GCDs of integer polynomials, where at the
+  moment it is only proven that the returned result is a common divisor.\<close>
 
 theory Polynomial_Division
 imports 
   "../Polynomial_Interpolation/Missing_Polynomial"
   Complex
+  Gauss_Lemma
 begin
 text \<open>A following type class is similar to @{class idom_divide}, but it has its own division operator.
   This is necessary for nesting, since the existing division on polynomials is only defined if the coefficients
@@ -23,7 +27,8 @@ text \<open>A following type class is similar to @{class idom_divide}, but it ha
 
 class idom_div = idom + 
   fixes exact_div :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
-  assumes exact_div_right[simp]: "b \<noteq> 0 \<Longrightarrow> exact_div (a * b) b = a"  
+  assumes exact_div_right[simp]: "b \<noteq> 0 \<Longrightarrow> exact_div (a * b) b = a"
+  and exact_div_zero_right[simp]: "exact_div a 0 = 0"
 begin
 lemma exact_div_left[simp]: "b \<noteq> 0 \<Longrightarrow> exact_div (b * a) b = a" unfolding mult.commute[of b a]
   by (rule exact_div_right)
@@ -37,6 +42,9 @@ next
   case False
   thus ?thesis using exact_div_right[OF False] a[unfolded dvd_def] by auto
 qed
+
+lemma exact_div_zero_left[simp]: "exact_div 0 a = 0"
+  by (cases "a = 0", auto, insert divisors_zero dvd_0_right) blast
 end
 
 definition pseudo_exponent :: "'a :: semiring_0 poly \<Rightarrow> 'a poly \<Rightarrow> nat" where
@@ -244,6 +252,60 @@ proof -
   show ?thesis by simp
 qed
 
+lemma p_div_main_0: "p_div_main 0 0 r d dr n = 0"
+proof (induct n arbitrary: r d dr)
+  case (Suc n r d dr)
+  show ?case unfolding p_div_main.simps[of _ _ r] Let_def
+    by (simp add: Suc del: p_div_main.simps)
+qed simp
+
+lemma p_div_0: "p_div f 0 = 0" unfolding p_div_def Let_def
+  by (simp add: Let_def p_div_main_0 del: p_div_main.simps)
+  
+definition "pseudo_mod_main lc r d dr n = snd (pseudo_divmod_main lc 0 r d dr n)"
+
+lemma snd_pseudo_divmod_main: "snd (pseudo_divmod_main lc q r d dr n) = snd (pseudo_divmod_main lc q' r d dr n)"
+proof (induct n arbitrary: q q' lc r d dr)
+  case (Suc n q q' lc r d dr)
+  show ?case unfolding pseudo_divmod_main.simps[of _ _ _ _ _ "Suc n"] Let_def using Suc
+    by simp
+qed simp
+
+lemma pseudo_mod_main_code[code]: "pseudo_mod_main lc r d dr n = (if n = 0 then r else let
+     rr = smult lc r;
+     a = coeff rr dr;
+     qq = exact_div a lc;
+     n1 = n - 1;
+     b = monom qq n1;
+     rrr = rr - b * d
+     in pseudo_mod_main lc rrr d (dr - 1) n1)"
+  unfolding pseudo_mod_main_def pseudo_divmod_main.simps[of _ _ _ _ _ n]
+    using snd_pseudo_divmod_main[of lc] 
+  by (auto simp: Let_def simp del: pseudo_divmod_main.simps)
+
+definition pseudo_mod :: "'a :: idom_div poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
+  "pseudo_mod f g = snd (pseudo_divmod f g)"
+  
+lemma pseudo_mod_code[code]: "pseudo_mod p q = (let dp = degree p; dq = degree q 
+   in pseudo_mod_main (coeff q dq) p q dp (1 + dp - dq))"
+   unfolding pseudo_mod_def pseudo_divmod_def pseudo_mod_main_def Let_def ..
+   
+lemma pseudo_mod: assumes g: "g \<noteq> 0"
+  and *: "pseudo_mod f g = r" 
+  shows "\<exists> a q. a \<noteq> 0 \<and> smult a f = g * q + r" "r = 0 \<or> degree r < degree g"
+proof - 
+  let ?cg = "coeff g (degree g)"
+  let ?cge = "?cg ^ pseudo_exponent f g"
+  def a \<equiv> ?cge
+  obtain q where pdm: "pseudo_divmod f g = (q,r)" using *[unfolded pseudo_mod_def]
+    by (cases "pseudo_divmod f g", auto)
+  from pseudo_divmod[OF g pdm] have id: "smult a f = g * q + r" and "r = 0 \<or> degree r < degree g" 
+    unfolding a_def by auto
+  show "r = 0 \<or> degree r < degree g" by fact
+  from g have "a \<noteq> 0" unfolding a_def by auto
+  thus "\<exists> a q. a \<noteq> 0 \<and> smult a f = g * q + r" using id by auto
+qed
+
   
 instantiation int :: idom_div
 begin
@@ -282,7 +344,99 @@ begin
 definition exact_div_poly :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
   [code_unfold]: "exact_div_poly = p_div"
 instance
-  by (standard, auto simp: exact_div_poly_def p_div)
+  by (standard, auto simp: exact_div_poly_def p_div p_div_0)
 end
+
+text \<open>Using pseudo-division, we can write a GCD-algorithm for polynomials over integers.\<close>
+
+text \<open>Specialization to @{type int} at this point, since several results on contents are
+  only available for @{type int}.\<close>
+function primitive_prs :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly" where
+  "primitive_prs f g = (if g = 0 then f else let
+    r = pseudo_mod f g;
+    h = normalize_content r
+  in primitive_prs g h)"
+  by pat_completeness auto
+  
+termination 
+proof (relation "measure (\<lambda> (f,g). if g = 0 then 0 else Suc (degree g))", force, clarify, goal_cases)
+  case (1 f g)
+  with pseudo_mod(2)[OF this refl, of f]
+  show ?case by auto
+qed  
+
+declare primitive_prs.simps[simp del]
+
+lemma normalize_content_1: "(normalize_content p :: int poly) \<noteq> 0 \<Longrightarrow> content (normalize_content p) = 1" 
+  using content_normalize_content_1 by force
+  
+lemma primitive_prs: assumes "h = primitive_prs f g"
+  "g \<noteq> 0 \<Longrightarrow> content g = 1"
+  "f \<noteq> 0 \<Longrightarrow> content f = 1" 
+  shows "h dvd f \<and> h dvd g \<and> (h \<noteq> 0 \<longrightarrow> content h = 1)"
+  using assms
+proof (induct f g arbitrary: h rule: primitive_prs.induct)
+  case (1 f g h)
+  def r \<equiv> "pseudo_mod f g"
+  let ?h = "normalize_content r"
+  from 1(2) have h: "h = (if g = 0 then f else primitive_prs g ?h)"
+    unfolding primitive_prs.simps[of f] r_def Let_def by auto
+  show ?case
+  proof (cases "g = 0")
+    case True
+    thus ?thesis unfolding h using 1(2-) by auto
+  next
+    case False
+    hence g: "g \<noteq> 0" and h: "h = primitive_prs g ?h" unfolding h by auto
+    from pseudo_mod[OF g refl, of f, folded r_def] obtain a q where
+      a: "a \<noteq> 0" and id: "smult a f = g * q + r" and r: "r = 0 \<or> degree r < degree g" by auto
+    from 1(1)[OF False refl refl h[unfolded r_def], folded r_def, OF normalize_content_1 1(3)] g
+    have hg: "h dvd g"  and hr: "h dvd ?h" and ch: "content h = 1" by auto
+    from hr have hr: "h dvd r" by (metis dvd_smult smult_normalize_content)
+    with hg have "h dvd smult a f" unfolding id by simp
+    with ch a have "h dvd f" 
+      by (metis dvd_smult_int smult_1_left smult_normalize_content) 
+    thus ?thesis using hg ch by auto
+  qed
+qed    
+  
+definition int_poly_gcd :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly" where
+  "int_poly_gcd f g = (
+    let cf = content f;
+        cg = content g;
+        f' = div_poly cf f;
+        g' = div_poly cg g
+      in smult (gcd cf cg) (primitive_prs f' g'))"
+
+lemma dvd_dvd_smult: "a dvd b \<Longrightarrow> f dvd g \<Longrightarrow> smult a f dvd smult b g"
+  unfolding dvd_def by (metis mult_smult_left mult_smult_right smult_smult)
+  
+lemma int_poly_gcd: assumes "h = int_poly_gcd f g"
+  shows "h dvd f" "h dvd g"
+proof -
+  let ?f = "normalize_content f"
+  let ?g = "normalize_content g"
+  let ?cf = "content f"
+  let ?cg = "content g"
+  def a \<equiv> "gcd ?cf ?cg"
+  def k \<equiv> "primitive_prs ?f ?g"
+  have h: "h = smult a k" unfolding assms k_def int_poly_gcd_def Let_def a_def 
+    normalize_content_def by auto
+  have a: "a dvd ?cf" "a dvd ?cg" unfolding a_def by auto
+  from primitive_prs[OF refl, of ?g ?f, folded k_def, OF normalize_content_1 normalize_content_1]
+  have k: "k dvd ?f" "k dvd ?g" by auto
+  have "f = smult ?cf ?f" by (simp add: smult_normalize_content)
+  from arg_cong[OF this, of "\<lambda> x. h dvd x"]
+  have "(h dvd f) = (h dvd smult ?cf ?f)" .
+  also have "\<dots> = (smult a k dvd smult ?cf ?f)" unfolding h ..
+  also have "\<dots>" using a(1) k(1) by (rule dvd_dvd_smult)
+  finally show "h dvd f" .
+  have "g = smult ?cg ?g" by (simp add: smult_normalize_content)
+  from arg_cong[OF this, of "\<lambda> x. h dvd x"]
+  have "(h dvd g) = (h dvd smult ?cg ?g)" .
+  also have "\<dots> = (smult a k dvd smult ?cg ?g)" unfolding h ..
+  also have "\<dots>" using a(2) k(2) by (rule dvd_dvd_smult)
+  finally show "h dvd g" .
+qed
 
 end
