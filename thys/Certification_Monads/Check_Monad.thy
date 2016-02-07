@@ -180,5 +180,9 @@ proof (induct xs)
   then show ?case using pairwise_aux [of x xs "\<lambda>x y. isOK (c x y)"] by simp
 qed auto
 
+abbreviation check_exists :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> ('a list) check"
+where
+  "check_exists f xs \<equiv> check_exm (\<lambda>x. if f x then succeed else error [x]) xs concat"
+
 end
 
