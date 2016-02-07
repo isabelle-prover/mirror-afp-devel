@@ -515,6 +515,9 @@ qed
 
 subsection "Lower Bound for Competitiveness"
 
+text{* This result is independent of MTF
+but is based on the list update problem defined in this theory. *}
+
 lemma rat_fun_lem:
    fixes l c :: real
    assumes [simp]: "F \<noteq> bot"
