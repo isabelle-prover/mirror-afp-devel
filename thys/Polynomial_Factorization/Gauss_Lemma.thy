@@ -46,6 +46,11 @@ definition rat_to_normalized_int_poly :: "rat poly \<Rightarrow> rat \<times> in
   "rat_to_normalized_int_poly p \<equiv> if p = 0 then (1,0) else case rat_to_int_poly p of (s,q)
     \<Rightarrow> (of_int (content q) / of_int s, normalize_content q)"
 
+lemma rat_to_normalized_int_poly_code[code]:
+  "rat_to_normalized_int_poly p = (if p = 0 then (1,0) else case rat_to_int_poly p of (s,q)
+    \<Rightarrow> let c = content q in (of_int c / of_int s, div_poly c q))"
+    unfolding Let_def rat_to_normalized_int_poly_def normalize_content_def ..
+
 lemma common_denom: assumes cd: "common_denom xs = (dd,ys)"
   shows "xs = map (\<lambda> i. of_int i / of_int dd) ys" "dd > 0"
   "\<And>x. x \<in> set xs \<Longrightarrow> rat_of_int (case quotient_of x of (n, x) \<Rightarrow> n * dd div x) / rat_of_int dd = x"
