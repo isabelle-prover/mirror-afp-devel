@@ -184,5 +184,10 @@ abbreviation check_exists :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Ri
 where
   "check_exists f xs \<equiv> check_exm (\<lambda>x. if f x then succeed else error [x]) xs concat"
 
+lemma isOK_choice [simp]:
+  "isOK (choice []) \<longleftrightarrow> False"
+  "isOK (choice (x # xs)) \<longleftrightarrow> isOK x \<or> isOK (choice xs)"
+by (auto simp: choice.simps isOK_def split: sum.splits)
+
 end
 

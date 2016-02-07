@@ -283,5 +283,12 @@ lemma then_return_eq [simp]:
   "(p \<then> q) = return f \<longleftrightarrow> isOK p \<and> q = return f"
   by (cases p) simp_all
 
+fun choice :: "('e + 'a) list \<Rightarrow> 'e list + 'a"
+where
+  "choice [] = error []" |
+  "choice (x # xs) = (try x catch (\<lambda>e. choice xs <+? Cons e))"
+
+declare choice.simps [simp del]
+
 end
 
