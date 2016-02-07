@@ -1954,8 +1954,8 @@ lemma resultant_impl[simp]: "resultant_impl f g = resultant f g"
 end
   
 
-lift_definition int_poly_common_divisor :: "int poly common_divisor" is int_poly_gcd
-  using int_poly_gcd[OF refl] by auto       
+lift_definition common_divisor_int_poly :: "int poly common_divisor" is gcd_int_poly
+  using gcd_int_poly[OF refl] by auto       
   
 lift_definition gcd_divisor :: "'a :: {idom_div,semiring_gcd} common_divisor" is gcd
   by auto
@@ -1963,7 +1963,7 @@ lift_definition gcd_divisor :: "'a :: {idom_div,semiring_gcd} common_divisor" is
 definition resultant_int_poly :: "int poly poly \<Rightarrow> int poly poly \<Rightarrow> int poly" where
   [simp]: "resultant_int_poly x y = resultant x y"
 
-lemma resultant_int_poly_code[code]: "resultant_int_poly = resultant_impl int_poly_common_divisor"
+lemma resultant_int_poly_code[code]: "resultant_int_poly = resultant_impl common_divisor_int_poly"
   by (intro ext, auto)
   
 lemma resultant_code[code]: "resultant x y = resultant_impl gcd_divisor x y"
