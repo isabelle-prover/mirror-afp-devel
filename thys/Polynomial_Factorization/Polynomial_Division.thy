@@ -373,8 +373,10 @@ lemma normalize_content_1: "(normalize_content p :: int poly) \<noteq> 0 \<Longr
 lemma primitive_prs: assumes "h = primitive_prs f g"
   "g \<noteq> 0 \<Longrightarrow> content g = 1"
   "f \<noteq> 0 \<Longrightarrow> content f = 1" 
-  shows "h dvd f \<and> h dvd g \<and> (h \<noteq> 0 \<longrightarrow> content h = 1)"
-  using assms
+  and ck: "k \<noteq> 0 \<Longrightarrow> content k = 1"
+  shows "h dvd f \<and> h dvd g \<and> (h \<noteq> 0 \<longrightarrow> content h = 1) \<and> 
+    (k dvd f \<longrightarrow> k dvd g \<longrightarrow> k dvd h)"
+  using assms(1-3)
 proof (induct f g arbitrary: h rule: primitive_prs.induct)
   case (1 f g h)
   def r \<equiv> "pseudo_mod f g"
@@ -391,17 +393,27 @@ proof (induct f g arbitrary: h rule: primitive_prs.induct)
     from pseudo_mod[OF g refl, of f, folded r_def] obtain a q where
       a: "a \<noteq> 0" and id: "smult a f = g * q + r" and r: "r = 0 \<or> degree r < degree g" by auto
     from 1(1)[OF False refl refl h[unfolded r_def], folded r_def, OF normalize_content_1 1(3)] g
-    have hg: "h dvd g"  and hr: "h dvd ?h" and ch: "content h = 1" by auto
+    have hg: "h dvd g"  and hr: "h dvd ?h" and ch: "content h = 1"
+      and k: "k dvd g \<Longrightarrow> k dvd ?h \<Longrightarrow> k dvd h" by auto
     from hr have hr: "h dvd r" by (metis dvd_smult smult_normalize_content)
     with hg have "h dvd smult a f" unfolding id by simp
-    with ch a have "h dvd f" 
+    with ch a have hf: "h dvd f" 
       by (metis dvd_smult_int smult_1_left smult_normalize_content) 
-    thus ?thesis using hg ch by auto
+    {
+      assume kf: "k dvd f" and kg: "k dvd g"
+      from kf have "k dvd g * q + r" unfolding id[symmetric] by (rule dvd_smult)
+      with kg have "k dvd r" by algebra
+      hence kh: "k dvd ?h" using ck
+        by (metis content_0_iff dvd_smult_int normalize_content_0 smult_1_left smult_normalize_content)
+      have "k dvd h"
+        by (rule k[OF kg kh])
+    }
+    thus ?thesis using hf hg ch by auto
   qed
 qed    
   
-definition int_poly_gcd :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly" where
-  "int_poly_gcd f g = (
+definition gcd_int_poly :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly" where
+  "gcd_int_poly f g = (
     let cf = content f;
         cg = content g;
         f' = div_poly cf f;
@@ -411,32 +423,45 @@ definition int_poly_gcd :: "int poly \<Rightarrow> int poly \<Rightarrow> int po
 lemma dvd_dvd_smult: "a dvd b \<Longrightarrow> f dvd g \<Longrightarrow> smult a f dvd smult b g"
   unfolding dvd_def by (metis mult_smult_left mult_smult_right smult_smult)
   
-lemma int_poly_gcd: assumes "h = int_poly_gcd f g"
-  shows "h dvd f" "h dvd g"
+lemma gcd_int_poly: assumes "h = gcd_int_poly f g"
+  shows "h dvd f" "h dvd g" "p dvd f \<Longrightarrow> p dvd g \<Longrightarrow> p dvd h"
 proof -
   let ?f = "normalize_content f"
   let ?g = "normalize_content g"
+  let ?p = "normalize_content p"
   let ?cf = "content f"
   let ?cg = "content g"
+  let ?cp = "content p"
   def a \<equiv> "gcd ?cf ?cg"
   def k \<equiv> "primitive_prs ?f ?g"
-  have h: "h = smult a k" unfolding assms k_def int_poly_gcd_def Let_def a_def 
+  have h: "h = smult a k" unfolding assms k_def gcd_int_poly_def Let_def a_def 
     normalize_content_def by auto
   have a: "a dvd ?cf" "a dvd ?cg" unfolding a_def by auto
-  from primitive_prs[OF refl, of ?g ?f, folded k_def, OF normalize_content_1 normalize_content_1]
-  have k: "k dvd ?f" "k dvd ?g" by auto
-  have "f = smult ?cf ?f" by (simp add: smult_normalize_content)
+  note main = primitive_prs[OF refl, of ?g ?f, folded k_def, OF normalize_content_1 normalize_content_1]
+  from main[of 0]
+  have k: "k dvd ?f" "k dvd ?g" "k \<noteq> 0 \<Longrightarrow> content k = 1" by auto
+  have f: "f = smult ?cf ?f" by (simp add: smult_normalize_content)
   from arg_cong[OF this, of "\<lambda> x. h dvd x"]
   have "(h dvd f) = (h dvd smult ?cf ?f)" .
   also have "\<dots> = (smult a k dvd smult ?cf ?f)" unfolding h ..
   also have "\<dots>" using a(1) k(1) by (rule dvd_dvd_smult)
   finally show "h dvd f" .
-  have "g = smult ?cg ?g" by (simp add: smult_normalize_content)
+  have g: "g = smult ?cg ?g" by (simp add: smult_normalize_content)
   from arg_cong[OF this, of "\<lambda> x. h dvd x"]
   have "(h dvd g) = (h dvd smult ?cg ?g)" .
   also have "\<dots> = (smult a k dvd smult ?cg ?g)" unfolding h ..
   also have "\<dots>" using a(2) k(2) by (rule dvd_dvd_smult)
   finally show "h dvd g" .
+  assume p: "p dvd f" "p dvd g"
+  have id: "p = smult ?cp ?p" by (simp add: smult_normalize_content)
+  from p id have dvd: "?p dvd f" "?p dvd g" by (metis smult_dvd_cancel)+
+  hence "?p dvd ?f" "?p dvd ?g"
+    by (metis f dvd_smult_int normalize_content_0 p(1) smult_eq_0_iff,
+        metis g dvd_smult_int normalize_content_0 p(2) smult_eq_0_iff)
+  with main[OF _ _ normalize_content_1[of p]] have dvd: "?p dvd k" by auto
+  from p gauss_lemma[of p] have "?cp dvd ?cf" "?cp dvd ?cg" by (metis dvdI exact_div_dvdD)+
+  hence "?cp dvd a" unfolding a_def by auto
+  thus "p dvd h" using dvd id unfolding h using dvd_dvd_smult by force
 qed
 
 end
