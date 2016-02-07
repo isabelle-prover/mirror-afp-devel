@@ -464,4 +464,65 @@ proof -
   thus "p dvd h" using dvd id unfolding h using dvd_dvd_smult by force
 qed
 
+definition gcd_rat_poly :: "rat poly \<Rightarrow> rat poly \<Rightarrow> rat poly" where
+  "gcd_rat_poly f g = (let
+     f' = snd (rat_to_int_poly f);
+     g' = snd (rat_to_int_poly g);
+     h = map_poly rat_of_int (gcd_int_poly f' g')
+   in smult (inverse (coeff h (degree h))) h)"
+
+lemma gcd_rat_poly[simp]: "gcd_rat_poly = gcd"
+proof (intro ext)
+  fix f g
+  let ?ri = "map_poly rat_of_int"
+  obtain a' f' where faf': "rat_to_int_poly f = (a',f')" by force
+  from rat_to_int_poly[OF this] obtain a where 
+    f: "f = smult a (?ri f')" and a: "a \<noteq> 0" by auto
+  obtain b' g' where gbg': "rat_to_int_poly g = (b',g')" by force
+  from rat_to_int_poly[OF this] obtain b where 
+    g: "g = smult b (?ri g')" and b: "b \<noteq> 0" by auto
+  def h \<equiv> "gcd_int_poly f' g'"
+  note gcd = gcd_int_poly[OF refl, of f' g', folded h_def]
+  let ?h = "?ri h"
+  def lc \<equiv> "inverse (coeff ?h (degree ?h))"
+  let ?gcd = "smult lc ?h"
+  have id: "gcd_rat_poly f g = ?gcd"
+    unfolding lc_def h_def gcd_rat_poly_def Let_def faf' gbg' snd_conv by auto
+  show "gcd_rat_poly f g = gcd f g" unfolding id
+  proof (rule sym, rule poly_gcd_unique)
+    have "?h dvd ?ri f'" using gcd(1) unfolding dvd_def by auto
+    hence "?h dvd f" unfolding f by (rule dvd_smult)
+    thus dvd_f: "?gcd dvd f"
+      by (metis dvdE inverse_zero_imp_zero lc_def leading_coeff_neq_0 mult_eq_0_iff smult_dvd_iff)
+    have "?h dvd ?ri g'" using gcd(2) unfolding dvd_def by auto
+    hence "?h dvd g" unfolding g by (rule dvd_smult)
+    thus dvd_g: "?gcd dvd g"
+      by (metis dvdE inverse_zero_imp_zero lc_def leading_coeff_neq_0 mult_eq_0_iff smult_dvd_iff)
+    show "coeff ?gcd (degree ?gcd) = (if f = 0 \<and> g = 0 then 0 else 1)" 
+    proof (cases "f = 0 \<and> g = 0")
+      case True
+      hence idd: "f = 0" "g = 0" by auto
+      show ?thesis unfolding id[symmetric] unfolding idd by code_simp
+    next
+      case False
+      hence "lc \<noteq> 0" using dvd_f dvd_g by auto
+      thus ?thesis using False unfolding lc_def by simp
+    qed
+    fix k
+    assume dvd: "k dvd f" "k dvd g"
+    obtain k' c where kck: "rat_to_normalized_int_poly k = (c,k')" by force
+    from rat_to_normalized_int_poly[OF this] have k: "k = smult c (?ri k')" and c: "c \<noteq> 0" by auto
+    from dvd(1) have kf: "k dvd ?ri f'" unfolding f using a by (rule dvd_smult_cancel)
+    from dvd(2) have kg: "k dvd ?ri g'" unfolding g using b by (rule dvd_smult_cancel)
+    from kf kg obtain kf kg where kf: "?ri f' = k * kf" and kg: "?ri g' = k * kg" unfolding dvd_def by auto    
+    from rat_to_int_factor_explicit[OF kf kck] have kf: "k' dvd f'" unfolding dvd_def by blast
+    from rat_to_int_factor_explicit[OF kg kck] have kg: "k' dvd g'" unfolding dvd_def by blast
+    from gcd_int_poly(3)[OF refl kf kg, folded h_def] 
+    have "k' dvd h" .
+    hence "?ri k' dvd ?ri h" unfolding dvd_def by auto
+    hence "k dvd ?ri h" unfolding k using c by (rule smult_dvd)
+    thus "k dvd ?gcd" by (rule dvd_smult)
+  qed
+qed
+
 end

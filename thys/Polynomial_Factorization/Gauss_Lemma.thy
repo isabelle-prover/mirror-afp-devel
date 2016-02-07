@@ -164,6 +164,10 @@ qed
 lemma normalize_content_0[simp]: "normalize_content 0 = 0"
   by (simp add: normalize_content_def div_poly_def eval_poly_def)
 
+lemma normalize_non_0_smult: "\<exists> a. (a :: int) \<noteq> 0 \<and> smult a (normalize_content p) = p"
+  by (cases "p = 0", rule exI[of _ 1], simp, rule exI[of _ "content p"], auto
+    simp: smult_normalize_content)
+
 lemma degree_normalize_content[simp]: "degree (normalize_content (p :: int poly)) = degree p" 
 proof (cases "p = 0")
   case False 
