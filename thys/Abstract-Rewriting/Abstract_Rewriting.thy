@@ -2471,4 +2471,8 @@ lemma NF_join_imp_reach:
   shows "(x, y) \<in> A\<^sup>*"
 using assms by (auto simp: join_def) (metis NF_not_suc rtrancl_converseD)
 
+lemma conversion_O_conversion [simp]:
+  "A\<^sup>\<leftrightarrow>\<^sup>* O A\<^sup>\<leftrightarrow>\<^sup>* = A\<^sup>\<leftrightarrow>\<^sup>*"
+by (force simp: converse_def)
+
 end
