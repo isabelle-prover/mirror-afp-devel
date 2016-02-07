@@ -2466,4 +2466,9 @@ unfolding CR_imp_conversionIff_join [OF \<open>CR r\<close>]
 by (auto simp: NF_iff_no_step normalizability_def)
    (metis (mono_tags) converse_rtranclE joinE)
 
+lemma NF_join_imp_reach:
+  assumes "y \<in> NF A" and "(x, y) \<in> A\<^sup>\<down>"
+  shows "(x, y) \<in> A\<^sup>*"
+using assms by (auto simp: join_def) (metis NF_not_suc rtrancl_converseD)
+
 end
