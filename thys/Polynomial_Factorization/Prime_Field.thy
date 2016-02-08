@@ -81,8 +81,24 @@ lift_definition one_GFp :: GFp is 1 .
 definition power_GFp :: "GFp \<Rightarrow> nat \<Rightarrow> GFp" where
   "power_GFp = fast_power mult_GFp one_GFp"
 
+private partial_function (tailrec) inverse_main :: "int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int" where
+  [code]: "inverse_main t r newt newr = (if newr = 0 then
+    t else let q = r div newr in 
+     inverse_main newt newr (t - q * newt) (r - q * newr))"
+
+definition inverse_GFp_large :: "GFp \<Rightarrow> GFp" where 
+  "inverse_GFp_large X = (let x = to_int_GFp X;
+    res' = inverse_main 0 p 1 x;
+    res = if res' < 0 then res' + p else res'
+    in of_int_GFp_unsafe res)"
+
 definition inverse_GFp :: "GFp \<Rightarrow> GFp" where
   "inverse_GFp x = (if x = zero_GFp then zero_GFp else power_GFp x (nat (p - 2)))"
+
+text \<open>The extended Euclidean algorithm @{const inverse_GFp_large} to compute
+   inverses is more efficient 
+   if the prime is large, whereas on small primes, exponentiation @{const inverse_GFp}
+   performs better.\<close>
 
 definition divide_GFp :: "GFp \<Rightarrow> GFp \<Rightarrow> GFp"  where
   "divide_GFp x y = mult_GFp x (inverse_GFp y)" 
