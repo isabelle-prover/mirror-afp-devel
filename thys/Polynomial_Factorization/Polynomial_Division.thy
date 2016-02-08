@@ -525,4 +525,5 @@ proof (intro ext)
   qed
 qed
 
+lemma gcd_rat_poly_unfold[code_unfold]: "gcd = gcd_rat_poly" by simp
 end
