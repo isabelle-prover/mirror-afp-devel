@@ -1,12 +1,9 @@
 chapter AFP
 
-session Abortable_Linearizable_Modules (AFP) = HOLCF +
+session Abortable_Linearizable_Modules (AFP) = HOL +
   options [timeout = 600]
-  theories [document = false]
-    "~~/src/HOL/Library/Sublist"
-    "~~/src/HOL/HOLCF/IOA/IOA"
   theories
-    CompositionCorrectness
+    Idempotence
   document_files
     "abstract.tex"
     "introduction.tex"
