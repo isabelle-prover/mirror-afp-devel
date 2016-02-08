@@ -3373,3 +3373,27 @@ abstract = Based on existing libraries for matrices and Sturm's theorem, we form
   </p><p>
   To this end, we formalized Gauss's Lemma and the rational root test, and we integrated several factorization algorithms: Yun, Kronecker, and Berlekamp-Hensel. Moreover, we defined and mechanized several results on resultants, which also required us to prove that polynomials over a unique factorization domain form again a unique factorization domain.
   </p>
+
+[Formal_SSA]
+title = Verified Construction of Static Single Assignment Form
+author = Sebastian Ullrich, Denis Lohner <http://pp.ipd.kit.edu/person.php?id=88>
+date = 2016-02-05
+topic = Computer Science/Algorithms, Computer Science/Programming Languages/Transformations
+abstract =
+ We define a functional variant of the static single assignment (SSA)
+ form construction algorithm described by <a
+ href="http://dx.doi.org/10.1007/978-3-642-37051-9_6">Braun et al.</a>,
+ which combines simplicity and efficiency. The definition is based on a
+ general, abstract control flow graph representation using Isabelle locales.
+ <p>
+ We prove that the algorithm's output is semantically equivalent to the
+ input according to a small-step semantics, and that it is in minimal SSA
+ form for the common special case of reducible inputs. We then show the
+ satisfiability of the locale assumptions by giving instantiations for a
+ simple While language.
+ <p>
+ Furthermore, we use a generic instantiation based on typedefs in order
+ to extract OCaml code and replace the unverified SSA construction
+ algorithm of the <a href="http://dx.doi.org/10.1145/2579080">CompCertSSA
+ project</a> with it.
+depends-on = Slicing, Dijkstra_Shortest_Path

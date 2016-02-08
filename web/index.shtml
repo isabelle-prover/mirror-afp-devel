@@ -50,6 +50,14 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2016-02-05:
+<a href="entries/Formal_SSA.shtml">Verified Construction of Static Single Assignment Form</a>
+<br>Author:
+Sebastian Ullrich and 
+<a href="http://pp.ipd.kit.edu/person.php?id=88">Denis Lohner</a>
+</td></tr>
+
+<tr><td class="entry">
 2016-01-20:
 <a href="entries/Knot_Theory.shtml">Knot Theory</a>
 <br>Author:
