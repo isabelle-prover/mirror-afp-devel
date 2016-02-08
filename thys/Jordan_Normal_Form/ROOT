@@ -14,7 +14,7 @@ session "Jordan_Normal_Form" (AFP) = "JNF-AFP-Lib" +
     "root.bib"
     "root.tex"
 
-session "JNF-HOL-Lib" in "~~/src/HOL/Library" = "HOL-Algebra" +
+session "JNF-HOL-Lib" (AFP) in "~~/src/HOL/Library" = "HOL-Algebra" +
   description {* Theories that are not part of HOL but are used by this entry *}
   options [document = false]
   theories
@@ -48,7 +48,7 @@ session "JNF-HOL-Lib" in "~~/src/HOL/Library" = "HOL-Algebra" +
     "~~/src/HOL/Cardinals/Order_Union"
     "~~/src/HOL/Cardinals/Wellorder_Extension"
 
-session "JNF-AFP-Lib" = "JNF-HOL-Lib" +
+session "JNF-AFP-Lib" (AFP) = "JNF-HOL-Lib" +
   description {* Theories from the Archive of Formal Proofs that are used by this entry *}
   options [document = false]
   theories
