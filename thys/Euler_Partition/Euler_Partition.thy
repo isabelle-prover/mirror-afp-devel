@@ -5,7 +5,9 @@
 section {* Euler's Partition Theorem *}
 
 theory Euler_Partition
-imports Main
+imports
+  Main
+  "../Card_Number_Partitions/Number_Partition"
 begin
 
 subsection {* Preliminaries *}
@@ -66,25 +68,6 @@ proof -
   have "{i::nat. 2 ^ i \<le> n} \<subseteq> {..n}"
     using dual_order.trans n_leq_2_pow_n by auto
   from this show ?thesis by (simp add: finite_subset)
-qed
-
-lemma bound_domain_and_range_impl_finitely_many_functions:
-  "finite {f::nat\<Rightarrow>nat. (\<forall>i. f i \<le> n) \<and> (\<forall>i\<ge>m. f i = 0)}"
-proof (induct m)
-  case 0
-  have eq: "{f. (\<forall>i. f i \<le> n) \<and> (\<forall>i. f i = 0)} = {(\<lambda>_. 0)}" by auto
-  from this show ?case by auto (subst eq; auto)
-next
-  case (Suc m)
-  let ?S = "(\<lambda>(y, f). f(m := y)) ` ({0..n} \<times> {f. (\<forall>i. f i \<le> n) \<and> (\<forall>i\<ge>m. f i = 0)})"
-  {
-    fix g
-    assume "\<forall>i. g i \<le> n" "\<forall>i\<ge>Suc m. g i = 0"
-    from this have "g \<in> ?S"
-      by (auto intro: image_eqI[where x="(g m, g(m:=0))"])
-  }
-  from this have "{f. (\<forall>i. f i \<le> n) \<and> (\<forall>i\<ge>Suc m. f i = 0)} = ?S" by auto
-  from this Suc show ?case by simp
 qed
 
 subsection {* Binary Encoding of Natural Numbers *}
@@ -269,52 +252,6 @@ lemma index_oddpart:
   shows "index (2 ^ i * m) = i" "oddpart (2 ^ i * m) = m"
 using index_oddpart_unique[where i=i and m=m and m'="oddpart (2 ^ i * m)" and i'="index (2 ^ i * m)"]
   assms odd_oddpart index_oddpart_decomposition by force+
-
-subsection {* Partitions as @{typ "nat => nat"} Functions *}
-
-definition partitions :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> bool" (infix "partitions" 50)
-where
-  "p partitions n = ((\<forall>i. p i \<noteq> 0 \<longrightarrow> 1 \<le> i \<and> i \<le> n) \<and> (\<Sum>i\<le>n. p i * i) = n)"
-
-lemma partitionsI:
-  assumes "\<And>i. p i \<noteq> 0 \<Longrightarrow> 1 \<le> i \<and> i \<le> n"
-  assumes "(\<Sum>i\<le>n. p i * i) = n"
-  shows "p partitions n"
-using assms unfolding partitions_def by auto
-
-lemma partitionsE:
-  assumes "p partitions n"
-  obtains "\<And>i. p i \<noteq> 0 \<Longrightarrow> 1 \<le> i \<and> i \<le> n" "(\<Sum>i\<le>n. p i * i) = n"
-using assms unfolding partitions_def by auto
-
-lemma partitions_bounds:
-  assumes "p partitions n"
-  shows "p i \<le> n"
-proof -
-  from assms have index_bounds: "(\<forall>i. p i \<noteq> 0 \<longrightarrow> 1 \<le> i \<and> i \<le> n)"
-    and sum: "(\<Sum>i\<le>n. p i * i) = n"
-    unfolding partitions_def by auto
-  show ?thesis
-  proof (cases "1 \<le> i \<and> i \<le> n")
-    case True
-    from True have "{..n} = insert i {i'. i' \<le> n \<and> i' \<noteq> i}" by blast
-    from sum[unfolded this] have "p i * i + (\<Sum>i\<in>{i'. i' \<le> n \<and> i' \<noteq> i}. p i * i) = n" by auto
-    from this have "p i * i \<le> n" by linarith
-    from this True show ?thesis using dual_order.trans by fastforce
-  next
-    case False
-    from this index_bounds show ?thesis by fastforce
-  qed
-qed
-
-lemma finite_partitions:
-  "finite {p. p partitions n}"
-proof -
-  have "{p. p partitions n} \<subseteq> {f. (\<forall>i. f i \<le> n) \<and> (\<forall>i. n + 1 \<le> i \<longrightarrow> f i = 0)}"
-    by (auto elim: partitions_bounds) (auto simp add: partitions_def)
-  from this bound_domain_and_range_impl_finitely_many_functions[of n "n + 1"] show ?thesis
-    by (simp add: finite_subset)
-qed
 
 subsection {* Partitions With Only Distinct and Only Odd Parts *}
 

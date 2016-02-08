@@ -774,14 +774,16 @@ next
   show "r\<^sup>\<down> \<subseteq> r\<^sup>\<leftrightarrow>\<^sup>*" by (rule join_imp_conversion)
 qed
 
-lemma join_sym: "sym (join r)" unfolding sym_def by auto
+lemma sym_join: "sym (join r)" by (auto simp: sym_def)
+
+lemma join_sym: "(s, t) \<in> A\<^sup>\<down> \<Longrightarrow> (t, s) \<in> A\<^sup>\<down>" by auto
 
 lemma CR_join_left_I:
   assumes "CR r" and "(x, y) \<in> r\<^sup>*" and "(x, z) \<in> r\<^sup>\<down>" shows "(y, z) \<in> r\<^sup>\<down>"
 proof -
   from \<open>(x, z) \<in> r\<^sup>\<down>\<close> obtain x' where "(x, x') \<in> r\<^sup>*" and "(z, x') \<in> r\<^sup>\<down>" by auto
   from \<open>CR r\<close> and \<open>(x, x') \<in> r\<^sup>*\<close> and \<open>(x, y) \<in> r\<^sup>*\<close> have "(x, y) \<in> r\<^sup>\<down>" by auto
-  then have "(y, x) \<in> r\<^sup>\<down>" using join_sym unfolding sym_def by best
+  then have "(y, x) \<in> r\<^sup>\<down>" using join_sym by best
   from \<open>CR r\<close> have "r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>" by (rule CR_imp_conversionIff_join)
   from \<open>(y, x) \<in> r\<^sup>\<down>\<close> and \<open>(x, z) \<in> r\<^sup>\<down>\<close> show ?thesis using conversion_trans
     unfolding trans_def \<open>r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>\<close> [symmetric] by best
@@ -820,7 +822,7 @@ proof -
       then have "(x, u) \<in> r\<^sup>*" and "(y, v) \<in> r\<^sup>*" and "u \<in> NF r" and "v \<in> NF r" by auto
       from \<open>CR r\<close> and \<open>(x, u) \<in> r\<^sup>*\<close> and \<open>(x, y) \<in> r\<^sup>\<down>\<close> have "(u, y) \<in> r\<^sup>\<down>"
         by (auto intro: CR_join_left_I)
-      then have "(y, u) \<in> r\<^sup>\<down>" using join_sym unfolding sym_def by best
+      then have "(y, u) \<in> r\<^sup>\<down>" using join_sym by best
       with \<open>(x, y) \<in> r\<^sup>\<down>\<close> have "(x, u) \<in> r\<^sup>\<down>" unfolding \<open>r\<^sup>\<leftrightarrow>\<^sup>* = r\<^sup>\<down>\<close> [symmetric]
         using conversion_trans unfolding trans_def by best
       from \<open>CR r\<close> and \<open>(x, y) \<in> r\<^sup>\<down>\<close> and \<open>(y, v) \<in> r\<^sup>*\<close> have "(x, v) \<in> r\<^sup>\<down>"
@@ -2367,5 +2369,110 @@ proof (induct rule:dec_induct)
   hence abi:"(a, b) \<in> Rel ^^ i" by auto
   from refl[of b] abi relpowp_Suc_I[of i "\<lambda> x y. (x,y) \<in> Rel"] show "(a, b) \<in> Rel ^^ Suc i" by auto
 qed
+
+lemma SN_on_induct_acc_style [consumes 1, case_names IH]:
+  assumes sn: "SN_on R {a}"
+    and IH: "\<And>x. SN_on R {x} \<Longrightarrow> \<lbrakk>\<And>y. (x, y) \<in> R \<Longrightarrow> P y\<rbrakk>  \<Longrightarrow> P x"
+  shows "P a"
+proof -
+  from sn SN_on_conv_acc [of "R\<inverse>" a] have a: "a \<in> termi R" by auto
+  show ?thesis
+  proof (rule Wellfounded.acc.induct [OF a, of P], rule IH)
+    fix x
+    assume "\<And>y. (y, x) \<in> R\<inverse> \<Longrightarrow> y \<in> termi R"
+    from this [folded SN_on_conv_acc]
+      show "SN_on R {x}" by simp fast
+  qed auto
+qed
+
+(* Lemma 2.3 in Huet: Confluent Reductions *)
+lemma partially_localize_CR:
+  "CR r \<longleftrightarrow> (\<forall> x y z. (x, y) \<in> r \<and> (x, z) \<in> r\<^sup>* \<longrightarrow> (y, z) \<in> join r)" 
+proof
+  assume "CR r"
+  thus "\<forall> x y z. (x, y) \<in> r \<and> (x, z) \<in> r\<^sup>* \<longrightarrow> (y, z) \<in> join r" by auto
+next
+  assume 1:"\<forall> x y z. (x, y) \<in> r \<and> (x, z) \<in> r\<^sup>* \<longrightarrow> (y, z) \<in> join r" 
+  show "CR r"
+  proof
+    fix a b c
+    assume 2: "a \<in> UNIV" and 3: "(a, b) \<in> r\<^sup>*" and 4: "(a, c) \<in> r\<^sup>*"
+    then obtain n  where "(a,c) \<in> r^^n" using rtrancl_is_UN_relpow by fast
+    with 2 3 show "(b,c) \<in> join r" 
+    proof (induct n arbitrary: a b c)
+      case 0 thus ?case by auto
+    next
+      case (Suc m)
+      from Suc(4) obtain d where ad: "(a, d) \<in> r^^m" and dc: "(d, c) \<in> r" by auto
+      from Suc(1) [OF Suc(2) Suc(3) ad] have "(b, d) \<in> join r" .
+      with 1 dc joinE joinI [of b _ r c] join_rtrancl_join show ?case by metis
+    qed
+  qed
+qed
+
+definition strongly_confluent_on :: "'a rel \<Rightarrow> 'a set \<Rightarrow> bool"
+where 
+  "strongly_confluent_on r A \<longleftrightarrow>
+    (\<forall>x \<in> A.  \<forall>y z. (x, y) \<in> r \<and> (x, z) \<in> r \<longrightarrow> (\<exists>u. (y, u) \<in> r\<^sup>* \<and> (z, u) \<in> r\<^sup>=))"
+
+abbreviation strongly_confluent :: "'a rel \<Rightarrow> bool"
+where
+  "strongly_confluent r \<equiv> strongly_confluent_on r UNIV"
+
+lemma strongly_confluent_on_E11:
+  "strongly_confluent_on r A \<Longrightarrow> x \<in> A \<Longrightarrow> (x, y) \<in> r \<Longrightarrow> (x, z) \<in> r \<Longrightarrow>
+    \<exists>u. (y, u) \<in> r\<^sup>* \<and> (z, u) \<in> r\<^sup>="
+unfolding strongly_confluent_on_def by blast
+
+lemma strongly_confluentI [intro]:
+  "\<lbrakk>\<And>x y z. (x, y) \<in> r \<Longrightarrow> (x, z) \<in> r \<Longrightarrow> \<exists>u. (y, u) \<in> r\<^sup>* \<and> (z, u) \<in> r\<^sup>=\<rbrakk> \<Longrightarrow> strongly_confluent r" 
+unfolding strongly_confluent_on_def by auto
+
+lemma strongly_confluent_E1n:
+  assumes scr: "strongly_confluent r"
+  shows "(x, y) \<in> r\<^sup>= \<Longrightarrow> (x, z) \<in> r ^^ n \<Longrightarrow> \<exists>u. (y, u) \<in> r\<^sup>* \<and> (z, u) \<in> r\<^sup>="
+proof (induct n arbitrary: x y z)
+  case (Suc m)
+  from Suc(3) obtain w where xw: "(x, w) \<in> r^^m" and wz: "(w, z) \<in> r" by auto
+  from Suc(1) [OF Suc(2) xw] obtain u where yu: "(y, u) \<in> r\<^sup>*" and wu: "(w, u) \<in> r\<^sup>=" by auto
+  from strongly_confluent_on_E11 [OF scr, of w] wz yu wu show ?case 
+    by (metis UnE converse_rtrancl_into_rtrancl iso_tuple_UNIV_I pair_in_Id_conv rtrancl_trans)
+qed auto
+
+(* Lemma 2.5 in Huet: Confluent Reductions *)
+lemma strong_confluence_imp_CR: 
+  assumes "strongly_confluent r"
+  shows "CR r"
+proof -
+  { fix x y z
+    have "(x, y) \<in> r \<Longrightarrow> (x, z) \<in> r\<^sup>* \<Longrightarrow> (y, z) \<in> join r" 
+      by (cases "x = y", insert strongly_confluent_E1n [OF assms], blast+) }
+  then show "CR r" using partially_localize_CR by blast
+qed
+
+lemma WCR_alt_def: "WCR A \<longleftrightarrow> A\<inverse> O A \<subseteq> A\<^sup>\<down>" by (auto simp: WCR_defs)
+
+lemma NF_imp_SN_on: "a \<in> NF R \<Longrightarrow> SN_on R {a}" unfolding SN_on_def NF_def by blast
+
+lemma Union_sym: "(s, t) \<in> (\<Union>i\<le>n. (S i)\<^sup>\<leftrightarrow>) \<longleftrightarrow> (t, s) \<in> (\<Union>i\<le>n. (S i)\<^sup>\<leftrightarrow>)" by auto
+
+lemma peak_iff: "(x, y) \<in> A\<inverse> O B \<longleftrightarrow> (\<exists>u. (u, x) \<in> A \<and> (u, y) \<in> B)" by auto
+
+lemma CR_NF_conv:
+  assumes "CR r" and "t \<in> NF r" and "(u, t) \<in> r\<^sup>\<leftrightarrow>\<^sup>*"
+  shows "(u, t) \<in> r\<^sup>!"
+using assms
+unfolding CR_imp_conversionIff_join [OF \<open>CR r\<close>]
+by (auto simp: NF_iff_no_step normalizability_def)
+   (metis (mono_tags) converse_rtranclE joinE)
+
+lemma NF_join_imp_reach:
+  assumes "y \<in> NF A" and "(x, y) \<in> A\<^sup>\<down>"
+  shows "(x, y) \<in> A\<^sup>*"
+using assms by (auto simp: join_def) (metis NF_not_suc rtrancl_converseD)
+
+lemma conversion_O_conversion [simp]:
+  "A\<^sup>\<leftrightarrow>\<^sup>* O A\<^sup>\<leftrightarrow>\<^sup>* = A\<^sup>\<leftrightarrow>\<^sup>*"
+by (force simp: converse_def)
 
 end
