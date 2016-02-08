@@ -24,6 +24,7 @@ imports
   Prime_Factorization
   Gauss_Lemma
   Factorization_Oracle
+  Polynomial_Division
 begin
 
 hide_const (open) Module.smult
@@ -357,7 +358,7 @@ definition list_to_poly :: "'a::comm_monoid_add list \<Rightarrow> 'a poly" wher
 text \<open>Factorization oracle for rational polynomials.\<close>
 definition berlekamp_hensel_factorization_rat :: "rat poly \<Rightarrow> rat \<times> (rat poly \<times> nat) list" where
   "berlekamp_hensel_factorization_rat p = (let
-     (a,psi) = yun_factorization p;
+     (a,psi) = yun_factorization gcd_rat_poly p;
      ber_hen = (\<lambda> (q,i). let (b,f) = rat_to_normalized_int_poly q;
        fs = berlekamp_hensel_factorization (coeffs f);
        gs = map (map of_int) fs;

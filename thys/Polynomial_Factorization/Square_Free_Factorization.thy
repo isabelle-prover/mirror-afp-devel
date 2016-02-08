@@ -111,9 +111,9 @@ qed
 end
 
 subsection \<open>Yun's factorization algorithm\<close>
-
 context 
   fixes type :: "'a :: field_char_0 poly itself"
+  and Gcd :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly"
 begin
 
 partial_function (tailrec) yun_factorization_main :: 
@@ -124,11 +124,11 @@ partial_function (tailrec) yun_factorization_main ::
     else (
     let 
       dn = cn - pderiv bn;
-      an = gcd bn dn
+      an = Gcd bn dn
     in yun_factorization_main (bn div an) (dn div an) (Suc i) ((an,i) # sqr)))"
 
 definition square_free_monic_poly :: "'a poly \<Rightarrow> 'a poly" where
-  "square_free_monic_poly p = (p div (gcd p (pderiv p)))"
+  "square_free_monic_poly p = (p div (Gcd p (pderiv p)))"
 
 definition square_free_poly :: "'a poly \<Rightarrow> 'a poly" where
   "square_free_poly p = (if p = 0 then 0 else 
@@ -137,7 +137,7 @@ definition square_free_poly :: "'a poly \<Rightarrow> 'a poly" where
 definition yun_monic_factorization :: "'a poly \<Rightarrow> ('a poly \<times> nat)list" where
   "yun_monic_factorization p = (let
     pp = pderiv p;
-    u = gcd p pp;
+    u = Gcd p pp;
     b0 = p div u;
     c0 = pp div u
     in 
@@ -149,6 +149,10 @@ definition yun_factorization :: "'a poly \<Rightarrow> 'a \<times> ('a poly \<ti
       c = coeff p (degree p);
       q = smult (inverse c) p
     in (c, yun_monic_factorization q)))"
+
+context
+  assumes Gcd: "Gcd = gcd"
+begin
 
 context
   fixes as :: "('a poly \<times> nat) set"
@@ -567,7 +571,7 @@ qed
 
 lemma square_free_monic_poly_context: "(poly (square_free_monic_poly p) x = 0) = (poly p x = 0)"
 proof -
-  show ?thesis unfolding square_free_monic_poly_def p_div_gcd_p_pderiv
+  show ?thesis unfolding square_free_monic_poly_def unfolding Gcd p_div_gcd_p_pderiv
     unfolding p poly_setprod setprod_zero_iff[OF fin] by force
 qed
 
@@ -593,9 +597,9 @@ proof -
       with bound[of n] have "\<not> bound \<le> n" by auto
       hence "(Suc n, n) \<in> measure ?meas" by auto
       note IH = IH[OF this]
-      from Bn res[unfolded Let_def, folded D.simps C.simps B.simps A.simps] 
+      from Bn res[unfolded Let_def Gcd, folded D.simps C.simps B.simps A.simps] 
       have res: "yun_factorization_main (B (Suc n)) (C (Suc n)) (Suc n) ((A n, n) # bs) = cs"
-        by simp
+        by (simp add: Gcd)
       note IH = IH[OF this]
       {
         fix i 
@@ -616,8 +620,10 @@ qed
 lemma yun_monic_factorization_res: assumes res: "yun_monic_factorization p = bs"
   shows "\<exists> m. set bs = {(A i, i) | i. i < m \<and> A i \<noteq> 1} \<and> B m = 1 \<and> distinct (map snd bs)"
 proof -
-  from res[unfolded yun_monic_factorization_def Let_def, folded B.simps C.simps]
-  obtain cs where yun: "yun_factorization_main (B 0) (C 0) 0 [] = cs" and bs: "bs = filter (\<lambda> (a,i). a \<noteq> 1) cs" by auto
+  from res[unfolded yun_monic_factorization_def Let_def, 
+    unfolded Gcd, folded B.simps C.simps, folded Gcd]
+  obtain cs where yun: "yun_factorization_main (B 0) (C 0) 0 [] = cs" and bs: "bs = filter (\<lambda> (a,i). a \<noteq> 1) cs" 
+    by auto
   from yun_factorization_main[OF yun] show ?thesis unfolding bs
     by (auto simp: distinct_map_filter)
 qed                                                    
@@ -662,9 +668,11 @@ proof -
 qed
 end
 end
+end
+end
 
 lemma square_free_monic_poly: assumes monic: "monic p"
-  shows "(poly (square_free_monic_poly p) x = 0) = (poly p x = 0)"
+  shows "(poly (square_free_monic_poly gcd p) x = 0) = (poly p x = 0)"
 proof -
   from monic_irreducible_factorization[OF monic]
   obtain as f where fin: "finite as" and p: "p = (\<Prod>a\<in>as. a ^ Suc (f a))" 
@@ -681,11 +689,11 @@ proof -
   have p: "p = (\<Prod>(a, i)\<in>cs. a ^ Suc i)" unfolding p cs_def
     by (rule setprod.reindex_cong, auto, auto simp: inj_on_def)
   show ?thesis  
-    by (rule square_free_monic_poly_context[OF p fin' disj irr])
+    by (rule square_free_monic_poly_context[OF refl p fin' disj irr])
 qed
 
 lemma square_free_poly: 
-  "(poly (square_free_poly p) x = 0) = (poly p x = 0)"
+  "(poly (square_free_poly gcd p) x = 0) = (poly p x = 0)"
 proof (cases "p = 0")
   case True
   thus ?thesis unfolding square_free_poly_def by auto
@@ -693,7 +701,7 @@ next
   case False
   let ?c = "coeff p (degree p)"
   let ?ic = "inverse ?c"
-  have id: "square_free_poly p = square_free_monic_poly (smult ?ic p)"
+  have id: "square_free_poly gcd p = square_free_monic_poly gcd (smult ?ic p)"
     unfolding square_free_poly_def using False by auto
   from False have mon: "monic (smult ?ic p)" and ic: "?ic \<noteq> 0" by auto
   show ?thesis unfolding id square_free_monic_poly[OF mon]
@@ -701,7 +709,7 @@ next
 qed  
 
 
-lemma yun_monic_factorization: assumes res: "yun_monic_factorization p = bs"
+lemma yun_monic_factorization: assumes res: "yun_monic_factorization gcd p = bs"
   and monic: "monic p"
   shows "square_free_factorization p (1,bs)" "(b,i) \<in> set bs \<Longrightarrow> monic b"
 proof -
@@ -719,7 +727,7 @@ proof -
   have disj: "\<And>a i b j. (a, i) \<in> cs \<Longrightarrow> (b, j) \<in> cs \<Longrightarrow> (a, i) \<noteq> (b, j) \<Longrightarrow> a \<noteq> b" unfolding cs_def by auto
   have p: "p = (\<Prod>(a, i)\<in>cs. a ^ Suc i)" unfolding p cs_def
     by (rule setprod.reindex_cong, auto, auto simp: inj_on_def)
-  note yun = yun_monic_factorization_context[OF p fin' disj irr res]
+  note yun = yun_monic_factorization_context[OF refl p fin' disj irr res]
   show "square_free_factorization p (1,bs)" by (rule yun(1))
   show "(b,i) \<in> set bs \<Longrightarrow> monic b" by (rule yun(2))
 qed
@@ -736,7 +744,7 @@ proof -
   from eq p sf show ?thesis unfolding square_free_factorization_def by blast
 qed
 
-lemma yun_factorization: assumes res: "yun_factorization p = c_bs"
+lemma yun_factorization: assumes res: "yun_factorization gcd p = c_bs"
   shows "square_free_factorization p c_bs" "(b,i) \<in> set (snd c_bs) \<Longrightarrow> monic b"
 proof -
   note res = res[unfolded yun_factorization_def Let_def]
@@ -751,7 +759,7 @@ proof -
     let ?ic = "inverse ?c"
     obtain c bs where cbs: "c_bs = (c,bs)" by force
     with False res
-    have c: "c = ?c" "?c \<noteq> 0" and fact: "yun_monic_factorization (smult ?ic p) = bs" by auto
+    have c: "c = ?c" "?c \<noteq> 0" and fact: "yun_monic_factorization gcd (smult ?ic p) = bs" by auto
     from False have mon: "monic (smult ?ic p)" by auto
     from yun_monic_factorization[OF fact mon]
     have sff: "square_free_factorization (smult ?ic p) (1, bs)" "(b, i) \<in> set bs \<Longrightarrow> monic b" .
@@ -985,7 +993,7 @@ proof -
   show ?thesis unfolding square_free_factorization_def using 1 2 3 4 5 by blast
 qed
 
-function square_free_sample_optimization :: "'a poly \<Rightarrow> ('a poly \<times> nat)list \<Rightarrow> ('a poly \<times> nat)list" where
+function square_free_sample_optimization :: "'a :: field poly \<Rightarrow> ('a poly \<times> nat)list \<Rightarrow> ('a poly \<times> nat)list" where
   "square_free_sample_optimization x [] = []"
 | "square_free_sample_optimization x ((a,i) # bs) = (if degree a > degree x \<and> x dvd a \<and> degree x \<noteq> 0
   then (x, i) # square_free_sample_optimization x ((a div x,i) # bs)
@@ -1031,7 +1039,7 @@ proof (induct x bs arbitrary: as rule: square_free_sample_optimization.induct)
   qed
 qed (simp add: square_free_sample_optimization.simps)
     
-fun square_free_psamples_optimization :: "'a poly list \<Rightarrow> ('a poly \<times> nat)list \<Rightarrow> ('a poly \<times> nat)list" where
+fun square_free_psamples_optimization :: "'a :: field poly list \<Rightarrow> ('a poly \<times> nat)list \<Rightarrow> ('a poly \<times> nat)list" where
   "square_free_psamples_optimization [] bs = bs"
 | "square_free_psamples_optimization (x # xs) bs = 
     square_free_psamples_optimization xs (square_free_sample_optimization x bs)"
@@ -1047,7 +1055,7 @@ proof (induct xs arbitrary: bs)
   show ?case by simp
 qed simp
 
-definition square_free_samples_optimization :: "'a list \<Rightarrow> ('a poly \<times> nat)list \<Rightarrow> ('a poly \<times> nat)list" where
+definition square_free_samples_optimization :: "'a :: field list \<Rightarrow> ('a poly \<times> nat)list \<Rightarrow> ('a poly \<times> nat)list" where
   "square_free_samples_optimization xs = square_free_psamples_optimization (map (\<lambda> x. [: -x, 1 :]) xs)"
 
 lemma square_free_samples_optimization: 
@@ -1055,7 +1063,7 @@ lemma square_free_samples_optimization:
   square_free_factorization p (c, square_free_samples_optimization xs bs)"
   unfolding square_free_samples_optimization_def by (rule square_free_psamples_optimization)
 
-definition root_finder_optimization :: "('a poly \<Rightarrow> 'a list) \<Rightarrow> ('a poly \<times> nat)list \<Rightarrow> ('a poly \<times> nat)list" where
+definition root_finder_optimization :: "('a :: field poly \<Rightarrow> 'a list) \<Rightarrow> ('a poly \<times> nat)list \<Rightarrow> ('a poly \<times> nat)list" where
   "root_finder_optimization root_finder bs \<equiv> let
     xs = [x. (a,_) <- bs, x <- root_finder a]
     in square_free_samples_optimization xs bs"
@@ -1069,9 +1077,9 @@ lemma root_finder_optimization: "square_free_factorization p (c,bs) \<Longrighta
   it can be feed with potential polynomial factors like $x^2 + 1$,
   and with potential roots, and with an arbitrary root finding algorithm. *)
 definition root_finder_samples_factorization 
-  :: "('a poly \<Rightarrow> 'a list) \<Rightarrow> 'a list \<Rightarrow> 'a poly list \<Rightarrow> 'a poly \<Rightarrow> 'a \<times> ('a poly \<times> nat)list" where
+  :: "('a :: field_char_0 poly \<Rightarrow> 'a list) \<Rightarrow> 'a list \<Rightarrow> 'a poly list \<Rightarrow> 'a poly \<Rightarrow> 'a \<times> ('a poly \<times> nat)list" where
   "root_finder_samples_factorization root_finder samples psamples p \<equiv> let
-     (c,bs) = yun_factorization p;
+     (c,bs) = yun_factorization gcd p;
      cs = square_free_psamples_optimization psamples bs;
      ds = square_free_samples_optimization samples cs;
      es = root_finder_optimization root_finder ds
@@ -1082,12 +1090,10 @@ lemma root_finder_samples_factorization:
   "square_free_factorization p (root_finder_samples_factorization root_finder samples psamples p)"
 proof -
   let ?sff = "square_free_factorization p"
-  obtain c bs where yun: "yun_factorization p = (c,bs)" by force
+  obtain c bs where yun: "yun_factorization gcd p = (c,bs)" by force
   from yun_factorization[OF this] have "?sff (c,bs)" by auto
   from root_finder_optimization[OF square_free_samples_optimization[OF 
      square_free_psamples_optimization[OF this]]]
   show ?thesis unfolding root_finder_samples_factorization_def Let_def yun split .
 qed
-end
-
 end

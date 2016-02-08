@@ -127,11 +127,11 @@ lemma sturm_rat: "sturm (real_of_rat_poly p) = map real_of_rat_poly (sturm_rat p
   unfolding sturm_rat_def sturm_def pderiv_rat sturm_aux_rat ..
 
 definition sturm_squarefree_rat where
-  "sturm_squarefree_rat p = sturm_rat (p div (gcd p (pderiv p)))"
+  "sturm_squarefree_rat p = sturm_rat (p div (gcd_rat_poly p (pderiv p)))"
 
 lemma sturm_squarefree_rat: "sturm_squarefree (real_of_rat_poly p) 
   = map real_of_rat_poly (sturm_squarefree_rat p)"
-  unfolding sturm_squarefree_rat_def sturm_squarefree_def
+  unfolding sturm_squarefree_rat_def sturm_squarefree_def gcd_rat_poly
     rpoly.map_poly_gcd[symmetric] rpoly.map_poly_div[symmetric] pderiv_rat sturm_rat ..
 
 definition poly_inf_rat :: "rat poly \<Rightarrow> rat" where 

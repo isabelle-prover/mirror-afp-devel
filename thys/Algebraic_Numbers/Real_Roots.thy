@@ -586,7 +586,7 @@ definition roots_of_real_main :: "real poly \<Rightarrow> real list" where
     else (real_roots_of_rat_poly (map_poly to_rat p))"
   
 definition roots_of_real_poly :: "real poly \<Rightarrow> real list option" where
-  "roots_of_real_poly p \<equiv> let (c,pis) = yun_factorization p in
+  "roots_of_real_poly p \<equiv> let (c,pis) = yun_factorization gcd p in
     if (c \<noteq> 0 \<and> (\<forall> (p,i) \<in> set pis. degree p \<le> 2 \<or> (\<forall> x \<in> set (coeffs p). x \<in> \<rat>))) then 
     Some (concat (map (roots_of_real_main o fst) pis)) else None"
 
@@ -633,7 +633,7 @@ qed
 lemma roots_of_real_poly: assumes rt: "roots_of_real_poly p = Some xs"
   shows "set xs = {x. poly p x = 0}"
 proof -
-  obtain c pis where yun: "yun_factorization p = (c,pis)" by force
+  obtain c pis where yun: "yun_factorization gcd p = (c,pis)" by force
   from rt[unfolded roots_of_real_poly_def yun split Let_def]
   have c: "c \<noteq> 0" and pis: "\<And> p i. (p, i)\<in>set pis \<Longrightarrow> degree p \<le> 2 \<or> (\<forall>x\<in>set (coeffs p). x \<in> \<rat>)"
     and xs: "xs = concat (map (roots_of_real_main \<circ> fst) pis)"

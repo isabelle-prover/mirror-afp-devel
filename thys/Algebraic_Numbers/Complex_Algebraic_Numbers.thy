@@ -88,11 +88,11 @@ proof (induct p rule: pderiv.induct)
 qed
   
 lemma map_poly_square_free_monic_poly: 
-  "map_poly hom (square_free_monic_poly p) = square_free_monic_poly (map_poly hom p)"
+  "map_poly hom (square_free_monic_poly gcd p) = square_free_monic_poly gcd (map_poly hom p)"
   unfolding square_free_monic_poly_def map_poly_div map_poly_gcd map_poly_pderiv ..
 
 lemma map_poly_square_free_poly: 
-  "map_poly hom (square_free_poly p) = square_free_poly (map_poly hom p)"
+  "map_poly hom (square_free_poly gcd p) = square_free_poly gcd (map_poly hom p)"
 proof (cases "p = 0")
   case True
   thus ?thesis unfolding square_free_poly_def by auto 
@@ -105,18 +105,18 @@ next
 qed
 end
 
-lemma square_free_poly_0[simp]: "square_free_poly p = 0 \<longleftrightarrow> p = 0"
+lemma square_free_poly_0[simp]: "square_free_poly gcd p = 0 \<longleftrightarrow> p = 0"
 proof 
-  assume "square_free_poly p = 0"
+  assume "square_free_poly gcd p = 0"
   from arg_cong[OF this, of "\<lambda> p. {x. poly p x = 0}", unfolded square_free_poly] 
   show "p = 0" using poly_all_0_iff_0 by blast
 qed (auto simp: square_free_poly_def)
 
-lemma alg_poly_square_free_poly_eq[simp]: "alg_poly x (square_free_poly p) = alg_poly x p"
+lemma alg_poly_square_free_poly_eq[simp]: "alg_poly x (square_free_poly gcd p) = alg_poly x p"
   unfolding alg_poly_def rpoly.poly_map_poly_eval_poly[symmetric] rpoly.map_poly_square_free_poly 
     square_free_poly by simp
 
-lemma alg_poly_square_free_poly: "alg_poly x p \<Longrightarrow> alg_poly x (square_free_poly p)"
+lemma alg_poly_square_free_poly: "alg_poly x p \<Longrightarrow> alg_poly x (square_free_poly gcd p)"
   by simp
 
 lemma alg_poly_root_poly: assumes "rpoly p x = 0" and p: "p \<noteq> 0"
@@ -409,7 +409,7 @@ definition roots_of_complex_main :: "complex poly \<Rightarrow> complex list" wh
     else (complex_roots_of_rat_poly (map_poly to_rat p))"
   
 definition roots_of_complex_poly :: "complex poly \<Rightarrow> complex list option" where
-  "roots_of_complex_poly p \<equiv> let (c,pis) = yun_factorization p in
+  "roots_of_complex_poly p \<equiv> let (c,pis) = yun_factorization gcd p in
     if (c \<noteq> 0 \<and> (\<forall> (p,i) \<in> set pis. degree p \<le> 2 \<or> (\<forall> x \<in> set (coeffs p). x \<in> \<rat>))) then 
     Some (concat (map (roots_of_complex_main o fst) pis)) else None"
 
@@ -456,7 +456,7 @@ qed
 lemma roots_of_complex_poly: assumes rt: "roots_of_complex_poly p = Some xs"
   shows "set xs = {x. poly p x = 0}"
 proof -
-  obtain c pis where yun: "yun_factorization p = (c,pis)" by force
+  obtain c pis where yun: "yun_factorization gcd p = (c,pis)" by force
   from rt[unfolded roots_of_complex_poly_def yun split Let_def]
   have c: "c \<noteq> 0" and pis: "\<And> p i. (p, i)\<in>set pis \<Longrightarrow> degree p \<le> 2 \<or> (\<forall>x\<in>set (coeffs p). x \<in> \<rat>)"
     and xs: "xs = concat (map (roots_of_complex_main \<circ> fst) pis)"
@@ -483,7 +483,7 @@ qed
 subsection \<open>Factorization of Complex Polynomials\<close>
 
 definition factorize_complex_main :: "complex poly \<Rightarrow> (complex \<times> (complex \<times> nat) list) option" where
-  "factorize_complex_main p \<equiv> let (c,pis) = yun_factorization p in
+  "factorize_complex_main p \<equiv> let (c,pis) = yun_factorization gcd p in
     if ((\<forall> (p,i) \<in> set pis. degree p \<le> 2 \<or> (\<forall> x \<in> set (coeffs p). x \<in> \<rat>))) then 
     Some (c, concat (map (\<lambda> (p,i). map (\<lambda> r. (r,i)) (remdups (roots_of_complex_main p))) pis)) else None"
 
@@ -495,7 +495,7 @@ definition factorize_complex_poly :: "complex poly \<Rightarrow> (complex \<time
 lemma factorize_complex_main: assumes rt: "factorize_complex_main p = Some (c,xis)"
   shows "p = smult c (\<Prod>(x, i)\<leftarrow>xis. [:- x, 1:] ^ Suc i)"
 proof -
-  obtain d pis where yun: "yun_factorization p = (d,pis)" by force
+  obtain d pis where yun: "yun_factorization gcd p = (d,pis)" by force
   from rt[unfolded factorize_complex_main_def yun split Let_def]
   have pis: "\<And> p i. (p, i)\<in>set pis \<Longrightarrow> degree p \<le> 2 \<or> (\<forall>x\<in>set (coeffs p). x \<in> \<rat>)"
     and xis: "xis = concat (map (\<lambda>(p, i). map (\<lambda>r. (r, i)) (remdups (roots_of_complex_main p))) pis)"

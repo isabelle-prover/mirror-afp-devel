@@ -105,13 +105,13 @@ qed
 declare roots_of_rat_poly_main.simps[simp del]
 
 definition roots_of_rat_poly :: "rat poly \<Rightarrow> rat list" where
-  "roots_of_rat_poly p \<equiv> let (c,pis) = yun_factorization p in
+  "roots_of_rat_poly p \<equiv> let (c,pis) = yun_factorization gcd_rat_poly p in
     concat (map (roots_of_rat_poly_main o fst) pis)"
 
 lemma roots_of_rat_poly: assumes p: "p \<noteq> 0"
   shows "set (roots_of_rat_poly p) = {x. poly p x = 0}"
 proof -
-  obtain c pis where yun: "yun_factorization p = (c,pis)" by force
+  obtain c pis where yun: "yun_factorization gcd p = (c,pis)" by force
   from yun
   have res: "roots_of_rat_poly p = concat (map (roots_of_rat_poly_main \<circ> fst) pis)"
     by (auto simp: roots_of_rat_poly_def split: if_splits)
@@ -488,7 +488,7 @@ definition initial_factorization_rat :: "rat poly \<Rightarrow> rat \<times> (ra
       (c,pis) \<Rightarrow> if p = smult c ((\<Prod>(q, i)\<leftarrow>pis. q ^ i)) \<and> list_all (\<lambda> (p,i). i \<noteq> 0 \<and> p \<noteq> 0) pis 
       then (c,pis) 
       else Code.abort (String.implode (''error in factorization-oracle on input '' @
-        show_poly p)) (\<lambda> _. case yun_factorization p of 
+        show_poly p)) (\<lambda> _. case yun_factorization gcd_rat_poly p of 
         (c,pis) \<Rightarrow> (c, map (\<lambda> (p,i). (p, Suc i)) pis)))"
 
 lemma initial_factorization_rat: assumes res: "initial_factorization_rat p = (c,qis)"
@@ -509,7 +509,7 @@ proof -
       with True show ?thesis by (auto simp: list_all_iff)
     next
       case False
-      obtain d pis where yun: "yun_factorization p = (d,pis)" by force
+      obtain d pis where yun: "yun_factorization gcd p = (d,pis)" by force
       with res False mode have id: "c = d" "qis = map (\<lambda> (p,i). (p, Suc i)) pis" by auto
       from square_free_factorizationD(1,2,5)[OF yun_factorization(1)[OF yun]]
       have p: "p = smult d (\<Prod>(a, i)\<in>set pis. a ^ Suc i)" and pis: "distinct pis" 
