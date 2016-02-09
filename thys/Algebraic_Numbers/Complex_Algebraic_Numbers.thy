@@ -171,30 +171,32 @@ text \<open>Determine complex roots of a polynomial,
    intended for polynomials of degree 3 or higher,
    for lower degree polynomials use @{const roots1} or @{const croots2}\<close>
 definition complex_roots_of_rat_poly3 :: "rat poly \<Rightarrow> complex list" where
-  "complex_roots_of_rat_poly3 p \<equiv> let n = degree p; rr = count_roots_rat p in 
-    if n = rr 
-    then map (\<lambda> r. Complex r 0) (real_roots_of_rat_poly p) 
+  "complex_roots_of_rat_poly3 p \<equiv> let n = degree p; rr = count_roots_rat p; 
+    rrts' = real_roots_of_rat_poly3 p; (* all real roots *)
+    rrts = (if length rrts' = rr then rrts' else remdups rrts'); (* distinct real roots *)
+    crts = map (\<lambda> r. Complex r 0) rrts
+    in 
+    if n = rr then crts 
     else if n - rr = 2 then 
-    let rrts = remdups (real_roots_of_rat_poly3 p);
-        crts = map (\<lambda> x. Complex x 0) rrts;
-        pp = real_of_rat_poly p div (listprod (map (\<lambda> x. [:-x,1:]) rrts));
+    let pp = real_of_rat_poly p div (listprod (map (\<lambda> x. [:-x,1:]) rrts));
         cpp = map_poly (\<lambda> r. Complex r 0) pp
       in crts @ croots2 cpp else
     let
         rp = root_poly_Re p;
         ip = root_poly_Im p;
-        rxs = real_roots_of_rat_poly rp;
+        rxs = real_roots_of_rat_poly rp; (* this includes factorization, so do not use real_roots_of_rat_poly3 *)
         ixs = (* TODO: is a remdups at this point required to avoid duplicates? *) 
-          remdups (concat (map real_roots_of_rat_poly ip));
-        rts = [Complex rx ix. rx <- rxs, ix <- ixs] 
-    in filter (\<lambda> c. rpoly p c = 0) rts"
+          remdups (filter (op < 0) (concat (map real_roots_of_rat_poly ip)));
+        rts = [Complex rx ix. rx <- rxs, ix <- ixs];
+        crts' = filter (\<lambda> c. rpoly p c = 0) rts
+    in crts @ crts' @ map cnj crts'"
 
 definition complex_roots_of_rat_poly_all :: "rat poly \<Rightarrow> complex list" where
   "complex_roots_of_rat_poly_all p = (let n = degree p in 
     if n \<ge> 3 then complex_roots_of_rat_poly3 p
     else if n = 1 then [roots1 (map_poly of_rat p)] else if n = 2 then croots2 (map_poly of_rat p)
     else [])"
-
+    
 lemma complex_roots_of_rat_poly3: assumes p: "p \<noteq> 0" 
   shows "set (complex_roots_of_rat_poly3 p) = {x. rpoly p x = 0}" (is "?l = ?r")
 proof -
@@ -203,39 +205,93 @@ proof -
   from p have q0: "q \<noteq> 0" unfolding q_def by auto
   hence q: "?q \<noteq> 0" by auto
   interpret cr: inj_ring_hom complex_of_real by (unfold_locales, auto)
-  note d = complex_roots_of_rat_poly3_def Let_def
-  have r: "?r = {x. poly ?q x = 0}"
+  def rr' \<equiv> "real_roots_of_rat_poly3 p"
+  def rr \<equiv> "if length rr' = count_roots_rat p then rr' else remdups rr'"
+  def rrts \<equiv> "map (\<lambda>r. Complex r 0) rr"
+  note d = complex_roots_of_rat_poly3_def[of p, unfolded Let_def, folded rr'_def, folded rr_def rrts_def]
+  have rr': "set rr' = {x. rpoly p x = 0}" unfolding rr'_def
+    using real_roots_of_rat_poly3[OF p] .
+  have rr: "set rr = {x. rpoly p x = 0}" unfolding rr_def using rr' by auto
+  have rrts: "set rrts = {x. poly ?q x = 0 \<and> x \<in> \<real>}" unfolding rrts_def set_map rr q_def
+    by (auto simp: eval_poly_def) 
+       (metis (full_types) Reals_cases cr.hom_0_iff cr.poly_map_poly image_eqI mem_Collect_eq)
+  have cr: "count_roots_rat p = card {x. poly ?q x = 0 \<and> x \<in> \<real>}" 
+    unfolding q_def[symmetric] count_roots_rat[of p] eval_poly_def 
+  proof -
+    have "card {x. poly q x = 0} \<le> card {x. poly (map_poly complex_of_real q) x = 0 \<and> x \<in> \<real>}" (is "?l \<le> ?r")
+      by (rule card_inj_on_le[of of_real], insert poly_roots_finite[OF q], auto simp: inj_on_def)
+    moreover have "?l \<ge> ?r"
+      by (rule card_inj_on_le[of Re, OF _ _ poly_roots_finite[OF q0]], auto simp: inj_on_def elim!: Reals_cases)
+    ultimately show "?l = ?r" by simp
+  qed
+  have dist: "distinct rr" unfolding rr_def count_roots_rat[of p]
+    by (auto simp: rr'[symmetric] card_distinct) 
+  have conv: "\<And> x. rpoly p x = 0 \<longleftrightarrow> poly ?q x = 0"
     unfolding poly_complex_of_rat_poly[symmetric] q_def
     by (subst map_poly_compose, auto simp: o_def)
+  have r: "?r = {x. poly ?q x = 0}" unfolding conv ..
   show ?thesis
   proof (cases "degree p = count_roots_rat p")
     case False note oFalse = this
     show ?thesis
     proof (cases "degree p - count_roots_rat p = 2")
       case False
-      have "?l \<subseteq> ?r" unfolding d using False oFalse by auto
+      def cpx \<equiv> "[c\<leftarrow>concat (map (\<lambda>rx. map (Complex rx)
+          (remdups (filter (op < 0) (concat (map real_roots_of_rat_poly (root_poly_Im p))))))
+              (real_roots_of_rat_poly (root_poly_Re p))). rpoly p c = 0]"
+      have cpx: "set cpx \<subseteq> ?r" unfolding cpx_def by auto
+      have ccpx: "cnj ` set cpx \<subseteq> ?r" using cpx unfolding r 
+        by (auto intro!: complex_conjugate_root[of ?q] simp: Reals_def coeffs_map_poly) 
+      have l: "?l = set (rrts @ cpx @ map cnj cpx)" unfolding d cpx_def[symmetric] using False oFalse by auto
+      have "?l \<subseteq> ?r" using rrts cpx ccpx unfolding l r by auto
       moreover
       {
         fix x :: complex
-        let ?rp = "root_poly_Re p"
-        let ?ip = "root_poly_Im p"
-        let ?x = "Complex (Re x) (Im x)"
         assume rt: "rpoly p x = 0"
-        from alg_poly_root_poly[OF this p] obtain qi where 
-          "?rp \<noteq> 0" "rpoly ?rp (Re x) = 0" and qi: "qi \<in> set ?ip" and "qi \<noteq> 0" "rpoly qi (Im x) = 0" by auto
-        hence mem: "Re x \<in> set (real_roots_of_rat_poly ?rp)" "Im x \<in> set (real_roots_of_rat_poly qi)"
-          by (auto simp: real_roots_of_rat_poly)    
-        have x: "x = ?x" by (cases x, auto)
-        with rt have rt: "rpoly p ?x = 0" by auto
-        from False oFalse rt mem qi have "?x \<in> ?l" unfolding d by fastforce
-        with x have "x \<in> ?l" by auto
+        {
+          fix x 
+          assume rt: "rpoly p x = 0"
+            and gt: "Im x > 0"
+          let ?rp = "root_poly_Re p"
+          let ?ip = "root_poly_Im p"
+          let ?x = "Complex (Re x) (Im x)"
+          from alg_poly_root_poly[OF rt p] obtain qi where 
+            "?rp \<noteq> 0" "rpoly ?rp (Re x) = 0" and qi: "qi \<in> set ?ip" and "qi \<noteq> 0" "rpoly qi (Im x) = 0" by auto
+          hence mem: "Re x \<in> set (real_roots_of_rat_poly ?rp)" "Im x \<in> set (real_roots_of_rat_poly qi)"
+            by (auto simp: real_roots_of_rat_poly)    
+          have x: "x = ?x" by (cases x, auto)
+          with rt have rt: "rpoly p ?x = 0" by auto
+          have intro: "\<And> y Y. y \<in> Y \<Longrightarrow> complex_of_real (Re x) + \<i> * y \<in> Complex (Re x) ` Y" by simp
+          from rt qi gt mem(2) have "?x \<in> set cpx" unfolding cpx_def by (auto intro!: bexI[OF _ mem(1)] intro)
+          hence "x \<in> set cpx" using x by simp
+        } note gt = this
+        have cases: "Im x = 0 \<or> Im x > 0 \<or> Im x < 0" by auto
+        from rt have rt': "rpoly p (cnj x) = 0" unfolding conv 
+          by (intro complex_conjugate_root[of ?q x], auto simp: Reals_def coeffs_map_poly)
+        {
+          assume "Im x > 0"
+          from gt[OF rt this] have "x \<in> ?l" unfolding l by auto
+        }
+        moreover
+        {
+          assume "Im x < 0"          
+          hence "Im (cnj x) > 0" by simp
+          from gt[OF rt' this] have "cnj (cnj x) \<in> ?l" unfolding l set_append set_map by blast
+          hence "x \<in> ?l" by simp
+        }
+        moreover
+        {
+          assume "Im x = 0"
+          hence "x \<in> \<real>" using complex_is_Real_iff by blast
+          with rt rrts have "x \<in> ?l" unfolding l conv by auto
+        }
+        ultimately have "x \<in> ?l" using cases by blast
       }
       ultimately show ?thesis by blast
     next
       case True
       let ?rr = "real_roots_of_rat_poly3 p"
-      let ?cr = "map_poly of_real :: real poly \<Rightarrow> complex poly"      
-      def rr \<equiv> "remdups ?rr"
+      let ?cr = "map_poly of_real :: real poly \<Rightarrow> complex poly"
       def pp \<equiv> "complex_of_rat_poly p"
       have id: "pp = map_poly of_real q" unfolding q_def pp_def
         by (subst map_poly_compose, auto simp: o_def)
@@ -248,14 +304,13 @@ proof -
       from True have id: "degree p = count_roots_rat p \<longleftrightarrow> False" 
         "degree p - count_roots_rat p = 2 \<longleftrightarrow> True" by auto
       have l: "?l = of_real ` {x. poly q x = 0} \<union> set (croots2 ?c2)"
-        unfolding d rr_def rts_def id if_False if_True 
+        unfolding d rts_def id if_False if_True set_append rrts 
         using real_roots_of_rat_poly3[OF p] pq 
-        by (auto simp: q_def)
-      have dist: "distinct rr" unfolding rr_def by simp
-      from arg_cong[OF real_roots_of_rat_poly3[OF p, unfolded pq], of card] dist 
-      have len_rr: "length rr = card {x. poly q x = 0}" unfolding rr_def by (simp add: List.card_set)
-      have rr: "\<And> r. r \<in> set rr \<Longrightarrow> poly q r = 0"
-        unfolding rr_def using real_roots_of_rat_poly3[OF p] pq by auto
+        by (auto simp: q_def Reals_def)
+      from dist
+      have len_rr: "length rr = card {x. poly q x = 0}" unfolding rr[unfolded pq, symmetric] 
+        by (simp add: distinct_card)
+      have rr': "\<And> r. r \<in> set rr \<Longrightarrow> poly q r = 0" using rr unfolding q_def eval_poly_def by simp
       with dist have "q = q div listprod ?rts * listprod ?rts"
       proof (induct rr arbitrary: q)
         case (Cons r rr q)
@@ -302,32 +357,18 @@ proof -
         by (subst semiring_hom.hom_listprod[OF cr.semiring_hom_map_poly], unfold map_map o_def, auto)
       also have "{x. poly \<dots> x = 0} = of_real ` set rr" 
         unfolding poly_listprod_zero_iff by auto
-      also have "set rr = {x. poly q x = 0}" 
-        unfolding rr_def set_remdups real_roots_of_rat_poly3[OF p] pq by simp
+      also have "set rr = {x. poly q x = 0}" unfolding rr q_def by (simp add: eval_poly_def) 
       finally show ?thesis unfolding l by simp
     qed
   next
     case True
-    from True have "?l = of_real ` {x. rpoly p x = 0}" unfolding d 
-      using real_roots_of_rat_poly[OF p] by auto
-    also have "{x. rpoly p x = (0 :: real)} = {x. poly q x = 0}" unfolding q_def poly_real_of_rat_poly ..
-    finally have l: "?l = of_real ` {x. poly q x = 0}" .
-    have "?thesis = (complex_of_real ` {x. poly q x = 0} = {x. poly ?q x = 0})" (is "_ = (?l = ?r)")
-      unfolding l r by auto
-    also have "?l = ?r"
-    proof -
-      have "?l \<subseteq> ?r" by auto
-      have "card ?r \<le> degree ?q"
-        by (rule poly_roots_degree[OF q])
-      also have "\<dots> = card {x. poly q x = 0}"
-        using True[unfolded count_roots_rat poly_real_of_rat_poly[symmetric] q_def[symmetric]] 
-        unfolding q_def by (simp add: degree_map_poly)
-      also have "\<dots> = card ?l"
-        by (subst card_image, auto simp: inj_on_def)
-      finally have "card ?r \<le> card ?l" .
-      with `?l \<subseteq> ?r` poly_roots_finite[OF q] show "?l = ?r" by (metis card_seteq)
-    qed
-    finally show ?thesis by auto  
+    have "card {x. poly ?q x = 0} \<le> degree ?q" by (rule poly_roots_degree[OF q])
+    also have "\<dots> = degree p" unfolding q_def by simp
+    also have "\<dots> = card {x. poly ?q x = 0 \<and> x \<in> \<real>}" using True cr by simp
+    finally have le: "card {x. poly ?q x = 0} \<le> card {x. poly ?q x = 0 \<and> x \<in> \<real>}" by auto
+    have "{x. poly ?q x = 0 \<and> x \<in> \<real>} = {x. poly ?q x = 0}"
+      by (rule card_seteq[OF _ _ le], insert poly_roots_finite[OF q], auto)
+    with True rrts show ?thesis unfolding r d by auto
   qed
 qed
 
