@@ -381,7 +381,7 @@ lemma config_config_distinct:
 apply (induct rule: config_induct) by (simp_all add: distinct_step)
 
 lemma config_config_set: 
-  shows " \<forall>x \<in> (config   A init qs). set (fst x) = set init"
+  shows " \<forall>x \<in> (config A init qs). set (fst x) = set init"
 apply(induct rule: config_induct) by(simp_all add: set_step)
 
 lemma config_config:
