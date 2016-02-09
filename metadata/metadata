@@ -1170,10 +1170,6 @@ abstract =
   in a <a href="http://www.in.tum.de/~nipkow/pubs/itp15.html">paper</a>
   published in the proceedings of the conference on Interactive
   Theorem Proving ITP 2015.
-  <p>
-  In the same spirit we show that the move-to-front algorithm for the list
-  update problem is 2-competitive and that this is optimal for deterministic
-  online algorithms for this problem.
 extra-history =
   Change history:
   [2015-03-17]: Added pairing heaps by Hauke Brinkop.<br>
