@@ -390,6 +390,15 @@ proof-
   finally show ?thesis by(simp add: T_mtf_def)
 qed
 
+corollary Sleator_Tarjan': "T_mtf n \<le> 2*T_A n - n"
+proof -
+  have "T_mtf n \<le> (\<Sum>i<n. 2*c_A i + p_A i - f_A i) - n" by (fact Sleator_Tarjan)
+  also have "(\<Sum>i<n. 2*c_A i + p_A i - f_A i) \<le> (\<Sum>i<n. 2*(c_A i + p_A i))"
+    by(intro setsum_mono) (simp add: p_A_def f_A_def)
+  also have "\<dots> \<le> 2* T_A n" by (simp add: setsum_right_distrib T_A_def t_A_def)
+  finally show "T_mtf n \<le> 2* T_A n - n" by auto
+qed
+
 lemma T_A_nneg: "0 \<le> T_A n"
 by(auto simp add: setsum_nonneg T_A_def t_A_def c_A_def p_A_def)
 
@@ -490,6 +499,10 @@ corollary MTF_competitive2: "s0 \<noteq> [] \<Longrightarrow> \<forall>i<length 
   T_on MTF s0 rs \<le> (2 - 1/(size s0)) * T s0 rs as"
 by (metis T_mtf_competitive T_A_eq T_mtf_eq of_int_of_nat_eq)
 
+corollary MTF_competitive': "T_on MTF s0 rs \<le> 2 * T s0 rs as"
+using Sleator_Tarjan'[of "length rs"] T_A_eq T_mtf_eq
+by auto
+
 end
 
 theorem compet_MTF: assumes "s0 \<noteq> []" "distinct s0" "set rs \<subseteq> set s0"
@@ -510,6 +523,35 @@ proof-
     done
   thus ?thesis using assms by(simp add: field_simps
     length_greater_0_conv[symmetric] del: length_greater_0_conv)
+qed
+
+theorem compet_MTF': assumes "distinct s0"
+shows "T_on MTF s0 rs \<le> (2::real) * T_opt s0 rs"
+proof- 
+  { fix as :: "answer list" assume len: "length as = length rs"
+    interpret MTF_Off as rs s0 proof qed (auto simp: assms(1) len)
+    from MTF_competitive'
+    have "T_on MTF s0 rs / 2 \<le> of_int(T s0 rs as)"
+      by(simp add: field_simps length_greater_0_conv[symmetric]
+        del: length_greater_0_conv) }
+  hence "T_on MTF s0 rs / 2 \<le> T_opt s0 rs"
+    apply(simp add: T_opt_def Inf_nat_def)
+    apply(rule LeastI2_wellorder)
+    using length_replicate[of "length rs" undefined] apply fastforce
+    apply auto
+    done
+  thus ?thesis using assms by(simp add: field_simps
+    length_greater_0_conv[symmetric] del: length_greater_0_conv)
+qed
+ 
+theorem MTF_is_2_competitive: "compet MTF 2 {init . distinct init}"
+unfolding compet_def 
+proof 
+  case goal1
+  then have ds0: "distinct s0" by auto
+  show ?case
+    apply(rule exI[where x="0"]) 
+      using compet_MTF'[OF ds0] by simp
 qed
 
 
