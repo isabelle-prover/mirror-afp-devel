@@ -142,7 +142,7 @@ definition inverse_int_modulo :: "int \<Rightarrow> int \<Rightarrow> int" where
 text \<open>Pre-Hensel-Factorization assumes square free and content-free integer polynomial as input.
   It finds a suitable prime and exponent, factors the polynomial w.r.t. the prime and returns
   the factors, the prime, and the exponent.\<close>
-definition pre_hensel_factorization :: "int poly_f \<Rightarrow> GFp ffield \<times> GFp poly_f list \<times> (int \<times> nat)" where
+definition pre_hensel_factorization :: "int poly_f \<Rightarrow> GFp poly_f list \<times> (int \<times> nat)" where
   "pre_hensel_factorization g = (let 
      p = prime_for_finite_factorization g;
      F = GFp p;
@@ -152,7 +152,7 @@ definition pre_hensel_factorization :: "int poly_f \<Rightarrow> GFp ffield \<ti
      n = hensel_prime_power (nat p) (nat (2 * a * M));
      f = int_list_to_poly_f F g;
      (_,fs) = berlekamp_factorization F f
-     in (F,fs,(p,n)))"
+     in (fs,(p,n)))"
 
 definition integer_ops :: "int ffield" where
   "integer_ops = \<lparr> 
@@ -229,17 +229,18 @@ definition hensel_lifting_binary :: "GFp ffield \<Rightarrow> nat \<Rightarrow> 
     a = I a'
     in hensel_lifting_binary_rec integer_ops p a b 1 m u v w)"
 
-definition hensel_lifting :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> GFp poly_f list \<Rightarrow> int poly_f list" where
-  "hensel_lifting F m u vs' = (let n = length vs' in if n = 1 then [u]
+fun hensel_lifting :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> GFp poly_f list \<Rightarrow> int poly_f list" where
+  "hensel_lifting F m u vs' = (let n = length vs' in if n \<le> 1 then if n = 1 then [u] else []
     else let 
+      i = n div 2;
+      vs_1 = take i vs';
+      vs_2 = drop i vs';
       idxs = [0 ..< n];
       I = map (to_int_f F);
-      hensel = (\<lambda> i. let
-        other = take i vs' @ drop (Suc i) vs';
-        w = I (listprod_poly_f F other);
-        v = I (vs' ! i)
-        in fst (hensel_lifting_binary F m u v w))
-    in map hensel idxs)"
+      v = I (listprod_poly_f F vs_1);
+      w = I (listprod_poly_f F vs_2);
+      (V,W) = hensel_lifting_binary F m u v w
+      in hensel_lifting F m V vs_1 @ hensel_lifting F m W vs_2)"
 
 definition int_poly_bnd :: "int \<Rightarrow> int poly_f \<Rightarrow> int poly_f" where
   "int_poly_bnd b = map (\<lambda> x. if 2 * x \<le> b then x else x - b)"
@@ -252,7 +253,8 @@ text \<open>input to berlekamp-hensel-factorization-init:
 definition berlekamp_hensel_factorization_init :: "int poly_f \<Rightarrow> int \<times> int poly_f list \<times> int" where 
   "berlekamp_hensel_factorization_init f = (let 
      a = last f;
-     (F,ps',(p,m)) = pre_hensel_factorization f;   
+     (ps',(p,m)) = pre_hensel_factorization f;
+     F = GFp p;
      mm = p^m;
      i = inverse_int_modulo a mm;
      g = map (op * i) f;
@@ -310,6 +312,10 @@ definition div_int_poly_f :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> 
 definition dvd_int_poly_f :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> bool" where
   "dvd_int_poly_f p q = (case div_int_poly_ff q p of None \<Rightarrow> False | Some _ \<Rightarrow> True)"
 
+fun coeff_0_int_poly :: "int poly_f \<Rightarrow> int" where
+  "coeff_0_int_poly (Cons x xs) = x"
+| "coeff_0_int_poly Nil = 0"
+  
 context fixes
   m :: int
 begin
@@ -319,6 +325,9 @@ partial_function (tailrec) factorization_f_to_factorization_int :: "int poly_f \
     \<Rightarrow> let d' = d + 1 in if 2 * d' > r then (u # res) else 
       factorization_f_to_factorization_int u luu lu d' r vs res (sublists_length d' vs)
    | ws # cands' \<Rightarrow> let 
+       lv' = foldr (\<lambda> w p. (p * coeff_0_int_poly w) mod m) ws lu;       
+       lv = if 2 * lv' \<le> m then lv' else lv' - m (* lv is last coefficient of v below *)  
+     in if lv dvd coeff_0_int_poly luu then let
        Z = integer_ops; 
        v = int_poly_bnd m (mod_int_poly m (smult_poly_f Z lu (listprod_poly_f Z ws)))
     in if dvd_int_poly_f v luu then 
@@ -332,8 +341,10 @@ partial_function (tailrec) factorization_f_to_factorization_int :: "int poly_f \
         in if 2 * d > r' 
           then (u' # res') 
           else factorization_f_to_factorization_int u' luu' lu' d r' vs' res' (sublists_length d vs')
+     else factorization_f_to_factorization_int u luu lu d r vs res cands'
      else factorization_f_to_factorization_int u luu lu d r vs res cands')"
 end
+
 
 text \<open>input to berlekamp-hensel-factorization: content-free and square-free, 
   non-zero integer polynomial f,
