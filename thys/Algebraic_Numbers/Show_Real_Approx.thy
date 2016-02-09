@@ -17,12 +17,13 @@ overloading show_real_alg \<equiv> show_real_alg
 begin
 
 definition show_real_alg[code]: "show_real_alg x \<equiv> let 
-  x1000 = floor (1000 * x);
+  x1000' = floor (1000 * x);
+  (x1000,s) = (if x1000' < 0 then (-x1000', ''-'') else (x1000', ''''));
   (bef,aft) = divmod_int x1000 1000;
   a' = show aft;
   a = replicate (3-length a') (CHR ''0'') @ a'
   in 
-  '' ~'' @ show bef @ ''.'' @ a"
+  '' ~'' @ s @ show bef @ ''.'' @ a"
 
 end
 
