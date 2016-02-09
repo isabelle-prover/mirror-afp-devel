@@ -125,7 +125,7 @@ fun embedd :: "('state,'is,'request,'answer) alg_on \<Rightarrow> ('state,'is,'r
 "embedd A = ( (\<lambda>s. return_pmf (fst A s))  ,
                   (\<lambda>s r. return_pmf (snd A s r)) )"
 
-lemma T_deter_rand: "T_off (\<lambda>s0. (off2 (snd A) (s0, x))) s0 qs = T_on_rand' (embedd A) (return_pmf (s0,x)) qs"
+lemma T_deter_rand: "T_off (\<lambda>s0. (off2 A (s0, x))) s0 qs = T_on_rand' (embedd A) (return_pmf (s0,x)) qs"
 apply(induct qs arbitrary: s0 x) 
   by(simp_all add: Step_def bind_return_pmf split: prod.split)
 

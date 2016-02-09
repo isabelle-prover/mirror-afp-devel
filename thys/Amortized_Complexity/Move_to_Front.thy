@@ -455,7 +455,7 @@ qed
 lemma T_A_eq: "T_A (length rs) = T s0 rs as"
 using T_A_eq_lem by(simp add: T_A_def atLeast0LessThan)
 
-lemma nth_off_MTF: "n < length rs \<Longrightarrow> off2 (snd MTF) s rs ! n = (size(fst s) - 1,[])"
+lemma nth_off_MTF: "n < length rs \<Longrightarrow> off2 MTF s rs ! n = (size(fst s) - 1,[])"
 by(induction rs arbitrary: s n)(auto simp add: MTF_def nth_Cons' Step_def)
 
 lemma t_mtf_MTF: "n < length rs \<Longrightarrow>
@@ -626,11 +626,11 @@ text{* The cruel adversary: *}
 
 fun cruel :: "('a,'is) alg_on \<Rightarrow> 'a state * 'is \<Rightarrow> nat \<Rightarrow> 'a list" where
 "cruel A s 0 = []" |
-"cruel A s (Suc n) = last (fst s) # cruel A (Step (snd A) s (last (fst s))) n"
+"cruel A s (Suc n) = last (fst s) # cruel A (Step A s (last (fst s))) n"
 
 definition adv :: "('a,'is) alg_on \<Rightarrow> ('a::linorder) alg_off" where
 "adv A s rs = (if rs=[] then [] else
-  let crs = cruel A (Step (snd A) (s, fst A s) (last s)) (size rs - 1)
+  let crs = cruel A (Step A (s, fst A s) (last s)) (size rs - 1)
   in (0,sort_sws (\<lambda>x. size rs - 1 - count_list crs x) s) # replicate (size rs - 1) (0,[]))"
 
 lemma set_cruel: "s \<noteq> [] \<Longrightarrow> set(cruel A (s,is) n) \<subseteq> set s"
@@ -641,11 +641,11 @@ by (metis empty_iff swaps_inv last_in_set list.set(1) rev_subsetD set_mtf2)
 (* Do not convert into structured proof - eta conversion screws it up! *)
 lemma T_cruel:
   "s \<noteq> [] \<Longrightarrow> distinct s \<Longrightarrow>
-  T s (cruel A (s,is) n) (off2 (snd A) (s,is) (cruel A (s,is) n)) \<ge> n*(length s)"
+  T s (cruel A (s,is) n) (off2 A (s,is) (cruel A (s,is) n)) \<ge> n*(length s)"
 apply(induction n arbitrary: s "is")
  apply(simp)
-apply(erule_tac x = "fst(Step (snd A) (s, is) (last s))" in meta_allE)
-apply(erule_tac x = "snd(Step (snd A) (s, is) (last s))" in meta_allE)
+apply(erule_tac x = "fst(Step A (s, is) (last s))" in meta_allE)
+apply(erule_tac x = "snd(Step A (s, is) (last s))" in meta_allE)
 apply(frule_tac sws = "snd(fst(snd A (s,is) (last s)))" in index_swaps_last_size)
 apply(simp add: distinct_step t_def split_def Step_def
         length_greater_0_conv[symmetric] del: length_greater_0_conv)
@@ -694,7 +694,7 @@ shows "T_off (adv A) [0..<l] (cruel A ([0..<l],fst A [0..<l]) (Suc n))
 proof-
   let ?s = "[0..<l]"
   let ?r = "last ?s"
-  let ?S' = "Step (snd A) (?s,fst A ?s) ?r"
+  let ?S' = "Step A (?s,fst A ?s) ?r"
   let ?s' = "fst ?S'"
   let ?cr = "cruel A ?S' n"
   let ?c = "count_list ?cr"

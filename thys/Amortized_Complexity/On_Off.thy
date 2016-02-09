@@ -19,17 +19,17 @@ fun T :: "'state \<Rightarrow> 'request list \<Rightarrow> 'answer list \<Righta
 "T s (r#rs) (a#as) = t s r a + T (step s r a) rs as"
 
 definition Step ::
-  "('state * 'istate \<Rightarrow> 'request \<Rightarrow> 'answer * 'istate)
+  "('state , 'istate, 'request, 'answer)alg_on
    \<Rightarrow> 'state * 'istate \<Rightarrow> 'request \<Rightarrow> 'state * 'istate"
 where
-"Step stp s r = (let (a,is') = stp s r in (step (fst s) r a, is'))"
+"Step A s r = (let (a,is') = snd A s r in (step (fst s) r a, is'))"
 
-fun off2 :: "('state * 'is \<Rightarrow> 'request \<Rightarrow> 'answer * 'is) \<Rightarrow> ('state * 'is,'request,'answer) alg_off" where
-"off2 stp s [] = []" |
-"off2 stp s (r#rs) = fst (stp s r) # off2 stp (Step stp s r) rs"
+fun off2 :: "('state,'is,'request,'answer) alg_on \<Rightarrow> ('state * 'is,'request,'answer) alg_off" where
+"off2 A s [] = []" |
+"off2 A s (r#rs) = fst (snd A s r) # off2 A (Step A s r) rs"
 
 abbreviation off :: "('state,'is,'request,'answer) alg_on \<Rightarrow> ('state,'request,'answer) alg_off" where
-"off A s0 \<equiv> off2 (snd A) (s0, fst A s0)"
+"off A s0 \<equiv> off2 A (s0, fst A s0)"
 
 abbreviation T_off :: "('state,'request,'answer) alg_off \<Rightarrow> 'state \<Rightarrow> 'request list \<Rightarrow> nat" where
 "T_off A s0 rs == T s0 rs (A s0 rs)"
