@@ -20,7 +20,8 @@ session Amortized_Complexity (AFP) = "HOL-Probability" +
     Splay_Heap
     Pairing_Heap
     Pairing_Heap_List
-    Move_to_Front
+    Move_to_Front 
+    BIT
 
   document_files
     "root.tex"

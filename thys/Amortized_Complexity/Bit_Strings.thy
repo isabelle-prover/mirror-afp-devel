@@ -188,13 +188,9 @@ proof -
   have b: "?S \<inter> (X \<union> Y) = {}" by auto  
   show ?thesis apply(rule card1[where ?S="?S"]) by(simp_all add: assms a b)
 qed
-
-
-
-
+ 
 subsection "average out the second sum for free-absch"
-
-
+ 
 lemma Expactation2or1: "finite S \<Longrightarrow> finite Tr \<Longrightarrow> finite Fa \<Longrightarrow> card Tr + card Fa + card S \<le> l \<Longrightarrow>
   S \<inter> (Tr \<union> Fa) = {} \<Longrightarrow> Tr \<inter> Fa = {} \<Longrightarrow> S \<union> Tr \<union> Fa \<subseteq> {0..<l} \<Longrightarrow>
   (\<Sum>x\<in>{xs. (\<forall>i\<in>Tr. xs ! i) \<and> (\<forall>i\<in>Fa. \<not> xs ! i) \<and> length xs = l}. \<Sum>j\<in>S. if x ! j then 2 else 1)

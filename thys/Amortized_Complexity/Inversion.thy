@@ -19,9 +19,13 @@ by (metis index_conv_size_if_notin index_less before_in_def less_asym order_refl
 lemma before_in_setD2: "x < y in xs \<Longrightarrow> y : set xs"
 by (simp add: before_in_def)
 
+
 lemma not_before_in:
   "x : set xs \<Longrightarrow> y : set xs \<Longrightarrow> \<not> x < y in xs \<longleftrightarrow> y < x in xs \<or> x=y"
 by (metis index_eq_index_conv before_in_def less_asym linorder_neqE_nat)
+
+lemma before_in_irefl: "x < x in xs = False"
+by (meson before_in_setD2 not_before_in)
 
 lemma no_before_inI[simp]: "x < y in xs \<Longrightarrow> (\<not> y < x in xs) = True"
 by (metis before_in_setD1 not_before_in)
