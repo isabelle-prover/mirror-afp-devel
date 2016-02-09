@@ -38,7 +38,7 @@ begin
     g :: 'g
   where
     empty: "g \<turnstile> [Entry g]\<Down>\<^sub>s(ssaStep g (Entry g) 0 Map.empty)"
-  | snoc: "\<lbrakk>g \<turnstile> ns\<Down>\<^sub>ss; last ns = predecessors g m ! i; m \<in> set (\<alpha>n g); i < length (predecessors g m)\<rbrakk> \<Longrightarrow>
+  | snoc: "\<lbrakk>g \<turnstile> ns\<Down>\<^sub>ss; last ns = old.predecessors g m ! i; m \<in> set (\<alpha>n g); i < length (old.predecessors g m)\<rbrakk> \<Longrightarrow>
             g \<turnstile> (ns@[m])\<Down>\<^sub>s(ssaStep g m i s)"
 
   lemma ssaBS_I:
@@ -48,7 +48,7 @@ begin
   proof (atomize_elim, induction rule:old.path2_rev_induct)
     case (snoc ns m' m)
     then obtain s where s: "g \<turnstile> ns\<Down>\<^sub>ss" by auto
-    from snoc.hyps(2) obtain i where "m' = predecessors g m ! i" "i < length (predecessors g m)" by (auto simp:in_set_conv_nth)
+    from snoc.hyps(2) obtain i where "m' = old.predecessors g m ! i" "i < length (old.predecessors g m)" by (auto simp:in_set_conv_nth)
     with snoc.hyps snoc.prems s show ?case by -(rule exI, erule ssaBS.snoc, auto dest:old.path2_last)
   qed (auto intro: ssaBS.empty)
 
@@ -97,7 +97,7 @@ begin
           assume asm: "?n\<^sub>v \<in> set (butlast ns')"
           with ns'(1,3) have[simp]: "?n\<^sub>v \<noteq> n" by (cases ns' rule: rev_cases, auto dest!: old.path2_last)
           from ns'(1) have "length ns' \<ge> 2" by auto
-          with ns' have bns': "g \<turnstile> Entry g-butlast ns'\<rightarrow>?n''" "?n'' \<in> set (predecessors g n)"
+          with ns' have bns': "g \<turnstile> Entry g-butlast ns'\<rightarrow>?n''" "?n'' \<in> set (old.predecessors g n)"
             by (auto elim: old.path2_unsnoc)
           with asm obtain ns'' where ns'': "g \<turnstile> ?n\<^sub>v-ns''\<rightarrow>?n''" "suffixeq ns'' (butlast ns')" "?n\<^sub>v \<notin> set (tl ns'')"
             by - (rule old.path2_split_first_last, auto)
@@ -128,7 +128,7 @@ begin
           fix vs
           assume asm: "g \<turnstile> Entry g-ns @ [n]\<rightarrow>n" "phis g (n, v) = Some vs" "var g v \<notin> var g ` defs g n"
           let ?n' = "last ns"
-          from asm(1) have "length ns \<ge> 1" by (cases ns, auto simp: path2_def)
+          from asm(1) have "length ns \<ge> 1" by (cases ns, auto simp: old.path2_def)
           hence "g \<turnstile> Entry g-ns\<rightarrow>?n'"
             by - (rule old.path2_unsnoc[OF asm(1)], auto)
           moreover have "vs ! i \<in> phiUses g ?n'" using snoc.hyps(2,4) phis_wf[OF asm(2)]

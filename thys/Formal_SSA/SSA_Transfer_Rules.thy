@@ -33,7 +33,7 @@ lemma graph_path_transfer [transfer_rule]:
     and [transfer_rule]: "(G ===> op =) inEdges inEdges2"
   shows "op \<longrightarrow> (graph_path \<alpha>e \<alpha>n invar inEdges) (graph_path \<alpha>e2 \<alpha>n2 invar2 inEdges2)"
   unfolding graph_path_def [abs_def] graph_def valid_graph_def graph_nodes_it_def graph_pred_it_def
-  graph_nodes_it_axioms_def graph_pred_it_axioms_def set_iterator_def set_iterator_genord_def sorted_by_rel_def 
+  graph_nodes_it_axioms_def graph_pred_it_axioms_def set_iterator_def set_iterator_genord_def 
   foldri_def
   using assms(2-5)
   apply clarsimp

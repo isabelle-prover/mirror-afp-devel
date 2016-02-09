@@ -10,7 +10,6 @@ Construct_SSA_code
 Construct_SSA_notriv_code
 RBT_Mapping_Exts
 SSA_Transfer_Rules
-"~~/src/Tools/Permanent_Interpretation"
 "~~/src/HOL/Library/RBT_Set"
 "~~/src/HOL/Library/Code_Target_Numeral"
 begin
@@ -67,8 +66,8 @@ by auto
 declare graph_path_base.transfer_rules[OF gen_cfg_wf.right_total gen_wf_\<alpha>e.transfer gen_wf_\<alpha>n.transfer gen_wf_invar_trans gen_wf_inEdges'_transfer, transfer_rule]
 declare CFG_base.defAss'_transfer[OF gen_cfg_wf.right_total gen_wf_\<alpha>e.transfer gen_wf_\<alpha>n.transfer gen_wf_invar_trans gen_wf_inEdges'_transfer, transfer_rule]
 
-permanent_interpretation gen_wf: CFG_Construct_linorder gen_wf_\<alpha>e gen_wf_\<alpha>n gen_wf_invar gen_wf_inEdges' gen_wf_Entry gen_wf_defs gen_wf_uses
-defining
+global_interpretation gen_wf: CFG_Construct_linorder gen_wf_\<alpha>e gen_wf_\<alpha>n gen_wf_invar gen_wf_inEdges' gen_wf_Entry gen_wf_defs gen_wf_uses
+defines
   gen_wf_predecessors = gen_wf.predecessors and
   gen_wf_successors = gen_wf.successors and
   gen_wf_defs' = gen_wf.defs' and
@@ -131,9 +130,9 @@ lemma gen_ssa_wf_inEdges'_transfer [transfer_rule]: "rel_fun cr_gen_ssa_cfg_wf o
   apply (auto simp: rel_fun_def cr_gen_cfg_wf_def)
   by (erule_tac x=x in allE) simp
 
-permanent_interpretation uninst: CFG_SSA_wf_base_code gen_ssa_wf_\<alpha>e gen_ssa_wf_\<alpha>n gen_wf_invar gen_ssa_wf_inEdges' gen_ssa_wf_Entry gen_ssa_wf_ssa_defs u p
+global_interpretation uninst: CFG_SSA_wf_base_code gen_ssa_wf_\<alpha>e gen_ssa_wf_\<alpha>n gen_wf_invar gen_ssa_wf_inEdges' gen_ssa_wf_Entry gen_ssa_wf_ssa_defs u p
   for u and p
-  defining
+  defines
       uninst_predecessors = uninst.predecessors
   and uninst_successors = uninst.successors
   and uninst_phiDefs = uninst.phiDefs
@@ -182,8 +181,8 @@ lemma defAss'_ign[simp]: "CFG_base.defAss' (ign gen_\<alpha>n g) gen_wf_invar (i
   = CFG_base.defAss' gen_\<alpha>n gen_wf_invar gen_inEdges' gen_Entry gen_defs g"
 by (simp add: CFG_base.defAss'_def [abs_def])
 
-permanent_interpretation gen_ssa_wf_notriv: CFG_SSA_Transformed_notriv_linorder_code gen_ssa_wf_\<alpha>e gen_ssa_wf_\<alpha>n gen_wf_invar gen_ssa_wf_inEdges' gen_ssa_wf_Entry gen_ssa_wf_defs gen_ssa_wf_uses gen_ssa_wf_ssa_defs gen_ssa_wf_ssa_uses gen_ssa_wf_phis gen_ssa_wf_var uninst_chooseNext
-defining
+global_interpretation gen_ssa_wf_notriv: CFG_SSA_Transformed_notriv_linorder_code gen_ssa_wf_\<alpha>e gen_ssa_wf_\<alpha>n gen_wf_invar gen_ssa_wf_inEdges' gen_ssa_wf_Entry gen_ssa_wf_defs gen_ssa_wf_uses gen_ssa_wf_ssa_defs gen_ssa_wf_ssa_uses gen_ssa_wf_phis gen_ssa_wf_var uninst_chooseNext
+defines
   gen_ssa_wf_notriv_substAll = gen_ssa_wf_notriv.substAll and
   gen_ssa_wf_notriv_substAll_efficient = gen_ssa_wf_notriv.substAll_efficient
 apply unfold_locales
@@ -256,9 +255,9 @@ next
   by transfer (clarsimp simp: CFG_SSA_Transformed_code_def CFG_SSA_Transformed_code_axioms_def)
 qed (auto simp: uninst_chooseNext_def uninst_trivial_phis_def CFG_SSA_wf_base_code.trivial_phis_def)
 
-permanent_interpretation uninst_code: CFG_SSA_Transformed_notriv_base_code gen_ssa_wf_\<alpha>e gen_ssa_wf_\<alpha>n gen_wf_invar gen_ssa_wf_inEdges' gen_ssa_wf_Entry gen_ssa_wf_defs gen_ssa_wf_uses gen_ssa_wf_ssa_defs u p gen_ssa_wf_var uninst_chooseNext
+global_interpretation uninst_code: CFG_SSA_Transformed_notriv_base_code gen_ssa_wf_\<alpha>e gen_ssa_wf_\<alpha>n gen_wf_invar gen_ssa_wf_inEdges' gen_ssa_wf_Entry gen_ssa_wf_defs gen_ssa_wf_uses gen_ssa_wf_ssa_defs u p gen_ssa_wf_var uninst_chooseNext
 for u and p
-defining
+defines
   uninst_code_step_code = uninst_code.step_codem and
   uninst_code_phis' = uninst_code.phis'_codem and
   uninst_code_uses' = uninst_code.uses'_codem and

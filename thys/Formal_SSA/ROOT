@@ -14,7 +14,6 @@ theories [document=false]
   "~~/src/HOL/Library/Char_ord"
   "~~/src/HOL/Library/List_lexord"
   "~~/src/HOL/Library/Code_Target_Numeral"
-  "~~/src/Tools/Permanent_Interpretation"
   "../Slicing/While/AdditionalLemmas"
   "../Dijkstra_Shortest_Path/GraphSpec"
 theories [timeout = 1000]

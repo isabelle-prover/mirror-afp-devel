@@ -109,12 +109,12 @@ Then at least one of Q and R does not dominate P. *}
       have[simp]: "var g q = var g r" using phiArg_same_var[OF assms(1)] phiArg_same_var[OF assms(2)] by simp
 
       txt {*  Furthermore, let S be the corresponding predecessor block of P where p is using q. *}
-      obtain S where S: "q \<in> phiUses g S" "S \<in> set (predecessors g (defNode g p))" by (rule phiUses_exI'[OF assms(1)], simp)
+      obtain S where S: "q \<in> phiUses g S" "S \<in> set (old.predecessors g (defNode g p))" by (rule phiUses_exI'[OF assms(1)], simp)
 
       txt {* Then there is a path from the start block crossing Q then R and S. *}
       have "defNode g p \<noteq> defNode g q" using assms(1,3)
         by - (rule phiArg_distinct_nodes, auto)
-      with S have "dominates g (defNode g q) S"
+      with S have "old.dominates g (defNode g q) S"
         by - (rule allUses_dominated, auto)
       then obtain ns where ns: "g \<turnstile> defNode g q-ns\<rightarrow>S" "distinct ns"
         by (rule old.dominates_path, auto elim: old.simple_path2)
@@ -122,11 +122,11 @@ Then at least one of Q and R does not dominate P. *}
       proof-
         have "defNode g r \<noteq> defNode g q" using assms
           by - (rule phiArgs_def_distinct, auto)
-        hence "hd ns \<noteq> defNode g r" using ns by (auto simp:path2_def)
+        hence "hd ns \<noteq> defNode g r" using ns by (auto simp:old.path2_def)
         moreover
         have "defNode g p \<noteq> defNode g r" using assms(2,3)
           by - (rule phiArg_distinct_nodes, auto)
-        with S(2) have "dominates g (defNode g r) S"
+        with S(2) have "old.dominates g (defNode g r) S"
           by - (rule old.dominates_unsnoc[where m="defNode g p"], auto simp:wlog asm assms)
         with wlog have "defNode g r \<in> set ns" using ns(1)
           by (rule old.dominates_mid, auto)
@@ -138,7 +138,7 @@ Then at least one of Q and R does not dominate P. *}
       moreover have "q \<in> allDefs g (defNode g q)" using assms S(1) by simp
       moreover have "r \<in> allDefs g (defNode g r)" using assms S(1) by simp
       ultimately have "var g r \<noteq> var g q" using S(1)
-        by - (rule conventional, auto simp:path2_def distinct_hd_tl)
+        by - (rule conventional, auto simp:old.path2_def distinct_hd_tl)
       hence False by simp
     }
     ultimately show False using assms asm by auto
@@ -160,11 +160,11 @@ Then at least one of Q and R does not dominate P. *}
       b: "v\<^sub>b \<in> defs g b" "var g v\<^sub>b = var g v"
       and conv: "g \<turnstile> a-as\<rightarrow>n" "g \<turnstile> b-bs\<rightarrow>n" "1 < length as" "1 < length bs" "a \<noteq> b" "set (butlast as) \<inter> set (butlast bs) = {}"
       by (auto simp:necessaryPhi_def old.pathsConverge'_def oldDefs_def)
-    have "dominates g (defNode g v) m" using assms(2,3)
+    have "old.dominates g (defNode g v) m" using assms(2,3)
       by - (rule allUses_dominated, auto)
-    hence dom: "dominates g (defNode g v) n" using assms(2,4) 1
+    hence dom: "old.dominates g (defNode g v) n" using assms(2,4) 1
       by - (rule old.dominates_unsnoc', auto)
-    hence "strict_dom g (defNode g v) n" using 1 2 by auto
+    hence "old.strict_dom g (defNode g v) n" using 1 2 by auto
 
     {
       fix v\<^sub>a a as v\<^sub>b b bs
@@ -177,11 +177,11 @@ Then at least one of Q and R does not dominate P. *}
       proof
         assume contr: "defNode g v = a"
 
-        have "a \<in> set (butlast as)" using as by (auto simp:path2_def intro:hd_in_butlast)
+        have "a \<in> set (butlast as)" using as by (auto simp:old.path2_def intro:hd_in_butlast)
         hence "a \<notin> set (butlast bs)" using conv(2) by auto
         moreover
         have "a \<noteq> n" using 1 2 contr by auto
-        hence "a \<noteq> last bs" using bs by (auto simp:path2_def)
+        hence "a \<noteq> last bs" using bs by (auto simp:old.path2_def)
         ultimately have 4: "a \<notin> set bs"
           by - (subst append_butlast_last_id[symmetric], rule old.path2_not_Nil[OF bs], auto)
 
@@ -217,7 +217,7 @@ Then at least one of Q and R does not dominate P. *}
                 by - (subst tl_append2, auto simp: old.path2_not_Nil)
               show "v\<^sub>a \<in> allUses g m" using asm assms(3) by simp
               have "b \<in> set (tl abs)" using abs(1) conv(1)
-                by (auto simp:path2_def intro!:last_in_tl nonsimple_length_gt_1)
+                by (auto simp:old.path2_def intro!:last_in_tl nonsimple_length_gt_1)
               thus "b \<in> set (tl ?path)" using abs(1) by (simp add: old.path2_not_Nil)
             qed (simp_all add: a b)
             thus False using a b by simp
@@ -245,14 +245,14 @@ Then at least one of Q and R does not dominate P. *}
         proof (rule conventional)
           show "g \<turnstile> defNode g v-?path\<rightarrow>m" using eas' as assms(2)
             by (auto simp del:append_Cons append_assoc intro: old.path2_app)
-          show "a \<in> set (tl ?path)" using eas' 3 by (auto simp:path2_def)
+          show "a \<in> set (tl ?path)" using eas' 3 by (auto simp:old.path2_def)
           show "defNode g v \<notin> set (tl ?path)" using assms(4) 1 eas'(2) asm by auto
         qed (simp_all add:1 assms(3) a(1))
         with a(2) show False by simp
       qed
       moreover have "defNode g v \<noteq> n" using 1 2 by auto
       ultimately have "defNode g v \<in> set (butlast as)" using as subsetD[OF set_tl, of "defNode g v" as]
-        by - (rule in_set_butlastI, auto simp:path2_def)
+        by - (rule in_set_butlastI, auto simp:old.path2_def)
     }
     note def_in_as = this
     from def_in_as[OF a conv(1,3) b conv(2)] def_in_as[OF b conv(2,4) a conv(1)] conv(5,6) show False by auto
@@ -288,7 +288,7 @@ Then at least one of Q and R does not dominate P. *}
     obtains xs' ys' z' where "old.pathsConverge g x xs' y ys' z'" "prefixeq xs' xs" "prefixeq ys' ys"
   using assms proof (induction "length xs" arbitrary:xs ys z rule:nat_less_induct)
     case 1
-    from "1.prems"(3,4) have 2: "x \<noteq> y" by (auto simp:path2_def)
+    from "1.prems"(3,4) have 2: "x \<noteq> y" by (auto simp:old.path2_def)
     show thesis
     proof (cases "set (butlast xs) \<inter> set (butlast ys) = {}")
       case True
@@ -298,7 +298,7 @@ Then at least one of Q and R does not dominate P. *}
       case False
       then obtain xs' z' where xs': "g \<turnstile> x-xs'\<rightarrow>z'" "prefixeq xs' (butlast xs)" "z' \<in> set (butlast ys)" "\<forall>a \<in> set (butlast xs'). a \<notin> set (butlast ys)"
         using "1.prems"(2,5) by - (rule old.path2_split_first_prop[of g x "butlast xs" _ "\<lambda>a. a \<in> set (butlast ys)"], auto elim: old.path2_unsnoc)
-      from xs'(3) "1.prems"(3) obtain ys' where ys': "g \<turnstile> y-ys'\<rightarrow>z'" "prefix ys' ys"
+      from xs'(3) "1.prems"(3) obtain ys' where ys': "g \<turnstile> y-ys'\<rightarrow>z'" "Sublist.prefix ys' ys"
         by - (rule old.path2_strict_prefix_ex)
       show ?thesis
       proof (rule "1.hyps"[rule_format, OF _ _ _ xs'(1) ys'(1) assms(3)])
@@ -314,7 +314,7 @@ Then at least one of Q and R does not dominate P. *}
           moreover {
             assume "length xs' = 1"
             with xs'(1,3) have "x \<in> set (butlast ys)"
-              by (auto simp:path2_def simp del:One_nat_def dest!:singleton_list_hd_last)
+              by (auto simp:old.path2_def simp del:One_nat_def dest!:singleton_list_hd_last)
             with "1.prems"(7) have False ..
           }
           ultimately show ?thesis by arith
@@ -326,7 +326,7 @@ Then at least one of Q and R does not dominate P. *}
           moreover {
             assume "length ys' = 1"
             with ys'(1) xs'(1,2) have "y \<in> set (butlast xs)"
-              by (auto simp:path2_def old.path_not_Nil simp del:One_nat_def dest!:singleton_list_hd_last)
+              by (auto simp:old.path2_def old.path_not_Nil simp del:One_nat_def dest!:singleton_list_hd_last)
             with "1.prems"(8) have False ..
           }
           ultimately show ?thesis by arith
@@ -384,9 +384,9 @@ Then at least one of Q and R does not dominate P. *}
       proof (rule equals0I)
         fix x
         assume 1: "x \<in> set (butlast ns\<^sub>1') \<inter> set (butlast ns\<^sub>2')"
-        with set_butlast_distinct[OF ns\<^sub>1'(3)] ns\<^sub>1'(1) have 2: "x \<noteq> defNode g r" by (auto simp:path2_def)
+        with set_butlast_distinct[OF ns\<^sub>1'(3)] ns\<^sub>1'(1) have 2: "x \<noteq> defNode g r" by (auto simp:old.path2_def)
         with 1 ns\<^sub>1'(4) ns\<^sub>2'(4) ns\<^sub>1(2) ns\<^sub>2(2) have "x \<in> set (butlast ns\<^sub>1)" "x \<in> set (butlast ns\<^sub>2)"
-          by - (auto intro!:in_set_butlastI elim:in_set_butlastD simp:path2_def)
+          by - (auto intro!:in_set_butlastI elim:in_set_butlastD simp:old.path2_def)
         with ns show False by auto
       qed
 
@@ -412,7 +412,7 @@ Then at least one of Q and R does not dominate P. *}
           moreover from rs have "defNode g r \<noteq> defNode g s"
             by - (rule phiArgs_def_distinct, auto)
           ultimately have "defNode g r \<in> set (butlast ms\<^sub>1)" "defNode g r \<in> set (butlast ms\<^sub>2)" using True ms\<^sub>1(2) ms\<^sub>2(2)
-            by (auto simp:path2_def intro:in_set_butlastI)
+            by (auto simp:old.path2_def intro:in_set_butlastI)
           with ms show False by auto
         qed
         with ms\<^sub>2 show thesis by (rule that)
@@ -440,9 +440,9 @@ Then at least one of Q and R does not dominate P. *}
         proof-
           from ms'(1) have "m' \<in> set ms'" by auto
           with 2 have "defNode g r \<noteq> m'" by auto
-          with 4 ns\<^sub>1(2) show ?thesis by - (rule in_set_butlastI, auto simp:path2_def)
+          with 4 ns\<^sub>1(2) show ?thesis by - (rule in_set_butlastI, auto simp:old.path2_def)
         qed
-        with ns\<^sub>1(2) obtain ns\<^sub>1' where ns\<^sub>1': "g \<turnstile> n\<^sub>1-ns\<^sub>1'\<rightarrow>m'" "m' \<notin> set (butlast ns\<^sub>1')" "prefix ns\<^sub>1' ns\<^sub>1"
+        with ns\<^sub>1(2) obtain ns\<^sub>1' where ns\<^sub>1': "g \<turnstile> n\<^sub>1-ns\<^sub>1'\<rightarrow>m'" "m' \<notin> set (butlast ns\<^sub>1')" "Sublist.prefix ns\<^sub>1' ns\<^sub>1"
           by - (rule old.path2_strict_prefix_ex)
         have thesis
         proof (rule that[OF ns\<^sub>2(1,2), OF ns\<^sub>1(1), of "ns\<^sub>1'@tl ms'"])
@@ -457,7 +457,7 @@ Then at least one of Q and R does not dominate P. *}
               hence 4: "x \<in> set (butlast ns\<^sub>1)" using ns\<^sub>1'(3) by (auto dest:set_mono_prefix)
               with ns\<^sub>1(3) have "x \<noteq> defNode g r" by auto
               with ns\<^sub>2(2) x have "x \<in> set (butlast ns\<^sub>2)"
-                by - (rule in_set_butlastI, auto simp:path2_def)
+                by - (rule in_set_butlastI, auto simp:old.path2_def)
               with 4 ns show False by auto
             next
               case False
@@ -533,9 +533,9 @@ from a direct assignment of v to p.
         by (auto simp:oldDefs_def)
 
       txt {* They converge at P or earlier. *}
-      obtain ns' n' where ns': "g \<turnstile> ?R-ns'\<rightarrow>n'" "r \<in> phiUses g n'" "n' \<in> set (predecessors g ?P)" "?R \<notin> set (tl ns')"
+      obtain ns' n' where ns': "g \<turnstile> ?R-ns'\<rightarrow>n'" "r \<in> phiUses g n'" "n' \<in> set (old.predecessors g ?P)" "?R \<notin> set (tl ns')"
         by (rule phiArg_path_ex'[OF rs(1)], auto elim: old.simple_path2)
-      obtain ms' m' where ms': "g \<turnstile> ?S-ms'\<rightarrow>m'" "s \<in> phiUses g m'" "m' \<in> set (predecessors g ?P)" "?S \<notin> set (tl ms')"
+      obtain ms' m' where ms': "g \<turnstile> ?S-ms'\<rightarrow>m'" "s \<in> phiUses g m'" "m' \<in> set (old.predecessors g ?P)" "?S \<notin> set (tl ms')"
         by (rule phiArg_path_ex'[OF rs(2)], auto elim: old.simple_path2)
 
       let ?left = "(ns@tl ns')@[?P]"
@@ -585,7 +585,7 @@ from a direct assignment of v to p.
         {
           fix r ns' n'
           let ?R = "defNode g r"
-          assume ns': "g \<turnstile> ?R-ns'\<rightarrow>n'" "r \<in> phiUses g n'" "n' \<in> set (predecessors g (?P))" "?R \<notin> set (tl ns')"
+          assume ns': "g \<turnstile> ?R-ns'\<rightarrow>n'" "r \<in> phiUses g n'" "n' \<in> set (old.predecessors g (?P))" "?R \<notin> set (tl ns')"
           assume rs: "var g r = var g p"
           have "z \<notin> set (tl ns')"
           proof
@@ -636,7 +636,7 @@ this be r. *}
       have[simp]: "s \<in> allVars g" using rs by auto
 
       have thesis
-      proof (cases "dominates g ?R ?P")
+      proof (cases "old.dominates g ?R ?P")
         case False
 
         txt {* If R does not dominate P, then r is the sought-after q. *}
@@ -646,7 +646,7 @@ this be r. *}
 
         txt {* So let R dominate P.
 Due to Lemma 2, S does not dominate P. *}
-        hence 4: "\<not>dominates g ?S ?P" using 2[OF rs] by simp
+        hence 4: "\<not>old.dominates g ?S ?P" using 2[OF rs] by simp
 
         txt {* Employing the SSA property, r /= p
 yields R /= P. *}
@@ -658,15 +658,15 @@ yields R /= P. *}
         qed auto
 
         txt {* Thus, R strictly dominates P. *}
-        hence "strict_dom g ?R ?P" using True by simp
+        hence "old.strict_dom g ?R ?P" using True by simp
 
         txt {* This implies that R dominates all
 predecessors of P, which contain the uses of p, especially the predecessor S' that
 contains the use of s. *}
         moreover obtain ss' S' where ss': "g \<turnstile> ?S-ss'\<rightarrow>S'"
-          and S': "s \<in> phiUses g S'" "S' \<in> set (predecessors g ?P)"
+          and S': "s \<in> phiUses g S'" "S' \<in> set (old.predecessors g ?P)"
           by (rule phiArg_path_ex'[OF rs(2)], simp)
-        ultimately have 5: "dominates g ?R S'" by - (rule old.dominates_unsnoc, auto)
+        ultimately have 5: "old.dominates g ?R S'" by - (rule old.dominates_unsnoc, auto)
 
         txt {* Due to the SSA property, there is a path from S to S' that
 does not contain R. *}
@@ -675,7 +675,7 @@ does not contain R. *}
           by - (rule conventional'[where v=s and v'=r], auto simp del: phiArg_def)
 
         txt {* Employing R dominates S' this yields R dominates S. *}
-        hence dom: "dominates g ?R ?S" using 5 ss' by - (rule old.dominates_extend)
+        hence dom: "old.dominates g ?R ?S" using 5 ss' by - (rule old.dominates_extend)
 
         txt {* Now assume that s is necessary. *}
         have "unnecessaryPhi g s"
@@ -687,7 +687,7 @@ does not contain R. *}
             by - (rule allDef_path_from_simpleDef[of r g], auto simp del: phiArg_def)
           then obtain X xs where xs: "g \<turnstile> X-xs\<rightarrow>?R" "var g r \<in> oldDefs g X" "\<forall>x \<in> set (tl xs). var g r \<notin> oldDefs g x" "old.EntryPath g xs"
             by - (rule old.path2_split_last_prop[OF xs(1), of "\<lambda>x. var g r \<in> oldDefs g x"], auto dest: old.EntryPath_suffixeq)
-          then obtain x where x: "x \<in> defs g X" "var g x = var g r" by (auto simp: oldDefs_def path2_def)
+          then obtain x where x: "x \<in> defs g X" "var g x = var g r" by (auto simp: oldDefs_def old.path2_def)
           hence[simp]: "X = defNode g x" using xs by - (rule defNode_eq[symmetric], auto)
           from xs obtain xs where xs: "g \<turnstile> X-xs\<rightarrow>?R" "X \<notin> set (tl xs)" "old.EntryPath g xs"
             by - (rule old.simple_path2, auto dest: old.EntryPath_suffixeq)
@@ -728,7 +728,7 @@ one of these definitions is contained in a block Y on a path $R \rightarrow^+ S$
           hence[simp]: "Y = defNode g y" using ys by - (rule defNode_eq[symmetric], auto)
 
           obtain rr' R' where "g \<turnstile> ?R-rr'\<rightarrow>R'"
-            and R': "r \<in> phiUses g R'" "R' \<in> set (predecessors g ?P)"
+            and R': "r \<in> phiUses g R'" "R' \<in> set (old.predecessors g ?P)"
             by (rule phiArg_path_ex'[OF rs(1)], simp)
           then obtain rr' where rr': "g \<turnstile> ?R-rr'\<rightarrow>R'" "?R \<notin> set (tl rr')" by - (rule old.simple_path2)
           with R' obtain rr where rr: "g \<turnstile> ?R-rr\<rightarrow>?P" and[simp]: "rr = rr' @ [?P]" by (auto intro: old.path2_snoc)
@@ -765,7 +765,7 @@ contradiction, s is unnecessary and the sought-after q. *}
                 moreover
                 from ys asm(2) obtain ys' where ys': "g \<turnstile> z-ys'\<rightarrow>?S" "suffixeq ys' ys"
                   by - (rule old.path2_split_ex, auto simp: suffixeq_def)
-                have "dominates g ?R z" using ys(2) set_tl[of ys] suffixeq_tl_subset[OF ys'(2)]
+                have "old.dominates g ?R z" using ys(2) set_tl[of ys] suffixeq_tl_subset[OF ys'(2)]
                   by - (rule old.dominates_extend[OF dom ys'(1)], auto)
                 hence "old.shortestPath g ?R \<le> old.shortestPath g z"
                   by (rule old.dominates_shortestPath_order, auto)
@@ -778,16 +778,16 @@ contradiction, s is unnecessary and the sought-after q. *}
                 moreover
                 from asm(2) obtain ss\<^sub>2 where ss\<^sub>2: "g \<turnstile> z-ss\<^sub>2\<rightarrow>S'" "set (tl ss\<^sub>2) \<subseteq> set (tl ss')"
                   using set_tl[of ss'] by - (rule old.path2_split_ex[OF ss'(1)], auto simp: old.path2_not_Nil dest: in_set_butlastD)
-                from S'(1) ss'(1) have "dominates g ?S S'" by - (rule allUses_dominated, auto)
-                hence "dominates g ?S z" using ss'(2) ss\<^sub>2(2)
+                from S'(1) ss'(1) have "old.dominates g ?S S'" by - (rule allUses_dominated, auto)
+                hence "old.dominates g ?S z" using ss'(2) ss\<^sub>2(2)
                   by - (rule old.dominates_extend[OF _ ss\<^sub>2(1)], auto)
-                with dom have "dominates g ?R z" by auto
+                with dom have "old.dominates g ?R z" by auto
                 hence "old.shortestPath g ?R \<le> old.shortestPath g z"
                   by - (rule old.dominates_shortestPath_order, auto)
                 ultimately have False by simp
               }
               moreover
-              have "?R \<noteq> Y" using ys by (auto simp:path2_def)
+              have "?R \<noteq> Y" using ys by (auto simp:old.path2_def)
               with ys'(1) have 1: "length ys' > 1" by (rule old.path2_nontriv)
               {
                 assume asm: "z \<in> set rr'" "z \<in> set ys"
@@ -803,7 +803,7 @@ contradiction, s is unnecessary and the sought-after q. *}
                   show "r \<in> allUses g R'" using R' by auto
 
                   thus "Y \<in> set (tl ?path)" using ys'(1) 1
-                    by (auto simp:path2_def old.path2_not_Nil intro:last_in_tl)
+                    by (auto simp:old.path2_def old.path2_not_Nil intro:last_in_tl)
                   show "y \<in> allDefs g Y" using y by simp
                   show "defNode g r \<notin> set (tl ?path)"
                     using ys' ys\<^sub>1(1) ys(2) rr\<^sub>2(2) rr'(2) prefixeq_tl_subset[OF ys\<^sub>1(2)] set_tl[of ys] by (auto simp: old.path2_not_Nil)
@@ -838,7 +838,7 @@ contradiction, s is unnecessary and the sought-after q. *}
             qed
           qed
           hence "necessaryPhi' g p" using xs oldDefsI[OF x(1)] x(2) oldDefsI[OF y(1)] y(2)
-            by - (rule necessaryPhiI[where v="var g p"], assumption, auto simp:path2_def)
+            by - (rule necessaryPhiI[where v="var g p"], assumption, auto simp:old.path2_def)
           with assms(1) show False by auto
         qed
         thus ?thesis using rs(2) 4 by - (rule that)
@@ -886,12 +886,12 @@ number of operations, there must be a cycle when following the q chain. *}
 
       txt {* A cycle in the $\phi$ functions implies a cycle in G. *}
       then obtain ns where ns: "g \<turnstile> defNode g q-ns\<rightarrow>defNode g q" "length ns > 1"
-        "\<forall>n \<in> set (butlast ns). \<exists>p q m ns'. ?r p q \<and> g \<turnstile> defNode g q-ns'\<rightarrow>m \<and> (defNode g q) \<notin> set (tl ns') \<and> q \<in> phiUses g m \<and> m \<in> set (predecessors g (defNode g p)) \<and> n \<in> set ns' \<and> set ns' \<subseteq> set ns \<and> defNode g p \<in> set ns"
+        "\<forall>n \<in> set (butlast ns). \<exists>p q m ns'. ?r p q \<and> g \<turnstile> defNode g q-ns'\<rightarrow>m \<and> (defNode g q) \<notin> set (tl ns') \<and> q \<in> phiUses g m \<and> m \<in> set (old.predecessors g (defNode g p)) \<and> n \<in> set ns' \<and> set ns' \<subseteq> set ns \<and> defNode g p \<in> set ns"
         by - (rule phiArg_tranclp_path_ex[where r="?r"], auto simp: tranclp_unfold)
 
       txt {* As G is reducible, the control flow
 cycle contains one entry block, which dominates all other blocks in the cycle. *}
-      obtain n where n: "n \<in> set ns" "\<forall>m \<in> set ns. dominates g n m"
+      obtain n where n: "n \<in> set ns" "\<forall>m \<in> set ns. old.dominates g n m"
         using assms(1)[unfolded old.reducible_def, rule_format, OF ns(1)] by auto
 
       txt {* Without loss of generality, let q be in the entry block, which means it dominates p. *}
@@ -901,13 +901,13 @@ cycle contains one entry block, which dominates all other blocks in the cycle. *
         with n(1) show ?thesis by (rule in_set_butlastI)
       next
         case True
-        with ns(1) have "n = hd ns" by (auto simp: path2_def)
+        with ns(1) have "n = hd ns" by (auto simp: old.path2_def)
         with ns(2) show ?thesis by - (auto intro: hd_in_butlast)
       qed
-      then obtain p q ns' m where ns': "?r p q" "g \<turnstile> defNode g q-ns'\<rightarrow>m" "defNode g q \<notin> set (tl ns')" "q \<in> phiUses g m" "m \<in> set (predecessors g (defNode g p))" "n \<in> set ns'" "set ns' \<subseteq> set ns" "defNode g p \<in> set ns"
+      then obtain p q ns' m where ns': "?r p q" "g \<turnstile> defNode g q-ns'\<rightarrow>m" "defNode g q \<notin> set (tl ns')" "q \<in> phiUses g m" "m \<in> set (old.predecessors g (defNode g p))" "n \<in> set ns'" "set ns' \<subseteq> set ns" "defNode g p \<in> set ns"
         by - (drule ns(3)[THEN bspec], auto)
-      hence "dominates g (defNode g q) n" by - (rule defUse_path_dominated, auto)
-      moreover from ns' n(2) have n_dom: "dominates g n (defNode g q)" "dominates g n (defNode g p)" by - (auto elim!:bspec)
+      hence "old.dominates g (defNode g q) n" by - (rule defUse_path_dominated, auto)
+      moreover from ns' n(2) have n_dom: "old.dominates g n (defNode g q)" "old.dominates g n (defNode g p)" by - (auto elim!:bspec)
       ultimately have "defNode g q = n" by auto
 
       txt {* Therefore, our assumption is wrong and G is either in minimal SSA form or there exist trivial $\phi$ functions. *}

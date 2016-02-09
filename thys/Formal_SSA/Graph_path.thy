@@ -89,7 +89,7 @@ begin
   abbreviation pred_list_it  where "pred_list_it \<equiv> gop_pred_list_it ops"
 end
 
-locale StdGraph = StdGraphDefs + org!:StdGraph +
+locale StdGraph = StdGraphDefs + org:StdGraph +
   graph_pred_it \<alpha> invar pred_list_it
 
 locale graph_path_base =
@@ -121,6 +121,7 @@ begin
 
   declare predecessors_def [code]
 
+  declare [[inductive_internals]]
   inductive path :: "'g \<Rightarrow> 'node list \<Rightarrow> bool"
     for g :: 'g
   where
@@ -136,8 +137,8 @@ end
 locale graph_path =
   graph_path_base \<alpha>e \<alpha>n invar inEdges' +
   graph \<alpha> invar +
-  ni!: graph_nodes_it \<alpha> invar "\<lambda>g. foldri (\<alpha>n g)" +
-  pi!: graph_pred_it \<alpha> invar "\<lambda>g n. foldri (inEdges' g n)"
+  ni: graph_nodes_it \<alpha> invar "\<lambda>g. foldri (\<alpha>n g)" +
+  pi: graph_pred_it \<alpha> invar "\<lambda>g n. foldri (inEdges' g n)"
 for
   \<alpha>e :: "'g \<Rightarrow> ('node \<times> 'edgeD \<times> 'node) set" and
   \<alpha>n :: "'g \<Rightarrow> 'node list" and
@@ -642,10 +643,10 @@ begin
 
   lemma path2_strict_prefix_ex:
     assumes "g \<turnstile> n-ns\<rightarrow>m" "m' \<in> set (butlast ns)"
-    obtains ns' where "g \<turnstile> n-ns'\<rightarrow>m'" "prefix ns' ns" "m' \<notin> set (butlast ns')"
+    obtains ns' where "g \<turnstile> n-ns'\<rightarrow>m'" "Sublist.prefix ns' ns" "m' \<notin> set (butlast ns')"
   proof-
     from assms(2) obtain ns' where ns': "prefixeq (ns'@[m']) (butlast ns)" "m' \<notin> set ns'" by (rule prefix_split_first)
-    hence "prefix (ns'@[m']) ns" using assms by - (rule strict_prefix_butlast, auto)
+    hence "Sublist.prefix (ns'@[m']) ns" using assms by - (rule strict_prefix_butlast, auto)
     with assms(1) ns'(2) show thesis by - (rule that, auto)
   qed
 
@@ -1031,7 +1032,7 @@ begin
     also have "length sns' < length sns"
     proof-
       from assms(1) sns(1) sns'(1) have "sns' \<noteq> sns" by -(drule path2_last, drule path2_last, auto)
-      with sns'(2) have "prefix sns' sns" by auto
+      with sns'(2) have "Sublist.prefix sns' sns" by auto
       thus ?thesis by (rule prefixeq_length_less)
     qed
     finally show ?thesis by (simp add:sns(2))

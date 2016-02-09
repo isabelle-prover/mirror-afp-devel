@@ -78,12 +78,12 @@ begin
     from triv obtain vs where vs: "phi g v = Some vs" "(set vs = {v'} \<or> set vs = {v,v'})" by (auto simp:isTrivialPhi_def split:option.splits)
     hence "?n \<noteq> Entry g" by auto
 
-    have other_preds_dominated: "\<And>m. m \<in> set (predecessors g ?n) \<Longrightarrow> v' \<notin> phiUses g m \<Longrightarrow> dominates g ?n m"
+    have other_preds_dominated: "\<And>m. m \<in> set (old.predecessors g ?n) \<Longrightarrow> v' \<notin> phiUses g m \<Longrightarrow> old.dominates g ?n m"
     proof-
       fix m
-      assume m: "m \<in> set (predecessors g ?n)" "v' \<notin> phiUses g m"
+      assume m: "m \<in> set (old.predecessors g ?n)" "v' \<notin> phiUses g m"
       hence[simp]: "m \<in> set (\<alpha>n g)" by auto
-      show "dominates g ?n m"
+      show "old.dominates g ?n m"
       proof (cases "v \<in> phiUses g m")
         case True
         hence "v \<in> allUses g m" by simp
@@ -98,27 +98,27 @@ begin
     show "?n' \<noteq> ?n"
     proof (rule notI)
       assume asm: "?n' = ?n"
-      have "\<And>m. m \<in> set (predecessors g ?n) \<Longrightarrow> v' \<in> phiUses g m \<Longrightarrow> dominates g ?n m"
+      have "\<And>m. m \<in> set (old.predecessors g ?n) \<Longrightarrow> v' \<in> phiUses g m \<Longrightarrow> old.dominates g ?n m"
       proof-
         fix m
-        assume "m \<in> set (predecessors g ?n)" "v' \<in> phiUses g m"
-        hence "dominates g ?n' m" by - (rule allUses_dominated, auto)
+        assume "m \<in> set (old.predecessors g ?n)" "v' \<in> phiUses g m"
+        hence "old.dominates g ?n' m" by - (rule allUses_dominated, auto)
         thus "?thesis m" by (simp add:asm)
       qed
       with non_dominated_predecessor[of ?n g] other_preds_dominated `?n \<noteq> Entry g` show False by auto
     qed
 
-    show "dominates g ?n' ?n"
+    show "old.dominates g ?n' ?n"
     proof
       fix ns
       assume asm: "g \<turnstile> Entry g-ns\<rightarrow>?n"
       from `?n \<noteq> Entry g` obtain m ns'
-        where ns': "g \<turnstile> Entry g-ns'\<rightarrow>m" "m \<in> set (predecessors g ?n)" "?n \<notin> set ns'" "set ns' \<subseteq> set ns"
+        where ns': "g \<turnstile> Entry g-ns'\<rightarrow>m" "m \<in> set (old.predecessors g ?n)" "?n \<notin> set ns'" "set ns' \<subseteq> set ns"
         by - (rule old.simple_path2_unsnoc[OF asm], auto)
       hence[simp]: "m \<in> set (\<alpha>n g)" by auto
-      from ns' have "\<not>dominates g ?n m" by (auto elim:old.dominatesE)
+      from ns' have "\<not>old.dominates g ?n m" by (auto elim:old.dominatesE)
       with other_preds_dominated[of m] ns'(2) have "v' \<in> phiUses g m" by auto
-      hence "dominates g ?n' m" by - (rule allUses_dominated, auto)
+      hence "old.dominates g ?n' m" by - (rule allUses_dominated, auto)
       with ns'(1) have "?n' \<in> set ns'" by - (erule old.dominatesE)
       with ns'(4) show "?n' \<in> set ns" by auto
     qed auto
@@ -173,13 +173,13 @@ begin
       case False
       thus ?thesis using v v' defs_uses_disjoint[of n g] by (auto simp:substNext_def split:split_if_asm)
     next
-      case True[simp]
+      case [simp]: True
       from v' have n_defNode: "n = defNode g v'" by - (rule defNode_eq[symmetric], auto)
       from v(1) have[simp]: "v \<in> allVars g" by - (rule allUses_in_allVars[where n=n], auto)
       let ?n' = "defNode g v"
-      have "strict_dom g n ?n'"
+      have "old.strict_dom g n ?n'"
         by (simp only:n_defNode v(2), rule trivialPhi_strict_dom, auto simp:substNext_def)
-      moreover from v(1) have "dominates g ?n' n" by - (rule allUses_dominated, auto)
+      moreover from v(1) have "old.dominates g ?n' n" by - (rule allUses_dominated, auto)
       ultimately show False by auto
     qed
   qed
@@ -272,7 +272,7 @@ begin
   abbreviation "u_g \<equiv> uses(g:=uses' g)"
   abbreviation "p_g \<equiv> phis(g:=phis' g)"
 
-  sublocale step!: CFG_SSA_Transformed_notriv_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u_g p_g var chooseNext_all .
+  sublocale step: CFG_SSA_Transformed_notriv_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u_g p_g var chooseNext_all .
 
   lemma simpleDefs_phiDefs_disjoint_inv:
     assumes "n \<in> set (\<alpha>n g)"
@@ -292,11 +292,11 @@ begin
 
   lemma phis_wf_inv:
     assumes "phis' g (n, v) = Some args"
-    shows "length (predecessors g n) = length args"
+    shows "length (old.predecessors g n) = length args"
   using phis_wf[of g] assms by (auto split:split_if_asm)
 
 
-  sublocale step!: CFG_SSA \<alpha>e \<alpha>n invar inEdges' Entry "defs" u_g p_g
+  sublocale step: CFG_SSA \<alpha>e \<alpha>n invar inEdges' Entry "defs" u_g p_g
   apply unfold_locales
   apply (rename_tac g')
   apply (case_tac "g'=g")
@@ -332,12 +332,12 @@ begin
     assumes "n \<in> set (\<alpha>n g)"
     shows "step.allUses g n \<subseteq> substNext g ` allUses g n"
   proof-
-    have "\<And>n' v' z b. phis g (n', v') = Some z \<Longrightarrow> (n, b) \<in> set (zip (predecessors g n') z) \<Longrightarrow> b \<notin> phiUses g n \<Longrightarrow> b \<in> uses g n"
+    have "\<And>n' v' z b. phis g (n', v') = Some z \<Longrightarrow> (n, b) \<in> set (zip (old.predecessors g n') z) \<Longrightarrow> b \<notin> phiUses g n \<Longrightarrow> b \<in> uses g n"
     proof-
       fix n' v' z b
-      assume "(n, b) \<in> set (zip (predecessors g n') (z :: 'val list))"
+      assume "(n, b) \<in> set (zip (old.predecessors g n') (z :: 'val list))"
       with assms(1) have "n' \<in> set (\<alpha>n g)" by auto
-      thus "phis g (n', v') = Some z \<Longrightarrow> (n, b) \<in> set (zip (predecessors g n') z) \<Longrightarrow> b \<notin> phiUses g n \<Longrightarrow> b \<in> uses g n" by (auto intro:phiUsesI)
+      thus "phis g (n', v') = Some z \<Longrightarrow> (n, b) \<in> set (zip (old.predecessors g n') z) \<Longrightarrow> b \<notin> phiUses g n \<Longrightarrow> b \<in> uses g n" by (auto intro:phiUsesI)
     qed
     thus ?thesis by (auto simp:step.allUses_def allUses_def zip_map2 intro!:imageI elim!:step.phiUsesE phiUsesE split:split_if_asm)
   qed
@@ -376,7 +376,7 @@ begin
       qed
       ultimately show ?thesis by auto
     next
-      case False[simp]
+      case [simp]: False
       have[simp]: "v' = v" by (simp add:v' substNext_def)
       have "v \<in> allDefs g ?n\<^sub>v" by simp
       thus ?thesis by - (rule bexI[of _ ?n\<^sub>v\<^sub>'], auto simp:allDefs_def step.allDefs_def step.phiDefs_def 1 phiDefs_def)
@@ -386,7 +386,7 @@ begin
   lemma Entry_no_phis_inv: "phis' g (Entry g, v) = None"
   by (simp add:Entry_no_phis)
 
-  sublocale step!: CFG_SSA_wf \<alpha>e \<alpha>n invar inEdges' Entry "defs" u_g p_g
+  sublocale step: CFG_SSA_wf \<alpha>e \<alpha>n invar inEdges' Entry "defs" u_g p_g
   apply unfold_locales
   apply (rename_tac g' n)
   apply (case_tac "g'=g")
@@ -434,7 +434,7 @@ begin
     next
       case True
       hence dom: "strict_def_dom g v v\<^sub>0" using substitution[of g] by - (rule trivialPhi_strict_dom, simp_all add:substNext_def v\<^sub>0)
-      from v\<^sub>0(2) have "dominates g ?n\<^sub>0 m" using assms(1) by - (rule allUses_dominated, auto)
+      from v\<^sub>0(2) have "old.dominates g ?n\<^sub>0 m" using assms(1) by - (rule allUses_dominated, auto)
       with assms(1) dom have "?n\<^sub>0 \<in> set ns" by - (rule old.dominates_mid, auto)
       with assms(1) obtain ns\<^sub>1 ns\<^sub>3 ns\<^sub>2 where
         ns: "ns = ns\<^sub>1@ns\<^sub>3@ns\<^sub>2" and
@@ -444,11 +444,11 @@ begin
       have[simp]: "ns\<^sub>1 \<noteq> []"
       proof
         assume "ns\<^sub>1 = []"
-        hence "?n\<^sub>0 = n" "hd ns = n" using assms(1) ns\<^sub>3 by (auto simp:ns path2_def)
+        hence "?n\<^sub>0 = n" "hd ns = n" using assms(1) ns\<^sub>3 by (auto simp:ns old.path2_def)
         thus False by (metis `n = defNode g v` dom)
       qed
       hence "length (ns\<^sub>1@[?n\<^sub>0]) \<ge> 2" by (cases ns\<^sub>1, auto)
-      with ns\<^sub>1 have 1: "g \<turnstile> n-ns\<^sub>1\<rightarrow>last ns\<^sub>1" "last ns\<^sub>1 \<in> set (predecessors g ?n\<^sub>0)" by - (erule old.path2_unsnoc, simp, simp, erule old.path2_unsnoc, auto)
+      with ns\<^sub>1 have 1: "g \<turnstile> n-ns\<^sub>1\<rightarrow>last ns\<^sub>1" "last ns\<^sub>1 \<in> set (old.predecessors g ?n\<^sub>0)" by - (erule old.path2_unsnoc, simp, simp, erule old.path2_unsnoc, auto)
       from `v\<^sub>0 = chooseNext g` v\<^sub>0 have triv: "isTrivialPhi g v\<^sub>0 v" using substitution[of g] by (auto simp:substNext_def)
       then obtain vs where vs: "phi g v\<^sub>0 = Some vs" "set vs = {v\<^sub>0,v} \<or> set vs = {v}" by (auto simp:isTrivialPhi_def split:option.splits)
       hence[simp]: "var g v\<^sub>0 = var g v" by - (rule phiArg_same_var[symmetric], auto simp: phiArg_def)
@@ -460,7 +460,7 @@ begin
           assume asm: "v\<^sub>0 \<in> phiUses g (last ns\<^sub>1)"
           from True have "last ns\<^sub>1 \<in> set ns\<^sub>1" by - (rule last_in_set, auto)
           hence "last ns\<^sub>1 \<in> set (\<alpha>n g)" by - (rule old.path2_in_\<alpha>n[OF ns\<^sub>1(1)], auto)
-          with asm ns\<^sub>1 have "dominates g ?n\<^sub>0 (last ns\<^sub>1)" by - (rule allUses_dominated, auto)
+          with asm ns\<^sub>1 have "old.dominates g ?n\<^sub>0 (last ns\<^sub>1)" by - (rule allUses_dominated, auto)
           moreover have "strict_def_dom g v v\<^sub>0" using triv by - (rule trivialPhi_strict_dom, auto)
           ultimately have "?n\<^sub>0 \<in> set ns\<^sub>1" using 1(1) by - (rule old.dominates_mid, auto)
           with ns\<^sub>1(2) show False ..
@@ -476,7 +476,7 @@ begin
         case False
         show ?thesis
         proof (cases "var g v' = var g v\<^sub>0")
-          case True[simp]
+          case [simp]: True
           {
             assume asm: "x \<in> set ns\<^sub>3"
             with assms(6)[THEN allDefs_narrows] have[simp]: "x = defNode g v'"
@@ -494,7 +494,7 @@ begin
                 by - (rule old.path2_simple_loop, auto)
               with `x \<noteq> ?n\<^sub>0` have "length ns\<^sub>3 > 1"
                 by (metis empty_iff graph_path_base.path2_def hd_Cons_tl insert_iff length_greater_0_conv length_tl list.set(1) list.set(2) zero_less_diff)
-              with ns\<^sub>3 obtain ns' m where ns': "g \<turnstile> ?n\<^sub>0-ns'\<rightarrow>m" "m \<in> set (predecessors g ?n\<^sub>0)" "ns' = butlast ns\<^sub>3"
+              with ns\<^sub>3 obtain ns' m where ns': "g \<turnstile> ?n\<^sub>0-ns'\<rightarrow>m" "m \<in> set (old.predecessors g ?n\<^sub>0)" "ns' = butlast ns\<^sub>3"
                 by - (rule old.path2_unsnoc, auto)
               with vs ns\<^sub>3 have "v \<in> phiUses g m \<or> v\<^sub>0 \<in> phiUses g m"
                 by - (rule phiUses_exI[of m g ?n\<^sub>0 v\<^sub>0 vs], auto simp:phi_def)
@@ -507,14 +507,14 @@ begin
                   moreover have "n \<notin> set ns'" using ns'(3) ns\<^sub>3(4) assms(2) by (auto dest: in_set_butlastD)
                   ultimately show "n \<notin> set (tl (ns\<^sub>1 @ ns'))" by simp
                   show "v \<in> allDefs g n" using `v \<in> allDefs g n` .
-                  show "?n\<^sub>0 \<in> set (tl (ns\<^sub>1 @ ns'))" using ns'(1) by (auto simp: path2_def)
+                  show "?n\<^sub>0 \<in> set (tl (ns\<^sub>1 @ ns'))" using ns'(1) by (auto simp: old.path2_def)
                 qed (auto simp: `v \<in> phiUses g m`)
                 hence False by simp
               }
               moreover {
                 assume "v\<^sub>0 \<in> phiUses g m"
                 moreover from ns\<^sub>3(1,3) `x \<noteq> ?n\<^sub>0` `length ns\<^sub>3 > 1` have "x \<in> set (tl (butlast ns\<^sub>3))"
-                  by (cases ns\<^sub>3, auto simp: path2_def intro: in_set_butlastI)
+                  by (cases ns\<^sub>3, auto simp: old.path2_def intro: in_set_butlastI)
                 ultimately have "var g v' \<noteq> var g v\<^sub>0"
                   using assms(6)[THEN allDefs_narrows] ns\<^sub>3(2,3) ns'(3) by - (rule conventional[OF ns'(1)], auto)
                 hence False by simp
@@ -580,7 +580,7 @@ begin
    apply (simp add:allDefs_var_disjoint[unfolded allDefs_def phiDefs_def, simplified] step.allDefs_def step.phiDefs_def)
   by (rule chooseNext_all)
 
-  sublocale step!: CFG_SSA_Transformed_notriv \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u_g p_g var chooseNext_all
+  sublocale step: CFG_SSA_Transformed_notriv \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u_g p_g var chooseNext_all
   by (rule step_CFG_SSA_Transformed_notriv)
 
   lemma step_defNode: "v \<in> allVars g \<Longrightarrow> v \<noteq> chooseNext g \<Longrightarrow> step.defNode g v = defNode g v"
@@ -612,7 +612,7 @@ begin
           thus thesis by - (rule "1.prems"(1), rule step.livePhi', rule asm)
         qed (auto simp: livePhi' False[symmetric])
       next
-        case True[simp]
+        case [simp]: True
         with "1.prems"(3) have[simp]: "v \<noteq> v'" by simp
         from True have "trivial g v'" using chooseNext[OF redundant] by auto
         with `phiArg g v' v` have "isTrivialPhi g v' v" by (auto simp: phiArg_def trivial_def isTrivialPhi_def)
@@ -671,7 +671,7 @@ begin
   abbreviation "inst g u p \<equiv> CFG_SSA_Transformed_notriv \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses defs (uses(g:=u)) (phis(g:=p)) var chooseNext_all"
   abbreviation "inst' g \<equiv> \<lambda>(u,p). inst g u p"
 
-  interpretation uninst!: CFG_SSA_Transformed_notriv_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u p var chooseNext_all
+  interpretation uninst: CFG_SSA_Transformed_notriv_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u p var chooseNext_all
   for u and p
   by unfold_locales
 
@@ -723,10 +723,10 @@ begin
       and "CFG_SSA_wf_base.redundant \<alpha>n inEdges' defs (uses(g:=u)) (phis(g:=p)) g"
     shows "inst' g (step g (u,p))"
   proof-
-    from assms(1) interpret i!: CFG_SSA_Transformed_notriv \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses(g:=u)" "phis(g:=p)" var
+    from assms(1) interpret i: CFG_SSA_Transformed_notriv \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses(g:=u)" "phis(g:=p)" var
     by simp
 
-    from assms(2) interpret step!: CFG_SSA_step \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses(g:=u)" "phis(g:=p)" var chooseNext_all
+    from assms(2) interpret step: CFG_SSA_step \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses(g:=u)" "phis(g:=p)" var chooseNext_all
     by unfold_locales
 
     show ?thesis using step.step_CFG_SSA_Transformed_notriv[simplified] by (simp add: step_def)
@@ -757,7 +757,7 @@ begin
          proof-
            fix u p
            assume "inst g u p"
-           then interpret i!: CFG_SSA_Transformed_notriv \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses(g:=u)" "phis(g:=p)" by simp
+           then interpret i: CFG_SSA_Transformed_notriv \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses(g:=u)" "phis(g:=p)" by simp
            assume "i.redundant g"
            thus "card (dom (i.phis' g)) < card (dom p)" by (rule i.substAll_wf[of g, simplified])
          qed
@@ -767,14 +767,14 @@ begin
   qed
 
 
-  sublocale notriv!: CFG_SSA_Transformed \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" uses'_all phis'_all
+  sublocale notriv: CFG_SSA_Transformed \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" uses'_all phis'_all
   proof-
     interpret ssa: CFG_SSA \<alpha>e \<alpha>n invar inEdges' Entry "defs" uses'_all phis'_all
     proof
       fix g
       interpret i: CFG_SSA_Transformed_notriv \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses(g:=uses'_all g)" "phis(g:=phis'_all g)" var
       by (rule substAll, auto)
-      interpret uninst!: CFG_SSA_Transformed_notriv_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u p var chooseNext_all
+      interpret uninst: CFG_SSA_Transformed_notriv_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u p var chooseNext_all
       for u and p
       by unfold_locales
 
@@ -785,13 +785,13 @@ begin
       show "invar g" by (rule invar) 
       show "finite (dom (phis'_all g))" by (rule i.phis_finite[of g, simplified])
       show "phis'_all g (n, v) = Some args \<Longrightarrow> n \<in> set (\<alpha>n g)" using i.phis_in_\<alpha>n[of g] by simp
-      show "phis'_all g (n, v) = Some args \<Longrightarrow> length (predecessors g n) = length args" using i.phis_wf[of g] by simp
+      show "phis'_all g (n, v) = Some args \<Longrightarrow> length (old.predecessors g n) = length args" using i.phis_wf[of g] by simp
       show "n \<in> set (\<alpha>n g) \<Longrightarrow> defs g n \<inter> uninst.phiDefs phis'_all g n = {}" using i.simpleDefs_phiDefs_disjoint[of n g] by (simp add: uninst.CFG_SSA_defs)
       show "n \<in> set (\<alpha>n g) \<Longrightarrow> m \<in> set (\<alpha>n g) \<Longrightarrow> n \<noteq> m \<Longrightarrow> uninst.allDefs phis'_all g n \<inter> uninst.allDefs phis'_all g m = {}"
       using i.allDefs_disjoint[of n g] by (simp add: uninst.CFG_SSA_defs)
       show "n \<in> set (\<alpha>n g) \<Longrightarrow> defs g n \<inter> uses'_all g n = {}" using i.defs_uses_disjoint[of n g] by simp
     qed
-    interpret uninst!: CFG_SSA_Transformed_notriv_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u p var chooseNext_all
+    interpret uninst: CFG_SSA_Transformed_notriv_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u p var chooseNext_all
     for u and p
     by unfold_locales
 
@@ -812,7 +812,7 @@ begin
 
   theorem not_redundant: "\<not>notriv.redundant g"
   proof-
-    interpret uninst!: CFG_SSA_Transformed_notriv_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u p var chooseNext_all
+    interpret uninst: CFG_SSA_Transformed_notriv_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u p var chooseNext_all
     for u and p
     by unfold_locales
 
@@ -839,7 +839,7 @@ begin
       then interpret i: CFG_SSA_step \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses(g:=u)" "phis(g:=p)" var chooseNext_all g
       by unfold_locales
 
-      interpret uninst!: CFG_SSA_Transformed_notriv_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u p var chooseNext_all
+      interpret uninst: CFG_SSA_Transformed_notriv_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u p var chooseNext_all
       for u and p
       by unfold_locales
 
@@ -849,12 +849,12 @@ begin
     }
     note 1 = this
 
-    interpret uninst!: CFG_SSA_Transformed_notriv_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u p var chooseNext_all
+    interpret uninst: CFG_SSA_Transformed_notriv_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" u p var chooseNext_all
     for u and p
     by unfold_locales
 
     have 2: "\<And>u u' p p' g. uninst.pruned (u'(g:=u g)) (p'(g:=p g)) g \<longleftrightarrow> uninst.pruned u p g"
-    by (auto simp: uninst.CFG_SSA_wf_defs)
+    by (clarsimp simp: uninst.CFG_SSA_wf_defs)
 
     from 1 assms show ?thesis
     by - (rule substAll(2)[where P="\<lambda>(u,p). uninst.pruned (uses(g:=u)) (phis(g:=p)) g" and Q="\<lambda>u p. uninst.pruned (uses(g:=u)) (phis(g:=p)) g" and g=g, simplified 2],

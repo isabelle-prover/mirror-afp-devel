@@ -370,7 +370,7 @@ begin
 
   lemmas base_SSA_defs = CFG_SSA_base.CFG_SSA_defs
 
-  sublocale braun_ssa!: CFG_SSA \<alpha>e \<alpha>n invar inEdges' Entry defs' uses' phis'
+  sublocale braun_ssa: CFG_SSA \<alpha>e \<alpha>n invar inEdges' Entry defs' uses' phis'
   apply unfold_locales
            apply (rule defs'_uses'_disjoint, simp_all)
           apply (rule defs'_finite)
@@ -454,7 +454,7 @@ begin
           case False
           with assms(5) have "v' \<in> braun_ssa.phiDefs g m'" by (simp add:braun_ssa.allDefs_def)
           hence "m' \<in> phiDefNodes g (fst v')"
-            unfolding braun_ssa.phiDefs_def by (auto simp add: phis'_def split:split_split_asm split_if_asm)
+            unfolding braun_ssa.phiDefs_def by (auto simp add: phis'_def split:prod.split_asm split_if_asm)
           with rec(2) show ?thesis by (auto dest:phiDefNode_is_join_node)
         qed
       qed
@@ -473,7 +473,7 @@ begin
     case False
     with assms(1) obtain  m' v' vs where "(m,v) \<in> set (zip (predecessors g m') vs)" "phis' g (m', v') = Some vs"
       by (auto simp add:braun_ssa.allUses_def elim:braun_ssa.phiUsesE)
-    hence l: "v = lookupDef g m (var g v')" by (auto simp add:phis'_def split:split_split_asm split_if_asm elim:in_set_zip_map)
+    hence l: "v = lookupDef g m (var g v')" by (auto simp add:phis'_def split:prod.split_asm split_if_asm elim:in_set_zip_map)
     with assms(2) have "var g v = var g v'" unfolding var_def by (metis lookupDef_fst)
     with l show ?thesis by simp
   qed
@@ -481,7 +481,7 @@ begin
   lemma phis'_fst:
     assumes "phis' g (n,v) = Some vs" "v' \<in> set vs"
     shows "var g v' = var g v"
-  using assms by (auto intro!:lookupDef_fst dest!:phiDefNodes_\<alpha>n simp add:phis'_def split:split_split_asm split_if_asm)
+  using assms by (auto intro!:lookupDef_fst dest!:phiDefNodes_\<alpha>n simp add:phis'_def split:prod.split_asm split_if_asm)
 
   lemma allUse_simpleUse:
     assumes "v \<in> braun_ssa.allUses g m" "m \<in> set (\<alpha>n g)"
@@ -495,7 +495,7 @@ begin
     case False
     with assms(1) obtain  m' v' vs where phi: "(m,v) \<in> set (zip (predecessors g m') vs)" "phis' g (m', v') = Some vs"
       by (auto simp add:braun_ssa.allUses_def elim:braun_ssa.phiUsesE)
-    hence m': "m' \<in> phiDefNodes g (var g v')" by (auto simp add:phis'_def split:split_split_asm split_if_asm)
+    hence m': "m' \<in> phiDefNodes g (var g v')" by (auto simp add:phis'_def split:prod.split_asm split_if_asm)
     from phi have[simp]: "var g v = var g v'" by - (rule phis'_fst, auto)
     from m' obtain m'' ms where "g \<turnstile> m'-ms\<rightarrow>m''" "\<forall>x \<in> set ms. var g v' \<notin> defs g x" "var g v' \<in> uses g m''" by (erule phiDefNodesE)
     with phi(1) show ?thesis by - (rule that[of "m#ms" m''], auto simp del:var_def)
@@ -516,7 +516,7 @@ begin
       from PhiDef.prems(1,2) have vars: "var g v \<in> vars g" by auto
       from PhiDef.hyps(1) PhiDef.prems(2,3) have "\<forall>n\<in>set ms. var g v \<notin> defs g n" by (metis hd_Cons_tl path2_def path2_not_Nil set_ConsD)
       with PhiDef have "defNode v \<in> phiDefNodes g (var g v)" by - (rule phiDefNodesI)
-      with PhiDef.hyps(3) vars have "v \<in> braun_ssa.phiDefs g (defNode v)" unfolding braun_ssa.phiDefs_def by (auto simp add: phis'_def split:split_split)
+      with PhiDef.hyps(3) vars have "v \<in> braun_ssa.phiDefs g (defNode v)" unfolding braun_ssa.phiDefs_def by (auto simp add: phis'_def split:prod.split)
       thus ?case by (simp add:braun_ssa.allDefs_def)
     next
       case (rec n m)
@@ -646,7 +646,7 @@ begin
   apply (rule Empty_no_phis)
   done
 
-  sublocale braun_ssa!: CFG_SSA_wf \<alpha>e \<alpha>n invar inEdges' Entry defs' uses' phis'
+  sublocale braun_ssa: CFG_SSA_wf \<alpha>e \<alpha>n invar inEdges' Entry defs' uses' phis'
   by (rule braun_ssa_CFG_SSA_wf)
 
   lemma braun_ssa_CFG_SSA_Transformed:
@@ -659,7 +659,7 @@ begin
   apply (erule allDefs_var_disjoint, simp, simp, simp)
   done
 
-  sublocale braun_ssa!: CFG_SSA_Transformed \<alpha>e \<alpha>n invar inEdges' Entry "defs" "uses" defs' uses' phis' var
+  sublocale braun_ssa: CFG_SSA_Transformed \<alpha>e \<alpha>n invar inEdges' Entry "defs" "uses" defs' uses' phis' var
   by (rule braun_ssa_CFG_SSA_Transformed)
 
   lemma PhiDef_defNode_eq:

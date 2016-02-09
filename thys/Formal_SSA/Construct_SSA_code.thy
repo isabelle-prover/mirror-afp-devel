@@ -8,7 +8,6 @@ theory Construct_SSA_code imports
   SSA_CFG_code
   Construct_SSA
   Mapping_Exts
-  "~~/src/Tools/Permanent_Interpretation"
   "~~/src/HOL/Library/Product_Lexorder"
 begin
 

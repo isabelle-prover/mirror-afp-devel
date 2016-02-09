@@ -41,7 +41,7 @@ for
   var :: "'g \<Rightarrow> 'val \<Rightarrow> 'var" and
   chooseNext_all :: "('g, 'node, 'val) chooseNext_code"
 begin
-  definition [code]: "cond_code g = redundant_code g"
+  definition [code]: "cond_code g = ssa.redundant_code g"
 
   definition uses'_codem :: "'g \<Rightarrow> 'node \<times> 'val \<Rightarrow> 'val \<Rightarrow> ('val, 'node set) mapping \<Rightarrow> ('node, 'val set) mapping"
   where [code]: "uses'_codem g next next' nodes_of_uses =
@@ -73,13 +73,13 @@ begin
       Mapping.map_default next' {} (\<lambda>ns. (Set.remove next ns) \<union> old_phis) nop)"
 
   definition [code]: "triv_phis' g next triv_phis nodes_of_phis
-    = (Set.remove next triv_phis) \<union> (Set.filter (\<lambda>n. trivial_code (snd n) (the (Mapping.lookup (phis g) n))) (case_option {} (Set.remove next) (Mapping.lookup nodes_of_phis (snd next))))"
+    = (Set.remove next triv_phis) \<union> (Set.filter (\<lambda>n. ssa.trivial_code (snd n) (the (Mapping.lookup (phis g) n))) (case_option {} (Set.remove next) (Mapping.lookup nodes_of_phis (snd next))))"
 
   definition [code]: "step_code g = (let next = chooseNext' g in (uses'_code g next, phis'_code g next))"
   definition [code]: "step_codem g next next' nodes_of_uses nodes_of_phis = (uses'_codem g next next' nodes_of_uses, phis'_codem g next next' nodes_of_phis)"
 
   definition phi_equiv_mapping :: "'g \<Rightarrow> ('val, 'a set) mapping \<Rightarrow> ('val, 'a set) mapping \<Rightarrow> bool" ("_ \<turnstile> _ \<approx>\<^sub>\<phi> _" 50)
-    where "g \<turnstile> nou\<^sub>1 \<approx>\<^sub>\<phi> nou\<^sub>2 \<equiv> \<forall>v \<in> Mapping.keys (phidefNodes g). case_option {} id (Mapping.lookup nou\<^sub>1 v) = case_option {} id (Mapping.lookup nou\<^sub>2 v)"
+    where "g \<turnstile> nou\<^sub>1 \<approx>\<^sub>\<phi> nou\<^sub>2 \<equiv> \<forall>v \<in> Mapping.keys (ssa.phidefNodes g). case_option {} id (Mapping.lookup nou\<^sub>1 v) = case_option {} id (Mapping.lookup nou\<^sub>2 v)"
 end
 
 locale CFG_SSA_Transformed_notriv_linorder = CFG_SSA_Transformed_notriv_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses" phis var chooseNext_all
@@ -149,7 +149,7 @@ begin
   proof-
     fix u p
     assume "CFG_SSA_Transformed_notriv \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses defs (uses(g:=u)) (phis(g:=p)) var chooseNext_all"
-    then interpret i!: CFG_SSA_Transformed_notriv \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses(g:=u)" "phis(g:=p)" var chooseNext_all .
+    then interpret i: CFG_SSA_Transformed_notriv \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses(g:=u)" "phis(g:=p)" var chooseNext_all .
     assume "i.redundant g"
     thus "card (dom (i.phis' g)) < card (dom p)" by (rule i.substAll_wf[of g, simplified])
   qed
@@ -213,28 +213,28 @@ begin
   by unfold_locales
 
   lemma phis'_code_correct:
-    assumes "redundant g"
+    assumes "ssa.redundant g"
     shows "phis' g = Mapping.lookup (phis'_code g (chooseNext' g))"
   unfolding phis'_def [abs_def] phis'_code_def [abs_def]
   by (auto simp: Mapping_lookup_map_values substNext_code_correct [OF assms] split: split_if Option.bind_split)
 
-  lemma redundant_ign[simp]: "uninst_code.redundant_code (const p) g = uninst_code.redundant_code (phis(g:=p)) g"
-  unfolding uninst_code.redundant_code_def uninst_code.trivial_code_def[abs_def] CFG_SSA_wf_base.CFG_SSA_wf_defs uninst_code.trivial_phis_def
+  lemma redundant_ign[simp]: "uninst_code.ssa.redundant_code (const p) g = uninst_code.ssa.redundant_code (phis(g:=p)) g"
+  unfolding uninst_code.ssa.redundant_code_def uninst_code.ssa.trivial_code_def[abs_def] CFG_SSA_wf_base.CFG_SSA_wf_defs uninst_code.ssa.trivial_phis_def
   unfolding fun_upd_same
   ..
 
   lemma uses'_ign[simp]: "uninst_code.uses'_codem (const u) g = uninst_code.uses'_codem (u_g g u) g"
-  unfolding uninst_code.uses'_codem_def[abs_def] uninst.substNext_code_def uninst.substitution_code_def uninst_code.trivial_code_def[abs_def] CFG_SSA_wf_base.CFG_SSA_wf_defs
+  unfolding uninst_code.uses'_codem_def[abs_def] uninst.substNext_code_def uninst.substitution_code_def uninst_code.ssa.trivial_code_def[abs_def] CFG_SSA_wf_base.CFG_SSA_wf_defs
     uninst.uses'_code_def[abs_def]
   by simp
 
   lemma phis'_ign[simp]: "uninst_code.phis'_code (const p) g = uninst_code.phis'_code (phis(g:=p)) g"
-  unfolding uninst_code.phis'_code_def[abs_def] uninst.substNext_code_def uninst.substitution_code_def uninst_code.trivial_code_def[abs_def] CFG_SSA_wf_base.CFG_SSA_wf_defs
+  unfolding uninst_code.phis'_code_def[abs_def] uninst.substNext_code_def uninst.substitution_code_def uninst_code.ssa.trivial_code_def[abs_def] CFG_SSA_wf_base.CFG_SSA_wf_defs
   unfolding fun_upd_same
   ..
 
   lemma phis'm_ign[simp]: "uninst_code.phis'_codem (const p) g = uninst_code.phis'_codem (phis(g:=p)) g"
-  unfolding uninst_code.phis'_codem_def[abs_def] uninst.substNext_code_def uninst.substitution_code_def uninst_code.trivial_code_def[abs_def] CFG_SSA_wf_base.CFG_SSA_wf_defs
+  unfolding uninst_code.phis'_codem_def[abs_def] uninst.substNext_code_def uninst.substitution_code_def uninst_code.ssa.trivial_code_def[abs_def] CFG_SSA_wf_base.CFG_SSA_wf_defs
   unfolding fun_upd_same
   ..
 
@@ -252,7 +252,7 @@ begin
       unfolding phis'_code_def mmap_def phi_equiv_mapping_def
     apply (subst mapping_eq_iff)
     by (auto simp: Mapping_lookup_map_values Mapping_lookup_map Option.bind_def map_option_case lookup_delete keys_dom_lookup
-      dest: phis_disj [where n="fst next" and v="snd next", simplified] split: option.splits)
+      dest: ssa.phis_disj [where n="fst next" and v="snd next", simplified] split: option.splits)
 
     also from assms have "... = phis'_codem g next (substitution_code g next) nodes_of_phis"
       unfolding phis'_codem_def mmap_def ssa.lookup_phiNodes_of [OF ssa.phis_finite] phi_equiv_mapping_def
@@ -305,10 +305,10 @@ begin
     unfolding phis'_code_def by (auto simp: Mapping_lookup_map_values Option.bind_def split: option.splits)
 
   lemma nodes_of_phis_finite [simplified]:
-  assumes "g \<turnstile> nodes_of_phis \<approx>\<^sub>\<phi> ssa.phiNodes_of g" and "Mapping.lookup nodes_of_phis v = Some ns" and "v \<in> Mapping.keys (phidefNodes g)"
+  assumes "g \<turnstile> nodes_of_phis \<approx>\<^sub>\<phi> ssa.phiNodes_of g" and "Mapping.lookup nodes_of_phis v = Some ns" and "v \<in> Mapping.keys (ssa.phidefNodes g)"
   shows "finite ns"
   using assms unfolding phi_equiv_mapping_def
-    by (erule_tac x=v in ballE) (auto intro: finite_subset [OF _ phis_finite [of g]])
+    by (erule_tac x=v in ballE) (auto intro: finite_subset [OF _ ssa.phis_finite [of g]])
 
   lemma lookup_phis'_codem_next:
   assumes "\<And>ns. Mapping.lookup nodes_of_phis (snd next) = Some ns \<Longrightarrow> finite ns"
@@ -332,7 +332,7 @@ begin
     hence "snd next = snd \<phi>" by simp
     with assms(3) have "fst next \<noteq> fst \<phi>" by (cases "next", cases \<phi>) auto
     with assms(2) False have [simp]: "Mapping.lookup (phis g) \<phi> = None"
-      by (cases \<phi>, cases "next") (fastforce simp: keys_dom_lookup dest: phis_disj)
+      by (cases \<phi>, cases "next") (fastforce simp: keys_dom_lookup dest: ssa.phis_disj)
     from `fst next \<noteq> fst \<phi>` `snd next = snd \<phi>` show ?thesis
     unfolding phis'_codem_correct [OF assms(1,2)] phis'_code_def
       by (auto simp: Mapping_lookup_map_values lookup_delete map_option_case substNext_code_def split: option.splits)
@@ -397,19 +397,19 @@ begin
   lemma keys_phis'_codem':
     assumes "g \<turnstile> nodes_of_phis \<approx>\<^sub>\<phi> ssa.phiNodes_of g" and "next \<in> Mapping.keys (phis g)"
     shows "Mapping.keys (phis'_codem g next next' nodes_of_phis) = Mapping.keys (phis g) - {next}"
-    using assms unfolding phis'_codem_def phi_equiv_mapping_def keys_phidefNodes [OF phis_finite]
+    using assms unfolding phis'_codem_def phi_equiv_mapping_def ssa.keys_phidefNodes [OF ssa.phis_finite]
   by (force split: option.splits if_splits simp: fold_update_conv fun_upd_apply keys_dom_lookup lookup_delete)
 
   lemma triv_phis'_correct:
-    assumes "g \<turnstile> nodes_of_phis \<approx>\<^sub>\<phi> ssa.phiNodes_of g" and "next \<in> Mapping.keys (phis g)" and "trivial g (snd next)"
-    shows "uninst_code.triv_phis' (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g next (trivial_phis g) nodes_of_phis = uninst_code.trivial_phis (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g"
+    assumes "g \<turnstile> nodes_of_phis \<approx>\<^sub>\<phi> ssa.phiNodes_of g" and "next \<in> Mapping.keys (phis g)" and "ssa.trivial g (snd next)"
+    shows "uninst_code.triv_phis' (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g next (ssa.trivial_phis g) nodes_of_phis = uninst_code.ssa.trivial_phis (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g"
   proof (rule set_eqI)
     note keys_phis'_codem' [OF assms(1,2), simp]
     fix \<phi>
 
-    from assms(2,3) phis_in_\<alpha>n [of g "fst next" "snd next"]
-    have "redundant g"
-      unfolding redundant_def allVars_def allDefs_def phiDefs_def
+    from assms(2,3) ssa.phis_in_\<alpha>n [of g "fst next" "snd next"]
+    have "ssa.redundant g"
+      unfolding ssa.redundant_def ssa.allVars_def ssa.allDefs_def ssa.phiDefs_def
       by (cases "next") (auto simp: keys_dom_lookup)
 
     then interpret step: CFG_SSA_step_code \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses" phis var chooseNext_all
@@ -426,31 +426,31 @@ begin
       apply (intro CFG_SSA_wf_code.intro CFG_SSA_code.intro)
       unfolding u_g_is_u_g p_g_is_p_g by intro_locales
 
-    show "\<phi> \<in> uninst_code.triv_phis' (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g next (trivial_phis g) nodes_of_phis \<longleftrightarrow> \<phi> \<in> uninst_code.trivial_phis (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g"
+    show "\<phi> \<in> uninst_code.triv_phis' (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g next (ssa.trivial_phis g) nodes_of_phis \<longleftrightarrow> \<phi> \<in> uninst_code.ssa.trivial_phis (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g"
     proof (cases "\<phi> = next")
       case True
-      hence "\<phi> \<notin> uninst_code.triv_phis' (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g next (trivial_phis g) nodes_of_phis"
+      hence "\<phi> \<notin> uninst_code.triv_phis' (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g next (ssa.trivial_phis g) nodes_of_phis"
         unfolding uninst_code.triv_phis'_def by (auto split: option.splits)
       moreover
       from True have "\<phi> \<notin> Mapping.keys (phis'_codem g next (substitution_code g next) nodes_of_phis)"
         unfolding phis'_codem_def
         by (transfer fixing: nodes_of_phis "next") (auto simp: fold_update_conv split: if_splits option.splits)
-      hence "\<phi> \<notin> uninst_code.trivial_phis (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g"
-        unfolding uninst_code.trivial_phis_def by simp
+      hence "\<phi> \<notin> uninst_code.ssa.trivial_phis (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g"
+        unfolding uninst_code.ssa.trivial_phis_def by simp
       ultimately show ?thesis by simp
     next
       case False
       show ?thesis
       proof (cases "Mapping.lookup nodes_of_phis (snd next)")
         case None
-        hence "uninst_code.triv_phis' (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g next (trivial_phis g) nodes_of_phis = trivial_phis g - {next}"
+        hence "uninst_code.triv_phis' (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g next (ssa.trivial_phis g) nodes_of_phis = ssa.trivial_phis g - {next}"
           unfolding uninst_code.triv_phis'_def by auto
         moreover from None
-        have "uninst_code.trivial_phis (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g = trivial_phis g - {next}"
-          unfolding phis'_codem_def uninst_code.trivial_phis_def by (auto simp: lookup_delete)
+        have "uninst_code.ssa.trivial_phis (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g = ssa.trivial_phis g - {next}"
+          unfolding phis'_codem_def uninst_code.ssa.trivial_phis_def by (auto simp: lookup_delete)
         ultimately show ?thesis by simp
       next
-        case (Some nodes) [simp]
+        case [simp]: (Some nodes)
         from assms(2) have "snd next \<in> snd ` dom (Mapping.lookup (phis g))" by (auto simp: keys_dom_lookup)
         with assms(1) Some have "finite nodes" by (rule nodes_of_phis_finite)
         hence [simp]: "set (sorted_list_of_set nodes) = nodes" by simp
@@ -458,12 +458,12 @@ begin
         show ?thesis
         proof (cases "\<phi> \<in> nodes")
           case False
-          with `\<phi> \<noteq> next` have "\<phi> \<in> uninst_code.triv_phis' (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g next (trivial_phis g) nodes_of_phis \<longleftrightarrow> \<phi> \<in> trivial_phis g"
+          with `\<phi> \<noteq> next` have "\<phi> \<in> uninst_code.triv_phis' (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g next (ssa.trivial_phis g) nodes_of_phis \<longleftrightarrow> \<phi> \<in> ssa.trivial_phis g"
             unfolding uninst_code.triv_phis'_def by simp
           moreover
 
-          from False `\<phi> \<noteq> next` have "... \<longleftrightarrow> \<phi> \<in> uninst_code.trivial_phis (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g"
-            unfolding phis'_codem_def uninst_code.trivial_phis_def
+          from False `\<phi> \<noteq> next` have "... \<longleftrightarrow> \<phi> \<in> uninst_code.ssa.trivial_phis (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g"
+            unfolding phis'_codem_def uninst_code.ssa.trivial_phis_def
             by (auto simp add: keys_dom_lookup dom_def lookup_delete)
           ultimately show ?thesis by simp
         next
@@ -475,54 +475,54 @@ begin
 
           then obtain \<phi>_args where [simp]: "Mapping.lookup (phis g) (\<phi>_node, \<phi>_val) = Some \<phi>_args"
             unfolding keys_dom_lookup by auto
-          hence [simp]: "phi g \<phi>_val = Some \<phi>_args"
-            by (rule phis_phi)
+          hence [simp]: "ssa.phi g \<phi>_val = Some \<phi>_args"
+            by (rule ssa.phis_phi)
 
-          from True `\<phi> \<noteq> next` have "\<phi> \<in> uninst_code.triv_phis' (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g next (trivial_phis g) nodes_of_phis \<longleftrightarrow>
-            \<phi> \<in> trivial_phis g \<or> trivial_code (snd \<phi>) (the (Mapping.lookup (phis'_codem g next (substitution_code g next) nodes_of_phis) \<phi>))"
+          from True `\<phi> \<noteq> next` have "\<phi> \<in> uninst_code.triv_phis' (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g next (ssa.trivial_phis g) nodes_of_phis \<longleftrightarrow>
+            \<phi> \<in> ssa.trivial_phis g \<or> ssa.trivial_code (snd \<phi>) (the (Mapping.lookup (phis'_codem g next (substitution_code g next) nodes_of_phis) \<phi>))"
             unfolding uninst_code.triv_phis'_def by simp
           moreover
 
           from `\<phi> \<noteq> next` `\<phi> \<in> Mapping.keys (phis g)` `next \<in> Mapping.keys (phis g)`
           have [simp]: "\<phi>_val \<noteq> snd next"
             unfolding keys_dom_lookup
-            by (cases "next", cases \<phi>) (auto dest: phis_disj)
+            by (cases "next", cases \<phi>) (auto dest: ssa.phis_disj)
 
           show ?thesis
-          proof (cases "\<phi> \<in> trivial_phis g")
+          proof (cases "\<phi> \<in> ssa.trivial_phis g")
             case True
-            hence "trivial_code \<phi>_val \<phi>_args"
-              unfolding trivial_phis_def by clarsimp
-            hence "trivial_code \<phi>_val (map (substNext_code g next) \<phi>_args)"
-              apply (rule trivial_code_mapI)
+            hence "ssa.trivial_code \<phi>_val \<phi>_args"
+              unfolding ssa.trivial_phis_def by clarsimp
+            hence "ssa.trivial_code \<phi>_val (map (substNext_code g next) \<phi>_args)"
+              apply (rule ssa.trivial_code_mapI)
                prefer 2
                apply (clarsimp simp: substNext_code_def)
               apply (clarsimp simp: substNext_code_def substitution_code_def)
               apply (erule_tac c="\<phi>_val" in equalityCE)
                prefer 2 apply simp
               apply clarsimp
-              apply (subgoal_tac "isTrivialPhi g \<phi>_val (snd next)")
-               apply (subgoal_tac "isTrivialPhi g (snd next) \<phi>_val")
+              apply (subgoal_tac "ssa.isTrivialPhi g \<phi>_val (snd next)")
+               apply (subgoal_tac "ssa.isTrivialPhi g (snd next) \<phi>_val")
                 apply (blast dest: isTrivialPhi_asymmetric)
                using assms(3) `next \<in> Mapping.keys (phis g)`
-               apply (clarsimp simp: trivial_def keys_dom_lookup)
+               apply (clarsimp simp: ssa.trivial_def keys_dom_lookup)
                apply (frule isTrivial_the_trivial [rotated 1, where v="snd next"])
                 apply -
-                apply (rule phis_phi [where n="fst next"])
+                apply (rule ssa.phis_phi [where n="fst next"])
                 apply simp
                apply simp
               apply (thin_tac "\<phi>_val = v" for v)
-              using `trivial_code \<phi>_val \<phi>_args`
-              apply (clarsimp simp: trivial_code_def)
-              by (erule the_trivial_SomeE) (auto simp: isTrivialPhi_def)
+              using `ssa.trivial_code \<phi>_val \<phi>_args`
+              apply (clarsimp simp: ssa.trivial_code_def)
+              by (erule the_trivial_SomeE) (auto simp: ssa.isTrivialPhi_def)
             with calculation True `\<phi> \<noteq> next` `\<phi> \<in> nodes` show ?thesis
-              unfolding uninst_code.trivial_phis_def phis'_codem_def
+              unfolding uninst_code.ssa.trivial_phis_def phis'_codem_def
               by (clarsimp simp: keys_dom_lookup substNext_code_alt_def)
           next
             case False
             with calculation `\<phi> \<noteq> next` `\<phi> \<in> Mapping.keys (phis g)` True show ?thesis
-              unfolding phis'_codem_def uninst_code.trivial_phis_def
-              by (auto simp: keys_dom_lookup triv_phis'_def trivial_code_def)
+              unfolding phis'_codem_def uninst_code.ssa.trivial_phis_def
+              by (auto simp: keys_dom_lookup triv_phis'_def ssa.trivial_code_def)
           qed
         qed
       qed
@@ -531,23 +531,23 @@ begin
 
   lemma nodes_of_phis'_correct:
   assumes "g \<turnstile> nodes_of_phis \<approx>\<^sub>\<phi> ssa.phiNodes_of g"
-    and "next \<in> Mapping.keys (phis g)" and "trivial g (snd next)"
-  shows "g \<turnstile> (nodes_of_phis' g next (substitution_code g next) nodes_of_phis) \<approx>\<^sub>\<phi> (uninst_code.phiNodes_of (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g)"
+    and "next \<in> Mapping.keys (phis g)" and "ssa.trivial g (snd next)"
+  shows "g \<turnstile> (nodes_of_phis' g next (substitution_code g next) nodes_of_phis) \<approx>\<^sub>\<phi> (uninst_code.ssa.phiNodes_of (const (phis'_codem g next (substitution_code g next) nodes_of_phis)) g)"
   proof -
     from assms(2) obtain next_args where lookup_next [simp]: "Mapping.lookup (phis g) next = Some next_args"
       unfolding keys_dom_lookup by auto
-    hence phi_next [simp]: "phi g (snd next) = Some next_args"
-      by -(rule phis_phi [where n="fst next"], simp)
+    hence phi_next [simp]: "ssa.phi g (snd next) = Some next_args"
+      by -(rule ssa.phis_phi [where n="fst next"], simp)
     from assms(3) have in_next_args: "\<And>v. v \<in> set next_args \<Longrightarrow> v = snd next \<or> v = substitution_code g next"
-      unfolding trivial_def substitution_code_def
+      unfolding ssa.trivial_def substitution_code_def
       apply clarsimp
       apply (subst(asm) isTrivial_the_trivial)
-        apply (rule phis_phi [where g=g and n="fst next"])
+        apply (rule ssa.phis_phi [where g=g and n="fst next"])
         apply simp
        apply assumption
-      by (auto simp: isTrivialPhi_def split: option.splits)
+      by (auto simp: ssa.isTrivialPhi_def split: option.splits)
     from assms(2) have [dest!]: "\<And>x vs. Mapping.lookup (phis g) (x, snd next) = Some vs \<Longrightarrow> x = fst next \<and> vs = next_args"
-      by (auto simp add: keys_dom_lookup dest: phis_disj [where n'="fst next"])
+      by (auto simp add: keys_dom_lookup dest: ssa.phis_disj [where n'="fst next"])
     show ?thesis
     unfolding phi_equiv_mapping_def
     apply (subgoal_tac "finite (dom (Mapping.lookup (phis'_codem g next (substitution_code g next) nodes_of_phis)))")
@@ -556,15 +556,15 @@ begin
       apply (rule nodes_of_phis_finite [OF assms(1)], assumption)
       using assms(2) [unfolded keys_dom_lookup]
       apply clarsimp
-     apply (clarsimp simp: phis_finite split: option.splits)
+     apply (clarsimp simp: ssa.phis_finite split: option.splits)
      apply (rule nodes_of_phis_finite [OF assms(1)], assumption)
      using assms(2) [unfolded keys_dom_lookup]
      apply clarsimp
     unfolding phis'_codem_correct [OF assms(1,2)]
     apply (intro ballI)
     apply (rename_tac v)
-    apply (subst(asm) keys_phidefNodes [OF ssa.phis_finite])
-    apply (subst uninst_code.lookup_phiNodes_of, assumption)
+    apply (subst(asm) ssa.keys_phidefNodes [OF ssa.phis_finite])
+    apply (subst uninst_code.ssa.lookup_phiNodes_of, assumption)
     apply (subst lookup_phis'_code)+
     apply (subst substNext_code_def)+
     apply (subst dom_phis'_code)+
@@ -754,12 +754,12 @@ begin
 
   lemma nodes_of_uses'_correct:
   assumes "g \<turnstile> nodes_of_uses \<approx>\<^sub>\<phi> ssa.useNodes_of g"
-    and "next \<in> Mapping.keys (phis g)" and "trivial g (snd next)"
-  shows "g \<turnstile> (nodes_of_uses' g next (substitution_code g next) (Mapping.keys (phidefNodes g)) nodes_of_uses) \<approx>\<^sub>\<phi> (uninst_code.useNodes_of (const (uses'_codem g next (substitution_code g next) nodes_of_uses)) g)"
+    and "next \<in> Mapping.keys (phis g)" and "ssa.trivial g (snd next)"
+  shows "g \<turnstile> (nodes_of_uses' g next (substitution_code g next) (Mapping.keys (ssa.phidefNodes g)) nodes_of_uses) \<approx>\<^sub>\<phi> (uninst_code.ssa.useNodes_of (const (uses'_codem g next (substitution_code g next) nodes_of_uses)) g)"
   proof -
-    from assms(2,3) phis_in_\<alpha>n [of g "fst next" "snd next"]
-    have "redundant g"
-      unfolding redundant_def allVars_def allDefs_def phiDefs_def
+    from assms(2,3) ssa.phis_in_\<alpha>n [of g "fst next" "snd next"]
+    have "ssa.redundant g"
+      unfolding ssa.redundant_def ssa.allVars_def ssa.allDefs_def ssa.phiDefs_def
       by (cases "next") (auto simp: keys_dom_lookup)
 
     then interpret step: CFG_SSA_step_code \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses" phis var chooseNext_all
@@ -767,30 +767,30 @@ begin
 
 
     from assms(2,3) obtain next_args v where lookup_next [simp]: "Mapping.lookup (phis g) next = Some next_args"
-      and "isTrivialPhi g (snd next) v"
-      unfolding keys_dom_lookup trivial_def by auto
-    hence phi_next [simp]: "phi g (snd next) = Some next_args"
-      by -(rule phis_phi [where n="fst next"], simp)
-    hence the_trivial_next_args [simp]: "the_trivial (snd next) next_args = Some v" using `isTrivialPhi g (snd next) v`
+      and "ssa.isTrivialPhi g (snd next) v"
+      unfolding keys_dom_lookup ssa.trivial_def by auto
+    hence phi_next [simp]: "ssa.phi g (snd next) = Some next_args"
+      by -(rule ssa.phis_phi [where n="fst next"], simp)
+    hence the_trivial_next_args [simp]: "the_trivial (snd next) next_args = Some v" using `ssa.isTrivialPhi g (snd next) v`
       by (rule isTrivial_the_trivial)
 
     from assms(3) have in_next_args: "\<And>v. v \<in> set next_args \<Longrightarrow> v = snd next \<or> v = substitution_code g next"
-      unfolding trivial_def substitution_code_def
+      unfolding ssa.trivial_def substitution_code_def
       apply (clarsimp simp del: the_trivial_next_args)
       apply (subst(asm) isTrivial_the_trivial)
-        apply (rule phis_phi [where g=g and n="fst next"])
+        apply (rule ssa.phis_phi [where g=g and n="fst next"])
         apply simp
        apply assumption
-      by (auto simp: isTrivialPhi_def split: option.splits)
+      by (auto simp: ssa.isTrivialPhi_def split: option.splits)
 
-    from `isTrivialPhi g (snd next) v`
-    have triv_phi_is_v [dest!]: "\<And>v'. isTrivialPhi g (snd next) v' \<Longrightarrow> v' = v"
+    from `ssa.isTrivialPhi g (snd next) v`
+    have triv_phi_is_v [dest!]: "\<And>v'. ssa.isTrivialPhi g (snd next) v' \<Longrightarrow> v' = v"
       using isTrivialPhi_det [OF assms(3)] by auto
 
-    from `isTrivialPhi g (snd next) v` have [simp]: "v \<noteq> snd next" unfolding isTrivialPhi_def by simp
+    from `ssa.isTrivialPhi g (snd next) v` have [simp]: "v \<noteq> snd next" unfolding ssa.isTrivialPhi_def by simp
 
     from assms(2) have [dest!]: "\<And>x vs. Mapping.lookup (phis g) (x, snd next) = Some vs \<Longrightarrow> x = fst next \<and> vs = next_args"
-      by (auto simp add: keys_dom_lookup dest: phis_disj [where n'="fst next"])
+      by (auto simp add: keys_dom_lookup dest: ssa.phis_disj [where n'="fst next"])
 
     have [simp]: "(CFG_base.useNodes_of \<alpha>n
               (const
@@ -828,11 +828,11 @@ begin
     apply (subst uninst.lookup_useNodes_of')
      apply (clarsimp simp: uses'_code_def split: option.splits)
      apply (rule finite_imageI)
-     using uses_finite [of g]
+     using ssa.uses_finite [of g]
      apply (fastforce split: option.splits)[1]
     apply (cases "v \<in> snd ` dom (Mapping.lookup (phis g))")
      prefer 2
-     apply (force intro: rev_image_eqI simp: lookup_delete uses'_code_def substNext_code_def substitution_code_def split: option.splits)[1]
+     apply (force intro: rev_image_eqI simp: lookup_delete uninst_code.uses'_code_def substNext_code_def substitution_code_def split: option.splits)[1]
     apply (clarsimp simp: Mapping_lookup_map_default lookup_delete uses'_code_def substNext_code_def substitution_code_def)
     apply (rename_tac n n' v' phi_args phi_args')
     apply safe
@@ -866,10 +866,10 @@ begin
   qed
 
   definition[code]: "substAll_efficient g \<equiv>
-    let phiVals = Mapping.keys (phidefNodes g);
+    let phiVals = Mapping.keys (ssa.phidefNodes g);
         u = uses g;
         p = phis g;
-        tp = trivial_phis g;
+        tp = ssa.trivial_phis g;
         nou = ssa.useNodes_of g;
         nop = ssa.phiNodes_of g
     in
@@ -906,15 +906,15 @@ begin
   apply (auto simp: phi_equiv_mapping_def)
   by (erule_tac x="next" in ballE) (auto simp: ssa.lookup_useNodes_of split: if_splits option.splits)
 
-  lemma triv_phis_base [simp]: "uninst_code.trivial_phis (const (phis g)) g = trivial_phis g"
-    unfolding uninst_code.trivial_phis_def ..
-  lemma useNodes_of_base [simp]: "uninst_code.useNodes_of (const (uses g)) g = ssa.useNodes_of g"
-    unfolding uninst_code.useNodes_of_def uninst_code.addN_def [abs_def] mmap_def Mapping.map_default_def [abs_def] Mapping.default_def
+  lemma triv_phis_base [simp]: "uninst_code.ssa.trivial_phis (const (phis g)) g = ssa.trivial_phis g"
+    unfolding uninst_code.ssa.trivial_phis_def ..
+  lemma useNodes_of_base [simp]: "uninst_code.ssa.useNodes_of (const (uses g)) g = ssa.useNodes_of g"
+    unfolding uninst_code.ssa.useNodes_of_def uninst_code.ssa.addN_def [abs_def] mmap_def Mapping.map_default_def [abs_def] Mapping.default_def
     unfolding usesOf_def [abs_def]
     by transfer auto
 
-  lemma phiNodes_of_base [simp]: "uninst_code.phiNodes_of (const (phis g)) g = ssa.phiNodes_of g"
-    unfolding uninst_code.phiNodes_of_def uninst_code.phis_addN_def [abs_def] mmap_def Mapping.map_default_def [abs_def] Mapping.default_def
+  lemma phiNodes_of_base [simp]: "uninst_code.ssa.phiNodes_of (const (phis g)) g = ssa.phiNodes_of g"
+    unfolding uninst_code.ssa.phiNodes_of_def uninst_code.ssa.phis_addN_def [abs_def] mmap_def Mapping.map_default_def [abs_def] Mapping.default_def
     by transfer auto
 
   lemma phi_equiv_mapping_refl [simp]: "uninst_code.phi_equiv_mapping ph g m m"
@@ -929,9 +929,9 @@ begin
       R="\<lambda>x y. y = map_option (\<lambda>a. map_prod usesOf Mapping.lookup (fst (f a))) x" and
       I="\<lambda>((u,p),triv_phis,nodes_of_uses, phis_of_nodes). Mapping.keys u \<subseteq> set (\<alpha>n g) \<and> Mapping.keys p \<subseteq> Mapping.keys (phis g)
         \<and> CFG_SSA_Transformed_notriv_linorder_code \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses defs (uses(g:=u)) (phis(g:=p)) var chooseNext_all
-        \<and> triv_phis = uninst_code.trivial_phis (const p) g
-        \<and> uninst_code.phi_equiv_mapping (const p) g nodes_of_uses (uninst_code.useNodes_of (const u) g)
-        \<and> uninst_code.phi_equiv_mapping (const p) g phis_of_nodes (uninst_code.phiNodes_of (const p) g)"
+        \<and> triv_phis = uninst_code.ssa.trivial_phis (const p) g
+        \<and> uninst_code.phi_equiv_mapping (const p) g nodes_of_uses (uninst_code.ssa.useNodes_of (const u) g)
+        \<and> uninst_code.phi_equiv_mapping (const p) g phis_of_nodes (uninst_code.ssa.phiNodes_of (const p) g)"
       for f
       , simplified], simp_all add: split_def dom_uses_in_graph Set.is_empty_def)
     show "CFG_SSA_Transformed_notriv_linorder_code \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses defs uses phis var
@@ -941,39 +941,39 @@ begin
     fix s1
     assume "Mapping.keys (fst (fst s1)) \<subseteq> set (\<alpha>n g) \<and> Mapping.keys (snd (fst s1)) \<subseteq> Mapping.keys (phis g)
       \<and> CFG_SSA_Transformed_notriv_linorder_code \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses defs (u g (fst s1)) (p g (fst s1)) var chooseNext_all
-      \<and> fst (snd s1) = uninst_code.trivial_phis (const (snd (fst s1))) g
-      \<and> uninst_code.phi_equiv_mapping (const (snd (fst s1))) g (fst (snd (snd s1))) (uninst_code.useNodes_of (const (fst (fst s1))) g)
-      \<and> uninst_code.phi_equiv_mapping (const (snd (fst s1))) g (snd (snd (snd s1))) (uninst_code.phiNodes_of (const (snd (fst s1))) g)"
+      \<and> fst (snd s1) = uninst_code.ssa.trivial_phis (const (snd (fst s1))) g
+      \<and> uninst_code.phi_equiv_mapping (const (snd (fst s1))) g (fst (snd (snd s1))) (uninst_code.ssa.useNodes_of (const (fst (fst s1))) g)
+      \<and> uninst_code.phi_equiv_mapping (const (snd (fst s1))) g (snd (snd (snd s1))) (uninst_code.ssa.phiNodes_of (const (snd (fst s1))) g)"
     then obtain s1_uses s1_phis s1_triv_phis s1_nodes_of_uses s1_phi_nodes_of where
       [simp]: "s1 = ((s1_uses, s1_phis), s1_triv_phis, s1_nodes_of_uses, s1_phi_nodes_of)"
       and "Mapping.keys s1_uses \<subseteq> set (\<alpha>n g)"
       and "Mapping.keys s1_phis \<subseteq> Mapping.keys (phis g)"
       and "CFG_SSA_Transformed_notriv_linorder_code \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses defs (u_g g s1_uses) (p_g g s1_phis) var chooseNext_all"
-      and [simp]: "s1_triv_phis = uninst_code.trivial_phis (const s1_phis) g"
-      and nou_equiv: "uninst_code.phi_equiv_mapping (const s1_phis) g s1_nodes_of_uses (uninst_code.useNodes_of (const s1_uses) g)"
-      and pno_equiv: "uninst_code.phi_equiv_mapping (const s1_phis) g s1_phi_nodes_of (uninst_code.phiNodes_of (const s1_phis) g)"
+      and [simp]: "s1_triv_phis = uninst_code.ssa.trivial_phis (const s1_phis) g"
+      and nou_equiv: "uninst_code.phi_equiv_mapping (const s1_phis) g s1_nodes_of_uses (uninst_code.ssa.useNodes_of (const s1_uses) g)"
+      and pno_equiv: "uninst_code.phi_equiv_mapping (const s1_phis) g s1_phi_nodes_of (uninst_code.ssa.phiNodes_of (const s1_phis) g)"
       by (cases s1; auto)
-    from this(4) interpret i!: CFG_SSA_Transformed_notriv_linorder_code \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "u_g g s1_uses" "p_g g s1_phis" var chooseNext_all .
+    from this(4) interpret i: CFG_SSA_Transformed_notriv_linorder_code \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "u_g g s1_uses" "p_g g s1_phis" var chooseNext_all .
     let ?s2 = "map_prod usesOf Mapping.lookup (fst s1)"
-    have [simp]: "uninst_code.trivial_phis (const s1_phis) g \<noteq> {} \<longleftrightarrow> cond g ?s2"
-      unfolding uninst_code.redundant_code_def [symmetric]
-      by (clarsimp simp add: cond_def i.redundant_code [simplified, symmetric] CFG_SSA_wf_base.CFG_SSA_wf_defs)
-    thus "uninst_code.trivial_phis (const (snd (fst s1))) g \<noteq> {} \<longleftrightarrow> cond g ?s2"
+    have [simp]: "uninst_code.ssa.trivial_phis (const s1_phis) g \<noteq> {} \<longleftrightarrow> cond g ?s2"
+      unfolding uninst_code.ssa.redundant_code_def [symmetric]
+      by (clarsimp simp add: cond_def i.ssa.redundant_code [simplified, symmetric] CFG_SSA_wf_base.CFG_SSA_wf_defs)
+    thus "uninst_code.ssa.trivial_phis (const (snd (fst s1))) g \<noteq> {} \<longleftrightarrow> cond g ?s2"
       by simp
     {
-      assume "uninst_code.trivial_phis (const (snd (fst s1))) g \<noteq> {}"
+      assume "uninst_code.ssa.trivial_phis (const (snd (fst s1))) g \<noteq> {}"
       hence red: "uninst.redundant (usesOf \<circ> u_g g s1_uses) (\<lambda>g'. Mapping.lookup (p_g g s1_phis g')) g"
         by (simp add: cond_def uninst.CFG_SSA_wf_defs)
-      then interpret step!: CFG_SSA_step_code \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs"
+      then interpret step: CFG_SSA_step_code \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs"
         "u_g g s1_uses" "p_g g s1_phis" var chooseNext_all g
         by unfold_locales simp
       from step.step_CFG_SSA_Transformed_notriv[simplified]
-      interpret step_step!: CFG_SSA_Transformed_notriv \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs"
+      interpret step_step: CFG_SSA_Transformed_notriv \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs"
       "(usesOf \<circ> u_g g s1_uses)(g := uninst.uses' (usesOf \<circ> u_g g s1_uses) (\<lambda>g'. Mapping.lookup (p_g g s1_phis g')) g)"
       "(\<lambda>g'. Mapping.lookup (p_g g s1_phis g'))(g := uninst.phis' (usesOf \<circ> u_g g s1_uses) (\<lambda>g'. Mapping.lookup (p_g g s1_phis g')) g)"
       var i.cN .
 
-      interpret step_step!: CFG_SSA_ext \<alpha>e \<alpha>n invar inEdges' Entry "defs"
+      interpret step_step: CFG_SSA_ext \<alpha>e \<alpha>n invar inEdges' Entry "defs"
       "(usesOf \<circ> u_g g s1_uses)(g := uninst.uses' (usesOf \<circ> (u_g g s1_uses)) (\<lambda>g'. Mapping.lookup (p_g g s1_phis g')) g)"
       "(\<lambda>g'. Mapping.lookup (p_g g s1_phis g'))(g := uninst.phis' (usesOf \<circ> u_g g s1_uses) (\<lambda>g'. Mapping.lookup (p_g g s1_phis g')) g)"
       ..
@@ -984,28 +984,28 @@ begin
 
       have "Max (CFG_SSA_wf_base_code.trivial_phis (p_g g s1_phis) g) = chooseNext_all (usesOf (u_g g s1_uses g)) (p_g g s1_phis g) g"
       apply (rule chooseNext_all_code [where u="u_g g s1_uses", symmetric])
-      by unfold_locales (simp add: i.redundant_code [symmetric])
+      by unfold_locales (simp add: i.ssa.redundant_code [symmetric])
 
       hence [simp]: "Max (CFG_SSA_wf_base_code.trivial_phis (const s1_phis) g) = chooseNext_all (usesOf s1_uses) s1_phis g"
-        by (simp add: uninst_code.trivial_phis_def)
+        by (simp add: uninst_code.ssa.trivial_phis_def)
 
       have [simp]: "chooseNext_all (usesOf s1_uses) s1_phis g \<in> Mapping.keys s1_phis"
         using i.chooseNext' [of g]
         by (clarsimp simp: Mapping.keys_dom_lookup)
 
-      have [simp]: "uninst_code.useNodes_of (const s1_uses) g = uninst_code.useNodes_of (u_g g s1_uses) g"
-        unfolding uninst_code.useNodes_of_def
-        unfolding uninst_code.addN_def [abs_def]
+      have [simp]: "uninst_code.ssa.useNodes_of (const s1_uses) g = uninst_code.ssa.useNodes_of (u_g g s1_uses) g"
+        unfolding uninst_code.ssa.useNodes_of_def
+        unfolding uninst_code.ssa.addN_def [abs_def]
         by simp
 
-      have [simp]: "uninst_code.phiNodes_of (const s1_phis) g = uninst_code.phiNodes_of (p_g g s1_phis) g"
-        unfolding uninst_code.phiNodes_of_def
-        unfolding uninst_code.phis_addN_def [abs_def]
+      have [simp]: "uninst_code.ssa.phiNodes_of (const s1_phis) g = uninst_code.ssa.phiNodes_of (p_g g s1_phis) g"
+        unfolding uninst_code.ssa.phiNodes_of_def
+        unfolding uninst_code.ssa.phis_addN_def [abs_def]
         by simp
 
       from `Mapping.keys s1_phis \<subseteq> Mapping.keys (phis g)`
       have "finite (Mapping.keys s1_phis)"
-      by (rule finite_subset) (auto simp: keys_dom_lookup intro: phis_finite)
+      by (rule finite_subset) (auto simp: keys_dom_lookup intro: ssa.phis_finite)
 
       hence [simp]: "uninst_code.phi_equiv_mapping (const s1_phis) g = uninst_code.phi_equiv_mapping (p_g g s1_phis) g"
         apply (intro ext)
@@ -1045,13 +1045,12 @@ begin
       have [simp]: "uninst_code.substitution_code (const s1_phis) g = uninst_code.substitution_code (p_g g s1_phis) g"
         by (intro ext) (clarsimp simp: uninst_code.substitution_code_def)
 
-      let ?next = "Max (uninst_code.trivial_phis (const (snd (fst s1))) g)"
+      let ?next = "Max (uninst_code.ssa.trivial_phis (const (snd (fst s1))) g)"
       let ?u' = "fst (uninst_code.step_codem (u g (fst s1)) (p g (fst s1)) g ?next (uninst_code.substitution_code (const (snd (fst s1))) g ?next) (fst (snd (snd s1))) (snd (snd (snd s1))))"
       let ?p' = "snd (uninst_code.step_codem (u g (fst s1)) (p g (fst s1)) g ?next (uninst_code.substitution_code (const (snd (fst s1))) g ?next) (fst (snd (snd s1))) (snd (snd (snd s1))))"
 
       show step_s2: "step g ?s2 = map_prod usesOf Mapping.lookup (uninst_code.step_codem (u g (fst s1)) (p g (fst s1)) g
-        (Max (uninst_code.trivial_phis (const (snd (fst s1))) g))
-        (uninst_code.substitution_code (const (snd (fst s1))) g ?next)
+        ?next (uninst_code.substitution_code (const (snd (fst s1))) g ?next)
         (fst (snd (snd s1))) (snd (snd (snd s1))))"
         unfolding uninst_code.step_codem_def uninst.step_def split_def map_prod_def Let_def
       apply (auto simp: map_prod_def Let_def step_step.usesOf_cache[of g, simplified]
@@ -1066,12 +1065,12 @@ begin
 
       have [simplified, simp]:
         "uninst_code.phis'_codem (p g (fst s1)) g ?next (uninst_code.substitution_code (const (snd (fst s1))) g ?next) s1_phi_nodes_of
-          = uninst_code.phis'_codem (p g (fst s1)) g ?next (uninst_code.substitution_code (const (snd (fst s1))) g ?next) (uninst_code.phiNodes_of (const (snd (fst s1))) g)"
+          = uninst_code.phis'_codem (p g (fst s1)) g ?next (uninst_code.substitution_code (const (snd (fst s1))) g ?next) (uninst_code.ssa.phiNodes_of (const (snd (fst s1))) g)"
         by (auto simp: i.phis'_codem_correct [OF phi_equiv_mapping_refl] i.phis'_codem_correct [OF pno_equiv [simplified]])
 
       have [simplified, simp]:
         "usesOf (uninst_code.uses'_codem (u g (fst s1)) g ?next (uninst_code.substitution_code (const (snd (fst s1))) g ?next) s1_nodes_of_uses)
-          = usesOf (uninst_code.uses'_codem (u g (fst s1)) g ?next (uninst_code.substitution_code (const (snd (fst s1))) g ?next) (uninst_code.useNodes_of (const (fst (fst s1))) g))"
+          = usesOf (uninst_code.uses'_codem (u g (fst s1)) g ?next (uninst_code.substitution_code (const (snd (fst s1))) g ?next) (uninst_code.ssa.useNodes_of (const (fst (fst s1))) g))"
         by (auto simp: i.uses'_codem_correct [OF phi_equiv_mapping_refl] i.uses'_codem_correct [OF nou_equiv [simplified]])
 
       from step_s2[symmetric] step.step_CFG_SSA_Transformed_notriv `Mapping.keys s1_uses \<subseteq> set (\<alpha>n g)`
@@ -1101,17 +1100,17 @@ begin
             i.keys_uses'_codem' [OF nou_equiv [simplified], of ?next, simplified fun_upd_apply, simplified])
       moreover
 
-      have [simp]: "uninst_code.trivial_phis (p_g g s1_phis) g = uninst_code.trivial_phis (const s1_phis) g"
-        unfolding uninst_code.trivial_phis_def uninst_code.trivial_code_def
+      have [simp]: "uninst_code.ssa.trivial_phis (p_g g s1_phis) g = uninst_code.ssa.trivial_phis (const s1_phis) g"
+        unfolding uninst_code.ssa.trivial_phis_def uninst_code.ssa.trivial_code_def
         by clarsimp
 
       from i.triv_phis'_correct [of g "snd (snd (snd s1))" ?next] i.chooseNext' [of g]
       have "uninst_code.triv_phis' (const ?p') g ?next s1_triv_phis (snd (snd (snd s1)))
-        = uninst_code.trivial_phis (const ?p') g"
+        = uninst_code.ssa.trivial_phis (const ?p') g"
         by (auto intro: pno_equiv [simplified] simp: uninst_code.step_codem_def)
       moreover
 
-      from `Mapping.keys s1_phis \<subseteq> Mapping.keys (phis g)` phis_finite
+      from `Mapping.keys s1_phis \<subseteq> Mapping.keys (phis g)` ssa.phis_finite
       have "finite (dom (Mapping.lookup s1_phis))"
         by (auto intro: finite_subset simp: keys_dom_lookup)
       hence phi_equiv_mapping_p'I [simplified]:
@@ -1132,18 +1131,18 @@ begin
         apply -
         apply (erule meta_impE)
          apply auto[1]
-        apply (auto simp: Let_def uninst_code.substitution_code_def keys_dom_lookup uninst_code.trivial_def)
+        apply (auto simp: Let_def uninst_code.substitution_code_def keys_dom_lookup uninst_code.ssa.trivial_def)
         apply (drule i.isTrivial_the_trivial [rotated 1])
-         apply (rule i.phis_phi [where n="fst ?next"])
+         apply (rule i.ssa.phis_phi [where n="fst ?next"])
          apply simp
         apply clarsimp
-        apply (drule i.allVars_in_allDefs)
+        apply (drule i.ssa.allVars_in_allDefs)
         apply clarsimp
-        apply (drule phis_phi)
+        apply (drule ssa.phis_phi)
         apply clarsimp
-        apply (clarsimp simp: uninst_code.allVars_def uninst_code.allDefs_def uninst_code.allUses_def uninst_code.phiDefs_def)
+        apply (clarsimp simp: uninst_code.ssa.allVars_def uninst_code.ssa.allDefs_def uninst_code.ssa.allUses_def uninst_code.ssa.phiDefs_def)
         apply (erule disjE)
-         apply (drule(1) simpleDef_not_phi)
+         apply (drule(1) ssa.simpleDef_not_phi)
          apply simp
         by (auto intro: rev_image_eqI)
 
@@ -1151,13 +1150,13 @@ begin
       show "Mapping.keys ?u' \<subseteq> set (\<alpha>n g) \<and>
           Mapping.keys ?p' \<subseteq> Mapping.keys (phis g) \<and>
           CFG_SSA_Transformed_notriv_linorder_code \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses defs
-           (u g (uninst_code.step_codem (u g (fst s1)) (p g (fst s1)) g (Max (uninst_code.trivial_phis (const (snd (fst s1))) g)) (uninst_code.substitution_code (const (snd (fst s1))) g ?next) (fst (snd (snd s1))) (snd (snd (snd s1)))))
-           (p g (uninst_code.step_codem (u g (fst s1)) (p g (fst s1)) g (Max (uninst_code.trivial_phis (const (snd (fst s1))) g)) (uninst_code.substitution_code (const (snd (fst s1))) g ?next) (fst (snd (snd s1))) (snd (snd (snd s1)))))
+           (u g (uninst_code.step_codem (u g (fst s1)) (p g (fst s1)) g (Max (uninst_code.ssa.trivial_phis (const (snd (fst s1))) g)) (uninst_code.substitution_code (const (snd (fst s1))) g ?next) (fst (snd (snd s1))) (snd (snd (snd s1)))))
+           (p g (uninst_code.step_codem (u g (fst s1)) (p g (fst s1)) g (Max (uninst_code.ssa.trivial_phis (const (snd (fst s1))) g)) (uninst_code.substitution_code (const (snd (fst s1))) g ?next) (fst (snd (snd s1))) (snd (snd (snd s1)))))
            var chooseNext_all \<and>
-          uninst_code.triv_phis' (const ?p') g ?next (uninst_code.trivial_phis (const (snd (fst s1))) g) (snd (snd (snd s1)))
-            = uninst_code.trivial_phis (const ?p') g \<and>
-          uninst_code.phi_equiv_mapping (const ?p') g (uninst_code.nodes_of_uses' g ?next (uninst_code.substitution_code (const (snd (fst s1))) g ?next) (snd ` dom (Mapping.lookup (phis g))) (fst (snd (snd s1)))) (uninst_code.useNodes_of (const ?u') g) \<and>
-          uninst_code.phi_equiv_mapping (const ?p') g (uninst_code.nodes_of_phis' g ?next (uninst_code.substitution_code (const (snd (fst s1))) g ?next) (snd (snd (snd s1)))) (uninst_code.phiNodes_of (const ?p') g)"
+          uninst_code.triv_phis' (const ?p') g ?next (uninst_code.ssa.trivial_phis (const (snd (fst s1))) g) (snd (snd (snd s1)))
+            = uninst_code.ssa.trivial_phis (const ?p') g \<and>
+          uninst_code.phi_equiv_mapping (const ?p') g (uninst_code.nodes_of_uses' g ?next (uninst_code.substitution_code (const (snd (fst s1))) g ?next) (snd ` dom (Mapping.lookup (phis g))) (fst (snd (snd s1)))) (uninst_code.ssa.useNodes_of (const ?u') g) \<and>
+          uninst_code.phi_equiv_mapping (const ?p') g (uninst_code.nodes_of_phis' g ?next (uninst_code.substitution_code (const (snd (fst s1))) g ?next) (snd (snd (snd s1)))) (uninst_code.ssa.phiNodes_of (const ?p') g)"
       using i.nodes_of_uses'_correct [of g s1_nodes_of_uses ?next, OF nou_equiv [simplified]]
         i.chooseNext' [of g]
         i.nodes_of_phis'_correct [of g s1_phi_nodes_of ?next, OF pno_equiv [simplified]]

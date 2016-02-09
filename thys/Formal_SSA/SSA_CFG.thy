@@ -4,7 +4,6 @@
 
 theory SSA_CFG
 imports Main Relation Graph_path "~~/src/HOL/Library/Sublist"
-  "~~/src/Tools/Permanent_Interpretation"
 begin
 
 subsection {* CFG *}
@@ -284,6 +283,10 @@ begin
 
   definition "defAssUses g \<equiv> \<forall>n \<in> set (\<alpha>n g). \<forall>v \<in> allUses g n. defAss g n v"
 
+  text {* 'liveness' of an SSA value is defined inductively starting from simple uses so that
+    a circle of \pf s is not considered live. *}
+
+  declare [[inductive_internals]]
   inductive liveVal :: "'g \<Rightarrow> 'val \<Rightarrow> bool"
     for g :: 'g
   where
@@ -652,7 +655,7 @@ for
   fixes var :: "'g \<Rightarrow> 'val \<Rightarrow> 'var"
 
 locale CFG_SSA_Transformed = CFG_SSA_Transformed_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses" phis var
-  + old!: CFG_wf \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses + CFG_SSA_wf \<alpha>e \<alpha>n invar inEdges' Entry "defs" "uses" phis
+  + old: CFG_wf \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses + CFG_SSA_wf \<alpha>e \<alpha>n invar inEdges' Entry "defs" "uses" phis
 for
   \<alpha>e :: "'g \<Rightarrow> ('node::linorder \<times> 'edgeD \<times> 'node) set" and
   \<alpha>n :: "'g \<Rightarrow> 'node list" and
@@ -702,7 +705,7 @@ begin
       let ?V' = "last (butlast ns')"
       from ns' phi have nontriv: "length ns' \<ge> 2"
         by - (rule old.path2_nontrivial, auto)
-      hence 3: "g \<turnstile> Entry g-butlast ns'\<rightarrow>?V'" "?V' \<in> set (predecessors g ?V)"
+      hence 3: "g \<turnstile> Entry g-butlast ns'\<rightarrow>?V'" "?V' \<in> set (old.predecessors g ?V)"
         using ns'(1) by (auto intro: old.path2_unsnoc)
       with phi vs obtain v' where v': "v' \<in> phiUses g ?V'" "var g v' = var g v"
         by - (rule phiArg_exI, auto simp: phi_def phis_same_var phiArg_def)
@@ -736,7 +739,7 @@ begin
       let ?V' = "last (butlast ns)"
       from ns phi have nontriv: "length ns \<ge> 2"
         by - (rule old.path2_nontrivial, auto)
-      hence 3: "g \<turnstile> Entry g-butlast ns\<rightarrow>?V'" "?V' \<in> set (predecessors g ?V)"
+      hence 3: "g \<turnstile> Entry g-butlast ns\<rightarrow>?V'" "?V' \<in> set (old.predecessors g ?V)"
         using ns(1) by (auto intro: old.path2_unsnoc)
       with phi vs obtain v' where v': "v' \<in> phiUses g ?V'" "var g v' = var g v"
         by - (rule phiArg_exI, auto simp: phi_def phis_same_var phiArg_def)
@@ -792,7 +795,7 @@ begin
     have "?P \<noteq> ?Q" using defNode_var_disjoint[of p g q] by auto
     moreover have "?Q \<notin> set (tl ns)" using p(2,3)
       by - (rule conventional'[OF p(1), of p q], auto)
-    ultimately show ?thesis using p(1) by (cases ns, auto simp: path2_def)
+    ultimately show ?thesis using p(1) by (cases ns, auto simp: old.path2_def)
   qed
 
   lemma defUse_paths_disjoint:
@@ -808,24 +811,24 @@ begin
       fix p ns n
       assume p: "g \<turnstile> defNode g p-ns\<rightarrow>n" "defNode g p \<notin> set (tl ns)" "p \<in> allUses g n"
       assume y: "y \<in> set ns"
-      from p(1,3) have dom: "dominates g (defNode g p) n" by - (rule allUses_dominated, auto)
+      from p(1,3) have dom: "old.dominates g (defNode g p) n" by - (rule allUses_dominated, auto)
       moreover
       obtain ns' where "g \<turnstile> y-ns'\<rightarrow>n" "suffixeq ns' ns"
         by (rule old.path2_split_first_last[OF p(1) y], auto)
-      ultimately have "dominates g (defNode g p) y" using suffixeq_tl_subset[of ns' ns] p(2)
+      ultimately have "old.dominates g (defNode g p) y" using suffixeq_tl_subset[of ns' ns] p(2)
         by - (rule old.dominates_extend[where ms=ns'], auto)
     }
-    with assms y have dom: "dominates g (defNode g p) y" "dominates g (defNode g q) y" by auto
+    with assms y have dom: "old.dominates g (defNode g p) y" "old.dominates g (defNode g q) y" by auto
 
     {
       fix p ns n q ms m
       let ?P = "defNode g p"
       let ?Q = "defNode g q"
 
-      assume p: "g \<turnstile> defNode g p-ns\<rightarrow>n" "defNode g p \<notin> set (tl ns)" "p \<in> allUses g n" "dominates g ?P y" "y \<in> set ns"
-      assume q: "g \<turnstile> defNode g q-ms\<rightarrow>m" "defNode g q \<notin> set (tl ms)" "q \<in> allUses g m" "dominates g ?Q y" "y \<in> set ms"
+      assume p: "g \<turnstile> defNode g p-ns\<rightarrow>n" "defNode g p \<notin> set (tl ns)" "p \<in> allUses g n" "old.dominates g ?P y" "y \<in> set ns"
+      assume q: "g \<turnstile> defNode g q-ms\<rightarrow>m" "defNode g q \<notin> set (tl ms)" "q \<in> allUses g m" "old.dominates g ?Q y" "y \<in> set ms"
       assume[simp]: "p \<noteq> q" "var g p = var g q"
-      assume dom: "dominates g ?P ?Q"
+      assume dom: "old.dominates g ?P ?Q"
       then obtain pqs where pqs: "g \<turnstile> ?P-pqs\<rightarrow>?Q" "?P \<notin> set (tl pqs)" by (rule old.dominates_path, auto intro: old.simple_path2)
       from p obtain ns\<^sub>2 where ns\<^sub>2: "g \<turnstile> y-ns\<^sub>2\<rightarrow>n" "suffixeq ns\<^sub>2 ns" by - (rule old.path2_split_first_last, auto)
       from q obtain ms\<^sub>1 where ms\<^sub>1: "g \<turnstile> ?Q-ms\<^sub>1\<rightarrow>y" "prefixeq ms\<^sub>1 ms" by - (rule old.path2_split_first_last, auto)
@@ -846,7 +849,7 @@ begin
         show "p \<in> allDefs g (defNode g p)" by auto
         have "?P \<noteq> ?Q" using defNode_var_disjoint[of p g q] by auto
         hence 1: "length pqs > 1" using pqs by - (rule old.path2_nontriv)
-        hence "?Q \<in> set (tl pqs)" using pqs unfolding path2_def by (auto intro:last_in_tl)
+        hence "?Q \<in> set (tl pqs)" using pqs unfolding old.path2_def by (auto intro:last_in_tl)
         moreover from 1 have "pqs \<noteq> []" by auto
         ultimately show "?Q \<in> set (tl ?path)" by simp
         show "q \<in> allDefs g ?Q" by simp
