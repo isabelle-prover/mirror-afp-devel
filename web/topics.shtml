@@ -81,6 +81,7 @@
 <a href="entries/QR_Decomposition.shtml">QR_Decomposition</a> &nbsp;
 <a href="entries/Hermite.shtml">Hermite</a> &nbsp;
 <a href="entries/Imperative_Insertion_Sort.shtml">Imperative_Insertion_Sort</a> &nbsp;
+<a href="entries/Formal_SSA.shtml">Formal_SSA</a> &nbsp;
 
 <strong>Distributed:</strong>&nbsp;<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
 <a href="entries/GenClock.shtml">GenClock</a> &nbsp;
@@ -217,6 +218,7 @@
 
 <strong>Transformations:</strong>&nbsp;<a href="entries/Call_Arity.shtml">Call_Arity</a> &nbsp;
 <a href="entries/WorkerWrapper.shtml">WorkerWrapper</a> &nbsp;
+<a href="entries/Formal_SSA.shtml">Formal_SSA</a> &nbsp;
 
 <strong>Misc:</strong>&nbsp;<a href="entries/JiveDataStoreModel.shtml">JiveDataStoreModel</a> &nbsp;
 <a href="entries/Case_Labeling.shtml">Case_Labeling</a> &nbsp;
