@@ -54,19 +54,20 @@ apply(induct qs as arbitrary: s rule: list_induct2)
 abbreviation Step_rand :: "('state,'is,'request,'answer) alg_on_rand  \<Rightarrow> 'request \<Rightarrow> 'state * 'is \<Rightarrow> ('state * 'is) pmf" where
 "Step_rand A r s \<equiv> bind_pmf ((snd A) s r) (\<lambda>(a,is'). return_pmf (step (fst s) r a, is'))"
  
-fun config' :: "('state,'is,'request,'answer) alg_on_rand  \<Rightarrow> ('state*'is) pmf \<Rightarrow> 'request list  
+fun config'_rand :: "('state,'is,'request,'answer) alg_on_rand  \<Rightarrow> ('state*'is) pmf \<Rightarrow> 'request list  
     \<Rightarrow> ('state * 'is) pmf" where
-"config' A s []  = s" |
-"config' A s (r#rs) = config' A (s \<bind> Step_rand A r) rs"
+"config'_rand A s []  = s" |
+"config'_rand A s (r#rs) = config'_rand A (s \<bind> Step_rand A r) rs"
 
-lemma config'_append: "config' A s (rs@[r]) = config' A s rs \<bind> Step_rand A r"
+lemma config'_rand_append: "config'_rand A s (rs@[r]) = config'_rand A s rs \<bind> Step_rand A r"
 apply(induct rs arbitrary: s) by(simp_all)
 
 
-abbreviation config where
-"config A s0 rs == config' A ((fst A s0) \<bind> (\<lambda>is. return_pmf (s0, is))) rs"
+abbreviation config_rand where
+"config_rand A s0 rs == config'_rand A ((fst A s0) \<bind> (\<lambda>is. return_pmf (s0, is))) rs"
 
-lemma config'_induct: "(\<forall>x \<in> set_pmf init. P (fst x)) \<Longrightarrow> (\<And>s q a. P s \<Longrightarrow> P (step s q a)) \<Longrightarrow> \<forall>x\<in>set_pmf (config' A init qs). P (fst x)"
+lemma config'_rand_induct: "(\<forall>x \<in> set_pmf init. P (fst x)) \<Longrightarrow> (\<And>s q a. P s \<Longrightarrow> P (step s q a))
+     \<Longrightarrow> \<forall>x\<in>set_pmf (config'_rand A init qs). P (fst x)"
 proof (induct qs arbitrary: init)
   case (Cons r rs)
   show ?case apply(simp)
@@ -79,8 +80,8 @@ proof (induct qs arbitrary: init)
       by fact
 qed (simp)
  
-lemma config_induct: "P s0 \<Longrightarrow> (\<And>s q a. P s \<Longrightarrow> P (step s q a)) \<Longrightarrow> \<forall>x\<in>set_pmf (config  A s0 qs). P (fst x)"
-using config'_induct[of "((fst A s0) \<bind> (\<lambda>is. return_pmf (s0, is)))" P] by auto
+lemma config_rand_induct: "P s0 \<Longrightarrow> (\<And>s q a. P s \<Longrightarrow> P (step s q a)) \<Longrightarrow> \<forall>x\<in>set_pmf (config_rand A s0 qs). P (fst x)"
+using config'_rand_induct[of "((fst A s0) \<bind> (\<lambda>is. return_pmf (s0, is)))" P] by auto
 
 
 fun T_on_rand' :: "('state,'is,'request,'answer) alg_on_rand \<Rightarrow> ('state*'is) pmf \<Rightarrow> 'request list \<Rightarrow>  real" where
@@ -89,18 +90,18 @@ fun T_on_rand' :: "('state,'is,'request,'answer) alg_on_rand \<Rightarrow> ('sta
                               + T_on_rand' A (s \<bind> Step_rand A r) rs"
 
 
-lemma T_on_rand'_append: "T_on_rand' A s (xs@ys) = T_on_rand' A s xs + T_on_rand' A (config' A s xs) ys"
+lemma T_on_rand'_append: "T_on_rand' A s (xs@ys) = T_on_rand' A s xs + T_on_rand' A (config'_rand A s xs) ys"
 apply(induct xs arbitrary: s) by simp_all   
 
 abbreviation T_on_rand :: "('state,'is,'request,'answer) alg_on_rand \<Rightarrow> 'state \<Rightarrow> 'request list \<Rightarrow> real" where
   "T_on_rand A s rs == T_on_rand' A (fst A s \<bind> (\<lambda>is. return_pmf (s,is))) rs" 
 
-lemma T_on_rand_append: "T_on_rand A s (xs@ys) = T_on_rand A s xs + T_on_rand' A (config A s xs) ys"
+lemma T_on_rand_append: "T_on_rand A s (xs@ys) = T_on_rand A s xs + T_on_rand' A (config_rand A s xs) ys"
 by(rule T_on_rand'_append)  
 
-abbreviation "T_on_n A s0 xs n == T_on_rand' A (config A s0 (take n xs)) [xs!n]" 
+abbreviation "T_on_rand_n A s0 xs n == T_on_rand' A (config_rand A s0 (take n xs)) [xs!n]" 
 
-lemma T_on_rand_as_sum: "T_on_rand A s0 rs = setsum (T_on_n A s0 rs) {..<length rs} "
+lemma T_on_rand_as_sum: "T_on_rand A s0 rs = setsum (T_on_rand_n A s0 rs) {..<length rs} "
 apply(induct rs rule: rev_induct)
   by(simp_all add: T_on_rand'_append  nth_append)
 
@@ -131,7 +132,7 @@ apply(induct qs arbitrary: s0 x)
 
 lemma T_on_embedd: "T_on A s0 qs = T_on_rand (embedd A) s0 qs"
 using T_deter_rand[where x="fst A s0", of s0 qs A] by(auto simp: bind_return_pmf)
-
+ 
 lemma compet_embedded: "compet A c S0 = compet_rand (embedd A) c S0"
 unfolding compet_def compet_rand_def using T_on_embedd by metis
 

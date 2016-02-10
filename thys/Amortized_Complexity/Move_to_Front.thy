@@ -6,6 +6,7 @@ theory Move_to_Front
 imports
   Swaps
   On_Off
+  Competitive_Analysis
 begin
 
 declare Let_def[simp]
@@ -153,7 +154,7 @@ by(auto simp add: step_def)
 lemma set_step: "set(step s r act) = set s"
 by(cases act)(simp add: set_step2)
 
-lemma distinct_step: "s \<noteq> [] \<Longrightarrow> distinct(step s r as) = distinct s"
+lemma distinct_step: "distinct(step s r as) = distinct s"
 by (auto simp: step_def split_def)
 
 
@@ -178,6 +179,20 @@ proof-
   thus ?thesis
     by (metis (erased, lifting) add.commute diff_add_cancel le_add_same_cancel2 order.trans ppos setsum_mono ub)
 qed
+
+lemma potential2:
+fixes t :: "nat \<Rightarrow> 'a::linordered_ab_group_add" and p :: "nat \<Rightarrow> 'a"
+assumes p0: "p 0 = 0" and ppos: "\<And>n. p n \<ge> 0"
+and ub: "\<And>m. m<n \<Longrightarrow> t m + p(m+1) - p m \<le> u m"
+shows "(\<Sum>i<n. t i) \<le> (\<Sum>i<n. u i)"
+proof-
+  let ?a = "\<lambda>n. t n + p(n+1) - p n"
+  have "(\<Sum>i<n. t i) = (\<Sum>i<n. ?a i) - p(n)" by(induction n) (simp_all add: p0)
+  also have      "\<dots> \<le> (\<Sum>i<n. ?a i)" using ppos by auto
+  also have      "\<dots> \<le> (\<Sum>i<n. u i)" apply(rule setsum_mono) apply(rule ub) by auto
+  finally show ?thesis .
+qed
+
 
 abbreviation "before x xs \<equiv> {y. y < x in xs}"
 abbreviation "after x xs \<equiv> {y. x < y in xs}"
@@ -239,6 +254,30 @@ apply(induction xs)
  apply (simp add: before_in_def)
 apply (auto simp: card_insert_if)
 done
+
+lemma config_config_length: "length (fst (config A init qs)) = length init"
+apply (induct rule: config_induct) by (simp_all)
+
+lemma config_config_distinct: 
+  shows " distinct (fst (config A init qs)) = distinct init" 
+apply (induct rule: config_induct) by (simp_all add: distinct_step)
+
+lemma config_config_set: 
+  shows "set (fst (config A init qs)) = set init"
+apply(induct rule: config_induct) by(simp_all add: set_step)
+
+lemma config_config:
+  "set (fst (config A init qs)) = set init
+        \<and> distinct (fst (config A init qs)) = distinct init
+        \<and> length (fst (config A init qs)) = length init"
+using config_config_distinct config_config_set config_config_length by metis
+
+lemma config_dist_perm:
+  "distinct init \<Longrightarrow> dist_perm (fst (config A init qs)) init"
+using config_config_distinct config_config_set by metis
+ 
+
+
 
 (*fixme start from Inv*)
 

@@ -189,7 +189,7 @@ apply(induct qs as arbitrary: s  n rule: list_induct2) by auto
 
 
 
-definition "ALG'_det Strat qs init i x = ALG x qs i (swapSucs (snd (Strat!i)) (steps' init qs Strat i),())"
+definition "ALG'_det Strat qs init i x = ALG x qs i (swaps (snd (Strat!i)) (steps' init qs Strat i),())"
 
 lemma ALG'_det_append: "n < length Strat \<Longrightarrow> n < length qs \<Longrightarrow> ALG'_det Strat (qs@a) init n x 
                         = ALG'_det Strat qs init n x"
@@ -217,7 +217,7 @@ proof -
 qed 
 
 
-abbreviation "config'' A qs init n == config A init (take n qs)"
+abbreviation "config'' A qs init n == config_rand A init (take n qs)"
 
 definition "ALG' A qs init i x = E( map_pmf (ALG x qs i) (config'' A qs init i))"
 thm ALG'_def
@@ -301,7 +301,7 @@ We can find another representation of the cost of an online algorithm without pa
 
 (*<*)
 
-thm config_config_set
+thm config_rand_set
 
 term "(set init) \<times> (set init)"
 
@@ -316,11 +316,11 @@ lemma umformung:
     (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ALGxy A qs init x y)"
 proof -
   have config_dist: "\<forall>n. \<forall>xa \<in> set_pmf (config'' A qs init n). distinct (fst xa)"
-      using dist config_config_distinct by metis
+      using dist config_rand_distinct by metis
 
   thm setsum.cong
   have E0: "T\<^sub>p_on_rand A init qs =
-        (\<Sum>i\<in>{..<length qs}. T\<^sub>p_on_n A init qs i)" unfolding T_on_rand_as_sum by auto
+        (\<Sum>i\<in>{..<length qs}. T\<^sub>p_on_rand_n A init qs i)" unfolding T_on_rand_as_sum by auto
   also have "\<dots> = 
   (\<Sum>i<length qs.  E (bind_pmf (config'' A qs init i)
                           (\<lambda>s. bind_pmf (snd A s (qs ! i))
@@ -343,12 +343,12 @@ proof -
                     then show ?case using no_paid[of "fst b" "snd b"] by(auto simp add: split_def)
                   next
                     case (3 a b c)
-                    with config_config_set have a: "set (fst b) = set init" by metis
+                    with config_rand_set have a: "set (fst b) = set init" by metis
                     with inlist have " set qs \<subseteq> set (fst b)" by auto
                     with 3 show ?case by auto 
                   next
                     case (4 a b c)
-                    with config_config_set have a: "set (fst b) = set init" by metis
+                    with config_rand_set have a: "set (fst b) = set init" by metis
                     then show ?case by(simp) 
                   qed
           
@@ -944,24 +944,24 @@ qed
 lemma T_on_n_no_paid:
       assumes 
       nopaid: "\<And>l m n. map_pmf (\<lambda>x. snd (fst x)) (snd A (l, m) n) = return_pmf []" 
-      shows "T_on_n A init qs i = E (config'' A qs init i \<bind> (\<lambda>p. return_pmf (real(index (fst p) (qs ! i)))))"
+      shows "T_on_rand_n A init qs i = E (config'' A qs init i \<bind> (\<lambda>p. return_pmf (real(index (fst p) (qs ! i)))))"
 proof -
   { fix p :: "'a list \<times> 'b"
     have "snd A (fst p,snd p)
        (qs ! i) \<bind>
       (\<lambda>pa. return_pmf
              (real(index
-               (swapSucs (snd (fst pa))
+               (swaps (snd (fst pa))
                  (fst p))
                (qs ! i) +
               length (snd (fst pa)))))
            =  map_pmf ((%pay. 
-             real(index (swapSucs pay (fst p))
+             real(index (swaps pay (fst p))
                (qs ! i) + length pay)) \<circ> (\<lambda>pa. (snd(fst pa)) ))
                (snd A(fst p,snd p) (qs ! i))"
                by(simp add: map_pmf_def)
      also have "\<dots> = map_pmf (%pay. 
-             (index (swapSucs pay (fst p))
+             (index (swaps pay (fst p))
                (qs ! i) + length pay)) (
                 map_pmf ((\<lambda>pa. (snd(fst pa)) ))
                (snd A(fst p,snd p) (qs ! i)))"
@@ -971,7 +971,7 @@ proof -
        (qs ! i) \<bind>
       (\<lambda>pa. return_pmf
              (real(index
-               (swapSucs (snd (fst pa))
+               (swaps (snd (fst pa))
                  (fst p))
                (qs ! i)) +
               length (snd (fst pa))))
@@ -1010,9 +1010,9 @@ proof clarify
   proof -
       case goal1
       obtain I S where A: "A=(I,S)" by fastforce 
-      have "setsum (T\<^sub>p_on_n A (Lxy init {x, y}) (Lxy qs {x, y})) {..<length (Lxy qs {x, y})}
+      have "setsum (T\<^sub>p_on_rand_n A (Lxy init {x, y}) (Lxy qs {x, y})) {..<length (Lxy qs {x, y})}
           = setsum (\<lambda>i.  if qs ! i \<in> {y, x} 
-                        then T\<^sub>p_on_n A (Lxy init {x, y}) (Lxy qs {x, y})  (nrofnextxy {x,y} qs i)
+                        then T\<^sub>p_on_rand_n A (Lxy init {x, y}) (Lxy qs {x, y})  (nrofnextxy {x,y} qs i)
                         else 0) {..<length qs}" sorry
       also have "\<dots> = (\<Sum>i<length qs.
         if qs ! i \<in> {y, x}
@@ -1026,7 +1026,7 @@ proof clarify
             have nopaid: "\<And>l m n. map_pmf (\<lambda>x. snd (fst x)) (snd A (l,m) n) = return_pmf []" 
               apply(simp add: map_pmf_def) sorry
             have requested: "(Lxy qs {x, y} ! (nrofnextxy {x, y} qs i)) = qs ! i" sorry
-            have 1: "T\<^sub>p_on_n A (Lxy init {x, y}) (Lxy qs {x, y})  (nrofnextxy {x, y} qs i)
+            have 1: "T\<^sub>p_on_rand_n A (Lxy init {x, y}) (Lxy qs {x, y})  (nrofnextxy {x, y} qs i)
                   = E (config'' A (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs i) \<bind>
                       (\<lambda>p. return_pmf (real(index (fst p) ((Lxy qs {x, y}) ! (nrofnextxy {x, y} qs i))))))"
                apply(rule T_on_n_no_paid) using nopaid by(simp)
@@ -1050,15 +1050,15 @@ proof clarify
                               (config'' A (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs i))"
                    unfolding A
                    proof (rule pmf.map_cong0)
-                    thm config_config_length
+                    thm config_rand_length
                     case goal1
                     from goal1 have A: "set (fst z) = set (Lxy init {x, y})"
-                      using config_config_set by metis
+                      using config_rand_set by metis
                     have B: "set (Lxy init {x, y}) = {x,y}" 
                       using  xyininit by(simp add: Lxy_set_filter)
                     from A B have 1: "set (fst z) = {x, y}" by auto
                     from goal1 have A: "length (fst z) = length (Lxy init {x, y})"
-                      using config_config_length by metis
+                      using config_rand_length by metis
                     also have "\<dots> = 2"
                     proof -
                       have "distinct (Lxy init {x,y})"
@@ -1140,7 +1140,7 @@ proof clarify
           = setsum ((%i. ALG' A qs init i y + ALG' A qs init i x) \<circ> (posxy qs {x,y}))
             ( {..<length (Lxy qs {x, y})})" sorry
       also have "\<dots> = setsum
-     (T\<^sub>p_on_n A (Lxy qs {x, y})
+     (T\<^sub>p_on_rand_n A (Lxy qs {x, y})
        (Lxy init {x, y}))
      {..<length (Lxy qs {x, y})}"
         apply(rule setsum.cong)
@@ -1160,17 +1160,17 @@ proof clarify
              (Lxy qs {x, y} ! i) \<bind>
             (\<lambda>pa. return_pmf
                    (real(index
-                     (swapSucs (snd (fst pa))
+                     (swaps (snd (fst pa))
                        (fst p))
                      (Lxy qs {x, y} ! i) +
                     length (snd (fst pa)))))
                  =  map_pmf ((%pay. 
-                   real(index (swapSucs pay (fst p))
+                   real(index (swaps pay (fst p))
                      (Lxy qs {x, y} ! i) + length pay)) \<circ> (\<lambda>pa. (snd(fst pa)) ))
                      (S (fst p,snd p) (Lxy qs {x, y} ! i))"
                      by(simp add: map_pmf_def)
            also have "\<dots> = map_pmf (%pay. 
-                   (index (swapSucs pay (fst p))
+                   (index (swaps pay (fst p))
                      (Lxy qs {x, y} ! i) + length pay)) (
                       map_pmf ((\<lambda>pa. (snd(fst pa)) ))
                      (S (fst p,snd p) (Lxy qs {x, y} ! i)))"
@@ -1180,7 +1180,7 @@ proof clarify
              (Lxy qs {x, y} ! i) \<bind>
             (\<lambda>pa. return_pmf
                    (real(index
-                     (swapSucs (snd (fst pa))
+                     (swaps (snd (fst pa))
                        (fst p))
                      (Lxy qs {x, y} ! i) +
                     length (snd (fst pa)))))
@@ -1244,15 +1244,15 @@ proof clarify
               also have "\<dots> = map_pmf (\<lambda>b. real(index (fst b) x))
                         (config'' (I, S) (Lxy qs {x, y}) (Lxy init {x, y}) i)"
                    proof (rule pmf.map_cong0)
-                    thm config_config_length
+                    thm config_rand_length
                     case goal1
                     from goal1 have A: "set (fst z) = set (Lxy init {x, y})"
-                      using config_config_set by metis
+                      using config_rand_set by metis
                     have B: "set (Lxy init {x, y}) = {x,y}" 
                       using xyininit  by(simp add: Lxy_set_filter)
                     from A B have 1: "set (fst z) = {y, x}" by auto
                     from goal1 have A: "length (fst z) = length (Lxy init {x, y})"
-                      using config_config_length by metis
+                      using config_rand_length by metis
                     also have "\<dots> = 2"
                     proof -
                       have "distinct (Lxy init {x,y})"
@@ -1375,13 +1375,13 @@ section "List Factoring for OPT"
 
 (*<*)
 thm ALG.simps
-thm swapSuc_def
+thm swap_def
 (* calculates given a list of swaps, elements x and y and a current state
   how many swaps between x and y there are *)
 fun ALG_P :: "nat list \<Rightarrow> 'a  \<Rightarrow> 'a  \<Rightarrow> 'a list \<Rightarrow> nat" where
   "ALG_P [] x y xs = (0::nat)"
-| "ALG_P (s#ss) x y xs = (if Suc s < length (swapSucs ss xs)
-                          then (if ((swapSucs ss xs)!s=x \<and> (swapSucs ss xs)!(Suc s)=y) \<or> ((swapSucs ss xs)!s=y \<and> (swapSucs ss xs)!(Suc s)=x)
+| "ALG_P (s#ss) x y xs = (if Suc s < length (swaps ss xs)
+                          then (if ((swaps ss xs)!s=x \<and> (swaps ss xs)!(Suc s)=y) \<or> ((swaps ss xs)!s=y \<and> (swaps ss xs)!(Suc s)=x)
                                 then 1
                                 else 0)
                           else 0) + ALG_P ss x y xs"
@@ -1396,19 +1396,19 @@ proof (induct sws)
   case (Cons s ss)
   then have isininit: "Suc s < length init" by auto
   
-  let ?expr = "(\<lambda>x y. (if Suc s < length (swapSucs ss init)
-                          then (if ((swapSucs ss init)!s=x \<and> (swapSucs ss init)!(Suc s)=y) \<or> ((swapSucs ss init)!s=y \<and> (swapSucs ss init)!(Suc s)=x)
+  let ?expr = "(\<lambda>x y. (if Suc s < length (swaps ss init)
+                          then (if ((swaps ss init)!s=x \<and> (swaps ss init)!(Suc s)=y) \<or> ((swaps ss init)!s=y \<and> (swaps ss init)!(Suc s)=x)
                                 then 1::nat
                                 else 0)
                           else 0))"
 
-  let ?expr2 = "(\<lambda>x y. (if ((swapSucs ss init)!s=x \<and> (swapSucs ss init)!(Suc s)=y) \<or> ((swapSucs ss init)!s=y \<and> (swapSucs ss init)!(Suc s)=x)
+  let ?expr2 = "(\<lambda>x y. (if ((swaps ss init)!s=x \<and> (swaps ss init)!(Suc s)=y) \<or> ((swaps ss init)!s=y \<and> (swaps ss init)!(Suc s)=x)
                                 then 1
                                 else 0))"
 
-  let ?expr3 = "(%x y.  ((swapSucs ss init)!s=x \<and> (swapSucs ss init)!(Suc s)=y)
-                    \<or> ((swapSucs ss init)!s=y \<and> (swapSucs ss init)!(Suc s)=x))"
-  let ?co' = "swapSucs ss init"
+  let ?expr3 = "(%x y.  ((swaps ss init)!s=x \<and> (swaps ss init)!(Suc s)=y)
+                    \<or> ((swaps ss init)!s=y \<and> (swaps ss init)!(Suc s)=x))"
+  let ?co' = "swaps ss init"
 
   from dinit have dco: "distinct ?co'" by auto
 
@@ -1462,7 +1462,7 @@ proof (induct sws)
     have b: "?B = { (?co'!(Suc s), ?co'!s) } "
     proof -
      from dco distinct_conv_nth[of "?co'"] 
-     have "swapSucs ss init ! s \<noteq> swapSucs ss init ! (Suc s)" 
+     have "swaps ss init ! s \<noteq> swaps ss init ! (Suc s)" 
       using isT2 isT3 by simp
      with False show ?thesis by auto
     qed
@@ -1518,7 +1518,7 @@ qed (simp)
 (* thesame with paid exchanges *)
 lemma t\<^sub>p_sumofALGALGP: "distinct s \<Longrightarrow> (qs!i)\<in>set s 
   \<Longrightarrow> \<forall>l\<in>set (snd a). Suc l < length s
-  \<Longrightarrow> t\<^sub>p s (qs!i) a = (\<Sum>e\<in>set s. ALG e qs i (swapSucs (snd a) s,()))
+  \<Longrightarrow> t\<^sub>p s (qs!i) a = (\<Sum>e\<in>set s. ALG e qs i (swaps (snd a) s,()))
       + (\<Sum>(x,y)\<in>{(x::('a::linorder),y)|x y. x \<in> set s \<and> y\<in>set s \<and> x<y}. ALG_P (snd a) x y s)"
 proof -
   case goal1
@@ -1531,13 +1531,13 @@ proof -
 
 
   (* access cost *)
-  have ac: "index (swapSucs (snd a) s) (qs ! i) = (\<Sum>e\<in>set s. ALG e qs i (swapSucs (snd a) s,()))"
+  have ac: "index (swaps (snd a) s) (qs ! i) = (\<Sum>e\<in>set s. ALG e qs i (swaps (snd a) s,()))"
   proof -
-    have "index (swapSucs (snd a) s) (qs ! i) 
-        = (\<Sum>e\<in>set (swapSucs (snd a) s). if e < (qs ! i) in (swapSucs (snd a) s) then 1 else 0)" 
+    have "index (swaps (snd a) s) (qs ! i) 
+        = (\<Sum>e\<in>set (swaps (snd a) s). if e < (qs ! i) in (swaps (snd a) s) then 1 else 0)" 
           apply(rule index_sum)
             using goal1 by(simp_all)
-    also have "\<dots> = (\<Sum>e\<in>set s. ALG e qs i (swapSucs (snd a) s,()))" by auto
+    also have "\<dots> = (\<Sum>e\<in>set s. ALG e qs i (swaps (snd a) s,()))" by auto
     finally show ?thesis .
   qed
 
@@ -1549,12 +1549,12 @@ qed
 
 (*
 lemma ALG_P_1: "Suc s < length xs \<Longrightarrow> (xs!s=x \<and> xs!(Suc s)=y) \<or> (xs!s=y \<and> xs!(Suc s)=x) \<Longrightarrow>
-ALG_P (s#ss) x y xs = 1 + ALG_P ss x y (swapSuc s xs)" by(simp)
+ALG_P (s#ss) x y xs = 1 + ALG_P ss x y (swap s xs)" by(simp)
 
-lemma ALG_P_0a: "~ Suc s < length xs \<Longrightarrow> ALG_P (s#ss) x y xs = 0 + ALG_P ss x y (swapSuc s xs)" by(auto)
-lemma ALG_P_0b: "Suc s < length xs \<Longrightarrow> ~((xs!s=x \<and> xs!(Suc s)=y) \<or> (xs!s=y \<and> xs!(Suc s)=x)) \<Longrightarrow> ALG_P (s#ss) x y xs = 0 + ALG_P ss x y (swapSuc s xs)" by auto
+lemma ALG_P_0a: "~ Suc s < length xs \<Longrightarrow> ALG_P (s#ss) x y xs = 0 + ALG_P ss x y (swap s xs)" by(auto)
+lemma ALG_P_0b: "Suc s < length xs \<Longrightarrow> ~((xs!s=x \<and> xs!(Suc s)=y) \<or> (xs!s=y \<and> xs!(Suc s)=x)) \<Longrightarrow> ALG_P (s#ss) x y xs = 0 + ALG_P ss x y (swap s xs)" by auto
 
-lemma ALG_P_0: "(~ Suc s < length xs) \<or> ~((xs!s=x \<and> xs!(Suc s)=y) \<or> (xs!s=y \<and> xs!(Suc s)=x)) \<Longrightarrow> ALG_P (s#ss) x y xs = 0 + ALG_P ss x y (swapSuc s xs)"
+lemma ALG_P_0: "(~ Suc s < length xs) \<or> ~((xs!s=x \<and> xs!(Suc s)=y) \<or> (xs!s=y \<and> xs!(Suc s)=x)) \<Longrightarrow> ALG_P (s#ss) x y xs = 0 + ALG_P ss x y (swap s xs)"
   by(auto)
 *)
 
@@ -1716,7 +1716,7 @@ Similarly we lift the blocking cost @{term ALG} to @{term "ALGxy_det"}.
 
 lemma swap0in2:  assumes "set l = {x,y}" "x\<noteq>y" "length l = 2" "dist_perm l l"
   shows
-    "x < y in (swapSuc 0) l = (~ x < y in l)"
+    "x < y in (swap 0) l = (~ x < y in l)"
 proof (cases "x < y in l")
   case True
   then have a: "index l x < index l y" unfolding before_in_def by simp
@@ -1727,16 +1727,16 @@ proof (cases "x < y in l")
   have g: "x = l ! 0" "y = l ! 1"
     using k nth_index assms(1) by force+ 
 
-      have "x < y in swapSuc 0 l
+      have "x < y in swap 0 l
       = (x < y in l \<and> \<not> (x = l ! 0 \<and> y = l ! Suc 0)
             \<or>  x = l ! Suc 0 \<and> y = l ! 0)"
-            apply(rule before_in_swapSuc)
+            apply(rule before_in_swap)
               apply(fact assms(4))
               using assms(3) by simp
   also have "\<dots> = (\<not> (x = l ! 0 \<and> y = l ! Suc 0)
             \<or>  x = l ! Suc 0 \<and> y = l ! 0)" using True by simp
   also have "\<dots> = False" using g assms(2) by auto
-  finally have "~ x < y in (swapSuc 0) l" by simp
+  finally have "~ x < y in (swap 0) l" by simp
   then show ?thesis using True by auto
 next
   case False
@@ -1748,26 +1748,26 @@ next
   from a b have k: "index l x = 1" "index l y = 0" by auto
   then have g: "x = l ! 1" "y = l ! 0" 
     using k nth_index assms(1) by force+ 
-  have "x < y in swapSuc 0 l
+  have "x < y in swap 0 l
       = (x < y in l \<and> \<not> (x = l ! 0 \<and> y = l ! Suc 0)
             \<or>  x = l ! Suc 0 \<and> y = l ! 0)"
-            apply(rule before_in_swapSuc)
+            apply(rule before_in_swap)
               apply(fact assms(4))
               using assms(3) by simp
   also have "\<dots> = (x = l ! Suc 0 \<and> y = l ! 0)" using False by simp
   also have "\<dots> = True" using g by auto
-  finally have "x < y in (swapSuc 0) l" by simp
+  finally have "x < y in (swap 0) l" by simp
   then show ?thesis using False by auto
 qed 
 
 
 
-lemma before_in_swapSuc2:
+lemma before_in_swap2:
  "dist_perm xs ys \<Longrightarrow> Suc n < size xs \<Longrightarrow> x\<noteq>y \<Longrightarrow>
-  x < y in (swapSuc n xs) \<longleftrightarrow>
+  x < y in (swap n xs) \<longleftrightarrow>
   (~ x < y in xs \<and> (y = xs!n \<and> x = xs!Suc n)
       \<or> x < y in xs \<and> ~(y = xs!Suc n \<and> x = xs!n))"
-apply(simp add:before_in_def index_swapSuc_distinct)
+apply(simp add:before_in_def index_swap_distinct)
 by (metis Suc_lessD Suc_lessI index_nth_id less_Suc_eq nth_mem yes)
 
 lemma geil: 
@@ -1778,32 +1778,32 @@ lemma geil:
   and g: "length s2 = 2"  
   and h: "dist_perm s2 s2"  
   shows "x < y in s1 = x < y in s2 \<Longrightarrow>
-  x < y in swapSucs acs s1 = x < y in (swapSuc 0 ^^ ALG_P acs x y s1) s2"
+  x < y in swaps acs s1 = x < y in (swap 0 ^^ ALG_P acs x y s1) s2"
 proof (induct acs)
   case Nil
   then show ?case by auto
 next
   case (Cons s ss)
-  from d have dd: "dist_perm (swapSucs ss s1) (swapSucs ss s1)" by simp
-  from f have ff: "set ((swapSuc 0 ^^ ALG_P ss x y s1) s2) = {x, y}" by (metis foldr_replicate swapSucs_inv)
-  from g have gg: "length ((swapSuc 0 ^^ ALG_P ss x y s1) s2) = 2"  by (metis foldr_replicate swapSucs_inv)
-  from h have hh: "dist_perm ((swapSuc 0 ^^ ALG_P ss x y s1) s2) ((swapSuc 0 ^^ ALG_P ss x y s1) s2)" by (metis foldr_replicate swapSucs_inv) 
+  from d have dd: "dist_perm (swaps ss s1) (swaps ss s1)" by simp
+  from f have ff: "set ((swap 0 ^^ ALG_P ss x y s1) s2) = {x, y}" by (metis foldr_replicate swaps_inv)
+  from g have gg: "length ((swap 0 ^^ ALG_P ss x y s1) s2) = 2"  by (metis foldr_replicate swaps_inv)
+  from h have hh: "dist_perm ((swap 0 ^^ ALG_P ss x y s1) s2) ((swap 0 ^^ ALG_P ss x y s1) s2)" by (metis foldr_replicate swaps_inv) 
   show ?case (is "?LHS = ?RHS")
-  proof (cases "Suc s < length (swapSucs ss s1) \<and> (((swapSucs ss s1)!s=x \<and> (swapSucs ss s1)!(Suc s)=y) \<or> ((swapSucs ss s1)!s=y \<and> (swapSucs ss s1)!(Suc s)=x))")
+  proof (cases "Suc s < length (swaps ss s1) \<and> (((swaps ss s1)!s=x \<and> (swaps ss s1)!(Suc s)=y) \<or> ((swaps ss s1)!s=y \<and> (swaps ss s1)!(Suc s)=x))")
     case True
-    from True have 1:" Suc s < length (swapSucs ss s1)"
-          and 2: "(swapSucs ss s1 ! s = x \<and> swapSucs ss s1 ! Suc s = y
-            \<or>  swapSucs ss s1 ! s = y \<and> swapSucs ss s1 ! Suc s = x)" by auto
+    from True have 1:" Suc s < length (swaps ss s1)"
+          and 2: "(swaps ss s1 ! s = x \<and> swaps ss s1 ! Suc s = y
+            \<or>  swaps ss s1 ! s = y \<and> swaps ss s1 ! Suc s = x)" by auto
     from True have "ALG_P (s # ss) x y s1 =  1 + ALG_P ss x y s1" by auto
-    then have "?RHS = x < y in (swapSuc 0) ((swapSuc 0 ^^ ALG_P ss x y s1) s2)"
+    then have "?RHS = x < y in (swap 0) ((swap 0 ^^ ALG_P ss x y s1) s2)"
       by auto
-    also have "\<dots> = (~ x < y in ((swapSuc 0 ^^ ALG_P ss x y s1) s2))" 
+    also have "\<dots> = (~ x < y in ((swap 0 ^^ ALG_P ss x y s1) s2))" 
       apply(rule swap0in2)
         by(fact)+
-    also have "\<dots> = (~ x < y in swapSucs ss s1)" 
+    also have "\<dots> = (~ x < y in swaps ss s1)" 
       using Cons by auto
-    also have "\<dots> = x < y in (swapSuc s) (swapSucs ss s1)"
-      using 1  2 before_in_swapSuc
+    also have "\<dots> = x < y in (swap s) (swaps ss s1)"
+      using 1  2 before_in_swap
       by (metis Suc_lessD before_id dd lessI no_before_inI) (* bad *)
     also have "\<dots> = ?LHS" by auto
     finally show ?thesis by simp
@@ -1811,23 +1811,23 @@ next
     case False
     note F=this
     then have "ALG_P (s # ss) x y s1 =  ALG_P ss x y s1" by auto
-    then have "?RHS = x < y in ((swapSuc 0 ^^ ALG_P ss x y s1) s2)"
+    then have "?RHS = x < y in ((swap 0 ^^ ALG_P ss x y s1) s2)"
       by auto
-    also have "\<dots> = x < y in swapSucs ss s1" 
+    also have "\<dots> = x < y in swaps ss s1" 
       using Cons by auto
-    also have "\<dots> = x < y in (swapSuc s) (swapSucs ss s1)"
-    proof (cases "Suc s < length (swapSucs ss s1)")
+    also have "\<dots> = x < y in (swap s) (swaps ss s1)"
+    proof (cases "Suc s < length (swaps ss s1)")
       case True
-      with F have g: "swapSucs ss s1 ! s \<noteq> x \<or>
-         swapSucs ss s1 ! Suc s \<noteq> y" and
-        h: "swapSucs ss s1 ! s \<noteq> y \<or>
-         swapSucs ss s1 ! Suc s \<noteq> x" by auto 
+      with F have g: "swaps ss s1 ! s \<noteq> x \<or>
+         swaps ss s1 ! Suc s \<noteq> y" and
+        h: "swaps ss s1 ! s \<noteq> y \<or>
+         swaps ss s1 ! Suc s \<noteq> x" by auto 
          show ?thesis 
-          unfolding before_in_swapSuc[OF dd True, of x y] apply(simp)
+          unfolding before_in_swap[OF dd True, of x y] apply(simp)
             using g h by auto
     next
       case False
-      then show ?thesis unfolding swapSuc_def by(simp)
+      then show ?thesis unfolding swap_def by(simp)
     qed
     also have "\<dots> = ?LHS" by auto
     finally show ?thesis by simp
@@ -1837,21 +1837,21 @@ qed
 
 (*
 lemma geil1: "x < y in s1 = x < y in s2 \<Longrightarrow>
-  x < y in swapSucs acs s1 = x < y in (swapSuc 0 ^^ ALG_P acs x y s1) s2"
+  x < y in swaps acs s1 = x < y in (swap 0 ^^ ALG_P acs x y s1) s2"
 proof -
     assume mono: "(x < y in s1) = (x < y in s2)"
     
-    from mono show "(x < y in (swapSucs acs s1))
-        = (x < y in (swapSuc 0 ^^ (ALG_P acs x y s1)) s2)"
+    from mono show "(x < y in (swaps acs s1))
+        = (x < y in (swap 0 ^^ (ALG_P acs x y s1)) s2)"
     proof(induct acs arbitrary: s1 s2)
       case (Cons A AS)
       have dists1: "distinct s1" sorry
-      let ?s1'="(swapSucs AS s1)"
+      let ?s1'="(swaps AS s1)"
       show ?case
         proof (cases "Suc A < length s1")
           case False
-          then have a: "x < y in swapSucs (A # AS) s1 =
-                    x < y in swapSucs AS s1" by auto
+          then have a: "x < y in swaps (A # AS) s1 =
+                    x < y in swaps AS s1" by auto
           from False have b: "ALG_P (A # AS) x y s1 
               = ALG_P AS x y s1" by auto
           from a b Cons(1)[OF Cons(2)] show ?thesis by auto
@@ -1863,9 +1863,9 @@ proof -
           show ?thesis
           proof (cases "(?s1'!A=x \<and> ?s1'!(Suc A)=y) \<or> (?s1'!A=y \<and> ?s1'!(Suc A)=x)")
             case False
-            then have a: "x < y in swapSucs (A # AS) s1 =
-                      x < y in swapSucs AS s1"
-                using before_in_swapSuc[OF dp lengthok'] apply(simp)
+            then have a: "x < y in swaps (A # AS) s1 =
+                      x < y in swaps AS s1"
+                using before_in_swap[OF dp lengthok'] apply(simp)
                 by (blast)
             from lengthok' False have b: "ALG_P (A # AS) x y s1 
               = ALG_P AS x y s1"
@@ -1875,13 +1875,13 @@ proof -
            case True
             have xny: "x\<noteq>y" sorry
             have to: "x \<in> set s1" sorry
-            then have tox2: "x \<in> set (swapSucs AS s1)" by auto
+            then have tox2: "x \<in> set (swaps AS s1)" by auto
             have toy: "y \<in> set s1" sorry
-            then have toy2: "y \<in> set (swapSucs AS s1)" by auto
+            then have toy2: "y \<in> set (swaps AS s1)" by auto
             thm not_before_in
-            from True have a: "x < y in swapSucs (A # AS) s1 =
-                      (~(x < y in swapSucs AS s1))"
-                apply(simp add:  before_in_swapSuc[OF dp lengthok'])
+            from True have a: "x < y in swaps (A # AS) s1 =
+                      (~(x < y in swaps AS s1))"
+                apply(simp add:  before_in_swap[OF dp lengthok'])
                 unfolding not_before_in[OF tox2 toy2]
                 using xny apply(simp)
                   using xny not_before_in using dp lengthok' by auto
@@ -1890,19 +1890,19 @@ proof -
               = 1 + ALG_P AS x y s1"
                 by(simp add: ALG_P.simps )
 
-            have "(x < y in (swapSuc 0 ^^ ALG_P (A # AS) x y s1) s2)
-              = x < y in (swapSuc (0::nat) ((swapSuc 0 ^^ ALG_P AS x y s1) s2))"
+            have "(x < y in (swap 0 ^^ ALG_P (A # AS) x y s1) s2)
+              = x < y in (swap (0::nat) ((swap 0 ^^ ALG_P AS x y s1) s2))"
                 unfolding b by(simp)
-            also have "\<dots> = (~ x < y in ((swapSuc 0 ^^ ALG_P AS x y s1) s2))"
+            also have "\<dots> = (~ x < y in ((swap 0 ^^ ALG_P AS x y s1) s2))"
                 sorry (* involves proving that s2 is of length 2 and contains x,y,
-                        and swapSuc doesnt alter these facts *)
-            finally have c: "(x < y in (swapSuc 0 ^^ ALG_P (A # AS) x y s1) s2)
-                  = (~ x < y in ((swapSuc 0 ^^ ALG_P AS x y s1) s2))" .
+                        and swap doesnt alter these facts *)
+            finally have c: "(x < y in (swap 0 ^^ ALG_P (A # AS) x y s1) s2)
+                  = (~ x < y in ((swap 0 ^^ ALG_P AS x y s1) s2))" .
 
             from a b c Cons(1)[OF Cons(2)] show ?thesis by auto
            qed
         qed
-    qed (simp add: swapSuc_def)
+    qed (simp add: swap_def)
 qed
 *)
 
@@ -1914,7 +1914,7 @@ by (induct qs as arbitrary: s rule: list_induct2) (auto)
 
 
 
-term "swapSucs"
+term "swaps"
 lemma T1_7': "T\<^sub>p init qs Strat = T\<^sub>p_opt init qs \<Longrightarrow> length Strat = length qs
       \<Longrightarrow> n\<le>length qs \<Longrightarrow>  
       x\<noteq>(y::('a::linorder)) \<Longrightarrow>
@@ -1924,7 +1924,7 @@ lemma T1_7': "T\<^sub>p init qs Strat = T\<^sub>p_opt init qs \<Longrightarrow> 
         (*T\<^sub>p_opt (Lxy init {x,y}) (Lxy (take n qs) {x,y}) \<le> T\<^sub>p (Lxy init {x,y}) (Lxy (take n qs) {x,y}) Strat2
           \<and>*)  length Strat2 = length (Lxy (take n qs) {x,y})
           \<and>     (x < y in (steps' init (take n qs) (take n Strat) n))
-              = (x < y in (swapSucs sws (steps' (Lxy init {x,y}) (Lxy (take n qs) {x,y}) Strat2 (length Strat2))))
+              = (x < y in (swaps sws (steps' (Lxy init {x,y}) (Lxy (take n qs) {x,y}) Strat2 (length Strat2))))
           \<and> T\<^sub>p (Lxy init {x,y}) (Lxy (take n qs) {x,y}) Strat2 + length sws =            
           ALGxy_det Strat (take n qs) init x y + ALG_Pxy Strat (take n qs) init x y)"
 proof(induct n)
@@ -1938,7 +1938,7 @@ proof(induct n)
      and iff:
       "x < y in steps' init (take n qs) (take n Strat) n
          =
-       x < y in swapSucs sws (steps' (Lxy init {x,y}) (Lxy (take n qs) {x, y}) Strat2 (length Strat2))"   
+       x < y in swaps sws (steps' (Lxy init {x,y}) (Lxy (take n qs) {x, y}) Strat2 (length Strat2))"   
 
      and T_Strat2: "T\<^sub>p (Lxy init {x,y}) (Lxy (take n qs) {x, y}) Strat2 + length sws =
      ALGxy_det Strat (take n qs) init x y +
@@ -1981,7 +1981,7 @@ proof(induct n)
     let ?m="ALG_P' (take n Strat @ [Strat ! n]) (take n qs @ [qs ! n]) init n x y"
     let ?L="replicate ?m 0 @ sws" 
 
-    thm before_in_mtf before_in_swapSuc
+    thm before_in_mtf before_in_swap
  
 
 
@@ -2000,10 +2000,10 @@ proof(induct n)
           } note f=this
 
 
-          value "swapSucs [0,1] [0,1,2::int]"
-          (* swapSucs funktioniert von hinten nach vorne! *) 
+          value "swaps [0,1] [0,1,2::int]"
+          (* swaps funktioniert von hinten nach vorne! *) 
           { fix a as l
-            have "swapSucs (a#as) l = swapSuc a (swapSucs as l)"
+            have "swaps (a#as) l = swap a (swaps as l)"
               by(auto)
           }
 
@@ -2014,18 +2014,18 @@ proof(induct n)
             dann induct über snd (Strat!n) *)
           have "(x < y in steps' init (take (Suc n) qs) (take (Suc n) Strat) (Suc n))
             = (x < y in mtf2 (fst (Strat ! n)) (qs ! n)
-             (swapSucs (snd (Strat ! n)) (steps' init (take n qs) (take n Strat) n)))"             
+             (swaps (snd (Strat ! n)) (steps' init (take n qs) (take n Strat) n)))"             
           unfolding tak2 tak apply(simp only: steps'_append[OF qQS aQ] )
           by (simp add: step_def split_def)
           thm before_in_mtf
-          also have "\<dots> = (x < y in (swapSucs (snd (Strat ! n)) (steps' init (take n qs) (take n Strat) n)))"
+          also have "\<dots> = (x < y in (swaps (snd (Strat ! n)) (steps' init (take n qs) (take n Strat) n)))"
             apply(rule f[symmetric])
               apply(fact)
               using qsnset steps'_set[OF qQS aS] apply(simp)
               using steps'_distinct[OF qQS aS] dI apply(simp) 
               using steps'_set[OF qQS aS] xyininit by simp_all
-          also have "\<dots> =  x < y in (swapSuc 0 ^^ ALG_P (snd (Strat ! n)) x y (steps' init (take n qs) (take n Strat) n))
-                                    (swapSucs sws (steps' (Lxy init {x, y}) (Lxy (take n qs) {x, y}) Strat2 (length Strat2)))"
+          also have "\<dots> =  x < y in (swap 0 ^^ ALG_P (snd (Strat ! n)) x y (steps' init (take n qs) (take n Strat) n))
+                                    (swaps sws (steps' (Lxy init {x, y}) (Lxy (take n qs) {x, y}) Strat2 (length Strat2)))"
                  apply(rule geil)
                   apply(rule steps'_dist_perm)
                     apply(fact qQS)
@@ -2050,8 +2050,8 @@ proof(induct n)
                                     
           finally have umfa: "x < y in steps' init (take (Suc n) qs) (take (Suc n) Strat) (Suc n) =
   x < y
-  in (swapSuc 0 ^^ ALG_P (snd (Strat ! n)) x y (steps' init (take n qs) (take n Strat) n))
-      (swapSucs sws (steps' (Lxy init {x, y}) (Lxy (take n qs) {x, y}) Strat2 (length Strat2)))" .
+  in (swap 0 ^^ ALG_P (snd (Strat ! n)) x y (steps' init (take n qs) (take n Strat) n))
+      (swaps sws (steps' (Lxy init {x, y}) (Lxy (take n qs) {x, y}) Strat2 (length Strat2)))" .
 
 
           thm tak2 tak 
@@ -2145,7 +2145,7 @@ proof(induct n)
     (* what is the configuration before the step? *)  
     let ?xs = "steps' init (take n qs) (take n Strat) n"
     (* what is the configuration before the mtf *)
-    let ?xs' = "(swapSucs (snd (Strat!n)) ?xs)"
+    let ?xs' = "(swaps (snd (Strat!n)) ?xs)"
     let ?xs'' = "steps' init (take (Suc n) qs) (take (Suc n) Strat) (Suc n)"
     let ?xs''2 = "mtf2 ?Strat_mft (qs!n) ?xs'"
     (* position of requested element *)
@@ -2162,15 +2162,15 @@ proof(induct n)
           unfolding tak tak2
           apply(rule steps'_append)
             by fact+
-    also have "\<dots> = mtf2 (fst (Strat!n)) (qs!n) (swapSucs (snd (Strat!n)) ?xs)" unfolding step_def
+    also have "\<dots> = mtf2 (fst (Strat!n)) (qs!n) (swaps (snd (Strat!n)) ?xs)" unfolding step_def
      by (auto simp: split_def)
     finally have A: "?xs'' = mtf2 (fst (Strat!n)) (qs!n) ?xs'" . 
 
     let ?ys = "(steps' (Lxy init {x, y})
                   (Lxy (take n qs) {x, y}) Strat2 (length Strat2))"
-    let ?ys' = "( swapSucs sws (steps' (Lxy init {x, y})
+    let ?ys' = "( swaps sws (steps' (Lxy init {x, y})
                   (Lxy (take n qs) {x, y}) Strat2 (length Strat2)))"
-    let ?ys'' = " (swapSuc 0 ^^ ALG_P (snd (Strat!n)) x y ?xs) ?ys'"
+    let ?ys'' = " (swap 0 ^^ ALG_P (snd (Strat!n)) x y ?xs) ?ys'"
     let ?ys''' = "(steps' (Lxy init {x, y}) (Lxy (take (Suc n) qs) {x, y}) ?newStrat (length ?newStrat))"
 
     have gr: "Lxy (take n qs @ [qs ! n]) {x, y} = 
@@ -2179,8 +2179,8 @@ proof(induct n)
     have t: "steps' init (take n qs @ [qs ! n]) Strat n
         = steps' init (take n qs) (take n Strat) n"
           using steps'_rests by (metis aS append_take_drop_id qQS)
-    have gge: "swapSucs (replicate ?m 0) ?ys'
-        =  (swapSuc 0 ^^ ALG_P (snd (Strat!n)) x y ?xs) ?ys'"
+    have gge: "swaps (replicate ?m 0) ?ys'
+        =  (swap 0 ^^ ALG_P (snd (Strat!n)) x y ?xs) ?ys'"
           unfolding ALG_P'_def t by simp
 
     have gg: "length ?newStrat = Suc (length Strat2)" by auto
@@ -2188,9 +2188,9 @@ proof(induct n)
           unfolding tak gr unfolding gg
           apply(rule steps'_append)
             using len by auto
-    also have "\<dots> = mtf2 ?mtf (qs!n) (swapSucs ?L ?ys)"
+    also have "\<dots> = mtf2 ?mtf (qs!n) (swaps ?L ?ys)"
           unfolding step_def by (simp add: split_def)
-    also have "\<dots> = mtf2 ?mtf (qs!n) (swapSucs (replicate ?m 0) ?ys')"
+    also have "\<dots> = mtf2 ?mtf (qs!n) (swaps (replicate ?m 0) ?ys')"
       by (simp)
     also have "\<dots> = mtf2 ?mtf (qs!n) ?ys''"
       using gge by (simp)
@@ -2198,10 +2198,10 @@ proof(induct n)
                      
 
     thm ahjer steps'_set
-    have 3: "set ?ys' = {x,y}" using ahjer steps'_set len swapSucs_inv by metis
-    have k: "?ys'' = swapSucs (replicate (ALG_P (snd (Strat!n)) x y ?xs) 0) ?ys'"
+    have 3: "set ?ys' = {x,y}" using ahjer steps'_set len swaps_inv by metis
+    have k: "?ys'' = swaps (replicate (ALG_P (snd (Strat!n)) x y ?xs) 0) ?ys'"
       by (auto)
-    have 6: "set ?ys'' = {x,y}" unfolding k using 3 swapSucs_inv by metis
+    have 6: "set ?ys'' = {x,y}" unfolding k using 3 swaps_inv by metis
     have 7: "set ?ys''' = {x,y}" unfolding B using set_mtf2 6 by metis                              
     have 22: "x \<in> set ?ys''" "y \<in> set ?ys''" using 6 by auto
     have 23: "x \<in> set ?ys'''" "y \<in> set ?ys'''" using 7 by auto
@@ -2212,19 +2212,19 @@ proof(induct n)
     thm ahjer3 ah
     have "distinct ?ys" apply(rule steps'_distinct2)
       using len ahjer3 by(simp)+
-    then have 9: "distinct ?ys'" using swapSucs_inv by metis              
-    then have 27: "distinct ?ys''" unfolding k  using swapSucs_inv by metis
+    then have 9: "distinct ?ys'" using swaps_inv by metis              
+    then have 27: "distinct ?ys''" unfolding k  using swaps_inv by metis
 
     from 3 Suc(5) have "card (set ?ys') = 2" by auto
     then have 4: "length ?ys' = 2" using distinct_card[OF 9] by simp
-    have "length ?ys'' = 2" unfolding k using 4 swapSucs_inv by metis
+    have "length ?ys'' = 2" unfolding k using 4 swaps_inv by metis
     have 5: "dist_perm ?ys' ?ys'" using 9 by auto
 
 
 
 
     have sxs: "set ?xs = set init" apply(rule steps'_set) by fact+
-    have sxs': "set ?xs' = set ?xs" using swapSucs_inv by metis
+    have sxs': "set ?xs' = set ?xs" using swaps_inv by metis
     have sxs'': "set ?xs'' = set ?xs'" unfolding A using set_mtf2 by metis
     have 24: "x \<in> set ?xs'" "y\<in>set ?xs'" "(qs!n) \<in> set ?xs'" 
         using xysubs True sxs sxs' by auto
@@ -2234,7 +2234,7 @@ proof(induct n)
     have 0: "dist_perm init init" using dI by auto
     have 1: "dist_perm ?xs ?xs" apply(rule steps'_dist_perm)
       by fact+
-    then have 25: "distinct ?xs'" using swapSucs_inv by metis
+    then have 25: "distinct ?xs'" using swaps_inv by metis
 
 
     (* aus der Induktionsvorraussetzung (iff) weiß ich bereits
@@ -2277,8 +2277,8 @@ proof(induct n)
                 from goal1(2,3) have e: "b \<in> set ?ys''" by auto
 
                 from d e have p: "mtf2 1 b ?ys'' =
-                      swapSuc 0 ?ys''" unfolding mtf2_def by auto
-                have q: "a < b in swapSuc 0 ?ys'' = (\<not> a < b in ?ys'')"
+                      swap 0 ?ys''" unfolding mtf2_def by auto
+                have q: "a < b in swap 0 ?ys'' = (\<not> a < b in ?ys'')"
                   apply(rule swap0in2)
                     by(fact)+
                 thm swap0in2
@@ -2459,7 +2459,7 @@ proof(induct n)
 
 
 
-            have list: "?ys' = swapSucs sws (steps (Lxy init {x, y})  (Lxy (take n qs) {x, y}) Strat2)"
+            have list: "?ys' = swaps sws (steps (Lxy init {x, y})  (Lxy (take n qs) {x, y}) Strat2)"
               unfolding steps_steps'[OF len[symmetric], of "(Lxy init {x, y})"] by simp
 
             have j2: "steps' init (take n qs @ [qs ! n]) Strat n
@@ -2484,7 +2484,7 @@ proof(induct n)
               finally show ?thesis by simp
             qed
 
-            have indexe: "((swapSuc 0 ^^ ?m) (swapSucs sws
+            have indexe: "((swap 0 ^^ ?m) (swaps sws
                       (steps (Lxy init {x,y}) (Lxy (take n qs) {x, y}) Strat2))) 
               = ?ys''" unfolding ALG_P'_def unfolding list using j2 by auto
 
@@ -2497,7 +2497,7 @@ proof(induct n)
 
 
 
-           have index_is_blocking_cost: "index  ((swapSuc 0 ^^ ?m) (swapSucs sws
+           have index_is_blocking_cost: "index  ((swap 0 ^^ ?m) (swaps sws
                         (steps (Lxy init {x,y}) (Lxy (take n qs) {x, y}) Strat2))) (qs ! n)
                       = ALG'_det Strat qs init n y + ALG'_det Strat qs init n x"
            proof (cases "x= qs!n")
@@ -2580,14 +2580,14 @@ proof(induct n)
             also have "\<dots> = 
                  T\<^sub>p (Lxy init {x,y}) (Lxy (take n qs) {x, y}) Strat2
                   + length sws
-                  + index ((swapSuc 0 ^^ ?m) (swapSucs sws
+                  + index ((swap 0 ^^ ?m) (swaps sws
                         (steps (Lxy init {x,y}) (Lxy (take n qs) {x, y}) Strat2))) (qs ! n)
                   + ALG_P' Strat (take n qs @ [qs ! n]) init n x y"
               by(simp add: t\<^sub>p_def)
            thm T_Strat2 tak
            (* now use iH *)
            also have "\<dots> = (ALGxy_det Strat (take n qs) init x y 
-                  + index ((swapSuc 0 ^^ ?m) (swapSucs sws
+                  + index ((swap 0 ^^ ?m) (swaps sws
                         (steps (Lxy init {x,y}) (Lxy (take n qs) {x, y}) Strat2))) (qs ! n))
                   + (ALG_Pxy Strat (take n qs) init x y
                   + ALG_P' Strat (take n qs @ [qs ! n]) init n x y)"
@@ -2636,7 +2636,7 @@ proof -
     obtain Strat2 sws where 
       len: "length Strat2 = length (Lxy qs {x, y})"
      and "x < y in steps' init qs (take (length qs) Strat)
-         (length qs) = x < y in swapSucs sws (steps' (Lxy init {x,y})
+         (length qs) = x < y in swaps sws (steps' (Lxy init {x,y})
            (Lxy qs {x, y}) Strat2 (length Strat2))"
      and Tp: "T\<^sub>p (Lxy init {x,y}) (Lxy qs {x, y}) Strat2 + length sws
         =  ALGxy_det Strat qs init x y 
@@ -2684,7 +2684,7 @@ lemma umformung_OPT:
           ALGxy_det Strat qs init x y + ALG_Pxy Strat qs init x y)"
 proof -
  (* have config_dist: "\<forall>n. \<forall>xa \<in> set_pmf (config\<^sub>p (I, S) qs init n). distinct (snd xa)"
-      using dist config_config_distinct by metis
+      using dist config_rand_distinct by metis
 *) 
 
   (* ersten Teil umformen: *)
@@ -2711,7 +2711,7 @@ proof -
 
   (* zweiten Teil umformen: *)
   
-  let ?config = "(%i. swapSucs (snd (Strat!i)) (steps' init qs Strat i))"
+  let ?config = "(%i. swaps (snd (Strat!i)) (steps' init qs Strat i))"
 
   have "(\<Sum>i\<in>{..<length qs}. 
                 (\<Sum>e\<in>set init. ALG e qs i (?config i, ())))
@@ -2858,11 +2858,11 @@ proof -
         (\<Sum>i\<in>{..<length qs}. t\<^sub>p (steps' init qs Strat i) (qs!i) (Strat!i))"
           by auto  (*
   also have "\<dots> = (\<Sum>i\<in>{..<length qs}. 
-              index (swapSucs (snd (Strat!i)) (steps' init qs Strat i)) (qs ! i)
+              index (swaps (snd (Strat!i)) (steps' init qs Strat i)) (qs ! i)
                 +  length (snd (Strat!i)))"
                 unfolding t\<^sub>p_def by(auto simp: split_def) *)
   also have "\<dots> = (\<Sum>i\<in>{..<length qs}. 
-                (\<Sum>e\<in>set (steps' init qs Strat i). ALG e qs i (swapSucs (snd (Strat!i)) (steps' init qs Strat i),()))
+                (\<Sum>e\<in>set (steps' init qs Strat i). ALG e qs i (swaps (snd (Strat!i)) (steps' init qs Strat i),()))
 + (\<Sum>(x,y)\<in>{(x,(y::('a::linorder)))|x y. x \<in> set (steps' init qs Strat i) \<and> y\<in>set (steps' init qs Strat i) \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
             apply(rule setsum.cong)
               apply(simp)
@@ -2870,7 +2870,7 @@ proof -
                 using dist steps'_distinct2 sorry
   thm t\<^sub>p_sumofALGALGP
   also have "\<dots> = (\<Sum>i\<in>{..<length qs}. 
-                (\<Sum>e\<in>set init. ALG e qs i (swapSucs (snd (Strat!i)) (steps' init qs Strat i),()))
+                (\<Sum>e\<in>set init. ALG e qs i (swaps (snd (Strat!i)) (steps' init qs Strat i),()))
 + (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
                 apply(rule setsum.cong)
                   apply(simp)
@@ -2880,7 +2880,7 @@ proof -
                     then show ?case by simp
                   qed 
   also have "\<dots> = (\<Sum>i\<in>{..<length qs}. 
-                (\<Sum>e\<in>set init. ALG e qs i (swapSucs (snd (Strat!i)) (steps' init qs Strat i), ())))
+                (\<Sum>e\<in>set init. ALG e qs i (swaps (snd (Strat!i)) (steps' init qs Strat i), ())))
                + (\<Sum>i\<in>{..<length qs}. 
                (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
     by (simp add: setsum.distrib split_def) 

@@ -24,18 +24,73 @@ definition Step ::
 where
 "Step A s r = (let (a,is') = snd A s r in (step (fst s) r a, is'))"
 
+fun config' :: "('state,'is,'request,'answer) alg_on  \<Rightarrow> ('state*'is) \<Rightarrow> 'request list  
+    \<Rightarrow> ('state * 'is)" where
+"config' A s []  = s" |
+"config' A s (r#rs) = config' A (Step A s r) rs"
+
+lemma config'_append: "config' A s (rs@[r]) = Step A (config' A s rs) r"
+apply(induct rs arbitrary: s) by simp_all
+
+lemma config'_induct: "P (fst init) \<Longrightarrow> (\<And>s q a. P s \<Longrightarrow> P (step s q a))
+     \<Longrightarrow> P (fst (config' A init rs))"
+apply (induct rs arbitrary: init) by(simp_all add: Step_def split: prod.split)
+
+abbreviation config where
+"config A s0 rs == config' A (s0, fst A s0) rs" 
+ 
+lemma config_induct: "P s0 \<Longrightarrow> (\<And>s q a. P s \<Longrightarrow> P (step s q a)) \<Longrightarrow> P (fst (config A s0 qs))"
+using config'_induct[of P "(s0, fst A s0)" ] by auto
+
+fun T_on' :: "('state,'is,'request,'answer) alg_on \<Rightarrow> ('state*'is) \<Rightarrow> 'request list \<Rightarrow>  nat" where
+"T_on' A s [] = 0" |
+"T_on' A s (r#rs) = (t (fst s) r (fst (snd A s r))) + T_on' A (Step A s r) rs"
+
+lemma T_on'_append: "T_on' A s (xs@ys) = T_on' A s xs + T_on' A (config' A s xs) ys"
+apply(induct xs arbitrary: s) by simp_all   
+
+abbreviation T_on'' :: "('state,'is,'request,'answer) alg_on \<Rightarrow> 'state \<Rightarrow> 'request list \<Rightarrow> nat" where
+  "T_on'' A s rs == T_on' A (s,fst A s) rs" 
+
+lemma T_on_append: "T_on'' A s (xs@ys) = T_on'' A s xs + T_on' A (config A s xs) ys"
+by(rule T_on'_append)  
+
+abbreviation "T_on_n A s0 xs n == T_on' A (config A s0 (take n xs)) [xs!n]" 
+
+lemma T_on__as_sum: "T_on'' A s0 rs = setsum (T_on_n A s0 rs) {..<length rs} "
+apply(induct rs rule: rev_induct)
+  by(simp_all add: T_on'_append  nth_append)
+
+
+
 fun off2 :: "('state,'is,'request,'answer) alg_on \<Rightarrow> ('state * 'is,'request,'answer) alg_off" where
 "off2 A s [] = []" |
 "off2 A s (r#rs) = fst (snd A s r) # off2 A (Step A s r) rs"
 
+
 abbreviation off :: "('state,'is,'request,'answer) alg_on \<Rightarrow> ('state,'request,'answer) alg_off" where
 "off A s0 \<equiv> off2 A (s0, fst A s0)"
+
 
 abbreviation T_off :: "('state,'request,'answer) alg_off \<Rightarrow> 'state \<Rightarrow> 'request list \<Rightarrow> nat" where
 "T_off A s0 rs == T s0 rs (A s0 rs)"
 
+
+
 abbreviation T_on :: "('state,'is,'request,'answer) alg_on \<Rightarrow> 'state \<Rightarrow> 'request list \<Rightarrow> nat" where
 "T_on A == T_off (off A)"
+
+
+
+lemma T_on_on': "T_off (\<lambda>s0. (off2 A (s0, x))) s0 qs = T_on' A (s0,x) qs"
+apply(induct qs arbitrary: s0 x) 
+  by(simp_all add: Step_def split: prod.split)
+
+lemma T_on_on'': "T_on A s0 qs = T_on'' A s0 qs"
+using T_on_on'[where x="fst A s0", of s0 qs A] by(auto)
+
+
+
 
 definition T_opt :: "'state \<Rightarrow> 'request list \<Rightarrow> nat" where
 "T_opt s rs = Inf {T s rs as | as. size as = size rs}"

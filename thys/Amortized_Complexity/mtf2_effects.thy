@@ -2,7 +2,7 @@
     Author:      Max Haslbeck
 *)
 theory mtf2_effects
-imports "List_Update_Problem"
+imports "Move_to_Front"
 begin
 
 
@@ -43,43 +43,43 @@ proof -
 from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n) # [index xs q - n..<index xs q]"
               using Suc_diff_Suc upt_rec by auto
 
-        from onemore have yeah: "swapSucs [index xs q - Suc n..<index xs q] xs
-            = swapSuc (index xs q - Suc n) (swapSucs  [index xs q - n..<index xs q] xs)" by auto
+        from onemore have yeah: "swaps [index xs q - Suc n..<index xs q] xs
+            = swap (index xs q - Suc n) (swaps  [index xs q - n..<index xs q] xs)" by auto
 
       have sis: "Suc (index xs q - Suc n) = index xs q - n" using True Suc_diff_Suc by auto
       
       have indq: "index xs q < length xs"
         apply(rule index_less) by(auto simp: qinxs)
  
-      let ?i' = "index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i)"
-      let ?x = "(xs!i)" and  ?xs="(swapSucs  [index xs q - n..<index xs q] xs)"
+      let ?i' = "index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i)"
+      let ?x = "(xs!i)" and  ?xs="(swaps  [index xs q - n..<index xs q] xs)"
               and ?n="(index xs q - Suc n)"
       have "?i'
-          =  index (swapSuc (index xs q - Suc n) (swapSucs  [index xs q - n..<index xs q] xs)) (xs!i)" using yeah by auto
-      thm index_swapSuc_distinct index_less
+          =  index (swap (index xs q - Suc n) (swaps  [index xs q - n..<index xs q] xs)) (xs!i)" using yeah by auto
+      thm index_swap_distinct index_less
       also have "\<dots> = (if ?x = ?xs ! ?n then Suc ?n else if ?x = ?xs ! Suc ?n then ?n else index ?xs ?x)"
-        apply(rule index_swapSuc_distinct)
+        apply(rule index_swap_distinct)
           apply(simp)
           apply(simp add: sis) using indq by linarith
       finally have i': "?i' = (if ?x = ?xs ! ?n then Suc ?n else if ?x = ?xs ! Suc ?n then ?n else index ?xs ?x)" .
       
-      let ?i''="index (swapSucs [index xs q - n..<index xs q] xs) (xs ! i)"
+      let ?i''="index (swaps [index xs q - n..<index xs q] xs) (xs ! i)"
 
 
     show "(index xs q < i \<and> i < length xs \<longrightarrow>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs (xs ! i) \<and>
-     index xs q < index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) \<and>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) < length xs) \<and>
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs (xs ! i) \<and>
+     index xs q < index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) \<and>
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) < length xs) \<and>
     (index xs q = i \<longrightarrow>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs q - Suc n \<and>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs q - Suc n) \<and>
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs q - Suc n \<and>
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs q - Suc n) \<and>
     (index xs q - Suc n \<le> i \<and> i < index xs q \<longrightarrow>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) = Suc (index xs (xs ! i)) \<and>
-     index xs q - Suc n < index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) \<and>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) \<le> index xs q) \<and>
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) = Suc (index xs (xs ! i)) \<and>
+     index xs q - Suc n < index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) \<and>
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) \<le> index xs q) \<and>
     (i < index xs q - Suc n \<longrightarrow>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs (xs ! i) \<and>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) < index xs q - Suc n)"
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs (xs ! i) \<and>
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) < index xs q - Suc n)"
     apply(intro conjI)
     apply(intro impI) apply(elim conjE) prefer 4 apply(intro impI)  prefer 4 apply(intro impI) apply(elim conjE) 
       prefer 4 apply(intro impI) prefer 4
@@ -92,7 +92,7 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
       also have a': "\<dots> = i" apply(rule index_nth_id) using ass2 by(auto)
       finally have ii: "?i'' = i" .
       thm difind_difelem[where i="?n"]
-      have fstF: "~ ?x = ?xs ! ?n" apply(rule difind_difelem[where j="index (swapSucs [index xs q - n..<index xs q] xs) (xs!i)"])
+      have fstF: "~ ?x = ?xs ! ?n" apply(rule difind_difelem[where j="index (swaps [index xs q - n..<index xs q] xs) (xs!i)"])
         using indq apply (simp add: less_imp_diff_less)
         apply(simp)
         apply(rule nth_index) apply(simp) using ass2 apply(simp)
@@ -100,7 +100,7 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
           apply(simp) using ass2 apply(simp)
           apply(simp)
         using ii ass by auto
-      have sndF: "~ ?x = ?xs ! Suc ?n" apply(rule difind_difelem[where j="index (swapSucs [index xs q - n..<index xs q] xs) (xs!i)"])
+      have sndF: "~ ?x = ?xs ! Suc ?n" apply(rule difind_difelem[where j="index (swaps [index xs q - n..<index xs q] xs) (xs!i)"])
         using indq True apply (simp add: Suc_diff_Suc less_imp_diff_less)
         apply(simp)
         apply(rule nth_index) apply(simp) using ass2 apply(simp)
@@ -125,7 +125,7 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
       thm nth_index
       have sndTrue: "?x = ?xs ! Suc ?n" apply(simp add: a)
               apply(rule nth_index[symmetric]) by (simp add: ass)
-      have fstFalse: "~ ?x = ?xs ! ?n" apply(rule difind_difelem[where j="index (swapSucs [index xs q - n..<index xs q] xs) (xs!i)"])
+      have fstFalse: "~ ?x = ?xs ! ?n" apply(rule difind_difelem[where j="index (swaps [index xs q - n..<index xs q] xs) (xs!i)"])
         using indq True apply (simp add: Suc_diff_Suc less_imp_diff_less)
         apply(simp)
         apply(rule nth_index) apply(simp) using ass  apply(simp)
@@ -170,7 +170,7 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
         case True
         with ass2 indH3 have a: "?i'' = Suc (index xs (xs ! i))" by auto
         have jo: "index xs (xs ! i) = i" apply(rule index_nth_id) using ilen by(auto)
-        have fstF: "~ ?x = ?xs ! ?n" apply(rule difind_difelem[where j="index (swapSucs [index xs q - n..<index xs q] xs) (xs!i)"])
+        have fstF: "~ ?x = ?xs ! ?n" apply(rule difind_difelem[where j="index (swaps [index xs q - n..<index xs q] xs) (xs!i)"])
           using indq apply (simp add: less_imp_diff_less)
           apply(simp)
           apply(rule nth_index) apply(simp) using ilen apply(simp)
@@ -179,7 +179,7 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
             apply(simp)
           apply(simp only: a jo) using True by auto
           thm Suc_diff_Suc
-        have sndF: "~ ?x = ?xs ! Suc ?n" apply(rule difind_difelem[where j="index (swapSucs [index xs q - n..<index xs q] xs) (xs!i)"])
+        have sndF: "~ ?x = ?xs ! Suc ?n" apply(rule difind_difelem[where j="index (swaps [index xs q - n..<index xs q] xs) (xs!i)"])
           using True1 apply (simp add: Suc_diff_Suc less_imp_diff_less)
           apply(simp)
           apply(rule nth_index) apply(simp) using ilen apply(simp)
@@ -202,7 +202,7 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
 
 
       have jo: "index xs (xs ! i) = i" apply(rule index_nth_id) using ilen by(auto)
-      have fstF: "~ ?x = ?xs ! ?n" apply(rule difind_difelem[where j="index (swapSucs [index xs q - n..<index xs q] xs) (xs!i)"])
+      have fstF: "~ ?x = ?xs ! ?n" apply(rule difind_difelem[where j="index (swaps [index xs q - n..<index xs q] xs) (xs!i)"])
         using indq apply (simp add: less_imp_diff_less)
         apply(simp)
         apply(rule nth_index) apply(simp) using ilen apply(simp)
@@ -211,7 +211,7 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
           apply(simp)
         apply(simp only: a jo) using ass by auto
         thm Suc_diff_Suc
-      have sndF: "~ ?x = ?xs ! Suc ?n" apply(rule difind_difelem[where j="index (swapSucs [index xs q - n..<index xs q] xs) (xs!i)"])
+      have sndF: "~ ?x = ?xs ! Suc ?n" apply(rule difind_difelem[where j="index (swaps [index xs q - n..<index xs q] xs) (xs!i)"])
         using True1 apply (simp add: Suc_diff_Suc less_imp_diff_less)
         apply(simp)
         apply(rule nth_index) apply(simp) using ilen apply(simp)
@@ -227,22 +227,22 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
     case False
 
     then have smalla: "index xs q - Suc n = index xs q - n" by auto
-    then have nomore: "swapSucs [index xs q - Suc n..<index xs q] xs
-            =swapSucs [index xs q - n..<index xs q] xs" by auto
+    then have nomore: "swaps [index xs q - Suc n..<index xs q] xs
+            =swaps [index xs q - n..<index xs q] xs" by auto
     show "(index xs q < i \<and> i < length xs \<longrightarrow>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs (xs ! i) \<and>
-     index xs q < index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) \<and>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) < length xs) \<and>
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs (xs ! i) \<and>
+     index xs q < index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) \<and>
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) < length xs) \<and>
     (index xs q = i \<longrightarrow>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs q - Suc n \<and>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs q - Suc n) \<and>
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs q - Suc n \<and>
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs q - Suc n) \<and>
     (index xs q - Suc n \<le> i \<and> i < index xs q \<longrightarrow>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) = Suc (index xs (xs ! i)) \<and>
-     index xs q - Suc n < index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) \<and>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) \<le> index xs q) \<and>
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) = Suc (index xs (xs ! i)) \<and>
+     index xs q - Suc n < index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) \<and>
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) \<le> index xs q) \<and>
     (i < index xs q - Suc n \<longrightarrow>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs (xs ! i) \<and>
-     index (swapSucs [index xs q - Suc n..<index xs q] xs) (xs ! i) < index xs q - Suc n)" 
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) = index xs (xs ! i) \<and>
+     index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i) < index xs q - Suc n)" 
       unfolding nomore smalla by (rule indH)
   qed
 next
@@ -441,43 +441,43 @@ lemma
       mtf2_q_after: "index (mtf2 n q A) q =  index A q - n"
 proof -
 
-    have lele: "(q < x in A \<longrightarrow> q < x in swapSucs [index A q - n..<index A q] A) \<and> (index (swapSucs [index A q - n..<index A q] A) q =  index A q - n)"
+    have lele: "(q < x in A \<longrightarrow> q < x in swaps [index A q - n..<index A q] A) \<and> (index (swaps [index A q - n..<index A q] A) q =  index A q - n)"
     apply(induct n) apply(simp)
     proof -
       fix n
-      assume ind: "(q < x in A \<longrightarrow> q < x in swapSucs [index A q - n..<index A q] A)
-            \<and> index (swapSucs [index A q - n..<index A q] A) q =  index A q - n"
-      then have iH: " q < x in A \<Longrightarrow> q < x in swapSucs [index A q - n..<index A q] A" by auto
-      from ind have indH2: "index (swapSucs [index A q - n..<index A q] A) q =  index A q - n" by auto
+      assume ind: "(q < x in A \<longrightarrow> q < x in swaps [index A q - n..<index A q] A)
+            \<and> index (swaps [index A q - n..<index A q] A) q =  index A q - n"
+      then have iH: " q < x in A \<Longrightarrow> q < x in swaps [index A q - n..<index A q] A" by auto
+      from ind have indH2: "index (swaps [index A q - n..<index A q] A) q =  index A q - n" by auto
 
-      show "(q < x in A \<longrightarrow> q < x in swapSucs [index A q - Suc n..<index A q] A) \<and>
-          index (swapSucs [index A q - Suc n..<index A q] A) q = index A q - Suc n" (is "?part1 \<and> ?part2")
+      show "(q < x in A \<longrightarrow> q < x in swaps [index A q - Suc n..<index A q] A) \<and>
+          index (swaps [index A q - Suc n..<index A q] A) q = index A q - Suc n" (is "?part1 \<and> ?part2")
       proof (cases "index A q \<ge> Suc n")
           case True    
           then have onemore: "[index A q - Suc n..<index A q] = (index A q - Suc n) # [index A q - n..<index A q]"
                 using Suc_diff_Suc upt_rec by auto
 
-          from onemore have yeah: "swapSucs [index A q - Suc n..<index A q] A
-              = swapSuc (index A q - Suc n) (swapSucs  [index A q - n..<index A q] A)" by auto
+          from onemore have yeah: "swaps [index A q - Suc n..<index A q] A
+              = swap (index A q - Suc n) (swaps  [index A q - n..<index A q] A)" by auto
 
 
-            from indH2 have gr: "index (swapSucs [index A q - n..<index A q] A) q =  Suc(index A q - Suc n)" using Suc_diff_Suc True by auto
-            have whereisq: "swapSucs [index A q - n..<index A q] A ! Suc (index A q - Suc n) = q" 
+            from indH2 have gr: "index (swaps [index A q - n..<index A q] A) q =  Suc(index A q - Suc n)" using Suc_diff_Suc True by auto
+            have whereisq: "swaps [index A q - n..<index A q] A ! Suc (index A q - Suc n) = q" 
                 unfolding gr[symmetric] apply(rule nth_index) using asm by auto
 
           have indSi: "index A q < length A" using asm index_less by auto
-          have 3: "Suc (index A q - Suc n) < length (swapSucs [index A q - n..<index A q] A)" using True
+          have 3: "Suc (index A q - Suc n) < length (swaps [index A q - n..<index A q] A)" using True
             apply(auto simp: Suc_diff_Suc asm) using indSi by auto
-          have 1: "q \<noteq> swapSucs [index A q - n..<index A q] A ! (index A q - Suc n)"
+          have 1: "q \<noteq> swaps [index A q - n..<index A q] A ! (index A q - Suc n)"
               proof
-                assume as: "q = swapSucs [index A q - n..<index A q] A ! (index A q - Suc n)"
+                assume as: "q = swaps [index A q - n..<index A q] A ! (index A q - Suc n)"
                 {
                   fix xs x
                   have "Suc x < length xs \<Longrightarrow> xs ! x = q \<Longrightarrow> xs ! Suc x = q \<Longrightarrow> \<not> distinct xs"  
                   by (metis Suc_lessD index_nth_id n_not_Suc_n)
                 } note cool=this
 
-                have "\<not> distinct (swapSucs [index A q - n..<index A q] A)"
+                have "\<not> distinct (swaps [index A q - n..<index A q] A)"
                   apply(rule cool[of "(index A q - Suc n)"])
                     apply(simp only: 3)
                     apply(simp only: as[symmetric])
@@ -496,43 +496,43 @@ proof -
                assume a3: "distinct B"
                assume a4: "Suc i < length B"
                
-               thm before_in_swapSuc[of B B]
+               thm before_in_swap[of B B]
 
                have "dist_perm B B" by(simp add: a3)
                moreover have "Suc i < length B" using a4 by auto
                moreover have "q < x in B \<and> \<not> (q = B ! i \<and> x = B ! Suc i)" using a1 a2 by auto
-               ultimately have "q < x in swapSuc i B"
-                using before_in_swapSuc[of B B] by simp
+               ultimately have "q < x in swap i B"
+                using before_in_swap[of B B] by simp
            } note grr=this
 
               thm grr[OF iH[OF qx]]
 
                              
                
-            have 2: "distinct (swapSucs [index A q - n..<index A q] A)" using distA by auto
+            have 2: "distinct (swaps [index A q - n..<index A q] A)" using distA by auto
             
 
-            show "q < x in swapSucs [index A q - Suc n..<index A q] A"
+            show "q < x in swaps [index A q - Suc n..<index A q] A"
               apply(simp only: yeah)
               apply(rule grr[OF iH[OF qx]]) using 1 2 3 by auto
            qed
 
 
-           let ?xs = "(swapSucs [index A q - n..<index A q] A)"
+           let ?xs = "(swaps [index A q - n..<index A q] A)"
            let ?n = "(index A q - Suc n)"
            thm indH2
-           have "?xs ! Suc ?n = swapSucs [index A q - n..<index A q] A ! (index (swapSucs [index A q - n..<index A q] A) q)" 
+           have "?xs ! Suc ?n = swaps [index A q - n..<index A q] A ! (index (swaps [index A q - n..<index A q] A) q)" 
               using indH2 Suc_diff_Suc True by auto
            also have "\<dots> = q" apply(rule nth_index) using asm by auto
            finally have sndTrue: "?xs ! Suc ?n = q" .
            have fstFalse: "~ q = ?xs ! ?n" by (fact 1) 
 
 
-           have "index (swapSucs [index A q - Suc n..<index A q] A) q
-              = index (swapSuc (index A q - Suc n) ?xs) q" by (simp only: yeah)
-           thm index_swapSuc_distinct
+           have "index (swaps [index A q - Suc n..<index A q] A) q
+              = index (swap (index A q - Suc n) ?xs) q" by (simp only: yeah)
+           thm index_swap_distinct
            also have "\<dots> = (if q = ?xs ! ?n then Suc ?n else if q = ?xs ! Suc ?n then ?n else index ?xs q)"
-            apply(rule index_swapSuc_distinct)
+            apply(rule index_swap_distinct)
               apply(simp add: distA)
               by (fact 3)
            also have "\<dots> = ?n" using fstFalse sndTrue by auto
@@ -560,7 +560,7 @@ qed
 
 subsection "effect of mtf2 on index"
 
-lemma swapsthrough: "distinct xs \<Longrightarrow> q \<in> set xs \<Longrightarrow> index ( swapSucs [index xs q - entf..<index xs q] xs ) q = index xs q - entf"
+lemma swapsthrough: "distinct xs \<Longrightarrow> q \<in> set xs \<Longrightarrow> index ( swaps [index xs q - entf..<index xs q] xs ) q = index xs q - entf"
 proof (induct entf)
   case (Suc e)
   note iH=this
@@ -569,10 +569,10 @@ proof (induct entf)
     case 0
     then have "[index xs q - Suc e..<index xs q]
         = [index xs q - e..<index xs q]" by force
-    then have "index (swapSucs [index xs q - Suc e..<index xs q] xs) q
+    then have "index (swaps [index xs q - Suc e..<index xs q] xs) q
           =  index xs q - e" using Suc by auto
     also have "\<dots> = index xs q - (Suc e)" using 0 by auto
-    finally show "index (swapSucs [index xs q - Suc e..<index xs q] xs) q = index xs q - Suc e" .
+    finally show "index (swaps [index xs q - Suc e..<index xs q] xs) q = index xs q - Suc e" .
   next
     case (Suc f)
 
@@ -583,16 +583,16 @@ proof (induct entf)
     finally have indle: "index xs q - e < length xs".
 
     thm index_less_size_conv[symmetric]
-    have arg: "Suc (index xs q - Suc e) < length (swapSucs [index xs q - e..<index xs q] xs)"
+    have arg: "Suc (index xs q - Suc e) < length (swaps [index xs q - e..<index xs q] xs)"
       apply(auto) unfolding gaa using indle by simp
-    then have arg2: "index xs q - Suc e < length (swapSucs [index xs q - e..<index xs q] xs)" by auto
+    then have arg2: "index xs q - Suc e < length (swaps [index xs q - e..<index xs q] xs)" by auto
     from Suc have nexter: "index xs q - e = Suc (index xs q - (Suc e))" by auto
     then have aaa: "[index xs q - Suc e..<index xs q]
         = (index xs q - Suc e)#[index xs q - e..<index xs q]" using upt_rec by auto
 
      
     let ?i="index xs q - Suc e"
-    let ?rest="swapSucs [index xs q - e..<index xs q] xs"
+    let ?rest="swaps [index xs q - e..<index xs q] xs"
     from iH nexter have indj: "index ?rest q = Suc ?i" by auto
 
     from iH(2) have "distinct ?rest" by auto
@@ -603,19 +603,19 @@ proof (induct entf)
     with `distinct ?rest` have whichcase2: "~ q = ?rest ! ?i" 
           by (metis Suc_lessD arg index_nth_id n_not_Suc_n)
 
-    from aaa have "index (swapSucs [index xs q - Suc e..<index xs q] xs) q
-        = index (swapSuc (index xs q - Suc e) (swapSucs [index xs q - e..<index xs q] xs)) q" 
+    from aaa have "index (swaps [index xs q - Suc e..<index xs q] xs) q
+        = index (swap (index xs q - Suc e) (swaps [index xs q - e..<index xs q] xs)) q" 
           by auto
-    thm this[unfolded swapSuc_def]
+    thm this[unfolded swap_def]
     thm index_swap_if_distinct
     also have "\<dots> = (if q = ?rest ! ?i then (Suc ?i) else if q = ?rest ! (Suc ?i) then ?i else index ?rest q)"
-        unfolding swapSuc_def apply(simp only: arg if_True)
+        unfolding swap_def apply(simp only: arg if_True)
         apply(rule index_swap_if_distinct)
           apply(simp add: iH)
           apply(simp only: arg2)
           by(simp only: arg)
     also have "\<dots> = ?i" using whichcase whichcase2 by simp
-    finally show "index (swapSucs [index xs q - Suc e..<index xs q] xs) q =
+    finally show "index (swaps [index xs q - Suc e..<index xs q] xs) q =
               index xs q - Suc e" .
   qed
 next
@@ -629,11 +629,11 @@ unfolding mtf2_def
 proof -
   assume distxs: "distinct xs"
   assume qinxs: "q \<in> set xs"
-  have " index (if q \<in> set xs then swapSucs [index xs q - length xs..<index xs q] xs else xs) q 
-    = index ( swapSucs [index xs q - length xs..<index xs q] xs) q" using qinxs by auto
+  have " index (if q \<in> set xs then swaps [index xs q - length xs..<index xs q] xs else xs) q 
+    = index ( swaps [index xs q - length xs..<index xs q] xs) q" using qinxs by auto
   also have "\<dots> = index xs q - (length xs)" apply(rule swapsthrough) using distxs qinxs by auto
   also have "\<dots> = 0" using index_less_size_conv qinxs by (simp add: index_le_size)
-  finally show "index (if q \<in> set xs then swapSucs [index xs q - length xs..<index xs q] xs else xs) q = 0" .
+  finally show "index (if q \<in> set xs then swaps [index xs q - length xs..<index xs q] xs else xs) q = 0" .
 qed
 
 

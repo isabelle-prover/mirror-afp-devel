@@ -6,11 +6,11 @@ theory BIT
 imports 
 Bit_Strings 
 mtf2_effects
-List_Update_Problem
+Move_to_Front
 begin
     
 
-abbreviation "config'' A qs init n == config A init (take n qs)"
+abbreviation "config'' A qs init n == config_rand A init (take n qs)"
 
 
 lemma setsum_my: fixes f g::"'b \<Rightarrow> 'a::ab_group_add"
@@ -59,7 +59,7 @@ apply(intro exI[where x="[a]"])
   -- "comment in a proof"
 by(auto simp: UNIV_bool set_pmf_bernoulli)
  
-definition BIT_step :: "('a state, bool list * 'a list, 'a, 'a action)alg_on_step" where
+definition BIT_step :: "('a state, bool list * 'a list, 'a, answer)alg_on_step" where
 "BIT_step s q = ( let a=((if (fst (snd s))!(index (snd (snd s)) q) then 0 else (length (fst s))),[]) in
                      return_pmf (a , (flip (index (snd (snd s)) q) (fst (snd s)), snd (snd s))))"
                  
@@ -69,7 +69,7 @@ by simp
 
 
 
-abbreviation BIT :: "('a state, bool list*'a list, 'a, 'a action)alg_on_rand" where
+abbreviation BIT :: "('a state, bool list*'a list, 'a, answer)alg_on_rand" where
     "BIT == (BIT_init, BIT_step)"
 
  
@@ -80,29 +80,29 @@ unfolding BIT_step_def
 by(auto)
 
 subsubsection "About the Internal State"
-term "(config' (BIT_init, BIT_step) s0 qs) "
+term "(config'_rand (BIT_init, BIT_step) s0 qs) "
 lemma config'_n_init: fixes qs init n
-  shows "map_pmf (snd \<circ> snd) (config' (BIT_init, BIT_step) init qs) = map_pmf (snd \<circ> snd) init"
+  shows "map_pmf (snd \<circ> snd) (config'_rand (BIT_init, BIT_step) init qs) = map_pmf (snd \<circ> snd) init"
 apply (induct qs arbitrary: init)
   by (simp_all add: map_pmf_def bind_assoc_pmf BIT_step_def bind_return_pmf )   
  
 
-lemma config_n_init: "map_pmf (snd \<circ> snd) (config  (BIT_init, BIT_step) s0 qs) = return_pmf s0"
+lemma config_n_init: "map_pmf (snd \<circ> snd) (config_rand  (BIT_init, BIT_step) s0 qs) = return_pmf s0"
 using config'_n_init[of "((fst (BIT_init, BIT_step) s0) \<bind> (\<lambda>is. return_pmf (s0, is)))"] 
   by (simp_all add: map_pmf_def bind_assoc_pmf  bind_return_pmf BIT_init_def )    
 
-lemma config_n_init2: "\<forall>(_,(_,x)) \<in> set_pmf (config (BIT_init, BIT_step) init qs). x = init"
+lemma config_n_init2: "\<forall>(_,(_,x)) \<in> set_pmf (config_rand (BIT_init, BIT_step) init qs). x = init"
 proof 
   case (goal1 z)
-  then have 1: "snd(snd z) \<in> (snd \<circ> snd) ` set_pmf (config   (BIT_init, BIT_step) init qs)"
+  then have 1: "snd(snd z) \<in> (snd \<circ> snd) ` set_pmf (config_rand   (BIT_init, BIT_step) init qs)"
         by force
-  have "(snd \<circ> snd) ` set_pmf (config  (BIT_init, BIT_step) init qs)
-              = set_pmf (map_pmf (snd \<circ> snd) (config  (BIT_init, BIT_step) init qs))" by(simp)
+  have "(snd \<circ> snd) ` set_pmf (config_rand  (BIT_init, BIT_step) init qs)
+              = set_pmf (map_pmf (snd \<circ> snd) (config_rand  (BIT_init, BIT_step) init qs))" by(simp)
   also have "\<dots> = {init}" apply(simp only: config_n_init) by simp
   finally have "snd(snd z) = init" using 1 by auto 
   then show ?case by auto 
 qed 
-lemma config_n_init3: "\<forall>x \<in> set_pmf (config (BIT_init, BIT_step) init qs). snd (snd x) = init"
+lemma config_n_init3: "\<forall>x \<in> set_pmf (config_rand (BIT_init, BIT_step) init qs). snd (snd x) = init"
 using config_n_init2 by(simp add: split_def)
 
 
@@ -110,8 +110,8 @@ using config_n_init2 by(simp add: split_def)
 lemma config'_n_L: fixes qs init n 
   shows " map_pmf (snd \<circ> snd) init = return_pmf s0
       \<Longrightarrow> map_pmf (fst \<circ> snd) init = L (length s0)
-      \<Longrightarrow> map_pmf (snd \<circ> snd) (config' (BIT_init, BIT_step) init qs) = return_pmf s0
-        \<and> map_pmf (fst \<circ> snd) (config' (BIT_init, BIT_step) init qs) = L (length s0)"
+      \<Longrightarrow> map_pmf (snd \<circ> snd) (config'_rand (BIT_init, BIT_step) init qs) = return_pmf s0
+        \<and> map_pmf (fst \<circ> snd) (config'_rand (BIT_init, BIT_step) init qs) = L (length s0)"
 proof (induct qs arbitrary: init)
   case (Cons r rs) 
   from Cons(2) have a: "map_pmf (snd \<circ> snd) (init \<bind> (\<lambda>s. snd (BIT_init, BIT_step) s r \<bind>
@@ -123,7 +123,7 @@ proof (induct qs arbitrary: init)
      by (metis (mono_tags, lifting) comp_eq_dest_lhs map_pmf_eq_return_pmf_iff)
 
   show ?case
-    apply(simp only: full.config'.simps)
+    apply(simp only: config'_rand.simps)
     proof (rule Cons(1))  
       case goal2
       have "map_pmf (fst \<circ> snd)
@@ -142,30 +142,30 @@ proof (induct qs arbitrary: init)
 qed simp
 
  
-lemma config_n_L_2: "map_pmf (snd \<circ> snd) (config (BIT_init, BIT_step) s0 qs) = return_pmf s0
-        \<and> map_pmf (fst \<circ> snd) (config (BIT_init, BIT_step) s0 qs) = L (length s0)"
+lemma config_n_L_2: "map_pmf (snd \<circ> snd) (config_rand (BIT_init, BIT_step) s0 qs) = return_pmf s0
+        \<and> map_pmf (fst \<circ> snd) (config_rand (BIT_init, BIT_step) s0 qs) = L (length s0)"
 apply(rule config'_n_L)
   by(simp_all add: bind_return_pmf map_pmf_def bind_assoc_pmf bind_return_pmf' BIT_init_def)
 
 
  
-lemma config_n_L: "map_pmf (fst \<circ> snd) (config (BIT_init, BIT_step) s0 qs) = L (length s0)"
+lemma config_n_L: "map_pmf (fst \<circ> snd) (config_rand (BIT_init, BIT_step) s0 qs) = L (length s0)"
 using config_n_L_2 by auto
 
-lemma config_n_fst_init_length: "\<forall>(_,(x,_)) \<in> set_pmf (config (BIT_init, BIT_step) s0 qs). length x = length s0"
+lemma config_n_fst_init_length: "\<forall>(_,(x,_)) \<in> set_pmf (config_rand (BIT_init, BIT_step) s0 qs). length x = length s0"
 proof 
   fix x::"('a list \<times> (bool list \<times> 'a list))"
-  assume ass:"x \<in> set_pmf (config (BIT_init, BIT_step) s0 qs)" 
+  assume ass:"x \<in> set_pmf (config_rand (BIT_init, BIT_step) s0 qs)" 
   let ?a="fst (snd x)"
-  from ass have "(fst x,(?a,snd (snd x))) \<in> set_pmf (config (BIT_init, BIT_step) s0 qs)" by auto
-  with ass have "?a \<in> (fst \<circ> snd) ` set_pmf (config (BIT_init, BIT_step) s0 qs)" by force
-  then have "?a \<in> set_pmf (map_pmf (fst \<circ> snd) (config (BIT_init, BIT_step) s0 qs))" by auto
+  from ass have "(fst x,(?a,snd (snd x))) \<in> set_pmf (config_rand (BIT_init, BIT_step) s0 qs)" by auto
+  with ass have "?a \<in> (fst \<circ> snd) ` set_pmf (config_rand (BIT_init, BIT_step) s0 qs)" by force
+  then have "?a \<in> set_pmf (map_pmf (fst \<circ> snd) (config_rand (BIT_init, BIT_step) s0 qs))" by auto
   then have "?a \<in> L (length s0)" by(simp only: config_n_L)
   then have "length ?a = length s0" by (auto simp: len_L_n)
   then show "case x of (uu_, xa, uua_) \<Rightarrow> length xa = length s0" by(simp add: split_def)
 qed
 
-lemma config_n_fst_init_length2: "\<forall>x \<in> set_pmf (config (BIT_init, BIT_step) s0 qs). length (fst (snd x)) = length s0"
+lemma config_n_fst_init_length2: "\<forall>x \<in> set_pmf (config_rand (BIT_init, BIT_step) s0 qs). length (fst (snd x)) = length s0"
 using config_n_fst_init_length by(simp add: split_def)
 
 
@@ -176,7 +176,7 @@ section "BIT is $1.75$-competitive"
 subsection "Definition of the Locale and Helper Functions"
 (*<*)
 locale BIT_Off = 
-fixes acts :: "'a action list"              (* auszuführende aktionen Off *)
+fixes acts :: "answer list"              (* auszuführende aktionen Off *)
 fixes qs :: "'a list"                       (* queries *)
 fixes init :: "'a list"                     (* initial list *)
 assumes dist_init[simp]: "distinct init"
@@ -257,19 +257,19 @@ by(induction n) (simp_all add: step_def)
 lemma cost_paidAA': "n < length paid_A' \<Longrightarrow> length (paid_A!n) \<le> length (paid_A'!n)"
   unfolding paid_A_def by simp
 
-lemma swapSucs_filtered: "swapSucs (filter (\<lambda>x. Suc x < length xs) ys) xs = swapSucs (ys) xs"
+lemma swaps_filtered: "swaps (filter (\<lambda>x. Suc x < length xs) ys) xs = swaps (ys) xs"
 apply (induct ys) by auto
 
 lemma sAsA': "n < length paid_A' \<Longrightarrow> s_A' n = s_A n"
 proof (induct n)
   case (Suc m) 
   have " s_A' (Suc m)
-        =  mtf2 (free_A!m) (qs!m) (swapSucs (paid_A'!m) (s_A' m))" by (simp add: step_def)
-  thm swapSucs_filtered swapSucs_filtered[where xs="s_A' m", simplified]
-  also from Suc(2) have "\<dots> = mtf2 (free_A!m) (qs!m) (swapSucs (paid_A!m) (s_A' m))"
+        =  mtf2 (free_A!m) (qs!m) (swaps (paid_A'!m) (s_A' m))" by (simp add: step_def)
+  thm swaps_filtered swaps_filtered[where xs="s_A' m", simplified]
+  also from Suc(2) have "\<dots> = mtf2 (free_A!m) (qs!m) (swaps (paid_A!m) (s_A' m))"
       unfolding paid_A_def                                   
-      by (simp only: nth_map swapSucs_filtered[where xs="s_A' m", simplified])
-  also have "\<dots> = mtf2 (free_A!m) (qs!m) (swapSucs (paid_A!m) (s_A m))" using Suc by auto
+      by (simp only: nth_map swaps_filtered[where xs="s_A' m", simplified])
+  also have "\<dots> = mtf2 (free_A!m) (qs!m) (swaps (paid_A!m) (s_A m))" using Suc by auto
   also have "\<dots> = s_A (Suc m)" by (simp add: step_def)
   finally show ?case .
 qed simp
@@ -280,17 +280,17 @@ using sAsA' by auto
 
 
 definition t_BIT :: "nat \<Rightarrow> real" where   (* was zahlt BIT im nten schritt *)
-"t_BIT n = T_on_n BIT init qs n"
+"t_BIT n = T_on_rand_n BIT init qs n"
 
 definition T_BIT :: "nat \<Rightarrow> real" where   (* was zahlt BIT in den ersten n Schritten *)
 "T_BIT n = (\<Sum>i<n. t_BIT i)"
 
 
 definition c_A :: "nat \<Rightarrow> int" where     (* wieviel kosten die free exchanges *)
-"c_A n = index (swapSucs (paid_A!n) (s_A n)) (qs!n) + 1"
+"c_A n = index (swaps (paid_A!n) (s_A n)) (qs!n) + 1"
 
 definition f_A :: "nat \<Rightarrow> int" where     (* wie weit das element nach vorne gebubbelt wird *)
-"f_A n = min (free_A!n) (index (swapSucs (paid_A!n) (s_A n)) (qs!n))"
+"f_A n = min (free_A!n) (index (swaps (paid_A!n) (s_A n)) (qs!n))"
 
 definition p_A :: "nat \<Rightarrow> int" where     (* wieviel kosten die paid exchanges *)
 "p_A n = size(paid_A!n)"
@@ -301,7 +301,7 @@ definition t_A :: "nat \<Rightarrow> int" where   (* was zahlt A in einem schrit
 
 
 definition c_A' :: "nat \<Rightarrow> int" where     (* wieviel kosten die free exchanges für A' *)
-"c_A' n = index (swapSucs (paid_A'!n) (s_A' n)) (qs!n) + 1"
+"c_A' n = index (swaps (paid_A'!n) (s_A' n)) (qs!n) + 1"
 
 definition p_A' :: "nat \<Rightarrow> int" where     (* wieviel kosten die paid exchanges für A' *)
 "p_A' n = size(paid_A'!n)"
@@ -312,7 +312,7 @@ lemma t_A_A'_leq: "n < length paid_A' \<Longrightarrow> t_A n \<le> t_A' n"
 unfolding t_A_def t_A'_def c_A_def c_A'_def p_A_def p_A'_def
   apply(simp add: sAsA')
   unfolding paid_A_def
-  by (simp add: swapSucs_filtered[where xs="(s_A n)", simplified])
+  by (simp add: swaps_filtered[where xs="(s_A n)", simplified])
 
 definition T_A' :: "nat \<Rightarrow> int" where   (* was zahlt A' in den ersten n Schritten *)
 "T_A' n = (\<Sum>i<n. t_A' i)"
@@ -330,7 +330,7 @@ using T_A_A'_leq by auto
 
 fun s'_A :: "nat \<Rightarrow> nat \<Rightarrow> 'a list" where
 "s'_A n 0 = s_A n" 
-| "(s'_A n (Suc m)) = swapSuc ((paid_A  ! n)!(length (paid_A  ! n) -(Suc m)) ) (s'_A n m)"
+| "(s'_A n (Suc m)) = swap ((paid_A  ! n)!(length (paid_A  ! n) -(Suc m)) ) (s'_A n m)"
 
 lemma set_s'_A[simp]: "set (s'_A n m) = set init"
 apply(induct m) by(auto)
@@ -341,15 +341,15 @@ apply(induct m) by(auto)
 lemma distperm_s'_A[simp]: "dist_perm (s'_A n m) init"
 apply(induct m) by auto
 
-lemma s'A_m_le: "m \<le> (length (paid_A ! n)) \<Longrightarrow> swapSucs (drop (length (paid_A  ! n) - m) (paid_A ! n)) (s_A n) = s'_A n m"
+lemma s'A_m_le: "m \<le> (length (paid_A ! n)) \<Longrightarrow> swaps (drop (length (paid_A  ! n) - m) (paid_A ! n)) (s_A n) = s'_A n m"
 apply(induct m)
 apply(simp)
 proof -
   fix m
-  assume iH: "(m \<le> length (paid_A ! n) \<Longrightarrow> swapSucs (drop (length (paid_A ! n) - m) (paid_A ! n)) (s_A n) = s'_A n m)"
+  assume iH: "(m \<le> length (paid_A ! n) \<Longrightarrow> swaps (drop (length (paid_A ! n) - m) (paid_A ! n)) (s_A n) = s'_A n m)"
   assume Suc: "Suc m \<le> length (paid_A ! n)"
   then have "m \<le> length (paid_A ! n)" by auto
-  with iH have x: "swapSucs (drop (length (paid_A ! n) - m) (paid_A ! n)) (s_A n) = s'_A n m" by auto
+  with iH have x: "swaps (drop (length (paid_A ! n) - m) (paid_A ! n)) (s_A n) = s'_A n m" by auto
   
   from Suc have mlen: "(length (paid_A ! n) - Suc m) < length (paid_A ! n)" by auto
 
@@ -362,22 +362,22 @@ proof -
     by (rule Cons_nth_drop_Suc)
 
   from Suc have "s'_A n (Suc m)
-      = swapSuc ((paid_A  ! n)!(length (paid_A  ! n) - (Suc m)) ) (s'_A n m)" by auto
-  also have "\<dots> = swapSuc ((paid_A  ! n)!(length (paid_A  ! n) - (Suc m)) )
-                    (swapSucs (drop (length (paid_A ! n) - m) (paid_A ! n)) (s_A n))"
+      = swap ((paid_A  ! n)!(length (paid_A  ! n) - (Suc m)) ) (s'_A n m)" by auto
+  also have "\<dots> = swap ((paid_A  ! n)!(length (paid_A  ! n) - (Suc m)) )
+                    (swaps (drop (length (paid_A ! n) - m) (paid_A ! n)) (s_A n))"
     by(simp only: x)
-  also have "\<dots> = (swapSucs (((paid_A  ! n)!(length (paid_A  ! n) - (Suc m)) ) # (drop (length (paid_A ! n) - m) (paid_A ! n))) (s_A n))"
+  also have "\<dots> = (swaps (((paid_A  ! n)!(length (paid_A  ! n) - (Suc m)) ) # (drop (length (paid_A ! n) - m) (paid_A ! n))) (s_A n))"
     by auto
-  also have "\<dots> = (swapSucs (((paid_A  ! n)! ?l ) # (drop (Suc ?l) (paid_A ! n))) (s_A n))"
+  also have "\<dots> = (swaps (((paid_A  ! n)! ?l ) # (drop (Suc ?l) (paid_A ! n))) (s_A n))"
     using Sucl by auto
   thm Cons_nth_drop_Suc
-  also from mlen have "\<dots> = (swapSucs ((drop ?l (paid_A ! n))) (s_A n))"
+  also from mlen have "\<dots> = (swaps ((drop ?l (paid_A ! n))) (s_A n))"
     by (simp only: yu)
-  finally have " s'_A n (Suc m) = swapSucs (drop (length (paid_A ! n) - Suc m) (paid_A ! n)) (s_A n)" .
-  then show " swapSucs (drop (length (paid_A ! n) - Suc m) (paid_A ! n)) (s_A n) = s'_A n (Suc m)" by auto
+  finally have " s'_A n (Suc m) = swaps (drop (length (paid_A ! n) - Suc m) (paid_A ! n)) (s_A n)" .
+  then show " swaps (drop (length (paid_A ! n) - Suc m) (paid_A ! n)) (s_A n) = s'_A n (Suc m)" by auto
 qed
 
-lemma s'A_m: "swapSucs (paid_A ! n) (s_A n) = s'_A n (length (paid_A ! n))"
+lemma s'A_m: "swaps (paid_A ! n) (s_A n) = s'_A n (length (paid_A ! n))"
 using s'A_m_le[of "(length (paid_A ! n))" "n", simplified] by auto
 
 
@@ -435,7 +435,7 @@ definition PhiPlus :: "nat \<Rightarrow> real" ("\<Phi>\<^sup>+") where
 lemma PhiPlus_is_Phi_Suc: "n<length qs \<Longrightarrow> PhiPlus n = Phi (Suc n)"
 unfolding PhiPlus_def Phi_def 
 apply (simp add: bind_return_pmf map_pmf_def bind_assoc_pmf split_def take_Suc_conv_app_nth )
-  apply(simp add: full.config'_append)
+  apply(simp add: config'_rand_append)
   by(simp add: bind_assoc_pmf split_def bind_return_pmf)
 
 lemma phi0: "Phi 0 = 0" unfolding Phi_def 
@@ -448,27 +448,27 @@ apply(rule E_nonneg_fun)
 using phi_nonzero by auto
   
 subsection "Helper lemmas"
-lemma swap_subs: "dist_perm X Y \<Longrightarrow> Inv X (swapSuc z Y) \<subseteq> Inv X Y \<union> {(Y ! z, Y ! Suc z)}"
+lemma swap_subs: "dist_perm X Y \<Longrightarrow> Inv X (swap z Y) \<subseteq> Inv X Y \<union> {(Y ! z, Y ! Suc z)}"
 proof -
   assume "dist_perm X Y"
   note aj = Inv_swap[OF this, of z]                
-  show "Inv X (swapSuc z Y) \<subseteq> Inv X Y \<union> {(Y ! z, Y ! Suc z)}"
+  show "Inv X (swap z Y) \<subseteq> Inv X Y \<union> {(Y ! z, Y ! Suc z)}"
   proof cases
     assume c1: "Suc z < length X"
-    show "Inv X (swapSuc z Y) \<subseteq> Inv X Y \<union> {(Y ! z, Y ! Suc z)}"
+    show "Inv X (swap z Y) \<subseteq> Inv X Y \<union> {(Y ! z, Y ! Suc z)}"
     proof cases
       assume "Y ! z < Y ! Suc z in X"
-      with c1 have "Inv X (swapSuc z Y) = Inv X Y \<union> {(Y ! z, Y ! Suc z)}" using aj by auto
-      then show "Inv X (swapSuc z Y) \<subseteq> Inv X Y \<union> {(Y ! z, Y ! Suc z)}" by auto
+      with c1 have "Inv X (swap z Y) = Inv X Y \<union> {(Y ! z, Y ! Suc z)}" using aj by auto
+      then show "Inv X (swap z Y) \<subseteq> Inv X Y \<union> {(Y ! z, Y ! Suc z)}" by auto
     next
       assume "~ Y ! z < Y ! Suc z in X"
-      with c1 have "Inv X (swapSuc z Y) = Inv X Y - {(Y ! Suc z, Y ! z)}" using aj by auto
-      then show "Inv X (swapSuc z Y) \<subseteq> Inv X Y \<union> {(Y ! z, Y ! Suc z)}" by auto
+      with c1 have "Inv X (swap z Y) = Inv X Y - {(Y ! Suc z, Y ! z)}" using aj by auto
+      then show "Inv X (swap z Y) \<subseteq> Inv X Y \<union> {(Y ! z, Y ! Suc z)}" by auto
     qed
   next
     assume "~ (Suc z < length X)"
-    then have "Inv X (swapSuc z Y) = Inv X Y" using aj by auto
-    then show "Inv X (swapSuc z Y) \<subseteq> Inv X Y \<union> {(Y ! z, Y ! Suc z)}" by auto
+    then have "Inv X (swap z Y) = Inv X Y" using aj by auto
+    then show "Inv X (swap z Y) \<subseteq> Inv X Y \<union> {(Y ! z, Y ! Suc z)}" by auto
   qed
 qed
 
@@ -489,7 +489,7 @@ proof -
   qed
   from a c have d: "snd ` ?D \<subseteq> {x. length x = length init} \<times> {init}" by force
   have b: "fst ` ?D \<subseteq> {x. length x = length init \<and> distinct x \<and> set x = set init}"
-    using config_config by fastforce
+    using config_rand by fastforce
 
   from b d have "?D \<subseteq> {x. length x = length init \<and> distinct x \<and> set x = set init} \<times> ({x. length x = length init} \<times> {init})"
     by (smt SigmaI image_subset_iff prod.collapse subsetI)
@@ -575,7 +575,7 @@ unfolding t_def by(auto)
 lemma integr_index: "integrable (measure_pmf (config'' (BIT_init, BIT_step) qs init n))
    (\<lambda>(s, is). real (Suc (index s (qs ! n))))"
     apply(rule measure_pmf.integrable_const_bound[where B="Suc (length init)"])
-      apply(simp add: split_def) apply (metis (mono_tags) index_le_size AE_measure_pmf_iff config_config_length)
+      apply(simp add: split_def) apply (metis (mono_tags) index_le_size AE_measure_pmf_iff config_rand_length)
       by (auto)
  
 
@@ -594,8 +594,8 @@ proof -
   have absch: "(\<forall>x\<in> set_pmf ?D. ((\<lambda>(s,is). real (Suc (index s (qs ! n)))) x) \<le> ((\<lambda>(is,s). Suc (length init)) x))"
   proof (rule ballI)
     case (goal1 x) 
-    from goal1 config_config_length have 1: "length (fst x) = length init" by fastforce
-    from goal1 config_config_set have 2: "set (fst x) = set init" by fastforce
+    from goal1 config_rand_length have 1: "length (fst x) = length init" by fastforce
+    from goal1 config_rand_set have 2: "set (fst x) = set init" by fastforce
 
     from qs 2 have "(qs!n) \<notin>  set (fst x)" by auto
     then show ?case using 1 by (simp add: split_def) (* es gilt sogar = *)
@@ -634,8 +634,8 @@ proof -
   have absch: "(\<forall>x\<in> set_pmf ?D. ((\<lambda>(s, is). real (Suc (index s (qs ! n)))) x) \<le> ((\<lambda>(s, is). length init) x))"
   proof (rule ballI)
     case (goal1 x) 
-    from goal1 config_config_length have 1: "length (fst x) = length init" by fastforce
-    from goal1 config_config_set have 2: "set (fst x) = set init" by fastforce
+    from goal1 config_rand_length have 1: "length (fst x) = length init" by fastforce
+    from goal1 config_rand_set have 2: "set (fst x) = set init" by fastforce
 
     from qs 2 have "(qs!n) \<in> set (fst x)" by auto
     then have "(index (fst x) (qs ! n)) < length init" apply(rule index_less) using 1 by auto
@@ -681,13 +681,13 @@ proof -
     proof -
       from False have qsn: "(qs!n) \<notin> set init" by auto
       from False have l0: "length init = 0" by auto
-      then have "length (swapSucs (paid_A ! n) (s_A n)) = 0" using length_s_A  by auto
+      then have "length (swaps (paid_A ! n) (s_A n)) = 0" using length_s_A  by auto
   
       with l0 have 4: "t_A n = 1 + length (paid_A ! n)" unfolding t_A_def c_A_def p_A_def by(simp)
   
       have 1: "t_BIT n \<le> 1" using t_BIT_ub2[OF qsn] l0 by auto
   
-      thm phi_empty2 config_config_set
+      thm phi_empty2 config_rand_set
       { fix m
       have "phi m = (\<lambda>(b,(a,i)). phi m (b,(a,i)))" by auto
       also have "\<dots> = (\<lambda>(b,(a,i)). 0)" by(simp only: phi_empty2[OF l0])
@@ -742,7 +742,7 @@ proof -
       have "t_BIT n + Phi (n+1) - Phi n =
        t_BIT n + PhiPlus n - Phi n" using PhiPlus_is_Phi_Suc nqs by auto
       also have "\<dots> =
-          T_on_n BIT init qs n
+          T_on_rand_n BIT init qs n
          + E (map_pmf (phi (Suc n)) (bind_pmf D
             (\<lambda>(s, is). bind_pmf (BIT_step (s, is) (q)) (\<lambda>(a, nis). return_pmf (step s (q) a, nis)))))
         - E (map_pmf (phi n) D)
@@ -768,7 +768,7 @@ proof -
     thm inEreinziehn
 
     def [simp]: xs  == "s_A n"
-    def [simp]: xs' == "swapSucs (paid_A!n) xs"
+    def [simp]: xs' == "swaps (paid_A!n) xs"
     def [simp]: xs''== "mtf2 (free_A!n) (q) xs'"
     def [simp]: k   == "index xs' (q)"    (* position of the requested element in A's list *)
     def [simp]: k'  == "max 0 (k-free_A!n)" (* position where A moves the requested element to *)
@@ -827,9 +827,9 @@ subsection "The Transformation"
       have "ys' = mtf2 (fst aBIT) (q) ys" by (simp add: step_def ys'_def)
       
 
-      thm config_config_set config_config_distinct config_config_length
+      thm config_rand_set config_rand_distinct config_rand_length
 
-      from config_config_distinct[of BIT] config_config_set[of BIT] xinD
+      from config_rand_distinct[of BIT] config_rand_set[of BIT] xinD
       have dp_ys_init[simp]: "dist_perm ys init" unfolding D_def ys_def by force
       have dp_ys'_init[simp]: "dist_perm ys' init" unfolding ys'_def step_def by (auto)
       then have lenys'[simp]: "length ys' = length init" by (metis distinct_card)
@@ -876,7 +876,7 @@ subsection "The Transformation"
           let ?revm="(length (paid_A ! n) - Suc m)"
           note ah=Inv_swap[of "ys" "(s'_A n m)" "(paid_A ! n ! ?revm)", OF dist]
           have "(\<Sum>(xa, y)\<in>Inv ys (s'_A n (Suc m)). if b ! (index init y) then 2::real else 1)
-              = (\<Sum>(xa, y)\<in>Inv ys (swapSuc (paid_A ! n ! ?revm) (s'_A n m)). if b ! (index init y) then 2 else 1)" using s'_A.simps(2) by auto
+              = (\<Sum>(xa, y)\<in>Inv ys (swap (paid_A ! n ! ?revm) (s'_A n m)). if b ! (index init y) then 2 else 1)" using s'_A.simps(2) by auto
           also
           have "\<dots> = (\<Sum>(xa, y)\<in>(if Suc (paid_A ! n ! ?revm) < length ys
    then if s'_A n m ! (paid_A ! n ! ?revm) < s'_A n m ! Suc (paid_A ! n ! ?revm) in ys
@@ -1131,7 +1131,7 @@ subsection "The Transformation"
 
           (* das gilt, weil q nur nach vorn verschoben wird *)
           have g: "InvOf (q) ys' xs'' \<supseteq> InvOf (q) ys' xs'"
-            using True apply(auto) apply(rule mtf2_mono[of "swapSucs (paid_A ! n) (s_A n)"])
+            using True apply(auto) apply(rule mtf2_mono[of "swaps (paid_A ! n) (s_A n)"])
               by (auto simp: queryinlist)
           have h: "?split1 = (InvOf (q) ys' xs'') \<inter> (InvOf (q) ys' xs')" 
             unfolding Inv_def by auto
@@ -1346,8 +1346,8 @@ subsection "The Transformation"
           have "A = (\<Sum>(x,y)\<in>(Inv ys' xs'')-(Inv ys xs'). (if b'!(index init y) then 2::real else 1))" by auto
           
 
-          have "index (mtf2 (free_A ! n) (q) (swapSucs (paid_A ! n) (s_A n))) (q)
-              = (index (swapSucs (paid_A ! n) (s_A n)) (q) - free_A ! n)" 
+          have "index (mtf2 (free_A ! n) (q) (swaps (paid_A ! n) (s_A n))) (q)
+              = (index (swaps (paid_A ! n) (s_A n)) (q) - free_A ! n)" 
                 apply(rule mtf2_q_after) using queryinlist by auto
           then have whatisk': "k' = index xs'' q" by auto
 
@@ -1509,7 +1509,7 @@ subsection "The Transformation"
               case (goal1 z)
               show ?case
                 proof 
-                from goal1(1) have "index xs' z < index (swapSucs (paid_A ! n) (s_A n)) (q)"
+                from goal1(1) have "index xs' z < index (swaps (paid_A ! n) (s_A n)) (q)"
                   by auto
                 also have "\<dots> < length xs'" using index_less_size_conv by (auto simp: queryinlist) 
                 finally have "index xs' z  < length xs'" .
@@ -1521,7 +1521,7 @@ subsection "The Transformation"
               qed
             next
               case goal2
-              from goal2(1) have "i < index (swapSucs (paid_A ! n) (s_A n)) (q)"
+              from goal2(1) have "i < index (swaps (paid_A ! n) (s_A n)) (q)"
                 by auto
               also have "\<dots> < length xs'" using index_less_size_conv by (auto simp: queryinlist) 
               finally have iset: "i < length xs'" .
@@ -1602,9 +1602,9 @@ subsection "The Transformation"
           have setxsbleibt: "set xs'' = set xs'" by auto
 
           have whatisk: "k = index xs' q" by auto
-          thm mtf2_q_after[of "(swapSucs (paid_A ! n) (s_A n))"]
-          have "index (mtf2 (free_A ! n) (q) (swapSucs (paid_A ! n) (s_A n))) (q)
-              = (index (swapSucs (paid_A ! n) (s_A n)) (q) - free_A ! n)" 
+          thm mtf2_q_after[of "(swaps (paid_A ! n) (s_A n))"]
+          have "index (mtf2 (free_A ! n) (q) (swaps (paid_A ! n) (s_A n))) (q)
+              = (index (swaps (paid_A ! n) (s_A n)) (q) - free_A ! n)" 
                 apply(rule mtf2_q_after) using queryinlist by auto
           then have whatisk': "k' = index xs'' q" by auto
               
@@ -1674,10 +1674,10 @@ subsection "The Transformation"
                               apply(auto)
                             proof -
                               case (goal1 x)
-                              have id: "(swapSucs (paid_A ! n) (s_A n) ! index (swapSucs (paid_A ! n) (s_A n)) x) = x"
+                              have id: "(swaps (paid_A ! n) (s_A n) ! index (swaps (paid_A ! n) (s_A n)) x) = x"
                                 apply(rule nth_index) using goal1 by auto
                                 thm mtf2_forward_beforeq
-                              have xa: "index xs'' (swapSucs (paid_A ! n) (s_A n) ! index (swapSucs (paid_A ! n) (s_A n)) x)  \<le> index xs' (q)"
+                              have xa: "index xs'' (swaps (paid_A ! n) (s_A n) ! index (swaps (paid_A ! n) (s_A n)) x)  \<le> index xs' (q)"
                                   unfolding xs''_def xs'_def xs_def apply(rule mtf2_forward_beforeq)
                                     using queryinlist apply(simp)
                                     apply(simp)
@@ -1687,26 +1687,26 @@ subsection "The Transformation"
                                   \<and> index xs'' x  \<le> index xs' (q)" apply(intro conjI)
                                     unfolding xs''_def xs'_def xs_def apply(fact goal1(2))
                                     using id xa by auto
-                              then have 3: "index (swapSucs (paid_A ! n) (s_A n)) (q) - (free_A ! n)
-  < index (mtf2 (free_A ! n) (q) (swapSucs (paid_A ! n) (s_A n))) (swapSucs (paid_A ! n) (s_A n) ! index (swapSucs (paid_A ! n) (s_A n)) x) \<and>
-  index (mtf2 (free_A ! n) (q) (swapSucs (paid_A ! n) (s_A n))) (swapSucs (paid_A ! n) (s_A n) ! index (swapSucs (paid_A ! n) (s_A n)) x)
-  \<le> index (swapSucs (paid_A ! n) (s_A n)) (q)" using id by auto
-                              have qxs': "index (swapSucs (paid_A ! n) (s_A n)) (q) < length (swapSucs (paid_A ! n) (s_A n))"
+                              then have 3: "index (swaps (paid_A ! n) (s_A n)) (q) - (free_A ! n)
+  < index (mtf2 (free_A ! n) (q) (swaps (paid_A ! n) (s_A n))) (swaps (paid_A ! n) (s_A n) ! index (swaps (paid_A ! n) (s_A n)) x) \<and>
+  index (mtf2 (free_A ! n) (q) (swaps (paid_A ! n) (s_A n))) (swaps (paid_A ! n) (s_A n) ! index (swaps (paid_A ! n) (s_A n)) x)
+  \<le> index (swaps (paid_A ! n) (s_A n)) (q)" using id by auto
+                              have qxs': "index (swaps (paid_A ! n) (s_A n)) (q) < length (swaps (paid_A ! n) (s_A n))"
                                 using queryinlist by auto
-                              have qinset: "q \<in> set (swapSucs (paid_A ! n) (s_A n))"
+                              have qinset: "q \<in> set (swaps (paid_A ! n) (s_A n))"
                                 using queryinlist by auto
-                              have dist: "distinct (swapSucs (paid_A ! n) (s_A n))" by auto
+                              have dist: "distinct (swaps (paid_A ! n) (s_A n))" by auto
                               thm mtf2_backwards_effect3 
                               thm index_less
-                              have 4: "index (swapSucs (paid_A ! n) (s_A n)) x < length (swapSucs (paid_A ! n) (s_A n))"
+                              have 4: "index (swaps (paid_A ! n) (s_A n)) x < length (swaps (paid_A ! n) (s_A n))"
                                 apply(rule index_less) using setinit goal1 by auto
                               from mtf2_backwards_effect3[OF qxs' qinset dist 3 4]
-                              have "index (swapSucs (paid_A ! n) (s_A n)) (q) - free_A ! n \<le> index (swapSucs (paid_A ! n) (s_A n)) x" by auto
+                              have "index (swaps (paid_A ! n) (s_A n)) (q) - free_A ! n \<le> index (swaps (paid_A ! n) (s_A n)) x" by auto
                               then show ?case by auto
                             next                            
                               case (goal2 x)
                               thm whatisk'
-                              let ?i=" index (swapSucs (paid_A ! n) (s_A n)) x"
+                              let ?i=" index (swaps (paid_A ! n) (s_A n)) x"
                               have a: "index xs'' q = index xs' q - free_A ! n" 
                                 unfolding xs''_def apply(rule mtf2_q_after)
                                    using queryinlist by auto
@@ -1725,19 +1725,19 @@ subsection "The Transformation"
             apply(auto)
             proof
               case (goal1 x)
-              let ?i27="index (swapSucs (paid_A ! n) (s_A n))"
-              from goal1 show "x = swapSucs (paid_A ! n) (s_A n) ! ?i27 x \<and> index (swapSucs (paid_A ! n) (s_A n)) (q) - free_A ! n \<le> ?i27 x \<and>
-                    ?i27 x < index (swapSucs (paid_A ! n) (s_A n)) (q)"
+              let ?i27="index (swaps (paid_A ! n) (s_A n))"
+              from goal1 show "x = swaps (paid_A ! n) (s_A n) ! ?i27 x \<and> index (swaps (paid_A ! n) (s_A n)) (q) - free_A ! n \<le> ?i27 x \<and>
+                    ?i27 x < index (swaps (paid_A ! n) (s_A n)) (q)"
                   by simp
             next
               case (goal2 i) (* elements between k' and k are different from q *)
-              let ?fA = "swapSucs (paid_A ! n) (s_A n)"
+              let ?fA = "swaps (paid_A ! n) (s_A n)"
               have "?fA ! index ?fA q = q" apply(rule nth_index) using ` q \<in> set init` by auto
               have 1: "i \<noteq> index ?fA q" using goal2 by (auto simp: q_def) 
 
-              have "index (swapSucs (paid_A ! n) (s_A n)) (q) \<le> length (swapSucs (paid_A ! n) (s_A n))"
+              have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length (swaps (paid_A ! n) (s_A n))"
                 by(rule index_le_size)
-              then have "index (swapSucs (paid_A ! n) (s_A n)) (q) \<le> length init" by auto
+              then have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length init" by auto
               with goal2 have a: "i<length init" by auto
                {
                   fix xs x y q
@@ -1756,28 +1756,28 @@ subsection "The Transformation"
             next
               case (goal3 i)
               thm index_nth_id
-              have "index (swapSucs (paid_A ! n) (s_A n)) (q) \<le> length (swapSucs (paid_A ! n) (s_A n))"
+              have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length (swaps (paid_A ! n) (s_A n))"
                 by(rule index_le_size)
-              then have "index (swapSucs (paid_A ! n) (s_A n)) (q) \<le> length init" by auto
+              then have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length init" by auto
               with goal3(2) have a: "i<length init" by auto
-              have g: "index (swapSucs (paid_A ! n) (s_A n)) (swapSucs (paid_A ! n) (s_A n) ! i) = i"
+              have g: "index (swaps (paid_A ! n) (s_A n)) (swaps (paid_A ! n) (s_A n) ! i) = i"
                   apply(rule index_nth_id) by(auto simp: a)
               show ?case unfolding g using goal3(1) by auto
             next
               case (goal4 i)
-              have "index (swapSucs (paid_A ! n) (s_A n)) (q) \<le> length (swapSucs (paid_A ! n) (s_A n))"
+              have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length (swaps (paid_A ! n) (s_A n))"
                 by(rule index_le_size)
-              then have "index (swapSucs (paid_A ! n) (s_A n)) (q) \<le> length init" by auto
+              then have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length init" by auto
               with goal4(2) have a: "i<length init" by auto
-              have g: "index (swapSucs (paid_A ! n) (s_A n)) (swapSucs (paid_A ! n) (s_A n) ! i)
+              have g: "index (swaps (paid_A ! n) (s_A n)) (swaps (paid_A ! n) (s_A n) ! i)
                         = i" apply(rule index_nth_id) by(auto simp: a)
               show ?case unfolding g using goal4 by auto
             next
               case (goal5 i)
-              have "index (swapSucs (paid_A ! n) (s_A n)) (q) < length (swapSucs (paid_A ! n) (s_A n))"
+              have "index (swaps (paid_A ! n) (s_A n)) (q) < length (swaps (paid_A ! n) (s_A n))"
                 apply(rule index_less) by (auto simp: queryinlist) 
-              from order.strict_trans[OF goal5(2) this] have g: "i < length (swapSucs (paid_A ! n) (s_A n))" by auto
-              have "swapSucs (paid_A ! n) (s_A n) ! i \<in> set (swapSucs (paid_A ! n) (s_A n))"
+              from order.strict_trans[OF goal5(2) this] have g: "i < length (swaps (paid_A ! n) (s_A n))" by auto
+              have "swaps (paid_A ! n) (s_A n) ! i \<in> set (swaps (paid_A ! n) (s_A n))"
                   apply(rule nth_mem) using g by auto
               then show ?case by auto
             qed
@@ -1810,23 +1810,23 @@ subsection "The Transformation"
                 then have "{x \<in> ?UB. fst x = y} = {(y,q)}" by (auto)
               } note aah=this
 
-              have fstUB: "fst ` ?UB = {swapSucs (paid_A ! n) (s_A n) ! i|i. i\<in> {k'..<k}}" by force
-              let ?fstUB="{swapSucs (paid_A ! n) (s_A n) ! i|i. i\<in> {k'..<k}}"
+              have fstUB: "fst ` ?UB = {swaps (paid_A ! n) (s_A n) ! i|i. i\<in> {k'..<k}}" by force
+              let ?fstUB="{swaps (paid_A ! n) (s_A n) ! i|i. i\<in> {k'..<k}}"
                    
               term "card (fst ` ?UB)"
               term "k-k'"
-              have  "fst ` ?UB =  (\<lambda>i. swapSucs (paid_A ! n) (s_A n) ! i) ` {k'..<k}" by force
-              then have  "card (fst ` ?UB) = card ((\<lambda>i. swapSucs (paid_A ! n) (s_A n) ! i) ` {k'..<k})" by auto
+              have  "fst ` ?UB =  (\<lambda>i. swaps (paid_A ! n) (s_A n) ! i) ` {k'..<k}" by force
+              then have  "card (fst ` ?UB) = card ((\<lambda>i. swaps (paid_A ! n) (s_A n) ! i) ` {k'..<k})" by auto
               also have "\<dots> = card {k'..<k}"
                   apply(rule card_image) apply(auto)
                   apply(rule inj_on_nth) apply(auto)
                   proof -
                     fix i
-                    assume "index (swapSucs (paid_A ! n) (s_A n)) (q) - free_A ! n \<le> i"
-                        and isub: "i < index (swapSucs (paid_A ! n) (s_A n)) (q)"
-                    have "index (swapSucs (paid_A ! n) (s_A n)) (q) \<le> length (swapSucs (paid_A ! n) (s_A n))"
+                    assume "index (swaps (paid_A ! n) (s_A n)) (q) - free_A ! n \<le> i"
+                        and isub: "i < index (swaps (paid_A ! n) (s_A n)) (q)"
+                    have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length (swaps (paid_A ! n) (s_A n))"
                           by (rule index_le_size)
-                    then have "index (swapSucs (paid_A ! n) (s_A n)) (q) \<le> length init" by auto
+                    then have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length init" by auto
                     then show "i < length init" using isub by auto
                   qed
               also have "\<dots> = k-k'" by auto
@@ -1920,8 +1920,8 @@ subsection "Approximation of the Term for Free exchanges"
 
         let ?S="{(xs'!j)|j. j<k'}"
 
-        from queryinlist have "q \<in> set (swapSucs (paid_A ! n) (s_A n))" by auto
-        then have "index (swapSucs (paid_A ! n) (s_A n)) q < length xs'" by auto
+        from queryinlist have "q \<in> set (swaps (paid_A ! n) (s_A n))" by auto
+        then have "index (swaps (paid_A ! n) (s_A n)) q < length xs'" by auto
         then have k'inbound: "k' < length xs'" by auto 
         
         { fix x
@@ -1943,7 +1943,7 @@ subsection "Approximation of the Term for Free exchanges"
 
         have identS: "?S = set (take k' xs')"
           proof -
-              have "index (swapSucs (paid_A ! n) (s_A n)) (q) \<le> length (swapSucs (paid_A ! n) (s_A n))"
+              have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length (swaps (paid_A ! n) (s_A n))"
                   by (rule index_le_size)
               then have kxs': "k' \<le> length xs'" by simp
               have "?S = op ! xs' ` {0..<k'}" by force
@@ -2233,7 +2233,7 @@ by(auto simp add: setsum_nonneg T_A_def t_A_def c_A_def p_A_def)
  
 
 lemma T_BIT_eq: "T_BIT (length qs) = T_on_rand BIT init qs"
-unfolding T_BIT_def full.T_on_rand_as_sum using t_BIT_def  by auto
+unfolding T_BIT_def T_on_rand_as_sum using t_BIT_def  by auto
 
 
 corollary T_BIT_competitive: assumes "n \<le> length qs" and "init \<noteq> []" and "\<forall>i<n. qs!i \<in> set init"
@@ -2314,7 +2314,7 @@ theorem compet_BIT: assumes "init \<noteq> []" "distinct init" "set qs \<subsete
 shows "T_on_rand BIT init qs \<le> ( (7/4) - 3 / (4 * length init)) * T_opt init qs"
 proof-
   from assms(3) have 1: "\<forall>i < length qs. qs!i \<in> set init" by auto
-  { fix acts :: "'a action list" 
+  { fix acts :: "answer list" 
     assume len: "length acts = length qs"
     interpret BIT_Off acts qs init proof qed (auto simp: assms(2) len)
     from BIT_competitive2[OF assms(1) 1] assms(1)
@@ -2322,7 +2322,7 @@ proof-
       by(simp add: field_simps length_greater_0_conv[symmetric]
         del: length_greater_0_conv) }
     hence "T_on_rand BIT init qs / ( (7/4) - 3 / (4 * length init)) \<le> T_opt init qs"
-      apply(simp add: full.T_opt_def Inf_nat_def)
+      apply(simp add: T_opt_def Inf_nat_def)
       apply(rule LeastI2_wellorder)
       using length_replicate[of "length qs" undefined] apply fastforce
       apply auto
@@ -2334,7 +2334,7 @@ qed
 theorem compet_BIT4: assumes "init \<noteq> []" "distinct init"   
 shows "T_on_rand BIT init qs \<le> 7/4 * T_opt init qs"
 proof- 
-  { fix acts :: "'a action list" 
+  { fix acts :: "answer list" 
     assume len: "length acts = length qs"
     interpret BIT_Off acts qs init proof qed (auto simp: assms(2) len)
     thm BIT_absch_le BIT_competitive2
@@ -2343,7 +2343,7 @@ proof-
       by(simp add: field_simps length_greater_0_conv[symmetric]
         del: length_greater_0_conv) }
     hence "(T_on_rand BIT init qs + 3 / 4 * length qs)/ (7/4) \<le> T_opt init qs"
-      apply(simp add: full.T_opt_def Inf_nat_def)
+      apply(simp add: T_opt_def Inf_nat_def)
       apply(rule LeastI2_wellorder)
       using length_replicate[of "length qs" undefined] apply fastforce
       apply auto
@@ -2353,8 +2353,8 @@ proof-
 qed
  
 theorem compet_BIT_2:
- "full.compet_rand BIT (7/4) {init. init \<noteq> [] \<and> distinct init}"
-unfolding full.compet_rand_def
+ "compet_rand BIT (7/4) {init. init \<noteq> [] \<and> distinct init}"
+unfolding compet_rand_def
 proof 
   fix init
   assume "init \<in> {init. init \<noteq> [] \<and> distinct init }"
