@@ -18,6 +18,7 @@ imports
   "../Polynomial_Interpolation/Divmod_Int"
   "../Sqrt_Babylonian/Sqrt_Babylonian"
   "../Polynomial_Interpolation/Is_Rat_To_Rat"
+  "../Jordan_Normal_Form/Gauss_Jordan_IArray_Impl"
   Gauss_Jordan_Field
   Polynomial_Field
   Square_Free_Factorization

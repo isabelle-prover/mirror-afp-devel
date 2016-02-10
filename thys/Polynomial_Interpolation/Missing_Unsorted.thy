@@ -447,4 +447,12 @@ lemma inverse_le_sgn: assumes sgn: "sgn x = sgn y" and xy: "x \<le> (y :: real)"
   shows "inverse y \<le> inverse x"
   using xy inverse_le_iff_sgn[OF sgn] by auto
 
+lemma set_list_update: "set (xs [i := k]) = 
+  (if i < length xs then insert k (set (take i xs) \<union> set (drop (Suc i) xs)) else set xs)"
+proof (induct xs arbitrary: i)
+  case (Cons x xs i) 
+  thus ?case
+    by (cases i, auto)
+qed simp
+
 end

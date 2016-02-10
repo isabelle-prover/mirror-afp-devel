@@ -11,6 +11,7 @@ text \<open>In this theory we load all executable algorithms, i.e., Gauss-Jordan
 theory Matrix_Impl
 imports 
   Matrix_IArray_Impl
+  Gauss_Jordan_IArray_Impl
   Determinant_Impl
   Show_Matrix
   Jordan_Normal_Form_Existence
