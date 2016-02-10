@@ -311,7 +311,7 @@ lemma umformung:
   assumes no_paid: "\<And>is s q. \<forall>((free,paid),_) \<in> (snd A (s,is) q). paid=[]"
   assumes inlist: "set qs \<subseteq> set init"
   assumes dist: "distinct init"
-  assumes "\<And>x. finite (set_pmf (config'' A qs init x))"
+  assumes "\<And>x. x < length qs \<Longrightarrow> finite (set_pmf (config'' A qs init x))"
   shows "T\<^sub>p_on_rand A init qs = 
     (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ALGxy A qs init x y)"
 proof -
@@ -1318,7 +1318,7 @@ lemma umf_pair: assumes
   assumes 1: "\<And>is s q. \<forall>((free,paid),_) \<in> (snd A (s, is) q). paid=[]"
   assumes 2: "set qs \<subseteq> set init"
   assumes 3: "distinct init"
-  assumes 4: "\<And>x. finite (set_pmf (config'' A qs init x))"
+  assumes 4: "\<And>x. x<length qs \<Longrightarrow> finite (set_pmf (config'' A qs init x))"
    shows "T\<^sub>p_on_rand A init qs
       = (\<Sum>(x,y)\<in>{(x, y) |x y. x \<in> set init \<and> y \<in> set init \<and> x < y}. T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x,y}))"
 proof -

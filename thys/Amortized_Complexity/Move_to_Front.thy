@@ -278,6 +278,28 @@ using config_config_distinct config_config_set by metis
  
 
 
+lemma config_rand_length: "\<forall>x\<in>set_pmf (config_rand  A init qs). length (fst x) = length init"
+apply (induct rule: config_rand_induct) by (simp_all)
+
+lemma config_rand_distinct: 
+  shows "\<forall>x \<in> (config_rand  A init qs). distinct (fst x) = distinct init" 
+apply (induct rule: config_rand_induct) by (simp_all add: distinct_step)
+
+lemma config_rand_set: 
+  shows " \<forall>x \<in> (config_rand   A init qs). set (fst x) = set init"
+apply(induct rule: config_rand_induct) by(simp_all add: set_step)
+
+lemma config_rand:
+  "\<forall>x \<in> (config_rand   A  init qs). set (fst x) = set init
+        \<and> distinct (fst x) = distinct init \<and> length (fst x) = length init"
+using config_rand_distinct config_rand_set config_rand_length by metis
+
+lemma config_rand_dist_perm:
+  "distinct init \<Longrightarrow> \<forall>x \<in> (config_rand A init qs). dist_perm (fst x) init"
+using config_rand_distinct config_rand_set  by metis
+
+
+
 
 (*fixme start from Inv*)
 
