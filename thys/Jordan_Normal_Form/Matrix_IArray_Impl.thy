@@ -13,11 +13,7 @@ text \<open>In this theory we implement matrices as arrays of arrays.
 
   There is potential for optimizations though, since for some operations
   the current implementation is clearly non-optimal. For instance, 
-  performing a row-operation in the Gauss-Jordan algorithm currently
-  generates a complete new matrix, where only a single row-array would have
-  to be changed. Hence, the Gauss-Jordan algorithm will run one order of
-  magnitude slower than expected. Also the code to construct matrices from 
-  lists could be improved.
+  the code to construct matrices from lists could be improved.
 
   To implement the infinite carrier set, we use A.\ Lochbihler's container framework
   \cite{Containers-AFP}.\<close>
