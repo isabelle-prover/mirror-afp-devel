@@ -29,8 +29,11 @@ fun config' :: "('state,'is,'request,'answer) alg_on  \<Rightarrow> ('state*'is)
 "config' A s []  = s" |
 "config' A s (r#rs) = config' A (Step A s r) rs"
 
-lemma config'_append: "config' A s (rs@[r]) = Step A (config' A s rs) r"
+lemma config'_snoc: "config' A s (rs@[r]) = Step A (config' A s rs) r"
 apply(induct rs arbitrary: s) by simp_all
+
+lemma config'_append2: "config' A s (xs@ys) = config' A (config' A s xs) ys"
+apply(induct xs arbitrary: s) by simp_all
 
 lemma config'_induct: "P (fst init) \<Longrightarrow> (\<And>s q a. P s \<Longrightarrow> P (step s q a))
      \<Longrightarrow> P (fst (config' A init rs))"
@@ -39,6 +42,13 @@ apply (induct rs arbitrary: init) by(simp_all add: Step_def split: prod.split)
 abbreviation config where
 "config A s0 rs == config' A (s0, fst A s0) rs" 
  
+
+lemma config_snoc: "config A s (rs@[r]) = Step A (config A s rs) r"
+using config'_snoc by metis
+
+lemma config_append: "config A s (xs@ys) = config' A (config A s xs) ys"
+using config'_append2 by metis
+
 lemma config_induct: "P s0 \<Longrightarrow> (\<And>s q a. P s \<Longrightarrow> P (step s q a)) \<Longrightarrow> P (fst (config A s0 qs))"
 using config'_induct[of P "(s0, fst A s0)" ] by auto
 
@@ -89,6 +99,8 @@ apply(induct qs arbitrary: s0 x)
 lemma T_on_on'': "T_on A s0 qs = T_on'' A s0 qs"
 using T_on_on'[where x="fst A s0", of s0 qs A] by(auto)
 
+lemma T_on_as_sum: "T_on A s0 rs = setsum (T_on_n A s0 rs) {..<length rs} "
+using T_on__as_sum T_on_on'' by metis
 
 
 
