@@ -189,46 +189,65 @@ definition mod_int_poly :: "int \<Rightarrow> int poly_f \<Rightarrow> int poly_
   "mod_int_poly n f = (let g = map (\<lambda> x. x mod n) f
     in foldr cCons g [])"
 
-context
-  fixes Z :: "int ffield"
-  and   p :: int
-  fixes a b :: "int poly_f"
-begin
-text \<open>Algorithm according to Exercise 22 (page 684-685 of Knuth's Art of Computer Programming,
-  Volume 2.\<close>
-definition hensel_lifting_binary_main :: "int \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
-  "hensel_lifting_binary_main m u v w = (let 
-    q = fast_power (op *) 1 p (nat m);
-    r = p;
-    qr = q * r;
-    f = map (\<lambda> x. x div q) (mod_int_poly qr (minus_poly_f Z u (times_poly_f Z v w)));
-    bf = times_poly_f Z b f;  
-    t = fst (divmod_gen_poly_f Z 1 bf v);
-    vbar = minus_poly_f Z bf (times_poly_f Z t v);
-    wbar = plus_poly_f Z (times_poly_f Z a f) (times_poly_f Z t w);
-    V = mod_int_poly qr (plus_poly_f Z v (smult_poly_f Z q vbar));
-    W = mod_int_poly qr (plus_poly_f Z w (smult_poly_f Z q wbar))
-  in (V,W))"
+definition div_int_poly :: "int \<Rightarrow> int poly_f \<Rightarrow> int poly_f" where
+  "div_int_poly n f = (let g = map (\<lambda> x. x div n) f
+    in foldr cCons g [])"
 
-function hensel_lifting_binary_rec :: "nat \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
-  "hensel_lifting_binary_rec i m f f1 f2 = (if i \<ge> m then (f1,f2) else
-     case hensel_lifting_binary_main i f f1 f2 of
-       (f1',f2') \<Rightarrow> hensel_lifting_binary_rec (i + 1) m f f1' f2')"
-  by pat_completeness auto
-termination by (relation "measure (\<lambda> (i,m,_). m - i)", auto)
+text \<open>Algorithm according to Alfonso Miola and David Yun paper.\<close>
+context fixes
+  Fp :: "GFp ffield"
+  and p :: int
+  and k :: nat
+  and C :: "int poly_f"
+  and S T D1 H1 :: "GFp poly_f"
+begin
+
+definition hensel_dupe :: "GFp poly_f \<Rightarrow> GFp poly_f \<Rightarrow> GFp poly_f 
+   \<Rightarrow> GFp poly_f \<times> GFp poly_f" where
+  "hensel_dupe D H U \<equiv> let 
+       pp = plus_poly_f Fp;
+       tt = times_poly_f Fp;  
+       (Q,R) = divmod_poly_f Fp (tt T U) D;
+       A = pp (tt S U) (tt H Q);
+       B = R
+     in (A,B)"
+
+partial_function (tailrec) hensel_lifting_main :: "int \<Rightarrow> nat
+  \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
+  [code]: "hensel_lifting_main q j D H = (if j > k then (D,H) else
+     let 
+       Z = integer_ops;
+       mm = minus_poly_f Z;
+       pp = plus_poly_f Z;
+       tt = times_poly_f Z;
+       sm = smult_poly_f Z;
+       I = map (to_int_f Fp);
+       (* H2 *)
+       U = div_int_poly q (mm C (tt D H))
+     in if U = zero_poly_f then (D,H) else let (* opt. iii *)
+       (* H3 *)
+       U = int_list_to_poly_f Fp U;
+       (A,B) = hensel_dupe D1 H1 U;
+       (* H4 *)
+       D = pp D (sm q (I B));
+       H = pp H (sm q (I A));
+       j = j + 1;
+       q = q * p
+     in hensel_lifting_main q j D H)"
 end
 
 definition hensel_lifting_binary :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
-  "hensel_lifting_binary F m u v w = (let 
-    p = characteristic F;
-    G = int_list_to_poly_f F;
-    v' = G v;
-    w' = G w;
-    I = map (to_int_f F);
-    (_,a',b') = extended_gcd_poly_f F v' w';
-    b = I b';
-    a = I a'
-    in hensel_lifting_binary_rec integer_ops p a b 1 m u v w)"
+  "hensel_lifting_binary Fp k C D1 H1 = (let
+    p = characteristic Fp;
+    G = int_list_to_poly_f Fp;
+    D1' = G D1;
+    H1' = G H1;
+    (_,S,T) = extended_gcd_poly_f Fp D1' H1';
+    j = 1;
+    q = p;
+    D = D1;
+    H = H1
+    in hensel_lifting_main Fp p k C S T D1' H1' q j D H)"
 
 fun hensel_lifting :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> GFp poly_f list \<Rightarrow> int poly_f list" where
   "hensel_lifting F m u vs' = (let n = length vs' in if n \<le> 1 then if n = 1 then [u] else []
