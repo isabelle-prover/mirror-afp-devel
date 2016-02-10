@@ -193,7 +193,9 @@ definition div_int_poly :: "int \<Rightarrow> int poly_f \<Rightarrow> int poly_
   "div_int_poly n f = (let g = map (\<lambda> x. x div n) f
     in foldr cCons g [])"
 
-text \<open>Algorithm according to Alfonso Miola and David Yun paper.\<close>
+text \<open>Algorithm according to Alfonso Miola and David Yun paper.
+  We did not include refinement H2', since it resulted
+  in worse runtime in our experiments.\<close>
 context fixes
   Fp :: "GFp ffield"
   and p :: int
