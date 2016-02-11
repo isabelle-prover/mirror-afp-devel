@@ -443,14 +443,18 @@ fun coeff_0_int_poly :: "int poly_f \<Rightarrow> int" where
 context fixes
   m :: int
 begin
+
+private definition "coeff_0_prod ws lu = (let
+  lv' = foldr (\<lambda> w p. (p * coeff_0_int_poly w) mod m) ws lu       
+  in if 2 * lv' \<le> m then lv' else lv' - m)"
+  
 partial_function (tailrec) factorization_f_to_factorization_int :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> nat
   \<Rightarrow> int poly_f list \<Rightarrow> int poly_f list \<Rightarrow> int poly_f list list \<Rightarrow> int poly_f list" where
   [code]: "factorization_f_to_factorization_int u luu lu d r vs res cands = (case cands of Nil
     \<Rightarrow> let d' = d + 1 in if 2 * d' > r then (u # res) else 
       factorization_f_to_factorization_int u luu lu d' r vs res (sublists_length d' vs)
-   | ws # cands' \<Rightarrow> let 
-       lv' = foldr (\<lambda> w p. (p * coeff_0_int_poly w) mod m) ws lu;       
-       lv = if 2 * lv' \<le> m then lv' else lv' - m (* lv is last coefficient of v below *)  
+   | ws # cands' \<Rightarrow> let               
+       lv = coeff_0_prod ws lu (* lv is last coefficient of v below *)  
      in if lv dvd coeff_0_int_poly luu then let
        Z = integer_ops; 
        v = int_poly_bnd m (mod_int_poly m (smult_poly_f Z lu (listprod_poly_f Z ws)))
