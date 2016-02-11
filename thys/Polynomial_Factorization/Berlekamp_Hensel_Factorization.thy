@@ -210,7 +210,7 @@ definition hensel_dupe :: "GFp poly_f
   "hensel_dupe U \<equiv> let 
        pp = plus_poly_f Fp;
        tt = times_poly_f Fp;  
-       (Q,R) = divmod_poly_one_f' Fp (tt T U) D1;
+       (Q,R) = divmod_poly_one_f Fp (tt T U) D1;
        A = pp (tt S U) (tt H1 Q);
        B = R
      in (A,B)"
