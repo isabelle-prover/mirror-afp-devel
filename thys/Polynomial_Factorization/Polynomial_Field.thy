@@ -65,16 +65,34 @@ definition degree_poly_f :: "'a poly_f \<Rightarrow> nat" where
 definition leading_coeff_f :: "'a poly_f \<Rightarrow> 'a" where
   "leading_coeff_f pp = (if pp = zero_poly_f then 0f else last pp)"
 
-definition divmod_gen_poly_f :: "'a \<Rightarrow> 'a poly_f \<Rightarrow> 'a poly_f \<Rightarrow> 'a poly_f \<times> 'a poly_f" where
-  "divmod_gen_poly_f iq pp q = (let dq = degree_poly_f q in (foldr (\<lambda> a (s,r). 
-      let
-        ar = cCons_f a r;
-        b = (coeff_poly_f ar dq) *f iq
-      in (cCons_f b s, minus_poly_f ar (smult_poly_f b q))) pp (zero_poly_f, zero_poly_f)))"
+fun minus_poly_rev_f :: "'a poly_f \<Rightarrow> 'a poly_f \<Rightarrow> 'a poly_f" where
+  "minus_poly_rev_f (x # xs) (y # ys) = (x -f y) # (minus_poly_rev_f xs ys)"
+| "minus_poly_rev_f xs [] = xs"
+
+(* div mod where divisor has leading coefficient 1 *)
+fun divmod_poly_one_main_f :: "'a poly_f \<Rightarrow> 'a poly_f \<Rightarrow> 'a poly_f 
+  \<Rightarrow> nat \<Rightarrow> 'a poly_f \<times> 'a poly_f" where
+  "divmod_poly_one_main_f q r d n = (if n = 0 then (q,r) else let
+     a = hd r;
+     n1 = n - 1;
+     qqq = cCons_f a q;
+     rr = tl (if a = 0f then r else minus_poly_rev_f r (map (op *f a) d))
+     in divmod_poly_one_main_f qqq rr d n1)"
+
+(* div mod where divisor has leading coefficient 1 *)
+definition divmod_poly_one_f :: "'a poly_f \<Rightarrow> 'a poly_f \<Rightarrow> 'a poly_f \<times> 'a poly_f" where
+  "divmod_poly_one_f p q = (let dp = degree_poly_f p; dq = degree_poly_f q;
+     (qu,re) = divmod_poly_one_main_f zero_poly_f (rev p) (rev q) (1 + dp - dq)
+     in (qu,rev (dropWhile (op = 0f) re)))"
 
 definition divmod_poly_f :: "'a poly_f \<Rightarrow> 'a poly_f \<Rightarrow> 'a poly_f \<times> 'a poly_f" where
   "divmod_poly_f pp q = (if q = zero_poly_f then (zero_poly_f,pp)
-    else divmod_gen_poly_f (inverse_f F (leading_coeff_f q)) pp q)"
+    else let 
+      lc = leading_coeff_f q; 
+      ilc = inverse_f F lc;
+      q' = smult_poly_f ilc q;
+      (qu,re) = divmod_poly_one_f pp q'
+    in (smult_poly_f ilc qu, re))"
 
 definition "div_poly_f pp qq = fst (divmod_poly_f pp qq)"
 definition "mod_poly_f pp qq = snd (divmod_poly_f pp qq)"
