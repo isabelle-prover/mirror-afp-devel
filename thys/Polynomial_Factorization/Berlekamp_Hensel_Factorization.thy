@@ -195,7 +195,8 @@ definition div_int_poly :: "int \<Rightarrow> int poly_f \<Rightarrow> int poly_
 
 text \<open>Algorithm according to Alfonso Miola and David Yun paper.
   We did not include refinement H2', since it resulted
-  in worse runtime in our experiments.\<close>
+  in worse runtime in our experiments. We further replaced the bound
+ in H2 from $j > k$ to $j \geq k$.\<close>
 context fixes
   Fp :: "GFp ffield"
   and p :: int
@@ -217,7 +218,7 @@ definition hensel_dupe :: "GFp poly_f
 
 partial_function (tailrec) linear_hensel_lifting_main :: "int \<Rightarrow> nat
   \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
-  [code]: "linear_hensel_lifting_main q j D H = (if j > k then (D,H) else
+  [code]: "linear_hensel_lifting_main q j D H = (if j \<ge> k then (D,H) else
      let 
        Z = integer_ops;
        mm = minus_poly_f Z;
