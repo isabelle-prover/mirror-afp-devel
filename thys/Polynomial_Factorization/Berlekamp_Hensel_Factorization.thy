@@ -34,9 +34,17 @@ hide_const (open) Divisibility.prime
 context
   fixes F :: "GFp ffield" (structure)
 begin
+fun power_polys where
+  "power_polys mul_p u curr_p (Suc i) = curr_p # 
+      power_polys mul_p u (mod_poly_f F (times_poly_f F curr_p mul_p) u) i"
+| "power_polys mul_p u curr_p 0 = []"
+
+
 definition berlekamp_mat :: "GFp poly_f \<Rightarrow> GFp mat" where
   "berlekamp_mat u = (let n = degree_poly_f u;
-    xks = map (\<lambda> k. power_poly_f_mod F u [0f,1f] (nat (characteristic F) * k)) [0..<n] in 
+    mul_p = power_poly_f_mod F u [0f,1f] (nat (characteristic F));
+    xks = power_polys mul_p u (one_poly_f F) n
+   in 
     mat_of_rows_list n (map (\<lambda> cs. let k = n - length cs in cs @ replicate k 0f) xks))"
 
 definition berlekamp_resulting_mat :: "GFp poly_f \<Rightarrow> GFp mat" where
