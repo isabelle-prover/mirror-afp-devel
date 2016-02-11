@@ -204,19 +204,20 @@ context fixes
   and S T D1 H1 :: "GFp poly_f"
 begin
 
-definition hensel_dupe :: "GFp poly_f \<Rightarrow> GFp poly_f \<Rightarrow> GFp poly_f 
+(* assumes leading coefficient of D1 is 1 *)
+definition hensel_dupe :: "GFp poly_f 
    \<Rightarrow> GFp poly_f \<times> GFp poly_f" where
-  "hensel_dupe D H U \<equiv> let 
+  "hensel_dupe U \<equiv> let 
        pp = plus_poly_f Fp;
        tt = times_poly_f Fp;  
-       (Q,R) = divmod_poly_f Fp (tt T U) D;
-       A = pp (tt S U) (tt H Q);
+       (Q,R) = divmod_poly_one_f' Fp (tt T U) D1;
+       A = pp (tt S U) (tt H1 Q);
        B = R
      in (A,B)"
 
-partial_function (tailrec) hensel_lifting_main :: "int \<Rightarrow> nat
+partial_function (tailrec) linear_hensel_lifting_main :: "int \<Rightarrow> nat
   \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
-  [code]: "hensel_lifting_main q j D H = (if j > k then (D,H) else
+  [code]: "linear_hensel_lifting_main q j D H = (if j > k then (D,H) else
      let 
        Z = integer_ops;
        mm = minus_poly_f Z;
@@ -229,17 +230,17 @@ partial_function (tailrec) hensel_lifting_main :: "int \<Rightarrow> nat
      in if U = zero_poly_f then (D,H) else let (* opt. iii *)
        (* H3 *)
        U = int_list_to_poly_f Fp U;
-       (A,B) = hensel_dupe D1 H1 U;
+       (A,B) = hensel_dupe U;
        (* H4 *)
        D = pp D (sm q (I B));
        H = pp H (sm q (I A));
        j = j + 1;
        q = q * p
-     in hensel_lifting_main q j D H)"
+     in linear_hensel_lifting_main q j D H)"
 end
 
-definition hensel_lifting_binary :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
-  "hensel_lifting_binary Fp k C D1 H1 = (let
+definition linear_hensel_lifting_binary :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
+  "linear_hensel_lifting_binary Fp k C D1 H1 = (let
     p = characteristic Fp;
     G = int_list_to_poly_f Fp;
     D1' = G D1;
@@ -249,7 +250,7 @@ definition hensel_lifting_binary :: "GFp ffield \<Rightarrow> nat \<Rightarrow> 
     q = p;
     D = D1;
     H = H1
-    in hensel_lifting_main Fp p k C S T D1' H1' q j D H)"
+    in linear_hensel_lifting_main Fp p k C S T D1' H1' q j D H)"
 
 fun hensel_lifting :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> GFp poly_f list \<Rightarrow> int poly_f list" where
   "hensel_lifting F m u vs' = (let n = length vs' in if n \<le> 1 then if n = 1 then [u] else []
@@ -261,7 +262,7 @@ fun hensel_lifting :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<R
       I = map (to_int_f F);
       v = I (listprod_poly_f F vs_1);
       w = I (listprod_poly_f F vs_2);
-      (V,W) = hensel_lifting_binary F m u v w
+      (V,W) = linear_hensel_lifting_binary F m u v w
       in hensel_lifting F m V vs_1 @ hensel_lifting F m W vs_2)"
 
 definition int_poly_bnd :: "int \<Rightarrow> int poly_f \<Rightarrow> int poly_f" where
