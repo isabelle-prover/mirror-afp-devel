@@ -1,8 +1,8 @@
 (*  Title:       Effects of the function mtf2 on index and before_in
     Author:      Max Haslbeck
 *)
-theory mtf2_effects
-imports "Move_to_Front"
+theory MTF2_Effects
+imports Move_to_Front
 begin
 
 

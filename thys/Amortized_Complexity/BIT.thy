@@ -3,10 +3,9 @@
 *) 
 
 theory BIT
-imports 
-Bit_Strings 
-mtf2_effects
-Move_to_Front
+imports
+  Bit_Strings 
+  MTF2_Effects
 begin
     
 
