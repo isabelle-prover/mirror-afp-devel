@@ -24,7 +24,6 @@ imports
   Square_Free_Factorization
   Prime_Factorization
   Gauss_Lemma
-  Factorization_Oracle
   Polynomial_Division
 begin
 
@@ -483,39 +482,5 @@ definition berlekamp_hensel_factorization :: "int poly_f \<Rightarrow> int poly_
      (a,vs,m) = berlekamp_hensel_factorization_init f;
      af = smult_poly_f integer_ops a f     
      in (factorization_f_to_factorization_int m f af a 0 (length vs) vs [] []))"
-
-(* TODO: isn't list_to_poly possible in a more convenient way? Just invoking @{const Poly}
-  yields abstraction violation *)
-primrec list_to_poly_main :: "'a::comm_monoid_add list \<Rightarrow> nat \<Rightarrow> 'a poly"
-where
-  "list_to_poly_main [] i = 0"
-| "list_to_poly_main (a # as) i = monom a i + list_to_poly_main as (Suc i)"
-
-definition list_to_poly :: "'a::comm_monoid_add list \<Rightarrow> 'a poly" where
-  "list_to_poly xs = list_to_poly_main xs 0"
-
-text \<open>Factorization oracle for rational polynomials.\<close>
-definition berlekamp_hensel_factorization_rat :: "rat poly \<Rightarrow> rat \<times> (rat poly \<times> nat) list" where
-  "berlekamp_hensel_factorization_rat p = (let
-     (a,psi) = yun_factorization gcd_rat_poly p;
-     ber_hen = (\<lambda> (q,i). let (b,f) = rat_to_normalized_int_poly q;
-       fs = berlekamp_hensel_factorization (coeffs f);
-       gs = map (map of_int) fs;
-       hsi = map (\<lambda> h. (list_to_poly h,Suc i)) gs
-       in (b^Suc i, hsi));
-     pre_result = map ber_hen psi;
-     factors = concat (map snd pre_result);
-     b = a * listprod (map fst pre_result);     
-     sanity = True (* (p = smult b (listprod (map (\<lambda> (q,i). q^i) factors))) *)
-   in if sanity then (b,factors) else Code.abort (String.implode
-       (''error in berlekamp_hensel_factorization_rat on input '' @ show (coeffs p))) (\<lambda> _. (b,factors)))"
-
        
-overloading factorization_oracle \<equiv> factorization_oracle
-begin
-
-definition factorization_oracle[code]: "factorization_oracle x \<equiv> berlekamp_hensel_factorization_rat x"
-
-end
-
 end
