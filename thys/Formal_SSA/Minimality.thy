@@ -496,11 +496,11 @@ Then at least one of Q and R does not dominate P. *}
       by (simp_all add:phiArg_same_var)
 
     txt {* They can either be:
-– The result of a direct assignment to v.
-– The result of a necessary $\phi$ function r' . This however means that r' was
-reachable by at least two different direct assignments to v. So there is a path
-from a direct assignment of v to p.
-– Another unnecessary $\phi$ function. *}
+      \<^item> The result of a direct assignment to v.
+      \<^item> The result of a necessary $\phi$ function r' . This however means that r' was
+        reachable by at least two different direct assignments to v. So there is a path
+        from a direct assignment of v to p.
+      \<^item> Another unnecessary $\phi$ function. *}
 
     let ?R = "defNode g r"
     let ?S = "defNode g s"
