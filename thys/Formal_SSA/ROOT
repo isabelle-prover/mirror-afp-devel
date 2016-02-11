@@ -1,8 +1,3 @@
-session "compcertSSA" = Collections +
-  theories
-    Generic_Extract
-
-
 chapter AFP
 
 session Formal_SSA (AFP) = Collections +
@@ -32,6 +27,7 @@ session Formal_SSA (AFP) = Collections +
     Construct_SSA_code
     Construct_SSA_notriv_code
     Generic_Interpretation
+    Generic_Extract
     WhileGraphSSA
   document_files
     "root.tex"

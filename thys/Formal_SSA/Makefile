@@ -11,20 +11,27 @@ all: compcertSSA/midend/SSA/BraunSSA.ml
 $(COMPCERTSSA_FILE):
 	wget -O $@ $(COMPCERTSSA_URL)
 
-compcertSSA: $(COMPCERTSSA_FILE)
+compcertSSA/.patched: $(COMPCERTSSA_FILE)
 	tar --exclude=compcertSSA/tools/ndfun.[co]* --exclude=compcertSSA/doc/coq2html.o --exclude=compcertSSA/doc/coq2html.cm[xi] -xzf $(COMPCERTSSA_FILE)
 	patch -p1 < $(COMPCERTSSA_PATCH)
+	touch $@
 
-compcertSSA/midend/SSA/BraunSSA.ml: $(wildcard *.thy) ROOT | compcertSSA
+compcertSSA/midend/SSA/BraunSSA.ml: $(wildcard *.thy) ROOT | compcertSSA/midend/SSA
+	rm -f $@
 	$(ISABELLE) build -c -d '$$AFP/Collections' -d '$$AFP/Refine_Monadic' -d '$$AFP/Automatic_Refinement' -d . compcertSSA
+	ln -s ../../../BraunSSA.ml $@
 
-compcertSSA/midend/SSA/ExternSSAgen.ml: compcertSSA
+compcertSSA/midend/SSA/ExternSSAgen.ml: compcertSSA/.patched
 
-compcertSSA/Makefile.config: | compcertSSA
+compcertSSA/midend/SSA:
+	mkdir -p $@
+
+compcertSSA/Makefile.config: compcertSSA/.patched
 	cd compcertSSA;	./configure $(COMPCERTSSA_TARGET)
 
 compcertSSA/ccomp: compcertSSA/Makefile.config compcertSSA/midend/SSA/ExternSSAgen.ml compcertSSA/midend/SSA/BraunSSA.ml
 	$(MAKE) -C compcertSSA
+	touch $@
 
 test/ifgen: test/ifgen.c
 	$(CC) -O2 -o $@ -std=c99 test/ifgen.c
