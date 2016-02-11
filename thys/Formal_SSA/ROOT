@@ -1,37 +1,38 @@
 session "compcertSSA" = Collections +
-theories
-  Generic_Extract
+  theories
+    Generic_Extract
+
 
 chapter AFP
 
 session Formal_SSA (AFP) = Collections +
-theories [document=false]
-  "~~/src/HOL/Library/While_Combinator"
-  "~~/src/HOL/Library/Product_Lexorder"
-  "~~/src/HOL/Library/Sublist"
-  "~~/src/HOL/Library/RBT_Set"
-  "~~/src/HOL/Library/RBT_Mapping"
-  "~~/src/HOL/Library/Char_ord"
-  "~~/src/HOL/Library/List_lexord"
-  "~~/src/HOL/Library/Code_Target_Numeral"
-  "../Slicing/While/AdditionalLemmas"
-  "../Dijkstra_Shortest_Path/GraphSpec"
-theories [timeout = 1000]
-  FormalSSA_Misc
-  Serial_Rel
-  Mapping_Exts
-  RBT_Mapping_Exts
-  SSA_CFG
-  Minimality
-  Construct_SSA  
-  Construct_SSA_notriv
-  SSA_Semantics
-  While_Combinator_Exts
-  SSA_Transfer_Rules
-  Construct_SSA_code
-  Construct_SSA_notriv_code
-  Generic_Interpretation
-  WhileGraphSSA
-document_files
-  "root.tex"
-  "root.bib"
+  theories [document = false]
+    "~~/src/HOL/Library/While_Combinator"
+    "~~/src/HOL/Library/Product_Lexorder"
+    "~~/src/HOL/Library/Sublist"
+    "~~/src/HOL/Library/RBT_Set"
+    "~~/src/HOL/Library/RBT_Mapping"
+    "~~/src/HOL/Library/Char_ord"
+    "~~/src/HOL/Library/List_lexord"
+    "~~/src/HOL/Library/Code_Target_Numeral"
+    "../Slicing/While/AdditionalLemmas"
+    "../Dijkstra_Shortest_Path/GraphSpec"
+  theories [timeout = 1000]
+    FormalSSA_Misc
+    Serial_Rel
+    Mapping_Exts
+    RBT_Mapping_Exts
+    SSA_CFG
+    Minimality
+    Construct_SSA
+    Construct_SSA_notriv
+    SSA_Semantics
+    While_Combinator_Exts
+    SSA_Transfer_Rules
+    Construct_SSA_code
+    Construct_SSA_notriv_code
+    Generic_Interpretation
+    WhileGraphSSA
+  document_files
+    "root.tex"
+    "root.bib"
