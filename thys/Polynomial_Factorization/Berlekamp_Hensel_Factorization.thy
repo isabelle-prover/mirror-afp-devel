@@ -206,9 +206,9 @@ context fixes
 begin
 
 (* assumes leading coefficient of D1 is 1 *)
-definition hensel_dupe :: "GFp poly_f 
+definition hensel_dupe_one :: "GFp poly_f 
    \<Rightarrow> GFp poly_f \<times> GFp poly_f" where
-  "hensel_dupe U \<equiv> let 
+  "hensel_dupe_one U \<equiv> let 
        pp = plus_poly_f Fp;
        tt = times_poly_f Fp;  
        (Q,R) = divmod_poly_one_f Fp (tt T U) D1;
@@ -231,7 +231,7 @@ partial_function (tailrec) linear_hensel_lifting_main :: "int \<Rightarrow> nat
      in if U = zero_poly_f then (D,H) else let (* opt. iii *)
        (* H3 *)
        U = int_list_to_poly_f Fp U;
-       (A,B) = hensel_dupe U;
+       (A,B) = hensel_dupe_one U;
        (* H4 *)
        D = pp D (sm q (I B));
        H = pp H (sm q (I A));
@@ -253,6 +253,81 @@ definition linear_hensel_lifting_binary :: "GFp ffield \<Rightarrow> nat \<Right
     H = H1
     in linear_hensel_lifting_main Fp p k C S T D1' H1' q j D H)"
 
+text \<open>Algorithm according to Alfonso Miola and David Yun paper.\<close>
+context fixes
+    k :: nat
+  and C :: "int poly_f"
+begin
+
+definition hensel_dupe :: "GFp ffield \<Rightarrow> int \<Rightarrow> GFp poly_f \<Rightarrow> GFp poly_f \<Rightarrow> GFp poly_f \<Rightarrow> GFp poly_f \<Rightarrow> GFp poly_f 
+   \<Rightarrow> GFp poly_f \<times> GFp poly_f" where
+  "hensel_dupe Fq q U D H S T \<equiv> let
+       pp = plus_poly_f Fq;
+       tt = times_poly_f Fq;
+       lc = to_int_f Fq (leading_coeff_f Fq D);
+       ilc = inverse_int_modulo lc q;
+       Ilc = of_int_f Fq ilc;
+       D' = smult_poly_f Fq Ilc D;
+       (Q',R) = divmod_poly_one_f Fq (tt T U) D';
+       Q = smult_poly_f Fq Ilc Q';
+       A = pp (tt S U) (tt H Q);
+       B = R
+     in (A,B)"
+
+partial_function (tailrec) quadratic_hensel_lifting_main :: "int \<Rightarrow> nat
+  \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
+  [code]: "quadratic_hensel_lifting_main q j D H S T = (if j \<ge> k then (D,H) else
+     let 
+       Z = integer_ops;
+       Fq = GFp q;
+       mm = minus_poly_f Z;
+       pp = plus_poly_f Z;
+       tt = times_poly_f Z;
+       sm = smult_poly_f Z;
+       I' = int_list_to_poly_f Fq;
+       I = map (to_int_f Fq);
+       (* Z2 *)
+       U = div_int_poly q (mm C (tt D H))
+     in if U = zero_poly_f then (D,H) else let (* opt. iii *)
+       (* Z3 *)
+       IH = I' H;
+       ID = I' D;
+       IS = I' S;
+       IT = I' T;
+       U = int_list_to_poly_f Fq U;
+       (A,B) = hensel_dupe Fq q U ID IH IS IT;
+       (* Z4 *)
+       D' = pp D (sm q (I B));
+       H' = pp H (sm q (I A));
+       (* Z5 *)
+       U' = div_int_poly q (mm (pp (tt S D') (tt T H')) (one_poly_f Z));
+       (* Z6 *)
+       U' = int_list_to_poly_f Fq U';
+       (A',B') = hensel_dupe Fq q U' ID IH IS IT;
+       (* Z7 *)
+       S = mm S (sm q (I A'));
+       T = mm T (sm q (I B'));
+       D = D';
+       H = H';
+       j = j * 2;
+       q = q * q
+     in quadratic_hensel_lifting_main q j D H S T)"
+end
+
+definition quadratic_hensel_lifting_binary :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
+  "quadratic_hensel_lifting_binary Fp k C D1 H1 = (let
+    p = characteristic Fp;
+    G = int_list_to_poly_f Fp;
+    I = map (to_int_f Fp);
+    D1' = G D1;
+    H1' = G H1;
+    (_,S,T) = extended_gcd_poly_f Fp D1' H1';
+    j = 1;
+    q = p;
+    D = D1;
+    H = H1
+    in quadratic_hensel_lifting_main k C q j D H (I S) (I T))"
+    
 fun hensel_lifting :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> GFp poly_f list \<Rightarrow> int poly_f list" where
   "hensel_lifting F m u vs' = (let n = length vs' in if n \<le> 1 then if n = 1 then [u] else []
     else let 
@@ -263,7 +338,7 @@ fun hensel_lifting :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<R
       I = map (to_int_f F);
       v = I (listprod_poly_f F vs_1);
       w = I (listprod_poly_f F vs_2);
-      (V,W) = linear_hensel_lifting_binary F m u v w
+      (V,W) = quadratic_hensel_lifting_binary F m u v w
       in hensel_lifting F m V vs_1 @ hensel_lifting F m W vs_2)"
 
 definition int_poly_bnd :: "int \<Rightarrow> int poly_f \<Rightarrow> int poly_f" where
