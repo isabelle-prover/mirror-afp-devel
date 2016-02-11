@@ -416,9 +416,26 @@ definition div_int_poly_f :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> 
   "div_int_poly_f p q = (case div_int_poly_ff p q of Some d \<Rightarrow> d | None \<Rightarrow> 
     Code.abort (STR ''integer poly division error'') (\<lambda> _. []))"
 
-definition dvd_int_poly_f :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> bool" where
-  "dvd_int_poly_f p q = (case div_int_poly_ff q p of None \<Rightarrow> False | Some _ \<Rightarrow> True)"
+    
+fun minus_poly_rev_int :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f" where
+  "minus_poly_rev_int (x # xs) (y # ys) = (x - y) # (minus_poly_rev_int xs ys)"
+| "minus_poly_rev_int xs [] = xs"
+  
+fun dvd_poly_int_main :: "int \<Rightarrow> int poly_f \<Rightarrow> int poly_f 
+  \<Rightarrow> nat \<Rightarrow> bool" where
+  "dvd_poly_int_main lc r d n = (if n = 0 then list_all (op = 0) r else let
+     a = hd r;
+     (q,re) = divmod_int a lc
+     in (re = 0 \<and> (let
+     n1 = n - 1;
+     rr = tl (if q = 0 then r else minus_poly_rev_int r (map (op * q) d))
+     in dvd_poly_int_main lc rr d n1)))"
 
+(* assumes q \<noteq> 0 *)     
+definition dvd_int_poly_f :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> bool" where
+  "dvd_int_poly_f q p = (let dp = degree_poly_f p; dq = degree_poly_f q
+     in dvd_poly_int_main (last q) (rev p) (rev q) (1 + dp - dq))"
+  
 fun coeff_0_int_poly :: "int poly_f \<Rightarrow> int" where
   "coeff_0_int_poly (Cons x xs) = x"
 | "coeff_0_int_poly Nil = 0"
