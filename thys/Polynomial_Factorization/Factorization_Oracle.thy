@@ -8,7 +8,9 @@ text \<open>We define an overloaded constant which serves as an arbitrary factor
   and the external one is invoked on larger ones. One just has to load exactly one of 
   the corresponding \emph{Select-\ldots-Factorization}-theory. 
   If this is not purely the Berlekamp-Hensel algorithm, one has to manually implement the
-  external factorization algorithm.\<close>
+  external factorization algorithm.
+
+  An example external oracle is available in Mathematica.hs\<close>
 
 theory Factorization_Oracle
 imports
