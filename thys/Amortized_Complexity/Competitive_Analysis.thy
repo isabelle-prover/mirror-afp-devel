@@ -59,8 +59,11 @@ fun config'_rand :: "('state,'is,'request,'answer) alg_on_rand  \<Rightarrow> ('
 "config'_rand A s []  = s" |
 "config'_rand A s (r#rs) = config'_rand A (s \<bind> Step_rand A r) rs"
 
-lemma config'_rand_append: "config'_rand A s (rs@[r]) = config'_rand A s rs \<bind> Step_rand A r"
+lemma config'_rand_snoc: "config'_rand A s (rs@[r]) = config'_rand A s rs \<bind> Step_rand A r"
 apply(induct rs arbitrary: s) by(simp_all)
+
+lemma config'_rand_append: "config'_rand A s (xs@ys) = config'_rand A (config'_rand A s xs) ys"
+apply(induct xs arbitrary: s) by(simp_all)
 
 
 abbreviation config_rand where
@@ -98,6 +101,14 @@ abbreviation T_on_rand :: "('state,'is,'request,'answer) alg_on_rand \<Rightarro
 
 lemma T_on_rand_append: "T_on_rand A s (xs@ys) = T_on_rand A s xs + T_on_rand' A (config_rand A s xs) ys"
 by(rule T_on_rand'_append)  
+
+
+abbreviation "T_on_rand'_n A s0 xs n == T_on_rand' A (config'_rand A s0 (take n xs)) [xs!n]"
+
+lemma T_on_rand'_as_sum: "T_on_rand' A s0 rs = setsum (T_on_rand'_n A s0 rs) {..<length rs} "
+apply(induct rs rule: rev_induct)
+  by(simp_all add: T_on_rand'_append nth_append)
+
 
 abbreviation "T_on_rand_n A s0 xs n == T_on_rand' A (config_rand A s0 (take n xs)) [xs!n]" 
 

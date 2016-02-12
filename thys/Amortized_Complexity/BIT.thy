@@ -435,7 +435,7 @@ definition PhiPlus :: "nat \<Rightarrow> real" ("\<Phi>\<^sup>+") where
 lemma PhiPlus_is_Phi_Suc: "n<length qs \<Longrightarrow> PhiPlus n = Phi (Suc n)"
 unfolding PhiPlus_def Phi_def 
 apply (simp add: bind_return_pmf map_pmf_def bind_assoc_pmf split_def take_Suc_conv_app_nth )
-  apply(simp add: config'_rand_append)
+  apply(simp add: config'_rand_snoc)
   by(simp add: bind_assoc_pmf split_def bind_return_pmf)
 
 lemma phi0: "Phi 0 = 0" unfolding Phi_def 

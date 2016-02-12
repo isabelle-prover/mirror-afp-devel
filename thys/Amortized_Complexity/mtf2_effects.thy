@@ -649,5 +649,27 @@ by (metis before_in_setD2 not_before_in x_stays_before_y_if_y_not_moved_to_front
 
 
 
+lemma mtf2_moves_to_frontm1: "distinct xs \<Longrightarrow> q \<in> set xs \<Longrightarrow> index (mtf2 (length xs -1) q xs) q  = 0"
+unfolding mtf2_def
+proof -
+  assume distxs: "distinct xs"
+  assume qinxs: "q \<in> set xs"
+  have " index (if q \<in> set xs then swaps [index xs q - (length xs -1)..<index xs q] xs else xs) q 
+    = index ( swaps [index xs q - (length xs -1)..<index xs q] xs) q" using qinxs by auto
+  also have "\<dots> = index xs q - (length xs -1)" apply(rule swapsthrough) using distxs qinxs by auto
+  also have "\<dots> = 0" using index_less_size_conv qinxs 
+by (metis Suc_pred' gr0I length_pos_if_in_set less_irrefl less_trans_Suc zero_less_diff)
+  finally show "index (if q \<in> set xs then swaps [index xs q - (length xs -1)..<index xs q] xs else xs) q = 0" .
+qed
+
+(* TODO move to mtf2_effect *)
+lemma mtf2_moves_to_front': "distinct xs \<Longrightarrow> y \<in> set xs \<Longrightarrow> x \<in> set xs \<Longrightarrow> x\<noteq>y \<Longrightarrow> x < y in mtf2 (length xs-1) x xs = True"
+using mtf2_moves_to_frontm1 by (metis before_in_def gr0I index_eq_index_conv set_mtf2)
+
+lemma mtf2_moves_to_front'': "distinct xs \<Longrightarrow> y \<in> set xs \<Longrightarrow> x \<in> set xs \<Longrightarrow> x\<noteq>y \<Longrightarrow> x < y in mtf2 (length xs) x xs = True"
+using mtf2_moves_to_front by (metis before_in_def gr0I index_eq_index_conv set_mtf2)
+
+
+
 
 end
