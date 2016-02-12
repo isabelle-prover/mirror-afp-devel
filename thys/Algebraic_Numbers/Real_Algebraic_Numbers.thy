@@ -26,6 +26,7 @@ imports
   "../Abstract-Rewriting/SN_Order_Carrier"
   "../Deriving/Comparator_Generator/Compare_Rat"
   "../Deriving/Comparator_Generator/Compare_Real"
+  "../Jordan_Normal_Form/Gauss_Jordan_IArray_Impl"
   Algebraic_Numbers
   Sturm_Rat
 begin

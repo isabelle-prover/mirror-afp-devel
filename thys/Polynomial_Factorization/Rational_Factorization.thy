@@ -461,7 +461,7 @@ qed
 datatype factorization_mode = Uncertified_Factorization | Full_Factorization | Check_Irreducible
   | Check_Root_Free
 
-text \<open>@{const Uncertified_Factorization}: just apply oracle @{const factorization_oracle}, 
+text \<open>@{const Uncertified_Factorization}: just apply oracle @{const factorization_oracle_rat_poly}, 
      result will be a factorization, but not guaranteed into irreducible factors.
 
   @{const Full_Factorization}: first apply oracle, and then factor in a certified (and slow) way into
@@ -484,7 +484,7 @@ definition initial_factorization_rat :: "rat poly \<Rightarrow> rat \<times> (ra
   "initial_factorization_rat p = (
     if mode = Check_Irreducible \<or> mode = Check_Root_Free then (if p = 0 then (0,[]) else (1,[(p,1)]))
     else 
-    case factorization_oracle p of 
+    case factorization_oracle_rat_poly p of 
       (c,pis) \<Rightarrow> if p = smult c ((\<Prod>(q, i)\<leftarrow>pis. q ^ i)) \<and> list_all (\<lambda> (p,i). i \<noteq> 0 \<and> p \<noteq> 0) pis 
       then (c,pis) 
       else Code.abort (String.implode (''error in factorization-oracle on input '' @
@@ -494,7 +494,7 @@ definition initial_factorization_rat :: "rat poly \<Rightarrow> rat \<times> (ra
 lemma initial_factorization_rat: assumes res: "initial_factorization_rat p = (c,qis)"
   shows "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" "(q,i) \<in> set qis \<Longrightarrow> i \<noteq> 0 \<and> q \<noteq> 0"
 proof -
-  obtain d pis where fo: "factorization_oracle p = (d,pis)" by force
+  obtain d pis where fo: "factorization_oracle_rat_poly p = (d,pis)" by force
   note res = res[unfolded initial_factorization_rat_def fo split]
   have "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i) \<and> ((q,i) \<in> set qis \<longrightarrow> i \<noteq> 0 \<and> q \<noteq> 0)" 
   proof (cases "mode = Check_Irreducible \<or> mode = Check_Root_Free")

@@ -2,9 +2,7 @@
     Author:      Max Haslbeck
 *)
 theory Prob_Theory
-imports
-Main  
-Probability 
+imports Probability 
 begin
 
 

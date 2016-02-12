@@ -4,19 +4,15 @@
 *)
 
 theory Competitive_Analysis
-imports Complex_Main
-Prob_Theory
-On_Off
+imports
+  Prob_Theory
+  On_Off
 begin
  
 
 section "Competitive Analysis"
 
 subsection "Probability Theory in Isabelle/HOL"
-
-lemma bernoulliset: "set_pmf (bernoulli_pmf p) \<subseteq> {True, False}"
-by (auto)
-
 
 subsection "Competitive Analysis Formalized"
  

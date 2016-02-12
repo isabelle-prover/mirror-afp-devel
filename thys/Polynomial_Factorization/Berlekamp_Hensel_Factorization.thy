@@ -24,7 +24,6 @@ imports
   Square_Free_Factorization
   Prime_Factorization
   Gauss_Lemma
-  Factorization_Oracle
   Polynomial_Division
 begin
 
@@ -34,9 +33,17 @@ hide_const (open) Divisibility.prime
 context
   fixes F :: "GFp ffield" (structure)
 begin
+fun power_polys where
+  "power_polys mul_p u curr_p (Suc i) = curr_p # 
+      power_polys mul_p u (mod_poly_f F (times_poly_f F curr_p mul_p) u) i"
+| "power_polys mul_p u curr_p 0 = []"
+
+
 definition berlekamp_mat :: "GFp poly_f \<Rightarrow> GFp mat" where
   "berlekamp_mat u = (let n = degree_poly_f u;
-    xks = map (\<lambda> k. power_poly_f_mod F u [0f,1f] (nat (characteristic F) * k)) [0..<n] in 
+    mul_p = power_poly_f_mod F u [0f,1f] (nat (characteristic F));
+    xks = power_polys mul_p u (one_poly_f F) n
+   in 
     mat_of_rows_list n (map (\<lambda> cs. let k = n - length cs in cs @ replicate k 0f) xks))"
 
 definition berlekamp_resulting_mat :: "GFp poly_f \<Rightarrow> GFp mat" where
@@ -189,47 +196,145 @@ definition mod_int_poly :: "int \<Rightarrow> int poly_f \<Rightarrow> int poly_
   "mod_int_poly n f = (let g = map (\<lambda> x. x mod n) f
     in foldr cCons g [])"
 
-context
-  fixes Z :: "int ffield"
-  and   p :: int
-  fixes a b :: "int poly_f"
-begin
-text \<open>Algorithm according to Exercise 22 (page 684-685 of Knuth's Art of Computer Programming,
-  Volume 2.\<close>
-definition hensel_lifting_binary_main :: "int \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
-  "hensel_lifting_binary_main m u v w = (let 
-    q = fast_power (op *) 1 p (nat m);
-    r = p;
-    qr = q * r;
-    f = map (\<lambda> x. x div q) (mod_int_poly qr (minus_poly_f Z u (times_poly_f Z v w)));
-    bf = times_poly_f Z b f;  
-    t = fst (divmod_gen_poly_f Z 1 bf v);
-    vbar = minus_poly_f Z bf (times_poly_f Z t v);
-    wbar = plus_poly_f Z (times_poly_f Z a f) (times_poly_f Z t w);
-    V = mod_int_poly qr (plus_poly_f Z v (smult_poly_f Z q vbar));
-    W = mod_int_poly qr (plus_poly_f Z w (smult_poly_f Z q wbar))
-  in (V,W))"
+definition div_int_poly :: "int \<Rightarrow> int poly_f \<Rightarrow> int poly_f" where
+  "div_int_poly n f = (let g = map (\<lambda> x. x div n) f
+    in foldr cCons g [])"
 
-function hensel_lifting_binary_rec :: "nat \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
-  "hensel_lifting_binary_rec i m f f1 f2 = (if i \<ge> m then (f1,f2) else
-     case hensel_lifting_binary_main i f f1 f2 of
-       (f1',f2') \<Rightarrow> hensel_lifting_binary_rec (i + 1) m f f1' f2')"
-  by pat_completeness auto
-termination by (relation "measure (\<lambda> (i,m,_). m - i)", auto)
+text \<open>Algorithm according to Alfonso Miola and David Yun paper.
+  We did not include refinement H2', since it resulted
+  in worse runtime in our experiments. We further replaced the bound
+ in H2 from $j > k$ to $j \geq k$.\<close>
+context fixes
+  Fp :: "GFp ffield"
+  and p :: int
+  and k :: nat
+  and C :: "int poly_f"
+  and S T D1 H1 :: "GFp poly_f"
+begin
+
+(* assumes leading coefficient of D1 is 1 *)
+definition hensel_dupe_one :: "GFp poly_f 
+   \<Rightarrow> GFp poly_f \<times> GFp poly_f" where
+  "hensel_dupe_one U \<equiv> let 
+       pp = plus_poly_f Fp;
+       tt = times_poly_f Fp;  
+       (Q,R) = divmod_poly_one_f Fp (tt T U) D1;
+       A = pp (tt S U) (tt H1 Q);
+       B = R
+     in (A,B)"
+
+partial_function (tailrec) linear_hensel_lifting_main :: "int \<Rightarrow> nat
+  \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
+  [code]: "linear_hensel_lifting_main q j D H = (if j \<ge> k then (D,H) else
+     let 
+       Z = integer_ops;
+       mm = minus_poly_f Z;
+       pp = plus_poly_f Z;
+       tt = times_poly_f Z;
+       sm = smult_poly_f Z;
+       I = map (to_int_f Fp);
+       (* H2 *)
+       U = div_int_poly q (mm C (tt D H))
+     in if U = zero_poly_f then (D,H) else let (* opt. iii *)
+       (* H3 *)
+       U = int_list_to_poly_f Fp U;
+       (A,B) = hensel_dupe_one U;
+       (* H4 *)
+       D = pp D (sm q (I B));
+       H = pp H (sm q (I A));
+       j = j + 1;
+       q = q * p
+     in linear_hensel_lifting_main q j D H)"
 end
 
-definition hensel_lifting_binary :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
-  "hensel_lifting_binary F m u v w = (let 
-    p = characteristic F;
-    G = int_list_to_poly_f F;
-    v' = G v;
-    w' = G w;
-    I = map (to_int_f F);
-    (_,a',b') = extended_gcd_poly_f F v' w';
-    b = I b';
-    a = I a'
-    in hensel_lifting_binary_rec integer_ops p a b 1 m u v w)"
+definition linear_hensel_lifting_binary :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
+  "linear_hensel_lifting_binary Fp k C D1 H1 = (let
+    p = characteristic Fp;
+    G = int_list_to_poly_f Fp;
+    D1' = G D1;
+    H1' = G H1;
+    (_,S,T) = extended_gcd_poly_f Fp D1' H1';
+    j = 1;
+    q = p;
+    D = D1;
+    H = H1
+    in linear_hensel_lifting_main Fp p k C S T D1' H1' q j D H)"
 
+text \<open>Algorithm according to Alfonso Miola and David Yun paper.\<close>
+context fixes
+    k :: nat
+  and C :: "int poly_f"
+begin
+
+definition hensel_dupe :: "GFp ffield \<Rightarrow> int \<Rightarrow> GFp poly_f \<Rightarrow> GFp poly_f \<Rightarrow> GFp poly_f \<Rightarrow> GFp poly_f \<Rightarrow> GFp poly_f 
+   \<Rightarrow> GFp poly_f \<times> GFp poly_f" where
+  "hensel_dupe Fq q U D H S T \<equiv> let
+       pp = plus_poly_f Fq;
+       tt = times_poly_f Fq;
+       lc = to_int_f Fq (leading_coeff_f Fq D);
+       ilc = inverse_int_modulo lc q;
+       Ilc = of_int_f Fq ilc;
+       D' = smult_poly_f Fq Ilc D;
+       (Q',R) = divmod_poly_one_f Fq (tt T U) D';
+       Q = smult_poly_f Fq Ilc Q';
+       A = pp (tt S U) (tt H Q);
+       B = R
+     in (A,B)"
+
+partial_function (tailrec) quadratic_hensel_lifting_main :: "int \<Rightarrow> nat
+  \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
+  [code]: "quadratic_hensel_lifting_main q j D H S T = (if j \<ge> k then (D,H) else
+     let 
+       Z = integer_ops;
+       Fq = GFp q;
+       mm = minus_poly_f Z;
+       pp = plus_poly_f Z;
+       tt = times_poly_f Z;
+       sm = smult_poly_f Z;
+       I' = int_list_to_poly_f Fq;
+       I = map (to_int_f Fq);
+       (* Z2 *)
+       U = div_int_poly q (mm C (tt D H))
+     in if U = zero_poly_f then (D,H) else let (* opt. iii *)
+       (* Z3 *)
+       IH = I' H;
+       ID = I' D;
+       IS = I' S;
+       IT = I' T;
+       U = int_list_to_poly_f Fq U;
+       (A,B) = hensel_dupe Fq q U ID IH IS IT;
+       (* Z4 *)
+       D' = pp D (sm q (I B));
+       H' = pp H (sm q (I A));
+       (* Z5 *)
+       U' = div_int_poly q (mm (pp (tt S D') (tt T H')) (one_poly_f Z));
+       (* Z6 *)
+       U' = int_list_to_poly_f Fq U';
+       (A',B') = hensel_dupe Fq q U' ID IH IS IT;
+       (* Z7 *)
+       S = mm S (sm q (I A'));
+       T = mm T (sm q (I B'));
+       D = D';
+       H = H';
+       j = j * 2;
+       q = q * q
+     in quadratic_hensel_lifting_main q j D H S T)"
+end
+
+definition quadratic_hensel_lifting_binary :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
+  "quadratic_hensel_lifting_binary Fp k C D1 H1 = (let
+    p = characteristic Fp;
+    G = int_list_to_poly_f Fp;
+    I = map (to_int_f Fp);
+    D1' = G D1;
+    H1' = G H1;
+    (_,S,T) = extended_gcd_poly_f Fp D1' H1';
+    j = 1;
+    q = p;
+    D = D1;
+    H = H1
+    in quadratic_hensel_lifting_main k C q j D H (I S) (I T))"
+    
 fun hensel_lifting :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> GFp poly_f list \<Rightarrow> int poly_f list" where
   "hensel_lifting F m u vs' = (let n = length vs' in if n \<le> 1 then if n = 1 then [u] else []
     else let 
@@ -240,7 +345,7 @@ fun hensel_lifting :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<R
       I = map (to_int_f F);
       v = I (listprod_poly_f F vs_1);
       w = I (listprod_poly_f F vs_2);
-      (V,W) = hensel_lifting_binary F m u v w
+      (V,W) = quadratic_hensel_lifting_binary F m u v w
       in hensel_lifting F m V vs_1 @ hensel_lifting F m W vs_2)"
 
 definition int_poly_bnd :: "int \<Rightarrow> int poly_f \<Rightarrow> int poly_f" where
@@ -310,9 +415,26 @@ definition div_int_poly_f :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> 
   "div_int_poly_f p q = (case div_int_poly_ff p q of Some d \<Rightarrow> d | None \<Rightarrow> 
     Code.abort (STR ''integer poly division error'') (\<lambda> _. []))"
 
-definition dvd_int_poly_f :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> bool" where
-  "dvd_int_poly_f p q = (case div_int_poly_ff q p of None \<Rightarrow> False | Some _ \<Rightarrow> True)"
+    
+fun minus_poly_rev_int :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f" where
+  "minus_poly_rev_int (x # xs) (y # ys) = (x - y) # (minus_poly_rev_int xs ys)"
+| "minus_poly_rev_int xs [] = xs"
+  
+fun dvd_poly_int_main :: "int \<Rightarrow> int poly_f \<Rightarrow> int poly_f 
+  \<Rightarrow> nat \<Rightarrow> bool" where
+  "dvd_poly_int_main lc r d n = (if n = 0 then list_all (op = 0) r else let
+     a = hd r;
+     (q,re) = divmod_int a lc
+     in (re = 0 \<and> (let
+     n1 = n - 1;
+     rr = tl (if q = 0 then r else minus_poly_rev_int r (map (op * q) d))
+     in dvd_poly_int_main lc rr d n1)))"
 
+(* assumes q \<noteq> 0 *)     
+definition dvd_int_poly_f :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> bool" where
+  "dvd_int_poly_f q p = (let dp = degree_poly_f p; dq = degree_poly_f q
+     in dvd_poly_int_main (last q) (rev p) (rev q) (1 + dp - dq))"
+  
 fun coeff_0_int_poly :: "int poly_f \<Rightarrow> int" where
   "coeff_0_int_poly (Cons x xs) = x"
 | "coeff_0_int_poly Nil = 0"
@@ -320,14 +442,18 @@ fun coeff_0_int_poly :: "int poly_f \<Rightarrow> int" where
 context fixes
   m :: int
 begin
+
+private definition "coeff_0_prod ws lu = (let
+  lv' = foldr (\<lambda> w p. (p * coeff_0_int_poly w) mod m) ws lu       
+  in if 2 * lv' \<le> m then lv' else lv' - m)"
+  
 partial_function (tailrec) factorization_f_to_factorization_int :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> nat
   \<Rightarrow> int poly_f list \<Rightarrow> int poly_f list \<Rightarrow> int poly_f list list \<Rightarrow> int poly_f list" where
   [code]: "factorization_f_to_factorization_int u luu lu d r vs res cands = (case cands of Nil
     \<Rightarrow> let d' = d + 1 in if 2 * d' > r then (u # res) else 
       factorization_f_to_factorization_int u luu lu d' r vs res (sublists_length d' vs)
-   | ws # cands' \<Rightarrow> let 
-       lv' = foldr (\<lambda> w p. (p * coeff_0_int_poly w) mod m) ws lu;       
-       lv = if 2 * lv' \<le> m then lv' else lv' - m (* lv is last coefficient of v below *)  
+   | ws # cands' \<Rightarrow> let               
+       lv = coeff_0_prod ws lu (* lv is last coefficient of v below *)  
      in if lv dvd coeff_0_int_poly luu then let
        Z = integer_ops; 
        v = int_poly_bnd m (mod_int_poly m (smult_poly_f Z lu (listprod_poly_f Z ws)))
@@ -356,39 +482,5 @@ definition berlekamp_hensel_factorization :: "int poly_f \<Rightarrow> int poly_
      (a,vs,m) = berlekamp_hensel_factorization_init f;
      af = smult_poly_f integer_ops a f     
      in (factorization_f_to_factorization_int m f af a 0 (length vs) vs [] []))"
-
-(* TODO: isn't list_to_poly possible in a more convenient way? Just invoking @{const Poly}
-  yields abstraction violation *)
-primrec list_to_poly_main :: "'a::comm_monoid_add list \<Rightarrow> nat \<Rightarrow> 'a poly"
-where
-  "list_to_poly_main [] i = 0"
-| "list_to_poly_main (a # as) i = monom a i + list_to_poly_main as (Suc i)"
-
-definition list_to_poly :: "'a::comm_monoid_add list \<Rightarrow> 'a poly" where
-  "list_to_poly xs = list_to_poly_main xs 0"
-
-text \<open>Factorization oracle for rational polynomials.\<close>
-definition berlekamp_hensel_factorization_rat :: "rat poly \<Rightarrow> rat \<times> (rat poly \<times> nat) list" where
-  "berlekamp_hensel_factorization_rat p = (let
-     (a,psi) = yun_factorization gcd_rat_poly p;
-     ber_hen = (\<lambda> (q,i). let (b,f) = rat_to_normalized_int_poly q;
-       fs = berlekamp_hensel_factorization (coeffs f);
-       gs = map (map of_int) fs;
-       hsi = map (\<lambda> h. (list_to_poly h,Suc i)) gs
-       in (b^Suc i, hsi));
-     pre_result = map ber_hen psi;
-     factors = concat (map snd pre_result);
-     b = a * listprod (map fst pre_result);     
-     sanity = True (* (p = smult b (listprod (map (\<lambda> (q,i). q^i) factors))) *)
-   in if sanity then (b,factors) else Code.abort (String.implode
-       (''error in berlekamp_hensel_factorization_rat on input '' @ show (coeffs p))) (\<lambda> _. (b,factors)))"
-
        
-overloading factorization_oracle \<equiv> factorization_oracle
-begin
-
-definition factorization_oracle[code]: "factorization_oracle x \<equiv> berlekamp_hensel_factorization_rat x"
-
-end
-
 end
