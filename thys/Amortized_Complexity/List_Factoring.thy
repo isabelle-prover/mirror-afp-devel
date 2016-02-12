@@ -5,7 +5,7 @@
 theory List_Factoring
 imports
 Partial_Cost_Model
-mtf2_effects
+MTF2_Effects
 begin
 term config
 hide_const config compet
