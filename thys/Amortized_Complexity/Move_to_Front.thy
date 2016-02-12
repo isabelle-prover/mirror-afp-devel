@@ -114,6 +114,116 @@ proof(induction j arbitrary: xs)
 qed simp
 
 
+
+
+
+subsection "Function Lxy"
+
+
+definition Lxy :: "'a list \<Rightarrow> 'a set \<Rightarrow> 'a list" where
+  "Lxy xs S = filter (\<lambda>z. z\<in>S) xs" 
+thm inter_set_filter
+
+lemma Lxy_length_cons: "length (Lxy xs S) \<le> length (Lxy (x#xs) S)"
+unfolding Lxy_def by(simp)
+
+lemma Lxy_empty[simp]: "Lxy [] S = []"
+unfolding Lxy_def by simp
+
+lemma Lxy_set_filter: "set (Lxy xs S) = S \<inter> set xs" 
+by (simp add: Lxy_def inter_set_filter)
+
+lemma Lxy_distinct: "distinct xs \<Longrightarrow> distinct (Lxy xs S)"
+by (simp add: Lxy_def)
+
+lemma Lxy_append: "Lxy (xs@ys) S = Lxy xs S @ Lxy ys S"
+by(simp add: Lxy_def)
+
+lemma Lxy_not: "S \<inter> set xs = {} \<Longrightarrow> Lxy xs S = []"
+unfolding Lxy_def apply(induct xs) by simp_all
+
+
+
+lemma Lxy_notin: "set xs \<inter> S = {} \<Longrightarrow> Lxy xs S = []"
+apply(induct xs) by(simp_all add: Lxy_def)
+
+lemma Lxy_in: "x\<in>S \<Longrightarrow> Lxy [x] S = [x]"
+by(simp add: Lxy_def)
+
+
+
+lemma Lxy_project: "x\<noteq>y \<Longrightarrow> x \<in> set xs \<Longrightarrow> y\<in>set xs \<Longrightarrow> distinct xs \<Longrightarrow> x < y in xs
+           \<Longrightarrow> Lxy xs {x,y} = [x,y]"
+proof -
+  case goal1
+  then have ij: "index xs x < index xs y"
+        and xinxs: "index xs x < length xs"
+        and yinxs: "index xs y < length xs" unfolding before_in_def by auto  
+  from xinxs obtain a as where dec1: "a @ [xs!index xs x] @ as = xs"
+        and "a = take (index xs x) xs" and "as = drop (Suc (index xs x)) xs"
+        and length_a: "length a = index xs x" and length_as: "length as = length xs - index xs x- 1"
+        using id_take_nth_drop by fastforce 
+  have "index xs y\<ge>length (a @ [xs!index xs x])" using length_a ij by auto
+  then have "((a @ [xs!index xs x]) @ as) ! index xs y = as ! (index xs y-length (a @ [xs ! index xs x]))" using nth_append[where xs="a @ [xs!index xs x]" and ys="as"]
+    by(simp)
+  then have xsj: "xs ! index xs y = as ! (index xs y-index xs x-1)" using dec1 length_a by auto   
+  have las: "(index xs y-index xs x-1) < length as" using length_as yinxs ij by simp
+  obtain b c where dec2: "b @ [xs!index xs y] @ c = as"
+            and "b = take (index xs y-index xs x-1) as" "c=drop (Suc (index xs y-index xs x-1)) as"
+            and length_b: "length b = index xs y-index xs x-1" using id_take_nth_drop[OF las] xsj by force
+  have xs_dec: "a @ [xs!index xs x] @ b @ [xs!index xs y] @ c = xs" using dec1 dec2 by auto 
+   
+  from xs_dec goal1(4) have "distinct ((a @ [xs!index xs x] @ b @ [xs!index xs y]) @ c)" by simp
+  then have c_empty: "set c \<inter> {x,y} = {}"
+      and b_empty: "set b \<inter> {x,y} = {}"and a_empty: "set a \<inter> {x,y} = {}" by(auto simp add: goal1(2,3))
+
+  have "Lxy (a @ [xs!index xs x] @ b @ [xs!index xs y] @ c) {x,y} = [x,y]"
+    apply(simp only: Lxy_append)
+    apply(simp add: goal1(2,3))
+    using a_empty b_empty c_empty by(simp add: Lxy_notin Lxy_in)
+
+  with xs_dec show ?case by auto
+qed
+
+
+lemma Lxy_mono: "{x,y} \<subseteq> set xs \<Longrightarrow> distinct xs \<Longrightarrow> x < y in xs = x < y in Lxy xs {x,y}"
+apply(cases "x=y")
+  apply(simp add: before_in_irefl)
+proof -
+  assume xyset: "{x,y} \<subseteq> set xs"
+  assume dxs: "distinct xs"
+  assume xy: "x\<noteq>y" 
+  {
+    fix x y
+    assume 1: "{x,y} \<subseteq> set xs" 
+    assume xny: "x\<noteq>y"
+    assume 3: "x < y in xs" 
+    have "Lxy xs {x,y} = [x,y]" apply(rule Lxy_project) 
+          using xny 1 3 dxs by(auto)
+    then have "x < y in Lxy xs {x,y}" using xny by(simp add: before_in_def)
+  } note aha=this
+  thm Lxy_project aha
+  have a: "x < y in xs \<Longrightarrow> x < y in Lxy xs {x,y}"
+    apply(subst Lxy_project) 
+      using xy xyset dxs by(simp_all add: before_in_def)
+  have t: "{x,y}={y,x}" by(auto)
+  have f: "~ x < y in xs \<Longrightarrow> y < x in Lxy xs {x,y}"
+    unfolding t
+    apply(rule aha)
+      using xyset apply(simp)
+      using xy apply(simp)
+      using xy xyset by(simp add: not_before_in)
+  have b: "~ x < y in xs \<Longrightarrow> ~ x < y in Lxy xs {x,y}"
+  proof -
+    assume "~ x < y in xs"
+    then have "y < x in Lxy xs {x,y}" using f by auto
+    then have "~ x < y in Lxy xs {x,y}" using xy by(simp add: not_before_in)
+    then show ?thesis .
+  qed
+  from a b
+  show ?thesis by metis
+qed
+
 subsection "List Update as Online/Offline Algorithm"
 
 type_synonym 'a state = "'a list"
