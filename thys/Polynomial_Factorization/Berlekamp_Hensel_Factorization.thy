@@ -371,13 +371,14 @@ definition berlekamp_hensel_factorization_init :: "int poly_f \<Rightarrow> int 
      in if sanity then (a,qs,mm) else Code.abort (String.implode 
        (''error in berlekamp_hensel_factorization on input '' @ show f)) (\<lambda> _. (a,qs,mm)))"
 
-fun sublists_i_n_main :: "'a list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a list list" where
-  "sublists_i_n_main xs i n = (if i = 0 then [[]] else if i = n then [xs]
+fun sublists_i_n_main :: "('a \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'b \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ('b \<times> 'a list) list" where
+  "sublists_i_n_main f b xs i n = (if i = 0 then [(b,[])] else if i = n then [(foldr f xs b, xs)]
     else case xs of 
-      (y # ys) \<Rightarrow> map (Cons y) (sublists_i_n_main ys (i - 1) (n - 1)) @ sublists_i_n_main ys i (n - 1))"
+      (y # ys) \<Rightarrow> map (\<lambda> (c,zs) \<Rightarrow> (c,y # zs)) (sublists_i_n_main f (f y b) ys (i - 1) (n - 1)) 
+        @ sublists_i_n_main f b ys i (n - 1))"
 
-definition sublists_length :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a list list" where
-  "sublists_length i xs = (let n = length xs in if i > n then [] else sublists_i_n_main xs i n)"
+definition sublists_length :: "('a \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'b \<Rightarrow> nat \<Rightarrow> 'a list \<Rightarrow> ('b \<times> 'a list) list" where
+  "sublists_length f b i xs = (let n = length xs in if i > n then [] else sublists_i_n_main f b xs i n)"
 
 
 definition normalize_content_f :: "int poly_f \<Rightarrow> int poly_f" where
@@ -442,18 +443,18 @@ fun coeff_0_int_poly :: "int poly_f \<Rightarrow> int" where
 context fixes
   m :: int
 begin
-
-private definition "coeff_0_prod ws lu = (let
-  lv' = foldr (\<lambda> w p. (p * coeff_0_int_poly w) mod m) ws lu       
-  in if 2 * lv' \<le> m then lv' else lv' - m)"
   
+private definition mul_const :: "int poly_f \<Rightarrow> int \<Rightarrow> int" where
+  "mul_const p c = (coeff_0_int_poly p * c) mod m"
+
 partial_function (tailrec) factorization_f_to_factorization_int :: "int poly_f \<Rightarrow> int poly_f \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> nat
-  \<Rightarrow> int poly_f list \<Rightarrow> int poly_f list \<Rightarrow> int poly_f list list \<Rightarrow> int poly_f list" where
+  \<Rightarrow> int poly_f list \<Rightarrow> int poly_f list \<Rightarrow> (int \<times> (int poly_f list)) list \<Rightarrow> int poly_f list" where
   [code]: "factorization_f_to_factorization_int u luu lu d r vs res cands = (case cands of Nil
-    \<Rightarrow> let d' = d + 1 in if 2 * d' > r then (u # res) else 
-      factorization_f_to_factorization_int u luu lu d' r vs res (sublists_length d' vs)
-   | ws # cands' \<Rightarrow> let               
-       lv = coeff_0_prod ws lu (* lv is last coefficient of v below *)  
+    \<Rightarrow> let d' = d + 1
+      in if 2 * d' > r then (u # res) else 
+      factorization_f_to_factorization_int u luu lu d' r vs res (sublists_length mul_const lu d' vs)
+   | (lv',ws) # cands' \<Rightarrow> let               
+       lv = if 2 * lv' \<le> m then lv' else lv' - m (* lv is last coefficient of v below *)  
      in if lv dvd coeff_0_int_poly luu then let
        Z = integer_ops; 
        v = int_poly_bnd m (mod_int_poly m (smult_poly_f Z lu (listprod_poly_f Z ws)))
@@ -467,7 +468,7 @@ partial_function (tailrec) factorization_f_to_factorization_int :: "int poly_f \
           r' = r - length ws
         in if 2 * d > r' 
           then (u' # res') 
-          else factorization_f_to_factorization_int u' luu' lu' d r' vs' res' (sublists_length d vs')
+          else factorization_f_to_factorization_int u' luu' lu' d r' vs' res' (sublists_length mul_const lu' d vs')
      else factorization_f_to_factorization_int u luu lu d r vs res cands'
      else factorization_f_to_factorization_int u luu lu d r vs res cands')"
 end

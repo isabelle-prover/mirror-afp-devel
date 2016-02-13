@@ -34,10 +34,7 @@ aft = "; " ++
    "P := Expand[FromDigits[Reverse[Inp], x]]; " ++   -- convert list to polynomial
    "Facts := FactorList[P]; " ++                     -- factorize
    "Fs := Map[First, Facts]; " ++                    -- since input is assumed to be square-free, drop exponents
-   "H := First[Fs]; " ++                             -- the first factor is the constant part
-   "T := Rest[Fs]; " ++                              -- the remainder contains the real factors
-   "Gs := If[Exponent[H, x] == 0, Prepend[Rest[T], First[T]*H], T]; " ++ -- integrate constant part in first real factor
-   "Outp := Map[Function[q, CoefficientList[q, x]], Gs]; " ++   -- convert polynomials into coefficient lists
+   "Outp := Map[Function[q, CoefficientList[q, x]], Fs]; " ++   -- convert polynomials into coefficient lists
    "Outp";                                           -- and print result
 
 change_braces :: String -> String -> String -> String;
@@ -52,7 +49,13 @@ m_output :: String -> [[Integer]];
 m_output xs = let
   ys = dropWhile (\ c -> c /= '=') xs;
   zs = filter (\ c -> (c >= '0' && c <= '9') || c `elem` ",-{}") ys;
-  in read (change_braces "{}" "[]" zs);
+  fact_list = read (change_braces "{}" "[]" zs);
+  const_parts = filter (\ f -> length f == 1) fact_list;
+  c = foldr (\ x p -> p * head x) 1 const_parts; 
+  other_parts = filter (\ f -> length f /= 1) fact_list;
+  in if c == 1 then other_parts else 
+     if other_parts == [] then [[c]] else
+     map ((*) c) (head other_parts) : tail other_parts;
 
 -- starting Mathematica process
 m_in_out :: (Handle, Handle);

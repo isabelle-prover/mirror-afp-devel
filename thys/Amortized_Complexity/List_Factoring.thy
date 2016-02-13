@@ -313,7 +313,7 @@ lemma umformung:
   assumes dist: "distinct init"
   assumes "\<And>x. x < length qs \<Longrightarrow> finite (set_pmf (config'' A qs init x))"
   shows "T\<^sub>p_on_rand A init qs = 
-    (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ALGxy A qs init x y)"
+    (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALGxy A qs init x y)"
 proof -
   have config_dist: "\<forall>n. \<forall>xa \<in> set_pmf (config'' A qs init n). distinct (fst xa)"
       using dist config_rand_distinct by metis
@@ -418,13 +418,13 @@ proof -
         finally show ?case by simp
       qed
 
-   also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}.
+   also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
             (\<Sum>i\<in>{i. i<length qs \<and> qs!i=y}. ALG' A qs init i x)
            + (\<Sum>i\<in>{i. i<length qs \<and> qs!i=x}. ALG' A qs init i y) )"
             (is "(\<Sum>(x,y)\<in> ?L. ?f x y) = (\<Sum>(x,y)\<in> ?R. ?f x y +  ?f y x)")
               proof -
               case goal1
-                let ?R' = "{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> y<x}"
+                let ?R' = "{(x,y). x \<in> set init \<and> y\<in>set init \<and> y<x}"
                 have A: "?L = ?R \<union> ?R'" by auto
                 have "{} = ?R \<inter> ?R'" by auto
                 have C: "?R' = (%(x,y). (y, x)) ` ?R" by auto
@@ -459,7 +459,7 @@ proof -
               finally show ?thesis .
             qed
                 
-   also have E5: "\<dots> = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}.
+   also have E5: "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
             (\<Sum>i\<in>{i. i<length qs \<and> (qs!i=y \<or> qs!i=x)}. ALG' A qs init i y + ALG' A qs init i x))"
     apply(rule setsum.cong)
       apply(simp)
@@ -492,7 +492,7 @@ proof -
             show ?case unfolding x apply(simp add: split_def)
           unfolding unio by simp
      qed   
-     also have E6: "\<dots> = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}.
+     also have E6: "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
                   ALGxy A qs init x y)"
            unfolding ALGxy_def by simp
      finally show ?thesis .
@@ -632,7 +632,7 @@ unfolding ALGxy_def ALG'_def sorry
 
 
 definition pairwise where
-  "pairwise A = (\<forall>init. \<forall>qs\<in>{xs. set xs \<subseteq> set init}. \<forall>(x::('a::linorder),y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x,y}) = ALGxy A qs init x y)"
+  "pairwise A = (\<forall>init. \<forall>qs\<in>{xs. set xs \<subseteq> set init}. \<forall>(x::('a::linorder),y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x,y}) = ALGxy A qs init x y)"
  
 definition "Pbefore_in x y A qs init n = map_pmf (\<lambda>p. x < y in fst p) (config'' A qs init n)"
 
@@ -885,7 +885,7 @@ lemma down_in_bounds: "n < Lastxy qs {x, y} \<Longrightarrow> nrofnextxy {x, y} 
 
 lemma pairwise_property_lemma': 
 "(\<And>init qs. qs \<in> {xs. set xs \<subseteq> set init}
-    \<Longrightarrow> (\<And>n x y. (x,y)\<in> {(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x\<noteq>y} 
+    \<Longrightarrow> (\<And>n x y. (x,y)\<in> {(x,y). x \<in> set init \<and> y\<in>set init \<and> x\<noteq>y} 
                 \<Longrightarrow> x \<noteq> y
                 \<Longrightarrow> n < Lastxy qs {x,y} (* das kann man relaxen auf n \<le> letzer index auf dem ein x,y steht *)
                 \<Longrightarrow> Pbefore_in x y A qs init n = Pbefore_in x y A (Lxy qs {x,y}) (Lxy init {x,y}) (nrofnextxy {x,y} qs n)
@@ -894,7 +894,7 @@ lemma pairwise_property_lemma':
  \<Longrightarrow> pairwise A"
 unfolding pairwise_def
 proof clarify
-  case goal1
+  case (goal1 init qs x y)
   then have xny: "x\<noteq>y" by auto
   note xyininit=goal1(3) goal1(4)
   have dinit: "distinct init" sorry
@@ -1036,7 +1036,7 @@ term "Pbefore_in x y A qs init (posxy qs {x,y} n)"
 (* erste formulierung 
 lemma pairwise_property_lemma: 
 "(\<And>init qs. qs \<in> {xs. set xs \<subseteq> set init}
-    \<Longrightarrow> (\<And>n x y. (x,y)\<in> {(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x\<noteq>y} 
+    \<Longrightarrow> (\<And>n x y. (x,y)\<in> {(x,y). x \<in> set init \<and> y\<in>set init \<and> x\<noteq>y} 
                 \<Longrightarrow> x \<noteq> y
                 \<Longrightarrow> n < length (Lxy qs {x,y})
                 \<Longrightarrow> Pbefore_in x y A qs init (posxy qs {x,y} n) = Pbefore_in x y A (Lxy qs {x,y}) (Lxy init {x,y}) n
@@ -1250,11 +1250,11 @@ lemma umf_pair: assumes
   assumes 3: "distinct init"
   assumes 4: "\<And>x. x<length qs \<Longrightarrow> finite (set_pmf (config'' A qs init x))"
    shows "T\<^sub>p_on_rand A init qs
-      = (\<Sum>(x,y)\<in>{(x, y) |x y. x \<in> set init \<and> y \<in> set init \<and> x < y}. T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x,y}))"
+      = (\<Sum>(x,y)\<in>{(x, y). x \<in> set init \<and> y \<in> set init \<and> x < y}. T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x,y}))"
 proof -
-  have " T\<^sub>p_on_rand A init qs = (\<Sum>(x,y)\<in>{(x, y) |x y. x \<in> set init \<and> y \<in> set init \<and> x < y}. ALGxy A qs init x y)"
+  have " T\<^sub>p_on_rand A init qs = (\<Sum>(x,y)\<in>{(x, y). x \<in> set init \<and> y \<in> set init \<and> x < y}. ALGxy A qs init x y)"
     by(simp only: umformung[OF 1 2 3 4])
-  also have "\<dots> = (\<Sum>(x,y)\<in>{(x, y) |x y. x \<in> set init \<and> y \<in> set init \<and> x < y}. T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x,y}))"
+  also have "\<dots> = (\<Sum>(x,y)\<in>{(x, y). x \<in> set init \<and> y \<in> set init \<and> x < y}. T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x,y}))"
     apply(rule setsum.cong)
       apply(simp)
       using 0[unfolded pairwise_def] 2 by auto
@@ -1288,8 +1288,8 @@ By Lemma \ref{thm_umformung} we could conclude that A is c-competitive.
 \begin{center}
 \begin{tabular}{l@ {~~@{text ""}~~} p{14cm}}
   & @{term "T\<^sub>p_on A qs init"}\\
-@{text "="} & @{term " (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ALGxy A qs init x y)"}\\
-@{text "\<le>"} & @{term " (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. c * ALGxy OPT qs init x y)"}\\
+@{text "="} & @{term " (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALGxy A qs init x y)"}\\
+@{text "\<le>"} & @{term " (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. c * ALGxy OPT qs init x y)"}\\
 @{text "="} & @{term "  c * T\<^sub>p_on OPT qs init"}
 \end{tabular}
 \end{center}
@@ -1321,7 +1321,7 @@ lemma ALG_P_erwischt_alle:
   assumes dinit: "distinct init" 
   shows
   "\<forall>l\<in> set sws. Suc l < length init \<Longrightarrow> length sws
-        = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set (init::('a::linorder) list) \<and> y\<in>set init \<and> x<y}. ALG_P sws x y init)"
+        = (\<Sum>(x,y)\<in>{(x,y). x \<in> set (init::('a::linorder) list) \<and> y\<in>set init \<and> x<y}. ALG_P sws x y init)"
 proof (induct sws)
   case (Cons s ss)
   then have isininit: "Suc s < length init" by auto
@@ -1357,7 +1357,7 @@ proof (induct sws)
   from isT7 have "?co'! (Suc s) \<in> set ?co'" by (rule nth_mem)
   then have b: "?co'!(Suc s) \<in> set init" by auto
 
-  have  "{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}
+  have  "{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}
                           \<inter> {(x,y). ?expr3 x y}
      = {(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y
                               \<and>  (?co'!s=x \<and> ?co'!(Suc s)=y
@@ -1371,7 +1371,7 @@ proof (induct sws)
                            \<union>
                   {(x,y). x<y \<and> ?co'!s=y \<and> ?co'!(Suc s)=x}"
               using a b by(auto)
-  finally have c1: "{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y} \<inter> {(x,y). ?expr3 x y}
+  finally have c1: "{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y} \<inter> {(x,y). ?expr3 x y}
       = {(x,y). x<y \<and> ?co'!s=x \<and> ?co'!(Suc s)=y}
                            \<union>
                   {(x,y). x<y \<and> ?co'!s=y \<and> ?co'!(Suc s)=x}" . 
@@ -1404,21 +1404,21 @@ proof (induct sws)
     
         
 
-  have yeah: "(\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ?expr x y) = (1::nat)"
+  have yeah: "(\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ?expr x y) = (1::nat)"
   proof -
-    have "(\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ?expr x y)
-        = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ?expr2 x y)"
+    have "(\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ?expr x y)
+        = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ?expr2 x y)"
           using isT by auto
-    also have "\<dots> = (\<Sum>z\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ?expr2 (fst z) (snd z))"
+    also have "\<dots> = (\<Sum>z\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ?expr2 (fst z) (snd z))"
         by(simp add: split_def)
-    also have "\<dots> = (\<Sum>z\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ?expr4 z)"
+    also have "\<dots> = (\<Sum>z\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ?expr4 z)"
         by(simp add: split_def)
-    also have "\<dots> = (\<Sum>z\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}
+    also have "\<dots> = (\<Sum>z\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}
                           \<inter>{(x,y). ?expr3 x y} . 1)"
         apply(rule setsum.inter_restrict[symmetric])
               apply(rule finite_subset[where B="set init \<times> set init"])
                 by(auto)
-    also have "\<dots> = card ({(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}
+    also have "\<dots> = card ({(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}
                           \<inter> {(x,y). ?expr3 x y})" by auto
     also have "\<dots> = card ({(x,y). x<y \<and> ?co'!s=x \<and> ?co'!(Suc s)=y}
                            \<union>
@@ -1429,15 +1429,15 @@ proof (induct sws)
 
   have "length (s # ss) = 1 + length ss"
     by auto
-  also have "\<dots> = 1 + (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P ss x y init)"
+  also have "\<dots> = 1 + (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P ss x y init)"
     using Cons by auto
-  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ?expr x y)
-            + (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P ss x y init)"
+  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ?expr x y)
+            + (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P ss x y init)"
     by(simp only: yeah)
-  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ?expr x y + ALG_P ss x y init)"
+  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ?expr x y + ALG_P ss x y init)"
     (is "?A + ?B = ?C") 
     by (simp add: setsum.distrib split_def)  
-  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (s#ss) x y init)"
+  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (s#ss) x y init)"
     by auto
   finally show ?case . 
 qed (simp)
@@ -1449,13 +1449,13 @@ qed (simp)
 lemma t\<^sub>p_sumofALGALGP: "distinct s \<Longrightarrow> (qs!i)\<in>set s 
   \<Longrightarrow> \<forall>l\<in>set (snd a). Suc l < length s
   \<Longrightarrow> t\<^sub>p s (qs!i) a = (\<Sum>e\<in>set s. ALG e qs i (swaps (snd a) s,()))
-      + (\<Sum>(x,y)\<in>{(x::('a::linorder),y)|x y. x \<in> set s \<and> y\<in>set s \<and> x<y}. ALG_P (snd a) x y s)"
+      + (\<Sum>(x,y)\<in>{(x::('a::linorder),y). x \<in> set s \<and> y\<in>set s \<and> x<y}. ALG_P (snd a) x y s)"
 proof -
   case goal1
 
   (* paid exchanges *)
   have pe: "length (snd a)
-        = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set s \<and> y\<in>set s \<and> x<y}. ALG_P (snd a) x y s)"   
+        = (\<Sum>(x,y)\<in>{(x,y). x \<in> set s \<and> y\<in>set s \<and> x<y}. ALG_P (snd a) x y s)"   
     apply(rule ALG_P_erwischt_alle)  
         by(fact)+                                              
 
@@ -1491,7 +1491,7 @@ lemma ALG_P_0: "(~ Suc s < length xs) \<or> ~((xs!s=x \<and> xs!(Suc s)=y) \<or>
 
 
 lemma "Suc ` set sws \<subseteq> {..<length s}
-  \<Longrightarrow> (\<Sum>(x,y)\<in>{(x,y)|x y. x\<in>set s \<and> y\<in>set s \<and> x<y}. ALG_P sws x y s) = length sws"
+  \<Longrightarrow> (\<Sum>(x,y)\<in>{(x,y). x\<in>set s \<and> y\<in>set s \<and> x<y}. ALG_P sws x y s) = length sws"
 sorry
 
 (* given a Strategy Strat to serve request sequence qs on initial list init how many
@@ -2610,7 +2610,7 @@ lemma umformung_OPT:
   assumes qsStrat: "length qs = length Strat"
   assumes "T\<^sub>p init qs Strat = T\<^sub>p_opt init qs"
   shows "T\<^sub>p init qs Strat = 
-    (\<Sum>(x,y)\<in>{(x,y::('a::linorder))|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}.
+    (\<Sum>(x,y)\<in>{(x,y::('a::linorder)). x \<in> set init \<and> y\<in>set init \<and> x<y}.
           ALGxy_det Strat qs init x y + ALG_Pxy Strat qs init x y)"
 proof -
  (* have config_dist: "\<forall>n. \<forall>xa \<in> set_pmf (config\<^sub>p (I, S) qs init n). distinct (snd xa)"
@@ -2620,23 +2620,23 @@ proof -
   (* ersten Teil umformen: *)
   thm setsum.commute
   have "(\<Sum>i\<in>{..<length qs}.
-    (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )
+    (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )
                 = (\<Sum>i\<in>{..<length qs}. 
-               (\<Sum>z\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) (fst z) (snd z) (steps' init qs Strat i)) )"
+               (\<Sum>z\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) (fst z) (snd z) (steps' init qs Strat i)) )"
           by(auto simp: split_def)
   also have "\<dots>
-       = (\<Sum>z\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}.
+       = (\<Sum>z\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
                 (\<Sum>i\<in>{..<length qs}. ALG_P (snd (Strat!i)) (fst z) (snd z) (steps' init qs Strat i)) )" 
           by(rule setsum.commute)
-  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}.
+  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
                 (\<Sum>i\<in>{..<length qs}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
           by(auto simp: split_def)
-  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}.
+  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
                 ALG_Pxy Strat qs init x y)"
           unfolding ALG_P'_def ALG_Pxy_def by auto
   finally have paid_part: "(\<Sum>i\<in>{..<length qs}.
-    (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )
-      = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}.
+    (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )
+      = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
                 ALG_Pxy Strat qs init x y)" .
 
   (* zweiten Teil umformen: *)
@@ -2699,13 +2699,13 @@ proof -
         finally show ?case by simp
       qed
 
-   also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}.
+   also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
             (\<Sum>i\<in>{i. i<length qs \<and> qs!i=y}. ALG x qs i (?config i, ()))
            + (\<Sum>i\<in>{i. i<length qs \<and> qs!i=x}. ALG y qs i (?config i, ())) )"
             (is "(\<Sum>(x,y)\<in> ?L. ?f x y) = (\<Sum>(x,y)\<in> ?R. ?f x y +  ?f y x)")
               proof -
               case goal1
-                let ?R' = "{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> y<x}"
+                let ?R' = "{(x,y). x \<in> set init \<and> y\<in>set init \<and> y<x}"
                 have A: "?L = ?R \<union> ?R'" by auto
                 have "{} = ?R \<inter> ?R'" by auto
                 have C: "?R' = (%(x,y). (y, x)) ` ?R" by auto
@@ -2740,7 +2740,7 @@ proof -
               finally show ?thesis .
             qed
                 
-   also have E5: "\<dots> = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}.
+   also have E5: "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
             (\<Sum>i\<in>{i. i<length qs \<and> (qs!i=y \<or> qs!i=x)}. ALG y qs i (?config i, ()) + ALG x qs i (?config i, ())))"
     apply(rule setsum.cong)
       apply(simp)
@@ -2774,14 +2774,14 @@ proof -
             show ?case unfolding x apply(simp add: split_def)
           unfolding unio by simp
      qed    
-     also have E6: "\<dots> = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}.
+     also have E6: "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
                   ALGxy_det Strat qs init x y)"
            apply(rule setsum.cong)
            unfolding ALGxy_det_alternativ unfolding ALG'_det_def by auto
      finally have blockingpart: "(\<Sum>i<length qs. 
                          \<Sum>e\<in>set init.
                               ALG e qs i (?config i, ()))
-                 = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. 
+                 = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. 
                          ALGxy_det Strat qs init x y) " .
   thm setsum.cong
   from Tp_darstellung[OF qsStrat] have E0: "T\<^sub>p init qs Strat =
@@ -2793,7 +2793,7 @@ proof -
                 unfolding t\<^sub>p_def by(auto simp: split_def) *)
   also have "\<dots> = (\<Sum>i\<in>{..<length qs}. 
                 (\<Sum>e\<in>set (steps' init qs Strat i). ALG e qs i (swaps (snd (Strat!i)) (steps' init qs Strat i),()))
-+ (\<Sum>(x,y)\<in>{(x,(y::('a::linorder)))|x y. x \<in> set (steps' init qs Strat i) \<and> y\<in>set (steps' init qs Strat i) \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
++ (\<Sum>(x,y)\<in>{(x,(y::('a::linorder))). x \<in> set (steps' init qs Strat i) \<and> y\<in>set (steps' init qs Strat i) \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
             apply(rule setsum.cong)
               apply(simp)
               apply (rule t\<^sub>p_sumofALGALGP)
@@ -2801,7 +2801,7 @@ proof -
   thm t\<^sub>p_sumofALGALGP
   also have "\<dots> = (\<Sum>i\<in>{..<length qs}. 
                 (\<Sum>e\<in>set init. ALG e qs i (swaps (snd (Strat!i)) (steps' init qs Strat i),()))
-+ (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
++ (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
                 apply(rule setsum.cong)
                   apply(simp)
                   proof -
@@ -2812,21 +2812,21 @@ proof -
   also have "\<dots> = (\<Sum>i\<in>{..<length qs}. 
                 (\<Sum>e\<in>set init. ALG e qs i (swaps (snd (Strat!i)) (steps' init qs Strat i), ())))
                + (\<Sum>i\<in>{..<length qs}. 
-               (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
+               (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
     by (simp add: setsum.distrib split_def) 
   thm blockingpart
-  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. 
+  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. 
                          ALGxy_det Strat qs init x y)
                + (\<Sum>i\<in>{..<length qs}. 
-               (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
+               (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
                 by(simp only: blockingpart)
   thm paid_part
-  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. 
+  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. 
                          ALGxy_det Strat qs init x y)
-               + (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}.
+               + (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
                 ALG_Pxy Strat qs init x y)"
                 by(simp only: paid_part)
-  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. 
+  also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. 
                          ALGxy_det Strat qs init x y
                +   ALG_Pxy Strat qs init x y)"
     by (simp add: setsum.distrib split_def) 
@@ -2846,7 +2846,7 @@ corollary OPT_zerlegen:
   assumes
         dist: "distinct init"
     and setqsinit: "set qs \<subseteq> set init"
-  shows "(\<Sum>(x,y)\<in>{(x,y::('a::linorder))|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. (T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})))
+  shows "(\<Sum>(x,y)\<in>{(x,y::('a::linorder)). x \<in> set init \<and> y\<in>set init \<and> x<y}. (T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})))
         \<le> T\<^sub>p_opt init qs"
 proof -
 
@@ -2860,8 +2860,8 @@ proof -
               unfolding T_opt_def by auto
 
   thm setsum_mono 
-  have "(\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}.
-       T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x, y})) \<le> (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}.
+  have "(\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
+       T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x, y})) \<le> (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
           ALGxy_det Strat qs init x y + ALG_Pxy Strat qs init x y)"
      apply (rule setsum_mono)
      apply(auto)
@@ -2937,7 +2937,7 @@ lemma factoringlemma:
       (* A has pairwise property *)
       and pw: "pairwise A"
       (* A is c-competitive on list of length 2 *) 
-      and on2: "\<forall>qs init. \<forall>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_on A (Lxy qs {x,y}) (Lxy init {x,y}) \<le> c * (T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y}))" 
+      and on2: "\<forall>qs init. \<forall>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_on A (Lxy qs {x,y}) (Lxy init {x,y}) \<le> c * (T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y}))" 
       (* then A is c-competitive on arbitrary list lengths *)
       shows "compet\<^sub>p A c UNIV"
 proof -
@@ -2945,22 +2945,22 @@ proof -
   fix init qs
   thm setsum_mono
   have "T\<^sub>p_on A qs init =
-(\<Sum>(x,y)\<in>{(x, y) |x y. x \<in> set init \<and> y \<in> set init \<and> x < y}.
+(\<Sum>(x,y)\<in>{(x, y) . x \<in> set init \<and> y \<in> set init \<and> x < y}.
        T\<^sub>p_on A (Lxy qs {x, y}) (Lxy init {x,y}))"
        using umf_pair[OF pw, of qs init] by simp 
        (* 1.4 *)
-  also have "\<dots> \<le> (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. c * (T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})))"
+  also have "\<dots> \<le> (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. c * (T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})))"
         apply(rule setsum_mono)
         using on2 by(simp add: split_def)
-  also have "\<dots> = c * (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y}))"
+  also have "\<dots> = c * (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y}))"
         by(simp add: split_def setsum_right_distrib[symmetric])
   also have "\<dots> \<le> c * T\<^sub>p_opt init qs"
     proof -
-      have "(\<Sum>(x, y)\<in>{(x, y) |x y. x \<in> set init \<and>
+      have "(\<Sum>(x, y)\<in>{(x, y) . x \<in> set init \<and>
               y \<in> set init \<and> x < y}. T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x, y}))
               \<le>  T\<^sub>p_opt init qs"
               using OPT_zerlegen sorry (* by auto assumptions over init and qs needed *)    
-      then have "real (\<Sum>(x, y)\<in>{(x, y) |x y. x \<in> set init \<and>
+      then have "real (\<Sum>(x, y)\<in>{(x, y) . x \<in> set init \<and>
               y \<in> set init \<and> x < y}. T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x, y}))
               \<le>  real (T\<^sub>p_opt init qs)"
               by blast
@@ -2974,11 +2974,11 @@ qed *)
 
 
 
-lemma cardofpairs: "S \<noteq> [] \<Longrightarrow> sorted S \<Longrightarrow> distinct S \<Longrightarrow> card {(x,y)|x y. x \<in> set S \<and> y\<in>set S \<and> x<y} = ((length S)*(length S-1)) / 2"
+lemma cardofpairs: "S \<noteq> [] \<Longrightarrow> sorted S \<Longrightarrow> distinct S \<Longrightarrow> card {(x,y). x \<in> set S \<and> y\<in>set S \<and> x<y} = ((length S)*(length S-1)) / 2"
 proof (induct S rule: list_nonempty_induct)
   case (cons s ss)
   then have "sorted ss" "distinct ss" using sorted_Cons by auto
-  from cons(2)[OF this(1) this(2)] have iH: "card {(x, y) |x y. x \<in> set ss \<and> y \<in> set ss \<and> x < y}
+  from cons(2)[OF this(1) this(2)] have iH: "card {(x, y) . x \<in> set ss \<and> y \<in> set ss \<and> x < y}
     = (length ss * (length ss-1)) / 2"
     by auto
 
@@ -2991,35 +2991,37 @@ proof (induct S rule: list_nonempty_induct)
     with tt show ?thesis by fastforce
   qed
     
-  then have "{(x, y) |x y. x = s \<and> y \<in> set ss \<and> x < y}
-          = {(x, y) |x y. x = s \<and> y \<in> set ss}" by auto
+  then have "{(x, y) . x = s \<and> y \<in> set ss \<and> x < y}
+          = {(x, y) . x = s \<and> y \<in> set ss}" by auto
   also have "\<dots> = {s}\<times>(set ss)" by auto
-  finally have "{(x, y) |x y. x = s \<and> y \<in> set ss \<and> x < y} = {s}\<times>(set ss)" .
-  then have "card {(x, y) |x y. x = s \<and> y \<in> set ss \<and> x < y}
+  finally have "{(x, y) . x = s \<and> y \<in> set ss \<and> x < y} = {s}\<times>(set ss)" .
+  then have "card {(x, y) . x = s \<and> y \<in> set ss \<and> x < y}
           = card (set ss)" by(auto)
   also from cons distinct_card have "\<dots> = length ss" by auto
-  finally have step: "card {(x, y) |x y. x = s \<and> y \<in> set ss \<and> x < y} =
+  finally have step: "card {(x, y) . x = s \<and> y \<in> set ss \<and> x < y} =
             length ss" .
 
-  have uni: "{(x, y) |x y. x \<in> set (s # ss) \<and> y \<in> set (s # ss) \<and> x < y}
-      = {(x, y) |x y. x \<in> set ss \<and> y \<in> set ss \<and> x < y}
-        \<union> {(x, y) |x y. x = s \<and> y \<in> set ss \<and> x < y}"
+  have uni: "{(x, y) . x \<in> set (s # ss) \<and> y \<in> set (s # ss) \<and> x < y}
+      = {(x, y) . x \<in> set ss \<and> y \<in> set ss \<and> x < y}
+        \<union> {(x, y) . x = s \<and> y \<in> set ss \<and> x < y}"
         using tt by auto
 
-  have disj: "{(x, y) |x y. x \<in> set ss \<and> y \<in> set ss \<and> x < y}
-        \<inter> {(x, y) |x y. x = s \<and> y \<in> set ss \<and> x < y} = {}"
+  have disj: "{(x, y) . x \<in> set ss \<and> y \<in> set ss \<and> x < y}
+        \<inter> {(x, y) . x = s \<and> y \<in> set ss \<and> x < y} = {}"
           using sss by(auto)
-  have "card {(x, y) |x y. x \<in> set (s # ss) \<and> y \<in> set (s # ss) \<and> x < y}
-    = card ({(x, y) |x y. x \<in> set ss \<and> y \<in> set ss \<and> x < y}
-        \<union> {(x, y) |x y. x = s \<and> y \<in> set ss \<and> x < y})" using uni by auto
-  also have "\<dots> = card {(x, y) |x y. x \<in> set ss \<and> y \<in> set ss \<and> x < y}
-          + card {(x, y) |x y. x = s \<and> y \<in> set ss \<and> x < y}" 
-            apply(rule card_Un_disjoint)
-              apply(rule finite_subset[where B="(set ss) \<times> (set ss)"])
-                apply(force)
-                apply(simp)
-              apply(simp)
-              using disj apply(simp) done
+  have "card {(x, y) . x \<in> set (s # ss) \<and> y \<in> set (s # ss) \<and> x < y}
+    = card ({(x, y) . x \<in> set ss \<and> y \<in> set ss \<and> x < y}
+        \<union> {(x, y) . x = s \<and> y \<in> set ss \<and> x < y})" using uni by auto
+  also have "\<dots> = card {(x, y) . x \<in> set ss \<and> y \<in> set ss \<and> x < y}
+          + card {(x, y) . x = s \<and> y \<in> set ss \<and> x < y}" 
+       apply(rule card_Un_disjoint)
+          apply(rule finite_subset[where B="(set ss) \<times> (set ss)"])
+           apply(force)
+          apply(simp)
+         apply(rule finite_subset[where B="{s} \<times> (set ss)"])
+          apply(force)
+         apply(simp)
+         using disj apply(simp) done
   also have "\<dots> = (length ss * (length ss-1)) / 2
                   + length ss" using iH step by auto
   also have "\<dots> = (length ss * (length ss-1) + 2*length ss) / 2" by auto
@@ -3031,7 +3033,9 @@ proof (induct S rule: list_nonempty_induct)
   also have "\<dots> = ((length ss+1) * length ss) / 2" by auto
   also have "\<dots> = (length (s#ss) * (length (s#ss)-1)) / 2" by auto
   finally show ?case by auto
-qed simp
+next
+  case single thus ?case by(simp cong: conj_cong)
+qed
 
 
 (* factoring lemma *)
@@ -3045,7 +3049,7 @@ lemma factoringlemma_withconstant:
       (* A has pairwise property *)
       assumes pw: "pairwise A"
       (* A is c-competitive on list of length 2 *) 
-      assumes on2: "\<forall>s0\<in>S0. \<exists>b\<ge>0. \<forall>qs\<in>{x. set x \<subseteq> set s0}. \<forall>(x,y)\<in>{(x,y)|x y. x \<in> set s0 \<and> y\<in>set s0 \<and> x<y}. T\<^sub>p_on_rand A (Lxy s0 {x,y}) (Lxy qs {x,y})  \<le> c * (T\<^sub>p_opt (Lxy s0 {x,y}) (Lxy qs {x,y})) + b" 
+      assumes on2: "\<forall>s0\<in>S0. \<exists>b\<ge>0. \<forall>qs\<in>{x. set x \<subseteq> set s0}. \<forall>(x,y)\<in>{(x,y). x \<in> set s0 \<and> y\<in>set s0 \<and> x<y}. T\<^sub>p_on_rand A (Lxy s0 {x,y}) (Lxy qs {x,y})  \<le> c * (T\<^sub>p_opt (Lxy s0 {x,y}) (Lxy qs {x,y})) + b" 
       assumes nopaid: "\<And>is s q. \<forall>((free,paid),_) \<in> (snd A (s, is) q). paid=[]"
       assumes 4: "\<And>init qs. distinct init \<Longrightarrow> set qs \<subseteq> set init \<Longrightarrow> (\<And>x. x<length qs \<Longrightarrow> finite (set_pmf (config'' A qs init x)))" 
       (* then A is c-competitive on arbitrary list lengths *)
@@ -3057,7 +3061,7 @@ proof
     have d2: "init \<noteq> []" using  notempty goal1 by auto
 
 
-    obtain b where on3: "\<forall>qs\<in>{x. set x \<subseteq> set init}. \<forall>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_on_rand A  (Lxy init {x,y}) (Lxy qs {x,y}) \<le> c * (T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})) + b"
+    obtain b where on3: "\<forall>qs\<in>{x. set x \<subseteq> set init}. \<forall>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_on_rand A  (Lxy init {x,y}) (Lxy qs {x,y}) \<le> c * (T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})) + b"
         and b: "b\<ge>0"
       using on2 goal1 by auto
 
@@ -3069,17 +3073,17 @@ proof
 
   thm umf_pair
   have "T\<^sub>p_on_rand A init qs =
-(\<Sum>(x,y)\<in>{(x, y) |x y. x \<in> set init \<and> y \<in> set init \<and> x < y}.
+(\<Sum>(x,y)\<in>{(x, y) . x \<in> set init \<and> y \<in> set init \<and> x < y}.
        T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x, y})) "
        apply(rule umf_pair)
         apply(fact)+
         using 4[of init qs] drin d by(simp add: split_def)
        (* 1.4 *) 
-  also have "\<dots> \<le> (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. c * (T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})) + b)"
+  also have "\<dots> \<le> (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. c * (T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})) + b)"
         apply(rule setsum_mono)
         using on3 drin by(simp add: split_def) 
         thm setsum_right_distrib setsum.distrib
-  also have "\<dots> = c * (\<Sum>(x,y)\<in>{(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})) + b*(((length init)*(length init-1)) / 2)"
+  also have "\<dots> = c * (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})) + b*(((length init)*(length init-1)) / 2)"
   proof - 
 
     {
@@ -3087,15 +3091,15 @@ proof
       assume dis: "distinct S"
       assume d2: "S \<noteq> []"
       then have d3: "sort S \<noteq> []" by (metis length_0_conv length_sort)
-      have "card {(x,y)|x y. x \<in> set S \<and> y\<in>set S \<and> x<y}
-            = card {(x,y)|x y. x \<in> set (sort S) \<and> y\<in>set (sort S) \<and> x<y}"
+      have "card {(x,y). x \<in> set S \<and> y\<in>set S \<and> x<y}
+            = card {(x,y). x \<in> set (sort S) \<and> y\<in>set (sort S) \<and> x<y}"
             by auto
       also have "\<dots> = (length (sort S) * (length (sort S) - 1)) / 2"
         apply(rule cardofpairs) using dis d2 d3 by (simp_all)
-      finally have "card {(x, y) |x y. x \<in> set S \<and> y \<in> set S \<and> x < y} =
+      finally have "card {(x, y) . x \<in> set S \<and> y \<in> set S \<and> x < y} =
               (length (sort S) * (length (sort S) - 1)) / 2 " .      
     }
-    with d d2 have e: "card {(x,y)|x y. x \<in> set init \<and> y\<in>set init \<and> x<y} = ((length init)*(length init-1)) / 2" by auto
+    with d d2 have e: "card {(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y} = ((length init)*(length init-1)) / 2" by auto
     show ?thesis  (is "(\<Sum>(x,y)\<in>?S. c * (?T x y) + b) = c * ?R + b*?T2")
     proof -
        have "(\<Sum>(x,y)\<in>?S. c * (?T x y) + b) =
@@ -3108,11 +3112,11 @@ proof
   qed
   also have "\<dots> \<le> c * T\<^sub>p_opt init qs + (b*((length init)*(length init-1)) / 2)"
     proof -
-      have "(\<Sum>(x, y)\<in>{(x, y) |x y. x \<in> set init \<and>
+      have "(\<Sum>(x, y)\<in>{(x, y) . x \<in> set init \<and>
               y \<in> set init \<and> x < y}. T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x, y}))
               \<le>  T\<^sub>p_opt init qs"
               using OPT_zerlegen drin d by auto    
-      then have "  (\<Sum>(x, y)\<in>{(x, y) |x y. x \<in> set init \<and>
+      then have "  (\<Sum>(x, y)\<in>{(x, y) . x \<in> set init \<and>
               y \<in> set init \<and> x < y}. T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x, y}))
               \<le>    (T\<^sub>p_opt init qs)"
               by blast    

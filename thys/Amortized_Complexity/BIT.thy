@@ -1121,8 +1121,8 @@ subsection "The Transformation"
 
           let ?fin="(Inv ys' xs'') \<inter> (Inv ys' xs')"
 
-          have ttt: "{(x,y)|x y. (x,y)\<in>(Inv ys' xs'') \<inter> (Inv ys' xs')
-                          \<and> y = (q)} \<union> {(x,y)|x y. (x,y)\<in>(Inv ys' xs'') \<inter> (Inv ys' xs')
+          have ttt: "{(x,y). (x,y)\<in>(Inv ys' xs'') \<inter> (Inv ys' xs')
+                          \<and> y = (q)} \<union> {(x,y). (x,y)\<in>(Inv ys' xs'') \<inter> (Inv ys' xs')
                           \<and> y \<noteq> (q)} = (Inv ys' xs'') \<inter> (Inv ys' xs')" (is "?split1 \<union> ?split2 = ?easy")  by auto
           have interem: "?split1 \<inter> ?split2 = {}" by auto
           have split1subs: "?split1 \<subseteq> ?fin" by auto
@@ -1186,7 +1186,8 @@ subsection "The Transformation"
           thm setsum_my2[OF split1easy]
           thm setsum_my2[OF split2easy]
           also have E4: "\<dots> = (\<Sum>(x,y)\<in>?split1. (-1::real) )
-                    + (\<Sum>(x,y)\<in>?split2. 0)" by(simp only: split_def setsum_my2[OF split1easy] setsum_my2[OF split2easy])
+                    + (\<Sum>(x,y)\<in>?split2. 0)"
+                 using setsum_my2[OF split1easy]setsum_my2[OF split2easy] by(simp only: split_def)
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (-1::real) )" by auto
           also have E5: "\<dots> = - card ?split1 " by auto
           also have E6: "\<dots> = - I " using cardsp1isI by auto
@@ -1238,8 +1239,8 @@ subsection "The Transformation"
 
           let ?fin="(Inv ys' xs'') \<inter> (Inv ys xs')"
 
-          have ttt: "{(x,y)|x y. (x,y)\<in>(Inv ys' xs'') \<inter> (Inv ys  xs')
-                          \<and> y = (q)} \<union> {(x,y)|x y. (x,y)\<in>(Inv ys' xs'') \<inter> (Inv ys  xs')
+          have ttt: "{(x,y). (x,y)\<in>(Inv ys' xs'') \<inter> (Inv ys  xs')
+                          \<and> y = (q)} \<union> {(x,y). (x,y)\<in>(Inv ys' xs'') \<inter> (Inv ys  xs')
                           \<and> y \<noteq> (q)} = (Inv ys' xs'') \<inter> (Inv ys  xs')" (is "?split1 \<union> ?split2 = ?easy")  by auto
           have interem: "?split1 \<inter> ?split2 = {}" by auto
           have split1subs: "?split1 \<subseteq> ?fin" by auto
@@ -1279,7 +1280,7 @@ subsection "The Transformation"
                     apply(simp only: interem) by auto
           thm setsum_my2[OF split2easy]
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (1::real) )
-                    + (\<Sum>(x,y)\<in>?split2. 0)" by (simp only: split_def setsum_my2[OF split1easy] setsum_my2[OF split2easy]) 
+                    + (\<Sum>(x,y)\<in>?split2. 0)" using setsum_my2[OF split1easy] setsum_my2[OF split2easy] by (simp only: split_def) 
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (1::real) )" by auto
           also have "\<dots> = card ?split1" by auto
           also have "\<dots> = (0::real)" apply(simp only: split1empty) by auto
@@ -1287,8 +1288,8 @@ subsection "The Transformation"
           
           (* abschätzung für B *)
 
-          have ttt2: "{(x,y)|x y. (x,y)\<in>(Inv ys  xs') - (Inv ys' xs'')
-                          \<and> y = (q)} \<union> {(x,y)|x y. (x,y)\<in>(Inv ys  xs') - (Inv ys' xs'')
+          have ttt2: "{(x,y). (x,y)\<in>(Inv ys  xs') - (Inv ys' xs'')
+                          \<and> y = (q)} \<union> {(x,y). (x,y)\<in>(Inv ys  xs') - (Inv ys' xs'')
                           \<and> y \<noteq> (q)} = (Inv ys  xs') - (Inv ys' xs'')" (is "?split1 \<union> ?split2 = ?easy2")  by auto
           have interem: "?split1 \<inter> ?split2 = {}" by auto
           have split1subs: "?split1 \<subseteq> ?easy2" by auto
@@ -1321,7 +1322,8 @@ subsection "The Transformation"
                     apply(simp only: interem) by auto
           thm setsum_my2[OF split1easy2]
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. 1)
-                    + (\<Sum>(x,y)\<in>?split2. (if b!(index init y) then 2::real else 1))" by (simp only: setsum_my2[OF split1easy2] split_def) 
+                    + (\<Sum>(x,y)\<in>?split2. (if b!(index init y) then 2::real else 1))"
+                 using setsum_my2[OF split1easy2] by (simp only: split_def)
           also have "\<dots> = card ?split1
                     + (\<Sum>(x,y)\<in>?split2. (if b!(index init y) then 2::real else 1))" by auto
           also have "\<dots> = I
