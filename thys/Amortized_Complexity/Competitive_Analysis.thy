@@ -124,7 +124,7 @@ lemma T_on_rand_nn: "T_on_rand (I,S) s0 qs \<ge> 0"
 by (rule T_on_rand'_nn)
  
 definition compet_rand :: "('state,'is,'request,'answer) alg_on_rand \<Rightarrow> real \<Rightarrow> 'state set \<Rightarrow> bool" where
-"compet_rand A c S0 = (\<forall>s0\<in>S0. \<exists>b \<ge> 0. \<forall>qs. T_on_rand A s0 qs \<le> c * T_opt s0 qs + b)"
+"compet_rand A c S0 = (\<forall>s0\<in>S0. \<exists>b \<ge> 0. \<forall>rs. T_on_rand A s0 rs \<le> c * T_opt s0 rs + b)"
 
 
 subsection "embedding of deterministic into randomized algorithms"
