@@ -133,7 +133,7 @@ qed
 
 
 lemma BIT_pairwise': " qs \<in> {xs. set xs \<subseteq> set init} \<Longrightarrow>
-       (x, y) \<in> {(x, y) |x y. x \<in> set init \<and> y \<in> set init \<and> x \<noteq> y} \<Longrightarrow>
+       (x, y) \<in> {(x, y). x \<in> set init \<and> y \<in> set init \<and> x \<noteq> y} \<Longrightarrow>
        x \<noteq> y \<Longrightarrow> n < Lastxy qs {x, y} \<Longrightarrow> Pbefore_in x y BIT qs init n = Pbefore_in x y BIT (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs n)"
 proof -
   case goal1 

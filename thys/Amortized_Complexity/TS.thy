@@ -2478,7 +2478,7 @@ scheiß egal, ich machs trotzdem erstmal!
 
 
 lemma TS_pairwise': "qs \<in> {xs. set xs \<subseteq> set init} \<Longrightarrow>
-       (x, y) \<in> {(x, y) |x y. x \<in> set init \<and> y \<in> set init \<and> x \<noteq> y} \<Longrightarrow>
+       (x, y) \<in> {(x, y). x \<in> set init \<and> y \<in> set init \<and> x \<noteq> y} \<Longrightarrow>
        x \<noteq> y \<Longrightarrow>
        n < Lastxy qs {x, y} \<Longrightarrow>
        Pbefore_in x y (Partial_Cost_Model.embedd (rTS [])) qs init n =

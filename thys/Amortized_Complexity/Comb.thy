@@ -119,6 +119,29 @@ next
 qed
 
 
+lemma configCOMB2asd: "config'_rand (COMB h) (COMB_state h x y i) qs  = do {
+                    (b::bool) \<leftarrow> (bernoulli_pmf 0.8); 
+                    (b1,b2) \<leftarrow>  (config'_rand BIT i qs);
+                    (t1,t2) \<leftarrow>  (config'_rand (embedd (rTS h)) (return_pmf ([x,y],h)) qs);
+                    return_pmf (if b then  (b1, CBit b2) else (t1, CTs t2))
+                    }" (is "?LHS = ?RHS i")
+proof (induct qs rule: rev_induct)
+  case Nil
+  show ?case
+  by(simp add: COMB_state_def BIT_init_def COMB_def rTS_def map_pmf_def bind_return_pmf bind_assoc_pmf )
+next
+  case (snoc r rs) 
+  show ?case apply(simp add: take_Suc_conv_app_nth)
+    apply(subst config'_rand_append)
+    apply(subst snoc(1))
+      apply(simp)
+      apply(simp add: bind_return_pmf bind_assoc_pmf split_def config'_rand_append)
+        apply(rule bind_pmf_cong)
+          apply(simp) 
+          apply(simp only: set_pmf_bernoulli)
+            apply(case_tac xa)
+               by(simp_all add: COMB_def COMB_step_def rTS_def map_pmf_def split_def bind_return_pmf bind_assoc_pmf)
+qed
 
  
 lemma T2_COMB_split: "T\<^sub>p_on2 (COMB h) qs (COMB_state h x y i)
@@ -133,15 +156,15 @@ proof -
           by(simp only: setsum_right_distrib setsum.distrib) 
   show ?thesis unfolding A unfolding T\<^sub>p_on2_def T_on_n2_def
     apply(rule setsum.cong)
-      apply(simp) sorry (*
-      apply(subst configCOMB)
+      apply(simp)  
+      apply(subst configCOMB2asd)
         apply(simp)  
         unfolding rTS_def COMB_def  
         apply(simp add: bind_assoc_pmf  bind_return_pmf split_def ) 
         apply(simp add: E_bernoulli2[unfolded map_pmf_def])
         unfolding COMB_step_def BIT_init_def map_pmf_def apply(simp add: split_def)
         apply(simp add: bind_assoc_pmf)
-        by(simp add: bind_return_pmf split_def )  *)
+        by(simp add: bind_return_pmf split_def )   
 qed  
 
 
@@ -779,8 +802,10 @@ lemma COMB_pairwise: "pairwise (COMB [])"
 proof(rule pairwise_property_lemma') 
   case goal1
 
-  thm TS_pairwise'[OF goal1]
-  have 1: "nrofnextxy {x, y} qs n \<le> length (Lxy qs {x, y})" sorry
+  thm TS_pairwise'[OF goal1(1)] goal1
+  have 1: "nrofnextxy {x, y} qs n < length (Lxy qs {x, y})"
+      apply(rule down_in_bounds)
+        by fact
   from goal1(4) have "n < Lastxy qs {x, y}" by simp
   also have "\<dots> \<le> length qs" by (rule Lastxy_length)
   finally have "n<length qs" .
@@ -791,7 +816,7 @@ proof(rule pairwise_property_lemma')
         apply(subst configCOMB) 
           apply(fact e)
         apply(subst configCOMB) 
-          apply(fact 1)
+          using 1 apply(simp)
         apply(simp only: map_pmf_def  bind_assoc_pmf)
         apply(rule bind_pmf_cong)
           apply(simp)
@@ -838,7 +863,10 @@ proof -
 qed
 
 lemma COMB_no_paid: " \<forall>((free, paid), t)\<in>set_pmf (snd (COMB []) (s, is) q). paid = []"
-sorry
+apply(simp add:  COMB_def COMB_step_def split_def BIT_step_def TS_step_d_def)
+apply(case_tac "is")
+  by(simp_all add: BIT_step_def TS_step_d_def)
+  
 
 
 theorem COMB_competitive: "\<forall>s0\<in>{x::nat list. distinct x \<and> x\<noteq>[]}.
