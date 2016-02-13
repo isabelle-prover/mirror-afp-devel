@@ -2476,8 +2476,14 @@ scheiß egal, ich machs trotzdem erstmal!
 
 *) 
 
-theorem TS_pairwise: "pairwise (embedd (rTS []))"
-proof(rule pairwise_property_lemma')
+
+lemma TS_pairwise': "qs \<in> {xs. set xs \<subseteq> set init} \<Longrightarrow>
+       (x, y) \<in> {(x, y) |x y. x \<in> set init \<and> y \<in> set init \<and> x \<noteq> y} \<Longrightarrow>
+       x \<noteq> y \<Longrightarrow>
+       n < Lastxy qs {x, y} \<Longrightarrow>
+       Pbefore_in x y (Partial_Cost_Model.embedd (rTS [])) qs init n =
+       Pbefore_in x y (Partial_Cost_Model.embedd (rTS [])) (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs n)"
+proof -
   case goal1 
   then have xyininit: "{x, y} \<subseteq> set init" 
         and qsininit: "set qs \<subseteq> set init" by auto
@@ -2512,6 +2518,12 @@ proof(rule pairwise_property_lemma')
 *)
   show ?case sorry
 qed
+
+
+
+theorem TS_pairwise: "pairwise (embedd (rTS []))"
+apply(rule pairwise_property_lemma')
+  apply(rule TS_pairwise') by simp_all
 
 (*
     proof (cases "n>0")

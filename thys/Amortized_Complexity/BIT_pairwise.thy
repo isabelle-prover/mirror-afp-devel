@@ -132,8 +132,10 @@ proof -
 qed
 
 
-theorem BIT_pairwise: "pairwise BIT"
-proof(rule pairwise_property_lemma')
+lemma BIT_pairwise': " qs \<in> {xs. set xs \<subseteq> set init} \<Longrightarrow>
+       (x, y) \<in> {(x, y) |x y. x \<in> set init \<and> y \<in> set init \<and> x \<noteq> y} \<Longrightarrow>
+       x \<noteq> y \<Longrightarrow> n < Lastxy qs {x, y} \<Longrightarrow> Pbefore_in x y BIT qs init n = Pbefore_in x y BIT (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs n)"
+proof -
   case goal1 
   then have xyininit: "{x, y} \<subseteq> set init" 
         and qsininit: "set qs \<subseteq> set init" by auto
@@ -637,6 +639,11 @@ proof(rule pairwise_property_lemma')
 
   from fine[OF img_in_bounds,unfolded bij] show ?case . *)
 qed
+
+
+theorem BIT_pairwise: "pairwise BIT"
+apply(rule pairwise_property_lemma')
+  apply(rule BIT_pairwise') by(simp_all)
 
 
 

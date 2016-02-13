@@ -137,6 +137,16 @@ lemma T_deter_rand: "T_off (\<lambda>s0. (off2 A (s0, x))) s0 qs = T_on_rand' (e
 apply(induct qs arbitrary: s0 x) 
   by(simp_all add: Step_def bind_return_pmf split: prod.split)
 
+
+lemma config'_embedd: "config'_rand (embedd A) (return_pmf s0) qs = return_pmf (config' A s0 qs)"
+apply(induct qs arbitrary: s0)
+  apply(simp_all add: Step_def split_def bind_return_pmf) by metis
+
+lemma config_embedd: "config_rand (embedd A) s0 qs = return_pmf (config A s0 qs)" 
+apply(simp add: bind_return_pmf)
+  apply(subst config'_embedd[unfolded embedd.simps])
+    by simp
+
 lemma T_on_embedd: "T_on A s0 qs = T_on_rand (embedd A) s0 qs"
 using T_deter_rand[where x="fst A s0", of s0 qs A] by(auto simp: bind_return_pmf)
  

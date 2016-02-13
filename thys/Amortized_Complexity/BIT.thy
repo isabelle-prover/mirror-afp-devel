@@ -168,8 +168,45 @@ lemma config_n_fst_init_length2: "\<forall>x \<in> set_pmf (config_rand (BIT_ini
 using config_n_fst_init_length by(simp add: split_def)
 
 
+
+lemma fperms: "finite {x::'a list. length x = length init \<and> distinct x \<and> set x = set init}"
+apply(rule finite_subset[where B="{xs. set xs \<subseteq> set init \<and> length xs \<le> length init}"])
+apply(force) apply(rule finite_lists_length_le) by auto
+
+
+lemma finite_config_BIT: assumes [simp]: "distinct init"
+  shows "finite (set_pmf (config'' (BIT_init, BIT_step) qs init n))" (is "finite ?D")
+proof -
+  have a: "(fst \<circ> snd) ` ?D \<subseteq> {x. length x = length init}" using config_n_fst_init_length2 by force
+  have c: "(snd \<circ> snd) ` ?D = {init}"
+  proof -
+    have "(snd \<circ> snd) ` set_pmf (config'' (BIT_init, BIT_step) qs init n)
+                = set_pmf (map_pmf (snd \<circ> snd) (config'' (BIT_init, BIT_step) qs init n))" by(simp)
+    also have "\<dots> = {init}" apply(subst config_n_init) by simp
+    finally show ?thesis .
+  qed
+  from a c have d: "snd ` ?D \<subseteq> {x. length x = length init} \<times> {init}" by force
+  have b: "fst ` ?D \<subseteq> {x. length x = length init \<and> distinct x \<and> set x = set init}"
+    using config_rand by fastforce
+
+  from b d have "?D \<subseteq> {x. length x = length init \<and> distinct x \<and> set x = set init} \<times> ({x. length x = length init} \<times> {init})"
+    by (smt SigmaI image_subset_iff prod.collapse subsetI)
+  then show ?thesis
+    apply (rule finite_subset)
+      apply(rule finite_cartesian_product)
+        apply(rule fperms)
+        apply(rule finite_cartesian_product)
+          apply (rule bitstrings_finite)
+          by(simp) 
+qed
+
+
 section "BIT is $1.75$-competitive"
  
+
+
+
+
 
 
 subsection "Definition of the Locale and Helper Functions"
@@ -471,35 +508,6 @@ proof -
   qed
 qed
 
-
-lemma fperms: "finite {x::'a list. length x = length init \<and> distinct x \<and> set x = set init}"
-apply(rule finite_subset[where B="{xs. set xs \<subseteq> set init \<and> length xs \<le> length init}"])
-apply(force) apply(rule finite_lists_length_le) by auto
-
-lemma finite_config_BIT: "finite (set_pmf (config'' (BIT_init, BIT_step) qs init n))" (is "finite ?D")
-proof -
-  have a: "(fst \<circ> snd) ` ?D \<subseteq> {x. length x = length init}" using config_n_fst_init_length2 by force
-  have c: "(snd \<circ> snd) ` ?D = {init}"
-  proof -
-    have "(snd \<circ> snd) ` set_pmf (config'' (BIT_init, BIT_step) qs init n)
-                = set_pmf (map_pmf (snd \<circ> snd) (config'' (BIT_init, BIT_step) qs init n))" by(simp)
-    also have "\<dots> = {init}" apply(subst config_n_init) by simp
-    finally show ?thesis .
-  qed
-  from a c have d: "snd ` ?D \<subseteq> {x. length x = length init} \<times> {init}" by force
-  have b: "fst ` ?D \<subseteq> {x. length x = length init \<and> distinct x \<and> set x = set init}"
-    using config_rand by fastforce
-
-  from b d have "?D \<subseteq> {x. length x = length init \<and> distinct x \<and> set x = set init} \<times> ({x. length x = length init} \<times> {init})"
-    by (smt SigmaI image_subset_iff prod.collapse subsetI)
-  then show ?thesis
-    apply (rule finite_subset)
-      apply(rule finite_cartesian_product)
-        apply(rule fperms)
-        apply(rule finite_cartesian_product)
-          apply (rule bitstrings_finite)
-          by(simp) 
-qed
  
 subsection "InvOf"
 
@@ -756,10 +764,10 @@ proof -
                   + E (map_pmf \<Phi>\<^sub>2 D)
                   - E (map_pmf \<Phi>\<^sub>0 D)" using rightform1 rightform2 split_def by auto
       also have "\<dots> =  E (map_pmf (\<lambda>x. (cost x) + (\<Phi>\<^sub>2 x)) D) -  E (map_pmf (\<lambda>x. (\<Phi>\<^sub>0 x)) D)"
-            unfolding D_def using E_linear_plus2[OF finite_config_BIT] by auto
+            unfolding D_def using E_linear_plus2[OF finite_config_BIT[OF dist_init]] by auto
             thm E_linear_diff2[OF finite_config_BIT]
       also have "\<dots> =  E (map_pmf (\<lambda>x. (cost x) + (\<Phi>\<^sub>2 x) - (\<Phi>\<^sub>0 x)) D)"
-            unfolding D_def by(simp only: E_linear_diff2[OF finite_config_BIT] split_def)
+            unfolding D_def by(simp only: E_linear_diff2[OF finite_config_BIT[OF dist_init]] split_def)
       finally show "t_BIT n + Phi (n+1) - Phi n 
             =  E (map_pmf (\<lambda>x. (cost x) + (\<Phi>\<^sub>2 x) - (\<Phi>\<^sub>0 x)) D)" by auto
     qed 
@@ -2152,7 +2160,7 @@ subsection "Transformation of the Term for Paid Exchanges"
       have "E(map_pmf (\<lambda>x. (\<Sum>i<(length (paid_A!n)). (if (fst (snd x))!(gebub n i) then 2::real else 1))) D) = 
           (\<Sum>i<(length (paid_A!n)). E(map_pmf ((\<lambda>xx. (if (fst (snd xx))!(gebub n i) then 2::real else 1))) D))"
           apply(subst E_linear_setsum2)
-            using finite_config_BIT by(simp_all)
+            using finite_config_BIT[OF dist_init] by(simp_all)
       also have "\<dots> =  (\<Sum>i<(length (paid_A!n)). E(map_pmf (\<lambda>y. if y then 2::real else 1) (bernoulli_pmf (5 / 10))))" using umform gebub_def gebub_inBound[OF 31] by simp
       also have "\<dots> =  3/2 * (length (paid_A!n))" by(simp add: E_bernoulli)
       finally show "E(map_pmf (\<lambda>x. (\<Sum>i<(length (paid_A!n)). (if (fst (snd x))!(gebub n i) then 2::real else 1))) D) = 3/2 * (length (paid_A!n))" .
@@ -2173,14 +2181,14 @@ subsection "Combine the Results"
       using inEreinziehn by auto
     also have "\<dots> \<le> E(map_pmf ?yo2 D)"
            apply(rule E_mono2) unfolding D_def
-            apply(fact finite_config_BIT)
+            apply(fact finite_config_BIT[OF dist_init])
             apply(fact ub_cost[unfolded D_def])
             done
 
     also have E2: "\<dots> = E(map_pmf (\<lambda>x. k + 1::real) D)
             + (E(map_pmf (\<lambda>x. (if (q)\<in>set init then (if (fst (snd x))!(index init q) then real(k-k') else (\<Sum>j<k'. (if (fst (snd x))!(index init (xs'!j)) then 2::real else 1)))else 0)) D)
             + E(map_pmf (\<lambda>x. (\<Sum>i<(length (paid_A!n)). (if (fst (snd x))!(gebub n i) then 2::real else 1))) D))"
-             unfolding D_def  apply(simp only: E_linear_plus2[OF finite_config_BIT]) by(auto simp: add.assoc)
+             unfolding D_def  apply(simp only: E_linear_plus2[OF finite_config_BIT[OF dist_init]]) by(auto simp: add.assoc)
  
     also have E3: "\<dots> \<le>  k + 1 + (3/4 * (real (k)) + (3/2 * real (length (paid_A!n))))" using paid_absch free_absch by auto
 
