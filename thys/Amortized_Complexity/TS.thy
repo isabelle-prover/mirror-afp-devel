@@ -2885,7 +2885,7 @@ next
   case goal4 then show ?case sorry (* strange subtype effect here, that i dont understande *)
 qed (simp_all)
 
-thm TS_compet[OF TS_pairwise]
+thm TS_compet[OF TS_pairwise, unfolded T_on_embedd[symmetric]]
 
 lemma TS_compet': "pairwise (embedd (rTS [])) \<Longrightarrow> compet_rand (embedd (rTS [])) 2 {init. distinct init}"
 unfolding compet_def

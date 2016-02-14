@@ -872,7 +872,7 @@ apply(case_tac "is")
 
 theorem COMB_competitive: "\<forall>s0\<in>{x::nat list. distinct x \<and> x\<noteq>[]}.
    \<exists>b\<ge>0. \<forall>qs\<in>{x. set x \<subseteq> set s0}.
-             T\<^sub>p_on_rand (COMB []) s0 qs \<le> (1.6::real) *  T\<^sub>p_opt s0 qs + b" 
+             T\<^sub>p_on_rand (COMB []) s0 qs \<le> ((8::nat)/(5::nat)) *  T\<^sub>p_opt s0 qs + b" 
 proof(rule factoringlemma_withconstant)
   case goal5
   show ?case 
