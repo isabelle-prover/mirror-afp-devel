@@ -2474,8 +2474,8 @@ lemma TS_pairwise': "qs \<in> {xs. set xs \<subseteq> set init} \<Longrightarrow
        (x, y) \<in> {(x, y). x \<in> set init \<and> y \<in> set init \<and> x \<noteq> y} \<Longrightarrow>
        x \<noteq> y \<Longrightarrow>
        n < Lastxy qs {x, y} \<Longrightarrow>
-       Pbefore_in x y (Partial_Cost_Model.embedd (rTS [])) qs init n =
-       Pbefore_in x y (Partial_Cost_Model.embedd (rTS [])) (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs n)"
+       Pbefore_in x y (Partial_Cost_Model.embed (rTS [])) qs init n =
+       Pbefore_in x y (Partial_Cost_Model.embed (rTS [])) (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs n)"
 proof -
   case goal1 
   then have xyininit: "{x, y} \<subseteq> set init" 
@@ -2514,7 +2514,7 @@ qed
 
 
 
-theorem TS_pairwise: "pairwise (embedd (rTS []))"
+theorem TS_pairwise: "pairwise (embed (rTS []))"
 apply(rule pairwise_property_lemma')
   apply(rule TS_pairwise') by simp_all
 
@@ -2811,8 +2811,8 @@ thm T_TS_T_on
 
 term "{(init::bool list). distinct init}"
 
-lemma TS_compet:   "pairwise (embedd (rTS [])) \<Longrightarrow> 
-      \<forall>s0\<in>{init::(nat list). distinct init \<and> init\<noteq>[]}. \<exists>b\<ge>0. \<forall>qs\<in>{x. set x \<subseteq> set s0}. T\<^sub>p_on_rand (embedd (rTS [])) s0 qs \<le> (2::real) *  T\<^sub>p_opt s0 qs + b"
+lemma TS_compet:   "pairwise (embed (rTS [])) \<Longrightarrow> 
+      \<forall>s0\<in>{init::(nat list). distinct init \<and> init\<noteq>[]}. \<exists>b\<ge>0. \<forall>qs\<in>{x. set x \<subseteq> set s0}. T\<^sub>p_on_rand (embed (rTS [])) s0 qs \<le> (2::real) *  T\<^sub>p_opt s0 qs + b"
 unfolding rTS_def 
 apply(rule factoringlemma_withconstant)
   proof -
@@ -2860,10 +2860,10 @@ apply(rule factoringlemma_withconstant)
               fix b::nat
               fix qs
               assume as: "a \<noteq> b" "set qs \<subseteq> {a, b}"
-              have "T_on_rand' (embedd (rTS [])) (fst (embedd (rTS [])) [a,b] \<bind> (\<lambda>is. return_pmf ([a,b], is))) qs
-                    = T\<^sub>p_on (rTS []) [a, b] qs" by (rule  T_on_embedd[symmetric])
+              have "T_on_rand' (embed (rTS [])) (fst (embed (rTS [])) [a,b] \<bind> (\<lambda>is. return_pmf ([a,b], is))) qs
+                    = T\<^sub>p_on (rTS []) [a, b] qs" by (rule  T_on_embed[symmetric])
               also from as have "\<dots> \<le> 2 * T\<^sub>p_opt [a, b] qs + 2" by (rule TS2) 
-              finally have "T_on_rand' (embedd (rTS [])) (fst (embedd (rTS [])) [a,b] \<bind> (\<lambda>is. return_pmf ([a,b], is))) qs
+              finally have "T_on_rand' (embed (rTS [])) (fst (embed (rTS [])) [a,b] \<bind> (\<lambda>is. return_pmf ([a,b], is))) qs
                     \<le> 2 * T\<^sub>p_opt [a, b] qs + 2"  .
             } note ye=this
 
@@ -2885,9 +2885,9 @@ next
   case goal4 then show ?case sorry (* strange subtype effect here, that i dont understande *)
 qed (simp_all)
 
-thm TS_compet[OF TS_pairwise, unfolded T_on_embedd[symmetric]]
+thm TS_compet[OF TS_pairwise, unfolded T_on_embed[symmetric]]
 
-lemma TS_compet': "pairwise (embedd (rTS [])) \<Longrightarrow> compet_rand (embedd (rTS [])) 2 {init. distinct init}"
+lemma TS_compet': "pairwise (embed (rTS [])) \<Longrightarrow> compet_rand (embed (rTS [])) 2 {init. distinct init}"
 unfolding compet_def
 using TS_compet sorry
  (* TODO: integrate qs filtering into definition or prove a lemma s.th. additional 

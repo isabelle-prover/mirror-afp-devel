@@ -26,12 +26,12 @@ definition COMB_step :: "(nat state, CombState, nat, answer) alg_on_step" where
             
 definition "COMB h = (COMB_init h, COMB_step)"
 
-term "config'' (embedd (rTS h)) qs init i"
+term "config'' (embed (rTS h)) qs init i"
 term "config'' BIT qs init i"
 lemma configCOMB: "i \<le> length qs \<Longrightarrow> config'' (COMB h) qs init i = do {
                     (b::bool) \<leftarrow> (bernoulli_pmf 0.8); 
                     (b1,b2) \<leftarrow>  (config'' BIT qs init i);
-                    (t1,t2) \<leftarrow>  (config'' (embedd (rTS h)) qs init i);
+                    (t1,t2) \<leftarrow>  (config'' (embed (rTS h)) qs init i);
                     return_pmf (if b then  (b1, CBit b2) else (t1, CTs t2))
                     }" (is "?Prem \<Longrightarrow> ?LHS = ?RHS i")
 proof (induct i)
@@ -59,10 +59,10 @@ qed
 
 
  
-lemma T_COMB_split: "T\<^sub>p_on_rand (COMB h) init qs = 0.2 * T\<^sub>p_on_rand (embedd (rTS h))  init qs + 0.8 * T\<^sub>p_on_rand BIT  init qs"
+lemma T_COMB_split: "T\<^sub>p_on_rand (COMB h) init qs = 0.2 * T\<^sub>p_on_rand (embed (rTS h))  init qs + 0.8 * T\<^sub>p_on_rand BIT  init qs"
 proof -
-  have A: "0.2 * T_on_rand (embedd (rTS h))  init qs + 0.8 * T_on_rand BIT  init qs
-      = setsum (%i. 0.2 * T\<^sub>p_on_rand_n (embedd (rTS h)) init qs i + 0.8 * T\<^sub>p_on_rand_n BIT  init qs i) {..<length qs}"
+  have A: "0.2 * T_on_rand (embed (rTS h))  init qs + 0.8 * T_on_rand BIT  init qs
+      = setsum (%i. 0.2 * T\<^sub>p_on_rand_n (embed (rTS h)) init qs i + 0.8 * T\<^sub>p_on_rand_n BIT  init qs i) {..<length qs}"
         unfolding T_on_rand_as_sum
           by(simp only: setsum_right_distrib setsum.distrib) 
   show ?thesis unfolding A unfolding T_on_rand_as_sum
@@ -99,7 +99,7 @@ definition "COMB_initial init h x y = do {
 lemma config2COMB: "i \<le> length qs \<Longrightarrow> config2 (COMB h) qs (COMB_state h x y BI) i = do {
                     (b::bool) \<leftarrow> (bernoulli_pmf 0.8); 
                     (b1,b2) \<leftarrow>  (config2 BIT qs BI i);
-                    (t1,t2) \<leftarrow>  config2 (embedd (rTS h)) qs (return_pmf ([x, y], h)) i;
+                    (t1,t2) \<leftarrow>  config2 (embed (rTS h)) qs (return_pmf ([x, y], h)) i;
                     return_pmf (if b then  (b1, CBit b2) else (t1, CTs t2))
                     }" (is "?Prem \<Longrightarrow> ?LHS = ?RHS i")
 proof (induct i)
@@ -123,7 +123,7 @@ qed
 lemma configCOMB2asd: "config'_rand (COMB h) (COMB_state h x y i) qs  = do {
                     (b::bool) \<leftarrow> (bernoulli_pmf 0.8); 
                     (b1,b2) \<leftarrow>  (config'_rand BIT i qs);
-                    (t1,t2) \<leftarrow>  (config'_rand (embedd (rTS h)) (return_pmf ([x,y],h)) qs);
+                    (t1,t2) \<leftarrow>  (config'_rand (embed (rTS h)) (return_pmf ([x,y],h)) qs);
                     return_pmf (if b then  (b1, CBit b2) else (t1, CTs t2))
                     }" (is "?LHS = ?RHS i")
 proof (induct qs rule: rev_induct)
@@ -146,12 +146,12 @@ qed
 
  
 lemma T2_COMB_split: "T\<^sub>p_on2 (COMB h) qs (COMB_state h x y i)
-           = 0.2 * T\<^sub>p_on2 (embedd (rTS h)) qs (return_pmf ([x,y],h))
+           = 0.2 * T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h))
             + 0.8 * T\<^sub>p_on2 BIT qs i"
 proof -
-  have A: "0.2 * T\<^sub>p_on2 (embedd (rTS h)) qs (return_pmf ([x,y],h))
+  have A: "0.2 * T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h))
             + 0.8 * T\<^sub>p_on2 BIT qs i 
-      = setsum (\<lambda>j. 0.2 * T_on_rand'_n (embedd (rTS h)) (return_pmf ([x, y], h)) qs j
+      = setsum (\<lambda>j. 0.2 * T_on_rand'_n (embed (rTS h)) (return_pmf ([x, y], h)) qs j
             + 0.8 * T_on_rand'_n BIT i qs j) {..<length qs}"
         unfolding  T\<^sub>p_on2_def T_on_n2_def
           by(simp only: setsum_right_distrib setsum.distrib) 
@@ -173,8 +173,8 @@ qed
 definition "pre_inv_COMB init x y h = (h=[] \<or> (\<exists>hs. h = [x,x]@hs))"
 definition "inv_COMB init qs x y h = (inv_BIT init qs x y \<and> inv_TS qs x y h)"
 
-lemma TS_help: "T\<^sub>p_on_rand (embedd (rTS h)) [x,y] qs
-      = T\<^sub>p_on2 (embedd (rTS h)) qs (return_pmf ([x,y],h))" 
+lemma TS_help: "T\<^sub>p_on_rand (embed (rTS h)) [x,y] qs
+      = T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h))" 
     unfolding T\<^sub>p_on2_def T_on_n2_def T_on_rand_as_sum rTS_def by(simp add: bind_return_pmf)
 
 thm T_COMB_split
@@ -191,13 +191,13 @@ proof (rule LxxI[where P="(\<lambda>x y qs.  T\<^sub>p_on2 (COMB h) qs (COMB_sta
   from ts_d[OF goal1(1,2) h goal1(5)]
   have "real (T_TS [x, y] h qs) = 0"
       and TS_inv: "inv_TS qs x y h"  by auto
-  then have "T\<^sub>p_on_rand (embedd (rTS h)) [x,y] qs = 0" using T_TS_T_on T_on_embedd by metis
-  then have TS: "T\<^sub>p_on2 (embedd (rTS h)) qs (return_pmf ([x,y],h)) = 0" using TS_help by metis
+  then have "T\<^sub>p_on_rand (embed (rTS h)) [x,y] qs = 0" using T_TS_T_on T_on_embed by metis
+  then have TS: "T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h)) = 0" using TS_help by metis
   have BIT: "T\<^sub>p_on2 BIT qs (type0 init x y)  = 0" apply(rule BIT_d) using goal1 by auto
   have BIT_inv: "inv_BIT init qs x y" unfolding inv_BIT_def apply(rule BIT_d_config) using goal1 by auto
 
   have "T\<^sub>p_on2 (COMB h) qs (COMB_state h x y (type0 init x y)) 
-      = 0.2 * T\<^sub>p_on2 (embedd (rTS h)) qs (return_pmf ([x,y],h))
+      = 0.2 * T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h))
             + 0.8 * T\<^sub>p_on2 BIT qs (type0 init x y)"
     by(fact T2_COMB_split) 
   also have "\<dots> = 0" using TS BIT by simp
@@ -235,9 +235,9 @@ next
   have  TS_3: "T_TS [x, y] (rev u @ h) v = (length v - 2)"
          and  inv1: "s_TS [x,y] (rev u @ h) v (length v) = [y,x]"
          and  inv2: "(\<exists>hs. (rev v @ (rev u @ h)) = [y,y]@hs)" by auto
-  have "T\<^sub>p_on_rand (embedd (rTS h))  [x,y] qs = (length v - 2)"
-    unfolding  qsuv using T_on_embedd T_TS_T_on TS_1 TS_3 by metis
-  then have TS: "T\<^sub>p_on2 (embedd (rTS h)) qs (return_pmf ([x,y],h)) = (length v - 2)" using TS_help by metis
+  have "T\<^sub>p_on_rand (embed (rTS h))  [x,y] qs = (length v - 2)"
+    unfolding  qsuv using T_on_embed T_TS_T_on TS_1 TS_3 by metis
+  then have TS: "T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h)) = (length v - 2)" using TS_help by metis
 
   have splitdet1: "TSdet [x,y] h (u @ v) (length (u @ v))
       = TSdet (fst (TSdet [x,y] h u (length u))) (rev u @ h) v (length v)" 
@@ -284,7 +284,7 @@ next
 
   (* calculation *)
   have "T\<^sub>p_on2 (COMB h) qs (COMB_state h x y (type0 init x y)) 
-      = 0.2 * T\<^sub>p_on2 (embedd (rTS h)) qs (return_pmf ([x,y],h))
+      = 0.2 * T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h))
             + 0.8 * T\<^sub>p_on2 BIT qs (type0 init x y)"
     by(fact T2_COMB_split)
   also have "\<dots> = 0.2 * (length v - 2) + 0.8 * (0.75 * length v - 0.5)" using TS BIT by simp
@@ -339,9 +339,9 @@ next
   have  TS_3: "T_TS [x, y] (rev u @ h) v = (length v - 2)"
          and  inv1: "s_TS [x,y] (rev u @ h) v (length v) = [x,y]"
          and  inv2: "(\<exists>hs. (rev v @ (rev u @ h)) = [x,x]@hs)" by auto
-  have "T\<^sub>p_on_rand (embedd (rTS h))  [x,y] qs = (length v - 2)"
-    unfolding  qsuv using T_TS_T_on TS_1 TS_3 T_on_embedd by metis
-  then have TS: "T\<^sub>p_on2 (embedd (rTS h)) qs (return_pmf ([x,y],h)) = (length v - 2)" using TS_help by metis
+  have "T\<^sub>p_on_rand (embed (rTS h))  [x,y] qs = (length v - 2)"
+    unfolding  qsuv using T_TS_T_on TS_1 TS_3 T_on_embed by metis
+  then have TS: "T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h)) = (length v - 2)" using TS_help by metis
 
 
   have splitdet1: "TSdet [x,y] h (u @ v) (length (u @ v))
@@ -391,7 +391,7 @@ next
 
   (* calculation *)  
   have "T\<^sub>p_on2 (COMB h) qs (COMB_state h x y (type0 init x y)) 
-      = 0.2 * T\<^sub>p_on2 (embedd (rTS h)) qs (return_pmf ([x,y],h))
+      = 0.2 * T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h))
             + 0.8 * T\<^sub>p_on2 BIT qs (type0 init x y)"
     by(fact T2_COMB_split)
   also have "\<dots> = 0.2 * (length v - 2) + 0.8 * (0.75 * length v - 0.5)" using TS BIT by simp
@@ -421,9 +421,9 @@ next
   from ts_a[OF goal4(2,5) h]
   have "real (T_TS [x, y] h qs) = 2" 
       and TS_inv: "inv_TS qs x y h" by auto
-  then have "T\<^sub>p_on_rand (embedd (rTS h)) [x,y] qs = 2"
-      using T_TS_T_on T_on_embedd by metis
-  then have TS: "T\<^sub>p_on2 (embedd (rTS h)) qs (return_pmf ([x,y],h)) = 2" using TS_help by metis
+  then have "T\<^sub>p_on_rand (embed (rTS h)) [x,y] qs = 2"
+      using T_TS_T_on T_on_embed by metis
+  then have TS: "T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h)) = 2" using TS_help by metis
 
   have BIT: "T\<^sub>p_on2 BIT qs (type0 init x y) = 1.5" apply(rule BIT_a) using goal4 by auto
   have BIT_inv: "inv_BIT init qs x y" unfolding inv_BIT_def other_def
@@ -433,7 +433,7 @@ next
   have OPT: "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = 1" using OPT2_A[OF goal4(2,5)] by auto
 
   have "T\<^sub>p_on2 (COMB h) qs (COMB_state h x y (type0 init x y)) 
-      = 0.2 * T\<^sub>p_on2 (embedd (rTS h)) qs (return_pmf ([x,y],h))
+      = 0.2 * T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h))
             + 0.8 * T\<^sub>p_on2 BIT qs (type0 init x y)"
     by(fact T2_COMB_split)also have "\<dots> = 1.6" using TS BIT by simp
   also have "\<dots> \<le> 1.6 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])" using OPT by simp
@@ -493,7 +493,7 @@ lemma config2_COMB_init: "config2 (COMB h) xs (COMB_initial h x y) i
       = do { 
               (b::bool) \<leftarrow> (bernoulli_pmf 0.8);
               (b1,b2) \<leftarrow>  (config2 BIT xs (type0 init x y) i);
-              (t1,t2) \<leftarrow>  (config2 (embedd (rTS h)) xs (return_pmf (h,[x,y])) i);
+              (t1,t2) \<leftarrow>  (config2 (embed (rTS h)) xs (return_pmf (h,[x,y])) i);
               return_pmf (if b then  (CBit b1, b2) else (CTs t1, t2))
             }"
 unfolding COMB_def
@@ -590,7 +590,7 @@ theorem COMB_OPT2: "(x::nat) \<noteq> y
  
      have "s_TS [x, y] h xs (length xs) = [last xs, other (last xs) x y]"
         and invTS_2: "(\<exists>hs. rev xs @ h = [last xs, last xs] @ hs)"  
-        and invTS_config2: "config2 (embedd (rTS h)) xs (return_pmf ([x, y], h)) (length xs)
+        and invTS_config2: "config2 (embed (rTS h)) xs (return_pmf ([x, y], h)) (length xs)
             = return_pmf ([last xs, other (last xs) x y], rev xs@h)"
       proof -
         from invTS obtain x' y' hs where 1: "s_TS [x, y] h xs (length xs) = [x', y']"
@@ -611,11 +611,11 @@ theorem COMB_OPT2: "(x::nat) \<noteq> y
         have sndTS: "snd (TSdet [x,y] h xs (length xs)) = (rev xs)@h"
           apply(subst sndTSdet) by(auto)
  
-        have "config2 (embedd (rTS h)) xs (return_pmf ([x, y], h)) (length xs) 
-              = config'' (embedd (rTS h)) xs [x,y] (length xs)"
+        have "config2 (embed (rTS h)) xs (return_pmf ([x, y], h)) (length xs) 
+              = config'' (embed (rTS h)) xs [x,y] (length xs)"
           unfolding rTS_def config2_def by(simp add: bind_return_pmf)
         also have "\<dots> =  (return_pmf ( TSdet [x,y] h xs (length xs)))"
-             apply(subst config_embedd) by simp
+             apply(subst config_embed) by simp
         also have "\<dots> = return_pmf ([last xs, other (last xs) x y], rev xs@h)"
           using sndTS fstTS[unfolded s_TS_def]  apply(cases " TSdet [x,y] h xs (length xs)")
             by(simp) 
@@ -836,8 +836,8 @@ subsubsection "COMB 1.6-competitive"
 
 
 
-lemma finite_config_TS: "finite (set_pmf (config'' (embedd (rTS h)) qs init n))" (is "finite ?D")
-  apply(subst config_embedd)
+lemma finite_config_TS: "finite (set_pmf (config'' (embed (rTS h)) qs init n))" (is "finite ?D")
+  apply(subst config_embed)
     by(simp)
 
 lemma COMB_has_finite_config_set: assumes [simp]: "distinct init"
