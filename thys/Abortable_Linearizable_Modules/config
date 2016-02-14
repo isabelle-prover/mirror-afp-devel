@@ -2,7 +2,7 @@
 
 # Get email when automated build fails. May be empty.
 # values: "email1 email2 .. emailn"
-NOTIFY="giuliano.losa@epfl.ch nipkow@in.tum.de"
+NOTIFY="giuliano@losa.fr nipkow@in.tum.de"
 
 # Participate in frequent (nightly) build (only for small submissions)
 # values: "yes" "no"
