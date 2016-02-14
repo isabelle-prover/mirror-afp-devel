@@ -305,4 +305,175 @@ qed
 
 
 
+theorem Phase_partitioning_general: 
+  fixes P :: "(nat state * 'is) pmf \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> bool"
+      and \<iota> :: "(nat state,'is) alg_on_init"
+      and \<delta> :: "(nat state,'is,nat,answer) alg_on_step"
+  assumes xny: "(x0::nat) \<noteq> y0" 
+    and cpos: "(c::real)\<ge>0"
+    and initial: "P (map_pmf (%is. ([x0,y0],is)) (\<iota> [x0,y0])) x0 y0 [x0,y0]"
+    and D: "\<And>a b \<sigma> s. \<sigma> \<in> Lxx a b \<Longrightarrow> a\<noteq>b \<Longrightarrow> {a,b}={x0,y0} \<Longrightarrow> P s a b [x0,y0] 
+          \<Longrightarrow> T_on_rand' (\<iota>,\<delta>) s \<sigma> \<le> c * T\<^sub>p [a,b] \<sigma> (OPT2 \<sigma> [a,b])  \<and> P (config'_rand (\<iota>,\<delta>) s \<sigma>) (last \<sigma>) (other (last \<sigma>) x0 y0) [x0,y0]"
+    and "\<And>x y. P s x y s0 \<Longrightarrow> map_pmf fst s = return_pmf [x,y]"
+    and setrs: "set \<sigma> \<subseteq> {x0,y0}"
+  shows "T\<^sub>p_on_rand (\<iota>,\<delta>) [x0,y0] \<sigma>  \<le> c * T\<^sub>p_opt [x0,y0] \<sigma> + c"
+proof -
+  
+ {
+   fix x y s
+ have "x \<noteq> y \<Longrightarrow> P s x y [x0,y0] \<Longrightarrow> set \<sigma> \<subseteq> {x,y} \<Longrightarrow> T_on_rand' (\<iota>,\<delta>) s \<sigma> \<le> c * T\<^sub>p [x,y] \<sigma> (OPT2 \<sigma> [x,y]) + c"
+ proof (induction "length \<sigma>" arbitrary: \<sigma> x y s rule: less_induct)
+  case (less \<sigma>) 
+
+  show ?case
+  proof (cases "\<exists>xs ys. \<sigma>=xs@ys \<and> xs \<in> Lxx x y")
+    case True 
+
+    then obtain xs ys where qs: "\<sigma>=xs@ys" and xsLxx: "xs \<in> Lxx x y" by auto
+
+    with Lxx1 have len: "length ys < length \<sigma>" by fastforce
+    from qs(1) less(4) have ysxy: "set ys \<subseteq> {x,y}" by auto
+
+
+    have xsset: "set xs \<subseteq> {x, y}" using less(4) qs by auto
+    from xsLxx Lxx1 have lxsgt1: "length xs \<ge> 2" by auto
+    then have xs_not_Nil: "xs \<noteq> []" by auto
+
+    from D[OF xsLxx less(2) _ less(3) ]
+      have D1: "T_on_rand' (\<iota>,\<delta>) s xs \<le> c * T\<^sub>p [x, y] xs (OPT2 xs [x, y])" 
+         and invCOMB: "P (config'_rand (\<iota>,\<delta>) s xs) (last xs) (other (last xs) x0 y0) [x0, y0]" sorry
+ 
+
+    from xsLxx Lxx_ends_in_two_equal obtain pref e where "xs = pref @ [e,e]" by metis
+    then have endswithsame: "xs = pref @ [last xs, last xs]" by auto 
+
+    let ?c' = "[last xs, other (last xs) x y]" 
+
+    have setys: "set ys \<subseteq> {x,y}" using qs less by auto 
+    have setxs: "set xs \<subseteq> {x,y}" using qs less by auto 
+    have lxs: "last xs \<in> set xs" using xs_not_Nil by auto
+    from lxs setxs have lxsxy: "last xs \<in> {x,y}" by auto 
+     from lxs setxs have otherxy: "other (last xs) x y \<in> {x,y}" by (simp add: other_def)
+    from less(2) have other_diff: "last xs \<noteq> other (last xs) x y" by(simp add: other_def)
+ 
+    have aha: "other (last xs) x0 y0 = other (last xs) x y"
+      unfolding other_def using lxsxy sorry
+
+    have nextstate: "{[last xs, other (last xs) x y], [other (last xs) x y, last xs]}
+            = { [x,y],[y,x]}" using lxsxy otherxy other_diff by fastforce
+    have setys': "set ys \<subseteq> {last xs, other (last xs) x y}"
+            using setys lxsxy otherxy other_diff by fastforce
+   
+    have c: "T_on_rand' (\<iota>,\<delta>) (config'_rand (\<iota>,\<delta>) s xs) ys
+        \<le> c * T\<^sub>p ?c' ys (OPT2 ys ?c') + c"       
+            apply(rule less(1))
+              apply(fact len)
+              apply(fact other_diff) 
+              apply(fact invCOMB[unfolded aha]) 
+              by(fact setys') 
+ 
+
+    have well: "T\<^sub>p [x, y] xs (OPT2 xs [x, y]) + T\<^sub>p ?c' ys (OPT2 ys ?c')
+        = T\<^sub>p [x, y] (xs @ ys) (OPT2 (xs @ ys) [x, y])"
+          apply(rule OPTauseinander[where pref=pref])
+            apply(fact)+
+            using lxsxy other_diff otherxy apply(fastforce)
+            apply(simp)
+            using endswithsame by simp  
+      
+    have E0: "T_on_rand' (\<iota>,\<delta>) s \<sigma>
+          =  T_on_rand' (\<iota>,\<delta>) s (xs@ys)" using qs by auto
+          thm T_on_rand'_append
+     also have E1: "\<dots> = T_on_rand' (\<iota>,\<delta>) s xs + T_on_rand' (\<iota>,\<delta>) (config'_rand (\<iota>,\<delta>) s xs) ys"
+              by (rule T_on_rand'_append)
+    also have E2: "\<dots> \<le> T_on_rand' (\<iota>,\<delta>) s xs + c * T\<^sub>p ?c' ys (OPT2 ys ?c') + c"
+        using c by simp
+    also have E3: "\<dots> \<le> c * T\<^sub>p [x, y] xs (OPT2 xs [x, y]) + c * T\<^sub>p ?c' ys (OPT2 ys ?c') + c"
+        using D1 by simp        
+    also have "\<dots> = c * (T\<^sub>p [x,y] xs (OPT2 xs [x,y]) + T\<^sub>p ?c' ys (OPT2 ys ?c')) + c"
+        using cpos  sorry
+    also have  "\<dots> = c * (T\<^sub>p [x,y] (xs@ys) (OPT2 (xs@ys) [x,y])) + c"
+      using well by auto 
+    also have E4: "\<dots> = c * (T\<^sub>p [x,y] \<sigma> (OPT2 \<sigma> [x,y])) + c"
+        using qs by auto
+    finally show ?thesis .
+  next
+    case False
+    note f1=this
+    from Lxx_othercase[OF less(4) this, unfolded hideit_def] have
+        nodouble: "\<sigma> = [] \<or> \<sigma> \<in> lang (nodouble x y)" by  auto
+    show ?thesis
+    proof (cases "\<sigma> = []")
+      case True
+      then show ?thesis using cpos  by simp
+    next
+      case False
+      (* with padding *)
+      from False nodouble have qsnodouble: "\<sigma> \<in> lang (nodouble x y)" by auto
+      let ?padded = "pad \<sigma> x y"
+      from False pad_adds2[of \<sigma> x y] less(4) obtain addum where ui: "pad \<sigma> x y = \<sigma> @ [last \<sigma>]" by auto
+      from nodouble_padded[OF False qsnodouble] have pLxx: "?padded \<in> Lxx x y" .
+
+      have E0: "T_on_rand' (\<iota>,\<delta>) s \<sigma> \<le> T_on_rand' (\<iota>,\<delta>) s ?padded"
+      proof -
+        have "T_on_rand' (\<iota>,\<delta>) s \<sigma> = setsum (T_on_rand'_n (\<iota>,\<delta>) s \<sigma>) {..<length \<sigma>}"
+          by(rule T_on_rand'_as_sum)
+        also have "\<dots>
+             = setsum (T_on_rand'_n (\<iota>,\<delta>) s (\<sigma> @ [last \<sigma>])) {..<length \<sigma>}"
+          proof(rule setsum.cong)
+            case (goal2 t)
+            then have "t < length \<sigma>" by auto 
+            then show ?case by(simp add: nth_append)
+          qed simp
+        also have "\<dots> \<le> T_on_rand' (\<iota>,\<delta>) s ?padded"
+          unfolding ui
+            apply(subst (2) T_on_rand'_as_sum) by(simp add: T_on_rand'_nn del: T_on_rand'.simps)  
+        finally show ?thesis by auto
+      qed  
+ 
+      also have E1: "\<dots> \<le> c * T\<^sub>p [x,y] ?padded (OPT2 ?padded [x,y])"
+        using D[OF pLxx less(2) _ less(3) ] sorry
+      also have E2: "\<dots> \<le> c * (T\<^sub>p [x,y] \<sigma> (OPT2 \<sigma> [x,y]) + 1)"
+      proof -
+        from False less(2) obtain \<sigma>' x' y' where qs': "\<sigma> = \<sigma>' @ [x']" and x': "x' = last \<sigma>" "y'\<noteq>x'" "y' \<in>{x,y}" 
+            by (metis append_butlast_last_id insert_iff)
+        have tla: "last \<sigma> \<in> {x,y}" using less(4) False last_in_set by blast
+        with x' have grgr: "{x,y} = {x',y'}" by auto
+        then have "(x = x' \<and> y = y') \<or> (x = y' \<and> y = x')" using less(2) by auto
+        then have tts: "[x, y] \<in> {[x', y'], [y', x']}" by blast
+        
+        from qs' ui have pd: "?padded = \<sigma>' @ [x', x']" by auto 
+
+        have "T\<^sub>p [x,y] (?padded) (OPT2 (?padded) [x,y])
+              = T\<^sub>p [x,y] (\<sigma>' @ [x', x']) (OPT2 (\<sigma>' @ [x', x']) [x,y])"
+                unfolding pd by simp
+        also have gr: "\<dots>
+            \<le> T\<^sub>p [x,y] (\<sigma>' @ [x']) (OPT2 (\<sigma>' @ [x']) [x,y]) + 1"
+              apply(rule OPT2_padded[where x="x'" and y="y'"])
+                apply(fact)
+                using grgr qs' less(4) by auto
+        also have "\<dots> \<le> T\<^sub>p [x,y] (\<sigma>) (OPT2 (\<sigma>) [x,y]) + 1" 
+              unfolding qs' by simp
+        finally show ?thesis using cpos by (meson mult_left_mono of_nat_le_iff)
+      qed
+      also have "\<dots> =  c * T\<^sub>p [x,y] \<sigma> (OPT2 \<sigma> [x,y]) + c" by (metis (no_types, lifting) mult.commute of_nat_1 of_nat_add semiring_normalization_rules(2))
+      finally show ?thesis .  
+    qed
+  qed 
+qed
+} note allg=this  
+
+ thm initial
+ have "T_on_rand (\<iota>, \<delta>) [x0,y0] \<sigma> \<le> c * real (T\<^sub>p [x0, y0] \<sigma> (OPT2 \<sigma> [x0, y0])) + c"  
+  apply(rule allg)
+    apply(fact)
+    using initial apply(simp add: map_pmf_def)
+    by(fact)
+  also have "\<dots> = c * T\<^sub>p_opt [x0, y0] \<sigma> + c"
+    using OPT2_is_opt[OF assms(6,1)] by(simp)
+  finally show ?thesis .
+qed
+
+
+
 end

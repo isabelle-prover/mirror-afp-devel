@@ -2468,13 +2468,6 @@ proof(induct n)
 qed (simp add: s_TS_def) 
 
 
-(* okay, das macht jetzt keinen sinn, ich glaube das wird alles viel einfacher wenn
-  ich erst die einbettung von det in random gemacht habe,
-ich setzte erstmal fort mit dem ganzen für BIT 
-
-scheiß egal, ich machs trotzdem erstmal! 
-
-*) 
 
 
 lemma TS_pairwise': "qs \<in> {xs. set xs \<subseteq> set init} \<Longrightarrow>
@@ -2892,7 +2885,7 @@ next
   case goal4 then show ?case sorry (* strange subtype effect here, that i dont understande *)
 qed (simp_all)
 
-
+thm TS_compet[OF TS_pairwise]
 
 lemma TS_compet': "pairwise (embedd (rTS [])) \<Longrightarrow> compet_rand (embedd (rTS [])) 2 {init. distinct init}"
 unfolding compet_def

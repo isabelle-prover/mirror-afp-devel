@@ -113,7 +113,7 @@ apply(induct rs rule: rev_induct)
   by(simp_all add: T_on_rand'_append  nth_append)
 
 
-lemma T_on_rand'_nn: "T_on_rand' (I,S) s qs \<ge> 0"
+lemma T_on_rand'_nn: "T_on_rand' A s qs \<ge> 0"
 apply(induct qs arbitrary: s) 
   apply(simp_all add: bind_return_pmf)
   apply(rule add_nonneg_nonneg)
