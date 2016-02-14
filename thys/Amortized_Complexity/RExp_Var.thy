@@ -395,7 +395,7 @@ fun seq :: "'a rexp list \<Rightarrow> 'a rexp" where
 "seq (r#rs) = Times r (seq rs)"
 
 
-definition question where [simp]: "question x = Plus x One" 
+abbreviation question where "question x == Plus x One" 
 
 definition "L_4cases (x::nat) y=
     verund [seq[question (Atom x),(Atom y), (Atom y)],
@@ -585,7 +585,7 @@ proof -
 qed
 
 
-notation (latex output)  Plus  ("_ +_" [14,14] 14)
+notation (latex output)  Plus  ("_+_" [14,14] 14)
 notation (latex output)  Times ("__" [15,15] 15)
 notation (latex output)  Star  ("_\<^raw:$^*$>" [16] 16)
 notation (latex output)  question  ("_\<^raw:$^?$>" [17] 17)

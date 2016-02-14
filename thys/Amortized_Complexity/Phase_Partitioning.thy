@@ -157,7 +157,7 @@ lemma LxxI: "(qs \<in> lang (seq [Atom x, Atom x]) \<Longrightarrow> P x y qs)
     \<Longrightarrow> (qs \<in> lang (seq [Plus (Atom x) rexp.One, Atom y, Atom x, Star (Times (Atom y) (Atom x)), Atom x]) \<Longrightarrow> P x y qs)
     \<Longrightarrow> (qs \<in> lang (seq [Plus (Atom x) rexp.One, Atom y, Atom y]) \<Longrightarrow> P x y qs)
     \<Longrightarrow> (qs \<in> Lxx x y \<Longrightarrow> P x y qs)"
-unfolding Lxx_def lastxx_is_4cases[symmetric] L_4cases_def apply(simp only: question_def verund.simps lang.simps)
+unfolding Lxx_def lastxx_is_4cases[symmetric] L_4cases_def apply(simp only: verund.simps lang.simps)
   by blast
 
 
