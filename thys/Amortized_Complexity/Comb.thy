@@ -797,39 +797,63 @@ qed
 subsubsection "COMB pairwise"
 
 
-
+lemma config_rand_COMB: "config_rand (COMB h) init qs = do {
+                    (b::bool) \<leftarrow> (bernoulli_pmf 0.8); 
+                    (b1,b2) \<leftarrow>  (config_rand BIT init qs);
+                    (t1,t2) \<leftarrow>  (config_rand (embed (rTS h)) init qs);
+                    return_pmf (if b then  (b1, CBit b2) else (t1, CTs t2))
+                    }" (is "?LHS = ?RHS")
+proof (induct qs rule: rev_induct)
+  case Nil
+  show ?case
+  apply(simp add: BIT_init_def COMB_def rTS_def map_pmf_def bind_return_pmf bind_assoc_pmf )
+  apply(rule bind_pmf_cong)
+    apply(simp) 
+    apply(simp only: set_pmf_bernoulli)
+      apply(case_tac x)
+        by(simp_all) 
+next
+  case (snoc q qs) 
+  show ?case apply(simp add: take_Suc_conv_app_nth)
+    apply(subst config'_rand_append)
+    apply(subst snoc)
+      apply(simp)
+      apply(simp add: bind_return_pmf bind_assoc_pmf split_def config'_rand_append)
+        apply(rule bind_pmf_cong)
+          apply(simp) 
+          apply(simp only: set_pmf_bernoulli)
+            apply(case_tac x)
+               by(simp_all add: COMB_def COMB_step_def rTS_def map_pmf_def split_def bind_return_pmf bind_assoc_pmf)
+qed
 
 lemma COMB_pairwise: "pairwise (COMB [])"
-proof(rule pairwise_property_lemma') 
+proof(rule pairwise_property_lemma) 
   case goal1
-
-  thm TS_pairwise'[OF goal1(1)] goal1
-  have 1: "nrofnextxy {x, y} qs n < length (Lxy qs {x, y})"
-      apply(rule down_in_bounds)
-        by fact
-  from goal1(4) have "n < Lastxy qs {x, y}" by simp
-  also have "\<dots> \<le> length qs" by (rule Lastxy_length)
-  finally have "n<length qs" .
-  then have e: "n\<le>length qs" by simp
-  show "Pbefore_in x y (COMB []) qs init n 
-        = Pbefore_in x y (COMB []) (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs n) "
+  then have qsininit: "set qs \<subseteq> set init" by simp
+  
+  show "Pbefore_in x y (COMB []) qs init 
+        = Pbefore_in x y (COMB []) (Lxy qs {x, y}) (Lxy init {x, y})"
         unfolding Pbefore_in_def
-        apply(subst configCOMB) 
-          apply(fact e)
-        apply(subst configCOMB) 
-          using 1 apply(simp)
+        apply(subst config_rand_COMB)  
+        apply(subst config_rand_COMB)  
         apply(simp only: map_pmf_def  bind_assoc_pmf)
         apply(rule bind_pmf_cong)
           apply(simp)
           apply(simp only: set_pmf_bernoulli)
           apply(case_tac xa)
             apply(simp add: split_def) 
-              using BIT_pairwise'[OF goal1, unfolded Pbefore_in_def map_pmf_def]
+              using BIT_pairwise'[OF qsininit goal1(2,3), unfolded Pbefore_in_def map_pmf_def]
               apply(simp add: bind_return_pmf bind_assoc_pmf)
             apply(simp add: split_def) 
               using TS_pairwise'[OF goal1, unfolded Pbefore_in_def map_pmf_def]
               by(simp add: bind_return_pmf bind_assoc_pmf)
-qed
+next
+  case goal2
+  show ?case
+    apply(simp add: COMB_def COMB_step_def split_def)
+    apply(case_tac "snd xa")
+      by(simp_all add: BIT_step_def TS_step_d_def)
+qed 
           
 
 subsubsection "COMB 1.6-competitive"
