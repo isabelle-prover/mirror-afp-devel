@@ -250,6 +250,16 @@ definition ALGxy where
   "ALGxy A qs init x y = (\<Sum>i\<in>{i. i<length qs \<and> (qs!i \<in> {y,x})}. ALG' A qs init i y + ALG' A qs init i x)"
 
 
+
+lemma ALGxy_append: "ALGxy A (rs@[r]) init x y =
+      ALGxy A rs init x y + (if (r \<in> {y,x}) then ALG' A (rs@[r]) init (length (rs@[r])) y + ALG' A (rs@[r]) init (length (rs@[r])) x else 0 )" 
+proof -
+    have "ALGxy A (rs@[r]) init x y = (\<Sum>i\<in>{..<Suc (length rs)} \<inter> {i. (rs @ [r]) ! i \<in> {y, x}}.
+       ALG' A (rs @ [r]) init i y +
+       ALG' A (rs @ [r]) init i x)"sorry
+    show ?thesis sorry
+qed
+
 lemma ALGxy_wholerange: "ALGxy A qs init x y
     = (\<Sum>i<(length qs). (if qs ! i \<in> {y, x}
           then ALG' A qs init i y + ALG' A qs init i x
@@ -635,6 +645,7 @@ definition pairwise where
   "pairwise A = (\<forall>init. \<forall>qs\<in>{xs. set xs \<subseteq> set init}. \<forall>(x::('a::linorder),y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x,y}) = ALGxy A qs init x y)"
  
 definition "Pbefore_in x y A qs init n = map_pmf (\<lambda>p. x < y in fst p) (config'' A qs init n)"
+definition "Pbefore_in' x y A qs init = map_pmf (\<lambda>p. x < y in fst p) (config_rand A init qs)"
 
 fun posxy' :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a set \<Rightarrow> nat" 
   where "posxy' n [] S = 0"
@@ -881,6 +892,43 @@ definition "Lastxy qs S = (1::nat)"
 lemma Lastxy_length: "Lastxy qs {x, y} \<le> length qs" sorry
 
 lemma down_in_bounds: "n < Lastxy qs {x, y} \<Longrightarrow> nrofnextxy {x, y} qs n < length (Lxy qs {x,y})" sorry
+
+lemma pairwise_property_lemma':
+  assumes  
+"(\<And>init qs. qs \<in> {xs. set xs \<subseteq> set init}
+    \<Longrightarrow> (\<And>n x y. (x,y)\<in> {(x,y). x \<in> set init \<and> y\<in>set init \<and> x\<noteq>y} 
+                \<Longrightarrow> x \<noteq> y
+                \<Longrightarrow> n < Lastxy qs {x,y} (* das kann man relaxen auf n \<le> letzer index auf dem ein x,y steht *)
+                \<Longrightarrow> Pbefore_in' x y A qs init = Pbefore_in' x y A (Lxy qs {x,y}) (Lxy init {x,y})
+        )
+ )  
+ "
+shows "pairwise A"
+unfolding pairwise_def
+proof clarify
+  case (goal1 init rs x y)
+
+  show ?case
+    proof(induct rs rule: rev_induct)
+      case (snoc r rs)
+      show ?case (is "?L (rs @ [r]) = ?R (rs @ [r])")
+      proof(cases "r\<in>{x,y}")
+        case True
+        let ?expr = "E (Partial_Cost_Model.config'_rand A
+        (fst A (Lxy init {x, y}) \<bind>
+         (\<lambda>is. return_pmf (Lxy init {x, y}, is)))
+        (Lxy rs {x, y}) \<bind>
+       (\<lambda>s. snd A s r \<bind>
+            (\<lambda>(a, is').
+                return_pmf
+                 (real (t\<^sub>p (fst s) r a)))))"
+        from True have "?L (rs @ [r]) = ?L rs + ?expr"
+          by(simp add: Lxy_snoc T_on_rand'_append)
+        also have "\<dots> = ?L rs + f" sorry
+        also have "\<dots> = ?R rs + f" by(simp add: snoc)
+        also from True have "\<dots> = ?R (rs@[r])" apply(simp add: ALGxy_def)
+    qed (simp add: ALGxy_def)
+
 
 
 lemma pairwise_property_lemma': 
