@@ -1387,7 +1387,7 @@ end
 subsubsection \<open>Resultant as Nonzero Polynomial Expression\<close>
 
 lemma resultant_zero:
-  fixes p q :: "'a :: idom poly"
+  fixes p q :: "'a :: comm_ring_1 poly"
   assumes deg: "degree p > 0 \<or> degree q > 0"
       and xp: "poly p x = 0" and xq: "poly q x = 0"
   shows "resultant p q = 0"
@@ -1413,7 +1413,7 @@ proof -
 qed
 
 lemma poly_resultant_zero:
-  fixes p q :: "'a :: idom poly poly"
+  fixes p q :: "'a :: comm_ring_1 poly poly"
   assumes degp: "degree p > 0" and degq: "degree q > 0"
       and y: "poly2 p x y = 0 \<and> poly2 q x y = 0"
   shows "poly (resultant p q) x = 0"
