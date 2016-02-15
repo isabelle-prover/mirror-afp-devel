@@ -2473,9 +2473,8 @@ qed (simp add: s_TS_def)
 lemma TS_pairwise': "qs \<in> {xs. set xs \<subseteq> set init} \<Longrightarrow>
        (x, y) \<in> {(x, y). x \<in> set init \<and> y \<in> set init \<and> x \<noteq> y} \<Longrightarrow>
        x \<noteq> y \<Longrightarrow>
-       n < Lastxy qs {x, y} \<Longrightarrow>
-       Pbefore_in x y (Partial_Cost_Model.embed (rTS [])) qs init n =
-       Pbefore_in x y (Partial_Cost_Model.embed (rTS [])) (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs n)"
+       Pbefore_in x y (Partial_Cost_Model.embed (rTS [])) qs init =
+       Pbefore_in x y (Partial_Cost_Model.embed (rTS [])) (Lxy qs {x, y}) (Lxy init {x, y})"
 proof -
   case goal1 
   then have xyininit: "{x, y} \<subseteq> set init" 
@@ -2484,8 +2483,7 @@ proof -
   from goal1 have xny: "x\<noteq>y" by simp
 
   have initpos: "Lxy init {x,y} \<in> {[x,y],[y,x]}" sorry
-
-  let ?q = "Lxy qs {x, y}!n"
+ 
 
   have lq_s: "set (Lxy qs {x, y}) \<subseteq> {x,y}" by (simp add: Lxy_set_filter)
  
@@ -2515,8 +2513,8 @@ qed
 
 
 theorem TS_pairwise: "pairwise (embed (rTS []))"
-apply(rule pairwise_property_lemma')
-  apply(rule TS_pairwise') by simp_all
+apply(rule pairwise_property_lemma)
+  apply(rule TS_pairwise') by (simp_all add: rTS_def TS_step_d_def)
 
 (*
     proof (cases "n>0")

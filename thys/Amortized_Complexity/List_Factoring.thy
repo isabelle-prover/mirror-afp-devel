@@ -197,7 +197,7 @@ definition ALGxy where
 
 
 lemma ALGxy_append: "ALGxy A (rs@[r]) init x y =
-      ALGxy A rs init x y + (if (r \<in> {y,x}) then ALG' A (rs@[r]) init (length (rs@[r])) y + ALG' A (rs@[r]) init (length (rs@[r])) x else 0 )" 
+      ALGxy A rs init x y + (if (r \<in> {y,x}) then ALG' A (rs@[r]) init (length rs) y + ALG' A (rs@[r]) init (length rs) x else 0 )" 
 proof -
     have "ALGxy A (rs@[r]) init x y = (\<Sum>i\<in>{..<Suc (length rs)} \<inter> {i. (rs @ [r]) ! i \<in> {y, x}}.
        ALG' A (rs @ [r]) init i y +
@@ -500,208 +500,9 @@ unfolding ALGxy_def ALG'_def sorry
 
 definition pairwise where
   "pairwise A = (\<forall>init. \<forall>qs\<in>{xs. set xs \<subseteq> set init}. \<forall>(x::('a::linorder),y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x,y}) = ALGxy A qs init x y)"
- 
-definition "Pbefore_in x y A qs init n = map_pmf (\<lambda>p. x < y in fst p) (config'' A qs init n)"
-definition "Pbefore_in' x y A qs init = map_pmf (\<lambda>p. x < y in fst p) (config_rand A init qs)"
-
-fun posxy' :: "nat \<Rightarrow> 'a list \<Rightarrow> 'a set \<Rightarrow> nat" 
-  where "posxy' n [] S = 0"
-      | "posxy' (Suc n) (x#xs) S = (if x\<in>S then 1+posxy' n xs S else 1+posxy' (Suc n) xs S)"
-      | "posxy' 0 (x#xs) S = (if x\<in>S then 0 else 1+posxy' 0 xs S)"
-
-lemma "posxy' n xs S \<le> posxy' (Suc n) xs S"
-apply(induct xs arbitrary: n) apply(simp) apply(cases n) apply(simp) oops
-
-lemma "posxy' n (x#xs) S \<le> 1 + posxy' n xs S
-      \<and> posxy' n xs S \<le> posxy' (Suc n) xs S"
-apply(induct xs arbitrary: x)
-  apply(cases n)
-    apply(simp)
-    apply(simp)
-  apply(cases n)
-    apply(simp)
-    apply(safe)
-      apply(simp) oops
-
-lemma posxy'_notin: "x\<notin>S \<Longrightarrow> posxy' n (x#xs) S = 1+posxy' n xs S"
-apply(cases n) by(simp_all)
-
-value "posxy' 3 [2,2,0,0,1,2,2,2,1] {0,1::nat}"
-
-lemma "posxy' n xs S < length xs \<Longrightarrow> posxy' n (xs@ys) S < length xs"
-apply(induct xs)
-  apply(simp)
-  apply(simp) oops
-
-(* gibt für das nte element aus S in qs die position an *)
-definition posxy :: "'a list \<Rightarrow> 'a set \<Rightarrow> nat \<Rightarrow> nat" where "posxy qs S n = posxy' n qs S"
-term "index"
-
-
-(* wenn ich die position eines elements will das drin ist, 
-   dann ist es wirklich drin *)
-lemma posxy_in_bounds: "n < length (Lxy qs S) \<Longrightarrow> posxy qs S n < length qs" sorry
-(*
-proof (induct qs arbitrary: n rule: rev_induct)
-  case (snoc q qs)
-  show ?case 
-  proof(cases "q\<in>S")
-    case True
-    have "length (Lxy (qs @ [q]) S) = length (Lxy qs S) + 1" using True Lxy_def by auto
-    show ?thesis sorry
-  next
-    case False
-    have "length (Lxy (qs @ [q]) S) = length (Lxy qs S)" using False Lxy_def by auto
-    then have "n < length (Lxy qs S)" using snoc(2) by auto
-    then have "posxy qs S n < length qs" using snoc(1) by auto
-    show ?thesis sorry
-  qed 
-qed simp *)
-
-lemma posxy_Lxy: "n < length (Lxy qs S) \<Longrightarrow> length (Lxy (take (posxy qs S n) qs) S) = n"
-sorry
-
-
-lemma posxy_in_S: "n < length (Lxy qs S) \<Longrightarrow> qs!(posxy qs S n) \<in> S" sorry
-
-lemma posxy_in_projected: "i < length (Lxy qs S) \<Longrightarrow> e \<in> S \<Longrightarrow> qs ! posxy qs S i = e 
-            \<Longrightarrow>  Lxy qs {x, y} ! i = e"
-sorry
-
-lemma plpl: "(posxy qs S) ` {..<length (Lxy qs S)} = {..<length qs} \<inter> {x. qs!i \<in> S}" sorry
-
-lemma stellen: "qs ! posxy qs S n \<in> S" sorry
-
-lemma posxy_incr: "(posxy qs S (Suc n)) < length qs \<Longrightarrow> posxy qs S n < posxy qs S (Suc n)" sorry
-
-lemma letzten2:
-  assumes "(posxy qs S (Suc n)) < length qs"
-  obtains prefix as a b 
-  where "take (Suc (posxy qs S (Suc n))) qs = prefix @ [a] @ as @ [b] \<and> a\<in>S \<and> b\<in>S"
-proof 
-  note 2=posxy_incr[OF assms(1)]
-  let ?allS ="take (Suc (posxy qs S (Suc n))) qs"
-  let ?all ="take (posxy qs S (Suc n)) qs"
-  have "?allS
-        = ?all @ [qs!(posxy qs S (Suc n))]" apply(rule take_Suc_conv_app_nth) using assms(1) by simp
-  also have "?all = take (posxy qs S n) ?all @ ?all!(posxy qs S n) #
-                      drop (Suc (posxy qs S n)) ?all" apply(rule id_take_nth_drop)
-                        using assms(1) 2 by(simp)
-  finally have 1: "?allS =take (posxy qs S n) ?all @ [?all!(posxy qs S n)] @
-                      drop (Suc (posxy qs S n)) ?all @ [qs!(posxy qs S (Suc n))]" by simp
-  show "?allS = take (posxy qs S n) ?all @ [?all!(posxy qs S n)] @
-                      drop (Suc (posxy qs S n)) ?all @ [qs!(posxy qs S (Suc n))]
-                      \<and> ?all!(posxy qs S n) \<in> S \<and> qs!(posxy qs S (Suc n))\<in>S"
-         apply(safe)
-          using 1 apply(simp)
-          using 2 apply(simp add: nth_take stellen)
-          by(simp add: stellen)
-  qed 
-
-lemma derletzte:
-  assumes "(posxy qs S n) < length qs"
-  obtains prefix as a 
-  where "qs = prefix @ [a] @ as \<and> a\<in>S"
-proof    
-   have 1: "qs = take (posxy qs S n) qs @ qs!(posxy qs S n) #
-                      drop (Suc (posxy qs S n)) qs" apply(rule id_take_nth_drop)
-                        by fact 
-  show "qs = take (posxy qs S n) qs @ [qs!(posxy qs S n)] @
-                      drop (Suc (posxy qs S n)) qs
-                      \<and> qs!(posxy qs S n) \<in> S "
-         apply(safe)
-          using 1 apply(simp) 
-          by(simp add: stellen)
-qed 
-
-
-
-primrec anz :: "'a list \<Rightarrow> 'a set \<Rightarrow> nat" where
-"anz [] S = 0" |
-"anz (x#xs) S = (if x\<in>S then anz xs S + 1 else anz xs S)"
-
-lemma "anz xs S = setsum (count_list xs) (S\<inter>set xs)"
-proof -
-  have "anz xs S = listsum (map (\<lambda>x. (if x\<in>S then 1 else 0)) xs)"
-    apply(induct xs) by (simp_all)
-  also have "\<dots> = (\<Sum>x\<in>set xs. count_list xs x * (if x\<in>S then 1 else 0))" by(rule listsum_map_eq_setsum_count)
-  also have "\<dots> = (\<Sum>x\<in>set xs. (if x\<in>S then count_list xs x  else 0))"
-    apply(rule setsum.cong) by(simp_all)
-  also have "\<dots> = (\<Sum>x\<in>set xs\<inter>S. count_list xs x)" apply(rule setsum.inter_restrict[symmetric]) by(simp)
-  also have "\<dots> = (\<Sum>x\<in>S\<inter>set xs. count_list xs x)" by (simp add: Int_commute) 
-  finally show ?thesis .
-qed
-
-lemma anz_append: "anz (as@bs) S = anz as S + anz bs S"
-apply(induct as) by auto
-
-definition "nrofnextxy S qs n = (anz (take n qs) S)"
-
-lemma nrofnextxy0: "nrofnextxy S qs 0 = 0" unfolding nrofnextxy_def by auto
-
-lemma "x\<noteq>y \<Longrightarrow> n < length qs \<Longrightarrow> (Lxy qs {x, y} ! nrofnextxy {x, y} qs n)  = qs ! n" sorry
-
-lemma nrofnextxy_Suc: "n<length qs \<Longrightarrow> qs!n \<in> S \<Longrightarrow> nrofnextxy S qs (Suc n) = Suc (nrofnextxy S qs n)"
-unfolding nrofnextxy_def
-proof -
-  case goal1
-  then have A: "take (Suc n) qs = take n qs @ [qs!n]" using take_Suc_conv_app_nth by auto
-  show ?case unfolding A apply(simp add: anz_append) using goal1 by auto
-qed
-
-lemma nrofnextxy_Suc2: "n<length qs \<Longrightarrow> qs!n \<notin> S \<Longrightarrow> nrofnextxy S qs (Suc n) = (nrofnextxy S qs n)"
-unfolding nrofnextxy_def
-proof -
-  case goal1
-  then have A: "take (Suc n) qs = take n qs @ [qs!n]" using take_Suc_conv_app_nth by auto
-  show ?case unfolding A apply(simp add: anz_append) using goal1 by auto
-qed
-
-lemma nrofnextxy_counts_xy: "n < length qs \<Longrightarrow> nrofnextxy S qs n = length (Lxy (take n qs) S)"
-proof (induct n)
- case (Suc n)
- then have n_less_qs: "n < length qs" by auto
- with Suc have iH: "anz (take n qs) S = length (Lxy (take n qs) S)" unfolding nrofnextxy_def Lxy_def by auto
- have takeSuc: "(take (Suc n) qs) = take n qs @ [qs!n]" using n_less_qs take_Suc_conv_app_nth by auto
- have "nrofnextxy S qs (Suc n) = anz (take n qs @ [qs!n]) S" unfolding nrofnextxy_def using takeSuc
-  by auto
- also have "\<dots> = anz (take n qs) S + anz [qs!n] S" by(simp add: anz_append)
- also have "\<dots> = length (Lxy (take n qs) S) + anz[qs!n] S" using iH by auto
- also have "\<dots> = length (Lxy (take (Suc n) qs) S)" unfolding takeSuc by(auto simp add: Lxy_def)
- finally show ?case .
-qed (simp add: nrofnextxy_def)
-
-value "nrofnextxy {0,1} [2,3,0::nat,0,1] 2"
-
-lemma nrofnextxy_Lxy_nth: "n < length qs \<Longrightarrow> qs!n \<in> S \<Longrightarrow> (Lxy qs S ! nrofnextxy S qs n) = qs!n"
-proof -
-  case goal1
-  with nrofnextxy_counts_xy have A: "nrofnextxy S qs n = length (Lxy (take n qs) S)" by metis
-  have takeSuc: "(take (Suc n) qs) = take n qs @ [qs!n]" using goal1 take_Suc_conv_app_nth by auto
-  then have C: "Lxy (take (Suc n) qs) S = Lxy (take n qs) S @ [qs!n]" using Lxy_append
-    unfolding Lxy_def using goal1 by auto
-  have "Lxy qs S = Lxy (take (Suc n) qs) S @ Lxy (drop (Suc n) qs) S"
-    using append_take_drop_id Lxy_append by metis
-  also have "\<dots> = Lxy (take n qs) S @ [qs!n] @ Lxy (drop (Suc n) qs) S" using C by auto
-  finally have B: "Lxy qs S = Lxy (take n qs) S @ [qs!n] @ Lxy (drop (Suc n) qs) S" .
-  have "Lxy qs S ! nrofnextxy S qs n = Lxy qs S ! length (Lxy (take n qs) S)" using A by auto
-  also have "\<dots> = (Lxy (take n qs) S @ [qs!n] @ Lxy (drop (Suc n) qs) S) ! length (Lxy (take n qs) S)"
-    using B by simp
-  also have "\<dots> = qs!n" using nth_append_length by auto
-  finally show ?case .
-qed
   
-lemma nrofnextxy_posxy_id: "n < length (Lxy qs S) \<Longrightarrow> nrofnextxy S qs (posxy qs S n) = n"
-proof -
-  case goal1
-  with posxy_in_bounds have "posxy qs S n < length qs" by auto
-  with nrofnextxy_counts_xy have "nrofnextxy S qs (posxy qs S n) = length (Lxy (take (posxy qs S n) qs) S)"
-    by auto
-  also have "\<dots> = n" using posxy_Lxy goal1 by auto
-  finally show ?thesis .
-qed
-
-
+definition "Pbefore_in x y A qs init = map_pmf (\<lambda>p. x < y in fst p) (config_rand A init qs)"
+ 
 
 lemma T_on_n_no_paid:
       assumes 
@@ -743,34 +544,43 @@ proof -
     apply(simp add: t\<^sub>p_def split_def) 
       using brutal  by(simp)
 qed
-
-definition "Lastxy qs S = (1::nat)"
-
-lemma Lastxy_length: "Lastxy qs {x, y} \<le> length qs" sorry
-
-lemma down_in_bounds: "n < Lastxy qs {x, y} \<Longrightarrow> nrofnextxy {x, y} qs n < length (Lxy qs {x,y})" sorry
-
-lemma pairwise_property_lemma'_new:
+ 
+lemma pairwise_property_lemma:
   assumes  
-"(\<And>init qs. qs \<in> {xs. set xs \<subseteq> set init}
-    \<Longrightarrow> (\<And>n x y. (x,y)\<in> {(x,y). x \<in> set init \<and> y\<in>set init \<and> x\<noteq>y} 
-                \<Longrightarrow> x \<noteq> y
-                \<Longrightarrow> n < Lastxy qs {x,y} (* das kann man relaxen auf n \<le> letzer index auf dem ein x,y steht *)
-                \<Longrightarrow> Pbefore_in' x y A qs init = Pbefore_in' x y A (Lxy qs {x,y}) (Lxy init {x,y})
-        )
- )  
- "
+relativeorder: "(\<And>init qs. qs \<in> {xs. set xs \<subseteq> set init}
+    \<Longrightarrow> (\<And>x y. (x,y)\<in> {(x,y). x \<in> set init \<and> y\<in>set init \<and> x\<noteq>y} 
+                \<Longrightarrow> x \<noteq> y 
+                \<Longrightarrow> Pbefore_in x y A qs init = Pbefore_in x y A (Lxy qs {x,y}) (Lxy init {x,y})
+        ))" 
+and nopaid: "\<And>xa r. \<forall>z\<in> set_pmf(snd A xa r). snd(fst z) = []"
 shows "pairwise A"
 unfolding pairwise_def
 proof clarify
   case (goal1 init rs x y)
+  then have xny: "x\<noteq>y" by auto
 
-  show ?case
+  have dinit: "distinct init" sorry
+  then have dLyx: "distinct (Lxy init {y,x})" by(rule Lxy_distinct)
+  from dinit have dLxy: "distinct (Lxy init {x,y})" by(rule Lxy_distinct)
+  have setLxy: "set (Lxy init {x, y}) = {x,y}" apply(subst Lxy_set_filter) using goal1 by auto
+  have setLyx: "set (Lxy init {y, x}) = {x,y}" apply(subst Lxy_set_filter) using goal1 by auto
+  have lengthLyx:" length  (Lxy init {y, x}) = 2" using setLyx distinct_card[OF dLyx] xny by simp
+  have lengthLxy:" length  (Lxy init {x, y}) = 2" using setLxy distinct_card[OF dLxy] xny by simp
+  have aee: "{x,y} = {y,x}" by auto
+
+
+  from goal1(1) show ?case
     proof(induct rs rule: rev_induct)
       case (snoc r rs)
+      
+      have b: "Pbefore_in x y A rs init = Pbefore_in x y A (Lxy rs {x,y}) (Lxy init {x,y})"
+        apply(rule relativeorder)
+        using snoc goal1 xny by(simp_all)  
+
       show ?case (is "?L (rs @ [r]) = ?R (rs @ [r])")
       proof(cases "r\<in>{x,y}")
         case True
+        note xyrequest=this
         let ?expr = "E (Partial_Cost_Model.config'_rand A
         (fst A (Lxy init {x, y}) \<bind>
          (\<lambda>is. return_pmf (Lxy init {x, y}, is)))
@@ -779,352 +589,124 @@ proof clarify
             (\<lambda>(a, is').
                 return_pmf
                  (real (t\<^sub>p (fst s) r a)))))"
-        from True have "?L (rs @ [r]) = ?L rs + ?expr"
+        let ?expr2 = "ALG' A (rs @ [r]) init (length rs) y + ALG' A (rs @ [r]) init (length rs) x"
+
+        from xyrequest have "?L (rs @ [r]) = ?L rs + ?expr"
           by(simp add: Lxy_snoc T_on_rand'_append)
-        also have "\<dots> = ?L rs + f" sorry
-        also have "\<dots> = ?R rs + f" by(simp add: snoc)
-        also from True have "\<dots> = ?R (rs@[r])" apply(simp add: ALGxy_def) sorry
+        also have "\<dots> = ?L rs + ?expr2"
+          proof(cases "r=x") 
+            case True
+            let ?projS ="config'_rand A (fst A (Lxy init {x, y}) \<bind> (\<lambda>is. return_pmf (Lxy init {x, y}, is))) (Lxy rs {x, y})"
+            let ?S = "(config'_rand A (fst A init \<bind> (\<lambda>is. return_pmf (init, is))) rs)"
+
+
+            have "?projS \<bind> (\<lambda>s. snd A s r
+                           \<bind> (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) r a))))
+              = ?projS \<bind> (\<lambda>s. return_pmf (real (index (fst s) r)))"
+                    proof (rule bind_pmf_cong)
+                      case (goal2 z)
+                      have "snd A z r \<bind> (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst z) r a))) = snd A z r \<bind> (\<lambda>x. return_pmf (real (index (fst z) r)))"  
+                        apply(rule bind_pmf_cong)
+                          apply(simp)
+                          using nopaid[of z r] by(simp add: split_def t\<^sub>p_def) 
+                      then show ?case by(simp add: bind_return_pmf)
+                    qed simp
+            also have "\<dots> = map_pmf (%b. (if b then 0::real else 1)) (Pbefore_in x y A (Lxy rs {x,y}) (Lxy init {x,y}))"
+                  unfolding Pbefore_in_def map_pmf_def
+                    apply(simp add: bind_return_pmf bind_assoc_pmf)
+                    apply(rule bind_pmf_cong)
+                      apply(simp add: aee)
+                      proof -
+                        case (goal1 z)
+                        have " (if x < y in fst z then 0 else 1) = (index (fst z) x)"
+                            apply(rule before_in_index1)
+                              using goal1 config_rand_set setLxy apply fast
+                              using goal1 config_rand_length lengthLxy apply metis                 
+                              using xny by simp
+                        with True show ?case
+                          by(auto)
+                      qed
+            also have "\<dots> = map_pmf (%b. (if b then 0::real else 1)) (Pbefore_in x y A rs init)" by(simp add: b)
+                      
+            also have "\<dots> = map_pmf (\<lambda>xa. real (if y < x in fst xa then 1 else 0)) ?S"  
+                apply(simp add: Pbefore_in_def map_pmf_comp)
+                proof (rule map_pmf_cong)
+                  case (goal2 z)
+                  then have set_z: "set (fst z) = set init"
+                    using config_rand_set by fast
+                  have "(\<not> x < y in fst z) = y < x in fst z" 
+                    apply(subst not_before_in)
+                      using set_z goal1(2,3) xny by(simp_all)
+                  then show ?case by(simp add: )
+                qed simp 
+            finally have a: "?projS \<bind> (\<lambda>s. snd A s x
+                           \<bind> (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) x a))))
+                  = map_pmf (\<lambda>xa. real (if y < x in fst xa then 1 else 0)) ?S" using True by simp
+            from True show ?thesis
+            apply(simp add: ALG'_refl nth_append)
+            unfolding ALG'_def
+              by(simp add: a)
+          next
+            case False
+            with xyrequest have request: "r=y" by blast
+
+            let ?projS ="config'_rand A (fst A (Lxy init {x, y}) \<bind> (\<lambda>is. return_pmf (Lxy init {x, y}, is))) (Lxy rs {x, y})"
+            let ?S = "(config'_rand A (fst A init \<bind> (\<lambda>is. return_pmf (init, is))) rs)"
+
+
+            have "?projS \<bind> (\<lambda>s. snd A s r
+                           \<bind> (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) r a))))
+              = ?projS \<bind> (\<lambda>s. return_pmf (real (index (fst s) r)))"
+                    proof (rule bind_pmf_cong)
+                      case (goal2 z)
+                      have "snd A z r \<bind> (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst z) r a))) = snd A z r \<bind> (\<lambda>x. return_pmf (real (index (fst z) r)))"  
+                        apply(rule bind_pmf_cong)
+                          apply(simp)
+                          using nopaid[of z r] by(simp add: split_def t\<^sub>p_def) 
+                      then show ?case by(simp add: bind_return_pmf)
+                    qed simp
+            also have "\<dots> = map_pmf (%b. (if b then 1::real else 0)) (Pbefore_in x y A (Lxy rs {x,y}) (Lxy init {x,y}))"
+                  unfolding Pbefore_in_def map_pmf_def
+                    apply(simp add: bind_return_pmf bind_assoc_pmf)
+                    apply(rule bind_pmf_cong)
+                      apply(simp add: aee)
+                      proof -
+                        case (goal1 z)
+                        have " (if x < y in fst z then 1 else 0) = (index (fst z) y)"
+                            apply(rule before_in_index2)
+                              using goal1 config_rand_set setLxy apply fast
+                              using goal1 config_rand_length lengthLxy apply metis                 
+                              using xny by simp
+                        with request show ?case
+                          by(auto)
+                      qed
+            also have "\<dots> = map_pmf (%b. (if b then 1::real else 0)) (Pbefore_in x y A rs init)" by(simp add: b)
+                      
+            also have "\<dots> = map_pmf (\<lambda>xa. real (if x < y in fst xa then 1 else 0)) ?S"  
+                apply(simp add: Pbefore_in_def map_pmf_comp)
+                apply (rule map_pmf_cong) by simp_all 
+            finally have a: "?projS \<bind> (\<lambda>s. snd A s y
+                           \<bind> (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) y a))))
+                  = map_pmf (\<lambda>xa. real (if x < y in fst xa then 1 else 0)) ?S" using request by simp
+            from request show ?thesis
+            apply(simp add: ALG'_refl nth_append)
+            unfolding ALG'_def
+              by(simp add: a) 
+          qed            
+        also have "\<dots> = ?R rs + ?expr2" using snoc by simp 
+        also from True have "\<dots> = ?R (rs@[r])"
+            apply(subst ALGxy_append) by(auto)
         finally show ?thesis .
       next
         case False
-        show ?thesis sorry
+        then have "?L (rs @ [r]) = ?L rs" apply(subst Lxy_snoc) by simp
+        also have "\<dots> = ?R rs" using snoc by(simp)
+        also have "\<dots> = ?R (rs @ [r])"  
+            apply(subst ALGxy_append) using False by(simp)
+        finally show ?thesis .
       qed
     qed (simp add: ALGxy_def)
 qed
-
-
-
-lemma pairwise_property_lemma': 
-"(\<And>init qs. qs \<in> {xs. set xs \<subseteq> set init}
-    \<Longrightarrow> (\<And>n x y. (x,y)\<in> {(x,y). x \<in> set init \<and> y\<in>set init \<and> x\<noteq>y} 
-                \<Longrightarrow> x \<noteq> y
-                \<Longrightarrow> n < Lastxy qs {x,y} (* das kann man relaxen auf n \<le> letzer index auf dem ein x,y steht *)
-                \<Longrightarrow> Pbefore_in x y A qs init n = Pbefore_in x y A (Lxy qs {x,y}) (Lxy init {x,y}) (nrofnextxy {x,y} qs n)
-        )
- )  
- \<Longrightarrow> pairwise A"
-unfolding pairwise_def
-proof clarify
-  case (goal1 init qs x y)
-  then have xny: "x\<noteq>y" by auto
-  note xyininit=goal1(3) goal1(4)
-  have dinit: "distinct init" sorry
-  then have dLyx: "distinct (Lxy init {y,x})" by(rule Lxy_distinct)
-  have setLxy: "set (Lxy init {x, y}) = {x,y}" apply(subst Lxy_set_filter) using goal1 by auto
-  have setLyx: "set (Lxy init {y, x}) = {x,y}" apply(subst Lxy_set_filter) using goal1 by auto
-  have lengthLyx:" length  (Lxy init {y, x}) = 2" using setLyx distinct_card[OF dLyx] xny by simp
-
-  have e: "{x,y} = {y,x}" by auto
-  have zent: "\<And>n. n < Lastxy qs {x, y} \<Longrightarrow> Pbefore_in x y A qs init n
-                                = Pbefore_in x y A (Lxy qs {x,y}) (Lxy init {x,y}) (nrofnextxy {x,y} qs n)"
-    apply(rule goal1(1))
-      using goal1 by(simp_all)
-
-  have zent2: "\<And>n. n < Lastxy qs {x, y} \<Longrightarrow> Pbefore_in y x A qs init n 
-                                  = Pbefore_in y x A (Lxy qs {x,y}) (Lxy init {x,y}) (nrofnextxy {x,y} qs n)"  
-    unfolding e
-    apply(rule goal1(1))
-      using goal1 by(simp_all)
-
-  show ?case
-  unfolding ALGxy_wholerange T_on_rand_as_sum
-  proof -
-      case goal1
-      obtain I S where A: "A=(I,S)" by fastforce 
-      have "setsum (T\<^sub>p_on_rand_n A (Lxy init {x, y}) (Lxy qs {x, y})) {..<length (Lxy qs {x, y})}
-          = setsum (\<lambda>i.  if qs ! i \<in> {y, x} 
-                        then T\<^sub>p_on_rand_n A (Lxy init {x, y}) (Lxy qs {x, y})  (nrofnextxy {x,y} qs i)
-                        else 0) {..<length qs}"
-             proof(induct qs rule: rev_induct)
-              case (snoc r rs)
-              then show ?case (is "setsum ?L {..<length (Lxy (rs@[r]) {x, y})}=setsum ?R {..<length (rs@[r])}")
-                proof (cases "r\<in>{x,y}")
-                  case True 
-                  then have 1: "(rs @ [r]) ! length rs \<in> {y, x} = True"  apply(simp add: nth_append) by blast
-                  have 2: "nrofnextxy {x, y} (rs @ [r]) (length rs) = length (Lxy rs {x, y})" sorry
-
-                  from True have "setsum ?L {..<length (Lxy (rs@[r]) {x, y})}
-                      = setsum ?L {..<Suc (length (Lxy rs {x, y}))}" by(simp add: Lxy_def)
-                  also have "\<dots> = setsum ?L {..<(length (Lxy rs {x, y}))} + ?L (length (Lxy rs {x, y})) " by simp
-                  also have "\<dots> = setsum ?R {..<length rs} + ?L (length (Lxy rs {x, y}))" 
-                    using Cons apply(simp) sorry (* inside nth_append oder ähnliches *)
-                  also have "\<dots> = setsum ?R {..<length rs} + ?R (length rs)"
-                    apply(simp only: add_left_cancel 1 2) by simp 
-                  also have "\<dots> = setsum ?R {..<length (rs@[r])}" by simp
-                  finally show ?thesis .
-                next
-                  case False
-                  then have 1: "(rs @ [r]) ! length rs \<in> {y, x} = False"  by(simp add: nth_append)
-                  from False have "setsum ?L {..<length (Lxy (rs@[r]) {x, y})}
-                      = setsum ?L {..<(length (Lxy rs {x, y}))}" by(simp add: Lxy_def) 
-                  also have "\<dots> = setsum ?R {..<length rs} + 0" 
-                    using Cons apply(simp) sorry (* inside nth_append oder ähnliches *)
-                  also have "\<dots> = setsum ?R {..<length rs} + ?R (length rs)"
-                    apply(simp only: add_left_cancel 1) by simp 
-                  also have "\<dots> = setsum ?R {..<length (rs@[r])}" by simp
-                  finally show ?thesis .
-                qed
-            qed simp 
-      also have "\<dots> = (\<Sum>i<length qs.
-        if qs ! i \<in> {y, x}
-        then ALG' A qs init i y + ALG' A qs init i x
-        else 0)"
-         apply(rule setsum.cong)
-          apply(simp)
-          proof(case_tac "qs ! xa \<in> {y, x}")
-            case (goal1 i)
-            then have iqs: "i < Lastxy qs {x,y}" sorry
-            have nopaid: "\<And>l m n. map_pmf (\<lambda>x. snd (fst x)) (snd A (l,m) n) = return_pmf []" 
-              apply(simp add: map_pmf_def) sorry
-            have requested: "(Lxy qs {x, y} ! (nrofnextxy {x, y} qs i)) = qs ! i" sorry
-            have 1: "T\<^sub>p_on_rand_n A (Lxy init {x, y}) (Lxy qs {x, y})  (nrofnextxy {x, y} qs i)
-                  = E (config'' A (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs i) \<bind>
-                      (\<lambda>p. return_pmf (real(index (fst p) ((Lxy qs {x, y}) ! (nrofnextxy {x, y} qs i))))))"
-               apply(rule T_on_n_no_paid) using nopaid by(simp)
-            note need2=zent2[unfolded map_pmf_def Pbefore_in_def, OF iqs]  
-            note need=zent[unfolded map_pmf_def Pbefore_in_def, OF iqs]  
-            have aee: "{x,y} = {y,x}" by auto
-            have y2: "config'' A (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs i)
-                        \<bind> (\<lambda>p. return_pmf (real (index (fst p) y)))
-                  = map_pmf (\<lambda>b. if b then 1::real else 0) (config'' A (Lxy qs {y, x}) (Lxy init {y, x}) (nrofnextxy {x, y} qs i)
-                        \<bind> (\<lambda>xa. return_pmf (x < y in fst xa)))"
-              apply(simp add: map_pmf_def bind_return_pmf bind_assoc_pmf) 
-              apply(rule bind_pmf_cong)
-                apply(simp add: aee)
-                proof -
-                  case (goal1 z)
-                  have " (if x < y in fst z then 1 else 0) = (index (fst z) y)"
-                      apply(rule before_in_index2)
-                        using goal1 config_rand_set setLyx apply fast
-                        using goal1 config_rand_length lengthLyx apply metis                 
-                        using xny by simp
-                  then show ?case by auto
-                qed
- 
-
-            have x2: "config'' A (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs i)
-                      \<bind> (\<lambda>p. return_pmf (real (index (fst p) x)))
-                  = map_pmf (\<lambda>b. if b then 1::real else 0) (config'' A (Lxy qs {y, x}) (Lxy init {y, x}) (nrofnextxy {x, y} qs i) 
-                      \<bind> (\<lambda>xa. return_pmf (y < x in fst xa)))"
-              apply(simp add: map_pmf_def bind_return_pmf bind_assoc_pmf) 
-              apply(rule bind_pmf_cong)
-                apply(simp add: aee)
-                proof -
-                  case (goal1 z)
-                  have " (if y < x in fst z then 1 else 0) = (index (fst z) x)"
-                      apply(rule before_in_index2)
-                        using goal1 config_rand_set setLyx apply fast
-                        using goal1 config_rand_length lengthLyx apply metis                 
-                        using xny by simp
-                  then show ?case by auto
-                qed
-
-            have x3: "config'' A qs init i \<bind>
-        (\<lambda>xa. return_pmf
-               (real (if x < y in fst xa then 1 else 0)))
-                  = map_pmf (\<lambda>b. if b then 1::real else 0) (config'' A qs init i \<bind>
-            (\<lambda>xa. return_pmf (x < y in fst xa)))" apply(simp add: map_pmf_def bind_return_pmf bind_assoc_pmf)
-                apply(rule bind_pmf_cong) by(simp_all)
-            have y3: "config'' A qs init i \<bind>
-        (\<lambda>xa. return_pmf
-                (real (if y < x in fst xa then 1 else 0)))
-                  = map_pmf (\<lambda>b. if b then 1::real else 0) (config'' A qs init i \<bind>
-        (\<lambda>xa. return_pmf (y < x in fst xa)))"  apply(simp add: map_pmf_def bind_return_pmf bind_assoc_pmf)
-                apply(rule bind_pmf_cong) by(simp_all)
-
-          show ?case  apply(simp only: 1)
-            apply(simp add: requested ALG'_def before_in_irefl map_pmf_def)             
-              apply(simp only: x2 y2 )
-              apply(simp only: x3 y3)
-              by(auto simp add: need need2 e)
-      qed simp
-      finally show ?case .
-  qed
-qed
-
-term "Pbefore_in x y A qs init (posxy qs {x,y} n)"
-
-(* erste formulierung 
-lemma pairwise_property_lemma: 
-"(\<And>init qs. qs \<in> {xs. set xs \<subseteq> set init}
-    \<Longrightarrow> (\<And>n x y. (x,y)\<in> {(x,y). x \<in> set init \<and> y\<in>set init \<and> x\<noteq>y} 
-                \<Longrightarrow> x \<noteq> y
-                \<Longrightarrow> n < length (Lxy qs {x,y})
-                \<Longrightarrow> Pbefore_in x y A qs init (posxy qs {x,y} n) = Pbefore_in x y A (Lxy qs {x,y}) (Lxy init {x,y}) n
-        )
- ) \<Longrightarrow> pairwise A"
-unfolding pairwise_def
-proof clarify
-  case goal1
-  then have xny: "x\<noteq>y" by auto
-  note xyininit=goal1(3) goal1(4)
-  have dinit: "distinct init" sorry
-  have zent: "\<And>n. n < length (Lxy qs {x,y})
-                \<Longrightarrow> Pbefore_in x y A qs init (posxy qs {x,y} n) = Pbefore_in x y A (Lxy qs {x,y}) (Lxy init {x,y}) n"
-  apply(rule goal1(1))
-    using goal1 by(simp_all)
-
-  have zent2: "\<And>n. n < length (Lxy qs {y,x})
-                \<Longrightarrow> Pbefore_in y x A qs init (posxy qs {y,x} n) = Pbefore_in y x A (Lxy qs {y,x}) (Lxy init {y,x}) n"
-  apply(rule goal1(1))
-    using goal1 by(simp_all)
-  thm zent zent2
-  show ?case
-  unfolding ALGxy_wholerange
-  proof -
-      case goal1
-      obtain I S where A: "A=(I,S)" by fastforce
-      thm setsum.inter_restrict plpl
-      have "(\<Sum>i<length qs. if qs ! i \<in> {y, x} 
-                        then ALG' A qs init i y + ALG' A qs init i x
-                        else 0)
-          = setsum ((%i. ALG' A qs init i y + ALG' A qs init i x) \<circ> (posxy qs {x,y}))
-            ( {..<length (Lxy qs {x, y})})" sorry
-      also have "\<dots> = setsum
-     (T\<^sub>p_on_rand_n A (Lxy qs {x, y})
-       (Lxy init {x, y}))
-     {..<length (Lxy qs {x, y})}"
-        apply(rule setsum.cong)
-          apply(simp)
-          apply(simp) unfolding ALG'_def A
-          apply(simp add: split_def)
-        proof -
-          case (goal1 i) 
-          note iless=this
-          (* Algorithm A has no paid exchange! *)
-          have nopaid: "\<And>l m n. map_pmf (\<lambda>x. snd (fst x)) (S (l,m) n) = return_pmf []" sorry
-          (* alternativ: *)
-          have "\<And>is s q. \<forall>((free,paid),_) \<in> (S (s,is) q). paid=[]" sorry
-
-          { fix p :: "'a list \<times> 'b"
-          have "S (fst p,snd p)
-             (Lxy qs {x, y} ! i) \<bind>
-            (\<lambda>pa. return_pmf
-                   (real(index
-                     (swaps (snd (fst pa))
-                       (fst p))
-                     (Lxy qs {x, y} ! i) +
-                    length (snd (fst pa)))))
-                 =  map_pmf ((%pay. 
-                   real(index (swaps pay (fst p))
-                     (Lxy qs {x, y} ! i) + length pay)) \<circ> (\<lambda>pa. (snd(fst pa)) ))
-                     (S (fst p,snd p) (Lxy qs {x, y} ! i))"
-                     by(simp add: map_pmf_def)
-           also have "\<dots> = map_pmf (%pay. 
-                   (index (swaps pay (fst p))
-                     (Lxy qs {x, y} ! i) + length pay)) (
-                      map_pmf ((\<lambda>pa. (snd(fst pa)) ))
-                     (S (fst p,snd p) (Lxy qs {x, y} ! i)))"
-                    using pmf.map_comp by metis 
-           also have "\<dots> = return_pmf (index (fst p) (Lxy qs {x, y} ! i))" using nopaid[of "fst p" "snd p"] by auto
-           finally have "S (fst p,snd p)
-             (Lxy qs {x, y} ! i) \<bind>
-            (\<lambda>pa. return_pmf
-                   (real(index
-                     (swaps (snd (fst pa))
-                       (fst p))
-                     (Lxy qs {x, y} ! i) +
-                    length (snd (fst pa)))))
-                      = return_pmf (real(index (fst p) (Lxy qs {x, y} ! i)))" .
-            } note brutal=this
-
-            thm map_pmf_compose
-            thm map_pmf_def
-            thm bind_return_pmf'
-
-
-          have tt: "E (config'' A (Lxy qs {x, y})
-        (Lxy init {x, y}) i \<bind>
-       (\<lambda>p. S (fst p, snd p)
-             (Lxy qs {x, y} ! i) \<bind>
-            (\<lambda>pa. return_pmf
-                   (real(t\<^sub>p (fst p)
-                     (Lxy qs {x, y} ! i)
-                     (fst pa))))))
-= E (config'' (I, S) (Lxy qs {x, y})
-        (Lxy init {x, y}) i \<bind>
-       (\<lambda>p. return_pmf (real (index (fst p) (Lxy qs {x, y} ! i)))))"
-              unfolding t\<^sub>p_def
-              apply(simp add: split_def) 
-              (* apply(simp only: brutal) *) sorry
-              (* FUCKUP with real and nat *)
-
-          have cc: "qs ! posxy qs {x, y} i \<in> {x,y}" 
-            using posxy_in_S[OF goal1] by simp
-          show ?case 
-          proof (cases "qs ! posxy qs {x, y} i = x")
-            case True
-            then have pla: "Lxy qs {x, y} ! i = x" 
-              using posxy_in_projected[OF goal1] by auto
-
-            show ?thesis unfolding True tt
-              apply(simp add: before_in_irefl)
-              unfolding t\<^sub>p_def pla
-             proof -
-              case goal1
-              have kl: "{y,x} = {x,y}" by auto
-              note hr=zent2[unfolded A Pbefore_in_def kl, OF iless]
-              have a: "(\<lambda>xa. if y < x in fst xa then 1 else 0)
-                  = ((\<lambda>b. if b then 1 else 0) \<circ> (\<lambda>xa. y < x in fst xa))"
-                    by(auto)
-              thm Pbefore_in_def
-              have "map_pmf (\<lambda>xa. if y < x in fst xa then 1::real else 0)
-                (config'' (I, S) qs init (posxy qs {x, y} i))
-                = map_pmf ((\<lambda>b. if b then 1 else 0) \<circ> (\<lambda>xa. y < x in fst xa))
-                 (config'' (I, S) qs init (posxy qs {x, y} i))" by(simp only: a)
-              also have "\<dots> = map_pmf (\<lambda>b. if b then 1 else 0)
-               ( map_pmf (\<lambda>xa. y < x in fst xa) (config'' (I, S) qs init (posxy qs {x, y} i)))"
-                   using pmf.map_comp by metis 
-              also have "\<dots> = map_pmf (\<lambda>b. if b then 1 else 0)
-                      (map_pmf (\<lambda>p. y < x in fst p)
-                        (config'' (I, S) (Lxy qs {x, y}) (Lxy init {x, y}) i))"
-                      by(simp only: hr)
-              also have "\<dots> = map_pmf (\<lambda>b. if y < x in fst b then 1::real else 0)
-                        (config'' (I, S) (Lxy qs {x, y}) (Lxy init {x, y}) i)"
-                   by(simp add: pmf.map_comp a)    
-              also have "\<dots> = map_pmf (\<lambda>b. real(index (fst b) x))
-                        (config'' (I, S) (Lxy qs {x, y}) (Lxy init {x, y}) i)"
-                   proof (rule pmf.map_cong0)
-                    thm config_rand_length
-                    case goal1
-                    from goal1 have A: "set (fst z) = set (Lxy init {x, y})"
-                      using config_rand_set by metis
-                    have B: "set (Lxy init {x, y}) = {x,y}" 
-                      using xyininit  by(simp add: Lxy_set_filter)
-                    from A B have 1: "set (fst z) = {y, x}" by auto
-                    from goal1 have A: "length (fst z) = length (Lxy init {x, y})"
-                      using config_rand_length by metis
-                    also have "\<dots> = 2"
-                    proof -
-                      have "distinct (Lxy init {x,y})"
-                        apply(rule Lxy_distinct) by (fact dinit)
-                      from distinct_card[OF this] B xny show ?thesis by auto
-                    qed
-                    finally have 2:  "length (fst z) = 2" . 
-                    from before_in_index2[OF 1 2 xny[symmetric]] 
-                      show ?case by auto
-                  qed
-              
-              finally have gr: "map_pmf (\<lambda>xa. if y < x in fst xa then 1::real else 0)
-   (config'' (I, S) qs init
-     (posxy qs {x, y} i)) =
-  map_pmf (\<lambda>b. index (fst b) x)
-   (config'' (I, S) (Lxy qs {x, y})
-     (Lxy init {x, y}) i) " .
-              show ?case (* apply(simp only: gr) fuckup mit real vs nat *) sorry
-            qed
-          next
-            case False
-            with cc have "qs ! posxy qs {x, y} i = y" by auto
-            (* same as True case *)
-            show ?thesis sorry
-          qed
-              
-        qed
-     finally show ?case sorry
-   qed
-qed
-*)
 
 
 lemma umf_pair: assumes

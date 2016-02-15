@@ -131,12 +131,13 @@ proof -
   then show ?thesis by simp
 qed
 
-
-lemma BIT_pairwise': " qs \<in> {xs. set xs \<subseteq> set init} \<Longrightarrow>
-       (x, y) \<in> {(x, y). x \<in> set init \<and> y \<in> set init \<and> x \<noteq> y} \<Longrightarrow>
-       x \<noteq> y \<Longrightarrow> n < Lastxy qs {x, y} \<Longrightarrow> Pbefore_in x y BIT qs init n = Pbefore_in x y BIT (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs n)"
+lemma BIT_pairwise': "set qs \<subseteq> set init    
+    \<Longrightarrow> (x,y)\<in> {(x,y). x \<in> set init \<and> y\<in>set init \<and> x\<noteq>y} 
+                \<Longrightarrow> x \<noteq> y 
+                \<Longrightarrow> Pbefore_in x y BIT qs init = Pbefore_in x y BIT (Lxy qs {x,y}) (Lxy init {x,y})
+        "                    
 proof -
-  case goal1 
+  case goal1
   then have xyininit: "{x, y} \<subseteq> set init" 
         and qsininit: "set qs \<subseteq> set init" by auto
   have dinit: "distinct init" sorry
@@ -144,74 +145,53 @@ proof -
 
   have xyininit': "{y,x} \<subseteq> set init" using xyininit by auto
  
-    have a: "x \<in> set init" "y\<in>set init" using goal1 by auto 
+  have a: "x \<in> set init" "y\<in>set init" using goal1 by auto 
 
     { fix n
-    have strong: "n< Lastxy qs {x, y} \<Longrightarrow> 
-      map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y},(sublist w {index init x,index init y},Lxy init {x,y}))) (config'' BIT qs init n) =
-      config'' BIT (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x,y} qs n)"
+    have strong: "set qs \<subseteq> set init \<Longrightarrow>
+      map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y},(sublist w {index init x,index init y},Lxy init {x,y}))) (config_rand BIT init qs) =
+      config_rand BIT (Lxy init {x, y}) (Lxy qs {x, y}) " (is "?inv \<Longrightarrow> ?L qs = ?R qs")
+    proof (induct qs rule: rev_induct)
+      case Nil 
 
-    proof (induct n)
-      case 0
-      have indexinprojectedlist: "(nrofnextxy {x,y} qs 0) = 0" using nrofnextxy0 by auto
-
-
-      have " map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y},(sublist w {index init x,index init y},Lxy init {x,y}))) (config'' BIT qs init 0)
+      have " map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y},(sublist w {index init x,index init y},Lxy init {x,y}))) (config_rand BIT init [])
           =  map_pmf (\<lambda>w. (Lxy init {x,y}, (w, Lxy init {x,y}))) (map_pmf (\<lambda>l. sublist l {index init x,index init y}) (Prob_Theory.L (length init)))"
               by(simp add: bind_return_pmf map_pmf_def bind_assoc_pmf split_def BIT_init_def)
       also have "\<dots> = map_pmf (\<lambda>w. (Lxy init {x,y}, (w, Lxy init {x,y}))) (Prob_Theory.L (length (Lxy init {x, y})))" 
           using L_sublist_Lxy[OF a xny dinit] by simp
-      also have "\<dots> = config'' BIT (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs 0)"
-          unfolding indexinprojectedlist by(simp add: BIT_init_def bind_return_pmf bind_assoc_pmf map_pmf_def)
+      also have "\<dots> = config_rand BIT  (Lxy init {x, y}) (Lxy [] {x, y})"
+          by(simp add: BIT_init_def bind_return_pmf bind_assoc_pmf map_pmf_def)
       finally show ?case . 
     next
-      case (Suc n)
-      then have nLastxy: "n <  Lastxy qs {x, y}" by auto
-      also have "\<dots> \<le> length qs" by (rule Lastxy_length)
-      finally have nqs: "n<length qs" .
-      thm Suc(1)[OF nLastxy]
-      from nqs have qininit: "qs!n \<in>  set init" using qsininit by auto
+      case (snoc q qs)
+      then have qininit: "q \<in>  set init" 
+            and qsininit: "set qs \<subseteq> set init" using qsininit by auto
 
-      from  Suc(1)[OF nLastxy] have iH: "map_pmf
-   (\<lambda>(l, w, i) .
-          (Lxy l {x, y},
-           sublist w {index init x, index init y},
-           Lxy init {x, y}))
-   (Partial_Cost_Model.config'_rand BIT
-     (BIT_init init \<bind> (\<lambda>is. return_pmf (init, is)))
-     (take n qs)) =
-  Partial_Cost_Model.config'_rand BIT
-   (fst BIT (Lxy init {x, y}) \<bind>
-    (\<lambda>is. return_pmf (Lxy init {x, y}, is)))
-   (take (nrofnextxy {x, y} qs n) (Lxy qs {x, y}))" by (simp add: split_def)
+      from  snoc(1)[OF qsininit] have iH: "?L qs = ?R qs" by (simp add: split_def)
 
       show ?case 
-      proof (cases "qs!n \<in> {x,y}")
+      proof (cases "q \<in> {x,y}")
         case True
         note whatisq=this
-
-        have 5: "(nrofnextxy {x, y} qs n) < length (Lxy qs {x,y})" sorry
-        have 4: "(Lxy qs {x, y} ! nrofnextxy {x, y} qs n)  = qs ! n" using nqs sorry
-
-        thm nrofnextxy_Suc[OF nqs True]  
-        have "map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y}, (sublist w {index init x,index init y},Lxy init {x,y}))) (config'' BIT qs init (Suc n)) =
-         map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y},(sublist w {index init x,index init y},Lxy init {x,y}))) (config'' BIT qs init n \<bind>
-              (\<lambda>s. BIT_step s (qs ! n) \<bind> (\<lambda>(a, nis). return_pmf (step (fst s) (qs ! n) a, nis))))"
-            using nqs by(simp add: BIT_init_def take_Suc_conv_app_nth bind_return_pmf bind_assoc_pmf config'_rand_snoc) 
+ 
+        have "?L (qs@[q]) =
+         map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y},(sublist w {index init x,index init y},Lxy init {x,y}))) (config_rand BIT init qs \<bind>
+              (\<lambda>s. BIT_step s q \<bind> (\<lambda>(a, nis). return_pmf (step (fst s) q a, nis))))"
+             by(simp add: split_def config'_rand_snoc) 
         also have "\<dots> =
-        map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y}, (sublist w {index init x,index init y},Lxy init {x,y}))) (config'' BIT qs init n) \<bind>
+        map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y}, (sublist w {index init x,index init y},Lxy init {x,y}))) (config_rand BIT init qs) \<bind>
         (\<lambda>s.
-            BIT_step s (Lxy qs {x, y} ! nrofnextxy {x, y} qs n) \<bind>
-            (\<lambda>(a, nis). return_pmf (step (fst s) (Lxy qs {x, y} ! nrofnextxy {x, y} qs n) a, nis))) "
+            BIT_step s q \<bind>
+            (\<lambda>(a, nis). return_pmf (step (fst s) q a, nis))) "
            apply(simp add: map_pmf_def split_def bind_return_pmf bind_assoc_pmf)
-           apply(simp add: 4 BIT_step_def bind_return_pmf)
+           apply(simp add: BIT_step_def bind_return_pmf)
         proof (rule bind_pmf_cong)
           case (goal2 z)
           let ?s = "fst z"
           let ?b = "fst (snd z)"
 
           from goal2 have z: "set (?s) = set init" using config_rand_set[of BIT, simplified]  by metis
-          with True have qLxy: "qs ! n \<in> set (Lxy (?s) {x, y})" using   xyininit by (simp add: Lxy_set_filter)
+          with True have qLxy: "q \<in> set (Lxy (?s) {x, y})" using   xyininit by (simp add: Lxy_set_filter)
           from goal2 have dz: "distinct (?s)" using dinit config_rand_distinct[of BIT, simplified] by metis
           then have dLxy: "distinct (Lxy (?s) {x, y})" using Lxy_distinct by auto
 
@@ -238,8 +218,8 @@ proof -
           have 33: "index (Lxy init {x, y}) x \<noteq> index (Lxy init {x,y}) y"
             using xny xLxy by auto
  
-          have a1: "sublist (flip (index init (qs ! n)) (fst (snd z))) {index init x,index init y}
-                = flip (index (Lxy init {x,y}) (qs ! n)) (sublist (fst (snd z)) {index init x,index init y})" (is "?A=?B")
+          have a1: "sublist (flip (index init (q)) (fst (snd z))) {index init x,index init y}
+                = flip (index (Lxy init {x,y}) (q)) (sublist (fst (snd z)) {index init x,index init y})" (is "?A=?B")
           proof (simp only: list_eq_iff_nth_eq)
             case goal1
 
@@ -260,19 +240,19 @@ proof -
                           by fact
 
 
-            have "sublist (flip (index init (qs ! n)) (fst (snd z))) {index init x,index init y}
-                  = [flip (index init (qs ! n)) (fst (snd z))!index init x,
-                        flip (index init (qs ! n)) (fst (snd z))!index init y]"
+            have "sublist (flip (index init (q)) (fst (snd z))) {index init x,index init y}
+                  = [flip (index init (q)) (fst (snd z))!index init x,
+                        flip (index init (q)) (fst (snd z))!index init y]"
                         apply(rule sublist_project')
                           using xyininit apply(simp)
                           using xyininit apply(simp)
                           by fact
-            also have "\<dots> = flip (index (Lxy init {x,y}) (qs ! n)) [(fst (snd z)) ! index init x, (fst (snd z)) ! index init y]" 
-              apply(cases "qs!n=x")
+            also have "\<dots> = flip (index (Lxy init {x,y}) (q)) [(fst (snd z)) ! index init x, (fst (snd z)) ! index init y]" 
+              apply(cases "q=x")
                 apply(simp add: ix) using flip_other[OF 2 1 3] flip_itself[OF 1] apply(simp)
                 using whatisq apply(simp add: iy) using flip_other[OF 1 2 3[symmetric]] flip_itself[OF 2] by(simp)
-            finally have "sublist (flip (index init (qs ! n)) (fst (snd z))) {index init x,index init y}
-                    = flip (index (Lxy init {x,y}) (qs ! n)) (sublist (fst (snd z)) {index init x,index init y})" 
+            finally have "sublist (flip (index init (q)) (fst (snd z))) {index init x,index init y}
+                    = flip (index (Lxy init {x,y}) (q)) (sublist (fst (snd z)) {index init x,index init y})" 
                     by(simp add: g1)
                           
             }note cas1=this
@@ -293,22 +273,22 @@ proof -
                           by fact
 
             have man2: "{index init x,index init y} = {index init y,index init x}" by auto
-            have "sublist (flip (index init (qs ! n)) (fst (snd z))) {index init y,index init x}
-                  = [flip (index init (qs ! n)) (fst (snd z))!index init y,
-                        flip (index init (qs ! n)) (fst (snd z))!index init x]"
+            have "sublist (flip (index init (q)) (fst (snd z))) {index init y,index init x}
+                  = [flip (index init (q)) (fst (snd z))!index init y,
+                        flip (index init (q)) (fst (snd z))!index init x]"
                         apply(rule sublist_project')
                           using xyininit apply(simp)
                           using xyininit apply(simp)
                           by fact
-            also have "\<dots> = flip (index (Lxy init {x,y}) (qs ! n)) [(fst (snd z)) ! index init y, (fst (snd z)) ! index init x]" 
-              apply(cases "qs!n=x")
+            also have "\<dots> = flip (index (Lxy init {x,y}) (q)) [(fst (snd z)) ! index init y, (fst (snd z)) ! index init x]" 
+              apply(cases "q=x")
                 apply(simp add: ix) using flip_other[OF 2 1 3] flip_itself[OF 1] apply(simp)
                 using whatisq apply(simp add: iy) using flip_other[OF 1 2 3[symmetric]] flip_itself[OF 2] by(simp)
-            finally have "sublist (flip (index init (qs ! n)) (fst (snd z))) {index init y,index init x}
-                    = flip (index (Lxy init {x,y}) (qs ! n)) (sublist (fst (snd z)) {index init y,index init x})" 
+            finally have "sublist (flip (index init (q)) (fst (snd z))) {index init y,index init x}
+                    = flip (index (Lxy init {x,y}) (q)) (sublist (fst (snd z)) {index init y,index init x})" 
                     by(simp add: g1)
-            then have "sublist (flip (index init (qs ! n)) (fst (snd z))) {index init x,index init y}
-                    = flip (index (Lxy init {x,y}) (qs ! n)) (sublist (fst (snd z)) {index init x,index init y})" 
+            then have "sublist (flip (index init (q)) (fst (snd z))) {index init x,index init y}
+                    = flip (index (Lxy init {x,y}) (q)) (sublist (fst (snd z)) {index init x,index init y})" 
                     using man2 by auto                          
             } note cas2=this
 
@@ -316,8 +296,8 @@ proof -
           qed
 
           thm sublist_project
-          have a: "sublist (fst (snd z)) {index init x, index init y} ! (index (Lxy init {x,y}) (qs ! n))
-                    = fst (snd z) ! (index init (qs ! n))"
+          have a: "sublist (fst (snd z)) {index init x, index init y} ! (index (Lxy init {x,y}) (q))
+                    = fst (snd z) ! (index init (q))"
           proof -
             from 31 32  33have ca: "(index (Lxy init {x,y}) x = 0 \<and> index (Lxy init {x,y}) y = 1)
                     \<or> (index (Lxy init {x,y}) x = 1 \<and> index (Lxy init {x,y}) y = 0)" by force
@@ -366,8 +346,8 @@ proof -
          qed
 
 
-          have b: "Lxy (mtf2 (length ?s) (qs ! n) ?s) {x, y} 
-                =  mtf2 (length (Lxy ?s {x, y})) (qs ! n) (Lxy ?s {x, y})" (is "?A = ?B")
+          have b: "Lxy (mtf2 (length ?s) (q) ?s) {x, y} 
+                =  mtf2 (length (Lxy ?s {x, y})) (q) (Lxy ?s {x, y})" (is "?A = ?B")
           proof -
             
                 thm mtf2_moves_to_front'[simplified]
@@ -378,8 +358,8 @@ proof -
                 have lA: "length ?A = 2" using xny sA dA distinct_card by fastforce 
                 from lA ylxymA have yindA: "index ?A y < 2" by auto
                 from lA xlxymA have xindA: "index ?A x < 2" by auto
-                have geA: "{x,y} \<subseteq> set (mtf2 (length ?s) (qs ! n) ?s)" using xyininit z by auto
-                have geA': "{y,x} \<subseteq> set (mtf2 (length ?s) (qs ! n) (?s))" using xyininit z by auto
+                have geA: "{x,y} \<subseteq> set (mtf2 (length ?s) (q) ?s)" using xyininit z by auto
+                have geA': "{y,x} \<subseteq> set (mtf2 (length ?s) (q) (?s))" using xyininit z by auto
                 have man: "{y,x} = {x,y}" by auto
 
                 have sB: "set ?B = {x,y}" using z xyininit by(simp add: Lxy_set_filter)
@@ -391,9 +371,9 @@ proof -
                 from lB xlxymB have xindB: "index ?B x < 2" by auto
                 
                 show ?thesis
-                proof (cases "qs!n = x")                
+                proof (cases "q = x")                
                   case True
-                  then have xby: "x < y in (mtf2 (length (?s)) (qs ! n) (?s))"
+                  then have xby: "x < y in (mtf2 (length (?s)) (q) (?s))"
                     apply(simp)
                           apply(rule mtf2_moves_to_front''[simplified])
                             using z xyininit xny by(simp_all add: dz)
@@ -430,8 +410,8 @@ proof -
                   then show "?A = ?B " using end1 end2 by simp
               next             
                   case False
-                  with whatisq have qsy: "qs!n=y" by simp
-                  then have xby: "y < x in (mtf2 (length (?s)) (qs ! n) (?s))"
+                  with whatisq have qsy: "q=y" by simp
+                  then have xby: "y < x in (mtf2 (length (?s)) (q) (?s))"
                     apply(simp)
                           apply(rule mtf2_moves_to_front''[simplified])
                             using z xyininit xny by(simp_all add: dz)
@@ -469,30 +449,31 @@ proof -
               qed  
            qed 
           
-          have a2: " Lxy (step (?s) (qs ! n) (if ?b ! (index init (qs ! n)) then 0 else length (?s), [])) {x, y}
-              = step (Lxy (?s) {x, y}) (qs ! n) (if sublist (?b) {index init x, index init y} ! (index (Lxy init {x,y}) (qs ! n)) 
+          have a2: " Lxy (step (?s) (q) (if ?b ! (index init (q)) then 0 else length (?s), [])) {x, y}
+              = step (Lxy (?s) {x, y}) (q) (if sublist (?b) {index init x, index init y} ! (index (Lxy init {x,y}) (q)) 
                               then 0 
                               else length (Lxy (?s) {x, y}), [])"
                apply(auto simp add: a step_def) by(simp add: b)
-          from a1 a2 show ?case by simp
+ 
+
+           show ?case using a1 a2 by(simp)
         qed simp 
-        also have "\<dots>=config'' BIT (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs (Suc n))"
-          using 5 apply(simp add:  nrofnextxy_Suc[OF nqs True] take_Suc_conv_app_nth config'_rand_snoc)  
-          apply(subst iH) by(simp add: split_def ) 
+        also have "\<dots> = ?R (qs@[q])"
+          using True apply(simp add: Lxy_snoc take_Suc_conv_app_nth config'_rand_snoc)  
+          using iH by(simp add: split_def ) 
         finally show ?thesis .
       next
         case False
-        then have qnx: "(qs!n) \<noteq> x" and qny: "(qs!n) \<noteq> y" by auto
+        then have qnx: "(q) \<noteq> x" and qny: "(q) \<noteq> y" by auto
 
         let ?proj="(\<lambda>a. (Lxy (fst a) {x, y}, (sublist (fst (snd a)) {index init x, index init y}, Lxy init {x, y})))"
-
-        note gut=nrofnextxy_Suc2[OF nqs False]                                     
-        note iH=Suc(1)[OF nLastxy]
-        have "map_pmf ?proj (config'' BIT qs init (Suc n))
-             = map_pmf ?proj (config'' (BIT_init, BIT_step) qs init n
-                \<bind> (\<lambda>p. BIT_step p (qs ! n) \<bind> (\<lambda>pa. return_pmf (step (fst p) (qs ! n) (fst pa), snd pa)))) "
-               using nqs by (simp add: split_def take_Suc_conv_app_nth config'_rand_snoc)
-        also have "\<dots> = map_pmf ?proj (config'' (BIT_init, BIT_step) qs init n)" 
+             
+        thm iH
+        have "map_pmf ?proj (config_rand BIT init (qs@[q]))
+             = map_pmf ?proj (config_rand (BIT_init, BIT_step) init qs
+                \<bind> (\<lambda>p. BIT_step p (q) \<bind> (\<lambda>pa. return_pmf (step (fst p) (q) (fst pa), snd pa)))) "
+               by (simp add: split_def take_Suc_conv_app_nth config'_rand_snoc)
+        also have "\<dots> = map_pmf ?proj (config_rand (BIT_init, BIT_step) init qs)" 
             apply(simp add: map_pmf_def bind_assoc_pmf bind_return_pmf BIT_step_def)
             proof (rule bind_pmf_cong)
               case (goal2 z)
@@ -506,19 +487,19 @@ proof -
               
               have ff_ix: "index init x < length (?b)" unfolding ff_len using a(1) by auto
               have ff_iy: "index init y < length (?b)" unfolding ff_len using a(2) by auto
-              have ff_q: "index init (qs!n) < length (?b)" unfolding ff_len using qininit by auto
-              have iq_ix: "index init (qs!n) \<noteq> index init x" using a(1) qnx by auto
-              have iq_iy: "index init (qs!n) \<noteq> index init y" using a(2) qny by auto
+              have ff_q: "index init (q) < length (?b)" unfolding ff_len using qininit by auto
+              have iq_ix: "index init (q) \<noteq> index init x" using a(1) qnx by auto
+              have iq_iy: "index init (q) \<noteq> index init y" using a(2) qny by auto
               have ix_iy: "index init x \<noteq> index init y" using a(2) xny by auto
 
               from goal2 have s_set[simp]: "set (?s) = set init" using config_rand_set by force
               have s_xin: "x\<in>set (?s)" using a(1) by simp
               have s_yin: "y\<in>set (?s)" using a(2) by simp
               from goal2 have s_dist: "distinct (?s)" using config_rand_distinct dinit by force
-              have s_qin: "qs ! n \<in> set (?s)" using qininit by simp
+              have s_qin: "q \<in> set (?s)" using qininit by simp
 
 
-              have fstfst: "sublist (flip (index ?m (qs ! n)) (?b))
+              have fstfst: "sublist (flip (index ?m (q)) (?b))
               {index init x, index init y}
                   = sublist (?b) {index init x, index init y}" (is "sublist ?A ?I = sublist ?B ?I")
               proof (cases "index init x < index init y")
@@ -549,8 +530,8 @@ proof -
               qed
 
 
-              have snd: "Lxy (step (?s) (qs ! n)
-                  (if ?b ! index ?m (qs ! n) then 0 else length (?s),
+              have snd: "Lxy (step (?s) (q)
+                  (if ?b ! index ?m (q) then 0 else length (?s),
                    [])) {x, y} = Lxy (?s) {x, y}" (is "Lxy ?A {x,y} = Lxy ?B {x,y}")
               proof (cases "x < y in ?B")
                 thm Lxy_project
@@ -585,25 +566,21 @@ proof -
  
               show ?case by(simp add: fstfst snd)
             qed simp
-        also have "\<dots> = config'' BIT (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs n)"
+        also have "\<dots> = config_rand BIT (Lxy init {x, y}) (Lxy qs {x, y})"
           using iH by (auto simp: split_def)
-        also have "\<dots> = config'' BIT (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs (Suc n))"
-          by(simp add: gut)
+        also have "\<dots> = ?R (qs@[q])"
+          using False by(simp add: Lxy_snoc)
         finally show ?thesis by (simp add: split_def)
       qed 
     qed
     } note strong=this
 
-    thm strong
-    
   { 
-    fix n::nat
-    assume nqs: "n < Lastxy qs {x,y}"
-    thm strong[OF nqs]
-    have "Pbefore_in x y BIT qs init n = 
+    fix n::nat 
+    have "Pbefore_in x y BIT qs init = 
         map_pmf (\<lambda>p. x < y in fst p)
             (map_pmf (\<lambda>(l, (w, i)). (Lxy l {x, y}, (sublist w {index init x, index init y}, Lxy init {x, y})))
-                  (config'' BIT qs init n))" 
+                  (config_rand BIT init qs))" 
                   unfolding Pbefore_in_def apply(simp add: map_pmf_def bind_return_pmf bind_assoc_pmf split_def)
                   apply(rule bind_pmf_cong)
                     apply(simp)
@@ -618,35 +595,22 @@ proof -
                           using v by simp
                       then show ?case by simp
                     qed
-     also have "\<dots> = map_pmf (\<lambda>p. x < y in fst p) (config'' BIT (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x, y} qs n))"
-        apply(subst strong[OF nqs]) by simp
-     also have "\<dots> = Pbefore_in x y BIT (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x,y} qs n)" unfolding Pbefore_in_def by simp
-     finally have "Pbefore_in x y BIT qs init n =
-        Pbefore_in x y BIT (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x,y} qs n)" .      
+     also have "\<dots> = map_pmf (\<lambda>p. x < y in fst p) (config_rand BIT (Lxy init {x, y}) (Lxy qs {x, y}))"
+        apply(subst strong) using goal1 by simp_all
+     also have "\<dots> = Pbefore_in x y BIT (Lxy qs {x, y}) (Lxy init {x, y})" unfolding Pbefore_in_def by simp
+     finally have "Pbefore_in x y BIT qs init =
+        Pbefore_in x y BIT (Lxy qs {x, y}) (Lxy init {x, y})" .      
   
   } note fine=this
 
-  with goal1(4) show ?case by simp
-  (* posxy :      index in Lxy \<mapsto> index in qs
-     nrofnextxy:  index in qs \<mapsto> index in Lxy
-     
-  from goal1(4)  have "(posxy qs {x, y} n) < length qs"
-    using posxy_in_bounds by metis
-  then have img_in_bounds: "(posxy qs {x, y} n) \<le> length qs" by auto
-  
-  from goal1(4) have bij: "(nrofnextxy {x, y} qs (posxy qs {x, y} n)) = n"
-    using nrofnextxy_posxy_id by auto
-
-  from fine[OF img_in_bounds,unfolded bij] show ?case . *)
+  with goal1 show ?case by simp
 qed
-
+        
 
 theorem BIT_pairwise: "pairwise BIT"
-apply(rule pairwise_property_lemma')
-  apply(rule BIT_pairwise') by(simp_all)
-
-
-
+apply(rule pairwise_property_lemma)
+  apply(rule BIT_pairwise') 
+    by(simp_all add: BIT_step_def)
 
 
 end
