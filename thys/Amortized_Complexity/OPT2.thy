@@ -1157,23 +1157,6 @@ following requests one can apply the induction hypothesis.
 *}
 
 
-
-(*<*)
-
-section "The function steps"
-
-
-fun steps where
-  "steps s [] [] = s"
-| "steps s (q#qs) (a#as) = steps (step s q a) qs as"
-
-lemma steps_append: "length qs = length as \<Longrightarrow> steps s (qs@[q]) (as@[a]) = step (steps s qs as) q a"
-apply(induct qs as arbitrary: s rule: list_induct2) by simp_all
-
-
-
-(*>*)
-
 section "Remarks"
 
 text {*
