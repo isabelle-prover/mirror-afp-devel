@@ -36,7 +36,7 @@ unfolding lastxy_def nextxy_def apply(simp) oops
 
 
 theorem MTF_pairwise: "pairwise (embed MTF)"
-proof(rule pairwise_property_lemma'_new)
+proof(rule pairwise_property_lemma)
   case (goal1 init qs x y)
   then have xyininit: "{x, y} \<subseteq> set init" 
         and qsininit: "set qs \<subseteq> set init" by auto
@@ -46,21 +46,21 @@ proof(rule pairwise_property_lemma'_new)
   from qsininit show ?case 
     proof (induct qs rule: rev_induct)
       case Nil 
-      show ?case unfolding Pbefore_in'_def MTF_def
+      show ?case unfolding Pbefore_in_def MTF_def
         apply(simp)
         apply(rule Lxy_mono)
           apply(fact xyininit)
           by(fact dinit)
     next
       case (snoc q qs)
-      then have iH: "Pbefore_in' x y (embed MTF) qs init =
-        Pbefore_in' x y (embed MTF) (Lxy qs {x, y}) (Lxy init {x, y})" by auto 
+      then have iH: "Pbefore_in x y (embed MTF) qs init =
+        Pbefore_in x y (embed MTF) (Lxy qs {x, y}) (Lxy init {x, y})" by auto 
 
       thm bind_return_pmf map_bind_pmf
-      have "Pbefore_in' x y (embed MTF) (qs@[q]) init 
+      have "Pbefore_in x y (embed MTF) (qs@[q]) init 
          = bind_pmf (config_rand (embed MTF) init qs)
               (\<lambda>xa. return_pmf (x < y in mtf2 (length (fst xa) - 1) (q) (fst xa)))"
-            unfolding Pbefore_in'_def MTF_def
+            unfolding Pbefore_in_def MTF_def
          by (auto simp add: config'_rand_snoc map_pmf_def bind_assoc_pmf take_Suc_conv_app_nth  bind_return_pmf map_bind_pmf split_def step_def)
       also have "\<dots> = map_pmf (\<lambda>xa. (x < y in mtf2 (length (fst xa) - 1) (q) (fst xa)))
               (config_rand (embed MTF) init qs)" unfolding map_pmf_def by simp
@@ -176,14 +176,14 @@ proof(rule pairwise_property_lemma'_new)
         also have "\<dots> =
               map_pmf (\<lambda>p. x < y in fst p)
                 (config_rand (embed MTF) (Lxy init {x, y}) (Lxy qs {x, y}) )"
-                  using iH[unfolded Pbefore_in'_def ] by auto
+                  using iH[unfolded Pbefore_in_def ] by auto
         also have "\<dots> = 
               map_pmf (\<lambda>p. x < y in fst p)
                 (config_rand (embed MTF) (Lxy init {x, y}) (Lxy (qs@[q]) {x, y}))" using False by(simp add: Lxy_snoc)
         finally show ?thesis .
       qed
-      also have "\<dots> = Pbefore_in' x y (embed MTF) (Lxy (qs@[q]) {x, y}) (Lxy init {x, y}) "
-                   unfolding Pbefore_in'_def MTF_def by simp
+      also have "\<dots> = Pbefore_in x y (embed MTF) (Lxy (qs@[q]) {x, y}) (Lxy init {x, y}) "
+                   unfolding Pbefore_in_def MTF_def by simp
       finally show ?case .
     qed  
 qed (simp add: MTF_def)
