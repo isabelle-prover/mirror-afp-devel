@@ -19,48 +19,9 @@ text {*
 (*>*)
 
 chapter "TS: another 2-competitve Algorithm"
-
-text {*
-\label{ch:TS}
-
-We now study another deterministic algorithm: TS was introduced as a member of the
-family of randomized online algorithms TIMESTAMP due to Albers \cite{albers1998improved}.
-The best member of this family is $\Phi$-competitive (with $\Phi \approx 1.62$ being the golden ratio).
-A little later a combination of TS and BIT called COMB was presented by Albers et al \cite{albers1995combined}
-and it even improved that bound to $1.6$. 
-
-This is to date the best known algorithm for the list update problem. As for a lower bound of the
-competitive factor, Amb{\"u}hl showed that no randomized online algorithm (in the partial cost model)
-can attain a better competitive ratio than $1.50155$ \cite{ambuhl2000optimal}.
-
-The proof of the competitivness of COMB in \cite{albers1995combined} is based on the analysis of
-TS and BIT on lists of length 2.
-The first step of this development, proving TS's 2-competitiveness for lists of length 2, is the
-topic of this chapter.
-
-In the following we will first define the deterministic online algorithm TS, then will introduce to
-the phase partitioning technique that we suggested in the last chapter and finally use it to show that
-TS is 2-competitive on lists of length $2$. Assuming we had proven the pairwise property of TS
-we could use the list factoring lemma to conclude TS being 2-competitive on lists of arbitrary length.
-
-*}
-
+ 
 section "Definition of TS"
-
-text {*
-
-The deterministic online algorithm due to Albers \cite{albers1998improved} can be formulated as follows:
-
-\begin{definition}[TS informal]
-After each request, the accessed item @{term x} is inserted immediately in front of the first item
-@{term y} that precedes @{term x} in the list and was requested at most once since the last request
-to @{term x}.
-If there is no such item @{term y} or if @{term x} is requested for the first time, then the position
-of @{term x} remains unchanged.
-\end{definition}
-
-*}
-
+ 
 
 (*<*)  
 definition TS_step_d where
@@ -79,31 +40,6 @@ definition TS_step_d where
       )
       ,[]), q#(snd s))"
 
-
-(*>*)
-
-
-text {*
-In order to formalize this algorithm we take the history of the request sequences already
-processed as the internal state. Consequently we initialize TS with an empty history list.
-Also we formalize the deterministic step.
-
-\begin{definition}@{text " "}\\ 
-\label{def_TS_step_d}
-@{thm[break] TS_step_d_def[no_vars]}
-\end{definition}
-
-To determine the action taken by TS to serve a request @{term q} with list state being @{term s} and
-history being @{term "is"}, we first compute to what position the requested element is moved, then
-add no paid exchanges and update the history with the currently requested element @{term q}.
-As for the position @{term q} gets moved to, it is a literal translation of the informal definition.
-Note that @{term "take n xs"} returns the length @{term n} prefix of @{term xs}.
-
-
-*}
-
-
-(*<*)
 
 lemma sf_TS_step_d: "snd (fst (TS_step_d (s,is) q)) = []"
 unfolding TS_step_d_def by(simp)
@@ -149,26 +85,7 @@ lemma step2_xy2: "x\<noteq>y \<Longrightarrow> q \<in> {x, y} \<Longrightarrow> 
     \<Longrightarrow> snd (step2 s' s q) \<in> {[x,y], [y,x]}"
 using step2_xy by (metis step2.elims)
 
-
-
-(*>*)
-
-
-text {*
-
-To conform with the format of the framework we lift this definition to an online algorithm:
-
-\begin{definition}@{text " "}\\ 
-
-@{thm rTS_def[no_vars]}
-\end{definition}
-
-
-*}
-
-
-(*<*)
-
+ 
 
 fun TSstep where
   "TSstep qs n (is,s) 
@@ -232,37 +149,7 @@ unfolding T_on_as_sum T_TS_def
 apply(rule setsum.cong)
   apply(simp)
   unfolding t_TS_def by(simp add: t\<^sub>p_def split_def TSnopaid s_TS_def)
-
-
-
-(*>*)
-
-
-text {*
-
-We denote by @{term "s_TS init initH qs n"} the list state of TS after serving the @{term n}th 
-request of the request sequence @{term qs} starting with the initial list @{term init} and initial
-history list @{term initH}. Thus @{term "s_TS"} is just the first component of @{term "TSdet"}.
-
-As TS does not use paid exchanges the cost for a single step only depends on the position of the
-requested element. Hence the costs for a single step and the whole execution are
-
-\begin{lemma}@{text " "}\\
-@{thm t_TS_def[no_vars]}
-
-@{thm T_TS_def[eta_contract=false,no_vars]}
-\end{lemma}
  
-
-From that point on we will work in the deterministic domain, being able to lift it back into the 
-framework with lemma \ref{thm_T_on_T_TS}.
-
-
-*}
-
-
-(*<*)
-
 
 (* lemma to split the query list *)
 
@@ -274,22 +161,7 @@ apply(induct n)
   
 
 
-
-(*>*)
-
-
-text {*
-
-Note that TS maintains the history list the expected way:
-
-\begin{lemma}
-@{thm sndTSdet[no_vars]}
-\end{lemma}
-
-*}
-
-
-(*<*)
+ 
 
 
 lemma TSdet_append: "n\<le>length xs \<Longrightarrow> TSdet init initH (xs@ys) n
@@ -398,128 +270,19 @@ proof (induct ys rule: rev_induct)
     by auto
   finally show ?case unfolding T_TS_def .
 qed (simp add: T_TS_def)
-  
-(*>*)
-
-section "Phase Partitioning Technique"
-
-text {*
-
-In this technique we cut the request sequence in phases ending with two consecutive requests
-to the same element (@{term "xx"} or @{term "yy"}).
-
-These phases come in different types, which will be characterised by regular expressions over the 
-alphabet @{term "{x,y}"}.
-In order to show equivalence of the languages represented by these, we use the theory of
-regular expressions:
-A regular expression equivalence checker has already been formalized in Isabelle/HOL \cite{Regex_Equivalence-AFP},
-which we extend to regular expressions with variables.
-
-With this tool in place, we can easily show that the regular expressions defining the different
-types really cover all possible request sequences.
-
-*}
-
-
-subsection "Regular Expressions Equivalence"
-(*<*)
-
-thm myUNIV_char[unfolded myUNIV_def[simplified] L_lasthasxx_def[simplified seq.simps],
-          no_vars]
-thm nodouble_def[simplified seq.simps, no_vars]
-
-(*>*)
-
-text {*
-
-In the following we will partition all request sequences into phases that end with two consecutive
-requests to the same element and possibly a trailing incomplete phase.
-These phases can be summarized into 4 types, which can be represented by regular expressions over
-the elements @{term x} and @{term y}.
-In order to check whether we covered all possible request sequences we formalize these regular
-expressions and use a regular expression equivalence checker available in Isabelle/HOL.
-
-All request sequences can be described by @{thm (rhs) myUNIV_def[simplified, no_vars]}, the phases that
-end in two identical elements by @{thm (rhs) L_lasthasxx_def[simplified seq.simps, no_vars]} and the incomplete
-phases (sequences that do not contain any occurrence of two consecutive elements) by 
-@{thm (rhs) nodouble_def[simplified seq.simps, no_vars]}.
-           
-First we show that any request sequence can be described by a concatenation of several phases and
-an trailing incomplete phase:
-\begin{lemma} 
-@{thm myUNIV_char[unfolded L_4cases_def[simplified seq.simps] L_lasthasxx_def[simplified seq.simps] nodouble_def[simplified seq.simps], no_vars]}
-\end{lemma}
-
-Furthermore a phase can be of one of the following types:
-\begin{table}[ht]
-\centering
-\label{tab_phases}
-\begin{tabular}{l|l}
- & @{term "\<sigma>"}   \\ \hline
-\hline
-A &  @{thm (rhs) L_A_def[simplified seq.simps, no_vars]}           \\ \hline
-B & @{thm (rhs) L_B_def[simplified seq.simps, no_vars]}   \\ \hline
-C & @{thm (rhs) L_C_def[simplified seq.simps, no_vars]}   \\ \hline 
-D & @{thm (rhs) L_D_def[simplified seq.simps, no_vars]}   \\
-\end{tabular}
-\caption{4 types of phases.}
-\end{table}
-
-In Chapter \ref{ch:OPT2} we determined OPT2's cost for serving request sequences of the first three types.
-We verify that they cover all proper phases:
-
-\begin{lemma}
-\label{thm_4cases_cover_all_phases}
-@{thm lastxx_is_4cases[unfolded L_4cases_def[simplified seq.simps verund.simps] L_lasthasxx_def[simplified seq.simps], no_vars]}
-\end{lemma}
-
-Note that these results naturally also hold for @{term x} and @{term y} interchanged. All the proofs
-of this section can be proven mechanically with the regular expression equivalence checker.
-
-\begin{example}
-Figure \ref{fig:TS_example} shows the request sequence @{term "xyxyxxxyxyxyxyyxxxyxyxyxyxyxy"}
-partitioned into phases and a trailing incomplete phase. Any such incomplete phase can be padded
-to form a proper phase by repeating the last requested element. This also can be ensured via
-proving the equivalence of two regular expressions.
-\begin{figure}[ht]
-	\centering
-\input{diagrams/TS_example.pgf}
-	\label{fig:TS_example}
-\end{figure}
-\end{example}
-
-
-*}
+    
 
 
 subsection "Analysis of the Phases"
-
-text {*
-
-Let us first consider the 4 different phase types we just introduced and proof that TS is 2-competitive
-for request sequences of these types:
-
-
-*}
-
+ 
 
 definition "inv_TS qs x y h = (\<exists>x' y'. s_TS [x,y] h qs (length qs) = [x',y'] \<and> (\<exists>hs. (rev qs @ h) = [x',x']@hs))" 
 
-
-
-
-(*<*)
-
-
-
-
 (*
-
 TS_A   (x+1)yy \<rightarrow>         Plus(Atom (x::nat)) One,(Atom y), (Atom y)]
 TS_B   (x+1)yx(yx)*yy \<rightarrow>  Plus(Atom x) One,(Atom y),(Atom x),Star(Times (Atom y)(Atom x)),(Atom y),(Atom y)]
 TS_C   (x+1)yx(yx)*x  \<rightarrow>  Plus(Atom x) One,(Atom y),(Atom x),Star(Times (Atom y)(Atom x)),(Atom x)]
 TD_D   xx             \<rightarrow>  seq[(Atom x),(Atom x)]
-
 *)
 
 subsubsection "(yx)*?"
@@ -1321,154 +1084,12 @@ apply(cases "h=[]")
 
 
 thm TS_a'[unfolded Lxx_def L_lasthasxx_def, simplified seq.simps]
-
-(*>*)
-
-text {*
-
-Without loss of generality, we only consider servings of the phases with the element @{term x} in front of the current
-list.
-For every phase we assume that a certain invariant holds before the serving of the sequence:
-@{term "h=[] \<or> (\<exists>hs. h=[x,x]@hs)"}
-
-It states that either we are in the beginning of a request sequence and no element has been processed
-so far or the last two requests went to element @{term x}.
-This invariant implies that for the first request to @{term y}, the element would not be moved to the front
-of @{term x} (c.f. definition \ref{def_TS_step_d}).
-
-We now can show: *}
-(*
-\begin{lemma}
-@{thm TS_a'[simplified seq.simps, no_vars]}
-
-@{thm TS_b'[simplified seq.simps,no_vars]}
-
-@{thm TS_c'[simplified seq.simps,no_vars]}
-
-@{thm TS_d[simplified seq.simps,no_vars]}
-\end{lemma}
-*)
-
-text {*
-\begin{table}[ht]
-\centering
-\label{tab_TScost}
-\begin{tabular}{l|l|c|c}
- & @{term "\<sigma>"} & @{term "T_TS [x,y] h \<sigma>"} & @{term "T\<^sub>p [x,y] \<sigma> (OPT2 \<sigma> [x,y])"} \\ \hline
-\hline
-A &  @{thm (rhs) L_A_def[simplified seq.simps, no_vars]}          & $2$ &  $1$\\ \hline
-B & @{thm (rhs) L_B_def[simplified seq.simps, no_vars]}  & $2*\frac{@{term "length \<sigma> - 3"}}{2}$ & $\frac{@{term "length \<sigma>"}}{2}$ \\ \hline
-C & @{thm (rhs) L_C_def[simplified seq.simps, no_vars]}  & $2*\frac{@{term "length \<sigma> - 3"}}{2}$ & $\frac{@{term "length \<sigma> - 1"}}{2}$ \\ \hline 
-D & @{thm (rhs) L_D_def[simplified seq.simps, no_vars]}  & $0$ & $0$  \\
-\end{tabular}
-\caption{Costs of TS for request sequence of the 4 types.}
-\end{table}
-
-Table \ref{tab_TScost} shows the costs of TS and OPT2 for the 4 respective types.
-We now verify the numbers for TS: 
-
-For @{thm (rhs) L_A_def[simplified seq.simps, no_vars]}, we first may have a request to @{term x} that costs nothing
-as @{term x} is in the front of the list. The first request to @{term y} costs one and the element will
-not be moved to the front, as the invariant still holds. The second request to @{term y} costs again
-one and the element will be moved to the front.
-
-For B, again the potential request to @{term x} is free and preserves the invariant. The first request
-to @{term y} costs 1 and leaves the list unchanged. Then the second request to @{term y} costs 1 again
-and moves @{term y} to the front. Each subsequent request for @{term y} or @{term x} in
-@{term "Times (Star (Times x y)) y"} costs one and swaps the list, in the end the last request for 
-@{term y} costs nothing, the list state is @{term "[y,x]"} and the internal state (being the history)
-contains the prefix @{term "[y,y]"}. In total let @{term "k"} be the number of repetitions of the 
-star expression, then the cost for B is @{term "(2::nat)*k+1"}. We can express
-@{term "k = (length \<sigma> - 5) div 2"} and thus the cost to be @{term "2 * (length \<sigma> - 3) div 2"}.
-
-A similar derivation gives a total cost of @{term "2 * (length \<sigma> - 3) div 2"} for type C.
-
-The last type is easy, any request to @{term x} costs nothing, and the invariant is preserved.
-
-
-The formal proof for each type is again as for the analysis of OPT2 a simulation of the algorithm
-plus an induction on the star of the regular expressions. The complicated part is to carry through
-the invariant involving the history of the request sequence.
-
-Note that in contrast to Table 1.1 in \cite[section 1.6.1]{borodin2005online} we are not able to
-state the respective costs relative to the number of repetitions of @{term "yx"}, nevertheless it
-can be stated in terms of the length of the request sequence.
-Albeit following their idea, we define the phase types differently: They allow more than one heading
-@{term x} in type A, B and C; in contrast we only allow zero or one occurrence but add type D. 
-This captures the idea of splitting the request sequence into phases, that end with two consecutive
-requests to the same element, more precisely. This explains the differences of the results.
-
-Finally, as the 4 types cover all request sequences of a phase (Lemma \ref{thm_4cases_cover_all_phases})
-we obtain the following:
-
-\begin{lemma}
-\label{thm_analysisTS}
-For any request sequence @{term qs} in @{thm (rhs) L_4cases_def[simplified seq.simps verund.simps,no_vars]}
-and the history @{term h} satisfying the invariant it holds:
-
-@{thm[break] (concl) D[no_vars]}
-\end{lemma}
-
-*}
-
-
-
-
-
-
-
-(*<*)
-
-
-
-
-
-
-             
-
-
-(*>*)
-
+ 
 
 subsection "Phase Partitioning"
-
-
-text {*
-
-With the competitiveness results for the phases at hand we now turn to the whole request sequence:
-
-*}
-
-(*<*)
-
-
-
+ 
 theorem TS_OPT2: "(x::nat) \<noteq> y \<Longrightarrow> set \<sigma> \<subseteq> {x,y} \<Longrightarrow> h=[] \<or> (\<exists>hs. h=[x,x]@hs)
      \<Longrightarrow> T_TS [x,y] h \<sigma> \<le> 2 * T\<^sub>p [x,y] \<sigma> (OPT2 \<sigma> [x,y]) + 2"
-(*>*)
-text_raw {*
-
-\begin{lemma}
-@{term "?thesis"}
-\end{lemma}
-\begin{proof}
-*}
-
-text {*
-
-Suppose the initial list is @{term "[x,y]"}, the current history is @{term "h"} and the invariant
-for TS holds.
-
-As we already mentioned we partition the given request sequence @{term "\<sigma>"} into phases.
-
-We proceed by well-founded induction on the length of @{term "\<sigma>"} and chop off the phases one by one. 
-
-Thus we have two cases: either we have a phase as prefix of @{term "\<sigma>"} or @{term "\<sigma>"} 
-is an incomplete phase (c.f. Figure \ref{fig:TS_example}).
-
-*}
-
-(*<*)
 proof (induction "length \<sigma>" arbitrary: h \<sigma> x y rule: less_induct)
   case (less \<sigma>)
   show ?case
@@ -1553,41 +1174,6 @@ proof (induction "length \<sigma>" arbitrary: h \<sigma> x y rule: less_induct)
     also have E4: "\<dots> = 2 * (T\<^sub>p [x,y] \<sigma> (OPT2 \<sigma> [x,y])) + 2"
         using qs by auto
     finally show ?thesis .
-
-(*>*)
-text {*
-
-In the first case it is possible to find a prefix @{term "xs"} that ends in two consecutive requests
-to the same element.
-Let @{term ys} denote the rest s.t. @{thm qs}. Let @{term "LTS'"} denote the list state of TS after
-serving @{term xs}.
-
-\begin{center}
-\begin{tabular}{l@ {~~@{text ""}~~} p{14cm}}
-  & @{thm (lhs) E0}\\ 
-@{text "="} & @{thm (rhs) E0}\\
-@{text "="} & @{thm (rhs) E1}\\
-@{text "\<le>"} & @{thm (rhs) E2}\\
-@{text "\<le>"} & @{thm (rhs) E3}\\
-@{text "="} & @{thm (rhs) E4}
-\end{tabular}
-\end{center}
-
-We first split the serving of @{term "\<sigma>"} by TS at the end of the phase.
-Knowing from the second part of Lemma \ref{thm_analysisTS} that after serving
-the phase the invariant holds again, we can apply the induction hypothesis on the shorter request
-sequence @{term ys}.
-Then we use the first part of Lemma \ref{thm_analysisTS}.
-After that we have to put together the serving of @{term "\<sigma>"} by OPT2.
-This is valid as we can show that OPT2 has the same list state (@{term LTS'}) as TS after serving the
-prefix @{term xs}:
-after the two consecutive requests to the same element this element is in front of OPT2's list,
-as it is for TS's.
-
-*}
-(*<*)
-
-
   next
     case False
     note f1=this
@@ -1641,44 +1227,8 @@ as it is for TS's.
         finally show ?thesis by auto
       qed
       finally show ?thesis . 
-(*>*)
-text {*
-
-In the second case if it is not possible to find a phase as prefix, we either have the trivial case of
-an empty request sequence or a request sequence with alternating @{term x} and @{term y}
-(@{thm (rhs) nodouble_def[simplified, of x y, no_vars]}).
-But we can complete @{term \<sigma>} to a proper phase by repeating the last requested element:
-e.g. @{term "xyx"} gets padded to @{term "xyxx"} which is a valid type C phase.
-
-\begin{center}
-\begin{tabular}{l@ {~~@{text ""}~~} p{14cm}}
-  & @{thm (lhs) E0}\\ 
-@{text "\<le>"} & @{thm (rhs) E0}\\
-@{text "\<le>"} & @{thm (rhs) E1}\\
-@{text "\<le>"} & @{thm (rhs) E2}
-\end{tabular}
-\end{center}
-
-First we know that serving one more request costs at least as much as serving @{term \<sigma>}. Then we can
-apply lemma \ref{thm_analysisTS} as before.
-Finally we know that OPT2 has at most cost 1 for the padded request, which gets doubled and
-constitutes the constant term.
-
-*}
-(*<*)
-
-
-
-
     qed
   qed
-(*>*)
-text_raw {*
-
-\end{proof}
-*}
-
-(*<*)
 qed  
 
 thm TS_OPT2 OPT2_is_opt
@@ -2795,20 +2345,6 @@ qed
 
 *)
 
-
-
-fun a :: "('a::linorder) \<Rightarrow> unit" where
- "a x = ()"
-
-value "a (1::nat)"
-
-
-
-thm factoringlemma_withconstant
-thm T_TS_T_on
-
-term "{(init::bool list). distinct init}"
-
 lemma TS_compet:   "pairwise (embed (rTS [])) \<Longrightarrow> 
       \<forall>s0\<in>{init::(nat list). distinct init \<and> init\<noteq>[]}. \<exists>b\<ge>0. \<forall>qs\<in>{x. set x \<subseteq> set s0}. T\<^sub>p_on_rand (embed (rTS [])) s0 qs \<le> (2::real) *  T\<^sub>p_opt s0 qs + b"
 unfolding rTS_def 
@@ -2890,30 +2426,5 @@ unfolding compet_def
 using TS_compet sorry
  (* TODO: integrate qs filtering into definition or prove a lemma s.th. additional 
           requests to elements outside the list do not alter the competitive ratio *)
-
-(*>*)
-
-text {*
-
-Now as we know that OPT2 is optimal and we can reintegrate our formulation of TS into the framework
-we obtain the corollary:
-
-\begin{corollary}
-@{thm TS2[no_vars]}
-\end{corollary}
-
-section "TS is 2-competitive"
-
-Assuming that we also show that TS has the pairwise property we can use the list factoring lemma 
-\ref{thm_listfactoringlemma} and conclude that TS is 2-competitive:
-
-\begin{lemma}[{\cite[Theorem 1.4]{borodin2005online}}]
-@{text " "}\\
-@{thm[break] TS_compet'[no_vars]}
-\end{lemma}
-
-*} 
-
-(*<*)
+ 
 end
-(*>*)
