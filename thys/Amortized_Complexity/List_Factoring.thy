@@ -1,7 +1,6 @@
 (*  Title:       List Factoring
     Author:      Max Haslbeck
 *)
-(*<*)
 theory List_Factoring
 imports
 Partial_Cost_Model
@@ -9,69 +8,15 @@ MTF2_Effects
 begin
 term config
 hide_const config compet
-(*>*)
+
+
 
 chapter "List factoring technique"
 
 
-text {*
-\label{ch:ListFactoring}
-
-In the last two chapters we have seen proofs for competitiveness of the algorithms MTF and BIT.
-Albeit these algorithms are simple to state, their analysis is already quite complicated.
-In order to analyse more complex algorithms we long for better techniques.
-
-The proof technique \emph{list factoring} enables us to reason about a certain algorithm only on lists of 
-length $2$ and then lift the result to lists of arbitrary length. As most algorithms collapse into 
-quite easy ones, once they only work on two elements, the proofs typically get much shorter, and thus
-enable us to tackle more involved algorithms.
-
-Borodin gives quite easy proves of TS being 2-comp, BIT being 1.75-comp and their combination 
-COMB being 1.6-comp, once the proof technique of list factoring is available.
-
-The downside of this approach is, that a lot of work has to be done in order to obtain
-this proof technique.
- 
-
-*} 
-
-text {*
-In this chapter we introduce the list factoring technique for analyzing algorithms for the list update
-problem. 
-Therefor we first present a different representation of the cost of a list update algorithm with
-which we can decompose this cost to the costs only involving pairs of elements. We then introduce the
-pairwise property of online algorithms, which is satisfied by a number of proposed algorithms (e.g
-BIT, MTF, TS, etc.). With these two ingredients we are able to show the factoring lemma which enables
-us to lift competitiveness results of lists of length two to arbitrary list lengths.
-
-\emph{Note that from this chapter on we consider the partial cost model for the list update problem,
-i.e. an access to the front element has cost $0$.}
-*}
-
-
-section "Another view on the cost of an algorithm for the list update problem"
- 
-
-text {*
-The list factoring technique only works for algorithms that do not execute paid exchanges. These have
- the property that a request's cost only depends on the position in the list.
-
-The main idea of the list factoring technique is to count the cost of accesses in a different way:
-Instead of thinking about the cost of a request as the position @{term "i"} in the list and attributing
-the entire access cost of @{term "i"} to that element, we describe it as the number of elements 
-that precede the requested element.
-We thus change our view and attribute a ``blocking cost'' of $1$ to every element that precedes the 
-requested element. For the requested element and all following the ``blocking cost'' is $0$.
-
-*}
-
-(*<*)
 fun ALG :: "'a \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> ('a list * 'is) \<Rightarrow> nat" where
   "ALG x qs i s = (if x < (qs!i) in fst s then 1::nat else 0)" 
-
-
-
-value "take (index [1::nat,2,3] 1) [1,2,3]"
+ 
 
 lemma befaf: "q\<in>set s \<Longrightarrow> distinct s \<Longrightarrow> before q s \<union> {q} \<union> after q s = set s"
 proof -
@@ -281,41 +226,7 @@ proof -
           else 0 ))" apply(rule setsum.cong) by(auto)
   finally show ?thesis .
 qed
-
-
-(*>*)
-
-text {*
-
-Formally we state the blocking cost of an element @{term "x"} for the requested element @{term "qs!i"}
-for a current state tuple @{term "s"} as. Remember that a state tuple @{term "(is,c)"} is a pair of 
-an internal state @{term "is"} and a list configuration @{term "c"}.
- 
-\begin{definition}
-@{thm ALG.simps[no_vars]}
-\end{definition}
-
-We now lift this definition into the randomized world, where we have to cope with a distribution over
-states and expectations: @{term "ALG' A qs init i x"} determines the expected blocking cost of element
-@{term "x"} in the @{term "i"}th step of the execution of the online algorithm @{term "A"} on the
-request sequence @{term "qs"} starting from initial list state @{term "init"}.
-
-\begin{definition}
-@{thm ALG'_def[no_vars]}
-\end{definition}
-
-We can find another representation of the cost of an online algorithm without paid exchanges:
-*}
-
-
-
-(*<*)
-
-thm config_rand_set
-
-term "(set init) \<times> (set init)"
-
-
+  
 lemma umformung:
   fixes A :: "(('a::linorder) list,'is,'a,(nat * nat list)) alg_on_rand"
   assumes no_paid: "\<And>is s q. \<forall>((free,paid),_) \<in> (snd A (s,is) q). paid=[]"
@@ -505,55 +416,12 @@ proof -
      also have E6: "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
                   ALGxy A qs init x y)"
            unfolding ALGxy_def by simp
-     finally show ?thesis .
-(*>*)
-text {*
-
-\begin{center}
-\begin{tabular}{l@ {~~@{text ""}~~} p{14cm}}
-  & @{thm (lhs) E0}\\
-@{text "="} & @{thm[eta_contract=false] (rhs) E0}\\
-@{text "="} & @{thm[eta_contract=false] (rhs) E1}\\
-@{text "="} & @{thm (rhs) E2}\\
-@{text "="} & @{thm (rhs) E3}\\
-@{text "="} & @{thm[break] (rhs) E4}\\
-@{text "="} & @{thm[break] (rhs) E5}
-\end{tabular}
-\end{center}
-
-First we unfold the definition of the algorithm's cost, then the cost of step @{term "i"} is equivalent
-to the sum of blocking cost of all elements in step @{term "i"}. We rearrange the summations and denote
-the inner summation of the last expression @{term "ALGxy A qs init x y"}, meaning the cost generated
-by @{term "x"} blocking @{term "y"} or vice versa: 
-
-\begin{definition}
-@{text " "}\\
-@{thm ALGxy_def[of A qs init x y, no_vars]}
-\end{definition}
-
-*}
-(*<*)
-
-
+     finally show ?thesis . 
 qed (* das ist gleichung 1.4 *)
 
 
 thm umformung
 
-(*>*)
-
-text {*
-
-We can summarize the above derivation:
-
-\begin{lemma}[{\cite[Equation 1.4]{borodin2005online}}]
-@{text " "}\\
-\label{thm_umformung}
-@{thm (concl) umformung[no_vars]}
-\end{lemma}
-
-
-*}
 
 
 lemma before_in_index1:
@@ -611,17 +479,6 @@ qed (simp add: assms)
 
 
 subsection "The pairwise property"
-
-text {*
-
-At this point we want to find a possibility to determine @{term "ALGxy A qs init x y"}. The only thing the 
-term depends on is the relative order of @{term "x"} and @{term "y"} during the execution. Note that
-this order can only change when either @{term "x"} or @{term "y"} is requested and thus can get in
-front of the other element via free exchanges.
-
-We now examine the cost of an algorithm on a projected list and request sequence:
-
-*}
 
 (*<*)
 
@@ -893,7 +750,7 @@ lemma Lastxy_length: "Lastxy qs {x, y} \<le> length qs" sorry
 
 lemma down_in_bounds: "n < Lastxy qs {x, y} \<Longrightarrow> nrofnextxy {x, y} qs n < length (Lxy qs {x,y})" sorry
 
-lemma pairwise_property_lemma':
+lemma pairwise_property_lemma'_new:
   assumes  
 "(\<And>init qs. qs \<in> {xs. set xs \<subseteq> set init}
     \<Longrightarrow> (\<And>n x y. (x,y)\<in> {(x,y). x \<in> set init \<and> y\<in>set init \<and> x\<noteq>y} 
@@ -926,8 +783,14 @@ proof clarify
           by(simp add: Lxy_snoc T_on_rand'_append)
         also have "\<dots> = ?L rs + f" sorry
         also have "\<dots> = ?R rs + f" by(simp add: snoc)
-        also from True have "\<dots> = ?R (rs@[r])" apply(simp add: ALGxy_def)
+        also from True have "\<dots> = ?R (rs@[r])" apply(simp add: ALGxy_def) sorry
+        finally show ?thesis .
+      next
+        case False
+        show ?thesis sorry
+      qed
     qed (simp add: ALGxy_def)
+qed
 
 
 
@@ -1264,33 +1127,6 @@ qed
 *)
 
 
-(*>*)
-
-text {*
-
-Denote with @{term "Lxy qs {x,y}"} the projection of @{term "qs"} over @{term x} and @{term y},
-being the request sequence @{term qs} after deleting all requests for elements other than  @{term x} and @{term y}.
-Similarly let @{term "Lxy init {x,y}"} be the projection of the initial list.
-
-Thus we can state the cost of serving the projected request sequence on the projected initial list as:
-
-@{term "T\<^sub>p_on A (Lxy qs {x,y} ) (Lxy init {x,y})"}
-
-\begin{definition}[pairwise property]
-\label{def_pairwise}
-We then say that the algorithm @{term A} satisfies the \emph{pairwise property} if
-
-@{thm[break] (rhs) pairwise_def[no_vars]}
-\end{definition}
-
-Remark:
-Algorithm MTF and BIT are examples of algorithms that satisfy the pairwise property. Also algorithms
-TS and COMB satisfy it.
-
-*}
-
-(*<*)
-
 lemma umf_pair: assumes
    0: "pairwise A"
   assumes 1: "\<And>is s q. \<forall>((free,paid),_) \<in> (snd A (s, is) q). paid=[]"
@@ -1308,50 +1144,10 @@ proof -
       using 0[unfolded pairwise_def] 2 by auto
   finally show ?thesis .
 qed
-
-       
-thm umformung
-(*>*)
-
-subsection "Desire for the list factoring technique"
-
-text {*
-
-With Lemma \ref{thm_umformung} and the definition of the pairwise property we are in the position to
-describe the list factoring technique:
-
-Suppose we have an algorithm A that does not use paid exchanges and satisfies the pairwise property.
-Assume for the moment that OPT also satisfies the pairwise property as well as Lemma \ref{thm_umformung}.
-Now suppose that we have proven that A is c-competitive for all projected request sequences 
-@{term "Lxy qs {x::nat,y} "} and initial lists @{term "Lxy init {x,y}"}:
-
-@{term "T\<^sub>p_on A qs\<^sub>2 init\<^sub>2 \<le> c * T\<^sub>p_on OPT (Lxy qs {x,y}) (Lxy init {x,y})"}
-
-With the pairwise property of both A and OPT we obtain
-
-@{term "ALGxy A qs init x y \<le> c * ALGxy OPT qs init x y"}
-
-By Lemma \ref{thm_umformung} we could conclude that A is c-competitive.
-
-\begin{center}
-\begin{tabular}{l@ {~~@{text ""}~~} p{14cm}}
-  & @{term "T\<^sub>p_on A qs init"}\\
-@{text "="} & @{term " (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALGxy A qs init x y)"}\\
-@{text "\<le>"} & @{term " (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. c * ALGxy OPT qs init x y)"}\\
-@{text "="} & @{term "  c * T\<^sub>p_on OPT qs init"}
-\end{tabular}
-\end{center}
-
-Unfortunately, OPT neither can avoid paid exchanges in general nor does it necessarily satisfy the
-pairwise property. That is why some detour has to be taken. In the next section we develop similar
-equations to Lemma \ref{thm_umformung} and the pairwise property for the optimal offline algorithms.
-
-*}
-
+ 
 section "List Factoring for OPT"
 
 
-(*<*)
 thm ALG.simps
 thm swap_def
 (* calculates given a list of swaps, elements x and y and a current state
@@ -1666,31 +1462,7 @@ unfolding ALG_Pxy_def apply(auto)
   apply(rule setsum.cong)
     apply(simp)
     using ALG_P'_rest2[symmetric, of _ qs Strat "[]" "[q]"] by(simp)
-        
-
-
-(*>*)
-
-text {*
-
-The crucial lack, why we cannot conduct the same development for OPT as in Lemma \ref{thm_umformung}
-is that OPT may use paid exchanges. Thus we have to take these into account.
-
-For that purpose we define the function @{term "ALG_P sws x y s"} that determines how often elements 
-@{term "x"} and @{term "y"} are swapped while executing the swaps @{term sws} on the list @{term s}.
-
-Note that we now want to use list factoring for a specific strategy (say @{term Strat}), thus we
-do not have to talk about expectations. So we can easily lift @{term ALG_P} up to
-@{term "ALG_Pxy Strat qs init x y"} -- denoting the number of paid exchanges between elements @{term x}
-and @{term y} while executing @{term Strat} on request sequence @{term qs} and initial list @{term init}.
-Similarly we lift the blocking cost @{term ALG} to @{term "ALGxy_det"}.
-
-*}
-
-
-
-(*<*)
-
+    
 
 lemma swap0in2:  assumes "set l = {x,y}" "x\<noteq>y" "length l = 2" "dist_perm l l"
   shows
@@ -2966,53 +2738,6 @@ proof -
 qed
 
 
-
-(*>*)
-
-
-text {*
-
-Then we are able to state the following theorem:
-
-
-\begin{theorem}[{\cite[Equation 1.7]{borodin2005online}}] Suppose we have a strategy @{term Strat} 
-that attains the optimal cost on @{term qs} and @{term init},
-then the optimal cost for the projected case is at most the blocking cost
-plus the number of paid exchanges executed between @{term x} and @{term y}:
-
-@{thm (concl) T1_7[no_vars]}
-\end{theorem}
-\begin{proof}
-Note that the right-hand side of this inequality gives the total cost of some offline algorithm
-$@{term Strat}^{@{term "{x,y}"}}$ that is a projection of @{term Strat} over @{term x} and 
-@{term y}:
-It includes all costs incurred by @{term "Strat"} for either accesses (via the blocking costs) and
-paid exchanges between @{term x} and @{term y}.
-The proof can be established by constructing $@{term Strat}^{@{term "{x,y}"}}$ and showing that
-its total cost in serving @{term "(Lxy qs {x,y})"} is the right-hand side of the inequality.
-Surely this algorithm pays at least as much as the optimal offline algorithm.
-\end{proof}
-
-Furthermore, with a similar development as in Lemma \ref{thm_umformung}, taking into account the paid
-exchanges, we can prove:
-
-\begin{theorem}[{\cite[Equation 1.8]{borodin2005online}}]@{text " "}\\
-@{thm[break] (concl) umformung_OPT[no_vars]}
-\end{theorem}
-
-Combining the last two theorems we can conclude:
-
-\begin{corollary}
-\label{thm_OPT_zerlegen}
-@{thm OPT_zerlegen[no_vars]}
-\end{corollary}
-
-\newpage
-*}
-
-
-
-
 section "Factoring Lemma"
 
 
@@ -3222,71 +2947,15 @@ proof
         using all b by simp
 qed
 
-(*>*)
 
-text {*
-
-Now as we have taken this detour, with the help of the pairwise property, Lemma \ref{thm_umformung}
-and Corollary \ref{thm_OPT_zerlegen} we can easily show the desired result:
-
-\begin{theorem}[{\cite[Lemma 1.2]{borodin2005online}}]
-\label{thm_listfactoringlemma}
-Assume @{term "\<alpha>"} to be nonnegative, @{term c} to be greater than @{term "1::nat"} and @{term A}
-to be an online algorithm that has the pairwise property. If @{term A} is c-competitive on lists
-of length 2
-
-@{thm[break] (prem 4) factoringlemma_withconstant[no_vars]}
-
-we can conclude that @{term A} is c-competitive on lists of arbitrary list length:
-
-@{thm (concl) factoringlemma_withconstant[no_vars]}.
-\end{theorem}
-
-
-*}
-
-
-(*<*)
+(*
  
-
-
-
-
-
-
-
-(*
-definition alg :: "'alg \<Rightarrow> nat list \<Rightarrow> nat list \<Rightarrow> nat"
-  where "T\<^sub>p  *)
-(*
-
-definition von costindependent macht keinen sinn, weil config und configp 
-immer gleich sind, wir lassen gar keine costdependent algorithms zu 
-definition costindependent where
-  "costindependent A = (\<forall>init qs. \<forall>n<length qs. config A qs init n = config\<^sub>p A qs init n)"
-
-thm costindependent_def
-
-
-lemma "T_on A qs init = T\<^sub>p_on A qs init + (length qs)"
-sorry
-
 
 (* Lemma 1.3 *)
 lemma costindependet: "compet\<^sub>p A c S0 \<Longrightarrow> compet A c SO"
 sorry
-
-
-
-corollary "1 \<le> real c
-  \<Longrightarrow> pairwise A
-  \<Longrightarrow> \<forall>qs init. \<forall>x\<in>set init. \<forall>y\<in>set init. T\<^sub>p_on A (Lxy qs {x,y}) (Lxy init {x,y}) \<le> c * (T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y}))
-  \<Longrightarrow>  compet A c SO"
-apply(rule costindependet)
-apply(rule factoringlemma) 
-  by simp_all
+ 
 
 *)
 
 end
-(*>*)
