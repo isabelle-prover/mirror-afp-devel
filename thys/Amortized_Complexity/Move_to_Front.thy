@@ -139,6 +139,9 @@ by (simp add: Lxy_def)
 lemma Lxy_append: "Lxy (xs@ys) S = Lxy xs S @ Lxy ys S"
 by(simp add: Lxy_def)
 
+lemma Lxy_snoc: "Lxy (xs@[x]) S = (if x\<in>S then Lxy xs S @ [x] else Lxy xs S)"
+by(simp add: Lxy_def)
+
 lemma Lxy_not: "S \<inter> set xs = {} \<Longrightarrow> Lxy xs S = []"
 unfolding Lxy_def apply(induct xs) by simp_all
 
