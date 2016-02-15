@@ -2586,29 +2586,49 @@ qed
 (* similar to *)
 thm umformung
 
+lemma T_snoc: "length rs = length as
+       \<Longrightarrow>  T init (rs@[r]) (as@[a])
+        = T init rs as + t\<^sub>p (steps' init rs as (length rs)) r a"
+apply(induct rs as arbitrary: init rule: list_induct2) by simp_all
+
+lemma steps'_snoc: "length rs = length as \<Longrightarrow> n = (length as)
+       \<Longrightarrow> steps' init (rs@[r]) (as@[a]) (Suc n) = step (steps' init rs as n) r a"
+apply(induct rs as arbitrary: init n r a rule: list_induct2)
+  by (simp_all) 
+
+lemma "n<length qs \<Longrightarrow> length qs = length Strat 
+    \<Longrightarrow> steps' init (take n qs) (take n Strat) n
+      = steps' init qs Strat n"  
+apply(induct n arbitrary: init)
+    apply(simp_all add: take_Suc_conv_app_nth)
+    apply(subst steps'_snoc)
+      apply(simp_all) sorry
 
 lemma Tp_darstellung: "length qs = length Strat
         \<Longrightarrow> T\<^sub>p init qs Strat =
-        (\<Sum>i\<in>{..<length qs}. t\<^sub>p (steps' init qs Strat i) (qs!i) (Strat!i))"
+        (\<Sum>i\<in>{..<length qs}. t\<^sub>p (steps' init qs Strat i) (qs!i) (Strat!i))" 
 proof -
   assume a: "length qs = length Strat"
-  have "\<And>n. n\<le>length qs \<Longrightarrow> n \<le> length Strat
+  {fix n
+      have " n\<le>length qs
         \<Longrightarrow> T\<^sub>p init (take n qs) (take n Strat) =
         (\<Sum>i\<in>{..<n}. t\<^sub>p (steps' init qs Strat i) (qs!i) (Strat!i))"
-  proof -
-    case goal1
-    show ?case sorry
-  qed
-  from a this[where n="length qs"] show ?thesis by auto
+  apply(induct n) 
+    apply(simp)
+    apply(simp add: a take_Suc_conv_app_nth)
+      apply(subst T_snoc)
+        using a apply(simp)
+        apply(simp) sorry
+  }
+  from a this[of "length qs"] show ?thesis by auto
 qed
 
          
 (* Gleichung 1.8 in Borodin *)
-lemma umformung_OPT:
+lemma umformung_OPT':
   assumes inlist: "set qs \<subseteq> set init"
   assumes dist: "distinct init"
-  assumes qsStrat: "length qs = length Strat"
-  assumes "T\<^sub>p init qs Strat = T\<^sub>p_opt init qs"
+  assumes qsStrat: "length qs = length Strat" 
   shows "T\<^sub>p init qs Strat = 
     (\<Sum>(x,y)\<in>{(x,y::('a::linorder)). x \<in> set init \<and> y\<in>set init \<and> x<y}.
           ALGxy_det Strat qs init x y + ALG_Pxy Strat qs init x y)"
@@ -2841,6 +2861,28 @@ lemma nn_contains_Inf:
   assumes nn: "S \<noteq> {}"
   shows "Inf S \<in> S"
 using assms Inf_nat_def LeastI by force
+
+
+
+(* Gleichung 1.8 in Borodin *)
+lemma umformung_OPT:
+  assumes inlist: "set qs \<subseteq> set init"
+  assumes dist: "distinct init" 
+  assumes a: "T\<^sub>p_opt init qs = T\<^sub>p init qs Strat"
+  assumes b: " length qs = length Strat"
+  shows "T\<^sub>p_opt init qs = 
+    (\<Sum>(x,y)\<in>{(x,y::('a::linorder)). x \<in> set init \<and> y\<in>set init \<and> x<y}.
+          ALGxy_det Strat qs init x y + ALG_Pxy Strat qs init x y)"
+proof -
+    have "T\<^sub>p_opt init qs = T\<^sub>p init qs Strat" by(fact a)
+    also have "\<dots> =
+    (\<Sum>(x,y)\<in>{(x,y::('a::linorder)). x \<in> set init \<and> y\<in>set init \<and> x<y}.
+          ALGxy_det Strat qs init x y + ALG_Pxy Strat qs init x y)"
+          apply(rule umformung_OPT')
+            apply(fact)+  done
+    finally show ?thesis .
+qed
+
 
 corollary OPT_zerlegen: 
   assumes
