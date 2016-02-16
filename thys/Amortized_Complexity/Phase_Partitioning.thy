@@ -14,46 +14,9 @@ definition Lxx where
 lemma Lxx_not_nullable: "[] \<notin> Lxx x y"
 unfolding Lxx_def L_lasthasxx_def by simp
 
-(*
-lemma Lxx_gt2: "xs \<in> Lxx x y \<Longrightarrow> length xs \<ge> 2"
-unfolding Lxx_def L_lasthasxx_def apply(auto)
-proof -
-  case goal1
-  then have "xs
-    \<in> ({[], [x]} @@ star ({[y]} @@ {[x]}))
-        @@ ({[y]} @@ {[y]})" by (simp add: conc_assoc)
-  then obtain A B where xs: "xs=A@B" and "A\<in>({[], [x]} @@ star ({[y]} @@ {[x]}))"
-      and "B\<in>({[y]} @@ {[y]})" by auto
-  then have "B=[y,y]" by auto
-  with xs show ?case by auto
-next 
-  case goal2
-  then have "xs
-    \<in> ({[], [y]} @@ star ({[x]} @@ {[y]}))
-        @@ ({[x]} @@ {[x]})" by (simp add: conc_assoc)
-  then obtain A B where xs: "xs=A@B" and "A\<in>({[], [y]} @@ star ({[x]} @@ {[y]}))"
-      and "B\<in>({[x]} @@ {[x]})" by auto
-  then have "B=[x,x]" by auto
-  with xs show ?case by auto
-qed
-*) 
 
 lemma Lxx_ends_in_two_equal: "xs \<in> Lxx x y \<Longrightarrow> \<exists>pref e. xs = pref @ [e,e]"
-unfolding Lxx_def L_lasthasxx_def
-apply(auto)
-proof -
-  case goal1
-  have A: "{[y]} @@ {[y]} = {[y,y]}" unfolding conc_def by(simp)
-  from goal1[unfolded A] have "xs \<in> ({[], [x]} @@ star ({[y]} @@ {[x]})) @@ {[y,y]}" 
-    by(simp add: conc_assoc)
-  then show ?case by auto 
-next 
-  case goal2
-  have A: "{[x]} @@ {[x]} = {[x,x]}" unfolding conc_def by(simp)
-  from goal2[unfolded A] have "xs \<in> ({[], [y]} @@ star ({[x]} @@ {[y]})) @@ {[x,x]}" 
-    by(simp add: conc_assoc)
-  then show ?case by auto 
-qed
+by(auto simp: conc_def Lxx_def L_lasthasxx_def) 
 
 
 lemma "Lxx x y = Lxx y x" unfolding Lxx_def by(rule lastxx_com)
@@ -165,11 +128,7 @@ lemma Lxx1: "xs \<in> Lxx x y \<Longrightarrow> length xs \<ge> 2"
   apply(rule LxxI[where P="(\<lambda>x y qs. length qs \<ge> 2)"])
   apply(auto) by(auto simp: conc_def)
 
-
-
-
 section "OPT2 Splitting"
-
          
 
 lemma ayay: "length qs = length as \<Longrightarrow> T\<^sub>p s (qs@[q]) (as@[a]) = T\<^sub>p s qs as + t\<^sub>p (steps s qs as) q a"
@@ -305,22 +264,23 @@ qed
 
 
 theorem Phase_partitioning_general: 
-  fixes P :: "(nat state * 'is) pmf \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> bool"
+  fixes P :: "(nat state * 'is) pmf \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> bool"
       and \<iota> :: "(nat state,'is) alg_on_init"
       and \<delta> :: "(nat state,'is,nat,answer) alg_on_step"
   assumes xny: "(x0::nat) \<noteq> y0" 
     and cpos: "(c::real)\<ge>0"
-    and initial: "P (map_pmf (%is. ([x0,y0],is)) (\<iota> [x0,y0])) x0 y0 [x0,y0]"
-    and D: "\<And>a b \<sigma> s. \<sigma> \<in> Lxx a b \<Longrightarrow> a\<noteq>b \<Longrightarrow> {a,b}={x0,y0} \<Longrightarrow> P s a b [x0,y0] 
-          \<Longrightarrow> T_on_rand' (\<iota>,\<delta>) s \<sigma> \<le> c * T\<^sub>p [a,b] \<sigma> (OPT2 \<sigma> [a,b])  \<and> P (config'_rand (\<iota>,\<delta>) s \<sigma>) (last \<sigma>) (other (last \<sigma>) x0 y0) [x0,y0]"
-    and "\<And>x y. P s x y s0 \<Longrightarrow> map_pmf fst s = return_pmf [x,y]"
+    and static: "set \<sigma> \<subseteq> {x0,y0}" 
+    and initial: "P (map_pmf (%is. ([x0,y0],is)) (\<iota> [x0,y0])) x0 [x0,y0]"
+    and D: "\<And>a b \<sigma> s. \<sigma> \<in> Lxx a b \<Longrightarrow> a\<noteq>b \<Longrightarrow> {a,b}={x0,y0} \<Longrightarrow> P s a [x0,y0] 
+          \<Longrightarrow> T_on_rand' (\<iota>,\<delta>) s \<sigma> \<le> c * T\<^sub>p [a,b] \<sigma> (OPT2 \<sigma> [a,b])  \<and> P (config'_rand (\<iota>,\<delta>) s \<sigma>) (last \<sigma>) [x0,y0]"
+   (* and "\<And>x. P s x s0 \<Longrightarrow> map_pmf (hd \<circ> fst) s = return_pmf x" *)
     and setrs: "set \<sigma> \<subseteq> {x0,y0}"
   shows "T\<^sub>p_on_rand (\<iota>,\<delta>) [x0,y0] \<sigma>  \<le> c * T\<^sub>p_opt [x0,y0] \<sigma> + c"
 proof -
   
  {
    fix x y s
- have "x \<noteq> y \<Longrightarrow> P s x y [x0,y0] \<Longrightarrow> set \<sigma> \<subseteq> {x,y} \<Longrightarrow> T_on_rand' (\<iota>,\<delta>) s \<sigma> \<le> c * T\<^sub>p [x,y] \<sigma> (OPT2 \<sigma> [x,y]) + c"
+ have "x \<noteq> y \<Longrightarrow> P s x [x0,y0] \<Longrightarrow> set \<sigma> \<subseteq> {x,y} \<Longrightarrow> {x,y}={x0,y0} \<Longrightarrow> T_on_rand' (\<iota>,\<delta>) s \<sigma> \<le> c * T\<^sub>p [x,y] \<sigma> (OPT2 \<sigma> [x,y]) + c"
  proof (induction "length \<sigma>" arbitrary: \<sigma> x y s rule: less_induct)
   case (less \<sigma>) 
 
@@ -338,9 +298,9 @@ proof -
     from xsLxx Lxx1 have lxsgt1: "length xs \<ge> 2" by auto
     then have xs_not_Nil: "xs \<noteq> []" by auto
 
-    from D[OF xsLxx less(2) _ less(3) ]
+    from D[OF xsLxx less(2) less(5) less(3)] 
       have D1: "T_on_rand' (\<iota>,\<delta>) s xs \<le> c * T\<^sub>p [x, y] xs (OPT2 xs [x, y])" 
-         and invCOMB: "P (config'_rand (\<iota>,\<delta>) s xs) (last xs) (other (last xs) x0 y0) [x0, y0]" sorry
+         and invCOMB: "P (config'_rand (\<iota>,\<delta>) s xs) (last xs) [x0, y0]" by auto
  
 
     from xsLxx Lxx_ends_in_two_equal obtain pref e where "xs = pref @ [e,e]" by metis
@@ -355,8 +315,8 @@ proof -
      from lxs setxs have otherxy: "other (last xs) x y \<in> {x,y}" by (simp add: other_def)
     from less(2) have other_diff: "last xs \<noteq> other (last xs) x y" by(simp add: other_def)
  
-    have aha: "other (last xs) x0 y0 = other (last xs) x y"
-      unfolding other_def using lxsxy sorry
+    have lo: "{last xs, other (last xs) x y} = {x0, y0}"
+      using lxsxy otherxy other_diff less(5) by force
 
     have nextstate: "{[last xs, other (last xs) x y], [other (last xs) x y, last xs]}
             = { [x,y],[y,x]}" using lxsxy otherxy other_diff by fastforce
@@ -368,8 +328,9 @@ proof -
             apply(rule less(1))
               apply(fact len)
               apply(fact other_diff) 
-              apply(fact invCOMB[unfolded aha]) 
-              by(fact setys') 
+              apply(fact invCOMB) 
+              apply(fact setys')
+              by(fact lo)
  
 
     have well: "T\<^sub>p [x, y] xs (OPT2 xs [x, y]) + T\<^sub>p ?c' ys (OPT2 ys ?c')
@@ -390,7 +351,7 @@ proof -
     also have E3: "\<dots> \<le> c * T\<^sub>p [x, y] xs (OPT2 xs [x, y]) + c * T\<^sub>p ?c' ys (OPT2 ys ?c') + c"
         using D1 by simp        
     also have "\<dots> = c * (T\<^sub>p [x,y] xs (OPT2 xs [x,y]) + T\<^sub>p ?c' ys (OPT2 ys ?c')) + c"
-        using cpos  sorry
+        using cpos apply(auto) by algebra
     also have  "\<dots> = c * (T\<^sub>p [x,y] (xs@ys) (OPT2 (xs@ys) [x,y])) + c"
       using well by auto 
     also have E4: "\<dots> = c * (T\<^sub>p [x,y] \<sigma> (OPT2 \<sigma> [x,y])) + c"
@@ -431,7 +392,7 @@ proof -
       qed  
  
       also have E1: "\<dots> \<le> c * T\<^sub>p [x,y] ?padded (OPT2 ?padded [x,y])"
-        using D[OF pLxx less(2) _ less(3) ] sorry
+        using D[OF pLxx less(2) less(5) less(3) ] by simp
       also have E2: "\<dots> \<le> c * (T\<^sub>p [x,y] \<sigma> (OPT2 \<sigma> [x,y]) + 1)"
       proof -
         from False less(2) obtain \<sigma>' x' y' where qs': "\<sigma> = \<sigma>' @ [x']" and x': "x' = last \<sigma>" "y'\<noteq>x'" "y' \<in>{x,y}" 
@@ -467,7 +428,8 @@ qed
   apply(rule allg)
     apply(fact)
     using initial apply(simp add: map_pmf_def)
-    by(fact)
+    apply(fact assms(3))
+    by simp
   also have "\<dots> = c * T\<^sub>p_opt [x0, y0] \<sigma> + c"
     using OPT2_is_opt[OF assms(6,1)] by(simp)
   finally show ?thesis .
