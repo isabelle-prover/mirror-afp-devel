@@ -131,7 +131,7 @@ next
 next
   case (9 R)
   then show ?case
-      unfolding OO_Grp_alt by (auto simp: fun_eq_iff intro: rel_bset.intros elim: rel_bset.cases)
+    by (auto simp: fun_eq_iff intro: rel_bset.intros elim: rel_bset.cases)
 qed
 
 (*<*)
