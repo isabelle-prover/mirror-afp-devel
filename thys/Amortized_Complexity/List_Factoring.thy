@@ -499,7 +499,7 @@ unfolding ALGxy_def ALG'_def sorry
 
 
 definition pairwise where
-  "pairwise A = (\<forall>init. \<forall>qs\<in>{xs. set xs \<subseteq> set init}. \<forall>(x::('a::linorder),y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x,y}) = ALGxy A qs init x y)"
+  "pairwise A = (\<forall>init. distinct init \<longrightarrow> (\<forall>qs\<in>{xs. set xs \<subseteq> set init}. \<forall>(x::('a::linorder),y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x,y}) = ALGxy A qs init x y))"
   
 definition "Pbefore_in x y A qs init = map_pmf (\<lambda>p. x < y in fst p) (config_rand A init qs)"
  
@@ -547,9 +547,9 @@ qed
  
 lemma pairwise_property_lemma:
   assumes  
-relativeorder: "(\<And>init qs. qs \<in> {xs. set xs \<subseteq> set init}
+relativeorder: "(\<And>init qs. distinct init \<Longrightarrow> qs \<in> {xs. set xs \<subseteq> set init}
     \<Longrightarrow> (\<And>x y. (x,y)\<in> {(x,y). x \<in> set init \<and> y\<in>set init \<and> x\<noteq>y} 
-                \<Longrightarrow> x \<noteq> y 
+                \<Longrightarrow> x \<noteq> y
                 \<Longrightarrow> Pbefore_in x y A qs init = Pbefore_in x y A (Lxy qs {x,y}) (Lxy init {x,y})
         ))" 
 and nopaid: "\<And>xa r. \<forall>z\<in> set_pmf(snd A xa r). snd(fst z) = []"
@@ -559,7 +559,7 @@ proof clarify
   case (goal1 init rs x y)
   then have xny: "x\<noteq>y" by auto
 
-  have dinit: "distinct init" sorry
+  note dinit=goal1(1)
   then have dLyx: "distinct (Lxy init {y,x})" by(rule Lxy_distinct)
   from dinit have dLxy: "distinct (Lxy init {x,y})" by(rule Lxy_distinct)
   have setLxy: "set (Lxy init {x, y}) = {x,y}" apply(subst Lxy_set_filter) using goal1 by auto
@@ -569,7 +569,7 @@ proof clarify
   have aee: "{x,y} = {y,x}" by auto
 
 
-  from goal1(1) show ?case
+  from goal1(2) show ?case
     proof(induct rs rule: rev_induct)
       case (snoc r rs)
       
@@ -636,7 +636,7 @@ proof clarify
                     using config_rand_set by fast
                   have "(\<not> x < y in fst z) = y < x in fst z" 
                     apply(subst not_before_in)
-                      using set_z goal1(2,3) xny by(simp_all)
+                      using set_z goal1(3,4) xny by(simp_all)
                   then show ?case by(simp add: )
                 qed simp 
             finally have a: "?projS \<bind> (\<lambda>s. snd A s x
@@ -723,7 +723,7 @@ proof -
   also have "\<dots> = (\<Sum>(x,y)\<in>{(x, y). x \<in> set init \<and> y \<in> set init \<and> x < y}. T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x,y}))"
     apply(rule setsum.cong)
       apply(simp)
-      using 0[unfolded pairwise_def] 2 by auto
+      using 0[unfolded pairwise_def] 2 3 by auto
   finally show ?thesis .
 qed
  
@@ -2451,7 +2451,7 @@ lemma factoringlemma_withconstant:
       assumes 4: "\<And>init qs. distinct init \<Longrightarrow> set qs \<subseteq> set init \<Longrightarrow> (\<And>x. x<length qs \<Longrightarrow> finite (set_pmf (config'' A qs init x)))" 
       (* then A is c-competitive on arbitrary list lengths *)
       shows "\<forall>s0\<in>S0. \<exists>b\<ge>0.  \<forall>qs\<in>{x. set x \<subseteq> set s0}. 
-              T\<^sub>p_on_rand A s0 qs \<le> c * (T\<^sub>p_opt s0 qs) + b"
+              T\<^sub>p_on_rand A s0 qs \<le> c * real (T\<^sub>p_opt s0 qs) + b"
 proof 
   case (goal1 init)
     have d: "distinct init" using  dist goal1 by auto
@@ -2529,6 +2529,22 @@ proof
         using all b by simp
 qed
 
+lemma factoringlemma_withconstant':
+    fixes A
+          and b::real
+          and c::real
+      assumes c: "c \<ge> 1"
+      assumes dist: "\<forall>e\<in>S0. distinct e"
+      assumes notempty: "\<forall>e\<in>S0. length e > 0"
+      (* A has pairwise property *)
+      assumes pw: "pairwise A"
+      (* A is c-competitive on list of length 2 *) 
+      assumes on2: "\<forall>s0\<in>S0. \<exists>b\<ge>0. \<forall>qs\<in>{x. set x \<subseteq> set s0}. \<forall>(x,y)\<in>{(x,y). x \<in> set s0 \<and> y\<in>set s0 \<and> x<y}. T\<^sub>p_on_rand A (Lxy s0 {x,y}) (Lxy qs {x,y})  \<le> c * (T\<^sub>p_opt (Lxy s0 {x,y}) (Lxy qs {x,y})) + b" 
+      assumes nopaid: "\<And>is s q. \<forall>((free,paid),_) \<in> (snd A (s, is) q). paid=[]"
+      assumes 4: "\<And>init qs. distinct init \<Longrightarrow> set qs \<subseteq> set init \<Longrightarrow> (\<And>x. x<length qs \<Longrightarrow> finite (set_pmf (config'' A qs init x)))" 
+      (* then A is c-competitive on arbitrary list lengths *)
+      shows "compet_rand A c S0"
+unfolding compet_rand_def static_def using factoringlemma_withconstant[OF assms] by simp
 
 (*
  

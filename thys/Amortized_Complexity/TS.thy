@@ -45,8 +45,9 @@ lemma sf_TS_step_d: "snd (fst (TS_step_d (s,is) q)) = []"
 unfolding TS_step_d_def by(simp)
 
  
-
-definition rTS :: "('a::linorder) list \<Rightarrow> ('a,'a list) alg_on"   where "rTS h = ((\<lambda>s. h), TS_step_d)"
+(* FIXME: generalizing regular expressions equivalence checking 
+          enables relaxing the type here to 'a::linord *)
+definition rTS :: "nat list \<Rightarrow> (nat,nat list) alg_on"   where "rTS h = ((\<lambda>s. h), TS_step_d)"
  
 fun step2 where
   "step2 (a, is) s q = (is, step s q a)"
@@ -2022,16 +2023,16 @@ qed (simp add: s_TS_def)
 
 lemma TS_pairwise': "qs \<in> {xs. set xs \<subseteq> set init} \<Longrightarrow>
        (x, y) \<in> {(x, y). x \<in> set init \<and> y \<in> set init \<and> x \<noteq> y} \<Longrightarrow>
-       x \<noteq> y \<Longrightarrow>
+       x \<noteq> y \<Longrightarrow> distinct init \<Longrightarrow>
        Pbefore_in x y (Partial_Cost_Model.embed (rTS [])) qs init =
        Pbefore_in x y (Partial_Cost_Model.embed (rTS [])) (Lxy qs {x, y}) (Lxy init {x, y})"
 proof -
   case goal1 
   then have xyininit: "{x, y} \<subseteq> set init" 
         and qsininit: "set qs \<subseteq> set init" by auto
-  have dinit: "distinct init" sorry
+  note dinit=goal1(4)
   from goal1 have xny: "x\<noteq>y" by simp
-
+                             
   have initpos: "Lxy init {x,y} \<in> {[x,y],[y,x]}" sorry
  
 
@@ -2345,7 +2346,7 @@ qed
 
 *)
 
-lemma TS_compet:   "pairwise (embed (rTS [])) \<Longrightarrow> 
+lemma TS_compet':   "pairwise (embed (rTS [])) \<Longrightarrow> 
       \<forall>s0\<in>{init::(nat list). distinct init \<and> init\<noteq>[]}. \<exists>b\<ge>0. \<forall>qs\<in>{x. set x \<subseteq> set s0}. T\<^sub>p_on_rand (embed (rTS [])) s0 qs \<le> (2::real) *  T\<^sub>p_opt s0 qs + b"
 unfolding rTS_def 
 apply(rule factoringlemma_withconstant)
@@ -2416,15 +2417,17 @@ next
     apply(induct x) 
       by (simp_all add: rTS_def split_def take_Suc_conv_app_nth config'_rand_snoc ) 
 next
-  case goal4 then show ?case sorry (* strange subtype effect here, that i dont understande *)
+  case goal4 then show ?case by simp (* strange subtype effect here, that i dont understande *)
 qed (simp_all)
 
-thm TS_compet[OF TS_pairwise, unfolded T_on_embed[symmetric]]
+thm TS_compet'[OF TS_pairwise, unfolded T_on_embed[symmetric]]
 
-lemma TS_compet': "pairwise (embed (rTS [])) \<Longrightarrow> compet_rand (embed (rTS [])) 2 {init. distinct init}"
-unfolding compet_def
-using TS_compet sorry
- (* TODO: integrate qs filtering into definition or prove a lemma s.th. additional 
-          requests to elements outside the list do not alter the competitive ratio *)
+lemma TS_compet: "compet_rand (embed (rTS [])) 2 {init. distinct init \<and> init \<noteq> []}"
+unfolding compet_rand_def static_def
+using TS_compet'[OF TS_pairwise] by simp
+
+
+thm TS_compet[unfolded Partial_Cost_Model.compet_embed[symmetric]]
+
  
 end

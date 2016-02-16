@@ -133,14 +133,14 @@ qed
 
 lemma BIT_pairwise': "set qs \<subseteq> set init    
     \<Longrightarrow> (x,y)\<in> {(x,y). x \<in> set init \<and> y\<in>set init \<and> x\<noteq>y} 
-                \<Longrightarrow> x \<noteq> y 
+                \<Longrightarrow> x \<noteq> y \<Longrightarrow> distinct init
                 \<Longrightarrow> Pbefore_in x y BIT qs init = Pbefore_in x y BIT (Lxy qs {x,y}) (Lxy init {x,y})
         "                    
 proof -
   case goal1
   then have xyininit: "{x, y} \<subseteq> set init" 
         and qsininit: "set qs \<subseteq> set init" by auto
-  have dinit: "distinct init" sorry
+  note dinit=goal1(4)
   from goal1 have xny: "x\<noteq>y" by simp
 
   have xyininit': "{y,x} \<subseteq> set init" using xyininit by auto

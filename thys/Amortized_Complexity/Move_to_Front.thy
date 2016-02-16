@@ -227,6 +227,7 @@ proof -
   show ?thesis by metis
 qed
 
+
 subsection "List Update as Online/Offline Algorithm"
 
 type_synonym 'a state = "'a list"
@@ -239,7 +240,9 @@ definition step :: "'a state \<Rightarrow> 'a \<Rightarrow> answer \<Rightarrow>
 definition t :: "'a state \<Rightarrow> 'a \<Rightarrow> answer \<Rightarrow> nat" where
 "t s r a = (let (mf,sws) = a in index (swaps sws s) r + 1 + size sws)"
 
-interpretation On_Off step t .
+definition static where "static s rs = (set rs \<subseteq> set s)"
+
+interpretation On_Off step t static .
 
 type_synonym 'a alg_off = "'a state \<Rightarrow> 'a list \<Rightarrow> answer list"
 type_synonym ('a,'is) alg_on = "('a state,'is,'a,answer) alg_on"
@@ -794,7 +797,7 @@ assumes "\<And>rs s0. size(Aoff s0 rs) = length rs" and "\<And>n. cruel n \<note
 assumes "compet Aon c S0" and "c\<ge>0" and "s0 \<in> S0"
  and l: "eventually (\<lambda>n. f s0 (cruel n) / (g s0 (cruel n) + a) \<ge> l) sequentially"
  and g: "LIM n sequentially. g s0 (cruel n) :> at_top"
- and "l > 0"
+ and "l > 0" and "\<And>n. static s0 (cruel n)"
 shows "l \<le> c"
 proof-
   let ?h = "\<lambda>b s0 rs. (f s0 rs - b) / g s0 rs"
@@ -802,10 +805,10 @@ proof-
     using filterlim_tendsto_add_at_top[OF tendsto_const g]
     by (simp add: ac_simps)
   from competE[OF assms(5) `c\<ge>0` _ `s0 \<in> S0`] assms(3) obtain b where
-    "\<forall>rs. rs \<noteq> [] \<longrightarrow> ?h b s0 rs \<le> c "
+    "\<forall>rs. static s0 rs \<and> rs \<noteq> [] \<longrightarrow> ?h b s0 rs \<le> c "
     by (fastforce simp del: neq0_conv simp: neq0_conv[symmetric]
         field_simps f_def g_def T_off_neq0[of Aoff, OF assms(3)])
-  hence "\<forall>n. (?h b s0 o cruel) n \<le> c" using assms(4) by simp
+  hence "\<forall>n. (?h b s0 o cruel) n \<le> c" using assms(4,11) by simp
   with rat_fun_lem[OF sequentially_bot `l>0` _ _ g', of "f s0 o cruel" "-b" "- a" c] assms(7) l
   show "l \<le> c" by (auto)
 qed
@@ -853,6 +856,9 @@ lemma set_cruel: "s \<noteq> [] \<Longrightarrow> set(cruel A (s,is) n) \<subset
 apply(induction n arbitrary: s "is")
 apply(auto simp: step_def Step_def split: prod.split)
 by (metis empty_iff swaps_inv last_in_set list.set(1) rev_subsetD set_mtf2)
+
+lemma static_cruel: "s \<noteq> [] \<Longrightarrow> static s (cruel A (s,is) n)"
+by(simp add: set_cruel static_def)
 
 (* Do not convert into structured proof - eta conversion screws it up! *)
 lemma T_cruel:
@@ -1010,6 +1016,7 @@ proof (rule compet_lb0[OF _ _ assms(1) `c\<ge>0`])
   thus "eventually (\<lambda>n. (2 * l) / (l + 1) \<le> ?on n / (real(?off n) + ?a)) sequentially"
     by(auto simp add: filterlim_at_top eventually_sequentially)
   show "0 < 2*l / (l+1)" using `l \<noteq> 0` by(simp)
+  show "\<And>n. static ?s0 (?cruel n)" using `l \<noteq> 0` by(simp add: static_cruel del: cruel.simps)
 qed
 
 

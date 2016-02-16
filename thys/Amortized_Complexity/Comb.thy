@@ -842,10 +842,10 @@ proof(rule pairwise_property_lemma)
           apply(simp only: set_pmf_bernoulli)
           apply(case_tac xa)
             apply(simp add: split_def) 
-              using BIT_pairwise'[OF qsininit goal1(2,3), unfolded Pbefore_in_def map_pmf_def]
+              using BIT_pairwise'[OF qsininit goal1(3,4,1), unfolded Pbefore_in_def map_pmf_def]
               apply(simp add: bind_return_pmf bind_assoc_pmf)
             apply(simp add: split_def) 
-              using TS_pairwise'[OF goal1, unfolded Pbefore_in_def map_pmf_def]
+              using TS_pairwise'[OF goal1(2,3,4,1), unfolded Pbefore_in_def map_pmf_def]
               by(simp add: bind_return_pmf bind_assoc_pmf)
 next
   case goal2
@@ -953,6 +953,8 @@ qed (simp_all add: COMB_no_paid)
 
 
 
+theorem COMB_competitive_nice: "compet_rand (COMB []) ((8::nat)/(5::nat)) {x::nat list. distinct x \<and> x\<noteq>[]}"
+  unfolding compet_rand_def static_def using COMB_competitive by simp
 
 
 

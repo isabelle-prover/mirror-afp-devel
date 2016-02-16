@@ -2374,7 +2374,7 @@ proof
     then have "T_on_rand BIT init qs \<le> 7/4 * T_opt init qs"
       using compet_BIT4[of init qs] by simp
   }
-  with a ne  show "\<exists>b\<ge>0. \<forall>qs. T_on_rand BIT init qs  \<le>  (7 / 4) * (T_opt init qs) + b"
+  with a ne  show "\<exists>b\<ge>0. \<forall>qs. static init qs \<longrightarrow> T_on_rand BIT init qs  \<le>  (7 / 4) * (T_opt init qs) + b"
     by auto
 qed
   

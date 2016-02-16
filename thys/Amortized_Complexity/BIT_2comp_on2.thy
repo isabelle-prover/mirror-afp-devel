@@ -921,6 +921,7 @@ proof -
     by(simp add: OPT2_is_opt goal1)
   finally show ?thesis .
 qed
- 
+
+
 
 end
