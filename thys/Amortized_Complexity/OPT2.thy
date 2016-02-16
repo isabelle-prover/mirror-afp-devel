@@ -819,19 +819,13 @@ next
         apply(simp add: R) 
         apply(case_tac "aa=y")
           by (simp_all add: R)
-   qed 
-qed 
-
-section "The function steps"
-
-
-fun steps where
-  "steps s [] [] = s"
-| "steps s (q#qs) (a#as) = steps (step s q a) qs as"
-
+   qed  
+qed  
+ 
+section "The function steps" 
+ 
+ 
 lemma steps_append: "length qs = length as \<Longrightarrow> steps s (qs@[q]) (as@[a]) = step (steps s qs as) q a"
 apply(induct qs as arbitrary: s rule: list_induct2) by simp_all
-
-
  
-end 
+end

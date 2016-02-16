@@ -212,7 +212,8 @@ proof -
       case Nil
       then show ?case
         apply(cases "R=[x,y]")
-          apply(simp add: step_def)
+(* FIXME why is simp_all needed? *)
+          apply simp_all apply(simp add: step_def)
           by(simp add: step_def mtf2_def swap_def)
     next
       case (Cons Q QS)
@@ -251,8 +252,6 @@ proof -
     from aa XSxy R have ll: "steps R (xs@[x,x]) (OPT2 (xs@[x,x]) R)
       = [x,y]" by auto
 
-
-    thm OPT2_split11 steps_append 
   have uer: " length (xs @ [x, x]) = length (OPT2 (xs @ [x, x]) R)"
     using R  by (auto simp: OPT2_length)
 
