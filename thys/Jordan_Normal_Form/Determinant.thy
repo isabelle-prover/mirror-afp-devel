@@ -1830,19 +1830,19 @@ definition "cofactor A i j = (-1)^(i+j) * det (mat_delete A i j)"
 
 
 lemma laplace_expansion_column:
-  assumes A: "(A::'a::comm_ring_1 mat) \<in> carrier\<^sub>m n n"
+  assumes A: "(A :: 'a :: comm_ring_1 mat) \<in> carrier\<^sub>m n n"
       and j: "j < n"
-  shows "det A = (\<Sum>i<dim\<^sub>r A. A $$ (i,j) * cofactor A i j)"
+  shows "det A = (\<Sum>i<n. A $$ (i,j) * cofactor A i j)"
 proof -
   def l \<equiv> "n-1"
   have A: "A \<in> carrier\<^sub>m (Suc l) (Suc l)"
-   and j: "j < Suc l" using A j unfolding l_def by auto
+   and jl: "j < Suc l" using A j unfolding l_def by auto
   let ?N = "{0 ..< Suc l}"
   def f \<equiv> "\<lambda>p i. A $$ (i, p i)"
   def g \<equiv> "\<lambda>p. setprod (f p) ?N"
   def h \<equiv> "\<lambda>p. signof p * g p"
   def Q \<equiv> "{ q . q permutes {0..<l} }"
-  have jN: "j \<in> ?N" using j by auto
+  have jN: "j \<in> ?N" using jl by auto
   have disj: "\<forall>i \<in> ?N. \<forall>i' \<in> ?N. i \<noteq> i' \<longrightarrow>
     {p. p permutes ?N \<and> p i = j} \<inter> {p. p permutes ?N \<and> p i' = j} = {}"
     using permutation_disjoint_dom[OF _ _ jN] by auto
@@ -1859,9 +1859,9 @@ proof -
     fix i assume "i \<in> ?N"
     hence i: "i < Suc l" by auto
     have "setsum h { p | p. p permutes ?N \<and> p i = j} = setsum h (permutation_insert i j ` Q)"
-      using permutation_fix[OF i j] unfolding Q_def by auto
+      using permutation_fix[OF i jl] unfolding Q_def by auto
     also have "... = setsum (h \<circ> permutation_insert i j) Q"
-      unfolding Q_def using setsum.reindex[OF permutation_insert_inj_on[OF i j]].
+      unfolding Q_def using setsum.reindex[OF permutation_insert_inj_on[OF i jl]].
     also have "... = (\<Sum> q \<in> Q.
       signof (permutation_insert i j q) * setprod (f (permutation_insert i j q)) ?N)"
       unfolding h_def g_def Q_def by simp
@@ -1884,7 +1884,7 @@ proof -
       also have "?part = {(i', permutation_insert i j q i') | i'. i' \<in> ?N-{i} }"
         unfolding image_def by metis
       also have "... = {(insert_index i i'', insert_index j (q i'')) | i''. i'' < l}"
-        unfolding foo[OF i j q]..
+        unfolding foo[OF i jl q]..
       also have "... = ((\<lambda>i''. (insert_index i i'', insert_index j (q i''))) ` {0..<l})"
         unfolding image_def by auto
       also have "setprod (\<lambda>ij. A $$ ij)... = setprod ((\<lambda>ij. A $$ ij) \<circ> (\<lambda>i''. (insert_index i i'', insert_index j (q i'')))) {0..<l}"
@@ -1903,13 +1903,13 @@ proof -
       proof (rule setprod.cong[OF refl], unfold atLeastLessThan_iff, elim conjE)
         fix x assume x: "x < l"
         show "A $$ (insert_index i x, insert_index j (q x)) = mat_delete A i j $$ (x, q x)"
-          apply(rule mat_delete_index[OF A i j]) using q x by auto
+          apply(rule mat_delete_index[OF A i jl]) using q x by auto
       qed
       finally have "setprod (f ?p) ?N =
         A $$ (i, j) * (\<Prod>i'' = 0..< l. mat_delete A i j $$ (i'', q i''))"
         by auto
       hence "signof ?p * setprod (f ?p) ?N  = (-1::'a)^(i+j) * signof q * ..."
-        unfolding signof_permutation_insert[OF q i j] by auto
+        unfolding signof_permutation_insert[OF q i jl] by auto
     }
     hence "... = (\<Sum> q \<in> Q. (-1)^(i+j) * signof q *
       A $$ (i, j) * (\<Prod>i'' = 0 ..< l. mat_delete A i j $$ (i'', q i'')))"
@@ -1927,7 +1927,7 @@ proof -
       unfolding cofactor_def by auto
   }
   hence "... = (\<Sum>i\<in>?N. A $$ (i,j) * cofactor A i j)" by auto
-  finally show ?thesis using A atLeast0LessThan by auto
+  finally show ?thesis unfolding atLeast0LessThan using A j unfolding l_def by auto
 qed
 
 
