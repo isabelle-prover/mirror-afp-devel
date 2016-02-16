@@ -721,15 +721,8 @@ proof-
     length_greater_0_conv[symmetric] del: length_greater_0_conv)
 qed
  
-theorem MTF_is_2_competitive: "compet MTF 2 {init . distinct init}"
-unfolding compet_def 
-proof 
-  case goal1
-  then have ds0: "distinct s0" by auto
-  show ?case
-    apply(rule exI[where x="0"]) 
-      using compet_MTF'[OF ds0] by simp
-qed
+theorem MTF_is_2_competitive: "compet MTF 2 {s . distinct s}"
+unfolding compet_def using compet_MTF' by fastforce 
 
 
 subsection "Lower Bound for Competitiveness"
