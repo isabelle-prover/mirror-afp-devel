@@ -232,8 +232,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
       |> BNF_LFP_Rec_Sugar.primrec bindings (eqs |> map (pair Attrib.empty_binding))
     val (phi, lthy) = restore_with_morphism lthy
     val pcomps = map (Morphism.term phi) pcomps
-    val pcomp_simps = Bnf_Access.postprocess_prim_rec_simp_rules pcomp_simps
-      |> map (Morphism.fact phi)
+    val pcomp_simps = pcomp_simps |> map (Morphism.fact phi)
 
     (* definitions of comparators via partial comparators and maps *)
 

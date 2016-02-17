@@ -23,20 +23,12 @@ val constr_terms : Proof.context -> string -> term list
 
 (* types *)
 val constr_argument_types : Proof.context -> string list -> typ list list list
-val bnf_types : Proof.context -> string list -> typ list 
-
-  (* prim_rec from bnf returns following list [[simpA_1,..simpA_n],[simpA_1], ..,[simpA_n], [simpB_1,...simpB_k],[simpB_1],...]
-     this is turned into [[simpA_1,..simpA_n], [simpB_1,..simpB_k]] *)
-val postprocess_prim_rec_simp_rules : thm list list -> thm list list 
+val bnf_types : Proof.context -> string list -> typ list
 
 end
 
 structure Bnf_Access : BNF_ACCESS =
 struct
-
-fun postprocess_prim_rec_simp_rules [] = []
-  | postprocess_prim_rec_simp_rules (thms :: simps) =
-      thms :: postprocess_prim_rec_simp_rules (drop (length thms) simps)
 
 fun constr_terms lthy = BNF_FP_Def_Sugar.fp_sugar_of lthy
   #> the #> #fp_ctr_sugar #> #ctr_sugar #> #ctrs
