@@ -1795,7 +1795,8 @@ lemma is_rcoset_replistD_cosets :
 
 lemma group_eq_subgrp_rcoset_un :
   "Subgroup H \<Longrightarrow> is_rcoset_replist H gs \<Longrightarrow> G = (\<Union>g\<in>set gs. H + {g})"
-  using is_rcoset_replistD_set is_rcoset_replistD_cosets rcosets by blast
+  using is_rcoset_replistD_set is_rcoset_replistD_cosets rcosets
+    by (auto, smt UN_E subsetCE, blast)
 
 lemma is_rcoset_replist_imp_nrelated_nth :
   assumes "Subgroup H" "is_rcoset_replist H gs"
@@ -1856,7 +1857,7 @@ proof-
     have  "G = (rcoset_rel H)``{g'} \<union> (\<Union>x\<in>set gs. (rcoset_rel H)``{x})"
     using is_rcoset_replistD_cosets[of H "g#gs"] rcoset_equiv equiv_class_eq_iff[of G]
     by    simp
-  ultimately show ?thesis using is_rcoset_replist_Cons by fast
+  ultimately show ?thesis using is_rcoset_replist_Cons by auto 
 qed
 
 end (* context Group *)
@@ -6996,7 +6997,8 @@ next
     from gh show "supp (g - h) \<subseteq> R"
       using addfunsetD_supp supp_diff_subset_union_supp by fast
     from gh show "range (g - h) \<subseteq> M"
-      using addfunsetD_range Group.diff_closed[OF assms] by fastforce
+      using addfunsetD_range Group.diff_closed [OF assms]
+        by (simp add: addfunsetD_range' image_subsetI)
     show "\<forall>x\<in>R. \<forall>y\<in>R. (g - h) (x + y) = (g - h) x + (g - h) y"
       using addfunsetD_add[OF gh(1)] addfunsetD_add[OF gh(2)] by simp
   qed
@@ -7474,7 +7476,7 @@ proof
     hence "x = 0 \<delta>\<delta> 0" using zero_aezfun_transfer by simp
     with assms show ?thesis
       using indspace_el_eq_on_1ddh_imp_eq_on_rddh[of HmodG f f'] Supgroup.zero_closed
-      by    fast
+        by auto
   next
     case OneTrue with FH show ?thesis using Supgroup.RG_zero_closed by fast
   next
@@ -7749,7 +7751,7 @@ proof (rule VecEnd_GMap_is_FGModuleEnd)
           RModule.AbGroup[of FG smult U]
           GroupEnd_inner_dirsum_el_decomp_nth[of "[W,U]" 1]
           GroupEnd.endomorph[of V]
-    by    force
+    by force
 
   have im_CP_V: "\<And>v. v \<in> V \<Longrightarrow> (\<lambda>g. CP g v) ` G \<subseteq> V"
   proof-

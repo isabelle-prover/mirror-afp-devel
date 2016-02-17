@@ -293,14 +293,13 @@ proof -
 
   have "{p. pState_inv prog p} \<subseteq> 
     (\<lambda>(pid,idx,pc,channels,vars). pState.make pid vars pc channels idx) ` ?P"
-    unfolding pState_inv_def image_def
+    unfolding pState_inv_def image_def [of _ ?P]
     apply (clarsimp simp add: pState.defs)
     apply (tactic {* Record.split_simp_tac @{context} [] (K ~1) 1*})
-    apply (auto)
-    apply (rule order_trans[OF less_imp_le])
-      apply (auto intro!: Max_ge)
-      done
-
+    apply auto
+    apply (rule order_trans [OF less_imp_le])
+    apply (auto intro!: Max_ge)
+    done
   moreover
   have "finite ?P4" by (fastforce intro: finite_lists_length_le)
   hence "finite ?P" by (auto intro: finite_cartesian_product simp: vardicts_finite)

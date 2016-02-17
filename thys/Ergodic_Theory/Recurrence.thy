@@ -272,7 +272,8 @@ lemma recurrent_subset_meas [measurable]:
   shows "recurrent_subset A \<in> sets M"
         "recurrent_subset_infty A \<in> sets M"
 proof -
-  have *: "recurrent_subset A = (\<Union>n\<in> {1..}. (T^^n)-`A \<inter> A)" using recurrent_subset_def by blast
+  have *: "recurrent_subset A = (\<Union>n\<in> {1..}. (T^^n)-`A \<inter> A)"
+    using recurrent_subset_def by auto
   have "\<And>n. (T^^n)-`A \<inter> A = (T^^n)--`A \<inter> A" using `A \<in> sets M`
     by (simp add: Int_assoc vimage_restr_def)
   hence "\<And>n. (T^^n)-`A \<inter> A \<in> sets M" using `A \<in> sets M` by auto
@@ -444,7 +445,8 @@ proof -
   hence *: "\<And>n. return_partition A (n+1) = disjointed B n" using disjointed_def[of B] by simp
   thus "disjoint_family (\<lambda>n. return_partition A (n+1))" using disjoint_family_disjointed by auto
 
-  have "recurrent_subset A = (\<Union>n\<in> {1..}. A \<inter> (T^^n)-`A)" using recurrent_subset_def by blast
+  have "recurrent_subset A = (\<Union>n\<in> {1..}. A \<inter> (T^^n)-`A)"
+    using recurrent_subset_def by auto
   moreover have "\<And>n. A \<inter> (T^^n)-`A = A \<inter> (T^^n)--`A"
     unfolding vimage_restr_def using `A \<in> sets M` sets.sets_into_space by auto
   ultimately have "recurrent_subset A = (\<Union>n\<in> {1..}. A \<inter> (T^^n)--`A)" by simp
@@ -1278,8 +1280,10 @@ proof
     have B0: "emeasure M B = 0" using `B \<in> K0` unfolding K0_def by simp
 
     have "(induced_map A)-`B \<subseteq> (\<Union>n. (T^^n)-`B)" unfolding induced_map_def by auto
-    then have "(induced_map A)-`B \<subseteq> (\<Union>n. (T^^n)-`B \<inter> space M)" using b sets.sets_into_space by blast
-    then have inc: "(induced_map A)-`B \<subseteq> (\<Union>n. (T^^n)--`B)" unfolding vimage_restr_def using sets.sets_into_space[OF B_meas] by blast
+    then have "(induced_map A)-`B \<subseteq> (\<Union>n. (T^^n)-`B \<inter> space M)"
+      using b sets.sets_into_space by simp blast 
+    then have inc: "(induced_map A)-`B \<subseteq> (\<Union>n. (T^^n)--`B)" unfolding vimage_restr_def
+      using sets.sets_into_space [OF B_meas] by simp blast 
     have m: "\<And>n. (T^^n)--`B \<in> sets M" using T_vrestr_meas(2)[OF B_meas] by simp
     then have m2: "(\<Union>n. (T^^n)--`B) \<in> sets M" by measurable
 
@@ -1856,7 +1860,8 @@ proof -
     using a by simp
 
   have "(\<Union>n\<in>{1..}.  (return_time_function A)-` {n}) = UNIV - (return_time_function A)-` {0}" by auto
-  hence "(\<Union>n\<in>{1..}.  (return_time_function A)-` {n}) = recurrent_subset A" using return_time0 by blast
+  then have "(\<Union>n\<in>{1..}.  (return_time_function A)-` {n}) = recurrent_subset A"
+    using return_time0 by auto
   moreover have "(\<Union>n. (return_time_function A)-` {n+1}) = (\<Union>n\<in>{1..}.  (return_time_function A)-` {n})"
     by (auto simp add: Suc_le_D)
   ultimately have "(\<Union>n. D n) = recurrent_subset A" using D_def by simp

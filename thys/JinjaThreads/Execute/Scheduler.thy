@@ -1131,7 +1131,8 @@ proof -
   proof(cases "step_thread update_state s t")
     case None
     with invar show ?thesis
-      by (auto simp add: thr.lookup_correct \<alpha>.step_thread_def step_thread_def ws.lookup_correct split_beta holds_eq split: split_if_asm) metis+
+      by (auto simp add: thr.lookup_correct \<alpha>.step_thread_def step_thread_def ws.lookup_correct
+        split_beta holds_eq split: split_if_asm cong del: strong_SUP_cong) metis+
   next
     case (Some a)
     then obtain t' taxm \<sigma>' 
@@ -1153,7 +1154,10 @@ proof -
         where rrs: "step_thread update_state s t =  \<lfloor>(t', \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
         by(cases a) fastforce
       with invar have ?thesis1 
-        by(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def split_beta \<alpha>.deterministic_THE[OF det, where s="state_\<alpha> s", simplified] deterministic_THE2[OF det] holds_eq split: split_if_asm) blast+
+        by (auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def
+          split_beta \<alpha>.deterministic_THE [OF det, where s="state_\<alpha> s", simplified]
+          deterministic_THE2[OF det] holds_eq split: split_if_asm
+          cong del: strong_SUP_cong) blast+
       moreover {
         assume "?tso ta \<longrightarrow> ?inv ta"
         hence ?thesis2 using rrs invar

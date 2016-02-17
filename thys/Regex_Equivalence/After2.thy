@@ -1,4 +1,4 @@
-(*  Author: Tobias Nipkow, Dmitriy Traytel *)
+(* Author: Tobias Nipkow, Dmitriy Traytel *)
 
 section {* Linear Time Optimization for ``Mark After Atom'' *}
 

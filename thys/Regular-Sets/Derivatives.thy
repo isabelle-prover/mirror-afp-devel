@@ -55,6 +55,10 @@ subsection {* Antimirov's partial derivatives *}
 abbreviation
   "Timess rs r \<equiv> (\<Union>r' \<in> rs. {Times r' r})"
 
+lemma Timess_eq_image:
+  "Timess rs r = (\<lambda>r'. Times r' r) ` rs"
+  by auto
+
 primrec
   pderiv :: "'a \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp set"
 where
@@ -207,7 +211,7 @@ proof (induct s rule: rev_induct)
   have "pderivs (s @ [c]) (Times r1 r2) = pderiv_set c (pderivs s (Times r1 r2))" 
     by (simp add: pderivs_snoc)
   also have "\<dots> \<subseteq> pderiv_set c (Timess (pderivs s r1) r2 \<union> (pderivs_lang (PSuf s) r2))"
-    using ih by fast
+    using ih by fastforce
   also have "\<dots> = pderiv_set c (Timess (pderivs s r1) r2) \<union> pderiv_set c (pderivs_lang (PSuf s) r2)"
     by (simp)
   also have "\<dots> = pderiv_set c (Timess (pderivs s r1) r2) \<union> pderivs_lang (PSuf s @@ {[c]}) r2"
@@ -241,7 +245,8 @@ apply(rule pderivs_lang_subsetI)
 apply(rule subset_trans)
 apply(rule pderivs_Times)
 using pderivs_lang_Times_aux1 pderivs_lang_Times_aux2
-apply(blast)
+apply auto
+apply blast
 done
 
 lemma pderivs_Star:
@@ -323,7 +328,7 @@ fun awidth :: "'a rexp \<Rightarrow> nat" where
 
 lemma card_Timess_pderivs_lang_le:
   "card (Timess (pderivs_lang A r) s) \<le> card (pderivs_lang A r)"
-by (metis card_image_le finite_pderivs_lang image_eq_UN)
+  using finite_pderivs_lang unfolding Timess_eq_image by (rule card_image_le)
 
 lemma card_pderivs_lang_UNIV1_le_awidth: "card (pderivs_lang UNIV1 r) \<le> awidth r"
 proof (induction r)

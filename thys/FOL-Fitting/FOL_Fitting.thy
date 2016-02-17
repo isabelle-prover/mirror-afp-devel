@@ -1650,8 +1650,7 @@ theorem extend_in_C: "alt_consistency C \<Longrightarrow>
   apply (erule exE)
   apply (rule someI2)
   apply (simp only: Compl_iff [symmetric])
-  apply fast
-  apply simp
+  apply auto
   done
 
 text {*
@@ -1959,7 +1958,7 @@ theorem extend_hintikka:
   apply (drule_tac x="\<Union>n. extend S C f n" in bspec,
     assumption, erule allE, erule mp)
   apply simp
-  apply fast
+  apply blast
   apply (rule_tac
     x="(App (SOME k. k \<notin> (\<Union>p \<in> extend S C f n \<union> {f n}. params p)) [])" in exI)
   apply (rule conjI)
@@ -1988,7 +1987,7 @@ theorem extend_hintikka:
   apply (drule_tac x="\<Union>n. extend S C f n" in bspec,
     assumption, erule allE, erule mp)
   apply simp
-  apply fast
+  apply blast
   apply (rule_tac
     x="(App (SOME k. k \<notin> (\<Union>p \<in> extend S C f n \<union> {f n}. params p)) [])" in exI)
   apply (rule conjI)
@@ -2323,11 +2322,11 @@ theorem sat_consistency: "consistency {S. \<not> finite (- (\<Union>p\<in>S. par
   apply (rule conjI)
   apply fastforce
   apply (rule conjI)
-  apply fastforce
+  apply force
   apply (rule conjI)
-  apply fastforce
+  apply (auto intro!: exI)[1]
   apply (rule conjI)
-  apply fastforce
+  apply (auto intro!: exI)[1]
   apply (rule conjI)
   apply (rule allI impI)+
   apply (erule exE)+
@@ -2381,11 +2380,11 @@ theorem sat_consistency: "consistency {S. \<not> finite (- (\<Union>p\<in>S. par
   apply assumption
   apply assumption
   apply (rule conjI)
-  apply fastforce
+  apply (auto intro!: exI)[1]
   apply (rule conjI)
-  apply fastforce
+  apply (auto intro!: exI)[1]
   apply (rule conjI)
-  apply fastforce
+  apply (auto intro!: exI)[1]
   apply (rule conjI)
   apply (rule allI impI)+
   apply (erule exE)+

@@ -205,7 +205,7 @@ proof(rule bd_ctsI, rule antisym)
         by(auto)
       hence "Sup (range (\<lambda>i. min (wp a (M i) s) (wp b (M i) s))) =
            Sup_exp (range (\<lambda>i s. min (wp a (M i) s) (wp b (M i) s))) s"
-        by(simp add:Sup_exp_def)
+        by (simp add: Sup_exp_def cong del: strong_SUP_cong)
     }
     finally show "min (wp a (Sup_exp (range M)) s) (wp b (Sup_exp (range M)) s) \<le>
                   Sup_exp (range (\<lambda>i s. min (wp a (M i) s) (wp b (M i) s))) s" .
@@ -415,7 +415,7 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
       by(auto)
     hence "Sup (range (\<lambda>i. p s * wp a (M i) s + (1 - p s) * wp b (M i) s)) =
            Sup_exp (range (\<lambda>x s. p s * wp a (M x) s + (1 - p s) * wp b (M x) s)) s"
-      by(simp add:Sup_exp_def)
+      by (simp add: Sup_exp_def cong del: strong_SUP_cong)
   }
   finally
   have "p s * wp a (Sup_exp (range M)) s + (1 - p s) * wp b (Sup_exp (range M)) s \<le>
@@ -552,7 +552,7 @@ proof(intro bd_ctsI ext, simp add:o_def)
     have "\<And>s. range (\<lambda>i. c * M i s) = {f s |f. f \<in> range (\<lambda>i s. c * M i s)}"
       by(auto)
     hence "(\<lambda>s. Sup (range (\<lambda>i. c * M i s))) = Sup_exp (range (\<lambda>i s. c * M i s))"
-      by(simp add:Sup_exp_def)
+      by (simp add: Sup_exp_def cong del: strong_SUP_cong)
     hence "a (\<lambda>s. Sup (range (\<lambda>i. c * M i s))) s =
            a (Sup_exp (range (\<lambda>i s. c * M i s))) s" by(simp)
   }
@@ -776,7 +776,7 @@ lemma SetDC_finite_insert:
   assumes fS: "finite S"
       and neS: "S \<noteq> {}"
   shows "SetDC a (\<lambda>_. insert x S) = a x \<Sqinter> SetDC a (\<lambda>_. S)"
-proof(intro ext, simp add:SetDC_def DC_def del:Inf_image_eq)
+proof (intro ext, simp add: SetDC_def DC_def)
   fix ab P s
   from fS have A: "finite (insert (a x ab P s) ((\<lambda>x. a x ab P s) ` S))" 
            and B: "finite (((\<lambda>x. a x ab P s) ` S))" by(auto)
@@ -788,14 +788,15 @@ proof(intro ext, simp add:SetDC_def DC_def del:Inf_image_eq)
   also from B D have "... = min (a x ab P s) (Min ((\<lambda>x. a x ab P s) ` S))"
     by(auto intro:Min_insert)
   also from B D have "... = min (a x ab P s) (Inf ((\<lambda>x. a x ab P s) ` S))"
-    by(simp add:cInf_eq_Min del:Inf_image_eq)
-  finally show "Inf (insert (a x ab P s) ((\<lambda>x. a x ab P s) ` S)) =
-                min (a x ab P s) (Inf ((\<lambda>x. a x ab P s) ` S))" .
+    by(simp add:cInf_eq_Min)
+  finally show "(INF x:insert x S. a x ab P s) =
+    min (a x ab P s) (INF x:S. a x ab P s)"
+    by (simp cong del: strong_INF_cong)
 qed
 
 lemma SetDC_singleton:
   "SetDC a (\<lambda>_. {x}) = a x"
-  by(simp add:SetDC_def)
+  by (simp add: SetDC_def cong del: strong_INF_cong)
 
 lemma cts_wp_SetDC_const:
   fixes a::"'a \<Rightarrow> 's prog"

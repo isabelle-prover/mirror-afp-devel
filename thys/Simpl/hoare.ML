@@ -135,20 +135,25 @@ fun dest_Un (Const (@{const_name Lattices.sup}, _) $ t1 $ t2) = dest_Un t1 @ des
 fun mk_UN' dT rT t = 
   let
     val dTs = HOLogic.mk_setT dT;
+    val rTs = HOLogic.mk_setT rT;
   in
-    Const (@{const_name Complete_Lattices.SUPREMUM},
-      dTs --> (dT --> rT) --> rT) $
-      Const (@{const_name Orderings.top}, dTs) $ t
+    Const (@{const_name Complete_Lattices.Sup}, rTs --> rT) $
+      (Const (@{const_name image}, (dT --> rT) --> dTs --> rTs) $ t $
+      Const (@{const_name Orderings.top}, dTs))
   end;
 
 fun mk_UN ((x, T), P) = mk_UN' T (fastype_of P) (absfree (x, T) P);
 
-fun dest_UN (Const (@{const_name Complete_Lattices.SUPREMUM}, _) $ Const (@{const_name Orderings.top}, _) $ Abs (x, T, t)) =
+fun dest_UN (Const (@{const_name Complete_Lattices.Sup}, _) $
+      (Const (@{const_name Set.image}, _) $ Abs (x, T, t) $
+      Const (@{const_name Orderings.top}, _))) =
       let val (vars, body) = dest_UN t
       in ((x, T) :: vars, body) end
   | dest_UN t = ([], t);
 
-fun tap_UN (Const (@{const_name Complete_Lattices.SUPREMUM}, _) $ Const (@{const_name Orderings.top}, _) $ t) = SOME t
+fun tap_UN (Const (@{const_name Complete_Lattices.Sup}, _) $
+     (Const (@{const_name Set.image}, _) $ t $
+     Const (@{const_name Orderings.top}, _))) = SOME t
   | tap_UN _ = NONE;
 
 

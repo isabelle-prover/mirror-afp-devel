@@ -104,13 +104,8 @@ lemma assumes ms: "measure_space M" and dis: "\<forall>j1\<in>(R::nat set). \<fo
   and meas: "\<forall>j\<in>R. B j \<in> measurable_sets M"
   shows measure_sums_UNION: "(\<lambda>n. measure M (if n \<in> R then B n else {})) sums measure M (\<Union>i\<in>R. B i)" 
 (*<*)proof -
-  have "(\<Union>i\<in>R. B i) = \<Union>(B ` R)"
-    by simp
-  also have "\<dots> = \<Union>((\<lambda>x. if x \<in> R then B x else {}) ` UNIV)"
-    by simp
-  also have "\<dots>  = (\<Union>x. if x \<in> R then B x else {})"
-    by (rule Union_image_eq)
-  finally have eq: "(\<Union>i\<in>R. B i) = (\<Union>i. if i\<in>R then B i else {})" .
+  have eq: "(\<Union>i\<in>R. B i) = (\<Union>i. if i\<in>R then B i else {})"
+    by (auto split: if_splits)
   
   from dis have dis2: "(\<forall>i j. i \<noteq> j \<longrightarrow> (if i\<in>R then B i else {}) \<inter> (if j\<in>R then B j else {})  = {})"
     by simp

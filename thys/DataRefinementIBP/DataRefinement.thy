@@ -93,18 +93,15 @@ lemma Disjunctive_Sup:
   apply (drule_tac x = x in spec)
   apply (simp add: Apply.Disjunctive_def)
   apply (subgoal_tac "(R x ` (\<lambda>f. f x) ` X) =((\<lambda>f. f x) ` {y. \<exists>x\<in>X. y = (\<lambda>xa. R xa (x xa))})")
-  by (auto simp add: SUP_def simp del: Sup_image_eq)
+  apply (auto simp add: image_image cong del: strong_SUP_cong)
+  done
 
 lemma (in DiagramTermination) disjunctive_SUP_L_P:
   "Disjunctive_fun R \<Longrightarrow> (R .. (SUP_L_P P (pair u i))) =  (SUP_L_P (\<lambda> w . (R .. (P w)))) (pair u i)"
-  apply (subst fun_eq_iff)
-  apply (simp add: SUP_L_P_def apply_fun_def  Disjunctive_fun_def Apply.Disjunctive_def, safe)
-  apply (subgoal_tac "(R x ` (\<lambda>v. P v x) ` {v. pair v x \<sqsubset> pair u i}) = 
-       ((\<lambda>v. R x (P v x)) ` {v. pair v x \<sqsubset> pair u i})")
-  by (auto simp add: SUP_def simp del: Sup_image_eq)
+  by (simp add: SUP_L_P_def apply_fun_def Disjunctive_fun_def Apply.Disjunctive_def fun_eq_iff)
 
 lemma apply_fun_range: "{y. \<exists>x. y = (R .. P x)} = range (\<lambda> x . R .. P x)"
-  by auto
+  by (fact full_SetCompr_eq)
 
 lemma [simp]: "Disjunctive_fun R \<Longrightarrow> mono ((R i)::'a::complete_lattice \<Rightarrow> 'b::complete_lattice)"
   by (simp add: Disjunctive_fun_def)
@@ -115,7 +112,7 @@ theorem (in DiagramTermination) dgr_data_refinement_1:
    (\<forall> w i j . DataRefinement ((assert (P w i)) o (D (i,j))) (R i) (R j) (D' (i, j))) \<Longrightarrow>
    
    \<Turnstile> (R .. (Sup (range P))) {| pt D' |} ((R .. (Sup (range P))) \<sqinter> (-(grd (step D'))))"
-  apply (simp add: Disjunctive_Sup apply_fun_range del: Sup_image_eq)
+  apply (simp add: Disjunctive_Sup apply_fun_range)
   apply (rule hoare_diagram2)
   apply simp_all
   apply safe
@@ -171,7 +168,7 @@ theorem (in DiagramTermination) Diagram_DataRefinement1:
   apply (unfold disjunctive_SUP_L_P [THEN sym])
   apply (simp add: apply_fun_def)
   apply (rule_tac S = "D (i,j)" and R = "R i" and R' = "R j" in data_refinement)
-  by (simp_all add: Disjunctive_Sup apply_fun_range del: Sup_image_eq)
+  by (simp_all add: Disjunctive_Sup apply_fun_range)
 
 
 lemma comp_left_mono [simp]: "S \<le> S' \<Longrightarrow> S o T \<le> S' o T"
@@ -199,8 +196,8 @@ theorem (in DiagramTermination) Diagram_DataRefinement2:
   apply (rule assert_pred_mono)
   apply (simp add: Sup_fun_def comp_def)
   apply (rule SUP_upper)
-  apply (auto simp add: apply_fun_def apply_fun_range SUP_def image_image fun_eq_iff simp del: Sup_image_eq)
-  apply (metis Apply.DisjunctiveD Disjunctive_fun_def range_composition)+
+  apply (auto simp add: apply_fun_def apply_fun_range image_image fun_eq_iff)
+  apply (auto intro!: arg_cong [where f = Sup] arg_cong2 [where f = inf])
   done
 
 lemma "(R'::'a::complete_lattice \<Rightarrow> 'b::complete_lattice) \<in> Apply.Disjunctive \<Longrightarrow>

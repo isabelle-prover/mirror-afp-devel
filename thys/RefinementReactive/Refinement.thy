@@ -154,13 +154,13 @@ text{*
     qed
 
   lemma sconjunctive_assert [simp]: "sconjunctive {.p.}"
-    proof (auto simp add: sconjunctive_def assert_def INF_def image_def, rule antisym, auto)
+    proof (auto simp add: sconjunctive_def assert_def image_def, rule antisym, auto)
       fix Q :: "'a set"
       have [simp]: "\<And> x . x \<in> Q \<Longrightarrow> Inf Q \<le> x"
         by (rule Inf_lower, simp)
       have A: "\<And> x . x \<in> Q \<Longrightarrow> p \<sqinter> Inf Q \<le> p \<sqinter> x"
         by (simp, rule_tac y = "Inf Q" in order_trans, simp_all)
-      show "p \<sqinter> Inf Q \<le> Inf {y. \<exists>x\<in>Q. y = p \<sqinter> x}"
+      show "p \<sqinter> Inf Q \<le> (INF x:Q. p \<sqinter> x)"
         by (rule Inf_greatest, safe, rule A, simp)
     next
       fix Q :: "'a set"
@@ -170,11 +170,11 @@ text{*
         by (rule Inf_lower, cut_tac A, auto)
       also have "... \<le> p"
         by simp
-      finally show "Inf {y. \<exists>x\<in>Q. y = p \<sqinter> x} \<le> p"
-        by simp
+      finally show "(INF x:Q. p \<sqinter> x) \<le> p"
+        by (simp only: image_def)
    next
       fix Q :: "'a set"
-      show "Inf {y. \<exists>x\<in>Q. y = p \<sqinter> x} \<le> Inf Q"
+      show "(INF x:Q. p \<sqinter> x) \<le> Inf Q"
         proof (rule Inf_greatest)
           fix x::'a
           assume A: "x \<in> Q"
@@ -182,7 +182,8 @@ text{*
             by (cut_tac A, rule Inf_lower, blast)
           also have "... \<le> x"
             by simp
-         finally show "Inf {y. \<exists>x\<in>Q. y = p \<sqinter> x} \<le> x" by simp
+         finally show "(INF x:Q. p \<sqinter> x) \<le> x"
+            by (simp only: image_def)
        qed
    qed
 
@@ -202,12 +203,12 @@ text{*
       have A: "S' (Inf X) = INFIMUM X S'"
         by (rule_tac x = a in sconjunctive_simp, auto)
       also have B: "S (INFIMUM X S') = INFIMUM (S' ` X) S"
-        by (subst INF_def, rule_tac x = "S' a" in sconjunctive_simp, auto)
+        by (rule_tac x = "S' a" in sconjunctive_simp, auto)
       finally show "(S o S') (Inf X) = INFIMUM X (S \<circ> S')" by simp
     qed
 
   lemma [simp]:"conjunctive S \<Longrightarrow> S (INFIMUM X Q) = (INFIMUM X (S o Q))"
-    by (metis INF_image Inf_image_eq conjunctive_def)
+    by (metis INF_image conjunctive_def)
 
   lemma conjunctive_simp: "conjunctive S \<Longrightarrow>  S (Inf Q) = INFIMUM Q S"
     by (metis conjunctive_def)
@@ -220,7 +221,7 @@ text{*
       have [simp]: "a \<sqinter> b = a"
         by (rule antisym, auto)
       have A: "S a = S a \<sqinter> S b"
-        by (cut_tac S = S and x = a and Q = "{a, b}" in sconjunctive_simp, auto simp add: INF_def)
+        by (cut_tac S = S and x = a and Q = "{a, b}" in sconjunctive_simp, auto)
       show "S a \<le> S b"
         by (subst A, simp)
     qed

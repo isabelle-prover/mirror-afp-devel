@@ -1948,10 +1948,11 @@ proof -
       and NC: "cS \<noteq> {0..<num_acc}"
 
     from NC INV obtain i where "i<num_acc" "i\<notin>cS" 
-      unfolding rec_loop_invar_def by force
+      unfolding rec_loop_invar_def by auto blast
 
     with ALL obtain v' where "v'\<in>Vl" "\<not> acc v' \<subseteq> cS"
-      by fastforce
+      by simp (smt UN_iff atLeastLessThan_iff le0 subsetCE)
+     
     moreover with CONN INV have "(v,v')\<in>(E \<inter> Vl \<times> Vl)\<^sup>*"
       unfolding rec_loop_invar_def by auto
     hence "(v,v')\<in>?E\<^sup>*" using rtrancl_mono_mp[OF E_SS] by blast

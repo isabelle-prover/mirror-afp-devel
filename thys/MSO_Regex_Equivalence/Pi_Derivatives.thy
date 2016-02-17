@@ -299,7 +299,7 @@ lemma toplevel_summands_ACI_norm_lderiv:
 proof (induct r)
   case (Plus r1 r2) thus ?case
    unfolding toplevel_summands.simps toplevel_summands_ACI_norm
-     toplevel_summands_lderiv[of as "\<guillemotleft>Plus r1 r2\<guillemotright>"] SUP_def image_Un Union_Un_distrib
+     toplevel_summands_lderiv[of as "\<guillemotleft>Plus r1 r2\<guillemotright>"] image_Un Union_Un_distrib
    by (simp add: image_UN)
 qed (auto simp: Let_def)
 

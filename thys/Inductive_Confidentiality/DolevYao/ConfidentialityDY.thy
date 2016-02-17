@@ -8,7 +8,6 @@ text{*In order not to leave hidden anything of the line of reasoning, we cancel 
 
 declare Spy_see_priEK [simp del]
         Spy_analz_priEK [simp del]
-        image_eq_UN [simp del]
         analz_into_parts [rule del]
         
 subsection{*On static secrets*}

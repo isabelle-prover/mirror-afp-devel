@@ -32,8 +32,7 @@ proof (rule antisym)
   have "f (\<Squnion>i\<in>I. g i) = (\<Squnion>i\<in>range M. f i)"
     unfolding eq sup_continuousD[OF f \<open>mono M\<close>] by simp
   also have "\<dots> \<le> (\<Squnion>i\<in>I. f (g i))"
-    using M unfolding subset_image_iff SUP_def
-    by (auto simp del: SUP_image simp add: SUP_image[of g] intro!: SUP_subset_mono)
+    by (insert M, drule SUP_subset_mono) auto
   finally show "f (\<Squnion>i\<in>I. g i) \<le> (\<Squnion>i\<in>I. f (g i))" .
 qed
 

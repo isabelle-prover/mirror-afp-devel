@@ -511,7 +511,7 @@ proof (rule antisym)
       apply (auto simp add: enat_0_iff image_iff eSuc_enat_iff)
       done
     with 3[of "stl \<omega>"] show ?case
-      by (auto simp: inf.absorb1 eSuc_Inf[symmetric] simp del: Inf_image_eq)
+      by (auto simp: inf.absorb1 eSuc_Inf[symmetric])
   qed simp_all
 qed
 

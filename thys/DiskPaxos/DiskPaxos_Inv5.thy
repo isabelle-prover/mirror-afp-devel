@@ -631,7 +631,7 @@ proof -
   have "(UN qq d. rdBy s' q qq d) \<subseteq> (UN qq d. rdBy s q qq d)" 
     by(auto simp add: EndPhase1_def InitializePhase_def rdBy_def split: split_if_asm, blast)
   hence "{block br | br. br \<in> (UN qq d. rdBy s' q qq d)} \<subseteq> {block br | br. br \<in> (UN qq d. rdBy s q qq d)}" (is "?R' \<subseteq> ?R")
-    by blast
+    by auto blast
   from union_inclusion[OF dblock union_inclusion[OF disk' this]]
   show ?thesis
     by(auto simp add: blocksOf_def)  
@@ -1047,7 +1047,7 @@ proof -
   hence "{block br | br. br \<in> (UN qq d. rdBy s' q qq d)} \<subseteq> 
          {block br | br. br \<in> (UN qq d. rdBy s q qq d)}" 
     (is "?R' \<subseteq> ?R")
-    by blast
+    by auto blast
   from union_inclusion[OF dblock union_inclusion[OF disk' this]]
   show ?thesis
     by(auto simp add: blocksOf_def)  

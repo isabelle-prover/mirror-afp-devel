@@ -276,7 +276,7 @@ proof
     unfolding B_def
     apply(auto)
     apply(simp add: str_eq_def)
-    apply(drule_tac x="CHR ''b'' ^^^ n" in spec)
+    apply(drule_tac x="CHR ''b'' ^^^ xa" in spec)
     apply(simp add: sameness)
     done
   ultimately 

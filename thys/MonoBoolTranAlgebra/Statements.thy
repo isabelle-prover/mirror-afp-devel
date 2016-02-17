@@ -279,7 +279,7 @@ theorem hoare_fixpoint_complete_mbt:
   "F x = x
      \<Longrightarrow> (!! w f . hoare (Sup_less p w) f q \<Longrightarrow> hoare (p w) (F f) q) 
      \<Longrightarrow> hoare (Sup (range p)) x q"
-  apply (simp add: hoare_Sup Sup_less_def SUP_def del: Sup_image_eq, safe)
+  apply (simp add: hoare_Sup Sup_less_def, safe)
   apply (rule_tac F = F in hoare_fixpoint_mbt)
   by auto
 
@@ -334,7 +334,7 @@ lemma hoare_while_mbt:
 lemma hoare_while_complete_mbt:
   "(\<forall> w::'b::well_founded . hoare ((p w) \<sqinter> b) x (Sup_less p w)) \<Longrightarrow> 
        hoare  (Sup (range p)) (While b do x) ((Sup (range p)) \<sqinter> -b)"
-  apply (simp add: hoare_Sup del: Sup_image_eq, safe)
+  apply (simp add: hoare_Sup, safe)
   apply (rule hoare_while_mbt)
   apply safe
   apply (drule_tac x = w in spec)

@@ -39,7 +39,10 @@ proof
     then obtain m where "Max ?lbs < m \<and> m < Min ?ubs"
       using dense[where 'a = real] by blast
     hence "\<forall>a \<in> set as. I\<^sub>R a (m#xs)" using 2 nonempty
-      by (auto simp:Ball_def Bex_def)(fastforce simp:field_simps)
+      apply (auto simp: Ball_def)
+      apply (auto simp: Bex_def)
+      apply (fastforce simp: field_simps)
+      done
     hence ?R .. }
   moreover
   { assume asm: "?lbs \<noteq> {} \<and> ?ubs = {}"
@@ -48,7 +51,8 @@ proof
       fix a assume "a \<in> set as"
       then obtain r c cs
         where "a = Less r (c#cs)" "c>0" "(r/c,(-1/c)*\<^sub>s cs) \<in> ?Ls"
-        using asm 2 by fastforce
+        using asm 2 
+          by (fastforce simp: field_simps)
       moreover hence "(r - \<langle>cs,xs\<rangle>)/c \<le> Max ?lbs"
         using asm fins
         by(auto intro!: Max_ge_iff[THEN iffD2])

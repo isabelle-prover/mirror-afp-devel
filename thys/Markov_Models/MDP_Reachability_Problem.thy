@@ -1080,7 +1080,7 @@ proof (induction s)
     finally show "0 < (\<integral>\<^sup>+t. n t \<partial>D)" .
   qed (insert K_wf K_finite `s\<in>S`, auto)
   also have "\<dots> = n s"
-    unfolding n_S1[OF `s \<in> S1`] INF_def
+    unfolding n_S1[OF `s \<in> S1`]
     using K_wf K_finite `s\<in>S` by (intro Min_Inf) auto
   finally show "0 < n s" .
 qed
@@ -1299,7 +1299,7 @@ proof -
       by (subst n_eq_lfp_F_inf, subst lfp_unfold[OF mono_F_inf])
          (auto simp add: F_inf_def n_eq_lfp_F_inf)
     moreover have "(\<Sqinter>D\<in>K s. \<integral>\<^sup>+x. n x \<partial>D) = Min (?I`K s)"
-      unfolding INF_def using `s \<in> S1` S1 K_wf
+      using `s \<in> S1` S1 K_wf
       by (intro cInf_eq_Min finite_imageI K_finite) auto
     moreover have "Min (?I`K s) \<in> ?I`K s"
       using `s \<in> S1` S1 K_wf by (intro Min_in finite_imageI K_finite) auto
