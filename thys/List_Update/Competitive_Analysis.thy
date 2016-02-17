@@ -42,8 +42,17 @@ fun steps where
   "steps s [] [] = s"
 | "steps s (q#qs) (a#as) = steps (step s q a) qs as"
 
+lemma steps_append: "length qs = length as \<Longrightarrow> steps s (qs@qs') (as@as') = steps (steps s qs as) qs' as'"
+apply(induct qs as arbitrary: s rule: list_induct2)
+   by simp_all
+
 
 lemma T_append: "length qs = length as \<Longrightarrow> T s (qs@[q]) (as@[a]) = T s qs as + t (steps s qs as) q a"
+apply(induct qs as arbitrary: s rule: list_induct2)
+   by simp_all
+
+
+lemma T_append2: "length qs = length as \<Longrightarrow> T s (qs@qs') (as@as') = T s qs as + T (steps s qs as) qs' as'"
 apply(induct qs as arbitrary: s rule: list_induct2)
    by simp_all
 
