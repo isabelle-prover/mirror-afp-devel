@@ -253,7 +253,7 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
         have "int n < (root_nat_floor 3 n + 1) ^ 3" by (rule root_nat_floor_upper, auto)
         also have "\<dots> \<le> int i ^ 3" by (rule power_mono[OF less, of 3], auto)
         finally have n_i3: "n < i ^ 3"
-          by (metis zless_int of_nat_power [symmetric])
+          by (metis of_nat_less_iff of_nat_power [symmetric])
         {
           fix m
           assume m: "multiplicity m n > 0"

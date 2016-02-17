@@ -6207,8 +6207,6 @@ apply (rule impI, simp)
  apply (cut_tac z = i and w = "int n + 1" in zdiff,
        simp only:minus_add_distrib,
        thin_tac "i - (int n + 1) = i + (- int n + - 1)")
- apply (simp only:add.assoc[THEN sym])
- apply (simp only:zdiff[THEN sym, of _ "1"])
  apply (cut_tac z = "i + - int n" in nat_diff_distrib[of "1"],
          simp, simp)
  apply (simp only:zdiff[of _ "1"], simp)
@@ -6233,7 +6231,7 @@ apply (rule_tac a = "x^\<^bsup>K (nat (i + (- int n - 1)))\<^esup>" and
  apply (metis Ring.npClose)
  apply (simp only: uminus_add_conv_diff [symmetric] add.assoc [symmetric])
  apply (simp add: algebra_simps nat_diff_distrib Suc_diff_Suc)
- apply (metis Suc_diff_Suc npow_suc zless_nat_eq_int_zless)
+ apply (smt Ring.npMulElmR Suc_nat_eq_nat_zadd1 nat_diff_distrib' nat_int of_nat_0_le_iff)
 done
 
 lemma (in Corps) npow_exp_minusTr2:"\<lbrakk>x \<in> carrier K; x \<noteq> \<zero>; 0 \<le> i; 0 \<le> j;

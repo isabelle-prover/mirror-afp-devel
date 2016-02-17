@@ -360,7 +360,8 @@ proof (induct ni arbitrary: n i "is" jj res rule: wf_induct[OF
       proof (cases "i' * i' \<le> n")
         case True note iin = this
         with res False have res: "res = prime_nat_main n jj iis" by auto
-        from iin have i_n: "i' < n" using dvd dvdi n nat_neq_iff by blast 
+        from iin have i_n: "i' < n"
+          using dvd dvdi n nat_neq_iff dvd_refl by blast
         {
           fix x
           assume "Suc i' \<le> x" "x < jj" "prime x"
@@ -497,7 +498,7 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
       proof (cases "i' * i' \<le> n")
         case True note iin = this
         with res False have res: "res = prime_factorization_nat_main n jj iis ps" by auto
-        from iin have i_n: "i' < n" using dvd dvdi n nat_neq_iff by blast 
+        from iin have i_n: "i' < n" using dvd dvdi n nat_neq_iff dvd_refl by blast 
         show ?thesis 
           by (rule IH[OF _ n dvds iis res], insert i_n i', auto)
       next

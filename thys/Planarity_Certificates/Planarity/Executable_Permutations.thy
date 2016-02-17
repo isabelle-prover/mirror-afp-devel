@@ -618,7 +618,8 @@ proof (induct "length as" arbitrary: as rule: less_induct)
       moreover
       have "UNION (set (orbits_list f ?as')) set = \<Union>sset (orbits_list f ?as')" by blast
       ultimately
-      show ?thesis using assms by (auto simp: set_orbit_list' sset_orbits_list)
+      show ?thesis using assms
+      by (auto simp: set_orbit_list' sset_orbits_list disjoint_iff_not_equal)
     qed
     show ?thesis
       using A B assms by (auto simp: distincts_Cons Cons distinct_orbit_list')
@@ -923,7 +924,8 @@ proof (intro set_eqI iffI)
   then have "sset xss = sset yss" by simp
   ultimately
   show "f \<in> ?R"
-    using assms by (auto simp: in_set_cyc_permutationss lists_succ_permutes cyclic_on_lists_succ')
+    using assms
+  by (auto simp: in_set_cyc_permutationss cyclic_on_lists_succ') (metis lists_succ_permutes)
 next
   fix f assume "f \<in> ?R"
   then have "f permutes \<Union>sset xss" "\<And>cs. cs \<in> set xss \<Longrightarrow> cyclic_on f (set cs)"

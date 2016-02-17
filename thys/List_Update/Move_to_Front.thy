@@ -430,7 +430,7 @@ proof-
   have "(?bxxs \<inter> ?bxys) \<union> (?axxs \<inter> ?bxys) = ?bxys"
     using assms(2) before_Un xxs by fastforce
   hence "?m + ?n = ?k"
-    using card_Un_disjoint[OF _ _ 1] by(simp add: zadd_int del: of_nat_add)
+    using card_Un_disjoint[OF _ _ 1] by(simp add: of_nat_add del: of_nat_add)
   hence "?m - ?n = 2 * ?m - ?k" by arith
   also have "?m \<le> ?j"
     using card_before_le_index[of x xs] card_mono[of ?bxxs, OF _ Int_lower1]

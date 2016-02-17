@@ -1911,7 +1911,7 @@ proof -
      apply(rule impI)
      apply(drule Finite_Set.card.insert[where x = "x \<tau>"])
      apply(rule includes_notin, simp, simp)
-     apply (metis Suc_eq_plus1 int_1 of_nat_add)
+     apply (metis Suc_eq_plus1 of_nat_1 of_nat_add)
 
     apply(subst (1 2) m[of \<tau>], simp only:   OclAdd\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r.cp0[symmetric],simp, simp add:invalid_def)
     apply(subst OclIncluding_finite_rep_set, fast+, simp add: OclValid_def)

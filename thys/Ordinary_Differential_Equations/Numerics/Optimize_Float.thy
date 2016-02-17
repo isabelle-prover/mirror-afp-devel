@@ -25,7 +25,7 @@ lemma compute_lapprox_posrat[code]:
        l = rat_precision prec x y;
        d = if 0 \<le> l then int x * power_int 2 l div y else int x div power_int 2 (- l) div y
     in normfloat (Float d (- l)))"
-  by (auto simp add: Float.compute_lapprox_posrat power_int_def Let_def zdiv_int of_nat_power int_mult)
+  by (auto simp add: Float.compute_lapprox_posrat power_int_def Let_def zdiv_int of_nat_power of_nat_mult)
 
 lemma compute_rapprox_posrat[code]:
   fixes prec x y
@@ -36,7 +36,7 @@ lemma compute_rapprox_posrat[code]:
      d = r div s ;
      m = r mod s
    in normfloat (Float (d + (if m = 0 \<or> y = 0 then 0 else 1)) (- l)))"
-  by (auto simp add: l_def Float.compute_rapprox_posrat power_int_def Let_def zdiv_int of_nat_power int_mult)
+  by (auto simp add: l_def Float.compute_rapprox_posrat power_int_def Let_def zdiv_int of_nat_power of_nat_mult)
 
 lemma compute_float_truncate_down[code]:
   "float_round_down prec (Float m e) = (let d = bitlen (abs m) - int prec in

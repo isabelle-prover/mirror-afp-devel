@@ -91,7 +91,7 @@ instance proof
   qed
   show l: "lcm = (lcm_eucl :: int \<Rightarrow> int \<Rightarrow> int)"
   proof (intro ext)
-    fix x xa::int        
+    fix x xa::int
     show "lcm x xa = lcm_eucl x xa"
       by (auto simp add: lcm_int_def lcm_lcm_eucl lcm_eucl_def)
     (metis A abs_ge_zero div_mult_mult2 gcd_abs_int gcd_gcd_eucl int_nat_eq mult.commute
@@ -113,19 +113,15 @@ instance proof
       thus ?thesis by (induct X, simp_all add: l)
     qed 
   qed
-  show "(Gcd::int set \<Rightarrow> int) = Gcd_eucl"
-  proof (intro ext)
-    fix X::"int set"
-    show "Gcd X = Gcd_eucl X" 
-      by (metis Gcd_int_def abs_of_nat gcd_idem_int A Gcd_eucl_dvd Gcd_dvd_int associated_def 
-        associated_iff_normed_eq div_by_1 dvd_Gcd_eucl dvd_Gcd_int gcd_eucl_idem gcd_zero_int 
-        normalisation_factor_Gcd_eucl)    
-  qed
+  show "(Gcd :: int set \<Rightarrow> int) = Gcd_eucl"
+    apply (rule ext)
+    apply (rule associated_eqI)
+    apply simp_all
+    apply (smt normalisation_factor_Gcd_eucl normalisation_factor_int_def sgn_less)
+    done
 qed
-end          
 
-
-
+end
 
 instantiation poly :: (field) euclidean_ring
 begin

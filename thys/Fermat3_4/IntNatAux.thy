@@ -104,7 +104,7 @@ proof -
     case (Cons p ps)
     with l have "nat a = p*prod ps" and p: "prime p" by (auto simp add: primel_def)
     hence "int (nat a) = (int p)*int(prod ps)"
-      by (auto simp add: int_mult)
+      by (auto simp add: of_nat_mult)
     with a p have "zprime (int p) \<and> int p dvd a"
       by (auto simp add: prime_impl_zprime_int)
     thus ?thesis by blast
@@ -454,7 +454,7 @@ proof -
   from relprime have absrelprime: "gcd ?a1 ?b1 = 1" by (auto simp only: zgcd_def)
   have "\<bar>a*b\<bar> = \<bar>a\<bar>*\<bar>b\<bar>" by (simp add: abs_mult)
   with abcn have "\<bar>c\<bar>^n = \<bar>a\<bar>*\<bar>b\<bar>" by (simp add: power_abs)
-  hence "int(?c1^n) = int(?a1*?b1)" by (simp only: int_nat_abs_eq_abs int_mult of_nat_power)
+  hence "int(?c1^n) = int(?a1*?b1)" by (simp only: int_nat_abs_eq_abs of_nat_mult of_nat_power)
   hence "?a1*?b1 = ?c1^n" by (simp only: of_nat_eq_iff)
   with absrelprime and n have "\<exists> k. ?a1 = k^n" by (simp only: nat_relprime_power_divisors)
   then obtain k::nat where alpha: "?a1 = k^n" by auto

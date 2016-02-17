@@ -543,15 +543,14 @@ proof
         have "?ic (N - ?X + ?Y) = int (?c N - ?c ?X) + ?ic ?Y" by simp
         also have "\<dots> = int (?c N - (?c {#a#} + ?c (X - K))) + ?ic (K - X) + ?ic Y" by simp
         also have "\<dots> = ?ic N - (?ic {#a#} + ?ic (X - K)) + ?ic (K - X) + ?ic Y"
-          using zdiff_int [OF *] by simp
+          using of_nat_diff [OF *] by simp
         also have "\<dots> = (?ic N - ?ic {#a#}) - ?ic (X - K) + ?ic (K - X) + ?ic Y" by simp
         also have "\<dots> = (?ic N - ?ic {#a#}) + (?ic (K - X) - ?ic (X - K)) + ?ic Y" by simp
         also have "\<dots> = (?ic N - ?ic {#a#}) + (?ic K - ?ic X) + ?ic Y" by simp
         also have "\<dots> = (?ic N - ?ic ?X) + ?ic ?Y" by (simp add: N)
         also have "\<dots> = ?ic L"
           unfolding L' M' N
-          using zdiff_int [OF **] (*nitpicking: this step was missing in "Term Rewriting and All That"*)
-          by simp
+          using ** by (simp add: algebra_simps)
         finally show "?c L = ?c (N - ?X + ?Y)" by simp
       qed
       ultimately show ?thesis by (metis diff_set_Ex_iff)

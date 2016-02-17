@@ -841,7 +841,7 @@ next
           apply (simp add: Nodes_def)
           apply (erule exE)
           apply (erule_tac x=p in allE)
-          apply (drule_tac i=k and j=n in no_in_one_ll)
+          apply (drule_tac i=x and j=n in no_in_one_ll)
           apply (auto simp add: length_ll_eq)
           done
         from repbNodes_in_Nodes 
@@ -1160,7 +1160,7 @@ next
             apply (erule conjE)
             apply (thin_tac "\<forall>q. q \<in> set_of pret \<longrightarrow> q \<in> set (ll ! var q)")
             apply (erule exE)
-            apply (erule_tac x=k in allE)
+            apply (erule_tac x=x in allE)
             apply (erule impE)
             apply arith
             apply (erule_tac x=no in ballE)
@@ -1180,7 +1180,7 @@ next
               apply -
               apply (simp add: Nodes_def length_ll_eq)
               apply (elim exE)
-              apply (drule_tac ?i=ka and ?j=n in no_in_one_ll)
+              apply (drule_tac ?i=xa and ?j=n in no_in_one_ll)
               apply arith
               apply simp
               apply auto
@@ -1253,7 +1253,7 @@ next
                   apply (erule conjE)
                   apply (thin_tac " \<forall>q. q \<in> set_of pret \<longrightarrow> q \<in> set (ll ! var q)")
                   apply (erule exE)
-                  apply (erule_tac x=k in allE)
+                  apply (erule_tac x=xa in allE)
                   apply (erule impE)
                   apply arith
                   apply (erule_tac x=x in ballE)
@@ -1328,12 +1328,12 @@ next
             with no_in_Nodes  have no_in_llbn: "no \<in> set (ll ! n)"
               apply (simp add: Nodes_def)
               apply (erule exE)
-              apply (erule_tac x=k in allE)
-              apply (case_tac "k<n")
+              apply (erule_tac x=x in allE)
+              apply (case_tac "x<n")
               apply simp
               apply simp
               apply (elim conjE)
-              apply (case_tac "k=n")
+              apply (case_tac "x=n")
               apply simp
               apply arith
               done
@@ -1536,7 +1536,7 @@ next
                 apply (simp add: wf_ll_def Nodes_def length_ll_eq)
                 apply (elim conjE exE)
                 apply (thin_tac " \<forall>q. q \<in> set_of pret \<longrightarrow> q \<in> set (ll ! var q)")
-                apply (erule_tac x=k in allE)
+                apply (erule_tac x=x in allE)
                 apply (erule impE)
                 apply simp
                 apply (erule_tac x="repc (high no)" in ballE)
@@ -2530,7 +2530,7 @@ next
             apply (simp add: wf_ll_def length_ll_eq)
             apply (elim conjE)
             apply (thin_tac " \<forall>q. q \<in> set_of pret \<longrightarrow> q \<in> set (ll ! var q)")
-            apply (erule_tac x=k in allE)
+            apply (erule_tac x=x in allE)
             apply auto
             done
           from Dag_q_Nodes_n have q_in_Nodesn: "q \<in> Nodes n ll"

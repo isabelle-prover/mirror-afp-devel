@@ -395,7 +395,7 @@ proof (induct y n rule: root_newton_int_main.induct)
   from 1(4) have n0: "n \<ge> 0" .
   def y' \<equiv> "(n div (y ^ pm) + y * int pm) div (int p)"
   from y0 n0 have y'0: "y' \<ge> 0" unfolding y'_def
-    by (metis Divides.transfer_nat_int_function_closures(1) add_increasing nonneg_int_cases zero_zle_int of_nat_mult of_nat_power)
+    by (metis Divides.transfer_nat_int_function_closures(1) add_increasing nonneg_int_cases of_nat_0_le_iff of_nat_mult of_nat_power)
   let ?rt = "root_newton_int_main"
   from 1(5) have rt: "?rt y n = (x,b)" by auto
   from y0 n0 have not: "\<not> (y < 0 \<or> n < 0)" "(y < 0 \<or> n < 0) = False" by auto
@@ -473,7 +473,7 @@ proof (induct y n rule: root_newton_int_main.induct)
           def s \<equiv> "n div y ^ pm + y * int pm"
           def S \<equiv> "NY + Y"
           have Y0: "Y \<ge> 0" using y0 unfolding Y_def
-            by (metis "1.prems"(2) mult_nonneg_nonneg of_int_0_le_iff zero_zle_int)
+            by (metis "1.prems"(2) mult_nonneg_nonneg of_int_0_le_iff of_nat_0_le_iff)
           have S0: "S > 0" using NY0 Y0 unfolding S_def by auto
           from p have p0: "p > 0" by auto
           have "?n / ?y ^ pm  < of_int (floor (?n / ?y^pm)) + 1"

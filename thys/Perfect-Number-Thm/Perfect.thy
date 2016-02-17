@@ -41,7 +41,7 @@ proof
     by (metis mult.commute dvd_def) 
   then have "?np dvd ?A"
     using coprime_minus_one_nat [of "2 ^ (exponent 2 m + 1)"]
-    by (auto intro: coprime_dvd_mult_nat) 
+    by (auto intro: coprime_dvd_mult) 
   hence bdef:       "?np*?B = ?A" by (simp add: dvd_mult_div_cancel)
   with a0 have  b0: "?B>0" by (metis gr0I mult_is_0)
 

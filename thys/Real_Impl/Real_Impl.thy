@@ -420,7 +420,7 @@ proof (transfer, unfold Let_def, clarsimp)
     unfolding qp qq split id n12_def z1n2_def
   proof (rule arg_cong[of _ _ "\<lambda> x. ((z1 * n2) + x) div (n1 * n2)"])
     have ge_int: "z2 * n1 * (z2 * n1) * int b \<ge> 0"
-      by (metis mult_nonneg_nonneg zero_le_square zero_zle_int)
+      by (metis mult_nonneg_nonneg zero_le_square of_nat_0_le_iff)
     show "\<lfloor>r_add\<rfloor> = (if 0 \<le> z2 * n1 then sqrt_int_floor_pos (z2 * n1 * (z2 * n1) * int b) else - sqrt_int_ceiling_pos (z2 * n1 * (z2 * n1) * int b))"
     proof (cases "z2 * n1 \<ge> 0")
       case True

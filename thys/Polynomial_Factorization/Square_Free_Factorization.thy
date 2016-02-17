@@ -965,7 +965,7 @@ proof -
     with sfa deg sff(2)[of a i] have False unfolding square_free_def by auto
   }
   hence gcd_rs: "gcd r s = 1" "gcd s r = 1" 
-    by (auto simp: poly_gcd_commute)
+    by (auto simp: gcd.commute)
   {
     fix b j 
     assume bj: "(b,j) \<in> ?rem"
@@ -974,7 +974,7 @@ proof -
     from coprime_poly_factor[OF rs] s have br: "gcd b r = 1" by force
     from coprime_poly_factor[OF sr] r have bs: "gcd b s = 1" by force
     from br bs have "gcd r b = 1" "gcd s b = 1"
-      by (auto simp: poly_gcd_commute)
+      by (auto simp: gcd.commute)
     note this br bs
   } note gcd = this
   {

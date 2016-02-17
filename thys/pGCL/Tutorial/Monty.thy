@@ -136,7 +136,7 @@ lemma wp_monty_switch_bruteforce:
             hide_behind_def guess_behind_def open_door_def
             switch_guess_def
   -- "Note that this is getting slow"
-  by(simp add:wp_eval insert_Diff_if swap_upd o_def)
+  by (simp add: wp_eval insert_Diff_if swap_upd o_def cong del: strong_INF_cong)
 
 subsection {* A Modular Approach *}
 
