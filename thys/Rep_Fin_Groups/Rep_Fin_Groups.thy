@@ -7100,8 +7100,12 @@ lemma Group_indspace :
   assumes "Ring1 FH"
   shows   "Group (indspace G FH V)"
 proof
-  show "indspace G FH V \<noteq> {}"
-    using indspace0 mono_indspace monoD[of _ 0] zero_closed by fastforce
+  from zero_closed have "0 \<subseteq> V" by simp
+  with mono_indspace [of G FH]
+  have "indspace G FH 0 \<subseteq> indspace G FH V"
+    by (auto dest!: monoD [of _ 0 V])
+  then show "indspace G FH V \<noteq> {}"
+    using indspace0 [of FH] by auto
 next
   fix f1 f2 assume ff: "f1 \<in> indspace G FH V" "f2 \<in> indspace G FH V"
   hence "f1 - f2 \<in> addfunset FH V"

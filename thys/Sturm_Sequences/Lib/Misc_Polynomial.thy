@@ -1,6 +1,6 @@
 (* Author: Manuel Eberl <eberlm@in.tum.de> *)
 theory Misc_Polynomial
-imports "~~/src/HOL/Library/Poly_Deriv"
+imports "~~/src/HOL/Library/Polynomial" "~~/src/HOL/Library/Polynomial_GCD_euclidean"
 begin
 
 subsection {* Analysis *}

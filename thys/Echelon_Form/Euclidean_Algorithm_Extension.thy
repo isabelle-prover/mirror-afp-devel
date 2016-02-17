@@ -12,6 +12,7 @@ theory Euclidean_Algorithm_Extension
 imports 
   Euclidean_Algorithm
   "~~/src/HOL/Library/Polynomial"
+  "~~/src/HOL/Library/Polynomial_GCD_euclidean"
 begin
 
 instantiation nat :: euclidean_semiring_gcd
