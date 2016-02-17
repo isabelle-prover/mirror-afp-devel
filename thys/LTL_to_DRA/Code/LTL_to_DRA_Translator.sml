@@ -183,8 +183,8 @@ fun equal_nata m n = (((integer_of_nat m) : IntInf.int) = (integer_of_nat n));
 
 val equal_nat = {equal = equal_nata} : nat equal;
 
-fun pred_list p [] = true
-  | pred_list p (x :: xs) = p x andalso pred_list p xs;
+fun list_all p [] = true
+  | list_all p (x :: xs) = p x andalso list_all p xs;
 
 datatype 'a set = Set of 'a list | Coset of 'a list;
 
@@ -195,8 +195,8 @@ fun member A_ x (Coset xs) = not (membera A_ xs x)
   | member A_ x (Set xs) = membera A_ xs x;
 
 fun less_eq_set A_ (Coset []) (Set []) = false
-  | less_eq_set A_ a (Coset ys) = pred_list (fn y => not (member A_ y a)) ys
-  | less_eq_set A_ (Set xs) b = pred_list (fn x => member A_ x b) xs;
+  | less_eq_set A_ a (Coset ys) = list_all (fn y => not (member A_ y a)) ys
+  | less_eq_set A_ (Set xs) b = list_all (fn x => member A_ x b) xs;
 
 fun equal_seta A_ a b = less_eq_set A_ a b andalso less_eq_set A_ b a;
 
@@ -233,8 +233,8 @@ fun equal_mappinga A_ B_ (Mapping xs) (Mapping ys) =
     val ks = map fst xs;
     val ls = map fst ys;
   in
-    pred_list (membera A_ ks) ls andalso
-      pred_list
+    list_all (membera A_ ks) ls andalso
+      list_all
         (fn k =>
           membera A_ ls k andalso
             equal_option B_ (map_of A_ xs k) (map_of A_ ys k))
@@ -366,7 +366,7 @@ fun less_nat m n = IntInf.< (integer_of_nat m, integer_of_nat n);
 
 fun upt i j = (if less_nat i j then i :: upt (suc i) j else []);
 
-fun ball (Set xs) p = pred_list p xs;
+fun ball (Set xs) p = list_all p xs;
 
 fun max A_ a b = (if less_eq A_ a b then b else a);
 
