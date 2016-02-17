@@ -1414,18 +1414,34 @@ qed
 
 lemma poly_resultant_zero:
   fixes p q :: "'a :: comm_ring_1 poly poly"
-  assumes degp: "degree p > 0" and degq: "degree q > 0"
-      and y: "poly2 p x y = 0 \<and> poly2 q x y = 0"
+  assumes deg: "degree p > 0 \<or> degree q > 0"
+  assumes p0: "poly2 p x y = 0" and q0: "poly2 q x y = 0"
   shows "poly (resultant p q) x = 0"
 proof -
-  obtain y where p0: "poly2 p x y = 0" and q0: "poly2 q x y = 0" using y by auto
-  obtain p' q' where "[: resultant p q :] = p' * p + q' * q"
-    using resultant_as_poly[OF degp degq] by force
-  hence "resultant p q = poly (p' * p + q' * q) [:y:]"
-    using mpoly_base_conv(2)[of "resultant p q"] by auto
-  also have "poly ... x = poly2 p x y * poly2 p' x y + poly2 q x y * poly2 q' x y"
-    unfolding poly2_def by simp
-  finally show ?thesis unfolding p0 q0 by simp
+  { assume "degree p > 0" "degree q > 0"
+    from resultant_as_poly[OF this]
+    obtain p' q' where "[: resultant p q :] = p' * p + q' * q" by force
+    hence "resultant p q = poly (p' * p + q' * q) [:y:]"
+      using mpoly_base_conv(2)[of "resultant p q"] by auto
+    also have "poly ... x = poly2 p x y * poly2 p' x y + poly2 q x y * poly2 q' x y"
+      unfolding poly2_def by simp
+    finally have ?thesis unfolding p0 q0 by simp
+  } moreover {
+    assume degp: "degree p = 0"
+    hence p: "p = [: coeff p 0 :]" by(subst degree_0_id[OF degp,symmetric],simp)
+    hence "resultant p q = coeff p 0 ^ degree q" using resultant_const(1) by metis
+    also have "poly ... x = poly (coeff p 0) x ^ degree q" by auto
+    also have "... = poly2 p x y ^ degree q" unfolding poly2_def by(subst p, auto)
+    finally have ?thesis unfolding p0 using deg degp zero_power by auto
+  } moreover {
+    assume degq: "degree q = 0"
+    hence q: "q = [: coeff q 0 :]" by(subst degree_0_id[OF degq,symmetric],simp)
+    hence "resultant p q = coeff q 0 ^ degree p" using resultant_const(2) by metis
+    also have "poly ... x = poly (coeff q 0) x ^ degree p" by auto
+    also have "... = poly2 q x y ^ degree p" unfolding poly2_def by(subst q, auto)
+    finally have ?thesis unfolding q0 using deg degq zero_power by auto
+  }
+  ultimately show ?thesis by auto
 qed
 
 lemma resultant_as_nonzero_poly_weak:

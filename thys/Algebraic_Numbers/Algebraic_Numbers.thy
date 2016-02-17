@@ -98,22 +98,14 @@ definition poly_add :: "'a :: comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarro
   "poly_add p q = resultant (poly_x_minus_y p) (poly_lift q)"
 
 lemma poly_add:
-  fixes p q :: "'a ::{ring_char_0,idom} poly"
-  assumes p0: "p \<noteq> 0" and q0: "q \<noteq> 0"
-      and x: "poly p x = 0" and y: "poly q y = 0"
+  fixes p q :: "'a ::comm_ring_1 poly"
+  assumes q0: "q \<noteq> 0" and x: "poly p x = 0" and y: "poly q y = 0"
   shows "poly (poly_add p q) (x+y) = 0"
-proof -
-  have p'0: "poly_x_minus_y p \<noteq> 0" using p0 by simp
-  have q'0: "poly_lift q \<noteq> 0" using q0 by simp
-  have "degree p > 0" using le_0_eq order_degree order_root p0 x by fastforce
-  hence degp: "degree (poly_x_minus_y p) > 0" by auto
-  have "degree q > 0" using le_0_eq order_degree order_root q0 y by fastforce
-  hence degq: "degree (poly_lift q) > 0"  by auto
-  def z == "x+y"
-  have "poly2 (poly_x_minus_y p) z (z-x) = 0"
-   and "poly2 (poly_lift q) z y = 0" using x y by simp+
-  thus ?thesis unfolding poly_add_def using poly_resultant_zero[OF degp degq] by force
-qed
+  unfolding poly_add_def
+proof (rule poly_resultant_zero[OF disjI2])
+  have "degree q > 0" using poly_zero q0 y by auto
+  thus degq: "degree (poly_lift q) > 0" by auto
+qed (insert x y, simp_all)
 
 lemma (in ring_hom) degree_map_poly_map_poly:  assumes zero: "\<forall>x. hom x = 0 \<longrightarrow> x = 0"
    shows "degree (map_poly (map_poly hom) p) = degree p"
@@ -338,7 +330,7 @@ proof -
     show "rpoly (poly_add p q) (x + y) = (0::complex)"
       unfolding eval_poly_def
       apply(subst rpoly.poly_add_hom[symmetric])
-      using poly_add[OF p'0 q'0 px0 qy0] by auto
+      using poly_add[OF q'0 px0 qy0] by auto
     have "map_poly of_rat (poly_add p q) \<noteq> (0::complex poly)"
       apply(subst rpoly.poly_add_hom[symmetric])
       apply(subst poly_add_nonzero_complex[OF p'0 q'0 px0 qy0], auto)
@@ -520,26 +512,15 @@ qed
 
 lemma poly_mult':
   fixes p q :: "'a :: field poly"
-  assumes p0: "p \<noteq> 0" and q0: "q \<noteq> 0"
+  assumes q0: "q \<noteq> 0"
       and x: "poly p x = 0" and y: "poly q y = 0"
-      and p00: "poly p 0 \<noteq> 0"
-      and x0: "x \<noteq> 0"
       and y0: "y \<noteq> 0" 
   shows "poly (poly_mult' p q) (x*y) = 0"
-proof -
-  have p'0: "poly_x_div_y p \<noteq> 0" using p0 by simp
-  have q'0: "poly_lift q \<noteq> 0" using q0 by simp
-  have dp: "degree p > 0" using le_0_eq order_degree order_root p0 x by fastforce
-  hence degp: "degree (poly_x_div_y p) > 0" by (subst poly_x_div_y_degree_eq[OF p00])
+  unfolding poly_mult'_def
+proof (rule poly_resultant_zero[OF disjI2])
   have "degree q > 0" using le_0_eq order_degree order_root q0 y by fastforce
-  hence degq: "degree (poly_lift q) > 0"  by auto
-  def z == "x*y"
-  hence yzx: "y = z / x" using x0 by auto
-  hence 1: "poly2 (poly_x_div_y p) z (z / x) = 0"
-   and 2: "poly2 (poly_lift q) z (z / x) = 0" using x y y0 by (auto simp: poly2_poly_x_div_y dp)
-  show ?thesis unfolding poly_mult'_def using poly_resultant_zero[OF degp degq conjI[OF 1 2]] 
-    by (simp add: z_def)
-qed
+  thus degq: "degree (poly_lift q) > 0" by auto
+qed (insert x y y0, auto simp: poly2_poly_x_div_y)
 
 lemma poly_x_div_y_poly_lift_coprime_complex:
   fixes p q :: "complex poly"
@@ -685,7 +666,7 @@ proof -
     show "rpoly (poly_mult' p q) (x * y) = (0::complex)"
       unfolding eval_poly_def
       apply(subst rpoly.poly_mult'_hom[symmetric])
-      using poly_mult'[OF p'0 q'0 px0 qy0 00[OF p00] x0 y0] by auto
+      using poly_mult'[OF q'0 px0 qy0 y0] by auto
     interpret cr: inj_field_hom "of_rat :: rat \<Rightarrow> complex" by unfold_locales auto
     have "map_poly of_rat (poly_mult' p q) \<noteq> (0::complex poly)"
       apply(subst rpoly.poly_mult'_hom[symmetric])
