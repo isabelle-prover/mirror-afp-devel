@@ -97,7 +97,7 @@ next
   case 10 then show ?case by (rule inconsistent) -- "BAAAAAMMMM"
 next
   case 11 then show ?case
-      unfolding OO_Grp_alt rel_var.simps[abs_def] by (auto simp: fun_eq_iff)
+      unfolding rel_var.simps[abs_def] by (auto simp: fun_eq_iff)
 qed
 
 lift_definition X :: "(bool, 'b, 'k) var" is "BPS (binsert (True, undefined) (binsert (False, undefined) bempty))".

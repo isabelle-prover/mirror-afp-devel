@@ -388,7 +388,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
             , List.map (fn (n, l) => ( ( (To_binding "", To_sbinding n)
                                        , List.map (fn s => (To_binding "", of_semi__typ s)) l)
                                      , NoSyn)) l)
-          , (To_binding "", To_binding ""))
+          , (To_binding "", To_binding "", To_binding ""))
         , [])]))
 | Theory_type_synonym (Type_synonym (n, v, l)) => in_theory
    (fn thy =>

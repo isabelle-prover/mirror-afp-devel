@@ -329,14 +329,14 @@ abbreviation satisfies_bounded (infix "\<Turnstile>\<^sub>b" 50) where
   "\<AA> \<Turnstile>\<^sub>b \<phi> \<equiv> satisfies_gen (\<lambda>_ P n. len P \<le> n) \<AA> \<phi>"
 
 abbreviation sat_vars_gen where
-  "sat_vars_gen r K V \<AA> \<phi> \<equiv>
-    satisfies_gen (\<lambda>k P n. restrict k P \<and> r k P n) \<AA> \<phi> \<and> (\<forall>k \<in> K. \<forall>x \<in> V k. restrict k (x\<^bsup>\<AA>\<^esup>k))"
+  "sat_vars_gen r K \<AA> \<phi> \<equiv>
+    satisfies_gen (\<lambda>k P n. restrict k P \<and> r k P n) \<AA> \<phi> \<and> (\<forall>k \<in> K. \<forall>x \<in> FV \<phi> k. restrict k (x\<^bsup>\<AA>\<^esup>k))"
 
 definition sat where
-  "sat \<AA> \<phi> \<equiv> sat_vars_gen (\<lambda>_ _ _. True) UNIV (FV \<phi>) \<AA> \<phi>"
+  "sat \<AA> \<phi> \<equiv> sat_vars_gen (\<lambda>_ _ _. True) UNIV \<AA> \<phi>"
 
 definition sat\<^sub>b where
-  "sat\<^sub>b \<AA> \<phi> \<equiv> sat_vars_gen (\<lambda>_ P n. len P \<le> n) UNIV (FV \<phi>) \<AA> \<phi>"
+  "sat\<^sub>b \<AA> \<phi> \<equiv> sat_vars_gen (\<lambda>_ P n. len P \<le> n) UNIV \<AA> \<phi>"
 
 fun RESTR where
   "RESTR (FOr \<phi> \<psi>) = FOr (RESTR \<phi>) (RESTR \<psi>)"
@@ -1130,22 +1130,21 @@ lemma satisfies_gen_restrict:
   by (induct V arbitrary: \<phi>) (auto simp: restrict_Restrict[symmetric])
 
 lemma sat_vars_RESTRICT_VARS:
-  fixes V
-  defines "vs \<equiv> sorted_list_of_set o V"
-  assumes "\<forall>k \<in> set ks. finite (V k)"
-  shows "sat_vars_gen r (set ks) V \<AA> \<phi> \<longleftrightarrow> satisfies_gen r \<AA> (RESTRICT_VARS ks vs \<phi>)"
-using assms proof (induct ks arbitrary: \<phi>)
+  fixes \<phi>
+  defines "vs \<equiv> sorted_list_of_set o FV \<phi>"
+  assumes "\<forall>k \<in> set ks. finite (FV \<phi> k)"
+  shows "sat_vars_gen r (set ks) \<AA> \<phi> \<longleftrightarrow> satisfies_gen r \<AA> (RESTRICT_VARS ks vs \<phi>)"
+using assms proof (induct ks)
   case (Cons k ks)
-  with satisfies_gen_restrict[of r \<AA> "(RESTRICT_VARS ks vs \<phi>)" "vs k"] show ?case
-    by (force simp: vs_def)
+  with satisfies_gen_restrict[of r \<AA> "(RESTRICT_VARS ks vs \<phi>)" "vs k"] show ?case by auto
 qed (simp add: satisfies_gen_restrict_RESTR)
 
 lemma sat_RESTRICT: "sat \<AA> \<phi> \<longleftrightarrow> \<AA> \<Turnstile> RESTRICT \<phi>"
-  unfolding sat_def RESTRICT_def using sat_vars_RESTRICT_VARS[of Enum.enum "FV \<phi>" _ \<AA> \<phi>, symmetric]
+  unfolding sat_def RESTRICT_def using sat_vars_RESTRICT_VARS[of Enum.enum, symmetric]
   by (auto simp: finite_FV enum_UNIV)
 
 lemma sat\<^sub>b_RESTRICT: "sat\<^sub>b \<AA> \<phi> \<longleftrightarrow> \<AA> \<Turnstile>\<^sub>b RESTRICT \<phi>"
-  unfolding sat\<^sub>b_def RESTRICT_def using sat_vars_RESTRICT_VARS[of Enum.enum "FV \<phi>" _ \<AA> \<phi>, symmetric]
+  unfolding sat\<^sub>b_def RESTRICT_def using sat_vars_RESTRICT_VARS[of Enum.enum, symmetric]
   by (auto simp: finite_FV enum_UNIV)
 
 lemma wf_RESTR: "wf idx \<phi> \<Longrightarrow> wf idx (RESTR \<phi>)"

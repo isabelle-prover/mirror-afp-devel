@@ -97,10 +97,10 @@ next
     by (rule predicate2I, transfer) (auto simp: rel_set_OO[symmetric])
 next
   fix R :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
-  show "rel_nebset R = ((BNF_Def.Grp {x. set_nebset x \<subseteq> {(x, y). R x y}} (map_nebset fst))\<inverse>\<inverse> OO
-         BNF_Def.Grp {x. set_nebset x \<subseteq> {(x, y). R x y}} (map_nebset snd) ::
-         'a set!['k] \<Rightarrow> 'b set!['k] \<Rightarrow> bool)"
-    by (simp add: rel_nebset_def map_fun_def o_def rel_set_def rel_nebset_aux_infinite)
+  show "rel_nebset R = ((\<lambda>x y. \<exists>z. set_nebset z \<subseteq> {(x, y). R x y} \<and>
+    map_nebset fst z = x \<and> map_nebset snd z = y) :: 'a set!['k] \<Rightarrow> 'b set!['k] \<Rightarrow> bool)"
+    by (simp add: rel_nebset_def map_fun_def o_def rel_set_def
+      rel_nebset_aux_infinite[unfolded OO_Grp_alt])
 qed (simp_all add: card_order_csum natLeq_card_order cinfinite_csum natLeq_cinfinite)
 
 lemma map_nebset_nebinsert[simp]: "map_nebset f (nebinsert x X) = nebinsert (f x) (map_nebset f X)"

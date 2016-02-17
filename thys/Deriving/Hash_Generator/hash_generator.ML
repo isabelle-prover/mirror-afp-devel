@@ -209,8 +209,7 @@ fun generate_hashs_from_bnf_fp tyco lthy =
       |> BNF_LFP_Rec_Sugar.primrec bindings (eqs |> map (pair Attrib.empty_binding))
     val (phi, lthy) = restore_with_morphism lthy
     val phashs = map (Morphism.term phi) phashs
-    val phash_simps = Bnf_Access.postprocess_prim_rec_simp_rules phash_simps
-      |> map (Morphism.fact phi)
+    val phash_simps = phash_simps |> map (Morphism.fact phi)
 
     (* definitions of hashs via partial hashs and maps *)
 

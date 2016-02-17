@@ -72,7 +72,7 @@ next
   case 8 then show ?case by (rule inconsistent) -- "BAAAAAMMMM"
 next
   case 9 then show ?case
-      unfolding OO_Grp_alt by (auto simp: fun_eq_iff intro: rel_bset.intros elim: rel_bset.cases)
+    by (auto simp: fun_eq_iff intro: rel_bset.intros elim: rel_bset.cases)
 qed
 
 lemma card_option_finite[simp]:
