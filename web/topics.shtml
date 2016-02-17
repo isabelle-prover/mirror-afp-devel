@@ -91,6 +91,8 @@
 <a href="entries/Abortable_Linearizable_Modules.shtml">Abortable_Linearizable_Modules</a> &nbsp;
 
 <strong>Concurrent:</strong>&nbsp;<a href="entries/ConcurrentGC.shtml">ConcurrentGC</a> &nbsp;
+
+<strong>Online:</strong>&nbsp;<a href="entries/List_Update.shtml">List_Update</a> &nbsp;
 </div>
 
 <h3>Data Structures</h3>
