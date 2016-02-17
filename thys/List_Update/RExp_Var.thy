@@ -170,8 +170,10 @@ lemma power_mono: "L1 \<subseteq> L2 \<Longrightarrow> (L1::'a lang) ^^ n \<subs
 apply(auto) apply(induct n) by(auto simp: conc_def)
 
 lemma star_mono: "L1 \<subseteq> L2 \<Longrightarrow> star L1 \<subseteq> star L2"
-using power_mono unfolding star_def by blast
-
+  apply (simp add: star_def)
+  apply (rule UN_mono)
+  apply (auto simp: power_mono)
+  done
 
 lemma Lstar: "L(starS M) = star ( L(M) )"
 unfolding starS_def apply(auto)
@@ -208,13 +210,15 @@ next
     have ac: "lang m \<subseteq> lang (Star (verund (m # bs)))" 
       apply(cases bs) by(auto)
     have ad: "(lang (Star (verund bs))) \<subseteq> lang (Star (verund (m # bs)))"
-      apply(auto) unfolding star_def apply(auto)
+      apply (simp add: star_def)
+      apply (rule UN_mono)
+      apply simp_all
       proof -
-        case goal1
-        thm power_mono
-        have t: "(lang (verund bs) ^^ n) \<subseteq> (lang m \<union> lang (verund bs)) ^^ n" apply(rule power_mono) by simp
-        show ?case apply(rule exI[where x="n"]) using goal1 t
-        apply(cases bs) by(auto)
+        fix n
+        have t: "(lang (verund bs) ^^ n) \<subseteq> (lang m \<union> lang (verund bs)) ^^ n"
+          by (rule power_mono) simp
+        then show "lang (verund bs) ^^ n
+          \<subseteq> lang (verund (m # bs)) ^^ n" by (cases bs) simp_all
       qed
 
     from Bin am mM x have "x \<in> lang m @@ (lang (Star (verund bs)))" by auto
@@ -231,11 +235,14 @@ next
 qed        
 
 lemma substL_star: "L (substL (star L1) \<sigma>) = L (starS (substL L1 \<sigma>))"
-apply(simp add: concS_def conc_def starS_def star_def)
-apply(auto) unfolding star_def
+apply (simp add: concS_def conc_def starS_def star_def)
+apply auto unfolding star_def
 proof -
-  case goal1
-  then show ?case
+  fix x a n
+  assume "x \<in> lang (subst (w2rexp a) \<sigma>)"
+  moreover assume "a \<in> L1 ^^ n"
+  ultimately show "\<exists>xa. (\<exists>xs. xa = Star (verund xs) \<and> set xs
+    \<subseteq> {subst (w2rexp a) \<sigma> | a. a \<in> L1}) \<and> x \<in> lang xa"
   proof(induct n arbitrary: x a)
     case 0
     then have "a=[]" by auto
@@ -278,10 +285,13 @@ proof -
         qed
     qed
 next
-  case goal2
+  fix x and xs :: "nat rexp list"
+  assume "x \<in> (\<Union>n. lang (verund xs) ^^ n)"
   then obtain n where "x \<in> lang (verund xs) ^^ n" by auto
-  with goal2(2) show ?case 
-  proof(induct n arbitrary: x)
+  moreover assume "set xs \<subseteq> {subst (w2rexp a) \<sigma> |a. a \<in> L1}"
+  ultimately show "\<exists>xa. (\<exists>a. xa = subst (w2rexp a) \<sigma> \<and>
+    (\<exists>n. a \<in> L1 ^^ n)) \<and> x \<in> lang xa"
+  proof (induct n arbitrary: x)
     case 0
     then have xe: "x=[]" by auto
     show ?case
@@ -296,11 +306,12 @@ next
     then have "x \<in> lang (verund xs) @@ (lang (verund xs) ^^ n)" by auto
     then obtain x1 x2 where x: "x=x1@x2" and x1: "x1\<in>lang (verund xs)"
                       and x2: "x2 \<in> (lang (verund xs) ^^ n)" by auto
-    from obtainit[OF x1] obtain el where "el \<in> set xs" and "x1 \<in> lang el" by auto
-    with Suc(2) obtain elem where x1elem: "x1 \<in> lang (subst (w2rexp elem) \<sigma>)"
-          and elemL1: "elem \<in> L1" by auto
-    thm Suc(1)[OF Suc(2) x2]
-    from Suc(1)[OF Suc(2) x2] obtain R word n where
+    from obtainit [OF x1] obtain el
+      where "el \<in> set xs" and "x1 \<in> lang el" by auto
+    with Suc.prems obtain elem
+      where x1elem: "x1 \<in> lang (subst (w2rexp elem) \<sigma>)"
+      and elemL1: "elem \<in> L1" by auto
+    from Suc.hyps [OF x2 Suc.prems(2)] obtain R word n where
          R: "R = subst (w2rexp word) \<sigma>" and word: "word \<in> L1 ^^ n" and x2: "x2 \<in> lang R" by auto
     
                       
@@ -319,13 +330,10 @@ next
             case goal2
             thm x1 Suc(2)
             have "x1 \<in> lang (subst (w2rexp elem) \<sigma>)" by(fact x1elem)
-            with x2[unfolded R] show ?case unfolding x apply(simp only: subst_w2rexp) by(blast)
+            with x2[unfolded R] show ?case unfolding x apply(simp only: subst_w2rexp) by blast
           qed
   qed
 qed
-
-
-
 
 lemma substituitionslemma: 
   fixes E :: "nat rexp"
