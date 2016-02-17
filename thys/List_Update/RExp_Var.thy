@@ -3,8 +3,7 @@
     Reference:   http://www4.in.tum.de/lehre/vorlesungen/theo/SS10/vorlesung.shtml p.96ff
 *)
 theory RExp_Var
-imports
-"$AFP/Regular-Sets/Equivalence_Checking"
+imports "../Regular-Sets/Equivalence_Checking"
 begin
 
 
