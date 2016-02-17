@@ -36,6 +36,16 @@ lemma degree2_coeffs: "degree p = 2 \<Longrightarrow>
   \<exists> a b c. p = [: c, b, a :] \<and> a \<noteq> 0"
   by (metis Suc_1 Suc_neq_Zero degree1_coeffs degree_pCons_eq_if nat.inject pCons_cases)
 
+lemma poly_zero:
+  fixes p :: "'a :: comm_ring_1 poly"
+  assumes x: "poly p x = 0" shows "p = 0 \<longleftrightarrow> degree p = 0"
+proof
+  assume degp: "degree p = 0"
+  hence "poly p x = coeff p (degree p)" by(subst degree_0_id[OF degp,symmetric], simp)
+  hence "coeff p (degree p) = 0" using x by auto
+  thus "p = 0" by auto
+qed auto
+
 lemma coeff_monom_Suc: "coeff (monom a (Suc d) * p) (Suc i) = coeff (monom a d * p) i"
   by (simp add: monom_Suc)
 
