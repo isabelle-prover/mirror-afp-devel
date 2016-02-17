@@ -384,7 +384,7 @@ next
   also have "\<dots> = (A ^^ Suc (Suc n)) @@ X \<union> ((A ^^ Suc n) @@ B) \<union> (\<Union>m\<le>n. (A ^^ m) @@ B)"
     by (simp add: conc_Un_distrib conc_assoc[symmetric] conc_pow_comm)
   also have "\<dots> = (A ^^ Suc (Suc n)) @@ X \<union> (\<Union>m\<le>Suc n. (A ^^ m) @@ B)"
-    by (auto simp add: le_Suc_eq cong del: strong_SUP_cong)
+    by (auto simp add: atMost_Suc)
   finally show "X = (A ^^ Suc (Suc n)) @@ X \<union> (\<Union>m\<le>Suc n. (A ^^ m) @@ B)" .
 qed
 
@@ -438,7 +438,7 @@ next
   also have "\<dots> = X @@ (A ^^ Suc (Suc n)) \<union> (B @@ (A ^^ Suc n)) \<union> (\<Union>m\<le>n. B @@ (A ^^ m))"
     by (simp add: conc_Un_distrib conc_assoc)
   also have "\<dots> = X @@ (A ^^ Suc (Suc n)) \<union> (\<Union>m\<le>Suc n. B @@ (A ^^ m))"
-    by (auto simp add: le_Suc_eq cong del: strong_SUP_cong)
+    by (auto simp add: atMost_Suc)
   finally show "X = X @@ (A ^^ Suc (Suc n)) \<union> (\<Union>m\<le>Suc n. B @@ (A ^^ m))" .
 qed
 
