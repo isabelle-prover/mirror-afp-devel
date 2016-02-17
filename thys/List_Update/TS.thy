@@ -1,7 +1,6 @@
 (*  Title:       Competitive Analysis of TS
     Author:      Max Haslbeck
-*)
-(*<*)
+*) 
 theory TS
 imports
 OPT2
@@ -10,20 +9,14 @@ Move_to_Front
 List_Factoring
 RExp_Var 
 begin
-
-
-text {*
-@{thm nodouble_def[simplified, no_vars]}
-*}
-
-(*>*)
+ 
 
 chapter "TS: another 2-competitve Algorithm"
  
 section "Definition of TS"
  
 
-(*<*)  
+  
 definition TS_step_d where
 "TS_step_d s q = ((
       ( 
