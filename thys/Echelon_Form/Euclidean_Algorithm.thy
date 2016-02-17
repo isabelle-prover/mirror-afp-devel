@@ -1635,7 +1635,7 @@ lemma "Gcd_eucl A = Lcm_eucl {d. \<forall>x\<in>A. d dvd x}"
   by (simp add: Gcd_Gcd_eucl Lcm_Lcm_eucl Gcd_eucl_def)
 
 lemma Gcd_eucl_dvd [simp]: "x \<in> A \<Longrightarrow> Gcd_eucl A dvd x"
-  and dvd_Gcd_eucl [simp]: "(\<forall>x\<in>A. g' dvd x) \<Longrightarrow> g' dvd Gcd_eucl A"
+  and Gcd_greatest_eucl [simp]: "(\<forall>x\<in>A. g' dvd x) \<Longrightarrow> g' dvd Gcd_eucl A"
   and normalisation_factor_Gcd_eucl [simp]: 
     "normalisation_factor (Gcd_eucl A) = (if Gcd_eucl A = 0 then 0 else 1)"
 proof -
@@ -1655,11 +1655,11 @@ lemma Gcd_euclI:
   "(\<And>x. x\<in>A \<Longrightarrow> l dvd x) \<Longrightarrow> (\<And>l'. (\<forall>x\<in>A. l' dvd x) \<Longrightarrow> l' dvd l) \<Longrightarrow>
     normalisation_factor l = (if l = 0 then 0 else 1) \<Longrightarrow> l = Gcd_eucl A"
   by (intro normed_associated_imp_eq)
-    (auto intro: Gcd_eucl_dvd dvd_Gcd_eucl simp: associated_def)
+    (auto intro: Gcd_eucl_dvd Gcd_greatest_eucl simp: associated_def)
 
 lemma Lcm_eucl_Gcd_eucl:
   "Lcm_eucl A = Gcd_eucl {m. \<forall>x\<in>A. x dvd m}"
-  by (rule Lcm_euclI[symmetric]) (auto intro: dvd_Gcd_eucl Gcd_eucl_dvd)
+  by (rule Lcm_euclI[symmetric]) (auto intro: Gcd_greatest_eucl Gcd_eucl_dvd)
 
 lemma Gcd_eucl_0_iff:
   "Gcd_eucl A = 0 \<longleftrightarrow> A \<subseteq> {0}"
@@ -1674,7 +1674,7 @@ lemma Gcd_eucl_empty [simp]:
 
 lemma Gcd_eucl_1:
   "1 \<in> A \<Longrightarrow> Gcd_eucl A = 1"
-  by (intro Gcd_euclI[symmetric]) (auto intro: Gcd_eucl_dvd dvd_Gcd_eucl)
+  by (intro Gcd_euclI[symmetric]) (auto intro: Gcd_eucl_dvd Gcd_greatest_eucl)
 
 lemma Gcd_eucl_insert [simp]:
   "Gcd_eucl (insert a A) = gcd_eucl a (Gcd_eucl A)"
@@ -1682,7 +1682,7 @@ proof (rule gcd_euclI)
   fix l assume "l dvd a" and "l dvd Gcd_eucl A"
   hence "\<forall>x\<in>A. l dvd x" by (blast intro: dvd_trans Gcd_eucl_dvd)
   with `l dvd a` show "l dvd Gcd_eucl (insert a A)" by (force intro: Gcd_eucl_dvd)
-qed (auto intro: Gcd_eucl_dvd dvd_Gcd_eucl)
+qed (auto intro: Gcd_eucl_dvd Gcd_greatest_eucl)
 
 lemma Gcd_eucl_finite:
   assumes "finite A"
@@ -2013,9 +2013,9 @@ lemmas Lcm_Un = Lcm_eucl_Un[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmet
 lemmas Lcm_1_iff = Lcm_eucl_1_iff [unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
 lemmas Lcm_no_units = Lcm_eucl_no_units [unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
 lemmas Lcm_empty = Lcm_eucl_empty[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
-lemmas Lcm_eq_0 = Lcm_eucl_eq_0[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
-lemmas Lcm0_iff' = Lcm_eucl0_iff'[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
-lemmas Lcm0_iff = Lcm_eucl0_iff[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
+lemmas Lcm_eq_0_I = Lcm_eucl_eq_0[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
+lemmas Lcm_0_iff' = Lcm_eucl0_iff'[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
+lemmas Lcm_0_iff = Lcm_eucl0_iff[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
 lemmas Lcm_no_multiple = Lcm_eucl_no_multiple[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
 lemmas Lcm_insert = Lcm_eucl_insert[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
 lemmas Lcm_finite = Lcm_eucl_finite[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
@@ -2026,7 +2026,7 @@ lemmas Lcm_coprime = Lcm_eucl_coprime[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_e
 lemmas Lcm_coprime' = Lcm_eucl_coprime'[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
 lemmas Gcd_Lcm = Gcd_eucl_Lcm_eucl[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
 lemmas Gcd_dvd = Gcd_eucl_dvd[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
-lemmas dvd_Gcd = dvd_Gcd_eucl[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
+lemmas Gcd_greatest = Gcd_greatest_eucl[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
 lemmas normalisation_factor_Gcd = normalisation_factor_Gcd_eucl[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
 lemmas GcdI = Gcd_euclI[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
 lemmas Lcm_Gcd = Lcm_eucl_Gcd_eucl[unfolded gcd_gcd_eucl[symmetric] lcm_lcm_eucl[symmetric] Gcd_Gcd_eucl[symmetric] Lcm_Lcm_eucl[symmetric]]
