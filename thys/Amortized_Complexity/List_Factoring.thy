@@ -171,12 +171,13 @@ unfolding ALG'_def by(simp add: split_def before_in_def)
  
 
 definition ALGxy_det where
-  "ALGxy_det A qs init x y = (\<Sum>i\<in>{i. i<length qs}. (if (qs!i \<in> {y,x}) then ALG'_det A qs init i y + ALG'_det A qs init i x
+  "ALGxy_det A qs init x y = (\<Sum>i\<in>{..<length qs}. (if (qs!i \<in> {y,x}) then ALG'_det A qs init i y + ALG'_det A qs init i x
                                                     else 0::nat))"
 
 lemma ALGxy_det_alternativ: "ALGxy_det A qs init x y
    =  (\<Sum>i\<in>{i. i<length qs \<and> (qs!i \<in> {y,x})}. ALG'_det A qs init i y + ALG'_det A qs init i x)"
 proof -
+  have f: "{i. i<length qs} = {..<length qs}" by(auto)
   thm setsum.inter_restrict
   have e: "{i. i<length qs \<and> (qs!i \<in> {y,x})} = {i. i<length qs} \<inter> {i. (qs!i \<in> {y,x})}"
       by auto
@@ -186,23 +187,46 @@ proof -
   also have "\<dots> = (\<Sum>i\<in>{i. i<length qs}. (if i \<in> {i. (qs!i \<in> {y,x})} then ALG'_det A qs init i y + ALG'_det A qs init i x
                                                     else 0))"
     apply(rule setsum.inter_restrict) by auto
+  also have "\<dots> = (\<Sum>i\<in>{..<length qs}. (if i \<in> {i. (qs!i \<in> {y,x})} then ALG'_det A qs init i y + ALG'_det A qs init i x
+                                                    else 0))"
+      unfolding f by auto
   also have "\<dots> = ALGxy_det A qs init x y"
     unfolding ALGxy_det_def by auto
   finally show ?thesis by simp
 qed
     
 definition ALGxy where
+  "ALGxy A qs init x y = (\<Sum>i\<in>{..<length qs} \<inter> {i. (qs!i \<in> {y,x})}. ALG' A qs init i y + ALG' A qs init i x)"
+
+lemma ALGxy_def2:
   "ALGxy A qs init x y = (\<Sum>i\<in>{i. i<length qs \<and> (qs!i \<in> {y,x})}. ALG' A qs init i y + ALG' A qs init i x)"
-
-
-
+proof -
+  have a: "{i. i<length qs \<and> (qs!i \<in> {y,x})} = {..<length qs} \<inter> {i. (qs!i \<in> {y,x})}" by auto
+  show ?thesis unfolding ALGxy_def a by simp
+qed
 lemma ALGxy_append: "ALGxy A (rs@[r]) init x y =
       ALGxy A rs init x y + (if (r \<in> {y,x}) then ALG' A (rs@[r]) init (length rs) y + ALG' A (rs@[r]) init (length rs) x else 0 )" 
 proof -
-    have "ALGxy A (rs@[r]) init x y = (\<Sum>i\<in>{..<Suc (length rs)} \<inter> {i. (rs @ [r]) ! i \<in> {y, x}}.
+    have "ALGxy A (rs@[r]) init x y = (\<Sum>i\<in>{..<(Suc (length rs))} \<inter> {i. (rs @ [r]) ! i \<in> {y, x}}.
        ALG' A (rs @ [r]) init i y +
-       ALG' A (rs @ [r]) init i x)"sorry
-    show ?thesis sorry
+       ALG' A (rs @ [r]) init i x)" unfolding ALGxy_def by(simp)
+    also have "\<dots> = (\<Sum>i\<in>{..<(Suc (length rs))}. (if i\<in>{i. (rs @ [r]) ! i \<in> {y, x}} then
+       ALG' A (rs @ [r]) init i y +
+       ALG' A (rs @ [r]) init i x else 0) )"
+       apply(rule setsum.inter_restrict) by simp
+    also have "\<dots> = (\<Sum>i\<in>{..<length rs}. (if i\<in>{i. (rs @ [r]) ! i \<in> {y, x}} then
+       ALG' A (rs @ [r]) init i y +
+       ALG' A (rs @ [r]) init i x else 0) ) + (if length rs\<in>{i. (rs @ [r]) ! i \<in> {y, x}} then
+       ALG' A (rs @ [r]) init (length rs) y +
+       ALG' A (rs @ [r]) init(length rs) x else 0) " by simp
+    also have "\<dots> = ALGxy A rs init x y + (if r \<in> {y, x} then
+       ALG' A (rs @ [r]) init (length rs) y +
+       ALG' A (rs @ [r]) init(length rs) x else 0)" 
+            apply(simp add: ALGxy_def setsum.inter_restrict nth_append)
+            unfolding ALG'_def
+              apply(rule setsum.cong)
+                apply(simp)  by(auto simp: nth_append)
+    finally show ?thesis .
 qed
 
 lemma ALGxy_wholerange: "ALGxy A qs init x y
@@ -415,7 +439,7 @@ proof -
      qed   
      also have E6: "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
                   ALGxy A qs init x y)"
-           unfolding ALGxy_def by simp
+           unfolding ALGxy_def2 by simp
      finally show ?thesis . 
 qed (* das ist gleichung 1.4 *)
 
@@ -479,23 +503,6 @@ qed (simp add: assms)
 
 
 subsection "The pairwise property"
-
-(*<*)
-
-
-(* alternative definitionen die auch richtig sein müssten
-fun ALGxy_n' where
-  "ALGxy_n' A qs init n x y =  (if qs!n = x \<or> qs!n = y
-      then E( map_pmf (ALG x qs n) (config\<^sub>p A qs init n))
-        + E( map_pmf (ALG y qs n) (config\<^sub>p A qs init n))
-      else 0)"
- 
-fun ALGxy' where
-  "ALGxy' A qs init x y = (\<Sum>i<length qs. ALGxy_n' A qs init i x y)"
-
-lemma "ALGxy A qs init x y  = ALGxy' A qs init x y " 
-unfolding ALGxy_def ALG'_def sorry
- *)
 
 
 definition pairwise where
@@ -903,23 +910,6 @@ proof -
 qed
 
 
-(*
-lemma ALG_P_1: "Suc s < length xs \<Longrightarrow> (xs!s=x \<and> xs!(Suc s)=y) \<or> (xs!s=y \<and> xs!(Suc s)=x) \<Longrightarrow>
-ALG_P (s#ss) x y xs = 1 + ALG_P ss x y (swap s xs)" by(simp)
-
-lemma ALG_P_0a: "~ Suc s < length xs \<Longrightarrow> ALG_P (s#ss) x y xs = 0 + ALG_P ss x y (swap s xs)" by(auto)
-lemma ALG_P_0b: "Suc s < length xs \<Longrightarrow> ~((xs!s=x \<and> xs!(Suc s)=y) \<or> (xs!s=y \<and> xs!(Suc s)=x)) \<Longrightarrow> ALG_P (s#ss) x y xs = 0 + ALG_P ss x y (swap s xs)" by auto
-
-lemma ALG_P_0: "(~ Suc s < length xs) \<or> ~((xs!s=x \<and> xs!(Suc s)=y) \<or> (xs!s=y \<and> xs!(Suc s)=x)) \<Longrightarrow> ALG_P (s#ss) x y xs = 0 + ALG_P ss x y (swap s xs)"
-  by(auto)
-*)
-
-
-
-lemma "Suc ` set sws \<subseteq> {..<length s}
-  \<Longrightarrow> (\<Sum>(x,y)\<in>{(x,y). x\<in>set s \<and> y\<in>set s \<and> x<y}. ALG_P sws x y s) = length sws"
-sorry
-
 (* given a Strategy Strat to serve request sequence qs on initial list init how many
   swaps between elements x and y occur during the ith step *)
 definition "ALG_P' Strat qs init i x y = ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)"
@@ -986,15 +976,6 @@ qed
 definition ALG_Pxy  where
   "ALG_Pxy Strat qs init x y = (\<Sum>i<length qs. ALG_P' Strat qs init i x y)"
 
-term "(\<Sum>i < k. f k)"
-lemma "{..<n}={x. x<n}" by auto
-lemma "(\<Sum>i | i < k. f k) = (\<Sum>(i::nat) < k. (f::nat\<Rightarrow>nat) k)"
-apply(auto) done
-
-lemma wtf: "(\<Sum>i | i < Suc n. f i) = (\<Sum>i| i < n. f i) + f n"
-sorry
-thm setsum_lessThan_Suc
-
 lemma wegdamit: "length A < length Strat \<Longrightarrow> b \<notin> {x,y} \<Longrightarrow> ALGxy_det Strat (A @ [b]) init x y
     = ALGxy_det Strat A init x y" 
 proof -
@@ -1005,29 +986,29 @@ proof -
   term "%i. ALG'_det Strat (A @ [b]) init i y"
 
   have e: "\<And>i. i<length A \<Longrightarrow> (A @ [b]) ! i = A ! i" by(auto simp: nth_append)
- have "(\<Sum>i | i < length (A @ [b]).
+ have "(\<Sum>i\<in> {..< length (A @ [b])}.
         if (A @ [b]) ! i \<in> {y, x}
         then ALG'_det Strat (A @ [b]) init i y +
              ALG'_det Strat (A @ [b]) init i x
-        else 0) = (\<Sum>i | i < Suc (length A).
+        else 0) = (\<Sum>i\<in> {..< Suc(length (A))}.
         if (A @ [b]) ! i \<in> {y, x}
         then ALG'_det Strat (A @ [b]) init i y +
              ALG'_det Strat (A @ [b]) init i x
         else 0)" by auto 
-  also have "\<dots> = (\<Sum> i | i < length A.
+  also have "\<dots> = (\<Sum>i\<in> {..< (length (A))}.
         if (A @ [b]) ! i \<in> {y, x}
         then ALG'_det Strat (A @ [b]) init i y +
              ALG'_det Strat (A @ [b]) init i x
         else 0) + ( if (A @ [b]) ! (length A) \<in> {y, x}
         then ALG'_det Strat (A @ [b]) init (length A) y +
              ALG'_det Strat (A @ [b]) init (length A) x
-        else 0) " by (rule wtf) (* abspalten des letzten glieds *)
-        also have "\<dots> = (\<Sum>i | i < length A.
+        else 0) " by simp (* abspalten des letzten glieds *)
+        also have "\<dots> = (\<Sum>i\<in> {..< (length (A))}.
         if (A @ [b]) ! i \<in> {y, x}
         then ALG'_det Strat (A @ [b]) init i y +
              ALG'_det Strat (A @ [b]) init i x
         else 0)" using bn by auto
-        also have "\<dots> = (\<Sum>i | i < length A.
+        also have "\<dots> = (\<Sum>i\<in> {..< (length (A))}.
           if A ! i \<in> {y, x}
           then ALG'_det Strat A init i y +
               ALG'_det Strat A init i x
@@ -1165,88 +1146,13 @@ next
     finally show ?thesis by simp
   qed
 qed 
- 
-
-(*
-lemma geil1: "x < y in s1 = x < y in s2 \<Longrightarrow>
-  x < y in swaps acs s1 = x < y in (swap 0 ^^ ALG_P acs x y s1) s2"
-proof -
-    assume mono: "(x < y in s1) = (x < y in s2)"
-    
-    from mono show "(x < y in (swaps acs s1))
-        = (x < y in (swap 0 ^^ (ALG_P acs x y s1)) s2)"
-    proof(induct acs arbitrary: s1 s2)
-      case (Cons A AS)
-      have dists1: "distinct s1" sorry
-      let ?s1'="(swaps AS s1)"
-      show ?case
-        proof (cases "Suc A < length s1")
-          case False
-          then have a: "x < y in swaps (A # AS) s1 =
-                    x < y in swaps AS s1" by auto
-          from False have b: "ALG_P (A # AS) x y s1 
-              = ALG_P AS x y s1" by auto
-          from a b Cons(1)[OF Cons(2)] show ?thesis by auto
-        next
-          case True
-          note lengthok=this
-          then have lengthok': "Suc A < length ?s1'" by auto
-          from True dists1 have dp: "dist_perm ?s1' s1" by auto
-          show ?thesis
-          proof (cases "(?s1'!A=x \<and> ?s1'!(Suc A)=y) \<or> (?s1'!A=y \<and> ?s1'!(Suc A)=x)")
-            case False
-            then have a: "x < y in swaps (A # AS) s1 =
-                      x < y in swaps AS s1"
-                using before_in_swap[OF dp lengthok'] apply(simp)
-                by (blast)
-            from lengthok' False have b: "ALG_P (A # AS) x y s1 
-              = ALG_P AS x y s1"
-                by(simp add: ALG_P.simps )
-            from a b Cons(1)[OF Cons(2)] show ?thesis by auto
-           next
-           case True
-            have xny: "x\<noteq>y" sorry
-            have to: "x \<in> set s1" sorry
-            then have tox2: "x \<in> set (swaps AS s1)" by auto
-            have toy: "y \<in> set s1" sorry
-            then have toy2: "y \<in> set (swaps AS s1)" by auto
-            thm not_before_in
-            from True have a: "x < y in swaps (A # AS) s1 =
-                      (~(x < y in swaps AS s1))"
-                apply(simp add:  before_in_swap[OF dp lengthok'])
-                unfolding not_before_in[OF tox2 toy2]
-                using xny apply(simp)
-                  using xny not_before_in using dp lengthok' by auto
-                
-            from lengthok' True have b: "ALG_P (A # AS) x y s1 
-              = 1 + ALG_P AS x y s1"
-                by(simp add: ALG_P.simps )
-
-            have "(x < y in (swap 0 ^^ ALG_P (A # AS) x y s1) s2)
-              = x < y in (swap (0::nat) ((swap 0 ^^ ALG_P AS x y s1) s2))"
-                unfolding b by(simp)
-            also have "\<dots> = (~ x < y in ((swap 0 ^^ ALG_P AS x y s1) s2))"
-                sorry (* involves proving that s2 is of length 2 and contains x,y,
-                        and swap doesnt alter these facts *)
-            finally have c: "(x < y in (swap 0 ^^ ALG_P (A # AS) x y s1) s2)
-                  = (~ x < y in ((swap 0 ^^ ALG_P AS x y s1) s2))" .
-
-            from a b c Cons(1)[OF Cons(2)] show ?thesis by auto
-           qed
-        qed
-    qed (simp add: swap_def)
-qed
-*)
-
+  
 
 lemma steps_steps':
   "length qs = length as \<Longrightarrow> steps s qs as = steps' s qs as (length as)"
 by (induct qs as arbitrary: s rule: list_induct2) (auto)
 
 
-
-
-term "swaps"
 lemma T1_7': "T\<^sub>p init qs Strat = T\<^sub>p_opt init qs \<Longrightarrow> length Strat = length qs
       \<Longrightarrow> n\<le>length qs \<Longrightarrow>  
       x\<noteq>(y::('a::linorder)) \<Longrightarrow>
@@ -1702,18 +1608,18 @@ proof(induct n)
                   + (ALG'_det Strat qs init n y + ALG'_det Strat qs init n x)" 
            proof -
             have "ALGxy_det Strat (take (Suc n) qs) init x y =
-              (\<Sum>i | i < length (take n qs @ [qs ! n]).
+              (\<Sum>i\<in>{..<length (take n qs @ [qs ! n])}.
             if (take n qs @ [qs ! n]) ! i \<in> {y, x}
             then ALG'_det Strat (take n qs @ [qs ! n]) init i y
                 + ALG'_det Strat (take n qs @ [qs ! n]) init i x
             else 0)" unfolding ALGxy_det_def tak by auto
             also have "\<dots>
-             =  (\<Sum>i | i < Suc n.
+             =  (\<Sum>i\<in>{..<Suc n}.
             if (take n qs @ [qs ! n]) ! i \<in> {y, x}
             then ALG'_det Strat (take n qs @ [qs ! n]) init i y
                 + ALG'_det Strat (take n qs @ [qs ! n]) init i x
             else 0)" using ns by simp
-           also have "\<dots> = (\<Sum>i | i < n.
+           also have "\<dots> = (\<Sum>i\<in>{..<n}.
             if (take n qs @ [qs ! n]) ! i \<in> {y, x}
             then ALG'_det Strat (take n qs @ [qs ! n]) init i y
                 + ALG'_det Strat (take n qs @ [qs ! n]) init i x
@@ -1721,10 +1627,9 @@ proof(induct n)
               + (if (take n qs @ [qs ! n]) ! n \<in> {y, x}
             then ALG'_det Strat (take n qs @ [qs ! n]) init n y
                 + ALG'_det Strat (take n qs @ [qs ! n]) init n x
-            else 0)" by (rule wtf) (* TODO: ersetzen! wenn ich gecheckt hab warum thm
-                  setsum_lessThan_Suc nicht funktioniert*)
+            else 0)" by simp
             thm setsum_lessThan_Suc
-            also have "\<dots> = (\<Sum>i | i < n.
+            also have "\<dots> = (\<Sum>i\<in>{..< n}.
             if take n qs ! i \<in> {y, x}
             then ALG'_det Strat (take n qs @ [qs ! n]) init i y
                 + ALG'_det Strat (take n qs @ [qs ! n]) init i x
@@ -1732,7 +1637,7 @@ proof(induct n)
               + ALG'_det Strat (take n qs @ [qs ! n]) init n y
                 + ALG'_det Strat (take n qs @ [qs ! n]) init n x "
                 using aer using garar by simp
-            also have "\<dots> = (\<Sum>i | i < n.
+            also have "\<dots> = (\<Sum>i\<in>{..< n}.
             if take n qs ! i \<in> {y, x}
             then ALG'_det Strat (take n qs @ [qs ! n]) init i y
                 + ALG'_det Strat (take n qs @ [qs ! n]) init i x
@@ -1757,7 +1662,7 @@ proof(induct n)
                   finally have 2: "ALG'_det Strat qs init n x = ALG'_det Strat (take n qs @ [qs ! n]) init n x" .
                   from 1 2 show ?thesis by auto
                 qed
-            also have "\<dots> = (\<Sum>i | i < n.
+            also have "\<dots> = (\<Sum>i\<in>{..< n}.
             if take n qs ! i \<in> {y, x}
             then ALG'_det Strat (take n qs) init i y
                 + ALG'_det Strat (take n qs) init i x
@@ -1769,7 +1674,7 @@ proof(induct n)
                   apply(simp)
                   apply(simp)
                   using ALG'_det_append[where qs="take n qs"] Suc.prems(2) ns by auto
-            also have "\<dots> = (\<Sum>i | i < length(take n qs).
+            also have "\<dots> = (\<Sum>i\<in>{..< length(take n qs)}.
             if take n qs ! i \<in> {y, x}
             then ALG'_det Strat (take n qs) init i y
                 + ALG'_det Strat (take n qs) init i x
@@ -2546,14 +2451,5 @@ lemma factoringlemma_withconstant':
       shows "compet_rand A c S0"
 unfolding compet_rand_def static_def using factoringlemma_withconstant[OF assms] by simp
 
-(*
  
-
-(* Lemma 1.3 *)
-lemma costindependet: "compet\<^sub>p A c S0 \<Longrightarrow> compet A c SO"
-sorry
- 
-
-*)
-
 end
