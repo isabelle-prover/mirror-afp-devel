@@ -93,11 +93,8 @@ proof-
     hence "d * r dvd d * 1" by (simp add: algebra_simps)
     hence "r dvd 1" using `d \<noteq> 0` by (subst (asm) dvd_mult_cancel_left, auto)
   }
-  hence A: "?d' dvd 1" by simp
-  from assms(1) have "p div d \<noteq> 0 \<or> q div d \<noteq> 0" by (auto simp: dvd_div_eq_mult)
-  hence B: "coeff ?d' (degree ?d') = coeff 1 (degree 1)"
-      using poly_gcd_monic[of "p div d" "q div d"] by simp
-  from poly_dvd_antisym[OF B A one_dvd] show ?thesis .
+  hence A: "?d' dvd 1" by blast
+  then show ?thesis by simp
 qed
 
 lemma poly_div:
@@ -133,7 +130,8 @@ lemma bezout_poly:
   "gcd p q = fst (bezw_poly p q) * p + snd (bezw_poly p q) * q"
 proof (induction p q rule: gcd_poly.induct)
   case (1 p)
-    show ?case by (subst bezw_poly.simps, simp add: gcd_poly.simps(1))
+    show ?case by (subst bezw_poly.simps)
+      (simp add: gcd_poly.simps(1) normalize_poly_def)
 next
   case prems: (2 q p)
     let ?b = "bezw_poly q (p mod q)"
@@ -267,11 +265,11 @@ proof-
       then obtain c where [simp]: "p = [:c:]" using pderiv_iszero by blast
       from assms(1) have "c \<noteq> 0" by simp
       from True have "d = smult (inverse c) p"
-          by (simp add: d_def gcd_poly.simps(1))
+          by (simp add: d_def gcd_poly.simps(1) normalize_poly_def)
       hence "p div d = [:c:]" using `c \<noteq> 0`
           by (simp add: div_smult_right assms(1) one_poly_def[symmetric])
       thus ?thesis using `c \<noteq> 0`
-        by (simp add: gcd_poly.simps(1) one_poly_def)
+        by (simp add: gcd_poly.simps(1) one_poly_def normalize_poly_def)
   qed
   thus ?A and "\<And>x. ?B x" by simp_all
 qed

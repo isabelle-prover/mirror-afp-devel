@@ -164,7 +164,7 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
             by (metis dvd_0_left_iff le0 le_antisym neq0_conv zero_neq_numeral)
           with choice have choice: "m = 1 \<or> m \<ge> i" by arith
           from m prems(5) have "m \<le> i" 
-            by (metis False div_by_0 dvd.dual_order.refl dvd_imp_le gr0I)
+            by (metis False div_by_0 dvd_refl dvd_imp_le gr0I)
           with choice
           show "m = 1 \<or> m = i" by auto        
         qed (insert prems(5), auto)

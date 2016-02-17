@@ -251,7 +251,8 @@ proof -
   from cardP subgrp order_G have "p ^ a * k dvd p ^ a * m" by (metis card_subgrp_dvd)
   hence "k dvd m"
     by (metis nat_mult_dvd_cancel_disj pa_not_zero) 
-  with prime_p pNotDvdm have ndvd:"\<not> (p dvd k)" by (metis dvd.dual_order.trans)
+  with pNotDvdm have ndvd:"\<not> p dvd k"
+    by (blast intro: dvd_trans)
   def PcalM \<equiv> "{s. s \<subseteq> carrier (G\<lparr>carrier := P\<rparr>) \<and> card s = p ^ a}"
   def PRelM \<equiv> "{(N1, N2). N1 \<in> PcalM \<and> N2 \<in> PcalM \<and> (\<exists>g\<in>carrier (G\<lparr>carrier := P\<rparr>). N1 = N2 #>\<^bsub>G\<lparr>carrier := P\<rparr>\<^esub> g)}"
   from subgrp finite_G have finite_groupP:"finite (carrier (G\<lparr>carrier := P\<rparr>))" by (auto simp:subgroup_finite)

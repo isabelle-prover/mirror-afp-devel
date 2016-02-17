@@ -960,7 +960,8 @@ proof -
     proof -
       have "cindex a b q p = setsum (\<lambda>x. sjump (p*q) x) A" unfolding A_def cindex_def
         using jump_coprime[OF `p\<noteq>0` `q\<noteq>0` _ `coprime p q`,folded mult.commute] by auto
-      moreover have "coprime q p" using `coprime p q` by (metis poly_gcd_commute)
+      moreover have "coprime q p" using `coprime p q`
+        by (simp add: ac_simps)
       hence "cindex a b p q = setsum (\<lambda>x. sjump (p*q) x) B" unfolding B_def cindex_def
         using jump_coprime[OF `q\<noteq>0` `p\<noteq>0`] by auto
       ultimately show ?thesis by auto

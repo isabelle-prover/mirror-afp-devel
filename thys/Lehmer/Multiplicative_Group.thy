@@ -125,8 +125,10 @@ lemma dvd_div_ge_1 :
   fixes a b :: nat
   assumes "a \<ge> 1" "b dvd a"
   shows "a div b \<ge> 1"
-  by (metis assms div_by_1 div_dvd_div div_less gcd_lcm_complete_lattice_nat.top_greatest
-      gcd_lcm_complete_lattice_nat.top_le not_less)
+proof -
+  from \<open>b dvd a\<close> obtain c where "a = b * c" ..
+  with \<open>a \<ge> 1\<close> show ?thesis by simp
+qed
 
 lemma dvd_nat_bounds :
  fixes n p :: nat
