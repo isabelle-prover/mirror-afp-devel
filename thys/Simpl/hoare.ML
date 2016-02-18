@@ -574,7 +574,7 @@ structure Hoare_Data = Generic_Data
   type T = hoare_data;
 
   val empty = make_hoare_data
-               (Symtab.empty: proc_info Symtab.table) (* smlnj needs typing *)
+               (Symtab.empty: proc_info Symtab.table)
                ([]:string list list)
                (Function)
                (stamp (),(K (K NONE)): Proof.context -> term -> term option)
