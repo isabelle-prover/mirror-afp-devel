@@ -1287,7 +1287,7 @@ lemma wf_ll_Nodes_pret:
   apply (thin_tac " \<forall>q. q \<in> set_of pret \<longrightarrow> q \<in> set (levellista ! var q)")
   apply (erule exE)
   apply (elim conjE)
-  apply (erule_tac x=k in allE)
+  apply (erule_tac x=xa in allE)
   apply (erule impE)
   apply arith
   apply (erule_tac x=x in ballE)
@@ -1387,7 +1387,7 @@ lemma Nodes_levellist:
  \<Longrightarrow> p \<notin> set (levellista ! nb)"
   apply (simp add: Nodes_def) 
   apply (erule exE)
-  apply (rule_tac i=k and j=nb in no_in_one_ll)
+  apply (rule_tac i=x and j=nb in no_in_one_ll)
   apply auto
   done
 
@@ -1398,7 +1398,7 @@ lemma Nodes_var_pret:
   apply (erule conjE)
   apply (thin_tac "\<forall>q. q \<in> set_of pret \<longrightarrow> q \<in> set (levellista ! var q)")
   apply (erule exE)
-  apply (erule_tac x=k in allE)
+  apply (erule_tac x=x in allE)
   apply (erule impE)
   apply arith
   apply (erule_tac x=p in ballE)
@@ -1555,7 +1555,7 @@ lemma Null_notin_Nodes: "\<lbrakk>Dag p low high t; nb <= length levellista; wf_
   apply (rule impI)
   apply (elim conjE)
   apply (thin_tac "\<forall>q. P q" for P)
-  apply (erule_tac x=k in allE)
+  apply (erule_tac x=x in allE)
   apply (erule impE)
   apply simp
   apply (erule_tac x=Null in ballE)
@@ -1572,7 +1572,7 @@ lemma Nodes_in_pret: "\<lbrakk>wf_ll t levellista var; nb <= length levellista\<
     apply (erule exE)
     apply (elim conjE)
     apply (thin_tac "\<forall>q. q \<in> set_of t \<longrightarrow> q \<in> set (levellista ! var q)")
-    apply (erule_tac x=k in allE)
+    apply (erule_tac x=xa in allE)
     apply (erule impE)
     apply simp
     apply (erule_tac x=x in ballE)
@@ -1626,9 +1626,9 @@ proof (elim Dags.cases)
         apply (simp add: Nodes_def)
         apply (simp add: Nodes_def)
         apply (erule exE conjE)
-        apply (case_tac "k=nb")
+        apply (case_tac "xa=nb")
         apply simp
-        apply (rule_tac x=k in exI)
+        apply (rule_tac x=xa in exI)
         apply auto
         done
       have "t \<in> Dags (repc `Nodes nb levellista) (repc \<propto> low) (repc \<propto> high)"

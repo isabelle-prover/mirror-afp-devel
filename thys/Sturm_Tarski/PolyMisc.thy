@@ -4,7 +4,7 @@
 
 theory PolyMisc imports
   Complex_Main 
-  "~~/src/HOL/Library/Poly_Deriv"
+  "~~/src/HOL/Library/Polynomial_GCD_euclidean"
 begin
 
 section{*Misc*}

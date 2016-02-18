@@ -416,7 +416,6 @@ lemma (in dist_transfer) transfer_REC[refine_transfer]:
   apply (rule lfp_induct_pointwise[where B=b and pre="op="])
   apply (rule)
   apply clarsimp
-  apply (subst SUP_def)
   apply (subst \<alpha>_dist)
   apply (auto simp add: chain_def le_fun_def) []
   apply (rule Sup_least)

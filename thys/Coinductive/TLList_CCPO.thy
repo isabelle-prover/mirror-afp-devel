@@ -351,7 +351,8 @@ proof(rule mcontI)
         by -(rule tllist.expand, simp_all add: terminal_tSup)
       moreover have "Complete_Partial_Order.chain (flat_ord b) (terminal ` Y)"
         using chain True by(auto intro: chain_imageI tllist_ord_terminalD)
-      ultimately show ?thesis using Y by(simp add: contD[OF cont_bot])
+      ultimately show ?thesis using Y
+      by (simp add: contD [OF cont_bot] cong del: b.strong_SUP_cong)
     next
       case False
       hence eq: "tSup Y = TCons (thd (tSup Y)) (ttl (tSup Y))" by simp
@@ -379,12 +380,9 @@ proof(rule mcontI)
         using chain by(rule chain_imageI[OF chain_subset])(auto simp add: tllist_ord_ttlI)
       moreover from False have "Y \<inter> {xs. \<not> is_TNil xs} \<noteq> {}" by auto
       ultimately show ?thesis
-        apply(subst (1 2) eq, simp del: b.Sup_image_eq)
+        apply(subst (1 2) eq)
         using False
-        apply(simp add: thd_tSup ttl_tSup[OF chain] mcont_contD[OF mcont] image_image lub del: b.Sup_image_eq)
-        apply(rule arg_cong[where f=lub])
-        apply(rule image_cong[OF refl])
-        apply simp
+        apply(simp add: thd_tSup ttl_tSup[OF chain] mcont_contD[OF mcont] image_image lub)
         done
     qed
   qed

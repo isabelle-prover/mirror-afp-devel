@@ -28,7 +28,7 @@ lemma finite_INF_in:
   assumes "finite S"
   assumes "S \<noteq> {}"
   shows "(INF s: S. f s) \<in> f ` S"
-proof (unfold INF_def)
+proof -
   from assms
   have "finite (f ` S)" "f ` S \<noteq> {}" by auto
   then show "Inf (f ` S) \<in> f ` S"

@@ -52,7 +52,8 @@ by(auto 4 3 simp add: chain_def)
 context ccpo begin
 
 lemma ccpo_fun: "class.ccpo (fun_lub Sup) (fun_ord op \<le>) (mk_less (fun_ord op \<le>))"
-by(unfold_locales)(auto 4 3 simp add: mk_less_def fun_ord_def fun_lub_apply simp del: Sup_image_eq intro: order.trans antisym chain_imageI ccpo_Sup_upper ccpo_Sup_least)
+  by standard (auto 4 3 simp add: mk_less_def fun_ord_def fun_lub_apply
+    intro: order.trans antisym chain_imageI ccpo_Sup_upper ccpo_Sup_least)
 
 lemma ccpo_Sup_below_iff: "Complete_Partial_Order.chain op \<le> Y \<Longrightarrow> Sup Y \<le> x \<longleftrightarrow> (\<forall>y\<in>Y. y \<le> x)"
 by(fast intro: order_trans[OF ccpo_Sup_upper] ccpo_Sup_least)
@@ -109,7 +110,7 @@ proof(rule ccpo_Sup_least)
   then obtain y' where "y' \<in> Y" "x' = f x y'" by blast note this(2)
   also from mono1[OF `y' \<in> Y`] le have "\<dots> \<le> f y y'" by(rule monotoneD)
   also have "\<dots> \<le> ?rhs" using chain'[OF y]
-    by(auto intro!: ccpo_Sup_upper simp add: `y' \<in> Y` simp del: Sup_image_eq)
+    by (auto intro!: ccpo_Sup_upper simp add: `y' \<in> Y`)
   finally show "x' \<le> ?rhs" .
 qed(rule x)
 
@@ -184,7 +185,8 @@ lemma swap_Sup:
   (is "?lhs = ?rhs")
 proof(cases "Y = {}")
   case True
-  thus ?thesis by(simp add: image_constant_conv)
+  then show ?thesis
+    by (simp add: image_constant_conv cong del: strong_SUP_cong)
 next
   case False
   have chain1: "\<And>f. f \<in> Z \<Longrightarrow> Complete_Partial_Order.chain op \<le> (f ` Y)"
@@ -513,7 +515,7 @@ by(auto simp add: monotone_fun_ord_apply cont_fun_lub_apply mcont_def)
 context ccpo begin
 
 lemma cont_const [simp, cont_intro]: "cont luba orda Sup op \<le> (\<lambda>x. c)"
-by(rule contI)(auto simp add: image_constant simp del: Sup_image_eq)
+by (rule contI) (simp add: image_constant_conv cong del: strong_SUP_cong)
 
 lemma mcont_const [cont_intro, simp]:
   "mcont luba orda Sup op \<le> (\<lambda>x. c)"
@@ -533,7 +535,7 @@ proof
   moreover from chain have chain': "Complete_Partial_Order.chain ordb (t ` Y)"
     by(rule chain_imageI)(rule monotoneD[OF mono])
   ultimately show "f (luba Y) (t (luba Y)) = \<Squnion>((\<lambda>x. f x (t x)) ` Y)"
-    by(simp add: contD[OF 1] contD[OF t] contD[OF 2] image_image del: Sup_image_eq)
+    by(simp add: contD[OF 1] contD[OF t] contD[OF 2] image_image)
       (rule diag_Sup[OF chain], auto intro: monotone2monotone[OF mono2 mono monotone_const transpI] monotoneD[OF mono1])
 qed
 
@@ -688,7 +690,8 @@ proof(intro mcontI contI)
     case True
     hence "\<Squnion>Y \<le> bound" using chain by(auto intro: ccpo_Sup_least)
     moreover have "Y \<inter> {x. \<not> x \<le> bound} = {}" using True by auto
-    ultimately show ?thesis using True Y by(auto simp add: image_constant_conv)
+    ultimately show ?thesis using True Y
+      by (auto simp add: image_constant_conv cong del: c.strong_SUP_cong)
   next
     case False
     let ?Y = "Y \<inter> {x. \<not> x \<le> bound}"
@@ -724,7 +727,7 @@ proof(intro mcontI contI)
       hence chain''': "Complete_Partial_Order.chain op \<sqsubseteq> (f ` ?Y)" by(rule chain_subset) blast
       have "bot \<sqsubseteq> \<Or>(f ` ?Y)" using y ybound by(blast intro: c.order_trans[OF bot] c.ccpo_Sup_upper[OF chain'''])
       hence "\<Or>(insert bot (f ` ?Y)) \<sqsubseteq> \<Or>(f ` ?Y)" using chain''
-        by(auto intro: c.ccpo_Sup_least c.ccpo_Sup_upper[OF chain'''] simp del: c.Sup_image_eq) 
+        by(auto intro: c.ccpo_Sup_least c.ccpo_Sup_upper[OF chain''']) 
       with _ have "\<dots> = \<Or>(insert bot (f ` ?Y))"
         by(rule c.antisym)(blast intro: c.ccpo_Sup_least[OF chain'''] c.ccpo_Sup_upper[OF chain''])
       also have "insert bot (f ` ?Y) = ?g ` Y" using False by auto
@@ -1406,10 +1409,10 @@ end
 context complete_distrib_lattice begin
 
 lemma mcont_inf1: "mcont Sup op \<le> Sup op \<le> (\<lambda>y. x \<sqinter> y)"
-by(auto intro: monotoneI contI simp add: le_infI2 inf_Sup SUP_def mcont_def simp del: Sup_image_eq)
+by(auto intro: monotoneI contI simp add: le_infI2 inf_Sup mcont_def)
 
 lemma mcont_inf2: "mcont Sup op \<le> Sup op \<le> (\<lambda>x. x \<sqinter> y)"
-by(auto intro: monotoneI contI simp add: le_infI1 Sup_inf SUP_def mcont_def simp del: Sup_image_eq)
+by(auto intro: monotoneI contI simp add: le_infI1 Sup_inf mcont_def)
 
 lemma mcont2mcont_inf [cont_intro, simp]:
   "\<lbrakk> mcont lub ord Sup op \<le> (\<lambda>x. f x);
@@ -1464,7 +1467,7 @@ lemma cont_Sup:
   assumes "cont lub ord Union op \<subseteq> f"
   shows "cont lub ord Sup op \<le> (\<lambda>x. \<Squnion>f x)"
 apply(rule contI)
-apply(simp add: contD[OF assms] del: Sup_image_eq)
+apply(simp add: contD[OF assms])
 apply(blast intro: Sup_least Sup_upper order_trans antisym)
 done
 
@@ -1473,19 +1476,16 @@ unfolding mcont_def by(blast intro: monotone_Sup cont_Sup)
 
 lemma monotone_SUP:
   "\<lbrakk> monotone ord op \<subseteq> f; \<And>y. monotone ord op \<le> (\<lambda>x. g x y) \<rbrakk> \<Longrightarrow> monotone ord op \<le> (\<lambda>x. \<Squnion>y\<in>f x. g x y)"
-unfolding SUP_def
 by(rule monotoneI)(blast dest: monotoneD intro: Sup_upper order_trans intro!: Sup_least)
 
 lemma monotone_SUP2:
   "(\<And>y. y \<in> A \<Longrightarrow> monotone ord op \<le> (\<lambda>x. g x y)) \<Longrightarrow> monotone ord op \<le> (\<lambda>x. \<Squnion>y\<in>A. g x y)"
-unfolding SUP_def
 by(rule monotoneI)(blast intro: Sup_upper order_trans dest: monotoneD intro!: Sup_least)
 
 lemma cont_SUP:
   assumes f: "mcont lub ord Union op \<subseteq> f"
   and g: "\<And>y. mcont lub ord Sup op \<le> (\<lambda>x. g x y)"
   shows "cont lub ord Sup op \<le> (\<lambda>x. \<Squnion>y\<in>f x. g x y)"
-unfolding SUP_def
 proof(rule contI)
   fix Y
   assume chain: "Complete_Partial_Order.chain ord Y"
@@ -1511,16 +1511,16 @@ proof(rule contI)
           assume "ord y y'"
           with f have "f y \<subseteq> f y'" by(rule mcont_monoD)
           with `z \<in> f y`
-          have "g y' z \<le> \<Squnion>(g y' ` f y')" by(auto intro: Sup_upper simp del: Sup_image_eq)
-          also have "\<dots> \<le> ?rhs" using `y' \<in> Y` by(auto intro: Sup_upper simp del: Sup_image_eq)
+          have "g y' z \<le> \<Squnion>(g y' ` f y')" by(auto intro: Sup_upper)
+          also have "\<dots> \<le> ?rhs" using `y' \<in> Y` by(auto intro: Sup_upper)
           finally show ?thesis .
         next
           note `u = g y' z` also
           assume "ord y' y"
           with g have "g y' z \<le> g y z" by(rule mcont_monoD)
           also have "\<dots> \<le> \<Squnion>(g y ` f y)" using `z \<in> f y`
-            by(auto intro: Sup_upper simp del: Sup_image_eq)
-          also have "\<dots> \<le> ?rhs" using `y \<in> Y` by(auto intro: Sup_upper simp del: Sup_image_eq)
+            by(auto intro: Sup_upper)
+          also have "\<dots> \<le> ?rhs" using `y \<in> Y` by(auto intro: Sup_upper)
           finally show ?thesis .
         qed
       qed
@@ -1538,10 +1538,10 @@ proof(rule contI)
         then obtain z where "u = g y z" "z \<in> f y" by auto
         note `u = g y z`
         also have "g y z \<le> \<Squnion>((\<lambda>x. g x z) ` Y)"
-          using `y \<in> Y` by(auto intro: Sup_upper simp del: Sup_image_eq)
+          using `y \<in> Y` by(auto intro: Sup_upper)
         also have "\<dots> = g (lub Y) z" by(simp add: mcont_contD[OF g chain Y])
         also have "\<dots> \<le> ?lhs" using `z \<in> f y` `y \<in> Y`
-          by(auto intro: Sup_upper simp add: mcont_contD[OF f chain Y] simp del: Sup_image_eq)
+          by(auto intro: Sup_upper simp add: mcont_contD[OF f chain Y])
         finally show "u \<le> ?lhs" .
       qed
     qed
@@ -1585,7 +1585,7 @@ lemma ccpo_rel_prodI:
   (is "class.ccpo ?lub ?ord ?ord'")
 proof(intro class.ccpo.intro class.ccpo_axioms.intro)
   show "class.order ?ord ?ord'" by(rule order_rel_prodI) intro_locales
-qed(auto 4 4 simp add: prod_lub_def intro: a.ccpo_Sup_upper b.ccpo_Sup_upper a.ccpo_Sup_least b.ccpo_Sup_least rev_image_eqI dest: chain_rel_prodD1 chain_rel_prodD2 simp del: a.Sup_image_eq b.Sup_image_eq)
+qed(auto 4 4 simp add: prod_lub_def intro: a.ccpo_Sup_upper b.ccpo_Sup_upper a.ccpo_Sup_least b.ccpo_Sup_least rev_image_eqI dest: chain_rel_prodD1 chain_rel_prodD2)
 
 interpretation ab: ccpo "prod_lub luba lubb" "rel_prod orda ordb" "mk_less (rel_prod orda ordb)"
 by(rule ccpo_rel_prodI)

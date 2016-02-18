@@ -122,9 +122,9 @@ proof(rule maximalI, rule ext, unfold wp_eval)
   hence "Inf ((\<lambda>a. wp (p a) (\<lambda>_. c) s) ` S s) = Inf ((\<lambda>_. c) ` S s)"
     using mp by(simp add:maximalD cong:image_cong)
   also {
-    from ne have "\<exists>a. a \<in> S s" by(blast)
+    from ne obtain a where "a \<in> S s" by blast
     hence "Inf ((\<lambda>_. c) ` S s) = c"
-      by(simp add:image_def)
+      by (auto simp add: image_constant_conv cong del: strong_INF_cong)
   }
   finally show "Inf ((\<lambda>a. wp (p a) (\<lambda>_. c) s) ` S s) = c" .
 qed

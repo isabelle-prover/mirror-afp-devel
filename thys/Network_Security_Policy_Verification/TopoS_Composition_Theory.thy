@@ -611,7 +611,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
       apply(frule valid_reqs2, drule valid_reqs1)
       apply(drule(2) configured_SecurityInvariant.offending_flows_union_mono)
       apply(simp add: get_offending_flows_def)
-      by blast
+      by auto
 
     thm configured_SecurityInvariant.Un_set_offending_flows_bound_minus_subseteq'
     lemma Un_set_offending_flows_bound_minus_subseteq':"\<lbrakk>valid_reqs M; 

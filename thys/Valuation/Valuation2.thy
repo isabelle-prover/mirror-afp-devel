@@ -396,7 +396,7 @@ apply (rotate_tac -1, drule not_sym,
       frule aGroup.ag_neq_diffnonzero[of "K" "1\<^sub>r" "x"],
       simp add:Ring.ring_one[of "K"], assumption+, simp,
       simp add:val_exp_ring[THEN sym],
-      cut_tac n1 = m in zero_less_int_conv[THEN sym]) 
+      cut_tac n1 = m in of_nat_0_less_iff[THEN sym]) 
 apply (cut_tac a = "0 < m" and b = "0 < int m" in a_b_exchange, simp,
        assumption)
 apply (thin_tac "(0 < m) = (0 < int m)",
@@ -952,7 +952,7 @@ apply (cut_tac i = 0 and j = "v (x^\<^bsup>K j\<^esup>)" and k = "v (\<^bsub>Suc
  apply (simp add: val_exp_ring[THEN sym],
         frule val_nonzero_z[of v x], assumption+,
         erule exE,
-        cut_tac m1 = 0 and n1 = j in zless_int[THEN sym],
+        cut_tac m1 = 0 and n1 = j in of_nat_less_iff[THEN sym],
         frule_tac a = "0 < j" and b = "int 0 < int j" in a_b_exchange,
         assumption, thin_tac "0 < j", thin_tac "(0 < j) = (int 0 < int j)")
 apply (simp del: of_nat_0_less_iff)
@@ -969,7 +969,7 @@ apply (frule_tac w1 = "int j" and x1 = 0 and y1 = "ant z" in
  apply (subst asprod_amult, simp, simp add:a_z_z)
 apply(
         simp only:ant_0[THEN sym], simp only:ale_zle,
-        cut_tac m1 = 0 and n1 = j in zless_int[THEN sym])
+        cut_tac m1 = 0 and n1 = j in of_nat_less_iff[THEN sym])
 apply (        frule_tac a = "0 < j" and b = "int 0 < int j" in a_b_exchange, 
         assumption+, thin_tac "0 < j", thin_tac "(0 < j) = (int 0 < int j)",
         frule_tac z = "int 0" and z' = "int j" in zless_imp_zle,

@@ -1,7 +1,7 @@
 section {* Proof of Sturm's Theorem *}
 (* Author: Manuel Eberl <eberlm@in.tum.de> *)
 theory Sturm_Theorem
-imports "~~/src/HOL/Library/Poly_Deriv" "Lib/Sturm_Library"
+imports "~~/src/HOL/Library/Polynomial" "Lib/Sturm_Library"
 begin
 
 subsection {* Sign changes of polynomial sequences *}

@@ -254,28 +254,8 @@ apply (frule_tac a = "ant z" in gt_na_poss[of _ "m"])
         simp add:asprod_amult a_z_z)
  apply (subst aless_zless)
  apply (cut_tac a = "ant z" in gt_na_poss[of _ "m"], assumption)
-
- apply (simp only:zless_int [THEN sym, of _ "m"])
-
- apply (case_tac "z \<le> 0")
- apply (frule_tac k = za in zmult_zless_mono2[of "int 0" "int m"], assumption+)
- apply simp apply (rule zle_zless_trans[of _ "0"], assumption+)
- apply (simp add:mult.commute[of _ "int m"])
-apply (simp only:not_zle)
- apply (cut_tac z = za in zgt_0_zge_1, assumption+)
- apply (frule_tac j = za and k = "int m" in int_mult_le[of "1"])
- apply simp
- apply (rule_tac i = z and j = "int m" and k = "int m * za"
-        in zless_zle_trans)
-  apply (thin_tac "a = ant z", thin_tac "0 \<le> ant za", thin_tac "x = ant za",
-         thin_tac "int m * 1 \<le> int m * za")
-  apply (cut_tac m1 = 0 and n1 = z in aless_zless[THEN sym], simp)
-  apply (simp only:ant_0)
-apply (frule_tac x = 0 and y = "ant z" in aless_imp_le)
-  apply (cut_tac y1 = 0 and x1 = "ant z" in aneg_less[THEN sym], simp)
-  apply (simp add:na_def)
-  apply (simp add:tna_ant) apply simp
-done
+ apply (smt a0_less_int_conv aposs_na_poss int_less_mono int_nat na_def of_nat_0_le_iff pos_zmult_pos tna_ant z_neq_inf)
+ done
 
 lemma  zmult_gt_one:"\<lbrakk>2 \<le> m; 0 < xa\<rbrakk> \<Longrightarrow> 1 < int m * xa"
 by (metis ge2_zmult_pos mult.commute)
@@ -2820,15 +2800,10 @@ apply (subgoal_tac "0 \<le> int n", subgoal_tac "0 \<le> int m",
         thin_tac "Vr K v \<diamondsuit>\<^sub>p (Pg K v^\<^bsup>K n\<^esup>) = Vr K v \<diamondsuit>\<^sub>p (Pg K v^\<^bsup>K m\<^esup>)")
 
 apply (case_tac "n = 0", simp, case_tac "m = 0", simp,
-       simp only:zero_less_int_conv[THEN sym, of "m"],
+       simp only:of_nat_0_less_iff[THEN sym, of "m"],
        simp only:asprod_amult a_z_z,
        simp only:ant_0[THEN sym], simp only:aeq_zeq, simp)
-
-apply (simp, simp only:zero_less_int_conv[THEN sym, of "n"],
-       simp only:asprod_amult a_z_z,
-       case_tac "m = 0", simp,
-       simp, simp only:zero_less_int_conv[THEN sym, of "m"],
-       simp only:asprod_amult a_z_z, simp only:aeq_zeq, simp, simp+)
+apply (auto simp add: asprod_mult)
 done
 
 lemma (in Corps) Vr_potent_eq:"\<lbrakk>valuation K v; 0 \<le> n; 0 \<le> m;
@@ -2895,7 +2870,6 @@ apply (rule conjI)
  apply (simp add:val_exp_ring[THEN sym, of v x n])
  apply (frule val_nonzero_z[of v x], assumption+, erule exE,
         simp add:asprod_amult a_z_z)
- apply (simp only:zless_int[THEN sym, of "Suc 0" "n"], simp)
  apply (simp add:vp_mem_val_poss[of v x])
 apply (rule contrapos_pp, simp+)
 apply (frule val_Rxa_gt_a[of v "x^\<^bsup>K n\<^esup>" "x^\<^bsup>K (n - Suc 0)\<^esup>"])

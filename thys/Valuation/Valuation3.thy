@@ -1793,7 +1793,7 @@ apply (frule_tac a = k in rHom_mem[of "pj (Vr K v) (vp K v)" "Vr K v"
 done
 
 lemma Suc_diff_int:"0 < n \<Longrightarrow> int (n - Suc 0) = int n - 1" 
-by (cut_tac int_Suc[of "n - Suc 0"], simp)
+by (cut_tac of_nat_Suc[of "n - Suc 0"], simp)
 
 lemma (in Corps) ecf_mem:"\<lbrakk>valuation K v; t \<in> carrier K; v t = 1; 
       x \<in> carrier K; x \<noteq> \<zero> \<rbrakk> \<Longrightarrow>  ecf\<^bsub>K v t x\<^esub> n \<in> carrier K"
@@ -1926,7 +1926,7 @@ apply (frule val_nonzero_noninf[of v x], assumption+)
 apply (simp add:tna_ant)
 apply (simp only:ant_1[THEN sym], simp del:ant_1 add:a_zpz)
 apply (simp add:add.assoc[THEN sym])
-apply (cut_tac m1 = "N + nat \<bar>z\<bar>" and n1 = n in zless_int[THEN sym], simp)
+apply (cut_tac m1 = "N + nat \<bar>z\<bar>" and n1 = n in of_nat_less_iff [where ?'a = int, THEN sym], simp)
 apply (frule_tac a = "int N + abs z" and b = "int n" and c = "z + 1" in 
        add_strict_right_mono, simp only:add.commute)
 apply (simp only:add.assoc[of _ "1"])

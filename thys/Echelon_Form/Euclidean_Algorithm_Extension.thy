@@ -12,6 +12,7 @@ theory Euclidean_Algorithm_Extension
 imports 
   Euclidean_Algorithm
   "~~/src/HOL/Library/Polynomial"
+  "~~/src/HOL/Library/Polynomial_GCD_euclidean"
 begin
 
 instantiation nat :: euclidean_semiring_gcd
@@ -36,19 +37,24 @@ qed (simp add: Lcm_eucl_finite)
 
 instance
 proof
-  show "(gcd :: nat \<Rightarrow> nat \<Rightarrow> nat) = gcd_eucl"
-  proof (intro ext)
+  show gcd: "(gcd :: nat \<Rightarrow> nat \<Rightarrow> nat) = gcd_eucl"
+  proof (rule ext)+
     fix a b :: nat show "gcd a b = gcd_eucl a b"
       by (induction a b rule: gcd_eucl.induct)
     (subst gcd_nat.simps, subst gcd_eucl.simps, simp_all)
   qed
-  thus "(lcm :: nat \<Rightarrow> nat \<Rightarrow> nat) = lcm_eucl"
-    by (intro ext) (simp add: lcm_nat_def lcm_eucl_def)     
-  thus "(Lcm::nat set \<Rightarrow> nat) = Lcm_eucl"
-    by (intro ext)
-  (metis Lcm_nat_def Lcm_nat_altdef Lcm_nat_def gcd_lcm_complete_lattice_nat.Sup_fold_sup)
-  thus "(Gcd::nat set \<Rightarrow> nat) = Gcd_eucl"  by (intro ext) (simp add: Gcd_nat_def Gcd_eucl_def)
+  then show lcm: "(lcm :: nat \<Rightarrow> nat \<Rightarrow> nat) = lcm_eucl"
+    by (intro ext) (simp add: lcm_nat_def lcm_eucl_def)
+  show "(Lcm :: nat set \<Rightarrow> nat) = Lcm_eucl"
+  proof
+    fix M :: "nat set" show "Lcm M = Lcm_eucl M"
+    by (induct M rule: infinite_finite_induct)
+      (simp_all add: lcm Lcm_nat_infinite, simp add: Lcm_nat_altdef)
+  qed
+  then show "(Gcd :: nat set \<Rightarrow> nat) = Gcd_eucl"
+    by (simp add: fun_eq_iff Gcd_nat_def Gcd_eucl_def)
 qed
+
 end
 
 instantiation int :: euclidean_ring_gcd
@@ -91,7 +97,7 @@ instance proof
   qed
   show l: "lcm = (lcm_eucl :: int \<Rightarrow> int \<Rightarrow> int)"
   proof (intro ext)
-    fix x xa::int        
+    fix x xa::int
     show "lcm x xa = lcm_eucl x xa"
       by (auto simp add: lcm_int_def lcm_lcm_eucl lcm_eucl_def)
     (metis A abs_ge_zero div_mult_mult2 gcd_abs_int gcd_gcd_eucl int_nat_eq mult.commute
@@ -103,29 +109,28 @@ instance proof
     show "Lcm X = Lcm_eucl X"
     proof (cases "finite X")
       case False 
-      have n: "nat_set (abs` X)" unfolding nat_set_def by fastforce
-      hence f: "\<not> finite (nat ` abs ` X)" 
-        unfolding transfer_int_nat_set_relations(1)[OF n, symmetric] using False 
-        unfolding finite_int_set_iff_bounded_le by auto
-      thus ?thesis unfolding Lcm_int_def Lcm_nat_def by (simp add: False Lcm_int_altdef)
+      have n: "nat_set (abs ` X)" unfolding nat_set_def by fastforce
+      have "infinite (nat ` abs ` X)" 
+        unfolding transfer_int_nat_set_relations(1) [OF n, symmetric] using False 
+        unfolding finite_int_set_iff_bounded_le by (auto simp add: image_image)
+      then have "infinite ((nat \<circ> abs) ` X)"
+        by (simp add: image_comp)
+      with False show ?thesis unfolding Lcm_int_def Lcm_nat_def
+        by (simp add: Lcm_int_altdef)
     next
       case True
       thus ?thesis by (induct X, simp_all add: l)
     qed 
   qed
-  show "(Gcd::int set \<Rightarrow> int) = Gcd_eucl"
-  proof (intro ext)
-    fix X::"int set"
-    show "Gcd X = Gcd_eucl X" 
-      by (metis Gcd_int_def abs_of_nat gcd_idem_int A Gcd_eucl_dvd Gcd_dvd_int associated_def 
-        associated_iff_normed_eq div_by_1 dvd_Gcd_eucl dvd_Gcd_int gcd_eucl_idem gcd_zero_int 
-        normalisation_factor_Gcd_eucl)    
-  qed
+  show "(Gcd :: int set \<Rightarrow> int) = Gcd_eucl"
+    apply (rule ext)
+    apply (rule associated_eqI)
+    apply simp_all
+    apply (smt normalisation_factor_Gcd_eucl normalisation_factor_int_def sgn_less)
+    done
 qed
-end          
 
-
-
+end
 
 instantiation poly :: (field) euclidean_ring
 begin

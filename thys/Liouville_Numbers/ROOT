@@ -3,7 +3,7 @@ chapter AFP
 session Liouville_Numbers (AFP) = HOL +
   options [timeout=600]
   theories [document=false]
-    "~~/src/HOL/Library/Poly_Deriv"
+    "~~/src/HOL/Library/Polynomial"
   theories
     Liouville_Numbers
   document_files

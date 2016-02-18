@@ -1156,7 +1156,7 @@ lemma f: "\<forall>x. ((n,x) \<in> deriv s) = (x \<in> set (f [s] n))"
   apply(simp add: f_def)
   apply(simp add: set_flatten)
   apply(erule bexE)
-  apply(drule_tac x=a in spec) 
+  apply(drule_tac x=xa in spec) 
   apply(rule step) apply(auto)
   done
 

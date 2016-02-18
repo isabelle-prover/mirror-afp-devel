@@ -1462,13 +1462,11 @@ qed
 lemma setsum_wt[simp]:
 assumes "proper c"
 shows "setsum (wt c s) {..< brn c} = 1"
-using assms proof(induct c arbitrary: s rule: proper_induct)
+using assms proof (induct c arbitrary: s rule: proper_induct)
   case (Par cl)
   let ?w = "\<lambda> n. 1 / (length cl) * setsum (wt (cl ! n) s) {..< brn (cl ! n)}"
   show ?case
-  apply(rule setsum_UN_introL
-  [of _ "{..< length cl}" "%n. {brnL cl n ..<+ brn (cl!n)}" _ ?w])
-  proof-
+  proof (rule setsum_UN_introL [of _ "%n. {brnL cl n ..<+ brn (cl!n)}" "{..< length cl}" _ ?w])
     have "1 = setsum (\<lambda> n. 1 / (length cl)) {..< length cl}"
     using Par by simp
     also have "... = setsum ?w {..< length cl}" using Par by simp
@@ -1502,9 +1500,7 @@ next
   next
     case False note nf = False
     show ?thesis
-    apply(rule setsum_UN_introL
-    [of _ "{..< length cl}" "%n. {brnL cl n ..<+ brn (cl!n)}" _ w])
-    proof-
+    proof (rule setsum_UN_introL [of _ "%n. {brnL cl n ..<+ brn (cl!n)}" "{..< length cl}" _ w])
       show "1 = setsum w {..< length cl}"
       proof(cases "?wtF = 1")
         case True note sch = True

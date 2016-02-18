@@ -177,19 +177,27 @@ apply(fastforce simp:UN_subset_iff)
 done
 
 lemma pr_Hom_pres_nodes:
-  "is_pr_Hom \<phi> Fs\<^sub>1 Fs\<^sub>2 \<Longrightarrow> \<phi> ` (\<Union>F\<in>Fs\<^sub>1. set F) = (\<Union>F\<in>Fs\<^sub>2. set F)"
-apply(drule pr_Hom_pres_face_nodes)
-apply(rule equalityI)
- apply blast
-apply(clarsimp)
-apply(subgoal_tac "set F : (\<Union>F\<in>Fs\<^sub>2. {set F})")
- prefer 2 apply blast
-apply(subgoal_tac "set F : (\<Union>F\<in>Fs\<^sub>1. {\<phi> ` set F})")
- prefer 2 apply blast
-apply(subgoal_tac "EX F':Fs\<^sub>1. \<phi> ` set F' = set F")
- prefer 2 apply blast
-apply blast
-done
+  assumes "is_pr_Hom \<phi> Fs\<^sub>1 Fs\<^sub>2"
+  shows "\<phi> ` (\<Union>F\<in>Fs\<^sub>1. set F) = (\<Union>F\<in>Fs\<^sub>2. set F)"
+proof
+  from assms have *: "(\<Union>F\<in>Fs\<^sub>1. {\<phi> ` set F}) = (\<Union>F\<in>Fs\<^sub>2. {set F})"
+    by (rule pr_Hom_pres_face_nodes)
+  then show "\<phi> ` (\<Union>F\<in>Fs\<^sub>1. set F) \<subseteq> (\<Union>F\<in>Fs\<^sub>2. set F)"
+    by blast
+  show "(\<Union>F\<in>Fs\<^sub>2. set F) \<subseteq> \<phi> ` (\<Union>F\<in>Fs\<^sub>1. set F)"
+  proof
+    fix x
+    assume "x \<in> (\<Union>F\<in>Fs\<^sub>2. set F)"
+    then obtain F where "F \<in> Fs\<^sub>2" and "x \<in> set F" ..
+    then have "set F \<in> (\<Union>F\<in>Fs\<^sub>2. {set F})"
+      by blast
+    then have "set F \<in> (\<Union>F\<in>Fs\<^sub>1. {\<phi> ` set F})"
+      using * by simp
+    then obtain F' where "F' \<in> Fs\<^sub>1" and "set F \<in> {\<phi> ` set F'}" ..
+    with \<open>x \<in> set F\<close> show "x \<in> \<phi> ` (\<Union>F\<in>Fs\<^sub>1. set F)"
+      by auto
+  qed
+qed
 
 text{* Therefore isomorphisms preserve cardinality of node set. *}
 

@@ -11,6 +11,7 @@ text \<open>The theory contains some basic results on polynomials which have not
 theory Missing_Polynomial
 imports 
   "~~/src/HOL/Library/Polynomial"
+  "~~/src/HOL/Library/Polynomial_GCD_euclidean"
   Missing_Unsorted
 begin
 
@@ -518,21 +519,7 @@ qed
 
 subsection \<open>Divisibility\<close>
 
-instance poly :: (field) ring_gcd
-proof 
-  fix a b :: "'a poly"
-  show "normalize (gcd a b) = gcd a b" by (simp add: normalize_poly_def poly_gcd_monic)
-  show "lcm a b = normalize (a * b) div gcd a b" 
-  proof (cases "a * b = 0") 
-    case False
-    show ?thesis unfolding lcm_poly_def normalize_poly_def
-    by (subst div_smult_right, insert False, auto simp: div_smult_left)
-       (metis coeff_degree_mult divide_divide_eq_left divide_inverse_commute inverse_eq_divide)
-  next
-    case True
-    thus ?thesis by (metis div_0 lcm_poly_def normalize_0)
-  qed
-qed auto
+instance poly :: (field) ring_gcd ..
 
 context
   fixes sort :: "'a :: idom"

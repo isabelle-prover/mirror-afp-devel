@@ -1559,10 +1559,10 @@ proof -
   qed simp
   also have "fst (prod_lub lSup lSup ?C) = xs"
     unfolding prod_lub_def fst_conv
-    by(subst image_image)(simp add: mcont_contD[OF mcont_ltake1, symmetric] ltake_all del: Sup_image_eq)
+    by(subst image_image)(simp add: mcont_contD[OF mcont_ltake1, symmetric] ltake_all)
   also have "snd (prod_lub lSup lSup ?C) = ys"
     unfolding prod_lub_def snd_conv
-    by(subst image_image)(simp add: mcont_contD[OF mcont_ltake1, symmetric] ltake_all del: Sup_image_eq)
+    by(subst image_image)(simp add: mcont_contD[OF mcont_ltake1, symmetric] ltake_all)
   finally show ?thesis .
 qed
 
@@ -2237,7 +2237,7 @@ proof -
   have "ccpo.admissible Sup op \<le> (\<lambda>n. ltake n xs \<sqsubseteq> ltake n ys)" by simp
   hence "ltake (Sup (range enat)) xs \<sqsubseteq> ltake (Sup (range enat)) ys"
     by(rule ccpo.admissibleD)(auto intro: assms)
-  thus ?thesis by(simp add: ltake_all del: Sup_image_eq)
+  thus ?thesis by(simp add: ltake_all)
 qed
 
 lemma lprefix_conv_lappend: "xs \<sqsubseteq> ys \<longleftrightarrow> (\<exists>zs. ys = lappend xs zs)" (is "?lhs \<longleftrightarrow> ?rhs")

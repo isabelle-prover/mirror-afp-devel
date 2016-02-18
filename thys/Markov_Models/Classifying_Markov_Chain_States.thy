@@ -5,13 +5,10 @@ imports
   Discrete_Time_Markov_Chain
 begin
 
-lemma Gcd_eq_one: "1 \<in> A \<Longrightarrow> Gcd A = (1::nat)"
-  by (auto intro!: gcd_lcm_complete_lattice_nat.Inf_eqI)
-
-lemma ereal_one_divide_invese: "0 \<le> x \<Longrightarrow> 1 / inverse x = (x::ereal)"
+lemma ereal_one_divide_invese: "0 \<le> x \<Longrightarrow> 1 / inverse x = (x::ereal)" -- \<open>FIXME move\<close>
   by (cases x) (auto simp: divide_ereal_def)
 
-lemma one_divide_ereal: "x \<noteq> 0 \<Longrightarrow> 1 / ereal x = ereal (1 / x)"
+lemma one_divide_ereal: "x \<noteq> 0 \<Longrightarrow> 1 / ereal x = ereal (1 / x)" -- \<open>FIXME move\<close>
   by (simp add: divide_ereal_def divide_inverse)
 
 lemma pmf_positive_iff: "0 < pmf p x \<longleftrightarrow> x \<in> set_pmf p"
@@ -60,8 +57,8 @@ lemma Gcd_nonneg: "0 \<le> Gcd (S :: int set)"
 lemma Gcd_eq_Gcd_monoid_closure:
   fixes S :: "nat set"
   shows "Gcd S = Gcd (monoid_closure S)"
-  apply (simp add: Gcd_int_def)
-proof (safe intro!: dvd.antisym gcd_lcm_complete_lattice_nat.Inf_greatest)
+apply (simp add: Gcd_int_def)
+proof (safe intro!: dvd_antisym Gcd_greatest)
   fix s assume "s \<in> monoid_closure S"
   then show "Gcd S dvd nat \<bar>s\<bar>"
   proof induct
@@ -77,8 +74,12 @@ proof (safe intro!: dvd.antisym gcd_lcm_complete_lattice_nat.Inf_greatest)
   qed simp
 next
   fix s assume "s \<in> S"
-  then show "Gcd ((\<lambda>x. nat \<bar>x\<bar>) ` monoid_closure S) dvd s"
-    by (intro Gcd_dvd_nat image_eqI[where x="int s"] monoid_closure.base) simp
+  then have "int s \<in> monoid_closure S"
+    by (simp add: monoid_closure.base)
+  then have "s \<in> (\<lambda>k. nat \<bar>k\<bar>) ` monoid_closure S"
+    by (auto intro!: image_eqI [where x = "int s"])
+  then show "(Gcd m\<in>monoid_closure S. nat \<bar>m\<bar>) dvd s"
+    by (rule Gcd_dvd)
 qed
 
 lemma monoid_closure_nat_mult:
@@ -129,44 +130,49 @@ proof -
     by auto
 
   have "Gcd (monoid_closure S) = int m"
-    apply (simp add: Gcd_int_def)
-    apply (safe intro!: gcd_lcm_complete_lattice_nat.Inf_eqI)
-  proof -
-    fix y assume "\<forall>i. i \<in> (\<lambda>x. nat \<bar>x\<bar>) ` monoid_closure S \<longrightarrow> y dvd i"
-    moreover have "m \<in> (\<lambda>x. nat \<bar>x\<bar>) ` monoid_closure S"
-      using m apply (intro image_eqI[where x="int m"]) by auto
-    ultimately show "y dvd m" by auto
-  next
-    fix i s assume s: "s \<in> monoid_closure S"
-    from zmod_zdiv_equality'[of s m]
-    have "s mod int m = s - s div int m * int m"
-      by auto
-    also have "s - s div int m * int m \<in> monoid_closure S"
-      by (intro monoid_closure.diff s monoid_closure_int_mult m')
-    finally have mod_in: "s mod int m \<in>monoid_closure S" by auto
+  proof (unfold Gcm_eq_int_iff, rule dvd_antisym)
+    from m have "m \<in> (nat \<circ> abs) ` monoid_closure S"
+      by (auto intro: image_eqI [of _ _ "int m"])
+    then show "Gcd ((nat \<circ> abs) `
+      monoid_closure S) dvd m"
+    by (rule Gcd_dvd)
+    show "m dvd Gcd ((nat \<circ> abs) ` monoid_closure S)"
+    proof (rule Gcd_greatest)
+      fix n
+      assume "n \<in> (nat \<circ> abs) ` monoid_closure S"
+      then obtain s where s: "s \<in> monoid_closure S"
+        and n: "n = (nat \<circ> abs) s"
+        by blast
+      from zmod_zdiv_equality' [of s m]
+      have "s mod int m = s - s div int m * int m"
+        by auto
+      also have "s - s div int m * int m \<in> monoid_closure S"
+        by (intro monoid_closure.diff s monoid_closure_int_mult m')
+      finally have mod_in: "s mod int m \<in> monoid_closure S" by auto
 
-    have "int m dvd s"
-    proof cases
-      assume "s mod int m = 0"
-      with dvd_eq_mod_eq_0[of "int m" s] show ?thesis by simp
-    next
-      assume "s mod int m \<noteq> 0"
-      moreover have "0 \<le> s mod int m"
-        using m'(2) by (rule pos_mod_sign[of "int m" s])
-      ultimately have pos: "0 < s mod int m" by auto
-      moreover have "s mod int m < int m"
-        using m'(2) by (rule pos_mod_bound)
-      moreover have "m \<le> nat (s mod int m)"
-        using pos
-        apply (subst m_def)
-        apply (intro Least_le)
-        apply (auto intro: mod_in)
-        done
-     ultimately show ?thesis
-       by auto
+      have "int m dvd s"
+      proof cases
+        assume "s mod int m = 0"
+        with dvd_eq_mod_eq_0[of "int m" s] show ?thesis by simp
+      next
+        assume "s mod int m \<noteq> 0"
+        moreover have "0 \<le> s mod int m"
+          using m'(2) by (rule pos_mod_sign[of "int m" s])
+        ultimately have pos: "0 < s mod int m" by auto
+        moreover have "s mod int m < int m"
+          using m'(2) by (rule pos_mod_bound)
+        moreover have "m \<le> nat (s mod int m)"
+          using pos
+          apply (subst m_def)
+          apply (intro Least_le)
+          apply (auto intro: mod_in)
+          done
+       ultimately show ?thesis
+         by auto
+      qed
+      then show "m dvd n"
+        unfolding int_dvd_iff by (simp add: n)
     qed
-    then show "m dvd nat \<bar>s\<bar>"
-      unfolding int_dvd_iff[symmetric] .
   qed
   with m' show ?thesis by simp
 qed
@@ -226,7 +232,7 @@ proof -
   finally obtain s t :: nat where st: "s = 0 \<or> s \<in> S" "t = 0 \<or> t \<in> S" "Gcd S = int s - int t" by auto
   then have Gcd_S: "Gcd S = s - t"
     by auto
-  with gcd_lcm_complete_lattice_nat.Inf_top_conv[of S] s
+  with s
   have "t < s"
     by (rule_tac ccontr) auto
 
@@ -1851,7 +1857,7 @@ proof -
   moreover have "(y, x) \<in> communicating"
     using c by (simp add: communicating_def)
   ultimately show ?thesis
-    by (metis dvd.antisym gcd_lcm_complete_lattice_nat.Inf_greatest)
+    by (auto intro: dvd_antisym Gcd_greatest Gcd_dvd)
 qed
 
 lemma period_eq:
@@ -1908,7 +1914,7 @@ proof -
     using C by (auto simp: not_ephemeral_def)
 
   have "period C \<noteq> 0"
-    unfolding period_eq[OF C' `x \<in> C`] gcd_lcm_complete_lattice_nat.Inf_top_conv
+    unfolding period_eq [OF C' `x \<in> C`]
     using n by (auto simp: period_set_def)
   then show ?thesis by auto
 qed
@@ -1921,8 +1927,8 @@ proof -
   from `0 < period C` have "period C \<noteq> 0"
     by auto
   then show ?thesis
-    unfolding period_eq[OF C `x \<in> C`] gcd_lcm_complete_lattice_nat.Inf_top_conv
-    unfolding period_set_def by simp
+    unfolding period_eq [OF C `x \<in> C`]
+    unfolding period_set_def by auto
 qed
 
 lemma not_ephemeralD_pos_period:
@@ -1947,7 +1953,7 @@ proof -
     using C by auto
 
   have "period C \<noteq> 0"
-    unfolding period_eq[OF C' `x \<in> C`] gcd_lcm_complete_lattice_nat.Inf_top_conv
+    unfolding period_eq [OF C' `x \<in> C`]
     using n by (auto simp: period_set_def)
   moreover have "eventually (\<lambda>m. m * Gcd (period_set x) \<in> (period_set x)) sequentially"
   proof (rule eventually_mult_Gcd)
@@ -1967,6 +1973,7 @@ proof -
     by (auto simp add: period_set_def elim!: eventually_elim2)
 qed
 
+
 lemma aperiodic_eventually_recurrent:
   "aperiodic C \<longleftrightarrow> C \<in> UNIV // communicating \<and> (\<forall>x\<in>C. eventually (\<lambda>m. 0 < p x x m) sequentially)"
 proof safe
@@ -1981,15 +1988,25 @@ next
     by (auto simp: eventually_sequentially)
   then have "{N <..} \<subseteq> period_set x"
     by (auto simp: period_set_def)
-  show "aperiodic C"
-    unfolding period_eq[OF C `x \<in> C`] aperiodic_def
-  proof (intro conjI gcd_lcm_complete_lattice_nat.Inf_eqI)
-    fix y assume "\<And>i. i \<in> period_set x \<Longrightarrow> y dvd i"
-    from this[of "Suc N"]  this[of "Suc (Suc N)"]  `{N <..} \<subseteq> period_set x`
-    have "y dvd (Suc (Suc N) - Suc N)"
-      by (intro dvd_diff_nat) (auto simp: subset_eq)
-    then show "y dvd 1" by simp
-  qed (simp_all add: C)
+  from C show "aperiodic C"
+    unfolding period_eq [OF C `x \<in> C`] aperiodic_def
+  proof
+    show "Gcd (period_set x) = 1"
+    proof (rule Gcd_eqI)
+      from one_dvd show "1 dvd q" for q :: nat .
+      fix m
+      assume "\<And>q. q \<in> period_set x \<Longrightarrow> m dvd q"
+      moreover from \<open>{N <..} \<subseteq> period_set x\<close>
+      have "{Suc N, Suc (Suc N)} \<subseteq> period_set x"
+        by auto
+      ultimately have "m dvd Suc (Suc N)" and "m dvd Suc N"
+        by auto
+      then have "m dvd Suc (Suc N) - Suc N"
+        by (rule dvd_diff_nat)
+      then show "is_unit m"
+        by simp
+    qed simp
+  qed
 qed (simp add: aperiodic_def)
 
 lemma stationary_distributionD_emeasure:

@@ -25,17 +25,18 @@ proof (rule ccontr)
 qed
 
 lemma coprime_exponent:
-  assumes p:"prime p" and m:"m>0"
-  shows "coprime p (m div (p^(exponent p m)))"
+  assumes "prime p" and "m > 0"
+  shows "coprime p (m div (p ^ exponent p m))"
 proof (rule ccontr)
-  assume " ~ coprime p (m div p ^ exponent p m)"
-  hence "EX q. prime q & q dvd p & q dvd (m div (p^(exponent p m)))"
-    by (metis dvd.dual_order.refl p prime_imp_coprime_nat)
-  hence "EX q. q = p & q dvd (m div (p^(exponent p m)))"
-    by (metis one_not_prime_nat p prime_def)
-  hence  "EX q. p dvd (m div (p^(exponent p m)))" by auto
-  hence "p dvd (m div (p^(exponent p m)))" by auto
-  with p m show "False" by (auto simp add: exp_is_max_div)
+  assume "\<not> coprime p (m div p ^ exponent p m)"
+  with \<open>prime p\<close> have "\<exists>q. prime q \<and> q dvd p \<and> q dvd m div p ^ exponent p m"
+    by (metis dvd_refl prime_imp_coprime_nat)
+  with \<open>prime p\<close> have "\<exists>q. q = p \<and> q dvd m div p ^ exponent p m"
+    by (metis one_not_prime_nat prime_def)
+  then have "p dvd m div p ^ exponent p m"
+    by auto
+  with assms show False
+    by (auto simp add: exp_is_max_div)
 qed
 
 lemma add_mult_distrib_three: "(x::nat)*(a+b+c)=x*a+x*b+x*c" 

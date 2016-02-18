@@ -1202,7 +1202,7 @@ apply (rule iffI)
 apply (rule contrapos_pp, simp+, simp add:deg_def,
        cut_tac minf_le_any[of "0"], frule ale_antisym[of "0" "-\<infinity>"], 
        assumption+,
-       simp only:an_0[THEN sym], simp only:an_def, simp del:int_0)
+       simp only:an_0[THEN sym], simp only:an_def, simp del:of_nat_0)
 apply (simp add:deg_def) 
 done
 

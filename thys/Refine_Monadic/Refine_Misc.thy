@@ -531,11 +531,10 @@ next
     apply (rule lfp_lowerbound)
     apply (rule sup_least)
     apply (rule order_trans[OF _ SUP_upper[where i=0]], simp_all) []
-    unfolding SUP_def
-    apply (simp add: contD [OF CONT] del: Sup_image_eq)
+    apply (simp add: contD [OF CONT])
     apply (rule Sup_subset_mono)
     apply (auto)
-    apply (rule_tac x="Suc i" in range_eqI)
+    apply (rule_tac x="Suc xa" in range_eqI)
     apply simp
     done
 qed
@@ -564,11 +563,10 @@ proof (rule antisym)
 next
   show "lfp f \<le> (SUP i. (f^^i) bot)"
     apply (rule lfp_lowerbound)
-    unfolding SUP_def
-    apply (simp add: contD [OF CONT] del: Sup_image_eq)
+    apply (simp add: contD [OF CONT])
     apply (rule Sup_subset_mono)
-    apply (auto)
-    apply (rule_tac x="Suc i" in range_eqI)
+    apply auto
+    apply (rule_tac x="Suc xa" in range_eqI)
     apply auto
     done
 qed
@@ -583,7 +581,7 @@ proof -
     by simp
 
   have "f (SUP i. (f^^i) m) = (SUP i. f ((f ^^ i) m))"
-    unfolding SUP_def by (subst contD[OF C]) (simp_all)
+    by (subst contD[OF C]) (simp_all)
   also have "\<dots> \<le> (SUP i. (f^^i) m)"
     apply (rule SUP_least)
     apply (simp, subst 1)

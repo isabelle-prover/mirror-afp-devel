@@ -74,7 +74,7 @@ to prove $-(p\ until\ -p) = \Box\; p$.
               have "(INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<le> (SUP i:{i. i < 0}. - p i) \<squnion> p 0"
                 by (rule INF_lower, simp)
               also have "... \<le> (INF i:{i. i \<le> 0}. p i)"
-                by (simp add: INF_def)
+                by simp
               finally show "(INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<le> (INF i:{i. i \<le> 0}. p i)"
                 by simp
             next

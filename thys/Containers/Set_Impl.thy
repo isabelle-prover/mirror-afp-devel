@@ -322,10 +322,8 @@ declare [[code drop:
   wf
   Min
   Inf_fin
-  INFIMUM
   Max
   Sup_fin
-  SUPREMUM
   "Inf :: 'a set set \<Rightarrow> 'a set"
   "Sup :: 'a set set \<Rightarrow> 'a set"
   sorted_list_of_set
@@ -907,12 +905,6 @@ lemmas Predicate_Inf_code [code] = Inf_code[where ?'a = "_ :: type Predicate.pre
 lemmas Predicate_Sup_code [code] = Sup_code[where ?'a = "_ :: type Predicate.pred"]
 lemmas Inf_fun_code [code] = Inf_code[where ?'a = "_ :: type \<Rightarrow> _ :: complete_lattice"]
 lemmas Sup_fun_code [code] = Sup_code[where ?'a = "_ :: type \<Rightarrow> _ :: complete_lattice"]
-
-lemma INF_code [code]: "INFIMUM A f = Inf (f ` A)"
-by(rule INF_def)
-
-lemma SUP_code [code]: "SUPREMUM A f = Sup (f ` A)"
-by(rule SUP_def)
 
 lift_definition min_sls :: "'a :: linorder semilattice_set" is min by unfold_locales
 

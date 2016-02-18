@@ -1941,7 +1941,7 @@ lemma (in sigma_finite_measure) approx_PInf_emeasure_with_finite:
 proof -
   obtain A :: "nat \<Rightarrow> 'a set"
     where "range A \<subseteq> sets M" "(\<Union>i. A i) = space M" "\<And>i. emeasure M (A i) \<noteq> \<infinity>" "incseq A"
-    using sigma_finite_incseq by auto
+    using sigma_finite_incseq by blast
   def B \<equiv> "\<lambda>i. W \<inter> A i"
   have B_meas: "\<And>i. B i \<in> sets M" using W_meas `range A \<subseteq> sets M` B_def by blast
   have b: "\<And>i. B i \<subseteq> W" using B_def by blast

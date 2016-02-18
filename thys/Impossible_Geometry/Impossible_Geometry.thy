@@ -1362,7 +1362,7 @@ proof-
     done
   moreover have "coprime (fst p) ((snd p)^3)"  "coprime ((fst p)^3) (snd p)"
     using hypsp
-    by (auto simp add: coprime_exp_int gcd_commute_int)
+    by (auto simp add: coprime_exp_int gcd.commute)
   ultimately have "(fst p) = 1 | (fst p) = - 1"  "(snd p) = 1"
     using hypsp
     by auto

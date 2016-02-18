@@ -154,16 +154,21 @@ proof -
 qed
 
 lemma prodsums_eq_sumprods:
-fixes p::nat and m::nat
-assumes "coprime p m"
-shows "(\<Sum>{p^f|f. f<=n})*(\<Sum>{b. b dvd m}) = (\<Sum> {p^f*b| f b. f <= n & b dvd m})"
-proof-
-  have "ALL x f. x dvd m \<longrightarrow> coprime (p ^ f) x"
-    by (metis assms coprime_exp_nat gcd_1_nat gcd_nat.absorb_iff1 gcd.commute gcd_semilattice_nat.inf_left_commute)
-  thus ?thesis
-    by(auto simp: imp_ex setsum_mult_setsum_if_inj[OF mult_inj_if_coprime_nat]
-            intro!: arg_cong[where f = "setsum (%x. x)"])
+  fixes p :: nat and m :: nat
+  assumes "coprime p m"
+  shows " \<Sum>{p ^ f |f. f \<le> n} * \<Sum>{b. b dvd m} = \<Sum>{p ^ f * b |f b. f \<le> n \<and> b dvd m}"
+proof -
+  have "coprime (p ^ f) x" if "x dvd m" for x f
+    unfolding gcd.commute [of _ x]
+    apply (rule coprime_exp_nat)
+    using assms that
+    apply auto
+    by (metis gcd.commute gcd.left_commute gcd_Suc_0 gcd_nat.absorb2)
+  then show ?thesis
+    by (auto simp: imp_ex setsum_mult_setsum_if_inj [OF mult_inj_if_coprime_nat]
+      intro!: arg_cong [where f = "setsum (\<lambda>x. x)"])
 qed
+
 declare [[simproc add: finite_Collect]]
 
 lemma rewrite_for_sigma_semimultiplicative:
@@ -195,7 +200,7 @@ theorem sigma_semimultiplicative:
   shows "sigma (p^n) * sigma m = sigma (p^n * m)" (is "?l = ?r")
 proof -
   from cop have cop2: "coprime (p^n) m"
-    by (auto simp add: coprime_exp_nat gcd_commute_nat)
+    by (auto simp add: coprime_exp_nat gcd.commute)
   have "?l = (\<Sum> {a . a dvd p^n})*(\<Sum> {b . b dvd m})" by (simp add: sigma_def)
   also from p have "... = (\<Sum> {p^f| f . f<=n})*(\<Sum> {b . b dvd m})"
     by (simp add: pr_pow_div_eq_sm_pr_pow)

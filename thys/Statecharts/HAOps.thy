@@ -370,7 +370,7 @@ apply simp
 apply (erule_tac x=SAA in ballE)
 prefer 2
 apply simp
-apply blast
+apply auto[1]
 apply (unfold UNION_eq Pow_def)
 apply simp
 apply (case_tac "SAA = {}")
@@ -869,41 +869,39 @@ lemma AddSA_ChiRel [simp]:
    ChiRel (A [++] (S,SA)) = { (T,T') . T = S \<and> T' \<in> States SA } \<union> (ChiRel A)" 
 apply (unfold ChiRel_def)
 apply (simp add: AddSA_HAStates)
+apply safe
+apply (rename_tac T U)
+apply (case_tac "T \<in> States SA")
+apply simp
+apply simp
+apply (rename_tac T U)
+apply (case_tac "T \<noteq> S")
+apply (case_tac "T \<in>  States SA")
+apply simp
+apply simp
+apply simp
+apply (rename_tac T U)
+apply (case_tac "T \<in>  States SA")
+apply simp
+apply simp
+apply (cut_tac A=A and T=T in Chi_HAStates)
+apply fast
+apply (case_tac "T \<in> States SA")
+apply simp
+apply simp
+apply (cut_tac A=A and T=T in Chi_HAStates)
+apply fast
+apply fast
+apply (rename_tac T U)
+apply (case_tac "T \<noteq> S")
+apply (case_tac "T \<in> States SA")
+apply simp
+apply simp
+apply simp
+apply (rename_tac T U)
+apply (case_tac "T \<in>  States SA")
 apply auto
-apply (rename_tac T U)
-apply (case_tac "T \<in> States SA")
-apply simp
-apply simp
-apply (rename_tac T U)
-apply (case_tac "T \<noteq> S")
-apply (case_tac "T \<in>  States SA")
-apply simp
-apply simp
-apply simp
-apply (rename_tac T U)
-apply (case_tac "T \<in>  States SA")
-apply simp
-apply simp
-apply (cut_tac A=A and T=T in Chi_HAStates)
-apply fast
-apply (case_tac "T \<in> States SA")
-apply simp
-apply simp
-apply (cut_tac A=A and T=T in Chi_HAStates)
-apply fast
-apply fast
-apply (rename_tac T U)
-apply (case_tac "T \<noteq> S")
-apply (case_tac "T \<in> States SA")
-apply simp
-apply simp
-apply simp
-apply (rename_tac T U)
-apply (case_tac "T \<in>  States SA")
-apply fast
-apply (case_tac "T \<noteq> S")
-apply simp
-apply simp
+apply (metis AddSA_Chi AddSA_Chi3 Int_iff Un_iff empty_iff)
 done
 
 lemma help_InitConf:

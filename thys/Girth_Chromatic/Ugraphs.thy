@@ -208,7 +208,7 @@ lemma le_\<alpha>_iff:
 proof
   assume ?L
   then obtain vs where "vs \<in> independent_sets Gr" and "k \<le> card vs"
-    using assms unfolding \<alpha>_def SUP_def enat_le_Sup_iff by auto
+    using assms unfolding \<alpha>_def enat_le_Sup_iff by auto
   moreover
   then obtain us where "us \<subseteq> vs" and "k = card us"
     using card_Ex_subset by auto

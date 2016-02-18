@@ -195,7 +195,7 @@ proof -
     assume "degree g = degree p"
     with dvd mg `monic p` have "g = p" 
       by (metis degree_0 degree_mod_less g_def gcd_poly.simps 
-      irr(1) poly_divides_conv0 poly_dvd_antisym poly_gcd_commute poly_gcd_dvd2 smult_dvd_iff)
+      irr(1) poly_divides_conv0 poly_dvd_antisym gcd.commute poly_gcd_dvd2 smult_dvd_iff)
     thus ?thesis unfolding g_def by auto
   qed
 qed
@@ -206,7 +206,7 @@ lemma irreducible_monic_gcd_twice:
   shows "gcd p q = 1 \<or> p = q"
 proof (cases "gcd p q = 1")
   case False note pq = this
-  have id: "gcd p q = gcd q p" by (simp add: poly_gcd_commute)
+  have id: "gcd p q = gcd q p" by (simp add: gcd.commute)
   have "p = gcd p q" using irreducible_monic_gcd[OF p] pq by force
   also have "\<dots> = q" using irreducible_monic_gcd[OF q] pq unfolding id by force
   finally show ?thesis by auto

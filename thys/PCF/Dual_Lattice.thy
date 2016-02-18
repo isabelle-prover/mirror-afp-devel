@@ -290,11 +290,11 @@ end
 
 lemma SUP_dual_unfold:
   "SUPREMUM A f = dual (INFIMUM A (undual \<circ> f))"
-  by (simp add: SUP_def Sup_dual_def)
+  by (simp add: Sup_dual_def)
 
 lemma INF_dual_unfold:
   "INFIMUM A f = dual (SUPREMUM A (undual \<circ> f))"
-  by (simp add: INF_def Inf_dual_def)
+  by (simp add: Inf_dual_def)
 
 text {*
   Apparently, the @{text \<Sqinter>} and @{text \<Squnion>} operations are dual to each

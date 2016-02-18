@@ -559,8 +559,7 @@ apply (erule subsetCE)
 apply auto
 apply (unfold image_def)
 apply auto
-apply (erule_tac x=SA in ballE)
-apply auto
+apply (metis target_select)
 done
 
 lemma HPT_Target_HAStates:
@@ -927,20 +926,17 @@ apply (unfold IsConfSet_def UniqueSucStates_def)
 apply safe
 apply (erule_tac x=S in ballE)
 prefer 2
-apply fast
+apply blast
 apply (erule_tac x=A in ballE)
 prefer 2
 apply fast
 apply simp
-apply (fast intro:OneState_Conf HAStates_CompFun_SAs_mem Conf_HAStates2)+
+apply (fast intro: HAStates_CompFun_SAs_mem Conf_HAStates2)+
 done
 
 
 lemma Conf_ChiRel: 
    "\<lbrakk> (S,T) \<in> ChiRel (HA ST); T \<in> Conf ST \<rbrakk> \<Longrightarrow> S \<in> Conf ST"
-apply (cut_tac ST=ST in UniqueSucStates_Status) 
-apply (unfold UniqueSucStates_def)
-apply (auto cong del: strong_SUP_cong)
 apply (unfold ChiRel_def Chi_def restrict_def)
 apply simp
 apply safe
@@ -951,7 +947,8 @@ apply (unfold HAStates_def)
 apply simp
 apply safe
 apply (rename_tac U)
-apply (erule_tac x=U in ballE)
+apply (cut_tac ST=ST in UniqueSucStates_Status) 
+apply (unfold UniqueSucStates_def)
 apply (erule_tac x=S in ballE)
 apply (erule_tac x=SA in ballE)
 apply auto

@@ -109,12 +109,10 @@ proof -
     apply clarsimp
     apply (drule_tac x=x in point_chainI)
     apply (erule dres_Sup_chain_cases)
-    apply (simp only: SUP_def)
-    apply simp
-    apply (simp only: SUP_def)
-    apply auto []
-    apply (simp only: SUP_def)
-    apply force
+    apply auto
+    apply (metis (poly_guards_query) SUP_bot_conv(1))
+    apply (metis (poly_guards_query) SUP_bot_conv(1))
+    apply metis
     done
 qed
 

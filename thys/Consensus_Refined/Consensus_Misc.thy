@@ -122,7 +122,7 @@ qed
 lemma Max_by_UNION_distrib:
   "\<lbrakk>finite A; A = (\<Union>x\<in>S. f x); S \<noteq> {}; {} \<notin> f ` S; inj_on cmp_f A\<rbrakk> \<Longrightarrow> 
     Max_by cmp_f A = Max_by cmp_f (Max_by cmp_f ` (f ` S))"
-  by(force  simp only: SUP_def intro!: Max_by_Union_distrib)
+  by(force intro!: Max_by_Union_distrib)
 
 lemma Max_by_eta:
   "Max_by f = (\<lambda>S. (SOME x. x \<in> S \<and> f x = Max (f ` S)))"
@@ -228,9 +228,10 @@ proof-
       by(auto simp add: map_graph_def fun_graph_def vs_def)
   also have "... \<le> (\<Union>p\<in>S. (\<lambda>r. ((r, p), the (v_hist r p))) ` {0..<r})" 
     using assms(1)
-    apply(auto simp add: map_graph_def fun_graph_def image_def)
-      apply (metis leI option.distinct(2))
-    by (metis option.sel)
+    apply auto
+    apply (auto simp add: map_graph_def fun_graph_def image_def)
+    apply (metis le_less_linear option.distinct(1))
+    done
   also note I=finite_subset[OF calculation] 
   have "finite vs"
     by(auto intro: I assms(2) nat_seg_image_imp_finite[where n=r])    

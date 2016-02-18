@@ -102,7 +102,8 @@ lemma soldAllocationIsAllocationVariant:
   assumes "a \<in> soldAllocations N \<Omega>" 
   shows "a \<in> allAllocations'' (Domain a) (\<Union>Range a)"
 proof - 
-  show ?thesis using assms soldAllocationIsAllocation by blast 
+  show ?thesis using assms soldAllocationIsAllocation
+  by auto blast+
 qed
 
 lemma onlyGoodsAreSold: 
@@ -182,7 +183,7 @@ corollary lm02:
   assumes "a \<in> soldAllocations'' N \<Omega>" 
   shows "a \<in> allocationsUniverse & Domain a \<subseteq> N-{seller} & \<Union> Range a \<subseteq> \<Omega>"
 proof -
-  have "a \<in> allocationsUniverse" using assms lm01 by blast
+  have "a \<in> allocationsUniverse" using assms lm01 [of a] by blast
   moreover have "Domain a \<subseteq> N-{seller}" using assms lm01 by blast
   moreover have "\<Union> Range a \<subseteq> \<Omega>" using assms onlyGoodsAreSold by blast
   ultimately show ?thesis by blast

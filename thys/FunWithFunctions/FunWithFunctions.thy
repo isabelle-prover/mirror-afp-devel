@@ -152,7 +152,7 @@ proof -
     using `n\<noteq>0`
     by (metis (no_types, hide_lams) f_mult mult.commute nonzero_divide_eq_eq of_int_of_nat_eq of_nat_0_eq_iff) 
   also have "\<dots> = f(of_int (i + int n - 1))" using `n\<noteq>0`[simplified]
-    by (metis One_nat_def Suc_leI int_1 add_diff_eq of_int_add zdiff_int)
+    by (metis One_nat_def Suc_leI of_nat_1 add_diff_eq of_int_add of_nat_diff)
   also have "\<dots> = of_int (i + int n - 1) + 1" by(rule f_int)
   also have "\<dots> = of_int i + of_int n" by arith
   finally show ?thesis using `n\<noteq>0` unfolding r by (simp add:field_simps)

@@ -230,7 +230,7 @@ qed
 lemma tendsto_ccpoI:
   fixes f :: "'a::ccpo_topology \<Rightarrow> 'b::ccpo_topology"
   shows "(\<And>C. chain C \<Longrightarrow> C \<noteq> {} \<Longrightarrow> chain (f ` C) \<and> f (Sup C) = Sup (f`C)) \<Longrightarrow> f \<midarrow>x\<rightarrow> f x"
-  by (intro tendsto_open_vimage) (auto simp: open_ccpo simp del: Sup_image_eq)
+  by (intro tendsto_open_vimage) (auto simp: open_ccpo)
 
 lemma tendsto_mcont: 
   assumes mcont: "mcont Sup op \<le> Sup op \<le> (f :: 'a :: ccpo_topology \<Rightarrow> 'b :: ccpo_topology)"

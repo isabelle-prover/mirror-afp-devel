@@ -169,15 +169,12 @@ unfolding subrobdds_set_def by simp_all
 lemma subrobdds_set_subset_simp :
   "subrobdds b \<subseteq> subrobdds_set bs \<longleftrightarrow> b \<in> subrobdds_set bs"
 unfolding subrobdds_set_def
-by (simp add: subset_iff Bex_def) (metis subrobdds_refl subrobdds_trans)
+by (auto simp add: subset_iff dest: subrobdds_trans)
 
 lemma subrobdds_set_idempot [simp] :
   "subrobdds_set (subrobdds_set bs) = subrobdds_set bs"
-unfolding subrobdds_set_def set_eq_iff
-apply (simp add: Bex_def)
-apply (intro allI iff_exI)
-apply (metis subrobdds_refl subrobdds_trans)
-done
+unfolding subrobdds_set_def
+by (auto dest: subrobdds_trans intro: subrobdds_refl)
 
 lemma subrobdds_set_idempot2 [simp] :
   "subrobdds_set (subrobdds b) = subrobdds b"
@@ -186,11 +183,7 @@ by simp
 
 lemma subrobdds_set_mono :
   "bs \<subseteq> subrobdds_set bs"
-unfolding subrobdds_set_def set_eq_iff
-apply (simp add: Bex_def subset_iff)
-apply (intro allI impI)
-apply (metis subrobdds_refl)
-done
+unfolding subrobdds_set_def by auto
 
 lemma subrobdds_set_mono2 :
   "bs1 \<subseteq> bs2 \<Longrightarrow> (subrobdds_set bs1 \<subseteq> subrobdds_set bs2)"
@@ -1337,12 +1330,8 @@ locale robdd_locale =
   next
     case False 
     then obtain b where "b \<in> bs" by auto
-    hence b_in: "b \<in> subrobdds_set bs" 
-      apply (simp add: subrobdds_set_def Bex_def) 
-      apply (rule exI [where x = b]) 
-      apply (simp)
-    done
-
+    then have b_in: "b \<in> subrobdds_set bs" 
+      unfolding subrobdds_set_def by rule simp
     from rev_map_invar_D3(1)[OF invar b_in]
     show ?thesis by (simp add: robdd_invar_ext_def)
   qed
@@ -1445,9 +1434,9 @@ locale robdd_locale =
         have lr'_eq: "l' = l" "r' = r"
         proof -
           from b_in b_eq have lr'_in': "l' \<in> subrobdds_set bs" "r' \<in> subrobdds_set bs"
-            apply (simp_all add: subrobdds_set_def Bex_def)
-            apply (rule_tac exI[where x = b], simp)+
-          done
+            apply (simp_all add: subrobdds_set_def)
+            apply (auto intro: bexI [of _ b])
+            done
 
           from invar_ids_equal lr_in' lr'_in' l_id_eq r_id_eq 
           show "l' = l" "r' = r"
