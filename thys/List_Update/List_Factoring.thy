@@ -1822,7 +1822,9 @@ proof -
     apply(simp add: a take_Suc_conv_app_nth)
       apply(subst T_snoc)
         using a apply(simp)
-        apply(simp) sorry
+        apply(simp)
+
+(*sorry*)by (metis (no_types, lifting) Suc_leD Suc_le_lessD a id_take_nth_drop length_take min_absorb2 steps'_rests)
   }
   from a this[of "length qs"] show ?thesis by auto
 qed
@@ -1879,7 +1881,7 @@ proof -
               case (2 x)
               have "(\<Sum>i<length qs. ALG x qs i (?config i, ()))
                 = setsum (%i. ALG x qs i (?config i, ())) {i. i<length qs}"
-                  sorry (*times out:  by (metis lessThan_def) *)
+                by (simp add: lessThan_def)
               also have "\<dots> = setsum (%i. ALG x qs i (?config i, ())) 
                         (UNION {y. y\<in> set init} (\<lambda>y. {i. i<length qs \<and> qs ! i = y}))"
                          apply(rule setsum.cong)
@@ -1981,7 +1983,7 @@ proof -
           {i. i < length qs \<and> qs ! i = a}. ALG b qs i (?config i, ()) +
                ALG a qs i (?config i, ())) - (\<Sum>i\<in>{i. i < length qs \<and> qs ! i = b} \<inter>
           {i. i < length qs \<and> qs ! i = a}. ALG b qs i (?config i, ()) +
-               ALG a qs i (?config i, ())) "
+               ALG a qs i (?config i, ()))"
                (* apply(rule setsum_Un)
                 by(auto) strange *) sorry
         also have "\<dots> = (\<Sum>i\<in>{i. i < length qs \<and> qs ! i = b}. ALG b qs i (?config i, ()) +
@@ -2017,8 +2019,9 @@ proof -
             apply(rule setsum.cong)
               apply(simp)
               apply (rule t\<^sub>p_sumofALGALGP)
-                using dist steps'_distinct2 sorry
-  thm t\<^sub>p_sumofALGALGP
+apply auto
+apply (metis (no_types, lifting) dist id_take_nth_drop length_take less_imp_le_nat min_absorb2 qsStrat steps'_distinct2 steps'_rests)
+sorry
   also have "\<dots> = (\<Sum>i\<in>{..<length qs}. 
                 (\<Sum>e\<in>set init. ALG e qs i (swaps (snd (Strat!i)) (steps' init qs Strat i),()))
 + (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
@@ -2026,7 +2029,8 @@ proof -
                   apply(simp)
                   proof goal_cases
                     case (1 x)
-                    have "set (steps' init qs Strat x) = set init" sorry
+                    then have "set (steps' init qs Strat x) = set init"
+by (metis id_take_nth_drop length_take lessThan_def mem_Collect_eq min_absorb2 order.strict_implies_order qsStrat steps'_rests steps'_set)(*sorry*)
                     then show ?case by simp
                   qed 
   also have "\<dots> = (\<Sum>i\<in>{..<length qs}. 
@@ -2315,7 +2319,8 @@ proof (standard, goal_cases)
               y \<in> set init \<and> x < y}. T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x, y}))
               \<le>    (T\<^sub>p_opt init qs)"
               by blast    
-      with c show ?thesis sorry (* auto *)
+      with c show ?thesis apply (auto)
+by (metis (mono_tags, lifting) of_nat_le_iff of_nat_setsum setsum.cong) (*sorry*)
     qed
   finally have f: "T\<^sub>p_on_rand A init qs \<le> c * real (T\<^sub>p_opt init qs) + (b*((length init)*(length init-1)) / 2)" .
   } note all=this
