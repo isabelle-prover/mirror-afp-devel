@@ -255,7 +255,7 @@ abstract =
 
 [List_Update]
 title = Analysis of List Update Algorithms
-author = Maximilian P.L. Haslbeck <mailto:haslbema@in.tum.de>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
+author = Maximilian P.L. Haslbeck <http://in.tum.de/~haslbema/>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2016-02-17
 topic = Computer Science/Algorithms/Online
 depends-on = List-Index, Regular-Sets
