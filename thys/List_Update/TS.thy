@@ -2095,12 +2095,154 @@ qed
 lemma projEmpty: "Lxy qs S = [] \<Longrightarrow> x \<in> S \<Longrightarrow> x \<notin> set qs"
 unfolding Lxy_def by (metis filter_empty_conv)  
 
-lemma projSnoc: 
-  assumes "Lxy qs S = as@[a]"
+
+lemma Lxy_index_mono:
+  assumes "x\<in>S" "y\<in>S"
+    and "index xs x < index xs y"
+    and "index xs y < length xs"
+    and "x\<noteq>y"
+  shows "index (Lxy xs S) x < index (Lxy xs S) y"
+proof -
+  from assms have ij: "index xs x < index xs y"
+        and xinxs: "index xs x < length xs"
+        and yinxs: "index xs y < length xs" by auto  
+  then have inset: "x\<in>set xs" "y\<in>set xs" using index_less_size_conv by fast+
+  from xinxs obtain a as where dec1: "a @ [xs!index xs x] @ as = xs"
+        and a: "a = take (index xs x) xs" and "as = drop (Suc (index xs x)) xs"
+        and length_a: "length a = index xs x" and length_as: "length as = length xs - index xs x- 1"
+        using id_take_nth_drop by fastforce 
+  have "index xs y\<ge>length (a @ [xs!index xs x])" using length_a ij by auto
+  then have "((a @ [xs!index xs x]) @ as) ! index xs y = as ! (index xs y-length (a @ [xs ! index xs x]))" using nth_append[where xs="a @ [xs!index xs x]" and ys="as"]
+    by(simp)
+  then have xsj: "xs ! index xs y = as ! (index xs y-index xs x-1)" using dec1 length_a by auto   
+  have las: "(index xs y-index xs x-1) < length as" using length_as yinxs ij by simp
+  obtain b c where dec2: "b @ [xs!index xs y] @ c = as"
+            and "b = take (index xs y-index xs x-1) as" "c=drop (Suc (index xs y-index xs x-1)) as"
+            and length_b: "length b = index xs y-index xs x-1" using id_take_nth_drop[OF las] xsj by force
+
+  have xs_dec: "a @ [xs!index xs x] @ b @ [xs!index xs y] @ c = xs" using dec1 dec2 by auto 
+   
+
+  then have "Lxy xs S = Lxy (a @ [xs!index xs x] @ b @ [xs!index xs y] @ c) S"
+    by(simp add: xs_dec)
+  also have "\<dots> = Lxy a S @ Lxy [x] S @ Lxy b S @ Lxy [y] S @ Lxy c S"
+    by(simp add: Lxy_append Lxy_def assms inset)
+  finally have gr: "Lxy xs S = Lxy a S @ [x] @ Lxy b S @ [y] @ Lxy c S"
+      using assms by(simp add: Lxy_def)
+
+  have "y \<notin> set (take (index xs x) xs)" 
+    apply(rule index_take) using assms by simp
+  then have "y \<notin>  set (Lxy (take (index xs x) xs) S )"
+    apply(subst Lxy_set_filter) by blast
+  with a have ynot: "y \<notin> set (Lxy a S)" by simp
+  have "index (Lxy xs S) y =
+          index (Lxy a S @ [x] @ Lxy b S @ [y] @ Lxy c S) y"
+            by(simp add: gr)
+  also have "\<dots> \<ge> length (Lxy a S) + 1"
+    using assms(5) ynot by(simp add: index_append)
+  finally have 1: "index (Lxy xs S) y \<ge> length (Lxy a S) + 1" .
+
+  have "index (Lxy xs S) x = index (Lxy a S @ [x] @ Lxy b S @ [y] @ Lxy c S) x"
+    by (simp add: gr)
+  also have "\<dots> \<le>  length (Lxy a S)"
+    apply(simp add: index_append)
+    apply(subst index_less_size_conv[symmetric]) by simp
+  finally have 2: "index (Lxy xs S) x \<le> length (Lxy a S)" .
+
+  from 1 2 show ?thesis by linarith
+qed
+
+lemma proj_Cons: 
+  assumes filterd_cons: "Lxy qs S = a#as"
+    and a_filter: "a\<in>S"
+  obtains pre suf where "qs = pre @ [a] @ suf" and "\<And>x. x \<in> S \<Longrightarrow> x \<notin> set pre"
+                  and "Lxy suf S = as"
+proof -
+  have "set (Lxy qs S) \<subseteq> set qs" using Lxy_set_filter by fast
+  with filterd_cons have a_inq: "a \<in> set qs" by simp
+  then have "index qs a < length qs" by(simp)
+  { fix e
+    assume eS:"e\<in>S"
+    assume "e\<noteq>a"
+    have "index qs a \<le> index qs e"
+    proof (rule ccontr)
+      assume "\<not> index qs a \<le> index qs e"
+      then have 1: "index qs e < index qs a" by simp
+      have 0: "index (Lxy qs S) a = 0" unfolding filterd_cons by simp
+      have 2: "index (Lxy qs S) e < index (Lxy qs S) a"
+        apply(rule Lxy_index_mono)
+          by(fact)+
+      from 0 2 show "False" by linarith
+    qed
+  } note atfront=this
+
+
+  let ?lastInd="index qs a"
+  have "qs = take ?lastInd qs @ qs!?lastInd # drop (Suc ?lastInd) qs"
+    apply(rule id_take_nth_drop)
+      using a_inq by simp
+  also have "\<dots> = take ?lastInd qs @ [a] @ drop (Suc ?lastInd) qs"
+    using a_inq by simp
+  finally have split: "qs = take ?lastInd qs @ [a] @ drop (Suc ?lastInd) qs" .
+  
+  have nothingin: "\<And>s. s\<in>S \<Longrightarrow> s \<notin> set (take ?lastInd qs)"
+    apply(rule index_take)
+    apply(case_tac "a=s")
+      apply(simp)
+     by (rule atfront) simp_all
+  then have "set (Lxy (take ?lastInd qs) S) = {}"
+    apply(subst Lxy_set_filter) by blast
+  then have emptyPre: "Lxy (take ?lastInd qs) S = []" by blast
+
+
+  have "a#as = Lxy qs S"
+    using filterd_cons by simp
+  also have "\<dots> = Lxy (take ?lastInd qs @ [a] @ drop (Suc ?lastInd) qs) S"
+    using split by simp
+  also have "\<dots> = Lxy (take ?lastInd qs) S @ (Lxy [a] S) @ Lxy (drop (Suc ?lastInd) qs) S"
+    by(simp add: Lxy_append Lxy_def)
+  also have "\<dots> = a#Lxy (drop (Suc ?lastInd) qs) S"
+    unfolding emptyPre by(simp add: Lxy_def a_filter)
+  finally have suf: "Lxy (drop (Suc ?lastInd) qs) S = as" by simp
+  
+  from split nothingin suf show ?thesis ..                          
+qed
+
+
+lemma Lxy_rev: "rev (Lxy qs S) = Lxy (rev qs) S"
+apply(induct qs)
+  by(simp_all add: Lxy_def)
+
+lemma proj_Snoc: 
+  assumes filterd_cons: "Lxy qs S = as@[a]"
+    and a_filter: "a\<in>S"
   obtains pre suf where "qs = pre @ [a] @ suf" and "\<And>x. x \<in> S \<Longrightarrow> x \<notin> set suf"
                   and "Lxy pre S = as"
-sorry
+proof - 
+  have "Lxy (rev qs) S = rev (Lxy qs S)" by(simp add: Lxy_rev)
+  also have "\<dots> = a#(rev as)" unfolding filterd_cons by simp
+  finally have "Lxy (rev qs) S = a # (rev as)" .
+  with a_filter
+  obtain pre' suf' where 1: "rev qs = pre' @[a] @ suf'"
+          and 2: "\<And>x. x \<in> S \<Longrightarrow> x \<notin> set pre'"
+          and 3: "Lxy suf' S = rev as"
+    using proj_Cons by metis
+  have "qs = rev (rev qs)" by simp 
+  also have "\<dots> = rev suf' @ [a] @ rev pre'" using 1 by simp
+  finally have a1: "qs = rev suf' @ [a] @ rev pre'" .
 
+  have "Lxy (rev suf') S = rev (Lxy suf' S)" by(simp add: Lxy_rev)
+  also have "\<dots> = as" using 3 by simp
+  finally have a3: "Lxy (rev suf') S = as" .
+
+  have a2: "\<And>x. x \<in> S \<Longrightarrow> x \<notin> set (rev pre')" using 2 by simp
+
+  from a1 a2 a3 show ?thesis ..
+qed
+  
+    
+
+  
 
 
 lemma sndTSconfig': "snd (config' (rTS initH) (init,[]) qs) = rev qs @ []"
@@ -2121,10 +2263,7 @@ proof -
         and qsininit: "set qs \<subseteq> set init" by auto
   note dinit=goal1(4)
   from goal1 have xny: "x\<noteq>y" by simp
-                             
-  have initpos: "Lxy init {x,y} \<in> {[x,y],[y,x]}" sorry
- 
-
+                              
   have lq_s: "set (Lxy qs {x, y}) \<subseteq> {x,y}" by (simp add: Lxy_set_filter)
  
   (* projezierte history *)
@@ -2149,17 +2288,16 @@ proof -
     finally show ?thesis .
   next
     case (snoc as a)  
-    note a=this
-    from a obtain pre suf  where qs: "qs = pre @ [a] @ suf"
+    then have "a\<in>set (Lxy qs {x, y})" by (simp)
+    then have axy: "a\<in>{x,y}" by(simp add: Lxy_set_filter)
+    note a=snoc
+    from a axy obtain pre suf  where qs: "qs = pre @ [a] @ suf"
                   and nosuf: "\<And>e. e \<in> {x,y} \<Longrightarrow> e \<notin> set suf" 
                   and pre: "Lxy pre {x,y} = as"
-          using projSnoc by metis
+          using proj_Snoc by metis
     show ?thesis
     proof (cases "as" rule: rev_cases)
-      case Nil
-      from a Nil have "a\<in>set (Lxy qs {x, y})" by simp
-      then have axy: "a \<in> {x, y}" by(simp add: Lxy_set_filter)
-
+      case Nil  
       from pre Nil have xqs: "x \<notin> set pre" and yqs: "y \<notin> set pre" by(simp_all add: projEmpty) 
       from xqs yqs axy have "a \<notin> set pre" by blast
       then have noocc: "index (rev pre) a = length (rev pre)" by simp
@@ -2183,23 +2321,83 @@ proof -
     next
       case (snoc bs b) 
       note b=this
+      with a have "b\<in>set (Lxy qs {x, y})" by (simp)
+      then have bxy: "b\<in>{x,y}" by(simp add: Lxy_set_filter)
       from b pre have "Lxy pre {x,y} = bs @ [b]" by simp
-      then obtain pre2 suf2  where as: "pre = pre2 @ [b] @ suf2"
+      with bxy obtain pre2 suf2  where bs: "pre = pre2 @ [b] @ suf2"
                     and nosuf2: "\<And>e. e \<in> {x,y} \<Longrightarrow> e \<notin> set suf2" 
                     and pre2: "Lxy pre2 {x,y} = bs"
-            using projSnoc by metis
+            using proj_Snoc by metis
 
-      from as qs have "qs = pre2 @ [b] @ suf2 @ [a] @ suf" by simp
+      from bs qs have qs2: "qs = pre2 @ [b] @ suf2 @ [a] @ suf" by simp
       
-      (* jetzt falls b=a sind wir im fall xx,
-        dann ist in allen fällen x vorne *)
+      show ?thesis
+      proof (cases "a=b")
+        case True
+        (* jetzt falls b=a sind wir im fall xx,
+          dann ist in allen fällen x vorne *)
+        show ?thesis sorry
+      next
+        case False
 
-      (* wenn nicht, müssen wir noch einen weiteren snoc aufmachen *)
-      
-      
 
+        (* wenn nicht, müssen wir noch einen weiteren snoc aufmachen *)
+        show ?thesis
+        proof (cases "bs" rule: rev_cases)
+          case Nil
+          with a b have "Lxy qs {x, y} = [b,a]" by simp
+          from pre2 Nil have xqs: "x \<notin> set pre2" and yqs: "y \<notin> set pre2" by(simp_all add: projEmpty) 
+          from xqs yqs bxy have "b \<notin> set pre2" by blast
+          then have noocc2: "index (rev pre2) b = length (rev pre2)" by simp 
+          from axy nosuf2 have "a \<notin> set suf2" by blast
+          with xqs yqs axy False have "a \<notin> set ((pre2 @ b # suf2))" by(auto)
+          then have noocc: "index (rev (pre2 @ b # suf2) @ []) a = length (rev (pre2 @ b # suf2))" by simp
+          have " x < y in fst (config\<^sub>p (rTS []) init qs)
+                =  x < y in fst (config\<^sub>p (rTS []) init ((((pre2 @ [b]) @ suf2) @ [a]) @ suf))" by(simp add: qs2)
+          also have "\<dots> = x < y in fst (config\<^sub>p (rTS []) init (((pre2 @ [b]) @ suf2) @ [a]))"
+            apply(subst config_append)
+            apply(rule staysuntouched) using goal1 xqs yqs qs nosuf by(simp_all)
+          also have "\<dots> = x < y in fst (config\<^sub>p (rTS []) init ((pre2 @ [b]) @ suf2))"
+            apply(subst config_append)
+            apply(simp add: rTS_def Step_def split_def)
+            apply(simp only: TS_step_d_def)
+            apply(simp only: sndTSconfig'[unfolded rTS_def])
+            apply(simp only: noocc) by (simp add: step_def)
+          also have "\<dots> = x < y in fst (config\<^sub>p (rTS []) init (pre2 @ [b]))"
+            apply(subst config_append)
+            apply(rule staysuntouched) using goal1 xqs yqs qs2 nosuf2 by(simp_all)
+          also have "\<dots> = x < y in fst (config\<^sub>p (rTS []) init (pre2))"
+            apply(subst config_append)
+            apply(simp add: rTS_def Step_def split_def)
+            apply(simp only: TS_step_d_def)
+            apply(simp only: sndTSconfig'[unfolded rTS_def])
+            by(simp add: noocc2 step_def)
+          also have "\<dots> = x < y in init"
+            apply(rule staysuntouched') using goal1 xqs yqs qs2 by(simp_all)        
+          also have "\<dots> = x < y in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y}))"
+            unfolding a b Nil
+            using False
+            apply(simp add: Step_def split_def rTS_def TS_step_d_def step_def) 
+              apply(rule Lxy_mono) using xyininit dinit by(simp_all)
+          finally show ?thesis . 
+        next
+          case (snoc cs c)   
+          note c=this
+          with a b have "c\<in>set (Lxy qs {x, y})" by (simp)
+          then have bxy: "c\<in>{x,y}" by(simp add: Lxy_set_filter)
+          from c pre2 have "Lxy pre2 {x,y} = cs @ [c]" by simp
+          with bxy obtain pre3 suf3  where cs: "pre2 = pre3 @ [c] @ suf3"
+                        and nosuf3: "\<And>e. e \<in> {x,y} \<Longrightarrow> e \<notin> set suf3" 
+                        and pre3: "Lxy pre3 {x,y} = cs"
+                using proj_Snoc by metis    
 
-      show ?thesis sorry
+          from bs cs qs have qs2: "qs = pre3 @ [c] @ suf3 @ [b] @ suf2 @ [a] @ suf" by simp
+                
+          thm casexxy
+    
+          show ?thesis sorry      
+        qed (* end of snoc cs c *)
+      qed (* end of (a=b) *)
     qed (* end snoc bs b *)
   qed (* end snoc as a *)
 
