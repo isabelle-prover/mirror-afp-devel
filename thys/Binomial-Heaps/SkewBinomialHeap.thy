@@ -1631,50 +1631,6 @@ lemma in_image_msetE:
   apply (force split: split_if_asm)
   done
 
-text {* Multiset Union *}
-(*MOVE*)
-definition mset_Union :: "'a multiset multiset \<Rightarrow> 'a multiset"
-where
-  "mset_Union M = fold_mset op + {#} M"
-
-lemma comp_fun_commute_mset_Union:
-  "comp_fun_commute (plus :: 'a multiset \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset)"
-proof qed (auto simp add: union_ac)
-
-lemma mset_Union_empty [simp]:
-  "mset_Union {#} = {#}"
-  by (simp add: mset_Union_def)
-
-lemma mset_Union_single [simp]:
-  "mset_Union {#x#} = x"
-proof -
-  interpret comp_fun_commute "plus :: 'a multiset \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset"
-    by (fact comp_fun_commute_mset_Union)
-  show ?thesis by (simp add: mset_Union_def)
-qed
-
-lemma mset_Union_un [simp]:
-  "mset_Union (A + B) = mset_Union A + mset_Union B"
-proof -
-  interpret comp_fun_commute "plus :: 'a multiset \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset"
-    by (fact comp_fun_commute_mset_Union)
-  show ?thesis by (induct B) (auto simp add: mset_Union_def union_ac)
-qed
-
-corollary mset_Union_insert:
-  "mset_Union (A + {#x#}) = mset_Union A + x"
-  by simp
-
-lemma in_mset_UnionE:
-  assumes "e\<in>#mset_Union M"
-  obtains s where "s\<in>#M" "e\<in>#s"
-  using assms
-  apply (induct M)
-  apply simp
-  apply (force split: split_if_asm)
-  done
-
-
 text {* Some very special introduction lemmas for @{const image_mset} *}
 lemma image_mset_fstI: "(e,a):#M \<Longrightarrow> e \<in># image_mset fst M"
   by (induct M) (auto split: split_if_asm)
@@ -2126,7 +2082,7 @@ text {*
 *}
 function elem_to_mset where
   "elem_to_mset (Element e a q) = {# (e,a) #} 
-  + mset_Union (image_mset elem_to_mset (queue_to_multiset q))"
+  + Union_mset (image_mset elem_to_mset (queue_to_multiset q))"
 by pat_completeness auto
 termination
 proof
@@ -2163,7 +2119,7 @@ proof (induct n\<equiv>"level x" arbitrary: x rule: full_nat_induct)
   obtain e a q where [simp]: "x=Element e a q" by (cases x) auto
 
   from PREMS(2) have "y=(e,a) \<or> 
-    y\<in>#mset_Union (image_mset elem_to_mset (queue_to_multiset q))"
+    y\<in>#Union_mset (image_mset elem_to_mset (queue_to_multiset q))"
     (is "?C1 \<or> ?C2")
     by (auto split: split_if_asm)
   moreover {
@@ -2174,7 +2130,7 @@ proof (induct n\<equiv>"level x" arbitrary: x rule: full_nat_induct)
     then obtain yx where 
       A: "yx \<in># queue_to_multiset q"  and
       B: "y \<in># elem_to_mset yx"
-      apply (auto elim!: in_mset_UnionE in_image_msetE)
+      apply (auto elim!: in_image_msetE)
       apply (drule bsmap_fs_depD)
       apply auto
       done
