@@ -400,36 +400,14 @@ definition insert :: "'e \<Rightarrow> 'a::linorder \<Rightarrow> ('e, 'a) Binom
   ('e, 'a) BinomialQueue_inv" where
   "insert e a bq = ins (Node e a 0 []) bq"
 
-lemma ins_mset: 
+lemma ins_mset:
   "\<lbrakk>tree_invar t; queue_invar q\<rbrakk> \<Longrightarrow> queue_to_multiset (ins t q) 
    = tree_to_multiset t + queue_to_multiset q"
-proof(induct q arbitrary: t)
-  case Nil
-  then show ?case by simp
-next
-  case (Cons a q) thus ?case
-    apply(cases "rank t < rank a")
-    apply(simp add: union_ac)
-    apply(cases "rank t = rank a") defer
-    apply(simp add: union_ac)
-  proof goal_cases
-    case prems: 1
-    from prems(3) have inv_a: "tree_invar a" by (simp)
-    from prems(3) have inv_q: "queue_invar q" by (simp)
-    note inv_link = link_tree_invar[OF prems(2) inv_a prems(5)]
-    note iv = prems(1)[OF inv_link inv_q]
-    with mset_link[of t a] prems(5) show ?case by (simp add: union_ac)
-  qed
-qed
+by (induct q arbitrary: t) (auto simp: union_ac link_tree_invar)
 
-lemma insert_mset: 
-  assumes "queue_invar q" 
-  shows "queue_to_multiset (insert e a q) = 
-  queue_to_multiset q + {# (e,a) #}" using assms
-proof -
-  have inv: "tree_invar (Node e a 0 [])" by simp
-  from ins_mset[OF inv assms] show ?thesis by (simp add: union_ac insert_def)
-qed
+lemma insert_mset: "queue_invar q \<Longrightarrow>
+  queue_to_multiset (insert e a q) = queue_to_multiset q + {# (e,a) #}"
+by(simp add: ins_mset union_ac insert_def)
 
 lemma ins_queue_invar: "\<lbrakk>tree_invar t; queue_invar q\<rbrakk> \<Longrightarrow> queue_invar (ins t q)"
 proof (induct q arbitrary: t)
@@ -684,35 +662,8 @@ lemma rank_invar_meld:
 lemma meld_mset: "\<lbrakk>queue_invar q; queue_invar q'\<rbrakk> \<Longrightarrow> 
   queue_to_multiset (meld q q') = 
   queue_to_multiset q + queue_to_multiset q'"
-proof(induct q q' rule: meld.induct)
-  case (3 t1 bq1 t2 bq2)
-  note iv="3.hyps"
-  note prems="3.prems"
-  show ?case (* "rank t1 < rank t2" *)
-  proof (cases rule: nat_less_cases[of "rank t1" "rank t2", 
-            case_names less eq greater])
-    case less
-    from prems have inv_bq1: "queue_invar bq1" by simp
-    from iv(1)[OF less inv_bq1 prems(2)] less
-    show ?thesis by (simp add: union_ac)
-  next
-    case greater with prems iv show ?thesis
-      by (auto simp add: union_ac)
-  next
-    case [simp]: eq
-    from prems have 
-      inv_bq1: "queue_invar bq1" and
-      inv_t1: "tree_invar t1" and
-      inv_bq2: "queue_invar bq2" and
-      inv_t2: "tree_invar t2" by simp_all
-    note inv_link = link_tree_invar[OF inv_t1 inv_t2 eq]
-    note inv_meld = meld_queue_invar[OF inv_bq1 inv_bq2]
-    note mset_meld = iv(3)[OF _ _ inv_bq1 inv_bq2, simplified]
-    note mset_link = mset_link[of t1 t2]
-    from ins_mset[OF inv_link inv_meld] mset_meld mset_link
-    show ?thesis by (simp add: union_ac)
-  qed
-qed simp_all
+by(induct q q' rule: meld.induct)
+  (auto simp add: link_tree_invar meld_queue_invar ins_mset union_ac)
 
 lemma meld_correct:
   assumes "invar q" "invar q'" 
@@ -860,25 +811,7 @@ qed
 lemma remove1_mset: "t \<in> set q \<Longrightarrow> 
   queue_to_multiset (remove1 t q) = 
   queue_to_multiset q - tree_to_multiset t"
-proof (induct q)
-  case Nil
-  then show ?case by simp
-next
-  case (Cons a q)
-  show ?case
-  proof (cases "t = a")
-    case True
-    then show ?thesis by (simp add: union_ac)
-  next
-    case False
-    with Cons(2) have t_in_q: "t \<in> set q" by simp
-    note iv = Cons(1)[OF t_in_q]
-    note t_subset_q = qtm_in_set_subset[OF t_in_q]
-    note assoc = 
-      multiset_diff_union_assoc[OF t_subset_q, of "tree_to_multiset a"]
-    from iv False assoc show ?thesis by (simp add: union_ac)
-  qed
-qed
+by (induct q) (auto simp: multiset_diff_union_assoc qtm_in_set_subset)
 
 lemma remove1Prio_remove1[simp]: 
   "remove1Prio (prio (getMinTree bq)) bq = remove1 (getMinTree bq) bq"

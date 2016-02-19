@@ -609,34 +609,14 @@ fun insert :: "'e \<Rightarrow> 'a::linorder \<Rightarrow> ('e, 'a) SkewBinomial
       else (skewlink e a t t') # bq)"
 
 lemma ins_mset: 
-  "\<lbrakk>tree_invar t; queue_invar q\<rbrakk> \<Longrightarrow> queue_to_multiset (ins t q) 
-   = tree_to_multiset t + queue_to_multiset q"
-proof (induct q arbitrary: t)
-  case Nil
-  then show ?case by simp
-next
-  case (Cons a q)
-  thus ?case
-    apply (cases "rank t < rank a")
-    apply (simp add: union_ac)
-    apply (cases "rank t = rank a") defer
-    apply (simp add: union_ac)
-  proof goal_cases
-    case prems: 1
-    from prems(3) have inv_a: "tree_invar a" by simp
-    from prems(3) have inv_q: "queue_invar q" by simp
-    note inv_link = link_tree_invar[OF prems(2) inv_a prems(5)]
-    note iv = prems(1)[OF inv_link inv_q]
-    with link_mset[of t a] prems(5) show ?case by (simp add: union_ac)
-  qed
-qed
+  "\<lbrakk>tree_invar t; queue_invar q\<rbrakk> \<Longrightarrow>
+   queue_to_multiset (ins t q) = tree_to_multiset t + queue_to_multiset q"
+by (induct q arbitrary: t) (auto simp: union_ac link_tree_invar)
 
 lemma insert_mset: "queue_invar q \<Longrightarrow> 
   queue_to_multiset (insert e a q) = 
   queue_to_multiset q + {# (e,a) #}"
-  apply(induct q rule: insert.induct)
-  apply (auto simp add: union_ac ttm_children)
-  done
+by (induct q rule: insert.induct) (auto simp add: union_ac ttm_children)
 
 lemma ins_queue_invar: "\<lbrakk>tree_invar t; queue_invar q\<rbrakk> \<Longrightarrow> queue_invar (ins t q)"
 proof (induct q arbitrary: t)
@@ -833,57 +813,13 @@ lemma uniqify_mset: "queue_invar q \<Longrightarrow> queue_to_multiset q = queue
 lemma meldUniq_mset: "\<lbrakk>queue_invar q; queue_invar q'\<rbrakk> \<Longrightarrow> 
   queue_to_multiset (meldUniq q q') = 
   queue_to_multiset q + queue_to_multiset q'"
-proof (induct q q' rule: meldUniq.induct)
-  case 1
-  then show ?case by simp
-next
-  case 2
-  then show ?case by simp
-next
-  case (3 t1 bq1 t2 bq2)
-  consider (lt) "rank t1 < rank t2" | (gt) "rank t1 > rank t2" | (eq) "rank t1 = rank t2"
-    by atomize_elim auto
-  then show ?case
-  proof cases
-    case t1t2: lt
-    from 3(4) have inv_bq1: "queue_invar bq1" by simp
-    from 3(1)[OF t1t2 inv_bq1 3(5)] t1t2
-    show ?thesis by (simp add: union_ac)
-  next
-    case t1t2: gt
-    from 3(5) have inv_bq2: "queue_invar bq2" by simp
-    from t1t2 have "\<not> rank t1 < rank t2" by auto
-    from 3(2)[OF this t1t2 3(4) inv_bq2] t1t2
-    show ?thesis by (simp add: union_ac)
-  next
-    case t1t2: eq
-    then have eq: "rank t1 = rank t2" by simp
-    from 3(4) have inv_bq1: "queue_invar bq1" by simp
-    from 3(4) have inv_t1: "tree_invar t1" by simp
-    from 3(5) have inv_bq2: "queue_invar bq2" by simp
-    from 3(5) have inv_t2: "tree_invar t2" by simp
-    note inv_link = link_tree_invar[OF inv_t1 inv_t2 eq]
-    note inv_meldUniq = invar_meldUniq[OF inv_bq1 inv_bq2]
-    from t1t2 have "\<not> rank t1 < rank t2" "\<not> rank t2 < rank t1" by auto
-    note mset_meldUniq = 3(3)[OF this inv_bq1 inv_bq2]
-    note mset_link = link_mset[of t1 t2]
-    from ins_mset[OF inv_link inv_meldUniq] mset_meldUniq mset_link eq
-    show ?thesis by (simp add: union_ac)
-  qed
-qed
+by(induct q q' rule: meldUniq.induct)
+  (auto simp: ins_mset link_tree_invar invar_meldUniq union_ac)
 
 lemma meld_mset:
-  assumes "queue_invar q"
-    and "queue_invar q'"
-  shows "queue_to_multiset (meld q q') = queue_to_multiset q + queue_to_multiset q'"
-proof -
-  note inv_uniq_q = invar_uniqify[OF assms(1)]
-  note inv_uniq_q' = invar_uniqify[OF assms(2)]
-  note mset_uniq_q = uniqify_mset[OF assms(1)]
-  note mset_uniq_q' = uniqify_mset[OF assms(2)]
-  note meldUniq_mset[OF inv_uniq_q inv_uniq_q']
-  with mset_uniq_q mset_uniq_q' show ?thesis by (simp add: meld_def)
-qed
+  "\<lbrakk> queue_invar q; queue_invar q' \<rbrakk> \<Longrightarrow>
+  queue_to_multiset (meld q q') = queue_to_multiset q + queue_to_multiset q'"
+by (simp add: meld_def meldUniq_mset invar_uniqify uniqify_mset[symmetric])
 
 text \<open>Ins operation satisfies rank invariant, see binomial queues\<close>
 lemma rank_ins: "rank_invar bq \<Longrightarrow> rank_invar (ins t bq)"
@@ -1214,25 +1150,7 @@ qed
 lemma mset_remove1: "t \<in> set q \<Longrightarrow> 
   queue_to_multiset (remove1 t q) = 
   queue_to_multiset q - tree_to_multiset t"
-proof (induct q)
-  case Nil
-  then show ?case by simp
-next
-  case (Cons a q)
-  show ?case
-  proof (cases "t = a")
-    case True
-    then show ?thesis by (simp add: union_ac)
-  next
-    case False
-    with Cons(2) have t_in_q: "t \<in> set q" by simp
-    note iv = Cons(1)[OF t_in_q]
-    note t_subset_q = in_set_subset[OF t_in_q]
-    note assoc = 
-      multiset_diff_union_assoc[OF t_subset_q, of "tree_to_multiset a"]
-    from iv False assoc show ?thesis by (simp add: union_ac)
-  qed
-qed
+by (induct q) (auto simp: multiset_diff_union_assoc in_set_subset)
 
 lemma invar_children':
   assumes "tree_invar t"
