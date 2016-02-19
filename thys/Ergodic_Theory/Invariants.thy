@@ -374,7 +374,7 @@ next
       then have "(T^^m) x \<in> good_set" using ** Inf_nat_def1 by (metis empty_iff mem_Collect_eq)
       have "n+1 \<in> {m. (T^^m) x \<in> good_set}" using a by simp
       then have "m \<le> n+1" using m_def by (simp add: Inf_nat_def Least_le)
-      then obtain k where "n+1 = m + k" using Nat.le_iff_add by blast
+      then obtain k where "n+1 = m + k" using le_iff_add by blast
       have "g x = f((T^^m) x)" unfolding g_def good_time_def using ** m_def by simp
       also have "... = f((T^^k) ((T^^m) x))" using `(T^^m) x \<in> good_set` good_k by simp
       also have "... = f((T^^(n+1))x)" using `n+1 = m + k`[symmetric] funpow_add by (metis add.commute comp_apply)

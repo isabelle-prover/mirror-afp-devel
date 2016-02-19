@@ -512,7 +512,7 @@ by (metis local_time_birkhoff birkhoff_sum_cocycle)
 
 lemma local_time_incseq:
   "incseq (\<lambda>n. local_time A n x)"
-using local_time_cocycle incseq_def by (metis Nat.le_iff_add)
+using local_time_cocycle incseq_def by (metis le_iff_add)
 
 lemma local_time_Suc:
   "local_time A (n+1) x = local_time A n x + indicator A ((T^^n)x)"
@@ -660,7 +660,7 @@ next
             by (metis Suc_diff_Suc Suc_eq_plus1 diff_diff_add local_time_Suc[of A, of "n-i-1"] `n>i`)
           hence "local_time A (n-i) x >  local_time A (n-i-1) x" by simp
           moreover have "local_time A n x \<ge> local_time A (n-i) x" using local_time_incseq
-            by (metis `i < n` le_add_diff_inverse2 less_or_eq_imp_le local_time_cocycle ordered_cancel_comm_monoid_diff_class.le_iff_add)
+            by (metis `i < n` le_add_diff_inverse2 less_or_eq_imp_le local_time_cocycle le_iff_add)
           ultimately have "local_time A n x > local_time A (n-i-1) x" by simp
           moreover have "local_time A n x < Suc k" using a K_def by simp
           ultimately have *: "local_time A (n-i-1) x < k" by simp
@@ -1071,30 +1071,10 @@ next
 qed
 
 lemma induced_map_meas [measurable]:
-  assumes "A \<in> sets M"
+  assumes A: "A \<in> sets M"
     shows "induced_map A \<in> measurable M M"
-proof -
-  have "\<And>Z. Z \<in> sets M \<Longrightarrow> (induced_map A)-`Z \<inter> space M \<in> sets M"
-  proof -
-    fix Z
-    assume "Z \<in> sets M"
-    have "UNIV = (\<Union> n. (return_time_function A)-` {n})" by blast
-    hence "(induced_map A)-`Z = (\<Union> n. (return_time_function A)-` {n} \<inter> (induced_map A)-`Z)" by blast
-    moreover have "\<And> n. (return_time_function A)-` {n} \<inter> (induced_map A)-`Z =  (return_time_function A)-` {n} \<inter> (T^^n)-`Z"
-      using induced_map_def return_time_function_def by auto
-    ultimately have "(induced_map A)-`Z = (\<Union> n. (return_time_function A)-` {n} \<inter> (T^^n)-`Z)"
-      by simp
-    hence *: "(induced_map A)-`Z \<inter> space M = (\<Union> n. (return_time_function A)-` {n} \<inter> space M \<inter> (T^^n)-`Z \<inter> space M)"
-      by blast
-    have "\<And> n. (return_time_function A)-` {n} \<inter> space M \<inter> (T^^n)-`Z \<inter> space M \<in> sets M"
-      using return_time_function_meas[OF assms] `Z \<in> sets M` measurable_sets by auto
-    hence "(\<Union> n. (return_time_function A)-` {n} \<inter> space M \<inter> (T^^n)-`Z \<inter> space M) \<in> sets M"
-      by measurable
-    thus "(induced_map A)-`Z \<inter> space M \<in> sets M" using * by simp
-  qed
-  thus ?thesis
-    by (metis Tn_meas induced_map_def measurableI measurable_space)
-qed
+  unfolding induced_map_def
+  by (rule measurable_compose_countable[OF Tn_meas return_time_function_meas[OF A]])
 
 lemma induced_map_iterates:
   "((induced_map A)^^n) x = (T^^(\<Sum>i < n. return_time_function A ((induced_map A ^^i) x))) x"
@@ -1281,9 +1261,9 @@ proof
 
     have "(induced_map A)-`B \<subseteq> (\<Union>n. (T^^n)-`B)" unfolding induced_map_def by auto
     then have "(induced_map A)-`B \<subseteq> (\<Union>n. (T^^n)-`B \<inter> space M)"
-      using b sets.sets_into_space by simp blast 
+      using b sets.sets_into_space by simp blast
     then have inc: "(induced_map A)-`B \<subseteq> (\<Union>n. (T^^n)--`B)" unfolding vimage_restr_def
-      using sets.sets_into_space [OF B_meas] by simp blast 
+      using sets.sets_into_space [OF B_meas] by simp blast
     have m: "\<And>n. (T^^n)--`B \<in> sets M" using T_vrestr_meas(2)[OF B_meas] by simp
     then have m2: "(\<Union>n. (T^^n)--`B) \<in> sets M" by measurable
 

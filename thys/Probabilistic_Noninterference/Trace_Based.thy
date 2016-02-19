@@ -289,7 +289,7 @@ proof -
     by simp
 
   from discr_N alw_discrCf_indis[OF sd _] assms(2,3) show ?thesis
-    by (simp add: N alw_iff_sdrop le_iff_add eq)
+    by (simp add: N alw_iff_sdrop le_iff_add[where 'a=nat] eq)
        (metis indis_iff)
 qed
 

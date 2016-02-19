@@ -654,6 +654,9 @@ lemma emeasure_HLD:
   "emeasure (T s) {\<omega>\<in>space (T s). HLD X \<omega>} = emeasure (K s) X"
   using emeasure_HLD_nxt[of "\<lambda>\<omega>. True" s X] T.emeasure_space_1 by simp
 
+lemma lfp_upperbound: "(\<And>y. x \<le> f y) \<Longrightarrow> x \<le> lfp f"
+  unfolding lfp_def by (intro Inf_greatest) (auto intro: order_trans)
+
 lemma emeasure_suntil_HLD:
   assumes [measurable]: "Measurable.pred S P"
   shows "emeasure (T s) {x\<in>space (T s). (not (HLD {t}) suntil (HLD {t} aand nxt P)) x} =
@@ -673,8 +676,9 @@ proof -
                         emeasure_positive[symmetric]
                   intro!: arg_cong[where f="\<lambda>x. c + x" for c] nn_integral_cong split: split_max split_indicator)
       done
-  qed (auto intro!: order_continuous_intros split: split_indicator
-              simp: nn_integral_nonneg emeasure_nonneg le_fun_def emeasure_positive bot_ereal_def)
+  qed (auto intro!: order_continuous_intros sup_continuous_mono lfp_upperbound
+            intro: le_funI nn_integral_nonneg add_nonneg_nonneg
+            simp: emeasure_positive bot_ereal_def split: split_indicator)
   also have "lfp (?F (HLD {t})) s = emeasure (T s) {x\<in>space (T s). (HLD (-{t}) suntil HLD {t}) x}"
     by (rule emeasure_suntil_disj[symmetric]) (auto simp: HLD_iff)
   finally show ?thesis

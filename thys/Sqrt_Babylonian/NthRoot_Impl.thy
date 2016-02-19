@@ -521,7 +521,7 @@ proof (induct y n rule: root_newton_int_main.induct)
     with rt have x: "x = y" by simp
     with 1(2) True have n: "n = y ^ p" by auto
     show ?thesis unfolding n x using y0 unfolding p
-      by (metis add_le_less_mono add_less_cancel_left lessI less_add_one monoid_add_class.add.right_neutral ordered_cancel_comm_monoid_diff_class.le_iff_add power_strict_mono)
+      by (metis add_le_less_mono add_less_cancel_left lessI less_add_one add.right_neutral le_iff_add power_strict_mono)
   qed
 qed
 

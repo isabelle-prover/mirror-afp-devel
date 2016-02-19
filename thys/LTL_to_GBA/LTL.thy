@@ -1,8 +1,8 @@
 section \<open>Linear Temporal Logic\<close>
 (* Author: Alexander Schimpf *)
 theory LTL
-imports 
-  "~~/src/HOL/Library/Omega_Words_Fun" Refine_Util
+imports
+  "~~/src/HOL/Library/Omega_Words_Fun" "../Automatic_Refinement/Lib/Refine_Util"
 begin
 
 subsection "LTL formulas"
@@ -10,13 +10,13 @@ subsection "LTL formulas"
 subsubsection \<open>Syntax\<close>
 
 datatype (plugins del: size)
- 'a ltl = LTLTrue      
-       | LTLFalse      
-       | LTLProp 'a    
-       | LTLNeg "'a ltl"  
-       | LTLAnd "'a ltl" "'a ltl"  
-       | LTLOr "'a ltl" "'a ltl"   
-       | LTLNext "'a ltl"      
+ 'a ltl = LTLTrue
+       | LTLFalse
+       | LTLProp 'a
+       | LTLNeg "'a ltl"
+       | LTLAnd "'a ltl" "'a ltl"
+       | LTLOr "'a ltl" "'a ltl"
+       | LTLNext "'a ltl"
        | LTLUntil "'a ltl" "'a ltl"
        | LTLRelease "'a ltl" "'a ltl"
 
@@ -40,10 +40,10 @@ instance ..
 
 end
 
-text \<open>The following locale defines syntactic sugar for 
+text \<open>The following locale defines syntactic sugar for
   parsing and printing LTL formulas in Isabelle\<close>
 locale LTL_Syntax begin
-notation 
+notation
            LTLTrue     ("true")
        and LTLFalse    ("false")
        and LTLProp     ("prop'(_')")
@@ -56,14 +56,14 @@ notation
 end
 
 subsubsection \<open>Semantics\<close>
-text \<open>We first provide an abstract semantics, that is parameterized with 
+text \<open>We first provide an abstract semantics, that is parameterized with
   the semantics of atomic propositions\<close>
 
 context begin interpretation LTL_Syntax .
 
-primrec ltl_semantics :: "'ap set word \<Rightarrow> 'ap ltl \<Rightarrow> bool" 
+primrec ltl_semantics :: "'ap set word \<Rightarrow> 'ap ltl \<Rightarrow> bool"
   ("_ \<Turnstile> _" [80,80] 80)
-  where 
+  where
     "\<xi> \<Turnstile> true = True"
   | "\<xi> \<Turnstile> false = False"
   | "\<xi> \<Turnstile> prop(q) = (q \<in> (\<xi> 0))"
@@ -83,17 +83,17 @@ text \<open>In this section, we provide a formulation of LTL with
   serves as a reference semantics.
 \<close>
 datatype (ltlc_aprops: 'a)
-    ltlc = LTLcTrue 
+    ltlc = LTLcTrue
          | LTLcFalse
-         | LTLcProp 'a  
-         | LTLcNeg "'a ltlc"    
-         | LTLcAnd "'a ltlc" "'a ltlc"  
-         | LTLcOr "'a ltlc" "'a ltlc"   
-         | LTLcImplies "'a ltlc" "'a ltlc"  
-         | LTLcIff "'a ltlc" "'a ltlc"  
-         | LTLcNext "'a ltlc"      
-         | LTLcFinal "'a ltlc"     
-         | LTLcGlobal "'a ltlc"    
+         | LTLcProp 'a
+         | LTLcNeg "'a ltlc"
+         | LTLcAnd "'a ltlc" "'a ltlc"
+         | LTLcOr "'a ltlc" "'a ltlc"
+         | LTLcImplies "'a ltlc" "'a ltlc"
+         | LTLcIff "'a ltlc" "'a ltlc"
+         | LTLcNext "'a ltlc"
+         | LTLcFinal "'a ltlc"
+         | LTLcGlobal "'a ltlc"
          | LTLcUntil "'a ltlc" "'a ltlc"
          | LTLcRelease "'a ltlc" "'a ltlc"
 
@@ -116,7 +116,7 @@ end
 
 context begin interpretation LTL_Syntax .
 
-primrec ltlc_semantics 
+primrec ltlc_semantics
   :: "['a set word, 'a ltlc] \<Rightarrow> bool" ("_ \<Turnstile>\<^sub>c _" [80,80] 80)
 where
     "\<xi> \<Turnstile>\<^sub>c true\<^sub>c = True"
@@ -149,10 +149,10 @@ by auto
 
 definition "pw_eq_on S w w' \<equiv> \<forall>i. w i \<inter> S = w' i \<inter> S"
 
-lemma 
+lemma
       pw_eq_on_refl[simp]: "pw_eq_on S w w"
   and pw_eq_on_sym: "pw_eq_on S w w' \<Longrightarrow> pw_eq_on S w' w"
-  and pw_eq_on_trans[trans]: 
+  and pw_eq_on_trans[trans]:
     "\<lbrakk>pw_eq_on S w w'; pw_eq_on S w' w''\<rbrakk> \<Longrightarrow> pw_eq_on S w w''"
   unfolding pw_eq_on_def by auto
 
@@ -189,9 +189,9 @@ proof -
 
   have 1: "\<Union>range ?\<xi>r \<subseteq> ltlc_aprops \<phi>" by auto
 
-  have INJ_the_dom: "inj_on (the o f) (dom f)" 
+  have INJ_the_dom: "inj_on (the o f) (dom f)"
     using assms
-    by (auto simp: inj_on_def domIff) 
+    by (auto simp: inj_on_def domIff)
   note 2 = subset_inj_on[OF this DOM]
 
   have 3: "(\<lambda>i. (the o f) ` ?\<xi>r' i) = map_aprops f o \<xi>" using DOM INJ
@@ -243,7 +243,7 @@ where
 
 lemma ltlc_to_ltl_equiv:
   "\<xi> \<Turnstile> (ltlc_to_ltl \<phi>) \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>c \<phi>"
-  apply (induct \<phi> arbitrary:\<xi>) 
+  apply (induct \<phi> arbitrary:\<xi>)
   apply (auto simp: Let_def)
   done
 
@@ -293,7 +293,7 @@ proof
     case (Suc k)
     with phi_is have "\<xi> \<Turnstile> \<phi>" by auto
     moreover
-    have "\<xi> \<Turnstile> X (\<phi> U \<psi>)" 
+    have "\<xi> \<Turnstile> X (\<phi> U \<psi>)"
     using psi_is phi_is Suc by auto
     ultimately show ?rhs by auto
   qed
@@ -344,11 +344,11 @@ qed
 text\<open>Double negation structure of an LTL formula\<close>
 
 lemma [simp]:
-  "not ((\<lambda>\<mu>. not not \<mu>) ^^ n) \<phi> = ((\<lambda>\<mu>. not not \<mu>) ^^ n) (not \<phi>)" 
+  "not ((\<lambda>\<mu>. not not \<mu>) ^^ n) \<phi> = ((\<lambda>\<mu>. not not \<mu>) ^^ n) (not \<phi>)"
   by (induct n) auto
 
 lemma ltl_double_neg_struct:
-  shows "\<exists>n \<psi>. \<phi> = ((\<lambda>\<xi>. not not \<xi>) ^^ n) \<psi> \<and> (\<forall>\<nu>. \<psi> \<noteq> not not \<nu>)" 
+  shows "\<exists>n \<psi>. \<phi> = ((\<lambda>\<xi>. not not \<xi>) ^^ n) \<psi> \<and> (\<forall>\<nu>. \<psi> \<noteq> not not \<nu>)"
   (is "\<exists>n \<psi>. ?Q \<phi> n \<psi>")
 proof(cases "\<forall>\<nu>. \<phi> \<noteq> not \<nu>")
   case True
@@ -381,7 +381,7 @@ next
             qed
         qed
     qed auto
-qed 
+qed
 
 lemma ltl_size_double_neg:
   assumes "\<psi> = ((\<lambda>\<mu>. not not \<mu>) ^^ n) \<phi>"
@@ -420,7 +420,7 @@ fun
 
 
 text\<open>
-  In fact, the @{text ltl_pushneg} function does not change the 
+  In fact, the @{text ltl_pushneg} function does not change the
   semantics of the input formula.
 \<close>
 
@@ -431,7 +431,7 @@ lemma ltl_pushneg_neg:
 theorem ltl_pushneg_equiv[simp]:
   "\<xi> \<Turnstile> ltl_pushneg \<phi> \<longleftrightarrow> \<xi> \<Turnstile> \<phi>"
 proof (induct \<phi> arbitrary: \<xi>)
-  case (LTLNeg \<psi>) 
+  case (LTLNeg \<psi>)
   with ltl_pushneg_neg show ?case by auto
 qed auto
 
@@ -548,7 +548,7 @@ next
          and rt_prm: "\<psi> is_subformula_of z"
        using 8 by auto
       then have z_is:
-            "z = ltl_pushneg (not \<nu>) \<or> 
+            "z = ltl_pushneg (not \<nu>) \<or>
              z = ltl_pushneg (not \<mu>)" by (cases z) auto
       show ?case
       proof(cases "\<psi> = z")
@@ -571,7 +571,7 @@ next
          and rt_prm: "\<psi> is_subformula_of z"
        using 9 by auto
       then have z_is:
-            "z = ltl_pushneg (not \<nu>) \<or> 
+            "z = ltl_pushneg (not \<nu>) \<or>
              z = ltl_pushneg (not \<mu>)" by (cases z) auto
       show ?case
       proof(cases "\<psi> = z")
@@ -616,7 +616,7 @@ next
          and rt_prm: "\<psi> is_subformula_of z"
        using 11 by auto
       then have z_is:
-            "z = ltl_pushneg (not \<nu>) \<or> 
+            "z = ltl_pushneg (not \<nu>) \<or>
              z = ltl_pushneg (not \<mu>)" by (cases z) auto
       show ?case
       proof(cases "\<psi> = z")
@@ -639,7 +639,7 @@ next
          and rt_prm: "\<psi> is_subformula_of z"
        using 12 by auto
       then have z_is:
-            "z = ltl_pushneg (not \<nu>) \<or> 
+            "z = ltl_pushneg (not \<nu>) \<or>
              z = ltl_pushneg (not \<mu>)" by (cases z) auto
       show ?case
       proof(cases "\<psi> = z")
@@ -662,7 +662,7 @@ next
          and rt_prm: "\<psi> is_subformula_of z"
        using 13 by auto
       then have z_is:
-            "z = ltl_pushneg \<nu> \<or> 
+            "z = ltl_pushneg \<nu> \<or>
              z = ltl_pushneg \<mu>" by (cases z) auto
       show ?case
       proof(cases "\<psi> = z")
@@ -685,7 +685,7 @@ next
          and rt_prm: "\<psi> is_subformula_of z"
        using 14 by auto
       then have z_is:
-            "z = ltl_pushneg \<nu> \<or> 
+            "z = ltl_pushneg \<nu> \<or>
              z = ltl_pushneg \<mu>" by (cases z) auto
       show ?case
       proof(cases "\<psi> = z")
@@ -729,7 +729,7 @@ next
          and rt_prm: "\<psi> is_subformula_of z"
        using 16 by auto
       then have z_is:
-            "z = ltl_pushneg \<nu> \<or> 
+            "z = ltl_pushneg \<nu> \<or>
              z = ltl_pushneg \<mu>" by (cases z) auto
       show ?case
       proof(cases "\<psi> = z")
@@ -752,7 +752,7 @@ next
          and rt_prm: "\<psi> is_subformula_of z"
        using 17 by auto
       then have z_is:
-            "z = ltl_pushneg \<nu> \<or> 
+            "z = ltl_pushneg \<nu> \<or>
              z = ltl_pushneg \<mu>" by (cases z) auto
       show ?case
       proof(cases "\<psi> = z")
@@ -988,14 +988,14 @@ text\<open>
 
 
 datatype
-  'a ltln = LTLnTrue  
-       | LTLnFalse    
-       | LTLnProp 'a    
-       | LTLnNProp 'a   
-       | LTLnAnd "'a ltln" "'a ltln" 
-       | LTLnOr "'a ltln" "'a ltln"  
-       | LTLnNext "'a ltln"          
-       | LTLnUntil "'a ltln" "'a ltln" 
+  'a ltln = LTLnTrue
+       | LTLnFalse
+       | LTLnProp 'a
+       | LTLnNProp 'a
+       | LTLnAnd "'a ltln" "'a ltln"
+       | LTLnOr "'a ltln" "'a ltln"
+       | LTLnNext "'a ltln"
+       | LTLnUntil "'a ltln" "'a ltln"
        | LTLnRelease "'a ltln" "'a ltln"
 
 context LTL_Syntax begin
@@ -1011,16 +1011,16 @@ context LTL_Syntax begin
     and LTLnRelease   ("_ V\<^sub>n _" [84,84] 83)
 
   abbreviation ltln_eventuality :: "'a ltln \<Rightarrow> 'a ltln" ("\<diamond>\<^sub>n _" [88] 87)
-    where "ltln_eventuality \<phi> \<equiv> true\<^sub>n U\<^sub>n \<phi>" 
+    where "ltln_eventuality \<phi> \<equiv> true\<^sub>n U\<^sub>n \<phi>"
 
   abbreviation ltln_universality :: "'a ltln \<Rightarrow> 'a ltln" ("\<box>\<^sub>n _" [88] 87)
-    where "ltln_universality \<phi> \<equiv> false\<^sub>n V\<^sub>n \<phi>" 
+    where "ltln_universality \<phi> \<equiv> false\<^sub>n V\<^sub>n \<phi>"
 
 end
 
 context begin interpretation LTL_Syntax .
 
-primrec ltln_semantics :: "['a set word, 'a ltln] \<Rightarrow> bool" 
+primrec ltln_semantics :: "['a set word, 'a ltln] \<Rightarrow> bool"
 ("_ \<Turnstile>\<^sub>n _" [80,80] 80)
   where
     "\<xi> \<Turnstile>\<^sub>n true\<^sub>n = True"
@@ -1129,7 +1129,7 @@ next
      and "\<forall>i. suffix i \<xi> \<Turnstile> g = suffix i \<xi> \<Turnstile>\<^sub>n ltl_to_ltln g"
     using LTLUntil(1,2) by blast+
     then show ?case by auto
-next   
+next
   case (LTLRelease f g \<xi> \<psi>)
     then have frml_eq: "ltl_pushneg \<psi> = f V g" by auto
     with subformula_on_ltl_pushneg[of _ \<psi>]
@@ -1214,7 +1214,7 @@ proof
     assume i_eq: "i = Suc k"
     with phi_is have "\<xi> \<Turnstile>\<^sub>n \<phi>" by auto
     moreover
-    have "\<xi> \<Turnstile>\<^sub>n X\<^sub>n (\<phi> U\<^sub>n \<psi>)" 
+    have "\<xi> \<Turnstile>\<^sub>n X\<^sub>n (\<phi> U\<^sub>n \<psi>)"
     using psi_is phi_is i_eq by auto
     ultimately show ?rhs by auto
   qed
