@@ -1611,15 +1611,6 @@ text {*
 (* TODO: Some of these should be moved into the multiset library, they are
   marked by *MOVE* *)
 
-text {* Congruence rule for multiset image *}
-(*MOVE*)
-lemma image_mset_cong[fundef_cong]:
-  "\<lbrakk> M=N; !!x. x\<in>#M \<Longrightarrow> f x = g x \<rbrakk> \<Longrightarrow> image_mset f M = image_mset g N"
-  apply hypsubst_thin
-  apply (induct N)
-  apply auto
-  done
-
 text {* Finding the preimage of an element *}
 (*MOVE*)
 lemma in_image_msetE:
