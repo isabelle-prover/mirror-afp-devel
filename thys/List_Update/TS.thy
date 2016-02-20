@@ -1268,6 +1268,16 @@ unfolding T_TS_T_on
 using TS2'[of x y qs] by auto
 
  
+
+lemma config'_distinct[simp]: 
+  shows "distinct (fst (config' A S qs)) = distinct (fst S)" 
+apply (induct qs rule: rev_induct) by(simp_all add: config'_snoc Step_def split_def distinct_step)
+
+lemma config'_set[simp]: 
+  shows "set (fst (config' A S qs)) = set (fst S)" 
+apply (induct qs rule: rev_induct) by(simp_all add: config'_snoc Step_def split_def set_step)
+
+
  
 lemma s_TS_append: "i\<le>length as \<Longrightarrow>s_TS init h (as@bs) i = s_TS init h as i"
 by (simp add: TSdet_append s_TS_def)
@@ -1446,8 +1456,9 @@ proof -
         = ?result"   
         unfolding 1 apply(simp add: split_def step_def rTS_def Step_def TS_step_d_def del: config'.simps)
         apply(simp add: nth_append del: config'.simps)
-          using lasocc_x'[unfolded rTS_def] apply(simp add: aa' del: config'.simps)
-          using yS[unfolded sl rTS_def] apply (auto simp: take_append)  sorry
+          using lasocc_x'[unfolded rTS_def] aa'[unfolded rTS_def]
+            apply(simp add:  del: config'.simps)
+          using yS[unfolded sl rTS_def] by auto  
 
 
     have ydrinee: "  y \<in> set (mtf2 ?entf x (fst (TSdet init h (as @ x # bs @ [x]) (Suc (length as + length bs)))))" 
@@ -1596,7 +1607,7 @@ proof (rule infinite_descent[where P="(%i. i<length cs \<longrightarrow> (\<fora
         also widerspruch mit y_before_x'"
     have "?s_Suct3 = step ?s ?y (0, [])"  
       apply(simp add: s_TS_def del: config'.simps)
-      unfolding once
+      using once
       using i_in_cs using goal1 apply(simp add: nth_append split_def TS_step_d_def del: config'.simps)
       sorry
     then have e: "?s_Suct3 = ?s" by(simp only: step_no_action)
@@ -1660,8 +1671,8 @@ length (fst (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
     and isminimal: "index ?s z = Min (index ?s ` ?S)" by(simp_all add: nth_append) 
   thm s_TS_set[unfolded s_TS_def]
   have elemins: "z \<in> set ?s" unfolding before_in_def by (meson zbeforey before_in_setD1)
-  then  have zininit: "z \<in> set init" using i_in_cs apply(simp add: s_TS_set[unfolded s_TS_def] del: config'.simps)
-      sorry
+  then  have zininit: "z \<in> set init"
+    using i_in_cs by(simp add: s_TS_set[unfolded s_TS_def] del: config'.simps) 
 
   from zbeforey have zbeforey_ind: "index ?s z < index ?s ?y" unfolding before_in_def by auto
   then have el_n_y: "z \<noteq> ?y" by auto
@@ -1670,33 +1681,34 @@ length (fst (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
 
   (* and because it is JUST before that element, z must be before x *)
 
-  have "?s_Suct3 = step ?s ?y (index ?s ?y - Min (index ?s ` ?S), [])" (*
-     unfolding s_TS_def  apply(simp add: split_def del: config'.simps) 
+  have "?s_Suct3 = fst (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (Suc (length as + length bs + i)))))"
+    by(auto simp add: s_TS_def)
+  also have "\<dots> = step ?s ?y (index ?s ?y - Min (index ?s ` ?S), [])"   
       apply(simp only: once[unfolded assms(1)])
-      apply(simp add: split_def TS_step_d_def del: config'.simps) 
-     apply(safe)
+      apply(simp add: Step_def split_def TS_step_d_def del: config'.simps)  
       using aha2 apply(simp add: split_def del: config'.simps)
       using aha aha2  apply(simp add: split_def del: config'.simps)
-      using aha' apply(simp add: split_def nth_append del: config'.simps)
-      apply(simp add: nth_append del: config'.simps) *) sorry
+      using aha' apply(simp add: split_def nth_append del: config'.simps) sorry (*
+      apply(simp add: nth_append del: config'.simps) *)
+  finally have "?s_Suct3 = step ?s ?y (index ?s ?y - Min (index ?s ` ?S), [])" .
   with isminimal have state_dannach: "?s_Suct3 = step ?s ?y (index ?s ?y - index ?s z, [])" by presburger
     
 
   -- "so y is moved in front of z, that means:"
   thm mtf2_q_passes
-  have yinfrontofz: "?y < z in s_TS init h \<sigma> (length (as @ [x] @ bs @ [x]) + i+1)" (*
+  have yinfrontofz: "?y < z in s_TS init h \<sigma> (length (as @ [x] @ bs @ [x]) + i+1)"
     unfolding   assms(1) state_dannach apply(simp add: step_def del: config'.simps)
     apply(rule mtf2_q_passes)
-      using i_in_cs assms(5) apply(simp_all add: s_TS_distinct[unfolded s_TS_def] s_TS_set[unfolded s_TS_def] del: TSdet.simps) 
+      using i_in_cs assms(5) apply(simp_all add: s_TS_distinct[unfolded s_TS_def] s_TS_set[unfolded s_TS_def]) 
       using yininit apply(simp)
-      using zbeforey_ind apply simp *) sorry
+      using zbeforey_ind by simp 
 
   
  
            
-  have yins: "?y \<in> set ?s"  (*
+  have yins: "?y \<in> set ?s"  
       using i_in_cs assms(3,5)  apply(simp_all add:   s_TS_set[unfolded s_TS_def] del: config'.simps) 
-      by fastforce *) sorry
+      by fastforce
 
   have "index ?s_Suct3 ?y = index ?s z" 
     and "index ?s_Suct3 z = Suc (index ?s z)" 
@@ -1819,7 +1831,7 @@ length (fst (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
     have xin123: "x \<in> set (s_TS init h ((as @ [x] @ bs @ [x]) @ (take (i+1) cs)) (length (as @ [x] @ bs @ [x]) + (i+1)))"
       using i_in_cs assms(4) by(simp add: s_TS_set)
     have zin123: "z \<in> set (s_TS init h ((as @ [x] @ bs @ [x]) @ (take (i+1) cs)) (length (as @ [x] @ bs @ [x]) + (i+1)))"  
-      using i_in_cs elemins apply(simp add: s_TS_set  del: config'.simps) using zininit by simp
+      using i_in_cs elemins by(simp add: s_TS_set  del: config'.simps)
 
     thm TS_mono
     have "x < z in s_TS init h ((as @ [x] @ bs @ [x]) @ (take (i+1) cs)) (length (as @ [x] @ bs @ [x]) + (i + 1))"
@@ -2014,48 +2026,8 @@ qed
         using ki by simp
 qed
 
-lemma "set qs \<subseteq> set init \<Longrightarrow> distinct init \<Longrightarrow> x\<in>set init \<Longrightarrow> y\<in>set init \<Longrightarrow> x \<notin> set bs \<Longrightarrow> y \<notin> set bs
-   \<Longrightarrow> n<length bs \<Longrightarrow>  x < y in s_TS init h (as@bs) n = x < y in s_TS init h (as@bs) 0"
-proof(induct n) 
-  case (Suc n)
-  then have n_le: "n < length bs" by auto
-  with Suc have iH: "x < y in s_TS init h (as@bs) n = x < y in s_TS init h (as@bs) 0" by auto
-
-  
-  from  n_le  have "x \<noteq> (take(posxy qs {x, y} 0) (as@bs) @ drop (posxy qs {x, y} 0) qs)!n"
-    apply(simp only: nth_append) apply(simp) sorry
-  then have xnq: "bs!n \<noteq> x" sorry
-  from   n_le   have "y \<noteq> (take(posxy qs {x, y} 0) qs @ drop (posxy qs {x, y} 0) qs)!n"
-    apply(simp only: nth_append) apply(simp) sorry
-  then have ynq: "bs!n \<noteq> y" sorry
-
-  {
-    fix e
-    thm xy_relativorder_mtf2
-    have "x < y in mtf2 e (bs!n) (s_TS init h (as@bs) n) = x < y in (s_TS init h (as@bs) n)"
-      apply(rule xy_relativorder_mtf2)
-        apply(fact)+
-        using n_le assms Suc.prems apply(simp_all add: s_TS_set) sorry
-  } note a=this
-  have qin: "qs!n \<in> set (s_TS init h (as@bs) n)" sorry
-
-  thm x_stays_before_y_if_y_not_moved_to_front[OF qin]
-  have "x < y in s_TS init h (as@bs) (Suc n)
-      = x < y in (s_TS init h (as@bs) n)"
-        apply(simp add: split_def step_def s_TS_def TS_step_d_def a[unfolded s_TS_def] ) sorry
-  with iH show ?case by auto
-qed (simp add: s_TS_def) 
-
 lemma nopaid: "snd (fst (TS_step_d s q)) = []" unfolding TS_step_d_def by simp
 
-
-lemma config'_distinct[simp]: 
-  shows "distinct (fst (config' A S qs)) = distinct (fst S)" 
-apply (induct qs rule: rev_induct) by(simp_all add: config'_snoc Step_def split_def distinct_step)
-
-lemma config'_set[simp]: 
-  shows "set (fst (config' A S qs)) = set (fst S)" 
-apply (induct qs rule: rev_induct) by(simp_all add: config'_snoc Step_def split_def set_step)
 
 lemma staysuntouched:
    assumes d[simp]: "distinct (fst S)"
@@ -2251,6 +2223,132 @@ apply(induct qs rule: rev_induct)
   by(simp add: split_def TS_step_d_def config'_snoc Step_def rTS_def)
   
 
+lemma projxx: 
+  fixes e a bs
+  assumes axy: "a\<in>{x,y}"
+  assumes ane: "a\<noteq>e"
+  assumes exy: "e\<in>{x,y}"
+  assumes add: "f\<in>{[],[e]}" 
+  assumes bsaxy: "set (bs @ [a] @ f) \<subseteq> {x,y}"
+  assumes Lxyinitxy: "Lxy init {x, y} \<in> {[x,y],[y,x]}"
+  shows "a < e in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) ((bs @ [a] @ f) @ [a]))"
+proof -
+  have aexy: "{a,e}={x,y}" using exy axy ane by blast
+
+  let ?h="snd (Partial_Cost_Model.config' (\<lambda>s. [], TS_step_d)
+                          (Lxy init {x, y}, []) (bs @ a # f))"
+  have history: "?h = (rev f)@a#(rev bs)"
+    using sndTSdet[of "length (bs@a#f)" "bs@a#f", unfolded rTS_def] by(simp) 
+
+  thm stepxy
+  { fix xs s
+    assume sinit: "s:{[a,e],[e,a]}"
+    assume "set xs \<subseteq> {a,e}"
+    then have "fst (config' (\<lambda>s. [], TS_step_d) (s, []) xs) \<in> {[a,e], [e,a]}"
+      apply (induct xs rule: rev_induct)
+        using sinit apply(simp)                
+       apply(subst config'_append2)
+       apply(simp only: Step_def config'.simps Let_def split_def fst_conv)
+       apply(rule stepxy) by simp_all  
+   } note staysae=this
+
+  have opt: "fst (config' (\<lambda>s. [], TS_step_d)
+                                       (Lxy init {x, y}, []) (bs @ [a] @ f)) \<in> {[a,e], [e,a]}"
+    apply(rule staysae)
+      using Lxyinitxy exy axy ane apply fast
+      unfolding aexy by(fact bsaxy)
+
+  have contr: " (\<forall>x. 0 < (if e = x then 0 else index [a] x + 1)) = False"
+  proof (rule ccontr, goal_cases)
+    case 1
+    then have "\<And>x. 0 < (if e = x then 0 else index [a] x + 1)" by simp
+    then have "0 < (if e = e then 0 else index [a] e + 1)" by blast
+    then have "0<0" by simp
+    then show "False" by auto
+  qed
+    
+
+  show "a < e in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) ((bs @ [a] @ f) @ [a]))"
+      apply(subst config_append)
+      apply(simp add: rTS_def Step_def split_def)
+      apply(subst TS_step_d_def)
+      apply(simp only: history)
+      using opt ane add
+      apply(auto simp: step_def)
+           apply(simp add: before_in_def)
+          apply(simp add: before_in_def)
+         apply(simp add: before_in_def contr)
+        apply(simp add: mtf2_def swap_def before_in_def)
+       apply(auto simp add: before_in_def contr)
+       apply (metis One_nat_def add_is_1 count_list.simps(1) le_Suc_eq)
+      by(simp add: mtf2_def swap_def)          
+qed
+
+
+lemma oneposs: 
+   assumes "set xs = {x,y}"
+      assumes "x\<noteq>y"
+      assumes "distinct xs"
+      assumes True: "x<y in xs"
+      shows "xs = [x,y]"
+proof -
+  from assms have len2: "length xs = 2" using distinct_card[OF assms(3)] by fastforce
+  from True have "index xs x < index xs y" "index xs y < length xs" unfolding before_in_def using assms
+        by simp_all
+  then have f: "index xs x = 0 \<and> index xs y = 1" using len2 by linarith
+  have "xs = take 1 xs @ xs!1 # drop (Suc 1) xs"
+    apply(rule id_take_nth_drop) using len2 by simp
+  also have "\<dots> = take 1 xs @ [xs!1]" using len2 by simp
+  also have "take 1 xs = take 0 (take 1 xs) @ (take 1 xs)!0 # drop (Suc 0) (take 1 xs)"
+    apply(rule id_take_nth_drop) using len2 by simp
+  also have "\<dots> = [xs!0]" by(simp)
+  finally have "xs = [xs!0, xs!1]" by simp
+  also have "\<dots> = [xs!(index xs x), xs!index xs y]" using f by simp
+  also have "\<dots> = [x,y]" using assms by(simp) 
+  finally show "xs = [x,y]" . 
+qed
+
+lemma twoposs: 
+   assumes "set xs = {x,y}"
+      assumes "x\<noteq>y"
+      assumes "distinct xs"
+      shows "xs \<in> {[x,y], [y,x]}"
+proof (cases "x<y in xs")
+  case True
+  from assms have len2: "length xs = 2" using distinct_card[OF assms(3)] by fastforce
+  from True have "index xs x < index xs y" "index xs y < length xs" unfolding before_in_def using assms
+        by simp_all
+  then have f: "index xs x = 0 \<and> index xs y = 1" using len2 by linarith
+  have "xs = take 1 xs @ xs!1 # drop (Suc 1) xs"
+    apply(rule id_take_nth_drop) using len2 by simp
+  also have "\<dots> = take 1 xs @ [xs!1]" using len2 by simp
+  also have "take 1 xs = take 0 (take 1 xs) @ (take 1 xs)!0 # drop (Suc 0) (take 1 xs)"
+    apply(rule id_take_nth_drop) using len2 by simp
+  also have "\<dots> = [xs!0]" by(simp)
+  finally have "xs = [xs!0, xs!1]" by simp
+  also have "\<dots> = [xs!(index xs x), xs!index xs y]" using f by simp
+  also have "\<dots> = [x,y]" using assms by(simp) 
+  finally have "xs = [x,y]" .
+  then show ?thesis by simp
+next
+  case False
+  from assms have len2: "length xs = 2" using distinct_card[OF assms(3)] by fastforce
+  from False have "y<x in xs" using not_before_in assms(1,2) by fastforce
+  then have "index xs y < index xs x" "index xs x < length xs" unfolding before_in_def using assms
+        by simp_all
+  then have f: "index xs y = 0 \<and> index xs x = 1" using len2 by linarith
+  have "xs = take 1 xs @ xs!1 # drop (Suc 1) xs"
+    apply(rule id_take_nth_drop) using len2 by simp
+  also have "\<dots> = take 1 xs @ [xs!1]" using len2 by simp
+  also have "take 1 xs = take 0 (take 1 xs) @ (take 1 xs)!0 # drop (Suc 0) (take 1 xs)"
+    apply(rule id_take_nth_drop) using len2 by simp
+  also have "\<dots> = [xs!0]" by(simp)
+  finally have "xs = [xs!0, xs!1]" by simp
+  also have "\<dots> = [xs!(index xs y), xs!index xs x]" using f by simp
+  also have "\<dots> = [y,x]" using assms by(simp) 
+  finally have "xs = [y,x]" .
+  then show ?thesis by simp
+qed
 
 lemma TS_pairwise': "qs \<in> {xs. set xs \<subseteq> set init} \<Longrightarrow>
        (x, y) \<in> {(x, y). x \<in> set init \<and> y \<in> set init \<and> x \<noteq> y} \<Longrightarrow>
@@ -2263,6 +2361,10 @@ proof -
         and qsininit: "set qs \<subseteq> set init" by auto
   note dinit=goal1(4)
   from goal1 have xny: "x\<noteq>y" by simp
+  have Lxyinitxy: "Lxy init {x, y} \<in> {[x, y], [y, x]}"
+    apply(rule twoposs)
+      apply(subst Lxy_set_filter) using xyininit apply fast
+      using xny Lxy_distinct[OF dinit] by simp_all
                               
   have lq_s: "set (Lxy qs {x, y}) \<subseteq> {x,y}" by (simp add: Lxy_set_filter)
  
@@ -2290,6 +2392,7 @@ proof -
     case (snoc as a)  
     then have "a\<in>set (Lxy qs {x, y})" by (simp)
     then have axy: "a\<in>{x,y}" by(simp add: Lxy_set_filter)
+    with xyininit have ainit: "a\<in>set init" by auto
     note a=snoc
     from a axy obtain pre suf  where qs: "qs = pre @ [a] @ suf"
                   and nosuf: "\<And>e. e \<in> {x,y} \<Longrightarrow> e \<notin> set suf" 
@@ -2323,6 +2426,7 @@ proof -
       note b=this
       with a have "b\<in>set (Lxy qs {x, y})" by (simp)
       then have bxy: "b\<in>{x,y}" by(simp add: Lxy_set_filter)
+      with xyininit have binit: "b\<in>set init" by auto
       from b pre have "Lxy pre {x,y} = bs @ [b]" by simp
       with bxy obtain pre2 suf2  where bs: "pre = pre2 @ [b] @ suf2"
                     and nosuf2: "\<And>e. e \<in> {x,y} \<Longrightarrow> e \<notin> set suf2" 
@@ -2334,11 +2438,91 @@ proof -
       show ?thesis
       proof (cases "a=b")
         case True
+        note ab=this
         (* jetzt falls b=a sind wir im fall xx,
           dann ist in allen fällen x vorne *)
-        show ?thesis sorry
+ 
+
+        thm twotox
+        let ?qs ="(pre2 @ [a] @ suf2 @ [a]) @ suf"
+        {
+          fix e
+          assume ane: "a\<noteq>e"
+          assume exy: "e\<in>{x,y}"
+          have "a < e in fst (config\<^sub>p (rTS []) init qs)
+              = a < e in fst (config\<^sub>p (rTS []) init ?qs)" using True qs2 by(simp)
+          also have "\<dots> = a < e in fst  (config\<^sub>p (rTS []) init (pre2 @ [a] @ suf2 @ [a]))"
+            apply(subst config_append)
+            apply(rule staysuntouched) using goal1 qs nosuf apply(simp_all)
+              using  exy xyininit apply fast
+              using nosuf axy apply(simp)
+              using nosuf exy by simp
+          also have "\<dots>"
+            apply(simp)
+            apply(rule twotox[unfolded s_TS_def, simplified])
+              using nosuf2 exy apply(simp)
+              using goal1  apply(simp_all)
+              using axy xyininit  apply fast
+              using exy xyininit  apply fast
+              using nosuf2 axy apply(simp)
+              using ane by simp
+          finally have "a < e in fst (config\<^sub>p (rTS []) init qs)" by simp
+        } note full=this
+        thm full
+   
+        have "set (bs @ [a]) \<subseteq> set (Lxy qs {x, y})" using a b  by auto
+        also have "\<dots> = {x,y} \<inter> set qs" by (rule Lxy_set_filter)
+        also have "\<dots> \<subseteq> {x,y}" by simp
+        finally have bsaxy: "set (bs @ [a]) \<subseteq> {x,y}" .
+
+        with xny show ?thesis
+        proof(cases "x=a")
+          case True
+          have 1: "a < y in fst (config\<^sub>p (rTS []) init qs)"
+            apply(rule full)
+              using True xny apply blast
+              by simp
+
+
+          have "a < y in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y}))
+              = a < y in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) ((bs @ [a] @ []) @ [a]))"
+              using a b ab by simp
+          also have "\<dots>"
+            apply(rule projxx[where bs=bs and f="[]"])
+              using True apply blast
+              using a b True ab xny Lxyinitxy bsaxy by(simp_all) 
+          finally show ?thesis using True 1 by simp
+        next
+          case False
+          with axy have ay: "a=y" by blast
+          have 1: "a < x in fst (config\<^sub>p (rTS []) init qs)"
+            apply(rule full)
+              using False xny apply blast
+              by simp
+          have "a < x in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y}))
+              = a < x in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) ((bs @ [a] @ []) @ [a]))"
+              using a b ab by simp
+          also have "\<dots>"
+            apply(rule projxx[where bs=bs and f="[]"])
+              using True axy apply blast
+              using a b True ab xny Lxyinitxy ay bsaxy by(simp_all)
+          finally have 2: "a < x in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y}))" .
+
+          have "x < y in fst (config\<^sub>p (rTS []) init qs) = 
+             (\<not> y < x in fst (config\<^sub>p (rTS []) init qs))"
+            apply(subst not_before_in)
+              using goal1 by(simp_all)
+          also have "\<dots> = False" using  1 ay by simp
+          also have "\<dots> = (\<not> y < x in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y})))"
+            using 2 ay by simp
+          also have "\<dots> = x < y in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y}))"
+            apply(subst not_before_in)
+              using goal1  by(simp_all add: Lxy_set_filter)
+          finally show ?thesis .
+        qed
       next
         case False
+        note ab=this
 
 
         (* wenn nicht, müssen wir noch einen weiteren snoc aufmachen *)
@@ -2384,18 +2568,185 @@ proof -
           case (snoc cs c)   
           note c=this
           with a b have "c\<in>set (Lxy qs {x, y})" by (simp)
-          then have bxy: "c\<in>{x,y}" by(simp add: Lxy_set_filter)
+          then have cxy: "c\<in>{x,y}" by(simp add: Lxy_set_filter)
           from c pre2 have "Lxy pre2 {x,y} = cs @ [c]" by simp
-          with bxy obtain pre3 suf3  where cs: "pre2 = pre3 @ [c] @ suf3"
+          with cxy obtain pre3 suf3  where cs: "pre2 = pre3 @ [c] @ suf3"
                         and nosuf3: "\<And>e. e \<in> {x,y} \<Longrightarrow> e \<notin> set suf3" 
                         and pre3: "Lxy pre3 {x,y} = cs"
                 using proj_Snoc by metis    
 
-          from bs cs qs have qs2: "qs = pre3 @ [c] @ suf3 @ [b] @ suf2 @ [a] @ suf" by simp
-                
-          thm casexxy
+          let ?qs=" pre3 @ [c] @ suf3 @ [b] @ suf2 @ [a] @ suf"
+          from bs cs qs have qs2: "qs = ?qs" by simp
+                   
+          show ?thesis
+          proof(cases "c=a")
+            case True (* aba *)
+            note ca=this
+
+            thm twotox
+            have "a < b in fst (config\<^sub>p (rTS []) init qs)
+                = a < b in fst (config\<^sub>p (rTS []) init ((pre3 @ a # (suf3 @ [b] @ suf2) @ [a]) @ suf))"
+                  using qs2 True by simp
+            also have "\<dots> = a < b in fst (config\<^sub>p (rTS []) init (pre3 @ a # (suf3 @ [b] @ suf2) @ [a]))"
+              apply(subst config_append)
+              apply(rule staysuntouched) using goal1 qs nosuf apply(simp_all)
+                using bxy xyininit apply(fast)
+                using nosuf axy bxy by(simp_all)
+            also have "..."
+              apply(rule twotox[unfolded s_TS_def, simplified])
+                using nosuf2 nosuf3 bxy apply(simp add: count_append)
+                using goal1 apply(simp_all)
+                using axy xyininit apply(fast)
+                using bxy xyininit apply(fast)
+                using ab nosuf2 nosuf3 axy apply(simp)
+                using ab by simp
+            finally have full: "a < b in fst (config\<^sub>p (rTS []) init qs)" by simp
+  
+
+            have "set (cs @ [a] @ [b]) \<subseteq> set (Lxy qs {x, y})" using a b c  by auto
+            also have "\<dots> = {x,y} \<inter> set qs" by (rule Lxy_set_filter)
+            also have "\<dots> \<subseteq> {x,y}" by simp
+            finally have csabxy: "set (cs @ [a] @ [b]) \<subseteq> {x,y}" .
+
+            with xny show ?thesis
+            proof(cases "x=a")
+              case True
+              with xny ab bxy have bisy: "b=y" by blast
+              have 1: "x < y in fst (config\<^sub>p (rTS []) init qs)"
+                using full True bisy by simp
+
+              have "a < y in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y}))
+                  = a < y in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) ((cs @ [a] @ [b]) @ [a]))"
+                  using a b c ca ab by simp
+              also have "\<dots>"
+                apply(rule projxx)
+                  using True apply blast
+                  using a b True ab xny Lxyinitxy csabxy by(simp_all) 
+              finally show ?thesis using 1 True by simp
+            next
+              case False
+              with axy have ay: "a=y" by blast
+              with xny ab bxy have bisx: "b=x" by blast
+              have 1: "y < x in fst (config\<^sub>p (rTS []) init qs)"
+                using full ay bisx by simp
+
+              have "a < x in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y}))
+                  = a < x in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) ((cs @ [a] @ [b]) @ [a]))"
+                  using a b c ca ab by simp
+              also have "\<dots>"
+                apply(rule projxx) 
+                  using a b True ab xny Lxyinitxy csabxy False by(simp_all) 
+              finally have 2: "a < x in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y}))" .
     
-          show ?thesis sorry      
+              have "x < y in fst (config\<^sub>p (rTS []) init qs) = 
+                 (\<not> y < x in fst (config\<^sub>p (rTS []) init qs))"
+                apply(subst not_before_in)
+                  using goal1 by(simp_all)
+              also have "\<dots> = False" using  1 ay by simp
+              also have "\<dots> = (\<not> y < x in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y})))"
+                using 2 ay by simp
+              also have "\<dots> = x < y in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y}))"
+                apply(subst not_before_in)
+                  using goal1  by(simp_all add: Lxy_set_filter)
+              finally show ?thesis .
+            qed
+          next
+            case False  (* bba *)
+            then have cb: "c=b" using bxy cxy axy ab by blast
+            
+            let ?cs = "suf2 @ [a] @ suf"
+            let ?i = "index ?cs a"
+
+
+            have aed: "(\<forall>j<index (suf2 @ a # suf) a. (suf2 @ a # suf) ! j \<noteq> a)"
+              by (metis add.right_neutral axy index_Cons index_append nosuf2 nth_append nth_mem)
+
+            thm casexxy
+            have "?i < length ?cs      
+              \<longrightarrow> (\<forall>j<?i. ?cs ! j \<noteq> ?cs ! ?i) \<longrightarrow> ?cs ! ?i \<noteq> b
+                \<longrightarrow> ?cs ! ?i \<notin> set suf3
+                \<longrightarrow> b < ?cs ! ?i in s_TS init [] qs (length (pre3 @ [b] @ suf3 @ [b]) + ?i + 1)"
+              apply(rule casexxy) 
+                     using cb qs2 apply(simp)
+                    using bxy ab nosuf2 nosuf apply(simp)
+                   using bs qs qsininit apply(simp)
+                  using bxy xyininit apply(blast)
+                 apply(fact)
+                using nosuf3 bxy apply(simp)
+              using cs bs qs qsininit by(simp_all)
+                
+            then have inner: "b < a in s_TS init [] qs (length (pre3 @ [b] @ suf3 @ [b]) + ?i + 1)"
+              using ab nosuf3 axy bxy aed
+              by(simp) 
+            let ?n = "(length (pre3 @ [b] @ suf3 @ [b]) + ?i + 1)"
+            let ?inner="(config\<^sub>p (rTS []) init (take (length (pre3 @ [b] @ suf3 @ [b]) + ?i + 1) ?qs))"
+
+            have "b < a in fst (config\<^sub>p (rTS []) init qs)
+              = b < a in fst (config\<^sub>p (rTS []) init (take ?n ?qs @ drop ?n ?qs))" using qs2 by simp
+            also have "\<dots> = b < a in fst (config' (rTS []) ?inner suf)" apply(simp only: config_append drop_append) 
+              using nosuf2 axy by(simp add: index_append config_append)
+            also have "\<dots> = b < a in fst ?inner" 
+              apply(rule staysuntouched) using goal1 bxy xyininit  qs nosuf apply(simp_all)
+              using bxy xyininit apply(blast)
+              using axy xyininit by (blast)
+            also have "\<dots> = True" using inner by(simp add: s_TS_def qs2)
+            finally have full: "b < a in fst (config\<^sub>p (rTS []) init qs)" by simp
+               
+            have "set (cs @ [b] @ []) \<subseteq> set (Lxy qs {x, y})" using a b c  by auto
+            also have "\<dots> = {x,y} \<inter> set qs" by (rule Lxy_set_filter)
+            also have "\<dots> \<subseteq> {x,y}" by simp
+            finally have csbxy: "set (cs @ [b] @ []) \<subseteq> {x,y}" .
+ 
+            have "set (Lxy init {x, y}) = {x,y} \<inter> set init"
+              by(rule Lxy_set_filter)
+            also have "\<dots> = {x,y}" using xyininit by fast
+            also have "\<dots> = {b,a}" using axy bxy ab by fast
+            finally have r: "set (Lxy init {x, y}) = {b, a}" .
+
+            let ?confbef="(config\<^sub>p (rTS []) (Lxy init {x, y}) ((cs @ [b] @ []) @ [b]))"
+            have f1: "b < a in fst ?confbef"
+              apply(rule projxx)
+                using bxy ab axy a b c csbxy Lxyinitxy by(simp_all)
+            have 1: "fst ?confbef = [b,a]" 
+              apply(rule oneposs)
+                using ab axy bxy xyininit Lxy_distinct[OF dinit] f1 r by(simp_all)
+            have 2: "snd (Partial_Cost_Model.config'
+                           (\<lambda>s. [], TS_step_d)
+                           (Lxy init {x, y}, [])
+                           (cs @ [b, b])) = [b,b]@(rev cs)" 
+              using sndTSdet[of "length (cs @ [b, b])" "(cs @ [b, b])", unfolded rTS_def] by(simp) 
+            have "b < a in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y}))
+              = b < a in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (((cs @ [b] @ []) @ [b])@[a]))"
+              using a b c cb by(simp)
+            also have "\<dots>"
+              apply(subst config_append)
+              using 1 2 ab apply(simp add: step_def Step_def split_def rTS_def TS_step_d_def)
+                by(simp add: before_in_def) 
+            finally have projected: "b < a in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y}))" .
+
+
+            have 1: "{x,y} = {a,b}" using ab axy bxy by fast
+            with xny show ?thesis
+            proof(cases "x=a")
+              case True
+              with 1 xny have y: "y=b" by fast
+              have "a < b in fst (config\<^sub>p (rTS []) init qs) = 
+                 (\<not> b < a in fst (config\<^sub>p (rTS []) init qs))"
+                apply(subst not_before_in)
+                  using binit ainit ab by(simp_all)
+              also have "\<dots> = False" using  full by simp
+              also have "\<dots> = (\<not> b < a in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y})))"
+                using projected by simp
+              also have "\<dots> = a < b in fst (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y}))"
+                apply(subst not_before_in)
+                  using binit ainit ab axy bxy  by(simp_all add: Lxy_set_filter)
+              finally show ?thesis using True y by simp
+            next
+              case False
+              with 1 xny have y: "y=a" "x=b" by fast+
+              with full projected show ?thesis by fast
+            qed
+          qed (* end of (c=a) *)
         qed (* end of snoc cs c *)
       qed (* end of (a=b) *)
     qed (* end snoc bs b *)
@@ -2407,27 +2758,7 @@ proof -
   show ?case unfolding Pbefore_in_def
     apply(subst config_embed)
     apply(subst config_embed)
-      apply(simp) by (rule A)
- (*
-  have "x < y in (s_TS init [] qs (posxy qs {x, y} n))
-        = x < y in (s_TS (Lxy init {x,y}) [] (Lxy qs {x,y}) n)"  
-  proof (rule ahahahha[of _ "Lxy qs {x,y}" x y])
-    case goal1
-    show ?case sorry
-  next
-    case goal2
-    then obtain prefix a b where ahae: "Lxy qs {x,y} = prefix @ [a] @ [a] @ [b]" "a\<in>{x,y}" "b\<in>{x,y}"
-        by (auto simp: mycasexxy_def conc_def) 
-    then obtain as bs cs ds where "qs = as @ [a] @ bs @ [a] @ cs @ [b] @ ds"
-                "set bs \<inter> {x,y} = {}" "set cs \<inter> {x,y} = {}"  unfolding Lxy_def
-      sorry
-    thm casexxy
-    have "(Lxy init {x, y}) \<in> {[x,y], [y,x]}" sorry
-    then have " x < y in s_TS (Lxy init {x, y}) [] (Lxy qs {x, y}) n"
-      unfolding ahae unfolding s_TS_def apply(simp)
-    
-
-*) 
+      apply(simp) by (rule A) 
 qed
 
 
@@ -2436,285 +2767,7 @@ qed
 theorem TS_pairwise: "pairwise (embed (rTS []))"
 apply(rule pairwise_property_lemma)
   apply(rule TS_pairwise') by (simp_all add: rTS_def TS_step_d_def)
-
-(*
-    proof (cases "n>0")
-      case True 
-      show ?thesis
-      proof (cases "n>1")
-        case True
-        show ?thesis
-        proof (cases "(Lxy init {x,y})!n-1 = (Lxy init {x,y})!n-2")
-          case True
-          show ?thesis sorry (* fall1 ...xx / ...yy*)
-        next
-          case False
-          note different=this
-          show ?thesis 
-          proof (cases "n>2")
-            case True 
-            show ?thesis
-            proof (cases "(Lxy init {x,y})!n-3 = (Lxy init {x,y})!n-2")
-              case True 
-              obtain prefix where "(Lxy init {x,y}) = prefix @ [(Lxy init {x,y})
-
-              thm casexxy
-              show ?thesis sorry (* fall 2 ...yyx / ...xxy*)
-            next
-              case False
-              show ?thesis sorry (* fall 1 ...yxy / ...xyx *)
-            qed
-          next
-            case False
-            with `n>1` have "n=Suc (Suc 0)" by force
-            then have "(s_TS (Lxy init {x,y}) [] (Lxy init {x,y})  n) =  (Lxy init {x,y}) "
-              using different apply(auto simp add: s_TS_def TS_step_d_def step_def TS_init_d_def)
-                using initpos by auto
-            show ?thesis sorry (* fall xy / yx *)
-          qed
-        qed        
-      next
-        case False
-        with `n>0` have "n=1" by force
-        then have "(s_TS (Lxy init {x,y}) [] (Lxy init {x,y})  n) =  (Lxy init {x,y}) "
-          by(simp add: s_TS_def TS_step_d_def step_def TS_init_d_def)
-        show ?thesis sorry (* n=1 x / y *)
-      qed
-    next 
-      case False
-      then have 1: "n=0" by auto
-      then
-      have "(s_TS (Lxy init {x,y}) [] (Lxy init {x,y})  n) =  (Lxy init {x,y}) "
-        by(simp add: s_TS_def TS_init_d_def)
-      show ?thesis apply(simp) sorry (* [] *)
-    qed
-
-
-    case False
-    then have "n<2" by auto
-    then have "n=0 \<or> n=1" by auto
-    then have sn: "(s_TS (Lxy init {x,y}) [] (Lxy qs {x,y}) n) = (Lxy init {x,y})"
-      using initpos lq_s
-        by(auto simp: s_TS_def TS_init_d_def TS_step_d_def step_def)
-    have "x < y in (s_TS (Lxy init {x,y}) [] (Lxy qs {x,y}) n)
-          = x < y in Lxy init {x,y}" by(simp add: sn)
-    have "x < y in Lxy init {x,y} = x < y in init" sorry
-    {
-      fix m
-      assume "m \<le> (posxy qs {x, y} n)"
-      have "x < y in Lxy init {x,y} = x < y in (s_TS init [] qs m)"
-
-
-    
-    show ?thesis sorry
-  next
-    case True
-    show ?thesis sorry
-  qed
-
-
-  thm config_rTS
-
-  then 
-  show ?case unfolding Pbefore_in_def
-        by(simp add:  map_pmf_def bind_return_pmf config_rTS s_TS_def)
-        
-
-
-  { 
-    fix n
-    have "n\<le>length qs \<Longrightarrow> 
-      Pbefore_in x y (rTS []) qs init n =
-      Pbefore_in x y (rTS []) (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x,y} qs n)"
-    proof (induct n)
-      case 0
-      have indexinprojectedlist: "(nrofnextxy {x,y} qs 0) = 0" using nrofnextxy0 by auto
-      show ?case unfolding Pbefore_in_def  rTS_def indexinprojectedlist
-        apply(simp add: TS_init_def bind_return_pmf)
-        apply(rule Lxy_mono)
-          apply(fact xyininit)
-          by(fact dinit)
-    next
-      case (Suc n)
-      then have iH: "Pbefore_in x y (rTS []) qs init n =
-        Pbefore_in x y (rTS []) (Lxy qs {x, y})
-          (Lxy init {x, y})
-          (nrofnextxy {x,y} qs n)" by auto
-          
-      have n_le_qs: "n<length qs" using Suc(2) lastxy_index_le_size Suc_le_lessD le_trans by blast
-      thm iH[unfolded Pbefore_in_def]
-
-      thm bind_return_pmf map_bind_pmf
-      have "Pbefore_in x y (rTS []) qs init (Suc n)
-         = config\<^sub>p (TS_init [], TS_step) qs init n \<guillemotright>=
-    (\<lambda>xa. return_pmf (x < y in step (snd xa) (qs ! n) (fst (TS_step_d (fst xa) (snd xa) (qs ! n)))))"
-            unfolding Pbefore_in_def rTS_def
-         by(auto simp add: TS_step_def bind_return_pmf map_bind_pmf split_def)
-      also have "\<dots> = map_pmf (\<lambda>xa. (x < y in step (snd xa) (qs ! n) (fst (TS_step_d (fst xa) (snd xa) (qs ! n)))))
-              (config\<^sub>p (TS_init [], TS_step) qs init n)" unfolding map_pmf_def by simp
-      also have "\<dots> = map_pmf (\<lambda>p. x < y in snd p)
-                      (config\<^sub>p (TS_init [], TS_step) (Lxy qs {x, y}) (Lxy init {x, y})
-                      (nrofnextxy {x,y} qs (Suc n)))"
-      proof (cases "qs!n \<in> {x,y}")
-        case True
-        then have step: "(nrofnextxy {x,y} qs (Suc n))
-                  = Suc (nrofnextxy {x,y} qs n)" using nrofnextxy_Suc[OF n_le_qs] by auto
-
-          have A: "(Lxy qs {x, y} ! nrofnextxy {x,y} qs n) = qs!n"
-            using nrofnextxy_Lxy_nth True n_le_qs by auto
-                                            
-
-        have "map_pmf (\<lambda>xa. (x < y in step (snd xa) (qs ! n) (fst (TS_step_d (fst xa) (snd xa) (qs ! n)))))
-              (config\<^sub>p (TS_init [], TS_step) qs init n)
-            =  map_pmf 
-            (\<lambda>xa. (x < y in step (snd xa) (Lxy qs {x, y} ! nrofnextxy {x,y} qs n)
-                  (fst (TS_step_d (fst xa) (snd xa) (Lxy qs {x, y} ! nrofnextxy {x,y} qs n))))) 
-              (config\<^sub>p (TS_init [], TS_step) (Lxy qs {x, y}) (Lxy init {x, y}) (nrofnextxy {x,y} qs n))
-              "
-        proof (cases "qs!n=x")
-          case True
-
-          have "map_pmf (\<lambda>xa. (x < y in step (snd xa) (qs ! n) (fst (TS_step_d (fst xa) (snd xa) (qs ! n)))))
-              (config\<^sub>p (TS_init [], TS_step) qs init n)
-      =  map_pmf (\<lambda>xa. True) (config\<^sub>p (MTF_init, MTF_step) qs init n)"
-            unfolding True
-              proof (rule pmf.map_cong0)
-                case goal1
-                then have 1: "distinct (snd z)" using config_config_distinct dinit sorry (* by metis *)
-                have "set (snd z) = set init" using goal1 config_config_set sorry (* by metis *)
-                then have 2: "x \<in> set (snd z)" "y \<in> set (snd z)" "qs!n \<in> set (snd z)"
-                      using xyininit n_le_qs qsininit by auto                  
-                from 1 2 xny show ?case using mtf2_moves_to_front' by metis  
-              qed
-          also have "\<dots> = return_pmf True" by auto
-          also have "\<dots> = map_pmf (\<lambda>xa. True) (config\<^sub>p (MTF_init, MTF_step) (Lxy qs {x, y})
-                (Lxy init {x, y}) (nrofnextxy {x,y} qs n))" by auto
-          also have "\<dots> = map_pmf
-            (\<lambda>xa. x < y in mtf2 (length (snd xa)) (qs!n) (snd xa))
-              (config\<^sub>p (MTF_init, MTF_step) (Lxy qs {x, y})
-                (Lxy init {x, y}) (nrofnextxy {x,y} qs n))" unfolding True
-                proof (rule pmf.map_cong0)
-                  case goal1
-                  then have 1: "distinct (snd z)" using config_config_distinct dinit Lxy_distinct by metis
-                  have "set (snd z) = set (Lxy init {x, y})" using goal1 config_config_set by metis
-                  also have "\<dots> = {x,y}" using Lxy_set_filter xyininit by auto
-                  finally have 2: "x\<in>set (snd z)" "y\<in>set (snd z)" by auto
-                  from 1 2 xny show ?case using mtf2_moves_to_front' by metis  
-                qed
-          finally show ?thesis unfolding A .
-        next
-
-
-
-          case False
-          with True have yreq: "qs!n=y" by simp
-          have " map_pmf (\<lambda>xa. x < y in mtf2 (length (snd xa)) (qs ! n) (snd xa))
-                  (config\<^sub>p (MTF_init, MTF_step) qs init n)
-                   =  map_pmf (\<lambda>xa. False) (config\<^sub>p (MTF_init, MTF_step) qs init n)"
-            unfolding yreq
-            proof (rule pmf.map_cong0)
-              case goal1
-              then have 1: "distinct (snd z)" using config_config_distinct dinit by metis
-              have "set (snd z) = set init" using goal1 config_config_set by metis
-              then have 2: "x \<in> set (snd z)" "y \<in> set (snd z)" "qs!n \<in> set (snd z)"
-                    using xyininit n_le_qs qsininit by auto                   
-              from 1 2 xny have "y < x in mtf2 (length (snd z)) y (snd z) = True"
-                  using mtf2_moves_to_front' by metis  
-              then show ?case using xny 2 by simp
-            qed
-          also have "\<dots> = return_pmf False" by auto
-          also have "\<dots> = map_pmf (\<lambda>xa. False) (config\<^sub>p (MTF_init, MTF_step) (Lxy qs {x, y})
-                    (Lxy init {x, y}) (nrofnextxy {x,y} qs n))" by auto
-          also have "\<dots> = map_pmf (\<lambda>xa. x < y in mtf2 (length (snd xa)) (qs!n) (snd xa))
-                    (config\<^sub>p (MTF_init, MTF_step) (Lxy qs {x, y})
-                    (Lxy init {x, y}) (nrofnextxy {x,y} qs n))" unfolding yreq
-            proof (rule pmf.map_cong0)
-              case goal1
-              then have 1: "distinct (snd z)" using config_config_distinct dinit Lxy_distinct by metis
-              have "set (snd z) = set (Lxy init {x, y})" using goal1 config_config_set by metis
-              also have "\<dots> = {x,y}" using Lxy_set_filter xyininit by auto
-              finally have 2: "x\<in>set (snd z)" "y\<in>set (snd z)" by auto
-              from 1 2 xny have "y < x in mtf2 (length (snd z)) y (snd z) = True"
-                  using mtf2_moves_to_front' by metis  
-              then show ?case using xny 2 by simp  
-            qed
-          finally show ?thesis unfolding A .         
-        qed
-        also have "\<dots> =  bind_pmf (config\<^sub>p (MTF_init, MTF_step) (Lxy qs {x, y})
-              (Lxy init {x, y}) (nrofnextxy {x,y} qs n))
-              (\<lambda>xa. return_pmf (x < y in mtf2 (length (snd xa))
-                (Lxy qs {x, y} ! nrofnextxy {x,y} qs n)
-                (snd xa)))"
-                unfolding map_pmf_def by simp 
-        also have "\<dots> = 
-              map_pmf (\<lambda>p. x < y in snd p)
-                (config\<^sub>p (MTF_init, MTF_step) (Lxy qs {x, y}) (Lxy init {x, y})
-                  (Suc (nrofnextxy {x,y} qs n)))"
-                  by(simp add: MTF_step_def bind_return_pmf map_bind_pmf split_def step_def)
-        also have "\<dots> = 
-              map_pmf (\<lambda>p. x < y in snd p)
-                (config\<^sub>p (MTF_init, MTF_step) (Lxy qs {x, y}) (Lxy init {x, y})
-                  (nrofnextxy {x,y} qs (Suc n)))" using step by(simp)
-        finally show ?thesis .
-      next
-
-
-        case False
-        have step: "nrofnextxy {x,y} qs (Suc n) = nrofnextxy {x,y} qs n"
-          using nrofnextxy_Suc2[OF n_le_qs] False  by auto
-
-        have "map_pmf (\<lambda>xa. x < y in mtf2 (length (snd xa)) (qs ! n) (snd xa))
-                (config\<^sub>p (MTF_init, MTF_step) qs init n)
-            = map_pmf (\<lambda>p. x < y in snd p)
-                (config\<^sub>p (MTF_init, MTF_step) qs init n)" 
-             proof(rule pmf.map_cong0)
-                case goal1
-                (* x < y
-         in mtf2 (length (snd z)) (qs ! n) (snd z) =
-         x < y in snd z *)
-                from False have 1: "qs!n\<noteq>x" "qs!n\<noteq>y" by auto
-                have 2: "distinct (snd z)" using goal1 config_config_distinct dinit by (metis)
-                have "set (snd z) = set init" using goal1 config_config_set by metis
-                then have 3: "x \<in> set (snd z)" "y \<in> set (snd z)" "qs!n \<in> set (snd z)"
-                      using xyininit n_le_qs qsininit by auto                  
-                from 1 2 3 show ?case by (metis xy_relativorder_mtf2)
-             qed
-        also have "\<dots> =
-              map_pmf (\<lambda>p. x < y in snd p)
-                (config\<^sub>p (MTF_init, MTF_step) (Lxy qs {x, y}) (Lxy init {x, y})
-                  (nrofnextxy {x,y} qs n))"
-                  using iH[unfolded Pbefore_in_def MTF_def] by auto
-        also have "\<dots> = 
-              map_pmf (\<lambda>p. x < y in snd p)
-                (config\<^sub>p (MTF_init, MTF_step) (Lxy qs {x, y}) (Lxy init {x, y})
-                  (nrofnextxy {x,y} qs (Suc n)))" using step by(simp)
-        finally show ?thesis .
-      qed
-      also have "\<dots> = Pbefore_in x y MTF (Lxy qs {x, y})
-                   (Lxy init {x, y})
-                   (nrofnextxy {x,y} qs (Suc n))"
-                   unfolding Pbefore_in_def MTF_def by simp
-      finally show ?case .
-    qed
-  } note fine=this
-
-  (* posxy :      index in Lxy \<mapsto> index in qs
-     nrofnextxy:  index in qs \<mapsto> index in Lxy
-     *)
-  from goal1(4)  have "(posxy qs {x, y} n) < length qs"
-    using posxy_in_bounds by metis
-  then have img_in_bounds: "(posxy qs {x, y} n) \<le> length qs" by auto
-  
-  from goal1(4) have bij: "(nrofnextxy {x, y} qs (posxy qs {x, y} n)) = n"
-    using nrofnextxy_posxy_id by auto
-
-  from fine[OF img_in_bounds,unfolded bij] show ?case .
-qed
-
-
-
-
-*)
+ 
 
 lemma TS_compet':   "pairwise (embed (rTS [])) \<Longrightarrow> 
       \<forall>s0\<in>{init::(nat list). distinct init \<and> init\<noteq>[]}. \<exists>b\<ge>0. \<forall>qs\<in>{x. set x \<subseteq> set s0}. T\<^sub>p_on_rand (embed (rTS [])) s0 qs \<le> (2::real) *  T\<^sub>p_opt s0 qs + b"
@@ -2787,7 +2840,7 @@ next
     apply(induct x) 
       by (simp_all add: rTS_def split_def take_Suc_conv_app_nth config'_rand_snoc ) 
 next
-  case goal4 then show ?case by simp (* strange subtype effect here, that i dont understande *)
+  case goal4 then show ?case by simp
 qed (simp_all)
 
 thm TS_compet'[OF TS_pairwise, unfolded T_on_embed[symmetric]]
