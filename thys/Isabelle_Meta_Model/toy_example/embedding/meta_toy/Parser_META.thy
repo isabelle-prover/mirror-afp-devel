@@ -205,7 +205,7 @@ definition "of_nibble b = rec_nibble
   (b \<open>NibbleE\<close>)
   (b \<open>NibbleF\<close>)"
 
-definition "of_char a b = rec_char
+definition "of_char a b = char.char
   (ap2 a (b \<open>Char\<close>) (of_nibble b) (of_nibble b))"
 
 definition "of_string_gen s_flatten s_st0 s_st a b s = 
