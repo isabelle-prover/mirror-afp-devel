@@ -187,8 +187,8 @@ lemma letters_impl [code]:
   "c \<in> set letters \<longleftrightarrow> letters_impl c"
 proof (cases c)
   case (Char n1 n2)
-  show ?thesis
-    by (simp add: Char letters_impl_def letters_def less_eq_char_def nat_of_char_def, cases n1)
+  then show ?thesis
+    by (simp add: letters_impl_def letters_def less_eq_char_def nat_of_char_Char, cases n1)
        (cases n2, simp_all)+
 qed
 
