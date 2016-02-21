@@ -1589,7 +1589,7 @@ proof (rule infinite_descent[where P="(%i. i<length cs \<longrightarrow> (\<fora
     then have alters: "(index ?is' (cs ! i) = length ?is') \<or> ?S' = {}"
       apply(simp only: SS') by(simp only: isis')
     -- "wenn (cs ! i) noch nie requested wurde, dann kann es gar nicht nach vorne gebracht werden!
-        also widerspruch mit y_before_x'" 
+        also widerspruch mit @{text y_before_x'}" 
     have "?s_Suct3 = fst (config (rTS h) init ((as @ [x] @ bs @ [x]) @ (take (i+1) cs)))"
       unfolding s_TS_def
       apply(simp only: length_append)
@@ -1861,7 +1861,7 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
     have yeah: "z \<notin> set (take (Suc i) cs)" apply(rule count_notin2) by fact
  
     -- "now we know that x is in front of z after 2nd request to x, and that z is not requested any more,
-        that means it stays behind x, which leads to a contradiction with z_before_x"
+        that means it stays behind x, which leads to a contradiction with @{text z_before_x}"
 
     have xin123: "x \<in> set (s_TS init h ((as @ [x] @ bs @ [x]) @ (take (i+1) cs)) (length (as @ [x] @ bs @ [x]) + (i+1)))"
       using i_in_cs assms(4) by(simp add: s_TS_set)
