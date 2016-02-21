@@ -122,15 +122,14 @@ lemma len_bv_n: "\<forall>xs \<in> set_pmf (bv n). length xs = n"
 apply(induct n) by auto
 
 lemma bv_set: "set_pmf (bv n) = {x::bool list. length x = n}"
-apply(induct n)
-  apply(simp)
-  apply(simp add: set_pmf_bernoulli UNIV_bool)
-  proof -
-    case goal1
-    have "(\<Union>x\<in>{x. length x = n}. {True # x, False # x})= {x#xs| x xs. length xs = n}" by auto
-    also have "\<dots> = {x. length x = Suc n} " using Suc_length_conv by fastforce
-    finally show ?case .
-  qed
+proof (induct n) 
+  case (Suc n)
+  then have "set_pmf (bv (Suc n)) = (\<Union>x\<in>{x. length x = n}. {True # x, False # x})"
+    by(simp add: set_pmf_bernoulli UNIV_bool)
+  also have "\<dots> = {x#xs| x xs. length xs = n}" by auto
+  also have "\<dots> = {x. length x = Suc n} " using Suc_length_conv by fastforce
+  finally show ?case .
+qed (simp)
 
 lemma len_not_in_bv: "length xs  \<noteq> n \<Longrightarrow> xs \<notin> set_pmf (bv n)"
 by(auto simp: len_bv_n)
@@ -269,22 +268,22 @@ qed simp
 lemma flip_other: "y < length X \<Longrightarrow> z < length X \<Longrightarrow> z \<noteq> y \<Longrightarrow> flip z X ! y = X ! y"
 apply(induct y arbitrary: X z) 
 apply(simp) apply (metis flip.elims neq0_conv nth_Cons_0)
-proof (case_tac z)
-  case goal1
+proof (case_tac z, goal_cases)
+  case (1 y X z)
   then obtain a as where "X=a#as" using length_greater_0_conv by (metis (full_types) flip.elims)
-  with goal1(5) show ?case by(simp)
+  with 1(5) show ?case by(simp)
 next
-  case (goal2 y X z z')
-  from goal2 have 3: "z' \<noteq> y" by auto
-  from goal2(2) have "length X > 0" by auto
+  case (2 y X z z')
+  from 2 have 3: "z' \<noteq> y" by auto
+  from 2(2) have "length X > 0" by auto
   then obtain a as where aas: "X = a#as" by (metis (full_types) flip.elims length_greater_0_conv)
   then have a: "flip (Suc z') X ! Suc y = flip z' as ! y"
     and b : "(X ! Suc y) = (as !  y)" by auto
-  from goal2(2) aas have 1: "y < length as" by auto
-  from goal2(3,5) aas have 2: "z' < length as" by auto
-  note c=goal2(1)[OF 1 2 3]
+  from 2(2) aas have 1: "y < length as" by auto
+  from 2(3,5) aas have f2: "z' < length as" by auto
+  note c=2(1)[OF 1 f2 3]
 
-  have "flip z X ! Suc y = flip (Suc z') X ! Suc y" using goal2 by auto
+  have "flip z X ! Suc y = flip (Suc z') X ! Suc y" using 2 by auto
   also have "\<dots> = flip z' as ! y" by (rule a)
   also have "\<dots> = as ! y" by (rule c)
   also have "\<dots> = (X ! Suc y)" by (rule b[symmetric])
@@ -315,12 +314,12 @@ proof (cases "i < length b")
   case True
   then have A: "i < length (flip i b)" by simp
   show ?thesis apply(simp add: list_eq_iff_nth_eq) apply(clarify)
-  proof -
-    case (goal1 j)
+  proof (goal_cases)
+    case (1 j)
     then show ?case
       apply(cases "i=j")
         using flip_itself[OF A] flip_itself[OF True] apply(simp)
-        using flip_other True goal1 by auto
+        using flip_other True 1 by auto
   qed
 qed (simp add: flip_out_of_bounds)
  
@@ -335,15 +334,15 @@ by(simp add: flip_other)
 
 lemma bernoulli_Not: "map_pmf Not (bernoulli_pmf (1 / 2)) = (bernoulli_pmf (1 / 2))"
 apply(rule pmf_eqI)
-proof (case_tac i)
-  case goal1
+proof (case_tac i, goal_cases)
+  case (1 i)
   then have "pmf (map_pmf Not (bernoulli_pmf (1 / 2))) i =
     pmf (map_pmf Not (bernoulli_pmf (1 / 2))) (Not False)" by auto
   also have "\<dots> = pmf (bernoulli_pmf (1 / 2)) False" apply (rule pmf_map_inj') apply(rule injI) by auto
   also have "\<dots> = pmf (bernoulli_pmf (1 / 2)) i" by auto
   finally show ?case .
 next
-  case goal2
+  case (2 i)
   then have "pmf (map_pmf Not (bernoulli_pmf (1 / 2))) i =
     pmf (map_pmf Not (bernoulli_pmf (1 / 2))) (Not True)" by auto
   also have "\<dots> = pmf (bernoulli_pmf (1 / 2)) True" apply (rule pmf_map_inj') apply(rule injI) by auto
@@ -355,8 +354,8 @@ qed
 lemma inv_flip_bv: "map_pmf (flip i) (bv n) = (bv n)"
 apply(induct n arbitrary: i) apply(simp)
 apply(simp) apply(simp only: map_bind_pmf)
-proof -
-   case goal1
+proof (goal_cases)
+   case (1 n i)
    have "bind_pmf (bv n) (\<lambda>x. bind_pmf (bernoulli_pmf (1 / 2)) (\<lambda>xa. map_pmf (flip i) (return_pmf (xa # x))))
     = bind_pmf (bernoulli_pmf (1 / 2)) (\<lambda>xa .bind_pmf (bv n) (\<lambda>x. map_pmf (flip i) (return_pmf (xa # x))))"
     by(rule bind_commute_pmf) 
@@ -381,7 +380,7 @@ proof -
     also have "\<dots> = bind_pmf (bernoulli_pmf (1 / 2)) (\<lambda>xa. bind_pmf (map_pmf (flip i') (bv n)) (\<lambda>x. return_pmf (xa # x)))"
         by(auto simp add: bind_map_pmf)
     also have "\<dots> =  bind_pmf (bernoulli_pmf (1 / 2)) (\<lambda>xa. bind_pmf (bv n) (\<lambda>x. return_pmf (xa # x)))" 
-        using goal1[of "i'"] by simp
+        using 1[of "i'"] by simp
     finally show ?thesis .
    qed
    also have "\<dots> = bind_pmf (bv n) (\<lambda>x. bind_pmf (bernoulli_pmf (1 / 2)) (\<lambda>xa. return_pmf (xa # x)))" 

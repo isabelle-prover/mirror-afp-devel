@@ -1817,15 +1817,15 @@ lemma steps'_snoc: "length rs = length as \<Longrightarrow> n = (length as)
 apply(induct rs as arbitrary: init n r a rule: list_induct2)
   by (simp_all) 
 
-lemma steps'_take: "n<length qs \<Longrightarrow> length qs = length Strat 
-    \<Longrightarrow> steps' init (take n qs) (take n Strat) n
-      = steps' init qs Strat n" 
+lemma steps'_take:
+  assumes "n<length qs" "length qs = length Strat" 
+  shows "steps' init (take n qs) (take n Strat) n
+      = steps' init qs Strat n"                       
 proof -
-  case goal1
   have "steps' init qs Strat n =
     steps' init (take n qs @ drop n qs) (take n Strat @ drop n Strat) n"  by simp
   also have "\<dots> = steps' init (take n qs) (take n Strat) n"
-      apply(subst steps'_rests[symmetric]) using goal1  by auto
+      apply(subst steps'_rests[symmetric]) using assms  by auto
   finally show ?thesis by simp
 qed
 
@@ -2101,35 +2101,35 @@ lemma OPT_noStupid:
   shows "\<And>x l. x < length Strat \<Longrightarrow>
         l < length (snd (Strat ! x)) \<Longrightarrow>
        Suc ((snd (Strat ! x))!l) < length init"
-proof (rule ccontr)
-  case goal1
+proof (rule ccontr, goal_cases)
+  case (1 x l)
 
   (* construct a Stratgy that leaves out that paid exchange *)
   let ?sws' = "take l (snd (Strat!x)) @ drop (Suc l) (snd (Strat!x))"
   let ?Strat' = "take x Strat @ (fst (Strat!x),?sws') # drop (Suc x) Strat"
 
-  from goal1(1) have valid: "length ?Strat' = length qs" by simp
+  from 1(1) have valid: "length ?Strat' = length qs" by simp
   from valid have isin: "T\<^sub>p init qs ?Strat' \<in> {T\<^sub>p init qs as |as. length as = length qs}" by blast
 
-  from goal1(1,2) have lsws': "length (snd (Strat!x)) = length ?sws' + 1"
+  from 1(1,2) have lsws': "length (snd (Strat!x)) = length ?sws' + 1"
     by (simp)
 
   have a: "(take x ?Strat') = (take x Strat)"
-    using goal1(1) by(auto simp add: min_def take_Suc_conv_app_nth)
+    using 1(1) by(auto simp add: min_def take_Suc_conv_app_nth)
   have b: "(drop (Suc x) Strat) = (drop (Suc x) ?Strat')"
-    using goal1(1) by(auto simp add: min_def take_Suc_conv_app_nth)
+    using 1(1) by(auto simp add: min_def take_Suc_conv_app_nth)
 
   have aa: "(take l (snd (Strat!x))) = (take l (snd (?Strat'!x)))"
-    using goal1(1,2) by(auto simp add: min_def take_Suc_conv_app_nth nth_append)
+    using 1(1,2) by(auto simp add: min_def take_Suc_conv_app_nth nth_append)
   have bb: "(drop (Suc l) (snd (Strat!x))) = (drop l (snd (?Strat'!x)))"
-    using goal1(1,2) by(auto simp add: min_def take_Suc_conv_app_nth nth_append )
+    using 1(1,2) by(auto simp add: min_def take_Suc_conv_app_nth nth_append )
  
   have "(swaps (snd (Strat ! x)) (steps init (take x qs) (take x Strat)))
       = (swaps (take l (snd (Strat ! x)) @ (snd (Strat ! x))!l # drop (Suc l) (snd (Strat ! x))) (steps init (take x qs) (take x Strat)))"
-      unfolding id_take_nth_drop[OF goal1(2), symmetric] by simp
+      unfolding id_take_nth_drop[OF 1(2), symmetric] by simp
   also have "...
       = (swaps (take l (snd (Strat ! x)) @ drop (Suc l) (snd (Strat ! x))) (steps init (take x qs) (take x Strat)))"
-        using goal1(3) by(simp add: swap_def steps_length)
+        using 1(3) by(simp add: swap_def steps_length)
   finally have noeffect: "(swaps (snd (Strat ! x)) (steps init (take x qs) (take x Strat)))
       = (swaps (take l (snd (Strat ! x)) @ drop (Suc l) (snd (Strat ! x))) (steps init (take x qs) (take x Strat)))"
       .
@@ -2137,19 +2137,19 @@ proof (rule ccontr)
 
   have c: "t\<^sub>p (steps init (take x qs) (take x Strat)) (qs ! x) (Strat ! x) = 
         t\<^sub>p (steps init (take x qs) (take x ?Strat')) (qs ! x) (?Strat' ! x) + 1"
-    unfolding a t\<^sub>p_def using goal1(1,2)
+    unfolding a t\<^sub>p_def using 1(1,2)
     apply(simp add: min_def split_def nth_append) unfolding noeffect
     by(simp) 
 
   have "T\<^sub>p init (take (Suc x) qs) (take (Suc x) Strat)
         = T\<^sub>p init (take x qs) (take x ?Strat') + 
               t\<^sub>p (steps init (take x qs) (take x Strat)) (qs ! x) (Strat ! x)"
-        using goal1(1) a by(simp add: take_Suc_conv_app_nth T_append)
+        using 1(1) a by(simp add: take_Suc_conv_app_nth T_append)
   also have "\<dots> = T\<^sub>p init (take x qs) (take x ?Strat')  + 
               t\<^sub>p (steps init (take x qs) (take x ?Strat')) (qs ! x) (?Strat' ! x) + 1"
               unfolding c by(simp)
   also have "\<dots> = T\<^sub>p init (take (Suc x) qs) (take (Suc x) ?Strat')  + 1"
-        using goal1(1) a by(simp add: min_def take_Suc_conv_app_nth T_append nth_append)
+        using 1(1) a by(simp add: min_def take_Suc_conv_app_nth T_append nth_append)
   finally have bef: "T\<^sub>p init (take (Suc x) qs) (take (Suc x) Strat)
       = T\<^sub>p init (take (Suc x) qs) (take (Suc x) ?Strat') + 1" .
      
@@ -2157,7 +2157,7 @@ proof (rule ccontr)
   let ?interstate' = "(steps init (take (Suc x) qs) (take (Suc x) ?Strat'))"
 
   have state: "?interstate' = ?interstate"
-    using goal1(1) apply(simp add: take_Suc_conv_app_nth min_def)
+    using 1(1) apply(simp add: take_Suc_conv_app_nth min_def)
     apply(simp add: steps_append step_def split_def) using noeffect by simp
 
 
@@ -2169,9 +2169,9 @@ proof (rule ccontr)
               apply(subst T_append2) by(simp_all)
   also have "\<dots> =  T\<^sub>p init (take (Suc x) qs) (take (Suc x) ?Strat')
             + T\<^sub>p ?interstate' (drop (Suc x) qs) (drop (Suc x) ?Strat') + 1"
-       unfolding bef state using goal1(1) by(simp add: min_def nth_append)
+       unfolding bef state using 1(1) by(simp add: min_def nth_append)
   also have "\<dots> = T\<^sub>p init (take (Suc x) qs @ drop (Suc x) qs)  (take (Suc x) ?Strat' @ drop (Suc x) ?Strat') + 1"
-              apply(subst T_append2) using goal1(1) by(simp_all add: min_def)     
+              apply(subst T_append2) using 1(1) by(simp_all add: min_def)     
   also have "\<dots> = T\<^sub>p init qs ?Strat' + 1" by simp
   finally have better: "T\<^sub>p init qs ?Strat' + 1 = T\<^sub>p init qs Strat" by simp
 

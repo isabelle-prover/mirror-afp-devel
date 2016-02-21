@@ -32,7 +32,6 @@ proof -
         - (\<Sum>x\<in>(B-A). g x) - (\<Sum>x\<in>(B\<inter>A). g x) " using inters by auto
   also have "\<dots> =  (\<Sum>x\<in>(A-B). f x) - (\<Sum>x\<in>(A\<inter>B). g x) + (\<Sum>x\<in>(A\<inter>B). f x) 
         - (\<Sum>x\<in>(B-A). g x)  " using commute by auto
-   thm setsum_subtractf
   also have "\<dots> = (\<Sum>x\<in>(A\<inter>B). f x - g x) +(\<Sum>x\<in>(A-B). f x) 
         - (\<Sum>x\<in>(B-A). g x)" using setsum_subtractf[of f g "(A\<inter>B)"] by auto
   finally show ?thesis .
@@ -91,8 +90,8 @@ using config'_n_init[of "((fst (BIT_init, BIT_step) s0) \<bind> (\<lambda>is. re
   by (simp_all add: map_pmf_def bind_assoc_pmf  bind_return_pmf BIT_init_def )    
 
 lemma config_n_init2: "\<forall>(_,(_,x)) \<in> set_pmf (config_rand (BIT_init, BIT_step) init qs). x = init"
-proof 
-  case (goal1 z)
+proof (rule, goal_cases)
+  case (1 z)
   then have 1: "snd(snd z) \<in> (snd \<circ> snd) ` set_pmf (config_rand   (BIT_init, BIT_step) init qs)"
         by force
   have "(snd \<circ> snd) ` set_pmf (config_rand  (BIT_init, BIT_step) init qs)
@@ -123,8 +122,8 @@ proof (induct qs arbitrary: init)
 
   show ?case
     apply(simp only: config'_rand.simps)
-    proof (rule Cons(1))  
-      case goal2
+    proof (rule Cons(1), goal_cases)  
+      case 2
       have "map_pmf (fst \<circ> snd)
      (init \<bind>
       (\<lambda>s. snd (BIT_init, BIT_step) s r \<bind>
@@ -297,8 +296,7 @@ lemma sAsA': "n < length paid_A' \<Longrightarrow> s_A' n = s_A n"
 proof (induct n)
   case (Suc m) 
   have " s_A' (Suc m)
-        =  mtf2 (free_A!m) (qs!m) (swaps (paid_A'!m) (s_A' m))" by (simp add: step_def)
-  thm swaps_filtered swaps_filtered[where xs="s_A' m", simplified]
+        =  mtf2 (free_A!m) (qs!m) (swaps (paid_A'!m) (s_A' m))" by (simp add: step_def) 
   also from Suc(2) have "\<dots> = mtf2 (free_A!m) (qs!m) (swaps (paid_A!m) (s_A' m))"
       unfolding paid_A_def                                   
       by (simp only: nth_map swaps_filtered[where xs="s_A' m", simplified])
@@ -403,7 +401,6 @@ proof -
     by auto
   also have "\<dots> = (swaps (((paid_A  ! n)! ?l ) # (drop (Suc ?l) (paid_A ! n))) (s_A n))"
     using Sucl by auto
-  thm Cons_nth_drop_Suc
   also from mlen have "\<dots> = (swaps ((drop ?l (paid_A ! n))) (s_A n))"
     by (simp only: yu)
   finally have " s'_A n (Suc m) = swaps (drop (length (paid_A ! n) - Suc m) (paid_A ! n)) (s_A n)" .
@@ -416,12 +413,10 @@ using s'A_m_le[of "(length (paid_A ! n))" "n", simplified] by auto
  
 definition gebub :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
   "gebub n m = index init ((s'_A n m)!(Suc ((paid_A!n)!(length (paid_A ! n) - Suc m))))"
-
-thm paidAnm_inbound
+ 
 lemma gebub_inBound: assumes 1: " n < length paid_A " and  2: "m < length (paid_A !  n)" 
           shows "gebub n m < length init"  
 proof -
-  thm paidAnm_inbound[OF 1 2] setinit
   have "Suc (paid_A ! n ! (length (paid_A ! n) - Suc m)) < length (s'_A n m)" using paidAnm_inbound[OF 1 2] by auto
   then have "s'_A n m ! Suc (paid_A ! n ! (length (paid_A ! n) - Suc m)) \<in> set (s'_A n m)" by (rule nth_mem)
   then show ?thesis
@@ -453,7 +448,7 @@ apply(simp only: phi.simps Inv_empty3) by auto
 lemma phi_nonzero: "phi n (c,(b,i)) \<ge> 0"
 by (simp add: setsum_nonneg split_def)
 
-(* definition der potential funktion! *)
+(* definition of the potential function! *)
 definition Phi :: "nat \<Rightarrow> real" ("\<Phi>") where
 "Phi n = E( map_pmf (\<phi> n) (config'' BIT qs init n))"
 
@@ -473,11 +468,10 @@ apply (simp add: bind_return_pmf map_pmf_def bind_assoc_pmf split_def take_Suc_c
 lemma phi0: "Phi 0 = 0" unfolding Phi_def 
    by (simp add: bind_return_pmf map_pmf_def bind_assoc_pmf BIT_init_def)
 
-thm integral_nonneg
 lemma phi_pos: "Phi n \<ge> 0"
-unfolding Phi_def
-apply(rule E_nonneg_fun)
-using phi_nonzero by auto
+  unfolding Phi_def
+  apply(rule E_nonneg_fun)
+  using phi_nonzero by auto
   
 subsection "Helper lemmas"
 lemma swap_subs: "dist_perm X Y \<Longrightarrow> Inv X (swap z Y) \<subseteq> Inv X Y \<union> {(Y ! z, Y ! Suc z)}"
@@ -547,15 +541,12 @@ proof -
     with distxsys have b: "x \<in> set ys" by auto
     from a have  "y \<in> set xs" by (rule before_in_setD2)
     with distxsys have c: "y \<in> set ys" by auto
-    from a have e: "~ x = y" unfolding before_in_def by auto
-    thm not_before_in
+    from a have e: "~ x = y" unfolding before_in_def by auto 
     have "(\<not> y < x in ys) = (x < y in ys \<or> y = x)" apply(rule not_before_in)
       using b c by auto
     with d e show "x < y in ys" by auto
   qed
-
-  thm card_before[OF distinctxs yinxs]
-
+ 
   have "(index xs y) - card (InvOf y xs ys) = card (before y xs) - card ?A"
     by(simp only: aha card_before[OF distinctxs yinxs])
   also have "\<dots> = card ((before y xs) - ?A)"
@@ -588,28 +579,23 @@ section "Upper Bound on the Cost of BIT"
 lemma t_BIT_ub2: "(qs!n) \<notin> set init \<Longrightarrow> t_BIT n \<le> Suc(size init)"
 unfolding t_BIT_def  apply(simp) unfolding t_def BIT_step_def
 apply(simp) apply(simp add: bind_return_pmf)
-proof -
-  case goal1
+proof (goal_cases)
+  case 1
   note qs=this
-  thm map_pmf_def
   let ?D =  "(config'' (BIT_init, BIT_step) qs init n)"
 
   have absch: "(\<forall>x\<in> set_pmf ?D. ((\<lambda>(s,is). real (Suc (index s (qs ! n)))) x) \<le> ((\<lambda>(is,s). Suc (length init)) x))"
-  proof (rule ballI)
-    case (goal1 x) 
-    from goal1 config_rand_length have 1: "length (fst x) = length init" by fastforce
-    from goal1 config_rand_set have 2: "set (fst x) = set init" by fastforce
+  proof (rule ballI, goal_cases)
+    case (1 x) 
+    from 1 config_rand_length have f1: "length (fst x) = length init" by fastforce
+    from 1 config_rand_set have 2: "set (fst x) = set init" by fastforce
 
     from qs 2 have "(qs!n) \<notin>  set (fst x)" by auto
-    then show ?case using 1 by (simp add: split_def) (* es gilt sogar = *)
+    then show ?case using f1 by (simp add: split_def)
   qed      
 
   have "integrable (measure_pmf (config'' (BIT_init, BIT_step) qs init n))
      (\<lambda>(s, is). Suc (length init))" by(simp)
-
-     thm measure_pmf.integrable_const_bound
-
-
 
   have "E(bind_pmf ?D (\<lambda>(s, is). return_pmf (real (Suc (index s (qs ! n))))))
           = E(map_pmf (\<lambda>(s, is). real (Suc (index s (qs ! n)))) ?D)"
@@ -624,24 +610,22 @@ proof -
    finally show ?case by(simp add: map_pmf_def bind_assoc_pmf bind_return_pmf split_def)
  qed
 
-thm t_def t_BIT_ub2
 lemma t_BIT_ub: "(qs!n) \<in> set init \<Longrightarrow> t_BIT n \<le> size init"
 unfolding t_BIT_def  apply(simp) unfolding t_def BIT_step_def
 apply(simp) apply(simp add: bind_return_pmf)
-proof -
-  case goal1
-  note qs=this
-  thm map_pmf_def
+proof (goal_cases)
+  case 1
+  note qs=this 
   let ?D =  "(config'' (BIT_init, BIT_step) qs init n)"
 
   have absch: "(\<forall>x\<in> set_pmf ?D. ((\<lambda>(s, is). real (Suc (index s (qs ! n)))) x) \<le> ((\<lambda>(s, is). length init) x))"
-  proof (rule ballI)
-    case (goal1 x) 
-    from goal1 config_rand_length have 1: "length (fst x) = length init" by fastforce
-    from goal1 config_rand_set have 2: "set (fst x) = set init" by fastforce
+  proof (rule ballI, goal_cases)
+    case (1 x) 
+    from 1 config_rand_length have f1: "length (fst x) = length init" by fastforce
+    from 1 config_rand_set have 2: "set (fst x) = set init" by fastforce
 
     from qs 2 have "(qs!n) \<in> set (fst x)" by auto
-    then have "(index (fst x) (qs ! n)) < length init" apply(rule index_less) using 1 by auto
+    then have "(index (fst x) (qs ! n)) < length init" apply(rule index_less) using f1 by auto
     then show ?case by (simp add: split_def)
   qed      
 
@@ -656,9 +640,7 @@ proof -
   also have "\<dots> = length init"
           by(simp add: split_def)
    finally show ?case by(simp add: map_pmf_def bind_assoc_pmf bind_return_pmf split_def)
- qed
-
-thm t_BIT_ub2 t_BIT_ub
+ qed 
 
 lemma T_BIT_ub: "\<forall>i<n. qs!i \<in> set init \<Longrightarrow> T_BIT n \<le> n * size init"
 proof(induction n)
@@ -689,8 +671,7 @@ proof -
       with l0 have 4: "t_A n = 1 + length (paid_A ! n)" unfolding t_A_def c_A_def p_A_def by(simp)
   
       have 1: "t_BIT n \<le> 1" using t_BIT_ub2[OF qsn] l0 by auto
-  
-      thm phi_empty2 config_rand_set
+    
       { fix m
       have "phi m = (\<lambda>(b,(a,i)). phi m (b,(a,i)))" by auto
       also have "\<dots> = (\<lambda>(b,(a,i)). 0)" by(simp only: phi_empty2[OF l0])
@@ -731,7 +712,7 @@ proof -
          = bind_pmf D
                       (\<lambda>(s, is). return_pmf (t s q (if (fst is) ! (index (snd is) q) then 0 else length s, [])))"
             unfolding BIT_step_def apply (auto simp: bind_return_pmf split_def)
-              by (metis bind_pmf_cong prod.collapse)
+              by (metis prod.collapse)
       also have "\<dots> = map_pmf cost D"  
                      by (auto simp: map_pmf_def split_def)
       finally have rightform1: "bind_pmf D
@@ -761,14 +742,11 @@ proof -
                   - E (map_pmf \<Phi>\<^sub>0 D)" using rightform1 rightform2 split_def by auto
       also have "\<dots> =  E (map_pmf (\<lambda>x. (cost x) + (\<Phi>\<^sub>2 x)) D) -  E (map_pmf (\<lambda>x. (\<Phi>\<^sub>0 x)) D)"
             unfolding D_def using E_linear_plus2[OF finite_config_BIT[OF dist_init]] by auto
-            thm E_linear_diff2[OF finite_config_BIT]
       also have "\<dots> =  E (map_pmf (\<lambda>x. (cost x) + (\<Phi>\<^sub>2 x) - (\<Phi>\<^sub>0 x)) D)"
             unfolding D_def by(simp only: E_linear_diff2[OF finite_config_BIT[OF dist_init]] split_def)
       finally show "t_BIT n + Phi (n+1) - Phi n 
             =  E (map_pmf (\<lambda>x. (cost x) + (\<Phi>\<^sub>2 x) - (\<Phi>\<^sub>0 x)) D)" by auto
     qed 
-
-    thm inEreinziehn
 
     def [simp]: xs  == "s_A n"
     def [simp]: xs' == "swaps (paid_A!n) xs"
@@ -789,9 +767,9 @@ subsection "The Transformation"
                                       else (\<Sum>j<k'. (if (fst (snd x))!(index init (xs'!j)) then 2::real else 1)))
               else 0)
               + (\<Sum>i<(length (paid_A!n)). (if (fst (snd x))!(gebub n i) then 2 else 1))"
-    proof 
-      case goal1
-      note xinD=goal1 
+    proof (rule, goal_cases)
+      case (1 x)
+      note xinD=1 
       then have [simp]: "snd (snd x) = init" using D_def config_n_init3 by fast
 
       def b == "fst (snd x)"
@@ -816,8 +794,7 @@ subsection "The Transformation"
         unfolding s_A.simps apply(simp only: split_def) by auto
       then have gis: "\<Phi>\<^sub>2 x = (\<Sum>(x,y)\<in>(Inv ys' xs''). (if b'!(index init y) then 2 else 1))"
         unfolding ys_def b_def by (auto simp: split_def)
-   
-      thm phi.simps
+
       have his2: "(\<Phi>\<^sub>0 (ys,(b,init))) = (\<Sum>(x,y)\<in>(Inv ys xs). (if b!(index init y) then 2 else 1))"
         apply(simp only: split_def)
         apply(simp only: \<Phi>\<^sub>0_def phi.simps) by(simp add: split_def)
@@ -827,10 +804,7 @@ subsection "The Transformation"
       have dis: "\<Phi>\<^sub>1 x = (\<Sum>(x,y)\<in>(Inv ys xs'). (if b!(index init y) then 2 else 1))"
         unfolding \<Phi>\<^sub>1_def b_def by auto
   
-      have "ys' = mtf2 (fst aBIT) (q) ys" by (simp add: step_def ys'_def)
-      
-
-      thm config_rand_set config_rand_distinct config_rand_length
+      have "ys' = mtf2 (fst aBIT) (q) ys" by (simp add: step_def ys'_def) 
 
       from config_rand_distinct[of BIT] config_rand_set[of BIT] xinD
       have dp_ys_init[simp]: "dist_perm ys init" unfolding D_def ys_def by force
@@ -871,11 +845,8 @@ subsection "The Transformation"
           case (Suc m)
           then have m_bd2: "m \<le> length (paid_A ! n)"
                 and m_bd: "m < length (paid_A ! n)" by auto
-          note yeah = Suc(1)[OF m_bd2]
-          thm Inv_swap 
-          thm s'_A.simps(2)
+          note yeah = Suc(1)[OF m_bd2]  
 
-          
           let ?revm="(length (paid_A ! n) - Suc m)"
           note ah=Inv_swap[of "ys" "(s'_A n m)" "(paid_A ! n ! ?revm)", OF dist]
           have "(\<Sum>(xa, y)\<in>Inv ys (s'_A n (Suc m)). if b ! (index init y) then 2::real else 1)
@@ -890,7 +861,7 @@ subsection "The Transformation"
           have "\<dots> \<le> (\<Sum>(xa, y)\<in>Inv ys (s'_A n m). if b ! (index init y) then 2::real else 1)
                         + (if (b) ! (index init (s'_A n m ! Suc (paid_A ! n ! ?revm))) then 2::real else 1)" (is "?A \<le> ?B")
                proof(cases "Suc (paid_A ! n ! ?revm) < length ys")
-                case False (* TODO! can't occur! because it has already been filtered out! see:
+                case False (* FIXME! can't occur! because it has already been filtered out! see:
                  then have "False" using paidAnm_inbound apply(auto) using m_bd nqs by blast *)
                 then have "?A = (\<Sum>(xa, y)\<in>(Inv ys (s'_A n m)). if b ! (index init y) then 2 else 1)" by auto
                 also have "\<dots> \<le> (\<Sum>(xa, y)\<in>(Inv ys (s'_A n m)). if b ! (index init y) then 2 else 1) +
@@ -942,14 +913,13 @@ subsection "The Transformation"
                         ). if b ! (index init y) then 2 else 1)" by auto
                   also have "\<dots> \<le> (\<Sum>(xa, y)\<in>(Inv ys (s'_A n m)). if b ! (index init y) then 2 else 1)"
                     by (smt Diff_empty Diff_insert0 case_prod_unfold finite_insert insert_Diff_single setsum.infinite setsum.remove)
-                    (* TODO: avoid smt! *)
+                    (* FIXME: avoid smt! *)
                   also have "\<dots> \<le> ?B" by auto
                   finally show ?thesis .
                 qed                   
                 finally show "?A \<le> ?B" .
-              qed
-                
-                            thm yeah
+              qed 
+
           also have "\<dots> 
               \<le> (\<Sum>(xa, y)\<in>Inv ys (s_A n). if b ! (index init y) then 2::real else 1) + (\<Sum>i<m. if b ! gebub n i then 2::real else 1)
                         + (if (b) ! (index init (s'_A n m ! Suc (paid_A ! n ! ?revm))) then 2::real else 1)" using yeah by simp
@@ -964,8 +934,6 @@ subsection "The Transformation"
         show ?thesis
           unfolding \<Phi>\<^sub>1_def his apply(simp only: b) using x b_def by auto
       qed
-
-      thm paid_ub 
 
       subsubsection "Upper bound for the costs of BIT"
 
@@ -1008,7 +976,6 @@ subsection "The Transformation"
         from False have 1: "ys' = ys" unfolding ys'_def step_def mtf2_def by(simp)
         from False have 2: "xs' = xs''" unfolding xs''_def mtf2_def by(simp)
         from False have "(index init q) \<ge> length b" using setinit by auto
-        thm flip_out_of_bounds
         then have 3: "b' = b" unfolding b'_def using flip_out_of_bounds by auto
 
         from False have 4: "I = 0" unfolding I_def before_in_def by(auto)
@@ -1040,8 +1007,6 @@ subsection "The Transformation"
               = (if e=y then (if X ! y then -1 else 1) else 0)" using ey by auto
           next
              assume len: "y < length X" and eny: "e\<noteq>y"
-             thm flip_other 
-             thm flip_other[OF len rd eny]
              then have "(if flip e X ! y then 2::real else 1) - (if X ! y then 2 else 1)
                       = (if X ! y then 2::real else 1) - (if X ! y then 2 else 1)" using flip_other[OF len rd eny]  by auto
              also have "\<dots> = 0" by auto
@@ -1097,12 +1062,9 @@ subsection "The Transformation"
 
 
              have betainit: "\<beta> \<in> set init" using 1 by auto
-             thm queryinlist
              have aha: "(q=\<beta>) = (index init q = index init \<beta>)"
-                using betainit by simp (* misteriös *)
+                using betainit by simp
 
-
-             thm flipstyle
              have "(if b'!(index init \<beta>) then 2::real else 1) - (if b!(index init \<beta>) then 2 else 1)
                 = (if (index init q) = (index init \<beta>) then if b !(index init \<beta>) then - 1 else 1 else 0)" 
                   unfolding b'_def apply(rule flipstyle) by(fact)+
@@ -1128,11 +1090,8 @@ subsection "The Transformation"
           have fs2: "finite ?split2"  apply(rule finite_subset[where B="?fin"])
             apply(rule split2subs) by(auto)  
   
-          (* ?inI="InvOf (q) ys xs'"  *)
-
           have "k - k' \<le> (free_A!n)" by auto
 
-          (* das gilt, weil q nur nach vorn verschoben wird *)
           have g: "InvOf (q) ys' xs'' \<supseteq> InvOf (q) ys' xs'"
             using True apply(auto) apply(rule mtf2_mono[of "swaps (paid_A ! n) (s_A n)"])
               by (auto simp: queryinlist)
@@ -1167,7 +1126,6 @@ subsection "The Transformation"
           also from puh have E1: "... =
               (\<Sum>(x,y)\<in>(Inv ys' xs'') \<inter> (Inv ys' xs'). 
                       (if b'!(index init y) then 2::real else 1) - (if b!(index init y) then 2 else 1))" by auto
-          thm setsum_my2[OF grreeeaa]
           also have E2: "\<dots> = (\<Sum>(x,y)\<in>?easy. 
                       (if (q) = y then (-1::real) else 0))" using setsum_my2[OF grreeeaa] by (auto simp: split_def)
           also have E3: "\<dots> = (\<Sum>(x,y)\<in>?split1 \<union> ?split2. 
@@ -1179,8 +1137,6 @@ subsection "The Transformation"
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (if (q) = y then (-1::real) else 0))
                     + (\<Sum>(x,y)\<in>?split2. (if (q) = y then (-1::real) else 0))"
                     apply(simp only: interem) by auto
-          thm setsum_my2[OF split1easy]
-          thm setsum_my2[OF split2easy]
           also have E4: "\<dots> = (\<Sum>(x,y)\<in>?split1. (-1::real) )
                     + (\<Sum>(x,y)\<in>?split2. 0)"
                  using setsum_my2[OF split1easy]setsum_my2[OF split2easy] by(simp only: split_def)
@@ -1189,19 +1145,17 @@ subsection "The Transformation"
           also have E6: "\<dots> = - I " using cardsp1isI by auto
           finally have abschC: "C = -I".
 
-          (* einzige abschätzung *)
           have abschB: "B \<ge> (0::real)" unfolding B_def apply(rule setsum_nonneg) by auto  
  
           from abschB abschC show "C - B \<le> -I" by simp
 
         next
           case False
-          thm mtf2_moves_to_front
           from leninitys False have ya: "ys' = mtf2 (length ys) q ys"
               unfolding step_def ys'_def by(auto)
-          have "index ys' q = 0" unfolding ya apply(rule mtf2_moves_to_front) 
-            apply (simp add: gra)
-            using gra2 by simp
+          have "index ys' q = 0" 
+            unfolding ya apply(rule mtf2_moves_to_front) 
+            using gra2 by simp_all
           then have nixbefore: "before q ys' = {}" unfolding before_in_def by auto
 
           {
@@ -1215,12 +1169,10 @@ subsection "The Transformation"
              then have puzzel: "(index init \<beta>) < length b" using leninitb by auto
 
 
-             have betainit: "\<beta> \<in> set init" using 1 by auto
-             thm queryinlist
+             have betainit: "\<beta> \<in> set init" using 1 by auto 
              have aha: "(q=\<beta>) = (index init q = index init \<beta>)"
-                using betainit by simp (* misteriös *)
+                using betainit by simp 
 
-             thm flipstyle
              have "(if b'!(index init \<beta>) then 2::real else 1) - (if b!(index init \<beta>) then 2 else 1)
                 = (if (index init q) = (index init \<beta>) then if b ! (index init \<beta>) then - 1 else 1 else 0)" 
                   unfolding b'_def apply(rule flipstyle) by(fact)+
@@ -1256,13 +1208,11 @@ subsection "The Transformation"
 
           from nixbefore have InvOfempty: "InvOf q ys' xs'' = {}" unfolding Inv_def by auto
 
-              (* before q ys' = {} *)
           have "?split1 = InvOf q ys' xs'' \<inter> InvOf q ys xs'" 
               unfolding Inv_def by auto
           also from InvOfempty have "\<dots> = {}" by auto
           finally have split1empty: "?split1 = {}" .
 
-          thm setsum_my2[OF grreeeaa2]
           have "C  = (\<Sum>(x,y)\<in>?easy. 
                       (if (q) = y then (1::real) else 0))" unfolding C_def by(simp only: split_def setsum_my2[OF grreeeaa2])
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1 \<union> ?split2. 
@@ -1273,8 +1223,7 @@ subsection "The Transformation"
                     by(rule setsum_Un[OF fs1 fs2]) 
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (if (q) = y then (1::real) else 0))
                     + (\<Sum>(x,y)\<in>?split2. (if (q) = y then (1::real) else 0))"
-                    apply(simp only: interem) by auto
-          thm setsum_my2[OF split2easy]
+                    apply(simp only: interem) by auto 
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (1::real) )
                     + (\<Sum>(x,y)\<in>?split2. 0)" using setsum_my2[OF split1easy] setsum_my2[OF split2easy] by (simp only: split_def) 
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (1::real) )" by auto
@@ -1282,7 +1231,7 @@ subsection "The Transformation"
           also have "\<dots> = (0::real)" apply(simp only: split1empty) by auto
           finally have abschC: "C = (0::real)" .
           
-          (* abschätzung für B *)
+          (* approx for B *)
 
           have ttt2: "{(x,y). (x,y)\<in>(Inv ys  xs') - (Inv ys' xs'')
                           \<and> y = (q)} \<union> {(x,y). (x,y)\<in>(Inv ys  xs') - (Inv ys' xs'')
@@ -1306,7 +1255,6 @@ subsection "The Transformation"
           have abschaway: "(\<Sum>(x,y)\<in>?split2. (if b!(index init y) then 2::real else 1)) \<ge> 0"
               apply(rule setsum_nonneg) by auto
           
-          (* B = (\<Sum>(x,y)\<in>(Inv ys xs')-(Inv ys' xs''). (if b!y then 2::real else 1)) *)
          have "B  =  (\<Sum>(x,y)\<in>?split1 \<union> ?split2. 
                       (if b!(index init y) then 2::real else 1) )" unfolding B_def by(simp only: ttt2)
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (if b!(index init y) then 2::real else 1))
@@ -1315,8 +1263,7 @@ subsection "The Transformation"
                     by(rule setsum_Un[OF fs1 fs2]) 
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. (if b!(index init y) then 2::real else 1))
                     + (\<Sum>(x,y)\<in>?split2. (if b!(index init y) then 2::real else 1))"
-                    apply(simp only: interem) by auto
-          thm setsum_my2[OF split1easy2]
+                    apply(simp only: interem) by auto 
           also have "\<dots> = (\<Sum>(x,y)\<in>?split1. 1)
                     + (\<Sum>(x,y)\<in>?split2. (if b!(index init y) then 2::real else 1))"
                  using setsum_my2[OF split1easy2] by (simp only: split_def)
@@ -1324,7 +1271,6 @@ subsection "The Transformation"
                     + (\<Sum>(x,y)\<in>?split2. (if b!(index init y) then 2::real else 1))" by auto
           also have "\<dots> = I
                     + (\<Sum>(x,y)\<in>?split2. (if b!(index init y) then 2::real else 1))" using splI by auto
-          thm abschaway
           also have "\<dots> \<ge> I" using abschaway by auto
           finally have abschB: "B \<ge> I" .
 
@@ -1333,7 +1279,7 @@ subsection "The Transformation"
  
 
         (* ==========================================
-            ZENTRAL, die berechnung von A 
+            central! calculations for A 
            ========================================== *)
  
         have A_absch: "A
@@ -1344,8 +1290,7 @@ subsection "The Transformation"
           from leninitys False have ya: "ys' = mtf2 (length ys) q ys" (* BIT moves q to front *)
               unfolding step_def ys'_def by(auto)
           have "index ys' q = 0" unfolding ya apply(rule mtf2_moves_to_front) 
-            apply (simp add: gra)
-            using gra2 by(simp)
+             using gra2 by(simp_all)
           then have nixbefore: "before q ys' = {}" unfolding before_in_def by auto
           
           have "A = (\<Sum>(x,y)\<in>(Inv ys' xs'')-(Inv ys xs'). (if b'!(index init y) then 2::real else 1))" by auto
@@ -1385,17 +1330,17 @@ subsection "The Transformation"
             \<union> {(x,y). x\<noteq>y \<and> y\<noteq>q \<and> x < y in ys' \<and> y < x in xs'' \<and>  x < y in xs' }" (is "?S1 \<union> ?S2 = ?S1 \<union> ?S2'")
               proof -
                 have "?S2 = ?S2'" apply(safe)
-                proof -
-                  case (goal2 a b)
-                  from goal2(5) have "~ b < a in xs'" by auto
-                  with goal2(6) show "False" by auto
+                proof (goal_cases)
+                  case (2 a b)
+                  from 2(5) have "~ b < a in xs'" by auto
+                  with 2(6) show "False" by auto
                 next
-                  case (goal1 a b)
-                  from goal1(4) have "a \<in> set xs'" "b \<in> set xs'" 
+                  case (1 a b)
+                  from 1(4) have "a \<in> set xs'" "b \<in> set xs'" 
                     using  before_in_setD1[where xs="xs''"]
                      before_in_setD2[where xs="xs''"] ss2 by auto
-                  with not_before_in goal1(5) have "(a < b in xs' \<or> a = b)" by metis
-                  with goal1(1) show "a < b in xs'" by auto
+                  with not_before_in 1(5) have "(a < b in xs' \<or> a = b)" by metis
+                  with 1(1) show "a < b in xs'" by auto
                 qed
                 then show ?thesis by auto
               qed
@@ -1404,17 +1349,17 @@ subsection "The Transformation"
             \<union> {(x,y). x\<noteq>y \<and> y\<noteq>q \<and> x < y in ys' \<and> ~ x < y in xs'' \<and>  x < y in xs' }" (is "?S1 \<union> ?S2 = ?S1 \<union> ?S2'")
               proof -
                 have "?S2 = ?S2'" apply(safe)
-                proof -
-                  case (goal1 a b)
-                  from goal1(4) have "~ a < b in xs''" by auto
-                  with goal1(6) show "False" by auto
+                proof (goal_cases)
+                  case (1 a b)
+                  from 1(4) have "~ a < b in xs''" by auto
+                  with 1(6) show "False" by auto
                 next
-                  case (goal2 a b)
-                  from goal2(5) have "a \<in> set xs''" "b \<in> set xs''" 
+                  case (2 a b)
+                  from 2(5) have "a \<in> set xs''" "b \<in> set xs''" 
                     using  before_in_setD1[where xs="xs'"]
                      before_in_setD2[where xs="xs'"] ss2 by auto
-                  with not_before_in goal2(4) have "(b < a in xs'' \<or> a = b)" by metis
-                  with goal2(1) show "b < a in xs''" by auto
+                  with not_before_in 2(4) have "(b < a in xs'' \<or> a = b)" by metis
+                  with 2(1) show "b < a in xs''" by auto
                 qed
                 then show ?thesis by auto
               qed
@@ -1466,9 +1411,9 @@ subsection "The Transformation"
           have k'b: "k' < length b" using whatisk' by (auto simp: queryinlist) 
           have asdasd: "{(\<alpha>,\<beta>). \<alpha>=q \<and> \<beta>\<noteq>q \<and> index xs' \<beta> < k'} 
             = {(\<alpha>,\<beta>). \<alpha>=q \<and> \<beta>\<noteq>q \<and> index xs' \<beta> < k' \<and>  (index init \<beta>) < length b }"
-                    proof (auto)
-                      case goal1
-                      from goal1(2) have "index xs' b < index xs' (q)" by auto
+                    proof (auto, goal_cases)
+                      case (1 b)
+                      from 1(2) have "index xs' b < index xs' (q)" by auto
                       also have "\<dots> < length xs'" by (auto simp: queryinlist) 
                       finally have "b \<in> set xs'" using index_less_size_conv by metis
                       then show ?case using setinit by auto
@@ -1491,8 +1436,8 @@ subsection "The Transformation"
                           using asdasd  by auto
           also have "\<dots> = (\<Sum>(x,y)\<in>{(\<alpha>,\<beta>). \<alpha>=q \<and> \<beta>\<noteq>q \<and> index xs' \<beta> < k' 
                           \<and>  (index init \<beta>) < length b }. (if b!(index init y) then 2::real else 1))"
-          proof (rule setsum.cong)
-             case (goal2 z)
+          proof (rule setsum.cong, goal_cases)
+             case (2 z)
              then obtain \<alpha> \<beta> where zab: "z=(\<alpha>, \<beta>)" and "\<alpha> = q" and diff: "\<beta> \<noteq> q" and "index xs' \<beta> < k'" and i: "index init \<beta> < length b" by auto
              from diff ij have "index init \<beta> \<noteq> index init q" by auto
              with flip_other qsfst i have "b' ! index init \<beta> =  b ! index init \<beta>" unfolding b'_def  by auto
@@ -1505,42 +1450,38 @@ subsection "The Transformation"
           also have E2: "\<dots> = (\<Sum>(x,y)\<in>{(q,b)|b. index xs' b < k'}. (if b!(index init y) then 2::real else 1))" 
               by (simp only: lulae[symmetric])
           finally have aa: "A \<le> (\<Sum>(x,y)\<in>{(q,b)|b. index xs' b < k'}. (if b!(index init y) then 2::real else 1))" .
-          (* strange effect, ich kann nach dem ersten also oben nicht weiter machen *)
 
-          thm exI
-          have sameset: "{y. index xs' y < k'} = {xs'!i | i. i < k'}"
-            apply(safe)
-            proof -
-              case (goal1 z)
+          have sameset: "{y. index xs' y < k'} = {xs'!i | i. i < k'}" 
+            proof (safe, goal_cases)
+              case (1 z)
               show ?case
                 proof 
-                from goal1(1) have "index xs' z < index (swaps (paid_A ! n) (s_A n)) (q)"
+                from 1(1) have "index xs' z < index (swaps (paid_A ! n) (s_A n)) (q)"
                   by auto
                 also have "\<dots> < length xs'" using index_less_size_conv by (auto simp: queryinlist) 
                 finally have "index xs' z  < length xs'" .
                 then have zset: "z \<in> set xs'" using index_less_size_conv by metis
-                have 1: "xs' ! (index xs' z) = z"
+                have f1: "xs' ! (index xs' z) = z"
                   apply(rule nth_index) using zset by auto
                 show "z = xs' ! (index xs' z) \<and> (index xs' z) < k'"
-                using 1 goal1(1)  by auto
+                using f1 1(1)  by auto
               qed
             next
-              case goal2
-              from goal2(1) have "i < index (swaps (paid_A ! n) (s_A n)) (q)"
+              case (2 k i)
+              from 2(1) have "i < index (swaps (paid_A ! n) (s_A n)) (q)"
                 by auto
               also have "\<dots> < length xs'" using index_less_size_conv by (auto simp: queryinlist) 
               finally have iset: "i < length xs'" .
-              thm index_nth_id
               have "index xs' (xs' ! i) = i" apply(rule index_nth_id)
                 using iset by(auto)
-              with goal2 show ?case by auto
+              with 2 show ?case by auto
             qed
            
           have aaa23: "inj_on (\<lambda>i. xs'!i) {i. i < k'}"
             apply(rule inj_on_nth)
               apply(simp)
-              apply(simp) proof safe
-                case goal1
+              apply(simp) proof (safe, goal_cases)
+                case (1 i)
                 then have "i < index xs' (q)" by auto
                 also have "\<dots> < length xs'" using index_less_size_conv by (auto simp: queryinlist) 
                 also have "\<dots> = length init" by auto
@@ -1556,10 +1497,6 @@ subsection "The Transformation"
 
           have aadad: "inj_on (\<lambda>b. (q,b)) {b. index xs' b < k'}" 
             unfolding inj_on_def by(simp)
-
-
-
-        thm subsa
 
           have "(\<Sum>(x,y)\<in>{(q,b)|b. index xs' b < k'}. (if b!(index init y) then 2::real else 1))
                 = (\<Sum>y\<in>{y. index xs' y < k'}. (if b!(index init y) then 2::real else 1))"
@@ -1581,9 +1518,6 @@ subsection "The Transformation"
           finally have bb: "(\<Sum>(x,y)\<in>{(q,b)|b. index xs' b < k'}. (if b!(index init y) then 2::real else 1))
               = (\<Sum>j<k'. (if b!(index init (xs'!j)) then 2::real else 1))" .
  
-
-              thm setsum_image_gen le_trans
-              thm aa bb
           have "A \<le> (\<Sum>j<k'. (if b!(index init (xs'!j)) then 2::real else 1))"
             using aa bb by linarith
 
@@ -1607,7 +1541,6 @@ subsection "The Transformation"
           have setxsbleibt: "set xs'' = set xs'" by auto
 
           have whatisk: "k = index xs' q" by auto
-          thm mtf2_q_after[of "(swaps (paid_A ! n) (s_A n))"]
           have "index (mtf2 (free_A ! n) (q) (swaps (paid_A ! n) (s_A n))) (q)
               = (index (swaps (paid_A ! n) (s_A n)) (q) - free_A ! n)" 
                 apply(rule mtf2_q_after) using queryinlist by auto
@@ -1626,7 +1559,6 @@ subsection "The Transformation"
             using before_in_setD1 before_in_setD2 by force
           also have "\<dots>  = {(x,y). x\<noteq>y \<and> x \<in> set xs' \<and> y\<in> set xs'  \<and> x < y in ys  \<and> y < x in xs'' \<and>  ~ y < x in xs'}"
                using setxsbleibt by force
-          thm not_before_in[where xs="xs'"]
           also have "\<dots>  = {(x,y). x\<noteq>y \<and> x \<in> set xs' \<and> y\<in> set xs'  \<and> x < y in ys  \<and> y < x in xs'' \<and>  x < y in xs'}"
                using not_before_in[where xs="xs'"] by force
           also have "\<dots> = {(x,y). x\<noteq>y \<and> x \<in> set xs'' \<and> y\<in> set xs'' \<and> x < y in ys  \<and> y < x in xs'' \<and>  x < y in xs'}"
@@ -1668,29 +1600,28 @@ subsection "The Transformation"
                             \<and> (k' < index xs'' x \<and> x \<in> set xs'')
                             \<and> (index xs' x < k)}"
                               using queryinlist by auto
-          also have "\<dots> \<subseteq> {(x,q)| x. x\<noteq>q       (* lasse eine bedingung fallen *)
+          also have "\<dots> \<subseteq> {(x,q)| x. x\<noteq>q       
                             \<and> (k' < index xs'' x \<and> x \<in> set xs'')
                             \<and> (index xs' x < k)}"
                               using queryinlist by auto
           also have "\<dots> = {(x,q)| x. x\<noteq>q       
-                            \<and> k' \<le> index xs' x  (* diese elemente haben sich bewegt! *)
+                            \<and> k' \<le> index xs' x  (* these elements moved *)
                             \<and> index xs' x < k 
                             \<and> x \<in> set xs''}"
                               apply(auto)
-                            proof -
-                              case (goal1 x)
+                            proof (goal_cases)
+                              case (1 x)
                               have id: "(swaps (paid_A ! n) (s_A n) ! index (swaps (paid_A ! n) (s_A n)) x) = x"
-                                apply(rule nth_index) using goal1 by auto
-                                thm mtf2_forward_beforeq
+                                apply(rule nth_index) using 1 by auto
                               have xa: "index xs'' (swaps (paid_A ! n) (s_A n) ! index (swaps (paid_A ! n) (s_A n)) x)  \<le> index xs' (q)"
                                   unfolding xs''_def xs'_def xs_def apply(rule mtf2_forward_beforeq)
                                     using queryinlist apply(simp)
                                     apply(simp)
-                                    by (fact goal1(4))
+                                    by (fact 1(4))
                               
                               have  "index xs' q - (free_A ! n) < index xs'' x
                                   \<and> index xs'' x  \<le> index xs' (q)" apply(intro conjI)
-                                    unfolding xs''_def xs'_def xs_def apply(fact goal1(2))
+                                    unfolding xs''_def xs'_def xs_def apply(fact 1(2))
                                     using id xa by auto
                               then have 3: "index (swaps (paid_A ! n) (s_A n)) (q) - (free_A ! n)
   < index (mtf2 (free_A ! n) (q) (swaps (paid_A ! n) (s_A n))) (swaps (paid_A ! n) (s_A n) ! index (swaps (paid_A ! n) (s_A n)) x) \<and>
@@ -1701,49 +1632,46 @@ subsection "The Transformation"
                               have qinset: "q \<in> set (swaps (paid_A ! n) (s_A n))"
                                 using queryinlist by auto
                               have dist: "distinct (swaps (paid_A ! n) (s_A n))" by auto
-                              thm mtf2_backwards_effect3 
-                              thm index_less
                               have 4: "index (swaps (paid_A ! n) (s_A n)) x < length (swaps (paid_A ! n) (s_A n))"
-                                apply(rule index_less) using setinit goal1 by auto
+                                apply(rule index_less) using setinit 1 by auto
                               from mtf2_backwards_effect3[OF qxs' qinset dist 3 4]
                               have "index (swaps (paid_A ! n) (s_A n)) (q) - free_A ! n \<le> index (swaps (paid_A ! n) (s_A n)) x" by auto
                               then show ?case by auto
                             next                            
-                              case (goal2 x)
-                              thm whatisk'
+                              case (2 x)
                               let ?i=" index (swaps (paid_A ! n) (s_A n)) x"
                               have a: "index xs'' q = index xs' q - free_A ! n" 
                                 unfolding xs''_def apply(rule mtf2_q_after)
                                    using queryinlist by auto
-                              from goal2(2) whatisk' have b: "index xs'' q \<le> index xs' x" by auto
+                              from 2(2) whatisk' have b: "index xs'' q \<le> index xs' x" by auto
                               from a b have t: "index xs' q - (free_A ! n) \<le> index xs' x" by auto
-                              from goal2(3) have t2: "index xs' x < index xs' q" by auto
+                              from 2(3) have t2: "index xs' x < index xs' q" by auto
                               have qxs': "q \<in> set xs'" by (auto simp: queryinlist) 
                               have distxs': "distinct xs'" by auto
                               from t t2 have tt: "index xs' q - (free_A ! n) \<le> index xs' x \<and> index xs' x < index xs' q" by auto
                                
                               from mtf2_forward_effect3[OF qxs' distxs' tt]
-                                show ?case by(simp add: goal2(4))
+                                show ?case by(simp add: 2(4))
                         qed
                               
           also have "\<dots> = {(xs'!i,q)|i. i\<in>{k'..<k}}"
             apply(auto)
-            proof
-              case (goal1 x)
+            proof (rule, goal_cases)
+              case (1 x)
               let ?i27="index (swaps (paid_A ! n) (s_A n))"
-              from goal1 show "x = swaps (paid_A ! n) (s_A n) ! ?i27 x \<and> index (swaps (paid_A ! n) (s_A n)) (q) - free_A ! n \<le> ?i27 x \<and>
+              from 1 show "x = swaps (paid_A ! n) (s_A n) ! ?i27 x \<and> index (swaps (paid_A ! n) (s_A n)) (q) - free_A ! n \<le> ?i27 x \<and>
                     ?i27 x < index (swaps (paid_A ! n) (s_A n)) (q)"
                   by simp
             next
-              case (goal2 i) (* elements between k' and k are different from q *)
+              case (2 i) (* elements between k' and k are different from q *)
               let ?fA = "swaps (paid_A ! n) (s_A n)"
               have "?fA ! index ?fA q = q" apply(rule nth_index) using ` q \<in> set init` by auto
-              have 1: "i \<noteq> index ?fA q" using goal2 by (auto simp: q_def) 
+              have 1: "i \<noteq> index ?fA q" using 2 by (auto simp: q_def) 
 
               have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length (swaps (paid_A ! n) (s_A n))"
                 by(rule index_le_size)
               then have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length init" by auto
-              with goal2 have a: "i<length init" by auto
+              with 2 have a: "i<length init" by auto
                {
                   fix xs x y q
                   have "x\<noteq>y \<Longrightarrow> x < length xs \<Longrightarrow> y < length xs \<Longrightarrow> xs ! x = q \<Longrightarrow> xs ! y = q \<Longrightarrow> \<not> distinct xs"  
@@ -1755,33 +1683,32 @@ subsection "The Transformation"
                   apply(simp add: a)
                   apply(rule index_less) using ` q \<in> set init` apply simp
                   apply(simp)
-                  apply(simp add: goal2 q_def)
+                  apply(simp add: 2 q_def)
                   apply(rule nth_index) using ` q \<in> set init` by auto
               then show ?case by simp
             next
-              case (goal3 i)
-              thm index_nth_id
+              case (3 i)
               have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length (swaps (paid_A ! n) (s_A n))"
                 by(rule index_le_size)
               then have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length init" by auto
-              with goal3(2) have a: "i<length init" by auto
+              with 3(2) have a: "i<length init" by auto
               have g: "index (swaps (paid_A ! n) (s_A n)) (swaps (paid_A ! n) (s_A n) ! i) = i"
                   apply(rule index_nth_id) by(auto simp: a)
-              show ?case unfolding g using goal3(1) by auto
+              show ?case unfolding g using 3(1) by auto
             next
-              case (goal4 i)
+              case (4 i)
               have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length (swaps (paid_A ! n) (s_A n))"
                 by(rule index_le_size)
               then have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length init" by auto
-              with goal4(2) have a: "i<length init" by auto
+              with 4(2) have a: "i<length init" by auto
               have g: "index (swaps (paid_A ! n) (s_A n)) (swaps (paid_A ! n) (s_A n) ! i)
                         = i" apply(rule index_nth_id) by(auto simp: a)
-              show ?case unfolding g using goal4 by auto
+              show ?case unfolding g using 4 by auto
             next
-              case (goal5 i)
+              case (5 i)
               have "index (swaps (paid_A ! n) (s_A n)) (q) < length (swaps (paid_A ! n) (s_A n))"
                 apply(rule index_less) by (auto simp: queryinlist) 
-              from order.strict_trans[OF goal5(2) this] have g: "i < length (swaps (paid_A ! n) (s_A n))" by auto
+              from order.strict_trans[OF 5(2) this] have g: "i < length (swaps (paid_A ! n) (s_A n))" by auto
               have "swaps (paid_A ! n) (s_A n) ! i \<in> set (swaps (paid_A ! n) (s_A n))"
                   apply(rule nth_mem) using g by auto
               then show ?case by auto
@@ -1795,7 +1722,6 @@ subsection "The Transformation"
            
           have q: "{x\<in>?UB. snd x=q} = ?UB" by auto
 
-          thm setsum_mono2
           have E0: "A = (\<Sum>(x,y)\<in>(Inv ys' xs'')-(Inv ys xs'). (if b'!(index init y) then 2::real else 1))" by auto
           also have E1: "\<dots> \<le> (\<Sum>(z,y)\<in>?UB. if flip (index init q) (b) ! (index init y) then 2::real else 1)" 
               unfolding A_def b'_def apply(rule setsum_mono2)
@@ -1837,7 +1763,6 @@ subsection "The Transformation"
               also have "\<dots> = k-k'" by auto
               finally have cardfst: "card (fst ` ?UB)= k-k'" .
 
-              thm setsum_image_gen
               have "(\<Sum>y\<in>?UB. 1) = (\<Sum>y\<in>fst ` ?UB. (\<Sum>y\<in>{x \<in> ?UB. fst x = y}. 1))" 
                 apply(rule setsum_image_gen) by (auto)
               also have "\<dots> = (\<Sum>y\<in>fst ` ?UB. (\<Sum>y\<in>{(y,q)}. 1))" 
@@ -1856,8 +1781,7 @@ subsection "The Transformation"
         show "(\<Sum>(x,y)\<in>(Inv ys' xs''). (if b'!(index init y) then 2::real else 1)) - (\<Sum>(x,y)\<in>(Inv ys xs'). (if b!(index init y) then 2::real else 1)) \<le> ?ub2" 
                   unfolding ub_free_def teilen[unfolded \<Delta>_def A_def B_def C_def] using BC_absch A_absch using True 
                     by auto
-      qed
-      thm this
+      qed 
       from paid_ub have kl: "\<Phi>\<^sub>1 x \<le> \<Phi>\<^sub>0 x + ?paidUB" by auto
       from free_ub have kl2: "\<Phi>\<^sub>2 x -  ?ub2 \<le> \<Phi>\<^sub>1 x" using gis dis by auto
 
@@ -1869,10 +1793,7 @@ subsection "The Transformation"
       then have "(cost x) + (\<Phi>\<^sub>2 x) - (\<Phi>\<^sub>0 x) \<le> k + 1 + I + ?ub2 + ?paidUB" using ub_cost_BIT by auto
   
       then show ?case unfolding ub_free_def b_def by auto 
-    qed 
-
-thm ub_cost
- 
+    qed   
 
 subsection "Approximation of the Term for Free exchanges"
 
@@ -1914,7 +1835,6 @@ subsection "Approximation of the Term for Free exchanges"
 
         have "(\<Sum>x\<in>{l::bool list. length l = ?l \<and> l!(index init q)}. real(k-k'))
             = (\<Sum>x\<in>{l::bool list. length l = ?l \<and> l!(index init q)}. k-k')" by auto    
-            thm setsum_constant
         also have "\<dots> = (k-k')*2^(?l-1)" using lulu by simp
      
    finally have absch1stterm:  "(\<Sum>x\<in>{l::bool list. length l = ?l \<and> l!(index init q)}. real(k-k'))
@@ -1958,10 +1878,10 @@ subsection "Approximation of the Term for Free exchanges"
         have distinctS: "distinct (take k' xs')" using distinct_take identS by simp
         have lengthS: "length (take k' xs') = k'" using length_take k'inbound by simp
         from distinct_card[OF distinctS] lengthS have "card (set (take k' xs')) = k'" by simp
-        then have cardS: "card ?S = k'" using identS by simp (* needed *)
+        then have cardS: "card ?S = k'" using identS by simp
         
         have a: "?S \<subseteq> set xs'" using set_take_subset identS by metis
-        then have Ssubso: "(index init) ` ?S \<subseteq> {0..<?l}" using setinit by auto (* needed *)
+        then have Ssubso: "(index init) ` ?S \<subseteq> {0..<?l}" using setinit by auto
         from a have s_subst_init: "?S \<subseteq> set init" by auto
         
         note index_inj_on_S=subset_inj_on[OF inj_on_index[of "init"] s_subst_init]
@@ -1969,7 +1889,7 @@ subsection "Approximation of the Term for Free exchanges"
         have l: "xs'!k = q" unfolding k_def apply(rule nth_index) using queryinlist by(auto)
         have "xs'!k \<notin> set (take k' xs')"
             apply(rule index_take) using l by simp
-        then have requestnotinS: "(q) \<notin> ?S" using l identS by simp (* needed *)
+        then have requestnotinS: "(q) \<notin> ?S" using l identS by simp
         then have indexnotin: "index init q \<notin> (index init) ` ?S"
             using index_inj_on_S s_subst_init by auto
        
@@ -2040,7 +1960,6 @@ subsection "Approximation of the Term for Free exchanges"
       have fb: "finite {l::bool list. length l = ?l \<and> ~l!(index init q)}" using bitstrings_finite by auto
 
       { fix f :: "bool list \<Rightarrow> real"
-        thm setsum_Un setsum_Un[OF fa fb, of f]
         have "(\<Sum>x\<in>{l::bool list. length l = ?l}. f x)
         = (\<Sum>x\<in>{l::bool list. length l = ?l \<and> l!(index init q)} \<union> {l::bool list. length l = ?l \<and> ~l!(index init q)}. f x)" by(simp only: splitie)
         also have "\<dots>
@@ -2071,7 +1990,6 @@ subsection "Approximation of the Term for Free exchanges"
       also
       have E2:  "\<dots> = E(map_pmf (\<lambda>x. (if x!(index init q) then real(k-k') else (\<Sum>j<k'. (if x!(index init (xs'!j)) then 2::real else 1)))) (bv ?l))"
           using config_n_bv[of init _] by auto
-      thm config_n_bv
       also
       let ?insf="(\<lambda>x. (if x!(index init q) then k-k' else (\<Sum>j<k'. (if x!(index init (xs'!j)) then 2::real else 1))))"
       have E3: "\<dots> = (\<Sum>x\<in>(set_pmf (bv ?l)). (?insf x) * pmf (bv ?l) x)"
@@ -2203,19 +2121,13 @@ subsection "Combine the Results"
   then show "t_BIT n + Phi(n + 1) - Phi n \<le> (7 / 4) * t_A n - 3/4" .
 qed
 
-
-thm potential phi0 myub
-thm potential[of Phi, OF phi0 phi_pos myub] 
- 
-
 section "Lift the Result to the Whole Request List"
 
  
 lemma T_BIT_absch_le: assumes nqs: "n \<le> length qs"
   shows "T_BIT n \<le> (7 / 4) * T_A n - 3/4*n"
 unfolding T_BIT_def T_A_def
-proof -
-  thm potential2[of "Phi", OF phi0 phi_pos myub]
+proof - 
   from potential2[of "Phi", OF phi0 phi_pos myub] nqs have
       "setsum t_BIT {..<n} \<le> (\<Sum>i<n. 7 / 4 *   (t_A i) - 3 / 4)" by auto
   also have "\<dots> = (\<Sum>i<n. 7 / 4 * real_of_int (t_A i)) - (\<Sum>i<n. (3/4))" by (rule setsum_subtractf)
@@ -2249,7 +2161,6 @@ proof cases
   have "T_BIT n \<le> (7 / 4) * T_A' n - 3/4*n" using T_BIT_absch[OF assms(1)] by auto
   also have "\<dots> = ((7 / 4) * real_of_int(T_A' n)) - (3/4*(n * size init)) / size init"
     using assms(2) by simp
-    thm diff_left_mono  divide_right_mono diff_left_mono[OF divide_right_mono[OF 1]]
   also have "\<dots> \<le> ((7 / 4) * real_of_int(T_A' n)) - 3/4*T_A' n / size init"
     by(rule diff_left_mono[OF  divide_right_mono[OF 1]]) simp
   also have "\<dots> = ((7 / 4) - 3/4 / size init) * T_A' n" by algebra
@@ -2342,7 +2253,6 @@ proof-
   { fix acts :: "answer list" 
     assume len: "length acts = length qs"
     interpret BIT_Off acts qs init proof qed (auto simp: assms(2) len)
-    thm BIT_absch_le BIT_competitive2
     from BIT_absch_le[OF assms(1)] assms(1)
     have "(T_on_rand BIT init qs + 3 / 4 * length qs)/ (7/4) \<le> real(T init qs acts)"
       by(simp add: field_simps length_greater_0_conv[symmetric]

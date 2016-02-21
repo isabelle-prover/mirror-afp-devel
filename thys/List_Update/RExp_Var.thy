@@ -88,24 +88,24 @@ definition concS :: "'b rexp set \<Rightarrow> 'b rexp set \<Rightarrow> 'b rexp
 lemma substL_conc: "L (substL (L1 @@ L2) \<sigma>) = L (concS (substL L1 \<sigma>) (substL L2 \<sigma>))"
 apply(simp add: concS_def conc_def)
 apply(auto)
-proof -
-  case goal1
+proof (goal_cases)
+  case (1 x xs ys)
   show ?case
     apply(rule exI[where x="Times (subst (w2rexp xs) \<sigma>) (subst (w2rexp ys) \<sigma>)"])
     apply(simp)
     apply(safe)
-     apply(rule exI[where x="xs"]) apply(simp add: goal1(2))
-     apply(rule exI[where x="ys"]) apply(simp add: goal1(3))
-     using goal1(1) subst_w2rexp by auto
+     apply(rule exI[where x="xs"]) apply(simp add: 1(2))
+     apply(rule exI[where x="ys"]) apply(simp add: 1(3))
+     using 1(1) subst_w2rexp by auto
 next
-  case (goal2 x xs ys)
+  case (2 x xs ys)
   show ?case
     apply(rule exI[where x="subst (w2rexp (xs @ ys)) \<sigma>"])
     apply(safe)
       apply(rule exI[where x="xs@ys"]) apply(simp)
         apply(rule exI[where x="xs"])
-        apply(rule exI[where x="ys"]) using goal2(2,3) apply(simp)
-      using goal2(1) subst_w2rexp by(auto)
+        apply(rule exI[where x="ys"]) using 2(2,3) apply(simp)
+      using 2(1) subst_w2rexp by(auto)
 qed
 
 lemma L_conc: "L(concS M1 M2) = (L M1) @@ (L M2)"
@@ -133,11 +133,12 @@ apply(induct rs)
   apply(simp)
   apply(case_tac rs) by auto
 
-lemma obtainit: "r \<in> lang (verund rs) \<Longrightarrow> \<exists>x\<in>(set (rs::nat rexp list)). r \<in> lang x"
+lemma obtainit: 
+  assumes "r \<in> lang (verund rs)"
+  shows "\<exists>x\<in>(set (rs::nat rexp list)). r \<in> lang x"
 proof -
-  case goal1
-  then have "r \<in> L (set rs)" by(simp only: lang_verund)
-  then show ?case by(auto)
+  from assms have "r \<in> L (set rs)" by(simp only: lang_verund)
+  then show ?thesis by(auto)
 qed
 
 
@@ -177,18 +178,18 @@ lemma star_mono: "L1 \<subseteq> L2 \<Longrightarrow> star L1 \<subseteq> star L
 
 lemma Lstar: "L(starS M) = star ( L(M) )"
 unfolding starS_def apply(auto)
-proof -
-  case (goal1 x xs)
-  from goal1(2) have "L (set xs) \<subseteq> L (M)" by(rule L_mono)
+proof (goal_cases)
+  case (1 x xs)
+  from 1(2) have "L (set xs) \<subseteq> L (M)" by(rule L_mono)
   then have a: "star (L (set xs)) \<subseteq> star (L (M))" by (rule star_mono)
-  from goal1(1) obtain n where "x \<in> (lang (verund xs)) ^^ n" unfolding star_def by(auto)
+  from 1(1) obtain n where "x \<in> (lang (verund xs)) ^^ n" unfolding star_def by(auto)
   thm lang_verund4
   then have "x \<in> (L (set xs)) ^^ n" by(simp only: lang_verund4)
   then have "x \<in> star (L (set xs))" unfolding star_def by auto
   with a have "x \<in> star (L (M))" by auto
   then show "x \<in> star (\<Union>x\<in>M. lang x)" unfolding starS_def by auto
 next
-  case (goal2 x)
+  case (2 x)
   then obtain n where "x \<in> (\<Union>x\<in>M. lang x) ^^ n" unfolding star_def by auto
   then show ?case
   proof (induct n arbitrary: x)
@@ -223,14 +224,14 @@ next
 
     from Bin am mM x have "x \<in> lang m @@ (lang (Star (verund bs)))" by auto
     then have " x \<in> lang (Star (verund (m # bs))) @@ lang (Star (verund (m # bs)))" using ac ad by blast
-    then have gelberengeL: "x \<in> lang (Star (verund (m # bs)))" by (auto)
+    then have x_in: "x \<in> lang (Star (verund (m # bs)))" by (auto)
 
     
     show ?case
       apply(rule exI[where x="?c"])
       apply(safe)
         apply(rule exI[where x="m#bs"]) apply(simp add: bsM mM)
-        by(fact gelberengeL)
+        by(fact x_in)
   qed
 qed        
 
@@ -274,8 +275,8 @@ proof -
         apply(simp add: li) 
           apply(rule exI[where x="A"]) apply(simp add: A)
         unfolding x
-        proof -
-          case goal1
+        proof (goal_cases)
+          case 1
           let ?L = "(lang (subst (w2rexp A) \<sigma>) \<union> lang (verund li))"
           have t1: "x1 \<in> ?L" using x1 star_mono by blast
           have t2: "x2 \<in> star ?L" using x2R R star_mono apply(simp) by blast
@@ -321,13 +322,13 @@ next
         apply(rule exI[where x="elem@word"])
         apply(simp)
           apply(rule exI[where x="Suc n"])
-          proof -
-            case goal1
+          proof (goal_cases)
+            case 1
             have "elem \<in> L1" by(fact elemL1)
             with word
             show "elem @ word \<in> L1 ^^ Suc n" by simp
           next
-            case goal2
+            case 2
             thm x1 Suc(2)
             have "x1 \<in> lang (subst (w2rexp elem) \<sigma>)" by(fact x1elem)
             with x2[unfolded R] show ?case unfolding x apply(simp only: subst_w2rexp) by blast
@@ -473,21 +474,17 @@ proof -
         apply(case_tac ws)
           apply(simp)
           apply(auto)
-        proof -
-          case (goal1 as)
+        proof (goal_cases)
+          case (1 as)
           then show ?case
-            apply(induct as)
-              apply(simp)
-              apply(rule exI[where x="[]"])
-              apply(simp)
-              proof -
-                case goal1
-                then have as: "set as \<subseteq> {x,y}" and axy: "a \<in> {x,y}" by auto
-                from goal1(1)[OF as] obtain ws where asco: "as = concat ws" and ws: "set ws \<subseteq> {[y],[x]}" by auto
-                show ?case
-                  apply(rule exI[where x="[a]#ws"])
-                  using axy by(auto simp add: asco ws)
-              qed
+            proof (induct as)
+              case (Cons a as)
+              then have as: "set as \<subseteq> {x,y}" and axy: "a \<in> {x,y}" by auto
+              from Cons(1)[OF as] obtain ws where asco: "as = concat ws" and ws: "set ws \<subseteq> {[y],[x]}" by auto
+              show ?case
+                apply(rule exI[where x="[a]#ws"])
+                using axy by(auto simp add: asco ws)
+            qed (rule exI[where x="[]"], simp)
           qed
    finally show ?thesis by(simp add: myUNIV_def)
 qed
@@ -584,8 +581,8 @@ lemma ahahahha:
   "( xs\<in>lang (mycasex x y) \<Longrightarrow> P xs)"
   shows
   "set xs \<subseteq> {x,y} \<Longrightarrow> P xs"
-proof -
-  case goal1
+proof (goal_cases)
+  case 1
   then have "xs \<in> lang (myUNIV x y)"  using myUNIV_alle by fast
   then have "xs \<in> lang (mycases x y)" using mycases_char by auto
   then show ?case unfolding mycases_def using assms by auto

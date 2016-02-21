@@ -47,30 +47,8 @@ proof -
 qed 
 
 
-thm measure_pmf.ereal_integral_real
-
-
-(* mir ist grad aufgefalln, dass ich eigentlich auch T_on definiert haben will nicht für
-eine bestimmt ausgangs verteilung (der zustände) sondern auch für beliebige,
-normal startet man ja immer mit (init, initvonalgorithm), 
-das sollte relaxiert werden, damit ich splitquerylist richtig hinschreiben kann *)
-
-
 term "Partial_Cost_Model.config'_rand"
-         
-(*                  
-fun config2 :: "('a list,'is,'a, nat * nat list) alg_on_rand  \<Rightarrow> 'a list  \<Rightarrow>  ('a list*'is) pmf \<Rightarrow> nat
-    \<Rightarrow> ('a list * 'is) pmf" where
-"config2 A qs initdistr 0 = initdistr" |
-"config2 A qs initdistr (Suc n) = bind_pmf (config2 A qs initdistr n)
-                (\<lambda>s. bind_pmf  (snd A s (qs!n)) (\<lambda>(a,nis). return_pmf (step (fst s) (qs!n) a, nis)) )"
-
-term "config2"
-lemma "n<length rs \<Longrightarrow> config2 A rs init n = config'_rand A init (take n rs)"
-apply(induct n)
-  apply(simp)
-  by(simp add: take_Suc_conv_app_nth config'_rand_append)
-*)
+          
 definition config2 where
   "config2 A rs init n == config'_rand A init (take n rs)"
 
@@ -98,14 +76,6 @@ apply(induct x)
 lemma config2_append_ge2: "x\<ge>length xs \<Longrightarrow> config2 (I, S) (xs @ ys) init x
           =  config2 (I, S) ys (config2 (I,S) xs init (length xs)) (x-length xs)"
 using config2_append_ge by (metis le_add_diff_inverse) 
-
-(*
-fun T_on_n2 where
-  "T_on_n2 A qs init n = E (bind_pmf (config2 A qs init n)
-                    (\<lambda>(s,is). bind_pmf (snd A (s,is) (qs!n)) (\<lambda>(a,nis). return_pmf (t\<^sub>p s (qs!n) a))))"
- 
-lemma "T_on_n2 A qs init n = T_on_rand'_n A init qs n"
-  by(simp add: split_def) *)
 
 definition T_on_n2 where "T_on_n2 A qs init n == T_on_rand'_n A init qs n"
 
@@ -151,15 +121,12 @@ definition "type0 init x y = do {
 
 lemma T\<^sub>p_on2_from_type0: "T\<^sub>p_on2 BIT qs (type0 [x,y] x y) = T\<^sub>p_on_rand BIT [x,y] qs"
 unfolding T\<^sub>p_on2_def T_on_rand_as_sum
-proof(rule setsum.cong)
-  case (goal2 e)
+proof(rule setsum.cong, goal_cases)
+  case (2 e)
   show ?case unfolding T_on_n2_def
   apply(simp only: config2_config[symmetric])
     apply(simp add: config2_def BIT_init_def bind_assoc_pmf map_pmf_def type0_def bind_return_pmf)
-    proof -
-      case goal1 
-      show ?case by(simp add: bind_commute_pmf[where C= "(\<lambda>a b.  return_pmf ([x, y], ([a,b],[x,y])))"])
-    qed 
+     by(simp add: bind_commute_pmf[where C= "(\<lambda>a b.  return_pmf ([x, y], ([a,b],[x,y])))"])     
 qed simp
 
 definition "type1 init x y = do {
@@ -175,14 +142,13 @@ definition "inv_BIT init qs x y = (config2 BIT qs (type0 init x y) (length qs) =
 
 
 
-lemma bit_yx: "x \<noteq> y \<Longrightarrow> qs \<in> lang (Star(Times (Atom y) (Atom x))) 
-       \<Longrightarrow> init \<in> {[x,y],[y,x]}
-       \<Longrightarrow> T\<^sub>p_on2 BIT (qs@r) (type1 init x y) = 0.75 * length qs + T\<^sub>p_on2 BIT r (type1 init x y)
+lemma bit_yx: assumes "x \<noteq> y" "qs \<in> lang (Star(Times (Atom y) (Atom x))) "
+       "init \<in> {[x,y],[y,x]}"
+   shows "T\<^sub>p_on2 BIT (qs@r) (type1 init x y) = 0.75 * length qs + T\<^sub>p_on2 BIT r (type1 init x y)
     \<and> config2 BIT qs (type1 init x y) (length qs) = (type1 init x y)"
 proof -
-  case goal1
-  then have "qs \<in> star ({[y]} @@ {[x]})" by (simp)
-  from this goal1 show ?case
+  from assms have "qs \<in> star ({[y]} @@ {[x]})" by (simp)
+  from this assms show ?thesis
   proof (induct qs rule: star_induct)
     case (append u v)
     then have uyx: "u = [y,x]" by auto 
@@ -197,8 +163,8 @@ proof -
     have s2: "config2 BIT [y,x] (type1 init x y) (Suc (Suc 0)) = (type1 init x y)"
       unfolding type1_def  
       apply(simp add: A bind_return_pmf BIT_step_def config2_def bind_assoc_pmf split_def)
-      proof -
-        case goal1                                                 
+      proof (goal_cases)
+        case 1                                                 
         show ?case (is "bernoulli_pmf (1 / 2) \<bind> (\<lambda>xa. bernoulli_pmf (1 / 2) \<bind>
                           (\<lambda>xb. return_pmf (?A xa xb))) = bernoulli_pmf (1 / 2) \<bind> (\<lambda>xa. bernoulli_pmf (1 / 2) \<bind>
                           (\<lambda>xb. return_pmf (?B xa xb)))")
@@ -244,7 +210,7 @@ proof -
         apply(subst E_bernoulli3) 
           apply(simp) apply(simp) apply(simp)   
         using A 
-          using goal1(3)
+          using assms(3)
             apply(cases "init=[x,y]")
             by(simp_all add: t\<^sub>p_def step_def swap_def mtf2_def) 
   
@@ -274,17 +240,15 @@ proof -
   qed (simp add: config2_def)
 qed
 
-lemma bit_yxyx: "x \<noteq> y
-       \<Longrightarrow> init \<in> {[x,y],[y,x]}
-       \<Longrightarrow> qs \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])
-       \<Longrightarrow> T\<^sub>p_on2 BIT (qs@r) (type0 init x y) = 0.75* length qs + T\<^sub>p_on2 BIT r (type1 init x y)
+lemma bit_yxyx: assumes "x \<noteq> y" "init \<in> {[x,y],[y,x]}"
+      "qs \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])"
+ shows "T\<^sub>p_on2 BIT (qs@r) (type0 init x y) = 0.75* length qs + T\<^sub>p_on2 BIT r (type1 init x y)
        \<and> config2 BIT qs (type0 init x y) (length qs) = (type1 init x y)"
 proof -
-  case goal1
   obtain u v where uu: "u \<in> lang (Times (Atom y) (Atom x))"
                       and vv: "v \<in> lang (seq[ Star(Times (Atom y) (Atom x))])"
                       and qsuv: "qs = u @ v" 
-                      using goal1(3)
+                      using assms(3)
                       by (auto simp: conc_def)  
   from uu have uyx: "u = [y,x]" by(auto)
 
@@ -293,13 +257,13 @@ proof -
 
 
 
-    have A: "x\<noteq>y" "init \<in> {[x,y],[y,x]}" using goal1 by auto
+    have A: "x\<noteq>y" "init \<in> {[x,y],[y,x]}" using assms by auto
 
    have s2: "config2 BIT [y,x] (type0 init x y) (Suc (Suc 0)) = (type1 init x y)"
       unfolding type0_def type1_def  config2_def
       apply(simp add: A bind_return_pmf  BIT_step_def bind_assoc_pmf split_def)
-      proof -
-        case goal1                                                 
+      proof (goal_cases)
+        case 1                                                 
         show ?case (is "bernoulli_pmf (1 / 2) \<bind> (\<lambda>xa. bernoulli_pmf (1 / 2) \<bind>
                           (\<lambda>xb. return_pmf (?A xa xb))) = bernoulli_pmf (1 / 2) \<bind> (\<lambda>xa. bernoulli_pmf (1 / 2) \<bind>
                           (\<lambda>xb. return_pmf (?B xa xb)))")
@@ -370,31 +334,30 @@ apply(subst E_bernoulli3)
       by (simp add: ring_distribs del: add_2_eq_Suc' add_2_eq_Suc) 
     also have "\<dots> = 0.75 * length (u @ v) + T\<^sub>p_on2 BIT r (type1 init x y)"
       using uyx by simp
-    finally show ?case using qsuv config by simp
+    finally show ?thesis using qsuv config by simp
 qed
  
 
-lemma BIT_a_config: "qs \<in> Lxx x y \<Longrightarrow> x \<noteq> y
-       \<Longrightarrow> init \<in> {[x,y],[y,x]} \<Longrightarrow> 
-  qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y]) \<Longrightarrow>
-    config2 BIT qs (type0 init x y) (length qs) = (type0 init y x)"
-proof -
-  case goal1
-  from goal1(4) have alt: "qs = [x,y,y] \<or> qs = [y,y]" apply(simp) by fastforce
-  with goal1(2) show ?thesis 
+lemma BIT_a_config: assumes "qs \<in> Lxx x y" "x \<noteq> y"
+    " init \<in> {[x,y],[y,x]}"
+   "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
+  shows  "config2 BIT qs (type0 init x y) (length qs) = (type0 init y x)"
+proof - 
+  from assms(4) have alt: "qs = [x,y,y] \<or> qs = [y,y]" apply(simp) by fastforce
+  with assms(2) show ?thesis 
     unfolding  type0_def config2_def
     apply(cases "qs=[y,y]")
       apply(simp add: mtf2_def step_def split_def swap_def bind_assoc_pmf bind_return_pmf BIT_step_def )
       apply(rule pmf_eqI)
         apply(simp only: pmf_bind)  
-          using goal1(3)
+          using assms(3)
             apply(cases "init=[x,y]")
             apply(simp_all add: swap_def) 
 
       apply(simp add: mtf2_def step_def split_def swap_def bind_assoc_pmf bind_return_pmf BIT_step_def )
       apply(rule pmf_eqI)
         apply(simp only: pmf_bind)  
-          using goal1(3)
+          using assms(3)
             apply(cases "init=[x,y]")
             apply(simp_all add: swap_def) apply smt+
     done
@@ -412,30 +375,28 @@ lemma BIT_a: "qs \<in> Lxx x y \<Longrightarrow> x \<noteq> y
     done
 
 
-lemma bit_a: "qs \<in> Lxx x y \<Longrightarrow> x \<noteq> y
-       \<Longrightarrow> init \<in> {[x,y],[y,x]} \<Longrightarrow> 
-  qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y]) \<Longrightarrow>
-   T\<^sub>p_on2 BIT qs (type0 init x y)  \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y]) 
+lemma bit_a: assumes "qs \<in> Lxx x y" "x \<noteq> y"
+ "init \<in> {[x,y],[y,x]}"
+ "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
+ shows "T\<^sub>p_on2 BIT qs (type0 init x y)  \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y]) 
     \<and> inv_BIT init qs x y"
 proof -
-  case goal1
-  then have lqs: "last qs = y" by fastforce
-  from goal1 BIT_a have BIT: "T\<^sub>p_on2 BIT qs (type0 init x y) = 1.5" by auto
-  with OPT2_A[OF goal1(2,4)] have "T\<^sub>p_on2 BIT qs (type0 init x y) \<le> 1.75 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])" by auto
-  moreover from BIT_a_config goal1 lqs have "inv_BIT init qs x y" unfolding inv_BIT_def by(auto simp: other_def)
+  from assms have lqs: "last qs = y" by fastforce
+  from assms BIT_a have BIT: "T\<^sub>p_on2 BIT qs (type0 init x y) = 1.5" by auto
+  with OPT2_A[OF assms(2,4)] have "T\<^sub>p_on2 BIT qs (type0 init x y) \<le> 1.75 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])" by auto
+  moreover from BIT_a_config assms lqs have "inv_BIT init qs x y" unfolding inv_BIT_def by(auto simp: other_def)
   ultimately show ?thesis by simp
 qed
 
-lemma BIT_x: "x\<noteq>y
-       \<Longrightarrow> init \<in> {[x,y],[y,x]} \<Longrightarrow> qs \<in> lang (Plus (Atom x) One)
-  \<Longrightarrow> T\<^sub>p_on2 BIT (qs@r) (type0 init x y) = T\<^sub>p_on2 BIT r (type0 init x y)
+lemma BIT_x: assumes "x\<noteq>y"
+       "init \<in> {[x,y],[y,x]}" "qs \<in> lang (Plus (Atom x) One)"
+ shows "T\<^sub>p_on2 BIT (qs@r) (type0 init x y) = T\<^sub>p_on2 BIT r (type0 init x y)
     \<and> config2 BIT qs (type0 init x y) (length qs) = (type0 init x y)"
-proof -
-  case goal1
-  have A: "x\<noteq>y"  using goal1 by auto
+proof - 
+  have A: "x\<noteq>y"  using assms by auto
 
   have s: "config2 BIT qs (type0 init x y) (length qs) = type0 init x y"
-    unfolding  type0_def config2_def using goal1(2,3)
+    unfolding  type0_def config2_def using assms(2,3)
     apply(cases "init=[x,y]")
     apply(auto simp: mtf2_def step_def split_def swap_def bind_assoc_pmf bind_return_pmf BIT_step_def)
     apply(rule pmf_eqI)  
@@ -446,7 +407,7 @@ proof -
           apply(simp_all) apply(smt) done
 
   have t: "T\<^sub>p_on2 BIT qs (type0 init x y) = 0"
-    using goal1(2,3)
+    using assms(2,3)
     apply(cases "init=[x,y]")
       unfolding  T\<^sub>p_on2_def type0_def T_on_n2_def
       apply(auto simp add: bind_return_pmf bind_assoc_pmf BIT_step_def split_def)
@@ -466,16 +427,15 @@ proof -
 qed
         
 
-lemma BIT_b: "x \<noteq> y 
-       \<Longrightarrow> init \<in> {[x,y],[y,x]}
-    \<Longrightarrow> v \<in> lang (seq [Times (Atom y) (Atom x), Star (Times (Atom y) (Atom x)), Atom y, Atom y])
-       \<Longrightarrow> T\<^sub>p_on2 BIT v (type0 init x y) = 0.75 * length v - 0.5
+lemma BIT_b: assumes "x \<noteq> y"
+       "init \<in> {[x,y],[y,x]}"
+    "v \<in> lang (seq [Times (Atom y) (Atom x), Star (Times (Atom y) (Atom x)), Atom y, Atom y])"
+    shows "T\<^sub>p_on2 BIT v (type0 init x y) = 0.75 * length v - 0.5
     \<and> config2 BIT v (type0 init x y) (length v) = (type0 init y x)"
 proof -
-  case goal1
   have lenvmod: "length v mod 2 = 0"
   proof -
-    from goal1(3) have "v \<in> ({[y]} @@ {[x]}) @@ star({[y]} @@ {[x]}) @@ {[y]} @@ {[y]}" by(simp add: conc_assoc)
+    from assms(3) have "v \<in> ({[y]} @@ {[x]}) @@ star({[y]} @@ {[x]}) @@ {[y]} @@ {[y]}" by(simp add: conc_assoc)
     then obtain p q r where pqr: "v=p@q@r" and "p\<in>({[y]} @@ {[x]})"
               and q: "q \<in> star ({[y]} @@ {[x]})" and "r \<in>{[y]} @@ {[y]}" by (metis concE)
     then have "p = [y,x]" "r=[y,y]" by auto
@@ -486,9 +446,9 @@ proof -
     from a b show "length v mod 2 = 0" by auto
   qed
         
-  have A: "x\<noteq>y"  using goal1 by auto
+  have A: "x\<noteq>y"  using assms by auto
  
-  from goal1(3) have "v \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])
+  from assms(3) have "v \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])
                           @@ lang (seq[Atom y, Atom y])" by (auto simp: conc_def)
   then obtain a b where aa: "a \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])"
                       and "b \<in> lang (seq[Atom y, Atom y])"
@@ -498,11 +458,11 @@ proof -
   from aa have lena: "length a > 0" by auto
   from vab bb have lenv: "length v = length a + 2" by auto
  
-  from bit_yxyx goal1(1,2) aa have stars: "T\<^sub>p_on2 BIT (a @ b) (type0 init x y) = 0.75 * length a + T\<^sub>p_on2 BIT b (type1 init x y)"
+  from bit_yxyx assms(1,2) aa have stars: "T\<^sub>p_on2 BIT (a @ b) (type0 init x y) = 0.75 * length a + T\<^sub>p_on2 BIT b (type1 init x y)"
                              and s2: "config2 BIT a (type0 init x y) (length a) = type1 init x y"  by fast+
 
   have t: "T\<^sub>p_on2 BIT b (type1 init x y) = 1"
-    unfolding bb  using goal1(2) 
+    unfolding bb  using assms(2) 
     apply(cases "init=[x,y]")
       unfolding  T\<^sub>p_on2_def type1_def T_on_n2_def
       apply(simp_all add: bind_return_pmf bind_assoc_pmf BIT_step_def split_def) 
@@ -512,7 +472,7 @@ proof -
  
     have s: "config2 BIT [y, y] (type1 init x y) (Suc (Suc 0)) = type0 init y x"
       unfolding type0_def type1_def config2_def
-        using goal1(1,2)
+        using assms(1,2)
        apply(cases "init=[x,y]")
       apply(auto simp: step_def map_pmf_def split_def bind_assoc_pmf bind_return_pmf BIT_step_def)
       apply(rule pmf_eqI)
@@ -540,17 +500,16 @@ proof -
 qed
 
 
-lemma bit_b: "qs \<in> Lxx x y \<Longrightarrow> x \<noteq> y
-       \<Longrightarrow> init \<in> {[x,y],[y,x]}
-    \<Longrightarrow> qs \<in> lang (seq[Plus (Atom x) One, Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom y, Atom y])
-       \<Longrightarrow> T\<^sub>p_on2 BIT qs (type0 init x y)  \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y])
+lemma bit_b: assumes "qs \<in> Lxx x y" "x \<noteq> y"
+      "init \<in> {[x,y],[y,x]}"
+   "qs \<in> lang (seq[Plus (Atom x) One, Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom y, Atom y])"
+ shows  "T\<^sub>p_on2 BIT qs (type0 init x y)  \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y])
     \<and> inv_BIT init qs x y"
 proof -
-  case goal1
   obtain u v where uu: "u \<in> lang (Plus (Atom x) One)"
         and vv: "v \<in> lang (seq[Times (Atom y) (Atom x), Star (Times (Atom y) (Atom x)), Atom y, Atom y])"
         and qsuv: "qs = u @ v" 
-        using goal1
+        using assms
         by (auto simp: conc_def) 
   have lenv: "length v mod 2 = 0 \<and> last v = y \<and> v\<noteq>[]"
   proof -
@@ -575,9 +534,9 @@ proof -
                       and vab: "v = a @ b" 
                       by(erule concE)  
 
-  from BIT_x[OF goal1(2,3) uu] have u_t: "T\<^sub>p_on2 BIT (u @ v) (type0 init x y) = T\<^sub>p_on2 BIT v (type0 init x y)"
+  from BIT_x[OF assms(2,3) uu] have u_t: "T\<^sub>p_on2 BIT (u @ v) (type0 init x y) = T\<^sub>p_on2 BIT v (type0 init x y)"
       and u_c: "config2 BIT u (type0 init x y) (length u) = type0 init x y" by auto
-  from BIT_b[OF goal1(2,3) vv] have b_t: "T\<^sub>p_on2 BIT v (type0 init x y) = 0.75 * length v - 0.5"
+  from BIT_b[OF assms(2,3) vv] have b_t: "T\<^sub>p_on2 BIT v (type0 init x y) = 0.75 * length v - 0.5"
       and  b_c: "config2 BIT v (type0 init x y) (length v) = (type0 init y x)" by auto
 
   have "T\<^sub>p_on2 BIT qs (type0 init x y) = T\<^sub>p_on2 BIT (u@v) (type0 init x y)"
@@ -608,21 +567,19 @@ proof -
            Atom y, Atom y])" by(auto simp: conc_def)
   have OPT: "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = (length v) div 2" apply(rule OPT2_B) by(fact)+
 
-  show ?case using BIT OPT lenv config 1 2  by (auto simp: inv_BIT_def)
+  show ?thesis using BIT OPT lenv config 1 2  by (auto simp: inv_BIT_def)
 qed
 
 
 
-lemma BIT_c: "x \<noteq> y 
-       \<Longrightarrow> init \<in> {[x,y],[y,x]}
-    \<Longrightarrow> v \<in> lang (seq [Times (Atom y) (Atom x), Star (Times (Atom y) (Atom x)), Atom x])
-       \<Longrightarrow> T\<^sub>p_on2 BIT v (type0 init x y) = 0.75 * length v - 0.5
+lemma BIT_c: assumes "x \<noteq> y" "init \<in> {[x,y],[y,x]}"
+    "v \<in> lang (seq [Times (Atom y) (Atom x), Star (Times (Atom y) (Atom x)), Atom x])"
+ shows  "T\<^sub>p_on2 BIT v (type0 init x y) = 0.75 * length v - 0.5
         \<and> config2 BIT v (type0 init x y) (length v) = type0 init x y"
 proof -
-  case goal1
   have lenvmod: "length v mod 2 = 1"
   proof -
-    from goal1(3) have "v \<in> ({[y]} @@ {[x]}) @@ star({[y]} @@ {[x]}) @@ {[x]}" by(simp add: conc_assoc)
+    from assms(3) have "v \<in> ({[y]} @@ {[x]}) @@ star({[y]} @@ {[x]}) @@ {[x]}" by(simp add: conc_assoc)
     then obtain p q r where pqr: "v=p@q@r" and "p\<in>({[y]} @@ {[x]})"
               and q: "q \<in> star ({[y]} @@ {[x]})" and "r \<in>{[x]}" by (metis concE)
     then have "p = [y,x]" "r=[x]" by auto
@@ -633,9 +590,9 @@ proof -
     from a b show "length v mod 2 = 1" by auto
   qed
         
-  have A: "x\<noteq>y"  using goal1 by auto
+  have A: "x\<noteq>y"  using assms by auto
  
-  from goal1(3) have "v \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])
+  from assms(3) have "v \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])
                           @@ lang (seq[Atom x])" by (auto simp: conc_def)
   then obtain a b where aa: "a \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])"
                       and "b \<in> lang (seq[Atom x])"
@@ -645,11 +602,11 @@ proof -
   from aa have lena: "length a > 0" by auto
   from vab bb have lenv: "length v = length a + 1" by auto
  
-  from bit_yxyx goal1(1,2) aa have stars: "T\<^sub>p_on2 BIT (a @ b) (type0 init x y) = 0.75 * length a + T\<^sub>p_on2 BIT b (type1 init x y)"
+  from bit_yxyx assms(1,2) aa have stars: "T\<^sub>p_on2 BIT (a @ b) (type0 init x y) = 0.75 * length a + T\<^sub>p_on2 BIT b (type1 init x y)"
                              and s2: "config2 BIT a (type0 init x y) (length a) = type1 init x y"  apply(auto) by fast+
 
   have t:"T\<^sub>p_on2 BIT b (type1 init x y) = 0.25"
-    unfolding bb  using goal1(2) 
+    unfolding bb  using assms(2) 
       apply(cases "init=[x,y]")
       unfolding  T\<^sub>p_on2_def type1_def T_on_n2_def
       apply(simp_all add: bind_return_pmf bind_assoc_pmf BIT_step_def split_def)
@@ -660,7 +617,7 @@ proof -
  
     have s: "config2 BIT [x] (type1 init  x y) (Suc 0) = type0 init  x y" 
     unfolding type0_def type1_def config2_def
-      using goal1(1,2)
+      using assms(1,2)
       apply(cases "init=[x,y]")
       apply(auto simp add: step_def split_def swap_def bind_assoc_pmf bind_return_pmf BIT_step_def)
       apply(rule pmf_eqI)
@@ -683,21 +640,19 @@ proof -
   then have whatineed: "T\<^sub>p_on2 BIT v (type0 init x y) = 0.75 * length v - 0.5" unfolding lenv 
     unfolding vab
       by (simp add: ring_distribs del: One_nat_def) 
-  with config vab show ?case by simp
+  with config vab show ?thesis by simp
 qed
  
 
-lemma bit_c: "qs \<in> Lxx x y \<Longrightarrow> x \<noteq> y
-       \<Longrightarrow> init \<in> {[x,y],[y,x]} \<Longrightarrow> 
-  qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom x, Star (Times (Atom y) (Atom x)), Atom x])
-  \<Longrightarrow> T\<^sub>p_on2 BIT qs (type0 init x y) \<le> 1.75 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])
+lemma bit_c: assumes "qs \<in> Lxx x y" "x \<noteq> y" "init \<in> {[x,y],[y,x]}"
+  " qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom x, Star (Times (Atom y) (Atom x)), Atom x])"
+ shows "T\<^sub>p_on2 BIT qs (type0 init x y) \<le> 1.75 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])
         \<and> inv_BIT init qs x y"
 proof -
-  case goal1
   obtain u v where uu: "u \<in> lang (Plus (Atom x) One)"
         and vv: "v \<in> lang (seq[Times (Atom y) (Atom x), Star (Times (Atom y) (Atom x)), Atom x])"
         and qsuv: "qs = u @ v" 
-        using goal1
+        using assms
         by (auto simp: conc_def) 
   have lenv: "length v mod 2 = 1 \<and> length v \<ge> 3 \<and> last v = x"
   proof -
@@ -716,9 +671,9 @@ proof -
   qed
 
 
-  from BIT_x[OF goal1(2,3) uu] have u_t: "T\<^sub>p_on2 BIT (u @ v) (type0 init x y) = T\<^sub>p_on2 BIT v (type0 init x y)"
+  from BIT_x[OF assms(2,3) uu] have u_t: "T\<^sub>p_on2 BIT (u @ v) (type0 init x y) = T\<^sub>p_on2 BIT v (type0 init x y)"
       and u_c: "config2 BIT u (type0 init x y) (length u) = type0 init x y" by auto
-  from BIT_c[OF goal1(2,3) vv] have c_t: "T\<^sub>p_on2 BIT v (type0 init x y) = 0.75 * length v - 0.5"
+  from BIT_c[OF assms(2,3) vv] have c_t: "T\<^sub>p_on2 BIT v (type0 init x y) = 0.75 * length v - 0.5"
       and  c_c: "config2 BIT v (type0 init x y) (length v) = (type0 init x y)" by auto
 
   have "T\<^sub>p_on2 BIT qs (type0 init x y) = T\<^sub>p_on2 BIT (u@v) (type0 init x y)"
@@ -762,69 +717,52 @@ proof -
   qed    
   also have "\<dots> = 1.75 * (length v div 2)"
   proof -
-    thm lenv
     from mod_div_equality have "length v = length v div 2 * 2 + length v mod 2" by auto
     with lenv have "length v = length v div 2 * 2 + 1" by auto 
     then have "(length v - 1) / 2 = length v div 2" by simp
     then show ?thesis by simp
   qed
   also have "\<dots> = 1.75 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])" using OPT by auto
-  finally show ?case using config 1 2  by (simp add: inv_BIT_def)
+  finally show ?thesis using config 1 2  by (simp add: inv_BIT_def)
 qed
 
-lemma BIT_d_config: "qs \<in> Lxx x y \<Longrightarrow>
-    x \<noteq> y \<Longrightarrow>
-        init \<in> {[x,y],[y,x]} \<Longrightarrow>
-    qs \<in> lang (seq [Atom x, Atom x]) \<Longrightarrow>
-    config2 BIT qs (type0 init x y) (length qs) = (type0 init (last qs) (other (last qs) x y))"
+lemma BIT_d_config: assumes "qs \<in> Lxx x y" "x \<noteq> y" "init \<in> {[x,y],[y,x]}"
+    "qs \<in> lang (seq [Atom x, Atom x])"
+ shows "config2 BIT qs (type0 init x y) (length qs) = (type0 init (last qs) (other (last qs) x y))"
 proof -
-  case goal1
-  then have "qs = [x,x]" by auto
+  from assms have "qs = [x,x]" by auto
   then show ?thesis unfolding config2_def
-     using goal1(3)
+     using assms(3)
      apply(cases "init=[x,y]")
      apply(simp_all add: other_def type0_def  BIT_step_def bind_return_pmf bind_assoc_pmf)
       by(simp_all add: mtf2_def step_def split_def swap_def bind_assoc_pmf bind_return_pmf BIT_step_def)
-      (*apply(rule pmf_eqI)
-        apply(simp only: pmf_bind) 
-        using goal1(2-4)  
-          apply(cases "x=0")
-            apply(simp add: swap_def)
-            apply(simp add: swap_def)
-      done *)
 qed
 
 
-lemma BIT_d : "qs \<in> Lxx x y \<Longrightarrow>
-    x \<noteq> y \<Longrightarrow> 
-        init \<in> {[x,y],[y,x]} \<Longrightarrow>
-    qs \<in> lang (seq [Atom x, Atom x]) \<Longrightarrow>
-    T\<^sub>p_on2 BIT qs (type0 init x y) = 0"
+lemma BIT_d : assumes "qs \<in> Lxx x y" "x \<noteq> y" "init \<in> {[x,y],[y,x]}"
+    "qs \<in> lang (seq [Atom x, Atom x])"
+  shows "T\<^sub>p_on2 BIT qs (type0 init x y) = 0"
 proof -
-  case goal1
-  then have qs: "qs = [x,x]" by auto 
+  from assms have qs: "qs = [x,x]" by auto 
   
   have BIT: "T\<^sub>p_on2 BIT qs (type0 init x y) = 0"
     unfolding T\<^sub>p_on2_def  qs type0_def T_on_n2_def
-    using goal1(2,3) 
+    using assms(2,3) 
     apply(cases "init=[x,y]")
     apply(simp_all add: bind_return_pmf bind_assoc_pmf split_def BIT_step_def t\<^sub>p_def step_def mtf2_def)
     done
-  show ?case using  BIT by simp
+  show ?thesis using  BIT by simp
 qed
 
-lemma bit_d: "qs \<in> Lxx x y \<Longrightarrow>
-    x \<noteq> y \<Longrightarrow> 
-        init \<in> {[x,y],[y,x]} \<Longrightarrow>
-    qs \<in> lang (seq [Atom x, Atom x]) \<Longrightarrow>
-    T\<^sub>p_on2 BIT qs (type0 init x y) \<le> 1.75 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])
+lemma bit_d: assumes "qs \<in> Lxx x y" "x \<noteq> y" "init \<in> {[x,y],[y,x]}"
+    "qs \<in> lang (seq [Atom x, Atom x])"
+  shows "T\<^sub>p_on2 BIT qs (type0 init x y) \<le> 1.75 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])
     \<and> inv_BIT init qs x y"
 proof -
-  case goal1
-  then have qs: "qs = [x,x]" by auto
+  from assms have qs: "qs = [x,x]" by auto
   then have OPT: "T\<^sub>p [x, y] qs (OPT2 qs [x, y]) = 0" by (simp add: t\<^sub>p_def step_def)
   
-  show ?case using OPT BIT_d BIT_d_config goal1  by (simp add: inv_BIT_def)
+  show ?thesis using OPT BIT_d BIT_d_config assms  by (simp add: inv_BIT_def)
 qed
 
 
@@ -880,7 +818,6 @@ theorem BIT_OPT2: "x \<noteq> y \<Longrightarrow> set \<sigma> \<subseteq> {x,y}
 
     have "T\<^sub>p_on2 BIT ys (config2 BIT xs (type0 init x y) (length xs)) = T\<^sub>p_on2 BIT ys (type0 init (last xs) (other (last xs) x y))"
       using s by auto
-  (*  also have "\<dots> = T\<^sub>p_on BIT ys ?c'" using T\<^sub>p_on2_from_type0 by auto *)
     also from len have "\<dots> \<le> 1.75 * T\<^sub>p ?c' ys (OPT2 ys ?c') + 1.75"       
             apply(subst less(1))
               apply(simp_all add: other_diff setxy setys)
@@ -936,8 +873,8 @@ theorem BIT_OPT2: "x \<noteq> y \<Longrightarrow> set \<sigma> \<subseteq> {x,y}
           unfolding T\<^sub>p_on2_def by simp
         also have "\<dots>
              = setsum (T_on_n2 BIT (\<sigma> @ [last \<sigma>]) (type0 init x y)) {..<length \<sigma>}"
-          proof(rule setsum.cong)
-            case (goal2 t)
+          proof(rule setsum.cong, goal_cases)
+            case (2 t)
             then have "t < length \<sigma>" by auto 
             then show ?case by(simp only:  T_on_n2_append[unfolded ])
           qed simp
@@ -977,17 +914,16 @@ theorem BIT_OPT2: "x \<noteq> y \<Longrightarrow> set \<sigma> \<subseteq> {x,y}
   qed 
 qed
 
-theorem BIT_175comp_on_2: "x \<noteq> y \<Longrightarrow> set \<sigma> \<subseteq> {x,y}
-     \<Longrightarrow> T\<^sub>p_on_rand BIT [x::nat,y] \<sigma>  \<le> 1.75 * (T\<^sub>p_opt [x,y] \<sigma>) + 1.75" 
+theorem BIT_175comp_on_2: assumes "x \<noteq> y" "set \<sigma> \<subseteq> {x,y}"
+   shows "T\<^sub>p_on_rand BIT [x::nat,y] \<sigma>  \<le> 1.75 * (T\<^sub>p_opt [x,y] \<sigma>) + 1.75" 
 proof -
-  case goal1
   have "T\<^sub>p_on_rand BIT [x,y]  \<sigma>
           = T\<^sub>p_on2 BIT \<sigma> (type0 [x,y] x y)" by(simp add: T\<^sub>p_on2_from_type0)
   also have "\<dots> \<le> 1.75 * T\<^sub>p [x,y] \<sigma> (OPT2 \<sigma> [x,y]) + 1.75"
     apply(rule BIT_OPT2)
-      by(simp_all add: goal1)
+      by(simp_all add: assms)
   also have "\<dots> = 1.75 *  T\<^sub>p_opt [x,y] \<sigma> + 1.75"
-    by(simp add: OPT2_is_opt goal1)
+    by(simp add: OPT2_is_opt assms)
   finally show ?thesis .
 qed
 

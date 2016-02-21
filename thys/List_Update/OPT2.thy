@@ -145,10 +145,9 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
     case (Cons a \<sigma>')
     note Cons1=Cons
     show ?thesis unfolding Cons
-      proof(cases "a=x") (* der Fall, dass das vordere Element gefragt wird *)
+      proof(cases "a=x") (* case that the element in front is requested *)
         case True
         from True Cons have qsform: "\<sigma> = x#\<sigma>'" by auto
-        thm cInf_greatest Ex_list_of_length
         have up: "T\<^sub>p [x, y] (x # \<sigma>') (OPT2 (x # \<sigma>') [x, y]) \<le> T\<^sub>p_opt [x, y] (x # \<sigma>')"
           unfolding True
           unfolding T_opt_def apply(rule cInf_greatest)
@@ -168,7 +167,6 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
               also have "\<dots> \<le> T\<^sub>p [x, y] (x # \<sigma>') Strat"
                    proof (cases "(step [x, y] x (hd Strat)) = [x,y]")
                       case True
-                      thm exI[where x="tl Strat"]
                       have aha: "T\<^sub>p_opt [x, y] \<sigma>' \<le> T\<^sub>p [x, y] \<sigma>' (tl Strat)"                     
                         unfolding T_opt_def apply(rule cInf_lower)
                           apply(auto) apply(rule exI[where x="tl Strat"]) using lStrat by auto
@@ -215,12 +213,11 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
       next
 
 
-        case False (* der Fall 2: dass das hintere Element zuerst gefragt wird *)
+        case False (* case 2: element at back is requested first *)
         with less Cons have ay: "a=y" by auto
         show "T\<^sub>p [x, y] (a # \<sigma>') (OPT2 (a # \<sigma>') [x, y]) \<le> T\<^sub>p_opt [x, y] (a # \<sigma>')" unfolding ay
         proof(cases \<sigma>')
-          case Nil (* simpler Fall 2x: das war schon der letzte request *)
-
+          case Nil
           have up: "T\<^sub>p_opt [x, y] [y] \<ge> 1"
             unfolding T_opt_def apply(rule cInf_greatest)
             apply(simp add: Ex_list_of_length)
@@ -235,36 +232,29 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
                   apply(simp add: less(3))
                   by(simp)
             qed
-          thm exI[where x="[([],0)]"]
 
           show "T\<^sub>p [x, y] (y # \<sigma>') (OPT2 (y # \<sigma>') [x, y]) \<le> T\<^sub>p_opt [x, y] (y # \<sigma>')" unfolding Nil
             apply(simp) unfolding t\<^sub>p_def using less(3) apply(simp)
             using up by(simp)
         next
-          case (Cons b rest2) (* simpler Fall 2y: es kommen noch requests *)
+          case (Cons b rest2)
 
           show up: "T\<^sub>p [x, y] (y # \<sigma>') (OPT2 (y # \<sigma>') [x, y]) \<le> T\<^sub>p_opt [x, y] (y # \<sigma>')"
             unfolding Cons
-          proof (cases "b=x") (* Fall 2y_x: request seq= [y,x] *)
+          proof (cases "b=x")
             case True
             
             show "T\<^sub>p [x, y] (y # b # rest2) (OPT2 (y # b # rest2) [x, y]) \<le> T\<^sub>p_opt [x, y] (y # b # rest2)"
               unfolding True
               unfolding T_opt_def apply(rule cInf_greatest)
                 apply(simp add: Ex_list_of_length)
-                proof - (* jetzt muss ich für jede Strategie in T\<^sub>p_opt zeigen, dass er nicht besser
-                          ist als OPT2, eigentlich würde ich hier gerne ausrechnen wie dieses Set aussieht:
-                          es gibt nämlich nur endlich viele möglichkeiten! *)
+                proof -
                   fix el
                   assume "el \<in> {T\<^sub>p [x, y] (y # x # rest2) as |as. length as = length (y # x # rest2)}"
                   then obtain Strat where lenStrat: "length Strat = length (y # x # rest2)" and
                                Strat: "el = T\<^sub>p [x, y] (y # x # rest2) Strat" by auto
-                  (* ich nehm eine Strategie aus der Menge und nenn sie Strat *)
                   have v: " set rest2 \<subseteq> {x, y}" using less(2)[unfolded Cons1 Cons] by auto
                   
-
-                  (* ich weiß dass Strat zu beginn L=[x,y] hat,
-                    aber nicht genau wie L nach 1 bzw. 2 requestes aussehen: *)
                   let ?L1 = "(step [x, y] y (hd Strat))"
                   let ?L2 = "(step ?L1 x (hd (tl Strat)))"
 
@@ -295,7 +285,6 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
                                   apply(cases "?L1=[x,y]")
                                     using splitqsallg[OF b, where a=x and x=x and y=y, simplified] apply(auto)
                                     using tt splitqsallg[OF b, where a=x and x=y and y=x, simplified] by auto
-                      thm splitqsallg
                       from 1 2 show ?thesis by auto
                     qed
 
@@ -303,17 +292,14 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
                     =  1 +  T\<^sub>p [x, y] (rest2) (OPT2 (rest2) [x, y])"
                     unfolding True
                     using less(3) by(simp add: t\<^sub>p_def step_def OPT2x)
-                    thm Cons1 Cons less(2)
                   also have "\<dots> \<le> 1 +  T\<^sub>p_opt [x, y] (rest2)" apply(simp)
                     apply(rule less(1))
                       apply(simp add: less(2) Cons1 Cons)
                       apply(fact) by fact
-                      thm cInf_lower
                   also
 
                   have "\<dots> \<le> T\<^sub>p [x, y] (y # x # rest2) Strat"
-                  proof (cases "?L2 = [x,y]") (* falls Strat die Liste erzeugt, die auch OPT2 erzeugt,
-                          kann ich einfach die iH verwenden *)
+                  proof (cases "?L2 = [x,y]")
                     case True
                     have 2: "t\<^sub>p [x, y] y (hd Strat) + t\<^sub>p ?L1 x (hd (tl Strat))
                             + T\<^sub>p [x,y] rest2 (tl (tl Strat)) \<ge> t\<^sub>p [x, y] y (hd Strat) + t\<^sub>p ?L1 x (hd (tl Strat))
@@ -330,14 +316,12 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
                             qed
                     from 1 2 3 True show ?thesis by auto
                   next
-                    case False (* Falls Strat die Liste umdreht, muss ich die Abschätzung verwenden
-                        und zeigen, dass mindestens 1 mehr gezahlt wird als bei OPT2 *)
+                    case False
                     note L2F=this
                     have L1: "?L1 \<in> {[x, y], [y, x]}" apply(rule stepxy) by simp_all
                     have "?L2 \<in> {[x, y], [y, x]}" apply(rule stepxy) using L1 by simp_all
                     with False have 2: "?L2 = [y,x]" by auto
 
-                    thm 1
                     have k: "T\<^sub>p [x, y] (y # x # rest2) Strat
                         =   t\<^sub>p [x, y] y (hd Strat) + t\<^sub>p ?L1 x (hd (tl Strat)) +
                             T\<^sub>p [y,x] rest2 (tl (tl Strat))" using 1 2 by auto
@@ -347,9 +331,8 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
                           by (simp_all add: split_def)
 
                     have r: "T\<^sub>p [x, y] (y # x # rest2) Strat \<ge> 2 + T\<^sub>p [y,x] rest2 (tl (tl Strat))"
-                    proof (cases "?L1 = [x,y]") (* nochmal ein case distinct auf wie Strat
-                        die Liste nach dem ersten Request hat *)
-                      case True (* angenommen sie lässt sie gleich (also so wie OPT2) *)
+                    proof (cases "?L1 = [x,y]")
+                      case True
                       note T=this
                       then have "t\<^sub>p ?L1 x (hd (tl Strat)) > 0" unfolding True
                         proof(cases "snd (hd (tl Strat)) = []")
@@ -366,8 +349,7 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
                       with l have " t\<^sub>p [x, y] y (hd Strat) + t\<^sub>p ?L1 x (hd (tl Strat)) \<ge> 2" by auto
                       with k show ?thesis by auto
                     next
-                      case False (* angenommen Strat dreht im ersten Schritt die Liste um *)
-                      (*have "?L1 \<in> {[y,x], [x,y]}" using stepxy2[OF less(3)[symmetric], where A="[x,y]", simplified] by auto *)
+                      case False
                       from L1 False have 2: "?L1 = [y,x]" by auto
                       { fix k sws T
                         have "T\<in>{[x,y],[y,x]} \<Longrightarrow> mtf2 k x T = [y,x] \<Longrightarrow> T = [y,x]"
@@ -402,26 +384,20 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
 
 
           next
-            case False (* Fall 2y_y *)
+            case False
             with Cons1 Cons less(2) have bisy: "b=y" by auto
             with less(3) have "OPT2 (y # b # rest2) [x, y] = (1,[])# (OPT2 (b#rest2) [y,x])" by simp
             show "T\<^sub>p [x, y] (y # b # rest2) (OPT2 (y # b # rest2) [x, y]) \<le> T\<^sub>p_opt [x, y] (y # b # rest2)" 
               unfolding bisy
               unfolding T_opt_def apply(rule cInf_greatest)
                 apply(simp add: Ex_list_of_length)
-                proof - (* jetzt muss ich für jede Strategie in T\<^sub>p_opt zeigen, dass er nicht besser
-                          ist als OPT2, eigentlich würde ich hier gerne ausrechnen wie dieses Set aussieht:
-                          es gibt nämlich nur endlich viele möglichkeiten! *)
+                proof -
                   fix el
                   assume "el \<in> {T\<^sub>p [x, y] (y # y # rest2) as |as. length as = length (y # y # rest2)}"
                   then obtain Strat where lenStrat: "length Strat = length (y # y # rest2)" and
                                Strat: "el = T\<^sub>p [x, y] (y # y # rest2) Strat" by auto
-                  (* ich nehm eine Strategie aus der Menge und nenn sie Strat *)
                   have v: " set rest2 \<subseteq> {x, y}" using less(2)[unfolded Cons1 Cons] by auto
-                  
 
-                  (* ich weiß dass Strat zu beginn L=[x,y] hat,
-                    aber nicht genau wie L nach 1 bzw. 2 requestes aussehen: *)
                   let ?L1 = "(step [x, y] y (hd Strat))"
                   let ?L2 = "(step ?L1 y (hd (tl Strat)))"
 
@@ -452,24 +428,20 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
                                   apply(cases "?L1=[x,y]")
                                     using splitqsallg[OF b, where a=y and x=x and y=y, simplified] apply(auto)
                                     using tt splitqsallg[OF b, where a=y and x=y and y=x, simplified] by auto
-                      thm splitqsallg
                       from 1 2 show ?thesis by auto
                     qed
 
                   have " T\<^sub>p [x, y] (y # y # rest2) (OPT2 (y # y # rest2) [x, y])
                     =  1 +  T\<^sub>p [y, x] (rest2) (OPT2 (rest2) [y, x])" 
                     using less(3) by(simp add: t\<^sub>p_def step_def mtf2_def swap_def OPT2x)
-                    thm Cons1 Cons less(2)
                   also have "\<dots> \<le> 1 +  T\<^sub>p_opt [y, x] (rest2)" apply(simp)
                     apply(rule less(1))
                       apply(simp add: less(2) Cons1 Cons)
                       using v less(3) by(auto)
-                      thm cInf_lower
                   also
 
                   have "\<dots> \<le> T\<^sub>p [x, y] (y # y # rest2) Strat"
-                  proof (cases "?L2 = [y,x]") (* falls Strat die Liste erzeugt, die auch OPT2 erzeugt,
-                          kann ich einfach die iH verwenden *)
+                  proof (cases "?L2 = [y,x]")
                     case True
                     have 2: "t\<^sub>p [x, y] y (hd Strat) + t\<^sub>p ?L1 y (hd (tl Strat))
                             + T\<^sub>p [y,x] rest2 (tl (tl Strat)) \<ge> t\<^sub>p [x, y] y (hd Strat) + t\<^sub>p ?L1 y (hd (tl Strat))
@@ -485,16 +457,13 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
                               then show "Suc 0 \<le> t\<^sub>p [x, y] y (hd Strat) + t\<^sub>p ?L1 y (hd (tl Strat))" by auto
                             qed
                     from 1 2 3 True show ?thesis by auto 
-                    (* bis hier wars eigentlich copy paste von Fally_x*)
                   next
-                    case False (* Falls Strat die Liste umdreht, muss ich die Abschätzung verwenden
-                        und zeigen, dass mindestens 1 mehr gezahlt wird als bei OPT2 *)
+                    case False 
                     note L2F=this
                     have L1: "?L1 \<in> {[x, y], [y, x]}" apply(rule stepxy) by simp_all
                     have "?L2 \<in> {[x, y], [y, x]}" apply(rule stepxy) using L1 by simp_all
                     with False have 2: "?L2 = [x,y]" by auto
 
-                    thm 1
                     have k: "T\<^sub>p [x, y] (y # y # rest2) Strat
                         =   t\<^sub>p [x, y] y (hd Strat) + t\<^sub>p ?L1 y (hd (tl Strat)) +
                             T\<^sub>p [x,y] rest2 (tl (tl Strat))" using 1 2 by auto
@@ -504,10 +473,8 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
                           by (simp_all add: split_def)
 
                     have r: "T\<^sub>p [x, y] (y # y # rest2) Strat \<ge> 2 + T\<^sub>p [x,y] rest2 (tl (tl Strat))"
-                    proof (cases "?L1 = [y,x]") (* nochmal ein case distinct auf wie Strat
-                        die Liste nach dem ersten Request hat *)
-                      case False  (* False means: not act as OPT2 *)
-                          (* angenommen sie lässt sie gleich (also nicht so wie OPT2) *)
+                    proof (cases "?L1 = [y,x]")  
+                      case False
                       from L1 False have "?L1 = [x,y]" by auto
                       note T=this
                       then have "t\<^sub>p ?L1 y (hd (tl Strat)) > 0" unfolding T
@@ -517,7 +484,7 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
                       with l k show ?thesis by auto
                     next
 
-                      case True  (* angenommen Strat dreht im ersten Schritt die Liste um, nicht wie OPT2 *)
+                      case True
                       note T=this
                           
                         have "t\<^sub>p ?L1 y (hd (tl Strat)) > 0" unfolding T
@@ -590,34 +557,33 @@ lemma OPT2_is_opt: "set qs \<subseteq> {x,y} \<Longrightarrow> x\<noteq>y \<Long
 by (simp add: OPT2_is_lb OPT2_is_ub antisym)
 
 
-lemma OPT2_A: "x \<noteq> y \<Longrightarrow> qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y]) \<Longrightarrow> T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = 1"
+lemma OPT2_A: assumes "x \<noteq> y" "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
+  shows "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = 1"
 proof -
-  case goal1
-  from goal1(2) obtain u v where qs: "qs=u@v" and u: "u=[x] \<or> u=[]" and v: "v = [y,y]" by (auto simp: conc_def)
+  from assms(2) obtain u v where qs: "qs=u@v" and u: "u=[x] \<or> u=[]" and v: "v = [y,y]" by (auto simp: conc_def)
   from u have pref1: "T\<^sub>p [x,y] (u@v) (OPT2 (u@v) [x,y]) = T\<^sub>p [x,y] v (OPT2 v [x,y])"
     apply(cases "u=[]")
       apply(simp)
       by(simp add: OPT2x t\<^sub>p_def step_def)
 
-  have ende: "T\<^sub>p [x,y] v (OPT2 v [x,y]) = 1" unfolding v using goal1(1) by(simp add: mtf2_def swap_def t\<^sub>p_def step_def)
+  have ende: "T\<^sub>p [x,y] v (OPT2 v [x,y]) = 1" unfolding v using assms(1) by(simp add: mtf2_def swap_def t\<^sub>p_def step_def)
 
-  from pref1 ende qs show ?case by auto
+  from pref1 ende qs show ?thesis by auto
 qed
   
 
-lemma OPT2_B: "x \<noteq> y \<Longrightarrow> qs=u@v \<Longrightarrow> u=[] \<or> u=[x] \<Longrightarrow> v \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x)), Atom y, Atom y])
-      \<Longrightarrow> T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = (length v div 2)"
+lemma OPT2_B: assumes "x \<noteq> y" "qs=u@v" "u=[] \<or> u=[x]" "v \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x)), Atom y, Atom y])"
+  shows "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = (length v div 2)"
 proof -
-  case goal1
-  from goal1(3) have pref1: "T\<^sub>p [x,y] (u@v) (OPT2 (u@v) [x,y]) = T\<^sub>p [x,y] v (OPT2 v [x,y])"
+  from assms(3) have pref1: "T\<^sub>p [x,y] (u@v) (OPT2 (u@v) [x,y]) = T\<^sub>p [x,y] v (OPT2 v [x,y])"
     apply(cases "u=[]")
       apply(simp)
       by(simp add: OPT2x t\<^sub>p_def step_def)
 
-  from goal1(4) obtain a w where v: "v=a@w" and "a\<in>lang (Times (Atom y) (Atom x))" and w: "w\<in>lang (seq[Star(Times (Atom y) (Atom x)), Atom y, Atom y])" by(auto)
+  from assms(4) obtain a w where v: "v=a@w" and "a\<in>lang (Times (Atom y) (Atom x))" and w: "w\<in>lang (seq[Star(Times (Atom y) (Atom x)), Atom y, Atom y])" by(auto)
   from this(2) have aa: "a=[y,x]" by(simp add: conc_def)
 
-  from goal1(1) this v have pref2: "T\<^sub>p [x,y] v (OPT2 v [x,y]) = 1 + T\<^sub>p [x,y] w (OPT2 w [x,y])"
+  from assms(1) this v have pref2: "T\<^sub>p [x,y] v (OPT2 v [x,y]) = 1 + T\<^sub>p [x,y] w (OPT2 w [x,y])"
    by(simp add: t\<^sub>p_def step_def OPT2x)
 
   from w obtain c d where w2: "w=c@d" and c: "c \<in> lang (Star (Times (Atom y) (Atom x)))" and d: "d \<in> lang (Times (Atom y) (Atom y))" by auto
@@ -629,36 +595,36 @@ proof -
       then have r: "r=[y,x]" by auto
       then have "T\<^sub>p [x, y] ((r @ s) @ d) (OPT2 ((r @ s) @ d) [x, y]) = T\<^sub>p [x, y] ([y,x] @ (s @ d)) (OPT2 ([y,x] @ (s @ d)) [x, y])" by simp
       also have "\<dots> = 1 + T\<^sub>p [x, y] (s @ d) (OPT2 (s @ d) [x, y])"
-        using goal1(1) by(simp add: t\<^sub>p_def step_def OPT2x)
+        using assms(1) by(simp add: t\<^sub>p_def step_def OPT2x)
       also have "\<dots> =  1 + length s div 2 + T\<^sub>p [x, y] d (OPT2 d [x, y])" using append by simp
       also have "\<dots> =  length (r @ s) div 2 + T\<^sub>p [x, y] d (OPT2 d [x, y])" using r by auto
       finally show ?case .
     qed simp
 
-  have ende: "T\<^sub>p [x,y] d (OPT2 d [x,y]) = 1" unfolding dd using goal1(1) by(simp add: mtf2_def swap_def t\<^sub>p_def step_def)
+  have ende: "T\<^sub>p [x,y] d (OPT2 d [x,y]) = 1" unfolding dd using assms(1) by(simp add: mtf2_def swap_def t\<^sub>p_def step_def)
   
   have vv: "v = [y,x]@c@[y,y]" using w2 dd v aa by auto
 
   from pref1 pref2 star w2 ende have
-    "T\<^sub>p [x, y] qs (OPT2 qs [x, y]) = 1 + length c div 2 + 1" unfolding goal1(2) by auto
+    "T\<^sub>p [x, y] qs (OPT2 qs [x, y]) = 1 + length c div 2 + 1" unfolding assms(2) by auto
   also have "\<dots> = (length v div 2)" using vv by auto
-  finally show ?case .
+  finally show ?thesis .
 qed
 
 
 
-lemma OPT2_C: "x \<noteq> y \<Longrightarrow> qs=u@v \<Longrightarrow> u=[] \<or> u=[x] \<Longrightarrow> v \<in> lang (seq[Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom x])
-      \<Longrightarrow> T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = (length v div 2)"
+lemma OPT2_C: assumes "x \<noteq> y" "qs=u@v" "u=[] \<or> u=[x]" 
+  and "v \<in> lang (seq[Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom x])"
+  shows "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = (length v div 2)"
 proof -
-  case goal1
-  from goal1(3) have pref1: "T\<^sub>p [x,y] (u@v) (OPT2 (u@v) [x,y]) = T\<^sub>p [x,y] v (OPT2 v [x,y])"
+  from assms(3) have pref1: "T\<^sub>p [x,y] (u@v) (OPT2 (u@v) [x,y]) = T\<^sub>p [x,y] v (OPT2 v [x,y])"
     apply(cases "u=[]")
       apply(simp)
       by(simp add: OPT2x t\<^sub>p_def step_def)
 
-  from goal1(4) obtain a w where v: "v=a@w" and aa: "a=[y,x]" and w: "w\<in>lang (seq[Star(Times (Atom y) (Atom x)), Atom x])" by(auto simp: conc_def)
+  from assms(4) obtain a w where v: "v=a@w" and aa: "a=[y,x]" and w: "w\<in>lang (seq[Star(Times (Atom y) (Atom x)), Atom x])" by(auto simp: conc_def)
 
-  from goal1(1) this v have pref2: "T\<^sub>p [x,y] v (OPT2 v [x,y]) = 1 + T\<^sub>p [x,y] w (OPT2 w [x,y])"
+  from assms(1) this v have pref2: "T\<^sub>p [x,y] v (OPT2 v [x,y]) = 1 + T\<^sub>p [x,y] w (OPT2 w [x,y])"
    by(simp add: t\<^sub>p_def step_def OPT2x)
 
   from w obtain c d where w2: "w=c@d" and c: "c \<in> lang (Star (Times (Atom y) (Atom x)))" and d: "d \<in> lang (Atom x)" by auto
@@ -671,20 +637,20 @@ proof -
       from append have r: "r=[y,x]" by auto
       then have "T\<^sub>p [x, y] ((r @ s) @ d) (OPT2 ((r @ s) @ d) [x, y]) = T\<^sub>p [x, y] ([y,x] @ (s @ d)) (OPT2 ([y,x] @ (s @ d)) [x, y])" by simp
       also have "\<dots> = 1 + T\<^sub>p [x, y] (s @ d) (OPT2 (s @ d) [x, y])"
-        using goal1(1) by(simp add: t\<^sub>p_def step_def OPT2x)
+        using assms(1) by(simp add: t\<^sub>p_def step_def OPT2x)
       also have "\<dots> =  1 + length s div 2 + T\<^sub>p [x, y] d (OPT2 d [x, y])" using append by simp
       also have "\<dots> =  length (r @ s) div 2 + T\<^sub>p [x, y] d (OPT2 d [x, y])" using r by auto
       finally show ?case by(simp add: mod r)
     qed simp
 
-  have ende: "T\<^sub>p [x,y] d (OPT2 d [x,y]) = 0" unfolding dd using goal1(1) by(simp add: mtf2_def swap_def t\<^sub>p_def step_def)
+  have ende: "T\<^sub>p [x,y] d (OPT2 d [x,y]) = 0" unfolding dd using assms(1) by(simp add: mtf2_def swap_def t\<^sub>p_def step_def)
   
   have vv: "v = [y,x]@c@[x]" using w2 dd v aa by auto
 
   from pref1 pref2 star w2 ende have
-    "T\<^sub>p [x, y] qs (OPT2 qs [x, y]) = 1 + length c div 2" unfolding goal1(2) by auto
+    "T\<^sub>p [x, y] qs (OPT2 qs [x, y]) = 1 + length c div 2" unfolding assms(2) by auto
   also have "\<dots> = (length v div 2)" using vv star by auto
-  finally show ?case .
+  finally show ?thesis .
 qed
 
 
@@ -702,15 +668,15 @@ proof(induct qs arbitrary: x y)
     case (Cons q' qs')
     with Cons1 have "q'\<in>{x,y}" by auto
     note Cons=Cons this
-    thm if_True if_splits(1)
+
     from Cons1 Cons have T: "T\<^sub>p [x, y] qs (OPT2 qs [x, y]) \<le> length qs"
                             "T\<^sub>p [y, x] qs (OPT2 qs [y, x]) \<le> length qs" by auto
     show "T\<^sub>p [x,y] (q # qs) (OPT2 (q # qs) [x,y]) \<le> length (q # qs)"
           unfolding Cons apply(simp only: OPT2.simps)
           apply(split if_splits(1))
             apply(safe)
-            proof -
-              case goal1
+            proof (goal_cases)
+              case 1
               have "T\<^sub>p [x, y] (x # q' # qs') ((0, []) # OPT2 (q' # qs') [x, y])
                       = t\<^sub>p [x, y] x (0,[]) + T\<^sub>p [x, y] qs (OPT2 qs [x, y])"
                         by(simp add: step_def Cons)
@@ -718,12 +684,12 @@ proof(induct qs arbitrary: x y)
               also have "\<dots> \<le> length (x # q' # qs')" using Cons by(simp add: t\<^sub>p_def)
               finally show ?case .
             next
-              case goal2
+              case 2
               with Cons1 Cons show ?case
                 apply(split if_splits(1))
                 apply(safe)
-                proof -
-                  case goal1
+                proof (goal_cases)
+                  case 1
                   then have "T\<^sub>p [x, y] (y # x # qs') ((0, []) # OPT2 (x # qs') [x, y])
                           = t\<^sub>p [x, y] y (0,[]) + T\<^sub>p [x, y] qs (OPT2 qs [x, y])"
                             by(simp add: step_def)
@@ -731,7 +697,7 @@ proof(induct qs arbitrary: x y)
                   also have "\<dots> \<le> length (y # x # qs')" using Cons by(simp add: t\<^sub>p_def)
                   finally show ?case .
                 next
-                  case goal2
+                  case 2
                   then have "T\<^sub>p [x, y] (y # y # qs') ((1, []) # OPT2 (y # qs') [y, x])
                           = t\<^sub>p [x, y] y (1,[]) + T\<^sub>p [y, x] qs (OPT2 qs [y, x])"
                             by(simp add: step_def mtf2_def swap_def)
@@ -751,10 +717,10 @@ apply(induct qs arbitrary: R)
     apply(case_tac "R=[x,y]")
       apply(simp add: step_def t\<^sub>p_def )
       apply(simp add: step_def mtf2_def swap_def t\<^sub>p_def)
-  proof -
-    case goal1
+  proof (goal_cases)
+    case (1 a qs R)
     then have a: "a \<in> {x,y}" by auto 
-    with goal1 show ?case
+    with 1 show ?case
       apply(cases qs)
         apply(cases "a=x")
           apply(cases "R=[x,y]")
@@ -763,16 +729,16 @@ apply(induct qs arbitrary: R)
           apply(cases "R=[x,y]")
             apply(simp add: step_def t\<^sub>p_def)
             apply(simp add: step_def mtf2_def swap_def t\<^sub>p_def)
-      proof -
-        case (goal1 p ps)
+      proof (goal_cases)
+        case (1 p ps)
         show ?case
           apply(cases "a=x")
             apply(cases "R=[x,y]")
-              apply(simp add: OPT2x step_def) using goal1 apply(simp)
-              using goal1(2) apply(simp)
+              apply(simp add: OPT2x step_def) using 1 apply(simp)
+              using 1(2) apply(simp)
                 apply(cases qs)
                   apply(simp add: step_def mtf2_def swap_def t\<^sub>p_def)
-                  using goal1 by(auto simp add: swap_def mtf2_def step_def)
+                  using 1 by(auto simp add: swap_def mtf2_def step_def)
        qed
 qed 
 

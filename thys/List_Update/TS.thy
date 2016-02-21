@@ -49,7 +49,7 @@ lemma step2_splitted: "step2 S s q = (snd S, step s q (fst S))"
 apply(cases S) by(simp)
 
 
-lemma 1: "x\<noteq>y \<Longrightarrow> q \<in> {x, y}
+lemma step2_1: "x\<noteq>y \<Longrightarrow> q \<in> {x, y}
     \<Longrightarrow> snd (step2 (a, is) [x,y] q) \<in> {[x,y], [y,x]}"
 proof -
   case goal1
@@ -64,13 +64,13 @@ lemma step2_xy: "x\<noteq>y \<Longrightarrow> q \<in> {x, y} \<Longrightarrow> s
     proof(cases "s=[x,y]")
       case True
       assume assms: "x\<noteq>y" "q \<in> {x, y}" 
-      show ?thesis unfolding True apply(rule 1) using assms by auto
+      show ?thesis unfolding True apply(rule step2_1) using assms by auto
     next
       case False
       assume assms: "x\<noteq>y" "q \<in> {x, y}" 
       assume "s \<in> {[x,y], [y,x]}"
       with False have t: "s=[y,x]" by simp
-      have "snd (step2 (a, is) [y, x] q) \<in> {[y, x], [x, y]}" unfolding t apply(rule 1) using assms by auto
+      have "snd (step2 (a, is) [y, x] q) \<in> {[y, x], [x, y]}" unfolding t apply(rule step2_1) using assms by auto
       then show ?thesis unfolding t by blast
     qed
 
@@ -304,13 +304,13 @@ TD_D   xx             \<rightarrow>  seq[(Atom x),(Atom x)]
 
 subsubsection "(yx)*?"
 
-lemma TS_yx: "x \<noteq> y \<Longrightarrow> qs \<in> lang (Star(Times (Atom y) (Atom x)))
-      \<Longrightarrow> \<exists>hs. h=[x,y]@hs \<Longrightarrow> T_TS [x,y] h (qs@r) = length qs + T_TS [x,y] ((rev qs) @h) r \<and> (\<exists>hs. ((rev qs) @h) = [x, y] @ hs)
+lemma TS_yx: assumes "x \<noteq> y" "qs \<in> lang (Star(Times (Atom y) (Atom x)))"
+      "\<exists>hs. h=[x,y]@hs"
+   shows "T_TS [x,y] h (qs@r) = length qs + T_TS [x,y] ((rev qs) @h) r \<and> (\<exists>hs. ((rev qs) @h) = [x, y] @ hs)
         \<and> TSdet [x, y] h qs (length qs) = ([x,y],rev qs @ h)"
 proof -
-  case goal1
-  then have "qs \<in> star ({[y]} @@ {[x]})" by (simp)
-  from this goal1(3) show ?case
+  from assms have "qs \<in> star ({[y]} @@ {[x]})" by (simp)
+  from this assms(3) show ?thesis
   proof (induct qs arbitrary: h rule: star_induct)
     case Nil
     then show ?case by(simp add: rTS_def)
@@ -330,7 +330,7 @@ proof -
     
     have s0: "s_TS [x, y] h [y, x] 0 = [x,y]" unfolding s_TS_def by(simp) 
 
-    from goal1(1) have hahah: " {xa. xa < y in [x, y] \<and> count_list [x] xa \<le> 1} = {x}"
+    from assms(1) have hahah: " {xa. xa < y in [x, y] \<and> count_list [x] xa \<le> 1} = {x}"
       unfolding before_in_def by auto
 
     have "(let li = index (x # y # hs) y
@@ -342,7 +342,7 @@ proof -
                          in if S = {} then 0 else index [x, y] y - Min (index [x, y] ` S))" by auto
     also have "\<dots> = (let  S = {x}
                          in if S = {} then 0 else index [x, y] y - Min (index [x, y] ` S))" by (simp only: hahah)
-    also have "\<dots> = 1" by (simp add: goal1(1))
+    also have "\<dots> = 1" by (simp add: assms(1))
     finally have tt: "(let li = index (x # y # hs) y
                  in if li = length (x # y # hs) then 0
                     else let sincelast = take li (x # y # hs);
@@ -360,17 +360,13 @@ proof -
       apply(subst TSdet_Suc)
         apply(simp) 
         apply(simp only: det1) unfolding rTS_def Step_def apply(simp only: fst_conv snd_conv TS_step_d_def)
-        unfolding before_in_def using goal1(1) apply(auto) unfolding step_def mtf2_def by(simp add: swap_def)
+        unfolding before_in_def using assms(1) apply(auto) unfolding step_def mtf2_def by(simp add: swap_def)
 
     then have s2: "s_TS [x, y] h u (length u) = [x,y]" unfolding uyx a unfolding s_TS_def by simp
       
     have ta: "T_TS [x, y] h u = 2"
         unfolding T_TS_def uyx apply(simp) unfolding t_TS_def
-        unfolding s0 s1 using goal1(1) by (simp)
-
- (*   have helper:"(step2 (TS_step_d ([x, y], h) y) [x, y] y) = ([y,x], y#h)"
-        unfolding a using goal1(1) apply(auto simp add: TS_step_d_def step_def before_in_def)
-        by(simp add: mtf2_def swap_def) *)
+        unfolding s0 s1 using assms(1) by (simp)
 
     have helper2: "fst (TSdet [x, y] h u (length u)) = [x,y]"
     unfolding uyx using det2 by simp
@@ -399,12 +395,11 @@ qed
 
 subsubsection "?x"
 
-lemma TS_x: "x \<noteq> y \<Longrightarrow> \<exists>hs. h = [x, y] @ hs \<Longrightarrow>
-         T_TS [x, y] h [x] = 0 \<and> TSdet [x, y] h [x] (length [x]) = ([x,y], rev [x] @ h)"
+lemma TS_x: assumes "x \<noteq> y" "\<exists>hs. h = [x, y] @ hs"
+  shows "T_TS [x, y] h [x] = 0 \<and> TSdet [x, y] h [x] (length [x]) = ([x,y], rev [x] @ h)"
 proof -
-  case goal1
-  then obtain hs where a: "h = [x,y]@hs" by blast
-  then show ?case 
+  from assms obtain hs where a: "h = [x,y]@hs" by blast
+  then show ?thesis 
         unfolding T_TS_def apply(simp) unfolding  t_TS_def
         unfolding s_TS_def apply(simp) 
         unfolding rTS_def Step_def  by (simp add: TS_step_d_def step_def)
@@ -449,21 +444,20 @@ proof -
 qed
 
 
-lemma TS_yy: "x \<noteq> y \<Longrightarrow> \<exists>hs. h = [x, y] @ hs \<Longrightarrow>
-         T_TS [x, y] h [y, y] = 1 \<and> TSdet [x, y] h [y,y] (length [y,y]) = ([y,x],rev [y,y] @ h)"
+lemma TS_yy: assumes "x \<noteq> y" "\<exists>hs. h = [x, y] @ hs"
+  shows "T_TS [x, y] h [y, y] = 1 \<and> TSdet [x, y] h [y,y] (length [y,y]) = ([y,x],rev [y,y] @ h)"
 proof -
-  case goal1
-  then obtain hs where a: "h = [x,y]@hs" by blast
+  from assms obtain hs where a: "h = [x,y]@hs" by blast
     have s0: "s_TS [x, y] ([x, y]@hs) [y, y] 0 = [x,y]" unfolding s_TS_def by(simp) 
 
     have det0: "TSdet [x, y] ([x, y]@hs) [y, y] 0 = ([x,y],[x, y]@hs)" by(simp add: rTS_def) 
 
 
-    from goal1(1) have indi: "index (x # y # hs) y = 1" by simp
-    from goal1(1) have puh: "{xa. xa < y in [x, y] \<and> count_list [x] xa \<le> 1} = {x}" apply(auto)
+    from assms(1) have indi: "index (x # y # hs) y = 1" by simp
+    from assms(1) have puh: "{xa. xa < y in [x, y] \<and> count_list [x] xa \<le> 1} = {x}" apply(auto)
       unfolding before_in_def apply(auto) using add_is_0 by fastforce
 
-    from goal1(1) have "(let li = index (x # y # hs) y
+    from assms(1) have "(let li = index (x # y # hs) y
                  in if li = length (x # y # hs) then 0
                     else let sincelast = take li (x # y # hs);
                              S = {xa. xa < y in [x, y] \<and> count_list sincelast xa \<le> 1}
@@ -473,7 +467,7 @@ proof -
     also have "\<dots> = (let S = {x}
                          in if S = {} then 0 else index [x, y] y - Min (index [x, y] ` S))"
                           by (simp only: puh)
-    also have "\<dots> = 1" apply(auto) using goal1(1) by simp
+    also have "\<dots> = 1" apply(auto) using assms(1) by simp
     finally have hhuu: "(let li = index (x # y # hs) y
                  in if li = length (x # y # hs) then 0
                     else let sincelast = take li (x # y # hs);
@@ -496,8 +490,8 @@ proof -
 
     from a have cost: "T_TS [x,y] ([x,y]@ hs) [y,y] = 1"
         unfolding T_TS_def apply(simp) unfolding  t_TS_def
-         apply(simp add: split_def s0[simplified] s1[simplified]) using goal1(1) by auto
-    show ?case
+         apply(simp add: split_def s0[simplified] s1[simplified]) using assms(1) by auto
+    show ?thesis
       apply(safe)
          unfolding a apply(fact cost)
          using det2 by(simp del: config'.simps) 
@@ -505,15 +499,15 @@ proof -
 
 subsubsection "yx(yx)*?"
 
-lemma TS_yxyx: "x \<noteq> y \<Longrightarrow> qs \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])
-      \<Longrightarrow> (\<exists>hs. h=[x,x]@hs) \<or> index h y = length h \<Longrightarrow> T_TS [x,y] h (qs@r) = length qs - 1 + T_TS [x,y] (rev qs @ h) r \<and> (\<exists>hs. (rev qs @ h) = [x, y] @ hs)
+lemma TS_yxyx: assumes "x \<noteq> y" "qs \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])"
+  "(\<exists>hs. h=[x,x]@hs) \<or> index h y = length h"
+  shows "T_TS [x,y] h (qs@r) = length qs - 1 + T_TS [x,y] (rev qs @ h) r \<and> (\<exists>hs. (rev qs @ h) = [x, y] @ hs)
             \<and> TSdet [x, y] h qs (length qs) = ([x,y], rev qs @ h)"
-proof -
-  case goal1
+proof - 
   obtain u v where uu: "u \<in> lang (Times (Atom y) (Atom x))"
                       and vv: "v \<in> lang (seq[ Star(Times (Atom y) (Atom x))])"
                       and qsuv: "qs = u @ v" 
-                      using goal1(2)
+                      using assms(2)
                       by (auto simp: conc_def)  
   from uu have uyx: "u = [y,x]" by(auto)
 
@@ -523,7 +517,7 @@ proof -
   
   have s0: "s_TS [x, y] h [y, x] 0 = [x,y]" unfolding s_TS_def by(simp) 
 
-  from goal1(1) have hahah: " {xa. xa < y in [x, y] \<and> count_list [x] xa \<le> 1} = {x}"
+  from assms(1) have hahah: " {xa. xa < y in [x, y] \<and> count_list [x] xa \<le> 1} = {x}"
     unfolding before_in_def by auto
 
     have det1: "TSdet [x, y] h [y] (Suc 0) = ([x,y],y#h)"  
@@ -531,7 +525,7 @@ proof -
       unfolding rTS_def Step_def apply(simp only: fst_conv snd_conv TS_step_d_def)       
         proof (cases "index h y = length h")
           case False
-          with goal1(3) obtain hs where "h = [x,x]@hs" by auto
+          with assms(3) obtain hs where "h = [x,x]@hs" by auto
           with False have "(let li = index h y
        in if li = length h then 0
           else let sincelast = take li h;
@@ -563,14 +557,14 @@ proof -
         apply(simp)
         using det1 apply(simp add: nth.simps  del: config'.simps)
         unfolding rTS_def Step_def apply(simp only: fst_conv snd_conv TS_step_d_def) 
-        unfolding before_in_def using goal1(1) apply(auto) unfolding step_def mtf2_def 
+        unfolding before_in_def using assms(1) apply(auto) unfolding step_def mtf2_def 
           by(simp add: swap_def)
 
     then have s2: "s_TS [x, y] h u (length u) = [x,y]" unfolding uyx unfolding s_TS_def by simp
       
     have ta: "T_TS [x, y] h u = 1"
       unfolding T_TS_def uyx apply(simp) unfolding t_TS_def
-      unfolding s0 s1 using goal1(1) by (simp)
+      unfolding s0 s1 using assms(1) by (simp)
    
     have ttt: " T_TS [x,y] (rev u @ h) (v@r) = 
           length v + T_TS [x, y] (rev v @ (rev u @ h)) r \<and>
@@ -602,7 +596,7 @@ proof -
   also have "\<dots> = T_TS [x, y] h u + length v + T_TS [x, y] (rev qs @ h) r" by (simp only: tat) 
   also have "\<dots> = 1 + length v + T_TS [x, y] (rev qs @ h) r" by(simp only: ta) 
   also have "\<dots> = length qs - 1 + T_TS [x, y] (rev qs @ h) r" using vqs2 by auto
-  finally show ?case 
+  finally show ?thesis 
     apply(safe)
     using history qsuv apply(simp)
     using his by auto                           
@@ -610,14 +604,12 @@ qed
 
 
 
-lemma TS_xr: "x \<noteq> y \<Longrightarrow>
-  qs \<in> lang (Plus (Atom x) One) \<Longrightarrow>
-   h = [] \<or> (\<exists>hs. h = [x, x] @ hs) 
-    \<Longrightarrow> T_TS [x, y] h (qs@r) = T_TS [x,y] (rev qs @ h) r
+lemma TS_xr: assumes "x \<noteq> y" "qs \<in> lang (Plus (Atom x) One)"
+   "h = [] \<or> (\<exists>hs. h = [x, x] @ hs) "
+  shows "T_TS [x, y] h (qs@r) = T_TS [x,y] (rev qs @ h) r
           \<and> ((\<exists>hs. (rev qs @ h) = [x, x] @ hs) \<or> (rev qs @ h) = [x] \<or> (rev qs @ h)=[]) " 
 proof -
-  case goal1
-  then have alt: "qs=[] \<or> qs=[x]" by auto
+  from assms have alt: "qs=[] \<or> qs=[x]" by auto
   then have s: "s_TS [x,y] h qs (length qs) = [x,y]"
     by (auto simp: Step_def rTS_def s_TS_def TS_step_d_def step_def) 
 
@@ -625,31 +617,30 @@ proof -
     by(auto simp: T_TS_def t_TS_def s_TS_def Step_def rTS_def)
 
 
-  from goal1 have setux: "set qs \<subseteq> {x}" using atoms_lang by fastforce
+  from assms have setux: "set qs \<subseteq> {x}" using atoms_lang by fastforce
 
   have fall': "(\<exists>hs. (rev qs @ h) = [x, x] @ hs) \<or> (rev qs @ h)=[x] \<or> (rev qs @ h)=[]"
-    using alt goal1 by(auto) 
+    using alt assms by(auto) 
 
 
   have "T_TS [x, y] h (qs@r) =  T_TS [x, y] h qs + T_TS (s_TS [x,y] h qs (length qs)) (rev qs @ h) r"
       by(rule splitquerylist)
   also have "\<dots>
       = T_TS [x,y] (rev qs @ h) r" by(simp add: s t)
-  finally show ?case using fall' by simp
+  finally show ?thesis using fall' by simp
 qed
 
 
 subsubsection "(x+1)yx(yx)*yy"
 
 
-lemma ts_b: "x \<noteq> y \<Longrightarrow>
-  v \<in> lang (seq[Times (Atom y) (Atom x), Star (Times (Atom y) (Atom x)), Atom y, Atom y]) \<Longrightarrow>
-  (\<exists>hs. h = [x, x] @ hs) \<or> h = [x] \<or> h = []
-    \<Longrightarrow> T_TS [x, y] h v = (length v - 2)
+lemma ts_b: assumes "x \<noteq> y"
+  "v \<in> lang (seq[Times (Atom y) (Atom x), Star (Times (Atom y) (Atom x)), Atom y, Atom y])"
+  "(\<exists>hs. h = [x, x] @ hs) \<or> h = [x] \<or> h = []"
+  shows "T_TS [x, y] h v = (length v - 2)
             \<and>  (s_TS [x,y] h v (length v) = [y,x] \<and> (\<exists>hs. (rev v @ h) = [y,y]@hs))"
-proof - 
-  case goal1 
-  from goal1 have lenvmod: "length v mod 2 = 0" apply(simp)
+proof -  
+  from assms have lenvmod: "length v mod 2 = 0" apply(simp)
   proof -
     assume "v \<in> ({[y]} @@ {[x]}) @@ star ({[y]} @@ {[x]}) @@ {[y]} @@ {[y]}"
     then obtain p q r where pqr: "v=p@q@r" and "p\<in>({[y]} @@ {[x]})"
@@ -662,11 +653,11 @@ proof -
     from a b show ?thesis by auto
   qed
 
-  with goal1(1,3) have fall: "(\<exists>hs. h = [x, x] @ hs) \<or> index h y = length h"
+  with assms(1,3) have fall: "(\<exists>hs. h = [x, x] @ hs) \<or> index h y = length h"
     by(auto) 
  
 
-  from goal1(2) have "v \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])
+  from assms(2) have "v \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])
                           @@ lang (seq[Atom y, Atom y])" by (auto simp: conc_def)
   then obtain a b where aa: "a \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])"
                       and "b \<in> lang (seq[Atom y, Atom y])"
@@ -675,7 +666,7 @@ proof -
   then have bb: "b=[y,y]" by auto
   from aa have lena: "length a > 0" by auto
  
-  from TS_yxyx[OF goal1(1) aa fall] have stars: "T_TS [x, y] h (a @ b) =
+  from TS_yxyx[OF assms(1) aa fall] have stars: "T_TS [x, y] h (a @ b) =
     length a - 1 + T_TS [x, y] (rev a @ h) b" 
     and history: "(\<exists>hs. rev a @ h = [x, y] @ hs)"
     and state: "TSdet [x, y] h a (length a) = ([x,y],rev a @ h)" by auto 
@@ -687,9 +678,7 @@ proof -
 
   from stars suffix have "T_TS [x, y] h (a @ b) = length a" using lena by auto
   then have whatineed: "T_TS [x, y] h v = (length v - 2)" using vab bb by auto
-  
-  (* was hinten raus kommt *)
- 
+   
   have splitdet2: "TSdet [x, y] h (a @ [y, y]) (length (a @ [y, y]))
       = TSdet (fst (TSdet [x,y] h a (length a))) (rev a @ h) [y, y] (length [y, y])"
       using splitdet[of h x y a "[y,y]"] by auto
@@ -704,35 +693,31 @@ proof -
   from history obtain hs' where "rev a @ h = [x, y] @ hs'" by auto
   then obtain hs2 where reva: "rev a @ h = x # hs2" by auto
 
-  show ?case using whatineed
+  show ?thesis using whatineed
     apply(auto) 
       using grgr apply(simp add: s_TS_def )
       by(simp add: reva vab bb)
 qed
 
-lemma TS_b': "qs \<in> Lxx x y \<Longrightarrow>
-    x \<noteq> y \<Longrightarrow>
-    h = [] \<or> (\<exists>hs. h = [x, x] @ hs) \<Longrightarrow>
-    qs
-    \<in> lang (seq [Plus (Atom x) rexp.One, Atom y, Atom x, Star (Times (Atom y) (Atom x)), Atom y, Atom y]) \<Longrightarrow>
-    T_TS [x, y] h qs
+lemma TS_b': assumes "qs \<in> Lxx x y" "x \<noteq> y" "h = [] \<or> (\<exists>hs. h = [x, x] @ hs)"
+   "qs \<in> lang (seq [Plus (Atom x) rexp.One, Atom y, Atom x, Star (Times (Atom y) (Atom x)), Atom y, Atom y])"
+ shows "T_TS [x, y] h qs
     \<le> 2 * T\<^sub>p [x, y] qs (OPT2 qs [x, y]) \<and> inv_TS qs x y h"
 proof -
-  case goal1
   obtain u v where uu: "u \<in> lang (Plus (Atom x) One)"
         and vv: "v \<in> lang (seq[Times (Atom y) (Atom x), Star (Times (Atom y) (Atom x)), Atom y, Atom y])"
         and qsuv: "qs = u @ v" 
-        using goal1(4)
+        using assms(4)
         by (auto simp: conc_def)   
  
-  from TS_xr[OF goal1(2) uu goal1(3), of v] have
+  from TS_xr[OF assms(2) uu assms(3), of v] have
               T_pre: "T_TS [x, y] h (u@v) = T_TS [x,y] (rev u @ h) v"
           and fall': "(\<exists>hs. (rev u @ h) = [x, x] @ hs) \<or> (rev u @ h) = [x] \<or> (rev u @ h)=[]" by auto
       
-  with goal1 uu have fall: "(\<exists>hs. (rev u @ h) = [x, x] @ hs) \<or> index (rev u @ h) y = length (rev u @ h)"
+  with assms uu have fall: "(\<exists>hs. (rev u @ h) = [x, x] @ hs) \<or> index (rev u @ h) y = length (rev u @ h)"
     by(auto) 
 
-  from ts_b[OF goal1(2) vv fall'] have
+  from ts_b[OF assms(2) vv fall'] have
               T_star: "T_TS [x, y] (rev u @ h) v = length v - 2"
           and inv1:   "s_TS [x, y] (rev u @ h) v (length v) = [y, x]"
           and inv2:   "(\<exists>hs. rev v @ rev u @ h = [y, y] @ hs)" by auto
@@ -747,8 +732,6 @@ proof -
   have OPT: "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = (length v) div 2" apply(rule OPT2_B) by(fact)+
 
 
-  (* was hinten raus kommt *)
-
   have splitdet1: "TSdet [x,y] h (u @ v) (length (u @ v))
       = TSdet (fst (TSdet [x,y] h u (length u))) (rev u @ h) v (length v)" 
         using splitdet by auto 
@@ -762,7 +745,7 @@ proof -
     unfolding s_TS_def qsuv apply(simp only: splitdet1)
     by(simp only: first inv1[unfolded s_TS_def]) 
  
-  show ?case unfolding TS OPT
+  show ?thesis unfolding TS OPT
     apply(auto)
      unfolding inv_TS_def
      apply(rule exI[where x="y"])
@@ -776,17 +759,14 @@ subsubsection "(x+1)yy"
 
 
 
-lemma ts_a: "x \<noteq> y \<Longrightarrow>
-  qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y]) \<Longrightarrow>
-   h = [] \<or> (\<exists>hs. h = [x, x] @ hs) \<Longrightarrow> 
-    T_TS [x, y] h qs = 2
-     \<and>  inv_TS qs x y h"
-proof -                                             
-  case goal1
+lemma ts_a: assumes "x \<noteq> y" "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
+   "h = [] \<or> (\<exists>hs. h = [x, x] @ hs)"
+  shows "T_TS [x, y] h qs = 2  \<and>  inv_TS qs x y h"
+proof - 
   obtain u v where uu: "u \<in> lang (Plus (Atom x) One)"
         and vv: "v \<in> lang (seq[Atom y, Atom y])"
         and qsuv: "qs = u @ v" 
-        using goal1(2)
+        using assms(2)
         by (auto simp: conc_def)  
 
   from vv have vv2: "v = [y,y]" by auto
@@ -813,26 +793,26 @@ proof -
                         []) = (0,[])" 
   proof (cases "index (rev u @ h) y = length (rev u @ h)")
     case False
-    then have "h \<noteq> []" using setux by (metis append_Nil2 goal1(1) index_conv_size_if_notin set_rev singletonD subset_code(1))
-    with goal1(3) have tt: "(\<exists>hs. h = [x, x] @ hs)" by auto
+    then have "h \<noteq> []" using setux by (metis append_Nil2 assms(1) index_conv_size_if_notin set_rev singletonD subset_code(1))
+    with assms(3) have tt: "(\<exists>hs. h = [x, x] @ hs)" by auto
     then obtain hs where tl: "h=[x,x]@hs" by auto
 
 
     have sndcase: "u \<noteq> [] \<Longrightarrow> u = [x]" using uu by (simp)
 
-    from goal1(1) have empt: "{xa. xa < y in [x, y] \<and> count_list (take (index (rev u @ h) y) (rev u @ h)) xa \<le> 1}
+    from assms(1) have empt: "{xa. xa < y in [x, y] \<and> count_list (take (index (rev u @ h) y) (rev u @ h)) xa \<le> 1}
         = {}"
           unfolding before_in_def apply(simp) 
     apply(cases "u=[]") 
-      apply(simp) unfolding tl apply(simp add: goal1(1))
-      using sndcase apply(simp add: goal1(1))
+      apply(simp) unfolding tl apply(simp add: assms(1))
+      using sndcase apply(simp add: assms(1))
     done          
 
     show ?thesis apply(simp only: Let_def False if_False empt) by (simp)
   qed simp
 
   have e: "T_TS [x,y] (rev u @ h) [y,y] = 2" unfolding T_TS_def apply(simp)
-    unfolding t_TS_def s_TS_def using goal1(1) apply(auto simp: split_def)
+    unfolding t_TS_def s_TS_def using assms(1) apply(auto simp: split_def)
         unfolding rTS_def Step_def apply(simp only: fst_conv snd_conv TS_step_d_def)  
         apply(simp only: u) by(auto simp: step_def)
 
@@ -867,21 +847,18 @@ proof -
        by(simp)
 qed
  
-lemma TS_a': "qs \<in> Lxx x y \<Longrightarrow>
-    x \<noteq> y \<Longrightarrow>
-    h = [] \<or> (\<exists>hs. h = [x, x] @ hs) \<Longrightarrow>
-    qs
+lemma TS_a': assumes "qs \<in> Lxx x y" "x \<noteq> y"
+    "h = [] \<or> (\<exists>hs. h = [x, x] @ hs)"
+  and "qs
     \<in> lang
         (seq
           [Plus (Atom x) rexp.One, Atom y,
-           Atom y]) \<Longrightarrow>
-    T_TS [x, y] h qs
-    \<le> 2 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])
+           Atom y])"
+  shows "T_TS [x, y] h qs \<le> 2 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])
     \<and>  inv_TS qs x y h"
-proof -                                             
-  case goal1
-  have OPT: "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = 1" using OPT2_A[OF goal1(2) goal1(4)] by auto
-  show ?case using OPT ts_a[OF goal1(2,4,3)] by auto  
+proof -      
+  have OPT: "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = 1" using OPT2_A[OF assms(2,4)] by auto
+  show ?thesis using OPT ts_a[OF assms(2,4,3)] by auto  
 qed
 
 subsubsection "x+yx(yx)*x"
@@ -938,8 +915,6 @@ proof -
   from stars suffix have "T_TS [x, y] h (a @ b) = length a - 1" by auto
   then have whatineed: "T_TS [x, y] h v = (length v - 2)" using vab bb by auto
 
-
-  (* was hinten raus kommt *)
  
   have splitdet2: "TSdet [x, y] (h) (a @ [x]) (length (a @ [x]))
       = TSdet (fst (TSdet [x,y] (h) a (length a))) (rev a @ h) [x] (length [x])"
@@ -1007,7 +982,6 @@ proof -
   have OPT: "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = (length v) div 2" apply(rule OPT2_C) by(fact)+
 
 
-  (* was hinten raus kommt *)
 
   have splitdet1: "TSdet [x,y] h (u @ v) (length (u @ v))
       = TSdet (fst (TSdet [x,y] h u (length u))) (rev u @ h) v (length v)" 
@@ -2394,7 +2368,7 @@ proof -
                               
   have lq_s: "set (Lxy qs {x, y}) \<subseteq> {x,y}" by (simp add: Lxy_set_filter)
  
-  (* projezierte history *)
+  (* projected history *)
   let ?pH = "snd (config\<^sub>p (rTS []) (Lxy init {x, y}) (Lxy qs {x, y}))"
   have "?pH =snd (TSdet (Lxy init {x, y}) [] (Lxy qs {x, y}) (length (Lxy qs {x, y})))"
     by(simp)
@@ -2464,10 +2438,7 @@ proof -
       show ?thesis
       proof (cases "a=b")
         case True
-        note ab=this
-        (* jetzt falls b=a sind wir im fall xx,
-          dann ist in allen fällen x vorne *)
- 
+        note ab=this 
  
         let ?qs ="(pre2 @ [a] @ suf2 @ [a]) @ suf"
         {
@@ -2548,8 +2519,6 @@ proof -
         case False
         note ab=this
 
-
-        (* wenn nicht, müssen wir noch einen weiteren snoc aufmachen *)
         show ?thesis
         proof (cases "bs" rule: rev_cases)
           case Nil

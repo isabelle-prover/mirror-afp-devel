@@ -49,7 +49,7 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
       have sis: "Suc (index xs q - Suc n) = index xs q - n" using True Suc_diff_Suc by auto
       
       have indq: "index xs q < length xs"
-        apply(rule index_less) by(auto simp: qinxs)
+        apply(rule index_less) by auto
  
       let ?i' = "index (swaps [index xs q - Suc n..<index xs q] xs) (xs ! i)"
       let ?x = "(xs!i)" and  ?xs="(swaps  [index xs q - n..<index xs q] xs)"
@@ -82,8 +82,8 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
     apply(intro conjI)
     apply(intro impI) apply(elim conjE) prefer 4 apply(intro impI)  prefer 4 apply(intro impI) apply(elim conjE) 
       prefer 4 apply(intro impI) prefer 4
-    proof -        
-      case goal1 
+    proof (goal_cases)
+      case 1 
       have indH1: "(index xs q < i \<and> i < length xs \<longrightarrow>
                       ?i'' =  index xs (xs ! i))" using indH by auto
       assume ass: "index xs q < i" and ass2:"i < length xs"      
@@ -110,7 +110,7 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
       have "?i' = index xs (xs ! i)" unfolding i' using fstF sndF a by simp
       then show ?case using a' ass ass2 by auto
     next
-      case goal2
+      case 2
       have indH2: "index xs q = i \<longrightarrow> ?i'' = index xs (xs ! i) - n" using indH by auto
       assume "index xs q = i"
       then have ass: "i = index xs q" by auto
@@ -135,7 +135,7 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
           unfolding i' using sndTrue fstFalse by simp
       with ass show ?case by auto
     next
-      case goal3
+      case 3
       have indH3: "index xs q - n \<le> i \<and> i < index xs q
               \<longrightarrow>  ?i'' = Suc (index xs (xs ! i))" using indH by auto
       assume ass: "index xs q - Suc n \<le> i" and
@@ -185,7 +185,7 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
         then show ?thesis using ass ass2 jo by auto
       qed
     next
-      case goal4
+      case 4
       assume ass: "i < index xs q - Suc n"
       then have ass2: "i < index xs q - n" by auto
       moreover have "(i < index xs q - n \<longrightarrow> ?i'' = index xs (xs ! i))" using indH by auto
@@ -240,19 +240,19 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
 next
   case 0
   then show ?case apply(simp)
-  proof safe
-    case goal1
-    have " index xs (xs ! i) = i" apply(rule index_nth_id) using goal1 by auto
-    with goal1 show ?case by auto
+  proof (safe, goal_cases)
+    case 1
+    have " index xs (xs ! i) = i" apply(rule index_nth_id) using 1 by auto
+    with 1 show ?case by auto
   next
-    case goal2
-    have "xs ! index xs q = q" using goal2 by(auto)
-    with goal2 show ?case by auto
+    case 2
+    have "xs ! index xs q = q" using 2 by(auto)
+    with 2 show ?case by auto
   next
-    case goal3
-    have a: "index xs q < length xs" apply(rule index_less) using goal3 by auto
-    have "index xs (xs ! i) = i" apply(rule index_nth_id) apply(fact goal3(2)) using goal3(3) a by auto
-    with goal3 show ?case by auto
+    case 3
+    have a: "index xs q < length xs" apply(rule index_less) using 3 by auto
+    have "index xs (xs ! i) = i" apply(rule index_nth_id) apply(fact 3(2)) using 3(3) a by auto
+    with 3 show ?case by auto
   qed   
 qed
 
@@ -310,35 +310,36 @@ apply (cases "i < index xs q - n")
   using mtf2_forward_effect3 using leI by metis
 
 
-lemma x_stays_before_y_if_y_not_moved_to_front: "q \<in> set xs \<Longrightarrow> distinct xs \<Longrightarrow> x \<in> set xs \<Longrightarrow>  y \<in> set xs \<Longrightarrow> y \<noteq> q \<Longrightarrow> 
-      x < y in xs \<Longrightarrow> x < y in (mtf2 n q xs)"
-proof -
-  case goal1
-  from goal1(3) obtain i where i: "i = index xs x" and i2: "i < length xs" by auto
-  from goal1(4) obtain j where j: "j = index xs y" and j2: "j < length xs" by auto
+lemma x_stays_before_y_if_y_not_moved_to_front:
+  assumes "q \<in> set xs" "distinct xs" "x \<in> set xs" "y \<in> set xs" "y \<noteq> q"
+   and "x < y in xs"
+  shows "x < y in (mtf2 n q xs)"
+proof - 
+  from assms(3) obtain i where i: "i = index xs x" and i2: "i < length xs" by auto
+  from assms(4) obtain j where j: "j = index xs y" and j2: "j < length xs" by auto
   have "x < y in xs \<Longrightarrow> x < y in (mtf2 n q xs)"
   apply(cases i xs rule: splitit[where q=q and n=n])
-     apply(simp add: i  goal1(1,2) mtf2_forward_effect1' before_in_def)
+     apply(simp add: i  assms(1,2) mtf2_forward_effect1' before_in_def)
      apply(cases j xs rule: splitit[where q=q and n=n])
-      apply (metis before_in_def goal1(1) goal1(2) goal1(3) i j less_imp_diff_less mtf2_effect nth_index set_mtf2)
-      apply(simp add: i j goal1 mtf2_forward_effect1' mtf2_forward_effect2' before_in_def)
-      apply(simp add: i j goal1 mtf2_forward_effect1' mtf2_forward_effect2' before_in_def)
-      apply(simp add: i j goal1 mtf2_forward_effect1' mtf2_forward_effect3' before_in_def)
+      apply (metis before_in_def assms(1-3) i j less_imp_diff_less mtf2_effect nth_index set_mtf2)
+      apply(simp add: i j assms mtf2_forward_effect1' mtf2_forward_effect2' before_in_def)
+      apply(simp add: i j assms mtf2_forward_effect1' mtf2_forward_effect2' before_in_def)
+      apply(simp add: i j assms mtf2_forward_effect1' mtf2_forward_effect3' before_in_def)
       apply(rule j2)
      apply(cases j xs rule: splitit[where q=q and n=n])
-      apply (smt before_in_def goal1(1) goal1(2) goal1(3) i j le_less_trans mtf2_forward_effect1 mtf2_forward_effect3 nth_index set_mtf2)
-      using goal1(4) goal1(5) j apply simp
-      apply (smt Suc_leI before_in_def goal1(1) goal1(2) goal1(3) i j le_less_trans lessI mtf2_forward_effect3 nth_index set_mtf2)
+      apply (smt before_in_def assms(1-3) i j le_less_trans mtf2_forward_effect1 mtf2_forward_effect3 nth_index set_mtf2)
+      using assms(4,5) j apply simp
+      apply (smt Suc_leI before_in_def assms(1-3) i j le_less_trans lessI mtf2_forward_effect3 nth_index set_mtf2)
       apply (simp add: before_in_def i j)     
       apply(rule j2)
      apply(cases j xs rule: splitit[where q=q and n=n])
-      apply (smt before_in_def goal1(1) goal1(2) goal1(3) i j le_less_trans mtf2_forward_effect1 mtf2_forward_effect4 nth_index set_mtf2)
-      using goal1(4) goal1(5) j apply simp
-      apply (smt before_in_def goal1(1) goal1(2) goal1(3) i j le_less_trans less_imp_le_nat mtf2_forward_effect3 mtf2_forward_effect4 nth_index set_mtf2)
-      apply (metis before_in_def goal1(1) goal1(2) goal1(3) i j mtf2_forward_effect4 nth_index set_mtf2)     
+      apply (smt before_in_def assms(1-3) i j le_less_trans mtf2_forward_effect1 mtf2_forward_effect4 nth_index set_mtf2)
+      using assms(4-5) j apply simp
+      apply (smt before_in_def assms(1-3) i j le_less_trans less_imp_le_nat mtf2_forward_effect3 mtf2_forward_effect4 nth_index set_mtf2)
+      apply (metis before_in_def assms(1-3) i j mtf2_forward_effect4 nth_index set_mtf2)     
       apply(rule j2)
      apply(rule i2) done
-   with goal1(6) show ?thesis by auto
+   with assms(6) show ?thesis by auto
 qed
 
 
@@ -351,74 +352,75 @@ lemma x_stays_before_y_if_y_not_moved_to_front_2dir: "q \<in> set xs \<Longright
 oops
 
 lemma mtf2_backwards_effect1:
-  "index xs q < length xs \<Longrightarrow> q \<in> set xs \<Longrightarrow> distinct xs 
-     \<Longrightarrow> index xs q < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) < length xs
-     \<Longrightarrow> i < length xs \<Longrightarrow> index xs q <  i \<and> i  < length xs"
+  assumes "index xs q < length xs" "q \<in> set xs" "distinct xs" 
+    "index xs q < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) < length xs"
+    "i < length xs"
+  shows  "index xs q <  i \<and> i  < length xs"
 proof -
-  case goal1
-  from goal1(4) have "~ (index xs q - n = index (mtf2 n q xs) (xs ! i))" by auto
-  with goal1 mtf2_forward_effect2 have 1: "~ (index xs q = i)" by metis
-  from goal1(4) have "~ (index xs q - n < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) \<le> index xs q)" by auto
-  with goal1 mtf2_forward_effect3 have 2: "~ (index xs q - n \<le> i \<and> i < index xs q)" by metis
-  from goal1(4) have "~ (index (mtf2 n q xs) (xs ! i) < index xs q - n)" by auto
-  with goal1 mtf2_forward_effect4 have 3: "~ (i < index xs q - n)" by metis
+  from assms(4) have "~ (index xs q - n = index (mtf2 n q xs) (xs ! i))" by auto
+  with assms mtf2_forward_effect2 have 1: "~ (index xs q = i)" by metis
+  from assms(4) have "~ (index xs q - n < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) \<le> index xs q)" by auto
+  with assms mtf2_forward_effect3 have 2: "~ (index xs q - n \<le> i \<and> i < index xs q)" by metis
+  from assms(4) have "~ (index (mtf2 n q xs) (xs ! i) < index xs q - n)" by auto
+  with assms mtf2_forward_effect4 have 3: "~ (i < index xs q - n)" by metis
 
-  from fullchar[OF goal1(1)] goal1(5) 1 2 3 show "index xs q <  i \<and> i  < length xs" by metis
+  from fullchar[OF assms(1)] assms(5) 1 2 3 show "index xs q <  i \<and> i  < length xs" by metis
 qed
 
 lemma mtf2_backwards_effect2:
-  "index xs q < length xs \<Longrightarrow> q \<in> set xs \<Longrightarrow> distinct xs \<Longrightarrow> index (mtf2 n q xs) (xs ! i) = index xs q - n
-     \<Longrightarrow> i < length xs \<Longrightarrow> index xs q = i"
-proof -
-  case goal1
-  from goal1(4) have "~ (index xs q < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) < length xs)" by auto
-  with goal1 mtf2_forward_effect1 have 1: "~ (index xs q < i \<and> i < length xs)" by metis
-  from goal1(4) have "~ (index xs q - n < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) \<le> index xs q)" by auto
-  with goal1 mtf2_forward_effect3 have 2: "~ (index xs q - n \<le> i \<and> i < index xs q)" by metis
-  from goal1(4) have "~ (index (mtf2 n q xs) (xs ! i) < index xs q - n)" by auto
-  with goal1 mtf2_forward_effect4 have 3: "~ (i < index xs q - n)" by metis
+  assumes "index xs q < length xs" "q \<in> set xs" "distinct xs" "index (mtf2 n q xs) (xs ! i) = index xs q - n"
+    "i < length xs" 
+    shows "index xs q = i"
+proof - 
+  from assms(4) have "~ (index xs q < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) < length xs)" by auto
+  with assms mtf2_forward_effect1 have 1: "~ (index xs q < i \<and> i < length xs)" by metis
+  from assms(4) have "~ (index xs q - n < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) \<le> index xs q)" by auto
+  with assms mtf2_forward_effect3 have 2: "~ (index xs q - n \<le> i \<and> i < index xs q)" by metis
+  from assms(4) have "~ (index (mtf2 n q xs) (xs ! i) < index xs q - n)" by auto
+  with assms mtf2_forward_effect4 have 3: "~ (i < index xs q - n)" by metis
 
-  from fullchar[OF goal1(1)] goal1(5) 1 2 3 show "index xs q = i" by metis
+  from fullchar[OF assms(1)] assms(5) 1 2 3 show "index xs q = i" by metis
 qed
 
 lemma mtf2_backwards_effect3:
-  "index xs q < length xs \<Longrightarrow> q \<in> set xs \<Longrightarrow> distinct xs 
-     \<Longrightarrow> index xs q - n < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) \<le> index xs q
-     \<Longrightarrow> i < length xs \<Longrightarrow> index xs q - n \<le> i \<and> i < index xs q"
+  assumes "index xs q < length xs" "q \<in> set xs" "distinct xs"
+    "index xs q - n < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) \<le> index xs q"
+    "i < length xs"
+  shows "index xs q - n \<le> i \<and> i < index xs q"
 proof -
-  case goal1
-  from goal1(4) have "~ (index xs q < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) < length xs)" by auto
-  with goal1 mtf2_forward_effect1 have 2: "~ (index xs q <  i \<and> i  < length xs)" by metis
-  from goal1(4) have "~ (index xs q - n = index (mtf2 n q xs) (xs ! i))" by auto
-  with goal1 mtf2_forward_effect2 have 1: "~ (index xs q = i)" by metis
-  from goal1(4) have "~ (index (mtf2 n q xs) (xs ! i) < index xs q - n)" by auto
-  with goal1 mtf2_forward_effect4 have 3: "~ (i < index xs q - n)" by metis
+  from assms(4) have "~ (index xs q < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) < length xs)" by auto
+  with assms mtf2_forward_effect1 have 2: "~ (index xs q <  i \<and> i  < length xs)" by metis
+  from assms(4) have "~ (index xs q - n = index (mtf2 n q xs) (xs ! i))" by auto
+  with assms mtf2_forward_effect2 have 1: "~ (index xs q = i)" by metis
+  from assms(4) have "~ (index (mtf2 n q xs) (xs ! i) < index xs q - n)" by auto
+  with assms mtf2_forward_effect4 have 3: "~ (i < index xs q - n)" by metis
 
-  from fullchar[OF goal1(1)] goal1(5) 1 2 3 show "index xs q - n \<le> i \<and> i < index xs q" by metis
+  from fullchar[OF assms(1)] assms(5) 1 2 3 show "index xs q - n \<le> i \<and> i < index xs q" by metis
 qed
 
 
 lemma mtf2_backwards_effect4:
-  "index xs q < length xs \<Longrightarrow> q \<in> set xs \<Longrightarrow> distinct xs 
-     \<Longrightarrow> index (mtf2 n q xs) (xs ! i) < index xs q - n
-     \<Longrightarrow> i < length xs \<Longrightarrow> i < index xs q - n"
-proof -
-  case goal1
-  from goal1(4) have "~ (index xs q < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) < length xs)" by auto
-  with goal1 mtf2_forward_effect1 have 2: "~ (index xs q <  i \<and> i  < length xs)" by metis
-  from goal1(4) have "~ (index xs q - n = index (mtf2 n q xs) (xs ! i))" by auto
-  with goal1 mtf2_forward_effect2 have 1: "~ (index xs q = i)" by metis
-  from goal1(4) have "~ (index xs q - n < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) \<le> index xs q)" by auto
-  with goal1 mtf2_forward_effect3 have 3: "~ (index xs q - n \<le> i \<and> i < index xs q)" by metis
+  assumes "index xs q < length xs" "q \<in> set xs" "distinct xs"
+   "index (mtf2 n q xs) (xs ! i) < index xs q - n"
+   "i < length xs" 
+  shows "i < index xs q - n"
+proof - 
+  from assms(4) have "~ (index xs q < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) < length xs)" by auto
+  with assms mtf2_forward_effect1 have 2: "~ (index xs q <  i \<and> i  < length xs)" by metis
+  from assms(4) have "~ (index xs q - n = index (mtf2 n q xs) (xs ! i))" by auto
+  with assms mtf2_forward_effect2 have 1: "~ (index xs q = i)" by metis
+  from assms(4) have "~ (index xs q - n < index (mtf2 n q xs) (xs ! i) \<and> index (mtf2 n q xs) (xs ! i) \<le> index xs q)" by auto
+  with assms mtf2_forward_effect3 have 3: "~ (index xs q - n \<le> i \<and> i < index xs q)" by metis
 
-  from fullchar[OF goal1(1)] goal1(5) 1 2 3 show "i < index xs q - n" by metis
+  from fullchar[OF assms(1)] assms(5) 1 2 3 show "i < index xs q - n" by metis
 qed
 
 lemma mtf2_backwards_effect4':
-  "index xs q < length xs \<Longrightarrow> q \<in> set xs \<Longrightarrow> distinct xs 
-     \<Longrightarrow> index (mtf2 n q xs) x < index xs q - n
-     \<Longrightarrow> x \<in> set xs \<Longrightarrow> (index xs x) < index xs q - n"
- using mtf2_backwards_effect4[where xs=xs and i="index xs x"] yes
+ assumes "index xs q < length xs" "q \<in> set xs" "distinct xs"
+  "index (mtf2 n q xs) x < index xs q - n"
+  "x \<in> set xs"
+ shows "(index xs x) < index xs q - n"
+ using assms mtf2_backwards_effect4[where xs=xs and i="index xs x"] yes
 by auto
 
 lemma 
