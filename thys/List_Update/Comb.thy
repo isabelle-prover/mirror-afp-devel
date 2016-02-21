@@ -58,21 +58,42 @@ next
 qed
 
 
- 
+
+lemma BITfin: "x<length qs
+   \<Longrightarrow> finite (set_pmf  (config'_rand BIT  (BIT_init init \<bind>  (\<lambda>is. return_pmf (init, is)))
+                      (take x qs)))"
+apply (induct x)
+  apply(simp add: BIT_init_def L_finite)
+  by(simp add: take_Suc_conv_app_nth config'_rand_append BIT_step_def)
+  
+lemma TSfin: "x<length qs 
+  \<Longrightarrow> finite (set_pmf (config'_rand (\<lambda>s. return_pmf h, \<lambda>s r. return_pmf (TS_step_d s r))
+                         (return_pmf (init, h))
+                         (take x qs)))" 
+apply (induct x)
+  apply(simp add: BIT_init_def)
+  by(simp add: take_Suc_conv_app_nth config'_rand_append split_def) 
+
+
 lemma T_COMB_split: "T\<^sub>p_on_rand (COMB h) init qs = 0.2 * T\<^sub>p_on_rand (embed (rTS h))  init qs + 0.8 * T\<^sub>p_on_rand BIT  init qs"
 proof -
   have A: "0.2 * T_on_rand (embed (rTS h))  init qs + 0.8 * T_on_rand BIT  init qs
       = setsum (%i. 0.2 * T\<^sub>p_on_rand_n (embed (rTS h)) init qs i + 0.8 * T\<^sub>p_on_rand_n BIT  init qs i) {..<length qs}"
         unfolding T_on_rand_as_sum
           by(simp only: setsum_right_distrib setsum.distrib) 
+
+
   show ?thesis unfolding A unfolding T_on_rand_as_sum
     apply(rule setsum.cong)
       apply(simp)
       apply(subst configCOMB)
         apply(simp)  
         unfolding rTS_def COMB_def  
-        apply(simp add: bind_assoc_pmf  bind_return_pmf split_def ) 
-        apply(simp add: E_bernoulli2[unfolded map_pmf_def])
+        apply(simp add: bind_assoc_pmf bind_return_pmf split_def ) 
+        apply(subst E_bernoulli3)
+          apply(simp) apply(simp) 
+          using BITfin[of _ qs init] TSfin[of _ qs]
+          apply(simp add: split_def set_pmf_bernoulli BIT_step_def COMB_step_def)
         unfolding COMB_step_def BIT_init_def map_pmf_def apply(simp add: split_def)
         apply(simp add: bind_assoc_pmf)
         by(simp add: bind_return_pmf split_def )  
@@ -145,7 +166,8 @@ next
 qed
 
  
-lemma T2_COMB_split: "T\<^sub>p_on2 (COMB h) qs (COMB_state h x y i)
+lemma T2_COMB_split: assumes "finite (set_pmf i)"
+  shows "T\<^sub>p_on2 (COMB h) qs (COMB_state h x y i)
            = 0.2 * T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h))
             + 0.8 * T\<^sub>p_on2 BIT qs i"
 proof -
@@ -155,14 +177,26 @@ proof -
             + 0.8 * T_on_rand'_n BIT i qs j) {..<length qs}"
         unfolding  T\<^sub>p_on2_def T_on_n2_def
           by(simp only: setsum_right_distrib setsum.distrib) 
+
+  { fix xa 
+    assume "xa<length qs "
+    then have "finite (set_pmf (config'_rand BIT i (take xa qs)))"
+    apply(induct xa)
+      using assms apply(simp)
+      by(simp add: take_Suc_conv_app_nth config'_rand_append split_def BIT_step_def)
+  } note BIT_fin2=this
+
   show ?thesis unfolding A unfolding T\<^sub>p_on2_def T_on_n2_def
     apply(rule setsum.cong)
       apply(simp)  
       apply(subst configCOMB2asd)
         apply(simp)  
         unfolding rTS_def COMB_def  
-        apply(simp add: bind_assoc_pmf  bind_return_pmf split_def ) 
-        apply(simp add: E_bernoulli2[unfolded map_pmf_def])
+        apply(simp add: bind_assoc_pmf  bind_return_pmf split_def )         
+        apply(subst E_bernoulli3)
+          apply(simp) apply(simp) 
+          using BIT_fin2 TSfin[of _ qs]
+          apply(simp add: split_def set_pmf_bernoulli BIT_step_def COMB_step_def)
         unfolding COMB_step_def BIT_init_def map_pmf_def apply(simp add: split_def)
         apply(simp add: bind_assoc_pmf)
         by(simp add: bind_return_pmf split_def )   
@@ -199,7 +233,8 @@ proof (rule LxxI[where P="(\<lambda>x y qs.  T\<^sub>p_on2 (COMB h) qs (COMB_sta
   have "T\<^sub>p_on2 (COMB h) qs (COMB_state h x y (type0 init x y)) 
       = 0.2 * T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h))
             + 0.8 * T\<^sub>p_on2 BIT qs (type0 init x y)"
-    by(fact T2_COMB_split) 
+    apply(rule T2_COMB_split) 
+      by(simp add: type0_def)
   also have "\<dots> = 0" using TS BIT by simp
   also have "\<dots> \<le> 1.6 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])" by simp
   finally show ?case unfolding inv_COMB_def using BIT_inv TS_inv by auto
@@ -286,7 +321,8 @@ next
   have "T\<^sub>p_on2 (COMB h) qs (COMB_state h x y (type0 init x y)) 
       = 0.2 * T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h))
             + 0.8 * T\<^sub>p_on2 BIT qs (type0 init x y)"
-    by(fact T2_COMB_split)
+    apply(rule T2_COMB_split)
+      by(simp add: type0_def)
   also have "\<dots> = 0.2 * (length v - 2) + 0.8 * (0.75 * length v - 0.5)" using TS BIT by simp
   also have "\<dots> \<le> 1.6 * (length v div 2)"
   proof -
@@ -393,7 +429,8 @@ next
   have "T\<^sub>p_on2 (COMB h) qs (COMB_state h x y (type0 init x y)) 
       = 0.2 * T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h))
             + 0.8 * T\<^sub>p_on2 BIT qs (type0 init x y)"
-    by(fact T2_COMB_split)
+    apply(rule T2_COMB_split)
+      by(simp add: type0_def)
   also have "\<dots> = 0.2 * (length v - 2) + 0.8 * (0.75 * length v - 0.5)" using TS BIT by simp
   also have "\<dots> \<le> 1.6 * (length v div 2)"
   proof -
@@ -435,7 +472,9 @@ next
   have "T\<^sub>p_on2 (COMB h) qs (COMB_state h x y (type0 init x y)) 
       = 0.2 * T\<^sub>p_on2 (embed (rTS h)) qs (return_pmf ([x,y],h))
             + 0.8 * T\<^sub>p_on2 BIT qs (type0 init x y)"
-    by(fact T2_COMB_split)also have "\<dots> = 1.6" using TS BIT by simp
+    apply(rule T2_COMB_split)
+      by(simp add: type0_def)
+  also have "\<dots> = 1.6" using TS BIT by simp
   also have "\<dots> \<le> 1.6 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])" using OPT by simp
   finally show ?case unfolding inv_COMB_def using BIT_inv TS_inv by auto
 qed simp
