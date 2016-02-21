@@ -190,41 +190,43 @@ apply(simp add: rTS_def s_TS_def prod.exhaust sndTSdet)
 unfolding sndTSdet[of "length xs" xs initH init, symmetric, simplified]
 by(simp add: rTS_def)
  
-
+lemma config'indif: "config' (\<lambda>s. a, TS_step_d) init qs
+        = config' (\<lambda>s. b, TS_step_d) init qs"
+apply(induct qs arbitrary: init) by(simp_all add: Step_def)
 
 lemma TSdet_split: "n \<le> length zs \<Longrightarrow> TSdet init initH (xs @ zs) (length xs + n)
      = TSdet (s_TS init initH xs (length xs)) (rev xs @ initH) zs n"
-sorry
-(*
-proof(induct n)
-  case (Suc n)
-  then have iH: "TSdet init initH (xs @ zs)
-     (length xs + n) =
-    TSdet (s_TS init initH xs (length xs))
-     (rev xs @ initH) zs n" by auto
+proof -
 
-  have yeah: "(xs @ zs) ! (length xs + n) = zs ! n" by (simp add: nth_append)
 
-  have "TSdet init initH (xs @ zs) (length xs + Suc n) =
-      (case TSdet (s_TS init initH xs (length xs))
-     (rev xs @ initH) zs n of
-     (is, s) \<Rightarrow>
-       step2
-        (TS_step_d is s
-          ((xs @ zs) ! (length xs + n)))
-        s ((xs @ zs) ! (length xs + n)))" by(simp add: iH)
-  also have "\<dots> = 
-    TSdet (s_TS init initH xs (length xs))
-     (rev xs @ initH) zs (Suc n)" by(simp add: yeah)
-  finally show ?case .
-qed (simp add: TSdet_restart)
- *)
+  from sndTSdet[of "length xs" xs, simplified, unfolded rTS_def]
+    have 1: "snd (config' (\<lambda>s. initH, TS_step_d) (init, initH) xs) = rev xs @ initH" by simp 
+  
+  have "TSdet init initH (xs @ zs) (length xs + n)
+      = config' (\<lambda>s. initH, TS_step_d)
+            (config' (\<lambda>s. initH, TS_step_d) (init, initH) xs) 
+              (take n zs)" by(simp add: rTS_def config'_append2)
+  also have "\<dots> = config' (\<lambda>s. initH, TS_step_d)
+            (fst (config' (\<lambda>s. initH, TS_step_d) (init, initH) xs) ,
+              snd (config' (\<lambda>s. initH, TS_step_d) (init, initH) xs) )
+              (take n zs)" by(simp)
+  also have "\<dots> = config' (\<lambda>s. initH, TS_step_d)
+            (fst (config' (\<lambda>s. initH, TS_step_d) (init, initH) xs),
+                rev xs @ initH)
+              (take n zs)" by(simp only: 1)
+  also have "\<dots> = config' (\<lambda>s. (rev xs @ initH), TS_step_d)
+            (fst (config' (\<lambda>s. initH, TS_step_d) (init, initH) xs),
+                rev xs @ initH)
+              (take n zs)" using config'indif by blast
+  also have "\<dots> = TSdet (s_TS init initH xs (length xs)) (rev xs @ initH) zs n"
+    by(simp add: rTS_def config'_append2 s_TS_def)
+  finally show ?thesis .
+qed 
 
 lemma splitdet: "TSdet [x,y] h (u @ v) (length (u @ v))
-      = TSdet (fst (TSdet [x,y] h u (length u))) (rev u @ h) v (length v)"
-sorry (*
-using TSdet_split[of "length v" v "[x,y]" h u, unfolded s_TS_def] by simp
-*)
+      = TSdet (fst (TSdet [x,y] h u (length u))) (rev u @ h) v (length v)" 
+using TSdet_split[of "length v" v h "[x,y]" u, unfolded s_TS_def] by simp
+
 
 lemma t_TS_append: "n \<in> {..<length ys} \<Longrightarrow> t_TS A B ys n = t_TS A B (ys @ zs) n"
 proof -
