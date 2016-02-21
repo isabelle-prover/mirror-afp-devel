@@ -16,7 +16,7 @@ datatype CombState = CBit "bool list * nat list" | CTs "nat list"
 fun COMB_init :: "nat list \<Rightarrow> (nat state, CombState) alg_on_init" where
   "COMB_init h init = do {
                     (b::bool) \<leftarrow> (bernoulli_pmf 0.8);
-                    (xs::bool list) \<leftarrow> Prob_Theory.L (length init);
+                    (xs::bool list) \<leftarrow> Prob_Theory.bv (length init);
                     return_pmf (if b then CBit (xs, init) else CTs h)
                   }"
   
@@ -63,7 +63,7 @@ lemma BITfin: "x<length qs
    \<Longrightarrow> finite (set_pmf  (config'_rand BIT  (BIT_init init \<bind>  (\<lambda>is. return_pmf (init, is)))
                       (take x qs)))"
 apply (induct x)
-  apply(simp add: BIT_init_def L_finite)
+  apply(simp add: BIT_init_def bv_finite)
   by(simp add: take_Suc_conv_app_nth config'_rand_append BIT_step_def)
   
 lemma TSfin: "x<length qs 

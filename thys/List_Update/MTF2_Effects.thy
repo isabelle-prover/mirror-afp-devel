@@ -56,7 +56,6 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
               and ?n="(index xs q - Suc n)"
       have "?i'
           =  index (swap (index xs q - Suc n) (swaps  [index xs q - n..<index xs q] xs)) (xs!i)" using yeah by auto
-      thm index_swap_distinct index_less
       also have "\<dots> = (if ?x = ?xs ! ?n then Suc ?n else if ?x = ?xs ! Suc ?n then ?n else index ?xs ?x)"
         apply(rule index_swap_distinct)
           apply(simp)
@@ -91,7 +90,6 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
       then have a: "?i'' =  index xs (xs ! i)" using indH1 by auto
       also have a': "\<dots> = i" apply(rule index_nth_id) using ass2 by(auto)
       finally have ii: "?i'' = i" .
-      thm difind_difelem[where i="?n"]
       have fstF: "~ ?x = ?xs ! ?n" apply(rule difind_difelem[where j="index (swaps [index xs q - n..<index xs q] xs) (xs!i)"])
         using indq apply (simp add: less_imp_diff_less)
         apply(simp)
@@ -117,12 +115,11 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
       assume "index xs q = i"
       then have ass: "i = index xs q" by auto
       with indH2 have a: "i - n = ?i''" by auto
-      from ass have c: "index xs (xs ! i) = i" by auto      
-      thm nth_index
+      from ass have c: "index xs (xs ! i) = i" by auto  
       have "Suc (index xs q - Suc n) = i - n" using ass True Suc_diff_Suc by auto
       also have "\<dots> = ?i''" using a by auto
       finally have a: "Suc ?n = ?i''" .
-      thm nth_index
+
       have sndTrue: "?x = ?xs ! Suc ?n" apply(simp add: a)
               apply(rule nth_index[symmetric]) by (simp add: ass)
       have fstFalse: "~ ?x = ?xs ! ?n" apply(rule difind_difelem[where j="index (swaps [index xs q - n..<index xs q] xs) (xs!i)"])
@@ -134,7 +131,6 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
           apply(simp)
         using a by auto    
 
-      thm index_nth_id
       have "?i' = index xs (xs ! index xs q) - Suc n"
           unfolding i' using sndTrue fstFalse by simp
       with ass show ?case by auto
@@ -151,9 +147,7 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
         then have "i < index xs q - n" by auto
         moreover have "(i < index xs q - n \<longrightarrow> ?i'' = index xs (xs ! i))" using indH by auto
         ultimately have d: "?i'' = index xs (xs ! i)" by simp
-        thm indH
         from False ass have b: "index xs q - Suc n = i" by auto
-        thm index_less
         have "index xs q < length xs" apply(rule index_less) by (auto)
         have c: "index xs (xs ! i) = i"
           apply(rule index_nth_id) apply(simp) using indq ass2 using less_trans by blast
@@ -178,7 +172,6 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
             apply(simp) using ilen apply(simp)
             apply(simp)
           apply(simp only: a jo) using True by auto
-          thm Suc_diff_Suc
         have sndF: "~ ?x = ?xs ! Suc ?n" apply(rule difind_difelem[where j="index (swaps [index xs q - n..<index xs q] xs) (xs!i)"])
           using True1 apply (simp add: Suc_diff_Suc less_imp_diff_less)
           apply(simp)
@@ -209,8 +202,7 @@ from True have onemore: "[index xs q - Suc n..<index xs q] = (index xs q - Suc n
         apply(rule index_less) 
           apply(simp) using ilen apply(simp)
           apply(simp)
-        apply(simp only: a jo) using ass by auto
-        thm Suc_diff_Suc
+        apply(simp only: a jo) using ass by auto 
       have sndF: "~ ?x = ?xs ! Suc ?n" apply(rule difind_difelem[where j="index (swaps [index xs q - n..<index xs q] xs) (xs!i)"])
         using True1 apply (simp add: Suc_diff_Suc less_imp_diff_less)
         apply(simp)
@@ -263,8 +255,6 @@ next
     with goal3 show ?case by auto
   qed   
 qed
-
-thm mtf2_effect
 
 lemma mtf2_forward_effect1:
   "q \<in> set xs \<Longrightarrow> distinct xs \<Longrightarrow> index xs q < i \<and> i < length xs 
@@ -319,8 +309,6 @@ apply (cases "i < index xs q - n")
   using mtf2_forward_effect4 apply force
   using mtf2_forward_effect3 using leI by metis
 
-
-thm splitit
 
 lemma x_stays_before_y_if_y_not_moved_to_front: "q \<in> set xs \<Longrightarrow> distinct xs \<Longrightarrow> x \<in> set xs \<Longrightarrow>  y \<in> set xs \<Longrightarrow> y \<noteq> q \<Longrightarrow> 
       x < y in xs \<Longrightarrow> x < y in (mtf2 n q xs)"
@@ -488,15 +476,12 @@ proof -
           have part1: ?part1
           proof
             assume qx: "q < x in A"
-            thm iH[OF qx]
             {  
               fix q x B i
                assume a1: "q < x in B"
                assume a2: "~ q = B ! i"
                assume a3: "distinct B"
                assume a4: "Suc i < length B"
-               
-               thm before_in_swap[of B B]
 
                have "dist_perm B B" by(simp add: a3)
                moreover have "Suc i < length B" using a4 by auto
@@ -505,10 +490,6 @@ proof -
                 using before_in_swap[of B B] by simp
            } note grr=this
 
-              thm grr[OF iH[OF qx]]
-
-                             
-               
             have 2: "distinct (swaps [index A q - n..<index A q] A)" using distA by auto
             
 
@@ -519,8 +500,7 @@ proof -
 
 
            let ?xs = "(swaps [index A q - n..<index A q] A)"
-           let ?n = "(index A q - Suc n)"
-           thm indH2
+           let ?n = "(index A q - Suc n)" 
            have "?xs ! Suc ?n = swaps [index A q - n..<index A q] A ! (index (swaps [index A q - n..<index A q] A) q)" 
               using indH2 Suc_diff_Suc True by auto
            also have "\<dots> = q" apply(rule nth_index) using asm by auto
@@ -529,8 +509,7 @@ proof -
 
 
            have "index (swaps [index A q - Suc n..<index A q] A) q
-              = index (swap (index A q - Suc n) ?xs) q" by (simp only: yeah)
-           thm index_swap_distinct
+              = index (swap (index A q - Suc n) ?xs) q" by (simp only: yeah) 
            also have "\<dots> = (if q = ?xs ! ?n then Suc ?n else if q = ?xs ! Suc ?n then ?n else index ?xs q)"
             apply(rule index_swap_distinct)
               apply(simp add: distA)
@@ -546,8 +525,7 @@ proof -
           show ?thesis apply(simp only: b a) by (fact ind) 
         qed      
       qed 
-
-    thm lele
+ 
     show "q < x in A \<Longrightarrow> q < x in (mtf2 n q A)"
         "(index (mtf2 n q A) q) =  index A q - n"
     unfolding mtf2_def  
@@ -582,7 +560,6 @@ proof (induct entf)
     also have "\<dots> < length xs" by(simp add: index_less_size_conv iH)
     finally have indle: "index xs q - e < length xs".
 
-    thm index_less_size_conv[symmetric]
     have arg: "Suc (index xs q - Suc e) < length (swaps [index xs q - e..<index xs q] xs)"
       apply(auto) unfolding gaa using indle by simp
     then have arg2: "index xs q - Suc e < length (swaps [index xs q - e..<index xs q] xs)" by auto
@@ -606,8 +583,6 @@ proof (induct entf)
     from aaa have "index (swaps [index xs q - Suc e..<index xs q] xs) q
         = index (swap (index xs q - Suc e) (swaps [index xs q - e..<index xs q] xs)) q" 
           by auto
-    thm this[unfolded swap_def]
-    thm index_swap_if_distinct
     also have "\<dots> = (if q = ?rest ! ?i then (Suc ?i) else if q = ?rest ! (Suc ?i) then ?i else index ?rest q)"
         unfolding swap_def apply(simp only: arg if_True)
         apply(rule index_swap_if_distinct)
@@ -662,7 +637,6 @@ by (metis Suc_pred' gr0I length_pos_if_in_set less_irrefl less_trans_Suc zero_le
   finally show "index (if q \<in> set xs then swaps [index xs q - (length xs -1)..<index xs q] xs else xs) q = 0" .
 qed
 
-(* TODO move to mtf2_effect *)
 lemma mtf2_moves_to_front': "distinct xs \<Longrightarrow> y \<in> set xs \<Longrightarrow> x \<in> set xs \<Longrightarrow> x\<noteq>y \<Longrightarrow> x < y in mtf2 (length xs-1) x xs = True"
 using mtf2_moves_to_frontm1 by (metis before_in_def gr0I index_eq_index_conv set_mtf2)
 

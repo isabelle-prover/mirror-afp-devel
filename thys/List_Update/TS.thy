@@ -48,7 +48,6 @@ fun step2 where
 lemma step2_splitted: "step2 S s q = (snd S, step s q (fst S))"
 apply(cases S) by(simp)
 
-thm stepxy
 
 lemma 1: "x\<noteq>y \<Longrightarrow> q \<in> {x, y}
     \<Longrightarrow> snd (step2 (a, is) [x,y] q) \<in> {[x,y], [y,x]}"
@@ -144,7 +143,7 @@ proof (induct i arbitrary: x y)
   from Suc have "i \<le> length xs" by simp
   from Suc(1)[OF Suc(2) Suc(3) this] have grr: "s_TS [x,y] h xs i \<in> {[x,y], [y,x]}" by simp
   
-  thm step2_xy
+
   have yo: "(xs ! i) \<in> {x,y}" using Suc(3,4) using less_le_trans nth_mem by blast
   show ?case unfolding s_TS_def 
     apply(simp add: take_Suc_conv_app_nth[OF ixs] config'_snoc Step_def split_def)
@@ -385,7 +384,6 @@ proof -
     finally have alles: "TSdet [x, y] h (u @ v) (length u + length v) =
                   ([x, y], rev v @ rev u @ h)" .
 
-    thm splitquerylist
     have "T_TS [x, y] h ((u @ v) @ r) = T_TS [x, y] h (u @ (v @ r))" by auto
     also have "\<dots>
         = T_TS [x, y] h u + T_TS (s_TS [x,y] h u (length u)) (rev u @ h) (v @ r)"
@@ -573,10 +571,6 @@ proof -
     have ta: "T_TS [x, y] h u = 1"
       unfolding T_TS_def uyx apply(simp) unfolding t_TS_def
       unfolding s0 s1 using goal1(1) by (simp)
-
-      (* instead of TS_b1 use TS_yx *)
-      thm TS_yx
-
    
     have ttt: " T_TS [x,y] (rev u @ h) (v@r) = 
           length v + T_TS [x, y] (rev v @ (rev u @ h)) r \<and>
@@ -586,7 +580,7 @@ proof -
       apply(fact)
       using vv apply(simp)
       using uyx by(simp)
-      thm TS_yy
+
     then have tat: "T_TS [x,y] (rev u @ h) (v@r) =  
           length v + T_TS [x, y] (rev qs @ h) r" 
           and history:  "(\<exists>hs. rev v @  (rev u @ h) = [x, y] @ hs)"
@@ -599,9 +593,7 @@ proof -
     unfolding uyx using det2 by simp
 
      have his: "TSdet [x, y] h qs (length qs) = ([x, y], rev qs @ h)"
-      unfolding qsuv apply(subst splitdet) apply(simp only: 1 state) by auto
-
-  thm splitquerylist
+      unfolding qsuv apply(subst splitdet) apply(simp only: 1 state) by auto 
   have "T_TS [x, y] h (qs@r) = T_TS [x, y] h (u @ v @ r)" using qsuv  by auto
   also have "\<dots>
       = T_TS [x, y] h u + T_TS (s_TS [x,y] h u (length u)) (rev u @ h) (v @ r)"
@@ -686,8 +678,7 @@ proof -
   from TS_yxyx[OF goal1(1) aa fall] have stars: "T_TS [x, y] h (a @ b) =
     length a - 1 + T_TS [x, y] (rev a @ h) b" 
     and history: "(\<exists>hs. rev a @ h = [x, y] @ hs)"
-    and state: "TSdet [x, y] h a (length a) = ([x,y],rev a @ h)" by auto
-  thm TS_yy
+    and state: "TSdet [x, y] h a (length a) = ([x,y],rev a @ h)" by auto 
   have suffix: "T_TS [x, y] (rev a @ h) b = 1
                  \<and> TSdet [x, y] (rev a @ h) b (length b) = ([y,x],rev b @ rev a @ h)" unfolding bb apply(rule TS_yy)
     apply(fact)
@@ -796,9 +787,7 @@ proof -
         and vv: "v \<in> lang (seq[Atom y, Atom y])"
         and qsuv: "qs = u @ v" 
         using goal1(2)
-        by (auto simp: conc_def) 
-  
-  thm star_unfold_left
+        by (auto simp: conc_def)  
 
   from vv have vv2: "v = [y,y]" by auto
   then have vv3: "v \<in> lang (seq [Star (Times (Atom y) (Atom x)), Atom y, Atom y])"
@@ -938,8 +927,7 @@ proof -
   from TS_yxyx[OF goal1(1) aa fall] have stars: "T_TS [x, y] h (a @ b) =
     length a - 1 + T_TS [x, y] (rev a @ h) b"
     and history: "(\<exists>hs. rev a @ h = [x, y] @ hs)"
-    and state: "TSdet [x, y] h a (length a) = ([x, y], rev a @ h)" by auto
-  thm TS_x
+    and state: "TSdet [x, y] h a (length a) = ([x, y], rev a @ h)" by auto 
   have "T_TS [x, y] (rev a @ h) b = 0
             \<and> TSdet [x, y] (rev a @ h) b (length b) = ([x,y], rev b @ (rev a @ h))" unfolding bb apply(rule TS_x)
     apply(fact)
@@ -1099,9 +1087,6 @@ apply(cases "h=[]")
   apply(cases "index h y = length h")
     apply(simp)
     using before_in_setD1 by auto
-
-
-thm TS_a'[unfolded Lxx_def L_lasthasxx_def, simplified seq.simps]
  
 
 subsection "Phase Partitioning"
@@ -1125,8 +1110,7 @@ proof (induction "length \<sigma>" arbitrary: h \<sigma> x y rule: less_induct)
         and D2: "\<exists>x' y'. s_TS [x,y] h xs (length xs) = [x',y'] \<and> (\<exists>hs. (rev xs @ h) = [x',x']@hs)"
           unfolding inv_TS_def by auto
 
-    def [simp]: LTS' == "s_TS [x,y] h xs (length xs)"
-    thm s_TS_xy
+    def [simp]: LTS' == "s_TS [x,y] h xs (length xs)" 
     have it: "s_TS [x,y] h xs (length xs) \<in> {[x,y],[y,x]}"
       apply(rule s_TS_xy)
         apply(fact)
@@ -1145,8 +1129,7 @@ proof (induction "length \<sigma>" arbitrary: h \<sigma> x y rule: less_induct)
 
     from Lxx1[OF xsLxx] obtain p1 l1 where p1: "xs = p1 @ [l1]"
       by (metis Lxx_not_nullable append_butlast_last_id xsLxx)
-    with Lxx1[OF xsLxx] have "length p1 > 0" by auto
-    thm append_butlast_last_id
+    with Lxx1[OF xsLxx] have "length p1 > 0" by auto 
     then have "p1 \<noteq> []" by auto     
     then obtain pref l2 where p2: "p1=pref@[l2]" by (metis append_butlast_last_id)
     from p1 p2 have "xs = pref @ [l2,l1]" by auto
@@ -1175,8 +1158,7 @@ proof (induction "length \<sigma>" arbitrary: h \<sigma> x y rule: less_induct)
               
 
     have E0: "T_TS [x,y] h \<sigma>
-          = T_TS [x,y] h (xs@ys)" using qs by auto
-    thm splitquerylist
+          = T_TS [x,y] h (xs@ys)" using qs by auto 
     also have E1: "\<dots> = T_TS [x,y] h xs + T_TS LTS' (rev xs @ h) ys"
         unfolding LTS'_def
         by(rule splitquerylist)
@@ -1211,14 +1193,12 @@ proof (induction "length \<sigma>" arbitrary: h \<sigma> x y rule: less_induct)
 
       have E0: " T_TS [x,y] h \<sigma> \<le> T_TS [x,y] h ?padded"
       proof -
-        thm splitquerylist
         have "T_TS [x,y] h ?padded = T_TS [x,y] h \<sigma> + T_TS (s_TS [x,y] h \<sigma> (length \<sigma>)) (rev \<sigma> @ h) [last \<sigma>]"
           unfolding ui(1) using splitquerylist by auto
         also have "\<dots> \<ge> T_TS [x,y] h \<sigma>" by auto
         finally show ?thesis by auto
       qed  
 
-      thm D[OF pLxx less(2) less(4)]
       also from pLxx have E1: "\<dots> \<le> 2 * T\<^sub>p [x,y] ?padded (OPT2 ?padded [x,y])"
         using D[OF pLxx less(2) less(4)] by simp
       also have E2: "\<dots> \<le> 2 * T\<^sub>p [x,y] \<sigma> (OPT2 \<sigma> [x,y]) + 2"
@@ -1247,17 +1227,13 @@ proof (induction "length \<sigma>" arbitrary: h \<sigma> x y rule: less_induct)
       finally show ?thesis . 
     qed
   qed
-qed  
-
-thm TS_OPT2 OPT2_is_opt
-
+qed   
 
 theorem TS2': "(x::nat) \<noteq> y \<Longrightarrow> set qs \<subseteq> {x,y}
      \<Longrightarrow> T_TS [x,y] [] qs \<le> 2 * (T\<^sub>p_opt [x,y] qs) + 2"
 proof -
   case goal1
-  with OPT2_is_opt[OF goal1(2) goal1(1)] have a: "T\<^sub>p [x, y] qs (OPT2 qs [x, y]) = T\<^sub>p_opt [x,y] qs" by simp
-  thm TS_OPT2[of x y qs "[]"]
+  with OPT2_is_opt[OF goal1(2) goal1(1)] have a: "T\<^sub>p [x, y] qs (OPT2 qs [x, y]) = T\<^sub>p_opt [x,y] qs" by simp 
   show ?case unfolding a[symmetric]
     apply(rule TS_OPT2[of x y qs "[]"])
     by(auto simp: goal1)
@@ -1471,8 +1447,7 @@ proof -
   next
     case False
     then have 2: "x < y  in s_TS init h (as @ x # bs @ [x]) (Suc (length as + length bs))" 
-      using brrr ydrin not_before_in assms(6) unfolding s_TS_def by metis
-    thm x_stays_before_y_if_y_not_moved_to_front
+      using brrr ydrin not_before_in assms(6) unfolding s_TS_def by metis 
     {
       fix e
       have "x < y in mtf2 e x (s_TS init h (as @ x # bs @ [x]) (Suc (length as + length bs)))"
@@ -1530,9 +1505,7 @@ lemma casexxy: assumes "\<sigma>=as@[x]@bs@[x]@cs"
 proof (rule infinite_descent[where P="(%i. i<length cs \<longrightarrow> (\<forall>j<i. cs!j\<noteq>cs!i) \<longrightarrow> cs!i\<noteq>x
       \<longrightarrow> (cs!i) \<notin> set bs
       \<longrightarrow> x < (cs!i) in  (s_TS init h \<sigma> (length (as@[x]@bs@[x]) + i+1)))"])
-  case (goal1 i)
-  thm infinite_descent_measure
-  thm infinite_descent 
+  case (goal1 i) 
   let ?y = "cs!i" 
   from goal1 have i_in_cs: "i < length cs" and
       firstocc: "(\<forall>j<i. cs ! j \<noteq> cs ! i)"
@@ -1663,13 +1636,9 @@ proof (rule infinite_descent[where P="(%i. i<length cs \<longrightarrow> (\<fora
       qed
     finally have "?s_Suct3 = step ?s ?y (0, [])" using ss' by simp
     then have e: "?s_Suct3 = ?s" by(simp only: step_no_action)
-    from x_before_y_t3 have "x < cs ! i in ?s_Suct3" unfolding e unfolding s_TS_def by simp    
-    
-    thm y_before_x'
-    thm x_before_y_t3
+    from x_before_y_t3 have "x < cs ! i in ?s_Suct3" unfolding e unfolding s_TS_def by simp     
     with y_before_x' show "False" unfolding assms(1) by auto
-  qed 
-  thm aha
+  qed  
   then have aha': "index (snd (TSdet init h (as @ x # bs @ x # cs)  (Suc (Suc (length as + length bs + i)))))
  (cs ! i) \<noteq>
 length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length bs + i)))))" 
@@ -1720,7 +1689,6 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
   with zminimal have zbeforey: "z < cs ! i in ?s"
     and zatmostonce: "count_list (take (index ?is (cs ! i)) ?is) z \<le> 1"
     and isminimal: "index ?s z = Min (index ?s ` ?S)" by(simp_all add: nth_append) 
-  thm s_TS_set[unfolded s_TS_def]
   have elemins: "z \<in> set ?s" unfolding before_in_def by (meson zbeforey before_in_setD1)
   then  have zininit: "z \<in> set init"
     using i_in_cs by(simp add: s_TS_set[unfolded s_TS_def] del: config'.simps) 
@@ -1766,8 +1734,7 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
   with isminimal have state_dannach: "?s_Suct3 = step ?s ?y (index ?s ?y - index ?s z, [])" by presburger
     
 
-  -- "so y is moved in front of z, that means:"
-  thm mtf2_q_passes
+  -- "so y is moved in front of z, that means:" 
   have yinfrontofz: "?y < z in s_TS init h \<sigma> (length (as @ [x] @ bs @ [x]) + i+1)"
     unfolding   assms(1) state_dannach apply(simp add: step_def del: config'.simps)
     apply(rule mtf2_q_passes)
@@ -1806,8 +1773,7 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
              (fst (TSdet init h (as @ x # bs @ x # cs)
                     (Suc (Suc (length as + length bs + i)))))
              z)"
-
-      thm mtf2_forward_effect2  s_TS_set[unfolded s_TS_def]
+ 
       have "index (mtf2 ?n ?y ?xs) (?xs ! index ?xs ?y) = index ?xs ?y - ?n\<and>
             index ?xs ?y - ?n = index (mtf2 ?n ?y ?xs) (?xs !  index ?xs ?y )"
         apply(rule mtf2_forward_effect2) 
@@ -1822,8 +1788,7 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
       have aa: "index ?xs ?y - ?n \<le> index ?xs z" "index ?xs z < index ?xs ?y" 
         apply(simp)
           using zbeforey_ind by fastforce
-
-      thm mtf2_forward_effect3'[OF yinxs distinctxs aa]
+ 
       from mtf2_forward_effect3'[OF yinxs distinctxs aa] 
         have B: "index (mtf2 ?n ?y ?xs) z = Suc (index ?xs z)" 
           using elemins yins by(simp add: nth_append split_def del: config'.simps)
@@ -1869,8 +1834,7 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
         by(simp)
 
     then show "False" using z_before_x not_before_in[OF xSuct3 elSuct3] by blast
-  qed
-  thm TS_mono
+  qed 
 
 
   have mind: "(index ?is (cs ! i)) \<ge> i + 1 + length bs + 1 " using lastoccy 
@@ -1895,8 +1859,7 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
     case goal1
     with aaaa have atmost1: "count_list bs z \<le> 1" and "count_list (take (Suc i) cs) z = 0" by force+
     have yeah: "z \<notin> set (take (Suc i) cs)" apply(rule count_notin2) by fact
-
-    thm xgoestofront atmost1
+ 
     -- "now we know that x is in front of z after 2nd request to x, and that z is not requested any more,
         that means it stays behind x, which leads to a contradiction with z_before_x"
 
@@ -1904,8 +1867,7 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
       using i_in_cs assms(4) by(simp add: s_TS_set)
     have zin123: "z \<in> set (s_TS init h ((as @ [x] @ bs @ [x]) @ (take (i+1) cs)) (length (as @ [x] @ bs @ [x]) + (i+1)))"  
       using i_in_cs elemins by(simp add: s_TS_set  del: config'.simps)
-
-    thm TS_mono
+ 
     have "x < z in s_TS init h ((as @ [x] @ bs @ [x]) @ (take (i+1) cs)) (length (as @ [x] @ bs @ [x]) + (i + 1))"
       apply(rule TS_mono)
         apply(rule xgoestofront)
@@ -1957,8 +1919,7 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
    qed
 
    
-   have "count_list bs z \<le> 1" using aaaa by linarith
-   thm xgoestofront
+   have "count_list bs z \<le> 1" using aaaa by linarith 
    with xgoestofront[OF zininit el_n_x[symmetric]] have xbeforez: "x < z in s_TS init h (as @ [x] @ bs @ [x]) (length (as @ [x] @ bs @ [x]))" by auto
 
    obtain cs1 cs2 where v: "cs1 @ cs2 = cs" and cs1: "cs1 = take (Suc k) cs" and cs2: "cs2 = drop (Suc k) cs" by auto
@@ -1966,14 +1927,12 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
    have z_firstocc:  "\<forall>j<k.  cs ! j \<noteq> cs ! k"
       and z_lastocc:  "\<forall>j<i-k-1.  cs2 ! j \<noteq> cs ! k" 
    proof (safe)
-    case (goal1 j) 
-    thm z_occurs_once_in_cs
+    case (goal1 j)  
     with ki i_in_cs have 2: "j < length (take k cs)" by auto
     have un1: "(take (Suc i) cs)!k = cs!k" apply(rule nth_take) using ki by auto
     have un2: "(take k cs)!j = cs!j" apply(rule nth_take) using goal1(1) ki by auto
 
-    from i_in_cs ki have 1: "k < length (take (Suc i) cs)" by auto
-    thm append_take_drop_id
+    from i_in_cs ki have 1: "k < length (take (Suc i) cs)" by auto 
     then have "(take (Suc i) cs) = (take k (take (Suc i) cs)) @ (take (Suc i) cs)!k # (drop (Suc k) (take (Suc i) cs))"
       by(rule id_take_nth_drop)
     also have "(take k (take (Suc i) cs)) = take k cs" using i_in_cs ki by (simp add: min_def)
@@ -2015,8 +1974,7 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
                                         @ cs! k
                                           # drop (Suc j) (drop (Suc k) (take (Suc i) cs))" by auto
                                        
-    from i_in_cs ki have 1: "k < length (take (Suc i) cs)" by auto
-    thm append_take_drop_id
+    from i_in_cs ki have 1: "k < length (take (Suc i) cs)" by auto 
     then have 7: "(take (Suc i) cs) = (take k (take (Suc i) cs)) @ (take (Suc i) cs)!k # (drop (Suc k) (take (Suc i) cs))"
       by(rule id_take_nth_drop)
     have 9: "(take (Suc i) cs)!k = z" unfolding zcsk apply(rule nth_take) using ki by auto
@@ -2050,8 +2008,7 @@ qed
 
    have notxbeforez: "~ x < z in s_TS init h \<sigma> (length (as @ [x] @ bs @ [x]) + k + 1)"
    proof (rule ccontr)
-    case goal1
-    thm this TS_mono
+    case goal1 
     then have a: "x < z in s_TS init h ((as@[x]@bs@[x])@(cs1)) (length (as@[x]@bs@[x]@(cs1)))"
       unfolding spliter assms(1) by auto
 
@@ -2072,13 +2029,11 @@ qed
         using v assms(2) apply force
         using assms by(simp_all add: cs1 cs2)
     
-    (* "contradiction to zmustbebeforex" *)
-    thm zmustbebeforex 
+    (* "contradiction to zmustbebeforex" *) 
     from zmustbebeforex this[unfolded rewr ] el_n_x zcsk 41 42 not_before_in show "False"
       unfolding s_TS_def  by fastforce
    qed
-      
-    thm bexI
+       
    have 1: "k < length cs"
                    "(\<forall>j<k. cs ! j \<noteq> cs ! k)"
                    "cs ! k \<noteq> x" "cs ! k \<notin> set bs" 
@@ -2311,8 +2266,7 @@ proof -
                           (Lxy init {x, y}, []) (bs @ a # f))"
   have history: "?h = (rev f)@a#(rev bs)"
     using sndTSdet[of "length (bs@a#f)" "bs@a#f", unfolded rTS_def] by(simp) 
-
-  thm stepxy
+ 
   { fix xs s
     assume sinit: "s:{[a,e],[e,a]}"
     assume "set xs \<subseteq> {a,e}"
@@ -2514,8 +2468,7 @@ proof -
         (* jetzt falls b=a sind wir im fall xx,
           dann ist in allen fällen x vorne *)
  
-
-        thm twotox
+ 
         let ?qs ="(pre2 @ [a] @ suf2 @ [a]) @ suf"
         {
           fix e
@@ -2539,8 +2492,7 @@ proof -
               using nosuf2 axy apply(simp)
               using ane by simp
           finally have "a < e in fst (config\<^sub>p (rTS []) init qs)" by simp
-        } note full=this
-        thm full
+        } note full=this 
    
         have "set (bs @ [a]) \<subseteq> set (Lxy qs {x, y})" using a b  by auto
         also have "\<dots> = {x,y} \<inter> set qs" by (rule Lxy_set_filter)
@@ -2654,8 +2606,7 @@ proof -
           proof(cases "c=a")
             case True (* aba *)
             note ca=this
-
-            thm twotox
+ 
             have "a < b in fst (config\<^sub>p (rTS []) init qs)
                 = a < b in fst (config\<^sub>p (rTS []) init ((pre3 @ a # (suf3 @ [b] @ suf2) @ [a]) @ suf))"
                   using qs2 True by simp
@@ -2732,8 +2683,7 @@ proof -
 
             have aed: "(\<forall>j<index (suf2 @ a # suf) a. (suf2 @ a # suf) ! j \<noteq> a)"
               by (metis add.right_neutral axy index_Cons index_append nosuf2 nth_append nth_mem)
-
-            thm casexxy
+ 
             have "?i < length ?cs      
               \<longrightarrow> (\<forall>j<?i. ?cs ! j \<noteq> ?cs ! ?i) \<longrightarrow> ?cs ! ?i \<noteq> b
                 \<longrightarrow> ?cs ! ?i \<notin> set suf3
@@ -2914,15 +2864,13 @@ next
 next
   case goal4 then show ?case by simp
 qed (simp_all)
-
-thm TS_compet'[OF TS_pairwise, unfolded T_on_embed[symmetric]]
+ 
 
 lemma TS_compet: "compet_rand (embed (rTS [])) 2 {init. distinct init \<and> init \<noteq> []}"
 unfolding compet_rand_def static_def
 using TS_compet'[OF TS_pairwise] by simp
 
-
-thm TS_compet[unfolded Partial_Cost_Model.compet_embed[symmetric]]
+ 
 
  
 end

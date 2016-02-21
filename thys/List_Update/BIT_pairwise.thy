@@ -7,39 +7,39 @@ begin
 
 
 lemma L_sublist: "S \<subseteq> {..<length init}
-  \<Longrightarrow> map_pmf (\<lambda>l. sublist l S) (Prob_Theory.L (length init))
-      = (Prob_Theory.L (length (sublist init S)))"
+  \<Longrightarrow> map_pmf (\<lambda>l. sublist l S) (Prob_Theory.bv (length init))
+      = (Prob_Theory.bv (length (sublist init S)))"
 proof(induct init arbitrary: S)
   case (Cons a as)
   then have passt: "{j. Suc j \<in> S} \<subseteq> {..<length as}" by auto
 
-  have " map_pmf (\<lambda>l. sublist l S) (Prob_Theory.L (length (a # as))) = 
-    Prob_Theory.L (length as) \<bind>
+  have " map_pmf (\<lambda>l. sublist l S) (Prob_Theory.bv (length (a # as))) = 
+    Prob_Theory.bv (length as) \<bind>
     (\<lambda>x. bernoulli_pmf (1 / 2) \<bind>
           (\<lambda>xa. return_pmf
                   ((if 0 \<in> S then [xa] else []) @ sublist x {j. Suc j \<in> S})))"
       by(simp add: map_pmf_def bind_return_pmf bind_assoc_pmf sublist_Cons) 
   also have "\<dots> = (bernoulli_pmf (1 / 2)) \<bind> 
-          (\<lambda>xa. (Prob_Theory.L (length as) \<bind>
+          (\<lambda>xa. (Prob_Theory.bv (length as) \<bind>
     (\<lambda>x. return_pmf ((if 0 \<in> S then [xa] else []) @ sublist x {j. Suc j \<in> S}))))"
         by(rule bind_commute_pmf)
    also have "\<dots> = (bernoulli_pmf (1 / 2)) \<bind> 
-          (\<lambda>xa. (map_pmf (\<lambda>x. (sublist x {j. Suc j \<in> S})) (Prob_Theory.L (length as)))
+          (\<lambda>xa. (map_pmf (\<lambda>x. (sublist x {j. Suc j \<in> S})) (Prob_Theory.bv (length as)))
               \<bind>  (\<lambda>xs. return_pmf ((if 0 \<in> S then [xa] else []) @ xs)))"
       by(simp add: bind_return_pmf bind_assoc_pmf map_pmf_def)
    also have "\<dots> = (bernoulli_pmf (1 / 2)) \<bind> 
-          (\<lambda>xa. Prob_Theory.L (length (sublist as {j. Suc j \<in> S}))
+          (\<lambda>xa. Prob_Theory.bv (length (sublist as {j. Suc j \<in> S}))
               \<bind>  (\<lambda>xs. return_pmf ((if 0 \<in> S then [xa] else []) @ xs)))"
         using Cons(1)[OF passt] by auto
-   also have "\<dots> = Prob_Theory.L (length (sublist (a # as) S))"
+   also have "\<dots> = Prob_Theory.bv (length (sublist (a # as) S))"
       apply(auto simp add: sublist_Cons bind_return_pmf')
       by(rule bind_commute_pmf)
    finally show ?case .
 qed (simp)
 
 lemma L_sublist_Lxy: "x\<in>set init \<Longrightarrow> y\<in>set init \<Longrightarrow> x\<noteq>y \<Longrightarrow> distinct init 
-  \<Longrightarrow> map_pmf (\<lambda>l. sublist l {index init x,index init y}) (Prob_Theory.L (length init))
-      = (Prob_Theory.L (length (Lxy init {x,y})))"
+  \<Longrightarrow> map_pmf (\<lambda>l. sublist l {index init x,index init y}) (Prob_Theory.bv (length init))
+      = (Prob_Theory.bv (length (Lxy init {x,y})))"
 proof -
   case goal1
   from goal1(4) have setinit: "(index init) ` set init = {0..<length init}" 
@@ -54,8 +54,8 @@ proof -
   qed simp
 
   have xy_le: "index init x<length init" "index init y<length init" using goal1 by auto
-  have "map_pmf (\<lambda>l. sublist l {index init x,index init y}) (Prob_Theory.L (length init))
-      = (Prob_Theory.L (length (sublist init {index init x,index init y})))"
+  have "map_pmf (\<lambda>l. sublist l {index init x,index init y}) (Prob_Theory.bv (length init))
+      = (Prob_Theory.bv (length (sublist init {index init x,index init y})))"
         apply(rule L_sublist)
         using goal1(1,2) by auto
   moreover have "length (Lxy init {x,y}) = length (sublist init {index init x,index init y})"
@@ -155,9 +155,9 @@ proof -
       case Nil 
 
       have " map_pmf (\<lambda>(l,(w,i)). (Lxy l {x,y},(sublist w {index init x,index init y},Lxy init {x,y}))) (config_rand BIT init [])
-          =  map_pmf (\<lambda>w. (Lxy init {x,y}, (w, Lxy init {x,y}))) (map_pmf (\<lambda>l. sublist l {index init x,index init y}) (Prob_Theory.L (length init)))"
+          =  map_pmf (\<lambda>w. (Lxy init {x,y}, (w, Lxy init {x,y}))) (map_pmf (\<lambda>l. sublist l {index init x,index init y}) (Prob_Theory.bv (length init)))"
               by(simp add: bind_return_pmf map_pmf_def bind_assoc_pmf split_def BIT_init_def)
-      also have "\<dots> = map_pmf (\<lambda>w. (Lxy init {x,y}, (w, Lxy init {x,y}))) (Prob_Theory.L (length (Lxy init {x, y})))" 
+      also have "\<dots> = map_pmf (\<lambda>w. (Lxy init {x,y}, (w, Lxy init {x,y}))) (Prob_Theory.bv (length (Lxy init {x, y})))" 
           using L_sublist_Lxy[OF a xny dinit] by simp
       also have "\<dots> = config_rand BIT  (Lxy init {x, y}) (Lxy [] {x, y})"
           by(simp add: BIT_init_def bind_return_pmf bind_assoc_pmf map_pmf_def)

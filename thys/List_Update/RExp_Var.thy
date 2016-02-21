@@ -591,17 +591,4 @@ proof -
   then show ?case unfolding mycases_def using assms by auto
 qed
 
-
-notation (latex output)  Plus  ("_+_" [14,14] 14)
-notation (latex output)  Times ("__" [15,15] 15)
-notation (latex output)  Star  ("_\<^raw:$^*$>" [16] 16)
-notation (latex output)  question  ("_\<^raw:$^?$>" [17] 17)
-notation (latex output)  Atom  ("_")
-notation (latex output)  One  ("1")
-notation (latex output)  Zero  ("0")
-
-
-
-
-
 end

@@ -48,7 +48,7 @@ subsection "Definition of BIT"
 
 
 definition BIT_init :: "('a state,bool list * 'a list)alg_on_init" where
-  "BIT_init init = map_pmf (\<lambda>l. (l,init)) (L (length init))"
+  "BIT_init init = map_pmf (\<lambda>l. (l,init)) (bv (length init))"
 
 
 
@@ -106,11 +106,11 @@ using config_n_init2 by(simp add: split_def)
 
 
 
-lemma config'_n_L: fixes qs init n 
+lemma config'_n_bv: fixes qs init n 
   shows " map_pmf (snd \<circ> snd) init = return_pmf s0
-      \<Longrightarrow> map_pmf (fst \<circ> snd) init = L (length s0)
+      \<Longrightarrow> map_pmf (fst \<circ> snd) init = bv (length s0)
       \<Longrightarrow> map_pmf (snd \<circ> snd) (config'_rand (BIT_init, BIT_step) init qs) = return_pmf s0
-        \<and> map_pmf (fst \<circ> snd) (config'_rand (BIT_init, BIT_step) init qs) = L (length s0)"
+        \<and> map_pmf (fst \<circ> snd) (config'_rand (BIT_init, BIT_step) init qs) = bv (length s0)"
 proof (induct qs arbitrary: init)
   case (Cons r rs) 
   from Cons(2) have a: "map_pmf (snd \<circ> snd) (init \<bind> (\<lambda>s. snd (BIT_init, BIT_step) s r \<bind>
@@ -129,27 +129,27 @@ proof (induct qs arbitrary: init)
      (init \<bind>
       (\<lambda>s. snd (BIT_init, BIT_step) s r \<bind>
            (\<lambda>(a, is').
-               return_pmf (step (fst s) r a, is')))) = map_pmf (flip (index s0 r)) (L (length s0))" 
+               return_pmf (step (fst s) r a, is')))) = map_pmf (flip (index s0 r)) (bv (length s0))" 
       using b
       apply(simp add: BIT_step_def Cons(3)[symmetric] bind_return_pmf map_pmf_def bind_assoc_pmf )
       apply(rule bind_pmf_cong)
         apply(simp)
-        by(simp add: inv_flip_L)
-      also have "\<dots> = L (length s0)"  using inv_flip_L by auto
+        by(simp add: inv_flip_bv)
+      also have "\<dots> = bv (length s0)"  using inv_flip_bv by auto
       finally show ?case  . 
    qed (fact)
 qed simp
 
  
-lemma config_n_L_2: "map_pmf (snd \<circ> snd) (config_rand (BIT_init, BIT_step) s0 qs) = return_pmf s0
-        \<and> map_pmf (fst \<circ> snd) (config_rand (BIT_init, BIT_step) s0 qs) = L (length s0)"
-apply(rule config'_n_L)
+lemma config_n_bv_2: "map_pmf (snd \<circ> snd) (config_rand (BIT_init, BIT_step) s0 qs) = return_pmf s0
+        \<and> map_pmf (fst \<circ> snd) (config_rand (BIT_init, BIT_step) s0 qs) = bv (length s0)"
+apply(rule config'_n_bv)
   by(simp_all add: bind_return_pmf map_pmf_def bind_assoc_pmf bind_return_pmf' BIT_init_def)
 
 
  
-lemma config_n_L: "map_pmf (fst \<circ> snd) (config_rand (BIT_init, BIT_step) s0 qs) = L (length s0)"
-using config_n_L_2 by auto
+lemma config_n_bv: "map_pmf (fst \<circ> snd) (config_rand (BIT_init, BIT_step) s0 qs) = bv (length s0)"
+using config_n_bv_2 by auto
 
 lemma config_n_fst_init_length: "\<forall>(_,(x,_)) \<in> set_pmf (config_rand (BIT_init, BIT_step) s0 qs). length x = length s0"
 proof 
@@ -159,8 +159,8 @@ proof
   from ass have "(fst x,(?a,snd (snd x))) \<in> set_pmf (config_rand (BIT_init, BIT_step) s0 qs)" by auto
   with ass have "?a \<in> (fst \<circ> snd) ` set_pmf (config_rand (BIT_init, BIT_step) s0 qs)" by force
   then have "?a \<in> set_pmf (map_pmf (fst \<circ> snd) (config_rand (BIT_init, BIT_step) s0 qs))" by auto
-  then have "?a \<in> L (length s0)" by(simp only: config_n_L)
-  then have "length ?a = length s0" by (auto simp: len_L_n)
+  then have "?a \<in> bv (length s0)" by(simp only: config_n_bv)
+  then have "length ?a = length s0" by (auto simp: len_bv_n)
   then show "case x of (uu_, xa, uua_) \<Rightarrow> length xa = length s0" by(simp add: split_def)
 qed
 
@@ -210,14 +210,12 @@ section "BIT is $1.75$-competitive"
 
 
 subsection "Definition of the Locale and Helper Functions"
-(*<*)
 locale BIT_Off = 
-fixes acts :: "answer list"              (* auszuführende aktionen Off *)
-fixes qs :: "'a list"                       (* queries *)
-fixes init :: "'a list"                     (* initial list *)
+fixes acts :: "answer list"  
+fixes qs :: "'a list" 
+fixes init :: "'a list" 
 assumes dist_init[simp]: "distinct init"
 assumes len_acts: "length acts = length qs"
-(* assumes setinit: "set init = {0..<length init}" *)
 begin
 
 
@@ -247,7 +245,6 @@ unfolding paid_A_def paid_A'_def using len_acts by auto
 lemma len_paid_A'[simp]: "length paid_A' = length qs"
 unfolding paid_A'_def using len_acts by auto
 
-thm nth_map
 
 lemma paidAnm_inbound: "n < length paid_A \<Longrightarrow> m < length(paid_A!n) \<Longrightarrow> (Suc ((paid_A!n)!(length (paid_A ! n) - Suc m))) < length init"
 proof -
@@ -264,7 +261,7 @@ proof -
   show "Suc (paid_A ! n ! (length (paid_A ! n) - Suc m)) < length init" using a b by auto
 qed
 
-fun s_A' :: "nat \<Rightarrow> 'a list" where          (* wie sieht die liste (state) nach n schritten Ausführung von A' aus *)
+fun s_A' :: "nat \<Rightarrow> 'a list" where 
 "s_A' 0 = init" |
 "s_A'(Suc n) = step (s_A' n) (qs!n) (free_A!n, paid_A'!n)"
 
@@ -277,7 +274,7 @@ by(induction n) (simp_all add: step_def)
 lemma set_s_A'[simp]: "set(s_A' n) = set init"
 by(induction n) (simp_all add: step_def)
 
-fun s_A  :: "nat \<Rightarrow> 'a list" where          (* wie sieht die liste (state) nach n schritten Ausführung von A aus *)
+fun s_A  :: "nat \<Rightarrow> 'a list" where  
 "s_A 0 = init" |
 "s_A(Suc n) = step (s_A n) (qs!n) (free_A!n, paid_A!n)"
 
@@ -315,33 +312,33 @@ lemma sAsA'': "n < length qs \<Longrightarrow> s_A n =  s_A' n"
 using sAsA' by auto
 
 
-definition t_BIT :: "nat \<Rightarrow> real" where   (* was zahlt BIT im nten schritt *)
+definition t_BIT :: "nat \<Rightarrow> real" where   (* BIT's cost in nth step *)
 "t_BIT n = T_on_rand_n BIT init qs n"
 
-definition T_BIT :: "nat \<Rightarrow> real" where   (* was zahlt BIT in den ersten n Schritten *)
+definition T_BIT :: "nat \<Rightarrow> real" where   (* BIT's cost in first n steps *)
 "T_BIT n = (\<Sum>i<n. t_BIT i)"
 
 
-definition c_A :: "nat \<Rightarrow> int" where     (* wieviel kosten die free exchanges *)
+definition c_A :: "nat \<Rightarrow> int" where 
 "c_A n = index (swaps (paid_A!n) (s_A n)) (qs!n) + 1"
 
-definition f_A :: "nat \<Rightarrow> int" where     (* wie weit das element nach vorne gebubbelt wird *)
+definition f_A :: "nat \<Rightarrow> int" where 
 "f_A n = min (free_A!n) (index (swaps (paid_A!n) (s_A n)) (qs!n))"
 
-definition p_A :: "nat \<Rightarrow> int" where     (* wieviel kosten die paid exchanges *)
+definition p_A :: "nat \<Rightarrow> int" where  
 "p_A n = size(paid_A!n)"
 
-definition t_A :: "nat \<Rightarrow> int" where   (* was zahlt A in einem schritt *)
+definition t_A :: "nat \<Rightarrow> int" where  
 "t_A n = c_A n + p_A n"
 
 
 
-definition c_A' :: "nat \<Rightarrow> int" where     (* wieviel kosten die free exchanges für A' *)
+definition c_A' :: "nat \<Rightarrow> int" where  
 "c_A' n = index (swaps (paid_A'!n) (s_A' n)) (qs!n) + 1"
 
-definition p_A' :: "nat \<Rightarrow> int" where     (* wieviel kosten die paid exchanges für A' *)
+definition p_A' :: "nat \<Rightarrow> int" where 
 "p_A' n = size(paid_A'!n)"
-definition t_A' :: "nat \<Rightarrow> int"  where   (* was zahlt A' in einem schritt *)
+definition t_A' :: "nat \<Rightarrow> int"  where  
 "t_A' n = c_A' n + p_A' n"
  
 lemma t_A_A'_leq: "n < length paid_A' \<Longrightarrow> t_A n \<le> t_A' n"
@@ -350,10 +347,10 @@ unfolding t_A_def t_A'_def c_A_def c_A'_def p_A_def p_A'_def
   unfolding paid_A_def
   by (simp add: swaps_filtered[where xs="(s_A n)", simplified])
 
-definition T_A' :: "nat \<Rightarrow> int" where   (* was zahlt A' in den ersten n Schritten *)
+definition T_A' :: "nat \<Rightarrow> int" where 
 "T_A' n = (\<Sum>i<n. t_A' i)"
                                                  
-definition T_A :: "nat \<Rightarrow> int" where   (* was zahlt A in den ersten n Schritten *)
+definition T_A :: "nat \<Rightarrow> int" where 
 "T_A n = (\<Sum>i<n. t_A i)"
  
 lemma T_A_A'_leq: "n \<le> length paid_A' \<Longrightarrow> T_A n \<le> T_A' n"
@@ -416,8 +413,7 @@ qed
 lemma s'A_m: "swaps (paid_A ! n) (s_A n) = s'_A n (length (paid_A ! n))"
 using s'A_m_le[of "(length (paid_A ! n))" "n", simplified] by auto
 
-
-(* welches element wird gebubbelt *)
+ 
 definition gebub :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
   "gebub n m = index init ((s'_A n m)!(Suc ((paid_A!n)!(length (paid_A ! n) - Suc m))))"
 
@@ -2073,16 +2069,16 @@ subsection "Approximation of the Term for Free exchanges"
             finally show ?thesis .
           qed
       also
-      have E2:  "\<dots> = E(map_pmf (\<lambda>x. (if x!(index init q) then real(k-k') else (\<Sum>j<k'. (if x!(index init (xs'!j)) then 2::real else 1)))) (L ?l))"
-          using config_n_L[of init _] by auto
-      thm config_n_L
+      have E2:  "\<dots> = E(map_pmf (\<lambda>x. (if x!(index init q) then real(k-k') else (\<Sum>j<k'. (if x!(index init (xs'!j)) then 2::real else 1)))) (bv ?l))"
+          using config_n_bv[of init _] by auto
+      thm config_n_bv
       also
       let ?insf="(\<lambda>x. (if x!(index init q) then k-k' else (\<Sum>j<k'. (if x!(index init (xs'!j)) then 2::real else 1))))"
-      have E3: "\<dots> = (\<Sum>x\<in>(set_pmf (L ?l)). (?insf x) * pmf (L ?l) x)"
-      apply(rule E_finite_sum_fun) by(auto simp: L_finite)
+      have E3: "\<dots> = (\<Sum>x\<in>(set_pmf (bv ?l)). (?insf x) * pmf (bv ?l) x)"
+      apply(rule E_finite_sum_fun) by(auto simp: bv_finite)
       also
-      have "\<dots> = (\<Sum>x\<in>{l::bool list. length l = ?l}. (?insf x) * pmf (L ?l) x)"
-      using L_set by auto
+      have "\<dots> = (\<Sum>x\<in>{l::bool list. length l = ?l}. (?insf x) * pmf (bv ?l) x)"
+      using bv_set by auto
       also
       have E4: "\<dots> = (\<Sum>x\<in>{l::bool list. length l = ?l}. (?insf x) * (1/2)^?l)"
       using list_pmf by auto
@@ -2148,12 +2144,12 @@ subsection "Transformation of the Term for Paid Exchanges"
         have "map_pmf (\<lambda>xx. if fst (snd xx) ! (index init i) then 2::real else 1) D =
                   bind_pmf (map_pmf (fst \<circ> snd) D) (\<lambda>b. return_pmf (if b! index init i then 2::real else 1))"
                             unfolding map_pmf_def by(simp add: bind_assoc_pmf bind_return_pmf)
-        also have "\<dots> = bind_pmf (L (length init)) (\<lambda>b. return_pmf (if b! index init i then 2::real else 1))"
-                    using config_n_L[of init "take n qs"] by simp 
-        also have "\<dots> = map_pmf (\<lambda>yy. (if yy then 2 else 1)) ( map_pmf (\<lambda>y. y!(index init i)) (L (length init)))"
+        also have "\<dots> = bind_pmf (bv (length init)) (\<lambda>b. return_pmf (if b! index init i then 2::real else 1))"
+                    using config_n_bv[of init "take n qs"] by simp 
+        also have "\<dots> = map_pmf (\<lambda>yy. (if yy then 2 else 1)) ( map_pmf (\<lambda>y. y!(index init i)) (bv (length init)))"
               by (simp add: map_pmf_def bind_return_pmf bind_assoc_pmf)    
         also have "\<dots> = map_pmf (\<lambda>yy. (if yy then 2 else 1)) (bernoulli_pmf (5 / 10))"
-               by (auto simp add:  L_comp_bernoulli[OF inbound]) 
+               by (auto simp add:  bv_comp_bernoulli[OF inbound]) 
         finally have "map_pmf (\<lambda>xx. if fst (snd xx) ! (index init i) then 2::real else 1) D =
                       map_pmf (\<lambda>yy. if yy then 2::real else 1) (bernoulli_pmf (5 / 10)) " .
       } note umform = this
