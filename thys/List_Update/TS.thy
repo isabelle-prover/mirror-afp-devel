@@ -1584,11 +1584,19 @@ proof (rule infinite_descent[where P="(%i. i<length cs \<longrightarrow> (\<fora
                 (rev (take i cs)) @ [x] @ (rev bs) @ [x] @ (rev as) @ h" using assms(1) by auto
 
   let ?is = "snd (TSdet init h (as @ [x] @ bs @ [x] @ cs) (length (as @ [x] @ bs @ [x]) + i))"
+  let ?is' = "snd (config (rTS h) init (as @ [x] @ bs @ [x] @ (take i cs)))"
   let ?s = "fst (TSdet init h (as @ [x] @ bs @ [x] @ cs) (length (as @ [x] @ bs @ [x]) + i))"
+  let ?s' = "fst (config (rTS h) init (as @ [x] @ bs @ [x] @ (take i cs)))"
   let ?s_Suct3="s_TS init h (as @ [x] @ bs @ [x] @ cs) (length (as @ [x] @ bs @ [x]) + i+1)" 
 
   let ?S = "{xa. (xa < (as @ [x] @ bs @ [x] @ cs) ! (length (as @ [x] @ bs @ [x]) + i) in ?s \<and>
             count_list (take (index ?is ((as @ [x] @ bs @ [x] @ cs) ! (length (as @ [x] @ bs @ [x]) + i))) ?is) xa \<le> 1) }"
+  let ?S' = "{xa. (xa < (as @ [x] @ bs @ [x] @ cs) ! (length (as @ [x] @ bs @ [x]) + i) in ?s' \<and>
+            count_list (take (index ?is' ((cs!i))) ?is') xa \<le> 1) }"
+
+  have isis': "?is = ?is'" by(simp)
+  have ss': "?s = ?s'" by(simp)
+  then have SS': "?S = ?S'" using i_in_cs by(simp add: nth_append)
 
 
   (* unfold TSdet once *) 
@@ -1598,21 +1606,62 @@ proof (rule infinite_descent[where P="(%i. i<length cs \<longrightarrow> (\<fora
       using i_in_cs apply(simp)
       by(simp add: nth_append) 
 
-  have aha: "(index ?is (cs ! i) \<noteq>
-      length (fst (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length bs + i)))))) 
+  have aha: "(index ?is (cs ! i) \<noteq> length ?is) 
         \<and> ?S \<noteq> {}"
   proof (rule ccontr)
     case goal1
+    then have "(index ?is (cs ! i) = length ?is) \<or> ?S = {}" by(simp)
+    then have alters: "(index ?is' (cs ! i) = length ?is') \<or> ?S' = {}"
+      apply(simp only: SS') by(simp only: isis')
     -- "wenn (cs ! i) noch nie requested wurde, dann kann es gar nicht nach vorne gebracht werden!
-        also widerspruch mit y_before_x'"
-    have "?s_Suct3 = step ?s ?y (0, [])"  
-      apply(simp add: s_TS_def del: config'.simps)
-      using once
-      using i_in_cs using goal1 apply(simp add: nth_append split_def TS_step_d_def del: config'.simps)
-      sorry
+        also widerspruch mit y_before_x'" 
+    have "?s_Suct3 = fst (config (rTS h) init ((as @ [x] @ bs @ [x]) @ (take (i+1) cs)))"
+      unfolding s_TS_def
+      apply(simp only: length_append)
+        apply(subst take_append)
+        apply(subst take_append)
+        apply(subst take_append)
+        apply(subst take_append) 
+        by(simp)
+    also have "\<dots> =  fst (config (rTS h) init (((as @ [x] @ bs @ [x]) @ (take i cs)) @ [cs!i]))"
+      using i_in_cs by(simp add: take_Suc_conv_app_nth)
+    also have "\<dots> = step ?s' ?y (0, [])"
+      proof (cases "index ?is' (cs ! i) = length ?is'")
+        case True
+        show ?thesis 
+          apply(subst config_append)
+          using i_in_cs apply(simp add: rTS_def Step_def split_def nth_append)
+          apply(subst TS_step_d_def)
+          apply(simp only: True[unfolded rTS_def,simplified])
+          by(simp)
+      next
+        case False 
+        with alters have S': "?S' = {}" by simp
+
+        have 1 : "{xa. xa < cs ! i
+                                 in fst (Partial_Cost_Model.config' (\<lambda>s. h, TS_step_d) (init, h)
+                                          (as @ x # bs @ x # take i cs)) \<and>
+                                 count_list (take (index
+                (snd
+                  (Partial_Cost_Model.config'
+                    (\<lambda>s. h, TS_step_d) (init, h)
+                    (as @ x # bs @ x # take i cs)))
+                (cs ! i))
+                        (snd
+                          (Partial_Cost_Model.config'
+(\<lambda>s. h, TS_step_d) (init, h)
+(as @ x # bs @ x # take i cs)))) xa \<le> 1} = {}" using S' by(simp add: rTS_def nth_append)
+
+        show ?thesis 
+          apply(subst config_append)
+          using i_in_cs apply(simp add: rTS_def Step_def split_def nth_append)
+          apply(subst TS_step_d_def)  
+          apply(simp only: 1 Let_def)
+          by(simp)
+      qed
+    finally have "?s_Suct3 = step ?s ?y (0, [])" using ss' by simp
     then have e: "?s_Suct3 = ?s" by(simp only: step_no_action)
-    from x_before_y_t3 have "x < cs ! i in ?s_Suct3" unfolding e unfolding s_TS_def by simp
-    
+    from x_before_y_t3 have "x < cs ! i in ?s_Suct3" unfolding e unfolding s_TS_def by simp    
     
     thm y_before_x'
     thm x_before_y_t3
@@ -1621,7 +1670,7 @@ proof (rule infinite_descent[where P="(%i. i<length cs \<longrightarrow> (\<fora
   thm aha
   then have aha': "index (snd (TSdet init h (as @ x # bs @ x # cs)  (Suc (Suc (length as + length bs + i)))))
  (cs ! i) \<noteq>
-length (fst (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length bs + i)))))" 
+length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length bs + i)))))" 
       and
       aha2: "?S \<noteq> {}" by auto
       
@@ -1680,16 +1729,37 @@ length (fst (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
   have el_n_x: "z \<noteq> x" using x_nin_S  z_in_S by blast
 
   (* and because it is JUST before that element, z must be before x *)
+  { fix s q
+    have TS_step_d2: "TS_step_d s q =
+      (let V\<^sub>r={x. x < q in fst s \<and> count_list (take (index (snd s) q) (snd s)) x \<le> 1}
+       in ((if index (snd s) q \<noteq> length (snd s) \<and> V\<^sub>r \<noteq> {}
+          then index (fst s) q - Min ( (index (fst s)) ` V\<^sub>r)
+          else 0,[]),q#(snd s)))"
+    unfolding TS_step_d_def 
+    apply(cases "index (snd s) q < length (snd s)") 
+     using index_le_size apply(simp split: prod.split) apply blast
+    by(auto simp add: index_less_size_conv split: prod.split)
+  } note alt_chara=this
+
+  have iF: "(index (snd (config' (\<lambda>s. h, TS_step_d) (init, h) (as @ x # bs @ x # take i cs))) (cs ! i)
+               \<noteq> length (snd (config' (\<lambda>s. h, TS_step_d) (init, h) (as @ x # bs @ x # take i cs))) \<and>
+               {xa. xa < cs ! i in fst (config' (\<lambda>s. h, TS_step_d) (init, h) (as @ x # bs @ x # take i cs)) \<and>
+                    count_list
+                     (take (index (snd (config' (\<lambda>s. h, TS_step_d) (init, h) (as @ x # bs @ x # take i cs))) (cs ! i))
+                       (snd (Partial_Cost_Model.config' (\<lambda>s. h, TS_step_d) (init, h) (as @ x # bs @ x # take i cs))))
+                     xa
+                    \<le> 1} \<noteq>
+               {}) = True" using aha[unfolded rTS_def] ss' SS' by(simp add: nth_append)
 
   have "?s_Suct3 = fst (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (Suc (length as + length bs + i)))))"
     by(auto simp add: s_TS_def)
   also have "\<dots> = step ?s ?y (index ?s ?y - Min (index ?s ` ?S), [])"   
       apply(simp only: once[unfolded assms(1)])
-      apply(simp add: Step_def split_def TS_step_d_def del: config'.simps)  
-      using aha2 apply(simp add: split_def del: config'.simps)
-      using aha aha2  apply(simp add: split_def del: config'.simps)
-      using aha' apply(simp add: split_def nth_append del: config'.simps) sorry (*
-      apply(simp add: nth_append del: config'.simps) *)
+      apply(simp add: Step_def split_def rTS_def del: config'.simps)  
+      apply(subst alt_chara) 
+      apply(simp only: Let_def )
+      apply(simp only: iF)
+        by(simp add: nth_append) 
   finally have "?s_Suct3 = step ?s ?y (index ?s ?y - Min (index ?s ` ?S), [])" .
   with isminimal have state_dannach: "?s_Suct3 = step ?s ?y (index ?s ?y - index ?s z, [])" by presburger
     
