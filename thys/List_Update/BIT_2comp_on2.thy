@@ -2,11 +2,52 @@ theory BIT_2comp_on2
 imports BIT Phase_Partitioning
 begin
 
+lemma E_bernoulli3: assumes "0<p"
+    and "p<1"
+    and "finite (set_pmf (bind_pmf (bernoulli_pmf p) f))"
+    shows "E (bind_pmf (bernoulli_pmf p) f) = E(f True)*p + E(f False)*(1-p)" (is "?L = ?R")
+proof -
+
+  have T: "(\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f True) a))
+            = E(f True)"
+    unfolding E_def
+    apply(subst integral_measure_pmf[of "bind_pmf (bernoulli_pmf p) f"])
+      using assms apply(simp)
+      using assms apply(simp add: set_pmf_bernoulli) apply blast
+      using assms by(simp add: set_pmf_bernoulli) 
+  have F: "(\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f False) a))
+            = E(f False)"
+    unfolding E_def
+    apply(subst integral_measure_pmf[of "bind_pmf (bernoulli_pmf p) f"])
+      using assms apply(simp)
+      using assms apply(simp add: set_pmf_bernoulli) apply blast
+      using assms by(simp add: set_pmf_bernoulli) 
+
+  have "?L = (\<Sum>a\<in>(\<Union>x. set_pmf (f x)).
+       a *
+       (pmf (f True) a * p +
+        pmf (f False) a * (1 - p)))"  
+  unfolding E_def 
+  apply(subst integral_measure_pmf[of "bind_pmf (bernoulli_pmf p) f"])
+    using assms apply(simp)
+    apply(simp)
+    using assms apply(simp add: set_pmf_bernoulli )
+    by(simp add: pmf_bind)
+  also have "\<dots> = (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f True) a * p)
+                                    + (a * pmf (f False) a * (1 - p)))"
+    apply(rule setsum.cong) apply(simp) by algebra
+  also have "\<dots> = (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f True) a * p))
+                  + (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f False) a * (1 - p)))"
+    by (simp add: setsum.distrib)
+  also have "\<dots> = (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f True) a)) * p
+                  + (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f False) a )) * (1 - p)"
+    by (simp add: setsum_left_distrib)    
+  also have "\<dots> = ?R" unfolding T F by simp
+  finally show ?thesis .
+qed 
 
 
-lemma E_bernoulli2: "0\<le>p \<Longrightarrow> p\<le>1 \<Longrightarrow> 
-        E (bind_pmf (bernoulli_pmf p) f) = E(f True)*p + E(f False)*(1-p)" sorry
-
+thm measure_pmf.ereal_integral_real
 
 
 (* mir ist grad aufgefalln, dass ich eigentlich auch T_on definiert haben will nicht für
@@ -189,7 +230,19 @@ proof -
     have ta: "T\<^sub>p_on2 BIT u (type1 init x y) = 1.5"
       unfolding T\<^sub>p_on2_def type1_def uyx T_on_n2_def
       apply(simp add: bind_return_pmf bind_assoc_pmf   BIT_step_def split_def)
-      apply(simp only: E_bernoulli2) 
+
+      apply(subst E_bernoulli3) 
+        apply(simp) apply(simp) apply(simp)
+        apply(subst E_bernoulli3) 
+          apply(simp) apply(simp) apply(simp) 
+        apply(subst E_bernoulli3) 
+          apply(simp) apply(simp) apply(simp) 
+        apply(subst E_bernoulli3) 
+          apply(simp) apply(simp) apply(simp) 
+        apply(subst E_bernoulli3) 
+          apply(simp) apply(simp) apply(simp) 
+        apply(subst E_bernoulli3) 
+          apply(simp) apply(simp) apply(simp)   
         using A 
           using goal1(3)
             apply(cases "init=[x,y]")
@@ -273,7 +326,18 @@ proof -
     have ta: "T\<^sub>p_on2 BIT u (type0 init x y) = 1.5"
       unfolding  T\<^sub>p_on2_def type0_def uyx T_on_n2_def 
       apply(simp add: bind_return_pmf bind_assoc_pmf BIT_step_def split_def)
-      apply(simp only: E_bernoulli2) 
+apply(subst E_bernoulli3) 
+        apply(simp) apply(simp) apply(simp)
+        apply(subst E_bernoulli3) 
+          apply(simp) apply(simp) apply(simp) 
+        apply(subst E_bernoulli3) 
+          apply(simp) apply(simp) apply(simp) 
+        apply(subst E_bernoulli3) 
+          apply(simp) apply(simp) apply(simp) 
+        apply(subst E_bernoulli3) 
+          apply(simp) apply(simp) apply(simp) 
+        apply(subst E_bernoulli3) 
+          apply(simp) apply(simp) apply(simp)  
         using A  
         apply(cases "init=[x,y]")
           by(simp_all add: t\<^sub>p_def step_def swap_def mtf2_def) 
@@ -343,7 +407,7 @@ lemma BIT_a: "qs \<in> Lxx x y \<Longrightarrow> x \<noteq> y
    T\<^sub>p_on2 BIT qs (type0 init x y) = 1.5"
   apply (auto simp add: conc_def  T_on_n2_def  mtf_def T\<^sub>p_on2_def type0_def)
     apply(simp_all add: bind_return_pmf map_pmf_def bind_assoc_pmf split_def BIT_step_def t\<^sub>p_def step_def mtf2_def swap_def)
-    apply(simp_all add: E_bernoulli2)
+    apply(simp_all add: E_bernoulli3)
     apply(simp_all add: swap_def) 
     done
 
@@ -386,7 +450,12 @@ proof -
     apply(cases "init=[x,y]")
       unfolding  T\<^sub>p_on2_def type0_def T_on_n2_def
       apply(auto simp add: bind_return_pmf bind_assoc_pmf BIT_step_def split_def)
-      apply(simp_all only: E_bernoulli2) 
+      apply(subst E_bernoulli3) 
+        apply(simp) apply(simp) apply(simp)
+        apply(subst E_bernoulli3) 
+          apply(simp) apply(simp) apply(simp) 
+        apply(subst E_bernoulli3) 
+          apply(simp) apply(simp) apply(simp) 
         using A 
           by(simp_all add: t\<^sub>p_def step_def swap_def mtf2_def) 
 
@@ -436,8 +505,8 @@ proof -
     unfolding bb  using goal1(2) 
     apply(cases "init=[x,y]")
       unfolding  T\<^sub>p_on2_def type1_def T_on_n2_def
-      apply(simp_all add: bind_return_pmf bind_assoc_pmf BIT_step_def split_def)
-      apply(simp_all only: E_bernoulli2) 
+      apply(simp_all add: bind_return_pmf bind_assoc_pmf BIT_step_def split_def) 
+        apply(simp_all add: E_bernoulli3)             
         using A  
           by(simp_all add: t\<^sub>p_def step_def swap_def mtf2_def) 
  
@@ -584,7 +653,7 @@ proof -
       apply(cases "init=[x,y]")
       unfolding  T\<^sub>p_on2_def type1_def T_on_n2_def
       apply(simp_all add: bind_return_pmf bind_assoc_pmf BIT_step_def split_def)
-      apply(simp_all only: E_bernoulli2) 
+      apply(simp_all add: E_bernoulli3) 
         using A  
           apply(simp_all add: t\<^sub>p_def step_def swap_def mtf2_def) done
  
