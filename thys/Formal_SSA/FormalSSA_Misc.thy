@@ -187,7 +187,7 @@ lemma set_take_two:
   obtains x y where "x \<in> A" "y \<in> A" "x \<noteq> y"
 proof-
   from assms obtain k where "card A = Suc (Suc k)"
-    using le_iff_add by auto
+    by (auto simp: le_iff_add)
   from card_eq_SucD[OF this] obtain x B where x: "A = insert x B" "x \<notin> B" "card B = Suc k" by auto
   from card_eq_SucD[OF this(3)] obtain y where y: "y \<in> B" by auto
   from x y show ?thesis by - (rule that[of x y], auto)
