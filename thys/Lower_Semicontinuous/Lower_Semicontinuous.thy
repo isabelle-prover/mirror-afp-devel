@@ -1060,7 +1060,7 @@ next
     hence "(SUM j : s. a j) = 0"
       using insert by auto
     hence "ALL j. (j : s --> a j = 0)"
-      using setsum_nonneg_0[where 'b=real] insert by fastforce
+      using insert by (simp add: setsum_nonneg_eq_0_iff)
     hence ?case using insert.hyps(1-3) `a i = 1`
       by (simp add: zero_ereal_def[symmetric] one_ereal_def[symmetric]) }
   moreover
