@@ -1,0 +1,17 @@
+chapter AFP
+
+session "List_Update" (AFP) = "HOL-Probability" +
+  options [timeout = 600]
+  theories [document = false]
+    "../List-Index/List_Index"
+    "../Regular-Sets/Equivalence_Checking"
+  theories
+    "Move_to_Front"
+    "BIT"
+    "TS"
+    "BIT_pairwise"
+    "BIT_2comp_on2"
+    "Comb"
+  document_files
+    "root.bib"
+    "root.tex"

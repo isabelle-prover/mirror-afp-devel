@@ -16,7 +16,7 @@ notation (latex) t\<^sub>p ("\<^raw:$t^{*}$>")
 
 lemma t\<^sub>pt: "t\<^sub>p s q a + 1 = t s q a" unfolding t\<^sub>p_def t_def by(simp add: split_def)
 
-interpretation On_Off step t\<^sub>p .
+interpretation On_Off step t\<^sub>p static .
                  
 abbreviation "T\<^sub>p == T"
 abbreviation "T\<^sub>p_opt == T_opt" 

@@ -42,8 +42,17 @@ fun steps where
   "steps s [] [] = s"
 | "steps s (q#qs) (a#as) = steps (step s q a) qs as"
 
+lemma steps_append: "length qs = length as \<Longrightarrow> steps s (qs@qs') (as@as') = steps (steps s qs as) qs' as'"
+apply(induct qs as arbitrary: s rule: list_induct2)
+   by simp_all
+
 
 lemma T_append: "length qs = length as \<Longrightarrow> T s (qs@[q]) (as@[a]) = T s qs as + t (steps s qs as) q a"
+apply(induct qs as arbitrary: s rule: list_induct2)
+   by simp_all
+
+
+lemma T_append2: "length qs = length as \<Longrightarrow> T s (qs@qs') (as@as') = T s qs as + T (steps s qs as) qs' as'"
 apply(induct qs as arbitrary: s rule: list_induct2)
    by simp_all
 
@@ -113,7 +122,7 @@ apply(induct rs rule: rev_induct)
   by(simp_all add: T_on_rand'_append  nth_append)
 
 
-lemma T_on_rand'_nn: "T_on_rand' (I,S) s qs \<ge> 0"
+lemma T_on_rand'_nn: "T_on_rand' A s qs \<ge> 0"
 apply(induct qs arbitrary: s) 
   apply(simp_all add: bind_return_pmf)
   apply(rule add_nonneg_nonneg)
@@ -124,34 +133,34 @@ lemma T_on_rand_nn: "T_on_rand (I,S) s0 qs \<ge> 0"
 by (rule T_on_rand'_nn)
  
 definition compet_rand :: "('state,'is,'request,'answer) alg_on_rand \<Rightarrow> real \<Rightarrow> 'state set \<Rightarrow> bool" where
-"compet_rand A c S0 = (\<forall>s0\<in>S0. \<exists>b \<ge> 0. \<forall>rs. T_on_rand A s0 rs \<le> c * T_opt s0 rs + b)"
+"compet_rand A c S0 = (\<forall>s\<in>S0. \<exists>b \<ge> 0. \<forall>rs. wf s rs \<longrightarrow> T_on_rand A s rs \<le> c * T_opt s rs + b)"
 
 
-subsection "embedding of deterministic into randomized algorithms"
+subsection "embeding of deterministic into randomized algorithms"
 
-fun embedd :: "('state,'is,'request,'answer) alg_on \<Rightarrow> ('state,'is,'request,'answer) alg_on_rand" where
-"embedd A = ( (\<lambda>s. return_pmf (fst A s))  ,
+fun embed :: "('state,'is,'request,'answer) alg_on \<Rightarrow> ('state,'is,'request,'answer) alg_on_rand" where
+"embed A = ( (\<lambda>s. return_pmf (fst A s))  ,
                   (\<lambda>s r. return_pmf (snd A s r)) )"
 
-lemma T_deter_rand: "T_off (\<lambda>s0. (off2 A (s0, x))) s0 qs = T_on_rand' (embedd A) (return_pmf (s0,x)) qs"
+lemma T_deter_rand: "T_off (\<lambda>s0. (off2 A (s0, x))) s0 qs = T_on_rand' (embed A) (return_pmf (s0,x)) qs"
 apply(induct qs arbitrary: s0 x) 
   by(simp_all add: Step_def bind_return_pmf split: prod.split)
 
 
-lemma config'_embedd: "config'_rand (embedd A) (return_pmf s0) qs = return_pmf (config' A s0 qs)"
+lemma config'_embed: "config'_rand (embed A) (return_pmf s0) qs = return_pmf (config' A s0 qs)"
 apply(induct qs arbitrary: s0)
   apply(simp_all add: Step_def split_def bind_return_pmf) by metis
 
-lemma config_embedd: "config_rand (embedd A) s0 qs = return_pmf (config A s0 qs)" 
+lemma config_embed: "config_rand (embed A) s0 qs = return_pmf (config A s0 qs)" 
 apply(simp add: bind_return_pmf)
-  apply(subst config'_embedd[unfolded embedd.simps])
+  apply(subst config'_embed[unfolded embed.simps])
     by simp
 
-lemma T_on_embedd: "T_on A s0 qs = T_on_rand (embedd A) s0 qs"
+lemma T_on_embed: "T_on A s0 qs = T_on_rand (embed A) s0 qs"
 using T_deter_rand[where x="fst A s0", of s0 qs A] by(auto simp: bind_return_pmf)
  
-lemma compet_embedded: "compet A c S0 = compet_rand (embedd A) c S0"
-unfolding compet_def compet_rand_def using T_on_embedd by metis
+lemma compet_embed: "compet A c S0 = compet_rand (embed A) c S0"
+unfolding compet_def compet_rand_def using T_on_embed by metis
 
  
    

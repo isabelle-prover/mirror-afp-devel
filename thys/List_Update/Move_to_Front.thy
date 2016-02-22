@@ -139,6 +139,9 @@ by (simp add: Lxy_def)
 lemma Lxy_append: "Lxy (xs@ys) S = Lxy xs S @ Lxy ys S"
 by(simp add: Lxy_def)
 
+lemma Lxy_snoc: "Lxy (xs@[x]) S = (if x\<in>S then Lxy xs S @ [x] else Lxy xs S)"
+by(simp add: Lxy_def)
+
 lemma Lxy_not: "S \<inter> set xs = {} \<Longrightarrow> Lxy xs S = []"
 unfolding Lxy_def apply(induct xs) by simp_all
 
@@ -152,11 +155,12 @@ by(simp add: Lxy_def)
 
 
 
-lemma Lxy_project: "x\<noteq>y \<Longrightarrow> x \<in> set xs \<Longrightarrow> y\<in>set xs \<Longrightarrow> distinct xs \<Longrightarrow> x < y in xs
-           \<Longrightarrow> Lxy xs {x,y} = [x,y]"
+lemma Lxy_project: 
+  assumes "x\<noteq>y" "x \<in> set xs"  "y\<in>set xs" "distinct xs" 
+    and "x < y in xs"
+  shows "Lxy xs {x,y} = [x,y]"
 proof -
-  case goal1
-  then have ij: "index xs x < index xs y"
+  from assms have ij: "index xs x < index xs y"
         and xinxs: "index xs x < length xs"
         and yinxs: "index xs y < length xs" unfolding before_in_def by auto  
   from xinxs obtain a as where dec1: "a @ [xs!index xs x] @ as = xs"
@@ -173,16 +177,16 @@ proof -
             and length_b: "length b = index xs y-index xs x-1" using id_take_nth_drop[OF las] xsj by force
   have xs_dec: "a @ [xs!index xs x] @ b @ [xs!index xs y] @ c = xs" using dec1 dec2 by auto 
    
-  from xs_dec goal1(4) have "distinct ((a @ [xs!index xs x] @ b @ [xs!index xs y]) @ c)" by simp
+  from xs_dec assms(4) have "distinct ((a @ [xs!index xs x] @ b @ [xs!index xs y]) @ c)" by simp
   then have c_empty: "set c \<inter> {x,y} = {}"
-      and b_empty: "set b \<inter> {x,y} = {}"and a_empty: "set a \<inter> {x,y} = {}" by(auto simp add: goal1(2,3))
+      and b_empty: "set b \<inter> {x,y} = {}"and a_empty: "set a \<inter> {x,y} = {}" by(auto simp add: assms(2,3))
 
   have "Lxy (a @ [xs!index xs x] @ b @ [xs!index xs y] @ c) {x,y} = [x,y]"
     apply(simp only: Lxy_append)
-    apply(simp add: goal1(2,3))
+    apply(simp add: assms(2,3))
     using a_empty b_empty c_empty by(simp add: Lxy_notin Lxy_in)
 
-  with xs_dec show ?case by auto
+  with xs_dec show ?thesis by auto
 qed
 
 
@@ -224,6 +228,7 @@ proof -
   show ?thesis by metis
 qed
 
+
 subsection "List Update as Online/Offline Algorithm"
 
 type_synonym 'a state = "'a list"
@@ -236,7 +241,9 @@ definition step :: "'a state \<Rightarrow> 'a \<Rightarrow> answer \<Rightarrow>
 definition t :: "'a state \<Rightarrow> 'a \<Rightarrow> answer \<Rightarrow> nat" where
 "t s r a = (let (mf,sws) = a in index (swaps sws s) r + 1 + size sws)"
 
-interpretation On_Off step t .
+definition static where "static s rs = (set rs \<subseteq> set s)"
+
+interpretation On_Off step t static .
 
 type_synonym 'a alg_off = "'a state \<Rightarrow> 'a list \<Rightarrow> answer list"
 type_synonym ('a,'is) alg_on = "('a state,'is,'a,answer) alg_on"
@@ -424,7 +431,7 @@ proof-
   have "(?bxxs \<inter> ?bxys) \<union> (?axxs \<inter> ?bxys) = ?bxys"
     using assms(2) before_Un xxs by fastforce
   hence "?m + ?n = ?k"
-    using card_Un_disjoint[OF _ _ 1] by(simp add: zadd_int del: of_nat_add)
+    using card_Un_disjoint[OF _ _ 1] by simp
   hence "?m - ?n = 2 * ?m - ?k" by arith
   also have "?m \<le> ?j"
     using card_before_le_index[of x xs] card_mono[of ?bxxs, OF _ Int_lower1]
@@ -715,15 +722,8 @@ proof-
     length_greater_0_conv[symmetric] del: length_greater_0_conv)
 qed
  
-theorem MTF_is_2_competitive: "compet MTF 2 {init . distinct init}"
-unfolding compet_def 
-proof 
-  case goal1
-  then have ds0: "distinct s0" by auto
-  show ?case
-    apply(rule exI[where x="0"]) 
-      using compet_MTF'[OF ds0] by simp
-qed
+theorem MTF_is_2_competitive: "compet MTF 2 {s . distinct s}"
+unfolding compet_def using compet_MTF' by fastforce 
 
 
 subsection "Lower Bound for Competitiveness"
@@ -791,7 +791,7 @@ assumes "\<And>rs s0. size(Aoff s0 rs) = length rs" and "\<And>n. cruel n \<note
 assumes "compet Aon c S0" and "c\<ge>0" and "s0 \<in> S0"
  and l: "eventually (\<lambda>n. f s0 (cruel n) / (g s0 (cruel n) + a) \<ge> l) sequentially"
  and g: "LIM n sequentially. g s0 (cruel n) :> at_top"
- and "l > 0"
+ and "l > 0" and "\<And>n. static s0 (cruel n)"
 shows "l \<le> c"
 proof-
   let ?h = "\<lambda>b s0 rs. (f s0 rs - b) / g s0 rs"
@@ -799,10 +799,10 @@ proof-
     using filterlim_tendsto_add_at_top[OF tendsto_const g]
     by (simp add: ac_simps)
   from competE[OF assms(5) `c\<ge>0` _ `s0 \<in> S0`] assms(3) obtain b where
-    "\<forall>rs. rs \<noteq> [] \<longrightarrow> ?h b s0 rs \<le> c "
+    "\<forall>rs. static s0 rs \<and> rs \<noteq> [] \<longrightarrow> ?h b s0 rs \<le> c "
     by (fastforce simp del: neq0_conv simp: neq0_conv[symmetric]
         field_simps f_def g_def T_off_neq0[of Aoff, OF assms(3)])
-  hence "\<forall>n. (?h b s0 o cruel) n \<le> c" using assms(4) by simp
+  hence "\<forall>n. (?h b s0 o cruel) n \<le> c" using assms(4,11) by simp
   with rat_fun_lem[OF sequentially_bot `l>0` _ _ g', of "f s0 o cruel" "-b" "- a" c] assms(7) l
   show "l \<le> c" by (auto)
 qed
@@ -850,6 +850,9 @@ lemma set_cruel: "s \<noteq> [] \<Longrightarrow> set(cruel A (s,is) n) \<subset
 apply(induction n arbitrary: s "is")
 apply(auto simp: step_def Step_def split: prod.split)
 by (metis empty_iff swaps_inv last_in_set list.set(1) rev_subsetD set_mtf2)
+
+lemma static_cruel: "s \<noteq> [] \<Longrightarrow> static s (cruel A (s,is) n)"
+by(simp add: set_cruel static_def)
 
 (* Do not convert into structured proof - eta conversion screws it up! *)
 lemma T_cruel:
@@ -1007,6 +1010,7 @@ proof (rule compet_lb0[OF _ _ assms(1) `c\<ge>0`])
   thus "eventually (\<lambda>n. (2 * l) / (l + 1) \<le> ?on n / (real(?off n) + ?a)) sequentially"
     by(auto simp add: filterlim_at_top eventually_sequentially)
   show "0 < 2*l / (l+1)" using `l \<noteq> 0` by(simp)
+  show "\<And>n. static ?s0 (?cruel n)" using `l \<noteq> 0` by(simp add: static_cruel del: cruel.simps)
 qed
 
 
