@@ -771,7 +771,7 @@ lemma method_in_EP_is_M:
   is = [Push Unit, instr.Return] \<and> xt = [] \<and> D = ''C''"
   by (fastforce elim: Methods.cases 
     simp: class_def SystemClasses_def ObjectC_def NullPointerC_def OutOfMemoryC_def ClassCastC_def
-    split_if_eq1 EP_def Method_def)
+    if_split_eq1 EP_def Method_def)
 
 lemma [simp]:
   "\<exists>T Ts mxs mxl is. (\<exists>xt. EP \<turnstile> ''C'' sees ''M'': Ts\<rightarrow>T = (mxs, mxl, is, xt) in ''C'') \<and> is \<noteq> []"

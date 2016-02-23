@@ -97,15 +97,15 @@ lemma tllist_ord_refl [simp]: "tllist_ord xs xs"
 by transfer(auto simp add: flat_ord_def)
 
 lemma tllist_ord_antisym: "\<lbrakk> tllist_ord xs ys; tllist_ord ys xs \<rbrakk> \<Longrightarrow> xs = ys"
-by transfer(auto simp add: flat_ord_def split: split_if_asm intro: lprefix_antisym)
+by transfer(auto simp add: flat_ord_def split: if_split_asm intro: lprefix_antisym)
 
 lemma tllist_ord_trans [trans]: "\<lbrakk> tllist_ord xs ys; tllist_ord ys zs \<rbrakk> \<Longrightarrow> tllist_ord xs zs"
-by transfer(auto simp add: flat_ord_def split: split_if_asm intro: lprefix_trans)
+by transfer(auto simp add: flat_ord_def split: if_split_asm intro: lprefix_trans)
 
 lemma chain_tllist_llist_of_tllist:
   assumes "Complete_Partial_Order.chain tllist_ord A"
   shows "Complete_Partial_Order.chain lprefix (llist_of_tllist ` A)"
-by(rule chainI)(auto 4 3 simp add: tllist_ord.rep_eq split: split_if_asm dest: chainD[OF assms])
+by(rule chainI)(auto 4 3 simp add: tllist_ord.rep_eq split: if_split_asm dest: chainD[OF assms])
 
 lemma chain_tllist_terminal:
   assumes "Complete_Partial_Order.chain tllist_ord A"
@@ -148,7 +148,7 @@ proof(cases "tfinite xs")
   next
     case False
     hence "\<exists>ys\<in>A. \<not> tllist_ord ys xs"
-      by(rule contrapos_np)(auto intro!: lprefix_antisym chain_lSup_lprefix chain_lprefix_lSup simp add: tSup_def image_image A chain_tllist_llist_of_tllist[OF chain] tllist_ord.rep_eq split: split_if_asm)
+      by(rule contrapos_np)(auto intro!: lprefix_antisym chain_lSup_lprefix chain_lprefix_lSup simp add: tSup_def image_image A chain_tllist_llist_of_tllist[OF chain] tllist_ord.rep_eq split: if_split_asm)
     then obtain ys where "ys \<in> A" "\<not> tllist_ord ys xs" by blast
     with A have "tllist_ord xs ys" "xs \<noteq> ys" by(auto dest: chainD[OF chain])
     with True have "terminal xs = b" by transfer(auto simp add: flat_ord_def)
@@ -157,7 +157,7 @@ proof(cases "tfinite xs")
   qed
 next
   case False
-  thus ?thesis using assms by(simp add: tllist_ord.rep_eq tSup_def image_image chain_lprefix_lSup chain_tllist_llist_of_tllist not_lfinite_lprefix_conv_eq[THEN iffD1] terminal_tllist_of_llist split: split_if_asm)
+  thus ?thesis using assms by(simp add: tllist_ord.rep_eq tSup_def image_image chain_lprefix_lSup chain_tllist_llist_of_tllist not_lfinite_lprefix_conv_eq[THEN iffD1] terminal_tllist_of_llist split: if_split_asm)
 qed
 
 lemma chain_tSup_tllist_ord:
@@ -166,7 +166,7 @@ lemma chain_tSup_tllist_ord:
   shows "tllist_ord (tSup A) xs"
 proof -
   have "\<And>xs'. xs' \<in> llist_of_tllist ` A \<Longrightarrow> lprefix xs' (llist_of_tllist xs)"
-    by(auto dest!: lub simp add: tllist_ord.rep_eq split: split_if_asm)
+    by(auto dest!: lub simp add: tllist_ord.rep_eq split: if_split_asm)
   with chain_tllist_llist_of_tllist[OF chain]
   have prefix: "lprefix (lSup (llist_of_tllist ` A)) (llist_of_tllist xs)"
     by(rule chain_lSup_lprefix)
@@ -195,7 +195,7 @@ proof -
         with False have "\<not> lprefix (llist_of_tllist xs) (llist_of_tllist xs')"
           by-(erule contrapos_nn, auto 4 4 intro: lprefix_trans chain_lprefix_lSup chain_tllist_llist_of_tllist chain)
         with lub[OF `xs' \<in> A`] have "terminal xs' = b"
-          by(auto simp add: tllist_ord.rep_eq split: split_if_asm) }
+          by(auto simp add: tllist_ord.rep_eq split: if_split_asm) }
       with chain_tllist_terminal[OF chain] have "flat_ord b (flat_lub b ?A) b"
         by -(rule ccpo.ccpo_Sup_least[OF Partial_Function.ccpo[OF flat_interpretation]], auto simp add: flat_ord_def)
       hence "flat_lub b ?A = b" by(simp add: flat_ord_def)
@@ -277,7 +277,7 @@ proof (transfer, goal_cases)
     apply(erule contrapos_np)
     apply(frule chainD[OF chain `(xs, b') \<in> Y`])
     using `\<not> lnull xs` xsb
-    by(fastforce split: split_if_asm simp add: lprefix_lnull intro!: rev_image_eqI)
+    by(fastforce split: if_split_asm simp add: lprefix_lnull intro!: rev_image_eqI)
   also have "flat_lub b \<dots> = flat_lub b (snd ` (apfst ltl ` (Y \<inter> {(xs, b). \<not> lnull xs}) \<inter> {(xs, _). lfinite xs}))"
     by(auto simp add: flat_lub_def)
   also
@@ -486,7 +486,7 @@ lemma mono_tllist_lappendt2 [partial_function_mono]:
   "tllist_pf.mono_tllist b A \<Longrightarrow> tllist_pf.mono_tllist b (\<lambda>f. lappendt xs (A f))"
 apply(rule monotoneI)
 apply(drule (1) monotoneD)
-apply(simp add: tllist_ord.rep_eq split: split_if_asm)
+apply(simp add: tllist_ord.rep_eq split: if_split_asm)
 apply(auto simp add: lappend_inf)
 done
 
@@ -498,7 +498,7 @@ apply(cases "tfinite xs")
  apply(drule monotoneD[OF assms[where y="terminal xs"]])
  including tllist.lifting
  apply transfer
- apply(fastforce split: split_if_asm)
+ apply(fastforce split: if_split_asm)
 apply(simp add: tappend_inf)
 done
 

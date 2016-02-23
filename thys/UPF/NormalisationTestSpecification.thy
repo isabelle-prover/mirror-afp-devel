@@ -130,7 +130,7 @@ definition disjDomGD where "disjDomGD p = disjDom (butlast p)"
 lemma distrPUTLG1: "\<lbrakk>x \<in> dom P; (list2policy PL) x = P x; PUTListGD PUT x PL\<rbrakk> \<Longrightarrow> PUT x = P x"
   apply (induct PL)  
   apply (simp_all add: domIff PUTListGD_def disjDomGD_def gatherDomain_def list2policy_def)
-  apply (auto simp: dom_def domIff split: split_if_asm) 
+  apply (auto simp: dom_def domIff split: if_split_asm) 
 done
 
 lemma distrPUTLG2: 

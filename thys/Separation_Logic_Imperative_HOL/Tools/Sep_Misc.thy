@@ -59,7 +59,7 @@ lemma do_uncurry2: "f a b c = uncurry2 f ((a,b),c)" by simp
   lemma ran_nth_set_encoding_conv[simp]: 
     "ran (\<lambda>i. if i<length l then Some (l!i) else None) = set l"
     apply safe
-    apply (auto simp: ran_def split: split_if_asm) []
+    apply (auto simp: ran_def split: if_split_asm) []
     apply (auto simp: in_set_conv_nth intro: ranI) []
     done
 

@@ -45,7 +45,7 @@ proof (standard, goal_cases)
 next
   case 2 thus ?case
     by (auto simp: Let_def insert_mod_def set_of_def map_up equiv_iff_qle
-      split:split_if_asm)
+      split:if_split_asm)
 next
   case 3 show ?case by(simp add: M_empty)
 next

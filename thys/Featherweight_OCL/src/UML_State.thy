@@ -106,7 +106,7 @@ text{* We derive the usual laws on definedness for (generic) object equality:*}
 lemma StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_defargs:
 "\<tau> \<Turnstile> (StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t x (y::('\<AA>,'a::{null,object})val))\<Longrightarrow> (\<tau> \<Turnstile>(\<upsilon> x)) \<and> (\<tau> \<Turnstile>(\<upsilon> y))"
 by(simp add: StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def OclValid_def true_def invalid_def bot_option_def
-        split: bool.split_asm HOL.split_if_asm)
+        split: bool.split_asm HOL.if_split_asm)
 
 lemma defined_StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_I:
  assumes val_x : "\<tau> \<Turnstile> \<upsilon> x"
@@ -726,7 +726,7 @@ proof -
     simp add: OclAllInstances_at_pre_def OclAllInstances_at_post_def
               OclValid_def OclIncludes_def true_def F F'
               valid_x[simplified OclValid_def] valid_y[simplified OclValid_def] bot_option_def
-         split: split_if_asm,
+         split: if_split_asm,
     simp add: comp_def image_def, fastforce)+
 qed
 
@@ -807,7 +807,7 @@ lemma
  apply(insert X_null,
        simp add : OclIncludes_def OclIsModifiedOnly_def StrongEq_def OclValid_def true_def)
  apply(case_tac \<tau>, simp)
- apply(simp split: split_if_asm)
+ apply(simp split: if_split_asm)
 by(simp add: null_fun_def, blast)
 
 subsubsection{* Context Passing *}
@@ -869,7 +869,7 @@ proof -
   apply(erule bexE, rename_tac x')
   apply(simp add: P_def)
   apply(simp only: OclNot3[symmetric], simp only: not_inj)
-  apply(simp add: StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def split: split_if_asm)
+  apply(simp add: StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def split: if_split_asm)
     apply(subgoal_tac "x \<tau> \<noteq> null \<and> x' \<noteq> null", simp)
     apply (metis (mono_tags) drop.simps def_x foundation16[THEN iffD1] true_def)
  by(simp add: invalid_def bot_option_def true_def)+
@@ -881,7 +881,7 @@ proof -
   apply(rule ballI, drule_tac x = "x'" in ballE) prefer 3 apply assumption
    apply(simp add: P_def)
    apply(simp only: OclNot4[symmetric], simp only: not_inj)
-   apply(simp add: StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def false_def split: split_if_asm)
+   apply(simp add: StrictRefEq\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def false_def split: if_split_asm)
     apply(subgoal_tac "x \<tau> \<noteq> null \<and> x' \<noteq> null", simp)
     apply (metis def_X' def_x  foundation16[THEN iffD1])
  by(simp add: invalid_def bot_option_def false_def)+
@@ -912,13 +912,13 @@ theorem framing:
  proof - show "\<tau> \<Turnstile> \<delta> x \<Longrightarrow> ?thesis" proof - assume def_x : "\<tau> \<Turnstile> \<delta> x" show ?thesis proof -
 
  have def_X : "\<tau> \<Turnstile> \<delta> X"
-  apply(insert oid_is_typerepr, simp add: UML_Set.OclForall_def OclValid_def split: split_if_asm)
+  apply(insert oid_is_typerepr, simp add: UML_Set.OclForall_def OclValid_def split: if_split_asm)
  by(simp add: bot_option_def true_def)
 
  have def_X' : "\<And>x. x \<in> \<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (X \<tau>)\<rceil>\<rceil> \<Longrightarrow> x \<noteq> null"
-  apply(insert modifiesclause, simp add: OclIsModifiedOnly_def OclValid_def split: split_if_asm)
-  apply(case_tac \<tau>, simp split: split_if_asm)
-   apply(simp add: UML_Set.OclExcluding_def split: split_if_asm)
+  apply(insert modifiesclause, simp add: OclIsModifiedOnly_def OclValid_def split: if_split_asm)
+  apply(case_tac \<tau>, simp split: if_split_asm)
+   apply(simp add: UML_Set.OclExcluding_def split: if_split_asm)
     apply(subst (asm) (2) Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse)
      apply(simp, (rule disjI2)+)
      apply (metis (hide_lams, mono_tags) Diff_iff Set_inv_lemma def_X)
@@ -939,7 +939,7 @@ theorem framing:
   apply(rule conjI, rule impI)
    apply(rule_tac f = "\<lambda>x. P \<lceil>x\<rceil>" in arg_cong)
    apply(insert modifiesclause[simplified OclIsModifiedOnly_def OclValid_def])
-   apply(case_tac \<tau>, rename_tac \<sigma> \<sigma>', simp split: split_if_asm)
+   apply(case_tac \<tau>, rename_tac \<sigma> \<sigma>', simp split: if_split_asm)
     apply(subst (asm) (2) UML_Set.OclExcluding_def)
     apply(drule foundation5[simplified OclValid_def true_def], simp)
     apply(subst (asm) Abs_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse, simp)
@@ -971,7 +971,7 @@ theorem framing':
   shows "\<tau> \<Turnstile> (x @pre P  \<triangleq>  (x @post P))"
 proof -
  have def_X : "\<tau> \<Turnstile> \<delta> X"
-  apply(insert oid_is_typerepr, simp add: UML_Set.OclForall_def OclValid_def split: split_if_asm)
+  apply(insert oid_is_typerepr, simp add: UML_Set.OclForall_def OclValid_def split: if_split_asm)
  by(simp add: bot_option_def true_def)
  show ?thesis
   apply(case_tac "\<tau> \<Turnstile> \<delta> x", drule foundation20)
@@ -991,32 +991,32 @@ lemma pre_post_new: "\<tau> \<Turnstile> (x .oclIsNew()) \<Longrightarrow> \<not
 by(simp add: OclIsNew_def OclSelf_at_pre_def OclSelf_at_post_def
              OclValid_def StrongEq_def true_def false_def
              bot_option_def invalid_def bot_fun_def valid_def
-      split: split_if_asm)
+      split: if_split_asm)
 
 lemma pre_post_old: "\<tau> \<Turnstile> (x .oclIsDeleted()) \<Longrightarrow> \<not> (\<tau> \<Turnstile> \<upsilon>(x @pre H1)) \<and> \<not> (\<tau> \<Turnstile> \<upsilon>(x @post H2))"
 by(simp add: OclIsDeleted_def OclSelf_at_pre_def OclSelf_at_post_def
              OclValid_def StrongEq_def true_def false_def
              bot_option_def invalid_def bot_fun_def valid_def
-      split: split_if_asm)
+      split: if_split_asm)
 
 lemma pre_post_absent: "\<tau> \<Turnstile> (x .oclIsAbsent()) \<Longrightarrow> \<not> (\<tau> \<Turnstile> \<upsilon>(x @pre H1)) \<and> \<not> (\<tau> \<Turnstile> \<upsilon>(x @post H2))"
 by(simp add: OclIsAbsent_def OclSelf_at_pre_def OclSelf_at_post_def
              OclValid_def StrongEq_def true_def false_def
              bot_option_def invalid_def bot_fun_def valid_def
-      split: split_if_asm)
+      split: if_split_asm)
 
 lemma pre_post_maintained: "(\<tau> \<Turnstile> \<upsilon>(x @pre H1) \<or> \<tau> \<Turnstile> \<upsilon>(x @post H2)) \<Longrightarrow> \<tau> \<Turnstile> (x .oclIsMaintained())"
 by(simp add: OclIsMaintained_def OclSelf_at_pre_def OclSelf_at_post_def
              OclValid_def StrongEq_def true_def false_def
              bot_option_def invalid_def bot_fun_def valid_def
-      split: split_if_asm)
+      split: if_split_asm)
 
 lemma pre_post_maintained':
 "\<tau> \<Turnstile> (x .oclIsMaintained()) \<Longrightarrow> (\<tau> \<Turnstile> \<upsilon>(x @pre (Some o H1)) \<and> \<tau> \<Turnstile> \<upsilon>(x @post (Some o H2)))"
 by(simp add: OclIsMaintained_def OclSelf_at_pre_def OclSelf_at_post_def
              OclValid_def StrongEq_def true_def false_def
              bot_option_def invalid_def bot_fun_def valid_def
-      split: split_if_asm)
+      split: if_split_asm)
 
 lemma framing_same_state: "(\<sigma>, \<sigma>) \<Turnstile> (x @pre H  \<triangleq>  (x @post H))"
 by(simp add: OclSelf_at_pre_def OclSelf_at_post_def OclValid_def StrongEq_def)
@@ -1110,7 +1110,7 @@ lemma select_object_any_defined\<^sub>S\<^sub>e\<^sub>q:
   apply(simp add: select_object_any\<^sub>S\<^sub>e\<^sub>q_def UML_Sequence.OclANY_def select_object\<^sub>S\<^sub>e\<^sub>q_def select_object_def
                   defined_def OclValid_def
                   false_def true_def bot_fun_def bot_option_def
-             split: split_if_asm)
+             split: if_split_asm)
   apply(simp add: mtSequence_def, subst (asm) Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse, simp, simp)
 by(simp)
 
@@ -1121,7 +1121,7 @@ lemma (*select_object_any_defined\<^sub>S\<^sub>e\<^sub>t:*)
   apply(simp add: select_object_any0\<^sub>S\<^sub>e\<^sub>t_def UML_Sequence.OclANY_def select_object\<^sub>S\<^sub>e\<^sub>t_def select_object_def
                   defined_def OclValid_def
                   false_def true_def bot_fun_def bot_option_def
-             split: split_if_asm)
+             split: if_split_asm)
 by(simp)
 
 lemma select_object_any_defined\<^sub>S\<^sub>e\<^sub>t:
@@ -1132,14 +1132,14 @@ lemma select_object_any_defined\<^sub>S\<^sub>e\<^sub>t:
                   defined_def OclValid_def
                   false_def true_def bot_fun_def bot_option_def
                   OclInt0_def OclInt1_def StrongEq_def OclIf_def null_fun_def null_option_def
-             split: split_if_asm)
+             split: if_split_asm)
 by(simp)
 
 lemma select_object_any_exec0\<^sub>S\<^sub>e\<^sub>q:
  assumes def_sel: "\<tau> \<Turnstile> \<delta> (select_object_any\<^sub>S\<^sub>e\<^sub>q f s_set)"
  shows "\<tau> \<Turnstile> (select_object_any\<^sub>S\<^sub>e\<^sub>q f s_set \<triangleq> f (hd s_set))"
   apply(insert def_sel[simplified foundation16],
-        simp add: select_object_any\<^sub>S\<^sub>e\<^sub>q_def foundation22 UML_Sequence.OclANY_def split: split_if_asm)
+        simp add: select_object_any\<^sub>S\<^sub>e\<^sub>q_def foundation22 UML_Sequence.OclANY_def split: if_split_asm)
   apply(case_tac "\<lceil>\<lceil>Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (select_object\<^sub>S\<^sub>e\<^sub>q f s_set \<tau>)\<rceil>\<rceil>", simp add: bot_option_def, simp)
   apply(simp add: select_object\<^sub>S\<^sub>e\<^sub>q_def select_object_def)
   apply(subst (asm) select_fold_exec\<^sub>S\<^sub>e\<^sub>q)
@@ -1166,7 +1166,7 @@ proof -
  show ?thesis
   when "\<lceil>\<lceil>Rep_Set\<^sub>b\<^sub>a\<^sub>s\<^sub>e (select_object\<^sub>S\<^sub>e\<^sub>t f s_set \<tau>)\<rceil>\<rceil> = z"
   apply(insert that def_sel[simplified foundation16],
-        simp add: select_object_any0\<^sub>S\<^sub>e\<^sub>t_def foundation22 UML_Set.OclANY_def null_fun_def split: split_if_asm)
+        simp add: select_object_any0\<^sub>S\<^sub>e\<^sub>t_def foundation22 UML_Set.OclANY_def null_fun_def split: if_split_asm)
 
   apply(simp add: select_object\<^sub>S\<^sub>e\<^sub>t_def select_object_def)
   apply(subst (asm) select_fold_exec\<^sub>S\<^sub>e\<^sub>t)
@@ -1239,10 +1239,10 @@ proof -
   apply(insert that def_sel[simplified foundation16],
         simp add: select_object_any\<^sub>S\<^sub>e\<^sub>t_def foundation22
                   Let_def null_fun_def bot_fun_def OclIf_def
-             split: split_if_asm)
+             split: if_split_asm)
   apply(simp add: StrongEq_def OclInt1_def true_def UML_Set.OclSize_def
                   bot_option_def UML_Set.OclANY_def null_fun_def
-                  split: split_if_asm)
+                  split: if_split_asm)
   apply(subgoal_tac "\<exists>z'. z = {z'}")
    prefer 2
    apply(rule finite.cases[where a = z], simp, simp, simp)

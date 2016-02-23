@@ -1349,7 +1349,7 @@ next
               (repc \<propto> low) no1 = (repc \<propto> low) no) = (repc no = repc no1)))"
               (is "?rnonN \<and> ?repreduce \<and> ?repshare")
               using [[simp_depth_limit=4]]
-              by (simp split: split_if)
+              by (simp split: if_split)
             then obtain 
               rnonN: "?rnonN" and
               repreduce: "?repreduce" and

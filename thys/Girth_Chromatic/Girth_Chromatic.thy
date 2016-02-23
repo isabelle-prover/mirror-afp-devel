@@ -491,7 +491,7 @@ proof -
     have inj_last_Cons: "\<And>A. inj_on (\<lambda>es. last es # es) A" by (rule inj_onI) simp
     { fix xs A assume "3 \<le> length xs - Suc 0" "hd xs = last xs"
       then have "xs \<in> (\<lambda>xs. last xs # xs) ` A \<longleftrightarrow> tl xs \<in> A"
-        by (cases xs) (auto simp: inj_image_mem_iff[OF inj_last_Cons] split: split_if_asm) }
+        by (cases xs) (auto simp: inj_image_mem_iff[OF inj_last_Cons] split: if_split_asm) }
     note image_mem_iff_inst = this
 
     { fix xs have "xs \<in> uwalks (edge_ugraph S_edges) \<Longrightarrow> set (tl xs) \<subseteq> S_verts"

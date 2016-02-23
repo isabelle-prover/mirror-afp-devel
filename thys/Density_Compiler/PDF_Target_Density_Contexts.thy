@@ -115,7 +115,7 @@ proof-
            (\<lambda>\<sigma>. extract_real (cexpr_sem (merge (set ?vs) (insert x (set vs')) (\<sigma>, \<rho>(x := v))) \<delta>))"
 
     from v and \<rho> have \<rho>': "(\<rho>(x := v)) \<in> space (state_measure (set (x#vs')) \<Gamma>)"
-      by (auto simp: state_measure_def space_PiM split: split_if_asm)
+      by (auto simp: state_measure_def space_PiM split: if_split_asm)
     have "cexpr_sem (case_nat v \<rho>) (marg_dens_cexpr \<Gamma> vs x \<delta>) = 
             cexpr_sem (case_nat v \<rho> \<circ> (\<lambda>y. if y = x then 0 else Suc y))
                    (integrate_vars \<Gamma> [y\<leftarrow>vs . y \<noteq> x] \<delta>)" (is "_ = ?A")
@@ -152,7 +152,7 @@ proof-
   note invar = cdens_ctxt_invarD[OF assms(1)]
   from assms have \<rho>: "case_nat v \<rho> \<circ> (\<lambda>y. if y = x then 0 else Suc y) 
                         \<in> space (state_measure (set (x#vs')) \<Gamma>)"
-    by (force simp: state_measure_def space_PiM o_def split: split_if_asm)
+    by (force simp: state_measure_def space_PiM o_def split: if_split_asm)
   moreover from x have "insert x {xa \<in> set vs. xa \<noteq> x} \<union> set vs' = set vs \<union> set vs'" by auto
   ultimately show ?thesis using assms invar unfolding marg_dens_cexpr_def
     by (subst cexpr_sem_map_vars, intro nonneg_cexpr_sem_integrate_vars[of _ "set (x#vs')"]) auto
@@ -274,7 +274,7 @@ proof-
       by (intro nn_integral_cong) simp
     have \<rho>': "\<rho>(x := fst z, y := snd z) \<in> space (state_measure ({x, y} \<union> set vs') \<Gamma>)"
       using z \<rho> unfolding state_measure_def 
-      by (auto simp: space_PiM space_pair_measure split: split_if_asm)
+      by (auto simp: space_PiM space_pair_measure split: if_split_asm)
     have integrable: "integrable ?M ?g"
     proof (intro integrableI_nonneg[OF _ AE_I2])
       show "?g \<in> borel_measurable ?M" using invar \<rho>' by (intro measurable_cexpr_sem') auto
@@ -326,7 +326,7 @@ proof-
                \<rho>(x := fst (extract_pair v), y := snd (extract_pair v))" by (intro ext) auto
   have B: "\<rho>(x := fst (extract_pair v), y := snd (extract_pair v)) 
                      \<in> space (state_measure (set vs' \<union> {x,y}) \<Gamma>)" using x y v' \<rho>
-    by (auto simp: space_state_measure split: split_if_asm)
+    by (auto simp: space_state_measure split: if_split_asm)
   from x y have "set ?vs \<union> (set vs' \<union> {x, y}) = set vs \<union> set vs'" by auto
   with invar have "nonneg_cexpr (set ?vs \<union> (set vs' \<union> {x, y})) \<Gamma> \<delta>" by simp
   thus ?thesis using assms invar(1-3) A unfolding marg_dens2_cexpr_def

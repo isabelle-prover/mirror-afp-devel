@@ -53,7 +53,7 @@ begin
       have i_aux: "!!m S S' k v. \<lbrakk>inj_on m S; S' = insert k S; v\<notin>ran m\<rbrakk> 
                                  \<Longrightarrow> inj_on (m(k\<mapsto>v)) S'"
         apply (rule inj_onI)
-        apply (simp split: split_if_asm)
+        apply (simp split: if_split_asm)
         apply (simp add: ran_def)
         apply (simp add: ran_def)
         apply blast

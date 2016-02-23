@@ -105,7 +105,7 @@ lemma less_length_cut_same:
   "\<lbrakk>(w @- sconst y) !! p = a\<rbrakk> \<Longrightarrow> a = y \<or> (p < length (cut_same y (w @- sconst y)) \<and> w ! p = a)"
   unfolding cut_same_def length_stake
   by (rule LeastI2_ex[OF exI[of _ "length w"]])
-    (auto simp: sdrop_shift shift_snth split: split_if_asm elim!: drop_sconstE)
+    (auto simp: sdrop_shift shift_snth split: if_split_asm elim!: drop_sconstE)
 
 lemma less_length_cut_same_Inl:
   "\<lbrakk>(\<forall>x \<in> set I. case x of Inr P \<Rightarrow> finite P | _ \<Rightarrow> True); r < length I; I ! r = Inl p\<rbrakk> \<Longrightarrow>
@@ -324,7 +324,7 @@ definition "positions_in_row s i =
 
 lemma positions_in_row: "positions_in_row s i = {p. snd (s !! p) ! i}"
   unfolding positions_in_row_def Option.these_def smap2_szip stream.set_map sset_range
-  by (auto split: split_if_asm intro!: image_eqI[of _ the] split: prod.splits)
+  by (auto split: if_split_asm intro!: image_eqI[of _ the] split: prod.splits)
 
 lemma positions_in_row_unique: "\<exists>!p. snd (s !! p) ! i \<Longrightarrow>
   the_elem (positions_in_row s i) = (THE p. snd (s !! p) ! i)"
@@ -365,7 +365,7 @@ lemma enc_atom_dec:
    enc_atom (stream_dec n FO s) p a = s !! p"
   unfolding stream_dec_def
   by (rule sym, subst surjective_pairing[of "s !! p"])
-    (auto intro!: nth_equalityI simp: positions_in_row simp del: prod.collapse split: split_if_asm,
+    (auto intro!: nth_equalityI simp: positions_in_row simp del: prod.collapse split: if_split_asm,
     (metis positions_in_row positions_in_row_nth)+)
 
 lemma length_stream_dec[simp]: "length (stream_dec n FO x) = n"
@@ -513,20 +513,20 @@ subsection {* Welldefinedness of enc wrt. Models *}
 lemma wf_interp_for_formula_FExists: 
  "\<lbrakk>wf_formula (length I) (FExists \<phi>)\<rbrakk>\<Longrightarrow>
   wf_interp_for_formula (w, I) (FExists \<phi>) \<longleftrightarrow> (\<forall>p. wf_interp_for_formula (w, Inl p # I) \<phi>)"
-  by (auto simp: nth_Cons' split: split_if_asm)
+  by (auto simp: nth_Cons' split: if_split_asm)
 
 lemma wf_interp_for_formula_any_Inl: "wf_interp_for_formula (w, Inl p # I) \<phi> \<Longrightarrow>
   \<forall>p. wf_interp_for_formula (w, Inl p # I) \<phi>"
-  by (auto simp: nth_Cons' split: split_if_asm)
+  by (auto simp: nth_Cons' split: if_split_asm)
 
 lemma wf_interp_for_formula_FEXISTS: 
  "\<lbrakk>wf_formula (length I) (FEXISTS \<phi>)\<rbrakk>\<Longrightarrow>
   wf_interp_for_formula (w, I) (FEXISTS \<phi>) \<longleftrightarrow> (\<forall>P. finite P \<longrightarrow> wf_interp_for_formula (w, Inr P # I) \<phi>)"
-  by (auto simp: nth_Cons' split: split_if_asm)
+  by (auto simp: nth_Cons' split: if_split_asm)
 
 lemma wf_interp_for_formula_any_Inr: "wf_interp_for_formula (w, Inr P # I) \<phi> \<Longrightarrow>
   \<forall>P. finite P \<longrightarrow> wf_interp_for_formula (w, Inr P # I) \<phi>"
-  by (auto simp: nth_Cons' split: split_if_asm)
+  by (auto simp: nth_Cons' split: if_split_asm)
 
 lemma wf_interp_for_formula_FOr:
   "wf_interp_for_formula (w, I) (FOr \<phi>1 \<phi>2) =
@@ -608,7 +608,7 @@ next
     next
       from FExists.prems(2,4) show "wf_interp_for_formula (w', Inl p # I') \<phi>"
         by (blast dest: wf_interp_for_formula_FExists[of I', unfolded length])
-    qed (auto simp: smap2_alt split: sum.splits split_if_asm)
+    qed (auto simp: smap2_alt split: sum.splits if_split_asm)
     ultimately show "(w', I') \<Turnstile> FExists \<phi>" by auto
   next
     assume "(w', I') \<Turnstile> FExists \<phi>"
@@ -621,7 +621,7 @@ next
     next
       from FExists.prems(2,4) show "wf_interp_for_formula (w', Inl p # I') \<phi>"
         by (blast dest: wf_interp_for_formula_FExists[of I', unfolded length])
-    qed (auto simp: smap2_alt split: sum.splits split_if_asm)
+    qed (auto simp: smap2_alt split: sum.splits if_split_asm)
     ultimately show "(w, I) \<Turnstile> FExists \<phi>" by auto
   qed
 next
@@ -639,7 +639,7 @@ next
     next
       from FEXISTS.prems(2,4) `finite P` show "wf_interp_for_formula (w', Inr P # I') \<phi>"
         by (blast dest: wf_interp_for_formula_FEXISTS[of I', unfolded length])
-    qed (auto simp: smap2_alt split: sum.splits split_if_asm)
+    qed (auto simp: smap2_alt split: sum.splits if_split_asm)
     ultimately show "(w', I') \<Turnstile> FEXISTS \<phi>" by auto
   next
     assume "(w', I') \<Turnstile> FEXISTS \<phi>"
@@ -652,7 +652,7 @@ next
     next
       from FEXISTS.prems(2,4) `finite P` show "wf_interp_for_formula (w', Inr P # I') \<phi>"
         by (blast dest: wf_interp_for_formula_FEXISTS[of I', unfolded length])
-    qed (auto simp: smap2_alt split: sum.splits split_if_asm)
+    qed (auto simp: smap2_alt split: sum.splits if_split_asm)
     ultimately show "(w, I) \<Turnstile> FEXISTS \<phi>" by auto
   qed
 qed auto
@@ -1101,16 +1101,16 @@ next
       by (auto simp: lang_quot SAMEQUOT_def simp del: o_apply enc.simps)
     with FExists(2) have "x' \<in> lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S (Suc n) \<phi>"
       by (intro subsetD[OF equalityD2[OF FExists(1)], of "Suc n" x'])
-        (auto split: split_if_asm sum.splits)
+        (auto split: if_split_asm sum.splits)
     then obtain w I' where
       *: "x' \<in> enc (w, I')" "wf_interp_for_formula (w, I') \<phi>" "length I' = Suc n" "(w, I') \<Turnstile> \<phi>"
        unfolding lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_def by blast
     moreover then obtain I\<^sub>0 I where "I' = I\<^sub>0 # I" by (cases I') auto
     moreover with FExists(2) *(2) obtain p where "I\<^sub>0 = Inl p"
-      by (auto simp: nth_Cons' split: sum.splits split_if_asm)
+      by (auto simp: nth_Cons' split: sum.splits if_split_asm)
     ultimately have "x \<in> enc (w, I)" "wf_interp_for_formula (w, I) (FExists \<phi>)" "length I = n"
       "(w, I) \<Turnstile> FExists \<phi>" using FExists(2) fin_cut_same_tl[OF ex_Loop_stream_enc, of "Inl p # I" w]
-      unfolding x by (auto simp add: \<pi>_def nth_Cons' split: split_if_asm)
+      unfolding x by (auto simp add: \<pi>_def nth_Cons' split: if_split_asm)
     thus "x \<in> lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S n (FExists \<phi>)" unfolding lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_def by (auto intro!: exI[of _ I])
   qed
 next
@@ -1136,16 +1136,16 @@ next
       by (auto simp: lang_quot SAMEQUOT_def simp del: o_apply enc.simps)
     with FEXISTS(2) have "x' \<in> lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S (Suc n) \<phi>"
       by (intro subsetD[OF equalityD2[OF FEXISTS(1)], of "Suc n" x'])
-        (auto split: split_if_asm sum.splits)
+        (auto split: if_split_asm sum.splits)
     then obtain w I' where
       *: "x' \<in> enc (w, I')" "wf_interp_for_formula (w, I') \<phi>" "length I' = Suc n" "(w, I') \<Turnstile> \<phi>"
        unfolding lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_def by blast
     moreover then obtain I\<^sub>0 I where "I' = I\<^sub>0 # I" by (cases I') auto
     moreover with FEXISTS(2) *(2) obtain P where "I\<^sub>0 = Inr P" "finite P"
-      by (auto simp: nth_Cons' split: sum.splits split_if_asm)
+      by (auto simp: nth_Cons' split: sum.splits if_split_asm)
     ultimately have "x \<in> enc (w, I)" "wf_interp_for_formula (w, I) (FEXISTS \<phi>)" "length I = n"
       "(w, I) \<Turnstile> FEXISTS \<phi>"  using FEXISTS(2) fin_cut_same_tl[OF ex_Loop_stream_enc, of "Inr P # I"]
-      unfolding x by (auto simp: nth_Cons' \<pi>_def split: split_if_asm)
+      unfolding x by (auto simp: nth_Cons' \<pi>_def split: if_split_asm)
     thus "x \<in> lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S n (FEXISTS \<phi>)" unfolding lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_def by (auto intro!: exI[of _ I])
   qed
 qed

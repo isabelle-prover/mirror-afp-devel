@@ -64,7 +64,7 @@ lemma [iff]: "(s -IF b THEN c ELSE d\<rightarrow> t) =
               (s -if b s then c else d\<rightarrow> t)"
 apply(rule iffI)
  apply(auto elim: exec.cases intro:exec.intros)
-apply(auto intro:exec.intros split:split_if_asm)
+apply(auto intro:exec.intros split:if_split_asm)
 done
 
 lemma [iff]: "(s -CALL p\<rightarrow> t) = (s -body p\<rightarrow> t)"

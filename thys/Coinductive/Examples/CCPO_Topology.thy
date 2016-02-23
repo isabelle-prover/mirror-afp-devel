@@ -87,7 +87,7 @@ lemma tendsto_id_at'[simp, intro]: "((\<lambda>x. x) \<longlongrightarrow> x) (a
   by (simp add: at'_def topological_tendstoI eventually_principal tendsto_ident_at)
 
 lemma cont_at': "(f \<longlongrightarrow> f x) (at' x) \<longleftrightarrow> f \<midarrow>x\<rightarrow> f x"
-  using at_eq_bot_iff[of x] by (auto split: split_if_asm intro!: topological_tendstoI simp: eventually_principal at'_def)
+  using at_eq_bot_iff[of x] by (auto split: if_split_asm intro!: topological_tendstoI simp: eventually_principal at'_def)
 
 subsection {* The type class @{text ccpo_topology} *}
 

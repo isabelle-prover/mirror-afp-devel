@@ -264,7 +264,7 @@ obtains
   using assms
 proof (induct i arbitrary: X)
   case (Suc i) thus ?case
-    by (cases "P_appr optns X0 h X") (auto simp: split: split_if_asm )
+    by (cases "P_appr optns X0 h X") (auto simp: split: if_split_asm )
 qed simp
 
 lemma extend_appr_ivl:
@@ -1101,7 +1101,7 @@ next
   show ?case
     using Cons
     by (cases x) (fastforce simp: min_def max_def enclosure_Cons_iff
-      split: split_if_asm option.split
+      split: if_split_asm option.split
       intro: inf_cases sup_cases inf.coboundedI1 inf.coboundedI2 le_infI2 le_supI1 le_supI2
         sup.coboundedI1 sup.coboundedI2)
 qed

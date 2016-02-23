@@ -58,7 +58,7 @@ next
   from snoc.IH show ?case
   proof(cases "v \<in> w_values P vs0 obs (ad, al)")
     case False thus ?thesis using `v \<in> w_values P vs0 (obs @ [ob]) (ad, al)`
-      by(cases ob rule: w_value_cases)(auto 4 4 intro: action_loc_aux_intros split: split_if_asm simp add: addr_locs_def split: htype.split_asm)
+      by(cases ob rule: w_value_cases)(auto 4 4 intro: action_loc_aux_intros split: if_split_asm simp add: addr_locs_def split: htype.split_asm)
   qed fastforce
 qed
 
@@ -90,7 +90,7 @@ apply(auto simp add: split_beta)
 done
 
 lemma w_value_mono: "vs0 adal \<subseteq> w_value P vs0 ob adal"
-by(cases ob rule: w_value_cases)(auto split: split_if_asm simp add: split_beta)
+by(cases ob rule: w_value_cases)(auto split: if_split_asm simp add: split_beta)
 
 lemma w_values_mono: "vs0 adal \<subseteq> w_values P vs0 obs adal"
 by(induct obs rule: rev_induct)(auto del: subsetI intro: w_value_mono subset_trans)

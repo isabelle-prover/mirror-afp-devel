@@ -78,7 +78,7 @@ lemma vangle_eq_0D:
 proof -
   from assms have "u \<bullet> v = norm u * norm v"
     using arccos_eq_iff[of "(u \<bullet> v) / (norm u * norm v)" 1] Cauchy_Schwarz_ineq2[of u v]
-    by (fastforce simp: vangle_def split: split_if_asm)
+    by (fastforce simp: vangle_def split: if_split_asm)
   thus ?thesis by (subst (asm) norm_cauchy_schwarz_eq) simp_all
 qed
 
@@ -88,7 +88,7 @@ lemma vangle_eq_piD:
 proof -
   from assms have "(-u) \<bullet> v = norm (-u) * norm v"
     using arccos_eq_iff[of "(u \<bullet> v) / (norm u * norm v)" "-1"] Cauchy_Schwarz_ineq2[of u v]
-    by (simp add: field_simps vangle_def split: split_if_asm)
+    by (simp add: field_simps vangle_def split: if_split_asm)
   thus ?thesis by (subst (asm) norm_cauchy_schwarz_eq) simp_all
 qed
 

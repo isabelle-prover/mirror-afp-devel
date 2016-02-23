@@ -603,7 +603,7 @@ proof -
   have gg: "g = ?g" unfolding g
   proof(rule the_equality)
     from f y bfin show "?the f ?g"
-      by(auto)(simp add: restrict_map_def ran_def split: split_if_asm)
+      by(auto)(simp add: restrict_map_def ran_def split: if_split_asm)
   next
     fix g'
     assume "?the f g'"
@@ -1349,7 +1349,7 @@ next
   case (update f a b)
   have "{x. (finfun_dom f(\<^sup>f a := b))\<^sub>f x} =
     (if b = finfun_default f then {x. (finfun_dom f)\<^sub>f x} - {a} else insert a {x. (finfun_dom f)\<^sub>f x})"
-    by (auto simp add: finfun_upd_apply split: split_if_asm)
+    by (auto simp add: finfun_upd_apply split: if_split_asm)
   thus ?case using update by simp
 qed
 
@@ -1415,7 +1415,7 @@ proof(subst finfun_to_list_def, rule the_equality)
         have "set (insort_insert a xs) = insert a (set xs)" by(simp add: set_insort_insert)
         also note eq also
         have "insert a {x. (finfun_dom f(\<^sup>f a := b))\<^sub>f x} = {x. (finfun_dom f)\<^sub>f x}" using True
-          by(auto simp add: finfun_upd_apply split: split_if_asm)
+          by(auto simp add: finfun_upd_apply split: if_split_asm)
         finally show 1: "set (insort_insert a xs) = {x. (finfun_dom f)\<^sub>f x} \<and> sorted (insort_insert a xs) \<and> distinct (insort_insert a xs)"
           by(simp add: sorted_insort_insert distinct_insort_insert)
 
@@ -1458,7 +1458,7 @@ proof(subst finfun_to_list_def, rule the_equality)
         have "set (remove1 a xs) = set xs - {a}" by simp
         also note eq also
         have "{x. (finfun_dom f(\<^sup>f a := b))\<^sub>f x} - {a} = {x. (finfun_dom f)\<^sub>f x}" using False
-          by(auto simp add: finfun_upd_apply split: split_if_asm)
+          by(auto simp add: finfun_upd_apply split: if_split_asm)
         finally show 1: "set (remove1 a xs) = {x. (finfun_dom f)\<^sub>f x} \<and> sorted (remove1 a xs) \<and> distinct (remove1 a xs)"
           by(simp add: sorted_remove1)
         
@@ -1470,7 +1470,7 @@ proof(subst finfun_to_list_def, rule the_equality)
         by (simp add: insort_insert_insort insort_remove1)
     qed
   qed
-qed (auto simp add: distinct_finfun_to_list sorted_finfun_to_list sorted_remove1 set_insort_insert sorted_insort_insert distinct_insort_insert finfun_upd_apply split: split_if_asm)
+qed (auto simp add: distinct_finfun_to_list sorted_finfun_to_list sorted_remove1 set_insort_insert sorted_insort_insert distinct_insort_insert finfun_upd_apply split: if_split_asm)
 
 lemma finfun_to_list_update_code [code]:
   "finfun_to_list (finfun_update_code f a b) = 

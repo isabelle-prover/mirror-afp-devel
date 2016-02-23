@@ -278,7 +278,7 @@ proof(clarsimp  simp add: PO_rhoare_defs New_Algo_trans_step_def all_conj_distri
         by(auto simp add: next2_def dec_f_def Q'_votes_v_def Let_def majs_def)
       have mru_vote: "\<forall>q\<in>Q. mru_vote (sc q) = Some (three_phase r, v)"  using vote \<mu>[THEN spec, of p]
         by(fastforce simp add: get_msgs_benign send2_def sc_r_votes_def restrict_map_def 
-          split: option.split_asm split_if_asm)
+          split: option.split_asm if_split_asm)
       hence "dom sc_r_votes \<in> majs"
         by(auto intro!:  majorities.mono_quorum[OF Q] simp add: sc_r_votes_def)
       moreover have "v \<in> ran sc_r_votes" using Q[THEN majorities.quorum_non_empty] mru_vote

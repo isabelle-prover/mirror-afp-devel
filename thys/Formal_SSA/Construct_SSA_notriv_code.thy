@@ -216,7 +216,7 @@ begin
     assumes "ssa.redundant g"
     shows "phis' g = Mapping.lookup (phis'_code g (chooseNext' g))"
   unfolding phis'_def [abs_def] phis'_code_def [abs_def]
-  by (auto simp: Mapping_lookup_map_values substNext_code_correct [OF assms] split: split_if Option.bind_split)
+  by (auto simp: Mapping_lookup_map_values substNext_code_correct [OF assms] split: if_split Option.bind_split)
 
   lemma redundant_ign[simp]: "uninst_code.ssa.redundant_code (const p) g = uninst_code.ssa.redundant_code (phis(g:=p)) g"
   unfolding uninst_code.ssa.redundant_code_def uninst_code.ssa.trivial_code_def[abs_def] CFG_SSA_wf_base.CFG_SSA_wf_defs uninst_code.ssa.trivial_phis_def

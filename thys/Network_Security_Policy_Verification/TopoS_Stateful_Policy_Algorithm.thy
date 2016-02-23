@@ -282,7 +282,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
         next
         case (Cons e Es)
           from Cons.IH[OF Cons.prems(1) Cons.prems(2)] Cons.prems(3) Cons.prems(4) Cons.prems(5) Cons.prems(6)
-          show ?case by(simp add: filternew_flows_state_alt2 split: split_if split_if_asm)
+          show ?case by(simp add: filternew_flows_state_alt2 split: if_split if_split_asm)
       qed
 
     

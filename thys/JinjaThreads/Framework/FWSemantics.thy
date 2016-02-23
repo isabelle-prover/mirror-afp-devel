@@ -336,13 +336,13 @@ lemma redT_ex_new_thread:
   assumes "s -t'\<triangleright>ta\<rightarrow> s'" "wset_thread_ok (wset s) (thr s)" "thr s' t = \<lfloor>(x, w)\<rfloor>" "thr s t = None"
   shows "\<exists>m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<and> w = no_wait_locks"
 using assms
-by cases (fastforce split: split_if_asm dest: wset_thread_okD redT_updTs_new_thread)+
+by cases (fastforce split: if_split_asm dest: wset_thread_okD redT_updTs_new_thread)+
 
 lemma redT_ex_new_thread':
   assumes "s -t'\<triangleright>ta\<rightarrow> s'" "thr s' t = \<lfloor>(x, w)\<rfloor>" "thr s t = None"
   shows "\<exists>m x. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
 using assms
-by(cases)(fastforce split: split_if_asm dest!: redT_updTs_new_thread)+
+by(cases)(fastforce split: if_split_asm dest!: redT_updTs_new_thread)+
 
 definition deterministic :: "('l,'t,'x,'m,'w) state set \<Rightarrow> bool"
 where
@@ -400,7 +400,7 @@ lemma redT_new_thread:
   shows "NewThread t x (shr s') \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<and> w = no_wait_locks"
 using assms
 apply(cases rule: redT_elims)
-apply(auto split: split_if_asm del: conjI elim!: rtrancl3p_cases)
+apply(auto split: if_split_asm del: conjI elim!: rtrancl3p_cases)
 apply(drule (2) redT_updTs_new_thread)
 apply(auto dest: new_thread_memory)
 done

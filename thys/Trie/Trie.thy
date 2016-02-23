@@ -287,16 +287,16 @@ next
       proof(cases "k' = k")
         case False
         from Some Cons "2.prems"(1) have "AList.delete_aux k ts = []"
-          by(clarsimp simp add: Let_def split: split_if_asm)
+          by(clarsimp simp add: Let_def split: if_split_asm)
         with False have "map_of ts k' = None"
           by(cases "map_of ts k'")(auto dest: map_of_SomeD simp add: delete_aux_eq_Nil_conv)
         thus ?thesis using False Some Cons "2.prems"(1) by simp
       next
         case True
         with Some "2.prems" Cons show ?thesis
-          by(clarsimp simp add: "2.hyps" Let_def is_empty_conv split: split_if_asm)
+          by(clarsimp simp add: "2.hyps" Let_def is_empty_conv split: if_split_asm)
       qed
-    qed(insert Some "2.prems"(1), simp add: Let_def split: split_if_asm)
+    qed(insert Some "2.prems"(1), simp add: Let_def split: if_split_asm)
   next
     case None thus ?thesis using "2.prems"(1) by simp
   qed
@@ -368,7 +368,7 @@ next
           by (auto 
             simp del: map_of_eq_Some_iff
             simp add: map_of_delete_aux 
-            split: split_if_asm)
+            split: if_split_asm)
         with "2.prems" have "\<not> is_empty_trie t' \<and> invar_trie t'" by auto }
       with "2.prems" have "invar_trie (Trie vo (AList.delete_aux k ts))" by auto
       thus ?thesis using True Some by(simp)
@@ -423,7 +423,7 @@ unfolding dom_def
 apply(rule sym)
 apply(safe)
   apply simp
- apply(clarsimp simp add: split_if_asm)
+ apply(clarsimp simp add: if_split_asm)
 apply(case_tac x)
 apply(auto split: option.split_asm)
 done

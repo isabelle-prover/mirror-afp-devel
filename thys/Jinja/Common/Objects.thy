@@ -156,7 +156,7 @@ where "gen_new_Addr h n \<equiv> if \<exists>a. a \<ge> n \<and> h a = None then
 
 lemma new_Addr_code_code [code]:
   "new_Addr h = gen_new_Addr h 0"
-by(simp add: new_Addr_def gen_new_Addr_def split del: split_if cong: if_cong)
+by(simp add: new_Addr_def gen_new_Addr_def split del: if_split cong: if_cong)
 
 lemma gen_new_Addr_code [code]:
   "gen_new_Addr h n = (if h n = None then Some n else gen_new_Addr h (Suc n))"

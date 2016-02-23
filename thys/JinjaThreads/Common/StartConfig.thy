@@ -137,7 +137,7 @@ lemma addr_of_sys_xcpt_start_addr:
   "\<lbrakk> start_heap_ok; C \<in> sys_xcpts \<rbrakk> \<Longrightarrow> addr_of_sys_xcpt C \<in> set start_addrs"
 unfolding start_heap_ok_def start_heap_data_def initialization_list_def sys_xcpts_list_def 
   preallocated_def start_heap_def start_addrs_def
-apply(simp split: prod.split_asm split_if_asm add: create_initial_object_simps)
+apply(simp split: prod.split_asm if_split_asm add: create_initial_object_simps)
 apply(erule sys_xcpts_cases)
 apply(simp_all add: addr_of_sys_xcpt_def start_addrs_def start_heap_data_def initialization_list_def sys_xcpts_list_def create_initial_object_simps)
 done
@@ -191,7 +191,7 @@ lemma preallocated_start_heap:
   "\<lbrakk> start_heap_ok; wf_syscls P \<rbrakk> \<Longrightarrow> preallocated start_heap"
 unfolding start_heap_ok_def start_heap_data_def initialization_list_def sys_xcpts_list_def 
   preallocated_def start_heap_def start_addrs_def
-apply(clarsimp split: prod.split_asm split_if_asm simp add: create_initial_object_simps)
+apply(clarsimp split: prod.split_asm if_split_asm simp add: create_initial_object_simps)
 apply(erule not_empty_pairE)+
 apply(drule (1) allocate_Eps)
 apply(drule (1) allocate_Eps)
@@ -217,7 +217,7 @@ apply(frule allocate_SomeD, simp add: wf_syscls_is_class_xcpt, frule hext_alloca
 apply(frule allocate_SomeD, simp add: wf_syscls_is_class_xcpt, frule hext_allocate, rotate_tac 1)
 apply(frule allocate_SomeD, simp add: wf_syscls_is_class_xcpt, frule hext_allocate, rotate_tac 1)
 apply(erule sys_xcpts_cases)
-apply(simp_all add: addr_of_sys_xcpt_def initialization_list_def sys_xcpts_list_def sys_xcpts_neqs Thread_neq_sys_xcpts start_heap_data_def start_addrs_def create_initial_object_simps allocate_not_emptyI split del: split_if)
+apply(simp_all add: addr_of_sys_xcpt_def initialization_list_def sys_xcpts_list_def sys_xcpts_neqs Thread_neq_sys_xcpts start_heap_data_def start_addrs_def create_initial_object_simps allocate_not_emptyI split del: if_split)
 apply(assumption|erule typeof_addr_hext_mono)+
 done
 
@@ -225,7 +225,7 @@ lemma start_tid_start_addrs:
   "\<lbrakk> wf_syscls P; start_heap_ok \<rbrakk> \<Longrightarrow> thread_id2addr start_tid \<in> set start_addrs"
 unfolding start_heap_ok_def start_heap_data_def initialization_list_def sys_xcpts_list_def 
   preallocated_def start_heap_def start_addrs_def
-apply(simp split: prod.split_asm split_if_asm add: create_initial_object_simps addr_of_sys_xcpt_def start_addrs_def start_tid_def start_heap_data_def initialization_list_def sys_xcpts_list_def)
+apply(simp split: prod.split_asm if_split_asm add: create_initial_object_simps addr_of_sys_xcpt_def start_addrs_def start_tid_def start_heap_data_def initialization_list_def sys_xcpts_list_def)
 apply(erule not_empty_pairE)+
 apply(drule (1) allocate_Eps)
 apply(rotate_tac -1)
@@ -331,7 +331,7 @@ proof -
         show ?case
         proof(cases "b \<and> allocate h (Class_type x) \<noteq> {}")
           case False thus ?thesis
-            using inv Ca len by(auto simp add: create_initial_object_simps zip_append1 split: split_if_asm)
+            using inv Ca len by(auto simp add: create_initial_object_simps zip_append1 split: if_split_asm)
         next
           case [simp]: True
           obtain h' a' where h'a': "(SOME ha. ha \<in> allocate h (Class_type x)) = (h', a')"

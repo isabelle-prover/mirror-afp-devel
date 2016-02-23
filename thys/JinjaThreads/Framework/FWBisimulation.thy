@@ -231,7 +231,7 @@ next
   moreover
   { fix t
     from `nta_bisim bisim ta1 ta2` have "redT_updT' TS1 ta1 t = None \<longleftrightarrow> redT_updT' TS2 ta2 t = None"
-      by(cases ta1, auto split: split_if_asm simp add: eqNone) }
+      by(cases ta1, auto split: if_split_asm simp add: eqNone) }
   ultimately have "thread_oks (redT_updT' TS1 ta1) TAS1 \<longleftrightarrow> thread_oks (redT_updT' TS2 ta2) TAS2"
     by -(rule IH, auto)
   moreover from `nta_bisim bisim ta1 ta2` fti have "thread_ok TS1 ta1 = thread_ok TS2 ta2" by(cases ta1, auto)
@@ -584,11 +584,11 @@ proof(cases ct)
   proof(cases "thr s1 t'")
     case None with red ct Join show ?thesis
       by(fastforce elim!: r1.mthr.silent_move.cases r1.redT.cases r1.m\<tau>move.cases rtrancl3p_cases 
-                  dest: r1.silent_tl split: split_if_asm)
+                  dest: r1.silent_tl split: if_split_asm)
   next
     case (Some a) with red ct Join show ?thesis
       by(fastforce elim!: r1.mthr.silent_move.cases r1.redT.cases r1.m\<tau>move.cases rtrancl3p_cases
-                  dest: r1.silent_tl r1.final_no_red split: split_if_asm simp add: redT_updWs_def)
+                  dest: r1.silent_tl r1.final_no_red split: if_split_asm simp add: redT_updWs_def)
   qed
 next
   case Yield thus ?thesis by simp
@@ -924,7 +924,7 @@ proof -
     moreover from `insert t A = r1.final_threads s1` have "r1.final_thread s1 t" by auto
     hence "wset s1 t = None" by(auto simp add: r1.final_thread_def)
     with `s1 \<approx>m s2` have "s1' \<approx>m s2'" unfolding s1'_def s2'_def
-      by(auto simp add: mbisim_def intro: tbisim_NoneI intro!: wset_thread_okI dest: wset_thread_okD split: split_if_asm)
+      by(auto simp add: mbisim_def intro: tbisim_NoneI intro!: wset_thread_okI dest: wset_thread_okD split: if_split_asm)
     ultimately have "\<exists>s2''. r2.mthr.silent_moves s2' s2'' \<and> s1' \<approx>m s2'' \<and> r1.final_threads s1' \<subseteq> r2.final_threads s2'' \<and> shr s2'' = shr s2'" by(rule insert)
     then obtain s2'' where reds: "r2.mthr.silent_moves s2' s2''" 
       and "s1' \<approx>m s2''" and fin: "\<And>t. r1.final_thread s1' t \<Longrightarrow> r2.final_thread s2'' t" and "shr s2'' = shr s2'" by blast
@@ -958,13 +958,13 @@ proof -
     from bisim r2.red_rtrancl_\<tau>_heapD_inv[OF red] have "m2' = shr s2" by auto
     hence "s1 \<approx>m (redT_upd_\<epsilon> ?s2'' t x2' m2')"
       using `s1' \<approx>m s2''` `s1 \<approx>m s2` tst1 tst2 `shr ?s2'' = shr s2` bisim' `shr s2'' = shr s2'` `wset s2 t = None`
-      unfolding s1'_def s2'_def by(auto simp add: mbisim_def redT_updLns_def split: split_if_asm intro: tbisim_SomeI)
+      unfolding s1'_def s2'_def by(auto simp add: mbisim_def redT_updLns_def split: if_split_asm intro: tbisim_SomeI)
     moreover { 
       fix t'
       assume "r1.final_thread s1 t'"
       with fin[of t'] `final2 x2'` tst2 `ln = no_wait_locks` `wset s2 t = None` `s1' \<approx>m s2''` `s1 \<approx>m s2`
       have "r2.final_thread (redT_upd_\<epsilon> ?s2'' t x2' m2') t'" unfolding s1'_def
-        by(fastforce split: split_if_asm simp add: r2.final_thread_def r1.final_thread_def redT_updLns_def finfun_Diag_const2 o_def mbisim_def)
+        by(fastforce split: if_split_asm simp add: r2.final_thread_def r1.final_thread_def redT_updLns_def finfun_Diag_const2 o_def mbisim_def)
     }
     moreover have "shr (redT_upd_\<epsilon> ?s2'' t x2' m2') = shr s2" using `m2' = shr s2` by simp
     ultimately show ?case by blast
@@ -1102,7 +1102,7 @@ next
   from interrupts show "interrupts s1' = interrupts s2'" .
 next
   from wsts s1' s2' wset show "wset_thread_ok (wset s1') (thr s1')"
-    by(fastforce intro!: wset_thread_okI split: split_if_asm dest: redT_updTs_None wset_thread_okD redT_updWs_None_implies_None)
+    by(fastforce intro!: wset_thread_okI split: if_split_asm dest: redT_updTs_None wset_thread_okD redT_updWs_None_implies_None)
 next
   fix T
   assume "thr s1' T = None"
@@ -1111,7 +1111,7 @@ next
     by(auto simp add: tbisim_def)
   hence "(redT_updTs (thr s1) \<lbrace>ta1\<rbrace>\<^bsub>t\<^esub> T = None) = (redT_updTs (thr s2) \<lbrace>ta2\<rbrace>\<^bsub>t\<^esub> T = None)"
     using tasim by -(rule redT_updTs_nta_bisim_inv, simp_all add: ta_bisim_def)
-  ultimately show "thr s2' T = None" using s2' s1' by(auto split: split_if_asm)
+  ultimately show "thr s2' T = None" using s2' s1' by(auto split: if_split_asm)
 next
   fix T X1 LN
   assume tsT: "thr s1' T = \<lfloor>(X1, LN)\<rfloor>"
@@ -1267,7 +1267,7 @@ proof -
       with mbisim tst tst' have "x1 \<approx>w x2"
         by(auto dest: mbisim_thrD1)
       from aoe Some have wakeup: "Notified \<in> set \<lbrace>ta1\<rbrace>\<^bsub>w\<^esub> \<or> WokenUp \<in> set \<lbrace>ta1\<rbrace>\<^bsub>w\<^esub>"
-        by(auto simp add: wset_actions_ok_def split: split_if_asm)
+        by(auto simp add: wset_actions_ok_def split: if_split_asm)
       from simulation_Wakeup1[OF bisim `x1 \<approx>w x2` red this]
       obtain ta2 x2' m2' where red2: "t \<turnstile> (x2, m2) -2-ta2\<rightarrow> (x2', m2')"
         and bisim': "t \<turnstile> (x1', M1') \<approx> (x2', m2')"
@@ -1359,7 +1359,7 @@ proof -
       from s1' show "interrupts s1' = interrupts ?s2'" by auto
     next
       fix t' assume "thr s1' t' = None"
-      with s1' have "thr s1 t' = None" by(auto split: split_if_asm)
+      with s1' have "thr s1 t' = None" by(auto split: if_split_asm)
       with mbisim_thrNone_eq[OF mbisim] have "ts2 t' = None" by simp
       with tst' show "thr ?s2' t' = None" by auto
     next
@@ -1526,7 +1526,7 @@ proof -
     next
       fix t'
       assume "thr s1' t' = None"
-      hence "ts1 t' = None" by(auto split: split_if_asm)
+      hence "ts1 t' = None" by(auto split: if_split_asm)
       with mbisim_thrNone_eq[OF mbisim] have "ts2 t' = None" by simp
       with tst' show "thr ?s2' t' = None" by auto
     next

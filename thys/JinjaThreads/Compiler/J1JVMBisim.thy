@@ -467,7 +467,7 @@ apply(induct e and es rule: call.induct calls.induct)
 apply(auto intro: bisim1_bisims1.intros simp add: nat_fun_sum_eq_conv)
 apply(rename_tac option a)
 apply(case_tac option)
-apply(auto intro: bisim1_bisims1.intros split: split_if_asm)
+apply(auto intro: bisim1_bisims1.intros split: if_split_asm)
 done
 
 lemma bisims1_lengthD: "P, es, h \<turnstile> (es', xs) [\<leftrightarrow>] s \<Longrightarrow> length es = length es'"
@@ -985,7 +985,7 @@ apply(induct e and es arbitrary: n xs and n xs rule: call.induct calls.induct)
 apply(auto intro: bisim1'_bisims1'.intros simp add: nat_fun_sum_eq_conv)
 apply(rename_tac option a b c)
 apply(case_tac option)
-apply(auto intro: bisim1'_bisims1'.intros simp add: fun_eq_iff split: split_if_asm)
+apply(auto intro: bisim1'_bisims1'.intros simp add: fun_eq_iff split: if_split_asm)
 done
 
 lemma bisim1_imp_bisim1': "P, e, h \<turnstile> exs \<leftrightarrow> s \<Longrightarrow> P, e, n, h \<turnstile>' exs \<leftrightarrow> s"
@@ -1078,7 +1078,7 @@ proof(induct "(e', xs)" "(stk, loc, length (compE2 e), xcp)"
     "stk = rev vs" "length vs = length es" "is_vals es' \<longrightarrow> es' = map Val vs \<and> xs = loc" by auto
   thus ?case
     by(clarsimp)(rule_tac x="v#vs" in exI, auto)
-qed(simp_all (no_asm_use), (fastforce dest: bisim1_pc_length_compE2 bisims1_pc_length_compEs2 split: bop.split_asm split_if_asm)+)
+qed(simp_all (no_asm_use), (fastforce dest: bisim1_pc_length_compE2 bisims1_pc_length_compEs2 split: bop.split_asm if_split_asm)+)
 
 corollary bisim1_call_pcD: "\<lbrakk> P,e,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp); call1 e' = \<lfloor>aMvs\<rfloor> \<rbrakk> \<Longrightarrow> pc < length (compE2 e)"
   and bisims1_calls_pcD: "\<lbrakk> P,es,h \<turnstile> (es', xs) [\<leftrightarrow>] (stk, loc, pc, xcp); calls1 es' = \<lfloor>aMvs\<rfloor> \<rbrakk> \<Longrightarrow> pc < length (compEs2 es)"
@@ -1169,19 +1169,19 @@ proof(induct "(stk, loc, pc, None :: 'addr option)" and "(stk, loc, pc, None :: 
     arbitrary: stk loc pc and stk loc pc rule: bisim1_bisims1.inducts)
   case bisim1Call1
   thus ?case
-    apply(clarsimp simp add: nth_append append_eq_append_conv2 neq_Nil_conv split: split_if_asm)
+    apply(clarsimp simp add: nth_append append_eq_append_conv2 neq_Nil_conv split: if_split_asm)
     apply(drule bisim1_pc_length_compE2, clarsimp simp add: neq_Nil_conv nth_append)
     apply(frule bisim1_pc_length_compE2, clarsimp)
     apply(drule bisim1_pc_length_compE2D, fastforce)
     done
 next
   case bisim1CallParams thus ?case
-    apply(clarsimp simp add: nth_append append_eq_Cons_conv split: split_if_asm)
+    apply(clarsimp simp add: nth_append append_eq_Cons_conv split: if_split_asm)
     apply(fastforce simp add: append_eq_append_conv2 Cons_eq_append_conv)
     apply(frule bisims1_pc_length_compEs2, clarsimp)
     apply(drule bisims1_pc_length_compEs2D, fastforce simp add: append_eq_append_conv2)
     done
-qed(fastforce simp add: nth_append append_eq_append_conv2 neq_Nil_conv split: split_if_asm bop.split_asm dest: bisim1_pc_length_compE2 bisims1_pc_length_compEs2)+
+qed(fastforce simp add: nth_append append_eq_append_conv2 neq_Nil_conv split: if_split_asm bop.split_asm dest: bisim1_pc_length_compE2 bisims1_pc_length_compEs2)+
 
 lemma fixes P :: "'addr J1_prog"
   shows bisim1_call_xcpNone: "P,e,h \<turnstile> (e',xs) \<leftrightarrow> (stk,loc,pc,\<lfloor>a\<rfloor>) \<Longrightarrow> call1 e' = None"
@@ -1654,7 +1654,7 @@ proof(induct e "n :: nat" e' xs stk loc pc "None :: 'addr option"
   qed
 next
   case bisim1BinOp2 thus ?case
-    by(auto split: split_if_asm bop.split_asm dest: bisim1_bisims1.bisim1BinOp2)
+    by(auto split: if_split_asm bop.split_asm dest: bisim1_bisims1.bisim1BinOp2)
 next
   case (bisim1AAcc1 A n a' xs stk loc pc i)
   note IH1 = `\<lbrakk>call1 a' = \<lfloor>(a, M, vs)\<rfloor>; compE2 A ! pc = Invoke M n0; pc < length (compE2 A) \<rbrakk>
@@ -1682,7 +1682,7 @@ next
   qed
 next
   case bisim1AAcc2 thus ?case
-    by(auto split: split_if_asm dest: bisim1_bisims1.bisim1AAcc2)
+    by(auto split: if_split_asm dest: bisim1_bisims1.bisim1AAcc2)
 next
   case (bisim1AAss1 A n a' xs stk loc pc i e)
   note IH1 = `\<lbrakk>call1 a' = \<lfloor>(a, M, vs)\<rfloor>; compE2 A ! pc = Invoke M n0; pc < length (compE2 A) \<rbrakk>
@@ -1735,7 +1735,7 @@ next
   qed
 next
   case bisim1AAss3 thus ?case
-    by(auto split: split_if_asm nat.split_asm simp add: nth_Cons dest: bisim1_bisims1.bisim1AAss3)
+    by(auto split: if_split_asm nat.split_asm simp add: nth_Cons dest: bisim1_bisims1.bisim1AAss3)
 next
   case (bisim1FAss1 e n e' xs stk loc pc e2 F D)
   note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e ! pc = Invoke M n0; pc < length (compE2 e) \<rbrakk>
@@ -1763,7 +1763,7 @@ next
   qed
 next
   case bisim1FAss2 thus ?case
-    by(auto split: split_if_asm nat.split_asm simp add: nth_Cons dest: bisim1_bisims1.bisim1FAss2)
+    by(auto split: if_split_asm nat.split_asm simp add: nth_Cons dest: bisim1_bisims1.bisim1FAss2)
 next
   case (bisim1Call1 obj n obj' xs stk loc pc ps M')
   note IH1 = `\<lbrakk>call1 obj' = \<lfloor>(a, M, vs)\<rfloor>; compE2 obj ! pc = Invoke M n0;
@@ -1790,7 +1790,7 @@ next
     with bisim1 CallParams have [simp]: "stk = [v]" "loc = xs" by(auto dest: bisim1_Val_length_compE2D)
     from IH2[of loc] CallParams ins
     show ?thesis
-      apply(clarsimp simp add: compEs2_map_Val is_vals_conv split: split_if_asm)
+      apply(clarsimp simp add: compEs2_map_Val is_vals_conv split: if_split_asm)
       apply(drule bisim1_bisims1.bisim1CallParams)
       apply(auto simp add: neq_Nil_conv)
       done
@@ -1801,7 +1801,7 @@ next
       assume pc: "pc < length (compE2 obj)"
       with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
     ultimately have [simp]: "pc = length (compE2 obj)" by(cases "pc < length (compE2 obj)") auto
-    with ins have [simp]: "vs = []" by(auto simp add: nth_append compEs2_map_Val split: split_if_asm)
+    with ins have [simp]: "vs = []" by(auto simp add: nth_append compEs2_map_Val split: if_split_asm)
     from bisim1 have [simp]: "stk = [Addr a]" "xs = loc" by(auto dest: bisim1_Val_length_compE2D)
     from ins show ?thesis by(auto intro: bisim1CallThrow[of "[]" "[]", simplified])
   qed
@@ -1820,7 +1820,7 @@ next
     hence [simp]: "v' = v" and call': "calls1 ps' = \<lfloor>(a, M, vs)\<rfloor>" by auto
     from bisim2 call' have "pc < length (compEs2 ps)" by(auto intro: bisims1_calls_pcD)
     with IH2 CallParams ins show ?thesis
-      by(auto simp add: is_vals_conv split: split_if_asm intro: bisim1_bisims1.bisim1CallParams)
+      by(auto simp add: is_vals_conv split: if_split_asm intro: bisim1_bisims1.bisim1CallParams)
   next
     case Call
     hence [simp]: "v = Addr a" "M' = M" "ps' = map Val vs" by auto
@@ -1859,9 +1859,9 @@ next
     with bisim1 have [simp]: "stk = [v]" "loc = xs" by(auto dest: bisim1_Val_length_compE2D)
     from call have "es \<noteq> []" by(cases es) simp_all
     with IH2[of loc] call ins
-    show ?thesis by(auto split: split_if_asm dest: bisims1List2)
+    show ?thesis by(auto split: if_split_asm dest: bisims1List2)
   qed
-qed(auto split: split_if_asm bop.split_asm intro: bisim1_bisims1.intros dest: bisim1_pc_length_compE2)
+qed(auto split: if_split_asm bop.split_asm intro: bisim1_bisims1.intros dest: bisim1_pc_length_compE2)
 
 lemma bisim1_max_stack: "P,e,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp) \<Longrightarrow> length stk \<le> max_stack e"
   and bisims1_max_stacks: "P,es,h \<turnstile> (es', xs) [\<leftrightarrow>] (stk, loc, pc, xcp) \<Longrightarrow> length stk \<le> max_stacks es"
@@ -2452,13 +2452,13 @@ next
   case bisim1New thus ?case by simp
 next
   case bisim1NewArray thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1NewArray)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1NewArray)
 next
   case bisim1Cast thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Cast)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Cast)
 next
   case bisim1InstanceOf thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1InstanceOf)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1InstanceOf)
 next
   case bisim1Val thus ?case by simp
 next
@@ -2497,7 +2497,7 @@ next
   from IH2 ins' pc call show ?case by(auto dest: bisim1_bisims1.bisim1BinOp2)
 next
   case bisim1LAss1 thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1LAss1)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1LAss1)
 next
   case bisim1LAss2 thus ?case by simp
 next
@@ -2591,10 +2591,10 @@ next
   case bisim1AAss4 thus ?case by simp
 next
   case bisim1ALength thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1ALength)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1ALength)
 next
   case bisim1FAcc thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1FAcc)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1FAcc)
 next
   case (bisim1FAss1 e1 e' xs stk loc pc F D e2)
   note IH1 = `\<lbrakk>call1 e' = \<lfloor>(a, M, vs)\<rfloor>; compE2 e1 ! pc = Invoke M n0\<rbrakk> \<Longrightarrow> ?concl e1 n e' xs pc stk loc`
@@ -2650,8 +2650,8 @@ next
       with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
     ultimately have [simp]: "pc = length (compE2 obj)" by(cases "pc < length (compE2 obj)") auto
     with ins have [simp]: "ps = []" "M' = M"
-      by(auto simp add: nth_append split: split_if_asm)(auto simp add: neq_Nil_conv nth_append)
-    from ins call have [simp]: "vs = []" by(auto split: split_if_asm)
+      by(auto simp add: nth_append split: if_split_asm)(auto simp add: neq_Nil_conv nth_append)
+    from ins call have [simp]: "vs = []" by(auto split: if_split_asm)
     with bisim1 have [simp]: "stk = [v']" "xs = loc" by(auto dest: bisim1_pc_length_compE2D)
     from bisim1Val2[of "length (compE2 (obj\<bullet>M([])))" "obj\<bullet>M([])" P h v loc] call ins
     show ?thesis by(auto simp add: is_val_iff)
@@ -2703,14 +2703,14 @@ next
     by(auto intro: bisim1_bisims1.bisim1BlockNone)
 next
   case bisim1Sync1 thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Sync1)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Sync1)
 next
   case bisim1Sync2 thus ?case by simp
 next
   case bisim1Sync3 thus ?case by simp
 next
   case bisim1Sync4 thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2 bisim1_bisims1.bisim1Sync4)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2 bisim1_bisims1.bisim1Sync4)
 next
   case bisim1Sync5 thus ?case by simp
 next
@@ -2725,39 +2725,39 @@ next
   case bisim1InSync thus ?case by(simp)
 next
   case bisim1Seq1 thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Seq1)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Seq1)
 next
   case bisim1Seq2 thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2)(fastforce dest: bisim1_bisims1.bisim1Seq2)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2)(fastforce dest: bisim1_bisims1.bisim1Seq2)
 next
   case bisim1Cond1 thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Cond1)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Cond1)
 next
   case (bisim1CondThen e1 stk loc pc e e2 e' xs) thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2)
       (fastforce dest: bisim1_bisims1.bisim1CondThen[where e=e and ?e2.0=e2])
 next
   case (bisim1CondElse e2 stk loc pc e e1 e' xs) thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2)
       (fastforce dest: bisim1_bisims1.bisim1CondElse[where e=e and ?e1.0=e1])
 next
   case bisim1While1 thus ?case by simp
 next
   case bisim1While3 thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1While3)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1While3)
 next
   case bisim1While4 thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2)(fastforce dest: bisim1_bisims1.bisim1While4)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2)(fastforce dest: bisim1_bisims1.bisim1While4)
 next
   case bisim1While6 thus ?case by simp
 next
   case bisim1While7 thus ?case by simp
 next
   case bisim1Throw1 thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Throw1)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Throw1)
 next
   case bisim1Try thus ?case
-    by(auto split: split_if_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Try)
+    by(auto split: if_split_asm dest: bisim1_pc_length_compE2 intro: bisim1_bisims1.bisim1Try)
 next
   case bisim1TryCatch1 thus ?case by simp
 next
@@ -2798,7 +2798,7 @@ next
   with bisim have pc: "pc < length (compEs2 es)" by(rule bisims1_calls_pcD)
   with ins have ins': "compEs2 es ! pc = Invoke M n0" by(simp add: nth_append)
   from IH call ins pc show ?case
-    by(auto split: split_if_asm dest: bisim1_bisims1.bisims1List2)
+    by(auto split: if_split_asm dest: bisim1_bisims1.bisims1List2)
 qed
 
 lemma bisim1_fv: "P,e,h \<turnstile> (e', xs) \<leftrightarrow> s \<Longrightarrow> fv e' \<subseteq> fv e"
@@ -2905,7 +2905,7 @@ next
   case bisim1Val2 thus ?case by(auto dest: exec_meth_length_compE2_stack_xliftD)
 next
   case bisim1New thus ?case
-    by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: split_if_asm)
+    by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: if_split_asm)
 next
   case bisim1NewThrow thus ?case by(fastforce elim: exec_meth.cases intro: exec_meth.intros)
 next
@@ -2927,7 +2927,7 @@ next
     with bisim obtain v where [simp]: "stk = [v]" "xcp = None"
       by(auto dest: dest: bisim1_pc_length_compE2D)
     with exec show ?thesis apply(simp)
-      by(erule exec_meth.cases)(auto 4 4 intro: exec_meth.intros split: split_if_asm)
+      by(erule exec_meth.cases)(auto 4 4 intro: exec_meth.intros split: if_split_asm)
   qed
 next
   case (bisim1NewArrayThrow e n a xs stk loc pc T)
@@ -2962,7 +2962,7 @@ next
     with bisim obtain v where [simp]: "stk = [v]" "xcp = None"
       by(auto dest: dest: bisim1_pc_length_compE2D)
     with exec show ?thesis apply(simp)
-      by(erule exec_meth.cases)(auto intro!: exec_meth.intros split: split_if_asm)
+      by(erule exec_meth.cases)(auto intro!: exec_meth.intros split: if_split_asm)
   qed
 next
   case (bisim1CastThrow e n a xs stk loc pc T)
@@ -2997,7 +2997,7 @@ next
     with bisim obtain v where [simp]: "stk = [v]" "xcp = None"
       by(auto dest: dest: bisim1_pc_length_compE2D)
     with exec show ?thesis apply(simp)
-      by(erule exec_meth.cases)(auto intro!: exec_meth.intros split: split_if_asm)
+      by(erule exec_meth.cases)(auto intro!: exec_meth.intros split: if_split_asm)
   qed
 next
   case (bisim1InstanceOfThrow e n a xs stk loc pc T)
@@ -3274,7 +3274,7 @@ next
     with bisim2 obtain v2 where [simp]: "stk = [v2]" "xcp = None"
       by(auto dest: dest: bisim1_pc_length_compE2D)
     with exec pc show ?thesis
-      by(clarsimp)(erule exec_meth.cases, auto intro!: exec_meth.intros split: split_if_asm)
+      by(clarsimp)(erule exec_meth.cases, auto intro!: exec_meth.intros split: if_split_asm)
   qed
 next
   case (bisim1AAccThrow1 A n a xs stk loc pc i)
@@ -3474,7 +3474,7 @@ next
     with bisim3 obtain v3 where [simp]: "stk = [v3]" "xcp = None"
       by(auto dest: dest: bisim1_pc_length_compE2D)
     with exec pc show ?thesis apply(simp)
-      by(erule exec_meth.cases)(auto intro!: exec_meth.intros split: split_if_asm)
+      by(erule exec_meth.cases)(auto intro!: exec_meth.intros split: if_split_asm)
   qed
 next
   case (bisim1AAssThrow1 A n a xs stk loc pc i e)
@@ -3584,7 +3584,7 @@ next
     with bisim obtain v where [simp]: "stk = [v]" "xcp = None"
       by(auto dest: dest: bisim1_pc_length_compE2D)
     with exec show ?thesis apply(simp)
-      by(erule exec_meth.cases)(auto intro!: exec_meth.intros split: split_if_asm)
+      by(erule exec_meth.cases)(auto intro!: exec_meth.intros split: if_split_asm)
   qed
 next
   case (bisim1ALengthThrow e n a xs stk loc pc)
@@ -3619,7 +3619,7 @@ next
     with bisim obtain v where [simp]: "stk = [v]" "xcp = None"
       by(auto dest: dest: bisim1_pc_length_compE2D)
     with exec show ?thesis apply(simp)
-      by(erule exec_meth.cases)(fastforce intro!: exec_meth.intros simp add: is_Ref_def split: split_if_asm)+
+      by(erule exec_meth.cases)(fastforce intro!: exec_meth.intros simp add: is_Ref_def split: if_split_asm)+
   qed
 next
   case (bisim1FAccThrow e n a xs stk loc pc F D)
@@ -3721,7 +3721,7 @@ next
     with bisim2 obtain v2 where [simp]: "stk = [v2]" "xcp = None"
       by(auto dest: dest: bisim1_pc_length_compE2D)
     with exec pc show ?thesis apply(simp)
-      by(erule exec_meth.cases)(fastforce intro!: exec_meth.intros split: split_if_asm)+
+      by(erule exec_meth.cases)(fastforce intro!: exec_meth.intros split: if_split_asm)+
   qed
 next
   case (bisim1FAssThrow1 e n a xs stk loc pc e2 F D)
@@ -3826,7 +3826,7 @@ next
     next
       case Nil
       with exec pc show ?thesis 
-        apply(auto elim!: exec_meth.cases intro!: exec_meth.intros simp add: split_beta split: split_if_asm)
+        apply(auto elim!: exec_meth.cases intro!: exec_meth.intros simp add: split_beta split: if_split_asm)
         apply(auto split: extCallRet.split_asm intro!: exec_meth.intros)
         apply(force intro!: exI)
         apply(force intro!: exI)
@@ -3845,7 +3845,7 @@ next
     case Nil
     with bisimParam have "pc = 0" "xcp = None" by(auto elim: bisims1.cases)
     with exec Nil show ?thesis 
-      apply(auto elim!: exec_meth.cases intro!: exec_meth.intros simp add: split_beta extRet2JVM_def split: split_if_asm)
+      apply(auto elim!: exec_meth.cases intro!: exec_meth.intros simp add: split_beta extRet2JVM_def split: if_split_asm)
       apply(auto split: extCallRet.split_asm simp add: neq_Nil_conv)
       apply(force intro!: exec_meth.intros)+
       done
@@ -3886,7 +3886,7 @@ next
       with bisimParam obtain vs where "stk = vs" "length vs = length ps" "xcp = None"
         by(auto dest: bisims1_pc_length_compEs2D)
       with exec pc Cons show ?thesis
-        apply(auto elim!: exec_meth.cases intro!: exec_meth.intros simp add: split_beta extRet2JVM_def split: split_if_asm)
+        apply(auto elim!: exec_meth.cases intro!: exec_meth.intros simp add: split_beta extRet2JVM_def split: if_split_asm)
         apply(auto simp add: neq_Nil_conv split: extCallRet.split_asm)
         apply(force intro!: exec_meth.intros)+
         done
@@ -4026,7 +4026,7 @@ next
     by(fastforce elim!: exec_meth.cases intro!: exec_meth.intros)
 next
   case bisim1Sync3 thus ?case
-    by(fastforce elim!: exec_meth.cases intro!: exec_meth.intros split: split_if_asm)
+    by(fastforce elim!: exec_meth.cases intro!: exec_meth.intros split: if_split_asm)
 next
   case (bisim1Sync4 e2 n e2' xs stk loc pc xcp e1 V a)
   note IH = `\<And>stk' loc' pc' xcp' STK. ?exec e2 stk STK loc pc xcp stk' loc' pc' xcp'
@@ -4058,7 +4058,7 @@ next
         apply -
         apply(erule exec_meth.cases)
         apply(cases "compE2 e2 ! pc")
-        by(fastforce simp add: is_Ref_def intro: exec_meth.intros split: split_if_asm)+
+        by(fastforce simp add: is_Ref_def intro: exec_meth.intros split: if_split_asm)+
       from IH[OF this] obtain stk'' where stk: "stk' = stk'' @ STK"
         and exec''': "exec_meth_d (compP2 P) (compE2 e2) (compxE2 e2 0 0) t h (stk, loc, pc, xcp)
       ta h' (stk'', loc', pc' - length ?pre, xcp')" by blast
@@ -4075,20 +4075,20 @@ next
       case (Some a)
       with exec'' have [simp]: "h' = h" "xcp' = None" "loc' = loc" "ta = \<epsilon>"
         by(auto elim!: exec_meth.cases simp add: match_ex_table_append
-           split: split_if_asm dest!: match_ex_table_stack_xliftD)
+           split: if_split_asm dest!: match_ex_table_stack_xliftD)
       show ?thesis
       proof(cases "match_ex_table (compP2 P) (cname_of h a) pc (compxE2 e2 0 0)")
         case None
         with Some exec'' True have [simp]: "stk' = Addr a # STK"
           and pc': "pc' = length (compE2 e1) + length (compE2 e2) + 6"
           by(auto elim!: exec_meth.cases simp add: match_ex_table_append
-                  split: split_if_asm dest!: match_ex_table_stack_xliftD)
+                  split: if_split_asm dest!: match_ex_table_stack_xliftD)
         with exec'' Some None
         have "exec_meth_d (compP2 P) (compE2 e2 @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc])
         (compxE2 e2 0 0 @ [(0, length (compE2 e2), None, 3 + length (compE2 e2), 0)]) t
         h (stk, loc, pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # drop (length stk - 0) stk, loc, pc' - length ?pre, None)"
           by -(rule exec_catch, auto elim!: exec_meth.cases simp add: match_ex_table_append matches_ex_entry_def
-                                     split: split_if_asm dest!: match_ex_table_stack_xliftD)
+                                     split: if_split_asm dest!: match_ex_table_stack_xliftD)
         hence "exec_meth_d (compP2 P) (?pre @ compE2 e2 @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc])
         (compxE2 e1 0 0 @ shift (length ?pre) (compxE2 e2 0 0 @ [(0, length (compE2 e2), None, 3 + length (compE2 e2), 0)])) t
         h (stk, loc, length ?pre + pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # drop (length stk - 0) stk, loc,
@@ -4102,7 +4102,7 @@ next
           h (stk, loc, pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # drop (length stk - snd pcd) stk, loc, pc' - length ?pre, None)"
           apply -
           apply(rule exec_catch)
-          apply(auto elim!: exec_meth.cases simp add: match_ex_table_append split: split_if_asm
+          apply(auto elim!: exec_meth.cases simp add: match_ex_table_append split: if_split_asm
                      dest!: match_ex_table_stack_xliftD)
           done
         hence "exec_meth_d (compP2 P) (compE2 e2 @ [Load V, MExit, Goto 4, Load V, MExit, ThrowExc]) (compxE2 e2 0 0 @ [(0, length (compE2 e2), None, 3 + length (compE2 e2), 0)]) t
@@ -4114,7 +4114,7 @@ next
           by(rule append_exec_meth_xt[where n=1])(auto)
         moreover from Some `xcp = \<lfloor>a\<rfloor>` exec'' True pc'
         have "pc' = length (compE2 e1) + 3 + fst pcd" "stk' = Addr a # drop (length stk - snd pcd) stk @ STK"
-          by(auto elim!: exec_meth.cases dest!: match_ex_table_stack_xliftD simp: match_ex_table_append split: split_if_asm)
+          by(auto elim!: exec_meth.cases dest!: match_ex_table_stack_xliftD simp: match_ex_table_append split: if_split_asm)
         ultimately show ?thesis using `xcp = \<lfloor>a\<rfloor>` by(auto simp add: eval_nat_numeral shift_compxE2 ac_simps)
       qed
     qed
@@ -4122,20 +4122,20 @@ next
     case False
     with pc have [simp]: "pc = length (compE2 e2)" by simp
     with exec show ?thesis
-      by(auto elim!: exec_meth.cases intro!: exec_meth.intros split: split_if_asm simp add: match_ex_table_append_not_pcs eval_nat_numeral)(simp_all add: matches_ex_entry_def)
+      by(auto elim!: exec_meth.cases intro!: exec_meth.intros split: if_split_asm simp add: match_ex_table_append_not_pcs eval_nat_numeral)(simp_all add: matches_ex_entry_def)
   qed
 next
   case bisim1Sync5 thus ?case
-    by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: split_if_asm)
+    by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: if_split_asm)
 next
   case bisim1Sync6 thus ?case  
-    by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: split_if_asm)     
+    by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: if_split_asm)     
 next
   case bisim1Sync7 thus ?case
-    by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: split_if_asm)
+    by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: if_split_asm)
 next
   case bisim1Sync8 thus ?case
-    by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: split_if_asm)
+    by(fastforce elim: exec_meth.cases intro: exec_meth.intros split: if_split_asm)
 next
   case (bisim1Sync9 e1 n e2 V a xs)
   note exec = `?exec (sync\<^bsub>V\<^esub> (e1) e2) [Addr a] STK xs (8 + length (compE2 e1) + length (compE2 e2)) None stk' loc' pc' xcp'`
@@ -4152,14 +4152,14 @@ next
   note exec = `?exec (sync\<^bsub>V\<^esub> (e1) e2) [Addr a] STK xs (8 + length (compE2 e1) + length (compE2 e2)) \<lfloor>a\<rfloor> stk' loc' pc' xcp'`
   hence "match_ex_table (compP2 P) (cname_of h a) (8 + length (compE2 e1) + length (compE2 e2)) (stack_xlift (length STK) (compxE2 (sync\<^bsub>V\<^esub> (e1) e2) 0 0)) \<noteq> None"
     by(rule exec_meth.cases) auto
-  hence False by(auto split: split_if_asm simp add: match_ex_table_append_not_pcs)(simp add: matches_ex_entry_def)
+  hence False by(auto split: if_split_asm simp add: match_ex_table_append_not_pcs)(simp add: matches_ex_entry_def)
   thus ?case ..
 next
   case (bisim1Sync11 e1 n e2 V xs)
   note exec = `?exec (sync\<^bsub>V\<^esub> (e1) e2) [Null] STK xs (Suc (Suc (length (compE2 e1)))) \<lfloor>addr_of_sys_xcpt NullPointer\<rfloor> stk' loc' pc' xcp'`
   hence "match_ex_table (compP2 P) (cname_of h (addr_of_sys_xcpt NullPointer)) (2 + length (compE2 e1)) (stack_xlift (length STK) (compxE2 (sync\<^bsub>V\<^esub> (e1) e2) 0 0)) \<noteq> None"
-    by(rule exec_meth.cases)(auto split: split_if_asm)
-  hence False by(auto split: split_if_asm simp add: match_ex_table_append_not_pcs)(simp add: matches_ex_entry_def)
+    by(rule exec_meth.cases)(auto split: if_split_asm)
+  hence False by(auto split: if_split_asm simp add: match_ex_table_append_not_pcs)(simp add: matches_ex_entry_def)
   thus ?case ..
 next
   case (bisim1SyncThrow e1 n a xs stk loc pc e2 V)
@@ -4504,7 +4504,7 @@ next
     case False
     with pc have [simp]: "pc = length (compE2 e)" by simp
     from bisim obtain v where "stk = [v]" "xcp = None" by(auto dest: bisim1_pc_length_compE2D)
-    with exec show ?thesis by(auto elim!: exec_meth.cases intro!: exec_meth.intros split: split_if_asm)
+    with exec show ?thesis by(auto elim!: exec_meth.cases intro!: exec_meth.intros split: if_split_asm)
   qed
 next
   case bisim1Throw2 thus ?case
@@ -4549,7 +4549,7 @@ next
         apply -
         apply(erule exec_meth.cases)
         apply(cases "compE2 e ! pc")
-        apply(fastforce simp add: is_Ref_def intro: exec_meth.intros split: split_if_asm)+
+        apply(fastforce simp add: is_Ref_def intro: exec_meth.intros split: if_split_asm)+
         done
       from IH[OF this] show ?thesis by auto
     next
@@ -4561,12 +4561,12 @@ next
         case (Some pcd)
         from exec `xcp = \<lfloor>a\<rfloor>` Some pc
         have stk': "stk' = Addr a # (drop (length stk - snd pcd) stk) @ STK"
-          by(auto elim!: exec_meth.cases simp add: match_ex_table_append split: split_if_asm dest!: match_ex_table_stack_xliftD)
+          by(auto elim!: exec_meth.cases simp add: match_ex_table_append split: if_split_asm dest!: match_ex_table_stack_xliftD)
         from exec' `xcp = \<lfloor>a\<rfloor>` Some pc have "exec_meth_d (compP2 P)
           (compE2 e) (stack_xlift (length STK) (compxE2 e 0 0)) t h (stk @ STK, loc, pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # (drop (length (stk @ STK) - (snd pcd + length STK)) (stk @ STK)), loc, pc', None)"
           apply -
           apply(rule exec_meth.intros)
-          apply(auto elim!: exec_meth.cases simp add: match_ex_table_append split: split_if_asm dest!: match_ex_table_shift_pcD match_ex_table_stack_xliftD)
+          apply(auto elim!: exec_meth.cases simp add: match_ex_table_append split: if_split_asm dest!: match_ex_table_shift_pcD match_ex_table_stack_xliftD)
           done
         from IH[unfolded `ta = \<epsilon>` `xcp = \<lfloor>a\<rfloor>` `h' = h`, OF this]
         have stk: "Addr a # drop (length stk - snd pcd) (stk @ STK) = Addr a # drop (length stk - snd pcd) stk @ STK"
@@ -4577,7 +4577,7 @@ next
         with Some exec pc have stk': "stk' = Addr a # STK"
           and pc': "pc' = Suc (length (compE2 e))"
           and subcls: "compP2 P \<turnstile> cname_of h a \<preceq>\<^sup>* C'"
-          by(auto elim!: exec_meth.cases split: split_if_asm simp add: match_ex_table_append_not_pcs)(simp add: matches_ex_entry_def)
+          by(auto elim!: exec_meth.cases split: if_split_asm simp add: match_ex_table_append_not_pcs)(simp add: matches_ex_entry_def)
         moreover from Some True None pc' subcls
         have "exec_meth_d (compP2 P) (compE2 (try e catch(C' V) e2)) (compxE2 (try e catch(C' V) e2) 0 0) t h
           (stk, loc, pc, \<lfloor>a\<rfloor>) \<epsilon> h (Addr a # drop (length stk - 0) stk, loc, pc', None)"
@@ -4589,11 +4589,11 @@ next
     case False
     with pc have [simp]: "pc = length (compE2 e)" by simp
     from bisim obtain v where "stk = [v]" "xcp = None" by(auto dest: bisim1_pc_length_compE2D)
-    with exec show ?thesis by(auto elim!: exec_meth.cases intro!: exec_meth.intros split: split_if_asm)
+    with exec show ?thesis by(auto elim!: exec_meth.cases intro!: exec_meth.intros split: if_split_asm)
   qed
 next
   case bisim1TryCatch1 thus ?case
-    by(auto elim!: exec_meth.cases intro!: exec_meth.intros split: split_if_asm)
+    by(auto elim!: exec_meth.cases intro!: exec_meth.intros split: if_split_asm)
 next
   case (bisim1TryCatch2 e2 n e' xs stk loc pc xcp e C' V)
   note bisim = `P,e2,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, xcp)`
@@ -4634,8 +4634,8 @@ next
     unfolding compP2_def by(rule bisim1_xcp_Some_not_caught)
   moreover from bisim have "pc < length (compE2 e)" by(auto dest: bisim1_ThrowD)
   ultimately have False using exec a
-    apply(auto elim!: exec_meth.cases simp add: outside_pcs_compxE2_not_matches_entry outside_pcs_not_matches_entry split: split_if_asm)
-    apply(auto simp add: compP2_def match_ex_entry match_ex_table_append_not_pcs cname_of_def split: split_if_asm)
+    apply(auto elim!: exec_meth.cases simp add: outside_pcs_compxE2_not_matches_entry outside_pcs_not_matches_entry split: if_split_asm)
+    apply(auto simp add: compP2_def match_ex_entry match_ex_table_append_not_pcs cname_of_def split: if_split_asm)
     done
   thus ?case ..
 next
@@ -4731,11 +4731,11 @@ next
 next
   case (bisim1Sync12 e1 n e2 V a xs v v')
   note exec = `?exec (sync\<^bsub>V\<^esub> (e1) e2) [v, v'] STK xs (4 + length (compE2 e1) + length (compE2 e2)) \<lfloor>a\<rfloor> stk' loc' pc' xcp'`
-  thus ?case by(auto elim!: exec_meth.cases split: split_if_asm simp add: match_ex_table_append_not_pcs)(simp add: matches_ex_entry_def)
+  thus ?case by(auto elim!: exec_meth.cases split: if_split_asm simp add: match_ex_table_append_not_pcs)(simp add: matches_ex_entry_def)
 next
   case (bisim1Sync14 e1 n e2 V a xs v a')
   note exec = `?exec (sync\<^bsub>V\<^esub> (e1) e2) [v, Addr a'] STK xs (7 + length (compE2 e1) + length (compE2 e2)) \<lfloor>a\<rfloor> stk' loc' pc' xcp'`
-  thus ?case by(auto elim!: exec_meth.cases split: split_if_asm simp add: match_ex_table_append_not_pcs)(simp add: matches_ex_entry_def)
+  thus ?case by(auto elim!: exec_meth.cases split: if_split_asm simp add: match_ex_table_append_not_pcs)(simp add: matches_ex_entry_def)
 qed
 
 lemma shows bisim1_callD:
@@ -4750,14 +4750,14 @@ lemma shows bisim1_callD:
 proof(induct e "n :: nat" e' xs stk loc pc xcp and es "n :: nat" es' xs stk loc pc xcp
     rule: bisim1_bisims1_inducts_split)
   case bisim1AAss1 thus ?case
-    apply(simp (no_asm_use) split: split_if_asm add: is_val_iff)
+    apply(simp (no_asm_use) split: if_split_asm add: is_val_iff)
     apply(fastforce dest: bisim_Val_pc_not_Invoke)
     apply(fastforce dest: bisim_Val_pc_not_Invoke)
     apply(fastforce dest: bisim_Val_pc_not_Invoke bisim1_pc_length_compE2)+
     done
 next
   case bisim1Call1 thus ?case
-    apply(clarsimp split: split_if_asm simp add: is_vals_conv)
+    apply(clarsimp split: if_split_asm simp add: is_vals_conv)
     apply(drule bisim_Val_pc_not_Invoke, simp, fastforce)
     apply(drule bisim_Val_pc_not_Invoke, simp, fastforce)
     apply(drule bisim1_pc_length_compE2, clarsimp simp add: neq_Nil_conv)
@@ -4769,12 +4769,12 @@ next
     done
 next
   case bisim1CallParams thus ?case
-    apply(clarsimp split: split_if_asm simp add: is_vals_conv)
+    apply(clarsimp split: if_split_asm simp add: is_vals_conv)
     apply(drule bisims_Val_pc_not_Invoke, simp, fastforce)
     apply(drule bisims1_pc_length_compEs2, simp)
     apply(drule bisims1_calls_pcD, simp, simp)
     done
-qed(fastforce split: split_if_asm dest: bisim1_pc_length_compE2 bisims1_pc_length_compEs2 bisim1_call_pcD bisims1_calls_pcD bisim1_call_xcpNone bisims1_calls_xcpNone bisim_Val_pc_not_Invoke bisims_Val_pc_not_Invoke)+
+qed(fastforce split: if_split_asm dest: bisim1_pc_length_compE2 bisims1_pc_length_compEs2 bisim1_call_pcD bisims1_calls_pcD bisim1_call_xcpNone bisims1_calls_xcpNone bisim_Val_pc_not_Invoke bisims_Val_pc_not_Invoke)+
 
 lemma bisim1_xcpD: "P,e,h \<turnstile> (e', xs) \<leftrightarrow> (stk, loc, pc, \<lfloor>a\<rfloor>) \<Longrightarrow> pc < length (compE2 e)"
   and bisims1_xcpD: "P,es,h \<turnstile> (es', xs) [\<leftrightarrow>] (stk, loc, pc, \<lfloor>a\<rfloor>) \<Longrightarrow> pc < length (compEs2 es)"
@@ -4800,28 +4800,28 @@ next
     by(fastforce dest: bisim1_xcpD simp add: match_ex_table_append match_ex_table_not_pcs_None)
 next
   case bisim1Sync4 thus ?case
-    apply(clarsimp simp add: match_ex_table_not_pcs_None match_ex_table_append matches_ex_entry_def split: split_if_asm)
+    apply(clarsimp simp add: match_ex_table_not_pcs_None match_ex_table_append matches_ex_entry_def split: if_split_asm)
     apply(fastforce simp add: match_ex_table_compxE2_shift_conv dest: bisim1_xcpD)
     done
 next
   case bisim1Try thus ?case
-    by(fastforce simp add: match_ex_table_append matches_ex_entry_def match_ex_table_not_pcs_None dest: bisim1_xcpD split: split_if_asm)
+    by(fastforce simp add: match_ex_table_append matches_ex_entry_def match_ex_table_not_pcs_None dest: bisim1_xcpD split: if_split_asm)
 next
   case bisim1TryCatch2 thus ?case
-    apply(clarsimp simp add: match_ex_table_not_pcs_None match_ex_table_append matches_ex_entry_def split: split_if_asm)
+    apply(clarsimp simp add: match_ex_table_not_pcs_None match_ex_table_append matches_ex_entry_def split: if_split_asm)
     apply(fastforce simp add: match_ex_table_compxE2_shift_conv dest: bisim1_xcpD)
     done
 next
   case bisim1TryFail thus ?case
-    by(fastforce simp add: match_ex_table_append matches_ex_entry_def match_ex_table_not_pcs_None dest: bisim1_xcpD split: split_if_asm)
+    by(fastforce simp add: match_ex_table_append matches_ex_entry_def match_ex_table_not_pcs_None dest: bisim1_xcpD split: if_split_asm)
 next
   case bisim1TryCatchThrow thus ?case
-    apply(clarsimp simp add: match_ex_table_not_pcs_None match_ex_table_append matches_ex_entry_def split: split_if_asm)
+    apply(clarsimp simp add: match_ex_table_not_pcs_None match_ex_table_append matches_ex_entry_def split: if_split_asm)
     apply(fastforce simp add: match_ex_table_compxE2_shift_conv dest: bisim1_xcpD)
     done
 next
   case bisims1List1 thus ?case
-    by(fastforce simp add: match_ex_table_append split: split_if_asm dest: bisim1_xcpD match_ex_table_pcsD)
+    by(fastforce simp add: match_ex_table_append split: if_split_asm dest: bisim1_xcpD match_ex_table_pcsD)
 qed(fastforce simp add: match_ex_table_not_pcs_None match_ex_table_append match_ex_table_compxE2_shift_conv match_ex_table_compxEs2_shift_conv match_ex_table_compxE2_stack_conv match_ex_table_compxEs2_stack_conv matches_ex_entry_def dest: bisim1_xcpD)+
 
 end

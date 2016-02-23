@@ -252,7 +252,7 @@ proof(rule invariant3pI)
           and m: "m = shr s'" 
           and ts't: "thr s' t' = \<lfloor>(x', redT_updLns (locks s) t' (snd (the (thr s t'))) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)\<rfloor>" by auto
         from aok have nwait: "\<not> waiting (wset s t')"
-          by(auto simp add: wset_actions_ok_def waiting_def split: split_if_asm)
+          by(auto simp add: wset_actions_ok_def waiting_def split: if_split_asm)
         have "\<exists>w'. Suspend w' \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"
         proof(cases "wset s t")
           case None
@@ -261,7 +261,7 @@ proof(rule invariant3pI)
         next
           case (Some w')
           with True aok have "Notified \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<or> WokenUp \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub>"
-            by(auto simp add: wset_actions_ok_def split: split_if_asm)
+            by(auto simp add: wset_actions_ok_def split: if_split_asm)
           with ws' show ?thesis using ws't unfolding True
             by(rule redT_updWs_WokenUp_SuspendD)
         qed

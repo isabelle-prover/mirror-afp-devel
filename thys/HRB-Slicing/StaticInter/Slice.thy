@@ -664,7 +664,7 @@ proof -
                                                  distance (targetnode a') mex x \<and>
                                                  valid_edge a' \<and> intra_kind(kind a') \<and>
                                                  targetnode a' = n')"
-        by(auto simp:slice_kind_def Let_def fun_eq_iff split:split_if_asm)
+        by(auto simp:slice_kind_def Let_def fun_eq_iff split:if_split_asm)
       from `valid_edge a` `intra_kind (kind a)` `distance (targetnode a) mex x`
       have ex1:"\<exists>!a'. sourcenode a = sourcenode a' \<and> distance (targetnode a') mex x \<and> 
         valid_edge a' \<and> intra_kind(kind a') \<and>
@@ -695,7 +695,7 @@ proof -
       with `sourcenode a \<notin> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` True `kind a' = (Q')\<^sub>\<surd>`
         `sourcenode a = sourcenode a'` mex dist
       show ?thesis by(auto dest:distance_det 
-        simp:slice_kind_def Let_def fun_eq_iff split:split_if_asm)
+        simp:slice_kind_def Let_def fun_eq_iff split:if_split_asm)
     next
       case False
       hence "obs_intra (sourcenode a) \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub> \<noteq> {}" .
@@ -711,7 +711,7 @@ proof -
                                                  distance (targetnode a') m x \<and>
                                                  valid_edge a' \<and> intra_kind(kind a') \<and>
                                                  targetnode a' = n')"
-        by(auto simp:slice_kind_def Let_def fun_eq_iff split:split_if_asm)
+        by(auto simp:slice_kind_def Let_def fun_eq_iff split:if_split_asm)
       show ?thesis
       proof(cases "distance (targetnode a') m x")
         case False

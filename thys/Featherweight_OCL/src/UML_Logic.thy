@@ -710,7 +710,7 @@ apply(rule ext,auto simp: OclValid_def true_def defined_def)
 apply(erule_tac x=a in allE)
 apply(erule_tac x=b in allE)
 apply(auto simp: false_def true_def defined_def bot_Boolean_def null_Boolean_def
-                 split: option.split_asm HOL.split_if_asm)
+                 split: option.split_asm HOL.if_split_asm)
 done
 
 text{* However, certain properties (like transitivity) can not
@@ -859,7 +859,7 @@ by(auto simp: OclNot_def OclValid_def valid_def invalid_def false_def true_def n
 (* ... and the usual rules on strictness, definedness propoagation, and cp ... *)
 lemma foundation16: "\<tau> \<Turnstile> (\<delta> X) = (X \<tau> \<noteq> bot \<and> X \<tau> \<noteq> null)"
 by(auto simp: OclValid_def defined_def false_def true_def  bot_fun_def null_fun_def
-        split:split_if_asm)
+        split:if_split_asm)
 
 lemma foundation16'': "\<not>(\<tau> \<Turnstile> (\<delta> X)) = ((\<tau> \<Turnstile> (X \<triangleq> invalid)) \<or> (\<tau> \<Turnstile> (X \<triangleq> null)))"
 apply(simp add: foundation16)
@@ -869,18 +869,18 @@ by(auto simp:defined_def false_def true_def  bot_fun_def null_fun_def OclValid_d
 lemma foundation16': "(\<tau> \<Turnstile> (\<delta> X)) = (X \<tau> \<noteq> invalid \<tau> \<and> X \<tau> \<noteq> null \<tau>)"
 apply(simp add:invalid_def null_def null_fun_def)
 by(auto simp: OclValid_def defined_def false_def true_def  bot_fun_def null_fun_def
-        split:split_if_asm)
+        split:if_split_asm)
 
 
 
 lemma foundation18: "(\<tau> \<Turnstile> (\<upsilon> X)) = (X \<tau> \<noteq> invalid \<tau>)"
 by(auto simp: OclValid_def valid_def false_def true_def bot_fun_def invalid_def
-        split:split_if_asm)
+        split:if_split_asm)
 
 (*legacy*)
 lemma foundation18': "(\<tau> \<Turnstile> (\<upsilon> X)) = (X \<tau> \<noteq> bot)"
 by(auto simp: OclValid_def valid_def false_def true_def bot_fun_def
-        split:split_if_asm)
+        split:if_split_asm)
 
 lemma foundation18'': "(\<tau> \<Turnstile> (\<upsilon> X) )=  (\<not>(\<tau> \<Turnstile> (X \<triangleq> invalid)))"
 by(auto simp:foundation15)
@@ -891,7 +891,7 @@ by(simp add: foundation18 foundation16 invalid_def)
 
 lemma foundation21: "(not A \<triangleq> not B) = (A \<triangleq> B)"
 by(rule ext, auto simp: OclNot_def StrongEq_def
-                     split: bool.split_asm HOL.split_if_asm option.split)
+                     split: bool.split_asm HOL.if_split_asm option.split)
 
 lemma foundation22: "(\<tau> \<Turnstile> (X \<triangleq> Y)) = (X \<tau> = Y \<tau>)"
 by(auto simp: StrongEq_def OclValid_def true_def)
@@ -926,24 +926,24 @@ by (simp add: foundation12 foundation6)
 lemma defined_not_I : "\<tau> \<Turnstile> \<delta> (x) \<Longrightarrow> \<tau> \<Turnstile> \<delta> (not x)"
   by(auto simp: OclNot_def null_def invalid_def defined_def valid_def OclValid_def
                   true_def false_def bot_option_def null_option_def null_fun_def bot_fun_def
-             split: option.split_asm HOL.split_if_asm)
+             split: option.split_asm HOL.if_split_asm)
 
 lemma valid_not_I : "\<tau> \<Turnstile> \<upsilon> (x) \<Longrightarrow> \<tau> \<Turnstile> \<upsilon> (not x)"
   by(auto simp: OclNot_def null_def invalid_def defined_def valid_def OclValid_def
                   true_def false_def bot_option_def null_option_def null_fun_def bot_fun_def
-          split: option.split_asm option.split HOL.split_if_asm)
+          split: option.split_asm option.split HOL.if_split_asm)
 
 lemma defined_and_I : "\<tau> \<Turnstile> \<delta> (x) \<Longrightarrow>  \<tau> \<Turnstile> \<delta> (y) \<Longrightarrow> \<tau> \<Turnstile> \<delta> (x and y)"
   apply(simp add: OclAnd_def null_def invalid_def defined_def valid_def OclValid_def
                   true_def false_def bot_option_def null_option_def null_fun_def bot_fun_def
-             split: option.split_asm HOL.split_if_asm)
+             split: option.split_asm HOL.if_split_asm)
   apply(auto simp: null_option_def split: bool.split)
   by(case_tac "ya",simp_all)
 
 lemma valid_and_I :   "\<tau> \<Turnstile> \<upsilon> (x) \<Longrightarrow>  \<tau> \<Turnstile> \<upsilon> (y) \<Longrightarrow> \<tau> \<Turnstile> \<upsilon> (x and y)"
   apply(simp add: OclAnd_def null_def invalid_def defined_def valid_def OclValid_def
                   true_def false_def bot_option_def null_option_def null_fun_def bot_fun_def
-             split: option.split_asm HOL.split_if_asm)
+             split: option.split_asm HOL.if_split_asm)
   by(auto simp: null_option_def split: option.split bool.split)
 
 lemma defined_or_I : "\<tau> \<Turnstile> \<delta> (x) \<Longrightarrow>  \<tau> \<Turnstile> \<delta> (y) \<Longrightarrow> \<tau> \<Turnstile> \<delta> (x or y)"
@@ -1165,7 +1165,7 @@ lemma OclNot_defargs:
 "\<tau> \<Turnstile> (not P) \<Longrightarrow> \<tau> \<Turnstile> \<delta> P"
 by(auto simp: OclNot_def OclValid_def true_def invalid_def defined_def false_def
                  bot_fun_def bot_option_def null_fun_def null_option_def
-        split: bool.split_asm HOL.split_if_asm option.split option.split_asm)
+        split: bool.split_asm HOL.if_split_asm option.split option.split_asm)
 
 
 lemma OclNot_contrapos_nn:

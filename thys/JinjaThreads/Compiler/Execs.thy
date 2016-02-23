@@ -194,7 +194,7 @@ lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
   shows compE1_Goto_not_same: "\<lbrakk> compE2 e ! pc = Goto i; pc < length (compE2 e) \<rbrakk> \<Longrightarrow> nat (int pc + i) \<noteq> pc"
   and compEs2_Goto_not_same: "\<lbrakk> compEs2 es ! pc = Goto i; pc < length (compEs2 es) \<rbrakk> \<Longrightarrow> nat (int pc + i) \<noteq> pc"
 apply(induct e and es arbitrary: pc i and pc i rule: compE2.induct compEs2.induct)
-apply(auto simp add: nth_Cons nth_append split: split_if_asm bop.split_asm nat.splits)
+apply(auto simp add: nth_Cons nth_append split: if_split_asm bop.split_asm nat.splits)
 apply fastforce+
 done
 
@@ -370,8 +370,8 @@ using assms
 proof(cases "ins ! pc")
   case (Invoke M n)
   thus ?thesis using exec check
-    by(auto split: split_if_asm extCallRet.splits split del: split_if simp add: split_beta nth_append min_def extRet2JVM_def)
-qed(force simp add: nth_append is_Ref_def has_method_def nth_Cons split_beta hd_append tl_append neq_Nil_conv split: list.split split_if_asm nat.splits sum.split_asm)+
+    by(auto split: if_split_asm extCallRet.splits split del: if_split simp add: split_beta nth_append min_def extRet2JVM_def)
+qed(force simp add: nth_append is_Ref_def has_method_def nth_Cons split_beta hd_append tl_append neq_Nil_conv split: list.split if_split_asm nat.splits sum.split_asm)+
 
 lemma exec_meth_stk_offer:
   assumes exec: "exec_meth ci P ins xt t h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"
@@ -448,8 +448,8 @@ next
   next
     case (Invoke M n)
     with exec show ?thesis 
-      by(auto split: split_if_asm extCallRet.splits split del: split_if simp add: split_beta nth_append min_def extRet2JVM_def)
-  qed(auto simp add: split_beta split: split_if_asm sum.split_asm)
+      by(auto split: if_split_asm extCallRet.splits split del: if_split simp add: split_beta nth_append min_def extRet2JVM_def)
+  qed(auto simp add: split_beta split: if_split_asm sum.split_asm)
   moreover from `ci_app ci (ins ! pc) P h stk loc undefined undefined pc []`
   have "ci_app ci (ins ! pc) P h stk loc undefined undefined (length ins' + pc) []"
     by(rule wf_ciD3'_ci_app) simp
@@ -499,7 +499,7 @@ proof(cases rule: exec_meth.cases)
   moreover with `(ta, xcp', h', [(stk', loc', undefined, undefined, pc')]) \<in> exec_instr ((ins @ ins') ! ?PC) P t h stk loc undefined undefined ?PC []`
   have "(ta, xcp', h', [(stk', loc', undefined, undefined, pc' - length ins)]) \<in> exec_instr (ins' ! pc) P t h stk loc undefined undefined pc []"
     apply(cases "ins' ! pc")
-    apply(simp_all add: split_beta split: split_if_asm sum.split_asm split del: split_if)
+    apply(simp_all add: split_beta split: if_split_asm sum.split_asm split del: if_split)
     apply(force split: extCallRet.splits simp add: min_def extRet2JVM_def)+
     done
   moreover from `ci_app ci ((ins @ ins') ! ?PC) P h stk loc undefined undefined ?PC []` jump pc
@@ -533,7 +533,7 @@ using exec
 proof(cases rule: exec_meth.cases)
   case exec_instr thus ?thesis using jump pc
     apply(cases "ins' ! (pc - length ins)")
-    apply(simp_all add: split_beta nth_append split: split_if_asm sum.split_asm)
+    apply(simp_all add: split_beta nth_append split: if_split_asm sum.split_asm)
     apply(force split: extCallRet.splits simp add: min_def extRet2JVM_def dest: jump_ok_GotoD jump_ok_IfFalseD)+
     done
 next
@@ -1013,7 +1013,7 @@ qed(rule exec_move_TryI2)
 lemma exec_move_raise_xcp_pcD:
   "exec_move ci P t E h (stk, loc, pc, None) ta h' (stk', loc', pc', Some a) \<Longrightarrow> pc' = pc"
 apply(cases "compE2 E ! pc")
-apply(auto simp add: exec_move_def elim!: exec_meth.cases split: split_if_asm sum.split_asm)
+apply(auto simp add: exec_move_def elim!: exec_meth.cases split: if_split_asm sum.split_asm)
 apply(auto split: extCallRet.split_asm simp add: split_beta)
 done
 
@@ -1887,27 +1887,27 @@ lemma exec_instr_frs_offer:
   "(ta, xcp', h', (stk', loc', C, M, pc') # frs) \<in> exec_instr ins P t h stk loc C M pc frs
   \<Longrightarrow> (ta, xcp', h', (stk', loc', C, M, pc') # frs @ frs') \<in> exec_instr ins P t h stk loc C M pc (frs @ frs')"
 apply(cases ins)
-apply(simp_all add: nth_append split_beta split: split_if_asm sum.split_asm)
+apply(simp_all add: nth_append split_beta split: if_split_asm sum.split_asm)
 apply(force split: extCallRet.split_asm simp add: extRet2JVM_def)+
 done
 
 lemma check_instr_frs_offer:
   "\<lbrakk> check_instr ins P h stk loc C M pc frs; ins \<noteq> Return \<rbrakk>
   \<Longrightarrow> check_instr ins P h stk loc C M pc (frs @ frs')"
-by(cases ins)(simp_all split: split_if_asm)
+by(cases ins)(simp_all split: if_split_asm)
 
 lemma exec_instr_CM_change:
   "(ta, xcp', h', (stk', loc', C, M, pc') # frs) \<in> exec_instr ins P t h stk loc C M pc frs
   \<Longrightarrow> (ta, xcp', h', (stk', loc', C', M', pc') # frs) \<in> exec_instr ins P t h stk loc C' M' pc frs"
 apply(cases ins)
-apply(simp_all add: nth_append split_beta neq_Nil_conv split: split_if_asm sum.split_asm)
+apply(simp_all add: nth_append split_beta neq_Nil_conv split: if_split_asm sum.split_asm)
 apply(force split: extCallRet.split_asm simp add: extRet2JVM_def)+
 done
 
 lemma check_instr_CM_change:
   "\<lbrakk> check_instr ins P h stk loc C M pc frs; ins \<noteq> Return \<rbrakk>
   \<Longrightarrow> check_instr ins P h stk loc C' M' pc frs"
-by(cases ins)(simp_all split: split_if_asm)
+by(cases ins)(simp_all split: if_split_asm)
 
 lemma exec_move_exec_1:
   assumes exec: "exec_move ci P t body h (stk, loc, pc, xcp) ta h' (stk', loc', pc', xcp')"

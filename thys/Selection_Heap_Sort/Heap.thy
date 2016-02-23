@@ -43,7 +43,7 @@ lemma heap_top_geq:
   assumes "a \<in># multiset t" "is_heap t"
   shows "val t \<ge> a"
 using assms
-by (induct t rule: is_heap.induct)  (auto split: split_if_asm)
+by (induct t rule: is_heap.induct)  (auto split: if_split_asm)
 
 lemma heap_top_max:
   assumes "t \<noteq> E" "is_heap t"

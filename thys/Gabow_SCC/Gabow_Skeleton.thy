@@ -1598,7 +1598,7 @@ begin
 
     moreover show UB': "j < seg_end (find_seg j)"
       unfolding seg_end_def 
-    proof (split split_if, intro impI conjI)
+    proof (split if_split, intro impI conjI)
       show "j<length S" using A .
       
       assume "find_seg j + 1 \<noteq> length B" 
@@ -1668,10 +1668,10 @@ begin
       done
 
     from B1 have B1: "(B!j < B!Suc i \<and> Suc i < length B) \<or> i=length B - 1"
-      using LI unfolding seg_start_def seg_end_def by (auto split: split_if_asm)
+      using LI unfolding seg_start_def seg_end_def by (auto split: if_split_asm)
 
     from B2 have B2: "(B!i < B!Suc j \<and> Suc j < length B) \<or> j=length B - 1"
-      using LJ unfolding seg_start_def seg_end_def by (auto split: split_if_asm)
+      using LJ unfolding seg_start_def seg_end_def by (auto split: if_split_asm)
 
     from B1 have B1: "j<Suc i \<or> i=length B - 1"
       using LI LJ distinct_sorted_strict_mono_iff[OF B_distinct B_sorted]
@@ -1816,7 +1816,7 @@ proof -
 
   show ?G1
     unfolding GS.\<alpha>_def GS_initial_impl_def
-    apply (simp split del: split_if) apply (intro conjI)
+    apply (simp split del: if_split) apply (intro conjI)
 
     unfolding GS.p_\<alpha>_def GS.seg_def[abs_def] GS.seg_start_def GS.seg_end_def
     apply (auto) []
@@ -1854,7 +1854,7 @@ begin
     have A2: "GS.p_\<alpha> (push_impl v succs) = p_\<alpha> @ [{v}]"
       unfolding push_impl_def GS.p_\<alpha>_def GS.seg_def[abs_def] 
         GS.seg_start_def GS.seg_end_def
-      apply (clarsimp split del: split_if)
+      apply (clarsimp split del: if_split)
 
       apply clarsimp
       apply safe
@@ -1890,7 +1890,7 @@ begin
       using S_distinct A apply (simp add: set_p_\<alpha>_is_set_S)
 
       using A I_consistent 
-      apply (auto simp: nth_append set_p_\<alpha>_is_set_S split: split_if_asm) []
+      apply (auto simp: nth_append set_p_\<alpha>_is_set_S split: if_split_asm) []
       
       using P_sorted P_distinct P_bound apply (auto simp: sorted_append) [3]
       done
@@ -2004,7 +2004,7 @@ begin
       using B_distinct BNE apply (auto simp: distinct_butlast) []
 
       using B0 apply (cases B rule: rev_cases, simp add: BNE) 
-      apply (auto simp: nth_append split: split_if_asm) []
+      apply (auto simp: nth_append split: if_split_asm) []
    
       using S_distinct apply (auto) []
 
@@ -2300,14 +2300,14 @@ begin
           (* The following three lines complete the proof. AUX_ex_conj_SeqSI
             and all stuff 
             below would be unnecessary, if smt would be allowed for AFP.
-          apply (auto simp: seg_start_def seg_end_def split: split_if_asm)
+          apply (auto simp: seg_start_def seg_end_def split: if_split_asm)
           apply (smt distinct_sorted_mono[OF B_sorted B_distinct])
           apply (smt distinct_sorted_mono[OF B_sorted B_distinct] B_in_bound')
           *)
 
           apply (auto 
             simp: seg_start_def seg_end_def 
-            split: split_if_asm
+            split: if_split_asm
             intro!: AUX_ex_conj_SeqSI
           )
 

@@ -80,7 +80,7 @@ proof (induct l arbitrary: l' m m' t' rule: rev_induct)
   thus ?case
     using snoc(2)
     apply (cases "?a")
-    apply (auto split: split_if_asm, (simp add: union_lcomm union_commute)+) 
+    apply (auto split: if_split_asm, (simp add: union_lcomm union_commute)+) 
     by (metis union_assoc)
 qed simp
 

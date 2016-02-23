@@ -13,7 +13,7 @@ method_setup clarsimp_all =
 
 lemma div_Suc:
   "(Suc m) div n = (if (Suc m) mod n = 0 then Suc (m div n) else m div n)"
-proof(simp add: mod_Suc split: split_if, intro conjI impI)
+proof(simp add: mod_Suc split: if_split, intro conjI impI)
   assume "Suc (m mod n) = n"
   thus "Suc m div n = Suc (m div n)"
     by (metis Divides.mod_less Divides.mult_div_cancel diff_Suc_Suc div_mult_self2_is_id
@@ -269,7 +269,7 @@ lemma vote_set_upd:
         else vote_set v_hist {p} - {(r, the (v_hist r p))}
       )
   "
-  by(auto simp add: vote_set_def const_map_is_Some split: split_if_asm)
+  by(auto simp add: vote_set_def const_map_is_Some split: if_split_asm)
 
 lemma finite_vote_set_upd:
   " finite (vote_set v_hist {a}) \<Longrightarrow> 

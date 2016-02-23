@@ -1387,7 +1387,7 @@ next
     from assms obtain z' where "z' \<in> Y" by blast
     let ?z = "if z \<in> Y then x \<squnion> z else x \<squnion> z'"
     have "z \<le> x \<squnion> ?z" using `z' \<in> Y` `z \<in> insert x Y` by auto
-    also have "\<dots> \<le> y" by(rule upper)(auto split: split_if_asm intro: `z' \<in> Y`)
+    also have "\<dots> \<le> y" by(rule upper)(auto split: if_split_asm intro: `z' \<in> Y`)
     finally show "z \<le> y" .
   qed
 qed

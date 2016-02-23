@@ -26,7 +26,7 @@ qed
 lemma faceCountMax_bound:
  "\<lbrakk> tame g; v \<in> \<V> g \<rbrakk> \<Longrightarrow> tri g v + quad g v \<le> 7"
 using tri_quad_le_degree[of g v]
-by(auto simp:tame_def tame11b_def split:split_if_asm)
+by(auto simp:tame_def tame11b_def split:if_split_asm)
 
 
 lemma filter_tame_succs:

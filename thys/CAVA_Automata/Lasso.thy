@@ -382,7 +382,7 @@ begin
             apply (cases pl'') 
             apply (auto 
               simp: path_simps degeneralize_ext_def 
-              split: split_if_asm)
+              split: if_split_asm)
             done
           from PS have 
             "path (degen.E T m) (q2,Suc i) pl'' (q,i)"

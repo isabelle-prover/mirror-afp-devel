@@ -110,7 +110,7 @@ lemma restrict_map_cancel:
   "(m |` S = m |` T) = (dom m \<inter> S = dom m \<inter> T)"
   by (fastforce intro: ext dest: fun_cong
                simp: restrict_map_def None_not_eq
-               split: split_if_asm)
+               split: if_split_asm)
 
 lemma map_add_restricted_self [simp]:
   "m ++ m |` S = m"
@@ -226,11 +226,11 @@ subsection {* Properties of @{term "sub_restrict_map"} *}
 
 lemma restrict_map_sub_disj: "h |` S \<bottom> h `- S"
   by (fastforce simp: sub_restrict_map_def restrict_map_def map_disj_def
-               split: option.splits split_if_asm)
+               split: option.splits if_split_asm)
 
 lemma restrict_map_sub_add: "h |` S ++ h `- S = h"
   by (fastforce simp: sub_restrict_map_def restrict_map_def map_add_def
-               split: option.splits split_if
+               split: option.splits if_split
                intro: ext)
 
 
@@ -489,7 +489,7 @@ lemma map_le_conv:
   unfolding map_le_def map_disj_def map_add_def
   by (rule iffI,
       clarsimp intro!: exI[where x="\<lambda>x. if x \<notin> dom h\<^sub>0' then h\<^sub>0 x else None"])
-     (fastforce intro: ext intro: split: option.splits split_if_asm)+
+     (fastforce intro: ext intro: split: option.splits if_split_asm)+
 
 lemma map_le_conv2:
   "h\<^sub>0' \<subseteq>\<^sub>m h\<^sub>0 = (\<exists>h\<^sub>1. h\<^sub>0 = h\<^sub>0' ++ h\<^sub>1 \<and> h\<^sub>0' \<bottom> h\<^sub>1)"

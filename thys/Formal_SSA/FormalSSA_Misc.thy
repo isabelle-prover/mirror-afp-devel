@@ -148,7 +148,7 @@ lemma butlast_idx:
 apply atomize_elim
 using assms proof (induction xs arbitrary:y)
   case (Cons x xs)
-  from Cons.prems have[simp]: "xs \<noteq> []" by (simp split:split_if_asm)
+  from Cons.prems have[simp]: "xs \<noteq> []" by (simp split:if_split_asm)
   show ?case
   proof (cases "y = x")
     case True

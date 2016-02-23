@@ -347,7 +347,7 @@ where
 lemma red_external_imp_red_external_aggr:
   "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle> \<Longrightarrow> (ta, va, h') \<in> red_external_aggr P t a M vs h"
 unfolding red_external_aggr_def
-by(auto elim!: red_external.cases split del: split_if simp add: split_beta)
+by(auto elim!: red_external.cases split del: if_split simp add: split_beta)
 
 end
 
@@ -398,7 +398,7 @@ by(auto elim: red_external.cases simp add: ta_upd_simps)
 
 lemma red_ext_aggr_new_thread_heap:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; NewThread t' ex h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> h'' = h'"
-by(auto simp add: red_external_aggr_def is_native.simps split_beta ta_upd_simps split: split_if_asm)
+by(auto simp add: red_external_aggr_def is_native.simps split_beta ta_upd_simps split: if_split_asm)
 
 end
 
@@ -413,7 +413,7 @@ lemma red_external_aggr_new_thread_exists_thread_object:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; typeof_addr h a \<noteq> None;
      NewThread t' x h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
   \<Longrightarrow> \<exists>C. typeof_addr h' (thread_id2addr t') = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
-by(auto simp add: red_external_aggr_def is_native.simps split_beta ta_upd_simps widen_Class split: split_if_asm dest!: Array_widen)
+by(auto simp add: red_external_aggr_def is_native.simps split_beta ta_upd_simps widen_Class split: if_split_asm dest!: Array_widen)
 
 end
 
@@ -421,7 +421,7 @@ context heap begin
 
 lemma red_external_aggr_hext: 
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; is_native P (the (typeof_addr h a)) M \<rbrakk> \<Longrightarrow> h \<unlhd> h'"
-apply(auto simp add: red_external_aggr_def split_beta is_native.simps elim!: external_WT_defs_cases hext_heap_clone split: split_if_asm)
+apply(auto simp add: red_external_aggr_def split_beta is_native.simps elim!: external_WT_defs_cases hext_heap_clone split: if_split_asm)
 apply(auto elim!: external_WT_defs.cases dest!: sees_method_decl_above intro: widen_trans simp add: class_type_of_eq split: htype.split_asm)
 done
 
@@ -443,7 +443,7 @@ lemma red_external_aggr_Wakeup_no_Join:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h;
      Notified \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<or> WokenUp \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
   \<Longrightarrow> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = {} \<and> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> = {} \<and> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub> = {}"
-by(auto simp add: red_external_aggr_def split_beta ta_upd_simps collect_locks_def collect_interrupts_def split: split_if_asm)
+by(auto simp add: red_external_aggr_def split_beta ta_upd_simps collect_locks_def collect_interrupts_def split: if_split_asm)
 
 lemma red_external_Suspend_StaySame:
   "\<lbrakk> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> va = RetStaySame"
@@ -451,7 +451,7 @@ by(auto elim!: red_external.cases simp add: ta_upd_simps)
 
 lemma red_external_aggr_Suspend_StaySame:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> va = RetStaySame"
-by(auto simp add: red_external_aggr_def split_beta ta_upd_simps split: split_if_asm)
+by(auto simp add: red_external_aggr_def split_beta ta_upd_simps split: if_split_asm)
 
 lemma red_external_Suspend_waitD:
   "\<lbrakk> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> M = wait"
@@ -459,7 +459,7 @@ by(auto elim!: red_external.cases simp add: ta_upd_simps)
 
 lemma red_external_aggr_Suspend_waitD:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; Suspend w \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk> \<Longrightarrow> M = wait"
-by(auto simp add: red_external_aggr_def split_beta ta_upd_simps split: split_if_asm)
+by(auto simp add: red_external_aggr_def split_beta ta_upd_simps split: if_split_asm)
 
 lemma red_external_new_thread_sub_thread:
   "\<lbrakk> P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>; NewThread t' (C, M', a') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
@@ -470,7 +470,7 @@ lemma red_external_aggr_new_thread_sub_thread:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; typeof_addr h a \<noteq> None;
      NewThread t' (C, M', a') h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
   \<Longrightarrow> typeof_addr h' a' = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread \<and> M' = run"
-by(auto simp add: red_external_aggr_def split_beta ta_upd_simps widen_Class split: split_if_asm dest!: Array_widen)
+by(auto simp add: red_external_aggr_def split_beta ta_upd_simps widen_Class split: if_split_asm dest!: Array_widen)
 
 
 lemma heap_copy_loc_length:

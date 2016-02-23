@@ -209,7 +209,7 @@ proof(rule interrupt_actions_ok_all_nthI)
           then obtain n' where "n' < length (take (Suc n) ias')" "take (Suc n) ias' ! n' = IsInterrupted t' True"
             "Interrupt t' \<notin> set (take n' (take (Suc n) ias'))" by(rule collect_interruptsE)
           hence "n' \<le> n" "ias' ! n' = IsInterrupted t' True" "Interrupt t' \<notin> set (take n' ias')"
-            using `Suc n < length ias` by(simp_all add: min_def split: split_if_asm)
+            using `Suc n < length ias` by(simp_all add: min_def split: if_split_asm)
           hence "Suc n' < length ias" using `Suc n < length ias` by(simp add: min_def)
           with `interrupt_actions_ok is' ias` 
           have "interrupt_action_ok (redT_updIs is' (take (Suc n') ias)) (ias ! Suc n')"

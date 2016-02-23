@@ -142,7 +142,7 @@ theorem (in start_context) exec_pres_type:
   apply fastforce
 
   -- Invoke
-  apply (clarsimp split: split_if_asm)
+  apply (clarsimp split: if_split_asm)
    apply fastforce
   apply (erule disjE)
    prefer 2

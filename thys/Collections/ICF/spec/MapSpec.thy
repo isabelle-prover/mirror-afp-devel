@@ -116,7 +116,7 @@ locale map_isSng = map +
 begin
   lemma isSng_correct_exists1 :
     "invar s \<Longrightarrow> (isSng s \<longleftrightarrow> (\<exists>!k. \<exists>v. (\<alpha> s k = Some v)))"
-    apply (auto simp add: isSng_correct split: split_if_asm)
+    apply (auto simp add: isSng_correct split: if_split_asm)
     apply (rule_tac x=k in exI)
     apply (rule_tac x=v in exI)
     apply (rule ext)

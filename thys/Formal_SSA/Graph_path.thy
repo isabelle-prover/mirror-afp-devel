@@ -939,7 +939,7 @@ begin
     proof
       assume asm: "x \<in> set (butlast ns\<^sub>0)"
       with ns\<^sub>0 obtain ns\<^sub>0' where ns\<^sub>0': "g \<turnstile> Entry g-ns\<^sub>0'\<rightarrow>x" "n \<notin> set (butlast ns\<^sub>0')"
-        by - (erule path2_split_ex, auto dest:in_set_butlastD simp: butlast_append split: split_if_asm)
+        by - (erule path2_split_ex, auto dest:in_set_butlastD simp: butlast_append split: if_split_asm)
       show False by (metis False assms(1) ns\<^sub>0' strict_domE)
     qed
     ultimately show ?thesis by simp

@@ -522,7 +522,7 @@ proof -
     from I have inv': "ahm_invar_aux (n - card it) a'" 
       and a'_eq_a: "\<And>k. k \<notin> it \<Longrightarrow> ahm_\<alpha>_aux a' k = ahm_\<alpha>_aux a k" 
       and a'_None: "\<And>k. k \<in> it \<Longrightarrow> ahm_\<alpha>_aux a' k = None"
-      and [simp]: "sz = array_length a'" by(auto split: split_if_asm)
+      and [simp]: "sz = array_length a'" by(auto split: if_split_asm)
     from it_sub finite_dom_ahm_\<alpha>_aux[OF inv] have "finite it" by(rule finite_subset)
     moreover with `k \<in> it` have "card it > 0" by(auto simp add: card_gt_0_iff)
     moreover from finite_dom_ahm_\<alpha>_aux[OF inv] it_sub

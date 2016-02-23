@@ -27,21 +27,21 @@ lemma type_eq_type: "typeof v = Some T \<Longrightarrow> P \<turnstile> typeof\<
 by(induct v)auto
 
 lemma typeof_Void [simp]: "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some Void \<Longrightarrow> v = Unit"
-by(induct v,auto split:split_if_asm)
+by(induct v,auto split:if_split_asm)
 
 lemma typeof_NT [simp]: "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some NT \<Longrightarrow> v = Null"
-by(induct v,auto split:split_if_asm)
+by(induct v,auto split:if_split_asm)
 
 lemma typeof_Boolean [simp]: "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some Boolean \<Longrightarrow> \<exists>b. v = Bool b"
-by(induct v,auto split:split_if_asm)
+by(induct v,auto split:if_split_asm)
 
 lemma typeof_Integer [simp]: "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some Integer \<Longrightarrow> \<exists>i. v = Intg i"
-by(induct v,auto split:split_if_asm)
+by(induct v,auto split:if_split_asm)
 
 lemma typeof_Class_Subo: 
 "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some (Class C) \<Longrightarrow> 
 \<exists>a Cs D S. v = Ref(a,Cs) \<and> h a = Some(D,S) \<and> Subobjs P D Cs \<and> last Cs = C"
-by(induct v,auto split:split_if_asm)
+by(induct v,auto split:if_split_asm)
 
 subsection {* The rules *}
 

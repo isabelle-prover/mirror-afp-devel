@@ -3,7 +3,7 @@ theory Trace
 imports Basis
 begin
 
-declare Let_def[simp] split_if_asm[split]
+declare Let_def[simp] if_split_asm[split]
 (*>*)
 
 section{*A trace based model*}

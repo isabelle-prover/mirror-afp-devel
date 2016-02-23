@@ -147,7 +147,7 @@ proof (induct A)
     have "{(a,b). a \<in> A \<and> b \<in> A \<and> a < b} \<inter> (\<lambda>a. if a < x then (a,x) else (x,a)) ` A = {}"
       using `x \<notin> A` by auto
     moreover have "inj_on (\<lambda>a. if a < x then (a, x) else (x, a)) A"
-      by (auto intro: inj_onI split: split_if_asm)
+      by (auto intro: inj_onI split: if_split_asm)
     ultimately show ?thesis using insert Suc
       by (simp add: card_Un_disjoint card_image del: if_image_distrib)
   qed (simp add: card_eq_0_iff insert)

@@ -310,10 +310,10 @@ apply (rule conjI)
 apply  clarify
 apply  (rule conjI)
 apply   clarify
-apply   (clarsimp simp del: BinDag.set_of.simps split del: split_if)
+apply   (clarsimp simp del: BinDag.set_of.simps split del: if_split)
 defer
 apply   (rule impI)
-apply   (clarsimp simp del: BinDag.set_of.simps split del: split_if)
+apply   (clarsimp simp del: BinDag.set_of.simps split del: if_split)
 defer
 apply   (clarsimp simp add: wf_levellist_def wf_marking_def) (* p=Null*)
 apply (simp only: Levellist_ext_to_all )
@@ -464,7 +464,7 @@ proof -
         by auto
       show ?thesis
         using size_rt_dec size_lt_dec rt_node lt_Tip Tip lt rt  
-        apply (clarsimp simp del: set_of_Node split del: split_if simp add: s)
+        apply (clarsimp simp del: set_of_Node split del: if_split simp add: s)
         subgoal premises prems for marka levellista lla
         proof -
           have lla: "Levellist levellista next lla" by fact
@@ -596,7 +596,7 @@ proof -
     show ?thesis
       apply (intro conjI ordered_lt mark_lt size_lt_dec)
       apply (clarify)
-      apply (simp add: size_rt_dec split del: split_if)
+      apply (simp add: size_rt_dec split del: if_split)
       apply (simp only: Levellist_ext_to_all)
       subgoal premises prems for marka nexta levellista lla
       proof -
@@ -1323,14 +1323,14 @@ apply (intro allI impI)
 apply (rule_tac x=\<sigma> in exI)
 apply (rule_tac x=t in exI)
 apply (rule conjI)
-apply  (clarsimp split:split_if_asm simp del: concat_replicate_trivial)
+apply  (clarsimp split:if_split_asm simp del: concat_replicate_trivial)
 apply  (frule replicate_spec [symmetric])
 apply   (simp)
 apply  (clarsimp simp add: Levellist_def )
 apply  (case_tac i)
 apply   simp
 apply  simp
-apply (simp add: Collect_conv_if split:split_if_asm)
+apply (simp add: Collect_conv_if split:if_split_asm)
 apply vcg_step
 apply (elim exE conjE)
 apply (rule_tac x=ll' in exI)

@@ -77,7 +77,7 @@ lemma f_join_aux_nth[rule_format]: "
   \<forall>n i. i < card (I \<inter> {n..<n + length xs}) \<longrightarrow>
   (f_join_aux xs n I) ! i = xs ! (((I \<inter> {n..<n + length xs}) \<rightarrow> i) - n)"
 apply (induct xs, simp)
-apply (clarsimp split del: split_if)
+apply (clarsimp split del: if_split)
 apply (subgoal_tac "{n..<Suc (n + length xs)} = insert n {Suc n..<Suc (n + length xs)}")
  prefer 2
  apply fastforce
@@ -1362,7 +1362,7 @@ lemma i_shrink_eq_Msg_iUntil_finish_event_conv: "
   (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t0). event t2 \<and> s t2 = m) \<or>
   (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t0). (\<not> event t2 \<and> s t2 = m \<and> (
     \<bigcirc> t' t2 [0\<dots>]. (s t3 = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t'). event t4 \<and> s t4 = \<NoMsg>)))))"
-apply (simp add: i_shrink_eq_Msg_iSince_conv split del: split_if)
+apply (simp add: i_shrink_eq_Msg_iSince_conv split del: if_split)
 apply (simp only: iTL_defs iT_add iT_cut_greater iT_cut_less Ball_def Bex_def iT_iff iFROM_inext)
 apply (subgoal_tac "t * k < t * k + k - Suc 0")
  prefer 2
@@ -1374,7 +1374,7 @@ apply (rule iffI)
   apply (rule le_pred_imp_less, simp)
   apply (simp only: mult.commute[of t k])
   apply (rule between_imp_mod_le[of "k - Suc 0 - Suc 0" k t])
-  apply (simp split del: split_if)+
+  apply (simp split del: if_split)+
  apply (elim exE conjE, rename_tac t1)
  apply (drule_tac x=t1 in order_le_imp_less_or_eq, erule disjE)
   prefer 2
@@ -1383,7 +1383,7 @@ apply (rule iffI)
   apply (clarsimp simp add: mod_pred iIN_iff)
  apply (rule disjI2)
  apply (rule_tac x=t1 in exI)
- apply (simp split del: split_if)
+ apply (simp split del: if_split)
  apply (rule conjI)
   apply (rule_tac x="t * k + k - Suc 0" in exI)
   apply (clarsimp simp: mod_pred iIN_iff)
@@ -1410,7 +1410,7 @@ apply (drule_tac y=t1 in order_le_imp_less_or_eq, erule disjE)
  prefer 2
  apply (drule_tac t=t1 in sym)
  apply (clarsimp simp: iIN_iff, rename_tac t3)
- apply (split split_if_asm)
+ apply (split if_split_asm)
   apply (subgoal_tac "t2 = Suc (t * k)")
    prefer 2
    apply simp

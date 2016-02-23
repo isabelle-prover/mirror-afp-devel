@@ -217,7 +217,7 @@ next
     using assms by (auto simp: finite_nan finite_infinity)
   then show "Val a < Val b"
     using lt assms
-    by (simp add: fcompare_def Isnan_def Infinity_def Val_def split: split_if_asm)
+    by (simp add: fcompare_def Isnan_def Infinity_def Val_def split: if_split_asm)
 qed
 
 lemma float_eq [simp]:
@@ -239,7 +239,7 @@ next
     using assms float_distinct_finite by auto
   then show "Val a = Val b"
     using eq assms
-    by (simp add: fcompare_def Isnan_def Infinity_def Val_def split: split_if_asm)
+    by (simp add: fcompare_def Isnan_def Infinity_def Val_def split: if_split_asm)
 qed
 
 lemma float_le [simp]:

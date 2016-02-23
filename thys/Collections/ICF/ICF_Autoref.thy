@@ -433,7 +433,7 @@ lemma (in map_restrict) restrict_autoref[autoref_rules]:
   apply (intro fun_relI)
   apply (simp add: restrict_correct br_comp_alt m1.rel_def m2.rel_def )
   apply (intro fun_relI)
-  apply (auto simp: restrict_map_def split: split_if_asm)
+  apply (auto simp: restrict_map_def split: if_split_asm)
   apply (drule (1) fun_relD1)
   apply (auto simp: option_rel_def) []
   apply (drule (1) fun_relD1)

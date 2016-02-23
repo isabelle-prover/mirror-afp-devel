@@ -481,7 +481,7 @@ lemma t_ins_invariance:
   assumes XY: "Y \<in> t_ins_set X" and X: "t_ins_inv x xt X"
   shows "t_ins_inv x xt Y"
 using XY
-proof (rule t_ins_set.induct, simp_all split del: split_if)
+proof (rule t_ins_set.induct, simp_all split del: if_split)
   show "t_ins_inv x xt X" using X .
 next
   fix z :: "'a::linorder" and y yl yr ts
@@ -600,7 +600,7 @@ next
       case 0
       have "0 \<in> {..<Suc (length ts)}" by simp
       with I have "?P 0" ..
-      thus ?thesis by (simp add: Let_def 0 split add: split_if_asm)
+      thus ?thesis by (simp add: Let_def 0 split add: if_split_asm)
     next
       case (Suc m)
       have "?P n" using I and n ..
@@ -654,7 +654,7 @@ next
         else t_multiset (t_right ((ts @ [Branch x xt Leaf]) ! 0)))"
        by (simp add: Let_def)
       show ?thesis
-      proof (simp add: Let_def 0 del: t_sorted.simps split del: split_if,
+      proof (simp add: Let_def 0 del: t_sorted.simps split del: if_split,
        rule conjI, simp_all add: Let_def 0 del: t_sorted.simps,
        rule_tac [2] conjI, rule_tac [!] impI)
         assume s: "t_sorted xt"
@@ -732,7 +732,7 @@ next
         else t_multiset (t_right ((ts @ [Branch x xt Leaf]) ! 0)))"
        by (simp add: Let_def)
       show ?thesis
-      proof (simp add: Let_def 0 del: t_sorted.simps split del: split_if,
+      proof (simp add: Let_def 0 del: t_sorted.simps split del: if_split,
        rule conjI, simp_all add: Let_def 0 del: t_sorted.simps,
        rule_tac [2] conjI, rule_tac [!] impI)
         assume s: "t_sorted xt"

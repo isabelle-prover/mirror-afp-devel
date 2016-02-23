@@ -742,7 +742,7 @@ proof -
   also have "gfp ?R \<le> 0"
     using gfp_lemma2[OF \<open>mono ?R\<close>] assms[THEN pmf_positive]
     by (cases "gfp ?R" rule: ereal_cases)
-       (auto simp: one_ereal_def min_def field_simps mult_le_0_iff split: split_if_asm)
+       (auto simp: one_ereal_def min_def field_simps mult_le_0_iff split: if_split_asm)
   finally have "\<And>s. AE \<omega> in T s. \<not> N \<omega>"
     by (subst AE_iff_measurable[OF _ refl]) (auto intro: antisym simp: le_fun_def)
   then have "AE \<omega> in T s. alw (not N) \<omega>"

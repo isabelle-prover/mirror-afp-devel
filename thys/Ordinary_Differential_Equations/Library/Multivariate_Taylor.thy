@@ -21,7 +21,7 @@ proof (rule sym)
       thus "x \<in> ?f ` ?p"
         by (intro image_eqI[where x="(restrict x A, x a)"])
           (auto simp: restrict_def extensional_def PiE_iff)
-    qed (auto simp: PiE_iff extensional_def split: split_if_asm)
+    qed (auto simp: PiE_iff extensional_def split: if_split_asm)
   next
     show "inj_on ?f ?p" by (rule inj_onI, clarsimp)
       (metis Int_iff PiE_def assms extensional_restrict restrict_fupd fun_upd_same)

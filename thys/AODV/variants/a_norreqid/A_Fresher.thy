@@ -114,7 +114,7 @@ lemma nsqn_update_changed_kno_val [simp]: "\<And>rt ip dsn dsk hops nhip.
   rt \<noteq> update rt ip (dsn, kno, val, hops, nhip, {})
    \<Longrightarrow> nsqn (update rt ip (dsn, kno, val, hops, nhip, {})) ip = dsn"
   using assms unfolding nsqn\<^sub>r_def update_def
-  by (clarsimp simp: kD_nsqn split: option.split_asm option.split split_if_asm)
+  by (clarsimp simp: kD_nsqn split: option.split_asm option.split if_split_asm)
      (metis fun_upd_triv)
 
 lemma nsqn_addpreRT_inv [simp]:

@@ -593,7 +593,7 @@ next
       hence "finite (max x ` {y \<in> Y. y > x})"
         by(rule finite_subset[rotated]) auto
       hence "finite {y \<in> Y. y > x}"
-        by(rule finite_imageD)(auto intro!: inj_onI simp add: max_def split: split_if_asm)
+        by(rule finite_imageD)(auto intro!: inj_onI simp add: max_def split: if_split_asm)
       moreover have "finite {y \<in> Y. y \<le> x}"
         by(rule finite_enat_bounded)(auto simp add: enat)
       ultimately have "finite ({y \<in> Y. y > x} \<union> {y \<in> Y. y \<le> x})" by simp

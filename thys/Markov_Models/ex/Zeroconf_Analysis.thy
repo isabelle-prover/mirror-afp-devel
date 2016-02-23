@@ -131,7 +131,7 @@ next
     by (auto intro!: T.prob_eq_0_AE T.prob_Collect_eq_1[THEN iffD2]
              simp: P_err_def AE_sconst ev_sconst HLD_iff ev_Stream T.prob_space
              simp del: space_T sets_T )
-qed (insert p q, auto intro!: integrable_measure_pmf_finite split: split_if_asm)
+qed (insert p q, auto intro!: integrable_measure_pmf_finite split: if_split_asm)
 
 lemma P_err_start: "P_err start = (q * p ^ Suc N) / (1 - q * (1 - p ^ Suc N))"
   by (simp add: P_err)
@@ -142,7 +142,7 @@ lemma states_closed:
   assumes "s \<in> states"
   assumes "(s, t) \<in> acc_on (- {error, ok})"
   shows "t \<in> states"
-  using assms(2,1) p q by induction (auto split: split_if_asm)
+  using assms(2,1) p q by induction (auto split: if_split_asm)
 
 lemma finite_reached:
   assumes s: "s \<in> states" shows "finite (acc_on (- {error, ok}) `` {s})"
@@ -174,7 +174,7 @@ lemma R_finite:
   unfolding R_def
 proof (rule nn_integral_reward_until_finite)
   { fix t assume "(s, t) \<in> acc" from this s p q have "t \<in> states"
-      by induction (auto split: split_if_asm) } 
+      by induction (auto split: if_split_asm) } 
   then have "acc `` {s} \<subseteq> states"
     by auto
   then show "finite (acc `` {s})"

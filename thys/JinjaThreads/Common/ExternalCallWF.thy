@@ -26,7 +26,7 @@ apply(clarsimp)
 apply(drule (1) sees_wf_native)
 apply(erule external_WT_defs.cases)
 apply(case_tac [!] hT)
-apply(auto 4 4 simp add: red_external_aggr_def widen_Class intro: red_external.intros heap_base.red_external.intros[where addr2thread_id=addr2thread_id and thread_id2addr=thread_id2addr and spurious_wakeups=True and empty_heap=empty_heap and allocate=allocate and typeof_addr=typeof_addr and heap_read=heap_read and heap_write=heap_write] heap_base.red_external.intros[where addr2thread_id=addr2thread_id and thread_id2addr=thread_id2addr and spurious_wakeups=False and empty_heap=empty_heap and allocate=allocate and typeof_addr=typeof_addr and heap_read=heap_read and heap_write=heap_write] split: split_if_asm dest: sees_method_decl_above)
+apply(auto 4 4 simp add: red_external_aggr_def widen_Class intro: red_external.intros heap_base.red_external.intros[where addr2thread_id=addr2thread_id and thread_id2addr=thread_id2addr and spurious_wakeups=True and empty_heap=empty_heap and allocate=allocate and typeof_addr=typeof_addr and heap_read=heap_read and heap_write=heap_write] heap_base.red_external.intros[where addr2thread_id=addr2thread_id and thread_id2addr=thread_id2addr and spurious_wakeups=False and empty_heap=empty_heap and allocate=allocate and typeof_addr=typeof_addr and heap_read=heap_read and heap_write=heap_write] split: if_split_asm dest: sees_method_decl_above)
 done
 
 lemma WT_red_external_list_conv:
@@ -490,7 +490,7 @@ proof(atomize_elim)
         case RedWaitInterrupt
         note ta = `ta = \<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>`
         from ta False None have hli: "\<not> has_lock (locks s $ a) t \<or> t \<notin> interrupts s"
-          by(fastforce simp add: lock_actions_ok'_iff finfun_upd_apply split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t dest: has_lock_may_lock)
+          by(fastforce simp add: lock_actions_ok'_iff finfun_upd_apply split: if_split_asm dest: may_lock_t_may_lock_unlock_lock_t dest: has_lock_may_lock)
         show ?thesis
         proof(cases "has_lock (locks s $ a) t")
           case True
@@ -517,7 +517,7 @@ proof(atomize_elim)
         note ta = `ta = \<lbrace>Suspend a, Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a\<rbrace>`
 
         from ta False None have hli: "\<not> has_lock (locks s $ a) t \<or> t \<in> interrupts s"
-          by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t dest: has_lock_may_lock)
+          by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: if_split_asm dest: may_lock_t_may_lock_unlock_lock_t dest: has_lock_may_lock)
         show ?thesis
         proof(cases "has_lock (locks s $ a) t")
           case True
@@ -544,7 +544,7 @@ proof(atomize_elim)
                    then \<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, IsInterrupted t True, ClearInterrupt t, ObsInterrupted t\<rbrace>
                    else \<lbrace>Suspend a, Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a \<rbrace>"
         from ta False None have "has_lock (locks s $ a) t"
-          by(auto simp add: finfun_upd_apply split: split_if_asm)
+          by(auto simp add: finfun_upd_apply split: if_split_asm)
         hence "final_thread.actions_ok final s t ?ta'" using None
           by(auto simp add: final_thread.actions_ok_iff final_thread.cond_action_oks.simps lock_ok_las_def finfun_upd_apply has_lock_may_lock wset_actions_ok_def)
         moreover from RedWaitFail RedWait RedWaitInterrupt
@@ -581,7 +581,7 @@ proof(atomize_elim)
         case RedWaitSpurious
         note ta = `ta = \<lbrace>Unlock\<rightarrow>a, Lock\<rightarrow>a, ReleaseAcquire\<rightarrow>a, IsInterrupted t False, SyncUnlock a\<rbrace>`
         from ta False None have hli: "\<not> has_lock (locks s $ a) t \<or> t \<in> interrupts s"
-          by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t dest: has_lock_may_lock)
+          by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: if_split_asm dest: may_lock_t_may_lock_unlock_lock_t dest: has_lock_may_lock)
         show ?thesis
         proof(cases "has_lock (locks s $ a) t")
           case True
@@ -609,7 +609,7 @@ proof(atomize_elim)
         note ta = `ta = \<lbrace>Notify a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
         let ?ta' = "\<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
         from ta False None have "\<not> has_lock (locks s $ a) t"
-          by(fastforce simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t has_lock_may_lock)
+          by(fastforce simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: if_split_asm dest: may_lock_t_may_lock_unlock_lock_t has_lock_may_lock)
         hence "final_thread.actions_ok' s t ?ta'" using None
           by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
         moreover from ta have "final_thread.actions_subset ?ta' ta"
@@ -621,7 +621,7 @@ proof(atomize_elim)
         note ta = `ta = \<lbrace>UnlockFail\<rightarrow>a\<rbrace>`
         let ?ta' = "\<lbrace>Notify a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>"
         from ta False None have "has_lock (locks s $ a) t"
-          by(auto simp add: finfun_upd_apply split: split_if_asm)
+          by(auto simp add: finfun_upd_apply split: if_split_asm)
         hence "final_thread.actions_ok' s t ?ta'" using None
           by(auto simp add: finfun_upd_apply simp add: wset_actions_ok_def intro: has_lock_may_lock)
         moreover from ta have "final_thread.actions_subset ?ta' ta"
@@ -633,7 +633,7 @@ proof(atomize_elim)
         note ta = `ta = \<lbrace>NotifyAll a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>`
         let ?ta' = "\<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
         from ta False None have "\<not> has_lock (locks s $ a) t"
-          by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: split_if_asm dest: may_lock_t_may_lock_unlock_lock_t)
+          by(auto simp add: lock_actions_ok'_iff finfun_upd_apply wset_actions_ok_def Cons_eq_append_conv split: if_split_asm dest: may_lock_t_may_lock_unlock_lock_t)
         hence "final_thread.actions_ok' s t ?ta'" using None
           by(auto simp add: lock_actions_ok'_iff finfun_upd_apply)
         moreover from ta have "final_thread.actions_subset ?ta' ta"
@@ -645,7 +645,7 @@ proof(atomize_elim)
         note ta = `ta = \<lbrace>UnlockFail\<rightarrow>a\<rbrace>`
         let ?ta' = "\<lbrace>NotifyAll a, Unlock\<rightarrow>a, Lock\<rightarrow>a\<rbrace>"
         from ta False None have "has_lock (locks s $ a) t"
-          by(auto simp add: finfun_upd_apply split: split_if_asm)
+          by(auto simp add: finfun_upd_apply split: if_split_asm)
         hence "final_thread.actions_ok' s t ?ta'" using None
           by(auto simp add: finfun_upd_apply wset_actions_ok_def intro: has_lock_may_lock)
         moreover from ta have "final_thread.actions_subset ?ta' ta"
@@ -706,7 +706,7 @@ proof -
     and [cong] = conj_cong
   
   from assms show ?thesis
-    by(fastforce simp add: red_external_aggr_def split_beta ta_upd_simps split: split_if_asm intro: exI[where x="empty"] exI[where x="(K$ None)(a $:= \<lfloor>(t, 0)\<rfloor>)"] exI[where x="K$ None"])
+    by(fastforce simp add: red_external_aggr_def split_beta ta_upd_simps split: if_split_asm intro: exI[where x="empty"] exI[where x="(K$ None)(a $:= \<lfloor>(t, 0)\<rfloor>)"] exI[where x="K$ None"])
 qed
 
 end
@@ -755,7 +755,7 @@ apply(simp add: final_thread.actions_ok_iff lock_ok_las_def)
 apply(erule red_external.cases)
 apply(erule_tac [!] red_external.cases)
 apply simp_all
-apply(auto simp add: finfun_upd_apply wset_actions_ok_def dest: heap_clone_deterministic[OF det] split: split_if_asm)
+apply(auto simp add: finfun_upd_apply wset_actions_ok_def dest: heap_clone_deterministic[OF det] split: if_split_asm)
 using deterministic_heap_ops_no_spurious_wakeups[OF det]
 apply simp_all
 done

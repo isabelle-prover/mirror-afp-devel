@@ -855,7 +855,7 @@ lemma
   atLeastAtMost_cut_less:    "{m..n} \<down>< t = (if n < t then {m..n} else {m..<t})" and
   atLeastAtMost_cut_ge:      "{m..n} \<down>\<ge> t = (if t \<le> m then {m..n} else {t..n})" and
   atLeastAtMost_cut_greater: "{m..n} \<down>> t = (if t < m then {m..n} else {t<..n})"
-apply (simp_all add: set_eq_iff i_cut_mem_iff split_if linorder_not_le linorder_not_less)
+apply (simp_all add: set_eq_iff i_cut_mem_iff if_split linorder_not_le linorder_not_less)
 apply fastforce+
 done
 

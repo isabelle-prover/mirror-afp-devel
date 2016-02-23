@@ -92,7 +92,7 @@ begin
     case (1 g v n phis)
     show ?case
     using "1.IH"(1,2) "1.prems"
-    apply (auto simp: readVariableRecursive.psimps Let_def phis_measure_update_le split: split_if_asm list.splits option.splits prod.splits)
+    apply (auto simp: readVariableRecursive.psimps Let_def phis_measure_update_le split: if_split_asm list.splits option.splits prod.splits)
     apply (subgoal_tac "phis_measure g v x1 \<le> phis_measure g v (Mapping.update (n,v) [] phis)")
      defer
      apply (rule "1.IH"(3))
@@ -224,7 +224,7 @@ begin
     have a: "\<And>n. phiDefNodes_aux g v [n\<leftarrow>\<alpha>n g . (n, v) \<notin> dom (Mapping.lookup phis)] n \<subseteq> (set (\<alpha>n g))"
       by (rule subset_trans, rule phiDefNodes_aux_in_unvisited, auto)
     have "Mapping.keys (phis'_aux g v ns phis) \<subseteq> set (\<alpha>n g) \<times> vars g \<union> Mapping.keys phis"
-      by (auto simp: phis'_aux_def keys_dom_lookup split: split_if_asm dest: subsetD[OF a])
+      by (auto simp: phis'_aux_def keys_dom_lookup split: if_split_asm dest: subsetD[OF a])
     thus ?thesis by (rule finite_subset, auto intro: assms)
   qed
 
@@ -335,7 +335,7 @@ begin
      apply (auto simp: lookup_update_neq phis'_aux_def)[1]
     apply (auto split: option.splits prod.splits)[1]
     apply (subst(asm) IH2, assumption, assumption, assumption)
-    apply (auto simp: lookup_update_cases phis'_aux_def removeAll_filter_not_eq image_def split: split_if_asm)[1]
+    apply (auto simp: lookup_update_cases phis'_aux_def removeAll_filter_not_eq image_def split: if_split_asm)[1]
        apply (cut_tac fold_union_elemI)
          apply auto[3]
       apply (cut_tac fold_union_elemI)
@@ -371,13 +371,13 @@ begin
     have IH2: "phis'_aux g v {m} (phis'_aux g v (set ms) phis) = snd (readVariableRecursive g v m (phis'_aux g v (set ms) phis))"
     apply (rule "3.IH"(2))
           apply (auto simp: IH1 intro: phis'_aux_finite)[5]
-     apply (simp add: phis'_aux_def keys_dom_lookup dom_def split: split_if_asm)
+     apply (simp add: phis'_aux_def keys_dom_lookup dom_def split: if_split_asm)
      apply safe
       apply (erule phiDefNodes_auxE)
        using "3.prems"(1,5)
        apply (auto simp: keys_dom_lookup)[3]
     using "3.prems"(6)
-    apply (auto simp: phis'_aux_def split: split_if_asm)
+    apply (auto simp: phis'_aux_def split: if_split_asm)
     done
 
     have a: "phiDefNodes_aux g v [n\<leftarrow>\<alpha>n g . (n, v) \<notin> Mapping.keys (phis'_aux g v (set ms) phis)] m \<subseteq> phiDefNodes_aux g v [n\<leftarrow>\<alpha>n g . (n, v) \<notin> Mapping.keys phis] m"
@@ -394,7 +394,7 @@ begin
       apply-
       apply (erule phiDefNodes_auxE, simp)
       apply (rule phiDefNodes_auxI)
-         apply (auto simp: phis'_aux_def keys_dom_lookup split: split_if_asm)[3]
+         apply (auto simp: phis'_aux_def keys_dom_lookup split: if_split_asm)[3]
         apply (drule phiDefNodes_aux_redirect)
               using "3.prems"(1)
               apply auto[6]
@@ -479,16 +479,16 @@ begin
          using 3
          apply (auto simp: uses_in_\<alpha>n)[2]
         apply (rule finite_subset[where B="set (\<alpha>n g) \<times> vars g \<union> Mapping.keys p"])
-         apply (auto simp: keys_dom_lookup IH[symmetric] split: split_if_asm dest!: phiDefNodes_aux_in_unvisited[THEN subsetD])[1]
+         apply (auto simp: keys_dom_lookup IH[symmetric] split: if_split_asm dest!: phiDefNodes_aux_in_unvisited[THEN subsetD])[1]
         apply (simp add: 3(4))[1]
        using 3(5-6)
-       apply (auto simp: keys_dom_lookup dom_def IH[symmetric] split: split_if_asm dest!: phiDefNode_aux_is_join_node)
+       apply (auto simp: keys_dom_lookup dom_def IH[symmetric] split: if_split_asm dest!: phiDefNode_aux_is_join_node)
       done
 
       have a: "m \<in> phiDefNodes_aux g v [n\<leftarrow>\<alpha>n g . (n, v) \<notin> Mapping.keys ?p] n \<Longrightarrow> m \<in> phiDefNodes_aux g v [n\<leftarrow>\<alpha>n g . (n, v) \<notin> Mapping.keys p] n"
       apply (erule rev_subsetD)
       apply (rule phiDefNodes_aux_unvisited_monotonic)
-      by (auto simp: IH[symmetric] keys_dom_lookup split: split_if_asm)
+      by (auto simp: IH[symmetric] keys_dom_lookup split: if_split_asm)
 
       have b: "v \<notin> set us \<Longrightarrow> [n\<leftarrow>\<alpha>n g . (n, v) \<notin> Mapping.keys ?p] = [n\<leftarrow>\<alpha>n g . (n, v) \<notin> Mapping.keys p]"
       by (rule arg_cong2[where f=filter], auto simp: keys_dom_lookup IH[symmetric])
@@ -497,7 +497,7 @@ begin
       unfolding aux_1_def
       unfolding foldr.foldr_Cons
       unfolding aux_1_def[symmetric]
-      by (auto simp: Let_def split_def IH[symmetric] rVV[symmetric] phis'_aux_def b dest: a uses_in_vars split: split_if_asm)
+      by (auto simp: Let_def split_def IH[symmetric] rVV[symmetric] phis'_aux_def b dest: a uses_in_vars split: if_split_asm)
     }
   qed (auto simp: lookup_multimap_def)
 
@@ -527,9 +527,9 @@ begin
 
     with this[of n] asm(2) have a': "Mapping.lookup ?u n = None" by simp
     moreover have "finite (Mapping.keys ?p)"
-      by (rule finite_subset[where B="set (\<alpha>n g) \<times> vars g"]) (auto simp: keys_dom_lookup IH[symmetric] split: split_if_asm dest!: phiDefNodes_aux_in_unvisited[THEN subsetD])
+      by (rule finite_subset[where B="set (\<alpha>n g) \<times> vars g"]) (auto simp: keys_dom_lookup IH[symmetric] split: if_split_asm dest!: phiDefNodes_aux_in_unvisited[THEN subsetD])
     moreover have "\<And>n v. (n,v) \<in> Mapping.keys ?p \<Longrightarrow> length (predecessors g n) \<noteq> 1"
-      by (auto simp: keys_dom_lookup dom_def IH[symmetric] split: split_if_asm dest!: phiDefNode_aux_is_join_node)
+      by (auto simp: keys_dom_lookup dom_def IH[symmetric] split: if_split_asm dest!: phiDefNode_aux_is_join_node)
     moreover have "\<And>v. Mapping.lookup ?p (Entry g,v) \<in> {None, Some []}"
       by (auto simp: IH[symmetric])
     ultimately have aux_2: "lookupDef g n ` uses g n = lookup_multimap u' n" "\<And>m. m \<noteq> n \<Longrightarrow> Mapping.lookup u' m = Mapping.lookup ?u m"
@@ -599,11 +599,11 @@ begin
     apply (auto simp: lookup_map_keys a intro!: ext)
        apply (auto simp: vimage_def)[1]
       apply (subst(asm) foldr_aux_2(3)[OF _ _ surjective_pairing, symmetric])
-        apply (auto simp: phiDefNodes_def vimage_def elim!: fold_union_elem intro!: \<alpha>n_distinct split: split_if_asm)[4]
+        apply (auto simp: phiDefNodes_def vimage_def elim!: fold_union_elem intro!: \<alpha>n_distinct split: if_split_asm)[4]
      apply (subst(asm) foldr_aux_2(3)[OF _ _ surjective_pairing, symmetric])
-       apply (auto simp: phiDefNodes_def vimage_def elim!: fold_union_elem intro!: \<alpha>n_distinct split: split_if_asm)[3]
+       apply (auto simp: phiDefNodes_def vimage_def elim!: fold_union_elem intro!: \<alpha>n_distinct split: if_split_asm)[3]
     apply (subst(asm) foldr_aux_2(3)[OF _ _ surjective_pairing, symmetric])
-      apply (auto simp: phiDefNodes_def vimage_def elim!: fold_union_elem intro!: \<alpha>n_distinct fold_union_elemI split: split_if_asm)
+      apply (auto simp: phiDefNodes_def vimage_def elim!: fold_union_elem intro!: \<alpha>n_distinct fold_union_elemI split: if_split_asm)
     done
   qed
 end

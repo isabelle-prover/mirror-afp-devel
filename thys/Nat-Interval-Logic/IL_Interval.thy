@@ -460,7 +460,7 @@ done
 corollary iMOD_Suc: "
   x \<in> [r, mod m] \<Longrightarrow> (Suc x \<in> [r, mod m]) = (m = Suc 0)"
 apply (simp add: iMOD_iff, safe)
-apply (simp add: mod_Suc, split split_if_asm)
+apply (simp add: mod_Suc, split if_split_asm)
 apply simp+
 done
 

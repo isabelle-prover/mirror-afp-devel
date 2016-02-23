@@ -3107,7 +3107,7 @@ val state_fun_update_ss =
       @ @{thms list.distinct} @ @{thms simp_thms} @ K_fun_convs)
     addsimprocs [DistinctTreeProver.distinct_simproc ["distinct_fields", "distinct_fields_globals"]]
     |> Simplifier.add_cong @{thm imp_cong} (* K_fun_congs  FIXME: Stefan fragen*)
-    |> Splitter.add_split @{thm split_if});
+    |> Splitter.add_split @{thm if_split});
 
 in
 

@@ -916,7 +916,7 @@ proof-
           thus ?thesis
             using True
             using `\<not> clauseTautology clause`
-            by (auto simp only: Let_def split: split_if) 
+            by (auto simp only: Let_def split: if_split) 
         next
           case False
           hence "getSATFlag state = FALSE" "\<not> satisfiable Phi"

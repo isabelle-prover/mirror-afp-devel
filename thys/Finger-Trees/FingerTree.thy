@@ -1412,7 +1412,7 @@ lemma splitDigit_inv':
   "
   apply (unfold splitDigit_def)
   apply (cases d)
-  apply (auto split: split_if_asm simp add: Let_def)
+  apply (auto split: if_split_asm simp add: Let_def)
   done
 
 
@@ -1421,7 +1421,7 @@ lemma splitDigit_list: "splitDigit p i d = (l,n,r) \<Longrightarrow>
   \<and> length l \<le> 4 \<and> length r \<le> 4"
   apply (unfold splitDigit_def)
   apply (cases d)
-  apply (auto split: split_if_asm simp add: Let_def)
+  apply (auto split: if_split_asm simp add: Let_def)
   done
 
 lemma gmnl_gmft: "\<forall> x \<in> set nl. is_measured_node x \<Longrightarrow> 
@@ -2388,7 +2388,7 @@ subsubsection "Correctness statements"
     apply (unfold toList_def splitTree_aux_def splitTree_def annot_def 
       extract_splitres_def extract_splitres_l_def 
       extract_splitres_a_def extract_splitres_r_def) [1]
-    apply (auto split: split_if_asm prod.split_asm 
+    apply (auto split: if_split_asm prod.split_asm 
       simp add: init_ff sum_tt[unfolded annot_def] Abs_splitres_inverse) [1]
 
     apply (rule
@@ -2401,7 +2401,7 @@ subsubsection "Correctness statements"
     apply (unfold toList_def splitTree_aux_def splitTree_def annot_def 
       extract_splitres_def extract_splitres_l_def 
       extract_splitres_a_def extract_splitres_r_def) [1]
-    apply (auto split: split_if_asm prod.split_asm 
+    apply (auto split: if_split_asm prod.split_asm 
       simp add: init_ff sum_tt[unfolded annot_def] Abs_splitres_inverse) [1]
 
     apply (rule
@@ -2414,7 +2414,7 @@ subsubsection "Correctness statements"
     apply (unfold toList_def splitTree_aux_def splitTree_def annot_def 
       extract_splitres_def extract_splitres_l_def 
       extract_splitres_a_def extract_splitres_r_def) [1]
-    apply (auto split: split_if_asm prod.split_asm 
+    apply (auto split: if_split_asm prod.split_asm 
       simp add: init_ff sum_tt[unfolded annot_def] Abs_splitres_inverse) [1]
     done
 

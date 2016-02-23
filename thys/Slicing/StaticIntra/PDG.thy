@@ -148,7 +148,7 @@ definition PDG_BS :: "'node set \<Rightarrow> 'node set"
 
 lemma PDG_BS_valid_node:"n \<in> PDG_BS S \<Longrightarrow> valid_node n"
   by(auto elim:PDG_path_CFG_path dest:path_valid_node simp:PDG_BS_def 
-          split:split_if_asm)
+          split:if_split_asm)
 
 lemma Exit_PDG_BS:"n \<in> PDG_BS {(_Exit_)} \<Longrightarrow> n = (_Exit_)"
   by(fastforce dest:PDG_path_Exit simp:PDG_BS_def)

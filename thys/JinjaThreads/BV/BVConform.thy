@@ -168,7 +168,7 @@ apply clarify
 apply (simp (no_asm_use))
 apply clarify
 apply (unfold conf_f_def)
-apply (simp (no_asm_use) split: split_if_asm)
+apply (simp (no_asm_use) split: if_split_asm)
 apply (fast elim!: confs_hext confTs_hext)+
 done
 

@@ -1320,7 +1320,7 @@ begin
         "inres (select_edge_impl ((S, B, I, P)::'a GS)) (vo, (S', B', I', P'))"
       hence "length B' = length B"
         apply (simp add: select_edge_impl_def GS.sel_rem_last_def refine_pw_simps
-          split: split_if_asm prod.splits)
+          split: if_split_asm prod.splits)
         apply auto
         done
     } note AUX1=this
@@ -1576,7 +1576,7 @@ begin
       then obtain j where "j < seg_end i" and "v=S!j"
         by (auto simp: seg_def)
       hence "j<B!(i+1)" and "i+1 \<le> length B - 1" using `i<length B - 1`
-        by (auto simp: seg_end_def last_conv_nth split: split_if_asm)
+        by (auto simp: seg_end_def last_conv_nth split: if_split_asm)
       with sorted_nth_mono[OF B_sorted `i+1 \<le> length B - 1`] have "j<last B"
         by (auto simp: last_conv_nth)
       moreover from `j < seg_end i` have "j<length S"

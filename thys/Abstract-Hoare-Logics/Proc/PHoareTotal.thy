@@ -112,7 +112,7 @@ apply(erule thoare.induct)
    apply(erule wf_induct)
    apply clarify
    apply(drule unfold_while[THEN iffD1])
-   apply (simp split add:split_if_asm)
+   apply (simp split add:if_split_asm)
    apply fast
   apply(rule allI, rule allI)
   apply(erule wf_induct)

@@ -119,7 +119,7 @@ interpretation DLO\<^sub>e:
           "(\<lambda>Eq i j \<Rightarrow> i=0 \<or> j=0 | a \<Rightarrow> False)"
           "(\<lambda>Eq i j \<Rightarrow> i=j | a \<Rightarrow> False)" subst\<^sub>0
 apply(unfold_locales)
-apply(fastforce simp:subst_def nth_Cons' split:atom.splits split_if_asm)
+apply(fastforce simp:subst_def nth_Cons' split:atom.splits if_split_asm)
 apply(simp add:subst_def split:atom.splits)
 apply(fastforce simp:subst_def nth_Cons' split:atom.splits)
 apply(fastforce simp add:subst_def split:atom.splits)

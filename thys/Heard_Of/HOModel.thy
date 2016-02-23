@@ -2,7 +2,7 @@ theory HOModel
 imports Main
 begin
 
-declare split_if_asm [split] -- {* perform default perform case splitting on conditionals *}
+declare if_split_asm [split] -- {* perform default perform case splitting on conditionals *}
 
 section {* Heard-Of Algorithms *}
 

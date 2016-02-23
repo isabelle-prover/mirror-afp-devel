@@ -59,7 +59,7 @@ by(simp add:is_maxsplitter_def reducing_def)
 lemma chop_concat[rule_format]: "is_maxsplitter P splitf ==>
   (!yss zs. chop splitf xs = (yss,zs) --> xs = concat yss @ zs)"
 apply (induct xs rule:length_induct)
-apply (simp (no_asm_simp) split del: split_if
+apply (simp (no_asm_simp) split del: if_split
             add: chop_rule[OF is_maxsplitter_reducing])
 apply (simp add: Let_def is_maxsplitter_def split: prod.split)
 done

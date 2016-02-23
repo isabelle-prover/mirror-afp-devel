@@ -27,7 +27,7 @@ context heap begin
 lemma red_external_aggr_read_mem_typeable:
   "\<lbrakk> (ta, va, h') \<in> red_external_aggr P t a M vs h; ReadMem ad al v \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
   \<Longrightarrow> \<exists>T'. P,h \<turnstile> ad@al : T'"
-by(auto simp add: red_external_aggr_def split_beta split: split_if_asm dest: heap_clone_read_typeable)
+by(auto simp add: red_external_aggr_def split_beta split: if_split_asm dest: heap_clone_read_typeable)
 
 end
 
@@ -96,8 +96,8 @@ proof -
       apply(auto 6 2 split: sum.split_asm)
       done
   next
-    case MExit with exec check show ?thesis by(auto split: split_if_asm)
-  qed(clarsimp split: split_if_asm)+
+    case MExit with exec check show ?thesis by(auto split: if_split_asm)
+  qed(clarsimp split: if_split_asm)+
 qed
 
 lemma exec_d_known_addrs_mono:
@@ -122,17 +122,17 @@ lemma exec_instr_known_addrs_ReadMem:
 using assms
 proof(cases i)
   case ALoad thus ?thesis using assms
-    by(cases stk)(case_tac [2] list, auto simp add: split_beta is_Ref_def jvm_known_addrs_def split: split_if_asm)
+    by(cases stk)(case_tac [2] list, auto simp add: split_beta is_Ref_def jvm_known_addrs_def split: if_split_asm)
 next
   case (Invoke M n)
   with check have "stk ! n \<noteq> Null \<longrightarrow> the_Addr (stk ! n) \<in> ka_Val (stk ! n)" "stk ! n \<in> set stk"
     by(auto simp add: is_Ref_def)
   with assms Invoke show ?thesis
-    by(auto simp add: split_beta is_Ref_def simp del: ka_Val.simps nth_mem split: split_if_asm dest!: red_external_aggr_known_addrs_ReadMem in_set_takeD del: is_AddrE)(auto simp add: jvm_known_addrs_def simp del: ka_Val.simps nth_mem del: is_AddrE)
+    by(auto simp add: split_beta is_Ref_def simp del: ka_Val.simps nth_mem split: if_split_asm dest!: red_external_aggr_known_addrs_ReadMem in_set_takeD del: is_AddrE)(auto simp add: jvm_known_addrs_def simp del: ka_Val.simps nth_mem del: is_AddrE)
 next
   case Getfield thus ?thesis using assms
-    by(auto simp add: jvm_known_addrs_def neq_Nil_conv is_Ref_def split: split_if_asm)
-qed(auto simp add: split_beta is_Ref_def neq_Nil_conv split: split_if_asm)
+    by(auto simp add: jvm_known_addrs_def neq_Nil_conv is_Ref_def split: if_split_asm)
+qed(auto simp add: split_beta is_Ref_def neq_Nil_conv split: if_split_asm)
 
 lemma mexecd_known_addrs_ReadMem:
   "\<lbrakk> mexecd P t (xcpfrs, h) ta (xcpfrs', h'); ReadMem ad al v \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
@@ -156,14 +156,14 @@ proof(cases i)
   with check have "stk ! n \<noteq> Null \<longrightarrow> the_Addr (stk ! n) \<in> ka_Val (stk ! n)" "stk ! n \<in> set stk"
     by(auto simp add: is_Ref_def)
   thus ?thesis using assms Invoke
-    by(auto simp add: is_Ref_def split_beta split: split_if_asm simp del: ka_Val.simps nth_mem dest!: red_external_aggr_known_addrs_WriteMem in_set_takeD del: is_AddrE)(auto simp add: jvm_known_addrs_def del: is_AddrE)
+    by(auto simp add: is_Ref_def split_beta split: if_split_asm simp del: ka_Val.simps nth_mem dest!: red_external_aggr_known_addrs_WriteMem in_set_takeD del: is_AddrE)(auto simp add: jvm_known_addrs_def del: is_AddrE)
 next
   case AStore with assms show ?thesis
-    by(cases stk)(auto simp add: jvm_known_addrs_def split: split_if_asm)
+    by(cases stk)(auto simp add: jvm_known_addrs_def split: if_split_asm)
 next
   case Putfield with assms show ?thesis
-    by(cases stk)(auto simp add: jvm_known_addrs_def split: split_if_asm)
-qed(auto simp add: split_beta split: split_if_asm)
+    by(cases stk)(auto simp add: jvm_known_addrs_def split: if_split_asm)
+qed(auto simp add: split_beta split: if_split_asm)
 
 lemma mexecd_known_addrs_WriteMem:
   "\<lbrakk> mexecd P t (xcpfrs, h) ta (xcpfrs', h'); \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! n = WriteMem ad al (Addr a); n < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
@@ -185,17 +185,17 @@ using assms
 proof(cases i)
   case (Invoke M n)
   with assms have "stk ! n \<noteq> Null \<longrightarrow> the_Addr (stk ! n) \<in> ka_Val (stk ! n) \<and> thread_id2addr (addr2thread_id (the_Addr (stk ! n))) = the_Addr (stk ! n)" "stk ! n \<in> set stk"
-    apply(auto simp add: is_Ref_def split: split_if_asm)
+    apply(auto simp add: is_Ref_def split: if_split_asm)
     apply(frule red_external_aggr_NewThread_idD, simp, simp)
     apply(drule red_external_aggr_new_thread_sub_thread)
     apply(auto intro: addr2thread_id_inverse)
     done
   with assms Invoke show ?thesis
-    apply(auto simp add: is_Ref_def split_beta split: split_if_asm simp del: nth_mem del: is_AddrE)
+    apply(auto simp add: is_Ref_def split_beta split: if_split_asm simp del: nth_mem del: is_AddrE)
     apply(drule red_external_aggr_NewThread_idD)
     apply(auto simp add: extNTA2JVM_def jvm_known_addrs_def split_beta simp del: nth_mem del: is_AddrE)
     done
-qed(auto simp add: split_beta split: split_if_asm)
+qed(auto simp add: split_beta split: if_split_asm)
 
 lemma mexecd_known_addrs_new_thread:
   "\<lbrakk> mexecd P t (xcpfrs, h) ta (xcpfrs', h'); NewThread t' x' h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
@@ -214,7 +214,7 @@ lemma exec_instr_New_same_addr_same:
      \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! j = NewHeapElem a x'; j < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
   \<Longrightarrow> i = j"
 apply(cases ins)
-apply(auto split: prod.split_asm split_if_asm)
+apply(auto split: prod.split_asm if_split_asm)
 apply(auto split: extCallRet.split_asm dest: red_external_aggr_New_same_addr_same)
 done
 
@@ -259,7 +259,7 @@ lemma exec_instr_allocated_mono:
   "\<lbrakk> (ta, xcp', h', frs') \<in> exec_instr i P t h stk loc C M pc frs; check_instr i P h stk loc C M pc frs \<rbrakk>
   \<Longrightarrow> allocated h \<subseteq> allocated h'"
 apply(cases i)
-apply(auto 4 4 simp add: split_beta has_method_def is_native.simps split: split_if_asm sum.split_asm intro: allocate_allocated_mono dest: heap_write_allocated_same dest!: red_external_aggr_allocated_mono del: subsetI)
+apply(auto 4 4 simp add: split_beta has_method_def is_native.simps split: if_split_asm sum.split_asm intro: allocate_allocated_mono dest: heap_write_allocated_same dest!: red_external_aggr_allocated_mono del: subsetI)
 done
 
 lemma mexecd_allocated_mono:
@@ -277,7 +277,7 @@ lemma exec_instr_allocatedD:
      check_instr i P h stk loc C M pc frs; NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
   \<Longrightarrow> ad \<in> allocated h' \<and> ad \<notin> allocated h"
 apply(cases i)
-apply(auto 4 4 split: split_if_asm prod.split_asm dest: allocate_allocatedD dest!: red_external_aggr_allocatedD simp add: has_method_def is_native.simps)
+apply(auto 4 4 split: if_split_asm prod.split_asm dest: allocate_allocatedD dest!: red_external_aggr_allocatedD simp add: has_method_def is_native.simps)
 done
 
 lemma mexecd_allocatedD:
@@ -296,7 +296,7 @@ lemma exec_instr_NewHeapElemD:
      ad \<in> allocated h'; ad \<notin> allocated h \<rbrakk>
   \<Longrightarrow> \<exists>CTn. NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
 apply(cases i)
-apply(auto 4 3 split: split_if_asm prod.split_asm sum.split_asm dest: allocate_allocatedD heap_write_allocated_same dest!: red_external_aggr_NewHeapElemD simp add: is_native.simps has_method_def)
+apply(auto 4 3 split: if_split_asm prod.split_asm sum.split_asm dest: allocate_allocatedD heap_write_allocated_same dest!: red_external_aggr_NewHeapElemD simp add: is_native.simps has_method_def)
 done
 
 lemma mexecd_NewHeapElemD:
@@ -386,19 +386,19 @@ using exec check read
 proof(cases i)
   case ALoad
   with assms show ?thesis
-    by(fastforce simp add: split_beta is_Ref_def nat_less_iff word_sless_alt intro: addr_loc_type.intros split: split_if_asm)
+    by(fastforce simp add: split_beta is_Ref_def nat_less_iff word_sless_alt intro: addr_loc_type.intros split: if_split_asm)
 next
   case (Getfield F D)
   with assms show ?thesis
-    by(clarsimp simp add: split_beta is_Ref_def split: split_if_asm)(blast intro: addr_loc_type.intros dest: has_visible_field has_field_mono)
+    by(clarsimp simp add: split_beta is_Ref_def split: if_split_asm)(blast intro: addr_loc_type.intros dest: has_visible_field has_field_mono)
 next
   case (Invoke M n)
   with exec check read obtain a vs ta' va T
     where "(ta', va, h') \<in> red_external_aggr P t a M vs h"
     and "ReadMem ad al v \<in> set \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>"
-    by(auto split: split_if_asm simp add: is_Ref_def)
+    by(auto split: if_split_asm simp add: is_Ref_def)
   thus ?thesis by(rule red_external_aggr_read_mem_typeable)
-qed(auto simp add: split_beta is_Ref_def split: split_if_asm)
+qed(auto simp add: split_beta is_Ref_def split: if_split_asm)
 
 lemma exec_1_d_read_typeable:
   "\<lbrakk> P,t \<turnstile> Normal (xcp, h, frs) -ta-jvmd\<rightarrow> Normal (xcp', h', frs'); 
@@ -439,7 +439,7 @@ lemma exec_instr_New_typeof_addrD:
      NewHeapElem a x \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<rbrakk>
   \<Longrightarrow> typeof_addr h' a = Some x"
 apply(cases i)
-apply(auto dest: allocate_SomeD split: prod.split_asm split_if_asm)
+apply(auto dest: allocate_SomeD split: prod.split_asm if_split_asm)
 apply(auto 4 4 split: extCallRet.split_asm dest!: red_external_aggr_New_typeof_addrD simp add: has_method_def is_native.simps)
 done
 
@@ -460,8 +460,8 @@ lemma exec_instr_non_speculative_typeable:
   shows "(ta, xcp', h', frs') \<in> JVM_heap_base.exec_instr addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate typeof_addr (heap_read_typed P) heap_write i P t h stk loc C M pc frs"
 proof -
   note [simp] = JVM_heap_base.exec_instr.simps
-    and [split] = split_if_asm prod.split_asm sum.split_asm
-    and [split del] = split_if
+    and [split] = if_split_asm prod.split_asm sum.split_asm
+    and [split del] = if_split
   from assms show "?thesis"
   proof(cases i)
     case ALoad with assms show ?thesis
@@ -484,8 +484,8 @@ lemma exec_instr_non_speculative_vs_conf:
   shows "vs_conf P h' (w_values P vs (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
 proof -
   note [simp] = JVM_heap_base.exec_instr.simps take_Cons'
-    and [split] = split_if_asm prod.split_asm sum.split_asm
-    and [split del] = split_if
+    and [split] = if_split_asm prod.split_asm sum.split_asm
+    and [split del] = if_split
   from assms show ?thesis
   proof(cases i)
     case New with assms show ?thesis
@@ -700,7 +700,7 @@ proof(cases i)
   from exec_i i read have Null: "hd (tl stk) \<noteq> Null"
     and bounds: "0 <=s ?i" "sint ?i < int (alen_of_htype (the (typeof_addr (shr s) ?a)))"
     and [simp]: "I = 0" "a'' = ?a" "al'' = ACell (nat (sint ?i))"
-    by(auto split: split_if_asm)
+    by(auto split: if_split_asm)
 
   from Null check obtain a T n 
     where a: "length stk > 1" "hd (tl stk) = Addr a"
@@ -718,7 +718,7 @@ next
 
   from exec_i i read have Null: "hd stk \<noteq> Null"
     and [simp]: "I = 0" "a'' = ?a" "al'' = CField D F"
-    by(auto split: split_if_asm)
+    by(auto split: if_split_asm)
   with check obtain U T fm C' a
     where sees: "P \<turnstile> D sees F:T (fm) in D"
     and type: "typeof_addr (shr s) ?a = \<lfloor>U\<rfloor>" 
@@ -737,7 +737,7 @@ next
   let ?vs = "rev (take n stk)"
   from exec_i i read have Null: "stk ! n \<noteq> Null" 
     and iec: "snd (snd (snd (method P (class_type_of (the (typeof_addr (shr s) ?a))) M))) = Native"
-    by(auto split: split_if_asm)
+    by(auto split: if_split_asm)
   with check obtain a T Ts Tr D
     where a: "stk ! n = Addr a" "n < length stk"
     and type: "typeof_addr (shr s) ?a = \<lfloor>T\<rfloor>"
@@ -757,7 +757,7 @@ next
     and "\<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> ! I = ReadMem a'' al'' v'" "length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> \<le> length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>" by auto
   thus ?thesis using Null iec ta extwt a type
     by(cases va'') force+
-qed(auto simp add: split_beta split: split_if_asm)
+qed(auto simp add: split_beta split: if_split_asm)
 
 lemma exec_1_d_non_speculative_read:
   assumes hrt: "heap_read_typeable hconf P"

@@ -131,7 +131,7 @@ proof (cases "x = 0")
     using assms x' by (intro taylor[OF _ _ A]) simp_all
   then guess t by (elim exE conjE)
   note t = this
-  with assms have "abs t < 1/2" by (auto split: split_if_asm)
+  with assms have "abs t < 1/2" by (auto split: if_split_asm)
   moreover from t(2) have "(1 + x) powr p = 1 + p * x + p * (p - 1) * (1 + t) powr (p - 2) / 2 * x ^ 2"
     by (simp add: numeral_2_eq_2 of_nat_Suc)
   ultimately show ?thesis by (rule that)

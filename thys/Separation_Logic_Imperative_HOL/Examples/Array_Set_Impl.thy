@@ -127,7 +127,7 @@ begin
     "< is_ias m p > ias_ins k p <\<lambda>r. is_ias (insert k m) r>\<^sub>t"
     unfolding is_ias_def ias_ins_def
     by (sep_auto 
-      decon: decon_split_if 
+      decon: decon_if_split 
       simp: ias_ins_abs1 ias_ins_abs2)
   
   lemma ias_set_impl: "imp_set is_ias"
@@ -164,7 +164,7 @@ begin
       fix s p a
       show "<is_ias s p> ias_ins a p <is_ias (insert a s)>\<^sub>t"
         unfolding is_ias_def ias_ins_def
-        by (sep_auto decon: decon_split_if simp: ias_ins_abs1 ias_ins_abs2)
+        by (sep_auto decon: decon_if_split simp: ias_ins_abs1 ias_ins_abs2)
     qed    
 
   end

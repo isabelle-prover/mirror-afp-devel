@@ -172,13 +172,13 @@ text{*
     proof -
       assume a: "new_configured_SecurityInvariant (sinvar, defbot, receiver_violation, nP) = Some m"
       hence NetModel: "SecurityInvariant sinvar defbot receiver_violation"
-        by(simp add: new_configured_SecurityInvariant.simps split: split_if_asm)
+        by(simp add: new_configured_SecurityInvariant.simps split: if_split_asm)
       hence NetModel_p: "SecurityInvariant_preliminaries sinvar" by(simp add: SecurityInvariant_def)
 
       from a have c_eval: "c_sinvar m = (\<lambda>G. sinvar G nP)"
          and c_offending: "c_offending_flows m = (\<lambda>G. SecurityInvariant_withOffendingFlows.set_offending_flows sinvar G nP)"
          and "c_isIFS m = receiver_violation"
-        by(auto simp add: new_configured_SecurityInvariant.simps NetModel split: split_if_asm)
+        by(auto simp add: new_configured_SecurityInvariant.simps NetModel split: if_split_asm)
 
       have monoI: "SecurityInvariant_withOffendingFlows.sinvar_mono sinvar"
         apply(simp add: SecurityInvariant_withOffendingFlows.sinvar_mono_def, clarify)
@@ -500,7 +500,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
          from enf_offending_flows[OF `configured_SecurityInvariant m` `\<forall>G. c_sinvar m G = (\<forall>e\<in>edges G. P e)`] have
           offending: "\<And>G. c_offending_flows m G = (if c_sinvar m G then {} else {{e \<in> edges G. \<not> P e}})" by simp
          from `F \<in> c_offending_flows m ?G` `F \<noteq> {}` have "F = {e \<in> edges ?G. \<not> P e}"
-           by(simp split: split_if_asm add: offending)
+           by(simp split: if_split_asm add: offending)
          from this `(v1, v2) \<in> F`  have "\<not> P (v1, v2)" by simp
 
          from this enf_m have "\<not> c_sinvar m \<lparr>nodes = V, edges = insert (v1, v2) E\<rparr>" by(simp)

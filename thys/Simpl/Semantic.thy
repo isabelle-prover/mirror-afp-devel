@@ -2106,7 +2106,7 @@ next
   proof (cases "s \<in> g")
     case False
     with exec_merge have "t=Fault f"
-      by (auto split: com.splits split_if_asm elim: execn_Normal_elim_cases 
+      by (auto split: com.splits if_split_asm elim: execn_Normal_elim_cases 
         simp add: Let_def is_Guard_def)
     with False show ?thesis
       by (auto intro: execn.intros)
@@ -4377,7 +4377,7 @@ subsection "Restriction of Procedure Environment"
 (* ************************************************************************* *)
 
 lemma restrict_SomeD: "(m|\<^bsub>A\<^esub>) x = Some y \<Longrightarrow> m x = Some y"
-  by (auto simp add: restrict_map_def split: split_if_asm)
+  by (auto simp add: restrict_map_def split: if_split_asm)
 
 (* FIXME: To Map *)
 lemma restrict_dom_same [simp]: "m|\<^bsub>dom m\<^esub> = m"
@@ -4408,7 +4408,7 @@ using exec_restrict notStuck
 by (induct) (auto intro: execn.intros dest: restrict_SomeD execn_Stuck_end)
 
 lemma restrict_NoneD: "m x = None \<Longrightarrow>  (m|\<^bsub>A\<^esub>) x = None"
-  by (auto simp add: restrict_map_def split: split_if_asm)
+  by (auto simp add: restrict_map_def split: if_split_asm)
 
 lemma execn_to_execn_restrict:
   assumes execn: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t"

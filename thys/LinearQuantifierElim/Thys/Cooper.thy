@@ -10,7 +10,7 @@ text{* This section formalizes Cooper's algorithm~\cite{Cooper72}. *}
 
 lemma set_atoms0_iff:
  "qfree \<phi> \<Longrightarrow> a : set(Z.atoms\<^sub>0 \<phi>) \<longleftrightarrow> a : atoms \<phi> \<and> hd_coeff a \<noteq> 0"
-by(induct \<phi>) (auto split:split_if_asm)
+by(induct \<phi>) (auto split:if_split_asm)
 
 definition
 "hd_coeffs1 \<phi> =
@@ -160,7 +160,7 @@ proof(induct \<phi>)
       case Nil thus ?thesis using Le Atom by simp
     next
       case (Cons k ks) thus ?thesis using Le Atom
-        by (auto simp:lbounds_def Ball_def split:split_if_asm) arith
+        by (auto simp:lbounds_def Ball_def split:if_split_asm) arith
     qed
   next
     case (Dvd m i js)
@@ -183,7 +183,7 @@ proof(induct \<phi>)
             by (metis `m dvd d` dvd_diff)
           thus ?thesis by(simp add:algebra_simps)
         qed
-        thus ?thesis using Atom Dvd Cons by(auto split:split_if_asm)
+        thus ?thesis using Atom Dvd Cons by(auto split:if_split_asm)
       qed
     qed
   next
@@ -206,7 +206,7 @@ proof(induct \<phi>)
           hence "m dvd i + (x + \<langle>ks,xs\<rangle>) - d" by(simp add:algebra_simps)
           thus ?thesis by (metis `m dvd d` zdvd_zdiffD)
         qed
-        thus ?thesis using Atom NDvd Cons by(auto split:split_if_asm)
+        thus ?thesis using Atom NDvd Cons by(auto split:if_split_asm)
       qed
     qed
   qed
@@ -297,11 +297,11 @@ lemma divisor_hd_coeff1_neq0:
 apply (case_tac a)
 
 apply simp
-apply(rename_tac list) apply(case_tac list) apply simp apply(simp split:split_if_asm)
+apply(rename_tac list) apply(case_tac list) apply simp apply(simp split:if_split_asm)
 
 apply simp
 apply(rename_tac list)apply(case_tac list) apply simp
-apply(clarsimp split:split_if_asm)
+apply(clarsimp split:if_split_asm)
 apply(hypsubst_thin)
 apply(subgoal_tac "a : set(map hd_coeff (Z.atoms\<^sub>0 \<phi>))")
  apply(subgoal_tac "\<forall>i\<in>set(map hd_coeff (Z.atoms\<^sub>0 \<phi>)). i \<noteq> 0")
@@ -311,7 +311,7 @@ apply(fastforce simp:image_def set_atoms0_iff Bex_def)
 
 apply simp
 apply(rename_tac list) apply(case_tac list) apply simp
-apply(clarsimp split:split_if_asm)
+apply(clarsimp split:if_split_asm)
 apply(hypsubst_thin)
 apply(subgoal_tac "a : set(map hd_coeff (Z.atoms\<^sub>0 \<phi>))")
  apply(subgoal_tac "\<forall>i\<in>set(map hd_coeff (Z.atoms\<^sub>0 \<phi>)). i \<noteq> 0")

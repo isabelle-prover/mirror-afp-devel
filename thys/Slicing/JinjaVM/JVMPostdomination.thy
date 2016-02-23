@@ -152,7 +152,7 @@ apply (erule Methods.cases, clarsimp simp: class_def SystemClasses_def ObjectC_d
 apply (clarsimp simp: class_def)
 apply (erule Methods.cases)
  by (fastforce simp: class_def SystemClasses_def ObjectC_def NullPointerC_def
-                       OutOfMemoryC_def ClassCastC_def split_if_eq1)+
+                       OutOfMemoryC_def ClassCastC_def if_split_eq1)+
 
 lemma [simp]:
   "\<exists>T Ts mxs mxl is. (\<exists>xt. EP \<turnstile> ''C'' sees ''M'': Ts\<rightarrow>T = (mxs, mxl, is, xt) in ''C'') \<and> is \<noteq> []"

@@ -89,7 +89,7 @@ proof(cases "chosen s=NotAnInput")
     qed
     from True act chosen'
     have "chosen s' = inp (dblock s p)"
-    proof(auto simp add: HNextPart_def split: split_if_asm)
+    proof(auto simp add: HNextPart_def split: if_split_asm)
       fix pa
       assume outpt'_pa: "outpt s' pa \<noteq> NotAnInput"
       from outpt'_q
@@ -297,7 +297,7 @@ proof(cases "chosen s=NotAnInput")
   with True act asm
   show ?thesis
     by(auto simp add: EndPhase2_def HNextPart_def 
-               split: split_if_asm)
+               split: if_split_asm)
 next
   case False
   with inv
@@ -322,7 +322,7 @@ next
     case True
     with asm act
     have p41: "r=p"
-      by(auto simp add: EndPhase2_def split: split_if_asm)
+      by(auto simp add: EndPhase2_def split: if_split_asm)
     from maj 
     have p42: "\<exists>D\<in>MajoritySet. \<forall>d\<in>D. \<forall>q\<in>UNIV-{p}. hasRead s p d q"
       by(auto simp add: MajoritySet_def)
@@ -415,7 +415,7 @@ next
     with False asm inv2c act
     have "outpt s' r = outpt s r"
       by(auto simp add: Inv2c_inner_def EndPhase2_def 
-                 split: split_if_asm)
+                 split: if_split_asm)
     with inv p33 False
     show ?thesis
       by(auto simp add: HInv6_def)

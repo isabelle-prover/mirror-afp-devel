@@ -299,7 +299,7 @@ set @{term "radical_sqrt"} of @{term r} is a subset (strictly
 speaking) of the set @{term "radicals"} of @{term e}. *}
 
 lemma radicals_expr_subset: "r \<in> radicals e \<Longrightarrow> radicals r \<subset> radicals e"
-  by (induct e, auto simp add: split_if_asm)
+  by (induct e, auto simp add: if_split_asm)
 
 text {* If @{term x} is in @{term "radical_sqrt"} then there exists a
 radical expression @{term e} which translation is @{term x} (it is

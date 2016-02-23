@@ -128,7 +128,7 @@ declare [[simp_depth_limit = 5]]
 lemma anormal_atoms_qelim:
   "(\<And>as. \<forall>a \<in> set as. depends\<^sub>0 a \<and> anormal a \<Longrightarrow> normal(qe as)) \<Longrightarrow>
    \<forall>a \<in> set as. anormal a \<Longrightarrow> a : atoms(qelim qe as) \<Longrightarrow> anormal a"
-apply(auto simp add:qelim_def and_def normal_def split:split_if_asm)
+apply(auto simp add:qelim_def and_def normal_def split:if_split_asm)
 apply(auto simp add:anormal_decr dest!: atoms_list_conjE)
  apply(erule_tac x = "filter depends\<^sub>0 as" in meta_allE)
  apply(simp)

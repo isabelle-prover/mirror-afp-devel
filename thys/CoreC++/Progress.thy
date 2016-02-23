@@ -221,7 +221,7 @@ proof (induct rule:WTrt_inducts2)
   have type:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T" by fact
   { fix C a Cs D S
     assume "T = Class C" and "Val v = ref(a,Cs)" and "h a = Some(D,S)"
-    with type have "Subobjs P D Cs" and "C = last Cs" by (auto split:split_if_asm)
+    with type have "Subobjs P D Cs" and "C = last Cs" by (auto split:if_split_asm)
     hence "P \<turnstile> D \<preceq>\<^sup>* C" by simp (rule Subobjs_subclass) }
   thus ?case by blast
 qed auto
@@ -346,7 +346,7 @@ next
       fix r assume "e = ref r"
       then obtain a Cs where ref:"e = ref(a,Cs)" by (cases r) auto
       with wte wf have "class":"is_class P (last Cs)" 
-        by (auto intro:Subobj_last_isClass split:split_if_asm)
+        by (auto intro:Subobj_last_isClass split:if_split_asm)
       show ?thesis
       proof(cases "P \<turnstile> (last Cs) \<preceq>\<^sup>* C")
         case True
@@ -490,7 +490,7 @@ next
       then obtain a Cs' where ref:"e = ref(a,Cs')" by (cases r) auto
       with wte obtain D S where h:"h a = Some(D,S)" and suboD:"Subobjs P D Cs'"
         and last:"last Cs' = C"
-        by (fastforce split:split_if_asm)
+        by (fastforce split:if_split_asm)
       from field obtain Bs fs ms
         where "class": "class P (last Cs) = Some(Bs,fs,ms)"
         and fs:"map_of fs F = Some T"
@@ -560,7 +560,7 @@ next
           from e1 obtain a Cs' where ref:"e\<^sub>1 = ref(a,Cs')" by (cases r) auto
           with wte1 obtain D S where h:"h a = Some(D,S)" 
             and suboD:"Subobjs P D Cs'" and last:"last Cs' = C"
-            by (fastforce split:split_if_asm)
+            by (fastforce split:if_split_asm)
           from field obtain Bs fs ms
             where "class": "class P (last Cs) = Some(Bs,fs,ms)"
             and fs:"map_of fs F = Some T"
@@ -672,7 +672,7 @@ next
         from ref obtain a Cs' where ref:"e = ref(a,Cs')" by (cases r) auto
         with wte obtain D S where h:"h a = Some(D,S)" and suboD:"Subobjs P D Cs'"
           and last:"last Cs' = C"
-          by (fastforce split:split_if_asm)
+          by (fastforce split:if_split_asm)
         from wte ref h have subcls:"P \<turnstile> D \<preceq>\<^sup>* C" by -(drule mdc_leq_dyn_type,auto)
         from "method" have has:"P \<turnstile> C has M = (Ts,T,pns,body) via Cs"
             by(rule has_least_method_has_method)
@@ -811,7 +811,7 @@ next
         assume es: "\<exists>vs. es = map Val vs"
         from ref obtain a Cs' where ref:"e = ref(a,Cs')" by (cases r) auto
         with wte have last:"last Cs' = C'"
-          by (fastforce split:split_if_asm)
+          by (fastforce split:if_split_asm)
         with path_unique obtain Cs''
           where path_via:"P \<turnstile> Path (last Cs') to C via Cs''"
           by (auto simp add:path_via_def path_unique_def)

@@ -49,7 +49,7 @@ and "\<lbrakk> P \<turnstile>\<^sub>1 \<langle>es,(h,ls)\<rangle> [\<Rightarrow>
       \<Longrightarrow> ls ! i = ls' ! i"
 (*<*)
 apply(induct rule:eval\<^sub>1_evals\<^sub>1_inducts)
-apply(auto dest!:eval\<^sub>1_preserves_len split:split_if_asm)
+apply(auto dest!:eval\<^sub>1_preserves_len split:if_split_asm)
 done
 (*>*)
 
@@ -473,8 +473,8 @@ apply clarsimp
 apply(fastforce)
 apply clarsimp
 apply(fastforce split:bop.splits)
-apply (fastforce simp:map_upds_apply_eq_Some split:split_if_asm)
-apply (fastforce simp:map_upds_apply_eq_Some split:split_if_asm)
+apply (fastforce simp:map_upds_apply_eq_Some split:if_split_asm)
+apply (fastforce simp:map_upds_apply_eq_Some split:if_split_asm)
 apply (fastforce)
 apply (fastforce)
 apply (fastforce dest!: sees_method_compP[where f = f])
@@ -636,7 +636,7 @@ next
   hence "\<D> (compE\<^sub>1 (Vs@[V]) e\<^sub>2) \<lfloor>last_index (Vs@[V]) ` (A\<union>{V})\<rfloor>"
     using TryCatch.prems by(simp add:Diff_subset_conv)
   moreover have "last_index (Vs@[V]) ` A \<subseteq> last_index Vs ` A \<union> {size Vs}"
-    using TryCatch.prems by(auto simp add: image_last_index split:split_if_asm)
+    using TryCatch.prems by(auto simp add: image_last_index split:if_split_asm)
   ultimately show ?case using TryCatch
     by(auto simp:hyperset_defs elim!:D_mono')
 next

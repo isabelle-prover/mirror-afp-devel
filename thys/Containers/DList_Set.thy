@@ -34,7 +34,7 @@ primrec list_remdups :: "'a list \<Rightarrow> 'a list" where
 | "list_remdups (x # xs) = (if list_member xs x then list_remdups xs else x # list_remdups xs)"
 
 lemma list_member_filterD: "list_member (filter P xs) x \<Longrightarrow> list_member xs x"
-by(induct xs)(auto split: split_if_asm)
+by(induct xs)(auto split: if_split_asm)
 
 lemma list_distinct_filter [simp]: "list_distinct xs \<Longrightarrow> list_distinct (filter P xs)"
 by(induct xs)(auto dest: list_member_filterD)

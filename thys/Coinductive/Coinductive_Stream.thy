@@ -388,7 +388,7 @@ lemma scount_eq_0I: "alw (not P) \<omega> \<Longrightarrow> scount P \<omega> = 
 lemma scount_eq_0D: "scount P \<omega> = 0 \<Longrightarrow> alw (not P) \<omega>"
 proof (induction rule: alw.coinduct)
   case (alw \<omega>) with scount.simps[of P \<omega>] show ?case
-    by (simp split: split_if_asm)
+    by (simp split: if_split_asm)
 qed
 
 lemma scount_eq_0_iff: "scount P \<omega> = 0 \<longleftrightarrow> alw (not P) \<omega>"
@@ -458,7 +458,7 @@ lemma less_sfirstD:
   using assms
 proof (induction n arbitrary: \<omega>)
   case (Suc n) then show ?case
-    by (auto simp: sfirst.simps[of _ \<omega>] eSuc_enat[symmetric] split: split_if_asm)
+    by (auto simp: sfirst.simps[of _ \<omega>] eSuc_enat[symmetric] split: if_split_asm)
 qed (simp add: enat_0 sfirst_eq_0)
 
 lemma sfirst_finite: "sfirst P \<omega> < \<infinity> \<longleftrightarrow> ev P \<omega>"
@@ -468,7 +468,7 @@ proof
   then show "ev P \<omega>"
   proof (induction n arbitrary: \<omega>)
     case (Suc n) then show ?case
-      by (auto simp add: eSuc_enat[symmetric] sfirst.simps[of P \<omega>] split: split_if_asm)
+      by (auto simp add: eSuc_enat[symmetric] sfirst.simps[of P \<omega>] split: if_split_asm)
   qed (auto simp add: enat_0 sfirst_eq_0)
 next
   assume "ev P \<omega>" then show "sfirst P \<omega> < \<infinity>"
