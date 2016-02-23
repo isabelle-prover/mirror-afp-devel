@@ -461,12 +461,11 @@ proof safe
     have "t0 \<in> {t \<in> {t0..x1}. norm (y t - z t) = 0}"
       using x1 i1.is_solutionD[OF y_sol] i2.is_solutionD[OF z_sol]
       by simp
+    then have "{t \<in> {t0..x1}. norm (y t - z t) = 0} \<noteq> {}" by blast
     ultimately
     have "\<exists>m\<in>{t \<in> {t0..x1}. norm (y t - z t) = 0}.
-      \<forall>y\<in>{t \<in> {t0..x1}. norm (y t - z t) = 0}.
-      dist x1 m \<le> dist x1 y"
-      by (intro distance_attains_inf) (auto intro!: distance_attains_inf
-        simp: ex_in_conv[symmetric])
+            \<forall>y\<in>{t \<in> {t0..x1}. norm (y t - z t) = 0}. dist x1 m \<le> dist x1 y"
+      by (rule distance_attains_inf) auto
     then guess x_max .. note max = this
     have "z x_max = y x_max" using max by simp
     have "x_max \<in> {t0..min a b}" "x_max \<in> T"

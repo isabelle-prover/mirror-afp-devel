@@ -895,10 +895,9 @@ next
       assume "\<not>{s \<in> {t0..t}. norm (x s - x t0) \<in> {b..}} \<subseteq> {t}"
       hence notempty: "{s \<in> {t0..t}. norm (x s - x t0) \<in> {b..}} \<noteq> {}"
         and not_max: "{s \<in> {t0..t}. norm (x s - x t0) \<in> {b..}} \<noteq> {t}" by auto
-      from distance_attains_inf[OF closed notempty, of t0]
       obtain s where s_bound: "s \<in> {t0..t}" and exceeds: "norm (x s - x t0) \<in> {b..}"
         and min: "\<forall>t2\<in>{t0..t}. norm (x t2 - x t0) \<in> {b..} \<longrightarrow> dist t0 s \<le> dist t0 t2"
-        by blast
+        by (blast intro: distance_attains_inf[OF closed notempty, of t0])
       hence "s \<le> t" by simp
       have lt: "t0 < s"
         using s_bound exceeds min
