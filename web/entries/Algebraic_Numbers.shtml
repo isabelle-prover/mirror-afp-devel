@@ -115,7 +115,10 @@ To this end, we mechanized several results on resultants, which also required us
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-12-22.tar.gz">afp-<!--#echo var="name" -->-2015-12-22.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

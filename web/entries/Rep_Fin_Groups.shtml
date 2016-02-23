@@ -102,7 +102,10 @@ We provide a formal framework for the theory of representations of finite groups
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-08-12.tar.gz">afp-<!--#echo var="name" -->-2015-08-12.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

@@ -111,7 +111,11 @@ A full description is found in a
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-06-08.tar.gz">afp-<!--#echo var="name" -->-2015-06-08.tar.gz</a></li>
+<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-06-07.tar.gz">afp-<!--#echo var="name" -->-2015-06-07.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
