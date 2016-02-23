@@ -167,7 +167,7 @@ done
 
 lemma next_plane0_finals_incr:
  "g [next_plane0\<^bsub>p\<^esub>]\<rightarrow> g' \<Longrightarrow> f \<in> set(finals g) \<Longrightarrow> f \<in> set(finals g')"
-apply(auto simp:next_plane0_def generatePolygon_def split:split_if_asm)
+apply(auto simp:next_plane0_def generatePolygon_def split:if_split_asm)
 apply(erule subdivFace_pres_finals)
 apply (simp add:nonFinals_def)
 done

@@ -40,7 +40,7 @@ lemma is_list_UNIV_iff:
 proof
   assume "is_list_UNIV xs"
   hence c: "card_UNIV (TYPE('a)) > 0" and xs: "size (remdups xs) = card_UNIV (TYPE('a))"
-    unfolding is_list_UNIV_def by(simp_all add: Let_def split: split_if_asm)
+    unfolding is_list_UNIV_def by(simp_all add: Let_def split: if_split_asm)
   from c have fin: "finite (UNIV :: 'a set)" by(auto simp add: card_UNIV_ge_0_finite_UNIV)
   have "card (set (remdups xs)) = size (remdups xs)" by(subst distinct_card) auto
   also note set_remdups

@@ -2704,7 +2704,7 @@ proof -
       with `literal el prefix` 
       have "literalFalse literal' prefix"
         unfolding precedes_def
-        by (auto split: split_if_asm)
+        by (auto split: if_split_asm)
     }
     thus ?thesis
       by (auto simp add:clauseFalseIffAllLiteralsAreFalse)

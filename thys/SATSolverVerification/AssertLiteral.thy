@@ -18,7 +18,7 @@ assumes
 shows 
   "l el clause" "l \<noteq> w1" "l \<noteq> w2" "\<not> literalFalse l (elements M)"
 using assms
-by (induct clause) (auto split: split_if_asm)
+by (induct clause) (auto split: if_split_asm)
 
 lemma getNonWatchedUnfalsifiedLiteralNoneCharacterization:
 fixes clause :: Clause and w1 :: Literal and w2 :: Literal and M :: LiteralTrail
@@ -27,7 +27,7 @@ assumes
 shows 
   "\<forall> l. l el clause \<and> l \<noteq> w1 \<and> l \<noteq> w2 \<longrightarrow> literalFalse l (elements M)"
 using assms
-by (induct clause) (auto split: split_if_asm)
+by (induct clause) (auto split: if_split_asm)
 
 (*****************************************************************************)
 (*   S W A P   W A T C H E S                                                 *)
@@ -207,7 +207,7 @@ next
             using None
             using `\<not> literalFalse ?w1 (elements (getM ?state'))`
             unfolding isPrefix_def
-            by (auto simp add: Let_def split: split_if_asm)
+            by (auto simp add: Let_def split: if_split_asm)
         qed
       qed
     qed
@@ -322,7 +322,7 @@ next
             using None
             using `\<not> literalFalse ?w1 (elements (getM ?state'))`
             unfolding isPrefix_def
-            by (auto simp add: Let_def split: split_if_asm)
+            by (auto simp add: Let_def split: if_split_asm)
         qed
       qed
     qed
@@ -2304,7 +2304,7 @@ next
                   using Cons(7)
                   using swapWatchesEffect
                   unfolding setWatch2_def
-                  by (auto split: split_if_asm)
+                  by (auto split: if_split_asm)
               qed
             qed
           qed
@@ -2624,7 +2624,7 @@ next
                   using `Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c`
                   using Cons(7)
                   unfolding setWatch2_def
-                  by (auto split: split_if_asm)
+                  by (auto split: if_split_asm)
               qed
             qed
           qed
@@ -6020,7 +6020,7 @@ next
             using `\<not> literalFalse ?w1 (elements (getM ?state'))`
             unfolding isPrefix_def
             unfolding InvariantUniqQ_def
-            by (simp add: Let_def split: split_if_asm)
+            by (simp add: Let_def split: if_split_asm)
         qed
       qed
     qed
@@ -6137,7 +6137,7 @@ next
             using `\<not> literalFalse ?w1 (elements (getM ?state'))`
             unfolding isPrefix_def
             unfolding InvariantUniqQ_def
-            by (simp add: Let_def split: split_if_asm)
+            by (simp add: Let_def split: if_split_asm)
         qed
       qed
     qed
@@ -6790,7 +6790,7 @@ next
             using Cons(1)[of "?state''" "Q \<union> {?w1}" "clause # newWl"]
             using Cons(3) Cons(6) Cons(7)
             using `uniq Wl'`
-            by (simp add: Let_def split: split_if_asm)
+            by (simp add: Let_def split: if_split_asm)
           moreover
           have "(Q \<union> (set (getQ ?state0) - set (getQ state))) \<subseteq> (Q \<union> (set (getQ ?state0) - set (getQ ?state'')) \<union> {?w1})"
             using `getQ ?state'' = (if ?w1 el (getQ state) then (getQ state) else (getQ state) @ [?w1])`
@@ -6998,7 +6998,7 @@ next
             using Cons(1)[of "?state''" "Q \<union> {?w1}" "clause # newWl"]
             using Cons(3) Cons(6) Cons(7)
             using `uniq Wl'`
-            by (simp add: Let_def split: split_if_asm)
+            by (simp add: Let_def split: if_split_asm)
           moreover
           have "(Q \<union> (set (getQ ?state0) - set (getQ state))) \<subseteq> (Q \<union> (set (getQ ?state0) - set (getQ ?state'')) \<union> {?w1})"
             using `getQ ?state'' = (if ?w1 el (getQ state) then (getQ state) else (getQ state) @ [?w1])`

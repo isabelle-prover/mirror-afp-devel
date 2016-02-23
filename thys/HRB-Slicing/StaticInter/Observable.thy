@@ -215,7 +215,7 @@ proof(atomize_elim)
     proof(cases ns'')
       case Nil
       with `ns' \<in> obs (nx#ns'') S` obtain x where "ns' = [x]" and "x \<in> obs_intra nx S"
-        by(auto simp:Let_def split:split_if_asm)
+        by(auto simp:Let_def split:if_split_asm)
       with Nil show ?thesis by fastforce
     next
       case Cons
@@ -272,7 +272,7 @@ proof(atomize_elim)
           with `\<forall>n'\<in>set ns''. \<forall>nx'. call_of_return_node n' nx' \<longrightarrow> nx' \<in> S`
             `ns' \<in> obs (nx # ns'') S`
           obtain nx'' where "ns' = nx''#ns''" and "nx'' \<in> obs_intra nx S"
-          by(fastforce simp:Let_def split:split_if_asm)
+          by(fastforce simp:Let_def split:if_split_asm)
           { fix n' assume "n'\<in>set ns''"
             with `\<forall>n \<in> set ns''. return_node n` have "return_node n'" by simp
             hence "\<exists>!n''. call_of_return_node n' n''" 
@@ -371,7 +371,7 @@ lemma in_obs_valid:
   assumes "ns' \<in> obs ns S" and "\<forall>n \<in> set ns. valid_node n"
   shows "\<forall>n \<in> set ns'. valid_node n"
   using `ns' \<in> obs ns S` `\<forall>n \<in> set ns. valid_node n`
-  by(induct ns)(auto intro:in_obs_intra_valid simp:Let_def split:split_if_asm)
+  by(induct ns)(auto intro:in_obs_intra_valid simp:Let_def split:if_split_asm)
 
 
 

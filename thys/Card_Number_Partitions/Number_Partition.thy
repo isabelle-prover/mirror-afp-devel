@@ -30,7 +30,7 @@ unfolding partitions_def by auto
 lemma partitions_one:
   "p partitions (Suc 0) \<longleftrightarrow> p = (\<lambda>i. 0)(1 := 1)"
 unfolding partitions_def
-by (auto split: split_if_asm) (auto simp add: fun_eq_iff)
+by (auto split: if_split_asm) (auto simp add: fun_eq_iff)
 
 subsection {* Bounds and Finiteness of Number Partitions *}
 
@@ -123,7 +123,7 @@ lemma partitions_remove1_bounds:
   shows "1 \<le> i \<and> i \<le> n - k"
 proof
     from partitions neq show "1 \<le> i"
-      by (auto elim!: partitionsE split: split_if_asm)
+      by (auto elim!: partitionsE split: if_split_asm)
 next
   from partitions gr0 have n: "(\<Sum>i\<le>n. p i * i) = n" and "k \<le> n"
     by (auto elim: partitionsE)
@@ -147,7 +147,7 @@ next
     qed
     from neq this show ?thesis
       using partitions_remaining_Max_part[OF partitions gr0] leI
-      by (auto split: split_if_asm) force
+      by (auto split: if_split_asm) force
   qed
 qed
 

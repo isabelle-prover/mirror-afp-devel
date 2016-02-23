@@ -229,7 +229,7 @@ apply(rule conjI, blast)
 apply(auto)
 apply(subgoal_tac "pc \<notin> pcs xt\<^sub>2")
  prefer 2 apply blast
-apply (auto split:split_if_asm)
+apply (auto split:if_split_asm)
 done
 (*>*)
 
@@ -899,7 +899,7 @@ next
   have "P,C,M \<rhd> compxE\<^sub>2 (try e\<^sub>1 catch(Ci i) e\<^sub>2) pc (size vs) / I,size vs" by fact
   hence "P,C,M \<rhd> compxE\<^sub>2 e\<^sub>1 pc (size vs) /
                  {pc..<pc + length (compE\<^sub>2 e\<^sub>1)},size vs"
-    using Try\<^sub>1.prems by (fastforce simp:beforex_def split:split_if_asm)
+    using Try\<^sub>1.prems by (fastforce simp:beforex_def split:if_split_asm)
   hence "P \<turnstile> (None,h\<^sub>0,(vs,ls\<^sub>0,C,M,pc)#frs) -jvm\<rightarrow>
              (None,h\<^sub>1,(v\<^sub>1#vs,ls\<^sub>1,C,M,?pc\<^sub>1)#frs)" using Try\<^sub>1 by auto
   also have "P \<turnstile> \<dots> -jvm\<rightarrow> (None,h\<^sub>1,(v\<^sub>1#vs,ls\<^sub>1,C,M,?pc\<^sub>1')#frs)"

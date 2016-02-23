@@ -78,7 +78,7 @@ proof -
   from this obtain Ds where "Ds = rev Cs''" by simp
   with 1 R C''Cs'' have subo1:"is_subobj P ((C',C''#rev Ds))" by simp
   with R show ?thesis
-    by (induct Ds,auto simp:mdc_def split:split_if_asm dest:subobj_aux,
+    by (induct Ds,auto simp:mdc_def split:if_split_asm dest:subobj_aux,
       auto elim:converse_rtranclE dest!:subclsS_subcls1 elim:subcls1_class)
 qed
 
@@ -264,7 +264,7 @@ next
   hence subR:"P \<turnstile> X \<prec>\<^sub>R Y"  by(rule_tac Cs="Xs" and Cs'="[]" in isSubobjs_subclsR) simp
   from E_Es Es have "last (D#E#Es) = C'" by simp
   with subR lb l butlast have "P \<turnstile> last(D#rev Cs') \<prec>\<^sub>R C'"
-    by (auto split:split_if_asm)
+    by (auto split:if_split_asm)
   with suboCD show ?case by simp
 qed
 

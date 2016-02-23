@@ -364,9 +364,9 @@ apply(simp add: hd_coeffs1_def)
  apply(erule disjE) apply fastforce
 apply (clarsimp)
 apply(case_tac xa)
-  apply(rename_tac list) apply(case_tac list) apply fastforce apply (simp split:split_if_asm)
+  apply(rename_tac list) apply(case_tac list) apply fastforce apply (simp split:if_split_asm)
  apply(rename_tac list) apply(case_tac list) apply fastforce
- apply (simp split:split_if_asm) apply fastforce
+ apply (simp split:if_split_asm) apply fastforce
  apply(erule disjE) prefer 2 apply fastforce
  apply(simp add:zdiv_eq_0_iff)
  apply(subgoal_tac "a \<in> set(map hd_coeff as)")
@@ -375,7 +375,7 @@ apply(case_tac xa)
   prefer 2 apply simp
  apply (metis elem_le_zlcms linorder_not_le zlcms_pos)
 apply(rename_tac list) apply(case_tac list) apply fastforce
-apply (simp split:split_if_asm) apply fastforce
+apply (simp split:if_split_asm) apply fastforce
 apply(simp add:zdiv_eq_0_iff)
 apply(subgoal_tac "\<forall>i\<in> set(map hd_coeff as). i \<noteq> 0")
  prefer 2 apply simp
@@ -391,9 +391,9 @@ apply(simp add: hd_coeffs1_def)
  apply(erule disjE) apply fastforce
 apply (clarsimp)
 apply(case_tac xa)
-  apply(rename_tac list) apply(case_tac list) apply fastforce apply (simp split:split_if_asm)
+  apply(rename_tac list) apply(case_tac list) apply fastforce apply (simp split:if_split_asm)
  apply(rename_tac list) apply(case_tac list) apply fastforce
- apply (simp split:split_if_asm) apply fastforce
+ apply (simp split:if_split_asm) apply fastforce
  apply(erule disjE) prefer 2 apply fastforce
  apply(simp add:zdiv_eq_0_iff)
  apply(subgoal_tac "a \<in> set(map hd_coeff as)")
@@ -402,7 +402,7 @@ apply(case_tac xa)
   prefer 2 apply simp
  apply (metis elem_le_zlcms linorder_not_le zlcms_pos)
 apply(rename_tac list) apply(case_tac list) apply fastforce
-apply (simp split:split_if_asm) apply fastforce
+apply (simp split:if_split_asm) apply fastforce
 apply(simp add:zdiv_eq_0_iff)
 apply(subgoal_tac "\<forall>i\<in> set(map hd_coeff as). i \<noteq> 0")
  prefer 2 apply simp

@@ -213,11 +213,11 @@ proof(induct rule:WCFG_induct)
     { fix v assume "interpret e s' = Some v"
       with `\<forall>V'\<in>rhs_aux e. s V' = s' V'` have "interpret e s = Some v"
         by(fastforce intro:rhs_interpret_eq)
-      with None have False by(fastforce split:split_if_asm) }
+      with None have False by(fastforce split:if_split_asm) }
     with None show ?thesis by fastforce
   next
     case (Some v)
-    hence "interpret e s = Some v" by(fastforce split:split_if_asm)
+    hence "interpret e s = Some v" by(fastforce split:if_split_asm)
     with `\<forall>V'\<in>rhs_aux e. s V' = s' V'`
     have "interpret e s' = Some v" by(fastforce intro:rhs_interpret_eq)
     with Some show ?thesis by simp

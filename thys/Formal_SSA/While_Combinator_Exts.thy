@@ -73,11 +73,11 @@ proof -
   }
   ultimately show ?thesis using diverge
     unfolding while_option_def
-    apply (split split_if)
+    apply (split if_split)
     apply (rule conjI)
-     apply (split split_if)
+     apply (split if_split)
      apply metis
-    apply (split split_if)
+    apply (split if_split)
     by (metis (lifting) LeastI_ex)
 qed
 

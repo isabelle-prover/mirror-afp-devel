@@ -255,7 +255,7 @@ lemma Sup_eq_RESE:
 proof -
   show ?thesis
     using assms unfolding Sup_nres_def
-    apply (simp split: split_if_asm)
+    apply (simp split: if_split_asm)
     apply (rule_tac C="{X. RES X \<in> A}" in that)
     apply auto []
     apply (case_tac x, auto simp: nres_simp_internals) []

@@ -228,7 +228,7 @@ lemma Bag_inv_lemma: "\<tau> \<Turnstile> (\<delta> X) \<Longrightarrow> \<lceil
 apply(insert Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e [of "X \<tau>"], simp)
 apply(auto simp: OclValid_def defined_def false_def true_def cp_def
                  bot_fun_def bot_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def null_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def null_fun_def
-           split:split_if_asm)
+           split:if_split_asm)
  apply(erule contrapos_pp [of "Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e (X \<tau>) = bot"])
  apply(subst Abs_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject[symmetric], rule Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e, simp)
  apply(simp add: Rep_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse bot_Bag\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def bot_option_def)
@@ -684,7 +684,7 @@ text{* OclSize *}
 lemma OclSize_defined_args_valid: "\<tau> \<Turnstile> \<delta> (X->size\<^sub>B\<^sub>a\<^sub>g()) \<Longrightarrow> \<tau> \<Turnstile> \<delta> X"
 by(auto simp: OclSize_def OclValid_def true_def valid_def false_def StrongEq_def
               defined_def invalid_def bot_fun_def null_fun_def
-        split: bool.split_asm HOL.split_if_asm option.split)
+        split: bool.split_asm HOL.if_split_asm option.split)
 
 lemma OclSize_infinite:
 assumes non_finite:"\<tau> \<Turnstile> not(\<delta>(S->size\<^sub>B\<^sub>a\<^sub>g()))"
@@ -692,7 +692,7 @@ shows   "(\<tau> \<Turnstile> not(\<delta>(S))) \<or> \<not> finite (Rep_Bag_bas
 apply(insert non_finite, simp)
 apply(rule impI)
 apply(simp add: OclSize_def OclValid_def defined_def bot_fun_def null_fun_def bot_option_def null_option_def
-           split: split_if_asm)
+           split: if_split_asm)
 done
 
 lemma "\<tau> \<Turnstile> \<delta> X \<Longrightarrow> \<not> finite (Rep_Bag_base X \<tau>) \<Longrightarrow> \<not> \<tau> \<Turnstile> \<delta> (X->size\<^sub>B\<^sub>a\<^sub>g())"
@@ -717,7 +717,7 @@ text{* OclIsEmpty *}
 lemma OclIsEmpty_defined_args_valid:"\<tau> \<Turnstile> \<delta> (X->isEmpty\<^sub>B\<^sub>a\<^sub>g()) \<Longrightarrow> \<tau> \<Turnstile> \<upsilon> X"
   apply(auto simp: OclIsEmpty_def OclValid_def defined_def valid_def false_def true_def
                    bot_fun_def null_fun_def OclAnd_def OclOr_def OclNot_def
-             split: split_if_asm)
+             split: if_split_asm)
   apply(case_tac "(X->size\<^sub>B\<^sub>a\<^sub>g() \<doteq> \<zero>) \<tau>", simp add: bot_option_def, simp, rename_tac x)
   apply(case_tac x, simp add: null_option_def bot_option_def, simp)
   apply(simp add: OclSize_def StrictRefEq\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r valid_def)
@@ -727,12 +727,12 @@ by (metis (hide_lams, no_types)
 lemma "\<tau> \<Turnstile> \<delta> (null->isEmpty\<^sub>B\<^sub>a\<^sub>g())"
 by(auto simp: OclIsEmpty_def OclValid_def defined_def valid_def false_def true_def
               bot_fun_def null_fun_def OclAnd_def OclOr_def OclNot_def null_is_valid
-        split: split_if_asm)
+        split: if_split_asm)
 
 lemma OclIsEmpty_infinite: "\<tau> \<Turnstile> \<delta> X \<Longrightarrow> \<not> finite (Rep_Bag_base X \<tau>) \<Longrightarrow> \<not> \<tau> \<Turnstile> \<delta> (X->isEmpty\<^sub>B\<^sub>a\<^sub>g())"
   apply(auto simp: OclIsEmpty_def OclValid_def defined_def valid_def false_def true_def
                    bot_fun_def null_fun_def OclAnd_def OclOr_def OclNot_def
-             split: split_if_asm)
+             split: if_split_asm)
   apply(case_tac "(X->size\<^sub>B\<^sub>a\<^sub>g() \<doteq> \<zero>) \<tau>", simp add: bot_option_def, simp, rename_tac x)
   apply(case_tac x, simp add: null_option_def bot_option_def, simp)
 by(simp add: OclSize_def StrictRefEq\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r valid_def bot_fun_def false_def true_def invalid_def)
@@ -764,10 +764,10 @@ show "\<tau> \<Turnstile> \<delta> X \<Longrightarrow>
  apply(simp add: OclNotEmpty_def OclIsEmpty_def deMorgan1 deMorgan2, drule foundation5)
  apply(subst (asm) (2) OclNot_def,
        simp add: OclValid_def StrictRefEq\<^sub>I\<^sub>n\<^sub>t\<^sub>e\<^sub>g\<^sub>e\<^sub>r StrongEq_def
-            split: split_if_asm)
+            split: if_split_asm)
   prefer 2
   apply(simp add: invalid_def bot_option_def true_def)
- apply(simp add: OclSize_def valid_def split: split_if_asm,
+ apply(simp add: OclSize_def valid_def split: if_split_asm,
        simp_all add: false_def true_def bot_option_def bot_fun_def OclInt0_def)
  apply(drule s_non_empty[of "Rep_Bag_base X \<tau>"], erule exE, case_tac x)
 by blast
@@ -784,7 +784,7 @@ text{* OclANY *}
 lemma OclANY_defined_args_valid: "\<tau> \<Turnstile> \<delta> (X->any\<^sub>B\<^sub>a\<^sub>g()) \<Longrightarrow> \<tau> \<Turnstile> \<delta> X"
 by(auto simp: OclANY_def OclValid_def true_def valid_def false_def StrongEq_def
               defined_def invalid_def bot_fun_def null_fun_def OclAnd_def
-        split: bool.split_asm HOL.split_if_asm option.split)
+        split: bool.split_asm HOL.if_split_asm option.split)
 
 lemma "\<tau> \<Turnstile> \<delta> X \<Longrightarrow> \<tau> \<Turnstile> X->isEmpty\<^sub>B\<^sub>a\<^sub>g() \<Longrightarrow> \<not> \<tau> \<Turnstile> \<delta> (X->any\<^sub>B\<^sub>a\<^sub>g())"
  apply(simp add: OclANY_def OclValid_def)
@@ -799,13 +799,13 @@ proof -
  have A: "(\<tau> \<Turnstile> \<upsilon>(X->any\<^sub>B\<^sub>a\<^sub>g())) \<Longrightarrow> ((\<tau> \<Turnstile>(\<upsilon> X)))"
           by(auto simp: OclANY_def OclValid_def true_def valid_def false_def StrongEq_def
                         defined_def invalid_def bot_fun_def null_fun_def
-                  split: bool.split_asm HOL.split_if_asm option.split)
+                  split: bool.split_asm HOL.if_split_asm option.split)
  have B: "(\<tau> \<Turnstile>(\<upsilon> X)) \<Longrightarrow> (\<tau> \<Turnstile> \<upsilon>(X->any\<^sub>B\<^sub>a\<^sub>g()))"
            apply(auto simp: OclANY_def OclValid_def true_def false_def StrongEq_def
                             defined_def invalid_def valid_def bot_fun_def null_fun_def
                             bot_option_def null_option_def null_is_valid
                             OclAnd_def
-                      split: bool.split_asm HOL.split_if_asm option.split)
+                      split: bool.split_asm HOL.if_split_asm option.split)
            apply(frule Bag_inv_lemma[OF foundation16[THEN iffD2], OF conjI], simp)
            apply(subgoal_tac "(\<delta> X) \<tau> = true \<tau>")
             prefer 2

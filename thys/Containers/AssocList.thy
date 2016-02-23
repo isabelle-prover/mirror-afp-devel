@@ -85,7 +85,7 @@ lemma map_of_delete_aux:
 by(simp add: map_of_delete_aux')
 
 lemma delete_aux_eq_Nil_conv: "delete_aux k ts = [] \<longleftrightarrow> ts = [] \<or> (\<exists>v. ts = [(k, v)])"
-by(cases ts)(auto split: split_if_asm)
+by(cases ts)(auto split: if_split_asm)
 
 subsection {* Operations on the abstract type @{typ "('a, 'b) alist"} *}
 

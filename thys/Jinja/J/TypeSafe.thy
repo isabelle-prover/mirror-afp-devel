@@ -73,7 +73,7 @@ next
   moreover from IH lconf wt have "P,h' \<turnstile> l' (:\<le>) E(V\<mapsto>T)"
     by(auto simp del: fun_upd_apply simp: fun_upd_same lconf_upd2 conf_def)
   ultimately show "P,h' \<turnstile> l'(V := l V) (:\<le>) E"
-    by (fastforce simp:lconf_def split:split_if_asm)
+    by (fastforce simp:lconf_def split:if_split_asm)
 next
   case (BlockRedNone e h l V e' h' l' T T')
   have red: "P \<turnstile> \<langle>e,(h, l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
@@ -85,7 +85,7 @@ next
   moreover have "P,h' \<turnstile> l' (:\<le>) E(V\<mapsto>T)"
     by(rule IH, insert lconf wt, auto simp:lconf_def)
   ultimately show "P,h' \<turnstile> l'(V := l V) (:\<le>) E"
-    by (fastforce simp:lconf_def split:split_if_asm)
+    by (fastforce simp:lconf_def split:if_split_asm)
 next
   case (BlockRedSome e h l V e' h' l' v T T')
   have red: "P \<turnstile> \<langle>e,(h, l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
@@ -97,7 +97,7 @@ next
   moreover have "P,h' \<turnstile> l' (:\<le>) E(V\<mapsto>T)"
     by(rule IH, insert lconf wt, auto simp:lconf_def)
   ultimately show "P,h' \<turnstile> l'(V := l V) (:\<le>) E"
-    by (fastforce simp:lconf_def split:split_if_asm)
+    by (fastforce simp:lconf_def split:if_split_asm)
 qed auto
 (*>*)
 

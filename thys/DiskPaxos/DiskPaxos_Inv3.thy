@@ -64,7 +64,7 @@ proof -
   from inv_L' act pq
   have "phase s q \<in> {1,2} \<and> hasRead s q d p"
     by(auto simp add: Phase1or2ReadThen_def HInv3_L_def 
-            hasRead_def split: split_if_asm)
+            hasRead_def split: if_split_asm)
   with inv2b
   have "disk s d q = dblock s q"
     by(auto simp add: Inv2b_def Inv2b_inner_def 

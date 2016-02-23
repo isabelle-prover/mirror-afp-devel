@@ -358,7 +358,7 @@ apply (case_tac "n \<in> I")
  apply (simp add: iprev_def)
 apply (rule contrapos_pn[of "iprev n I < k" "k \<in> I"], simp)
 apply (unfold iprev_def i_cut_defs, simp)
-apply (split split_if_asm)
+apply (split if_split_asm)
 apply (cut_tac Max_ge[of "{x \<in> I. x < n}" k])
 apply fastforce+
 done
@@ -785,7 +785,7 @@ apply (unfold iprev_def)
 apply (rule set_eqI, safe)
  apply (simp add: i_cut_defs)
 apply simp
-apply (split split_if_asm)
+apply (split if_split_asm)
  apply (simp add: Max_ge_iff nat_cut_less_finite)
  apply (blast intro: le_less_trans)
 apply (frule iMin_neq_imp_greater, assumption)
@@ -823,7 +823,7 @@ apply (unfold iprev_def)
 apply (rule set_eqI, safe)
  apply (simp add: i_cut_defs linorder_not_less)
  apply (drule iMinI, fastforce)
-apply (split split_if_asm)
+apply (split if_split_asm)
  apply (rule ccontr)
  apply (simp add: nat_cut_less_finite linorder_not_le)
  apply blast
@@ -1062,7 +1062,7 @@ apply (rule_tac x=n in bexI)
 apply (case_tac "a < n")
  prefer 2
  apply simp
- apply (split split_if_asm)
+ apply (split if_split_asm)
   apply (subgoal_tac "I \<down>> n = {}", simp+)
  apply (drule not_sym)
  apply (rule ssubst[OF cut_greater_ge_inext_conv])
@@ -1135,13 +1135,13 @@ apply simp
 apply (subgoal_tac "iMin I < n")
  prefer 2
  apply (blast intro: order_le_less_trans)
-apply (split split_if_asm)
+apply (split if_split_asm)
  apply clarsimp
- apply (split split_if_asm)
+ apply (split if_split_asm)
   apply simp
  apply (simp add: cut_less_le_iprev_conv[symmetric])
  apply blast
-apply (split split_if_asm)
+apply (split if_split_asm)
  apply simp
 apply (simp add: cut_less_le_iprev_conv[symmetric])
 apply (clarsimp, rename_tac x)

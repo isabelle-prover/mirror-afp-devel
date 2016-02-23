@@ -50,7 +50,7 @@ lemma boundSummandDest[dest]:
   
   shows False
 using assms
-by(induct P rule: pi.induct, auto simp add: split_if pi.inject name_abs_eq name_calc)
+by(induct P rule: pi.induct, auto simp add: if_split pi.inject name_abs_eq name_calc)
 
 lemma summandFresh:
   fixes P :: pi
@@ -62,7 +62,7 @@ lemma summandFresh:
   
   shows "x \<sharp> P"
 using assms
-by(nominal_induct Q avoiding: P rule: pi.strong_induct, auto simp add: split_if)
+by(nominal_induct Q avoiding: P rule: pi.strong_induct, auto simp add: if_split)
 
 nominal_primrec hnf :: "pi \<Rightarrow> bool" where
   "hnf \<zero> = True"
@@ -230,7 +230,7 @@ next
   next
     case(Res y P)
     have "hnf(<\<nu>y>P)" by fact
-    thus ?case by(auto simp add: split_if)
+    thus ?case by(auto simp add: if_split)
   next
     case(Bang P)
     have "hnf (!P)" by fact
@@ -295,7 +295,7 @@ next
   next
     case(Res x P)
     have "hnf (<\<nu>x>P)" by fact
-    thus ?case by(force elim: resCasesF outputCases simp add: split_if residual.inject)
+    thus ?case by(force elim: resCasesF outputCases simp add: if_split residual.inject)
   next
     case(Bang P)
     have "hnf (!P)" by fact
@@ -413,12 +413,12 @@ next
       assume "<\<nu>x>a{x}.P' \<in> summands(<\<nu>y>P)"
       with PeqP'' have Summ: "<\<nu>x>a{x}.P' \<in> summands(<\<nu>y>b{y}.P'')" by simp
       moreover with bineqy xineqy have aeqb: "a = b" 
-        by(auto simp add: split_if pi.inject name_abs_eq name_fresh_fresh)
+        by(auto simp add: if_split pi.inject name_abs_eq name_fresh_fresh)
       from bineqy xineqy yFreshP' have "y \<sharp> b{x}.P'" by(simp add: name_calc)
       with Summ aeqb bineqy aineqx have "<\<nu>y>b{y}.([(x, y)] \<bullet> P') \<in> summands(<\<nu>y>b{y}.P'')"
         by(simp only: alphaRes, simp add: name_calc)
       with aeqb PeqP'' have "<\<nu>y>P \<longmapsto>a<\<nu>y> \<prec> [(x, y)] \<bullet> P'"
-        by(auto intro: Open Output simp add: split_if pi.inject name_abs_eq)
+        by(auto intro: Open Output simp add: if_split pi.inject name_abs_eq)
       moreover from yFreshP' have "x \<sharp> [(x, y)] \<bullet> P'" by(simp add: name_fresh_left name_calc)
       ultimately show ?thesis by(simp add: alphaBoundResidual name_swap)
     qed

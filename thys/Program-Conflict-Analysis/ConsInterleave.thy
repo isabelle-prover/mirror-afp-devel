@@ -64,7 +64,7 @@ lemma cil_last_case_split[cases set, case_names left right]: "
     !!w'. \<lbrakk>w=e2#w'; w'\<in>(e1#w1 \<otimes>\<^bsub>\<alpha>\<^esub> w2); 
            fst (\<alpha> e2) \<inter> mon_pl (map \<alpha> (e1#w1)) = {} \<rbrakk> \<Longrightarrow> P
   \<rbrakk> \<Longrightarrow> P"
-  by (auto elim: list_set_cons_cases split: split_if_asm)
+  by (auto elim: list_set_cons_cases split: if_split_asm)
 
 lemma cil_cases[cases set, case_names both_empty left_empty right_empty app_left app_right]: "
   \<lbrakk> w\<in>wa\<otimes>\<^bsub>\<alpha>\<^esub>wb; 

@@ -210,7 +210,7 @@ begin
    lemma defined_mono : "\<tau> \<Turnstile>\<upsilon>(f Y Z) \<Longrightarrow> (\<tau> \<Turnstile>\<delta> Y) \<and> (\<tau> \<Turnstile>\<upsilon> Z)"
    by(auto simp: valid_def bot_fun_def invalid_def 
                  def_scheme StrongEq_def OclValid_def false_def true_def
-           split: split_if_asm)
+           split: if_split_asm)
    
    lemma cp_pre: "cp self' \<Longrightarrow> cp a1' \<Longrightarrow>  cp (\<lambda>X. PRE (self' X) (a1' X)  )"
    by(rule_tac f=PRE in cpI2, auto intro: cp\<^sub>P\<^sub>R\<^sub>E)
@@ -278,7 +278,7 @@ begin
    lemma defined_mono : "\<tau> \<Turnstile>\<upsilon>(f X Y Z) \<Longrightarrow> (\<tau> \<Turnstile>\<delta> X) \<and> (\<tau> \<Turnstile>\<upsilon> Y) \<and> (\<tau> \<Turnstile>\<upsilon> Z)"
    by(auto simp: valid_def bot_fun_def invalid_def 
                  def_scheme StrongEq_def OclValid_def false_def true_def
-           split: split_if_asm)
+           split: if_split_asm)
    
    lemma cp_pre: "cp self' \<Longrightarrow> cp a1' \<Longrightarrow> cp a2' \<Longrightarrow> cp (\<lambda>X. PRE (self' X) (a1' X) (a2' X) )"
    by(rule_tac f=PRE in cpI3, auto intro: cp\<^sub>P\<^sub>R\<^sub>E)
@@ -370,7 +370,7 @@ begin
    lemma defined_mono : "\<tau> \<Turnstile>\<upsilon>(f W X Y Z) \<Longrightarrow> (\<tau> \<Turnstile>\<delta> W) \<and> (\<tau> \<Turnstile>\<upsilon> X) \<and> (\<tau> \<Turnstile>\<upsilon> Y) \<and> (\<tau> \<Turnstile>\<upsilon> Z)"
    by(auto simp: valid_def bot_fun_def invalid_def 
                  def_scheme StrongEq_def OclValid_def false_def true_def
-           split: split_if_asm)
+           split: if_split_asm)
    
    lemma cp_pre: "cp self' \<Longrightarrow> cp a1' \<Longrightarrow> cp a2'\<Longrightarrow> cp a3' 
                   \<Longrightarrow> cp (\<lambda>X. PRE (self' X) (a1' X) (a2' X) (a3' X) )"

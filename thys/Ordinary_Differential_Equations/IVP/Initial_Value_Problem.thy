@@ -369,7 +369,7 @@ proof -
   from T1_subset assms have "t \<in> T" by auto
   from connection_eq_solution[OF `t \<in> T`] i1.interval assms
   show ?thesis
-    by (simp add: connection_def split: split_if_asm)
+    by (simp add: connection_def split: if_split_asm)
 qed
 
 lemma solution2_eq_solution:
@@ -379,7 +379,7 @@ proof -
   from T2_subset assms have "t \<in> T" by auto
   from connection_eq_solution[OF `t \<in> T`] i2.interval assms conn_t conn_x i2.solution_t0
   show ?thesis
-    by (simp add: connection_def split: split_if_asm)
+    by (simp add: connection_def split: if_split_asm)
 qed
 
 end
@@ -448,7 +448,7 @@ lemma const_in_subspace: "(\<lambda>_. x0) \<in> (T \<rightarrow> X) \<inter> bc
 lemma closed_iter_space: "closed iter_space"
 proof -
   have "(T \<rightarrow> X) \<inter> bcontfun \<inter> {x. x t0 = x0} = Pi T (\<lambda>i. if i = t0 then {x0} else X) \<inter> bcontfun"
-    using iv_defined by (auto simp: Pi_iff split: split_if_asm)
+    using iv_defined by (auto simp: Pi_iff split: if_split_asm)
   thus ?thesis using closed by (auto simp add: iter_space_def intro!: closed_Pi_bcontfun)
 qed
 

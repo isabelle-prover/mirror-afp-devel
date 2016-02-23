@@ -394,7 +394,7 @@ lemma rerr_sip:
                               onl_oinvariant_sterms [OF aodv_wf oreceived_rreq_rrep_nsqn_fresh_inv]
                               other_quality_increases other_localD
                     simp del: One_nat_def, intro conjI)
-         (clarsimp simp del: One_nat_def split: split_if_asm option.split_asm, erule(2) partial)+
+         (clarsimp simp del: One_nat_def split: if_split_asm option.split_asm, erule(2) partial)+
   qed
 
 lemma prerr_guard: "paodv i \<TTurnstile>
@@ -402,7 +402,7 @@ lemma prerr_guard: "paodv i \<TTurnstile>
                       \<longrightarrow> (\<forall>ip\<in>dom(dests \<xi>). ip\<in>vD(rt \<xi>)
                                              \<and> the (nhop (rt \<xi>) ip) = sip \<xi>
                                              \<and> sqn (rt \<xi>) ip < the (dests \<xi> ip))))"
-  by (inv_cterms) (clarsimp split: option.split_asm split_if_asm)
+  by (inv_cterms) (clarsimp split: option.split_asm if_split_asm)
 
 lemmas odests_vD_inc_sqn =
          open_seq_invariant [OF dests_vD_inc_sqn initiali_aodv oaodv_trans aodv_trans,
@@ -945,7 +945,7 @@ lemma seq_nhop_quality_increases':
               with \<open>sip = i\<close> \<open>Suc 0 \<le> osn\<close> change after \<open>oip\<in>kD(rt (\<sigma> sip))\<close>
                 have "nsqn (rt (\<sigma> sip)) oip < nsqn (rt (\<sigma>' sip)) oip"
                   unfolding update_def
-                  by (clarsimp split: option.split_asm split_if_asm)
+                  by (clarsimp split: option.split_asm if_split_asm)
                      (auto simp: sqn_def)
               with \<open>osn \<le> nsqn (rt (\<sigma> sip)) oip\<close> have "osn < nsqn (rt (\<sigma>' sip)) oip"
                 by simp

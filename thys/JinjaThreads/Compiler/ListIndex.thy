@@ -86,7 +86,7 @@ lemma inj_on_index: "inj_on (index xs) (set xs)"
 lemma index_drop: "\<And>x i. \<lbrakk> x \<in> set xs; index xs x < i \<rbrakk> \<Longrightarrow> x \<notin> set(drop i xs)"
 (*<*)
 apply(induct xs)
-apply (auto simp:drop_Cons split:split_if_asm nat.splits dest:in_set_dropD)
+apply (auto simp:drop_Cons split:if_split_asm nat.splits dest:in_set_dropD)
 done
 (*>*)
 
@@ -169,7 +169,7 @@ lemma index_le_lengthD: "index xs x < length xs \<Longrightarrow> x \<in> set xs
 by(erule contrapos_pp)(simp)
 
 lemma not_hidden_index_nth: "\<lbrakk> i < length Vs; \<not> hidden Vs i \<rbrakk> \<Longrightarrow> index Vs (Vs ! i) = i"
-by(induct Vs arbitrary: i)(auto split: split_if_asm nat.split_asm simp add: nth_Cons hidden_def)
+by(induct Vs arbitrary: i)(auto split: if_split_asm nat.split_asm simp add: nth_Cons hidden_def)
 
 lemma hidden_snoc_nth:
   assumes len: "i < length Vs"
@@ -203,7 +203,7 @@ proof -
       case True
       with `[x # xs [\<mapsto>] ys] V = Some v` `length xs \<le> length Ys` `ys = y # Ys`
       have "[xs [\<mapsto>] Ys] V = Some v"
-        apply(auto simp add: map_upds_def map_of_eq_None_iff set_zip image_Collect split: split_if_asm)
+        apply(auto simp add: map_upds_def map_of_eq_None_iff set_zip image_Collect split: if_split_asm)
         apply(clarsimp simp add: in_set_conv_decomp)
         apply(hypsubst_thin)
         apply(erule_tac x="length ys" in allE)

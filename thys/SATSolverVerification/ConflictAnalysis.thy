@@ -1659,7 +1659,7 @@ next
           unfolding applyLearn_def
           unfolding setWatch1_def
           unfolding setWatch2_def
-          by (auto simp add:Let_def nth_append split: split_if_asm)
+          by (auto simp add:Let_def nth_append split: if_split_asm)
         thus ?thesis
           using `set (getC state) \<noteq> {opposite ?l}`
           unfolding applyLearn_def
@@ -2646,7 +2646,7 @@ proof-
     using assertLiteralEffect
     unfolding applyBackjump_def
     unfolding setReason_def
-    by (auto simp add: Let_def split: split_if_asm)
+    by (auto simp add: Let_def split: if_split_asm)
   moreover
   have "InvariantUniq (?prefix @ [(opposite ?l, False)])"
     using assms
@@ -2654,7 +2654,7 @@ proof-
     using assertLiteralEffect
     unfolding applyBackjump_def
     unfolding setReason_def
-    by (auto simp add: Let_def split: split_if_asm)
+    by (auto simp add: Let_def split: if_split_asm)
   ultimately
   show ?thesis
     using assms
@@ -2758,7 +2758,7 @@ proof-
     using assertLiteralEffect
     unfolding applyBackjump_def
     unfolding setReason_def
-    by (auto simp add: Let_def split: split_if_asm)
+    by (auto simp add: Let_def split: if_split_asm)
   moreover
   have "InvariantWatchCharacterization (getF ?state') (getWatch1 ?state') (getWatch2 ?state') (getM ?state')"
     using InvariantWatchCharacterizationInBackjumpPrefix[of "state"]
@@ -2774,7 +2774,7 @@ proof-
     unfolding applyBackjump_def
     unfolding setReason_def
     using assms
-    by (auto simp add: Let_def split: split_if_asm)
+    by (auto simp add: Let_def split: if_split_asm)
   hence "removeAll (opposite ?l) (getQ ?state'1) = getQ ?state'1" 
         "removeAll (opposite ?l) (getQ ?state''1) = getQ ?state''1"
     using removeAll_id[of "opposite ?l" "getQ ?state'1"]
@@ -2873,7 +2873,7 @@ proof-
     using assertLiteralEffect
     unfolding applyBackjump_def
     unfolding setReason_def
-    by (auto simp add: Let_def split: split_if_asm)
+    by (auto simp add: Let_def split: if_split_asm)
 
   have "InvariantUniq (?prefix @  [(opposite ?l, False)])"
     using assms
@@ -2881,7 +2881,7 @@ proof-
     using assertLiteralEffect
     unfolding applyBackjump_def
     unfolding setReason_def
-    by (auto simp add: Let_def split: split_if_asm)
+    by (auto simp add: Let_def split: if_split_asm)
 
   let ?state'1 = "?state' \<lparr> getQ := getQ ?state' @ [opposite ?l]\<rparr>"
   let ?state'2 = "assertLiteral (opposite ?l) False ?state'1"
@@ -3304,7 +3304,7 @@ proof-
     using assertLiteralEffect
     unfolding applyBackjump_def
     unfolding setReason_def
-    by (auto simp add: Let_def split: split_if_asm)
+    by (auto simp add: Let_def split: if_split_asm)
   ultimately
   show ?thesis
     using InvariantConflictFlagCharacterizationAfterAssertLiteral[of "?state'"]
@@ -3408,7 +3408,7 @@ proof-
     using assertLiteralEffect
     unfolding applyBackjump_def
     unfolding setReason_def
-    by (auto simp add: Let_def split: split_if_asm)
+    by (auto simp add: Let_def split: if_split_asm)
   ultimately
   show ?thesis
     using InvariantConflictFlagCharacterizationAfterAssertLiteral[of "?state'"]

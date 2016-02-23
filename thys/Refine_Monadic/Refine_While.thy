@@ -790,7 +790,7 @@ subsubsection {* Bounded while-loop *}
         using I0 apply (simp add: pw_le_iff refine_pw_simps)
       
         unfolding WHILEI_body_def
-        apply (split split_if)+
+        apply (split if_split)+
         apply (intro impI conjI)
         apply (simp_all)
         using ISTEP
@@ -945,7 +945,7 @@ subsubsection {* Bounded while-loop *}
       (is "?C1 \<or> ?C2")
       apply (cases "bounded_WHILE n cond step m0")
       apply simp
-      apply (simp add: pw_eq_iff refine_pw_simps split: split_if_asm)
+      apply (simp add: pw_eq_iff refine_pw_simps split: if_split_asm)
       apply (auto intro: not_nofail_inres simp: refine_pw_simps)
       done
     moreover {
@@ -979,7 +979,7 @@ subsubsection {* Bounded while-loop *}
       apply simp
       apply (rule that, assumption)
       apply (force simp: refine_pw_simps pw_eq_iff) []
-      apply (auto simp add: refine_pw_simps pw_eq_iff split: split_if_asm)
+      apply (auto simp add: refine_pw_simps pw_eq_iff split: if_split_asm)
       done
     with Suc.prems(2) obtain xh X' where 
         "xh\<in>Xh" and

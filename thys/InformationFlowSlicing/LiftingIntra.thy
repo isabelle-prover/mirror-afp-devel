@@ -1028,7 +1028,7 @@ proof -
       (Postdomination.standard_control_dependence src trg lve NewExit) S"
       by(fastforce intro:PDG.PDG_path_Append[OF PDG'] PDG.PDG_path_ddep[OF PDG']
                         PDG.PDG_ddep_edge[OF PDG'] simp:PDG.PDG_BS_def[OF PDG']
-                  split:split_if_asm)
+                  split:if_split_asm)
   next
     fix n S
     interpret PDGx:PDG src trg knd lve NewEntry lDef lUse state_val NewExit
@@ -1376,7 +1376,7 @@ proof -
       (StrongPostdomination.weak_control_dependence src trg lve NewExit) S"
       by(fastforce intro:PDG.PDG_path_Append[OF PDG'] PDG.PDG_path_ddep[OF PDG']
                         PDG.PDG_ddep_edge[OF PDG'] simp:PDG.PDG_BS_def[OF PDG']
-                  split:split_if_asm)
+                  split:if_split_asm)
   next
     fix n S
     interpret PDGx:PDG src trg knd lve NewEntry lDef lUse state_val NewExit

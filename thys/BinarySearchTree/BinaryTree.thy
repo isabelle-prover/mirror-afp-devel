@@ -78,7 +78,7 @@ apply (induct t)
   --{*Just auto will do it, but very slowly*}
 apply (simp)
 apply (clarify, auto)
-apply (simp_all split: split_if_asm) 
+apply (simp_all split: if_split_asm) 
 done
 
 definition sorted_distinct_pred :: "'a hash => 'a => 'a => 'a Tree => bool" where

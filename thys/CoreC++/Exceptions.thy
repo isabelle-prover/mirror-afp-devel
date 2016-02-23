@@ -83,19 +83,19 @@ subsection "@{term start_heap}"
 lemma start_Subobj:
 "\<lbrakk>start_heap P a = Some(C, S); (Cs,fs) \<in> S\<rbrakk> \<Longrightarrow> Subobjs P C Cs"
 by (fastforce elim:init_obj.cases simp:start_heap_def blank_def 
-                                    fun_upd_apply split:split_if_asm)
+                                    fun_upd_apply split:if_split_asm)
 
 lemma start_SuboSet:
 "\<lbrakk>start_heap P a = Some(C, S); Subobjs P C Cs\<rbrakk> \<Longrightarrow> \<exists>fs. (Cs,fs) \<in> S"
 by (fastforce intro:init_obj.intros simp:start_heap_def blank_def
-                split:split_if_asm)
+                split:if_split_asm)
 
 lemma start_init_obj: "start_heap P a = Some(C,S) \<Longrightarrow> S = Collect (init_obj P C)"
-by (auto simp:start_heap_def blank_def split:split_if_asm)
+by (auto simp:start_heap_def blank_def split:if_split_asm)
 
 lemma start_subobj:
   "\<lbrakk>start_heap P a = Some(C, S); \<exists>fs. (Cs, fs) \<in> S\<rbrakk> \<Longrightarrow> Subobjs P C Cs"
 by (fastforce elim:init_obj.cases simp:start_heap_def blank_def
-                  split:split_if_asm)
+                  split:if_split_asm)
 
 end

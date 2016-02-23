@@ -456,7 +456,7 @@ proof -
       qed
     qed }
   with is_class_Object[OF wf] sup itA itB show ?thesis unfolding sup_def
-    by(cases "A = B")(auto split: split_if_asm simp add: exec_lub_refl)
+    by(cases "A = B")(auto split: if_split_asm simp add: exec_lub_refl)
 qed
 
 lemma closed_err_types:
@@ -503,7 +503,7 @@ proof -
       using acyclic_widen1[OF wfP] superI[of _ _ P]
       by(simp add: exec_lub_conv)(blast dest: is_lubD is_ubD intro: widen1_rtrancl_into_widen) }
   with it1 it2 sup show ?thesis
-    by (cases s) (auto simp add: sup_def split: split_if_asm elim: refTE)
+    by (cases s) (auto simp add: sup_def split: if_split_asm elim: refTE)
 qed
 
 lemma sup_widen_smallest:
@@ -539,7 +539,7 @@ proof -
       by(rule widen1_rtrancl_into_widen)
     with W have "P \<turnstile> W \<le> V" by simp }
   with sup itT itU TwV UwV show ?thesis
-    by(simp add: sup_def split: split_if_asm)
+    by(simp add: sup_def split: if_split_asm)
 qed
 
 lemma sup_exists:

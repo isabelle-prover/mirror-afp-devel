@@ -93,7 +93,7 @@ lemma subcls1:
   apply (simp add: class_defs system_defs E_def class_def)
   (* FIXME: cannot simply expand class names, since
      inequality proofs on strings are too inefficient *)
-  apply (auto simp: distinct_classes split: split_if_asm)
+  apply (auto simp: distinct_classes split: if_split_asm)
   done
 (*>*)
 
@@ -547,7 +547,7 @@ by(auto simp add: Predicate.holds_eq intro: sees_field_i_i_i_o_iI elim: sees_fie
 lemma [code]:
   "app\<^sub>i (Putfield F C, P, pc, mxs, T\<^sub>r, (T\<^sub>1#T\<^sub>2#ST, LT)) = 
      Predicate.holds (Predicate.bind (sees_field_i_i_i_o_i P C F C) (\<lambda>T\<^sub>f. if P \<turnstile> T\<^sub>2 \<le> (Class C) \<and> P \<turnstile> T\<^sub>1 \<le> T\<^sub>f then Predicate.single () else bot))"
-by(auto simp add: Predicate.holds_eq simp del: eval_bind split: split_if_asm elim!: sees_field_i_i_i_o_iE Predicate.bindE intro: Predicate.bindI sees_field_i_i_i_o_iI)
+by(auto simp add: Predicate.holds_eq simp del: eval_bind split: if_split_asm elim!: sees_field_i_i_i_o_iE Predicate.bindE intro: Predicate.bindI sees_field_i_i_i_o_iI)
 
 lemma [code]:
   "app\<^sub>i (Invoke M n, P, pc, mxs, T\<^sub>r, (ST,LT)) =
@@ -556,7 +556,7 @@ lemma [code]:
       (case ST!n of
          Class C \<Rightarrow> Predicate.holds (Predicate.bind (Method_i_i_i_o_o_o_o P C M) (\<lambda>(Ts, T, m, D). if P \<turnstile> rev (take n ST) [\<le>] Ts then Predicate.single () else bot))
        | _ \<Rightarrow> False)))"
-by (fastforce simp add: Predicate.holds_eq simp del: eval_bind split: ty.split_asm split_if_asm intro: bindI Method_i_i_i_o_o_o_oI elim!: bindE Method_i_i_i_o_o_o_oE)
+by (fastforce simp add: Predicate.holds_eq simp del: eval_bind split: ty.split_asm if_split_asm intro: bindI Method_i_i_i_o_o_o_oI elim!: bindE Method_i_i_i_o_o_o_oE)
 
 lemmas [code] =
   SemiType.sup_def [unfolded exec_lub_def]

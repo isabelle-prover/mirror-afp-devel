@@ -298,7 +298,7 @@ lemma converse_SubobjsR_Rep:
 apply (induct rule:Subobjs\<^sub>R.induct)
  apply (frule subclsR_subcls1)
  apply (fastforce dest!:subcls1D class_wf wf_cdecl_supD SubobjsR_Base SubobjsR_Rep)
-apply (fastforce elim:SubobjsR_Rep simp: SubobjsR_nonempty split:split_if_asm)
+apply (fastforce elim:SubobjsR_Rep simp: SubobjsR_nonempty split:if_split_asm)
 done
 
 
@@ -972,7 +972,7 @@ proof -
     with wf path_via have "Cs' = [last Cs]"
       by(fastforce intro:mdc_eq_last simp:path_via_def) }
   ultimately have eq:"Cs' = [last Cs]" using appendPath
-    by(simp add:appendPath_def,split split_if_asm,simp_all)
+    by(simp add:appendPath_def,split if_split_asm,simp_all)
   with path_via have "C = last Cs"
     by(simp add:path_via_def)
   with wf path_via' have "Cs'' = [last Cs]"
@@ -1656,7 +1656,7 @@ proof (induct rule:rtrancl.induct)
       and Chas:"P \<turnstile> C has M = (Ts,T,m) via Cs"
     from path' wf have Cs':"Cs' = [C]" by(rule path_via_C)
     from leq_path Cs' notempty have leq':"P,C \<turnstile> Ds \<sqsubseteq> Cs"
-      by(auto simp:appendPath_def split:split_if_asm)
+      by(auto simp:appendPath_def split:if_split_asm)
     { assume "Ds = Cs"
       with Cleast Chas have "Ts = Ts' \<and> T' = T"
         by (auto simp:MinimalMethodDefs_def HasMethodDef_def MethodDefs_def)

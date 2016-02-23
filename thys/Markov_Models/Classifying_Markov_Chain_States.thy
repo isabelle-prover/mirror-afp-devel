@@ -848,7 +848,7 @@ proof (induct n arbitrary: x)
   qed
   with Suc show ?case
     by (auto intro: converse_rtrancl_into_rtrancl)
-qed (simp add: p_0 split: split_if_asm)
+qed (simp add: p_0 split: if_split_asm)
 
 lemma recurrent_iffI_communicating:
   assumes "(x, y) \<in> communicating"

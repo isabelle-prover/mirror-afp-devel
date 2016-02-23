@@ -453,7 +453,7 @@ where
 
 lemma map_of_remap_SomeD:
   "map_of (map (\<lambda>((k,k'),x). (k,(k',x))) t) k = Some (k',x) \<Longrightarrow> map_of t (k, k') = Some x"
-(*<*)by (induct t) (auto simp:fun_upd_apply split: split_if_asm)(*>*)
+(*<*)by (induct t) (auto simp:fun_upd_apply split: if_split_asm)(*>*)
 
 
 lemma has_visible_field:

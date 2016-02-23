@@ -169,7 +169,7 @@ where
 
 lemma jvmd_NormalD:
   "P,t \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>' \<Longrightarrow> check P \<sigma> \<and> (ta, \<sigma>') \<in> exec P t \<sigma> \<and> (\<exists>xcp h f frs. \<sigma> = (xcp, h, f # frs))"
-apply(erule exec_1_d.cases, auto simp add: exec_d_def split: split_if_asm)
+apply(erule exec_1_d.cases, auto simp add: exec_d_def split: if_split_asm)
 apply(case_tac b, auto)
 done
 
@@ -206,7 +206,7 @@ theorem no_type_error_commutes:
 
 lemma defensive_imp_aggressive_1:
   "P,t \<turnstile> (Normal \<sigma>) -tas-jvmd\<rightarrow> (Normal \<sigma>') \<Longrightarrow> P,t \<turnstile> \<sigma> -tas-jvm\<rightarrow> \<sigma>'"
-by(auto elim!: exec_1_d.cases intro!: exec_1.intros simp add: exec_d_def split: split_if_asm)
+by(auto elim!: exec_1_d.cases intro!: exec_1.intros simp add: exec_d_def split: if_split_asm)
 
 end
 
@@ -238,31 +238,31 @@ proof -
     proof(cases "ins ! pc")
       case (New C)
       with xexec show ?thesis
-        by(auto intro: hext_allocate split: split_if_asm)
+        by(auto intro: hext_allocate split: if_split_asm)
     next
       case (NewArray T)
       with xexec show ?thesis
-        by(auto intro: hext_allocate split: split_if_asm)
+        by(auto intro: hext_allocate split: if_split_asm)
     next
       case AStore
       with xexec check_ins show ?thesis
-        by(auto simp add: split_beta split: split_if_asm intro: hext_heap_write)
+        by(auto simp add: split_beta split: if_split_asm intro: hext_heap_write)
     next
       case Putfield
       with xexec check_ins show ?thesis
-        by(auto intro: hext_heap_write simp add: split_beta split: split_if_asm)
+        by(auto intro: hext_heap_write simp add: split_beta split: if_split_asm)
     next
       case (Invoke M n)
       with xexec check_ins show ?thesis
         apply(auto simp add: min_def split_beta is_Ref_def extRet2JVM_def has_method_def
-                split: split_if_asm intro: red_external_aggr_hext)
+                split: if_split_asm intro: red_external_aggr_hext)
         apply(case_tac va)
         apply(auto 4 3 intro: red_external_aggr_hext is_native.intros)
         done
     next
       case (BinOpInstr bop)
       with xexec check_ins show ?thesis by(auto split: sum.split_asm)
-    qed(auto simp add: split_beta split: split_if_asm)
+    qed(auto simp add: split_beta split: if_split_asm)
   next
     case (Some a)
     with exec have "h' = h" by auto
@@ -272,7 +272,7 @@ qed
 
 lemma exec_1_d_hext:
   "\<lbrakk> P,t \<turnstile> Normal (xcp, h, frs) -ta-jvmd\<rightarrow> Normal (xcp', h', frs') \<rbrakk> \<Longrightarrow> h \<unlhd> h'"
-by(auto elim!: exec_1_d.cases simp add: exec_d_def split: split_if_asm intro: check_exec_hext)
+by(auto elim!: exec_1_d.cases simp add: exec_d_def split: if_split_asm intro: check_exec_hext)
 
 end
 

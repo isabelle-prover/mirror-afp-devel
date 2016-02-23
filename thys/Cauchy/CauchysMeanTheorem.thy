@@ -686,7 +686,7 @@ lemma pos_cons [simp]:
   "xs \<noteq> [] \<longrightarrow> pos (x#xs) =
    (if (x>0) then pos xs else False)"
   (is "?P x xs" is "?A xs \<longrightarrow> ?S x xs")
-proof (simp add: split_if, rule impI)
+proof (simp add: if_split, rule impI)
   assume xsne: "xs \<noteq> []"
   hence pxs_simp:
     "pos xs = (\<forall>e. e : set xs \<longrightarrow> e > 0)"

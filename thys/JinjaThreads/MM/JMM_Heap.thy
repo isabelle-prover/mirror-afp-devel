@@ -143,7 +143,7 @@ unfolding vs_conf_def by blast
 lemma vs_conf_insert_iff:
   "vs_conf P h (vs((ad, al) := insert v (vs (ad, al)))) 
   \<longleftrightarrow> vs_conf P h vs \<and> (\<exists>T. P,h \<turnstile> ad@al : T \<and> P,h \<turnstile> v :\<le> T)"
-by(auto 4 3 elim: vs_confD intro: vs_confI split: split_if_asm)
+by(auto 4 3 elim: vs_confD intro: vs_confI split: if_split_asm)
 
 end
 
@@ -157,7 +157,7 @@ lemma vs_conf_allocate:
   \<Longrightarrow> vs_conf P h' (w_value P vs (NormalAction (NewHeapElem a hT)))"
 apply(drule vs_conf_hext)
  apply(erule hext_allocate)
-apply(auto intro!: vs_confI simp add: addr_locs_def split: split_if_asm htype.split_asm)
+apply(auto intro!: vs_confI simp add: addr_locs_def split: if_split_asm htype.split_asm)
 apply(auto 3 3 intro: addr_loc_type.intros defval_conf dest: allocate_SomeD elim: has_field_is_class vs_confD)
 apply(rule exI conjI addr_loc_type.intros|drule allocate_SomeD|erule has_field_is_class|simp)+
 done

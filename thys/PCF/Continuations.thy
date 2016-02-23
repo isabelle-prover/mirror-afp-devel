@@ -220,7 +220,7 @@ proof(rule below_monicI)
   let ?k = "\<Lambda> x. if x \<sqsubseteq> v' then \<bottom> else some_non_bottom_element"
   from vv' have "unitK\<cdot>v\<cdot>?k \<sqsubseteq> unitK\<cdot>v'\<cdot>?k" by (rule monofun_cfun_fun)
   hence "?k\<cdot>v \<sqsubseteq> ?k\<cdot>v'" by (simp add: unitK_def)
-  with some_non_bottom_element show "v \<sqsubseteq> v'" by (auto split: split_if_asm)
+  with some_non_bottom_element show "v \<sqsubseteq> v'" by (auto split: if_split_asm)
 qed
 
 

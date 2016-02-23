@@ -184,7 +184,7 @@ next
         lbdt_def: "bdt lt var = Some lbdt" and 
         rbdt_def: "bdt rt var = Some rbdt" and 
         bdt1_def: "bdt1 = Bdt_Node lbdt (var a) rbdt"
-        by (auto split: split_if_asm option.splits)
+        by (auto split: if_split_asm option.splits)
       from no_in_t show ?thesis
       proof (simp, elim disjE)
         assume " no = a"

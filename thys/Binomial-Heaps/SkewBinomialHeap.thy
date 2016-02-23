@@ -1619,14 +1619,14 @@ lemma in_image_msetE:
   using assms
   apply (induct M)
   apply simp
-  apply (force split: split_if_asm)
+  apply (force split: if_split_asm)
   done
 
 text {* Some very special introduction lemmas for @{const image_mset} *}
 lemma image_mset_fstI: "(e,a):#M \<Longrightarrow> e \<in># image_mset fst M"
-  by (induct M) (auto split: split_if_asm)
+  by (induct M) (auto split: if_split_asm)
 lemma image_mset_sndI: "(e,a):#M \<Longrightarrow> a \<in># image_mset snd M"
-  by (induct M) (auto split: split_if_asm)
+  by (induct M) (auto split: if_split_asm)
 
 text {* Very special lemma for images multisets of pairs, where the second
   component is a function of the first component *}
@@ -1939,7 +1939,7 @@ lemma bsmap_fs_dep:
     rule: SkewBinomialHeapStruc.tree_to_multiset_queue_to_multiset.induct)
   apply auto
   apply (case_tac t)
-  apply (auto split: split_if_asm)
+  apply (auto split: if_split_asm)
   done
 
 
@@ -2044,7 +2044,7 @@ lemma level_m:
   "x\<in>#queue_to_multiset q \<Longrightarrow> level x < Suc (queue_level q)"
   apply (induct t and q rule: tree_level_queue_level.induct)
   apply (case_tac [!] x)
-  apply (auto split: split_if_asm)
+  apply (auto split: if_split_asm)
   done
 
 lemma level_measure:
@@ -2112,7 +2112,7 @@ proof (induct n\<equiv>"level x" arbitrary: x rule: full_nat_induct)
   from PREMS(2) have "y=(e,a) \<or> 
     y\<in>#Union_mset (image_mset elem_to_mset (queue_to_multiset q))"
     (is "?C1 \<or> ?C2")
-    by (auto split: split_if_asm)
+    by (auto split: if_split_asm)
   moreover {
     assume "y=(e,a)"
     with PREMS have ?case by simp

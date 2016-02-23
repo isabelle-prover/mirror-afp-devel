@@ -170,7 +170,7 @@ apply(split option.splits) apply(rule)
 by (force intro: ft_dclI)
 
 lemma mem_remove: "cld : set P \<Longrightarrow> length (remove1 cld P) < length P"
-apply(induct P) by(simp, force split: split_if_asm)
+apply(induct P) by(simp, force split: if_split_asm)
 
 lemma finite_program[rule_format, intro]:
   "\<forall>P cld. (\<exists>ctx ctx' fqn. find_cld_f P ctx fqn = Some (ctx', cld)) \<longrightarrow>
@@ -596,7 +596,7 @@ lemma path_append[rule_format]:
   "find_path_rec_f P ctx cl path' = Some path \<Longrightarrow> \<exists>path''. path = path' @ path''"
 apply(induct rule: find_path_rec_f.induct)
  apply(clarsimp)
-apply(force split: split_if_asm option.splits)
+apply(force split: if_split_asm option.splits)
 done
 
 lemma all_in_path_found'[rule_format]:
@@ -605,7 +605,7 @@ lemma all_in_path_found'[rule_format]:
 apply(induct rule: find_path_rec_f.induct)
  apply(clarsimp)
 apply(rule)
-apply(force split: split_if_asm option.splits)
+apply(force split: if_split_asm option.splits)
 done
 
 lemma all_in_path_found:
@@ -618,9 +618,9 @@ lemma fpr_target_is_head':
           (\<exists>path''. path = path' @ ctxcld # path''))"
 apply(induct_tac P ctx cl path' rule: find_path_rec_f.induct)
  apply(simp)
-apply(clarsimp split: split_if_asm option.splits)
+apply(clarsimp split: if_split_asm option.splits)
 apply(case_tac "superclass_name_f b") apply(clarsimp)
-apply(clarsimp split: split_if_asm option.splits)
+apply(clarsimp split: if_split_asm option.splits)
 apply(force)
 done
 
@@ -636,9 +636,9 @@ lemma fpr_sub_path':
               (\<exists>path'''. path_fqn = path'' @ path''' \<and> path = path' @ ctxcld # path'''))"
 apply(induct_tac P ctx cl path' rule: find_path_rec_f.induct)
  apply(simp)
-apply(clarsimp split: split_if_asm option.splits)
+apply(clarsimp split: if_split_asm option.splits)
 apply(case_tac "superclass_name_f b") apply(simp add: find_path_f_def)
-apply(clarsimp split: split_if_asm option.splits)
+apply(clarsimp split: if_split_asm option.splits)
 apply(frule_tac path = path in path_append) apply(clarsimp) apply(force)
 done
 
@@ -653,7 +653,7 @@ lemma fpr_sub_path_simp:
     find_path_rec_f P ctx (superclass_name_f cld) (path' @ [(ctx, cld)]) = Some path\<rbrakk>
        \<Longrightarrow> \<exists>path'''. path_fqn = path'' @ path''' \<and> path = path' @ (ctx, cld) # path'''"
 apply(cut_tac P = P and ctx = ctx and cl = "cl_fqn fqn" and path' = path' and path = path in fpr_sub_path')
-apply(clarsimp split: option.splits split_if_asm)
+apply(clarsimp split: option.splits if_split_asm)
 done
 
 lemma fpr_same_suffix'[rule_format]:
@@ -730,7 +730,7 @@ by (unfold find_path_f_def, force intro: fpr_first_in_path'[of _ _ _ "[]", simpl
 
 lemma cld_for_path:
   "find_path_f P ctx (cl_fqn fqn) = Some path \<Longrightarrow> \<exists>ctxcld. find_cld_f P ctx fqn = Some ctxcld"
-apply(unfold find_path_f_def) apply(clarsimp split: split_if_asm option.splits) done
+apply(unfold find_path_f_def) apply(clarsimp split: if_split_asm option.splits) done
 
 lemma ctx_cld_ctx_dcl[rule_format]:
   "(ctx, cld_def dcl cl fds mds) \<in> set path \<longrightarrow> (ctx, dcl) \<in> (\<lambda>(ctx, cld). (ctx, class_name_f cld)) ` set path"
@@ -794,7 +794,7 @@ apply(rule)
  apply(erule sty_many.cases) apply(clarsimp simp add: is_sty_many_def split: option.splits) apply(rule)
   apply(simp add: lift_opts_exists)
  apply(force intro: lift_opts_all_true)
-apply(clarsimp simp add: is_sty_many_def split: option.splits split_if_asm)
+apply(clarsimp simp add: is_sty_many_def split: option.splits if_split_asm)
 apply(rule_tac ty_ty'_list = "zip tys tys'" in sty_manyI)
   apply(simp add: map_fst_zip[THEN sym])
  apply(simp add: map_snd_zip[THEN sym])

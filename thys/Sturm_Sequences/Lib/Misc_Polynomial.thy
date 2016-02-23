@@ -235,7 +235,7 @@ proof -
                 by (simp add: dvd_imp_degree_le)
        ultimately show ?thesis by simp
     qed
-    then obtain c where [simp]: "x = [:c:]" by (cases x, simp split: split_if_asm)
+    then obtain c where [simp]: "x = [:c:]" by (cases x, simp split: if_split_asm)
     moreover from `x \<noteq> 0` have "c \<noteq> 0" by simp
     ultimately show "x dvd 1" using dvdI[of 1 x "[:inverse c:]"]
         by (simp add: one_poly_def)
@@ -297,7 +297,7 @@ next
       case True
         hence "sgn (poly p a) = -1" by simp
         with assms True have "poly p b > 0"
-            by (auto simp: sgn_real_def split: split_if_asm)
+            by (auto simp: sgn_real_def split: if_split_asm)
         from poly_IVT_pos[OF `a < b` True this] guess x ..
         thus ?thesis by (intro exI[of _ x], simp)
     next
@@ -306,7 +306,7 @@ next
         hence "sgn (poly p a) = 1"  by simp
         with assms False have "poly p b < 0"
             by (auto simp: sgn_real_def not_less
-                           less_eq_real_def split: split_if_asm)
+                           less_eq_real_def split: if_split_asm)
         from poly_IVT_neg[OF `a < b` `poly p a > 0` this] guess x ..
         thus ?thesis by (intro exI[of _ x], simp)
     qed
@@ -380,7 +380,7 @@ proof -
   then have "eventually (\<lambda>x. \<bar>sgn (poly p x) - sgn (poly p x\<^sub>0)\<bar> < 1) (at x\<^sub>0)"
       by (auto simp: isCont_def tendsto_iff dist_real_def)
   then show ?thesis
-    by (rule eventually_mono) (simp add: sgn_real_def split: split_if_asm)
+    by (rule eventually_mono) (simp add: sgn_real_def split: if_split_asm)
 qed
 
 lemma poly_lhopital:
@@ -432,7 +432,7 @@ proof
   {
     fix x assume A: "x < l" "sgn (poly p x) \<noteq> sgn (poly p l)"
     with poly_IVT_pos[OF A(1), of p] poly_IVT_neg[OF A(1), of p] A(2)
-        have False by (auto split: split_if_asm
+        have False by (auto split: if_split_asm
                          simp: sgn_real_def l_props not_less less_eq_real_def)
   }
   thus "\<And>x. x \<le> l \<Longrightarrow> sgn (poly p x) = sgn (poly p l)"
@@ -441,7 +441,7 @@ proof
   {
     fix x assume A: "x > u" "sgn (poly p x) \<noteq> sgn (poly p u)"
     with u_props poly_IVT_neg[OF A(1), of p] poly_IVT_pos[OF A(1), of p] A(2)
-        have False by (auto split: split_if_asm
+        have False by (auto split: if_split_asm
                          simp: sgn_real_def l_props not_less less_eq_real_def)
   }
   thus "\<And>x. x \<ge> u \<Longrightarrow> sgn (poly p x) = sgn (poly p u)"
@@ -579,7 +579,7 @@ lemma poly_lim_inf:
 proof (cases "degree p \<ge> 1")
   case False
     hence "degree p = 0" by simp
-    then obtain c where "p = [:c:]" by (cases p, auto split: split_if_asm)
+    then obtain c where "p = [:c:]" by (cases p, auto split: if_split_asm)
     thus ?thesis
         by (simp add: eventually_at_top_linorder poly_inf_def)
 next
@@ -622,7 +622,7 @@ proof-
       using tendsto_mono at_bot_le_at_infinity by (force simp: f_def)
   moreover from assms
       have "LIM x at_bot. g x :> (if even (degree p) then at_top else at_bot)"
-        by (auto simp add: g_def split: split_if_asm intro: filterlim_pow_at_bot_even filterlim_pow_at_bot_odd filterlim_ident)
+        by (auto simp add: g_def split: if_split_asm intro: filterlim_pow_at_bot_even filterlim_pow_at_bot_odd filterlim_ident)
   ultimately have "LIM x at_bot. f x * g x :>
                       (if even ?n then at_top else at_bot)"
       by (auto simp: assms intro: filterlim_tendsto_pos_mult_at_top
@@ -652,7 +652,7 @@ lemma poly_lim_neg_inf:
 proof (cases "degree p \<ge> 1")
   case False
     hence "degree p = 0" by simp
-    then obtain c where "p = [:c:]" by (cases p, auto split: split_if_asm)
+    then obtain c where "p = [:c:]" by (cases p, auto split: if_split_asm)
     thus ?thesis
         by (simp add: eventually_at_bot_linorder poly_neg_inf_def)
 next
@@ -781,7 +781,7 @@ proof (intro iffI conjI)
   from poly_lim_inf obtain x where "sgn (poly p x) = poly_inf p"
       by (auto simp: eventually_at_top_linorder)
   with A show "poly_inf p = 1"
-      by (simp add: sgn_real_def split: split_if_asm)
+      by (simp add: sgn_real_def split: if_split_asm)
 next
   assume "poly_inf p = 1 \<and> (\<forall>x. poly p x \<noteq> 0)"
   hence A: "poly_inf p = 1" and B: "(\<forall>x. poly p x \<noteq> 0)" by simp_all
@@ -792,7 +792,7 @@ next
     assume "\<not>(\<forall>x. poly p x > 0)"
     then obtain x' where "poly p x' \<le> 0" by (auto simp: not_less)
     with A and C have "sgn (poly p x') \<noteq> sgn (poly p x)"
-        by (auto simp: sgn_real_def split: split_if_asm)
+        by (auto simp: sgn_real_def split: if_split_asm)
     from poly_different_sign_imp_root'[OF this] and B
         show False by blast
   qed
@@ -826,7 +826,7 @@ next
     assume "\<not>(\<forall>x. x > a \<longrightarrow> poly p x > 0)"
     then obtain x' where "x' > a" "poly p x' \<le> 0" by (auto simp: not_less)
     with A and D have E: "sgn (poly p x') \<noteq> sgn (poly p (max x\<^sub>0(a+1)))"
-        by (auto simp: sgn_real_def split: split_if_asm)
+        by (auto simp: sgn_real_def split: if_split_asm)
     show False
         apply (cases x' "max x\<^sub>0 (a+1)" rule: linorder_cases)
         using B E `x' > a`
@@ -883,7 +883,7 @@ next
     assume "\<not>(\<forall>x. x < a \<longrightarrow> poly p x > 0)"
     then obtain x' where "x' < a" "poly p x' \<le> 0" by (auto simp: not_less)
     with A and D have E: "sgn (poly p x') \<noteq> sgn (poly p (min x\<^sub>0 (a - 1)))"
-        by (auto simp: sgn_real_def split: split_if_asm)
+        by (auto simp: sgn_real_def split: if_split_asm)
     show False
         apply (cases x' "min x\<^sub>0 (a - 1)" rule: linorder_cases)
         using B E `x' < a`

@@ -1078,7 +1078,7 @@ begin
   proof -
     let ?f = "\<lambda>xy. if P xy then Some (f xy) else None"
     from INJ have INJ': "inj_on ?f (s1.\<alpha> s1 \<times> s2.\<alpha> s2 \<inter> dom ?f)"
-      by (force intro!: inj_onI dest: inj_onD split: split_if_asm)
+      by (force intro!: inj_onI dest: inj_onD split: if_split_asm)
 
     from inj_image_filter_cartesian_product_correct [OF I INJ']
     show "?T1" "?T2"

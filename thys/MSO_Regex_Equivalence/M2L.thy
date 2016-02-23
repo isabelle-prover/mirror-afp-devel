@@ -198,7 +198,7 @@ next
         "w \<in> star (lang n (Atom (Arbitrary_Except r False)))" using `0 < n` unfolding valid_ENC_def
         by (fastforce simp del: lang.simps(4))
       hence "length u < length x" "\<And>i. i < length x \<longrightarrow> snd (x ! i) ! r \<longleftrightarrow> i = length u"
-         by (auto simp: nth_append nth_Cons' split: split_if_asm simp del: lang.simps
+         by (auto simp: nth_append nth_Cons' split: if_split_asm simp del: lang.simps
             dest!: Arbitrary_ExceptD[OF _ `r < n`]
             dest: star_Arbitrary_ExceptD[OF _ `r < n`, of u]
             elim!: iffD1[OF star_Arbitrary_ExceptD[OF _ `r < n`, of w False]]) auto
@@ -242,11 +242,11 @@ lemma wf_interp_for_formula_FExists:
   "\<lbrakk>wf_formula (length I) (FExists \<phi>); w \<noteq> []\<rbrakk>\<Longrightarrow>
     wf_interp_for_formula (w, I) (FExists \<phi>) \<longleftrightarrow>
     (\<forall>p < length w. wf_interp_for_formula (w, Inl p # I) \<phi>)"
-  by (auto simp: nth_Cons' split: split_if_asm)
+  by (auto simp: nth_Cons' split: if_split_asm)
 
 lemma wf_interp_for_formula_any_Inl: "wf_interp_for_formula (w, Inl p # I) \<phi> \<Longrightarrow>
   \<forall>p < length w. wf_interp_for_formula (w, Inl p # I) \<phi>"
-  by (auto simp: nth_Cons' split: split_if_asm)
+  by (auto simp: nth_Cons' split: if_split_asm)
 
 lemma wf_interp_for_formula_FEXISTS: 
  "\<lbrakk>wf_formula (length I) (FEXISTS \<phi>); w \<noteq> []\<rbrakk>\<Longrightarrow>
@@ -255,7 +255,7 @@ lemma wf_interp_for_formula_FEXISTS:
 
 lemma wf_interp_for_formula_any_Inr: "wf_interp_for_formula (w, Inr P # I) \<phi> \<Longrightarrow>
   \<forall>P \<subseteq> {0 .. length w - 1}. wf_interp_for_formula (w, Inr P # I) \<phi>"
-  by (cases w) (auto simp: nth_Cons' split: split_if_asm)
+  by (cases w) (auto simp: nth_Cons' split: if_split_asm)
 
 lemma enc_word_length: "enc (w, I) = enc (w', I') \<Longrightarrow> length w = length w'"
   by (auto elim: map_index_eq_imp_length_eq)
@@ -805,7 +805,7 @@ next
     with FExists(2) have "enc (w, Inl p # I) \<in> ?L (Suc n) \<phi>"
       by (intro subsetD[OF equalityD1[OF FExists(1)], of "Suc n" "enc (w, Inl p # I)"])
        (auto simp: lang\<^sub>M\<^sub>2\<^sub>L_def nth_Cons' ord_less_eq_trans[OF le_imp_less_Suc Suc_pred[OF *(4)]]
-        split: split_if_asm sum.splits intro!: exI[of _ w] exI[of _ "Inl p # I"])
+        split: if_split_asm sum.splits intro!: exI[of _ w] exI[of _ "Inl p # I"])
     with *(1) show "x \<in> ?L n (FExists \<phi>)"
       by (auto simp: map_index intro!: image_eqI[of _ "map \<pi>"] simp del: o_apply) (auto simp: \<pi>_def)
   next
@@ -813,16 +813,16 @@ next
     then obtain x' where x: "x = map \<pi> x'" and "x' \<in> ?L (Suc n) \<phi>" by (auto simp del: o_apply)
     with FExists(2) have "x' \<in> lang\<^sub>M\<^sub>2\<^sub>L (Suc n) \<phi>"
       by (intro subsetD[OF equalityD2[OF FExists(1)], of "Suc n" x'])
-         (auto split: split_if_asm sum.splits)
+         (auto split: if_split_asm sum.splits)
     then obtain w I' where
       *: "x' = enc (w, I')" "wf_interp_for_formula (w, I') \<phi>" "length I' = Suc n" "satisfies (w, I') \<phi>"
        unfolding lang\<^sub>M\<^sub>2\<^sub>L_def by auto
     moreover then obtain I\<^sub>0 I where "I' = I\<^sub>0 # I" by (cases I') auto
     moreover with FExists(2) *(2) obtain p where "I\<^sub>0 = Inl p" "p < length w"
-      by (auto simp: nth_Cons' split: sum.splits split_if_asm)
+      by (auto simp: nth_Cons' split: sum.splits if_split_asm)
     ultimately have "x = enc (w, I)" "wf_interp_for_formula (w, I) (FExists \<phi>)" "length I = n"
       "length w > 0" "satisfies (w, I) (FExists \<phi>)"using FExists(2) unfolding x
-      by (auto simp: map_tl nth_Cons' split: split_if_asm simp del: o_apply) (auto simp: \<pi>_def)
+      by (auto simp: map_tl nth_Cons' split: if_split_asm simp del: o_apply) (auto simp: \<pi>_def)
     thus "x \<in> lang\<^sub>M\<^sub>2\<^sub>L n (FExists \<phi>)" unfolding lang\<^sub>M\<^sub>2\<^sub>L_def by (auto intro!: exI[of _ w] exI[of _ I])
   qed
 next
@@ -837,7 +837,7 @@ next
     from *(4,5) have "\<forall>p \<in> P. p < length w" by (cases w) auto
     with *(2-4,6) FEXISTS(2) have "enc (w, Inr P # I) \<in> ?L (Suc n) \<phi>"
       by (intro subsetD[OF equalityD1[OF FEXISTS(1)], of "Suc n" "enc (w, Inr P # I)"])
-       (auto simp: lang\<^sub>M\<^sub>2\<^sub>L_def nth_Cons' split: split_if_asm sum.splits
+       (auto simp: lang\<^sub>M\<^sub>2\<^sub>L_def nth_Cons' split: if_split_asm sum.splits
         intro!: exI[of _ w] exI[of _ "Inr P # I"])
     with *(1) show "x \<in> ?L n (FEXISTS \<phi>)"
       by (auto simp: map_index intro!: image_eqI[of _ "map \<pi>"] simp del: o_apply) (auto simp: \<pi>_def)
@@ -846,17 +846,17 @@ next
     then obtain x' where x: "x = map \<pi> x'" and x': "length x' > 0" and "x' \<in> ?L (Suc n) \<phi>" by (auto simp del: o_apply)
     with FEXISTS(2) have "x' \<in> lang\<^sub>M\<^sub>2\<^sub>L (Suc n) \<phi>"
       by (intro subsetD[OF equalityD2[OF FEXISTS(1)], of "Suc n" x'])
-         (auto split: split_if_asm sum.splits)
+         (auto split: if_split_asm sum.splits)
     then obtain w I' where
       *: "x' = enc (w, I')" "wf_interp_for_formula (w, I') \<phi>" "length I' = Suc n" "satisfies (w, I') \<phi>"
        unfolding lang\<^sub>M\<^sub>2\<^sub>L_def by auto
     moreover then obtain I\<^sub>0 I where "I' = I\<^sub>0 # I" by (cases I') auto
     moreover with FEXISTS(2) *(2) obtain P where "I\<^sub>0 = Inr P"
-      by (auto simp: nth_Cons' split: sum.splits split_if_asm)
+      by (auto simp: nth_Cons' split: sum.splits if_split_asm)
     moreover have "length w \<ge> 1" using x' *(1) by (cases w) auto
     ultimately have "x = enc (w, I)" "wf_interp_for_formula (w, I) (FEXISTS \<phi>)" "length I = n"
       "length w > 0" "satisfies (w, I) (FEXISTS \<phi>)" using FEXISTS(2) unfolding x
-      by (auto simp add: map_tl nth_Cons' split: split_if_asm
+      by (auto simp add: map_tl nth_Cons' split: if_split_asm
         intro!: exI[of _ P] simp del: o_apply) (auto simp: \<pi>_def)
     thus "x \<in> lang\<^sub>M\<^sub>2\<^sub>L n (FEXISTS \<phi>)" unfolding lang\<^sub>M\<^sub>2\<^sub>L_def by (auto intro!: exI[of _ w] exI[of _ I])
   qed

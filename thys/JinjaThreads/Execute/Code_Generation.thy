@@ -30,7 +30,7 @@ text {* new code equation for @{term "insort_insert_key"} to avoid module depend
 lemma insort_insert_key_code [code]:
   "insort_insert_key f x xs = 
   (if List.member (map f xs) (f x) then xs else insort_key f x xs)"
-by(simp add: insort_insert_key_def List.member_def split del: split_if)
+by(simp add: insort_insert_key_def List.member_def split del: if_split)
 
 
 text {* equations on predicate operations for code inlining *}

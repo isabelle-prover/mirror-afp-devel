@@ -27,10 +27,10 @@ fix x y z :: Dom
     unfolding less_eq_Dom_def less_Dom_def by auto
   show "x \<le> x" unfolding less_eq_Dom_def by auto
   show "\<lbrakk>x \<le> y; y \<le> z\<rbrakk> \<Longrightarrow> x \<le> z" 
-    unfolding less_eq_Dom_def by ((split split_if_asm)+, auto)
+    unfolding less_eq_Dom_def by ((split if_split_asm)+, auto)
   show "\<lbrakk>x \<le> y; y \<le> x\<rbrakk> \<Longrightarrow> x = y" 
-    unfolding less_eq_Dom_def by ((split split_if_asm)+, 
-      auto, (split split_if_asm)+, auto)
+    unfolding less_eq_Dom_def by ((split if_split_asm)+, 
+      auto, (split if_split_asm)+, auto)
 qed
 
 end

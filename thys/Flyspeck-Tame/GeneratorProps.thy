@@ -178,7 +178,7 @@ next
       fix v f assume a: "v \<in> V" "f \<in> set (facesAt g v)" "f \<bullet> v \<in> V"
       have "v : \<V> g" using a(1) `V <= \<V> g` by blast
       show False using a not_cl mgp_facesAt_no_loop[OF mgp `v : \<V> g` a(2)]
-        by(fastforce simp: close_def split:split_if_asm)
+        by(fastforce simp: close_def split:if_split_asm)
     qed
     show "separated\<^sub>3 g V"
     proof (clarsimp simp:separated\<^sub>3_def)
@@ -197,7 +197,7 @@ next
           { assume "u = f \<bullet> v"
             hence "u = v"
               using not_cl f `u \<in> V` `v \<in> V` 3
-              by(force simp:close_def split:split_if_asm)
+              by(force simp:close_def split:if_split_asm)
           }
           moreover
           { assume "u = f \<bullet> (f \<bullet> v)"
@@ -208,7 +208,7 @@ next
             then obtain f' where "f' \<in> set(facesAt g v)" "(v,u) \<in>  \<E> f'"
               using mgp_edge_face_ex[OF mgp vg f] by blast
             hence "u = v" using not_cl `u \<in> V` `v \<in> V` 3
-              by(force simp:close_def edges_face_eq split:split_if_asm)
+              by(force simp:close_def edges_face_eq split:if_split_asm)
           }
           ultimately show "u=v" using `u \<in> \<V> f` by blast
         next
@@ -221,13 +221,13 @@ next
           { assume "u = f \<bullet> v"
             hence "u = v"
               using not_cl f `u \<in> V` `v \<in> V` 4
-              by(force simp:close_def split:split_if_asm)
+              by(force simp:close_def split:if_split_asm)
           }
           moreover
           { assume "u = f \<bullet> (f \<bullet> v)"
             hence "u = v"
               using not_cl f `u \<in> V` `v \<in> V` 4
-              by(force simp:close_def split:split_if_asm)
+              by(force simp:close_def split:if_split_asm)
           }
           moreover
           { assume "u = f \<bullet> (f \<bullet> (f \<bullet> v))"
@@ -238,7 +238,7 @@ next
             then obtain f' where "f' \<in> set(facesAt g v)" "(v,u) \<in>  \<E> f'"
               using mgp_edge_face_ex[OF mgp vg f] by blast
             hence "u = v" using not_cl `u \<in> V` `v \<in> V` 4
-              by(force simp:close_def edges_face_eq split:split_if_asm)
+              by(force simp:close_def edges_face_eq split:if_split_asm)
           }
           ultimately show "u=v" using `u \<in> \<V> f` by blast
         qed
@@ -351,7 +351,7 @@ lemma mono_ExcessTab: "\<lbrakk>g' \<in> set (next_plane0\<^bsub>p\<^esub> g); i
 apply(clarsimp simp:ExcessTable_def image_def)
 apply(rule conjI)
  apply(blast dest:next_plane0_vertices_subset inv_mgp)
-apply (clarsimp simp:ExcessAt_def split:split_if_asm)
+apply (clarsimp simp:ExcessAt_def split:if_split_asm)
 apply(frule (3) next_plane0_finalVertex_mono)
 apply(simp add: next_plane0_len_filter_eq tri_def quad_def except_def)
 done
@@ -364,15 +364,15 @@ by(simp add:close_def next_plane0_finalVertex_facesAt_eq)
 
 lemma ExcessTab_final:
  "p \<in> set(ExcessTable g (vertices g)) \<Longrightarrow> finalVertex g (fst p)"
-by(clarsimp simp:ExcessTable_def image_def ExcessAt_def split:split_if_asm)
+by(clarsimp simp:ExcessTable_def image_def ExcessAt_def split:if_split_asm)
 
 lemma ExcessTab_vertex:
  "p \<in> set(ExcessTable g (vertices g)) \<Longrightarrow> fst p \<in> \<V> g"
-by(clarsimp simp:ExcessTable_def image_def ExcessAt_def split:split_if_asm)
+by(clarsimp simp:ExcessTable_def image_def ExcessAt_def split:if_split_asm)
 
 lemma fst_set_ExcessTable_subset:
  "fst ` set (ExcessTable g (vertices g)) \<subseteq> \<V> g"
-by(clarsimp simp:ExcessTable_def image_def ExcessAt_def split:split_if_asm)
+by(clarsimp simp:ExcessTable_def image_def ExcessAt_def split:if_split_asm)
 
 lemma next_plane0_incr_ExcessNotAt:
  "\<lbrakk>g' \<in> set (next_plane0\<^bsub>p\<^esub> g); inv g \<rbrakk> \<Longrightarrow>
@@ -402,7 +402,7 @@ lemma next_plane0_incr_squander_lb:
   squanderLowerBound g \<le> squanderLowerBound g'"
 apply(simp add:squanderLowerBound_def)
 apply(frule (1) next_plane0_incr_ExcessNotAt)
-apply(clarsimp simp add:next_plane0_def split:split_if_asm)
+apply(clarsimp simp add:next_plane0_def split:if_split_asm)
 apply(drule (4) genPoly_incr_facesquander_lb)
 apply arith
 done
@@ -420,7 +420,7 @@ apply(erule disjE)
  apply clarify
  apply(frule (2) next_plane0_incr_degree)
  apply(frule (2) next_plane0_incr_except)
- apply (force split:split_if_asm)
+ apply (force split:if_split_asm)
 apply(frule (1) next_plane0_incr_squander_lb)
 apply(arith)
 done
@@ -456,7 +456,7 @@ proof(clarsimp simp add: notame_def notame7_def untame_def tame11b_def is_tame13
       assume "except g v \<noteq> 0"
       thus False using `tame g` v
         by(auto simp: except_def filter_empty_conv tame_def tame11b_def
-          minGraphProps_facesAt_eq[OF inv_mgp[OF `inv g`]] split:split_if_asm)
+          minGraphProps_facesAt_eq[OF inv_mgp[OF `inv g`]] split:if_split_asm)
     qed
   next
     assume ?A
@@ -492,7 +492,7 @@ lemma excess_notame:
  "\<lbrakk> inv g; g' \<in> set (next_plane\<^bsub>p\<^esub> g); g' \<notin> set (next_tame0 p g) \<rbrakk>
        \<Longrightarrow> notame7 g'"
 apply(frule (1) mgp_next_plane0_if_next_plane[OF inv_mgp])
-apply(auto simp add:next_tame0_def next_plane_def split:split_if_asm)
+apply(auto simp add:next_tame0_def next_plane_def split:if_split_asm)
 apply(rename_tac n)
 apply(case_tac "n \<in> set(polysizes p g)")
  apply(drule bspec) apply assumption

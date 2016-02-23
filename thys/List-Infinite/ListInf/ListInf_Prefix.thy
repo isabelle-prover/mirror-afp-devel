@@ -164,7 +164,7 @@ lemma equal_pair_count_correct:"
 apply (induct ps)
  apply simp
 apply simp
-apply (split split_if_asm)
+apply (split if_split_asm)
 apply (case_tac i)
 apply (simp add: equal_pair_def)+
 done

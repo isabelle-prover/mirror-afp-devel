@@ -255,7 +255,7 @@ by(rule jmm'.heap_read_typeableI)(auto simp add: jmm_heap_read_def jmm.heap_read
 
 lemma jmm_heap_conf:
   "heap_conf addr2thread_id thread_id2addr jmm_empty jmm_allocate (jmm_typeof_addr P) jmm_heap_write jmm_hconf P"
-by(unfold_locales)(simp_all add: jmm_hconf_def jmm_heap_ops_defs split: split_if_asm)
+by(unfold_locales)(simp_all add: jmm_hconf_def jmm_heap_ops_defs split: if_split_asm)
 
 interpretation jmm: heap_conf
   addr2thread_id thread_id2addr
@@ -357,7 +357,7 @@ next
   fix h' a h hT
   assume "(h', a) \<in> jmm_allocate h hT"
   thus "jmm_allocated h' = insert a (jmm_allocated h) \<and> a \<notin> jmm_allocated h"
-    by(auto simp add: jmm_heap_ops_defs split: split_if_asm)
+    by(auto simp add: jmm_heap_ops_defs split: if_split_asm)
 next
   fix h a al v h'
   assume "jmm_heap_write h a al v h'"

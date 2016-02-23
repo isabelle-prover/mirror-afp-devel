@@ -247,7 +247,7 @@ definition swapAlts :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" w
   "swapAlts a b u \<equiv> if u = a then b else if u = b then a else u"
 
 lemma swapAlts_in_set_iff: "{a, b} \<subseteq> A \<Longrightarrow> swapAlts a b u \<in> A \<longleftrightarrow> u \<in> A"
-  unfolding swapAlts_def by (simp split: split_if)
+  unfolding swapAlts_def by (simp split: if_split)
 
 definition swapAltsP :: "('a, 'i) Profile \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> ('a, 'i) Profile" where
   "swapAltsP P a b \<equiv> (\<lambda>i. { (u, v) . (swapAlts a b u, swapAlts a b v) \<in> P i })"
@@ -453,11 +453,11 @@ proof -
   qed
   moreover
   have "\<And>i. \<lbrakk> i \<in> Is; x \<^bsub>(?P' i)\<^esub>\<prec> y \<rbrakk> \<Longrightarrow> x \<^bsub>(P i)\<^esub>\<prec> y"
-    unfolding strict_pref_def by (simp split: split_if_asm)
+    unfolding strict_pref_def by (simp split: if_split_asm)
   moreover
   from profileP C xyA
   have "\<And>i. \<lbrakk>i \<in> Is; x \<^bsub>(?P' i)\<^esub>\<approx> y\<rbrakk> \<Longrightarrow> x \<^bsub>(P i)\<^esub>\<preceq> y"
-    unfolding indifferent_pref_def by (simp split: split_if_asm)
+    unfolding indifferent_pref_def by (simp split: if_split_asm)
   moreover
   from C CxPy obtain k where kC: "k \<in> C" and xPky: "x \<^bsub>(P k)\<^esub>\<prec> y" by blast
   hence "x \<^bsub>(?P' k)\<^esub>\<approx> y" by auto
@@ -479,7 +479,7 @@ proof -
     also have "\<dots> = card { i \<in> Is. y \<^bsub>(?P' i)\<^esub>\<prec> x }" (is "card ?lhs = card ?rhs")
     proof -
       from profileP xyA have "\<And>i. \<lbrakk> i \<in> Is; y \<^bsub>(?P' i)\<^esub>\<prec> x \<rbrakk> \<Longrightarrow> y \<^bsub>(P i)\<^esub>\<prec> x"
-        unfolding strict_pref_def by (simp split: split_if_asm, blast dest: rpr_complete)
+        unfolding strict_pref_def by (simp split: if_split_asm, blast dest: rpr_complete)
       hence "?rhs \<subseteq> ?lhs" by blast
       moreover
       from profileP xyA have "\<And>i. \<lbrakk> i \<in> Is; y \<^bsub>(P i)\<^esub>\<prec> x \<rbrakk> \<Longrightarrow> y \<^bsub>(?P' i)\<^esub>\<prec> x"

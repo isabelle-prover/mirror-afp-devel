@@ -464,7 +464,7 @@ apply (subgoal_tac "\<And>x1 x2 P Q. \<lbrakk>P x1; Q x2; Least P \<le> Least Q\
    apply (rule Least_le, assumption)
   apply (rule order_trans, assumption)
   apply (rule Least_le, assumption)
-apply (unfold min_def, split split_if, safe)
+apply (unfold min_def, split if_split, safe)
  apply blast
 apply (subst disj_commute)
 apply (fastforce simp: linorder_not_le)
@@ -883,10 +883,10 @@ lemma singleton_eq_conv: "({a} = {b}) = (a = b)" by blast
 lemma singleton_subset_singleton_conv: "({a} \<subseteq> {b}) = (a = b)" by blast
 
 lemma singleton_Int1_if: "{a} \<inter> A = (if a \<in> A then {a} else {})"
-by (split split_if, blast)
+by (split if_split, blast)
 
 lemma singleton_Int2_if: "A \<inter> {a} = (if a \<in> A then {a} else {})"
-by (split split_if, blast)
+by (split if_split, blast)
 
 lemma singleton_image: "f ` {a} = {f a}" by blast
 lemma inj_on_singleton: "inj_on f {a}" by blast

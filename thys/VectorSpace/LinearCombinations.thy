@@ -492,7 +492,7 @@ from 0 show ?thesis
            apply (auto simp add: module_def)
          apply (rename_tac f)
          apply (rule_tac x="restrict (\<lambda>v'. \<ominus>\<^bsub>R\<^esub> (f v')) S" in bexI)
-          apply (auto simp add:restrict_def cong: if_cong split: split_if_asm, auto)
+          apply (auto simp add:restrict_def cong: if_cong split: if_split_asm, auto)
          apply (auto simp add: a_ac PiE_mem2 r_neg) (*intro: ext*)
       apply (unfold PiE_def extensional_def Pi_def)
       by (auto simp add: m_assoc l_distr r_distr)

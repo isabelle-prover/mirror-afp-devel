@@ -159,7 +159,7 @@ lemma lock_oks1_thr_updI:
   "\<And>ln. \<lbrakk> lock_oks1 ls ts; ts t = \<lfloor>(((e, xs), exs), ln)\<rfloor>;
      \<forall>l. expr_locks e l + expr_lockss (map fst exs) l = expr_locks e' l + expr_lockss (map fst exs') l \<rbrakk>
   \<Longrightarrow> lock_oks1 ls (ts(t \<mapsto> (((e', xs'), exs'), ln)))"
-by(rule lock_oks1I)(auto split: split_if_asm dest: lock_oks1D2 lock_oks1D1)
+by(rule lock_oks1I)(auto split: if_split_asm dest: lock_oks1D2 lock_oks1D1)
 
 
 definition mbisim_Red1'_Red1 ::
@@ -183,7 +183,7 @@ lemma red1_True_into_red1_False:
   "\<lbrakk> True,P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; els_loc_ok es (lcl s) \<rbrakk>
   \<Longrightarrow> False,P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<or> (\<exists>l. ta = \<lbrace>UnlockFail\<rightarrow>l\<rbrace> \<and> expr_lockss es l > 0)"
 apply(induct rule: red1_reds1.inducts)
-apply(auto intro: red1_reds1.intros split: split_if_asm)
+apply(auto intro: red1_reds1.intros split: if_split_asm)
 done
 
 lemma Red1_True_into_Red1_False:
@@ -397,9 +397,9 @@ proof(cases rule: Red1_mthr.redT.cases)
       { fix l
         from aoe have "lock_actions_ok (locks s1 $ l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l)" by(auto simp add: lock_ok_las_def)
         with None have "has_locks ((redT_updLs (locks s1) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) $ l) t' = has_locks (locks s1 $ l) t'"
-          by(auto split: split_if_asm)
+          by(auto split: if_split_asm)
         also from loks None have "has_locks (locks s1 $ l) t' = 0" unfolding lock_oks1_def
-          by(force split: split_if_asm dest!: redT_updTs_None)
+          by(force split: if_split_asm dest!: redT_updTs_None)
         finally have "has_locks (upd_locks (locks s1 $ l) t (\<lbrace>TA\<rbrace>\<^bsub>l\<^esub> $ l)) t' = 0" by simp }
       hence "\<forall>l. has_locks (upd_locks (locks s1 $ l) t (\<lbrace>TA\<rbrace>\<^bsub>l\<^esub> $ l)) t' = 0" .. }
     moreover {
@@ -551,7 +551,7 @@ proof -
   from wt have "expr_locks ?e = (\<lambda>_. 0)" by(auto intro: WT1_expr_locks)
   thus ?thesis using da sees sv B
     unfolding start_state_def
-    by(fastforce simp add: mbisim_Red1'_Red1_def lock_oks1_def el_loc_ok1_def contains_insync_conv intro!: ts_okI expr_locks_sync_ok split: split_if_asm intro: el_loc_okI)
+    by(fastforce simp add: mbisim_Red1'_Red1_def lock_oks1_def el_loc_ok1_def contains_insync_conv intro!: ts_okI expr_locks_sync_ok split: if_split_asm intro: el_loc_okI)
 qed
 
 lemma Red1'_Red1_bisim_into_weak:

@@ -176,7 +176,7 @@ proof -
     apply simp
     apply (intro allI impI)
     apply (erule exec_1_d.cases, simp)
-    apply (simp add: exec_all_def exec_d_def split: type_error.splits split_if_asm)
+    apply (simp add: exec_all_def exec_d_def split: type_error.splits if_split_asm)
     apply (rule rtrancl_trans, assumption)
     apply blast
     done

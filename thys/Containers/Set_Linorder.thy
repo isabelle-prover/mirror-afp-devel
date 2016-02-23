@@ -112,7 +112,7 @@ lemma set_less_eq_aux_empty [simp]: "A \<sqsubseteq>' {} \<longleftrightarrow> A
 by(auto simp add: set_less_eq_aux_def finite_complement_partition)
 
 lemma set_less_aux_antisym: "\<lbrakk> A \<sqsubset>' B; B \<sqsubset>' A \<rbrakk> \<Longrightarrow> False"
-by(auto simp add: set_less_aux_def split: split_if_asm)
+by(auto simp add: set_less_aux_def split: if_split_asm)
 
 lemma set_less_aux_conv_set_less_eq_aux:
   "A \<sqsubset>' B \<longleftrightarrow> A \<sqsubseteq>' B \<and> \<not> B \<sqsubseteq>' A"
@@ -523,10 +523,10 @@ lemma set_less_eq_refl [iff]: "A \<sqsubseteq> A"
 by(auto simp add: set_less_eq_def2 not_in_complement_partition)
 
 lemma set_less_eq_antisym: "\<lbrakk> A \<sqsubseteq> B; B \<sqsubseteq> A \<rbrakk> \<Longrightarrow> A = B"
-by(auto simp add: set_less_eq_def2 set_less_eq_aux''_finite not_in_complement_partition not_in_complement_partition_False del: equalityI split: split_if_asm dest: set_less_eq_aux_antisym set_less_eq_aux''_antisym)
+by(auto simp add: set_less_eq_def2 set_less_eq_aux''_finite not_in_complement_partition not_in_complement_partition_False del: equalityI split: if_split_asm dest: set_less_eq_aux_antisym set_less_eq_aux''_antisym)
 
 lemma set_less_eq_trans: "\<lbrakk> A \<sqsubseteq> B; B \<sqsubseteq> C \<rbrakk> \<Longrightarrow> A \<sqsubseteq> C"
-by(auto simp add: set_less_eq_def split: split_if_asm intro: set_less_eq_aux''_trans)
+by(auto simp add: set_less_eq_def split: if_split_asm intro: set_less_eq_aux''_trans)
 
 lemma set_less_eq_total: "A \<sqsubseteq> B \<or> B \<sqsubseteq> A"
 by(auto simp add: set_less_eq_def2 set_less_eq_aux''_finite not_in_complement_partition not_in_complement_partition_False intro: set_less_eq_aux_finite_total2 finite_subset[OF subset_UNIV] del: disjCI dest: set_less_eq_aux''_total)

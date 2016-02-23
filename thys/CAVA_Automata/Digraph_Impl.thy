@@ -83,13 +83,13 @@ lemma [autoref_op_pat]:
 
 lemma graph_restrict_aimpl: "op_graph_restrict Vl Vr E = 
   E_of_succ (\<lambda>v. if v\<in>Vl then {x \<in> E``{v}. x\<in>Vr} else {})"
-  by (auto simp: E_of_succ_def succ_of_E_def split: split_if_asm)
+  by (auto simp: E_of_succ_def succ_of_E_def split: if_split_asm)
 lemma graph_restrict_left_aimpl: "op_graph_restrict_left Vl E = 
   E_of_succ (\<lambda>v. if v\<in>Vl then E``{v} else {})"
-  by (auto simp: E_of_succ_def succ_of_E_def split: split_if_asm)
+  by (auto simp: E_of_succ_def succ_of_E_def split: if_split_asm)
 lemma graph_restrict_right_aimpl: "op_graph_restrict_right Vr E = 
   E_of_succ (\<lambda>v. {x \<in> E``{v}. x\<in>Vr})"
-  by (auto simp: E_of_succ_def succ_of_E_def split: split_if_asm)
+  by (auto simp: E_of_succ_def succ_of_E_def split: if_split_asm)
 
 schematic_goal graph_restrict_impl_aux:
   fixes Rsl Rsr
@@ -440,10 +440,10 @@ context g_rename_precond begin
     by simp
     
   lemma fi_map_Some: "(fi_map u = Some v) \<longleftrightarrow> u\<in>f`V \<and> fi u = v"
-    unfolding fi_map_def by (auto split: split_if_asm)
+    unfolding fi_map_def by (auto split: if_split_asm)
 
   lemma fi_map_None: "(fi_map u = None) \<longleftrightarrow> u\<notin>f`V"
-    unfolding fi_map_def by (auto split: split_if_asm)
+    unfolding fi_map_def by (auto split: if_split_asm)
 
   lemma rename_E_aimpl_alt: "rename_E f E = E_of_succ (\<lambda>v. case fi_map v of
     Some u \<Rightarrow> f ` (succ_of_E E u) | None \<Rightarrow> {})"
@@ -451,7 +451,7 @@ context g_rename_precond begin
     using E_ss
     by (force 
       simp: fi_f f_fi fi_map_Some fi_map_None 
-      split: split_if_asm option.splits)
+      split: if_split_asm option.splits)
 
 
   lemma frv_rename_ext_aimpl_alt: 
@@ -531,7 +531,7 @@ proof -
           if s={} then m u else Some (the_default {} (m u) \<union> s))"
       apply (induction l arbitrary: m)
       apply (auto 
-        split: option.split split_if 
+        split: option.split if_split 
         simp: Let_def Image_def
         intro!: ext)
       done
@@ -539,7 +539,7 @@ proof -
   
   show ?thesis
     unfolding succ_of_list_def aux
-    by (auto simp: br_def Let_def split: option.splits split_if_asm)
+    by (auto simp: br_def Let_def split: option.splits if_split_asm)
 qed
 
 

@@ -466,7 +466,7 @@ proof -
 
   from set_iterator_genord_image_filter_correct [OF it_OK, of ?g R, folded set_iterator_filter_def]
   show ?thesis
-    by (simp add: split_if_eq1 set_eq[symmetric] inj_on_def Ball_def in_dom_g)
+    by (simp add: if_split_eq1 set_eq[symmetric] inj_on_def Ball_def in_dom_g)
 qed
 
 lemma set_iterator_filter_correct :

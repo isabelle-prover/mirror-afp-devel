@@ -342,7 +342,7 @@ proof -
       case False
       with `l el elements M'` and `M' = M @ [(literal, True)]`
       have "l = literal"
-        by (auto split: split_if_asm)
+        by (auto split: if_split_asm)
       have "clauseEntailsLiteral [literal] literal" 
         by (simp add: clauseEntailsLiteral_def)
       moreover
@@ -458,7 +458,7 @@ proof -
       case False
       with `M' = M @ [(literal, True)]` `literal' el elements M'`
       have "literal = literal'"
-        by (simp split: split_if_asm)
+        by (simp split: if_split_asm)
       with `M' = M @ [(literal, True)]` 
       have "literal' el decisions M'"
         using markedElementIsMarkedTrue[of "literal" "M'"]
@@ -563,7 +563,7 @@ proof -
       case False
       with `l el (elements M')` `M' = M @ [(uLiteral, False)]`
       have "l = uLiteral"
-        by (auto split: split_if_asm)
+        by (auto split: if_split_asm)
       moreover
       from assms
       have "formulaEntailsLiteral (F @ val2form (decisionsTo uLiteral M')) uLiteral"
@@ -757,7 +757,7 @@ proof -
       case False
       with `l' el (elements M')` and `M' = ?p @ [(opposite ?l, False)]`
       have "?l = (opposite l')"
-        by (auto split: split_if_asm)
+        by (auto split: if_split_asm)
       hence "l' = (opposite ?l)"
         by simp
 
@@ -856,7 +856,7 @@ proof-
     unfolding InvariantConsistent_def 
     using `M' = (prefixBeforeLastDecision M) @ [(opposite (lastDecision M), False)]`
     using inconsistentAppend[of "elements (prefixBeforeLastDecision M)" "[opposite (lastDecision M)]"]
-    by (auto split: split_if_asm)
+    by (auto split: if_split_asm)
 qed
 
 lemma InvariantUniqAfterBacktrack:
@@ -2711,7 +2711,7 @@ next
               with `literalFalse l' (elements M)` `M = M' @ [(l, d)] @ M''` 
               have "literalFalse l' (elements (M' @ M''))"
                 using oppositeIsDifferentFromLiteral[of "l"]
-                by (auto split: split_if_asm)
+                by (auto split: if_split_asm)
               with `\<not> literalFalse l (elements M')` `\<not> literalFalse l (elements M'')` `l' = l`
               show ?thesis
                 by auto
@@ -2719,13 +2719,13 @@ next
               case False
               with `literalTrue l' (elements M)` `M = M' @ [(l, d)] @ M''` 
               have "literalTrue l' (elements (M' @ M''))"
-                by (auto split: split_if_asm)
+                by (auto split: if_split_asm)
               with `consistent (elements (M' @ M''))`
               have "\<not> literalFalse l' (elements (M' @ M''))"
                 by (auto simp add: inconsistentCharacterization)
               with `literalFalse l' (elements M)` `M = M' @ [(l, d)] @ M''` 
               have "opposite l' = l"
-                by (auto split: split_if_asm)
+                by (auto split: if_split_asm)
               with `var l = v`
               have "var l' = v"
                 by auto

@@ -191,7 +191,7 @@ proof -
   thus ?thesis
     apply (unfold sup_def) 
     apply (cases s)
-    apply (auto simp add: is_refT_def split: split_if_asm)
+    apply (auto simp add: is_refT_def split: if_split_asm)
     done
 qed
 (*>*)
@@ -236,7 +236,7 @@ proof -
          "subtype P a c" "subtype P b c" "sup P a b = OK d"
   thus ?thesis
     by (auto simp add: sup_def is_refT_def
-             split: split_if_asm)
+             split: if_split_asm)
 qed
 (*>*)
 

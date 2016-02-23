@@ -127,7 +127,7 @@ next
           show ?thesis by(fastforce elim:CFG_edge_Uses_pred_equal)
         next
           case False
-          from ex True Predicate have "kind a' = (Q)\<^sub>\<surd>" by(auto split:split_if_asm)
+          from ex True Predicate have "kind a' = (Q)\<^sub>\<surd>" by(auto split:if_split_asm)
           from True `slice_path as = x#xs` `as = a'#as'` have "n -[a']\<rightarrow>\<^sub>d* n'"
             by(auto simp:targetnodes_def)
           thus ?thesis
@@ -307,7 +307,7 @@ next
         case (Predicate Q)
         with `slice_path as = x#xs` `as = a'#as'` `last(targetnodes as) = n'` ex 
         have "ex = (\<lambda>s. True)\<^sub>\<surd> \<or> n -a'#as'\<rightarrow>\<^sub>d* n'"
-          by(cases "kind a'",auto split:split_if_asm) 
+          by(cases "kind a'",auto split:if_split_asm) 
         thus ?thesis
         proof
           assume "ex = (\<lambda>s. True)\<^sub>\<surd>" thus ?thesis by simp

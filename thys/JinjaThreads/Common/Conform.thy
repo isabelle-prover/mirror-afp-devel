@@ -275,7 +275,7 @@ by(blast intro: hext_heap_ops)+
 lemma tconf_start_heap_start_tid:
   "\<lbrakk> start_heap_ok; wf_syscls P \<rbrakk> \<Longrightarrow> P,start_heap \<turnstile> start_tid \<surd>t"
 unfolding start_tid_def start_heap_def start_heap_ok_def start_heap_data_def initialization_list_def addr_of_sys_xcpt_def start_addrs_def sys_xcpts_list_def 
-apply(clarsimp split: prod.split_asm simp add: create_initial_object_simps split: split_if_asm)
+apply(clarsimp split: prod.split_asm simp add: create_initial_object_simps split: if_split_asm)
 apply(erule not_empty_pairE)+
 apply(drule (1) allocate_Eps)
 apply(drule (1) allocate_Eps)

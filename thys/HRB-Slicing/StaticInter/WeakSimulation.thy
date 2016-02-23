@@ -837,7 +837,7 @@ proof(atomize_elim)
       `m = sourcenode a`
     have length:"length (transfer (slice_kind S a) s) = length (targetnode a#msx')"
       by(cases s)
-    (auto split:split_if_asm simp add:Let_def slice_kind_def intra_kind_def)
+    (auto split:if_split_asm simp add:Let_def slice_kind_def intra_kind_def)
     from `distance (targetnode a) m' x` obtain asx where "targetnode a -asx\<rightarrow>\<^sub>\<iota>* m'" 
       and "length asx = x" and "\<forall>as'. targetnode a -as'\<rightarrow>\<^sub>\<iota>* m' \<longrightarrow> x \<le> length as'"
       by(auto elim:distance.cases)
@@ -942,7 +942,7 @@ proof(atomize_elim)
       `m = sourcenode a`
     have length:"length (transfer (slice_kind S a) s) = length (targetnode a#msx')"
       by(cases s)
-    (auto split:split_if_asm simp add:Let_def slice_kind_def intra_kind_def)
+    (auto split:if_split_asm simp add:Let_def slice_kind_def intra_kind_def)
     from `distance (targetnode a) m' x` obtain asx where "targetnode a -asx\<rightarrow>\<^sub>\<iota>* m'" 
       and "length asx = x" and "\<forall>as'. targetnode a -as'\<rightarrow>\<^sub>\<iota>* m' \<longrightarrow> x \<le> length as'"
       by(auto elim:distance.cases)

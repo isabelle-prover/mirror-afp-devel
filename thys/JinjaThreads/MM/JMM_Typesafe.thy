@@ -268,7 +268,7 @@ proof -
 
   from ns E'
   have ns: "non_speculative P (vs_type_all P) (lmap snd (ldropn (length (lift_start_obs h.start_tid h.start_heap_obs)) (ltake (enat w) E)))"
-    by(subst (asm) lappend_ltake_ldrop[where n="enat (length (lift_start_obs h.start_tid h.start_heap_obs))", symmetric])(simp add: non_speculative_lappend min_def ltake_lappend1 w_values_vs_type_all_start_heap_obs[OF wfP] ldrop_enat split: split_if_asm)
+    by(subst (asm) lappend_ltake_ldrop[where n="enat (length (lift_start_obs h.start_tid h.start_heap_obs))", symmetric])(simp add: non_speculative_lappend min_def ltake_lappend1 w_values_vs_type_all_start_heap_obs[OF wfP] ldrop_enat split: if_split_asm)
 
   show ?thesis
   proof(cases "w < length ?start_obs")
@@ -514,7 +514,7 @@ proof(induction a arbitrary: ad al v rule: less_induct)
       from "write" `a \<in> read_actions E` have "ws a \<noteq> a" by(auto dest: read_actions_not_write_actions)
       with False have "ws a > a" by simp
       with ao have new: "is_new_action (action_obs E (ws a))"
-        by(simp add: action_order_def split: split_if_asm)
+        by(simp add: action_order_def split: if_split_asm)
       then obtain CTn where obs_w': "action_obs E (ws a) = NormalAction (NewHeapElem ad CTn)" 
         using adal_w by cases auto
 
@@ -823,7 +823,7 @@ proof -
             and i_nth: "lnth ?EE'' i = NormalAction (ReadMem ad al v)"
             and ns: "non_speculative P (vs_type_all P) (ltake (enat i) ?EE'')"
 
-          from i w_len have "i < w" by(simp add: min_def not_le split: split_if_asm)
+          from i w_len have "i < w" by(simp add: min_def not_le split: if_split_asm)
           with w_len have "enat i < llength (?E n')" by(simp add: less_trans[where y="enat w"])
           moreover
           from i_nth i `i < w` w_len

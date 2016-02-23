@@ -101,14 +101,14 @@ lemma atoms_list_disjE:
   "a : atoms(list_disj fs) \<Longrightarrow> a : (\<Union>\<phi> \<in> set fs. atoms \<phi>)"
 apply(induct fs)
  apply (simp add:list_disj_def)
-apply (auto simp add:list_disj_def Logic.or_def split:split_if_asm)
+apply (auto simp add:list_disj_def Logic.or_def split:if_split_asm)
 done
 
 lemma atoms_list_conjE:
   "a : atoms(list_conj fs) \<Longrightarrow> a : (\<Union>\<phi> \<in> set fs. atoms \<phi>)"
 apply(induct fs)
  apply (simp add:list_conj_def)
-apply (auto simp add:list_conj_def Logic.and_def split:split_if_asm)
+apply (auto simp add:list_conj_def Logic.and_def split:if_split_asm)
 done
 
 

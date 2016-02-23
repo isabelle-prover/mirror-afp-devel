@@ -290,7 +290,7 @@ lemma call1_callE:
   obtains (CallObj) "call1 obj = \<lfloor>(a, M', vs)\<rfloor>"
   | (CallParams) v where "obj = Val v" "calls1 pns = \<lfloor>(a, M', vs)\<rfloor>"
   | (Call) "obj = addr a" "pns = map Val vs" "M = M'"
-using assms by(auto split: split_if_asm simp add: is_vals_conv)
+using assms by(auto split: if_split_asm simp add: is_vals_conv)
 
 lemma calls1_map_Val_append [simp]:
   "calls1 (map Val vs @ es) = calls1 es"

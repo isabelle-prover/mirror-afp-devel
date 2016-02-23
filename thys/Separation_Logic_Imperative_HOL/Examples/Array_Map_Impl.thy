@@ -148,7 +148,7 @@ begin
     "< is_iam m p > iam_update k v p <\<lambda>r. is_iam (m(k\<mapsto>v)) r>\<^sub>t"
     unfolding is_iam_def iam_update_def
     by (sep_auto 
-      decon: decon_split_if 
+      decon: decon_if_split 
       simp: iam_update_abs1 iam_update_abs2)
   
   interpretation iam: imp_map is_iam

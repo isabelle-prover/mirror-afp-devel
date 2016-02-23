@@ -536,7 +536,7 @@ proof(induct arbitrary: s t pred:pattern)
   case pat_V thus ?case by simp
 next
   case pat_C thus ?case
-    by (simp add: atomic_tm_head_tm split:split_if_asm)
+    by (simp add: atomic_tm_head_tm split:if_split_asm)
        (metis eta_head_args in_set_butlastD pattern.pat_C)
 qed
 
@@ -553,7 +553,7 @@ lemma pattern_At_decomp: "pattern(s \<bullet> t) \<Longrightarrow> \<exists>nm s
 proof(induct s arbitrary: t)
   case (At s1 s2) show ?case
     using At by (metis foldl_Cons foldl_Nil foldl_append pattern_AtD12)
-qed (auto elim!: pattern.cases split:split_if_asm)
+qed (auto elim!: pattern.cases split:if_split_asm)
 
 
 subsection "Reduction of @{text \<lambda>}-terms"

@@ -114,7 +114,7 @@ declare SC_discr.simps[simp del]
 theorem SC_Sbis_Sbis[intro]: "proper c \<Longrightarrow> SC_Sbis c \<Longrightarrow> c \<approx>s c"
   by (induct c)
      (auto intro: Sbis discr_imp_Sbis siso_imp_Sbis
-           split: split_if_asm)
+           split: if_split_asm)
 
 fun SC_ZObis where
   "SC_ZObis Done           \<longleftrightarrow> True"
@@ -136,7 +136,7 @@ declare SC_Sbis.simps[simp del]
 
 theorem SC_ZObis_ZObis: "proper c \<Longrightarrow> SC_ZObis c \<Longrightarrow> c \<approx>01 c"
   apply (induct c)
-  apply (auto intro: Sbis_imp_ZObis ZObis split: split_if_asm)
+  apply (auto intro: Sbis_imp_ZObis ZObis split: if_split_asm)
   apply (auto intro!: ZObis(5))
   done
 

@@ -83,7 +83,7 @@ lemma \<alpha>ah_ah: "\<alpha>ah w \<in> ah"
   apply (induct w)
   apply (unfold ah_def)
   apply simp
-  apply (fastforce split: split_if_asm)
+  apply (fastforce split: if_split_asm)
   done
 
 lemma \<alpha>ah_hd: "\<lbrakk>m\<in>fst e; x\<in>fst e \<union> snd e \<union> mon_pl w\<rbrakk> \<Longrightarrow> x\<in>\<alpha>ah (e#w) m"
@@ -96,14 +96,14 @@ lemma \<alpha>ah_cases[cases set, case_names hd tl]: "\<lbrakk>
     !!e w'. \<lbrakk>w=e#w'; m\<in>fst e; x\<in>fst e \<union> snd e \<union> mon_pl w'\<rbrakk> \<Longrightarrow> P; 
     !!e w'. \<lbrakk>w=e#w'; m\<notin>fst e; x\<in>\<alpha>ah w' m\<rbrakk> \<Longrightarrow> P
   \<rbrakk> \<Longrightarrow> P"
-  by (cases w) (simp_all split: split_if_asm)
+  by (cases w) (simp_all split: if_split_asm)
 
 lemma \<alpha>ah_cons_cases[cases set, case_names hd tl]: "\<lbrakk>
     x\<in>\<alpha>ah (e#w') m;  
     \<lbrakk>m\<in>fst e; x\<in>fst e \<union> snd e \<union> mon_pl w'\<rbrakk> \<Longrightarrow> P; 
     \<lbrakk>m\<notin>fst e; x\<in>\<alpha>ah w' m\<rbrakk> \<Longrightarrow> P
   \<rbrakk> \<Longrightarrow> P"
-  by (simp_all split: split_if_asm)
+  by (simp_all split: if_split_asm)
 
 lemma mon_ah_subset: "mon_ah (\<alpha>ah w) \<subseteq> mon_pl w"
   by (induct w) (auto simp add: mon_ah_def)
@@ -154,7 +154,7 @@ next
     then obtain m1 m2 where CPAIR: "m1 \<in> \<alpha>ah (map \<alpha> (e#w1')) m2" "m2 \<in> \<alpha>ah (map \<alpha> w2) m1" by (unfold ah_il_def, blast) 
     -- "It comes either from the first step or not"
     from CPAIR(1) have "(m2\<in>fst (\<alpha> e) \<and> m1 \<in> fst (\<alpha> e) \<union> snd (\<alpha> e) \<union> mon_pl (map \<alpha> w1')) \<or> (m2\<notin>fst (\<alpha> e) \<and> m1 \<in> \<alpha>ah (map \<alpha> w1') m2)" (is "?CASE1 \<or> ?CASE2") 
-      by (auto split: split_if_asm) 
+      by (auto split: if_split_asm) 
     moreover {
       -- "Case: One monitor of the conflicting pair is entered in the first step of the left path"
       assume ?CASE1 hence C: "m2\<in>fst (\<alpha> e)" .. 
@@ -177,7 +177,7 @@ next
     assume "\<not> \<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> (e#w2'))" 
     then obtain m1 m2 where CPAIR: "m1 \<in> \<alpha>ah (map \<alpha> w1) m2" "m2 \<in> \<alpha>ah (map \<alpha> (e#w2')) m1" by (unfold ah_il_def, blast) 
     from CPAIR(2) have "(m1\<in>fst (\<alpha> e) \<and> m2 \<in> fst (\<alpha> e) \<union> snd (\<alpha> e) \<union> mon_pl (map \<alpha> w2')) \<or> (m1\<notin>fst (\<alpha> e) \<and> m2 \<in> \<alpha>ah (map \<alpha> w2') m1)" (is "?CASE1 \<or> ?CASE2") 
-      by (auto split: split_if_asm)
+      by (auto split: if_split_asm)
     moreover {
       assume ?CASE1 hence C: "m1\<in>fst (\<alpha> e)" .. 
       from right(2) mon_ah_subset[of "map \<alpha> w1"] have "fst (\<alpha> e) \<inter> mon_ah (\<alpha>ah (map \<alpha> w1)) = {}" by auto 

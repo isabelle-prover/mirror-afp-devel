@@ -98,7 +98,7 @@ begin
     thus ?case
     proof (cases un v g m rule:phiDefNodes_aux_cases)
       case rec
-      with 1 show ?thesis by (fastforce elim!:fold_union_elem split:split_if_asm)
+      with 1 show ?thesis by (fastforce elim!:fold_union_elem split:if_split_asm)
     qed auto
   qed
 
@@ -185,7 +185,7 @@ begin
       show ?thesis
       proof (cases "n \<in> (if length (predecessors g m) = 1 then {} else {m})")
         case True
-        hence "n = m" by (simp split:split_if_asm)
+        hence "n = m" by (simp split:if_split_asm)
         thus ?thesis using "1.prems"(2) rec True by auto
       next
         case False
@@ -340,7 +340,7 @@ begin
 
   lemma allDefs'_disjoint: " n \<in> set (\<alpha>n g) \<Longrightarrow> m \<in> set (\<alpha>n g) \<Longrightarrow> n \<noteq> m
     \<Longrightarrow> (defs' g n \<union> {v. (n, v) \<in> dom (phis' g)}) \<inter> (defs' g m \<union> {v. (m, v) \<in> dom (phis' g)}) = {}"
-  by (auto split:split_if_asm simp: defs'_def phis'_def)
+  by (auto split:if_split_asm simp: defs'_def phis'_def)
 
   lemma phiDefNodes_aux_finite: "finite (phiDefNodes_aux g v un m)"
   proof (induction un arbitrary:m rule:removeAll_induct)
@@ -353,11 +353,11 @@ begin
     let ?super = "set (\<alpha>n g) \<times> vars g \<times> set (\<alpha>n g) \<times> {PhiDef}"
     have "finite ?super" by auto
     thus ?thesis
-    by - (rule finite_subset[of _ ?super], auto simp:phis'_def split:split_if_asm)
+    by - (rule finite_subset[of _ ?super], auto simp:phis'_def split:if_split_asm)
   qed
 
   lemma phis'_wf: "phis' g (n, v) = Some args \<Longrightarrow> length (predecessors g n) = length args"
-  unfolding phis'_def predecessors_def by (auto split:prod.splits split_if_asm)
+  unfolding phis'_def predecessors_def by (auto split:prod.splits if_split_asm)
 
   lemma simpleDefs_phiDefs_disjoint: "n \<in> set (\<alpha>n g) \<Longrightarrow> defs' g n \<inter> {v. (n, v) \<in> dom (phis' g)} = {}"
   unfolding phis'_def defs'_def by auto
@@ -378,7 +378,7 @@ begin
         apply (rule uses'_finite)
        apply (rule invar)
       apply (rule phis'_finite)
-     apply (auto simp: phis'_def split: split_if_asm)[1]
+     apply (auto simp: phis'_def split: if_split_asm)[1]
     apply (rule phis'_wf, simp_all add: base_SSA_defs)
    apply (erule simpleDefs_phiDefs_disjoint)
   apply (erule allDefs'_disjoint, simp, simp)
@@ -454,7 +454,7 @@ begin
           case False
           with assms(5) have "v' \<in> braun_ssa.phiDefs g m'" by (simp add:braun_ssa.allDefs_def)
           hence "m' \<in> phiDefNodes g (fst v')"
-            unfolding braun_ssa.phiDefs_def by (auto simp add: phis'_def split:prod.split_asm split_if_asm)
+            unfolding braun_ssa.phiDefs_def by (auto simp add: phis'_def split:prod.split_asm if_split_asm)
           with rec(2) show ?thesis by (auto dest:phiDefNode_is_join_node)
         qed
       qed
@@ -473,7 +473,7 @@ begin
     case False
     with assms(1) obtain  m' v' vs where "(m,v) \<in> set (zip (predecessors g m') vs)" "phis' g (m', v') = Some vs"
       by (auto simp add:braun_ssa.allUses_def elim:braun_ssa.phiUsesE)
-    hence l: "v = lookupDef g m (var g v')" by (auto simp add:phis'_def split:prod.split_asm split_if_asm elim:in_set_zip_map)
+    hence l: "v = lookupDef g m (var g v')" by (auto simp add:phis'_def split:prod.split_asm if_split_asm elim:in_set_zip_map)
     with assms(2) have "var g v = var g v'" unfolding var_def by (metis lookupDef_fst)
     with l show ?thesis by simp
   qed
@@ -481,7 +481,7 @@ begin
   lemma phis'_fst:
     assumes "phis' g (n,v) = Some vs" "v' \<in> set vs"
     shows "var g v' = var g v"
-  using assms by (auto intro!:lookupDef_fst dest!:phiDefNodes_\<alpha>n simp add:phis'_def split:prod.split_asm split_if_asm)
+  using assms by (auto intro!:lookupDef_fst dest!:phiDefNodes_\<alpha>n simp add:phis'_def split:prod.split_asm if_split_asm)
 
   lemma allUse_simpleUse:
     assumes "v \<in> braun_ssa.allUses g m" "m \<in> set (\<alpha>n g)"
@@ -495,7 +495,7 @@ begin
     case False
     with assms(1) obtain  m' v' vs where phi: "(m,v) \<in> set (zip (predecessors g m') vs)" "phis' g (m', v') = Some vs"
       by (auto simp add:braun_ssa.allUses_def elim:braun_ssa.phiUsesE)
-    hence m': "m' \<in> phiDefNodes g (var g v')" by (auto simp add:phis'_def split:prod.split_asm split_if_asm)
+    hence m': "m' \<in> phiDefNodes g (var g v')" by (auto simp add:phis'_def split:prod.split_asm if_split_asm)
     from phi have[simp]: "var g v = var g v'" by - (rule phis'_fst, auto)
     from m' obtain m'' ms where "g \<turnstile> m'-ms\<rightarrow>m''" "\<forall>x \<in> set ms. var g v' \<notin> defs g x" "var g v' \<in> uses g m''" by (erule phiDefNodesE)
     with phi(1) show ?thesis by - (rule that[of "m#ms" m''], auto simp del:var_def)
@@ -565,7 +565,7 @@ begin
 
   lemma allDefs_var_disjoint: "\<lbrakk>n \<in> set (\<alpha>n g); v \<in> braun_ssa.allDefs g n; v' \<in> braun_ssa.allDefs g n; v \<noteq> v'\<rbrakk> \<Longrightarrow> var g v' \<noteq> var g v"
     unfolding braun_ssa.allDefs_def braun_ssa.phiDefs_def
-    by (auto simp: defs'_def phis'_def allDefs_var_disjoint_aux split:prod.splits split_if_asm)
+    by (auto simp: defs'_def phis'_def allDefs_var_disjoint_aux split:prod.splits if_split_asm)
 
   lemma[simp]: "n \<in> set (\<alpha>n g) \<Longrightarrow> v \<in> defs g n \<Longrightarrow> lookupDefNode g n v = n"
   by (cases rule:lookupDef_cases[of n g v]) simp_all
@@ -725,7 +725,7 @@ begin
   theorem phis'_pruned: "braun_ssa.pruned g"
   unfolding braun_ssa.pruned_def braun_ssa.phiDefs_def
   apply (subst phis'_def)
-  by (auto split:prod.splits split_if_asm simp add:phiDefNodes_def elim!:fold_union_elem phiDefNodes_aux_pruned)
+  by (auto split:prod.splits if_split_asm simp add:phiDefNodes_def elim!:fold_union_elem phiDefNodes_aux_pruned)
 
   declare var_def[simp del]
 

@@ -447,7 +447,7 @@ proof (induct n rule: less_induct)
       apply (subst unfold_nat_to_bv_helper)
       apply (subst bv_to_nat_dist_append)
       apply (fold nat_to_bv_def)
-      apply (simp add: ind' split del: split_if)
+      apply (simp add: ind' split del: if_split)
       apply (cases "n mod 2 = 0")
       proof (simp_all)
         assume "n mod 2 = 0"
@@ -964,7 +964,7 @@ proof (rule bit_list_cases [of w], simp_all)
   assume "length (norm_signed (\<zero>#xs)) = Suc (length xs)"
   thus "norm_signed (\<zero>#xs) = \<zero>#xs"
     by (simp add: norm_signed_Cons norm_unsigned_equal [THEN eqTrueI]
-             split: split_if_asm)
+             split: if_split_asm)
 next
   fix xs
   assume "length (norm_signed (\<one>#xs)) = Suc (length xs)"

@@ -138,7 +138,7 @@ by(rule pred_eqI)(auto elim: subcls'_i_i_iE intro: subcls'_i_i_iI)
 lemma subcls'_i_i_o_program [code]:
   "subcls'_i_i_o (program Pi) C = 
   sup (Predicate.single C) (case Mapping.lookup (fst (snd (snd (impl_of Pi)))) C of None \<Rightarrow> bot | Some m \<Rightarrow> pred_of_set m)"
-by(cases Pi)(fastforce simp add: subcls'_i_i_o_def subcls'_def tabulate_subcls_def lookup.rep_eq Mapping_inverse intro!: pred_eqI split: split_if_asm elim: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
+by(cases Pi)(fastforce simp add: subcls'_i_i_o_def subcls'_def tabulate_subcls_def lookup.rep_eq Mapping_inverse intro!: pred_eqI split: if_split_asm elim: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
 
 lemma rtranclp_FioB_i_i_subcls1_i_i_o_code [code_unfold]:
   "rtranclp_FioB_i_i (subcls1_i_i_o P) = subcls'_i_i_i P"
@@ -153,7 +153,7 @@ lemma Method_program [code]:
     (case Mapping.lookup m M of 
        None \<Rightarrow> False
      | Some (D', Ts', T', meth') \<Rightarrow> Ts = Ts' \<and> T = T' \<and> meth = meth' \<and> D = D'))"
-by(cases Pi)(auto split: split_if_asm dest: sees_method_is_class simp add: tabulate_Method_def lookup.rep_eq Mapping_inverse)
+by(cases Pi)(auto split: if_split_asm dest: sees_method_is_class simp add: tabulate_Method_def lookup.rep_eq Mapping_inverse)
 
 lemma Method_i_i_i_o_o_o_o_program [code]:
   "Method_i_i_i_o_o_o_o (program Pi) C M = 
@@ -185,7 +185,7 @@ lemma sees_field_program [code]:
     (case Mapping.lookup m F of 
        None \<Rightarrow> False
      | Some (D', T', fd') \<Rightarrow> T = T' \<and> fd = fd' \<and> D = D'))"
-by(cases Pi)(auto split: split_if_asm dest: has_visible_field[THEN has_field_is_class] simp add: tabulate_sees_field_def lookup.rep_eq Mapping_inverse)
+by(cases Pi)(auto split: if_split_asm dest: has_visible_field[THEN has_field_is_class] simp add: tabulate_sees_field_def lookup.rep_eq Mapping_inverse)
 
 lemma sees_field_i_i_i_o_o_o_program [code]:
   "sees_field_i_i_i_o_o_o (program Pi) C F =
@@ -216,7 +216,7 @@ lemma field_program [code]:
        None \<Rightarrow> Code.abort (STR ''not_unique'') (\<lambda>_. Predicate.the bot)
      | Some (D', T, fd) \<Rightarrow> (D', T, fd)))"
 unfolding field_def
-by(cases Pi)(fastforce simp add: Predicate.the_def tabulate_sees_field_def lookup.rep_eq Mapping_inverse split: split_if_asm intro: arg_cong[where f=The] dest: has_visible_field[THEN has_field_is_class] sees_field_fun)
+by(cases Pi)(fastforce simp add: Predicate.the_def tabulate_sees_field_def lookup.rep_eq Mapping_inverse split: if_split_asm intro: arg_cong[where f=The] dest: has_visible_field[THEN has_field_is_class] sees_field_fun)
 
 subsection {* Implementation for precomputing mappings *}
 
@@ -253,7 +253,7 @@ lemma subcls1_into_subcls1':
   shows "subcls1' P C D"
 proof -
   from assms obtain rest where "map_of P C = \<lfloor>(D, rest)\<rfloor>" "C \<noteq> Object" by cases simp
-  thus ?thesis by(induct P)(auto split: split_if_asm intro: subcls1'.intros)
+  thus ?thesis by(induct P)(auto split: if_split_asm intro: subcls1'.intros)
 qed
 
 lemma subcls1'_into_subcls1:

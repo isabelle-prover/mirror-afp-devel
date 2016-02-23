@@ -41,7 +41,7 @@ lemma (in lbvs) wtl_suc_pc:
 proof -
   from all pc
   have "wtc c (pc+1) (wtl (take (pc+1) ins) c 0 s\<^sub>0) \<noteq> T" by (rule wtl_all)
-  with pc show ?thesis by (simp add: phi_def wtc split: split_if_asm)
+  with pc show ?thesis by (simp add: phi_def wtc split: if_split_asm)
 qed
 (*>*)
 
@@ -67,7 +67,7 @@ proof (unfold stable_def, clarify)
 
   from wt_s\<^sub>1 pc c_None c_Some
   have inst: "wtc c pc ?s\<^sub>1  = wti c pc (\<tau>s!pc)"
-    by (simp add: wtc split: split_if_asm)
+    by (simp add: wtc split: if_split_asm)
 
   have "?s\<^sub>1 \<in> A" using pres cert s\<^sub>0 wtl pc by (rule wtl_pres)
   with pc c_Some cert c_None
@@ -165,7 +165,7 @@ next
   moreover 
   have "wtl (take 1 ins) c 0 s\<^sub>0 \<noteq> \<top>" using wtl by (rule wtl_take)
   with 0 False 
-  have "s\<^sub>0 \<sqsubseteq>\<^sub>r c!0" by (auto simp add: neq_Nil_conv wtc split: split_if_asm)
+  have "s\<^sub>0 \<sqsubseteq>\<^sub>r c!0" by (auto simp add: neq_Nil_conv wtc split: if_split_asm)
   ultimately
   show ?thesis by simp
 qed

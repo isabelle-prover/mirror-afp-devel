@@ -247,7 +247,7 @@ next
       (\<lambda>s. if \<exists>t. s = (Abort, t) then 0 else \<top>)"
       by (intro lfp_lowerbound) (auto simp: le_fun_def)
     then show "step.E_inf (Abort, s) (r f) \<le> wp Abort f s"
-      by (auto simp: E_inf_r le_fun_def split: split_if_asm)
+      by (auto simp: E_inf_r le_fun_def split: if_split_asm)
   qed (simp add: step.E_inf_nonneg)
 next
   case Assign then show ?case

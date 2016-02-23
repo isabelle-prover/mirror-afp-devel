@@ -1331,7 +1331,7 @@ proof(clarsimp simp add: HInv4d_def)
     by(auto simp add: HInv4a_def HInv4a1_def)
   with ddisk asm3
   show "\<exists>D\<in>MajoritySet. \<forall>dd\<in>D. bal bk \<le> mbal (disk s' dd p)"
-    by(auto simp add: MajoritySet_def split: split_if_asm)
+    by(auto simp add: MajoritySet_def split: if_split_asm)
 qed
 
 lemma HPhase1or2Write_HInv4d_q:

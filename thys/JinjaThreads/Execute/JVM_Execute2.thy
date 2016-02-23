@@ -116,7 +116,7 @@ apply(rule conjI)
  apply(simp add: sc.execute.correct_jvm_state_initial[OF assms])
 apply(rule ts_okI)
 using `sc_wf_start_state P C M vs`
-apply(auto simp add: sc.start_state_def split_beta sc_wf_start_state_iff split: split_if_asm dest: sees_method_idemp)
+apply(auto simp add: sc.start_state_def split_beta sc_wf_start_state_iff split: if_split_asm dest: sees_method_idemp)
 done
 
 lemma invariant3p_sc_jvm_state_invar:
@@ -160,7 +160,7 @@ proof(rule invariant3pI)
   moreover from red have "ts_ok (\<lambda>t (xcp, frs) h. \<forall>f\<in>set frs. frame'_ok P f) (thr s') (shr s')" unfolding tl 
   proof(cases rule: multithreaded_base.redT.cases[consumes 1, case_names normal acquire])
     case acquire thus ?thesis using invar
-      by(fastforce simp add: sc_jvm_state_invar_def intro!: ts_okI dest: ts_okD bspec split: split_if_asm)
+      by(fastforce simp add: sc_jvm_state_invar_def intro!: ts_okI dest: ts_okD bspec split: if_split_asm)
   next
     case (normal t x s ta x' m' s')
     obtain xcp frs where x: "x = (xcp, frs)" by(cases x)
@@ -176,7 +176,7 @@ proof(rule invariant3pI)
       apply hypsubst_thin
       apply(drule sc.exec_correct_state(3)[OF assms correct ok])
       apply(rule ts_okI)
-      apply(clarsimp split: split_if_asm simp add: jvm_thread_action'_ok_def)
+      apply(clarsimp split: if_split_asm simp add: jvm_thread_action'_ok_def)
       apply(drule (1) bspec)
       apply simp
       apply(case_tac "thr s t")

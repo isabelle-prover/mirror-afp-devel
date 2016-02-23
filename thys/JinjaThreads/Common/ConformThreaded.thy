@@ -62,7 +62,7 @@ by(blast intro: thread_confI tconf_hext_mono dest: thread_confD)
 
 lemma thread_conf_start_state:
   "\<lbrakk> start_heap_ok; wf_syscls P \<rbrakk> \<Longrightarrow> thread_conf P (thr (start_state f P C M vs)) (shr (start_state f P C M vs))"
-by(auto intro!: thread_confI simp add: start_state_def split_beta split: split_if_asm intro: tconf_start_heap_start_tid)
+by(auto intro!: thread_confI simp add: start_state_def split_beta split: if_split_asm intro: tconf_start_heap_start_tid)
 
 end
 

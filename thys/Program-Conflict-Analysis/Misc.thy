@@ -290,7 +290,7 @@ declare insert_DiffM[simp]
       assume CASE: "s\<noteq>r'"
       have "s:#{#s#}+c" by simp
       with A have "s:#{#r'#}+c'" by simp
-      with CASE have "s:#c'" by (auto elim!: mset_un_cases split: split_if_asm)
+      with CASE have "s:#c'" by (auto elim!: mset_un_cases split: if_split_asm)
       from insert_DiffM[OF this, symmetric] have 1: "c' = {#s#} + (c' - {#s#})" .
       with A have "{#s#}+c = {#s#}+({#r'#}+(c' - {#s#}))" by (auto simp add: union_ac)
       hence 2: "c={#r'#}+(c' - {#s#})" by (auto)
@@ -464,14 +464,14 @@ subsubsection {* Pointwise ordering *}
       with mset_le_mono_add[of "{#a#}" "{#a#}" "{#b#}" "A-{#a#}"] have "{#a#}+{#b#} \<le># A" by auto
     } moreover {
       assume C: "a :# A" "\<not> (b :# A-{#a#})"
-      with A have "b:#B" by (unfold subseteq_mset_def) (auto split: split_if_asm)
+      with A have "b:#B" by (unfold subseteq_mset_def) (auto split: if_split_asm)
     } moreover {
       assume C: "\<not> (a :# A)" "b :# B-{#a#}"
-      with A have "a :# B" by (unfold subseteq_mset_def) (auto split: split_if_asm)
+      with A have "a :# B" by (unfold subseteq_mset_def) (auto split: if_split_asm)
       with C mset_le_mono_add[of "{#a#}" "{#a#}" "{#b#}" "B-{#a#}"] have "{#a#}+{#b#} \<le># B" by auto
     } moreover {
       assume C: "\<not> (a :# A)" "\<not> (b :# B-{#a#})"
-      with A have "a:#B \<and> b:#A" by (unfold subseteq_mset_def) (auto split: split_if_asm)
+      with A have "a:#B \<and> b:#A" by (unfold subseteq_mset_def) (auto split: if_split_asm)
     } ultimately show P using CASES by blast
   qed
 

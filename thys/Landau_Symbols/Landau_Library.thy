@@ -116,7 +116,7 @@ lemma zero_powr [simp]: "(0::real) powr x = 0"
   unfolding powr_def by simp
 
 lemma powr_negD: "(a::real) powr b \<le> 0 \<Longrightarrow> a = 0"
-  unfolding powr_def by (simp split: split_if_asm)
+  unfolding powr_def by (simp split: if_split_asm)
 
 lemma inverse_powr [simp]:
   assumes "(x::real) \<ge> 0"

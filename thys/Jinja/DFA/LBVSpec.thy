@@ -169,7 +169,7 @@ next
   assume "\<And>x. ?set ls \<Longrightarrow> ?merge ls x \<Longrightarrow> ?P ls" hence "?P ls" using set merge' .
   moreover
   from merge set
-  have "pc' \<noteq> pc+1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'" by (simp split: split_if_asm)
+  have "pc' \<noteq> pc+1 \<longrightarrow> s' \<sqsubseteq>\<^sub>r c!pc'" by (simp split: if_split_asm)
   ultimately show "?P (l#ls)" by simp
 qed
 (*>*)
@@ -234,7 +234,7 @@ lemma (in lbv) merge_not_top_s:
 proof -
   from ss m have "\<forall>(pc',s') \<in> set ss. (pc' \<noteq> pc+1 \<longrightarrow> s' <=_r c!pc')" 
     by (rule merge_not_top)
-  with x ss m show ?thesis by - (drule merge_def, auto split: split_if_asm)
+  with x ss m show ?thesis by - (drule merge_def, auto split: if_split_asm)
 qed
 (*>*)
 
@@ -317,7 +317,7 @@ proof -
   with all have take: "?wtl (take pc is@i#r) \<noteq> \<top>" by simp 
   from pc have "is!pc = drop pc is ! 0" by simp
   with Cons have "is!pc = i" by simp
-  with take pc show ?thesis by (auto simp add: min_def split: split_if_asm)
+  with take pc show ?thesis by (auto simp add: min_def split: if_split_asm)
 qed
 (*>*)
 

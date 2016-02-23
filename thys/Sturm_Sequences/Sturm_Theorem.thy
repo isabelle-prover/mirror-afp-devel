@@ -428,7 +428,7 @@ next
                   by (metis sgn_less sgn_times, metis sgn_0_0)
               with sgn_r show sgn_r': "sgn (poly r x) = - sgn (poly p x)"
                   apply (simp add: sgn_real_def not_le not_less
-                             split: split_if_asm, intro conjI impI)
+                             split: if_split_asm, intro conjI impI)
                   using prod_neg[of "poly r x" "poly p x"] apply force+
                   done
 
@@ -541,13 +541,13 @@ proof-
               (if x < x\<^sub>0 then -sgn (poly p x) else sgn (poly p x))"
         by (auto simp add: sgn_real_def elim: linorder_neqE_linordered_idom
                  dest: mult_neg_neg zero_less_mult_pos
-                 zero_less_mult_pos' split: split_if_asm)
+                 zero_less_mult_pos' split: if_split_asm)
      from sign_changes_distrib[OF `poly q x \<noteq> 0`, of "[p]" ps']
         have "sign_changes ps x = sign_changes [p,q] x + sign_changes (q#ps') x"
             by simp
     also from q_sgn and `poly p x \<noteq> 0`
         have "sign_changes [p,q] x = (if x<x\<^sub>0 then 1 else 0)"
-        by (simp add: sign_changes_def sgn_zero_iff split: split_if_asm)
+        by (simp add: sign_changes_def sgn_zero_iff split: if_split_asm)
     also note prems(4)
     also from assms(1) have "sign_changes (q#ps') x\<^sub>0 = sign_changes ps x\<^sub>0"
         by (simp add: sign_changes_def)
@@ -874,7 +874,7 @@ proof-
           then obtain i' where [simp]: "i = Suc i'" by (cases i, simp_all)
           hence "length ps \<ge> 4" using 1 by simp
           with 1(2) have deg: "degree q \<noteq> 0"
-              by (subst (asm) sturm_aux.simps, simp split: split_if_asm)
+              by (subst (asm) sturm_aux.simps, simp split: if_split_asm)
           with 1(2) obtain ps' where [simp]: "ps = p # ps'"
               by (subst (asm) sturm_aux.simps, simp)
           with 1(2) deg have ps': "ps' = sturm_aux q (-(p mod q))"
@@ -887,7 +887,7 @@ proof-
         case True
           with 1(3) have "length ps \<ge> 3" by simp
           with 1(2) have "degree q \<noteq> 0"
-              by (subst (asm) sturm_aux.simps, simp split: split_if_asm)
+              by (subst (asm) sturm_aux.simps, simp split: if_split_asm)
           with 1(2) have [simp]: "sturm_aux p q ! Suc (Suc 0) = -(p mod q)"
               by (subst sturm_aux.simps, simp)
           from True have "ps!i = p" "ps!(i+1) = q" "ps!(i+2) = -(p mod q)"
@@ -912,7 +912,7 @@ proof (induction p q rule: sturm_aux.induct)
     proof (cases "r = p")
       case False
         with 1(2) have r: "r \<in> set (sturm_aux q (-(p mod q)))"
-          by (subst (asm) sturm_aux.simps, simp split: split_if_asm,
+          by (subst (asm) sturm_aux.simps, simp split: if_split_asm,
               subst sturm_aux.simps, simp)
         show ?thesis
         proof (cases "degree q = 0")
@@ -1099,7 +1099,7 @@ next
   fix x :: real and y :: real
   have "degree (last (sturm p)) = 0" by simp
   then obtain c where "last (sturm p) = [:c:]"
-      by (cases "last (sturm p)", simp split: split_if_asm)
+      by (cases "last (sturm p)", simp split: if_split_asm)
   thus "\<And>x y. sgn (poly (last (sturm p)) x) =
             sgn (poly (last (sturm p)) y)" by simp
 next
@@ -1315,7 +1315,7 @@ proof
         using `d \<noteq> 0` by (cases "last ?ps' = 0", auto)
     hence "degree (last ?ps') = 0" by simp
     then obtain c where "last ?ps' = [:c:]"
-        by (cases "last ?ps'", simp split: split_if_asm)
+        by (cases "last ?ps'", simp split: if_split_asm)
     thus "\<And>x y. sgn (poly (last ?ps') x) = sgn (poly (last ?ps') y)" by simp
   }
 
@@ -1369,7 +1369,7 @@ proof
       moreover have "d dvd p" "d dvd pderiv p" unfolding d_def by simp_all
       ultimately show ?case using prems
           by (auto simp: sgn_real_def poly_div not_less[symmetric]
-                         zero_less_divide_iff split: split_if_asm)
+                         zero_less_divide_iff split: if_split_asm)
   qed
 qed
 

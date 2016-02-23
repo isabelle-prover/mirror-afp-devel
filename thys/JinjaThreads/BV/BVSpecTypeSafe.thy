@@ -40,7 +40,7 @@ lemma Invoke_handlers:
   \<exists>(f,t,D,h,d) \<in> set (relevant_entries P (Invoke n M) pc xt). 
    (case D of None \<Rightarrow> True | Some D' \<Rightarrow> P \<turnstile> C \<preceq>\<^sup>* D') \<and> pc \<in> {f..<t} \<and> pc' = h \<and> d' = d"
   by (induct xt) (auto simp add: relevant_entries_def matches_ex_entry_def 
-                                 is_relevant_entry_def split: split_if_asm)
+                                 is_relevant_entry_def split: if_split_asm)
 
 lemma match_is_relevant:
   assumes rv: "\<And>D'. P \<turnstile> D \<preceq>\<^sup>* D' \<Longrightarrow> is_relevant_class (ins ! i) P D'"
@@ -207,7 +207,7 @@ proof -
       where pc': "pc+1 < size ins"
       and \<Phi>': "\<Phi> C M ! (pc+1) = Some (ST', LT')"
       and LT': "P \<turnstile> LT [\<le>\<^sub>\<top>] LT'"
-      by(auto simp add: neq_Nil_conv sup_state_opt_any_Some split: split_if_asm)
+      by(auto simp add: neq_Nil_conv sup_state_opt_any_Some split: if_split_asm)
     with NT ins wti \<Phi>_pc obtain D D' TTs TT m
       where D: "class_type_of' (ST!n) = \<lfloor>D\<rfloor>"
       and m_D: "P \<turnstile> D sees M': TTs\<rightarrow>TT = m in D'"
@@ -252,7 +252,7 @@ proof -
       let ?f  = "(stk, loc, C, M, pc)"
       
       from Addr obj m_C' ins meth_C exec C' False
-      have s': "\<sigma> = (None, h, ?f' # ?f # frs)" by(auto split: split_if_asm)
+      have s': "\<sigma> = (None, h, ?f' # ?f # frs)" by(auto split: if_split_asm)
       
       moreover 
       from wtprog mD''
@@ -413,7 +413,7 @@ proof -
       less:    "P \<turnstile> (T' # drop (size Ts+1) ST', LT') \<le>\<^sub>i (ST'', LT'')" and
       suc_pc': "Suc pc' < size ins'"
       using ins' \<Phi>' D T' wti
-      by(fastforce simp add: sup_state_opt_any_Some split: split_if_asm)
+      by(fastforce simp add: sup_state_opt_any_Some split: if_split_asm)
 
     from hd_stk T' have hd_stk': "P,h \<turnstile> hd stk :\<le> T'"  ..
         
@@ -492,7 +492,7 @@ lemma Checkcast_correct:
     (tas, \<sigma>) \<in> exec_instr (ins!pc) P t h stk loc C M pc frs \<rbrakk> 
 \<Longrightarrow> \<Phi> \<turnstile> t:\<sigma> \<surd>"
 using wf_preallocatedD[of "\<lambda>P C (M, Ts, T\<^sub>r, mxs, mxl\<^sub>0, is, xt). wt_method P C Ts T\<^sub>r mxs mxl\<^sub>0 is xt (\<Phi> C M)" P h ClassCast]
-apply (clarsimp simp add: wf_jvm_prog_phi_def split: split_if_asm)
+apply (clarsimp simp add: wf_jvm_prog_phi_def split: if_split_asm)
  apply(drule (1) sees_method_fun)
  apply(fastforce simp add: conf_def intro: widen_trans)
 apply (drule (1) sees_method_fun)
@@ -507,7 +507,7 @@ lemma Instanceof_correct:
     \<Phi> \<turnstile> t:(None, h, (stk,loc,C,M,pc)#frs)\<surd>;
     (tas, \<sigma>) \<in> exec_instr (ins!pc) P t h stk loc C M pc frs \<rbrakk> 
 \<Longrightarrow> \<Phi> \<turnstile> t:\<sigma> \<surd>"
-  apply (clarsimp simp add: wf_jvm_prog_phi_def split: split_if_asm)
+  apply (clarsimp simp add: wf_jvm_prog_phi_def split: if_split_asm)
   apply (drule (1) sees_method_fun)
   apply fastforce
   done
@@ -895,13 +895,13 @@ proof -
     with frame frames tconf heap_ok suc_pc no_x ins meth \<Phi>_pc si preh
       wf_preallocatedD[OF wf, of h OutOfMemory] wf_preallocatedD[OF wf, of h NegativeArraySize]
     show ?thesis
-      by(fastforce intro: tconf_hext_mono confs_hext confTs_hext conf_fs_hext split: split_if_asm)+
+      by(fastforce intro: tconf_hext_mono confs_hext confTs_hext conf_fs_hext split: if_split_asm)+
   next
     case False
     with ins meth si no_x obtain h' oref 
       where new: "(h', oref) \<in> allocate h (Array_type X (nat (sint si)))"
       and \<sigma>': "\<sigma> = (None, h', (Addr oref#tl stk,loc,C,M,pc+1)#frs)" (is "\<sigma> = (None, h', ?f # frs)")
-      by(auto split: split_if_asm)
+      by(auto split: if_split_asm)
     from new have hext: "h \<unlhd> h'" by(rule hext_allocate)
     with preh have preh': "preallocated h'" by(rule preallocated_hext)
     from new heap_ok is_type_X have heap_ok': "hconf h'" by(auto intro: hconf_allocate_mono)
@@ -1010,12 +1010,12 @@ proof -
         hence "\<Phi> \<turnstile> t:(None, h, ?f # frs) \<surd>"
           using meth \<Phi>' heap_ok \<Phi>_pc frames tconf preh by fastforce }
       with ins meth si' stk' a ha no_x idxI idx 
-      show ?thesis by(auto simp del: correct_state_def split: split_if_asm)
+      show ?thesis by(auto simp del: correct_state_def split: if_split_asm)
     next
       case False
       with stk' idxI ins no_x heap_ok tconf meth a ha Xel \<Phi>_pc frame frames
         wf_preallocatedD[OF wf, of h ArrayIndexOutOfBounds] preh
-      show ?thesis by(fastforce split: split_if_asm)
+      show ?thesis by(fastforce split: if_split_asm)
     qed
   qed
 qed
@@ -1133,18 +1133,18 @@ proof -
             by(fastforce) }
         with True si' ins meth stk' a ha no_x idxI idx Te
         show ?thesis
-          by(auto split: split_if_asm simp del: correct_state_def intro: widen_trans)
+          by(auto split: if_split_asm simp del: correct_state_def intro: widen_trans)
       next
         case False
         with stk' idxI ins no_x heap_ok tconf meth a ha Xel Te \<Phi>_pc frame frames si' preh
           wf_preallocatedD[OF wf, of h ArrayStore]
-        show ?thesis by(fastforce split: split_if_asm)
+        show ?thesis by(fastforce split: if_split_asm)
       qed
     next
       case False
       with stk' idxI ins no_x heap_ok tconf meth a ha Xel \<Phi>_pc frame frames preh
         wf_preallocatedD[OF wf, of h ArrayIndexOutOfBounds]
-      show ?thesis by(fastforce split: split_if_asm)
+      show ?thesis by(fastforce split: if_split_asm)
     qed
   qed
 qed
@@ -1685,7 +1685,7 @@ proof -
           show ?thesis by(auto dest!: red_external_imp_red_external_aggr)
         qed
       qed
-    qed(auto 4 4 simp add: split_beta split: split_if_asm)
+    qed(auto 4 4 simp add: split_beta split: if_split_asm)
     thus ?thesis using sees None
       unfolding f exec_1_iff by(simp del: split_paired_Ex)
   qed

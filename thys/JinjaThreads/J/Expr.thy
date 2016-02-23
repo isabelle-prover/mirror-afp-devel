@@ -455,7 +455,7 @@ lemma call_callE [consumes 1, case_names CallObj CallParams Call]:
      call obj = \<lfloor>(a, M', vs)\<rfloor> \<Longrightarrow> thesis; 
      \<And>v. \<lbrakk> obj = Val v; calls pns = \<lfloor>(a, M', vs)\<rfloor> \<rbrakk> \<Longrightarrow> thesis;
      \<lbrakk> obj = addr a; pns = map Val vs; M = M' \<rbrakk> \<Longrightarrow> thesis \<rbrakk> \<Longrightarrow> thesis"
-by(auto split: split_if_asm simp add: is_vals_conv)
+by(auto split: if_split_asm simp add: is_vals_conv)
 
 lemma calls_map_Val [simp]:
   "calls (map Val vs) = None"

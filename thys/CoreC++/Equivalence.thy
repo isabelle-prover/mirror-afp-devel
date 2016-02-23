@@ -82,7 +82,7 @@ proof(induct rule:red_reds_inducts)
     with v' casts wf show ?thesis by(fastforce intro:casts_casts)
   next
     case False
-    with lupd have "l V' = Some v'" by(fastforce split:split_if_asm)
+    with lupd have "l V' = Some v'" by(fastforce split:if_split_asm)
     with l show ?thesis by simp
   qed
 next
@@ -99,7 +99,7 @@ next
   next
     case False
     with l  l'upd have lnew:"(l(V := None)) V' = None"
-      and l'new:"l' V' = Some v'" by (auto split:split_if_asm)
+      and l'new:"l' V' = Some v'" by (auto split:if_split_asm)
     from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastforce
     from IH[OF lnew env' l'new] show ?thesis .
   qed
@@ -117,7 +117,7 @@ next
   next
     case False
     with l  l'upd have lnew:"(l(V := None)) V' = None"
-      and l'new:"l' V' = Some v'" by (auto split:split_if_asm)
+      and l'new:"l' V' = Some v'" by (auto split:if_split_asm)
     from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastforce
     from IH[OF lnew env' l'new] show ?thesis .
   qed
@@ -135,7 +135,7 @@ next
   next
     case False
     with l  l'upd have lnew:"(l(V \<mapsto> w')) V' = None"
-      and l'new:"l' V' = Some v'" by (auto split:split_if_asm)
+      and l'new:"l' V' = Some v'" by (auto split:if_split_asm)
     from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastforce
     from IH[OF lnew env' l'new] show ?thesis .
   qed
@@ -174,7 +174,7 @@ next
     with T'casts v' wf show ?thesis by(fastforce intro:casts_casts)
   next
     case False
-    with l lupd have "v = v'" by (auto split:split_if_asm)
+    with l lupd have "v = v'" by (auto split:if_split_asm)
     with casts wf show ?thesis by(fastforce intro:casts_casts)
   qed
 next
@@ -202,7 +202,7 @@ next
   next
     case False
     with l  l'upd have lnew:"(l(V := None)) V' = Some v"
-      and l'new:"l' V' = Some v'" by (auto split:split_if_asm)
+      and l'new:"l' V' = Some v'" by (auto split:if_split_asm)
     from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastforce
     from IH[OF lnew env' casts l'new] show ?thesis .
   qed
@@ -223,7 +223,7 @@ next
   next
     case False
     with l  l'upd have lnew:"(l(V := None)) V' = Some v"
-      and l'new:"l' V' = Some v'" by (auto split:split_if_asm)
+      and l'new:"l' V' = Some v'" by (auto split:if_split_asm)
     from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastforce
     from IH[OF lnew env' casts l'new] show ?thesis .
   qed
@@ -244,7 +244,7 @@ next
   next
     case False
     with l  l'upd have lnew:"(l(V \<mapsto> w')) V' = Some v"
-      and l'new:"l' V' = Some v'" by (auto split:split_if_asm)
+      and l'new:"l' V' = Some v'" by (auto split:if_split_asm)
     from env False have env':"(E(V \<mapsto> T')) V' = Some T" by fastforce
     from IH[OF lnew env' casts l'new] show ?thesis .
   qed

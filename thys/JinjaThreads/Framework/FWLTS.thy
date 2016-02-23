@@ -122,7 +122,7 @@ by cases(auto dest: \<tau>move_heap elim!: redT.cases)
 
 lemma \<tau>mredT_thread_preserved:
   "\<tau>mredT s s' \<Longrightarrow> thr s t = None \<longleftrightarrow> thr s' t = None"
-by(auto simp add: mthr.silent_move_iff elim!: redT.cases dest!: m\<tau>move_silentD split: split_if_asm)
+by(auto simp add: mthr.silent_move_iff elim!: redT.cases dest!: m\<tau>move_silentD split: if_split_asm)
 
 lemma \<tau>mRedT_thread_preserved:
   "\<tau>mredT^** s s' \<Longrightarrow> thr s t = None \<longleftrightarrow> thr s' t = None"

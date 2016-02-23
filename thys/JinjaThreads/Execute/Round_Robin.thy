@@ -120,14 +120,14 @@ using major
 proof(induct n\<equiv>"length (takeWhile (\<lambda>x. x\<noteq>t0) queue)" arbitrary: queue)
   case 0
   then obtain queue' where "queue = t0 # queue'"
-    by(cases queue)(auto split: split_if_asm)
+    by(cases queue)(auto split: if_split_asm)
   thus ?case by(simp add: head)
 next
   case (Suc n)
   then obtain t queue' where [simp]: "queue = t # queue'"
     and t: "t \<noteq> t0" and n: "n = length (takeWhile (\<lambda>x. x \<noteq> t0) queue')"
     and t0: "t0 \<in> set queue'"
-    by(cases queue)(auto split: split_if_asm)
+    by(cases queue)(auto split: if_split_asm)
   from n t0 have "n = length (takeWhile (\<lambda>x. x \<noteq> t0) (queue' @ [t]))" by(simp)
   moreover from t0 have "t0 \<in> set (queue' @ [t])" by simp
   ultimately have "P (queue' @ [t])" by(rule Suc.hyps)
@@ -150,7 +150,7 @@ lemma round_robin_step_invar_Some:
 apply(cases \<sigma>)
 apply clarsimp
 apply(frule (1) step_thread_Some_SomeD)
-apply(auto split: split_if_asm simp add: split_beta set_enqueue_new_threads deterministic_THE)
+apply(auto split: if_split_asm simp add: split_beta set_enqueue_new_threads deterministic_THE)
 apply(auto simp add: actions_ok_iff distinct_enqueue_new_threads)
 done
 

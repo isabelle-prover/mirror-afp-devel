@@ -2201,7 +2201,7 @@ lemma iT_Div_mod_partition_card:"
   (if I \<inter> [n * d\<dots>,d - Suc 0] = {} then 0 else Suc 0)"
 apply (case_tac "d = 0")
  apply (simp add: iIN_0 iTILL_0 iT_Div_0_if)
-apply (split split_if, rule conjI)
+apply (split if_split, rule conjI)
  apply (simp add: iT_Div_empty)
 apply clarsimp
 apply (subgoal_tac "I \<inter> [n * d\<dots>,d - Suc 0] \<oslash> d = {n}", simp)
@@ -2352,7 +2352,7 @@ lemma div_Suc: "
   0 < n \<Longrightarrow> Suc m div n = (if Suc (m mod n) = n then Suc (m div n) else m div n)"
 apply (drule Suc_leI, drule le_imp_less_or_eq)
 apply (case_tac "n = Suc 0", simp)
-apply (split split_if, intro conjI impI)
+apply (split if_split, intro conjI impI)
  apply (rule_tac t="Suc m" and s="m + 1" in subst, simp)
  apply (subst div_add1_eq2, simp+)
 apply (insert le_neq_trans[OF mod_less_divisor[THEN Suc_leI, of n m]], simp)
@@ -2449,7 +2449,7 @@ apply (rule_tac y="let I=I \<inter> [\<dots>n * d + d - Suc 0] in
  prefer 2
  apply (simp add: Let_def)
 apply (unfold Let_def)
-apply (split split_if, intro conjI impI)
+apply (split if_split, intro conjI impI)
  apply (subgoal_tac "card (I \<inter> [Suc n * d\<dots>,d - Suc 0]) \<noteq> d")
   prefer 2
   apply (rule ccontr, simp)

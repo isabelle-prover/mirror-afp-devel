@@ -481,7 +481,7 @@ fun expr_type :: "tyenv \<Rightarrow> expr \<Rightarrow> pdf_type option" where
 lemma expr_type_Some_iff: "expr_type \<Gamma> e = Some t \<longleftrightarrow> \<Gamma> \<turnstile> e : t"
   apply rule
   apply (induction e arbitrary: \<Gamma> t, 
-         auto intro!: expr_typing.intros split: option.split_asm split_if_asm) []
+         auto intro!: expr_typing.intros split: option.split_asm if_split_asm) []
   apply (induction rule: expr_typing.induct, auto simp del: fun_upd_apply)
   done
 
@@ -645,7 +645,7 @@ text {*
 
 lemma op_sem_val_type:
     "op_type oper (val_type v) = Some t' \<Longrightarrow> val_type (op_sem oper v) = t'"
-  by (cases oper) (auto split: val.split split_if_asm pdf_type.split_asm 
+  by (cases oper) (auto split: val.split if_split_asm pdf_type.split_asm 
                         simp: lift_RealIntVal_def lift_Comp_def
                               lift_IntVal_def lift_RealVal_def lift_RealIntVal2_def
                         elim!: PROD_E INTEG_E REAL_E)
@@ -817,7 +817,7 @@ next
   case Snd with assms show ?thesis by (simp split: pdf_type.split_asm)
 next
   case Equals with assms show ?thesis
-    by (auto intro!: val_case_stock_measurable split: split_if_asm)
+    by (auto intro!: val_case_stock_measurable split: if_split_asm)
 next
   case Pow with assms show ?thesis
     apply (auto intro!: val_case_stock_measurable split: pdf_type.splits)
@@ -1261,7 +1261,7 @@ next
       let ?\<sigma>' = "\<sigma>(y := v)" and ?\<Gamma>' = "\<Gamma>(y := val_type v)"
       from LetVar.prems have "\<Gamma>(y := val_type v) \<turnstile> f : t" by (auto intro: expr_typing_eq_on_free_vars)
       moreover from LetVar.prems have "?\<sigma>' \<in> space (state_measure (insert y V) ?\<Gamma>')"
-        by (auto simp: state_measure_def space_PiM split: split_if_asm)
+        by (auto simp: state_measure_def space_PiM split: if_split_asm)
       ultimately have "expr_sem ?\<sigma>' (e2\<langle>f/x\<rangle>) = expr_sem (?\<sigma>'(x := expr_sem_rf f ?\<sigma>')) e2"
         using LetVar.prems and `y \<noteq> x`
         by (intro LetVar.IH(2)[of "\<Gamma>(y := val_type v)" "insert y V"]) (auto simp del: fun_upd_apply)

@@ -37,7 +37,7 @@ proof -
       by(rule sym[OF appendPath_last])
     with T h v' have ?thesis by auto }
   with casts typeof wf typeof leq show ?thesis
-    by(cases v,auto elim:casts_to.cases split:split_if_asm)
+    by(cases v,auto elim:casts_to.cases split:if_split_asm)
 qed
 
 
@@ -68,7 +68,7 @@ next
     and casts:"P \<turnstile> T casts v to v'"
     and Ds:"Ds = Cs' @\<^sub>p Cs" and S:"(Ds,fs') \<in> S"
     and wte:"P,E,h \<turnstile> ref(a,Cs')\<bullet>F{Cs} := Val v : T'" by fact+
-  from wte have "P \<turnstile> last Cs' has least F:T' via Cs" by (auto split:split_if_asm)
+  from wte have "P \<turnstile> last Cs' has least F:T' via Cs" by (auto split:if_split_asm)
   with field have eq:"T = T'" by (rule sees_field_fun)
   with casts wte wf have conf:"P,h \<turnstile> v' :\<le> T'"
     by(auto intro:casts_conf)
@@ -159,7 +159,7 @@ next
     by (simp add:lconf_def fun_upd_apply)
   from IH[OF wte' this envconf'] have "P,h' \<turnstile> l' (:\<le>)\<^sub>w E(V\<mapsto>T)" .
   with lconf' show ?case
-    by (fastforce simp:lconf_def fun_upd_apply split:split_if_asm)
+    by (fastforce simp:lconf_def fun_upd_apply split:if_split_asm)
 next
   case (BlockRedSome E V T e h l e' h' l' v T')
   have red:"P,E(V \<mapsto> T) \<turnstile> \<langle>e,(h, l(V := None))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
@@ -178,7 +178,7 @@ next
     by (simp add:lconf_def fun_upd_apply)
   from IH[OF wte' this envconf'] have "P,h' \<turnstile> l' (:\<le>)\<^sub>w E(V\<mapsto>T)" .
   with lconf' show ?case
-    by (fastforce simp:lconf_def fun_upd_apply split:split_if_asm)
+    by (fastforce simp:lconf_def fun_upd_apply split:if_split_asm)
 next
   case (InitBlockRed E V T e h l v' e' h' l' v'' v T')
   have red: "P,E(V \<mapsto> T) \<turnstile> \<langle>e, (h, l(V\<mapsto>v'))\<rangle> \<rightarrow> \<langle>e',(h', l')\<rangle>"
@@ -203,7 +203,7 @@ next
     by -(rule lconf_upd2)
   from IH[OF wte' this envconf'] have "P,h' \<turnstile> l' (:\<le>)\<^sub>w E(V \<mapsto> T)" .
   with lconf' show ?case
-    by (fastforce simp:lconf_def fun_upd_apply split:split_if_asm)
+    by (fastforce simp:lconf_def fun_upd_apply split:if_split_asm)
 next
   case (CallObj E e h l e' h' l' Copt M es) thus ?case by (cases Copt) auto
 next
@@ -425,7 +425,7 @@ next
     and "class": "is_class P C" and T:"T = Class C"
     by auto
   from typeof obtain D S where h:"h a = Some(D,S)" and subo:"Subobjs P D Cs"
-    by (auto dest:typeof_Class_Subo split:split_if_asm)
+    by (auto dest:typeof_Class_Subo split:if_split_asm)
   from path_via subo wf Ds have "Subobjs P D Ds" and last:"last Ds = C"
     by(auto intro!:Subobjs_appendPath appendPath_last[THEN sym] Subobjs_nonempty
             simp:path_via_def)
@@ -439,7 +439,7 @@ next
     by auto
   from typeof obtain D S where h:"h a = Some(D,S)" 
     and subo:"Subobjs P D (Cs@[C]@Cs')"
-    by (auto dest:typeof_Class_Subo split:split_if_asm)
+    by (auto dest:typeof_Class_Subo split:if_split_asm)
   from subo have "Subobjs P D (Cs@[C])" by(fastforce intro:appendSubobj)
   with h have "P,E,h \<turnstile> ref (a,Cs@[C]) : Class C" by auto
   with T show ?case by (fastforce intro:wt_same_type_typeconf)
@@ -482,7 +482,7 @@ next
     and "class": "is_class P C" and T:"T = Class C"
     by auto
   from typeof hp have subo:"Subobjs P D Cs"
-    by (auto dest:typeof_Class_Subo split:split_if_asm)
+    by (auto dest:typeof_Class_Subo split:if_split_asm)
   from path_via subo have "Subobjs P D Cs'" 
     and last:"last Cs' = C" by (auto simp:path_via_def)
   with hp have "P,E,h \<turnstile> ref (a,Cs') : Class C" by auto
@@ -496,7 +496,7 @@ next
     and "class": "is_class P C" and T:"T = Class C"
     by auto
   from typeof obtain D S where h:"h a = Some(D,S)" and subo:"Subobjs P D Cs"
-    by (auto dest:typeof_Class_Subo split:split_if_asm)
+    by (auto dest:typeof_Class_Subo split:if_split_asm)
   from path_via subo wf Ds have "Subobjs P D Ds" and last:"last Ds = C"
     by(auto intro!:Subobjs_appendPath appendPath_last[THEN sym] Subobjs_nonempty
             simp:path_via_def)
@@ -510,7 +510,7 @@ next
     by auto
   from typeof obtain D S where h:"h a = Some(D,S)" 
     and subo:"Subobjs P D (Cs@[C]@Cs')"
-    by (auto dest:typeof_Class_Subo split:split_if_asm)
+    by (auto dest:typeof_Class_Subo split:if_split_asm)
   from subo have "Subobjs P D (Cs@[C])" by(fastforce intro:appendSubobj)
   with h have "P,E,h \<turnstile> ref (a,Cs@[C]) : Class C" by auto
   with T show ?case by (fastforce intro:wt_same_type_typeconf)
@@ -640,7 +640,7 @@ next
     then obtain C where "T = Class C" by auto
     with casts wt env wf show ?thesis
       by(auto elim!:casts_to.cases,
-         auto intro!:sym[OF appendPath_last] Subobjs_nonempty split:split_if_asm 
+         auto intro!:sym[OF appendPath_last] Subobjs_nonempty split:if_split_asm 
               simp:path_via_def,drule_tac Cs="Cs" in Subobjs_appendPath,auto)
   qed
 next
@@ -680,7 +680,7 @@ next
     and wte:"P,E,h \<turnstile> ref (a,Cs')\<bullet>F{Cs} : T" by fact+
   from wte have field:"P \<turnstile> last Cs' has least F:T via Cs"
     and notemptyCs:"Cs \<noteq> []"
-    by (auto split:split_if_asm)
+    by (auto split:if_split_asm)
   from h S sconf obtain Bs fs ms where classDs:"class P (last Ds) = Some (Bs,fs,ms)"
     and fconf:"P,h \<turnstile> fs' (:\<le>) map_of fs"
     by (simp add:sconf_def hconf_def oconf_def) blast
@@ -801,10 +801,10 @@ next
     and field:"P \<turnstile> last Cs' has least F:T via Cs"
     and wt:"P,E,h \<turnstile> ref (a,Cs')\<bullet>F{Cs} := Val v : T'" by fact+
   from wt wf have type:"is_type P T'" 
-    by (auto dest:least_field_is_type split:split_if_asm)
+    by (auto dest:least_field_is_type split:if_split_asm)
   from wt field obtain T'' where wtval:"P,E,h \<turnstile> Val v : T''" and eq:"T = T'" 
     and leq:"P \<turnstile> T'' \<le> T'"
-    by (auto dest:sees_field_fun split:split_if_asm)
+    by (auto dest:sees_field_fun split:if_split_asm)
   from casts eq wtval show ?case
   proof(induct rule:casts_to.induct)
     case (casts_prim T\<^sub>0 w)
@@ -812,7 +812,7 @@ next
     with leq have "T' = T''" by(cases T',auto)
     with wtval' have "P,E,h \<turnstile> Val w : T'" by simp
     with h have "P,E,(h(a\<mapsto>(D,insert(Ds,fs(F \<mapsto> w))(S-{(Ds,fs)})))) \<turnstile> Val w : T'"
-      by(cases w,auto split:split_if_asm)
+      by(cases w,auto split:if_split_asm)
     thus "P,E,(h(a\<mapsto>(D,insert(Ds,fs(F \<mapsto> w))(S-{(Ds,fs)})))) \<turnstile> (Val w) :\<^bsub>NT\<^esub> T'"
       by(rule wt_same_type_typeconf)
   next
@@ -830,7 +830,7 @@ next
       and "P,E,h \<turnstile> ref (a', Xs) : T''" by fact+
     with wf have "P,E,h \<turnstile> ref (a',Ds'') : T'"
       by (auto intro!:appendPath_last[THEN sym] Subobjs_nonempty
-        split:split_if_asm simp:path_via_def,
+        split:if_split_asm simp:path_via_def,
         drule_tac Cs="Xs" in Subobjs_appendPath,auto)
     with h have "P,E,(h(a\<mapsto>(D,insert(Ds,fs(F \<mapsto> Ref(a',Ds'')))(S-{(Ds,fs)})))) \<turnstile> 
       ref (a',Ds'') : T'"
@@ -1005,7 +1005,7 @@ next
   from wt hp "method" wf obtain Ts''
     where wtref:"P,E,h \<turnstile> ref (a,Cs) : Class (last Cs)" and eq:"T'' = T'"
     and wtes:"P,E,h \<turnstile> map Val vs [:] Ts''" and subs: "P \<turnstile> Ts'' [\<le>] Ts'"
-    by(auto dest:wf_sees_method_fun split:split_if_asm)
+    by(auto dest:wf_sees_method_fun split:if_split_asm)
   from select wf have "is_class P (last Cs')"
     by(induct rule:SelectMethodDef.induct,
        auto intro:Subobj_last_isClass simp:FinalOverriderMethodDef_def 
@@ -1017,11 +1017,11 @@ next
     by(auto simp:wf_mdecl_def)
   from wtes hp select
   have map:"map (P \<turnstile> typeof\<^bsub>h\<^esub>) (Ref(a,Cs')#vs) = map Some (Class(last Cs')#Ts'')"
-    by(auto elim:SelectMethodDef.cases split:split_if_asm 
+    by(auto elim:SelectMethodDef.cases split:if_split_asm 
             simp:FinalOverriderMethodDef_def OverriderMethodDefs_def 
                  MinimalMethodDefs_def LeastMethodDef_def MethodDefs_def)
   from wtref hp have "P \<turnstile> Path C to (last Cs) via Cs"
-    by (auto simp:path_via_def split:split_if_asm)
+    by (auto simp:path_via_def split:if_split_asm)
   with select "method" wf have "Ts' = Ts \<and> P \<turnstile> T \<le> T'"
     by -(rule select_least_methods_subtypes,simp_all)
   hence eqs:"Ts' = Ts" and sub:"P \<turnstile> T \<le> T'" by auto
@@ -1067,9 +1067,9 @@ next
     where wtref:"P,E,h \<turnstile> ref (a,Cs) : Class (last Cs)"
     and wtes:"P,E,h \<turnstile> map Val vs [:] Ts'" and subs:"P \<turnstile> Ts' [\<le>] Ts"
     and TeqT':"T = T'"
-    by(auto dest:wf_sees_method_fun split:split_if_asm)
+    by(auto dest:wf_sees_method_fun split:if_split_asm)
   from wtref obtain D S where hp:"h a = Some(D,S)" and subo:"Subobjs P D Cs"
-    by (auto split:split_if_asm)
+    by (auto split:if_split_asm)
   from length1 length2
   have length_vs: "length (Ref(a,Ds)#vs) = length (Class (last Ds)#Ts)" by simp
   from length2 have length_pns:"length (this#pns) = length (Class (last Ds)#Ts)"
@@ -1422,7 +1422,7 @@ where
 lemma types_conf_conf_types_conf:
   "\<lbrakk>types_conf P E h es Ts; conformable Ts Ts'\<rbrakk> \<Longrightarrow> types_conf P E h es Ts'"
 proof (induct Ts arbitrary: Ts' es)
-  case Nil thus ?case by (cases Ts') (auto split: split_if_asm)
+  case Nil thus ?case by (cases Ts') (auto split: if_split_asm)
 next
   case (Cons T'' Ts'')
   have type:"types_conf P E h es (T''#Ts'')"
@@ -1445,7 +1445,7 @@ qed
 lemma types_conf_Wtrt_conf:
   "types_conf P E h es Ts \<Longrightarrow> \<exists>Ts'. P,E,h \<turnstile> es [:] Ts' \<and> conformable Ts' Ts"
 proof (induct Ts arbitrary: es)
-  case Nil thus ?case by (cases es) (auto split:split_if_asm)
+  case Nil thus ?case by (cases es) (auto split:if_split_asm)
 next
   case (Cons T'' Ts'')
   have type:"types_conf P E h es (T''#Ts'')"

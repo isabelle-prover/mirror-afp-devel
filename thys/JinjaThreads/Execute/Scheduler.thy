@@ -905,7 +905,7 @@ proof -
         proof
           assume ?lhs
           with True xln invar tst `state_invar s` t show ?rhs
-            by(fastforce simp add: holds_eq thr'.ins_dj_correct s split_beta ws.lookup_correct split: split_if_asm elim!: bindE if_predE intro: \<alpha>.active_threads.intros)
+            by(fastforce simp add: holds_eq thr'.ins_dj_correct s split_beta ws.lookup_correct split: if_split_asm elim!: bindE if_predE intro: \<alpha>.active_threads.intros)
         next
           assume ?rhs
           with True xln invar tst `state_invar s` t show ?lhs
@@ -1032,12 +1032,12 @@ where
 lemma step_thread_NoneD:
   "step_thread update_state s t = None \<Longrightarrow> t \<notin> active_threads s"
 unfolding step_thread_def 
-by(fastforce simp add: split_beta elim!: active_threads.cases split: split_if_asm)
+by(fastforce simp add: split_beta elim!: active_threads.cases split: if_split_asm)
 
 lemma inactive_step_thread_eq_NoneI:
   "t \<notin> active_threads s \<Longrightarrow> step_thread update_state s t = None"
 unfolding step_thread_def
-by(fastforce simp add: split_beta split: split_if_asm intro: active_threads.intros)
+by(fastforce simp add: split_beta split: if_split_asm intro: active_threads.intros)
 
 lemma step_thread_eq_None_conv:
   "step_thread update_state s t = None \<longleftrightarrow> t \<notin> active_threads s"
@@ -1047,7 +1047,7 @@ lemma step_thread_eq_Some_activeD:
   "step_thread update_state s t = \<lfloor>(t', taxm\<sigma>')\<rfloor> 
   \<Longrightarrow> t' = t \<and> t \<in> active_threads s"
 unfolding step_thread_def 
-by(fastforce split: split_if_asm simp add: split_beta intro: active_threads.intros)
+by(fastforce split: if_split_asm simp add: split_beta intro: active_threads.intros)
 
 declare actions_ok_iff [simp del]
 declare actions_ok.cases [rule del]
@@ -1056,13 +1056,13 @@ lemma step_thread_Some_NoneD:
   "step_thread update_state s t' = \<lfloor>(t, None, \<sigma>')\<rfloor>
   \<Longrightarrow> \<exists>x ln n. thr s t = \<lfloor>(x, ln)\<rfloor> \<and> ln $ n > 0 \<and> \<not> waiting (wset s t) \<and> may_acquire_all (locks s) t ln \<and> \<sigma>' = update_state (K$ [], [], [], [], [], convert_RA ln)"
 unfolding step_thread_def
-by(auto split: split_if_asm simp add: split_beta elim!: neq_no_wait_locksE)
+by(auto split: if_split_asm simp add: split_beta elim!: neq_no_wait_locksE)
 
 lemma step_thread_Some_SomeD:
   "\<lbrakk> deterministic I; step_thread update_state s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>; s \<in> I \<rbrakk>
   \<Longrightarrow> \<exists>x. thr s t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle> \<and> actions_ok s t ta \<and> \<sigma>' = update_state ta"
 unfolding step_thread_def
-by(auto simp add: split_beta deterministic_THE split: split_if_asm)
+by(auto simp add: split_beta deterministic_THE split: if_split_asm)
 
 end
 
@@ -1112,7 +1112,7 @@ proof -
      apply(rule bindI[OF red])
      apply(simp add: singleI aok)
     apply(erule bindE)
-    apply(clarsimp split: split_if_asm)
+    apply(clarsimp split: if_split_asm)
      apply(drule (1) \<alpha>.deterministicD[OF `\<alpha>.deterministic I`, where s="state_\<alpha> s", simplified, OF red _ tst aok])
       apply(rule I)
      apply simp
@@ -1132,7 +1132,7 @@ proof -
     case None
     with invar show ?thesis
       by (auto simp add: thr.lookup_correct \<alpha>.step_thread_def step_thread_def ws.lookup_correct
-        split_beta holds_eq split: split_if_asm cong del: strong_SUP_cong) metis+
+        split_beta holds_eq split: if_split_asm cong del: strong_SUP_cong) metis+
   next
     case (Some a)
     then obtain t' taxm \<sigma>' 
@@ -1141,12 +1141,12 @@ proof -
     proof(cases "taxm")
       case None
       with rrs invar have ?thesis1
-        by(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def split_beta split: split_if_asm)
+        by(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def split_beta split: if_split_asm)
       moreover {
         let ?ta = "(K$ [], [], [], [], [], convert_RA (snd (the (thr_lookup t (thr s)))))"
         assume "?tso ?ta \<longrightarrow> ?inv ?ta"
         hence ?thesis2 using None rrs
-          by(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def split_beta split: split_if_asm) }
+          by(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def split_beta split: if_split_asm) }
       ultimately show ?thesis by blast
     next
       case (Some a)
@@ -1156,12 +1156,12 @@ proof -
       with invar have ?thesis1 
         by (auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def
           split_beta \<alpha>.deterministic_THE [OF det, where s="state_\<alpha> s", simplified]
-          deterministic_THE2[OF det] holds_eq split: split_if_asm
+          deterministic_THE2[OF det] holds_eq split: if_split_asm
           cong del: strong_SUP_cong) blast+
       moreover {
         assume "?tso ta \<longrightarrow> ?inv ta"
         hence ?thesis2 using rrs invar
-          by(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def split_beta \<alpha>.deterministic_THE[OF det, where s="state_\<alpha> s", simplified] deterministic_THE2[OF det] holds_eq split: split_if_asm)(auto simp add: \<alpha>.actions_ok_iff) 
+          by(auto simp add: thr.lookup_correct ws.lookup_correct \<alpha>.step_thread_def step_thread_def split_beta \<alpha>.deterministic_THE[OF det, where s="state_\<alpha> s", simplified] deterministic_THE2[OF det] holds_eq split: if_split_asm)(auto simp add: \<alpha>.actions_ok_iff) 
       }
       ultimately show ?thesis by blast
     qed
@@ -1235,7 +1235,7 @@ lemma singleton2_code [code]:
       the_only2 dfault xq
     else if Predicate.null xq then singleton2 dfault P else Code.abort (STR ''singleton2 not unique'') (\<lambda>_. singleton2 dfault (Predicate.Seq f)))"
 unfolding singleton2_def the_only2_def
-by(auto simp only: singleton_code Code.abort_def split: seq.split split_if)
+by(auto simp only: singleton_code Code.abort_def split: seq.split if_split)
 
 lemma the_only2_code [code]:
   "the_only2 dfault Predicate.Empty = Code.abort (STR ''the_only2 empty'') dfault"

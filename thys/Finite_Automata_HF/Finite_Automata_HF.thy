@@ -789,10 +789,10 @@ proof -
       by (rule list.exhaust) auto
   { fix u
     have "\<lbrakk>1 \<in> nfa.nextl ?N {0} u\<rbrakk> \<Longrightarrow> u = [a]"
-      by (cases u) (auto split: split_if_asm)
+      by (cases u) (auto split: if_split_asm)
   }
   then have "N.language = {[a]}"
-    by (auto simp: N.language_def split: split_if_asm)
+    by (auto simp: N.language_def split: if_split_asm)
   then show ?thesis
     by (metis N.imp_regular)
 qed
@@ -1029,7 +1029,7 @@ proof -
         by (auto simp: M  dfa.init eps_iff)
     next
       case (snoc x u) show ?case using snoc.prems q0 M
-        apply (auto split: split_if_asm simp: dfa.language_def eps_iff
+        apply (auto split: if_split_asm simp: dfa.language_def eps_iff
                     dest!: snoc.IH)
         apply (metis dfa.nextl_snoc)
         apply (rename_tac u1 u2)

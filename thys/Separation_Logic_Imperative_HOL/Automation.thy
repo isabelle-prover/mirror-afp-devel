@@ -513,7 +513,7 @@ struct
       addsimprocs [assn_simproc] 
       addsimps @{thms norm_assertion_simps}
       addsimps (Named_Theorems.get ctxt @{named_theorems sep_dflt_simps})
-      |> fold Splitter.del_split @{thms split_if}
+      |> fold Splitter.del_split @{thms if_split}
     );
 
   (***********************************)

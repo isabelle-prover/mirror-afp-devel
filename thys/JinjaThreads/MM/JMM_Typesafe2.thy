@@ -32,7 +32,7 @@ lemma jmm_conf_conv_jmm_conf' [simp, heap_independent]:
 by (metis jmm_typeof_addr'_conv_jmm_typeof_addr heap_base'.conf_conv_conf)
 
 lemma jmm_heap'': "heap'' addr2thread_id thread_id2addr jmm_allocate (jmm_typeof_addr' P) jmm_heap_write P"
-by(unfold_locales)(auto simp add: jmm_typeof_addr'_def jmm_allocate_def split: split_if_asm)
+by(unfold_locales)(auto simp add: jmm_typeof_addr'_def jmm_allocate_def split: if_split_asm)
 
 interpretation jmm: heap''
   addr2thread_id thread_id2addr
@@ -177,7 +177,7 @@ lemma red_external_aggr_heap_read_typed:
   "(ta, va, h') \<in> heap_base.red_external_aggr addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate (\<lambda>_ :: 'heap. typeof_addr) (heap_base.heap_read_typed (\<lambda>_ :: 'heap. typeof_addr) heap_read P) heap_write P t h a M vs \<longleftrightarrow>
    (ta, va, h') \<in> heap_base.red_external_aggr addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate (\<lambda>_ :: 'heap. typeof_addr) heap_read heap_write P t h a M vs \<and>
   (\<forall>ad al v T obs' a'. ReadMem ad al v \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<longrightarrow> heap_base'.addr_loc_type TYPE('heap) typeof_addr P ad al T \<longrightarrow> heap_base'.conf TYPE('heap) typeof_addr P v T)"
-by(auto simp add: heap_base.red_external_aggr_def heap_clone_heap_read_typed split del: split_if split: split_if_asm)
+by(auto simp add: heap_base.red_external_aggr_def heap_clone_heap_read_typed split del: if_split split: if_split_asm)
 
 
 
@@ -245,7 +245,7 @@ lemma red_external_aggr_heap_read_typedI:
     final_thread.actions_ok final s t ta
   \<rbrakk>
   \<Longrightarrow> \<exists>ta vah'. (ta, vah') \<in> heap_base.red_external_aggr addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate typeof_addr (heap_base.heap_read_typed typeof_addr jmm_heap_read P) jmm_heap_write P t h a M vs \<and> final_thread.actions_ok final s t ta"
-apply(simp add: heap_base.red_external_aggr_def split_beta split del: split_if split: split_if_asm del: split_paired_Ex)
+apply(simp add: heap_base.red_external_aggr_def split_beta split del: if_split split: if_split_asm del: split_paired_Ex)
 apply(auto simp del: split_paired_Ex)
  apply(drule jmm'_heap_cloneI)
  apply(clarify)

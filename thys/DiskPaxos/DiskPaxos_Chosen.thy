@@ -212,7 +212,7 @@ proof(auto)
   with act
   have p31: "phase s q = 1"
     and p32: "dblock s' q = dblock s q"
-    by(auto simp add: EndPhase1_def split: split_if_asm)
+    by(auto simp add: EndPhase1_def split: if_split_asm)
   with dblk_mbal
   have "b\<le>mbal(dblock s q)" by auto
   moreover
@@ -220,7 +220,7 @@ proof(auto)
   with act
   have "hasRead s q d p"
     by(auto simp add: EndPhase1_def InitializePhase_def 
-      hasRead_def split: split_if_asm)
+      hasRead_def split: if_split_asm)
   ultimately
   have "\<exists>br\<in>blocksRead s q d. b\<le> bal(block br)"
     using p31 asm4 d
@@ -306,14 +306,14 @@ proof(auto)
   have p31: "phase s q = 1"
    and p32: "dblock s' q = dblock s q"
     by(auto simp add: StartBallot_def InitializePhase_def
-                 hasRead_def split : split_if_asm)
+                 hasRead_def split : if_split_asm)
   with dblk_mbal
   have "b\<le>mbal(dblock s q)" by auto
   moreover 
   from act hasRead
   have "hasRead s q d p"
     by(auto simp add: StartBallot_def InitializePhase_def 
-      hasRead_def split: split_if_asm)
+      hasRead_def split: if_split_asm)
   ultimately
   have "\<exists>br\<in>blocksRead s q d. b\<le> bal(block br)"
     using p31 asm4 d
@@ -413,14 +413,14 @@ next
   have p31: "phase s q = 1"
    and p32: "dblock s' q = dblock s q"
     by(auto simp add: Phase1or2Write_def InitializePhase_def
-                      hasRead_def split : split_if_asm)
+                      hasRead_def split : if_split_asm)
   with dblk_mbal
   have "b\<le>mbal(dblock s q)" by auto
   moreover 
   from act hasRead
   have "hasRead s q d p"
     by(auto simp add: Phase1or2Write_def InitializePhase_def 
-      hasRead_def split: split_if_asm)
+      hasRead_def split: if_split_asm)
   ultimately
   have "\<exists>br\<in>blocksRead s q d. b\<le> bal(block br)"
     using p31 asm4 d
@@ -510,7 +510,7 @@ proof(auto)
     from act hasRead False
     have "hasRead s qq dd p"
       by(auto simp add: Phase1or2ReadThen_def 
-  hasRead_def split: split_if_asm)
+  hasRead_def split: if_split_asm)
     ultimately
     have "\<exists>br\<in>blocksRead s qq dd. b\<le> bal(block br)"
       using p31 asm4 d
@@ -587,14 +587,14 @@ proof(auto)
   have p31: "phase s q = 1"
    and p32: "dblock s' q = dblock s q"
     by(auto simp add: EndPhase2_def InitializePhase_def
-                      hasRead_def split : split_if_asm)
+                      hasRead_def split : if_split_asm)
   with dblk_mbal
   have "b\<le>mbal(dblock s q)" by auto
   moreover 
   from act hasRead
   have "hasRead s q d p"
     by(auto simp add: EndPhase2_def InitializePhase_def 
-      hasRead_def split: split_if_asm)
+      hasRead_def split: if_split_asm)
   ultimately
   have "\<exists>br\<in>blocksRead s q d. b\<le> bal(block br)"
     using p31 asm4 d
@@ -684,14 +684,14 @@ proof(auto)
   have p31: "phase s q = 1"
    and p32: "dblock s' q = dblock s q"
     by(auto simp add: Fail_def InitializePhase_def
-                  hasRead_def split : split_if_asm)
+                  hasRead_def split : if_split_asm)
   with dblk_mbal
   have "b\<le>mbal(dblock s q)" by auto
   moreover 
   from act hasRead
   have "hasRead s q d p"
     by(auto simp add: Fail_def InitializePhase_def 
-      hasRead_def split: split_if_asm)
+      hasRead_def split: if_split_asm)
   ultimately
   have "\<exists>br\<in>blocksRead s q d. b\<le> bal(block br)"
     using p31 asm4 d
@@ -773,7 +773,7 @@ next
     from act hasRead qqnq
     have "hasRead s q d p"
       by(auto simp add: Phase0Read_def hasRead_def
-                 split: split_if_asm)
+                 split: if_split_asm)
     ultimately
     have "\<exists>br\<in>blocksRead s q d. b\<le> bal(block br)"
       using p31 asm4 d
@@ -867,14 +867,14 @@ proof(auto)
   have p31: "phase s q = 1"
    and p32: "dblock s' q = dblock s q"
     by(auto simp add: EndPhase0_def InitializePhase_def
-                       hasRead_def split : split_if_asm)
+                       hasRead_def split : if_split_asm)
   with dblk_mbal
   have "b\<le>mbal(dblock s q)" by auto
   moreover 
   from act hasRead
   have "hasRead s q d p"
     by(auto simp add: EndPhase0_def InitializePhase_def 
-      hasRead_def split: split_if_asm)
+      hasRead_def split: if_split_asm)
   ultimately
   have "\<exists>br\<in>blocksRead s q d. b\<le> bal(block br)"
     using p31 asm4 d

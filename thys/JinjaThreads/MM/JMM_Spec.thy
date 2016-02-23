@@ -496,7 +496,7 @@ lemma action_orderE:
           "is_new_action (action_obs E a)" "is_new_action (action_obs E a') \<longrightarrow> a \<le> a'"
         | "a \<in> actions E" "a' \<in> actions E" 
           "\<not> is_new_action (action_obs E a)" "\<not> is_new_action (action_obs E a')" "a \<le> a'"
-using assms unfolding action_order_def by(simp split: split_if_asm)
+using assms unfolding action_order_def by(simp split: if_split_asm)
 
 lemma refl_action_order:
   "refl_onP (actions E) (action_order E)"
@@ -1609,7 +1609,7 @@ proof(intro conjI strip)
   { fix a a'
     assume "a \<in> external_actions (?E n)" 
       and "a' \<in> ?C n" "P,?E n \<turnstile> a \<le>hb a'"
-    moreover hence "n > 0" by(simp split: split_if_asm)
+    moreover hence "n > 0" by(simp split: if_split_asm)
     ultimately show "a \<in> ?C n" using assms
       by(simp add: external_actions_committed_def) blast }
     
@@ -1677,7 +1677,7 @@ lemma actions_change_prefix:
   and rn: "enat a < n"
   shows "a \<in> actions E'"
 using llist_all2_llengthD[OF prefix[unfolded sim_actions_def]] read rn
-by(simp add: actions_def min_def split: split_if_asm)
+by(simp add: actions_def min_def split: if_split_asm)
 
 lemma action_obs_change_prefix:
   assumes prefix: "ltake n E [\<approx>] ltake n E'"
@@ -1744,7 +1744,7 @@ lemma action_order_change_prefix:
   and a'n: "enat a' < n"
   shows "E' \<turnstile> a \<le>a a'"
 using ao actions_change_prefix[OF _ prefix an] actions_change_prefix[OF _ prefix a'n] action_obs_change_prefix[OF prefix an] action_obs_change_prefix[OF prefix a'n]
-by(auto simp add: action_order_def split: split_if_asm dest: sim_action_is_new_action_eq)
+by(auto simp add: action_order_def split: if_split_asm dest: sim_action_is_new_action_eq)
 
 
 lemma value_written_change_prefix:

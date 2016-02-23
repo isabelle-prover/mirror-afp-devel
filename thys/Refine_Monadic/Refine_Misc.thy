@@ -693,7 +693,7 @@ subsubsection {* Key-Value Set *}
     "m k = Some v \<Longrightarrow> (k,v)\<in>map_to_set m"
     "single_valued (map_to_set m)"
     apply (simp_all)
-    by (auto simp: map_to_set_def restrict_map_def split: split_if_asm
+    by (auto simp: map_to_set_def restrict_map_def split: if_split_asm
       intro: single_valuedI)
       
   lemma map_to_set_inj:     

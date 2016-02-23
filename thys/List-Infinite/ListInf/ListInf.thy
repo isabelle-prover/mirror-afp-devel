@@ -573,7 +573,7 @@ lemma i_append_eq_i_append_conv_if: "
   (if length xs \<le> length ys
    then xs = ys \<down> length xs \<and> f = (ys \<up> length xs) \<frown> g
    else xs \<down> length ys = ys \<and> (xs \<up> length ys) \<frown> f = g)"
-apply (split split_if, intro conjI impI)
+apply (split if_split, intro conjI impI)
  apply (simp add: i_append_eq_i_append_conv_if_aux)
 apply (force simp: eq_commute[of "xs \<frown> f"] i_append_eq_i_append_conv_if_aux)
 done

@@ -238,9 +238,9 @@ lemma filter_nth: "\<And>n.
 apply (induct xs rule: rev_induct, simp)
 apply (rename_tac x xs n)
 apply (simp only: filter_snoc)
-apply (simp split del: split_if)
+apply (simp split del: if_split)
 apply (case_tac "xs = []")
- apply (simp split del: split_if)
+ apply (simp split del: if_split)
  apply (rule_tac
    t = "\<lambda>k i. i = 0 \<and> i \<le> k \<and> P ([x] ! i)" and
    s = "\<lambda>k i. i = 0 \<and> P x"
@@ -253,8 +253,8 @@ apply (rule_tac
   s = "\<lambda>k. (card {i. i \<le> k \<and> i < length xs \<and> P (xs ! i)} +
            (if k \<ge> length xs \<and> P x then Suc 0 else 0))"
   in subst)
- apply (clarsimp simp: fun_eq_iff split del: split_if, rename_tac k)
- apply (simp split del: split_if add: less_Suc_eq conj_disj_distribL conj_disj_distribR Collect_disj_eq)
+ apply (clarsimp simp: fun_eq_iff split del: if_split, rename_tac k)
+ apply (simp split del: if_split add: less_Suc_eq conj_disj_distribL conj_disj_distribR Collect_disj_eq)
  apply (subst card_Un_disjoint)
     apply (rule_tac n="length xs" in bounded_nat_set_is_finite, blast)
    apply (rule_tac n="Suc (length xs)" in bounded_nat_set_is_finite, blast)
@@ -282,7 +282,7 @@ apply (rule_tac
    apply fastforce
   apply simp
  apply simp
-apply (simp split del: split_if add: less_Suc_eq conj_disj_distribL conj_disj_distribR)
+apply (simp split del: if_split add: less_Suc_eq conj_disj_distribL conj_disj_distribR)
 apply (rule_tac
   t = "\<lambda>k. k < length xs \<and>
            n < card {i. i \<le> k \<and> i < length xs \<and> P (xs ! i)} + (if length xs \<le> k \<and> P x then Suc 0 else 0)" and
@@ -302,7 +302,7 @@ apply (case_tac "n < length (filter P xs)")
    s = "(filter P xs) ! n"
    in subst)
   apply (simp add: nth_append1)
- apply (simp split del: split_if)
+ apply (simp split del: if_split)
  apply (subgoal_tac "\<exists>k<length xs. n < card {i. i \<le> k \<and> i < length xs \<and> P (xs ! i)}")
   prefer 2
   apply (rule_tac x="length xs - Suc 0" in exI)
@@ -803,14 +803,14 @@ apply (rename_tac y ys xs)
 apply (case_tac "ys = []")
  apply (simp add: sublist_singleton2)
 apply (unfold list_strict_asc_def)
-apply (simp add: sublist_list_if_snoc split del: split_if)
+apply (simp add: sublist_list_if_snoc split del: if_split)
 apply (frule list_ord_append[THEN iffD1])
-apply (clarsimp split del: split_if)
+apply (clarsimp split del: if_split)
 apply (subst sublist_disjoint_insert_right)
   apply simp
  apply (clarsimp simp: in_set_conv_nth, rename_tac i)
  apply (drule_tac i=i and j="length ys" in list_strict_asc_trans[unfolded list_strict_asc_def, THEN iffD1, rule_format])
- apply (simp add: nth_append split del: split_if)+
+ apply (simp add: nth_append split del: if_split)+
 apply (simp add: sublist_singleton2)
 done
 
@@ -885,7 +885,7 @@ by blast
 lemma f_image_insert_if: "
   xs `\<^sup>f (insert n A) = (
   if n < length xs then insert (xs ! n) (xs `\<^sup>f A) else (xs `\<^sup>f A))"
-by (split split_if, blast)
+by (split if_split, blast)
 
 lemma f_image_insert_eq1: "
   n < length xs \<Longrightarrow> xs `\<^sup>f (insert n A) = insert (xs ! n) (xs `\<^sup>f A)"
