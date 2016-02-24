@@ -549,7 +549,7 @@ by(induct xs arbitrary: A) auto
 lemma snd_o_Pair_conv_id: "snd o Pair a = id"
 by(simp add: o_def id_def)
 
-lemma if_split:
+lemma if_intro:
   "\<lbrakk> P \<Longrightarrow> A; \<not> P \<Longrightarrow> B \<rbrakk> \<Longrightarrow> if P then A else B"
 by(auto)
 
