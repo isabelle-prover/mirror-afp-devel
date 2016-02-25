@@ -38,7 +38,7 @@ definition leaves :: "'a tree \<Rightarrow> nat"
 where "leaves = fold_tree (\<lambda>_. 1) (op +)"
 
 lemma leaves_simps [simp]:
-  "leaves (Leaf x) = 1"
+  "leaves (Leaf x) = Suc 0"
   "leaves (Node l r) = leaves l + leaves r"
 by(simp_all add: leaves_def)
 
@@ -367,23 +367,22 @@ lemma correctness_applicative:
   assumes distinct: "\<And>n. pure (assert distinct) \<diamondop> symbols n = symbols n"
   shows "pure_state dlabels \<diamondop> label_tree t = symbols (leaves t)"
 proof(induction t)
-  case Leaf
-  show ?case unfolding label_tree_simps leaves_simps One_nat_def repeatM.simps
-    by applicative_nf simp
+  show "pure dlabels \<diamondop> label_tree (Leaf x) = symbols (leaves (Leaf x))" for x :: 'a
+    unfolding label_tree_simps leaves_simps repeatM.simps by applicative_nf simp
 next
-  case (Node l r)
+  fix l r :: "'a tree"
+  assume IH: "pure dlabels \<diamondop> label_tree l = symbols (leaves l)" "pure dlabels \<diamondop> label_tree r = symbols (leaves r)"
   let ?cat = "case_prod append" and ?disj = "case_prod disjoint"
+  let ?f = "\<lambda>l r. pure ?cat \<diamondop> (assert ?disj (pure Pair \<diamondop> l \<diamondop> r))"
   have "pure_state dlabels \<diamondop> label_tree (Node l r) =
-     pure (\<lambda>l r. pure ?cat \<diamondop> (assert ?disj (pure Pair \<diamondop> l \<diamondop> r))) \<diamondop>
-       (pure dlabels \<diamondop> label_tree l) \<diamondop> (pure dlabels \<diamondop> label_tree r)"
+        pure ?f \<diamondop> (pure dlabels \<diamondop> label_tree l) \<diamondop> (pure dlabels \<diamondop> label_tree r)"
     unfolding label_tree_simps by applicative_nf simp
-  also have "\<dots> = pure (\<lambda>l r. pure ?cat \<diamondop> (assert ?disj (pure Pair \<diamondop> l \<diamondop> r))) \<diamondop>
-    (pure (assert distinct) \<diamondop> symbols (leaves l)) \<diamondop> (pure (assert distinct) \<diamondop> symbols (leaves r))"
-    unfolding Node.IH distinct ..
+  also have "\<dots> = pure ?f \<diamondop> (pure (assert distinct) \<diamondop> symbols (leaves l)) \<diamondop> (pure (assert distinct) \<diamondop> symbols (leaves r))"
+    unfolding IH distinct ..
   also have "\<dots> = pure (assert distinct) \<diamondop> symbols (leaves (Node l r))"
     unfolding leaves_simps repeatM_plus by applicative_nf simp
   also have "\<dots> = symbols (leaves (Node l r))" by(rule distinct)
-  finally show ?case .
+  finally show "pure dlabels \<diamondop> label_tree (Node l r) = symbols (leaves (Node l r))" .
 qed
 
 end
