@@ -7,6 +7,7 @@ theory Applicative_Functor imports
   Applicative_Sum
   Applicative_Set
   Applicative_List
+  Applicative_Monoid
   Applicative_State
   Applicative_Stream
   Applicative_PMF
