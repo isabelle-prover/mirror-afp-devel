@@ -369,9 +369,10 @@ definition "factorize_rat_poly_main_wf_rel = inv_image (mult1 {(x, y). x < y}) (
 lemma wf_factorize_rat_poly_main_wf_rel: "wf factorize_rat_poly_main_wf_rel"
   unfolding factorize_rat_poly_main_wf_rel_def using wf_mult1[OF wf_less] by auto
 
-lemma factorize_rat_poly_main_wf_rel_sub: "((a,b,ps), (c,d,p # ps)) \<in> factorize_rat_poly_main_wf_rel"
-  unfolding factorize_rat_poly_main_wf_rel_def 
-  by (auto simp: mult1_def) (metis add.right_neutral count_empty not_less0)
+lemma factorize_rat_poly_main_wf_rel_sub:
+  "((a, b, ps), (c, d, p # ps)) \<in> factorize_rat_poly_main_wf_rel"
+  unfolding factorize_rat_poly_main_wf_rel_def
+  by (auto intro: mult1I [of _ _ _ _ "{#}"])
 
 lemma factorize_rat_poly_main_wf_rel_two: assumes "degree q < degree p" "degree r < degree p"
   shows "((a,b,q # r # ps), (c,d,p # ps)) \<in> factorize_rat_poly_main_wf_rel"

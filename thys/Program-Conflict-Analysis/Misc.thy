@@ -104,9 +104,9 @@ subsubsection {* Count *}
 
 subsubsection {* Union, difference and intersection *}
 
-  lemma size_diff_se: "\<lbrakk>t :# S\<rbrakk> \<Longrightarrow> size S = size (S - {#t#}) + 1" proof (unfold size_multiset_overloaded_eq)
+  lemma size_diff_se: "\<lbrakk>t \<in># S\<rbrakk> \<Longrightarrow> size S = size (S - {#t#}) + 1" proof (unfold size_multiset_overloaded_eq)
     let ?SIZE = "setsum (count S) (set_mset S)"
-    assume A: "t :# S"
+    assume A: "t \<in># S"
     from A have SPLITPRE: "finite (set_mset S) & {t}\<subseteq>(set_mset S)" by auto
     hence "?SIZE = setsum (count S) (set_mset S - {t}) + setsum (count S) {t}" by (blast dest: setsum_subset_split)
     hence "?SIZE = setsum (count S) (set_mset S - {t}) + count (S) t" by auto
@@ -118,13 +118,16 @@ subsubsection {* Union, difference and intersection *}
     qed
     ultimately have D: "?SIZE = setsum (count (S-{#t#})) (set_mset S - {t}) + count (S-{#t#}) t + 1" by (simp)
     moreover
-    { assume CASE: "count (S-{#t#}) t = 0"
-      from CASE have "set_mset S - {t} = set_mset (S-{#t#})" by (auto iff add: set_mset_def)
-      with CASE D have "?SIZE = setsum (count (S-{#t#})) (set_mset (S - {#t#})) + 1" by simp
+    { assume CASE: "t \<notin># S - {#t#}"
+      from CASE have "set_mset S - {t} = set_mset (S - {#t#})"
+        by (simp add: at_most_one_mset_mset_diff)
+      with CASE D have "?SIZE = setsum (count (S-{#t#})) (set_mset (S - {#t#})) + 1"
+        by (simp add: not_in_iff)
     }
     moreover
-    { assume CASE: "count (S-{#t#}) t ~= 0"
-      from CASE have 1: "set_mset S = set_mset (S-{#t#})" by (auto iff add: set_mset_def)
+    { assume CASE: "t \<in># S - {#t#}"
+      from CASE have 1: "set_mset S = set_mset (S-{#t#})"
+        by (rule more_than_one_mset_mset_diff [symmetric])
       moreover from D have "?SIZE = setsum (count (S-{#t#})) (set_mset S - {t}) + setsum (count (S-{#t#})) {t} + 1" by simp
       moreover from SPLITPRE setsum_subset_split have "setsum (count (S-{#t#})) (set_mset S) = setsum (count (S-{#t#})) (set_mset S - {t}) + setsum (count (S-{#t#})) {t}" by (blast)
       ultimately have "?SIZE = setsum (count (S-{#t#})) (set_mset (S-{#t#})) + 1" by simp
@@ -133,8 +136,8 @@ subsubsection {* Union, difference and intersection *}
   qed
 
   (* TODO: Check whether this proof can be done simpler *)
-  lemma mset_union_diff_comm: "t :# S \<Longrightarrow> T + (S - {#t#}) = (T + S) - {#t#}" proof -
-    assume "t :# S"
+  lemma mset_union_diff_comm: "t \<in># S \<Longrightarrow> T + (S - {#t#}) = (T + S) - {#t#}" proof -
+    assume "t \<in># S"
     hence "count S t = count (S-{#t#}) t + 1" by auto
     hence "count (S+T) t = count (S-{#t#}+T) t + 1" by auto
     hence "count (S+T-{#t#}) t = count (S-{#t#}+T) t" by (simp)
@@ -142,35 +145,35 @@ subsubsection {* Union, difference and intersection *}
     ultimately show ?thesis by (auto simp add: union_ac iff add: multiset_eq_iff)
   qed
 
-  lemma mset_right_cancel_union: "\<lbrakk>a :# A+B; ~(a :# B)\<rbrakk> \<Longrightarrow> a:#A"
+  lemma mset_right_cancel_union: "\<lbrakk>a \<in># A+B; ~(a \<in># B)\<rbrakk> \<Longrightarrow> a\<in>#A"
     by (simp)
-  lemma mset_left_cancel_union: "\<lbrakk>a :# A+B; ~(a :# A)\<rbrakk> \<Longrightarrow> a:#B"
+  lemma mset_left_cancel_union: "\<lbrakk>a \<in># A+B; ~(a \<in># A)\<rbrakk> \<Longrightarrow> a\<in>#B"
     by (simp)
   
   lemmas mset_cancel_union = mset_right_cancel_union mset_left_cancel_union
 
-  lemma mset_right_cancel_elem: "\<lbrakk>a :# A+{#b#}; a~=b\<rbrakk> \<Longrightarrow> a:#A"
-    apply(subgoal_tac "~(a :# {#b#})")
+  lemma mset_right_cancel_elem: "\<lbrakk>a \<in># A+{#b#}; a~=b\<rbrakk> \<Longrightarrow> a\<in>#A"
+    apply(subgoal_tac "~(a \<in># {#b#})")
     apply(auto)
   done
 
-  lemma mset_left_cancel_elem: "\<lbrakk>a :# {#b#}+A; a~=b\<rbrakk> \<Longrightarrow> a:#A"
-    apply(subgoal_tac "~(a :# {#b#})")
+  lemma mset_left_cancel_elem: "\<lbrakk>a \<in># {#b#}+A; a~=b\<rbrakk> \<Longrightarrow> a\<in>#A"
+    apply(subgoal_tac "~(a \<in># {#b#})")
     apply(auto)
   done
 
   lemmas mset_cancel_elem = mset_right_cancel_elem mset_left_cancel_elem
 
-  lemma mset_diff_cancel1elem[simp]: "~(a :# B) \<Longrightarrow> {#a#}-B = {#a#}" proof -
-    assume A: "~(a :# B)"
-    hence "count ({#a#}-B) a = count ({#a#}) a" by auto
+  lemma mset_diff_cancel1elem[simp]: "~(a \<in># B) \<Longrightarrow> {#a#}-B = {#a#}" proof -
+    assume A: "~(a \<in># B)"
+    hence "count ({#a#}-B) a = count ({#a#}) a" by (auto simp add: not_in_iff)
     moreover have "ALL e . e~=a \<longrightarrow> count ({#a#}-B) e = count ({#a#}) e" by auto
     ultimately show ?thesis by (auto simp add: multiset_eq_iff)
   qed
 
-  (*lemma union_diff_assoc_se: "t :# B \<Longrightarrow> (A+B)-{#t#} = A + (B-{#t#})"
+  (*lemma union_diff_assoc_se: "t \<in># B \<Longrightarrow> (A+B)-{#t#} = A + (B-{#t#})"
     by (auto iff add: multiset_eq_iff)
-  lemma union_diff_assoc_se2: "t :# A \<Longrightarrow> (A+B)-{#t#} = (A-{#t#}) + B"
+  lemma union_diff_assoc_se2: "t \<in># A \<Longrightarrow> (A+B)-{#t#} = (A-{#t#}) + B"
     by (auto iff add: multiset_eq_iff)
   lemmas union_diff_assoc_se = union_diff_assoc_se1 union_diff_assoc_se2*)
 
@@ -197,13 +200,13 @@ subsubsection {* Union, difference and intersection *}
   lemma mset_union_1_elem4[simp]: "({#b#}+M={#a#}) = (b=a & M={#})" using mset_union_1_elem3
     by (simp add: union_ac)
 
-  lemma mset_inter_1elem1[simp]: assumes A: "~(a :# B)" shows "{#a#} #\<inter> B = {#}" proof (unfold multiset_inter_def)
+  lemma mset_inter_1elem1[simp]: assumes A: "~(a \<in># B)" shows "{#a#} #\<inter> B = {#}" proof (unfold multiset_inter_def)
     from A have "{#a#} - B = {#a#}" by simp
     thus "{#a#} - ({#a#} - B) = {#}" by simp
   qed
 
-  lemma mset_inter_1elem2[simp]: "~(a :# B) \<Longrightarrow> B #\<inter> {#a#} = {#}" proof -
-    assume "~(a :# B)"
+  lemma mset_inter_1elem2[simp]: "~(a \<in># B) \<Longrightarrow> B #\<inter> {#a#} = {#}" proof -
+    assume "~(a \<in># B)"
     hence "{#a#} #\<inter> B = {#}" by simp
     thus ?thesis by (simp add: multiset_inter_commute)
   qed
@@ -234,8 +237,8 @@ subsubsection {* Union, difference and intersection *}
       assume NEQ: "c~=b & a~=c"
       from A have "{#a#}+{#b#}-{#c#} = M + {#c#}-{#c#}" by auto
       hence "{#a#}+{#b#}-{#c#} = M" by (auto simp add: union_assoc)
-      with NEQ have "{#a#}-{#c#}+{#b#} = M" by (subgoal_tac "~ (c :# {#b#})", auto simp add: multiset_union_diff_commute)
-      with NEQ have "{#a#}+{#b#} = M" by (subgoal_tac "~(a :# {#c#})", auto)
+      with NEQ have "{#a#}-{#c#}+{#b#} = M" by (subgoal_tac "~ (c \<in># {#b#})", auto simp add: multiset_union_diff_commute)
+      with NEQ have "{#a#}+{#b#} = M" by (subgoal_tac "~(a \<in># {#c#})", auto)
       hence S1: "size M = 2" by auto
       moreover from A have "size ({#a#}+{#b#}) = size (M + {#c#})" by auto
       hence "size M = 1" by auto
@@ -246,9 +249,11 @@ subsubsection {* Union, difference and intersection *}
 
 declare insert_DiffM[simp]
 
-  lemma mset_un_iff: "(a :# A + B) = (a :# A | a :# B)"
+  lemma mset_un_iff:
+    "(a \<in># A + B) = (a \<in># A | a \<in># B)"
     by (simp)
-  lemma mset_un_cases[cases set, case_names left right]: "\<lbrakk>a :# A + B; a:#A \<Longrightarrow> P; a:#B \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+  lemma mset_un_cases[cases set, case_names left right]:
+    "\<lbrakk>a \<in># A + B; a\<in>#A \<Longrightarrow> P; a\<in>#B \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
     by (auto)
 
   lemma mset_unplusm_dist_cases[cases set, case_names left right]:
@@ -257,7 +262,7 @@ declare insert_DiffM[simp]
     assumes R: "\<lbrakk>C={#s#}+(C-{#s#}); A=B+(C-{#s#})\<rbrakk> \<Longrightarrow> P" 
     shows P
   proof -
-    from A[symmetric] have "s :# B+C" by simp
+    from A[symmetric] have "s \<in># B+C" by simp
     thus ?thesis proof (cases rule: mset_un_cases)
       case left hence 1: "B={#s#}+(B-{#s#})" by simp
       with A have "{#s#}+A = {#s#}+((B-{#s#})+C)" by (simp add: union_ac)
@@ -288,9 +293,10 @@ declare insert_DiffM[simp]
       with CASE CASES have ?thesis by auto
     } moreover {
       assume CASE: "s\<noteq>r'"
-      have "s:#{#s#}+c" by simp
-      with A have "s:#{#r'#}+c'" by simp
-      with CASE have "s:#c'" by (auto elim!: mset_un_cases split: if_split_asm)
+      have "s\<in>#{#s#}+c" by simp
+      with A have "s \<in># {#r'#} + c'" by simp
+      with CASE have "s \<in># c'" 
+        by simp
       from insert_DiffM[OF this, symmetric] have 1: "c' = {#s#} + (c' - {#s#})" .
       with A have "{#s#}+c = {#s#}+({#r'#}+(c' - {#s#}))" by (auto simp add: union_ac)
       hence 2: "c={#r'#}+(c' - {#s#})" by (auto)
@@ -324,10 +330,14 @@ declare insert_DiffM[simp]
     shows "P"
     using A  CASES by (auto elim!: mset_single_cases2)
 
-  lemma mset_un_single_un_cases[consumes 1, case_names left right]: assumes A: "A+{#a#} = B+C" and CASES: "\<lbrakk>a:#B; A=(B-{#a#})+C\<rbrakk> \<Longrightarrow> P" "\<lbrakk>a:#C; A=B+(C-{#a#})\<rbrakk> \<Longrightarrow> P" shows "P"
+  lemma mset_un_single_un_cases [consumes 1, case_names left right]:
+    assumes A: "A + {#a#} = B + C"
+      and CASES: "a \<in># B \<Longrightarrow> A = (B - {#a#}) + C \<Longrightarrow> P"
+        "a \<in># C \<Longrightarrow> A = B + (C - {#a#}) \<Longrightarrow> P"
+    shows P
   proof -
-    have "a:#A+{#a#}" by simp
-    with A have "a:#B+C" by auto
+    have "a \<in># A+{#a#}" by simp
+    with A have "a \<in># B+C" by auto
     thus ?thesis proof (cases rule: mset_un_cases)
       case left hence "B=B-{#a#}+{#a#}" by auto
       with A have "A+{#a#} = (B-{#a#})+C+{#a#}" by (auto simp add: union_ac)
@@ -383,10 +393,10 @@ declare insert_DiffM[simp]
 
 
 subsubsection {* Singleton multisets *}   
-  lemma mset_singletonI[intro!]: "a :# {#a#}"
+  lemma mset_singletonI[intro!]: "a \<in># {#a#}"
     by auto
 
-  lemma mset_singletonD[dest!]: "b :# {#a#} \<Longrightarrow> b=a" 
+  lemma mset_singletonD[dest!]: "b \<in># {#a#} \<Longrightarrow> b=a" 
     apply(cases "a=b")
     apply(auto)
   done
@@ -394,15 +404,17 @@ subsubsection {* Singleton multisets *}
 lemma mset_size_le1_cases[case_names empty singleton,consumes 1]: "\<lbrakk> size M \<le> Suc 0; M={#} \<Longrightarrow> P; !!m. M={#m#} \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
   by (cases M) auto
 
-lemma diff_union_single_conv2: "a :# J \<Longrightarrow> J + I - {#a#} = (J - {#a#}) + I" using diff_union_single_conv[of J a I]
+lemma diff_union_single_conv2:
+  "a \<in># J \<Longrightarrow> J + I - {#a#} = (J - {#a#}) + I"
+  using diff_union_single_conv [of a J I]
   by (simp add: union_ac)
 
 lemmas diff_union_single_convs = diff_union_single_conv diff_union_single_conv2
 
-lemma mset_contains_eq: "(m:#M) = ({#m#}+(M-{#m#})=M)" proof (auto)
+lemma mset_contains_eq: "(m \<in># M) = ({#m#}+(M-{#m#})=M)" proof (auto)
   assume "{#m#} + (M - {#m#}) = M"
-  moreover have "m :# {#m#} + (M - {#m#})" by simp
-  ultimately show "m:#M" by simp
+  moreover have "m \<in># {#m#} + (M - {#m#})" by simp
+  ultimately show "m \<in># M" by simp
 qed
 
 
@@ -427,10 +439,7 @@ subsubsection {* Pointwise ordering *}
     by (auto simp add: union_ac)
   lemmas mset_le_decr_left = mset_le_decr_left1 mset_le_decr_left2
   
-  lemma mset_le_single_conv[simp]: "({#e#}\<le>#M) = (e:#M)"
-    by (unfold subseteq_mset_def) auto
-
-  lemma mset_le_trans_elem: "\<lbrakk>e :# c; c \<le># c'\<rbrakk> \<Longrightarrow> e :# c'" using subset_mset.order_trans[of "{#e#}" c c', simplified]
+  lemma mset_le_trans_elem: "\<lbrakk>e \<in># c; c \<le># c'\<rbrakk> \<Longrightarrow> e \<in># c'" using subset_mset.order_trans[of "{#e#}" c c', simplified]
     by assumption
 
   lemma mset_le_subtract: "(A::'a multiset)\<le>#B \<Longrightarrow> A-C \<le># B-C"
@@ -456,22 +465,34 @@ subsubsection {* Pointwise ordering *}
     by (auto elim: mset_le_addE simp add: union_ac)
 
   lemma mset_2dist2_cases:
-    assumes A: "{#a#}+{#b#} \<le># A+B"
-    assumes CASES: "{#a#}+{#b#} \<le># A \<Longrightarrow> P" "{#a#}+{#b#} \<le># B \<Longrightarrow> P" "\<lbrakk>a :# A; b :# B\<rbrakk> \<Longrightarrow> P" "\<lbrakk>a :# B; b :# A\<rbrakk> \<Longrightarrow> P"
+    assumes A: "{#a, b#} \<subseteq># A + B"
+    assumes CASES: "{#a, b#} \<subseteq># A \<Longrightarrow> P" "{#a, b#} \<subseteq># B \<Longrightarrow> P"
+      "a \<in># A \<Longrightarrow> b \<in># B \<Longrightarrow> P" "a \<in># B \<Longrightarrow> b \<in># A \<Longrightarrow> P"
     shows "P"
   proof -
-    { assume C: "a :# A" "b :# A-{#a#}" 
-      with mset_le_mono_add[of "{#a#}" "{#a#}" "{#b#}" "A-{#a#}"] have "{#a#}+{#b#} \<le># A" by auto
+    from A have "count A a + count B a \<ge> 1"
+      "count A b + count B b \<ge> 1"
+      using mset_less_eq_count [of "{#a, b#}" "A + B" a] mset_less_eq_count [of "{#a, b#}" "A + B" b]
+      by simp_all
+    then have B: "a \<in># A \<or> a \<in># B"
+      "b \<in># A \<or> b \<in># B"
+      by (auto simp add: not_in_iff Suc_le_eq)
+    { assume C: "a \<in># A" "b \<in># A - {#a#}" 
+      with mset_le_mono_add [of "{#a#}" "{#a#}" "{#b#}" "A-{#a#}"]
+      have "{#a, b#} \<subseteq># A" by auto
     } moreover {
-      assume C: "a :# A" "\<not> (b :# A-{#a#})"
-      with A have "b:#B" by (unfold subseteq_mset_def) (auto split: if_split_asm)
+      assume C: "a \<in># A" "b \<notin># A - {#a#}"
+      with B have "b \<in># B"
+        by (metis A Multiset.diff_add diff_union_single_conv2 mset_le_subtract_left mset_un_single_un_cases subset_mset.le_imp_diff_is_add)
     } moreover {
-      assume C: "\<not> (a :# A)" "b :# B-{#a#}"
-      with A have "a :# B" by (unfold subseteq_mset_def) (auto split: if_split_asm)
-      with C mset_le_mono_add[of "{#a#}" "{#a#}" "{#b#}" "B-{#a#}"] have "{#a#}+{#b#} \<le># B" by auto
+      assume C: "a \<notin># A" "b \<in># B - {#a#}"
+      with A have "a \<in># B" using B by blast
+      with C mset_le_mono_add [of "{#a#}" "{#a#}" "{#b#}" "B-{#a#}"]
+      have "{#a, b#} \<subseteq># B" by auto
     } moreover {
-      assume C: "\<not> (a :# A)" "\<not> (b :# B-{#a#})"
-      with A have "a:#B \<and> b:#A" by (unfold subseteq_mset_def) (auto split: if_split_asm)
+      assume C: "a \<notin># A" "b \<notin># B - {#a#}"
+      with A have "a \<in># B \<and> b \<in># A"
+        by (smt B(1) add.commute mset_le_single mset_le_sub_add_eq mset_le_subtract_left mset_un_single_un_cases subset_mset.diff_add_assoc2 union_ac(2))
     } ultimately show P using CASES by blast
   qed
 
@@ -481,13 +502,13 @@ subsubsection {* Pointwise ordering *}
     apply (subgoal_tac "count A a + count B a \<le> count C a", arith, simp)+
     done
 
-  lemma mset_union_subset_s: "{#a#}+B \<le># C \<Longrightarrow> a :# C \<and> B \<le># C"
+  lemma mset_union_subset_s: "{#a#}+B \<le># C \<Longrightarrow> a \<in># C \<and> B \<le># C"
     by (auto dest: mset_union_subset)
 
   lemma mset_le_eq_refl: "(a::'a multiset)=b \<Longrightarrow> a\<le>#b"
     by simp
 
-  lemma mset_singleton_eq[simplified,simp]: "a :# {#b#} = (a=b)"
+  lemma mset_singleton_eq[simplified,simp]: "a \<in># {#b#} = (a=b)"
     by auto -- {* The simplification is here due to the lemma @{thm [source] "Multiset.count_single"}, that will be applied first deleting any application potential for this rule*}
   lemma mset_le_single_single[simp]: "({#a#} \<le># {#b#}) = (a=b)"
     by auto
@@ -507,9 +528,9 @@ subsubsection {* Pointwise ordering *}
   lemma mset_le_distrib[consumes 1, case_names dist]: "\<lbrakk>X\<le>#(A::'a multiset)+B; !!Xa Xb. \<lbrakk>X=Xa+Xb; Xa\<le>#A; Xb\<le>#B\<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
     by (auto elim!: mset_le_addE mset_distrib)
 
-  lemma mset_le_mono_add_single: "\<lbrakk>a :# ys; b :# ws\<rbrakk> \<Longrightarrow> {#a#} + {#b#} \<le># ys + ws" using mset_le_mono_add[of "{#a#}" _ "{#b#}", simplified] .
+  lemma mset_le_mono_add_single: "\<lbrakk>a \<in># ys; b \<in># ws\<rbrakk> \<Longrightarrow> {#a#} + {#b#} \<le># ys + ws" using mset_le_mono_add[of "{#a#}" _ "{#b#}", simplified] .
 
-  lemma mset_size1elem: "\<lbrakk>size P \<le> 1; q :# P\<rbrakk> \<Longrightarrow> P={#q#}"
+  lemma mset_size1elem: "\<lbrakk>size P \<le> 1; q \<in># P\<rbrakk> \<Longrightarrow> P={#q#}"
     by (auto elim: mset_size_le1_cases)
   lemma mset_size2elem: "\<lbrakk>size P \<le> 2; {#q#}+{#q'#} \<le># P\<rbrakk> \<Longrightarrow> P={#q#}+{#q'#}"
     by (auto elim: mset_le_addE)

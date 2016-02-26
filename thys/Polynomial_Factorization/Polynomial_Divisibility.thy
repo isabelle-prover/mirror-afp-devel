@@ -218,7 +218,7 @@ proof (cases "p = 0")
       proof (rule ccontr)
         assume "\<not> ?thesis"
         then obtain a where "a \<in># ?f S #\<inter> ?f T" 
-          by (metis count_empty multiset_eqI not_gr0)
+          by (auto dest!: multi_nonempty_split intro: that)
         hence a: "a \<in># ?f S" "a \<in># ?f T" by auto
         from a(1)[unfolded fmset_def in_multiset_in_set] 
           obtain a1 where a1: "a1 \<in> set S" and aa: "assocs poly_monoid a1 = a" by auto

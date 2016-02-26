@@ -52,7 +52,7 @@ proof (rule Max_eqI[symmetric])
   fix y
   assume "y \<in> set_mset (multiset t)"
   thus "y \<le> val t"
-    using heap_top_geq[of t y] `is_heap t`
+    using heap_top_geq [of y t] `is_heap t`
     by simp
 next
   show "val t \<in> set_mset (multiset t)"

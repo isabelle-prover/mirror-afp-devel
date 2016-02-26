@@ -1622,12 +1622,6 @@ lemma in_image_msetE:
   apply (force split: if_split_asm)
   done
 
-text {* Some very special introduction lemmas for @{const image_mset} *}
-lemma image_mset_fstI: "(e,a):#M \<Longrightarrow> e \<in># image_mset fst M"
-  by (induct M) (auto split: if_split_asm)
-lemma image_mset_sndI: "(e,a):#M \<Longrightarrow> a \<in># image_mset snd M"
-  by (induct M) (auto split: if_split_asm)
-
 text {* Very special lemma for images multisets of pairs, where the second
   component is a function of the first component *}
 lemma mset_image_fst_dep_pair_diff_split:
@@ -1948,8 +1942,7 @@ lemma bsmap_fs_depD:
   \<Longrightarrow> e \<in># tree_to_multiset t \<and> a=eprio e"
   "(e,a)\<in>#SkewBinomialHeapStruc.queue_to_multiset (bsmap q) 
   \<Longrightarrow> e \<in># queue_to_multiset q \<and> a=eprio e"
-  by (auto intro: image_mset_fstI dest: bsmap_fs_dep)
-
+  by (auto dest: bsmap_fs_dep intro!: image_eqI)
 
 lemma findMin_correct_aux:
   assumes I: "invar q"
@@ -2044,7 +2037,7 @@ lemma level_m:
   "x\<in>#queue_to_multiset q \<Longrightarrow> level x < Suc (queue_level q)"
   apply (induct t and q rule: tree_level_queue_level.induct)
   apply (case_tac [!] x)
-  apply (auto split: if_split_asm)
+  apply (auto simp add: less_max_iff_disj)
   done
 
 lemma level_measure:
@@ -2122,8 +2115,6 @@ proof (induct n\<equiv>"level x" arbitrary: x rule: full_nat_induct)
       A: "yx \<in># queue_to_multiset q"  and
       B: "y \<in># elem_to_mset yx"
       apply (auto elim!: in_image_msetE)
-      apply (drule bsmap_fs_depD)
-      apply auto
       done
     
     from A PREMS have IYX: "elem_invar yx" by auto
@@ -2176,8 +2167,7 @@ proof -
 
   show "elem_invar (deleteMin' (Element e a q))"
     using AYMIN QEI FMIN FEI
-    apply (auto simp add: deleteMin_correct meld_correct)
-    done
+    by (auto simp add: deleteMin_correct meld_correct in_diff_count)
 
   from FMIQ have 
     S: "(queue_to_multiset q - {#Element ey ay qy#}) + {#Element ey ay qy#} 

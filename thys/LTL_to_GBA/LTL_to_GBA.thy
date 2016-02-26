@@ -1065,13 +1065,14 @@ next
   let ?ns' = "{n} \<union> ns"
   from prems have SPEC_sub:"SPEC (?P (?n', ?ns')) \<le> SPEC (?P x)"
     by (rule_tac SPEC_rule) auto
-  from prems have *: "old_next_pair n\<notin>old_next_pair ` ns"
+  from prems have "old_next_pair n \<notin> old_next_pair ` ns"
     by auto
-  then have subset_next_pair:
-    "old_next_pair ` ns \<subset> old_next_pair ` (insert n ns)"
+  then have "old_next_pair ` ns \<subset> old_next_pair ` (insert n ns)"
     by auto
-  with prems * have "((?n', ?ns'), (n, ns))\<in>expand_ord \<phi>"
-    by (auto simp add: expand_ord_def expand_inv_def finite_psupset_def)
+  moreover from prems have "expand_inv \<phi> (n, ns)"
+    by simp
+  ultimately have "((?n', ?ns'), (n, ns)) \<in> expand_ord \<phi>"
+    by (auto simp add: expand_ord_def finite_psupset_def expand_inv_def)
   moreover from prems have "expand_inv \<phi> (?n', ?ns')"
     unfolding expand_inv_def by auto
   ultimately have "expand (?n', ?ns') \<le> SPEC (?P (?n', ?ns'))"

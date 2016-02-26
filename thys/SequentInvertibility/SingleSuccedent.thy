@@ -211,13 +211,13 @@ lemma midMultiset:
   assumes "\<Gamma> \<oplus> A = \<Gamma>' \<oplus> B" and "A \<noteq> B"
   shows "\<exists> \<Gamma>''. \<Gamma> = \<Gamma>'' \<oplus> B \<and> \<Gamma>' = \<Gamma>'' \<oplus> A"
 proof-
-  from assms have "A :# \<Gamma>'"
+  from assms have "A \<in># \<Gamma>'"
       proof-
       from assms have "set_mset (\<Gamma> \<oplus> A) = set_mset (\<Gamma>' \<oplus> B)" by auto
       then have "set_mset \<Gamma> \<union> {A} = set_mset \<Gamma>' \<union> {B}" by auto
       then have "set_mset \<Gamma> \<union> {A} \<subseteq> set_mset \<Gamma>' \<union> {B}" by simp
       then have "A \<in> set_mset \<Gamma>'" using assms by auto
-      thus "A :# \<Gamma>'" by simp
+      thus "A \<in># \<Gamma>'" by simp
       qed
   then have "\<Gamma>' \<ominus> A \<oplus> A = \<Gamma>'" by (auto simp add:multiset_eq_iff)
   then have "\<exists> \<Gamma>''. \<Gamma>' = \<Gamma>'' \<oplus> A" apply (rule_tac x="\<Gamma>' \<ominus> A" in exI) by auto
@@ -231,7 +231,7 @@ qed
    contained in the extended multisets *)
 lemma extendID:
 assumes "extend S (\<LM> At i \<RM> \<Rightarrow>* At i) = (\<Gamma> \<Rightarrow>* \<Delta>)"
-shows "At i :# \<Gamma>"
+shows "At i \<in># \<Gamma>"
 using assms
 proof-
   from assms have "\<exists> \<Gamma>'. \<Gamma> = \<Gamma>' \<oplus> At i" 
@@ -242,7 +242,7 @@ qed
 
 lemma extendFalsum:
 assumes "extend S (\<LM> ff \<RM> \<Rightarrow>* Em) = (\<Gamma> \<Rightarrow>* \<Delta>)"
-shows "ff :# \<Gamma>"
+shows "ff \<in># \<Gamma>"
 proof-
   from assms have "\<exists> \<Gamma>'. \<Gamma> = \<Gamma>' \<oplus> ff" 
      using extend_def[where forms=S and seq="\<LM>ff \<RM> \<Rightarrow>* Em"]
@@ -254,7 +254,7 @@ qed
 (* Lemma that says if a propositional variable is in both the antecedent and succedent of a sequent,
    then it is derivable from idupRules *)
 lemma containID:
-assumes a:"At i :# \<Gamma>"
+assumes a:"At i \<in># \<Gamma>"
     and b:"Ax \<subseteq> R"
 shows "(\<Gamma> \<Rightarrow>* At i,0) \<in> derivable R*"
 proof-
@@ -271,7 +271,7 @@ then show ?thesis using derivable.base[where R="R*" and C="\<Gamma> \<Rightarrow
 qed
 
 lemma containFalsum:
-assumes a: "ff :# \<Gamma>"
+assumes a: "ff \<in># \<Gamma>"
    and  b: "Ax \<subseteq> R"
 shows "(\<Gamma> \<Rightarrow>* C,0) \<in> derivable R*"
 proof-
@@ -404,8 +404,8 @@ case 0
     {assume "c = (\<LM>At i\<RM> \<Rightarrow>* At i)"
      then have "extend S (\<LM>At i\<RM> \<Rightarrow>* At i) = (\<Gamma> \<Rightarrow>* At i)" and "At i = E" using split and `r = ([],c)`
           by (auto simp add:extendRule_def extend_def)
-     then have "At i :# \<Gamma>" using extendID by auto
-     then have "At i :# \<Gamma> + \<Gamma>'" by auto
+     then have "At i \<in># \<Gamma>" using extendID by auto
+     then have "At i \<in># \<Gamma> + \<Gamma>'" by auto
      then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* E,0) \<in> derivable R*" 
           using c and containID[where \<Gamma>="\<Gamma>+\<Gamma>'" and R=R and i=i] and `At i = E` by auto
     }
@@ -413,8 +413,8 @@ case 0
     {assume "c = (\<LM>ff\<RM> \<Rightarrow>* Em)"
      then have "extend S (\<LM>ff\<RM> \<Rightarrow>* Em) = (\<Gamma> \<Rightarrow>* E)" using split and `r = ([],c)`
           by (auto simp add:extendRule_def extend_def)
-     then have "ff :# \<Gamma>" using extendFalsum by auto
-     then have "ff :# \<Gamma> + \<Gamma>'" by auto
+     then have "ff \<in># \<Gamma>" using extendFalsum by auto
+     then have "ff \<in># \<Gamma> + \<Gamma>'" by auto
      then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* E,0) \<in> derivable R*" 
           using c and containFalsum[where \<Gamma>="\<Gamma>+\<Gamma>'" and R=R] by auto
     }
@@ -513,7 +513,7 @@ case 0
     {assume "c = (\<LM>ff\<RM> \<Rightarrow>* Em)"
      then have "extend S (\<LM>ff\<RM> \<Rightarrow>* Em) = (\<Gamma> \<Rightarrow>* Em)" using split and `r = ([],c)`
           by (auto simp add:extendRule_def extend_def)
-     then have "ff :# \<Gamma>" using extendFalsum by auto
+     then have "ff \<in># \<Gamma>" using extendFalsum by auto
      then have "(\<Gamma> \<Rightarrow>* C,0) \<in> derivable R*" 
           using c and containFalsum[where \<Gamma>=\<Gamma> and R=R] by auto
     }
@@ -637,8 +637,8 @@ proof (induct n arbitrary:\<Gamma> rule:nat_less_induct)
        with `extendRule S r = ([],\<Gamma> \<Rightarrow>* Compound F Fs)`
             have "extend S (\<LM> ff \<RM> \<Rightarrow>* Em) = (\<Gamma> \<Rightarrow>* Compound F Fs)"
             using extendRule_def[where R="([],\<LM>ff\<RM>\<Rightarrow>* Em)" and forms=S] by auto
-       then have "ff :# \<Gamma>" using extendFalsum[where S=S and \<Gamma>=\<Gamma> and \<Delta>="Compound F Fs"] by auto
-       then have "ff :# \<Gamma> + \<Gamma>'" by auto
+       then have "ff \<in># \<Gamma>" using extendFalsum[where S=S and \<Gamma>=\<Gamma> and \<Delta>="Compound F Fs"] by auto
+       then have "ff \<in># \<Gamma> + \<Gamma>'" by auto
        then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* E,0) \<in> derivable R*" using rules
             and containFalsum[where \<Gamma>="\<Gamma> + \<Gamma>'" and R=R] by auto
        then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* E,0) \<in> derivable R*" by blast
@@ -711,7 +711,7 @@ proof (induct n arbitrary:\<Gamma> rule:nat_less_induct)
          moreover
             {assume "c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* Em)"
              with ext and `r = (ps,c)`
-                  have "Compound T Ts :# \<Gamma>" by (auto simp add:extendRule_def extend_def)
+                  have "Compound T Ts \<in># \<Gamma>" by (auto simp add:extendRule_def extend_def)
              then have "\<exists> \<Gamma>1. \<Gamma> = \<Gamma>1 \<oplus> Compound T Ts"
                   by (rule_tac x="\<Gamma> \<ominus> Compound T Ts" in exI) (auto simp add:multiset_eq_iff)
              then obtain \<Gamma>1 where "\<Gamma> = \<Gamma>1 \<oplus> Compound T Ts" by auto
@@ -810,10 +810,10 @@ proof (induct n arbitrary:\<Gamma> \<delta> rule:nat_less_induct)
            with `extendRule S r = ([],\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<delta>)`
                 have "extend S (\<LM> ff \<RM> \<Rightarrow>* Em) = (\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<delta>)"
                 using extendRule_def[where R="([],\<LM>ff\<RM>\<Rightarrow>* Em)" and forms=S] by auto
-           then have "ff :# \<Gamma> \<oplus> Compound F Fs" 
+           then have "ff \<in># \<Gamma> \<oplus> Compound F Fs" 
                 using extendFalsum[where S=S and \<Gamma>="\<Gamma>\<oplus> Compound F Fs" and \<Delta>=\<delta>] by auto
-           then have "ff :# \<Gamma>" by auto
-           then have "ff :# \<Gamma> + \<Gamma>'" by auto
+           then have "ff \<in># \<Gamma>" by auto
+           then have "ff \<in># \<Gamma> + \<Gamma>'" by auto
            then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<delta>,0) \<in> derivable R*" using rules
                 and containFalsum[where \<Gamma>="\<Gamma> + \<Gamma>'" and R=R] by auto
           }
@@ -822,10 +822,10 @@ proof (induct n arbitrary:\<Gamma> \<delta> rule:nat_less_induct)
            with `extendRule S r = ([], \<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<delta>)`
                 have "extend S (\<LM> At i\<RM> \<Rightarrow>* At i) = (\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<delta>)"
                 using extendRule_def[where R="([], \<LM>At i \<RM> \<Rightarrow>* At i)" and forms=S] by auto
-           then have "At i :# \<Gamma> \<oplus> Compound F Fs" and eq: "\<delta> = At i"
+           then have "At i \<in># \<Gamma> \<oplus> Compound F Fs" and eq: "\<delta> = At i"
                 using extendID[where S=S and \<Gamma>="\<Gamma> \<oplus> Compound F Fs" and \<Delta>=\<delta> and i=i] by (auto simp add:extend_def)
-           then have "At i :# \<Gamma>" by auto
-           then have "At i :# \<Gamma> + \<Gamma>'" by auto
+           then have "At i \<in># \<Gamma>" by auto
+           then have "At i \<in># \<Gamma> + \<Gamma>'" by auto
            with eq have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<delta>,0) \<in> derivable R*" using rules
                 and containID[where i=i and \<Gamma>="\<Gamma> + \<Gamma>'" and R=R] by auto
           }

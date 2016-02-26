@@ -297,8 +297,10 @@ lemma poly_add_nonzero_complex:
       and x: "poly p x = 0" and y: "poly q y = 0"
   shows "poly_add p q \<noteq> 0"
 proof
-  have degp: "degree p > 0" using le_0_eq order_degree order_root p0 x by fastforce
-  have degq: "degree q > 0" using le_0_eq order_degree order_root q0 y by fastforce
+  have degp: "degree p > 0" using p0 x
+    by (simp add: poly_zero)
+  have degq: "degree q > 0" using q0 y
+    by (simp add: poly_zero)
   have pp0: "poly_x_minus_y p \<noteq> 0" (is "?p \<noteq> _") using p0 by auto
   have qq0: "poly_lift q \<noteq> 0" (is "?q \<noteq> _") using q0 by auto
   have degpp: "degree ?p = degree p" by auto
@@ -518,7 +520,8 @@ lemma poly_mult':
   shows "poly (poly_mult' p q) (x*y) = 0"
   unfolding poly_mult'_def
 proof (rule poly_resultant_zero[OF disjI2])
-  have "degree q > 0" using le_0_eq order_degree order_root q0 y by fastforce
+  have "degree q > 0" using q0 y 
+    by (simp add: poly_zero)
   thus degq: "degree (poly_lift q) > 0" by auto
 qed (insert x y y0, auto simp: poly2_poly_x_div_y)
 
@@ -548,8 +551,10 @@ lemma poly_mult'_nonzero_complex:
       and p00: "poly p 0 \<noteq> 0" and q00: "poly q 0 \<noteq> 0"
   shows "poly_mult' p q \<noteq> 0"
 proof
-  have degp: "degree p > 0" using le_0_eq order_degree order_root p0 x by fastforce
-  have degq: "degree q > 0" using le_0_eq order_degree order_root q0 y by fastforce
+  have degp: "degree p > 0" using p0 x
+    by (simp add: poly_zero)
+  have degq: "degree q > 0" using q0 y
+    by (simp add: poly_zero)
   have pp0: "poly_x_div_y p \<noteq> 0" (is "?p \<noteq> _") using p0 by simp
   have qq0: "poly_lift q \<noteq> 0" (is "?q \<noteq> _") using q0 by auto
   have degpp: "degree ?p = degree p" unfolding poly_x_div_y_degree_eq[OF p00] ..

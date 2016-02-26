@@ -2979,16 +2979,16 @@ proof-
         by auto
     qed
     moreover
-    have "\<forall> b. b :# ?W \<longrightarrow> (b, ?a) \<in> ?ord"
+    have "\<forall> b. b \<in># ?W \<longrightarrow> (b, ?a) \<in> ?ord"
     proof-
       {
         fix b
-        assume "b :# ?W"
+        assume "b \<in># ?W"
         hence "opposite b \<in> set (removeAll l reason)"
         proof-
-          from `b :# ?W` 
+          from `b \<in># ?W` 
           have "b el remdups (oppositeLiteralList (removeAll l (list_diff reason C)))"
-            by (auto simp add: set_count_greater_0)
+            by simp
           hence "opposite b el removeAll l (list_diff reason C)"
             using literalElListIffOppositeLiteralElOppositeLiteralList[of "opposite b" "removeAll l (list_diff reason C)"]
             by auto
@@ -3011,8 +3011,8 @@ proof-
         by auto
     qed
     ultimately
-    have "\<exists> a M0 K. ?X = M0 + {#a#} \<and> ?Y = M0 + K \<and> (\<forall>b. b :# K \<longrightarrow> (b, a) \<in> ?ord)"
-      by auto
+    have "\<exists> a M0 K. ?X = M0 + {#a#} \<and> ?Y = M0 + K \<and> (\<forall>b. b \<in># K \<longrightarrow> (b, a) \<in> ?ord)"
+      by blast
     thus ?thesis
       unfolding mult1_def
       by auto

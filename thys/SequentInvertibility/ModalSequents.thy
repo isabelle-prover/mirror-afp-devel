@@ -36,7 +36,7 @@ multiset_map (infixl "\<cdot>\<cdot>" 100) where
 
 lemma nonEmpty_contain:
 assumes "\<Gamma> \<noteq> \<Empt>"
-shows "\<exists> a. a :# \<Gamma>"
+shows "\<exists> a. a \<in># \<Gamma>"
 using assms
 by (induct \<Gamma>) auto
 
@@ -44,8 +44,8 @@ lemma nonEmpty_neq:
 assumes "\<Gamma> \<noteq> \<Empt>"
 shows "\<Gamma> + C \<noteq> C"
 proof-
-from assms and nonEmpty_contain obtain a where "a :# \<Gamma>" by auto
-then have "count \<Gamma> a \<ge> 1" by auto
+from assms and nonEmpty_contain obtain a where "a \<in># \<Gamma>" by auto
+then have "count \<Gamma> a \<ge> 1" by (simp add: Suc_le_eq)
 then have "count (\<Gamma> + C) a \<noteq> count C a" by auto
 then show "\<Gamma> + C \<noteq> C" by (auto simp add:multiset_eq_iff)
 qed 
@@ -56,7 +56,7 @@ shows "f \<cdot>\<cdot> \<Gamma> \<noteq> \<Empt>"
 using image_mset_is_empty_iff assms by auto
 
 lemma single_plus_obtain:
-assumes "A :# \<Gamma>"
+assumes "A \<in># \<Gamma>"
 shows "\<exists> \<Delta>. \<Gamma> = \<Delta> \<oplus> A"
 proof-
 from assms have "\<Gamma> = \<Gamma> \<ominus> A \<oplus> A" by (auto simp add:multiset_eq_iff)
@@ -215,7 +215,7 @@ text{*
 \noindent Modalising multisets is relatively straightforward.  We use the notation $!\cdot \Gamma$, where $!$ is a modal operator and $\Gamma$ is a multiset of formulae:
 *}
 definition modaliseMultiset :: "'b \<Rightarrow> ('a,'b) form multiset \<Rightarrow> ('a,'b) form multiset"
-  where "modaliseMultiset a \<Gamma> \<equiv> {# Modal a [p]. p :# \<Gamma> #}"
+  where "modaliseMultiset a \<Gamma> \<equiv> {# Modal a [p]. p \<in># \<Gamma> #}"
 
 end
 
@@ -322,7 +322,7 @@ by (auto simp add:neq_Nil_conv)
    contained in the extended multisets *)
 lemma extendID:
 assumes "extend S (\<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>) = (\<Gamma> \<Rightarrow>* \<Delta>)"
-shows "At i :# \<Gamma> \<and> At i :# \<Delta>"
+shows "At i \<in># \<Gamma> \<and> At i \<in># \<Delta>"
 using assms
 proof-
   from assms have "\<exists> \<Gamma>' \<Delta>'. \<Gamma> = \<Gamma>' \<oplus> At i \<and> \<Delta> = \<Delta>' \<oplus> At i" 
@@ -333,7 +333,7 @@ qed
 
 lemma extendFalsum:
 assumes "extend S (\<LM> ff \<RM> \<Rightarrow>* \<Empt>) = (\<Gamma> \<Rightarrow>* \<Delta>)"
-shows "ff :# \<Gamma>"
+shows "ff \<in># \<Gamma>"
 proof-
   from assms have "\<exists> \<Gamma>'. \<Gamma> = \<Gamma>' \<oplus> ff" 
      using extend_def[where forms=S and seq="\<LM>ff \<RM> \<Rightarrow>* \<Empt>"]
@@ -345,7 +345,7 @@ qed
 (* Lemma that says if a propositional variable is in both the antecedent and succedent of a sequent,
    then it is derivable from idupRules *)
 lemma containID:
-assumes a:"At i :# \<Gamma> \<and> At i :# \<Delta>"
+assumes a:"At i \<in># \<Gamma> \<and> At i \<in># \<Delta>"
     and b:"Ax \<subseteq> R"
 shows "(\<Gamma> \<Rightarrow>* \<Delta>,0) \<in> derivable (ext R R' M N)"
 proof-
@@ -362,7 +362,7 @@ then show ?thesis using derivable.base[where R="ext R R' M N" and C="\<Gamma> \<
 qed
 
 lemma containFalsum:
-assumes a: "ff :# \<Gamma>"
+assumes a: "ff \<in># \<Gamma>"
    and  b: "Ax \<subseteq> R"
 shows "(\<Gamma> \<Rightarrow>* \<Delta>,0) \<in> derivable (ext R R' M N)"
 proof-
@@ -574,7 +574,7 @@ by (induct_tac c) (auto simp add:extendAssoc)
 (* Disjointness of the various rule sets *)
 lemma disjoint_Aux:
 assumes "mset c = \<LM>A\<RM>"
-shows "A :# mset (extend S c)"
+shows "A \<in># mset (extend S c)"
 proof-
 from assms have "c = (\<Empt> \<Rightarrow>* \<LM>A\<RM>) \<or> c = (\<LM>A\<RM> \<Rightarrow>* \<Empt>)" by (cases c) (auto simp add:mset.simps union_is_single)
 then show ?thesis by (auto simp add:extend_def mset.simps)
@@ -586,7 +586,7 @@ assumes "mset c = \<LM>A\<RM>"
     and "mset (extend S c) = \<LM>B\<RM>"
 shows "False"
 proof-
-from assms have "A :# \<LM>B\<RM>" using disjoint_Aux[where c=c and A=A and S=S] by auto
+from assms have "A \<in># \<LM>B\<RM>" using disjoint_Aux[where c=c and A=A and S=S] by auto
 with `A \<noteq> B` show ?thesis by auto
 qed
 
@@ -645,7 +645,7 @@ qed
 
 lemma modal_not_contain:
 assumes "M \<noteq> N"
-shows "\<not> (Modal M A :# N\<cdot>\<Gamma>)"
+shows "\<not> (Modal M A \<in># N\<cdot>\<Gamma>)"
 using assms by (induct \<Gamma>) (auto simp add:modaliseMultiset_def)
 
 lemma nonPrincipalID:
@@ -669,7 +669,7 @@ ultimately show ?thesis by simp
 qed
 
 lemma compound_not_in_modal_multi:
-shows "\<not> (Compound M Ms :# N\<cdot>\<Gamma>)"
+shows "\<not> (Compound M Ms \<in># N\<cdot>\<Gamma>)"
 by (induct \<Gamma>) (auto simp add:modaliseMultiset_def)
 
 lemma not_principal_aux:
@@ -685,13 +685,13 @@ from assms and single_is_union have "c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts
 moreover
    {assume "c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>)"
     with assms have "M\<cdot>\<Gamma> \<oplus> Modal T Ts = N\<cdot>\<Delta> \<oplus> Compound F Fs" by auto
-    then have "Compound F Fs :# M\<cdot>\<Gamma> \<oplus> Modal T Ts" by auto
-    then have "Compound F Fs :# M\<cdot>\<Gamma>" by auto
+    then have "Compound F Fs \<in># M\<cdot>\<Gamma> \<oplus> Modal T Ts" by auto
+    then have "Compound F Fs \<in># M\<cdot>\<Gamma>" by auto
     then have "False" using compound_not_in_modal_multi[where M=F and Ms=Fs and N=M and \<Gamma>=\<Gamma>] by auto
    }
 moreover
    {assume "c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)"
-    with assms have "Compound F Fs :# M\<cdot>\<Gamma>" by auto
+    with assms have "Compound F Fs \<in># M\<cdot>\<Gamma>" by auto
     then have "False" using compound_not_in_modal_multi[where M=F and Ms=Fs and N=M and \<Gamma>=\<Gamma>] by auto
    }
 ultimately show ?thesis by blast
@@ -709,14 +709,14 @@ from assms and single_is_union have "c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts
          drule_tac x="multiset2" in meta_spec,simp)+
 moreover
    {assume "c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>)"
-    with assms have "Compound F Fs :# M\<cdot>\<Gamma>" by auto
+    with assms have "Compound F Fs \<in># M\<cdot>\<Gamma>" by auto
     then have "False" using compound_not_in_modal_multi[where M=F and Ms=Fs and N=M and \<Gamma>=\<Gamma>] by auto
    }
 moreover
    {assume "c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)"
     with assms have "M\<cdot>\<Gamma> \<oplus> Modal T Ts = N\<cdot>\<Delta> \<oplus> Compound F Fs" by auto
-    then have "Compound F Fs :# M\<cdot>\<Gamma> \<oplus> Modal T Ts" by auto
-    then have "Compound F Fs :# M\<cdot>\<Gamma>" by auto
+    then have "Compound F Fs \<in># M\<cdot>\<Gamma> \<oplus> Modal T Ts" by auto
+    then have "Compound F Fs \<in># M\<cdot>\<Gamma>" by auto
     then have "False" using compound_not_in_modal_multi[where M=F and Ms=Fs and N=M and \<Gamma>=\<Gamma>] by auto
    }
 ultimately show ?thesis by blast
@@ -855,27 +855,27 @@ lemma modalise_characterise:
 fixes A :: "('a,'b) form"
 and   M :: "'b"
 and  \<Delta>  :: "('a,'b) form multiset"
-assumes "A :# M\<cdot>\<Delta>"
+assumes "A \<in># M\<cdot>\<Delta>"
 shows "\<exists> B. A = Modal M [B]"
 proof-
  from assms have "\<Delta> \<noteq> \<Empt>" by (auto simp add:modaliseEmpty)
- with `A :# M\<cdot>\<Delta>` show "\<exists> B. A = Modal M [B]" 
+ with `A \<in># M\<cdot>\<Delta>` show "\<exists> B. A = Modal M [B]" 
       proof (induct \<Delta>)
       case empty
       then show ?case by simp
   next
       case (add \<Delta>' x)
-      then have IH: "\<lbrakk> A :# M\<cdot>\<Delta>' ; \<Delta>' \<noteq> \<Empt> \<rbrakk> \<Longrightarrow> \<exists> B. A = Modal M [B]"
-            and b: "A :# M \<cdot> (\<Delta>' \<oplus> x)" by auto
-      from b have "A :# M\<cdot>\<Delta>' \<or> A :# M\<cdot>(\<LM>x\<RM>)" by (auto simp add:modaliseMultiset_def image_mset_insert)
+      then have IH: "\<lbrakk> A \<in># M\<cdot>\<Delta>' ; \<Delta>' \<noteq> \<Empt> \<rbrakk> \<Longrightarrow> \<exists> B. A = Modal M [B]"
+            and b: "A \<in># M \<cdot> (\<Delta>' \<oplus> x)" by auto
+      from b have "A \<in># M\<cdot>\<Delta>' \<or> A \<in># M\<cdot>(\<LM>x\<RM>)" by (auto simp add:modaliseMultiset_def image_mset_insert)
       moreover
-         {assume "A :# M\<cdot>\<Delta>'"
+         {assume "A \<in># M\<cdot>\<Delta>'"
           then have "\<Delta>' \<noteq> \<Empt>" by (auto simp add:modaliseEmpty)
-          with `A :# M\<cdot>\<Delta>'` have "\<exists> B. A = Modal M [B]" using IH by simp
+          with `A \<in># M\<cdot>\<Delta>'` have "\<exists> B. A = Modal M [B]" using IH by simp
          }
       moreover
-         {assume "A :# M\<cdot>(\<LM>x\<RM>)"
-          then have "A :# \<LM> Modal M [x] \<RM>" by (auto simp add:modaliseMultiset_def)
+         {assume "A \<in># M\<cdot>(\<LM>x\<RM>)"
+          then have "A \<in># \<LM> Modal M [x] \<RM>" by (auto simp add:modaliseMultiset_def)
           then have "A \<in> set_mset (\<LM>Modal M [x]\<RM>)" by (auto simp only:set_mset_def)
           then have "A \<in> {Modal M [x]}" by auto
           then have "A = Modal M [x]" by auto
@@ -898,11 +898,11 @@ then obtain A where a: "A \<in> set_mset (M\<cdot>\<Delta>) \<inter> set_mset (N
 then have "False"
  proof- 
    from a have box: "A \<in> set_mset (M\<cdot>\<Delta>)" and dia: "A \<in> set_mset (N\<cdot>\<Delta>')" by auto
-   from box have "A :# M\<cdot>\<Delta>" by auto
+   from box have "A \<in># M\<cdot>\<Delta>" by auto
    with `\<Delta> \<noteq> \<Empt>` have "\<exists> B. A = Modal M [B]" using modalise_characterise[where M=M] by (auto)
    then obtain B where "A = Modal M [B]" by blast
    moreover 
-   from dia have "A :# N\<cdot>\<Delta>'" by auto
+   from dia have "A \<in># N\<cdot>\<Delta>'" by auto
    with `\<Delta>' \<noteq> \<Empt>` have "\<exists> C. A = Modal N [C]" using modalise_characterise[where M=N] by auto
    then obtain C where "A = Modal N [C]" by blast
    ultimately show "False" using `M\<noteq>N` by auto
@@ -965,8 +965,8 @@ case 0
     {assume "c = (\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>)"
      then have "extend S (\<LM>At i\<RM> \<Rightarrow>*\<LM>At i\<RM>) = (\<Gamma> \<Rightarrow>* \<Delta>)" using split and `r = ([],c)`
           by (auto simp add:extendRule_def extendConc_def)
-     then have "At i :# \<Gamma> \<and> At i :# \<Delta>" using extendID by auto
-     then have "At i :# \<Gamma> + \<Gamma>' \<and> At i :# \<Delta> + \<Delta>'" by auto
+     then have "At i \<in># \<Gamma> \<and> At i \<in># \<Delta>" using extendID by auto
+     then have "At i \<in># \<Gamma> + \<Gamma>' \<and> At i \<in># \<Delta> + \<Delta>'" by auto
      then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable (ext R R2 M N)" 
           using e and containID[where \<Gamma>="\<Gamma>+\<Gamma>'" and \<Delta>="\<Delta>+\<Delta>'" and R=R and i=i] by auto
     }
@@ -974,8 +974,8 @@ case 0
     {assume "c = (\<LM>ff\<RM> \<Rightarrow>* \<Empt>)"
      then have "extend S (\<LM>ff\<RM> \<Rightarrow>*\<Empt>) = (\<Gamma> \<Rightarrow>* \<Delta>)" using split and `r = ([],c)`
           by (auto simp add:extendRule_def extendConc_def)
-     then have "ff :# \<Gamma>" using extendFalsum by auto
-     then have "ff :# \<Gamma> + \<Gamma>'" by auto
+     then have "ff \<in># \<Gamma>" using extendFalsum by auto
+     then have "ff \<in># \<Gamma> + \<Gamma>'" by auto
      then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable (ext R R2 M N)" 
           using e and containFalsum[where \<Gamma>="\<Gamma>+\<Gamma>'" and \<Delta>="\<Delta>+\<Delta>'" and R=R] by auto
     }
@@ -1156,13 +1156,13 @@ proof-
       using upRuleCharacterise[where Ps=ps and C=c]
         and modRule2Characterise[where Ps=ps and C=c] by auto
  then have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)" using `c = (G \<Rightarrow>* H)` by auto
- ultimately have "Modal M Ms :# \<Psi>"
+ ultimately have "Modal M Ms \<in># \<Psi>"
      proof-
      have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)" by fact
      moreover
      {assume "H = \<Empt>"
       then have "\<Psi> = \<Delta> \<oplus> Modal M Ms" using `\<Psi> + H = \<Delta> \<oplus> Modal M Ms` by auto
-      then have "Modal M Ms :# \<Psi>" by auto
+      then have "Modal M Ms \<in># \<Psi>" by auto
      }
      moreover
      {assume "\<exists> A. H = \<LM>A\<RM>"
@@ -1172,17 +1172,17 @@ proof-
       then have "set_mset \<Psi> \<union> {T} = set_mset \<Delta> \<union> {Modal M Ms}" by auto
       moreover from `H = \<LM>T\<RM>` and `\<LM>Modal M Ms\<RM> \<noteq> H` have "Modal M Ms \<noteq> T" by auto
       ultimately have "Modal M Ms \<in> set_mset \<Psi>" by auto
-      then have "Modal M Ms :# \<Psi>" by auto
+      then have "Modal M Ms \<in># \<Psi>" by auto
      }
-     ultimately show "Modal M Ms :# \<Psi>" by blast
+     ultimately show "Modal M Ms \<in># \<Psi>" by blast
      qed
  then have "\<exists> \<Psi>1. \<Psi> = \<Psi>1 \<oplus> Modal M Ms" 
       by (rule_tac x="\<Psi> \<ominus> Modal M Ms" in exI) (auto simp add:multiset_eq_iff)
  then obtain \<Psi>1 where "S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms)" using `S = (\<Phi> \<Rightarrow>* \<Psi>)` by auto
  have "Ps = map (extend S) ps" using ext and extendRule_def[where forms=S and R=r] and `r = (ps,c)` by auto
  then have "\<forall> p \<in> set Ps. (\<exists> p'. p = extend S p')" using ex_map_conv[where ys=Ps and f="extend S"] by auto
- then have "\<forall> p \<in> set Ps. (Modal M Ms :# succ p)" 
-      using `Modal M Ms :# \<Psi>` and `S = (\<Phi> \<Rightarrow>* \<Psi>)` apply (auto simp add:Ball_def) 
+ then have "\<forall> p \<in> set Ps. (Modal M Ms \<in># succ p)" 
+      using `Modal M Ms \<in># \<Psi>` and `S = (\<Phi> \<Rightarrow>* \<Psi>)` apply (auto simp add:Ball_def) 
       by (drule_tac x=x in spec) (auto simp add:extend_def)
  then have a1:"\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Modal M Ms)" using characteriseSeq
       apply (auto simp add:Ball_def) apply (drule_tac x=x in spec,simp) 
@@ -1403,13 +1403,13 @@ proof-
       using upRuleCharacterise[where Ps=ps and C=c]
         and modRule2Characterise[where Ps=ps and C=c] by auto
  then have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)" using `c = (H \<Rightarrow>* G)` by auto
- ultimately have "Modal M Ms :# \<Phi>"
+ ultimately have "Modal M Ms \<in># \<Phi>"
      proof-
      have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)" by fact
      moreover
      {assume "H = \<Empt>"
       then have "\<Phi> = \<Gamma> \<oplus> Modal M Ms" using `\<Phi> + H = \<Gamma> \<oplus> Modal M Ms` by auto
-      then have "Modal M Ms :# \<Phi>" by auto
+      then have "Modal M Ms \<in># \<Phi>" by auto
      }
      moreover
      {assume "\<exists> A. H = \<LM>A\<RM>"
@@ -1419,17 +1419,17 @@ proof-
       then have "set_mset \<Phi> \<union> {T} = set_mset \<Gamma> \<union> {Modal M Ms}" by auto
       moreover from `H = \<LM>T\<RM>` and `\<LM>Modal M Ms\<RM> \<noteq> H` have "Modal M Ms \<noteq> T" by auto
       ultimately have "Modal M Ms \<in> set_mset \<Phi>" by auto
-      then have "Modal M Ms :# \<Phi>" by auto
+      then have "Modal M Ms \<in># \<Phi>" by auto
      }
-     ultimately show "Modal M Ms :# \<Phi>" by blast
+     ultimately show "Modal M Ms \<in># \<Phi>" by blast
      qed
  then have "\<exists> \<Phi>1. \<Phi> = \<Phi>1 \<oplus> Modal M Ms" 
       by (rule_tac x="\<Phi> \<ominus> Modal M Ms" in exI) (auto simp add:multiset_eq_iff)
  then obtain \<Phi>1 where "S = (\<Phi>1 \<oplus> Modal M Ms \<Rightarrow>* \<Psi>)" using `S = (\<Phi> \<Rightarrow>* \<Psi>)` by auto
  have "Ps = map (extend S) ps" using ext and extendRule_def[where forms=S and R=r] and `r = (ps,c)` by auto
  then have "\<forall> p \<in> set Ps. (\<exists> p'. p = extend S p')" using ex_map_conv[where ys=Ps and f="extend S"] by auto
- then have "\<forall> p \<in> set Ps. (Modal M Ms :# antec p)" 
-      using `Modal M Ms :# \<Phi>` and `S = (\<Phi> \<Rightarrow>* \<Psi>)` apply (auto simp add:Ball_def) 
+ then have "\<forall> p \<in> set Ps. (Modal M Ms \<in># antec p)" 
+      using `Modal M Ms \<in># \<Phi>` and `S = (\<Phi> \<Rightarrow>* \<Psi>)` apply (auto simp add:Ball_def) 
       by (drule_tac x=x in spec) (auto simp add:extend_def)
  then have a1:"\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>'\<oplus> Modal M Ms \<Rightarrow>* \<Psi>')" using characteriseSeq
       apply (auto simp add:Ball_def) apply (drule_tac x=x in spec,simp) 
@@ -1586,9 +1586,9 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
           with `extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)`
                have "extend S (\<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>) = (\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)"
                using extendRule_def[where R="([],\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>)" and forms=S] by auto
-          then have "At i :# \<Gamma> \<and> At i :# \<Delta>" 
+          then have "At i \<in># \<Gamma> \<and> At i \<in># \<Delta>" 
                using extendID[where S=S and i=i and \<Gamma>=\<Gamma> and \<Delta>="\<Delta> \<oplus> Modal M Ms"] by auto
-          then have "At i :# \<Gamma> + \<Gamma>' \<and> At i :# \<Delta> + \<Delta>'" by auto
+          then have "At i \<in># \<Gamma> + \<Gamma>' \<and> At i \<in># \<Delta> + \<Delta>'" by auto
           then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable (ext R R2 M1 M2)" using rules
                and containID[where \<Gamma>="\<Gamma> + \<Gamma>'" and i=i and \<Delta>="\<Delta> + \<Delta>'" and R=R] by auto
          }
@@ -1597,9 +1597,9 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
           with `extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)`
              have "extend S (\<LM> ff \<RM> \<Rightarrow>* \<Empt>) = (\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)"
              using extendRule_def[where R="([],\<LM>ff\<RM> \<Rightarrow>* \<Empt>)" and forms=S] by auto
-          then have "ff :# \<Gamma>" 
+          then have "ff \<in># \<Gamma>" 
                using extendFalsum[where S=S and \<Gamma>=\<Gamma> and \<Delta>="\<Delta> \<oplus> Modal M Ms"] by auto
-          then have "ff :# \<Gamma> + \<Gamma>'" by auto
+          then have "ff \<in># \<Gamma> + \<Gamma>'" by auto
           then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable (ext R R2 M1 M2)" using rules
                and containFalsum[where \<Gamma>="\<Gamma> + \<Gamma>'" and \<Delta>="\<Delta> + \<Delta>'" and R=R] by auto
          }
@@ -1796,7 +1796,7 @@ txt{* \noindent  The other interesting case is where the last inference was a mo
        by auto
   moreover
      {assume "Modal M Ms \<in> set_mset (M2\<cdot>\<Delta>'')" -- "Contradiction"
-     then have "Modal M Ms :# M2\<cdot>\<Delta>''" by auto
+     then have "Modal M Ms \<in># M2\<cdot>\<Delta>''" by auto
      with (*<*)modal_not_contain[where M=M and N=M2 and A=Ms and \<Gamma>=\<Delta>''] and(*>*) neq
        have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" 
        by auto
@@ -1836,7 +1836,7 @@ txt{* \noindent  The other interesting case is where the last inference was a mo
   }
 moreover
   {assume "Modal M Ms \<in> set_mset \<Delta>1" -- "Formula is in the implicit weakening"
- (*<*)  then have "Modal M Ms :# \<Delta>1" by auto
+ (*<*)  then have "Modal M Ms \<in># \<Delta>1" by auto
   then have "\<exists> \<Delta>2. \<Delta>1 = \<Delta>2 \<oplus> Modal M Ms" using insert_DiffM[where x="Modal M Ms" and M="\<Delta>1"]
                          apply auto apply (rule_tac x="\<Delta>1\<ominus>Modal M Ms" in exI) by (auto simp add:union_ac)(*>*)
   then obtain \<Delta>2 where "\<Delta>1 = \<Delta>2 \<oplus> Modal M Ms" by blast (*>*)
@@ -1883,13 +1883,13 @@ txt{* \noindent The other case, where the last inference was a left inference, i
                      by auto
                 moreover
                    {assume "Modal M Ms \<in> set_mset (M2\<cdot>\<Delta>'')"
-                    then have "Modal M Ms :# M2\<cdot>\<Delta>''" by auto
+                    then have "Modal M Ms \<in># M2\<cdot>\<Delta>''" by auto
                     with modal_not_contain[where M=M and N=M2 and A=Ms and \<Gamma>=\<Delta>''] and neq
                          have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" by auto
                    }
                 moreover
                    {assume "Modal M Ms \<in> set_mset \<Delta>1"
-                    then have "Modal M Ms :# \<Delta>1" by auto
+                    then have "Modal M Ms \<in># \<Delta>1" by auto
                     then have "\<exists> \<Delta>2. \<Delta>1 = \<Delta>2 \<oplus> Modal M Ms" using insert_DiffM[where x="Modal M Ms" and M="\<Delta>1"]
                          apply auto apply (rule_tac x="\<Delta>1\<ominus>Modal M Ms" in exI) by (auto simp add:union_ac)
                     then obtain \<Delta>2 where "\<Delta>1 = \<Delta>2 \<oplus> Modal M Ms" by blast
@@ -1966,9 +1966,9 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
           with `extendRule S r = ([],\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)`
                have "extend S (\<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>) = (\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)"
                using extendRule_def[where R="([],\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>)" and forms=S] by auto
-          then have "At i :# \<Gamma> \<and> At i :# \<Delta>" 
+          then have "At i \<in># \<Gamma> \<and> At i \<in># \<Delta>" 
                using extendID[where S=S and i=i and \<Gamma>="\<Gamma>\<oplus> Modal M Ms" and \<Delta>=\<Delta>] by auto
-          then have "At i :# \<Gamma> + \<Gamma>' \<and> At i :# \<Delta> + \<Delta>'" by auto
+          then have "At i \<in># \<Gamma> + \<Gamma>' \<and> At i \<in># \<Delta> + \<Delta>'" by auto
           then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable (ext R R2 M1 M2)" using rules
                and containID[where \<Gamma>="\<Gamma> + \<Gamma>'" and i=i and \<Delta>="\<Delta> + \<Delta>'" and R=R] by auto
          }
@@ -1977,9 +1977,9 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
           with `extendRule S r = ([],\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)`
              have "extend S (\<LM> ff \<RM> \<Rightarrow>* \<Empt>) = (\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)"
              using extendRule_def[where R="([],\<LM>ff\<RM> \<Rightarrow>* \<Empt>)" and forms=S] by auto
-          then have "ff :# \<Gamma>" 
+          then have "ff \<in># \<Gamma>" 
                using extendFalsum[where S=S and \<Gamma>="\<Gamma>\<oplus>Modal M Ms" and \<Delta>=\<Delta>] by auto
-          then have "ff :# \<Gamma> + \<Gamma>'" by auto
+          then have "ff \<in># \<Gamma> + \<Gamma>'" by auto
           then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable (ext R R2 M1 M2)" using rules
                and containFalsum[where \<Gamma>="\<Gamma> + \<Gamma>'" and \<Delta>="\<Delta> + \<Delta>'" and R=R] by auto
          }
@@ -2142,13 +2142,13 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                      by auto
                 moreover
                    {assume "Modal M Ms \<in> set_mset (M1\<cdot>\<Gamma>'')"
-                    then have "Modal M Ms :# M1\<cdot>\<Gamma>''" by auto
+                    then have "Modal M Ms \<in># M1\<cdot>\<Gamma>''" by auto
                     with modal_not_contain[where M=M and N=M1 and A=Ms and \<Gamma>=\<Gamma>''] and neq
                          have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" by auto
                    }
                 moreover
                    {assume "Modal M Ms \<in> set_mset \<Gamma>1"
-                    then have "Modal M Ms :# \<Gamma>1" by auto
+                    then have "Modal M Ms \<in># \<Gamma>1" by auto
                     then have "\<exists> \<Gamma>2. \<Gamma>1 = \<Gamma>2 \<oplus> Modal M Ms" using insert_DiffM[where x="Modal M Ms" and M="\<Gamma>1"]
                          apply auto apply (rule_tac x="\<Gamma>1\<ominus>Modal M Ms" in exI) by (auto simp add:union_ac)
                     then obtain \<Gamma>2 where "\<Gamma>1 = \<Gamma>2 \<oplus> Modal M Ms" by blast
@@ -2189,7 +2189,7 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                      by auto
                 moreover
                    {assume "Modal M Ms \<in> set_mset (M1\<cdot>\<Gamma>'')"
-                    then have "Modal M Ms :# M1\<cdot>\<Gamma>''" by auto
+                    then have "Modal M Ms \<in># M1\<cdot>\<Gamma>''" by auto
                     with modal_not_contain[where M=M and N=M1 and A=Ms and \<Gamma>=\<Gamma>''] and neq
                          have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" by auto
                    }
@@ -2225,7 +2225,7 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                    }
                 moreover
                    {assume "Modal M Ms \<in> set_mset \<Gamma>1"
-                    then have "Modal M Ms :# \<Gamma>1" by auto
+                    then have "Modal M Ms \<in># \<Gamma>1" by auto
                     then have "\<exists> \<Gamma>2. \<Gamma>1 = \<Gamma>2 \<oplus> Modal M Ms" using insert_DiffM[where x="Modal M Ms" and M="\<Gamma>1"]
                          apply auto apply (rule_tac x="\<Gamma>1\<ominus>Modal M Ms" in exI) by (auto simp add:union_ac)
                     then obtain \<Gamma>2 where "\<Gamma>1 = \<Gamma>2 \<oplus> Modal M Ms" by blast

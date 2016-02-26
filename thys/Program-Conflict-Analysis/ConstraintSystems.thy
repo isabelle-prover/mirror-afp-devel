@@ -202,7 +202,7 @@ lemma (in flowgraph) S_sound_ntrp:
     sh=[v,u']; 
     proc_of fg v = p; 
     mon_c fg ch = {}; 
-    !!s. s:# ch \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> 
+    !!s. s \<in># ch \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> 
                      (u,Spawn p,v)\<in>edges fg \<and> 
                      initialproc fg p; 
     !!P. (\<lambda>p. [entry fg p]) `# P \<le># ch \<Longrightarrow>
@@ -211,7 +211,7 @@ lemma (in flowgraph) S_sound_ntrp:
   shows Q
 proof -
   from A obtain ee where EE: "eel=LOC ee" "(([u],{#}),ee,(sh,ch))\<in>ntrs fg" by (auto elim: gtrp.cases)
-  have CHFMT: "!!s. s:# ch \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> (u,Spawn p,v)\<in>edges fg \<and> initialproc fg p" by (auto intro: ntrs_c_cases_s[OF EE(2)])
+  have CHFMT: "!!s. s \<in># ch \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> (u,Spawn p,v)\<in>edges fg \<and> initialproc fg p" by (auto intro: ntrs_c_cases_s[OF EE(2)])
   with c_of_initial_no_mon have CHNOMON: "mon_c fg ch = {}" by blast
   from EE(2) obtain p u' v w where FIRSTSPLIT: "ee=LCall p#w" "(([u],{#}),LCall p,([entry fg p,u'],{#}))\<in>trss fg" "sh=[v,u']" "(([entry fg p],{#}),w,([v],ch))\<in>trcl (trss fg)" by (auto elim!: ntrs.cases[simplified])
   from FIRSTSPLIT have EDGE: "(u,Call p,u')\<in>edges fg" by (auto elim!: trss.cases)
@@ -238,7 +238,7 @@ proof -
   from P S_precise[OF ENTRY, simplified] trss_bot_proc_const[where s="[]" and s'="[]", simplified] obtain wsl ch where 
     SLPATH: "(([entry fg p], {#}), wsl, [v], ch) \<in> trcl (trss fg)" "size P \<le> k" "(\<lambda>p. [entry fg p]) `# P \<le># ch" "M = mon_w fg wsl" by fastforce
   from mon_n_same_proc[OF trss_bot_proc_const[where s="[]" and s'="[]", simplified, OF SLPATH(1)]] have MON_V: "mon_n fg v = mon fg p" by (simp)
-  from trss_c_cases[OF SLPATH(1), simplified] have CHFMT: "\<And>s. s :# ch \<Longrightarrow> \<exists>p. s = [entry fg p] \<and> (\<exists>u v. (u, Spawn p, v) \<in> edges fg) \<and> initialproc fg p" by blast
+  from trss_c_cases[OF SLPATH(1), simplified] have CHFMT: "\<And>s. s \<in># ch \<Longrightarrow> \<exists>p. s = [entry fg p] \<and> (\<exists>u v. (u, Spawn p, v) \<in> edges fg) \<and> initialproc fg p" by blast
   with c_of_initial_no_mon have CHNOMON: "mon_c fg ch = {}" by blast
   -- "From the constraints prerequisites, we can construct the first step"
   have FS: "(([u],{#}),LCall p#wsl,([v,u'],ch))\<in>ntrs fg" proof (rule ntrs_step[where r="[]", simplified])
@@ -280,7 +280,7 @@ inductive_set
     \<Longrightarrow> ( u, mon fg p \<union> M \<union> Ml, Me, ah_update h (mon fg p,M) (Ml\<union>Me)) 
         \<in> RU_cs fg U"
   | RU_spawn: "\<lbrakk> (u,Call p,u')\<in>edges fg; proc_of fg v = p; (v,M,P)\<in>S_cs fg 1; 
-                 q:#P; (entry fg q,Ml,Me,h)\<in>RU_cs fg U; 
+                 q \<in># P; (entry fg q,Ml,Me,h)\<in>RU_cs fg U; 
                  (mon_n fg u \<union> mon fg p) \<inter> (Ml \<union> Me)={} \<rbrakk> 
     \<Longrightarrow> (u,mon fg p \<union> M, Ml \<union> Me, ah_update h (mon fg p,M) (Ml\<union>Me))
         \<in> RU_cs fg U"
@@ -319,12 +319,12 @@ lemma (in flowgraph) ntr_reverse_split_atU:
           A: "atU U c'" and 
           B: "(c,w,c')\<in>trcl (ntr fg)" 
   shows "\<exists>s w' c1'. 
-           s:#c \<and> w'\<preceq>w \<and> c1' \<le># c' \<and>
+           s \<in># c \<and> w'\<preceq>w \<and> c1' \<le># c' \<and>
            atU U c1' \<and> ({#s#},w',c1')\<in>trcl (ntr fg)" 
 proof -
   obtain ui r ce' where C'FMT: "c'={#ui#r#}+ce'" "ui\<in>U" by (rule atU_fmt[OF A], simp only: mset_contains_eq) (blast dest: sym)
   with ntr_reverse_split[OF _ V] B obtain s ce w1 w2 ce1' ce2' where RSPLIT: "c={#s#}+ce" "ce'=ce1'+ce2'" "w\<in>w1\<otimes>\<^bsub>\<alpha>n fg\<^esub>w2" "({#s#}, w1, {#ui#r#} + ce1') \<in> trcl (ntr fg)" by blast
-  with C'FMT have "s:#c" "w1\<preceq>w" "{#ui#r#}+ce1' \<le># c'" "atU U ({#ui#r#}+ce1')" by (auto dest: cil_ileq)
+  with C'FMT have "s \<in># c" "w1\<preceq>w" "{#ui#r#}+ce1' \<le># c'" "atU U ({#ui#r#}+ce1')" by (auto dest: cil_ileq)
   with RSPLIT(4) show ?thesis by blast
 qed
 
@@ -365,7 +365,7 @@ next
     -- "The first step consists of an initial call and a same-level path"
     FS_FMT: "eel = LOC (LCall p # w)" "(u, Call p, u') \<in> edges fg" "sh = [v, u']" "proc_of fg v = p" "mon_c fg ch = {}" 
     -- "The only environment threads after the first step are the threads that where spawned by the first step "
-    and CHFMT: "\<And>s. s:# ch \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> (u,Spawn p,v)\<in>edges fg \<and> initialproc fg p"
+    and CHFMT: "\<And>s. s \<in># ch \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> (u,Spawn p,v)\<in>edges fg \<and> initialproc fg p"
     -- {* For the same-level path, we find a corresponding entry in the @{text "S_cs"}-constraint system *}
     and S_ENTRY_PAT: "\<And>P. (\<lambda>p. [entry fg p]) `# P \<le># ch \<Longrightarrow> (v, mon_w fg w, P) \<in> S_cs fg (size P)"
     by (rule S_sound_ntrp[OF SPLIT(1)]) blast
@@ -420,7 +420,7 @@ next
     from cil_ileq[OF LESPLIT(1)] le_list_length[of "map ENV w2" "wwl"] have ILEQ: "map ENV w2\<preceq>wwl" and LEN: "length w2 \<le> length wwl" by (auto)
     from HVALID have CHVALID: "valid fg ch" "mon_s fg sh \<inter> mon_c fg ch = {}" by (auto simp add: valid_unconc)
       -- {* We first identify the actual thread from that @{term U} was reached *}
-    from ntr_reverse_split_atU[OF CHVALID(1) right LESPLIT(4)] obtain q wr cr' where RI: "[entry fg q] :# ch" "wr\<preceq>w2" "cr'\<le>#c2'" "atU U cr'" "({#[entry fg q]#},wr,cr')\<in>trcl (ntr fg)" by (blast dest: CHFMT)
+    from ntr_reverse_split_atU[OF CHVALID(1) right LESPLIT(4)] obtain q wr cr' where RI: "[entry fg q] \<in># ch" "wr\<preceq>w2" "cr'\<le>#c2'" "atU U cr'" "({#[entry fg q]#},wr,cr')\<in>trcl (ntr fg)" by (blast dest: CHFMT)
       -- "In order to apply the induction hypothesis, we have to convert the reaching path to loc/env semantics"
     from ntrs.gtr2gtrp[where c="{#}", simplified, OF RI(5)] obtain sr' cre' wwr where RI_NTRP: "cr'={#sr'#}+cre'" "wr=map le_rem_s wwr" "(([entry fg q],{#}),wwr,(sr',cre'))\<in>trcl (ntrp fg)" by blast
     from LEN le_list_length[OF RI(2)] RI_NTRP(2) have LEN': "length wwr \<le> length wwl" by simp
@@ -491,7 +491,7 @@ next
   then obtain w s' c' where IHAPP: "(([v], {#}), w, s', c') \<in> trcl (ntrp fg)" "atU U ({#s'#} + c')" "mon_loc fg w = Ml" "mon_env fg w = Me" "\<alpha>ah (map (\<alpha>nl fg) w) = h" by blast
   from RU_call.hyps(2) S_precise[OF RU_call.hyps(3), simplified] trss_bot_proc_const[where s="[]" and s'="[]", simplified] obtain wsl ch where 
     SLPATH: "(([entry fg p], {#}), wsl, [v], ch) \<in> trcl (trss fg)" "M = mon_w fg wsl" by fastforce
-  from trss_c_cases[OF SLPATH(1), simplified] have CHFMT: "\<And>s. s :# ch \<Longrightarrow> \<exists>p. s = [entry fg p] \<and> (\<exists>u v. (u, Spawn p, v) \<in> edges fg) \<and> initialproc fg p" by blast
+  from trss_c_cases[OF SLPATH(1), simplified] have CHFMT: "\<And>s. s \<in># ch \<Longrightarrow> \<exists>p. s = [entry fg p] \<and> (\<exists>u v. (u, Spawn p, v) \<in> edges fg) \<and> initialproc fg p" by blast
   with c_of_initial_no_mon have CHNOMON: "mon_c fg ch = {}" by blast
     -- "From the constraints prerequisites, we can construct the first step"
   have FS: "(([u],{#}),LCall p#wsl,([v,u'],ch))\<in>ntrs fg" proof (rule ntrs_step[where r="[]", simplified])
@@ -526,7 +526,7 @@ next
   from RU_spawn.hyps(2) S_precise[OF RU_spawn.hyps(3), simplified] trss_bot_proc_const[where s="[]" and s'="[]", simplified] obtain wsl ch where 
     SLPATH: "(([entry fg p], {#}), wsl, [v], ch) \<in> trcl (trss fg)" "M = mon_w fg wsl" "size P \<le> 1" "(\<lambda>p. [entry fg p]) `# P \<le># ch" by fastforce
   with RU_spawn.hyps(4) obtain che where PFMT: "P={#q#}" "ch = {#[entry fg q]#} + che" by (auto elim!: mset_size_le1_cases mset_le_addE)
-  from trss_c_cases[OF SLPATH(1), simplified] have CHFMT: "\<And>s. s :# ch \<Longrightarrow> \<exists>p. s = [entry fg p] \<and> (\<exists>u v. (u, Spawn p, v) \<in> edges fg) \<and> initialproc fg p" by blast
+  from trss_c_cases[OF SLPATH(1), simplified] have CHFMT: "\<And>s. s \<in># ch \<Longrightarrow> \<exists>p. s = [entry fg p] \<and> (\<exists>u v. (u, Spawn p, v) \<in> edges fg) \<and> initialproc fg p" by blast
   with c_of_initial_no_mon have CHNOMON: "mon_c fg ch = {}" by blast
   have FS: "(([u],{#}),LCall p#wsl,([v,u'],ch))\<in>ntrs fg" proof (rule ntrs_step[where r="[]", simplified])
     from RU_spawn.hyps(1) show "(([u], {#}), LCall p, [entry fg p, u'], {#}) \<in> trss fg" by (auto intro: trss_call)
@@ -575,17 +575,17 @@ where
          (v,Ml,Me)\<in>RUV_cs fg U V; mon_n fg u \<inter> Me = {} \<rbrakk> 
       \<Longrightarrow> (u,mon fg p \<union> M \<union> Ml,Me)\<in>RUV_cs fg U V"
   | RUV_spawn: 
-      "\<lbrakk> (u,Call p,u')\<in>edges fg; proc_of fg v = p; (v,M,P)\<in>S_cs fg 1; q :# P; 
+      "\<lbrakk> (u,Call p,u')\<in>edges fg; proc_of fg v = p; (v,M,P)\<in>S_cs fg 1; q \<in># P; 
          (entry fg q,Ml,Me)\<in>RUV_cs fg U V; 
          (mon_n fg u \<union> mon fg p) \<inter> (Ml \<union> Me) = {} \<rbrakk> 
       \<Longrightarrow> (u, mon fg p \<union> M, Ml\<union>Me)\<in>RUV_cs fg U V"
   | RUV_split_le: 
-      "\<lbrakk> (u,Call p,u')\<in>edges fg; proc_of fg v = p; (v,M,P)\<in>S_cs fg 1; q :# P; 
+      "\<lbrakk> (u,Call p,u')\<in>edges fg; proc_of fg v = p; (v,M,P)\<in>S_cs fg 1; q \<in># P; 
          (v,Ml,Me,h)\<in>RU_cs fg U; (entry fg q,Ml',Me',h')\<in>RU_cs fg V; 
          (mon_n fg u \<union> mon fg p) \<inter> (Me\<union>Ml'\<union>Me')={}; h [*] h' \<rbrakk> 
       \<Longrightarrow> (u, mon fg p \<union> M \<union> Ml, Me \<union> Ml' \<union> Me')\<in>RUV_cs fg U V"
   | RUV_split_el: 
-      "\<lbrakk> (u,Call p,u')\<in>edges fg; proc_of fg v = p; (v,M,P)\<in>S_cs fg 1; q :# P; 
+      "\<lbrakk> (u,Call p,u')\<in>edges fg; proc_of fg v = p; (v,M,P)\<in>S_cs fg 1; q \<in># P; 
          (v,Ml,Me,h)\<in>RU_cs fg V; (entry fg q,Ml',Me',h')\<in>RU_cs fg U; 
          (mon_n fg u \<union> mon fg p) \<inter> (Me\<union>Ml'\<union>Me')={}; h [*] h' \<rbrakk> 
       \<Longrightarrow> (u, mon fg p \<union> M \<union> Ml, Me \<union> Ml' \<union> Me')\<in>RUV_cs fg U V"
@@ -635,7 +635,7 @@ next
     by blast
   obtain p u' v w where 
     FS_FMT: "ee = LOC (LCall p # w)" "(u, Call p, u') \<in> edges fg" "sh = [v, u']" "proc_of fg v = p" "mon_c fg ch = {}" 
-    and CHFMT: "\<And>s. s :# ch \<Longrightarrow> \<exists>p u v. s = [entry fg p] \<and> (u, Spawn p, v) \<in> edges fg \<and> initialproc fg p"
+    and CHFMT: "\<And>s. s \<in># ch \<Longrightarrow> \<exists>p u v. s = [entry fg p] \<and> (u, Spawn p, v) \<in> edges fg \<and> initialproc fg p"
     and S_ENTRY_PAT: "\<And>P. (\<lambda>p. [entry fg p]) `# P \<le># ch \<Longrightarrow> (v, mon_w fg w, P) \<in> S_cs fg (size P)"
     by (rule S_sound_ntrp[OF SPLIT(1)]) blast
   from ntrp_mon_env_w_no_ctx[OF SPLIT(2)] FS_FMT(3,4) edges_part[OF FS_FMT(2)] have MON_PU: "mon_env fg ww \<inter> (mon fg p \<union> mon_n fg u) = {}" by (auto simp add: mon_n_def)
@@ -689,10 +689,10 @@ next
       case right' -- "The nodes are reached from different threads"
       from R_STACKS(2,3) have ATUV: "atU U ({#sq'#}+csp_q)" "atU V ce22'" by (-) (subst R_CONV(1)[symmetric], simp, subst right'(1), simp)
       -- "We have to reverse-split the second path again, to extract the second interesting thread"
-      obtain q' w22' ce22e' where REVSPLIT': "[entry fg q'] :# ceh" "w22'\<preceq>w22" "ce22e' \<le># ce22'" "atU V ce22e'" "({#[entry fg q']#},w22',ce22e')\<in>trcl (ntr fg)"
+      obtain q' w22' ce22e' where REVSPLIT': "[entry fg q'] \<in># ceh" "w22'\<preceq>w22" "ce22e' \<le># ce22'" "atU V ce22e'" "({#[entry fg q']#},w22',ce22e')\<in>trcl (ntr fg)"
       proof -
         from ntr_reverse_split_atU[OF _ ATUV(2) REVSPLIT(7)] ntrp_valid_preserve_s[OF SPLIT(1), simplified] REVSPLIT(1) obtain sq'' w22' ce22e' where 
-          "sq'' :# ceh" "w22'\<preceq>w22" "ce22e' \<le># ce22'" "atU V ce22e'" "({#sq''#},w22',ce22e')\<in>trcl (ntr fg)" by (auto simp add: valid_unconc)
+          "sq'' \<in># ceh" "w22'\<preceq>w22" "ce22e' \<le># ce22'" "atU V ce22e'" "({#sq''#},w22',ce22e')\<in>trcl (ntr fg)" by (auto simp add: valid_unconc)
         moreover from CHFMT[of sq''] REVSPLIT(1) this(1) obtain q' where "sq''=[entry fg q']" by auto 
         ultimately show thesis using that by blast 
       qed
@@ -725,10 +725,10 @@ next
   next
     case lr -- "The first node is reached from the local thread, the second one from a spawned thread"
     from RU_sound[OF DECOMP_LOC(2), of U] lr(1) DECOMP_LOC(1) obtain Ml Me h where RU: "(v, Ml, Me, h) \<in> RU_cs fg U" "Ml \<subseteq> mon_loc fg w1" "Me \<subseteq> mon_env fg w1" "h \<le> \<alpha>ah (map (\<alpha>nl fg) w1)" by auto
-    obtain Ml' Me' h' q' where RV: "[entry fg q'] :# ch" "(entry fg q', Ml', Me', h') \<in> RU_cs fg V" "Ml' \<subseteq> mon_ww fg w2" "Me' \<subseteq> mon_ww fg w2" "h' \<le> \<alpha>ah (map (\<alpha>n fg) w2)"
+    obtain Ml' Me' h' q' where RV: "[entry fg q'] \<in># ch" "(entry fg q', Ml', Me', h') \<in> RU_cs fg V" "Ml' \<subseteq> mon_ww fg w2" "Me' \<subseteq> mon_ww fg w2" "h' \<le> \<alpha>ah (map (\<alpha>n fg) w2)"
     proof -
       -- {* We have to extract the interesting thread from the spawned threads in order to get an entry in @{term "RU fg V"} *}
-      obtain q' w2' c2i' where REVSPLIT: "[entry fg q'] :# ch" "w2'\<preceq>w2" "c2i' \<le># c2'" "atU V c2i'" "({#[entry fg q']#},w2',c2i')\<in>trcl (ntr fg)"
+      obtain q' w2' c2i' where REVSPLIT: "[entry fg q'] \<in># ch" "w2'\<preceq>w2" "c2i' \<le># c2'" "atU V c2i'" "({#[entry fg q']#},w2',c2i')\<in>trcl (ntr fg)"
         using ntr_reverse_split_atU[OF _ lr(2) LESPLIT(4)] ntrp_valid_preserve_s[OF SPLIT(1), simplified] CHFMT by (simp add: valid_unconc) blast
       from ntrs.gtr2gtrp[where c="{#}", simplified, OF REVSPLIT(5)] obtain s2i' c2ie' ww2' where R_CONV: "c2i'={#s2i'#}+c2ie'" "w2'=map le_rem_s ww2'" "(([entry fg q'], {#}), ww2', s2i', c2ie') \<in> trcl (ntrp fg)" .
       from RU_sound[OF R_CONV(3), of V] REVSPLIT(4) R_CONV(1) obtain Ml' Me' h' where RV: "(entry fg q', Ml', Me', h') \<in> RU_cs fg V" "Ml' \<subseteq> mon_loc fg ww2'" "Me' \<subseteq> mon_env fg ww2'" "h' \<le> \<alpha>ah (map (\<alpha>nl fg) ww2')" by auto
@@ -749,10 +749,10 @@ next
   next
     case rl -- "The second node is reached from the local thread, the first one from a spawned thread. This case is symmetric to the previous one"
     from RU_sound[OF DECOMP_LOC(2), of V] rl(1) DECOMP_LOC(1) obtain Ml Me h where RV: "(v, Ml, Me, h) \<in> RU_cs fg V" "Ml \<subseteq> mon_loc fg w1" "Me \<subseteq> mon_env fg w1" "h \<le> \<alpha>ah (map (\<alpha>nl fg) w1)" by auto
-    obtain Ml' Me' h' q' where RU: "[entry fg q'] :# ch" "(entry fg q', Ml', Me', h') \<in> RU_cs fg U" "Ml' \<subseteq> mon_ww fg w2" "Me' \<subseteq> mon_ww fg w2" "h' \<le> \<alpha>ah (map (\<alpha>n fg) w2)"
+    obtain Ml' Me' h' q' where RU: "[entry fg q'] \<in># ch" "(entry fg q', Ml', Me', h') \<in> RU_cs fg U" "Ml' \<subseteq> mon_ww fg w2" "Me' \<subseteq> mon_ww fg w2" "h' \<le> \<alpha>ah (map (\<alpha>n fg) w2)"
     proof -
       -- {* We have to extract the interesting thread from the spawned threads in order to get an entry in @{term "RU fg V"} *}
-      obtain q' w2' c2i' where REVSPLIT: "[entry fg q'] :# ch" "w2'\<preceq>w2" "c2i' \<le># c2'" "atU U c2i'" "({#[entry fg q']#},w2',c2i')\<in>trcl (ntr fg)"
+      obtain q' w2' c2i' where REVSPLIT: "[entry fg q'] \<in># ch" "w2'\<preceq>w2" "c2i' \<le># c2'" "atU U c2i'" "({#[entry fg q']#},w2',c2i')\<in>trcl (ntr fg)"
         using ntr_reverse_split_atU[OF _ rl(2) LESPLIT(4)] ntrp_valid_preserve_s[OF SPLIT(1), simplified] CHFMT by (simp add: valid_unconc) blast
       from ntrs.gtr2gtrp[where c="{#}", simplified, OF REVSPLIT(5)] obtain s2i' c2ie' ww2' where R_CONV: "c2i'={#s2i'#}+c2ie'" "w2'=map le_rem_s ww2'" "(([entry fg q'], {#}), ww2', s2i', c2ie') \<in> trcl (ntrp fg)" .
       from RU_sound[OF R_CONV(3), of U] REVSPLIT(4) R_CONV(1) obtain Ml' Me' h' where RU: "(entry fg q', Ml', Me', h') \<in> RU_cs fg U" "Ml' \<subseteq> mon_loc fg ww2'" "Me' \<subseteq> mon_env fg ww2'" "h' \<le> \<alpha>ah (map (\<alpha>nl fg) ww2')" by auto

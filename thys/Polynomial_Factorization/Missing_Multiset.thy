@@ -28,11 +28,10 @@ proof -
     proof (cases "x \<in># ps")
       case True
       then obtain qs where ps: "ps = qs + {#x#}" by (metis insert_DiffM2)
-      show ?thesis unfolding ps mset_le_mono_add_right_cancel 
-        by (auto simp: mset_le_insertD)
+      show ?thesis unfolding ps mset_le_mono_add_right_cancel
+        by (auto dest: mset_le_insertD)
     next
       case False
-      hence cx: "count ps x = 0" by auto
       hence id: "(ps \<subseteq># xs + {#x#}) = (ps \<subseteq># xs)"
         by (simp add: inter_add_left1 subset_mset.inf.absorb_iff2)
       show ?thesis unfolding id using False by auto
