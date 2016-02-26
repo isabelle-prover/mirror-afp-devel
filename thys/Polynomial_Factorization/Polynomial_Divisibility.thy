@@ -78,7 +78,7 @@ proof (unfold_locales, unfold mk_monoid_simps)
     assume x: "x \<noteq> 0" and div: "x divides\<^bsub>poly_monoid\<^esub> a"
       "x divides\<^bsub>poly_monoid\<^esub> b" 
     hence "x dvd a" "x dvd b" unfolding f[OF x b] f[OF x a] by auto
-    hence "x dvd (gcd a b)" by blast
+    hence "x dvd (gcd a b)" by (rule gcd_greatest)
     thus "x divides\<^bsub>poly_monoid\<^esub> gcd a b" unfolding f[OF x g] .
   qed (insert a b, auto)
 qed
@@ -158,20 +158,20 @@ proof (cases "p = 0")
   proof (cases "r = 0")
     case True
     thus ?thesis using p assms 
-      by (cases "q = 0", auto simp: dvd_smult gcd_poly.simps normalize_poly_def)
+      by (cases "q = 0") (auto simp: dvd_smult gcd_non_0 normalize_poly_def)
   next
     case False note r = this
     show ?thesis
     proof (cases "q = 0")
       case True
-      thus ?thesis using p r assms by (auto simp: dvd_smult gcd_poly.simps normalize_poly_def)
+      thus ?thesis using p r assms by (auto simp: dvd_smult gcd_non_0 normalize_poly_def)
     next
       case False note q = this
       from q r have gcd: "gcd q r \<noteq> 0" by auto
       def g \<equiv> "gcd q r"
       have g: "g \<noteq> 0" unfolding g_def using gcd .
-      obtain t where qq: "q = g * t" using poly_gcd_dvd1[of q r] unfolding g_def dvd_def by auto
-      obtain s where rr: "r = g * s" using poly_gcd_dvd2[of q r] unfolding g_def dvd_def by auto
+      obtain t where qq: "q = g * t" using gcd_dvd1[of q r] unfolding g_def dvd_def by auto
+      obtain s where rr: "r = g * s" using gcd_dvd2[of q r] unfolding g_def dvd_def by auto
       from qq q have t: "t \<noteq> 0" by auto
       from rr r have s: "s \<noteq> 0" by auto
       let ?C = "carrier poly_monoid"

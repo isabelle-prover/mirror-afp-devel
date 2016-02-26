@@ -471,6 +471,9 @@ definition gcd_rat_poly :: "rat poly \<Rightarrow> rat poly \<Rightarrow> rat po
      h = map_poly rat_of_int (gcd_int_poly f' g')
    in smult (inverse (coeff h (degree h))) h)"
 
+lemma normalize_smult: "a \<noteq> 0 \<Longrightarrow> normalize (smult a p) = normalize p"
+  by (simp add: normalize_poly_def  field_simps)
+
 lemma gcd_rat_poly[simp]: "gcd_rat_poly = gcd"
 proof (intro ext)
   fix f g
@@ -489,7 +492,7 @@ proof (intro ext)
   have id: "gcd_rat_poly f g = ?gcd"
     unfolding lc_def h_def gcd_rat_poly_def Let_def faf' gbg' snd_conv by auto
   show "gcd_rat_poly f g = gcd f g" unfolding id
-  proof (rule sym, rule poly_gcd_unique)
+  proof (rule gcdI)
     have "?h dvd ?ri f'" using gcd(1) unfolding dvd_def by auto
     hence "?h dvd f" unfolding f by (rule dvd_smult)
     thus dvd_f: "?gcd dvd f"
@@ -498,16 +501,8 @@ proof (intro ext)
     hence "?h dvd g" unfolding g by (rule dvd_smult)
     thus dvd_g: "?gcd dvd g"
       by (metis dvdE inverse_zero_imp_zero lc_def leading_coeff_neq_0 mult_eq_0_iff smult_dvd_iff)
-    show "coeff ?gcd (degree ?gcd) = (if f = 0 \<and> g = 0 then 0 else 1)" 
-    proof (cases "f = 0 \<and> g = 0")
-      case True
-      hence idd: "f = 0" "g = 0" by auto
-      show ?thesis unfolding id[symmetric] unfolding idd by code_simp
-    next
-      case False
-      hence "lc \<noteq> 0" using dvd_f dvd_g by auto
-      thus ?thesis using False unfolding lc_def by simp
-    qed
+    show "normalize ?gcd = ?gcd"
+      by (cases "lc = 0") (simp_all add: normalize_poly_def field_simps lc_def)
     fix k
     assume dvd: "k dvd f" "k dvd g"
     obtain k' c where kck: "rat_to_normalized_int_poly k = (c,k')" by force

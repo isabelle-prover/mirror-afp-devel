@@ -90,24 +90,13 @@ proof -
   from irreducible_dvd_mult[OF irred s] p irred show ?thesis by auto
 qed  
 
+(* TODO: Move *)
+lemma normalize_monic: "monic p \<Longrightarrow> normalize p = p"
+  by (simp add: normalize_poly_def)
 
-lemma poly_gcd_monic_factor: fixes p :: "'a poly"
-  assumes "monic p"
-  shows "gcd (p * q) (p * r) = p * gcd q r"
-proof (rule poly_gcd_unique[OF _ _ dvd_gcd_mult])
-  show "p * gcd q r dvd p * q" by simp
-  show "p * gcd q r dvd p * r" by simp
-  have p: "p \<noteq> 0" using assms by auto
-  let ?r = "(if p * q = 0 \<and> p * r = 0 then 0 else (1 :: 'a))"
-  let ?l = "coeff (p * gcd q r) (degree (p * gcd q r))"
-  show "?l = ?r"
-  proof (cases "q = 0 \<and> r = 0")
-    case False
-    hence "?r = 1" using p by auto
-    from p assms have "?l = 1" by (simp add: False monic_mult poly_gcd_monic)
-    thus ?thesis unfolding `?r = 1` by simp
-  qed auto
-qed
+lemma poly_gcd_monic_factor:
+  "monic p \<Longrightarrow>  gcd (p * q) (p * r) = p * gcd q r"
+  by (rule gcdI [symmetric]) (simp_all add: normalize_mult normalize_monic dvd_gcd_mult)
 end
 
 subsection \<open>Yun's factorization algorithm\<close>
@@ -217,7 +206,7 @@ private lemma coprime_generic: assumes bs: "bs \<subseteq> as"
 proof -
   have single: "?single \<noteq> 0" by (rule nonzero_gen[OF bs])
   show ?thesis
-  proof (rule poly_gcd_unique)
+  proof (rule gcdI [symmetric])
     fix k
     assume dvd: "k dvd ?single" "k dvd ?onederiv"
     note bs_monic = as_monic[OF set_mp[OF bs]]
@@ -336,8 +325,8 @@ proof (induct n and n and n and n rule: A_B_C_D.induct)
   let ?an = "(\<Prod> (a, i) \<in> as \<inter> UNIV \<times> {n}. a)"
   let ?bn = "(\<Prod>(a, i)\<in>as - UNIV \<times> {0..<Suc n}. a)"
   show "A n = ?an" unfolding A.simps
-  proof (rule poly_gcd_unique)
-    have monB1: "monic (B n)" unfolding Bn by (rule monic_gen, auto)
+  proof (rule gcdI [symmetric])
+    have monB1: "monic (B n)" unfolding Bn by (rule monic_gen) auto
     hence "B n \<noteq> 0" by auto
     let ?dn = "(\<Sum> (a,i)\<in>as - UNIV \<times> {0 ..< Suc n}. 
         (\<Prod>(b, j)\<in> as - UNIV \<times> {0 ..< Suc n} - {(a, i)}. b) * (smult (of_nat (i - n)) (pderiv a)))"
@@ -355,8 +344,7 @@ proof (induct n and n and n and n rule: A_B_C_D.induct)
     }
     have mon: "monic ?an"
       by (rule monic_gen, auto)
-    show "coeff ?an (degree ?an) = (if B n = 0 \<and> D n = 0 then 0 else 1)" 
-      unfolding mon using `B n \<noteq> 0` by auto
+    thus "normalize ?an = ?an" by (simp add: normalize_monic)
   qed
 next
   case 2 (* B 0 *)
@@ -477,7 +465,7 @@ qed
 
 lemma gcd_A_A: assumes "i \<noteq> j"
   shows "GCD.gcd (A i) (A j) = 1"
-proof (rule poly_gcd_unique)
+proof (rule gcdI [symmetric])
   fix k  
   assume dvd: "k dvd A i" "k dvd A j"
   have Ai: "A i \<noteq> 0" unfolding A
@@ -923,7 +911,7 @@ proof -
     from ars have "b dvd a" unfolding a by auto
     with db have "b dvd gcd a b" by simp
     hence "degree (gcd a b) \<ge> degree b" using db 
-      by (metis degree_0 dvd_imp_degree_le poly_gcd_zero_iff)
+      by (metis degree_0 dvd_imp_degree_le gcd_eq_0_iff)
     with db have "gcd a b \<noteq> 1" by auto
     with sff(3)[of a i b j] rem have "(a,i) = (b,j)" by auto
     with sff(5) rem have False by auto
@@ -957,7 +945,7 @@ proof -
     let ?g = "gcd r s"
     assume no1: "?g \<noteq> 1"
     from r s rs have "monic ?g"
-      by (metis poly_gcd_monic)
+      using poly_gcd_monic[of r s] by (auto simp: lead_coeff_def)
     with no1 have deg: "degree ?g \<noteq> 0" 
       by (simp add: monic_degree_0)
     have "?g * ?g dvd a" unfolding a 
@@ -971,8 +959,7 @@ proof -
     assume bj: "(b,j) \<in> ?rem"
     from sff(3)[of b j a i] no_mem[OF bj] bj have gcd: "gcd b a = 1" by auto
     hence rs: "gcd b (r * s) = 1" and sr: "gcd b (s * r) = 1" unfolding a by (auto simp: ac_simps)
-    from coprime_poly_factor[OF rs] s have br: "gcd b r = 1" by force
-    from coprime_poly_factor[OF sr] r have bs: "gcd b s = 1" by force
+    from rs sr have br: "gcd b r = 1" and bs: "gcd b s = 1" by (simp_all add: coprime_mul_eq)
     from br bs have "gcd r b = 1" "gcd s b = 1"
       by (auto simp: gcd.commute)
     note this br bs
