@@ -68,9 +68,8 @@ locale snd_sylow = sylow +
 context snd_sylow
 begin
 
-lemma pa_not_zero:
-  shows "p ^ a \<noteq> 0"
-by (metis less_numeral_extra(3) prime_p zero_less_prime_power)
+lemma pa_not_zero: "p ^ a \<noteq> 0"
+  by (simp add: prime_gt_0_nat prime_p)
 
 lemma sylow_greater_zero:
   shows "card (subgroups_of_size (p ^ a)) > 0"

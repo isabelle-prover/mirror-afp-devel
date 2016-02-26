@@ -84,7 +84,7 @@ proof-
   }
   hence "EX x l. x \<longlonglongrightarrow> x0 & (f o x) \<longlonglongrightarrow> l & ~(f x0 <= l)"
      apply(rule_tac x="x o r" in exI) apply(rule_tac x=l in exI)
-     using r_def x_def by (auto simp add: o_assoc lim_subseq)
+     using r_def x_def by (auto simp add: o_assoc LIMSEQ_subseq_LIMSEQ)
   hence "~?lhs" unfolding lsc_at_def by blast
 }
 moreover

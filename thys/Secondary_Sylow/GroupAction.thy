@@ -467,7 +467,7 @@ lemma p_dvd_orbit_size:
   shows "p dvd card N"
 proof -
   from Norbit obtain m where m:"m \<in> M" "N = orbit m"  unfolding orbits_def quotient_def orbit_def by auto
-  from prime have "0 < p ^ a" by (metis zero_less_prime_power)
+  from prime have "0 < p ^ a" by (simp add: prime_gt_0_nat) 
   with orderG have "finite (carrier G)" unfolding order_def by (metis card_infinite less_nat_zero_code)
   with m have "order G = card (orbit m) * card (stabilizer m)" by (metis orbit_size)
   with orderG m have "p ^ a = card N * card (stabilizer m)" by simp
