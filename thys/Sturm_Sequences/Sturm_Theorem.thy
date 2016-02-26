@@ -919,7 +919,7 @@ proof (induction p q rule: sturm_aux.induct)
           case False
             hence "q \<noteq> 0" by force
             from 1(1)[OF False r] show ?thesis
-                by (subst gcd_poly.simps(2)[OF `q \<noteq> 0`], simp)
+                by (subst gcd_non_0[OF `q \<noteq> 0`], simp)
         next
           case True
             with 1(2) and `r \<noteq> p` have "r = q"

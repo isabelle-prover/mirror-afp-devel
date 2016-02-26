@@ -1,6 +1,6 @@
 (* Author: Manuel Eberl <eberlm@in.tum.de> *)
 theory Misc_Polynomial
-imports "~~/src/HOL/Library/Polynomial" "~~/src/HOL/Library/Polynomial_GCD_euclidean"
+imports "~~/src/HOL/Library/Polynomial" "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
 begin
 
 subsection {* Analysis *}
@@ -20,12 +20,8 @@ proof (rule connected_local_const)
 qed
 
 subsection {* Polynomials *}
-subsubsection {* General simplification lemmas *}
 
-lemma poly_gcd_right_idem: "gcd (gcd (p :: _ poly) q) q = gcd p q"
-    by (rule poly_gcd_unique, simp_all add: poly_gcd_monic)
-lemma poly_gcd_left_idem: "gcd p (gcd (p :: _ poly) q) = gcd p q"
-    by (rule poly_gcd_unique, simp_all add: poly_gcd_monic)
+subsubsection {* General simplification lemmas *}
 
 lemma degree_power_eq:
   "(p::('a::idom) poly) \<noteq> 0 \<Longrightarrow> degree (p^n) = n * degree p"
@@ -109,55 +105,6 @@ proof-
       using assms by (simp add: field_simps)
 qed
 
-
-text {*
-  A function that gives witnesses for Bezout's lemma for polynomials.
-*}
-function bezw_poly where
-  "bezw_poly (p::('a::field) poly) q =
-      (if q = 0 then ([:inverse (coeff p (degree p)):], 0)
-                else (case bezw_poly q (p mod q) of
-                        (r,s) \<Rightarrow> (s, r - s * (p div q))))"
-by (pat_completeness, simp_all)
-termination by (relation "measure (\<lambda>(x, y). if y = 0 then 0 else Suc (degree y))")
-               (auto dest: degree_mod_less)
-declare bezw_poly.simps[simp del]
-
-text {*
-  Bezout's lemma for polynomials.
-*}
-lemma bezout_poly:
-  "gcd p q = fst (bezw_poly p q) * p + snd (bezw_poly p q) * q"
-proof (induction p q rule: gcd_poly.induct)
-  case (1 p)
-    show ?case by (subst bezw_poly.simps)
-      (simp add: gcd_poly.simps(1) normalize_poly_def)
-next
-  case prems: (2 q p)
-    let ?b = "bezw_poly q (p mod q)"
-    let ?b' = "bezw_poly p q"
-
-    from prems have b'_b: "fst ?b' = snd ?b"
-                          "snd ?b' = fst ?b - snd ?b * (p div q)"
-        by (subst bezw_poly.simps, simp split: prod.split)+
-    hence "fst ?b' * p + snd ?b' * q =
-                snd ?b * p + (fst ?b - snd ?b * (p div q)) * q" by simp
-    also have "... = fst ?b * q + snd ?b * (p - p div q * q)"
-        by (simp add: algebra_simps)
-    also have "p - p div q * q = p mod q"
-        using mod_div_equality[of p q] by (simp add: algebra_simps)
-    also have "fst ?b * q + snd ?b * (p mod q) = gcd q (p mod q)"
-        using prems by simp
-    also have "... = gcd p q"
-        using prems by (subst gcd_poly.simps(2)[of q p], simp_all)
-    finally show ?case ..
-qed
-
-lemma bezout_poly': "\<exists>r s. gcd (p::('a::field) poly) q = r*p+s*q"
-    using bezout_poly by blast
-
-
-
 (* TODO: make this less ugly *)
 lemma poly_div_gcd_squarefree_aux:
   assumes "pderiv (p::('a::real_normed_field) poly) \<noteq> 0"
@@ -165,8 +112,8 @@ lemma poly_div_gcd_squarefree_aux:
   shows "coprime (p div d) (pderiv (p div d))" and
         "\<And>x. poly (p div d) x = 0 \<longleftrightarrow> poly p x = 0"
 proof -
-  from bezout_poly' obtain r s where rs: "d = r * p + s * pderiv p"
-    unfolding d_def by blast
+  from bezout[of p "pderiv p"] obtain r s where rs [symmetric]: "r * p + s * pderiv p = d"
+    unfolding d_def by force
   def t \<equiv> "p div d"
   def [simp]: p' \<equiv> "pderiv p"
   def [simp]: d' \<equiv> "pderiv d"
@@ -265,11 +212,11 @@ proof-
       then obtain c where [simp]: "p = [:c:]" using pderiv_iszero by blast
       from assms(1) have "c \<noteq> 0" by simp
       from True have "d = smult (inverse c) p"
-          by (simp add: d_def gcd_poly.simps(1) normalize_poly_def)
+          by (simp add: d_def normalize_poly_def)
       hence "p div d = [:c:]" using `c \<noteq> 0`
           by (simp add: div_smult_right assms(1) one_poly_def[symmetric])
       thus ?thesis using `c \<noteq> 0`
-        by (simp add: gcd_poly.simps(1) one_poly_def normalize_poly_def)
+        by (simp add: one_poly_def normalize_poly_def)
   qed
   thus ?A and "\<And>x. ?B x" by simp_all
 qed

@@ -11,7 +11,7 @@ text \<open>The theory contains some basic results on polynomials which have not
 theory Missing_Polynomial
 imports 
   "~~/src/HOL/Library/Polynomial"
-  "~~/src/HOL/Library/Polynomial_GCD_euclidean"
+  "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
   Missing_Unsorted
 begin
 
@@ -493,26 +493,6 @@ proof (rule ccontr)
   have "[: -a, 1 :] ^ Suc (order a p) dvd p"
     by (rule power_le_dvd[OF dvd[unfolded k]], simp)
   with order_2[OF p, of a] show False by blast
-qed
-
-lemma coprime_poly_factor: 
-  assumes cop: "coprime (p :: 'a :: field poly) (q * r)" and r: "r \<noteq> 0"
-  shows "coprime p q"
-proof (cases "q = 0")
-  case True
-  with assms show ?thesis by auto
-next
-  case False note q = this
-  with r have qr0: "q * r \<noteq> 0" by auto
-  let ?g = "gcd p (q * r)"
-  let ?g' = "gcd p q"
-  have d0: "degree ?g = 0" unfolding cop by simp
-  have "?g' dvd ?g" by simp
-  from dvd_imp_degree_le[OF this] poly_gcd_monic[of p "q * r"] qr0
-  have "degree ?g' \<le> degree ?g" by auto
-  with d0 have "degree ?g' = 0" by auto
-  with poly_gcd_monic[of p q] q 
-  show ?thesis using monic_degree_0[of ?g'] by auto
 qed
 
 

@@ -12,7 +12,6 @@ theory Euclidean_Algorithm_Extension
 imports 
   Euclidean_Algorithm
   "~~/src/HOL/Library/Polynomial"
-  "~~/src/HOL/Library/Polynomial_GCD_euclidean"
 begin
 
 instantiation nat :: euclidean_semiring_gcd
@@ -191,60 +190,5 @@ next
 qed
 
 end
-
-
-
-instantiation poly :: (field) euclidean_ring_gcd
-begin
-
-definition "(Gcd_poly::'a poly set\<Rightarrow> 'a poly) = Gcd_eucl"
-definition "(Lcm_poly::'a poly set\<Rightarrow> 'a poly) = Lcm_eucl"
-
-instance 
-proof
-  show g: "(gcd::'a poly\<Rightarrow> 'a poly \<Rightarrow> 'a poly) = gcd_eucl"
-  proof (intro ext) 
-    fix x xa::"'a poly"
-    show "gcd x xa = gcd_eucl x xa"
-    proof (induction x xa rule: gcd_eucl.induct)  
-      fix x xa::"'a poly" 
-      assume hyp: "(xa \<noteq> 0 \<Longrightarrow> gcd xa (x mod xa) = gcd_eucl xa (x mod xa))"
-      show "gcd x xa = gcd_eucl x xa"
-      proof (cases "xa=0")
-        case True
-        show ?thesis unfolding True unfolding gcd_poly.simps unfolding gcd_eucl_0 
-          unfolding normalisation_factor_poly_def 
-          by (rule div_poly_eq[symmetric], simp add: pdivmod_rel_def)
-      next
-        case False
-        show ?thesis
-          unfolding gcd_poly.simps(2)[OF False]
-          unfolding gcd_eucl.simps[of x xa]
-          unfolding hyp[OF False]
-          using False by simp
-      qed
-    qed
-  qed
-  show "(lcm::'a poly\<Rightarrow> 'a poly \<Rightarrow> 'a poly) = lcm_eucl" 
-  proof (intro ext)
-    fix a :: "'a poly" and b :: "'a poly"
-    show "lcm a b = lcm_eucl a b" unfolding lcm_poly_def lcm_eucl_def
-      by (cases "a = 0 \<or> b = 0")
-    (auto simp: coeff_mult_degree_sum degree_mult_eq normalisation_factor_poly_def g)
-  qed
-qed (simp_all add: Gcd_poly_def Lcm_poly_def)
-end
-
-    (*
-    value "gcd_eucl (2::int) (5)"
-    value "euclid_ext' (2::int) 5"
-    value "gcd [:2,3,6,5::real :] [:4,6,12,10:]"
-    value "euclid_ext' [:2,3,6,5::real :] [:2,3,6,5 :]"
-    value "Gcd_eucl {[:2,3,6,5::real :], [:2,3,6,5 :]}"
-    value "Lcm {[:2,3,6,5::real :], [:2,3,6,10 :]}"
-    value "Gcd {[:2,3,6,5::real :], [:2,3,6,10 :]}"
-    value "let p = [:2,3,6,5::real:]; q = [:2,3,6,5:] in 
-    fst (euclid_ext' p q) * p + snd (euclid_ext' p q) * q = gcd_eucl p q"
-    *)
 
 end

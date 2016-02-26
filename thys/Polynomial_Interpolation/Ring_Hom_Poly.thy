@@ -343,16 +343,11 @@ lemma map_poly_mod: "map_poly hom (p mod q) = map_poly hom p mod map_poly hom q"
   using map_poly_pdivmod[of p q] unfolding mod_poly_code by (metis snd_map_prod)
 
 lemma map_poly_gcd: "map_poly hom (gcd p q) = gcd (map_poly hom p) (map_poly hom q)"
-proof (induct p q rule: gcd_poly.induct)
-  case (1 p)
-  show ?case unfolding map_poly_simp_0 gcd_poly.simps 
-    map_poly_smult degree_map_poly hom_inverse coeff_map_poly by simp
-next
-  case (2 p q)
-  assume p: "p \<noteq> 0"
-  hence mp: "map_poly hom p \<noteq> 0" unfolding map_poly_0_iff .
-  note simp = gcd_poly.simps(2)
-  show ?case unfolding simp[OF p] simp[OF mp] 2(2) map_poly_mod by simp
+proof (induct p q rule: gcd_eucl.induct)
+  case (1 p b)
+  thus ?case
+    by (cases "b = 0")
+       (simp_all add: gcd_non_0 coeff_map_poly normalize_poly_def map_poly_mod)
 qed
   
 lemma map_poly_power: "map_poly hom (p ^ n) = (map_poly hom p) ^ n"
