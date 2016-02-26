@@ -14,20 +14,12 @@ text {*
   Pratt~\cite{pratt1975certificate}.
 *}
 
-lemma coprime_power_nat:
-  fixes a b :: nat assumes "0 < n" shows "coprime a (b ^ n) \<longleftrightarrow> coprime a b"
-  using assms
-proof (induct n)
-  case (Suc n) then show ?case
-    by (cases n) (simp_all add: coprime_mul_eq_nat del: One_nat_def)
-qed simp
-
 lemma mod_1_coprime_nat:
   fixes a b :: nat assumes "0 < n" "[a ^ n = 1] (mod b)" shows "coprime a b"
 proof -
   from assms have "coprime (a ^ n) b" by (simp cong: cong_gcd_eq_nat)
   with `0 < n` show ?thesis
-    by (simp add: coprime_power_nat gcd.commute del: One_nat_def)
+    by (simp add: coprime_power gcd.commute del: One_nat_def)
 qed
 
 lemma phi_leq: "phi x \<le> nat x - 1"
@@ -41,7 +33,7 @@ lemma phi_nonzero:
   assumes "2 \<le> x" shows "phi x \<noteq> 0"
 proof -
   have "coprime ((x - 1) + 1) (x - 1)"
-    by (simp only: coprime_plus_one_int)
+    by (simp only: coprime_plus_one)
   with assms have "card {x - 1} \<le> phi x"
     unfolding phi_def by (intro card_mono bounded_set1_int) (simp add: gcd.commute)
     (* XXX: We need bounded_set1_int here because of the finite_Collect simproc) *)
