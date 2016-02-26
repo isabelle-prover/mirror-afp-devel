@@ -128,7 +128,7 @@ shows "(\<Sum> {p^m | m . m<=(n::nat)}) = (\<Sum> i = 0 .. n . p^i)" (is "?l = ?
 proof -
   have "?l = setsum (%x. x) {(op ^ p) m |m . m<= n}" by auto
   also have "... = setsum (%x. x) ((op ^ p)`{m . m<= n})"
-    by(rule seteq_imp_setsumeq) auto
+    by (simp add: setcompr_eq_image)
   moreover with p have "inj_on (op ^p) {m . m<=n}"
     by (simp add: inj_on_def)
   ultimately have "?l = setsum (op ^ p) {m . m<=n}"
@@ -207,7 +207,7 @@ proof -
   also from cop  have "... = (\<Sum> {p^f*b| f b . f<=n & b dvd m})"
     by (auto simp add: prodsums_eq_sumprods prime_def)
   also have "... = (\<Sum> {a*b| a b . a dvd (p^n) & b dvd m})"
-    by(rule seteq_imp_setsumeq,rule rewrite_for_sigma_semimultiplicative[OF p])
+    by (simp add: p rewrite_for_sigma_semimultiplicative)
   finally have "?l = \<Sum>{c. c dvd (p^n*m)}" by (subst div_decomp_comp[OF cop2])
   thus "?l = sigma (p^n*m)" by (auto simp add: sigma_def)
 qed

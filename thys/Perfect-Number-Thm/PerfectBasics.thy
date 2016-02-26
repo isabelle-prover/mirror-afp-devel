@@ -5,9 +5,7 @@ imports Main "~~/src/HOL/Number_Theory/Primes" "~~/src/HOL/Algebra/Exponent"
 begin
 
 lemma setsum_mono2_nat: "finite (B::nat set) \<Longrightarrow> A <= B \<Longrightarrow> \<Sum> A <= \<Sum> B"
-by (auto simp add: setsum_mono2)
-
-lemma seteq_imp_setsumeq: "A=B ==> \<Sum> A = \<Sum> B" by simp
+  by (auto simp add: setsum_mono2)
 
 
 lemma exp_is_max_div:
@@ -18,8 +16,7 @@ proof (rule ccontr)
  hence a:"p dvd (m div (p^(exponent p m)))" by auto
  from m0 have "p^(exponent p m) dvd m" by (auto simp add: power_exponent_dvd)
  with a have "p*(p^exponent p m) dvd m"
-   by (metis (full_types) div_dvd_div div_mult_self2_is_id dvd_triv_right neq0_conv p 
-      zero_less_prime_power)
+   by (metis dvd_div_iff_mult mult_is_0)
  with p have "m=0" by (auto simp add: power_Suc_exponent_Not_dvd)
  with m0 show "False" by auto
 qed

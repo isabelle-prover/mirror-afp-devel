@@ -19,7 +19,7 @@ proof
 
   from even m0 have n1: "?n >= 1 " by (simp add: exponent_ge)
 
-  from m0 have  "2^?n dvd m" by (rule power_exponent_dvd)
+  have  "2^?n dvd m" by (rule power_exponent_dvd)
   hence "m = 2^?n*?A" by (simp only: dvd_mult_div_cancel) 
   with m0 have mdef: "m=2^?n*?A & coprime 2 ?A"
     by (simp add: coprime_exponent)
