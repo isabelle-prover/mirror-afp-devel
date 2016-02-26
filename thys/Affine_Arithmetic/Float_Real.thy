@@ -60,6 +60,8 @@ lemmas [code del] =
   real_inverse_code
   real_divide_code
   real_floor_code
+  Float.compute_truncate_down
+  Float.compute_truncate_up
 
 lemma real_equal_code [code]:
   "HOL.equal (real_of_float x) (real_of_float y) \<longleftrightarrow> HOL.equal x y"

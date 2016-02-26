@@ -39,7 +39,7 @@ lemma compute_rapprox_posrat[code]:
   by (auto simp add: l_def Float.compute_rapprox_posrat power_int_def Let_def zdiv_int of_nat_power of_nat_mult)
 
 lemma compute_float_truncate_down[code]:
-  "float_round_down prec (Float m e) = (let d = bitlen (abs m) - int prec in
+  "float_round_down prec (Float m e) = (let d = bitlen (abs m) - int prec - 1 in
     if 0 < d then let P = power_int 2 d ; n = m div P in Float n (e + d)
              else Float m e)"
   by (simp add: Float.compute_float_round_down power_int_def cong: if_cong)
