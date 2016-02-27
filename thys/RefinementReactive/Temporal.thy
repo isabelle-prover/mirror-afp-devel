@@ -54,8 +54,8 @@ begin
       definition eventually :: "'a \<Rightarrow> 'a"  ("\<diamond> (_)" [900] 900) where
         "\<diamond> p = (SUP i . p !! i)"
 
-      definition "next" :: "'a \<Rightarrow> 'a"  ("\<Odot> (_)" [900] 900) where
-        "\<Odot> p = p !! (Suc 0)"
+      definition "next" :: "'a \<Rightarrow> 'a"  ("\<circle> (_)" [900] 900) where
+        "\<circle> p = p !! (Suc 0)"
 
       definition until :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "until" 65) where 
         "(p until q) = (SUP n . (INFIMUM {i . i < n}  (at p)) \<sqinter> (q !! n))"
