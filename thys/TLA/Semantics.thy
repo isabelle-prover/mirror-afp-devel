@@ -80,7 +80,7 @@ text{* This is the concrete syntax for the (abstract) operators above. *}
 
 syntax
  "_always" :: "lift \<Rightarrow> lift" ("(\<box>_)" [90] 90) 
- "_nexts" :: "lift \<Rightarrow> lift" ("(\<circ>_)" [90] 90) 
+ "_nexts" :: "lift \<Rightarrow> lift" ("(\<circle>_)" [90] 90) 
  "_action" :: "[lift,lift] \<Rightarrow> lift" ("(\<box>[_]'_(_))" [20,1000] 90)
  "_before"    :: "lift \<Rightarrow> lift"  ("($_)" [100] 99)
  "_after"     :: "lift \<Rightarrow> lift"  ("(_$)" [100] 99)
@@ -196,7 +196,7 @@ text{*
   @{text "\<box>[P]_v"}.
   To show that @{text "\<box>[P]_v"} is stuttering invariant, is must be shown that a 
   slightly weaker predicate holds for @{term P}. For example, if @{term P} contains 
-  a term of the form @{text "\<circ>\<circ>Q"}, then it is not a well-formed pre-formula, thus 
+  a term of the form @{text "\<circle>\<circle>Q"}, then it is not a well-formed pre-formula, thus 
   @{text "\<box>[P]_v"} is not stuttering invariant. This weaker version of
   stuttering invariance has been named \emph{near stuttering invariance}.
 *}
@@ -401,11 +401,11 @@ text {*
   This subsection shows analogous properties about near stuttering
   invariance.
 
-  If a formula @{term F} is stuttering invariant then @{text "\<circ>F"} is
+  If a formula @{term F} is stuttering invariant then @{text "\<circle>F"} is
   nearly stuttering invariant.
 *}
 
-lemma nstut_nexts: assumes H: "STUTINV F" shows "NSTUTINV \<circ>F"
+lemma nstut_nexts: assumes H: "STUTINV F" shows "NSTUTINV \<circle>F"
 using H by (simp add: stutinv_def nstutinv_def nexts_def)
 
 text {* 

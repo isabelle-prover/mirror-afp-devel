@@ -93,12 +93,12 @@ text {*
 lemma (in Secondprogram) psiI: "\<turnstile> psi \<longrightarrow> \<box>I"
 proof -
   have init: "\<turnstile> initPsi \<longrightarrow> I" by (auto simp: initPsi_def I_def)
-  have "|~ I \<and> Unchanged vars \<longrightarrow> \<circ>I" by (auto simp: I_def vars_def tla_defs)
+  have "|~ I \<and> Unchanged vars \<longrightarrow> \<circle>I" by (auto simp: I_def vars_def tla_defs)
   moreover
-  have "|~ I \<and> n1 \<longrightarrow> \<circ>I" by (auto simp: I_def Sact2_defs tla_defs)
+  have "|~ I \<and> n1 \<longrightarrow> \<circle>I" by (auto simp: I_def Sact2_defs tla_defs)
   moreover
-  have "|~ I \<and> n2 \<longrightarrow> \<circ>I" by (auto simp: I_def Sact2_defs tla_defs)
-  ultimately have step: "|~ I \<and> [n1 \<or> n2]_vars \<longrightarrow> \<circ>I" by (force simp: actrans_def)
+  have "|~ I \<and> n2 \<longrightarrow> \<circle>I" by (auto simp: I_def Sact2_defs tla_defs)
+  ultimately have step: "|~ I \<and> [n1 \<or> n2]_vars \<longrightarrow> \<circle>I" by (force simp: actrans_def)
   from init step have goal: "\<turnstile> initPsi \<and> \<box>[n1 \<or> n2]_vars \<longrightarrow> \<box>I" by (rule invmono)
   have "\<turnstile> initPsi \<and> \<box>[n1 \<or> n2]_vars \<and> Live2 ==> \<turnstile> initPsi \<and> \<box>[n1 \<or> n2]_vars"
    by auto
@@ -116,7 +116,7 @@ proof -
   proof (rule refinement1)
     show "\<turnstile> initPsi \<longrightarrow> init" by (auto simp: initPsi_def init_def)
   next
-    show "|~ I \<and> \<circ>I \<and> [n1 \<or> n2]_vars \<longrightarrow> [m1 \<or> m2]_(x,y)"
+    show "|~ I \<and> \<circle>I \<and> [n1 \<or> n2]_vars \<longrightarrow> [m1 \<or> m2]_(x,y)"
       by (auto simp: I_def m1_def m2_def vars_def Sact2_defs tla_defs)
   qed
   with psiI show ?thesis unfolding psi_def by force
@@ -245,7 +245,7 @@ proof -
     show "|~ \<langle>(n1 \<or> n2) \<and> beta1\<rangle>_vars \<longrightarrow> \<langle>m1\<rangle>_(x,y)"
       by (auto simp: beta1_def m1_def vars_def tla_defs)
   next
-    show "|~ $pc1 = #b \<and> \<circ>($pc1 = #b) \<and> \<langle>(n1 \<or> n2) \<and> n1\<rangle>_vars \<longrightarrow> beta1"
+    show "|~ $pc1 = #b \<and> \<circle>($pc1 = #b) \<and> \<langle>(n1 \<or> n2) \<and> n1\<rangle>_vars \<longrightarrow> beta1"
       by (auto simp: n1_def alpha1_def beta1_def gamma1_def tla_defs)
   next
     show "\<turnstile> $pc1 = #b \<and> Enabled \<langle>m1\<rangle>_(x, y) \<longrightarrow> Enabled \<langle>n1\<rangle>_vars"
@@ -263,7 +263,7 @@ proof -
     proof -
       have "\<turnstile> \<box>\<box>[(n1 \<or> n2) \<and> \<not> beta1]_vars \<longrightarrow> \<box>($pc1 = #b \<longrightarrow> \<box>($pc1 = #b))"
       proof (rule STL4)
-        have "|~ $pc1 = #b \<and> [(n1 \<or> n2) \<and> \<not> beta1]_vars \<longrightarrow> \<circ>($pc1 = #b)"
+        have "|~ $pc1 = #b \<and> [(n1 \<or> n2) \<and> \<not> beta1]_vars \<longrightarrow> \<circle>($pc1 = #b)"
           by (auto simp: Sact2_defs vars_def tla_defs)
         from this[THEN INV1]
         show "\<turnstile> \<box>[(n1 \<or> n2) \<and> \<not> beta1]_vars \<longrightarrow> $pc1 = #b \<longrightarrow> \<box>($pc1 = #b)" by auto
@@ -286,13 +286,13 @@ proof -
         *}
         have ga: "\<turnstile> ?F \<longrightarrow> ($pc1 = #g \<leadsto> $pc1 = #a)"
         proof (rule SF1)
-          show "|~ $pc1 = #g \<and> [(n1 \<or> n2) \<and> \<not> beta1]_vars \<longrightarrow> \<circ>($pc1 = #g) \<or> \<circ>($pc1 = #a)"
+          show "|~ $pc1 = #g \<and> [(n1 \<or> n2) \<and> \<not> beta1]_vars \<longrightarrow> \<circle>($pc1 = #g) \<or> \<circle>($pc1 = #a)"
             by (auto simp: Sact2_defs vars_def tla_defs)
         next
-          show "|~ $pc1 = #g \<and> \<langle>((n1 \<or> n2) \<and> \<not> beta1) \<and> n1\<rangle>_vars \<longrightarrow> \<circ>($pc1 = #a)"
+          show "|~ $pc1 = #g \<and> \<langle>((n1 \<or> n2) \<and> \<not> beta1) \<and> n1\<rangle>_vars \<longrightarrow> \<circle>($pc1 = #a)"
             by (auto simp: Sact2_defs vars_def tla_defs)
         next
-          show "|~ $pc1 = #g \<and> Unchanged vars \<longrightarrow> \<circ>($pc1 = #g)"
+          show "|~ $pc1 = #g \<and> Unchanged vars \<longrightarrow> \<circle>($pc1 = #g)"
             by (auto simp: vars_def tla_defs)
         next
           have "\<turnstile> $pc1 = #g \<longrightarrow> Enabled \<langle>n1\<rangle>_vars"
@@ -313,13 +313,13 @@ proof -
         *}
         have ab: "\<turnstile> ?F \<longrightarrow> ($pc1 = #a \<leadsto> $pc1 = #b)"
         proof (rule SF1)
-          show "|~ $pc1 = #a \<and> [(n1 \<or> n2) \<and> \<not> beta1]_vars \<longrightarrow> \<circ>($pc1 = #a) \<or> \<circ>($pc1 = #b)"
+          show "|~ $pc1 = #a \<and> [(n1 \<or> n2) \<and> \<not> beta1]_vars \<longrightarrow> \<circle>($pc1 = #a) \<or> \<circle>($pc1 = #b)"
             by (auto simp: Sact2_defs vars_def tla_defs)
         next
-          show "|~ $pc1 = #a \<and> \<langle>((n1 \<or> n2) \<and> \<not> beta1) \<and> n1\<rangle>_vars \<longrightarrow> \<circ>($pc1 = #b)"
+          show "|~ $pc1 = #a \<and> \<langle>((n1 \<or> n2) \<and> \<not> beta1) \<and> n1\<rangle>_vars \<longrightarrow> \<circle>($pc1 = #b)"
             by (auto simp: Sact2_defs vars_def tla_defs)
         next
-          show "|~ $pc1 = #a \<and> Unchanged vars \<longrightarrow> \<circ>($pc1 = #a)"
+          show "|~ $pc1 = #a \<and> Unchanged vars \<longrightarrow> \<circle>($pc1 = #a)"
             by (auto simp: vars_def tla_defs)
         next
           txt {* We establish a suitable leadsto-chain. *}
@@ -329,13 +329,13 @@ proof -
             txt {* Rule @{text SF1} takes us from @{text "pc2 = b"} to @{text "pc2 = g"}. *}
             have bg2: "\<turnstile> ?G \<longrightarrow> ($pc2 = #b \<leadsto> $pc2 = #g)"
             proof (rule SF1)
-              show "|~ $pc2 = #b \<and> [(n1 \<or> n2) \<and> \<not>beta1]_vars \<longrightarrow> \<circ>($pc2 = #b) \<or> \<circ>($pc2 = #g)"
+              show "|~ $pc2 = #b \<and> [(n1 \<or> n2) \<and> \<not>beta1]_vars \<longrightarrow> \<circle>($pc2 = #b) \<or> \<circle>($pc2 = #g)"
                 by (auto simp: Sact2_defs vars_def tla_defs)
             next
-              show "|~ $pc2 = #b \<and> \<langle>((n1 \<or> n2) \<and> \<not>beta1) \<and> n2\<rangle>_vars \<longrightarrow> \<circ>($pc2 = #g)"
+              show "|~ $pc2 = #b \<and> \<langle>((n1 \<or> n2) \<and> \<not>beta1) \<and> n2\<rangle>_vars \<longrightarrow> \<circle>($pc2 = #g)"
                 by (auto simp: Sact2_defs vars_def tla_defs)
             next
-              show "|~ $pc2 = #b \<and> Unchanged vars \<longrightarrow> \<circ>($pc2 = #b)"
+              show "|~ $pc2 = #b \<and> Unchanged vars \<longrightarrow> \<circle>($pc2 = #b)"
                 by (auto simp: vars_def tla_defs)
             next
               have "\<turnstile> $pc2 = #b \<longrightarrow> Enabled \<langle>n2\<rangle>_vars"
@@ -351,13 +351,13 @@ proof -
             txt {* Similarly, @{text "pc2 = b"} leads to @{text "pc2 = g"}. *}
             have ga2: "\<turnstile> ?G \<longrightarrow> ($pc2 = #g \<leadsto> $pc2 = #a)"
             proof (rule SF1)
-              show "|~ $pc2 = #g \<and> [(n1 \<or> n2) \<and> \<not>beta1]_vars \<longrightarrow> \<circ>($pc2 = #g) \<or> \<circ>($pc2 = #a)"
+              show "|~ $pc2 = #g \<and> [(n1 \<or> n2) \<and> \<not>beta1]_vars \<longrightarrow> \<circle>($pc2 = #g) \<or> \<circle>($pc2 = #a)"
                 by (auto simp: Sact2_defs vars_def tla_defs)
             next
-              show "|~ $pc2 = #g \<and> \<langle>((n1 \<or> n2) \<and> \<not>beta1) \<and> n2\<rangle>_vars \<longrightarrow> \<circ>($pc2 = #a)"
+              show "|~ $pc2 = #g \<and> \<langle>((n1 \<or> n2) \<and> \<not>beta1) \<and> n2\<rangle>_vars \<longrightarrow> \<circle>($pc2 = #a)"
                 by (auto simp: n2_def alpha2_def beta2_def gamma2_def vars_def tla_defs)
             next
-              show "|~ $pc2 = #g \<and> Unchanged vars \<longrightarrow> \<circ>($pc2 = #g)"
+              show "|~ $pc2 = #g \<and> Unchanged vars \<longrightarrow> \<circle>($pc2 = #g)"
                 by (auto simp: vars_def tla_defs)
             next
               have "\<turnstile> $pc2 = #g \<longrightarrow> Enabled \<langle>n2\<rangle>_vars"
@@ -435,7 +435,7 @@ proof -
     show "|~ \<langle>(n1 \<or> n2) \<and> beta2\<rangle>_vars \<longrightarrow> \<langle>m2\<rangle>_(x,y)"
       by (auto simp: beta2_def m2_def vars_def tla_defs)
   next
-    show "|~ $pc2 = #b \<and> \<circ>($pc2 = #b) \<and> \<langle>(n1 \<or> n2) \<and> n2\<rangle>_vars \<longrightarrow> beta2"
+    show "|~ $pc2 = #b \<and> \<circle>($pc2 = #b) \<and> \<langle>(n1 \<or> n2) \<and> n2\<rangle>_vars \<longrightarrow> beta2"
       by (auto simp: n2_def alpha2_def beta2_def gamma2_def tla_defs)
   next
     show "\<turnstile> $pc2 = #b \<and> Enabled \<langle>m2\<rangle>_(x, y) \<longrightarrow> Enabled \<langle>n2\<rangle>_vars"
@@ -453,7 +453,7 @@ proof -
     proof -
       have "\<turnstile> \<box>\<box>[(n1 \<or> n2) \<and> \<not> beta2]_vars \<longrightarrow> \<box>($pc2 = #b \<longrightarrow> \<box>($pc2 = #b))"
       proof (rule STL4)
-        have "|~ $pc2 = #b \<and> [(n1 \<or> n2) \<and> \<not> beta2]_vars \<longrightarrow> \<circ>($pc2 = #b)"
+        have "|~ $pc2 = #b \<and> [(n1 \<or> n2) \<and> \<not> beta2]_vars \<longrightarrow> \<circle>($pc2 = #b)"
           by (auto simp: Sact2_defs vars_def tla_defs)
         from this[THEN INV1]
         show "\<turnstile> \<box>[(n1 \<or> n2) \<and> \<not> beta2]_vars \<longrightarrow> $pc2 = #b \<longrightarrow> \<box>($pc2 = #b)" by auto
@@ -476,13 +476,13 @@ proof -
         *}
         have ga: "\<turnstile> ?F \<longrightarrow> ($pc2 = #g \<leadsto> $pc2 = #a)"
         proof (rule SF1)
-          show "|~ $pc2 = #g \<and> [(n1 \<or> n2) \<and> \<not> beta2]_vars \<longrightarrow> \<circ>($pc2 = #g) \<or> \<circ>($pc2 = #a)"
+          show "|~ $pc2 = #g \<and> [(n1 \<or> n2) \<and> \<not> beta2]_vars \<longrightarrow> \<circle>($pc2 = #g) \<or> \<circle>($pc2 = #a)"
             by (auto simp: Sact2_defs vars_def tla_defs)
         next
-          show "|~ $pc2 = #g \<and> \<langle>((n1 \<or> n2) \<and> \<not> beta2) \<and> n2\<rangle>_vars \<longrightarrow> \<circ>($pc2 = #a)"
+          show "|~ $pc2 = #g \<and> \<langle>((n1 \<or> n2) \<and> \<not> beta2) \<and> n2\<rangle>_vars \<longrightarrow> \<circle>($pc2 = #a)"
             by (auto simp: n2_def alpha2_def beta2_def gamma2_def vars_def tla_defs)
         next
-          show "|~ $pc2 = #g \<and> Unchanged vars \<longrightarrow> \<circ>($pc2 = #g)"
+          show "|~ $pc2 = #g \<and> Unchanged vars \<longrightarrow> \<circle>($pc2 = #g)"
             by (auto simp: vars_def tla_defs)
         next
           have "\<turnstile> $pc2 = #g \<longrightarrow> Enabled \<langle>n2\<rangle>_vars"
@@ -503,13 +503,13 @@ proof -
         *}
         have ab: "\<turnstile> ?F \<longrightarrow> ($pc2 = #a \<leadsto> $pc2 = #b)"
         proof (rule SF1)
-          show "|~ $pc2 = #a \<and> [(n1 \<or> n2) \<and> \<not> beta2]_vars \<longrightarrow> \<circ>($pc2 = #a) \<or> \<circ>($pc2 = #b)"
+          show "|~ $pc2 = #a \<and> [(n1 \<or> n2) \<and> \<not> beta2]_vars \<longrightarrow> \<circle>($pc2 = #a) \<or> \<circle>($pc2 = #b)"
             by (auto simp: Sact2_defs vars_def tla_defs)
         next
-          show "|~ $pc2 = #a \<and> \<langle>((n1 \<or> n2) \<and> \<not> beta2) \<and> n2\<rangle>_vars \<longrightarrow> \<circ>($pc2 = #b)"
+          show "|~ $pc2 = #a \<and> \<langle>((n1 \<or> n2) \<and> \<not> beta2) \<and> n2\<rangle>_vars \<longrightarrow> \<circle>($pc2 = #b)"
             by (auto simp: n2_def alpha2_def beta2_def gamma2_def vars_def tla_defs)
         next
-          show "|~ $pc2 = #a \<and> Unchanged vars \<longrightarrow> \<circ>($pc2 = #a)"
+          show "|~ $pc2 = #a \<and> Unchanged vars \<longrightarrow> \<circle>($pc2 = #a)"
             by (auto simp: vars_def tla_defs)
         next
           txt {* We establish a suitable leadsto-chain. *}
@@ -519,13 +519,13 @@ proof -
             txt {* Rule @{text SF1} takes us from @{text "pc1 = b"} to @{text "pc1 = g"}. *}
             have bg1: "\<turnstile> ?G \<longrightarrow> ($pc1 = #b \<leadsto> $pc1 = #g)"
             proof (rule SF1)
-              show "|~ $pc1 = #b \<and> [(n1 \<or> n2) \<and> \<not>beta2]_vars \<longrightarrow> \<circ>($pc1 = #b) \<or> \<circ>($pc1 = #g)"
+              show "|~ $pc1 = #b \<and> [(n1 \<or> n2) \<and> \<not>beta2]_vars \<longrightarrow> \<circle>($pc1 = #b) \<or> \<circle>($pc1 = #g)"
                 by (auto simp: Sact2_defs vars_def tla_defs)
             next
-              show "|~ $pc1 = #b \<and> \<langle>((n1 \<or> n2) \<and> \<not>beta2) \<and> n1\<rangle>_vars \<longrightarrow> \<circ>($pc1 = #g)"
+              show "|~ $pc1 = #b \<and> \<langle>((n1 \<or> n2) \<and> \<not>beta2) \<and> n1\<rangle>_vars \<longrightarrow> \<circle>($pc1 = #g)"
                 by (auto simp: n1_def alpha1_def beta1_def gamma1_def vars_def tla_defs)
             next
-              show "|~ $pc1 = #b \<and> Unchanged vars \<longrightarrow> \<circ>($pc1 = #b)"
+              show "|~ $pc1 = #b \<and> Unchanged vars \<longrightarrow> \<circle>($pc1 = #b)"
                 by (auto simp: vars_def tla_defs)
             next
               have "\<turnstile> $pc1 = #b \<longrightarrow> Enabled \<langle>n1\<rangle>_vars"
@@ -541,13 +541,13 @@ proof -
             txt {* Similarly, @{text "pc1 = b"} leads to @{text "pc1 = g"}. *}
             have ga1: "\<turnstile> ?G \<longrightarrow> ($pc1 = #g \<leadsto> $pc1 = #a)"
             proof (rule SF1)
-              show "|~ $pc1 = #g \<and> [(n1 \<or> n2) \<and> \<not>beta2]_vars \<longrightarrow> \<circ>($pc1 = #g) \<or> \<circ>($pc1 = #a)"
+              show "|~ $pc1 = #g \<and> [(n1 \<or> n2) \<and> \<not>beta2]_vars \<longrightarrow> \<circle>($pc1 = #g) \<or> \<circle>($pc1 = #a)"
                 by (auto simp: Sact2_defs vars_def tla_defs)
             next
-              show "|~ $pc1 = #g \<and> \<langle>((n1 \<or> n2) \<and> \<not>beta2) \<and> n1\<rangle>_vars \<longrightarrow> \<circ>($pc1 = #a)"
+              show "|~ $pc1 = #g \<and> \<langle>((n1 \<or> n2) \<and> \<not>beta2) \<and> n1\<rangle>_vars \<longrightarrow> \<circle>($pc1 = #a)"
                 by (auto simp: n1_def alpha1_def beta1_def gamma1_def vars_def tla_defs)
             next
-              show "|~ $pc1 = #g \<and> Unchanged vars \<longrightarrow> \<circ>($pc1 = #g)"
+              show "|~ $pc1 = #g \<and> Unchanged vars \<longrightarrow> \<circle>($pc1 = #g)"
                 by (auto simp: vars_def tla_defs)
             next
               have "\<turnstile> $pc1 = #g \<longrightarrow> Enabled \<langle>n1\<rangle>_vars"

@@ -273,13 +273,13 @@ proof (rule invmono)
   show "\<turnstile> BInit ic q oc \<longrightarrow> BInv ic q oc"
     by (auto simp: BInit_def BInv_def)
 next
-  have enq: "|~ Enq ic q oc \<longrightarrow> BInv ic q oc \<longrightarrow> \<circ>(BInv ic q oc)"
+  have enq: "|~ Enq ic q oc \<longrightarrow> BInv ic q oc \<longrightarrow> \<circle>(BInv ic q oc)"
     by (auto simp: Enq_def BInv_def tla_defs)
-  have deq: "|~ Deq ic q oc \<longrightarrow> BInv ic q oc \<longrightarrow> \<circ>(BInv ic q oc)"
+  have deq: "|~ Deq ic q oc \<longrightarrow> BInv ic q oc \<longrightarrow> \<circle>(BInv ic q oc)"
     by (auto simp: Deq_def BInv_def tla_defs neq_Nil_conv)
-  have unch: "|~ Unchanged (ic,q,oc) \<longrightarrow> BInv ic q oc \<longrightarrow> \<circ>(BInv ic q oc)"
+  have unch: "|~ Unchanged (ic,q,oc) \<longrightarrow> BInv ic q oc \<longrightarrow> \<circle>(BInv ic q oc)"
     by (auto simp: BInv_def tla_defs)
-  show "|~ BInv ic q oc \<and> [Nxt ic q oc]_(ic, q, oc) \<longrightarrow> \<circ>(BInv ic q oc)"
+  show "|~ BInv ic q oc \<and> [Nxt ic q oc]_(ic, q, oc) \<longrightarrow> \<circle>(BInv ic q oc)"
     by (auto simp: Nxt_def actrans_def 
              elim: enq[unlift_rule] deq[unlift_rule] unch[unlift_rule])
 qed
@@ -401,7 +401,7 @@ begin
       by (simp add: M8[int_rewrite])
     have "\<turnstile> ?inv \<longrightarrow> #True" by auto
     moreover
-    have "|~ ?inv \<and> \<circ>?inv \<and> [?mid]_vars \<longrightarrow> [FullNxt]_vars"
+    have "|~ ?inv \<and> \<circle>?inv \<and> [?mid]_vars \<longrightarrow> [FullNxt]_vars"
     proof -
       have "|~ ?inv \<and> ?mid \<longrightarrow> [FullNxt]_vars"
       proof -
@@ -557,7 +557,7 @@ begin
       by (auto simp: db_defs tla_defs)
   next
     -- {* the helpful condition is the second queue being non-empty *}
-    show "|~ ($q2 \<noteq> #[]) \<and> \<circ>($q2 \<noteq> #[]) \<and> \<langle>FullNxt \<and> Deq mid q2 out\<rangle>_vars 
+    show "|~ ($q2 \<noteq> #[]) \<and> \<circle>($q2 \<noteq> #[]) \<and> \<langle>FullNxt \<and> Deq mid q2 out\<rangle>_vars 
              \<longrightarrow> Deq mid q2 out"
       by (auto simp: tla_defs)
   next
@@ -577,7 +577,7 @@ begin
             \<longrightarrow> \<box>($q2 \<noteq> #[] \<longrightarrow> \<box>($q2 \<noteq> #[]))"
     proof (rule STL4)
       have "|~ $q2 \<noteq> #[] \<and> [FullNxt \<and> \<not>(Deq mid q2 out)]_vars
-               \<longrightarrow> \<circ>($q2 \<noteq> #[])"
+               \<longrightarrow> \<circle>($q2 \<noteq> #[])"
         by (auto simp: db_defs tla_defs)
       from this[THEN INV1]
       show "\<turnstile> \<box>[FullNxt \<and> \<not> Deq mid q2 out]_vars
@@ -597,18 +597,18 @@ begin
               \<longrightarrow> ($q1 \<noteq> #[] \<leadsto> $q2 \<noteq> #[])"
       proof (rule WF1)
         show "|~ $q1 \<noteq> #[] \<and> [FullNxt \<and> \<not> Deq mid q2 out]_vars
-                 \<longrightarrow> \<circ>($q1 \<noteq> #[]) \<or> \<circ>($q2 \<noteq> #[])"
+                 \<longrightarrow> \<circle>($q1 \<noteq> #[]) \<or> \<circle>($q2 \<noteq> #[])"
           by (auto simp: db_defs tla_defs)
       next
         show "|~ $q1 \<noteq> #[] 
                  \<and> \<langle>(FullNxt \<and> \<not> Deq mid q2 out) \<and> Deq inp q1 mid\<rangle>_vars \<longrightarrow>
-                 \<circ>($q2 \<noteq> #[])"
+                 \<circle>($q2 \<noteq> #[])"
           by (auto simp: db_defs tla_defs)
       next
         show "\<turnstile> $q1 \<noteq> #[] \<longrightarrow> Enabled \<langle>Deq inp q1 mid\<rangle>_vars"
           by (simp add: Deq1_enabled[int_rewrite])
       next
-        show "|~ $q1 \<noteq> #[] \<and> Unchanged vars \<longrightarrow> \<circ>($q1 \<noteq> #[])"
+        show "|~ $q1 \<noteq> #[] \<and> Unchanged vars \<longrightarrow> \<circle>($q1 \<noteq> #[])"
           by (auto simp: vars_def tla_defs)
       qed
       hence "\<turnstile> \<box>[FullNxt \<and> \<not>(Deq mid q2 out)]_vars 

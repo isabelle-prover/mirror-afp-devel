@@ -77,19 +77,19 @@ text {*
 *}
 
 lemma pre_id_unch: assumes h: "stutinv F"
-  shows "|~ F \<and> Unchanged id \<longrightarrow> \<circ>F"
+  shows "|~ F \<and> Unchanged id \<longrightarrow> \<circle>F"
 proof (pref_unlift, clarify)
   fix s
   assume a1: "s \<Turnstile> F" and  a2: "s \<Turnstile> Unchanged id"
   from a2 have "(id (second s) = id (first s))" by (simp add: unch_defs)
   hence "s \<approx> (tail s)" by (simp add: addfirststut)
   with h a1 have "(tail s) \<Turnstile> F" by (simp add: stutinv_def)
-  thus "s \<Turnstile> \<circ>F" by (unfold nexts_def)
+  thus "s \<Turnstile> \<circle>F" by (unfold nexts_def)
 qed
 
 lemma pre_ex_unch: 
   assumes h: "stutinv F"
-  shows "\<exists>(v::'a::world \<Rightarrow> 'a). ( |~ F \<and> Unchanged v \<longrightarrow> \<circ>F)"
+  shows "\<exists>(v::'a::world \<Rightarrow> 'a). ( |~ F \<and> Unchanged v \<longrightarrow> \<circle>F)"
 using pre_id_unch[OF h] by blast
 
 lemma unch_pair: "|~ Unchanged (x,y) = (Unchanged x \<and> Unchanged y)"

@@ -156,10 +156,10 @@ proof -
 qed
 
 theorem WF1_general:
-  assumes h1: "|~ P \<and> N \<longrightarrow> \<circ>P \<or> \<circ>Q"
-      and h2: "|~ P \<and> N \<and> \<langle>A\<rangle>_v \<longrightarrow> \<circ>Q"
+  assumes h1: "|~ P \<and> N \<longrightarrow> \<circle>P \<or> \<circle>Q"
+      and h2: "|~ P \<and> N \<and> \<langle>A\<rangle>_v \<longrightarrow> \<circle>Q"
       and h3: "\<turnstile> P \<and> N \<longrightarrow> Enabled \<langle>A\<rangle>_v"
-      and h4: "|~ P \<and> Unchanged w \<longrightarrow> \<circ>P"
+      and h4: "|~ P \<and> Unchanged w \<longrightarrow> \<circle>P"
   shows "\<turnstile> \<box>N \<and> WF(A)_v \<longrightarrow> (P \<leadsto> Q)"
 proof -
   have "\<turnstile> \<box>(\<box>N \<and> WF(A)_v) \<longrightarrow> \<box>(\<box>P \<longrightarrow> \<diamond>\<langle>A\<rangle>_v)"
@@ -176,19 +176,19 @@ qed
 text {* Lamport's version of the rule is derived as a special case. *}
 
 theorem WF1: 
-  assumes h1: "|~ P \<and> [N]_v \<longrightarrow> \<circ>P \<or> \<circ>Q"
-      and h2: "|~ P \<and> \<langle>N \<and> A\<rangle>_v \<longrightarrow> \<circ>Q"
+  assumes h1: "|~ P \<and> [N]_v \<longrightarrow> \<circle>P \<or> \<circle>Q"
+      and h2: "|~ P \<and> \<langle>N \<and> A\<rangle>_v \<longrightarrow> \<circle>Q"
       and h3: "\<turnstile> P \<longrightarrow> Enabled \<langle>A\<rangle>_v"
-      and h4: "|~ P \<and> Unchanged v \<longrightarrow> \<circ>P"
+      and h4: "|~ P \<and> Unchanged v \<longrightarrow> \<circle>P"
   shows "\<turnstile> \<box>[N]_v \<and> WF(A)_v \<longrightarrow> (P \<leadsto> Q)"
 proof -
   have "\<turnstile> \<box>\<box>[N]_v \<and> WF(A)_v \<longrightarrow> (P \<leadsto> Q)"
   proof (rule WF1_general)
-    from h1 T9[of N v] show "|~ P \<and> \<box>[N]_v \<longrightarrow> \<circ>P \<or> \<circ>Q" by force
+    from h1 T9[of N v] show "|~ P \<and> \<box>[N]_v \<longrightarrow> \<circle>P \<or> \<circle>Q" by force
   next
     from T9[of N v] have "|~ P \<and> \<box>[N]_v \<and> \<langle>A\<rangle>_v \<longrightarrow> P \<and> \<langle>N \<and> A\<rangle>_v"
       by (auto simp: actrans_def angle_actrans_def)
-    from this h2 show "|~ P \<and> \<box>[N]_v \<and> \<langle>A\<rangle>_v \<longrightarrow> \<circ>Q" by (rule pref_imp_trans)
+    from this h2 show "|~ P \<and> \<box>[N]_v \<and> \<langle>A\<rangle>_v \<longrightarrow> \<circle>Q" by (rule pref_imp_trans)
   next
     from h3 T9[of N v] show "\<turnstile> P \<and> \<box>[N]_v \<longrightarrow> Enabled \<langle>A\<rangle>_v" by force
   qed (rule h4)
@@ -202,10 +202,10 @@ text {*
 *}
 
 theorem SF1_general:
-  assumes h1: "|~ P \<and> N \<longrightarrow> \<circ>P \<or> \<circ>Q"
-      and h2: "|~ P \<and> N \<and> \<langle>A\<rangle>_v \<longrightarrow> \<circ>Q"
+  assumes h1: "|~ P \<and> N \<longrightarrow> \<circle>P \<or> \<circle>Q"
+      and h2: "|~ P \<and> N \<and> \<langle>A\<rangle>_v \<longrightarrow> \<circle>Q"
       and h3: "\<turnstile> \<box>P \<and> \<box>N \<and> \<box>F \<longrightarrow> \<diamond>Enabled \<langle>A\<rangle>_v"
-      and h4: "|~ P \<and> Unchanged w \<longrightarrow> \<circ>P"
+      and h4: "|~ P \<and> Unchanged w \<longrightarrow> \<circle>P"
   shows "\<turnstile> \<box>N \<and> SF(A)_v \<and> \<box>F \<longrightarrow> (P \<leadsto> Q)"
 proof -
   have "\<turnstile> \<box>(\<box>N \<and> SF(A)_v \<and> \<box>F) \<longrightarrow> \<box>(\<box>P \<longrightarrow> \<diamond>\<langle>A\<rangle>_v)"
@@ -220,19 +220,19 @@ proof -
 qed
 
 theorem SF1:
-  assumes h1: "|~ P \<and> [N]_v \<longrightarrow> \<circ>P \<or> \<circ>Q"
-      and h2: "|~ P \<and> \<langle>N \<and> A\<rangle>_v \<longrightarrow> \<circ>Q"
+  assumes h1: "|~ P \<and> [N]_v \<longrightarrow> \<circle>P \<or> \<circle>Q"
+      and h2: "|~ P \<and> \<langle>N \<and> A\<rangle>_v \<longrightarrow> \<circle>Q"
       and h3: "\<turnstile> \<box>P \<and> \<box>[N]_v \<and> \<box>F \<longrightarrow> \<diamond>Enabled \<langle>A\<rangle>_v"
-      and h4: "|~ P \<and> Unchanged v \<longrightarrow> \<circ>P"
+      and h4: "|~ P \<and> Unchanged v \<longrightarrow> \<circle>P"
   shows "\<turnstile> \<box>[N]_v \<and> SF(A)_v \<and> \<box>F \<longrightarrow> (P \<leadsto> Q)"
 proof -
   have "\<turnstile> \<box>\<box>[N]_v \<and> SF(A)_v \<and> \<box>F \<longrightarrow> (P \<leadsto> Q)"
   proof (rule SF1_general)
-    from h1 T9[of N v] show "|~ P \<and> \<box>[N]_v \<longrightarrow> \<circ>P \<or> \<circ>Q" by force
+    from h1 T9[of N v] show "|~ P \<and> \<box>[N]_v \<longrightarrow> \<circle>P \<or> \<circle>Q" by force
   next
     from T9[of N v] have "|~ P \<and> \<box>[N]_v \<and> \<langle>A\<rangle>_v \<longrightarrow> P \<and> \<langle>N \<and> A\<rangle>_v"
       by (auto simp: actrans_def angle_actrans_def)
-    from this h2 show "|~ P \<and> \<box>[N]_v \<and> \<langle>A\<rangle>_v \<longrightarrow> \<circ>Q" by (rule pref_imp_trans)
+    from this h2 show "|~ P \<and> \<box>[N]_v \<and> \<langle>A\<rangle>_v \<longrightarrow> \<circle>Q" by (rule pref_imp_trans)
   next
     from h3 show "\<turnstile> \<box>P \<and> \<box>\<box>[N]_v \<and> \<box>F \<longrightarrow> \<diamond>Enabled \<langle>A\<rangle>_v" by simp
   qed (rule h4)
@@ -245,7 +245,7 @@ text {*
 
 theorem WF2:
   assumes h1: "|~ \<langle>N \<and> B\<rangle>_f \<longrightarrow> \<langle>M\<rangle>_g"
-      and h2: "|~ P \<and> \<circ>P \<and> \<langle>N \<and> A\<rangle>_f \<longrightarrow> B"
+      and h2: "|~ P \<and> \<circle>P \<and> \<langle>N \<and> A\<rangle>_f \<longrightarrow> B"
       and h3: "\<turnstile> P \<and> Enabled \<langle>M\<rangle>_g \<longrightarrow> Enabled \<langle>A\<rangle>_f"
       and h4: "\<turnstile> \<box>[N \<and> \<not>B]_f \<and> WF(A)_f \<and> \<box>F \<and> \<diamond>\<box>Enabled \<langle>M\<rangle>_g \<longrightarrow> \<diamond>\<box>P"
   shows "\<turnstile> \<box>[N]_f \<and> WF(A)_f \<and> \<box>F \<longrightarrow> WF(M)_g"
@@ -283,15 +283,15 @@ proof -
         using h3[THEN STL4, THEN STL4_eve] by (auto simp: STL6[int_rewrite] WeakF_def)
       have B: "\<turnstile> \<box>[N]_f \<and> \<diamond>\<box>P \<and>  \<box>\<diamond>\<langle>A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>M\<rangle>_g"
       proof -
-        from M1[of P f] have "\<turnstile> \<box>P \<and> \<box>\<diamond>\<langle>N \<and> A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>(P \<and> \<circ>P) \<and> (N \<and> A)\<rangle>_f"
+        from M1[of P f] have "\<turnstile> \<box>P \<and> \<box>\<diamond>\<langle>N \<and> A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>(P \<and> \<circle>P) \<and> (N \<and> A)\<rangle>_f"
           by (force intro: AA29[unlift_rule])
-        hence "\<turnstile> \<diamond>\<box>(\<box>P \<and> \<box>\<diamond>\<langle>N \<and> A\<rangle>_f) \<longrightarrow> \<diamond>\<box>\<box>\<diamond>\<langle>(P \<and> \<circ>P) \<and> (N \<and> A)\<rangle>_f"
+        hence "\<turnstile> \<diamond>\<box>(\<box>P \<and> \<box>\<diamond>\<langle>N \<and> A\<rangle>_f) \<longrightarrow> \<diamond>\<box>\<box>\<diamond>\<langle>(P \<and> \<circle>P) \<and> (N \<and> A)\<rangle>_f"
           by (rule STL4_eve[OF STL4])
-        hence "\<turnstile> \<diamond>\<box>P \<and> \<box>\<diamond>\<langle>N \<and> A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>(P \<and> \<circ>P) \<and> (N \<and> A)\<rangle>_f"
+        hence "\<turnstile> \<diamond>\<box>P \<and> \<box>\<diamond>\<langle>N \<and> A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>(P \<and> \<circle>P) \<and> (N \<and> A)\<rangle>_f"
           by (simp add: STL6[int_rewrite])
         with AA29[of N f A]
-        have B1: "\<turnstile> \<box>[N]_f \<and> \<diamond>\<box>P \<and>  \<box>\<diamond>\<langle>A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>(P \<and> \<circ>P) \<and> (N \<and> A)\<rangle>_f" by force
-        from h2 have "|~ \<langle>(P \<and> \<circ>P) \<and> (N \<and> A)\<rangle>_f \<longrightarrow> \<langle>N \<and> B\<rangle>_f"
+        have B1: "\<turnstile> \<box>[N]_f \<and> \<diamond>\<box>P \<and>  \<box>\<diamond>\<langle>A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>(P \<and> \<circle>P) \<and> (N \<and> A)\<rangle>_f" by force
+        from h2 have "|~ \<langle>(P \<and> \<circle>P) \<and> (N \<and> A)\<rangle>_f \<longrightarrow> \<langle>N \<and> B\<rangle>_f"
           by (auto simp: angle_actrans_sem[unlifted])
         from B1 this[THEN AA25, THEN STL4] have "\<turnstile> \<box>[N]_f \<and> \<diamond>\<box>P \<and>  \<box>\<diamond>\<langle>A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>N \<and> B\<rangle>_f"
           by (rule lift_imp_trans)
@@ -314,7 +314,7 @@ text {*
 
 theorem SF2:
   assumes h1: "|~ \<langle>N \<and> B\<rangle>_f \<longrightarrow> \<langle>M\<rangle>_g"
-      and h2: "|~ P \<and> \<circ>P \<and> \<langle>N \<and> A\<rangle>_f \<longrightarrow> B"
+      and h2: "|~ P \<and> \<circle>P \<and> \<langle>N \<and> A\<rangle>_f \<longrightarrow> B"
       and h3: "\<turnstile> P \<and> Enabled \<langle>M\<rangle>_g \<longrightarrow> Enabled \<langle>A\<rangle>_f"
       and h4: "\<turnstile> \<box>[N \<and> \<not>B]_f \<and> SF(A)_f \<and> \<box>F \<and> \<box>\<diamond>Enabled \<langle>M\<rangle>_g \<longrightarrow> \<diamond>\<box>P"
   shows "\<turnstile> \<box>[N]_f \<and> SF(A)_f \<and> \<box>F \<longrightarrow> SF(M)_g"
@@ -354,15 +354,15 @@ proof -
         by force
       have B: "\<turnstile> \<box>[N]_f \<and> \<diamond>\<box>P \<and>  \<box>\<diamond>\<langle>A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>M\<rangle>_g"
       proof -
-        from M1[of P f] have "\<turnstile> \<box>P \<and> \<box>\<diamond>\<langle>N \<and> A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>(P \<and> \<circ>P) \<and> (N \<and> A)\<rangle>_f"
+        from M1[of P f] have "\<turnstile> \<box>P \<and> \<box>\<diamond>\<langle>N \<and> A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>(P \<and> \<circle>P) \<and> (N \<and> A)\<rangle>_f"
           by (force intro: AA29[unlift_rule])
-        hence "\<turnstile> \<diamond>\<box>(\<box>P \<and> \<box>\<diamond>\<langle>N \<and> A\<rangle>_f) \<longrightarrow> \<diamond>\<box>\<box>\<diamond>\<langle>(P \<and> \<circ>P) \<and> (N \<and> A)\<rangle>_f"
+        hence "\<turnstile> \<diamond>\<box>(\<box>P \<and> \<box>\<diamond>\<langle>N \<and> A\<rangle>_f) \<longrightarrow> \<diamond>\<box>\<box>\<diamond>\<langle>(P \<and> \<circle>P) \<and> (N \<and> A)\<rangle>_f"
           by (rule STL4_eve[OF STL4])
-        hence "\<turnstile> \<diamond>\<box>P \<and> \<box>\<diamond>\<langle>N \<and> A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>(P \<and> \<circ>P) \<and> (N \<and> A)\<rangle>_f"
+        hence "\<turnstile> \<diamond>\<box>P \<and> \<box>\<diamond>\<langle>N \<and> A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>(P \<and> \<circle>P) \<and> (N \<and> A)\<rangle>_f"
           by (simp add: STL6[int_rewrite])
         with AA29[of N f A]
-        have B1: "\<turnstile> \<box>[N]_f \<and> \<diamond>\<box>P \<and>  \<box>\<diamond>\<langle>A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>(P \<and> \<circ>P) \<and> (N \<and> A)\<rangle>_f" by force
-        from h2 have "|~ \<langle>(P \<and> \<circ>P) \<and> (N \<and> A)\<rangle>_f \<longrightarrow> \<langle>N \<and> B\<rangle>_f"
+        have B1: "\<turnstile> \<box>[N]_f \<and> \<diamond>\<box>P \<and>  \<box>\<diamond>\<langle>A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>(P \<and> \<circle>P) \<and> (N \<and> A)\<rangle>_f" by force
+        from h2 have "|~ \<langle>(P \<and> \<circle>P) \<and> (N \<and> A)\<rangle>_f \<longrightarrow> \<langle>N \<and> B\<rangle>_f"
           by (auto simp: angle_actrans_sem[unlifted])
         from B1 this[THEN AA25, THEN STL4] have "\<turnstile> \<box>[N]_f \<and> \<diamond>\<box>P \<and>  \<box>\<diamond>\<langle>A\<rangle>_f \<longrightarrow> \<box>\<diamond>\<langle>N \<and> B\<rangle>_f"
           by (rule lift_imp_trans)

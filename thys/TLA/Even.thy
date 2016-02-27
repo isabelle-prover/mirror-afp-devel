@@ -42,7 +42,7 @@ proof (rule invmono)
   show "\<turnstile> init \<longrightarrow> $x \<in> #Even"
     by (auto simp: init_def even_zero)
 next
-  show "|~ $x \<in> #Even \<and> [act]_x \<longrightarrow> \<circ>($x \<in> #Even)"
+  show "|~ $x \<in> #Even \<and> [act]_x \<longrightarrow> \<circle>($x \<in> #Even)"
     by (auto simp: act_def even_step tla_defs)
 qed
 
