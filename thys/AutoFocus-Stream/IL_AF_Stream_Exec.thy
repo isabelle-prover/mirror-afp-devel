@@ -28,14 +28,14 @@ lemma i_Exec_Stream_Pre_Post3_iAll_iNext: "
   \<lbrakk> result = i_Exec_Comp_Stream trans_fun input c;
     \<forall>x_n c_n. P c_n \<longrightarrow> Q x_n (trans_fun x_n c_n);
     \<forall>t\<in>I. inext t I' = Suc t \<rbrakk> \<Longrightarrow>
-  \<box> t I. P (result t) \<longrightarrow> (\<bigcirc> t1 t I'. Q (input t1) (result t1))"
+  \<box> t I. P (result t) \<longrightarrow> (\<circle> t1 t I'. Q (input t1) (result t1))"
 by (rule iallI, simp add: iNext_def i_Exec_Stream_Pre_Post2_Suc)
 
 lemma i_Exec_Stream_Init_Pre_Post1_iAll_iNext: "
   \<lbrakk> result = i_Exec_Comp_Stream_Init trans_fun input c;
     \<forall>x_n c_n. P1 x_n \<and> P2 c_n \<longrightarrow> Q (trans_fun x_n c_n);
     \<forall>t\<in>I. inext t I' = Suc t \<rbrakk> \<Longrightarrow>
-  \<box> t I. (P1 (input t) \<and> P2 (result t) \<longrightarrow> (\<bigcirc> t1 t I'. Q (result t1)))"
+  \<box> t I. (P1 (input t) \<and> P2 (result t) \<longrightarrow> (\<circle> t1 t I'. Q (result t1)))"
 by (rule iallI, simp add: iNext_def i_Exec_Stream_Init_Pre_Post1)
 
 text {* Direct relation between input and state before transition *}
@@ -43,7 +43,7 @@ lemma i_Exec_Stream_Init_Pre_Post2_iAll_iNext: "
   \<lbrakk> result = i_Exec_Comp_Stream_Init trans_fun input c;
     \<forall>x_n c_n. P x_n c_n \<longrightarrow> Q (trans_fun x_n c_n);
     \<forall>t\<in>I. inext t I' = Suc t \<rbrakk> \<Longrightarrow>
-  \<box> t I. (P (input t) (result t) \<longrightarrow> (\<bigcirc> t1 t I'. Q (result t1)))"
+  \<box> t I. (P (input t) (result t) \<longrightarrow> (\<circle> t1 t I'. Q (result t1)))"
 by (rule iallI, simp add: iNext_def i_Exec_Stream_Init_Pre_Post2)
 
 text {* Relation between input and output *}
@@ -51,7 +51,7 @@ lemma i_Exec_Stream_Init_Pre_Post3_iAll_iNext: "
   \<lbrakk> result = i_Exec_Comp_Stream_Init trans_fun input c;
     \<forall>x_n c_n. P c_n \<longrightarrow> Q x_n (trans_fun x_n c_n);
     \<forall>t\<in>I. inext t I' = Suc t \<rbrakk> \<Longrightarrow>
-  \<box> t I. (P (result t) \<longrightarrow> (\<bigcirc> t1 t I'. Q (input\<^bsup>\<leftarrow> \<NoMsg>\<^esup> t1) (result t1)))"
+  \<box> t I. (P (result t) \<longrightarrow> (\<circle> t1 t I'. Q (input\<^bsup>\<leftarrow> \<NoMsg>\<^esup> t1) (result t1)))"
 apply (rule iallI, unfold iNext_def)
 apply (simp add: ilist_Previous_Suc i_Exec_Stream_Init_nth_Suc_eq_i_Exec_Stream_nth i_Exec_Stream_Previous_i_Exec_Stream_Init)
 apply (blast dest: i_Exec_Stream_Pre_Post2_iAll[OF refl])
@@ -146,14 +146,14 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_NoMsg_iAll_start_event_conv: "
   \<lbrakk> 0 < k; \<And> t. event t = (t mod k = 0); t0 = t * k;
     s = (output_fun \<circ> i_Exec_Comp_Stream trans_fun (input \<odot>\<^sub>i k) c) \<rbrakk>\<Longrightarrow>
   ((i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c) t = \<NoMsg>) =
-  (s t0 = \<NoMsg> \<and> (\<bigcirc> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 [0\<dots>] \<oplus> t'. event t2)))"
+  (s t0 = \<NoMsg> \<and> (\<circle> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 [0\<dots>] \<oplus> t'. event t2)))"
 by (simp add: i_Exec_Comp_Stream_Acc_Output_def i_shrink_eq_NoMsg_iAll_start_event_conv)
 
 lemma i_Exec_Comp_Stream_Acc_Output__Init__eq_NoMsg_iAll_start_event_conv: "
   \<lbrakk> 0 < k; \<And> t. event t = ((t + k - Suc 0) mod k = 0); t0 = Suc (t * k);
     s = (output_fun \<circ> i_Exec_Comp_Stream_Init trans_fun (input \<odot>\<^sub>i k) c) \<rbrakk>\<Longrightarrow>
   ((i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c) t = \<NoMsg>) =
-  (s t0 = \<NoMsg> \<and> (\<bigcirc> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 [0\<dots>] \<oplus> t'. event t2)))"
+  (s t0 = \<NoMsg> \<and> (\<circle> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 [0\<dots>] \<oplus> t'. event t2)))"
 apply (simp add: i_Exec_Comp_Stream_Acc_Output_def i_shrink_eq_NoMsg_iAll_start_event_conv)
 apply (simp add: iT_add iNext_def iFROM_inext iT_iff)
 apply (simp add: i_Exec_Stream_Init_eq_i_Exec_Stream_Cons)
@@ -166,16 +166,16 @@ lemma i_Exec_Comp_Stream_Acc_Output__Init__eq_NoMsg_iAll_start_event2_conv: "
   \<lbrakk> Suc 0 < k; \<And> t. event t = (t mod k = Suc 0); t0 = Suc (t * k);
     s = (output_fun \<circ> i_Exec_Comp_Stream_Init trans_fun (input \<odot>\<^sub>i k) c) \<rbrakk>\<Longrightarrow>
   ((i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c) t = \<NoMsg>) =
-  (s t0 = \<NoMsg> \<and> (\<bigcirc> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 [0\<dots>] \<oplus> t'. event t2)))"
+  (s t0 = \<NoMsg> \<and> (\<circle> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 [0\<dots>] \<oplus> t'. event t2)))"
 by (simp add: i_Exec_Comp_Stream_Acc_Output__Init__eq_NoMsg_iAll_start_event_conv mod_eq_Suc_0_conv)
 
 lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_iUntil_start_event_conv: "
   \<lbrakk> 0 < k; m \<noteq> \<NoMsg>; \<And>t. event t = (t mod k = 0); t0 = t * k;
     s = (output_fun \<circ> i_Exec_Comp_Stream trans_fun (input \<odot>\<^sub>i k) c) \<rbrakk> \<Longrightarrow>
   ((i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c) t = m) = (
-  (s t0 = m \<and> (\<bigcirc> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 ([0\<dots>] \<oplus> t'). event t2))) \<or>
-  (\<bigcirc> t' t0 [0\<dots>]. (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t'). (
-    s t2 = m \<and> \<not> event t2 \<and> (\<bigcirc> t'' t2 [0\<dots>].
+  (s t0 = m \<and> (\<circle> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 ([0\<dots>] \<oplus> t'). event t2))) \<or>
+  (\<circle> t' t0 [0\<dots>]. (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t'). (
+    s t2 = m \<and> \<not> event t2 \<and> (\<circle> t'' t2 [0\<dots>].
       (s t3 = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t''). event t4))))))"
 by (simp add: i_Exec_Comp_Stream_Acc_Output_def i_shrink_eq_Msg_iUntil_start_event_conv)
 
@@ -183,9 +183,9 @@ lemma i_Exec_Comp_Stream_Acc_Output__Init__eq_Msg_iUntil_start_event_conv: "
   \<lbrakk> 0 < k; m \<noteq> \<NoMsg>; \<And>t. event t = ((t + k - Suc 0) mod k = 0); t0 = Suc (t * k);
     s = (output_fun \<circ> i_Exec_Comp_Stream_Init trans_fun (input \<odot>\<^sub>i k) c) \<rbrakk> \<Longrightarrow>
   ((i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c) t = m) = (
-  (s t0 = m \<and> (\<bigcirc> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 ([0\<dots>] \<oplus> t'). event t2))) \<or>
-  (\<bigcirc> t' t0 [0\<dots>]. (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t'). (
-    s t2 = m \<and> \<not> event t2 \<and> (\<bigcirc> t'' t2 [0\<dots>].
+  (s t0 = m \<and> (\<circle> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 ([0\<dots>] \<oplus> t'). event t2))) \<or>
+  (\<circle> t' t0 [0\<dots>]. (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t'). (
+    s t2 = m \<and> \<not> event t2 \<and> (\<circle> t'' t2 [0\<dots>].
       (s t3 = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t''). event t4))))))"
 apply (simp add: i_Exec_Comp_Stream_Acc_Output_def i_shrink_eq_Msg_iUntil_start_event_conv)
 apply (simp add: iNext_def iFROM_inext iFROM_iff iT_add)
@@ -200,9 +200,9 @@ lemma i_Exec_Comp_Stream_Acc_Output__Init__eq_Msg_iUntil_start_event2_conv: "
   \<lbrakk> Suc 0 < k; m \<noteq> \<NoMsg>; \<And>t. event t = (t mod k = Suc 0); t0 = Suc (t * k);
     s = (output_fun \<circ> i_Exec_Comp_Stream_Init trans_fun (input \<odot>\<^sub>i k) c) \<rbrakk> \<Longrightarrow>
   ((i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c) t = m) = (
-  (s t0 = m \<and> (\<bigcirc> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 ([0\<dots>] \<oplus> t'). event t2))) \<or>
-  (\<bigcirc> t' t0 [0\<dots>]. (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t'). (
-    s t2 = m \<and> \<not> event t2 \<and> (\<bigcirc> t'' t2 [0\<dots>].
+  (s t0 = m \<and> (\<circle> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 ([0\<dots>] \<oplus> t'). event t2))) \<or>
+  (\<circle> t' t0 [0\<dots>]. (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t'). (
+    s t2 = m \<and> \<not> event t2 \<and> (\<circle> t'' t2 [0\<dots>].
       (s t3 = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t''). event t4))))))"
 by (simp add: i_Exec_Comp_Stream_Acc_Output__Init__eq_Msg_iUntil_start_event_conv mod_eq_Suc_0_conv)
 
@@ -210,14 +210,14 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_NoMsg_iAll_finish_event_conv: "
   \<lbrakk> Suc 0 < k; \<And> t. event t = (t mod k = k - Suc 0); t0 = t * k;
     s = (output_fun \<circ> i_Exec_Comp_Stream trans_fun (input \<odot>\<^sub>i k) c) \<rbrakk>\<Longrightarrow>
   ((i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c) t = \<NoMsg>) =
-  (s t0 = \<NoMsg> \<and> (\<bigcirc> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 [0\<dots>] \<oplus> t'. event t2 \<and> s t2 = \<NoMsg>)))"
+  (s t0 = \<NoMsg> \<and> (\<circle> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 [0\<dots>] \<oplus> t'. event t2 \<and> s t2 = \<NoMsg>)))"
 by (simp add: i_Exec_Comp_Stream_Acc_Output_def i_shrink_eq_NoMsg_iAll_finish_event_conv)
 
 lemma i_Exec_Comp_Stream_Acc_Output__Init__eq_NoMsg_iAll_finish_event_conv: "
   \<lbrakk> Suc 0 < k; \<And> t. event t = (t mod k = 0); t0 = Suc (t * k);
     s = (output_fun \<circ> i_Exec_Comp_Stream_Init trans_fun (input \<odot>\<^sub>i k) c) \<rbrakk>\<Longrightarrow>
   ((i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c) t = \<NoMsg>) =
-  (s t0 = \<NoMsg> \<and> (\<bigcirc> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 [0\<dots>] \<oplus> t'. event t2 \<and> s t2 = \<NoMsg>)))"
+  (s t0 = \<NoMsg> \<and> (\<circle> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 [0\<dots>] \<oplus> t'. event t2 \<and> s t2 = \<NoMsg>)))"
 apply (simp add: i_Exec_Comp_Stream_Acc_Output__eq_NoMsg_iAll_finish_event_conv)
 apply (simp add: iNext_def iFROM_inext iFROM_iff iT_add)
 apply (simp add: i_Exec_Stream_Init_eq_i_Exec_Stream_Cons)
@@ -233,7 +233,7 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_iUntil_finish_event_conv: "
   ((i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c) t = m) =
   ((\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t0). event t2 \<and> s t2 = m) \<or>
   (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t0). (\<not> event t2 \<and> s t2 = m \<and> (
-    \<bigcirc> t' t2 [0\<dots>]. (s t3 = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t'). event t4 \<and> s t4 = \<NoMsg>)))))"
+    \<circle> t' t2 [0\<dots>]. (s t3 = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t'). event t4 \<and> s t4 = \<NoMsg>)))))"
 apply (case_tac "k = Suc 0")
  apply (simp add: iT_add iT_not_empty iFROM_Min)
 apply (drule neq_le_trans[OF not_sym], simp)
@@ -246,7 +246,7 @@ lemma i_Exec_Comp_Stream_Acc_Output__Init__eq_Msg_iUntil_finish_event_conv: "
   ((i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c) t = m) =
   ((\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t0). event t2 \<and> s t2 = m) \<or>
   (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t0). (\<not> event t2 \<and> s t2 = m \<and> (
-    \<bigcirc> t' t2 [0\<dots>]. (s t3 = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t'). event t4 \<and> s t4 = \<NoMsg>)))))"
+    \<circle> t' t2 [0\<dots>]. (s t3 = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t'). event t4 \<and> s t4 = \<NoMsg>)))))"
 apply (simp add: i_Exec_Comp_Stream_Acc_Output__eq_Msg_iUntil_finish_event_conv)
 apply (simp add: iNext_def iFROM_inext iT_iff)
 apply (simp add: i_Exec_Stream_Init_eq_i_Exec_Stream_Cons)
@@ -516,7 +516,7 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_before_State_Idle_imp2: "
     s = i_Exec_Comp_Stream trans_fun (input \<odot>\<^sub>i k) c;
     t1 \<in> [0\<dots>, k - Suc 0] \<oplus> t0;
     output_fun (s t1) = m;
-    \<bigcirc> t2 t1 [0\<dots>].
+    \<circle> t2 t1 [0\<dots>].
      ((output_fun (s t3) = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t2).
       (output_fun (s t4) = \<NoMsg> \<and> State_Idle localState output_fun trans_fun (localState (s t4))))) \<rbrakk> \<Longrightarrow>
   i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c t = m"
@@ -578,7 +578,7 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_before_State_Idle_conv2: "
   (i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c t = m) =
   (\<diamond> t1 [0\<dots>, k - Suc 0] \<oplus> t0. (
      (output_fun (s t1) = m) \<and>
-     (\<bigcirc> t2 t1 [0\<dots>].
+     (\<circle> t2 t1 [0\<dots>].
       ((output_fun (s t3) = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t2).
       (output_fun (s t4) = \<NoMsg> \<and> State_Idle localState output_fun trans_fun (localState (s t4))))))))"
 apply (rule iffI)
@@ -668,7 +668,7 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_before_State_Idle_imp: "
     s = i_Exec_Comp_Stream trans_fun (input \<odot>\<^sub>i k) c;
     (\<not> State_Idle localState output_fun trans_fun (localState (s t1))). t1 \<U> t2 [0\<dots>] \<oplus> t0. (
     (output_fun (s t2) = m) \<and>
-    (\<bigcirc> t3 t2 [0\<dots>].
+    (\<circle> t3 t2 [0\<dots>].
       ((output_fun (s t4) = \<NoMsg>. t4 \<U> t5 ([0\<dots>] \<oplus> t3).
        (output_fun (s t5) = \<NoMsg> \<and> State_Idle localState output_fun trans_fun (localState (s t5))))))) \<rbrakk> \<Longrightarrow>
   i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c t = m"
@@ -738,7 +738,7 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_before_State_Idle_conv: "
   (i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c t = m) =
   ((\<not> State_Idle localState output_fun trans_fun (localState (s t1))). t1 \<U> t2 [0\<dots>] \<oplus> t0. (
      (output_fun (s t2) = m) \<and>
-     (\<bigcirc> t3 t2 [0\<dots>].
+     (\<circle> t3 t2 [0\<dots>].
        ((output_fun (s t4) = \<NoMsg>. t4 \<U> t5 ([0\<dots>] \<oplus> t3).
         (output_fun (s t5) = \<NoMsg> \<and> State_Idle localState output_fun trans_fun (localState (s t5))))))))"
 apply (rule iffI)
@@ -784,7 +784,7 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_State_Idle_conv2: "
   (\<diamond> t1 [0\<dots>, k - Suc 0] \<oplus> t0. (
     output_fun (s t1) = m \<and>
     (State_Idle localState output_fun trans_fun (localState (s t1)) \<or>
-    (\<bigcirc> t2 t1 [0\<dots>].
+    (\<circle> t2 t1 [0\<dots>].
       ((output_fun (s t3) = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t2).
        (output_fun (s t4) = \<NoMsg> \<and> State_Idle localState output_fun trans_fun (localState (s t4)))))))))"
 apply (subst conj_disj_distribL)
@@ -816,7 +816,7 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_State_Idle_conv2': "
       output_fun (s t1) = m \<and> State_Idle localState output_fun trans_fun (localState (s t1)))) \<or>
   (\<diamond> t1 [0\<dots>, k - Suc 0] \<oplus> t0. (
       ((output_fun (s t1) = m) \<and>
-        (\<bigcirc> t2 t1 [0\<dots>].
+        (\<circle> t2 t1 [0\<dots>].
           ((output_fun (s t3) = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t2).
            (output_fun (s t4) = \<NoMsg> \<and> State_Idle localState output_fun trans_fun (localState (s t4))))))))))"
 apply (subst i_Exec_Comp_Stream_Acc_Output__eq_Msg_State_Idle_conv2, assumption+)
@@ -837,7 +837,7 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_iAll_iUntil_State_Idle_conv2: "
     (\<diamond> t1 [0\<dots>, k - Suc 0] \<oplus> t0. (
       output_fun (s t1) = m \<and>
       (State_Idle localState output_fun trans_fun (localState (s t1)) \<or>
-      (\<bigcirc> t2 t1 [0\<dots>].
+      (\<circle> t2 t1 [0\<dots>].
         ((output_fun (s t3) = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t2).
          (output_fun (s t4) = \<NoMsg> \<and> State_Idle localState output_fun trans_fun (localState (s t4)))))))))))"
 apply (case_tac "m = \<NoMsg>")
@@ -857,7 +857,7 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_State_Idle_conv': "
     (output_fun (s t1) = m \<and> State_Idle localState output_fun trans_fun (localState (s t1)))) \<or>
   ((\<not> State_Idle localState output_fun trans_fun (localState (s t2))). t2 \<U> t1 [0\<dots>] \<oplus> t0.
    (output_fun (s t1) = m \<and>
-   (\<bigcirc> t3 t1 [0\<dots>].
+   (\<circle> t3 t1 [0\<dots>].
      ((output_fun (s t4) = \<NoMsg>. t4 \<U> t5 ([0\<dots>] \<oplus> t3).
       (output_fun (s t5) = \<NoMsg> \<and> State_Idle localState output_fun trans_fun (localState (s t5)))))))))"
 apply (case_tac "
@@ -895,7 +895,7 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_State_Idle_conv: "
   (((\<not> State_Idle localState output_fun trans_fun (localState (s t2))). t2 \<U> t1 [0\<dots>] \<oplus> t0.
     (output_fun (s t1) = m \<and>
       (State_Idle localState output_fun trans_fun (localState (s t1)) \<or>
-      (\<bigcirc> t3 t1 [0\<dots>].
+      (\<circle> t3 t1 [0\<dots>].
           ((output_fun (s t4) = \<NoMsg>. t4 \<U> t5 ([0\<dots>] \<oplus> t3).
            (output_fun (s t5) = \<NoMsg> \<and> State_Idle localState output_fun trans_fun (localState (s t5))))))))))"
 apply (subst i_Exec_Comp_Stream_Acc_Output__eq_Msg_State_Idle_conv', assumption+)
@@ -918,7 +918,7 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_iUntil_State_Idle_conv: "
     (((\<not> State_Idle localState output_fun trans_fun (localState (s t2))). t2 \<U> t1 [0\<dots>] \<oplus> t0.
       (output_fun (s t1) = m \<and>
         (State_Idle localState output_fun trans_fun (localState (s t1)) \<or>
-        (\<bigcirc> t3 t1 [0\<dots>].
+        (\<circle> t3 t1 [0\<dots>].
             ((output_fun (s t4) = \<NoMsg>. t4 \<U> t5 ([0\<dots>] \<oplus> t3).
              (output_fun (s t5) = \<NoMsg> \<and> State_Idle localState output_fun trans_fun (localState (s t5))))))))))))"
 apply (case_tac "m = \<NoMsg>")
@@ -950,7 +950,7 @@ corollary i_Exec_Comp_Stream_Acc_Output__eq_Msg_State_Idle_iEx_imp2: "
     s = i_Exec_Comp_Stream trans_fun (input \<odot>\<^sub>i k) c;
     \<diamond> t1 [0\<dots>, k - Suc 0] \<oplus> t0. (
           ((output_fun (s t1) = m) \<and>
-            (\<bigcirc> t2 t1 [0\<dots>].
+            (\<circle> t2 t1 [0\<dots>].
               ((output_fun (s t3) = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t2).
                (output_fun (s t4) = \<NoMsg> \<and> State_Idle localState output_fun trans_fun (localState (s t4)))))))) \<rbrakk> \<Longrightarrow>
   i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c t = m"
@@ -976,7 +976,7 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_State_Idle_iUntil_imp2: "
     s = i_Exec_Comp_Stream trans_fun (input \<odot>\<^sub>i k) c;
     (\<not> State_Idle localState output_fun trans_fun (localState (s t2))). t2 \<U> t1 [0\<dots>] \<oplus> t0.
     (output_fun (s t1) = m \<and>
-    (\<bigcirc> t3 t1 [0\<dots>].
+    (\<circle> t3 t1 [0\<dots>].
       ((output_fun (s t4) = \<NoMsg>. t4 \<U> t5 ([0\<dots>] \<oplus> t3).
        (output_fun (s t5) = \<NoMsg> \<and> State_Idle localState output_fun trans_fun (localState (s t5))))))) \<rbrakk> \<Longrightarrow>
   i_Exec_Comp_Stream_Acc_Output k output_fun trans_fun input c t = m"
