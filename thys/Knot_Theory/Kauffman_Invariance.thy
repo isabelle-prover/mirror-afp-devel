@@ -1,4 +1,4 @@
-header{*Kauffman\_Invariance: Proving the invariance of Kauffman Bracket*}
+section{*Kauffman\_Invariance: Proving the invariance of Kauffman Bracket*}
 
 theory Kauffman_Invariance
 imports Link_Algebra Linkrel_Kauffman
