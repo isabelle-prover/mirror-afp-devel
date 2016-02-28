@@ -228,8 +228,7 @@ lemma echelon_form_of_column_k_det_unit:
   fixes A::"'a::{bezout_domain_div}^'n::{mod_type}^'n::{mod_type}"
   assumes det: "is_unit (det_P)"
   shows "is_unit (fst (echelon_form_of_column_k_det (det_P,A,i,bezout) k))"
-  unfolding is_unit_def echelon_form_of_column_k_det_def Let_def fst_conv snd_conv 
-  using det is_unit_def by auto
+  unfolding echelon_form_of_column_k_det_def Let_def fst_conv snd_conv using det by auto
 
 lemma echelon_form_of_upt_k_det_unit:
   fixes A::"'a::{bezout_domain_div}^'n::{mod_type}^'n::{mod_type}"
@@ -237,7 +236,7 @@ lemma echelon_form_of_upt_k_det_unit:
 proof (induct k)
   case 0
   show ?case unfolding echelon_form_of_upt_k_det_def Let_def fst_conv
-    using echelon_form_of_column_k_det_unit[OF is_unit_1] by auto
+    using echelon_form_of_column_k_det_unit[of 1] by auto
 next
   case (Suc k)
   let ?f="(foldl echelon_form_of_column_k_det (1,A,0,bezout) [0..<Suc k])"
@@ -262,12 +261,12 @@ subsubsection{*Final lemmas*}
 corollary det_echelon_form_of_det':
   fixes A::"'a::{bezout_domain_div}^'n::{mod_type}^'n::{mod_type}"
   assumes ib: "is_bezout_ext bezout"
-  shows "det A = ring_inv (fst (echelon_form_of_det A bezout)) 
+  shows "det A = 1 div (fst (echelon_form_of_det A bezout)) 
   * det (snd (echelon_form_of_det A bezout))"
 proof -
   have "(fst (echelon_form_of_det A bezout)) * det A = det (snd (echelon_form_of_det A bezout))"
     by (rule det_echelon_form_of_det[OF ib])
-  thus "det A = ring_inv (fst (echelon_form_of_det A bezout)) 
+  thus "det A = 1 div (fst (echelon_form_of_det A bezout)) 
     * det (snd (echelon_form_of_det A bezout))"
     by (auto simp add: echelon_form_of_unit dest: sym)
 qed
@@ -292,14 +291,14 @@ lemma det_echelon_form:
 corollary det_echelon_form_of_det_setprod:
   fixes A::"'a::{bezout_domain_div}^'n::{mod_type}^'n::{mod_type}"
   assumes ib: "is_bezout_ext bezout"
-  shows "det A = ring_inv (fst (echelon_form_of_det A bezout)) 
+  shows "det A = 1 div (fst (echelon_form_of_det A bezout)) 
   * setprod (\<lambda>i. snd (echelon_form_of_det A bezout) $ i $ i) (UNIV:: 'n set)"
   using det_echelon_form_of_det'[OF ib]
   unfolding det_echelon_form[OF ef_echelon_form_of_det[OF ib]] by auto
 
 corollary det_echelon_form_of_euclidean[code]:
   fixes A::"'a::{euclidean_ring}^'n::{mod_type}^'n::{mod_type}"
-  shows "det A = ring_inv (fst (echelon_form_of_det A euclid_ext2)) 
+  shows "det A = 1 div (fst (echelon_form_of_det A euclid_ext2)) 
   * setprod (\<lambda>i. snd (echelon_form_of_det A euclid_ext2) $ i $ i) (UNIV:: 'n set)"
   by (rule det_echelon_form_of_det_setprod[OF is_bezout_ext_euclid_ext2])
 

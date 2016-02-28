@@ -9,7 +9,7 @@ section{*Rings*}
 theory Rings2
 imports
    "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
-   "Euclidean_Algorithm_Extension"
+   "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
 begin
 
 subsection{*Previous lemmas and results*}
@@ -135,8 +135,9 @@ lemma subgroup_Union:
   assumes all_subgroup: "\<forall>A\<in>S. subgroup A"
   and inc: "\<forall>n. I(n) \<subseteq> I(n+1)"
   shows "subgroup (\<Union>S)" 
-proof (unfold subgroup_def, auto)
-  show"\<exists>X\<in>S. 0 \<in> X" 
+unfolding subgroup_def
+proof (safe; (unfold Union_iff)?)
+  show "\<exists>X\<in>S. 0 \<in> X" 
   proof (rule bexI[of _ "I 0"])
     show "I 0 \<in> S" unfolding S by auto
     thus "0 \<in> I 0" using all_subgroup unfolding subgroup_def by auto
@@ -215,7 +216,8 @@ lemma ideal_Union:
   assumes all_ideal: "\<forall>A\<in>S. ideal A"
   and inc: "\<forall>n. I(n) \<subseteq> I(n+1)"
   shows "ideal (\<Union>S)"
-proof (unfold ideal_def left_ideal_def right_ideal_def, auto)
+unfolding ideal_def left_ideal_def right_ideal_def
+proof (safe; (unfold Union_iff)?)
   fix y x r
   assume y: "y \<in> S" and x: "x \<in> y"
   obtain n where n: "y=I n" using y S by auto
@@ -947,8 +949,8 @@ proof (unfold is_bezout_ext_def Let_def, auto)
     by (simp add: split_beta)
   show "fst (euclid_ext2 a b) * a + fst (snd (euclid_ext2 a b)) * b 
     = snd (snd (snd (snd (euclid_ext2 a b))))"
-    unfolding snd_snd fst_snd fst
-    by (rule euclid_ext'_correct)
+    unfolding snd_snd fst_snd fst using euclid_ext'_correct'[of a b]
+    by (simp add: case_prod_unfold)
   show d_dvd_a: "?d dvd a" by (simp add: snd_snd)
   show d_dvd_b: "?d dvd b" by (simp add: snd_snd)
   show "?d * ?u = - b" unfolding euclid_ext2_def Let_def fst_conv snd_conv
@@ -973,8 +975,8 @@ proof (unfold is_bezout_def Let_def, auto)
     unfolding euclid_ext'_def 
     by (simp add: split_beta)
   show "fst (euclid_ext a b) * a + fst (snd (euclid_ext a b)) * b = snd (snd (euclid_ext a b))"
-    unfolding snd_snd fst_snd fst
-    by (rule euclid_ext'_correct)
+    unfolding snd_snd fst_snd fst using euclid_ext'_correct'[of a b]
+    by (simp add: case_prod_unfold)
   show "snd (snd (euclid_ext a b)) dvd a" by (simp add: snd_snd)
   show "snd (snd (euclid_ext a b)) dvd b" by (simp add: snd_snd)
   fix d' assume "d' dvd a" and "d' dvd b" 
@@ -1000,31 +1002,11 @@ subsection{*More gcd structures*}
 text{*The following classes represent structures where there exists a gcd 
   for each pair of elements and the operation is fixed.*}
 
-class semiring_gcd = semiring + gcd +
-  assumes "gcd a b dvd a"
-  and "gcd a b dvd b"
-  and "c dvd a \<Longrightarrow> c dvd b \<Longrightarrow> c dvd gcd a b"
-
 class pir_gcd = pir + semiring_gcd
 class pid_gcd = pid + pir_gcd
 
-subclass (in euclidean_ring_gcd) pid_gcd
-proof
-  fix a b c
-  show "gcd a b dvd a" by (simp add: gcd_dvd1)
-  show "gcd a b dvd b" by (simp add: gcd_dvd2)
-  assume ca: "c dvd a" and cb: "c dvd b" show "c dvd gcd a b"
-    by (simp add: ca cb dvd_gcd_iff)
-qed
+subclass (in euclidean_ring_gcd) pid_gcd ..
 
-subclass (in euclidean_semiring_gcd) semiring_gcd
-proof
-  fix a b c
-  show "gcd a b dvd a" by (simp add: gcd_dvd1)
-  show "gcd a b dvd b" by (simp add: gcd_dvd2)
-  assume ca: "c dvd a" and cb: "c dvd b" show "c dvd gcd a b"
-    by (simp add: ca cb dvd_gcd_iff)
-qed
 
 
 subsection{*Field*}

@@ -1282,7 +1282,7 @@ proof-
   have l7: "r^3  = Fract (p^3) (q^3)"
     by (metis (no_types) hypsp mult_rat power3_eq_cube)
   have l8: "q ^ 3 > 0 & coprime (p ^ 3) (q ^ 3)"
-    by (metis hypsp gcd_exp_int power_one zero_less_power)
+    by (metis hypsp gcd_exp power_one zero_less_power)
   have "Fract (p ^ 3) (q ^ 3) = 2"
     using l6 l7
     by auto
@@ -1333,7 +1333,7 @@ proof-
     using hypsy hypsr [[hypsubst_thin = true]]
     by auto (metis (hide_lams, no_types) of_rat_1 of_rat_diff of_rat_eq_iff of_rat_mult of_rat_numeral_eq of_rat_power)
   have l7: "(snd p) ^3 > 0 & coprime ((fst p)^3) ((snd p)^3)"
-    by (metis hypsp gcd_exp_int power_one zero_less_power)
+    by (metis hypsp gcd_exp power_one zero_less_power)
   have "r^3  = Fract ((fst p)^3) ((snd p)^3)"
     by (metis (no_types) mult_rat power3_eq_cube hypsp)
   then have "Fract ((fst p)^3) ((snd p)^3) - (Fract (3 * (fst p)) (snd p)) = 1"
@@ -1362,7 +1362,7 @@ proof-
     done
   moreover have "coprime (fst p) ((snd p)^3)"  "coprime ((fst p)^3) (snd p)"
     using hypsp
-    by (auto simp add: coprime_exp_int gcd.commute)
+    by (auto simp add: coprime_exp gcd.commute)
   ultimately have "(fst p) = 1 | (fst p) = - 1"  "(snd p) = 1"
     using hypsp
     by auto

@@ -1004,7 +1004,7 @@ proof (cases "p = 0")
     also have "of_int a * rat_of_int n ^ p = of_int (a * n ^ p)" unfolding of_int_mult of_int_power ..
     finally have id: "a * n ^ p = b * z ^ p" by linarith
     from quotient_of_coprime[OF quo] have cop: "coprime (z ^ p) (n ^ p)"
-       by (metis gcd.commute coprime_exp_int)
+       by (metis gcd.commute coprime_exp)
     from coprime_crossproduct_int[OF quotient_of_coprime[OF q] this] arg_cong[OF id, of abs]
     have "\<bar>n ^ p\<bar> = \<bar>b\<bar>"
       by (simp add: field_simps abs_mult)

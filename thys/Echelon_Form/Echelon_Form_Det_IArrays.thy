@@ -36,7 +36,7 @@ definition echelon_form_of_det_iarrays :: "'a::{bezout_ring} iarray iarray
   = echelon_form_of_upt_k_det_iarrays (1::'a,A) (ncols_iarray A - 1) bezout"
 
 definition "det_iarrays_rings A = (let A' = echelon_form_of_det_iarrays A euclid_ext2 
-  in ring_inv (fst A') * listprod (map (\<lambda>i. (snd A') !! i !! i) [0..<nrows_iarray A]))"
+  in 1 div (fst A') * listprod (map (\<lambda>i. (snd A') !! i !! i) [0..<nrows_iarray A]))"
 
 subsection{*Properties*}
 
@@ -278,7 +278,7 @@ subsubsection{*Computing the determinant*}
 lemma det_echelon_form_of_euclidean_iarrays[code]:
   fixes A::"'a::{euclidean_ring}^'n::{mod_type}^'n::{mod_type}"
   shows "det A = (let A' = echelon_form_of_det_iarrays (matrix_to_iarray A) euclid_ext2 
-  in ring_inv (fst A') 
+  in 1 div (fst A') 
   * listprod (map (\<lambda>i. (snd A') !! i !! i) [0..<nrows_iarray (matrix_to_iarray A)]))"
 proof -
   let ?f="(\<lambda>i. snd (echelon_form_of_det_iarrays (matrix_to_iarray A) euclid_ext2) !! i !! i)"
@@ -303,11 +303,11 @@ proof -
   finally have *:"listprod (map (\<lambda>i. snd (echelon_form_of_det_iarrays 
     (matrix_to_iarray A) euclid_ext2) !! i !! i) [0..<nrows_iarray (matrix_to_iarray A)]) =
     (\<Prod>i\<in>UNIV. snd (echelon_form_of_det A euclid_ext2) $ i $ i)" .  
-  have "det A = ring_inv (fst (echelon_form_of_det A euclid_ext2)) 
+  have "det A = 1 div (fst (echelon_form_of_det A euclid_ext2)) 
     * setprod (\<lambda>i. snd (echelon_form_of_det A euclid_ext2) $ i $ i) (UNIV:: 'n set)"
     unfolding det_echelon_form_of_euclidean ..
   also have "... = (let A' = echelon_form_of_det_iarrays (matrix_to_iarray A) euclid_ext2
-    in ring_inv (fst A') 
+    in 1 div (fst A') 
     * listprod (map (\<lambda>i. (snd A') !! i !! i) [0..<nrows_iarray (matrix_to_iarray A)]))"
     unfolding Let_def unfolding * fst_echelon_form_of_det ..
   finally show ?thesis .

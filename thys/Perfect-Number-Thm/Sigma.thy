@@ -160,13 +160,11 @@ lemma prodsums_eq_sumprods:
 proof -
   have "coprime (p ^ f) x" if "x dvd m" for x f
     unfolding gcd.commute [of _ x]
-    apply (rule coprime_exp_nat)
-    using assms that
-    apply auto
-    by (metis gcd.commute gcd.left_commute gcd_Suc_0 gcd_nat.absorb2)
+    by (rule coprime_exp, rule coprime_divisors[OF that dvd_refl])
+       (insert assms, simp add: gcd.commute)
   then show ?thesis
     by (auto simp: imp_ex setsum_mult_setsum_if_inj [OF mult_inj_if_coprime_nat]
-      intro!: arg_cong [where f = "setsum (\<lambda>x. x)"])
+             intro!: arg_cong [where f = "setsum (\<lambda>x. x)"])
 qed
 
 declare [[simproc add: finite_Collect]]
@@ -193,14 +191,14 @@ qed
 lemma div_decomp_comp:
   fixes a::nat
   shows "coprime m n \<Longrightarrow> a dvd m*n \<longleftrightarrow> (\<exists>b c. a = b * c & b dvd m & c dvd n)"
-by (auto simp only: division_decomp_nat mult_dvd_mono)
+by (auto simp only: division_decomp mult_dvd_mono)
 
 theorem sigma_semimultiplicative:
   assumes p: "prime p" and cop: "coprime p m"
   shows "sigma (p^n) * sigma m = sigma (p^n * m)" (is "?l = ?r")
 proof -
   from cop have cop2: "coprime (p^n) m"
-    by (auto simp add: coprime_exp_nat gcd.commute)
+    by (auto simp add: coprime_exp gcd.commute)
   have "?l = (\<Sum> {a . a dvd p^n})*(\<Sum> {b . b dvd m})" by (simp add: sigma_def)
   also from p have "... = (\<Sum> {p^f| f . f<=n})*(\<Sum> {b . b dvd m})"
     by (simp add: pr_pow_div_eq_sm_pr_pow)

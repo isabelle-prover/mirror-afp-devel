@@ -2773,7 +2773,7 @@ next
         show "A $ i $ j \<noteq> 0" by (rule Suc.prems(4))
       qed
       thus "invertible (bezout_matrix A i (mod_type_class.from_nat (Suc n)) j bezout)"
-        unfolding invertible_iff_is_unit' by simp
+        unfolding invertible_iff_is_unit by simp
       show "invertible P" using inv_P .
     qed
   qed
