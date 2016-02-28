@@ -1,4 +1,4 @@
-header{*Tangle\_Algebra: Tensor product of tangles and its properties*}
+section{*Tangle\_Algebra: Tensor product of tangles and its properties*}
 theory Tangle_Algebra
 imports Tangles
 begin

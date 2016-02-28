@@ -1,4 +1,4 @@
-header{*Link\_Algebra: Defining equivalence of tangles and links*}
+section{*Link\_Algebra: Defining equivalence of tangles and links*}
 
 theory Link_Algebra
 imports Tangles Tangle_Algebra Tangle_Moves

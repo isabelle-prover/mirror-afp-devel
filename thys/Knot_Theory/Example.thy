@@ -1,4 +1,4 @@
-header{*Showing equivalence of links: An example*}
+section{*Showing equivalence of links: An example*}
 
 theory Example
 imports Link_Algebra 

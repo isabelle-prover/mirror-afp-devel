@@ -1,4 +1,4 @@
-header{*Kauffman Matrix and Kauffman Bracket- Definitions and Properties*}
+section{*Kauffman Matrix and Kauffman Bracket- Definitions and Properties*}
 theory Kauffman_Matrix
 imports "../Matrix_Tensor/Matrix_Tensor" Link_Algebra "~~/src/HOL/Library/Polynomial"
  "~~/src/HOL/Library/Fraction_Field" 
