@@ -1,4 +1,4 @@
-section{* Initial Value Problems *}
+ section{* Initial Value Problems *}
 theory Initial_Value_Problem
 imports "../ODE_Auxiliarities"
 begin
@@ -546,7 +546,7 @@ proof (rule lipschitzI)
       also have "... \<le> integral {t0..t} (\<lambda>t. L * norm (y t - z t))"
         using y_cont z_cont lipschitz t_bounds interval y_defined z_defined
         by (auto intro!: integral_le continuous_intros
-          simp add: dist_norm lipschitz_def Pi_iff)
+          simp add: dist_norm lipschitz_def Pi_iff simp del: integral_mult_right)
       also have "... \<le> integral {t0..t} (\<lambda>t. L *
         norm (Abs_bcontfun y - Abs_bcontfun  z))"
         using norm_bounded[of "Abs_bcontfun y - Abs_bcontfun z"]
