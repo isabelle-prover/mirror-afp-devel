@@ -302,7 +302,7 @@ begin
 
   lemma dom_phis'_code [simp]:
   shows "dom (Mapping.lookup (phis'_code g next)) = dom (Mapping.lookup (phis g)) - {v. snd v = snd next}"
-    unfolding phis'_code_def by (auto simp: Mapping_lookup_map_values Option.bind_def split: option.splits)
+    by (auto simp: phis'_code_def Mapping_lookup_map_values bind_eq_Some_conv)
 
   lemma nodes_of_phis_finite [simplified]:
   assumes "g \<turnstile> nodes_of_phis \<approx>\<^sub>\<phi> ssa.phiNodes_of g" and "Mapping.lookup nodes_of_phis v = Some ns" and "v \<in> Mapping.keys (ssa.phidefNodes g)"
@@ -353,7 +353,7 @@ begin
   lemma lookup_phis'_code:
   "Mapping.lookup (phis'_code g next) v = (if snd v = snd next then None else map_option (map (substNext_code g next)) (Mapping.lookup (phis g) v))"
     unfolding phis'_code_def
-    by (auto simp: Mapping_lookup_map_values Option.bind_def split: option.splits prod.splits)
+    by (auto simp: Mapping_lookup_map_values bind_eq_None_conv map_conv_bind_option comp_def split: prod.splits)
 
   lemma phi_equiv_mappingE':
     assumes "g \<turnstile> m\<^sub>1 \<approx>\<^sub>\<phi> ssa.phiNodes_of g"

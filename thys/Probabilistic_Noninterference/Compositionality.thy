@@ -2294,13 +2294,13 @@ proof-
     unfolding II using n nf cldl I_sub by simp
     also have "... =
     (?vS n) * (setsum (?v n) I) / (1 - setsum ?vS (theFTOne cl dl))"
-    apply (rule triv_div_mult) using vPII0 nf le1 by auto
+      using nf(1) vPII0 by (rule triv_div_mult) (insert le1, auto)
     also have "... =
     (?wS n) * (setsum (?w n) (F n I)) / (1 - setsum ?wS (theFTOne dl cl))"
     using n vSwS[of n] sw[of n I] I unfolding setsum_vS_wS by simp
     also have "... =
     (?wS n) / (1 - ?wSF) * (setsum (?w n) (F n I)) / (1 - setsum ?wP ?JJ_0)"
-    apply (rule triv_div_mult[THEN sym]) using wPJJ0 nf le1 by auto
+      using nf(2) wPJJ0 by (rule triv_div_mult[THEN sym]) (insert le1, auto)
     also have "... = setsum ?wP ?JJ / (1 - setsum ?wP ?JJ_0)"
     unfolding JJ using n nf cldl FnI_sub by simp
     finally show ?thesis .
