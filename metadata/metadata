@@ -2523,6 +2523,19 @@ abstract =
  CAVA Automata Library, Isabelle Workshop 2014.
 depends-on = Collections
 
+[LTL]
+title = Linear Temporal Logic
+author = Salomon Sickert <https://www7.in.tum.de/~sickert>
+date = 2016-03-01
+topic = Logic, Computer Science/Automata and Formal Languages
+abstract = 
+  This theory provides a formalisation of linear temporal logic (LTL)
+  and unifies previous formalisations within the AFP. This entry
+  establishes syntax and semantics for this logic and decouples it from
+  existing entries, yielding a common environment for theories reasoning
+  about LTL. Furthermore a parser written in SML and an executable
+  simplifier are provided.
+
 [LTL_to_GBA]
 title = Converting Linear-Time Temporal Logic to Generalized Büchi Automata
 author = Alexander Schimpf <mailto:schimpfa@informatik.uni-freiburg.de>, Peter Lammich <http://www21.in.tum.de/~lammich>

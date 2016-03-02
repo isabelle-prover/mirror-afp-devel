@@ -1,0 +1,11 @@
+chapter AFP
+
+session LTL (AFP) = "HOL-Library" +
+  options [timeout = 600]
+  theories
+    LTL
+    LTL_Rewrite
+    "example/LTL_Example"
+  document_files
+    "root.tex"
+    "root.bib"
