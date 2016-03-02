@@ -617,6 +617,78 @@ proof -
   finally show ?thesis unfolding p xis by simp
 qed
 
+lemma distinct_factorize_complex_main:
+  assumes "factorize_complex_main p = Some fctrs"
+  shows   "distinct (map fst (snd fctrs))"
+proof -
+  from assms have solvable: "\<forall>x\<in>set (snd (yun_factorization gcd p)). degree (fst x) \<le> 2 \<or> 
+                                 (\<forall>x\<in>set (coeffs (fst x)). x \<in> \<rat>)"
+    by (auto simp add: factorize_complex_main_def case_prod_unfold 
+                       Let_def map_concat o_def split: if_splits)
+  have sqf: "square_free_factorization p 
+               (fst (yun_factorization gcd p), snd (yun_factorization gcd p))"
+    by (rule yun_factorization) simp
+    
+  have "map fst (snd fctrs) = 
+        concat (map (\<lambda>x. remdups (roots_of_complex_main (fst x))) (snd (yun_factorization gcd p)))" 
+    using assms by (auto simp add: factorize_complex_main_def case_prod_unfold 
+                           Let_def map_concat o_def split: if_splits)
+  also have "distinct \<dots>"
+  proof (rule distinct_concat, goal_cases)
+    case 1
+    show ?case
+    proof (subst distinct_map, safe)
+      from square_free_factorizationD(5)[OF sqf]
+        show "distinct (snd (yun_factorization gcd p))" .
+      show "inj_on (\<lambda>x. remdups (roots_of_complex_main (fst x))) (set (snd (yun_factorization gcd p)))"
+      proof (rule inj_onI, clarify, goal_cases)
+        case (1 a1 b1 a2 b2)
+        {
+          assume neq: "(a1, b1) \<noteq> (a2, b2)"
+          from 1(1,2)[THEN square_free_factorizationD(2)[OF sqf]] 
+            have "degree a1 \<noteq> 0" "degree a2 \<noteq> 0" by blast+
+          hence [simp]: "a1 \<noteq> 0" "a2 \<noteq> 0" by auto
+          from square_free_factorizationD(3)[OF sqf 1(1,2) neq]
+            have "coprime a1 a2" .
+          
+          from solvable 1(1) have "{z. poly a1 z = 0} = set (roots_of_complex_main a1)"
+            by (intro roots_of_complex_main [symmetric]) auto
+          also have "set (roots_of_complex_main a1) = set (roots_of_complex_main a2)"
+            using 1(3) by (subst (1 2) set_remdups [symmetric]) (simp only: fst_conv)
+          also from solvable 1(2) have "\<dots> = {z. poly a2 z = 0}"
+            by (intro roots_of_complex_main) auto
+          finally have "{z. poly a1 z = 0} = {z. poly a2 z = 0}" .
+          with coprime_imp_no_common_roots[OF \<open>coprime a1 a2\<close>] 
+            have "{z. poly a1 z = 0} = {}" by auto
+          with fundamental_theorem_of_algebra constant_degree
+            have "degree a1 = 0" by auto
+          with \<open>degree a1 \<noteq> 0\<close> have False by contradiction
+        }
+        thus ?case by blast
+      qed
+    qed
+  
+  next
+    case (3 ys zs)
+    then obtain a1 b1 a2 b2 where ab:
+      "(a1, b1) \<in> set (snd (yun_factorization gcd p))"
+      "(a2, b2) \<in> set (snd (yun_factorization gcd p))"
+      "ys = remdups (roots_of_complex_main a1)" "zs = remdups (roots_of_complex_main a2)"
+      by auto
+    with 3 have neq: "(a1,b1) \<noteq> (a2,b2)" by auto
+    from ab(1,2)[THEN square_free_factorizationD(2)[OF sqf]] 
+      have [simp]: "a1 \<noteq> 0" "a2 \<noteq> 0" by auto
+    
+    from square_free_factorizationD(3)[OF sqf ab(1,2) neq] have "coprime a1 a2" .
+    have "set ys = {z. poly a1 z = 0}" "set zs = {z. poly a2 z = 0}"
+      by (insert solvable ab(1,2), subst ab, subst set_remdups,
+          rule roots_of_complex_main; (auto) [])+
+    with coprime_imp_no_common_roots[OF \<open>coprime a1 a2\<close>] show ?case by auto
+  qed auto
+  
+  finally show ?thesis .
+qed
+
 lemma factorize_complex_poly: assumes fp: "factorize_complex_poly p = Some (c,qis)"
   shows 
   "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" 
