@@ -3433,6 +3433,9 @@ abstract = Applicative functors augment computations with effects by lifting fun
   </p><p>
   We declare several types from the Isabelle library as applicative functors and illustrate the use of the methods with two examples: the lifting of the arithmetic type class hierarchy to streams and the verification of a relabelling function on binary trees. We also formalise and verify the normalisation algorithm used by the first proof method.
   </p>
+extra-history =
+  Change history:
+  [2016-03-03]: added formalisation of lifting with combinators<br>
 
 [Stern_Brocot]
 title = The Stern-Brocot Tree
