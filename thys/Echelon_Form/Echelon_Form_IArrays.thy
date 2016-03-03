@@ -36,15 +36,18 @@ where "bezout_iterate_iarrays A 0 i j bezout = A"
 
 definition
   "echelon_form_of_column_k_iarrays A' k = 
-    (let (A, i, bezout) =  A'
-      in if (vector_all_zero_from_index (i, (column_iarray k A))) \<or> i = (nrows_iarray A) 
+    (let (A, i, bezout) =  A'; 
+          nrows_A = nrows_iarray A;
+          column_Ak = column_iarray k A;
+          all_zero_below_i = vector_all_zero_from_index (i+1, column_Ak)
+      in if i = nrows_A \<or> (A !! i !! k = 0) \<and> all_zero_below_i 
             then (A, i, bezout) else 
-         if (vector_all_zero_from_index (i+1, (column_iarray k A))) 
+         if all_zero_below_i
             then (A, i + 1, bezout) else
-                let n = least_non_zero_position_of_vector_from_index (column_iarray k A) i; 
+                let n = least_non_zero_position_of_vector_from_index column_Ak i; 
                     interchange_A = interchange_rows_iarray A i n
                 in
-          (bezout_iterate_iarrays (interchange_A) (nrows_iarray A - 1) i k bezout, i + 1, bezout))"
+          (bezout_iterate_iarrays interchange_A (nrows_A - 1) i k bezout, i + 1, bezout))"
 
 definition "echelon_form_of_upt_k_iarrays A k bezout 
   = fst (foldl echelon_form_of_column_k_iarrays (A,0,bezout) [0..<Suc k])"
@@ -218,7 +221,7 @@ proof (cases "i<nrows A")
   have i_eq: "i=nrows A" by (metis False dual_order.le_imp_less_or_eq i)
   show "matrix_to_iarray (fst (echelon_form_of_column_k (A,i,bezout) k)) 
     = fst (echelon_form_of_column_k_iarrays (matrix_to_iarray A, i, bezout) k)"
-    unfolding echelon_form_of_column_k_def Let_def
+    unfolding echelon_form_of_column_k_efficient echelon_form_of_column_k_def Let_def
     unfolding echelon_form_of_column_k_iarrays_def Let_def snd_conv fst_conv
     unfolding matrix_to_iarray_nrows
     unfolding i_eq matrix_to_iarray_nrows by auto
@@ -241,7 +244,7 @@ next
     unfolding nrows_def by simp
   show ?thesis
     using True
-    unfolding echelon_form_of_column_k_def Let_def split_beta
+    unfolding echelon_form_of_column_k_efficient echelon_form_of_column_k_def Let_def split_beta
     unfolding echelon_form_of_column_k_iarrays_def Let_def snd_conv fst_conv
     unfolding matrix_to_iarray_nrows
     unfolding all_zero all_zero2 apply auto
@@ -250,7 +253,8 @@ next
     using vec_to_iarray_least_non_zero_position_of_vector_from_index'[of "from_nat i" "from_nat k" A]
     unfolding to_nat_from_nat_id[OF True[unfolded nrows_def]]
     unfolding to_nat_from_nat_id[OF k[unfolded ncols_def]]
-    unfolding vec_to_iarray_column'[OF k] by auto
+    unfolding vec_to_iarray_column'[OF k]
+    by (auto, metis Suc_eq_plus1 all_zero all_zero2 less_le)
 qed
 
 lemma snd_matrix_to_iarray_echelon_form_of_column_k:
@@ -264,7 +268,7 @@ proof (cases "i<nrows A")
   have i_eq: "i=nrows A" by (metis False dual_order.le_imp_less_or_eq i)
   show "(snd (echelon_form_of_column_k (A,i,bezout) k)) 
     = snd (echelon_form_of_column_k_iarrays (matrix_to_iarray A, i, bezout) k)"
-    unfolding echelon_form_of_column_k_def Let_def
+    unfolding echelon_form_of_column_k_efficient echelon_form_of_column_k_def Let_def
     unfolding echelon_form_of_column_k_iarrays_def Let_def snd_conv fst_conv
     unfolding i_eq matrix_to_iarray_nrows by auto
 next
@@ -281,9 +285,12 @@ next
     unfolding matrix_vector_all_zero_from_index2
     unfolding to_nat_from_nat_id[OF True[unfolded nrows_def]]
     unfolding vec_to_iarray_column'[OF k] ..
+    have Aik: "A $ from_nat i $ from_nat k = matrix_to_iarray A !! i !! k" 
+      by (metis True k matrix_to_iarray_nth ncols_def nrows_def to_nat_from_nat_id)
   show ?thesis
-    using True
-    unfolding echelon_form_of_column_k_def Let_def split_beta
+    using True Aik
+    unfolding echelon_form_of_column_k_efficient
+    unfolding echelon_form_of_column_k_efficient_def Let_def split_beta
     unfolding echelon_form_of_column_k_iarrays_def Let_def snd_conv fst_conv
     unfolding all_zero all_zero2
     unfolding matrix_to_iarray_nrows by auto

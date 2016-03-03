@@ -2992,6 +2992,28 @@ corollary echelon_form_of_euclidean_invertible:
          \<and> echelon_form (echelon_form_of A euclid_ext2)"
   using echelon_form_of_invertible[OF is_bezout_ext_euclid_ext2] .
 
+subsection{*More efficient code equations*}
+
+definition
+  "echelon_form_of_column_k_efficient A' k =
+    (let (A, i, bezout) = A';
+         from_nat_k = from_nat k;
+         from_nat_i = from_nat i;
+         all_zero_below_i = (\<forall>m>from_nat_i. A $ m $ from_nat_k = 0)
+     in if  (i = nrows A) \<or> (A $ from_nat_i $ from_nat_k = 0) \<and> all_zero_below_i  then (A, i, bezout)
+           else if all_zero_below_i then (A, i + 1, bezout)
+           else
+            let n = (LEAST n. A $ n $ from_nat_k \<noteq> 0 \<and> from_nat_i \<le> n);
+               interchange_A = interchange_rows A (from_nat_i) n
+            in
+              (bezout_iterate (interchange_A) (nrows A - 1) (from_nat_i) (from_nat_k) bezout, i + 1, bezout))"
+
+lemma echelon_form_of_column_k_efficient[code]: 
+  "echelon_form_of_column_k (A,i,bezout) k
+    = echelon_form_of_column_k_efficient (A,i,bezout) k"
+  unfolding echelon_form_of_column_k_def echelon_form_of_column_k_efficient_def
+  unfolding Let_def by force
+
 end
 
 
