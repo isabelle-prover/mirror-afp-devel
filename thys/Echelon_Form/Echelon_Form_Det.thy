@@ -15,27 +15,38 @@ subsection{*Definitions*}
 text{*The following definition can be improved in terms of performance, because it checks if
   there exists an element different from zero twice.*}
 
-definition echelon_form_of_column_k_det ::
-  "'b::{bezout_domain} \<times> (('b, 'c::{mod_type}) vec, 'd::{mod_type}) vec \<times> nat 
-  \<times> ('b \<Rightarrow> 'b \<Rightarrow> 'b \<times> 'b \<times> 'b \<times> 'b \<times> 'b) \<Rightarrow> nat 
-  \<Rightarrow> 'b \<times> (('b, 'c) vec, 'd) vec \<times> nat \<times> ('b \<Rightarrow> 'b \<Rightarrow> 'b \<times> 'b \<times> 'b \<times> 'b \<times> 'b)"
-  where "echelon_form_of_column_k_det A' k 
-  = (let det_P=fst A'; A = fst (snd A'); i = fst (snd(snd A')); 
-  bezout = snd (snd (snd A'));
-  from_nat_k = from_nat k; from_nat_i = from_nat i     
-  in if ((i \<noteq> nrows A) \<and> (A $ from_nat_i $ from_nat_k = 0) \<and>
-  (\<exists>m>from_nat_i. A $ m $ from_nat_k \<noteq> 0)) then 
-  (-1*det_P,echelon_form_of_column_k (A,i,bezout) k) 
-  else (det_P,echelon_form_of_column_k (A,i,bezout) k))"
+definition 
+  echelon_form_of_column_k_det :: "'b::{bezout_domain} \<times> 
+      (('b, 'c::{mod_type}) vec, 'd::{mod_type}) vec 
+      \<times> nat 
+      \<times> ('b \<Rightarrow> 'b \<Rightarrow> 'b \<times> 'b \<times> 'b \<times> 'b \<times> 'b) \<Rightarrow> nat \<Rightarrow> 'b 
+      \<times> (('b, 'c) vec, 'd) vec 
+      \<times> nat 
+      \<times> ('b \<Rightarrow> 'b \<Rightarrow> 'b \<times> 'b \<times> 'b \<times> 'b \<times> 'b)"
+  where 
+  "echelon_form_of_column_k_det A' k = 
+    (let (det_P, A, i, bezout) =  A';
+      from_nat_i = from_nat i;
+      from_nat_k = from_nat k
+     in 
+      if ( (i \<noteq> nrows A) \<and> 
+           (A $ from_nat_i $ from_nat_k = 0) \<and>
+           (\<exists>m>from_nat i. A $ m $ from_nat k \<noteq> 0)) 
+         then (-1 * det_P, echelon_form_of_column_k (A, i, bezout) k) 
+         else (     det_P, echelon_form_of_column_k (A, i, bezout) k))"
 
-definition "echelon_form_of_upt_k_det A' k bezout
-  = (let A = (snd A'); f = (foldl echelon_form_of_column_k_det (1, A, 0, bezout) [0..<Suc k])
-  in (fst f, fst (snd f)))"
+definition
+  "echelon_form_of_upt_k_det A' k bezout = 
+    (let A = (snd A'); 
+         f = (foldl echelon_form_of_column_k_det (1, A, 0, bezout) [0..<Suc k])
+     in (fst f, fst (snd f)))"
 
-
-definition "echelon_form_of_det" :: "'a::{bezout_domain}^'n::{mod_type}^'n::{mod_type} 
-  \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a \<times> 'a \<times> 'a) \<Rightarrow> ('a \<times> ('a::{bezout_domain}^'n::{mod_type}^'n::{mod_type}))"
-  where "echelon_form_of_det A bezout = echelon_form_of_upt_k_det (1::'a,A) (ncols A - 1) bezout"
+definition
+  echelon_form_of_det :: "'a::{bezout_domain}^'n::{mod_type}^'n::{mod_type}
+      \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a \<times> 'a \<times> 'a) 
+      \<Rightarrow> ('a \<times> ('a::{bezout_domain}^'n::{mod_type}^'n::{mod_type}))"
+  where 
+  "echelon_form_of_det A bezout = echelon_form_of_upt_k_det (1::'a,A) (ncols A - 1) bezout"
 
 subsection{*Properties*}
 

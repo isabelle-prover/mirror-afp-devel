@@ -18,13 +18,15 @@ subsection{*Definition of Echelon Form*}
 
 text{*Echelon form up to column k (NOT INCLUDED).*}
 
-definition echelon_form_upt_k :: "'a::{bezout_ring}^'cols::{mod_type}^'rows::{finite, ord} 
-  \<Rightarrow> nat \<Rightarrow> bool" where "echelon_form_upt_k A k = 
-  (
-    (\<forall>i. is_zero_row_upt_k i k A \<longrightarrow> \<not> (\<exists>j. j>i \<and> \<not> is_zero_row_upt_k j k A)) \<and> 
+definition 
+  echelon_form_upt_k :: "'a::{bezout_ring}^'cols::{mod_type}^'rows::{finite, ord} \<Rightarrow> nat \<Rightarrow> bool" 
+  where 
+  "echelon_form_upt_k A k = (
+    (\<forall>i. is_zero_row_upt_k i k A 
+          \<longrightarrow> \<not> (\<exists>j. j>i \<and> \<not> is_zero_row_upt_k j k A)) 
+    \<and>  
     (\<forall>i j. i<j \<and> \<not> (is_zero_row_upt_k i k A) \<and> \<not> (is_zero_row_upt_k j k A) 
-      \<longrightarrow> ((LEAST n. A $ i $ n \<noteq> 0) < (LEAST n. A $ j $ n \<noteq> 0)))
-  )"
+          \<longrightarrow> ((LEAST n. A $ i $ n \<noteq> 0) < (LEAST n. A $ j $ n \<noteq> 0))))"
   
 definition "echelon_form A = echelon_form_upt_k A (ncols A)"
 
@@ -422,43 +424,47 @@ subsubsection{*Definition of the algorithm*}
 context bezout_ring
 begin
 
-definition bezout_matrix ::"'a^'cols^'rows \<Rightarrow> 'rows \<Rightarrow> 'rows \<Rightarrow> 'cols\<Rightarrow> ('a=>'a=>('a \<times> 'a \<times> 'a \<times> 'a \<times> 'a)) 
-  \<Rightarrow>'a^'rows^'rows"
-where "bezout_matrix A a b j bezout 
-  = (let bez = bezout (A $ a $ j) (A $ b $ j); 
-         p = fst bez; 
-         q = fst(snd bez); 
-         u =(fst(snd(snd bez)));
-         v = fst(snd(snd(snd bez)));
-         d = snd(snd(snd(snd bez))) in
-         (\<chi> x y. if x=a \<and> y = a then p else
-                 if x=a \<and> y = b then q else
-                 if x=b \<and> y = a then u else
-                 if x=b \<and> y = b then v else
-                  (if x=y then 1 else 0)))"
+definition 
+  bezout_matrix :: "'a^'cols^'rows \<Rightarrow> 'rows \<Rightarrow> 'rows \<Rightarrow> 'cols 
+                    \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> ('a \<times> 'a \<times> 'a \<times> 'a \<times> 'a)) \<Rightarrow> 'a^'rows^'rows"
+  where 
+  "bezout_matrix A a b j bezout = (\<chi> x y. 
+      (let 
+        (p, q, u, v, d) = bezout (A $ a $ j) (A $ b $ j) 
+       in
+         if x = a \<and> y = a then p else
+         if x = a \<and> y = b then q else
+         if x = b \<and> y = a then u else
+         if x = b \<and> y = b then v else
+         if x = y then 1 else 0))"
 
 end
 
-primrec bezout_iterate :: "'a::{bezout_ring}^'cols^'rows::{mod_type} \<Rightarrow> nat \<Rightarrow> 'rows::{mod_type}\<Rightarrow>'cols 
-  \<Rightarrow> ('a\<Rightarrow>'a\<Rightarrow>('a \<times> 'a \<times> 'a \<times> 'a \<times> 'a)) \<Rightarrow> 'a^'cols^'rows::{mod_type}"
+primrec
+  bezout_iterate :: "'a::{bezout_ring}^'cols^'rows::{mod_type} 
+                     \<Rightarrow> nat \<Rightarrow> 'rows::{mod_type} 
+                     \<Rightarrow> 'cols \<Rightarrow> ('a \<Rightarrow>'a \<Rightarrow> ('a \<times> 'a \<times> 'a \<times> 'a \<times> 'a)) \<Rightarrow> 'a^'cols^'rows::{mod_type}"
 where "bezout_iterate A 0 i j bezout = A"
-    | "bezout_iterate A (Suc n) i j bezout = (if (Suc n) \<le> to_nat i then A else
-    bezout_iterate (bezout_matrix A i (from_nat (Suc n)) j bezout ** A) n i j bezout)"
+    | "bezout_iterate A (Suc n) i j bezout = 
+        (if (Suc n) \<le> to_nat i then A else 
+              bezout_iterate (bezout_matrix A i (from_nat (Suc n)) j bezout ** A) n i j bezout)"
 
-definition "echelon_form_of_column_k A' k 
-  = (let A = fst A'; i = fst (snd A'); bezout = snd (snd A'); 
-        from_nat_k = from_nat k;
-        from_nat_i = from_nat i
-        in if (\<forall>m\<ge>from_nat_i. A $ m $ from_nat_k = 0) \<or> (i = nrows A) then (A, i, bezout) 
-          (*If all are equal to zero, pivot included, or we are in the last row the position is kept*)            
-           else 
-           if (\<forall>m>from_nat_i. A $ m $ from_nat_k = 0) then (A, i + 1, bezout) 
-             (*If all are equal to zero except for the pivot, the algorithm does nothing but increases the pivot*)
-           else
-           let n = LEAST n. A $ n $ from_nat_k \<noteq> 0 \<and> from_nat_i \<le> n; interchange_A = interchange_rows A from_nat_i n
+text{*If every element in column @{term "k::nat"} over index @{term "i::nat"} are equal to zero,
+      the same input is returned. If every element over @{term "i::nat"} 
+      is equal to zero, except the pivot, the algorithm does nothing, but pivot @{term "i::nat"}
+      is increased in a unit. Finally, if there is a position @{term "n::nat"} 
+      whose coefficient is different from zero, its row is interchanged with row 
+      @{term "i::nat"} and the bezout coefficients are used to produce a zero in its position.*}
+
+definition 
+  "echelon_form_of_column_k A' k = 
+    (let (A, i, bezout) = A' 
+     in if (\<forall>m\<ge>from_nat i. A $ m $ from_nat k = 0) \<or> (i = nrows A) then (A, i, bezout) else 
+        if (\<forall>m>from_nat i. A $ m $ from_nat k = 0) then (A, i + 1, bezout) else
+            let n = (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> from_nat i \<le> n); 
+                interchange_A = interchange_rows A (from_nat i) n
            in
-           (bezout_iterate (interchange_A) (nrows A - 1) from_nat_i from_nat_k bezout, i + 1, bezout))"
-
+            (bezout_iterate (interchange_A) (nrows A - 1) (from_nat i) (from_nat k) bezout, i + 1, bezout))"
 
 definition "echelon_form_of_upt_k A k bezout = (fst (foldl echelon_form_of_column_k (A,0,bezout) [0..<Suc k]))"
 definition "echelon_form_of A bezout = echelon_form_of_upt_k A (ncols A - 1) bezout"
@@ -477,37 +483,60 @@ subsubsection{*Properties of the bezout matrix*}
 lemma bezout_matrix_works1:
   assumes ib: "is_bezout_ext (bezout)"
   and a_not_b: "a \<noteq> b"
-  shows "(bezout_matrix A a b j bezout ** A) $ a $ j = snd (snd (snd(snd (bezout (A $ a $ j) (A $ b $ j)))))"
-proof (unfold matrix_matrix_mult_def  bezout_matrix_def Let_def, auto)
-  let ?B = "bezout_matrix A a b j bezout"
-  let ?p = "fst (bezout (A $ a $ j) (A $ b $ j))"
-  let ?q = "fst (snd (bezout (A $ a $ j) (A $ b $ j)))"  
-  let ?u = "fst (snd (snd (bezout (A $ a $ j) (A $ b $ j))))"
-  let ?v = "fst (snd (snd (snd (bezout (A $ a $ j) (A $ b $ j)))))"
-  let ?d = "snd (snd (snd (snd (bezout (A $ a $ j) (A $ b $ j)))))"
+  shows "(bezout_matrix A a b j bezout ** A) $ a $ j = snd (snd (snd (snd (bezout (A $ a $ j) (A $ b $ j)))))"
+proof (unfold matrix_matrix_mult_def bezout_matrix_def Let_def, simp)
   let ?a = "(A $ a $ j)"
   let ?b = "(A $ b $ j)"
-  have pa_bq_d: "?p * ?a + ?b * ?q = ?d" 
-    using ib unfolding is_bezout_ext_def Let_def by (simp add: mult.commute)
-  def f\<equiv>"\<lambda>k. (if k = a then ?p
-              else if a = a \<and> k = b then ?q
-              else if a = b \<and> k = a then ?u
-              else if a = b \<and> k = b then ?v
-              else if a = k then 1 else 0) * A $ k $ j"
+  let ?z = "bezout (A $ a $ j) (A $ b $ j)"
+  obtain p q u v d where bz: "(p, q, u, v, d) = ?z" by (cases ?z, auto)
+  from ib have foo: "(\<And>a b. let (p, q, u, v, gcd_a_b) = bezout a b
+           in p * a + q * b = gcd_a_b \<and>
+              gcd_a_b dvd a \<and>
+              gcd_a_b dvd b \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd gcd_a_b) \<and> gcd_a_b * u = - b \<and> gcd_a_b * v = a)"
+           using is_bezout_ext_def [of bezout] by simp
+  have foo: "p * ?a + q * ?b = d \<and> d dvd ?a \<and>
+            d dvd ?b \<and> (\<forall>d'. d' dvd ?a \<and> d' dvd ?b \<longrightarrow> d' dvd d) \<and> d * u = - ?b \<and> d * v = ?a" 
+            using ib using is_bezout_ext_def using bz [symmetric]
+            using foo [of ?a ?b] by fastforce
+  have pa_bq_d: "p * ?a + ?b * q = d" using foo by (auto simp add: mult.commute)
+  def f \<equiv> "(\<lambda>k. (if k = a then p
+              else if a = a \<and> k = b then q
+              else if a = b \<and> k = a then u
+              else if a = b \<and> k = b then v
+              else if a = k then 1 else 0) * A $ k $ j)"
   have UNIV_rw: "UNIV = insert b (insert a (UNIV - {a} - {b}))" by auto
   have setsum_rw: "setsum f (insert a (UNIV - {a} - {b})) = f a + setsum f (UNIV - {a} - {b})"
     by (rule setsum.insert, auto)
   have setsum0: "setsum f (UNIV - {a} - {b}) = 0" by (rule setsum.neutral, simp add: f_def)
-  have "setsum f UNIV = setsum f (insert b (insert a (UNIV - {a} - {b})))" using UNIV_rw by simp
+  have "(\<Sum>k\<in>UNIV.
+       (case bezout (A $ a $ j) (A $ b $ j) of
+        (p, q, u, v, d) \<Rightarrow>
+          if k = a then p
+          else if a = a \<and> k = b then q
+               else if a = b \<and> k = a then u else if a = b \<and> k = b then v else if a = k then 1 else 0) *
+       A $ k $ j) = (\<Sum>k\<in>UNIV.
+       (if k = a then p
+          else if a = a \<and> k = b then q
+               else if a = b \<and> k = a then u else if a = b \<and> k = b then v else if a = k then 1 else 0) *
+       A $ k $ j)" unfolding bz [symmetric] by auto
+  also have "... = setsum f UNIV" unfolding f_def ..
+  also have "setsum f UNIV = setsum f (insert b (insert a (UNIV - {a} - {b})))" using UNIV_rw by simp
   also have "... = f b + setsum f (insert a (UNIV - {a} - {b}))"
     by (rule setsum.insert, auto, metis a_not_b)
   also have "... = f b + f a" unfolding setsum_rw setsum0 by simp
-  also have "... = ?d"
-    unfolding f_def using a_not_b 
-    by (auto, metis add.commute mult.commute pa_bq_d)
-  finally show "setsum f UNIV = snd (snd (snd (snd (bezout (A $ a $ j) (A $ b $ j)))))" .
+  also have "... = d"
+    unfolding f_def using a_not_b bz [symmetric] by (auto, metis add.commute mult.commute pa_bq_d)
+  also have "... = snd (snd (snd (snd (bezout (A $ a $ j) (A $ b $ j)))))"
+    using bz by (metis snd_conv)
+  finally show "(\<Sum>k\<in>UNIV.
+       (case bezout (A $ a $ j) (A $ b $ j) of
+        (p, q, u, v, d) \<Rightarrow>
+          if k = a then p
+          else if a = a \<and> k = b then q
+               else if a = b \<and> k = a then u else if a = b \<and> k = b then v else if a = k then 1 else 0) *
+       A $ k $ j) =
+    snd (snd (snd (snd (bezout (A $ a $ j) (A $ b $ j)))))" unfolding f_def by simp
 qed
-
 
 lemma bezout_matrix_not_zero:
   assumes ib: "is_bezout_ext (bezout)"
@@ -528,16 +557,24 @@ lemma ua_vb_0:
   assumes ib: "is_bezout_ext (bezout)" and nz: "snd (snd (snd (snd (bezout a b)))) \<noteq> 0"
   shows "fst (snd (snd (bezout a b))) * a + fst (snd (snd (snd (bezout a b)))) * b = 0"
 proof-
-  let ?u="fst (snd (snd (bezout a b)))"
-  let ?v="fst (snd (snd (snd (bezout a b))))"
-  let ?g="snd (snd (snd (snd (bezout a b))))"
-  let ?r="?u * a + ?v * b"
-  have "?u * a + ?v * b = ?r" by simp
-  hence "?g*?r= ?g * ?u * a + ?g * ?v * b" by (metis (erased, hide_lams) distrib_left mult.assoc)
-  also have "... = 0" using ib unfolding is_bezout_ext_def Let_def by auto
-  finally show ?thesis using nz  by auto
+  obtain p q u v d where bz: "(p, q, u, v, d) = bezout a b" by (cases "bezout a b", auto)
+  from ib have foo: "(\<And>a b. let (p, q, u, v, gcd_a_b) = bezout a b
+           in p * a + q * b = gcd_a_b \<and>
+              gcd_a_b dvd a \<and>
+              gcd_a_b dvd b \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd gcd_a_b) \<and> gcd_a_b * u = - b \<and> gcd_a_b * v = a)"
+           using is_bezout_ext_def [of bezout] by simp
+  have "p * a + q * b = d \<and> d dvd a \<and>
+            d dvd b \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd d) \<and> d * u = - b \<and> d * v = a" 
+            using foo [of a b] using bz by fastforce
+  hence dub: "d * u = - b" and dva: "d * v = a" by (simp_all)
+  hence "d * u * a + d * v * b = 0" 
+    using eq_neg_iff_add_eq_0 mult.commute mult_minus_left by auto
+  hence "u * a + v * b = 0"
+    by (metis (no_types, lifting) dub dva minus_minus mult_minus_left 
+          neg_eq_iff_add_eq_0 semiring_normalization_rules(18) semiring_normalization_rules(7))
+  thus ?thesis using bz [symmetric]
+  by simp 
 qed
-
 
 lemma bezout_matrix_works2:
   fixes A::"'a::bezout_domain^'cols^'rows"
@@ -546,44 +583,59 @@ lemma bezout_matrix_works2:
   and not_0: "A $ a $ j \<noteq> 0 \<or> A $ b $ j \<noteq> 0"
   shows "(bezout_matrix A a b j bezout ** A) $ b $ j = 0"
 proof (unfold matrix_matrix_mult_def bezout_matrix_def Let_def, auto)
-  let ?B = "bezout_matrix A a b j bezout"
-  let ?p = "fst (bezout (A $ a $ j) (A $ b $ j))"
-  let ?q = "fst (snd (bezout (A $ a $ j) (A $ b $ j)))"  
-  let ?u = "fst (snd (snd (bezout (A $ a $ j) (A $ b $ j))))"
-  let ?v = "fst (snd (snd (snd (bezout (A $ a $ j) (A $ b $ j)))))"
-  let ?d = "snd (snd (snd (snd (bezout (A $ a $ j) (A $ b $ j)))))"
   let ?a = "(A $ a $ j)"
   let ?b = "(A $ b $ j)"
-  have d_dvd_a: "?d dvd ?a" using ib unfolding is_bezout_ext_def Let_def by auto
-  have d_dvd_b: "?d dvd -?b" using ib unfolding is_bezout_ext_def Let_def by auto
-  have pa_bq_d: "?p * ?a + ?b * ?q = ?d" 
-    using ib unfolding is_bezout_ext_def Let_def by (simp add: mult.commute)
-  def f\<equiv>"\<lambda>k. (if b = a \<and> k = a then ?p
-                 else if b = a \<and> k = b then ?q
-                      else if b = b \<and> k = a then ?u
-                           else if b = b \<and> k = b then ?v else if b = k then 1 else 0) *
+  let ?z = "bezout (A $ a $ j) (A $ b $ j)"
+  from ib have foo: "(\<And>a b. let (p, q, u, v, gcd_a_b) = bezout a b
+           in p * a + q * b = gcd_a_b \<and>
+              gcd_a_b dvd a \<and>
+              gcd_a_b dvd b \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd gcd_a_b) \<and> gcd_a_b * u = - b \<and> gcd_a_b * v = a)"
+           using is_bezout_ext_def [of bezout] by simp
+  obtain p q u v d where bz: "(p, q, u, v, d) = ?z" by (cases ?z, auto)
+  hence pib: "p * ?a + q * ?b = d \<and> d dvd ?a \<and>
+            d dvd ?b \<and> (\<forall>d'. d' dvd ?a \<and> d' dvd ?b \<longrightarrow> d' dvd d) \<and> d * u = - ?b \<and> d * v = ?a" 
+            using foo [of ?a ?b] by fastforce
+  hence pa_bq_d: "p * ?a + ?b * q = d" by (simp add: mult.commute)
+  have d_dvd_a: "d dvd ?a" using pib by auto
+  have d_dvd_b: "d dvd -?b" using pib by auto
+  have pa_bq_d: "p * ?a + ?b * q = d" using pa_bq_d by (simp add: mult.commute)
+  def f\<equiv>"\<lambda>k. (if b = a \<and> k = a then p
+                 else if b = a \<and> k = b then q
+                      else if b = b \<and> k = a then u
+                           else if b = b \<and> k = b then v else if b = k then 1 else 0) *
                 A $ k $ j"
   have UNIV_rw: "UNIV = insert b (insert a (UNIV - {a} - {b}))" by auto
   have setsum_rw: "setsum f (insert a (UNIV - {a} - {b})) = f a + setsum f (UNIV - {a} - {b})"
     by (rule setsum.insert, auto)
   have setsum0: "setsum f (UNIV - {a} - {b}) = 0" by (rule setsum.neutral, simp add: f_def)
-  have "setsum f UNIV = setsum f (insert b (insert a (UNIV - {a} - {b})))" using UNIV_rw by simp
+  have "(\<Sum>k\<in>UNIV.
+       (case bezout (A $ a $ j) (A $ b $ j) of
+        (p, q, u, v, d) \<Rightarrow>
+          if b = a \<and> k = a then p
+          else if b = a \<and> k = b then q
+               else if b = b \<and> k = a then u else if b = b \<and> k = b then v else if b = k then 1 else 0) *
+       A $ k $ j) = setsum f UNIV" unfolding f_def bz [symmetric] by simp
+  also have "setsum f UNIV = setsum f (insert b (insert a (UNIV - {a} - {b})))" using UNIV_rw by simp
   also have "... = f b + setsum f (insert a (UNIV - {a} - {b}))"
     by (rule setsum.insert, auto, metis a_not_b)
   also have "... = f b + f a" unfolding setsum_rw setsum0 by simp
-  also have "... = ?v * ?b + ?u * ?a" unfolding f_def using a_not_b by auto
-  also have "... = ?u * ?a + ?v * ?b" by auto
-  also have "... = 0" 
-    proof (rule ua_vb_0[OF ib])
-      show "?d \<noteq> 0" using is_gcd_is_bezout_ext[OF ib] 
-      by (metis d_dvd_a d_dvd_b dvd_0_left_iff dvd_minus_iff not_0)
-    qed
-  finally show "setsum f UNIV = 0" .
+  also have "... = v * ?b + u * ?a" unfolding f_def using a_not_b by auto
+  also have "... = u * ?a + v * ?b" by auto
+  also have "... = 0"
+    using ua_vb_0 [OF ib] bz
+    by (metis fst_conv minus_minus minus_zero mult_eq_0_iff pib snd_conv)
+  finally show "(\<Sum>k\<in>UNIV.
+       (case bezout (A $ a $ j) (A $ b $ j) of
+        (p, q, u, v, d) \<Rightarrow>
+          if b = a \<and> k = a then p
+          else if b = a \<and> k = b then q
+               else if b = b \<and> k = a then u else if b = b \<and> k = b then v else if b = k then 1 else 0) *
+       A $ k $ j) =
+       0" .
 qed
 
-
 lemma bezout_matrix_preserves_previous_columns:
-  assumes ib: "is_bezout_ext (bezout)" 
+  assumes ib: "is_bezout_ext (bezout)"
   and i_not_j: "i \<noteq> j"
   and Aik: "A $ i $ k \<noteq> 0"
   and b_k: "b<k"
@@ -594,21 +646,37 @@ proof (auto)
   let ?B = "bezout_matrix A i j k bezout"
   let ?i = "(A $ i $ k)"
   let ?j = "(A $ j $ k)"
-  let ?p = "fst (bezout ?i ?j)"
-  let ?q = "fst (snd (bezout ?i ?j))"  
-  let ?u = "fst (snd (snd (bezout ?i ?j)))"
-  let ?v = "fst (snd (snd (snd (bezout ?i ?j))))"
-  let ?d = "snd (snd (snd (snd (bezout ?i ?j))))"
+  let ?z = "bezout (A $ i $ k) (A $ j $ k)"
+  from ib have foo: "(\<And>a b. let (p, q, u, v, gcd_a_b) = bezout a b
+           in p * a + q * b = gcd_a_b \<and>
+              gcd_a_b dvd a \<and>
+              gcd_a_b dvd b \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd gcd_a_b) \<and> gcd_a_b * u = - b \<and> gcd_a_b * v = a)"
+           using is_bezout_ext_def [of bezout] by simp
+  obtain p q u v d where bz: "(p, q, u, v, d) = ?z" by (cases ?z, auto)
   have Aib: "A $ i $ b = 0" by (metis b_k i is_zero_row_upt_k_def to_nat_mono)
   have Ajb: "A $ j $ b = 0" by (metis b_k j is_zero_row_upt_k_def to_nat_mono)
-  def f\<equiv>"(\<lambda>ka. (if a = i \<and> ka = i then ?p
-                  else if a = i \<and> ka = j then ?q
-                  else if a = j \<and> ka = i then ?u
-                  else if a = j \<and> ka = j then ?v else if a = ka then 1 else 0) * A $ ka $ b)"
-  show "setsum f UNIV = A $ a $ b"
+  def f\<equiv>"(\<lambda>ka. (if a = i \<and> ka = i then p
+                  else if a = i \<and> ka = j then q
+                  else if a = j \<and> ka = i then u
+                  else if a = j \<and> ka = j then v else if a = ka then 1 else 0) * A $ ka $ b)"
+  show "(\<Sum>ka\<in>UNIV.
+       (case bezout (A $ i $ k) (A $ j $ k) of
+        (p, q, u, v, d) \<Rightarrow>
+          if a = i \<and> ka = i then p
+          else if a = i \<and> ka = j then q
+               else if a = j \<and> ka = i then u else if a = j \<and> ka = j then v else if a = ka then 1 else 0) *
+       A $ ka $ b) =
+    A $ a $ b"
   proof (cases "a=i")
     case True
-    have "setsum f UNIV = 0" by (rule setsum.neutral, auto simp add: Aib Ajb f_def True i_not_j)
+    have "(\<Sum>ka\<in>UNIV.
+       (case bezout (A $ i $ k) (A $ j $ k) of
+        (p, q, u, v, d) \<Rightarrow>
+          if a = i \<and> ka = i then p
+          else if a = i \<and> ka = j then q
+               else if a = j \<and> ka = i then u else if a = j \<and> ka = j then v else if a = ka then 1 else 0) *
+       A $ ka $ b) = setsum f UNIV" unfolding f_def bz [symmetric] by simp
+    also have "setsum f UNIV = 0" by (rule setsum.neutral, auto simp add: Aib Ajb f_def True i_not_j)
     also have "... = A $ a $ b" unfolding True using Aib by simp
     finally show ?thesis .
   next
@@ -616,7 +684,14 @@ proof (auto)
     show ?thesis
     proof (cases "a=j")
       case True 
-      have "setsum f UNIV = 0" by (rule setsum.neutral, auto simp add: Aib Ajb f_def True i_not_j)
+      have "(\<Sum>ka\<in>UNIV.
+       (case bezout (A $ i $ k) (A $ j $ k) of
+        (p, q, u, v, d) \<Rightarrow>
+          if a = i \<and> ka = i then p
+          else if a = i \<and> ka = j then q
+               else if a = j \<and> ka = i then u else if a = j \<and> ka = j then v else if a = ka then 1 else 0) *
+       A $ ka $ b) = setsum f UNIV" unfolding f_def bz [symmetric] by simp
+    also have "setsum f UNIV = 0" by (rule setsum.neutral, auto simp add: Aib Ajb f_def True i_not_j)
       also have "... = A $ a $ b" unfolding True using Ajb by simp
       finally show ?thesis .
     next
@@ -626,7 +701,14 @@ proof (auto)
         using False a_not_i by auto
       have setsum0: "setsum f (UNIV - {i} - {j} - {a}) = 0"
         by (rule setsum.neutral, simp add: f_def)
-      have "setsum f UNIV = setsum f (insert j (insert i (UNIV - {i} - {j})))"
+      have "(\<Sum>ka\<in>UNIV.
+       (case bezout (A $ i $ k) (A $ j $ k) of
+        (p, q, u, v, d) \<Rightarrow>
+          if a = i \<and> ka = i then p
+          else if a = i \<and> ka = j then q
+               else if a = j \<and> ka = i then u else if a = j \<and> ka = j then v else if a = ka then 1 else 0) *
+       A $ ka $ b) = setsum f UNIV" unfolding f_def bz [symmetric] by simp
+      also have "setsum f UNIV = setsum f (insert j (insert i (UNIV - {i} - {j})))"
         using UNIV_rw by simp
       also have "... = f j + setsum f (insert i (UNIV - {i} - {j}))"
         by (rule setsum.insert, auto, metis i_not_j)
@@ -643,8 +725,6 @@ proof (auto)
   qed
 qed
 
-
-
 lemma det_bezout_matrix:
   fixes A::"'a::{bezout_domain}^'cols^'rows::{finite,wellorder}"
   assumes ib: "is_bezout_ext (bezout)"
@@ -653,45 +733,50 @@ lemma det_bezout_matrix:
   shows "det (bezout_matrix A a b j bezout) = 1"
 proof -
   let ?B = "bezout_matrix A a b j bezout"
-  let ?p = "fst (bezout (A $ a $ j) (A $ b $ j))"
-  let ?q = "fst (snd (bezout (A $ a $ j) (A $ b $ j)))"  
-  let ?u = "fst (snd (snd (bezout (A $ a $ j) (A $ b $ j))))"
-  let ?v = "fst (snd (snd (snd (bezout (A $ a $ j) (A $ b $ j)))))"
-  let ?d = "snd (snd (snd (snd (bezout (A $ a $ j) (A $ b $ j)))))"
   let ?a = "(A $ a $ j)"
   let ?b = "(A $ b $ j)"
-  have pa_bq_d: "?p * ?a + ?b * ?q = ?d" 
-    using ib unfolding is_bezout_ext_def Let_def by (simp add: mult.commute)
+  let ?z = "bezout ?a ?b"
+  from ib have foo: "(\<And>a b. let (p, q, u, v, gcd_a_b) = bezout a b
+           in p * a + q * b = gcd_a_b \<and>
+              gcd_a_b dvd a \<and>
+              gcd_a_b dvd b \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd gcd_a_b) \<and> gcd_a_b * u = - b \<and> gcd_a_b * v = a)"
+           using is_bezout_ext_def [of bezout] by simp
+  obtain p q u v d where bz: "(p, q, u, v, d) = ?z" by (cases ?z, auto)
+  hence pib: "p * ?a + q * ?b = d \<and> d dvd ?a \<and>
+            d dvd ?b \<and> (\<forall>d'. d' dvd ?a \<and> d' dvd ?b \<longrightarrow> d' dvd d) \<and> d * u = - ?b \<and> d * v = ?a" 
+            using foo [of ?a ?b] by fastforce
+  hence pa_bq_d: "p * ?a + ?b * q = d" by (simp add: mult.commute)
   have a_not_b: "a \<noteq> b" using a_less_b by auto
-  have d_dvd_a: "?d dvd ?a" using ib unfolding is_bezout_ext_def Let_def by auto
+  have d_dvd_a: "d dvd ?a" using pib by auto
   have UNIV_rw: "UNIV = insert b (insert a (UNIV - {a} - {b}))" by auto
   show ?thesis
-  proof (cases "?p=0")
+  proof (cases "p = 0")
     case True note p0=True
-    have q_not_0: "?q \<noteq> 0"
+    have q_not_0: "q \<noteq> 0"
     proof (rule ccontr, simp)
-      assume q: "?q = 0"
-      have "?d = 0" using ib unfolding is_bezout_ext_def Let_def
+      assume q: "q = 0"
+      have "d = 0" using pib
         by (metis True q add.right_neutral mult.commute mult_zero_right)
       hence "A $ a $ j = 0 \<and> A $ b $ j = 0"
         by (metis aj d_dvd_a dvd_0_left_iff)
       thus False using aj by auto
     qed
-    have d_not_0: "?d \<noteq> 0"
+    have d_not_0: "d \<noteq> 0"
       by (metis aj d_dvd_a dvd_0_left_iff)
-    have qb_not_0: "?q*(-?b) \<noteq> 0"
+    have qb_not_0: "q *(-?b) \<noteq> 0"
       by (metis d_not_0 mult_cancel_left1 neg_equal_0_iff_equal 
           no_zero_divisors p0 pa_bq_d q_not_0 right_minus)
     have "det (interchange_rows ?B a b) = (\<Prod>i\<in>UNIV. (interchange_rows ?B a b) $ i $ i)"
     proof (rule det_upperdiagonal)
       fix i ja::'rows assume ja_i: "ja<i"
       show "interchange_rows (bezout_matrix A a b j bezout) a b $ i $ ja = 0"    
-        unfolding interchange_rows_def using a_less_b ja_i p0 a_not_b
+        unfolding interchange_rows_def using a_less_b ja_i p0 a_not_b 
+        using bz [symmetric]
         unfolding bezout_matrix_def Let_def by auto
     qed
     also have "... = -1" 
     proof -
-      def f== "\<lambda>i. interchange_rows (bezout_matrix A a b j bezout) a b $ i $ i"
+      def f == "(\<lambda>i. interchange_rows (bezout_matrix A a b j bezout) a b $ i $ i)"
       have setprod_rw: "setprod f (insert a (UNIV - {a} - {b})) 
         =  f a * setprod f (UNIV - {a} - {b})"
         by (rule setprod.insert, simp_all)
@@ -705,18 +790,21 @@ proof -
         show "b \<notin> insert a (UNIV - {a} - {b})" using a_not_b by auto
       qed
       also have "... = f b * f a" unfolding setprod_rw setprod1 by auto
-      also have "... = ?q*?u" using a_not_b unfolding f_def interchange_rows_def bezout_matrix_def Let_def by auto
+      also have "... = q * u" 
+        using a_not_b 
+        using bz [symmetric]
+        unfolding f_def interchange_rows_def bezout_matrix_def Let_def by auto
       also have "... = -1"
       proof -
-        let ?r="?q*?u"
-        have du_b: "?d*?u=-?b" using ib unfolding is_bezout_ext_def Let_def by auto
-        hence "?q*(-?b)=?d*?r" by (metis (erased, hide_lams) mult.commute mult.left_commute)
-        also have "... = (?p*?a+?b*?q)*?r" unfolding pa_bq_d by auto
-        also have "... = ?b*?q*?r" using True by auto
-        also have "... = ?q*(-?b)*(-?r)" by auto
+        let ?r = "q * u"
+        have du_b: " d * u = -?b" using pib by auto
+        hence "q * (-?b) = d * ?r" by (metis mult.left_commute)
+        also have "... = (p * ?a + ?b * q) * ?r" unfolding pa_bq_d by auto
+        also have "... = ?b * q * ?r" using True by auto
+        also have "... = q * (-?b) * (-?r)" by auto
         finally show ?thesis using qb_not_0 
           unfolding ring_1_no_zero_divisors_class.mult_cancel_left1 
-          by (metis minus_minus)                
+          by (metis minus_minus)
       qed
       finally show ?thesis unfolding f_def .
     qed
@@ -726,27 +814,31 @@ proof -
     thus ?thesis unfolding det_inter_1 by simp
   next
     case False
-    def mult_b_dp \<equiv> "mult_row ?B b (?d*?p)"
+    def mult_b_dp \<equiv> "mult_row ?B b (d * p)"
     def sum_ab \<equiv> "row_add mult_b_dp b a ?b"
     have "det (sum_ab) = setprod (\<lambda>i. sum_ab $ i $ i) UNIV"
     proof (rule det_upperdiagonal)
-      fix i j::'rows assume j_less_i: "j < i"
-      have "?d * ?p * ?u + ?b * ?p = 0" using ib unfolding is_bezout_ext_def Let_def 
-        by (simp add: mult.commute mult.left_commute)
+      fix i j::'rows 
+      assume j_less_i: "j < i"
+      have "d * p * u + ?b * p = 0"
+        using pib
+        by (metis eq_neg_iff_add_eq_0 mult_minus_left semiring_normalization_rules(16))
       thus "sum_ab $ i $ j = 0"
-        unfolding sum_ab_def mult_b_dp_def row_add_def mult_row_def bezout_matrix_def Let_def
-        using a_not_b j_less_i a_less_b by auto
+        unfolding sum_ab_def mult_b_dp_def unfolding row_add_def
+        unfolding mult_row_def bezout_matrix_def
+        using a_not_b j_less_i a_less_b 
+        unfolding bz [symmetric] by auto
     qed
-    also have "... = ?d*?p"
+    also have "... = d * p"
     proof -
-      def f\<equiv>"(\<lambda>i. sum_ab $ i $ i)"
+      def f \<equiv> "(\<lambda>i. sum_ab $ i $ i)"
       have setprod_rw: "setprod f (insert a (UNIV - {a} - {b})) 
         =  f a * setprod f (UNIV - {a} - {b})"
         by (rule setprod.insert, simp_all)
       have setprod1: "setprod f (UNIV - {a} - {b}) = 1"
         by (rule setprod.neutral) (simp add: f_def sum_ab_def row_add_def 
           mult_b_dp_def mult_row_def bezout_matrix_def Let_def)
-      have ap_bq_d: "A $ a $ j * ?p + A $ b $ j * ?q = ?d" by (metis mult.commute pa_bq_d)
+      have ap_bq_d: "A $ a $ j * p + A $ b $ j * q = d" by (metis mult.commute pa_bq_d)
       have "setprod f UNIV = setprod f (insert b (insert a (UNIV - {a} - {b})))"
         using UNIV_rw by simp
       also have "... = f b * setprod f (insert a (UNIV - {a} - {b}))"
@@ -754,15 +846,16 @@ proof -
         show "b \<notin> insert a (UNIV - {a} - {b})" using a_not_b by auto
       qed
       also have "... = f b * f a" unfolding setprod_rw setprod1 by auto
-      also have "... = (?d * ?p * ?v + ?b * ?q) * ?p" 
-        unfolding f_def sum_ab_def row_add_def mult_b_dp_def mult_row_def bezout_matrix_def Let_def
+      also have "... = (d * p * v + ?b * q) * p" 
+        unfolding f_def sum_ab_def row_add_def mult_b_dp_def mult_row_def bezout_matrix_def
+        unfolding bz [symmetric]
         using a_not_b by auto
-      also have "... = ?d*?p"  using ib unfolding is_bezout_ext_def Let_def 
-        by (simp add: mult.commute mult.left_commute)
+      also have "... = d * p" 
+        using pib ap_bq_d semiring_normalization_rules(16) by auto
       finally show ?thesis unfolding f_def .
     qed
-    finally have "det (sum_ab) = ?d * ?p" .
-    moreover have "det (sum_ab) = ?d * ?p * det ?B"
+    finally have "det (sum_ab) = d * p" .
+    moreover have "det (sum_ab) = d * p * det ?B"
       unfolding sum_ab_def
       unfolding det_row_add'[OF not_sym[OF a_not_b]]
       unfolding mult_b_dp_def unfolding det_mult_row ..
@@ -947,33 +1040,28 @@ qed
 text{*Code equations to execute the bezout matrix*}
 
 definition "bezout_matrix_row A a b j bezout x
-  = (let bez = bezout (A $ a $ j) (A $ b $ j);
-         p = fst bez; 
-         q = fst(snd bez); 
-         u =(fst(snd(snd bez)));
-         v = fst(snd(snd(snd bez)));
-         d = snd(snd(snd(snd bez))) in
-         vec_lambda (% y. if x=a \<and> y = a then p else
-                 if x=a \<and> y = b then q else
-                 if x=b \<and> y = a then u else
-                 if x=b \<and> y = b then v else
-                  (if x=y then 1 else 0)))"
+  = (let (p, q, u, v, d) = bezout (A $ a $ j) (A $ b $ j) 
+      in
+         vec_lambda (\<lambda>y. if x = a \<and> y = a then p else
+                         if x = a \<and> y = b then q else
+                         if x = b \<and> y = a then u else
+                         if x = b \<and> y = b then v else
+                         if x = y then 1 else 0))"
 
 lemma bezout_matrix_row_code [code abstract]:
-  "vec_nth (bezout_matrix_row A a b j bezout x) = (let bez = bezout (A $ a $ j) (A $ b $ j);
-        p = fst bez; 
-         q = fst(snd bez); 
-         u =(fst(snd(snd bez)));
-         v = fst(snd(snd(snd bez)));
-         d = snd(snd(snd(snd bez))) in
-          (% y. if x=a \<and> y = a then p else
-                 if x=a \<and> y = b then q else
-                 if x=b \<and> y = a then u else
-                 if x=b \<and> y = b then v else
-                  (if x=y then 1 else 0)))" unfolding bezout_matrix_row_def Let_def by auto
+  "vec_nth (bezout_matrix_row A a b j bezout x) = 
+      (let (p, q, u, v, d) = bezout (A $ a $ j) (A $ b $ j)
+        in
+          (\<lambda>y. if x = a \<and> y = a then p else
+               if x = a \<and> y = b then q else
+               if x = b \<and> y = a then u else
+               if x = b \<and> y = b then v else
+               if x = y then 1 else 0))" unfolding bezout_matrix_row_def 
+               by (cases "bezout (A $ a $ j) (A $ b $ j)") auto
 
 lemma [code abstract]: "vec_nth (bezout_matrix A a b j bezout) = bezout_matrix_row A a b j bezout"
-  unfolding bezout_matrix_def unfolding bezout_matrix_row_def[abs_def] Let_def by auto
+  unfolding bezout_matrix_def unfolding bezout_matrix_row_def[abs_def] Let_def 
+  by (cases "bezout (A $ a $ j) (A $ b $ j)") auto
 
 subsubsection{*Properties of the bezout iterate function*}
 
@@ -1185,9 +1273,8 @@ lemma bezout_iterate_zero_column_k:
   using e Aik_0 n k a_n zero_upt_k_i
 proof (induct n arbitrary: A)
   case 0
-  show ?case unfolding bezout_iterate.simps 
-    by (metis (full_types) "0.prems"(5) from_nat_0 from_nat_to_nat_id 
-        i_le_a leD le_0_eq least_mod_type)
+  show ?case unfolding bezout_iterate.simps
+    using "0.prems"(5) i_le_a to_nat_from_nat to_nat_le by auto
 next
   case (Suc n)
   show ?case
@@ -1236,7 +1323,7 @@ next
         show "k < ncols ?B" by (metis Suc.prems(4) ncols_def)
         show "to_nat i \<le> n" by (metis i_le_n less_Suc_eq_le)
         show "is_zero_row_upt_k i k ?B" by (rule zero_ikB)
-      qed thm bezout_matrix_works2
+      qed
       also have "... = 0"
         by (metis Suc.prems(2) True bezout_matrix_works2 
            i_not_fn ib to_nat_from_nat)
@@ -1261,7 +1348,6 @@ next
     finally show ?thesis .
   qed
 qed
-
 
 subsubsection{*Proving the correctness*}
 
@@ -2401,7 +2487,7 @@ proof -
 qed
 
 
-lemma 
+lemma
   fixes A::"'a::{bezout_domain}^'cols::{mod_type}^'rows::{mod_type}"
   assumes k: "k<ncols A" and ib: "is_bezout_ext bezout"
   shows echelon_echelon_form_of_upt_k:
@@ -2413,7 +2499,7 @@ lemma
   else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) 
   (fst (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc k]))) + 1,
   bezout)"
-  using k
+using k 
 proof (induct k)
   let ?interchange="interchange_rows A 0 (LEAST n. A $ n $ 0 \<noteq> 0)"
   have i_rw: "(if \<forall>m. is_zero_row_upt_k m 0 A then 0 
@@ -2431,7 +2517,10 @@ proof (induct k)
     (fst (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc 0]))) + 1, bezout)"
     unfolding rw_upt
     unfolding foldl.simps
-    unfolding echelon_form_of_column_k_def Let_def from_nat_0 fst_conv snd_conv
+    unfolding echelon_form_of_column_k_def
+    unfolding Let_def 
+    unfolding split_beta
+    unfolding from_nat_0 fst_conv snd_conv
     unfolding is_zero_row_upt_k_def
     apply (auto simp add: least_mod_type to_nat_eq_0)
     apply (metis (mono_tags, lifting) Greatest'I least_mod_type less_le)
@@ -2546,7 +2635,7 @@ next
         using rw2 by auto
       have bezout_eq2: "snd (snd ?fold) = bezout"
         unfolding rw unfolding foldl_append 
-        unfolding foldl.simps unfolding echelon_form_of_column_k_def Let_def 
+        unfolding foldl.simps unfolding echelon_form_of_column_k_def Let_def split_beta
         using bezout_eq by auto
       thus "snd (snd ?fold) = snd (snd (fst ?fold, if \<forall>m. is_zero_row_upt_k m (Suc (Suc k)) 
         (fst ?fold) then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) 
@@ -2556,7 +2645,8 @@ next
         (fst ?fold)) + 1, bezout))"
         unfolding fst_conv snd_conv unfolding rw 
         unfolding foldl_append unfolding foldl.simps
-        unfolding echelon_form_of_column_k_def Let_def fst_snd_foldl unfolding A'_def[symmetric]
+        unfolding echelon_form_of_column_k_def Let_def split_beta fst_snd_foldl 
+        unfolding A'_def[symmetric]
       proof (auto simp add: least_mod_type from_nat_0 bezout_eq from_nat_to_nat_greatest)
         fix m assume "A' $ m $ from_nat (Suc k) \<noteq> 0"
         thus "\<exists>m. \<not> is_zero_row_upt_k m (Suc (Suc k)) A'" 
@@ -2567,7 +2657,7 @@ next
           and "\<exists>m. \<not> is_zero_row_upt_k m (Suc (Suc k)) A'"
           and "\<exists>m. \<not> is_zero_row_upt_k m (Suc (Suc k)) A'"
           and "\<exists>m. \<not> is_zero_row_upt_k m (Suc (Suc k)) A'"
-          unfolding is_zero_row_upt_k_def 
+          unfolding is_zero_row_upt_k_def
           by (metis add_to_nat_def from_nat_mono less_irrefl 
             monoid_add_class.add.right_neutral not_less_eq to_nat_0 to_nat_less_card)+
       next
@@ -2828,7 +2918,7 @@ proof (induct k)
 next
   case (Suc K)
   thus ?case
-    by (auto simp add: echelon_form_of_column_k_def Let_def  Suc.hyps)
+    by (auto simp add: split_beta echelon_form_of_column_k_def Let_def Suc.hyps)
 qed
 
 lemma echelon_form_of_upt_k_invertible:
@@ -2881,8 +2971,9 @@ qed
 lemma echelon_form_of_invertible:
   fixes A::"'a::{bezout_domain}^'cols::{mod_type}^'rows::{mod_type}"
   assumes ib: "is_bezout_ext (bezout)"
-  shows "\<exists>P. invertible P \<and> P**A = (echelon_form_of A bezout) 
-         \<and> echelon_form (echelon_form_of A bezout)"
+  shows "\<exists>P. invertible P 
+            \<and> P ** A = (echelon_form_of A bezout) 
+            \<and> echelon_form (echelon_form_of A bezout)"
   using echelon_form_of_upt_k_invertible[OF ib] echelon_form_echelon_form_of[OF ib]
   unfolding echelon_form_of_def by fast
 

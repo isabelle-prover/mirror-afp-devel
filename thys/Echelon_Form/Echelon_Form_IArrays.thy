@@ -14,39 +14,40 @@ begin
 
 subsection{*The algorithm over immutable arrays*}
 
-definition "bezout_matrix_iarrays A a b j bezout =
-tabulate2 (nrows_iarray A) (nrows_iarray A) 
-  (let bez = bezout (A !! a !! j) (A !! b !! j);
-      p = fst bez; q = fst (snd bez); u=fst(snd(snd bez));
-      v=fst(snd(snd(snd bez))); d = snd (snd (snd (snd bez)))
-      in (%x y. if x = a \<and> y = a then p else if x = a \<and> y = b then q 
-      else if x = b \<and> y = a then u else if x = b \<and> y = b 
-      then v else if x = y then 1 else 0))"
+definition
+  "bezout_matrix_iarrays A a b j bezout =
+    tabulate2 (nrows_iarray A) (nrows_iarray A) 
+      (let (p, q, u, v, d) = bezout (A !! a !! j) (A !! b !! j)      
+        in (%x y. if x = a \<and> y = a then p else 
+              if x = a \<and> y = b then q else 
+              if x = b \<and> y = a then u else 
+              if x = b \<and> y = b then v else 
+              if x = y then 1 else 0))"
 
-
-primrec bezout_iterate_iarrays :: "'a::{bezout_ring} iarray iarray \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat
-  \<Rightarrow> ('a\<Rightarrow>'a\<Rightarrow>('a \<times> 'a \<times> 'a \<times> 'a \<times> 'a)) \<Rightarrow> 'a iarray iarray"
+primrec 
+  bezout_iterate_iarrays :: "'a::{bezout_ring} iarray iarray \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat
+                              \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> ('a \<times> 'a \<times> 'a \<times> 'a \<times> 'a)) 
+                              \<Rightarrow> 'a iarray iarray"
 where "bezout_iterate_iarrays A 0 i j bezout = A"
-    | "bezout_iterate_iarrays A (Suc n) i j bezout = (if (Suc n) \<le> i then A else
-    bezout_iterate_iarrays (bezout_matrix_iarrays A i (Suc n) j bezout **i A) n i j bezout)"
+      | "bezout_iterate_iarrays A (Suc n) i j bezout = 
+        (if (Suc n) \<le> i 
+          then A 
+          else bezout_iterate_iarrays (bezout_matrix_iarrays A i (Suc n) j bezout **i A) n i j bezout)"
 
-
-
-definition "echelon_form_of_column_k_iarrays A' k 
-  = (let A = fst A'; i = fst (snd A'); bezout = snd (snd A')
-        in if (vector_all_zero_from_index (i, (column_iarray k A))) \<or> i = (nrows_iarray A)
-        then (A, i, bezout) else 
-           if (vector_all_zero_from_index (i+1, (column_iarray k A))) then (A, i + 1, bezout) 
-           else
-            let n = least_non_zero_position_of_vector_from_index (column_iarray k A) i; 
-            interchange_A = interchange_rows_iarray A i n
-           in
-           (bezout_iterate_iarrays (interchange_A) (nrows_iarray A - 1) i k bezout, i + 1, bezout))"
-
+definition
+  "echelon_form_of_column_k_iarrays A' k = 
+    (let (A, i, bezout) =  A'
+      in if (vector_all_zero_from_index (i, (column_iarray k A))) \<or> i = (nrows_iarray A) 
+            then (A, i, bezout) else 
+         if (vector_all_zero_from_index (i+1, (column_iarray k A))) 
+            then (A, i + 1, bezout) else
+                let n = least_non_zero_position_of_vector_from_index (column_iarray k A) i; 
+                    interchange_A = interchange_rows_iarray A i n
+                in
+          (bezout_iterate_iarrays (interchange_A) (nrows_iarray A - 1) i k bezout, i + 1, bezout))"
 
 definition "echelon_form_of_upt_k_iarrays A k bezout 
   = fst (foldl echelon_form_of_column_k_iarrays (A,0,bezout) [0..<Suc k])"
-
 
 definition "echelon_form_of_iarrays A bezout 
   = echelon_form_of_upt_k_iarrays A (ncols_iarray A - 1) bezout"
@@ -72,8 +73,8 @@ proof -
       nth_upt of_fun_nth plus_nat.add_0 to_nat_less_card)
   have rw3: "IArray (map (\<lambda>x. IArray.of_fun 
     (\<lambda>i. A $ from_nat x $ from_nat i) CARD('c)) [0..<CARD('b)]) !! to_nat a !! to_nat j = A $ a $ j"
-    by (metis IArray.sub_def list_of.simps rw1) 
-  have rw4: "IArray (map (\<lambda>x. IArray.of_fun 
+    by (metis IArray.sub_def list_of.simps rw1)
+  have rw4: "IArray (map (\<lambda>x. IArray.of_fun
     (\<lambda>i. A $ from_nat x $ from_nat i) CARD('c)) [0..<CARD('b)]) !! to_nat b !! to_nat j = A $ b $ j"
     by (metis IArray.sub_def list_of.simps rw2) 
   show ?thesis
@@ -83,38 +84,60 @@ proof -
     unfolding IArray.sub_def[symmetric] rw1 rw2 rw3 rw4
     unfolding IArray.of_fun_def iarray.inject
     apply (rule map_ext) unfolding vec_lambda_beta
-  proof -
+  proof
     fix x xa 
-    assume x: "x<CARD('b)"
-    def A'==" (if from_nat x = a \<and> from_nat xa = a then fst (bezout (A $ a $ j) (A $ b $ j))
-             else if from_nat x = a \<and> from_nat xa = b then fst (snd (bezout (A $ a $ j) (A $ b $ j)))
-                  else if from_nat x = b \<and> from_nat xa = a then fst (snd (snd (bezout (A $ a $ j) (A $ b $ j))))
-                       else if from_nat x = b \<and> from_nat xa = b then fst (snd (snd (snd (bezout (A $ a $ j) (A $ b $ j)))))
-                            else if (from_nat x::'b) = from_nat xa then 1 else 0) =
-            (if x = to_nat a \<and> xa = to_nat a then fst (bezout (A $ a $ j) (A $ b $ j))
-             else if x = to_nat a \<and> xa = to_nat b then fst (snd (bezout (A $ a $ j) (A $ b $ j)))
-                  else if x = to_nat b \<and> xa = to_nat a then fst (snd (snd (bezout (A $ a $ j) (A $ b $ j))))
-                       else if x = to_nat b \<and> xa = to_nat b then fst (snd (snd (snd (bezout (A $ a $ j) (A $ b $ j)))))
-                            else if x = xa then 1 else 0)"
-    have rw5: "(from_nat x = a) = (x = to_nat a)" 
-      by (metis `x < CARD('b)` from_nat_to_nat_id to_nat_from_nat_id)
-    show" xa \<in> set [0..<CARD('b)] \<longrightarrow> A'" 
-    proof auto
-      assume xa: "xa < CARD('b)"
-      have rw6: "(from_nat x = b) = (x = to_nat b)" 
+    assume x: "x < CARD('b)"
+    assume "xa \<in> set [0..<CARD('b)]"
+    hence xa: "xa < CARD('b)" using atLeast_upt by blast
+    have rw5: "(from_nat x = a) = (x = to_nat a)"
+      using x from_nat_not_eq from_nat_to_nat_id by blast
+    have rw6: "(from_nat x = b) = (x = to_nat b)"
         by (metis x from_nat_to_nat_id to_nat_from_nat_id)
-      have rw7: "(from_nat xa = b) = (xa = to_nat b)" 
+    have rw7: "(from_nat xa = b) = (xa = to_nat b)" 
         by (metis xa from_nat_to_nat_id to_nat_from_nat_id)
-      have rw8: "((from_nat x::'b) = (from_nat xa::'b)) = (x=xa)"
+    have rw8: "((from_nat x::'b) = (from_nat xa::'b)) = (x = xa)"
         by (metis from_nat_not_eq x xa)
-      have rw9: "(from_nat xa = a) = (xa = to_nat a)"
+    have rw9: "(from_nat xa = a) = (xa = to_nat a)"
         by (metis from_nat_to_nat_id to_nat_from_nat_id xa)
-      show "A'" unfolding A'_def rw5 unfolding rw6 unfolding rw7 unfolding rw8  unfolding rw9 
-        by auto
+    have cond01: "(from_nat x = a \<and> from_nat xa = a) == (x = to_nat a \<and> xa = to_nat a)"
+      using rw5 rw9 by simp
+    have cond02: "(from_nat x = a \<and> from_nat xa = b) == (x = to_nat a \<and> xa = to_nat b)"
+      using rw5 rw7 by simp
+    have cond03: "(from_nat x = b \<and> from_nat xa = a) == (x = to_nat b \<and> xa = to_nat a)"
+      using rw6 rw9 by simp
+    have cond04: "(from_nat x = b \<and> from_nat xa = b) == (x = to_nat b \<and> xa = to_nat b)"
+      using rw6 rw7 by simp
+    have cond05: "((from_nat x::'b) = (from_nat xa::'b)) == (x = xa)"
+      using rw8 by simp
+    show "(case bezout (A $ a $ j) (A $ b $ j) of
+             (p, q, u, v, d) \<Rightarrow>
+               if from_nat x = a \<and> from_nat xa = a then p
+               else if from_nat x = a \<and> from_nat xa = b then q
+                    else if from_nat x = b \<and> from_nat xa = a then u
+                         else if from_nat x = b \<and> from_nat xa = b then v
+                              else if (from_nat x::'b) = from_nat xa then 1 else 0) =
+            (case bezout (A $ a $ j) (A $ b $ j) of
+             (p, q, u, v, d) \<Rightarrow>
+               \<lambda>x y. if x = to_nat a \<and> y = to_nat a then p
+                     else if x = to_nat a \<and> y = to_nat b then q
+                          else if x = to_nat b \<and> y = to_nat a then u
+                               else if x = to_nat b \<and> y = to_nat b then v
+                                    else if x = y then 1 else 0)
+             x xa" 
+             proof (cases "bezout (A $ a $ j) (A $ b $ j)")
+             fix p q u v d
+             assume b: "bezout (A $ a $ j) (A $ b $ j) = (p, q, u, v, d)"
+             show ?thesis 
+              unfolding b
+              apply clarify
+              unfolding cond01 
+              unfolding cond02
+              unfolding cond03
+              unfolding cond04
+              unfolding cond05 by (rule refl)
     qed
   qed
 qed
-
 
 subsubsection{*Bezout Iterate for immutable arrays*}
 
@@ -218,7 +241,7 @@ next
     unfolding nrows_def by simp
   show ?thesis
     using True
-    unfolding echelon_form_of_column_k_def Let_def
+    unfolding echelon_form_of_column_k_def Let_def split_beta
     unfolding echelon_form_of_column_k_iarrays_def Let_def snd_conv fst_conv
     unfolding matrix_to_iarray_nrows
     unfolding all_zero all_zero2 apply auto
@@ -229,7 +252,6 @@ next
     unfolding to_nat_from_nat_id[OF k[unfolded ncols_def]]
     unfolding vec_to_iarray_column'[OF k] by auto
 qed
-
 
 lemma snd_matrix_to_iarray_echelon_form_of_column_k:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}"
@@ -261,7 +283,7 @@ next
     unfolding vec_to_iarray_column'[OF k] ..
   show ?thesis
     using True
-    unfolding echelon_form_of_column_k_def Let_def
+    unfolding echelon_form_of_column_k_def Let_def split_beta
     unfolding echelon_form_of_column_k_iarrays_def Let_def snd_conv fst_conv
     unfolding all_zero all_zero2
     unfolding matrix_to_iarray_nrows by auto
@@ -290,9 +312,11 @@ lemma snd_snd_foldl_echelon_form_of_column_k_iarrays:
 proof (induct k)
   case 0 thus ?case by auto
 next
-  case (Suc K)
-  thus ?case
-    by (auto simp add: echelon_form_of_column_k_iarrays_def Let_def  Suc.hyps)
+  case (Suc k)
+  show ?case
+    using Suc.hyps
+    unfolding echelon_form_of_column_k_iarrays_def
+    unfolding Let_def unfolding split_beta by auto
 qed
 
 lemma foldl_echelon_form_column_k_eq:
@@ -383,4 +407,3 @@ lemma matrix_to_iarray_echelon_form_of[code_unfold]:
     ncols_def ncols_eq_card_columns zero_less_card_finite)
 
 end
-

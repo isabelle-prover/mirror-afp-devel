@@ -185,9 +185,9 @@ definition "left_ideal_generated S = \<Inter>{I. left_ideal I \<and> S \<subsete
 definition "right_ideal_generated S = \<Inter>{I. right_ideal I \<and> S \<subseteq> I}"
 definition "ideal_generated S = \<Inter>{I. ideal I \<and> S \<subseteq> I}"
 
-definition "left_principal_ideal S =  (left_ideal S \<and>(\<exists>a. left_ideal_generated {a} = S))"
+definition "left_principal_ideal S =  (\<exists>a. left_ideal_generated {a} = S)"
 definition "right_principal_ideal S = (right_ideal S \<and> (\<exists>a. right_ideal_generated {a} = S))"
-definition "principal_ideal S = (ideal S \<and> (\<exists>a. ideal_generated {a} = S))"
+definition "principal_ideal S = (\<exists>a. ideal_generated {a} = S)"
 
 lemma ideal_inter:
   assumes "ideal I" and "ideal J" shows "ideal (I \<inter> J)"
@@ -470,8 +470,8 @@ corollary ideal_eq_left_ideal: "ideal I = left_ideal I"
 lemma ideal_eq_right_ideal: "ideal I = right_ideal I"
   by (metis ideal_def left_ideal_eq_right_ideal)
 
-lemma principal_ideal_eq_left: 
-  "principal_ideal S = (left_ideal S \<and> (\<exists>a. left_ideal_generated {a} = S))"  
+lemma principal_ideal_eq_left:
+  "principal_ideal S = (\<exists>a. left_ideal_generated {a} = S)"
   unfolding principal_ideal_def ideal_generated_def left_ideal_generated_def
   unfolding ideal_eq_left_ideal ..
 
@@ -584,7 +584,6 @@ lemma ideal_kZ: "ideal {k*x|x. x\<in>(UNIV::int set)}"
   apply (metis minus_mult_right)
   done
 
-
 subsection{*GCD Rings and Bezout Domains*}
 
 text{*To define GCD rings and Bezout rings, there are at least two options: 
@@ -599,10 +598,10 @@ begin
 text{*In this structure, there is always a gcd for each pair of elements, but maybe not unique.
 The following definition essentially says if a function satisfies the condition to be a gcd.*}
 
-definition is_gcd :: "('a\<Rightarrow>'a\<Rightarrow>'a) => bool"
+definition is_gcd :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> bool"
   where "is_gcd (gcd') = (\<forall>a b. (gcd' a b dvd a) 
-  \<and> (gcd' a b dvd b) 
-  \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd gcd' a b))"
+                          \<and> (gcd' a b dvd b) 
+                          \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd gcd' a b))"
 
 lemma gcd'_dvd1: 
   assumes "is_gcd gcd'" shows "gcd' a b dvd a" using assms unfolding is_gcd_def by auto
@@ -643,14 +642,13 @@ text{*In this structure, there is always a bezout decomposition for each pair of
 not unique. The following definition essentially says if a function satisfies the condition to be a 
 bezout decomposition.*}
 
-definition is_bezout :: "('a\<Rightarrow>'a\<Rightarrow>('a \<times> 'a \<times> 'a)) => bool"
-  where "is_bezout (bezout) = (\<forall>a b. let p=fst(bezout a b); 
-                                         q=fst(snd(bezout a b));
-                                         gcd_a_b=(snd(snd(bezout a b))) in
-                                         p*a+q*b=gcd_a_b 
-                                         \<and> (gcd_a_b dvd a) 
-                                         \<and> (gcd_a_b dvd b) 
-                                         \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd gcd_a_b))"
+definition is_bezout :: "('a \<Rightarrow>'a \<Rightarrow> ('a \<times> 'a \<times> 'a)) \<Rightarrow> bool"
+  where "is_bezout (bezout) = (\<forall>a b. let (p, q, gcd_a_b) = bezout a b 
+                                      in
+                                        p * a + q * b = gcd_a_b 
+                                        \<and> (gcd_a_b dvd a) 
+                                        \<and> (gcd_a_b dvd b) 
+                                        \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd gcd_a_b))"
 
 text{*The following definition is similar to the previous one, and checks if the input is a 
 function that given two parameters @{text "a b"} returns 5 elements @{text "(p,q,u,v,d)"} 
@@ -658,18 +656,15 @@ where @{text "d"} is a gcd of @{text "a"} and @{text "b"}, @{text "p"} and @{tex
 bezout coefficients such that @{text "p*a+q*b=d"}, @{text "d*u = -b"} and @{text "d*v= a"}.
 The elements @{text "u"} and @{text "v"} are useful for defining the bezout matrix.*}
 
-definition is_bezout_ext :: "('a\<Rightarrow>'a\<Rightarrow>('a \<times> 'a \<times> 'a \<times> 'a \<times> 'a)) => bool"
-  where "is_bezout_ext (bezout) = (\<forall>a b. let p = fst(bezout a b); 
-                                         q = fst(snd(bezout a b));
-                                         u = fst(snd(snd(bezout a b)));
-                                         v = fst(snd(snd(snd(bezout a b))));
-                                         gcd_a_b = snd(snd(snd(snd(bezout a b)))) in
-                                         p*a+q*b=gcd_a_b 
-                                         \<and> (gcd_a_b dvd a) 
-                                         \<and> (gcd_a_b dvd b) 
-                                         \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd gcd_a_b)
-                                         \<and> gcd_a_b * u = -b
-                                         \<and> gcd_a_b * v=a)"
+definition is_bezout_ext :: "('a \<Rightarrow>'a \<Rightarrow> ('a \<times> 'a \<times> 'a \<times> 'a \<times> 'a)) \<Rightarrow> bool"
+  where "is_bezout_ext (bezout) = (\<forall>a b. let (p, q, u, v, gcd_a_b) = bezout a b 
+                                          in
+                                            p * a + q * b = gcd_a_b 
+                                            \<and> (gcd_a_b dvd a) 
+                                            \<and> (gcd_a_b dvd b) 
+                                            \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd gcd_a_b)
+                                            \<and> gcd_a_b * u = -b
+                                            \<and> gcd_a_b * v = a)"
 
 lemma is_gcd_is_bezout_ext:
   assumes "is_bezout_ext bezout" 
@@ -689,30 +684,45 @@ lemma is_gcd_is_bezout:
 text{*The assumptions of the Bezout rings say that there exists a bezout operation. 
   Now we will show that there also exists an operation satisfying @{text "is_bezout_ext"}*}
 
+lemma exists_bezout_ext_aux:
+  fixes a and b
+  shows "\<exists>p q u v d. (p * a + q * b = d)
+                    \<and> (d dvd a)
+                    \<and> (d dvd b)
+                    \<and> (\<forall>d'. (d' dvd a \<and> d' dvd b) \<longrightarrow> d' dvd d) \<and> d * u = -b \<and> d * v = a"
+proof -
+  obtain p q d where prems01: "(p * a + q * b = d) 
+                    \<and> (d dvd a)
+                    \<and> (d dvd b)
+                    \<and> (\<forall>d'. (d' dvd a \<and> d' dvd b) \<longrightarrow> d' dvd d)"
+                    using exists_bezout [of a b] by fastforce
+  hence db: "d dvd b" and da: "d dvd a" by blast+
+  obtain u v where prems02: "d * u = -b" and prems03: "d * v = a" using db and da
+    by (metis local.dvdE local.minus_mult_right)
+  show ?thesis using exI [of _ "(p,q,u,v,d)"] prems01 prems02 prems03
+  by metis
+qed
+
 lemma exists_bezout_ext: "\<exists>bezout_ext. is_bezout_ext bezout_ext"
 proof -
-  def bezout_ext \<equiv> "\<lambda>a b. (SOME (p,q,u,v,d). p*a+q*b=d 
-    \<and> (d dvd a) \<and> (d dvd b) \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd d) \<and> d * u = -b \<and> d * v=a)"  
+  def bezout_ext \<equiv> "\<lambda>a b. (SOME (p,q,u,v,d). p * a + q * b = d 
+    \<and> (d dvd a) \<and> (d dvd b) \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd d) \<and> d * u = -b \<and> d * v = a)"
   show ?thesis
-  proof (rule exI[of _ bezout_ext], unfold is_bezout_ext_def Let_def, auto)
-     fix a b d'
-     let ?bez="(bezout_ext a b)"
-     let ?p="fst ?bez"
-     let ?q="fst (snd ?bez)"
-     let ?u="fst (snd (snd ?bez))"
-     let ?v="fst (snd (snd (snd ?bez)))"
-     let ?d="snd (snd (snd (snd ?bez)))"
-     obtain p q d where pa_qb_d: "p * a + q * b = d" and d_dvd_a: "d dvd a" 
-     and d_dvd_b: "d dvd b" and gcd_condition: "(\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd d)"
-        using exists_bezout by blast
-     obtain u where u: "d * u = - b" by (metis d_dvd_b dvd_def dvd_minus_iff) 
-     obtain v where v: "d * v = a" by (metis d_dvd_a dvdE)
-     show "?p * a + ?q * b = ?d" and  "?d dvd b" and "?d dvd a" and "?d * ?u = - b"
-     and "?d * ?v = a" and "d' dvd a \<Longrightarrow> d' dvd b \<Longrightarrow> d' dvd ?d"
-        unfolding bezout_ext_def
-        by (rule someI2_ex, auto, rule exI[of _ p], rule exI[of _ q],
-            metis pa_qb_d d_dvd_a d_dvd_b u v)+
-  qed
+  proof (rule exI [of _ bezout_ext], unfold is_bezout_ext_def, rule+)
+    fix a b
+    obtain p q u v d where foo: "p * a + q * b = d \<and>
+              d dvd a \<and>
+              d dvd b \<and>
+              (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd d) \<and> 
+              d * u = - b \<and> d * v = a" using exists_bezout_ext_aux [of a b] by fastforce 
+    show "let (p, q, u, v, gcd_a_b) = bezout_ext a b
+           in p * a + q * b = gcd_a_b \<and>
+              gcd_a_b dvd a \<and>
+              gcd_a_b dvd b \<and>
+              (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd gcd_a_b) \<and> 
+              gcd_a_b * u = - b \<and> gcd_a_b * v = a" thm someI
+      by (unfold bezout_ext_def Let_def, rule someI [of _ "(p,q,u,v,d)"], clarify, rule foo)
+   qed
 qed
 
 end
@@ -888,7 +898,7 @@ proof
     have fd_le: "\<forall>x\<in>I-{0}. euclidean_size d \<le> euclidean_size x" 
       by (metis (mono_tags) Least_le fd image_eqI)
     show "principal_ideal I"
-    proof (unfold principal_ideal_def,rule conjI, rule I, rule exI[of _ d], auto)
+    proof (unfold principal_ideal_def, rule exI[of _ d], auto)
       fix x assume x:"x \<in> ideal_generated {d}" show "x \<in> I" 
         using x unfolding ideal_generated_def
         by (auto, metis Diff_iff I d)
@@ -925,64 +935,46 @@ begin
 text{*This is similar to the @{text "euclid_ext"} operation, but involving two more parameters
 to satisfy that @{text "is_bezout_ext euclid_ext2"}*}
 
-definition "euclid_ext2 a b = (let e = euclid_ext a b; 
-            p= fst e;
-            q=fst (snd e);
-            d=snd(snd e) in (p,q,-b div d,a div d,d))"
+definition "euclid_ext2 a b = (let (p, q, d) = euclid_ext a b
+                                  in (p, q, -b div d, a div d, d))"
+
+lemma euclid_ext_impl_euclid_ext2:
+  assumes e: "euclid_ext a b = (p, q, d)"
+  shows "euclid_ext2 a b = (p, q, -b div d, a div d, d)"
+    using e unfolding euclid_ext2_def by auto
+
+lemma euclid_ext2_impl_euclid_ext:
+  assumes e: "euclid_ext2 a b = (p, q, u, v, d)"
+  shows "euclid_ext a b = (p, q, d)"
+  using e unfolding euclid_ext2_def by (cases "euclid_ext a b", auto)
 
 lemma is_bezout_ext_euclid_ext2: "is_bezout_ext (euclid_ext2)"
-proof (unfold is_bezout_ext_def Let_def, auto)
-  fix a b
-  let ?d="snd (snd (snd (snd (euclid_ext2 a b))))"
-  let ?u="fst (snd (snd (euclid_ext2 a b)))"
-  let ?v="fst (snd (snd (snd (euclid_ext2 a b))))"
-  have euclid_eq: "?d = snd (snd (euclid_ext a b))"
-    unfolding euclid_ext2_def Let_def by simp
-  have snd_snd: "?d = gcd_eucl a b" 
-    unfolding euclid_eq euclid_ext_gcd_eucl[of a b, symmetric]
-    by (simp add: split_beta)
-  have fst: "fst (euclid_ext2 a b) = fst (euclid_ext' a b)" 
-    unfolding euclid_ext2_def Let_def euclid_ext'_def
-    by (simp add: split_beta)
-  have fst_snd: "fst(snd (euclid_ext2 a b)) = snd (euclid_ext' a b)"
-    unfolding euclid_ext2_def Let_def euclid_ext'_def
-    by (simp add: split_beta)
-  show "fst (euclid_ext2 a b) * a + fst (snd (euclid_ext2 a b)) * b 
-    = snd (snd (snd (snd (euclid_ext2 a b))))"
-    unfolding snd_snd fst_snd fst using euclid_ext'_correct'[of a b]
-    by (simp add: case_prod_unfold)
-  show d_dvd_a: "?d dvd a" by (simp add: snd_snd)
-  show d_dvd_b: "?d dvd b" by (simp add: snd_snd)
-  show "?d * ?u = - b" unfolding euclid_ext2_def Let_def fst_conv snd_conv
-   by (metis d_dvd_b dvd_minus_iff dvd_mult_div_cancel euclid_eq)
-  show "?d * ?v = a" unfolding euclid_ext2_def Let_def fst_conv snd_conv
-   by (metis d_dvd_a dvd_mult_div_cancel euclid_eq)
-  fix d' assume "d' dvd a" and "d' dvd b" 
-  thus "d' dvd ?d" 
-    by (simp add: snd_snd gcd_eucl_greatest)    
+proof (unfold is_bezout_ext_def Let_def, clarify, intro conjI)
+  fix a b p q u v d
+  assume e: "euclid_ext2 a b = (p, q, u, v, d)"
+  hence e2: "euclid_ext a b = (p, q, d)" 
+   using e unfolding euclid_ext2_def by (cases "euclid_ext a b", auto)
+  show "p * a + q * b = d" using euclid_ext_correct' [of a b] unfolding e2 by auto
+  show da: "d dvd a" using euclid_ext_gcd_eucl [of a b] unfolding e2 using gcd_eucl_dvd1 [of a b] by simp
+  show db: "d dvd b" using euclid_ext_gcd_eucl [of a b] unfolding e2 using gcd_eucl_dvd2 [of a b] by simp
+  show "\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd d" 
+    using euclid_ext_gcd_eucl [of a b] using e2 using gcd_eucl_greatest [of _ a b] by force
+  have "a div d = v" and "-b div d = u"
+    using e using euclid_ext_impl_euclid_ext2 [OF e2] by (simp_all)
+  thus "d * v = a" and "d * u = - b" using da db by auto 
 qed
 
 lemma is_bezout_euclid_ext: "is_bezout (euclid_ext)"
-proof (unfold is_bezout_def Let_def, auto)
-  fix a b
-  have snd_snd: "snd (snd (euclid_ext a b)) = gcd_eucl a b" 
-    unfolding euclid_ext_gcd_eucl[of a b, symmetric]
-    by (simp add: split_beta)
-  have fst: "fst (euclid_ext a b) = fst (euclid_ext' a b)" 
-    unfolding euclid_ext'_def 
-    by (simp add: split_beta)
-  have fst_snd: "fst(snd (euclid_ext a b)) = snd (euclid_ext' a b)"
-    unfolding euclid_ext'_def 
-    by (simp add: split_beta)
-  show "fst (euclid_ext a b) * a + fst (snd (euclid_ext a b)) * b = snd (snd (euclid_ext a b))"
-    unfolding snd_snd fst_snd fst using euclid_ext'_correct'[of a b]
-    by (simp add: case_prod_unfold)
-  show "snd (snd (euclid_ext a b)) dvd a" by (simp add: snd_snd)
-  show "snd (snd (euclid_ext a b)) dvd b" by (simp add: snd_snd)
-  fix d' assume "d' dvd a" and "d' dvd b" 
-  thus "d' dvd snd (snd (euclid_ext a b))" 
-    by (simp add: snd_snd gcd_eucl_greatest) 
+proof (unfold is_bezout_def Let_def, clarify, intro conjI)
+  fix a b p q d
+  assume e: "euclid_ext a b = (p, q, d)" find_theorems euclid_ext
+  show "p * a + q * b = d"  using euclid_ext_correct' [of a b] unfolding e by auto
+  show da: "d dvd a" using euclid_ext_gcd_eucl [of a b] unfolding e using gcd_eucl_dvd1 [of a b] by simp
+  show db: "d dvd b" using euclid_ext_gcd_eucl [of a b] unfolding e using gcd_eucl_dvd2 [of a b] by simp
+  show "\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd d"
+    using euclid_ext_gcd_eucl [of a b] unfolding e using gcd_eucl_greatest [of _ a b] by auto
 qed
+
 end
 
 subclass (in euclidean_ring) pid_div 
