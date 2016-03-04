@@ -238,7 +238,7 @@ lemma [code, code del]: "term_of_class.term_of = (term_of_class.term_of :: uint8
 lemma term_of_uint8_code [code]:
   defines "TR \<equiv> typerep.Typerep" and "bit0 \<equiv> STR ''Numeral_Type.bit0''" shows
   "term_of_class.term_of x = 
-   Code_Evaluation.App (Code_Evaluation.Const (STR ''Uint8.Abs_uint8'') (TR (STR ''fun'') [TR (STR ''Word.word'') [TR bit0 [TR bit0 [TR bit0 [TR (STR ''Numeral_Type.num1'') []]]]], TR (STR ''Uint8.uint8'') []]))
+   Code_Evaluation.App (Code_Evaluation.Const (STR ''Uint8.uint8.Abs_uint8'') (TR (STR ''fun'') [TR (STR ''Word.word'') [TR bit0 [TR bit0 [TR bit0 [TR (STR ''Numeral_Type.num1'') []]]]], TR (STR ''Uint8.uint8'') []]))
        (term_of_class.term_of (Rep_uint8' x))"
 by(simp add: term_of_anything)
 
