@@ -483,9 +483,9 @@ ML {*
       val _ = tracing (msg ^ " (gets): " ^ @{make_string} ct);
       val res = conv ct 
         handle exc =>
-         (if Exn.is_interrupt exc then reraise exc
+         (if Exn.is_interrupt exc then Exn.reraise exc
           else tracing (msg ^ " (raises): " ^ @{make_string} exc);
-          reraise exc)
+          Exn.reraise exc)
       val _ = tracing (msg ^ " (yields): " ^ @{make_string} res);
     in res end
 
