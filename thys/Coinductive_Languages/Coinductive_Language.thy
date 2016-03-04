@@ -146,7 +146,7 @@ lemma \<oo>_Times[simp]:
 
 lemma \<dd>_Times[simp]:
   "\<dd> (Times r s) = (\<lambda>a. if \<oo> r then Plus (Times (\<dd> r a) s) (\<dd> s a) else Times (\<dd> r a) s)"
-  unfolding Times_def by (rule ext, coinduction arbitrary: r s) auto
+  unfolding Times_def by auto
 
 theorem Times_ZeroL[simp]: "Times Zero r = Zero"
   by coinduction simp
@@ -232,8 +232,7 @@ lemma \<oo>_Star[simp]: "\<oo> (Star r)"
   unfolding Star_def by simp
 
 lemma \<dd>_Star[simp]: "\<dd> (Star r) = (\<lambda>a. Times (\<dd> r a) (Star r))"
-  unfolding Star_def by (rule ext, coinduction arbitrary: r)
-    (auto simp add: Star_def StarLR_Times[symmetric])
+  unfolding Star_def by (auto simp add: Star_def StarLR_Times[symmetric])
 
 lemma Star_Zero[simp]: "Star Zero = One"
   by coinduction auto
@@ -312,7 +311,7 @@ lemma \<oo>_Shuffle[simp]:
 
 lemma \<dd>_Shuffle[simp]:
   "\<dd> (Shuffle r s) = (\<lambda>a. Plus (Shuffle (\<dd> r a) s) (Shuffle r (\<dd> s a)))"
-  unfolding Shuffle_def by (rule ext, coinduction arbitrary: r s) auto
+  unfolding Shuffle_def by auto
 
 theorem Shuffle_ZeroL[simp]: "Shuffle Zero r = Zero"
   by (coinduction arbitrary: r rule: language_coinduct_upto_Plus) (auto 0 4)
@@ -346,17 +345,17 @@ inductive regular_cong where
 | Sym[intro]: "regular_cong R x y \<Longrightarrow> regular_cong R y x"
 | Trans[intro]: "\<lbrakk>regular_cong R x y; regular_cong R y z\<rbrakk> \<Longrightarrow> regular_cong R x z"
 | Base[intro]: "R x y \<Longrightarrow> regular_cong R x y"
-| Plus[intro]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
+| Plus[intro!]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
     regular_cong R (Plus x x') (Plus y y')"
-| Times[intro]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
+| Times[intro!]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
     regular_cong R (Times x x') (Times y y')"
-| Star[intro]: "\<lbrakk>regular_cong R x y\<rbrakk> \<Longrightarrow>
+| Star[intro!]: "\<lbrakk>regular_cong R x y\<rbrakk> \<Longrightarrow>
     regular_cong R (Star x) (Star y)"
-| Inter[intro]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
+| Inter[intro!]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
     regular_cong R (Inter x x') (Inter y y')"
-| Not[intro]: "\<lbrakk>regular_cong R x y\<rbrakk> \<Longrightarrow>
+| Not[intro!]: "\<lbrakk>regular_cong R x y\<rbrakk> \<Longrightarrow>
     regular_cong R (Not x) (Not y)"
-| Shuffle[intro]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
+| Shuffle[intro!]: "\<lbrakk>regular_cong R x y; regular_cong R x' y'\<rbrakk> \<Longrightarrow>
     regular_cong R (Shuffle x x') (Shuffle y y')"
 
 lemma language_coinduct_upto_regular[unfolded rel_fun_def, simplified, case_names Lang, consumes 1]: 
@@ -430,24 +429,11 @@ theorem ardenL: "Plus r (Times s x) \<le> x \<Longrightarrow> Times (Star s) r \
 unfolding language_defs
 proof (coinduction arbitrary: r s x rule: language_coinduct_upto_regular)
   case Lang
-  hence "\<oo> r \<Longrightarrow> \<oo> x" by (metis Plus.sel(1))
-  moreover
-  { fix a
-    let ?R = "(\<lambda>L K. \<exists>r s.  L = Plus (Times (Star s) r) K \<and> Plus r (Plus (Times s K) K) = K)"
-    have "regular_cong ?R (Plus x (Times (Star s) r)) x"
-      using Lang[unfolded Plus_assoc] by (auto simp only: Plus_comm)
-    hence "regular_cong ?R
-      (Plus (Times (\<dd> s a) (Plus x (Times (Star s) r))) (Plus (\<dd> r a) (\<dd> x a)))
-      (Plus (\<dd> r a) (Plus (Times (\<dd> s a) x) (\<dd> x a)))"
-      by (auto simp del: Times_PlusR)
-    also have "(Plus (Times (\<dd> s a) (Plus x (Times (Star s) r))) (Plus (\<dd> r a) (\<dd> x a))) = 
-      (Plus (Times (\<dd> s a) (Times (Star s) r)) (Plus (\<dd> r a) (\<dd> x a)))"
-      by (subst (3) Lang[symmetric]) auto
-    finally have "regular_cong ?R
-      (Plus (Times (\<dd> s a) (Times (Star s) r)) (Plus (\<dd> r a) (\<dd> x a)))
-      (Plus (\<dd> r a) (Plus (Times (\<dd> s a) x) (\<dd> x a)))" .
-  }
-  ultimately show ?case by (subst (4) Lang[symmetric]) auto
+  then have "\<oo> r \<Longrightarrow> \<oo> x" by (metis Plus.sel(1))
+  then show ?case
+    by (subst (3 4) Lang[symmetric])
+      (auto simp: Times_PlusR[symmetric] simp del: Times_PlusR
+        intro!: exI[where 'a = "'a language"] Lang[unfolded Plus_ACI])
 qed
 
 theorem ardenR: "Plus r (Times x s) \<le> x \<Longrightarrow> Times r (Star s) \<le> x"
@@ -455,23 +441,18 @@ unfolding language_defs
 proof (coinduction arbitrary: r s x rule: language_coinduct_upto_regular)
   case Lang
   let ?R = "(\<lambda>L K. \<exists>r s. L = Plus (Times r (Star s)) K \<and> Plus r (Plus (Times K s) K) = K)"
+  have "\<And>a. \<oo> x \<Longrightarrow> Plus (\<dd> r a) (Plus (\<dd> s a) (Plus (\<dd> x a) (Times (\<dd> x a) s))) = \<dd> x a"
+    by (subst (1 2) Lang[symmetric]) auto
+  moreover
   have "\<And>a. \<oo> x \<Longrightarrow> Plus (\<dd> s a) (\<dd> x a) = \<dd> x a"
     by (subst (1 2) Lang[symmetric]) auto
-  then have *: "\<And>a. ?R (Plus (Times (\<dd> r a) (Star s)) (\<dd> x a)) (\<dd> x a)"
+  then have "\<And>a. ?R (Plus (Times (\<dd> r a) (Star s)) (\<dd> x a)) (\<dd> x a)"
     by (subst Lang[symmetric]) (auto simp del: Plus_comm)
   moreover
   from Lang have "\<oo> r \<Longrightarrow> \<oo> x" by (metis Plus.sel(1))
-  moreover
-  { fix a assume "\<oo> x"
-    have "regular_cong ?R (Plus (Times (\<dd> s a) (Star s)) (\<dd> x a)) (\<dd> x a)"
-    proof (rule Base exI conjI[OF refl])+
-      from `\<oo> x` show "Plus (\<dd> s a) (Plus (Times (\<dd> x a) s) (\<dd> x a)) = \<dd> x a"
-        by (subst (1 3) Lang[symmetric]) auto
-    qed
-    from Plus[OF Base[of ?R, OF *[of a]] this] have "regular_cong ?R
-      (Plus (Times (\<dd> r a) (Star s)) (Plus (Times (\<dd> s a) (Star s)) (\<dd> x a))) (\<dd> x a)" by auto
-  }
-  ultimately show ?case by auto
+  ultimately show ?case
+    by (auto 0 4 simp: Times_PlusL[symmetric] simp del: Times_PlusL
+      intro: exI[where 'a = "'a language"])
 qed
 
 lemma ge_One[simp]: "One \<le> r \<longleftrightarrow> \<oo> r"
