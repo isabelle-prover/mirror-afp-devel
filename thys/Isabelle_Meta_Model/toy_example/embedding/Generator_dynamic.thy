@@ -550,7 +550,7 @@ fun all_meta aux ret = let open META open META_overload in fn
                                      |> Local_Theory.new_group
                                      |> f
                                      |> Local_Theory.reset_group
-                                     |> Local_Theory.restore))) l
+                                     |> Local_Theory.reset))) l
        |> Local_Theory.exit_global)
 | META_boot_generation_syntax _ => ret o I
 | META_boot_setup_env _ => ret o I
