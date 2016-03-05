@@ -39,10 +39,10 @@ fun test name =
         write_out (solver ^ ":" ^ name ^ ": " ^ code ^ " " ^ show_time timer1 ^ " " ^
                   show_time timer2); code
       end
-      handle TimeLimit.TimeOut => (write_out (solver ^ ":" ^ name ^ ": TIMEOUT"); "UNKNOWN")
+      handle Timeout.TIMEOUT _ => (write_out (solver ^ ":" ^ name ^ ": TIMEOUT"); "UNKNOWN")
   in
-    TimeLimit.timeLimit (Time.fromSeconds max_secs) aux ()
-    handle TimeLimit.TimeOut => (write_out (solver ^ ":" ^ name ^ ": TIMEOUT"); "UNKNOWN")
+    Timeout.apply (Time.fromSeconds max_secs) aux ()
+      handle Timeout.TIMEOUT _ => (write_out (solver ^ ":" ^ name ^ ": TIMEOUT"); "UNKNOWN")
   end
 
 fun sat name = (test name = "SAT" orelse error "Expected SAT")
