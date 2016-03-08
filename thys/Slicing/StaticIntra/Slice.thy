@@ -295,7 +295,7 @@ proof -
         `kind a = (Q)\<^sub>\<surd>`
       have target:"targetnode a = (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and> 
                                                  valid_edge a' \<and> targetnode a' = n')"
-        by(auto simp:slice_kind_def Let_def fun_eq_iff split:split_if_asm)
+        by(auto simp:slice_kind_def Let_def fun_eq_iff split:if_split_asm)
       have "targetnode a' \<noteq> (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and> 
                                             valid_edge a' \<and> targetnode a' = n')"
       proof(rule ccontr)
@@ -310,7 +310,7 @@ proof -
       qed
       with `sourcenode a \<notin> backward_slice S` True `kind a' = (Q')\<^sub>\<surd>`
         `sourcenode a = sourcenode a'` show ?thesis 
-        by(auto simp:slice_kind_def Let_def fun_eq_iff split:split_if_asm)
+        by(auto simp:slice_kind_def Let_def fun_eq_iff split:if_split_asm)
     next
       case False
       hence "obs (sourcenode a) (backward_slice S) \<noteq> {}" .
@@ -325,7 +325,7 @@ proof -
         and target:"targetnode a = (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and>
                                                  distance (targetnode a') m x \<and>
                                                  valid_edge a' \<and> targetnode a' = n')"
-        by(auto simp:slice_kind_def Let_def fun_eq_iff split:split_if_asm)
+        by(auto simp:slice_kind_def Let_def fun_eq_iff split:if_split_asm)
       show ?thesis
       proof(cases "distance (targetnode a') m x")
         case False
@@ -1145,7 +1145,7 @@ proof(atomize_elim)
         case (Predicate Q)
         with `transfer (slice_kind S a) s\<^sub>2 = s\<^sub>2'` have "s\<^sub>2 = s\<^sub>2'"
           by(cases "slice_kind S a",
-            auto split:split_if_asm simp:slice_kind_def Let_def)
+            auto split:if_split_asm simp:slice_kind_def Let_def)
         thus ?thesis by simp
       qed
       from rv obtain as' nx where "n\<^sub>1' -as'\<rightarrow>* nx" 
@@ -1260,7 +1260,7 @@ next
     \<forall>nx\<in>set (sourcenodes as'). nx \<notin> backward_slice S`
   from `slice_edges S (a'#as') = []` have "slice_edges S as' = []"
     and "sourcenode a' \<notin> backward_slice S"
-    by(auto simp:slice_edges_def split:split_if_asm)
+    by(auto simp:slice_edges_def split:if_split_asm)
   from IH[OF `slice_edges S as' = []`] `sourcenode a' \<notin> backward_slice S`
   show ?case by(simp add:sourcenodes_def)
 qed

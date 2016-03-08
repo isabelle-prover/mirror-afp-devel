@@ -55,7 +55,7 @@ proof -
       and "wf_mdecl ?wf_md (compP (annotate_Mb_code P) P) C (M, Ts, T, \<lfloor>annotate_Mb_code P C M Ts T m\<rfloor>)"
     moreover obtain pns body where "m = (pns, body)" by(cases m)
     ultimately show "wf_mdecl ?wf_md P C (M, Ts, T, \<lfloor>m\<rfloor>)"
-      by(fastforce simp add: annotate_Mb_code_def annotate_code_def wf_mdecl_def THE_default_def the_equality Anno_code_def split: split_if_asm dest: Anno_block_types)
+      by(fastforce simp add: annotate_Mb_code_def annotate_code_def wf_mdecl_def THE_default_def the_equality Anno_code_def split: if_split_asm dest: Anno_block_types)
   qed
 
   { fix C D fs ms M Ts T pns body
@@ -77,7 +77,7 @@ proof -
     moreover from wf' sees have "wf_mdecl ?wf_md P C (M, Ts, T, \<lfloor>(pns, body)\<rfloor>)" by(rule sees_wf_mdecl)
     hence "set (block_types body) \<subseteq> types P" by(simp add: wf_mdecl_def)
     ultimately have "ran [this \<mapsto> Class C, pns [\<mapsto>] Ts] \<union> set (block_types body) \<subseteq> types P"
-      by(auto simp add: ran_def wf_mdecl_def map_upds_def split: split_if_asm dest!: map_of_SomeD set_zip_rightD)
+      by(auto simp add: ran_def wf_mdecl_def map_upds_def split: if_split_asm dest!: map_of_SomeD set_zip_rightD)
     hence "annotate_code P [this \<mapsto> Class C, pns [\<mapsto>] Ts] body = annotate P [this \<mapsto> Class C, pns [\<mapsto>] Ts] body"
       unfolding annotate_code_def annotate_def
       by -(rule arg_cong[where f="THE_default body"], auto intro!: ext intro: Anno_code_into_Anno[OF wf'] Anno_into_Anno_code[OF wf']) }

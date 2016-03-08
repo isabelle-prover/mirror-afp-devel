@@ -434,7 +434,7 @@ proof -
     have id: "n * c = n' * d" by auto 
     from quotient_of_coprime[OF irs'] have "coprime n d" .
     with dc id show False
-      by (metis coprime_dvd_mult_iff_int dc dvd_triv_right gcd.commute mult.commute)
+      by (metis coprime_dvd_mult_iff dc dvd_triv_right gcd.commute mult.commute)
   qed
   then obtain irs where irs: "?irs = ?r irs" unfolding Ints_def by blast        
   from ri.map_poly_inj[OF id[unfolded irs ri.map_poly_smult[symmetric]]]

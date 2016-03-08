@@ -17,13 +17,17 @@ begin
 definition multisets :: "'a set \<Rightarrow> 'a multiset set" where
   "multisets A = {M. set_mset M \<subseteq> A}"
 
+lemma in_multisets_iff:
+  "M \<in> multisets A \<longleftrightarrow> set_mset M \<subseteq> A"
+  by (simp add: multisets_def)
+
 lemma empty_multisets [simp]:
   "{#} \<in> multisets F"
-  by (simp add: multisets_def)
+  by (simp add: in_multisets_iff)
 
 lemma multisets_union [simp]:
   "M \<in> multisets A \<Longrightarrow> N \<in> multisets A \<Longrightarrow> M + N \<in> multisets A"
-  by (auto simp: multisets_def)
+  by (auto simp add: in_multisets_iff)
 
 definition mulex1 :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset \<Rightarrow> bool" where
   "mulex1 P = (\<lambda>M N. (M, N) \<in> mult1 {(x, y). P x y})"
@@ -356,9 +360,8 @@ lemma mult1_mono:
     and "N \<in> multisets A"
     and "(M, N) \<in> mult1 R"
   shows "(M, N) \<in> mult1 S"
-  using assms 
-  unfolding mult1_def multisets_def
-  by (auto) (metis (full_types) mem_set_mset_iff set_mp)
+  using assms unfolding mult1_def multisets_def
+  by auto (metis (full_types) set_mp)
 
 lemma mulex1_mono:
   assumes "\<And>x y. \<lbrakk>x \<in> A; y \<in> A; P x y\<rbrakk> \<Longrightarrow> Q x y"
@@ -466,7 +469,7 @@ next
     have "{#x#} = {#} + {#x#}" by simp
     moreover have "?Z = {#} + ?Z" by simp
     moreover have "\<forall>y. y \<in># ?Z \<longrightarrow> P y x"
-      using add.prems by (auto, metis (full_types) less_not_refl3)
+      using add.prems by (auto simp add: in_diff_count split: if_splits)
     ultimately have "mulex1 P ?Z {#x#}" unfolding mulex1_def mult1_def by blast
     moreover have "{#x#} \<in> multisets A" using add.prems by auto
     moreover have "?Z \<in> multisets A"
@@ -543,15 +546,14 @@ proof
         have "?ic (N - ?X + ?Y) = int (?c N - ?c ?X) + ?ic ?Y" by simp
         also have "\<dots> = int (?c N - (?c {#a#} + ?c (X - K))) + ?ic (K - X) + ?ic Y" by simp
         also have "\<dots> = ?ic N - (?ic {#a#} + ?ic (X - K)) + ?ic (K - X) + ?ic Y"
-          using zdiff_int [OF *] by simp
+          using of_nat_diff [OF *] by simp
         also have "\<dots> = (?ic N - ?ic {#a#}) - ?ic (X - K) + ?ic (K - X) + ?ic Y" by simp
         also have "\<dots> = (?ic N - ?ic {#a#}) + (?ic (K - X) - ?ic (X - K)) + ?ic Y" by simp
         also have "\<dots> = (?ic N - ?ic {#a#}) + (?ic K - ?ic X) + ?ic Y" by simp
         also have "\<dots> = (?ic N - ?ic ?X) + ?ic ?Y" by (simp add: N)
         also have "\<dots> = ?ic L"
           unfolding L' M' N
-          using zdiff_int [OF **] (*nitpicking: this step was missing in "Term Rewriting and All That"*)
-          by simp
+          using ** by (simp add: algebra_simps)
         finally show "?c L = ?c (N - ?X + ?Y)" by simp
       qed
       ultimately show ?thesis by (metis diff_set_Ex_iff)
@@ -563,7 +565,8 @@ proof
       then show "\<exists>x. x \<in># ?X \<and> P y x"
       proof
         assume "y \<in># K - X"
-        with K show ?thesis by force
+        then have "y \<in># K" by (rule in_diffD)
+        with K show ?thesis by auto
       next
         assume "y \<in># Y"
         with Y obtain x where "x \<in># X" and "P y x" by blast
@@ -575,7 +578,9 @@ proof
           moreover have "x \<in> A" using \<open>M \<in> multisets A\<close> and \<open>x \<in># K\<close> by (auto simp: M' multisets_def)
           ultimately have "P y a" using \<open>P y x\<close> and trans unfolding transp_on_def by blast
           then have ?thesis by force }
-        ultimately show ?thesis using \<open>x \<in># X\<close> by (cases "x \<in># X - K") auto
+        moreover from \<open>x \<in># X\<close> have "x \<in># X - K \<or> x \<in># K"
+          by (auto simp add: in_diff_count not_in_iff)
+        ultimately show ?thesis by auto
       qed
     qed
     ultimately show ?case by blast

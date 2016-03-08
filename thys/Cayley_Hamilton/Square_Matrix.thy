@@ -644,7 +644,7 @@ proof -
     by transfer rule
   ultimately show ?thesis
     by (auto simp add: det_rows_setsum det_rows_mult setsum_left_distrib det_perm_rows_If
-             split: split_if_asm intro!: setsum.mono_neutral_cong_right)
+             split: if_split_asm intro!: setsum.mono_neutral_cong_right)
 qed
 
 lift_definition minor :: "'a^^'b \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> 'a::semiring_1^^'b" is

@@ -27,7 +27,6 @@ lemma Lxx_othercase: "set qs \<subseteq> {x,y} \<Longrightarrow> \<not> (\<exist
 proof -
   assume "set qs \<subseteq> {x,y}"
   then have "qs \<in> lang (myUNIV x y)" using myUNIV_alle[of x y] by blast
-  thm myUNIV_char
   then have "qs \<in> star (lang (L_lasthasxx x y)) @@  lang (hideit x y)" unfolding hideit_def
     by(auto simp add: myUNIV_char)
   then have qs: "qs \<in> star (Lxx x y) @@  lang (hideit x y)" by(simp add: Lxx_def)
@@ -36,7 +35,6 @@ proof -
   proof -
     from qs obtain A B where qsAB: "qs=A@B" and A: "A\<in>star (Lxx x y)" and B: "B\<in>lang (hideit x y)" by auto
     with notpos have notin: "A \<notin> (Lxx x y)" by blast
-    thm  Lxx_not_nullable[of x y] 
     
     from A have 1: "A = [] \<or> A \<in> (Lxx x y) @@ star (Lxx x y)" using Regular_Set.star_unfold_left by auto
     have 2: "A \<notin> (Lxx x y) @@ star (Lxx x y)"
@@ -221,7 +219,6 @@ proof -
 
   then have "T\<^sub>p R (xs@[x,x]@ys) (OPT2 (xs@[x,x]@ys) R)
         = T\<^sub>p R ((xs@[x,x])@ys) (OPT2 (xs @ [x, x]) R @ OPT2 ys [x, y])"  by auto
-  thm T\<^sub>p_split
   also have "\<dots> = T\<^sub>p R (xs@[x,x]) (OPT2 (xs @ [x, x]) R)
                 + T\<^sub>p [x,y] ys (OPT2 ys [x, y])"
                   using T\<^sub>p_split[of "xs@[x,x]" "OPT2 (xs @ [x, x]) R" R ys "OPT2 ys [x, y]", OF uer, unfolded ll] 
@@ -273,7 +270,6 @@ theorem Phase_partitioning_general:
     and initial: "P (map_pmf (%is. ([x0,y0],is)) (\<iota> [x0,y0])) x0 [x0,y0]"
     and D: "\<And>a b \<sigma> s. \<sigma> \<in> Lxx a b \<Longrightarrow> a\<noteq>b \<Longrightarrow> {a,b}={x0,y0} \<Longrightarrow> P s a [x0,y0] 
           \<Longrightarrow> T_on_rand' (\<iota>,\<delta>) s \<sigma> \<le> c * T\<^sub>p [a,b] \<sigma> (OPT2 \<sigma> [a,b])  \<and> P (config'_rand (\<iota>,\<delta>) s \<sigma>) (last \<sigma>) [x0,y0]"
-   (* and "\<And>x. P s x s0 \<Longrightarrow> map_pmf (hd \<circ> fst) s = return_pmf x" *)
     and setrs: "set \<sigma> \<subseteq> {x0,y0}"
   shows "T\<^sub>p_on_rand (\<iota>,\<delta>) [x0,y0] \<sigma>  \<le> c * T\<^sub>p_opt [x0,y0] \<sigma> + c"
 proof -
@@ -343,7 +339,6 @@ proof -
       
     have E0: "T_on_rand' (\<iota>,\<delta>) s \<sigma>
           =  T_on_rand' (\<iota>,\<delta>) s (xs@ys)" using qs by auto
-          thm T_on_rand'_append
      also have E1: "\<dots> = T_on_rand' (\<iota>,\<delta>) s xs + T_on_rand' (\<iota>,\<delta>) (config'_rand (\<iota>,\<delta>) s xs) ys"
               by (rule T_on_rand'_append)
     also have E2: "\<dots> \<le> T_on_rand' (\<iota>,\<delta>) s xs + c * T\<^sub>p ?c' ys (OPT2 ys ?c') + c"
@@ -380,8 +375,8 @@ proof -
           by(rule T_on_rand'_as_sum)
         also have "\<dots>
              = setsum (T_on_rand'_n (\<iota>,\<delta>) s (\<sigma> @ [last \<sigma>])) {..<length \<sigma>}"
-          proof(rule setsum.cong)
-            case (goal2 t)
+          proof(rule setsum.cong, goal_cases)
+            case (2 t)
             then have "t < length \<sigma>" by auto 
             then show ?case by(simp add: nth_append)
           qed simp
@@ -423,7 +418,6 @@ proof -
 qed
 } note allg=this  
 
- thm initial
  have "T_on_rand (\<iota>, \<delta>) [x0,y0] \<sigma> \<le> c * real (T\<^sub>p [x0, y0] \<sigma> (OPT2 \<sigma> [x0, y0])) + c"  
   apply(rule allg)
     apply(fact)

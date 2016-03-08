@@ -31,7 +31,7 @@ lemma mon_pl_ileq: "w\<preceq>w' \<Longrightarrow> mon_pl w \<subseteq> mon_pl w
   by (induct rule: less_eq_list_induct) auto
 
 lemma mon_pl_set: "mon_pl w = \<Union>{ fst e \<union> snd e | e. e\<in>set w }"
-  by (unfold mon_pl_def) (safe, auto simp add: Bex_def foldl_set)
+  by (auto simp add: mon_pl_def foldl_set) blast+
 
 fun
   cil :: "'a list \<Rightarrow> ('a \<Rightarrow> ('m set \<times> 'm set)) \<Rightarrow> 'a list \<Rightarrow> 'a list set" 
@@ -64,7 +64,7 @@ lemma cil_last_case_split[cases set, case_names left right]: "
     !!w'. \<lbrakk>w=e2#w'; w'\<in>(e1#w1 \<otimes>\<^bsub>\<alpha>\<^esub> w2); 
            fst (\<alpha> e2) \<inter> mon_pl (map \<alpha> (e1#w1)) = {} \<rbrakk> \<Longrightarrow> P
   \<rbrakk> \<Longrightarrow> P"
-  by (auto elim: list_set_cons_cases split: split_if_asm)
+  by (auto elim: list_set_cons_cases split: if_split_asm)
 
 lemma cil_cases[cases set, case_names both_empty left_empty right_empty app_left app_right]: "
   \<lbrakk> w\<in>wa\<otimes>\<^bsub>\<alpha>\<^esub>wb; 

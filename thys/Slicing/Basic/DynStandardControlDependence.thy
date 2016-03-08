@@ -178,7 +178,7 @@ next
       hence "targetnode a -as'\<rightarrow>* n'" 
         by(fastforce dest:path_split)
       with isin have path':"targetnode a -as'\<rightarrow>* n'"
-        by(fastforce split:split_if_asm simp:targetnodes_def)
+        by(fastforce split:if_split_asm simp:targetnodes_def)
       with as' target'' have path1:"targetnode a -xs\<rightarrow>* sourcenode ax"
         and valid_edge':"valid_edge ax"
         and path2:"n'' -ys\<rightarrow>* n'"

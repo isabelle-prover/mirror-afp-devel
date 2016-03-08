@@ -11,7 +11,7 @@ subsection{* Standard control dependence *}
 context StandardControlDependencePDG begin
 
 lemma Exit_in_obs_slice_node:"(_Exit_) \<in> obs n' (PDG_BS S) \<Longrightarrow> (_Exit_) \<in> S"
-  by(auto elim:obsE PDG_path_CFG_path simp:PDG_BS_def split:split_if_asm)
+  by(auto elim:obsE PDG_path_CFG_path simp:PDG_BS_def split:if_split_asm)
 
 
 abbreviation PDG_path' :: "'node \<Rightarrow> 'node \<Rightarrow> bool" ("_ \<longrightarrow>\<^sub>d* _" [51,0] 80)
@@ -287,7 +287,7 @@ next
   assume "n' \<in> PDG_BS S" and "n influences V in n'"
   thus "n \<in> PDG_BS S"
     by(auto dest:PDG.PDG_path_ddep[OF PDG_scd,OF PDG.PDG_ddep_edge[OF PDG_scd]]
-            dest:PDG_path_Append simp:PDG_BS_def split:split_if_asm)
+            dest:PDG_path_Append simp:PDG_BS_def split:if_split_asm)
 next
   fix n S
   have "(\<exists>m. obs n (PDG_BS S) = {m}) \<or> obs n (PDG_BS S) = {}" 
@@ -308,7 +308,7 @@ subsection{* Weak control dependence *}
 context WeakControlDependencePDG begin
 
 lemma Exit_in_obs_slice_node:"(_Exit_) \<in> obs n' (PDG_BS S) \<Longrightarrow> (_Exit_) \<in> S"
-  by(auto elim:obsE PDG_path_CFG_path simp:PDG_BS_def split:split_if_asm)
+  by(auto elim:obsE PDG_path_CFG_path simp:PDG_BS_def split:if_split_asm)
 
 
 lemma cd_closed:
@@ -570,7 +570,7 @@ next
   fix n' S n V assume "n' \<in> PDG_BS S" and "n influences V in n'"
   thus "n \<in> PDG_BS S"
     by(auto dest:PDG.PDG_path_ddep[OF PDG_wcd,OF PDG.PDG_ddep_edge[OF PDG_wcd]]
-            dest:PDG_path_Append simp:PDG_BS_def split:split_if_asm)
+            dest:PDG_path_Append simp:PDG_BS_def split:if_split_asm)
 next
   fix n S
   have "(\<exists>m. obs n (PDG_BS S) = {m}) \<or> obs n (PDG_BS S) = {}" 

@@ -1,4 +1,4 @@
-section{* Initial Value Problems *}
+ section{* Initial Value Problems *}
 theory Initial_Value_Problem
 imports "../ODE_Auxiliarities"
 begin
@@ -369,7 +369,7 @@ proof -
   from T1_subset assms have "t \<in> T" by auto
   from connection_eq_solution[OF `t \<in> T`] i1.interval assms
   show ?thesis
-    by (simp add: connection_def split: split_if_asm)
+    by (simp add: connection_def split: if_split_asm)
 qed
 
 lemma solution2_eq_solution:
@@ -379,7 +379,7 @@ proof -
   from T2_subset assms have "t \<in> T" by auto
   from connection_eq_solution[OF `t \<in> T`] i2.interval assms conn_t conn_x i2.solution_t0
   show ?thesis
-    by (simp add: connection_def split: split_if_asm)
+    by (simp add: connection_def split: if_split_asm)
 qed
 
 end
@@ -448,7 +448,7 @@ lemma const_in_subspace: "(\<lambda>_. x0) \<in> (T \<rightarrow> X) \<inter> bc
 lemma closed_iter_space: "closed iter_space"
 proof -
   have "(T \<rightarrow> X) \<inter> bcontfun \<inter> {x. x t0 = x0} = Pi T (\<lambda>i. if i = t0 then {x0} else X) \<inter> bcontfun"
-    using iv_defined by (auto simp: Pi_iff split: split_if_asm)
+    using iv_defined by (auto simp: Pi_iff split: if_split_asm)
   thus ?thesis using closed by (auto simp add: iter_space_def intro!: closed_Pi_bcontfun)
 qed
 
@@ -546,7 +546,7 @@ proof (rule lipschitzI)
       also have "... \<le> integral {t0..t} (\<lambda>t. L * norm (y t - z t))"
         using y_cont z_cont lipschitz t_bounds interval y_defined z_defined
         by (auto intro!: integral_le continuous_intros
-          simp add: dist_norm lipschitz_def Pi_iff)
+          simp add: dist_norm lipschitz_def Pi_iff simp del: integral_mult_right)
       also have "... \<le> integral {t0..t} (\<lambda>t. L *
         norm (Abs_bcontfun y - Abs_bcontfun  z))"
         using norm_bounded[of "Abs_bcontfun y - Abs_bcontfun z"]
@@ -895,10 +895,9 @@ next
       assume "\<not>{s \<in> {t0..t}. norm (x s - x t0) \<in> {b..}} \<subseteq> {t}"
       hence notempty: "{s \<in> {t0..t}. norm (x s - x t0) \<in> {b..}} \<noteq> {}"
         and not_max: "{s \<in> {t0..t}. norm (x s - x t0) \<in> {b..}} \<noteq> {t}" by auto
-      from distance_attains_inf[OF closed notempty, of t0]
       obtain s where s_bound: "s \<in> {t0..t}" and exceeds: "norm (x s - x t0) \<in> {b..}"
         and min: "\<forall>t2\<in>{t0..t}. norm (x t2 - x t0) \<in> {b..} \<longrightarrow> dist t0 s \<le> dist t0 t2"
-        by blast
+        by (blast intro: distance_attains_inf[OF closed notempty, of t0])
       hence "s \<le> t" by simp
       have lt: "t0 < s"
         using s_bound exceeds min

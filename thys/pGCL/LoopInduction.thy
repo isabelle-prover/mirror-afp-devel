@@ -769,7 +769,7 @@ proof(rule bd_ctsI)
                 Sup (range (\<lambda>(i, j). iterates body G i (M j) s))"
       by(rule cSup_upper, auto intro:iB)
     thus "?X s \<le> ?Y s"
-      by(intro cSup_least, blast, clarify, simp del:Sup_image_eq, blast intro:cSup_least)
+      by(intro cSup_least, blast, clarify, simp, blast intro:cSup_least)
   qed
   also have "... = (\<lambda>s. Sup (range (\<lambda>j .Sup (range (\<lambda>i. iterates body G i (M j) s)))))"
     (is "?X = ?Y")
@@ -779,7 +779,7 @@ proof(rule bd_ctsI)
                 Sup (range (\<lambda>(i, j). iterates body G i (M j) s))"
       by(rule cSup_upper, auto intro:iB)
     thus "?Y s \<le> ?X s"
-      by(intro cSup_least, blast, clarify, simp del:Sup_image_eq, blast intro:cSup_least)
+      by(intro cSup_least, blast, clarify, simp, blast intro:cSup_least)
     show "?X s \<le> ?Y s"
     proof(rule cSup_least, blast, clarify)
       fix i j::nat
@@ -806,7 +806,7 @@ proof(rule bd_ctsI)
         hence "(\<lambda>s. Sup (range (\<lambda>i. iterates body G i (M j) s))) \<in>
               range ((\<lambda>P s. Sup {f s |f.
                            \<exists>t. f = t P \<and> t \<in> range (iterates body G)}) \<circ> M)"
-          by(simp add:o_def)
+          by (simp add: o_def cong del: strong_SUP_cong)
       }
       ultimately show "x \<in> ?Y s" by(auto)
     next
@@ -832,7 +832,7 @@ proof(rule bd_ctsI)
     qed
     hence "(\<lambda>s. Sup (range (\<lambda>j .Sup (range (\<lambda>i. iterates body G i (M j) s))))) =
           Sup_exp (range (Sup_trans (range (iterates body G)) o M))"
-      by(simp add:Sup_exp_def Sup_trans_def)
+      by (simp add: Sup_exp_def Sup_trans_def cong del: strong_SUP_cong)
   }
   also have "Sup_exp (range (Sup_trans (range (iterates body G)) o M)) =
              Sup_exp (range (wp do G \<longrightarrow> body od o M))"

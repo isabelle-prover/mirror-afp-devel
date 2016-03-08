@@ -235,7 +235,7 @@ by (auto simp add:neq_Nil_conv)
    contained in the extended multisets *)
 lemma extendID:
 assumes "extend S (\<LM> At i xs \<RM> \<Rightarrow>* \<LM> At i xs \<RM>) = (\<Gamma> \<Rightarrow>* \<Delta>)"
-shows "At i xs :# \<Gamma> \<and> At i xs :# \<Delta>"
+shows "At i xs \<in># \<Gamma> \<and> At i xs \<in># \<Delta>"
 using assms
 proof-
   from assms have "\<exists> \<Gamma>' \<Delta>'. \<Gamma> = \<Gamma>' \<oplus> At i xs \<and> \<Delta> = \<Delta>' \<oplus> At i xs" 
@@ -247,7 +247,7 @@ qed
 
 lemma extendFalsum:
 assumes "extend S (\<LM> ff \<RM> \<Rightarrow>* \<Empt>) = (\<Gamma> \<Rightarrow>* \<Delta>)"
-shows "ff :# \<Gamma>"
+shows "ff \<in># \<Gamma>"
 proof-
   from assms have "\<exists> \<Gamma>'. \<Gamma> = \<Gamma>' \<oplus> ff" 
      using extend_def[where forms=S and seq="\<LM> ff \<RM> \<Rightarrow>* \<Empt>"]
@@ -260,7 +260,7 @@ qed
 (* Lemma that says if a propositional variable is in both the antecedent and succedent of a sequent,
    then it is derivable from idscRules *)
 lemma containID:
-assumes a:"At i xs :# \<Gamma> \<and> At i xs :# \<Delta>"
+assumes a:"At i xs \<in># \<Gamma> \<and> At i xs \<in># \<Delta>"
     and b:"Ax \<subseteq> R"
 shows "(\<Gamma> \<Rightarrow>* \<Delta>,0) \<in> derivable R*"
 proof-
@@ -277,7 +277,7 @@ then show ?thesis using derivable.base[where R="R*" and C="\<Gamma> \<Rightarrow
 qed
 
 lemma containFalsum:
-assumes a: "ff :# \<Gamma>"
+assumes a: "ff \<in># \<Gamma>"
    and  b: "Ax \<subseteq> R"
 shows "(\<Gamma> \<Rightarrow>* \<Delta>,0) \<in> derivable R*"
 proof-
@@ -663,13 +663,13 @@ then have "\<exists> A. c = (\<Empt> \<Rightarrow>* \<LM>A\<RM>) \<or> c = (\<LM
        and nprovRuleCharacterise[where Ps=ps and C=c]
        and provRuleCharacterise[where Ps=ps and C=c] by auto
 then have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)" using `c = (G \<Rightarrow>* H)` by auto
-ultimately have "F \<nabla> [x].A :# \<Psi>"
+ultimately have "F \<nabla> [x].A \<in># \<Psi>"
     proof-
     have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)" by fact
     moreover
     {assume "H = \<Empt>"
      then have "\<Psi> = \<Delta> \<oplus> F \<nabla> [x].A" using `\<Psi> + H = \<Delta> \<oplus> F \<nabla> [x].A` by auto
-     then have "F \<nabla> [x].A :# \<Psi>" by auto
+     then have "F \<nabla> [x].A \<in># \<Psi>" by auto
     }
     moreover
     {assume "\<exists> A. H = \<LM>A\<RM>"
@@ -679,9 +679,9 @@ ultimately have "F \<nabla> [x].A :# \<Psi>"
      then have "set_mset \<Psi> \<union> {T} = set_mset \<Delta> \<union> {F \<nabla> [x].A}" by auto
      moreover from `H = \<LM>T\<RM>` and `\<LM>F \<nabla> [x].A\<RM> \<noteq> H` have "F \<nabla> [x].A \<noteq> T" by auto
      ultimately have "F \<nabla> [x].A \<in> set_mset \<Psi>" by auto
-     then have "F \<nabla> [x].A :# \<Psi>" by auto
+     then have "F \<nabla> [x].A \<in># \<Psi>" by auto
     }
-    ultimately show "F \<nabla> [x].A :# \<Psi>" by blast
+    ultimately show "F \<nabla> [x].A \<in># \<Psi>" by blast
     qed
 then have "\<exists> \<Psi>1. \<Psi> = \<Psi>1 \<oplus> F \<nabla> [x].A" 
      by (rule_tac x="\<Psi> \<ominus> F \<nabla> [x].A" in exI) (auto simp add:multiset_eq_iff)
@@ -689,8 +689,8 @@ then obtain \<Psi>1 where "S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> F \<nabla
 have "Ps = map (extend S) ps" 
      using `extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> F \<nabla> [x].A)` and extendRule_def and `r = (ps,c)` by auto
 then have "\<forall> p \<in> set Ps. (\<exists> p'. p = extend S p')" using ex_map_conv[where ys=Ps and f="extend S"] by auto
-then have "\<forall> p \<in> set Ps. (F \<nabla> [x].A :# succ p)" 
-     using `F \<nabla> [x].A :# \<Psi>` and `S = (\<Phi> \<Rightarrow>* \<Psi>)` apply (auto simp add:Ball_def) 
+then have "\<forall> p \<in> set Ps. (F \<nabla> [x].A \<in># succ p)" 
+     using `F \<nabla> [x].A \<in># \<Psi>` and `S = (\<Phi> \<Rightarrow>* \<Psi>)` apply (auto simp add:Ball_def) 
      by (drule_tac x=xa in spec) (auto simp add:extend_def)
 then have a1:"\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> F \<nabla> [x].A)" using characteriseSeq
      apply (auto simp add:Ball_def) apply (drule_tac x=xa in spec,simp) 
@@ -863,13 +863,13 @@ then have "\<exists> A. c = (\<Empt> \<Rightarrow>* \<LM>A\<RM>) \<or> c = (\<LM
        and nprovRuleCharacterise[where Ps=ps and C=c]
        and provRuleCharacterise[where Ps=ps and C=c] by auto
 then have "G = \<Empt> \<or> (\<exists> A. G = \<LM>A\<RM>)" using `c = (G \<Rightarrow>* H)` by auto
-ultimately have "F \<nabla> [x].A :# \<Phi>"
+ultimately have "F \<nabla> [x].A \<in># \<Phi>"
     proof-
     have "G = \<Empt> \<or> (\<exists> A. G = \<LM>A\<RM>)" by fact
     moreover
     {assume "G = \<Empt>"
      then have "\<Phi> = \<Gamma> \<oplus> F \<nabla> [x].A" using `\<Phi> + G = \<Gamma> \<oplus> F \<nabla> [x].A` by auto
-     then have "F \<nabla> [x].A :# \<Phi>" by auto
+     then have "F \<nabla> [x].A \<in># \<Phi>" by auto
     }
     moreover
     {assume "\<exists> A. G = \<LM>A\<RM>"
@@ -879,9 +879,9 @@ ultimately have "F \<nabla> [x].A :# \<Phi>"
      then have "set_mset \<Phi> \<union> {T} = set_mset \<Gamma> \<union> {F \<nabla> [x].A}" by auto
      moreover from `G = \<LM>T\<RM>` and `\<LM>F \<nabla> [x].A\<RM> \<noteq> G` have "F \<nabla> [x].A \<noteq> T" by auto
      ultimately have "F \<nabla> [x].A \<in> set_mset \<Phi>" by auto
-     then have "F \<nabla> [x].A :# \<Phi>" by auto
+     then have "F \<nabla> [x].A \<in># \<Phi>" by auto
     }
-    ultimately show "F \<nabla> [x].A :# \<Phi>" by blast
+    ultimately show "F \<nabla> [x].A \<in># \<Phi>" by blast
     qed
 then have "\<exists> \<Phi>1. \<Phi> = \<Phi>1 \<oplus> F \<nabla> [x].A" 
      by (rule_tac x="\<Phi> \<ominus> F \<nabla> [x].A" in exI) (auto simp add:multiset_eq_iff)
@@ -889,8 +889,8 @@ then obtain \<Phi>1 where "S = (\<Phi>1 \<oplus> F \<nabla> [x].A \<Rightarrow>*
 have "Ps = map (extend S) ps" 
      using `extendRule S r = (Ps,\<Gamma> \<oplus> F \<nabla> [x].A \<Rightarrow>* \<Delta>)` and extendRule_def and `r = (ps,c)` by auto
 then have "\<forall> p \<in> set Ps. (\<exists> p'. p = extend S p')" using ex_map_conv[where ys=Ps and f="extend S"] by auto
-then have "\<forall> p \<in> set Ps. (F \<nabla> [x].A :# antec p)" 
-     using `F \<nabla> [x].A :# \<Phi>` and `S = (\<Phi> \<Rightarrow>* \<Psi>)` apply (auto simp add:Ball_def) 
+then have "\<forall> p \<in> set Ps. (F \<nabla> [x].A \<in># antec p)" 
+     using `F \<nabla> [x].A \<in># \<Phi>` and `S = (\<Phi> \<Rightarrow>* \<Psi>)` apply (auto simp add:Ball_def) 
      by (drule_tac x=xa in spec) (auto simp add:extend_def)
 then have a1:"\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' \<oplus> F \<nabla> [x].A \<Rightarrow>* \<Psi>')" using characteriseSeq
      apply (auto simp add:Ball_def) apply (drule_tac x=xa in spec,simp) 
@@ -1037,9 +1037,9 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
             with `extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> F \<nabla> [x].A)`
                have "extend S (\<LM> At i xs \<RM> \<Rightarrow>* \<LM> At i xs \<RM>) = (\<Gamma> \<Rightarrow>* \<Delta> \<oplus> F \<nabla> [x].A)"
                using extendRule_def[where R="([],\<LM>At i xs\<RM> \<Rightarrow>* \<LM>At i xs\<RM>)" and forms=S] by auto
-            then have "At i xs :# \<Gamma> \<and> At i xs :# \<Delta>" 
+            then have "At i xs \<in># \<Gamma> \<and> At i xs \<in># \<Delta>" 
                  using extendID[where S=S and i=i and xs=xs and \<Gamma>=\<Gamma> and \<Delta>="\<Delta> \<oplus> F \<nabla> [x].A"] by auto
-            then have "At i xs :# \<Gamma> + \<Gamma>' \<and> At i xs :# \<Delta> + \<Delta>'" by auto
+            then have "At i xs \<in># \<Gamma> + \<Gamma>' \<and> At i xs \<in># \<Delta> + \<Delta>'" by auto
             then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable R*" using rules
                  and containID[where \<Gamma>="\<Gamma> + \<Gamma>'" and i=i and \<Delta>="\<Delta> + \<Delta>'" and R=R] by auto
            }
@@ -1048,9 +1048,9 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
             with `extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> F \<nabla> [x].A)`
                have "extend S (\<LM> ff \<RM> \<Rightarrow>* \<Empt>) = (\<Gamma> \<Rightarrow>* \<Delta> \<oplus> F \<nabla> [x].A)"
                using extendRule_def[where R="([],\<LM>ff\<RM> \<Rightarrow>* \<Empt>)" and forms=S] by auto
-            then have "ff :# \<Gamma>" 
+            then have "ff \<in># \<Gamma>" 
                  using extendFalsum[where S=S and \<Gamma>=\<Gamma> and \<Delta>="\<Delta> \<oplus> F \<nabla> [x].A"] by auto
-            then have "ff :# \<Gamma> + \<Gamma>'" by auto
+            then have "ff \<in># \<Gamma> + \<Gamma>'" by auto
             then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable R*" using rules
                  and containFalsum[where \<Gamma>="\<Gamma> + \<Gamma>'" and \<Delta>="\<Delta> + \<Delta>'" and R=R] by auto
            }
@@ -1247,9 +1247,9 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
             with `extendRule S r = ([],\<Gamma> \<oplus> F \<nabla> [x].A \<Rightarrow>* \<Delta>)`
                have "extend S (\<LM> At i xs \<RM> \<Rightarrow>* \<LM> At i xs \<RM>) = (\<Gamma> \<oplus> F \<nabla> [x].A \<Rightarrow>* \<Delta>)"
                using extendRule_def[where R="([],\<LM>At i xs\<RM> \<Rightarrow>* \<LM>At i xs\<RM>)" and forms=S] by auto
-            then have "At i xs :# \<Gamma> \<and> At i xs :# \<Delta>" 
+            then have "At i xs \<in># \<Gamma> \<and> At i xs \<in># \<Delta>" 
                  using extendID[where S=S and i=i and xs=xs and \<Gamma>="\<Gamma>\<oplus> F \<nabla> [x].A" and \<Delta>=\<Delta>] by auto
-            then have "At i xs :# \<Gamma> + \<Gamma>' \<and> At i xs :# \<Delta> + \<Delta>'" by auto
+            then have "At i xs \<in># \<Gamma> + \<Gamma>' \<and> At i xs \<in># \<Delta> + \<Delta>'" by auto
             then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable R*" using rules
                  and containID[where \<Gamma>="\<Gamma> + \<Gamma>'" and i=i and \<Delta>="\<Delta> + \<Delta>'" and R=R] by auto
            }
@@ -1258,9 +1258,9 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
             with `extendRule S r = ([],\<Gamma> \<oplus> F \<nabla> [x].A \<Rightarrow>* \<Delta>)`
                have "extend S (\<LM> ff \<RM> \<Rightarrow>* \<Empt>) = (\<Gamma> \<oplus> F \<nabla> [x].A \<Rightarrow>* \<Delta>)"
                using extendRule_def[where R="([],\<LM>ff\<RM> \<Rightarrow>* \<Empt>)" and forms=S] by auto
-            then have "ff :# \<Gamma>" 
+            then have "ff \<in># \<Gamma>" 
                  using extendFalsum[where S=S and \<Gamma>="\<Gamma>\<oplus>F \<nabla> [x].A" and \<Delta>=\<Delta>] by auto
-            then have "ff :# \<Gamma> + \<Gamma>'" by auto
+            then have "ff \<in># \<Gamma> + \<Gamma>'" by auto
             then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable R*" using rules
                  and containFalsum[where \<Gamma>="\<Gamma> + \<Gamma>'" and \<Delta>="\<Delta> + \<Delta>'" and R=R] by auto
            }

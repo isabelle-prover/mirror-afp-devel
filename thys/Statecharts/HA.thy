@@ -716,8 +716,7 @@ apply (erule_tac x="{s,t,u}" in ballE)
 prefer 2
 apply simp
 apply (unfold HAStates_def)
-apply safe
-apply fast+
+apply auto
 done
 
 lemma Chi_range_disjoint:
@@ -1016,7 +1015,7 @@ lemma ChiPlus_subset_States:
   "ChiPlus a `` {t} \<subseteq>  UNION (SAs a) States"
 apply (cut_tac A=a in ChiPlus_HAStates) 
 apply (unfold HAStates_def)
-apply fast
+apply auto
 done
 
 lemma finite_ChiPlus [simp]: 
@@ -1117,9 +1116,7 @@ prefer 2
 apply (simp add: ChiPlus_subset_States)
 apply (cut_tac A=A in ChiPlus_HAStates) 
 apply (unfold HAStates_def)
-apply fast
-apply safe
-apply fast
+apply auto
 apply (frule ChiPlus_ChiRel_NoCycle_2)
 apply fast
 apply (simp add:ChiRel_CompFun)
@@ -1295,7 +1292,7 @@ prefer 2
 apply (simp add: ChiPlus_subset_States)
 apply (cut_tac A=A in ChiPlus_HAStates) 
 apply (unfold HAStates_def)
-apply fast
+apply auto[1]
 apply safe
 apply fast
 apply (frule SAStates_ChiPlus_ChiRel_NoCycle_2)
@@ -1304,7 +1301,8 @@ apply (frule HAStates_SA_mem)
 apply fast
 apply (simp only:ChiRel_CompFun)
 apply (frule SAStates_ChiPlus_ChiRel_NoCycle_1)
-apply fast+
+apply auto[3]
+apply fast
 apply (simp add:ChiRel_CompFun)
 apply (frule SAStates_ChiPlus_ChiRel_NoCycle_3)
 apply fast

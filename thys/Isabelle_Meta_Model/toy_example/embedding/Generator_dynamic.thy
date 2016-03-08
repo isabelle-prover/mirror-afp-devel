@@ -388,7 +388,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
             , List.map (fn (n, l) => ( ( (To_binding "", To_sbinding n)
                                        , List.map (fn s => (To_binding "", of_semi__typ s)) l)
                                      , NoSyn)) l)
-          , (To_binding "", To_binding ""))
+          , (To_binding "", To_binding "", To_binding ""))
         , [])]))
 | Theory_type_synonym (Type_synonym (n, v, l)) => in_theory
    (fn thy =>
@@ -550,7 +550,7 @@ fun all_meta aux ret = let open META open META_overload in fn
                                      |> Local_Theory.new_group
                                      |> f
                                      |> Local_Theory.reset_group
-                                     |> Local_Theory.restore))) l
+                                     |> Local_Theory.reset))) l
        |> Local_Theory.exit_global)
 | META_boot_generation_syntax _ => ret o I
 | META_boot_setup_env _ => ret o I
@@ -1105,7 +1105,7 @@ end
 subsection\<open>Factoring All Meta Commands Together\<close>
 
 setup\<open>ML_Antiquotation.inline @{binding mk_string} (Scan.succeed
-"(fn ctxt => fn x => Pretty.string_of (Pretty.from_ML (pretty_ml (PolyML.prettyRepresentation (x, Config.get ctxt ML_Options.print_depth)))))")
+"(fn ctxt => fn x => Pretty.string_of (Pretty.from_ML (ML_Pretty.from_polyml (PolyML.prettyRepresentation (x, Config.get ctxt ML_Options.print_depth)))))")
 \<close>
 
 ML\<open>

@@ -359,7 +359,7 @@ lemma check_exec_instr_ok:
   shows "jvm_ta_state'_ok P tas"
 proof -
   note [simp] = drop_Suc drop_tl split_beta jvm_thread_action'_ok_def has_method_def
-  note [split] = split_if_asm sum.split
+  note [split] = if_split_asm sum.split
   from assms show ?thesis
   proof(cases i)
     case Return
@@ -396,7 +396,7 @@ proof -
   note [simp] =
     drop_Suc drop_tl split_beta jvm_thread_action'_ok_def jvm_thread_action'_of_jvm_thread_action_def has_method_def
     ta_upd_simps map_tl
-  note [split] = split_if_asm sum.split
+  note [split] = if_split_asm sum.split
   from assms show ?thesis
   proof(cases i)
     case Return thus ?thesis using assms by(cases frs) auto
@@ -431,7 +431,7 @@ proof -
   note [simp] =
     drop_Suc drop_tl split_beta jvm_thread_action'_ok_def jvm_thread_action'_of_jvm_thread_action_def has_method_def
     ta_upd_simps map_tl o_def
-  note [split] = split_if_asm sum.split
+  note [split] = if_split_asm sum.split
   from assms have "jvm_ta_state_of_jvm_ta_state' tas \<in> execute.exec_instr i P t h stk loc C M pc (map frame_of_frame' frs)"
   proof(cases i)
     case Invoke thus ?thesis using assms
@@ -536,7 +536,7 @@ proof -
   from wt obtain wf_md where wf: "wf_prog wf_md P" by(blast dest: wt_jvm_progD)
   from execute.no_type_error[OF wt correct]
   have check: "execute.check P (jvm_state_of_jvm_state' s)"
-    by(simp add: execute.exec_d_def split: split_if_asm)
+    by(simp add: execute.exec_d_def split: if_split_asm)
   with wf ok show eq: ?thesis1 by(rule exec_step_conv)
 
   { fix tas

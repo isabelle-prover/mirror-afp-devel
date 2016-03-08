@@ -9,7 +9,7 @@ subsection \<open>Preliminary lemmas\<close>
 theory Liouville_Numbers_Misc
 imports
   Complex_Main
-  "~~/src/HOL/Library/Poly_Deriv"
+  "~~/src/HOL/Library/Polynomial"
 begin
 
 text \<open>

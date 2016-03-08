@@ -25,7 +25,7 @@ lemma has_locksE:
      \<And>n'. \<lbrakk> l = \<lfloor>(t, n')\<rfloor>; Suc n' = n \<rbrakk> \<Longrightarrow> P;
      \<And>t' n'. \<lbrakk> l = \<lfloor>(t', n')\<rfloor>; t' \<noteq> t; n = 0 \<rbrakk> \<Longrightarrow> P \<rbrakk>
   \<Longrightarrow> P"
-by(auto simp add: has_locks_iff split: split_if_asm prod.split_asm)
+by(auto simp add: has_locks_iff split: if_split_asm prod.split_asm)
 
 
 inductive may_lock :: "'t lock \<Rightarrow> 't \<Rightarrow> bool" where
@@ -67,7 +67,7 @@ by(cases l, auto intro: may_lockI)
 
 lemma has_lock_may_lock_t_eq:
   "\<lbrakk> has_lock l t; may_lock l t' \<rbrakk> \<Longrightarrow> t = t'"
-by(auto elim!: may_lockE split: split_if_asm)
+by(auto elim!: may_lockE split: if_split_asm)
 
 lemma has_locks_has_locks_t_eq: 
   "\<lbrakk>has_locks l t = Suc n; has_locks l t' = Suc n'\<rbrakk> \<Longrightarrow> t = t'"
@@ -124,7 +124,7 @@ by(auto elim: may_lockE)
 
 lemma has_locks_release_all_conv [simp]:
   "has_locks (release_all l t) t = 0"
-by(cases l, auto split: split_if_asm)
+by(cases l, auto split: if_split_asm)
 
 lemma may_lock_lock_lock_conv [simp]: "may_lock (lock_lock l t) t = may_lock l t"
 by(cases l, auto elim!: may_lock.cases intro: may_lock.intros)
@@ -135,11 +135,11 @@ by(induct n arbitrary: l, auto)
 
 lemma may_lock_unlock_lock_conv [simp]:
   "has_lock l t \<Longrightarrow> may_lock (unlock_lock l) t = may_lock l t"
-by(cases l)(auto split: split_if_asm nat.splits elim!: may_lock.cases intro: may_lock.intros)
+by(cases l)(auto split: if_split_asm nat.splits elim!: may_lock.cases intro: may_lock.intros)
 
 lemma may_lock_release_all_conv [simp]:
   "may_lock (release_all l t) t = may_lock l t"
-by(cases l, auto split: split_if_asm intro!: may_lockI elim: may_lockE)
+by(cases l, auto split: if_split_asm intro!: may_lockI elim: may_lockE)
 
 lemma may_lock_t_may_lock_unlock_lock_t: 
   "may_lock l t \<Longrightarrow> may_lock (unlock_lock l) t"
@@ -156,7 +156,7 @@ by(cases l)(auto split: nat.split)
 
 lemma has_lock_lock_lock_unlock_lock_id [simp]:
   "has_lock l t \<Longrightarrow> lock_lock (unlock_lock l) t = l"
-by(cases l)(auto split: split_if_asm nat.split)
+by(cases l)(auto split: if_split_asm nat.split)
 
 lemma may_lock_unlock_lock_lock_lock_id [simp]:
   "may_lock l t \<Longrightarrow> unlock_lock (lock_lock l t) = l"
@@ -202,13 +202,13 @@ next
 next
   case ReleaseAcquire
   with ul show ?thesis
-    by(cases l, auto split: split_if_asm)
+    by(cases l, auto split: if_split_asm)
 qed
 
 
 lemma has_lock_upd_lock_implies_has_lock:
   "\<lbrakk> has_lock (upd_lock l t L) t'; t \<noteq> t' \<rbrakk> \<Longrightarrow> has_lock l t'"
-by(cases l L rule: option.exhaust[case_product lock_action.exhaust])(auto split: split_if_asm nat.split_asm)
+by(cases l L rule: option.exhaust[case_product lock_action.exhaust])(auto split: if_split_asm nat.split_asm)
 
 lemma has_lock_upd_locks_implies_has_lock:
   "\<lbrakk> has_lock (upd_locks l t Ls) t'; t \<noteq> t' \<rbrakk> \<Longrightarrow> has_lock l t'"
@@ -256,7 +256,7 @@ by(cases l)(auto elim: may_lock.cases)
 
 lemma has_locks_unlock_lock_conv' [simp]:
   "\<lbrakk> has_lock l t'; t \<noteq> t' \<rbrakk> \<Longrightarrow> has_locks (unlock_lock l) t = has_locks l t"
-by(cases l)(auto split: split_if_asm nat.split)
+by(cases l)(auto split: if_split_asm nat.split)
 
 lemma has_locks_release_all_conv' [simp]:
   "t \<noteq> t' \<Longrightarrow> has_locks (release_all l t') t = has_locks l t"
@@ -277,7 +277,7 @@ by(induct l t' Ls rule: upd_locks.induct) simp_all
 lemma has_lock_acquire_locks_implies_has_lock:
   "\<lbrakk> has_lock (acquire_locks l t n) t'; t \<noteq> t' \<rbrakk> \<Longrightarrow> has_lock l t'"
  unfolding acquire_locks_conv
- by(cases n)(auto split: split_if_asm)
+ by(cases n)(auto split: if_split_asm)
 
 lemma has_lock_has_lock_acquire_locks:
   "has_lock l T \<Longrightarrow> has_lock (acquire_locks l t n) T"

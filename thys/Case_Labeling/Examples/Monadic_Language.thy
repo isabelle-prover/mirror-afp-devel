@@ -105,7 +105,7 @@ end
 
 lemma dvd_div:
   fixes a b c :: int assumes "a dvd b" "c dvd b" "gcd a c = 1" shows "a dvd (b div c)"
-  by (metis assms coprime_dvd_mult_iff_int dvd_mult_div_cancel mult.commute)
+  by (metis assms coprime_dvd_mult_iff dvd_mult_div_cancel mult.commute)
 
 lemma divides: "
 valid

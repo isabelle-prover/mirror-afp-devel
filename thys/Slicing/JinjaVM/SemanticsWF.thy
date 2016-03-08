@@ -520,7 +520,7 @@ proof -
                   simp del: find_handler_for.simps exec.simps app\<^sub>i.simps fun_upd_apply)
           apply (rule_tac cs="(C,M,pc)#cs" in find_handler_exec_correct)
             apply fastforce
-           apply (fastforce simp: split_beta split: split_if_asm)
+           apply (fastforce simp: split_beta split: if_split_asm)
           apply fastforce
           done
       next
@@ -562,14 +562,14 @@ proof -
         with trg_state_correct Invoke
         have [simp]: "stkLength P C' M' 0 = 0"
           by (auto simp: split_beta correct_state_def
-                  split: split_if_asm)
+                  split: if_split_asm)
         from trg_state_correct Invoke `length ST > n`
         have "locLength P C' M' 0 =
           Suc n + fst(snd(snd(snd(snd(method (P\<^bsub>wf\<^esub>) 
                    (cname_of h (the_Addr (stk (length cs, length ST - Suc n)))) M')))))"
           by (auto simp: split_beta  (* nth_stks *) correct_state_def
                   dest!: list_all2_lengthD
-                  split: split_if_asm)
+                  split: if_split_asm)
         with Invoke state_correct trg_state_correct `length ST > n`
         have "JVMExec.exec  (P\<^bsub>wf\<^esub>, state_to_jvm_state P ((C, M, pc) # cs) s)
             =
@@ -694,7 +694,7 @@ proof -
     show ?thesis
       apply auto
       apply (erule JVM_CFG.cases, simp_all)
-       by (auto simp: bv_conform_def split: split_if_asm)
+       by (auto simp: bv_conform_def split: if_split_asm)
   next
     case Return
     with ve obtain Ts' T' mxs' mxl' is' xt'
@@ -1057,7 +1057,7 @@ lemma find_handler_last_cs_eqD:
   last frs = (stk,loc,C,M,pc);
   last frs' = (stk',loc',C',M',pc') \<rbrakk>
   \<Longrightarrow> C = C' \<and> M = M'"
-  by (induct frs, auto split: split_if_asm)
+  by (induct frs, auto split: if_split_asm)
 
 
 lemma exec_last_frs_eq_class:
@@ -1067,7 +1067,7 @@ lemma exec_last_frs_eq_class:
   frs \<noteq> [];
   frs' \<noteq> [] \<rbrakk>
   \<Longrightarrow> C = C'"
-apply (cases frs, auto split: split_if_asm)
+apply (cases frs, auto split: if_split_asm)
  apply (cases "instrs_of P\<^bsub>wf\<^esub> C M ! pc", auto simp: split_beta)
  apply (case_tac "instrs_of P\<^bsub>wf\<^esub> ab ac ! b", auto simp: split_beta)
  apply (case_tac list, auto)
@@ -1084,7 +1084,7 @@ lemma exec_last_frs_eq_method:
   frs \<noteq> [];
   frs' \<noteq> [] \<rbrakk>
   \<Longrightarrow> M = M'"
-apply (cases frs, auto split: split_if_asm)
+apply (cases frs, auto split: if_split_asm)
  apply (cases "instrs_of P\<^bsub>wf\<^esub> C M ! pc", auto simp: split_beta)
  apply (case_tac "instrs_of P\<^bsub>wf\<^esub> ab ac ! b", auto simp: split_beta)
  apply (case_tac list, auto)
@@ -1693,7 +1693,7 @@ proof(unfold_locales)
           from jvm_exec c s True Putfield ST wt
           have "update_loc loc frs' = loc"
             by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc],
-                 auto simp: split_beta hd_tl_stks split_if_eq1)
+                 auto simp: split_beta hd_tl_stks if_split_eq1)
           with sem_step s s' c prog jvm_exec
           have loc':"loc' = loc"
             by (clarsimp elim!: sem.cases)
@@ -1837,7 +1837,7 @@ proof(unfold_locales)
           from jvm_exec c s True Checkcast ST wt
           have loc'': "update_loc loc frs' = loc"
             by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc],
-                 auto simp: split_beta hd_tl_stks split_if_eq1)
+                 auto simp: split_beta hd_tl_stks if_split_eq1)
           from c Cons s s' sem_step jvm_exec prog       
           have "stk' = update_stk stk frs'"
             and [simp]: "framestack_to_callstack frs' = (C', M', pc')#cs'"
@@ -1924,7 +1924,7 @@ proof(unfold_locales)
       with jvm_exec c s Invoke wt
       have "h = h'"
         by (auto dest: find_handler_heap_eqD
-                 simp: split_beta (* nth_stks *) nth_Cons' split_if_eq1)
+                 simp: split_beta (* nth_stks *) nth_Cons' if_split_eq1)
       show ?thesis
       proof (cases "stk(length cs, stkLength P C M pc - Suc n') = Null")
         case True
@@ -1932,12 +1932,12 @@ proof(unfold_locales)
         have c': "c' = find_handler_for P NullPointer c"
           apply (auto elim!: sem.cases
                       simp: (* nth_stks *) split_beta nth_Cons' ST
-                      split: split_if_asm)
+                      split: if_split_asm)
            by (auto dest!: find_handler_find_handler_forD)
         with jvm_exec True Invoke wt ST prealloc
         have "framestack_to_callstack frs' = c'"
           by (auto dest!: find_handler_find_handler_forD
-                    simp: split_beta nth_Cons' (* nth_stks *) split_if_eq1)
+                    simp: split_beta nth_Cons' (* nth_stks *) if_split_eq1)
         with Invoke c' v_cs v_cs_f2c_frs'
         have v_pred_edge: "valid_edge prog ((_ (C,M,pc)#cs,None _),
           (\<lambda>(h,stk,loc). stk(length cs, stkLength P C M pc - Suc n') = Null )\<^sub>\<surd>,
@@ -1970,7 +1970,7 @@ proof(unfold_locales)
           have "transfers (JVM_CFG_Interpret.kinds [?e1,?e2]) s = s'"
             by (auto dest!: find_handler_find_handler_forD
                       simp: split_beta JVM_CFG_Interpret.kinds_def
-                            (* nth_stks *) nth_Cons' split_if_eq1 framestack_to_callstack_def)
+                            (* nth_stks *) nth_Cons' if_split_eq1 framestack_to_callstack_def)
           moreover from s True
           have "preds (JVM_CFG_Interpret.kinds [?e1,?e2]) s"
             by (simp add: JVM_CFG_Interpret.kinds_def)
@@ -1982,7 +1982,7 @@ proof(unfold_locales)
           from jvm_exec c s True Invoke ST wt
           have loc'': "update_loc loc frs' = loc"
             by -(rule find_handler_loc_fun_eq' [of P _ h "(C,M,pc)#cs" stk loc],
-                 auto simp: split_beta split_if_eq1 nth_Cons' (* nth_stks *))
+                 auto simp: split_beta if_split_eq1 nth_Cons' (* nth_stks *))
           from c Cons s s' sem_step jvm_exec prog       
           have "stk' = update_stk stk frs'"
             and [simp]: "framestack_to_callstack frs' = (C',M',pc')#cs'"
@@ -1997,7 +1997,7 @@ proof(unfold_locales)
             using c s Cons True prog Invoke ST wt trg_state_correct jvm_exec
             by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
               auto dest!: list_all2_lengthD
-                    simp: (* nth_stks *) nth_Cons' split_beta correct_state_def split_if_eq1)
+                    simp: (* nth_stks *) nth_Cons' split_beta correct_state_def if_split_eq1)
           from Cons Invoke c prog c' v_pred_edge v_cs_f2c_frs'
           have v_exec_edge:"valid_edge prog ((_ (C,M,pc)#cs,\<lfloor>(c',True)\<rfloor> _),
             \<Up>(\<lambda>(h,stk,loc).
@@ -2034,15 +2034,15 @@ proof(unfold_locales)
           apply -
           apply (drule_tac p="n'" in list_all2_nthD)
            apply simp
-          apply (auto simp: nth_Cons' split: split_if_asm)
+          apply (auto simp: nth_Cons' split: if_split_asm)
           apply hypsubst_thin
-          by (induct STn, auto simp: nth_Cons' split: split_if_asm)
+          by (induct STn, auto simp: nth_Cons' split: if_split_asm)
         with applicable ST Invoke sees_M
         obtain D' where D': "STs = Class D'"
           by (clarsimp simp: nth_append)
         from Invoke c s jvm_exec False wt ST D
         obtain loc'' where frs': "frs' = ([],loc'',D,M',0)#(snd(snd(state_to_jvm_state P c s)))"
-          by (auto simp: split_beta split_if_eq1 (* nth_stks *) nth_Cons' ST)
+          by (auto simp: split_beta if_split_eq1 (* nth_stks *) nth_Cons' ST)
         with trg_state_correct
         obtain Ts' T' mb' where D_sees_M': "(P\<^bsub>wf\<^esub>) \<turnstile> D sees M':Ts'\<rightarrow>T' = mb' in D"
           by (auto simp: correct_state_def)
@@ -2078,7 +2078,7 @@ proof(unfold_locales)
           "loc'' = stk (length cs, length ST - Suc n') #
                    rev (take n' (stks (length ST) (\<lambda>a. stk(length cs, a)))) @
                    replicate mxl arbitrary"
-          by (auto simp: split_beta (* nth_stks *) split_if_eq1 simp del: ST)
+          by (auto simp: split_beta (* nth_stks *) if_split_eq1 simp del: ST)
         with trg_state_correct frs' Invoke wt `length ST > n'`
         have locLength_trg:
           "locLength P D M' 0 = n' + Suc mxl"
@@ -2498,7 +2498,7 @@ proof(unfold_locales)
             using c s Cons True prog Throw ST wt trg_state_correct jvm_exec
             by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
               auto dest!: list_all2_lengthD
-                    simp: (* nth_stks *) nth_Cons' split_beta correct_state_def split_if_eq1)
+                    simp: (* nth_stks *) nth_Cons' split_beta correct_state_def if_split_eq1)
           from `(C',M',pc')#cs' = framestack_to_callstack frs'` Cons
           have "framestack_to_callstack frs' = c'"
             by simp
@@ -2605,7 +2605,7 @@ proof(unfold_locales)
             using c s Cons False prog Throw ST wt trg_state_correct jvm_exec
             by -(rule find_handler_stk_fun_eq' [of P _ h "(C,M,pc)#cs" _ loc h'],
               auto dest!: list_all2_lengthD
-                    simp: (* nth_stks *) nth_Cons' split_beta correct_state_def split_if_eq1)
+                    simp: (* nth_stks *) nth_Cons' split_beta correct_state_def if_split_eq1)
           from applicable False Throw ST sees_M
           have "is_refT ST1"
             by clarsimp

@@ -16,7 +16,7 @@ begin
 abbreviation
  "SomeFloor" ("(\<lfloor>_\<rfloor>)") where "\<lfloor>x\<rfloor> \<equiv> Some x"
 
-declare split_if_asm[split]
+declare if_split_asm[split]
 
 typedecl guest
 typedecl key

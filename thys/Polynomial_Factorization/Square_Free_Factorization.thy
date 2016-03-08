@@ -90,30 +90,19 @@ proof -
   from irreducible_dvd_mult[OF irred s] p irred show ?thesis by auto
 qed  
 
+(* TODO: Move *)
+lemma normalize_monic: "monic p \<Longrightarrow> normalize p = p"
+  by (simp add: normalize_poly_def)
 
-lemma poly_gcd_monic_factor: fixes p :: "'a poly"
-  assumes "monic p"
-  shows "gcd (p * q) (p * r) = p * gcd q r"
-proof (rule poly_gcd_unique[OF _ _ dvd_gcd_mult])
-  show "p * gcd q r dvd p * q" by simp
-  show "p * gcd q r dvd p * r" by simp
-  have p: "p \<noteq> 0" using assms by auto
-  let ?r = "(if p * q = 0 \<and> p * r = 0 then 0 else (1 :: 'a))"
-  let ?l = "coeff (p * gcd q r) (degree (p * gcd q r))"
-  show "?l = ?r"
-  proof (cases "q = 0 \<and> r = 0")
-    case False
-    hence "?r = 1" using p by auto
-    from p assms have "?l = 1" by (simp add: False monic_mult poly_gcd_monic)
-    thus ?thesis unfolding `?r = 1` by simp
-  qed auto
-qed
+lemma poly_gcd_monic_factor:
+  "monic p \<Longrightarrow>  gcd (p * q) (p * r) = p * gcd q r"
+  by (rule gcdI [symmetric]) (simp_all add: normalize_mult normalize_monic dvd_gcd_mult)
 end
 
 subsection \<open>Yun's factorization algorithm\<close>
 context 
   fixes type :: "'a :: field_char_0 poly itself"
-  and Gcd :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly"
+  and gcd :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly"
 begin
 
 partial_function (tailrec) yun_factorization_main :: 
@@ -124,11 +113,11 @@ partial_function (tailrec) yun_factorization_main ::
     else (
     let 
       dn = cn - pderiv bn;
-      an = Gcd bn dn
+      an = gcd bn dn
     in yun_factorization_main (bn div an) (dn div an) (Suc i) ((an,i) # sqr)))"
 
 definition square_free_monic_poly :: "'a poly \<Rightarrow> 'a poly" where
-  "square_free_monic_poly p = (p div (Gcd p (pderiv p)))"
+  "square_free_monic_poly p = (p div (gcd p (pderiv p)))"
 
 definition square_free_poly :: "'a poly \<Rightarrow> 'a poly" where
   "square_free_poly p = (if p = 0 then 0 else 
@@ -137,7 +126,7 @@ definition square_free_poly :: "'a poly \<Rightarrow> 'a poly" where
 definition yun_monic_factorization :: "'a poly \<Rightarrow> ('a poly \<times> nat)list" where
   "yun_monic_factorization p = (let
     pp = pderiv p;
-    u = Gcd p pp;
+    u = gcd p pp;
     b0 = p div u;
     c0 = pp div u
     in 
@@ -151,7 +140,7 @@ definition yun_factorization :: "'a poly \<Rightarrow> 'a \<times> ('a poly \<ti
     in (c, yun_monic_factorization q)))"
 
 context
-  assumes Gcd: "Gcd = gcd"
+  assumes gcd: "gcd = GCD.gcd"
 begin
 
 context
@@ -217,7 +206,7 @@ private lemma coprime_generic: assumes bs: "bs \<subseteq> as"
 proof -
   have single: "?single \<noteq> 0" by (rule nonzero_gen[OF bs])
   show ?thesis
-  proof (rule poly_gcd_unique)
+  proof (rule gcdI [symmetric])
     fix k
     assume dvd: "k dvd ?single" "k dvd ?onederiv"
     note bs_monic = as_monic[OF set_mp[OF bs]]
@@ -293,7 +282,7 @@ proof -
 qed
 
 private lemma pderiv_exp_gcd: 
-  "gcd p (pderiv p) = (\<Prod>(a, i)\<in>as. a ^ i)" (is "_ = ?prod")
+  "GCD.gcd p (pderiv p) = (\<Prod>(a, i)\<in>as. a ^ i)" (is "_ = ?prod")
 proof -
   let ?sum = "(\<Sum>(a, i)\<in>as. (\<Prod>(b, j)\<in>as - {(a, i)}. b) * smult (of_nat (Suc i)) (pderiv a))"
   let ?single = "(\<Prod>(a, i)\<in>as. a)"
@@ -302,20 +291,20 @@ proof -
   have pp: "pderiv p = ?prod * ?sum" by (rule pderiv_exp_setprod)
   have p: "p = ?prod * ?single" by (rule poly_exp_expand)
   have monic: "monic ?prod" by (rule monic_prod)
-  have gcd: "gcd ?single ?onederiv = 1" 
+  have gcd: "GCD.gcd ?single ?onederiv = 1" 
     by (rule coprime_generic, auto)
   show ?thesis unfolding pp unfolding p unfolding poly_gcd_monic_factor[OF monic] gcd by simp
 qed
 
-private lemma p_div_gcd_p_pderiv: "p div (gcd p (pderiv p)) = (\<Prod>(a, i)\<in>as. a)"
+private lemma p_div_gcd_p_pderiv: "p div (GCD.gcd p (pderiv p)) = (\<Prod>(a, i)\<in>as. a)"
   unfolding pderiv_exp_gcd unfolding poly_exp_expand
   by (rule div_mult_self1_is_id, insert monic_prod, auto)
 
 private fun A B C D :: "nat \<Rightarrow> 'a poly" where
-  "A n = gcd (B n) (D n)"
-| "B 0 = p div (gcd p (pderiv p))"
+  "A n = GCD.gcd (B n) (D n)"
+| "B 0 = p div (GCD.gcd p (pderiv p))"
 | "B (Suc n) = B n div A n"
-| "C 0 = pderiv p div (gcd p (pderiv p))"
+| "C 0 = pderiv p div (GCD.gcd p (pderiv p))"
 | "C (Suc n) = D n div A n"
 | "D n = C n - pderiv (B n)"
 
@@ -336,8 +325,8 @@ proof (induct n and n and n and n rule: A_B_C_D.induct)
   let ?an = "(\<Prod> (a, i) \<in> as \<inter> UNIV \<times> {n}. a)"
   let ?bn = "(\<Prod>(a, i)\<in>as - UNIV \<times> {0..<Suc n}. a)"
   show "A n = ?an" unfolding A.simps
-  proof (rule poly_gcd_unique)
-    have monB1: "monic (B n)" unfolding Bn by (rule monic_gen, auto)
+  proof (rule gcdI [symmetric])
+    have monB1: "monic (B n)" unfolding Bn by (rule monic_gen) auto
     hence "B n \<noteq> 0" by auto
     let ?dn = "(\<Sum> (a,i)\<in>as - UNIV \<times> {0 ..< Suc n}. 
         (\<Prod>(b, j)\<in> as - UNIV \<times> {0 ..< Suc n} - {(a, i)}. b) * (smult (of_nat (i - n)) (pderiv a)))"
@@ -348,15 +337,14 @@ proof (induct n and n and n and n rule: A_B_C_D.induct)
       fix k
       assume "k dvd B n" "k dvd D n"
       from dvd_gcd_mult[OF this[unfolded Bn' Dn]]
-      have "k dvd ?an * (gcd ?bn ?dn)" .
-      also have "gcd ?bn ?dn = 1"
+      have "k dvd ?an * (GCD.gcd ?bn ?dn)" .
+      also have "GCD.gcd ?bn ?dn = 1"
         by (rule coprime_generic, auto)
       finally show "k dvd ?an" by simp
     }
     have mon: "monic ?an"
       by (rule monic_gen, auto)
-    show "coeff ?an (degree ?an) = (if B n = 0 \<and> D n = 0 then 0 else 1)" 
-      unfolding mon using `B n \<noteq> 0` by auto
+    thus "normalize ?an = ?an" by (simp add: normalize_monic)
   qed
 next
   case 2 (* B 0 *)
@@ -476,8 +464,8 @@ proof -
 qed
 
 lemma gcd_A_A: assumes "i \<noteq> j"
-  shows "gcd (A i) (A j) = 1"
-proof (rule poly_gcd_unique)
+  shows "GCD.gcd (A i) (A j) = 1"
+proof (rule gcdI [symmetric])
   fix k  
   assume dvd: "k dvd A i" "k dvd A j"
   have Ai: "A i \<noteq> 0" unfolding A
@@ -571,7 +559,7 @@ qed
 
 lemma square_free_monic_poly_context: "(poly (square_free_monic_poly p) x = 0) = (poly p x = 0)"
 proof -
-  show ?thesis unfolding square_free_monic_poly_def unfolding Gcd p_div_gcd_p_pderiv
+  show ?thesis unfolding square_free_monic_poly_def unfolding gcd p_div_gcd_p_pderiv
     unfolding p poly_setprod setprod_zero_iff[OF fin] by force
 qed
 
@@ -597,9 +585,9 @@ proof -
       with bound[of n] have "\<not> bound \<le> n" by auto
       hence "(Suc n, n) \<in> measure ?meas" by auto
       note IH = IH[OF this]
-      from Bn res[unfolded Let_def Gcd, folded D.simps C.simps B.simps A.simps] 
+      from Bn res[unfolded Let_def gcd, folded D.simps C.simps B.simps A.simps] 
       have res: "yun_factorization_main (B (Suc n)) (C (Suc n)) (Suc n) ((A n, n) # bs) = cs"
-        by (simp add: Gcd)
+        by (simp add: gcd)
       note IH = IH[OF this]
       {
         fix i 
@@ -621,7 +609,7 @@ lemma yun_monic_factorization_res: assumes res: "yun_monic_factorization p = bs"
   shows "\<exists> m. set bs = {(A i, i) | i. i < m \<and> A i \<noteq> 1} \<and> B m = 1 \<and> distinct (map snd bs)"
 proof -
   from res[unfolded yun_monic_factorization_def Let_def, 
-    unfolded Gcd, folded B.simps C.simps, folded Gcd]
+    unfolded gcd, folded B.simps C.simps, folded gcd]
   obtain cs where yun: "yun_factorization_main (B 0) (C 0) 0 [] = cs" and bs: "bs = filter (\<lambda> (a,i). a \<noteq> 1) cs" 
     by auto
   from yun_factorization_main[OF yun] show ?thesis unfolding bs
@@ -656,7 +644,7 @@ proof -
     assume ai: "(a,i) \<in> set bs" and bj: "(b,j) \<in> set bs" and neq: "(a,i) \<noteq> (b,j)"
     hence a: "a = A i" and b: "b = A j" unfolding bs by auto
     from neq dist ai bj have neq: "i \<noteq> j" using a b by blast
-    from gcd_A_A[OF neq] have "gcd a b = 1" unfolding a b .
+    from gcd_A_A[OF neq] have "GCD.gcd a b = 1" unfolding a b .
   } note 3 = this
   have "monic p" unfolding p 
     by (rule monic_setprod, insert as_monic, auto intro: monic_power monic_mult)
@@ -923,7 +911,7 @@ proof -
     from ars have "b dvd a" unfolding a by auto
     with db have "b dvd gcd a b" by simp
     hence "degree (gcd a b) \<ge> degree b" using db 
-      by (metis degree_0 dvd_imp_degree_le poly_gcd_zero_iff)
+      by (metis degree_0 dvd_imp_degree_le gcd_eq_0_iff)
     with db have "gcd a b \<noteq> 1" by auto
     with sff(3)[of a i b j] rem have "(a,i) = (b,j)" by auto
     with sff(5) rem have False by auto
@@ -957,7 +945,7 @@ proof -
     let ?g = "gcd r s"
     assume no1: "?g \<noteq> 1"
     from r s rs have "monic ?g"
-      by (metis poly_gcd_monic)
+      using poly_gcd_monic[of r s] by (auto simp: lead_coeff_def)
     with no1 have deg: "degree ?g \<noteq> 0" 
       by (simp add: monic_degree_0)
     have "?g * ?g dvd a" unfolding a 
@@ -965,16 +953,15 @@ proof -
     with sfa deg sff(2)[of a i] have False unfolding square_free_def by auto
   }
   hence gcd_rs: "gcd r s = 1" "gcd s r = 1" 
-    by (auto simp: poly_gcd_commute)
+    by (auto simp: gcd.commute)
   {
     fix b j 
     assume bj: "(b,j) \<in> ?rem"
     from sff(3)[of b j a i] no_mem[OF bj] bj have gcd: "gcd b a = 1" by auto
     hence rs: "gcd b (r * s) = 1" and sr: "gcd b (s * r) = 1" unfolding a by (auto simp: ac_simps)
-    from coprime_poly_factor[OF rs] s have br: "gcd b r = 1" by force
-    from coprime_poly_factor[OF sr] r have bs: "gcd b s = 1" by force
+    from rs sr have br: "gcd b r = 1" and bs: "gcd b s = 1" by (simp_all add: coprime_mul_eq)
     from br bs have "gcd r b = 1" "gcd s b = 1"
-      by (auto simp: poly_gcd_commute)
+      by (auto simp: gcd.commute)
     note this br bs
   } note gcd = this
   {

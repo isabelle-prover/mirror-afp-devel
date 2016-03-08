@@ -196,14 +196,14 @@ lemma wp_SetDC:
       and ne: "\<And>s. S s \<noteq> {}"
       and sP: "\<And>x. sound (P x)"
   shows "(\<lambda>s. Inf ((\<lambda>x. P x s) ` S s)) \<tturnstile> wp (SetDC f S) Q"
-  using assms by(intro le_funI, simp add:wp_eval del:Inf_image_eq, blast intro!:cInf_mono)
+  using assms by(intro le_funI, simp add:wp_eval, blast intro!:cInf_mono)
 
 lemma wlp_SetDC:
   assumes wp: "\<And>s x. x \<in> S s \<Longrightarrow> P x \<tturnstile> wlp (f x) Q"
       and ne: "\<And>s. S s \<noteq> {}"
       and sP: "\<And>x. sound (P x)"
   shows "(\<lambda>s. Inf ((\<lambda>x. P x s) ` S s)) \<tturnstile> wlp (SetDC f S) Q"
-  using assms by(intro le_funI, simp add:wp_eval del:Inf_image_eq, blast intro!:cInf_mono)
+  using assms by(intro le_funI, simp add:wp_eval, blast intro!:cInf_mono)
 
 lemma wp_Embed:
   "P \<tturnstile> t Q \<Longrightarrow> P \<tturnstile> wp (Embed t) Q"

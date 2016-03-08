@@ -361,10 +361,8 @@ proof -
   let ?P = "map snd (\<alpha> s)"
   have "annot s \<in> set ?P"
     by (unfold ans) (rule listsum_in_set[OF snn])
-  hence "p_unwrap (annot s) \<in> set (map p_unwrap ?P)"
-    by (metis image_iff in_set_conv_decomp set_map split_list_last)
-  thus ?thesis
-    by (metis mem_set_multiset_eq alprio_\<alpha>_def)
+  then show ?thesis
+    by (auto intro!: image_eqI simp add: alprio_\<alpha>_def)
 qed
 
 lemma  listsum_less_elems: "\<forall>x\<in>set xs. snd x \<noteq> Infty \<Longrightarrow>

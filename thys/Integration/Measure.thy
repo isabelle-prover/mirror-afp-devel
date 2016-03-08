@@ -189,7 +189,7 @@ lemma mkdisjoint_disj:
       from less2 have "m1 \<in> {..n}" by simp
       hence "mkdisjoint A m1 \<subseteq> (\<Union>i\<in>{..n}. mkdisjoint A i)" by auto
       ultimately 
-      have "x \<notin> mkdisjoint A m1" by fast
+      have "x \<notin> mkdisjoint A m1" by auto
       with y have "y \<noteq> x" by fast
     }
     hence "mkdisjoint A m1 \<inter> mkdisjoint A m2 = {}" 

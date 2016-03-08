@@ -174,7 +174,7 @@ by(induct ts tas rule: redT_updTs.induct)(auto intro: redT_updTs_Some)
 
 lemma redT_updT_new_thread:
   "\<lbrakk> redT_updT ts ta t = \<lfloor>(x, w)\<rfloor>; thread_ok ts ta; ts t = None \<rbrakk> \<Longrightarrow> \<exists>m. ta = NewThread t x m \<and> w = no_wait_locks"
-by(cases ta)(auto split: split_if_asm)
+by(cases ta)(auto split: if_split_asm)
 
 lemma redT_updTs_new_thread:
   "\<lbrakk> redT_updTs ts tas t = \<lfloor>(x, w)\<rfloor>; thread_oks ts tas; ts t = None \<rbrakk> 

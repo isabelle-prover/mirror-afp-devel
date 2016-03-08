@@ -215,7 +215,7 @@ lemma lm021:
 lemma lm022: 
   "allAllocations N G \<subseteq> partitionValuedUniverse"
   using assms allocationInverseRangeDomainProperty is_partition_of_def is_non_overlapping_def 
-  by blast
+  by auto blast
 
 corollary allAllocationsUniverse: 
   "allAllocations N G \<subseteq> allocationsUniverse" 
@@ -654,7 +654,7 @@ lemma lm049:
 corollary emptyNotInRange: 
   assumes "a \<in> allAllocations N G" 
   shows "{} \<notin> Range a" 
-  using assms lm049 allAllocationsUniverse by blast
+  using assms lm049 allAllocationsUniverse by auto blast
 
 lemma lm050: 
   assumes "a \<in> allAllocations N G" 
@@ -1032,7 +1032,7 @@ corollary lm085:
   assumes "x \<notin> X" 
   shows  "injections ({x} \<union> X) Y \<subseteq> 
           (\<Union> f \<in> injections X Y. {f \<union> {(x, y)} | y . y \<in> Y - (Range f)})"
-  using assms lm084 by fast
+  using assms lm084 by auto
 
 lemma lm086: 
   assumes "x \<notin> X" 

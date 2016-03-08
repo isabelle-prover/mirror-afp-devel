@@ -1,4 +1,4 @@
-header{*Tangle\_Moves: Defining moves on tangles*}
+section{*Tangle\_Moves: Defining moves on tangles*}
 
 theory Tangle_Moves
 imports Tangles Tangle_Algebra Tangle_Relation

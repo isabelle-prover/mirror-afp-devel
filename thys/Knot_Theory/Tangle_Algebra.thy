@@ -1,4 +1,4 @@
-header{*Tangle\_Algebra: Tensor product of tangles and its properties*}
+section{*Tangle\_Algebra: Tensor product of tangles and its properties*}
 theory Tangle_Algebra
 imports Tangles
 begin
@@ -339,7 +339,7 @@ proof(induct xs)
        by metis
      ultimately have 1: "(x*xs) \<otimes> (basic (make_vert_block (k+1))) 
              =  (x\<otimes>(make_vert_block (k+1)))*(xs\<otimes>(basic (make_vert_block (k+1))))" 
-        using tensor.simps(2)  by (metis codomain_wall.simps(1) int_0 of_nat_less_0_iff)
+        using tensor.simps(2) by simp
      have "domain_wall (xs\<otimes>(basic (make_vert_block (k+1)))) 
                  = domain_wall xs + domain_wall (basic (make_vert_block (k+1)))"
             using tensor_domain_wall_additivity by auto
@@ -411,8 +411,7 @@ proof(induct xs)
         by metis
     ultimately have 1: "  (basic (make_vert_block (k+1))) \<otimes> (x*xs)
              =  ((make_vert_block (k+1)) \<otimes> x)*((basic (make_vert_block (k+1))) \<otimes> xs)" 
-        using tensor.simps(3)  
-        by (metis codomain_wall.simps(1) int_0 of_nat_less_0_iff)
+        using tensor.simps(3) by simp
     have "domain_wall ((basic (make_vert_block (k+1))) \<otimes> xs) 
                  = domain_wall xs + domain_wall (basic (make_vert_block (k+1)))"
         using tensor_domain_wall_additivity by auto

@@ -301,7 +301,7 @@ next
   have UN_Int_distrib: "\<And>f A. (\<Union>i. f i) \<inter> A = (\<Union>i. f i \<inter> A)" by blast
   have decomp: "{a..b} = (\<Union>i. ?A1 i \<inter> {a..b}) \<union> (\<Union>i. ?A2 i \<inter> {a..b}) \<union> ?C" (is "_ = ?D \<union> ?E \<union> _")
     by (subst Int_UNIV_left[symmetric], simp only: C Int_Un_distrib2 UN_Int_distrib)
-       (simp split: split_if)
+       (simp split: if_split)
   have "emeasure ?M1 {a..b} = emeasure ?M1 ?D + emeasure ?M1 ?E + emeasure ?M1 ?C"
     apply (subst decomp)
     apply (subst plus_emeasure[symmetric], simp, simp, simp)
@@ -310,7 +310,7 @@ next
     done
   also have "(\<lambda>x. - inverse x) -` {0 :: real} = {0}" by (auto simp: field_simps)
   hence "emeasure ?M1 ?C = 0" 
-    by (subst emeasure_distr)  (auto split: split_if simp: emeasure_density Mf)
+    by (subst emeasure_distr)  (auto split: if_split simp: emeasure_density Mf)
   also have "emeasure ?M2 {0} = 0" by (simp add: emeasure_density)
   hence "0 = emeasure ?M2 ?C"
     by (rule_tac sym, rule_tac order.antisym, rule_tac order.trans, rule_tac emeasure_mono[of _ "{0}"]) simp_all

@@ -285,7 +285,7 @@ apply(drule worklist_tree_rule2[where I = inv0 and S = SI and
   OF _ assms(2,3,5)])
    apply(simp add: SI_insert_mod2 assms(4))
   apply(clarsimp)
- apply(clarsimp simp add: insert_mod2_def split: split_if_asm)
+ apply(clarsimp simp add: insert_mod2_def split: if_split_asm)
   apply(frule assms(4))
   apply(frule SI_def[THEN iffD1])
   apply(frule (1) set_of_insert_mod)
@@ -330,7 +330,7 @@ apply(drule worklist_tree_rule2[where I = inv0 and S = SI and P =
     apply assumption
    apply(simp add: SI_insert_mod2)
   apply clarsimp
- apply (clarsimp simp: insert_mod2_def split: split_if_asm)
+ apply (clarsimp simp: insert_mod2_def split: if_split_asm)
   using set_of_insert_mod
   apply(simp add: SI_def image_def)
   apply(blast)

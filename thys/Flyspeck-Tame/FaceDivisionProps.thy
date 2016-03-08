@@ -1251,7 +1251,7 @@ lemma is_nextElem_between_empty[simp]:
  "distinct vs \<Longrightarrow> is_nextElem vs a b \<Longrightarrow> between vs a b = []"
 apply (simp add: is_nextElem_def between_def split_def)
 apply (cases "vs") apply simp+
-apply (simp split: split_if_asm)
+apply (simp split: if_split_asm)
 apply (case_tac "b = aa")
  apply (simp add: is_sublist_def)
  apply (erule disjE)
@@ -1275,7 +1275,7 @@ apply (subgoal_tac "aa # list = vs")
 
 lemma is_nextElem_between_empty': "between vs a b = [] \<Longrightarrow> distinct vs \<Longrightarrow> a \<in> set vs \<Longrightarrow> b \<in> set vs  \<Longrightarrow>
   a \<noteq> b \<Longrightarrow> is_nextElem vs a b"
-apply (simp add: is_nextElem_def between_def split_def split: split_if_asm)
+apply (simp add: is_nextElem_def between_def split_def split: if_split_asm)
  apply (case_tac vs) apply simp
  apply simp
  apply (rule conjI)
@@ -1626,7 +1626,7 @@ proof -
     proof (cases "m = u")
       case True with Cons have "u \<notin> set ms" by auto
       with Cons True have i: "i = 0" apply (induct i) by auto
-      with Cons show ?thesis  apply (simp split: split_if_asm) apply (cases ms) by simp_all
+      with Cons show ?thesis  apply (simp split: if_split_asm) apply (cases ms) by simp_all
     next
       case False with Cons have a1: "u \<in> set ms" by auto
       then have ms: "ms \<noteq> []" by auto
@@ -1817,7 +1817,7 @@ apply(subgoal_tac "pre_between (vertices f) v w")
  apply(drule (1) verticesFrom_distinct)
  using verticesFrom_hd[of f u]
  apply(clarsimp simp add:before_def between_def split_def hd_append
-                split:split_if_asm)
+                split:if_split_asm)
 apply(frule (1) verticesFrom_distinct)
 apply(clarsimp simp:pre_between_def before_def simp del:verticesFrom_distinct)
 apply(rule conjI)
@@ -3663,7 +3663,7 @@ next
       case 0 with None suc1 lvs show ?thesis by (simp add: take_Suc_conv_app_nth natToVertexList_nth_0)
     next
       case (Suc n')
-      with None suc1 lvs have esn: "es!n = es!n'" by (simp add: natToVertexList_nth_Suc split: split_if_asm)
+      with None suc1 lvs have esn: "es!n = es!n'" by (simp add: natToVertexList_nth_Suc split: if_split_asm)
       from Suc have n': "n - Suc 0 = n'" by auto
       show ?thesis
       proof (cases "Suc n = length es")
@@ -3725,7 +3725,7 @@ next
         sublist_Cons verticesFrom_hd del:verticesFrom_empty)
     next
       case (Suc n')
-      with Some suc1 lvs have esn: "es!n \<noteq> es!n'" by (simp add: natToVertexList_nth_Suc split: split_if_asm)
+      with Some suc1 lvs have esn: "es!n \<noteq> es!n'" by (simp add: natToVertexList_nth_Suc split: if_split_asm)
       from suc1 Suc have "Suc n' < length es" by auto
       with suc1 lvs esn  have "natToVertexList v f es !(Suc n') = Some (f\<^bsup>(es!(Suc n'))\<^esup> \<bullet> v)"
       apply (simp add: natToVertexList_nth_Suc)
@@ -3964,7 +3964,7 @@ proof -
     then have "distinct ([v\<leftarrow>vs . v = a \<or> v \<in> set ys])" by (rule_tac distinct_filter)
     with ays have distys: "distinct (a # ys)" by simp
     from dist distys ays show "[v\<leftarrow>vs. v \<in> set ys] = ys"
-     apply (induct vs) by (auto  split: split_if_asm simp: filter_Cons2)
+     apply (induct vs) by (auto  split: if_split_asm simp: filter_Cons2)
   qed
 
   from dist eq show ?thesis  by (rule_tac rule1)
@@ -4067,7 +4067,7 @@ proof -
     apply (auto intro: natToVertexList_removeNones simp: pre_subdivFace_face_def)
     apply (cases es) apply auto
     apply (cases es) apply auto
-    apply (subgoal_tac "0 < length list") apply (case_tac list) by (auto split: split_if_asm)
+    apply (subgoal_tac "0 < length list") apply (case_tac list) by (auto split: if_split_asm)
 qed
 
 
@@ -4086,7 +4086,7 @@ lemma pre_subdivFace'_None:
  "pre_subdivFace' g f v' v n (None # vol) \<Longrightarrow>
   pre_subdivFace' g f v' v (Suc n) vol"
 by(auto simp: pre_subdivFace'_def dest:invalidVertexList_shorten
-        split:split_if_asm)
+        split:if_split_asm)
 
 declare verticesFrom_between [simp del]
 
@@ -4344,7 +4344,7 @@ next
     from split_u vor_u_def nach_u_def have "verticesFrom f v' = vor_u @ u # nach_u" by auto
     moreover
     note dist_vf_v'
-    ultimately have "is_sublist [a,b] (nach_u)" apply (simp add: is_nextElem_def split:split_if_asm)
+    ultimately have "is_sublist [a,b] (nach_u)" apply (simp add: is_nextElem_def split:if_split_asm)
       apply (subgoal_tac "b \<noteq> hd (vor_u @ u # nach_u)")
        apply simp
        apply (subgoal_tac "distinct (vor_u @ (u # nach_u))")
@@ -4897,7 +4897,7 @@ proof -
     apply (cases "0 < n") apply (induct g) apply simp+
     apply (simp add: pre_subdivFace'_def)
     apply (rule conjI) apply force
-    apply (simp split: split_if_asm)
+    apply (simp split: if_split_asm)
      apply (rule ccontr)  apply simp
      apply (subgoal_tac "v = v'") apply simp  apply (elim conjE) apply (simp only:)
      apply (rule verticesFrom_is_nextElem_last) apply force apply force

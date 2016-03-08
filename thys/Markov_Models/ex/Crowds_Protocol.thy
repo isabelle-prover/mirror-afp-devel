@@ -204,16 +204,16 @@ lemma next_prob_Mix_MixI: "\<exists>j. s = Mix j \<Longrightarrow> \<exists>j\<i
 
 
 lemma E_Start: "E Start = {Init j | j. j \<in> H \<and> p_i j \<noteq> 0 }"
-  using p_i_C by (auto simp: set_pmf_iff next_prob_def split: state.splits split_if_asm)
+  using p_i_C by (auto simp: set_pmf_iff next_prob_def split: state.splits if_split_asm)
 
 lemma E_Init: "E (Init j) = {Mix j | j. j \<in> J }"
-  using p_j_pos C_smaller by (auto simp: set_pmf_iff next_prob_def split: state.splits split_if_asm)
+  using p_j_pos C_smaller by (auto simp: set_pmf_iff next_prob_def split: state.splits if_split_asm)
 
 lemma E_Mix: "E (Mix j) = {Mix j | j. j \<in> J } \<union> {End}"
-  using p_j_pos p_f by (auto simp: set_pmf_iff next_prob_def split: state.splits split_if_asm)
+  using p_j_pos p_f by (auto simp: set_pmf_iff next_prob_def split: state.splits if_split_asm)
 
 lemma E_End: "E End = {End}"
-  by (auto simp: set_pmf_iff next_prob_def split: state.splits split_if_asm)
+  by (auto simp: set_pmf_iff next_prob_def split: state.splits if_split_asm)
 
 lemma enabled_End:
   "enabled End \<omega> \<longleftrightarrow> \<omega> = sconst End"
@@ -656,7 +656,7 @@ proof -
     by (intro mult_mono) (auto simp: Suc_le_eq card_Diff_subset not_le)
   with `p_H \<noteq> p_j` have "p_j < p_H" by auto
   with approx show "1 - (p_H - p_j) * p_f \<le> 1 / 2"
-    by (auto simp add: field_simps divide_le_eq split: split_if_asm)
+    by (auto simp add: field_simps divide_le_eq split: if_split_asm)
 qed
 
 lemma Pr_before_C:

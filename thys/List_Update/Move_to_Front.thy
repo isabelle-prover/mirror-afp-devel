@@ -155,11 +155,12 @@ by(simp add: Lxy_def)
 
 
 
-lemma Lxy_project: "x\<noteq>y \<Longrightarrow> x \<in> set xs \<Longrightarrow> y\<in>set xs \<Longrightarrow> distinct xs \<Longrightarrow> x < y in xs
-           \<Longrightarrow> Lxy xs {x,y} = [x,y]"
+lemma Lxy_project: 
+  assumes "x\<noteq>y" "x \<in> set xs"  "y\<in>set xs" "distinct xs" 
+    and "x < y in xs"
+  shows "Lxy xs {x,y} = [x,y]"
 proof -
-  case goal1
-  then have ij: "index xs x < index xs y"
+  from assms have ij: "index xs x < index xs y"
         and xinxs: "index xs x < length xs"
         and yinxs: "index xs y < length xs" unfolding before_in_def by auto  
   from xinxs obtain a as where dec1: "a @ [xs!index xs x] @ as = xs"
@@ -176,16 +177,16 @@ proof -
             and length_b: "length b = index xs y-index xs x-1" using id_take_nth_drop[OF las] xsj by force
   have xs_dec: "a @ [xs!index xs x] @ b @ [xs!index xs y] @ c = xs" using dec1 dec2 by auto 
    
-  from xs_dec goal1(4) have "distinct ((a @ [xs!index xs x] @ b @ [xs!index xs y]) @ c)" by simp
+  from xs_dec assms(4) have "distinct ((a @ [xs!index xs x] @ b @ [xs!index xs y]) @ c)" by simp
   then have c_empty: "set c \<inter> {x,y} = {}"
-      and b_empty: "set b \<inter> {x,y} = {}"and a_empty: "set a \<inter> {x,y} = {}" by(auto simp add: goal1(2,3))
+      and b_empty: "set b \<inter> {x,y} = {}"and a_empty: "set a \<inter> {x,y} = {}" by(auto simp add: assms(2,3))
 
   have "Lxy (a @ [xs!index xs x] @ b @ [xs!index xs y] @ c) {x,y} = [x,y]"
     apply(simp only: Lxy_append)
-    apply(simp add: goal1(2,3))
+    apply(simp add: assms(2,3))
     using a_empty b_empty c_empty by(simp add: Lxy_notin Lxy_in)
 
-  with xs_dec show ?case by auto
+  with xs_dec show ?thesis by auto
 qed
 
 
@@ -430,7 +431,7 @@ proof-
   have "(?bxxs \<inter> ?bxys) \<union> (?axxs \<inter> ?bxys) = ?bxys"
     using assms(2) before_Un xxs by fastforce
   hence "?m + ?n = ?k"
-    using card_Un_disjoint[OF _ _ 1] by(simp add: zadd_int del: of_nat_add)
+    using card_Un_disjoint[OF _ _ 1] by simp
   hence "?m - ?n = 2 * ?m - ?k" by arith
   also have "?m \<le> ?j"
     using card_before_le_index[of x xs] card_mono[of ?bxxs, OF _ Int_lower1]

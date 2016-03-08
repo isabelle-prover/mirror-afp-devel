@@ -213,7 +213,7 @@ lemma G_eq:
   by (auto simp add: trans_def set_pmf_map set_pmf_wt)
 
 lemma discrCf_G: "discrCf cf \<Longrightarrow> cf' \<in> G cf \<Longrightarrow> discrCf cf'"
-  using discrCf_cont[of cf] by (auto simp: G_eq split: split_if_asm)
+  using discrCf_cont[of cf] by (auto simp: G_eq split: if_split_asm)
 
 lemma measurable_discrCf[measurable]: "Measurable.pred (count_space UNIV) discrCf"
   by auto
@@ -251,7 +251,7 @@ proof (coinduction arbitrary: cf \<omega>)
     by (auto simp add: HLD_iff enabled.simps[of _ \<omega>] G_eq
              simp del: split_paired_Ex discrCf_eff_indis
              intro!: exI[of _ "shd \<omega>"]
-             split: split_if_asm)
+             split: if_split_asm)
        (blast intro: indis_trans indis_sym)+
 qed
 
@@ -289,7 +289,7 @@ proof -
     by simp
 
   from discr_N alw_discrCf_indis[OF sd _] assms(2,3) show ?thesis
-    by (simp add: N alw_iff_sdrop le_iff_add eq)
+    by (simp add: N alw_iff_sdrop le_iff_add[where 'a=nat] eq)
        (metis indis_iff)
 qed
 
@@ -315,7 +315,7 @@ lemma qstermCf_E:
   "qstermCf cf \<Longrightarrow> cf' \<in> G cf \<Longrightarrow> qstermCf cf'"
   apply (auto simp: qstermCf_def)
   apply (erule_tac x="cf' ## cfT" in allE)
-  apply (auto simp: sfirst_Stream intro: enat_0 discrCf_G split: split_if_asm intro: enabled.intros)
+  apply (auto simp: sfirst_Stream intro: enat_0 discrCf_G split: if_split_asm intro: enabled.intros)
   done
 
 abbreviation "eff_at cf bT n \<equiv> snd ((cf ## bT) !! n)"
@@ -542,15 +542,15 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
       { fix bT n assume *: "?S (cf ## cf' ## bT) n" have "S cf' bT"
         proof (cases n)
           case 0 with * cf' show ?thesis
-            by (auto simp: S_def enat_0 sfirst_Stream G_eq split: split_if_asm intro!: exI[of _ 0])
+            by (auto simp: S_def enat_0 sfirst_Stream G_eq split: if_split_asm intro!: exI[of _ 0])
                (blast intro: indis_trans indis_sym discrCf_eff_indis)
         next
           case (Suc n) with * cf' show "S cf' bT"
-            by (auto simp: eSuc_enat[symmetric] sfirst_Stream S_def split: split_if_asm)
+            by (auto simp: eSuc_enat[symmetric] sfirst_Stream S_def split: if_split_asm)
         qed }
       moreover
       { fix bT n assume "?S (cf' ## bT) n" with cf' have "?S (cf ## cf' ## bT) (if discrCf cf then 0 else Suc n)"
-          by (auto simp: eSuc_enat[symmetric] enat_0[symmetric] sfirst_Stream G_eq split: split_if_asm)
+          by (auto simp: eSuc_enat[symmetric] enat_0[symmetric] sfirst_Stream G_eq split: if_split_asm)
              (blast intro: indis_trans indis_sym discrCf_eff_indis)
         then have "S cf (cf' ## bT)"
           by (auto simp: S_def) }
@@ -802,7 +802,7 @@ lemma siso_trace:
 proof (induction n arbitrary: c s t cfT)
   case (Suc n) case 1
   with Suc(1)[of "fst (shd cfT)" "snd (shd cfT)" "snd (shd cfT)" "stl cfT"] show ?case
-    by (auto simp add: enabled.simps[of _ cfT] G_eq cont_eff indis_refl split: split_if_asm)
+    by (auto simp add: enabled.simps[of _ cfT] G_eq cont_eff indis_refl split: if_split_asm)
 qed auto
 
 lemma Sbis_trace:

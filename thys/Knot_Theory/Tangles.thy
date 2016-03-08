@@ -1,4 +1,4 @@
-header{*Tangles: Definition as a type and basic functions on tangles*}
+section{*Tangles: Definition as a type and basic functions on tangles*}
 theory Tangles 
 imports Preliminaries
 begin

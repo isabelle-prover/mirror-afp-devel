@@ -78,27 +78,27 @@ proof(induct arbitrary: X Y rule: finite_induct)
   from empty have ents: "\<forall>i<m. (i\<in>Y) = (i\<notin>X)" by auto
 
   have "(\<exists>! w. (\<forall>i\<in>X. w ! i) \<and> (\<forall>i\<in>Y. \<not> w ! i) \<and>  length w = m)"
-  proof
-    case goal1
+  proof (rule ex1I, goal_cases)
+    case 1
     show "(\<forall>i\<in>X. (witness X m) ! i) \<and> (\<forall>i\<in>Y. \<not> (witness X m) ! i) \<and> length (witness X m) = m"
-    proof (safe)
-      case goal2
+    proof (safe, goal_cases)
+      case (2 i)
       with y have a: "i < m" by auto
       with iswitness have "witness X m ! i = (i \<in> X)" by auto
-      with a ents goal2 have "~ witness X m ! i" by auto
-      with goal2(2) show "False" by auto
+      with a ents 2 have "~ witness X m ! i" by auto
+      with 2(2) show "False" by auto
     next
-      case goal1
+      case (1 i)
       with x have a: "i < m" by auto
       with iswitness have "witness X m ! i = (i \<in> X)" by auto
-      with a ents goal1 show "witness X m ! i" by auto
+      with a ents 1 show "witness X m ! i" by auto
     qed (rule witness_length)
   next
-    case goal2
+    case (2 w)
     show "w = witness X m"
     proof -
       have "(length w = length (witness X m) \<and> (\<forall>i<length w. w ! i = (witness X m) ! i))"
-       using goal2 apply(simp add: witness_length)
+       using 2 apply(simp add: witness_length)
        proof 
         fix i 
         assume as: "(\<forall>i\<in>X. w ! i) \<and> (\<forall>i\<in>Y. \<not> w ! i) \<and>  length w = m"

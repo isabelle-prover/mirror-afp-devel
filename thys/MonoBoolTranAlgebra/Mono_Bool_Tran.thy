@@ -242,11 +242,11 @@ interpretation lifting_syntax .
 
 lemma [transfer_rule]:
   "(rel_set A ===> (A ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) INFIMUM INFIMUM"
-  unfolding INF_def [abs_def] by transfer_prover
+  by transfer_prover
 
 lemma [transfer_rule]:
   "(rel_set A ===> (A ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) SUPREMUM SUPREMUM"
-  unfolding SUP_def [abs_def] by transfer_prover
+  by transfer_prover
 
 end
 

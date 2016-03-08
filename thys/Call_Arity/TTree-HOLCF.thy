@@ -125,12 +125,7 @@ proof(rule contI)
   also have "\<dots> = insert [] (\<Union>x. \<Union>(t ` paths (Y x)))"
     by (simp add: assms(1))
   also have "\<dots> = \<Union>(t ` insert [] (\<Union>x. paths (Y x)))"
-    apply auto
-    apply (rule exI[where x = 0])
-    apply (rule bexI[where x = "[]"])
-    apply (rule assms(2))
-    apply simp
-    done
+    using assms(2) by auto
   also have "\<dots> = \<Union>(t ` paths (Either (range Y)))"
     by (auto simp add: paths_Either)
   also have "\<dots> = paths (f (Either (range Y)))"
@@ -190,11 +185,13 @@ lemma cont_both[cont2cont,simp]: "cont f \<Longrightarrow> cont g \<Longrightarr
 
 lemma cont_intersect1:
   "cont (\<lambda> x. intersect x y)"
-  by (rule ttree_contI2[where t = "\<lambda>xs . (if xs \<in> paths y then {xs} else {})"]) auto
+  by (rule ttree_contI2 [where t = "\<lambda>xs . (if xs \<in> paths y then {xs} else {})"])
+    (auto split: if_splits)
 
 lemma cont_intersect2:
   "cont (\<lambda> x. intersect y x)"
-  by (rule ttree_contI2[where t = "\<lambda>xs . (if xs \<in> paths y then {xs} else {})"]) auto
+  by (rule ttree_contI2 [where t = "\<lambda>xs . (if xs \<in> paths y then {xs} else {})"])
+    (auto split: if_splits)
 
 lemma cont_intersect[cont2cont,simp]: "cont f \<Longrightarrow> cont g \<Longrightarrow> cont (\<lambda> x. f x \<inter>\<inter> g x)"
   by (rule cont_compose2[OF cont_intersect1 cont_intersect2])

@@ -234,12 +234,12 @@ next
     -- "If the sl/ret path was executed on a different thread than the last macrostep"
     case (env cc) note CASE=this
     -- "we first look at the context after the last macrostep. It consists of the threads that already have been there and the threads that have been spawned by the last macrostep"
-    from STEPFMT(5) obtain cspt where CETFMT: "cet=cspt+ceh" "!!s. s:#cspt \<Longrightarrow> \<exists>p. s=[entry fg p] \<and> initialproc fg p" 
+    from STEPFMT(5) obtain cspt where CETFMT: "cet=cspt+ceh" "!!s. s \<in># cspt \<Longrightarrow> \<exists>p. s=[entry fg p] \<and> initialproc fg p" 
       by (unfold initialproc_def) (erule trss_c_cases, blast)
     -- "The spawned threads do not hold any monitors yet"
     hence CSPT_NO_MON: "mon_c fg cspt = {}" by (simp add: c_of_initial_no_mon)
     -- "We now distinguish whether the sl/ret path is executed on a thread that was just spawned or on a thread that was already there"
-    from CASE(1) CETFMT(1) have "u#r :# cspt+ceh" by auto 
+    from CASE(1) CETFMT(1) have "u#r \<in># cspt+ceh" by auto 
     thus ?thesis proof (cases rule: mset_un_cases[cases set]) 
       -- "The sl/ret path cannot have been executed on a freshly spawned thread due to the restrictions we made on the flowgraph"
       case left -- "Thread was spawned" with CETFMT obtain q where "u=entry fg q" "r=[]" "initialproc fg q" by auto
@@ -349,7 +349,7 @@ subsection {* Properties of normalized path *}
 text {* Like a usual path, also a macrostep modifies one thread, spawns some threads and preserves the state of all the other threads. The spawned threads do not make any steps, thus they stay in their initial configurations. *}
 lemma ntrs_c_cases_s[cases set]: "\<lbrakk> 
     ((s,c),w,(s',c'))\<in>ntrs fg; 
-    !!csp. \<lbrakk> c'=csp+c; !!s. s:#csp \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> 
+    !!csp. \<lbrakk> c'=csp+c; !!s. s \<in># csp \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> 
                                          (u,Spawn p,v)\<in>edges fg \<and> 
                                          initialproc fg p 
            \<rbrakk> \<Longrightarrow> P 
@@ -358,7 +358,7 @@ lemma ntrs_c_cases_s[cases set]: "\<lbrakk>
 
 lemma ntrs_c_cases[cases set]: "\<lbrakk> 
     ((s,c),ww,(s',c'))\<in>trcl (ntrs fg); 
-    !!csp. \<lbrakk> c'=csp+c; !!s. s:#csp \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> 
+    !!csp. \<lbrakk> c'=csp+c; !!s. s \<in># csp \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> 
                                          (u,Spawn p,v)\<in>edges fg \<and> 
                                          initialproc fg p 
            \<rbrakk> \<Longrightarrow> P 
@@ -605,7 +605,7 @@ proof (induct ww)
 next
   case (Cons ee ww) note IHP=this
   then obtain sh ch where SPLIT: "((s,c),ee,(sh,ch))\<in>ntrs fg" "((sh,ch),ww,(s',c'))\<in>trcl (ntrs fg)" by (fast dest: trcl_uncons)
-  from ntrs_c_cases_s[OF SPLIT(1)] obtain csph where CHFMT: "ch=csph+c" "!!s. s:#csph \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> (u, Spawn p, v) \<in> edges fg \<and> initialproc fg p" by blast
+  from ntrs_c_cases_s[OF SPLIT(1)] obtain csph where CHFMT: "ch=csph+c" "!!s. s \<in># csph \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> (u, Spawn p, v) \<in> edges fg \<and> initialproc fg p" by blast
   with ntrs_xchange_context_s SPLIT(1) IHP(3) have "((s,cn),ee,(sh,csph+cn))\<in>ntrs fg" by blast
   also
   from c_of_initial_no_mon CHFMT(2) have CSPH_NO_MON: "mon_c fg csph = {}" by auto
@@ -1005,7 +1005,7 @@ next
   case (Cons ee w) then obtain sh ch where SPLIT: "((s,c1+c2),ee,(sh,ch))\<in>ntrp fg" "((sh,ch),w,(s',c'))\<in>trcl (ntrp fg)" by (fast dest: trcl_uncons)
   from SPLIT(1) show ?case proof (cases rule: gtrp.cases)
     case gtrp_loc then obtain e where CASE: "ee=LOC e" "((s,c1+c2),e,(sh,ch))\<in>ntrs fg" by auto
-    from ntrs_c_cases_s[OF CASE(2)] obtain csp where CHFMT: "ch=(csp+c1)+c2" "\<And>s. s :# csp \<Longrightarrow> \<exists>p u v. s = [entry fg p] \<and> (u, Spawn p, v) \<in> edges fg \<and> initialproc fg p" by (simp add: union_assoc, blast) 
+    from ntrs_c_cases_s[OF CASE(2)] obtain csp where CHFMT: "ch=(csp+c1)+c2" "\<And>s. s \<in># csp \<Longrightarrow> \<exists>p u v. s = [entry fg p] \<and> (u, Spawn p, v) \<in> edges fg \<and> initialproc fg p" by (simp add: union_assoc, blast) 
     with c_of_initial_no_mon have CSPNOMON: "mon_c fg csp = {}" by auto
     from ntr_valid_preserve_s[OF gtrI_s, OF CASE(2)] Cons.prems(2) CHFMT have VALID: "valid fg ({#sh#}+(csp+c1)+c2)" by (simp add: union_ac)
     from Cons.hyps[OF _ VALID, of s' c'] CHFMT(1) SPLIT(2) obtain w1 w2 c1' c2' where IHAPP: "w \<in> w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> (map ENV w2)" "c' = c1' + c2'" "((sh, csp + c1), w1, s', c1') \<in> trcl (ntrp fg)" 
@@ -1035,7 +1035,7 @@ next
     ultimately show ?thesis by blast
   next
     case gtrp_env then obtain e ss ce ssh ceh where CASE: "ee=ENV e" "c1+c2={#ss#}+ce" "sh=s" "ch={#ssh#}+ceh" "((ss,{#s#}+ce),e,(ssh,{#s#}+ceh))\<in>ntrs fg" by auto
-    from ntrs_c_cases_s[OF CASE(5)] obtain csp where HFMT: "{#s#}+ceh = csp + ({#s#}+ce)" "\<And>s. s :# csp \<Longrightarrow> \<exists>p u v. s = [entry fg p] \<and> (u, Spawn p, v) \<in> edges fg \<and> initialproc fg p" by (blast)
+    from ntrs_c_cases_s[OF CASE(5)] obtain csp where HFMT: "{#s#}+ceh = csp + ({#s#}+ce)" "\<And>s. s \<in># csp \<Longrightarrow> \<exists>p u v. s = [entry fg p] \<and> (u, Spawn p, v) \<in> edges fg \<and> initialproc fg p" by (blast)
     from union_left_cancel[of "{#s#}" ceh "csp+ce"] HFMT(1) have CEHFMT: "ceh=csp+ce" by (auto simp add: union_ac)
     from HFMT(2) have CHNOMON: "mon_c fg csp = {}" by (blast intro!: c_of_initial_no_mon)
     from CASE(2)[symmetric] show ?thesis proof (cases rule: mset_unplusm_dist_cases)

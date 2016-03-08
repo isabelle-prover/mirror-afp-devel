@@ -268,9 +268,9 @@ proof -
   moreover from mn have "int ?a = int(m^2 - n^2)" and "int ?b = int(2*m*n)" 
     and "int ?c = int(m^2 + n^2)" by auto
   ultimately have "\<bar>a\<bar> = int(m^2) - int(n^2)" and "\<bar>b\<bar> = int(2*m*n)"
-    and "\<bar>c\<bar> = int(m^2) + int(n^2)" by (auto simp only: int_nat_abs_eq_abs zdiff_int)
+    and "\<bar>c\<bar> = int(m^2) + int(n^2)" by (auto simp only: int_nat_abs_eq_abs of_nat_diff)
   hence absabc: "\<bar>a\<bar> = (int m)^2 - (int n)^2 \<and> \<bar>b\<bar> = 2*(int m)*int n
-    \<and> \<bar>c\<bar> = (int m)^2 + (int n)^2" by (simp add: power2_eq_square int_mult)
+    \<and> \<bar>c\<bar> = (int m)^2 + (int n)^2" by (simp add: power2_eq_square of_nat_mult)
   from mn have mn_rel: "zgcd (int m) (int n) = 1" by (simp add: zgcd_def)
   show "\<exists> p q. a = p^2 - q^2 \<and> b = 2*p*q \<and> \<bar>c\<bar> = p^2 + q^2 \<and> zgcd p q=1" 
     (is "\<exists> p q. ?Q p q")
@@ -493,7 +493,7 @@ next
   have "r^2 \<ge> 0" and "x^2 \<ge> 0" by (auto simp only: zero_le_power2)
   hence "int(nat(r^2)) = r^2 \<and> int(nat(x^2)) = x^2" by auto
   with pqr have "int(nat(r^2)) < int(nat(x^2))" by auto
-  hence "nat(r^2) < nat(x^2)" by (simp only: zless_int)
+  hence "nat(r^2) < nat(x^2)" by (simp only: of_nat_less_iff)
   with pqr show ?case by auto
 qed
 

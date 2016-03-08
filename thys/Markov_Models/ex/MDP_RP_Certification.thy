@@ -214,7 +214,7 @@ lift_definition K :: "nat \<Rightarrow> nat pmf set" is
   "\<lambda>i. if i < state_count mdp then
      { (\<lambda>j. of_rat (lookup 0 D j) :: real) | D. D \<in> set (distrs mdp !! i) }
      else { indicator {0} }"
-proof (auto split: split_if_asm simp del: IArray.sub_def)
+proof (auto split: if_split_asm simp del: IArray.sub_def)
   fix n D assume n: "n < state_count mdp" and D: "D \<in> set (distrs mdp !! n)"
   from valid_mdp_rpD(3)[OF rp this] show nn: "\<And>i. 0 \<le> lookup 0 D i"
     by (auto simp add: lookup_eq_map_of split: option.split dest: map_of_SomeD)

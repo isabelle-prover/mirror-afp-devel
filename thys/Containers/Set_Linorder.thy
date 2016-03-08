@@ -112,7 +112,7 @@ lemma set_less_eq_aux_empty [simp]: "A \<sqsubseteq>' {} \<longleftrightarrow> A
 by(auto simp add: set_less_eq_aux_def finite_complement_partition)
 
 lemma set_less_aux_antisym: "\<lbrakk> A \<sqsubset>' B; B \<sqsubset>' A \<rbrakk> \<Longrightarrow> False"
-by(auto simp add: set_less_aux_def split: split_if_asm)
+by(auto simp add: set_less_aux_def split: if_split_asm)
 
 lemma set_less_aux_conv_set_less_eq_aux:
   "A \<sqsubset>' B \<longleftrightarrow> A \<sqsubseteq>' B \<and> \<not> B \<sqsubseteq>' A"
@@ -523,10 +523,10 @@ lemma set_less_eq_refl [iff]: "A \<sqsubseteq> A"
 by(auto simp add: set_less_eq_def2 not_in_complement_partition)
 
 lemma set_less_eq_antisym: "\<lbrakk> A \<sqsubseteq> B; B \<sqsubseteq> A \<rbrakk> \<Longrightarrow> A = B"
-by(auto simp add: set_less_eq_def2 set_less_eq_aux''_finite not_in_complement_partition not_in_complement_partition_False del: equalityI split: split_if_asm dest: set_less_eq_aux_antisym set_less_eq_aux''_antisym)
+by(auto simp add: set_less_eq_def2 set_less_eq_aux''_finite not_in_complement_partition not_in_complement_partition_False del: equalityI split: if_split_asm dest: set_less_eq_aux_antisym set_less_eq_aux''_antisym)
 
 lemma set_less_eq_trans: "\<lbrakk> A \<sqsubseteq> B; B \<sqsubseteq> C \<rbrakk> \<Longrightarrow> A \<sqsubseteq> C"
-by(auto simp add: set_less_eq_def split: split_if_asm intro: set_less_eq_aux''_trans)
+by(auto simp add: set_less_eq_def split: if_split_asm intro: set_less_eq_aux''_trans)
 
 lemma set_less_eq_total: "A \<sqsubseteq> B \<or> B \<sqsubseteq> A"
 by(auto simp add: set_less_eq_def2 set_less_eq_aux''_finite not_in_complement_partition not_in_complement_partition_False intro: set_less_eq_aux_finite_total2 finite_subset[OF subset_UNIV] del: disjCI dest: set_less_eq_aux''_total)
@@ -2215,47 +2215,13 @@ qed simp
 end
 
 lemma char_less_iff_nat_of_char: "x < y \<longleftrightarrow> nat_of_char x < nat_of_char y"
-  (is "?lhs \<longleftrightarrow> ?rhs")
-proof
-  assume "?lhs"
-  moreover obtain x1 x2 where x: "x = Char x1 x2" by(cases x)
-  moreover obtain y1 y2 where y: "y = Char y1 y2" by(cases y)
-  ultimately have "x1 < y1 \<or> x1 = y1 \<and> x2 < y2" (is "?C1 \<or> ?C2") by(simp add: less_char_Char)
-  thus ?rhs
-  proof
-    assume ?C1
-    from nat_of_nibble_less_16[of x2] x
-    have "nat_of_char x < (nat_of_nibble x1 + 1) * 16" by(simp add: nat_of_char_def)
-    also have "\<dots> \<le> nat_of_nibble y1 * 16" using `?C1` by(simp add: nibble_less_def less_eq_Suc_le)
-    also have "\<dots> \<le> nat_of_char y" using y by(simp add: nat_of_char_def)
-    finally show ?thesis .
-  next
-    assume ?C2 thus ?thesis using x y by(simp add: nat_of_char_def nibble_less_def)
-  qed
-next
-  assume "?rhs"
-  moreover obtain x1 x2 where x: "x = Char x1 x2" by(cases x)
-  moreover obtain y1 y2 where y: "y = Char y1 y2" by(cases y)
-  moreover 
-  { assume "x1 > y1"
-    have "nat_of_char y < (nat_of_nibble y1 + 1) * 16"
-      using y nat_of_nibble_less_16[of y2] by(simp add: nat_of_char_def)
-    also have "\<dots> \<le> nat_of_nibble x1 * 16" using `y1 < x1`
-      by(simp add: nibble_less_def less_eq_Suc_le)
-    also have "\<dots> \<le> nat_of_char x" using x by(simp add: nat_of_char_def)
-    finally have False using `?rhs` by simp }
-  moreover
-  { assume "x1 = y1"
-    with `?rhs` x y have "x2 < y2" 
-      by(simp add: nat_of_char_def nibble_less_def) }
-  ultimately show ?lhs by(cases "x1 > y1")(auto simp add: less_char_Char)
-qed
+  by (fact char_less_def)
 
 lemma nat_of_char_inject [simp]: "nat_of_char x = nat_of_char y \<longleftrightarrow> x = y"
-by(auto dest: arg_cong[where f=char_of_nat] simp add: char_of_nat_of_char)
+  by (fact nat_of_char_eq_iff)
 
 lemma char_le_iff_nat_of_char: "x \<le> y \<longleftrightarrow> nat_of_char x \<le> nat_of_char y"
-unfolding le_less by(auto simp add: char_less_iff_nat_of_char)
+  by (fact char_less_eq_def)
 
 instantiation char :: proper_interval begin
 fun proper_interval_char :: "char proper_interval" where
@@ -2290,9 +2256,10 @@ proof intro_classes
 
   { assume gt: "nat_of_char y - nat_of_char x > 1"
     let ?z = "char_of_nat (nat_of_char x + 1)"
-    from gt nat_of_char_less_256[of y] have 255: "nat_of_char x < 255" by auto
+    from gt nat_of_char_less_256[of y]
+    have 255: "nat_of_char x < 255" by arith
     with gt have "x < ?z" "?z < y"
-      by(simp_all add: char_less_iff_nat_of_char nat_of_char_of_nat)
+      by (simp_all add: char_less_iff_nat_of_char)
     hence "\<exists>z. x < z \<and> z < y" by blast }
   moreover
   { fix z

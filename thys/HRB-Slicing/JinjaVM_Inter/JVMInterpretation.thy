@@ -26,7 +26,7 @@ fun procs :: "jvm_prog \<Rightarrow> ((cname \<times> mname) \<times> var list \
 lemma in_set_methodsI: "map_of ms M = \<lfloor>(Ts, T, mxs, mxl\<^sub>0, is, xt)\<rfloor>
   \<Longrightarrow> ((C', M), Heap # map Local [0..<length Ts] @ [Local (length Ts)], [Heap, Stack 0, Exception])
   \<in> set (methods C' ms)"
-  by (induct rule: methods.induct) (auto split: split_if_asm)
+  by (induct rule: methods.induct) (auto split: if_split_asm)
 
 lemma in_methods_in_msD: "((C, M), ins, outs) \<in> set (methods D ms)
   \<Longrightarrow> M \<in> set (map fst ms) \<and> D = C"

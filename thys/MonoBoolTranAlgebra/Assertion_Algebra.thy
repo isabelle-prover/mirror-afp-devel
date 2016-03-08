@@ -139,11 +139,11 @@ begin
     Inf_Assertion_def: "Inf (A::('a Assertion) set) = - (Sup (uminus ` A))"
 
 lemma Sup1: "(x::'a Assertion) \<in> A \<Longrightarrow> x \<le> Sup A"
-    apply (simp add: Sup_Assertion_def less_eq_Assertion_def Abs_Assertion_inverse del: Sup_image_eq)
+    apply (simp add: Sup_Assertion_def less_eq_Assertion_def Abs_Assertion_inverse)
     by (rule Sup_upper, simp)
 
 lemma Sup2: "(\<And>x::'a Assertion . x \<in> A \<Longrightarrow> x \<le> z) \<Longrightarrow> Sup A \<le> z"
-    apply (simp add: Sup_Assertion_def less_eq_Assertion_def Abs_Assertion_inverse del: Sup_image_eq)
+    apply (simp add: Sup_Assertion_def less_eq_Assertion_def Abs_Assertion_inverse)
     apply (rule Sup_least)
     by blast
 
@@ -179,7 +179,7 @@ lemma assert_top [simp]: "{\<cdot>\<top>} = 1"
   by (simp add: top_Assertion_def)
 
 lemma assert_Sup: "{\<cdot>Sup A} = Sup (assert ` A)"
-  by (simp add: Sup_Assertion_def Abs_Assertion_inverse del: Sup_image_eq)
+  by (simp add: Sup_Assertion_def Abs_Assertion_inverse)
 
  
 lemma assert_Inf: "{\<cdot>Inf A} = (Inf (assert ` A)) \<sqinter> 1"
@@ -189,15 +189,13 @@ next
   note strong_INF_cong [cong del] strong_SUP_cong [cong del]
   case False then show ?thesis
   apply (simp add: Inf_Assertion_def uminus_Assertion_def)
-  apply (simp add: neg_assert_def assert_Sup dual_Sup Inf_comp inf_commute inf_Inf comp_def INF_def SUP_def
-    del: Inf_image_eq Sup_image_eq)
+  apply (simp add: neg_assert_def assert_Sup dual_Sup Inf_comp inf_commute inf_Inf comp_def)
   apply (rule_tac f = Inf in arg_cong)
   apply safe
   apply simp
   apply (subst inf_commute)
   apply (simp add: image_def uminus_Assertion_def)
   apply (simp add: neg_assert_def dual_comp dual_inf sup_comp assertion_prop)
-  apply (simp add: inf_commute)
   apply auto [1]
   apply (simp)
   apply (subst image_def, simp)

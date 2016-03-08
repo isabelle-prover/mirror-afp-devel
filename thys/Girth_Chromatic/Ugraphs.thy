@@ -147,7 +147,7 @@ proof (induct A)
     have "{(a,b). a \<in> A \<and> b \<in> A \<and> a < b} \<inter> (\<lambda>a. if a < x then (a,x) else (x,a)) ` A = {}"
       using `x \<notin> A` by auto
     moreover have "inj_on (\<lambda>a. if a < x then (a, x) else (x, a)) A"
-      by (auto intro: inj_onI split: split_if_asm)
+      by (auto intro: inj_onI split: if_split_asm)
     ultimately show ?thesis using insert Suc
       by (simp add: card_Un_disjoint card_image del: if_image_distrib)
   qed (simp add: card_eq_0_iff insert)
@@ -208,7 +208,7 @@ lemma le_\<alpha>_iff:
 proof
   assume ?L
   then obtain vs where "vs \<in> independent_sets Gr" and "k \<le> card vs"
-    using assms unfolding \<alpha>_def SUP_def enat_le_Sup_iff by auto
+    using assms unfolding \<alpha>_def enat_le_Sup_iff by auto
   moreover
   then obtain us where "us \<subseteq> vs" and "k = card us"
     using card_Ex_subset by auto

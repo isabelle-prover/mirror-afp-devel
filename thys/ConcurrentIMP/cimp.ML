@@ -51,7 +51,7 @@ fun define_lemmas name attrs thm_list lthy =
      * definitions from taking O(n^2) time (where "n" is the number of
      * definitions previously made).
      *)
-    val lthy' = Local_Theory.restore lthy  (* FIXME !? *)
+    val lthy' = Local_Theory.reset lthy  (* FIXME disrupts context *)
     val thms' = map (Morphism.thm (Local_Theory.target_morphism lthy)) thms
   in
     (thms', lthy')

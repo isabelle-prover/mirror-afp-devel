@@ -228,10 +228,10 @@ proof (induct p rule: rev_induct)
  case (snoc y ys) show ?case using snoc
   proof (cases "r \<in> set ys")
    case True show ?thesis using snoc True
-    by (simp add: applied_rule_rev_def split: split_if_asm)
+    by (simp add: applied_rule_rev_def split: if_split_asm)
    next
    case False show ?thesis using snoc False
-  by (simp add: applied_rule_rev_def split: split_if_asm)
+  by (simp add: applied_rule_rev_def split: if_split_asm)
  qed
 qed
 

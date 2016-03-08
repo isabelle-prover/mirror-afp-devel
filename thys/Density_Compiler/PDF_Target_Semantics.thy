@@ -183,7 +183,7 @@ primrec cexpr_type :: "tyenv \<Rightarrow> cexpr \<Rightarrow> pdf_type option" 
 lemma cexpr_type_Some_iff: "cexpr_type \<Gamma> e = Some t \<longleftrightarrow> \<Gamma> \<turnstile>\<^sub>c e : t"
   apply rule
   apply (induction e arbitrary: \<Gamma> t, 
-         auto intro!: cexpr_typing.intros split: option.split_asm split_if_asm) []
+         auto intro!: cexpr_typing.intros split: option.split_asm if_split_asm) []
   apply (induction rule: cexpr_typing.induct, auto)
   done
 
@@ -559,7 +559,7 @@ lemma cexpr_typing_subst_val[intro]:
 
 lemma free_vars_cexpr_subst_val_aux:
     "free_vars (cexpr_subst_val_aux x e v) = (\<lambda>y. if y \<ge> x then Suc y else y) -` free_vars e"
-  by (induction e arbitrary: x) (auto simp: insert_var_def split: split_if_asm)
+  by (induction e arbitrary: x) (auto simp: insert_var_def split: if_split_asm)
 
 lemma free_vars_cexpr_subst_val[simp]:
     "free_vars (cexpr_subst_val e v) = Suc -` free_vars e"
@@ -632,7 +632,7 @@ proof (intro nonneg_cexprI)
     by (simp add: cexpr_sem_cexpr_comp_aux)
   also from val_type_cexpr_sem[OF t1 vars \<sigma>] have "cexpr_sem \<sigma> f \<in> type_universe t1" by auto
   with \<sigma> x have "\<sigma>(x := cexpr_sem \<sigma> f) \<in> space (state_measure V (\<Gamma>(x := t1)))"
-    by (auto simp: state_measure_def space_PiM shift_var_set_def split: split_if_asm)
+    by (auto simp: state_measure_def space_PiM shift_var_set_def split: if_split_asm)
   hence "extract_real (cexpr_sem (\<sigma>(x := cexpr_sem \<sigma> f)) e) \<ge> 0"
     by(intro nonneg_cexprD[OF assms(1)])
   finally show "extract_real (cexpr_sem \<sigma> (cexpr_comp_aux x f e)) \<ge> 0" .
@@ -648,7 +648,7 @@ proof (intro nonneg_cexprI)
     by (simp add: cexpr_sem_cexpr_comp)
   also from val_type_cexpr_sem[OF assms(2,3) \<sigma>] have "cexpr_sem \<sigma> f \<in> type_universe t2" by auto
   with \<sigma> have "\<sigma>(0 := cexpr_sem \<sigma> f) \<in> space (state_measure (shift_var_set V) (case_nat t2 \<Gamma>))"
-    by (auto simp: state_measure_def space_PiM shift_var_set_def split: split_if_asm)
+    by (auto simp: state_measure_def space_PiM shift_var_set_def split: if_split_asm)
   hence "extract_real (cexpr_sem (\<sigma>(0 := cexpr_sem \<sigma> f)) e) \<ge> 0"
     by(intro nonneg_cexprD[OF assms(1)])
   finally show "extract_real (cexpr_sem \<sigma> (e \<circ>\<^sub>c f)) \<ge> 0" .
@@ -759,13 +759,13 @@ lemma integrable_cexpr_projection:
 proof (unfold real_integrable_def, intro AE_conjI)
   show "AE x in ?N. ?f x \<in> borel_measurable ?M" using \<rho> e disjoint
     by (intro AE_I2 measurable_cexpr_sem')
-       (auto simp: state_measure_def space_PiM dest: PiE_mem split: split_if_asm)
+       (auto simp: state_measure_def space_PiM dest: PiE_mem split: if_split_asm)
 
   let ?f'' = "\<lambda>x \<sigma>. extract_real (cexpr_sem (merge (insert v V) V' (\<sigma>(v := x), \<rho>)) e)"
   {
     fix x \<sigma> assume "x \<in> space ?N" "\<sigma> \<in> space ?M"
     hence "merge (insert v V) V' (\<sigma>(v := x), \<rho>) = merge V (insert v V') (\<sigma>, \<rho>(v := x))"
-      using disjoint by (intro ext) (simp add: merge_def split: split_if_asm)
+      using disjoint by (intro ext) (simp add: merge_def split: if_split_asm)
     hence "?f'' x \<sigma> = ?f x \<sigma>" by simp
   } note f''_eq_f = this
 
@@ -1011,7 +1011,7 @@ proof-
           RealVal (\<integral>x. extract_real (cexpr_sem (case_nat x \<sigma> \<circ> ?f) e) \<partial>stock_measure (\<Gamma> v))"
     by (simp add: extract_real_def integrate_var_def cexpr_sem_map_vars)
   also have "(\<lambda>x. case_nat x \<sigma> \<circ> ?f) = (\<lambda>x. \<sigma>(v := x))"
-    by (intro ext) (simp add: o_def split: split_if)
+    by (intro ext) (simp add: o_def split: if_split)
   finally show ?thesis .
 qed
 
@@ -1084,7 +1084,7 @@ next
   interpret sigma_finite_measure "state_measure (set vs) \<Gamma>"
     by (simp add: sigma_finite_state_measure)
   have \<rho>': "\<And>x. x \<in> type_universe (\<Gamma> v) \<Longrightarrow> \<rho>(v := x) \<in> space (state_measure (insert v V') \<Gamma>)"
-    using Cons.prems(1) by (auto simp: state_measure_def space_PiM split: split_if_asm)
+    using Cons.prems(1) by (auto simp: state_measure_def space_PiM split: if_split_asm)
   have "extract_real (cexpr_sem \<rho> (integrate_vars \<Gamma> (v # vs) e)) = 
           \<integral>x. extract_real (cexpr_sem (\<rho>(v := x)) (integrate_vars \<Gamma> vs e)) \<partial>stock_measure (\<Gamma> v)"
     (is "_ = ?I") by (simp add: integrate_vars_def cexpr_sem_integrate_var extract_real_def)
@@ -1115,7 +1115,7 @@ next
     done
   also have "(\<lambda>x \<sigma>. merge (set vs) (insert v V') (\<sigma>, \<rho>(v := x))) =
                  (\<lambda>x \<sigma>. merge (set (v#vs)) V' (\<sigma>(v := x), \<rho>))"
-    using Cons.prems by (intro ext) (auto simp: merge_def split: split_if)
+    using Cons.prems by (intro ext) (auto simp: merge_def split: if_split)
   also have "(\<integral>x. \<integral>\<sigma>. extract_real (cexpr_sem (merge (set (v#vs)) V' (\<sigma>(v := x), \<rho>)) e) 
                   \<partial>state_measure (set vs) \<Gamma> \<partial>stock_measure (\<Gamma> v)) =
                \<integral>\<sigma>. extract_real (cexpr_sem (merge (set (v#vs)) V' (\<sigma>, \<rho>)) e) 
@@ -1162,7 +1162,7 @@ proof (induction vs arbitrary: \<rho> V')
 next
   case (Cons v vs \<rho> V')
   have \<rho>': "\<And>x. x \<in> type_universe (\<Gamma> v) \<Longrightarrow> \<rho>(v := x) \<in> space (state_measure (insert v V') \<Gamma>)"
-    using Cons.prems(1) by (auto simp: state_measure_def space_PiM split: split_if_asm)
+    using Cons.prems(1) by (auto simp: state_measure_def space_PiM split: if_split_asm)
   have "extract_real (cexpr_sem \<rho> (integrate_vars \<Gamma> (v # vs) e)) =
           \<integral>x. extract_real (cexpr_sem (\<rho>(v := x)) (integrate_vars \<Gamma> vs e)) \<partial>stock_measure (\<Gamma> v)"
     by (simp add: integrate_vars_def cexpr_sem_integrate_var extract_real_def)

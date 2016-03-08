@@ -21,7 +21,7 @@ definition One_pdevs_raw::"nat \<Rightarrow> 'a::executable_euclidean_space"
 
 lemma zeros_One_pdevs_raw:
   "One_pdevs_raw -` {0::'a::executable_euclidean_space} = {length (Basis_list::'a list)..}"
-  by (auto simp: One_pdevs_raw_def split: split_if_asm dest!: nth_mem)
+  by (auto simp: One_pdevs_raw_def split: if_split_asm dest!: nth_mem)
 
 lemma nonzeros_One_pdevs_raw:
   "{i. One_pdevs_raw i \<noteq> (0::'a::executable_euclidean_space)} = - {length (Basis_list::'a list)..}"
@@ -1250,7 +1250,7 @@ next
 next
   case (Var x y)
   thus ?case
-    by (auto simp: aform_val_def inner_aform_def inner_add_left split: split_if_asm
+    by (auto simp: aform_val_def inner_aform_def inner_add_left split: if_split_asm
       intro!: exI[where x=e'])
 next
   case (Inverse ra)
@@ -1302,7 +1302,7 @@ next
           using err e
           by (auto intro!: exI[where x="e(d1:=err)"] simp: d1_def fun_upd_def)
       } ultimately show ?case using Inverse Y
-        by (auto split: split_if_asm simp: Let_def)
+        by (auto split: if_split_asm simp: Let_def)
     qed
   qed simp
 qed
@@ -1525,7 +1525,7 @@ lemma
   assumes "take (max_Var_realarith ra) ys = take (max_Var_realarith ra) zs"
   shows "interpret_realarith ra ys = interpret_realarith ra zs"
   using assms
-  by (induct ra) (auto dest!: take_max_eqD simp: take_Suc_eq split: split_if_asm)
+  by (induct ra) (auto dest!: take_max_eqD simp: take_Suc_eq split: if_split_asm)
 
 lemma
   interpret_euclarith_eq_take_max_VarI:
@@ -1851,11 +1851,11 @@ proof -
       intro!: image_eqI[where x="(\<lambda>_. 0)(i:=e 0)"])
 
   have "pdevs_domain (snd ?ivl) \<inter> pdevs_domain (snd Y) = {}"
-    using i[of Y] by (auto split: split_if_asm)
+    using i[of Y] by (auto split: if_split_asm)
   moreover
   have "list_all (\<lambda>Y. pdevs_domain (snd ?ivl) \<inter> pdevs_domain (snd Y) = {}) YS"
     using i
-    by (force split: split_if_asm simp: list_all_iff)
+    by (force split: if_split_asm simp: list_all_iff)
   ultimately have Joints: "c*\<^sub>Rhd Basis_list#y#ys \<in> Joints (?ivl#Y#YS)"
     by (auto intro!: fresh_JointsI[OF assms(2) _ in_Aff])
   with approx_euclarith_outer2_shift[OF assms(1)[simplified scaleR_aform_ivl_def] Joints,

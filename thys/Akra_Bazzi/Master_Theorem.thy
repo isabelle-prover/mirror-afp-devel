@@ -179,7 +179,7 @@ proof (intro exI conjI)
   def C \<equiv> "?C"
   from b_bounds have C_pos: "C > 0" unfolding C_def by simp 
   let ?T = "min (C powr r) (1 powr r) * min ((1/2) powr r') (1 powr r')"
-  from C_pos show "?T > 0" unfolding min_def by (auto split: split_if)
+  from C_pos show "?T > 0" unfolding min_def by (auto split: if_split)
   from bs_nonempty b_bounds have C_pos: "C > 0" unfolding C_def by simp
   thus "C < Min (set bs)" by (simp add: C_def)
   

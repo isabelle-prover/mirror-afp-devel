@@ -217,7 +217,7 @@ proof (cases "bp ! pc")
   next
     case False with ChoiceI assms obtain b i where 
       bi: "bval b s" "(b,i) \<in> set l" "pc' = nat(int(pc+1)+i)"
-      by (auto split: split_if_asm)
+      by (auto split: if_split_asm)
     with ChoiceI assms have "i \<in> UNION (set bp) offsets" by (force dest: nth_mem)
     with bi assms have "\<exists>a. (a \<in> max_next_pcs bp \<and> pc' \<le> a)"
       unfolding max_next_pcs_def offsets_is_def by force
@@ -225,7 +225,7 @@ proof (cases "bp ! pc")
       by (auto simp: Max_ge_iff max_next_pcs_not_empty[OF assms] finite_max_next_pcs) 
     qed
 qed (auto simp: Max_ge_iff max_next_pcs_not_empty finite_max_next_pcs,
-     (force simp add: max_next_pcs_def offsets_is_def dest: nth_mem split: split_if_asm)+)
+     (force simp add: max_next_pcs_def offsets_is_def dest: nth_mem split: if_split_asm)+)
 
 lemma Max_lem1: "\<lbrakk> pc < length bp; (pc', s') \<in> set (exec (bp ! pc) (pc, s))\<rbrakk>
     \<Longrightarrow> pc' \<le> Max (insert x (max_next_pcs bp))"
@@ -276,10 +276,10 @@ proof (induction bp s pc arbitrary: pc' rule: exec'.induct[case_names C])
   case (C ins s pc pc')
   from C.prems show ?case
     apply (subst (asm) exec'.simps)
-    apply (split split_if_asm instr.split_asm)+
+    apply (split if_split_asm instr.split_asm)+
     apply (simp add: pc_bound_def)
 
-    apply (simp split: split_if_asm add: Let_def)
+    apply (simp split: if_split_asm add: Let_def)
     apply (frule (2) C.IH(1), auto) []
     apply (auto simp: pc_bound_def) []
     apply (frule (2) C.IH(2), auto) []
@@ -290,7 +290,7 @@ proof (induction bp s pc arbitrary: pc' rule: exec'.induct[case_names C])
     apply (rule_tac x="TestI bexp int" in bexI, auto simp: array_idx_in_set) []
 
     apply (rename_tac list)
-    apply (clarsimp split: split_if_asm simp add: Let_def)
+    apply (clarsimp split: if_split_asm simp add: Let_def)
     apply (elim disjE conjE, auto) []
     apply (frule (1) C.IH(3), auto) []
     apply (force)
@@ -301,7 +301,7 @@ proof (induction bp s pc arbitrary: pc' rule: exec'.induct[case_names C])
     apply (rule_tac x="ChoiceI list" in bexI, auto simp: array_idx_in_set) []
 
     apply (rename_tac int)
-    apply (simp split: split_if_asm add: Let_def)
+    apply (simp split: if_split_asm add: Let_def)
     apply (frule (1) C.IH(4), auto) []
     apply (subgoal_tac "int \<in> offsets_is (list_of_array ins)")
     apply (blast intro: aux2)
@@ -400,7 +400,7 @@ proof (clarsimp simp del: exec.simps, intro conjI)
 
     thus ?thesis using STEP'
       by (simp add: AssI)
-  qed (auto split: split_if_asm)
+  qed (auto split: if_split_asm)
 qed
 
 lemma in_bound_step: 
@@ -412,7 +412,7 @@ lemma in_bound_step:
   apply (cases c)
   apply (auto 
     simp add: nexts.simps 
-    split: split_if_asm)
+    split: if_split_asm)
   apply (frule (2) exec_bound[THEN set_mp])
   apply clarsimp
   apply (frule (1) rcs_aux)

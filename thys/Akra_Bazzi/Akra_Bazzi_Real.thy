@@ -21,8 +21,8 @@ text \<open>
 locale akra_bazzi_integral =
   fixes integrable :: "(real \<Rightarrow> real) \<Rightarrow> real \<Rightarrow> real \<Rightarrow> bool"
     and integral   :: "(real \<Rightarrow> real) \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real"
-  assumes integrable_const: "integrable (\<lambda>_. c) a b"
-      and integral_const:   "a \<le> b \<Longrightarrow> integral (\<lambda>_. c) a b = (b - a) * c"
+  assumes integrable_const: "c \<ge> 0 \<Longrightarrow> integrable (\<lambda>_. c) a b"
+      and integral_const:   "c \<ge> 0 \<Longrightarrow> a \<le> b \<Longrightarrow> integral (\<lambda>_. c) a b = (b - a) * c"
       and integrable_subinterval: 
             "integrable f a b \<Longrightarrow> a \<le> a' \<Longrightarrow> b' \<le> b \<Longrightarrow> integrable f a' b'"
       and integral_le:
@@ -34,7 +34,7 @@ locale akra_bazzi_integral =
 begin
 lemma integral_nonneg: 
   "a \<le> b \<Longrightarrow> integrable f a b \<Longrightarrow> (\<And>x. x \<in> {a..b} \<Longrightarrow> f x \<ge> 0) \<Longrightarrow> integral f a b \<ge> 0"
-  by (drule integral_le[OF integrable_const], assumption) (simp add: integral_const)
+  using integral_le[OF integrable_const[of 0], of f a b]  by (simp add: integral_const)
 end
 
 
@@ -826,11 +826,12 @@ proof-
         by (intro mult_mono mult_nonneg_nonneg g_nonneg) auto
     }
     hence "integral (\<lambda>u. g u / u powr (p+1)) ?x' x \<le> integral (\<lambda>u. c2 * g x / ?m) ?x' x"
-      using x_pos step_pos[OF i x] x0_hb_bound7[OF x i] 
-      by (intro integral_le x'_le_x akra_bazzi_integrable ballI)
-         (simp_all add: field_simps integrable_const)
+      using x_pos step_pos[OF i x] x0_hb_bound7[OF x i] c2 x x0_le_x1
+      by (intro integral_le x'_le_x akra_bazzi_integrable ballI integrable_const)
+         (auto simp: field_simps intro!: mult_nonneg_nonneg g_nonneg)
       
-    also from x'_le_x have "... = (x - ?x') * (c2 * g x / ?m)" by (subst integral_const) simp_all
+    also from x0_pos x x0_le_x1 x'_le_x c2 have "... = (x - ?x') * (c2 * g x / ?m)"
+      by (subst integral_const) (simp_all add: g_nonneg)
     also from c2 x_pos x x0_le_x1 have "c2 * g x \<ge> 0"
       by (intro mult_nonneg_nonneg g_nonneg) simp_all 
     with x i x0_le_x1 have "(x - ?x') * (c2 * g x / ?m) \<le> x * (c2 * g x / ?m)" 
@@ -879,9 +880,11 @@ proof-
       finally have "g u / u powr (p + 1) \<le> ?m3" .
     } note A = this
     {
-      from A x have "?int x \<le> integral (\<lambda>_. ?m3) x\<^sub>0 x"
-        by (intro integral_le akra_bazzi_integrable integrable_const) simp_all
-      also from x have "... \<le> (x - x\<^sub>0) * ?m3" by (subst integral_const) simp_all
+      from A x gb2_nonneg have "?int x \<le> integral (\<lambda>_. ?m3) x\<^sub>0 x"
+        by (intro integral_le akra_bazzi_integrable integrable_const mult_nonneg_nonneg)
+           (simp_all add: le_max_iff_disj)
+      also from x gb2_nonneg have "... \<le> (x - x\<^sub>0) * ?m3" 
+        by (subst integral_const) (simp_all add: le_max_iff_disj)
       also from x gb2_nonneg have "... \<le> (x\<^sub>1 - x\<^sub>0) * ?m3"
         by (intro mult_right_mono mult_nonneg_nonneg) (simp_all add: max_def)
       finally have "1 + ?int x \<le> ?m4" by simp
@@ -1082,6 +1085,8 @@ proof-
     have [simp]: "bs ! i > 0" by (intro b_pos nth_mem) (simp add: i length_bs)
     from x x0_le_x1 i have x'_pos: "?x' > 0" by (intro step_pos) simp_all
     have m_pos: "?m > 0" unfolding max_def using x_pos step_pos[OF i x] by auto
+    with x x0_le_x1 c1 have c1_g_m_nonneg: "c1 * g x / ?m \<ge> 0" 
+      by (intro mult_nonneg_nonneg divide_nonneg_pos g_nonneg) simp_all
 
     from x i g_nonneg x0_le_x1 have "c3 * (g x / x powr p) \<le> (c1*b'/m') * (g x / x powr p)"
       unfolding m'_def b'_def by (intro mult_right_mono c3) (simp_all add: field_simps)
@@ -1101,7 +1106,7 @@ proof-
       by (subst powr_mult[symmetric]) (simp add: field_simps, simp, simp add: algebra_simps)
     also have "x powr (p + 1) * 1 = x powr (p + 1)" by simp
     also have "(x - ?x') * (c1 * g x / ?m) = integral (\<lambda>_. c1 * g x / ?m) ?x' x"
-      using x'_le_x by (subst integral_const) simp_all
+      using x'_le_x by (subst integral_const[OF c1_g_m_nonneg]) auto 
     also {
       fix u assume u: "u \<ge> ?x'" "u \<le> x"
       have "u powr (p + 1) \<le> ?m" using x u x'_pos by (intro powr_upper_bound mult_pos_pos) simp_all
@@ -1114,7 +1119,7 @@ proof-
     }
     hence "integral (\<lambda>_. c1 * g x / ?m) ?x' x \<le> integral (\<lambda>u. g u / u powr (p + 1)) ?x' x"
       using x0_hb_bound7[OF x i] x'_le_x
-      by (intro integral_le ballI akra_bazzi_integrable integrable_const) simp_all
+      by (intro integral_le ballI akra_bazzi_integrable integrable_const c1_g_m_nonneg) simp_all
     finally have "c3 * g x \<le> g_approx i x" using x_pos 
       unfolding g_approx_def by (simp add: field_simps)
   }

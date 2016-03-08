@@ -84,7 +84,7 @@ proof-
   }
   hence "EX x l. x \<longlonglongrightarrow> x0 & (f o x) \<longlonglongrightarrow> l & ~(f x0 <= l)"
      apply(rule_tac x="x o r" in exI) apply(rule_tac x=l in exI)
-     using r_def x_def by (auto simp add: o_assoc lim_subseq)
+     using r_def x_def by (auto simp add: o_assoc LIMSEQ_subseq_LIMSEQ)
   hence "~?lhs" unfolding lsc_at_def by blast
 }
 moreover
@@ -1060,7 +1060,7 @@ next
     hence "(SUM j : s. a j) = 0"
       using insert by auto
     hence "ALL j. (j : s --> a j = 0)"
-      using setsum_nonneg_0[where 'b=real] insert by fastforce
+      using insert by (simp add: setsum_nonneg_eq_0_iff)
     hence ?case using insert.hyps(1-3) `a i = 1`
       by (simp add: zero_ereal_def[symmetric] one_ereal_def[symmetric]) }
   moreover
@@ -1624,8 +1624,8 @@ proof-
   { fix e::real assume "e>0"
     hence "INFIMUM (ball x e) f <= min (f x) (Liminf (at x) f)"
       unfolding min_Liminf_at apply (subst SUP_upper) by auto
-    hence "EX y. y : ball x e & f y <= z"
-      using Inf_le_iff_less[of "ball x e" f "min (f x) (Liminf (at x) f)"] z_def by (auto simp: Bex_def)
+    hence "\<exists>y. y \<in> ball x e \<and> f y \<le> z"
+      using Inf_le_iff_less [of f "ball x e" "min (f x) (Liminf (at x) f)"] z_def by (auto simp add: Bex_def)
     hence "EX y. dist x y < e & y : domain f" unfolding domain_def ball_def using z_def by auto
   } hence "x:closure(domain f)" unfolding closure_approachable by (auto simp add: dist_commute)
 } ultimately show ?thesis by auto

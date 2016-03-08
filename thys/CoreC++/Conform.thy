@@ -91,7 +91,7 @@ next
   case (Class C')
   { assume "P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some(Class C')"
     with h have "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C')"
-      by (cases v) (auto split:split_if_asm)  }
+      by (cases v) (auto split:if_split_asm)  }
   hence 1:"P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some(Class C') \<Longrightarrow> 
            P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C')" by simp
   { assume type:"P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some NT"
@@ -103,7 +103,7 @@ next
     P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C')" by simp
   { assume "P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C')"
     with h have "P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some(Class C')"
-      by (cases v) (auto split:split_if_asm) }
+      by (cases v) (auto split:if_split_asm) }
   hence 3:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some(Class C') \<Longrightarrow> 
            P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v = Some(Class C')" by simp
   { assume typenot:"P \<turnstile> typeof\<^bsub>h(a \<mapsto> (C, S'))\<^esub> v \<noteq> Some NT"

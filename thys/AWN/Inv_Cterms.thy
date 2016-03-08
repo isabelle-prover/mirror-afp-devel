@@ -106,7 +106,7 @@ fun each ctxt =
 
 fun simp_all ctxt =
   let val ctxt' =
-        ctxt |> fold Splitter.add_split [@{thm split_if_asm}]
+        ctxt |> fold Splitter.add_split [@{thm if_split_asm}]
   in
     PARALLEL_ALLGOALS (shallow_simp ctxt)
     THEN

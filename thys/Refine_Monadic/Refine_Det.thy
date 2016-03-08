@@ -386,7 +386,7 @@ lemma dres_ne_bot_RECT[refine_transfer]:
   assumes A: "\<And>f x. \<lbrakk> \<And>x. f x \<noteq> dSUCCEED \<rbrakk> \<Longrightarrow> B f x \<noteq> dSUCCEED"
   shows "RECT B x \<noteq> dSUCCEED"
   unfolding RECT_def
-  apply (split split_if)
+  apply (split if_split)
   apply (intro impI conjI)
   apply simp_all
   

@@ -57,7 +57,7 @@ lemma Sequence_inv_lemma: "\<tau> \<Turnstile> (\<delta> X) \<Longrightarrow> \<
 apply(insert Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e [of "X \<tau>"], simp)
 apply(auto simp: OclValid_def defined_def false_def true_def cp_def
                  bot_fun_def bot_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def null_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def null_fun_def
-           split:split_if_asm)
+           split:if_split_asm)
  apply(erule contrapos_pp [of "Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e (X \<tau>) = bot"])
  apply(subst Abs_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inject[symmetric], rule Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e, simp)
  apply(simp add: Rep_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_inverse bot_Sequence\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def bot_option_def)

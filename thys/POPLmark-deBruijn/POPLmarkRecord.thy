@@ -1985,7 +1985,7 @@ lemma matchs_mono:
   using H
   apply (induct rule: matchs_induct)
   apply (rule M_Nil)
-  apply (simp split add: split_if_asm)
+  apply (simp split add: if_split_asm)
   apply (rule M_Cons)
   apply simp_all
   done
@@ -2022,7 +2022,7 @@ theorem matchs_tl:
   shows "fps\<langle>l\<rangle>\<^sub>? = \<bottom> \<Longrightarrow> \<turnstile> fps [\<rhd>] fs \<Rightarrow> ts"
   using H
   apply (induct fps "(l, t) \<Colon> fs" ts arbitrary: l t fs rule: matchs_induct)
-  apply (simp_all split add: split_if_asm)
+  apply (simp_all split add: if_split_asm)
   apply (rule M_Nil)
   apply (rule M_Cons)
   apply auto
@@ -2355,7 +2355,7 @@ theorem reorder_prop:
   apply (drule bpspec)
   apply assumption
   apply (erule exE)
-  apply (simp split add: split_if_asm)
+  apply (simp split add: if_split_asm)
   apply (auto dest: assoc_set)
   done
 

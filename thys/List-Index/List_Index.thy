@@ -179,7 +179,7 @@ done
 lemma last_index_drop:
   "last_index xs x < i \<Longrightarrow> x \<notin> set(drop i xs)"
 apply(subgoal_tac "set(drop i xs) = set(take (size xs - i) (rev xs))")
- apply(simp add: last_index_def index_take Let_def split:split_if_asm)
+ apply(simp add: last_index_def index_take Let_def split:if_split_asm)
 apply (metis rev_drop set_rev)
 done
 

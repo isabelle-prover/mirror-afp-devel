@@ -15,27 +15,38 @@ subsection{*Definitions*}
 text{*The following definition can be improved in terms of performance, because it checks if
   there exists an element different from zero twice.*}
 
-definition echelon_form_of_column_k_det ::
-  "'b::{bezout_domain} \<times> (('b, 'c::{mod_type}) vec, 'd::{mod_type}) vec \<times> nat 
-  \<times> ('b \<Rightarrow> 'b \<Rightarrow> 'b \<times> 'b \<times> 'b \<times> 'b \<times> 'b) \<Rightarrow> nat 
-  \<Rightarrow> 'b \<times> (('b, 'c) vec, 'd) vec \<times> nat \<times> ('b \<Rightarrow> 'b \<Rightarrow> 'b \<times> 'b \<times> 'b \<times> 'b \<times> 'b)"
-  where "echelon_form_of_column_k_det A' k 
-  = (let det_P=fst A'; A = fst (snd A'); i = fst (snd(snd A')); 
-  bezout = snd (snd (snd A'));
-  from_nat_k = from_nat k; from_nat_i = from_nat i     
-  in if ((i \<noteq> nrows A) \<and> (A $ from_nat_i $ from_nat_k = 0) \<and>
-  (\<exists>m>from_nat_i. A $ m $ from_nat_k \<noteq> 0)) then 
-  (-1*det_P,echelon_form_of_column_k (A,i,bezout) k) 
-  else (det_P,echelon_form_of_column_k (A,i,bezout) k))"
+definition 
+  echelon_form_of_column_k_det :: "'b::{bezout_domain} \<times> 
+      (('b, 'c::{mod_type}) vec, 'd::{mod_type}) vec 
+      \<times> nat 
+      \<times> ('b \<Rightarrow> 'b \<Rightarrow> 'b \<times> 'b \<times> 'b \<times> 'b \<times> 'b) \<Rightarrow> nat \<Rightarrow> 'b 
+      \<times> (('b, 'c) vec, 'd) vec 
+      \<times> nat 
+      \<times> ('b \<Rightarrow> 'b \<Rightarrow> 'b \<times> 'b \<times> 'b \<times> 'b \<times> 'b)"
+  where 
+  "echelon_form_of_column_k_det A' k = 
+    (let (det_P, A, i, bezout) =  A';
+      from_nat_i = from_nat i;
+      from_nat_k = from_nat k
+     in 
+      if ( (i \<noteq> nrows A) \<and> 
+           (A $ from_nat_i $ from_nat_k = 0) \<and>
+           (\<exists>m>from_nat i. A $ m $ from_nat k \<noteq> 0)) 
+         then (-1 * det_P, echelon_form_of_column_k (A, i, bezout) k) 
+         else (     det_P, echelon_form_of_column_k (A, i, bezout) k))"
 
-definition "echelon_form_of_upt_k_det A' k bezout
-  = (let A = (snd A'); f = (foldl echelon_form_of_column_k_det (1, A, 0, bezout) [0..<Suc k])
-  in (fst f, fst (snd f)))"
+definition
+  "echelon_form_of_upt_k_det A' k bezout = 
+    (let A = (snd A'); 
+         f = (foldl echelon_form_of_column_k_det (1, A, 0, bezout) [0..<Suc k])
+     in (fst f, fst (snd f)))"
 
-
-definition "echelon_form_of_det" :: "'a::{bezout_domain}^'n::{mod_type}^'n::{mod_type} 
-  \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a \<times> 'a \<times> 'a) \<Rightarrow> ('a \<times> ('a::{bezout_domain}^'n::{mod_type}^'n::{mod_type}))"
-  where "echelon_form_of_det A bezout = echelon_form_of_upt_k_det (1::'a,A) (ncols A - 1) bezout"
+definition
+  echelon_form_of_det :: "'a::{bezout_domain}^'n::{mod_type}^'n::{mod_type}
+      \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a \<times> 'a \<times> 'a) 
+      \<Rightarrow> ('a \<times> ('a::{bezout_domain}^'n::{mod_type}^'n::{mod_type}))"
+  where 
+  "echelon_form_of_det A bezout = echelon_form_of_upt_k_det (1::'a,A) (ncols A - 1) bezout"
 
 subsection{*Properties*}
 
@@ -228,8 +239,7 @@ lemma echelon_form_of_column_k_det_unit:
   fixes A::"'a::{bezout_domain_div}^'n::{mod_type}^'n::{mod_type}"
   assumes det: "is_unit (det_P)"
   shows "is_unit (fst (echelon_form_of_column_k_det (det_P,A,i,bezout) k))"
-  unfolding is_unit_def echelon_form_of_column_k_det_def Let_def fst_conv snd_conv 
-  using det is_unit_def by auto
+  unfolding echelon_form_of_column_k_det_def Let_def fst_conv snd_conv using det by auto
 
 lemma echelon_form_of_upt_k_det_unit:
   fixes A::"'a::{bezout_domain_div}^'n::{mod_type}^'n::{mod_type}"
@@ -237,7 +247,7 @@ lemma echelon_form_of_upt_k_det_unit:
 proof (induct k)
   case 0
   show ?case unfolding echelon_form_of_upt_k_det_def Let_def fst_conv
-    using echelon_form_of_column_k_det_unit[OF is_unit_1] by auto
+    using echelon_form_of_column_k_det_unit[of 1] by auto
 next
   case (Suc k)
   let ?f="(foldl echelon_form_of_column_k_det (1,A,0,bezout) [0..<Suc k])"
@@ -262,12 +272,12 @@ subsubsection{*Final lemmas*}
 corollary det_echelon_form_of_det':
   fixes A::"'a::{bezout_domain_div}^'n::{mod_type}^'n::{mod_type}"
   assumes ib: "is_bezout_ext bezout"
-  shows "det A = ring_inv (fst (echelon_form_of_det A bezout)) 
+  shows "det A = 1 div (fst (echelon_form_of_det A bezout)) 
   * det (snd (echelon_form_of_det A bezout))"
 proof -
   have "(fst (echelon_form_of_det A bezout)) * det A = det (snd (echelon_form_of_det A bezout))"
     by (rule det_echelon_form_of_det[OF ib])
-  thus "det A = ring_inv (fst (echelon_form_of_det A bezout)) 
+  thus "det A = 1 div (fst (echelon_form_of_det A bezout)) 
     * det (snd (echelon_form_of_det A bezout))"
     by (auto simp add: echelon_form_of_unit dest: sym)
 qed
@@ -292,14 +302,14 @@ lemma det_echelon_form:
 corollary det_echelon_form_of_det_setprod:
   fixes A::"'a::{bezout_domain_div}^'n::{mod_type}^'n::{mod_type}"
   assumes ib: "is_bezout_ext bezout"
-  shows "det A = ring_inv (fst (echelon_form_of_det A bezout)) 
+  shows "det A = 1 div (fst (echelon_form_of_det A bezout)) 
   * setprod (\<lambda>i. snd (echelon_form_of_det A bezout) $ i $ i) (UNIV:: 'n set)"
   using det_echelon_form_of_det'[OF ib]
   unfolding det_echelon_form[OF ef_echelon_form_of_det[OF ib]] by auto
 
 corollary det_echelon_form_of_euclidean[code]:
   fixes A::"'a::{euclidean_ring}^'n::{mod_type}^'n::{mod_type}"
-  shows "det A = ring_inv (fst (echelon_form_of_det A euclid_ext2)) 
+  shows "det A = 1 div (fst (echelon_form_of_det A euclid_ext2)) 
   * setprod (\<lambda>i. snd (echelon_form_of_det A euclid_ext2) $ i $ i) (UNIV:: 'n set)"
   by (rule det_echelon_form_of_det_setprod[OF is_bezout_ext_euclid_ext2])
 

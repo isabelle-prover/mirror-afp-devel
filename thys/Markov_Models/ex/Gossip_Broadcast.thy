@@ -12,9 +12,9 @@ lemma inj_on_upd_PiE:
 proof (safe intro!: inj_onI ext)
   fix f g :: "'a \<Rightarrow> 'b" and x y :: 'b
   assume *: "f(i := x) = g(i := y)" "f \<in> extensional I" "g \<in> extensional I"
-  then show "x = y" by (auto simp: fun_eq_iff split: split_if_asm)
+  then show "x = y" by (auto simp: fun_eq_iff split: if_split_asm)
   fix i' from * `i \<notin> I` show "f i' = g i'"
-    by (cases "i' = i") (auto simp: fun_eq_iff extensional_def split: split_if_asm)
+    by (cases "i' = i") (auto simp: fun_eq_iff extensional_def split: if_split_asm)
 qed
 
 lemma setsum_folded_product:

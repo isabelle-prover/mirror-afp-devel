@@ -508,7 +508,7 @@ proof -
     proof(induct rule: rtrancl_induct)
       case (step y z)
       with R T have "(y, z) \<in> (\<Union>a. relations M' a)"
-        by (blast dest: rtrancl_trans)
+        by auto (blast dest: rtrancl_trans)
       with step show ?case by (blast intro: rtrancl_trans)
     qed simp }
   thus ?thesis by blast
@@ -537,38 +537,40 @@ proof -
   from F G H have WORLDS: "worlds (gen_model M t) = worlds (gen_model M' t)"
     unfolding gen_model_def by (auto iff: Int_absorb1)
 
-  { fix a x y
-    assume XY: "(x, y) \<in> relations M a \<inter> (\<Union>x. relations M x)\<^sup>* `` {t} \<times> (\<Union>x. relations M x)\<^sup>* `` {t}"
-    from XY tMT
-    have "(x, y) \<in> relations M a \<inter> T \<times> T" by blast
-    with R
-    have "(x, y) \<in> relations M' a \<inter> T \<times> T" by blast
-    with F XY tM'T
-    have "(x, y) \<in> relations M' a \<inter> (\<Union>x. relations M' x)\<^sup>* `` {t} \<times> (\<Union>x. relations M' x)\<^sup>* `` {t}"
-      by blast }
-  moreover
-  { fix a x y
-    assume XY: "(x, y) \<in> relations M' a \<inter> (\<Union>x. relations M' x)\<^sup>* `` {t} \<times> (\<Union>x. relations M' x)\<^sup>* `` {t}"
-    from XY tM'T
-    have "(x, y) \<in> relations M' a \<inter> T \<times> T" by blast
-    with R
-    have "(x, y) \<in> relations M a \<inter> T \<times> T" by blast
-    with F XY tMT
-    have "(x, y) \<in> relations M a \<inter> (\<Union>x. relations M x)\<^sup>* `` {t} \<times> (\<Union>x. relations M x)\<^sup>* `` {t}"
-      by blast }
-  ultimately
   have RELATIONS: "\<And>a. relations (gen_model M t) a = relations (gen_model M' t) a"
-    unfolding gen_model_def
+  proof (simp add: Int_absorb1 G H gen_model_def)
+    fix a
+    { fix a x y
+      assume XY: "(x, y) \<in> relations M a \<inter> (\<Union>x. relations M x)\<^sup>* `` {t} \<times> (\<Union>x. relations M x)\<^sup>* `` {t}"
+      from XY tMT
+      have "(x, y) \<in> relations M a \<inter> T \<times> T" by blast
+      with R
+      have "(x, y) \<in> relations M' a \<inter> T \<times> T" by blast
+      with F XY tM'T
+      have "(x, y) \<in> relations M' a \<inter> (\<Union>x. relations M' x)\<^sup>* `` {t} \<times> (\<Union>x. relations M' x)\<^sup>* `` {t}"
+        by blast }
+    moreover
+    { fix a x y
+      assume XY: "(x, y) \<in> relations M' a \<inter> (\<Union>x. relations M' x)\<^sup>* `` {t} \<times> (\<Union>x. relations M' x)\<^sup>* `` {t}"
+      from XY tM'T
+      have "(x, y) \<in> relations M' a \<inter> T \<times> T" by blast
+      with R
+      have "(x, y) \<in> relations M a \<inter> T \<times> T" by blast
+      with F XY tMT
+      have "(x, y) \<in> relations M a \<inter> (\<Union>x. relations M x)\<^sup>* `` {t} \<times> (\<Union>x. relations M x)\<^sup>* `` {t}"
+        by blast }
+    ultimately show "Restr (relations M a) ((\<Union>x. relations M x)\<^sup>* `` {t}) =
+      Restr (relations M' a) ((\<Union>x. relations M' x)\<^sup>* `` {t})"
     apply -
-    apply (simp (no_asm) add: Int_absorb1 G H)
     apply rule
      apply rule
      apply auto[1]
     apply rule
     apply (case_tac x)
-    apply blast
+    apply (simp (no_asm_use))
+    apply (metis Image_singleton_iff mem_Sigma_iff)
     done
-
+  qed
   from WORLDS RELATIONS V show ?thesis
     unfolding gen_model_def by simp
 qed

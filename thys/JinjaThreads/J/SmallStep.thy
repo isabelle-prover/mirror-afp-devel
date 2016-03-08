@@ -439,7 +439,7 @@ by(induct es arbitrary: es')(auto elim: reds.cases)
 lemma red_lcl_incr: "extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle> \<Longrightarrow> dom (lcl s) \<subseteq> dom (lcl s')"
   and reds_lcl_incr: "extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> dom (lcl s) \<subseteq> dom (lcl s')"
 apply(induct rule:red_reds.inducts)
-apply(auto simp del: fun_upd_apply split: split_if_asm)
+apply(auto simp del: fun_upd_apply split: if_split_asm)
 done
 
 lemma red_lcl_add_aux:
@@ -467,7 +467,7 @@ proof (induct arbitrary: l0 and l0 rule:red_reds.inducts)
     case (Some v)
     with `extTA,P,t \<turnstile> \<langle>e,(h, x(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`
     have "x' V \<noteq> None"
-      by -(drule red_lcl_incr, auto split: split_if_asm)
+      by -(drule red_lcl_incr, auto split: if_split_asm)
     with IH[of "l0(V := vo)"]
     show ?thesis
       apply(clarsimp simp del: fun_upd_apply simp add: lrew)
@@ -540,7 +540,7 @@ lemma red_dom_lcl: "extTA,P,t \<turnstile> \<langle>e, s\<rangle> -ta\<rightarro
   and reds_dom_lcl: "extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> dom (lcl s') \<subseteq> dom (lcl s) \<union> fvs es"
 proof (induct rule:red_reds.inducts)
   case (BlockRed e h x V vo ta e' h' x' T)
-  thus ?case by(clarsimp)(fastforce split:split_if_asm)
+  thus ?case by(clarsimp)(fastforce split:if_split_asm)
 qed auto
 
 lemma red_Suspend_is_call:

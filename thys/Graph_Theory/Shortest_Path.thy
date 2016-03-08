@@ -24,7 +24,7 @@ proof -
   have *: "{p. awalk u p v} = {}"
     using assms by (auto simp: reachable_awalk)
   show "\<mu> f u v = \<infinity>" unfolding \<mu>_def *
-    by (simp add: INF_def top_ereal_def)
+    by (simp add: top_ereal_def)
 qed
 
 lemma min_cost_le_walk_cost:
@@ -138,7 +138,7 @@ proof -
       \<le> (INF p: {ext_p i|i. i \<in> UNIV}. ereal (awalk_cost f p))"
     by (auto intro: INF_superset_mono)
   also have "\<dots> = (INF i: UNIV. ereal (awalk_cost f (ext_p i)))"
-    unfolding INF_def by (rule arg_cong[where f=Inf], auto)
+    by (rule arg_cong[where f=Inf], auto)
   also have "\<dots> = - \<infinity>" unfolding ext_p_cost 
     by (rule inf_over_nats[OF `awalk_cost f c < 0`])
   finally show ?thesis unfolding \<mu>_def by simp
@@ -194,7 +194,7 @@ proof -
   def path_\<mu> \<equiv> "INF s:{p. apath u p v}. ereal (awalk_cost f s)"
 
   have awalks_ne: "{p. awalk u p v} \<noteq> {}"
-    using inf_mu unfolding \<mu>_def INF_def by safe (simp add: top_ereal_def)
+    using inf_mu unfolding \<mu>_def by safe (simp add: top_ereal_def)
   then have paths_ne: "{p. apath u p v} ~= {}"
     by (auto intro: apath_awalk_to_apath)
 
@@ -231,7 +231,7 @@ lemma \<mu>_reach_conv:
 proof
   assume "\<mu> f u v < \<infinity>"
   then have "{p. awalk u p v} \<noteq> {}"
-    unfolding \<mu>_def INF_def by safe (simp add: top_ereal_def)
+    unfolding \<mu>_def by safe (simp add: top_ereal_def)
   then show "u \<rightarrow>\<^sup>* v" by (simp add: reachable_awalk)
 next
   assume "u \<rightarrow>\<^sup>* v"
@@ -240,7 +240,7 @@ next
   then have "{p} \<subseteq> {p. apath u p v}" by simp
   then have "\<mu> f u v \<le> (INF p: {p}. ereal (awalk_cost f p))"
     unfolding \<mu>_def by (intro INF_superset_mono) (auto simp: apath_def)
-  also have "\<dots> < \<infinity>" unfolding INF_def by (simp add: min_def)
+  also have "\<dots> < \<infinity>" by (simp add: min_def)
   finally show "\<mu> f u v < \<infinity>" .
 qed
 
@@ -359,7 +359,7 @@ proof cases
 next
   assume "\<mu> c s u \<noteq> \<infinity>"
   then have "{p. awalk s p u} \<noteq> {}"
-    unfolding \<mu>_def INF_def by safe (simp add: top_ereal_def)
+    unfolding \<mu>_def by safe (simp add: top_ereal_def)
   then have "s \<rightarrow>\<^sup>* u" by (simp add: reachable_awalk)
   with pos_cost
   obtain p where p_props: "apath s p u" 

@@ -29,11 +29,10 @@ lemma mult_adjugate_det: "A ** adjugate A = mat (det A)"
   unfolding det_sq_matrix_eq adjugate_eq to_vec_eq_iff[symmetric] to_vec_matrix_matrix_mult to_vec_from_vec 
   by (simp add: to_vec_diag)
 
-
 lemma invertible_imp_matrix_inv:
-  assumes i: "invertible A"
-  shows "matrix_inv A = ring_inv (det A) *k adjugate A"
-proof -
+  assumes i: "invertible (A :: ('a :: {comm_ring_1,semiring_div}) ^ 'b ^ 'b)"
+  shows "matrix_inv A = (1 div (det A)) *k adjugate A"
+proof - 
   let ?A = "adjugate A"
   have "A ** ?A = det A *k mat 1" 
     unfolding mult_adjugate_det by (simp add: scalar_mult_mat)
@@ -42,15 +41,15 @@ proof -
   hence "?A = det A *k matrix_inv A"
     unfolding matrix_mul_assoc matrix_inv_left[OF i] matrix_mul_lid scalar_mult_mat matrix_mul_mat
     by simp
-  thus "matrix_inv A = ring_inv (det A) *k ?A"
-    by (metis (no_types, lifting) i invertible_iff_is_unit matrix_mul_assoc matrix_mul_mat
-        matrix_mul_rid ring_inv_is_inv2 scalar_mult_mat) 
+  with i show ?thesis
+    by (metis (no_types, lifting) dvd_mult_div_cancel invertible_iff_is_unit
+                 matrix_mul_assoc matrix_mul_mat matrix_mul_rid scalar_mult_mat mult.commute)
 qed    
 
 lemma inverse_matrix_code_rings[code_unfold]: 
   fixes A::"'a::{euclidean_ring}^'n::{mod_type}^'n::{mod_type}"
-  shows "inverse_matrix A = (let d=det A in if is_unit d then Some (ring_inv d *k adjugate A) else None)"
-  using invertible_imp_matrix_inv
+  shows "inverse_matrix A = (let d=det A in if is_unit d then Some ((1 div d) *k adjugate A) else None)"
+  using invertible_imp_matrix_inv[of A]
   unfolding inverse_matrix_def invertible_iff_is_unit by auto
 
 end

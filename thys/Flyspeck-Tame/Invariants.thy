@@ -102,12 +102,12 @@ by (unfold minGraphProps_def faceListAt_len_def) simp
 lemma minGraphProps5:
   "\<lbrakk>minGraphProps g; v : \<V> g; f \<in> set (facesAt g v)\<rbrakk> \<Longrightarrow> f \<in> \<F> g"
 by(auto simp: facesAt_def facesAt_eq_def minGraphProps_def minGraphProps'_def
-              faceListAt_len_def split:split_if_asm)
+              faceListAt_len_def split:if_split_asm)
 
 lemma minGraphProps6:
   "minGraphProps g \<Longrightarrow> v : \<V> g \<Longrightarrow> f \<in> set (facesAt g v) \<Longrightarrow> v \<in> \<V> f"
 by(auto simp: facesAt_def facesAt_eq_def minGraphProps_def minGraphProps'_def
-              faceListAt_len_def split:split_if_asm)
+              faceListAt_len_def split:if_split_asm)
 
 (* faces_subset *)
 lemma minGraphProps9:
@@ -199,7 +199,7 @@ apply (rule minGraphProps3) by simp+
 lemma minGraphProps7': "minGraphProps g \<Longrightarrow>
   f \<in> \<F> g \<Longrightarrow> v \<in> \<V> f \<Longrightarrow>  f \<in> set (faceListAt g ! v)"
 apply (frule minGraphProps7) apply assumption+
-by (simp add: facesAt_def split: split_if_asm)
+by (simp add: facesAt_def split: if_split_asm)
 
 (* edges_disj *)
 lemma mgp_edges_disj:
@@ -347,7 +347,7 @@ next
       assume vors: "containsUnacceptableEdgeSnd N v (i # is)"
       then show "containsUnacceptableEdgeSnd' N (v # i # is)"
         apply (cases "is") apply simp apply simp
-        apply (simp split: split_if_asm del: containsUnacceptableEdgeSnd.simps)
+        apply (simp split: if_split_asm del: containsUnacceptableEdgeSnd.simps)
          apply (simp add: containsUnacceptableEdgeSnd'_def) apply force
         apply (subgoal_tac "a # list = is") apply (thin_tac "is = a # list") apply (simp add: Cons)
          apply (simp add: containsUnacceptableEdgeSnd'_def) apply (elim exE)
@@ -541,7 +541,7 @@ proof (induct ns arbitrary: F)
 next
   case (Cons n ns)
   then show ?case
-    apply(simp add: split: split_if_asm ) apply (frule Cons)
+    apply(simp add: split: if_split_asm ) apply (frule Cons)
     apply (thin_tac "\<And>F. x \<in> set (replacefacesAt2 ns oldf newfs F ! k) \<Longrightarrow> x \<in> set (F ! k) \<or> x \<in> set newfs")
     apply (case_tac "x \<in> set newfs")  apply simp apply simp
     apply (case_tac "k = n") apply simp apply (frule replace5) apply simp by simp
@@ -593,7 +593,7 @@ lemma normFace_replace_in:
  "normFace a \<in> set (normFaces (replace oldF newFs fs)) \<Longrightarrow>
   normFace a \<in> set (normFaces newFs) \<or> normFace a \<in> set (normFaces fs)"
 apply (induct fs) apply simp
-apply (auto simp add: normFaces_def split:split_if_asm)
+apply (auto simp add: normFaces_def split:if_split_asm)
 done
 
 lemma distinct_replace_norm:
@@ -996,7 +996,7 @@ proof -
               apply (frule minGraphProps_facesAt_eq)
                apply (subgoal_tac "w \<in> \<V> g") apply assumption
                apply (rule minGraphProps9) apply assumption apply blast apply simp
-              apply (simp add: facesAt_def split: split_if_asm)
+              apply (simp add: facesAt_def split: if_split_asm)
 
              apply (simp add: normFaces_def)
 
@@ -1066,7 +1066,7 @@ proof -
                     apply (frule minGraphProps_facesAt_eq)
                      apply (subgoal_tac "v \<in> \<V> g") apply assumption
                      apply (rule minGraphProps9) apply assumption apply blast apply simp
-                    apply (simp add: facesAt_def split: split_if_asm)
+                    apply (simp add: facesAt_def split: if_split_asm)
 
                    apply (simp add: normFaces_def)
 
@@ -1080,7 +1080,7 @@ proof -
                    apply (frule minGraphProps_facesAt_eq)
                     apply (subgoal_tac "v \<in> \<V> g") apply assumption
                     apply (rule minGraphProps9) apply assumption apply blast apply simp
-                   apply (simp add: facesAt_def split: split_if_asm)
+                   apply (simp add: facesAt_def split: if_split_asm)
                   apply (rule between_not_r1) apply simp
                  apply (simp add: normFaces_def) apply (rule not_sym)
                  apply (rule splitFace_f12_f21_neq_norm) apply (rule pre) apply simp
@@ -1132,7 +1132,7 @@ proof -
                        apply (simp add: new_f12_norm)
 
                       apply (frule minGraphProps_facesAt_eq) apply assumption
-                      apply (simp add: facesAt_def split: split_if_asm)
+                      apply (simp add: facesAt_def split: if_split_asm)
                      apply (simp add: normFaces_def)
 
                     apply (case_tac "x \<notin> set (between (vertices f) v w)")
@@ -1143,7 +1143,7 @@ proof -
                       apply (simp add: new_f21_norm)
 
                      apply (frule minGraphProps_facesAt_eq) apply assumption
-                     apply (simp add: facesAt_def split: split_if_asm)
+                     apply (simp add: facesAt_def split: if_split_asm)
                     apply (simp add: normFaces_def)
                     apply (drule replacefacesAt_nth) apply assumption
                         apply (subgoal_tac "f \<notin> set [fst (split_face f v w [countVertices g..<countVertices g + n])]")
@@ -1272,9 +1272,9 @@ apply (simp only: split_def Let_def)
 apply (simp only: snd_conv)
 apply (rule equalityI)
  apply (rule subsetI)
- apply (simp only: faceListAt.simps vertices_graph.simps split:split_if_asm)
+ apply (simp only: faceListAt.simps vertices_graph.simps split:if_split_asm)
  apply (case_tac "v < |faceListAt g'| \<and> a < | faceListAt g'|")
-  apply (simp only: nth_append split: split_if_asm)
+  apply (simp only: nth_append split: if_split_asm)
    apply (case_tac "va < | faceListAt g' |")
     apply (subgoal_tac "va \<in> \<V> g'")
      apply (subgoal_tac "distinct vs1 \<and> distinct vs2 \<and>
@@ -2072,7 +2072,7 @@ next
   case (Cons ov ovl) then show ?case
 apply auto
 apply (cases "ov")
- apply (simp_all split: split_if_asm)
+ apply (simp_all split: if_split_asm)
  apply (rule Cons)
    apply (rule pre_subdivFace'_None)
    apply simp_all
@@ -2294,7 +2294,7 @@ proof -
       have "(b,a) : Edges_if f r u \<or>
             (\<exists>f''\<in>\<F> g. final f'' \<and> (b,a) \<in> \<E> f'')" (is "?A \<or> ?B")
         using 1 f' nf' abf'
-        by(simp add:one_final_but_def split:split_if_asm) blast+
+        by(simp add:one_final_but_def split:if_split_asm) blast+
       thus ?thesis (is "?A' \<or> ?B'")
       proof
         assume ?A
@@ -2580,7 +2580,7 @@ proof -
     apply simp
     apply (case_tac "natToVertexList v f e ! Suc j") apply simp
     apply simp
-    apply (case_tac "j") apply (simp add: natToVertexList_nth_0 natToVertexList_nth_Suc split: split_if_asm)
+    apply (case_tac "j") apply (simp add: natToVertexList_nth_0 natToVertexList_nth_Suc split: if_split_asm)
      apply (drule_tac spec) apply (rotate_tac -1) apply (erule impE)
       apply (subgoal_tac "e ! 0 < e ! Suc 0") apply assumption
       apply (cases "e") apply simp
@@ -2600,10 +2600,10 @@ proof -
     apply simp
     apply (subgoal_tac "natToVertexList v f e ! Suc nat =
         (if e ! nat = e ! Suc nat then None else Some (f\<^bsup>e ! Suc nat\<^esup> \<bullet> v))")
-     apply (simp split: split_if_asm)
+     apply (simp split: if_split_asm)
      apply (subgoal_tac "natToVertexList v f e ! Suc (Suc nat) =
         (if e ! (Suc nat) = e ! Suc (Suc nat) then None else Some (f\<^bsup>e ! Suc (Suc nat)\<^esup> \<bullet> v))")
-      apply (simp split: split_if_asm)
+      apply (simp split: if_split_asm)
       apply (drule spec) apply (rotate_tac -1)  apply (erule impE)
        apply (subgoal_tac "e ! nat < e ! Suc nat") apply assumption
        apply (rule incrIndexList_less) apply assumption apply arith
@@ -2687,7 +2687,7 @@ proof -
     and e: "e \<in> set (enumerator i |vertices f| )" and i: "2 < i"
     and containsNot: "\<not> containsDuplicateEdge g f v e"
     and is_eq: "is = indexToVertexList f v e"
-    by (auto simp: next_plane0_def generatePolygon_def image_def split:split_if_asm)
+    by (auto simp: next_plane0_def generatePolygon_def image_def split:if_split_asm)
   from f have fg: "f \<in> \<F> g" by(simp add:nonFinals_def)
   note pre_add = pre_subdivFace_indexToVertexList[OF mgp f v e containsNot i]
   with g' is_eq have g': "g' = subdivFace' g f v 0 (tl is)"
@@ -2820,7 +2820,7 @@ proof(clarsimp simp:invariant_def)
   assume  inv: "inv g" and "g' \<in> set (next_plane0\<^bsub>p\<^esub> g)"
   then obtain i v f where "g' \<in> set(generatePolygon i v f g)"
     and "f \<in> set (nonFinals g)" and "2 < i" and "v \<in> \<V> f"
-    by (auto simp: next_plane0_def split: split_if_asm)
+    by (auto simp: next_plane0_def split: if_split_asm)
   thus "inv g'" using inv by(blast intro:inv_genPoly)
 qed
 

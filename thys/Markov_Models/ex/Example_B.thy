@@ -97,7 +97,7 @@ proof safe
   then have "B.period UNIV = Gcd (B.period_set 0)"
     by (rule B.period_eq) simp
   also have "\<dots> = 1"
-    by (rule Gcd_eq_one) (simp add: B.period_set_def B.p_Suc' B.p_0 eq measure_pmf_single pmf_positive_iff K_def set_pmf_bernoulli UNIV_bool)
+    by (rule Gcd_nat_eq_one) (simp add: B.period_set_def B.p_Suc' B.p_0 eq measure_pmf_single pmf_positive_iff K_def set_pmf_bernoulli UNIV_bool)
   finally show "B.period UNIV = 1" .
 qed
 

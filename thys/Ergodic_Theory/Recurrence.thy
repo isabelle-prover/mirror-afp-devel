@@ -272,7 +272,8 @@ lemma recurrent_subset_meas [measurable]:
   shows "recurrent_subset A \<in> sets M"
         "recurrent_subset_infty A \<in> sets M"
 proof -
-  have *: "recurrent_subset A = (\<Union>n\<in> {1..}. (T^^n)-`A \<inter> A)" using recurrent_subset_def by blast
+  have *: "recurrent_subset A = (\<Union>n\<in> {1..}. (T^^n)-`A \<inter> A)"
+    using recurrent_subset_def by auto
   have "\<And>n. (T^^n)-`A \<inter> A = (T^^n)--`A \<inter> A" using `A \<in> sets M`
     by (simp add: Int_assoc vimage_restr_def)
   hence "\<And>n. (T^^n)-`A \<inter> A \<in> sets M" using `A \<in> sets M` by auto
@@ -444,7 +445,8 @@ proof -
   hence *: "\<And>n. return_partition A (n+1) = disjointed B n" using disjointed_def[of B] by simp
   thus "disjoint_family (\<lambda>n. return_partition A (n+1))" using disjoint_family_disjointed by auto
 
-  have "recurrent_subset A = (\<Union>n\<in> {1..}. A \<inter> (T^^n)-`A)" using recurrent_subset_def by blast
+  have "recurrent_subset A = (\<Union>n\<in> {1..}. A \<inter> (T^^n)-`A)"
+    using recurrent_subset_def by auto
   moreover have "\<And>n. A \<inter> (T^^n)-`A = A \<inter> (T^^n)--`A"
     unfolding vimage_restr_def using `A \<in> sets M` sets.sets_into_space by auto
   ultimately have "recurrent_subset A = (\<Union>n\<in> {1..}. A \<inter> (T^^n)--`A)" by simp
@@ -510,7 +512,7 @@ by (metis local_time_birkhoff birkhoff_sum_cocycle)
 
 lemma local_time_incseq:
   "incseq (\<lambda>n. local_time A n x)"
-using local_time_cocycle incseq_def by (metis Nat.le_iff_add)
+using local_time_cocycle incseq_def by (metis le_iff_add)
 
 lemma local_time_Suc:
   "local_time A (n+1) x = local_time A n x + indicator A ((T^^n)x)"
@@ -658,7 +660,7 @@ next
             by (metis Suc_diff_Suc Suc_eq_plus1 diff_diff_add local_time_Suc[of A, of "n-i-1"] `n>i`)
           hence "local_time A (n-i) x >  local_time A (n-i-1) x" by simp
           moreover have "local_time A n x \<ge> local_time A (n-i) x" using local_time_incseq
-            by (metis `i < n` le_add_diff_inverse2 less_or_eq_imp_le local_time_cocycle ordered_cancel_comm_monoid_diff_class.le_iff_add)
+            by (metis `i < n` le_add_diff_inverse2 less_or_eq_imp_le local_time_cocycle le_iff_add)
           ultimately have "local_time A n x > local_time A (n-i-1) x" by simp
           moreover have "local_time A n x < Suc k" using a K_def by simp
           ultimately have *: "local_time A (n-i-1) x < k" by simp
@@ -1069,30 +1071,10 @@ next
 qed
 
 lemma induced_map_meas [measurable]:
-  assumes "A \<in> sets M"
+  assumes A: "A \<in> sets M"
     shows "induced_map A \<in> measurable M M"
-proof -
-  have "\<And>Z. Z \<in> sets M \<Longrightarrow> (induced_map A)-`Z \<inter> space M \<in> sets M"
-  proof -
-    fix Z
-    assume "Z \<in> sets M"
-    have "UNIV = (\<Union> n. (return_time_function A)-` {n})" by blast
-    hence "(induced_map A)-`Z = (\<Union> n. (return_time_function A)-` {n} \<inter> (induced_map A)-`Z)" by blast
-    moreover have "\<And> n. (return_time_function A)-` {n} \<inter> (induced_map A)-`Z =  (return_time_function A)-` {n} \<inter> (T^^n)-`Z"
-      using induced_map_def return_time_function_def by auto
-    ultimately have "(induced_map A)-`Z = (\<Union> n. (return_time_function A)-` {n} \<inter> (T^^n)-`Z)"
-      by simp
-    hence *: "(induced_map A)-`Z \<inter> space M = (\<Union> n. (return_time_function A)-` {n} \<inter> space M \<inter> (T^^n)-`Z \<inter> space M)"
-      by blast
-    have "\<And> n. (return_time_function A)-` {n} \<inter> space M \<inter> (T^^n)-`Z \<inter> space M \<in> sets M"
-      using return_time_function_meas[OF assms] `Z \<in> sets M` measurable_sets by auto
-    hence "(\<Union> n. (return_time_function A)-` {n} \<inter> space M \<inter> (T^^n)-`Z \<inter> space M) \<in> sets M"
-      by measurable
-    thus "(induced_map A)-`Z \<inter> space M \<in> sets M" using * by simp
-  qed
-  thus ?thesis
-    by (metis Tn_meas induced_map_def measurableI measurable_space)
-qed
+  unfolding induced_map_def
+  by (rule measurable_compose_countable[OF Tn_meas return_time_function_meas[OF A]])
 
 lemma induced_map_iterates:
   "((induced_map A)^^n) x = (T^^(\<Sum>i < n. return_time_function A ((induced_map A ^^i) x))) x"
@@ -1278,8 +1260,10 @@ proof
     have B0: "emeasure M B = 0" using `B \<in> K0` unfolding K0_def by simp
 
     have "(induced_map A)-`B \<subseteq> (\<Union>n. (T^^n)-`B)" unfolding induced_map_def by auto
-    then have "(induced_map A)-`B \<subseteq> (\<Union>n. (T^^n)-`B \<inter> space M)" using b sets.sets_into_space by blast
-    then have inc: "(induced_map A)-`B \<subseteq> (\<Union>n. (T^^n)--`B)" unfolding vimage_restr_def using sets.sets_into_space[OF B_meas] by blast
+    then have "(induced_map A)-`B \<subseteq> (\<Union>n. (T^^n)-`B \<inter> space M)"
+      using b sets.sets_into_space by simp blast
+    then have inc: "(induced_map A)-`B \<subseteq> (\<Union>n. (T^^n)--`B)" unfolding vimage_restr_def
+      using sets.sets_into_space [OF B_meas] by simp blast
     have m: "\<And>n. (T^^n)--`B \<in> sets M" using T_vrestr_meas(2)[OF B_meas] by simp
     then have m2: "(\<Union>n. (T^^n)--`B) \<in> sets M" by measurable
 
@@ -1856,7 +1840,8 @@ proof -
     using a by simp
 
   have "(\<Union>n\<in>{1..}.  (return_time_function A)-` {n}) = UNIV - (return_time_function A)-` {0}" by auto
-  hence "(\<Union>n\<in>{1..}.  (return_time_function A)-` {n}) = recurrent_subset A" using return_time0 by blast
+  then have "(\<Union>n\<in>{1..}.  (return_time_function A)-` {n}) = recurrent_subset A"
+    using return_time0 by auto
   moreover have "(\<Union>n. (return_time_function A)-` {n+1}) = (\<Union>n\<in>{1..}.  (return_time_function A)-` {n})"
     by (auto simp add: Suc_le_D)
   ultimately have "(\<Union>n. D n) = recurrent_subset A" using D_def by simp

@@ -10,7 +10,7 @@ section \<open>Sign changes and Descartes' Rule of Signs\<close>
 theory Descartes_Sign_Rule
 imports 
   Complex_Main
-  "~~/src/HOL/Library/Poly_Deriv"
+  "~~/src/HOL/Library/Polynomial"
 begin
 
 lemma op_plus_0: "(op + (0 :: 'a :: monoid_add)) = id"
@@ -512,8 +512,8 @@ proof (induction xs rule: sign_changes_induct)
         odd (sign_changes ((x + y) # xs) - sign_changes (psums ((x + y) # xs)))"
       by (intro nonzero.IH) (auto simp: add.assoc)
     with arthan_aux1[of xs x y] nonzero(4,5) False(1) show ?thesis by force
-  qed (insert nonzero.prems, auto split: split_if_asm simp: sign_changes_two add_eq_0_iff)
-qed (auto split: split_if_asm simp: add_eq_0_iff)
+  qed (insert nonzero.prems, auto split: if_split_asm simp: sign_changes_two add_eq_0_iff)
+qed (auto split: if_split_asm simp: add_eq_0_iff)
 
 end
 
@@ -656,7 +656,7 @@ proof -
   also have "last (coeffs p) = lead_coeff p" 
     by (simp add: last_coeffs_eq_coeff_degree lead_coeff_def)
   finally have "sgn (hd (coeffs p)) * sgn (lead_coeff p) < 0" 
-    using const_coeff by (auto simp: sgn_if lead_coeff_def split: split_if_asm)
+    using const_coeff by (auto simp: sgn_if lead_coeff_def split: if_split_asm)
   also from \<open>p \<noteq> 0\<close> have "hd (coeffs p) = poly p 0" by (induction p) auto
   finally have "poly p 0 * lead_coeff p < 0" by (auto simp: mult_less_0_iff)
 

@@ -61,7 +61,7 @@ lemma filter_prop: "x \<in> set [u\<leftarrow>ys . P u] \<Longrightarrow> P x"
 proof (induct ys arbitrary: x)
   case Nil then show ?case by simp 
 next 
-  case Cons then show ?case by (auto split: split_if_asm)
+  case Cons then show ?case by (auto split: if_split_asm)
 qed
    
 lemma filter_compl1: 
@@ -83,7 +83,7 @@ proof
   qed
 next
   show "?lhs \<Longrightarrow> ?rhs" 
-    by (induct xs) (simp_all split: split_if_asm)
+    by (induct xs) (simp_all split: if_split_asm)
 qed
 lemma [simp]: "Not \<circ> (Not \<circ> P) = P"
   by (rule ext) simp
@@ -104,9 +104,9 @@ next
   have l: "length (filter P xs) \<le> length xs"
     by (simp add: length_filter_le)
   have hyp: "length (filter P (x # xs)) = length (x # xs)" by fact
-  then have "P x"  by (simp split: split_if_asm) (insert l, arith)
+  then have "P x"  by (simp split: if_split_asm) (insert l, arith)
   moreover with hyp have "length (filter P xs) = length xs" 
-    by (simp split: split_if_asm)
+    by (simp split: if_split_asm)
   moreover have "y \<in> set (x#xs)" by fact
   ultimately show ?case by (auto dest: Cons(1))
 qed
@@ -217,7 +217,7 @@ lemma replace1:
 proof (induct ls)
   case Nil then show ?case by simp
 next
-  case (Cons l ls) then show ?case by (simp split: split_if_asm)
+  case (Cons l ls) then show ?case by (simp split: if_split_asm)
 qed
 
 lemma replace2:
@@ -225,7 +225,7 @@ lemma replace2:
 proof (induct ls)
   case Nil then show ?case by simp
 next
-  case (Cons l ls) then show ?case by (auto split: split_if_asm)
+  case (Cons l ls) then show ?case by (auto split: if_split_asm)
 qed
 
 lemma replace3[intro]:
@@ -237,7 +237,7 @@ lemma replace4:
 by (induct ls) auto
 
 lemma replace5: "f \<in> set (replace oldF newfs fs) \<Longrightarrow> f \<in> set fs \<or> f \<in> set newfs"
-by (induct fs) (auto split: split_if_asm) 
+by (induct fs) (auto split: if_split_asm) 
 
 lemma replace6: "distinct oldfs \<Longrightarrow> x \<in> set (replace oldF newfs oldfs) = 
   ((x \<noteq> oldF \<or> oldF \<in> set newfs) \<and> ((oldF \<in> set oldfs \<and> x \<in> set newfs) \<or> x \<in> set oldfs))"
@@ -509,13 +509,13 @@ proof (cases "0 < (Suc n) mod (length ls)")
   def m \<equiv> "(Suc n) mod (length ls) - 1"
   with True have m: "Suc m = (Suc n) mod (length ls)" by auto
   with lls have a: "(Suc m) <   length ls" by auto
-  from lls m have "m = n mod (length ls)" by (simp add: mod_Suc split:split_if_asm)
+  from lls m have "m = n mod (length ls)" by (simp add: mod_Suc split:if_split_asm)
   with a m show ?thesis apply (drule_tac nth_rotate1_Suc) by auto
 next
   assume lls: "0 < length ls"
   case False
   then have a: "(Suc n) mod (length ls) = 0" by auto
-  with lls have "Suc (n mod (length ls)) = (length ls)" by (auto simp: mod_Suc split: split_if_asm)
+  with lls have "Suc (n mod (length ls)) = (length ls)" by (auto simp: mod_Suc split: if_split_asm)
   then have "(n mod (length ls)) = (length ls) - 1" by arith
   with a show ?thesis by (auto simp: nth_rotate1_0)
 qed
@@ -573,7 +573,7 @@ lemma splitAtRec_ram:
 proof (induct vs)
 case  Nil then show ?case by simp
 next
-case (Cons v vs) then show ?case by (auto dest: Cons(1) split: split_if_asm)
+case (Cons v vs) then show ?case by (auto dest: Cons(1) split: if_split_asm)
 qed
 
 lemma splitAtRec_notRam:
@@ -618,7 +618,7 @@ subsubsection {* Sets *}
 
 lemma splitAtRec_union:
 "\<And> a b s. (a,b) = splitAtRec ram s vs \<Longrightarrow> (set a \<union> set b) - {ram} = (set vs \<union> set s) - {ram}"
-  apply (induct vs) by (auto split: split_if_asm)
+  apply (induct vs) by (auto split: if_split_asm)
 
 lemma splitAt_subset_ab:
   "(a,b) = splitAt ram vs \<Longrightarrow> set a \<subseteq> set vs \<and> set b \<subseteq> set vs"
@@ -992,7 +992,7 @@ definition between :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> '
 
 lemma inbetween_inset:
  "x \<in> set(between xs a b) \<Longrightarrow> x \<in> set xs"
-apply(simp add:between_def split_def split:split_if_asm)
+apply(simp add:between_def split_def split:if_split_asm)
  apply(blast dest:splitAt_in_snd)
 apply(blast dest:splitAt_in_snd)
 done
@@ -1018,7 +1018,7 @@ apply(cases  "r = v")
  apply(clarsimp)
  apply(frule split_list[of v])
  apply(clarsimp)
- apply(simp add:between_def split_def split:split_if_asm)
+ apply(simp add:between_def split_def split:if_split_asm)
  apply(erule disjE)
   apply(frule split_list[of u])
   apply(clarsimp)
@@ -1033,21 +1033,21 @@ apply(erule disjE)
  apply(clarsimp)
  apply(rename_tac cs ds)
  apply(subgoal_tac "between (cs @ v # ds @ r # bs) r v = bs @ cs")
-  prefer 2 apply(simp add:between_def split_def split:split_if_asm)
+  prefer 2 apply(simp add:between_def split_def split:if_split_asm)
  apply simp
  apply(erule disjE)
   apply(frule split_list[of u])
-  apply(clarsimp simp:between_def split_def split:split_if_asm)
+  apply(clarsimp simp:between_def split_def split:if_split_asm)
  apply(frule split_list[of u])
- apply(clarsimp simp:between_def split_def split:split_if_asm)
+ apply(clarsimp simp:between_def split_def split:if_split_asm)
 apply(frule split_list[of v])
 apply(clarsimp)
 apply(rename_tac cs ds)
 apply(subgoal_tac "between (as @ r # cs @ v # ds) r v = cs")
- prefer 2 apply(simp add:between_def split_def split:split_if_asm)
+ prefer 2 apply(simp add:between_def split_def split:if_split_asm)
 apply simp
 apply(frule split_list[of u])
-apply(clarsimp simp:between_def split_def split:split_if_asm)
+apply(clarsimp simp:between_def split_def split:if_split_asm)
 done
 
 
@@ -1118,6 +1118,6 @@ lemma removeKeyList_empty[simp]: "removeKeyList ps [] = []"
 lemma removeKeyList_cons[simp]: 
   "removeKeyList ws (p#ps) 
   = (if fst p \<in> set ws then removeKeyList ws ps else p#(removeKeyList ws ps))"
-  by (induct ws) (simp_all split: split_if_asm add: removeKey_def)
+  by (induct ws) (simp_all split: if_split_asm add: removeKey_def)
 
 end

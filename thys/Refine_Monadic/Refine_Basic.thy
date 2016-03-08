@@ -246,7 +246,7 @@ lemma nres_order_simps[simp]:
   "\<And>x y. RETURN x \<le> RETURN y \<longleftrightarrow> x=y"
   "\<And>x Y. RETURN x \<le> RES Y \<longleftrightarrow> x\<in>Y"
   "\<And>X y. RES X \<le> RETURN y \<longleftrightarrow> X \<subseteq> {y}"
-  unfolding Sup_nres_def Inf_nres_def SUP_def INF_def RETURN_def
+  unfolding Sup_nres_def Inf_nres_def RETURN_def
   by (auto simp add: bot_unique top_unique nres_simp_internals)
 
 lemma Sup_eq_RESE:
@@ -255,7 +255,7 @@ lemma Sup_eq_RESE:
 proof -
   show ?thesis
     using assms unfolding Sup_nres_def
-    apply (simp split: split_if_asm)
+    apply (simp split: if_split_asm)
     apply (rule_tac C="{X. RES X \<in> A}" in that)
     apply auto []
     apply (case_tac x, auto simp: nres_simp_internals) []

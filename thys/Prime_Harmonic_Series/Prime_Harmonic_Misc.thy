@@ -56,7 +56,7 @@ proof
   finally have "multiplicity x (\<Prod>B) > 0" by simp
   moreover from assms x have "prime x" by simp
   ultimately show "x \<in> B" using assms(2,4)
-    by (subst (asm) multiplicity_prod_prime_powers_nat') (simp_all split: split_if_asm)
+    by (subst (asm) multiplicity_prod_prime_powers_nat') (simp_all split: if_split_asm)
 qed
 
 lemma setprod_prime_eq:

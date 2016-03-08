@@ -440,7 +440,7 @@ next
       apply (subst rewrite_ins)
       apply (subst lincomb_insert)
            apply (simp_all add: ring_subset_carrier coeff_in_ring)
-        apply (auto split: split_if_asm)
+        apply (auto split: if_split_asm)
       apply (subst lincomb_elim_if)
           by (auto simp add: smult_minus_1 l_neg ring_subset_carrier)
 (*NOTE: l_neg got deleted from the simp rules, but it is very useful.*)

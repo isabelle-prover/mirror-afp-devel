@@ -129,7 +129,7 @@ lemma map_of_fstD: "\<lbrakk> map_of xs a = \<lfloor>b\<rfloor>; \<forall>x \<in
   by (induct xs, auto)
 
 lemma map_of_fstE: "\<lbrakk> map_of xs a = \<lfloor>b\<rfloor>; \<exists>x \<in> set xs. fst x = a \<Longrightarrow> thesis \<rbrakk> \<Longrightarrow> thesis"
-  by (induct xs) (auto split: split_if_asm)
+  by (induct xs) (auto split: if_split_asm)
 
 lemma ex_unique_method_name:
   "\<exists>Name. \<forall>C D fs ms. class (PROG P) C = \<lfloor>(D, fs, ms)\<rfloor> \<longrightarrow> (\<forall>m\<in>set ms. Name \<noteq> fst m)"

@@ -612,7 +612,7 @@ next
     moreover have "l s = 0"
       using `s \<in> S` P0 sol[THEN bspec, of s] Prob0_subset_S
         Prob0_imp_not_Psi[OF svalid_subset_S svalid_subset_S P0]
-      by (auto simp: LES_def single_l split: split_if_asm)
+      by (auto simp: LES_def single_l split: if_split_asm)
     ultimately show "l s = \<P>(\<omega> in T s. pvalid (U\<^sup>\<infinity> F1 F2) (s ## \<omega>))" by simp
   next
     assume s: "s \<in> svalid F2"
@@ -654,7 +654,7 @@ proof -
     assume "\<not> ?thesis"
     from nn_integral_PInf_AE[OF _ this] `s\<in>S`
     have "AE \<omega> in T s. ev (HLD ?F) (s ## \<omega>)"
-      by (simp split: split_if_asm)
+      by (simp split: if_split_asm)
     with * show False ..
   qed
 qed

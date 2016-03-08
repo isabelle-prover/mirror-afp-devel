@@ -306,7 +306,7 @@ proof -
     fix \<xi>
     assume "\<xi> \<in> range (justifying_exec \<circ> ?J)"
     then obtain n where "\<xi> = justifying_exec (?J n)" by auto
-    then obtain n where \<xi>: "\<xi> = justifying_exec (J n)" and n: "n > 0" by(auto split: split_if_asm)
+    then obtain n where \<xi>: "\<xi> = justifying_exec (J n)" and n: "n > 0" by(auto split: if_split_asm)
     from range \<xi> have "\<xi> \<in> ?\<E>" by auto
     thus "\<xi> \<in> ?\<E>'" unfolding jmm_typeof_addr'_conv_jmm_type_addr[symmetric, abs_def]
     proof(rule J_\<E>_heap_read_typedI)
@@ -367,7 +367,7 @@ proof -
     fix \<xi>
     assume "\<xi> \<in> range (justifying_exec \<circ> ?J)"
     then obtain n where "\<xi> = justifying_exec (?J n)" by auto
-    then obtain n where \<xi>: "\<xi> = justifying_exec (J n)" and n: "n > 0" by(auto split: split_if_asm)
+    then obtain n where \<xi>: "\<xi> = justifying_exec (J n)" and n: "n > 0" by(auto split: if_split_asm)
     from range \<xi> have "\<xi> \<in> ?\<E>" by auto
     thus "\<xi> \<in> ?\<E>'" unfolding jmm_typeof_addr'_conv_jmm_type_addr[symmetric, abs_def]
     proof(rule J_\<E>_heap_read_typedI)

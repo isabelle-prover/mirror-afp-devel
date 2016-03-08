@@ -365,7 +365,7 @@ lemma elems_all_maps_list:
   shows "\<Union>sset M = set (snd G)"
     using assms
     by (simp add: all_maps_list_def in_set_cyc_permutationss distincts_grouped_arcs union_grouped_out_arcs[symmetric])
-       (metis SUP_def set_map)
+       (metis set_map)
 
 lemma comb_planar_impl_altdef: "comb_planar_impl G = (\<exists>M\<in>set (all_maps_list G). genus_impl G M = 0)"
   unfolding comb_planar_impl_def Let_def genus_impl_def by (cases G) (simp add:  sign_simps)

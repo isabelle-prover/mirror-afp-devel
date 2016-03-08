@@ -79,7 +79,7 @@ proof (induct xs rule: selsort.induct)
   show ?case
     unfolding selsort.simps
     by (auto simp: Let_def length_remove1
-      simp del: selsort.simps split: split_if_asm
+      simp del: selsort.simps split: if_split_asm
       intro!: Suc_pred
       dest!: fold_min_eqI1)
 qed simp

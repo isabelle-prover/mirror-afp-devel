@@ -1,6 +1,6 @@
 (* Author: Manuel Eberl <eberlm@in.tum.de> *)
 theory Misc_Polynomial
-imports "~~/src/HOL/Library/Poly_Deriv"
+imports "~~/src/HOL/Library/Polynomial" "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
 begin
 
 subsection {* Analysis *}
@@ -20,12 +20,8 @@ proof (rule connected_local_const)
 qed
 
 subsection {* Polynomials *}
-subsubsection {* General simplification lemmas *}
 
-lemma poly_gcd_right_idem: "gcd (gcd (p :: _ poly) q) q = gcd p q"
-    by (rule poly_gcd_unique, simp_all add: poly_gcd_monic)
-lemma poly_gcd_left_idem: "gcd p (gcd (p :: _ poly) q) = gcd p q"
-    by (rule poly_gcd_unique, simp_all add: poly_gcd_monic)
+subsubsection {* General simplification lemmas *}
 
 lemma degree_power_eq:
   "(p::('a::idom) poly) \<noteq> 0 \<Longrightarrow> degree (p^n) = n * degree p"
@@ -93,11 +89,8 @@ proof-
     hence "d * r dvd d * 1" by (simp add: algebra_simps)
     hence "r dvd 1" using `d \<noteq> 0` by (subst (asm) dvd_mult_cancel_left, auto)
   }
-  hence A: "?d' dvd 1" by simp
-  from assms(1) have "p div d \<noteq> 0 \<or> q div d \<noteq> 0" by (auto simp: dvd_div_eq_mult)
-  hence B: "coeff ?d' (degree ?d') = coeff 1 (degree 1)"
-      using poly_gcd_monic[of "p div d" "q div d"] by simp
-  from poly_dvd_antisym[OF B A one_dvd] show ?thesis .
+  hence A: "?d' dvd 1" by blast
+  then show ?thesis by simp
 qed
 
 lemma poly_div:
@@ -112,54 +105,6 @@ proof-
       using assms by (simp add: field_simps)
 qed
 
-
-text {*
-  A function that gives witnesses for Bezout's lemma for polynomials.
-*}
-function bezw_poly where
-  "bezw_poly (p::('a::field) poly) q =
-      (if q = 0 then ([:inverse (coeff p (degree p)):], 0)
-                else (case bezw_poly q (p mod q) of
-                        (r,s) \<Rightarrow> (s, r - s * (p div q))))"
-by (pat_completeness, simp_all)
-termination by (relation "measure (\<lambda>(x, y). if y = 0 then 0 else Suc (degree y))")
-               (auto dest: degree_mod_less)
-declare bezw_poly.simps[simp del]
-
-text {*
-  Bezout's lemma for polynomials.
-*}
-lemma bezout_poly:
-  "gcd p q = fst (bezw_poly p q) * p + snd (bezw_poly p q) * q"
-proof (induction p q rule: gcd_poly.induct)
-  case (1 p)
-    show ?case by (subst bezw_poly.simps, simp add: gcd_poly.simps(1))
-next
-  case prems: (2 q p)
-    let ?b = "bezw_poly q (p mod q)"
-    let ?b' = "bezw_poly p q"
-
-    from prems have b'_b: "fst ?b' = snd ?b"
-                          "snd ?b' = fst ?b - snd ?b * (p div q)"
-        by (subst bezw_poly.simps, simp split: prod.split)+
-    hence "fst ?b' * p + snd ?b' * q =
-                snd ?b * p + (fst ?b - snd ?b * (p div q)) * q" by simp
-    also have "... = fst ?b * q + snd ?b * (p - p div q * q)"
-        by (simp add: algebra_simps)
-    also have "p - p div q * q = p mod q"
-        using mod_div_equality[of p q] by (simp add: algebra_simps)
-    also have "fst ?b * q + snd ?b * (p mod q) = gcd q (p mod q)"
-        using prems by simp
-    also have "... = gcd p q"
-        using prems by (subst gcd_poly.simps(2)[of q p], simp_all)
-    finally show ?case ..
-qed
-
-lemma bezout_poly': "\<exists>r s. gcd (p::('a::field) poly) q = r*p+s*q"
-    using bezout_poly by blast
-
-
-
 (* TODO: make this less ugly *)
 lemma poly_div_gcd_squarefree_aux:
   assumes "pderiv (p::('a::real_normed_field) poly) \<noteq> 0"
@@ -167,8 +112,8 @@ lemma poly_div_gcd_squarefree_aux:
   shows "coprime (p div d) (pderiv (p div d))" and
         "\<And>x. poly (p div d) x = 0 \<longleftrightarrow> poly p x = 0"
 proof -
-  from bezout_poly' obtain r s where rs: "d = r * p + s * pderiv p"
-    unfolding d_def by blast
+  from bezout[of p "pderiv p"] obtain r s where rs [symmetric]: "r * p + s * pderiv p = d"
+    unfolding d_def by force
   def t \<equiv> "p div d"
   def [simp]: p' \<equiv> "pderiv p"
   def [simp]: d' \<equiv> "pderiv d"
@@ -237,7 +182,7 @@ proof -
                 by (simp add: dvd_imp_degree_le)
        ultimately show ?thesis by simp
     qed
-    then obtain c where [simp]: "x = [:c:]" by (cases x, simp split: split_if_asm)
+    then obtain c where [simp]: "x = [:c:]" by (cases x, simp split: if_split_asm)
     moreover from `x \<noteq> 0` have "c \<noteq> 0" by simp
     ultimately show "x dvd 1" using dvdI[of 1 x "[:inverse c:]"]
         by (simp add: one_poly_def)
@@ -267,11 +212,11 @@ proof-
       then obtain c where [simp]: "p = [:c:]" using pderiv_iszero by blast
       from assms(1) have "c \<noteq> 0" by simp
       from True have "d = smult (inverse c) p"
-          by (simp add: d_def gcd_poly.simps(1))
+          by (simp add: d_def normalize_poly_def)
       hence "p div d = [:c:]" using `c \<noteq> 0`
           by (simp add: div_smult_right assms(1) one_poly_def[symmetric])
       thus ?thesis using `c \<noteq> 0`
-        by (simp add: gcd_poly.simps(1) one_poly_def)
+        by (simp add: one_poly_def normalize_poly_def)
   qed
   thus ?A and "\<And>x. ?B x" by simp_all
 qed
@@ -299,7 +244,7 @@ next
       case True
         hence "sgn (poly p a) = -1" by simp
         with assms True have "poly p b > 0"
-            by (auto simp: sgn_real_def split: split_if_asm)
+            by (auto simp: sgn_real_def split: if_split_asm)
         from poly_IVT_pos[OF `a < b` True this] guess x ..
         thus ?thesis by (intro exI[of _ x], simp)
     next
@@ -308,7 +253,7 @@ next
         hence "sgn (poly p a) = 1"  by simp
         with assms False have "poly p b < 0"
             by (auto simp: sgn_real_def not_less
-                           less_eq_real_def split: split_if_asm)
+                           less_eq_real_def split: if_split_asm)
         from poly_IVT_neg[OF `a < b` `poly p a > 0` this] guess x ..
         thus ?thesis by (intro exI[of _ x], simp)
     qed
@@ -382,7 +327,7 @@ proof -
   then have "eventually (\<lambda>x. \<bar>sgn (poly p x) - sgn (poly p x\<^sub>0)\<bar> < 1) (at x\<^sub>0)"
       by (auto simp: isCont_def tendsto_iff dist_real_def)
   then show ?thesis
-    by (rule eventually_mono) (simp add: sgn_real_def split: split_if_asm)
+    by (rule eventually_mono) (simp add: sgn_real_def split: if_split_asm)
 qed
 
 lemma poly_lhopital:
@@ -434,7 +379,7 @@ proof
   {
     fix x assume A: "x < l" "sgn (poly p x) \<noteq> sgn (poly p l)"
     with poly_IVT_pos[OF A(1), of p] poly_IVT_neg[OF A(1), of p] A(2)
-        have False by (auto split: split_if_asm
+        have False by (auto split: if_split_asm
                          simp: sgn_real_def l_props not_less less_eq_real_def)
   }
   thus "\<And>x. x \<le> l \<Longrightarrow> sgn (poly p x) = sgn (poly p l)"
@@ -443,7 +388,7 @@ proof
   {
     fix x assume A: "x > u" "sgn (poly p x) \<noteq> sgn (poly p u)"
     with u_props poly_IVT_neg[OF A(1), of p] poly_IVT_pos[OF A(1), of p] A(2)
-        have False by (auto split: split_if_asm
+        have False by (auto split: if_split_asm
                          simp: sgn_real_def l_props not_less less_eq_real_def)
   }
   thus "\<And>x. x \<ge> u \<Longrightarrow> sgn (poly p x) = sgn (poly p u)"
@@ -581,7 +526,7 @@ lemma poly_lim_inf:
 proof (cases "degree p \<ge> 1")
   case False
     hence "degree p = 0" by simp
-    then obtain c where "p = [:c:]" by (cases p, auto split: split_if_asm)
+    then obtain c where "p = [:c:]" by (cases p, auto split: if_split_asm)
     thus ?thesis
         by (simp add: eventually_at_top_linorder poly_inf_def)
 next
@@ -624,7 +569,7 @@ proof-
       using tendsto_mono at_bot_le_at_infinity by (force simp: f_def)
   moreover from assms
       have "LIM x at_bot. g x :> (if even (degree p) then at_top else at_bot)"
-        by (auto simp add: g_def split: split_if_asm intro: filterlim_pow_at_bot_even filterlim_pow_at_bot_odd filterlim_ident)
+        by (auto simp add: g_def split: if_split_asm intro: filterlim_pow_at_bot_even filterlim_pow_at_bot_odd filterlim_ident)
   ultimately have "LIM x at_bot. f x * g x :>
                       (if even ?n then at_top else at_bot)"
       by (auto simp: assms intro: filterlim_tendsto_pos_mult_at_top
@@ -654,7 +599,7 @@ lemma poly_lim_neg_inf:
 proof (cases "degree p \<ge> 1")
   case False
     hence "degree p = 0" by simp
-    then obtain c where "p = [:c:]" by (cases p, auto split: split_if_asm)
+    then obtain c where "p = [:c:]" by (cases p, auto split: if_split_asm)
     thus ?thesis
         by (simp add: eventually_at_bot_linorder poly_neg_inf_def)
 next
@@ -783,7 +728,7 @@ proof (intro iffI conjI)
   from poly_lim_inf obtain x where "sgn (poly p x) = poly_inf p"
       by (auto simp: eventually_at_top_linorder)
   with A show "poly_inf p = 1"
-      by (simp add: sgn_real_def split: split_if_asm)
+      by (simp add: sgn_real_def split: if_split_asm)
 next
   assume "poly_inf p = 1 \<and> (\<forall>x. poly p x \<noteq> 0)"
   hence A: "poly_inf p = 1" and B: "(\<forall>x. poly p x \<noteq> 0)" by simp_all
@@ -794,7 +739,7 @@ next
     assume "\<not>(\<forall>x. poly p x > 0)"
     then obtain x' where "poly p x' \<le> 0" by (auto simp: not_less)
     with A and C have "sgn (poly p x') \<noteq> sgn (poly p x)"
-        by (auto simp: sgn_real_def split: split_if_asm)
+        by (auto simp: sgn_real_def split: if_split_asm)
     from poly_different_sign_imp_root'[OF this] and B
         show False by blast
   qed
@@ -828,7 +773,7 @@ next
     assume "\<not>(\<forall>x. x > a \<longrightarrow> poly p x > 0)"
     then obtain x' where "x' > a" "poly p x' \<le> 0" by (auto simp: not_less)
     with A and D have E: "sgn (poly p x') \<noteq> sgn (poly p (max x\<^sub>0(a+1)))"
-        by (auto simp: sgn_real_def split: split_if_asm)
+        by (auto simp: sgn_real_def split: if_split_asm)
     show False
         apply (cases x' "max x\<^sub>0 (a+1)" rule: linorder_cases)
         using B E `x' > a`
@@ -885,7 +830,7 @@ next
     assume "\<not>(\<forall>x. x < a \<longrightarrow> poly p x > 0)"
     then obtain x' where "x' < a" "poly p x' \<le> 0" by (auto simp: not_less)
     with A and D have E: "sgn (poly p x') \<noteq> sgn (poly p (min x\<^sub>0 (a - 1)))"
-        by (auto simp: sgn_real_def split: split_if_asm)
+        by (auto simp: sgn_real_def split: if_split_asm)
     show False
         apply (cases x' "min x\<^sub>0 (a - 1)" rule: linorder_cases)
         using B E `x' < a`

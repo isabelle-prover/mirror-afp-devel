@@ -420,7 +420,7 @@ by(induct rule: red1_reds1.inducts)(fastforce simp add: ta_upd_simps)+
 lemma red1_call_synthesized: "\<lbrakk> uf,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; call1 e = \<lfloor>aMvs\<rfloor> \<rbrakk> \<Longrightarrow> synthesized_call P (hp s) aMvs"
   and reds1_calls_synthesized: "\<lbrakk> uf,P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; calls1 es = \<lfloor>aMvs\<rfloor> \<rbrakk> \<Longrightarrow> synthesized_call P (hp s) aMvs"
 apply(induct rule: red1_reds1.inducts)
-apply(auto split: split_if_asm simp add: is_vals_conv append_eq_map_conv synthesized_call_conv)
+apply(auto split: if_split_asm simp add: is_vals_conv append_eq_map_conv synthesized_call_conv)
 apply blast
 done
 
@@ -682,7 +682,7 @@ lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   and \<tau>moves1_not_calls1:
   "calls1 es = \<lfloor>(a, M, vs)\<rfloor> \<Longrightarrow> \<tau>moves1 P h es \<longleftrightarrow> (synthesized_call P h (a, M, vs) \<longrightarrow> \<tau>external' P h a M)"
 apply(induct e and es rule: call1.induct calls1.induct)
-apply(auto split: split_if_asm simp add: is_vals_conv)
+apply(auto split: if_split_asm simp add: is_vals_conv)
 apply(fastforce simp add: synthesized_call_def map_eq_append_conv \<tau>external'_def \<tau>external_def dest: sees_method_fun)+
 done
 

@@ -223,7 +223,7 @@ proof
     by (simp add: algebra_simps det3_def')
   thus ?rhs
     by (auto simp add: det3_def')
-qed (auto simp: det3_def' algebra_simps split: split_if_asm)
+qed (auto simp: det3_def' algebra_simps split: if_split_asm)
 
 lemma det30_uminus2[simp]: "det3 0 (-a) (b) = 0 \<longleftrightarrow> det3 0 a b = 0"
   and det30_uminus3[simp]: "det3 0 a (-b) = 0 \<longleftrightarrow> det3 0 a b = 0"

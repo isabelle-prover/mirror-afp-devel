@@ -30,7 +30,7 @@ proof -
       by(cases ct)(fastforce intro: someI_ex[where P=final2])+
   qed
   hence "r2.actions_ok ?s2 t ta2"
-    using assms by(auto simp add: ta_bisim_def split del: split_if elim: rev_iffD1[OF _ thread_oks_bisim_inv])
+    using assms by(auto simp add: ta_bisim_def split del: if_split elim: rev_iffD1[OF _ thread_oks_bisim_inv])
   thus thesis by(rule that)
 qed
 
@@ -92,7 +92,7 @@ proof -
         by(simp_all add: mbisim_def)
     next
       from mbisim_wset_thread_ok1[OF mbisim] ws1t show "wset_thread_ok (wset ?s1) (thr ?s1)"
-        by(auto intro!: wset_thread_okI dest: wset_thread_okD split: split_if_asm)
+        by(auto intro!: wset_thread_okI dest: wset_thread_okD split: if_split_asm)
     next
       fix t'
       assume "thr ?s1 t' = None"
@@ -101,7 +101,7 @@ proof -
     next
       fix t' x1 ln
       assume "thr ?s1 t' = \<lfloor>(x1, ln)\<rfloor>"
-      hence "thr s1 t' = \<lfloor>(x1, ln)\<rfloor>" "t' \<noteq> t" by(auto split: split_if_asm)
+      hence "thr s1 t' = \<lfloor>(x1, ln)\<rfloor>" "t' \<noteq> t" by(auto split: if_split_asm)
       with mbisim_thrD1[OF mbisim `thr s1 t' = \<lfloor>(x1, ln)\<rfloor>`] mbisim
       show "\<exists>x2. thr ?s2 t' = \<lfloor>(x2, ln)\<rfloor> \<and> t' \<turnstile> (x1, shr ?s1) \<approx> (x2, shr ?s2) \<and> (wset ?s2 t' = None \<or> x1 \<approx>w x2)"
         by(auto simp add: mbisim_def)

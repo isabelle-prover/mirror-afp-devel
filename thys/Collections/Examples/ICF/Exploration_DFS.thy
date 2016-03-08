@@ -110,7 +110,7 @@ proof -
       in ls.iterate_rule_P)
     apply simp
     apply simp
-    apply (force split: split_if_asm simp add: hs.correct)
+    apply (force split: if_split_asm simp add: hs.correct)
     apply force
     done
   from G show ?T1

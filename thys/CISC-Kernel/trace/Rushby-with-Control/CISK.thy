@@ -198,7 +198,7 @@ proof-
   from 1 vpeq current_s_t vpeq_involved waiting_consistent[THEN spec,THEN spec,THEN spec,THEN spec,where x3=s and x2=t and x1="current s" and x="the (next_action s execs)"]
     have "fst (snd (CISK_control s (current s) (execs (current s)))) = fst (snd (CISK_control t (current s) (execs (current s))))"
     unfolding Kernel.next_action_def Kernel.involved_def
-    by(cases "(s,(current s),execs (current s))" rule: CISK_control.cases,auto split add: split_if_asm)
+    by(cases "(s,(current s),execs (current s))" rule: CISK_control.cases,auto split add: if_split_asm)
 }
 thus ?thesis by auto
 qed
@@ -291,7 +291,7 @@ proof-
       thus ?thesis
           unfolding Kernel.next_state_def
           using aborting_error_update waiting_error_update 1
-          by(cases "(sa,current sa,execs (current sa))" rule: CISK_control.cases,auto split: split_if_asm)
+          by(cases "(sa,current sa,execs (current sa))" rule: CISK_control.cases,auto split: if_split_asm)
     qed
 }
 thus ?thesis by auto
@@ -349,7 +349,7 @@ proof-
     assume 1: "next_action s execs = Some a"
     from 1 have "a \<in> actions_in_execution (execs (current s))"
       unfolding Kernel.next_action_def actions_in_execution_def
-      by (cases "(s,(current s),execs (current s))" rule: CISK_control.cases,auto split add: split_if_asm)
+      by (cases "(s,(current s),execs (current s))" rule: CISK_control.cases,auto split add: if_split_asm)
   }
   hence "next_action s execs \<rightharpoonup> (\<lambda> a . a \<in> actions_in_execution (execs (current s)))"
     unfolding B_def
@@ -365,7 +365,7 @@ proof-
   fix s execs u
   have "actions_in_execution (next_execs s execs u) \<subseteq> actions_in_execution (execs u)"
     unfolding Kernel.next_execs_def actions_in_execution_def
-    by (cases "(s,(current s),execs (current s))" rule: CISK_control.cases,auto split add: split_if_asm)
+    by (cases "(s,(current s),execs (current s))" rule: CISK_control.cases,auto split add: if_split_asm)
 }
 thus ?thesis by auto
 qed

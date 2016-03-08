@@ -164,7 +164,7 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
             by (metis dvd_0_left_iff le0 le_antisym neq0_conv zero_neq_numeral)
           with choice have choice: "m = 1 \<or> m \<ge> i" by arith
           from m prems(5) have "m \<le> i" 
-            by (metis False div_by_0 dvd.dual_order.refl dvd_imp_le gr0I)
+            by (metis False div_by_0 dvd_refl dvd_imp_le gr0I)
           with choice
           show "m = 1 \<or> m = i" by auto        
         qed (insert prems(5), auto)
@@ -253,7 +253,7 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
         have "int n < (root_nat_floor 3 n + 1) ^ 3" by (rule root_nat_floor_upper, auto)
         also have "\<dots> \<le> int i ^ 3" by (rule power_mono[OF less, of 3], auto)
         finally have n_i3: "n < i ^ 3"
-          by (metis zless_int of_nat_power [symmetric])
+          by (metis of_nat_less_iff of_nat_power [symmetric])
         {
           fix m
           assume m: "multiplicity m n > 0"

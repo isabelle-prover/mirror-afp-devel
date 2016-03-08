@@ -1418,7 +1418,7 @@ proof -
         case (Label l)
         with `V \<notin> Def wfp (sourcenode a)` `(p, n) = sourcenode a`
           `(p, ins, outs, c) \<in> set procs` wf THE1 THE2
-        have "V \<notin> lhs (label c l)" by(fastforce simp:Def_def split:split_if_asm)
+        have "V \<notin> lhs (label c l)" by(fastforce simp:Def_def split:if_split_asm)
         with `c \<turnstile> n -IEdge (kind a)\<rightarrow>\<^sub>p n'` `n = Label l`
         have "state_val (CFG.transfer (lift_procs wfp) (kind a) (cf#cfs)) V = fst cf V"
           by(fastforce intro:Proc_CFG_edge_no_lhs_equal)
@@ -1478,7 +1478,7 @@ proof -
           state_val (CFG.transfer (lift_procs wfp) (kind a) s') V"
           by(fastforce dest:Proc_CFG_Call_follows_id_edge 
             simp:ParamDefs_def ParamDefs_proc_def transfers_simps[of wfp,simplified]
-            split:split_if_asm)
+            split:if_split_asm)
         with lhs `(Main, n) = sourcenode a`[THEN sym] Label show ?thesis
           by(fastforce simp:Def_def)
       next
@@ -1500,7 +1500,7 @@ proof -
         have rhs:"\<forall>V\<in>rhs (label c l). state_val s V = state_val s' V"
           and PDef:"\<forall>V\<in>set (ParamDefs wfp (sourcenode a)). 
           state_val s V = state_val s' V"
-          by(auto dest:in_procs_THE_in_procs_cmd simp:Use_def split:split_if_asm)
+          by(auto dest:in_procs_THE_in_procs_cmd simp:Use_def split:if_split_asm)
         from rhs `c \<turnstile> n -IEdge (kind a)\<rightarrow>\<^sub>p n'` `n = Label l` `CFG.pred (kind a) s` 
           `CFG.pred (kind a) s'`
         have lhs:"\<forall>V\<in>lhs (label c l). 
@@ -1517,7 +1517,7 @@ proof -
           state_val (CFG.transfer (lift_procs wfp) (kind a) s') V"
           by(fastforce dest:Proc_CFG_Call_follows_id_edge 
             simp:ParamDefs_def ParamDefs_proc_def transfers_simps[of wfp,simplified]
-            split:split_if_asm)
+            split:if_split_asm)
         with lhs `(p, n) = sourcenode a`[THEN sym] Label THE
         show ?thesis by(auto simp:Def_def)
       next
@@ -1530,7 +1530,7 @@ proof -
         ultimately have "\<forall>V\<in>set ins. state_val s V = state_val s' V"
           using wf `(p, ins, outs, c) \<in> set procs` `(p,n) = sourcenode a`
           `\<forall>V\<in>Use wfp (sourcenode a). state_val s V = state_val s' V`  Entry
-          by(fastforce dest:in_procs_THE_in_procs_ins simp:Use_def split:split_if_asm)
+          by(fastforce dest:in_procs_THE_in_procs_ins simp:Use_def split:if_split_asm)
         with `c \<turnstile> n -IEdge (kind a)\<rightarrow>\<^sub>p n'` Entry
         have "\<forall>V\<in>set ins. state_val (CFG.transfer (lift_procs wfp) (kind a) s) V =
           state_val (CFG.transfer (lift_procs wfp) (kind a) s') V"
@@ -1588,7 +1588,7 @@ proof -
         with `\<forall>V\<in>Use wfp (sourcenode a). state_val s V = state_val s' V` wf
           `(p, n) = sourcenode a`[THEN sym] `(p, ins, outs, c) \<in> set procs`
         have "\<forall>V\<in>rhs (label c l). state_val s V = state_val s' V"
-          by(auto dest:in_procs_THE_in_procs_cmd simp:Use_def split:split_if_asm)
+          by(auto dest:in_procs_THE_in_procs_cmd simp:Use_def split:if_split_asm)
         with `c \<turnstile> n -IEdge (kind a)\<rightarrow>\<^sub>p n'` Label `CFG.pred (kind a) s`
           `length s = length s'`
         show ?thesis by(fastforce intro:Proc_CFG_edge_rhs_pred_eq)

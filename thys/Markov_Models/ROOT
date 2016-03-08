@@ -13,6 +13,15 @@ session Markov_Models (AFP) = "HOL-Probability" +
     "../Coinductive/Coinductive"
   theories
     "Markov_Models"
+
+    "ex/Example_A"
+    "ex/Example_B"
+    "ex/PCTL"
+    "ex/PGCL"
+    "ex/Crowds_Protocol"
+    "ex/Zeroconf_Analysis"
+    "ex/Gossip_Broadcast"
+    "ex/MDP_RP_Certification"
   document_files
     "root.bib"
     "root.tex"

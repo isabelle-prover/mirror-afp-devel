@@ -486,7 +486,7 @@ struct
   in 
     result
   end handle exc =>
-    if Exn.is_interrupt exc then reraise exc
+    if Exn.is_interrupt exc then Exn.reraise exc
     else
       (tracing ("assn_simproc failed with exception\n:" ^ Runtime.exn_message exc);
         NONE) (* Fail silently *);
@@ -513,7 +513,7 @@ struct
       addsimprocs [assn_simproc] 
       addsimps @{thms norm_assertion_simps}
       addsimps (Named_Theorems.get ctxt @{named_theorems sep_dflt_simps})
-      |> fold Splitter.del_split @{thms split_if}
+      |> fold Splitter.del_split @{thms if_split}
     );
 
   (***********************************)

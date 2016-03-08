@@ -1093,7 +1093,7 @@ lemma f_shrink_eq_conv': "
       else (\<exists>n<k. xs' ! (i * k + n) = xs ! i \<and>
                   (\<forall>j<k. n < j \<longrightarrow> xs' ! (i * k + j) = \<NoMsg>))))"
 apply (case_tac "k = 0", fastforce)
-apply (simp add: list_eq_iff f_shrink_length split del: split_if)
+apply (simp add: list_eq_iff f_shrink_length split del: if_split)
 apply (rule conj_cong, simp)
 apply (rule all_imp_eqI, simp)
 apply (cut_tac x=i in less_div_imp_mult_add_divisor_le[of _ "length xs'" k], simp)

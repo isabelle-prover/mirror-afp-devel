@@ -32,7 +32,7 @@ proof (cases "(a \<le> b \<and> poly p a = 0 \<and> p \<noteq> 0) \<or> (a = b \
                {x. a < x \<and> x \<le> b \<and> poly p x = 0}"
         by (auto simp: less_eq_real_def)
         thus ?thesis using poly_card_roots_less_leq assms False' 
-            by (auto split: split_if_asm)
+            by (auto split: if_split_asm)
     next
       case True
         have "{x. a \<le> x \<and> x \<le> b} = {a..b}"
@@ -322,7 +322,7 @@ next
                (if poly p b = 0 then 1 else 0))" by auto
     thus ?case using prems unfolding Let_def
         by (subst (asm) poly_no_roots_less_less[symmetric, unfolded Let_def], 
-        auto split: split_if_asm simp: less_eq_real_def) 
+        auto split: if_split_asm simp: less_eq_real_def) 
 qed
 
 lemma poly_pos_between_leq_less:

@@ -309,7 +309,7 @@ next
 next
   case WhileT thus ?case by(blast)
 next
-  case TryCatch thus ?case by(clarsimp simp:dom_def split:split_if_asm) blast
+  case TryCatch thus ?case by(clarsimp simp:dom_def split:if_split_asm) blast
 next
   case Cons show ?case by(rule subset_trans)(rule Cons.hyps)+
 next
@@ -366,7 +366,7 @@ and evals_hext:  "P \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarrow>] \<la
 proof (induct rule: eval_evals_inducts)
   case New thus ?case
     by(fastforce intro!: hext_new intro:LeastI simp:new_Addr_def
-                split:split_if_asm simp del:fun_upd_apply)
+                split:if_split_asm simp del:fun_upd_apply)
 next
   case BinOp thus ?case by (fast elim!:hext_trans)
 next

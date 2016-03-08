@@ -288,7 +288,7 @@ proof -
   have rhs1lhs1: "\<lbrakk> \<tau>instr P h stk (compE2 e ! pc); pc < length (compE2 e) \<rbrakk> \<Longrightarrow> \<tau>move2 P h stk e pc None"
     and rhs2lhs2: "\<lbrakk> \<tau>instr P h stk (compEs2 es ! pc); pc < length (compEs2 es) \<rbrakk> \<Longrightarrow> \<tau>moves2 P h stk es pc None"
     apply(induct e and es arbitrary: pc and pc rule: compE2.induct compEs2.induct)
-    apply(force intro: \<tau>move2_\<tau>moves2.intros \<tau>move2_intros' simp add: nth_append nth_Cons' not_less_eq split: split_if_asm)+
+    apply(force intro: \<tau>move2_\<tau>moves2.intros \<tau>move2_intros' simp add: nth_append nth_Cons' not_less_eq split: if_split_asm)+
     done
 
   { assume "pc < length (compE2 e)" "xcp \<noteq> None"
@@ -413,7 +413,7 @@ lemma \<tau>Move2_compP2:
   "P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>body\<rfloor> in D \<Longrightarrow> 
    \<tau>Move2 (compP2 P) (xcp, h, (stk, loc, C, M, pc) # frs) =
    (case xcp of None \<Rightarrow> \<tau>move2 P h stk body pc xcp \<or> pc = length (compE2 body) | Some a \<Rightarrow> pc < Suc (length (compE2 body)))"
-by(clarsimp simp add: \<tau>move2_iff compP2_def compMb2_def nth_append nth_Cons' split: option.splits split_if_asm)
+by(clarsimp simp add: \<tau>move2_iff compP2_def compMb2_def nth_append nth_Cons' split: option.splits if_split_asm)
 
 abbreviation \<tau>MOVE2 ::
   "'addr jvm_prog \<Rightarrow> (('addr option \<times> 'addr frame list) \<times> 'heap, ('addr, 'thread_id, 'heap) jvm_thread_action) trsys"
@@ -430,7 +430,7 @@ apply(cases xcp)
  prefer 18 -- BinOpInstr
  apply(rename_tac bop)
  apply(case_tac "the (binop bop (hd (tl stk)) (hd stk))")
- apply(auto simp add: split_beta \<tau>external_def split: split_if_asm)
+ apply(auto simp add: split_beta \<tau>external_def split: if_split_asm)
 apply(fastforce simp add: check_def has_method_def \<tau>external_def dest: \<tau>external_red_external_aggr_heap_unchanged)
 done
 
@@ -470,7 +470,7 @@ apply(cases xcp)
 apply auto
 apply(rename_tac stk loc C M pc FRS)
 apply(case_tac "instrs_of P C M ! pc")
-apply(simp_all split: split_if_asm)
+apply(simp_all split: if_split_asm)
 apply(auto simp add: check_def has_method_def \<tau>external_def dest!: \<tau>external_red_external_aggr_TA_empty)
 done
 

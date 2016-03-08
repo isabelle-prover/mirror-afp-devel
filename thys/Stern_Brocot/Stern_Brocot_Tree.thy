@@ -155,12 +155,12 @@ proof(induction m n rule: mk_path_induct)
   case (less m n)
   with stern_brocot_denominator_non_zero[where path="mk_path (Suc m) (n - m)"]
   show ?case
-    by (simp add: eq_rat field_simps zdiff_int[symmetric] split: prod.split_asm)
+    by (simp add: eq_rat field_simps of_nat_diff split: prod.split_asm)
 next
   case (greater m n)
   with stern_brocot_denominator_non_zero[where path="mk_path (m - n) (Suc n)"]
   show ?case
-    by (simp add: eq_rat field_simps zdiff_int[symmetric] split: prod.split_asm)
+    by (simp add: eq_rat field_simps of_nat_diff split: prod.split_asm)
 qed (simp_all add: eq_rat)
 
 subsection {* No repetitions *}
@@ -279,7 +279,7 @@ proof -
   from DX DY have *: "(x12 * x21) * (y12 + y22) < (x11 * x22) * (y12 + y22)"
     by(simp add: X Y Det_def)(cases y12, simp_all add: field_simps)
   from DX DY MX F show ?thesis
-    apply (simp add: split_def X Y int_mult[symmetric] del: of_nat_mult)
+    apply (simp add: split_def X Y of_nat_mult [symmetric] del: of_nat_mult)
     apply (clarsimp simp: Det_def times_matrix_def LL_def UR_def mediant_def split_def)
     using * by (simp add: field_simps)
 qed
@@ -295,7 +295,7 @@ proof -
   obtain x11 x12 x21 x22 where X: "X = ((x11, x12), (x21, x22))" by(cases X) auto
   obtain y11 y12 y21 y22 where Y: "Y = ((y11, y12), (y21, y22))" by(cases Y) auto
   show ?thesis using DX DY MX F
-    apply (simp add: X Y split_def int_mult[symmetric] del: of_nat_mult)
+    apply (simp add: X Y split_def of_nat_mult [symmetric] del: of_nat_mult)
     apply (simp add: Det_def times_matrix_def LL_def UR_def mediant_def split_def algebra_simps)
     apply (simp add: add_mult_distrib2[symmetric] mult.assoc[symmetric])
     apply (cases y21; simp)
@@ -671,7 +671,7 @@ proof -
   also have "\<dots> = pure (\<lambda>n d b. if b then n + d - 2 * (n mod d) else 0) \<diamondop> num' \<diamondop> den' \<diamondop> (pure (op < 0) \<diamondop> den')"
     unfolding den'_gt_0 ..
   also have "\<dots> = pure int \<diamondop> (num + den - 2 * (num mod den))" unfolding num'_def den'_def
-    by applicative_lifting(clarsimp simp add: zdiff_int[symmetric] int_mult zmod_int le)
+    by applicative_lifting (clarsimp simp add: of_nat_diff zmod_int le)
   also have "pure nat \<diamondop> \<dots> = num + den - 2 * (num mod den)" by(applicative_nf) simp
   finally show ?thesis .
 qed

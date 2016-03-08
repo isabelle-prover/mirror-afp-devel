@@ -293,7 +293,7 @@ qed
 lemma fun_upd_in_state_measure:
   "\<lbrakk>\<sigma> \<in> space (state_measure A \<Gamma>); y \<in> space (stock_measure (\<Gamma> x))\<rbrakk>
      \<Longrightarrow> \<sigma>(x := y) \<in> space (state_measure (insert x A) \<Gamma>)"
-  unfolding state_measure_def by (auto simp: space_PiM split: split_if_asm)
+  unfolding state_measure_def by (auto simp: space_PiM split: if_split_asm)
 
 lemma marg_dens_integral:
   fixes X :: "val set" assumes "x \<in> V" and "X \<in> sets (stock_measure (\<Gamma> x))"

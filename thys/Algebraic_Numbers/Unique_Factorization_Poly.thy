@@ -115,7 +115,8 @@ lemma content_map_poly_embed_ff: "content (map_poly embed_ff (p :: 'a :: ufd pol
 lemma range_coeffs_embed_ff: assumes "set (coeffs p) \<subseteq> range embed_ff" 
   shows "\<exists> m. coeff p i = embed_ff m"
 proof -
-  from assms(1) embed_ff_0 have "coeff p i \<in> range embed_ff" using range_coeff[of p] by force
+  from assms(1) embed_ff_0 have "coeff p i \<in> range embed_ff" using range_coeff [of p]
+    by auto (metis contra_subsetD embed_ff.hom_zero insertE range_eqI)
   thus ?thesis by auto
 qed
 

@@ -67,7 +67,7 @@ proof -
   from cs have "exec P t (xcp, h, f # Frs) \<noteq> {}"
     by(auto dest!: progress[OF wf] simp add: exec_1_iff)
   with no_type_error[OF wf cs] have check': "check P (xcp, h, frs)"
-    by(auto simp add: exec_d_def split: split_if_asm)
+    by(auto simp add: exec_d_def split: if_split_asm)
   from wf obtain wfmd where wfp: "wf_prog wfmd P" by(auto dest: wt_jvm_progD)
   from tconf hext have tconf': "P,h' \<turnstile> t \<surd>t" by(rule tconf_hext_mono)
   show ?thesis
@@ -159,7 +159,7 @@ proof -
           with ta'' ta' show ?thesis by(fastforce simp del: split_paired_Ex)
         qed
       qed
-    qed(auto 4 4 split: split_if_asm simp add: split_beta ta_upd_simps exec_1_iff intro: rev_image_eqI simp del: split_paired_Ex)
+    qed(auto 4 4 split: if_split_asm simp add: split_beta ta_upd_simps exec_1_iff intro: rev_image_eqI simp del: split_paired_Ex)
     with check' have "\<exists>ta' \<sigma>'. P,t \<turnstile> Normal (xcp, h, frs) -ta'-jvmd\<rightarrow> Normal \<sigma>' \<and> collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> \<subseteq> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and>
       collect_cond_actions \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> \<subseteq> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> \<and> collect_interrupts \<lbrace>ta'\<rbrace>\<^bsub>i\<^esub> \<subseteq> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>"
       apply clarify

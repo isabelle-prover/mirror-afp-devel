@@ -585,7 +585,7 @@ next
        nonneg_ind2: "nonneg_cexpr (set vs \<union> set vs') \<Gamma> ?ind2"
     using tind1 tind2 edc_if_det.hyps tb 
     by (auto intro!: nonneg_cexprI simp: cexpr_sem_expr_rf_to_cexpr bool_to_real_def extract_real_def 
-             dest: val_type_expr_sem_rf[OF tb b] elim!: BOOL_E split: split_if)
+             dest: val_type_expr_sem_rf[OF tb b] elim!: BOOL_E split: if_split)
   have subprob1: "subprob_cexpr (set vs) (set vs') \<Gamma> (\<delta> *\<^sub>c ?ind1)" and
        subprob2: "subprob_cexpr (set vs) (set vs') \<Gamma> (\<delta> *\<^sub>c ?ind2)"
     using invar tb edc_if_det.hyps edc_if_det.prems free_vars_expr_rf_to_cexpr[OF edc_if_det.hyps(1)]

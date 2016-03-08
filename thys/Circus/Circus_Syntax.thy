@@ -153,7 +153,7 @@ fun define_channels (params, binding) typesyn channels thy =
       |> Class.instantiation ([dt_name], params, @{sort ev_eq})
       |> Function_Fun.add_fun [(Binding.name fun_name, NONE, NoSyn)]
                  (map (pair Attrib.empty_binding) eqs) Function_Fun.fun_config
-      |> Local_Theory.restore
+      |> Local_Theory.reset
       |> Class.prove_instantiation_exit (fn ctxt => proof ctxt);
   in
     ((dt_name, constrs), thy2)

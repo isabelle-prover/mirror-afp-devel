@@ -20,9 +20,9 @@ lemma assumes wf: "wf_prog wfmd P"
   shows compE1_pres_wt: "\<lbrakk> P,[Vs[\<mapsto>]Ts] \<turnstile> e :: U; size Ts = size Vs \<rbrakk> \<Longrightarrow> compP f P,Ts \<turnstile>1 compE1 Vs e :: U"
   and compEs1_pres_wt: "\<lbrakk> P,[Vs[\<mapsto>]Ts] \<turnstile> es [::] Us; size Ts = size Vs \<rbrakk> \<Longrightarrow> compP f P,Ts \<turnstile>1 compEs1 Vs es [::] Us"
 proof(induct Vs e and Vs es arbitrary: Ts U and Ts Us rule: compE1_compEs1_induct)
-  case Var thus ?case by(fastforce simp:map_upds_apply_eq_Some split:split_if_asm)
+  case Var thus ?case by(fastforce simp:map_upds_apply_eq_Some split:if_split_asm)
 next
-  case LAss thus ?case by(fastforce simp:map_upds_apply_eq_Some split:split_if_asm)
+  case LAss thus ?case by(fastforce simp:map_upds_apply_eq_Some split:if_split_asm)
 next
   case Call thus ?case
     by(fastforce dest: sees_method_compP[where f = f])
@@ -300,7 +300,7 @@ next
   hence "\<D> (compE1 (Vs@[V]) e2) \<lfloor>index (Vs@[V]) ` (A\<union>{V})\<rfloor>"
     using TryCatch.prems by(simp add:Diff_subset_conv)
   moreover have "index (Vs@[V]) ` A \<subseteq> index Vs ` A \<union> {size Vs}"
-    using TryCatch.prems by(auto simp add: image_index split:split_if_asm)
+    using TryCatch.prems by(auto simp add: image_index split:if_split_asm)
   ultimately show ?case using TryCatch by(auto simp:hyperset_defs elim!:D_mono')
 next
   case (Seq e1 e2)

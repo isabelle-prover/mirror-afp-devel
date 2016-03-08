@@ -74,7 +74,7 @@ by(induct rule: rtrancl3p.induct)(auto dest: redT_updW_PostWS_imp_PostWS)
 lemma redT_updW_Some_otherD:
   "\<lbrakk> redT_updW t' ws wa ws'; ws' t = \<lfloor>w\<rfloor>; t \<noteq> t' \<rbrakk> 
   \<Longrightarrow> (case w of InWS w' \<Rightarrow> ws t = \<lfloor>InWS w'\<rfloor> | _ \<Rightarrow> ws t = \<lfloor>w\<rfloor> \<or> (\<exists>w'. ws t = \<lfloor>InWS w'\<rfloor>))"
-by(auto simp add: redT_updW.simps split: split_if_asm wait_set_status.split)
+by(auto simp add: redT_updW.simps split: if_split_asm wait_set_status.split)
 
 lemma redT_updWs_Some_otherD:
   "\<lbrakk> redT_updWs t' ws was ws'; ws' t = \<lfloor>w\<rfloor>; t \<noteq> t' \<rbrakk> 
@@ -86,7 +86,7 @@ done
 
 lemma redT_updW_None_SomeD:
   "\<lbrakk> redT_updW t ws wa ws'; ws' t' = \<lfloor>w\<rfloor>; ws t' = None \<rbrakk> \<Longrightarrow> t = t' \<and> (\<exists>w'. w = InWS w' \<and> wa = Suspend w')"
-by(auto simp add: redT_updW.simps split: split_if_asm)
+by(auto simp add: redT_updW.simps split: if_split_asm)
 
 lemma redT_updWs_None_SomeD:
   "\<lbrakk> redT_updWs t ws was ws'; ws' t' = \<lfloor>w\<rfloor>; ws t' = None \<rbrakk> \<Longrightarrow> t = t' \<and> (\<exists>w'. Suspend w' \<in> set was)"
@@ -108,7 +108,7 @@ qed
 
 lemma redT_updW_neq_Some_SomeD:
   "\<lbrakk> redT_updW t' ws wa ws'; ws' t = \<lfloor>InWS w\<rfloor>; ws t \<noteq> \<lfloor>InWS w\<rfloor> \<rbrakk> \<Longrightarrow> t = t' \<and> wa = Suspend w"
-by(auto simp add: redT_updW.simps split: split_if_asm)
+by(auto simp add: redT_updW.simps split: if_split_asm)
 
 lemma redT_updWs_neq_Some_SomeD:
   "\<lbrakk> redT_updWs t ws was ws'; ws' t' = \<lfloor>InWS w\<rfloor>; ws t' \<noteq> \<lfloor>InWS w\<rfloor> \<rbrakk> \<Longrightarrow> t = t' \<and> Suspend w \<in> set was"
@@ -133,7 +133,7 @@ qed
 lemma redT_updW_not_Suspend_Some:
   "\<lbrakk> redT_updW t ws wa ws'; ws' t = \<lfloor>w'\<rfloor>; ws t = \<lfloor>w\<rfloor>; \<And>w. wa \<noteq> Suspend w \<rbrakk>
   \<Longrightarrow> w' = w \<or> (\<exists>w'' w'''. w = InWS w'' \<and> w' = PostWS w''')"
-by(auto simp add: redT_updW.simps split: split_if_asm)
+by(auto simp add: redT_updW.simps split: if_split_asm)
 
 lemma redT_updWs_not_Suspend_Some:
   "\<lbrakk> redT_updWs t ws was ws'; ws' t = \<lfloor>w'\<rfloor>; ws t = \<lfloor>w\<rfloor>; \<And>w. Suspend w \<notin> set was \<rbrakk>
@@ -195,7 +195,7 @@ next
   next
     case (Some w')
     thus ?thesis using `ws t = \<lfloor>PostWS w\<rfloor>` Suspend `redT_updW t ws wa ws'`
-      by(auto simp add: redT_updW.simps split: split_if_asm)
+      by(auto simp add: redT_updW.simps split: if_split_asm)
   qed
   moreover
   { fix w from Suspend[of w] have "Suspend w \<notin> set was" by simp }

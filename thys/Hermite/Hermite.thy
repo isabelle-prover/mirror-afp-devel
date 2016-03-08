@@ -10,6 +10,7 @@ theory Hermite
   imports 
   "../Echelon_Form/Echelon_Form_Inverse"
   "../Echelon_Form/Examples_Echelon_Form_Abstract"
+  "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
 begin
 
 subsection{*Some previous properties*}
@@ -17,10 +18,6 @@ subsection{*Some previous properties*}
 subsubsection{*Rings*}
 
 subclass (in bezout_ring_div) ring_div
-proof
-qed
-
-subclass (in euclidean_ring) ring_div
 proof
 qed
 
@@ -32,9 +29,8 @@ proof (cases "a=0")
   thus ?thesis unfolding dvd_def by simp
 next
   case False
-  show ?thesis
-    by (metis (no_types, hide_lams) coeff_pCons_0 degree_mod_less degree_pCons_0 dvd_refl 
-      dvd_trans gcd_poly.simps(2) leading_coeff_0_iff not_less0 poly_gcd_dvd1 poly_gcd_greatest)
+  thus ?thesis
+    by (intro dvd_trans[OF is_unit_triv one_dvd]) simp
 qed
 
 lemma poly_dvd_antisym2:
@@ -69,10 +65,6 @@ qed
 
 subsubsection{*Units*}
 
-lemma unit_prod2: "is_unit (x * y) = (is_unit x \<and> is_unit y)" 
-  using unit_prod assms dvd_mult_left dvd_mult_right
-  unfolding is_unit_def by metis
-
 lemma unit_setprod:
   assumes "finite S"
   shows "is_unit (setprod (\<lambda>i. U $ i $ i) S) = (\<forall>i\<in>S. is_unit (U $ i $ i))"
@@ -84,7 +76,7 @@ next
   case (insert a S)
   have "setprod (\<lambda>i. U $ i $ i) (insert a S) = U $ a $ a * setprod (\<lambda>i. U $ i $ i) S"
     by (simp add: insert.hyps(2))
-  thus ?case using unit_prod2 insert.hyps by auto
+  thus ?case using is_unit_mult_iff insert.hyps by auto
 qed
 
 subsubsection{*Upper triangular matrices*}
@@ -187,26 +179,6 @@ lemma from_nat_1: "from_nat 1 = 1"
   unfolding from_nat_def o_def Abs'_def
   by (metis Rep_1 Rep_mod of_nat_1 one_def)
 
-subsubsection{*Normalisation factor*}
-
-lemma dvd_normalisation_factor:
-  assumes "a div normalisation_factor a = b div normalisation_factor b" 
-  shows "a dvd b"
-  by (metis assms div_0 dvd_refl normalisation_factor_dvd_iff(4))
-
-lemma a_dvd_a_div_normalisation_factor: "a dvd a div normalisation_factor a"
-  by (metis dvd_refl normalisation_0_iff normalisation_factor_dvd_iff(4))
-lemma a_div_a_dvd_normalisation_factor: "a div normalisation_factor a dvd a"  
-  by (metis div_by_0 dvd_refl normalisation_factor_0 normalisation_factor_dvd_iff(2))
-
-lemma div_normalisation_factor:
-  assumes "xa div normalisation_factor xa \<noteq> xb div normalisation_factor xb"
-  and "xa div normalisation_factor xa dvd xb div normalisation_factor xb"
-  shows "\<not> (xb div normalisation_factor xb dvd xa div normalisation_factor xa)"
-  using assms
-  by (auto, metis (mono_tags) associated_def associated_iff_normed_eq div_by_0 dvd_eq_mod_eq_0 
-    mod_by_0 normalisation_factor_0 normalisation_factor_dvd_iff(2) normalisation_factor_dvd_iff(4))
-
 subsubsection{*Div and Mod*}
 
 lemma dvd_minus_eq_mod:
@@ -268,28 +240,43 @@ lemma cong_eq: "cong a c b = (b dvd (a - c))"
 
 end
 
-context semiring_div
+context normalization_semidom
 begin
 
-lemma Units_eq: "Units = {x. is_unit x}" unfolding is_unit_def Units_def dvd_def ..
+lemma Units_eq: "Units = {x. x dvd 1}" unfolding Units_def dvd_def ..
 
-lemma associated_eq: "associated a b = (\<exists>u\<in>Units. a = u*b)" 
-  unfolding associated_def Units_def is_unit_def dvd_def
-  by (auto, metis associated_def associated_iff_div_unit dvdE dvd_triv_left is_unit_def)
-     (metis mult_1_right mult_assoc mult_commute, metis mult_commute)
+lemma normalize_Units: "x \<in> Units \<Longrightarrow> normalize x = 1"
+  by (intro is_unit_normalize) (simp_all add: Units_eq)
+
+lemma associated_eq: "(normalize a = normalize b) \<longleftrightarrow> (\<exists>u\<in>Units. a = u*b)" 
+proof
+  assume A: "normalize a = normalize b"
+  show "\<exists>u\<in>Units. a = u*b"
+  proof (cases "a = 0 \<or> b = 0")
+    case False
+    from A have "a = (unit_factor a div unit_factor b) * b"
+      by (metis mult_not_zero normalize_0 normalize_mult_unit_factor mult.left_commute 
+           unit_div_mult_self unit_factor_is_unit)
+    moreover from False have "unit_factor a div unit_factor b \<in> Units"
+      by (simp add: Units_eq unit_div)
+    ultimately show ?thesis by blast
+  next
+    case True
+    with A normalize_eq_0_iff[of a] normalize_eq_0_iff[of b] have "a = 0" "b = 0" by auto
+    thus ?thesis by (auto intro!: exI[of _ 1] simp: Units_def)
+  qed
+qed (auto simp: normalize_Units normalize_mult)
 
 end
 
 context ring_div
 begin
 
-definition "associated_rel = {(a,b). associated a b}"
+definition "associated_rel = {(a,b). normalize a = normalize b}"
 
 lemma equiv_associated: 
   shows "equiv UNIV associated_rel"
-  unfolding associated_rel_def equiv_def refl_on_def sym_def trans_def
-  by (auto simp add: associated_comm)
-(simp add: associated_def, meson associated_def dvd_trans)
+  unfolding associated_rel_def equiv_def refl_on_def sym_def trans_def by simp
 
 definition "congruent_rel b = {(a,c). cong a c b}"
 
@@ -316,15 +303,15 @@ end
 
 subsection{*Associates and residues functions*}
 
-context semiring_div
+context normalization_semidom
 begin
 
 definition ass_function :: "('a \<Rightarrow> 'a) \<Rightarrow> bool"
   where "ass_function f 
-  = ((\<forall>a. associated a (f a)) \<and> pairwise (\<lambda>a b. \<not> associated a b) (range f))"
+  = ((\<forall>a. normalize a = normalize (f a)) \<and> pairwise (\<lambda>a b. normalize a \<noteq> normalize b) (range f))"
 
 definition "Complete_set_non_associates S 
-  = (\<exists>f. ass_function f \<and> f`UNIV = S \<and> (pairwise (\<lambda>a b. \<not> associated a b) S))"
+  = (\<exists>f. ass_function f \<and> f`UNIV = S \<and> (pairwise (\<lambda>a b. normalize a \<noteq> normalize b) S))"
 
 end
 
@@ -345,26 +332,27 @@ lemma ass_function_Complete_set_non_associates:
   shows "Complete_set_non_associates (f`UNIV)"
   unfolding Complete_set_non_associates_def ass_function_def 
   apply (rule exI[of _ f])
-  using f unfolding ass_function_def unfolding pairwise_def associated_def by fast
+  using f unfolding ass_function_def unfolding pairwise_def by fast
 
 lemma in_Ass_not_associated:
   assumes Ass_S: "Complete_set_non_associates S" 
   and x: "x\<in>S" and y: "y\<in>S" and x_not_y: "x\<noteq>y" 
-  shows "\<not> associated x y"
+  shows "normalize x \<noteq> normalize y"
   using assms unfolding Complete_set_non_associates_def pairwise_def by auto
 
 
 lemma ass_function_0:
   assumes r: "ass_function ass"
   shows "(ass x = 0) = (x = 0)"
-  using assms unfolding ass_function_def associated_def pairwise_def
-  by (metis dvd_0_left_iff)+
+  using assms unfolding ass_function_def pairwise_def
+  by (metis normalize_eq_0_iff)
 
 lemma ass_function_0':
   assumes r: "ass_function ass"
   shows "(ass x div x = 0) = (x=0)"
-  using assms unfolding ass_function_def associated_def pairwise_def
-  by (auto, metis dvd_0_left_iff dvd_div_eq_mult mult.commute mult_zero_right)
+  using assms unfolding ass_function_def pairwise_def
+  by (metis ass_function_0 associatedD2 div_self divide_zero dvd_normalize_div
+            normalize_0 normalize_1 one_neq_zero r)
 
 
 lemma res_function_Complete_set_residues:
@@ -385,14 +373,11 @@ lemma in_Res_not_congruent:
 
 subsubsection{*Concrete instances in Euclidean rings*}
 
-definition "ass_function_euclidean (p::'a::{euclidean_ring}) = p div normalisation_factor p"
+definition "ass_function_euclidean (p::'a::{euclidean_ring}) = normalize p"
 definition "res_function_euclidean b (n::'a::{euclidean_ring}) = (if b = 0 then n else (n mod b))"
 
 lemma ass_function_euclidean: "ass_function ass_function_euclidean"
-  unfolding ass_function_def image_def ass_function_euclidean_def
-  unfolding associated_def pairwise_def 
-  by (auto simp add: div_normalisation_factor a_dvd_a_div_normalisation_factor
-    a_div_a_dvd_normalisation_factor)
+  unfolding ass_function_def image_def ass_function_euclidean_def pairwise_def by auto
 
 lemma res_function_euclidean: 
   "res_function (res_function_euclidean)"
@@ -533,7 +518,8 @@ definition "Hermite_upt_row A k associates residues =
 
 text{*The definition of Hermite Normal Form is now introduced:*}
 
-definition Hermite::"'a::{bezout_ring_div} set \<Rightarrow> ('a \<Rightarrow> 'a set) \<Rightarrow> (('a, 'b::{mod_type}) vec, 'c::{mod_type}) vec \<Rightarrow> bool"
+definition Hermite::"'a::{bezout_ring_div,normalization_semidom} set \<Rightarrow> ('a \<Rightarrow> 'a set) \<Rightarrow> 
+   (('a, 'b::{mod_type}) vec, 'c::{mod_type}) vec \<Rightarrow> bool"
 where  "Hermite associates residues A = (
   Complete_set_non_associates associates 
   \<and> (Complete_set_residues residues) 
@@ -1078,7 +1064,7 @@ lemma echelon_form_Hermite_of_upt_row_i:
   using echelon_form_fold_Hermite_of_row_i assms by auto
 
 lemma echelon_form_Hermite_of:
-  fixes A::"'a::{bezout_ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom}^'cols::{mod_type}^'rows::{mod_type}"
   assumes a: "ass_function ass"
   and r: "res_function res"
   and b: "is_bezout_ext bezout"
@@ -1107,7 +1093,7 @@ proof (auto simp add: Let_def)
   also have "... = ass ?Ain" 
   proof (rule dvd_div_mult_self)
     show "?Ain dvd ass ?Ain"
-      using a unfolding ass_function_def associated_def by simp
+      using a unfolding ass_function_def by (simp add: associatedD2)
   qed
   also have "... \<in> range ass" by simp
   finally show "?H $ i $ (LEAST n. ?H $ i $ n \<noteq> 0) \<in> range ass" .
@@ -1529,7 +1515,7 @@ qed
 
 
 lemma Hermite_of_upt_row_preserves_zero_rows:
-  fixes A::"'a::{bezout_ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom}^'cols::{mod_type}^'rows::{mod_type}"
   assumes i: "is_zero_row i A"
   and e: "echelon_form A" and a: "ass_function ass" and r: "res_function res" and k: "k \<le> nrows A"
   shows "is_zero_row i (Hermite_of_upt_row_i A k ass res)"
@@ -1590,7 +1576,7 @@ next
 qed
 
 lemma Hermite_of_preserves_zero_rows:
-  fixes A::"'a::{bezout_ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom}^'cols::{mod_type}^'rows::{mod_type}"
   assumes i: "is_zero_row i (echelon_form_of A bezout)"
   and a: "ass_function ass"
   and r: "res_function res"
@@ -1601,7 +1587,7 @@ lemma Hermite_of_preserves_zero_rows:
 (auto simp add: nrows_def)
 
 lemma Hermite_of_Least:
-  fixes A::"'a::{bezout_ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom}^'cols::{mod_type}^'rows::{mod_type}"
   assumes i: "\<not> is_zero_row i (Hermite_of A ass res bezout)"
   and a: "ass_function ass"
   and r: "res_function res"
@@ -1617,7 +1603,7 @@ proof -
 qed
 
 lemma in_associates_Hermite_of:
-  fixes A::"'a::{bezout_ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom}^'cols::{mod_type}^'rows::{mod_type}"
   assumes a: "ass_function ass"
   and r: "res_function res"
   and b: "is_bezout_ext bezout"
@@ -1751,7 +1737,7 @@ qed
 
 
 lemma in_residues_Hermite_of:
-  fixes A::"'a::{bezout_ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom}^'cols::{mod_type}^'rows::{mod_type}"
   assumes a: "ass_function ass"
   and r: "res_function res"
   and b: "is_bezout_ext bezout"
@@ -1836,8 +1822,8 @@ proof (auto simp add: Let_def, metis invertible_def matrix_mul_lid)
   let ?M="mult_row A i (ass (A $ i $ ?n) div A $ i $ ?n)"
   let ?P="mult_row (mat 1) i (ass (A $ i $ ?n) div A $ i $ ?n)"
   let ?Ain="A $ i $ ?n"
-  have ass_dvd: "ass ?Ain dvd ?Ain" using a unfolding ass_function_def associated_def by simp
-  have ass_dvd': "?Ain dvd ass ?Ain" using a unfolding ass_function_def associated_def by simp
+  have ass_dvd: "ass ?Ain dvd ?Ain" using a unfolding ass_function_def by (simp add: associatedD1)
+  have ass_dvd': "?Ain dvd ass ?Ain" using a unfolding ass_function_def by (simp add: associatedD1)
   assume iA: "\<not> is_zero_row i A"
   have Ain_0: "A $ i $ ?n \<noteq> 0" by (metis (mono_tags) LeastI iA is_zero_row_def')
   have ass_Ain_0: "ass (A $ i $ ?n) \<noteq> 0" by (metis Ain_0 ass_dvd dvd_0_left_iff) 
@@ -1891,7 +1877,7 @@ next
 qed
 
 lemma invertible_Hermite_of:
-  fixes A::"'a::{bezout_ring_div}^'cols::{mod_type}^'rows::{mod_type}"
+  fixes A::"'a::{bezout_ring_div,normalization_semidom}^'cols::{mod_type}^'rows::{mod_type}"
   assumes a: "ass_function ass" 
   and b: "is_bezout_ext bezout"
   shows "\<exists>P. invertible P \<and> Hermite_of A ass res bezout = P ** A"
@@ -1965,7 +1951,7 @@ text{*The uniqueness of the Hermite Normal Form is proven following the proof pr
   Integral Matrices (1972) by Morris Newman.*}
 
 lemma Hermite_unique:
-  fixes K::"'a::bezout_ring_div^'n::mod_type^'n::mod_type"
+  fixes K::"'a::{bezout_ring_div,normalization_semidom}^'n::mod_type^'n::mod_type"
   assumes A_PH: "A = P ** H" 
   and A_QK: "A = Q ** K"
   and inv_A: "invertible A"
@@ -2004,9 +1990,9 @@ proof -
       by (rule diagonal_in_associates[OF H inv_H upper_triangular_H])
     have Kii: "K $ i $ i \<in> associates"
       by (rule diagonal_in_associates[OF K inv_K upper_triangular_K])
-    have ass_Hii_Kii: "associated (H $ i $ i) (K $ i $ i)" 
-      by (metis associated_def inv_H inv_K invertible_iff_is_unit is_unit_diagonal
-        unit_imp_dvd upper_triangular_H upper_triangular_K)
+    have ass_Hii_Kii: "normalize (H $ i $ i) = normalize (K $ i $ i)" 
+      by (meson associatedI inv_H inv_K invertible_iff_is_unit is_unit_diagonal
+                unit_imp_dvd upper_triangular_H upper_triangular_K)
     show Hii_eq_Kii: "H $ i $ i = K $ i $ i"
       by (metis Hermite_def Hii K Kii ass_Hii_Kii in_Ass_not_associated)
     have "H $ i $ i = U $ i $ i * K $ i $ i" 

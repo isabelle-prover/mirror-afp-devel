@@ -593,7 +593,7 @@ next
       hence "finite (max x ` {y \<in> Y. y > x})"
         by(rule finite_subset[rotated]) auto
       hence "finite {y \<in> Y. y > x}"
-        by(rule finite_imageD)(auto intro!: inj_onI simp add: max_def split: split_if_asm)
+        by(rule finite_imageD)(auto intro!: inj_onI simp add: max_def split: if_split_asm)
       moreover have "finite {y \<in> Y. y \<le> x}"
         by(rule finite_enat_bounded)(auto simp add: enat)
       ultimately have "finite ({y \<in> Y. y > x} \<union> {y \<in> Y. y \<le> x})" by simp
@@ -674,8 +674,15 @@ proof -
     from Y have Y': "Y \<inter> {x. x \<noteq> 0} \<noteq> {}" by auto
     from Y(2) have eq: "Y = eSuc ` (epred ` (Y \<inter> {x. x \<noteq> 0}))"
       by(fastforce intro: rev_image_eqI)
-    show "f (epred (Sup Y)) (Sup Y) = lub ((\<lambda>x. f (epred x) x) ` Y)"
-      by(subst (1 2 3) eq)(simp add: mcont[THEN mcont_contD] mcont_eSuc[THEN mcont_contD, symmetric] Y' chain_epredI[OF chain] del: Sup_image_eq, simp add: image_image)
+    let ?Y = "epred ` (Y \<inter> {x. x \<noteq> 0})"
+    from chain_epredI [OF chain] Y'
+    have "f (\<Squnion>?Y) (eSuc (\<Squnion>?Y)) = lub ((\<lambda>x. f x (eSuc x)) ` ?Y)"
+      using mcont [THEN mcont_contD] by blast
+    moreover from chain_epredI [OF chain] Y'
+      have "SUPREMUM ?Y eSuc = eSuc (\<Squnion>?Y)"
+      using mcont_eSuc [THEN mcont_contD, symmetric] by blast
+    ultimately show "f (epred (Sup Y)) (Sup Y) = lub ((\<lambda>x. f (epred x) x) ` Y)"
+      by (subst (1 2 3) eq) (simp add: image_image)
   next
     fix x :: enat
     assume "\<not> x \<le> 0"

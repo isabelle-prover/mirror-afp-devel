@@ -422,7 +422,12 @@ proof -
   have
     "(\<forall>n s p. FV ({n \<rightarrow> [s,p]} t) \<subseteq> FV t \<union> FV s \<union> FV p)
     &(\<forall>n s p. FVoption (sopen_option n s p u) \<subseteq> FVoption u \<union> FV s \<union> FV p)"
-    by (rule compat_sterm_sterm_option.induct, simp_all split: bVariable.split, blast+)
+    apply (induct u rule: compat_sterm_sterm_option.induct)
+    apply (auto split: bVariable.split)
+    apply (metis (no_types, lifting) FV_Some UnE domI sopen_Some subsetCE)
+    apply blast
+    apply blast
+    done
   from conjunct1[OF this] show ?thesis by assumption
 qed
 

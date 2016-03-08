@@ -210,7 +210,7 @@ next
       and Ds:"Ds = Cs @\<^sub>p Cs'"
       and wtref:"P,E,h \<turnstile> ref (a, Cs) :\<^bsub>NT\<^esub> U" by fact+
     from wtref obtain D S where subo:"Subobjs P D Cs" and h:"h a = Some(D,S)"
-      by(cases U,auto split:split_if_asm)
+      by(cases U,auto split:if_split_asm)
     from path Ds have last:"C = last Ds"  
       by(fastforce intro!:appendPath_last Subobjs_nonempty simp:path_via_def)
     from subo path Ds wf have "Subobjs P D Ds"
@@ -282,7 +282,7 @@ next
       and ref:"e\<^sub>2 = ref (a',Xs@\<^sub>pXs')"
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs = Xs \<and> s\<^sub>1 = s\<^sub>2" by simp
     with wf eval_ref sconf wte have last:"last Cs = D"
-      by(auto dest:eval_preserves_type split:split_if_asm)
+      by(auto dest:eval_preserves_type split:if_split_asm)
     from disj show "ref (a,Ds) = e\<^sub>2 \<and> s\<^sub>1 = s\<^sub>2"
     proof (rule disjE)
       assume "P \<turnstile> Path D to C unique"
@@ -304,7 +304,7 @@ next
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs = Xs@C#Xs' \<and> s\<^sub>1 = s\<^sub>2" by simp
     with wf eval_ref sconf wte obtain C' where 
       last:"last Cs = D" and "Subobjs P C' (Xs@C#Xs')"
-      by(auto dest:eval_preserves_type split:split_if_asm)
+      by(auto dest:eval_preserves_type split:if_split_asm)
     hence subo:"Subobjs P C (C#Xs')" by(fastforce intro:Subobjs_Subobjs)
     with eq last have leq:"P \<turnstile> C \<preceq>\<^sup>* D" by(fastforce dest:Subobjs_subclass)
     from path_via last have "P \<turnstile> D \<preceq>\<^sup>* C"
@@ -323,7 +323,7 @@ next
       and notleq:"\<not> P \<turnstile> last Xs \<preceq>\<^sup>* C" and throw:"e\<^sub>2 = THROW ClassCast"
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs = Xs \<and> s\<^sub>1 = s\<^sub>2" by simp
     with wf eval_ref sconf wte have last:"last Cs = D" and notempty:"Cs \<noteq> []"
-      by(auto dest!:eval_preserves_type Subobjs_nonempty split:split_if_asm)
+      by(auto dest!:eval_preserves_type Subobjs_nonempty split:if_split_asm)
     from disj have "C = D"
     proof(rule disjE)
       assume path_unique:"P \<turnstile> Path D to C unique"
@@ -367,12 +367,12 @@ next
       by simp
     with wf eval_ref sconf wte obtain C' where 
       last:"last(C#Cs') = D" and "Subobjs P C' (Cs@[C]@Cs')"
-      by(auto dest:eval_preserves_type split:split_if_asm)
+      by(auto dest:eval_preserves_type split:if_split_asm)
     hence "P \<turnstile> Path C to D via C#Cs'" 
       by(fastforce intro:Subobjs_Subobjs simp:path_via_def)
     with eq last path_via wf have "Xs' = [C] \<and> Cs' = [] \<and> C = D"
       apply clarsimp
-      apply(split split_if_asm)
+      apply(split if_split_asm)
       by(simp,drule path_via_reverse,simp,simp)+
     with ref eq show "ref(a,Cs@[C]) = e\<^sub>2 \<and> s\<^sub>1 = s\<^sub>2" by(fastforce simp:appendPath_def)
   next
@@ -383,7 +383,7 @@ next
       by simp
     with wf eval_ref sconf wte obtain C' where 
       last:"last(C#Xs') = D" and subo:"Subobjs P C' (Cs@[C]@Cs')"
-      by(auto dest:eval_preserves_type split:split_if_asm)
+      by(auto dest:eval_preserves_type split:if_split_asm)
     from subo wf have notin:"C \<notin> set Cs" by -(rule unique2,simp)
     from subo wf have "C \<notin> set Cs'"  by -(rule unique1,simp,simp)
     with notin eq have "Cs = Xs \<and> Cs' = Xs'"
@@ -510,7 +510,7 @@ next
       and ref:"e\<^sub>2 = ref (a',Xs@\<^sub>pXs')"
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs = Xs \<and> s\<^sub>1 = s\<^sub>2" by simp
     with wf eval_ref sconf wte have last:"last Cs = D"
-      by(auto dest:eval_preserves_type split:split_if_asm)
+      by(auto dest:eval_preserves_type split:if_split_asm)
     with path_unique path_via path_via' eq have "Xs' = Cs'"
       by(fastforce simp:path_via_def path_unique_def)
     with eq Ds ref show "ref (a, Ds) = e\<^sub>2 \<and> s\<^sub>1 = s\<^sub>2" by simp
@@ -521,7 +521,7 @@ next
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs = Xs@C#Xs' \<and> s\<^sub>1 = s\<^sub>2" by simp
     with wf eval_ref sconf wte obtain C' where 
       last:"last Cs = D" and "Subobjs P C' (Xs@C#Xs')"
-      by(auto dest:eval_preserves_type split:split_if_asm)
+      by(auto dest:eval_preserves_type split:if_split_asm)
     hence "Subobjs P C (C#Xs')" by(fastforce intro:Subobjs_Subobjs)
     with last eq have "P \<turnstile> Path C to D via C#Xs'" 
       by(simp add:path_via_def)
@@ -537,7 +537,7 @@ next
     from IH[OF eval_ref wte sconf] s2 have eq:"a = a' \<and> Cs = Xs \<and> s\<^sub>1 = s\<^sub>2" by simp
     with wf eval_ref sconf wte h have "last Cs = D"
       and "Subobjs P D' Cs"
-      by(auto dest:eval_preserves_type split:split_if_asm)
+      by(auto dest:eval_preserves_type split:if_split_asm)
     with path_via wf have "P \<turnstile> Path D' to C via Cs@\<^sub>pCs'"
       by(fastforce intro:Subobjs_appendPath appendPath_last[THEN sym] 
                    dest:Subobjs_nonempty simp:path_via_def)
@@ -574,12 +574,12 @@ next
       by simp
     with wf eval_ref sconf wte obtain C' where 
       last:"last(C#Cs') = D" and "Subobjs P C' (Cs@[C]@Cs')"
-      by(auto dest:eval_preserves_type split:split_if_asm)
+      by(auto dest:eval_preserves_type split:if_split_asm)
     hence "P \<turnstile> Path C to D via C#Cs'" 
       by(fastforce intro:Subobjs_Subobjs simp:path_via_def)
     with eq last path_via wf have "Xs' = [C] \<and> Cs' = [] \<and> C = D"
       apply clarsimp
-      apply(split split_if_asm)
+      apply(split if_split_asm)
       by(simp,drule path_via_reverse,simp,simp)+
     with ref eq show "ref(a,Cs@[C]) = e\<^sub>2 \<and> s\<^sub>1 = s\<^sub>2" by(fastforce simp:appendPath_def)
   next
@@ -590,7 +590,7 @@ next
       by simp
     with wf eval_ref sconf wte obtain C' where 
       last:"last(C#Xs') = D" and subo:"Subobjs P C' (Cs@[C]@Cs')"
-      by(auto dest:eval_preserves_type split:split_if_asm)
+      by(auto dest:eval_preserves_type split:if_split_asm)
     from subo wf have notin:"C \<notin> set Cs" by -(rule unique2,simp)
     from subo wf have "C \<notin> set Cs'"  by -(rule unique1,simp,simp)
     with notin eq have "Cs = Xs \<and> Cs' = Xs'"
@@ -605,7 +605,7 @@ next
     from IH[OF eval_ref wte sconf] s2 have eq:"a = a' \<and> Cs@[C]@Cs' = Xs \<and> s\<^sub>1 = s\<^sub>2"
       by simp
     with wf eval_ref sconf wte h have "Subobjs P D' (Cs@[C]@Cs')"
-      by(auto dest:eval_preserves_type split:split_if_asm)
+      by(auto dest:eval_preserves_type split:if_split_asm)
     hence "Subobjs P D' (Cs@[C])" by(fastforce intro:appendSubobj)
     with path_via path_unique have "Xs' = Cs@[C]" 
       by(fastforce simp:path_via_def path_unique_def)
@@ -641,7 +641,7 @@ next
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs = Xs \<and> (h,l) = s\<^sub>2" by simp
     with wf eval_ref sconf wte h have "last Cs = D'"
       and "Subobjs P D Cs"
-      by(auto dest:eval_preserves_type split:split_if_asm)
+      by(auto dest:eval_preserves_type split:if_split_asm)
     with path_via' wf eq have "P \<turnstile> Path D to C via Xs@\<^sub>pXs'"
       by(fastforce intro:Subobjs_appendPath appendPath_last[THEN sym] 
                    dest:Subobjs_nonempty simp:path_via_def)
@@ -655,7 +655,7 @@ next
     from IH[OF eval_ref wte sconf] have eq:"a = a' \<and> Cs = Xs@C#Xs' \<and> (h,l) = s\<^sub>2"
       by simp
     with wf eval_ref sconf wte h have "Subobjs P D (Xs@[C]@Xs')"
-      by(auto dest:eval_preserves_type split:split_if_asm)
+      by(auto dest:eval_preserves_type split:if_split_asm)
     hence "Subobjs P D (Xs@[C])" by(fastforce intro:appendSubobj)
     with path_via path_unique have "Cs' = Xs@[C]" 
       by(fastforce simp:path_via_def path_unique_def)
@@ -1019,7 +1019,7 @@ next
     and wte2:"P,E \<turnstile> e\<^sub>2 :: T''" and leq:"P \<turnstile> T'' \<le> T'"
     by auto
   from wf eval' wte1 sconf have "last Cs' = C"
-    by(auto dest!:eval_preserves_type split:split_if_asm)
+    by(auto dest!:eval_preserves_type split:if_split_asm)
   with has_least has_least' have TeqT':"T = T'" by (fastforce intro:sees_field_fun)
   from eval show ?case
   proof(rule eval_cases)
@@ -1343,7 +1343,7 @@ next
     and has_least':"P \<turnstile> D has least M = (Ss,T'',m) via Cs''"
     and wtes:"P,E \<turnstile> es [::] Ss'" and subs:"P \<turnstile> Ss' [\<le>] Ss" by auto
   from eval_preserves_type[OF wf eval' sconf wte]
-  have last:"last Cs = D" by (auto split:split_if_asm)
+  have last:"last Cs = D" by (auto split:if_split_asm)
   with has_least has_least' wf
   have eq:"Ts' = Ss \<and> T' = T'' \<and> (pns',body') = m \<and> Ds = Cs''"
     by(fastforce dest:wf_sees_method_fun)
@@ -1359,10 +1359,10 @@ next
   from wf eval' sconf wte last have "P,E,(hp s\<^sub>1) \<turnstile> ref(a,Cs) :\<^bsub>NT\<^esub> Class(last Cs)"
     by -(rule eval_preserves_type,simp_all)
   with hext have "P,E,h\<^sub>2 \<turnstile> ref(a,Cs) :\<^bsub>NT\<^esub> Class(last Cs)"
-    by(auto intro:WTrt_hext_mono dest:hext_objD split:split_if_asm)
-  with h2 have "Subobjs P C Cs" by (auto split:split_if_asm)
+    by(auto intro:WTrt_hext_mono dest:hext_objD split:if_split_asm)
+  with h2 have "Subobjs P C Cs" by (auto split:if_split_asm)
   hence "P \<turnstile> Path C to (last Cs) via Cs"
-    by (auto simp:path_via_def split:split_if_asm)
+    by (auto simp:path_via_def split:if_split_asm)
   with selects has_least wf have param_types:"Ts' = Ts \<and> P \<turnstile> T \<le> T'"
     by -(rule select_least_methods_subtypes,simp_all)
   from wf selects have wt_body:"P,[this\<mapsto>Class(last Cs'),pns[\<mapsto>]Ts] \<turnstile> body :: T"
@@ -1535,7 +1535,7 @@ next
       and wtes:"P,E \<turnstile> es [::] Ts'" and subs:"P \<turnstile> Ts' [\<le>] Ts"
     by(auto dest:wf_sees_method_fun)
   from eval_preserves_type[OF wf eval' sconf wte]
-  have last:"last Cs = C'" by (auto split:split_if_asm)
+  have last:"last Cs = C'" by (auto split:if_split_asm)
   from wf has_least have param_type:"\<forall>T \<in> set Ts. is_type P T" 
     and return_type:"is_type P T" and TnotNT:"T \<noteq> NT"
     by(auto dest:has_least_wf_mdecl simp:wf_mdecl_def)
@@ -1545,9 +1545,9 @@ next
   from wf eval' sconf wte last have "P,E,(hp s\<^sub>1) \<turnstile> ref(a,Cs) :\<^bsub>NT\<^esub> Class(last Cs)"
     by -(rule eval_preserves_type,simp_all)
   with hext have "P,E,h\<^sub>2 \<turnstile> ref(a,Cs) :\<^bsub>NT\<^esub> Class(last Cs)"
-    by(auto intro:WTrt_hext_mono dest:hext_objD split:split_if_asm)
+    by(auto intro:WTrt_hext_mono dest:hext_objD split:if_split_asm)
   then obtain D S where h2:"h\<^sub>2 a = Some(D,S)" and "Subobjs P D Cs"
-    by (auto split:split_if_asm)
+    by (auto split:if_split_asm)
   with path_via wf have "Subobjs P D (Cs@\<^sub>pCs'')" and "last Cs'' = C"
     by(auto intro:Subobjs_appendPath simp:path_via_def)
   with has_least wf last' Ds have subo:"Subobjs P D Ds"

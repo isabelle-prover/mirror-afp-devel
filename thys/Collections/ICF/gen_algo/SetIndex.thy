@@ -186,7 +186,7 @@ begin
               by (simp add: ci_\<alpha>'_def)
             also from prems(4) have "\<dots> = index_map f (t.\<alpha> t - it) i" by simp
             finally have E: "{xa \<in> t.\<alpha> t - it. f xa = i} = {}" 
-              by (simp add: index_map_def index_def split: split_if_asm)
+              by (simp add: index_map_def index_def split: if_split_asm)
             moreover have 
               "{xa \<in> t.\<alpha> t - (it - {x}). f xa = i} 
                = {xa \<in> t.\<alpha> t - it. f xa = i} \<union> {x}"
@@ -207,7 +207,7 @@ begin
                 by (simp add: ci_\<alpha>'_def)
             also from prems(4) have "\<dots> = index_map f (t.\<alpha> t - it) i" by simp
             finally have E: "{xa \<in> t.\<alpha> t - it. f xa = i} = s.\<alpha> ss" 
-              by (simp add: index_map_def index_def split: split_if_asm)
+              by (simp add: index_map_def index_def split: if_split_asm)
             moreover have 
               "{xa \<in> t.\<alpha> t - (it - {x}). f xa = i} 
                = {xa \<in> t.\<alpha> t - it. f xa = i} \<union> {x}"

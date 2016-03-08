@@ -12,31 +12,36 @@ imports
   Echelon_Form_IArrays
 begin
 
-
 subsection{*Definitions*}
 
-definition echelon_form_of_column_k_det_iarrays:: 
-  "'a::{bezout_ring} \<times> 'a iarray iarray \<times> nat \<times> ('a \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a \<times> 'a \<times> 'a) \<Rightarrow> nat 
-  \<Rightarrow> 'a \<times> 'a iarray iarray \<times> nat \<times> ('a \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a \<times> 'a \<times> 'a)"
- where  "echelon_form_of_column_k_det_iarrays A' k 
-  = (let det_P=fst A'; A = fst (snd A'); i = fst (snd(snd A')); 
-  bezout = snd (snd (snd A'))
-  in if ((i \<noteq> nrows_iarray A) \<and> (A !! i !! k = 0) 
-  \<and> (\<not> vector_all_zero_from_index (i + 1, (column_iarray k A)))) then 
-  (-1*det_P,echelon_form_of_column_k_iarrays (A,i,bezout) k) 
-  else (det_P,echelon_form_of_column_k_iarrays (A,i,bezout) k))"
+definition echelon_form_of_column_k_det_iarrays :: 
+          "'a::{bezout_ring} \<times> 'a iarray iarray \<times> nat \<times> ('a \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a \<times> 'a \<times> 'a) 
+          \<Rightarrow> nat 
+          \<Rightarrow> 'a \<times> 'a iarray iarray \<times> nat \<times> ('a \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a \<times> 'a \<times> 'a)"
+ where  
+ "echelon_form_of_column_k_det_iarrays A' k = 
+    (let (det_P, A, i, bezout) = A'
+      in if ((i \<noteq> nrows_iarray A) \<and> (A !! i !! k = 0) 
+            \<and> (\<not> vector_all_zero_from_index (i + 1, (column_iarray k A)))) 
+         then (-1 * det_P, echelon_form_of_column_k_iarrays (A, i, bezout) k) 
+         else (det_P,echelon_form_of_column_k_iarrays (A,i,bezout) k))"
 
-definition "echelon_form_of_upt_k_det_iarrays A' k bezout 
-  = (let A = snd A'; f = foldl echelon_form_of_column_k_det_iarrays (1, A, 0, bezout) [0..<Suc k] 
-  in (fst f, fst (snd f)))"
+definition "echelon_form_of_upt_k_det_iarrays A' k bezout = 
+      (let A = snd A'; 
+           f = foldl echelon_form_of_column_k_det_iarrays (1, A, 0, bezout) [0..<Suc k] 
+       in (fst f, fst (snd f)))"
 
-definition echelon_form_of_det_iarrays :: "'a::{bezout_ring} iarray iarray 
-  \<Rightarrow>('a \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a \<times> 'a \<times> 'a) \<Rightarrow> ('a \<times> ('a iarray iarray))"
-  where "echelon_form_of_det_iarrays A bezout 
-  = echelon_form_of_upt_k_det_iarrays (1::'a,A) (ncols_iarray A - 1) bezout"
+definition echelon_form_of_det_iarrays :: 
+  "'a::{bezout_ring} iarray iarray 
+    \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a \<times> 'a \<times> 'a) 
+    \<Rightarrow> ('a \<times> ('a iarray iarray))"
+  where 
+  "echelon_form_of_det_iarrays A bezout = 
+      echelon_form_of_upt_k_det_iarrays (1::'a, A) (ncols_iarray A - 1) bezout"
 
-definition "det_iarrays_rings A = (let A' = echelon_form_of_det_iarrays A euclid_ext2 
-  in ring_inv (fst A') * listprod (map (\<lambda>i. (snd A') !! i !! i) [0..<nrows_iarray A]))"
+definition "det_iarrays_rings A = 
+    (let A' = echelon_form_of_det_iarrays A euclid_ext2 
+     in 1 div (fst A') * listprod (map (\<lambda>i. (snd A') !! i !! i) [0..<nrows_iarray A]))"
 
 subsection{*Properties*}
 
@@ -56,7 +61,6 @@ proof -
   thus ?thesis by auto
 qed
 
-
 lemma fst_matrix_to_iarray_echelon_form_of_column_k_det:
   assumes k: "k<ncols A" and i: "i\<le>nrows A"
   shows "fst (echelon_form_of_column_k_det (det_P, A, i, bezout) k)
@@ -73,7 +77,9 @@ proof (cases "i<nrows A")
     by (metis True k matrix_to_iarray_nth ncols_def nrows_def to_nat_from_nat_id)
   show ?thesis
     unfolding echelon_form_of_column_k_det_iarrays_def echelon_form_of_column_k_det_def
-    unfolding Let_def fst_conv snd_conv 
+    unfolding Let_def 
+    unfolding split_beta
+    unfolding fst_conv snd_conv 
     unfolding matrix_to_iarray_nrows
     unfolding ex_rw Aik by auto
 next
@@ -116,8 +122,8 @@ next
   case (Suc k)
   show ?case 
     apply auto 
-    unfolding echelon_form_of_column_k_det_iarrays_def Let_def fst_conv snd_conv
-    by (auto simp add: echelon_form_of_column_k_iarrays_def Let_def Suc.hyps)
+    unfolding echelon_form_of_column_k_det_iarrays_def Let_def
+    by (auto simp add: split_beta echelon_form_of_column_k_iarrays_def Let_def Suc.hyps)
 qed
 
 lemma snd_snd_snd_echelon_form_of_column_k_det:
@@ -278,7 +284,7 @@ subsubsection{*Computing the determinant*}
 lemma det_echelon_form_of_euclidean_iarrays[code]:
   fixes A::"'a::{euclidean_ring}^'n::{mod_type}^'n::{mod_type}"
   shows "det A = (let A' = echelon_form_of_det_iarrays (matrix_to_iarray A) euclid_ext2 
-  in ring_inv (fst A') 
+  in 1 div (fst A') 
   * listprod (map (\<lambda>i. (snd A') !! i !! i) [0..<nrows_iarray (matrix_to_iarray A)]))"
 proof -
   let ?f="(\<lambda>i. snd (echelon_form_of_det_iarrays (matrix_to_iarray A) euclid_ext2) !! i !! i)"
@@ -303,11 +309,11 @@ proof -
   finally have *:"listprod (map (\<lambda>i. snd (echelon_form_of_det_iarrays 
     (matrix_to_iarray A) euclid_ext2) !! i !! i) [0..<nrows_iarray (matrix_to_iarray A)]) =
     (\<Prod>i\<in>UNIV. snd (echelon_form_of_det A euclid_ext2) $ i $ i)" .  
-  have "det A = ring_inv (fst (echelon_form_of_det A euclid_ext2)) 
+  have "det A = 1 div (fst (echelon_form_of_det A euclid_ext2)) 
     * setprod (\<lambda>i. snd (echelon_form_of_det A euclid_ext2) $ i $ i) (UNIV:: 'n set)"
     unfolding det_echelon_form_of_euclidean ..
   also have "... = (let A' = echelon_form_of_det_iarrays (matrix_to_iarray A) euclid_ext2
-    in ring_inv (fst A') 
+    in 1 div (fst A') 
     * listprod (map (\<lambda>i. (snd A') !! i !! i) [0..<nrows_iarray (matrix_to_iarray A)]))"
     unfolding Let_def unfolding * fst_echelon_form_of_det ..
   finally show ?thesis .

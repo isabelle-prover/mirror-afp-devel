@@ -23,7 +23,7 @@ lemma polychain_appendI:
   "polychain xs \<Longrightarrow> polychain ys \<Longrightarrow> (xs \<noteq> [] \<Longrightarrow> ys \<noteq> [] \<Longrightarrow> snd (last xs) = fst (hd ys)) \<Longrightarrow>
     polychain (xs @ ys)"
   by (induct xs arbitrary: ys)
-    (auto simp add: polychain_Cons nth_append hd_conv_nth split: split_if_asm)
+    (auto simp add: polychain_Cons nth_append hd_conv_nth split: if_split_asm)
 
 fun pairself where "pairself f (x, y) = (f x, f y)"
 

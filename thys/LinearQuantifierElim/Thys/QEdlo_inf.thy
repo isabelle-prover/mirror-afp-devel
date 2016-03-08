@@ -51,15 +51,15 @@ proof(induct \<phi>)
     case (Less i j)
     then show ?thesis using Atom
       unfolding nolb_def
-      by (clarsimp simp: nth.simps Ball_def split:split_if_asm nat.splits)
+      by (clarsimp simp: nth.simps Ball_def split:if_split_asm nat.splits)
          (metis not_le_imp_less order_antisym order_less_trans)+
   next
     case (Eq i j) thus ?thesis using Atom
       apply(clarsimp simp:EQ_def nolb_def nth_Cons')
       apply(case_tac "i=0 \<and> j=0") apply simp
       apply(case_tac "i\<noteq>0 \<and> j\<noteq>0") apply simp
-      apply(case_tac "i=0 \<and> j\<noteq>0") apply (fastforce split:split_if_asm)
-      apply(case_tac "i\<noteq>0 \<and> j=0") apply (fastforce split:split_if_asm)
+      apply(case_tac "i=0 \<and> j\<noteq>0") apply (fastforce split:if_split_asm)
+      apply(case_tac "i\<noteq>0 \<and> j=0") apply (fastforce split:if_split_asm)
       apply arith
       done
   qed
@@ -184,7 +184,7 @@ next
   { assume "\<not> DLO.I (inf\<^sub>- \<phi>) xs"
     and "\<forall>k \<in> set ?ebs. \<not> DLO.I (subst \<phi> k) xs"
     hence noE: "\<forall>e \<in> EQ \<phi> xs. \<not> DLO.I \<phi> (e#xs)" using `nqfree \<phi>`
-      by (auto simp:set_ebounds EQ_def I_subst nth_Cons' split:split_if_asm)
+      by (auto simp:set_ebounds EQ_def I_subst nth_Cons' split:if_split_asm)
     hence "x \<notin> EQ \<phi> xs" using x by fastforce
     obtain l where "l \<in> LB \<phi> xs" "l < x"
       using LBex[OF `nqfree \<phi>` x `\<not> DLO.I(inf\<^sub>- \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..

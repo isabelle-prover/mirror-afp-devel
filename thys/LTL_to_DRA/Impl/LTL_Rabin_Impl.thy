@@ -99,7 +99,10 @@ proof -
     by auto
   also
   have "\<dots> = ?rhs"
-    using subset_G by (simp add: Let_def mapping_generator_code[symmetric] lookup_tabulate G_eq_G_list[symmetric] mapping_generator_set_eq; blast)
+    using subset_G 
+      by (auto simp add: Let_def mapping_generator_code [symmetric]
+        lookup_tabulate G_eq_G_list [symmetric] mapping_generator_set_eq
+        cong del: strong_SUP_cong; blast)
   finally
   show ?thesis
     by simp

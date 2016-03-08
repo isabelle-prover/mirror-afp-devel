@@ -118,7 +118,7 @@ fun define_raw_bns raw_dt_info raw_bn_funs raw_bn_eqs lthy =
       val (_, lthy1) = Function.add_function raw_bn_funs raw_bn_eqs
         Function_Common.default_config (pat_completeness_simp (raw_inject_thms @ raw_distinct_thms)) lthy
 
-      val (info, lthy2) = prove_termination_fun raw_size_thms (Local_Theory.restore lthy1)
+      val (info, lthy2) = prove_termination_fun raw_size_thms (Local_Theory.reset lthy1)  (* FIXME disrupts context *)
       val {fs, simps, inducts, ...} = info
 
       val raw_bn_induct = (the inducts)
@@ -257,7 +257,7 @@ fun define_raw_fvs raw_dt_info bn_info bclausesss lthy =
     val (_, lthy') = Function.add_function all_fun_names all_fun_eqs
       Function_Common.default_config (pat_completeness_simp (raw_inject_thms @ raw_distinct_thms)) lthy
 
-    val (info, lthy'') = prove_termination_fun raw_size_thms (Local_Theory.restore lthy')
+    val (info, lthy'') = prove_termination_fun raw_size_thms (Local_Theory.reset lthy')  (* FIXME disrupts context *)
  
     val {fs, simps, inducts, ...} = info; 
 
@@ -332,7 +332,7 @@ fun define_raw_bn_perms raw_dt_info bn_info lthy =
         Function_Common.default_config 
           (pat_completeness_simp (prod_simps @ raw_inject_thms @ raw_distinct_thms)) lthy
     
-      val (info, lthy'') = prove_termination_fun raw_size_thms (Local_Theory.restore lthy')
+      val (info, lthy'') = prove_termination_fun raw_size_thms (Local_Theory.reset lthy')  (* FIXME disrupts context *)
 
       val {fs, simps, ...} = info;
 

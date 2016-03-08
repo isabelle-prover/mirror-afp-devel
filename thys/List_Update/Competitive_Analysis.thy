@@ -42,8 +42,17 @@ fun steps where
   "steps s [] [] = s"
 | "steps s (q#qs) (a#as) = steps (step s q a) qs as"
 
+lemma steps_append: "length qs = length as \<Longrightarrow> steps s (qs@qs') (as@as') = steps (steps s qs as) qs' as'"
+apply(induct qs as arbitrary: s rule: list_induct2)
+   by simp_all
+
 
 lemma T_append: "length qs = length as \<Longrightarrow> T s (qs@[q]) (as@[a]) = T s qs as + t (steps s qs as) q a"
+apply(induct qs as arbitrary: s rule: list_induct2)
+   by simp_all
+
+
+lemma T_append2: "length qs = length as \<Longrightarrow> T s (qs@qs') (as@as') = T s qs as + T (steps s qs as) qs' as'"
 apply(induct qs as arbitrary: s rule: list_induct2)
    by simp_all
 
@@ -124,7 +133,7 @@ lemma T_on_rand_nn: "T_on_rand (I,S) s0 qs \<ge> 0"
 by (rule T_on_rand'_nn)
  
 definition compet_rand :: "('state,'is,'request,'answer) alg_on_rand \<Rightarrow> real \<Rightarrow> 'state set \<Rightarrow> bool" where
-"compet_rand A c S0 = (\<forall>s0\<in>S0. \<exists>b \<ge> 0. \<forall>rs. wf s0 rs \<longrightarrow> T_on_rand A s0 rs \<le> c * T_opt s0 rs + b)"
+"compet_rand A c S0 = (\<forall>s\<in>S0. \<exists>b \<ge> 0. \<forall>rs. wf s rs \<longrightarrow> T_on_rand A s rs \<le> c * T_opt s rs + b)"
 
 
 subsection "embeding of deterministic into randomized algorithms"

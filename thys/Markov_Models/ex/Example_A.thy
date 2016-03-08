@@ -107,7 +107,7 @@ proof safe
   then have "A.period {C1, C2, C3} = Gcd (A.period_set C1)"
     by (rule A.period_eq) simp
   also have "\<dots> = 1"
-    by (rule Gcd_eq_one) (simp add: A_E_eq A.period_set_def A.p_Suc' A.p_0 eq measure_pmf_single pmf_positive)
+    by (rule Gcd_nat_eq_one) (simp add: A_E_eq A.period_set_def A.p_Suc' A.p_0 eq measure_pmf_single pmf_positive)
   finally show "A.period {C1, C2, C3} = 1" .
 qed
 

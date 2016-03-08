@@ -118,9 +118,9 @@ lemma ahm_update_correct:
   apply (unfold ahm_update_def)
   apply (auto simp add: ahm_\<alpha>_def split: option.split)
   apply (rule ahm_invarI)
-  apply (auto dest: ahm_invarD ahm_invarDne split: split_if_asm)
+  apply (auto dest: ahm_invarD ahm_invarDne split: if_split_asm)
   apply (rule ahm_invarI)
-  apply (auto dest: ahm_invarD split: split_if_asm)
+  apply (auto dest: ahm_invarD split: if_split_asm)
   apply (drule (1) ahm_invarD)
   apply auto
   done
@@ -151,9 +151,9 @@ lemma ahm_delete_correct:
   apply (drule_tac x=x in fun_cong)
   apply (auto)[1]
   apply (rule ahm_invarI)
-  apply (auto split: split_if_asm option.split_asm dest: ahm_invarD)
+  apply (auto split: if_split_asm option.split_asm dest: ahm_invarD)
   apply (drule (1) ahm_invarD)
-  apply (auto simp add: restrict_map_def split: split_if_asm option.split_asm)
+  apply (auto simp add: restrict_map_def split: if_split_asm option.split_asm)
   done
 
 lemma ahm_isEmpty_correct: "ahm_invar m \<Longrightarrow> ahm_isEmpty m \<longleftrightarrow> ahm_\<alpha> m = Map.empty"

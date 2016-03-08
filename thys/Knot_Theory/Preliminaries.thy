@@ -1,4 +1,4 @@
-header{*Preliminaries: Definitions of tangles and links*}
+section{*Preliminaries: Definitions of tangles and links*}
 theory Preliminaries
 imports Main
 begin

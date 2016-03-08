@@ -45,7 +45,7 @@ lemma degree_list_eq_zeroD:
   assumes "degree_list xs = 0"
   shows "the_default 0 (map_of xs i) = 0"
   using assms
-  by (induct xs) (auto simp: Pdevs_raw_def sorted_append split: split_if_asm)
+  by (induct xs) (auto simp: Pdevs_raw_def sorted_append split: if_split_asm)
 
 lemma degree_slist_eq_zeroD: "degree_slist xs = 0 \<Longrightarrow> degree (Pdevs xs) = 0"
   unfolding degree_eq_Suc_max
@@ -57,7 +57,7 @@ proof (transfer, goal_cases)
   thus ?case
     by (induct xs)
       (auto simp: Pdevs_raw_def sorted_append map_of_eq_None_iff[symmetric]
-        split: split_if_asm option.split_asm)
+        split: if_split_asm option.split_asm)
 qed
 
 lemma degree_slist_zero:
@@ -66,7 +66,7 @@ proof (transfer, goal_cases)
   case (1 xs n j)
   thus ?case
     by (induct xs)
-      (auto simp: Pdevs_raw_def sorted_append split: split_if_asm option.split)
+      (auto simp: Pdevs_raw_def sorted_append split: if_split_asm option.split)
 qed
 
 lemma compute_degree[code]: "degree (Pdevs xs) = degree_slist xs"
@@ -87,14 +87,14 @@ fun binop where
 
 lemma set_binop_elemD1:
   "(a, b) \<in> set (binop f z xs ys) \<Longrightarrow> (a \<in> set (map fst xs) \<or> a \<in> set (map fst ys))"
-  by (induct f z xs ys rule: binop.induct) (auto split: split_if_asm)
+  by (induct f z xs ys rule: binop.induct) (auto split: if_split_asm)
 
 lemma set_binop_elemD2:
   "(a, b) \<in> set (binop f z xs ys) \<Longrightarrow>
     (\<exists>x\<in>set (map snd xs). b = f x z) \<or>
     (\<exists>y\<in>set (map snd ys). b = f z y) \<or>
     (\<exists>x\<in>set (map snd xs). \<exists>y\<in>set (map snd ys). b = f x y)"
-  by (induct f z xs ys rule: binop.induct) (auto split: split_if_asm)
+  by (induct f z xs ys rule: binop.induct) (auto split: if_split_asm)
 
 abbreviation "rsorted\<equiv>\<lambda>x. sorted (rev x)"
 
@@ -437,21 +437,21 @@ lemma in_set_update_listD:
   assumes "y \<in> set (update_list n x ys)"
   shows "y = (n, x) \<or> (y \<in> set ys)"
   using assms
-  by (induct ys) (auto split: split_if_asm)
+  by (induct ys) (auto split: if_split_asm)
 
 lemma in_set_update_listI:
   "y = (n, x) \<or> (fst y \<noteq> n \<and> y \<in> set ys) \<Longrightarrow> y \<in> set (update_list n x ys)"
-  by (induct ys) (auto split: split_if_asm)
+  by (induct ys) (auto split: if_split_asm)
 
 lemma in_set_update_list: "(n, x) \<in> set (update_list n x xs)"
   by (induct xs) simp_all
 
 lemma overwrite_update_list: "(a, b) \<in> set xs \<Longrightarrow> (a, b) \<notin> set (update_list n x xs) \<Longrightarrow> a = n"
-  by (induct xs) (auto split: split_if_asm)
+  by (induct xs) (auto split: if_split_asm)
 
 lemma insert_update_list:
   "distinct (map fst xs) \<Longrightarrow> rsorted (map fst xs) \<Longrightarrow> (a, b) \<in> set (update_list a x xs) \<Longrightarrow> b = x"
-  by (induct xs) (force split: split_if_asm simp: sorted_append)+
+  by (induct xs) (force split: if_split_asm simp: sorted_append)+
 
 lemma set_update_list_eq: "distinct (map fst xs) \<Longrightarrow> rsorted (map fst xs) \<Longrightarrow>
     set (update_list n x xs) = insert (n, x) (set xs - {x. fst x = n})"

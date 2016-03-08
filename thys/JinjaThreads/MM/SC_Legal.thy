@@ -73,7 +73,7 @@ proof -
     show "committed (?\<phi> 0) = {}"
       by(auto simp add: actions_def zero_enat_def[symmetric])
     show actions_E: "actions E = (\<Union>n. action_translation (?\<phi> n) ` committed (?\<phi> n))"
-      by(auto simp add: actions_def less_le_trans[where y="enat n" for n] split: split_if_asm)
+      by(auto simp add: actions_def less_le_trans[where y="enat n" for n] split: if_split_asm)
     hence committed_subset_E: "\<And>n. action_translation (?\<phi> n) ` committed (?\<phi> n) \<subseteq> actions E" by fastforce
 
     { fix n
@@ -126,7 +126,7 @@ proof -
         proof(cases "n = Suc n'")
           case True
           with P[of n] show ?thesis
-            by(simp add: action_tid_def action_obs_def lnth_ltake split: split_if_asm)
+            by(simp add: action_tid_def action_obs_def lnth_ltake split: if_split_asm)
         next
           case False
           with n' have "n' < n - 1" by auto
@@ -144,10 +144,10 @@ proof -
       next
         case True
         hence "{..<n} \<subseteq> actions E"
-          by(auto simp add: actions_def min_def less_le_trans[where y="enat n"] split: split_if_asm)
+          by(auto simp add: actions_def min_def less_le_trans[where y="enat n"] split: if_split_asm)
         moreover
         from True len_eq[OF True] have "{..<n} \<subseteq> actions (E' n)"
-          by(auto simp add: actions_def min_def less_le_trans[where y="enat n"] split: split_if_asm)
+          by(auto simp add: actions_def min_def less_le_trans[where y="enat n"] split: if_split_asm)
         moreover {
           fix a assume "a < n"
           moreover from sim[OF True]
@@ -176,7 +176,7 @@ proof -
 
     { fix n
       from len_eq[of n] have "enat n \<le> llength E \<Longrightarrow> {..<n} \<subseteq> actions (E' n)"
-        by(auto simp add: E'_def actions_def min_def less_le_trans[where y="enat n"] split: split_if_asm)
+        by(auto simp add: E'_def actions_def min_def less_le_trans[where y="enat n"] split: if_split_asm)
       thus "committed (?\<phi> n) \<subseteq> actions (justifying_exec (?\<phi> n))"
         by(simp add: actions_def E'_def) }
     note committed_actions = this
@@ -280,16 +280,16 @@ proof -
         and r: "r = action_translation (?\<phi> n) r'"
         and r'': "r'' = inv_into (actions (justifying_exec (?\<phi> (Suc n)))) (action_translation (?\<phi> (Suc n))) r"
       from r' r committed_subset[of n] have "r \<in> actions E"
-        by(auto split: split_if_asm elim!: read_actions.cases simp add: actions_def Suc_ile_eq less_trans[where y="enat n"])
+        by(auto split: if_split_asm elim!: read_actions.cases simp add: actions_def Suc_ile_eq less_trans[where y="enat n"])
       with r' r have r_actions: "r \<in> read_actions E"
-        by(fastforce dest: wf_action_translation_on_actionD[OF wfa] split: split_if_asm elim!: read_actions.cases intro: read_actions.intros)
+        by(fastforce dest: wf_action_translation_on_actionD[OF wfa] split: if_split_asm elim!: read_actions.cases intro: read_actions.intros)
       moreover from r' committed_subset[of n] committed_actions[of "Suc n"]
-      have "r' \<in> actions (justifying_exec (?\<phi> (Suc n)))" by(auto split: split_if_asm elim: read_actions.cases)
+      have "r' \<in> actions (justifying_exec (?\<phi> (Suc n)))" by(auto split: if_split_asm elim: read_actions.cases)
       ultimately have "r'' = r'" using r' r r'' by(cases "enat (Suc n) \<le> llength E") simp_all
       moreover from r' have "r' < n"
-        by(simp add: actions_def split: split_if_asm)(metis enat_ord_code(2) linorder_linear order_less_le_trans)
+        by(simp add: actions_def split: if_split_asm)(metis enat_ord_code(2) linorder_linear order_less_le_trans)
       ultimately show "action_translation (?\<phi> (Suc n)) (justifying_ws (?\<phi> (Suc n)) r'') = ws r"
-        using P[of "Suc n"] r' r r_actions by(clarsimp split: split_if_asm) }
+        using P[of "Suc n"] r' r r_actions by(clarsimp split: if_split_asm) }
 
     { fix r'
       assume r': "r' \<in> read_actions (justifying_exec (?\<phi> (Suc n)))"
@@ -298,13 +298,13 @@ proof -
       proof(cases "r' < n")
         case True
         hence "?committed" using r'
-          by(auto elim!: actionsE split: split_if_asm dest!: read_actions_actions)(metis Suc_ile_eq linorder_not_le not_less_iff_gr_or_eq)
+          by(auto elim!: actionsE split: if_split_asm dest!: read_actions_actions)(metis Suc_ile_eq linorder_not_le not_less_iff_gr_or_eq)
         thus ?thesis ..
       next
         case False
         hence "r' \<ge> n" by simp
         hence "enat (Suc n) \<le> llength E" using False r'
-          by(auto split: split_if_asm dest!: read_actions_actions elim!: actionsE) (metis Suc_ile_eq enat_ord_code(2) not_le_imp_less order_less_le_trans)
+          by(auto split: if_split_asm dest!: read_actions_actions elim!: actionsE) (metis Suc_ile_eq enat_ord_code(2) not_le_imp_less order_less_le_trans)
         hence ?hb using P[of "Suc n"] r' `r' \<ge> n` by simp
         thus ?thesis ..
       qed }
@@ -320,11 +320,11 @@ proof -
       next
         case False
         with r' r C_n have [simp]: "r' = n" 
-          apply(auto split: split_if_asm dest!: read_actions_actions elim!: actionsE)
+          apply(auto split: if_split_asm dest!: read_actions_actions elim!: actionsE)
           apply(metis enat_ord_code(1) less_SucI less_eq_Suc_le not_less_eq_eq order_trans)
           by (metis Suc_ile_eq enat_ord_code(1) leD leI linorder_cases)
         from r' have len_E: "enat (Suc n) \<le> llength E"
-          by(clarsimp simp add: actions_def Suc_ile_eq split: split_if_asm)
+          by(clarsimp simp add: actions_def Suc_ile_eq split: if_split_asm)
         with r' P[of "Suc n"] have "P,justifying_exec (?\<phi> (Suc n)) \<turnstile> ws' (Suc n) r' \<le>hb r'" by(simp)
         hence "justifying_exec (?\<phi> (Suc n)) \<turnstile> ws' (Suc n) r' \<le>a r'" by(rule happens_before_into_action_order)
         moreover from r' have "r' \<in> read_actions (justifying_exec (?\<phi> (Suc n)))" by simp
@@ -358,7 +358,7 @@ proof -
         moreover
         from r' have "r' \<in> committed (?\<phi> (Suc n))" by blast
         with r' r len_E wf_action_translation_on_actionD[OF wfa this] committed_subset_E[of "Suc n"]
-        have "r \<in> read_actions E" by(fastforce elim!: read_actions.cases intro: read_actions.intros split: split_if_asm)
+        have "r \<in> read_actions E" by(fastforce elim!: read_actions.cases intro: read_actions.intros split: if_split_asm)
         with sc obtain "P,E \<turnstile> r \<leadsto>mrw ws r" by(rule sequentially_consistentE)
         with E wf have "ws r < r" by(rule mrw_before)(rule sequentially_consistentE[OF sc])
         with C_n len_E r have ?C_ws by(auto simp add: Suc_ile_eq)

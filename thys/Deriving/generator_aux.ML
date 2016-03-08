@@ -248,7 +248,7 @@ fun add_used_tycos ctxt tyco =
       | SOME sugar => #fp_ctr_sugar sugar |> #ctrXs_Tss |> flat |> fold add_tycos)
 
 fun restore_with_morphism lthy_old =
-      Local_Theory.restore lthy_old
+      Local_Theory.reset lthy_old    (* FIXME disrupts context *)
       |> `(Proof_Context.export_morphism lthy_old)
 
 fun infer_type ctxt =

@@ -56,7 +56,7 @@ proof(induct f)
     case (Less i j)
     then show ?thesis using Atom
       unfolding nolub_def
-      by (clarsimp simp: nth.simps Ball_def split:split_if_asm nat.splits)
+      by (clarsimp simp: nth.simps Ball_def split:if_split_asm nat.splits)
          (metis not_le_imp_less order_antisym order_less_trans)+
   next
     case [simp]: (Eq i j)
@@ -92,7 +92,7 @@ lemma I_subst\<^sub>22:
 proof (induct f)
   case (Atom a) show ?case
     apply (cases "(l,u,a)" rule: asubst\<^sub>2.cases)
-    apply(insert Atom, auto simp: EQ_def nolub_def split:split_if_asm)
+    apply(insert Atom, auto simp: EQ_def nolub_def split:if_split_asm)
     done
 next
   case Or thus ?case by (simp add: Ball_def)(metis innermost_intvl)

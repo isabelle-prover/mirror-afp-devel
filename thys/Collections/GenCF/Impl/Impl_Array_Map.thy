@@ -302,7 +302,7 @@ proof-
   from assms 
       have A: "map_to_set m - {(k, v). k < array_length a} = set []"
       unfolding map_to_set_def iam_rel'_def br_def iam_\<alpha>_def[abs_def]
-      by (force split: split_if_asm)
+      by (force split: if_split_asm)
   with iam_to_list_set_correct_aux[OF assms _ A] show ?thesis
     unfolding it_to_list_def iam_iteratei_def by simp
 qed

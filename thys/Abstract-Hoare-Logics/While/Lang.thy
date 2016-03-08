@@ -97,7 +97,7 @@ by(fastforce elim: exec.cases intro:exec.intros)
 lemma unfold_while:
  "(s -WHILE b DO c\<rightarrow> u) =
   (s -IF b THEN c;WHILE b DO c ELSE Do(\<lambda>s. {s})\<rightarrow> u)"
-by(auto elim: exec.cases intro:exec.intros split:split_if_asm)
+by(auto elim: exec.cases intro:exec.intros split:if_split_asm)
 
 
 lemma while_lemma[rule_format]:

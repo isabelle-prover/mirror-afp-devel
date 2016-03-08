@@ -11,15 +11,17 @@ lemma mono_INF_fun:
   by (auto intro!: INF_mono[OF bexI] simp: le_fun_def mono_def)
 
 lemma sup_continuous_SUP[order_continuous_intros]:
+  fixes M :: "_ \<Rightarrow> _ \<Rightarrow> 'a::complete_lattice"
   assumes M: "\<And>i. i \<in> I \<Longrightarrow> sup_continuous (M i)"
   shows  "sup_continuous (\<Squnion>i\<in>I. M i)"
   unfolding sup_continuous_def by (auto simp add: sup_continuousD[OF M] intro: SUP_commute)
 
 lemma sup_continuous_apply_SUP[order_continuous_intros]:
-  "(\<And>i. i \<in> I \<Longrightarrow> sup_continuous (M i)) \<Longrightarrow> sup_continuous (\<lambda>x. \<Squnion>i\<in>I. M i x)"
+  fixes M :: "_ \<Rightarrow> _ \<Rightarrow> 'a::complete_lattice"
+  shows "(\<And>i. i \<in> I \<Longrightarrow> sup_continuous (M i)) \<Longrightarrow> sup_continuous (\<lambda>x. \<Squnion>i\<in>I. M i x)"
   unfolding SUP_apply[symmetric] by (rule sup_continuous_SUP)
 
-lemma SUP_sup_continuous_ereal: 
+lemma SUP_sup_continuous_ereal:
   fixes f :: "ereal \<Rightarrow> 'a::complete_lattice"
   assumes f: "sup_continuous f" and "I \<noteq> {}"
   shows "(SUP i:I. f (g i)) = f (SUP i:I. g i)"
@@ -32,8 +34,7 @@ proof (rule antisym)
   have "f (\<Squnion>i\<in>I. g i) = (\<Squnion>i\<in>range M. f i)"
     unfolding eq sup_continuousD[OF f \<open>mono M\<close>] by simp
   also have "\<dots> \<le> (\<Squnion>i\<in>I. f (g i))"
-    using M unfolding subset_image_iff SUP_def
-    by (auto simp del: SUP_image simp add: SUP_image[of g] intro!: SUP_subset_mono)
+    by (insert M, drule SUP_subset_mono) auto
   finally show "f (\<Squnion>i\<in>I. g i) \<le> (\<Squnion>i\<in>I. f (g i))" .
 qed
 
@@ -206,7 +207,7 @@ lemma nn_integral_T_lfp:
   assumes cont_g: "\<And>s. sup_continuous (g s)"
   assumes int_g: "\<And>f cfg. f \<in> borel_measurable (stream_space (count_space UNIV)) \<Longrightarrow>
     (\<integral>\<^sup>+\<omega>. g (state cfg) (f \<omega>) \<partial>T cfg) = g (state cfg) (\<integral>\<^sup>+\<omega>. f \<omega> \<partial>T cfg)"
-  shows "(\<integral>\<^sup>+\<omega>. lfp (\<lambda>f \<omega>. g (shd \<omega>) (f (stl \<omega>))) \<omega> \<partial>T cfg) = 
+  shows "(\<integral>\<^sup>+\<omega>. lfp (\<lambda>f \<omega>. g (shd \<omega>) (f (stl \<omega>))) \<omega> \<partial>T cfg) =
     lfp (\<lambda>f cfg. \<integral>\<^sup>+t. g (state t) (f t) \<partial>K_cfg cfg) cfg"
 proof (rule nn_integral_lfp)
   show "\<And>s. sets (T s) = sets St"
@@ -308,11 +309,11 @@ proof -
         then obtain cfg' where v_cfg': "\<And>t. t \<in> D \<Longrightarrow> ?p t \<le> ?v (cfg' t) + e" and
           cfg_on_cfg': "\<And>t. t \<in> D \<Longrightarrow> cfg' t \<in> cfg_on t"
           unfolding Bex_def bchoice_iff by blast
-  
+
         let ?cfg = "Cfg s D cfg'"
         have cfg: "K_cfg ?cfg = map_pmf cfg' D"
           by (auto simp add: K_cfg_def fun_eq_iff intro!: map_pmf_cong dest: cfg_on_cfg')
-  
+
         have "(\<integral>\<^sup>+ t. ?p t \<partial>D) \<le> (\<integral>\<^sup>+t. ?v (cfg' t) + e \<partial>D)"
           by (intro nn_integral_mono_AE) (simp add: v_cfg' AE_measure_pmf_iff)
         also have "\<dots> = (\<integral>\<^sup>+t. ?v (cfg' t) \<partial>D) + e"
@@ -408,7 +409,7 @@ lemma P_sup_True[simp]: "P_sup t (\<lambda>\<omega>. True) = 1"
 lemma P_sup_False[simp]: "P_sup t (\<lambda>\<omega>. False) = 0"
   by (auto simp add: P_sup_def SUP_constant)
 
-lemma P_sup_SUP: 
+lemma P_sup_SUP:
   fixes P :: "nat \<Rightarrow> 's stream \<Rightarrow> bool"
   assumes "mono P" and P[measurable]: "\<And>i. Measurable.pred St (P i)"
   shows "P_sup s (\<lambda>x. \<exists>i. P i x) = (\<Squnion>i. P_sup s (P i))"
@@ -520,11 +521,11 @@ qed
 lemma emeasure_T_const[simp]: "emeasure (T s) (space St) = 1"
   using T.emeasure_space_1[of s] by simp
 
-lemma E_inf_greatest: 
+lemma E_inf_greatest:
   "(\<And>cfg. cfg \<in> cfg_on s \<Longrightarrow> x \<le> (\<integral>\<^sup>+x. f x \<partial>T cfg)) \<Longrightarrow> x \<le> E_inf s f"
   unfolding E_inf_def by (rule INF_greatest)
 
-lemma E_inf_lower2: 
+lemma E_inf_lower2:
   "cfg \<in> cfg_on s \<Longrightarrow> (\<integral>\<^sup>+x. f x \<partial>T cfg) \<le> x \<Longrightarrow> E_inf s f \<le> x"
   unfolding E_inf_def by (rule INF_lower2)
 
@@ -649,7 +650,7 @@ lemma P_inf_True[simp]: "P_inf t (\<lambda>\<omega>. True) = 1"
 lemma P_inf_False[simp]: "P_inf t (\<lambda>\<omega>. False) = 0"
   by (auto simp add: P_inf_def SUP_constant)
 
-lemma P_inf_INF: 
+lemma P_inf_INF:
   fixes P :: "nat \<Rightarrow> 's stream \<Rightarrow> bool"
   assumes "decseq P" and P[measurable]: "\<And>i. Measurable.pred St (P i)"
   shows "P_inf s (\<lambda>x. \<forall>i. P i x) = (\<Sqinter>i. P_inf s (P i))"
@@ -695,7 +696,7 @@ end
 
 locale Finite_Markov_Decision_Process = Markov_Decision_Process K for K :: "'s \<Rightarrow> 's pmf set" +
   fixes S :: "'s set"
-  assumes S_not_empty: "S \<noteq> {}" 
+  assumes S_not_empty: "S \<noteq> {}"
   assumes S_finite: "finite S"
   assumes K_closed: "\<And>s. s \<in> S \<Longrightarrow> (\<Union>D\<in>K s. set_pmf D) \<subseteq> S"
   assumes K_finite: "\<And>s. s \<in> S \<Longrightarrow> finite (K s)"
@@ -724,7 +725,7 @@ lemma valid_cfgI: "s \<in> S \<Longrightarrow> cfg \<in> cfg_on s \<Longrightarr
 lemma valid_cfgD: "cfg \<in> valid_cfg \<Longrightarrow> cfg \<in> cfg_on (state cfg)"
   by (auto simp: valid_cfg_def)
 
-lemma 
+lemma
   shows valid_cfg_state_in_S: "cfg \<in> valid_cfg \<Longrightarrow> state cfg \<in> S"
     and valid_cfg_action: "cfg \<in> valid_cfg \<Longrightarrow> s \<in> action cfg \<Longrightarrow> s \<in> S"
     and valid_cfg_cont: "cfg \<in> valid_cfg \<Longrightarrow> s \<in> action cfg \<Longrightarrow> cont cfg s \<in> valid_cfg"

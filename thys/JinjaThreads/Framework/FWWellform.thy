@@ -128,15 +128,15 @@ by(auto simp add: wset_thread_ok_def)
 
 lemma wset_thread_ok_upd:
   "wset_thread_ok ls ts \<Longrightarrow> wset_thread_ok ls (ts(t \<mapsto> xw))"
-by(auto intro!: wset_thread_okI dest: wset_thread_okD split: split_if_asm)
+by(auto intro!: wset_thread_okI dest: wset_thread_okD split: if_split_asm)
 
 lemma wset_thread_ok_upd_None:
   "wset_thread_ok ws ts \<Longrightarrow> wset_thread_ok (ws(t := None)) (ts(t := None))"
-by(auto intro!: wset_thread_okI dest: wset_thread_okD split: split_if_asm)
+by(auto intro!: wset_thread_okI dest: wset_thread_okD split: if_split_asm)
 
 lemma wset_thread_ok_upd_Some:
   "wset_thread_ok ws ts \<Longrightarrow> wset_thread_ok (ws(t := wo)) (ts(t \<mapsto> xln))"
-by(auto intro!: wset_thread_okI dest: wset_thread_okD split: split_if_asm)
+by(auto intro!: wset_thread_okI dest: wset_thread_okD split: if_split_asm)
 
 lemma wset_thread_ok_upd_ws:
   "\<lbrakk> wset_thread_ok ws ts; ts t = \<lfloor>xln\<rfloor> \<rbrakk> \<Longrightarrow> wset_thread_ok (ws(t := w)) ts"

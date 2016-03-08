@@ -3,7 +3,7 @@
 *)
 
 theory SG_Library_Complement
-imports Complex_Main Topological_Spaces  "~~/src/HOL/Multivariate_Analysis/Extended_Real_Limits"
+imports Complex_Main Topological_Spaces "~~/src/HOL/Multivariate_Analysis/Extended_Real_Limits"
  "~~/src/HOL/Probability/Probability_Measure" "~~/src/HOL/Probability/Set_Integral"
 begin
 
@@ -189,7 +189,7 @@ subsection {*Topological-spaces.thy*}
 
 lemma open_diagonal_complement:
   "open {(x,y) | x y. x \<noteq> (y::('a::t2_space))}"
-proof (rule openI)
+proof (rule topological_space_class.openI)
   fix t assume "t \<in> {(x, y) | x y. x \<noteq> (y::'a)}"
   then obtain x y where "t = (x,y)" "x \<noteq> y" by blast
   then obtain U V where *: "open U \<and> open V \<and> x \<in> U \<and> y \<in> V \<and> U \<inter> V = {}"
@@ -210,7 +210,7 @@ qed
 
 lemma open_superdiagonal:
   "open  {(x,y) | x y. x > (y::'a::{linorder_topology})}"
-proof (rule openI)
+proof (rule topological_space_class.openI)
   fix t assume "t \<in> {(x, y) | x y. y < (x::'a)}"
   then obtain x y where "t = (x, y)" "x > y" by blast
   show "\<exists>T. open T \<and> t \<in> T \<and> T \<subseteq> {(x, y) | x y. y < x}"
@@ -244,7 +244,7 @@ qed
 
 lemma open_subdiagonal:
   "open  {(x,y) | x y. x < (y::'a::{linorder_topology})}"
-proof (rule openI)
+proof (rule topological_space_class.openI)
   fix t assume "t \<in> {(x, y) | x y. y > (x::'a)}"
   then obtain x y where "t = (x, y)" "x < y" by blast
   show "\<exists>T. open T \<and> t \<in> T \<and> T \<subseteq> {(x, y) | x y. y > x}"
@@ -366,13 +366,13 @@ proof -
   ultimately have "(\<lambda>n. f n / (n+k)) \<longlonglongrightarrow> l" using Lim_transform_eventually by auto
   then have a: "(\<lambda>n. f(n-k)/(n-k+k)) \<longlonglongrightarrow> l" using seq_offset_neg by auto
 
-   have "f(n-k)/(n-k+k) = f(n-k)/n"
-     if "n>k" for n using that by auto
-   with eventually_mono[OF eventually_gt_at_top[of k] this]
-   have "eventually (\<lambda>n. f(n-k)/(n-k+k) = f(n-k)/n) sequentially"
-     by auto
-   with Lim_transform_eventually[OF this a]
-   show ?thesis by auto
+  have "f(n-k)/(n-k+k) = f(n-k)/n"
+   if "n>k" for n using that by auto
+  with eventually_mono[OF eventually_gt_at_top[of k] this]
+  have "eventually (\<lambda>n. f(n-k)/(n-k+k) = f(n-k)/n) sequentially"
+   by auto
+  with Lim_transform_eventually[OF this a]
+  show ?thesis by auto
 qed
 
 subsection {*Topology-Euclidean-Space*}
@@ -385,36 +385,32 @@ proof -
   then have "countable B1" using `countable A` by (simp add: simple_image)
   def B2 \<equiv> "{(SOME x. x \<in> U)| U. U \<in> A}"
   then have "countable B2" using `countable A` by (simp add: simple_image)
-  have "\<And>x y. x < y \<Longrightarrow>  (\<exists>b \<in> B1 \<union> B2. x < b \<and> b \<le> y)"
-  proof -
-    fix x y::'a assume "x < y"
-    show "\<exists>b \<in> B1 \<union> B2. x < b \<and> b \<le> y"
-    proof (cases)
-      assume "\<exists>z. x < z \<and> z < y"
-      then obtain z where z: "x < z \<and> z < y" by auto
-      def U \<equiv> "{x<..<y}"
-      then have "open U" by simp
-      moreover have "z \<in> U" using z U_def by simp
-      ultimately obtain "V" where  "V \<in> A" "z \<in> V" "V \<subseteq> U" using topological_basisE[OF `topological_basis A`] by auto
-      def w \<equiv> "(SOME x. x \<in> V)"
-      then have "w \<in> V" using `z \<in> V` by (metis someI2)
-      then have "x < w \<and> w \<le> y" using `w \<in> V` `V \<subseteq> U` U_def by fastforce
-      moreover have "w \<in> B1 \<union> B2" using w_def B2_def `V \<in> A` by auto
-      ultimately show ?thesis by auto
-    next
-      assume "\<not>(\<exists>z. x < z \<and> z < y)"
-      then have *: "\<And>z. z > x \<Longrightarrow> z \<ge> y" by auto
-      def U \<equiv> "{x<..}"
-      then have "open U" by simp
-      moreover have "y \<in> U" using `x < y` U_def by simp
-      ultimately obtain "V" where  "V \<in> A" "y \<in> V" "V \<subseteq> U" using topological_basisE[OF `topological_basis A`] by auto
-      have "U = {y..}" unfolding U_def using * `x < y` by auto
-      then have "V \<subseteq> {y..}" using `V \<subseteq> U` by simp
-      then have "(LEAST w. w \<in> V) = y" using `y \<in> V` by (meson Least_equality atLeast_iff subsetCE)
-      then have "y \<in> B1 \<union> B2" using `V \<in> A` B1_def by auto
-      moreover have "x < y \<and> y \<le> y" using `x < y` by simp
-      ultimately show ?thesis by auto
-    qed
+  have "\<exists>b \<in> B1 \<union> B2. x < b \<and> b \<le> y" if "x < y" for x y
+  proof (cases)
+    assume "\<exists>z. x < z \<and> z < y"
+    then obtain z where z: "x < z \<and> z < y" by auto
+    def U \<equiv> "{x<..<y}"
+    then have "open U" by simp
+    moreover have "z \<in> U" using z U_def by simp
+    ultimately obtain "V" where  "V \<in> A" "z \<in> V" "V \<subseteq> U" using topological_basisE[OF `topological_basis A`] by auto
+    def w \<equiv> "(SOME x. x \<in> V)"
+    then have "w \<in> V" using `z \<in> V` by (metis someI2)
+    then have "x < w \<and> w \<le> y" using `w \<in> V` `V \<subseteq> U` U_def by fastforce
+    moreover have "w \<in> B1 \<union> B2" using w_def B2_def `V \<in> A` by auto
+    ultimately show ?thesis by auto
+  next
+    assume "\<not>(\<exists>z. x < z \<and> z < y)"
+    then have *: "\<And>z. z > x \<Longrightarrow> z \<ge> y" by auto
+    def U \<equiv> "{x<..}"
+    then have "open U" by simp
+    moreover have "y \<in> U" using `x < y` U_def by simp
+    ultimately obtain "V" where  "V \<in> A" "y \<in> V" "V \<subseteq> U" using topological_basisE[OF `topological_basis A`] by auto
+    have "U = {y..}" unfolding U_def using * `x < y` by auto
+    then have "V \<subseteq> {y..}" using `V \<subseteq> U` by simp
+    then have "(LEAST w. w \<in> V) = y" using `y \<in> V` by (meson Least_equality atLeast_iff subsetCE)
+    then have "y \<in> B1 \<union> B2" using `V \<in> A` B1_def by auto
+    moreover have "x < y \<and> y \<le> y" using `x < y` by simp
+    ultimately show ?thesis by auto
   qed
   moreover have "countable (B1 \<union> B2)" using `countable B1` `countable B2` by simp
   ultimately show ?thesis by auto
@@ -428,36 +424,32 @@ proof -
   then have "countable B1" using `countable A` by (simp add: simple_image)
   def B2 \<equiv> "{(SOME x. x \<in> U)| U. U \<in> A}"
   then have "countable B2" using `countable A` by (simp add: simple_image)
-  have "\<And>x y. x < y \<Longrightarrow>  (\<exists>b \<in> B1 \<union> B2. x \<le> b \<and> b < y)"
-  proof -
-    fix x y::'a assume "x < y"
-    show "\<exists>b \<in> B1 \<union> B2. x \<le> b \<and> b < y"
-    proof (cases)
-      assume "\<exists>z. x < z \<and> z < y"
-      then obtain z where z: "x < z \<and> z < y" by auto
-      def U \<equiv> "{x<..<y}"
-      then have "open U" by simp
-      moreover have "z \<in> U" using z U_def by simp
-      ultimately obtain "V" where  "V \<in> A" "z \<in> V" "V \<subseteq> U" using topological_basisE[OF `topological_basis A`] by auto
-      def w \<equiv> "(SOME x. x \<in> V)"
-      then have "w \<in> V" using `z \<in> V` by (metis someI2)
-      then have "x \<le> w \<and> w < y" using `w \<in> V` `V \<subseteq> U` U_def by fastforce
-      moreover have "w \<in> B1 \<union> B2" using w_def B2_def `V \<in> A` by auto
-      ultimately show ?thesis by auto
-    next
-      assume "\<not>(\<exists>z. x < z \<and> z < y)"
-      then have *: "\<And>z. z < y \<Longrightarrow> z \<le> x" using leI by blast
-      def U \<equiv> "{..<y}"
-      then have "open U" by simp
-      moreover have "x \<in> U" using `x < y` U_def by simp
-      ultimately obtain "V" where  "V \<in> A" "x \<in> V" "V \<subseteq> U" using topological_basisE[OF `topological_basis A`] by auto
-      have "U = {..x}" unfolding U_def using * `x < y` by auto
-      then have "V \<subseteq> {..x}" using `V \<subseteq> U` by simp
-      then have "(GREATEST x. x \<in> V) = x" using `x \<in> V` by (meson Greatest_equality atMost_iff subsetCE)
-      then have "x \<in> B1 \<union> B2" using `V \<in> A` B1_def by auto
-      moreover have "x \<le> x \<and> x < y" using `x < y` by simp
-      ultimately show ?thesis by auto
-    qed
+  have "\<exists>b \<in> B1 \<union> B2. x \<le> b \<and> b < y" if "x < y" for x y
+  proof (cases)
+    assume "\<exists>z. x < z \<and> z < y"
+    then obtain z where z: "x < z \<and> z < y" by auto
+    def U \<equiv> "{x<..<y}"
+    then have "open U" by simp
+    moreover have "z \<in> U" using z U_def by simp
+    ultimately obtain "V" where  "V \<in> A" "z \<in> V" "V \<subseteq> U" using topological_basisE[OF `topological_basis A`] by auto
+    def w \<equiv> "(SOME x. x \<in> V)"
+    then have "w \<in> V" using `z \<in> V` by (metis someI2)
+    then have "x \<le> w \<and> w < y" using `w \<in> V` `V \<subseteq> U` U_def by fastforce
+    moreover have "w \<in> B1 \<union> B2" using w_def B2_def `V \<in> A` by auto
+    ultimately show ?thesis by auto
+  next
+    assume "\<not>(\<exists>z. x < z \<and> z < y)"
+    then have *: "\<And>z. z < y \<Longrightarrow> z \<le> x" using leI by blast
+    def U \<equiv> "{..<y}"
+    then have "open U" by simp
+    moreover have "x \<in> U" using `x < y` U_def by simp
+    ultimately obtain "V" where  "V \<in> A" "x \<in> V" "V \<subseteq> U" using topological_basisE[OF `topological_basis A`] by auto
+    have "U = {..x}" unfolding U_def using * `x < y` by auto
+    then have "V \<subseteq> {..x}" using `V \<subseteq> U` by simp
+    then have "(GREATEST x. x \<in> V) = x" using `x \<in> V` by (meson Greatest_equality atMost_iff subsetCE)
+    then have "x \<in> B1 \<union> B2" using `V \<in> A` B1_def by auto
+    moreover have "x \<le> x \<and> x < y" using `x < y` by simp
+    ultimately show ?thesis by auto
   qed
   moreover have "countable (B1 \<union> B2)" using `countable B1` `countable B2` by simp
   ultimately show ?thesis by auto
@@ -1748,11 +1740,8 @@ proof -
     have "(u \<longlonglongrightarrow> c) \<longleftrightarrow> (\<forall>i. eventually (\<lambda>n. u n \<in> A i) sequentially)"
     proof
       assume "u \<longlonglongrightarrow> c"
-      {
-        fix i
-        have "eventually (\<lambda>n. u n \<in> A i) sequentially" using A(1)[of i] A(2)[of i] `u \<longlonglongrightarrow> c`
-          by (simp add: topological_tendstoD)
-      }
+      then have "eventually (\<lambda>n. u n \<in> A i) sequentially" for i using A(1)[of i] A(2)[of i]
+        by (simp add: topological_tendstoD)
       then show "(\<forall>i. eventually (\<lambda>n. u n \<in> A i) sequentially)" by auto
     next
       assume H: "(\<forall>i. eventually (\<lambda>n. u n \<in> A i) sequentially)"
@@ -1904,7 +1893,8 @@ qed
 
 
 lemma emeasure_union_summable:
-  assumes [measurable]: "\<And>n. A n \<in> sets M" and "\<And>n. emeasure M (A n) < \<infinity>" "summable (\<lambda>n. measure M (A n))"
+  assumes [measurable]: "\<And>n. A n \<in> sets M" 
+    and "\<And>n. emeasure M (A n) < \<infinity>" "summable (\<lambda>n. measure M (A n))"
   shows "emeasure M (\<Union>n. A n) < \<infinity>" "emeasure M (\<Union>n. A n) \<le> (\<Sum>n. measure M (A n))"
 proof -
   def B \<equiv> "\<lambda>N. (\<Union>n\<in>{..<N}. A n)"
@@ -1941,7 +1931,7 @@ lemma (in sigma_finite_measure) approx_PInf_emeasure_with_finite:
 proof -
   obtain A :: "nat \<Rightarrow> 'a set"
     where "range A \<subseteq> sets M" "(\<Union>i. A i) = space M" "\<And>i. emeasure M (A i) \<noteq> \<infinity>" "incseq A"
-    using sigma_finite_incseq by auto
+    using sigma_finite_incseq by blast
   def B \<equiv> "\<lambda>i. W \<inter> A i"
   have B_meas: "\<And>i. B i \<in> sets M" using W_meas `range A \<subseteq> sets M` B_def by blast
   have b: "\<And>i. B i \<subseteq> W" using B_def by blast
@@ -1998,7 +1988,6 @@ proof -
   then show ?thesis using a by auto
 qed
 
-
 lemma AE_count_union:
   assumes "\<And>(N::nat). N \<in> I \<Longrightarrow> AE x in M. P N x" "countable I"
   shows "AE x in M. \<forall>N \<in> I. P N x"
@@ -2006,7 +1995,7 @@ proof -
   def C \<equiv> "\<lambda>N. {x. P N x}"
   have "AE x in M. x \<in> C N" if "N \<in> I" for N unfolding C_def using assms that by auto
   then have "\<exists>D. D \<in> null_sets M \<and> (space M - D) \<subseteq> C N" if "N \<in> I" for N
-     by (metis that AE_E3 subsetI)
+    by (metis that AE_E3 subsetI)
   then obtain D where D: "\<And>N. N \<in> I \<Longrightarrow> D N \<in> null_sets M" "\<And>N. N \<in> I \<Longrightarrow>(space M - D N) \<subseteq> C N"
     by metis
   def E \<equiv> "(\<Union>N\<in>I. D N)"
@@ -2064,9 +2053,8 @@ proof -
   moreover
   {
     fix x assume i: "\<forall>n::nat \<in> UNIV. F x \<le> G x +  1/real (n+1)"
-    have *: "(\<lambda>n. (1/(real (n+1)))) \<longlonglongrightarrow> 0" using lim_1_over_n LIMSEQ_ignore_initial_segment by blast
     have "(\<lambda>n. G x +  1/real (n+1)) \<longlonglongrightarrow> G x + 0"
-      apply (rule tendsto_add) using * by auto
+      by (rule tendsto_add, simp, rule LIMSEQ_ignore_initial_segment[OF lim_1_over_n, of 1])
     then have "F x \<le> G x" using i LIMSEQ_le_const by fastforce
   }
   ultimately show ?thesis by auto
@@ -2132,7 +2120,8 @@ proof -
 qed
 
 lemma borel_cantelli_limsup1:
-  assumes [measurable]: "\<And>n. A n \<in> sets M" and "\<And>n. emeasure M (A n) < \<infinity>" "summable (\<lambda>n. measure M (A n))"
+  assumes [measurable]: "\<And>n. A n \<in> sets M" 
+    and "\<And>n. emeasure M (A n) < \<infinity>" "summable (\<lambda>n. measure M (A n))"
   shows "limsup A \<in> null_sets M"
 proof -
   have "(\<lambda>n. (\<Sum>k. measure M (A (k+n)))) \<longlonglongrightarrow> 0" by (rule suminf_exist_split2[OF assms(3)])
@@ -2145,7 +2134,8 @@ proof -
     also have "... = emeasure M (\<Union>k. A (k+n))"
       using I by auto
     also have "... \<le> (\<Sum>k. measure M (A (k+n)))"
-      apply (rule emeasure_union_summable) using assms summable_ignore_initial_segment[OF assms(3), of n] by auto
+      apply (rule emeasure_union_summable) 
+      using assms summable_ignore_initial_segment[OF assms(3), of n] by auto
     finally show ?thesis by simp
   qed
   ultimately have "emeasure M (limsup A) \<le> 0" by (simp add: LIMSEQ_le_const)
@@ -2153,10 +2143,12 @@ proof -
 qed
 
 lemma borel_cantelli_AE1:
-  assumes [measurable]: "\<And>n. A n \<in> sets M" and "\<And>n. emeasure M (A n) < \<infinity>" "summable (\<lambda>n. measure M (A n))"
+  assumes [measurable]: "\<And>n. A n \<in> sets M" 
+    and "\<And>n. emeasure M (A n) < \<infinity>" "summable (\<lambda>n. measure M (A n))"
   shows "AE x in M. eventually (\<lambda>n. x \<in> space M - A n) sequentially"
 proof -
-  have "AE x in M. x \<notin> limsup A" using borel_cantelli_limsup1[OF assms] unfolding eventually_ae_filter by auto
+  have "AE x in M. x \<notin> limsup A" 
+    using borel_cantelli_limsup1[OF assms] unfolding eventually_ae_filter by auto
   moreover
   {
     fix x assume "x \<notin> limsup A"
@@ -2179,7 +2171,7 @@ lemma nn_integral_densityR:
 proof -
   have "(\<integral>\<^sup>+ x. f x * g x \<partial>F) = (\<integral>\<^sup>+ x. g x * f x \<partial>F)" by (simp add: mult.commute)
   also have "... = (\<integral>\<^sup>+ x. f x \<partial>(density F g))"
-    by (rule nn_integral_density[symmetric]) (simp_all add: assms)
+    by (rule nn_integral_density[symmetric], simp_all add: assms)
   finally show ?thesis by simp
 qed
 
@@ -2229,7 +2221,7 @@ on the real line, but on any euclidean space *}
 lemma lborel_distr_plus2:
   fixes c :: "'a::euclidean_space"
   shows "distr lborel borel (op + c) = lborel"
-by (subst lborel_affine[of 1 c]) (auto simp: density_1 one_ereal_def[symmetric])
+by (subst lborel_affine[of 1 c], auto simp: density_1 one_ereal_def[symmetric])
 
 
 subsection {*Set-Integral.thy *}
@@ -2295,38 +2287,32 @@ lemma nn_integral_disjoint_family:
           "AE x in M. f x \<ge> 0"
    shows "(\<integral>\<^sup>+x \<in> (\<Union>n. B n). f x \<partial>M) = (\<Sum>n. (\<integral>\<^sup>+x \<in> B n. f x \<partial>M))"
 proof -
-  have [measurable]: "\<And>n. (\<lambda>x. f x * indicator (B n) x) \<in> borel_measurable M" by simp
-  moreover have "\<And>n. AE x in M. f x * indicator (B n) x \<ge> 0" using assms(4) by auto
-  ultimately have "(\<integral>\<^sup>+ x. (\<Sum>n. f x * indicator (B n) x) \<partial>M) = (\<Sum>n. (\<integral>\<^sup>+ x. f x * indicator (B n) x \<partial>M))"
-    by (rule nn_integral_suminf)
-  moreover have "\<And>x. (\<Sum>n. f x * indicator (B n) x) = f x * indicator (\<Union>n. B n) x"
-  proof -
-    fix x
-    show "(\<Sum>n. f x * indicator (B n) x) = f x * indicator (\<Union>n. B n) x"
-    proof (cases)
-      assume "x \<in> (\<Union>n. B n)"
-      then obtain n where "x \<in> B n" by blast
-      have a: "finite {n}" by simp
-      have "\<And>i. i \<noteq> n \<Longrightarrow> x \<notin> B i" using `x \<in> B n` assms(3) disjoint_family_on_def
-        by (metis IntI UNIV_I empty_iff)
-      hence "\<And>i. i \<notin> {n} \<Longrightarrow> indicator (B i) x = (0::ereal)" using indicator_def by simp
-      hence b: "\<And>i. i \<notin> {n} \<Longrightarrow> f x * indicator (B i) x = (0::ereal)" by simp
+  have "(\<integral>\<^sup>+ x. (\<Sum>n. f x * indicator (B n) x) \<partial>M) = (\<Sum>n. (\<integral>\<^sup>+ x. f x * indicator (B n) x \<partial>M))"
+    apply (rule nn_integral_suminf, simp) using assms(4) by auto
+  moreover have "(\<Sum>n. f x * indicator (B n) x) = f x * indicator (\<Union>n. B n) x" for x
+  proof (cases)
+    assume "x \<in> (\<Union>n. B n)"
+    then obtain n where "x \<in> B n" by blast
+    have a: "finite {n}" by simp
+    have "\<And>i. i \<noteq> n \<Longrightarrow> x \<notin> B i" using `x \<in> B n` assms(3) disjoint_family_on_def
+      by (metis IntI UNIV_I empty_iff)
+    hence "\<And>i. i \<notin> {n} \<Longrightarrow> indicator (B i) x = (0::ereal)" using indicator_def by simp
+    hence b: "\<And>i. i \<notin> {n} \<Longrightarrow> f x * indicator (B i) x = (0::ereal)" by simp
 
-      def h \<equiv> "\<lambda>i. f x * indicator (B i) x"
-      hence "\<And>i. i \<notin> {n} \<Longrightarrow> h i = 0" using b by simp
-      hence "(\<Sum>i. h i) = (\<Sum>i\<in>{n}. h i)"
-        by (metis sums_unique[OF sums_finite[OF a]])
-      hence "(\<Sum>i. h i) = h n" by simp
-      hence "(\<Sum>n. f x * indicator (B n) x) = f x * indicator (B n) x" using h_def by simp
-      hence "(\<Sum>n. f x * indicator (B n) x) = f x" using `x \<in> B n` indicator_def by simp
-      thus ?thesis using `x \<in> (\<Union>n. B n)` by auto
-    next
-      assume "x \<notin> (\<Union>n. B n)"
-      hence "\<And>n. f x * indicator (B n) x = 0" by simp
-      have "(\<Sum>n. f x * indicator (B n) x) = 0"
-        by (simp add: `\<And>n. f x * indicator (B n) x = 0`)
-      thus ?thesis using `x \<notin> (\<Union>n. B n)` by auto
-    qed
+    def h \<equiv> "\<lambda>i. f x * indicator (B i) x"
+    hence "\<And>i. i \<notin> {n} \<Longrightarrow> h i = 0" using b by simp
+    hence "(\<Sum>i. h i) = (\<Sum>i\<in>{n}. h i)"
+      by (metis sums_unique[OF sums_finite[OF a]])
+    hence "(\<Sum>i. h i) = h n" by simp
+    hence "(\<Sum>n. f x * indicator (B n) x) = f x * indicator (B n) x" using h_def by simp
+    hence "(\<Sum>n. f x * indicator (B n) x) = f x" using `x \<in> B n` indicator_def by simp
+    thus ?thesis using `x \<in> (\<Union>n. B n)` by auto
+  next
+    assume "x \<notin> (\<Union>n. B n)"
+    hence "\<And>n. f x * indicator (B n) x = 0" by simp
+    have "(\<Sum>n. f x * indicator (B n) x) = 0"
+      by (simp add: `\<And>n. f x * indicator (B n) x = 0`)
+    thus ?thesis using `x \<notin> (\<Union>n. B n)` by auto
   qed
   ultimately show ?thesis by simp
 qed
@@ -2340,20 +2326,14 @@ proof -
   have "(\<integral>\<^sup>+x \<in> A. (f x + g x) \<partial>M) = (\<integral>\<^sup>+x. (f x * indicator A x + g x * indicator A x) \<partial>M)"
     by (simp add: indicator_def nn_integral_cong_pos)
   also have "... = (\<integral>\<^sup>+x. f x * indicator A x \<partial>M) + (\<integral>\<^sup>+x. g x * indicator A x \<partial>M)"
-  proof (rule nn_integral_add)
-    show "AE x in M. 0 \<le> f x * indicator A x" using assms(1) by auto
-    show "AE x in M. 0 \<le> g x * indicator A x" using assms(2) by auto
-  qed (auto simp add: assms)
+    apply (rule nn_integral_add) using assms(1) assms(2) by auto
   finally show ?thesis by simp
 qed
 
 lemma nn_set_integral_cong:
   assumes "AE x in M. f x = g x"
   shows "(\<integral>\<^sup>+x \<in> A. f x \<partial>M) = (\<integral>\<^sup>+x \<in> A. g x \<partial>M)"
-proof -
-  have "AE x in M. f x * indicator A x = g x * indicator A x" using assms(1) by auto
-  then show ?thesis by (rule nn_integral_cong_AE)
-qed
+apply  (rule nn_integral_cong_AE) using assms(1) by auto
 
 lemma nn_set_integral_set_mono:
   assumes "A \<subseteq> B"
@@ -2522,11 +2502,8 @@ lemma integrable_Max:
    shows "integrable M (\<lambda>x. Max {f i x|i. i\<in>I})"
 proof (rule integrable_bound[where ?f = "\<lambda>x. (\<Sum>i\<in>I. abs(f i x))"])
   show "integrable M (\<lambda>x. \<Sum>i\<in>I. \<bar>f i x\<bar>)" by (rule integrable_setsum, auto simp add: assms)
-  {
-    fix x
-    have "\<bar>Max {f i x |i. i \<in> I}\<bar> \<le> (\<Sum>i\<in>I. \<bar>f i x\<bar>)"
-      by (metis simple_image abs_Max_sum2[OF assms(2) assms(3), of "\<lambda>i. f i x"])
-  }
+  have "\<bar>Max {f i x |i. i \<in> I}\<bar> \<le> (\<Sum>i\<in>I. \<bar>f i x\<bar>)" for x
+    by (metis simple_image abs_Max_sum2[OF assms(2) assms(3), of "\<lambda>i. f i x"])
   then show "AE x in M. norm (Max {f i x |i. i \<in> I}) \<le> norm (\<Sum>i\<in>I. \<bar>f i x\<bar>)" by auto
 qed (simp add: assms)
 
@@ -2559,6 +2536,9 @@ proof -
   then have "((\<lambda>n. ((\<integral>x. u n x \<partial>M) - (\<integral>x. f x \<partial>M))) \<longlongrightarrow> 0) F" using tendsto_norm_zero_iff by blast
   then show ?thesis using Lim_null by auto
 qed
+
+text {*The next lemma asserts that, if a sequence of functions converges in $L^1$, then
+it admits a subsequence that converges almost everywhere.*}
 
 lemma tendsto_L1_AE_subseq:
   fixes u :: "nat \<Rightarrow> 'a \<Rightarrow> 'b::{banach, second_countable_topology}"
@@ -2665,10 +2645,10 @@ The formalization is more painful as one should jump back and forth between real
 all the time positivity or integrability (thankfully, measurability is handled more or less automatically).*}
 
 lemma Scheffe_lemma1:
-   assumes "\<And> n. integrable M (F n)" "integrable M f"
+  assumes "\<And> n. integrable M (F n)" "integrable M f"
            "AE x in M. (\<lambda>n. F n x) \<longlonglongrightarrow> f x"
            "limsup (\<lambda>n. \<integral>\<^sup>+ x. norm(F n x) \<partial>M) \<le> (\<integral>\<^sup>+ x. norm(f x) \<partial>M)"
-    shows "(\<lambda>n. \<integral>\<^sup>+ x. norm(F n x - f x) \<partial>M) \<longlonglongrightarrow> 0"
+  shows "(\<lambda>n. \<integral>\<^sup>+ x. norm(F n x - f x) \<partial>M) \<longlonglongrightarrow> 0"
 proof -
   have [measurable]: "\<And>n. (\<lambda>x. norm(F n x)) \<in> borel_measurable M"
                      "(\<lambda>x. norm(f x)) \<in> borel_measurable M"
@@ -2699,16 +2679,13 @@ proof -
   also have "... = 2 * (\<integral>\<^sup>+ x. norm(f x) \<partial>M)" by (rule nn_integral_cmult, auto)
   finally have int_liminf: "(\<integral>\<^sup>+ x. liminf (\<lambda>n. G n x) \<partial>M) = 2 * (\<integral>\<^sup>+ x. norm(f x) \<partial>M)" by simp
 
-  {
-    fix n
-    have "(\<integral>\<^sup>+x. ereal(norm(f x)) + ereal(norm(F n x)) \<partial>M) =  (\<integral>\<^sup>+x. norm(f x) \<partial>M) +  (\<integral>\<^sup>+x. norm(F n x) \<partial>M)"
-      by (rule nn_integral_add) (auto simp add: assms)
-  }
-  then have "limsup (\<lambda>n. (\<integral>\<^sup>+x. ereal(norm(f x)) + ereal(norm(F n x)) \<partial>M)) = limsup (\<lambda>n.  (\<integral>\<^sup>+x. norm(f x) \<partial>M) +  (\<integral>\<^sup>+x. norm(F n x) \<partial>M))"
+  have "(\<integral>\<^sup>+x. ereal(norm(f x)) + ereal(norm(F n x)) \<partial>M) = (\<integral>\<^sup>+x. norm(f x) \<partial>M) + (\<integral>\<^sup>+x. norm(F n x) \<partial>M)" for n
+    by (rule nn_integral_add) (auto simp add: assms)
+  then have "limsup (\<lambda>n. (\<integral>\<^sup>+x. ereal(norm(f x)) + ereal(norm(F n x)) \<partial>M)) = limsup (\<lambda>n. (\<integral>\<^sup>+x. norm(f x) \<partial>M) + (\<integral>\<^sup>+x. norm(F n x) \<partial>M))"
     by simp
   also have "... = (\<integral>\<^sup>+x. norm(f x) \<partial>M) + limsup (\<lambda>n. (\<integral>\<^sup>+x. norm(F n x) \<partial>M))"
     by (rule ereal_limsup_lim_add, auto simp add: finint)
-  also have "... \<le> (\<integral>\<^sup>+x. norm(f x) \<partial>M) +  (\<integral>\<^sup>+x. norm(f x) \<partial>M)"
+  also have "... \<le> (\<integral>\<^sup>+x. norm(f x) \<partial>M) + (\<integral>\<^sup>+x. norm(f x) \<partial>M)"
     using assms(4) by (simp add: add_left_mono)
   also have "... = 2 * (\<integral>\<^sup>+x. norm(f x) \<partial>M)"
     by (metis ereal_left_distrib lambda_one one_add_one zero_less_one_ereal)
@@ -2768,14 +2745,14 @@ qed
 
 lemma Scheffe_lemma2:
   fixes F::"nat \<Rightarrow> 'a \<Rightarrow> 'b::{banach, second_countable_topology}"
-   assumes "\<And> n::nat. F n \<in> borel_measurable M" "integrable M f"
-           "AE x in M. (\<lambda>n. F n x) \<longlonglongrightarrow> f x"
-           "\<And>n. (\<integral>\<^sup>+ x. norm(F n x) \<partial>M) \<le> (\<integral>\<^sup>+ x. norm(f x) \<partial>M)"
-    shows "(\<lambda>n. \<integral>\<^sup>+ x. norm(F n x - f x) \<partial>M) \<longlonglongrightarrow> 0"
+  assumes "\<And> n::nat. F n \<in> borel_measurable M" "integrable M f"
+          "AE x in M. (\<lambda>n. F n x) \<longlonglongrightarrow> f x"
+          "\<And>n. (\<integral>\<^sup>+ x. norm(F n x) \<partial>M) \<le> (\<integral>\<^sup>+ x. norm(f x) \<partial>M)"
+  shows "(\<lambda>n. \<integral>\<^sup>+ x. norm(F n x - f x) \<partial>M) \<longlonglongrightarrow> 0"
 proof (rule Scheffe_lemma1)
   fix n::nat
-  have " (\<integral>\<^sup>+ x. norm(f x) \<partial>M) < \<infinity>" using assms(2) by (metis has_bochner_integral_implies_finite_norm integrable.cases)
-  then have " (\<integral>\<^sup>+ x. norm(F n x) \<partial>M) < \<infinity>" using assms(4)[of n] by auto
+  have "(\<integral>\<^sup>+ x. norm(f x) \<partial>M) < \<infinity>" using assms(2) by (metis has_bochner_integral_implies_finite_norm integrable.cases)
+  then have "(\<integral>\<^sup>+ x. norm(F n x) \<partial>M) < \<infinity>" using assms(4)[of n] by auto
   then show "integrable M (F n)" by (subst integrable_iff_bounded, simp add: assms(1)[of n])
 qed (auto simp add: assms Limsup_bounded)
 

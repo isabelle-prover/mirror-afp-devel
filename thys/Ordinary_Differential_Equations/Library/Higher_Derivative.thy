@@ -567,7 +567,7 @@ proof
     using assms `a \<in> {b..c}`
     apply (intro bexI[where x="\<lambda>i. if c \<bullet> i = a \<bullet> i then b \<bullet> i - a \<bullet> i else c \<bullet> i - a \<bullet> i"])
     apply (auto simp: algebra_simps min_def max_def eucl_le[of b] eucl_le[of _ c] not_le
-        split: split_if_asm)
+        split: if_split_asm)
     apply (metis le_less_trans not_le)
     apply metis
     by (metis less_irrefl)

@@ -25,7 +25,7 @@ primrec maxsplit :: "('a list => bool) => 'a list * 'a list => 'a list => 'a spl
 "maxsplit P res ps (q#qs) = maxsplit P (if P ps then (ps,q#qs) else res)
                                      (ps@[q]) qs"
 
-declare split_if[split del]
+declare if_split[split del]
 
 lemma maxsplit_lemma: "!!(ps::'a list) res.
   (maxsplit P res ps qs = (xs,ys)) =
@@ -33,7 +33,7 @@ lemma maxsplit_lemma: "!!(ps::'a list) res.
    else (xs,ys)=res)"
 apply(unfold is_maxpref_def)
 apply (induct "qs")
- apply (simp split: split_if)
+ apply (simp split: if_split)
  apply blast
 apply simp
 apply (erule thin_rl)
@@ -70,7 +70,7 @@ apply (simp (no_asm_simp))
 apply fastforce
 done
 
-declare split_if[split add]
+declare if_split[split add]
 
 lemma is_maxpref_Nil[simp]:
  "~(? us. prefixeq us xs & P us) ==> is_maxpref P ps xs = (ps = [])"

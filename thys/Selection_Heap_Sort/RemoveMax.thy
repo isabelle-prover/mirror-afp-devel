@@ -238,8 +238,7 @@ proof-
            "sorted sl \<and> (\<forall>x\<in>set l. \<forall>y\<in>List.set sl. x \<le> y)"
     thus "sorted (m # sl) \<and> (\<forall>x\<in>set l'. \<forall>y\<in>List.set (m # sl). x \<le> y)"
       using remove_max_set[of l m l'] remove_max_max[of l m l']
-      apply (auto simp add: sorted_Cons) 
-      by (metis Max_ge finite_set_mset insert_iff mem_set_mset_iff)
+      by (auto simp add: sorted_Cons intro: Max_ge)
   qed
   thus ?thesis
     by simp

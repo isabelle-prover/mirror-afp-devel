@@ -60,7 +60,7 @@ lemma unmod_extRet2J [simp]: "unmod e i \<Longrightarrow> unmod (extRet2J e va) 
 by(cases va) simp_all
 
 lemma max_dest: "(n :: nat) + max a b \<le> c \<Longrightarrow> n + a \<le> c \<and> n + b \<le> c"
-apply(auto simp add: max_def split: split_if_asm) 
+apply(auto simp add: max_def split: if_split_asm) 
 done
 
 declare max_dest [dest!]
@@ -485,14 +485,14 @@ done
 
 lemma bisim_call_None_call1: "\<lbrakk> bisim Vs e e' xs; call e = None \<rbrakk> \<Longrightarrow> call1 e' = None"
   and bisims_calls_None_calls1: "\<lbrakk> bisims Vs es es' xs; calls es = None \<rbrakk> \<Longrightarrow> calls1 es' = None"
-by(induct rule: bisim_bisims.inducts)(auto simp add: is_vals_conv split: split_if_asm)
+by(induct rule: bisim_bisims.inducts)(auto simp add: is_vals_conv split: if_split_asm)
 
 lemma bisim_call1_Some_call:
   "\<lbrakk> bisim Vs e e' xs; call1 e' = \<lfloor>aMvs\<rfloor> \<rbrakk> \<Longrightarrow> call e = \<lfloor>aMvs\<rfloor>"
 
   and bisims_calls1_Some_calls:
   "\<lbrakk> bisims Vs es es' xs; calls1 es' = \<lfloor>aMvs\<rfloor> \<rbrakk> \<Longrightarrow> calls es = \<lfloor>aMvs\<rfloor>"
-by(induct rule: bisim_bisims.inducts)(auto simp add: is_vals_conv split: split_if_asm)
+by(induct rule: bisim_bisims.inducts)(auto simp add: is_vals_conv split: if_split_asm)
 
 lemma blocks_bisim: 
   assumes bisim: "bisim (Vs @ pns) e e' xs"
@@ -543,7 +543,7 @@ proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
     case Call
     with `final E` `bisim VS E E' xs` show ?case by(auto simp add: is_vals_conv)
   qed
-qed(auto split: split_if_asm)
+qed(auto split: if_split_asm)
 
 lemma assumes bisim: "bisim VS E E' XS"
   and final: "final E"
@@ -694,7 +694,7 @@ next
       by(auto intro: Ds_mono')
     ultimately show ?thesis using False by(auto)
   qed
-qed(fastforce split: split_if_asm elim: D_mono' intro: sqUn_lem2 sqUn_lem A_inline_call)+
+qed(fastforce split: if_split_asm elim: D_mono' intro: sqUn_lem2 sqUn_lem A_inline_call)+
 
 lemma bisim_B: "bisim Vs e E xs \<Longrightarrow> \<B> E (length Vs)"
   and bisims_Bs: "bisims Vs es Es xs \<Longrightarrow> \<B>s Es (length Vs)"
@@ -728,14 +728,14 @@ lemma red1_preserves_unmod:
   and reds1_preserves_unmod:
   "\<lbrakk> uf,P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; unmods es i \<rbrakk> \<Longrightarrow> (lcl s') ! i = (lcl s) ! i"
 apply(induct rule: red1_reds1.inducts)
-apply(auto split: split_if_asm)
+apply(auto split: if_split_asm)
 done
 
 lemma red1_unmod_preserved:
   "\<lbrakk> uf,P,t \<turnstile>1 \<langle>e, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>; unmod e i \<rbrakk> \<Longrightarrow> unmod e' i"
   and reds1_unmods_preserved:
   "\<lbrakk> uf,P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; unmods es i \<rbrakk> \<Longrightarrow> unmods es' i"
-by(induct rule: red1_reds1.inducts)(auto split: split_if_asm)
+by(induct rule: red1_reds1.inducts)(auto split: if_split_asm)
 
 lemma \<tau>red1t_unmod_preserved:
   "\<lbrakk> \<tau>red1gt uf P t h (e, xs) (e', xs'); unmod e i \<rbrakk> \<Longrightarrow> unmod e' i"

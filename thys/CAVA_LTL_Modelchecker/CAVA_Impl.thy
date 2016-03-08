@@ -387,7 +387,7 @@ begin
       igbg_acc = \<lambda>(q,s). if s\<in>sa.V then igba.acc q else {}
     \<rparr>)"
     unfolding prod_def
-    apply (auto simp: succ_of_E_def E_of_succ_def split: split_if_asm)
+    apply (auto simp: succ_of_E_def E_of_succ_def split: if_split_asm)
     done
 
   schematic_goal vf_prod_impl_aux_cava_reorder:

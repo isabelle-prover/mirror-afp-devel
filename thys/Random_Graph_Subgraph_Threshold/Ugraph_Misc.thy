@@ -31,7 +31,7 @@ proof (subst setsum.If_cases)
 qed
 
 lemma setsum_upper:
-  fixes f :: "'i \<Rightarrow> 'a :: {ordered_cancel_ab_semigroup_add, comm_monoid_add}"
+  fixes f :: "'i \<Rightarrow> 'a :: ordered_comm_monoid_add"
   assumes "finite I" "\<And>i. i \<in> I \<Longrightarrow> 0 \<le> f i"
   shows "(\<Sum>i | i \<in> I \<and> P i. f i) \<le> setsum f I"
 proof -
@@ -46,27 +46,25 @@ proof -
 qed
 
 lemma setsum_lower:
-  fixes f :: "'i \<Rightarrow> 'a :: {ordered_cancel_ab_semigroup_add, comm_monoid_add}"
+  fixes f :: "'i \<Rightarrow> 'a :: ordered_comm_monoid_add"
   assumes "finite I" "i \<in> I" "\<And>i. i \<in> I \<Longrightarrow> 0 \<le> f i" "x < f i"
   shows "x < setsum f I"
 proof -
-  have "0 + x < setsum f (I - {i}) + f i"
-    using assms by (intro add_le_less_mono setsum_nonneg) auto
-  also have "setsum f (I - {i}) + f i = setsum f I"
-    using assms by (simp add: setsum.remove ac_simps)
-  finally show ?thesis by simp
+  have "x < f i" by fact
+  also have "\<dots> \<le> setsum f I"
+    using setsum_mono2[OF \<open>finite I\<close>, of "{i}" f] assms by auto
+  finally show ?thesis .
 qed
 
 lemma setsum_lower_or_eq:
-  fixes f :: "'i \<Rightarrow> 'a :: {ordered_cancel_ab_semigroup_add, comm_monoid_add}"
+  fixes f :: "'i \<Rightarrow> 'a :: ordered_comm_monoid_add"
   assumes "finite I" "i \<in> I" "\<And>i. i \<in> I \<Longrightarrow> 0 \<le> f i" "x \<le> f i"
   shows "x \<le> setsum f I"
 proof -
-  have "0 + x \<le> setsum f (I - {i}) + f i"
-    using assms by (metis Diff_iff add_mono setsum_nonneg)
-  also have "setsum f (I - {i}) + f i = setsum f I"
-    using assms by (simp add: setsum.remove ac_simps)
-  finally show ?thesis by simp
+  have "x \<le> f i" by fact
+  also have "\<dots> \<le> setsum f I"
+    using setsum_mono2[OF \<open>finite I\<close>, of "{i}" f] assms by auto
+  finally show ?thesis .
 qed
 
 lemma setsum_left_div_distrib:
@@ -185,7 +183,7 @@ context
 begin
 
   lemma LIMSEQ_power_zero: "f \<longlonglongrightarrow> 0 \<Longrightarrow> 0 < n  \<Longrightarrow> (\<lambda>x. f x ^ n :: real) \<longlonglongrightarrow> 0"
-  by (metis less_not_refl3 power_eq_0_iff tendsto_power)
+  by (metis power_eq_0_iff tendsto_power)
 
   lemma LIMSEQ_cong:
     assumes "f \<longlonglongrightarrow> x" "\<forall>\<^sup>\<infinity>n. f n = g n"

@@ -22,7 +22,7 @@ lemmas comp_simps = hide_def composition_def ioa_def par2_def is_trans_def
 lemmas trans_defs = Inv_def Lin_def Resp_def Init_def
   Abort_def Reco_def
 
-declare split_if_asm [split]
+declare if_split_asm [split]
 
 subsection {*A case rule for decomposing the transition relation 
   of the composition of two SLins *}

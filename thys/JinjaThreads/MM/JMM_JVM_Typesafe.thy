@@ -53,7 +53,7 @@ context JVM_allocated_heap_conf' begin
 lemma exec_instr_New_type_match:
   "\<lbrakk> (ta, s') \<in> h.exec_instr i P t h stk loc C M pc frs; NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>; typeof_addr ad \<noteq> None \<rbrakk>
   \<Longrightarrow> typeof_addr ad = \<lfloor>CTn\<rfloor>"
-by(cases i)(auto split: split_if_asm prod.split_asm dest: allocate_typeof_addr_SomeD red_external_aggr_New_type_match)
+by(cases i)(auto split: if_split_asm prod.split_asm dest: allocate_typeof_addr_SomeD red_external_aggr_New_type_match)
 
 lemma mexecd_New_type_match:
   "\<lbrakk> h.mexecd P t (xcpfrs, h) ta (xcpfrs', h'); NewHeapElem ad CTn \<in> set \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>; typeof_addr ad \<noteq> None \<rbrakk>
@@ -198,7 +198,7 @@ lemma jmm'_exec_instrI:
      final_thread.actions_ok (final_thread.init_fin_final JVM_final) s t ta \<rbrakk>
   \<Longrightarrow> \<exists>ta xcphfrs. (ta, xcphfrs) \<in> JVM_heap_base.exec_instr addr2thread_id thread_id2addr spurious_wakeups empty_heap allocate typeof_addr (heap_base.heap_read_typed typeof_addr jmm_heap_read P) jmm_heap_write i P t h stk loc C M pc frs \<and> final_thread.actions_ok (final_thread.init_fin_final JVM_final) s t ta"
 apply(cases i)
-apply(auto simp add: JVM_heap_base.exec_instr.simps split_beta final_thread.actions_ok_iff intro!: jmm_heap_read_typed_default_val rev_image_eqI simp del: split_paired_Ex split: split_if_asm)
+apply(auto simp add: JVM_heap_base.exec_instr.simps split_beta final_thread.actions_ok_iff intro!: jmm_heap_read_typed_default_val rev_image_eqI simp del: split_paired_Ex split: if_split_asm)
 apply(drule red_external_aggr_heap_read_typedI)
 apply((fastforce simp add: final_thread.actions_ok_iff simp del: split_paired_Ex)+)[2]
 done
@@ -295,7 +295,7 @@ proof -
     fix \<xi>
     assume "\<xi> \<in> range (justifying_exec \<circ> ?J)"
     then obtain n where "\<xi> = justifying_exec (?J n)" by auto
-    then obtain n where \<xi>: "\<xi> = justifying_exec (J n)" and n: "n > 0" by(auto split: split_if_asm)
+    then obtain n where \<xi>: "\<xi> = justifying_exec (J n)" and n: "n > 0" by(auto split: if_split_asm)
     from range \<xi> have "\<xi> \<in> ?\<E>" by auto
     thus "\<xi> \<in> ?\<E>'" unfolding jmm_typeof_addr'_conv_jmm_type_addr[symmetric, abs_def]
     proof(rule JVMd_\<E>_heap_read_typedI)
@@ -360,7 +360,7 @@ proof -
     fix \<xi>
     assume "\<xi> \<in> range (justifying_exec \<circ> ?J)"
     then obtain n where "\<xi> = justifying_exec (?J n)" by auto
-    then obtain n where \<xi>: "\<xi> = justifying_exec (J n)" and n: "n > 0" by(auto split: split_if_asm)
+    then obtain n where \<xi>: "\<xi> = justifying_exec (J n)" and n: "n > 0" by(auto split: if_split_asm)
     from range \<xi> have "\<xi> \<in> ?\<E>" by auto
     thus "\<xi> \<in> ?\<E>'" unfolding jmm_typeof_addr'_conv_jmm_type_addr[symmetric, abs_def]
     proof(rule JVMd_\<E>_heap_read_typedI)

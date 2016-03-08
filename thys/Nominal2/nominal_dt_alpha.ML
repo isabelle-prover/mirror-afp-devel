@@ -286,7 +286,7 @@ fun define_raw_alpha raw_dt_info bn_info bclausesss fvs lthy =
        alpha_bn_tys = alpha_bn_tys, 
        alpha_intros = alpha_intros,
        alpha_cases = alpha_cases,
-       alpha_raw_induct = alpha_raw_induct}, Local_Theory.restore lthy')
+       alpha_raw_induct = alpha_raw_induct}, Local_Theory.reset lthy')  (* FIXME disrupts context *)
   end
 
 

@@ -171,9 +171,12 @@ proof(induction h rule: del_min.induct)
     assume "ll = Leaf" thus ?thesis using 3 by (simp add: ac_simps)
   next
     assume "ll \<noteq> Leaf"
-    hence "get_min ll :# mset_tree ll"
-      by (metis get_min_in mem_set_mset_iff set_mset_tree)
-    thus ?thesis using 3 by(auto simp: multiset_eq_iff)
+    hence "get_min ll \<in># mset_tree ll"
+      by (simp add: get_min_in)
+    then obtain A where "mset_tree ll = A + {#get_min ll#}"
+      by (blast dest: multi_member_split)
+    then show ?thesis using 3 by (auto simp add: ac_simps)
+      (simp add: multiset_eq_iff)
   qed
 qed auto
 
