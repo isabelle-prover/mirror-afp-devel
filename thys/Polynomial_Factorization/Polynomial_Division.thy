@@ -50,16 +50,24 @@ end
 definition pseudo_exponent :: "'a :: semiring_0 poly \<Rightarrow> 'a poly \<Rightarrow> nat" where
   "pseudo_exponent p q = (Suc (degree p) - degree q)" 
 
-fun pseudo_divmod_main :: "'a :: idom_div \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly 
+definition mult_monom :: "'a \<Rightarrow> nat \<Rightarrow> 'a :: comm_semiring_0 poly \<Rightarrow> 'a poly" where
+  [simp, code del]: "mult_monom c n f = (monom c n * f)"
+
+lemma [code]: 
+  "mult_monom c (Suc n) f = mult_monom c n (pCons 0 f)"
+  "mult_monom c 0 f = smult c f"
+  by (auto simp: monom_0 monom_Suc)
+
+(* TODO: one might tune this code (and similarly p_div_main), 
+  cf. the improved code of dvd_poly_int_main in Berlekamp_Hensel_Factorization *) 
+fun pseudo_divmod_main :: "'a :: idom \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly 
   \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a poly \<times> 'a poly" where
   "pseudo_divmod_main lc q r d dr n = (if n = 0 then (q,r) else let
      rr = smult lc r;
-     a = coeff rr dr;
-     qq = exact_div a lc;
+     qq = coeff r dr;
      n1 = n - 1;
-     b = monom qq n1;
-     rrr = rr - b * d;
-     qqq = smult lc q + b
+     rrr = rr - mult_monom qq n1 d;
+     qqq = smult lc q + monom qq n1
      in pseudo_divmod_main lc qqq rrr d (dr - 1) n1)"
 
 fun p_div_main :: "'a :: idom_div \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly 
@@ -68,12 +76,11 @@ fun p_div_main :: "'a :: idom_div \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<
      a = coeff r dr;
      qq = exact_div a lc;
      n1 = n - 1;
-     b = monom qq n1;
-     rr = r - b * d;
-     qqq = q + b
+     rr = r - mult_monom qq n1 d;
+     qqq = q + monom qq n1
      in p_div_main lc qqq rr d (dr - 1) n1)"
 
-definition pseudo_divmod :: "'a :: idom_div poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<times> 'a poly" where
+definition pseudo_divmod :: "'a :: idom poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly \<times> 'a poly" where
   "pseudo_divmod p q = (let dp = degree p; dq = degree q 
      in pseudo_divmod_main (coeff q dq) 0 p q dp (1 + dp - dq))"
 
@@ -92,8 +99,7 @@ lemma pseudo_divmod_main: assumes d: "d \<noteq> 0" "lc = coeff d (degree d)"
 proof (induct n arbitrary: q r dr)
   case (Suc n q r dr)
   let ?rr = "smult lc r"
-  let ?a = "coeff ?rr dr"
-  let ?qq = "exact_div ?a lc"
+  let ?qq = "coeff r dr"
   def qq \<equiv> ?qq
   let ?n = "Suc n"
   let ?b = "monom qq n"
@@ -273,17 +279,15 @@ qed simp
 
 lemma pseudo_mod_main_code[code]: "pseudo_mod_main lc r d dr n = (if n = 0 then r else let
      rr = smult lc r;
-     a = coeff rr dr;
-     qq = exact_div a lc;
+     qq = coeff r dr;
      n1 = n - 1;
-     b = monom qq n1;
-     rrr = rr - b * d
+     rrr = rr - mult_monom qq n1 d
      in pseudo_mod_main lc rrr d (dr - 1) n1)"
   unfolding pseudo_mod_main_def pseudo_divmod_main.simps[of _ _ _ _ _ n]
     using snd_pseudo_divmod_main[of lc] 
   by (auto simp: Let_def simp del: pseudo_divmod_main.simps)
 
-definition pseudo_mod :: "'a :: idom_div poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
+definition pseudo_mod :: "'a :: idom poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
   "pseudo_mod f g = snd (pseudo_divmod f g)"
   
 lemma pseudo_mod_code[code]: "pseudo_mod p q = (let dp = degree p; dq = degree q 

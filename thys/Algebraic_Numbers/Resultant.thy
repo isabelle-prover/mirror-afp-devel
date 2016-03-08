@@ -1871,7 +1871,7 @@ function resultant_impl_main :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> nat
     else let 
        cd = common_divisor_list cdf (coeffs g);
        pg = exact_div_poly g cd;
-       (q,r) = pseudo_divmod f pg;
+       r = pseudo_mod f pg;
        dr = degree r;
        c = coeff pg dg;
        e1 = (Suc df - dg) * dg;
@@ -1885,10 +1885,10 @@ function resultant_impl_main :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> nat
 termination 
 proof (relation "measures [(\<lambda> (f,g,df,dg). if dg = degree g then 0 else 1), 
   (\<lambda> (f,g,df,dg). degree g)]", goal_cases)
-  case (2 f g df dg cg pg qr q r dr)
+  case (2 f g df dg cg pg r dr)
   let ?cd = "common_divisor_list cdf (coeffs g)"
   let ?pg = "exact_div_poly g  ?cd"
-  from 2 have pd: "pseudo_divmod f ?pg = (q,r)" and dg: "dg \<noteq> 0" by auto
+  from 2 have pd: "pseudo_mod f ?pg = r" and dg: "dg \<noteq> 0" by auto
   from 2 have dr: "dr = degree r" by auto
   show ?case
   proof (cases "dg = degree g")
@@ -1901,7 +1901,7 @@ proof (relation "measures [(\<lambda> (f,g,df,dg). if dg = degree g then 0 else 
     have deg: "degree ?pg = degree g" using cg0 degree_smult_eq[of ?cd g]  
       by simp
     with g have pg: "?pg \<noteq> 0" by auto
-    from pseudo_divmod[OF pg pd, unfolded deg] g
+    from pseudo_mod[OF pg pd, unfolded deg] g
     show ?thesis by (auto simp: dr)
   qed (auto simp: dr)
 qed simp
@@ -1925,6 +1925,7 @@ proof (induct f g df dg rule: resultant_impl_main.induct)
     obtain cg where cg: "cg = common_divisor_list cdf (coeffs g)" by blast
     obtain pg where pg: "pg = exact_div_poly g cg" by blast
     obtain q r where div: "pseudo_divmod f pg = (q,r)" by force
+    hence mod: "pseudo_mod f pg = r" unfolding pseudo_mod_def by simp
     let ?dr = "degree r"
     obtain c where c: "c = coeff pg dg" by blast
     obtain e1 where e1: "e1 = pseudo_exponent f g * dg" by blast
@@ -1940,10 +1941,10 @@ proof (induct f g df dg rule: resultant_impl_main.induct)
     from False have g: "pg \<noteq> 0" using deg cg0 id by fastforce
     from False have dpg0: "degree pg \<noteq> 0" by simp
     with pseudo_divmod[OF g div] have dr: "degree r < degree pg" "degree r \<le> dg" unfolding dpg by auto
-    note IH = 1(1)[OF False[folded dfg] cg pg refl div[symmetric] refl c refl refl dpg refl dr(2)]
+    note IH = 1(1)[OF False[folded dfg] cg pg mod[symmetric] refl c refl refl dpg refl dr(2)]
     have e1': "e1 = pseudo_exponent f pg * dg" by (auto simp: e1 dpg pseudo_exponent_def)
     have r: "resultant_impl_main f g df dg = cg ^ ?df * exact_div vrrg (c ^ (e1 - e2))" 
-      unfolding Let_def e1 e2 c rgr rrg div[unfolded pg cg] vrrg split pseudo_exponent_def 
+      unfolding Let_def e1 e2 c rgr rrg mod[unfolded pg cg] vrrg split pseudo_exponent_def 
         cg pg resultant_impl_main.simps[of f g] dfg
       using False by auto
     also have "vrrg = (if even dg \<or> even e2 then rrg else -rrg)" unfolding vrrg 
