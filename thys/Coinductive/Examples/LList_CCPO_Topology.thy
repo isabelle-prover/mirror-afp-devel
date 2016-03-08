@@ -390,7 +390,7 @@ proof (rule tendsto_closed[where x=xss, OF closed_Collect_eq])
   assume "lfinite xs" 
   then show "lmap f (lconcat' xs) = lconcat' (lmap (lmap f) xs)"
     by (induct xs rule: lfinite.induct) (auto simp: lmap_lappend_distrib)
-qed (intro isCont_lconcat' isCont_lappend isCont_LCons continuous_within_id isCont_lmap)+
+qed (intro isCont_lconcat' isCont_lappend isCont_LCons continuous_ident isCont_lmap)+
 
 lemmas tendsto_Sup[THEN tendsto_compose, tendsto_intros] =
   mcont_SUP[OF mcont_id' mcont_const, THEN tendsto_mcont]
