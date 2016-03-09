@@ -474,7 +474,7 @@ subsubsection{*The executable definition:*}
 context euclidean_space
 begin
 
-definition "echelon_form_of_euclidean A = echelon_form_of A euclid_ext2"
+definition [code_unfold]: "echelon_form_of_euclidean A = echelon_form_of A euclid_ext2"
 
 end
 

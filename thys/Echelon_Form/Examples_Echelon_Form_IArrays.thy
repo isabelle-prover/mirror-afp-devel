@@ -81,7 +81,7 @@ value "matrix_to_iarray (echelon_form_of test_int_3x3 euclid_ext2)"
 
 value "matrix_to_iarray (echelon_form_of test_int_8x8 euclid_ext2)"
 
-text{*THE FOLLOWING COMPUTATIONS SHALL BE MUCH FASTER:*}
+text{*The following computations are much faster when code is exported.*}
 
 (*value "matrix_to_iarray (echelon_form_of_euclidean test_int_20x20)"*)
 
