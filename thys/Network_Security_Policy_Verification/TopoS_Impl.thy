@@ -113,7 +113,7 @@ local
       of SOME x => x
       | NONE => raise TERM ("could not evaluate", []);
 in
-  fun visualize_edges ctxt (edges: term) (coloredges: (string * term) list) (graphviz_header: string): int = 
+  fun visualize_edges ctxt (edges: term) (coloredges: (string * term) list) (graphviz_header: string) = 
     let
       val _ = writeln("visualize_edges");
       val (biflows, uniflows) = partition_by_biflows ctxt edges;

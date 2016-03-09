@@ -20,10 +20,10 @@ sig
   (* edges is a term of type ('a \<times> 'a) list *)
   
   (* @{context} default_tune_node_format (edges_format \<times> edges)list*)
-  val visualize_graph: Proof.context -> (term -> string -> string) -> term -> int
+  val visualize_graph: Proof.context -> (term -> string -> string) -> term -> unit
 
   (* @{context} default_tune_node_format (edges_format \<times> edges)list graphviz_header*)
-  val visualize_graph_pretty: Proof.context -> (term -> string -> string) -> (string * term) list -> string-> int
+  val visualize_graph_pretty: Proof.context -> (term -> string -> string) -> (string * term) list -> string-> unit
 
   (* helper function.
      @{context} tune_node_format node *)
@@ -44,9 +44,8 @@ val default_tune_node_format: term -> string -> string = (fn _ => I)
 fun write_to_tmpfile (t: string): Path.T = 
   let 
     val p = Isabelle_System.create_tmp_path "graphviz" "graph_tmp.dot"
-    val p_str = File.shell_path p
   in
-    writeln ("using tmpfile " ^ p_str); File.write p (t^"\n"); p
+    writeln ("using tmpfile " ^ Path.print p); File.write p (t^"\n"); p
   end
 
 fun evaluate_term (ctxt: Proof.context) edges = 
@@ -102,7 +101,7 @@ local
      viewer is a PDF viewer, e.g. xdg-open
      retuns return code of bash command.
      noticeable side effect: generated pdf file is not deleted (maybe still open in editor)*)
-  fun paint_graph (viewer: string) (viz: string) (f: Path.T): int =
+  fun paint_graph (viewer: string) (viz: string) (f: Path.T) =
     if (Isabelle_System.bash ("which "^viz)) <> 0 then
       (*TODO: `which` on windows?*)
       error "ML_GraphViz: Graphviz command not found"
@@ -110,17 +109,20 @@ local
       error "ML_GraphViz: viewer command not found"
     else
       let
-        val file = (File.shell_path (Path.base f)) (*absolute path: (File.shell_path f)*)
-        val filePDF = file^".pdf";
-        val cmd = (viz^" -o "^filePDF^" -Tpdf "^file^" && "^viewer^" "^filePDF) (*^" && rm "^filePDF*)
-      in
+        val base = Path.base f;
+        val base_pdf = base |> Path.ext "pdf";
         (*First cd to the temp directory, then only call the commands with relative paths. 
           This is a Windows workaround if the Windows (not cygwin) version of graphviz is installed:
             It does not understand paths such as /tmp/isabelle/.., it wants C:\tmp\..
           Hence, we cd to the tmp directory and only use relative filenames henceforth.*)
-        (writeln ("cding to "^(File.shell_path (Path.dir f))); File.cd (Path.dir f));
-        (writeln ("executing: "^cmd); Isabelle_System.bash cmd; ());
-        Isabelle_System.bash ("rm "^file) (*cleanup dot file, PDF file will still exist*)
+        val cmd =
+          "cd " ^ File.bash_path (Path.dir f) ^ "; " ^
+          viz ^ " -o "^ File.bash_path base_pdf ^ " -Tpdf " ^ File.bash_path base ^
+          " && " ^ viewer ^ " " ^ File.bash_path base_pdf;
+      in
+        writeln ("executing: "^cmd);
+        Isabelle_System.bash cmd;
+        File.rm f (*cleanup dot file, PDF file will still exist*)
         (*some pdf viewers do not like it if we delete the pdf file they are currently displaying*)
       end
 
@@ -139,7 +141,7 @@ local
   fun apply_dot_header header edges =
     "digraph graphname {\n#header\n" ^ header ^"\n#edges\n\n"^ implode edges ^ "}"
 in
-  fun visualize_graph_pretty ctxt tune_node_format Es (header:string): int =
+  fun visualize_graph_pretty ctxt tune_node_format Es (header:string) =
     let 
       val evaluated_edges = map (fn (str, t) => (str, evaluate_term ctxt t)) Es
       val edge_to_string = HOLogic.dest_list #> map HOLogic.dest_prod #> format_dot_edges ctxt tune_node_format #> implode
@@ -151,8 +153,7 @@ in
           |> write_to_tmpfile
           |> paint_graph Graphviz_Platform_Config.executable_pdf_viewer Graphviz_Platform_Config.executable_dot
         )
-      else
-        (writeln "visualization disabled (Graphviz.open_viewer)"; 0)
+      else writeln "visualization disabled (Graphviz.open_viewer)"
     end
   end
 
