@@ -3286,6 +3286,20 @@ abstract = This article contains a formalisation of the Akra-Bazzi method
  proof methods, see the accompanying paper (publication forthcoming).
 depends-on = Landau_Symbols
 
+[Cartan_FP]
+title = The Cartan Fixed Point Theorems
+author = Lawrence Paulson <http://www.cl.cam.ac.uk/~lp15/>
+date = 2016-03-08
+topic = Mathematics/Analysis
+abstract = 
+  The Cartan fixed point theorems concern the group of holomorphic
+  automorphisms on a connected open set of C<sup>n</sup>. Ciolli et al.
+  have formalised the one-dimensional case of these theorems in HOL
+  Light. This entry contains their proofs, ported to Isabelle/HOL.  Thus
+  it addresses the authors~ remark that "it would be important to write
+  a formal proof in a language that can be read by both humans and
+  machines".
+
 [Gauss_Jordan]
 title = Gauss-Jordan Algorithm and Its Applications
 author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Jesús Aransay <http://www.unirioja.es/cu/jearansa>
