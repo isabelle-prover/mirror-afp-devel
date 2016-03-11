@@ -1,4 +1,6 @@
-session "Timed_Automata" = "HOL" +
+chapter AFP
+
+session "Timed_Automata" (AFP) = HOL +
   options [timeout=600]
   theories
     Normalized_Zone_Semantics
