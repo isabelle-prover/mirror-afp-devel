@@ -3420,6 +3420,34 @@ abstract = Recently, Javier Esparza and Jan Kretinsky proposed a new method dire
 extra-history =
  Change history: [2015-09-23]: Enable code export for the eager unfolding optimisation and reduce running time of the generated tool. Moreover, add support for the mlton SML compiler.
 
+[Timed_Automata]
+title = Timed Automata
+author = Simon Wimmer <http://in.tum.de/~wimmers>
+date = 2016-03-08
+topic = Computer Science/Automata and Formal Languages
+abstract = 
+  Timed automata are a widely used formalism for modeling real-time
+  systems, which is employed  in a class of successful model checkers
+  such as UPPAAL [LPY97], HyTech [HHWt97] or Kronos [Yov97].  This work
+  formalizes the theory for the subclass of diagonal-free timed
+  automata,  which is sufficient to model many interesting problems.  We
+  first define the basic concepts and semantics of diagonal-free timed
+  automata.  Based on this, we prove two types of decidability results
+  for the language emptiness problem.    The first is the classic result
+  of Alur and Dill [AD90, AD94],  which uses a finite partitioning of
+  the state space into so-called `regions`.    Our second result focuses
+  on an approach based on `Difference Bound Matrices (DBMs)`,  which is
+  practically used by model checkers.  We prove the correctness of the
+  basic forward analysis operations on DBMs.  One of these operations is
+  the Floyd-Warshall algorithm for the all-pairs shortest paths problem.
+  To obtain a finite search space, a widening operation has to be used
+  for this kind of analysis.  We use Patricia Bouyer's [Bou04] approach
+  to prove that this widening operation  is correct in the sense that
+  DBM-based forward analysis in combination with the widening operation
+  also decides language emptiness. The interesting property of this
+  proof is that the first  decidability result is reused to obtain the
+  second one.
+
 [Parity_Game]
 title = Positional Determinacy of Parity Games
 author = Christoph Dittmann <http://logic.las.tu-berlin.de/Members/Dittmann/>

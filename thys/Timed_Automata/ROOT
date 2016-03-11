@@ -1,0 +1,7 @@
+session "Timed_Automata" = "HOL" +
+  options [timeout=600]
+  theories
+    Normalized_Zone_Semantics
+  document_files
+    "root.tex"
+    "root.bib"
