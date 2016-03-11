@@ -13,19 +13,12 @@ session Algebraic_Numbers (AFP) = Pre_Algebraic_Numbers +
     "Ring_Hom_Poly"
     "Order_Polynomial"
     "Binary_Exponentiation"
-  theories
     "Explicit_Roots"
-  theories
     "Rational_Root_Test"
-  theories
     "Kronecker_Factorization"
-  theories
     "Square_Free_Factorization"
-  theories
     "Berlekamp_Hensel_Factorization"
-  theories
     "Rational_Factorization"
-  theories
     "Real_Factorization"
     "Show_Real_Approx"
   theories
