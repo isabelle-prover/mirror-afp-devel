@@ -272,7 +272,8 @@ definition "Term_term' = Term_term []"
 definition "Lemmas_simp = Lemmas_simp_thm True"
 definition "Lemmas_nosimp = Lemmas_simp_thm False"
 definition "Consts_value = \<open>(_)\<close>"
-definition "Consts_raw0 s l e o_arg = Consts s l (String.replace_chars (\<lambda>c. if c = Char Nibble5 NibbleF then \<open>'_\<close> else \<degree>c\<degree>) e @@ (case o_arg of
+definition "Consts_raw0 s l e o_arg =
+       Consts s l (String.replace_chars (\<lambda>c. if c = CHAR 0x5F then \<open>'_\<close> else \<degree>c\<degree>) e @@ (case o_arg of
          None \<Rightarrow> \<open>\<close>
        | Some arg \<Rightarrow>
            let ap = \<lambda>s. \<open>'(\<close> @@ s @@ \<open>')\<close> in

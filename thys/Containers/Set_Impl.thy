@@ -1924,7 +1924,6 @@ derive (rbt) set_impl nat
 derive (set_RBT) set_impl int (* shows usage of constant names *)
 derive (dlist) set_impl Enum.finite_1 Enum.finite_2 Enum.finite_3
 derive (rbt) set_impl integer natural
-derive (dlist) set_impl nibble
 derive (rbt) set_impl char
 
 instantiation sum :: (set_impl, set_impl) set_impl begin

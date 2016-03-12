@@ -161,9 +161,43 @@ definition letters :: "char list"
 where
   "letters = ''abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789&;:-''"
 
+definition is_letter :: "char \<Rightarrow> bool"
+where
+  "is_letter c \<longleftrightarrow> c \<in> set letters"
+
+lemma is_letter_code [code]:
+  "is_letter c \<longleftrightarrow>
+    CHR ''a'' \<le> c \<and> c \<le> CHR ''z'' \<or>
+    CHR ''A'' \<le> c \<and> c \<le> CHR ''Z'' \<or>
+    CHR ''0'' \<le> c \<and> c \<le> CHR ''9'' \<or>
+    c \<in> set ''_&;:-''" (is "_ \<longleftrightarrow> ?rhs")
+proof (cases c)
+  case (char_of_nat n)
+  then have [simp]: "n mod 256 = n" by simp
+  have [simp]: "n > 0 \<Longrightarrow> {m..<n} = {m..n - 1}" for m n :: nat
+    by auto
+  have "is_letter c \<longleftrightarrow> c \<in> set letters"
+    by (simp add: is_letter_def)
+  also have "\<dots> \<longleftrightarrow> n \<in> set (map nat_of_char letters)"
+    by (auto intro!: image_eqI simp add: char_of_nat)
+  also have "map nat_of_char letters =
+    [97..<123] @ [65..<91] @ [95] @ [48..<58] @ [38, 59, 58, 45]" (is "_ = ?I")
+    by (simp add: letters_def)
+  also have "n \<in> set ?I \<longleftrightarrow>
+    n \<in> {97..122} \<union> {65..90} \<union> {95} \<union> {48..57} \<union> {38, 59, 58, 45}" (is "_ \<longleftrightarrow> _ \<in> ?J")
+    by (simp only: set_append set_upt) simp
+  also have "\<dots> \<longleftrightarrow> ?rhs"
+    by (auto simp add: char_of_nat Char_def less_eq_char_def)
+  finally show ?thesis .
+qed
+
 definition many_letters :: "string parser"
 where
   [simp]: "many_letters = manyof letters"
+
+lemma many_letters [code, code_unfold]:
+  "many_letters = many is_letter"
+  by (simp add: is_letter_def [abs_def] manyof_def)
 
 definition parse_name :: "string parser"
 where
@@ -174,27 +208,6 @@ where
       error (''expected letter '' @ letters @ '' but first symbol is \"'' @ take 1 s @ ''\"'')
     else return n
   }) s"
-
-definition letters_impl :: "char \<Rightarrow> bool"
-where
-  "letters_impl c \<longleftrightarrow>
-    c \<ge> CHR ''a'' \<and> c \<le> CHR ''z'' \<or>
-    c \<ge> CHR ''A'' \<and> c \<le> CHR ''Z'' \<or>
-    c \<ge> CHR ''0'' \<and> c \<le> CHR ''9'' \<or>
-    c \<in> set ''_&;:-''"
-
-lemma letters_impl [code]:
-  "c \<in> set letters \<longleftrightarrow> letters_impl c"
-proof (cases c)
-  case (Char n1 n2)
-  then show ?thesis
-    by (simp add: letters_impl_def letters_def less_eq_char_def nat_of_char_Char, cases n1)
-       (cases n2, simp_all)+
-qed
-
-lemma many_letters [code_unfold]:
-  "many_letters = many letters_impl"
-  by (simp add: letters_impl_def [abs_def] manyof_def letters_impl)
 
 lemma is_parser_parse_name [intro]:
   "is_parser parse_name"

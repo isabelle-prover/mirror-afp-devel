@@ -39,14 +39,6 @@ begin
     by intro_classes (auto simp: inj_on_def hf_of_int_def)
 end
 
-instantiation nibble :: finitary
-begin
-  definition hf_of_nibble_def: 
-    "hf_of x == hf_of (nat_of_nibble x)"
-  instance 
-    by intro_classes (auto simp: inj_on_def hf_of_nibble_def nat_of_nibble_eq_iff)
-end
-
 text{*Strings are char lists, and are not considered separately.*}
 instantiation char :: finitary
 begin

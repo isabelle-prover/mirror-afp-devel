@@ -96,7 +96,6 @@ derive (eq) ceq
   Enum.finite_5
   integer
   natural
-  nibble
   char
   String.literal
 derive ceq sum prod list option

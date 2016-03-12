@@ -114,7 +114,7 @@ subsection {* Instantiations for HOL types *}
 derive (linorder) compare_order 
   Enum.finite_1 Enum.finite_2 Enum.finite_3 natural String.literal
 derive (compare) ccompare 
-  unit bool nat int Enum.finite_1 Enum.finite_2 Enum.finite_3 integer natural nibble char String.literal
+  unit bool nat int Enum.finite_1 Enum.finite_2 Enum.finite_3 integer natural char String.literal
 derive (no) ccompare Enum.finite_4 Enum.finite_5
 
 derive ccompare sum list option prod
@@ -196,11 +196,6 @@ end
 instantiation natural :: cproper_interval begin
 definition "cproper_interval = (proper_interval :: natural proper_interval)"
 instance by intro_classes (simp add: cproper_interval_natural_def ord_defs ccompare_natural_def ID_Some proper_interval_class.axioms)
-end
-
-instantiation nibble :: cproper_interval begin
-definition "cproper_interval = (proper_interval :: nibble proper_interval)"
-instance by intro_classes (simp add: cproper_interval_nibble_def ord_defs ccompare_nibble_def ID_Some proper_interval_class.axioms)
 end
 
 instantiation char :: cproper_interval begin

@@ -229,7 +229,6 @@ derive (rbt) mapping_impl nat
 derive (mapping_RBT) mapping_impl int (* shows usage of constant names *)
 derive (assoclist) mapping_impl Enum.finite_1 Enum.finite_2 Enum.finite_3
 derive (rbt) mapping_impl integer natural
-derive (assoclist) mapping_impl nibble
 derive (rbt) mapping_impl char
 
 instantiation sum :: (mapping_impl, mapping_impl) mapping_impl begin

@@ -280,11 +280,6 @@ definition "CENUM(Enum.finite_5) = Some (enum_class.enum, enum_class.enum_all, e
 instance by(intro_classes)(auto simp add: cEnum_finite_5_def enum_UNIV enum_all_UNIV enum_ex_UNIV)
 end
 
-instantiation nibble :: cenum begin
-definition "CENUM(nibble) = Some (enum_class.enum, enum_class.enum_all, enum_class.enum_ex)"
-instance by(intro_classes)(auto simp add: cEnum_nibble_def enum_UNIV enum_all_UNIV enum_ex_UNIV)
-end
-
 instantiation char :: cenum begin
 definition "CENUM(char) = Some (enum_class.enum, enum_class.enum_all, enum_class.enum_ex)"
 instance by(intro_classes)(auto simp add: cEnum_char_def enum_UNIV enum_all_UNIV enum_ex_UNIV)

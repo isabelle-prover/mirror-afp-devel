@@ -43,6 +43,47 @@ imports Meta_META
         Parser_Toy_extended
 begin
 
+text \<open>Prelude: imitating Isabelle/HOL's traditional char representation\<close>
+
+datatype nibble = Nibble0 | Nibble1 | Nibble2 | Nibble3
+  | Nibble4 | Nibble5 | Nibble6 | Nibble7
+  | Nibble8 | Nibble9 | NibbleA | NibbleB
+  | NibbleC | NibbleD | NibbleE | NibbleF
+
+primrec integer_of_nibble :: "nibble \<Rightarrow> integer"
+where
+  "integer_of_nibble Nibble0 = 0"
+| "integer_of_nibble Nibble1 = 1"
+| "integer_of_nibble Nibble2 = 2"
+| "integer_of_nibble Nibble3 = 3"
+| "integer_of_nibble Nibble4 = 4"
+| "integer_of_nibble Nibble5 = 5"
+| "integer_of_nibble Nibble6 = 6"
+| "integer_of_nibble Nibble7 = 7"
+| "integer_of_nibble Nibble8 = 8"
+| "integer_of_nibble Nibble9 = 9"
+| "integer_of_nibble NibbleA = 10"
+| "integer_of_nibble NibbleB = 11"
+| "integer_of_nibble NibbleC = 12"
+| "integer_of_nibble NibbleD = 13"
+| "integer_of_nibble NibbleE = 14"
+| "integer_of_nibble NibbleF = 15"
+
+definition nibble_of_integer :: "integer \<Rightarrow> nibble"
+where
+  "nibble_of_integer l = [Nibble0, Nibble1, Nibble2, Nibble3,
+    Nibble4, Nibble5, Nibble6, Nibble7,
+    Nibble8, Nibble9, NibbleA, NibbleB,
+    NibbleC, NibbleD, NibbleE, NibbleF] ! (nat_of_integer (l mod 16))"
+
+definition Char :: "nibble \<Rightarrow> nibble \<Rightarrow> char"
+where
+  "Char k l = char_of_integer (integer_of_nibble k * 16 + integer_of_nibble l)"
+
+definition char_case :: "(nibble \<Rightarrow> nibble \<Rightarrow> 'a) \<Rightarrow> char \<Rightarrow> 'a"
+where
+  "char_case f c = (let l = integer_of_char c in f (nibble_of_integer (l div 16)) (nibble_of_integer (l mod 16)))"
+
 subsection\<open>Building Recursors for Records\<close> (* NOTE part to be automated *)
 
 definition "compiler_env_config_rec0 f env = f
@@ -178,8 +219,6 @@ definition "of_option a b f = rec_option
   (b Of_None)
   (ap1 a (b Of_Some) f)"
 
-(* *)
-
 definition "of_unit b = case_unit
   (b \<open>()\<close>)"
 
@@ -205,13 +244,13 @@ definition "of_nibble b = rec_nibble
   (b \<open>NibbleE\<close>)
   (b \<open>NibbleF\<close>)"
 
-definition "of_char a b = char.char
+definition "of_char a b = char_case
   (ap2 a (b \<open>Char\<close>) (of_nibble b) (of_nibble b))"
 
 definition "of_string_gen s_flatten s_st0 s_st a b s = 
   b (let s = textstr_of_str (\<lambda>c. \<open>(\<close> @@ s_flatten @@ \<open> \<close> @@ c @@ \<open>)\<close>)
-                            (\<lambda>Char n1 n2 \<Rightarrow>
-                                 s_st0 (S.flatten [\<open> (\<close>, \<open>Char \<close>, of_nibble id n1, \<open> \<close>, of_nibble id n2, \<open>)\<close>]))
+                            (char_case (\<lambda>n1 n2.
+                                 s_st0 (S.flatten [\<open> (\<close>, \<open>Char \<close>, of_nibble id n1, \<open> \<close>, of_nibble id n2, \<open>)\<close>])))
                             (\<lambda>c. s_st (S.flatten [\<open> (\<close>, c, \<open>)\<close>]))
                             s in
      S.flatten [ \<open>(\<close>, s, \<open>)\<close> ])"
@@ -259,7 +298,6 @@ lemmas [code] =
   Parse_Isabelle.Of_Cons_def
   Parse_Isabelle.Of_None_def
   Parse_Isabelle.Of_Some_def
-
   Parse_Isabelle.of_pair_def
   Parse_Isabelle.of_list_def
   Parse_Isabelle.of_option_def
@@ -312,13 +350,13 @@ definition of_bool where "of_bool b = case_bool
   (b \<open>false\<close>)"
 
 definition' \<open>sml_escape =
-  String.replace_chars (\<lambda>x. if x = Char Nibble0 NibbleA then \<open>\n\<close>
-                            else if x = Char Nibble0 Nibble5 then \<open>\005\<close>
-                            else if x = Char Nibble0 Nibble6 then \<open>\006\<close>
-                            else if x = Char Nibble7 NibbleF then \<open>\127\<close>
+  String.replace_chars (\<lambda>x. if x = CHAR 0x0A then \<open>\n\<close>
+                            else if x = CHAR 0x05 then \<open>\005\<close>
+                            else if x = CHAR 0x06 then \<open>\006\<close>
+                            else if x = CHAR 0x7F then \<open>\127\<close>
                             else \<degree>x\<degree>)\<close>
 text \<open>Because of @{theory "Code_Char"}, it is not possible of extracting
-@{term "\<lambda> Char Nibble0 NibbleA \<Rightarrow> \<open>\<close>
+@{text "\<lambda> CHAR 0x0A \<Rightarrow> \<open>\<close>
         | x \<Rightarrow> \<degree>x\<degree>"}.\<close>
 
 definition' \<open>of_string a b =

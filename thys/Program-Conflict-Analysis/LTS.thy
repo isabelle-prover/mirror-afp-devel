@@ -93,8 +93,7 @@ lemma trcl_rev_cases: "!!c c'. \<lbrakk>
     \<lbrakk>w=[]; c=c'\<rbrakk>\<Longrightarrow>P; 
     !!ch e wh. \<lbrakk> w=wh@[e]; (c,wh,ch)\<in>trcl S; (ch,e,c')\<in>S \<rbrakk>\<Longrightarrow>P 
   \<rbrakk> \<Longrightarrow> P"
-  by (induct w rule: rev_induct) (simp, blast dest: trcl_rev_uncons)
-
+  by (induct w rule: rev_induct) (auto dest: trcl_rev_uncons)
 
 lemma trcl_cons2: "\<lbrakk> (c,e,ch)\<in>T; (ch,f,c')\<in>T \<rbrakk> \<Longrightarrow> (c,[e,f],c')\<in>trcl T"
   by auto
