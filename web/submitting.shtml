@@ -28,11 +28,11 @@
 <table width="80%" class="descr">
   <tbody>
     <tr><td>
-    <p>Please send your submissions by email to <a
-href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;">&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;</a>.
+    <p>Please send your submission
+    <a href="https://ci.isabelle.systems/afp-submission/">via this web page</a>.
     </p>
 
-    <p>The submission should contain</p>
+    <p>You will need to supply the following information:</p>
     <ul>
     <li>Title, authors and abstract in plain text.</li>
     <li>A short name. It will become the directory name of the archive
@@ -54,7 +54,8 @@ href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#1
     <p>In exceptional circumstances,
     submissions for the Isabelle development version may be acceptable, but publication of the entry on
     the front page will be deferred until the next Isabelle release.
-    If you feel this is necessary for your submission, please contact the editors.</p>
+    If you feel this is necessary for your submission, please email <a
+href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;">&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;</a>.</p>
 
     <p>The submission must follow these Isabelle style guidelines:</p>
     <ul>
@@ -82,8 +83,7 @@ href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#1
         maintainers will know what to expect.</li>
     </ul>
 
-    <p>There is a <a href="submit-template">submission template</a>
-    available and an
+    <p>There is an
      <a href="entries/Example-Submission.shtml">example submission</a>
     that contains further information.</p>
 
@@ -98,8 +98,8 @@ href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#1
     development team will assist with maintenance, but it does not have the
     resources to fully maintain the complete archive.</p>
 
-    <p>If you have questions regarding your submission please contact the <a
-       href="about.shtml#editors">editors</a>.
+    <p>If you have questions regarding your submission, please email <a
+href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;">&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;</a>.
       If you need help with Isabelle, please use the
 <a href="mailto:isabelle-users@cl.cam.ac.uk">isabelle-users@cl.cam.ac.uk</a>
       mailing list. It is always a good idea to <a
