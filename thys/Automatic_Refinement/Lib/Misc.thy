@@ -631,7 +631,6 @@ subsubsection {* Union, difference and intersection *}
 
   lemma mset_neutral_cancel2[simp]: "(c=n+c) = (n={#})" "(c=c+n) = (n={#})"
     apply (auto simp add: union_ac)
-    apply (subgoal_tac "c+n=c", simp_all)+
     done
 
 

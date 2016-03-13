@@ -215,11 +215,7 @@ subsubsection {* Union, difference and intersection *}
   declare mset_neutral_cancel1[simp]
 
   lemma mset_neutral_cancel2[simp]: "(c=n+c) = (n={#})" "(c=c+n) = (n={#})"
-    apply (auto simp add: union_ac)
-    apply (subgoal_tac "c+n=c", simp_all)+
-    done
-
-
+    by (auto simp add: union_ac)
 
   (* TODO: The proof seems too complicated, there should be an easier one ! *)
   lemma mset_union_2_elem: "{#a#}+{#b#} = M + {#c#} \<Longrightarrow> {#a#}=M & b=c | a=c & {#b#}=M" 
