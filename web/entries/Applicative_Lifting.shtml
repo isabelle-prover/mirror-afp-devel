@@ -52,6 +52,12 @@ We declare several types from the Isabelle library as applicative functors and i
 </p>
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2016-03-03]: added formalisation of lifting with combinators<br>
+        </td></tr>
+
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Applicative_Lifting-AFP,
