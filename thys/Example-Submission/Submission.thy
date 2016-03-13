@@ -19,23 +19,9 @@ text {*
 section "Format of a submission"
 
 text {*
-  Submission should be by email to \texttt{afp-submit at in.tum.de} and contain
-  the following:
-  \begin{itemize}
-  \item Title, authors, and abstract.
-  The abstract should be in plain text or plain html (no images/styles).
-  \item A short name that will become the directory name of the
-  submission.
-  \item The Isabelle theories: a tar.gz file with the theory files,
-  a ROOT file, and a document directory. 
-  The theories should work with the current release of Isabelle. 
-  Each theory file should include a header comment like the one 
-  in this theory.
-  \item A statement whether you would like to release your submission
-  under the BSD or the LGPL license.
-  \end{itemize}
+  Submission should be via the web page @{url "https://ci.isabelle.systems/afp-submission/"}.
 
-  The submission of the example you are reading is at
+  The tar file submission of the example you are reading is at
   @{url "http://afp.sf.net/release/afp-Example-Submission-current.tar.gz"}.
 *}
 
