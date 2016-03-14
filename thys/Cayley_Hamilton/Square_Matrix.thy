@@ -3,7 +3,7 @@
 
 theory Square_Matrix
 imports
-  Multivariate_Analysis
+  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
 begin
 
 lemma smult_axis: "x *s axis i y = axis i (x * y::_::mult_zero)"
