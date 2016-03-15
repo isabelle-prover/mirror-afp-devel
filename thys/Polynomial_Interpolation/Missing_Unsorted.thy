@@ -44,7 +44,7 @@ proof (rule ccontr)
   from c have cc: "cc > 0" unfolding cc_def by simp
   def bbb \<equiv> "bb - 1"
   have id: "bb = 1 + bbb" and bbb: "bbb > 0" and bm1: "bbb \<ge> -1" unfolding bbb_def using bb by auto
-  have "\<exists> n. cc / bbb < of_nat n" by (rule ex_less_of_nat)
+  have "\<exists> n. cc / bbb < of_nat n" by (rule reals_Archimedean2)
   then obtain n where lt: "cc / bbb < of_nat n" by auto
   from not have "\<not> b ^ n \<le> c" by auto
   hence bnc: "b ^ n > c" by simp
