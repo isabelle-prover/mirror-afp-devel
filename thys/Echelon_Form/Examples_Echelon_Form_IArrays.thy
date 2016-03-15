@@ -122,8 +122,24 @@ value "the (matrix_to_iarray_option (inverse_matrix (mat 1::int^20^20)))"
 
 value "the (matrix_to_iarray_option (inverse_matrix (mat 1::int^20^20))) = matrix_to_iarray (mat 1::int^20^20)"
 
-export_code charpoly det echelon_form_of test_int_8x8 test_int_20x20
-  in SML module_name Echelon
+
+definition "print_echelon_int (A::int^20^20) = echelon_form_of_iarrays (matrix_to_iarray A) euclid_ext2"
+
+text{*Performance is better when code is exported. In addition, it depends on the growth of 
+the integer coefficients of the matrices. For instance, @{text "test_int_20x20"}
+is a matrix of integer numbers between $-10$ and $10$. The computation of its echelon form (by means
+of @{text "print_echelon_int"}) needs about 2 seconds. However, the matrix @{text "test_int_20x20_2"}
+has elements between $0$ and $1010$. The computation of its echelon form (by means
+of @{text "print_echelon_int"} too) needs about 0.310 seconds. These benchmarks have been carried
+out in a laptop with an i5-3360M processor with 4 GB of RAM.*}
+
+export_code charpoly det echelon_form_of test_int_8x8 test_int_20x20 test_int_20x20_2 print_echelon_int
+  in SML module_name Echelon (*file "Echelon.sml"*)
+
+(*
+  PolyML.use "Echelon.sml"; open Echelon; open Timer; 
+  let val now=startCPUTimer (); in print_echelon_int (test_int_20x20); checkCPUTimes (now) end;
+*)
 
 (*Analogously, code can be exported to Haskell using the file Code_Rational presented in the
   Gauss-Jordan AFP entry.*)
