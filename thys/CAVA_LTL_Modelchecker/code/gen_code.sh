@@ -8,4 +8,4 @@ esac
 
 cd ..
 
-isabelle process -e 'use_thy "CAVA_Code";' -q $l
+isabelle process -e 'use_thy "CAVA_Code";' -q -l $l
