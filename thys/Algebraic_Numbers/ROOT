@@ -2,7 +2,7 @@ chapter AFP
 
 session Algebraic_Numbers (AFP) = Pre_Algebraic_Numbers +
   description {* Algebraic Numbers *}
-  options [timeout = 600]
+  options [timeout = 1200]
   theories
     "Missing_Multiset"
     "Missing_List"
@@ -29,7 +29,7 @@ session Algebraic_Numbers (AFP) = Pre_Algebraic_Numbers +
 
 session Pre_Algebraic_Numbers (AFP) = "Polynomial_Factorization" +
   description {* Theories from other AFP-entries and Extended Theories for Matrices *}
-  options [timeout = 600, document = false]
+  options [timeout = 1200, document = false]
   theories
     "../Deriving/Comparator_Generator/Compare_Rat"
     "../Deriving/Comparator_Generator/Compare_Real"
