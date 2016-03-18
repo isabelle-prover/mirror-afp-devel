@@ -7,7 +7,7 @@ section {* Extended natural numbers as a codatatype *}
 
 theory Coinductive_Nat imports
   "~~/src/HOL/Library/Extended_Nat"
-  Complete_Partial_Order2
+  "~~/src/HOL/Library/Complete_Partial_Order2"
 begin
 
 lemma inj_enat [simp]: "inj_on enat A"
