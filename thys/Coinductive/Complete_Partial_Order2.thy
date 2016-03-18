@@ -353,7 +353,7 @@ ML {*
    the remaining of the emerging subgoals with simp *)
 fun cont_intro_tac ctxt =
   REPEAT_ALL_NEW (resolve_tac ctxt (rev (Named_Theorems.get ctxt @{named_theorems cont_intro})))
-  THEN_ALL_NEW (simp_tac ctxt)
+  THEN_ALL_NEW (SOLVED' (simp_tac ctxt))
 
 fun cont_intro_simproc ctxt ct =
   let
@@ -880,13 +880,12 @@ lemma admissible_leI:
   shows "ccpo.admissible luba orda (\<lambda>x. f x \<sqsubseteq> g x)"
 using assms by(rule ccpo.admissible_leI)
 
+declare ccpo_class.admissible_leI[cont_intro]
+
 context ccpo begin
 
 lemma admissible_not_below: "ccpo.admissible Sup op \<le> (\<lambda>x. \<not> op \<le> x y)"
 by(rule ccpo.admissibleI)(simp add: ccpo_Sup_below_iff)
-
-(*lemmas [cont_intro] =
-  admissible_leI[where luba=Sup and orda="op \<le>"]*)
 
 end
 
@@ -896,7 +895,7 @@ by(unfold_locales)(auto simp add: mk_less_def intro: order_trans)
 context partial_function_definitions begin
 
 lemmas [cont_intro, simp] =
-  admissible_leI[OF Partial_Function.ccpo[OF partial_function_definitions_axioms], where luba=lub_fun and orda=le_fun]
+  admissible_leI[OF Partial_Function.ccpo[OF partial_function_definitions_axioms]]
   ccpo.admissible_not_below[THEN admissible_subst, OF Partial_Function.ccpo[OF partial_function_definitions_axioms]]
 
 end
@@ -1406,6 +1405,8 @@ by(best intro: ccpo.mcont2mcont'[OF complete_lattice_ccpo] mcont_sup1 mcont_sup2
 
 end
 
+lemmas [cont_intro] = admissible_leI[OF complete_lattice_ccpo']
+
 context complete_distrib_lattice begin
 
 lemma mcont_inf1: "mcont Sup op \<le> Sup op \<le> (\<lambda>y. x \<sqinter> y)"
@@ -1697,5 +1698,11 @@ lemma mcont2mcont_snd [cont_intro, simp]:
   "mcont lub ord (prod_lub luba lubb) (rel_prod orda ordb) t
   \<Longrightarrow> mcont lub ord lubb ordb (\<lambda>x. snd (t x))"
 by(auto intro!: mcontI monotoneI contI dest: mcont_monoD mcont_contD simp add: rel_prod_sel split_beta prod_lub_def image_image)
+
+context partial_function_definitions begin
+text \<open>Specialised versions of @{thm [source] mcont_call} for admissibility proofs for parallel fixpoint inductions\<close>
+lemmas mcont_call_fst [cont_intro] = mcont_call[THEN mcont2mcont, OF mcont_fst]
+lemmas mcont_call_snd [cont_intro] = mcont_call[THEN mcont2mcont, OF mcont_snd]
+end
 
 end

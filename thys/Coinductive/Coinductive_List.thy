@@ -697,6 +697,8 @@ qed
 lemma llist_ccpo [simp, cont_intro]: "class.ccpo lSup op \<sqsubseteq> (mk_less op \<sqsubseteq>)"
 by(unfold_locales)(auto dest: lprefix_antisym intro: lprefix_trans chain_lprefix_lSup chain_lSup_lprefix simp add: mk_less_def)
 
+lemmas [cont_intro] = ccpo.admissible_leI[OF llist_ccpo]
+
 lemma llist_partial_function_definitions:
   "partial_function_definitions op \<sqsubseteq> lSup"
 by(unfold_locales)(auto dest: lprefix_antisym intro: lprefix_trans chain_lprefix_lSup chain_lSup_lprefix)
@@ -910,10 +912,6 @@ by(cases "Y = {}")(simp_all add: mcont_lset[THEN mcont_contD])
 
 lemma lfinite_lSupD: "lfinite (lSup A) \<Longrightarrow> \<forall>xs \<in> A. lfinite xs"
 by(induct ys\<equiv>"lSup A" arbitrary: A rule: lfinite_induct) fastforce+
-
-lemmas [cont_intro, simp] =
-  admissible_leI[OF complete_lattice_ccpo', where luba=lSup and orda="op \<sqsubseteq>"]
-  admissible_leI[OF complete_lattice_ccpo', where luba=llist.lub_fun and orda=llist.le_fun]
 
 lemma monotone_enat_le_lprefix_case [cont_intro, simp]:
   "monotone op \<le> op \<sqsubseteq> (\<lambda>x. f x (eSuc x)) \<Longrightarrow> monotone op \<le> op \<sqsubseteq> (\<lambda>x. case x of 0 \<Rightarrow> LNil | eSuc x' \<Rightarrow> f x' x)"
@@ -2233,7 +2231,6 @@ lemma ltake_enat_lprefix_imp_lprefix:
   assumes "\<And>n. lprefix (ltake (enat n) xs) (ltake (enat n) ys)"
   shows "lprefix xs ys"
 proof -
-  note [cont_intro] = ccpo.admissible_leI[OF llist_ccpo]
   have "ccpo.admissible Sup op \<le> (\<lambda>n. ltake n xs \<sqsubseteq> ltake n ys)" by simp
   hence "ltake (Sup (range enat)) xs \<sqsubseteq> ltake (Sup (range enat)) ys"
     by(rule ccpo.admissibleD)(auto intro: assms)
