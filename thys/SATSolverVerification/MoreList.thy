@@ -1166,13 +1166,10 @@ definition
 "multiset_le a b r == a = b \<or> (a, b) \<in> mult r"
 
 lemma multisetEmptyLeI:
-assumes
-"trans r"
-shows
-"multiset_le {#} a r"
+  "multiset_le {#} a r"
 unfolding multiset_le_def
 using assms
-using one_step_implies_mult[of "r" "a" "{#}" "{#}"]
+using one_step_implies_mult[of "a" "{#}" r "{#}"]
 by auto
 
 lemma multisetUnionLessMono2:
@@ -1256,7 +1253,7 @@ next
   case (Cons x a')
   thus ?case
     using assms
-    using multisetEmptyLeI[of "r" "{#x#}"]
+    using multisetEmptyLeI[of "{#x#}" "r"]
     using multisetUnionLeMono[of "r" "mset (list_diff a' b)" "mset a'" "{#}" "{#x#}"]
     using multisetUnionLeMono1[of "r" "mset (list_diff a' b)" "mset a'" "{#x#}"]
     by auto
