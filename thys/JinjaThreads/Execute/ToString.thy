@@ -261,7 +261,7 @@ end
 instantiation rbt :: ("{toString,linorder}", toString) toString begin
 definition [code]: 
   "toString (t :: ('a, 'b) rbt) = 
-   Auxiliary.concat (list_toString (STR [CHAR 0x2C, CHAR 0x0A]) (rm_to_list t))"
+   Auxiliary.concat (list_toString (STR [CHR 0x2C, CHR 0x0A]) (rm_to_list t))"
 instance proof qed
 end
 

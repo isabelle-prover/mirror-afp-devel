@@ -201,7 +201,7 @@ lemmas [code] =
 
 subsection\<open>Operations on Char\<close>
 
-definition "char_escape = CHAR 0x09"
+definition "char_escape = CHR 0x09"
 definition "ST0 c = \<lless>[c]\<ggreater>"
 definition "ST0_base c = ST' [c]"
 
@@ -282,7 +282,7 @@ subsection\<open>Operations on String (II)\<close>
 
 definition "wildcard = \<open>_\<close>"
 
-definition "nat_raw_to_str = L.map (\<lambda>i. char_of_nat (nat_of_char (CHAR 0x30) + i))"
+definition "nat_raw_to_str = L.map (\<lambda>i. char_of_nat (nat_of_char (CHR 0x30) + i))"
 context String
 begin
 definition "lowercase = map (\<lambda>c. let n = nat_of_char c in if n < 97 then char_of_nat (n + 32) else c)"
@@ -352,9 +352,9 @@ definition "textstr_of_str f_flatten f_char f_str str =
   else
     f_flatten (S.flatten [ \<open>(\<close>, str, \<open>)\<close> ]))"
 
-definition' \<open>escape_sml = String.replace_chars (\<lambda>x. if x = CHAR 0x22 then \<open>\"\<close> else \<degree>x\<degree>)\<close>
+definition' \<open>escape_sml = String.replace_chars (\<lambda>x. if x = CHR 0x22 then \<open>\"\<close> else \<degree>x\<degree>)\<close>
 text \<open>Because of @{theory "Code_Char"}, it is not possible of extracting
-@{term "\<lambda>c. if c = CHAR 0x22 then \<open>\"\<close> else \<degree>c\<degree>"}.\<close>
+@{term "\<lambda>c. if c = CHR 0x22 then \<open>\"\<close> else \<degree>c\<degree>"}.\<close>
 definition "mk_constr_name name = (\<lambda> x. S.flatten [String.isub name, \<open>_\<close>, String.isub x])"
 definition "mk_dot s1 s2 = S.flatten [\<open>.\<close>, s1, s2]"
 definition "mk_dot_par_gen dot l_s = S.flatten [dot, \<open>(\<close>, case l_s of [] \<Rightarrow> \<open>\<close> | x # xs \<Rightarrow> S.flatten [x, S.flatten (L.map (\<lambda>s. \<open>, \<close> @@ s) xs) ], \<open>)\<close>]"

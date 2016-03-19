@@ -2160,7 +2160,7 @@ instantiation char :: proper_interval begin
 fun proper_interval_char :: "char proper_interval" where
   "proper_interval_char None None \<longleftrightarrow> True"
 | "proper_interval_char None (Some x) \<longleftrightarrow> x \<noteq> 0"
-| "proper_interval_char (Some x) None \<longleftrightarrow> x \<noteq> CHAR 0xFF"
+| "proper_interval_char (Some x) None \<longleftrightarrow> x \<noteq> CHR 0xFF"
 | "proper_interval_char (Some x) (Some y) \<longleftrightarrow> nat_of_char y - nat_of_char x > 1"
 instance
 proof intro_classes
@@ -2177,14 +2177,14 @@ proof intro_classes
     by auto
 
   fix x :: char
-  { assume "x \<noteq> CHAR 0xFF"
-    then have "x < CHAR 0xFF"
+  { assume "x \<noteq> CHR 0xFF"
+    then have "x < CHR 0xFF"
       by (auto simp add: neq_iff char_less_iff_nat_of_char)
         (insert nat_of_char_less_256 [of x], simp)
     hence "\<exists>z. x < z" .. }
   moreover
   { fix z :: char
-    assume "CHAR 0xFF < z"
+    assume "CHR 0xFF < z"
     hence "False"
       by (simp add: char_less_iff_nat_of_char)
         (insert nat_of_char_less_256 [of z], simp) }

@@ -350,13 +350,13 @@ definition of_bool where "of_bool b = case_bool
   (b \<open>false\<close>)"
 
 definition' \<open>sml_escape =
-  String.replace_chars (\<lambda>x. if x = CHAR 0x0A then \<open>\n\<close>
-                            else if x = CHAR 0x05 then \<open>\005\<close>
-                            else if x = CHAR 0x06 then \<open>\006\<close>
-                            else if x = CHAR 0x7F then \<open>\127\<close>
+  String.replace_chars (\<lambda>x. if x = CHR 0x0A then \<open>\n\<close>
+                            else if x = CHR 0x05 then \<open>\005\<close>
+                            else if x = CHR 0x06 then \<open>\006\<close>
+                            else if x = CHR 0x7F then \<open>\127\<close>
                             else \<degree>x\<degree>)\<close>
 text \<open>Because of @{theory "Code_Char"}, it is not possible of extracting
-@{text "\<lambda> CHAR 0x0A \<Rightarrow> \<open>\<close>
+@{text "\<lambda> CHR 0x0A \<Rightarrow> \<open>\<close>
         | x \<Rightarrow> \<degree>x\<degree>"}.\<close>
 
 definition' \<open>of_string a b =
