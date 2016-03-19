@@ -454,7 +454,7 @@ proof -
   ultimately have "\<forall>x\<in>set_mset (ms_of_greek (as @ b' @ cs @ a' @ bs) - {#(?A,[])#}).
     \<exists>y\<in>set_mset (ms_of_greek [?A,?B] - {#(?A,[])#}). (x, y) \<in> letter_less r <*lex*> greek_less r"
   unfolding msog_append by (auto simp: a' msog_append ac_simps * adj_msog_single)
-  from one_step_implies_mult[OF *** ** this,of "{#(?A,[])#}"]
+  from one_step_implies_mult[OF ** this,of "{#(?A,[])#}"]
   have "(ms_of_greek (as @ b' @ cs @ a' @ bs), ms_of_greek [?A,?B]) \<in> mult (letter_less r <*lex*> greek_less r)"
   unfolding a' msog_append by (auto simp: a' ac_simps * adj_msog_single)
   then show ?thesis
