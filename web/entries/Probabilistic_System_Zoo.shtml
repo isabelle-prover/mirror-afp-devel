@@ -111,7 +111,10 @@ This work is described in detail in the ITP 2015 publication by the authors.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-05-28.tar.gz">afp-<!--#echo var="name" -->-2015-05-28.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

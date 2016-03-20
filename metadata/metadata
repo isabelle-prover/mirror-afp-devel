@@ -2523,6 +2523,19 @@ abstract =
  CAVA Automata Library, Isabelle Workshop 2014.
 depends-on = Collections
 
+[LTL]
+title = Linear Temporal Logic
+author = Salomon Sickert <https://www7.in.tum.de/~sickert>
+date = 2016-03-01
+topic = Logic, Computer Science/Automata and Formal Languages
+abstract =
+  This theory provides a formalisation of linear temporal logic (LTL)
+  and unifies previous formalisations within the AFP. This entry
+  establishes syntax and semantics for this logic and decouples it from
+  existing entries, yielding a common environment for theories reasoning
+  about LTL. Furthermore a parser written in SML and an executable
+  simplifier are provided.
+
 [LTL_to_GBA]
 title = Converting Linear-Time Temporal Logic to Generalized Büchi Automata
 author = Alexander Schimpf <mailto:schimpfa@informatik.uni-freiburg.de>, Peter Lammich <http://www21.in.tum.de/~lammich>
@@ -3195,14 +3208,14 @@ abstract =
  <li>An executable implementation of all the theory.</li>
  <li>Examples, ranging from an aircraft cabin data network to the analysis
   of a large real-world firewall.</li>
- <li>More examples: A fully automated translation of high-level security goals to both 
+ <li>More examples: A fully automated translation of high-level security goals to both
  firewall and SDN configurations (see Examples/Distributed_WebApp.thy).</li>
  </ul>
  For a detailed description, see
  <ul>
- <li>C. Diekmann, A. Korsten, and G. Carle. 
-  <a href="http://www.net.in.tum.de/fileadmin/bibtex/publications/papers/diekmann2015mansdnnfv.pdf">Demonstrating 
-  topoS: Theorem-prover-based synthesis of secure network configurations.</a> 
+ <li>C. Diekmann, A. Korsten, and G. Carle.
+  <a href="http://www.net.in.tum.de/fileadmin/bibtex/publications/papers/diekmann2015mansdnnfv.pdf">Demonstrating
+  topoS: Theorem-prover-based synthesis of secure network configurations.</a>
   In 2nd International Workshop on Management of SDN and NFV Systems, manSDN/NFV, Barcelona, Spain, November 2015.</li>
  <li>C. Diekmann, S.-A. Posselt, H. Niedermayer, H. Kinkelin, O. Hanka, and G. Carle.
   <a href="http://www.net.in.tum.de/pub/diekmann/forte14.pdf">Verifying Security Policies using Host Attributes.</a>
@@ -3272,6 +3285,20 @@ abstract = This article contains a formalisation of the Akra-Bazzi method
  included. For a more detailed explanation of the formalisation and the
  proof methods, see the accompanying paper (publication forthcoming).
 depends-on = Landau_Symbols
+
+[Cartan_FP]
+title = The Cartan Fixed Point Theorems
+author = Lawrence Paulson <http://www.cl.cam.ac.uk/~lp15/>
+date = 2016-03-08
+topic = Mathematics/Analysis
+abstract =
+  The Cartan fixed point theorems concern the group of holomorphic
+  automorphisms on a connected open set of C<sup>n</sup>. Ciolli et al.
+  have formalised the one-dimensional case of these theorems in HOL
+  Light. This entry contains their proofs, ported to Isabelle/HOL.  Thus
+  it addresses the authors' remark that "it would be important to write
+  a formal proof in a language that can be read by both humans and
+  machines".
 
 [Gauss_Jordan]
 title = Gauss-Jordan Algorithm and Its Applications
@@ -3393,6 +3420,34 @@ abstract = Recently, Javier Esparza and Jan Kretinsky proposed a new method dire
 extra-history =
  Change history: [2015-09-23]: Enable code export for the eager unfolding optimisation and reduce running time of the generated tool. Moreover, add support for the mlton SML compiler.
 
+[Timed_Automata]
+title = Timed Automata
+author = Simon Wimmer <http://in.tum.de/~wimmers>
+date = 2016-03-08
+topic = Computer Science/Automata and Formal Languages
+abstract =
+  Timed automata are a widely used formalism for modeling real-time
+  systems, which is employed  in a class of successful model checkers
+  such as UPPAAL [LPY97], HyTech [HHWt97] or Kronos [Yov97].  This work
+  formalizes the theory for the subclass of diagonal-free timed
+  automata,  which is sufficient to model many interesting problems.  We
+  first define the basic concepts and semantics of diagonal-free timed
+  automata.  Based on this, we prove two types of decidability results
+  for the language emptiness problem.    The first is the classic result
+  of Alur and Dill [AD90, AD94],  which uses a finite partitioning of
+  the state space into so-called `regions`.    Our second result focuses
+  on an approach based on `Difference Bound Matrices (DBMs)`,  which is
+  practically used by model checkers.  We prove the correctness of the
+  basic forward analysis operations on DBMs.  One of these operations is
+  the Floyd-Warshall algorithm for the all-pairs shortest paths problem.
+  To obtain a finite search space, a widening operation has to be used
+  for this kind of analysis.  We use Patricia Bouyer's [Bou04] approach
+  to prove that this widening operation  is correct in the sense that
+  DBM-based forward analysis in combination with the widening operation
+  also decides language emptiness. The interesting property of this
+  proof is that the first  decidability result is reused to obtain the
+  second one.
+
 [Parity_Game]
 title = Positional Determinacy of Parity Games
 author = Christoph Dittmann <http://logic.las.tu-berlin.de/Members/Dittmann/>
@@ -3500,7 +3555,7 @@ abstract =
  we derive an efficient factorization algorithm for the integer polynomials,
  which is then lifted for rational polynomials by mechanizing Gauss' lemma.
  Finally, we assembled a combined factorization algorithm for rational polynomials,
- which combines all the mentioned algorithms and additionally uses the explicit formula for roots 
+ which combines all the mentioned algorithms and additionally uses the explicit formula for roots
  of quadratic polynomials and a rational root test.
  <p>
  As side products, we developed division algorithms for polynomials over integral domains,
@@ -3530,3 +3585,38 @@ abstract =
  algorithm of the <a href="http://dx.doi.org/10.1145/2579080">CompCertSSA
  project</a> with it.
 depends-on = Slicing, Dijkstra_Shortest_Path
+
+[PropResPI]
+title = Propositional Resolution and Prime Implicates Generation
+author = Nicolas Peltier <http://membres-lig.imag.fr/peltier/>
+date = 2016-03-11
+topic = Logic
+abstract =
+  We provide formal proofs in Isabelle-HOL (using mostly structured Isar
+  proofs) of the soundness and completeness of the Resolution rule in
+  propositional logic.  The completeness proofs take into account the
+  usual redundancy elimination rules (tautology elimination and
+  subsumption), and several refinements of the Resolution rule are
+  considered: ordered resolution (with selection functions), positive
+  and negative resolution, semantic resolution and unit resolution (the
+  latter refinement is complete only for clause sets that are Horn-
+  renamable). We also define a concrete procedure for computing
+  saturated sets and establish its soundness and completeness. The
+  clause sets are not assumed to be finite, so that the results can be
+  applied to formulas obtained by grounding sets of first-order clauses
+  (however, a total ordering among atoms is assumed to be given).
+  Next, we show that the unrestricted Resolution rule is deductive-
+  complete, in the sense that it is able to generate all  (prime)
+  implicates of any set of propositional clauses (i.e., all entailment-
+  minimal, non-valid, clausal consequences of the considered set). The
+  generation of prime implicates is an important problem, with many
+  applications in artificial intelligence and verification (for
+  abductive reasoning, knowledge compilation, diagnosis, debugging
+  etc.). We also show that implicates can be computed in an incremental
+  way, by fixing an ordering among all the atoms in the considered sets
+  and resolving upon these atoms one by one in the considered order
+  (with no backtracking). This feature is critical for the efficient
+  computation of prime implicates. Building on these results, we provide
+  a procedure for computing such implicates and establish its soundness
+  and completeness.
+

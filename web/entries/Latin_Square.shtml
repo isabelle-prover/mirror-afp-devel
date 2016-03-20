@@ -105,7 +105,10 @@ A Latin Square is a n x n table filled with integers from 1 to n where each numb
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-None    </td></tr>
+<ul>
+<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-12-03.tar.gz">afp-<!--#echo var="name" -->-2015-12-03.tar.gz</a></li>
+
+</ul>    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->

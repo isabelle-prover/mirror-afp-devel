@@ -24,6 +24,7 @@ BytecodeLogicJmlTypes
 Card_Number_Partitions
 CCS
 Call_Arity
+Cartan_FP
 Case_Labeling
 Category
 Category2
@@ -140,6 +141,7 @@ List_Update
 Lifting_Definition_Option
 Locally-Nameless-Sigma
 Lower_Semicontinuous
+LTL
 LTL_to_DRA
 LTL_to_GBA
 Markov_Models
@@ -187,6 +189,7 @@ Probabilistic_Noninterference
 Probabilistic_System_Zoo
 Program-Conflict-Analysis
 Promela
+PropResPI
 PseudoHoops
 Psi_Calculi
 QR_Decomposition
@@ -239,6 +242,7 @@ SumSquares
 TLA
 Tail_Recursive_Functions
 Tarskis_Geometry
+Timed_Automata
 Topology
 TortoiseHare
 Transitive-Closure
