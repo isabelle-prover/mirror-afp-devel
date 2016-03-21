@@ -282,7 +282,6 @@ subsection\<open>Operations on String (II)\<close>
 
 definition "wildcard = \<open>_\<close>"
 
-definition "nat_raw_to_str = L.map (\<lambda>i. char_of_nat (nat_of_char (CHR 0x30) + i))"
 context String
 begin
 definition "lowercase = map (\<lambda>c. let n = nat_of_char c in if n < 97 then char_of_nat (n + 32) else c)"
@@ -290,8 +289,15 @@ definition "uppercase = map (\<lambda>c. let n = nat_of_char c in if n < 97 then
 definition "to_bold_number = replace_chars (\<lambda>c. [\<open>\<zero>\<close>, \<open>\<one>\<close>, \<open>\<two>\<close>, \<open>\<three>\<close>, \<open>\<four>\<close>, \<open>\<five>\<close>, \<open>\<six>\<close>, \<open>\<seven>\<close>, \<open>\<eight>\<close>, \<open>\<nine>\<close>] ! (nat_of_char c - 48))"
 fun of_nat_aux where
    "of_nat_aux l (n :: Nat.nat) = (if n < 10 then n # l else of_nat_aux (n mod 10 # l) (n div 10))"
-definition of_nat where "of_nat n = \<lless>nat_raw_to_str (of_nat_aux [] n)\<ggreater>"
+definition of_nat where "of_nat n = 
+ (let nat_raw_to_str = L.map (\<lambda>i. char_of_nat (nat_of_char (CHR 0x30) + i)) in
+  \<lless>nat_raw_to_str (of_nat_aux [] n)\<ggreater>)"
 definition "of_natural = of_nat o nat_of_natural"
+definition "char_to_digit16 c = 
+  (let n = nat_of_char c
+   ; f = nth [CHR ''0'', CHR ''1'', CHR ''2'', CHR ''3'', CHR ''4'', CHR ''5'', CHR ''6'', CHR ''7'',
+              CHR ''8'', CHR ''9'', CHR ''A'', CHR ''B'', CHR ''C'', CHR ''D'', CHR ''E'', CHR ''F''] in
+   \<lless>[f (n div 16), f (n mod 16)]\<ggreater>)"
 end
 lemmas [code] =
   (*def*)
@@ -300,6 +306,7 @@ lemmas [code] =
   String.to_bold_number_def
   String.of_nat_def
   String.of_natural_def
+  String.char_to_digit16_def
 
   (*fun*)
   String.of_nat_aux.simps

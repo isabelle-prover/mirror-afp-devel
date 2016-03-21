@@ -43,47 +43,6 @@ imports Meta_META
         Parser_Toy_extended
 begin
 
-text \<open>Prelude: imitating Isabelle/HOL's traditional char representation\<close>
-
-datatype nibble = Nibble0 | Nibble1 | Nibble2 | Nibble3
-  | Nibble4 | Nibble5 | Nibble6 | Nibble7
-  | Nibble8 | Nibble9 | NibbleA | NibbleB
-  | NibbleC | NibbleD | NibbleE | NibbleF
-
-primrec integer_of_nibble :: "nibble \<Rightarrow> integer"
-where
-  "integer_of_nibble Nibble0 = 0"
-| "integer_of_nibble Nibble1 = 1"
-| "integer_of_nibble Nibble2 = 2"
-| "integer_of_nibble Nibble3 = 3"
-| "integer_of_nibble Nibble4 = 4"
-| "integer_of_nibble Nibble5 = 5"
-| "integer_of_nibble Nibble6 = 6"
-| "integer_of_nibble Nibble7 = 7"
-| "integer_of_nibble Nibble8 = 8"
-| "integer_of_nibble Nibble9 = 9"
-| "integer_of_nibble NibbleA = 10"
-| "integer_of_nibble NibbleB = 11"
-| "integer_of_nibble NibbleC = 12"
-| "integer_of_nibble NibbleD = 13"
-| "integer_of_nibble NibbleE = 14"
-| "integer_of_nibble NibbleF = 15"
-
-definition nibble_of_integer :: "integer \<Rightarrow> nibble"
-where
-  "nibble_of_integer l = [Nibble0, Nibble1, Nibble2, Nibble3,
-    Nibble4, Nibble5, Nibble6, Nibble7,
-    Nibble8, Nibble9, NibbleA, NibbleB,
-    NibbleC, NibbleD, NibbleE, NibbleF] ! (nat_of_integer (l mod 16))"
-
-definition Char :: "nibble \<Rightarrow> nibble \<Rightarrow> char"
-where
-  "Char k l = char_of_integer (integer_of_nibble k * 16 + integer_of_nibble l)"
-
-definition char_case :: "(nibble \<Rightarrow> nibble \<Rightarrow> 'a) \<Rightarrow> char \<Rightarrow> 'a"
-where
-  "char_case f c = (let l = integer_of_char c in f (nibble_of_integer (l div 16)) (nibble_of_integer (l mod 16)))"
-
 subsection\<open>Building Recursors for Records\<close> (* NOTE part to be automated *)
 
 definition "compiler_env_config_rec0 f env = f
@@ -206,7 +165,7 @@ definition "Of_Cons = \<open>Cons\<close>"
 definition "Of_None = \<open>None\<close>"
 definition "Of_Some = \<open>Some\<close>"
 
-(* *)
+(* recursor types *)
 
 definition "of_pair a b f1 f2 = (\<lambda>f. \<lambda>(c, d) \<Rightarrow> f c d)
   (ap2 a (b Of_Pair) f1 f2)"
@@ -219,6 +178,8 @@ definition "of_option a b f = rec_option
   (b Of_None)
   (ap1 a (b Of_Some) f)"
 
+(* ground types *)
+
 definition "of_unit b = case_unit
   (b \<open>()\<close>)"
 
@@ -226,31 +187,10 @@ definition of_bool where "of_bool b = case_bool
   (b \<open>True\<close>)
   (b \<open>False\<close>)"
 
-definition "of_nibble b = rec_nibble
-  (b \<open>Nibble0\<close>)
-  (b \<open>Nibble1\<close>)
-  (b \<open>Nibble2\<close>)
-  (b \<open>Nibble3\<close>)
-  (b \<open>Nibble4\<close>)
-  (b \<open>Nibble5\<close>)
-  (b \<open>Nibble6\<close>)
-  (b \<open>Nibble7\<close>)
-  (b \<open>Nibble8\<close>)
-  (b \<open>Nibble9\<close>)
-  (b \<open>NibbleA\<close>)
-  (b \<open>NibbleB\<close>)
-  (b \<open>NibbleC\<close>)
-  (b \<open>NibbleD\<close>)
-  (b \<open>NibbleE\<close>)
-  (b \<open>NibbleF\<close>)"
-
-definition "of_char a b = char_case
-  (ap2 a (b \<open>Char\<close>) (of_nibble b) (of_nibble b))"
-
 definition "of_string_gen s_flatten s_st0 s_st a b s = 
   b (let s = textstr_of_str (\<lambda>c. \<open>(\<close> @@ s_flatten @@ \<open> \<close> @@ c @@ \<open>)\<close>)
-                            (char_case (\<lambda>n1 n2.
-                                 s_st0 (S.flatten [\<open> (\<close>, \<open>Char \<close>, of_nibble id n1, \<open> \<close>, of_nibble id n2, \<open>)\<close>])))
+                            (\<lambda>c \<Rightarrow>
+                                 s_st0 (S.flatten [\<open> (\<close>, \<open>CHR 0x\<close>, String.char_to_digit16 c, \<open>)\<close>]))
                             (\<lambda>c. s_st (S.flatten [\<open> (\<close>, c, \<open>)\<close>]))
                             s in
      S.flatten [ \<open>(\<close>, s, \<open>)\<close> ])"
@@ -303,8 +243,6 @@ lemmas [code] =
   Parse_Isabelle.of_option_def
   Parse_Isabelle.of_unit_def
   Parse_Isabelle.of_bool_def
-  Parse_Isabelle.of_nibble_def
-  Parse_Isabelle.of_char_def
   Parse_Isabelle.of_string_gen_def
   Parse_Isabelle.of_string_def
   Parse_Isabelle.of_string\<^sub>b\<^sub>a\<^sub>s\<^sub>e_def
