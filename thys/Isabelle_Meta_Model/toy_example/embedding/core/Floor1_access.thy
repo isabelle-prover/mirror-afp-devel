@@ -113,7 +113,7 @@ definition "print_access_choose = start_map'''' O.definition o (\<lambda>expr _.
   [ let a = \<lambda>f x. Term_app f [x]
       ; b = \<lambda>s. Term_basic [s]
       ; lets = \<lambda>var exp. Definition (Term_rewrite (Term_basic [var]) \<open>=\<close> exp)
-      ; mk_var = \<lambda>i. b (S.flatten [\<open>x\<close>, String.of_natural i]) in
+      ; mk_var = \<lambda>i. b (S.flatten [\<open>x\<close>, String.natural_to_digit10 i]) in
     print_access_choose_switch
       lets mk_var expr
       print_access_choose_name

@@ -287,12 +287,12 @@ begin
 definition "lowercase = map (\<lambda>c. let n = nat_of_char c in if n < 97 then char_of_nat (n + 32) else c)"
 definition "uppercase = map (\<lambda>c. let n = nat_of_char c in if n < 97 then c else char_of_nat (n - 32))"
 definition "to_bold_number = replace_chars (\<lambda>c. [\<open>\<zero>\<close>, \<open>\<one>\<close>, \<open>\<two>\<close>, \<open>\<three>\<close>, \<open>\<four>\<close>, \<open>\<five>\<close>, \<open>\<six>\<close>, \<open>\<seven>\<close>, \<open>\<eight>\<close>, \<open>\<nine>\<close>] ! (nat_of_char c - 48))"
-fun of_nat_aux where
-   "of_nat_aux l (n :: Nat.nat) = (if n < 10 then n # l else of_nat_aux (n mod 10 # l) (n div 10))"
-definition of_nat where "of_nat n = 
- (let nat_raw_to_str = L.map (\<lambda>i. char_of_nat (nat_of_char (CHR 0x30) + i)) in
-  \<lless>nat_raw_to_str (of_nat_aux [] n)\<ggreater>)"
-definition "of_natural = of_nat o nat_of_natural"
+fun nat_to_digit10_aux where
+   "nat_to_digit10_aux l (n :: Nat.nat) = (if n < 10 then n # l else nat_to_digit10_aux (n mod 10 # l) (n div 10))"
+definition nat_to_digit10 where "nat_to_digit10 n = 
+  (let nat_raw_to_str = L.map (\<lambda>i. char_of_nat (nat_of_char (CHR 0x30) + i)) in
+   \<lless>nat_raw_to_str (nat_to_digit10_aux [] n)\<ggreater>)"
+definition "natural_to_digit10 = nat_to_digit10 o nat_of_natural"
 definition "char_to_digit16 c = 
   (let n = nat_of_char c
    ; f = nth [CHR ''0'', CHR ''1'', CHR ''2'', CHR ''3'', CHR ''4'', CHR ''5'', CHR ''6'', CHR ''7'',
@@ -304,17 +304,17 @@ lemmas [code] =
   String.lowercase_def
   String.uppercase_def
   String.to_bold_number_def
-  String.of_nat_def
-  String.of_natural_def
+  String.nat_to_digit10_def
+  String.natural_to_digit10_def
   String.char_to_digit16_def
 
   (*fun*)
-  String.of_nat_aux.simps
+  String.nat_to_digit10_aux.simps
 
 definition "add_0 n =
  (let n = nat_of_char n in
   S.flatten (L.map (\<lambda>_. \<open>0\<close>) (upt 0 (if n < 10 then 2 else if n < 100 then 1 else 0)))
-  @@ String.of_nat n)"
+  @@ String.nat_to_digit10 n)"
 definition "is_letter n = (n \<ge> CHR ''A'' & n \<le> CHR ''Z'' | n \<ge> CHR ''a'' & n \<le> CHR ''z'')"
 definition "is_digit n = (n \<ge> CHR ''0'' & n \<le> CHR ''9'')"
 definition "is_special = List.member '' <>^_=-./(){}''"
@@ -360,8 +360,6 @@ definition "textstr_of_str f_flatten f_char f_str str =
     f_flatten (S.flatten [ \<open>(\<close>, str, \<open>)\<close> ]))"
 
 definition' \<open>escape_sml = String.replace_chars (\<lambda>x. if x = CHR 0x22 then \<open>\"\<close> else \<degree>x\<degree>)\<close>
-text \<open>Because of @{theory "Code_Char"}, it is not possible of extracting
-@{term "\<lambda>c. if c = CHR 0x22 then \<open>\"\<close> else \<degree>c\<degree>"}.\<close>
 definition "mk_constr_name name = (\<lambda> x. S.flatten [String.isub name, \<open>_\<close>, String.isub x])"
 definition "mk_dot s1 s2 = S.flatten [\<open>.\<close>, s1, s2]"
 definition "mk_dot_par_gen dot l_s = S.flatten [dot, \<open>(\<close>, case l_s of [] \<Rightarrow> \<open>\<close> | x # xs \<Rightarrow> S.flatten [x, S.flatten (L.map (\<lambda>s. \<open>, \<close> @@ s) xs) ], \<open>)\<close>]"

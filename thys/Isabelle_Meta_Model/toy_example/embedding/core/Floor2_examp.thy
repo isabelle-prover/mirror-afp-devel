@@ -130,7 +130,7 @@ definition "print_examp_def_st_perm = (\<lambda> _ env.
          | [_] \<Rightarrow> ([], C.by [M.simp_add [d name]])
          | _ \<Rightarrow>
            ( [ M.simp_add [d name]]
-             # L.flatten (L.map (\<lambda>i_max. L.map (\<lambda>i. [M.subst_l (L.map String.of_nat [i_max - i]) (T.thm \<open>fun_upd_twist\<close>), print_examp_def_st_locale_metis]) (List.upt 0 i_max)) (List.upt 1 (List.length l_st)))
+             # L.flatten (L.map (\<lambda>i_max. L.map (\<lambda>i. [M.subst_l (L.map String.nat_to_digit10 [i_max - i]) (T.thm \<open>fun_upd_twist\<close>), print_examp_def_st_locale_metis]) (List.upt 0 i_max)) (List.upt 1 (List.length l_st)))
            , C.by [M.simp]) in
    case expr_app of None \<Rightarrow> [] | Some expr_app \<Rightarrow>
    [ Lemma

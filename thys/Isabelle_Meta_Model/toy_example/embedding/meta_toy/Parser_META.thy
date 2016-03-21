@@ -205,7 +205,7 @@ definition "of_string\<^sub>b\<^sub>a\<^sub>s\<^sub>e a b s = of_string_gen \<op
                                                    b
                                                    (String\<^sub>b\<^sub>a\<^sub>s\<^sub>e.to_String s)"
 
-definition of_nat where "of_nat a b = b o String.of_natural"
+definition of_nat where "of_nat a b = b o String.natural_to_digit10"
 
 end
 
@@ -293,9 +293,6 @@ definition' \<open>sml_escape =
                             else if x = CHR 0x06 then \<open>\006\<close>
                             else if x = CHR 0x7F then \<open>\127\<close>
                             else \<degree>x\<degree>)\<close>
-text \<open>Because of @{theory "Code_Char"}, it is not possible of extracting
-@{text "\<lambda> CHR 0x0A \<Rightarrow> \<open>\<close>
-        | x \<Rightarrow> \<degree>x\<degree>"}.\<close>
 
 definition' \<open>of_string a b =
  (\<lambda>x. b (S.flatten [ \<open>(META.SS_base (META.ST "\<close>
@@ -307,7 +304,7 @@ definition' \<open>of_string\<^sub>b\<^sub>a\<^sub>s\<^sub>e a b =
                   , sml_escape (String\<^sub>b\<^sub>a\<^sub>s\<^sub>e.to_String x)
                   , \<open>")\<close>]))\<close>
 
-definition of_nat where "of_nat a b = (\<lambda>x. b (S.flatten [\<open>(Code_Numeral.Nat \<close>, String.of_natural x, \<open>)\<close>]))"
+definition of_nat where "of_nat a b = (\<lambda>x. b (S.flatten [\<open>(Code_Numeral.Nat \<close>, String.natural_to_digit10 x, \<open>)\<close>]))"
 
 end
 
