@@ -6,12 +6,6 @@ theory Trace_Space_Equals_Markov_Processes
   imports Discrete_Time_Markov_Chain
 begin
 
-definition "with P f d = (if \<exists>x. P x then f (SOME x. P x) else d)"
-
-lemma withI[case_names default exists]:
-  "((\<And>x. \<not> P x) \<Longrightarrow> Q d) \<Longrightarrow> (\<And>x. P x \<Longrightarrow> Q (f x)) \<Longrightarrow> Q (with P f d)"
-  unfolding with_def by (auto intro: someI2)
-
 text {*
   We can construct for each time-homogeneous discrete-time Markov chain a corresponding
   probability space using @{theory Discrete_Time_Markov_Chain}. The constructed probability space
@@ -183,7 +177,7 @@ proof (rule stream_space_eq_sstart)
       by (simp add: K.T.emeasure_eq_1_AE AE_streams)
   next
     case (Cons t xs)
-    have "emeasure (K.T s) (sstart S (t # xs)) = 
+    have "emeasure (K.T s) (sstart S (t # xs)) =
       emeasure (K.T s) {x\<in>space (K.T s). shd x = t \<and> stl x \<in> sstart S xs}"
       by (intro arg_cong2[where f=emeasure]) (auto simp: space_stream_space)
     also have "\<dots> = (\<integral>\<^sup>+t'. emeasure (K.T t') {x\<in>space K.S. t' = t \<and> x \<in> sstart S xs} \<partial>K s)"
@@ -195,7 +189,7 @@ proof (rule stream_space_eq_sstart)
     finally show ?case
       by (simp add: lessThan_Suc_eq_insert_0 Zero_notin_Suc setprod.reindex Cons)
   qed
-  also have "pmf I s * ereal (\<Prod>i<length xs. pmf (K ((s#xs)!i)) (xs!i)) = 
+  also have "pmf I s * ereal (\<Prod>i<length xs. pmf (K ((s#xs)!i)) (xs!i)) =
     \<P>(x in M. \<forall>i\<le>length xs. X i x = (s # xs) ! i)"
     using xs s
   proof (induction xs rule: rev_induct)
@@ -219,7 +213,7 @@ proof (rule stream_space_eq_sstart)
         by (intro M.finite_measure_mono) (auto simp: nth_append nth_Cons split: nat.split)
       moreover have "\<P>(x in M. \<forall>i\<le>?l. X i x = (s # xs) ! i) \<le> \<P>(\<omega> in M. \<forall>i\<le>?l. X i \<omega> = (s # xs) ! i)"
         by (intro M.finite_measure_mono) (auto simp: nth_append nth_Cons split: nat.split)
-      ultimately show ?thesis 
+      ultimately show ?thesis
         by (simp add: measure_le_0_iff)
     next
       assume "\<P>(\<omega> in M. \<forall>i\<le>?l. X i \<omega> = (s # xs) ! i) \<noteq> 0"
@@ -287,7 +281,7 @@ proof -
       case (Suc n) then show ?case
         by (subst (1 2) prob_T') (simp_all del: space_T add: T_eq_T')
     qed (simp add: start_eq)
-    ultimately have "\<P>(\<omega> in T' I. stl \<omega> !! n = t \<bar> \<omega> !! n = s) = pmf (K s) t" 
+    ultimately have "\<P>(\<omega> in T' I. stl \<omega> !! n = t \<bar> \<omega> !! n = s) = pmf (K s) t"
       by (simp add: cond_prob_def field_simps) }
   note TH = this
 
@@ -296,14 +290,14 @@ proof -
       \<P>(\<omega> in T' I. \<forall>i\<le>n. \<omega> !! i = \<omega>' i) * pmf (K (\<omega>' n)) t"
     proof (induction n arbitrary: I \<omega>')
       case (Suc n)
-      have *[simp]: "\<And>s P. measure (T' (K s)) {x. s = \<omega>' 0 \<and> P x} = 
+      have *[simp]: "\<And>s P. measure (T' (K s)) {x. s = \<omega>' 0 \<and> P x} =
         measure (T' (K (\<omega>' 0))) {x. P x} * indicator {\<omega>' 0} s"
         by (auto split: split_indicator)
       from Suc[of _ "\<lambda>i. \<omega>' (Suc i)"] show ?case
         by (subst (1 2) prob_T')
            (simp_all add: T_eq_T' all_Suc_split[where P="\<lambda>i. i \<le> Suc n \<longrightarrow> Q i" for n Q] conj_commute conj_left_commute sets_eq_imp_space_eq[OF sets_T'])
     qed (simp add: start_eq)
-    ultimately have "\<P>(\<omega> in T' I. stl \<omega> !! n = t \<bar> \<forall>i\<le>n. \<omega> !! i = \<omega>' i) = pmf (K (\<omega>' n)) t" 
+    ultimately have "\<P>(\<omega> in T' I. stl \<omega> !! n = t \<bar> \<forall>i\<le>n. \<omega> !! i = \<omega>' i) = pmf (K (\<omega>' n)) t"
       by (simp add: cond_prob_def field_simps) }
   note MC = this
 
