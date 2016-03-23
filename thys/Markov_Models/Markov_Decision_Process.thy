@@ -6,6 +6,11 @@ theory Markov_Decision_Process
   imports Discrete_Time_Markov_Chain
 begin
 
+definition "some_elem s = (SOME x. x \<in> s)"
+
+lemma some_elem_ne: "s \<noteq> {} \<Longrightarrow> some_elem s \<in> s"
+  unfolding some_elem_def by (auto intro: someI)
+
 lemma mono_INF_fun:
     "(\<And>x y. mono (F x y)) \<Longrightarrow> mono (\<lambda>z x. \<Sqinter>y\<in>X x. F x y z :: 'a :: complete_lattice)"
   by (auto intro!: INF_mono[OF bexI] simp: le_fun_def mono_def)
@@ -52,37 +57,83 @@ with the restriction
 hide_const cont
 
 codatatype 's scheduler = Scheduler (action_sch: "'s pmf") (cont_sch: "'s \<Rightarrow> 's scheduler")
-datatype 's cfg = Cfg' (state: 's) (scheduler: "'s scheduler")
 
-definition "action cfg = action_sch (scheduler cfg)"
-definition "cont cfg s = Cfg' s (cont_sch (scheduler cfg) s)"
+lemma equivp_rel_prod: "equivp R \<Longrightarrow> equivp Q \<Longrightarrow> equivp (rel_prod R Q)"
+  by (auto intro!: equivpI prod.rel_symp prod.rel_transp prod.rel_reflp elim: equivpE)
 
-definition Cfg :: "'s \<Rightarrow> 's pmf \<Rightarrow> ('s \<Rightarrow> 's cfg) \<Rightarrow> 's cfg" where
-  "Cfg s D c = Cfg' s (Scheduler D (\<lambda>t. scheduler (c t)))"
+coinductive eq_scheduler :: "'s scheduler \<Rightarrow> 's scheduler \<Rightarrow> bool"
+where
+  "\<And>D. action_sch sc1 = D \<Longrightarrow> action_sch sc2 = D \<Longrightarrow>
+    (\<forall>s\<in>D. eq_scheduler (cont_sch sc1 s) (cont_sch sc2 s)) \<Longrightarrow> eq_scheduler sc1 sc2"
 
-definition cfg_corec :: "'s \<Rightarrow> ('a \<Rightarrow> 's pmf) \<Rightarrow> ('a \<Rightarrow> 's \<Rightarrow> 'a)  \<Rightarrow> 'a \<Rightarrow> 's cfg" where
-  "cfg_corec s d c x = Cfg' s (corec_scheduler d (\<lambda>x s. Inr (c x s)) x)"
+lemma eq_scheduler_refl[intro]: "eq_scheduler sc sc"
+  by (coinduction arbitrary: sc) auto
 
-lemma
-  shows state_cont[simp]: "state (cont cfg s) = s"
-    and state_Cfg[simp]: "state (Cfg s d' c') = s"
-    and action_Cfg[simp]: "action (Cfg s d' c') = d'"
-    and cont_Cfg[simp]: "state (c' t) = t \<Longrightarrow> cont (Cfg s d' c') t = c' t"
-    and state_cfg_corec[simp]: "state (cfg_corec s d c x) = s"
-    and action_cfg_corec[simp]: "action (cfg_corec s d c x) = d x"
-    and cont_cfg_corec[simp]: "cont (cfg_corec s d c x) t = cfg_corec t d c (c x t)"
-  by (simp_all add: cfg_corec_def Cfg_def action_def cont_def cfg.expand)
+quotient_type 's cfg = "'s \<times> 's scheduler" / "rel_prod op = eq_scheduler"
+proof (intro equivp_rel_prod equivpI reflpI sympI transpI)
+  show "eq_scheduler sc1 sc2 \<Longrightarrow> eq_scheduler sc2 sc1" for sc1 sc2 :: "'s scheduler"
+    by (coinduction arbitrary: sc1 sc2) (auto elim: eq_scheduler.cases)
+  show "eq_scheduler sc1 sc2 \<Longrightarrow> eq_scheduler sc2 sc3 \<Longrightarrow> eq_scheduler sc1 sc3"
+    for sc1 sc2 sc3 :: "'s scheduler"
+    by (coinduction arbitrary: sc1 sc2 sc3)
+       (subst (asm) (1 2) eq_scheduler.simps, auto)
+qed auto
+
+lift_definition state :: "'s cfg \<Rightarrow> 's" is "fst"
+  by auto
+
+lift_definition action :: "'s cfg \<Rightarrow> 's pmf" is "\<lambda>(s, sc). action_sch sc"
+  by (force elim: eq_scheduler.cases)
+
+lift_definition cont :: "'s cfg \<Rightarrow> 's \<Rightarrow> 's cfg" is
+  "\<lambda>(s, sc) t. if t \<in> action_sch sc then (t, cont_sch sc t) else
+    (t, cont_sch sc (some_elem (action_sch sc)))"
+  apply (simp add: rel_prod_conv split: prod.splits)
+  apply (subst (asm) eq_scheduler.simps)
+  apply (auto simp: Let_def set_pmf_not_empty[THEN some_elem_ne])
+  done
+
+lift_definition Cfg :: "'s \<Rightarrow> 's pmf \<Rightarrow> ('s \<Rightarrow> 's cfg) \<Rightarrow> 's cfg" is
+  "\<lambda>s D c. (s, Scheduler D (\<lambda>t. snd (c t)))"
+  by (auto simp: rel_prod_conv split_beta' eq_scheduler.simps[of "Scheduler _  _"])
+
+lift_definition cfg_corec :: "'s \<Rightarrow> ('a \<Rightarrow> 's pmf) \<Rightarrow> ('a \<Rightarrow> 's \<Rightarrow> 'a)  \<Rightarrow> 'a \<Rightarrow> 's cfg" is
+  "\<lambda>s D C x. (s, corec_scheduler D (\<lambda>x s. Inr (C x s)) x)"  .
+
+lemma state_cont[simp]: "state (cont cfg s) = s"
+  by transfer (simp split: prod.split)
+
+lemma state_Cfg[simp]: "state (Cfg s d' c') = s"
+  by transfer simp
+
+lemma action_Cfg[simp]: "action (Cfg s d' c') = d'"
+  by transfer simp
+
+lemma cont_Cfg[simp]: "t \<in> set_pmf d' \<Longrightarrow> state (c' t) = t \<Longrightarrow> cont (Cfg s d' c') t = c' t"
+  by transfer (auto simp add: rel_prod_conv split: prod.split)
+
+lemma state_cfg_corec[simp]: "state (cfg_corec s d c x) = s"
+  by transfer auto
+
+lemma action_cfg_corec[simp]: "action (cfg_corec s d c x) = d x"
+  by transfer auto
+
+lemma cont_cfg_corec[simp]: "t \<in> set_pmf (d x) \<Longrightarrow> cont (cfg_corec s d c x) t = cfg_corec t d c (c x t)"
+  by transfer auto
 
 lemma cfg_coinduct[consumes 1, case_names state action cont]:
-  assumes "X c d"
-  assumes state: "\<And>c d. X c d \<Longrightarrow> state c = state d"
-  assumes action:  "\<And>c d. X c d \<Longrightarrow> action c = action d"
-  assumes cont: "\<And>c d t. X c d \<Longrightarrow> X (cont c t) (cont d t)"
-  shows "c = d"
-proof (intro cfg.expand conjI assms)
-  from `X c d` show "scheduler c = scheduler d"
-    by (coinduction arbitrary: c d)
-       (auto intro!: exI[of _ "cont c y" for c y] dest: cont action simp: cont_def action_def)
+  "X c d \<Longrightarrow> (\<And>c d. X c d \<Longrightarrow> state c = state d) \<Longrightarrow> (\<And>c d. X c d \<Longrightarrow> action c = action d) \<Longrightarrow>
+    (\<And>c d t. X c d \<Longrightarrow> t \<in> set_pmf (action c) \<Longrightarrow> X (cont c t) (cont d t)) \<Longrightarrow> c = d"
+proof (transfer, clarsimp)
+  fix X :: "('a \<times> 'a scheduler) \<Rightarrow> ('a \<times> 'a scheduler) \<Rightarrow> bool" and B s1 s2 sc1 sc2
+  assume X: "X (s1, sc1) (s2, sc2)" and "rel_fun cr_cfg (rel_fun cr_cfg op =) X B"
+    and 1: "\<And>s1 sc1 s2 sc2. X (s1, sc1) (s2, sc2) \<Longrightarrow> s1 = s2"
+    and 2: "\<And>s1 sc1 s2 sc2. X (s1, sc1) (s2, sc2) \<Longrightarrow> action_sch sc1 = action_sch sc2"
+    and 3: "\<And>s1 sc1 s2 sc2 t. X (s1, sc1) (s2, sc2) \<Longrightarrow> t \<in> set_pmf (action_sch sc2) \<Longrightarrow>
+      X (t, cont_sch sc1 t) (t, cont_sch sc2 t)"
+  from X show "eq_scheduler sc1 sc2"
+    by (coinduction arbitrary: s1 s2 sc1 sc2)
+       (blast dest: 2 3)
 qed
 
 subsubsection {* Memoryless scheduler *}
@@ -92,14 +143,14 @@ definition "memoryless_on f s = cfg_corec s f (\<lambda>_ t. t) s"
 lemma
   shows state_memoryless_on[simp]: "state (memoryless_on f s) = s"
     and action_memoryless_on[simp]: "action (memoryless_on f s) = f s"
-    and cont_memoryless_on[simp]: "cont (memoryless_on f s) t = memoryless_on f t"
+    and cont_memoryless_on[simp]: "t \<in> (f s) \<Longrightarrow> cont (memoryless_on f s) t = memoryless_on f t"
   by (simp_all add: memoryless_on_def)
 
 definition K_cfg :: "'s cfg \<Rightarrow> 's cfg pmf" where
   "K_cfg cfg = map_pmf (cont cfg) (action cfg)"
 
 lemma set_K_cfg: "set_pmf (K_cfg cfg) = cont cfg ` set_pmf (action cfg)"
-  by (simp add: K_cfg_def set_map_pmf)
+  by (simp add: K_cfg_def)
 
 lemma nn_integral_K_cfg: "(\<integral>\<^sup>+cfg. f cfg \<partial>K_cfg cfg) = (\<integral>\<^sup>+s. f (cont cfg s) \<partial>action cfg)"
   by (simp add: K_cfg_def map_pmf_rep_eq nn_integral_distr)
@@ -196,8 +247,9 @@ proof -
   proof (rule ct.T_bisim[symmetric])
     fix s show "(T \<circ> memoryless_on ct) s =
         measure_pmf (ct s) \<bind> (\<lambda>s. distr ((T \<circ> memoryless_on ct) s) St (op ## s))"
-      by (simp add: T_eq[of "memoryless_on ct s"] K_cfg_def map_pmf_rep_eq bind_distr[where K=St]
-                    space_subprob_algebra T.prob_space_distr prob_space_imp_subprob_space)
+      by (auto simp add: T_eq[of "memoryless_on ct s"] K_cfg_def map_pmf_rep_eq bind_distr[where K=St]
+                         space_subprob_algebra T.prob_space_distr prob_space_imp_subprob_space
+               intro!: bind_measure_pmf_cong)
   qed (simp_all, intro_locales)
   then show ?thesis by (simp add: fun_eq_iff)
 qed
@@ -312,7 +364,7 @@ proof -
 
         let ?cfg = "Cfg s D cfg'"
         have cfg: "K_cfg ?cfg = map_pmf cfg' D"
-          by (auto simp add: K_cfg_def fun_eq_iff intro!: map_pmf_cong dest: cfg_on_cfg')
+          by (auto simp add: K_cfg_def fun_eq_iff cfg_on_cfg' intro!: map_pmf_cong)
 
         have "(\<integral>\<^sup>+ t. ?p t \<partial>D) \<le> (\<integral>\<^sup>+t. ?v (cfg' t) + e \<partial>D)"
           by (intro nn_integral_mono_AE) (simp add: v_cfg' AE_measure_pmf_iff)
@@ -589,7 +641,7 @@ proof (rule antisym)
         case (Suc n)
         have "(P ^^ Suc n) \<bottom> (memoryless_on ct s) =
           (\<integral>\<^sup>+ t. g t ((P ^^ n) \<bottom> (memoryless_on ct t)) \<partial>ct s)"
-          by (simp add: P_def K_cfg_def)
+          by (auto simp add: P_def K_cfg_def AE_measure_pmf_iff intro!: nn_integral_cong_AE)
         also have "\<dots> \<le> (\<integral>\<^sup>+ t. g t (lfp ?F t) \<partial>ct s)"
           by (intro nn_integral_mono sup_continuous_mono[OF cont_g, THEN monoD] Suc)
         also have "\<dots> = lfp ?F s"
@@ -742,7 +794,7 @@ lemma simple_cfg_on[simp]: "ct \<in> Pi S K \<Longrightarrow> simple ct s \<in> 
 lemma simple_valid_cfg[simp]: "ct \<in> Pi S K \<Longrightarrow> s \<in> S \<Longrightarrow> simple ct s \<in> valid_cfg"
   by (auto intro: valid_cfgI)
 
-lemma cont_simple[simp]: "s \<in> S \<Longrightarrow> cont (simple ct s) t = simple ct t"
+lemma cont_simple[simp]: "s \<in> S \<Longrightarrow> t \<in> set_pmf (ct s) \<Longrightarrow> cont (simple ct s) t = simple ct t"
   by (simp add: simple_def)
 
 lemma state_simple[simp]: "state (simple ct s) = s"
