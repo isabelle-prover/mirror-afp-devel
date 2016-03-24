@@ -5,7 +5,7 @@
 
 section \<open>LTL (in Negation-Normal-Form)\<close>
 
-theory LTL
+theory LTL_FGXU
   imports Main "Aux/Words2"
 begin
 

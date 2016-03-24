@@ -6,7 +6,7 @@ fun println x = print (x ^ "\n")
 fun println_err x = (TextIO.output (TextIO.stdErr, x ^ "\n"); TextIO.flushOut TextIO.stdErr)
 fun fast_print x = TextIO.output (TextIO.stdOut, x)
 
-open LTL_to_DRA_Translator;
+open LTL;
 
 fun print_ltl LTLTrue = fast_print "true"
   | print_ltl LTLFalse = fast_print "false"
@@ -43,19 +43,19 @@ fun print_state s = (print_tuple print_ltl_abs (print_mapping print_ltl (print_l
 fun print_transition s = print_triple print_state (print_set fast_print) print_state s
 
 (* Main *)
-fun usage () = println ("Usage: " ^ CommandLine.name () ^ " (--eager) ltlformula");
-
-fun parse_args [x] = (ltlc_to_rabin, x)
-  | parse_args [x, y] = (if x = "--eager" then (ltlc_to_rabin_UU, y) else (usage(); OS.Process.exit (OS.Process.failure)))
-  | parse_args _ = (usage(); OS.Process.exit (OS.Process.failure))
+fun usage () = println ("Usage: " ^ CommandLine.name () ^ " (-e|--eager) (-s|--simp=fast|--simp=slow) ltlformula");
 
 fun main () =
   let 
     val e = fn () => OS.Process.exit (OS.Process.failure)
     val u = fn () => (usage(); e())
-    val (t, ltl) = parse_args (CommandLine.arguments ())
+    val args = CommandLine.arguments ()
+    val eager = List.exists (fn x => x = "-e" orelse x = "--eager") args
+    val fast = List.exists (fn x => x = "--simp=fast") args
+    val slow = List.exists (fn x => x = "-s" orelse x = "--simp=slow") args
+    val ltl = List.last args
     val phi = LtlParser.compile_from_string ltl handle LtlParser.LtlError msg => (println_err ("LTL Error: " ^ msg); usage (); e ())
-    val res = t phi
+    val res = ltlc_to_rabin eager (if slow then Slow else (if fast then Fast else Nop)) phi
   in 
     (print_triple 
       (print_set print_transition)

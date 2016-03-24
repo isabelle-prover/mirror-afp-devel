@@ -6,7 +6,7 @@
 section \<open>af - Unfolding Functions\<close>
 
 theory af
-  imports Main "Aux/Words2" LTL
+  imports Main "Aux/Words2" LTL_FGXU
 begin
 
 subsection \<open>af\<close>

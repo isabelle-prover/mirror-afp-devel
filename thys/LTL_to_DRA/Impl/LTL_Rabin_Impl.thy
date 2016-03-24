@@ -416,9 +416,6 @@ qed
 definition 
   "ltl_to_generalized_rabin\<^sub>C_af \<equiv> ltl_to_rabin_base_code_def.ltl_to_generalized_rabin\<^sub>C \<up>af \<up>af\<^sub>G Abs Abs M_fin\<^sub>C_af"
 
-definition
-  "ltl_to_generalized_rabin\<^sub>C_af_simp \<phi> \<equiv> ltl_to_generalized_rabin\<^sub>C_af (map set (sublists (vars_list \<phi>))) \<phi>"
-
 theorem ltl_to_generalized_rabin\<^sub>C_af_correct:
   assumes "range w \<subseteq> set \<Sigma>"
   shows "w \<Turnstile> \<phi> \<longleftrightarrow> accept\<^sub>G\<^sub>R_LTS (ltl_to_generalized_rabin\<^sub>C_af \<Sigma> \<phi>) w" 
@@ -436,11 +433,6 @@ proof -
   finally
   show ?thesis .
 qed
-
-theorem ltl_to_generalized_rabin\<^sub>C_af_simp_correct:
-  assumes "range w \<subseteq> Pow (vars \<phi>)"
-  shows "w \<Turnstile> \<phi> \<longleftrightarrow> accept\<^sub>G\<^sub>R_LTS (ltl_to_generalized_rabin\<^sub>C_af_simp \<phi>) w" 
-  by (metis assms vars_eq_vars_list ltl_to_generalized_rabin\<^sub>C_af_simp_def list.set_map ltl_to_generalized_rabin\<^sub>C_af_correct sublists_powset)
 
 subsection \<open>Generalized Deterministic Rabin Automaton (eager af)\<close>
 
@@ -499,9 +491,6 @@ qed
 definition 
   "ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU> \<equiv> ltl_to_rabin_base_code_def.ltl_to_generalized_rabin\<^sub>C \<up>af\<^sub>\<UU> \<up>af\<^sub>G\<^sub>\<UU> (Abs \<circ> Unf) (Abs \<circ> Unf\<^sub>G) M_fin\<^sub>C_af\<^sub>\<UU>"
 
-definition
-  "ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_simp \<phi> \<equiv> ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU> (map set (sublists (vars_list \<phi>))) \<phi>"
-
 theorem ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_correct:
   assumes "range w \<subseteq> set \<Sigma>"
   shows "w \<Turnstile> \<phi> \<longleftrightarrow> accept\<^sub>G\<^sub>R_LTS (ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU> \<Sigma> \<phi>) w" 
@@ -519,10 +508,5 @@ proof -
   finally
   show ?thesis .
 qed
-
-theorem ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_simp_correct:
-  assumes "range w \<subseteq> Pow (vars \<phi>)"
-  shows "w \<Turnstile> \<phi> \<longleftrightarrow> accept\<^sub>G\<^sub>R_LTS (ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_simp \<phi>) w" 
-  by (metis assms vars_eq_vars_list ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_simp_def list.set_map ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_correct sublists_powset)
 
 end

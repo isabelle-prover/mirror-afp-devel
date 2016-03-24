@@ -13,14 +13,14 @@ in
     LTL_to_DRA_Translator.sml
 end
 
-ltl/datatypes.sml
-ltl/compiler.sml
-ltl/datatypes.sml
-ltl/ltl.yacc.sig
-ltl/ltl.yacc.sml
-ltl/ltl.lex.sml
-ltl/glue.sml
-ltl/compiler.sml
+../../LTL/parser/datatypes.sml
+../../LTL/parser/compiler.sml
+../../LTL/parser/datatypes.sml
+../../LTL/parser/ltl.yacc.sig
+../../LTL/parser/ltl.yacc.sml
+../../LTL/parser/ltl.lex.sml
+../../LTL/parser/glue.sml
+../../LTL/parser/compiler.sml
 
 LTL_to_DRA_CLI.sml
 LTL_to_DRA_mlton.sml

@@ -6,7 +6,10 @@
 section \<open>LTL Code Equations\<close>
 
 theory LTL_Impl
-  imports Main "../LTL" "../../Boolean_Expression_Checkers/Boolean_Expression_Checkers" "../../Boolean_Expression_Checkers/Boolean_Expression_Checkers_AList_Mapping"
+  imports Main 
+    "../LTL_FGXU" 
+    "../../Boolean_Expression_Checkers/Boolean_Expression_Checkers" 
+    "../../Boolean_Expression_Checkers/Boolean_Expression_Checkers_AList_Mapping"
 begin
 
 subsection \<open>Subformulae\<close>
@@ -27,28 +30,6 @@ lemma G_eq_G_list:
 
 lemma G_list_distinct:
   "distinct (G_list \<phi>)"
-  by (induction \<phi>) auto
-
-subsection \<open>Vars\<close>
-
-fun vars_list :: "'a ltl \<Rightarrow>'a list"
-where 
-  "vars_list (\<phi> and \<psi>) = List.union (vars_list \<phi>) (vars_list \<psi>)"
-| "vars_list (\<phi> or \<psi>) = List.union (vars_list \<phi>) (vars_list \<psi>)"
-| "vars_list (F \<phi>) = vars_list \<phi>"
-| "vars_list (G \<phi>) = vars_list \<phi>"
-| "vars_list (X \<phi>) = vars_list \<phi>"
-| "vars_list (\<phi> U \<psi>) = List.union (vars_list \<phi>) (vars_list \<psi>)"
-| "vars_list p(a) = [a]"
-| "vars_list (np(a)) = [a]"
-| "vars_list _ = []"
-
-lemma vars_eq_vars_list:
-  "vars \<phi> = set (vars_list \<phi>)"
-  by (induction \<phi>) auto
-
-lemma vars_list_distinct:
-  "distinct (vars_list \<phi>)"
   by (induction \<phi>) auto
 
 subsection \<open>Propositional Equivalence\<close>

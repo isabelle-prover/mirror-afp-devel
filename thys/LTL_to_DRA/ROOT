@@ -1,6 +1,6 @@
 chapter AFP
 
-session LTL_to_DRA (AFP) = "HOL-Library" +
+session LTL_to_DRA (AFP) = "LTL" + 
   options [timeout = 600]
   theories 
     [document = false]

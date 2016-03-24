@@ -6,28 +6,49 @@
 section \<open>Code Generation\<close>
 
 theory Export_Code
-  imports Main LTL_CAVA_Compat LTL_Rabin_Impl "../Aux/AList_Mapping2" "~~/src/HOL/Library/Code_Target_Numeral" "~~/src/HOL/Library/Code_Char"
+  imports Main LTL_Compat LTL_Rabin_Impl 
+    "../Aux/AList_Mapping2" 
+    "../../LTL/LTL_Rewrite"
+    "~~/src/HOL/Library/Code_Target_Numeral" 
+    "~~/src/HOL/Library/Code_Char"
 begin
 
 subsection \<open>External Interface\<close>
 
 --\<open>Fix the type to match the type of the LTL parser\<close>
-definition 
-  "ltlc_to_rabin (\<phi> :: String.literal ltlc) \<equiv> ltl_to_generalized_rabin\<^sub>C_af_simp (ltlc_to_ltl False \<phi>)"
 
 definition 
-  "ltlc_to_rabin\<^sub>\<UU> (\<phi> :: String.literal ltlc) \<equiv> ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_simp (ltlc_to_ltl False \<phi>)"
+  "ltlc_to_rabin eager mode (\<phi>\<^sub>c :: String.literal ltlc) \<equiv>
+    (let
+      \<phi>\<^sub>n = ltlc_to_ltln \<phi>\<^sub>c;
+      \<Sigma> = map set (sublists (atoms_list \<phi>\<^sub>n));
+      \<phi> = ltln_to_ltl (simplify mode \<phi>\<^sub>n)
+     in
+      (if eager then ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU> \<Sigma> \<phi> else ltl_to_generalized_rabin\<^sub>C_af \<Sigma> \<phi>))"
 
 theorem ltlc_to_rabin_exec_correct:
-  assumes "range w \<subseteq> Pow (ltlc_aprops \<phi>)"
-  shows "w \<Turnstile>\<^sub>c \<phi> \<longleftrightarrow> accept\<^sub>G\<^sub>R_LTS (ltlc_to_rabin \<phi>) w" (is ?t1)
-    and "w \<Turnstile>\<^sub>c \<phi> \<longleftrightarrow> accept\<^sub>G\<^sub>R_LTS (ltlc_to_rabin\<^sub>\<UU> \<phi>) w" (is ?t2)
+  assumes "range w \<subseteq> Pow (atoms_ltlc \<phi>\<^sub>c)"
+  shows "w \<Turnstile>\<^sub>c \<phi>\<^sub>c \<longleftrightarrow> accept\<^sub>G\<^sub>R_LTS (ltlc_to_rabin eager mode \<phi>\<^sub>c) w" 
+  (is "?lhs = ?rhs")
 proof -
-  have "ltlc_aprops \<phi> = vars (ltlc_to_ltl True \<phi>)" "ltlc_aprops \<phi> = vars (ltlc_to_ltl False \<phi>)"
-    by (induction \<phi>) auto                            
-  thus ?t1 ?t2
-    using assms ltl_to_generalized_rabin\<^sub>C_af_simp_correct ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_simp_correct 
-    using translation_correct(1) ltlc_to_rabin_def ltlc_to_rabin\<^sub>\<UU>_def by metis+
+  let ?\<phi>\<^sub>n = "ltlc_to_ltln \<phi>\<^sub>c"
+  let ?\<Sigma> = "map set (sublists (atoms_list ?\<phi>\<^sub>n))"
+  let ?\<phi> = "ltln_to_ltl (simplify mode ?\<phi>\<^sub>n)"
+
+  have "set ?\<Sigma> = Pow (atoms_ltln ?\<phi>\<^sub>n)"
+    unfolding atoms_list_correct[symmetric] sublists_powset[symmetric] list.set_map ..  
+  hence R: "range w \<subseteq> set ?\<Sigma>"
+    using assms ltlc_to_ltln_atoms[symmetric] by metis
+
+  have "w \<Turnstile>\<^sub>c \<phi>\<^sub>c \<longleftrightarrow> w \<Turnstile> ?\<phi>"
+    by (simp only: ltlc_to_ltln_semantics simplify_correct ltln_to_ltl_semantics)
+  also
+  have "\<dots> \<longleftrightarrow> ?rhs"
+    using ltl_to_generalized_rabin\<^sub>C_af\<^sub>\<UU>_correct[OF R] ltl_to_generalized_rabin\<^sub>C_af_correct[OF R] 
+    unfolding ltlc_to_rabin_def Let_def by auto
+  finally
+  show ?thesis
+    by simp
 qed
 
 subsection \<open>Register Code Equations\<close>
@@ -55,7 +76,7 @@ lemmas M_fin\<^sub>C_lhs [code del, code_unfold] =
   M_fin\<^sub>C_af\<^sub>\<UU>_lhs_def M_fin\<^sub>C_af_lhs_def 
 
 --\<open>Export translator (and also constructors)\<close>
-export_code true\<^sub>c true Abs AList_Mapping.Mapping set ltlc_to_rabin ltlc_to_rabin\<^sub>\<UU> 
-  in SML module_name LTL_to_DRA_Translator file "../Code/LTL_to_DRA_Translator.sml"
+export_code true\<^sub>c Iff_ltlc Nop true Abs AList_Mapping.Mapping set ltlc_to_rabin 
+  in SML module_name LTL file "../Code/LTL_to_DRA_Translator.sml"
 
 end
