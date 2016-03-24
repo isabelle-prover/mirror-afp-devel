@@ -121,7 +121,7 @@ lemma action_cfg_corec[simp]: "action (cfg_corec s d c x) = d x"
 lemma cont_cfg_corec[simp]: "t \<in> set_pmf (d x) \<Longrightarrow> cont (cfg_corec s d c x) t = cfg_corec t d c (c x t)"
   by transfer auto
 
-lemma cfg_coinduct[consumes 1, case_names state action cont]:
+lemma cfg_coinduct[consumes 1, case_names state action cont, coinduct pred]:
   "X c d \<Longrightarrow> (\<And>c d. X c d \<Longrightarrow> state c = state d) \<Longrightarrow> (\<And>c d. X c d \<Longrightarrow> action c = action d) \<Longrightarrow>
     (\<And>c d t. X c d \<Longrightarrow> t \<in> set_pmf (action c) \<Longrightarrow> X (cont c t) (cont d t)) \<Longrightarrow> c = d"
 proof (transfer, clarsimp)
@@ -135,6 +135,49 @@ proof (transfer, clarsimp)
     by (coinduction arbitrary: s1 s2 sc1 sc2)
        (blast dest: 2 3)
 qed
+
+coinductive rel_cfg :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a cfg \<Rightarrow> 'b cfg \<Rightarrow> bool" for P :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
+where
+  "P (state cfg1) (state cfg2) \<Longrightarrow>
+    rel_pmf (\<lambda>s t. rel_cfg P (cont cfg1 s) (cont cfg2 t)) (action cfg1) (action cfg2) \<Longrightarrow>
+    rel_cfg P cfg1 cfg2"
+
+lemma rel_cfg_state: "rel_cfg P cfg1 cfg2 \<Longrightarrow> P (state cfg1) (state cfg2)"
+  by (auto elim: rel_cfg.cases)
+
+lemma rel_cfg_cont:
+  "rel_cfg P cfg1 cfg2 \<Longrightarrow>
+    rel_pmf (\<lambda>s t. rel_cfg P (cont cfg1 s) (cont cfg2 t)) (action cfg1) (action cfg2)"
+  by (auto elim: rel_cfg.cases)
+
+lemma rel_cfg_action:
+  assumes P: "rel_cfg P cfg1 cfg2" shows "rel_pmf P (action cfg1) (action cfg2)"
+proof (rule pmf.rel_mono_strong)
+  show "rel_pmf (\<lambda>s t. rel_cfg P (cont cfg1 s) (cont cfg2 t)) (action cfg1) (action cfg2)"
+    using P by (rule rel_cfg_cont)
+qed (auto dest: rel_cfg_state)
+
+lemma rel_cfg_eq: "rel_cfg op = cfg1 cfg2 \<longleftrightarrow> cfg1 = cfg2"
+proof safe
+  show "rel_cfg op = cfg1 cfg2 \<Longrightarrow> cfg1 = cfg2"
+  proof (coinduction arbitrary: cfg1 cfg2)
+    case cont
+    have "action cfg1 = action cfg2"
+      using \<open>rel_cfg op = cfg1 cfg2\<close> by (auto dest: rel_cfg_action simp: pmf.rel_eq)
+    then have "rel_pmf (\<lambda>s t. rel_cfg op = (cont cfg1 s) (cont cfg2 t)) (action cfg1) (action cfg1)"
+      using cont by (auto dest: rel_cfg_cont)
+    then have "rel_pmf (\<lambda>s t. rel_cfg op = (cont cfg1 s) (cont cfg2 t) \<and> s = t) (action cfg1) (action cfg1)"
+      by (rule pmf.rel_mono_strong) (auto dest: rel_cfg_state)
+    then have "pred_pmf (\<lambda>s. rel_cfg op = (cont cfg1 s) (cont cfg2 s)) (action cfg1)"
+      unfolding pmf.pred_rel by (rule pmf.rel_mono_strong) (auto simp: eq_onp_def)
+    with \<open>t \<in> action cfg1\<close> show ?case
+      by (auto simp: pmf.pred_set)
+  qed (auto dest: rel_cfg_state rel_cfg_action simp: pmf.rel_eq)
+  show "rel_cfg op = cfg2 cfg2"
+    by (coinduction arbitrary: cfg2) (auto intro!: rel_pmf_reflI)
+qed
+
+(* TODO: show cfg is BNF -- the 's in scheduler is dead, but can be resurrected to live in cfg *)
 
 subsubsection {* Memoryless scheduler *}
 
