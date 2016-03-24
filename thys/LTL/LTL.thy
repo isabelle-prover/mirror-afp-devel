@@ -30,27 +30,27 @@ subsection \<open>LTL with Syntactic Sugar\<close>
 
 subsubsection \<open>Syntax\<close>
 
-datatype (ltlc_props: 'a) ltlc = 
-    LTLcTrue                        ("true\<^sub>c")
-  | LTLcFalse                       ("false\<^sub>c")
-  | LTLcProp 'a                     ("prop\<^sub>c'(_')")
-  | LTLcNeg "'a ltlc"               ("not\<^sub>c _" [85] 85)
-  | LTLcAnd "'a ltlc" "'a ltlc"     ("_ and\<^sub>c _" [82,82] 81)
-  | LTLcOr "'a ltlc" "'a ltlc"      ("_ or\<^sub>c _" [81,81] 80)
-  | LTLcImplies "'a ltlc" "'a ltlc" ("_ implies\<^sub>c _" [81,81] 80)
-  | LTLcNext "'a ltlc"              ("X\<^sub>c _" [88] 87) 
-  | LTLcFinal "'a ltlc"             ("F\<^sub>c _" [88] 87)
-  | LTLcGlobal "'a ltlc"            ("G\<^sub>c _" [88] 87)
-  | LTLcUntil "'a ltlc" "'a ltlc"   ("_ U\<^sub>c _" [84,84] 83)
-  | LTLcRelease "'a ltlc" "'a ltlc" ("_ V\<^sub>c _" [83,83] 82)
+datatype (atoms_ltlc: 'a) ltlc = 
+    True_ltlc                        ("true\<^sub>c")
+  | False_ltlc                       ("false\<^sub>c")
+  | Prop_ltlc 'a                     ("prop\<^sub>c'(_')")
+  | Not_ltlc "'a ltlc"               ("not\<^sub>c _" [85] 85)
+  | And_ltlc "'a ltlc" "'a ltlc"     ("_ and\<^sub>c _" [82,82] 81)
+  | Or_ltlc "'a ltlc" "'a ltlc"      ("_ or\<^sub>c _" [81,81] 80)
+  | Implies_ltlc "'a ltlc" "'a ltlc" ("_ implies\<^sub>c _" [81,81] 80)
+  | Next_ltlc "'a ltlc"              ("X\<^sub>c _" [88] 87) 
+  | Final_ltlc "'a ltlc"             ("F\<^sub>c _" [88] 87)
+  | Global_ltlc "'a ltlc"            ("G\<^sub>c _" [88] 87)
+  | Until_ltlc "'a ltlc" "'a ltlc"   ("_ U\<^sub>c _" [84,84] 83)
+  | Release_ltlc "'a ltlc" "'a ltlc" ("_ V\<^sub>c _" [83,83] 82)
 
-definition LTLcIff ("_ iff\<^sub>c _" [81,81] 80)
+definition Iff_ltlc ("_ iff\<^sub>c _" [81,81] 80)
 where
   "\<phi> iff\<^sub>c \<psi> \<equiv> (\<phi> implies\<^sub>c \<psi>) and\<^sub>c (\<psi> implies\<^sub>c \<phi>)"  
 
 subsubsection \<open>Semantics\<close>
 
-primrec ltlc_semantics :: "['a set word, 'a ltlc] \<Rightarrow> bool" ("_ \<Turnstile>\<^sub>c _" [80,80] 80)
+primrec semantics_ltlc :: "['a set word, 'a ltlc] \<Rightarrow> bool" ("_ \<Turnstile>\<^sub>c _" [80,80] 80)
 where
   "\<xi> \<Turnstile>\<^sub>c true\<^sub>c = True"
 | "\<xi> \<Turnstile>\<^sub>c false\<^sub>c = False"
@@ -65,17 +65,17 @@ where
 | "\<xi> \<Turnstile>\<^sub>c \<phi> U\<^sub>c \<psi> = (\<exists>i. suffix i \<xi> \<Turnstile>\<^sub>c \<psi> \<and> (\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>c \<phi>))"
 | "\<xi> \<Turnstile>\<^sub>c \<phi> V\<^sub>c \<psi> = (\<forall>i. suffix i \<xi> \<Turnstile>\<^sub>c \<psi> \<or> (\<exists>j<i. suffix j \<xi> \<Turnstile>\<^sub>c \<phi>))"
 
-lemma ltlc_semantics_sugar [simp]:
+lemma semantics_ltlc_sugar [simp]:
   "\<xi> \<Turnstile>\<^sub>c \<phi> iff\<^sub>c \<psi> = (\<xi> \<Turnstile>\<^sub>c \<phi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>c \<psi>)"
   "\<xi> \<Turnstile>\<^sub>c F\<^sub>c \<phi> = \<xi> \<Turnstile>\<^sub>c (true\<^sub>c U\<^sub>c \<phi>)"
   "\<xi> \<Turnstile>\<^sub>c G\<^sub>c \<phi> = \<xi> \<Turnstile>\<^sub>c (false\<^sub>c V\<^sub>c \<phi>)"
-  by (auto simp add: LTLcIff_def)
+  by (auto simp add: Iff_ltlc_def)
 
-definition "ltlc_language \<phi> \<equiv> {\<xi>. \<xi> \<Turnstile>\<^sub>c \<phi>}"
+definition "language_ltlc \<phi> \<equiv> {\<xi>. \<xi> \<Turnstile>\<^sub>c \<phi>}"
 
-lemma ltlc_language_negate[simp]:
-  "ltlc_language (not\<^sub>c \<phi>) = - ltlc_language \<phi>"
-  unfolding ltlc_language_def by auto
+lemma language_ltlc_negate[simp]:
+  "language_ltlc (not\<^sub>c \<phi>) = - language_ltlc \<phi>"
+  unfolding language_ltlc_def by auto
 
 lemma ltl_true_or_con[simp]:
   "\<xi> \<Turnstile>\<^sub>c prop\<^sub>c(p) or\<^sub>c (not\<^sub>c prop\<^sub>c(p)) \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>c true\<^sub>c"
@@ -111,31 +111,31 @@ lemma pw_eq_on_subset:
   by (auto simp add: pw_eq_on_def)
 
 lemma ltlc_eq_on_aux: 
-  "pw_eq_on (ltlc_props \<phi>) w w' \<Longrightarrow> w \<Turnstile>\<^sub>c \<phi> \<Longrightarrow> w' \<Turnstile>\<^sub>c \<phi>"
+  "pw_eq_on (atoms_ltlc \<phi>) w w' \<Longrightarrow> w \<Turnstile>\<^sub>c \<phi> \<Longrightarrow> w' \<Turnstile>\<^sub>c \<phi>"
 proof (induction \<phi> arbitrary: w w')
-  case LTLcUntil
+  case Until_ltlc
     thus ?case
-      by (simp; blast intro!: pw_eq_on_suffix[OF pw_eq_on_subset, of "ltlc_props _" "ltlc_props _ \<union> ltlc_props _"])
+      by (simp; blast intro!: pw_eq_on_suffix[OF pw_eq_on_subset, of "atoms_ltlc _" "atoms_ltlc _ \<union> atoms_ltlc _"])
 next
-  case (LTLcRelease \<phi> \<psi>)
+  case (Release_ltlc \<phi> \<psi>)
     thus ?case
-      by (simp; blast intro!: pw_eq_on_suffix[OF pw_eq_on_subset, of "ltlc_props _" "ltlc_props _ \<union> ltlc_props _"])
+      by (simp; blast intro!: pw_eq_on_suffix[OF pw_eq_on_subset, of "atoms_ltlc _" "atoms_ltlc _ \<union> atoms_ltlc _"])
 next
-  case (LTLcAnd \<phi> \<psi>)
+  case (And_ltlc \<phi> \<psi>)
     thus ?case
-      by (simp; blast intro!: pw_eq_on_subset[of "ltlc_props _" "ltlc_props _ \<union> ltlc_props _"]) 
+      by (simp; blast intro!: pw_eq_on_subset[of "atoms_ltlc _" "atoms_ltlc _ \<union> atoms_ltlc _"]) 
 next
-  case (LTLcOr \<phi> \<psi>) 
+  case (Or_ltlc \<phi> \<psi>) 
     thus ?case
-      by (simp; blast intro!: pw_eq_on_subset[of "ltlc_props _" "ltlc_props _ \<union> ltlc_props _"])  
+      by (simp; blast intro!: pw_eq_on_subset[of "atoms_ltlc _" "atoms_ltlc _ \<union> atoms_ltlc _"])  
 next
-  case (LTLcImplies \<phi> \<psi>)
+  case (Implies_ltlc \<phi> \<psi>)
     thus ?case
-      by (simp; meson Un_upper1 Un_upper2 pw_eq_on_subset[of "ltlc_props _" "ltlc_props \<phi> \<union> ltlc_props \<psi>"]  pw_eq_on_sym)
+      by (simp; meson Un_upper1 Un_upper2 pw_eq_on_subset[of "atoms_ltlc _" "atoms_ltlc \<phi> \<union> atoms_ltlc \<psi>"]  pw_eq_on_sym)
 qed (auto simp add: pw_eq_on_def; metis suffix_nth)+
 
 lemma ltlc_eq_on: 
-  "pw_eq_on (ltlc_props \<phi>) w w' \<Longrightarrow> w \<Turnstile>\<^sub>c \<phi> \<longleftrightarrow> w' \<Turnstile>\<^sub>c \<phi>"
+  "pw_eq_on (atoms_ltlc \<phi>) w w' \<Longrightarrow> w \<Turnstile>\<^sub>c \<phi> \<longleftrightarrow> w' \<Turnstile>\<^sub>c \<phi>"
   using ltlc_eq_on_aux pw_eq_on_sym by blast
 
 lemma suffix_comp: "(\<lambda>i. f (suffix k w i)) = suffix k (f o w)"
@@ -144,49 +144,49 @@ lemma suffix_comp: "(\<lambda>i. f (suffix k w i)) = suffix k (f o w)"
 lemma suffix_range: "\<Union>(range \<xi>) \<subseteq> APs \<Longrightarrow> \<Union>(range (suffix k \<xi>)) \<subseteq> APs"
     by auto
 
-lemma map_ltlc_semantics_aux:
+lemma map_semantics_ltlc_aux:
   assumes "inj_on f APs"
   assumes "\<Union>(range w) \<subseteq> APs"
-  assumes "ltlc_props \<phi> \<subseteq> APs"
+  assumes "atoms_ltlc \<phi> \<subseteq> APs"
   shows "w \<Turnstile>\<^sub>c \<phi> \<longleftrightarrow> (\<lambda>i. f ` w i) \<Turnstile>\<^sub>c map_ltlc f \<phi>"
   using assms(2,3)
 proof (induction \<phi> arbitrary: w)
-  case (LTLcProp x)
+  case (Prop_ltlc x)
     thus ?case   using assms(1) 
 by (simp add: SUP_le_iff inj_on_image_mem_iff)
 next
-  case (LTLcNext \<phi>)
+  case (Next_ltlc \<phi>)
     show ?case
-      using LTLcNext(1)[of "suffix 1 w", unfolded suffix_comp comp_def] LTLcNext(2,3) apply simp 
-        by (metis LTLcNext.prems(1) One_nat_def \<open>\<lbrakk>\<Union>range (suffix 1 w) \<subseteq> APs; ltlc_props \<phi> \<subseteq> APs\<rbrakk> \<Longrightarrow> suffix 1 w \<Turnstile>\<^sub>c \<phi> = suffix 1 (\<lambda>x. f ` w x) \<Turnstile>\<^sub>c map_ltlc f \<phi>\<close> suffix_range)
+      using Next_ltlc(1)[of "suffix 1 w", unfolded suffix_comp comp_def] Next_ltlc(2,3) apply simp 
+        by (metis Next_ltlc.prems(1) One_nat_def \<open>\<lbrakk>\<Union>range (suffix 1 w) \<subseteq> APs; atoms_ltlc \<phi> \<subseteq> APs\<rbrakk> \<Longrightarrow> suffix 1 w \<Turnstile>\<^sub>c \<phi> = suffix 1 (\<lambda>x. f ` w x) \<Turnstile>\<^sub>c map_ltlc f \<phi>\<close> suffix_range)
 next 
-  case (LTLcFinal \<phi>)
+  case (Final_ltlc \<phi>)
     thus ?case 
-       using LTLcFinal(1)[of "suffix _ _", unfolded suffix_comp comp_def, OF suffix_range] by fastforce
+       using Final_ltlc(1)[of "suffix _ _", unfolded suffix_comp comp_def, OF suffix_range] by fastforce
 next 
-  case (LTLcGlobal)
+  case (Global_ltlc)
     thus ?case
-      using LTLcGlobal(1)[of "suffix _ w", unfolded suffix_comp comp_def, OF suffix_range] by fastforce
+      using Global_ltlc(1)[of "suffix _ w", unfolded suffix_comp comp_def, OF suffix_range] by fastforce
 next 
-  case (LTLcUntil)
+  case (Until_ltlc)
     thus ?case
-      using LTLcUntil(1,2)[of "suffix _ w", unfolded suffix_comp comp_def, OF suffix_range] by fastforce
+      using Until_ltlc(1,2)[of "suffix _ w", unfolded suffix_comp comp_def, OF suffix_range] by fastforce
 next 
-  case (LTLcRelease)
+  case (Release_ltlc)
     thus ?case
-      using LTLcRelease(1,2)[of "suffix _ w", unfolded suffix_comp comp_def, OF suffix_range] by fastforce
+      using Release_ltlc(1,2)[of "suffix _ w", unfolded suffix_comp comp_def, OF suffix_range] by fastforce
 qed simp+
 
 definition "map_props f APs \<equiv> {i. \<exists>p\<in>APs. f p = Some i}"
 
-lemma map_ltlc_semantics:
-  assumes INJ: "inj_on f (dom f)" and DOM: "ltlc_props \<phi> \<subseteq> dom f"
+lemma map_semantics_ltlc:
+  assumes INJ: "inj_on f (dom f)" and DOM: "atoms_ltlc \<phi> \<subseteq> dom f"
   shows "\<xi> \<Turnstile>\<^sub>c \<phi> \<longleftrightarrow> (map_props f o \<xi>) \<Turnstile>\<^sub>c map_ltlc (the o f) \<phi>"
 proof -
-  let ?\<xi>r = "\<lambda>i. \<xi> i \<inter> ltlc_props \<phi>"
+  let ?\<xi>r = "\<lambda>i. \<xi> i \<inter> atoms_ltlc \<phi>"
   let ?\<xi>r' = "\<lambda>i. \<xi> i \<inter> dom f"
 
-  have 1: "\<Union>range ?\<xi>r \<subseteq> ltlc_props \<phi>" by auto
+  have 1: "\<Union>range ?\<xi>r \<subseteq> atoms_ltlc \<phi>" by auto
 
   have INJ_the_dom: "inj_on (the o f) (dom f)" 
     using assms
@@ -201,7 +201,7 @@ proof -
     apply (rule ltlc_eq_on)
     apply (auto simp: pw_eq_on_def)
     done
-  also from map_ltlc_semantics_aux[OF 2 1 subset_refl]
+  also from map_semantics_ltlc_aux[OF 2 1 subset_refl]
   have "\<dots> \<longleftrightarrow> (\<lambda>i. (the o f) ` ?\<xi>r i) \<Turnstile>\<^sub>c map_ltlc (the o f) \<phi>" .
   also have "\<dots> \<longleftrightarrow> (\<lambda>i. (the o f) ` ?\<xi>r' i) \<Turnstile>\<^sub>c map_ltlc (the o f) \<phi>"
     apply (rule ltlc_eq_on) using DOM INJ
@@ -211,10 +211,10 @@ proof -
   finally show ?thesis .
 qed
 
-lemma map_ltlc_semantics_inv:
-  assumes INJ: "inj_on f (dom f)" and DOM: "ltlc_props \<phi> \<subseteq> dom f"
+lemma map_semantics_ltlc_inv:
+  assumes INJ: "inj_on f (dom f)" and DOM: "atoms_ltlc \<phi> \<subseteq> dom f"
   shows "\<xi> \<Turnstile>\<^sub>c map_ltlc (the o f) \<phi> \<longleftrightarrow> (\<lambda>i. (the o f) -` \<xi> i) \<Turnstile>\<^sub>c \<phi>"
-  using map_ltlc_semantics[OF assms]
+  using map_semantics_ltlc[OF assms]
   apply simp
   apply (intro ltlc_eq_on)
   apply (auto simp add: pw_eq_on_def ltlc.set_map map_props_def)
@@ -228,16 +228,16 @@ text\<open>
 
 subsubsection \<open>Syntax\<close>
 
-datatype (ltln_props: 'a) ltln  = 
-    LTLnTrue                        ("true\<^sub>n")
-  | LTLnFalse                       ("false\<^sub>n")
-  | LTLnProp 'a                     ("prop\<^sub>n'(_')")
-  | LTLnNProp 'a                    ("nprop\<^sub>n'(_')")
-  | LTLnAnd "'a ltln" "'a ltln"     ("_ and\<^sub>n _" [82,82] 81)
-  | LTLnOr "'a ltln" "'a ltln"      ("_ or\<^sub>n _" [84,84] 83)
-  | LTLnNext "'a ltln"              ("X\<^sub>n _" [88] 87)
-  | LTLnUntil "'a ltln" "'a ltln"   ("_ U\<^sub>n _" [84,84] 83)
-  | LTLnRelease "'a ltln" "'a ltln" ("_ V\<^sub>n _" [84,84] 83)
+datatype (atoms_ltln: 'a) ltln  = 
+    True_ltln                        ("true\<^sub>n")
+  | False_ltln                       ("false\<^sub>n")
+  | Prop_ltln 'a                     ("prop\<^sub>n'(_')")
+  | Nprop_ltln 'a                    ("nprop\<^sub>n'(_')")
+  | And_ltln "'a ltln" "'a ltln"     ("_ and\<^sub>n _" [82,82] 81)
+  | Or_ltln "'a ltln" "'a ltln"      ("_ or\<^sub>n _" [84,84] 83)
+  | Next_ltln "'a ltln"              ("X\<^sub>n _" [88] 87)
+  | Until_ltln "'a ltln" "'a ltln"   ("_ U\<^sub>n _" [84,84] 83)
+  | Release_ltln "'a ltln" "'a ltln" ("_ V\<^sub>n _" [84,84] 83)
 
 abbreviation F\<^sub>n :: "'a ltln \<Rightarrow> 'a ltln" ("\<diamondsuit>\<^sub>n _" [88] 87)
 where 
@@ -249,7 +249,7 @@ where
 
 subsubsection \<open>Semantics\<close>
 
-primrec ltln_semantics :: "['a set word, 'a ltln] \<Rightarrow> bool" ("_ \<Turnstile>\<^sub>n _" [80,80] 80)
+primrec semantics_ltln :: "['a set word, 'a ltln] \<Rightarrow> bool" ("_ \<Turnstile>\<^sub>n _" [80,80] 80)
 where
   "\<xi> \<Turnstile>\<^sub>n true\<^sub>n = True"
 | "\<xi> \<Turnstile>\<^sub>n false\<^sub>n = False"
@@ -261,7 +261,7 @@ where
 | "\<xi> \<Turnstile>\<^sub>n \<phi> U\<^sub>n \<psi> = (\<exists>i. suffix i \<xi> \<Turnstile>\<^sub>n \<psi> \<and> (\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<phi>))"
 | "\<xi> \<Turnstile>\<^sub>n \<phi> V\<^sub>n \<psi> = (\<forall>i. suffix i \<xi> \<Turnstile>\<^sub>n \<psi> \<or> (\<exists>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<phi>))"
 
-definition "ltln_language \<phi> \<equiv> {\<xi>. \<xi> \<Turnstile>\<^sub>n \<phi>}"
+definition "language_ltln \<phi> \<equiv> {\<xi>. \<xi> \<Turnstile>\<^sub>n \<phi>}"
 
 subsubsection \<open>Conversion\<close>
 
@@ -325,6 +325,16 @@ lemma ltln_to_ltlc_semantics [simp]:
   "w \<Turnstile>\<^sub>c ltln_to_ltlc \<phi> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<phi>"
   by (induction \<phi> arbitrary: w) simp+
 
+lemma ltlc_to_ltln_atoms:
+  "atoms_ltln (ltlc_to_ltln \<phi>) = atoms_ltlc \<phi>"
+proof -
+  have "atoms_ltln (ltlc_to_ltln' True \<phi>) = atoms_ltlc \<phi>"
+    "atoms_ltln (ltlc_to_ltln' False \<phi>) = atoms_ltlc \<phi>"
+    by (induction \<phi>) simp+
+  thus ?thesis
+    by simp
+qed
+
 subsubsection \<open>Auxiliary Functions\<close>
 
 fun not\<^sub>n 
@@ -348,88 +358,53 @@ subsubsection \<open>Subformulae\<close>
 fun subfrmlsn :: "'a ltln \<Rightarrow> 'a ltln set"
 where
   "subfrmlsn (\<mu> and\<^sub>n \<psi>) = {\<mu> and\<^sub>n \<psi>} \<union> subfrmlsn \<mu> \<union> subfrmlsn \<psi>"
-| "subfrmlsn (X\<^sub>n \<mu>) = {X\<^sub>n \<mu>} \<union> subfrmlsn \<mu>"
+| "subfrmlsn (\<mu> or\<^sub>n \<psi>) = {\<mu> or\<^sub>n \<psi>} \<union> subfrmlsn \<mu> \<union> subfrmlsn \<psi>"
 | "subfrmlsn (\<mu> U\<^sub>n \<psi>) = {\<mu> U\<^sub>n \<psi>} \<union> subfrmlsn \<mu> \<union> subfrmlsn \<psi>"
 | "subfrmlsn (\<mu> V\<^sub>n \<psi>) = {\<mu> V\<^sub>n \<psi>} \<union> subfrmlsn \<mu> \<union> subfrmlsn \<psi>"
-| "subfrmlsn (\<mu> or\<^sub>n \<psi>) = {\<mu> or\<^sub>n \<psi>} \<union> subfrmlsn \<mu> \<union> subfrmlsn \<psi>"
+| "subfrmlsn (X\<^sub>n \<mu>) = {X\<^sub>n \<mu>} \<union> subfrmlsn \<mu>"
 | "subfrmlsn x = {x}"
 
 lemma subfrmlsn_id[simp]: 
   "\<phi> \<in> subfrmlsn \<phi>" 
-  by (induct \<phi>) auto
+  by (induction \<phi>) auto
 
-lemma subfrmlsn_finite: 
+lemma subfrmlsn_finite:
   "finite (subfrmlsn \<phi>)" 
-  by (induct \<phi>) auto
+  by (induction \<phi>) auto
 
 lemma subfrmlsn_subset:
   "\<psi> \<in> subfrmlsn \<phi> \<Longrightarrow> subfrmlsn \<psi> \<subseteq> subfrmlsn \<phi>"
-  by (induct \<phi> arbitrary:\<psi>) auto
+  by (induction \<phi>) auto
 
-fun size_frmln :: "'a ltln \<Rightarrow> nat"
-where
-  "size_frmln (\<phi> and\<^sub>n \<psi>) = size_frmln \<phi> + size_frmln \<psi> + 1"
-| "size_frmln (X\<^sub>n \<phi>) = size_frmln \<phi> + 1"
-| "size_frmln (\<phi> U\<^sub>n \<psi>) = size_frmln \<phi> + size_frmln \<psi> + 1"
-| "size_frmln (\<phi> V\<^sub>n \<psi>) = size_frmln \<phi> + size_frmln \<psi> + 1"
-| "size_frmln (\<phi> or\<^sub>n \<psi>) = size_frmln \<phi> + size_frmln \<psi> + 1"
-| "size_frmln _ = 1"
-
-lemma size_frmln_gt_zero[simp]: 
-  "size_frmln \<phi> > 0" 
-  by (induct \<phi>) auto
+lemma subfrmlsn_size:
+  "\<psi> \<in> subfrmlsn \<phi> \<Longrightarrow> size \<psi> < size \<phi> \<or> \<psi> = \<phi>"
+  by (induction \<phi>) auto 
 
 abbreviation
-  "frmlset_sumn \<Phi> \<equiv> setsum size_frmln \<Phi>"
+  "size_set \<Phi> \<equiv> setsum size \<Phi>"
 
-lemma frmlset_sumn_diff_less[intro!]:
-  assumes finS:"finite S"
-      and "A\<noteq>{}"
-      and subset:"A\<subseteq>S"
-    shows "frmlset_sumn (S - A) < frmlset_sumn S"
-proof -
-  have finA: "finite A" using assms by (rule_tac finite_subset)
-  then have "frmlset_sumn A > 0" using assms size_frmln_gt_zero by (induct rule:finite_induct) auto
-  moreover
-  have "frmlset_sumn A \<le> frmlset_sumn S" using assms size_frmln_gt_zero by (rule_tac setsum_mono2) auto
-  ultimately show ?thesis using setsum_diff_nat[OF finA, of S size_frmln] assms by auto
-qed
+lemma size_set_diff_lesseq[intro!]:
+  "finite S \<Longrightarrow> A \<subseteq> S \<Longrightarrow> size_set (S - A) \<le> size_set S"
+  by (simp add: le_add1 setsum.subset_diff)
 
-definition
-  "frmln_props \<phi> \<equiv> {p. prop\<^sub>n(p) \<in> subfrmlsn \<phi> \<or> nprop\<^sub>n(p) \<in> subfrmlsn \<phi>}"
-
-inductive subfrml :: "'a ltln \<Rightarrow> 'a ltln \<Rightarrow> bool"
-where
-  "subfrml \<phi> (\<phi> and\<^sub>n \<psi>)"
-| "subfrml \<psi> (\<phi> and\<^sub>n \<psi>)"
-| "subfrml \<phi> (\<phi> or\<^sub>n \<psi>)"
-| "subfrml \<psi> (\<phi> or\<^sub>n \<psi>)"
-| "subfrml \<phi> (X\<^sub>n \<phi>)"
-| "subfrml \<phi> (\<phi> U\<^sub>n \<psi>)"
-| "subfrml \<psi> (\<phi> U\<^sub>n \<psi>)"
-| "subfrml \<phi> (\<phi> V\<^sub>n \<psi>)"
-| "subfrml \<psi> (\<phi> V\<^sub>n \<psi>)"
-
-abbreviation is_subfrml ("_ is'_subformula'_of _")
-where
-  "is_subfrml \<psi> \<phi> \<equiv> subfrml\<^sup>*\<^sup>* \<psi> \<phi>"
-
-lemma subfrml_size:
-  assumes "subfrml \<psi> \<phi>"
-    shows "size \<psi> < size \<phi>"
-using assms by (induct \<phi>) auto
-
-lemma subformula_size:
-  assumes "\<psi> is_subformula_of \<phi>"
-    shows "size \<psi> < size \<phi> \<or> \<psi> = \<phi>"
-using assms proof(induct \<phi>)
-  case base then show ?case by auto
-next
-  case (step \<nu> \<mu>)
-    then have "size \<nu> < size \<mu>" by (rule_tac subfrml_size)
-    then show ?case using step by auto
-qed
-
+lemma size_set_diff_less[intro!]:
+  assumes "finite S" "A \<subseteq> S" "A \<inter> {x. size x > 0} \<noteq> {}"
+  shows "size_set (S - A) < size_set S"
+  using assms(1, 2)
+proof (induction S rule: finite_induct)
+  case (insert x S)
+    have "size_set (insert x S) = size_set (insert x S - A) + size_set A"
+      by (meson finite.insertI insert setsum.subset_diff)
+    moreover
+    have "finite A"
+      using insert infinite_super by blast
+    hence "size_set A > 0"
+      using assms(3) by fastforce
+    ultimately
+    show ?case
+      by linarith
+qed (insert assms(3); blast)
+   
 subsubsection \<open>Expansion\<close>
 
 lemma ltln_expand_Until:
@@ -454,39 +429,30 @@ proof
     ultimately show ?rhs by auto
   qed
 next
-  assume rhs: ?rhs
+  assume ?rhs
   show ?lhs
-  proof(cases "\<xi> \<Turnstile>\<^sub>n \<psi>")
-    assume "\<xi> \<Turnstile>\<^sub>n \<psi>"
-    then have "suffix 0 \<xi> \<Turnstile>\<^sub>n \<psi>" by auto
-    moreover
-    have "\<forall>j<0. suffix j \<xi> \<Turnstile>\<^sub>n \<phi>" by auto
-    ultimately
-    have "\<exists>i. suffix i \<xi> \<Turnstile>\<^sub>n \<psi>
-              \<and> (\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<phi>)" by blast
-    then show ?lhs by auto
+  proof (cases "\<xi> \<Turnstile>\<^sub>n \<psi>")
+    case True
+      then have "suffix 0 \<xi> \<Turnstile>\<^sub>n \<psi>" by auto
+      moreover
+      have "\<forall>j<0. suffix j \<xi> \<Turnstile>\<^sub>n \<phi>" by auto
+      ultimately
+      have "\<exists>i. suffix i \<xi> \<Turnstile>\<^sub>n \<psi> \<and> (\<forall>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<phi>)" by blast
+      then show ?lhs by auto
   next
-    assume "\<not> \<xi> \<Turnstile>\<^sub>n \<psi>"
-    then have phi_is: "\<xi> \<Turnstile>\<^sub>n \<phi>"
-      and "\<xi> \<Turnstile>\<^sub>n X\<^sub>n (\<phi> U\<^sub>n \<psi>)" using rhs by auto
-    then obtain i
-          where psi_suc_is: "suffix (Suc i) \<xi> \<Turnstile>\<^sub>n \<psi>"
-            and phi_suc_is: "\<forall>j<i. suffix (Suc j) \<xi> \<Turnstile>\<^sub>n \<phi>" by auto
-    have sbgoal: "\<forall>j<(Suc i). suffix j \<xi> \<Turnstile>\<^sub>n \<phi>"
-    proof(clarify)
-      fix j
-      assume j_less: "j<Suc i"
-      show "suffix j \<xi> \<Turnstile>\<^sub>n \<phi>"
-      proof (cases j)
-        assume "j=0"
-        then show ?thesis using phi_is by auto
-      next
-        fix k
-        assume "j=Suc k"
-        then show ?thesis using j_less phi_suc_is by auto
+    case False
+      then have phi_is: "\<xi> \<Turnstile>\<^sub>n \<phi>" and "\<xi> \<Turnstile>\<^sub>n X\<^sub>n (\<phi> U\<^sub>n \<psi>)" 
+        using `?rhs` by auto
+      then obtain i where psi_suc_is: "suffix (Suc i) \<xi> \<Turnstile>\<^sub>n \<psi>"
+        and phi_suc_is: "\<forall>j<i. suffix (Suc j) \<xi> \<Turnstile>\<^sub>n \<phi>" by auto
+      have sbgoal: "\<forall>j \<le> i. suffix j \<xi> \<Turnstile>\<^sub>n \<phi>"
+      proof(clarify)
+        fix j
+        assume j_less: "j \<le> i"
+        show "suffix j \<xi> \<Turnstile>\<^sub>n \<phi>"
+          using phi_is j_less phi_suc_is by (cases j) simp+
       qed
-    qed
-    then show ?lhs using psi_suc_is phi_is by auto
+      then show ?lhs using psi_suc_is phi_is by auto
   qed
 qed
 
@@ -582,41 +548,41 @@ subsection \<open>Propositional LTL\<close>
 subsubsection \<open>Syntax\<close>
 
 datatype 'a pltl  = 
-    LTLpFalse                       ("false\<^sub>p")
-  | LTLpAtom "'a \<Rightarrow> bool"           ("atom\<^sub>p _") 
-  | LTLpImplies "'a pltl" "'a pltl" ("_ implies\<^sub>p _" [81,81] 80)
-  | LTLpNext "'a pltl"              ("X\<^sub>p _" [88] 87)
-  | LTLpUntil "'a pltl" "'a pltl"   ("_ U\<^sub>p _" [84,84] 83)
+    False_ltlp                       ("false\<^sub>p")
+  | Atom_ltlp "'a \<Rightarrow> bool"           ("atom\<^sub>p _") 
+  | Implies_ltlp "'a pltl" "'a pltl" ("_ implies\<^sub>p _" [81,81] 80)
+  | Next_ltlp "'a pltl"              ("X\<^sub>p _" [88] 87)
+  | Until_ltlp "'a pltl" "'a pltl"   ("_ U\<^sub>p _" [84,84] 83)
 
 -- \<open>Further connectives of PLTL can be defined in terms of the existing syntax.\<close>
 
-definition LTLpNot ("not\<^sub>p _" [85] 85) 
+definition Not_ltlp ("not\<^sub>p _" [85] 85) 
 where 
   "not\<^sub>p \<phi> \<equiv> \<phi> implies\<^sub>p false\<^sub>p"
 
-definition LTLpTrue ("true\<^sub>p") 
+definition True_ltlp ("true\<^sub>p") 
 where 
   "true\<^sub>p \<equiv> not\<^sub>p false\<^sub>p"
 
-definition LTLpOr ("_ or\<^sub>p _" [81,81] 80) 
+definition Or_ltlp ("_ or\<^sub>p _" [81,81] 80) 
 where 
   "\<phi> or\<^sub>p \<psi> \<equiv> (not\<^sub>p \<phi>) implies\<^sub>p \<psi>"
 
-definition LTLpAnd ("_ and\<^sub>p _" [82,82] 81)
+definition And_ltlp ("_ and\<^sub>p _" [82,82] 81)
 where 
   "\<phi> and\<^sub>p \<psi> \<equiv> not\<^sub>p ((not\<^sub>p \<phi>) or\<^sub>p (not\<^sub>p \<psi>))"
 
-definition LTLpEventually ("F\<^sub>p _" [88] 87)
+definition Eventually_ltlp ("F\<^sub>p _" [88] 87)
 where 
   "F\<^sub>p \<phi> \<equiv> true\<^sub>p U\<^sub>p \<phi>"
 
-definition LTLpAlways ("G\<^sub>p _" [88] 87)
+definition Always_ltlp ("G\<^sub>p _" [88] 87)
 where 
   "G\<^sub>p \<phi> \<equiv> not\<^sub>p (F\<^sub>p (not\<^sub>p \<phi>))"
 
 subsubsection \<open>Semantics\<close>
 
-fun pltl_semantics :: "['a word, 'a pltl] \<Rightarrow> bool" ("_ \<Turnstile>\<^sub>p _" [80,80] 80)
+fun semantics_pltl :: "['a word, 'a pltl] \<Rightarrow> bool" ("_ \<Turnstile>\<^sub>p _" [80,80] 80)
 where
   "w \<Turnstile>\<^sub>p false\<^sub>p = False"
 | "w \<Turnstile>\<^sub>p (atom\<^sub>p p) = (p (w 0))"
@@ -624,14 +590,14 @@ where
 | "w \<Turnstile>\<^sub>p X\<^sub>p \<phi> = (suffix 1 w \<Turnstile>\<^sub>p \<phi>)"
 | "w \<Turnstile>\<^sub>p \<phi> U\<^sub>p \<psi> = (\<exists>i. suffix i w \<Turnstile>\<^sub>p \<psi> \<and> (\<forall>j<i. suffix j w \<Turnstile>\<^sub>p \<phi>))"
 
-lemma pltl_semantics_sugar [simp]: 
+lemma semantics_pltl_sugar [simp]: 
   "w \<Turnstile>\<^sub>p not\<^sub>p \<phi> = (\<not>w \<Turnstile>\<^sub>p \<phi>)"
   "w \<Turnstile>\<^sub>p true\<^sub>p = True"
   "w \<Turnstile>\<^sub>p \<phi> or\<^sub>p \<psi> = (w \<Turnstile>\<^sub>p \<phi> \<or> w \<Turnstile>\<^sub>p \<psi>)"
   "w \<Turnstile>\<^sub>p \<phi> and\<^sub>p \<psi> = (w \<Turnstile>\<^sub>p \<phi> \<and> w \<Turnstile>\<^sub>p \<psi>)"
   "w \<Turnstile>\<^sub>p F\<^sub>p \<phi> = (\<exists>i. suffix i w \<Turnstile>\<^sub>p \<phi>)"
   "w \<Turnstile>\<^sub>p G\<^sub>p \<phi> = (\<forall>i. suffix i w \<Turnstile>\<^sub>p \<phi>)"
-  by (auto simp: LTLpNot_def LTLpTrue_def LTLpOr_def LTLpAnd_def LTLpEventually_def LTLpAlways_def)
+  by (auto simp: Not_ltlp_def True_ltlp_def Or_ltlp_def And_ltlp_def Eventually_ltlp_def Always_ltlp_def)
 
 subsection \<open>Conversion\<close>
 
@@ -656,25 +622,25 @@ lemma ltlc_to_pltl_semantics [simp]:
 
 subsubsection \<open>Atoms\<close>
 
-fun pltl_atoms :: "'a pltl \<Rightarrow> ('a \<Rightarrow> bool) set"
+fun atoms_pltl :: "'a pltl \<Rightarrow> ('a \<Rightarrow> bool) set"
 where
-  "pltl_atoms false\<^sub>p = {}"
-| "pltl_atoms (atom\<^sub>p p) = {p}"
-| "pltl_atoms (\<phi> implies\<^sub>p \<psi>) = pltl_atoms \<phi> \<union> pltl_atoms \<psi>"
-| "pltl_atoms (X\<^sub>p \<phi>) = pltl_atoms \<phi>"
-| "pltl_atoms (\<phi> U\<^sub>p \<psi>) = pltl_atoms \<phi> \<union> pltl_atoms \<psi>"
+  "atoms_pltl false\<^sub>p = {}"
+| "atoms_pltl (atom\<^sub>p p) = {p}"
+| "atoms_pltl (\<phi> implies\<^sub>p \<psi>) = atoms_pltl \<phi> \<union> atoms_pltl \<psi>"
+| "atoms_pltl (X\<^sub>p \<phi>) = atoms_pltl \<phi>"
+| "atoms_pltl (\<phi> U\<^sub>p \<psi>) = atoms_pltl \<phi> \<union> atoms_pltl \<psi>"
 
 lemma atoms_finite [iff]: 
-  "finite (pltl_atoms \<phi>)"
+  "finite (atoms_pltl \<phi>)"
   by (induct \<phi>) auto
 
-lemma pltl_atoms_sugar [simp]: 
-  "pltl_atoms (not\<^sub>p \<phi>) = pltl_atoms \<phi>"
-  "pltl_atoms true\<^sub>p = {}"
-  "pltl_atoms (\<phi> or\<^sub>p \<psi>) = pltl_atoms \<phi> \<union> pltl_atoms \<psi>"
-  "pltl_atoms (\<phi> and\<^sub>p \<psi>) = pltl_atoms \<phi> \<union> pltl_atoms \<psi>"
-  "pltl_atoms (F\<^sub>p \<phi>) = pltl_atoms \<phi>"
-  "pltl_atoms (G\<^sub>p \<phi>) = pltl_atoms \<phi>"
-  by (auto simp: LTLpNot_def LTLpTrue_def LTLpOr_def LTLpAnd_def LTLpEventually_def LTLpAlways_def)
+lemma atoms_pltl_sugar [simp]: 
+  "atoms_pltl (not\<^sub>p \<phi>) = atoms_pltl \<phi>"
+  "atoms_pltl true\<^sub>p = {}"
+  "atoms_pltl (\<phi> or\<^sub>p \<psi>) = atoms_pltl \<phi> \<union> atoms_pltl \<psi>"
+  "atoms_pltl (\<phi> and\<^sub>p \<psi>) = atoms_pltl \<phi> \<union> atoms_pltl \<psi>"
+  "atoms_pltl (F\<^sub>p \<phi>) = atoms_pltl \<phi>"
+  "atoms_pltl (G\<^sub>p \<phi>) = atoms_pltl \<phi>"
+  by (auto simp: Not_ltlp_def True_ltlp_def Or_ltlp_def And_ltlp_def Eventually_ltlp_def Always_ltlp_def)
 
 end

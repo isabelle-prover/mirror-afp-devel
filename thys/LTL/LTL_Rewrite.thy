@@ -14,7 +14,7 @@ begin
 text \<open>This theory provides rewrite rules for the simplification of LTL formulas. It supports:
   \begin{itemize}
     \item Constants Removal
-    \item @{const LTLnNext}-Normalisation
+    \item @{const Next_ltln}-Normalisation
     \item Modal Simplification (based on pure eventual, pure universal, or suspendable formulas)
     \item Syntactic Implication Checking
   \end{itemize}
@@ -61,7 +61,7 @@ where
 
 definition mk_next_pow ("X\<^sub>n'")
 where
-  "mk_next_pow n x \<equiv> case x of true\<^sub>n \<Rightarrow> true\<^sub>n | false\<^sub>n \<Rightarrow> false\<^sub>n | _ \<Rightarrow> (LTLnNext ^^ n) x"
+  "mk_next_pow n x \<equiv> case x of true\<^sub>n \<Rightarrow> true\<^sub>n | false\<^sub>n \<Rightarrow> false\<^sub>n | _ \<Rightarrow> (Next_ltln ^^ n) x"
 
 lemma mk_and_semantics [simp]: 
   "w \<Turnstile>\<^sub>n mk_and x y \<longleftrightarrow> w \<Turnstile>\<^sub>n x and\<^sub>n y"
@@ -78,14 +78,14 @@ lemma remove_until_sound:
 lemma mk_until_semantics [simp]: 
   "w \<Turnstile>\<^sub>n mk_until x y \<longleftrightarrow> w \<Turnstile>\<^sub>n x U\<^sub>n y"
 proof (cases x)
-  case (LTLnTrue)
+  case (True_ltln)
     show ?thesis
-      apply (unfold LTLnTrue remove_until_sound[symmetric, of _ y] mk_until_def)
+      apply (unfold True_ltln remove_until_sound[symmetric, of _ y] mk_until_def)
       apply (cases y) 
       apply auto
       done
 next
-  case (LTLnFalse)
+  case (False_ltln)
     thus ?thesis
       by (force simp: mk_until_def)
 qed (cases y; auto simp: mk_until_def)+
@@ -97,14 +97,14 @@ lemma remove_release_sound:
 lemma mk_release_semantics [simp]: 
   "w \<Turnstile>\<^sub>n mk_release x y \<longleftrightarrow> w \<Turnstile>\<^sub>n x V\<^sub>n y"
 proof (cases x)
-  case (LTLnFalse)
+  case (False_ltln)
     thus ?thesis
-      apply (unfold LTLnFalse remove_release_sound[symmetric, of _ y] mk_release_def)
+      apply (unfold False_ltln remove_release_sound[symmetric, of _ y] mk_release_def)
       apply (cases y) 
       apply auto
       done
 next
-  case (LTLnTrue)
+  case (True_ltln)
     thus ?thesis
       by (force simp: mk_release_def)
 qed (cases y; auto simp: mk_release_def)+
@@ -253,7 +253,7 @@ lemma combine_until_release_semantics:
   shows "w \<Turnstile>\<^sub>n to_ltln (combine mk_until (\<phi>, i) (\<psi>, j)) \<longleftrightarrow> w \<Turnstile>\<^sub>n to_ltln (\<phi>, i) U\<^sub>n to_ltln (\<psi>, j)" 
     and "w \<Turnstile>\<^sub>n to_ltln (combine mk_release (\<phi>, i) (\<psi>, j)) \<longleftrightarrow> w \<Turnstile>\<^sub>n to_ltln (\<phi>, i) V\<^sub>n to_ltln (\<psi>, j)"
   by ((cases i; cases j; simp add: is_constant_constructors_simps is_constant_constructors_simps2 
-       until_constant_simp release_constant_simp mk_next_pow_until mk_next_pow_release del: ltln_semantics.simps),
+       until_constant_simp release_constant_simp mk_next_pow_until mk_next_pow_release del: semantics_ltln.simps),
       (blast dest: is_constant_semantics), 
       (cases \<psi>; simp add: assms), 
       (cases \<phi>; insert assms; auto simp: add.commute))+
@@ -261,23 +261,23 @@ lemma combine_until_release_semantics:
 lemma rewrite_X_enat_infinity_invariant: 
   "snd (rewrite_X_enat \<phi>) = \<infinity> \<longleftrightarrow> is_constant (fst (rewrite_X_enat \<phi>))"
 proof (induction \<phi>)
-  case (LTLnAnd \<phi> \<psi>)
+  case (And_ltln \<phi> \<psi>)
     thus ?case
-      by (simp add: combine_infinity_invariant[OF LTLnAnd(1,2), unfolded prod.collapse])
+      by (simp add: combine_infinity_invariant[OF And_ltln(1,2), unfolded prod.collapse])
 next
-  case (LTLnOr \<phi> \<psi>)
+  case (Or_ltln \<phi> \<psi>)
     thus ?case
-      by (simp add: combine_infinity_invariant[OF LTLnOr(1,2), unfolded prod.collapse])
+      by (simp add: combine_infinity_invariant[OF Or_ltln(1,2), unfolded prod.collapse])
 next
-  case (LTLnUntil \<phi> \<psi>)
+  case (Until_ltln \<phi> \<psi>)
     thus ?case
-      by (simp add: combine_infinity_invariant[OF LTLnUntil(1,2), unfolded prod.collapse])
+      by (simp add: combine_infinity_invariant[OF Until_ltln(1,2), unfolded prod.collapse])
 next
-  case (LTLnRelease \<phi> \<psi>)
+  case (Release_ltln \<phi> \<psi>)
     thus ?case
-      by (simp add: combine_infinity_invariant[OF LTLnRelease(1,2), unfolded prod.collapse])
+      by (simp add: combine_infinity_invariant[OF Release_ltln(1,2), unfolded prod.collapse])
 next
-  case (LTLnNext \<phi>)
+  case (Next_ltln \<phi>)
     thus ?case
       by (simp add: split_def) (metis eSuc_infinity eSuc_inject)
 qed auto
@@ -285,33 +285,33 @@ qed auto
 lemma rewrite_X_enat_correct: 
   "w \<Turnstile>\<^sub>n \<phi> \<longleftrightarrow> w \<Turnstile>\<^sub>n to_ltln (rewrite_X_enat \<phi>)"
 proof (induction \<phi> arbitrary: w)
-  case (LTLnAnd \<phi> \<psi>)
+  case (And_ltln \<phi> \<psi>)
     thus ?case 
       using combine_and_or_semantics[OF rewrite_X_enat_infinity_invariant rewrite_X_enat_infinity_invariant] by fastforce
 next
-  case (LTLnOr \<phi> \<psi>)
+  case (Or_ltln \<phi> \<psi>)
     thus ?case 
       using combine_and_or_semantics[OF rewrite_X_enat_infinity_invariant rewrite_X_enat_infinity_invariant] by fastforce
 next
-  case (LTLnUntil \<phi> \<psi>)
+  case (Until_ltln \<phi> \<psi>)
     thus ?case 
       unfolding rewrite_X_enat.simps combine_until_release_semantics[OF rewrite_X_enat_infinity_invariant rewrite_X_enat_infinity_invariant, unfolded prod.collapse] by fastforce
 next
-  case (LTLnRelease \<phi> \<psi>)
+  case (Release_ltln \<phi> \<psi>)
     thus ?case 
       unfolding rewrite_X_enat.simps combine_until_release_semantics[OF rewrite_X_enat_infinity_invariant rewrite_X_enat_infinity_invariant, unfolded prod.collapse] by fastforce
 next
-  case (LTLnNext \<phi>)
+  case (Next_ltln \<phi>)
     moreover 
     have " w \<Turnstile>\<^sub>n to_ltln (rewrite_X_enat (X\<^sub>n \<phi>)) \<longleftrightarrow> suffix 1 w \<Turnstile>\<^sub>n to_ltln (rewrite_X_enat \<phi>)"
       by (simp add: split_def; cases "snd (rewrite_X_enat \<phi>) \<noteq> \<infinity>")
          (auto simp: eSuc_def, auto simp: rewrite_X_enat_infinity_invariant eSuc_def dest: is_constant_semantics)
     ultimately
     show ?case
-       using ltln_semantics.simps(7) by blast
+       using semantics_ltln.simps(7) by blast
 qed auto
 
-theorem rewrite_X_sound [simp]:
+lemma rewrite_X_sound [simp]:
   "w \<Turnstile>\<^sub>n rewrite_X \<phi> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<phi>"
   using rewrite_X_enat_correct unfolding rewrite_X_def Let_def by auto
 
@@ -353,7 +353,7 @@ where
 lemma pure_eventual_left_append: 
   "pure_eventual \<mu> \<Longrightarrow> w \<Turnstile>\<^sub>n \<mu> \<Longrightarrow> (u \<frown> w) \<Turnstile>\<^sub>n \<mu>"
 proof (induction \<mu> arbitrary: u w)
-  case (LTLnUntil \<mu> \<mu>')
+  case (Until_ltln \<mu> \<mu>')
     moreover
     then obtain i where "suffix i w \<Turnstile>\<^sub>n \<mu>'"
       by auto
@@ -361,14 +361,14 @@ proof (induction \<mu> arbitrary: u w)
       by simp (metis suffix_conc_length suffix_suffix)
     moreover
     have "pure_eventual \<mu>' \<Longrightarrow> (u \<frown> w) \<Turnstile>\<^sub>n \<mu>'"
-      by (metis \<open>suffix i w \<Turnstile>\<^sub>n \<mu>'\<close> LTLnUntil(2) prefix_suffix)
+      by (metis \<open>suffix i w \<Turnstile>\<^sub>n \<mu>'\<close> Until_ltln(2) prefix_suffix)
     hence "pure_eventual \<mu>' \<Longrightarrow> ?case"
       by force
     ultimately
     show ?case
       by fastforce
 next
-  case (LTLnRelease \<mu> \<mu>')
+  case (Release_ltln \<mu> \<mu>')
     thus ?case 
       by (cases "\<forall>i. suffix i w \<Turnstile>\<^sub>n \<mu>'"; simp_all)
          (metis linear suffix_conc_snd gr0I not_less0 prefix_suffix suffix_0)+
@@ -377,47 +377,47 @@ qed (auto, metis diff_zero le_0_eq not_less_eq_eq suffix_conc_length suffix_conc
 lemma pure_universal_suffix_closed:
   "pure_universal \<nu> \<Longrightarrow> (u \<frown> w) \<Turnstile>\<^sub>n \<nu> \<Longrightarrow> w \<Turnstile>\<^sub>n \<nu>"
 proof (induction \<nu> arbitrary: u w)
-  case (LTLnUntil \<nu> \<nu>')
+  case (Until_ltln \<nu> \<nu>')
     hence "\<exists>i. suffix i (u \<frown> w) \<Turnstile>\<^sub>n \<nu>' \<and> (\<forall>j<i. suffix j (u \<frown> w) \<Turnstile>\<^sub>n \<nu>)"
-      using ltln_semantics.simps(8) by blast
+      using semantics_ltln.simps(8) by blast
     thus ?case
-      by (simp; metis LTLnUntil(1-3) le_0_eq le_eq_less_or_eq le_less_linear prefix_suffix pure_universal.simps(5) suffix_conc_fst suffix_conc_snd)
+      by (simp; metis Until_ltln(1-3) le_0_eq le_eq_less_or_eq le_less_linear prefix_suffix pure_universal.simps(5) suffix_conc_fst suffix_conc_snd)
 next
-  case (LTLnRelease \<nu> \<nu>')
+  case (Release_ltln \<nu> \<nu>')
     moreover
     hence "\<forall>i. suffix i (u \<frown> w) \<Turnstile>\<^sub>n \<nu>' \<or> (\<exists>j<i. suffix j (u \<frown> w) \<Turnstile>\<^sub>n \<nu>)"
       by simp
     ultimately
     show ?case
-      by (simp; metis ltln_semantics.simps(2) not_less0 prefix_suffix suffix_0 suffix_conc_length suffix_suffix)
+      by (simp; metis semantics_ltln.simps(2) not_less0 prefix_suffix suffix_0 suffix_conc_length suffix_suffix)
 next
-  case (LTLnNext \<mu>)
+  case (Next_ltln \<mu>)
     thus ?case
-      by (metis One_nat_def Suc_leI build_split gr0I ltln_semantics.simps(7) prefix_suffix pure_universal.simps(7) suffix_conc_fst suffix_conc_length suffix_singleton_suffix)
+      by (metis One_nat_def Suc_leI build_split gr0I semantics_ltln.simps(7) prefix_suffix pure_universal.simps(7) suffix_conc_fst suffix_conc_length suffix_singleton_suffix)
 qed auto
 
 lemma suspendable_prefix_invariant:
   "suspendable \<xi> \<Longrightarrow> (u \<frown> w) \<Turnstile>\<^sub>n \<xi> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<xi>"
 proof (induction \<xi> arbitrary: u w)
-  case (LTLnUntil \<xi> \<xi>')
+  case (Until_ltln \<xi> \<xi>')
     show ?case
     proof (cases "suspendable \<xi>'")
       case False
         hence "\<xi> = true\<^sub>n" and "pure_universal \<xi>'"
-          using LTLnUntil by simp+
+          using Until_ltln by simp+
         thus ?thesis
           by (simp; metis (no_types) linear pure_universal_suffix_closed suffix_conc_fst suffix_conc_length suffix_conc_snd suffix_suffix)   
-    qed (simp; metis LTLnUntil(2) not_less0 prefix_suffix) 
+    qed (simp; metis Until_ltln(2) not_less0 prefix_suffix) 
 next
-  case (LTLnRelease \<xi> \<xi>')
+  case (Release_ltln \<xi> \<xi>')
     show ?case
     proof (cases "suspendable \<xi>'")
       case False
         hence "\<xi> = false\<^sub>n" and "pure_eventual \<xi>'"
-          using LTLnRelease by simp+
+          using Release_ltln by simp+
         thus ?thesis     
           by (simp; metis (no_types) le_iff_add add_diff_cancel_left' linear pure_eventual_left_append suffix_0 suffix_conc_fst suffix_conc_snd)
-    qed (simp; metis LTLnRelease(2) not_less0 prefix_suffix)
+    qed (simp; metis Release_ltln(2) not_less0 prefix_suffix)
 qed (simp_all, metis prefix_suffix)
 
 theorem pure_eventual_formula_simp:
@@ -459,7 +459,7 @@ proof -
   have "\<And>i. w \<Turnstile>\<^sub>n \<phi> \<Longrightarrow> suffix i w \<Turnstile>\<^sub>n \<phi> "
     using pure_universal_suffix_closed[OF assms] prefix_suffix by metis
   thus ?t2
-    by (metis gr0I ltln_semantics.simps(8) nested_until_semantics not_less0 suffix_0)  
+    by (metis gr0I semantics_ltln.simps(8) nested_until_semantics not_less0 suffix_0)  
 qed
 
 fun rewrite_modal :: "'a ltln \<Rightarrow> 'a ltln"
@@ -476,21 +476,21 @@ where
 lemma rewrite_modal_sound [simp]:
   "w \<Turnstile>\<^sub>n rewrite_modal \<phi> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<phi>"
 proof (induction \<phi> arbitrary: w)
-  case (LTLnUntil \<phi> \<psi>)
+  case (Until_ltln \<phi> \<psi>)
     thus ?case
       apply (cases "pure_eventual \<psi> \<or> suspendable \<psi>")
       apply (insert pure_eventual_formula_simp[of \<psi>] suspendable_formula_simp[of \<psi>])
       apply fastforce+
       done
 next
-  case (LTLnRelease \<phi> \<psi>)
+  case (Release_ltln \<phi> \<psi>)
     thus ?case
       apply (cases "pure_universal \<psi> \<or> suspendable \<psi>")
       apply (insert pure_universal_formula_simp[of \<psi>] suspendable_formula_simp[of \<psi>])  
       apply fastforce+
       done
 next
-  case (LTLnNext \<phi>)
+  case (Next_ltln \<phi>)
     thus ?case
       apply (cases "suspendable \<phi>")
       apply (insert suspendable_formula_simp[of \<phi>])
@@ -501,14 +501,14 @@ qed auto
 lemma rewrite_modal_size:
   "size (rewrite_modal \<phi>) < size \<phi> \<or> rewrite_modal \<phi> = \<phi>"
 proof (induction \<phi>)
-  case (LTLnUntil \<phi> \<psi>)
+  case (Until_ltln \<phi> \<psi>)
     thus ?case
       apply (cases \<phi>)
       apply (cases \<psi>) 
       apply auto
       done
 next
-  case (LTLnRelease \<phi> \<psi>)
+  case (Release_ltln \<phi> \<psi>)
     thus ?case
       apply (cases \<phi>)
       defer
@@ -589,11 +589,11 @@ where
 lemma rewrite_syn_imp_sound: 
   "w \<Turnstile>\<^sub>n rewrite_syn_imp \<phi> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<phi>"
 proof (induction \<phi> arbitrary: w)
-  case LTLnAnd
+  case And_ltln
     thus ?case
       by (simp add: Let_def; metis syntactical_implies_correct not\<^sub>n_semantics)
 next
-  case (LTLnOr \<phi> \<psi>)
+  case (Or_ltln \<phi> \<psi>)
     moreover  
     have "not\<^sub>n \<phi> \<turnstile>\<^sub>s \<psi> \<Longrightarrow> \<forall>w. w \<Turnstile>\<^sub>n \<phi> or\<^sub>n \<psi>"
       by (auto intro: syntactical_implies_correct[of "not\<^sub>n \<phi>"])
@@ -604,10 +604,10 @@ next
     show ?case
       by (auto intro: syntactical_implies_correct)
 next
-  case (LTLnUntil \<phi> \<psi>)
+  case (Until_ltln \<phi> \<psi>)
     moreover
     have "\<phi> \<turnstile>\<^sub>s \<psi> \<Longrightarrow> ?case"
-      by (force simp add: LTLnUntil dest: syntactical_implies_correct)
+      by (force simp add: Until_ltln dest: syntactical_implies_correct)
     moreover
     {
       assume A: "not\<^sub>n \<phi> \<turnstile>\<^sub>s \<psi>" and B: "\<not> \<phi> \<turnstile>\<^sub>s \<psi>" 
@@ -624,16 +624,16 @@ next
           using syntactical_implies_correct[OF A] by auto
       }
       hence ?case
-        by (simp del: rewrite_syn_imp.simps; unfold LTLnUntil(2)) blast
+        by (simp del: rewrite_syn_imp.simps; unfold Until_ltln(2)) blast
     }
     ultimately
     show ?case 
       by fastforce
 next
-  case (LTLnRelease \<phi> \<psi>)
+  case (Release_ltln \<phi> \<psi>)
     moreover
     have "\<psi> \<turnstile>\<^sub>s \<phi> \<Longrightarrow> ?case"
-      by (force simp add: LTLnRelease dest: syntactical_implies_correct)
+      by (force simp add: Release_ltln dest: syntactical_implies_correct)
     moreover
     {
       assume A: "\<psi> \<turnstile>\<^sub>s not\<^sub>n \<phi>" and B: "\<not> \<psi> \<turnstile>\<^sub>s \<phi>" 
@@ -650,7 +650,7 @@ next
           using syntactical_implies_correct[OF A] by auto
       }
       hence ?case 
-        by (simp del: rewrite_syn_imp.simps; unfold LTLnRelease(2)) blast
+        by (simp del: rewrite_syn_imp.simps; unfold Release_ltln(2)) blast
     }
     ultimately
     show ?case 
@@ -684,7 +684,7 @@ lemma iterate_sound:
 theorem rewrite_iter_fast_sound [simp]:
   "w \<Turnstile>\<^sub>n rewrite_iter_fast \<phi> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<phi>"
   apply (insert iterate_sound[of _ "rewrite_modal o rewrite_X"])
-  apply (unfold comp_def rewrite_modal_sound rewrite_X_sound rewrite_syn_imp_sound rewrite_iter_fast_def)
+  apply (unfold comp_def rewrite_modal_sound rewrite_X_sound rewrite_iter_fast_def)
   by blast
 
 theorem rewrite_iter_slow_sound [simp]:
@@ -692,6 +692,22 @@ theorem rewrite_iter_slow_sound [simp]:
   apply (insert iterate_sound[of _ "rewrite_syn_imp o rewrite_modal o rewrite_X"])
   apply (unfold comp_def rewrite_modal_sound rewrite_X_sound rewrite_syn_imp_sound rewrite_iter_slow_def)
   by blast
+
+subsection \<open>Simplifier\<close>
+
+text \<open>We now define a convenience wrapper for the rewriting engine\<close>
+
+datatype mode = Nop | Fast | Slow
+
+fun simplify :: "mode \<Rightarrow> 'a ltln \<Rightarrow> 'a ltln"
+where
+  "simplify Nop = id"
+| "simplify Fast = rewrite_iter_fast"
+| "simplify Slow = rewrite_iter_slow"
+
+theorem simplify_correct:
+  "w \<Turnstile>\<^sub>n simplify m \<phi> \<longleftrightarrow> w \<Turnstile>\<^sub>n \<phi>"
+  by (cases m) simp+
 
 subsection \<open>Code Generation\<close>
 

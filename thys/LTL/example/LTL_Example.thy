@@ -19,6 +19,6 @@ where
 
 --\<open>Export rewriting engine (and also constructors)\<close>
 
-export_code true\<^sub>c LTLcIff rewrite in SML file "rewrite_example.sml"
+export_code true\<^sub>c Iff_ltlc rewrite in SML file "rewrite_example.sml"
 
 end

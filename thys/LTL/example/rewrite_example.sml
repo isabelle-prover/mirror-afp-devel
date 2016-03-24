@@ -90,206 +90,207 @@ fun less_eq_nat m n = IntInf.<= (integer_of_nat m, integer_of_nat n);
 end; (*struct Arith*)
 
 structure LTL : sig
-  datatype 'a ltln = LTLnTrue | LTLnFalse | LTLnProp of 'a | LTLnNProp of 'a |
-    LTLnAnd of 'a ltln * 'a ltln | LTLnOr of 'a ltln * 'a ltln |
-    LTLnNext of 'a ltln | LTLnUntil of 'a ltln * 'a ltln |
-    LTLnRelease of 'a ltln * 'a ltln
+  datatype 'a ltln = True_ltln | False_ltln | Prop_ltln of 'a | Nprop_ltln of 'a
+    | And_ltln of 'a ltln * 'a ltln | Or_ltln of 'a ltln * 'a ltln |
+    Next_ltln of 'a ltln | Until_ltln of 'a ltln * 'a ltln |
+    Release_ltln of 'a ltln * 'a ltln
   val equal_ltlna : 'a HOL.equal -> 'a ltln -> 'a ltln -> bool
   val equal_ltln : 'a HOL.equal -> 'a ltln HOL.equal
-  datatype 'a ltlc = LTLcTrue | LTLcFalse | LTLcProp of 'a | LTLcNeg of 'a ltlc
-    | LTLcAnd of 'a ltlc * 'a ltlc | LTLcOr of 'a ltlc * 'a ltlc |
-    LTLcImplies of 'a ltlc * 'a ltlc | LTLcNext of 'a ltlc |
-    LTLcFinal of 'a ltlc | LTLcGlobal of 'a ltlc |
-    LTLcUntil of 'a ltlc * 'a ltlc | LTLcRelease of 'a ltlc * 'a ltlc
-  val lTLcIff : 'a ltlc -> 'a ltlc -> 'a ltlc
+  datatype 'a ltlc = True_ltlc | False_ltlc | Prop_ltlc of 'a |
+    Not_ltlc of 'a ltlc | And_ltlc of 'a ltlc * 'a ltlc |
+    Or_ltlc of 'a ltlc * 'a ltlc | Implies_ltlc of 'a ltlc * 'a ltlc |
+    Next_ltlc of 'a ltlc | Final_ltlc of 'a ltlc | Global_ltlc of 'a ltlc |
+    Until_ltlc of 'a ltlc * 'a ltlc | Release_ltlc of 'a ltlc * 'a ltlc
+  val iff_ltlc : 'a ltlc -> 'a ltlc -> 'a ltlc
   val not_n : 'a ltln -> 'a ltln
   val ltlc_to_ltln : 'a ltlc -> 'a ltln
   val map_ltlc : ('a -> 'b) -> 'a ltlc -> 'b ltlc
   val size_ltln : 'a ltln -> Arith.nat
 end = struct
 
-datatype 'a ltln = LTLnTrue | LTLnFalse | LTLnProp of 'a | LTLnNProp of 'a |
-  LTLnAnd of 'a ltln * 'a ltln | LTLnOr of 'a ltln * 'a ltln |
-  LTLnNext of 'a ltln | LTLnUntil of 'a ltln * 'a ltln |
-  LTLnRelease of 'a ltln * 'a ltln;
+datatype 'a ltln = True_ltln | False_ltln | Prop_ltln of 'a | Nprop_ltln of 'a |
+  And_ltln of 'a ltln * 'a ltln | Or_ltln of 'a ltln * 'a ltln |
+  Next_ltln of 'a ltln | Until_ltln of 'a ltln * 'a ltln |
+  Release_ltln of 'a ltln * 'a ltln;
 
-fun equal_ltlna A_ (LTLnUntil (x81, x82)) (LTLnRelease (x91, x92)) = false
-  | equal_ltlna A_ (LTLnRelease (x91, x92)) (LTLnUntil (x81, x82)) = false
-  | equal_ltlna A_ (LTLnNext x7) (LTLnRelease (x91, x92)) = false
-  | equal_ltlna A_ (LTLnRelease (x91, x92)) (LTLnNext x7) = false
-  | equal_ltlna A_ (LTLnNext x7) (LTLnUntil (x81, x82)) = false
-  | equal_ltlna A_ (LTLnUntil (x81, x82)) (LTLnNext x7) = false
-  | equal_ltlna A_ (LTLnOr (x61, x62)) (LTLnRelease (x91, x92)) = false
-  | equal_ltlna A_ (LTLnRelease (x91, x92)) (LTLnOr (x61, x62)) = false
-  | equal_ltlna A_ (LTLnOr (x61, x62)) (LTLnUntil (x81, x82)) = false
-  | equal_ltlna A_ (LTLnUntil (x81, x82)) (LTLnOr (x61, x62)) = false
-  | equal_ltlna A_ (LTLnOr (x61, x62)) (LTLnNext x7) = false
-  | equal_ltlna A_ (LTLnNext x7) (LTLnOr (x61, x62)) = false
-  | equal_ltlna A_ (LTLnAnd (x51, x52)) (LTLnRelease (x91, x92)) = false
-  | equal_ltlna A_ (LTLnRelease (x91, x92)) (LTLnAnd (x51, x52)) = false
-  | equal_ltlna A_ (LTLnAnd (x51, x52)) (LTLnUntil (x81, x82)) = false
-  | equal_ltlna A_ (LTLnUntil (x81, x82)) (LTLnAnd (x51, x52)) = false
-  | equal_ltlna A_ (LTLnAnd (x51, x52)) (LTLnNext x7) = false
-  | equal_ltlna A_ (LTLnNext x7) (LTLnAnd (x51, x52)) = false
-  | equal_ltlna A_ (LTLnAnd (x51, x52)) (LTLnOr (x61, x62)) = false
-  | equal_ltlna A_ (LTLnOr (x61, x62)) (LTLnAnd (x51, x52)) = false
-  | equal_ltlna A_ (LTLnNProp x4) (LTLnRelease (x91, x92)) = false
-  | equal_ltlna A_ (LTLnRelease (x91, x92)) (LTLnNProp x4) = false
-  | equal_ltlna A_ (LTLnNProp x4) (LTLnUntil (x81, x82)) = false
-  | equal_ltlna A_ (LTLnUntil (x81, x82)) (LTLnNProp x4) = false
-  | equal_ltlna A_ (LTLnNProp x4) (LTLnNext x7) = false
-  | equal_ltlna A_ (LTLnNext x7) (LTLnNProp x4) = false
-  | equal_ltlna A_ (LTLnNProp x4) (LTLnOr (x61, x62)) = false
-  | equal_ltlna A_ (LTLnOr (x61, x62)) (LTLnNProp x4) = false
-  | equal_ltlna A_ (LTLnNProp x4) (LTLnAnd (x51, x52)) = false
-  | equal_ltlna A_ (LTLnAnd (x51, x52)) (LTLnNProp x4) = false
-  | equal_ltlna A_ (LTLnProp x3) (LTLnRelease (x91, x92)) = false
-  | equal_ltlna A_ (LTLnRelease (x91, x92)) (LTLnProp x3) = false
-  | equal_ltlna A_ (LTLnProp x3) (LTLnUntil (x81, x82)) = false
-  | equal_ltlna A_ (LTLnUntil (x81, x82)) (LTLnProp x3) = false
-  | equal_ltlna A_ (LTLnProp x3) (LTLnNext x7) = false
-  | equal_ltlna A_ (LTLnNext x7) (LTLnProp x3) = false
-  | equal_ltlna A_ (LTLnProp x3) (LTLnOr (x61, x62)) = false
-  | equal_ltlna A_ (LTLnOr (x61, x62)) (LTLnProp x3) = false
-  | equal_ltlna A_ (LTLnProp x3) (LTLnAnd (x51, x52)) = false
-  | equal_ltlna A_ (LTLnAnd (x51, x52)) (LTLnProp x3) = false
-  | equal_ltlna A_ (LTLnProp x3) (LTLnNProp x4) = false
-  | equal_ltlna A_ (LTLnNProp x4) (LTLnProp x3) = false
-  | equal_ltlna A_ LTLnFalse (LTLnRelease (x91, x92)) = false
-  | equal_ltlna A_ (LTLnRelease (x91, x92)) LTLnFalse = false
-  | equal_ltlna A_ LTLnFalse (LTLnUntil (x81, x82)) = false
-  | equal_ltlna A_ (LTLnUntil (x81, x82)) LTLnFalse = false
-  | equal_ltlna A_ LTLnFalse (LTLnNext x7) = false
-  | equal_ltlna A_ (LTLnNext x7) LTLnFalse = false
-  | equal_ltlna A_ LTLnFalse (LTLnOr (x61, x62)) = false
-  | equal_ltlna A_ (LTLnOr (x61, x62)) LTLnFalse = false
-  | equal_ltlna A_ LTLnFalse (LTLnAnd (x51, x52)) = false
-  | equal_ltlna A_ (LTLnAnd (x51, x52)) LTLnFalse = false
-  | equal_ltlna A_ LTLnFalse (LTLnNProp x4) = false
-  | equal_ltlna A_ (LTLnNProp x4) LTLnFalse = false
-  | equal_ltlna A_ LTLnFalse (LTLnProp x3) = false
-  | equal_ltlna A_ (LTLnProp x3) LTLnFalse = false
-  | equal_ltlna A_ LTLnTrue (LTLnRelease (x91, x92)) = false
-  | equal_ltlna A_ (LTLnRelease (x91, x92)) LTLnTrue = false
-  | equal_ltlna A_ LTLnTrue (LTLnUntil (x81, x82)) = false
-  | equal_ltlna A_ (LTLnUntil (x81, x82)) LTLnTrue = false
-  | equal_ltlna A_ LTLnTrue (LTLnNext x7) = false
-  | equal_ltlna A_ (LTLnNext x7) LTLnTrue = false
-  | equal_ltlna A_ LTLnTrue (LTLnOr (x61, x62)) = false
-  | equal_ltlna A_ (LTLnOr (x61, x62)) LTLnTrue = false
-  | equal_ltlna A_ LTLnTrue (LTLnAnd (x51, x52)) = false
-  | equal_ltlna A_ (LTLnAnd (x51, x52)) LTLnTrue = false
-  | equal_ltlna A_ LTLnTrue (LTLnNProp x4) = false
-  | equal_ltlna A_ (LTLnNProp x4) LTLnTrue = false
-  | equal_ltlna A_ LTLnTrue (LTLnProp x3) = false
-  | equal_ltlna A_ (LTLnProp x3) LTLnTrue = false
-  | equal_ltlna A_ LTLnTrue LTLnFalse = false
-  | equal_ltlna A_ LTLnFalse LTLnTrue = false
-  | equal_ltlna A_ (LTLnRelease (x91, x92)) (LTLnRelease (y91, y92)) =
+fun equal_ltlna A_ (Until_ltln (x81, x82)) (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Next_ltln x7) (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) (Next_ltln x7) = false
+  | equal_ltlna A_ (Next_ltln x7) (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Until_ltln (x81, x82)) (Next_ltln x7) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Until_ltln (x81, x82)) (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) (Next_ltln x7) = false
+  | equal_ltlna A_ (Next_ltln x7) (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Until_ltln (x81, x82)) (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) (Next_ltln x7) = false
+  | equal_ltlna A_ (Next_ltln x7) (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (Nprop_ltln x4) (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Nprop_ltln x4) (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Until_ltln (x81, x82)) (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Nprop_ltln x4) (Next_ltln x7) = false
+  | equal_ltlna A_ (Next_ltln x7) (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Nprop_ltln x4) (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Nprop_ltln x4) (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Prop_ltln x3) (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) (Prop_ltln x3) = false
+  | equal_ltlna A_ (Prop_ltln x3) (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Until_ltln (x81, x82)) (Prop_ltln x3) = false
+  | equal_ltlna A_ (Prop_ltln x3) (Next_ltln x7) = false
+  | equal_ltlna A_ (Next_ltln x7) (Prop_ltln x3) = false
+  | equal_ltlna A_ (Prop_ltln x3) (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) (Prop_ltln x3) = false
+  | equal_ltlna A_ (Prop_ltln x3) (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) (Prop_ltln x3) = false
+  | equal_ltlna A_ (Prop_ltln x3) (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Nprop_ltln x4) (Prop_ltln x3) = false
+  | equal_ltlna A_ False_ltln (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) False_ltln = false
+  | equal_ltlna A_ False_ltln (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Until_ltln (x81, x82)) False_ltln = false
+  | equal_ltlna A_ False_ltln (Next_ltln x7) = false
+  | equal_ltlna A_ (Next_ltln x7) False_ltln = false
+  | equal_ltlna A_ False_ltln (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) False_ltln = false
+  | equal_ltlna A_ False_ltln (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) False_ltln = false
+  | equal_ltlna A_ False_ltln (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Nprop_ltln x4) False_ltln = false
+  | equal_ltlna A_ False_ltln (Prop_ltln x3) = false
+  | equal_ltlna A_ (Prop_ltln x3) False_ltln = false
+  | equal_ltlna A_ True_ltln (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) True_ltln = false
+  | equal_ltlna A_ True_ltln (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Until_ltln (x81, x82)) True_ltln = false
+  | equal_ltlna A_ True_ltln (Next_ltln x7) = false
+  | equal_ltlna A_ (Next_ltln x7) True_ltln = false
+  | equal_ltlna A_ True_ltln (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) True_ltln = false
+  | equal_ltlna A_ True_ltln (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) True_ltln = false
+  | equal_ltlna A_ True_ltln (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Nprop_ltln x4) True_ltln = false
+  | equal_ltlna A_ True_ltln (Prop_ltln x3) = false
+  | equal_ltlna A_ (Prop_ltln x3) True_ltln = false
+  | equal_ltlna A_ True_ltln False_ltln = false
+  | equal_ltlna A_ False_ltln True_ltln = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) (Release_ltln (y91, y92)) =
     equal_ltlna A_ x91 y91 andalso equal_ltlna A_ x92 y92
-  | equal_ltlna A_ (LTLnUntil (x81, x82)) (LTLnUntil (y81, y82)) =
+  | equal_ltlna A_ (Until_ltln (x81, x82)) (Until_ltln (y81, y82)) =
     equal_ltlna A_ x81 y81 andalso equal_ltlna A_ x82 y82
-  | equal_ltlna A_ (LTLnNext x7) (LTLnNext y7) = equal_ltlna A_ x7 y7
-  | equal_ltlna A_ (LTLnOr (x61, x62)) (LTLnOr (y61, y62)) =
+  | equal_ltlna A_ (Next_ltln x7) (Next_ltln y7) = equal_ltlna A_ x7 y7
+  | equal_ltlna A_ (Or_ltln (x61, x62)) (Or_ltln (y61, y62)) =
     equal_ltlna A_ x61 y61 andalso equal_ltlna A_ x62 y62
-  | equal_ltlna A_ (LTLnAnd (x51, x52)) (LTLnAnd (y51, y52)) =
+  | equal_ltlna A_ (And_ltln (x51, x52)) (And_ltln (y51, y52)) =
     equal_ltlna A_ x51 y51 andalso equal_ltlna A_ x52 y52
-  | equal_ltlna A_ (LTLnNProp x4) (LTLnNProp y4) = HOL.eq A_ x4 y4
-  | equal_ltlna A_ (LTLnProp x3) (LTLnProp y3) = HOL.eq A_ x3 y3
-  | equal_ltlna A_ LTLnFalse LTLnFalse = true
-  | equal_ltlna A_ LTLnTrue LTLnTrue = true;
+  | equal_ltlna A_ (Nprop_ltln x4) (Nprop_ltln y4) = HOL.eq A_ x4 y4
+  | equal_ltlna A_ (Prop_ltln x3) (Prop_ltln y3) = HOL.eq A_ x3 y3
+  | equal_ltlna A_ False_ltln False_ltln = true
+  | equal_ltlna A_ True_ltln True_ltln = true;
 
 fun equal_ltln A_ = {equal = equal_ltlna A_} : 'a ltln HOL.equal;
 
-datatype 'a ltlc = LTLcTrue | LTLcFalse | LTLcProp of 'a | LTLcNeg of 'a ltlc |
-  LTLcAnd of 'a ltlc * 'a ltlc | LTLcOr of 'a ltlc * 'a ltlc |
-  LTLcImplies of 'a ltlc * 'a ltlc | LTLcNext of 'a ltlc | LTLcFinal of 'a ltlc
-  | LTLcGlobal of 'a ltlc | LTLcUntil of 'a ltlc * 'a ltlc |
-  LTLcRelease of 'a ltlc * 'a ltlc;
+datatype 'a ltlc = True_ltlc | False_ltlc | Prop_ltlc of 'a |
+  Not_ltlc of 'a ltlc | And_ltlc of 'a ltlc * 'a ltlc |
+  Or_ltlc of 'a ltlc * 'a ltlc | Implies_ltlc of 'a ltlc * 'a ltlc |
+  Next_ltlc of 'a ltlc | Final_ltlc of 'a ltlc | Global_ltlc of 'a ltlc |
+  Until_ltlc of 'a ltlc * 'a ltlc | Release_ltlc of 'a ltlc * 'a ltlc;
 
-fun lTLcIff phi psi = LTLcAnd (LTLcImplies (phi, psi), LTLcImplies (psi, phi));
+fun iff_ltlc phi psi =
+  And_ltlc (Implies_ltlc (phi, psi), Implies_ltlc (psi, phi));
 
-fun not_n LTLnTrue = LTLnFalse
-  | not_n LTLnFalse = LTLnTrue
-  | not_n (LTLnProp a) = LTLnNProp a
-  | not_n (LTLnNProp a) = LTLnProp a
-  | not_n (LTLnAnd (phi, psi)) = LTLnOr (not_n phi, not_n psi)
-  | not_n (LTLnOr (phi, psi)) = LTLnAnd (not_n phi, not_n psi)
-  | not_n (LTLnUntil (phi, psi)) = LTLnRelease (not_n phi, not_n psi)
-  | not_n (LTLnRelease (phi, psi)) = LTLnUntil (not_n phi, not_n psi)
-  | not_n (LTLnNext phi) = LTLnNext (not_n phi);
+fun not_n True_ltln = False_ltln
+  | not_n False_ltln = True_ltln
+  | not_n (Prop_ltln a) = Nprop_ltln a
+  | not_n (Nprop_ltln a) = Prop_ltln a
+  | not_n (And_ltln (phi, psi)) = Or_ltln (not_n phi, not_n psi)
+  | not_n (Or_ltln (phi, psi)) = And_ltln (not_n phi, not_n psi)
+  | not_n (Until_ltln (phi, psi)) = Release_ltln (not_n phi, not_n psi)
+  | not_n (Release_ltln (phi, psi)) = Until_ltln (not_n phi, not_n psi)
+  | not_n (Next_ltln phi) = Next_ltln (not_n phi);
 
-fun ltlc_to_ltlna false LTLcTrue = LTLnTrue
-  | ltlc_to_ltlna false LTLcFalse = LTLnFalse
-  | ltlc_to_ltlna false (LTLcProp q) = LTLnProp q
-  | ltlc_to_ltlna false (LTLcAnd (phi, psi)) =
-    LTLnAnd (ltlc_to_ltlna false phi, ltlc_to_ltlna false psi)
-  | ltlc_to_ltlna false (LTLcOr (phi, psi)) =
-    LTLnOr (ltlc_to_ltlna false phi, ltlc_to_ltlna false psi)
-  | ltlc_to_ltlna false (LTLcImplies (phi, psi)) =
-    LTLnOr (ltlc_to_ltlna true phi, ltlc_to_ltlna false psi)
-  | ltlc_to_ltlna false (LTLcFinal phi) =
-    LTLnUntil (LTLnTrue, ltlc_to_ltlna false phi)
-  | ltlc_to_ltlna false (LTLcGlobal phi) =
-    LTLnRelease (LTLnFalse, ltlc_to_ltlna false phi)
-  | ltlc_to_ltlna false (LTLcUntil (phi, psi)) =
-    LTLnUntil (ltlc_to_ltlna false phi, ltlc_to_ltlna false psi)
-  | ltlc_to_ltlna false (LTLcRelease (phi, psi)) =
-    LTLnRelease (ltlc_to_ltlna false phi, ltlc_to_ltlna false psi)
-  | ltlc_to_ltlna true LTLcTrue = LTLnFalse
-  | ltlc_to_ltlna true LTLcFalse = LTLnTrue
-  | ltlc_to_ltlna true (LTLcProp q) = LTLnNProp q
-  | ltlc_to_ltlna true (LTLcAnd (nu, mu)) =
-    LTLnOr (ltlc_to_ltlna true nu, ltlc_to_ltlna true mu)
-  | ltlc_to_ltlna true (LTLcOr (nu, mu)) =
-    LTLnAnd (ltlc_to_ltlna true nu, ltlc_to_ltlna true mu)
-  | ltlc_to_ltlna true (LTLcImplies (phi, psi)) =
-    LTLnAnd (ltlc_to_ltlna false phi, ltlc_to_ltlna true psi)
-  | ltlc_to_ltlna true (LTLcFinal phi) =
-    LTLnRelease (LTLnFalse, ltlc_to_ltlna true phi)
-  | ltlc_to_ltlna true (LTLcGlobal phi) =
-    LTLnUntil (LTLnTrue, ltlc_to_ltlna true phi)
-  | ltlc_to_ltlna true (LTLcUntil (nu, mu)) =
-    LTLnRelease (ltlc_to_ltlna true nu, ltlc_to_ltlna true mu)
-  | ltlc_to_ltlna true (LTLcRelease (nu, mu)) =
-    LTLnUntil (ltlc_to_ltlna true nu, ltlc_to_ltlna true mu)
-  | ltlc_to_ltlna b (LTLcNeg psi) = ltlc_to_ltlna (not b) psi
-  | ltlc_to_ltlna b (LTLcNext phi) = LTLnNext (ltlc_to_ltlna b phi);
+fun ltlc_to_ltlna false True_ltlc = True_ltln
+  | ltlc_to_ltlna false False_ltlc = False_ltln
+  | ltlc_to_ltlna false (Prop_ltlc q) = Prop_ltln q
+  | ltlc_to_ltlna false (And_ltlc (phi, psi)) =
+    And_ltln (ltlc_to_ltlna false phi, ltlc_to_ltlna false psi)
+  | ltlc_to_ltlna false (Or_ltlc (phi, psi)) =
+    Or_ltln (ltlc_to_ltlna false phi, ltlc_to_ltlna false psi)
+  | ltlc_to_ltlna false (Implies_ltlc (phi, psi)) =
+    Or_ltln (ltlc_to_ltlna true phi, ltlc_to_ltlna false psi)
+  | ltlc_to_ltlna false (Final_ltlc phi) =
+    Until_ltln (True_ltln, ltlc_to_ltlna false phi)
+  | ltlc_to_ltlna false (Global_ltlc phi) =
+    Release_ltln (False_ltln, ltlc_to_ltlna false phi)
+  | ltlc_to_ltlna false (Until_ltlc (phi, psi)) =
+    Until_ltln (ltlc_to_ltlna false phi, ltlc_to_ltlna false psi)
+  | ltlc_to_ltlna false (Release_ltlc (phi, psi)) =
+    Release_ltln (ltlc_to_ltlna false phi, ltlc_to_ltlna false psi)
+  | ltlc_to_ltlna true True_ltlc = False_ltln
+  | ltlc_to_ltlna true False_ltlc = True_ltln
+  | ltlc_to_ltlna true (Prop_ltlc q) = Nprop_ltln q
+  | ltlc_to_ltlna true (And_ltlc (nu, mu)) =
+    Or_ltln (ltlc_to_ltlna true nu, ltlc_to_ltlna true mu)
+  | ltlc_to_ltlna true (Or_ltlc (nu, mu)) =
+    And_ltln (ltlc_to_ltlna true nu, ltlc_to_ltlna true mu)
+  | ltlc_to_ltlna true (Implies_ltlc (phi, psi)) =
+    And_ltln (ltlc_to_ltlna false phi, ltlc_to_ltlna true psi)
+  | ltlc_to_ltlna true (Final_ltlc phi) =
+    Release_ltln (False_ltln, ltlc_to_ltlna true phi)
+  | ltlc_to_ltlna true (Global_ltlc phi) =
+    Until_ltln (True_ltln, ltlc_to_ltlna true phi)
+  | ltlc_to_ltlna true (Until_ltlc (nu, mu)) =
+    Release_ltln (ltlc_to_ltlna true nu, ltlc_to_ltlna true mu)
+  | ltlc_to_ltlna true (Release_ltlc (nu, mu)) =
+    Until_ltln (ltlc_to_ltlna true nu, ltlc_to_ltlna true mu)
+  | ltlc_to_ltlna b (Not_ltlc psi) = ltlc_to_ltlna (not b) psi
+  | ltlc_to_ltlna b (Next_ltlc phi) = Next_ltln (ltlc_to_ltlna b phi);
 
 fun ltlc_to_ltln phi = ltlc_to_ltlna false phi;
 
-fun map_ltlc f LTLcTrue = LTLcTrue
-  | map_ltlc f LTLcFalse = LTLcFalse
-  | map_ltlc f (LTLcProp x3) = LTLcProp (f x3)
-  | map_ltlc f (LTLcNeg x4) = LTLcNeg (map_ltlc f x4)
-  | map_ltlc f (LTLcAnd (x51, x52)) = LTLcAnd (map_ltlc f x51, map_ltlc f x52)
-  | map_ltlc f (LTLcOr (x61, x62)) = LTLcOr (map_ltlc f x61, map_ltlc f x62)
-  | map_ltlc f (LTLcImplies (x71, x72)) =
-    LTLcImplies (map_ltlc f x71, map_ltlc f x72)
-  | map_ltlc f (LTLcNext x8) = LTLcNext (map_ltlc f x8)
-  | map_ltlc f (LTLcFinal x9) = LTLcFinal (map_ltlc f x9)
-  | map_ltlc f (LTLcGlobal x10) = LTLcGlobal (map_ltlc f x10)
-  | map_ltlc f (LTLcUntil (x111, x112)) =
-    LTLcUntil (map_ltlc f x111, map_ltlc f x112)
-  | map_ltlc f (LTLcRelease (x121, x122)) =
-    LTLcRelease (map_ltlc f x121, map_ltlc f x122);
+fun map_ltlc f True_ltlc = True_ltlc
+  | map_ltlc f False_ltlc = False_ltlc
+  | map_ltlc f (Prop_ltlc x3) = Prop_ltlc (f x3)
+  | map_ltlc f (Not_ltlc x4) = Not_ltlc (map_ltlc f x4)
+  | map_ltlc f (And_ltlc (x51, x52)) = And_ltlc (map_ltlc f x51, map_ltlc f x52)
+  | map_ltlc f (Or_ltlc (x61, x62)) = Or_ltlc (map_ltlc f x61, map_ltlc f x62)
+  | map_ltlc f (Implies_ltlc (x71, x72)) =
+    Implies_ltlc (map_ltlc f x71, map_ltlc f x72)
+  | map_ltlc f (Next_ltlc x8) = Next_ltlc (map_ltlc f x8)
+  | map_ltlc f (Final_ltlc x9) = Final_ltlc (map_ltlc f x9)
+  | map_ltlc f (Global_ltlc x10) = Global_ltlc (map_ltlc f x10)
+  | map_ltlc f (Until_ltlc (x111, x112)) =
+    Until_ltlc (map_ltlc f x111, map_ltlc f x112)
+  | map_ltlc f (Release_ltlc (x121, x122)) =
+    Release_ltlc (map_ltlc f x121, map_ltlc f x122);
 
-fun size_ltln LTLnTrue = Arith.suc Arith.zero_nat
-  | size_ltln LTLnFalse = Arith.suc Arith.zero_nat
-  | size_ltln (LTLnProp x3) = Arith.suc Arith.zero_nat
-  | size_ltln (LTLnNProp x4) = Arith.suc Arith.zero_nat
-  | size_ltln (LTLnAnd (x51, x52)) =
+fun size_ltln True_ltln = Arith.suc Arith.zero_nat
+  | size_ltln False_ltln = Arith.suc Arith.zero_nat
+  | size_ltln (Prop_ltln x3) = Arith.suc Arith.zero_nat
+  | size_ltln (Nprop_ltln x4) = Arith.suc Arith.zero_nat
+  | size_ltln (And_ltln (x51, x52)) =
     Arith.plus_nat (Arith.plus_nat (size_ltln x51) (size_ltln x52))
       (Arith.suc Arith.zero_nat)
-  | size_ltln (LTLnOr (x61, x62)) =
+  | size_ltln (Or_ltln (x61, x62)) =
     Arith.plus_nat (Arith.plus_nat (size_ltln x61) (size_ltln x62))
       (Arith.suc Arith.zero_nat)
-  | size_ltln (LTLnNext x7) =
+  | size_ltln (Next_ltln x7) =
     Arith.plus_nat (size_ltln x7) (Arith.suc Arith.zero_nat)
-  | size_ltln (LTLnUntil (x81, x82)) =
+  | size_ltln (Until_ltln (x81, x82)) =
     Arith.plus_nat (Arith.plus_nat (size_ltln x81) (size_ltln x82))
       (Arith.suc Arith.zero_nat)
-  | size_ltln (LTLnRelease (x91, x92)) =
+  | size_ltln (Release_ltln (x91, x92)) =
     Arith.plus_nat (Arith.plus_nat (size_ltln x91) (size_ltln x92))
       (Arith.suc Arith.zero_nat);
 
@@ -395,70 +396,70 @@ structure LTL_Rewrite : sig
 end = struct
 
 fun mk_or x y =
-  (case x of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => y
-    | LTL.LTLnProp _ =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => x
-        | LTL.LTLnProp _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnOr (x, y))
-    | LTL.LTLnNProp _ =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => x
-        | LTL.LTLnProp _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnOr (x, y))
-    | LTL.LTLnAnd (_, _) =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => x
-        | LTL.LTLnProp _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnOr (x, y))
-    | LTL.LTLnOr (_, _) =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => x
-        | LTL.LTLnProp _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnOr (x, y))
-    | LTL.LTLnNext _ =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => x
-        | LTL.LTLnProp _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnOr (x, y))
-    | LTL.LTLnUntil (_, _) =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => x
-        | LTL.LTLnProp _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnOr (x, y))
-    | LTL.LTLnRelease (_, _) =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => x
-        | LTL.LTLnProp _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnOr (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnOr (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnOr (x, y)));
+  (case x of LTL.True_ltln => LTL.True_ltln | LTL.False_ltln => y
+    | LTL.Prop_ltln _ =>
+      (case y of LTL.True_ltln => LTL.True_ltln | LTL.False_ltln => x
+        | LTL.Prop_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Or_ltln (x, y))
+    | LTL.Nprop_ltln _ =>
+      (case y of LTL.True_ltln => LTL.True_ltln | LTL.False_ltln => x
+        | LTL.Prop_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Or_ltln (x, y))
+    | LTL.And_ltln (_, _) =>
+      (case y of LTL.True_ltln => LTL.True_ltln | LTL.False_ltln => x
+        | LTL.Prop_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Or_ltln (x, y))
+    | LTL.Or_ltln (_, _) =>
+      (case y of LTL.True_ltln => LTL.True_ltln | LTL.False_ltln => x
+        | LTL.Prop_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Or_ltln (x, y))
+    | LTL.Next_ltln _ =>
+      (case y of LTL.True_ltln => LTL.True_ltln | LTL.False_ltln => x
+        | LTL.Prop_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Or_ltln (x, y))
+    | LTL.Until_ltln (_, _) =>
+      (case y of LTL.True_ltln => LTL.True_ltln | LTL.False_ltln => x
+        | LTL.Prop_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Or_ltln (x, y))
+    | LTL.Release_ltln (_, _) =>
+      (case y of LTL.True_ltln => LTL.True_ltln | LTL.False_ltln => x
+        | LTL.Prop_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Or_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Or_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Or_ltln (x, y)));
 
 fun eq_i_i A_ xa xb =
   Predicate.bind (Predicate.single (xa, xb))
@@ -466,90 +467,90 @@ fun eq_i_i A_ xa xb =
       (if HOL.eq A_ x xaa then Predicate.single () else Predicate.bot_pred));
 
 fun mk_and x y =
-  (case x of LTL.LTLnTrue => y | LTL.LTLnFalse => LTL.LTLnFalse
-    | LTL.LTLnProp _ =>
-      (case y of LTL.LTLnTrue => x | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnAnd (x, y))
-    | LTL.LTLnNProp _ =>
-      (case y of LTL.LTLnTrue => x | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnAnd (x, y))
-    | LTL.LTLnAnd (_, _) =>
-      (case y of LTL.LTLnTrue => x | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnAnd (x, y))
-    | LTL.LTLnOr (_, _) =>
-      (case y of LTL.LTLnTrue => x | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnAnd (x, y))
-    | LTL.LTLnNext _ =>
-      (case y of LTL.LTLnTrue => x | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnAnd (x, y))
-    | LTL.LTLnUntil (_, _) =>
-      (case y of LTL.LTLnTrue => x | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnAnd (x, y))
-    | LTL.LTLnRelease (_, _) =>
-      (case y of LTL.LTLnTrue => x | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnAnd (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnAnd (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnAnd (x, y)));
+  (case x of LTL.True_ltln => y | LTL.False_ltln => LTL.False_ltln
+    | LTL.Prop_ltln _ =>
+      (case y of LTL.True_ltln => x | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.And_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.And_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.And_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.And_ltln (x, y))
+    | LTL.Nprop_ltln _ =>
+      (case y of LTL.True_ltln => x | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.And_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.And_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.And_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.And_ltln (x, y))
+    | LTL.And_ltln (_, _) =>
+      (case y of LTL.True_ltln => x | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.And_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.And_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.And_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.And_ltln (x, y))
+    | LTL.Or_ltln (_, _) =>
+      (case y of LTL.True_ltln => x | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.And_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.And_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.And_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.And_ltln (x, y))
+    | LTL.Next_ltln _ =>
+      (case y of LTL.True_ltln => x | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.And_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.And_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.And_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.And_ltln (x, y))
+    | LTL.Until_ltln (_, _) =>
+      (case y of LTL.True_ltln => x | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.And_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.And_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.And_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.And_ltln (x, y))
+    | LTL.Release_ltln (_, _) =>
+      (case y of LTL.True_ltln => x | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.And_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.And_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.And_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.And_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.And_ltln (x, y)));
 
 fun mk_next_pow n x =
-  (case x of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-    | LTL.LTLnProp _ => Arith.funpow n LTL.LTLnNext x
-    | LTL.LTLnNProp _ => Arith.funpow n LTL.LTLnNext x
-    | LTL.LTLnAnd (_, _) => Arith.funpow n LTL.LTLnNext x
-    | LTL.LTLnOr (_, _) => Arith.funpow n LTL.LTLnNext x
-    | LTL.LTLnNext _ => Arith.funpow n LTL.LTLnNext x
-    | LTL.LTLnUntil (_, _) => Arith.funpow n LTL.LTLnNext x
-    | LTL.LTLnRelease (_, _) => Arith.funpow n LTL.LTLnNext x);
+  (case x of LTL.True_ltln => LTL.True_ltln | LTL.False_ltln => LTL.False_ltln
+    | LTL.Prop_ltln _ => Arith.funpow n LTL.Next_ltln x
+    | LTL.Nprop_ltln _ => Arith.funpow n LTL.Next_ltln x
+    | LTL.And_ltln (_, _) => Arith.funpow n LTL.Next_ltln x
+    | LTL.Or_ltln (_, _) => Arith.funpow n LTL.Next_ltln x
+    | LTL.Next_ltln _ => Arith.funpow n LTL.Next_ltln x
+    | LTL.Until_ltln (_, _) => Arith.funpow n LTL.Next_ltln x
+    | LTL.Release_ltln (_, _) => Arith.funpow n LTL.Next_ltln x);
 
-fun is_constant LTL.LTLnTrue = true
-  | is_constant LTL.LTLnFalse = true
-  | is_constant (LTL.LTLnProp v) = false
-  | is_constant (LTL.LTLnNProp v) = false
-  | is_constant (LTL.LTLnAnd (v, va)) = false
-  | is_constant (LTL.LTLnOr (v, va)) = false
-  | is_constant (LTL.LTLnNext v) = false
-  | is_constant (LTL.LTLnUntil (v, va)) = false
-  | is_constant (LTL.LTLnRelease (v, va)) = false;
+fun is_constant LTL.True_ltln = true
+  | is_constant LTL.False_ltln = true
+  | is_constant (LTL.Prop_ltln v) = false
+  | is_constant (LTL.Nprop_ltln v) = false
+  | is_constant (LTL.And_ltln (v, va)) = false
+  | is_constant (LTL.Or_ltln (v, va)) = false
+  | is_constant (LTL.Next_ltln v) = false
+  | is_constant (LTL.Until_ltln (v, va)) = false
+  | is_constant (LTL.Release_ltln (v, va)) = false;
 
 fun the_enat_0 (Extended_Nat.Enat i) = i
   | the_enat_0 Extended_Nat.Infinity_enat = Arith.zero_nat;
@@ -574,206 +575,227 @@ fun iterate A_ f x n =
          end);
 
 fun mk_next x =
-  (case x of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-    | LTL.LTLnProp _ => LTL.LTLnNext x | LTL.LTLnNProp _ => LTL.LTLnNext x
-    | LTL.LTLnAnd (_, _) => LTL.LTLnNext x | LTL.LTLnOr (_, _) => LTL.LTLnNext x
-    | LTL.LTLnNext _ => LTL.LTLnNext x | LTL.LTLnUntil (_, _) => LTL.LTLnNext x
-    | LTL.LTLnRelease (_, _) => LTL.LTLnNext x);
+  (case x of LTL.True_ltln => LTL.True_ltln | LTL.False_ltln => LTL.False_ltln
+    | LTL.Prop_ltln _ => LTL.Next_ltln x | LTL.Nprop_ltln _ => LTL.Next_ltln x
+    | LTL.And_ltln (_, _) => LTL.Next_ltln x
+    | LTL.Or_ltln (_, _) => LTL.Next_ltln x | LTL.Next_ltln _ => LTL.Next_ltln x
+    | LTL.Until_ltln (_, _) => LTL.Next_ltln x
+    | LTL.Release_ltln (_, _) => LTL.Next_ltln x);
 
-fun remove_until (LTL.LTLnUntil (x, y)) = remove_until y
-  | remove_until (LTL.LTLnOr (x, y)) =
-    LTL.LTLnOr (remove_until x, remove_until y)
-  | remove_until LTL.LTLnTrue = LTL.LTLnTrue
-  | remove_until LTL.LTLnFalse = LTL.LTLnFalse
-  | remove_until (LTL.LTLnProp v) = LTL.LTLnProp v
-  | remove_until (LTL.LTLnNProp v) = LTL.LTLnNProp v
-  | remove_until (LTL.LTLnAnd (v, va)) = LTL.LTLnAnd (v, va)
-  | remove_until (LTL.LTLnNext v) = LTL.LTLnNext v
-  | remove_until (LTL.LTLnRelease (v, va)) = LTL.LTLnRelease (v, va);
+fun remove_until (LTL.Until_ltln (x, y)) = remove_until y
+  | remove_until (LTL.Or_ltln (x, y)) =
+    LTL.Or_ltln (remove_until x, remove_until y)
+  | remove_until LTL.True_ltln = LTL.True_ltln
+  | remove_until LTL.False_ltln = LTL.False_ltln
+  | remove_until (LTL.Prop_ltln v) = LTL.Prop_ltln v
+  | remove_until (LTL.Nprop_ltln v) = LTL.Nprop_ltln v
+  | remove_until (LTL.And_ltln (v, va)) = LTL.And_ltln (v, va)
+  | remove_until (LTL.Next_ltln v) = LTL.Next_ltln v
+  | remove_until (LTL.Release_ltln (v, va)) = LTL.Release_ltln (v, va);
 
 fun mk_until x y =
   (case x
-    of LTL.LTLnTrue =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnUntil (LTL.LTLnTrue, remove_until y)
-        | LTL.LTLnNProp _ => LTL.LTLnUntil (LTL.LTLnTrue, remove_until y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnUntil (LTL.LTLnTrue, remove_until y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnUntil (LTL.LTLnTrue, remove_until y)
-        | LTL.LTLnNext _ => LTL.LTLnUntil (LTL.LTLnTrue, remove_until y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnUntil (LTL.LTLnTrue, remove_until y)
-        | LTL.LTLnRelease (_, _) =>
-          LTL.LTLnUntil (LTL.LTLnTrue, remove_until y))
-    | LTL.LTLnFalse => y
-    | LTL.LTLnProp _ =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnUntil (x, y))
-    | LTL.LTLnNProp _ =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnUntil (x, y))
-    | LTL.LTLnAnd (_, _) =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnUntil (x, y))
-    | LTL.LTLnOr (_, _) =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnUntil (x, y))
-    | LTL.LTLnNext _ =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnUntil (x, y))
-    | LTL.LTLnUntil (_, _) =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnUntil (x, y))
-    | LTL.LTLnRelease (_, _) =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnUntil (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnUntil (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnUntil (x, y)));
+    of LTL.True_ltln =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Until_ltln (LTL.True_ltln, remove_until y)
+        | LTL.Nprop_ltln _ => LTL.Until_ltln (LTL.True_ltln, remove_until y)
+        | LTL.And_ltln (_, _) => LTL.Until_ltln (LTL.True_ltln, remove_until y)
+        | LTL.Or_ltln (_, _) => LTL.Until_ltln (LTL.True_ltln, remove_until y)
+        | LTL.Next_ltln _ => LTL.Until_ltln (LTL.True_ltln, remove_until y)
+        | LTL.Until_ltln (_, _) =>
+          LTL.Until_ltln (LTL.True_ltln, remove_until y)
+        | LTL.Release_ltln (_, _) =>
+          LTL.Until_ltln (LTL.True_ltln, remove_until y))
+    | LTL.False_ltln => y
+    | LTL.Prop_ltln _ =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Until_ltln (x, y))
+    | LTL.Nprop_ltln _ =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Until_ltln (x, y))
+    | LTL.And_ltln (_, _) =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Until_ltln (x, y))
+    | LTL.Or_ltln (_, _) =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Until_ltln (x, y))
+    | LTL.Next_ltln _ =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Until_ltln (x, y))
+    | LTL.Until_ltln (_, _) =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Until_ltln (x, y))
+    | LTL.Release_ltln (_, _) =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Until_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Until_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Until_ltln (x, y)));
 
-fun remove_release (LTL.LTLnRelease (x, y)) = remove_release y
-  | remove_release (LTL.LTLnAnd (x, y)) =
-    LTL.LTLnAnd (remove_release x, remove_release y)
-  | remove_release LTL.LTLnTrue = LTL.LTLnTrue
-  | remove_release LTL.LTLnFalse = LTL.LTLnFalse
-  | remove_release (LTL.LTLnProp v) = LTL.LTLnProp v
-  | remove_release (LTL.LTLnNProp v) = LTL.LTLnNProp v
-  | remove_release (LTL.LTLnOr (v, va)) = LTL.LTLnOr (v, va)
-  | remove_release (LTL.LTLnNext v) = LTL.LTLnNext v
-  | remove_release (LTL.LTLnUntil (v, va)) = LTL.LTLnUntil (v, va);
+fun remove_release (LTL.Release_ltln (x, y)) = remove_release y
+  | remove_release (LTL.And_ltln (x, y)) =
+    LTL.And_ltln (remove_release x, remove_release y)
+  | remove_release LTL.True_ltln = LTL.True_ltln
+  | remove_release LTL.False_ltln = LTL.False_ltln
+  | remove_release (LTL.Prop_ltln v) = LTL.Prop_ltln v
+  | remove_release (LTL.Nprop_ltln v) = LTL.Nprop_ltln v
+  | remove_release (LTL.Or_ltln (v, va)) = LTL.Or_ltln (v, va)
+  | remove_release (LTL.Next_ltln v) = LTL.Next_ltln v
+  | remove_release (LTL.Until_ltln (v, va)) = LTL.Until_ltln (v, va);
 
 fun mk_release x y =
-  (case x of LTL.LTLnTrue => y
-    | LTL.LTLnFalse =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnRelease (LTL.LTLnFalse, remove_release y)
-        | LTL.LTLnNProp _ => LTL.LTLnRelease (LTL.LTLnFalse, remove_release y)
-        | LTL.LTLnAnd (_, _) =>
-          LTL.LTLnRelease (LTL.LTLnFalse, remove_release y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnRelease (LTL.LTLnFalse, remove_release y)
-        | LTL.LTLnNext _ => LTL.LTLnRelease (LTL.LTLnFalse, remove_release y)
-        | LTL.LTLnUntil (_, _) =>
-          LTL.LTLnRelease (LTL.LTLnFalse, remove_release y)
-        | LTL.LTLnRelease (_, _) =>
-          LTL.LTLnRelease (LTL.LTLnFalse, remove_release y))
-    | LTL.LTLnProp _ =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnRelease (x, y))
-    | LTL.LTLnNProp _ =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnRelease (x, y))
-    | LTL.LTLnAnd (_, _) =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnRelease (x, y))
-    | LTL.LTLnOr (_, _) =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnRelease (x, y))
-    | LTL.LTLnNext _ =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnRelease (x, y))
-    | LTL.LTLnUntil (_, _) =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnRelease (x, y))
-    | LTL.LTLnRelease (_, _) =>
-      (case y of LTL.LTLnTrue => LTL.LTLnTrue | LTL.LTLnFalse => LTL.LTLnFalse
-        | LTL.LTLnProp _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnNProp _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnAnd (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnOr (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnNext _ => LTL.LTLnRelease (x, y)
-        | LTL.LTLnUntil (_, _) => LTL.LTLnRelease (x, y)
-        | LTL.LTLnRelease (_, _) => LTL.LTLnRelease (x, y)));
+  (case x of LTL.True_ltln => y
+    | LTL.False_ltln =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Release_ltln (LTL.False_ltln, remove_release y)
+        | LTL.Nprop_ltln _ =>
+          LTL.Release_ltln (LTL.False_ltln, remove_release y)
+        | LTL.And_ltln (_, _) =>
+          LTL.Release_ltln (LTL.False_ltln, remove_release y)
+        | LTL.Or_ltln (_, _) =>
+          LTL.Release_ltln (LTL.False_ltln, remove_release y)
+        | LTL.Next_ltln _ => LTL.Release_ltln (LTL.False_ltln, remove_release y)
+        | LTL.Until_ltln (_, _) =>
+          LTL.Release_ltln (LTL.False_ltln, remove_release y)
+        | LTL.Release_ltln (_, _) =>
+          LTL.Release_ltln (LTL.False_ltln, remove_release y))
+    | LTL.Prop_ltln _ =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Release_ltln (x, y))
+    | LTL.Nprop_ltln _ =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Release_ltln (x, y))
+    | LTL.And_ltln (_, _) =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Release_ltln (x, y))
+    | LTL.Or_ltln (_, _) =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Release_ltln (x, y))
+    | LTL.Next_ltln _ =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Release_ltln (x, y))
+    | LTL.Until_ltln (_, _) =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Release_ltln (x, y))
+    | LTL.Release_ltln (_, _) =>
+      (case y of LTL.True_ltln => LTL.True_ltln
+        | LTL.False_ltln => LTL.False_ltln
+        | LTL.Prop_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.Nprop_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.And_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Or_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Next_ltln _ => LTL.Release_ltln (x, y)
+        | LTL.Until_ltln (_, _) => LTL.Release_ltln (x, y)
+        | LTL.Release_ltln (_, _) => LTL.Release_ltln (x, y)));
 
-fun rewrite_X_enat LTL.LTLnTrue = (LTL.LTLnTrue, Extended_Nat.Infinity_enat)
-  | rewrite_X_enat LTL.LTLnFalse = (LTL.LTLnFalse, Extended_Nat.Infinity_enat)
-  | rewrite_X_enat (LTL.LTLnProp a) = (LTL.LTLnProp a, Extended_Nat.zero_enat)
-  | rewrite_X_enat (LTL.LTLnNProp a) = (LTL.LTLnNProp a, Extended_Nat.zero_enat)
-  | rewrite_X_enat (LTL.LTLnAnd (phi, psi)) =
+fun rewrite_X_enat LTL.True_ltln = (LTL.True_ltln, Extended_Nat.Infinity_enat)
+  | rewrite_X_enat LTL.False_ltln = (LTL.False_ltln, Extended_Nat.Infinity_enat)
+  | rewrite_X_enat (LTL.Prop_ltln a) = (LTL.Prop_ltln a, Extended_Nat.zero_enat)
+  | rewrite_X_enat (LTL.Nprop_ltln a) =
+    (LTL.Nprop_ltln a, Extended_Nat.zero_enat)
+  | rewrite_X_enat (LTL.And_ltln (phi, psi)) =
     combine mk_and (rewrite_X_enat phi) (rewrite_X_enat psi)
-  | rewrite_X_enat (LTL.LTLnOr (phi, psi)) =
+  | rewrite_X_enat (LTL.Or_ltln (phi, psi)) =
     combine mk_or (rewrite_X_enat phi) (rewrite_X_enat psi)
-  | rewrite_X_enat (LTL.LTLnUntil (phi, psi)) =
+  | rewrite_X_enat (LTL.Until_ltln (phi, psi)) =
     combine mk_until (rewrite_X_enat phi) (rewrite_X_enat psi)
-  | rewrite_X_enat (LTL.LTLnRelease (phi, psi)) =
+  | rewrite_X_enat (LTL.Release_ltln (phi, psi)) =
     combine mk_release (rewrite_X_enat phi) (rewrite_X_enat psi)
-  | rewrite_X_enat (LTL.LTLnNext phi) = let
-  val (phia, n) = rewrite_X_enat phi;
-in
-  (phia, Extended_Nat.eSuc n)
-end;
+  | rewrite_X_enat (LTL.Next_ltln phi) = let
+   val (phia, n) = rewrite_X_enat phi;
+ in
+   (phia, Extended_Nat.eSuc n)
+ end;
 
 fun rewrite_X phi =
   let
@@ -782,94 +804,94 @@ fun rewrite_X phi =
     mk_next_pow (the_enat_0 (Product_Type.snd t)) (Product_Type.fst t)
   end;
 
-fun pure_universal A_ LTL.LTLnTrue = true
-  | pure_universal A_ LTL.LTLnFalse = true
-  | pure_universal A_ (LTL.LTLnAnd (nua, nu)) =
+fun pure_universal A_ LTL.True_ltln = true
+  | pure_universal A_ LTL.False_ltln = true
+  | pure_universal A_ (LTL.And_ltln (nua, nu)) =
     pure_universal A_ nua andalso pure_universal A_ nu
-  | pure_universal A_ (LTL.LTLnOr (nua, nu)) =
+  | pure_universal A_ (LTL.Or_ltln (nua, nu)) =
     pure_universal A_ nua andalso pure_universal A_ nu
-  | pure_universal A_ (LTL.LTLnUntil (nua, nu)) =
+  | pure_universal A_ (LTL.Until_ltln (nua, nu)) =
     pure_universal A_ nua andalso pure_universal A_ nu
-  | pure_universal A_ (LTL.LTLnRelease (nua, nu)) =
-    LTL.equal_ltlna A_ nua LTL.LTLnFalse orelse pure_universal A_ nu
-  | pure_universal A_ (LTL.LTLnNext nu) = pure_universal A_ nu
-  | pure_universal A_ (LTL.LTLnProp v) = false
-  | pure_universal A_ (LTL.LTLnNProp v) = false;
+  | pure_universal A_ (LTL.Release_ltln (nua, nu)) =
+    LTL.equal_ltlna A_ nua LTL.False_ltln orelse pure_universal A_ nu
+  | pure_universal A_ (LTL.Next_ltln nu) = pure_universal A_ nu
+  | pure_universal A_ (LTL.Prop_ltln v) = false
+  | pure_universal A_ (LTL.Nprop_ltln v) = false;
 
-fun pure_eventual A_ LTL.LTLnTrue = true
-  | pure_eventual A_ LTL.LTLnFalse = true
-  | pure_eventual A_ (LTL.LTLnAnd (mua, mu)) =
+fun pure_eventual A_ LTL.True_ltln = true
+  | pure_eventual A_ LTL.False_ltln = true
+  | pure_eventual A_ (LTL.And_ltln (mua, mu)) =
     pure_eventual A_ mua andalso pure_eventual A_ mu
-  | pure_eventual A_ (LTL.LTLnOr (mua, mu)) =
+  | pure_eventual A_ (LTL.Or_ltln (mua, mu)) =
     pure_eventual A_ mua andalso pure_eventual A_ mu
-  | pure_eventual A_ (LTL.LTLnUntil (mua, mu)) =
-    LTL.equal_ltlna A_ mua LTL.LTLnTrue orelse pure_eventual A_ mu
-  | pure_eventual A_ (LTL.LTLnRelease (mua, mu)) =
+  | pure_eventual A_ (LTL.Until_ltln (mua, mu)) =
+    LTL.equal_ltlna A_ mua LTL.True_ltln orelse pure_eventual A_ mu
+  | pure_eventual A_ (LTL.Release_ltln (mua, mu)) =
     pure_eventual A_ mua andalso pure_eventual A_ mu
-  | pure_eventual A_ (LTL.LTLnNext mu) = pure_eventual A_ mu
-  | pure_eventual A_ (LTL.LTLnProp v) = false
-  | pure_eventual A_ (LTL.LTLnNProp v) = false;
+  | pure_eventual A_ (LTL.Next_ltln mu) = pure_eventual A_ mu
+  | pure_eventual A_ (LTL.Prop_ltln v) = false
+  | pure_eventual A_ (LTL.Nprop_ltln v) = false;
 
-fun suspendable A_ LTL.LTLnTrue = true
-  | suspendable A_ LTL.LTLnFalse = true
-  | suspendable A_ (LTL.LTLnAnd (xia, xi)) =
+fun suspendable A_ LTL.True_ltln = true
+  | suspendable A_ LTL.False_ltln = true
+  | suspendable A_ (LTL.And_ltln (xia, xi)) =
     suspendable A_ xia andalso suspendable A_ xi
-  | suspendable A_ (LTL.LTLnOr (xia, xi)) =
+  | suspendable A_ (LTL.Or_ltln (xia, xi)) =
     suspendable A_ xia andalso suspendable A_ xi
-  | suspendable A_ (LTL.LTLnUntil (phi, xi)) =
-    LTL.equal_ltlna A_ phi LTL.LTLnTrue andalso pure_universal A_ xi orelse
+  | suspendable A_ (LTL.Until_ltln (phi, xi)) =
+    LTL.equal_ltlna A_ phi LTL.True_ltln andalso pure_universal A_ xi orelse
       suspendable A_ xi
-  | suspendable A_ (LTL.LTLnRelease (phi, xi)) =
-    LTL.equal_ltlna A_ phi LTL.LTLnFalse andalso pure_eventual A_ xi orelse
+  | suspendable A_ (LTL.Release_ltln (phi, xi)) =
+    LTL.equal_ltlna A_ phi LTL.False_ltln andalso pure_eventual A_ xi orelse
       suspendable A_ xi
-  | suspendable A_ (LTL.LTLnNext xi) = suspendable A_ xi
-  | suspendable A_ (LTL.LTLnProp v) = false
-  | suspendable A_ (LTL.LTLnNProp v) = false;
+  | suspendable A_ (LTL.Next_ltln xi) = suspendable A_ xi
+  | suspendable A_ (LTL.Prop_ltln v) = false
+  | suspendable A_ (LTL.Nprop_ltln v) = false;
 
-fun rewrite_modal A_ LTL.LTLnTrue = LTL.LTLnTrue
-  | rewrite_modal A_ LTL.LTLnFalse = LTL.LTLnFalse
-  | rewrite_modal A_ (LTL.LTLnAnd (phi, psi)) =
-    LTL.LTLnAnd (rewrite_modal A_ phi, rewrite_modal A_ psi)
-  | rewrite_modal A_ (LTL.LTLnOr (phi, psi)) =
-    LTL.LTLnOr (rewrite_modal A_ phi, rewrite_modal A_ psi)
-  | rewrite_modal A_ (LTL.LTLnUntil (phi, psi)) =
+fun rewrite_modal A_ LTL.True_ltln = LTL.True_ltln
+  | rewrite_modal A_ LTL.False_ltln = LTL.False_ltln
+  | rewrite_modal A_ (LTL.And_ltln (phi, psi)) =
+    LTL.And_ltln (rewrite_modal A_ phi, rewrite_modal A_ psi)
+  | rewrite_modal A_ (LTL.Or_ltln (phi, psi)) =
+    LTL.Or_ltln (rewrite_modal A_ phi, rewrite_modal A_ psi)
+  | rewrite_modal A_ (LTL.Until_ltln (phi, psi)) =
     (if pure_eventual A_ psi orelse suspendable A_ psi then rewrite_modal A_ psi
-      else LTL.LTLnUntil (rewrite_modal A_ phi, rewrite_modal A_ psi))
-  | rewrite_modal A_ (LTL.LTLnRelease (phi, psi)) =
+      else LTL.Until_ltln (rewrite_modal A_ phi, rewrite_modal A_ psi))
+  | rewrite_modal A_ (LTL.Release_ltln (phi, psi)) =
     (if pure_universal A_ psi orelse suspendable A_ psi
       then rewrite_modal A_ psi
-      else LTL.LTLnRelease (rewrite_modal A_ phi, rewrite_modal A_ psi))
-  | rewrite_modal A_ (LTL.LTLnNext phi) =
+      else LTL.Release_ltln (rewrite_modal A_ phi, rewrite_modal A_ psi))
+  | rewrite_modal A_ (LTL.Next_ltln phi) =
     (if suspendable A_ phi then rewrite_modal A_ phi
-      else LTL.LTLnNext (rewrite_modal A_ phi))
-  | rewrite_modal A_ (LTL.LTLnProp v) = LTL.LTLnProp v
-  | rewrite_modal A_ (LTL.LTLnNProp v) = LTL.LTLnNProp v;
+      else LTL.Next_ltln (rewrite_modal A_ phi))
+  | rewrite_modal A_ (LTL.Prop_ltln v) = LTL.Prop_ltln v
+  | rewrite_modal A_ (LTL.Nprop_ltln v) = LTL.Nprop_ltln v;
 
 fun syntactical_implies_i_i A_ x xa =
   Predicate.sup_pred
     (Predicate.bind (Predicate.single (x, xa))
       (fn a =>
-        (case a of (_, LTL.LTLnTrue) => Predicate.single ()
-          | (_, LTL.LTLnFalse) => Predicate.bot_pred
-          | (_, LTL.LTLnProp _) => Predicate.bot_pred
-          | (_, LTL.LTLnNProp _) => Predicate.bot_pred
-          | (_, LTL.LTLnAnd (_, _)) => Predicate.bot_pred
-          | (_, LTL.LTLnOr (_, _)) => Predicate.bot_pred
-          | (_, LTL.LTLnNext _) => Predicate.bot_pred
-          | (_, LTL.LTLnUntil (_, _)) => Predicate.bot_pred
-          | (_, LTL.LTLnRelease (_, _)) => Predicate.bot_pred)))
+        (case a of (_, LTL.True_ltln) => Predicate.single ()
+          | (_, LTL.False_ltln) => Predicate.bot_pred
+          | (_, LTL.Prop_ltln _) => Predicate.bot_pred
+          | (_, LTL.Nprop_ltln _) => Predicate.bot_pred
+          | (_, LTL.And_ltln (_, _)) => Predicate.bot_pred
+          | (_, LTL.Or_ltln (_, _)) => Predicate.bot_pred
+          | (_, LTL.Next_ltln _) => Predicate.bot_pred
+          | (_, LTL.Until_ltln (_, _)) => Predicate.bot_pred
+          | (_, LTL.Release_ltln (_, _)) => Predicate.bot_pred)))
     (Predicate.sup_pred
       (Predicate.bind (Predicate.single (x, xa))
         (fn a =>
-          (case a of (LTL.LTLnTrue, _) => Predicate.bot_pred
-            | (LTL.LTLnFalse, _) => Predicate.single ()
-            | (LTL.LTLnProp _, _) => Predicate.bot_pred
-            | (LTL.LTLnNProp _, _) => Predicate.bot_pred
-            | (LTL.LTLnAnd (_, _), _) => Predicate.bot_pred
-            | (LTL.LTLnOr (_, _), _) => Predicate.bot_pred
-            | (LTL.LTLnNext _, _) => Predicate.bot_pred
-            | (LTL.LTLnUntil (_, _), _) => Predicate.bot_pred
-            | (LTL.LTLnRelease (_, _), _) => Predicate.bot_pred)))
+          (case a of (LTL.True_ltln, _) => Predicate.bot_pred
+            | (LTL.False_ltln, _) => Predicate.single ()
+            | (LTL.Prop_ltln _, _) => Predicate.bot_pred
+            | (LTL.Nprop_ltln _, _) => Predicate.bot_pred
+            | (LTL.And_ltln (_, _), _) => Predicate.bot_pred
+            | (LTL.Or_ltln (_, _), _) => Predicate.bot_pred
+            | (LTL.Next_ltln _, _) => Predicate.bot_pred
+            | (LTL.Until_ltln (_, _), _) => Predicate.bot_pred
+            | (LTL.Release_ltln (_, _), _) => Predicate.bot_pred)))
       (Predicate.sup_pred
         (Predicate.bind (Predicate.single (x, xa))
           (fn (phi, phia) =>
@@ -880,177 +902,181 @@ fun syntactical_implies_i_i A_ x xa =
         (Predicate.sup_pred
           (Predicate.bind (Predicate.single (x, xa))
             (fn a =>
-              (case a of (LTL.LTLnTrue, _) => Predicate.bot_pred
-                | (LTL.LTLnFalse, _) => Predicate.bot_pred
-                | (LTL.LTLnProp _, _) => Predicate.bot_pred
-                | (LTL.LTLnNProp _, _) => Predicate.bot_pred
-                | (LTL.LTLnAnd (phi, _), chi) =>
+              (case a of (LTL.True_ltln, _) => Predicate.bot_pred
+                | (LTL.False_ltln, _) => Predicate.bot_pred
+                | (LTL.Prop_ltln _, _) => Predicate.bot_pred
+                | (LTL.Nprop_ltln _, _) => Predicate.bot_pred
+                | (LTL.And_ltln (phi, _), chi) =>
                   Predicate.bind (syntactical_implies_i_i A_ phi chi)
                     (fn () => Predicate.single ())
-                | (LTL.LTLnOr (_, _), _) => Predicate.bot_pred
-                | (LTL.LTLnNext _, _) => Predicate.bot_pred
-                | (LTL.LTLnUntil (_, _), _) => Predicate.bot_pred
-                | (LTL.LTLnRelease (_, _), _) => Predicate.bot_pred)))
+                | (LTL.Or_ltln (_, _), _) => Predicate.bot_pred
+                | (LTL.Next_ltln _, _) => Predicate.bot_pred
+                | (LTL.Until_ltln (_, _), _) => Predicate.bot_pred
+                | (LTL.Release_ltln (_, _), _) => Predicate.bot_pred)))
           (Predicate.sup_pred
             (Predicate.bind (Predicate.single (x, xa))
               (fn a =>
-                (case a of (LTL.LTLnTrue, _) => Predicate.bot_pred
-                  | (LTL.LTLnFalse, _) => Predicate.bot_pred
-                  | (LTL.LTLnProp _, _) => Predicate.bot_pred
-                  | (LTL.LTLnNProp _, _) => Predicate.bot_pred
-                  | (LTL.LTLnAnd (_, psi), chi) =>
+                (case a of (LTL.True_ltln, _) => Predicate.bot_pred
+                  | (LTL.False_ltln, _) => Predicate.bot_pred
+                  | (LTL.Prop_ltln _, _) => Predicate.bot_pred
+                  | (LTL.Nprop_ltln _, _) => Predicate.bot_pred
+                  | (LTL.And_ltln (_, psi), chi) =>
                     Predicate.bind (syntactical_implies_i_i A_ psi chi)
                       (fn () => Predicate.single ())
-                  | (LTL.LTLnOr (_, _), _) => Predicate.bot_pred
-                  | (LTL.LTLnNext _, _) => Predicate.bot_pred
-                  | (LTL.LTLnUntil (_, _), _) => Predicate.bot_pred
-                  | (LTL.LTLnRelease (_, _), _) => Predicate.bot_pred)))
+                  | (LTL.Or_ltln (_, _), _) => Predicate.bot_pred
+                  | (LTL.Next_ltln _, _) => Predicate.bot_pred
+                  | (LTL.Until_ltln (_, _), _) => Predicate.bot_pred
+                  | (LTL.Release_ltln (_, _), _) => Predicate.bot_pred)))
             (Predicate.sup_pred
               (Predicate.bind (Predicate.single (x, xa))
                 (fn a =>
-                  (case a of (_, LTL.LTLnTrue) => Predicate.bot_pred
-                    | (_, LTL.LTLnFalse) => Predicate.bot_pred
-                    | (_, LTL.LTLnProp _) => Predicate.bot_pred
-                    | (_, LTL.LTLnNProp _) => Predicate.bot_pred
-                    | (phi, LTL.LTLnAnd (psi, chi)) =>
+                  (case a of (_, LTL.True_ltln) => Predicate.bot_pred
+                    | (_, LTL.False_ltln) => Predicate.bot_pred
+                    | (_, LTL.Prop_ltln _) => Predicate.bot_pred
+                    | (_, LTL.Nprop_ltln _) => Predicate.bot_pred
+                    | (phi, LTL.And_ltln (psi, chi)) =>
                       Predicate.bind (syntactical_implies_i_i A_ phi psi)
                         (fn () =>
                           Predicate.bind (syntactical_implies_i_i A_ phi chi)
                             (fn () => Predicate.single ()))
-                    | (_, LTL.LTLnOr (_, _)) => Predicate.bot_pred
-                    | (_, LTL.LTLnNext _) => Predicate.bot_pred
-                    | (_, LTL.LTLnUntil (_, _)) => Predicate.bot_pred
-                    | (_, LTL.LTLnRelease (_, _)) => Predicate.bot_pred)))
+                    | (_, LTL.Or_ltln (_, _)) => Predicate.bot_pred
+                    | (_, LTL.Next_ltln _) => Predicate.bot_pred
+                    | (_, LTL.Until_ltln (_, _)) => Predicate.bot_pred
+                    | (_, LTL.Release_ltln (_, _)) => Predicate.bot_pred)))
               (Predicate.sup_pred
                 (Predicate.bind (Predicate.single (x, xa))
                   (fn a =>
-                    (case a of (_, LTL.LTLnTrue) => Predicate.bot_pred
-                      | (_, LTL.LTLnFalse) => Predicate.bot_pred
-                      | (_, LTL.LTLnProp _) => Predicate.bot_pred
-                      | (_, LTL.LTLnNProp _) => Predicate.bot_pred
-                      | (_, LTL.LTLnAnd (_, _)) => Predicate.bot_pred
-                      | (phi, LTL.LTLnOr (psi, _)) =>
+                    (case a of (_, LTL.True_ltln) => Predicate.bot_pred
+                      | (_, LTL.False_ltln) => Predicate.bot_pred
+                      | (_, LTL.Prop_ltln _) => Predicate.bot_pred
+                      | (_, LTL.Nprop_ltln _) => Predicate.bot_pred
+                      | (_, LTL.And_ltln (_, _)) => Predicate.bot_pred
+                      | (phi, LTL.Or_ltln (psi, _)) =>
                         Predicate.bind (syntactical_implies_i_i A_ phi psi)
                           (fn () => Predicate.single ())
-                      | (_, LTL.LTLnNext _) => Predicate.bot_pred
-                      | (_, LTL.LTLnUntil (_, _)) => Predicate.bot_pred
-                      | (_, LTL.LTLnRelease (_, _)) => Predicate.bot_pred)))
+                      | (_, LTL.Next_ltln _) => Predicate.bot_pred
+                      | (_, LTL.Until_ltln (_, _)) => Predicate.bot_pred
+                      | (_, LTL.Release_ltln (_, _)) => Predicate.bot_pred)))
                 (Predicate.sup_pred
                   (Predicate.bind (Predicate.single (x, xa))
                     (fn a =>
-                      (case a of (_, LTL.LTLnTrue) => Predicate.bot_pred
-                        | (_, LTL.LTLnFalse) => Predicate.bot_pred
-                        | (_, LTL.LTLnProp _) => Predicate.bot_pred
-                        | (_, LTL.LTLnNProp _) => Predicate.bot_pred
-                        | (_, LTL.LTLnAnd (_, _)) => Predicate.bot_pred
-                        | (phi, LTL.LTLnOr (_, chi)) =>
+                      (case a of (_, LTL.True_ltln) => Predicate.bot_pred
+                        | (_, LTL.False_ltln) => Predicate.bot_pred
+                        | (_, LTL.Prop_ltln _) => Predicate.bot_pred
+                        | (_, LTL.Nprop_ltln _) => Predicate.bot_pred
+                        | (_, LTL.And_ltln (_, _)) => Predicate.bot_pred
+                        | (phi, LTL.Or_ltln (_, chi)) =>
                           Predicate.bind (syntactical_implies_i_i A_ phi chi)
                             (fn () => Predicate.single ())
-                        | (_, LTL.LTLnNext _) => Predicate.bot_pred
-                        | (_, LTL.LTLnUntil (_, _)) => Predicate.bot_pred
-                        | (_, LTL.LTLnRelease (_, _)) => Predicate.bot_pred)))
+                        | (_, LTL.Next_ltln _) => Predicate.bot_pred
+                        | (_, LTL.Until_ltln (_, _)) => Predicate.bot_pred
+                        | (_, LTL.Release_ltln (_, _)) => Predicate.bot_pred)))
                   (Predicate.sup_pred
                     (Predicate.bind (Predicate.single (x, xa))
                       (fn a =>
-                        (case a of (LTL.LTLnTrue, _) => Predicate.bot_pred
-                          | (LTL.LTLnFalse, _) => Predicate.bot_pred
-                          | (LTL.LTLnProp _, _) => Predicate.bot_pred
-                          | (LTL.LTLnNProp _, _) => Predicate.bot_pred
-                          | (LTL.LTLnAnd (_, _), _) => Predicate.bot_pred
-                          | (LTL.LTLnOr (phi, psi), chi) =>
+                        (case a of (LTL.True_ltln, _) => Predicate.bot_pred
+                          | (LTL.False_ltln, _) => Predicate.bot_pred
+                          | (LTL.Prop_ltln _, _) => Predicate.bot_pred
+                          | (LTL.Nprop_ltln _, _) => Predicate.bot_pred
+                          | (LTL.And_ltln (_, _), _) => Predicate.bot_pred
+                          | (LTL.Or_ltln (phi, psi), chi) =>
                             Predicate.bind (syntactical_implies_i_i A_ phi chi)
                               (fn () =>
                                 Predicate.bind
                                   (syntactical_implies_i_i A_ psi chi)
                                   (fn () => Predicate.single ()))
-                          | (LTL.LTLnNext _, _) => Predicate.bot_pred
-                          | (LTL.LTLnUntil (_, _), _) => Predicate.bot_pred
-                          | (LTL.LTLnRelease (_, _), _) => Predicate.bot_pred)))
+                          | (LTL.Next_ltln _, _) => Predicate.bot_pred
+                          | (LTL.Until_ltln (_, _), _) => Predicate.bot_pred
+                          | (LTL.Release_ltln (_, _), _) =>
+                            Predicate.bot_pred)))
                     (Predicate.sup_pred
                       (Predicate.bind (Predicate.single (x, xa))
                         (fn a =>
-                          (case a of (_, LTL.LTLnTrue) => Predicate.bot_pred
-                            | (_, LTL.LTLnFalse) => Predicate.bot_pred
-                            | (_, LTL.LTLnProp _) => Predicate.bot_pred
-                            | (_, LTL.LTLnNProp _) => Predicate.bot_pred
-                            | (_, LTL.LTLnAnd (_, _)) => Predicate.bot_pred
-                            | (_, LTL.LTLnOr (_, _)) => Predicate.bot_pred
-                            | (_, LTL.LTLnNext _) => Predicate.bot_pred
-                            | (phi, LTL.LTLnUntil (_, chi)) =>
+                          (case a of (_, LTL.True_ltln) => Predicate.bot_pred
+                            | (_, LTL.False_ltln) => Predicate.bot_pred
+                            | (_, LTL.Prop_ltln _) => Predicate.bot_pred
+                            | (_, LTL.Nprop_ltln _) => Predicate.bot_pred
+                            | (_, LTL.And_ltln (_, _)) => Predicate.bot_pred
+                            | (_, LTL.Or_ltln (_, _)) => Predicate.bot_pred
+                            | (_, LTL.Next_ltln _) => Predicate.bot_pred
+                            | (phi, LTL.Until_ltln (_, chi)) =>
                               Predicate.bind
                                 (syntactical_implies_i_i A_ phi chi)
                                 (fn () => Predicate.single ())
-                            | (_, LTL.LTLnRelease (_, _)) =>
+                            | (_, LTL.Release_ltln (_, _)) =>
                               Predicate.bot_pred)))
                       (Predicate.sup_pred
                         (Predicate.bind (Predicate.single (x, xa))
                           (fn a =>
-                            (case a of (LTL.LTLnTrue, _) => Predicate.bot_pred
-                              | (LTL.LTLnFalse, _) => Predicate.bot_pred
-                              | (LTL.LTLnProp _, _) => Predicate.bot_pred
-                              | (LTL.LTLnNProp _, _) => Predicate.bot_pred
-                              | (LTL.LTLnAnd (_, _), _) => Predicate.bot_pred
-                              | (LTL.LTLnOr (_, _), _) => Predicate.bot_pred
-                              | (LTL.LTLnNext _, _) => Predicate.bot_pred
-                              | (LTL.LTLnUntil (phi, psi), chi) =>
+                            (case a of (LTL.True_ltln, _) => Predicate.bot_pred
+                              | (LTL.False_ltln, _) => Predicate.bot_pred
+                              | (LTL.Prop_ltln _, _) => Predicate.bot_pred
+                              | (LTL.Nprop_ltln _, _) => Predicate.bot_pred
+                              | (LTL.And_ltln (_, _), _) => Predicate.bot_pred
+                              | (LTL.Or_ltln (_, _), _) => Predicate.bot_pred
+                              | (LTL.Next_ltln _, _) => Predicate.bot_pred
+                              | (LTL.Until_ltln (phi, psi), chi) =>
                                 Predicate.bind
                                   (syntactical_implies_i_i A_ phi chi)
                                   (fn () =>
                                     Predicate.bind
                                       (syntactical_implies_i_i A_ psi chi)
                                       (fn () => Predicate.single ()))
-                              | (LTL.LTLnRelease (_, _), _) =>
+                              | (LTL.Release_ltln (_, _), _) =>
                                 Predicate.bot_pred)))
                         (Predicate.sup_pred
                           (Predicate.bind (Predicate.single (x, xa))
                             (fn a =>
-                              (case a of (LTL.LTLnTrue, _) => Predicate.bot_pred
-                                | (LTL.LTLnFalse, _) => Predicate.bot_pred
-                                | (LTL.LTLnProp _, _) => Predicate.bot_pred
-                                | (LTL.LTLnNProp _, _) => Predicate.bot_pred
-                                | (LTL.LTLnAnd (_, _), _) => Predicate.bot_pred
-                                | (LTL.LTLnOr (_, _), _) => Predicate.bot_pred
-                                | (LTL.LTLnNext _, _) => Predicate.bot_pred
-                                | (LTL.LTLnUntil (_, _), LTL.LTLnTrue) =>
+                              (case a
+                                of (LTL.True_ltln, _) => Predicate.bot_pred
+                                | (LTL.False_ltln, _) => Predicate.bot_pred
+                                | (LTL.Prop_ltln _, _) => Predicate.bot_pred
+                                | (LTL.Nprop_ltln _, _) => Predicate.bot_pred
+                                | (LTL.And_ltln (_, _), _) => Predicate.bot_pred
+                                | (LTL.Or_ltln (_, _), _) => Predicate.bot_pred
+                                | (LTL.Next_ltln _, _) => Predicate.bot_pred
+                                | (LTL.Until_ltln (_, _), LTL.True_ltln) =>
                                   Predicate.bot_pred
-                                | (LTL.LTLnUntil (_, _), LTL.LTLnFalse) =>
+                                | (LTL.Until_ltln (_, _), LTL.False_ltln) =>
                                   Predicate.bot_pred
-                                | (LTL.LTLnUntil (_, _), LTL.LTLnProp _) =>
+                                | (LTL.Until_ltln (_, _), LTL.Prop_ltln _) =>
                                   Predicate.bot_pred
-                                | (LTL.LTLnUntil (_, _), LTL.LTLnNProp _) =>
+                                | (LTL.Until_ltln (_, _), LTL.Nprop_ltln _) =>
                                   Predicate.bot_pred
-                                | (LTL.LTLnUntil (_, _), LTL.LTLnAnd (_, _)) =>
+                                | (LTL.Until_ltln (_, _), LTL.And_ltln (_, _))
+                                  => Predicate.bot_pred
+                                | (LTL.Until_ltln (_, _), LTL.Or_ltln (_, _)) =>
                                   Predicate.bot_pred
-                                | (LTL.LTLnUntil (_, _), LTL.LTLnOr (_, _)) =>
+                                | (LTL.Until_ltln (_, _), LTL.Next_ltln _) =>
                                   Predicate.bot_pred
-                                | (LTL.LTLnUntil (_, _), LTL.LTLnNext _) =>
-                                  Predicate.bot_pred
-                                | (LTL.LTLnUntil (phi, psi),
-                                    LTL.LTLnUntil (chi, nu))
+                                | (LTL.Until_ltln (phi, psi),
+                                    LTL.Until_ltln (chi, nu))
                                   => Predicate.bind
                                        (syntactical_implies_i_i A_ phi chi)
                                        (fn () =>
  Predicate.bind (syntactical_implies_i_i A_ psi nu)
    (fn () => Predicate.single ()))
-                                | (LTL.LTLnUntil (_, _), LTL.LTLnRelease (_, _))
+                                | (LTL.Until_ltln (_, _),
+                                    LTL.Release_ltln (_, _))
                                   => Predicate.bot_pred
-                                | (LTL.LTLnRelease (_, _), _) =>
+                                | (LTL.Release_ltln (_, _), _) =>
                                   Predicate.bot_pred)))
                           (Predicate.sup_pred
                             (Predicate.bind (Predicate.single (x, xa))
                               (fn a =>
                                 (case a
-                                  of (LTL.LTLnTrue, _) => Predicate.bot_pred
-                                  | (LTL.LTLnFalse, _) => Predicate.bot_pred
-                                  | (LTL.LTLnProp _, _) => Predicate.bot_pred
-                                  | (LTL.LTLnNProp _, _) => Predicate.bot_pred
-                                  | (LTL.LTLnAnd (_, _), _) =>
+                                  of (LTL.True_ltln, _) => Predicate.bot_pred
+                                  | (LTL.False_ltln, _) => Predicate.bot_pred
+                                  | (LTL.Prop_ltln _, _) => Predicate.bot_pred
+                                  | (LTL.Nprop_ltln _, _) => Predicate.bot_pred
+                                  | (LTL.And_ltln (_, _), _) =>
                                     Predicate.bot_pred
-                                  | (LTL.LTLnOr (_, _), _) => Predicate.bot_pred
-                                  | (LTL.LTLnNext _, _) => Predicate.bot_pred
-                                  | (LTL.LTLnUntil (_, _), _) =>
+                                  | (LTL.Or_ltln (_, _), _) =>
                                     Predicate.bot_pred
-                                  | (LTL.LTLnRelease (_, chi), phi) =>
+                                  | (LTL.Next_ltln _, _) => Predicate.bot_pred
+                                  | (LTL.Until_ltln (_, _), _) =>
+                                    Predicate.bot_pred
+                                  | (LTL.Release_ltln (_, chi), phi) =>
                                     Predicate.bind
                                       (syntactical_implies_i_i A_ chi phi)
                                       (fn () => Predicate.single ()))))
@@ -1058,18 +1084,19 @@ fun syntactical_implies_i_i A_ x xa =
                               (Predicate.bind (Predicate.single (x, xa))
                                 (fn a =>
                                   (case a
-                                    of (_, LTL.LTLnTrue) => Predicate.bot_pred
-                                    | (_, LTL.LTLnFalse) => Predicate.bot_pred
-                                    | (_, LTL.LTLnProp _) => Predicate.bot_pred
-                                    | (_, LTL.LTLnNProp _) => Predicate.bot_pred
-                                    | (_, LTL.LTLnAnd (_, _)) =>
+                                    of (_, LTL.True_ltln) => Predicate.bot_pred
+                                    | (_, LTL.False_ltln) => Predicate.bot_pred
+                                    | (_, LTL.Prop_ltln _) => Predicate.bot_pred
+                                    | (_, LTL.Nprop_ltln _) =>
                                       Predicate.bot_pred
-                                    | (_, LTL.LTLnOr (_, _)) =>
+                                    | (_, LTL.And_ltln (_, _)) =>
                                       Predicate.bot_pred
-                                    | (_, LTL.LTLnNext _) => Predicate.bot_pred
-                                    | (_, LTL.LTLnUntil (_, _)) =>
+                                    | (_, LTL.Or_ltln (_, _)) =>
                                       Predicate.bot_pred
-                                    | (chi, LTL.LTLnRelease (phi, psi)) =>
+                                    | (_, LTL.Next_ltln _) => Predicate.bot_pred
+                                    | (_, LTL.Until_ltln (_, _)) =>
+                                      Predicate.bot_pred
+                                    | (chi, LTL.Release_ltln (phi, psi)) =>
                                       Predicate.bind
 (syntactical_implies_i_i A_ chi phi)
 (fn () =>
@@ -1079,38 +1106,40 @@ fun syntactical_implies_i_i A_ x xa =
                                 (Predicate.bind (Predicate.single (x, xa))
                                   (fn a =>
                                     (case a
-                                      of (LTL.LTLnTrue, _) => Predicate.bot_pred
-                                      | (LTL.LTLnFalse, _) => Predicate.bot_pred
-                                      | (LTL.LTLnProp _, _) =>
+                                      of (LTL.True_ltln, _) =>
 Predicate.bot_pred
-                                      | (LTL.LTLnNProp _, _) =>
+                                      | (LTL.False_ltln, _) =>
 Predicate.bot_pred
-                                      | (LTL.LTLnAnd (_, _), _) =>
+                                      | (LTL.Prop_ltln _, _) =>
 Predicate.bot_pred
-                                      | (LTL.LTLnOr (_, _), _) =>
+                                      | (LTL.Nprop_ltln _, _) =>
 Predicate.bot_pred
-                                      | (LTL.LTLnNext _, _) =>
+                                      | (LTL.And_ltln (_, _), _) =>
 Predicate.bot_pred
-                                      | (LTL.LTLnUntil (_, _), _) =>
+                                      | (LTL.Or_ltln (_, _), _) =>
 Predicate.bot_pred
-                                      | (LTL.LTLnRelease (_, _), LTL.LTLnTrue)
-=> Predicate.bot_pred
-                                      | (LTL.LTLnRelease (_, _), LTL.LTLnFalse)
-=> Predicate.bot_pred
-                                      | (LTL.LTLnRelease (_, _), LTL.LTLnProp _)
+                                      | (LTL.Next_ltln _, _) =>
+Predicate.bot_pred
+                                      | (LTL.Until_ltln (_, _), _) =>
+Predicate.bot_pred
+                                      | (LTL.Release_ltln (_, _), LTL.True_ltln)
 => Predicate.bot_pred
                                       |
-(LTL.LTLnRelease (_, _), LTL.LTLnNProp _) => Predicate.bot_pred
+(LTL.Release_ltln (_, _), LTL.False_ltln) => Predicate.bot_pred
                                       |
-(LTL.LTLnRelease (_, _), LTL.LTLnAnd (_, _)) => Predicate.bot_pred
+(LTL.Release_ltln (_, _), LTL.Prop_ltln _) => Predicate.bot_pred
                                       |
-(LTL.LTLnRelease (_, _), LTL.LTLnOr (_, _)) => Predicate.bot_pred
-                                      | (LTL.LTLnRelease (_, _), LTL.LTLnNext _)
-=> Predicate.bot_pred
+(LTL.Release_ltln (_, _), LTL.Nprop_ltln _) => Predicate.bot_pred
                                       |
-(LTL.LTLnRelease (_, _), LTL.LTLnUntil (_, _)) => Predicate.bot_pred
+(LTL.Release_ltln (_, _), LTL.And_ltln (_, _)) => Predicate.bot_pred
                                       |
-(LTL.LTLnRelease (phi, psi), LTL.LTLnRelease (chi, nu)) =>
+(LTL.Release_ltln (_, _), LTL.Or_ltln (_, _)) => Predicate.bot_pred
+                                      |
+(LTL.Release_ltln (_, _), LTL.Next_ltln _) => Predicate.bot_pred
+                                      |
+(LTL.Release_ltln (_, _), LTL.Until_ltln (_, _)) => Predicate.bot_pred
+                                      |
+(LTL.Release_ltln (phi, psi), LTL.Release_ltln (chi, nu)) =>
 Predicate.bind (syntactical_implies_i_i A_ phi chi)
   (fn () =>
     Predicate.bind (syntactical_implies_i_i A_ psi nu)
@@ -1119,126 +1148,130 @@ Predicate.bind (syntactical_implies_i_i A_ phi chi)
                                   (Predicate.bind (Predicate.single (x, xa))
                                     (fn a =>
                                       (case a
-of (LTL.LTLnTrue, _) => Predicate.bot_pred
-| (LTL.LTLnFalse, _) => Predicate.bot_pred
-| (LTL.LTLnProp _, _) => Predicate.bot_pred
-| (LTL.LTLnNProp _, _) => Predicate.bot_pred
-| (LTL.LTLnAnd (_, _), _) => Predicate.bot_pred
-| (LTL.LTLnOr (_, _), _) => Predicate.bot_pred
-| (LTL.LTLnNext _, _) => Predicate.bot_pred
-| (LTL.LTLnUntil (_, _), _) => Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnTrue, _), _) => Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnFalse, _), LTL.LTLnTrue) => Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnFalse, _), LTL.LTLnFalse) => Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnFalse, _), LTL.LTLnProp _) => Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnFalse, _), LTL.LTLnNProp _) => Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnFalse, _), LTL.LTLnAnd (_, _)) => Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnFalse, _), LTL.LTLnOr (_, _)) => Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnFalse, phi), LTL.LTLnNext psi) =>
+of (LTL.True_ltln, _) => Predicate.bot_pred
+| (LTL.False_ltln, _) => Predicate.bot_pred
+| (LTL.Prop_ltln _, _) => Predicate.bot_pred
+| (LTL.Nprop_ltln _, _) => Predicate.bot_pred
+| (LTL.And_ltln (_, _), _) => Predicate.bot_pred
+| (LTL.Or_ltln (_, _), _) => Predicate.bot_pred
+| (LTL.Next_ltln _, _) => Predicate.bot_pred
+| (LTL.Until_ltln (_, _), _) => Predicate.bot_pred
+| (LTL.Release_ltln (LTL.True_ltln, _), _) => Predicate.bot_pred
+| (LTL.Release_ltln (LTL.False_ltln, _), LTL.True_ltln) => Predicate.bot_pred
+| (LTL.Release_ltln (LTL.False_ltln, _), LTL.False_ltln) => Predicate.bot_pred
+| (LTL.Release_ltln (LTL.False_ltln, _), LTL.Prop_ltln _) => Predicate.bot_pred
+| (LTL.Release_ltln (LTL.False_ltln, _), LTL.Nprop_ltln _) => Predicate.bot_pred
+| (LTL.Release_ltln (LTL.False_ltln, _), LTL.And_ltln (_, _)) =>
+  Predicate.bot_pred
+| (LTL.Release_ltln (LTL.False_ltln, _), LTL.Or_ltln (_, _)) =>
+  Predicate.bot_pred
+| (LTL.Release_ltln (LTL.False_ltln, phi), LTL.Next_ltln psi) =>
   Predicate.bind
-    (syntactical_implies_i_i A_ (LTL.LTLnRelease (LTL.LTLnFalse, phi)) psi)
+    (syntactical_implies_i_i A_ (LTL.Release_ltln (LTL.False_ltln, phi)) psi)
     (fn () => Predicate.single ())
-| (LTL.LTLnRelease (LTL.LTLnFalse, _), LTL.LTLnUntil (_, _)) =>
+| (LTL.Release_ltln (LTL.False_ltln, _), LTL.Until_ltln (_, _)) =>
   Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnFalse, _), LTL.LTLnRelease (_, _)) =>
+| (LTL.Release_ltln (LTL.False_ltln, _), LTL.Release_ltln (_, _)) =>
   Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnProp _, _), _) => Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnNProp _, _), _) => Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnAnd (_, _), _), _) => Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnOr (_, _), _), _) => Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnNext _, _), _) => Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnUntil (_, _), _), _) => Predicate.bot_pred
-| (LTL.LTLnRelease (LTL.LTLnRelease (_, _), _), _) => Predicate.bot_pred)))
+| (LTL.Release_ltln (LTL.Prop_ltln _, _), _) => Predicate.bot_pred
+| (LTL.Release_ltln (LTL.Nprop_ltln _, _), _) => Predicate.bot_pred
+| (LTL.Release_ltln (LTL.And_ltln (_, _), _), _) => Predicate.bot_pred
+| (LTL.Release_ltln (LTL.Or_ltln (_, _), _), _) => Predicate.bot_pred
+| (LTL.Release_ltln (LTL.Next_ltln _, _), _) => Predicate.bot_pred
+| (LTL.Release_ltln (LTL.Until_ltln (_, _), _), _) => Predicate.bot_pred
+| (LTL.Release_ltln (LTL.Release_ltln (_, _), _), _) => Predicate.bot_pred)))
                                   (Predicate.sup_pred
                                     (Predicate.bind (Predicate.single (x, xa))
                                       (fn a =>
-(case a of (LTL.LTLnTrue, _) => Predicate.bot_pred
-  | (LTL.LTLnFalse, _) => Predicate.bot_pred
-  | (LTL.LTLnProp _, _) => Predicate.bot_pred
-  | (LTL.LTLnNProp _, _) => Predicate.bot_pred
-  | (LTL.LTLnAnd (_, _), _) => Predicate.bot_pred
-  | (LTL.LTLnOr (_, _), _) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnTrue) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnFalse) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnProp _) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnNProp _) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnAnd (_, _)) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnOr (_, _)) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnNext _) => Predicate.bot_pred
-  | (LTL.LTLnNext phi, LTL.LTLnUntil (LTL.LTLnTrue, psi)) =>
+(case a of (LTL.True_ltln, _) => Predicate.bot_pred
+  | (LTL.False_ltln, _) => Predicate.bot_pred
+  | (LTL.Prop_ltln _, _) => Predicate.bot_pred
+  | (LTL.Nprop_ltln _, _) => Predicate.bot_pred
+  | (LTL.And_ltln (_, _), _) => Predicate.bot_pred
+  | (LTL.Or_ltln (_, _), _) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.True_ltln) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.False_ltln) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.Prop_ltln _) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.Nprop_ltln _) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.And_ltln (_, _)) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.Or_ltln (_, _)) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.Next_ltln _) => Predicate.bot_pred
+  | (LTL.Next_ltln phi, LTL.Until_ltln (LTL.True_ltln, psi)) =>
     Predicate.bind
-      (syntactical_implies_i_i A_ phi (LTL.LTLnUntil (LTL.LTLnTrue, psi)))
+      (syntactical_implies_i_i A_ phi (LTL.Until_ltln (LTL.True_ltln, psi)))
       (fn () => Predicate.single ())
-  | (LTL.LTLnNext _, LTL.LTLnUntil (LTL.LTLnFalse, _)) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnUntil (LTL.LTLnProp _, _)) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnUntil (LTL.LTLnNProp _, _)) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnUntil (LTL.LTLnAnd (_, _), _)) =>
+  | (LTL.Next_ltln _, LTL.Until_ltln (LTL.False_ltln, _)) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.Until_ltln (LTL.Prop_ltln _, _)) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.Until_ltln (LTL.Nprop_ltln _, _)) =>
     Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnUntil (LTL.LTLnOr (_, _), _)) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnUntil (LTL.LTLnNext _, _)) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnUntil (LTL.LTLnUntil (_, _), _)) =>
+  | (LTL.Next_ltln _, LTL.Until_ltln (LTL.And_ltln (_, _), _)) =>
     Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnUntil (LTL.LTLnRelease (_, _), _)) =>
+  | (LTL.Next_ltln _, LTL.Until_ltln (LTL.Or_ltln (_, _), _)) =>
     Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnRelease (_, _)) => Predicate.bot_pred
-  | (LTL.LTLnUntil (_, _), _) => Predicate.bot_pred
-  | (LTL.LTLnRelease (_, _), _) => Predicate.bot_pred)))
+  | (LTL.Next_ltln _, LTL.Until_ltln (LTL.Next_ltln _, _)) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.Until_ltln (LTL.Until_ltln (_, _), _)) =>
+    Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.Until_ltln (LTL.Release_ltln (_, _), _)) =>
+    Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.Release_ltln (_, _)) => Predicate.bot_pred
+  | (LTL.Until_ltln (_, _), _) => Predicate.bot_pred
+  | (LTL.Release_ltln (_, _), _) => Predicate.bot_pred)))
                                     (Predicate.bind (Predicate.single (x, xa))
                                       (fn a =>
-(case a of (LTL.LTLnTrue, _) => Predicate.bot_pred
-  | (LTL.LTLnFalse, _) => Predicate.bot_pred
-  | (LTL.LTLnProp _, _) => Predicate.bot_pred
-  | (LTL.LTLnNProp _, _) => Predicate.bot_pred
-  | (LTL.LTLnAnd (_, _), _) => Predicate.bot_pred
-  | (LTL.LTLnOr (_, _), _) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnTrue) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnFalse) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnProp _) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnNProp _) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnAnd (_, _)) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnOr (_, _)) => Predicate.bot_pred
-  | (LTL.LTLnNext phi, LTL.LTLnNext psi) =>
+(case a of (LTL.True_ltln, _) => Predicate.bot_pred
+  | (LTL.False_ltln, _) => Predicate.bot_pred
+  | (LTL.Prop_ltln _, _) => Predicate.bot_pred
+  | (LTL.Nprop_ltln _, _) => Predicate.bot_pred
+  | (LTL.And_ltln (_, _), _) => Predicate.bot_pred
+  | (LTL.Or_ltln (_, _), _) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.True_ltln) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.False_ltln) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.Prop_ltln _) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.Nprop_ltln _) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.And_ltln (_, _)) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.Or_ltln (_, _)) => Predicate.bot_pred
+  | (LTL.Next_ltln phi, LTL.Next_ltln psi) =>
     Predicate.bind (syntactical_implies_i_i A_ phi psi)
       (fn () => Predicate.single ())
-  | (LTL.LTLnNext _, LTL.LTLnUntil (_, _)) => Predicate.bot_pred
-  | (LTL.LTLnNext _, LTL.LTLnRelease (_, _)) => Predicate.bot_pred
-  | (LTL.LTLnUntil (_, _), _) => Predicate.bot_pred
-  | (LTL.LTLnRelease (_, _), _) => Predicate.bot_pred)))))))))))))))))));
+  | (LTL.Next_ltln _, LTL.Until_ltln (_, _)) => Predicate.bot_pred
+  | (LTL.Next_ltln _, LTL.Release_ltln (_, _)) => Predicate.bot_pred
+  | (LTL.Until_ltln (_, _), _) => Predicate.bot_pred
+  | (LTL.Release_ltln (_, _), _) => Predicate.bot_pred)))))))))))))))))));
 
 fun syntactical_implies A_ x1 x2 =
   Predicate.holds (syntactical_implies_i_i A_ x1 x2);
 
-fun rewrite_syn_imp A_ (LTL.LTLnAnd (phi, psi)) =
+fun rewrite_syn_imp A_ (LTL.And_ltln (phi, psi)) =
   (if syntactical_implies A_ phi psi then rewrite_syn_imp A_ phi
     else (if syntactical_implies A_ psi phi then rewrite_syn_imp A_ psi
            else (if syntactical_implies A_ phi (LTL.not_n psi) orelse
                       syntactical_implies A_ psi (LTL.not_n phi)
-                  then LTL.LTLnFalse
+                  then LTL.False_ltln
                   else mk_and (rewrite_syn_imp A_ phi)
                          (rewrite_syn_imp A_ psi))))
-  | rewrite_syn_imp A_ (LTL.LTLnOr (phi, psi)) =
+  | rewrite_syn_imp A_ (LTL.Or_ltln (phi, psi)) =
     (if syntactical_implies A_ phi psi then rewrite_syn_imp A_ psi
       else (if syntactical_implies A_ psi phi then rewrite_syn_imp A_ phi
              else (if syntactical_implies A_ (LTL.not_n phi) psi orelse
                         syntactical_implies A_ (LTL.not_n psi) phi
-                    then LTL.LTLnTrue
+                    then LTL.True_ltln
                     else mk_or (rewrite_syn_imp A_ phi)
                            (rewrite_syn_imp A_ psi))))
-  | rewrite_syn_imp A_ (LTL.LTLnUntil (phi, psi)) =
+  | rewrite_syn_imp A_ (LTL.Until_ltln (phi, psi)) =
     (if syntactical_implies A_ phi psi then rewrite_syn_imp A_ psi
       else (if syntactical_implies A_ (LTL.not_n phi) psi
-             then mk_until LTL.LTLnTrue (rewrite_syn_imp A_ psi)
+             then mk_until LTL.True_ltln (rewrite_syn_imp A_ psi)
              else mk_until (rewrite_syn_imp A_ phi) (rewrite_syn_imp A_ psi)))
-  | rewrite_syn_imp A_ (LTL.LTLnRelease (phi, psi)) =
+  | rewrite_syn_imp A_ (LTL.Release_ltln (phi, psi)) =
     (if syntactical_implies A_ psi phi then rewrite_syn_imp A_ psi
       else (if syntactical_implies A_ psi (LTL.not_n phi)
-             then mk_release LTL.LTLnFalse (rewrite_syn_imp A_ psi)
+             then mk_release LTL.False_ltln (rewrite_syn_imp A_ psi)
              else mk_release (rewrite_syn_imp A_ phi) (rewrite_syn_imp A_ psi)))
-  | rewrite_syn_imp A_ (LTL.LTLnNext phi) = mk_next (rewrite_syn_imp A_ phi)
-  | rewrite_syn_imp A_ LTL.LTLnTrue = LTL.LTLnTrue
-  | rewrite_syn_imp A_ LTL.LTLnFalse = LTL.LTLnFalse
-  | rewrite_syn_imp A_ (LTL.LTLnProp v) = LTL.LTLnProp v
-  | rewrite_syn_imp A_ (LTL.LTLnNProp v) = LTL.LTLnNProp v;
+  | rewrite_syn_imp A_ (LTL.Next_ltln phi) = mk_next (rewrite_syn_imp A_ phi)
+  | rewrite_syn_imp A_ LTL.True_ltln = LTL.True_ltln
+  | rewrite_syn_imp A_ LTL.False_ltln = LTL.False_ltln
+  | rewrite_syn_imp A_ (LTL.Prop_ltln v) = LTL.Prop_ltln v
+  | rewrite_syn_imp A_ (LTL.Nprop_ltln v) = LTL.Nprop_ltln v;
 
 fun rewrite_iter_slow A_ phi =
   iterate (LTL.equal_ltln A_)
