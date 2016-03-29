@@ -398,7 +398,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
               (Isabelle_Typedecl.abbrev_cmd0 (SOME s_bind) thy (of_semi__typ l))) thy
      end)
 | Theory_type_notation (Type_notation (n, e)) => in_local
-   (Specification.type_notation_cmd true ("", true) [(To_string0 n, Mixfix (To_string0 e, [], 1000))])
+   (Specification.type_notation_cmd true ("", true) [(To_string0 n, Mixfix (Input.string (To_string0 e), [], 1000, Position.no_range))])
 | Theory_instantiation (Instantiation (n, n_def, expr)) => in_theory
    (fn thy =>
      let val name = To_string0 n
@@ -425,18 +425,18 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
 | Theory_consts (Consts (n, ty, symb)) => in_theory
    (Sign.add_consts_cmd [( To_sbinding n
                         , of_semi__typ ty
-                        , Mixfix ("(_) " ^ To_string0 symb, [], 1000))])
+                        , Mixfix (Input.string ("(_) " ^ To_string0 symb), [], 1000, Position.no_range))])
 | Theory_definition def => in_local
     let val (def, e) = case def of
         Definition e => (NONE, e)
       | Definition_where1 (name, (abbrev, prio), e) =>
           (SOME ( To_sbinding name
                 , NONE
-                , Mixfix ("(1" ^ of_semi__term abbrev ^ ")", [], To_nat prio)), e)
+                , Mixfix (Input.string ("(1" ^ of_semi__term abbrev ^ ")"), [], To_nat prio, Position.no_range)), e)
       | Definition_where2 (name, abbrev, e) =>
           (SOME ( To_sbinding name
                 , NONE
-                , Mixfix ("(" ^ of_semi__term abbrev ^ ")", [], 1000)), e) in
+                , Mixfix (Input.string ("(" ^ of_semi__term abbrev ^ ")"), [], 1000, Position.no_range)), e) in
     (snd o Specification.definition_cmd (def, ((@{binding ""}, []), of_semi__term e)) false)
     end
 | Theory_lemmas (Lemmas_simp_thm (simp, s, l)) => in_local

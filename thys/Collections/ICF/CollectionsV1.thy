@@ -499,7 +499,7 @@ qed
         val lthy = fold (fn (name,rhs) =>
           Local_Theory.abbrev 
             Syntax.mode_input 
-            ((Binding.name name,Mixfix.NoSyn),rhs) #> #2
+            ((Binding.name name,NoSyn),rhs) #> #2
         ) abbrevs lthy
         (*val _ = tracing "Done";*)
       in lthy end
