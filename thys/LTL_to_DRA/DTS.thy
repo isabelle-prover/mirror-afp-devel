@@ -149,18 +149,22 @@ qed
 
 subsubsection \<open>Compute reach Using DFS\<close>
 
-fun Q\<^sub>L :: "'a list \<Rightarrow> ('b, 'a) DTS \<Rightarrow> 'b \<Rightarrow> 'b set"
+definition Q\<^sub>L :: "'a list \<Rightarrow> ('b, 'a) DTS \<Rightarrow> 'b \<Rightarrow> 'b set"
 where
   "Q\<^sub>L \<Sigma> \<delta> q\<^sub>0 = (if \<Sigma> \<noteq> [] then gen_dfs (\<lambda>q. map (\<delta> q) \<Sigma>) Set.insert (op \<in>) {} [q\<^sub>0] else {})"
 
-fun \<delta>\<^sub>L :: "'a list \<Rightarrow> ('b, 'a) DTS \<Rightarrow> 'b \<Rightarrow> ('b, 'a) transition set"
+definition list_dfs :: "(('a, 'b) transition \<Rightarrow> ('a, 'b) transition list) \<Rightarrow> ('a, 'b) transition list => ('a, 'b) transition list => ('a, 'b) transition list"
 where
-  "\<delta>\<^sub>L \<Sigma> \<delta> q\<^sub>0 = ( 
+  "list_dfs succ S start \<equiv> gen_dfs succ List.insert (\<lambda>x xs. x \<in> set xs) S start"
+
+definition \<delta>\<^sub>L :: "'a list \<Rightarrow> ('b, 'a) DTS \<Rightarrow> 'b \<Rightarrow> ('b, 'a) transition set"
+where
+  "\<delta>\<^sub>L \<Sigma> \<delta> q\<^sub>0 = set ( 
     let 
       start = map (\<lambda>\<nu>. (q\<^sub>0, \<nu>, \<delta> q\<^sub>0 \<nu>)) \<Sigma>; 
       succ = \<lambda>(_, _, q). (map (\<lambda>\<nu>. (q, \<nu>, \<delta> q \<nu>)) \<Sigma>)
     in 
-      gen_dfs succ Set.insert (op \<in>) {} start)"
+      (list_dfs succ [] start))"
 
 lemma Q\<^sub>L_reach:
   assumes "finite (reach (set \<Sigma>) \<delta> q\<^sub>0)"
@@ -233,18 +237,18 @@ proof (cases "\<Sigma> \<noteq> []")
 
     have "reachable {q\<^sub>0} \<subseteq> Q\<^sub>L \<Sigma> \<delta> q\<^sub>0"
       using reachable_imp_dfs[OF _ list_all_init] unfolding list.set reachable_redef
-      unfolding  reach_redef Q\<^sub>L.simps using `\<Sigma> \<noteq> []` by auto
+      unfolding  reach_redef Q\<^sub>L_def using `\<Sigma> \<noteq> []` by auto
 
     moreover
 
     have "Q\<^sub>L \<Sigma> \<delta> q\<^sub>0 \<subseteq> reach (set \<Sigma>) \<delta> q\<^sub>0"
       using dfs_invariant[of "{}", OF _ list_all_init] 
-      by (auto simp add: reach_redef)
+      by (auto simp add: reach_redef Q\<^sub>L_def)
 
     ultimately
     show ?thesis
       using `\<Sigma> \<noteq> []` dfs_invariant[of "{}", OF _ list_all_init] by simp+
-qed (simp add: reach_def)
+qed (simp add: reach_def Q\<^sub>L_def)
 
 lemma \<delta>\<^sub>L_reach: 
   assumes "finite (reach\<^sub>t (set \<Sigma>) \<delta> q\<^sub>0)"
@@ -266,7 +270,7 @@ proof -
 
   let ?succs = "\<lambda>(_, _, q). (map (\<lambda>\<nu>. (q, \<nu>, \<delta> q \<nu>)) \<Sigma>)"
 
-  interpret DFS "\<lambda>(_, _, q). (map (\<lambda>\<nu>. (q, \<nu>, \<delta> q \<nu>)) \<Sigma>)" "\<lambda>t. t \<in> reach\<^sub>t (set \<Sigma>) \<delta> q\<^sub>0" "\<lambda>S. S \<subseteq> reach\<^sub>t (set \<Sigma>) \<delta> q\<^sub>0" Set.insert "op \<in>" "{}" id
+  interpret DFS "\<lambda>(_, _, q). (map (\<lambda>\<nu>. (q, \<nu>, \<delta> q \<nu>)) \<Sigma>)" "\<lambda>t. t \<in> reach\<^sub>t (set \<Sigma>) \<delta> q\<^sub>0" "\<lambda>S. set S \<subseteq> reach\<^sub>t (set \<Sigma>) \<delta> q\<^sub>0" List.insert "\<lambda>x xs. x \<in> set xs" "[]" id
     apply (unfold_locales; auto simp add: member_rec reach\<^sub>t_foldl_def list_all_iff elim: extend_run)
     apply (metis extend_run image_eqI set_map)
     using  assms unfolding reach\<^sub>t_foldl_def by simp
@@ -335,14 +339,14 @@ proof -
   moreover
 
   have "reachable ?q\<^sub>0 \<subseteq> (\<delta>\<^sub>L \<Sigma> \<delta> q\<^sub>0)"
-    using reachable_imp_dfs[OF _ list_all_init] unfolding reachable_redef
+    using reachable_imp_dfs[OF _ list_all_init] unfolding \<delta>\<^sub>L_def reachable_redef list_dfs_def
     by (simp; blast)
 
   moreover
 
-  have " \<delta>\<^sub>L \<Sigma> \<delta> q\<^sub>0 \<subseteq> reach\<^sub>t (set \<Sigma>) \<delta> q\<^sub>0"
-    using dfs_invariant[of "{}", OF _ list_all_init] 
-    by (auto simp add: reach\<^sub>t_foldl_def)
+  have "\<delta>\<^sub>L \<Sigma> \<delta> q\<^sub>0 \<subseteq> reach\<^sub>t (set \<Sigma>) \<delta> q\<^sub>0"
+    using dfs_invariant[of "[]", OF _ list_all_init] 
+    by (auto simp add: reach\<^sub>t_foldl_def \<delta>\<^sub>L_def list_dfs_def)
 
   ultimately
   show ?thesis 

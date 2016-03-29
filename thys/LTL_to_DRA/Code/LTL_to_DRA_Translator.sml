@@ -1443,6 +1443,36 @@ fun update A_ k v [] = [(k, v)]
   | update A_ k v (p :: ps) =
     (if eq A_ (fst p) k then (k, v) :: ps else p :: update A_ k v ps);
 
+fun norm_rep A_ B_ (i, (qa, (nua, pa))) (q, (nu, p)) =
+  let
+    val eq_q = eq A_ qa q;
+    val eq_p = eq A_ pa p;
+    val qaa = (if eq_q then q else (if eq A_ qa p then p else qa));
+    val pb = (if eq_p then p else (if eq A_ pa q then q else pa));
+  in
+    (i orelse eq_q andalso (eq_p andalso eq B_ nua nu), (qaa, (nua, pb)))
+  end;
+
+fun foldl_break f s a [] = a
+  | foldl_break f s a (x :: xs) =
+    (if s a then a else foldl_break f s (f a x) xs);
+
+fun norm_fold A_ B_ (q, (nu, p)) xs =
+  foldl_break (norm_rep A_ B_) fst
+    (false, (q, (nu, (if eq A_ q p then q else p)))) xs;
+
+fun list_dfs A_ B_ succ s (x :: xs) =
+  let
+    val (memb, sa) = let
+                       val (i, xa) = norm_fold A_ B_ x s;
+                     in
+                       (if i then (i, s) else (i, xa :: s))
+                     end;
+  in
+    list_dfs A_ B_ succ sa (if memb then xs else succ x @ xs)
+  end
+  | list_dfs A_ B_ succ s [] = s;
+
 fun iff_ltlc phi psi =
   And_ltlc (Implies_ltlc (phi, psi), Implies_ltlc (psi, phi));
 
@@ -1993,13 +2023,13 @@ fun mk_next x =
     | Release_ltln (_, _) => Next_ltln x);
 
 fun delta_L A_ B_ sigma delta q_0 =
-  let
-    val start = map (fn nu => (q_0, (nu, delta q_0 nu))) sigma;
-    val succ = (fn (_, (_, q)) => map (fn nu => (q, (nu, delta q nu))) sigma);
-  in
-    gen_dfs succ (insert (equal_prod B_ (equal_prod A_ B_)))
-      (member (equal_prod B_ (equal_prod A_ B_))) bot_set start
-  end;
+  Set let
+        val start = map (fn nu => (q_0, (nu, delta q_0 nu))) sigma;
+        val succ =
+          (fn (_, (_, q)) => map (fn nu => (q, (nu, delta q nu))) sigma);
+      in
+        list_dfs B_ A_ succ [] start
+      end;
 
 fun remove_until (Until_ltln (x, y)) = remove_until y
   | remove_until (Or_ltln (x, y)) = Or_ltln (remove_until x, remove_until y)

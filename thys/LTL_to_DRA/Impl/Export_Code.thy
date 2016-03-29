@@ -51,6 +51,53 @@ proof -
     by simp
 qed
 
+subsection \<open>Normalize Equivalence Classes During DFS-Search\<close>
+
+fun norm_rep
+where
+  "norm_rep (i, (q, \<nu>, p)) (q', \<nu>', p') = (
+    let 
+      eq_q = (q = q'); eq_p = (p = p');
+      q'' = if eq_q then q' else if q = p' then p' else q;
+      p'' = if eq_p then p' else if p = q' then q' else p
+    in 
+      (i | (eq_q & eq_p & \<nu> = \<nu>'), q'', \<nu>, p''))"
+
+fun norm_fold :: "('a, 'b) transition \<Rightarrow> ('a, 'b) transition list \<Rightarrow> (bool * 'a * 'b * 'a)"
+where
+  "norm_fold (q, \<nu>, p) xs = foldl_break norm_rep fst (False, q, \<nu>, if q = p then q else p) xs"
+
+definition norm_insert :: "('a, 'b) transition \<Rightarrow> ('a, 'b) transition list \<Rightarrow> (bool * ('a, 'b) transition list)"
+where
+  "norm_insert x xs \<equiv> let (i, x') = norm_fold x xs in if i then (i, xs) else (i, x' # xs)" 
+
+lemma norm_fold:
+  "norm_fold (q, \<nu>, p) xs = ((q, \<nu>, p) \<in> set xs, q, \<nu>, p)"
+proof (induction xs rule: rev_induct)
+  case (snoc x xs)
+    obtain q' \<nu>' p' where x_def: "x = (q', \<nu>', p')"
+      by (blast intro: prod_cases3)
+    show ?case
+      using snoc by (auto simp add: x_def foldl_break_append)
+qed simp  
+
+lemma norm_insert: 
+  "norm_insert x xs = (x \<in> set xs, List.insert x xs)"
+proof -
+  obtain q \<nu> p where x_def: "x = (q, \<nu>, p)"
+    by (blast intro: prod_cases3)
+  show ?thesis
+    unfolding x_def norm_insert_def norm_fold by simp
+qed
+ 
+declare list_dfs_def [code del]
+declare norm_insert_def [code_unfold]
+
+lemma list_dfs_norm_insert [code]: 
+  "list_dfs succ S [] = S"
+  "list_dfs succ S (x # xs) = (let (memb, S') = norm_insert x S in list_dfs succ S' (if memb then xs else succ x @ xs))"
+  unfolding list_dfs_def Let_def norm_insert by simp+ 
+
 subsection \<open>Register Code Equations\<close>
 
 lemma [code]:

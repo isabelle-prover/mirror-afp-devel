@@ -218,7 +218,7 @@ proof (induction n)
            using assms  by force
           moreover
           have "q \<in> (\<lambda>q. \<delta> q (w n)) ` set (r n)"
-            using  `p \<notin> set zs \<union> set zs' \<union> {q}` image_set unfolding filter_map_if_splitf[of "(\<lambda>q. \<not> sink q)" "\<lambda>q. \<delta> q (w n)"] 
+            using  `p \<notin> set zs \<union> set zs' \<union> {q}` image_set unfolding filter_map_split_iff[of "(\<lambda>q. \<not> sink q)" "\<lambda>q. \<delta> q (w n)"] 
             by (metis (no_types, lifting) Un_insert_right `p = q\<^sub>0`  `{q, p} \<subseteq> set [q\<leftarrow>map (\<lambda>q. \<delta> q (w n)) (r n) @ [q\<^sub>0] . \<not> sink q]` append_Nil2 insert_iff insert_subset list.simps(15) mem_Collect_eq set_append set_filter)  
           hence "q \<in> (\<lambda>q. \<delta> q (w n)) ` {q'. configuration q' n \<noteq> {}}"
             using nxt_run_configuration unfolding r_def by auto
@@ -241,7 +241,7 @@ proof (induction n)
             and 3: "filter (\<lambda>q. \<not>sink q) (map (\<lambda>q. \<delta> q (w n)) ps') = zs'"
             and "filter (\<lambda>q. \<not>sink q) (map (\<lambda>q. \<delta> q (w n)) sp') = [p]"
             and "filter (\<lambda>q. \<not>sink q) (map (\<lambda>q. \<delta> q (w n)) ps'') = butlast zs''"
-            using X  unfolding filter_map_if_splitf by (blast)
+            using X  unfolding filter_map_split_iff by (blast)
           hence 21: "Set.filter (\<lambda>q. \<not>sink q) ((\<lambda>q. \<delta> q (w n)) ` set sq') = {q}"
             and 41: "Set.filter (\<lambda>q. \<not>sink q) ((\<lambda>q. \<delta> q (w n)) ` set sp') = {p}"
             by (metis filter_set image_set list.set(1) list.simps(15))+

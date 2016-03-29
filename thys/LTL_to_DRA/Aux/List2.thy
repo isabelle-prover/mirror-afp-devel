@@ -95,7 +95,7 @@ lemma filter_map_splitE:
   obtains us vs where "xs = us @ vs" and "filter P (map f us) = ys" and "filter P (map f vs) = zs"
   using assms by (fastforce elim: filter_splitE map_splitE)
 
-lemma filter_map_if_splitf:
+lemma filter_map_split_iff:
   "filter P (map f xs) = ys @ zs \<longleftrightarrow> (\<exists>us vs. xs = us @ vs \<and> filter P (map f us) = ys \<and> filter P (map f vs) = zs)"
   by (fastforce elim: filter_map_splitE)
 

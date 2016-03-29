@@ -32,7 +32,6 @@ qed simp
 
 subsection \<open>Limit\<close>
 
-
 lemma limit_range_suffix:
   assumes "limit r = range (suffix i r)"
   shows "limit r = range (suffix (i + j) r)"
@@ -50,5 +49,16 @@ proof -
   show "?lhs = ?rhs"
     by (metis antisym_conv limit_in_range_suffix)
 qed
+
+subsection \<open>Short-circuited Version of @{const foldl}\<close>
+
+fun foldl_break :: "('b \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> 'a list \<Rightarrow> 'b"
+where
+  "foldl_break f s a [] = a" 
+| "foldl_break f s a (x # xs) = (if s a then a else foldl_break f s (f a x) xs)"
+
+lemma foldl_break_append:
+  "foldl_break f s a (xs @ ys) = (if s (foldl_break f s a xs) then foldl_break f s a xs else (foldl_break f s (foldl_break f s a xs) ys))"
+  by (induction xs arbitrary: a) (cases ys, auto)
 
 end
