@@ -228,7 +228,7 @@ ML {*
       (* Import type variables *)
       val (rhs,lthy) = yield_singleton Variable.importT_terms rhs lthy;
       val ((ft,(_,def_thm)),lthy) 
-        = Local_Theory.define ((Binding.name name,Mixfix.NoSyn),
+        = Local_Theory.define ((Binding.name name,NoSyn),
          ((Binding.name (Thm.def_name name),[]),rhs)) lthy;
     in ((ft,def_thm),lthy) end;
 

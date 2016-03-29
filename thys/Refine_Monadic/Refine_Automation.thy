@@ -288,7 +288,7 @@ let
   val attribs = map (Attrib.check_src lthy) attribs_raw;
 
   val ((_,(_,def_thm)),lthy) = Specification.definition 
-    (SOME (fun_name,NONE,Mixfix.NoSyn),((Binding.empty,attribs),def_term)) lthy;
+    (SOME (fun_name,NONE,NoSyn),((Binding.empty,attribs),def_term)) lthy;
 
   val folded_thm = Local_Defs.fold lthy [def_thm] thm';
 
