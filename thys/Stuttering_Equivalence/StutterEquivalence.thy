@@ -91,6 +91,10 @@ proof -
     by (simp add: stutter_reduced_0)
 qed
 
+abbreviation suffix_notation ("_ [_..]")
+where
+  "suffix_notation w k \<equiv> suffix k w"
+
 text {*
   Given any stuttering sampling function @{text f} for sequence @{text "\<sigma>"},
   any suffix of @{text "\<sigma>"} starting at index @{text "f n"} is stuttering
@@ -99,7 +103,7 @@ text {*
 *}
 lemma suffix_stutter_equiv:
   assumes f: "stutter_sampler f \<sigma>"
-  shows "\<sigma>[f n ..] \<approx> (\<sigma> \<circ> f)[n ..]"
+  shows "suffix (f n) \<sigma> \<approx> suffix n (\<sigma> \<circ> f)"
 proof -
   from f have "stutter_sampler (\<lambda>k. f (n+k) - f n) (\<sigma>[f n ..])"
     by (rule stutter_sampler_suffix)
@@ -246,6 +250,4 @@ proof -
     by (force dest: stutter_equiv_0)
 qed
 
-
-end (* theory StutterEquivalence *)
-
+end

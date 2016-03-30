@@ -14,22 +14,23 @@ begin
 subsection \<open>Parametricity Setup Boilerplate\<close>
 
 subsubsection \<open>LTL Formulas\<close>
+
 derive linorder ltln
 
 inductive_set ltln_rel for R where
-  "(LTLnTrue,LTLnTrue) \<in> ltln_rel R"
-| "(LTLnFalse,LTLnFalse) \<in> ltln_rel R"
-| "(a,a')\<in>R \<Longrightarrow> (LTLnProp a,LTLnProp a') \<in> ltln_rel R"
-| "(a,a')\<in>R \<Longrightarrow> (LTLnNProp a,LTLnNProp a') \<in> ltln_rel R"
+  "(True_ltln, True_ltln) \<in> ltln_rel R"
+| "(False_ltln, False_ltln) \<in> ltln_rel R"
+| "(a,a')\<in>R \<Longrightarrow> (Prop_ltln a,Prop_ltln a') \<in> ltln_rel R"
+| "(a,a')\<in>R \<Longrightarrow> (Nprop_ltln a,Nprop_ltln a') \<in> ltln_rel R"
 | "\<lbrakk>(a,a')\<in>ltln_rel R; (b,b')\<in>ltln_rel R\<rbrakk> 
-  \<Longrightarrow> (LTLnAnd a b,LTLnAnd a' b') \<in> ltln_rel R"
+  \<Longrightarrow> (And_ltln a b,And_ltln a' b') \<in> ltln_rel R"
 | "\<lbrakk>(a,a')\<in>ltln_rel R; (b,b')\<in>ltln_rel R\<rbrakk> 
-  \<Longrightarrow> (LTLnOr a b,LTLnOr a' b') \<in> ltln_rel R"
-| "\<lbrakk>(a,a')\<in>ltln_rel R\<rbrakk> \<Longrightarrow> (LTLnNext a,LTLnNext a') \<in> ltln_rel R"
+  \<Longrightarrow> (Or_ltln a b,Or_ltln a' b') \<in> ltln_rel R"
+| "\<lbrakk>(a,a')\<in>ltln_rel R\<rbrakk> \<Longrightarrow> (Next_ltln a,Next_ltln a') \<in> ltln_rel R"
 | "\<lbrakk>(a,a')\<in>ltln_rel R; (b,b')\<in>ltln_rel R\<rbrakk> 
-  \<Longrightarrow> (LTLnUntil a b,LTLnUntil a' b') \<in> ltln_rel R"
+  \<Longrightarrow> (Until_ltln a b,Until_ltln a' b') \<in> ltln_rel R"
 | "\<lbrakk>(a,a')\<in>ltln_rel R; (b,b')\<in>ltln_rel R\<rbrakk> 
-  \<Longrightarrow> (LTLnRelease a b,LTLnRelease a' b') \<in> ltln_rel R"
+  \<Longrightarrow> (Release_ltln a b,Release_ltln a' b') \<in> ltln_rel R"
 
 lemmas ltln_rel_induct[induct set] 
   = ltln_rel.induct[unfolded relAPP_def[of ltln_rel, symmetric]]
@@ -39,16 +40,15 @@ lemmas ltln_rel_intros
   = ltln_rel.intros[unfolded relAPP_def[of ltln_rel, symmetric]]
 
 inductive_simps ltln_rel_left_simps[unfolded relAPP_def[of ltln_rel, symmetric]]: 
-  "(LTLnTrue,z) \<in> ltln_rel R"
-  "(LTLnFalse,z) \<in> ltln_rel R"
-  "(LTLnProp p, z) \<in> ltln_rel R"
-  "(LTLnNProp p, z) \<in> ltln_rel R"
-  "(LTLnAnd a b, z) \<in> ltln_rel R"
-  "(LTLnOr a b, z) \<in> ltln_rel R"
-  "(LTLnNext a, z) \<in> ltln_rel R"
-  "(LTLnUntil a b, z) \<in> ltln_rel R"
-  "(LTLnRelease a b, z) \<in> ltln_rel R"
-
+  "(True_ltln,z) \<in> ltln_rel R"
+  "(False_ltln,z) \<in> ltln_rel R"
+  "(Prop_ltln p, z) \<in> ltln_rel R"
+  "(Nprop_ltln p, z) \<in> ltln_rel R"
+  "(And_ltln a b, z) \<in> ltln_rel R"
+  "(Or_ltln a b, z) \<in> ltln_rel R"
+  "(Next_ltln a, z) \<in> ltln_rel R"
+  "(Until_ltln a b, z) \<in> ltln_rel R"
+  "(Release_ltln a b, z) \<in> ltln_rel R"
 
 lemma ltln_rel_sv[relator_props]: 
   assumes SV: "single_valued R"  
@@ -77,22 +77,21 @@ qed
 
 lemma ltln_rel_id_simp[simp]:  "\<langle>Id\<rangle>ltln_rel = Id" by (rule ltln_rel_id) simp
 
-
 consts i_ltln :: "interface \<Rightarrow> interface"
 lemmas [autoref_rel_intf] = REL_INTFI[of ltln_rel i_ltln]
 
 thm ltln_rel_intros[no_vars]
 
 lemma ltln_con_param[param, autoref_rules]:
-  "(LTLnTrue, LTLnTrue) \<in> \<langle>R\<rangle>ltln_rel"
-  "(LTLnFalse, LTLnFalse) \<in> \<langle>R\<rangle>ltln_rel"
-  "(LTLnProp, LTLnProp) \<in> R \<rightarrow> \<langle>R\<rangle>ltln_rel"
-  "(LTLnNProp, LTLnNProp) \<in> R \<rightarrow> \<langle>R\<rangle>ltln_rel"
-  "(LTLnAnd, LTLnAnd) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
-  "(LTLnOr, LTLnOr) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
-  "(LTLnNext, LTLnNext) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
-  "(LTLnUntil, LTLnUntil) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
-  "(LTLnRelease, LTLnRelease) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
+  "(True_ltln, True_ltln) \<in> \<langle>R\<rangle>ltln_rel"
+  "(False_ltln, False_ltln) \<in> \<langle>R\<rangle>ltln_rel"
+  "(Prop_ltln, Prop_ltln) \<in> R \<rightarrow> \<langle>R\<rangle>ltln_rel"
+  "(Nprop_ltln, Nprop_ltln) \<in> R \<rightarrow> \<langle>R\<rangle>ltln_rel"
+  "(And_ltln, And_ltln) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
+  "(Or_ltln, Or_ltln) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
+  "(Next_ltln, Next_ltln) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
+  "(Until_ltln, Until_ltln) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
+  "(Release_ltln, Release_ltln) \<in> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel \<rightarrow> \<langle>R\<rangle>ltln_rel"
   by (auto intro: ltln_rel_intros)
 
 lemma case_ltln_param[param, autoref_rules]: 
@@ -130,15 +129,15 @@ proof (clarsimp, goal_cases)
 qed
 
 lemma case_ltln_mono[refine_mono]: 
-  assumes "\<phi> = LTLnTrue \<Longrightarrow> a\<le>a'"
-  assumes "\<phi> = LTLnFalse \<Longrightarrow> b\<le>b'"
-  assumes "\<And>p. \<phi> = LTLnProp p \<Longrightarrow> c p\<le>c' p"
-  assumes "\<And>p. \<phi> = LTLnNProp p \<Longrightarrow> d p\<le>d' p"
-  assumes "\<And>\<mu> \<nu>. \<phi> = LTLnAnd \<mu> \<nu> \<Longrightarrow> e \<mu> \<nu>\<le>e' \<mu> \<nu>"
-  assumes "\<And>\<mu> \<nu>. \<phi> = LTLnOr \<mu> \<nu> \<Longrightarrow> f \<mu> \<nu>\<le>f' \<mu> \<nu>"
-  assumes "\<And>\<mu>. \<phi> = LTLnNext \<mu> \<Longrightarrow> g \<mu>\<le>g' \<mu>"
-  assumes "\<And>\<mu> \<nu>. \<phi> = LTLnUntil \<mu> \<nu> \<Longrightarrow> h \<mu> \<nu>\<le>h' \<mu> \<nu>"
-  assumes "\<And>\<mu> \<nu>. \<phi> = LTLnRelease \<mu> \<nu> \<Longrightarrow> i \<mu> \<nu>\<le>i' \<mu> \<nu>"
+  assumes "\<phi> = True_ltln \<Longrightarrow> a\<le>a'"
+  assumes "\<phi> = False_ltln \<Longrightarrow> b\<le>b'"
+  assumes "\<And>p. \<phi> = Prop_ltln p \<Longrightarrow> c p\<le>c' p"
+  assumes "\<And>p. \<phi> = Nprop_ltln p \<Longrightarrow> d p\<le>d' p"
+  assumes "\<And>\<mu> \<nu>. \<phi> = And_ltln \<mu> \<nu> \<Longrightarrow> e \<mu> \<nu>\<le>e' \<mu> \<nu>"
+  assumes "\<And>\<mu> \<nu>. \<phi> = Or_ltln \<mu> \<nu> \<Longrightarrow> f \<mu> \<nu>\<le>f' \<mu> \<nu>"
+  assumes "\<And>\<mu>. \<phi> = Next_ltln \<mu> \<Longrightarrow> g \<mu>\<le>g' \<mu>"
+  assumes "\<And>\<mu> \<nu>. \<phi> = Until_ltln \<mu> \<nu> \<Longrightarrow> h \<mu> \<nu>\<le>h' \<mu> \<nu>"
+  assumes "\<And>\<mu> \<nu>. \<phi> = Release_ltln \<mu> \<nu> \<Longrightarrow> i \<mu> \<nu>\<le>i' \<mu> \<nu>"
   shows "case_ltln a b c d e f g h i \<phi> \<le> case_ltln a' b' c' d' e' f' g' h' i' \<phi>"
   using assms
   apply (cases \<phi>)
@@ -147,21 +146,21 @@ lemma case_ltln_mono[refine_mono]:
 
 
 primrec ltln_eq where
-  "ltln_eq eq LTLnTrue f \<longleftrightarrow> (case f of LTLnTrue \<Rightarrow> True | _ \<Rightarrow> False)"
-| "ltln_eq eq LTLnFalse f \<longleftrightarrow> (case f of LTLnFalse \<Rightarrow> True | _ \<Rightarrow> False)"
-| "ltln_eq eq (LTLnProp p) f \<longleftrightarrow> (case f of LTLnProp p' \<Rightarrow> eq p p' | _ \<Rightarrow> False)"
-| "ltln_eq eq (LTLnNProp p) f \<longleftrightarrow> (case f of LTLnNProp p' \<Rightarrow> eq p p' | _ \<Rightarrow> False)"
-| "ltln_eq eq (LTLnAnd \<mu> \<nu>) f 
-  \<longleftrightarrow> (case f of LTLnAnd \<mu>' \<nu>' \<Rightarrow> ltln_eq eq \<mu> \<mu>' \<and> ltln_eq eq \<nu> \<nu>' | _ \<Rightarrow> False)"
-| "ltln_eq eq (LTLnOr \<mu> \<nu>) f 
-  \<longleftrightarrow> (case f of LTLnOr \<mu>' \<nu>' \<Rightarrow> ltln_eq eq \<mu> \<mu>' \<and> ltln_eq eq \<nu> \<nu>' | _ \<Rightarrow> False)"
-| "ltln_eq eq (LTLnNext \<phi>) f 
-  \<longleftrightarrow> (case f of LTLnNext \<phi>' \<Rightarrow> ltln_eq eq \<phi> \<phi>' | _ \<Rightarrow> False)"
-| "ltln_eq eq (LTLnUntil \<mu> \<nu>) f 
-  \<longleftrightarrow> (case f of LTLnUntil \<mu>' \<nu>' \<Rightarrow> ltln_eq eq \<mu> \<mu>' \<and> ltln_eq eq \<nu> \<nu>' | _ \<Rightarrow> False)"
-| "ltln_eq eq (LTLnRelease \<mu> \<nu>) f 
+  "ltln_eq eq True_ltln f \<longleftrightarrow> (case f of True_ltln \<Rightarrow> True | _ \<Rightarrow> False)"
+| "ltln_eq eq False_ltln f \<longleftrightarrow> (case f of False_ltln \<Rightarrow> True | _ \<Rightarrow> False)"
+| "ltln_eq eq (Prop_ltln p) f \<longleftrightarrow> (case f of Prop_ltln p' \<Rightarrow> eq p p' | _ \<Rightarrow> False)"
+| "ltln_eq eq (Nprop_ltln p) f \<longleftrightarrow> (case f of Nprop_ltln p' \<Rightarrow> eq p p' | _ \<Rightarrow> False)"
+| "ltln_eq eq (And_ltln \<mu> \<nu>) f 
+  \<longleftrightarrow> (case f of And_ltln \<mu>' \<nu>' \<Rightarrow> ltln_eq eq \<mu> \<mu>' \<and> ltln_eq eq \<nu> \<nu>' | _ \<Rightarrow> False)"
+| "ltln_eq eq (Or_ltln \<mu> \<nu>) f 
+  \<longleftrightarrow> (case f of Or_ltln \<mu>' \<nu>' \<Rightarrow> ltln_eq eq \<mu> \<mu>' \<and> ltln_eq eq \<nu> \<nu>' | _ \<Rightarrow> False)"
+| "ltln_eq eq (Next_ltln \<phi>) f 
+  \<longleftrightarrow> (case f of Next_ltln \<phi>' \<Rightarrow> ltln_eq eq \<phi> \<phi>' | _ \<Rightarrow> False)"
+| "ltln_eq eq (Until_ltln \<mu> \<nu>) f 
+  \<longleftrightarrow> (case f of Until_ltln \<mu>' \<nu>' \<Rightarrow> ltln_eq eq \<mu> \<mu>' \<and> ltln_eq eq \<nu> \<nu>' | _ \<Rightarrow> False)"
+| "ltln_eq eq (Release_ltln \<mu> \<nu>) f 
   \<longleftrightarrow> (case f of 
-    LTLnRelease \<mu>' \<nu>' \<Rightarrow> ltln_eq eq \<mu> \<mu>' \<and> ltln_eq eq \<nu> \<nu>' 
+    Release_ltln \<mu>' \<nu>' \<Rightarrow> ltln_eq eq \<mu> \<mu>' \<and> ltln_eq eq \<nu> \<nu>' 
   | _ \<Rightarrow> False)"
 
 lemma ltln_eq_autoref[autoref_rules]:
@@ -191,7 +190,6 @@ proof (intro fun_relI)
     done
 qed
 
-
 lemma ltln_dflt_cmp[autoref_rules_raw]: 
   assumes "PREFER_id R"
   shows
@@ -200,13 +198,10 @@ lemma ltln_dflt_cmp[autoref_rules_raw]:
   using assms
   by simp
 
-
-
 type_synonym
   node_name_impl = node_name 
 
 abbreviation (input) "node_name_rel \<equiv> Id :: (node_name_impl\<times>node_name) set"
-
 
 lemma case_ltln_gtransfer:
   assumes
@@ -218,8 +213,8 @@ lemma case_ltln_gtransfer:
   "\<And>ltln1 ltln2. \<gamma> (fi ltln1 ltln2) \<le> f ltln1 ltln2"
   "\<And>ltln. \<gamma> (gi ltln) \<le> g ltln"
   "\<And>ltln1 ltln2. \<gamma> (hi ltln1 ltln2) \<le> h ltln1 ltln2"
-  "\<And>ltln1 ltln2. \<gamma> (ii ltln1 ltln2) \<le> i ltln1 ltln2"
-  shows "\<gamma> (case_ltln ai bi ci di ei fi gi hi ii \<phi>) 
+  "\<And>ltln1 ltln2. \<gamma> (iiv ltln1 ltln2) \<le> i ltln1 ltln2"
+  shows "\<gamma> (case_ltln ai bi ci di ei fi gi hi iiv \<phi>) 
     \<le> (case_ltln a b c d e f g h i \<phi>)"
   apply (cases \<phi>)
   apply (auto intro: assms)
@@ -238,12 +233,11 @@ lemma [refine_transfer]:
   "\<And>ltln1 ltln2. fi ltln1 ltln2 \<noteq> dSUCCEED"
   "\<And>ltln. gi ltln \<noteq> dSUCCEED"
   "\<And>ltln1 ltln2. hi ltln1 ltln2 \<noteq> dSUCCEED"
-  "\<And>ltln1 ltln2. ii ltln1 ltln2 \<noteq> dSUCCEED"
-  shows "case_ltln ai bi ci di ei fi gi hi ii \<phi> \<noteq> dSUCCEED"
+  "\<And>ltln1 ltln2. iiv ltln1 ltln2 \<noteq> dSUCCEED"
+  shows "case_ltln ai bi ci di ei fi gi hi iiv \<phi> \<noteq> dSUCCEED"
   apply (cases \<phi>)
   apply (simp_all add: assms)
   done
-
 
 subsubsection \<open>Nodes\<close>
 
@@ -253,6 +247,9 @@ record 'a node_impl =
   new_impl :: "'a frml list"
   old_impl :: "'a frml list"
   next_impl :: "'a frml list"
+
+hide_const (open) Re
+hide_const (open) exp
 
 definition node_rel where node_rel_def_internal: "node_rel Re R \<equiv> {( 
   \<lparr> name_impl = namei, 
@@ -327,9 +324,6 @@ lemma [autoref_rules]: "(node_impl_ext, node_ext) \<in>
   unfolding node_rel_def
   by auto
 
-
-term node.incoming_update
-
 lemma [autoref_rules]: 
   "(node_impl.name_impl_update,node.name_update) 
   \<in> (node_name_rel \<rightarrow> node_name_rel) \<rightarrow> \<langle>Re,R\<rangle>node_rel \<rightarrow> \<langle>Re,R\<rangle>node_rel"
@@ -372,6 +366,8 @@ text \<open>
   and slightly stratify the code.
 \<close>
 
+
+
 abbreviation (input) "expand2 exp n ns \<phi> n1 nx1 n2 \<equiv> do {
     (nm, nds) \<leftarrow> exp (
       n\<lparr> 
@@ -383,7 +379,6 @@ abbreviation (input) "expand2 exp n ns \<phi> n1 nx1 n2 \<equiv> do {
   }"
 
 
-context begin interpretation LTL_Syntax .
 
 definition "expand_aimpl \<equiv> REC\<^sub>T (\<lambda>expand (n,ns). 
       if new n = {} then ( 
@@ -433,7 +428,6 @@ definition "expand_aimpl \<equiv> REC\<^sub>T (\<lambda>expand (n,ns).
       }
      )"
 
-end
 
 lemma expand_aimpl_refine:
   fixes n_ns :: "('a node \<times> _)"
@@ -628,7 +622,6 @@ qed
 
 text \<open>\paragraph{ Accepting Sets}\<close>
 
-context begin interpretation LTL_Syntax .
 primrec until_frmlsn :: "'a frml \<Rightarrow> ('a frml \<times> 'a frml) set" where
   "until_frmlsn (\<mu> and\<^sub>n \<psi>) = (until_frmlsn \<mu>) \<union> (until_frmlsn \<psi>)"
 | "until_frmlsn (X\<^sub>n \<mu>) = until_frmlsn \<mu>"
@@ -640,27 +633,25 @@ primrec until_frmlsn :: "'a frml \<Rightarrow> ('a frml \<times> 'a frml) set" w
 | "until_frmlsn (prop\<^sub>n(_)) = {}"
 | "until_frmlsn (nprop\<^sub>n(_)) = {}"
 
-end
-
 lemma until_frmlsn_correct: 
-  "until_frmlsn \<phi> = {(\<mu>, \<eta>). LTLnUntil \<mu> \<eta> \<in> subfrmlsn \<phi>}"
+  "until_frmlsn \<phi> = {(\<mu>, \<eta>). Until_ltln \<mu> \<eta> \<in> subfrmlsn \<phi>}"
   by (induct \<phi>) auto
 
 
 definition "build_F nds \<phi> 
-  \<equiv> (\<lambda>(\<mu>,\<eta>). name ` {q \<in> nds. (LTLnUntil \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q)}) `
+  \<equiv> (\<lambda>(\<mu>,\<eta>). name ` {q \<in> nds. (Until_ltln \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q)}) `
     until_frmlsn \<phi>"
 
 lemma build_F_correct: "build_F nds \<phi> = 
-  {name ` A |A. \<exists>\<mu> \<eta>. A = {q \<in> nds. LTLnUntil \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q} \<and>
-                     LTLnUntil \<mu> \<eta> \<in> subfrmlsn \<phi>}"
+  {name ` A |A. \<exists>\<mu> \<eta>. A = {q \<in> nds. Until_ltln \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q} \<and>
+                     Until_ltln \<mu> \<eta> \<in> subfrmlsn \<phi>}"
 proof -
-  have "{name ` A |A. \<exists>\<mu> \<eta>. A = {q \<in> nds. LTLnUntil \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q} \<and>
-                     LTLnUntil \<mu> \<eta> \<in> subfrmlsn \<phi>}
-    = (\<lambda>(\<mu>,\<eta>). name`{q\<in>nds. LTLnUntil \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q}) 
-      ` {(\<mu>, \<eta>). LTLnUntil \<mu> \<eta> \<in> subfrmlsn \<phi>}"
+  have "{name ` A |A. \<exists>\<mu> \<eta>. A = {q \<in> nds. Until_ltln \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q} \<and>
+                     Until_ltln \<mu> \<eta> \<in> subfrmlsn \<phi>}
+    = (\<lambda>(\<mu>,\<eta>). name`{q\<in>nds. Until_ltln \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q}) 
+      ` {(\<mu>, \<eta>). Until_ltln \<mu> \<eta> \<in> subfrmlsn \<phi>}"
     by auto
-  also have "\<dots> = (\<lambda>(\<mu>,\<eta>). name`{q\<in>nds. LTLnUntil \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q}) 
+  also have "\<dots> = (\<lambda>(\<mu>,\<eta>). name`{q\<in>nds. Until_ltln \<mu> \<eta> \<in> old q \<longrightarrow> \<eta> \<in> old q}) 
       ` until_frmlsn \<phi>"
     unfolding until_frmlsn_correct ..
   finally show ?thesis
@@ -669,17 +660,17 @@ qed
 
 text \<open>\paragraph{ Labeling Function }\<close>
 definition "pn_props ps \<equiv> FOREACHi 
-  (\<lambda>it (P,N). P = {p. LTLnProp p \<in> ps - it} \<and> N = {p. LTLnNProp p \<in> ps - it}) 
+  (\<lambda>it (P,N). P = {p. Prop_ltln p \<in> ps - it} \<and> N = {p. Nprop_ltln p \<in> ps - it}) 
   ps (\<lambda>p (P,N). 
-    case p of LTLnProp p \<Rightarrow> RETURN (insert p P,N)
-    | LTLnNProp p \<Rightarrow> RETURN (P, insert p N)
+    case p of Prop_ltln p \<Rightarrow> RETURN (insert p P,N)
+    | Nprop_ltln p \<Rightarrow> RETURN (P, insert p N)
     | _ \<Rightarrow> RETURN (P,N)
   ) ({},{})"
 
 lemma pn_props_correct: 
   assumes [simp]: "finite ps"
   shows "pn_props ps \<le> SPEC(\<lambda>r. r = 
-  ({p. LTLnProp p \<in> ps}, {p. LTLnNProp p \<in> ps}))"
+  ({p. Prop_ltln p \<in> ps}, {p. Nprop_ltln p \<in> ps}))"
   unfolding pn_props_def
   apply (refine_rcg refine_vcg)
   apply (auto split: ltln.split)
@@ -699,8 +690,8 @@ lemma pn_map_correct:
     case r qn of 
       None \<Rightarrow> qn \<notin> name`nds
     | Some (P,N) \<Rightarrow> qn \<in> name`nds 
-      \<and> P = {p. LTLnProp p \<in> old (the_inv_into nds name qn)}
-      \<and> N = {p. LTLnNProp p \<in> old (the_inv_into nds name qn)}
+      \<and> P = {p. Prop_ltln p \<in> old (the_inv_into nds name qn)}
+      \<and> N = {p. Nprop_ltln p \<in> old (the_inv_into nds name qn)}
   )"
   unfolding pn_map_def
   apply (refine_rcg refine_vcg
@@ -708,8 +699,8 @@ lemma pn_map_correct:
       case r qn of 
         None \<Rightarrow> qn \<notin> name`(nds - it)
       | Some (P,N) \<Rightarrow> qn \<in> name`(nds - it)
-        \<and> P = {p. LTLnProp p \<in> old (the_inv_into nds name qn)}
-        \<and> N = {p. LTLnNProp p \<in> old (the_inv_into nds name qn)}"]
+        \<and> P = {p. Prop_ltln p \<in> old (the_inv_into nds name qn)}
+        \<and> N = {p. Nprop_ltln p \<in> old (the_inv_into nds name qn)}"]
     order_trans[OF pn_props_correct]
   )
   apply simp_all
@@ -864,11 +855,7 @@ schematic_goal pn_map_code_aux: "RETURN ?c \<le> pn_map_impl x"
 concrete_definition pn_map_code uses pn_map_code_aux
 lemmas [refine_transfer] = pn_map_code.refine 
 
-
-
-
 thm autoref_tyrel
-
 
 schematic_goal cr_rename_gba_impl_aux:
   assumes ID[relator_props]: "R=Id"
@@ -991,6 +978,7 @@ lemma list_set_autoref_to_list[autoref_ga_rules]:
 
 end
 
+hide_const (open) Im
 
 context begin interpretation autoref_syn .
 lemma [autoref_itype]:

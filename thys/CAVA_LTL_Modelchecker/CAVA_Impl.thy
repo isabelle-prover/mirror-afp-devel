@@ -133,7 +133,7 @@ definition is_ltl_to_gba_algo
 definition gerth_ltl_to_gba 
   -- "Conversion based on Gerth's Algorithm"
   where "gerth_ltl_to_gba \<phi> 
-  \<equiv> create_name_igba (ltln_rewrite (ltl_to_ltln (ltl_pushneg (ltlc_to_ltl \<phi>))))"
+  \<equiv> create_name_igba (rewrite_iter_fast (ltlc_to_ltln \<phi>))"
 
 lemma gerth_ltl_to_gba_refine:
   "gerth_ltl_to_gba \<phi> \<le> \<Down>Id (ltl_to_gba_spec \<phi>)"
@@ -146,17 +146,16 @@ proof (safe del: equalityI)
   assume "igba G"
   interpret igba G by fact
   assume 1: "finite (g_V G)"
-  assume 2: "\<forall> \<xi>. accept \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n ltln_rewrite (ltl_to_ltln (ltl_pushneg (ltlc_to_ltl \<phi>)))"
-  show "lang = ltlc_language \<phi>"
-    unfolding lang_def ltlc_language_def using 2
-    by (auto simp: ltln_rewrite__equiv ltlc_to_ltl_equiv)
+  assume 2: "\<forall> \<xi>. accept \<xi> \<longleftrightarrow> \<xi> \<Turnstile>\<^sub>n rewrite_iter_fast (ltlc_to_ltln \<phi>)"
+  show "lang = language_ltlc \<phi>"
+    unfolding lang_def language_ltlc_def using 2
+    using rewrite_iter_fast_sound ltlc_to_ltln_semantics by auto
   show "finite ((g_E G)\<^sup>* `` g_V0 G)" using 1 reachable_V 
     by (auto intro: finite_subset)
 qed
 
-definition "gerth_ltl_to_gba_code \<phi> 
-  \<equiv> create_name_igba_code 
-      (ltln_rewrite (ltl_to_ltln (ltl_pushneg (ltlc_to_ltl \<phi>))))"  
+definition
+  "gerth_ltl_to_gba_code \<phi> \<equiv> create_name_igba_code (rewrite_iter_fast (ltlc_to_ltln \<phi>))"  
   
 lemma gerth_ltl_to_gba_code_refine:
   "is_ltl_to_gba_algo gerth_ltl_to_gba_code"
@@ -583,11 +582,11 @@ theorem cava_sys_agn_correct:
   assumes "(sysi, sys) \<in> sa_impl_rel_ext unit_rel Id (\<langle>Id\<rangle>fun_set_rel)"
     and "sa sys" "finite ((g_E sys)\<^sup>* `` g_V0 sys)"
   shows "case cava_sys_agn cfg sysi \<phi> of
-         None \<Rightarrow> sa.lang sys \<subseteq> ltlc_language \<phi> 
-         | Some None \<Rightarrow> \<not> sa.lang sys \<subseteq> ltlc_language \<phi>
+         None \<Rightarrow> sa.lang sys \<subseteq> language_ltlc \<phi> 
+         | Some None \<Rightarrow> \<not> sa.lang sys \<subseteq> language_ltlc \<phi>
          | Some (Some L) \<Rightarrow> 
              graph_defs.is_run sys (run_of_lasso L) 
-           \<and> sa_L sys \<circ> (run_of_lasso L) \<notin> ltlc_language \<phi>"
+           \<and> sa_L sys \<circ> (run_of_lasso L) \<notin> language_ltlc \<phi>"
   using cava_sys_agn.impl_model_check_correct[OF assms, of \<phi> cfg]
   unfolding cava_sys_agn_def
   by (auto split: option.splits simp: lasso_run_rel_def br_def)
@@ -687,11 +686,11 @@ text {*
 *}
 theorem cava_bpc_correct:
   "case cava_bpc cfg bpc \<phi> of 
-    None \<Rightarrow> bpc_lang bpc \<subseteq> ltlc_language \<phi>
-  | Some None \<Rightarrow> (\<not>(bpc_lang bpc \<subseteq> ltlc_language \<phi>))
+    None \<Rightarrow> bpc_lang bpc \<subseteq> language_ltlc \<phi>
+  | Some None \<Rightarrow> (\<not>(bpc_lang bpc \<subseteq> language_ltlc \<phi>))
   | Some (Some ce) \<Rightarrow> 
       bpc_is_run bpc (run_of_lasso ce) 
-    \<and> bpc_props o run_of_lasso ce \<notin> ltlc_language \<phi>"
+    \<and> bpc_props o run_of_lasso ce \<notin> language_ltlc \<phi>"
   using cava_sys_agn_correct[OF bpc_to_sa_impl_refine bpc_to_sa_invar bpc_to_sa_fr, 
     of bpc \<phi> cfg]
   unfolding cava_bpc_def
@@ -755,10 +754,10 @@ text {*
 lemma cava_promela_correct:
   shows 
   "case cava_promela cfg ast \<phi> of 
-    None \<Rightarrow> promela_language ast \<subseteq> ltlc_language \<phi>
-  | Some None \<Rightarrow> (\<not>(promela_language ast \<subseteq> ltlc_language \<phi>))
+    None \<Rightarrow> promela_language ast \<subseteq> language_ltlc \<phi>
+  | Some None \<Rightarrow> (\<not>(promela_language ast \<subseteq> language_ltlc \<phi>))
   | Some (Some ce) \<Rightarrow> promela_is_run ast (run_of_lasso ce) 
-    \<and> promela_props o run_of_lasso ce \<notin> ltlc_language \<phi>"
+    \<and> promela_props o run_of_lasso ce \<notin> language_ltlc \<phi>"
 proof -
   obtain APs \<phi>\<^sub>i where conv: "PromelaLTL.ltl_convert \<phi> = (APs,\<phi>\<^sub>i)" 
     by (metis prod.exhaust)
@@ -835,6 +834,9 @@ export_code (* Cava MC *)
             printProcesses Promela.printConfigFromAST lookupLTL
             PromelaLTLConv.ltl_conv
 
+            (* LTL *)
+            ltlc_to_ltln Iff_ltlc simplify Fast
+
             (* stat printing *)
             frv_export_code LTL_to_GBA_impl.create_name_gba_code
 
@@ -859,6 +861,9 @@ export_code (* Cava MC *)
             (* Promela *)
             printProcesses Promela.printConfigFromAST lookupLTL
             PromelaLTLConv.ltl_conv PromelaLTLConv.CProp PromelaLTLConv.Eq PromelaLTLConv.Ident
+            
+            (* LTL *)
+            ltlc_to_ltln Iff_ltlc simplify Fast
 
             (* stat printing *)
             frv_export_code LTL_to_GBA_impl.create_name_gba_code

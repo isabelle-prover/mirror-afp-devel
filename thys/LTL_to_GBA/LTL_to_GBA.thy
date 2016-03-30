@@ -7,7 +7,7 @@ section \<open>LTL to GBA translation\<close>
 theory LTL_to_GBA
 imports
   "../CAVA_Automata/CAVA_Base/CAVA_Base"
-  LTL LTL_Rewrite
+  "../LTL/LTL" "../LTL/LTL_Rewrite"
   "../CAVA_Automata/Automata"
 begin
 
@@ -108,15 +108,6 @@ record 'a node =
 
 context
 begin
-
-interpretation LTL_Syntax .
-
-fun frml_neg
-where
-  "frml_neg true\<^sub>n = false\<^sub>n"
-| "frml_neg false\<^sub>n = true\<^sub>n"
-| "frml_neg prop\<^sub>n(q) = nprop\<^sub>n(q)"
-| "frml_neg nprop\<^sub>n(q) = prop\<^sub>n(q)"
 
 fun new1 where
   "new1 (\<mu> and\<^sub>n \<psi>) = {\<mu>,\<psi>}"
@@ -258,7 +249,7 @@ where
         \<phi> \<leftarrow> SPEC (\<lambda>x. x\<in>(new n));
         let n = n\<lparr> new := new n - {\<phi>} \<rparr>;
         if (\<exists>q. \<phi> = prop\<^sub>n(q) \<or> \<phi> = nprop\<^sub>n(q)) then
-          (if (frml_neg \<phi>)\<in>old n then RETURN (name n, ns)
+          (if (not\<^sub>n \<phi>) \<in> old n then RETURN (name n, ns)
            else expand (n\<lparr> old := {\<phi>} \<union> old n \<rparr>, ns))
         else if \<phi> = true\<^sub>n then expand (n\<lparr> old := {\<phi>} \<union> old n \<rparr>, ns)
         else if \<phi> = false\<^sub>n then RETURN (name n, ns)
@@ -687,8 +678,9 @@ next
 next
   case prems: (3 f x n ns \<psi>)
   { assume "expand_assm_exist \<xi> (n, ns)"
-    with prems have "\<xi> \<Turnstile>\<^sub>n \<psi>" and "\<xi> \<Turnstile>\<^sub>n frml_neg \<psi>" by auto
-    with prems have False by auto }
+    with prems have "\<xi> \<Turnstile>\<^sub>n \<psi>" and "\<xi> \<Turnstile>\<^sub>n not\<^sub>n \<psi>"  
+      by (metis (no_types, lifting) fstI node.select_convs(4) node.surjective node.update_convs(3))+
+    then have False by simp }
   with prems show ?case by auto
 next
   case prems: (4 f x n ns \<psi>)
@@ -858,7 +850,7 @@ lemma old_next_limit_finite: "finite (old_next_limit \<phi>)"
 definition
   "expand_ord \<phi> \<equiv>
      inv_image (finite_psupset (old_next_limit \<phi>) <*lex*> less_than)
-               (\<lambda>(n, ns). (old_next_pair ` ns, frmlset_sumn (new n)))"
+               (\<lambda>(n, ns). (old_next_pair ` ns, size_set (new n)))"
 
 lemma expand_ord_wf[simp]: "wf (expand_ord \<phi>)"
   using finite_psupset_wf[OF old_next_limit_finite]
@@ -875,21 +867,21 @@ abbreviation
 definition
   "expand_inv \<phi> n_ns \<equiv> (case n_ns of (n, ns) \<Rightarrow> expand_inv_node \<phi> n \<and> expand_inv_result \<phi> ns)"
 
-lemma new1_less_setsum: "frmlset_sumn (new1 \<phi>) < frmlset_sumn {\<phi>}"
-proof -
-  have "frmlset_sumn {\<nu>,\<mu>} < Suc (size_frmln \<nu> + size_frmln \<mu>)" for \<nu> \<mu>
-    by (cases "\<nu> = \<mu>") auto
-  then show ?thesis
-    by (cases \<phi>) auto
-qed
+lemma new1_less_setsum: 
+  "size_set (new1 \<phi>) < size_set {\<phi>}"
+proof (cases \<phi>)
+  case (And_ltln \<nu> \<mu>)
+    thus ?thesis
+      by (cases "\<nu> = \<mu>"; simp)
+qed (simp_all)
 
-lemma new2_less_setsum: "frmlset_sumn (new2 \<phi>) < frmlset_sumn {\<phi>}"
-proof -
-  have "frmlset_sumn {\<nu>,\<mu>} < Suc (size_frmln \<nu> + size_frmln \<mu>)" for \<nu> \<mu>
-    by (cases "\<nu> = \<mu>") auto
-  then show ?thesis
-    by (cases \<phi>) auto
-qed
+lemma new2_less_setsum: 
+  "size_set (new2 \<phi>) < size_set {\<phi>}"
+proof (cases \<phi>)
+  case (Release_ltln \<nu> \<mu>)
+    thus ?thesis
+      by (cases "\<nu> = \<mu>"; simp)
+qed (simp_all)
 
 lemma new1_finite[intro]: "finite (new1 \<psi>)"
   by (cases \<psi>) auto
@@ -911,12 +903,14 @@ lemma expand_inv_impl[intro!]:
       and newn: "\<psi> \<in> new n"
       and "old_next_pair ` ns \<subseteq> old_next_pair ` ns'"
       and "expand_inv_result \<phi> ns'"
-      and "(n' = n\<lparr> new := new n - {\<psi>}, old := {\<psi>} \<union> old n \<rparr>) \<or>
+      and "(n' = n\<lparr> new := new n - {\<psi>}, 
+                    old := {\<psi>} \<union> old n \<rparr>) \<or>
            (n' = n\<lparr> new := new1 \<psi> \<union> (new n - {\<psi>}),
                     old := {\<psi>} \<union> old n,
                     next := next1 \<psi> \<union> next n \<rparr>) \<or>
-           (n' = n\<lparr> name := nm,
-                    new := new2 \<psi> \<union> (new n - {\<psi>}), old := {\<psi>} \<union> old n \<rparr>)"
+           (n' = n\<lparr> name := nm, 
+                    new := new2 \<psi> \<union> (new n - {\<psi>}), 
+                    old := {\<psi>} \<union> old n \<rparr>)"
           (is "?case1 \<or> ?case2 \<or> ?case3")
     shows "((n', ns'), (n, ns))\<in>expand_ord \<phi> \<and> expand_inv \<phi> (n', ns')"
           (is "?concl1 \<and> ?concl2")
@@ -926,41 +920,47 @@ proof
   proof cases
     case n'def: 1
     with assms show ?thesis
-      unfolding expand_inv_def expand_ord_def finite_psupset_def by auto
+      unfolding expand_ord_def expand_inv_def finite_psupset_def 
+      apply (cases "old_next_pair ` ns \<subset> old_next_pair ` ns'") 
+      apply simp_all
+      apply auto [1]
+      apply (metis (no_types, lifting) add_Suc diff_Suc_less psubsetI setsum.remove setsum_diff1_nat zero_less_Suc)
+      done
   next
     case n'def: 2
-    have \<psi>innew: "\<psi>\<in> new n" and fin_new: "finite (new n)"
+    have \<psi>innew: "\<psi> \<in> new n" and fin_new: "finite (new n)"
       using assms unfolding expand_inv_def by auto
-    from \<psi>innew setsum_diff1_nat[of size_frmln "new n" \<psi>]
-    have "frmlset_sumn (new n - {\<psi>}) = frmlset_sumn (new n) - size_frmln \<psi>"
-      by simp
+    then have "size_set (new n - {\<psi>}) = size_set (new n) - size_set {\<psi>}"
+      using size_set_diff by fastforce
     moreover
-    from fin_new setsum_Un_nat[OF new1_finite _, of "new n - {\<psi>}" size_frmln \<psi>]
-    have "frmlset_sumn (new n') \<le> frmlset_sumn (new1 \<psi>) + frmlset_sumn (new n - {\<psi>})"
-      unfolding n'def by auto
-    moreover have sum_leq:"frmlset_sumn (new n) \<ge>  frmlset_sumn {\<psi>}"
-      using \<psi>innew setsum_mono2[OF fin_new, of "{\<psi>}" size_frmln]
-        size_frmln_gt_zero
-      by simp
-    ultimately have "frmlset_sumn (new n') < frmlset_sumn (new n)"
-      using new1_less_setsum[of \<psi>] sum_leq by auto
-    with assms show ?thesis unfolding expand_ord_def finite_psupset_def by auto
+    from fin_new setsum_Un_nat[OF new1_finite _, of "new n - {\<psi>}" size \<psi>]
+    have "size_set (new n') \<le> size_set (new1 \<psi>) + size_set (new n - {\<psi>})"
+      unfolding n'def by (simp add: new1_finite setsum_Un_nat) 
+    moreover 
+    have sum_leq: "size_set (new n) \<ge> size_set {\<psi>}"
+      using \<psi>innew setsum_mono2[OF fin_new, of "{\<psi>}"]
+      by blast
+    ultimately 
+    have "size_set (new n') < size_set (new n)"
+      using new1_less_setsum[of \<psi>] by auto
+    with assms show ?thesis 
+      unfolding expand_ord_def finite_psupset_def by auto
   next
     case n'def: 3
-    have \<psi>innew: "\<psi>\<in> new n" and fin_new: "finite (new n)"
+    have \<psi>innew: "\<psi> \<in> new n" and fin_new: "finite (new n)"
       using assms unfolding expand_inv_def by auto
-    from \<psi>innew setsum_diff1_nat[of size_frmln "new n" \<psi>]
-    have "frmlset_sumn (new n - {\<psi>}) = frmlset_sumn (new n) - size_frmln \<psi>"
-      by simp
+    from \<psi>innew setsum_diff1_nat[of size "new n" \<psi>]
+    have "size_set (new n - {\<psi>}) = size_set (new n) - size_set {\<psi>}"
+      using size_set_diff[of "new n" "{\<psi>}"] by fastforce
     moreover
-    from fin_new setsum_Un_nat[OF new2_finite _, of "new n - {\<psi>}" size_frmln \<psi>]
-    have "frmlset_sumn (new n') \<le> frmlset_sumn (new2 \<psi>) + frmlset_sumn (new n - {\<psi>})"
-      unfolding n'def by auto
-    moreover have sum_leq:"frmlset_sumn (new n) \<ge>  frmlset_sumn {\<psi>}"
-      using \<psi>innew setsum_mono2[OF fin_new, of "{\<psi>}" size_frmln]
-        size_frmln_gt_zero
-      by simp
-    ultimately have "frmlset_sumn (new n') < frmlset_sumn (new n)"
+    from fin_new setsum_Un_nat[OF new2_finite _, of "new n - {\<psi>}" size \<psi>]
+    have "size_set (new n') \<le> size_set (new2 \<psi>) + size_set (new n - {\<psi>})"
+      unfolding n'def by (simp add: new2_finite setsum_Un_nat) 
+    moreover 
+    have sum_leq:"size_set (new n) \<ge>  size_set {\<psi>}"
+      using \<psi>innew setsum_mono2[OF fin_new, of "{\<psi>}"] by blast
+    ultimately 
+    have "size_set (new n') < size_set (new n)"
       using new2_less_setsum[of \<psi>] sum_leq by auto
     with assms show ?thesis
       unfolding expand_ord_def finite_psupset_def by auto
@@ -1649,8 +1649,6 @@ lemma create_gba_from_nodes__is_run:
 
 context
 begin
-
-interpretation LTL_Syntax .
 
 abbreviation
   "auto_run_j j \<xi> q \<equiv>
@@ -2638,60 +2636,60 @@ lemma L4_8':
   shows "\<xi> \<Turnstile>\<^sub>n \<psi>"
   using assms
 proof (induct \<psi> arbitrary: \<sigma> \<xi>)
-  case LTLnTrue
+  case True_ltln
   show ?case by auto
 next
-  case LTLnFalse
+  case False_ltln
   then show ?case
     using inres_SPEC[OF res false_propag_on_create_graph]
       create_gba_from_nodes__ipath
     by (metis)
 next
-  case (LTLnProp p)
+  case (Prop_ltln p)
   then show ?case
     unfolding create_gba_from_nodes_def by auto
 next
-  case (LTLnNProp p)
+  case (Nprop_ltln p)
   then show ?case
     unfolding create_gba_from_nodes_def by auto
 next
-  case (LTLnAnd \<mu> \<eta>)
+  case (And_ltln \<mu> \<eta>)
   then show ?case
     using inres_SPEC[OF res and_propag_on_create_graph, of \<mu> \<eta>]
       create_gba_from_nodes__ipath
-      by (metis insert_subset ltln_semantics.simps(5))
+      by (metis insert_subset semantics_ltln.simps(5))
 next
-  case (LTLnOr \<mu> \<eta>)
+  case (Or_ltln \<mu> \<eta>)
   then have "\<mu> \<in> old (\<sigma> 0) \<or> \<eta> \<in> old (\<sigma> 0)"
     using inres_SPEC[OF res or_propag_on_create_graph, of \<mu> \<eta>]
     create_gba_from_nodes__ipath
     by (metis (full_types) Int_empty_left Int_insert_left_if0)
   moreover have "\<xi> \<Turnstile>\<^sub>n \<mu>" if "\<mu> \<in> old (\<sigma> 0)"
-    using LTLnOr that by auto
+    using Or_ltln that by auto
   moreover have "\<xi> \<Turnstile>\<^sub>n \<eta>" if "\<eta> \<in> old (\<sigma> 0)"
-    using LTLnOr that by auto
+    using Or_ltln that by auto
   ultimately show ?case by auto
 next
-  case (LTLnNext \<mu>)
+  case (Next_ltln \<mu>)
   with create_gba_from_nodes__ipath[of \<sigma>]
   have "\<sigma> 0 \<in> qs \<and> \<sigma> 1 \<in> qs \<and> name (\<sigma> 0) \<in> incoming (\<sigma> 1)"
     by auto
   with inres_SPEC[OF res next_propag_on_create_graph, of \<mu>] have "\<mu>\<in>old (suffix 1 \<sigma> 0)"
-    using LTLnNext by auto
+    using Next_ltln by auto
   moreover
   have "?inf_run (suffix 1 \<sigma>)"
     and "?gbarel_accept (suffix 1 \<sigma>)"
     and "?lgbarel_accept (suffix 1 \<xi>) (suffix 1 \<sigma> )"
-    using LTLnNext create_gba_from_nodes__ipath
+    using Next_ltln create_gba_from_nodes__ipath
     apply -
     apply (metis ipath_suffix)
     apply (auto simp del: suffix_nth) [] (* FIXME:
       "\<lambda>a. suffix i \<sigma> a" is unfolded, but "suffix i \<sigma>" is not! *)
     apply auto
     done
-  ultimately show ?case using LTLnNext by simp
+  ultimately show ?case using Next_ltln by simp
 next
-  case (LTLnUntil \<mu> \<eta>)
+  case (Until_ltln \<mu> \<eta>)
   then have "\<exists>j. (\<forall>i<j. {\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (\<sigma> i)) \<and> \<eta> \<in> old (\<sigma> j)"
     using L4_2b by auto
   then obtain j where \<sigma>_pre: "\<forall>i<j. {\<mu>, \<mu> U\<^sub>n \<eta>} \<subseteq> old (\<sigma> i)" and "\<eta> \<in> old (suffix j \<sigma> 0)"
@@ -2701,7 +2699,7 @@ next
     and "?gbarel_accept (suffix j \<sigma>)"
     and "?lgbarel_accept (suffix j \<xi>) (suffix j \<sigma>)"
     unfolding limit_suffix
-    using LTLnUntil create_gba_from_nodes__ipath
+    using Until_ltln create_gba_from_nodes__ipath
     apply -
     apply (metis ipath_suffix)
     apply (auto simp del: suffix_nth) [] (* FIXME:
@@ -2709,7 +2707,7 @@ next
     apply auto
     done
   ultimately have "suffix j \<xi> \<Turnstile>\<^sub>n \<eta>"
-    using LTLnUntil by simp
+    using Until_ltln by simp
   moreover {
     fix i
     assume "i < j"
@@ -2717,7 +2715,7 @@ next
       and "?gbarel_accept (suffix i \<sigma>)"
       and "?lgbarel_accept (suffix i \<xi>) (suffix i \<sigma> )"
       unfolding limit_suffix
-      using LTLnUntil create_gba_from_nodes__ipath
+      using Until_ltln create_gba_from_nodes__ipath
       apply -
       apply (metis ipath_suffix)
       apply (auto simp del: suffix_nth) [] (* FIXME:
@@ -2726,11 +2724,11 @@ next
       done
     moreover have "\<mu>\<in>old (suffix i \<sigma> 0)"
       using \<sigma>_pre \<open>i<j\<close> by auto
-    ultimately have "suffix i \<xi> \<Turnstile>\<^sub>n \<mu>" using LTLnUntil by simp
+    ultimately have "suffix i \<xi> \<Turnstile>\<^sub>n \<mu>" using Until_ltln by simp
   }
   ultimately show ?case by auto
 next
-  case (LTLnRelease \<mu> \<eta>)
+  case (Release_ltln \<mu> \<eta>)
   { fix i
     assume "\<eta> \<in> old (\<sigma> i) \<or> (\<exists>j<i. \<mu> \<in> old (\<sigma> j))"
     moreover
@@ -2740,7 +2738,7 @@ next
         and "?gbarel_accept (suffix i \<sigma>)"
         and "?lgbarel_accept (suffix i \<xi>) (suffix i \<sigma> )"
         unfolding limit_suffix
-        using LTLnRelease create_gba_from_nodes__ipath
+        using Release_ltln create_gba_from_nodes__ipath
         apply -
         apply (metis ipath_suffix)
         apply (auto simp del: suffix_nth) [] (* FIXME:
@@ -2748,7 +2746,7 @@ next
         apply auto
         done
       with * have "suffix i \<xi> \<Turnstile>\<^sub>n \<eta>"
-        using LTLnRelease by auto
+        using Release_ltln by auto
     }
     moreover
     {
@@ -2758,7 +2756,7 @@ next
       have "?inf_run (suffix j \<sigma>)"
         and "?gbarel_accept (suffix j \<sigma>)"
         and "?lgbarel_accept (suffix j \<xi>) (suffix j \<sigma> )" unfolding limit_suffix
-        using LTLnRelease create_gba_from_nodes__ipath
+        using Release_ltln create_gba_from_nodes__ipath
         apply -
         apply (metis ipath_suffix)
         apply (auto simp del: suffix_nth) [] (* FIXME:
@@ -2766,13 +2764,13 @@ next
         apply auto
         done
       ultimately have "suffix j \<xi> \<Turnstile>\<^sub>n \<mu>"
-        using LTLnRelease by auto
+        using Release_ltln by auto
       then have "\<exists>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<mu>"
         using \<open>j<i\<close> by auto
     }
     ultimately have "suffix i \<xi> \<Turnstile>\<^sub>n \<eta> \<or> (\<exists>j<i. suffix j \<xi> \<Turnstile>\<^sub>n \<mu>)" by auto
   }
-  then show ?case using LTLnRelease L4_2c by auto
+  then show ?case using Release_ltln L4_2c by auto
 qed
 
 

@@ -381,30 +381,12 @@ lemma subfrmlsn_size:
   by (induction \<phi>) auto 
 
 abbreviation
-  "size_set \<Phi> \<equiv> setsum size \<Phi>"
+  "size_set S \<equiv> setsum (\<lambda>x. 2 * size x + 1) S"
 
-lemma size_set_diff_lesseq[intro!]:
-  "finite S \<Longrightarrow> A \<subseteq> S \<Longrightarrow> size_set (S - A) \<le> size_set S"
-  by (simp add: le_add1 setsum.subset_diff)
+lemma size_set_diff:
+  "finite S \<Longrightarrow> S' \<subseteq> S \<Longrightarrow> size_set (S - S') = size_set S - size_set S'"
+  using setsum_diff_nat finite_subset by metis
 
-lemma size_set_diff_less[intro!]:
-  assumes "finite S" "A \<subseteq> S" "A \<inter> {x. size x > 0} \<noteq> {}"
-  shows "size_set (S - A) < size_set S"
-  using assms(1, 2)
-proof (induction S rule: finite_induct)
-  case (insert x S)
-    have "size_set (insert x S) = size_set (insert x S - A) + size_set A"
-      by (meson finite.insertI insert setsum.subset_diff)
-    moreover
-    have "finite A"
-      using insert infinite_super by blast
-    hence "size_set A > 0"
-      using assms(3) by fastforce
-    ultimately
-    show ?case
-      by linarith
-qed (insert assms(3); blast)
-   
 subsubsection \<open>Expansion\<close>
 
 lemma ltln_expand_Until:

@@ -19,22 +19,21 @@ type_synonym APs = "expr iarray"
 
 primrec ltlc_aps_list' :: "'a ltlc \<Rightarrow> 'a list \<Rightarrow> 'a list"
 where
-  "ltlc_aps_list' LTLcTrue l = l"
-| "ltlc_aps_list' LTLcFalse l = l"
-| "ltlc_aps_list' (LTLcProp p) l = (if List.member l p then l else p#l)"
-| "ltlc_aps_list' (LTLcNeg x) l = ltlc_aps_list' x l"
-| "ltlc_aps_list' (LTLcNext x) l = ltlc_aps_list' x l"
-| "ltlc_aps_list' (LTLcFinal x) l = ltlc_aps_list' x l"
-| "ltlc_aps_list' (LTLcGlobal x) l = ltlc_aps_list' x l"
-| "ltlc_aps_list' (LTLcAnd x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
-| "ltlc_aps_list' (LTLcOr x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
-| "ltlc_aps_list' (LTLcImplies x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
-| "ltlc_aps_list' (LTLcIff x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
-| "ltlc_aps_list' (LTLcUntil x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
-| "ltlc_aps_list' (LTLcRelease x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
+  "ltlc_aps_list' True_ltlc l = l"
+| "ltlc_aps_list' False_ltlc l = l"
+| "ltlc_aps_list' (Prop_ltlc p) l = (if List.member l p then l else p#l)"
+| "ltlc_aps_list' (Not_ltlc x) l = ltlc_aps_list' x l"
+| "ltlc_aps_list' (Next_ltlc x) l = ltlc_aps_list' x l"
+| "ltlc_aps_list' (Final_ltlc x) l = ltlc_aps_list' x l"
+| "ltlc_aps_list' (Global_ltlc x) l = ltlc_aps_list' x l"
+| "ltlc_aps_list' (And_ltlc x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
+| "ltlc_aps_list' (Or_ltlc x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
+| "ltlc_aps_list' (Implies_ltlc x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
+| "ltlc_aps_list' (Until_ltlc x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
+| "ltlc_aps_list' (Release_ltlc x y) l = ltlc_aps_list' y (ltlc_aps_list' x l)"
 
 lemma ltlc_aps_list'_correct:
-  "set (ltlc_aps_list' \<phi> l) = ltlc_aprops \<phi> \<union> set l"
+  "set (ltlc_aps_list' \<phi> l) = atoms_ltlc \<phi> \<union> set l"
   by (induct \<phi> arbitrary: l) (auto simp add: in_set_member)
 
 lemma ltlc_aps_list'_distinct:
@@ -46,7 +45,7 @@ where
   "ltlc_aps_list \<phi> = ltlc_aps_list' \<phi> []"
 
 lemma ltlc_aps_list_correct:
-  "set (ltlc_aps_list \<phi>) = ltlc_aprops \<phi>"
+  "set (ltlc_aps_list \<phi>) = atoms_ltlc \<phi>"
   unfolding ltlc_aps_list_def
   by (force simp: ltlc_aps_list'_correct)
 
@@ -149,8 +148,8 @@ definition ltl_convert :: "expr ltlc \<Rightarrow> APs \<times> nat ltlc" where
 
 lemma ltl_convert_correct:
   assumes "ltl_convert \<phi> = (APs, \<phi>\<^sub>i)"
-  shows "ltlc_aprops \<phi> = set (IArray.list_of APs)" (is "?P1")
-  and "ltlc_aprops \<phi>\<^sub>i = {..<IArray.length APs}" (is "?P2")
+  shows "atoms_ltlc \<phi> = set (IArray.list_of APs)" (is "?P1")
+  and "atoms_ltlc \<phi>\<^sub>i = {..<IArray.length APs}" (is "?P2")
   and "\<phi>\<^sub>i = map_ltlc (the \<circ> idx (IArray.list_of APs)) \<phi>" (is "?P3")
   and "distinct (IArray.list_of APs)"
 proof -
@@ -165,7 +164,7 @@ proof -
     unfolding ltl_convert_def
     by auto
 
-  from assms have "ltlc_aprops \<phi>\<^sub>i = (the \<circ> idx ?APs) ` ltlc_aprops \<phi>"
+  from assms have "atoms_ltlc \<phi>\<^sub>i = (the \<circ> idx ?APs) ` atoms_ltlc \<phi>"
     unfolding ltl_convert_def
     by (auto simp add: ltlc.set_map)
   moreover from APs_def ltlc_aps_list_distinct show "distinct ?APs" by simp
@@ -244,7 +243,7 @@ definition promela_language_ltl :: "program \<times> APs \<times> gState \<Right
 lemma promela_props_ltl_map_aprops:
   assumes "ltl_convert \<phi> = (APs,\<phi>\<^sub>i)"
   shows "promela_props_ltl APs = 
-          map_aprops (idx (IArray.list_of APs)) \<circ> promela_props"
+          map_props (idx (IArray.list_of APs)) \<circ> promela_props"
 proof -
   let ?APs = "IArray.list_of APs"
   let ?idx = "idx ?APs"
@@ -260,14 +259,14 @@ proof -
       by (simp_all add: propValid_def)
     hence "APs!!i \<in> promela_props g" by (simp add: promela_props_def)
     moreover from idx_correct l D have "?idx (APs!!i) = Some i" by fastforce
-    ultimately show "i \<in> (map_aprops ?idx \<circ> promela_props) g"
-      unfolding o_def map_aprops_def
+    ultimately show "i \<in> (map_props ?idx \<circ> promela_props) g"
+      unfolding o_def map_props_def
       by blast
   next
     fix g i
-    assume "i \<in> (map_aprops ?idx \<circ> promela_props) g"
+    assume "i \<in> (map_props ?idx \<circ> promela_props) g"
     then obtain p where p_def: "p \<in> promela_props g" "?idx p = Some i" 
-      unfolding map_aprops_def o_def 
+      unfolding map_props_def o_def 
       by auto
     hence expr: "exprArith g emptyProc p \<noteq> 0" by (simp add: promela_props_def)
   
@@ -281,33 +280,33 @@ qed
 
 lemma promela_run_in_language_iff:
   assumes conv: "ltl_convert \<phi> = (APs,\<phi>\<^sub>i)"
-  shows "promela_props \<circ> \<xi> \<in> ltlc_language \<phi> 
-          \<longleftrightarrow> promela_props_ltl APs \<circ> \<xi> \<in> ltlc_language \<phi>\<^sub>i" (is "?L \<longleftrightarrow> ?R")
+  shows "promela_props \<circ> \<xi> \<in> language_ltlc \<phi> 
+          \<longleftrightarrow> promela_props_ltl APs \<circ> \<xi> \<in> language_ltlc \<phi>\<^sub>i" (is "?L \<longleftrightarrow> ?R")
 proof -
   let ?APs = "IArray.list_of APs"
 
   from conv have D: "distinct ?APs"
     by (simp add: ltl_convert_correct)
-  with conv have APs: "ltlc_aprops \<phi> \<subseteq> dom (idx ?APs)"
+  with conv have APs: "atoms_ltlc \<phi> \<subseteq> dom (idx ?APs)"
     by (simp add: idx_dom ltl_convert_correct)
 
-  note map_semantics = map_ltlc_semantics[OF idx_inj_on_dom[OF D] APs]
+  note map_semantics = map_semantics_ltlc[OF idx_inj_on_dom[OF D] APs]
                        promela_props_ltl_map_aprops[OF conv]
                        ltl_convert_correct[OF conv]
 
-  have "?L \<longleftrightarrow> (promela_props \<circ> \<xi>) \<Turnstile>\<^sub>c \<phi>" by (simp add: ltlc_language_def)
+  have "?L \<longleftrightarrow> (promela_props \<circ> \<xi>) \<Turnstile>\<^sub>c \<phi>" by (simp add: language_ltlc_def)
   also have "... \<longleftrightarrow> (promela_props_ltl APs \<circ> \<xi>) \<Turnstile>\<^sub>c \<phi>\<^sub>i"
     using map_semantics
     by (simp add: o_assoc)
   also have "... \<longleftrightarrow> ?R"
-    by (simp add: ltlc_language_def)
+    by (simp add: language_ltlc_def)
   finally show ?thesis .
 qed
 
 lemma promela_language_sub_iff:
   assumes conv: "ltl_convert \<phi> = (APs,\<phi>\<^sub>i)"
   and setUp: "setUp ast = (prog,g)"
-  shows "promela_language_ltl (prog,APs,g) \<subseteq> ltlc_language \<phi>\<^sub>i \<longleftrightarrow> promela_language ast \<subseteq> ltlc_language \<phi>"
+  shows "promela_language_ltl (prog,APs,g) \<subseteq> language_ltlc \<phi>\<^sub>i \<longleftrightarrow> promela_language ast \<subseteq> language_ltlc \<phi>"
   using promela_run_in_language_iff[OF conv] setUp
   by (auto simp add: promela_language_ltl_def promela_language_def promela_is_run_ltl_def)
 

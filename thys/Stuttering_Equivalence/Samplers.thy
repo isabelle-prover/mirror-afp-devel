@@ -1,5 +1,5 @@
 theory Samplers
-imports Main
+  imports Main "~~/src/HOL/Library/Omega_Words_Fun"
 begin
 
 section {* Utility Lemmas *}
@@ -64,26 +64,6 @@ lemma strict_mono_comp:
       and f: "strict_mono (f::'b::order \<Rightarrow> 'c::order)"
   shows "strict_mono (f \<circ> g)"
   using assms by (auto simp: strict_mono_def)
-
-
-text {*
-  We represent @{text \<omega>}-words as functions of type @{text "nat \<Rightarrow> 'a"}.
-  Suffixes of @{text \<omega>}-words are simply obtained by index shifting,
-  and we introduce a convenient notation.
-*}
-
-definition suffix :: "(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> 'a)"   ("_[_ ..]" [80, 15] 80) where
-  "\<sigma>[n..] \<equiv> \<lambda>i. \<sigma> (n + i)"
-
-lemma suffix_elt [simp]: "(\<sigma>[n..]) i = \<sigma> (n+i)"
-  by (simp add: suffix_def)
-
-lemma suffix_0 [simp]: "\<sigma>[0..] = \<sigma>"
-  by (simp add: suffix_def)
-
-lemma suffix_suffix [simp]: "\<sigma>[n..][m..] = \<sigma>[n+m ..]"
-  by (simp add: suffix_def add.assoc)
-
 
 section {* Stuttering Sampling Functions *}
 
@@ -164,7 +144,7 @@ text {*
 *}
 lemma stutter_sampler_suffix:
   assumes f: "stutter_sampler f \<sigma>"
-  shows "stutter_sampler (\<lambda>k. f (n+k) - f n) (\<sigma>[f n ..])"
+  shows "stutter_sampler (\<lambda>k. f (n+k) - f n) (suffix (f n) \<sigma>)"
 proof (auto simp: stutter_sampler_def strict_mono_def)
   fix i j
   assume ij: "(i::nat) < j"
@@ -322,14 +302,14 @@ text {*
 *}
 lemma stutter_free_suffix: 
   assumes sigma: "stutter_free \<sigma>"
-  shows "stutter_free (\<sigma>[k..])"
+  shows "stutter_free (suffix k \<sigma>)"
 proof (rule stutter_freeI)
   fix j n
-  assume j: "(\<sigma>[k..]) (Suc j) = (\<sigma>[k..]) j" and n: "j < n"
+  assume j: "(suffix k \<sigma>) (Suc j) = (suffix k \<sigma>) j" and n: "j < n"
   from j have "\<sigma> (Suc (k+j)) = \<sigma> (k+j)" by simp
   moreover from n have "k+n > k+j" by simp
   ultimately have "\<sigma> (k+n) = \<sigma> (k+j)" by (rule stutter_freeD[OF sigma])
-  thus "(\<sigma>[k..]) n = (\<sigma>[k..]) j" by simp
+  thus "(suffix k \<sigma>) n = (suffix k \<sigma>) j" by simp
 qed
 
 lemma stutter_reduced_0: "(\<natural>\<sigma>) 0 = \<sigma> 0"
@@ -396,15 +376,15 @@ proof (rule stutter_freeI)
              simp del: max_stutter_sampler.simps)
 qed
 
-lemma stutter_reduced_suffix: "\<natural>((\<natural>\<sigma>)[k..]) = (\<natural>\<sigma>)[k..]"
+lemma stutter_reduced_suffix: "\<natural> (suffix k (\<natural>\<sigma>)) = suffix k (\<natural>\<sigma>)"
 proof (rule stutter_free_reduced)
   have "stutter_free (\<natural>\<sigma>)" by (rule stutter_reduced_stutter_free)
-  thus "stutter_free ((\<natural>\<sigma>)[k..])" by (rule stutter_free_suffix)
+  thus "stutter_free (suffix k (\<natural>\<sigma>))" by (rule stutter_free_suffix)
 qed
 
 lemma stutter_reduced_reduced: "\<natural>\<natural>\<sigma> = \<natural>\<sigma>"
-  by (rule stutter_reduced_suffix[of "\<sigma>" "0", simplified])
-
+  by (insert stutter_reduced_suffix[of 0 "\<sigma>", simplified])
+  
 text {*
   One can define a partial order on sampling functions for a given sequence
   @{text "\<sigma>"} by saying that function @{text g} is better than function @{text f}

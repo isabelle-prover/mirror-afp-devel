@@ -203,55 +203,55 @@ of  ( 0, ( ( _, ( MlyValue.formula formula, formula1left, formula1right)) :: res
 )
  in ( LrTable.NT 0, ( result, formula1left, formula1right), rest671)
 end
-|  ( 1, ( ( _, ( MlyValue.ident ident, ident1left, ident1right)) :: rest671)) => let val  result = MlyValue.formula ((*#line 41.20 "ltl.yacc"*)LTLcProp ident(*#line 206.1 "ltl.yacc.sml"*)
+|  ( 1, ( ( _, ( MlyValue.ident ident, ident1left, ident1right)) :: rest671)) => let val  result = MlyValue.formula ((*#line 41.20 "ltl.yacc"*)Prop_ltlc ident(*#line 206.1 "ltl.yacc.sml"*)
 )
  in ( LrTable.NT 1, ( result, ident1left, ident1right), rest671)
 end
-|  ( 2, ( ( _, ( _, TRUE1left, TRUE1right)) :: rest671)) => let val  result = MlyValue.formula ((*#line 42.19 "ltl.yacc"*)LTLcTrue(*#line 210.1 "ltl.yacc.sml"*)
+|  ( 2, ( ( _, ( _, TRUE1left, TRUE1right)) :: rest671)) => let val  result = MlyValue.formula ((*#line 42.21 "ltl.yacc"*)True_ltlc(*#line 210.1 "ltl.yacc.sml"*)
 )
  in ( LrTable.NT 1, ( result, TRUE1left, TRUE1right), rest671)
 end
-|  ( 3, ( ( _, ( _, FALSE1left, FALSE1right)) :: rest671)) => let val  result = MlyValue.formula ((*#line 43.20 "ltl.yacc"*)LTLcFalse(*#line 214.1 "ltl.yacc.sml"*)
+|  ( 3, ( ( _, ( _, FALSE1left, FALSE1right)) :: rest671)) => let val  result = MlyValue.formula ((*#line 43.20 "ltl.yacc"*)False_ltlc(*#line 214.1 "ltl.yacc.sml"*)
 )
  in ( LrTable.NT 1, ( result, FALSE1left, FALSE1right), rest671)
 end
-|  ( 4, ( ( _, ( MlyValue.formula formula, _, formula1right)) :: ( _, ( _, NOT1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 44.25 "ltl.yacc"*)LTLcNeg formula(*#line 218.1 "ltl.yacc.sml"*)
+|  ( 4, ( ( _, ( MlyValue.formula formula, _, formula1right)) :: ( _, ( _, NOT1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 44.25 "ltl.yacc"*)Not_ltlc formula(*#line 218.1 "ltl.yacc.sml"*)
 )
  in ( LrTable.NT 1, ( result, NOT1left, formula1right), rest671)
 end
-|  ( 5, ( ( _, ( MlyValue.formula formula, _, formula1right)) :: ( _, ( _, NEXT1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 45.26 "ltl.yacc"*)LTLcNext formula(*#line 222.1 "ltl.yacc.sml"*)
+|  ( 5, ( ( _, ( MlyValue.formula formula, _, formula1right)) :: ( _, ( _, NEXT1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 45.26 "ltl.yacc"*)Next_ltlc formula(*#line 222.1 "ltl.yacc.sml"*)
 )
  in ( LrTable.NT 1, ( result, NEXT1left, formula1right), rest671)
 end
-|  ( 6, ( ( _, ( MlyValue.formula formula, _, formula1right)) :: ( _, ( _, FINAL1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 46.27 "ltl.yacc"*)LTLcFinal formula(*#line 226.1 "ltl.yacc.sml"*)
+|  ( 6, ( ( _, ( MlyValue.formula formula, _, formula1right)) :: ( _, ( _, FINAL1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 46.27 "ltl.yacc"*)Final_ltlc formula(*#line 226.1 "ltl.yacc.sml"*)
 )
  in ( LrTable.NT 1, ( result, FINAL1left, formula1right), rest671)
 end
-|  ( 7, ( ( _, ( MlyValue.formula formula, _, formula1right)) :: ( _, ( _, GLOBAL1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 47.28 "ltl.yacc"*)LTLcGlobal formula(*#line 230.1 "ltl.yacc.sml"*)
+|  ( 7, ( ( _, ( MlyValue.formula formula, _, formula1right)) :: ( _, ( _, GLOBAL1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 47.28 "ltl.yacc"*)Global_ltlc formula(*#line 230.1 "ltl.yacc.sml"*)
 )
  in ( LrTable.NT 1, ( result, GLOBAL1left, formula1right), rest671)
 end
-|  ( 8, ( ( _, ( MlyValue.formula formula2, _, formula2right)) :: _ :: ( _, ( MlyValue.formula formula1, formula1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 48.31 "ltl.yacc"*)LTLcOr (formula1, formula2)(*#line 234.1 "ltl.yacc.sml"*)
+|  ( 8, ( ( _, ( MlyValue.formula formula2, _, formula2right)) :: _ :: ( _, ( MlyValue.formula formula1, formula1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 48.31 "ltl.yacc"*)Or_ltlc (formula1, formula2)(*#line 234.1 "ltl.yacc.sml"*)
 )
  in ( LrTable.NT 1, ( result, formula1left, formula2right), rest671)
 end
-|  ( 9, ( ( _, ( MlyValue.formula formula2, _, formula2right)) :: _ :: ( _, ( MlyValue.formula formula1, formula1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 49.33 "ltl.yacc"*)LTLcAnd (formula1, formula2)(*#line 238.1 "ltl.yacc.sml"*)
+|  ( 9, ( ( _, ( MlyValue.formula formula2, _, formula2right)) :: _ :: ( _, ( MlyValue.formula formula1, formula1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 49.33 "ltl.yacc"*)And_ltlc (formula1, formula2)(*#line 238.1 "ltl.yacc.sml"*)
 )
  in ( LrTable.NT 1, ( result, formula1left, formula2right), rest671)
 end
-|  ( 10, ( ( _, ( MlyValue.formula formula2, _, formula2right)) :: _ :: ( _, ( MlyValue.formula formula1, formula1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 50.32 "ltl.yacc"*)LTLcImplies (formula1, formula2)(*#line 242.1 "ltl.yacc.sml"*)
+|  ( 10, ( ( _, ( MlyValue.formula formula2, _, formula2right)) :: _ :: ( _, ( MlyValue.formula formula1, formula1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 50.32 "ltl.yacc"*)Implies_ltlc (formula1, formula2)(*#line 242.1 "ltl.yacc.sml"*)
 )
  in ( LrTable.NT 1, ( result, formula1left, formula2right), rest671)
 end
-|  ( 11, ( ( _, ( MlyValue.formula formula2, _, formula2right)) :: _ :: ( _, ( MlyValue.formula formula1, formula1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 51.35 "ltl.yacc"*)LTLcIff (formula1, formula2)(*#line 246.1 "ltl.yacc.sml"*)
+|  ( 11, ( ( _, ( MlyValue.formula formula2, _, formula2right)) :: _ :: ( _, ( MlyValue.formula formula1, formula1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 51.35 "ltl.yacc"*)iff_ltlc formula1 formula2(*#line 246.1 "ltl.yacc.sml"*)
 )
  in ( LrTable.NT 1, ( result, formula1left, formula2right), rest671)
 end
-|  ( 12, ( ( _, ( MlyValue.formula formula2, _, formula2right)) :: _ :: ( _, ( MlyValue.formula formula1, formula1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 52.34 "ltl.yacc"*)LTLcUntil (formula1, formula2)(*#line 250.1 "ltl.yacc.sml"*)
+|  ( 12, ( ( _, ( MlyValue.formula formula2, _, formula2right)) :: _ :: ( _, ( MlyValue.formula formula1, formula1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 52.34 "ltl.yacc"*)Until_ltlc (formula1, formula2)(*#line 250.1 "ltl.yacc.sml"*)
 )
  in ( LrTable.NT 1, ( result, formula1left, formula2right), rest671)
 end
-|  ( 13, ( ( _, ( MlyValue.formula formula2, _, formula2right)) :: _ :: ( _, ( MlyValue.formula formula1, formula1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 53.35 "ltl.yacc"*)LTLcRelease (formula1, formula2)(*#line 254.1 "ltl.yacc.sml"*)
+|  ( 13, ( ( _, ( MlyValue.formula formula2, _, formula2right)) :: _ :: ( _, ( MlyValue.formula formula1, formula1left, _)) :: rest671)) => let val  result = MlyValue.formula ((*#line 53.35 "ltl.yacc"*)Release_ltlc (formula1, formula2)(*#line 254.1 "ltl.yacc.sml"*)
 )
  in ( LrTable.NT 1, ( result, formula1left, formula2right), rest671)
 end

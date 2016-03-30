@@ -29,7 +29,7 @@ definition ltl_to_gba_spec
   :: "'prop ltlc \<Rightarrow> ('q, 'prop set, _) igba_rec_scheme nres"
   -- {* Conversion of LTL formula to generalized buchi automaton *}  
   where "ltl_to_gba_spec \<phi> \<equiv> SPEC (\<lambda>gba. 
-    igba.lang gba = ltlc_language \<phi> \<and> igba gba \<and> finite ((g_E gba)\<^sup>* `` g_V0 gba))"
+    igba.lang gba = language_ltlc \<phi> \<and> igba gba \<and> finite ((g_E gba)\<^sup>* `` g_V0 gba))"
 
 definition inter_spec 
   :: "('s,'prop set,_) sa_rec_scheme 
@@ -73,7 +73,7 @@ definition abs_model_check
   where
   "abs_model_check _ _ _ _ sys \<phi> \<equiv> do {
     gba :: ('ba_state,_,'ba_more) igba_rec_scheme 
-      \<leftarrow> ltl_to_gba_spec (LTLcNeg \<phi>);
+      \<leftarrow> ltl_to_gba_spec (Not_ltlc \<phi>);
     ASSERT (igba gba);
     ASSERT (sa sys);
     (Gprod::('prod_state,'prod_more)igb_graph_rec_scheme, map_state) 
@@ -99,9 +99,9 @@ theorem abs_model_check_correct:
     ASSERT (sa sys);
     ASSERT (finite ((g_E sys)\<^sup>* `` g_V0 sys));
     SPEC (\<lambda>res. case res of
-      None \<Rightarrow> sa.lang sys \<subseteq> ltlc_language \<phi>
-    | Some None \<Rightarrow> \<not> sa.lang sys \<subseteq> ltlc_language \<phi>
-    | Some (Some r) \<Rightarrow> graph_defs.is_run sys r \<and> sa_L sys \<circ> r \<notin> ltlc_language \<phi>)
+      None \<Rightarrow> sa.lang sys \<subseteq> language_ltlc \<phi>
+    | Some None \<Rightarrow> \<not> sa.lang sys \<subseteq> language_ltlc \<phi>
+    | Some (Some r) \<Rightarrow> graph_defs.is_run sys r \<and> sa_L sys \<circ> r \<notin> language_ltlc \<phi>)
   }"
   unfolding abs_model_check_def ltl_to_gba_spec_def inter_spec_def 
     find_ce_spec_def
@@ -160,7 +160,7 @@ begin
       \<Rightarrow> 'sai \<Rightarrow> 'prop ltlc \<Rightarrow> 'mcei option option"
     where
     "impl_model_check cfg sys \<phi> \<equiv> let
-      ba = ltl_to_gba_impl (cfg_l2b cfg) (LTLcNeg \<phi>);
+      ba = ltl_to_gba_impl (cfg_l2b cfg) (Not_ltlc \<phi>);
       (G,map_q) = inter_impl (cfg_int cfg) sys ba;
       ce = find_ce_impl (cfg_ce cfg) G
     in
@@ -181,7 +181,7 @@ begin
 
     apply (refine_rcg
       ltl_to_gba_refine[param_fo, THEN plain_nres_relD]
-      rel_arg_cong[where f="LTLcNeg"]
+      rel_arg_cong[where f="Not_ltlc"]
       inter_refine[param_fo, THEN plain_nres_relD]
       find_ce_refine[param_fo, THEN plain_nres_relD]
     )
@@ -197,12 +197,12 @@ begin
     assumes [simp]: "sa sys" "finite ((g_E sys)\<^sup>* `` g_V0 sys)"
     shows "case impl_model_check cfg sysi \<phi> of
       None 
-        \<Rightarrow> sa.lang sys \<subseteq> ltlc_language \<phi>
+        \<Rightarrow> sa.lang sys \<subseteq> language_ltlc \<phi>
     | Some None 
-        \<Rightarrow> \<not> sa.lang sys \<subseteq> ltlc_language \<phi>
+        \<Rightarrow> \<not> sa.lang sys \<subseteq> language_ltlc \<phi>
     | Some (Some ri) 
         \<Rightarrow> (\<exists>r. (ri,r)\<in>mce_rel 
-           \<and> graph_defs.is_run sys r \<and> sa_L sys o r \<notin> ltlc_language \<phi>)"
+           \<and> graph_defs.is_run sys r \<and> sa_L sys o r \<notin> language_ltlc \<phi>)"
   proof -
     note impl_model_check_refine[
       where cfg=cfg,
@@ -221,7 +221,7 @@ begin
     assumes "(sysi,sys)\<in>sa_rel"
     assumes SA: "sa sys" "finite ((g_E sys)\<^sup>* `` g_V0 sys)"
     shows "impl_model_check cfg sysi \<phi> = None 
-    \<longleftrightarrow> sa.lang sys \<subseteq> ltlc_language \<phi>"
+    \<longleftrightarrow> sa.lang sys \<subseteq> language_ltlc \<phi>"
     using impl_model_check_correct[where cfg=cfg, OF assms, of \<phi>]
     by (auto 
       split: option.splits 
