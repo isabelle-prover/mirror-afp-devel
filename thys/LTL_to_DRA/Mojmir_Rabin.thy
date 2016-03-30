@@ -6,7 +6,7 @@
 section \<open>Translation to Deterministic Transition-Based Rabin Automata\<close>
 
 theory Mojmir_Rabin
-  imports Main Mojmir Rabin "Aux/Words2" "Aux/List2"
+  imports Main Mojmir Rabin "Aux/List2"
 begin
 
 locale mojmir_to_rabin_def = mojmir_def 

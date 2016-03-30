@@ -509,7 +509,7 @@ proof (rule ccontr, cases "q\<^sub>0 \<notin> F")
     finally
     obtain j where "j < i" and "infinite {t. \<not>token_succeeds t \<and> token_squats t \<and> stable_rank t j}"
       (is "infinite ?S")
-      using inf infinite_Union by force
+      using inf by force
 
     --\<open>Obtain such a token x\<close>
     then obtain x where "\<not>token_succeeds x" and "token_squats x" and "stable_rank x j"

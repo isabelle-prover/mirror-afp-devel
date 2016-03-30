@@ -3,10 +3,10 @@
     License:     BSD
 *)
 
-section \<open>LTL (in Negation-Normal-Form)\<close>
+section \<open>LTL (in Negation-Normal-Form, FGXU-Syntax)\<close>
 
 theory LTL_FGXU
-  imports Main "Aux/Words2"
+  imports Main "~~/src/HOL/Library/Omega_Words_Fun"
 begin
 
 text \<open>Inspired/Based on schimpf/LTL\<close>

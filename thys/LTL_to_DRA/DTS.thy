@@ -6,7 +6,7 @@
 section \<open>Deterministic Transition Systems\<close>
 
 theory DTS
-  imports Main "Aux/Mapping2" "Aux/Words2" "../KBPs/DFS"
+  imports Main "~~/src/HOL/Library/Omega_Words_Fun" "Aux/Mapping2" "../KBPs/DFS"
 begin
 
 -- \<open>DTS are realised by functions\<close>

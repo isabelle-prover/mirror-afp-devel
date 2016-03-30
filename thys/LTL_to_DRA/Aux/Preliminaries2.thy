@@ -22,12 +22,6 @@ proof -
     using snd fst finite_subset by blast
 qed
 
-lemma infinite_Union:
-  assumes "infinite(\<Union>A)"
-  assumes "finite A"
-  obtains M where "M \<in> A" and "infinite M"
-  using assms finite_Union by blast
-
 inductive finite_ordered :: "('a \<Rightarrow> nat) \<Rightarrow> 'a set \<Rightarrow> bool" for f :: "'a \<Rightarrow> nat" 
 where
   empty_ordered: "finite_ordered f {}"
