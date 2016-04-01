@@ -45,21 +45,21 @@ datatype (dead 's, dead 'm, dead 'p, 'l) seqp =
 
 syntax
   "_guard"    :: "['a,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("(00\<langle>_\<rangle>)//_" [0, 60] 60)
+                 ("(\<open>unbreakable\<close>\<langle>_\<rangle>)//_" [0, 60] 60)
   "_lguard"   :: "['a, 'a,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("{_}(00\<langle>_\<rangle>)//_" [0, 0, 60] 60)
+                 ("{_}(\<open>unbreakable\<close>\<langle>_\<rangle>)//_" [0, 0, 60] 60)
   "_ifguard"  :: "[pttrn, bool,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("(00\<langle>_. _\<rangle>)//_" [0, 0, 60] 60)
+                 ("(\<open>unbreakable\<close>\<langle>_. _\<rangle>)//_" [0, 0, 60] 60)
 
   "_bassign"  :: "[pttrn, 'a,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("(00\<lbrakk>_. _\<rbrakk>)//_" [0, 0, 60] 60)
+                 ("(\<open>unbreakable\<close>\<lbrakk>_. _\<rbrakk>)//_" [0, 0, 60] 60)
   "_lbassign" :: "['a, pttrn, 'a, ('s, 'm, 'p, 'a) seqp] \<Rightarrow> ('s, 'm, 'p, 'a) seqp"
-                 ("{_}(00\<lbrakk>_. _\<rbrakk>)//_" [0, 0, 0, 60] 60)
+                 ("{_}(\<open>unbreakable\<close>\<lbrakk>_. _\<rbrakk>)//_" [0, 0, 0, 60] 60)
 
   "_assign"  :: "['a,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
-                 ("((00\<lbrakk>_\<rbrakk>))//_" [0, 60] 60)
+                 ("((\<open>unbreakable\<close>\<lbrakk>_\<rbrakk>))//_" [0, 60] 60)
   "_lassign" :: "['a, 'a, ('s, 'm, 'p, 'a) seqp] \<Rightarrow> ('s, 'm, 'p, 'a) seqp"
-                 ("({_}(00\<lbrakk>_\<rbrakk>))//_" [0, 0, 60] 60)
+                 ("({_}(\<open>unbreakable\<close>\<lbrakk>_\<rbrakk>))//_" [0, 0, 60] 60)
 
   "_unicast"  :: "['a, 'a,  ('s, 'm, 'p, unit) seqp,  ('s, 'm, 'p, unit) seqp] \<Rightarrow>  ('s, 'm, 'p, unit) seqp"
                  ("(3unicast'((1(3_),/ (3_))') .//(_)/ (2\<triangleright> _))" [0, 0, 60, 60] 60)
