@@ -6,9 +6,9 @@ begin
 section\<open>First Cartan Theorem\<close>
 
 text\<open>Ported from HOL Light. See
-      Gianni Ciolli · Graziano Gentili · Marco Maggesi.
+      Gianni Ciolli, Graziano Gentili, Marco Maggesi.
       A Certified Proof of the Cartan Fixed Point Theorems.
-      J Automated Reasoning (2011) 47:319–336    DOI 10.1007/s10817-010-9198-6\<close>
+      J Automated Reasoning (2011) 47:319--336    DOI 10.1007/s10817-010-9198-6\<close>
 
 lemma deriv_left_inverse:
   assumes "f holomorphic_on S" and "g holomorphic_on T"
