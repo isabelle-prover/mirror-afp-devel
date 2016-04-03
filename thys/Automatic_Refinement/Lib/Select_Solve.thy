@@ -31,8 +31,6 @@ proof -
 qed
 
 consts NO_TAG :: "prop"
-lemma NO_TAG: "TERM NO_TAG" .
-
 
 
 ML {*
@@ -94,7 +92,7 @@ structure Select_Solve :SELECT_SOLVE = struct
 
     (* Prepare tag *)
     local 
-      fun intr_bal [] = @{thm NO_TAG}
+      fun intr_bal [] = @{thm \<open>TERM NO_TAG\<close>}
         | intr_bal l = Conjunction.intr_balanced l
 
       val t = Thm.term_of P 
