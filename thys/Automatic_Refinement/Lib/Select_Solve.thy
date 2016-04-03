@@ -10,7 +10,7 @@ begin
 *)
 
 lemma retrofit_with_prems:
-  fixes P Q R TAG
+  fixes P Q R TAG :: "prop"
   assumes 1: "PROP P ==> PROP Q" (* Original goal state *)
   assumes 2: "PROP R ==> PROP TAG &&& PROP P" (* Result of first subgoal *)
   shows "PROP R ==> PROP Q" (* New goal state with &&&*)
@@ -21,7 +21,7 @@ proof -
 qed
 
 lemma retrofit_no_prems:
-  fixes P Q TAG
+  fixes P Q TAG :: "prop"
   assumes 1: "PROP P ==> PROP Q" (* Original goal state *)
   assumes 2: "PROP TAG &&& PROP P" (* Result of first subgoal *)
   shows "PROP Q" (* New goal state *)

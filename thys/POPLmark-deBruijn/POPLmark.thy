@@ -248,7 +248,7 @@ lemma liftT_substT_strange:
   "\<up>\<^sub>\<tau> n k T[n + k \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau> = \<up>\<^sub>\<tau> n (Suc k) T[k \<mapsto>\<^sub>\<tau> \<up>\<^sub>\<tau> n 0 U]\<^sub>\<tau>"
   apply (induct T arbitrary: n k)
   apply simp_all
-  apply (thin_tac "\<And>x. PROP P x" for P)
+  apply (thin_tac "\<And>x. PROP P x" for P :: "_ \<Rightarrow> prop")
   apply (drule_tac x=n in meta_spec)
   apply (drule_tac x="Suc k" in meta_spec)
   apply simp
@@ -262,7 +262,7 @@ lemma substT_substT:
   "i \<le> j \<Longrightarrow> T[Suc j \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>[i \<mapsto>\<^sub>\<tau> U[j - i \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>]\<^sub>\<tau> = T[i \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>[j \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>"
   apply (induct T arbitrary: i j U V)
   apply (simp_all add: diff_Suc split add: nat.split)
-  apply (thin_tac "\<And>x. PROP P x" for P)
+  apply (thin_tac "\<And>x. PROP P x" for P :: "_ \<Rightarrow> prop")
   apply (drule_tac x="Suc i" in meta_spec)
   apply (drule_tac x="Suc j" in meta_spec)
   apply simp
@@ -493,7 +493,7 @@ theorem wf_subst:
   apply (erule well_formed_cases)
   apply (rule wf_all)
   apply simp
-  apply (thin_tac "\<And>x. PROP P x" for P)
+  apply (thin_tac "\<And>x. PROP P x" for P :: "_ \<Rightarrow> prop")
   apply (drule_tac x="TVarB T1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   done
