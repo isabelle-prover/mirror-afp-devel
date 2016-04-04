@@ -29,6 +29,11 @@ subsection {*Definition and basic properties*}
 definition subcocycle::"(nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> bool"
   where "subcocycle u = ((\<forall>n. integrable M (u n)) \<and> (\<forall>n m x. u (n+m) x \<le> u n x + u m ((T^^n) x)))"
 
+lemma subcocycle_ineq:
+  assumes "subcocycle u"
+  shows "u (n+m) x \<le> u n x + u m ((T^^n) x)"
+using assms unfolding subcocycle_def by blast
+
 lemma subcocycle_0_nonneg:
   assumes "subcocycle u"
   shows "u 0 x \<ge> 0"

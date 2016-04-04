@@ -49,7 +49,7 @@ proof -
     ultimately have "sigma_algebra (space M) I" using sigma_algebra_iff by auto
     moreover have "sigma_algebra (space M) (sets M)" using measure_space measure_space_def by auto
     ultimately have "sigma_algebra (space M) (I \<inter> (sets M))" using sigma_algebra_intersection by auto
-    moreover have "I \<inter> sets M =  {A \<in> sets M. T-`A \<inter> space M = A}" unfolding I_def by auto
+    moreover have "I \<inter> sets M = {A \<in> sets M. T-`A \<inter> space M = A}" unfolding I_def by auto
     ultimately show ?thesis by simp
   qed
   then show ?thesis unfolding Invariants_def using sigma_algebra.sets_measure_of_eq by blast
@@ -208,7 +208,7 @@ proof -
   have "\<And>n. (T^^(Suc n))--`A \<subseteq> (T^^n)--`A" using T_vrestr_composed(3)[OF assms(1)]  vrestr_inclusion[OF assms(2)] by auto
   then have "disjoint_family (\<lambda>n. (T^^n)--`A - (T^^(Suc n))--`A)" by (rule disjoint_family_Suc2[where ?A = "\<lambda>n. (T^^n)--`A"])
   moreover have "\<And>n. (T^^n)--`A - (T^^(Suc n))--`A = (T^^n)--`B" unfolding B_def Suc_eq_plus1 using T_vrestr_composed(3)[OF assms(1)] by auto
-  ultimately have "disjoint_family (\<lambda>n.  (T^^n)--` B)" by simp
+  ultimately have "disjoint_family (\<lambda>n. (T^^n)--` B)" by simp
   then have "\<And>n. n \<noteq> 0 \<Longrightarrow> ((T^^n)--`B) \<inter> B = {}" unfolding disjoint_family_on_def by (metis UNIV_I T_vrestr_0[OF `B \<in> sets M`])
   then have "\<And>n. n > 0 \<Longrightarrow> (T^^n)-`B \<inter> B = {}" unfolding vimage_restr_def using `B \<in> sets M` by (simp add: Int_assoc)
   then have "B \<in> null_sets M" using disjoint_then_null[OF `B \<in> sets M`] Int_commute by auto
@@ -224,7 +224,7 @@ proof -
   have "\<And>n. (T^^(Suc n))--`A \<supseteq> (T^^n)--`A" using T_vrestr_composed(3)[OF assms(1)]  vrestr_inclusion[OF assms(2)] by auto
   then have "disjoint_family (\<lambda>n. (T^^(Suc n))--`A - (T^^n)--`A)" by (rule disjoint_family_Suc[where ?A = "\<lambda>n. (T^^n)--`A"])
   moreover have "\<And>n. (T^^(Suc n))--`A - (T^^n)--`A = (T^^n)--`B" unfolding B_def Suc_eq_plus1 using T_vrestr_composed(3)[OF assms(1)] by auto
-  ultimately have "disjoint_family (\<lambda>n.  (T^^n)--` B)" by simp
+  ultimately have "disjoint_family (\<lambda>n. (T^^n)--` B)" by simp
   then have "\<And>n. n \<noteq> 0 \<Longrightarrow> ((T^^n)--`B) \<inter> B = {}" unfolding disjoint_family_on_def by (metis UNIV_I T_vrestr_0[OF `B \<in> sets M`])
   then have "\<And>n. n > 0 \<Longrightarrow> (T^^n)-`B \<inter> B = {}" unfolding vimage_restr_def using `B \<in> sets M` by (simp add: Int_assoc)
   then have "B \<in> null_sets M" using disjoint_then_null[OF `B \<in> sets M`] Int_commute by auto
@@ -287,7 +287,7 @@ next
   def g \<equiv> "\<lambda>x. if (\<exists>n. (T^^n) x \<in> good_set) then f( (T^^(good_time x)) x) else y0"
 
   have [measurable]: "good_set \<in> sets M" unfolding good_set_def by simp
-  have [measurable]: "\<And>k.  (T^^k)-` good_set \<inter> space M \<in> sets M" using Tn_meas by measurable
+  have [measurable]: "\<And>k. (T^^k)-` good_set \<inter> space M \<in> sets M" using Tn_meas by measurable
   have "AE x in M. x \<in> good_set" using good_set_def `C \<in> null_sets M` AE_iff_null_sets by auto
   {
      fix x assume "x \<in> good_set"
@@ -419,7 +419,7 @@ proof -
   have *: "B = (\<Inter>n. (T^^n)--`A)"
     unfolding B_def A_def vimage_restr_def by (auto simp add: T_spaceM_stable(2))
   then have "T--`B = (\<Inter>n. T--` (T^^n)--`A)" by auto
-  also have "... =  (\<Inter>n. (T^^(n+1))--`A)" using T_vrestr_composed(2)[OF `A \<in> sets M`] by simp
+  also have "... = (\<Inter>n. (T^^(n+1))--`A)" using T_vrestr_composed(2)[OF `A \<in> sets M`] by simp
   also have "... \<supseteq> (\<Inter>n. (T^^n)--`A)" by blast
   finally have B1: "B \<subseteq> T--`B" using * by simp
   have "B \<subseteq> A" using * T_vrestr_0[OF `A \<in> sets M`] by blast
@@ -479,7 +479,7 @@ proof -
   have *: "B = (\<Inter>n. (T^^n)--`A)"
     unfolding B_def A_def vimage_restr_def by (auto simp add: T_spaceM_stable(2))
   then have "T--`B = (\<Inter>n. T--` (T^^n)--`A)" by auto
-  also have "... =  (\<Inter>n. (T^^(n+1))--`A)" using T_vrestr_composed(2)[OF `A \<in> sets M`] by simp
+  also have "... = (\<Inter>n. (T^^(n+1))--`A)" using T_vrestr_composed(2)[OF `A \<in> sets M`] by simp
   also have "... \<supseteq> (\<Inter>n. (T^^n)--`A)" by blast
   finally have B1: "B \<subseteq> T--`B" using * by simp
   have "B \<subseteq> A" using * T_vrestr_0[OF `A \<in> sets M`] by blast
@@ -563,8 +563,8 @@ proof -
   have *: "integrable M (F i)" for i unfolding F_def
     by (subst comp_def, rule Tn_integral_preserving(1)[OF assms, of i])
 
-  have "AE x in M. n * real_cond_exp M Invariants f x =  (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants f x)" by auto
-  moreover have "AE x in M.  (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants f x) = (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants (F i) x)"
+  have "AE x in M. n * real_cond_exp M Invariants f x = (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants f x)" by auto
+  moreover have "AE x in M. (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants f x) = (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants (F i) x)"
     apply (rule AE_equal_setsum) unfolding F_def using Invariants_of_foTn[OF assms] by simp
   moreover have "AE x in M. (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants (F i) x) = real_cond_exp M Invariants (\<lambda>x. \<Sum>i\<in>{..<n}. F i x) x"
     by (rule real_cond_exp_setsum [OF *])
@@ -648,7 +648,7 @@ proof -
     have b: "F (n+1) x = max (Max {0}) (Max {birkhoff_sum f k x |k. k \<in>{1..n+1}})"
       by (subst F_def, subst *, rule Max.union, auto)
 
-    have "{birkhoff_sum f k x |k. k \<in>{1..n+1}} =  {birkhoff_sum f (1+k) x |k. k \<in>{0..n}}" using Suc_le_D by auto
+    have "{birkhoff_sum f k x |k. k \<in>{1..n+1}} = {birkhoff_sum f (1+k) x |k. k \<in>{0..n}}" using Suc_le_D by auto
     also have "... = { f x + birkhoff_sum f k (T x) |k. k \<in>{0..n}}"
       by (subst birkhoff_sum_cocycle, subst birkhoff_sum_1(2), auto)
     finally have c: "F (n+1) x = max 0 (Max {f x + birkhoff_sum f k (T x) |k. k \<in>{0..n}})" using b by simp
@@ -657,7 +657,7 @@ proof -
     also have "Max ... = f x + Max {birkhoff_sum f k (T x) |k. k \<in>{0..n}}"
       by (rule add_Max_commute[symmetric], auto)
     also have "... = f x + F n (T x)" unfolding F_def by simp
-    finally have "Max {f x + birkhoff_sum f k (T x) |k. k \<in>{0..n}} =  f x + F n (T x)" by simp
+    finally have "Max {f x + birkhoff_sum f k (T x) |k. k \<in>{0..n}} = f x + F n (T x)" by simp
     then have "F (n+1) x = max 0 (f x + F n (T x))" using c by simp
     then show "F (n+1) x - F n (T x) = max (-F n (T x)) (f x)" by auto
   qed
@@ -714,23 +714,23 @@ proof -
   have "\<And>n. (\<integral>x. (F (n+1) x - F n (T x)) * indicator A x \<partial>M) \<ge> 0"
   proof -
     fix n
-    have " (\<integral>x. F n (T x) * indicator A x \<partial>M) =  (\<integral>x. (\<lambda>x. F n x * indicator A x) (T x) \<partial>M)"
+    have " (\<integral>x. F n (T x) * indicator A x \<partial>M) = (\<integral>x. (\<lambda>x. F n x * indicator A x) (T x) \<partial>M)"
       by (rule integral_cong, auto simp add: Ainv indicator_def)
-    also have "... =  (\<integral>x. F n x * indicator A x \<partial>M)"
+    also have "... = (\<integral>x. F n x * indicator A x \<partial>M)"
       by (rule T_integral_preserving, auto simp add: intFn integrable_real_mult_indicator)
-    finally have i: "(\<integral>x. F n (T x) * indicator A x \<partial>M) =  (\<integral>x. F n x * indicator A x \<partial>M)" by simp
+    finally have i: "(\<integral>x. F n (T x) * indicator A x \<partial>M) = (\<integral>x. F n x * indicator A x \<partial>M)" by simp
 
-    have " (\<integral>x. (F (n+1) x - F n (T x)) * indicator A x \<partial>M) =  (\<integral>x. F (n+1) x * indicator A x - F n (T x) * indicator A x \<partial>M)"
+    have " (\<integral>x. (F (n+1) x - F n (T x)) * indicator A x \<partial>M) = (\<integral>x. F (n+1) x * indicator A x - F n (T x) * indicator A x \<partial>M)"
       by (simp add: mult.commute right_diff_distrib)
-    also have "... =  (\<integral>x. F (n+1) x * indicator A x \<partial>M) - (\<integral>x. F n (T x) * indicator A x \<partial>M)"
+    also have "... = (\<integral>x. F (n+1) x * indicator A x \<partial>M) - (\<integral>x. F n (T x) * indicator A x \<partial>M)"
       by (rule integral_diff, auto simp add: intFn integrable_real_mult_indicator T_meas T_integral_preserving(1))
-    also have "... =  (\<integral>x. F (n+1) x * indicator A x \<partial>M) - (\<integral>x. F n x * indicator A x \<partial>M)"
+    also have "... = (\<integral>x. F (n+1) x * indicator A x \<partial>M) - (\<integral>x. F n x * indicator A x \<partial>M)"
       using i by simp
-    also have "... =  (\<integral>x. F (n+1) x * indicator A x - F n x * indicator A x \<partial>M)"
+    also have "... = (\<integral>x. F (n+1) x * indicator A x - F n x * indicator A x \<partial>M)"
       by (rule integral_diff[symmetric], auto simp add: intFn integrable_real_mult_indicator)
     also have "... = (\<integral>x. (F (n+1) x - F n x) * indicator A x \<partial>M)"
       by (simp add: mult.commute right_diff_distrib)
-    finally have *: "(\<integral>x. (F (n+1) x - F n (T x)) * indicator A x \<partial>M) =  (\<integral>x. (F (n+1) x - F n x) * indicator A x \<partial>M)"
+    finally have *: "(\<integral>x. (F (n+1) x - F n (T x)) * indicator A x \<partial>M) = (\<integral>x. (F (n+1) x - F n x) * indicator A x \<partial>M)"
       by simp
 
     {
@@ -738,7 +738,7 @@ proof -
       have "F n x \<le> F (n+1) x" unfolding F_def by (rule Max_mono, auto)
       then have " (F (n+1) x - F n x) * indicator A x \<ge> 0" by simp
     } note a = this
-    have "integral\<^sup>L M (\<lambda>x. 0) \<le> integral\<^sup>L M (\<lambda>x.  (F (n+1) x - F n x) * indicator A x)"
+    have "integral\<^sup>L M (\<lambda>x. 0) \<le> integral\<^sup>L M (\<lambda>x. (F (n+1) x - F n x) * indicator A x)"
       apply (rule integral_mono) using a by (auto simp add: intFn integrable_real_mult_indicator)
     then have "(\<integral>x. (F (n+1) x - F n x) * indicator A x \<partial>M) \<ge> 0" by simp
     then show "(\<integral>x. (F (n+1) x - F n (T x)) * indicator A x \<partial>M) \<ge> 0" using * by simp
@@ -911,14 +911,14 @@ proof (rule Scheffe_lemma2)
 
   have "AE x in M. real_cond_exp M Invariants f x \<ge> 0" using assms(1) real_cond_exp_pos by simp
   then have *: "AE x in M. norm (real_cond_exp M Invariants f x) = real_cond_exp M Invariants f x" by auto
-  have **: "(\<integral> x. norm (real_cond_exp M Invariants f x) \<partial>M) =  (\<integral> x. real_cond_exp M Invariants f x \<partial>M)"
+  have **: "(\<integral> x. norm (real_cond_exp M Invariants f x) \<partial>M) = (\<integral> x. real_cond_exp M Invariants f x \<partial>M)"
     apply (rule integral_cong_AE) using * by auto
 
   have "( \<integral>\<^sup>+ x. ereal (norm (real_cond_exp M Invariants f x)) \<partial>M) = (\<integral> x. norm (real_cond_exp M Invariants f x) \<partial>M)"
     by (rule nn_integral_eq_integral, auto simp add: i)
-  also have "... =  (\<integral> x. real_cond_exp M Invariants f x \<partial>M)"
+  also have "... = (\<integral> x. real_cond_exp M Invariants f x \<partial>M)"
     using ** by simp
-  also have "... =  (\<integral> x. f x \<partial>M)"
+  also have "... = (\<integral> x. f x \<partial>M)"
     using real_cond_exp_int(2) assms(2) by auto
   also have "... = (\<integral>x. norm(f x) \<partial>M)" using assms by auto
   also have "... = (\<integral>\<^sup>+x. norm(f x) \<partial>M)"
@@ -951,13 +951,13 @@ proof (rule Scheffe_lemma2)
     then have "1/ereal(real n) \<ge> 0" by (simp add: one_ereal_def)
     have "(\<integral>\<^sup>+ x. ereal (norm (birkhoff_sum f n x / real n)) \<partial>M) = (\<integral>\<^sup>+ x. ereal (norm (birkhoff_sum f n x)) / ereal(real n) \<partial>M)"
       using `n > 0` by auto
-    also have "... =  (\<integral>\<^sup>+ x.  (1/ereal(real n)) * ereal (norm (birkhoff_sum f n x)) \<partial>M)"
+    also have "... = (\<integral>\<^sup>+ x. (1/ereal(real n)) * ereal (norm (birkhoff_sum f n x)) \<partial>M)"
       by (simp add: `0 < n`)
-    also have "... =   (1/ereal(real n)) * (\<integral>\<^sup>+ x. ereal (norm (birkhoff_sum f n x)) \<partial>M)"
+    also have "... =  (1/ereal(real n)) * (\<integral>\<^sup>+ x. ereal (norm (birkhoff_sum f n x)) \<partial>M)"
       by (rule nn_integral_cmult, auto)
     also have "... \<le> (1/ereal(real n)) * ereal(real n) * ( \<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M)"
        by (metis ereal_times_divide_eq_left mult.left_neutral ereal_mult_left_mono[OF *  `1/ereal(real n) >= 0`])
-    also have "... =  ( \<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M)"
+    also have "... = ( \<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M)"
       using `n > 0` by auto
     finally show ?thesis by simp
   qed
@@ -979,7 +979,7 @@ proof -
     then have "\<And>x. birkhoff_sum f n x / n = birkhoff_sum g n x / n - birkhoff_sum h n x / n" using `n > 0` by (simp add: diff_divide_distrib)
     moreover have "AE x in M. real_cond_exp M Invariants g x - real_cond_exp M Invariants h x = real_cond_exp M Invariants f x"
       using real_cond_exp_diff g_int h_int  `f = (\<lambda>x. g x - h x)` by auto
-    ultimately have "AE x in M.  birkhoff_sum f n x / n - real_cond_exp M Invariants f x =
+    ultimately have "AE x in M. birkhoff_sum f n x / n - real_cond_exp M Invariants f x =
         (birkhoff_sum g n x / n - real_cond_exp M Invariants g x) - (birkhoff_sum h n x / n - real_cond_exp M Invariants h x)"
       by auto
     then have *: "AE x in M. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x) \<le>
@@ -988,7 +988,7 @@ proof -
     have "(\<integral>\<^sup>+ x. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x) \<partial>M) \<le>
        (\<integral>\<^sup>+ x. ereal(norm(birkhoff_sum g n x / n - real_cond_exp M Invariants g x)) + norm(birkhoff_sum h n x / n - real_cond_exp M Invariants h x) \<partial>M)"
       apply (rule nn_integral_mono_AE) using * by simp
-    also have "... =  (\<integral>\<^sup>+ x. norm(birkhoff_sum g n x / n - real_cond_exp M Invariants g x) \<partial>M) + (\<integral>\<^sup>+ x. norm(birkhoff_sum h n x / n - real_cond_exp M Invariants h x) \<partial>M)"
+    also have "... = (\<integral>\<^sup>+ x. norm(birkhoff_sum g n x / n - real_cond_exp M Invariants g x) \<partial>M) + (\<integral>\<^sup>+ x. norm(birkhoff_sum h n x / n - real_cond_exp M Invariants h x) \<partial>M)"
       apply (rule nn_integral_add) apply auto using real_cond_exp_F_meas borel_measurable_cond_exp2 by measurable
     finally have "(\<integral>\<^sup>+ x. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x) \<partial>M) \<le>
        (\<integral>\<^sup>+ x. norm(birkhoff_sum g n x / n - real_cond_exp M Invariants g x) \<partial>M) + (\<integral>\<^sup>+ x. norm(birkhoff_sum h n x / n - real_cond_exp M Invariants h x) \<partial>M)"
@@ -998,17 +998,17 @@ proof -
        (\<integral>\<^sup>+ x. norm(birkhoff_sum g n x / n - real_cond_exp M Invariants g x) \<partial>M) + (\<integral>\<^sup>+ x. norm(birkhoff_sum h n x / n - real_cond_exp M Invariants h x) \<partial>M))
        sequentially"
     using eventually_at_top_dense by auto
-  have **:  "eventually (\<lambda>n. (\<integral>\<^sup>+ x. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x) \<partial>M) \<ge> 0) sequentially"
+  have **: "eventually (\<lambda>n. (\<integral>\<^sup>+ x. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x) \<partial>M) \<ge> 0) sequentially"
     using eventually_at_top_dense by (simp add: nn_integral_nonneg)
 
-  have "(\<lambda>n.  (\<integral>\<^sup>+ x. norm(birkhoff_sum g n x / n - real_cond_exp M Invariants g x) \<partial>M)) \<longlonglongrightarrow> 0"
+  have "(\<lambda>n. (\<integral>\<^sup>+ x. norm(birkhoff_sum g n x / n - real_cond_exp M Invariants g x) \<partial>M)) \<longlonglongrightarrow> 0"
     apply (rule birkhoff_lemma_L1, auto simp add: g_int) unfolding g_def by auto
-  moreover have "(\<lambda>n.  (\<integral>\<^sup>+ x. norm(birkhoff_sum h n x / n - real_cond_exp M Invariants h x) \<partial>M)) \<longlonglongrightarrow> 0"
+  moreover have "(\<lambda>n. (\<integral>\<^sup>+ x. norm(birkhoff_sum h n x / n - real_cond_exp M Invariants h x) \<partial>M)) \<longlonglongrightarrow> 0"
     apply (rule birkhoff_lemma_L1, auto simp add: h_int) unfolding h_def by auto
-  ultimately have "(\<lambda>n.  (\<integral>\<^sup>+ x. norm(birkhoff_sum g n x / n - real_cond_exp M Invariants g x) \<partial>M) + (\<integral>\<^sup>+ x. norm(birkhoff_sum h n x / n - real_cond_exp M Invariants h x) \<partial>M)) \<longlonglongrightarrow> 0"
+  ultimately have "(\<lambda>n. (\<integral>\<^sup>+ x. norm(birkhoff_sum g n x / n - real_cond_exp M Invariants g x) \<partial>M) + (\<integral>\<^sup>+ x. norm(birkhoff_sum h n x / n - real_cond_exp M Invariants h x) \<partial>M)) \<longlonglongrightarrow> 0"
     using tendsto_add_ereal[where ?x = 0 and ?y = 0] by auto
   then show ?thesis
-   using tendsto_sandwich[OF ** *] by auto
+    using tendsto_sandwich[OF ** *] by auto
 qed
 
 subsubsection {*Conservativity of skew products*}
@@ -1052,7 +1052,7 @@ proof (rule conservative_mptI)
 
   {
     fix N::nat
-    have " {(x, y). abs(y) \<le> real N \<and> x \<in> space M} = space M \<times> {-(real N)..(real N)}" by auto
+    have "{(x, y). abs(y) \<le> real N \<and> x \<in> space M} = space M \<times> {-(real N)..(real N)}" by auto
     then have "{(x, y). \<bar>y\<bar> \<le>  real N \<and> x \<in> space M} \<in> sets ?MS" by auto
     then have "A \<inter> {(x, y). \<bar>y\<bar> \<le>  real N \<and> x \<in> space M} \<in> sets ?MS" using A1 by auto
     moreover have "A \<inter> {(x,y). abs(y) \<le> real N} = A \<inter> {(x, y). \<bar>y\<bar> \<le> real N \<and> x \<in> space M}"
@@ -1199,18 +1199,18 @@ proof (rule conservative_mptI)
         then have "x \<in> Dx" "(T^^n) x \<in> Cx" by auto
         then have "abs(birkhoff_sum f n x) \<le> r * n" using `n \<in> {n0..n1}` Dx_def by auto
         then have *: "abs(birkhoff_sum f n x) \<le> r * n1" using `n \<le> n1` `r>0`
-         by (meson of_nat_le_iff order_trans real_mult_le_cancel_iff2)
+          by (meson of_nat_le_iff order_trans real_mult_le_cancel_iff2)
 
         have "(Pair ((T^^n)x) -`C) \<subseteq>  {real_of_int (- int N)..real N}" unfolding C_def B_def by auto
         then have "(op+(birkhoff_sum f n x)) -` (Pair ((T^^n)x) -`C) \<subseteq> {-N-birkhoff_sum f n x..N-birkhoff_sum f n x}"
-         by auto
+          by auto
         also have "... \<subseteq> {-r * n1 - N .. r * n1 + N}" using * by auto
         finally have "F = (op+(birkhoff_sum f n x)) -` (Pair ((T^^n)x) -`C)" using F_expr by auto
 
         then have "emeasure lborel F = emeasure lborel (op+(birkhoff_sum f n x) -` (Pair ((T^^n)x) -`C))" by auto
         also have "... = emeasure lborel ((op+(birkhoff_sum f n x) -` (Pair ((T^^n)x) -`C)) \<inter> space lborel)" by simp
         also have "... = emeasure (distr lborel borel (op + (birkhoff_sum f n x))) (Pair ((T^^n)x) -`C)"
-         apply (rule emeasure_distr[symmetric]) using Cn_meas by auto
+          apply (rule emeasure_distr[symmetric]) using Cn_meas by auto
         also have "... = emeasure lborel (Pair ((T^^n)x) -`C)" using lborel_distr_plus[of "birkhoff_sum f n x"] by simp
         also have "... \<ge> e"  using Cx_fibers `(T^^n) x \<in> Cx` by auto
         finally have "emeasure lborel F \<ge> e" by auto
@@ -1314,7 +1314,7 @@ compatible with conservativity.
 
 lemma birkhoff_sum_small_asymp_lemma:
   assumes [measurable]: "integrable M f"
-   and "AE x in M. real_cond_exp M Invariants f x = 0" "e>(0::real)"
+    and "AE x in M. real_cond_exp M Invariants f x = 0" "e>(0::real)"
   shows "AE x in M. infinite {n. birkhoff_sum f n x \<in> {0..e}}"
 proof -
   have [measurable]: "f \<in> borel_measurable M" by auto
@@ -1487,7 +1487,7 @@ text{*Thanks to Birkhoff theorem, one can relate conditional expectations with r
 sigma algebra, for a map and for a corresponding induced map, as follows.*}
 
 proposition Invariants_cond_exp_induced_map:
-   fixes f::"'a \<Rightarrow> real"
+  fixes f::"'a \<Rightarrow> real"
   assumes [measurable]: "A \<in> sets M" "integrable M f"
   defines "MA \<equiv> restrict_space M A" and "TA \<equiv> induced_map A" and "fA \<equiv> induced_function A f"
   shows "AE x in MA. real_cond_exp MA (qmpt.Invariants MA TA) fA x
@@ -1568,7 +1568,7 @@ proof -
 qed
 
 corollary Invariants_cond_exp_induced_map_0:
-   fixes f::"'a \<Rightarrow> real"
+  fixes f::"'a \<Rightarrow> real"
   assumes [measurable]: "A \<in> sets M" "integrable M f" and "AE x in M. real_cond_exp M Invariants f x = 0"
   defines "MA \<equiv> restrict_space M A" and "TA \<equiv> induced_map A" and "fA \<equiv> induced_function A f"
   shows "AE x in MA. real_cond_exp MA (qmpt.Invariants MA TA) fA x = 0"
@@ -1580,5 +1580,4 @@ proof -
 qed
 
 end
-
 end
