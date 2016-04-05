@@ -14,7 +14,7 @@ imports
   "../Abstract-Rewriting/Seq"
   Least_Enum
   Infinite_Sequences
-  Restricted_Predicates
+  "../Open_Induction/Restricted_Predicates"
 begin
 
 subsection \<open>Basic Definitions and Facts\<close>

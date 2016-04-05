@@ -8,7 +8,7 @@
 section \<open>Open Induction\<close>
 
 theory Open_Induction
-imports "../Well_Quasi_Orders/Restricted_Predicates"
+imports Restricted_Predicates
 begin
 
 subsection \<open>(Greatest) Lower Bounds and Chains\<close>

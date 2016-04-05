@@ -10,7 +10,7 @@ section \<open>Multiset Extension of Orders (as Binary Predicates)\<close>
 
 theory Multiset_Extension
 imports
-  "Restricted_Predicates"
+  "../Open_Induction/Restricted_Predicates"
   "~~/src/HOL/Library/Multiset"
 begin
 
