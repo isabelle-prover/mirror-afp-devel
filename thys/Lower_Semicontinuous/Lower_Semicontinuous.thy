@@ -1533,7 +1533,7 @@ proof-
   qed
   ultimately have "A Int rel_interior(Epigraph UNIV f) ~= {}"
     by (metis assms(1) convex_Epigraph convex_UNIV
-       open_inter_closure_eq_empty open_inter_closure_rel_interior)
+       open_Int_closure_eq_empty open_inter_closure_rel_interior)
   then obtain x0 z0 where "(x0,z0):A & x0 : rel_interior (domain f) & f x0 < ereal z0"
     using rel_interior_Epigraph[of f] assms by auto
   thus ?thesis apply(rule_tac x="x0" in bexI) using A_def by auto
