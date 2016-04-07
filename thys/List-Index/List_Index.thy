@@ -238,7 +238,7 @@ apply(rule bij_betw_imageI[OF inj_on_index])
 by (auto simp: image_def) (metis index_nth_id nth_mem)
 
 lemma index_image: "distinct xs \<Longrightarrow> set xs = X \<Longrightarrow> index xs ` X = {0..<size xs}"
-by (simp add: bij_betw_imageE bij_betw_index)
+by (simp add: bij_betw_imp_surj_on bij_betw_index)
 
 lemma index_map_inj_on:
   "\<lbrakk> inj_on f S; y \<in> S; set xs \<subseteq> S \<rbrakk> \<Longrightarrow> index (map f xs) (f y) = index xs y"
