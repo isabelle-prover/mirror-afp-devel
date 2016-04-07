@@ -1105,7 +1105,7 @@ end
 subsection\<open>Factoring All Meta Commands Together\<close>
 
 setup\<open>ML_Antiquotation.inline @{binding mk_string} (Scan.succeed
-"(fn ctxt => fn x => Pretty.string_of (Pretty.from_ML (ML_Pretty.from_polyml (ML_system_pretty (x, Config.get ctxt ML_Options.print_depth)))))")
+"(fn ctxt => fn x => ML_Pretty.string_of_polyml (ML_system_pretty (x, Config.get ctxt ML_Print_Depth.print_depth)))")
 \<close>
 
 ML\<open>
@@ -1174,7 +1174,7 @@ fun outer_syntax_command0 mk_string cmd_spec cmd_descr parser get_all_meta_embed
                                 (mk_string
                                   (Proof_Context.init_global
                                     (case n of NONE => thy
-                                             | SOME n => Config.put_global ML_Options.print_depth n thy))
+                                             | SOME n => Config.put_global ML_Print_Depth.print_depth n thy))
                                   name) in
                   (Gen_syntax_print n, thy)
                   end)
