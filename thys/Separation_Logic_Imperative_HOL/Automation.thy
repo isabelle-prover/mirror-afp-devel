@@ -498,7 +498,7 @@ struct
        @{term "P \<Longrightarrow>\<^sub>A Q"},
        @{term "Hoare_Triple.hoare_triple P c Q"},
        @{term "(P::assn) = Q"}],
-      proc = K assn_simproc_fun, identifier = []};
+      proc = K assn_simproc_fun};
 
 
 
