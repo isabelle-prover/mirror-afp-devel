@@ -2,7 +2,6 @@ chapter AFP
 
 session "Kleene_Algebra" (AFP) = "HOL-Word" +
   options [timeout = 600]
-
   theories
     Signatures
     Dioid
@@ -19,7 +18,6 @@ session "Kleene_Algebra" (AFP) = "HOL-Word" +
     Finite_Suprema
     Formal_Power_Series
     Inf_Matrix
-
   document_files
     "root.bib"
     "root.tex"

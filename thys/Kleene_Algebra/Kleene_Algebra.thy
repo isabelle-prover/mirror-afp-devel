@@ -742,7 +742,7 @@ class left_kleene_algebra_zerol = left_kleene_algebra + dioid_one_zerol
 begin
 
 sublocale conway: near_conway_base_zerol star
-  by default (simp_all add: local.star_slide)
+  by standard (simp_all add: local.star_slide)
 
 lemma star_zero [simp]: "0\<^sup>\<star> = 1"
   by (rule local.conway.zero_dagger)
@@ -792,7 +792,7 @@ proof -
 qed
 
 sublocale conway: pre_conway star
-  by default (simp add: star_sim2)
+  by standard (simp add: star_sim2)
 
 lemma star_inductr_var: "y \<cdot> x \<le> y \<Longrightarrow> y \<cdot> x\<^sup>\<star> \<le> y"
   by (simp add: star_inductr)
@@ -869,7 +869,7 @@ class kleene_algebra = left_kleene_algebra_zero +
 begin
 
 subclass kleene_algebra_zerol 
-  by default (simp add: star_inductr')
+  by standard (simp add: star_inductr')
 
 sublocale conway_zerol: conway star ..
 
