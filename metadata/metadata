@@ -1704,7 +1704,7 @@ abstract = This set of theories presents an Isabelle/HOL formalisation of stream
 
 [Isabelle_Meta_Model]
 title = A Meta-Model for the Isabelle API
-author = Frédéric Tuong <http://www.lri.fr/~tuong/>, Burkhart Wolff <http://www.lri.fr/~wolff/>
+author = Frédéric Tuong <mailto:tuong@users.gforge.inria.fr>, Burkhart Wolff <http://www.lri.fr/~wolff/>
 date = 2015-09-16
 topic = Computer Science/Programming Languages/Language Definitions
 abstract =
@@ -3070,7 +3070,7 @@ abstract = This paper presents an Isabelle/HOL set of theories which allows the 
 
 [Featherweight_OCL]
 title = Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5
-author =  Achim D. Brucker <mailto:brucker@spamfence.net>, Frédéric Tuong <mailto:frederic.tuong@lri.fr>, Burkhart Wolff <mailto:wolff@lri.fr>
+author =  Achim D. Brucker <mailto:brucker@spamfence.net>, Frédéric Tuong <mailto:tuong@users.gforge.inria.fr>, Burkhart Wolff <mailto:wolff@lri.fr>
 date = 2014-01-16
 topic = Computer Science/System Description Languages
 abstract = The Unified Modeling Language (UML) is one of the few
