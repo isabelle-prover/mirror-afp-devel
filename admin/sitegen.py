@@ -868,24 +868,6 @@ def handle_template(entries, template, content):
 		output_filename = os.path.join(dest_subdir, template + output_suffix)
 		write_output(output_filename, content, partial(generator, not_ignored))
 
-# creates a makefile
-def makefile(entries, dir):
-	filename = os.path.join(dir, "IsaMakefile")
-	try:
-		with open(filename, "w") as output:
-			output.write(".PHONY: all\n")
-			output.write("all:")
-			for k, _ in entries.items():
-				output.write(" {0}".format(k))
-			output.write("\n\n")
-			for k, attributes in entries.items():
-				output.write(".PHONY: {0}\n".format(k))
-				output.write("{0}: {1}\n".format(k, " ".join(attributes["depends-on"])))
-				output.write("\tmake -C {0} -f IsaMakefile all\n\n".format(k))
-	except Exception as ex:
-		failed = True
-		error("Error writing Makefile {0}".format(filename), exception = ex)
-
 # checks whether all dependencies are present
 def check_deps(entries):
 	keys = set(entries.keys())
@@ -895,12 +877,11 @@ def check_deps(entries):
 			warn(u"In entry {0}: Missing dependencies {1}".format(key, deps - keys))
 
 if __name__ == "__main__":
-	parser = OptionParser(usage = "Usage: %prog [--no-warn] [--debug] [--check=THYS_DIR | --dest=DEST_DIR | --makefile=THYS_DIR] metadata-dir")
+	parser = OptionParser(usage = "Usage: %prog [--no-warn] [--debug] [--check=THYS_DIR | --dest=DEST_DIR] metadata-dir")
 	parser.add_option("--no-warn", action = "store_false", dest = "enable_warnings", default = True, help = "disable output of warnings")
 	parser.add_option("--check", action = "store", type = "string", dest = "thys_dir", help = "compare the contents of the metadata file with actual file system contents")
 	parser.add_option("--dest", action = "store", type = "string", dest = "dest_dir", help = "generate files for each template in the metadata directory")
 	parser.add_option("--debug", action = "store_true", dest = "enable_debug", default = False, help = "display debug output")
-	parser.add_option("--makefile", action = "store", type = "string", dest = "makefile_dir", help = "generate a makefile for building the whole AFP")
 
 	(options, args) = parser.parse_args(argv)
 	if len(args) != 2:
@@ -937,6 +918,3 @@ if __name__ == "__main__":
 		stats = Stats()
 		scan_templates(entries)
 		print(stats)
-
-	if options.makefile_dir:
-		makefile(entries, options.makefile_dir)
