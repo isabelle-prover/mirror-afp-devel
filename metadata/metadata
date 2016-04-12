@@ -1975,6 +1975,24 @@ abstract =
  in KAT and its relational model and present a simple formally verified
  program verification tool prototype based on the algebraic approach.
 
+[KAD]
+title = Kleene Algebras with Domain
+author = Victor B. F. Gomes, Walter Guttmann, Peter Höfner, Georg Struth, Tjark Weber
+date = 2016-04-12
+topic = Automata and Formal Languages; Programming Languages (Logics); Algebra
+abstract =
+  Kleene algebras with domain are Kleene algebras endowed with an
+  operation that maps each element of the algebra to its domain of
+  definition (or its complement) in abstract fashion. They form a simple
+  algebraic basis for Hoare logics, dynamic logics or predicate
+  transformer semantics. We formalise a modular hierarchy of algebras
+  with domain and antidomain (domain complement) operations in
+  Isabelle/HOL that ranges from domain and antidomain semigroups to
+  modal Kleene algebras and divergence Kleene algebras. We link these
+  algebras with models of binary relations and program traces. We
+  include some examples from modal logics, termination and program
+  analysis.
+
 [Regular_Algebras]
 title = Regular Algebras
 author = Simon Foster <http://www-users.cs.york.ac.uk/~simonf>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>
