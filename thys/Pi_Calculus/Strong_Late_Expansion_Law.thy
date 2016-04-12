@@ -505,7 +505,7 @@ proof -
   proof -
     have Aux: "\<And>a x P b Q. {\<tau>.(P'[x'::=b'] \<parallel> Q') | a' x' P' b' Q'. a'<x'>.P' = a<x>.P \<and> a'{b'}.Q' = a{b}.Q} = {\<tau>.(P[x::=b] \<parallel> Q)}"
       by(auto simp add: name_abs_eq pi.inject renaming)
-    have "\<And>a x P Q b. finite {\<tau>.(P'[x'::=b] \<parallel> Q') | a' x' P' b Q'. a'<x'>.P' = a<x>.P \<and> a'{b}.Q' \<in> summands Q}"
+    have "\<And>a x P Q b::'a::{}. finite {\<tau>.(P'[x'::=b] \<parallel> Q') | a' x' P' b Q'. a'<x'>.P' = a<x>.P \<and> a'{b}.Q' \<in> summands Q}"
       apply(induct rule: pi.induct, simp_all)
       apply(case_tac "a=name1")
       apply(simp add: Aux)
@@ -525,7 +525,7 @@ proof -
   proof -
       have Aux: "\<And>a x P b Q. {\<tau>.(P' \<parallel> (Q'[x'::=b'])) | a' b' P' x' Q'. a'{b'}.P' = a{b}.P \<and> a'<x'>.Q' = a<x>.Q} = {\<tau>.(P \<parallel> (Q[x::=b]))}"
         by(auto simp add: name_abs_eq pi.inject renaming)
-      have "\<And>a b P Q x. finite {\<tau>.(P' \<parallel> (Q'[x::=b'])) | a' b' P' x Q'. a'{b'}.P' = a{b}.P \<and> a'<x>.Q' \<in> summands Q}"
+      have "\<And>a b P Q x::'a::{}. finite {\<tau>.(P' \<parallel> (Q'[x::=b'])) | a' b' P' x Q'. a'{b'}.P' = a{b}.P \<and> a'<x>.Q' \<in> summands Q}"
       apply(induct rule: pi.induct, simp_all)
       apply(case_tac "a=name1")
       apply(simp add: Aux)
