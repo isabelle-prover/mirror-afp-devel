@@ -1963,6 +1963,7 @@ abstract =
 title = Kleene Algebra with Tests and Demonic Refinement Algebras
 author = Alasdair Armstrong <http://www.dcs.shef.ac.uk/~alasdair>, Victor B. F. Gomes <http://www.dcs.shef.ac.uk/~victor>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>
 date = 2014-01-23
+depends-on = Kleene_Algebra
 topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
 abstract =
  We formalise Kleene algebra with tests (KAT) and demonic refinement
@@ -1977,9 +1978,10 @@ abstract =
 
 [KAD]
 title = Kleene Algebras with Domain
-author = Victor B. F. Gomes, Walter Guttmann, Peter Höfner, Georg Struth, Tjark Weber
+author = Victor B. F. Gomes <http://www.dcs.shef.ac.uk/~victor>, Walter Guttmann, Peter Höfner <http://www.hoefner-online.de/>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>, Tjark Weber <http://user.it.uu.se/~tjawe125/>
 date = 2016-04-12
-topic = Automata and Formal Languages; Programming Languages (Logics); Algebra
+depends-on = Kleene_Algebra
+topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
 abstract =
   Kleene algebras with domain are Kleene algebras endowed with an
   operation that maps each element of the algebra to its domain of
