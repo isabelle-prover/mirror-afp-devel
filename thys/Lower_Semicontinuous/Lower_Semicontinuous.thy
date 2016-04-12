@@ -1802,15 +1802,15 @@ lemma lsc_hull_of_convex:
   assumes "convex_on UNIV f"
   assumes "x : rel_interior (domain f)"
   shows "((%m. f((1-m)*\<^sub>R x + m *\<^sub>R y)) \<longlongrightarrow> (lsc_hull f) y) (at 1 within {0..<1})"
-proof-
-let "?g m" = "f((1-m)*\<^sub>R x + m *\<^sub>R y)"
-{ assume "y=x" hence "?g = (%m. f y)" by (simp add: algebra_simps)
-  hence "(?g \<longlongrightarrow> f y) (at 1 within {0..<1})" by (simp add: tendsto_const)
-  moreover have "(lsc_hull f) y = f y" by (metis `y=x` assms lsc_hull_of_convex_agrees_onRI)
-  ultimately have ?thesis by auto
-}
-moreover
-{ assume "y~=x"
+         (is "(?g \<longlongrightarrow> _ y) _")
+proof (cases "y=x")
+  case True
+    hence "?g = (%m. f y)" by (simp add: algebra_simps)
+    hence "(?g \<longlongrightarrow> f y) (at 1 within {0..<1})" by simp
+    moreover have "(lsc_hull f) y = f y" by (metis `y=x` assms lsc_hull_of_convex_agrees_onRI)
+    ultimately show ?thesis by auto
+next
+  case False
   have aux: "ALL m. y - ((1 - m) *\<^sub>R x + m *\<^sub>R y) = (1-m)*\<^sub>R (y-x)" by (simp add: algebra_simps)
   have "(lsc_hull f) y = min (f y) (Liminf (at y) f)" by (metis lsc_hull_liminf_at)
   also have "... <= Liminf (at 1 within {0..<1}) ?g" unfolding min_Liminf_at unfolding Liminf_within
@@ -1849,8 +1849,7 @@ moreover
     ultimately have "Limsup (at 1 within {0..<1}) ?g = (lsc_hull f) y
                    & Liminf (at 1 within {0..<1}) ?g = (lsc_hull f) y"
       using * by auto
-  hence ?thesis apply (subst Liminf_eq_Limsup) using nontr by auto
-} ultimately show ?thesis by auto
+  thus ?thesis apply (subst Liminf_eq_Limsup) using nontr by auto
 qed
 
 end
