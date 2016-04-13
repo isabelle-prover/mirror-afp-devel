@@ -299,7 +299,7 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
 val add_partial_function_mr = gen_add_partial_function_mr Specification.check_spec;
 val add_partial_function_mr_cmd = gen_add_partial_function_mr Specification.read_spec;
 
-val mode = @{keyword "("} |-- Parse.xname --| @{keyword ")"};
+val mode = @{keyword "("} |-- Parse.name --| @{keyword ")"};
 
 val _ =
   Outer_Syntax.local_theory @{command_keyword partial_function_mr} "define mutually recursive partial functions"

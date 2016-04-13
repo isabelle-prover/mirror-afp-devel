@@ -422,7 +422,7 @@ ML {* Outer_Syntax.local_theory
   (Parse.binding 
     -- Parse.opt_attribs
     -- Scan.optional (@{keyword "for"} |-- Scan.repeat1 Args.var) []
-    --| @{keyword "uses"} -- Parse.xthm
+    --| @{keyword "uses"} -- Parse.thm
     -- Scan.optional (@{keyword "is"} |-- Scan.repeat1 Args.name_inner_syntax) []
   >> (fn ((((name,attribs),params),raw_thm),pats) => fn lthy => let
     val thm = 
@@ -472,12 +472,12 @@ declare [[ cd_patterns "_ = ?f" "_ == ?f" ]]
 ML {* 
   let
     val modes = (Scan.optional
-     (@{keyword "("} |-- Parse.list1 Parse.xname --| @{keyword ")"}) [])
+     (@{keyword "("} |-- Parse.list1 Parse.name --| @{keyword ")"}) [])
   in
     Outer_Syntax.local_theory 
     @{command_keyword prepare_code_thms} 
     "Refinement framework: Prepare theorems for code generation" 
-    (modes -- Parse.xthms1
+    (modes -- Parse.thms1
       >> (fn (modes,raw_thms) => fn lthy => let
         val thms = Attrib.eval_thms lthy raw_thms
       in

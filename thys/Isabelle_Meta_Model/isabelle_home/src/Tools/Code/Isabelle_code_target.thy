@@ -68,7 +68,7 @@ open Basic_Code_Thingol;
 val parse_classrel_ident = Parse.class --| @{keyword "<"} -- Parse.class;
 
 
-val parse_inst_ident = Parse.xname --| @{keyword "::"} -- Parse.class;
+val parse_inst_ident = Parse.name --| @{keyword "::"} -- Parse.class;
 
 
 

@@ -168,7 +168,7 @@ in
   Outer_Syntax.local_theory @{command_keyword standard_shows_list}
     "use standard way to extend shows to shows_list, requires associativity lemma as parameter"
     (*standard way: "shows_list = shows_list_aux shows"*)
-    (Parse.xthm >> define_shows_list)
+    (Parse.thm >> define_shows_list)
 end
 *}
 
