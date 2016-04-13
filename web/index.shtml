@@ -55,6 +55,17 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 	</tr>
 
 <tr><td class="entry">
+2016-04-12:
+<a href="entries/KAD.shtml">Kleene Algebras with Domain</a>
+<br>Author:
+<a href="http://www.dcs.shef.ac.uk/~victor">Victor B. F. Gomes</a>,
+Walter Guttmann,
+<a href="http://www.hoefner-online.de/">Peter Höfner</a>,
+<a href="http://www.dcs.shef.ac.uk/~georg">Georg Struth</a> and 
+<a href="http://user.it.uu.se/~tjawe125/">Tjark Weber</a>
+</td></tr>
+
+<tr><td class="entry">
 2016-03-11:
 <a href="entries/PropResPI.shtml">Propositional Resolution and Prime Implicates Generation</a>
 <br>Author:
@@ -252,7 +263,7 @@ Lukas Bulwahn
 2015-09-16:
 <a href="entries/Isabelle_Meta_Model.shtml">A Meta-Model for the Isabelle API</a>
 <br>Author:
-<a href="http://www.lri.fr/~tuong/">Frédéric Tuong</a> and 
+Frédéric Tuong and 
 <a href="http://www.lri.fr/~wolff/">Burkhart Wolff</a>
 </td></tr>
 

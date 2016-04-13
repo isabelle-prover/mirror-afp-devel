@@ -39,11 +39,11 @@ by (metis omega.cases)
 lemma omega_coinduct: "X x z \<Longrightarrow>
   (\<And>x z. X x z \<Longrightarrow> \<exists>y. (x, y) \<in> R \<and> (X y z \<or> (y, z) \<in> omega R)) \<Longrightarrow>
   (x, z) \<in> omega R"
-by (metis omega.coinduct)
+by (metis (full_types) omega.coinduct)
 
 lemma omega_weak_coinduct: "X x z \<Longrightarrow>
   (\<And>x z. X x z \<Longrightarrow> \<exists>y. (x, y) \<in> R \<and> X y z) \<Longrightarrow>
-  (x, z) \<in> omega R"
+  (x, z) \<in> omega R" 
 by (metis omega.coinduct)
 
 interpretation rel_omega_algebra: omega_algebra "op \<union>" "op O" Id "{}" "op \<subseteq>" "op \<subset>" rtrancl omega

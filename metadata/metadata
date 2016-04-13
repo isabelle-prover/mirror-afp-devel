@@ -1963,6 +1963,7 @@ abstract =
 title = Kleene Algebra with Tests and Demonic Refinement Algebras
 author = Alasdair Armstrong <http://www.dcs.shef.ac.uk/~alasdair>, Victor B. F. Gomes <http://www.dcs.shef.ac.uk/~victor>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>
 date = 2014-01-23
+depends-on = Kleene_Algebra
 topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
 abstract =
  We formalise Kleene algebra with tests (KAT) and demonic refinement
@@ -1974,6 +1975,25 @@ abstract =
  case of DRA. In addition, we derive the inference rules for Hoare logic
  in KAT and its relational model and present a simple formally verified
  program verification tool prototype based on the algebraic approach.
+
+[KAD]
+title = Kleene Algebras with Domain
+author = Victor B. F. Gomes <http://www.dcs.shef.ac.uk/~victor>, Walter Guttmann, Peter Höfner <http://www.hoefner-online.de/>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>, Tjark Weber <http://user.it.uu.se/~tjawe125/>
+date = 2016-04-12
+depends-on = Kleene_Algebra
+topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
+abstract =
+  Kleene algebras with domain are Kleene algebras endowed with an
+  operation that maps each element of the algebra to its domain of
+  definition (or its complement) in abstract fashion. They form a simple
+  algebraic basis for Hoare logics, dynamic logics or predicate
+  transformer semantics. We formalise a modular hierarchy of algebras
+  with domain and antidomain (domain complement) operations in
+  Isabelle/HOL that ranges from domain and antidomain semigroups to
+  modal Kleene algebras and divergence Kleene algebras. We link these
+  algebras with models of binary relations and program traces. We
+  include some examples from modal logics, termination and program
+  analysis.
 
 [Regular_Algebras]
 title = Regular Algebras
