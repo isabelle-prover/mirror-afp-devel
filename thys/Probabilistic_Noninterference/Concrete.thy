@@ -1,6 +1,6 @@
 section {* Concrete setting *}
 
-theory Concrete 
+theory Concrete
 imports Syntactic_Criteria
 begin
 
@@ -9,13 +9,13 @@ begin
 (* Security levels: *)
 datatype level = Lo | Hi
 
-lemma [simp]: "\<And> l. l \<noteq> Hi \<longleftrightarrow> l = Lo" and 
-      [simp]: "\<And> l. Hi \<noteq> l \<longleftrightarrow> Lo = l" and 
-      [simp]: "\<And> l. l \<noteq> Lo \<longleftrightarrow> l = Hi" and 
+lemma [simp]: "\<And> l. l \<noteq> Hi \<longleftrightarrow> l = Lo" and
+      [simp]: "\<And> l. Hi \<noteq> l \<longleftrightarrow> Lo = l" and
+      [simp]: "\<And> l. l \<noteq> Lo \<longleftrightarrow> l = Hi" and
       [simp]: "\<And> l. Lo \<noteq> l \<longleftrightarrow> Hi = l"
 by (metis level.exhaust level.simps(2))+
 
-lemma [dest]: "\<And> l A. \<lbrakk>l \<in> A; Lo \<notin> A\<rbrakk> \<Longrightarrow> l = Hi" and 
+lemma [dest]: "\<And> l A. \<lbrakk>l \<in> A; Lo \<notin> A\<rbrakk> \<Longrightarrow> l = Hi" and
       [dest]: "\<And> l A. \<lbrakk>l \<in> A; Hi \<notin> A\<rbrakk> \<Longrightarrow> l = Lo"
 by (metis level.exhaust)+
 
@@ -45,39 +45,39 @@ datatype test = Tr | Eq exp exp | Gt exp exp | Non test
 datatype atom = Assign var exp
 type_synonym choice = "real + test"
 type_synonym state = "var \<Rightarrow> nat"
- 
+
 syntax
  "_assign" :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  ("_ ::= _" [1000, 61] 61)
 
 translations
   "x ::= expr" == "CONST Atm (CONST Assign x expr)"
- 
+
 primrec sec where
   "sec h  = Hi"
 | "sec h' = Hi"
 | "sec l  = Lo"
 | "sec l' = Lo"
 
-fun eval where 
+fun eval where
  "eval (Ct n) s = n"
 |"eval (Var x) s = s x"
 |"eval (Plus e1 e2) s = eval e1 s + eval e2 s"
 |"eval (Minus e1 e2) s = eval e1 s - eval e2 s"
 
-fun tval where 
+fun tval where
  "tval Tr s = True"
 |"tval (Eq e1 e2) s = (eval e1 s = eval e2 s)"
 |"tval (Gt e1 e2) s = (eval e1 s > eval e2 s)"
 |"tval (Non e) s = (\<not> tval e s)"
 
-fun aval where 
+fun aval where
 "aval (Assign x e) s = (s (x := eval e s))"
 
-fun cval where 
+fun cval where
  "cval (Inl p) s = min 1 (max 0 p)"
 |"cval (Inr tst) s = (if tval tst s then 1 else 0)"
 
-definition indis :: "(state * state) set"where 
+definition indis :: "(state * state) set"where
 "indis \<equiv> {(s,t). ALL x. sec x = Lo \<longrightarrow> s x = t x}"
 
 interpretation Example_PL: PL_Indis aval tval cval indis
@@ -90,14 +90,14 @@ next
 qed
 
 (* The security level of expressions: *)
-fun exprSec where 
+fun exprSec where
  "exprSec (Ct n) = Lo"
 |"exprSec (Var x) = sec x"
 |"exprSec (Plus e1 e2) = sup (exprSec e1) (exprSec e2)"
 |"exprSec (Minus e1 e2) = sup (exprSec e1) (exprSec e2)"
 
 (* The security level of tests: *)
-fun tstSec where 
+fun tstSec where
  "tstSec Tr = Lo"
 |"tstSec (Eq e1 e2) = sup (exprSec e1) (exprSec e2)"
 |"tstSec (Gt e1 e2) = sup (exprSec e1) (exprSec e2)"
@@ -148,35 +148,35 @@ lemma "SC_discr (h ::= Ct 0)"
 subsection {* The secure programs from the paper's Example 3 *}
 
 definition [simp]: "d0 =
-  h' ::= Ct 0 ;;  
-  While (Gt (Var h) (Ct 0)) 
-    (Ch\<^sub>\<onehalf> (h ::= Ct 0) 
+  h' ::= Ct 0 ;;
+  While (Gt (Var h) (Ct 0))
+    (Ch\<^sub>\<onehalf> (h ::= Ct 0)
          (h' ::= Plus (Var h') (Ct 1)))"
 
 definition [simp]: "d1 =
   While (Gt (Var h) (Ct 0))
-    (Ch\<^sub>\<onehalf> (h ::= Minus (Var h) (Ct 1)) 
+    (Ch\<^sub>\<onehalf> (h ::= Minus (Var h) (Ct 1))
          (h ::= Plus (Var h) (Ct 1)))"
 
 definition [simp]: "d2 =
-  If (Eq (Var l) (Ct 0)) 
-    (l' ::= Ct 1) 
+  If (Eq (Var l) (Ct 0))
+    (l' ::= Ct 1)
     d0"
 
 definition [simp]: "d3 =
-  h ::= Ct 5 ;; 
+  h ::= Ct 5 ;;
   ParT [d0, (l ::= Ct 1)]"
 
 (* The syntactic criteria are checked automatically: *)
-theorem "SC_discr d0" 
+theorem "SC_discr d0"
         "SC_discr d1"
         "SC_Sbis d2"
         "SC_ZObis d2"
   by (auto simp: Example_PL.SC_discr.simps Example_PL.SC_Sbis.simps Example_PL.SC_ZObis.simps)
 
-(* Alternatively, the semantic notions follow directly from the compositionality facts 
+(* Alternatively, the semantic notions follow directly from the compositionality facts
 used as intro rules: *)
-theorem "discr d0" 
+theorem "discr d0"
         "discr d1"
         "d2 \<approx>s d2"
         "d3 \<approx>01 d3"

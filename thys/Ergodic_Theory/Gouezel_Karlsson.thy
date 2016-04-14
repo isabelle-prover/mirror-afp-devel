@@ -7,19 +7,23 @@ imports Banach_Density Kingman
 
 begin
 
+lemma one_less_ennreal[simp]: "1 < ennreal x \<longleftrightarrow> 1 < x"
+  including ennreal.lifting
+  by transfer (auto simp: max.absorb2 less_max_iff_disj)
+
 section {*Gouezel-Karlsson*}
 
-text {*This section is devoted to the proof of the main ergodic result of 
-the article "Subadditive and multiplicative ergodic theorems" by Gouezel and 
+text {*This section is devoted to the proof of the main ergodic result of
+the article "Subadditive and multiplicative ergodic theorems" by Gouezel and
 Karlsson (denoted [GK] below). It is a version of Kingman
 theorem ensuring that, for subadditive cocycles, there are almost surely
-many times $n$ where the cocycle is nearly additive at \emph{all} times 
-between $0$ and $n$. 
+many times $n$ where the cocycle is nearly additive at \emph{all} times
+between $0$ and $n$.
 
-This theorem is then used in this article to construct horofunctions 
+This theorem is then used in this article to construct horofunctions
 characterizing the behavior at infinity of compositions
-of semi-contractions. This requires too many further notions to be implemented 
-in current Isabelle/HOL, but the main ergodic result is (almost) completely 
+of semi-contractions. This requires too many further notions to be implemented
+in current Isabelle/HOL, but the main ergodic result is (almost) completely
 proved below.*}
 
 locale GK1 = pmpt +
@@ -149,7 +153,7 @@ proof -
 
   {
     fix r::real
-    obtain c::nat where "r / d < c" using reals_Archimedean2 by auto 
+    obtain c::nat where "r / d < c" using reals_Archimedean2 by auto
     then have "r/d < real c+1" by auto
     then have "r / (real c+1) < d" using `d>0` by (simp add: divide_less_eq mult.commute)
     then have "\<exists>c::nat. r / (real c+1) < d" by auto
@@ -169,9 +173,11 @@ proof -
     using unG by auto
   then have "(\<lambda>c. emeasure M {x \<in> G. real_cond_exp M Invariants f x / (real c+1) < d}) \<longlonglongrightarrow> 1"
     using `emeasure M G = 1` by simp
-  then have "eventually (\<lambda>c. emeasure M {x \<in> G. real_cond_exp M Invariants f x / (real c+1) < d} > 1 -d) sequentially"
-    by (rule order_tendstoD(1), auto simp add: `d>0`)
-  then obtain c0 where c0: "emeasure M {x \<in> G. real_cond_exp M Invariants f x / (real c0+1) < d} > 1 -d"
+  then have "eventually (\<lambda>c. emeasure M {x \<in> G. real_cond_exp M Invariants f x / (real c+1) < d} > 1 - d) sequentially"
+    apply (rule order_tendstoD)
+    apply (insert \<open>0<d\<close>, auto simp add: ennreal_1[symmetric] ennreal_lessI simp del: ennreal_1)
+    done
+  then obtain c0 where c0: "emeasure M {x \<in> G. real_cond_exp M Invariants f x / (real c0+1) < d} > 1 - d"
     using eventually_sequentially by auto
   def c \<equiv> "real c0 + 1"
   then have "c > 0" by auto
@@ -190,7 +196,7 @@ qed
 text {*Next lemma is Lemma 2.2 in [GK]*}
 
 lemma upper_density_large_k:
-  assumes "d > (0::real)"
+  assumes "d > (0::real)" "d \<le> 1"
   shows "\<exists>k::nat.
          emeasure M {x \<in> space M. upper_Banach_density {n. \<exists>l \<in> {k..n}. u n x - u (n-l) x \<le> - d * l} < d} > 1 - d"
 proof -
@@ -202,26 +208,26 @@ proof -
   integral of $u_s$ should be suitably small -- how small precisely is given by $\rho$.*}
   {
     fix n
-    have "ereal(\<integral>x. abs(u n x / n) \<partial>M) = (\<integral>\<^sup>+x. abs(u n x /n) \<partial>M)"
+    have "ennreal(\<integral>x. abs(u n x / n) \<partial>M) = (\<integral>\<^sup>+x. abs(u n x /n) \<partial>M)"
       apply (rule nn_integral_eq_integral[symmetric]) using int_u by auto
     also have "... = (\<integral>\<^sup>+x. abs(u n x /n  - subcocycle_lim u x) \<partial>M)"
       apply (rule nn_integral_cong_AE) using subu_0 by auto
-    finally have "ereal(\<integral>x. abs(u n x / n) \<partial>M) =  (\<integral>\<^sup>+x. abs(u n x /n  - subcocycle_lim u x) \<partial>M)"
+    finally have "ennreal(\<integral>x. abs(u n x / n) \<partial>M) =  (\<integral>\<^sup>+x. abs(u n x /n  - subcocycle_lim u x) \<partial>M)"
        by simp
   }
   moreover have "(\<lambda>n. \<integral>\<^sup>+x. abs(u n x /n  - subcocycle_lim u x) \<partial>M) \<longlonglongrightarrow> 0"
     by (rule kingman_theorem_nonergodic(3)[OF subu subu_fin])
-  ultimately have "(\<lambda>n. ereal(\<integral>x. abs(u n x / n) \<partial>M)) \<longlonglongrightarrow> 0"
+  ultimately have "(\<lambda>n. ennreal(\<integral>x. abs(u n x / n) \<partial>M)) \<longlonglongrightarrow> 0"
     by auto
   then have "(\<lambda>n. (\<integral>x. abs(u n x / n) \<partial>M)) \<longlonglongrightarrow> 0"
-    by (simp add: zero_ereal_def)
+    by (simp add: ennreal_0[symmetric] del: ennreal_0)
   then have "eventually (\<lambda>n. (\<integral>x. abs(u n x / n) \<partial>M) < rho) sequentially"
     by (rule order_tendstoD(2), auto)
   then obtain s::nat where [simp]: "s>0" and s_int: "(\<integral>x. abs(u s x / s) \<partial>M) < rho"
-    by (metis (mono_tags, lifting) neq0_conv eventually_sequentially gr_implies_not0  
+    by (metis (mono_tags, lifting) neq0_conv eventually_sequentially gr_implies_not0
         linorder_not_le of_nat_0_eq_iff order_refl zero_neq_one)
 
-  
+
 
   text {*Second step: a truncation argument, to decompose $|u_1|$ as a sum of a constant (its
   contribution will be small if $k$ is large at the end of the argument) and of a function with
@@ -696,9 +702,10 @@ proof -
     apply auto
     done
   also have "... = (1/epsilon) * (\<integral>x. F2 x \<partial>M)"
+    apply (intro arg_cong[where f=ennreal])
     by (simp, rule real_cond_exp_int(2), simp add: int_F2)
   also have "... < (1/epsilon) * 2 * rho"
-    using F2_int by (auto simp add: divide_simps)
+    using F2_int by (intro ennreal_lessI) (auto simp add: divide_simps)
   also have "... = d"
     unfolding epsilon_def by auto
   finally have *: "emeasure M {x\<in>space M. real_cond_exp M Invariants F2 x \<ge> epsilon} < d"
@@ -713,9 +720,9 @@ proof -
   also have "... \<le> emeasure M G2 + emeasure M  {x\<in>space M. real_cond_exp M Invariants F2 x \<ge> epsilon}"
     by (rule emeasure_subadditive, auto)
   also have "... < emeasure M G2 + d"
-    apply (rule ereal_less_add) using * by auto
-  finally have "emeasure M G2 > 1 - d"
-    using emeasure_eq_measure by auto
+    using * by auto
+  finally have "1 - d < emeasure M G2"
+    using emeasure_eq_measure \<open>d \<le> 1\<close> by (auto intro!: ennreal_less_iff[THEN iffD2] simp del: ennreal_plus simp add: ennreal_plus[symmetric])
 
   have "upper_Banach_density {n. \<exists>l \<in> {k..n}. u n x - u (n-l) x \<le> - d * l} < d"
     if "x \<in> G2" for x
@@ -783,7 +790,7 @@ corresponding to Lemma 2.3 in [GK]*}
 
 lemma upper_density_delta:
   fixes d::real
-  assumes "d > 0"
+  assumes "d > 0" "d \<le> 1"
   shows "\<exists>delta::nat\<Rightarrow>real. (\<forall>l. delta l > 0) \<and> (delta \<longlonglongrightarrow> 0) \<and>
          emeasure M {x \<in> space M. \<forall>(N::nat). card {n \<in>{..<N}. \<exists>l \<in> {1..n}. u n x - u (n-l) x \<le> - delta l * l} \<le> d * N} > 1 - d"
 proof -
@@ -801,10 +808,10 @@ proof -
   have "emeasure M O1 > 1 - (d2/2)" unfolding O1_def using N1 by auto
 
   have *: "\<exists>N. emeasure M {x \<in> space M.  \<forall>B \<ge> N. card({n. \<exists>l \<in> {N..n}. u n x - u (n-l) x \<le> - e * l} \<inter> {..<B}) < e * B} >  1 - e"
-    if "e>0" for e::real
+    if "e>0" "e \<le> 1" for e::real
   proof -
     obtain k where k: "emeasure M {x \<in> space M. upper_Banach_density {n. \<exists>l \<in> {k..n}. u n x - u (n-l) x \<le> - e * l} < e} > 1 - e"
-      using upper_density_large_k[OF `e>0`] by blast
+      using upper_density_large_k[OF `e>0` \<open>e \<le> 1\<close>] by blast
     then obtain N0 where N0: "emeasure M {x \<in> space M.  \<forall>B \<ge> N0. card({n. \<exists>l \<in> {k..n}. u n x - u (n-l) x \<le> - e * l} \<inter> {..<B}) < e * B} >  1 - e"
       using  upper_density_eventually_measure[OF _ k] by auto
     def N \<equiv> "max k N0"
@@ -828,10 +835,19 @@ proof -
 
   def Ne \<equiv> "\<lambda>(e::real). SOME N. emeasure M {x \<in> space M.  \<forall>B \<ge> N. card({n. \<exists>l \<in> {N..n}. u n x - u (n-l) x \<le> - e * l} \<inter> {..<B}) < e * B} >  1 - e"
   have Ne: "emeasure M {x \<in> space M.  \<forall>B \<ge> Ne e. card({n. \<exists>l \<in> {Ne e..n}. u n x - u (n-l) x \<le> - e * l} \<inter> {..<B}) < e * B} >  1 - e"
-    if "e>0" for e::real
+    if "e>0" "e \<le> 1" for e::real
   unfolding Ne_def by (rule someI_ex[OF *[OF that]])
   def eps \<equiv> "\<lambda>(n::nat). d2 * (1/2)^n"
   have [simp]: "eps n > 0" for n unfolding eps_def by auto
+  then have [simp]: "eps n \<ge> 0" for n by (rule less_imp_le)
+
+  have "eps n \<le> (1 / 2) * 1" for n
+    unfolding eps_def d2_def
+    using \<open>d \<le> 1\<close> by (intro mult_mono power_le_one) auto
+  also have "\<dots> < 1" by auto
+  finally have [simp]: "eps n < 1" for n by simp
+  then have [simp]: "eps n \<le> 1" for n by (rule less_imp_le)
+
   have "(\<lambda>n. d2 * (1/2)^n) \<longlonglongrightarrow> d2 * 0"
     by (rule tendsto_mult, auto simp add: LIMSEQ_realpow_zero)
   then have "eps \<longlonglongrightarrow> 0" unfolding eps_def by auto
@@ -871,7 +887,7 @@ proof -
       also have "... \<le> Nf N" unfolding Nf_def using `N>1` by auto
       finally have "Ne (eps N) \<le> Nf N" by simp
       have "1 - eps N < emeasure M {x \<in> space M.  \<forall>B \<ge> Ne(eps N). card({n. \<exists>l \<in> {Ne(eps N)..n}. u n x - u (n-l) x \<le> - (eps N) * l} \<inter> {..<B}) < (eps N) * B}"
-        by (rule Ne, simp)
+        by (rule Ne) simp_all
       also have "... \<le> emeasure M {x \<in> space M.  \<forall>B \<ge> Nf N. card({n. \<exists>l \<in> {Nf N..n}. u n x - u (n-l) x \<le> - (eps N) * l} \<inter> {..<B}) < (eps N) * B}"
       proof (rule emeasure_mono, auto)
         fix x n assume H: "x \<in> space M"
@@ -895,17 +911,21 @@ proof -
   def Ogood\<equiv> "(\<Inter>N. On (N+1))"
   have [measurable]: "Ogood \<in> sets M" unfolding Ogood_def by auto
   have "emeasure M Ogood \<ge> 1 - (\<Sum>N. eps(N+1))"
-    unfolding Ogood_def apply (rule emeasure_intersection, simp)
-    using * apply (simp add: less_eq_ereal_def)
-    unfolding eps_def by (rule summable_mult, auto, rule summable_divide, rule summable_geometric, auto)
+    unfolding Ogood_def
+    apply (rule emeasure_intersection)
+    apply simp
+    apply simp
+    apply (simp add: eps_def summable_mult summable_divide summable_geometric)
+    using * apply (simp add: less_imp_le)
+    done
   moreover have "(\<Sum>N. eps(N+1)) = d2"
     unfolding eps_def
     apply (subst suminf_mult)
     apply (simp, rule summable_divide, rule summable_geometric, simp)
     using sums_unique[OF power_half_series, symmetric] by auto
   finally have "emeasure M Ogood \<ge> 1 - d2" by simp
-  then have "emeasure M Ogood > 1 -d" unfolding d2_def using `d>0`
-    by (simp add: emeasure_eq_measure real_sum_of_halves)
+  then have "emeasure M Ogood > 1 - d" unfolding d2_def using `d>0` \<open>d \<le> 1\<close>
+    by (simp add: emeasure_eq_measure real_sum_of_halves ennreal_less_iff)
 
   have Ogood_union: "Ogood = (\<Union>(K::nat). Ogood \<inter> {x \<in> space M. \<forall>n \<in> {1..Nf 1}. \<forall>l \<in> {1..n}. u n x - u (n-l) x > - (real K * l)})"
   apply auto using sets.sets_into_space[OF `Ogood \<in> sets M`] apply blast
@@ -997,8 +1017,7 @@ proof -
     finally have *: "(\<Sum>N\<in>{..<B}. (1/(2::real))^N) \<le> 2" by simp
 
     have "(\<Sum> N \<in> {2..<B}. eps N * B) \<le> (\<Sum> N \<in> {2..<B+2}. eps N * B)"
-      apply (rule setsum_mono2, auto)
-      using `\<And>n. eps n > 0` less_eq_real_def by auto
+      by (rule setsum_mono2, auto)
     also have "... = (\<Sum>N\<in>{2..<B+2}. d2 * (1/2)^N * B)"
       unfolding eps_def by auto
     also have "... = (\<Sum>N\<in>{..<B}. d2 * (1/2)^(N+2) * B)"

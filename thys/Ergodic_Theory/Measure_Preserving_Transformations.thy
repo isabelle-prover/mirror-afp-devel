@@ -1,4 +1,4 @@
-(*  Author:  Sébastien Gouëzel   sebastien.gouezel@univ-rennes1.fr 
+(*  Author:  Sébastien Gouëzel   sebastien.gouezel@univ-rennes1.fr
     License: BSD
 *)
 
@@ -87,7 +87,7 @@ lemma measure_preserving_preserves_nn_integral:
 proof -
   have a: "T \<in> measurable M N" using assms(1) measure_preserving_def by blast
   have "(\<integral>\<^sup>+x. f (T x) \<partial>M) = (\<integral>\<^sup>+y. f y \<partial>distr M N T)"
-    using nn_integral_distr[of "T", of "M", of "N", of "f", OF a, OF assms(2)] by simp
+    using assms nn_integral_distr[of T M N f, OF a] by simp
   also have "... = (\<integral>\<^sup>+y. f y \<partial>N)" using measure_preserving_eq_distr[OF assms(1)] by simp
   finally show ?thesis by simp
 qed
@@ -213,7 +213,10 @@ lemma fmpt_null_space:
   assumes "emeasure M (space M) = 0"
           "T \<in> measurable M M"
   shows "fmpt M T"
-by (rule fmpt_I, auto simp add: assms finite_measureI, metis assms(1) emeasure_le_0_iff emeasure_space)
+  apply (rule fmpt_I)
+  apply (auto simp add: assms finite_measureI)
+  apply (metis assms(1) assms(2) emeasure_eq_0 measurable_sets sets.sets_into_space sets.top)
+  done
 
 lemma fmpt_empty_space:
   assumes "space M = {}"
@@ -251,17 +254,20 @@ next
   show ?thesis
   proof (rule mpt_I)
     have "sigma_finite_measure M" using assms(1) unfolding mpt_def qmpt_def by auto
-    moreover have "sigma_finite_measure N" using assms(2) `\<not>(space M = {})` unfolding mpt_def qmpt_def by auto
-    ultimately show "sigma_finite_measure (M \<Otimes>\<^sub>M N)" by (simp add: sigma_finite_pair_measure)
+    then interpret M: sigma_finite_measure M .
+    have "sigma_finite_measure N" using assms(2) `\<not>(space M = {})` unfolding mpt_def qmpt_def by auto
+    then interpret N: sigma_finite_measure N .
+    show "sigma_finite_measure (M \<Otimes>\<^sub>M N)"
+      by (rule sigma_finite_pair_measure) standard+
 
     have [measurable]: "T \<in> measurable M M" using assms(1) unfolding mpt_def qmpt_def qmpt_axioms_def quasi_measure_preserving_def by auto
     show [measurable]: "(\<lambda>(x, y). (T x, U x y)) \<in> measurable (M \<Otimes>\<^sub>M N) (M \<Otimes>\<^sub>M N)" by auto
     have "T \<in> measure_preserving M M" using assms(1) by (simp add: mpt.Tm)
 
     fix A assume [measurable]: "A \<in> sets (M \<Otimes>\<^sub>M N)"
-    then have [measurable]: "(\<lambda> (x,y). (indicator A (x,y))::ereal ) \<in> borel_measurable (M \<Otimes>\<^sub>M N)" by auto
+    then have [measurable]: "(\<lambda> (x,y). (indicator A (x,y))::ennreal ) \<in> borel_measurable (M \<Otimes>\<^sub>M N)" by auto
     then have [measurable]: "(\<lambda>x. \<integral>\<^sup>+ y. indicator A (x, y) \<partial>N) \<in> borel_measurable M"
-      using \<open>sigma_finite_measure N\<close>  sigma_finite_measure.borel_measurable_nn_integral by blast
+      by simp
 
     def B \<equiv> "(\<lambda>(x, y). (T x, U x y)) -` A \<inter> space (M \<Otimes>\<^sub>M N)"
     then have [measurable]: "B \<in> sets (M \<Otimes>\<^sub>M N)" by auto
@@ -269,13 +275,13 @@ next
     {
       fix x assume "x \<in> space M"
       then have "T x \<in> space M" by (meson \<open>T \<in> measurable M M\<close> \<open>x \<in> space M\<close> measurable_space)
-      then have 1: "(\<lambda>y. (indicator A (T x, y))::ereal) \<in> borel_measurable N" using `A \<in> sets (M \<Otimes>\<^sub>M N)` by auto
-      have 2: "\<And>y. ((indicator B (x, y))::ereal) = indicator A (T x, U x y) * indicator (space M) x * indicator (space N) y"
+      then have 1: "(\<lambda>y. (indicator A (T x, y))::ennreal) \<in> borel_measurable N" using `A \<in> sets (M \<Otimes>\<^sub>M N)` by auto
+      have 2: "\<And>y. ((indicator B (x, y))::ennreal) = indicator A (T x, U x y) * indicator (space M) x * indicator (space N) y"
         unfolding B_def by (simp add: indicator_def space_pair_measure)
       have 3: "U x \<in> measure_preserving N N" using assms(2) `x \<in> space M` by (simp add: mpt.Tm)
 
       have "(\<integral>\<^sup>+y. indicator B (x,y) \<partial>N) =  (\<integral>\<^sup>+y. indicator A (T x, U x y) \<partial>N)"
-         apply (rule nn_integral_cong_strong) using 2 by (auto simp add: indicator_def `x \<in> space M`)
+         using 2 by (intro nn_integral_cong_strong) (auto simp add: indicator_def `x \<in> space M`)
       also have "... = (\<integral>\<^sup>+y. indicator A (T x, y) \<partial>N)"
         by (rule measure_preserving_preserves_nn_integral[OF 3, symmetric], metis 1, simp add: indicator_def)
       finally have "(\<integral>\<^sup>+y. indicator B (x,y) \<partial>N) = (\<integral>\<^sup>+y. indicator A (T x, y) \<partial>N)" by simp
@@ -286,7 +292,7 @@ next
     also have "... =  (\<integral>\<^sup>+ x. (\<integral>\<^sup>+y. indicator A (T x, y) \<partial>N) \<partial>M)"
       by (rule nn_integral_cong_strong, auto simp add: *)
     also have "... =  (\<integral>\<^sup>+ x. (\<integral>\<^sup>+y. indicator A (x, y) \<partial>N) \<partial>M)"
-      by (rule measure_preserving_preserves_nn_integral[OF `T \<in> measure_preserving M M`, symmetric], auto simp add: nn_integral_nonneg)
+      by (rule measure_preserving_preserves_nn_integral[OF `T \<in> measure_preserving M M`, symmetric]) auto
     also have "... = emeasure (M \<Otimes>\<^sub>M N) A"
       by (simp add: \<open>sigma_finite_measure N\<close> sigma_finite_measure.emeasure_pair_measure)
     finally show "emeasure (M \<Otimes>\<^sub>M N) ((\<lambda>(x, y). (T x, U x y)) -` A \<inter> space (M \<Otimes>\<^sub>M N)) = emeasure (M \<Otimes>\<^sub>M N) A"
@@ -413,8 +419,8 @@ lemma vrestr_same_measure_f:
           "A \<in> sets M"
   shows "measure M (f--`A) = measure M A"
 proof -
-  have "measure M (f--`A) = real_of_ereal (emeasure M  (f--`A))" by (simp add: Sigma_Algebra.measure_def)
-  also have "... = real_of_ereal (emeasure M A)" using vrestr_same_emeasure_f[OF assms] by simp
+  have "measure M (f--`A) = enn2real (emeasure M  (f--`A))" by (simp add: Sigma_Algebra.measure_def)
+  also have "... = enn2real (emeasure M A)" using vrestr_same_emeasure_f[OF assms] by simp
   also have "... = measure M A"  by (simp add: Sigma_Algebra.measure_def)
   finally show "measure M (f--` A) = measure M A" by simp
 qed
@@ -523,7 +529,7 @@ proof -
   have "(T^^n)--`N \<in> null_sets M" for n using T_quasi_preserves_null2(2)[OF N(2)].
   then have "A \<in> null_sets M" unfolding A_def by auto
   moreover have "\<And>x. x \<in> space M - A \<Longrightarrow> \<forall>n. P ((T^^n) x)"
-  proof 
+  proof
     fix x n
     assume "x \<in> space M - A"
     then have "x \<in> (space M - (T^^n)--`N)" unfolding A_def by auto
@@ -566,13 +572,13 @@ lemma Tn_integral_preserving:
 using measure_preserving_preserves_integral[OF  Tn_measure_preserving assms] by auto
 
 lemma T_nn_integral_preserving:
-  fixes f :: "'a \<Rightarrow> ereal"
+  fixes f :: "'a \<Rightarrow> ennreal"
   assumes "\<And>x. f x \<ge> 0" "f \<in> borel_measurable M"
   shows "(\<integral>\<^sup>+x. f(T x) \<partial>M) = (\<integral>\<^sup>+x. f x \<partial>M)"
 using measure_preserving_preserves_nn_integral[OF Tm assms(2) assms(1)] by auto
 
 lemma Tn_nn_integral_preserving:
-  fixes f :: "'a \<Rightarrow> ereal"
+  fixes f :: "'a \<Rightarrow> ennreal"
   assumes "\<And>x. f x \<ge> 0" "f \<in> borel_measurable M"
   shows "(\<integral>\<^sup>+x. f((T^^n) x) \<partial>M) = (\<integral>\<^sup>+x. f x \<partial>M)"
 using measure_preserving_preserves_nn_integral[OF Tn_measure_preserving assms(2) assms(1)] by auto
@@ -617,7 +623,7 @@ begin
 definition birkhoff_sum::"('a \<Rightarrow> 'b::comm_monoid_add) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'b"
   where "birkhoff_sum f n x = (\<Sum>i\<in>{..<n}. f((T^^i)x))"
 
-text{*I did not find a way to prove a lemma applying simultaneously in \verb+real+ and \verb+ereal+
+text{*I did not find a way to prove a lemma applying simultaneously in \verb+real+ and \verb+ennreal+
 and \verb+nat+, so I give three separate statements about measurability.*}
 
 lemma birkhoff_sum_meas [measurable]:
@@ -632,8 +638,8 @@ proof -
   then show ?thesis by simp
 qed
 
-lemma birkhoff_sum_meas_ereal [measurable]:
-  fixes f::"'a \<Rightarrow> ereal"
+lemma birkhoff_sum_meas_ennreal [measurable]:
+  fixes f::"'a \<Rightarrow> ennreal"
   assumes "f \<in> borel_measurable M"
   shows "birkhoff_sum f n \<in> borel_measurable M"
 proof -
@@ -737,7 +743,7 @@ qed
 
 
 lemma (in mpt) birkhoff_sum_nn_integral:
-  fixes f :: "'a \<Rightarrow> ereal"
+  fixes f :: "'a \<Rightarrow> ennreal"
   assumes [measurable]: "f \<in> borel_measurable M" and pos: "\<And>x. f x \<ge> 0"
   shows "(\<integral>\<^sup>+x. birkhoff_sum f n x \<partial>M) =  n * (\<integral>\<^sup>+x. f x \<partial>M)"
 proof -
@@ -750,7 +756,7 @@ proof -
   also have "... =  (\<Sum>k\<in>{..<n}.  (\<integral>\<^sup>+x. f((T^^k) x) \<partial>M))"
     by (rule nn_integral_setsum, auto simp add: posk)
   also have "... =  (\<Sum>k\<in>{..<n}.  (\<integral>\<^sup>+x. f x \<partial>M))" using b by simp
-  also have "... = n * (\<integral>\<^sup>+x. f x \<partial>M)" by (simp add: setsum_constant_ereal mult.commute)
+  also have "... = n * (\<integral>\<^sup>+x. f x \<partial>M)" by simp
   finally show "(\<integral>\<^sup>+x. birkhoff_sum f n x \<partial>M) =  n * (\<integral>\<^sup>+x. f x \<partial>M)" by simp
 qed
 

@@ -825,8 +825,8 @@ proof -
     then have "AE x in M. limsup (\<lambda>n. ereal(birkhoff_sum f n x / n)) \<le> ereal(real_cond_exp M Invariants f x) + \<epsilon>"
       by auto
   }
-  then show ?thesis using AE_upper_bound_inf_ereal2[where ?F = "\<lambda>x. limsup (\<lambda>n. ereal (birkhoff_sum f n x / real n))"
-      and ?G = "\<lambda>x. ereal (real_cond_exp M Invariants f x)"] by auto
+  then show ?thesis
+    by (rule AE_upper_bound_inf_ereal)
 qed
 
 theorem birkhoff_theorem_AE_nonergodic:
@@ -906,7 +906,7 @@ proof (rule Scheffe_lemma2)
   show "AE x in M. (\<lambda>n. birkhoff_sum f n x / real n) \<longlonglongrightarrow> real_cond_exp M Invariants f x"
     using  birkhoff_theorem_AE_nonergodic assms by simp
   fix n
-  have [measurable]: "(\<lambda>x. ereal \<bar>birkhoff_sum f n x\<bar>) \<in> borel_measurable M" by measurable
+  have [measurable]: "(\<lambda>x. ennreal \<bar>birkhoff_sum f n x\<bar>) \<in> borel_measurable M" by measurable
   show [measurable]: "(\<lambda>x. birkhoff_sum f n x / real n) \<in> borel_measurable M" by measurable
 
   have "AE x in M. real_cond_exp M Invariants f x \<ge> 0" using assms(1) real_cond_exp_pos by simp
@@ -914,8 +914,8 @@ proof (rule Scheffe_lemma2)
   have **: "(\<integral> x. norm (real_cond_exp M Invariants f x) \<partial>M) = (\<integral> x. real_cond_exp M Invariants f x \<partial>M)"
     apply (rule integral_cong_AE) using * by auto
 
-  have "( \<integral>\<^sup>+ x. ereal (norm (real_cond_exp M Invariants f x)) \<partial>M) = (\<integral> x. norm (real_cond_exp M Invariants f x) \<partial>M)"
-    by (rule nn_integral_eq_integral, auto simp add: i)
+  have "( \<integral>\<^sup>+ x. ennreal (norm (real_cond_exp M Invariants f x)) \<partial>M) = (\<integral> x. norm (real_cond_exp M Invariants f x) \<partial>M)"
+    by (rule nn_integral_eq_integral) (auto simp add: i)
   also have "... = (\<integral> x. real_cond_exp M Invariants f x \<partial>M)"
     using ** by simp
   also have "... = (\<integral> x. f x \<partial>M)"
@@ -929,10 +929,10 @@ proof (rule Scheffe_lemma2)
     fix x
     have "norm(birkhoff_sum f n x) \<le> birkhoff_sum (\<lambda>x. norm(f x)) n x"
       using birkhoff_sum_abs by fastforce
-    then have "norm(birkhoff_sum f n x) \<le> birkhoff_sum (\<lambda>x. ereal(norm(f x))) n x"
+    then have "norm(birkhoff_sum f n x) \<le> birkhoff_sum (\<lambda>x. ennreal(norm(f x))) n x"
       unfolding birkhoff_sum_def by auto
   }
-  then have "(\<integral>\<^sup>+x. norm(birkhoff_sum f n x) \<partial>M) \<le> (\<integral>\<^sup>+x. birkhoff_sum (\<lambda>x. ereal(norm(f x))) n x \<partial>M)"
+  then have "(\<integral>\<^sup>+x. norm(birkhoff_sum f n x) \<partial>M) \<le> (\<integral>\<^sup>+x. birkhoff_sum (\<lambda>x. ennreal(norm(f x))) n x \<partial>M)"
     by (simp add: nn_integral_mono)
   also have "... = n * (\<integral>\<^sup>+x. norm(f x) \<partial>M)"
     by (rule birkhoff_sum_nn_integral, auto)
@@ -941,24 +941,26 @@ proof (rule Scheffe_lemma2)
   finally have *: "(\<integral>\<^sup>+x. norm(birkhoff_sum f n x) \<partial>M) \<le> n * ( \<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M)"
     by simp
 
-  show "(\<integral>\<^sup>+ x. ereal (norm (birkhoff_sum f n x / real n)) \<partial>M) \<le> (\<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M)"
+  show "(\<integral>\<^sup>+ x. ennreal (norm (birkhoff_sum f n x / real n)) \<partial>M) \<le> (\<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M)"
   proof (cases)
     assume "n=0"
-    then show ?thesis by (auto, metis ereal_zero_mult nn_integral_nonneg zero_ereal_def)
+    then show ?thesis by auto
   next
     assume "\<not>(n=0)"
     then have "n > 0" by simp
-    then have "1/ereal(real n) \<ge> 0" by (simp add: one_ereal_def)
-    have "(\<integral>\<^sup>+ x. ereal (norm (birkhoff_sum f n x / real n)) \<partial>M) = (\<integral>\<^sup>+ x. ereal (norm (birkhoff_sum f n x)) / ereal(real n) \<partial>M)"
-      using `n > 0` by auto
-    also have "... = (\<integral>\<^sup>+ x. (1/ereal(real n)) * ereal (norm (birkhoff_sum f n x)) \<partial>M)"
-      by (simp add: `0 < n`)
-    also have "... =  (1/ereal(real n)) * (\<integral>\<^sup>+ x. ereal (norm (birkhoff_sum f n x)) \<partial>M)"
-      by (rule nn_integral_cmult, auto)
-    also have "... \<le> (1/ereal(real n)) * ereal(real n) * ( \<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M)"
-       by (metis ereal_times_divide_eq_left mult.left_neutral ereal_mult_left_mono[OF *  `1/ereal(real n) >= 0`])
+    then have "1/ennreal(real n) \<ge> 0" by simp
+    have "(\<integral>\<^sup>+ x. ennreal (norm (birkhoff_sum f n x / real n)) \<partial>M) = (\<integral>\<^sup>+ x. ennreal (norm (birkhoff_sum f n x)) / ennreal(real n) \<partial>M)"
+      using `n > 0` by (auto simp: divide_ennreal)
+    also have "... = (\<integral>\<^sup>+ x. (1/ennreal(real n)) * ennreal (norm (birkhoff_sum f n x)) \<partial>M)"
+      by (simp add: `0 < n` divide_ennreal_def mult.commute)
+    also have "... =  (1/ennreal(real n) * (\<integral>\<^sup>+ x. ennreal (norm (birkhoff_sum f n x)) \<partial>M))"
+      by (subst nn_integral_cmult) auto
+    also have "... \<le> (1/ennreal(real n)) * (ennreal(real n) * ( \<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M))"
+      using * by (intro mult_mono) (auto simp: ennreal_of_nat_eq_real_of_nat)
     also have "... = ( \<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M)"
-      using `n > 0` by auto
+      using `n > 0`
+      by (auto simp del: ennreal_1 simp add: ennreal_1[symmetric] divide_ennreal ennreal_mult[symmetric] mult.assoc[symmetric])
+         simp
     finally show ?thesis by simp
   qed
 qed
@@ -986,8 +988,8 @@ proof -
        norm(birkhoff_sum g n x / n - real_cond_exp M Invariants g x) + norm(birkhoff_sum h n x / n - real_cond_exp M Invariants h x)"
       by auto
     have "(\<integral>\<^sup>+ x. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x) \<partial>M) \<le>
-       (\<integral>\<^sup>+ x. ereal(norm(birkhoff_sum g n x / n - real_cond_exp M Invariants g x)) + norm(birkhoff_sum h n x / n - real_cond_exp M Invariants h x) \<partial>M)"
-      apply (rule nn_integral_mono_AE) using * by simp
+       (\<integral>\<^sup>+ x. ennreal(norm(birkhoff_sum g n x / n - real_cond_exp M Invariants g x)) + norm(birkhoff_sum h n x / n - real_cond_exp M Invariants h x) \<partial>M)"
+      apply (rule nn_integral_mono_AE) using * by (simp add: ennreal_plus[symmetric] del: ennreal_plus)
     also have "... = (\<integral>\<^sup>+ x. norm(birkhoff_sum g n x / n - real_cond_exp M Invariants g x) \<partial>M) + (\<integral>\<^sup>+ x. norm(birkhoff_sum h n x / n - real_cond_exp M Invariants h x) \<partial>M)"
       apply (rule nn_integral_add) apply auto using real_cond_exp_F_meas borel_measurable_cond_exp2 by measurable
     finally have "(\<integral>\<^sup>+ x. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x) \<partial>M) \<le>
@@ -999,14 +1001,14 @@ proof -
        sequentially"
     using eventually_at_top_dense by auto
   have **: "eventually (\<lambda>n. (\<integral>\<^sup>+ x. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x) \<partial>M) \<ge> 0) sequentially"
-    using eventually_at_top_dense by (simp add: nn_integral_nonneg)
+    by simp
 
   have "(\<lambda>n. (\<integral>\<^sup>+ x. norm(birkhoff_sum g n x / n - real_cond_exp M Invariants g x) \<partial>M)) \<longlonglongrightarrow> 0"
     apply (rule birkhoff_lemma_L1, auto simp add: g_int) unfolding g_def by auto
   moreover have "(\<lambda>n. (\<integral>\<^sup>+ x. norm(birkhoff_sum h n x / n - real_cond_exp M Invariants h x) \<partial>M)) \<longlonglongrightarrow> 0"
     apply (rule birkhoff_lemma_L1, auto simp add: h_int) unfolding h_def by auto
   ultimately have "(\<lambda>n. (\<integral>\<^sup>+ x. norm(birkhoff_sum g n x / n - real_cond_exp M Invariants g x) \<partial>M) + (\<integral>\<^sup>+ x. norm(birkhoff_sum h n x / n - real_cond_exp M Invariants h x) \<partial>M)) \<longlonglongrightarrow> 0"
-    using tendsto_add_ereal[where ?x = 0 and ?y = 0] by auto
+    using tendsto_add[of _ 0 _ _ 0] by auto
   then show ?thesis
     using tendsto_sandwich[OF ** *] by auto
 qed
@@ -1074,8 +1076,8 @@ proof (rule conservative_mptI)
     using B_meas by (auto simp add: lborel.sigma_finite_measure_axioms)
   finally have *: "(\<integral>\<^sup>+x. emeasure lborel (Pair x -` B) \<partial>M) > 0" by simp
 
-  have "\<exists>Cx e. Cx \<in> sets M \<and> e>(0::real) \<and> emeasure M Cx > 0 \<and> (\<forall>x \<in> Cx. emeasure lborel (Pair x -` B) \<ge> e)"
-    by (rule not_AE_zero_int_ereal_E, auto simp add: *)
+  have "\<exists>Cx\<in>sets M. \<exists>e::real>0. emeasure M Cx > 0 \<and> (\<forall>x \<in> Cx. emeasure lborel (Pair x -` B) \<ge> e)"
+    by (rule not_AE_zero_int_ennreal_E, auto simp add: *)
   then obtain Cx e where [measurable]: "Cx \<in> sets M" and Cxe: "e>(0::real)" "emeasure M Cx > 0" "\<And>x. x \<in> Cx \<Longrightarrow> emeasure lborel (Pair x -` B) \<ge> e"
     by blast
   def C \<equiv> "B \<inter> (Cx \<times> (UNIV::real set))"
@@ -1098,8 +1100,8 @@ proof (rule conservative_mptI)
   def Bgood \<equiv> "{x \<in> space M. (\<lambda>n. birkhoff_sum f n x / n) \<longlonglongrightarrow> 0}"
   have [measurable]: "Bgood \<in> sets M" unfolding Bgood_def by auto
   have *: "AE x in M. x \<in> Bgood" unfolding Bgood_def using birkhoff_theorem_AE_nonergodic[OF assms(1)] assms(2) by auto
-  then have "space M - Bgood \<in> null_sets M" by (simp add: AE_iff_null set_diff_eq)
-  then have "emeasure M Bgood = emeasure M (space M)" using emeasure_eq_measure finite_measure_compl by auto
+  then have "emeasure M Bgood = emeasure M (space M)"
+    by (intro emeasure_eq_AE) auto
 
   {
     fix x assume "x \<in> Bgood"
@@ -1120,24 +1122,23 @@ proof (rule conservative_mptI)
   }
   then have "AE x in M. x \<notin> space M -  (\<Union>n0. {x \<in> space M. \<forall>n\<in>{n0..}. abs(birkhoff_sum f n x) \<le> r * n})"
     using * by auto
-  then have "space M - (\<Union>n0. {x \<in> space M. \<forall>n\<in>{n0..}. abs(birkhoff_sum f n x) \<le> r * n}) \<in> null_sets M"
-    by (simp add: AE_iff_null_sets)
   then have eqM: "emeasure M (\<Union>n0. {x \<in> space M. \<forall>n\<in>{n0..}. abs(birkhoff_sum f n x) \<le> r * n}) = emeasure M (space M)"
-    using emeasure_eq_measure finite_measure_compl by auto
+    by (intro emeasure_eq_AE) auto
 
-  have "(\<lambda>n0. emeasure M {x \<in> space M. \<forall>n\<in>{n0..}. abs(birkhoff_sum f n x) \<le> r * n})
-           \<longlonglongrightarrow> emeasure M (\<Union>n0. {x \<in> space M. \<forall>n\<in>{n0..}. abs(birkhoff_sum f n x) \<le> r * n})"
+  have "(\<lambda>n0. emeasure M {x \<in> space M. \<forall>n\<in>{n0..}. abs(birkhoff_sum f n x) \<le> r * n} + c)
+           \<longlonglongrightarrow> emeasure M (\<Union>n0. {x \<in> space M. \<forall>n\<in>{n0..}. abs(birkhoff_sum f n x) \<le> r * n}) + c"
+    apply (intro tendsto_add)
     by (rule Lim_emeasure_incseq, auto simp add: incseq_def)
-  moreover have "emeasure M (\<Union>n0. {x \<in> space M. \<forall>n\<in>{n0..}. abs(birkhoff_sum f n x) \<le> r * n}) > emeasure M (space M) - c"
+  moreover have "emeasure M (\<Union>n0. {x \<in> space M. \<forall>n\<in>{n0..}. abs(birkhoff_sum f n x) \<le> r * n}) + c > emeasure M (space M)"
     using eqM `c > 0` emeasure_eq_measure by auto
-  ultimately have "eventually (\<lambda>n0. emeasure M {x \<in> space M. \<forall>n\<in>{n0..}. abs(birkhoff_sum f n x) \<le> r * n} > emeasure M (space M) - c) sequentially"
-    using order_tendsto_iff by fastforce
-  then obtain n0 where n0: "emeasure M {x \<in> space M. \<forall>n\<in>{n0..}. abs(birkhoff_sum f n x) \<le> r * n} > emeasure M (space M) - c"
+  ultimately have "eventually (\<lambda>n0. emeasure M {x \<in> space M. \<forall>n\<in>{n0..}. abs(birkhoff_sum f n x) \<le> r * n} + c > emeasure M (space M)) sequentially"
+    unfolding order_tendsto_iff by auto
+  then obtain n0 where n0: "emeasure M {x \<in> space M. \<forall>n\<in>{n0..}. abs(birkhoff_sum f n x) \<le> r * n} + c > emeasure M (space M)"
     using eventually_sequentially by auto
 
   def Dx \<equiv> "{x \<in> space M. \<forall>n\<in>{n0..}. abs(birkhoff_sum f n x) \<le> r * n}"
   have Dx_meas [measurable]: "Dx \<in> sets M" unfolding Dx_def by auto
-  have "emeasure M Dx \<ge> emeasure M (space M) - c" using n0 Dx_def by auto
+  have "emeasure M Dx + c \<ge> emeasure M (space M)" using n0 Dx_def by auto
 
   obtain n1::nat where n1: "n1 > max n0 ((measure M (space M) * 2 * N + e*c*n0 - e*c) / (e*c-2*r*measure M (space M)))"
     by (metis mult.commute mult.left_neutral numeral_One reals_Archimedean3 zero_less_numeral)
@@ -1171,14 +1172,14 @@ proof (rule conservative_mptI)
         fix y::real
         have "(?TS^^n)(x,y) = ((T^^n)x, y + birkhoff_sum f n x)"
           using skew_product_real_iterates by simp
-        then have "(indicator C ((?TS^^n) (x,y))::ereal) = indicator Cx ((T^^n)x) * indicator (Pair ((T^^n)x) -`C) (y + birkhoff_sum f n x)"
+        then have "(indicator C ((?TS^^n) (x,y))::ennreal) = indicator Cx ((T^^n)x) * indicator (Pair ((T^^n)x) -`C) (y + birkhoff_sum f n x)"
           using C_def by (simp add: indicator_def)
-        moreover have "(indicator (D n) (x, y)::ereal) = indicator Dx x * indicator {-r*n1-N..r*n1+N} y * indicator C ((?TS^^n) (x,y))"
+        moreover have "(indicator (D n) (x, y)::ennreal) = indicator Dx x * indicator {-r*n1-N..r*n1+N} y * indicator C ((?TS^^n) (x,y))"
           unfolding D_def by (simp add: indicator_def)
-        ultimately have "(indicator (D n) (x, y)::ereal) = indicator Dx x * indicator {-r*n1-N..r*n1+N} y
+        ultimately have "(indicator (D n) (x, y)::ennreal) = indicator Dx x * indicator {-r*n1-N..r*n1+N} y
              * indicator Cx ((T^^n)x) * indicator (Pair ((T^^n)x) -`C) (y + birkhoff_sum f n x)"
           by (simp add: mult.assoc)
-        then have "(indicator (D n) (x, y)::ereal) = indicator (Dx \<inter> (T^^n)-`Cx) x * indicator F y"
+        then have "(indicator (D n) (x, y)::ennreal) = indicator (Dx \<inter> (T^^n)-`Cx) x * indicator F y"
           unfolding F_def by (simp add: indicator_def)
       }
       then have "(\<integral>\<^sup>+y. indicator (D n) (x, y) \<partial>lborel) = (\<integral>\<^sup>+y. indicator (Dx \<inter> (T^^n)-`Cx) x * indicator F y \<partial>lborel)"
@@ -1189,12 +1190,12 @@ proof (rule conservative_mptI)
       finally have A: "(\<integral>\<^sup>+y. indicator (D n) (x, y) \<partial>lborel) = indicator (Dx \<inter> (T^^n)-`Cx) x * emeasure lborel F"
         by simp
 
-      have "(\<integral>\<^sup>+y. indicator (D n) (x, y) \<partial>lborel) \<ge> ereal e * indicator (Dx \<inter> (T^^n)-`Cx) x"
+      have "(\<integral>\<^sup>+y. indicator (D n) (x, y) \<partial>lborel) \<ge> ennreal e * indicator (Dx \<inter> (T^^n)-`Cx) x"
       proof (cases)
-        assume "indicator (Dx \<inter> (T^^n)-`Cx) x = (0::ereal)"
-        then show ?thesis using nn_integral_nonneg by auto
+        assume "indicator (Dx \<inter> (T^^n)-`Cx) x = (0::ennreal)"
+        then show ?thesis by auto
       next
-        assume "\<not>(indicator (Dx \<inter> (T^^n)-`Cx) x = (0::ereal))"
+        assume "\<not>(indicator (Dx \<inter> (T^^n)-`Cx) x = (0::ennreal))"
         then have "x \<in> Dx \<inter> (T^^n)-`Cx" by (simp add: indicator_eq_0_iff)
         then have "x \<in> Dx" "(T^^n) x \<in> Cx" by auto
         then have "abs(birkhoff_sum f n x) \<le> r * n" using `n \<in> {n0..n1}` Dx_def by auto
@@ -1219,16 +1220,16 @@ proof (rule conservative_mptI)
     }
     moreover have "emeasure ?MS (D n) = (\<integral>\<^sup>+x. (\<integral>\<^sup>+y. indicator (D n) (x, y) \<partial>lborel) \<partial>M)"
       using Dn_meas lborel.emeasure_pair_measure by blast
-    ultimately have "emeasure ?MS (D n) \<ge> (\<integral>\<^sup>+x. ereal e * indicator (Dx \<inter> (T ^^ n) -` Cx) x \<partial>M)"
+    ultimately have "emeasure ?MS (D n) \<ge> (\<integral>\<^sup>+x. ennreal e * indicator (Dx \<inter> (T ^^ n) -` Cx) x \<partial>M)"
       by (simp add: nn_integral_mono)
-    also have "(\<integral>\<^sup>+x. ereal e * indicator (Dx \<inter> (T ^^ n) -` Cx) x \<partial>M) = e * (\<integral>\<^sup>+x. indicator (Dx \<inter> (T ^^ n) -` Cx) x \<partial>M)"
+    also have "(\<integral>\<^sup>+x. ennreal e * indicator (Dx \<inter> (T ^^ n) -` Cx) x \<partial>M) = e * (\<integral>\<^sup>+x. indicator (Dx \<inter> (T ^^ n) -` Cx) x \<partial>M)"
       apply (rule nn_integral_cmult) using `e>0` by auto
-    also have "... = ereal e * emeasure M (Dx \<inter>  (T ^^ n) -` Cx)" by (simp add: T_vrestr_intersec_meas(2))
-    finally have *: "emeasure ?MS (D n) \<ge> ereal e * emeasure M (Dx \<inter>  (T ^^ n) -` Cx)" by auto
+    also have "... = ennreal e * emeasure M (Dx \<inter>  (T ^^ n) -` Cx)" by (simp add: T_vrestr_intersec_meas(2))
+    finally have *: "emeasure ?MS (D n) \<ge> ennreal e * emeasure M (Dx \<inter>  (T ^^ n) -` Cx)" by auto
 
-    have "c + emeasure M (space M) = (emeasure M (space M) - c) + 2 * c" by (simp add: emeasure_eq_measure)
-    also have "... \<le> emeasure M Dx + emeasure M Cx"
-      using `emeasure M Dx \<ge> emeasure M (space M) - c` c_def by (simp add: emeasure_eq_measure)
+    have "c + emeasure M (space M) \<le> emeasure M Dx + emeasure M Cx"
+      using `emeasure M Dx + c \<ge> emeasure M (space M)` unfolding c_def
+      by (auto simp: emeasure_eq_measure ennreal_plus[symmetric] simp del: ennreal_plus)
     also have "... = emeasure M Dx + emeasure M ((T^^n)--`Cx)"
       by (simp add: T_vrestr_same_emeasure(2))
     also have "... = emeasure M (Dx \<union> ((T^^n)--`Cx)) +  emeasure M (Dx \<inter> ((T^^n)--`Cx))"
@@ -1242,9 +1243,10 @@ proof (rule conservative_mptI)
       ultimately show ?thesis by (metis add.commute add_left_mono)
     qed
     finally have "emeasure M (Dx \<inter> ((T^^n)-`Cx)) \<ge> c" by (simp add: emeasure_eq_measure)
-    then have "ereal e * emeasure M (Dx \<inter> ((T^^n)-`Cx)) \<ge> ereal e * c" using `e > 0`
-      using ereal_less_eq(5) ereal_mult_left_mono by fastforce
-    then show "emeasure ?MS (D n) \<ge> e * c" using * by auto
+    then have "ennreal e * emeasure M (Dx \<inter> ((T^^n)-`Cx)) \<ge> ennreal e * c" using `e > 0`
+      using mult_left_mono by fastforce
+    with * show "emeasure ?MS (D n) \<ge> e * c"
+      using \<open>0<c\<close> \<open>0<e\<close> by (auto simp: ennreal_mult[symmetric])
   qed
 
   have "\<not>(disjoint_family_on D {n0..n1})"
@@ -1252,11 +1254,13 @@ proof (rule conservative_mptI)
     assume D: "disjoint_family_on D {n0..n1}"
     have "emeasure lborel {-r*n1-N..r*n1+N} = (r * real n1 + real N) - (- r * real n1 - real N)"
       apply (rule emeasure_lborel_Icc) using `r>0` by auto
-    then have *: "emeasure lborel {-r*n1-N..r*n1+N} = ereal(2 * r * real n1 + 2 * real N)" by auto
+    then have *: "emeasure lborel {-r*n1-N..r*n1+N} = ennreal(2 * r * real n1 + 2 * real N)"
+      by (auto simp: ac_simps)
 
-    have "ereal(e * c) * (real n1- real n0+1) = ereal(e*c) * card {n0..n1}" using `n1 > n0` by auto
-    also have "... = (\<Sum>n\<in>{n0..n1}. ereal(e*c))"
-      by (rule setsum_constant_ereal[symmetric])
+    have "ennreal(e * c) * (real n1 - real n0 + 1) = ennreal(e*c) * card {n0..n1}"
+      using `n1 > n0` by (auto simp: ennreal_of_nat_eq_real_of_nat Suc_diff_le ac_simps of_nat_diff)
+    also have "... = (\<Sum>n\<in>{n0..n1}. ennreal(e*c))"
+      by (simp add: ac_simps)
     also have "... \<le> (\<Sum>n\<in>{n0..n1}. emeasure ?MS (D n))"
       using `\<And>n. n \<in> {n0..n1} \<Longrightarrow> emeasure ?MS (D n) \<ge> e * c` by (meson setsum_mono)
     also have "... = emeasure ?MS (\<Union>n\<in>{n0..n1}. D n)"
@@ -1265,11 +1269,11 @@ proof (rule conservative_mptI)
       apply (rule emeasure_mono) unfolding D_def using sets.sets_into_space[OF Dx_meas] by auto
     also have "... = emeasure M (space M) * emeasure lborel {-r*n1-N..r*n1+N}"
       by (rule sigma_finite_measure.emeasure_pair_measure_Times, auto simp add: lborel.sigma_finite_measure_axioms)
-    also have "... = emeasure M (space M) * ereal(2 * r * real n1 + 2 * real N)"
+    also have "... = emeasure M (space M) * ennreal(2 * r * real n1 + 2 * real N)"
       using * by auto
-    finally have "ereal(e * c) * (real n1- real n0+1) \<le> emeasure M (space M) * ereal(2 * r * real n1 + 2 * real N)" by simp
+    finally have "ennreal(e * c) * (real n1- real n0+1) \<le> emeasure M (space M) * ennreal(2 * r * real n1 + 2 * real N)" by simp
     then have "e*c * (real n1- real n0 + 1) \<le> measure M (space M) * (2 * r * real n1 + 2 * real N)"
-      using emeasure_eq_measure by auto
+      using \<open>0<r\<close> \<open>0<e\<close> \<open>0<c\<close> \<open>n0 < n1\<close> emeasure_eq_measure by (auto simp: ennreal_mult'[symmetric] simp del: ennreal_plus)
     then have "0 \<le> measure M (space M) * (2 * r * real n1 + 2 * real N) - e*c * (real n1- real n0 + 1)" by auto
     also have "... = (measure M (space M) * 2 * N + e*c*n0 - e*c) - n1 * (e*c-2*r*measure M (space M))"
       by algebra
@@ -1399,7 +1403,7 @@ proof -
     then have "emeasure ?MS A = 0" unfolding MA_def
       by (metis A_meas emeasure_restrict_space sets.sets_into_space sets.top space_restrict_space space_restrict_space2)
     moreover have "emeasure ?MS A = emeasure M Ax * emeasure lborel {0..e/2}"
-      by (metis A_def calculation emeasure_notin_sets ereal_zero_times lborel.emeasure_pair_measure_Times)
+      unfolding A_def by (intro lborel.emeasure_pair_measure_Times) auto
     ultimately have "emeasure M {x \<in> space M. \<forall>n\<in>{N..}. birkhoff_sum f n x \<notin> {0..e}} = 0" using `e>0` Ax_def by simp
     then have "{x \<in> space M. \<forall>n\<in>{N..}. birkhoff_sum f n x \<notin> {0..e}} \<in> null_sets M" by auto
   }

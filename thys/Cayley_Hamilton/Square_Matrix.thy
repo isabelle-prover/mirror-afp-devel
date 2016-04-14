@@ -241,6 +241,8 @@ instance
        if_distrib[where f="\<lambda>x. x * b" for b] if_distrib[where f="\<lambda>x. b * x" for b])+
 end
 
+instance sq_matrix :: ("semiring_1", finite) numeral ..
+
 lemma diag_1: "diag 1 = 1"
   by transfer simp
 
@@ -321,7 +323,7 @@ lemma trace_smult[simp]: "trace (s *\<^sub>S A) = (s * trace A::_::semiring_0)"
 lemma trace_transpose[simp]: "trace (transpose A) = trace A"
   by transfer simp
 
-lemma trace_mult_symm: 
+lemma trace_mult_symm:
   fixes A B :: "'a::comm_semiring_0^^'n"
   shows "trace (A * B) = trace (B * A)"
   by transfer (auto intro: setsum.commute simp: mult.commute)
@@ -355,7 +357,7 @@ lemma det_diagonal:
 proof transfer
   fix A :: "'n \<Rightarrow> 'n \<Rightarrow> 'a" assume neq: "\<And>i j. i \<noteq> j \<Longrightarrow> A i j = 0"
   let ?pp = "\<lambda>p. of_int (sign p) * (\<Prod>i\<in>UNIV. A i (p i))"
-  
+
   { fix p :: "'n \<Rightarrow> 'n" assume p: "p permutes UNIV" "p \<noteq> id"
     then obtain i where i: "i \<noteq> p i"
       unfolding id_def by metis
@@ -376,7 +378,7 @@ lemma det_lowerdiagonal:
 proof transfer
   fix A :: "'n \<Rightarrow> 'n \<Rightarrow> 'a" assume ld: "\<And>i j. i < j \<Longrightarrow> A i j = 0"
   let ?pp = "\<lambda>p. of_int (sign p) * (\<Prod>i\<in>UNIV. A i (p i))"
-  
+
   { fix p :: "'n \<Rightarrow> 'n" assume p: "p permutes UNIV" "p \<noteq> id"
     with permutes_natset_le[OF p(1)] obtain i where i: "p i > i"
       by (metis not_le)
@@ -529,7 +531,7 @@ lemma det_perm_rows:
 
 lemma det_row_add: "det (upd_row M i (a + b)) = det (upd_row M i a) + det (upd_row M i b)"
   by transfer (simp add: setprod.If_cases setsum.distrib[symmetric] field_simps)
-    
+
 lemma det_row_mul: "det (upd_row M i (c *s a)) = c * det (upd_row M i a)"
   by transfer (simp add: setprod.If_cases setsum_right_distrib field_simps)
 
@@ -547,7 +549,7 @@ lemma det_row_setsum: "det (upd_row M i (\<Sum>s\<in>S. a s)) = (\<Sum>s\<in>S. 
 
 lemma det_col_add: "det (upd_col M i (a + b)) = det (upd_col M i a) + det (upd_col M i b)"
   using det_row_add[of "transpose M" i a b] by (simp add: upd_row_transpose det_transpose)
-  
+
 lemma det_col_mul: "det (upd_col M i (c *s a)) = c * det (upd_col M i a)"
   using det_row_mul[of "transpose M" i c a] by (simp add: upd_row_transpose det_transpose)
 
@@ -601,7 +603,7 @@ proof (induct T arbitrary: M rule: infinite_finite_induct)
     (\<Sum>s\<in>S. \<Sum>f\<in>T \<rightarrow>\<^sub>E S. det (upd_cols (upd_col M i (a i s)) T (\<lambda>i. a i (f i))))"
     unfolding setsum.cartesian_product PiE_insert_eq using `i \<notin> T`
     by (subst setsum.reindex[OF inj_combinator[OF `i \<notin> T`]])
-       (auto intro!: setsum.cong arg_cong[where f=det] upd_cols_cong 
+       (auto intro!: setsum.cong arg_cong[where f=det] upd_cols_cong
              simp: upd_cols_insert_rev simp_implies_def)
   also have "\<dots> = det (upd_col (upd_cols M T (\<lambda>i. setsum (a i) S)) i (\<Sum>s\<in>S. a i s))"
     unfolding insert(3)[symmetric] by (simp add: upd_cols_upd_col_swap[OF `i \<notin> T`] det_col_setsum)
@@ -615,7 +617,7 @@ lemma det_rows_setsum:
 
 lemma det_rows_mult: "det (upd_rows M T (\<lambda>i. c i *s a i)) = (\<Prod>i\<in>T. c i) * det (upd_rows M T a)"
   by transfer (simp add: setprod.If_cases setsum_right_distrib field_simps setprod.distrib)
-  
+
 lemma det_cols_mult: "det (upd_cols M T (\<lambda>i. c i *s a i)) = (\<Prod>i\<in>T. c i) * det (upd_cols M T a)"
   using det_rows_mult[of "transpose M" T c a] by (simp add: det_transpose upd_rows_transpose)
 
@@ -669,7 +671,7 @@ lemma det_minor_row':
   "row B i = axis j 1 \<Longrightarrow> det (minor B i j) = det B"
 proof (induction "{k. to_fun B k j \<noteq> 0} - {i}" arbitrary: B rule: infinite_finite_induct)
   case empty
-  then have "\<And>k. k \<noteq> i \<longrightarrow> to_fun B k j = 0" 
+  then have "\<And>k. k \<noteq> i \<longrightarrow> to_fun B k j = 0"
     by (auto simp add: card_eq_0_iff)
   with empty.prems have "axis i 1 = col B j"
     by transfer (auto simp: vec_eq_iff axis_def)
@@ -681,7 +683,7 @@ next
     by auto
   let ?B' = "upd_row B r (row B r - (to_fun B r j) *s row B i)"
   have "det (minor ?B' i j) = det ?B'"
-  proof (rule insert.hyps)  
+  proof (rule insert.hyps)
     show "NZ = {k. to_fun ?B' k j \<noteq> 0} - {i}"
       using insert.hyps(2,4) insert.prems
       by transfer (auto simp add: axis_def set_eq_iff)

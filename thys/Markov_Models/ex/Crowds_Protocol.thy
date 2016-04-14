@@ -6,40 +6,33 @@ theory Crowds_Protocol
   imports "../Discrete_Time_Markov_Chain"
 begin
 
+lemma cond_prob_nonneg[simp]: "0 \<le> cond_prob M A B"
+  by (auto simp: cond_prob_def)
+
 lemma (in MC_syntax) emeasure_suntil_geometric:
   assumes [measurable]: "Measurable.pred S P"
-  assumes "s \<in> X"
-  assumes r: "\<And>s. s \<in> X \<Longrightarrow> emeasure (T s) {\<omega>\<in>space (T s). P \<omega>} = ereal r"
-  assumes p: "\<And>s. s \<in> X \<Longrightarrow> emeasure (K s) X = ereal p" "p < 1"
+  assumes "s \<in> X" and *[simp]: "0 \<le> p" "0 \<le> r"
+  assumes r: "\<And>s. s \<in> X \<Longrightarrow> emeasure (T s) {\<omega>\<in>space (T s). P \<omega>} = ennreal r"
+  assumes p: "\<And>s. s \<in> X \<Longrightarrow> emeasure (K s) X = ennreal p" "p < 1"
   assumes "\<And>t. AE \<omega> in T t. \<not> (P \<sqinter> (HLD X \<sqinter> nxt (HLD X suntil P))) \<omega>"
   shows "emeasure (T s) {\<omega>\<in>space (T s). (HLD X suntil P) \<omega>} = r / (1 - p)"
 proof (subst emeasure_suntil_disj)
   let ?F = "\<lambda>F s. emeasure (T s) {\<omega> \<in> space (T s). P \<omega>} + \<integral>\<^sup>+ t. F t * indicator X t \<partial>K s"
-  let ?f = "\<lambda>x. max 0 (ereal r + ereal p * x)"
-  have *[simp]: "0 \<le> p" "0 \<le> r"
-    using p(1)[OF \<open>s \<in> X\<close>, symmetric] r(1)[OF \<open>s \<in> X\<close>, symmetric]
-    by (simp_all add: T.emeasure_eq_measure measure_pmf.emeasure_eq_measure measure_nonneg)
-  with `p < 1` have fp_nn: "0 \<le> ereal (r / (1 - p))"
-    by (simp add: divide_simps del: *)
+  let ?f = "\<lambda>x. ennreal r + ennreal p * x"
 
   have "mono ?F" "mono ?f"
-    by (auto intro!: monoI max.mono ereal_add_mono nn_integral_mono ereal_mult_left_mono ereal_mult_right_mono simp: le_fun_def)
-
-  have lfp_F_nn: "0 \<le> lfp ?F s" for s
-    by (subst lfp_unfold[OF \<open>mono ?F\<close>]) (auto simp: nn_integral_nonneg emeasure_nonneg)
-  have lfp_f_nn: "0 \<le> lfp ?f"
-    by (subst lfp_unfold[OF \<open>mono ?f\<close>]) auto
+    by (auto intro!: monoI max.mono add_mono nn_integral_mono mult_left_mono mult_right_mono simp: le_fun_def)
 
   have 1: "lfp ?f \<le> lfp ?F s"
     using `s \<in> X`
   proof (induction arbitrary: s rule: lfp_ordinal_induct[OF \<open>mono ?f\<close>])
     case step: (1 x)
-    then have "?f x \<le> ?F (\<lambda>s. max 0 x) s"
-      by (auto simp: p emeasure_nonneg nn_integral_nonneg r[simplified] nn_integral_cmult mult.commute[of _ x]
-               intro!: ereal_add_mono ereal_mult_right_mono)
-    also have "?F (\<lambda>s. max 0 x) \<le> ?F (lfp ?F)"
-      using lfp_F_nn step
-      by (intro le_funI ereal_add_mono order_refl nn_integral_mono) (auto simp: split: split_indicator)
+    then have "?f x \<le> ?F (\<lambda>_. x) s"
+      by (auto simp: p r[simplified] nn_integral_cmult mult.commute[of _ x]
+               intro!: add_mono mult_right_mono)
+    also have "?F (\<lambda>_. x) \<le> ?F (lfp ?F)"
+      using step
+      by (intro le_funI add_mono order_refl nn_integral_mono) (auto simp: split: split_indicator)
     finally show ?case
       by (subst lfp_unfold[OF \<open>mono ?F\<close>]) (auto simp: le_fun_def)
   qed (auto intro!: Sup_least)
@@ -47,21 +40,21 @@ proof (subst emeasure_suntil_disj)
     using `s \<in> X`
   proof (induction arbitrary: s rule: lfp_ordinal_induct[OF \<open>mono ?F\<close>])
     case (1 S)
-    with r have "?F S s \<le> ereal r + (\<integral>\<^sup>+x. ereal (r / (1 - p)) * indicator X x \<partial>K s)"
-      by (intro ereal_add_mono nn_integral_mono) (auto split: split_indicator)
-    also have "\<dots> \<le> ereal r + ereal (r * p / (1 - p))"
-      using fp_nn `s \<in> X` by (simp add: nn_integral_cmult_indicator p)
-    also have "\<dots> = ereal (r / (1 - p))"
-      using `p < 1` by (simp add: field_simps)
+    with r have "?F S s \<le> ennreal r + (\<integral>\<^sup>+x. ennreal (r / (1 - p)) * indicator X x \<partial>K s)"
+      by (intro add_mono nn_integral_mono) (auto split: split_indicator)
+    also have "\<dots> \<le> ennreal r + ennreal (r * p / (1 - p))"
+      using `s \<in> X` by (simp add: nn_integral_cmult_indicator p ennreal_mult''[symmetric])
+    also have "\<dots> = ennreal (r / (1 - p))"
+      using `p < 1` by (simp add: field_simps ennreal_plus[symmetric] del: ennreal_plus)
     finally show ?case .
   qed (auto intro!: SUP_least)
-  finally obtain x where x: "lfp ?f = ereal x"
-    using lfp_f_nn by (cases "lfp ?f") auto
+  finally obtain x where x: "lfp ?f = ennreal x" and [simp]: "0 \<le> x"
+    by (cases "lfp ?f") (auto simp: top_unique)
   from `p < 1` have "\<And>x. x = r + p * x \<Longrightarrow> x = r / (1 - p)"
     by (auto simp: field_simps)
   with lfp_unfold[OF \<open>mono ?f\<close>] `p < 1` have "lfp ?f = r / (1 - p)"
-    unfolding x by (auto simp: max_def)
-  with 1 2 show "lfp ?F s = ereal (r / (1 - p))"
+    unfolding x by (auto simp add: ennreal_plus[symmetric] ennreal_mult[symmetric] simp del: ennreal_plus)
+  with 1 2 show "lfp ?F s = ennreal (r / (1 - p))"
     by auto
 qed fact+
 
@@ -91,7 +84,7 @@ locale Crowds_Protocol =
   assumes J_not_empty: "J \<noteq> {}" and finite_J[simp]: "finite J"
   assumes C_smaller: "C \<subset> J" and C_non_empty: "C \<noteq> {}"
   assumes p_f: "0 < p_f" "p_f < 1"
-  assumes p_i_nonneg: "\<And>j. j \<in> J \<Longrightarrow> 0 \<le> p_i j"
+  assumes p_i_nonneg[simp]: "\<And>j. j \<in> J \<Longrightarrow> 0 \<le> p_i j"
   assumes p_i_distr: "(\<Sum>j\<in>J. p_i j) = 1"
   assumes p_i_C: "\<And>j. j \<in> C \<Longrightarrow> p_i j = 0"
 begin
@@ -101,7 +94,16 @@ abbreviation H :: "'a set" where
 
 definition "p_j = 1 / card J"
 
+lemma p_f_nonneg[simp]: "0 \<le> p_f" "p_f \<le> 1"
+  using p_f by simp_all
+
+lemma p_j_nonneg[simp]: "0 \<le> p_j"
+  by (simp add: p_j_def)
+
 definition "p_H = card H / card J"
+
+lemma p_H_nonneg[simp]: "0 \<le> p_H" "p_H \<le> 1"
+  by (auto simp: p_H_def divide_le_eq_1 card_gt_0_iff intro!: card_mono )
 
 definition next_prob :: "'a state \<Rightarrow> 'a state \<Rightarrow> real" where
   "next_prob s t = (case (s, t) of (Start, Init j) \<Rightarrow> if j \<in> H then p_i j else 0
@@ -174,10 +176,10 @@ lemma pmf_next_pmf[simp]: "pmf (N s) t = next_prob s t"
 proof (rule pmf_embed_pmf)
   show "\<And>x. 0 \<le> next_prob s x"
     using p_j_pos p_f by (auto simp: next_prob_def intro: p_i_nonneg split: state.split)
-  show "(\<integral>\<^sup>+ x. ereal (next_prob s x) \<partial>count_space UNIV) = 1"
+  show "(\<integral>\<^sup>+ x. ennreal (next_prob s x) \<partial>count_space UNIV) = 1"
     using p_f J_not_empty
     by (subst nn_integral_count_space'[where A="Init`H \<union> Mix`J \<union> {End}"])
-       (auto simp: next_prob_def p_i_nonneg setsum.reindex setsum.union_disjoint p_i_distr p_j_def
+       (auto simp: next_prob_def setsum.reindex setsum.union_disjoint p_i_distr p_j_def
              split: state.split)
 qed
 
@@ -253,8 +255,8 @@ proof -
     apply (subst (1 2) emeasure_Collect_T)
     apply simp
     apply (subst (1 2) nn_integral_measure_pmf_finite)
-    apply (auto simp: E_Mix E_Init * setsum.reindex setsum_ereal_left_distrib[symmetric]
-                      ereal_times_divide_eq[symmetric] emeasure_nonneg)
+    apply (auto simp: E_Mix E_Init * setsum.reindex setsum_left_distrib[symmetric] divide_ennreal
+      ennreal_times_divide[symmetric])
     done
 qed
 
@@ -319,14 +321,16 @@ proof -
     have "?P (Mix j) (?J suntil ?E) = (p_f * p_j * (1 - p_f) * card L) / (1 - p_f)"
     proof (rule emeasure_suntil_geometric)
       fix s assume s: "s \<in> Mix ` J"
-      then have "?P s ?E = (\<integral>\<^sup>+x. ereal (1 - p_f) * indicator (Mix`L) x \<partial>N s)"
+      then have "?P s ?E = (\<integral>\<^sup>+x. ennreal (1 - p_f) * indicator (Mix`L) x \<partial>N s)"
         by (auto simp add: emeasure_HLD_nxt emeasure_HLD AE_measure_pmf_iff emeasure_pmf_single
                  split: state.split split_indicator simp del: space_T nxt.simps
                  intro!: nn_integral_cong_AE)
-      also have "\<dots> = ereal (1 - p_f) * emeasure (N s) (Mix`L)"
+      also have "\<dots> = ennreal (1 - p_f) * emeasure (N s) (Mix`L)"
         using p_f by (intro nn_integral_cmult_indicator) auto
-      also have "\<dots> = ereal ((1 - p_f) * card L * p_j * p_f)"
-        using s assms by (subst emeasure_measure_pmf_finite) (auto simp: setsum.reindex subset_eq)
+      also have "\<dots> = ennreal ((1 - p_f) * card L * p_j * p_f)"
+        using s assms
+        by (subst emeasure_measure_pmf_finite)
+           (auto simp: setsum.reindex subset_eq ennreal_mult mult_ac)
       finally show "?P s ?E = p_f * p_j * (1 - p_f) * card L"
         by simp
     next
@@ -334,22 +338,22 @@ proof -
         by (intro AE_I2) (auto simp: HLD_iff elim: suntil.cases)
     qed (insert p_f j, auto simp: emeasure_measure_pmf_finite setsum.reindex p_j_def)
     then have "?P (Init j) (?J suntil ?E) = (p_f * p_j * (1 - p_f) * card L) / (1 - p_f) / p_f"
-      by (subst emeasure_Init_eq_Mix) (simp_all add:  suntil.simps[of _ _ "x ## s" for x s])
+      by (subst emeasure_Init_eq_Mix) (simp_all add:  suntil.simps[of _ _ "x ## s" for x s] divide_ennreal p_f)
     then have "?P (Init j) (?J suntil ?E) = p_j * card L"
       using p_f by simp }
   note J_suntil_E = this
 
   have "?P Start (visit I L) = (\<integral>\<^sup>+x. ?P x (?J suntil ?E) * indicator (Init`I) x \<partial>N Start)"
     unfolding visit_def using I L by (subst emeasure_HLD_nxt) (auto simp: Int_absorb2)
-  also have "\<dots> = (\<integral>\<^sup>+x. ereal (p_j * card L) * indicator (Init`I) x \<partial>N Start)"
+  also have "\<dots> = (\<integral>\<^sup>+x. ennreal (p_j * card L) * indicator (Init`I) x \<partial>N Start)"
     using I J_suntil_E
-    by (intro nn_integral_cong ereal_left_mult_cong)
+    by (intro nn_integral_cong ennreal_mult_right_cong)
        (auto split: split_indicator_asm)
-  also have "\<dots> = ereal ((\<Sum>i\<in>I. p_i i) * card L * p_j)"
+  also have "\<dots> = ennreal ((\<Sum>i\<in>I. p_i i) * card L * p_j)"
     using p_j_pos assms
     by (subst nn_integral_cmult_indicator)
-       (auto simp: emeasure_measure_pmf_finite setsum.reindex subset_eq)
-  finally show ?thesis by simp
+       (auto simp: emeasure_measure_pmf_finite setsum.reindex subset_eq ennreal_mult[symmetric] setsum_nonneg)
+  finally show ?thesis by (simp add: ac_simps)
 qed
 
 lemma measurable_visit[measurable]: "Measurable.pred S (visit I L)"
@@ -368,7 +372,8 @@ lemma server_view1: "j \<in> J \<Longrightarrow> \<P>(\<omega> in \<PP>. visit H
 
 lemma server_view_indep:
   "L \<subseteq> J \<Longrightarrow> I \<subseteq> H \<Longrightarrow> \<P>(\<omega> in \<PP>. visit I L \<omega>) = \<P>(\<omega> in \<PP>. visit H L \<omega>) * \<P>(\<omega> in \<PP>. visit I J \<omega>)"
-  unfolding measure_def by (subst (1 2 3) emeasure_visit) (auto simp: p_j_def)
+  unfolding measure_def
+  by (subst (1 2 3) emeasure_visit) (auto simp: p_j_def setsum_nonneg subset_eq)
 
 lemma server_view: "\<P>(\<omega> in \<PP>. \<exists>j\<in>H. visit {j} {j} \<omega>) = p_j"
   using finite_J
@@ -486,8 +491,8 @@ proof -
 
   have "?P Start hit_C = (\<integral>\<^sup>+x. ?P x (ev ?M) * indicator ?I x \<partial>N Start)"
     unfolding hit_C_def by (rule emeasure_HLD_nxt) measurable
-  also have "\<dots> = (\<integral>\<^sup>+x. ereal ((1 - p_H) / (1 - p_f * p_H)) * indicator ?I x \<partial>N Start)"
-  proof (intro nn_integral_cong ereal_left_mult_cong refl)
+  also have "\<dots> = (\<integral>\<^sup>+x. ennreal ((1 - p_H) / (1 - p_f * p_H)) * indicator ?I x \<partial>N Start)"
+  proof (intro nn_integral_cong ennreal_mult_right_cong refl)
     fix x assume "indicator (Init ` H) x \<noteq> 0"
     then have "x \<in> ?I"
       by (auto split: split_indicator_asm)
@@ -497,24 +502,26 @@ proof -
       also have "\<dots> = (((1 - p_H) * p_f)) / (1 - p_H * p_f)"
       proof (rule emeasure_suntil_geometric)
         fix s assume s: "s \<in> Mix ` H"
-        from s C_smaller show "?P s ?M = ereal ((1 - p_H) * p_f)"
+        from s C_smaller show "?P s ?M = ennreal ((1 - p_H) * p_f)"
           by (subst emeasure_HLD)
              (auto simp add: emeasure_measure_pmf_finite setsum.reindex subset_eq p_j_def H_compl)
         from s show "emeasure (N s) (Mix`H) = p_H * p_f"
-          by (auto simp: emeasure_measure_pmf_finite setsum.reindex H_eq2)
+          by (auto simp: emeasure_measure_pmf_finite setsum.reindex p_H_def p_j_def)
       qed (insert j, auto simp: HLD_iff p_H_p_f_less_1)
       finally have "?P (Init j) (ev ?M) = (1 - p_H) / (1 - p_H * p_f)"
-        using p_f by (subst emeasure_Init_eq_Mix) (auto simp: ev_Stream AE_End ev_sconst HLD_iff) }
+        using p_f
+        by (subst emeasure_Init_eq_Mix)
+           (auto simp: ev_Stream AE_End ev_sconst HLD_iff mult_le_one divide_ennreal) }
     then show "?P x (ev ?M) = (1 - p_H) / (1 - p_f * p_H)"
-      using `x \<in> ?I` by auto
+      using `x \<in> ?I` by (auto simp: mult_ac)
   qed
-  also have "\<dots> = ereal ((1 - p_H) / (1 - p_H * p_f))"
+  also have "\<dots> = ennreal ((1 - p_H) / (1 - p_H * p_f))"
     using p_j_pos assms p_H p_H_p_f_less_1
     by (subst nn_integral_cmult_indicator)
        (auto simp: emeasure_measure_pmf_finite setsum.reindex subset_eq mult_ac
              intro!: divide_nonneg_nonneg)
   finally show ?thesis
-    by (simp add: measure_def)
+    by (simp add: measure_def mult_le_one)
 qed
 
 lemma before_C_imp_hit_C:
@@ -534,6 +541,9 @@ proof -
       enabled.simps[of _ "stl \<omega>"] ev.simps[of _ "stl \<omega>"] suntil.simps[of _ _ "stl \<omega>"])
 qed
 
+lemma negE: "\<not> P \<Longrightarrow> P \<Longrightarrow> False"
+  by blast
+
 lemma Pr_visit_before_C:
   assumes L: "L \<subseteq> H" and I: "I \<subseteq> H"
   shows "\<P>(\<omega> in \<PP>. visit I J \<omega> \<and> before_C L \<omega> \<bar> hit_C \<omega> ) =
@@ -544,6 +554,9 @@ proof -
   let ?V = "(visit I J aand before_C L) aand hit_C"
   let ?U = "HLD ?M suntil (Mix`L \<cdot> HLD (Mix`C))"
   let ?L = "HLD (Mix`C)"
+
+  have IJ: "x \<in> I \<Longrightarrow> x \<in> J" for x
+    using I by auto
 
   have [simp, intro]: "finite I" "finite L"
     using L I by (auto dest: finite_subset)
@@ -573,16 +586,18 @@ proof -
     apply (subst emeasure_HLD_nxt emeasure_HLD, simp)+
     apply (subst nn_integral_indicator_finite)
     apply (auto simp: emeasure_measure_pmf_finite setsum.reindex next_prob_def setsum.If_cases
-                      Int_absorb2 H_compl2
+                      Int_absorb2 H_compl2 ennreal_mult[symmetric] setsum_nonneg
+                      setsum_right_distrib[symmetric] setsum_left_distrib[symmetric]
                 intro!: setsum.cong setsum_nonneg)
+    apply (subst (asm) ennreal_inj)
+    apply (auto intro!: mult_nonneg_nonneg setsum_nonneg setsum.mono_neutral_left elim!: negE)
     done
   also have "?P Start (Init`I \<cdot> ?U) = (\<Sum>i\<in>I. ?P (Init i) ?U * p_i i)"
     using I
     by (subst emeasure_HLD_nxt, simp)
-       (auto simp: nn_integral_indicator_finite emeasure_nonneg setsum.reindex
-                   emeasure_measure_pmf_finite
+       (auto simp: nn_integral_indicator_finite setsum.reindex emeasure_measure_pmf_finite
              intro!: setsum.cong[OF refl])
-  also have "\<dots> = (\<Sum>i\<in>I. ereal (p_f * (1 - p_H) * p_j * card L / (1 - p_H * p_f)) * p_i i)"
+  also have "\<dots> = (\<Sum>i\<in>I. ennreal (p_f * (1 - p_H) * p_j * card L / (1 - p_H * p_f)) * p_i i)"
   proof (intro setsum.cong refl arg_cong2[where f="op *"])
     fix i assume "i \<in> I"
     with I have i: "i \<in> H"
@@ -595,13 +610,14 @@ proof -
     next
       fix s assume "s \<in> ?M"
       with p_f p_j_pos L C_smaller[THEN less_imp_le]
-      show "?P s (Mix`L \<cdot> (HLD (Mix ` C))) = ereal (p_f * p_f * (1 - p_H) * p_j * card L)"
+      show "?P s (Mix`L \<cdot> (HLD (Mix ` C))) = ennreal (p_f * p_f * (1 - p_H) * p_j * card L)"
         apply (simp add: emeasure_HLD emeasure_HLD_nxt del: nxt.simps space_T)
         apply (subst nn_integral_measure_pmf_support[of "Mix`L"])
-        apply (auto simp add: subset_eq emeasure_measure_pmf_finite setsum.reindex H_compl p_j_def)
+        apply (auto simp add: subset_eq emeasure_measure_pmf_finite setsum.reindex H_compl p_j_def
+          ennreal_mult[symmetric] ennreal_of_nat_eq_real_of_nat)
         done
     next
-      fix s assume "s \<in> ?M" then show "emeasure (N s) ?M = ereal (p_H * p_f)"
+      fix s assume "s \<in> ?M" then show "emeasure (N s) ?M = ennreal (p_H * p_f)"
         by (auto simp add: emeasure_measure_pmf_finite setsum.reindex H_eq2)
     next
       show "AE \<omega> in T t. \<not> ((Mix ` L \<cdot> ?L) \<sqinter> (HLD (Mix ` H) \<sqinter> nxt ?U)) \<omega>" for t
@@ -612,13 +628,16 @@ proof -
         done
     qed (insert L, auto simp: p_H_p_f_less_1 E_Mix)
     then show "?P (Init i) ?U = p_f * (1 - p_H) * p_j * card L / (1 - p_H * p_f)"
-      by (subst emeasure_Init_eq_Mix) (auto simp: AE_End suntil_Stream)
+      by (subst emeasure_Init_eq_Mix)
+         (auto simp: AE_End suntil_Stream divide_ennreal mult_le_one p_f)
   qed
   finally have *: "\<P>(\<omega> in T Start. ?V \<omega>) =
       (p_f * (1 - p_H) * p_j * (card L) / (1 - p_H * p_f)) * (\<Sum>i\<in>I. p_i i) +
       (\<Sum>i\<in>I \<inter> L. p_i i) * (1 - p_H)"
     by (simp add: mult_ac measure_def setsum_left_distrib[symmetric] setsum_right_distrib[symmetric]
-                  setsum_divide_distrib[symmetric])
+                  setsum_divide_distrib[symmetric] IJ ennreal_mult[symmetric] setsum_nonneg
+                  mult_le_one ennreal_plus[symmetric]
+             del: ennreal_plus)
   show ?thesis
     unfolding cond_prob_def Pr_hit_C *
     using *
@@ -835,7 +854,6 @@ proof -
 
   have sd_fj: "simple_distributed hC first_J ?i"
     apply (rule hC.simple_distributedI[OF sf_fj])
-    apply (subst measure_hC)
     apply (auto intro!: T.cond_prob_eq_AE)
     apply (auto simp: space_stream_space)
     using AE_first_J
@@ -856,7 +874,6 @@ proof -
 
   have sd_lnc: "simple_distributed hC last_H ?l"
     apply (rule hC.simple_distributedI[OF sf_lnc])
-    apply (subst measure_hC)
     apply (auto intro!: T.cond_prob_eq_AE)
     apply (auto simp: space_stream_space)
     using AE_last_H
@@ -867,7 +884,6 @@ proof -
   have sd_fj_lnc: "simple_distributed hC (\<lambda>\<omega>. (first_J \<omega>, last_H \<omega>)) (\<lambda>(i, l). ?il i l)"
     apply (rule hC.simple_distributedI)
     apply (rule simple_function_Pair[OF sf_fj sf_lnc])
-    apply (subst measure_hC)
     apply (auto intro!: T.cond_prob_eq_AE)
     apply (auto simp: space_stream_space)
     using AE_last_H AE_first_J

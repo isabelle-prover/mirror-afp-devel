@@ -5,46 +5,8 @@ imports
   Discrete_Time_Markov_Chain
 begin
 
-lemma ereal_one_divide_invese: "0 \<le> x \<Longrightarrow> 1 / inverse x = (x::ereal)" -- \<open>FIXME move\<close>
-  by (cases x) (auto simp: divide_ereal_def)
-
-lemma one_divide_ereal: "x \<noteq> 0 \<Longrightarrow> 1 / ereal x = ereal (1 / x)" -- \<open>FIXME move\<close>
-  by (simp add: divide_ereal_def divide_inverse)
-
-lemma pmf_positive_iff: "0 < pmf p x \<longleftrightarrow> x \<in> set_pmf p"
-  unfolding less_le by (simp add: pmf_nonneg set_pmf_iff)
-
 lemma int_cases': "(\<And>n. x = int n \<Longrightarrow> P) \<Longrightarrow> (\<And>n. x = - int n \<Longrightarrow> P) \<Longrightarrow> P"
   by (metis int_cases)
-
-lemma power_series_tendsto_at_left:
-  assumes nonneg: "\<And>i. 0 \<le> f i" and summable: "\<And>z. 0 \<le> z \<Longrightarrow> z < 1 \<Longrightarrow> summable (\<lambda>n. f n * z^n)"
-  shows "((\<lambda>z. ereal (\<Sum>n. f n * z^n)) \<longlongrightarrow> (\<Sum>n. ereal (f n))) (at_left (1::real))"
-proof (intro tendsto_at_left_sequentially)
-  show "0 < (1::real)" by simp
-  fix S :: "nat \<Rightarrow> real" assume S: "\<And>n. S n < 1" "\<And>n. 0 < S n" "S \<longlonglongrightarrow> 1" "incseq S"
-  then have S_nonneg: "\<And>i. 0 \<le> S i" by (auto intro: less_imp_le)
-
-  have "(\<lambda>i. (\<integral>\<^sup>+n. f n * S i^n \<partial>count_space UNIV)) \<longlonglongrightarrow> (\<integral>\<^sup>+n. ereal (f n) \<partial>count_space UNIV)"
-  proof (rule nn_integral_LIMSEQ)
-    show "incseq (\<lambda>i n. ereal (f n * S i^n))"
-      using S by (auto intro!: mult_mono power_mono nonneg simp: incseq_def le_fun_def less_imp_le)
-    fix n have "(\<lambda>i. ereal (f n * S i^n)) \<longlonglongrightarrow> ereal (f n * 1^n)"
-      by (intro tendsto_intros lim_ereal[THEN iffD2] S)
-    then show "(\<lambda>i. ereal (f n * S i^n)) \<longlonglongrightarrow> ereal (f n)"
-      by simp
-  qed (auto simp: S_nonneg intro!: mult_nonneg_nonneg nonneg)
-  also have "(\<lambda>i. (\<integral>\<^sup>+n. f n * S i^n \<partial>count_space UNIV)) = (\<lambda>i. \<Sum>n. f n * S i^n)"
-    by (subst nn_integral_count_space_nat)
-       (intro ext suminf_ereal mult_nonneg_nonneg nonneg S_nonneg ereal_less_eq(5)[THEN iffD2]
-              zero_le_power suminf_ereal_finite summable S)+
-  also have "(\<integral>\<^sup>+n. ereal (f n) \<partial>count_space UNIV) = (\<Sum>n. ereal (f n))"
-    by (simp add: nn_integral_count_space_nat nonneg)
-  finally show "(\<lambda>n. ereal (\<Sum>na. f na * S n ^ na)) \<longlonglongrightarrow> (\<Sum>n. ereal (f n))" .
-qed
-
-lemma eventually_at_left_1: "(\<And>z::real. 0 < z \<Longrightarrow> z < 1 \<Longrightarrow> P z) \<Longrightarrow> eventually P (at_left 1)"
-  by (subst eventually_at_left[of 0]) (auto intro: exI[of _ 0])
 
 inductive_set monoid_closure :: "nat set \<Rightarrow> int set" for S where
   base: "s \<in> S \<Longrightarrow> int s \<in> monoid_closure S"
@@ -296,8 +258,8 @@ definition "gf_G s t z = (\<Sum>n. p s t n *\<^sub>R z ^ n)"
 
 definition "convergence_G s t z \<longleftrightarrow> summable (\<lambda>n. p s t n * norm z ^ n)"
 
-lemma p_nonneg: "0 \<le> p x y n"
-  by (simp add: p_def measure_nonneg)
+lemma p_nonneg[simp]: "0 \<le> p x y n"
+  by (simp add: p_def)
 
 lemma p_le_1: "p x y n \<le> 1"
   by (simp add: p_def)
@@ -321,23 +283,22 @@ proof (rule T.prob_eq_0_AE)
   qed
 qed
 
-lemma p_Suc: "ereal (p x y (Suc n)) = (\<integral>\<^sup>+ w. p w y n \<partial>K x)"
+lemma p_Suc: "ennreal (p x y (Suc n)) = (\<integral>\<^sup>+ w. p w y n \<partial>K x)"
   unfolding p_def T.emeasure_eq_measure[symmetric] by (subst emeasure_Collect_T) simp_all
 
 lemma p_Suc':
   "p x y (Suc n) = (\<integral>x'. p x' y n \<partial>K x)"
   using p_Suc[of x y n]
   by (subst (asm) nn_integral_eq_integral)
-     (auto simp: p_nonneg p_le_1
-           intro!: measure_pmf.integrable_const_bound[where B=1])
+     (auto simp: p_le_1 intro!: measure_pmf.integrable_const_bound[where B=1])
 
 lemma p_add: "p x y (n + m) = (\<integral>\<^sup>+ w. p x w n * p w y m \<partial>count_space UNIV)"
 proof (induction n arbitrary: x)
   case 0
-  have [simp]: "\<And>w. (if x = w then 1 else 0) * p w y m = ereal (p x y m) * indicator {x} w"
+  have [simp]: "\<And>w. (if x = w then 1 else 0) * p w y m = ennreal (p x y m) * indicator {x} w"
     by auto
   show ?case
-    by (simp add: p_0 p_nonneg one_ereal_def[symmetric] max_def)
+    by (simp add: p_0 one_ennreal_def[symmetric] max_def)
 next
   case (Suc n)
   def X \<equiv> "(SIGMA x:UNIV. K x)\<^sup>* `` K x"
@@ -349,9 +310,9 @@ next
   interpret XK: pair_sigma_finite "K x" "count_space X"
     by unfold_locales
 
-  have "ereal (p x y (Suc n + m)) = (\<integral>\<^sup>+t. (\<integral>\<^sup>+w. p t w n * p w y m \<partial>count_space UNIV) \<partial>K x)"
+  have "ennreal (p x y (Suc n + m)) = (\<integral>\<^sup>+t. (\<integral>\<^sup>+w. p t w n * p w y m \<partial>count_space UNIV) \<partial>K x)"
     by (simp add: p_Suc Suc)
-  also have "\<dots> = (\<integral>\<^sup>+t. (\<integral>\<^sup>+w. ereal (p t w n * p w y m) * indicator X w \<partial>count_space UNIV) \<partial>K x)"
+  also have "\<dots> = (\<integral>\<^sup>+t. (\<integral>\<^sup>+w. ennreal (p t w n * p w y m) * indicator X w \<partial>count_space UNIV) \<partial>K x)"
     by (auto intro!: nn_integral_cong_AE simp: AE_measure_pmf_iff AE_count_space Image_iff p_in_reachable X_def             split: split_indicator)
   also have "\<dots> = (\<integral>\<^sup>+t. (\<integral>\<^sup>+w. p t w n * p w y m \<partial>count_space X) \<partial>K x)"
     by (subst nn_integral_restrict_space[symmetric]) (simp_all add: restrict_count_space)
@@ -362,45 +323,46 @@ next
     apply (rule measurable_compose[OF measurable_fst])
     apply simp
     done
-  also have "\<dots> = (\<integral>\<^sup>+w. (\<integral>\<^sup>+t. ereal (p t w n * p w y m) * indicator X w \<partial>K x) \<partial>count_space UNIV)"
+  also have "\<dots> = (\<integral>\<^sup>+w. (\<integral>\<^sup>+t. ennreal (p t w n * p w y m) * indicator X w \<partial>K x) \<partial>count_space UNIV)"
     by (simp add: nn_integral_restrict_space[symmetric] restrict_count_space nn_integral_multc)
-  also have "\<dots> = (\<integral>\<^sup>+w. (\<integral>\<^sup>+t. ereal (p t w n * p w y m) \<partial>K x) \<partial>count_space UNIV)"
+  also have "\<dots> = (\<integral>\<^sup>+w. (\<integral>\<^sup>+t. ennreal (p t w n * p w y m) \<partial>K x) \<partial>count_space UNIV)"
     by (auto intro!: nn_integral_cong_AE simp: AE_measure_pmf_iff AE_count_space Image_iff p_in_reachable X_def             split: split_indicator)
   also have "\<dots> = (\<integral>\<^sup>+w. (\<integral>\<^sup>+t. p t w n \<partial>K x) * p w y m \<partial>count_space UNIV)"
-    by (simp add: p_nonneg nn_integral_multc[symmetric])
+    by (simp add: nn_integral_multc[symmetric] ennreal_mult)
   finally show ?case
-    unfolding times_ereal.simps(1)[symmetric] p_Suc by simp
+    by (simp add: ennreal_mult p_Suc)
 qed
 
 lemma prob_reachable_le:
   assumes [simp]: "m \<le> n"
   shows "p x y m * p y w (n - m) \<le> p x w n"
 proof -
-  have "p x y m * p y w (n - m) = (\<integral>\<^sup>+y'. ereal (p x y m * p y w (n - m)) * indicator {y} y' \<partial>count_space UNIV)"
-    by (simp add:  p_nonneg one_ereal_def[symmetric] max_def)
+  have "p x y m * p y w (n - m) = (\<integral>\<^sup>+y'. ennreal (p x y m * p y w (n - m)) * indicator {y} y' \<partial>count_space UNIV)"
+    by simp
   also have "\<dots> \<le> p x w (m + (n - m))"
     by (subst p_add)
-       (auto intro!: nn_integral_mono split: split_indicator simp: p_nonneg simp del: nn_integral_indicator_singleton)
+       (auto intro!: nn_integral_mono split: split_indicator simp del: nn_integral_indicator_singleton)
   finally show ?thesis
     by simp
 qed
 
-lemma G_eq_suminf: "G x y = (\<Sum>i. ereal (p x y i))"
+lemma G_eq_suminf: "G x y = (\<Sum>i. ennreal (p x y i))"
 proof -
   have *: "\<And>i \<omega>. indicator {\<omega> \<in> space S. (x ## \<omega>) !! i = y} \<omega> = indicator {i. (x ## \<omega>) !! i = y} i"
     by (auto simp: space_stream_space split: split_indicator)
 
   have "G x y = (\<integral>\<^sup>+ \<omega>. (\<Sum>i. indicator {\<omega>\<in>space (T x). (x ## \<omega>) !! i = y} \<omega>) \<partial>T x)"
     unfolding G_eq by (simp add: nn_integral_count_space_nat[symmetric] *)
-  also have "\<dots> = (\<Sum>i. ereal (p x y i))"
-    by (simp add: T.emeasure_eq_measure[symmetric] p_def emeasure_nonneg nn_integral_suminf)
+  also have "\<dots> = (\<Sum>i. ennreal (p x y i))"
+    by (simp add: T.emeasure_eq_measure[symmetric] p_def nn_integral_suminf)
   finally show ?thesis .
 qed
 
 lemma G_eq_real_suminf:
-  "convergence_G x y (1::real) \<Longrightarrow> G x y = ereal (\<Sum>i. p x y i)"
+  "convergence_G x y (1::real) \<Longrightarrow> G x y = ennreal (\<Sum>i. p x y i)"
   unfolding G_eq_suminf
-  by (intro suminf_ereal p_nonneg suminf_ereal_finite) (auto simp: convergence_G_def p_def)
+  by (intro suminf_ennreal ennreal_suminf_neq_top p_nonneg)
+     (auto simp: convergence_G_def p_def)
 
 lemma convergence_norm_G:
   "convergence_G x y z \<Longrightarrow> summable (\<lambda>n. p x y n * norm z ^ n)"
@@ -409,7 +371,7 @@ lemma convergence_norm_G:
 lemma convergence_G:
   "convergence_G x y (z::'a::{banach, real_normed_div_algebra}) \<Longrightarrow> summable (\<lambda>n. p x y n *\<^sub>R z ^ n)"
   unfolding convergence_G_def
-  by (rule summable_norm_cancel) (simp add: abs_mult p_nonneg norm_power)
+  by (rule summable_norm_cancel) (simp add: abs_mult norm_power)
 
 lemma convergence_G_less_1:
   fixes z :: "_ :: {banach, real_normed_field}"
@@ -419,10 +381,10 @@ proof (rule summable_comparison_test)
   have "\<And>n. p x y n * norm (z ^ n) \<le> 1 * norm (z ^ n)"
     by (intro mult_right_mono p_le_1) simp_all
   then show "\<exists>N. \<forall>n\<ge>N. norm (p x y n * norm z ^ n) \<le> norm z ^ n"
-    by (simp add: p_nonneg mult_nonneg_nonneg norm_power)
+    by (simp add: norm_power)
 qed (simp add: z summable_geometric)
 
-lemma lim_gf_G: "((\<lambda>z. ereal (gf_G x y z)) \<longlongrightarrow> G x y) (at_left (1::real))"
+lemma lim_gf_G: "((\<lambda>z. ennreal (gf_G x y z)) \<longlongrightarrow> G x y) (at_left (1::real))"
   unfolding gf_G_def G_eq_suminf real_scaleR_def
   by (intro power_series_tendsto_at_left p_nonneg p_le_1 summable_power_series)
 
@@ -450,10 +412,16 @@ lemma f_0: "f x y 0 = (if x = y then 1 else 0)"
   using T.prob_space by (simp add: f_def)
 
 lemma shows u_nonneg: "0 \<le> u x y n" and u_le_1: "u x y n \<le> 1"
-  by (simp_all add: u_def measure_nonneg)
+  by (simp_all add: u_def)
 
 lemma shows f_nonneg: "0 \<le> f x y n" and f_le_1: "f x y n \<le> 1"
-  by (simp_all add: f_def measure_nonneg)
+  by (simp_all add: f_def)
+
+lemma U_nonneg[simp]: "0 \<le> U x y"
+  by (simp add: U_def)
+
+lemma U_le_1: "U s t \<le> 1"
+  by (auto simp add: U_def intro!: antisym)
 
 lemma U_cases: "U s s = 1 \<or> U s s < 1"
   by (auto simp add: U_def intro!: antisym)
@@ -467,6 +435,12 @@ lemma gf_U_eq_U: "gf_U x y 1 = U x y"
 lemma f_sums_F: "f x y sums F x y"
   unfolding f_def[abs_def] F_def ev_iff_ev_at
   by (intro T.prob_sums) (auto intro: ev_at_unique)
+
+lemma F_nonneg[simp]: "0 \<le> F x y"
+  by (auto simp: F_def)
+
+lemma F_le_1: "F x y \<le> 1"
+  by (simp add: F_def)
 
 lemma gf_F_eq_F: "gf_F x y 1 = F x y"
   using f_sums_F[THEN sums_unique] by (simp add: gf_F_def F_def)
@@ -497,7 +471,7 @@ lemma convergence_norm_U:
   shows "summable (\<lambda>n. u x y n * norm z ^ Suc n)"
   using summable_ignore_initial_segment[OF convergence_norm_G[OF z], of 1]
   by (rule summable_comparison_test[rotated])
-     (auto simp add: u_nonneg p_nonneg abs_mult intro!: exI[of _ 0] mult_right_mono u_le_p)
+     (auto simp add: u_nonneg abs_mult intro!: exI[of _ 0] mult_right_mono u_le_p)
 
 lemma convergence_norm_F:
   fixes z :: "_ :: real_normed_div_algebra"
@@ -505,13 +479,13 @@ lemma convergence_norm_F:
   shows "summable (\<lambda>n. f x y n * norm z ^ n)"
   using convergence_norm_G[OF z]
   by (rule summable_comparison_test[rotated])
-     (auto simp add: f_nonneg p_nonneg abs_mult intro!: exI[of _ 0] mult_right_mono f_le_p)
+     (auto simp add: f_nonneg abs_mult intro!: exI[of _ 0] mult_right_mono f_le_p)
 
 lemma gf_G_nonneg:
   fixes z :: real
   shows "0 \<le> z \<Longrightarrow> z < 1 \<Longrightarrow> 0 \<le> gf_G x y z"
   unfolding gf_G_def
-  by (intro suminf_nonneg convergence_G convergence_G_less_1) (simp_all add: p_nonneg)
+  by (intro suminf_nonneg convergence_G convergence_G_less_1) simp_all
 
 lemma gf_F_nonneg:
   fixes z :: real
@@ -574,7 +548,7 @@ proof -
        (simp_all add: power_add[symmetric])
   also have "\<dots> = (\<Sum>n. f x y n * z^n) * (\<Sum>n. p y y n * z^n)"
     using convergence_norm_F[OF convergence_G_less_1[OF z]] convergence_norm_G[OF convergence_G_less_1[OF z]]
-    by (intro Cauchy_product[symmetric]) (auto simp: f_nonneg p_nonneg abs_mult power_abs)
+    by (intro Cauchy_product[symmetric]) (auto simp: f_nonneg abs_mult power_abs)
   also have "\<dots> = gf_F x y z * gf_G y y z"
     by (simp add: gf_F_def gf_G_def)
   finally show ?thesis .
@@ -602,8 +576,8 @@ proof -
   also have "\<dots> = 1 + gf_U x x z * gf_G x x z"
     unfolding gf_U_def gf_G_def
     by (subst Cauchy_product)
-       (auto simp: u_nonneg p_nonneg norm_power simp del: power_Suc
-                intro!:  z convergence_norm_G convergence_norm_U)
+       (auto simp: u_nonneg norm_power simp del: power_Suc
+             intro!: z convergence_norm_G convergence_norm_U)
   finally show "gf_G x x z = 1 / (1 - gf_U x x z)" "gf_U x x z \<noteq> 1"
     apply -
     apply (cases "gf_U x x z = 1")
@@ -613,13 +587,16 @@ qed
 
 lemma gf_U: "(gf_U x y \<longlongrightarrow> U x y) (at_left 1)"
 proof -
-  have "((\<lambda>z. ereal (\<Sum>n. u x y n * z ^ n)) \<longlongrightarrow> (\<Sum>n. ereal (u x y n))) (at_left 1)"
+  have "((\<lambda>z. ennreal (\<Sum>n. u x y n * z ^ n)) \<longlongrightarrow> (\<Sum>n. ennreal (u x y n))) (at_left 1)"
     using u_le_1 u_nonneg by (intro power_series_tendsto_at_left summable_power_series)
-  also have "(\<Sum>n. ereal (u x y n)) = ereal (suminf (u x y))"
-    by (intro u_nonneg suminf_ereal suminf_ereal_finite sums_summable[OF u_sums_U])
+  also have "(\<Sum>n. ennreal (u x y n)) = ennreal (suminf (u x y))"
+    by (intro u_nonneg suminf_ennreal ennreal_suminf_neq_top sums_summable[OF u_sums_U])
   also have "suminf (u x y) = U x y"
     using u_sums_U by (rule sums_unique[symmetric])
-  finally have "((\<lambda>z. z * (\<Sum>n. u x y n * z ^ n)) \<longlongrightarrow> 1 * U x y) (at_left 1)"
+  finally have "((\<lambda>z. \<Sum>n. u x y n * z ^ n) \<longlongrightarrow> U x y) (at_left 1)"
+    by (rule tendsto_ennrealD)
+       (auto simp: u_nonneg u_le_1 intro!: suminf_nonneg summable_power_series eventually_at_left_1)
+  then have "((\<lambda>z. z * (\<Sum>n. u x y n * z ^ n)) \<longlongrightarrow> 1 * U x y) (at_left 1)"
     by (intro tendsto_intros) simp
   then have "((\<lambda>z. \<Sum>n. u x y n * z ^ Suc n) \<longlongrightarrow> 1 * U x y) (at_left 1)"
     apply (rule filterlim_cong[OF refl refl, THEN iffD1, rotated])
@@ -632,20 +609,36 @@ proof -
     by (simp add: gf_U_def[abs_def] U_def)
 qed
 
+lemma gf_U_le_1: assumes z: "0 < z" "z < 1" shows "gf_U x y z \<le> (1::real)"
+proof -
+  note u = u_sums_U[of x y, THEN sums_summable]
+  have "gf_U x y z \<le> gf_U x y 1"
+    using z
+    unfolding gf_U_def real_scaleR_def
+    by (intro suminf_le allI mult_mono power_mono summable_comparison_test_ev[OF _ u] always_eventually)
+       (auto simp: u_nonneg intro!: mult_left_le mult_le_one power_le_one)
+  also have "\<dots> \<le> 1"
+    unfolding gf_U_eq_U by (rule U_le_1)
+  finally show ?thesis .
+qed
+
 lemma gf_F: "(gf_F x y \<longlongrightarrow> F x y) (at_left 1)"
 proof -
-  have "((\<lambda>z. ereal (\<Sum>n. f x y n * z ^ n)) \<longlongrightarrow> (\<Sum>n. ereal (f x y n))) (at_left 1)"
+  have "((\<lambda>z. ennreal (\<Sum>n. f x y n * z ^ n)) \<longlongrightarrow> (\<Sum>n. ennreal (f x y n))) (at_left 1)"
     using f_le_1 f_nonneg by (intro power_series_tendsto_at_left summable_power_series)
-  also have "(\<Sum>n. ereal (f x y n)) = ereal (suminf (f x y))"
-    by (intro f_nonneg suminf_ereal suminf_ereal_finite sums_summable[OF f_sums_F])
+  also have "(\<Sum>n. ennreal (f x y n)) = ennreal (suminf (f x y))"
+    by (intro f_nonneg suminf_ennreal ennreal_suminf_neq_top sums_summable[OF f_sums_F])
   also have "suminf (f x y) = F x y"
     using f_sums_F by (rule sums_unique[symmetric])
-  finally show ?thesis
+  finally have "((\<lambda>z. \<Sum>n. f x y n * z ^ n) \<longlongrightarrow> F x y) (at_left 1)"
+    by (rule tendsto_ennrealD)
+       (auto simp: f_nonneg f_le_1 intro!: suminf_nonneg summable_power_series eventually_at_left_1)
+  then show ?thesis
     by (simp add: gf_F_def[abs_def] F_def)
 qed
 
 lemma U_bounded: "0 \<le> U x y" "U x y \<le> 1"
-  unfolding U_def by (simp_all add: measure_nonneg)
+  unfolding U_def by simp_all
 
 subsection {* Recurrent states *}
 
@@ -692,7 +685,7 @@ proof -
     then have "emeasure (T x) (H' y (Suc n)) = emeasure (T x) {\<omega>\<in>space (T x). ?U \<omega>}"
       by (simp add: H'_def)
     also have "\<dots> = U x y * ?H' y y n"
-      by (subst emeasure_suntil_HLD) (simp_all add: T.emeasure_eq_measure U_def H'_def)
+      by (subst emeasure_suntil_HLD) (simp_all add: T.emeasure_eq_measure U_def H'_def ennreal_mult)
     finally have "?H' x y (Suc n) = U x y * ?H' y y n"
       by (simp add: T.emeasure_eq_measure) }
   note H'_Suc = this
@@ -723,11 +716,11 @@ proof -
     by (rule LIMSEQ_imp_Suc)
 
   have "U s s < 1 \<Longrightarrow> (\<lambda>n. U s s ^ n) \<longlonglongrightarrow> 0"
-    by (rule LIMSEQ_realpow_zero) (simp_all add: U_def measure_nonneg)
+    by (rule LIMSEQ_realpow_zero) (simp_all add: U_def)
   with lim_H have "U s s < 1 \<Longrightarrow> H s s = 0"
     by (blast intro: LIMSEQ_unique)
   moreover have "U s s = 1 \<Longrightarrow> (\<lambda>n. U s s ^ n) \<longlonglongrightarrow> 1"
-    by (simp add: tendsto_const)
+    by simp
   with lim_H have "U s s = 1 \<Longrightarrow> H s s = 1"
     by (blast intro: LIMSEQ_unique)
   moreover note recurrent_iff_U_eq_1 U_cases
@@ -745,9 +738,9 @@ qed
 
 lemma recurrent_iff_G_infinite: "recurrent x \<longleftrightarrow> G x x = \<infinity>"
 proof -
-  have "((\<lambda>z. ereal (gf_G x x z)) \<longlongrightarrow> G x x) (at_left 1)"
+  have "((\<lambda>z. ennreal (gf_G x x z)) \<longlongrightarrow> G x x) (at_left 1)"
     by (rule lim_gf_G)
-  then have G: "((\<lambda>z. ereal (1 / (1 - gf_U x x z))) \<longlongrightarrow> G x x) (at_left (1::real))"
+  then have G: "((\<lambda>z. ennreal (1 / (1 - gf_U x x z))) \<longlongrightarrow> G x x) (at_left (1::real))"
     apply (rule filterlim_cong[OF refl refl, THEN iffD1, rotated])
     apply (rule eventually_at_left_1)
     apply (subst gf_G_eq_gf_U)
@@ -777,20 +770,20 @@ proof -
       by (intro tendsto_intros gf_U)
     moreover have "eventually (\<lambda>z. gf_U x x z < 1) (at_left (1::real))"
       by (auto intro!: eventually_at_left_1 strict simp: `U x x = 1` gf_U_eq_U)
-    ultimately have "((\<lambda>z. ereal (1 / (1 - gf_U x x z))) \<longlongrightarrow> \<infinity>) (at_left 1)"
-      unfolding tendsto_PInfty_eq_at_top
+    ultimately have "((\<lambda>z. ennreal (1 / (1 - gf_U x x z))) \<longlongrightarrow> top) (at_left 1)"
+      unfolding ennreal_tendsto_top_eq_at_top
       by (intro LIM_at_top_divide[where a=1] tendsto_const zero_less_one)
          (auto simp: field_simps)
-    with G have "G x x = \<infinity>"
+    with G have "G x x = top"
       by (rule tendsto_unique[rotated]) simp }
   moreover
   { assume "U x x < 1"
-    then have "((\<lambda>xa. ereal (1 / (1 - gf_U x x xa))) \<longlongrightarrow> 1 / (1 - U x x)) (at_left 1)"
-      by (intro tendsto_intros gf_U lim_ereal[THEN iffD2]) simp
+    then have "((\<lambda>xa. ennreal (1 / (1 - gf_U x x xa))) \<longlongrightarrow> 1 / (1 - U x x)) (at_left 1)"
+      by (intro tendsto_intros gf_U tendsto_ennrealI) simp
     from tendsto_unique[OF _ G this] have "G x x \<noteq> \<infinity>"
       by simp }
   ultimately show ?thesis
-    using U_cases recurrent_iff_U_eq_1 by blast
+    using U_cases recurrent_iff_U_eq_1 by auto
 qed
 
 definition communicating :: "('s \<times> 's) set" where
@@ -822,7 +815,7 @@ next
     by simp
   case (step w y)
   then obtain n where "0 < p x w n" and "0 < pmf (K w) y"
-    by (auto simp: set_pmf_iff less_le pmf_nonneg)
+    by (auto simp: set_pmf_iff less_le)
   then have "0 < p x w n * pmf (K w) y"
     by (intro mult_pos_pos)
   also have "\<dots> \<le> p x w n * p w y (Suc 0)"
@@ -841,7 +834,7 @@ proof (induct n arbitrary: x)
   proof (rule ccontr)
     assume "\<not> ?thesis"
     then have "AE x' in K x. p x' y n = 0"
-      by (simp add: AE_measure_pmf_iff p_nonneg less_le)
+      by (simp add: AE_measure_pmf_iff less_le)
     then have "(\<integral>x'. p x' y n \<partial>K x) = (\<integral>x'. 0 \<partial>K x)"
       by (intro integral_cong_AE) simp_all
     with less show False by simp
@@ -858,29 +851,28 @@ proof -
     by (force simp: communicating_def dest: accD_pos)
   moreover
   { fix x y n m assume "0 < p x y n" "0 < p y x m" "G y y = \<infinity>"
-    then have "\<infinity> = ereal (p x y n * p y x m) * G y y"
-      by (auto intro: mult_pos_pos)
-    also have "ereal (p x y n * p y x m) * G y y = (\<Sum>i. ereal (p x y n * p y x m) * p y y i)"
-      unfolding G_eq_suminf
-      by (rule suminf_cmult_ereal[symmetric]) (auto simp: p_nonneg mult_nonneg_nonneg)
-    also have "\<dots> \<le> (\<Sum>i. ereal (p x x (n + i + m)))"
-    proof (intro suminf_le_pos)
+    then have "\<infinity> = ennreal (p x y n * p y x m) * G y y"
+      by (auto intro: mult_pos_pos simp: ennreal_mult_top)
+    also have "ennreal (p x y n * p y x m) * G y y = (\<Sum>i. ennreal (p x y n * p y x m) * p y y i)"
+      unfolding G_eq_suminf by (rule ennreal_suminf_cmult[symmetric])
+    also have "\<dots> \<le> (\<Sum>i. ennreal (p x x (n + i + m)))"
+    proof (intro suminf_le allI)
       fix i
       have "(p x y n * p y y ((n + i) - n)) * p y x ((n + i + m) - (n + i)) \<le> p x y (n + i) * p y x ((n + i + m) - (n + i))"
-        by (intro mult_right_mono prob_reachable_le) (simp_all add: p_nonneg)
+        by (intro mult_right_mono prob_reachable_le) simp_all
       also have "\<dots> \<le> p x x (n + i + m)"
          by (intro prob_reachable_le) simp_all
-      finally show "ereal (p x y n * p y x m) * p y y i \<le> ereal (p x x (n + i + m))"
-        by (simp add: ac_simps)
-    qed (simp add: p_nonneg)
-    also have "\<dots> \<le> (\<Sum>i. ereal (p x x (i + (n + m))))"
+      finally show "ennreal (p x y n * p y x m) * p y y i \<le> ennreal (p x x (n + i + m))"
+        by (simp add: ac_simps ennreal_mult'[symmetric])
+    qed auto
+    also have "\<dots> \<le> (\<Sum>i. ennreal (p x x (i + (n + m))))"
       by (simp add: ac_simps)
-    also have "\<dots> \<le> (\<Sum>i. ereal (p x x i))"
-      by (rule suminf_ereal_offset_le) (simp add: p_nonneg)
+    also have "\<dots> \<le> (\<Sum>i. ennreal (p x x i))"
+      by (subst suminf_offset[of "\<lambda>i. ennreal (p x x i)" "n + m"]) auto
     also have "\<dots> \<le> G x x"
       unfolding G_eq_suminf by (auto intro!: suminf_le_pos)
     finally have "G x x = \<infinity>"
-      by simp }
+      by (simp add: top_unique) }
   ultimately show ?thesis
     using recurrent_iff_G_infinite by blast
 qed
@@ -900,7 +892,7 @@ proof -
     also have "\<dots> = measure (K w) {x} + (\<integral>v. U v x * indicator (- {x}) v \<partial>K w)"
       by (subst integral_add)
          (auto intro!: measure_pmf.integrable_const_bound[where B=1]
-               simp: abs_mult mult_le_one U_bounded measure_pmf.emeasure_eq_measure)
+               simp: abs_mult mult_le_one U_bounded(2) measure_pmf.emeasure_eq_measure)
     finally have "measure (K w) UNIV - measure (K w) {x} = (\<integral>v. U v x * indicator (- {x}) v \<partial>K w)"
       by simp
     also have "measure (K w) UNIV - measure (K w) {x} = measure (K w) (UNIV - {x})"
@@ -910,16 +902,16 @@ proof -
     also have "\<dots> = (\<integral>v. (1 - U v x) * indicator (- {x}) v \<partial>K w)"
       by (subst integral_diff[symmetric])
          (auto intro!: measure_pmf.integrable_const_bound[where B=1] integral_cong
-               simp: abs_mult mult_le_one U_bounded split: split_indicator)
+               simp: abs_mult mult_le_one U_bounded(2) split: split_indicator)
     also have "\<dots> \<ge> (\<integral>v. (1 - U y x) * indicator {y} v \<partial>K w)" (is "_ \<ge> ?rhs")
       using `recurrent x`
       by (intro integral_mono measure_pmf.integrable_const_bound[where B=1])
-         (auto simp: abs_mult mult_le_one U_bounded recurrent_iff_U_eq_1 field_simps
+         (auto simp: abs_mult mult_le_one U_bounded(2) recurrent_iff_U_eq_1 field_simps
                split: split_indicator)
     also (xtrans) have "?rhs = (1 - U y x) * pmf (K w) y"
       by (simp add: measure_pmf.emeasure_eq_measure pmf.rep_eq)
     finally have "(1 - U y x) * pmf (K w) y = 0"
-      by (auto intro!: antisym simp: U_bounded pmf_nonneg mult_le_0_iff)
+      by (auto intro!: antisym simp: U_bounded(2) mult_le_0_iff)
     with `y \<in> K w` have "U y x = 1"
       by (simp add: set_pmf_iff)
     then have "U y x = 1" "H y x = 1"
@@ -1031,6 +1023,9 @@ lemma essential_class_iff_recurrent:
 
 definition "U' x y = (\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {y}) \<omega>) \<partial>T x)"
 
+lemma U'_neq_zero[simp]: "U' x y \<noteq> 0"
+  unfolding U'_def by (simp add: nn_integral_add add_eq_0_iff_both_eq_0)
+
 definition "gf_U' x y z = (\<Sum>n. u x y n * Suc n * z ^ n)"
 
 definition "pos_recurrent x \<longleftrightarrow> recurrent x \<and> U' x x \<noteq> \<infinity>"
@@ -1059,6 +1054,10 @@ proof -
     done
 qed
 
+lemma gf_U'_nonneg[simp]: "0 < z \<Longrightarrow> z < 1 \<Longrightarrow> 0 \<le> gf_U' x y z"
+  unfolding gf_U'_def
+  by (intro suminf_nonneg summable_gf_U') (auto simp: u_nonneg)
+
 lemma DERIV_gf_U:
   fixes z :: real assumes z: "0 < z" "z < 1"
   shows "DERIV (gf_U x y) z :> gf_U' x y z"
@@ -1073,36 +1072,36 @@ lemma sfirst_finiteI_recurrent:
 
 lemma U'_eq_suminf:
   assumes x: "recurrent x" "(x, y) \<in> acc"
-  shows "U' x y = (\<Sum>i. ereal (u x y i * Suc i))"
+  shows "U' x y = (\<Sum>i. ennreal (u x y i * Suc i))"
 proof -
   have "(\<integral>\<^sup>+\<omega>. eSuc (sfirst (HLD {y}) \<omega>) \<partial>T x) =
-      (\<integral>\<^sup>+\<omega>. (\<Sum>i. ereal (Suc i) * indicator {\<omega>\<in>space (T y). ev_at (HLD {y}) i \<omega>} \<omega>) \<partial>T x)"
+      (\<integral>\<^sup>+\<omega>. (\<Sum>i. ennreal (Suc i) * indicator {\<omega>\<in>space (T y). ev_at (HLD {y}) i \<omega>} \<omega>) \<partial>T x)"
     using sfirst_finiteI_recurrent[OF x]
   proof (intro nn_integral_cong_AE, eventually_elim)
     fix \<omega> assume "sfirst (HLD {y}) \<omega> < \<infinity>"
     then obtain n :: nat where [simp]: "sfirst (HLD {y}) \<omega> = n"
       by auto
-    show "eSuc (sfirst (HLD {y}) \<omega>) = (\<Sum>i. ereal (Suc i) * indicator {\<omega>\<in>space (T y). ev_at (HLD {y}) i \<omega>} \<omega>)"
+    show "eSuc (sfirst (HLD {y}) \<omega>) = (\<Sum>i. ennreal (Suc i) * indicator {\<omega>\<in>space (T y). ev_at (HLD {y}) i \<omega>} \<omega>)"
       by (subst suminf_cmult_indicator[where i=n])
-         (auto simp: disjoint_family_on_def ev_at_unique space_stream_space sfirst_eq_enat_iff[symmetric]
+         (auto simp: disjoint_family_on_def ev_at_unique space_stream_space
+                     sfirst_eq_enat_iff[symmetric] ennreal_of_nat_eq_real_of_nat
                split: split_indicator)
   qed
-  also have "\<dots> = (\<Sum>i. ereal (Suc i) * emeasure (T x) {\<omega>\<in>space (T x). ev_at (HLD {y}) i \<omega>})"
+  also have "\<dots> = (\<Sum>i. ennreal (Suc i) * emeasure (T x) {\<omega>\<in>space (T x). ev_at (HLD {y}) i \<omega>})"
     by (subst nn_integral_suminf)
        (auto intro!: arg_cong[where f=suminf] nn_integral_cmult_indicator simp: fun_eq_iff)
   finally show ?thesis
-    unfolding u_def by (simp add: T.emeasure_eq_measure mult_ac U'_def)
+    by (simp add: U'_def u_def T.emeasure_eq_measure mult_ac ennreal_mult)
 qed
 
 lemma gf_U'_tendsto_U':
   assumes x: "recurrent x" "(x, y) \<in> acc"
-  shows "((\<lambda>z. ereal (gf_U' x y z)) \<longlongrightarrow> U' x y) (at_left 1)"
+  shows "((\<lambda>z. ennreal (gf_U' x y z)) \<longlongrightarrow> U' x y) (at_left 1)"
   unfolding U'_eq_suminf[OF x] gf_U'_def
   by (auto intro!: power_series_tendsto_at_left summable_gf_U' mult_nonneg_nonneg u_nonneg simp del: of_nat_Suc)
 
 lemma one_le_integral_t:
   assumes x: "recurrent x" shows "1 \<le> U' x x"
-  using ereal_add_mono[OF order_refl nn_integral_nonneg]
   by (simp add: nn_integral_add T.emeasure_space_1 U'_def del: space_T)
 
 lemma gf_U'_pos:
@@ -1129,31 +1128,31 @@ qed
 
 lemma inverse_gf_U'_tendsto:
   assumes "recurrent y"
-  shows "((\<lambda>x. - 1 / - gf_U' y y x) \<longlongrightarrow> real_of_ereal (1 / U' y y)) (at_left (1::real))"
+  shows "((\<lambda>x. - 1 / - gf_U' y y x) \<longlongrightarrow> enn2real (1 / U' y y)) (at_left (1::real))"
 proof cases
   assume inf: "U' y y = \<infinity>"
   with gf_U'_tendsto_U'[of y y] `recurrent y`
   have "LIM z (at_left 1). gf_U' y y z :> at_top"
-    by (auto simp: tendsto_PInfty_eq_at_top U'_def)
+    by (auto simp: ennreal_tendsto_top_eq_at_top U'_def)
   then have "LIM z (at_left 1). gf_U' y y z :> at_infinity"
     by (rule filterlim_mono) (auto simp: at_top_le_at_infinity)
   with inf show ?thesis
     by (auto intro!: tendsto_divide_0)
 next
   assume fin: "U' y y \<noteq> \<infinity>"
-  then obtain r where r: "U' y y = ereal r"
+  then obtain r where r: "U' y y = ennreal r" and [simp]: "0 \<le> r"
     by (cases "U' y y") (auto simp: U'_def)
-  then have eq: "real_of_ereal (1 / U' y y) = - 1 / - r" and "1 \<le> r"
-    using one_le_integral_t[OF `recurrent y`] by (auto simp add: one_ereal_def)
-  have gf_U': "(gf_U' y y \<longlongrightarrow> r) (at_left (1::real))"
+  then have eq: "enn2real (1 / U' y y) = - 1 / - r" and "1 \<le> r"
+    using one_le_integral_t[OF `recurrent y`]
+    by (auto simp add: ennreal_1[symmetric] divide_ennreal simp del: ennreal_1)
+  have "((\<lambda>z. ennreal (gf_U' y y z)) \<longlongrightarrow> ennreal r) (at_left 1)"
     using gf_U'_tendsto_U'[OF `recurrent y`, of y] r by simp
+  then have gf_U': "(gf_U' y y \<longlongrightarrow> r) (at_left (1::real))"
+    by (rule tendsto_ennrealD)
+       (insert summable_gf_U', auto intro!: eventually_at_left_1 suminf_nonneg simp: gf_U'_def u_nonneg)
   show ?thesis
     using `1 \<le> r` unfolding eq by (intro tendsto_intros gf_U') simp
 qed
-
-lemma F_nonneg: "0 \<le> F x y" by (simp add: F_def measure_nonneg)
-
-lemma F_le_1: "F x y \<le> 1" by (simp add: F_def)
 
 lemma gf_G_pos:
   fixes z :: real
@@ -1182,13 +1181,12 @@ lemma pos_recurrentI_communicating:
   shows "pos_recurrent x"
 proof -
   from y x have recurrent: "recurrent y" "recurrent x" and fin: "U' y y \<noteq> \<infinity>"
-    by (auto simp: pos_recurrent_def recurrent_iffI_communicating nn_integral_nonneg nn_integral_add)
-  have pos: "0 < real_of_ereal (1 / U' y y)"
+    by (auto simp: pos_recurrent_def recurrent_iffI_communicating nn_integral_add)
+  have pos: "0 < enn2real (1 / U' y y)"
     using one_le_integral_t[OF `recurrent y`] fin
-    by (subst zero_less_real_of_ereal)
-       (auto simp add: divide_ereal_def ereal_0_gt_inverse nn_integral_nonneg U'_def)
+    by (auto simp: U'_def enn2real_positive_iff less_top[symmetric] ennreal_zero_less_divide ennreal_divide_eq_top_iff)
 
-  from fin obtain r where r: "U' y y = ereal r"
+  from fin obtain r where r: "U' y y = ennreal r" and [simp]: "0 \<le> r"
     by (cases "U' y y") (auto simp: U'_def)
 
   from x obtain n m where "0 < p x y n" "0 < p y x m"
@@ -1208,7 +1206,7 @@ proof -
       show "norm z < 1" using z by simp
       fix i
       have "(p x y n * p y y ((n + i) - n)) * p y x ((n + i + m) - (n + i)) \<le> p x y (n + i) * p y x ((n + i + m) - (n + i))"
-        by (intro mult_right_mono prob_reachable_le) (simp_all add: p_nonneg)
+        by (intro mult_right_mono prob_reachable_le) simp_all
       also have "\<dots> \<le> p x x (n + i + m)"
          by (intro prob_reachable_le) simp_all
       finally show "p x y n * p y x m * z ^ (n + m) * (p y y i * z ^ i) \<le> p x x (i + (n + m)) * z ^ (i + (n + m))"
@@ -1219,7 +1217,7 @@ proof -
       using z
       apply (subst (2) suminf_split_initial_segment[where k="n + m"])
       apply (intro convergence_G conv)
-      apply (simp add: setsum_nonneg p_nonneg)
+      apply (simp add: setsum_nonneg)
       done
     finally have "(p x y n * p y x m * z^(n + m)) * gf_G y y z \<le> gf_G x x z"
       using sums_unique[OF sums] by simp
@@ -1252,13 +1250,13 @@ proof -
       have "(gf_U' y y \<longlongrightarrow> U' y y) ?L"
         using `recurrent y` by (rule gf_U'_tendsto_U') simp
       then have *: "(gf_U' y y \<longlongrightarrow> r) ?L"
-        by (simp add: r del: ereal_of_enat_eSuc)
+        by (auto simp add: r eventually_at_left_1 dest!: tendsto_ennrealD)
       moreover
       have "(gf_U' x x \<longlongrightarrow> U' x x) ?L"
         using `recurrent x` by (rule gf_U'_tendsto_U') simp
       then have "LIM z ?L. - gf_U' x x z :> at_bot"
-        by (simp add: tendsto_PInfty_eq_at_top `U' x x = \<infinity>` filterlim_uminus_at_top
-                 del: ereal_of_enat_eSuc)
+        by (simp add: ennreal_tendsto_top_eq_at_top `U' x x = \<infinity>` filterlim_uminus_at_top
+                 del: ennreal_of_enat_eSuc)
       then have "LIM z ?L. - gf_U' x x z :> at_infinity"
         by (rule filterlim_mono) (auto simp: at_bot_le_at_infinity)
       ultimately show "((\<lambda>z. - gf_U' y y z / - gf_U' x x z) \<longlongrightarrow> 0) ?L"
@@ -1316,7 +1314,7 @@ proof -
       by (simp add: essential_class_def not_empty_irreducible)
     then obtain x where "x \<in> C" by auto
 
-    have "((\<lambda>z. (\<Sum>y\<in>A n. gf_F x y z * ((1 - z) / (1 - gf_U y y z)))) \<longlongrightarrow> (\<Sum>y\<in>A n. F x y * real_of_ereal (1 / U' y y))) ?L"
+    have "((\<lambda>z. (\<Sum>y\<in>A n. gf_F x y z * ((1 - z) / (1 - gf_U y y z)))) \<longlongrightarrow> (\<Sum>y\<in>A n. F x y * enn2real (1 / U' y y))) ?L"
     proof (intro tendsto_intros gf_F, rule lhopital_left)
       fix y assume "y \<in> A n"
       with `A n \<subseteq> C` have "y \<in> C"
@@ -1340,10 +1338,10 @@ proof -
         by (auto intro!: eventually_at_left_1 derivative_eq_intros DERIV_gf_U)
       show "eventually (\<lambda>x. DERIV (op - 1) x :> - 1) ?L"
         by (auto intro!: eventually_at_left_1 derivative_eq_intros)
-      show "((\<lambda>x. - 1 / - gf_U' y y x) \<longlongrightarrow> real_of_ereal (1 / U' y y)) ?L"
+      show "((\<lambda>x. - 1 / - gf_U' y y x) \<longlongrightarrow> enn2real (1 / U' y y)) ?L"
         using `recurrent y` by (rule inverse_gf_U'_tendsto)
     qed
-    also have "(\<Sum>y\<in>A n. F x y * real_of_ereal (1 / U' y y)) = (\<Sum>y\<in>A n. real_of_ereal (1 / U' y y))"
+    also have "(\<Sum>y\<in>A n. F x y * enn2real (1 / U' y y)) = (\<Sum>y\<in>A n. enn2real (1 / U' y y))"
     proof (intro setsum.cong refl)
       fix y assume "y \<in> A n"
       with `A n \<subseteq> C` have "y \<in> C" by auto
@@ -1354,10 +1352,10 @@ proof -
       then have "U x y = 1"
         by (rule recurrent_acc)
       with F_le_1[of x y] U_le_F[of x y] have "F x y = 1" by simp
-      then show "F x y * real_of_ereal (1 / U' y y) = real_of_ereal (1 / U' y y)"
+      then show "F x y * enn2real (1 / U' y y) = enn2real (1 / U' y y)"
         by simp
     qed
-    finally have le: "(\<Sum>y\<in>A n. real_of_ereal (1 / U' y y)) \<le> 1"
+    finally have le: "(\<Sum>y\<in>A n. enn2real (1 / U' y y)) \<le> 1"
     proof (rule tendsto_le[OF trivial_limit_at_left_real tendsto_const], intro eventually_at_left_1)
       fix z :: real assume z: "0 < z" "z < 1"
       with `x \<in> C` have "norm z < 1"
@@ -1389,7 +1387,7 @@ proof -
                (auto simp: disjoint_family_on_def intro!: arg_cong2[where f=measure])
           then show "(\<Sum>y\<in>A n. p x y l) \<le> 1"
             by simp
-        qed (insert z, auto simp: setsum_nonneg p_nonneg)
+        qed (insert z, auto simp: setsum_nonneg)
         finally show "(\<Sum>y\<in>A n. p x y l *\<^sub>R z ^ l) \<le> z ^ l" .
       qed fact
       also have "\<dots> = 1 / (1 - z)"
@@ -1409,21 +1407,21 @@ proof -
       unfolding stat_def U'_def using A(1)[of n]
       apply (intro setsum.cong refl)
       apply (subst emeasure_point_measure_finite2)
-      apply (auto simp: ereal_inverse_nonneg_iff nn_integral_nonneg divide_ereal_def)
+      apply (auto simp: divide_ennreal_def)
       done
-    also have "\<dots> = ereal (\<Sum>y\<in>A n. real_of_ereal (1 / U' y y))"
-      apply (subst setsum_ereal[symmetric])
+    also have "\<dots> = ennreal (\<Sum>y\<in>A n. enn2real (1 / U' y y))"
+      apply (subst setsum_ennreal[symmetric], simp)
     proof (intro setsum.cong refl)
       fix y assume "y \<in> A n"
       with `A n \<subseteq> C` pos have "pos_recurrent y"
         by auto
-      with one_le_integral_t[of y] obtain r where "U' y y = ereal r" "1 \<le> U' y y"
+      with one_le_integral_t[of y] obtain r where "U' y y = ennreal r" "1 \<le> U' y y" and [simp]: "0 \<le> r"
         by (cases "U' y y") (auto simp: pos_recurrent_def nn_integral_add)
-      then show "inverse (U' y y) = ereal (real_of_ereal (1 / U' y y))"
-        by (simp add: one_ereal_def inverse_eq_divide)
+      then show "inverse (U' y y) = ennreal (enn2real (1 / U' y y))"
+        by (simp add: ennreal_1[symmetric] divide_ennreal inverse_ennreal inverse_eq_divide del: ennreal_1)
     qed
     also have "\<dots> \<le> 1"
-      using le by (simp add: one_ereal_def)
+      using le by simp
     finally show "emeasure (stat C) (A n) \<le> 1" .
   qed
   with A show ?thesis
@@ -1465,11 +1463,11 @@ proof (rule pmf_eqI antisym)+
 
   { assume *: "(\<integral>y. pmf (K y) i \<partial>N) < pmf N i"
     have "0 \<le> (\<integral>y. pmf (K y) i \<partial>N)"
-      by (intro integral_nonneg_AE) (simp add: pmf_nonneg)
+      by (intro integral_nonneg_AE) simp
     with * have i: "i \<in> set_pmf N" "i \<in> \<Omega>"
-      by (auto simp: set_pmf_iff \<Omega>_def)
+      by (auto simp: set_pmf_iff \<Omega>_def not_le[symmetric])
     from * have "0 < pmf N i - (\<integral>y. pmf (K y) i \<partial>N)"
-      by (simp add: pmf_nonneg field_simps)
+      by (simp add: field_simps)
     also have "\<dots> = (\<integral>t. (pmf N i - (\<integral>y. pmf (K y) i \<partial>N)) * indicator {i} t \<partial>count_space \<Omega>)"
       by (simp add: i)
     also have "\<dots> \<le> (\<integral>t. pmf N t - \<integral>y. pmf (K y) t \<partial>N \<partial>count_space \<Omega>)"
@@ -1480,10 +1478,11 @@ proof (rule pmf_eqI antisym)+
       by (subst integral_diff) (auto intro!: integrable_pmf simp: pmf_bind[symmetric])
     also have "(\<integral>t. \<integral>y. pmf (K y) t \<partial>N \<partial>count_space \<Omega>) = (\<integral>y. \<integral>t. pmf (K y) t \<partial>count_space \<Omega> \<partial>N)"
       apply (intro pN.Fubini_integral integrable_iff_bounded[THEN iffD2] conjI)
-      apply (auto simp add: N.nn_integral_fst'[symmetric] pmf_nonneg nn_integral_eq_integral integrable_pmf
-          intro!: integrableD)
+      apply (auto simp add: N.nn_integral_fst[symmetric] nn_integral_eq_integral integrable_pmf)
+      unfolding less_top[symmetric] unfolding infinity_ennreal_def[symmetric]
+      apply (intro integrableD)
       apply (auto intro!: measure_pmf.integrable_const_bound[where B=1]
-                  simp: AE_measure_pmf_iff integral_nonneg_AE measure_nonneg integral_pmf)
+                  simp: AE_measure_pmf_iff integral_nonneg_AE integral_pmf)
       done
     also have "(\<integral>y. \<integral>t. pmf (K y) t \<partial>count_space \<Omega> \<partial>N) = (\<integral>y. 1 \<partial>N)"
       by (intro integral_cong_AE)
@@ -1496,18 +1495,18 @@ qed
 
 lemma stationary_distribution_iterate:
   assumes N: "stationary_distribution N"
-  shows "ereal (pmf N y) = (\<integral>\<^sup>+x. p x y n \<partial>N)"
+  shows "ennreal (pmf N y) = (\<integral>\<^sup>+x. p x y n \<partial>N)"
 proof (induct n arbitrary: y)
-  have [simp]: "\<And>x y. ereal (if x = y then 1 else 0) = indicator {y} x"
+  have [simp]: "\<And>x y. ennreal (if x = y then 1 else 0) = indicator {y} x"
     by simp
   case 0 then show ?case
     by (simp add: p_0 pmf.rep_eq measure_pmf.emeasure_eq_measure)
 next
   case (Suc n) with N show ?case
-    apply (simp add: nn_integral_eq_integral[symmetric] p_le_1 p_nonneg p_Suc'
+    apply (simp add: nn_integral_eq_integral[symmetric] p_le_1 p_Suc'
                      measure_pmf.integrable_const_bound[where B=1])
     apply (subst nn_integral_bind[symmetric, where B="count_space UNIV"])
-    apply (auto simp: stationary_distribution_def measure_pmf_bind[symmetric] p_nonneg
+    apply (auto simp: stationary_distribution_def measure_pmf_bind[symmetric]
                 simp del: measurable_pmf_measure1)
     done
 qed
@@ -1517,7 +1516,7 @@ lemma stationary_distribution_iterate':
   shows "measure N {y} = (\<integral>x. p x y n \<partial>N)"
   using stationary_distribution_iterate[OF assms]
   by (subst (asm) nn_integral_eq_integral)
-     (auto intro!: measure_pmf.integrable_const_bound[where B=1] simp: p_nonneg p_le_1 pmf.rep_eq)
+     (auto intro!: measure_pmf.integrable_const_bound[where B=1] simp: p_le_1 pmf.rep_eq)
 
 lemma stationary_distributionD:
   assumes C: "essential_class C" "countable C"
@@ -1525,15 +1524,16 @@ lemma stationary_distributionD:
   shows "\<forall>x\<in>C. pos_recurrent x" "measure_pmf N = stat C"
 proof -
   have integrable_K: "\<And>f x. integrable N (\<lambda>s. pmf (K s) (f x))"
-    by (rule measure_pmf.integrable_const_bound[where B=1]) (simp_all add: pmf_nonneg pmf_le_1)
+    by (rule measure_pmf.integrable_const_bound[where B=1]) (simp_all add: pmf_le_1)
 
   have measure_C: "measure N C = 1" and ae_C: "AE x in N. x \<in> C"
     using N C measure_pmf.prob_eq_1[of C] by (auto simp: AE_measure_pmf_iff)
 
   have integrable_p: "\<And>n y. integrable N (\<lambda>x. p x y n)"
-    by (rule measure_pmf.integrable_const_bound[where B=1]) (simp_all add: p_nonneg p_le_1)
+    by (rule measure_pmf.integrable_const_bound[where B=1]) (simp_all add: p_le_1)
 
   { fix e :: real assume "0 < e"
+    then have [simp]: "0 \<le> e" by simp
     have "\<exists>A\<subseteq>C. finite A \<and> 1 - e < measure N A"
     proof (rule ccontr)
       assume contr: "\<not> (\<exists>A \<subseteq> C. finite A \<and> 1 - e < measure N A)"
@@ -1556,25 +1556,24 @@ proof -
            (auto elim!: eventually_mono
                  intro!: integral_add integral_indicator p_le_1 integrable_real_mult_indicator
                    integrable_add
-                 split: split_indicator simp: integrable_p)
+                 split: split_indicator simp: integrable_p less_top[symmetric] top_unique)
       also have "\<dots> = (\<integral>x. p x y n * indicator A x \<partial>N) + measure N (C - A)"
         using ae_C `A \<subseteq> C`
         apply (subst integral_add)
         apply (auto elim!: eventually_mono
                     intro!: integral_add integral_indicator p_le_1 integrable_real_mult_indicator
-                    split: split_indicator simp: integrable_p)
+                    split: split_indicator simp: integrable_p less_top[symmetric] top_unique)
         done
       also have "\<dots> \<le> (\<integral>x. p x y n * indicator A x \<partial>N) + e"
         using e `A \<subseteq> C`  by (simp add: measure_pmf.finite_measure_Diff measure_C)
       finally have "measure N {y} \<le> (\<integral>x. p x y n * indicator A x \<partial>N) + e" .
-      then have "emeasure N {y} \<le> ereal (\<integral>x. p x y n * indicator A x \<partial>N) + e"
-        by (simp add: measure_pmf.emeasure_eq_measure)
-      also have "\<dots> = (\<integral>\<^sup>+x. ereal (p x y n) * indicator A x \<partial>N) + e"
+      then have "emeasure N {y} \<le> ennreal (\<integral>x. p x y n * indicator A x \<partial>N) + e"
+        by (simp add: measure_pmf.emeasure_eq_measure ennreal_plus[symmetric] del: ennreal_plus)
+      also have "\<dots> = (\<integral>\<^sup>+x. ennreal (p x y n) * indicator A x \<partial>N) + e"
         by (subst nn_integral_eq_integral[symmetric])
            (auto intro!: measure_pmf.integrable_const_bound[where B=1]
-                 simp: abs_mult p_nonneg p_le_1 mult_le_one times_ereal.simps[symmetric] ereal_indicator
-                 simp del: times_ereal.simps)
-      finally have "emeasure N {y} \<le> (\<integral>\<^sup>+x. ereal (p x y n) * indicator A x \<partial>N) + e" . }
+                 simp: abs_mult p_le_1 mult_le_one ennreal_indicator ennreal_mult)
+      finally have "emeasure N {y} \<le> (\<integral>\<^sup>+x. ennreal (p x y n) * indicator A x \<partial>N) + e" . }
     note v_le = this
 
     { fix y and z :: real assume y: "y \<in> C" and z: "0 < z" "z < 1"
@@ -1582,50 +1581,56 @@ proof -
         using `y\<in>C` z `A \<subseteq> C`
         by (auto intro!: summable_comparison_test[OF _ summable_mult[OF summable_geometric[of z], of 1]] exI[of _ 0] mult_le_one
                             measure_pmf.integral_le_const integrable_real_mult_indicator integrable_p AE_I2 p_le_1
-                    simp: abs_mult integral_nonneg_AE p_nonneg)
+                    simp: abs_mult integral_nonneg_AE)
 
       from y z have sums_y: "(\<lambda>n. measure N {y} * (1 - z) * z ^ n) sums measure N {y}"
         using sums_mult[OF geometric_sums[of z], of "measure N {y} * (1 - z)"] by simp
-      then have "emeasure N {y} = ereal (\<Sum>n. (measure N {y} * (1 - z)) * z ^ n)"
-        by (simp add: sums_unique measure_pmf.emeasure_eq_measure)
+      then have "emeasure N {y} = ennreal (\<Sum>n. (measure N {y} * (1 - z)) * z ^ n)"
+        by (auto simp add: sums_unique[symmetric] measure_pmf.emeasure_eq_measure)
       also have "\<dots> = (\<Sum>n. emeasure N {y} * (1 - z) * z ^ n)"
-        using z
-        by (subst suminf_ereal[symmetric])
-           (auto intro!: mult_nonneg_nonneg measure_nonneg suminf_ereal_finite
-              summable_mult[OF summable_geometric[of z]] simp: measure_pmf.emeasure_eq_measure)
-      also have "\<dots> \<le> (\<Sum>n. ((\<integral>\<^sup>+x. ereal (p x y n) * indicator A x \<partial>N) + e) * (1 - z) * z ^ n)"
+        using z  summable_mult[OF summable_geometric[of z], of "measure_pmf.prob N {y} * (1 - z)"]
+        by (subst suminf_ennreal[symmetric])
+           (auto simp: measure_pmf.emeasure_eq_measure ennreal_mult[symmetric] ennreal_suminf_neq_top)
+      also have "\<dots> \<le> (\<Sum>n. ((\<integral>\<^sup>+x. ennreal (p x y n) * indicator A x \<partial>N) + e) * (1 - z) * z ^ n)"
         using `y\<in>C` z `A \<subseteq> C`
-        by (intro suminf_le_pos ereal_mult_right_mono v_le)
-           (auto simp: measure_pmf.emeasure_eq_measure measure_nonneg)
-      also have "\<dots> = (\<Sum>n. (\<integral>\<^sup>+x. ereal (p x y n) * indicator A x \<partial>N) * (1 - z) * z ^ n) + e"
-        using `0 < e` z sums_mult[OF geometric_sums[of z], of "e * (1 - z)"]
-        by (simp add: ereal_left_distrib nn_integral_nonneg suminf_add_ereal sums_suminf_ereal)
-      also have "\<dots> = (\<Sum>n. ereal (1 - z) * ((\<integral>\<^sup>+x. ereal (p x y n) * indicator A x \<partial>N) * z ^ n)) + e"
+        by (intro suminf_le mult_right_mono v_le allI)
+           (auto simp: measure_pmf.emeasure_eq_measure)
+      also have "\<dots> = (\<Sum>n. (\<integral>\<^sup>+x. ennreal (p x y n) * indicator A x \<partial>N) * (1 - z) * z ^ n) + e"
+        using `0 < e` z sums_mult[OF geometric_sums[of z], of "e * (1 - z)"] \<open>0<z\<close> \<open>z<1\<close>
+        by (simp add: distrib_right suminf_add[symmetric] ennreal_suminf_cmult[symmetric]
+                      ennreal_mult[symmetric] suminf_ennreal_eq sums_unique[symmetric]
+                 del: ennreal_suminf_cmult)
+      also have "\<dots> = (\<Sum>n. ennreal (1 - z) * ((\<integral>\<^sup>+x. ennreal (p x y n) * indicator A x \<partial>N) * z ^ n)) + e"
         by (simp add: ac_simps)
-      also have "\<dots> = ereal (1 - z) * (\<Sum>n. ((\<integral>\<^sup>+x. ereal (p x y n) * indicator A x \<partial>N) * z ^ n)) + e"
-        using z by (subst suminf_cmult_ereal) (simp_all add: nn_integral_nonneg)
-      also have "(\<Sum>n. ((\<integral>\<^sup>+x. ereal (p x y n) * indicator A x \<partial>N) * z ^ n)) =
-          (\<Sum>n. (\<integral>\<^sup>+x. ereal (p x y n * z ^ n) * indicator A x \<partial>N))"
-        using z by (simp add: ac_simps nn_integral_cmult[symmetric])
-      also have "\<dots> = (\<integral>\<^sup>+x. ereal (gf_G x y z) * indicator A x \<partial>N)"
+      also have "\<dots> = ennreal (1 - z) * (\<Sum>n. ((\<integral>\<^sup>+x. ennreal (p x y n) * indicator A x \<partial>N) * z ^ n)) + e"
+        using z by (subst ennreal_suminf_cmult) simp_all
+      also have "(\<Sum>n. ((\<integral>\<^sup>+x. ennreal (p x y n) * indicator A x \<partial>N) * z ^ n)) =
+          (\<Sum>n. (\<integral>\<^sup>+x. ennreal (p x y n * z ^ n) * indicator A x \<partial>N))"
+        using z by (simp add: ac_simps nn_integral_cmult[symmetric] ennreal_mult)
+      also have "\<dots> = (\<integral>\<^sup>+x. ennreal (gf_G x y z) * indicator A x \<partial>N)"
         using z
         apply (subst nn_integral_suminf[symmetric])
-        apply (auto simp add: p_nonneg gf_G_def intro!: nn_integral_cong suminf_ereal' split: split_indicator)
+        apply (auto simp add: gf_G_def simp del: suminf_ennreal
+                    intro!: ennreal_mult_right_cong suminf_ennreal2 nn_integral_cong)
         apply (intro summable_comparison_test[OF _ summable_mult[OF summable_geometric[of z], of 1]] impI)
-        apply (simp_all add: abs_mult p_nonneg p_le_1 mult_le_one power_le_one split: split_indicator)
+        apply (simp_all add: abs_mult p_le_1 mult_le_one power_le_one split: split_indicator)
         done
-      also have "\<dots> = (\<integral>\<^sup>+x. ereal (gf_F x y z * gf_G y y z) * indicator A x \<partial>N)"
+      also have "\<dots> = (\<integral>\<^sup>+x. ennreal (gf_F x y z * gf_G y y z) * indicator A x \<partial>N)"
         using z by (intro nn_integral_cong) (simp add: gf_G_eq_gf_F[symmetric])
-      also have "\<dots> = ereal (gf_G y y z) * (\<integral>\<^sup>+x. ereal (gf_F x y z) * indicator A x \<partial>N)"
-        using z by (subst nn_integral_cmult[symmetric]) (simp_all add: gf_G_nonneg ac_simps)
-      also have "\<dots> = ereal (1 / (1 - gf_U y y z)) * (\<integral>\<^sup>+x. ereal (gf_F x y z) * indicator A x \<partial>N)"
+      also have "\<dots> = ennreal (gf_G y y z) * (\<integral>\<^sup>+x. ennreal (gf_F x y z) * indicator A x \<partial>N)"
+        using z by (subst nn_integral_cmult[symmetric]) (simp_all add: gf_G_nonneg gf_F_nonneg ac_simps ennreal_mult)
+      also have "\<dots> = ennreal (1 / (1 - gf_U y y z)) * (\<integral>\<^sup>+x. ennreal (gf_F x y z) * indicator A x \<partial>N)"
         using z `y \<in> C` by (subst gf_G_eq_gf_U) (auto intro!: convergence_G_less_1)
-      finally have "emeasure N {y} \<le> ereal ((1 - z) / (1 - gf_U y y z)) * (\<integral>\<^sup>+x. gf_F x y z * indicator A x \<partial>N) + e"
-        by (subst (asm) mult.assoc[symmetric]) (simp add: ereal_indicator[symmetric])
+      finally have "emeasure N {y} \<le> ennreal ((1 - z) / (1 - gf_U y y z)) * (\<integral>\<^sup>+x. gf_F x y z * indicator A x \<partial>N) + e"
+        using z
+        by (subst (asm) mult.assoc[symmetric])
+           (simp add: ennreal_indicator[symmetric] ennreal_mult'[symmetric] gf_F_nonneg)
       then have "measure N {y} \<le> (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e"
         using z
         by (subst (asm) nn_integral_eq_integral[OF measure_pmf.integrable_const_bound[where B=1]])
-           (auto simp: gf_F_nonneg measure_pmf.emeasure_eq_measure gf_F_le_1 mult_le_one) }
+           (auto simp: gf_F_nonneg gf_U_le_1 gf_F_le_1 measure_pmf.emeasure_eq_measure mult_le_one
+                       ennreal_mult''[symmetric] ennreal_plus[symmetric]
+                 simp del: ennreal_plus) }
     then have "\<exists>A \<subseteq> C. finite A \<and> (\<forall>y\<in>C. \<forall>z. 0 < z \<longrightarrow> z < 1 \<longrightarrow> measure N {y} \<le> (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e)"
       using `A \<subseteq> C` `finite A` by auto }
   note eps = this
@@ -1674,7 +1679,7 @@ proof -
   { fix y assume "y \<in> C"
     then have "U y y = 1" "recurrent y"
       using `y \<in> C \<Longrightarrow> U y y = 1` all_recurrent by auto
-    have "measure N {y} \<le> real_of_ereal (1 / U' y y)"
+    have "measure N {y} \<le> enn2real (1 / U' y y)"
     proof (rule field_le_epsilon)
       fix e :: real assume "0 < e"
       from eps[OF `0 < e`] `y \<in> C` obtain A where
@@ -1683,7 +1688,7 @@ proof -
         by auto
       let ?L = "at_left (1::real)"
       have "((\<lambda>z. (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e) \<longlongrightarrow>
-          real_of_ereal (1 / U' y y) * (\<integral>x. F x y * indicator A x \<partial>N) + e) ?L"
+          enn2real (1 / U' y y) * (\<integral>x. F x y * indicator A x \<partial>N) + e) ?L"
       proof (intro tendsto_add tendsto_const tendsto_mult int_gf_F,
              rule lhopital_left[where f'="\<lambda>x. - 1" and g'="\<lambda>z. - gf_U' y y z"])
         show "(op - 1 \<longlongrightarrow> 0) ?L" "((\<lambda>x. 1 - gf_U y y x) \<longlongrightarrow> 0) ?L"
@@ -1691,7 +1696,7 @@ proof -
         show "y \<in> C" "finite A" "A \<subseteq> C" by fact+
         show "eventually (\<lambda>x. 1 - gf_U y y x \<noteq> 0) ?L"
           using gf_G_eq_gf_U(2)[OF convergence_G_less_1, where 'z=real] by (auto intro!: eventually_at_left_1)
-        show "((\<lambda>x. - 1 / - gf_U' y y x) \<longlongrightarrow> real_of_ereal (1 / U' y y)) ?L"
+        show "((\<lambda>x. - 1 / - gf_U' y y x) \<longlongrightarrow> enn2real (1 / U' y y)) ?L"
           using `recurrent y` by (rule inverse_gf_U'_tendsto)
         have "eventually (\<lambda>x. 0 < gf_U' y y x) ?L"
           by (intro eventually_at_left_1 gf_U'_pos) (simp_all add: `U y y = 1`)
@@ -1702,16 +1707,15 @@ proof -
         show "eventually (\<lambda>x. DERIV (op - 1) x :> - 1) ?L"
           by (auto intro!: eventually_at_left_1 derivative_eq_intros)
       qed
-      then have "measure N {y} \<le> real_of_ereal (1 / U' y y) * (\<integral>x. F x y * indicator A x \<partial>N) + e"
+      then have "measure N {y} \<le> enn2real (1 / U' y y) * (\<integral>x. F x y * indicator A x \<partial>N) + e"
         by (rule tendsto_le[OF trivial_limit_at_left_real _ tendsto_const]) (intro eventually_at_left_1 le)
-      then have "measure N {y} - e \<le> real_of_ereal (1 / U' y y) * (\<integral>x. F x y * indicator A x \<partial>N)"
+      then have "measure N {y} - e \<le> enn2real (1 / U' y y) * (\<integral>x. F x y * indicator A x \<partial>N)"
         by simp
-      also have "\<dots> \<le> real_of_ereal (1 / U' y y)"
+      also have "\<dots> \<le> enn2real (1 / U' y y)"
         using A
-        by (intro mult_left_le real_of_ereal_pos zero_le_divide_ereal nn_integral_nonneg
-                  measure_pmf.integral_le_const measure_pmf.integrable_const_bound[where B=1])
-           (auto simp: F_nonneg mult_le_one F_le_1 U'_def nn_integral_nonneg)
-      finally show "measure N {y} \<le> real_of_ereal (1 / U' y y) + e"
+        by (intro mult_left_le measure_pmf.integral_le_const measure_pmf.integrable_const_bound[where B=1])
+           (auto simp: mult_le_one F_le_1 U'_def)
+      finally show "measure N {y} \<le> enn2real (1 / U' y y) + e"
         by simp
     qed }
   note measure_y_le = this
@@ -1723,10 +1727,10 @@ proof -
     { fix y assume "y \<in> C"
       with x have "\<not> pos_recurrent y"
         using C by (auto simp: essential_class_def pos_recurrent_iffI_communicating[symmetric] elim!: quotientE)
-      with all_recurrent `y \<in> C` have "real_of_ereal (1 / U' y y) = 0"
+      with all_recurrent `y \<in> C` have "enn2real (1 / U' y y) = 0"
         by (simp add: pos_recurrent_def nn_integral_add)
       with measure_y_le[OF `y \<in> C`] have "measure N {y} = 0"
-        by (auto intro!: antisym simp: measure_nonneg pos_recurrent_def) }
+        by (auto intro!: antisym simp: pos_recurrent_def) }
     then have "emeasure N C = 0"
       by (subst emeasure_countable_singleton) (auto simp: C ae_C measure_pmf.emeasure_eq_measure nn_integral_0_iff_AE)
     then show False
@@ -1744,16 +1748,17 @@ proof -
         assume "y \<in> C"
         with pos have "pos_recurrent y"
           by auto
-        with one_le_integral_t[of y] obtain r where r: "U' y y = ereal r" "1 \<le> U' y y"
+        with one_le_integral_t[of y] obtain r where r: "U' y y = ennreal r" "1 \<le> U' y y" and [simp]: "0 \<le> r"
           by (cases "U' y y") (auto simp: pos_recurrent_def nn_integral_add)
 
         from measure_y_le[OF `y \<in> C`]
-        have "emeasure N {y} \<le> ereal (real_of_ereal (1 / U' y y))"
+        have "emeasure N {y} \<le> ennreal (enn2real (1 / U' y y))"
           by (simp add: measure_pmf.emeasure_eq_measure)
         also have "\<dots> = emeasure (stat C) {y}"
           unfolding stat_def using `y \<in> C` r
           by (subst emeasure_point_measure_finite2)
-             (auto simp: ereal_inverse_nonneg_iff nn_integral_nonneg divide_ereal_def one_ereal_def)
+             (auto simp add: ennreal_1[symmetric] divide_ennreal inverse_ennreal inverse_eq_divide ennreal_mult[symmetric]
+                   simp del: ennreal_1)
         finally show "emeasure N {y} \<le> emeasure (stat C) {y}"
           by simp
       next
@@ -1772,7 +1777,7 @@ proof -
 
   from stat_subprob[OF C(1) `countable C` pos] N_le_C[OF `countable C`] `measure N C = 1`
   have stat_C_eq_1: "emeasure (stat C) C = 1"
-    by (auto simp add: measure_pmf.emeasure_eq_measure one_ereal_def)
+    by (auto simp add: measure_pmf.emeasure_eq_measure one_ennreal_def)
   moreover have "emeasure (stat C) (UNIV - C) = 0"
     by (subst AE_iff_measurable[symmetric, where P="\<lambda>x. x \<in> C"])
        (auto simp: stat_def AE_point_measure sets_point_measure space_point_measure
@@ -1798,7 +1803,9 @@ proof -
         by (subst plus_emeasure) (auto intro!: measure_pmf.emeasure_eq_1_AE)
       also have "\<dots> < emeasure (stat C) {x} + emeasure (stat C) (C - {x})"
         using x N_le_C[of "C - {x}"] C ae_C
-        by (simp add: stat.emeasure_eq_measure measure_pmf.emeasure_eq_measure Diff_subset)
+        by (simp add: stat.emeasure_eq_measure measure_pmf.emeasure_eq_measure Diff_subset
+                      ennreal_plus[symmetric] ennreal_less_iff
+                 del: ennreal_plus)
       also have "\<dots> = 1"
         using ae_stat by (subst plus_emeasure) (auto intro!: stat.emeasure_eq_1_AE)
       finally have False by simp }
@@ -1806,18 +1813,25 @@ proof -
   qed
 qed
 
+lemma measure_point_measure_singleton:
+  "x \<in> A \<Longrightarrow> measure (point_measure A X) {x} = enn2real (X x)"
+  unfolding measure_def by (subst emeasure_point_measure_finite2) auto
+
 lemma stationary_distribution_imp_int_t:
   assumes C: "essential_class C" "countable C" "stationary_distribution N" "N \<subseteq> C"
-  assumes x: "x \<in> C" shows "U' x x = 1 / pmf N x"
+  assumes x: "x \<in> C" shows "U' x x = 1 / ennreal (pmf N x)"
 proof -
   from stationary_distributionD[OF C]
   have "measure_pmf N = stat C" and *: "\<forall>x\<in>C. pos_recurrent x" by auto
   show ?thesis
     unfolding `measure_pmf N = stat C` pmf.rep_eq stat_def
     using *[THEN bspec, OF x] x
+    apply (simp add: measure_point_measure_singleton)
     apply (cases "U' x x")
-    apply (auto simp add: measure_def emeasure_point_measure_finite2 ereal_inverse_nonneg_iff
-                     nn_integral_nonneg pos_recurrent_def divide_inverse one_ereal_def U'_def)
+    subgoal for r
+      by (cases "r = 0")
+         (simp_all add: divide_ennreal_def inverse_ennreal)
+    apply simp
     done
 qed
 
@@ -1879,7 +1893,7 @@ proof cases
   assume "\<exists>x. C = {x}"
   with `x \<in> C` have "C = {x}" by auto
   with C p_nonneg[of x x 1] have "0 < p x x 1"
-    by (auto simp: not_ephemeral_def)
+    by (auto simp: not_ephemeral_def less_le)
   with `C = {x}` show ?thesis by auto
 next
   from C have irr: "C \<in> UNIV // communicating"
@@ -2023,8 +2037,7 @@ proof -
     apply (simp add: measure_pmf_bind)
     apply (subst measure_pmf.measure_bind[where N="count_space UNIV"])
     apply (rule measurable_compose[OF _ measurable_measure_pmf])
-    apply (auto intro!: nn_integral_eq_integral[symmetric] measure_pmf.integrable_const_bound[where B=1]
-      simp: measure_nonneg)
+    apply (auto intro!: nn_integral_eq_integral[symmetric] measure_pmf.integrable_const_bound[where B=1])
     done
 qed
 
@@ -2055,8 +2068,7 @@ lemma p_eq_p1_p2:
 
 lemma P_accD:
   assumes "((x1, x2), (y1, y2)) \<in> acc"shows "(x1, y1) \<in> K1.acc" "(x2, y2) \<in> K2.acc"
-  using assms by (auto simp: acc_iff K1.acc_iff K2.acc_iff p_eq_p1_p2
-                             zero_less_mult_iff not_le[of 0, symmetric] K1.p_nonneg K2.p_nonneg
+  using assms by (auto simp: acc_iff K1.acc_iff K2.acc_iff p_eq_p1_p2 zero_less_mult_iff not_le[of 0, symmetric]
                        cong: conj_cong)
 
 lemma aperiodicI_pair:
@@ -2103,8 +2115,7 @@ proof safe
     moreover from acc obtain k where "0 < p (x1, x2) (y1, y2) k" by (auto dest!: accD_pos)
     ultimately have "(x1, y1) \<in> K1.acc \<and> (x2, y2) \<in> K2.acc"
       by (subst (asm) p_eq_p1_p2)
-         (auto intro!: K1.accI_pos K2.accI_pos
-               simp: zero_less_mult_iff K1.p_nonneg K2.p_nonneg not_le[of 0, symmetric]) }
+         (auto intro!: K1.accI_pos K2.accI_pos simp: zero_less_mult_iff not_le[of 0, symmetric]) }
   note 2 = this
 
   from K1.not_empty_irreducible[OF C1] K2.not_empty_irreducible[OF C2]
@@ -2166,8 +2177,7 @@ proof -
   have pos: "\<And>x. x \<in> C \<Longrightarrow> 0 < emeasure N {x}"
     using pos unfolding stat_def `measure_pmf N = stat C`
     by (subst emeasure_point_measure_finite2)
-       (auto simp: ereal_0_gt_inverse nn_integral_nonneg ereal_inverse_nonneg_iff pos_recurrent_def
-                   divide_ereal_def nn_integral_add emeasure_nonneg U'_def)
+       (auto simp: U'_def pos_recurrent_def nn_integral_add ennreal_zero_less_divide less_top)
   then have rpos: "\<And>x. x \<in> C \<Longrightarrow> 0 < pmf N x"
     by (simp add: measure_pmf.emeasure_eq_measure pmf.rep_eq)
 
@@ -2326,27 +2336,27 @@ proof -
       by (rule abs_triangle_ineq4)
     also have "\<dots> \<le> \<P>(\<omega> in KN.T (y, None). fst (\<omega> !! n) = x \<and> \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>)) +
       \<P>(\<omega> in KN.T (y, None). snd (\<omega> !! n) = Some x \<and> \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>))"
-      by (simp add: measure_nonneg)
+      by simp
     finally have "\<bar> p y x (Suc n) - measure N {x} \<bar> \<le> \<dots>" . }
   note mono = this
 
   { fix n :: nat
     have "(\<integral>\<^sup>+x. \<bar> p y x (Suc n) - measure N {x} \<bar> \<partial>count_space C) \<le>
-      (\<integral>\<^sup>+x. ereal (\<P>(\<omega> in KN.T (y, None). fst (\<omega> !! n) = x \<and> \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>))) +
-      ereal (\<P>(\<omega> in KN.T (y, None). snd (\<omega> !! n) = Some x \<and> \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>))) \<partial>count_space C)"
-      using mono by (intro nn_integral_mono) simp
+      (\<integral>\<^sup>+x. ennreal (\<P>(\<omega> in KN.T (y, None). fst (\<omega> !! n) = x \<and> \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>))) +
+      ennreal (\<P>(\<omega> in KN.T (y, None). snd (\<omega> !! n) = Some x \<and> \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>))) \<partial>count_space C)"
+      using mono by (intro nn_integral_mono) (simp add: ennreal_plus[symmetric] del: ennreal_plus)
     also have "\<dots> = (\<integral>\<^sup>+x. \<P>(\<omega> in KN.T (y, None). fst (\<omega> !! n) = x \<and> \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>)) \<partial>count_space C) +
       (\<integral>\<^sup>+x. \<P>(\<omega> in KN.T (y, None). snd (\<omega> !! n) = Some x \<and> \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>)) \<partial>count_space C)"
-      by (subst nn_integral_add) (simp_all add: measure_nonneg)
+      by (subst nn_integral_add) auto
     also have "\<dots> = emeasure (KN.T (y, None)) (\<Union>x\<in>C. {\<omega>\<in>space (KN.T (y, None)). fst (\<omega> !! n) = x \<and> \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>)}) +
       emeasure (KN.T (y, None)) (\<Union>x\<in>C. {\<omega>\<in>space (KN.T (y, None)). snd (\<omega> !! n) = Some x \<and> \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>)})"
       by (subst (1 2) emeasure_UN_countable)
          (auto simp add: disjoint_family_on_def KN.T.emeasure_eq_measure C)
-    also have "\<dots> \<le> ereal (\<P>(\<omega> in KN.T (y, None). \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>))) + ereal (\<P>(\<omega> in KN.T (y, None). \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>)))"
+    also have "\<dots> \<le> ennreal (\<P>(\<omega> in KN.T (y, None). \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>))) + ennreal (\<P>(\<omega> in KN.T (y, None). \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>)))"
       unfolding KN.T.emeasure_eq_measure
-      by (intro add_mono ereal_less_eq(3)[THEN iffD2] KN.T.finite_measure_mono) auto
+      by (intro add_mono) (auto intro!: KN.T.finite_measure_mono)
     also have "\<dots> \<le> 2 * \<P>(\<omega> in KN.T (y, None). \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>))"
-      by simp
+      by (simp add: ennreal_plus[symmetric] del: ennreal_plus)
     finally have "?L (Suc n) \<le> 2 * \<P>(\<omega> in KN.T (y, None). \<not> (\<exists>i<n. ev_at (HLD D) i \<omega>))"
       by (auto intro!: integral_real_bounded simp add: pmf.rep_eq) }
   note le_2 = this
@@ -2366,7 +2376,7 @@ proof -
     show "countable (C \<times> Some`C)"
       using C by auto
     show "set_pmf (pair_pmf N (map_pmf Some N)) \<subseteq> C \<times> Some ` C"
-      using `N \<subseteq> C` by (auto simp: set_pair_pmf set_map_pmf)
+      using `N \<subseteq> C` by auto
   qed
 
   from c0_D have "\<P>(\<omega> in KN.T (y, None). alw (not (HLD D)) \<omega>) \<le> \<P>(\<omega> in KN.T (y, None). alw (not (HLD {(c0, Some c0)})) \<omega>)"
@@ -2382,7 +2392,7 @@ proof -
   proof
     fix t assume t: "t \<in> KN.Kp (y, None)"
     then obtain a b where t_eq: "t = (a, Some b)" "a \<in> K y" "b \<in> N"
-      unfolding KN.Kp_def by (auto simp: set_map_pmf set_pair_pmf K'_def)
+      unfolding KN.Kp_def by (auto simp: K'_def)
     with `y \<in> C` have "a \<in> C"
       using essential_classD2[OF `essential_class C` `y \<in> C`] by auto
     have "b \<in> C"
@@ -2456,7 +2466,6 @@ proof -
 qed
 
 end
-
 
 lemma (in MC_syntax) essential_classI2:
   assumes "X \<noteq> {}"

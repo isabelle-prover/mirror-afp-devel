@@ -3,8 +3,7 @@
 *)
 
 theory Conditional_Expectation
-imports Complex_Main  "~~/src/HOL/Probability/Radon_Nikodym" "~~/src/HOL/Probability/Probability_Measure"
-        SG_Library_Complement
+imports "~~/src/HOL/Probability/Probability" SG_Library_Complement
 begin
 
 section {*Conditional expectation*}
@@ -105,7 +104,7 @@ lemma finite_measure_restr_to_subalg:
           "finite_measure M"
    shows "finite_measure (restr_to_subalg M F)"
 by (metis (no_types, lifting) assms emeasure_restr_to_subalg finite_measure.finite_emeasure_space
-    finite_measureI sets.top space_restr_to_subalg subalgebra_def)
+    finite_measureI sets.top space_restr_to_subalg subalgebra_def infinity_ennreal_def)
 
 lemma measurable_in_subalg:
   assumes "subalgebra M F"
@@ -124,24 +123,15 @@ text{*The following is the direct transposition of \verb+nn_integral_subalgebra+
 current notations, with the removal of the useless assumption $f \geq 0$.*}
 
 lemma nn_integral_subalgebra2:
-  assumes "subalgebra M F" and
-          [measurable]: "f \<in> borel_measurable F"
+  assumes "subalgebra M F" and [measurable]: "f \<in> borel_measurable F"
   shows "(\<integral>\<^sup>+ x. f x \<partial>(restr_to_subalg M F)) = (\<integral>\<^sup>+ x. f x \<partial>M)"
-proof -
-  def g \<equiv> "\<lambda>x. max (f x) 0"
-  have "(\<integral>\<^sup>+ x. f x \<partial>(restr_to_subalg M F)) = (\<integral>\<^sup>+ x. g x \<partial>(restr_to_subalg M F))"
-    using g_def by (simp add: g_def max_def_raw nn_integral_cong_pos)
-  also have "... = (\<integral>\<^sup>+ x. g x \<partial>M)"
-  proof (rule nn_integral_subalgebra)
-    have "g \<in> borel_measurable F" using g_def by simp
-    then show "g \<in> borel_measurable (restr_to_subalg M F)" using measurable_in_subalg[OF assms(1)] by auto
-    show "sets (restr_to_subalg M F) \<subseteq> sets M"  by (metis sets_restr_to_subalg[OF assms(1)] assms(1) subalgebra_def)
-    fix A assume "A \<in> sets (restr_to_subalg M F)"
-    then show "emeasure (restr_to_subalg M F) A = emeasure M A" by (metis sets_restr_to_subalg[OF assms(1)] emeasure_restr_to_subalg[OF assms(1)])
-  qed (auto simp add: g_def assms space_restr_to_subalg sets_restr_to_subalg[OF assms(1)])
-  also have "... =  (\<integral>\<^sup>+ x. f x \<partial>M)" using g_def by (simp add: g_def max_def_raw nn_integral_cong_pos)
-  finally show ?thesis by simp
-qed
+proof (rule nn_integral_subalgebra)
+  show "f \<in> borel_measurable (restr_to_subalg M F)"
+    by (rule measurable_in_subalg[OF assms(1)]) simp
+  show "sets (restr_to_subalg M F) \<subseteq> sets M"  by (metis sets_restr_to_subalg[OF assms(1)] assms(1) subalgebra_def)
+  fix A assume "A \<in> sets (restr_to_subalg M F)"
+  then show "emeasure (restr_to_subalg M F) A = emeasure M A" by (metis sets_restr_to_subalg[OF assms(1)] emeasure_restr_to_subalg[OF assms(1)])
+qed (auto simp add: assms space_restr_to_subalg sets_restr_to_subalg[OF assms(1)])
 
 text{*The following is the direct transposition of \verb+integral_subalgebra+
 (from \verb+Bochner_Integration+) in the current notations.*}
@@ -165,10 +155,10 @@ proof (rule integrableI_bounded)
   have [measurable]: "f \<in> borel_measurable F" using assms by auto
   then show "f \<in> borel_measurable M" using assms(1) measurable_from_subalg by blast
 
-  have "(\<integral>\<^sup>+ x. ereal (norm (f x)) \<partial>M) = (\<integral>\<^sup>+ x. ereal (norm (f x)) \<partial>(restr_to_subalg M F))"
+  have "(\<integral>\<^sup>+ x. ennreal (norm (f x)) \<partial>M) = (\<integral>\<^sup>+ x. ennreal (norm (f x)) \<partial>(restr_to_subalg M F))"
     by (rule nn_integral_subalgebra2[symmetric], auto simp add: assms)
   also have "... < \<infinity>" using  integrable_iff_bounded assms by auto
-  finally show "(\<integral>\<^sup>+ x. ereal (norm (f x)) \<partial>M) < \<infinity>" by simp
+  finally show "(\<integral>\<^sup>+ x. ennreal (norm (f x)) \<partial>M) < \<infinity>" by simp
 qed
 
 lemma integrable_in_subalg:
@@ -179,10 +169,10 @@ lemma integrable_in_subalg:
   shows "integrable (restr_to_subalg M F) f"
 proof (rule integrableI_bounded)
   show "f \<in> borel_measurable (restr_to_subalg M F)" using assms(2) assms(1) by auto
-  have "(\<integral>\<^sup>+ x. ereal (norm (f x)) \<partial>(restr_to_subalg M F)) = (\<integral>\<^sup>+ x. ereal (norm (f x)) \<partial>M)"
+  have "(\<integral>\<^sup>+ x. ennreal (norm (f x)) \<partial>(restr_to_subalg M F)) = (\<integral>\<^sup>+ x. ennreal (norm (f x)) \<partial>M)"
     by (rule nn_integral_subalgebra2, auto simp add: assms)
   also have "... < \<infinity>" using  integrable_iff_bounded assms by auto
-  finally show "(\<integral>\<^sup>+ x. ereal (norm (f x)) \<partial>(restr_to_subalg M F)) < \<infinity>" by simp
+  finally show "(\<integral>\<^sup>+ x. ennreal (norm (f x)) \<partial>(restr_to_subalg M F)) < \<infinity>" by simp
 qed
 
 subsection {*Nonnegative conditional expectation*}
@@ -199,20 +189,20 @@ machinery, and works for all positive functions.
 
 In this paragraph, we develop the definition and basic properties for nonnegative functions,
 as the basics of the general case. As in the definition of integrals, the nonnegative case is done
-with ereal-valued functions, without any integrability assumption.
+with ennreal-valued functions, without any integrability assumption.
 *}
 
-definition nn_cond_exp :: "'a measure => 'a measure => ('a => ereal) \<Rightarrow> ('a \<Rightarrow> ereal)" where
+definition nn_cond_exp :: "'a measure \<Rightarrow> 'a measure \<Rightarrow> ('a \<Rightarrow> ennreal) \<Rightarrow> ('a \<Rightarrow> ennreal)"
+where
   "nn_cond_exp M F f =
-    (if f \<in> borel_measurable M \<and> (AE x in M. 0 \<le> f x) \<and> subalgebra M F
+    (if f \<in> borel_measurable M \<and> subalgebra M F
        then RN_deriv (restr_to_subalg M F) (restr_to_subalg (density M f) F)
        else (\<lambda>_. 0))"
 
 lemma
   shows borel_measurable_nn_cond_exp [measurable]:  "nn_cond_exp M F f \<in> borel_measurable F"
   and   borel_measurable_nn_cond_exp2 [measurable]: "nn_cond_exp M F f \<in> borel_measurable M"
-  and nn_cond_exp_nonneg: "\<And>x. nn_cond_exp M F f x \<ge> 0"
-by (simp_all add: nn_cond_exp_def RN_deriv_nonneg)
+by (simp_all add: nn_cond_exp_def)
   (metis borel_measurable_RN_deriv borel_measurable_subalgebra sets_restr_to_subalg space_restr_to_subalg subalgebra_def)
 
 text {* The good setting for conditional expectations is the situation where the subalgebra $F$
@@ -231,7 +221,7 @@ proof
   obtain A where Ap: "countable A \<and> A \<subseteq> sets (restr_to_subalg M F)  \<and> \<Union>A = space (restr_to_subalg M F) \<and> (\<forall>a\<in>A. emeasure (restr_to_subalg M F) a \<noteq> \<infinity>)"
     using sigma_finite_measure.sigma_finite_countable[OF sigm_fin_subalg] by auto
   have "A \<subseteq> sets F"  using Ap sets_restr_to_subalg[OF subalg] by fastforce
-  then have "A \<subseteq> sets M" using subalg subalgebra_def by fastforce
+  then have "A \<subseteq> sets M" using subalg subalgebra_def by force
   moreover have "\<Union>A = space M" using Ap space_restr_to_subalg by simp
   moreover have "\<forall>a\<in>A. emeasure M a \<noteq> \<infinity>" by (metis subsetD emeasure_restr_to_subalg[OF subalg] `A \<subseteq> sets F` Ap)
   ultimately show "\<exists>A. countable A \<and> A \<subseteq> sets M \<and> \<Union>A = space M \<and> (\<forall>a\<in>A. emeasure M a \<noteq> \<infinity>)" using Ap by auto
@@ -250,7 +240,7 @@ lemma finite_measure_subalgebra_is_sigma_finite:
 proof -
   interpret finite_measure_subalgebra M F using assms by simp
   have "finite_measure (restr_to_subalg M F)"
-    using finite_measure_restr_to_subalg subalg finite_emeasure_space finite_measureI by blast
+    using finite_measure_restr_to_subalg subalg finite_emeasure_space finite_measureI unfolding infinity_ennreal_def by blast
   then have "sigma_finite_measure (restr_to_subalg M F)"
     unfolding finite_measure_def by simp
   then show "sigma_finite_subalgebra M F" unfolding sigma_finite_subalgebra_def using subalg by simp
@@ -259,7 +249,7 @@ qed
 sublocale finite_measure_subalgebra \<subseteq> sigma_finite_subalgebra
 proof -
   have "finite_measure (restr_to_subalg M F)"
-    using finite_measure_restr_to_subalg subalg finite_emeasure_space finite_measureI by blast
+    using finite_measure_restr_to_subalg subalg finite_emeasure_space finite_measureI unfolding infinity_ennreal_def by blast
   then have "sigma_finite_measure (restr_to_subalg M F)"
     unfolding finite_measure_def by simp
   then show "sigma_finite_subalgebra M F" unfolding sigma_finite_subalgebra_def using subalg by simp
@@ -278,8 +268,7 @@ the definition using Radon-Nikodym derivatives.
 *}
 
 lemma nn_cond_exp_intg:
-  assumes "AE x in M. g x \<ge> 0" and
-          [measurable]: "f \<in> borel_measurable F" "g \<in> borel_measurable M"
+  assumes [measurable]: "f \<in> borel_measurable F" "g \<in> borel_measurable M"
   shows "(\<integral>\<^sup>+ x. f x * nn_cond_exp M F g x \<partial>M) = (\<integral>\<^sup>+ x. f x * g x \<partial>M)"
 proof -
   have [measurable]: "f \<in> borel_measurable M"
@@ -288,7 +277,8 @@ proof -
     unfolding absolutely_continuous_def
   proof -
     have "null_sets (restr_to_subalg M F) = null_sets M \<inter> sets F" by (rule null_sets_restr_to_subalg[OF subalg])
-    moreover have "null_sets M \<subseteq> null_sets (density M g)" using absolutely_continuousI_density absolutely_continuous_def assms(3) by blast
+    moreover have "null_sets M \<subseteq> null_sets (density M g)"
+      by (rule absolutely_continuousI_density[unfolded absolutely_continuous_def]) auto
     ultimately have "null_sets (restr_to_subalg M F) \<subseteq> null_sets (density M g) \<inter> sets F" by auto
     moreover have "null_sets (density M g) \<inter> sets F = null_sets (restr_to_subalg (density M g) F)"
      by (rule null_sets_restr_to_subalg[symmetric]) (metis subalg sets_density space_density subalgebra_def)
@@ -296,7 +286,7 @@ proof -
   qed
 
   have "(\<integral>\<^sup>+ x. f x * nn_cond_exp M F g x \<partial>M) = (\<integral>\<^sup>+ x. f x * nn_cond_exp M F g x \<partial>(restr_to_subalg M F))"
-    by (rule nn_integral_subalgebra2[symmetric]) (simp_all add: assms subalg nn_cond_exp_nonneg)
+    by (rule nn_integral_subalgebra2[symmetric]) (simp_all add: assms subalg)
   also have "... = (\<integral>\<^sup>+ x. f x * RN_deriv (restr_to_subalg M F) (restr_to_subalg (density M g) F) x \<partial>(restr_to_subalg M F))"
     unfolding nn_cond_exp_def using assms subalg by simp
   also have "... = (\<integral>\<^sup>+ x. RN_deriv (restr_to_subalg M F) (restr_to_subalg (density M g) F) x * f x \<partial>(restr_to_subalg M F))"
@@ -307,7 +297,7 @@ proof -
       by (metis subalg restr_to_subalg_def sets.sets_measure_of_eq space_density subalgebra_def)
   qed (auto simp add: assms measurable_restrict ac measurable_in_subalg subalg  sigm_fin_subalg)
   also have "... = (\<integral>\<^sup>+ x. f x \<partial>(density M g))"
-    by (metis nn_integral_subalgebra2 subalg assms(2) sets_density space_density subalgebra_def)
+    by (metis nn_integral_subalgebra2 subalg assms(1) sets_density space_density subalgebra_def)
   also have "... = (\<integral>\<^sup>+ x. g x * f x \<partial>M)"
     by (rule nn_integral_density) (simp_all add: assms)
   also have "... =   (\<integral>\<^sup>+ x. f x * g x \<partial>M)"
@@ -316,8 +306,7 @@ proof -
 qed
 
 lemma nn_cond_exp_charact:
-  assumes "AE x in M. f x \<ge> 0" "AE x in M. g x \<ge> 0"
-          "\<And>A. A \<in> sets F \<Longrightarrow> (\<integral>\<^sup>+ x \<in> A. f x \<partial>M) = (\<integral>\<^sup>+ x \<in> A. g x \<partial>M)" and
+  assumes "\<And>A. A \<in> sets F \<Longrightarrow> (\<integral>\<^sup>+ x \<in> A. f x \<partial>M) = (\<integral>\<^sup>+ x \<in> A. g x \<partial>M)" and
           [measurable]:  "f \<in> borel_measurable M" "g \<in> borel_measurable F"
   shows "AE x in M. g x = nn_cond_exp M F f x"
 proof -
@@ -327,7 +316,7 @@ proof -
     then have [measurable]: "A \<in> sets F" using sets_restr_to_subalg[OF subalg] by simp
     have "(\<integral>\<^sup>+ x \<in> A. g x \<partial> ?MF) = (\<integral>\<^sup>+ x \<in> A. g x \<partial>M)"
       by (simp add: nn_integral_subalgebra2 subalg)
-    also have "... = (\<integral>\<^sup>+ x \<in> A. f x \<partial>M)" using assms(3) by simp
+    also have "... = (\<integral>\<^sup>+ x \<in> A. f x \<partial>M)" using assms(1) by simp
     also have "... = (\<integral>\<^sup>+ x. indicator A x * f x \<partial>M)" by (simp add: mult.commute)
     also have "... = (\<integral>\<^sup>+ x. indicator A x * nn_cond_exp M F f x \<partial>M)"
       by (rule nn_cond_exp_intg[symmetric]) (auto simp add: assms)
@@ -338,25 +327,20 @@ proof -
   } note * = this
   have "AE x in ?MF. g x =  nn_cond_exp M F f x"
    by (rule sigma_finite_measure.density_unique2)
-      (auto simp add: assms subalg  sigm_fin_subalg AE_restr_to_subalg2 * nn_cond_exp_nonneg)
+      (auto simp add: assms subalg  sigm_fin_subalg AE_restr_to_subalg2 *)
   then show ?thesis using AE_restr_to_subalg[OF subalg] by simp
 qed
 
 lemma nn_cond_exp_F_meas:
-   assumes "AE x in M. f x \<ge> 0"
-           "f \<in> borel_measurable F"
+   assumes "f \<in> borel_measurable F"
    shows "AE x in M. f x = nn_cond_exp M F f x"
 by (rule nn_cond_exp_charact) (auto simp add: assms measurable_from_subalg[OF subalg])
 
 lemma nn_cond_exp_prod:
-   assumes "AE x in M. f x \<ge> 0" "AE x in M. g x \<ge> 0" and
-           [measurable]: "f \<in> borel_measurable F" "g \<in> borel_measurable M"
+   assumes [measurable]: "f \<in> borel_measurable F" "g \<in> borel_measurable M"
    shows "AE x in M. f x * nn_cond_exp M F g x = nn_cond_exp M F (\<lambda>x. f x * g x) x"
 proof (rule nn_cond_exp_charact)
-  have [measurable]: "f \<in> borel_measurable M" by (rule measurable_from_subalg[OF subalg assms(3)])
-  show "AE x in M. 0 \<le> f x * g x" using assms(1) assms(2) by auto
-  show "AE x in M. 0 \<le> f x * nn_cond_exp M F g x"
-    by (metis (mono_tags, lifting) assms(1) ereal_0_le_mult eventually_mono nn_cond_exp_nonneg)
+  have [measurable]: "f \<in> borel_measurable M" by (rule measurable_from_subalg[OF subalg assms(1)])
   show "(\<lambda>x. f x * g x) \<in> borel_measurable M" by measurable
 
   fix A assume "A \<in> sets F"
@@ -371,79 +355,55 @@ proof (rule nn_cond_exp_charact)
 qed (auto simp add: assms)
 
 lemma nn_cond_exp_sum:
-   assumes "AE x in M. f x \<ge> 0" "AE x in M. g x \<ge> 0" and
-           [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
+   assumes [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
    shows "AE x in M. nn_cond_exp M F f x + nn_cond_exp M F g x = nn_cond_exp M F (\<lambda>x. f x + g x) x"
 proof (rule nn_cond_exp_charact)
-  show "AE x in M. 0 \<le> f x + g x" using assms(1) assms(2) by auto
   fix A assume [measurable]: "A \<in> sets F"
   then have "A \<in> sets M" by (meson subalg subalgebra_def subsetD)
   have "\<integral>\<^sup>+x\<in>A. (nn_cond_exp M F f x + nn_cond_exp M F g x)\<partial>M =  (\<integral>\<^sup>+x\<in>A. nn_cond_exp M F f x \<partial>M) +  (\<integral>\<^sup>+x\<in>A. nn_cond_exp M F g x \<partial>M)"
-    by (rule nn_set_integral_add) (auto simp add: assms `A \<in> sets M` nn_cond_exp_nonneg)
+    by (rule nn_set_integral_add) (auto simp add: assms `A \<in> sets M`)
   also have "... =  (\<integral>\<^sup>+x. indicator A x * nn_cond_exp M F f x \<partial>M) +  (\<integral>\<^sup>+x. indicator A x * nn_cond_exp M F g x \<partial>M)"
     by (metis (no_types, lifting) mult.commute nn_integral_cong)
   also have "... =  (\<integral>\<^sup>+x. indicator A x * f x \<partial>M) +  (\<integral>\<^sup>+x. indicator A x * g x \<partial>M)"
-    by (simp add: nn_cond_exp_intg assms(1) assms(2) assms(3) assms(4))
+    by (simp add: nn_cond_exp_intg)
   also have "... =  (\<integral>\<^sup>+x\<in>A. f x \<partial>M) +  (\<integral>\<^sup>+x\<in>A. g x \<partial>M)"
     by (metis (no_types, lifting) mult.commute nn_integral_cong)
   also have "... = \<integral>\<^sup>+x\<in>A. (f x + g x)\<partial>M"
     by (rule nn_set_integral_add[symmetric]) (auto simp add: assms `A \<in> sets M`)
   finally show "\<integral>\<^sup>+x\<in>A. (f x + g x)\<partial>M = \<integral>\<^sup>+x\<in>A. (nn_cond_exp M F f x + nn_cond_exp M F g x)\<partial>M"
     by simp
-qed (auto simp add: assms nn_cond_exp_nonneg)
+qed (auto simp add: assms)
 
 lemma nn_cond_exp_cong:
    assumes "AE x in M. f x = g x" and
            [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
    shows "AE x in M. nn_cond_exp M F f x = nn_cond_exp M F g x"
-proof (cases)
-  assume i: "AE x in M. 0 \<le> f x"
-  then have *: "AE x in M. 0 \<le> g x" using assms(1) by auto
-  show ?thesis
-  proof (rule nn_cond_exp_charact)
-  {
-    fix A assume [measurable]: "A \<in> sets F"
-    have " \<integral>\<^sup>+x\<in>A. nn_cond_exp M F f x \<partial>M = \<integral>\<^sup>+x. indicator A x * nn_cond_exp M F f x \<partial>M"
-      by (simp add: mult.commute)
-    also have "... = \<integral>\<^sup>+x. indicator A x * f x \<partial>M" by (simp add: nn_cond_exp_intg assms i)
-    also have "... = \<integral>\<^sup>+x\<in>A. f x \<partial>M" by (simp add: mult.commute)
-    also have "... = \<integral>\<^sup>+x\<in>A. g x \<partial>M" by (rule nn_set_integral_cong[OF assms(1)])
-    finally show "\<integral>\<^sup>+x\<in>A. g x \<partial>M = \<integral>\<^sup>+x\<in>A. nn_cond_exp M F f x \<partial>M" by simp
-  }
-  qed (auto simp add: assms * nn_cond_exp_nonneg)
-next
-  assume *: "\<not>(AE x in M. 0 \<le> f x)"
-  then have a: "nn_cond_exp M F f = (\<lambda>x. 0)" unfolding nn_cond_exp_def by simp
-  have "\<not>(AE x in M. 0 \<le> g x)"
-  proof (rule ccontr)
-    assume " \<not> \<not> (AE x in M. 0 \<le> g x)"
-    then have "AE x in M. 0 \<le> g x" by simp
-    then have "AE x in M. 0 \<le> f x" using assms(1) by auto
-    then show False using * by auto
-  qed
-  then have b: "nn_cond_exp M F g = (\<lambda>x. 0)" unfolding nn_cond_exp_def by simp
-  show ?thesis using a b by simp
-qed
+proof (rule nn_cond_exp_charact)
+{
+  fix A assume [measurable]: "A \<in> sets F"
+  have " \<integral>\<^sup>+x\<in>A. nn_cond_exp M F f x \<partial>M = \<integral>\<^sup>+x. indicator A x * nn_cond_exp M F f x \<partial>M"
+    by (simp add: mult.commute)
+  also have "... = \<integral>\<^sup>+x. indicator A x * f x \<partial>M" by (simp add: nn_cond_exp_intg assms)
+  also have "... = \<integral>\<^sup>+x\<in>A. f x \<partial>M" by (simp add: mult.commute)
+  also have "... = \<integral>\<^sup>+x\<in>A. g x \<partial>M" by (rule nn_set_integral_cong[OF assms(1)])
+  finally show "\<integral>\<^sup>+x\<in>A. g x \<partial>M = \<integral>\<^sup>+x\<in>A. nn_cond_exp M F f x \<partial>M" by simp
+}
+qed (auto simp add: assms)
 
 lemma nn_cond_exp_mono:
-   assumes "AE x in M. f x \<ge> 0" "AE x in M. f x \<le> g x" and
+   assumes "AE x in M. f x \<le> g x" and
            [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
    shows "AE x in M. nn_cond_exp M F f x \<le> nn_cond_exp M F g x"
 proof -
   def h \<equiv> "\<lambda>x. g x - f x"
   have [measurable]: "h \<in> borel_measurable M" unfolding h_def by simp
-  have pos: "AE x in M. h x \<ge> 0" using assms(2) ereal_diff_positive h_def by auto
-  have "AE x in M. f x \<noteq> (-\<infinity>)" using assms(1) by auto
-  then have *: "AE x in M. g x = f x + h x" unfolding h_def using ereal_ineq_diff_add assms(2) by auto
+  have *: "AE x in M. g x = f x + h x" unfolding h_def using assms(1) by (auto simp: ennreal_ineq_diff_add)
   have "AE x in M. nn_cond_exp M F g x = nn_cond_exp M F (\<lambda>x. f x + h x) x"
     by (rule nn_cond_exp_cong) (auto simp add: * assms)
   moreover have "AE x in M. nn_cond_exp M F f x + nn_cond_exp M F h x = nn_cond_exp M F (\<lambda>x. f x + h x) x"
-    by (rule nn_cond_exp_sum) (auto simp add: assms pos)
+    by (rule nn_cond_exp_sum) (auto simp add: assms)
   ultimately have "AE x in M. nn_cond_exp M F g x =  nn_cond_exp M F f x + nn_cond_exp M F h x" by auto
-  moreover have "AE x in M. nn_cond_exp M F h x \<ge> 0" using nn_cond_exp_nonneg by fastforce
-  moreover have "\<And>a b c::ereal. a = b + c \<Longrightarrow> c \<ge> 0 \<Longrightarrow> b \<le> a"
-    by (metis add.commute add.left_neutral ereal_add_le_add_iff2)
-  ultimately show ?thesis by force
+  then show ?thesis by force
 qed
 
 lemma nested_subalg_is_sigma_finite:
@@ -467,7 +427,7 @@ lemma nn_cond_exp_nested_subalg:
   assumes "subalgebra M G" "subalgebra G F"
     "AE x in M. f x \<ge> 0" and [measurable]:  "f \<in> borel_measurable M"
   shows "AE x in M. nn_cond_exp M F f x = nn_cond_exp M F (nn_cond_exp M G f) x"
-proof (rule nn_cond_exp_charact, auto simp add: nn_cond_exp_nonneg)
+proof (rule nn_cond_exp_charact, auto)
   interpret G: sigma_finite_subalgebra M G by (rule nested_subalg_is_sigma_finite[OF assms(1) assms(2)])
   fix A assume [measurable]: "A \<in> sets F"
   then have [measurable]: "A \<in> sets G" using assms(2) by (meson set_mp subalgebra_def)
@@ -491,9 +451,9 @@ One could also define a conditional expectation of vector-space valued functions
 concentrate on it. (It is also essential for the case of the most general Pettis integral.)
  *}
 
-definition real_cond_exp :: "'a measure => 'a measure => ('a => real) \<Rightarrow> ('a \<Rightarrow> real)" where
-  "real_cond_exp M F f = (\<lambda>x. real_of_ereal(nn_cond_exp M F (\<lambda>x. max (f x) (0::ereal)) x)
-                            - real_of_ereal(nn_cond_exp M F (\<lambda>x. max (ereal(-f x)) (0::ereal)) x))"
+definition real_cond_exp :: "'a measure \<Rightarrow> 'a measure \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> ('a \<Rightarrow> real)" where
+  "real_cond_exp M F f =
+    (\<lambda>x. enn2real(nn_cond_exp M F (\<lambda>x. ennreal (f x)) x) - enn2real(nn_cond_exp M F (\<lambda>x. ennreal (-f x)) x))"
 
 lemma
   shows borel_measurable_cond_exp [measurable]:  "real_cond_exp M F f \<in> borel_measurable F"
@@ -505,21 +465,20 @@ begin
 
 lemma real_cond_exp_abs:
   assumes [measurable]: "f \<in> borel_measurable M"
-   shows "AE x in M. abs(real_cond_exp M F f x) \<le> nn_cond_exp M F (\<lambda>x. abs(f x)) x"
+   shows "AE x in M. abs(real_cond_exp M F f x) \<le> nn_cond_exp M F (\<lambda>x. ennreal (abs(f x))) x"
 proof -
-  def fp \<equiv> "\<lambda>x. max (f x) (0::ereal)"
-  def fm \<equiv> "\<lambda>x. max (-f x) (0::ereal)"
+  def fp \<equiv> "\<lambda>x. ennreal (f x)"
+  def fm \<equiv> "\<lambda>x. ennreal (- f x)"
   have [measurable]: "fp \<in> borel_measurable M" "fm \<in> borel_measurable M" unfolding fp_def fm_def by auto
-  have eq: "\<And>x. abs(ereal(f x)) = fp x + fm x" unfolding fp_def fm_def by (simp add: max_def)
+  have eq: "\<And>x. ennreal \<bar>f x\<bar> = fp x + fm x" unfolding fp_def fm_def by (simp add: abs_real_def ennreal_neg)
 
   {
     fix x assume H: "nn_cond_exp M F fp x + nn_cond_exp M F fm x = nn_cond_exp M F (\<lambda>x. fp x + fm x) x"
-    have "real_cond_exp M F f x = real_of_ereal(nn_cond_exp M F fp x) - real_of_ereal(nn_cond_exp M F fm x)"
-      unfolding real_cond_exp_def fp_def fm_def by auto
-    then have "abs(real_cond_exp M F f x) \<le> abs(nn_cond_exp M F fp x) + abs(nn_cond_exp M F fm x)"
-      by (metis ereal_abs_diff abs_ereal.simps(1) ereal_less_eq(1) ereal_minus(1) ereal_plus_eq_PInfty ereal_real)
-    also have "... \<le> nn_cond_exp M F fp x + nn_cond_exp M F fm x"
-      by (simp add: nn_cond_exp_nonneg)
+    have "\<bar>real_cond_exp M F f x\<bar> \<le> \<bar>enn2real(nn_cond_exp M F fp x)\<bar> + \<bar>enn2real(nn_cond_exp M F fm x)\<bar>"
+      unfolding real_cond_exp_def fp_def fm_def by (auto intro: abs_triangle_ineq4 simp del: enn2real_nonneg)
+    from ennreal_leI[OF this]
+    have "abs(real_cond_exp M F f x) \<le> nn_cond_exp M F fp x + nn_cond_exp M F fm x"
+      by simp (metis add.commute ennreal_enn2real le_iff_add not_le top_unique)
     also have "... = nn_cond_exp M F (\<lambda>x. fp x + fm x) x" using H by simp
     finally have "abs(real_cond_exp M F f x) \<le> nn_cond_exp M F (\<lambda>x. fp x + fm x) x" by simp
   }
@@ -539,7 +498,7 @@ is given first assuming $f \geq 0$ for simplicity, and then extended to the gene
 the subsequent lemma. The idea of the proof is essentially trivial, but the implementation
 is slightly tedious as one should check all the integrability properties of the different parts, and go
 back and forth between positive integral and signed integrals, and between real-valued
-functions and ereal-valued functions.
+functions and ennreal-valued functions.
 
 Once this lemma is available, we will use it to characterize the conditional expectation,
 and never come back to the original technical definition, as we did in the case of the
@@ -547,24 +506,23 @@ nonnegative conditional expectation.
 *}
 
 lemma real_cond_exp_intg_fpos:
-  assumes "integrable M (\<lambda>x. f x * g x)" and
-          f_pos: "\<And>x. f x \<ge> 0" and
+  assumes "integrable M (\<lambda>x. f x * g x)" and f_pos[simp]: "\<And>x. f x \<ge> 0" and
           [measurable]: "f \<in> borel_measurable F" "g \<in> borel_measurable M"
   shows  "integrable M (\<lambda>x. f x * real_cond_exp M F g x)"
          "(\<integral> x. f x * real_cond_exp M F g x \<partial>M) = (\<integral> x. f x * g x \<partial>M)"
 proof -
   have [measurable]: "f \<in> borel_measurable M" by (rule measurable_from_subalg[OF subalg assms(3)])
-  def gp \<equiv> "\<lambda>x. max (g x) (0::ereal)"
-  def gm \<equiv> "\<lambda>x. max (-g x) (0::ereal)"
+  def gp \<equiv> "\<lambda>x. ennreal (g x)"
+  def gm \<equiv> "\<lambda>x. ennreal (- g x)"
   have [measurable]: "gp \<in> borel_measurable M" "gm \<in> borel_measurable M" unfolding gp_def gm_def by auto
-  def h \<equiv> "\<lambda>x. ereal(abs(g x))"
-  have hgpgm: "\<And>x. h x = gp x + gm x" unfolding gp_def gm_def h_def  by (simp add: max_def)
+  def h \<equiv> "\<lambda>x. ennreal(abs(g x))"
+  have hgpgm: "\<And>x. h x = gp x + gm x" unfolding gp_def gm_def h_def  by (simp add: abs_real_def ennreal_neg)
   have [measurable]: "h \<in> borel_measurable M" unfolding h_def by simp
-  have pos: "\<And>x. h x \<ge> 0" "\<And>x. gp x \<ge> 0" "\<And>x. gm x \<ge> 0" unfolding h_def gp_def gm_def by simp_all
-  have gp_real: "\<And>x. real_of_ereal(gp x) = max (g x) 0"
-    unfolding gp_def by (metis ereal_max real_of_ereal.simps(1) zero_ereal_def)
-  have gm_real: "\<And>x. real_of_ereal(gm x) = max (-g x) 0"
-    unfolding gm_def by (metis ereal_max real_of_ereal.simps(1) zero_ereal_def)
+  have pos[simp]: "\<And>x. h x \<ge> 0" "\<And>x. gp x \<ge> 0" "\<And>x. gm x \<ge> 0" unfolding h_def gp_def gm_def by simp_all
+  have gp_real: "\<And>x. enn2real(gp x) = max (g x) 0"
+    unfolding gp_def by (simp add: max_def ennreal_neg)
+  have gm_real: "\<And>x. enn2real(gm x) = max (-g x) 0"
+    unfolding gm_def by (simp add: max_def ennreal_neg)
 
   have "(\<integral>\<^sup>+ x. norm(f x * max (g x) 0) \<partial>M) \<le> (\<integral>\<^sup>+ x. norm(f x * g x) \<partial>M)"
     by (simp add: nn_integral_mono)
@@ -579,128 +537,128 @@ proof -
   then have int2: "integrable M (\<lambda>x. f x * max (-g x) 0)" by (simp add: integrableI_bounded)
 
   have " (\<integral>\<^sup>+x. f x * nn_cond_exp M F h x \<partial>M) =  (\<integral>\<^sup>+x. f x * h x \<partial>M)"
-    by (rule nn_cond_exp_intg) (auto simp add: pos)
-  also have "... = (\<integral>\<^sup>+x. abs(f x * g x) \<partial>M)"
-    unfolding h_def by (simp add: abs_mult f_pos)
-  also have "... < \<infinity>" by (auto simp add: assms(1) integrableD(2))
+    by (rule nn_cond_exp_intg) auto
+  also have "\<dots> = \<integral>\<^sup>+ x. ennreal (f x * max (g x) 0 + f x * max (- g x) 0) \<partial>M"
+    unfolding h_def
+    by (intro nn_integral_cong) (auto simp: ennreal_mult abs_mult split: split_max)
+  also have "... < \<infinity>"
+    using integrable_add[OF int1 int2, THEN integrableD(2)] by (auto simp add: less_top)
   finally have *: "(\<integral>\<^sup>+x. f x * nn_cond_exp M F h x \<partial>M) < \<infinity>" by simp
 
   have "(\<integral>\<^sup>+x. norm(f x * real_cond_exp M F g x) \<partial>M) = (\<integral>\<^sup>+x. f x * abs(real_cond_exp M F g x) \<partial>M)"
-    by (simp add: abs_mult f_pos)
+    by (simp add: abs_mult)
   also have "... \<le>  (\<integral>\<^sup>+x. f x * nn_cond_exp M F h x \<partial>M)"
   proof (rule nn_integral_mono_AE)
     {
       fix x assume *: "abs(real_cond_exp M F g x) \<le> nn_cond_exp M F h x"
-      have "ereal (f x * \<bar>real_cond_exp M F g x\<bar>) = f x * ereal(\<bar>real_cond_exp M F g x\<bar>)"
-        by simp
+      have "ennreal (f x * \<bar>real_cond_exp M F g x\<bar>) = f x * ennreal(\<bar>real_cond_exp M F g x\<bar>)"
+        by (simp add: ennreal_mult)
       also have "... \<le> f x * nn_cond_exp M F h x"
-        using * ereal_mult_left_mono f_pos by (metis ereal_less_eq(5))
-      finally have "ereal (f x * \<bar>real_cond_exp M F g x\<bar>) \<le> f x * nn_cond_exp M F h x"
+        using * by (auto intro!: mult_left_mono)
+      finally have "ennreal (f x * \<bar>real_cond_exp M F g x\<bar>) \<le> f x * nn_cond_exp M F h x"
         by simp
     }
-    then show "AE x in M. ereal (f x * \<bar>real_cond_exp M F g x\<bar>) \<le> f x * nn_cond_exp M F h x"
+    then show "AE x in M. ennreal (f x * \<bar>real_cond_exp M F g x\<bar>) \<le> f x * nn_cond_exp M F h x"
       using real_cond_exp_abs[OF assms(4)] h_def by auto
   qed
   finally have **: "(\<integral>\<^sup>+x. norm(f x * real_cond_exp M F g x) \<partial>M) < \<infinity>" using * by auto
   show "integrable M  (\<lambda>x. f x * real_cond_exp M F g x)"
-    apply (rule integrableI_bounded) using ** by auto
+    using ** by (intro integrableI_bounded) auto
 
 
   have "(\<integral>\<^sup>+x. f x * nn_cond_exp M F gp x \<partial>M) \<le> (\<integral>\<^sup>+x. f x * nn_cond_exp M F h x \<partial>M)"
   proof (rule nn_integral_mono_AE)
     have "AE x in M. nn_cond_exp M F gp x \<le> nn_cond_exp M F h x"
-      apply (rule nn_cond_exp_mono) apply (auto simp add: pos hgpgm)  using add_left_mono pos(3) by fastforce
+      by (rule nn_cond_exp_mono) (auto simp add: hgpgm)
     then show "AE x in M. f x * nn_cond_exp M F gp x \<le> f x * nn_cond_exp M F h x"
-      using f_pos ereal_mult_left_mono by auto
+      by (auto simp: mult_left_mono)
   qed
   then have a: "(\<integral>\<^sup>+x. f x * nn_cond_exp M F gp x \<partial>M) < \<infinity>"
     using * by auto
-  have "\<And>x. ereal(norm(f x * real_of_ereal(nn_cond_exp M F gp x))) \<le> f x * nn_cond_exp M F gp x"
-    by (metis abs_ereal.simps(1) abs_ereal_ge0 ereal_0_le_mult ereal_less_eq(5)
-        ereal_mult_zero ereal_real order_refl real_norm_def times_ereal.simps(1) f_pos nn_cond_exp_nonneg)
-  then have "(\<integral>\<^sup>+x. norm(f x * real_of_ereal(nn_cond_exp M F gp x)) \<partial>M) \<le> (\<integral>\<^sup>+x. f x * nn_cond_exp M F gp x \<partial>M)"
+  have "ennreal(norm(f x * enn2real(nn_cond_exp M F gp x))) \<le> f x * nn_cond_exp M F gp x" for x
+    by (auto simp add: ennreal_mult intro!: mult_left_mono)
+       (metis enn2real_ennreal enn2real_nonneg le_cases le_ennreal_iff)
+  then have "(\<integral>\<^sup>+x. norm(f x * enn2real(nn_cond_exp M F gp x)) \<partial>M) \<le> (\<integral>\<^sup>+x. f x * nn_cond_exp M F gp x \<partial>M)"
     by (simp add: nn_integral_mono)
-  then have "(\<integral>\<^sup>+x. norm(f x * real_of_ereal(nn_cond_exp M F gp x)) \<partial>M) < \<infinity>" using a by auto
-  then have gp_int: "integrable M (\<lambda>x. f x * real_of_ereal(nn_cond_exp M F gp x))" by (simp add: integrableI_bounded)
+  then have "(\<integral>\<^sup>+x. norm(f x * enn2real(nn_cond_exp M F gp x)) \<partial>M) < \<infinity>" using a by auto
+  then have gp_int: "integrable M (\<lambda>x. f x * enn2real(nn_cond_exp M F gp x))" by (simp add: integrableI_bounded)
   have gp_fin: "AE x in M. f x * nn_cond_exp M F gp x \<noteq> \<infinity>"
     apply (rule nn_integral_PInf_AE) using a by auto
 
-  have "(\<integral> x. f x * real_of_ereal(nn_cond_exp M F gp x) \<partial>M) = real_of_ereal (\<integral>\<^sup>+ x. f x * real_of_ereal(nn_cond_exp M F gp x) \<partial>M)"
-    by (rule integral_eq_nn_integral) (auto simp add: f_pos nn_cond_exp_nonneg real_of_ereal_pos)
-  also have "... = real_of_ereal(\<integral>\<^sup>+ x. ereal(f x * real_of_ereal(gp x)) \<partial>M)"
+  have "(\<integral> x. f x * enn2real(nn_cond_exp M F gp x) \<partial>M) = enn2real (\<integral>\<^sup>+ x. f x * enn2real(nn_cond_exp M F gp x) \<partial>M)"
+    by (rule integral_eq_nn_integral) auto
+  also have "... = enn2real(\<integral>\<^sup>+ x. ennreal(f x * enn2real(gp x)) \<partial>M)"
   proof -
     {
       fix x assume "f x * nn_cond_exp M F gp x \<noteq> \<infinity>"
-      then have "ereal (f x * real_of_ereal (nn_cond_exp M F gp x)) = ereal (f x) * nn_cond_exp M F gp x"
-        by (metis abs_ereal_ge0 ereal_0_le_mult ereal_less_eq(5) ereal_real' f_pos
-            nn_cond_exp_nonneg real_of_ereal.simps(1) real_of_ereal_mult)
+      then have "ennreal (f x * enn2real (nn_cond_exp M F gp x)) = ennreal (f x) * nn_cond_exp M F gp x"
+        by (auto simp add: ennreal_mult ennreal_mult_eq_top_iff less_top intro!: ennreal_mult_left_cong)
     }
-    then have "AE x in M. ereal (f x * real_of_ereal (nn_cond_exp M F gp x)) = ereal (f x) * nn_cond_exp M F gp x"
+    then have "AE x in M. ennreal (f x * enn2real (nn_cond_exp M F gp x)) = ennreal (f x) * nn_cond_exp M F gp x"
       using gp_fin by auto
-    then have "(\<integral>\<^sup>+ x. f x * real_of_ereal(nn_cond_exp M F gp x) \<partial>M) = (\<integral>\<^sup>+ x. f x * nn_cond_exp M F gp x \<partial>M)"
+    then have "(\<integral>\<^sup>+ x. f x * enn2real(nn_cond_exp M F gp x) \<partial>M) = (\<integral>\<^sup>+ x. f x * nn_cond_exp M F gp x \<partial>M)"
       by (rule nn_integral_cong_AE)
     also have "... = (\<integral>\<^sup>+ x. f x * gp x \<partial>M)"
       by (rule nn_cond_exp_intg) (auto simp add: gp_def)
-    also have "... =  (\<integral>\<^sup>+ x. ereal(f x * real_of_ereal(gp x)) \<partial>M)"
-      by (rule nn_integral_cong_AE, metis (mono_tags, lifting) ereal_max gp_def gp_real not_eventuallyD times_ereal.simps(1) zero_ereal_def)
-    finally have "(\<integral>\<^sup>+ x. f x * real_of_ereal(nn_cond_exp M F gp x) \<partial>M) = (\<integral>\<^sup>+ x. ereal(f x * real_of_ereal(gp x)) \<partial>M)" by simp
+    also have "... =  (\<integral>\<^sup>+ x. ennreal(f x * enn2real(gp x)) \<partial>M)"
+      by (rule nn_integral_cong_AE) (auto simp: ennreal_mult gp_def)
+    finally have "(\<integral>\<^sup>+ x. f x * enn2real(nn_cond_exp M F gp x) \<partial>M) = (\<integral>\<^sup>+ x. ennreal(f x * enn2real(gp x)) \<partial>M)" by simp
     then show ?thesis by simp
   qed
-  also have "... = (\<integral> x. f x * real_of_ereal(gp x) \<partial>M)"
-    by (rule integral_eq_nn_integral[symmetric]) (auto simp add: f_pos gp_def real_of_ereal_pos)
-  finally have gp_expr: "(\<integral> x. f x * real_of_ereal(nn_cond_exp M F gp x) \<partial>M) =  (\<integral> x. f x * real_of_ereal(gp x) \<partial>M)" by simp
+  also have "... = (\<integral> x. f x * enn2real(gp x) \<partial>M)"
+    by (rule integral_eq_nn_integral[symmetric]) (auto simp add: gp_def)
+  finally have gp_expr: "(\<integral> x. f x * enn2real(nn_cond_exp M F gp x) \<partial>M) =  (\<integral> x. f x * enn2real(gp x) \<partial>M)" by simp
 
 
   have "(\<integral>\<^sup>+x. f x * nn_cond_exp M F gm x \<partial>M) \<le> (\<integral>\<^sup>+x. f x * nn_cond_exp M F h x \<partial>M)"
   proof (rule nn_integral_mono_AE)
     have "AE x in M. nn_cond_exp M F gm x \<le> nn_cond_exp M F h x"
-      apply (rule nn_cond_exp_mono) apply (auto simp add: pos hgpgm)  using add_right_mono pos(2) by fastforce
+      by (rule nn_cond_exp_mono) (auto simp add: hgpgm)
     then show "AE x in M. f x * nn_cond_exp M F gm x \<le> f x * nn_cond_exp M F h x"
-      using f_pos ereal_mult_left_mono by auto
+      by (auto simp: mult_left_mono)
   qed
   then have a: "(\<integral>\<^sup>+x. f x * nn_cond_exp M F gm x \<partial>M) < \<infinity>"
     using * by auto
-  have "\<And>x. ereal(norm(f x * real_of_ereal(nn_cond_exp M F gm x))) \<le> f x * nn_cond_exp M F gm x"
-    by (metis abs_ereal.simps(1) abs_ereal_ge0 ereal_0_le_mult ereal_less_eq(5)
-        ereal_mult_zero ereal_real order_refl real_norm_def times_ereal.simps(1) f_pos nn_cond_exp_nonneg)
-  then have "(\<integral>\<^sup>+x. norm(f x * real_of_ereal(nn_cond_exp M F gm x)) \<partial>M) \<le> (\<integral>\<^sup>+x. f x * nn_cond_exp M F gm x \<partial>M)"
+  have "\<And>x. ennreal(norm(f x * enn2real(nn_cond_exp M F gm x))) \<le> f x * nn_cond_exp M F gm x"
+    by (auto simp add: ennreal_mult intro!: mult_left_mono)
+       (metis enn2real_ennreal enn2real_nonneg le_cases le_ennreal_iff)
+  then have "(\<integral>\<^sup>+x. norm(f x * enn2real(nn_cond_exp M F gm x)) \<partial>M) \<le> (\<integral>\<^sup>+x. f x * nn_cond_exp M F gm x \<partial>M)"
     by (simp add: nn_integral_mono)
-  then have "(\<integral>\<^sup>+x. norm(f x * real_of_ereal(nn_cond_exp M F gm x)) \<partial>M) < \<infinity>" using a by auto
-  then have gm_int: "integrable M (\<lambda>x. f x * real_of_ereal(nn_cond_exp M F gm x))" by (simp add: integrableI_bounded)
+  then have "(\<integral>\<^sup>+x. norm(f x * enn2real(nn_cond_exp M F gm x)) \<partial>M) < \<infinity>" using a by auto
+  then have gm_int: "integrable M (\<lambda>x. f x * enn2real(nn_cond_exp M F gm x))" by (simp add: integrableI_bounded)
   have gm_fin: "AE x in M. f x * nn_cond_exp M F gm x \<noteq> \<infinity>"
     apply (rule nn_integral_PInf_AE) using a by auto
 
-  have "(\<integral> x. f x * real_of_ereal(nn_cond_exp M F gm x) \<partial>M) = real_of_ereal (\<integral>\<^sup>+ x. f x * real_of_ereal(nn_cond_exp M F gm x) \<partial>M)"
-    by (rule integral_eq_nn_integral) (auto simp add: f_pos nn_cond_exp_nonneg real_of_ereal_pos)
-  also have "... = real_of_ereal(\<integral>\<^sup>+ x. ereal(f x * real_of_ereal(gm x)) \<partial>M)"
+  have "(\<integral> x. f x * enn2real(nn_cond_exp M F gm x) \<partial>M) = enn2real (\<integral>\<^sup>+ x. f x * enn2real(nn_cond_exp M F gm x) \<partial>M)"
+    by (rule integral_eq_nn_integral) auto
+  also have "... = enn2real(\<integral>\<^sup>+ x. ennreal(f x * enn2real(gm x)) \<partial>M)"
   proof -
     {
       fix x assume "f x * nn_cond_exp M F gm x \<noteq> \<infinity>"
-      then have "ereal (f x * real_of_ereal (nn_cond_exp M F gm x)) = ereal (f x) * nn_cond_exp M F gm x"
-        by (metis abs_ereal_ge0 ereal_0_le_mult ereal_less_eq(5) ereal_real' f_pos
-            nn_cond_exp_nonneg real_of_ereal.simps(1) real_of_ereal_mult)
+      then have "ennreal (f x * enn2real (nn_cond_exp M F gm x)) = ennreal (f x) * nn_cond_exp M F gm x"
+        by (auto simp add: ennreal_mult ennreal_mult_eq_top_iff less_top intro!: ennreal_mult_left_cong)
     }
-    then have "AE x in M. ereal (f x * real_of_ereal (nn_cond_exp M F gm x)) = ereal (f x) * nn_cond_exp M F gm x"
+    then have "AE x in M. ennreal (f x * enn2real (nn_cond_exp M F gm x)) = ennreal (f x) * nn_cond_exp M F gm x"
       using gm_fin by auto
-    then have "(\<integral>\<^sup>+ x. f x * real_of_ereal(nn_cond_exp M F gm x) \<partial>M) = (\<integral>\<^sup>+ x. f x * nn_cond_exp M F gm x \<partial>M)"
+    then have "(\<integral>\<^sup>+ x. f x * enn2real(nn_cond_exp M F gm x) \<partial>M) = (\<integral>\<^sup>+ x. f x * nn_cond_exp M F gm x \<partial>M)"
       by (rule nn_integral_cong_AE)
     also have "... =  (\<integral>\<^sup>+ x. f x * gm x \<partial>M)"
       by (rule nn_cond_exp_intg) (auto simp add: gm_def)
-    also have "... =  (\<integral>\<^sup>+ x. ereal(f x * real_of_ereal(gm x)) \<partial>M)"
-      by (rule nn_integral_cong_AE, metis (mono_tags, lifting) ereal_max gm_def gm_real not_eventuallyD times_ereal.simps(1) zero_ereal_def)
-    finally have "(\<integral>\<^sup>+ x. f x * real_of_ereal(nn_cond_exp M F gm x) \<partial>M) = (\<integral>\<^sup>+ x. ereal(f x * real_of_ereal(gm x)) \<partial>M)" by simp
+    also have "... =  (\<integral>\<^sup>+ x. ennreal(f x * enn2real(gm x)) \<partial>M)"
+      by (rule nn_integral_cong_AE) (auto simp: ennreal_mult gm_def)
+    finally have "(\<integral>\<^sup>+ x. f x * enn2real(nn_cond_exp M F gm x) \<partial>M) = (\<integral>\<^sup>+ x. ennreal(f x * enn2real(gm x)) \<partial>M)" by simp
     then show ?thesis by simp
   qed
-  also have "... = (\<integral> x. f x * real_of_ereal(gm x) \<partial>M)"
-    by (rule integral_eq_nn_integral[symmetric]) (auto simp add: f_pos gm_def real_of_ereal_pos)
-  finally have gm_expr: "(\<integral> x. f x * real_of_ereal(nn_cond_exp M F gm x) \<partial>M) =  (\<integral> x. f x * real_of_ereal(gm x) \<partial>M)" by simp
+  also have "... = (\<integral> x. f x * enn2real(gm x) \<partial>M)"
+    by (rule integral_eq_nn_integral[symmetric]) (auto simp add: gm_def)
+  finally have gm_expr: "(\<integral> x. f x * enn2real(nn_cond_exp M F gm x) \<partial>M) =  (\<integral> x. f x * enn2real(gm x) \<partial>M)" by simp
 
 
-  have "(\<integral> x. f x * real_cond_exp M F g x \<partial>M) =  (\<integral> x. f x * real_of_ereal(nn_cond_exp M F gp x) - f x * real_of_ereal(nn_cond_exp M F gm x) \<partial>M)"
+  have "(\<integral> x. f x * real_cond_exp M F g x \<partial>M) =  (\<integral> x. f x * enn2real(nn_cond_exp M F gp x) - f x * enn2real(nn_cond_exp M F gm x) \<partial>M)"
     unfolding real_cond_exp_def gp_def gm_def by (simp add: right_diff_distrib)
-  also have "... =  (\<integral> x. f x * real_of_ereal(nn_cond_exp M F gp x) \<partial>M) -  (\<integral> x. f x * real_of_ereal(nn_cond_exp M F gm x) \<partial>M)"
+  also have "... =  (\<integral> x. f x * enn2real(nn_cond_exp M F gp x) \<partial>M) -  (\<integral> x. f x * enn2real(nn_cond_exp M F gm x) \<partial>M)"
     by (rule integral_diff) (simp_all add: gp_int gm_int)
-  also have "... = (\<integral> x. f x * real_of_ereal(gp x) \<partial>M) - (\<integral> x. f x * real_of_ereal(gm x) \<partial>M)"
+  also have "... = (\<integral> x. f x * enn2real(gp x) \<partial>M) - (\<integral> x. f x * enn2real(gm x) \<partial>M)"
     using gp_expr gm_expr by simp
   also have "... = (\<integral> x. f x * max (g x) 0 \<partial>M) - (\<integral> x. f x * max (-g x) 0 \<partial>M)"
     using gp_real gm_real by simp
@@ -867,13 +825,12 @@ proof (rule real_cond_exp_charact)
 qed (auto simp add: assms)
 
 lemma real_cond_exp_cong:
-   assumes "AE x in M. f x = g x" and
-           [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
+   assumes ae: "AE x in M. f x = g x" and [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
    shows "AE x in M. real_cond_exp M F f x = real_cond_exp M F g x"
 proof -
-  have "AE x in M. nn_cond_exp M F (\<lambda>x. max (f x) (0::ereal)) x = nn_cond_exp M F (\<lambda>x. max (g x) (0::ereal)) x"
+  have "AE x in M. nn_cond_exp M F (\<lambda>x. ennreal (f x)) x = nn_cond_exp M F (\<lambda>x. ennreal (g x)) x"
     apply (rule nn_cond_exp_cong) using assms by auto
-  moreover have "AE x in M. nn_cond_exp M F (\<lambda>x. max (ereal(-f x)) (0::ereal)) x = nn_cond_exp M F (\<lambda>x. max (ereal(-g x)) (0::ereal)) x"
+  moreover have "AE x in M. nn_cond_exp M F (\<lambda>x. ennreal (-f x)) x = nn_cond_exp M F (\<lambda>x. ennreal(-g x)) x"
     apply (rule nn_cond_exp_cong) using assms by auto
   ultimately show "AE x in M. real_cond_exp M F f x = real_cond_exp M F g x"
     unfolding real_cond_exp_def by auto
@@ -905,15 +862,15 @@ proof -
   then have *: "AE x in M. real_cond_exp M F f x = real_cond_exp M F g x" using real_cond_exp_cong g_def by auto
 
   have "\<And>x. g x \<ge> 0" unfolding g_def by simp
-  then have " (\<lambda>x. max (ereal(-g x)) (0::ereal)) =  (\<lambda>x. 0)"
-    by (simp add: max_def)
+  then have " (\<lambda>x. ennreal(-g x)) =  (\<lambda>x. 0)"
+    by (simp add: ennreal_neg)
   moreover have "AE x in M. 0 = nn_cond_exp M F (\<lambda>x. 0) x"
     by (rule nn_cond_exp_F_meas, auto)
-  ultimately have "AE x in M. nn_cond_exp M F (\<lambda>x. max (ereal(-g x)) (0::ereal)) x = 0"
+  ultimately have "AE x in M. nn_cond_exp M F (\<lambda>x. ennreal(-g x)) x = 0"
     by simp
-  then have "AE x in M. real_cond_exp M F g x = real_of_ereal(nn_cond_exp M F (\<lambda>x. max (g x) (0::ereal)) x)"
+  then have "AE x in M. real_cond_exp M F g x = enn2real(nn_cond_exp M F (\<lambda>x. ennreal (g x)) x)"
     unfolding real_cond_exp_def by auto
-  then have "AE x in M. real_cond_exp M F g x \<ge> 0" by (auto simp add: nn_cond_exp_nonneg real_of_ereal_pos)
+  then have "AE x in M. real_cond_exp M F g x \<ge> 0" by auto
   then show ?thesis using * by auto
 qed
 

@@ -118,13 +118,16 @@ lemma lebesgue_integral_point_measure:
   fixes g :: "_ \<Rightarrow> real"
   assumes f: "finite {a\<in>A. 0 < f a \<and> g a \<noteq> 0}"
   shows "integral\<^sup>L (point_measure A f) g = (\<Sum>a|a\<in>A \<and> 0 < f a \<and> g a \<noteq> 0. f a * g a)"
+
 proof -
   have eq: "{a \<in> A. max 0 (f a) \<noteq> 0 \<and> g a \<noteq> 0} = {a\<in>A. 0 < f a \<and> g a \<noteq> 0}"
     by auto
+  have *: "ennreal (f x) = ennreal (max 0 (f x))" for x
+    by (cases "0 \<le> f x") (auto simp: max.absorb1 ennreal_neg)
+
   show ?thesis
-    unfolding point_measure_def
+    unfolding point_measure_def *
     using f
-    apply (subst density_ereal_max_0)
     apply (subst integral_real_density)
     apply (auto simp add: integral_real_density lebesgue_integral_count_space_finite_support eq
       intro!: setsum.cong)

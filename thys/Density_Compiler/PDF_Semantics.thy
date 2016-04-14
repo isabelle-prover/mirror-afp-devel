@@ -24,7 +24,7 @@ next
   interpret sigma_finite_measure N by fact
   fix X assume X: "X \<in> sets N"
   hence "(\<lambda>x. (\<integral>\<^sup>+y. f x y * indicator X y \<partial>N)) \<in> borel_measurable M" by simp
-  moreover from X and assms have 
+  moreover from X and assms have
       "\<And>x. x \<in> space M \<Longrightarrow> emeasure (density N (f x)) X = (\<integral>\<^sup>+y. f x y * indicator X y \<partial>N)"
     by (simp add: emeasure_density)
   ultimately show "(\<lambda>x. emeasure (density N (f x)) X) \<in> borel_measurable M"
@@ -35,7 +35,7 @@ section {* Built-in Probability Distributions *}
 
 subsection {* Bernoulli *}
 
-definition bernoulli_density :: "real \<Rightarrow> bool \<Rightarrow> ereal" where
+definition bernoulli_density :: "real \<Rightarrow> bool \<Rightarrow> ennreal" where
   "bernoulli_density p b = (if p \<in> {0..1} then (if b then p else 1 - p) else 0)"
 
 definition bernoulli :: "val \<Rightarrow> val measure" where
@@ -48,15 +48,17 @@ lemma measurable_bernoulli_density[measurable]:
 lemma measurable_bernoulli[measurable]: "bernoulli \<in> measurable REAL (subprob_algebra BOOL)"
   unfolding bernoulli_def[abs_def]
   by (auto intro!: measurable_subprob_algebra_density
-           simp: measurable_split_conv nn_integral_BoolVal bernoulli_density_def)
+           simp: measurable_split_conv nn_integral_BoolVal bernoulli_density_def
+             ennreal_plus[symmetric]
+           simp del: ennreal_plus)
 
 subsection {* Uniform *}
 
-definition uniform_real_density :: "real \<times> real \<Rightarrow> real \<Rightarrow> ereal" where
-  "uniform_real_density \<equiv> \<lambda>(a,b) x. (if a < b \<and> x \<in> {a..b} then inverse (b - a) else 0)"
+definition uniform_real_density :: "real \<times> real \<Rightarrow> real \<Rightarrow> ennreal" where
+  "uniform_real_density \<equiv> \<lambda>(a,b) x. ennreal (if a < b \<and> x \<in> {a..b} then inverse (b - a) else 0)"
 
-definition uniform_int_density :: "int \<times> int \<Rightarrow> int \<Rightarrow> ereal" where
-  "uniform_int_density \<equiv> \<lambda>(a,b) x. (if x \<in> {a..b} then inverse (b - a + 1) else 0)"
+definition uniform_int_density :: "int \<times> int \<Rightarrow> int \<Rightarrow> ennreal" where
+  "uniform_int_density \<equiv> \<lambda>(a,b) x. (if x \<in> {a..b} then inverse (nat (b - a + 1)) else 0)"
 
 lemma measurable_uniform_density_int[measurable]:
   "(case_prod uniform_int_density)
@@ -81,7 +83,7 @@ definition uniform_int :: "val \<Rightarrow> val measure" where
 definition uniform_real :: "val \<Rightarrow> val measure" where
   "uniform_real = map_real_pair (\<lambda>l u. density REAL (uniform_real_density (l,u) o extract_real)) (\<lambda>_. undefined)"
 
-lemma if_bounded: "(if a \<le> i \<and> i \<le> b then v else 0) = (v::ereal) * indicator {a .. b} i"
+lemma if_bounded: "(if a \<le> i \<and> i \<le> b then v else 0) = (v::real) * indicator {a .. b} i"
   by auto
 
 lemma measurable_uniform_int[measurable]:
@@ -95,7 +97,9 @@ proof (rule measurable measurable_subprob_algebra_density)+
     assume "fst x \<le> snd x" then show ?thesis
       by (cases x)
          (simp add: uniform_int_density_def comp_def nn_integral_IntVal nn_integral_cmult
-                    if_bounded[where 'a=int])
+                    nn_integral_set_ennreal[symmetric] ennreal_of_nat_eq_real_of_nat
+                    if_bounded[where 'a=int] ennreal_mult[symmetric]
+               del: ennreal_plus)
   qed (simp add: uniform_int_density_def comp_def split_beta' if_bounded[where 'a=int])
 qed (auto simp: comp_def)
 
@@ -109,25 +113,26 @@ lemma measurable_uniform_real[measurable]:
   unfolding uniform_real_def
 proof (rule measurable measurable_subprob_algebra_density)+
   fix x :: "real \<times> real"
-  obtain l u where [simp]: "x = (l, u)" 
+  obtain l u where [simp]: "x = (l, u)"
     by (cases x) auto
   show "(\<integral>\<^sup>+y. (uniform_real_density (fst x, snd x) o extract_real) y \<partial>REAL) \<le> 1"
   proof cases
     assume "l < u" then show ?thesis
-      by (simp add: nn_integral_RealVal uniform_real_density_def if_bounded nn_integral_cmult)
+      by (simp add: nn_integral_RealVal uniform_real_density_def if_bounded nn_integral_cmult
+                    nn_integral_set_ennreal[symmetric] ennreal_mult[symmetric])
   qed (simp add: uniform_real_density_def comp_def)
 qed (auto simp: comp_def borel_prod)
 
 subsection {* Gaussian *}
 
-definition gaussian_density :: "real \<times> real \<Rightarrow> real \<Rightarrow> ereal" where
-  "gaussian_density \<equiv> 
+definition gaussian_density :: "real \<times> real \<Rightarrow> real \<Rightarrow> ennreal" where
+  "gaussian_density \<equiv>
       \<lambda>(m,s) x. (if s > 0 then exp (-(x - m)\<^sup>2 / (2 * s\<^sup>2)) / sqrt (2 * pi * s\<^sup>2) else 0)"
 
 lemma measurable_gaussian_density[measurable]:
   "case_prod gaussian_density \<in> borel_measurable (borel \<Otimes>\<^sub>M borel)"
 proof-
-  have "case_prod gaussian_density = 
+  have "case_prod gaussian_density =
               (\<lambda>(x,y). (if snd x > 0 then exp (-((y - fst x)^2) / (2 * snd x^2)) /
                              sqrt (2 * pi * snd x^2) else 0))"
     unfolding gaussian_density_def by (intro ext) (simp split: prod.split)
@@ -156,13 +161,13 @@ proof (rule measurable measurable_subprob_algebra_density)+
   next
     assume "\<not> snd x > 0" then show ?thesis
       by (cases x)
-         (simp add: nn_integral_RealVal comp_def gaussian_density_def zero_ereal_def[symmetric])
+         (simp add: nn_integral_RealVal comp_def gaussian_density_def zero_ennreal_def[symmetric])
   qed
 qed (auto simp: comp_def borel_prod)
 
 subsection {* Poisson *}
 
-definition poisson_density' :: "real \<Rightarrow> int \<Rightarrow> ereal" where
+definition poisson_density' :: "real \<Rightarrow> int \<Rightarrow> ennreal" where
   "poisson_density' rate k = pmf (poisson_pmf rate) (nat k) * indicator ({0 <..} \<times> {0..}) (rate, k)"
 
 lemma measurable_poisson_density'[measurable]:
@@ -186,17 +191,17 @@ proof (rule measurable measurable_subprob_algebra_density)+
     by (auto simp: image_iff intro!: bexI[of _ "int x" for x])
 
   { assume "0 < r"
-    then have "(\<integral>\<^sup>+ x. ereal (r ^ nat x * exp (- r) * indicator ({0<..} \<times> {0..}) (r, x) / (fact (nat x))) \<partial>count_space UNIV)
-      = (\<integral>\<^sup>+ x. ereal (pmf (poisson_pmf r) (nat x)) \<partial>count_space {0 ..})"
+    then have "(\<integral>\<^sup>+ x. ennreal (r ^ nat x * exp (- r) * indicator ({0<..} \<times> {0..}) (r, x) / (fact (nat x))) \<partial>count_space UNIV)
+      = (\<integral>\<^sup>+ x. ennreal (pmf (poisson_pmf r) (nat x)) \<partial>count_space {0 ..})"
       by (auto intro!: nn_integral_cong simp add: nn_integral_count_space_indicator split: split_indicator)
     also have "\<dots> = 1"
       using measure_pmf.emeasure_space_1[of "poisson_pmf r"]
       by (subst nn_integral_pmf') (auto simp: inj_on_def)
-    finally have "(\<integral>\<^sup>+ x. ereal (r ^ nat x * exp (- r) * indicator ({0<..} \<times> {0..}) (r, x) / (fact (nat x))) \<partial>count_space UNIV) = 1"
+    finally have "(\<integral>\<^sup>+ x. ennreal (r ^ nat x * exp (- r) * indicator ({0<..} \<times> {0..}) (r, x) / (fact (nat x))) \<partial>count_space UNIV) = 1"
       . }
   then show "integral\<^sup>N INTEG (poisson_density' r \<circ> extract_int) \<le> 1"
     by (cases "0 < r")
-       (auto simp: nn_integral_IntVal poisson_density'_def zero_ereal_def[symmetric])
+       (auto simp: nn_integral_IntVal poisson_density'_def zero_ennreal_def[symmetric])
 qed (auto simp: comp_def)
 
 section {* Source Language Syntax and Semantics *}
@@ -207,11 +212,11 @@ class expr = fixes free_vars :: "'a \<Rightarrow> vname set"
 
 datatype pdf_dist = Bernoulli | UniformInt | UniformReal | Poisson | Gaussian
 
-datatype pdf_operator = Fst | Snd | Add | Mult | Minus | Less | Equals | And | Not | Or | Pow | 
+datatype pdf_operator = Fst | Snd | Add | Mult | Minus | Less | Equals | And | Not | Or | Pow |
                         Sqrt | Exp | Ln | Fact | Inverse | Pi | Cast pdf_type
 
 datatype expr =
-      Var vname 
+      Var vname
     | Val val
     | LetVar expr expr ("LET _ IN _" [0, 60] 61)
     | Operator pdf_operator expr (infixl "$$" 999)
@@ -232,7 +237,7 @@ primrec free_vars_expr :: "expr \<Rightarrow> vname set" where
 | "free_vars_expr (Operator _ e) = free_vars_expr e"
 | "free_vars_expr (<e1, e2>) = free_vars_expr e1 \<union> free_vars_expr e2"
 | "free_vars_expr (Random _ e) = free_vars_expr e"
-| "free_vars_expr (IF b THEN e1 ELSE e2) = 
+| "free_vars_expr (IF b THEN e1 ELSE e2) =
        free_vars_expr b \<union> free_vars_expr e1 \<union> free_vars_expr e2"
 | "free_vars_expr (Fail _) = {}"
 
@@ -242,12 +247,12 @@ end
 primrec free_vars_expr_code :: "expr \<Rightarrow> vname set" where
   "free_vars_expr_code (Var x) = {x}"
 | "free_vars_expr_code (Val _) = {}"
-| "free_vars_expr_code (LetVar e1 e2) = 
+| "free_vars_expr_code (LetVar e1 e2) =
       free_vars_expr_code e1 \<union> (\<lambda>x. x - 1) ` (free_vars_expr_code e2 - {0})"
 | "free_vars_expr_code (Operator _ e) = free_vars_expr_code e"
 | "free_vars_expr_code (<e1, e2>) = free_vars_expr_code e1 \<union> free_vars_expr_code e2"
 | "free_vars_expr_code (Random _ e) = free_vars_expr_code e"
-| "free_vars_expr_code (IF b THEN e1 ELSE e2) = 
+| "free_vars_expr_code (IF b THEN e1 ELSE e2) =
        free_vars_expr_code b \<union> free_vars_expr_code e1 \<union> free_vars_expr_code e2"
 | "free_vars_expr_code (Fail _) = {}"
 
@@ -285,16 +290,16 @@ lemma measurable_dist_measure[measurable]:
   by (cases d) simp_all
 
 lemma sets_dist_measure[simp]:
-  "val_type x = dist_param_type dst \<Longrightarrow> 
+  "val_type x = dist_param_type dst \<Longrightarrow>
        sets (dist_measure dst x) = sets (stock_measure (dist_result_type dst))"
   by (rule sets_kernel[OF measurable_dist_measure]) simp
 
 lemma space_dist_measure[simp]:
-  "val_type x = dist_param_type dst \<Longrightarrow> 
+  "val_type x = dist_param_type dst \<Longrightarrow>
        space (dist_measure dst x) = type_universe (dist_result_type dst)"
   by (subst space_stock_measure[symmetric]) (intro sets_eq_imp_space_eq sets_dist_measure)
 
-primrec dist_dens :: "pdf_dist \<Rightarrow> val \<Rightarrow> val \<Rightarrow> ereal" where
+primrec dist_dens :: "pdf_dist \<Rightarrow> val \<Rightarrow> val \<Rightarrow> ennreal" where
   "dist_dens Bernoulli x y = bernoulli_density (extract_real x) (extract_bool y)"
 | "dist_dens UniformInt x y = uniform_int_density (extract_int_pair x) (extract_int y)"
 | "dist_dens UniformReal x y = uniform_real_density (extract_real_pair x) (extract_real y)"
@@ -309,13 +314,8 @@ lemma measurable_dist_dens[measurable]:
   apply (subst dist_dens_def, cases dst, simp_all)
   done
 
-lemma dist_dens_nonneg: "dist_dens dst x y \<ge> 0"
-  by (cases dst)
-     (auto simp: bernoulli_density_def uniform_int_density_def uniform_real_density_def
-                 poisson_density'_def gaussian_density_def split_beta' pmf_nonneg)
-
 lemma dist_measure_has_density:
-  "v \<in> type_universe (dist_param_type dst) \<Longrightarrow> 
+  "v \<in> type_universe (dist_param_type dst) \<Longrightarrow>
        has_density (dist_measure dst v) (stock_measure (dist_result_type dst)) (dist_dens dst v)"
 proof (intro has_densityI)
   fix v assume "v \<in> type_universe (dist_param_type dst)"
@@ -323,16 +323,16 @@ proof (intro has_densityI)
     by (cases dst)
        (auto simp: bernoulli_def uniform_int_def uniform_real_def poisson_def gaussian_def
              intro!: density_cong' elim!: PROD_E REAL_E INTEG_E)
-qed (insert dist_dens_nonneg, simp_all)
+qed simp_all
 
-lemma subprob_space_dist_measure: 
+lemma subprob_space_dist_measure:
     "v \<in> type_universe (dist_param_type dst) \<Longrightarrow> subprob_space (dist_measure dst v)"
   using subprob_space_kernel[OF measurable_dist_measure, of v dst] by simp
 
 lemma dist_measure_has_subprob_density:
-  "v \<in> type_universe (dist_param_type dst) \<Longrightarrow> 
+  "v \<in> type_universe (dist_param_type dst) \<Longrightarrow>
        has_subprob_density (dist_measure dst v) (stock_measure (dist_result_type dst)) (dist_dens dst v)"
-  unfolding has_subprob_density_def 
+  unfolding has_subprob_density_def
   by (auto intro: subprob_space_dist_measure dist_measure_has_density)
 
 lemma dist_dens_integral_space:
@@ -355,26 +355,26 @@ qed
 subsection {* Typing *}
 
 primrec op_type :: "pdf_operator \<Rightarrow> pdf_type \<Rightarrow> pdf_type option" where
-  "op_type Add x = 
-      (case x of 
+  "op_type Add x =
+      (case x of
          PRODUCT INTEG INTEG \<Rightarrow> Some INTEG
        | PRODUCT REAL REAL \<Rightarrow> Some REAL
        | _ \<Rightarrow> None)"
-| "op_type Mult x = 
-      (case x of 
+| "op_type Mult x =
+      (case x of
          PRODUCT INTEG INTEG \<Rightarrow> Some INTEG
        | PRODUCT REAL REAL \<Rightarrow> Some REAL
        | _ \<Rightarrow> None)"
-| "op_type Minus x = 
+| "op_type Minus x =
       (case x of
          INTEG \<Rightarrow> Some INTEG
        | REAL \<Rightarrow> Some REAL
        | _ \<Rightarrow> None)"
-| "op_type Equals x = 
-      (case x of 
+| "op_type Equals x =
+      (case x of
          PRODUCT t1 t2 \<Rightarrow> if t1 = t2 then Some BOOL else None
        | _ \<Rightarrow> None)"
-| "op_type Less x = 
+| "op_type Less x =
       (case x of
          PRODUCT INTEG INTEG \<Rightarrow> Some BOOL
        | PRODUCT REAL REAL \<Rightarrow> Some BOOL
@@ -395,7 +395,7 @@ primrec op_type :: "pdf_operator \<Rightarrow> pdf_type \<Rightarrow> pdf_type o
 | "op_type Exp x = (case x of REAL \<Rightarrow> Some REAL | _ \<Rightarrow> None)"
 | "op_type Ln x = (case x of REAL \<Rightarrow> Some REAL | _ \<Rightarrow> None)"
 | "op_type Pi x = (case x of UNIT \<Rightarrow> Some REAL | _ \<Rightarrow> None)"
-| "op_type Pow x = (case x of 
+| "op_type Pow x = (case x of
                       PRODUCT REAL INTEG \<Rightarrow> Some REAL
                     | PRODUCT INTEG INTEG \<Rightarrow> Some INTEG
                     | _ \<Rightarrow> None)"
@@ -409,8 +409,8 @@ abbreviation (input) de_bruijn_insert (infixr "\<cdot>" 65) where
   "de_bruijn_insert x f \<equiv> case_nat x f"
 
 inductive expr_typing :: "tyenv \<Rightarrow> expr \<Rightarrow> pdf_type \<Rightarrow> bool" ("(1_/ \<turnstile>/ (_ :/ _))" [50,0,50] 50) where
-  et_var:  "\<Gamma> \<turnstile> Var x : \<Gamma> x" 
-| et_val:  "\<Gamma> \<turnstile> Val v : val_type v" 
+  et_var:  "\<Gamma> \<turnstile> Var x : \<Gamma> x"
+| et_val:  "\<Gamma> \<turnstile> Val v : val_type v"
 | et_let:  "\<Gamma> \<turnstile> e1 : t1 \<Longrightarrow> t1 \<cdot> \<Gamma> \<turnstile> e2 : t2 \<Longrightarrow> \<Gamma> \<turnstile> LetVar e1 e2 : t2"
 | et_op:   "\<Gamma> \<turnstile> e : t \<Longrightarrow> op_type oper t = Some t' \<Longrightarrow> \<Gamma> \<turnstile> Operator oper e : t'"
 | et_pair: "\<Gamma> \<turnstile> e1 : t1  \<Longrightarrow> \<Gamma> \<turnstile> e2 : t2 \<Longrightarrow>  \<Gamma> \<turnstile> <e1, e2> : PRODUCT t1 t2"
@@ -423,7 +423,7 @@ lemma expr_typing_cong':
 proof (induction arbitrary: \<Gamma>' rule: expr_typing.induct)
   case (et_let \<Gamma> e1 t1 e2 t2 \<Gamma>')
   have "\<Gamma>' \<turnstile> e1 : t1" using et_let.prems by (intro et_let.IH(1)) auto
-  moreover have "case_nat t1 \<Gamma>' \<turnstile> e2 : t2" 
+  moreover have "case_nat t1 \<Gamma>' \<turnstile> e2 : t2"
     using et_let.prems by (intro et_let.IH(2)) (auto split: nat.split)
   ultimately show ?case by (auto intro!: expr_typing.intros)
 qed (auto intro!: expr_typing.intros)
@@ -461,13 +461,13 @@ fun expr_type :: "tyenv \<Rightarrow> expr \<Rightarrow> pdf_type option" where
        (case expr_type \<Gamma> e1 of
           Some t \<Rightarrow> expr_type (case_nat t \<Gamma>) e2
         | None \<Rightarrow> None)"
-| "expr_type \<Gamma> (Operator oper e) = 
+| "expr_type \<Gamma> (Operator oper e) =
        (case expr_type \<Gamma> e of Some t \<Rightarrow> op_type oper t | None \<Rightarrow> None)"
-| "expr_type \<Gamma> (<e1, e2>) = 
+| "expr_type \<Gamma> (<e1, e2>) =
        (case (expr_type \<Gamma> e1, expr_type \<Gamma> e2) of
           (Some t1, Some t2) \<Rightarrow> Some (PRODUCT t1 t2)
         |  _ \<Rightarrow> None)"
-| "expr_type \<Gamma> (Random dst e) = 
+| "expr_type \<Gamma> (Random dst e) =
        (if expr_type \<Gamma> e = Some (dist_param_type dst) then
            Some (dist_result_type dst)
         else None)"
@@ -480,7 +480,7 @@ fun expr_type :: "tyenv \<Rightarrow> expr \<Rightarrow> pdf_type option" where
 
 lemma expr_type_Some_iff: "expr_type \<Gamma> e = Some t \<longleftrightarrow> \<Gamma> \<turnstile> e : t"
   apply rule
-  apply (induction e arbitrary: \<Gamma> t, 
+  apply (induction e arbitrary: \<Gamma> t,
          auto intro!: expr_typing.intros split: option.split_asm if_split_asm) []
   apply (induction rule: expr_typing.induct, auto simp del: fun_upd_apply)
   done
@@ -502,7 +502,7 @@ lemma countable_type_countable[dest]:
   by (induction t)
      (auto simp: pair_measure_countable space_embed_measure space_pair_measure stock_measure.simps)
 
-lemma countable_type_imp_count_space: 
+lemma countable_type_imp_count_space:
   "countable_type t \<Longrightarrow> stock_measure t = count_space (type_universe t)"
 proof (subst space_stock_measure[symmetric], induction t)
   case (PRODUCT t1 t2)
@@ -524,10 +524,10 @@ lemma return_val_countable:
 proof (rule measure_eqI)
   let ?M3 = "count_space (type_universe (val_type v))"
   fix X assume asm: "X \<in> ?M1"
-  with assms have "emeasure ?M2 X = \<integral>\<^sup>+ x. indicator {v} x * indicator X x 
+  with assms have "emeasure ?M2 X = \<integral>\<^sup>+ x. indicator {v} x * indicator X x
                                               \<partial>count_space (type_universe (val_type v))"
     by (simp add: return_val_def emeasure_density countable_type_imp_count_space)
-  also have "(\<lambda>x. indicator {v} x * indicator X x :: ereal) = (\<lambda>x. indicator (X \<inter> {v}) x)"
+  also have "(\<lambda>x. indicator {v} x * indicator X x :: ennreal) = (\<lambda>x. indicator (X \<inter> {v}) x)"
     by (rule ext, subst Int_commute) (simp split: split_indicator)
   also have "nn_integral ?M3 ... = emeasure ?M3 (X \<inter> {v})"
     by (subst nn_integral_indicator[symmetric]) auto
@@ -542,14 +542,14 @@ subsection {* Semantics *}
 definition bool_to_int :: "bool \<Rightarrow> int" where
   "bool_to_int b = (if b then 1 else 0)"
 
-lemma measurable_bool_to_int[measurable]: 
+lemma measurable_bool_to_int[measurable]:
   "bool_to_int \<in> measurable (count_space UNIV) (count_space UNIV)"
   by (rule measurable_count_space)
 
 definition bool_to_real :: "bool \<Rightarrow> real" where
   "bool_to_real b = (if b then 1 else 0)"
 
-lemma measurable_bool_to_real[measurable]: 
+lemma measurable_bool_to_real[measurable]:
   "bool_to_real \<in> borel_measurable (count_space UNIV)"
   by (rule borel_measurable_count_space)
 
@@ -604,20 +604,20 @@ text {* The semantics of expressions. Assumes that the expression given is well-
 primrec expr_sem :: "state \<Rightarrow> expr \<Rightarrow> val measure" where
   "expr_sem \<sigma> (Var x) = return_val (\<sigma> x)"
 | "expr_sem \<sigma> (Val v) = return_val v"
-| "expr_sem \<sigma> (LET e1 IN e2) = 
+| "expr_sem \<sigma> (LET e1 IN e2) =
       do {
         v \<leftarrow> expr_sem \<sigma> e1;
         expr_sem (v \<cdot> \<sigma>) e2
       }"
-| "expr_sem \<sigma> (oper $$ e) = 
+| "expr_sem \<sigma> (oper $$ e) =
       do {
-        x \<leftarrow> expr_sem \<sigma> e; 
+        x \<leftarrow> expr_sem \<sigma> e;
         return_val (op_sem oper x)
       }"
-| "expr_sem \<sigma> <v, w> = 
+| "expr_sem \<sigma> <v, w> =
       do {
-        x \<leftarrow> expr_sem \<sigma> v; 
-        y \<leftarrow> expr_sem \<sigma> w; 
+        x \<leftarrow> expr_sem \<sigma> v;
+        y \<leftarrow> expr_sem \<sigma> w;
         return_val <|x, y|>
       }"
 | "expr_sem \<sigma> (IF b THEN e1 ELSE e2) =
@@ -627,7 +627,7 @@ primrec expr_sem :: "state \<Rightarrow> expr \<Rightarrow> val measure" where
      }"
 | "expr_sem \<sigma> (Random dst e) =
      do {
-       x \<leftarrow> expr_sem \<sigma> e; 
+       x \<leftarrow> expr_sem \<sigma> e;
        dist_measure dst x
      }"
 | "expr_sem \<sigma> (Fail t) = null_measure (stock_measure t)"
@@ -639,19 +639,19 @@ lemma expr_sem_pair_vars: "expr_sem \<sigma> <Var x, Var y> = return_val <|\<sig
   by (simp add: return_val_def bind_return[where N="PRODUCT (val_type (\<sigma> x)) (val_type (\<sigma> y))"]
            cong: bind_cong_strong)
 
-text {* 
+text {*
   Well-typed expressions produce a result in the measure space that corresponds to their type
 *}
 
 lemma op_sem_val_type:
     "op_type oper (val_type v) = Some t' \<Longrightarrow> val_type (op_sem oper v) = t'"
-  by (cases oper) (auto split: val.split if_split_asm pdf_type.split_asm 
+  by (cases oper) (auto split: val.split if_split_asm pdf_type.split_asm
                         simp: lift_RealIntVal_def lift_Comp_def
                               lift_IntVal_def lift_RealVal_def lift_RealIntVal2_def
                         elim!: PROD_E INTEG_E REAL_E)
 
 lemma sets_expr_sem:
-  "\<Gamma> \<turnstile> w : t \<Longrightarrow> (\<forall>x \<in> free_vars w. val_type (\<sigma> x) = \<Gamma> x) \<Longrightarrow> 
+  "\<Gamma> \<turnstile> w : t \<Longrightarrow> (\<forall>x \<in> free_vars w. val_type (\<sigma> x) = \<Gamma> x) \<Longrightarrow>
        sets (expr_sem \<sigma> w) = sets (stock_measure t)"
 proof (induction arbitrary: \<sigma> rule: expr_typing.induct)
   case (et_var \<Gamma> x \<sigma>)
@@ -665,23 +665,23 @@ next
   from sets_eq_imp_space_eq[OF this]
     have A: "space (expr_sem \<sigma> e1) = type_universe t1" by (simp add:)
   hence B: "(SOME x. x \<in> space (expr_sem \<sigma> e1)) \<in> space (expr_sem \<sigma> e1)" (is "?v \<in> _")
-    unfolding some_in_eq by simp   
+    unfolding some_in_eq by simp
   with A et_let have "sets (expr_sem (case_nat ?v \<sigma>) e2) = sets (stock_measure t2)"
     by (intro et_let.IH(2)) (auto split: nat.split)
   with B show "sets (expr_sem \<sigma> (LetVar e1 e2)) = sets (stock_measure t2)"
     by (subst expr_sem.simps, subst bind_nonempty) auto
 next
   case (et_op \<Gamma> e t oper t' \<sigma>)
-  from et_op.IH[of \<sigma>] and et_op.prems 
+  from et_op.IH[of \<sigma>] and et_op.prems
       have [simp]: "sets (expr_sem \<sigma> e) = sets (stock_measure t)" by simp
-  from sets_eq_imp_space_eq[OF this] 
+  from sets_eq_imp_space_eq[OF this]
       have [simp]: "space (expr_sem \<sigma> e) = type_universe t" by (simp add:)
   have "(SOME x. x \<in> space (expr_sem \<sigma> e)) \<in> space (expr_sem \<sigma> e)"
-    unfolding some_in_eq by simp   
+    unfolding some_in_eq by simp
   with et_op show ?case by (simp add: bind_nonempty return_val_def op_sem_val_type)
 next
   case (et_pair \<Gamma> e1 t1 e2 t2 \<sigma>)
-  hence [simp]: "space (expr_sem \<sigma> e1) = type_universe t1" 
+  hence [simp]: "space (expr_sem \<sigma> e1) = type_universe t1"
                 "space (expr_sem \<sigma> e2) = type_universe t2"
     by (simp_all add: sets_eq_imp_space_eq)
   have "(SOME x. x \<in> space (expr_sem \<sigma> e1)) \<in> space (expr_sem \<sigma> e1)"
@@ -702,7 +702,7 @@ next
   case (et_if \<Gamma> b e1 t e2 \<sigma>)
   have "sets (expr_sem \<sigma> b) = sets (stock_measure BOOL)"
     using et_if.prems by (intro et_if.IH) simp
-  from sets_eq_imp_space_eq[OF this] 
+  from sets_eq_imp_space_eq[OF this]
     have "space (expr_sem \<sigma> b) \<noteq> {}" by simp
   moreover have "sets (expr_sem \<sigma> e1) = sets (stock_measure t)"
                 "sets (expr_sem \<sigma> e2) = sets (stock_measure t)"
@@ -711,28 +711,28 @@ next
 qed simp_all
 
 lemma space_expr_sem:
-    "\<Gamma> \<turnstile> w : t \<Longrightarrow> (\<forall>x \<in> free_vars w. val_type (\<sigma> x) = \<Gamma> x) 
+    "\<Gamma> \<turnstile> w : t \<Longrightarrow> (\<forall>x \<in> free_vars w. val_type (\<sigma> x) = \<Gamma> x)
       \<Longrightarrow> space (expr_sem \<sigma> w) = type_universe t"
   by (subst space_stock_measure[symmetric]) (intro sets_expr_sem sets_eq_imp_space_eq)
 
 lemma measurable_expr_sem_eq:
-    "\<Gamma> \<turnstile> e : t \<Longrightarrow> \<sigma> \<in> space (state_measure V \<Gamma>) \<Longrightarrow> free_vars e \<subseteq> V \<Longrightarrow> 
+    "\<Gamma> \<turnstile> e : t \<Longrightarrow> \<sigma> \<in> space (state_measure V \<Gamma>) \<Longrightarrow> free_vars e \<subseteq> V \<Longrightarrow>
        measurable (expr_sem \<sigma> e) = measurable (stock_measure t)"
   by (intro ext measurable_cong_sets sets_expr_sem)
      (auto simp: state_measure_def space_PiM dest: PiE_mem)
 
 lemma measurable_expr_semI:
-    "\<Gamma> \<turnstile> e : t \<Longrightarrow> \<sigma> \<in> space (state_measure V \<Gamma>) \<Longrightarrow> free_vars e \<subseteq> V \<Longrightarrow> 
+    "\<Gamma> \<turnstile> e : t \<Longrightarrow> \<sigma> \<in> space (state_measure V \<Gamma>) \<Longrightarrow> free_vars e \<subseteq> V \<Longrightarrow>
        f \<in> measurable (stock_measure t) M \<Longrightarrow> f \<in> measurable (expr_sem \<sigma> e) M"
   by (subst measurable_expr_sem_eq)
 
-lemma expr_sem_eq_on_vars: 
+lemma expr_sem_eq_on_vars:
   "(\<And>x. x\<in>free_vars e \<Longrightarrow> \<sigma>\<^sub>1 x = \<sigma>\<^sub>2 x) \<Longrightarrow> expr_sem \<sigma>\<^sub>1 e = expr_sem \<sigma>\<^sub>2 e"
 proof (induction e arbitrary: \<sigma>\<^sub>1 \<sigma>\<^sub>2)
   case (LetVar e1 e2 \<sigma>1 \<sigma>2)
     from LetVar.prems have A: "expr_sem \<sigma>1 e1 = expr_sem \<sigma>2 e1" by (rule LetVar.IH(1)) simp_all
     from LetVar.prems show ?case
-      by (subst (1 2) expr_sem.simps, subst A) 
+      by (subst (1 2) expr_sem.simps, subst A)
          (auto intro!: bind_cong LetVar.IH(2) split: nat.split)
 next
   case (Operator oper e \<sigma>1 \<sigma>2)
@@ -749,8 +749,8 @@ next
     by (subst (1 2) expr_sem.simps, subst A) (auto intro!: bind_cong)
 next
   case (IfThenElse b e1 e2 \<sigma>1 \<sigma>2)
-  have A: "expr_sem \<sigma>1 b = expr_sem \<sigma>2 b" 
-          "expr_sem \<sigma>1 e1 = expr_sem \<sigma>2 e1" 
+  have A: "expr_sem \<sigma>1 b = expr_sem \<sigma>2 b"
+          "expr_sem \<sigma>1 e1 = expr_sem \<sigma>2 e1"
           "expr_sem \<sigma>1 e2 = expr_sem \<sigma>2 e2"
     using IfThenElse.prems by (intro IfThenElse.IH, simp)+
   thus ?case by (simp only: expr_sem.simps A)
@@ -798,7 +798,7 @@ next
       done
   next
     note PRODUCT[measurable]
-    show "Measurable.pred (stock_measure (PRODUCT t1 t2) \<Otimes>\<^sub>M stock_measure (PRODUCT t1 t2)) ?f" 
+    show "Measurable.pred (stock_measure (PRODUCT t1 t2) \<Otimes>\<^sub>M stock_measure (PRODUCT t1 t2)) ?f"
       by measurable
   qed
 qed (simp_all add: pair_measure_countable stock_measure.simps)
@@ -842,7 +842,7 @@ lemma shift_var_set_Suc[simp]: "Suc x \<in> shift_var_set V \<longleftrightarrow
 lemma case_nat_update_0[simp]: "(case_nat x \<sigma>)(0 := y) = case_nat y \<sigma>"
   by (intro ext) (simp split: nat.split)
 
-lemma case_nat_delete_var_1[simp]: 
+lemma case_nat_delete_var_1[simp]:
     "case_nat x (case_nat y \<sigma>) \<circ> case_nat 0 (\<lambda>x. Suc (Suc x)) = case_nat x \<sigma>"
   by (intro ext) (simp split: nat.split)
 
@@ -855,7 +855,7 @@ lemma measurable_case_nat[measurable]:
   assumes "g \<in> measurable R N" "h \<in> measurable R (Pi\<^sub>M V M)"
   shows "(\<lambda>x. case_nat (g x) (h x)) \<in> measurable R (Pi\<^sub>M (shift_var_set V) (case_nat N M))"
 proof (rule measurable_Pair_compose_split[OF _ assms])
-  have "(\<lambda>(t,f). \<lambda>x\<in>shift_var_set V. case_nat t f x) 
+  have "(\<lambda>(t,f). \<lambda>x\<in>shift_var_set V. case_nat t f x)
           \<in> measurable (N \<Otimes>\<^sub>M PiM V M) (PiM (shift_var_set V) (case_nat N M))" (is ?P)
     unfolding shift_var_set_def
     by (subst measurable_split_conv, rule measurable_restrict) (auto split: nat.split_asm)
@@ -870,7 +870,7 @@ qed
 
 lemma measurable_case_nat'[measurable]:
   assumes "g \<in> measurable R (stock_measure t)" "h \<in> measurable R (state_measure V \<Gamma>)"
-  shows "(\<lambda>x. case_nat (g x) (h x)) \<in> 
+  shows "(\<lambda>x. case_nat (g x) (h x)) \<in>
            measurable R (state_measure (shift_var_set V) (case_nat t \<Gamma>))"
 proof-
   have A: "(\<lambda>x. stock_measure (case_nat t \<Gamma> x)) =
@@ -894,7 +894,7 @@ lemma subset_shift_var_set:
 
 lemma measurable_expr_sem[measurable]:
   assumes "\<Gamma> \<turnstile> e : t" and "free_vars e \<subseteq> V"
-  shows "(\<lambda>\<sigma>. expr_sem \<sigma> e) \<in> measurable (state_measure V \<Gamma>) 
+  shows "(\<lambda>\<sigma>. expr_sem \<sigma> e) \<in> measurable (state_measure V \<Gamma>)
                                          (subprob_algebra (stock_measure t))"
 using assms
 proof (induction arbitrary: V rule: expr_typing.induct)
@@ -904,12 +904,12 @@ proof (induction arbitrary: V rule: expr_typing.induct)
     by (subst A) (rule measurable_comp[OF measurable_component_singleton], simp_all)
 next
   case (et_val \<Gamma> v)
-  thus ?case by (auto intro!: measurable_const subprob_space_return 
+  thus ?case by (auto intro!: measurable_const subprob_space_return
                       simp: space_subprob_algebra return_val_def)
 next
   case (et_let \<Gamma> e1 t1 e2 t2 V)
-    have A: "(\<lambda>v. stock_measure (case_nat t1 \<Gamma> v)) = 
-                 case_nat (stock_measure t1) (\<lambda>v. stock_measure (\<Gamma> v))" 
+    have A: "(\<lambda>v. stock_measure (case_nat t1 \<Gamma> v)) =
+                 case_nat (stock_measure t1) (\<lambda>v. stock_measure (\<Gamma> v))"
       by (rule ext) (simp split: nat.split)
     from et_let.prems and et_let.hyps show ?case
       apply (subst expr_sem.simps, intro measurable_bind)
@@ -918,8 +918,8 @@ next
       apply (simp_all add: subset_shift_var_set)
       done
 next
-  case (et_op \<Gamma> e t oper t') 
-  thus ?case by (auto intro!: measurable_bind2 measurable_compose[OF _ measurable_return_val] 
+  case (et_op \<Gamma> e t oper t')
+  thus ?case by (auto intro!: measurable_bind2 measurable_compose[OF _ measurable_return_val]
                               measurable_op_sem cong: measurable_cong)
 next
   case (et_pair t t1 t2 \<Gamma> e1 e2)
@@ -937,7 +937,7 @@ next
                      measurable_bind measurable_dist_measure)
 next
   case (et_if \<Gamma> b e1 t e2 V)
-  let ?M = "\<lambda>e t. (\<lambda>\<sigma>. expr_sem \<sigma> e) \<in> 
+  let ?M = "\<lambda>e t. (\<lambda>\<sigma>. expr_sem \<sigma> e) \<in>
                       measurable (state_measure V \<Gamma>) (subprob_algebra (stock_measure t))"
   from et_if.prems have A[measurable]: "?M b BOOL" "?M e1 t" "?M e2 t" by (intro et_if.IH, simp)+
   show ?case by (subst expr_sem.simps, rule measurable_bind[OF A(1)]) simp_all
@@ -966,14 +966,14 @@ primrec expr_sem_rf :: "state \<Rightarrow> expr \<Rightarrow> val" where
 | "expr_sem_rf \<sigma> (<e1, e2>) = <|expr_sem_rf \<sigma> e1, expr_sem_rf \<sigma> e2|>"
 | "expr_sem_rf \<sigma> (Operator oper e) = op_sem oper (expr_sem_rf \<sigma> e)"
 | "expr_sem_rf \<sigma> (LetVar e1 e2) = expr_sem_rf (expr_sem_rf \<sigma> e1 \<cdot> \<sigma>) e2"
-| "expr_sem_rf \<sigma> (IfThenElse b e1 e2) = 
+| "expr_sem_rf \<sigma> (IfThenElse b e1 e2) =
       (if expr_sem_rf \<sigma> b = BoolVal True then expr_sem_rf \<sigma> e1 else expr_sem_rf \<sigma> e2)"
 | "expr_sem_rf _ (Random _ _) = undefined"
 | "expr_sem_rf _ (Fail _) = undefined"
 
 
 lemma measurable_expr_sem_rf[measurable]:
-  "\<Gamma> \<turnstile> e : t \<Longrightarrow> randomfree e \<Longrightarrow> free_vars e \<subseteq> V \<Longrightarrow> 
+  "\<Gamma> \<turnstile> e : t \<Longrightarrow> randomfree e \<Longrightarrow> free_vars e \<subseteq> V \<Longrightarrow>
        (\<lambda>\<sigma>. expr_sem_rf \<sigma> e) \<in> measurable (state_measure V \<Gamma>) (stock_measure t)"
 proof (induction arbitrary: V rule: expr_typing.induct)
   case (et_val \<Gamma> v V)
@@ -991,11 +991,11 @@ next
 next
   case (et_let \<Gamma> e1 t1 e2 t2 V)
   hence M1: "(\<lambda>\<sigma>. expr_sem_rf \<sigma> e1) \<in> measurable (state_measure V \<Gamma>) (stock_measure t1)"
-    and M2: "(\<lambda>\<sigma>. expr_sem_rf \<sigma> e2) \<in> measurable (state_measure (shift_var_set V) (case_nat t1 \<Gamma>)) 
+    and M2: "(\<lambda>\<sigma>. expr_sem_rf \<sigma> e2) \<in> measurable (state_measure (shift_var_set V) (case_nat t1 \<Gamma>))
                                            (stock_measure t2)"
     using subset_shift_var_set
     by (auto intro!: et_let.IH(1)[of V] et_let.IH(2)[of "shift_var_set V"])
-  have "(\<lambda>\<sigma>. expr_sem_rf \<sigma> (LetVar e1 e2)) = 
+  have "(\<lambda>\<sigma>. expr_sem_rf \<sigma> (LetVar e1 e2)) =
             (\<lambda>\<sigma>. expr_sem_rf \<sigma> e2) \<circ> (\<lambda>(\<sigma>,y). case_nat y \<sigma>) \<circ> (\<lambda>\<sigma>. (\<sigma>, expr_sem_rf \<sigma> e1))" (is "_ = ?f")
     by (intro ext) simp
   also have "?f \<in> measurable (state_measure V \<Gamma>) (stock_measure t2)"
@@ -1020,21 +1020,21 @@ next
   let ?M = "state_measure V \<Gamma>"
   from et_pair.hyps and et_pair.prems
     have e1: "return_val (expr_sem_rf \<sigma> e1) = expr_sem \<sigma> e1" and
-         e2: "return_val (expr_sem_rf \<sigma> e2) = expr_sem \<sigma> e2" 
+         e2: "return_val (expr_sem_rf \<sigma> e2) = expr_sem \<sigma> e2"
       by (auto intro!: et_pair.IH[of V])
 
   from e1 and et_pair.prems have "space (return_val (expr_sem_rf \<sigma> e1)) = type_universe t1"
     by (subst e1, subst space_expr_sem[OF et_pair.hyps(1)])
        (auto dest: state_measure_var_type)
-  hence A: "val_type (expr_sem_rf \<sigma> e1) = t1" "expr_sem_rf \<sigma> e1 \<in> type_universe t1" 
+  hence A: "val_type (expr_sem_rf \<sigma> e1) = t1" "expr_sem_rf \<sigma> e1 \<in> type_universe t1"
       by (auto simp add: return_val_def)
   from e2 and et_pair.prems have "space (return_val (expr_sem_rf \<sigma> e2)) = type_universe t2"
     by (subst e2, subst space_expr_sem[OF et_pair.hyps(2)])
        (auto dest: state_measure_var_type)
-  hence B: "val_type (expr_sem_rf \<sigma> e2) = t2" "expr_sem_rf \<sigma> e2 \<in> type_universe t2" 
+  hence B: "val_type (expr_sem_rf \<sigma> e2) = t2" "expr_sem_rf \<sigma> e2 \<in> type_universe t2"
       by (auto simp add: return_val_def)
 
-  have "expr_sem \<sigma> (<e1, e2>) = expr_sem \<sigma> e1 \<bind> 
+  have "expr_sem \<sigma> (<e1, e2>) = expr_sem \<sigma> e1 \<bind>
             (\<lambda>v. expr_sem \<sigma> e2 \<bind> (\<lambda>w. return_val (<|v,w|>)))" by simp
   also have "expr_sem \<sigma> e1 = return (stock_measure t1) (expr_sem_rf \<sigma> e1)"
     using e1 by (simp add: et_pair.prems return_val_def A)
@@ -1043,10 +1043,10 @@ next
   proof (intro bind_cong ballI)
     fix v assume "v \<in> space (return (stock_measure t1) (expr_sem_rf \<sigma> e1))"
     hence v: "val_type v = t1" "v \<in> type_universe t1" by (simp_all add:)
-    have "expr_sem \<sigma> e2 \<bind> (\<lambda>w. return_val (<|v,w|>)) = 
+    have "expr_sem \<sigma> e2 \<bind> (\<lambda>w. return_val (<|v,w|>)) =
               return (stock_measure t2) (expr_sem_rf \<sigma> e2) \<bind> (\<lambda>w. return_val (<|v,w|>))"
       using e2 by (simp add: et_pair.prems return_val_def B)
-    also have "... = return (stock_measure t2) (expr_sem_rf \<sigma> e2) \<bind> 
+    also have "... = return (stock_measure t2) (expr_sem_rf \<sigma> e2) \<bind>
                          (\<lambda>w. return (stock_measure (PRODUCT t1 t2)) (<|v,w|>))"
     proof (intro bind_cong ballI)
       fix w assume "w \<in> space (return (stock_measure t2) (expr_sem_rf \<sigma> e2))"
@@ -1061,7 +1061,7 @@ next
   qed
   also have "(\<lambda>v. <|v, expr_sem_rf \<sigma> e2|>) \<in> measurable (stock_measure t1) (stock_measure (PRODUCT t1 t2))"
     using B by (auto intro!: injI)
-  hence "return (stock_measure t1) (expr_sem_rf \<sigma> e1) \<bind> (\<lambda>v. return_val (<|v, expr_sem_rf \<sigma> e2|>)) = 
+  hence "return (stock_measure t1) (expr_sem_rf \<sigma> e1) \<bind> (\<lambda>v. return_val (<|v, expr_sem_rf \<sigma> e2|>)) =
              return_val (<|expr_sem_rf \<sigma> e1, expr_sem_rf \<sigma> e2|>)"
     by (subst bind_return, rule measurable_compose[OF _ measurable_return_val])
        (auto simp: A)
@@ -1075,7 +1075,7 @@ next
   hence [simp]: "val_type (expr_sem_rf \<sigma> b) = BOOL" by (simp add: A return_val_def)
   have B: "return_val (expr_sem_rf \<sigma> e1) \<in> space (subprob_algebra (stock_measure t))"
           "return_val (expr_sem_rf \<sigma> e2) \<in> space (subprob_algebra (stock_measure t))"
-    using et_if.hyps and et_if.prems 
+    using et_if.hyps and et_if.prems
     by ((subst A[symmetric], intro measurable_space[OF measurable_expr_sem], auto) [])+
   thus ?case
     by (auto simp: A bind_return_val''[where M=t])
@@ -1088,10 +1088,10 @@ next
   with et_op.prems have "space (return_val (expr_sem_rf \<sigma> e)) = type_universe t"
     by (subst e, subst space_expr_sem[OF et_op.hyps(1)])
        (auto dest: state_measure_var_type)
-  hence A: "val_type (expr_sem_rf \<sigma> e) = t" "expr_sem_rf \<sigma> e \<in> type_universe t" 
+  hence A: "val_type (expr_sem_rf \<sigma> e) = t" "expr_sem_rf \<sigma> e \<in> type_universe t"
     by (auto simp add: return_val_def)
   from et_op.prems e
-    have "expr_sem \<sigma> (Operator oper e) = 
+    have "expr_sem \<sigma> (Operator oper e) =
                  return_val (expr_sem_rf \<sigma> e) \<bind> (\<lambda>v. return_val (op_sem oper v))" by simp
   also have "... = return_val (op_sem oper (expr_sem_rf \<sigma> e))"
     by (subst return_val_def, rule bind_return,
@@ -1107,23 +1107,23 @@ next
   from et_let.prems have S: "space (return_val (expr_sem_rf \<sigma> e1)) = type_universe t1"
     by (subst e1, subst space_expr_sem[OF et_let.hyps(1)])
        (auto dest: state_measure_var_type)
-  hence A: "val_type (expr_sem_rf \<sigma> e1) = t1" "expr_sem_rf \<sigma> e1 \<in> type_universe t1" 
+  hence A: "val_type (expr_sem_rf \<sigma> e1) = t1" "expr_sem_rf \<sigma> e1 \<in> type_universe t1"
     by (auto simp add: return_val_def)
   with et_let.prems have e2: "\<And>\<sigma>. \<sigma> \<in> space ?N \<Longrightarrow> return_val (expr_sem_rf \<sigma> e2) = expr_sem \<sigma> e2"
     using subset_shift_var_set
     by (intro et_let.IH(2)[of "shift_var_set V"]) (auto simp del: fun_upd_apply)
 
-  from et_let.prems have "expr_sem \<sigma> (LetVar e1 e2) = 
-                              return_val (expr_sem_rf \<sigma> e1) \<bind> (\<lambda>v. expr_sem (case_nat v \<sigma>) e2)" 
+  from et_let.prems have "expr_sem \<sigma> (LetVar e1 e2) =
+                              return_val (expr_sem_rf \<sigma> e1) \<bind> (\<lambda>v. expr_sem (case_nat v \<sigma>) e2)"
     by (simp add: e1)
-  also from et_let.prems 
+  also from et_let.prems
     have "... = return_val (expr_sem_rf \<sigma> e1) \<bind> (\<lambda>v. return_val (expr_sem_rf (case_nat v \<sigma>) e2))"
     by (intro bind_cong ballI, subst e2) (auto simp: S)
   also from et_let have Me2[measurable]: "(\<lambda>\<sigma>. expr_sem_rf \<sigma> e2) \<in> measurable ?N (stock_measure t2)"
     using subset_shift_var_set by (intro measurable_expr_sem_rf) auto
   have "(\<lambda>(\<sigma>,y). case_nat y \<sigma>) \<circ> (\<lambda>y. (\<sigma>, y)) \<in> measurable (stock_measure t1) ?N"
     using `\<sigma> \<in> space ?M` by simp
-  have  "return_val (expr_sem_rf \<sigma> e1) \<bind> (\<lambda>v. return_val (expr_sem_rf (case_nat v \<sigma>) e2)) = 
+  have  "return_val (expr_sem_rf \<sigma> e1) \<bind> (\<lambda>v. return_val (expr_sem_rf (case_nat v \<sigma>) e2)) =
               return_val (expr_sem_rf ?\<sigma>' e2)" using `\<sigma> \<in> space ?M`
   by (subst return_val_def, intro bind_return, subst A)
      (rule measurable_compose[OF _ measurable_return_val[of t2]], simp_all)
@@ -1139,7 +1139,7 @@ proof-
   also from assms have "return_val (expr_sem_rf \<sigma> e) = expr_sem \<sigma> e"
     by (intro expr_sem_rf_sound) auto
   also from assms have "space ... = type_universe t"
-    by (intro space_expr_sem[of \<Gamma>]) 
+    by (intro space_expr_sem[of \<Gamma>])
        (auto simp: state_measure_def space_PiM  dest: PiE_mem)
   finally show ?thesis by simp
 qed
@@ -1158,7 +1158,7 @@ next
     hence "case_nat (expr_sem_rf \<sigma>1 e1) \<sigma>1 y = case_nat (expr_sem_rf \<sigma>2 e1) \<sigma>2 y"
       using LetVar(3) by (auto simp add: A split: nat.split)
   }
-  hence "expr_sem_rf (case_nat (expr_sem_rf \<sigma>1 e1) \<sigma>1) e2 = 
+  hence "expr_sem_rf (case_nat (expr_sem_rf \<sigma>1 e1) \<sigma>1) e2 =
            expr_sem_rf (case_nat (expr_sem_rf \<sigma>2 e1) \<sigma>2) e2" by (intro LetVar.IH) simp
   thus ?case by simp
 next
@@ -1228,7 +1228,7 @@ proof (induction rule: expr_typing.induct)
 qed (insert assms(2), auto intro: expr_typing.intros)
 
 lemma expr_subst_randomfree:
-  assumes "\<Gamma> \<turnstile> f : t" "randomfree f" "free_vars f \<subseteq> V" "free_vars f \<inter> bound_vars e = {}" 
+  assumes "\<Gamma> \<turnstile> f : t" "randomfree f" "free_vars f \<subseteq> V" "free_vars f \<inter> bound_vars e = {}"
           "\<sigma> \<in> space (state_measure V \<Gamma>)"
   shows   "expr_sem \<sigma> (e\<langle>f/x\<rangle>) = expr_sem (\<sigma>(x := expr_sem_rf f \<sigma>)) e"
 using assms(1,3,4,5)
@@ -1240,7 +1240,7 @@ proof (induction e arbitrary: \<sigma> V \<Gamma>)
     thus ?case by (simp del: fun_upd_apply)
 next
   case (IfThenElse b e1 e2 \<sigma> V \<Gamma>)
-    from IfThenElse.prems 
+    from IfThenElse.prems
       have "expr_sem \<sigma> (b\<langle>f/x\<rangle>) = expr_sem (\<sigma>(x := expr_sem_rf f \<sigma>)) b"
            "expr_sem \<sigma> (e1\<langle>f/x\<rangle>) = expr_sem (\<sigma>(x := expr_sem_rf f \<sigma>)) e1"
            "expr_sem \<sigma> (e2\<langle>f/x\<rangle>) = expr_sem (\<sigma>(x := expr_sem_rf f \<sigma>)) e2"
@@ -1248,7 +1248,7 @@ next
     thus ?case by (simp only: expr_sem.simps expr_subst.simps)
 next
   case (LetVar y e1 e2)
-  from LetVar.prems have A: "expr_sem \<sigma> (e1\<langle>f/x\<rangle>) = expr_sem (\<sigma>(x := expr_sem_rf f \<sigma>)) e1" 
+  from LetVar.prems have A: "expr_sem \<sigma> (e1\<langle>f/x\<rangle>) = expr_sem (\<sigma>(x := expr_sem_rf f \<sigma>)) e1"
     by (intro LetVar.IH) auto
   show ?case
   proof (cases "y = x")
@@ -1284,23 +1284,23 @@ lemma Let_det_eq_subst:
   shows   "expr_sem \<sigma> (LET x = f IN e) = expr_sem \<sigma> (e\<langle>f/x\<rangle>)"
 proof-
   from assms(1) obtain t' where t1: "\<Gamma> \<turnstile> f : t'" and t2: "\<Gamma>(x := t') \<turnstile> e : t" by auto
-  with assms have "expr_sem \<sigma> (LET x = f IN e) = 
+  with assms have "expr_sem \<sigma> (LET x = f IN e) =
                        return_val (expr_sem_rf f \<sigma>) \<bind> (\<lambda>v. expr_sem (\<sigma>(x := v)) e)" (is "_ = ?M")
     by (auto simp: expr_sem_rf_sound)
-  also have "(\<lambda>\<sigma>. expr_sem \<sigma> e) \<circ> (\<lambda>(\<sigma>,v). \<sigma>(x := v)) \<circ> (\<lambda>v. (\<sigma>,v)) \<in> 
+  also have "(\<lambda>\<sigma>. expr_sem \<sigma> e) \<circ> (\<lambda>(\<sigma>,v). \<sigma>(x := v)) \<circ> (\<lambda>v. (\<sigma>,v)) \<in>
                  measurable (stock_measure ((\<Gamma>(x := t')) x)) (subprob_algebra (stock_measure t))"
     apply (intro measurable_comp, rule measurable_Pair1', rule assms)
     apply (subst fun_upd_same, unfold state_measure_def)
     apply (rule measurable_add_dim', subst stock_measure_context_upd[symmetric])
-    apply (insert assms, auto intro!: measurable_expr_sem[unfolded state_measure_def] t1 t2 
+    apply (insert assms, auto intro!: measurable_expr_sem[unfolded state_measure_def] t1 t2
                               simp del: fun_upd_apply)
-    done                   
-  hence "(\<lambda>v. expr_sem (\<sigma>(x := v)) e) \<in> 
+    done
+  hence "(\<lambda>v. expr_sem (\<sigma>(x := v)) e) \<in>
                  measurable (stock_measure ((\<Gamma>(x := t')) x)) (subprob_algebra (stock_measure t))"
     by (simp add: o_def)
   with assms have "?M = expr_sem (\<sigma>(x := expr_sem_rf f \<sigma>)) e"
-    unfolding return_val_def 
-    by (intro bind_return) (auto simp: val_type_expr_sem_rf[OF t1] 
+    unfolding return_val_def
+    by (intro bind_return) (auto simp: val_type_expr_sem_rf[OF t1]
                                        type_universe_def simp del: type_universe_type)
   also from assms t1 t2 have "... = expr_sem \<sigma> (e\<langle>f/x\<rangle>)"
     by (intro expr_subst_randomfree[symmetric]) auto

@@ -69,7 +69,7 @@ primrec free_vars_cexpr :: "cexpr \<Rightarrow> vname set" where
 | "free_vars_cexpr (CVal _) = {}"
 | "free_vars_cexpr (oper $$\<^sub>c e) = free_vars_cexpr e"
 | "free_vars_cexpr (<e1, e2>\<^sub>c) = free_vars_cexpr e1 \<union> free_vars_cexpr e2"
-| "free_vars_cexpr (IF\<^sub>c b THEN e1 ELSE e2) = 
+| "free_vars_cexpr (IF\<^sub>c b THEN e1 ELSE e2) =
        free_vars_cexpr b \<union> free_vars_cexpr e1 \<union> free_vars_cexpr e2"
 | "free_vars_cexpr (\<integral>\<^sub>c e \<partial>t) = Suc -` free_vars_cexpr e"
 
@@ -85,10 +85,10 @@ inductive cexpr_typing :: "tyenv \<Rightarrow> cexpr \<Rightarrow> pdf_type \<Ri
                    \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>c IF\<^sub>c b THEN e1 ELSE e2 : t"
 | cet_int:    "t \<cdot> \<Gamma> \<turnstile>\<^sub>c e : REAL \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>c \<integral>\<^sub>c e \<partial>t : REAL"
 
-lemma cet_val': "t = val_type v \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>c CVal v : t" 
+lemma cet_val': "t = val_type v \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>c CVal v : t"
   by (simp add: cet_val)
 
-lemma cet_var': "t = \<Gamma> x \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>c CVar x : t" 
+lemma cet_var': "t = \<Gamma> x \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>c CVar x : t"
   by (simp add: cet_var)
 
 lemma cet_not: "\<Gamma> \<turnstile>\<^sub>c e : BOOL \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>c \<not>\<^sub>c e : BOOL"
@@ -119,7 +119,7 @@ lemma cet_eq: "\<Gamma> \<turnstile>\<^sub>c e1 : t \<Longrightarrow> \<Gamma> \
 
 lemma cet_less_eq_real: "\<Gamma> \<turnstile>\<^sub>c e1 : REAL \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>c e2 : REAL \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>c e1 \<le>\<^sub>c e2 : BOOL"
   by (intro cet_less_real cet_or cet_eq)
-     
+
 lemma cet_minus_int: "\<Gamma> \<turnstile>\<^sub>c e : INTEG \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>c -\<^sub>ce : INTEG"
   by (rule cet_op[where t = "INTEG"], simp, simp)+
 
@@ -177,12 +177,12 @@ primrec cexpr_type :: "tyenv \<Rightarrow> cexpr \<Rightarrow> pdf_type option" 
                                    (Some t, Some t') \<Rightarrow> if t = t' then Some t else None
                                  | _ \<Rightarrow> None
                                else None)"
-| "cexpr_type \<Gamma> (\<integral>\<^sub>c e \<partial>t) = 
+| "cexpr_type \<Gamma> (\<integral>\<^sub>c e \<partial>t) =
       (if cexpr_type (case_nat t \<Gamma>) e = Some REAL then Some REAL else None)"
 
 lemma cexpr_type_Some_iff: "cexpr_type \<Gamma> e = Some t \<longleftrightarrow> \<Gamma> \<turnstile>\<^sub>c e : t"
   apply rule
-  apply (induction e arbitrary: \<Gamma> t, 
+  apply (induction e arbitrary: \<Gamma> t,
          auto intro!: cexpr_typing.intros split: option.split_asm if_split_asm) []
   apply (induction rule: cexpr_typing.induct, auto)
   done
@@ -242,7 +242,7 @@ next
   from CIf.prems show ?case by (auto simp: CIf.IH[of \<sigma> \<sigma>'])
 next
   case (CIntegral e t \<sigma> \<sigma>')
-  have "cexpr_sem \<sigma> (\<integral>\<^sub>c e \<partial>t) = RealVal (\<integral>x. extract_real (cexpr_sem (case_nat x \<sigma>) e) \<partial>stock_measure t)" 
+  have "cexpr_sem \<sigma> (\<integral>\<^sub>c e \<partial>t) = RealVal (\<integral>x. extract_real (cexpr_sem (case_nat x \<sigma>) e) \<partial>stock_measure t)"
     by simp
   also from CIntegral.prems have A: "(\<lambda>v. cexpr_sem (case_nat v \<sigma>) e) = (\<lambda>v. cexpr_sem (case_nat v \<sigma>') e)"
     by (intro ext CIntegral.IH) (auto split: nat.split)
@@ -256,7 +256,7 @@ definition eval_cexpr :: "cexpr \<Rightarrow> state \<Rightarrow> val \<Rightarr
   "eval_cexpr e \<sigma> v = extract_real (cexpr_sem (case_nat v \<sigma>) e)"
 
 lemma measurable_cexpr_sem[measurable]:
-  "\<Gamma> \<turnstile>\<^sub>c e : t \<Longrightarrow> free_vars e \<subseteq> V \<Longrightarrow> 
+  "\<Gamma> \<turnstile>\<^sub>c e : t \<Longrightarrow> free_vars e \<subseteq> V \<Longrightarrow>
       (\<lambda>\<sigma>. cexpr_sem \<sigma> e) \<in> measurable (state_measure V \<Gamma>) (stock_measure t)"
 proof (induction arbitrary: V rule: cexpr_typing.induct)
   case (cet_op oper t t' \<Gamma> e)
@@ -359,7 +359,7 @@ primrec cexpr_subst :: "vname \<Rightarrow> cexpr \<Rightarrow> cexpr \<Rightarr
 | "cexpr_subst x e (CVar y) = insert_var x CVar e y"
 | "cexpr_subst x e <e1, e2>\<^sub>c = <cexpr_subst x e e1, cexpr_subst x e e2>\<^sub>c"
 | "cexpr_subst x e (oper $$\<^sub>c e') = oper $$\<^sub>c (cexpr_subst x e e')"
-| "cexpr_subst x e (IF\<^sub>c b THEN e1 ELSE e2) = 
+| "cexpr_subst x e (IF\<^sub>c b THEN e1 ELSE e2) =
       (IF\<^sub>c cexpr_subst x e b THEN cexpr_subst x e e1 ELSE cexpr_subst x e e2)"
 | "cexpr_subst x e (\<integral>\<^sub>c e' \<partial>t) = (\<integral>\<^sub>c cexpr_subst (Suc x) (map_vars Suc e) e' \<partial>t)"
 
@@ -374,7 +374,7 @@ proof (induction e' arbitrary: x e \<sigma>)
 qed (simp_all add: insert_var_def)
 
 text {*
-   This corresponds to a Let-binding; the variable with index 0 is substituted 
+   This corresponds to a Let-binding; the variable with index 0 is substituted
    with the given expression.
 *}
 lemma cexpr_sem_cexpr_subst:
@@ -386,7 +386,7 @@ lemma cexpr_typing_subst_aux:
   shows "\<Gamma> \<turnstile>\<^sub>c cexpr_subst x e e' : t'"
 using assms
 proof (induction e' arbitrary: x \<Gamma> e t')
-  case CVar 
+  case CVar
   thus ?case by (auto intro!: cexpr_typing.intros simp: insert_var_def)
 next
   case COperator
@@ -428,10 +428,10 @@ next
   from CIf.IH[of x e] show ?case by auto
 next
   case (CIntegral e' t x e)
-  have "free_vars (cexpr_subst x e (\<integral>\<^sub>c e' \<partial>t)) \<subseteq> 
+  have "free_vars (cexpr_subst x e (\<integral>\<^sub>c e' \<partial>t)) \<subseteq>
           Suc -` (?f (Suc x) -` free_vars e') \<union>
           Suc -` (free_vars (map_vars Suc e))" (is "_ \<subseteq> ?A \<union> ?B")
-    by (simp only: cexpr_subst.simps free_vars_cexpr.simps 
+    by (simp only: cexpr_subst.simps free_vars_cexpr.simps
                    vimage_mono CIntegral.IH vimage_Un[symmetric])
   also have "?B = free_vars e" by (simp add: inj_vimage_image_eq)
   also have "?A \<subseteq> ?f x -` free_vars (\<integral>\<^sub>c e' \<partial>t)" by auto
@@ -449,7 +449,7 @@ primrec cexpr_comp_aux :: "vname \<Rightarrow> cexpr \<Rightarrow> cexpr \<Right
 | "cexpr_comp_aux x e (CVar y) = (if x = y then e else CVar y)"
 | "cexpr_comp_aux x e <e1, e2>\<^sub>c = <cexpr_comp_aux x e e1, cexpr_comp_aux x e e2>\<^sub>c"
 | "cexpr_comp_aux x e (oper $$\<^sub>c e') = oper $$\<^sub>c (cexpr_comp_aux x e e')"
-| "cexpr_comp_aux x e (IF\<^sub>c b THEN e1 ELSE e2) = 
+| "cexpr_comp_aux x e (IF\<^sub>c b THEN e1 ELSE e2) =
       (IF\<^sub>c cexpr_comp_aux x e b THEN cexpr_comp_aux x e e1 ELSE cexpr_comp_aux x e e2)"
 | "cexpr_comp_aux x e (\<integral>\<^sub>c e' \<partial>t) = (\<integral>\<^sub>c cexpr_comp_aux (Suc x) (map_vars Suc e) e' \<partial>t)"
 
@@ -504,7 +504,7 @@ lemma free_vars_cexpr_comp_aux:
 proof (induction e' arbitrary: x e)
   case (CIntegral e' t x e)
   note IH = CIntegral.IH[of "Suc x" "map_vars Suc e"]
-  have "free_vars (cexpr_comp_aux x e (\<integral>\<^sub>c e' \<partial>t)) = 
+  have "free_vars (cexpr_comp_aux x e (\<integral>\<^sub>c e' \<partial>t)) =
            Suc -` free_vars (cexpr_comp_aux (Suc x) (map_vars Suc e) e')" by simp
   also have "... \<subseteq> Suc -` (free_vars e' - {Suc x} \<union> free_vars (map_vars Suc e))"
     by (rule vimage_mono, rule CIntegral.IH)
@@ -536,7 +536,7 @@ qed
 primrec cexpr_subst_val_aux :: "nat \<Rightarrow> cexpr \<Rightarrow> val \<Rightarrow> cexpr" where
   "cexpr_subst_val_aux _ (CVal v) _ = CVal v"
 | "cexpr_subst_val_aux x (CVar y) v = insert_var x CVar (CVal v) y"
-| "cexpr_subst_val_aux x (IF\<^sub>c b THEN e1 ELSE e2) v = 
+| "cexpr_subst_val_aux x (IF\<^sub>c b THEN e1 ELSE e2) v =
     (IF\<^sub>c cexpr_subst_val_aux x b v THEN cexpr_subst_val_aux x e1 v ELSE cexpr_subst_val_aux x e2 v)"
 | "cexpr_subst_val_aux x (oper $$\<^sub>c e) v = oper $$\<^sub>c (cexpr_subst_val_aux x e v)"
 | "cexpr_subst_val_aux x <e1, e2>\<^sub>c v = <cexpr_subst_val_aux x e1 v, cexpr_subst_val_aux x e2 v>\<^sub>c"
@@ -568,7 +568,7 @@ lemma free_vars_cexpr_subst_val[simp]:
 
 subsection {* Nonnegative expressions *}
 
-definition "nonneg_cexpr V \<Gamma> e \<equiv> 
+definition "nonneg_cexpr V \<Gamma> e \<equiv>
     \<forall>\<sigma> \<in> space (state_measure V \<Gamma>). extract_real (cexpr_sem \<sigma> e) \<ge> 0"
 
 lemma nonneg_cexprI:
@@ -627,7 +627,7 @@ lemma nonneg_cexpr_comp_aux:
   shows "nonneg_cexpr V \<Gamma> (cexpr_comp_aux x f e)"
 proof (intro nonneg_cexprI)
   fix \<sigma> assume \<sigma>: "\<sigma> \<in> space (state_measure V \<Gamma>)"
-  have "extract_real (cexpr_sem \<sigma> (cexpr_comp_aux x f e)) = 
+  have "extract_real (cexpr_sem \<sigma> (cexpr_comp_aux x f e)) =
             extract_real (cexpr_sem (\<sigma>(x := cexpr_sem \<sigma> f)) e)"
     by (simp add: cexpr_sem_cexpr_comp_aux)
   also from val_type_cexpr_sem[OF t1 vars \<sigma>] have "cexpr_sem \<sigma> f \<in> type_universe t1" by auto
@@ -660,7 +660,7 @@ lemma nonneg_cexpr_subst_val:
 proof (intro nonneg_cexprI)
   fix \<sigma> assume \<sigma>: "\<sigma> \<in> space (state_measure V \<Gamma>)"
   moreover from assms(2) have "v \<in> type_universe t" by auto
-  ultimately show "extract_real (cexpr_sem \<sigma> (cexpr_subst_val e v)) \<ge> 0" 
+  ultimately show "extract_real (cexpr_sem \<sigma> (cexpr_subst_val e v)) \<ge> 0"
     by (auto intro!: nonneg_cexprD[OF assms(1)])
 qed
 
@@ -679,8 +679,8 @@ qed
 
 text {* Subprobability density expressions *}
 
-definition "subprob_cexpr V V' \<Gamma> e \<equiv> 
-    \<forall>\<rho> \<in> space (state_measure V' \<Gamma>). 
+definition "subprob_cexpr V V' \<Gamma> e \<equiv>
+    \<forall>\<rho> \<in> space (state_measure V' \<Gamma>).
       (\<integral>\<^sup>+\<sigma>. extract_real (cexpr_sem (merge V V' (\<sigma>, \<rho>)) e) \<partial>state_measure V \<Gamma>) \<le> 1"
 
 lemma subprob_cexprI:
@@ -720,15 +720,15 @@ proof (intro subprob_cexprI)
     ultimately have "?eval \<sigma> e1 * ?eval \<sigma> (\<langle>e2\<rangle>\<^sub>c) \<le> ?eval \<sigma> e1"
       by (intro mult_right_le_one_le) auto
   }
-  hence "(\<integral>\<^sup>+\<sigma>. ?eval \<sigma> e1 * ?eval \<sigma> (\<langle>e2\<rangle>\<^sub>c) \<partial>state_measure V \<Gamma>) \<le> 
+  hence "(\<integral>\<^sup>+\<sigma>. ?eval \<sigma> e1 * ?eval \<sigma> (\<langle>e2\<rangle>\<^sub>c) \<partial>state_measure V \<Gamma>) \<le>
              (\<integral>\<^sup>+\<sigma>. ?eval \<sigma> e1 \<partial>state_measure V \<Gamma>)"
-    by (intro nn_integral_mono) simp
+    by (intro nn_integral_mono) (simp add: ennreal_leI)
   also from subprob and \<rho> have "... \<le> 1" by (rule subprob_cexprD)
   finally show "(\<integral>\<^sup>+\<sigma>. ?eval \<sigma> (e1 *\<^sub>c \<langle>e2\<rangle>\<^sub>c) \<partial>state_measure V \<Gamma>)  \<le> 1" .
 qed
 
 lemma measurable_cexpr_sem':
-  assumes \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)" 
+  assumes \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
   assumes e: "\<Gamma> \<turnstile>\<^sub>c e : REAL" "free_vars e \<subseteq> V \<union> V'"
   shows "(\<lambda>\<sigma>. extract_real (cexpr_sem (merge V V' (\<sigma>, \<rho>)) e))
             \<in> borel_measurable (state_measure V \<Gamma>)"
@@ -739,7 +739,7 @@ lemma measurable_cexpr_sem':
 
 lemma measurable_fun_upd_state_measure[measurable]:
   assumes "v \<notin> V"
-  shows "(\<lambda>(x,y). y(v := x)) \<in> measurable (stock_measure (\<Gamma> v) \<Otimes>\<^sub>M state_measure V \<Gamma>) 
+  shows "(\<lambda>(x,y). y(v := x)) \<in> measurable (stock_measure (\<Gamma> v) \<Otimes>\<^sub>M state_measure V \<Gamma>)
                                           (state_measure (insert v V) \<Gamma>)"
   unfolding state_measure_def by simp
 
@@ -749,11 +749,11 @@ lemma integrable_cexpr_projection:
   assumes disjoint: "V \<inter> V' = {}" "v \<notin> V" "v \<notin> V'"
   assumes \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
   assumes e: "\<Gamma> \<turnstile>\<^sub>c e : REAL" "free_vars e \<subseteq> insert v V \<union> V'"
-  assumes int: "integrable (state_measure (insert v V) \<Gamma>) 
+  assumes int: "integrable (state_measure (insert v V) \<Gamma>)
                     (\<lambda>\<sigma>. extract_real (cexpr_sem (merge (insert v V) V' (\<sigma>, \<rho>)) e))"
                 (is "integrable _ ?f'")
-  shows "AE x in stock_measure (\<Gamma> v). 
-           integrable (state_measure V \<Gamma>) 
+  shows "AE x in stock_measure (\<Gamma> v).
+           integrable (state_measure V \<Gamma>)
                (\<lambda>\<sigma>. extract_real (cexpr_sem (merge V (insert v V') (\<sigma>, \<rho>(v := x))) e))"
     (is "AE x in ?N. integrable ?M (?f x)")
 proof (unfold real_integrable_def, intro AE_conjI)
@@ -769,56 +769,58 @@ proof (unfold real_integrable_def, intro AE_conjI)
     hence "?f'' x \<sigma> = ?f x \<sigma>" by simp
   } note f''_eq_f = this
 
-  interpret product_sigma_finite "(\<lambda>v. stock_measure (\<Gamma> v))" 
+  interpret product_sigma_finite "(\<lambda>v. stock_measure (\<Gamma> v))"
     by (simp add: product_sigma_finite_def)
-  interpret sigma_finite_measure "state_measure V \<Gamma>" 
+  interpret sigma_finite_measure "state_measure V \<Gamma>"
     by (rule sigma_finite_state_measure[OF fin])
 
-  from int have "(\<integral>\<^sup>+\<sigma>. ereal (?f' \<sigma>) \<partial>state_measure (insert v V) \<Gamma>) \<noteq> \<infinity>"
+  from int have "(\<integral>\<^sup>+\<sigma>. ennreal (?f' \<sigma>) \<partial>state_measure (insert v V) \<Gamma>) \<noteq> \<infinity>"
     by (simp add: real_integrable_def)
-  also have "(\<integral>\<^sup>+\<sigma>. ereal (?f' \<sigma>) \<partial>state_measure (insert v V) \<Gamma>) = 
-                 \<integral>\<^sup>+x. \<integral>\<^sup>+\<sigma>. ereal (?f'' x \<sigma>) \<partial>?M \<partial>?N" (is "_ = ?I")
+  also have "(\<integral>\<^sup>+\<sigma>. ennreal (?f' \<sigma>) \<partial>state_measure (insert v V) \<Gamma>) =
+                 \<integral>\<^sup>+x. \<integral>\<^sup>+\<sigma>. ennreal (?f'' x \<sigma>) \<partial>?M \<partial>?N" (is "_ = ?I")
     using fin disjoint e \<rho>
     by (unfold state_measure_def, subst product_nn_integral_insert_rev)
-       (auto intro!: borel_measurable_ereal measurable_cexpr_sem'[unfolded state_measure_def])
-  finally have "AE x in ?N. (\<integral>\<^sup>+\<sigma>. ereal (?f'' x \<sigma>) \<partial>?M) \<noteq> \<infinity>" (is ?P) using e disjoint
+       (auto intro!: measurable_compose[OF _ measurable_ennreal] measurable_cexpr_sem'[unfolded state_measure_def])
+  finally have "AE x in ?N. (\<integral>\<^sup>+\<sigma>. ennreal (?f'' x \<sigma>) \<partial>?M) \<noteq> \<infinity>" (is ?P) using e disjoint
     by (intro nn_integral_PInf_AE)
-       (auto simp: measurable_split_conv intro!: borel_measurable_nn_integral borel_measurable_ereal
+       (auto simp: measurable_split_conv intro!: borel_measurable_nn_integral measurable_compose[OF _ measurable_ennreal]
                    measurable_compose[OF _ measurable_cexpr_sem'[OF \<rho>]])
-  moreover have "\<And>x. x \<in> space ?N \<Longrightarrow> (\<integral>\<^sup>+\<sigma>. ereal (?f'' x \<sigma>) \<partial>?M) = (\<integral>\<^sup>+\<sigma>. ereal (?f x \<sigma>) \<partial>?M)"
+  moreover have "\<And>x. x \<in> space ?N \<Longrightarrow> (\<integral>\<^sup>+\<sigma>. ennreal (?f'' x \<sigma>) \<partial>?M) = (\<integral>\<^sup>+\<sigma>. ennreal (?f x \<sigma>) \<partial>?M)"
     by (intro nn_integral_cong) (simp add: f''_eq_f)
-  hence "?P \<longleftrightarrow> (AE x in ?N. (\<integral>\<^sup>+\<sigma>. ereal (?f x \<sigma>) \<partial>?M) \<noteq> \<infinity>)" by (intro AE_cong) simp
-  ultimately show "AE x in ?N. (\<integral>\<^sup>+\<sigma>. ereal (?f x \<sigma>) \<partial>?M) \<noteq> \<infinity>" by simp
+  hence "?P \<longleftrightarrow> (AE x in ?N. (\<integral>\<^sup>+\<sigma>. ennreal (?f x \<sigma>) \<partial>?M) \<noteq> \<infinity>)" by (intro AE_cong) simp
+  ultimately show "AE x in ?N. (\<integral>\<^sup>+\<sigma>. ennreal (?f x \<sigma>) \<partial>?M) \<noteq> \<infinity>" by simp
 
-  from int have "(\<integral>\<^sup>+\<sigma>. ereal (-?f' \<sigma>) \<partial>state_measure (insert v V) \<Gamma>) \<noteq> \<infinity>"
+  from int have "(\<integral>\<^sup>+\<sigma>. ennreal (-?f' \<sigma>) \<partial>state_measure (insert v V) \<Gamma>) \<noteq> \<infinity>"
     by (simp add: real_integrable_def)
-  also have "(\<integral>\<^sup>+\<sigma>. ereal (-?f' \<sigma>) \<partial>state_measure (insert v V) \<Gamma>) = 
-                 \<integral>\<^sup>+x. \<integral>\<^sup>+\<sigma>. ereal (-?f'' x \<sigma>) \<partial>?M \<partial>?N" (is "_ = ?I")
+  also have "(\<integral>\<^sup>+\<sigma>. ennreal (-?f' \<sigma>) \<partial>state_measure (insert v V) \<Gamma>) =
+                 \<integral>\<^sup>+x. \<integral>\<^sup>+\<sigma>. ennreal (-?f'' x \<sigma>) \<partial>?M \<partial>?N" (is "_ = ?I")
     using fin disjoint e \<rho>
     by (unfold state_measure_def, subst product_nn_integral_insert_rev)
-       (auto intro!: borel_measurable_ereal borel_measurable_uminus 
+       (auto intro!: measurable_compose[OF _ measurable_ennreal] borel_measurable_uminus
                      measurable_cexpr_sem'[unfolded state_measure_def])
-  finally have "AE x in ?N. (\<integral>\<^sup>+\<sigma>. ereal (-?f'' x \<sigma>) \<partial>?M) \<noteq> \<infinity>" (is ?P) using e disjoint
+  finally have "AE x in ?N. (\<integral>\<^sup>+\<sigma>. ennreal (-?f'' x \<sigma>) \<partial>?M) \<noteq> \<infinity>" (is ?P) using e disjoint
     by (intro nn_integral_PInf_AE)
-       (auto simp: measurable_split_conv intro!: borel_measurable_nn_integral borel_measurable_ereal
+       (auto simp: measurable_split_conv intro!: borel_measurable_nn_integral measurable_compose[OF _ measurable_ennreal]
                    measurable_compose[OF _ measurable_cexpr_sem'[OF \<rho>]] borel_measurable_uminus)
-  moreover have "\<And>x. x \<in> space ?N \<Longrightarrow> (\<integral>\<^sup>+\<sigma>. ereal (-?f'' x \<sigma>) \<partial>?M) = (\<integral>\<^sup>+\<sigma>. ereal (-?f x \<sigma>) \<partial>?M)"
+  moreover have "\<And>x. x \<in> space ?N \<Longrightarrow> (\<integral>\<^sup>+\<sigma>. ennreal (-?f'' x \<sigma>) \<partial>?M) = (\<integral>\<^sup>+\<sigma>. ennreal (-?f x \<sigma>) \<partial>?M)"
     by (intro nn_integral_cong) (simp add: f''_eq_f)
-  hence "?P \<longleftrightarrow> (AE x in ?N. (\<integral>\<^sup>+\<sigma>. ereal (-?f x \<sigma>) \<partial>?M) \<noteq> \<infinity>)" by (intro AE_cong) simp
-  ultimately show "AE x in ?N. (\<integral>\<^sup>+\<sigma>. ereal (-?f x \<sigma>) \<partial>?M) \<noteq> \<infinity>" by simp
+  hence "?P \<longleftrightarrow> (AE x in ?N. (\<integral>\<^sup>+\<sigma>. ennreal (-?f x \<sigma>) \<partial>?M) \<noteq> \<infinity>)" by (intro AE_cong) simp
+  ultimately show "AE x in ?N. (\<integral>\<^sup>+\<sigma>. ennreal (-?f x \<sigma>) \<partial>?M) \<noteq> \<infinity>" by simp
 qed
 
 
 definition cdens_ctxt_invar :: "vname list \<Rightarrow> vname list \<Rightarrow> tyenv \<Rightarrow> cexpr \<Rightarrow> bool" where
-  "cdens_ctxt_invar vs vs' \<Gamma> \<delta> \<equiv> 
-       distinct (vs @ vs') \<and> free_vars \<delta> \<subseteq> set (vs @ vs') \<and>
-       \<Gamma> \<turnstile>\<^sub>c \<delta> : REAL \<and> nonneg_cexpr (set vs \<union> set vs') \<Gamma> \<delta> \<and>
+  "cdens_ctxt_invar vs vs' \<Gamma> \<delta> \<equiv>
+       distinct (vs @ vs') \<and>
+       free_vars \<delta> \<subseteq> set (vs @ vs') \<and>
+       \<Gamma> \<turnstile>\<^sub>c \<delta> : REAL \<and>
+       nonneg_cexpr (set vs \<union> set vs') \<Gamma> \<delta> \<and>
        subprob_cexpr (set vs) (set vs') \<Gamma> \<delta>"
 
 lemma cdens_ctxt_invarI:
   "\<lbrakk>distinct (vs @ vs'); free_vars \<delta> \<subseteq> set (vs @ vs'); \<Gamma> \<turnstile>\<^sub>c \<delta> : REAL;
     nonneg_cexpr (set vs \<union> set vs') \<Gamma> \<delta>;
-    subprob_cexpr (set vs) (set vs') \<Gamma> \<delta> \<rbrakk> \<Longrightarrow> 
+    subprob_cexpr (set vs) (set vs') \<Gamma> \<delta> \<rbrakk> \<Longrightarrow>
       cdens_ctxt_invar vs vs' \<Gamma> \<delta>"
   by (simp add: cdens_ctxt_invar_def)
 
@@ -826,49 +828,43 @@ lemma cdens_ctxt_invarD:
   assumes "cdens_ctxt_invar vs vs' \<Gamma> \<delta>"
   shows "distinct (vs @ vs')" "free_vars \<delta> \<subseteq> set (vs @ vs')" "\<Gamma> \<turnstile>\<^sub>c \<delta> : REAL"
         "nonneg_cexpr (set vs \<union> set vs') \<Gamma> \<delta>" "subprob_cexpr (set vs) (set vs') \<Gamma> \<delta>"
-  using assms by (simp_all add: cdens_ctxt_invar_def) 
+  using assms by (simp_all add: cdens_ctxt_invar_def)
 
 lemma cdens_ctxt_invar_empty:
   assumes "cdens_ctxt_invar vs vs' \<Gamma> \<delta>"
   shows "cdens_ctxt_invar [] (vs @ vs') \<Gamma> (CReal 1)"
   using cdens_ctxt_invarD[OF assms]
-  by (intro cdens_ctxt_invarI) 
-     (auto simp: cexpr_type_Some_iff[symmetric] extract_real_def state_measure_def PiM_empty 
+  by (intro cdens_ctxt_invarI)
+     (auto simp: cexpr_type_Some_iff[symmetric] extract_real_def state_measure_def PiM_empty
            intro!: nonneg_cexprI subprob_cexprI)
 
 lemma cdens_ctxt_invar_imp_integrable:
   assumes "cdens_ctxt_invar vs vs' \<Gamma> \<delta>" and \<rho>: "\<rho> \<in> space (state_measure (set vs') \<Gamma>)"
-  shows "integrable (state_measure (set vs) \<Gamma>) 
+  shows "integrable (state_measure (set vs) \<Gamma>)
              (\<lambda>\<sigma>. extract_real (cexpr_sem (merge (set vs) (set vs') (\<sigma>, \<rho>)) \<delta>))" (is "integrable ?M ?f")
-  unfolding real_integrable_def
+  unfolding integrable_iff_bounded
 proof (intro conjI)
   note invar = cdens_ctxt_invarD[OF assms(1)]
   show "?f \<in> borel_measurable ?M"
     apply (rule measurable_compose[OF _ measurable_extract_real])
-    apply (rule measurable_compose[OF _ measurable_cexpr_sem[OF invar(3,2)]]) 
+    apply (rule measurable_compose[OF _ measurable_cexpr_sem[OF invar(3,2)]])
     apply (simp only: state_measure_def set_append, rule measurable_compose[OF _ measurable_merge])
     apply (rule measurable_Pair, simp, insert assms(2), simp add: state_measure_def)
     done
 
-  have "(\<integral>\<^sup>+\<sigma>. ereal (-?f \<sigma>) \<partial>?M) = (\<integral>\<^sup>+\<sigma>. max 0 (ereal (-?f \<sigma>)) \<partial>?M)"
-    by (simp add: nn_integral_max_0)
-  also from `nonneg_cexpr (set vs \<union> set vs') \<Gamma> \<delta>`
-    have nonneg: "\<And>\<sigma>. \<sigma> \<in> space ?M \<Longrightarrow> ?f \<sigma> \<ge> 0"
+  have nonneg: "\<And>\<sigma>. \<sigma> \<in> space ?M \<Longrightarrow> ?f \<sigma> \<ge> 0"
+    using `nonneg_cexpr (set vs \<union> set vs') \<Gamma> \<delta>`
     by (rule nonneg_cexprD, intro merge_in_state_measure[OF _ \<rho>])
-  have "(\<integral>\<^sup>+\<sigma>. max 0 (ereal (-?f \<sigma>)) \<partial>?M) = (\<integral>\<^sup>+\<sigma>. 0 \<partial>?M)"
-    by (intro nn_integral_cong) (auto simp: max_def dest: nonneg)
-  also have "... \<noteq> \<infinity>" by simp
-  finally show "(\<integral>\<^sup>+\<sigma>. ereal (-?f \<sigma>) \<partial>?M) \<noteq> \<infinity>" .
-
-  from `subprob_cexpr (set vs) (set vs') \<Gamma> \<delta>` and \<rho>
-    show "(\<integral>\<^sup>+\<sigma>. ereal (?f \<sigma>) \<partial>?M) \<noteq> \<infinity>" unfolding subprob_cexpr_def by auto
+  with `subprob_cexpr (set vs) (set vs') \<Gamma> \<delta>` and \<rho>
+  show "(\<integral>\<^sup>+\<sigma>. ennreal (norm (?f \<sigma>)) \<partial>?M) < \<infinity>" unfolding subprob_cexpr_def
+    by (auto simp: less_top[symmetric] top_unique cong: nn_integral_cong)
 qed
 
 
 subsection {* Randomfree expressions *}
 
-text {* 
-  Translates an expression with no occurrences of Random or Fail into an 
+text {*
+  Translates an expression with no occurrences of Random or Fail into an
   equivalent target language expression.
 *}
 primrec expr_rf_to_cexpr :: "expr \<Rightarrow> cexpr" where
@@ -876,9 +872,9 @@ primrec expr_rf_to_cexpr :: "expr \<Rightarrow> cexpr" where
 | "expr_rf_to_cexpr (Var x) = CVar x"
 | "expr_rf_to_cexpr <e1, e2> = <expr_rf_to_cexpr e1, expr_rf_to_cexpr e2>\<^sub>c"
 | "expr_rf_to_cexpr (oper $$ e) = oper $$\<^sub>c (expr_rf_to_cexpr e)"
-| "expr_rf_to_cexpr (IF b THEN e1 ELSE e2) = 
+| "expr_rf_to_cexpr (IF b THEN e1 ELSE e2) =
       (IF\<^sub>c expr_rf_to_cexpr b THEN expr_rf_to_cexpr e1 ELSE expr_rf_to_cexpr e2)"
-| "expr_rf_to_cexpr (LET e1 IN e2) = 
+| "expr_rf_to_cexpr (LET e1 IN e2) =
       cexpr_subst 0 (expr_rf_to_cexpr e1) (expr_rf_to_cexpr e2)"
 | "expr_rf_to_cexpr (Random _ _) = undefined"
 | "expr_rf_to_cexpr (Fail _) = undefined"
@@ -938,7 +934,7 @@ lemma cexpr_typing_dist_dens_cexpr:
   (* Poisson *)
   apply (simp, intro cet_if cet_and, rule cet_less_real, simp add: cet_val', simp)
   apply (rule cet_less_eq_int, simp add: cet_val', simp)
-  apply (intro cet_mult_real cet_pow_real cet_inverse cet_cast_real_int cet_exp cet_minus_real 
+  apply (intro cet_mult_real cet_pow_real cet_inverse cet_cast_real_int cet_exp cet_minus_real
                cet_op[where oper = Fact and t = INTEG] cet_var', simp_all add: cet_val') [2]
   (* Gaussian *)
   apply (simp, intro cet_if cet_op_intros cet_val', simp_all add: cet_fst cet_snd)
@@ -955,26 +951,35 @@ lemma val_type_eq_PRODUCT: "val_type x = PRODUCT t1 t2 \<longleftrightarrow>
   (\<exists>a b. val_type a = t1 \<and> val_type b = t2 \<and> x = <| a, b |>)"
   by (cases x) auto
 
-lemma cexpr_sem_dist_dens_cexpr:
+lemma cexpr_sem_dist_dens_cexpr_nonneg:
   assumes "\<Gamma> \<turnstile>\<^sub>c e1 : dist_param_type dst" "\<Gamma> \<turnstile>\<^sub>c e2 : dist_result_type dst"
   assumes "free_vars e1 \<subseteq> V" "free_vars e2 \<subseteq> V"
   assumes "\<sigma> \<in> space (state_measure V \<Gamma>)"
-  shows "ereal (extract_real (cexpr_sem \<sigma> (dist_dens_cexpr dst e1 e2))) =
-           dist_dens dst (cexpr_sem \<sigma> e1) (cexpr_sem \<sigma> e2)"
+  shows "ennreal (extract_real (cexpr_sem \<sigma> (dist_dens_cexpr dst e1 e2))) =
+           dist_dens dst (cexpr_sem \<sigma> e1) (cexpr_sem \<sigma> e2) \<and>
+           0 \<le> extract_real (cexpr_sem \<sigma> (dist_dens_cexpr dst e1 e2))"
 proof-
   from val_type_cexpr_sem[OF assms(1,3,5)] and val_type_cexpr_sem[OF assms(2,4,5)]
     have "cexpr_sem \<sigma> e1 \<in> space (stock_measure (dist_param_type dst))" and
-         "cexpr_sem \<sigma> e2 \<in> space (stock_measure (dist_result_type dst))" 
+         "cexpr_sem \<sigma> e2 \<in> space (stock_measure (dist_result_type dst))"
     by (auto simp: type_universe_def simp del: type_universe_type)
   thus ?thesis
     by (subst dist_dens_cexpr_def, cases dst)
        (auto simp:
             lift_Comp_def lift_RealVal_def lift_RealIntVal_def lift_RealIntVal2_def
             bernoulli_density_def val_type_eq_REAL val_type_eq_BOOL val_type_eq_PRODUCT val_type_eq_INTEG
-            uniform_int_density_def uniform_real_density_def 
-            lift_IntVal_def poisson_density'_def one_ereal_def
+            uniform_int_density_def uniform_real_density_def
+            lift_IntVal_def poisson_density'_def one_ennreal_def
             field_simps gaussian_density_def)
 qed
+
+lemma cexpr_sem_dist_dens_cexpr:
+  assumes "\<Gamma> \<turnstile>\<^sub>c e1 : dist_param_type dst" "\<Gamma> \<turnstile>\<^sub>c e2 : dist_result_type dst"
+  assumes "free_vars e1 \<subseteq> V" "free_vars e2 \<subseteq> V"
+  assumes "\<sigma> \<in> space (state_measure V \<Gamma>)"
+  shows "ennreal (extract_real (cexpr_sem \<sigma> (dist_dens_cexpr dst e1 e2))) =
+           dist_dens dst (cexpr_sem \<sigma> e1) (cexpr_sem \<sigma> e2)"
+  using cexpr_sem_dist_dens_cexpr_nonneg[OF assms] by simp
 
 lemma nonneg_dist_dens_cexpr:
   assumes "\<Gamma> \<turnstile>\<^sub>c e1 : dist_param_type dst" "\<Gamma> \<turnstile>\<^sub>c e2 : dist_result_type dst"
@@ -982,17 +987,10 @@ lemma nonneg_dist_dens_cexpr:
   shows "nonneg_cexpr V \<Gamma> (dist_dens_cexpr dst e1 e2)"
 proof (intro nonneg_cexprI)
   fix \<sigma> assume \<rho>: "\<sigma> \<in> space (state_measure V \<Gamma>)"
-  hence "ereal (extract_real (cexpr_sem \<sigma> (dist_dens_cexpr dst e1 e2))) =
-             dist_dens dst (cexpr_sem \<sigma> e1) (cexpr_sem \<sigma> e2)"
-    by (rule cexpr_sem_dist_dens_cexpr[OF assms])
-  also from val_type_cexpr_sem[OF assms(1,3) \<rho>] and val_type_cexpr_sem[OF assms(2,4) \<rho>]
-    have "cexpr_sem \<sigma> e1 \<in> type_universe (dist_param_type dst)" and
-         "cexpr_sem \<sigma> e2 \<in> type_universe (dist_result_type dst)" 
-    by (auto simp: type_universe_def simp del: type_universe_type)
-  hence "dist_dens dst (cexpr_sem \<sigma> e1) (cexpr_sem \<sigma> e2) \<ge> 0" by (intro dist_dens_nonneg)
-  finally show "extract_real (cexpr_sem \<sigma> (dist_dens_cexpr dst e1 e2)) \<ge> 0" by simp
+  from cexpr_sem_dist_dens_cexpr_nonneg[OF assms this]
+  show "0 \<le> extract_real (cexpr_sem \<sigma> (dist_dens_cexpr dst e1 e2))"
+    by simp
 qed
-
 
 subsection {* Integral expressions *}
 
@@ -1003,11 +1001,11 @@ definition integrate_vars :: "tyenv \<Rightarrow> vname list \<Rightarrow> cexpr
   "integrate_vars \<Gamma> = foldr (integrate_var \<Gamma>)"
 
 lemma cexpr_sem_integrate_var:
-  "cexpr_sem \<sigma> (integrate_var \<Gamma> v e) = 
+  "cexpr_sem \<sigma> (integrate_var \<Gamma> v e) =
     RealVal (\<integral>x. extract_real (cexpr_sem (\<sigma>(v := x)) e) \<partial>stock_measure (\<Gamma> v))"
 proof-
   let ?f = "(\<lambda>w. if v = w then 0 else Suc w)"
-  have "cexpr_sem \<sigma> (integrate_var \<Gamma> v e) = 
+  have "cexpr_sem \<sigma> (integrate_var \<Gamma> v e) =
           RealVal (\<integral>x. extract_real (cexpr_sem (case_nat x \<sigma> \<circ> ?f) e) \<partial>stock_measure (\<Gamma> v))"
     by (simp add: extract_real_def integrate_var_def cexpr_sem_map_vars)
   also have "(\<lambda>x. case_nat x \<sigma> \<circ> ?f) = (\<lambda>x. \<sigma>(v := x))"
@@ -1016,7 +1014,7 @@ proof-
 qed
 
 lemma cexpr_sem_integrate_var':
-  "extract_real (cexpr_sem \<sigma> (integrate_var \<Gamma> v e)) = 
+  "extract_real (cexpr_sem \<sigma> (integrate_var \<Gamma> v e)) =
       (\<integral>x. extract_real (cexpr_sem (\<sigma>(v := x)) e) \<partial>stock_measure (\<Gamma> v))"
   by (subst cexpr_sem_integrate_var, simp add: extract_real_def)
 
@@ -1053,7 +1051,7 @@ proof-
     apply (elim conjE)
     apply (subst (1 2) nn_integral_snd[symmetric])
     apply ((subst (asm) (1 2) product_nn_integral_insert[OF assms(1,2)],
-           auto intro!: borel_measurable_ereal borel_measurable_uminus) [])+
+           auto intro!: measurable_compose[OF _ measurable_ennreal] borel_measurable_uminus) [])+
     done
   from assms have "integral\<^sup>L (Pi\<^sub>M (insert i I) M) f = LINT x|Pi\<^sub>M I M. LINT y|M i. f (x(i := y))"
     by (rule product_integral_insert)
@@ -1066,10 +1064,10 @@ qed
 lemma cexpr_sem_integrate_vars:
   assumes \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
   assumes disjoint: "distinct vs" "set vs \<inter> V' = {}"
-  assumes "integrable (state_measure (set vs) \<Gamma>) 
+  assumes "integrable (state_measure (set vs) \<Gamma>)
                (\<lambda>\<sigma>. extract_real (cexpr_sem (merge (set vs) V' (\<sigma>, \<rho>)) e))"
   assumes e: "\<Gamma> \<turnstile>\<^sub>c e : REAL" "free_vars e \<subseteq> set vs \<union> V'"
-  shows "extract_real (cexpr_sem \<rho> (integrate_vars \<Gamma> vs e)) = 
+  shows "extract_real (cexpr_sem \<rho> (integrate_vars \<Gamma> vs e)) =
            \<integral>\<sigma>. extract_real (cexpr_sem (merge (set vs) V' (\<sigma>, \<rho>)) e) \<partial>state_measure (set vs) \<Gamma>"
 using assms
 proof (induction vs arbitrary: \<rho> V')
@@ -1085,24 +1083,24 @@ next
     by (simp add: sigma_finite_state_measure)
   have \<rho>': "\<And>x. x \<in> type_universe (\<Gamma> v) \<Longrightarrow> \<rho>(v := x) \<in> space (state_measure (insert v V') \<Gamma>)"
     using Cons.prems(1) by (auto simp: state_measure_def space_PiM split: if_split_asm)
-  have "extract_real (cexpr_sem \<rho> (integrate_vars \<Gamma> (v # vs) e)) = 
+  have "extract_real (cexpr_sem \<rho> (integrate_vars \<Gamma> (v # vs) e)) =
           \<integral>x. extract_real (cexpr_sem (\<rho>(v := x)) (integrate_vars \<Gamma> vs e)) \<partial>stock_measure (\<Gamma> v)"
     (is "_ = ?I") by (simp add: integrate_vars_def cexpr_sem_integrate_var extract_real_def)
-  also from Cons.prems(4) have int: "integrable (state_measure (insert v (set vs)) \<Gamma>) 
+  also from Cons.prems(4) have int: "integrable (state_measure (insert v (set vs)) \<Gamma>)
       (\<lambda>\<sigma>. extract_real (cexpr_sem (merge (insert v (set vs)) V' (\<sigma>, \<rho>)) e))" by simp
-  have "AE x in stock_measure (\<Gamma> v). 
+  have "AE x in stock_measure (\<Gamma> v).
                 extract_real (cexpr_sem (\<rho>(v := x)) (integrate_vars \<Gamma> vs e)) =
-                  \<integral>\<sigma>. extract_real (cexpr_sem (merge (set vs) (insert v V') (\<sigma>, \<rho>(v := x))) e) 
+                  \<integral>\<sigma>. extract_real (cexpr_sem (merge (set vs) (insert v V') (\<sigma>, \<rho>(v := x))) e)
                       \<partial>state_measure (set vs) \<Gamma>"
     apply (rule AE_mp[OF _ AE_I2[OF impI]])
     apply (rule integrable_cexpr_projection[OF _ _ _ _ _ _ _ int])
     apply (insert Cons.prems, auto) [7]
     apply (subst Cons.IH, rule \<rho>', insert Cons.prems, auto)
     done
-  hence "?I = \<integral>x. \<integral>\<sigma>. extract_real (cexpr_sem (merge (set vs) (insert v V') (\<sigma>, \<rho>(v := x))) e) 
+  hence "?I = \<integral>x. \<integral>\<sigma>. extract_real (cexpr_sem (merge (set vs) (insert v V') (\<sigma>, \<rho>(v := x))) e)
                   \<partial>state_measure (set vs) \<Gamma> \<partial>stock_measure (\<Gamma> v)" using Cons.prems
     apply (intro integral_cong_AE)
-    apply (rule measurable_compose[OF measurable_Pair_compose_split[OF 
+    apply (rule measurable_compose[OF measurable_Pair_compose_split[OF
                 measurable_fun_upd_state_measure[of v V' \<Gamma>]]])
     apply (simp, simp, simp, rule measurable_compose[OF _ measurable_extract_real])
     apply (rule measurable_cexpr_sem, simp, (auto) [])
@@ -1116,9 +1114,9 @@ next
   also have "(\<lambda>x \<sigma>. merge (set vs) (insert v V') (\<sigma>, \<rho>(v := x))) =
                  (\<lambda>x \<sigma>. merge (set (v#vs)) V' (\<sigma>(v := x), \<rho>))"
     using Cons.prems by (intro ext) (auto simp: merge_def split: if_split)
-  also have "(\<integral>x. \<integral>\<sigma>. extract_real (cexpr_sem (merge (set (v#vs)) V' (\<sigma>(v := x), \<rho>)) e) 
+  also have "(\<integral>x. \<integral>\<sigma>. extract_real (cexpr_sem (merge (set (v#vs)) V' (\<sigma>(v := x), \<rho>)) e)
                   \<partial>state_measure (set vs) \<Gamma> \<partial>stock_measure (\<Gamma> v)) =
-               \<integral>\<sigma>. extract_real (cexpr_sem (merge (set (v#vs)) V' (\<sigma>, \<rho>)) e) 
+               \<integral>\<sigma>. extract_real (cexpr_sem (merge (set (v#vs)) V' (\<sigma>, \<rho>)) e)
                   \<partial>state_measure (set (v#vs)) \<Gamma>"
     using Cons.prems unfolding state_measure_def
     by (subst (2) set_simps, subst product_integral_insert') simp_all
@@ -1129,16 +1127,16 @@ lemma cexpr_sem_integrate_vars':
   assumes \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
   assumes disjoint: "distinct vs" "set vs \<inter> V' = {}"
   assumes nonneg: "nonneg_cexpr (set vs \<union> V') \<Gamma> e"
-  assumes "integrable (state_measure (set vs) \<Gamma>) 
+  assumes "integrable (state_measure (set vs) \<Gamma>)
                (\<lambda>\<sigma>. extract_real (cexpr_sem (merge (set vs) V' (\<sigma>, \<rho>)) e))"
   assumes e: "\<Gamma> \<turnstile>\<^sub>c e : REAL" "free_vars e \<subseteq> set vs \<union> V'"
-  shows "ereal (extract_real (cexpr_sem \<rho> (integrate_vars \<Gamma> vs e))) = 
+  shows "ennreal (extract_real (cexpr_sem \<rho> (integrate_vars \<Gamma> vs e))) =
            \<integral>\<^sup>+\<sigma>. extract_real (cexpr_sem (merge (set vs) V' (\<sigma>, \<rho>)) e) \<partial>state_measure (set vs) \<Gamma>"
 proof-
   from assms have "extract_real (cexpr_sem \<rho> (integrate_vars \<Gamma> vs e)) =
       \<integral>\<sigma>. extract_real (cexpr_sem (merge (set vs) V' (\<sigma>, \<rho>)) e) \<partial>state_measure (set vs) \<Gamma>"
     by (intro cexpr_sem_integrate_vars)
-  also have "ereal ... = 
+  also have "ennreal ... =
       \<integral>\<^sup>+\<sigma>. extract_real (cexpr_sem (merge (set vs) V' (\<sigma>, \<rho>)) e) \<partial>state_measure (set vs) \<Gamma>"
     using assms
     by (intro nn_integral_eq_integral[symmetric] AE_I2)
@@ -1157,7 +1155,7 @@ proof (induction vs arbitrary: \<rho> V')
   case Nil
   hence "\<And>v. (if v \<in> V' then \<rho> v else undefined) = \<rho> v"
     by (auto simp: state_measure_def space_PiM)
-  with Nil show ?case 
+  with Nil show ?case
     by (auto simp: integrate_vars_def state_measure_def merge_def PiM_empty nonneg_cexprD)
 next
   case (Cons v vs \<rho> V')
@@ -1171,12 +1169,20 @@ next
   finally show "extract_real (cexpr_sem \<rho> (integrate_vars \<Gamma> (v # vs) e)) \<ge> 0" .
 qed
 
+lemma nonneg_cexpr_sem_integrate_vars':
+  "distinct vs \<Longrightarrow> set vs \<inter> V' = {} \<Longrightarrow> nonneg_cexpr (set vs \<union> V') \<Gamma> e \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>c e : REAL \<Longrightarrow>
+    free_vars e \<subseteq> set vs \<union> V' \<Longrightarrow> nonneg_cexpr V' \<Gamma> (integrate_vars \<Gamma> vs e)"
+  apply (intro nonneg_cexprI allI)
+  apply (rule nonneg_cexpr_sem_integrate_vars[where V'=V'])
+  apply auto
+  done
+
 lemma cexpr_sem_integral_nonneg:
   assumes finite: "(\<integral>\<^sup>+x. extract_real (cexpr_sem (case_nat x \<sigma>) e) \<partial>stock_measure t) < \<infinity>"
   assumes nonneg: "nonneg_cexpr (shift_var_set V) (case_nat t \<Gamma>) e"
   assumes t: "case_nat t \<Gamma> \<turnstile>\<^sub>c e : REAL" and vars: "free_vars e \<subseteq> shift_var_set V"
   assumes \<rho>: "\<sigma> \<in> space (state_measure V \<Gamma>)"
-  shows "ereal (extract_real (cexpr_sem \<sigma> (\<integral>\<^sub>c e \<partial>t))) = 
+  shows "ennreal (extract_real (cexpr_sem \<sigma> (\<integral>\<^sub>c e \<partial>t))) =
              \<integral>\<^sup>+x. extract_real (cexpr_sem (case_nat x \<sigma>) e) \<partial>stock_measure t"
 proof-
   let ?f = "\<lambda>x. extract_real (cexpr_sem (case_nat x \<sigma>) e)"
@@ -1192,28 +1198,10 @@ proof-
   have "extract_real (cexpr_sem \<sigma> (\<integral>\<^sub>c e \<partial>t)) =
           \<integral>x. extract_real (cexpr_sem (case_nat x \<sigma>) e) \<partial>stock_measure t"
     by (simp add: extract_real_def)
-  also have "ereal ... = \<integral>\<^sup>+x. extract_real (cexpr_sem (case_nat x \<sigma>) e) \<partial>stock_measure t"
+  also have "ennreal ... = \<integral>\<^sup>+x. extract_real (cexpr_sem (case_nat x \<sigma>) e) \<partial>stock_measure t"
     by (subst nn_integral_eq_integral[OF int AE_I2])
        (auto intro!: nonneg_cexprD[OF nonneg] case_nat_in_state_measure[OF _ \<rho>])
   finally show ?thesis .
-qed
-
-lemma has_parametrized_subprob_density_imp_nonneg_cexpr:
-  assumes "has_parametrized_subprob_density (state_measure (set vs') \<Gamma>) M
-            (stock_measure t) (\<lambda>\<sigma> x. ereal (eval_cexpr f \<sigma> x))"
-  shows "nonneg_cexpr (shift_var_set (set vs')) (case_nat t \<Gamma>) f"
-proof (intro nonneg_cexprI)
-  fix \<sigma> assume \<sigma>: "\<sigma> \<in> space (state_measure (shift_var_set (set vs')) (case_nat t \<Gamma>))"
-  have "\<sigma> = case_nat (\<sigma> 0) (\<sigma> \<circ> Suc)" by (intro ext) (simp split: nat.split)
-  hence "extract_real (cexpr_sem \<sigma> f) = eval_cexpr f (\<sigma> \<circ> Suc) (\<sigma> 0)" by (simp add: eval_cexpr_def)
-  also have "\<sigma> \<circ> Suc \<in> space (state_measure (set vs') \<Gamma>)" "\<sigma> 0 \<in> type_universe t"
-    apply (insert \<sigma>)
-    apply (force simp: state_measure_def space_PiM shift_var_set_def o_def)
-    apply (force simp: state_measure_def shift_var_set_def space_PiM dest: PiE_mem)
-    done
-  hence "ereal (eval_cexpr f (\<sigma> \<circ> Suc) (\<sigma> 0)) \<ge> 0"
-    by (intro has_parametrized_subprob_densityD[OF assms]) simp_all
-  finally show "extract_real (cexpr_sem \<sigma> f) \<ge> 0" by simp
 qed
 
 lemma has_parametrized_subprob_density_cexpr_sem_integral:
@@ -1223,21 +1211,21 @@ lemma has_parametrized_subprob_density_cexpr_sem_integral:
   assumes tf: "case_nat t' (case_nat t \<Gamma>) \<turnstile>\<^sub>c f : REAL"
   assumes varsf: "free_vars f \<subseteq> shift_var_set (shift_var_set V')"
   assumes \<rho>: "\<rho> \<in> space (state_measure V' \<Gamma>)"
-  shows "AE x in stock_measure t. 
-          (\<integral>\<^sup>+y. eval_cexpr f (case_nat x \<rho>) y \<partial>stock_measure t') = ereal (eval_cexpr (\<integral>\<^sub>c f \<partial>t') \<rho> x)"
+  shows "AE x in stock_measure t.
+          (\<integral>\<^sup>+y. eval_cexpr f (case_nat x \<rho>) y \<partial>stock_measure t') = ennreal (eval_cexpr (\<integral>\<^sub>c f \<partial>t') \<rho> x)"
 proof (rule AE_mp[OF _ AE_I2[OF impI]])
   interpret sigma_finite_measure "stock_measure t'" by simp
   let ?f = "\<lambda>x. \<integral>\<^sup>+y. eval_cexpr f (case_nat x \<rho>) y \<partial>stock_measure t'"
   from has_parametrized_subprob_density_integral[OF dens \<rho>]
-    have "(\<integral>\<^sup>+x. ?f x \<partial>stock_measure t) \<noteq> \<infinity>" by (auto simp: eval_cexpr_def)
+    have "(\<integral>\<^sup>+x. ?f x \<partial>stock_measure t) \<noteq> \<infinity>" by (auto simp: eval_cexpr_def top_unique)
   thus "AE x in stock_measure t. ?f x \<noteq> \<infinity>" using \<rho> tf varsf by (intro nn_integral_PInf_AE) simp_all
   fix x assume x: "x \<in> space (stock_measure t)" and finite: "?f x \<noteq> \<infinity>"
   have nonneg': "AE y in stock_measure t'. eval_cexpr f (case_nat x \<rho>) y \<ge> 0"
     unfolding eval_cexpr_def using \<rho> x
     by (intro AE_I2 nonneg_cexprD[OF nonneg]) (auto intro!: case_nat_in_state_measure)
   hence "integrable (stock_measure t') (\<lambda>y. eval_cexpr f (case_nat x \<rho>) y)"
-    using x \<rho> tf varsf finite by (intro integrableI_nonneg) simp_all
-  thus "?f x = ereal (eval_cexpr (\<integral>\<^sub>c f \<partial>t') \<rho> x)" using nonneg'
+    using x \<rho> tf varsf finite by (intro integrableI_nonneg) (simp_all add: top_unique less_top)
+  thus "?f x = ennreal (eval_cexpr (\<integral>\<^sub>c f \<partial>t') \<rho> x)" using nonneg'
     by (simp add: extract_real_def nn_integral_eq_integral eval_cexpr_def)
 qed
 

@@ -14,7 +14,7 @@ We now formalize the following Markov chain:
   \begin{scope} [rotate = 45]
     \path [fill, color = gray!30] (7.5, -6) ellipse(3 and 1) ;
   \end{scope}
-  
+
   \node (bot2)  at (7, -0.5) {} ;
   \node[draw, circle] (1) at ( 8, -0.5) {$0$} ;
   \node[draw, circle] (2) at ( 9,  0.5) {$1$} ;
@@ -24,7 +24,7 @@ We now formalize the following Markov chain:
 
   \node (inf1) at (10.5, 2) {} ;
   \node (inf2) at (11.5, 3) {} ;
-  
+
   \path[->, >=latex]
     (bot2) edge (1)
     (1)    edge [loop below]   node [right] {$\frac{2}{3}$} (1)
@@ -135,11 +135,14 @@ proof -
   have "B.stat UNIV = N"
     using B.stationary_distributionD(2)[OF B_essential _ stationary_distribution_N _] by simp
   then have "2^Suc i = 1 / emeasure (B.stat UNIV) {i}"
-    by (simp add: one_divide_ereal field_simps emeasure_pmf_single pmf_eq_0_set_pmf)
+    apply (simp add: field_simps emeasure_pmf_single pmf_positive)
+    apply (subst divide_ennreal[symmetric])
+    apply (auto simp: ennreal_mult ennreal_power[symmetric])
+    done
   also have "\<dots> = B.U' i i"
     unfolding B.stat_def
     by (subst emeasure_point_measure_finite2)
-       (simp_all add: nn_integral_nonneg divide_ereal_def inverse_ereal_ge0I B.U'_def)
+       (simp_all add: B.U'_def)
   finally show ?thesis
     by simp
 qed

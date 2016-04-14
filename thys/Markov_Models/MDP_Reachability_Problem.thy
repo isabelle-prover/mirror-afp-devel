@@ -43,30 +43,21 @@ lemma v_eq: "cfg \<in> valid_cfg \<Longrightarrow>
     v cfg = emeasure (T cfg) {x\<in>space St. (HLD S1 suntil HLD S2) (state cfg ## x)}"
   by (auto simp add: v_def)
 
-lemma v_nonneg: "cfg \<in> valid_cfg \<Longrightarrow> 0 \<le> v cfg"
-  by (auto simp add: v_def emeasure_nonneg)
-
-lemma real_v: "cfg \<in> valid_cfg \<Longrightarrow> real_of_ereal (v cfg) = \<P>(\<omega> in T cfg. (HLD S1 suntil HLD S2) (state cfg ## \<omega>))"
+lemma real_v: "cfg \<in> valid_cfg \<Longrightarrow> enn2real (v cfg) = \<P>(\<omega> in T cfg. (HLD S1 suntil HLD S2) (state cfg ## \<omega>))"
   by (auto simp add: v_def T.emeasure_eq_measure)
 
 lemma v_le_1: "cfg \<in> valid_cfg \<Longrightarrow> v cfg \<le> 1"
-  by (auto simp add: v_def T.emeasure_eq_measure one_ereal_def)
+  by (auto simp add: v_def T.emeasure_eq_measure)
 
-lemma v_neq_Pinf[simp]: "cfg \<in> valid_cfg \<Longrightarrow> v cfg \<noteq> \<infinity>"
+lemma v_neq_Pinf[simp]: "cfg \<in> valid_cfg \<Longrightarrow> v cfg \<noteq> top"
   by (auto simp add: v_def)
-
-lemma v_neq_Minf[simp]: "cfg \<in> valid_cfg \<Longrightarrow> v cfg \<noteq> - \<infinity>"
-  by (auto simp add: v_def)
-
-lemma v_neq_Inf[simp]: "cfg \<in> valid_cfg \<Longrightarrow> \<bar>v cfg\<bar> \<noteq> \<infinity>"
-  by (auto intro!: ereal_infinity_cases)
 
 lemma v_1_AE: "cfg \<in> valid_cfg \<Longrightarrow> v cfg = 1 \<longleftrightarrow> (AE \<omega> in T cfg. (HLD S1 suntil HLD S2) (state cfg ## \<omega>))"
-  unfolding v_eq T.emeasure_eq_measure ereal_eq_1 space_T[symmetric, of cfg]
+  unfolding v_eq T.emeasure_eq_measure ennreal_eq_1 space_T[symmetric, of cfg]
   by (rule T.prob_Collect_eq_1) simp
 
 lemma v_0_AE: "cfg \<in> valid_cfg \<Longrightarrow> v cfg = 0 \<longleftrightarrow> (AE x in T cfg. not (HLD S1 suntil HLD S2) (state cfg ## x))"
-  unfolding v_eq T.emeasure_eq_measure ereal_eq_0 space_T[symmetric, of cfg]
+  unfolding v_eq T.emeasure_eq_measure space_T[symmetric, of cfg] ennreal_eq_zero_iff[OF measure_nonneg]
   by (rule T.prob_Collect_eq_0) simp
 
 lemma v_S2[simp]: "cfg \<in> valid_cfg \<Longrightarrow> state cfg \<in> S2 \<Longrightarrow> v cfg = 1"
@@ -92,16 +83,16 @@ proof -
 qed
 
 lemma real_v_integrable:
-  "integrable (action cfg) (\<lambda>s. real_of_ereal (v (cont cfg s)))"
-  by (rule measure_pmf.integrable_const_bound[where B="max 1 (real_of_ereal \<bar>undefined::ereal\<bar>)"])
-     (auto simp add: v_def emeasure_nonneg measure_def[symmetric] le_max_iff_disj)
+  "integrable (action cfg) (\<lambda>s. enn2real (v (cont cfg s)))"
+  by (rule measure_pmf.integrable_const_bound[where B="max 1 (enn2real undefined)"])
+     (auto simp add: v_def measure_def[symmetric] le_max_iff_disj)
 
 lemma real_v_integral_eq:
   assumes cfg[simp]: "cfg \<in> valid_cfg"
-  shows "real_of_ereal (\<integral>\<^sup>+ s. v (cont cfg s) \<partial>action cfg) = \<integral> s. real_of_ereal (v (cont cfg s)) \<partial>action cfg"
+  shows "enn2real (\<integral>\<^sup>+ s. v (cont cfg s) \<partial>action cfg) = \<integral> s. enn2real (v (cont cfg s)) \<partial>action cfg"
  by (subst integral_eq_nn_integral)
-    (auto simp: AE_measure_pmf_iff measure_nonneg v_eq T.emeasure_eq_measure valid_cfg_cont
-          intro!: arg_cong[where f=real_of_ereal] nn_integral_cong_AE)
+    (auto simp: AE_measure_pmf_iff v_eq T.emeasure_eq_measure valid_cfg_cont
+          intro!: arg_cong[where f=enn2real] nn_integral_cong_AE)
 
 lemma v_eq_0_coinduct[consumes 3, case_names valid nS2 cont]:
   assumes *: "P cfg"
@@ -140,22 +131,19 @@ lemma v_le_p: "cfg \<in> valid_cfg \<Longrightarrow> v cfg \<le> p (state cfg)"
   by (subst p_eq_SUP_v) (auto intro!: SUP_upper dest: valid_cfgD valid_cfg_state_in_S)
 
 lemma p_eq_0_imp: "cfg \<in> valid_cfg \<Longrightarrow> p (state cfg) = 0 \<Longrightarrow> v cfg = 0"
-  using v_le_p[of cfg] v_nonneg[of cfg] by (auto intro: antisym)
+  using v_le_p[of cfg] by (auto intro: antisym)
 
 lemma p_eq_0_iff: "s \<in> S \<Longrightarrow> p s = 0 \<longleftrightarrow> (\<forall>cfg\<in>cfg_on s. v cfg = 0)"
-  unfolding p_eq_SUP_v by (subst SUP_eq_iff) (auto intro: v_nonneg[OF valid_cfgI])
+  unfolding p_eq_SUP_v by (subst SUP_eq_iff) auto
 
 lemma p_le_1: "s \<in> S \<Longrightarrow> p s \<le> 1"
   by (auto simp: p_eq_SUP_v intro!: SUP_least v_le_1 intro: valid_cfgI)
 
-lemma p_nonneg: "s \<in> S \<Longrightarrow> 0 \<le> p s"
-  by (auto simp: p_eq_SUP_v intro!: v_nonneg SUP_upper2[of "simple arb_act s"])
-
 lemma p_undefined[simp]: "s \<notin> S \<Longrightarrow> p s = undefined"
   by (simp add: p_def)
 
-lemma p_not_inf[simp]: "s \<in> S \<Longrightarrow> p s \<noteq> \<infinity>" "s \<in> S \<Longrightarrow> p s \<noteq> -\<infinity>"
-  using p_nonneg[of s] p_le_1[of s] by auto
+lemma p_not_inf[simp]: "s \<in> S \<Longrightarrow> p s \<noteq> top"
+  using p_le_1[of s] by (auto simp: top_unique)
 
 lemma p_S1: "s \<in> S1 \<Longrightarrow> p s = (\<Squnion>D\<in>K s. \<integral>\<^sup>+ t. p t \<partial>D)"
   using S1 S1_S2 K_closed[of s] unfolding p_def
@@ -177,20 +165,19 @@ using assms proof (induction rule: converse_rtrancl_induct)
   with S1 set_pmf_closed[of s D] have in_S: "\<And>t. t \<in> D \<Longrightarrow> t \<in> S"
     by auto
   from `t' \<in> D` `0 < p t'` have "0 < pmf D t' * p t'"
-    by (auto simp add: ereal_zero_less_0_iff pmf_positive)
+    by (auto simp add: ennreal_zero_less_mult_iff pmf_positive)
   also have "\<dots> \<le> (\<integral>\<^sup>+t. p t' * indicator {t'} t\<partial>D)"
     using in_S[OF `t' \<in> D`]
-    by (subst nn_integral_cmult_indicator)
-       (auto intro!: ereal_0_le_mult p_nonneg simp: ac_simps emeasure_pmf_single)
+    by (subst nn_integral_cmult_indicator) (auto simp: ac_simps emeasure_pmf_single)
   also have "\<dots> \<le> (\<integral>\<^sup>+t. p t \<partial>D)"
-    by (auto intro!: nn_integral_mono_AE p_nonneg split: split_indicator simp: in_S AE_measure_pmf_iff
+    by (auto intro!: nn_integral_mono_AE split: split_indicator simp: in_S AE_measure_pmf_iff
       simp del: nn_integral_indicator_singleton)
   also have "\<dots> \<le> p s"
     using `s \<in> S1` `D \<in> K s` by (auto intro: SUP_upper simp add: p_S1)
   finally show ?case .
 qed simp
 
-definition F_sup :: "('s \<Rightarrow> ereal) \<Rightarrow> 's \<Rightarrow> ereal" where
+definition F_sup :: "('s \<Rightarrow> ennreal) \<Rightarrow> 's \<Rightarrow> ennreal" where
   "F_sup f = (\<lambda>s\<in>S. if s \<in> S2 then 1 else if s \<in> S1 then SUP D:K s. \<integral>\<^sup>+t. f t \<partial>D else 0)"
 
 lemma F_sup_cong: "(\<And>s. s \<in> S \<Longrightarrow> f s = g s) \<Longrightarrow> F_sup f s = F_sup g s"
@@ -205,9 +192,6 @@ lemma continuous_F_sup: "sup_continuous F_sup"
 lemma mono_F_sup: "mono F_sup"
   by (intro sup_continuous_mono continuous_F_sup)
 
-lemma F_sup_nonneg: "s \<in> S \<Longrightarrow> 0 \<le> F_sup F s"
-  by (auto simp: F_sup_def intro!: SUP_upper2 nn_integral_nonneg intro: arb_actI)
-
 lemma lfp_F_sup_iterate: "lfp F_sup = (SUP i. (F_sup ^^ i) (\<lambda>x\<in>S. 0))"
 proof -
   { have "(SUP i. (F_sup ^^ i) \<bottom>) = (SUP i. (F_sup ^^ i) (\<lambda>x\<in>S. 0))"
@@ -215,10 +199,10 @@ proof -
       fix i show "\<exists>j\<in>UNIV. (F_sup ^^ i) \<bottom> \<le> (F_sup ^^ j) (\<lambda>x\<in>S. 0)"
         by (intro bexI[of _ i] funpow_mono mono_F_sup) auto
       have *: "(\<lambda>x\<in>S. 0) \<le> F_sup \<bottom>"
-        using K_wf by (auto simp: F_sup_def le_fun_def) (blast intro: SUP_upper2 nn_integral_nonneg)
+        using K_wf by (auto simp: F_sup_def le_fun_def)
       show "\<exists>j\<in>UNIV. (F_sup ^^ i) (\<lambda>x\<in>S. 0) \<le> (F_sup ^^ j) \<bottom>"
         by (auto intro!: exI[of _ "Suc i"] funpow_mono mono_F_sup  *
-                 simp del: funpow.simps simp add: funpow_Suc_right F_sup_nonneg le_funI)
+                 simp del: funpow.simps simp add: funpow_Suc_right le_funI)
     qed }
   then show ?thesis
     by (auto simp: sup_continuous_lfp continuous_F_sup)
@@ -281,13 +265,13 @@ lemma S\<^sub>e_nS2: "S\<^sub>e \<inter> S2 = {}"
 
 lemma S\<^sub>e_E1: "s \<in> S\<^sub>e \<inter> S1 \<Longrightarrow> (s, t) \<in> E \<Longrightarrow> t \<in> S\<^sub>e"
   unfolding S\<^sub>e_def using S1
-  by (auto simp: p_S1 SUP_eq_iff K_wf nn_integral_nonneg nn_integral_0_iff_AE AE_measure_pmf_iff E_def
-           intro: set_pmf_closed p_nonneg antisym
+  by (auto simp: p_S1 SUP_eq_iff K_wf nn_integral_0_iff_AE AE_measure_pmf_iff E_def
+           intro: set_pmf_closed antisym
            cong: rev_conj_cong)
 
 lemma S\<^sub>e_E2: "s \<in> S1 \<Longrightarrow> (\<And>t. (s, t) \<in> E \<Longrightarrow> t \<in> S\<^sub>e) \<Longrightarrow> s \<in> S\<^sub>e"
   unfolding S\<^sub>e_def using S1 S1_S2
-  by (force simp: p_S1 SUP_eq_iff K_wf nn_integral_nonneg nn_integral_0_iff_AE AE_measure_pmf_iff E_def
+  by (force simp: p_S1 SUP_eq_iff K_wf nn_integral_0_iff_AE AE_measure_pmf_iff E_def
             cong: rev_conj_cong)
 
 lemma S\<^sub>e_E_iff: "s \<in> S1 \<Longrightarrow> s \<in> S\<^sub>e \<longleftrightarrow> (\<forall>t. (s, t) \<in> E \<longrightarrow> t \<in> S\<^sub>e)"
@@ -361,10 +345,10 @@ proof -
       with S\<^sub>r_S1 ct have "v (?C s) = (\<integral>\<^sup>+t. v (?C t) \<partial>ct s)"
         by (subst v_S1) (auto intro!: nn_integral_cong_AE AE_pmfI)
       also have "\<dots> \<noteq> 0"
-        using ct t
-        by (subst nn_integral_0_iff_AE) (auto simp add: Pi_iff AE_measure_pmf_iff not_le step intro!: bexI[of _ t])
+        using ct t step
+        by (subst nn_integral_0_iff_AE) (auto simp add: AE_measure_pmf_iff zero_less_iff_neq_zero)
       finally show ?case
-        using ct by (auto simp add: less_le v_nonneg)
+        using ct by (auto simp add: less_le)
     qed (subst v_S2, insert S2, auto) }
   moreover
   { fix s assume s: "s \<notin> ?D" "s \<in> S\<^sub>r"
@@ -527,8 +511,7 @@ proof -
 
       from `proper ct` `s\<^sub>0 \<in> S` s\<^sub>0 have "?v s\<^sub>0 \<noteq> 0"
         by (auto simp add: proper_def)
-      then have "0 < ?v s\<^sub>0"
-        using v_nonneg[of "?C s\<^sub>0"] by simp
+      then have "0 < ?v s\<^sub>0" by (simp add: zero_less_iff_neq_zero)
 
       { fix t assume "t \<in> S\<^sub>e \<union> S2 \<union> X" "t \<in> ?E s\<^sub>0" and "?v s\<^sub>0 \<le> ?v t"
         moreover have "t \<in> S\<^sub>e \<Longrightarrow> ?v t = 0"
@@ -555,7 +538,7 @@ proof -
             finally show ?thesis .
           next
             assume "y \<notin> S\<^sub>r - X" with y * show ?thesis
-              by (auto simp: S\<^sub>r_def v_S\<^sub>e[of "?C y"] v_nonneg[of "?C x"] ct_Pi)
+              by (auto simp: S\<^sub>r_def v_S\<^sub>e[of "?C y"] ct_Pi)
           qed }
         then have "maximal ?v (?E s\<^sub>0 \<inter> (S2 \<union> X)) \<subseteq> maximal ?v (?E s\<^sub>0)"
           by (auto simp: maximal_def)
@@ -577,7 +560,7 @@ proof -
           by (intro nn_integral_mono_AE)
              (auto intro!: v_le_1 simp: AE_measure_pmf_iff proper_def ct_Pi)
         then show "(\<integral>\<^sup>+x. ?v x \<partial>?K) \<noteq> \<infinity>"
-          by auto
+          by (auto simp: top_unique)
         have "?v t < ?v s\<^sub>0"
         proof cases
           assume "t \<in> S\<^sub>e \<union> S2 \<union> X" then show ?thesis
@@ -604,9 +587,9 @@ proof -
               by (elim maximalD2) (auto simp: S\<^sub>r_def intro!: ct_closed[of _ t])
           qed
         qed
-      qed (insert ct_closed[of s\<^sub>0], auto simp: AE_measure_pmf_iff intro!: v_nonneg[OF valid_C])
+      qed (insert ct_closed[of s\<^sub>0], auto simp: AE_measure_pmf_iff)
       also have "\<dots> = ?v s\<^sub>0"
-        using `s\<^sub>0 \<in> S` measure_pmf.emeasure_space_1[of "ct s\<^sub>0"] by (simp add: v_nonneg[OF valid_C])
+        using `s\<^sub>0 \<in> S` measure_pmf.emeasure_space_1[of "ct s\<^sub>0"] by simp
       finally show False
         by simp
     qed
@@ -658,7 +641,7 @@ proof -
         show "?v s \<le> ?v t"
           using t(2)[THEN maximalD2] ct
           by (auto simp add: v_S1 AE_measure_pmf_iff proper_def Pi_iff PiE_def
-                   intro!: measure_pmf.nn_integral_le_const v_nonneg)
+                   intro!: measure_pmf.nn_integral_le_const)
       qed fact
     qed
   qed simp
@@ -720,20 +703,20 @@ proof atomize_elim
       also have "\<dots> \<le> (\<integral>\<^sup>+t. ?v s \<partial>D)"
         using `s \<in> S` s' D by (intro nn_integral_mono_AE) (auto simp: AE_measure_pmf_iff intro: maximalD2)
       finally show False
-        using measure_pmf.emeasure_space_1[of D] by (simp add: v_nonneg `s \<in> S` ct)
+        using measure_pmf.emeasure_space_1[of D] by (simp add: `s \<in> S` ct)
     qed
 
     have "p s' \<noteq> 0"
     proof
       assume "p s' = 0"
       then have "?v s' = 0"
-        using v_le_p[of "simple ct s'"] ct `s' \<in> S` by (auto intro!: antisym v_nonneg ct)
+        using v_le_p[of "simple ct s'"] ct `s' \<in> S` by (auto intro!: antisym ct)
       then have "(\<integral>\<^sup>+t. ?v t \<partial>D) = 0"
         using maximalD2[OF s'] by (subst nn_integral_0_iff_AE) (auto simp: `s\<in>S` D AE_measure_pmf_iff)
       then have "?v s < 0"
         using not_maximal by auto
       then show False
-        using v_nonneg[of "simple ct s"] `s\<in>S` by (simp add: ct)
+        using `s\<in>S` by (simp add: ct)
     qed
     with `s' \<in> S` have "s' \<in> S2 \<union> S\<^sub>r"
       by (auto simp: S\<^sub>r_def S\<^sub>e_def)
@@ -748,7 +731,7 @@ proof atomize_elim
       also have "\<dots> \<le> (\<integral>\<^sup>+t. ?v s' \<partial>D)"
         using s' by (intro nn_integral_mono_AE) (auto simp: `s \<in> S` D AE_measure_pmf_iff intro: maximalD2)
       finally show False
-        using measure_pmf.emeasure_space_1[of D] by (simp add: v_nonneg `s' \<in> S` ct)
+        using measure_pmf.emeasure_space_1[of D] by (simp add:`s' \<in> S` ct)
     qed
 
     from `s' \<in> S2 \<union> S\<^sub>r` have "s' \<in> ?D ct'"
@@ -804,9 +787,9 @@ proof atomize_elim
       then have "t' \<in> S"
         by (metis v_nS simple_valid_cfg_iff ct' ct order.irrefl)
 
-      def \<Delta> \<equiv> "\<lambda>t. real_of_ereal (?v t) - real_of_ereal (?v' t)"
-      with * `t' \<in> S` v_nonneg[of "simple ct' t'"] have "0 < \<Delta> t'"
-        by (cases "?v t'" "?v' t'" rule: ereal2_cases) (auto simp add: ct' ct)
+      def \<Delta> \<equiv> "\<lambda>t. enn2real (?v t) - enn2real (?v' t)"
+      with * `t' \<in> S` have "0 < \<Delta> t'"
+        by (cases "?v t'" "?v' t'" rule: ennreal2_cases) (auto simp add: ct' ct ennreal_less_iff)
 
       { fix t assume t: "t \<in> maximal \<Delta> S"
         with `t' \<in> S` have "\<Delta> t' \<le> \<Delta> t"
@@ -817,14 +800,12 @@ proof atomize_elim
       note max_is_S\<^sub>r = this
 
       { fix s assume "s \<in> S"
-        with v_nonneg[of "simple ct' s"] v_le_1[of "simple ct' s"]
-             v_nonneg[of "simple ct s"] v_le_1[of "simple ct s"]
+        with v_le_1[of "simple ct' s"] v_le_1[of "simple ct s"]
         have "\<bar>\<Delta> s\<bar> \<le> 1"
-          by (cases "?v s" "?v' s" rule: ereal2_cases)
-             (auto simp: \<Delta>_def one_ereal_def abs_real_def ct ct') }
+          by (cases "?v s" "?v' s" rule: ennreal2_cases) (auto simp: \<Delta>_def ct ct') }
       note \<Delta>_le_1[simp] = this
-      then have ereal_\<Delta>: "\<And>s. s \<in> S \<Longrightarrow> \<Delta> s = ?v s - ?v' s"
-        by (auto simp add: \<Delta>_def v_def T.emeasure_eq_measure ct ct')
+      then have ennreal_\<Delta>: "\<And>s. s \<in> S \<Longrightarrow> \<Delta> s = ?v s - ?v' s"
+        by (auto simp add: \<Delta>_def v_def T.emeasure_eq_measure ct ct' ennreal_minus)
 
       from `s \<in> S` S_finite have "maximal \<Delta> S \<noteq> {}"
         by (intro maximal_ne) auto
@@ -865,7 +846,7 @@ proof atomize_elim
           qed
           also have "\<dots> = \<Delta> t"
             using measure_pmf.prob_space[of "ct' t"] by simp
-          also have "\<Delta> t \<le> (\<integral>s. real_of_ereal (?v s) \<partial>ct' t) - (\<integral>s. real_of_ereal (?v' s) \<partial>ct' t)"
+          also have "\<Delta> t \<le> (\<integral>s. enn2real (?v s) \<partial>ct' t) - (\<integral>s. enn2real (?v' s) \<partial>ct' t)"
           proof -
             have "?v t \<le> (\<integral>\<^sup>+s. ?v s \<partial>ct' t)"
             proof cases
@@ -874,30 +855,30 @@ proof atomize_elim
               assume "t \<noteq> s" with S1 `t\<in>S1` \<open>t \<in> S\<close> ct ct' show ?thesis
                 by (subst v_S1) (auto intro!: nn_integral_mono_AE AE_pmfI)
             qed
-            also have "\<dots> = ereal (\<integral>s. real_of_ereal (?v s) \<partial>ct' t)"
+            also have "\<dots> = ennreal (\<integral>s. enn2real (?v s) \<partial>ct' t)"
               using ct ct' `t\<in>S`
-              by (intro measure_pmf.ereal_integral_real[symmetric, where B=1])
-                 (auto simp: AE_measure_pmf_iff one_ereal_def[symmetric]
-                       intro!: v_nonneg v_le_1 simple_valid_cfg intro: Pi_closed)
-            finally have "real_of_ereal (?v t) \<le> (\<integral>s. real_of_ereal (?v s) \<partial>ct' t)"
+              by (intro measure_pmf.ennreal_integral_real[symmetric, where B=1])
+                 (auto simp: AE_measure_pmf_iff one_ennreal_def[symmetric]
+                       intro!: v_le_1 simple_valid_cfg intro: Pi_closed)
+            finally have "enn2real (?v t) \<le> (\<integral>s. enn2real (?v s) \<partial>ct' t)"
               using ct `t\<in>S` by (simp add: v_def T.emeasure_eq_measure)
             moreover
             { have "?v' t = (\<integral>\<^sup>+s. ?v' s \<partial>ct' t)"
                 using ct ct' \<open>t \<in> S\<close> `t \<in> S1` S1 by (subst v_S1) (auto intro!: nn_integral_cong_AE AE_pmfI)
-              also have "\<dots> = ereal (\<integral>s. real_of_ereal (?v' s) \<partial>ct' t)"
+              also have "\<dots> = ennreal (\<integral>s. enn2real (?v' s) \<partial>ct' t)"
                 using ct' `t\<in>S`
-                by (intro measure_pmf.ereal_integral_real[symmetric, where B=1])
-                   (auto simp: AE_measure_pmf_iff one_ereal_def[symmetric]
-                         intro!: v_nonneg v_le_1 simple_valid_cfg intro: Pi_closed)
-              finally have "real_of_ereal (?v' t) = (\<integral>s. real_of_ereal (?v' s) \<partial>ct' t)"
+                by (intro measure_pmf.ennreal_integral_real[symmetric, where B=1])
+                   (auto simp: AE_measure_pmf_iff one_ennreal_def[symmetric]
+                         intro!:  v_le_1 simple_valid_cfg intro: Pi_closed)
+              finally have "enn2real (?v' t) = (\<integral>s. enn2real (?v' s) \<partial>ct' t)"
                 using ct' `t\<in>S` by (simp add: v_def T.emeasure_eq_measure) }
             ultimately show ?thesis
-              using `t \<in> S` by (simp add: \<Delta>_def ereal_minus_mono)
+              using `t \<in> S` by (simp add: \<Delta>_def ennreal_minus_mono)
           qed
           also have "\<dots> = (\<integral>s. \<Delta> s \<partial>ct' t)"
             unfolding \<Delta>_def using Pi_closed[OF ct `t\<in>S`] Pi_closed[OF ct' `t\<in>S`] ct ct'
             by (intro integral_diff[symmetric] measure_pmf.integrable_const_bound[where B=1])
-               (auto simp: AE_measure_pmf_iff real_v v_nonneg intro!: real_of_ereal_le_1)
+               (auto simp: AE_measure_pmf_iff real_v)
           finally show False
             by simp
         qed
@@ -957,7 +938,7 @@ proof atomize_elim
         by (auto simp: v_S1 PiE_def intro!: nn_integral_mono_AE AE_pmfI)
       moreover
       { have "0 \<le> ?v s"
-          using `s\<in>S` ct by (simp add: v_nonneg PiE_def)
+          using `s\<in>S` ct by (simp add: PiE_def)
         also assume v_less: "?v s < (SUP D:K s. integral\<^sup>N D ?v)"
         also have "\<dots> \<le> p s"
           unfolding p_S1[OF `s\<in>S1`] using `s\<in>S` ct v_le_p[OF simple_valid_cfg, OF `ct \<in> Pi S K`]
@@ -1028,17 +1009,14 @@ lemma n_eq_1_iff: "s \<in> S \<Longrightarrow> n s = 1 \<longleftrightarrow> (\<
 lemma n_le_1: "s \<in> S \<Longrightarrow> n s \<le> 1"
   by (auto simp: n_eq_INF_v intro!: INF_lower2[OF simple_cfg_on[of arb_act]] v_le_1)
 
-lemma n_nonneg: "s \<in> S \<Longrightarrow> 0 \<le> n s"
-  by (auto simp: n_eq_INF_v intro!: v_nonneg INF_greatest valid_cfgI)
-
 lemma n_undefined[simp]: "s \<notin> S \<Longrightarrow> n s = undefined"
   by (simp add: n_def)
 
 lemma n_eq_0: "s \<in> S \<Longrightarrow> cfg \<in> cfg_on s \<Longrightarrow> v cfg = 0 \<Longrightarrow> n s = 0"
-  using n_le_v[of s cfg] n_nonneg[of s] by auto
+  using n_le_v[of s cfg] by auto
 
-lemma n_not_inf[simp]: "s \<in> S \<Longrightarrow> n s \<noteq> \<infinity>" "s \<in> S \<Longrightarrow> n s \<noteq> -\<infinity>"
-  using n_nonneg[of s] n_le_1[of s] by auto
+lemma n_not_inf[simp]: "s \<in> S \<Longrightarrow> n s \<noteq> top"
+  using n_le_1[of s] by (auto simp: top_unique)
 
 lemma n_S1: "s \<in> S1 \<Longrightarrow> n s = (\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. n t \<partial>D)"
   using S1 S1_S2 unfolding n_def
@@ -1072,12 +1050,12 @@ proof (induction s)
     have in_S: "\<And>t. t \<in> D \<Longrightarrow> t \<in> S"
       using set_pmf_closed[OF `s \<in> S` `D \<in> K s`] by auto
     from w have "0 < pmf D w * n w"
-      by (simp add: ereal_zero_less_0_iff pmf_positive)
+      by (simp add: pmf_positive ennreal_zero_less_mult_iff)
     also have "\<dots> = (\<integral>\<^sup>+t. n w * indicator {w} t \<partial>D)"
       by (subst nn_integral_cmult_indicator)
-         (auto intro!: n_nonneg simp: ac_simps emeasure_pmf_single in_S `w \<in> D`)
+         (auto simp: ac_simps emeasure_pmf_single in_S `w \<in> D`)
     also have "\<dots> \<le> (\<integral>\<^sup>+t. n t \<partial>D)"
-      by (intro nn_integral_mono_AE) (auto split: split_indicator intro: n_nonneg simp: AE_measure_pmf_iff in_S)
+      by (intro nn_integral_mono_AE) (auto split: split_indicator simp: AE_measure_pmf_iff in_S)
     finally show "0 < (\<integral>\<^sup>+t. n t \<partial>D)" .
   qed (insert K_wf K_finite `s\<in>S`, auto)
   also have "\<dots> = n s"
@@ -1086,7 +1064,7 @@ proof (induction s)
   finally show "0 < n s" .
 qed
 
-definition F_inf :: "('s \<Rightarrow> ereal) \<Rightarrow> ('s \<Rightarrow> ereal)" where
+definition F_inf :: "('s \<Rightarrow> ennreal) \<Rightarrow> ('s \<Rightarrow> ennreal)" where
   "F_inf f = (\<lambda>s\<in>S. if s \<in> S2 then 1 else if s \<in> S1 then (\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. f t \<partial>D) else 0)"
 
 lemma F_inf_n: "F_inf n = n"
@@ -1097,9 +1075,6 @@ lemma F_inf_nS[simp]: "s \<notin> S \<Longrightarrow> F_inf f s = undefined"
 
 lemma mono_F_inf: "mono F_inf"
   by (auto intro!: INF_superset_mono nn_integral_mono simp: mono_def F_inf_def le_fun_def)
-
-lemma F_inf_nonneg: "s \<in> S \<Longrightarrow> 0 \<le> F_inf F s"
-  by (auto simp: F_inf_def intro!: INF_greatest nn_integral_nonneg intro: arb_actI)
 
 lemma S1_nS2: "s \<in> S1 \<Longrightarrow> s \<notin> S2"
   using S1_S2 by auto
@@ -1158,7 +1133,7 @@ proof (intro antisym lfp_lowerbound le_funI)
       fix n from `s\<in>S` show "P s n \<le> lfp F_inf s"
       proof (induct n arbitrary: s)
         case 0 with S1 show ?case
-          by (subst lfp_unfold[OF mono_F_inf]) (auto simp: P_def intro: F_inf_nonneg)
+          by (subst lfp_unfold[OF mono_F_inf]) (auto simp: P_def)
       next
         case (Suc n)
 
@@ -1194,10 +1169,10 @@ proof (intro antisym lfp_lowerbound le_funI)
 qed (simp add: F_inf_n)
 
 
-lemma real_n: "s \<in> S \<Longrightarrow> ereal (real_of_ereal (n s)) = n s"
+lemma real_n: "s \<in> S \<Longrightarrow> ennreal (enn2real (n s)) = n s"
   by (cases "n s") simp_all
 
-lemma real_p: "s \<in> S \<Longrightarrow> ereal (real_of_ereal (p s)) = p s"
+lemma real_p: "s \<in> S \<Longrightarrow> ennreal (enn2real (p s)) = p s"
   by (cases "p s") simp_all
 
 lemma p_ub:
@@ -1206,9 +1181,9 @@ lemma p_ub:
   assumes solution: "\<And>s D. s \<in> S1 \<Longrightarrow> D \<in> K s \<Longrightarrow> (\<Sum>t\<in>S. pmf D t * x t) \<le> x s"
   assumes solution_0: "\<And>s. s \<in> S \<Longrightarrow> p s = 0 \<Longrightarrow> x s = 0"
   assumes solution_S2: "\<And>s. s \<in> S2 \<Longrightarrow> x s = 1"
-  shows "real_of_ereal (p s) \<le> x s" (is "?y s \<le> _")
+  shows "enn2real (p s) \<le> x s" (is "?y s \<le> _")
 proof -
-  let ?p = "\<lambda>s. real_of_ereal (p s)"
+  let ?p = "\<lambda>s. enn2real (p s)"
   from p_v_memoryless obtain sc where "sc \<in> Pi\<^sub>E S K" and p_eq: "p = v \<circ> simple sc"
     by auto
   then have sch: "\<And>s. s \<in> S \<Longrightarrow> sc s \<in> K s" and sc_Pi: "sc \<in> Pi S K"
@@ -1297,7 +1272,7 @@ lemma n_lb:
   assumes solution: "\<And>s D. s \<in> S1 \<Longrightarrow> D \<in> K s \<Longrightarrow> x s \<le> (\<Sum>t\<in>S. pmf D t * x t)"
   assumes solution_n0: "\<And>s. s \<in> S \<Longrightarrow> n s = 0 \<Longrightarrow> x s = 0"
   assumes solution_S2: "\<And>s. s \<in> S2 \<Longrightarrow> x s = 1"
-  shows "x s \<le> real_of_ereal (n s)" (is "_ \<le> ?y s")
+  shows "x s \<le> enn2real (n s)" (is "_ \<le> ?y s")
 proof -
   let ?I = "\<lambda>D::'s pmf. \<integral>\<^sup>+x. n x \<partial>D"
   { fix s assume "s \<in> S1"
@@ -1327,7 +1302,7 @@ proof -
       by (auto simp add: N_def) }
   note N = this
 
-  let ?n = "\<lambda>s. real_of_ereal (n s)"
+  let ?n = "\<lambda>s. enn2real (n s)"
   show ?thesis
   proof cases
     assume "s \<in> S - N"
@@ -1352,7 +1327,7 @@ proof -
         apply simp_all
         apply (subst integral_eq_nn_integral)
         apply (auto simp: Pi_closed[OF sc_Pi] AE_measure_pmf_iff
-                    intro!: n_nonneg real_of_ereal_pos arg_cong[where f=real_of_ereal] nn_integral_cong_AE real_n)
+                    intro!: arg_cong[where f=enn2real] nn_integral_cong_AE real_n)
         done
       then show "(\<integral> t. ?n t \<partial>sc s) + 0 \<le> ?n s"
         by simp

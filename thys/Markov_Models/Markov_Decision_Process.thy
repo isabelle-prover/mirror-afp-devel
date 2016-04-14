@@ -11,38 +11,6 @@ definition "some_elem s = (SOME x. x \<in> s)"
 lemma some_elem_ne: "s \<noteq> {} \<Longrightarrow> some_elem s \<in> s"
   unfolding some_elem_def by (auto intro: someI)
 
-lemma mono_INF_fun:
-    "(\<And>x y. mono (F x y)) \<Longrightarrow> mono (\<lambda>z x. \<Sqinter>y\<in>X x. F x y z :: 'a :: complete_lattice)"
-  by (auto intro!: INF_mono[OF bexI] simp: le_fun_def mono_def)
-
-lemma sup_continuous_SUP[order_continuous_intros]:
-  fixes M :: "_ \<Rightarrow> _ \<Rightarrow> 'a::complete_lattice"
-  assumes M: "\<And>i. i \<in> I \<Longrightarrow> sup_continuous (M i)"
-  shows  "sup_continuous (\<Squnion>i\<in>I. M i)"
-  unfolding sup_continuous_def by (auto simp add: sup_continuousD[OF M] intro: SUP_commute)
-
-lemma sup_continuous_apply_SUP[order_continuous_intros]:
-  fixes M :: "_ \<Rightarrow> _ \<Rightarrow> 'a::complete_lattice"
-  shows "(\<And>i. i \<in> I \<Longrightarrow> sup_continuous (M i)) \<Longrightarrow> sup_continuous (\<lambda>x. \<Squnion>i\<in>I. M i x)"
-  unfolding SUP_apply[symmetric] by (rule sup_continuous_SUP)
-
-lemma SUP_sup_continuous_ereal:
-  fixes f :: "ereal \<Rightarrow> 'a::complete_lattice"
-  assumes f: "sup_continuous f" and "I \<noteq> {}"
-  shows "(SUP i:I. f (g i)) = f (SUP i:I. g i)"
-proof (rule antisym)
-  show "(\<Squnion>i\<in>I. f (g i)) \<le> f (\<Squnion>i\<in>I. g i)"
-    by (rule mono_SUP[OF sup_continuous_mono[OF f]])
-  from Sup_countable_SUP[of "g`I"] \<open>I \<noteq> {}\<close>
-  obtain M :: "nat \<Rightarrow> ereal" where "incseq M" and M: "range M \<subseteq> g ` I" and eq: "(\<Squnion>i\<in>I. g i) = (\<Squnion>i. M i)"
-    by auto
-  have "f (\<Squnion>i\<in>I. g i) = (\<Squnion>i\<in>range M. f i)"
-    unfolding eq sup_continuousD[OF f \<open>mono M\<close>] by simp
-  also have "\<dots> \<le> (\<Squnion>i\<in>I. f (g i))"
-    by (insert M, drule SUP_subset_mono) auto
-  finally show "f (\<Squnion>i\<in>I. g i) \<le> (\<Squnion>i\<in>I. f (g i))" .
-qed
-
 subsection {* Schedulers *}
 
 text {*
@@ -307,10 +275,9 @@ lemma nn_integral_T_lfp:
 proof (rule nn_integral_lfp)
   show "\<And>s. sets (T s) = sets St"
       "\<And>F. F \<in> borel_measurable St \<Longrightarrow> (\<lambda>a. g (shd a) (F (stl a))) \<in> borel_measurable St"
-      "\<And>F cfg. 0 \<le> (\<integral>\<^sup>+ t. g (state t) (F t) \<partial>K_cfg cfg)"
-    by (auto simp: nn_integral_nonneg)
+    by auto
 next
-  fix s and F :: "'s stream \<Rightarrow> ereal" assume "F \<in> borel_measurable St"
+  fix s and F :: "'s stream \<Rightarrow> ennreal" assume "F \<in> borel_measurable St"
   then show "(\<integral>\<^sup>+ a. g (shd a) (F (stl a)) \<partial>T s) =
            (\<integral>\<^sup>+ cfg. g (state cfg) (integral\<^sup>N (T cfg) F) \<partial>K_cfg s)"
     by (rewrite nn_integral_T) (simp_all add: int_g)
@@ -323,10 +290,9 @@ lemma emeasure_Collect_T:
   using MC.emeasure_Collect_T[of "\<lambda>x. P (smap state x)" cfg]
   by (simp add: nn_integral_distr emeasure_Collect_distr T_def)
 
-definition "E_sup s f = (\<Squnion>cfg\<in>cfg_on s. \<integral>\<^sup>+x. f x \<partial>T cfg)"
-
-lemma E_sup_nonneg: "0 \<le> E_sup s f"
-  by (auto intro!: SUP_upper2 nn_integral_nonneg memoryless_on_cfg_onI arb_actI simp: E_sup_def)
+definition E_sup :: "'s \<Rightarrow> ('s stream \<Rightarrow> ennreal) \<Rightarrow> ennreal"
+where
+  "E_sup s f = (\<Squnion>cfg\<in>cfg_on s. \<integral>\<^sup>+x. f x \<partial>T cfg)"
 
 lemma E_sup_const: "0 \<le> c \<Longrightarrow> E_sup s (\<lambda>_. c) = c"
   using T.emeasure_space_1 by (simp add: E_sup_def)
@@ -334,7 +300,7 @@ lemma E_sup_const: "0 \<le> c \<Longrightarrow> E_sup s (\<lambda>_. c) = c"
 lemma E_sup_mult_right:
   assumes [measurable]: "f \<in> borel_measurable St" and [simp]: "0 \<le> c"
   shows "E_sup s (\<lambda>x. c * f x) = c * E_sup s f"
-  by (simp add: nn_integral_cmult E_sup_def SUP_ereal_mult_left nn_integral_nonneg)
+  by (simp add: nn_integral_cmult E_sup_def SUP_mult_left_ennreal)
 
 lemma E_sup_mono:
   "(\<And>\<omega>. f \<omega> \<le> g \<omega>) \<Longrightarrow> E_sup s f \<le> E_sup s g"
@@ -344,23 +310,18 @@ lemma E_sup_add:
   assumes [measurable]: "f \<in> borel_measurable St" "g \<in> borel_measurable St"
   shows "E_sup s (\<lambda>x. f x + g x) \<le> E_sup s f + E_sup s g"
 proof -
-  { fix \<omega> have "f \<omega> + g \<omega> \<le> max 0 (f \<omega>) + max 0 (g \<omega>)"
-      by (cases "f \<omega>" "g \<omega>" rule: ereal2_cases) (auto split: split_max) }
-  then have "E_sup s (\<lambda>x. f x + g x) \<le> E_sup s (\<lambda>x. max 0 (f x) + max 0 (g x))"
-    by (rule E_sup_mono)
-  also have "\<dots> = (\<Squnion>cfg\<in>cfg_on s. (\<integral>\<^sup>+x. max 0 (f x) \<partial>T cfg) + (\<integral>\<^sup>+x. max 0 (g x) \<partial>T cfg))"
+  have "E_sup s (\<lambda>x. f x + g x) = (\<Squnion>cfg\<in>cfg_on s. (\<integral>\<^sup>+x. f x \<partial>T cfg) + (\<integral>\<^sup>+x. g x \<partial>T cfg))"
     by (simp add: E_sup_def nn_integral_add)
-  also have "\<dots> \<le> (\<Squnion>cfg\<in>cfg_on s. \<integral>\<^sup>+x. max 0 (f x) \<partial>T cfg) + (\<Squnion>cfg\<in>cfg_on s. (\<integral>\<^sup>+x. max 0 (g x) \<partial>T cfg))"
-    by (auto simp: SUP_le_iff intro!: ereal_add_mono SUP_upper)
+  also have "\<dots> \<le> (\<Squnion>cfg\<in>cfg_on s. \<integral>\<^sup>+x. f x \<partial>T cfg) + (\<Squnion>cfg\<in>cfg_on s. (\<integral>\<^sup>+x. g x \<partial>T cfg))"
+    by (auto simp: SUP_le_iff intro!: add_mono SUP_upper)
   finally show ?thesis
-    by (simp add: nn_integral_max_0 E_sup_def)
+    by (simp add: E_sup_def)
 qed
 
 lemma E_sup_add_left:
   assumes [measurable]: "f \<in> borel_measurable St" and nn: "0 \<le> c" "\<And>x. 0 \<le> f x"
   shows "E_sup s (\<lambda>x. f x + c) = E_sup s f + c"
-  by (simp add: nn nn_integral_add E_sup_def T.emeasure_space_1[simplified] nn_integral_nonneg
-                SUP_ereal_add_left)
+  by (simp add: nn nn_integral_add E_sup_def T.emeasure_space_1[simplified] ennreal_SUP_add_left)
 
 lemma E_sup_SUP:
   assumes [measurable]: "\<And>i. f i \<in> borel_measurable St" and [simp]: "incseq f"
@@ -386,20 +347,18 @@ proof -
     proof cases
       assume p_finite: "\<forall>t\<in>D. ?p t < \<infinity>"
       show ?thesis
-      proof (rule ereal_le_epsilon2, intro allI impI)
+      proof (rule ennreal_le_epsilon)
         fix e :: real assume "0 < e"
         have "\<forall>t\<in>D. \<exists>cfg\<in>cfg_on t. ?p t \<le> ?v cfg + e"
         proof
           fix t assume "t \<in> D"
           moreover have "(SUP cfg : cfg_on t. ?v cfg) = ?p t"
             unfolding E_sup_def by (simp add: cfg_on_def)
-          moreover have "0 \<le> ?p t"
-            by (rule E_sup_nonneg)
-          ultimately have "\<bar>SUP cfg : cfg_on t. ?v cfg\<bar> \<noteq> \<infinity>"
-            using p_finite by (intro ereal_infinity_cases) auto
-          from SUP_approx_ereal[OF `0 < e` refl this]
+          ultimately have "(SUP cfg : cfg_on t. ?v cfg) \<noteq> \<infinity>"
+            using p_finite by auto
+          from SUP_approx_ennreal[OF \<open>0<e\<close> _ refl this]
           show "\<exists>cfg\<in>cfg_on t. ?p t \<le> ?v cfg + e"
-            by (simp add: E_sup_def)
+            by (auto simp add: E_sup_def intro: less_imp_le)
         qed
         then obtain cfg' where v_cfg': "\<And>t. t \<in> D \<Longrightarrow> ?p t \<le> ?v (cfg' t) + e" and
           cfg_on_cfg': "\<And>t. t \<in> D \<Longrightarrow> cfg' t \<in> cfg_on t"
@@ -413,23 +372,23 @@ proof -
           by (intro nn_integral_mono_AE) (simp add: v_cfg' AE_measure_pmf_iff)
         also have "\<dots> = (\<integral>\<^sup>+t. ?v (cfg' t) \<partial>D) + e"
           using `0 < e` measure_pmf.emeasure_space_1[of D]
-          by (subst nn_integral_add) (auto intro: cfg_on_cfg' nn_integral_nonneg)
+          by (subst nn_integral_add) (auto intro: cfg_on_cfg' )
         also have "(\<integral>\<^sup>+t. ?v (cfg' t) \<partial>D) = (\<integral>\<^sup>+t. ?v t \<partial>K_cfg ?cfg)"
           by (simp add: cfg map_pmf_rep_eq nn_integral_distr)
         also have "\<dots> \<le> (SUP cfg:cfg_on s. (\<integral>\<^sup>+t. ?v t \<partial>K_cfg cfg))"
           by (auto intro!: SUP_upper intro!: cfg_of_cfg_onI D cfg_on_cfg')
         finally show "(\<integral>\<^sup>+ t. ?p t \<partial>D) \<le> (SUP cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) + e"
-          by (blast intro: ereal_add_mono)
+          by (blast intro: add_mono)
       qed
     next
       assume "\<not> (\<forall>t\<in>D. ?p t < \<infinity>)"
       then obtain t where "t \<in> D" "?p t = \<infinity>"
-        by auto
+        by (auto simp: not_less top_unique)
       then have "\<infinity> = pmf (D) t * ?p t"
-        by (auto intro!: pmf_positive)
+        by (auto simp: ennreal_mult_top set_pmf_iff)
       also have "\<dots> = (SUP cfg : cfg_on t. pmf (D) t * ?v cfg)"
         unfolding E_sup_def
-        by (auto simp add: pmf_nonneg nn_integral_nonneg intro!: SUP_ereal_mult_left[symmetric])
+        by (auto simp: SUP_mult_left_ennreal[symmetric])
       also have "\<dots> \<le> (SUP cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg)"
         unfolding E_sup_def
       proof (intro SUP_least SUP_upper2)
@@ -441,28 +400,28 @@ proof -
 
         show "?cfg \<in> cfg_on s"
           by (auto intro!: cfg_of_cfg_onI D cfg memoryless_on_cfg_onI)
-        have "ereal (pmf (D) t) * (\<integral>\<^sup>+ x. f (state cfg ## x) \<partial>T cfg) =
+        have "ennreal (pmf (D) t) * (\<integral>\<^sup>+ x. f (state cfg ## x) \<partial>T cfg) =
           (\<integral>\<^sup>+t'. (\<integral>\<^sup>+ x. f (state cfg ## x) \<partial>T cfg) * indicator {t} t' \<partial>D)"
-          by (auto simp add: nn_integral_nonneg max_def emeasure_pmf_single intro: mult_ac)
+          by (auto simp add:  max_def emeasure_pmf_single intro: mult_ac)
         also have "\<dots> = (\<integral>\<^sup>+cfg. ?v cfg * indicator {t} (state cfg) \<partial>K_cfg ?cfg)"
           unfolding C using cfg
           by (auto simp add: nn_integral_distr map_pmf_rep_eq split: split_indicator
                    simp del: nn_integral_indicator_singleton
                    intro!: nn_integral_cong)
         also have "\<dots> \<le> (\<integral>\<^sup>+cfg. ?v cfg \<partial>K_cfg ?cfg)"
-          by (auto intro!: nn_integral_mono nn_integral_nonneg split: split_indicator)
-        finally show "ereal (pmf (D) t) * (\<integral>\<^sup>+ x. f (state cfg ## x) \<partial>T cfg)
+          by (auto intro!: nn_integral_mono  split: split_indicator)
+        finally show "ennreal (pmf (D) t) * (\<integral>\<^sup>+ x. f (state cfg ## x) \<partial>T cfg)
            \<le> (\<integral>\<^sup>+ t. \<integral>\<^sup>+ x. f (state t ## x) \<partial>T t \<partial>K_cfg ?cfg)" .
       qed
       finally show ?thesis
-        by simp
+        by (simp add: top_unique del: Sup_eq_top_iff SUP_eq_top_iff)
     qed
   qed
   finally show ?thesis .
 qed
 
 lemma E_sup_bot: "E_sup s \<bottom> = 0"
-  by (auto simp add: E_sup_def nn_integral_const_nonpos)
+  by (auto simp add: E_sup_def bot_ennreal)
 
 lemma E_sup_lfp:
   fixes g
@@ -478,13 +437,13 @@ proof (rule lfp_transfer_bounded[where \<alpha>="\<lambda>F s. E_sup s F" and f=
   show "sup_continuous l"
     using cont_g[THEN sup_continuous_compose] by (auto intro!: order_continuous_intros simp: l_def)
   show "\<And>F. (\<lambda>s. E_sup s \<bottom>) \<le> (\<lambda>s. \<Squnion>D\<in>K s. \<integral>\<^sup>+ t. g t (F t) \<partial>D)"
-    using K_wf by (auto simp: E_sup_bot le_fun_def intro: SUP_upper2 nn_integral_nonneg)
+    using K_wf by (auto simp: E_sup_bot le_fun_def intro: SUP_upper2 )
 next
-  fix f :: "'s stream \<Rightarrow> ereal" assume f: "f \<in> borel_measurable St"
+  fix f :: "'s stream \<Rightarrow> ennreal" assume f: "f \<in> borel_measurable St"
   moreover
   have "E_sup s (\<lambda>\<omega>. g s (f \<omega>)) = g s (E_sup s f)" for s
     unfolding E_sup_def using int_g[OF f]
-    by (subst SUP_sup_continuous_ereal[OF cont_g, symmetric])
+    by (subst SUP_sup_continuous_ennreal[OF cont_g, symmetric])
        (auto intro!: SUP_cong simp del: cfg_onD_state dest: cfg_onD_state[symmetric])
   ultimately show "(\<lambda>s. E_sup s (l f)) = (\<lambda>s. \<Squnion>D\<in>K s. \<integral>\<^sup>+ t. g t (E_sup t f) \<partial>D)"
     by (subst E_sup_iterate) (auto simp: l_def int_g fun_eq_iff intro!: SUP_cong nn_integral_cong)
@@ -544,9 +503,6 @@ qed
 
 definition "E_inf s f = (\<Sqinter>cfg\<in>cfg_on s. \<integral>\<^sup>+x. f x \<partial>T cfg)"
 
-lemma E_inf_nonneg: "0 \<le> E_inf s f"
-  by (simp add: E_inf_def le_INF_iff nn_integral_nonneg)
-
 lemma E_inf_const: "0 \<le> c \<Longrightarrow> E_inf s (\<lambda>_. c) = c"
   using T.emeasure_space_1 by (simp add: E_inf_def)
 
@@ -569,7 +525,7 @@ proof -
       by (auto simp add: E_inf_def nn_integral_K_cfg AE_measure_pmf_iff intro!: nn_integral_mono_AE INF_lower2)
   next
     fix D assume D: "D \<in> K s" show "(INF cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (\<integral>\<^sup>+t. ?p t \<partial>D)"
-    proof (rule ereal_le_epsilon2, intro allI impI)
+    proof (rule ennreal_le_epsilon)
       fix e :: real assume "0 < e"
       have "\<forall>t\<in>D. \<exists>cfg\<in>cfg_on t. ?v cfg \<le> ?p t + e"
       proof
@@ -577,17 +533,15 @@ proof -
         show "\<exists>cfg\<in>cfg_on t. ?v cfg \<le> ?p t + e"
         proof cases
           assume "?p t = \<infinity>" with cfg_on_not_empty[of t] show ?thesis
-            by (auto simp del: cfg_on_not_empty)
+            by (auto simp: top_add simp del: cfg_on_not_empty)
         next
           assume p_finite: "?p t \<noteq> \<infinity>"
           note `t \<in> D`
           moreover have "(INF cfg : cfg_on t. ?v cfg) = ?p t"
             unfolding E_inf_def by (simp add: cfg_on_def)
-          moreover have "0 \<le> ?p t"
-            by (rule E_inf_nonneg)
-          ultimately have "\<bar>INF cfg : cfg_on t. ?v cfg\<bar> \<noteq> \<infinity>"
-            using p_finite by (intro ereal_infinity_cases) auto
-          from INF_approx_ereal[OF `0 < e` refl this]
+          ultimately have "(INF cfg : cfg_on t. ?v cfg) \<noteq> \<infinity>"
+            using p_finite by auto
+          from INF_approx_ennreal[OF `0 < e` refl this]
           show "\<exists>cfg\<in>cfg_on t. ?v cfg \<le> ?p t + e"
             by (auto simp: E_inf_def intro: less_imp_le)
         qed
@@ -606,7 +560,7 @@ proof -
       then have "(INF cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (\<integral>\<^sup>+ t. ?p t + e \<partial>D)"
         by (rule INF_lower2) (auto simp: cfg map_pmf_rep_eq nn_integral_distr v_cfg' AE_measure_pmf_iff intro!: nn_integral_mono_AE)
       also have "\<dots> = (\<integral>\<^sup>+ t. ?p t \<partial>D) + e"
-        using `0 < e` by (simp add: nn_integral_add E_inf_nonneg measure_pmf.emeasure_space_1[simplified])
+        using `0 < e` by (simp add: nn_integral_add measure_pmf.emeasure_space_1[simplified])
       finally show "(INF cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (\<integral>\<^sup>+ t. ?p t \<partial>D) + e" .
     qed
   qed
