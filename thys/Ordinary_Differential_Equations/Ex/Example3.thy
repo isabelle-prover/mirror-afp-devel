@@ -5,7 +5,7 @@ imports
   "~~/src/HOL/Decision_Procs/Approximation"
 begin
 
-subsection {* Example 3 *}
+subsection \<open>Example 3\<close>
 
 approximate_affine e3 "\<lambda>(t, x). (1::real, x*x + t*t::real)"
 
@@ -26,10 +26,10 @@ interpretation e3: aform_approximate_ivp
   apply unfold_locales
   apply (rule e3[THEN Joints2_JointsI])
   unfolding list.sel apply assumption apply assumption
-  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
+  apply (drule length_set_of_apprs, simp)\<comment>"TODO: prove in affine-approximation"
   apply (rule e3_fderiv)
   apply (rule e3_d[THEN Joints2_JointsI]) apply assumption apply assumption
-  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
+  apply (drule length_set_of_apprs, simp)\<comment>"TODO: prove in affine-approximation"
   apply (auto intro!: continuous_intros simp: split_beta')
   done
 
@@ -149,10 +149,10 @@ lemma
   using certification(1) last_enclosure
   by (simp_all add: e3.enclosure_def)
 
-subsubsection {* Comparison with bounds analytically obtained by Walter~\cite{walter} in section 9,
-  Example V. *}
+subsubsection \<open>Comparison with bounds analytically obtained by Walter~\cite{walter} in section 9,
+  Example V.\<close>
 
-text {* First approximation. *}
+text \<open>First approximation.\<close>
 
 notepad begin
   fix solution
@@ -169,7 +169,7 @@ notepad begin
   with Walter have "solution ?x \<in> {1.142857139 .. 1.287426955}" by blast
 end
 
-text {* Better approximation. *}
+text \<open>Better approximation.\<close>
 
 notepad begin
   fix solution::"real\<Rightarrow>real"

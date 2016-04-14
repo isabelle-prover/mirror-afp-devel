@@ -1,4 +1,4 @@
-section {* Optimizations for Code Float *}
+section \<open>Optimizations for Code Float\<close>
 theory Optimize_Float
 imports
   "../ODE_Auxiliarities"

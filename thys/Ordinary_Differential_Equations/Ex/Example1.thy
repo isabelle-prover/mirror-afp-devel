@@ -1,12 +1,12 @@
-section {* Examples *}
+section \<open>Examples\<close>
 theory Example1
 imports
   "../Numerics/Euler_Affine"
   "../Numerics/Optimize_Float"
 begin
 
-subsection {* Example 1 *}
-text {* \label{sec:example1} *}
+subsection \<open>Example 1\<close>
+text \<open>\label{sec:example1}\<close>
 approximate_affine e1 "\<lambda>(t::real, y::real). (1::real, y*y + - t)"
 
 lemma e1_fderiv: "((\<lambda>(t::real, y::real). (1::real, y * y + - t)) has_derivative (\<lambda>(a, b) (c, d). (0, 2 * (b * d) + - c)) x) (at x within X)"
@@ -24,10 +24,10 @@ interpretation e1: aform_approximate_ivp
   apply unfold_locales
   apply (rule e1[THEN Joints2_JointsI])
   unfolding list.sel apply assumption apply assumption
-  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
+  apply (drule length_set_of_apprs, simp)\<comment>"TODO: prove in affine-approximation"
   apply (rule e1_fderiv)
   apply (rule e1_d[THEN Joints2_JointsI]) apply assumption apply assumption
-  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
+  apply (drule length_set_of_apprs, simp)\<comment>"TODO: prove in affine-approximation"
   apply (auto intro!: continuous_intros simp: split_beta')
   done
 

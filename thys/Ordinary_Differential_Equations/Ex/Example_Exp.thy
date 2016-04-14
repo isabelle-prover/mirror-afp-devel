@@ -4,9 +4,9 @@ imports
   "../Numerics/Optimize_Float"
 begin
 
-subsection {* Example Exponential *}
+subsection \<open>Example Exponential\<close>
 
-text {* TODO: why not exp-ivp "lambda x::real. x"? *}
+text \<open>TODO: why not exp-ivp "lambda x::real. x"?\<close>
 
 approximate_affine exp_affine "\<lambda>(x::real, y::real). (x, y)"
 
@@ -27,10 +27,10 @@ interpretation exp_ivp: aform_approximate_ivp
   apply (rule exp_affine[THEN Joints2_JointsI])
   unfolding list.sel
   apply assumption apply assumption
-  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
+  apply (drule length_set_of_apprs, simp)\<comment>"TODO: prove in affine-approximation"
   apply (rule exp_ivp_fderiv)
   apply (rule exp_d[THEN Joints2_JointsI]) apply assumption apply assumption
-  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
+  apply (drule length_set_of_apprs, simp)\<comment>"TODO: prove in affine-approximation"
   apply (auto intro!: continuous_intros simp: split_beta)
   done
 

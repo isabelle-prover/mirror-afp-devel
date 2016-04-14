@@ -1,4 +1,4 @@
-section {* Euler Method on Affine Forms: Code *}
+section \<open>Euler Method on Affine Forms: Code\<close>
 theory Euler_Affine_Code
 imports
   Print
@@ -8,7 +8,7 @@ imports
   "../../Affine_Arithmetic/Affine_Arithmetic"
 begin
 
-text{*\label{sec:euleraformcode}*}
+text\<open>\label{sec:euleraformcode}\<close>
 
 record ('a, 'b, 'c) options =
   precision :: nat
@@ -43,7 +43,7 @@ locale approximate_sets0 =
   fixes inter_appr_plane::"'b \<Rightarrow> 'a \<Rightarrow> real \<Rightarrow> 'b"
 begin
 
-text {* TODO: more conceptual refinement?! *}
+text \<open>TODO: more conceptual refinement?!\<close>
 
 definition ivl_appr_of_appr::"'b \<Rightarrow> 'b" where
   "ivl_appr_of_appr x = (appr_of_ivl (inf_of_appr x) (sup_of_appr x))"
@@ -144,8 +144,8 @@ primrec euler_series where
 | "euler_series optns t0 X0 (Suc i) = advance_euler optns (euler_series optns t0 X0 i)"
 
 
-subsection {* Checkpoint: Partition *}
-text {* TODO: partitioning really needed when we do cancelling? *}
+subsection \<open>Checkpoint: Partition\<close>
+text \<open>TODO: partitioning really needed when we do cancelling?\<close>
 
 definition width_appr::"'b \<Rightarrow> real"
   where "width_appr x = infnorm (sup_of_appr x - inf_of_appr x)"
@@ -228,8 +228,8 @@ definition collect_cancel_apprs::"('a, 'b, 'c) options \<Rightarrow> nat \<Right
     in remdups (outside_checkpoint @ s_not_covered)
     else xs)"
 
-text {* TODO: certify common stepsize first, and establish a common history of disjunctions of
-  zonotopes *}
+text \<open>TODO: certify common stepsize first, and establish a common history of disjunctions of
+  zonotopes\<close>
 
 fun map_enclosure_option::
   "(nat \<Rightarrow> real \<Rightarrow> 'b \<Rightarrow> 'b list) \<Rightarrow> 'b enclosure option list \<Rightarrow> 'b enclosure option list"
@@ -277,7 +277,7 @@ definition "sup_abs_appr X = sup (abs (inf_of_appr X)) (abs(sup_of_appr X))"
 
 definition "intersects X b y \<longleftrightarrow> (inf_of_appr X \<bullet> b \<le> y \<and> sup_of_appr X \<bullet> b \<ge> y)"
 
-text {* Precondition: X does not intersect b, but euler-step does! *}
+text \<open>Precondition: X does not intersect b, but euler-step does!\<close>
 
 primrec intersect'
   where
@@ -365,7 +365,7 @@ definition "poincares optns X0s b y =
         QS = map (\<lambda>(h, X0, t, CX, X). project_rect CX b y) IS1
       in (map (\<lambda>(h, X0, t, CX, X). (h, X)) (NIS @ IS1) @ IS2', PS@QS, RS @ map (snd o snd o snd o snd)RS')
     )
-    (map (\<lambda>X. (stepsize optns, X)) X0s, [], [])" --{* Verbindung mit Euler, parametrisiert mit h! *}
+    (map (\<lambda>X. (stepsize optns, X)) X0s, [], [])" \<comment>\<open>Verbindung mit Euler, parametrisiert mit h!\<close>
 
 definition "poincares_collected optns X0s b y =
   (case snd (poincares optns X0s b y) of ([], RS) \<Rightarrow> ([], RS)
@@ -439,7 +439,7 @@ abbreviation "msum_aform' \<equiv> \<lambda>X. msum_aform (degree_aform X) X"
 
 abbreviation "uncurry_options \<equiv> \<lambda>f x. f (precision x) (tolerance x)"
 
-text {* intersection with plane *}
+text \<open>intersection with plane\<close>
 
 definition inter_aform_plane where
   "inter_aform_plane X b y = X"

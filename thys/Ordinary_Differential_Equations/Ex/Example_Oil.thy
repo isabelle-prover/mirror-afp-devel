@@ -4,8 +4,8 @@ imports
   "../Numerics/Optimize_Float"
 begin
 
-subsection {* Oil reservoir in Affine arithmetic *}
-text {*\label{sec:exampleoil}*}
+subsection \<open>Oil reservoir in Affine arithmetic\<close>
+text \<open>\label{sec:exampleoil}\<close>
 approximate_affine oil "\<lambda>(y::real, z::real). (z, z*z + -3 * inverse (inverse 1000 + y*y))"
 
 lemma oil_deriv_ok: fixes y::real
@@ -35,10 +35,10 @@ interpretation oil: aform_approximate_ivp
   apply (rule oil[THEN Joints2_JointsI])
   unfolding list.sel
   apply assumption apply assumption
-  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
+  apply (drule length_set_of_apprs, simp)\<comment>"TODO: prove in affine-approximation"
   apply (rule oil_fderiv)
   apply (rule oil_d[THEN Joints2_JointsI]) apply assumption apply assumption
-  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
+  apply (drule length_set_of_apprs, simp)\<comment>"TODO: prove in affine-approximation"
   apply (auto intro!: continuous_intros simp: split_beta oil_deriv_ok)
   done
 
@@ -857,6 +857,6 @@ lemma "oiltest_rough () =
          (FloatR 655360 (- 16), FloatR 869715 (- 57)), FloatR 110 (- 9),
          (FloatR 655314 (- 16), FloatR (- 864708) (- 27)), FloatR 655315 (- 16),
          FloatR (- 864707) (- 27))])"
-  oops --"by eval"
+  oops \<comment>"by eval"
 
 end

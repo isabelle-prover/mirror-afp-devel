@@ -1,14 +1,14 @@
-section {* Target Language debug messages *}
+section \<open>Target Language debug messages\<close>
 theory Print
 imports
   "../../Affine_Arithmetic/Executable_Euclidean_Space"
 begin
 
-text {* very ad-hoc... *}
+text \<open>very ad-hoc...\<close>
 
-subsection {* Printing *}
+subsection \<open>Printing\<close>
 
-text {* Just for debugging purposes *}
+text \<open>Just for debugging purposes\<close>
 
 definition print::"String.literal \<Rightarrow> unit" where "print x = ()"
 
@@ -50,8 +50,8 @@ end
 
 code_printing
   code_module "Float2_Float10" \<rightharpoonup> (SML)
-  --"this is taken from Approximation.thy" --"TODO: implement in Isabelle/HOL?"
-{*
+  \<comment>"this is taken from Approximation.thy" \<comment>"TODO: implement in Isabelle/HOL?"
+\<open>
 fun float2float10integer prec round_down m e = (
   let
     val (m, e) = (if e < 0 then (m,e) else (m * IntInf.pow (2, e), 0))
@@ -80,7 +80,7 @@ fun float2float10integer prec round_down m e = (
 
   in (sgn * (digits + x * (IntInf.pow (10, e10))), ~e10)
   end)
-*}
+\<close>
 | constant float2_float10_integer \<rightharpoonup> (SML) "float2float10integer"
 code_reserved SML float2_float10_integer
 
