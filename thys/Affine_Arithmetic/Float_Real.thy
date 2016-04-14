@@ -1,9 +1,9 @@
-section {* Dyadic Rational Representation of Real *}
+section \<open>Dyadic Rational Representation of Real\<close>
 theory Float_Real
 imports
   "~~/src/HOL/Library/Float"
 begin
-text {* \label{sec:floatreal} *}
+text \<open>\label{sec:floatreal}\<close>
 
 code_datatype real_of_float
 
@@ -17,11 +17,11 @@ abbreviation
 where
   "float_of_int \<equiv> of_int"
 
-text{* Collapse nested embeddings *}
+text\<open>Collapse nested embeddings\<close>
 
-text {* Operations *}
+text \<open>Operations\<close>
 
-text {* Undo code setup for @{term Ratreal}. *}
+text \<open>Undo code setup for @{term Ratreal}.\<close>
 
 lemma of_rat_numeral_eq [code_abbrev]:
   "real_of_float (numeral w) = Ratreal (numeral w)"

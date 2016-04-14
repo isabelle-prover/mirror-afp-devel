@@ -1,11 +1,11 @@
-section {* Euclidean Space: Executability *}
+section \<open>Euclidean Space: Executability\<close>
 theory Executable_Euclidean_Space
 imports
   "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
   Float_Real
 begin
 
-subsection {* Ordered representation of Basis and Rounding of Components *}
+subsection \<open>Ordered representation of Basis and Rounding of Components\<close>
 
 class executable_euclidean_space = ordered_euclidean_space +
   fixes Basis_list eucl_down eucl_truncate_down eucl_truncate_up
@@ -31,7 +31,7 @@ lemma eucl_truncate_down_zero[simp]: "eucl_truncate_down p 0 = 0"
 lemma eucl_truncate_up_zero[simp]: "eucl_truncate_up p 0 = 0"
   by (auto simp: eucl_truncate_up_def)
 
-subsection {* Instantiations *}
+subsection \<open>Instantiations\<close>
 
 instantiation real::executable_euclidean_space
 begin

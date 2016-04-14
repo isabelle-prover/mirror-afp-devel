@@ -1,10 +1,10 @@
-section {* CCW for Nonaligned Points in the Plane  *}
+section \<open>CCW for Nonaligned Points in the Plane\<close>
 theory Counterclockwise_2D_Strict
 imports Counterclockwise_Vector
 begin
-text {* \label{sec:counterclockwise2d} *}
+text \<open>\label{sec:counterclockwise2d}\<close>
 
-subsection {* Determinant *}
+subsection \<open>Determinant\<close>
 
 type_synonym point = "real*real"
 
@@ -274,7 +274,7 @@ proof -
 qed
 
 
-subsection {* Strict CCW Predicate *}
+subsection \<open>Strict CCW Predicate\<close>
 
 definition "ccw' p q r \<longleftrightarrow> 0 < det3 p q r"
 
@@ -319,14 +319,14 @@ proof cases
     assume "x > 1"
     hence ?thesis using ccw'
       by (auto simp: not_ccw'_eq ccw'.translate_origin)
-  } ultimately show ?thesis using `x \<noteq> 1` by arith
+  } ultimately show ?thesis using \<open>x \<noteq> 1\<close> by arith
 qed (insert assms, simp)
 
 lemma ccw'_sorted_scaleR: "ccw'.sortedP 0 xs \<Longrightarrow> r > 0 \<Longrightarrow> ccw'.sortedP 0 (map (op *\<^sub>R r) xs)"
   by (induct xs) (auto intro!: ccw'.sortedP.Cons  elim!: ccw'.sortedP_Cons simp del: scaleR_Pair)
 
 
-subsection {* Collinearity *}
+subsection \<open>Collinearity\<close>
 
 abbreviation "coll a b c \<equiv> det3 a b c = 0"
 
@@ -390,7 +390,7 @@ proof (cases "snd z = 0")
     by (cases z) (auto simp add: zero_prod_def det3_def')
   with True assms have "snd x = 0"
     by (cases y, cases z) (auto simp add: zero_prod_def det3_def')
-  from `snd x = 0` `snd y = 0` `snd z = 0`
+  from \<open>snd x = 0\<close> \<open>snd y = 0\<close> \<open>snd z = 0\<close>
   show ?thesis
     by (auto simp add: zero_prod_def det3_def')
 next
@@ -406,7 +406,7 @@ next
     apply (auto simp add: zero_prod_def det3_def')
     apply (metis mult.commute mult_eq_0_iff ring_class.ring_distribs(1))
     done
-  with False assms `snd y \<noteq> 0` have yz: "snd (y + z) \<noteq> 0"
+  with False assms \<open>snd y \<noteq> 0\<close> have yz: "snd (y + z) \<noteq> 0"
     apply (cases x)
     apply (cases y)
     apply (cases z)
@@ -427,13 +427,13 @@ next
     apply (cases z)
     apply (auto simp: zero_prod_def)
     done
-  from `s \<noteq> 0` rs have "y = r *\<^sub>R x - z" "y = z /\<^sub>R s"
+  from \<open>s \<noteq> 0\<close> rs have "y = r *\<^sub>R x - z" "y = z /\<^sub>R s"
     by (auto simp: inverse_eq_divide algebra_simps)
   hence "r *\<^sub>R x - z = z /\<^sub>R s" by simp
   hence "r *\<^sub>R x = (1 + inverse s) *\<^sub>R z"
     by (auto simp: inverse_eq_divide algebra_simps)
   hence "x = (inverse r * (1 + inverse s)) *\<^sub>R z"
-    using `r \<noteq> 0` `s \<noteq> 0`
+    using \<open>r \<noteq> 0\<close> \<open>s \<noteq> 0\<close>
     by (auto simp: field_simps scaleR_left_normalize)
   from this
   show ?thesis
@@ -480,7 +480,7 @@ proof (induct xs rule: list_nonempty_induct)
   thus ?case by (rule coll_trans)
 next
   case (cons x xs)
-  from cons(5)[of x] `a \<noteq> 0` cons(6)[of x]
+  from cons(5)[of x] \<open>a \<noteq> 0\<close> cons(6)[of x]
   have *: "coll 0 x (listsum xs)" "a \<noteq> 0" "x \<noteq> 0" by (force simp add: coll_add_cancel)+
   have "0 < snd (listsum (x#xs))"
     unfolding snd_listsum
@@ -500,14 +500,14 @@ next
       by (simp add: coll_add_cancel)
     from cons(5)[of y]
     have "coll 0 y (listsum xs)"
-      using `y \<in> set xs` cons(6)[of y] `x + listsum xs \<noteq> 0`
+      using \<open>y \<in> set xs\<close> cons(6)[of y] \<open>x + listsum xs \<noteq> 0\<close>
       apply (cases "y = x")
        apply (force simp add: coll_add_cancel)
       apply (force simp: dest!: coll_add_trans[OF _ *(1) _ *(3)])
       done
   } note cl = this
   show ?case
-    by (rule cons(2)[OF cH cy cl cons(6) `a \<noteq> 0`]) auto
+    by (rule cons(2)[OF cH cy cl cons(6) \<open>a \<noteq> 0\<close>]) auto
 qed
 
 lemma listsum_coll_ex_scale:
@@ -518,7 +518,7 @@ proof -
   {
     fix i assume i: "i < length xs"
     hence nth: "xs ! i \<in> set xs" by simp
-    note coll_scale[OF coll[OF nth] `z \<noteq> 0`]
+    note coll_scale[OF coll[OF nth] \<open>z \<noteq> 0\<close>]
   } then obtain r where r: "\<And>i. i < length xs \<Longrightarrow> xs ! i = r i *\<^sub>R z"
     by metis
   have "xs = map (op ! xs) [0..<length xs]" by (simp add: map_nth)

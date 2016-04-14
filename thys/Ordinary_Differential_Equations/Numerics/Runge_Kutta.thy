@@ -1,4 +1,4 @@
-section{* Runge-Kutta methods*}
+section\<open>Runge-Kutta methods\<close>
 theory Runge_Kutta
 imports
   "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
@@ -24,23 +24,23 @@ proof cases
   hence "s - t \<noteq> 0" "0 \<le> s - t" by simp_all
   from assms have "(f has_integral integral {t .. s} f) (cbox t s)"
     by (auto simp: integrable_integral)
-  from has_integral_affinity[OF this `s - t \<noteq> 0`, of t]
+  from has_integral_affinity[OF this \<open>s - t \<noteq> 0\<close>, of t]
   have "((\<lambda>x. f ((s - t) * x + t)) has_integral (1 / \<bar>s - t\<bar>) *\<^sub>R integral {t..s} f)
     ((\<lambda>x. (x - t) / (s - t)) ` {t..s})"
-    using `s > t`
+    using \<open>s > t\<close>
     by (simp add: divide_simps)
   also
   have "t < s \<Longrightarrow> 0 \<le> x \<Longrightarrow> x \<le> 1 \<Longrightarrow> x * (s - t) + t \<le> s" for x
-    by (auto simp add: algebra_simps dest: mult_left_le_one_le[OF `0 \<le> s - t`])
+    by (auto simp add: algebra_simps dest: mult_left_le_one_le[OF \<open>0 \<le> s - t\<close>])
   then have "((\<lambda>x. (x - t) / (s - t)) ` {t..s}) = {0 .. 1}"
-    using `s > t`
+    using \<open>s > t\<close>
     by (auto intro!: image_eqI[where x="x * (s - t) + t" for x]
       simp: divide_simps)
   finally
   have "integral {0..1} (\<lambda>x. f ((s - t) * x + t)) = (1 / \<bar>s - t\<bar>) *\<^sub>R integral {t..s} f"
     by (rule integral_unique)
   then show ?thesis
-    using `s > t` by simp
+    using \<open>s > t\<close> by simp
 qed (insert assms, simp)
 
 lemma
@@ -136,7 +136,7 @@ proof (rule dense_eq0_I, cases)
     by (auto simp: intro!: mult_nonneg_nonneg)
   obtain y where y: "y \<in> G" "?s = ?s' y"
     by (rule setsum_by_parts_ivt[OF \<open>finite p\<close> \<open>convex G\<close> Pi])
-      (auto simp: split_beta' scaleR_setsum_left `G \<noteq> {}`)
+      (auto simp: split_beta' scaleR_setsum_left \<open>G \<noteq> {}\<close>)
   note this(2)
   also have "(\<Sum>(x, k)\<in>p. (content k * f x) *\<^sub>R y) = ?f *\<^sub>R y"
     by (auto simp: scaleR_left.setsum intro!: setsum.cong)
@@ -181,7 +181,7 @@ proof -
     by (simp_all add: bounded_scaling closed_scaling)
   have "G \<noteq> {}" using nonempty G by auto
   then show ?thesis
-    using `closed ?IG`
+    using \<open>closed ?IG\<close>
     by (subst in_closed_iff_infdist_zero)
       (auto intro!: assms compact_imp_bounded integral_by_parts_near_bounded_convex_set)
 qed
@@ -276,7 +276,7 @@ proof -
     and nonneg: "0 \<le> F" "0 \<le> G"
     by (auto simp: bounded_pos intro: less_imp_le)
   have "norm (prod (f x) (g x)) \<le> F * G * K" if x: "x \<in> s" for x
-    using F[OF x] G[OF x] nonneg `0 \<le> K`
+    using F[OF x] G[OF x] nonneg \<open>0 \<le> K\<close>
     by (auto intro!: mult_mono mult_nonneg_nonneg order_trans[OF K])
   thus ?thesis
     by (auto simp: bounded_iff)
@@ -321,10 +321,10 @@ proof -
 qed
 
 
-text{*\label{sec:rk}*}
+text\<open>\label{sec:rk}\<close>
 
-subsection {* Definitions *}
-text{*\label{sec:rk-definition}*}
+subsection \<open>Definitions\<close>
+text\<open>\label{sec:rk-definition}\<close>
 
 declare setsum.cong[fundef_cong]
 fun rk_eval :: "(nat\<Rightarrow>nat\<Rightarrow>real) \<Rightarrow> (nat\<Rightarrow>real) \<Rightarrow> (real\<times>'a::real_vector \<Rightarrow> 'a) \<Rightarrow> real \<Rightarrow> real \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a" where
@@ -363,8 +363,8 @@ definition rk2_increment where
 definition rk2 where
   "rk2 x f = grid_function (discrete_evolution (rk2_increment x f))"
 
-subsection {* Euler method is consistent *}
-text{*\label{sec:rk-euler-cons}*}
+subsection \<open>Euler method is consistent\<close>
+text\<open>\label{sec:rk-euler-cons}\<close>
 
 lemma euler_increment:
   fixes f::"_ \<Rightarrow> 'a::real_vector"
@@ -399,8 +399,8 @@ lemma rk2_increment:
   apply (simp del: rk_eval.simps add:  field_simps)
   done
 
-subsection {* Set-Based Consistency of Euler Method *}
-text {*\label{sec:setconsistent}*}
+subsection \<open>Set-Based Consistency of Euler Method\<close>
+text \<open>\label{sec:setconsistent}\<close>
 
 locale derivative_set_bounded =
   derivative_on_prod +
@@ -426,7 +426,7 @@ lemma euler_consistent_traj_set:
 proof cases
   assume "h = 0"
   from F'_nonempty obtain f' where "f' \<in> F'" by auto
-  from this `h = 0` show ?thesis
+  from this \<open>h = 0\<close> show ?thesis
     by (auto simp: discrete_evolution_def)
 next
   assume "h \<noteq> 0"
@@ -438,8 +438,8 @@ next
   from ht have subset: "{t .. t + h} \<subseteq> {t .. u}" by simp
   let ?T = "{t..u}"
   from ht have subset: "{t .. t + h} \<subseteq> {t .. u}" by simp
-  from `t < u` have "t \<in> ?T" by auto
-  from `t < u` have tx: "t \<in> T" "x t \<in> X" using assms by auto
+  from \<open>t < u\<close> have "t \<in> ?T" by auto
+  from \<open>t < u\<close> have tx: "t \<in> T" "x t \<in> X" using assms by auto
   from tx assms have "0 \<le> norm (f (t, x t))" by simp
   have x_diff: "\<And>s. s \<in> ?T \<Longrightarrow> x differentiable at s within ?T"
     by (rule differentiableI, rule x'[simplified has_vector_derivative_def])
@@ -544,10 +544,10 @@ proof cases
     unfolding ex_in_conv[symmetric]
     by (force intro!: f_set_bounded)
   with F_nonempty X_nonempty
-    `h = 0`
+    \<open>h = 0\<close>
     heun_remainder_bounded
   have "0 \<in> R" by force
-  from this `h = 0` show ?thesis
+  from this \<open>h = 0\<close> show ?thesis
     by (auto simp: discrete_evolution_def)
 next
   assume "h \<noteq> 0"
@@ -569,8 +569,8 @@ next
   from ht have subset: "{t .. t + h} \<subseteq> {t .. u}" by simp
   let ?T = "{t..u}"
   from ht have subset: "{t .. t + h} \<subseteq> {t .. u}" by simp
-  from `t < u` have "t \<in> ?T" by auto
-  from `t < u` have tx: "t \<in> T" "x t \<in> X" using T ht x by auto
+  from \<open>t < u\<close> have "t \<in> ?T" by auto
+  from \<open>t < u\<close> have tx: "t \<in> T" "x t \<in> X" using T ht x by auto
 
   from tx assms have "0 \<le> norm (f (t, x t))" by simp
   have x_diff: "\<And>s. s \<in> ?T \<Longrightarrow> x differentiable at s within ?T"
@@ -641,7 +641,7 @@ next
       has_integral
       x (t + h) - x t - h *\<^sub>R (f (t, x t)) - (h ^ 2 / (2::nat)) *\<^sub>R (?p t))
     (cbox t (t + h))"
-    using ht `h\<noteq>0`
+    using ht \<open>h\<noteq>0\<close>
     by (auto simp: field_simps of_nat_Suc Pi_iff numeral_2_eq_2 numeral_3_eq_3
       numeral_6_eq_6 power2_eq_square diff_def scaleR_setsum_right)
   from has_integral_affinity[OF this \<open>h \<noteq> 0\<close>, of t, simplified]
@@ -693,12 +693,12 @@ next
     have "t + s * (h * p) = t + s * p * h"
       by (simp add: ac_simps)
     also have "\<dots> \<in> {t .. u}"
-      using `0 < p` `p \<le> 1` s
+      using \<open>0 < p\<close> \<open>p \<le> 1\<close> s
       by (intro line_in) (auto intro!: mult_nonneg_nonneg mult_left_le_one_le mult_le_oneI)
     also note \<open>\<dots> \<subseteq> T\<close>
     finally show "t + s * (h * p) \<in> T" .
     show "x t + (s * (h * p)) *\<^sub>R f (t, x t) \<in> X"
-      using convexD_alt[OF `convex X` tx(2) step_in s]
+      using convexD_alt[OF \<open>convex X\<close> tx(2) step_in s]
       by (simp add: algebra_simps)
   qed
   from f_taylor[OF line_in, simplified]
@@ -917,7 +917,7 @@ proof
       using f' f'_bounded
       by (auto simp add: intro!: f'_bounded has_derivative_linear)
     moreover assume "x \<in> X" "y \<in> X"
-    with `t \<in> T` have "(t, x) \<in> ?I" "(t, y) \<in> ?I" by simp_all
+    with \<open>t \<in> T\<close> have "(t, x) \<in> ?I" "(t, y) \<in> ?I" by simp_all
     ultimately have "norm (f (t, x) - f (t, y)) \<le> B' * norm ((t, x) - (t, y))"
       by (rule differentiable_bound)
     thus "dist (f (t, x)) (f (t, y)) \<le> B' * dist x y"
@@ -945,10 +945,10 @@ next
   fix t and x d::'a assume "t \<in> T" "(x, d) \<in> X \<times> cball 0 B"
   hence "x \<in> X" "norm d \<le> B" by (auto simp: dist_norm)
   have "norm (f' (t, x) (1, d)) \<le> onorm (f' (t, x)) * norm (1::real, d)"
-    by (auto intro!: onorm has_derivative_bounded_linear f' `t \<in> T` `x \<in> X`)
+    by (auto intro!: onorm has_derivative_bounded_linear f' \<open>t \<in> T\<close> \<open>x \<in> X\<close>)
   also have "\<dots> \<le> B' * (B + 1)"
-    by (auto intro!: mult_mono f'_bounded f_bounded `t \<in> T` `x \<in> X` f'_bound_nonneg
-      order_trans[OF norm_Pair_le] `norm d \<le> B`)
+    by (auto intro!: mult_mono f'_bounded f_bounded \<open>t \<in> T\<close> \<open>x \<in> X\<close> f'_bound_nonneg
+      order_trans[OF norm_Pair_le] \<open>norm d \<le> B\<close>)
   finally have "f' (t, x) (1, d) \<in> cball 0 (B' * (B + 1))"
     by (auto simp: dist_norm)
   also note cball_in_cbox
@@ -1002,10 +1002,10 @@ lemma euler_consistent_solution:
 proof (rule euler_consistent_traj)
   show "{t'..t0 + e} \<subseteq> T" using t' interval by simp
   fix s
-  assume "s \<in> {t'..t0 + e}" hence "s \<in> T" using `{t'..t0 + e} \<subseteq> T` by auto
+  assume "s \<in> {t'..t0 + e}" hence "s \<in> T" using \<open>{t'..t0 + e} \<subseteq> T\<close> by auto
   show "(solution has_vector_derivative f (s, solution s)) (at s within {t'..t0 + e})"
-    by (rule has_vector_derivative_within_subset[OF _ `{t'..t0 + e} \<subseteq> T`]) (rule solution(2)[OF `s \<in> T`])
-  have "solution s \<in> ivp_X i" by (rule solution(3)[OF `s \<in> T`])
+    by (rule has_vector_derivative_within_subset[OF _ \<open>{t'..t0 + e} \<subseteq> T\<close>]) (rule solution(2)[OF \<open>s \<in> T\<close>])
+  have "solution s \<in> ivp_X i" by (rule solution(3)[OF \<open>s \<in> T\<close>])
   thus "solution s \<in> X'" using domain_subset ..
 qed
 
@@ -1032,8 +1032,8 @@ proof
     by (auto intro: lipschitz_subset[OF _ lipschitz_area])
 qed
 
-subsection {* Euler method is convergent *}
-text{*\label{sec:rk-euler-conv}*}
+subsection \<open>Euler method is convergent\<close>
+text\<open>\label{sec:rk-euler-conv}\<close>
 
 locale max_step1 = grid +
   fixes t1 L B r
@@ -1050,8 +1050,8 @@ sublocale euler_convergent \<subseteq>
   convergent_one_step t0 "t0 + e" solution "euler_increment f" 1 euler_C r B' t
   by unfold_locales (simp add: grid_from)
 
-subsection {* Euler method on Rectangle is convergent *}
-text{*\label{sec:rk-euler-conv-on-rect}*}
+subsection \<open>Euler method on Rectangle is convergent\<close>
+text\<open>\label{sec:rk-euler-conv-on-rect}\<close>
 
 locale ivp_rectangle_bounded_derivative = solution_in_cylinder "i::'a::euclidean_space ivp" e b B +
   derivative_norm_bounded T "cbox (x0 - (b + \<bar>r\<bar>) *\<^sub>R One) (x0 + (b + \<bar>r\<bar>) *\<^sub>R One)" f f' B B' for i e b r B f' B'
@@ -1067,7 +1067,7 @@ proof
   show "X \<subseteq> cbox (x0 - (b + \<bar>r\<bar>) *\<^sub>R One) (x0 + (b + \<bar>r\<bar>) *\<^sub>R One)" using lipschitz_on_domain .
   fix t assume "t \<in> T"
   have "cball (solution t) \<bar>r\<bar> \<subseteq> cball x0 (b + \<bar>r\<bar>)"
-    using solution_in_D[of t] cylinder `t \<in> T`
+    using solution_in_D[of t] cylinder \<open>t \<in> T\<close>
     by (auto intro: cball_trans simp: interval)
   also note cball_in_cbox
   finally show "cball (solution t) \<bar>r\<bar> \<subseteq> cbox (x0 - (b + \<bar>r\<bar>) *\<^sub>R One) (x0 + (b + \<bar>r\<bar>) *\<^sub>R One)" .
@@ -1107,8 +1107,8 @@ qed
 
 end
 
-subsection {* Stability and Convergence of Approximate Euler *}
-text{*\label{sec:rk-euler-stable}*}
+subsection \<open>Stability and Convergence of Approximate Euler\<close>
+text\<open>\label{sec:rk-euler-stable}\<close>
 
 locale euler_rounded_on_rectangle =
   ivp_rectangle_bounded_derivative i e1' b r B f' B' +
@@ -1202,7 +1202,7 @@ proof
     dist ((g (t j, x))) ((eucl_down e (g (t j, x))))"
     by (rule dist_triangle)
   also
-  from approx_f[OF `t j \<le> t0 + e1'`]
+  from approx_f[OF \<open>t j \<le> t0 + e1'\<close>]
   have "dist (f (t j, x)) ((g (t j, x))) \<le>
     euler_C / 2 * stepsize j" .
   also
@@ -1210,7 +1210,7 @@ proof
   have "dist ((g (t j, x))) ((eucl_down e (g (t j, x)))) \<le> sqrt (DIM('a)) * 2 powr - e" by simp
   also
   have "sqrt (DIM('a)) * 2 powr -e \<le> euler_C / 2 * stepsize j"
-    using rounding_error `t j \<le> t0 + e1'` .
+    using rounding_error \<open>t j \<le> t0 + e1'\<close> .
   finally
   have "dist (euler_increment f (h) (t j) (x)) ((euler_increment' e g h (t j) x)) \<le> euler_C * stepsize j"
     by arith

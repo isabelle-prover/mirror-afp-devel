@@ -1,4 +1,4 @@
-section {* Examples: Intersection of Zonotopes with Hyperplanes *}
+section \<open>Examples: Intersection of Zonotopes with Hyperplanes\<close>
 theory Ex_Inter
 imports Intersection
 begin
@@ -12,7 +12,7 @@ definition interzono1::"(real*real*real) aform"
 
 value[code] "interzono1"
 
-text {* 10-dimensional zonotope with 50 generators *}
+text \<open>10-dimensional zonotope with 50 generators\<close>
 
 definition random_zono::"(real*real*real*real*real*real*real*real*real*real) aform" where
   "random_zono =
@@ -68,7 +68,7 @@ definition random_zono::"(real*real*real*real*real*real*real*real*real*real) afo
       (6, 18, 17, 14, 19, 25, 9, 22, 7, 26),
       (24, 7, 30, 27, 9, 2, 8, 23, 24, 1)])"
 
-text {* 10-dimensional zonotope with 100 generators *}
+text \<open>10-dimensional zonotope with 100 generators\<close>
 
 definition random_zono2::"(real*real*real*real*real*real*real*real*real*real) aform" where
   "random_zono2 =
@@ -173,7 +173,7 @@ definition random_zono2::"(real*real*real*real*real*real*real*real*real*real) af
       (7, 17, 17, 11, 20, 5, 13, 27, 27, 6),
       (7, 30, 14, 22, 16, 16, 11, 30, 29, 8)])"
 
-text {* a randomly generated 20-dimensional zonotope* with 50 generators *}
+text \<open>a randomly generated 20-dimensional zonotope* with 50 generators\<close>
 definition random_zono3::
   "(real*real*real*real*real*real*real*real*real*real*
     real*real*real*real*real*real*real*real*real*real) aform"
@@ -244,20 +244,20 @@ fun random_inter3 where
       (7, 10, 24, 12, 6, 14, 10, 14, 23, 13, 25, 27, 20, 2, 1, 9, 4, 17, 28, 19)
       12)"
 
-ML {*
+ML \<open>
 val ri1 = @{code random_inter1}
 val ri2 = @{code random_inter2}
 val ri3 = @{code random_inter3}
-*}
+\<close>
 
-text {* Timings *}
+text \<open>Timings\<close>
 
-ML {*
+ML \<open>
 fun iter f 0 = f ()
 | iter f i = let val _ = f () in iter f (i - 1) end
-*}
-ML {* iter ri1 100 *} --"0.7 s"
-ML {* iter ri2 100 *} --"1.3 s"
-ML {* iter ri3 100 *} --"1.3 s"
+\<close>
+ML \<open>iter ri1 100\<close> \<comment>"0.7 s"
+ML \<open>iter ri2 100\<close> \<comment>"1.3 s"
+ML \<open>iter ri3 100\<close> \<comment>"1.3 s"
 
 end

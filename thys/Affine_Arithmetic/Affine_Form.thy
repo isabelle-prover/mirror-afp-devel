@@ -1,12 +1,12 @@
-section {* Affine Form *}
+section \<open>Affine Form\<close>
 theory Affine_Form
 imports
   "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
   "~~/src/HOL/Library/Permutation"
 begin
-text {* \label{sec:aforms} *}
+text \<open>\label{sec:aforms}\<close>
 
-subsection {* Auxiliary developments *}
+subsection \<open>Auxiliary developments\<close>
 
 lemma listsum_mono:
   fixes xs ys::"'a::ordered_ab_group_add list"
@@ -114,7 +114,7 @@ next
 qed
 
 
-subsection {* Partial Deviations *}
+subsection \<open>Partial Deviations\<close>
 
 typedef (overloaded) 'a pdevs = "{x::nat \<Rightarrow> 'a::zero. finite {i. x i \<noteq> 0}}"
   morphisms pdevs_apply Abs_pdev
@@ -145,14 +145,14 @@ instance proof qed (simp add: equal_pdevs_def)
 end
 
 
-subsection {* Affine Forms *}
+subsection \<open>Affine Forms\<close>
 
-text {* The data structure of affine forms represents particular sets, zonotopes *}
+text \<open>The data structure of affine forms represents particular sets, zonotopes\<close>
 
 type_synonym 'a aform = "'a \<times> 'a pdevs"
 
 
-subsection {* Evaluation, Range, Joint Range *}
+subsection \<open>Evaluation, Range, Joint Range\<close>
 
 definition aform_val :: "(nat \<Rightarrow> real) \<Rightarrow> 'a::real_normed_vector aform \<Rightarrow> 'a"
   where "aform_val e X = fst X + pdevs_val e (snd X)"
@@ -250,7 +250,7 @@ lemma Joints2E:
   by atomize_elim (auto simp: Joints2_def Pi_iff valuate_ex)
 
 
-subsection {* Domain *}
+subsection \<open>Domain\<close>
 
 definition "pdevs_domain x = {i. pdevs_apply x i \<noteq> 0}"
 
@@ -261,7 +261,7 @@ lemma in_pdevs_domain[simp]: "i \<in> pdevs_domain x \<longleftrightarrow> pdevs
   by (auto simp: pdevs_domain_def)
 
 
-subsection {* Least Fresh Index *}
+subsection \<open>Least Fresh Index\<close>
 
 definition degree::"'a::real_vector pdevs \<Rightarrow> nat"
   where "degree x = (LEAST i. \<forall>j\<ge>i. pdevs_apply x j = 0)"
@@ -343,7 +343,7 @@ lemma sorted_list_of_pdevs_domain_eq:
   by (auto simp: degree_gt intro!: sorted_distinct_set_unique sorted_filter[of "\<lambda>x. x", simplified])
 
 
-subsection {* Total Deviation *}
+subsection \<open>Total Deviation\<close>
 
 definition tdev::"'a::ordered_euclidean_space pdevs \<Rightarrow> 'a" where
   "tdev x = (\<Sum>i<degree x. \<bar>pdevs_apply x i\<bar>)"
@@ -354,7 +354,7 @@ lemma abs_pdevs_val_le_tdev: "e \<in> UNIV \<rightarrow> {-1 .. 1} \<Longrightar
     intro: abs_leI)
 
 
-subsection {* Binary Pointwise Operations *}
+subsection \<open>Binary Pointwise Operations\<close>
 
 definition binop_pdevs_raw::"('a::real_vector \<Rightarrow> 'b::real_vector \<Rightarrow> 'c::real_vector) \<Rightarrow>
     (nat \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> 'b) \<Rightarrow> nat \<Rightarrow> 'c"
@@ -375,7 +375,7 @@ lemma pdevs_apply_binop_pdevs[simp]: "pdevs_apply (binop_pdevs f x y) i =
   by transfer (auto simp: binop_pdevs_raw_def)
 
 
-subsection {* Addition *}
+subsection \<open>Addition\<close>
 
 definition add_pdevs::"'a::real_vector pdevs \<Rightarrow> 'a pdevs \<Rightarrow> 'a pdevs"
   where "add_pdevs = binop_pdevs op +"
@@ -406,7 +406,7 @@ proof -
 qed
 
 
-subsection {* Total Deviation *}
+subsection \<open>Total Deviation\<close>
 
 lemma tdev_eq_zero_iff: fixes X::"real pdevs" shows "tdev X = 0 \<longleftrightarrow> (\<forall>e. pdevs_val e X = 0)"
   by (force simp add: pdevs_val_setsum tdev_def setsum_nonneg_eq_0_iff
@@ -419,7 +419,7 @@ lemma tdev_nonpos_iff[simp]: "tdev X \<le> 0 \<longleftrightarrow> tdev X = 0"
   by (auto simp: order.antisym)
 
 
-subsection {* Unary Operations *}
+subsection \<open>Unary Operations\<close>
 
 definition unop_pdevs_raw::
     "('a::zero \<Rightarrow> 'b::zero) \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'b"
@@ -466,7 +466,7 @@ proof -
 qed
 
 
-subsection {* Pointwise Scaling of Partial Deviations *}
+subsection \<open>Pointwise Scaling of Partial Deviations\<close>
 
 definition scaleR_pdevs::"real \<Rightarrow> 'a::real_vector pdevs \<Rightarrow> 'a pdevs"
   where "scaleR_pdevs r x = unop_pdevs (op *\<^sub>R r) x"
@@ -485,7 +485,7 @@ lemma pdevs_val_scaleR_pdevs[simp]:
   by (auto simp: pdevs_val_setsum scaleR_setsum_right ac_simps)
 
 
-subsection {* Partial Deviations Scale Pointwise *}
+subsection \<open>Partial Deviations Scale Pointwise\<close>
 
 definition pdevs_scaleR::"real pdevs \<Rightarrow> 'a::real_vector \<Rightarrow> 'a pdevs"
   where "pdevs_scaleR r x = unop_pdevs (\<lambda>r. r *\<^sub>R x) r"
@@ -504,7 +504,7 @@ lemma pdevs_val_pdevs_scaleR[simp]:
   by (auto simp: pdevs_val_setsum scaleR_setsum_left)
 
 
-subsection {* Pointwise Unary Minus *}
+subsection \<open>Pointwise Unary Minus\<close>
 
 definition uminus_pdevs::"'a::real_vector pdevs \<Rightarrow> 'a pdevs"
   where "uminus_pdevs = unop_pdevs uminus"
@@ -528,7 +528,7 @@ lemma aform_val_uminus_aform[simp]: "aform_val e (uminus_aform X) = - aform_val 
   by (auto simp: uminus_aform_def aform_val_def)
 
 
-subsection {* Constant *}
+subsection \<open>Constant\<close>
 
 lift_definition zero_pdevs::"'a::zero pdevs" is "\<lambda>_. 0" by simp
 
@@ -541,7 +541,7 @@ lemma pdevs_val_zero_pdevs[simp]: "pdevs_val e zero_pdevs = 0"
 definition "num_aform f = (f, zero_pdevs)"
 
 
-subsection {* Inner Product *}
+subsection \<open>Inner Product\<close>
 
 definition pdevs_inner::"'a::euclidean_space pdevs \<Rightarrow> 'a \<Rightarrow> real pdevs"
   where "pdevs_inner x b = unop_pdevs (\<lambda>x. x \<bullet> b) x"
@@ -557,7 +557,7 @@ definition inner_aform::"'a::euclidean_space aform \<Rightarrow> 'a \<Rightarrow
 
 
 
-subsection {* Inner Product Pair *}
+subsection \<open>Inner Product Pair\<close>
 
 definition inner2::"'a::euclidean_space \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> real*real"
   where "inner2 x n l = (x \<bullet> n, x \<bullet> l)"
@@ -585,7 +585,7 @@ proof -
 qed
 
 
-subsection {* Update *}
+subsection \<open>Update\<close>
 
 lemma pdevs_val_upd[simp]:
   "pdevs_val (e(n := e')) X = pdevs_val e X - e n * pdevs_apply X n + e' * pdevs_apply X n"
@@ -618,7 +618,7 @@ lemma degree_pdev_upd:
   by (auto intro!: degree_cong split: if_split_asm)
 
 
-subsection {* Inf/Sup *}
+subsection \<open>Inf/Sup\<close>
 
 definition "Inf_aform X = fst X - tdev (snd X)"
 
@@ -637,7 +637,7 @@ lemma Sup_aform:
   by (auto simp: Sup_aform_def aform_val_def)
 
 
-subsection {* Minkowski Sum *}
+subsection \<open>Minkowski Sum\<close>
 
 definition msum_pdevs_raw::"nat\<Rightarrow>(nat \<Rightarrow> 'a::real_vector)\<Rightarrow>(nat \<Rightarrow> 'a)\<Rightarrow>(nat\<Rightarrow>'a)" where
   "msum_pdevs_raw n x y i = (if i < n then x i else y (i - n))"
@@ -862,7 +862,7 @@ lemma Joints2_JointsI:
   by (auto simp: Joints_def Joints2_def valuate_def)
 
 
-subsection {* Splitting *}
+subsection \<open>Splitting\<close>
 
 definition "split_aform X i =
   (let xi = pdevs_apply (snd X) i /\<^sub>R 2
@@ -967,7 +967,7 @@ proof -
 qed
 
 
-subsection {* From List of Generators *}
+subsection \<open>From List of Generators\<close>
 
 lift_definition pdevs_of_list::"'a::zero list \<Rightarrow> 'a pdevs"
   is "\<lambda>xs i. if i < length xs then xs ! i else 0"
@@ -1160,7 +1160,7 @@ proof -
         pdevs_val ?f (pdevs_of_list (filter p xs)) +
         pdevs_val ?g (pdevs_of_list (filter (Not \<circ> p) xs))" .
     show "?f \<in> UNIV \<rightarrow> I" "?g \<in> UNIV \<rightarrow> I"
-      using assms `i\<in>I`
+      using assms \<open>i\<in>I\<close>
       by (auto simp: Pi_iff)
   qed
 qed
@@ -1469,16 +1469,16 @@ proof -
       pdevs_val (\<lambda>_. 0) (pdevs_of_list (filter (Not o p) xs))"
     by (simp add: pdevs_val_setsum)
   also
-  from pdevs_val_pdevs_of_list_append[OF `e \<in> _` `(\<lambda>_. 0) \<in> _`]
+  from pdevs_val_pdevs_of_list_append[OF \<open>e \<in> _\<close> \<open>(\<lambda>_. 0) \<in> _\<close>]
   obtain e' where "e' \<in> UNIV \<rightarrow> I"
       "\<dots> = pdevs_val e' (pdevs_of_list (filter p xs @ filter (Not o p) xs))"
     by metis
   note this(2)
   also
-  from pdevs_val_perm[OF partition_permI `e' \<in> _`]
+  from pdevs_val_perm[OF partition_permI \<open>e' \<in> _\<close>]
   obtain e'' where "\<dots> = pdevs_val e'' (pdevs_of_list xs)" "e'' \<in> UNIV \<rightarrow> I" by metis
   note this(1)
-  finally show ?thesis using `e'' \<in> _` ..
+  finally show ?thesis using \<open>e'' \<in> _\<close> ..
 qed
 
 lemma
@@ -1494,13 +1494,13 @@ proof -
       pdevs_val e' (pdevs_of_list (filter (op \<noteq> 0) (dense_list_of_pdevs X)))"
     by (rule pdevs_val_perm[OF list_of_pdevs_perm_filter_nonzero assms(1)])
   note this(2)
-  also from pdevs_val_filter[OF `e' \<in> _` `0 \<in> I`, of "op \<noteq> 0" "dense_list_of_pdevs X"]
+  also from pdevs_val_filter[OF \<open>e' \<in> _\<close> \<open>0 \<in> I\<close>, of "op \<noteq> 0" "dense_list_of_pdevs X"]
   obtain e'' where "e'' \<in> UNIV \<rightarrow> I"
     and "\<dots> = pdevs_val e'' (pdevs_of_list (dense_list_of_pdevs X))"
     by metis
   note this(2)
   also have "\<dots> = pdevs_val e'' X" by (simp add: pdevs_of_list_dense_list_of_pdevs)
-  finally show ?thesis using `e'' \<in> UNIV \<rightarrow> I` ..
+  finally show ?thesis using \<open>e'' \<in> UNIV \<rightarrow> I\<close> ..
 qed
 
 lemma
@@ -1515,7 +1515,7 @@ proof -
     by (simp add: perm_sym)
   have "pdevs_val e X = pdevs_val e (pdevs_of_list (dense_list_of_pdevs X))"
     by (simp add: pdevs_of_list_dense_list_of_pdevs)
-  also from pdevs_val_partition[OF `e \<in> _`, of "dense_list_of_pdevs X" "op \<noteq> 0"]
+  also from pdevs_val_partition[OF \<open>e \<in> _\<close>, of "dense_list_of_pdevs X" "op \<noteq> 0"]
   obtain f g where "f \<in> UNIV \<rightarrow> I" "g \<in> UNIV \<rightarrow> I"
     "\<dots> = pdevs_val f (pdevs_of_list (filter (op \<noteq> 0) (dense_list_of_pdevs X))) +
       pdevs_val g (pdevs_of_list (filter (Not \<circ> op \<noteq> 0) (dense_list_of_pdevs X)))"
@@ -1529,9 +1529,9 @@ proof -
   also
   obtain e' where "e' \<in> UNIV \<rightarrow> I"
     and "?f = pdevs_val e' (pdevs_of_list (map snd (list_of_pdevs X)))"
-    by (rule pdevs_val_perm[OF perm `f \<in> _`])
+    by (rule pdevs_val_perm[OF perm \<open>f \<in> _\<close>])
   note this(2)
-  finally show ?thesis using `e' \<in> UNIV \<rightarrow> I` by (auto intro!: that)
+  finally show ?thesis using \<open>e' \<in> UNIV \<rightarrow> I\<close> by (auto intro!: that)
 qed
 
 lemma dense_list_of_pdevs_scaleR:

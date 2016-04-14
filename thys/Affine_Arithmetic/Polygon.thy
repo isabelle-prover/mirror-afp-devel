@@ -2,7 +2,7 @@ theory Polygon
 imports Counterclockwise_2D_Strict
 begin
 
-subsection {* Polygonal chains *}
+subsection \<open>Polygonal chains\<close>
 
 definition "polychain xs = (\<forall>i. Suc i<length xs \<longrightarrow> snd (xs ! i) = (fst (xs ! Suc i)))"
 
@@ -152,7 +152,7 @@ lemma polychain_of_singleton_iff: "polychain_of p xs = [a] \<longleftrightarrow>
 lemma polychain_of_add: "polychain_of (x + y) xs = map ((op + (y, y))) (polychain_of x xs)"
   by (induct xs arbitrary: x y) (auto simp: algebra_simps)
 
-subsection {* Dirvec: Inverse of Polychain *}
+subsection \<open>Dirvec: Inverse of Polychain\<close>
 
 primrec dirvec where "dirvec (x, y) = (y - x)"
 
@@ -172,7 +172,7 @@ lemma map_dirvec_polychain_of[simp]: "map dirvec (polychain_of x xs) = xs"
   by (induct xs arbitrary: x) simp_all
 
 
-subsection {* Polychain of Sorted (@{term polychain_of}, @{term ccw'.sortedP}) *}
+subsection \<open>Polychain of Sorted (@{term polychain_of}, @{term ccw'.sortedP})\<close>
 
 lemma ccw'_sortedP_translateD:
   "linorder_list0.sortedP (ccw' x0) (map (op + x \<circ> g) xs) \<Longrightarrow>
@@ -322,7 +322,7 @@ lemma polychain_of_ccw_convex:
 proof (induct Ps arbitrary: P Q Pc)
   case Nil
   have eq: "e P *\<^sub>R P + e Q *\<^sub>R Q - P = (1 - e P) *\<^sub>R (- P) + e Q *\<^sub>R Q"
-    using `e \<in> _`
+    using \<open>e \<in> _\<close>
     by (auto simp add: algebra_simps)
   from Nil ccw'_sortedP_implies_distinct[OF Nil(2)]
   have "P \<noteq> Q" "e P < 1" "0 < e Q" "ccw' 0 P Q"
@@ -440,7 +440,7 @@ proof (induct zs arbitrary: x rule: list.induct)
             (auto elim!: ccw'.sortedP_Cons)
       qed
       thus "ccw' (snd (last (polychain_of (x + z) zs))) (x + z) (c, d)"
-         by (auto simp: last_map[symmetric, where f= snd] `zs \<noteq> []` intro: ccw'.cyclicI)
+         by (auto simp: last_map[symmetric, where f= snd] \<open>zs \<noteq> []\<close> intro: ccw'.cyclicI)
     qed
   }
   thus ?case

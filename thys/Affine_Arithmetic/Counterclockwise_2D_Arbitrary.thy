@@ -1,9 +1,9 @@
-section {* CCW for Arbitrary Points in the Plane *}
+section \<open>CCW for Arbitrary Points in the Plane\<close>
 theory Counterclockwise_2D_Arbitrary
 imports Counterclockwise_2D_Strict
 begin
 
-subsection {* Interpretation of Knuth's axioms in the plane *}
+subsection \<open>Interpretation of Knuth's axioms in the plane\<close>
 
 definition lex::"point \<Rightarrow> point \<Rightarrow> bool" where
   "lex p q \<longleftrightarrow> (fst p < fst q \<or> fst p = fst q \<and> snd p < snd q \<or> p = q)"
@@ -129,7 +129,7 @@ proof (induct xs)
   case (Cons y ys)
   hence "coll 0 x y" "coll 0 x (listsum ys)"
     by (auto simp: list_all_iff intro!: coll_listsum)
-  hence "coll 0 y (listsum ys)" using `x \<noteq> 0`
+  hence "coll 0 y (listsum ys)" using \<open>x \<noteq> 0\<close>
     by (rule coll_trans)
   hence "\<bar>y + listsum ys\<bar> = abs y + abs (listsum ys)" using Cons
     by (subst abs_add_nlex) (auto simp: list_all_iff lex_listsum)
@@ -188,7 +188,7 @@ proof -
   hence "lex (v *\<^sub>R (p - r)) 0" using uv
     by (simp add: lex_scale1_zero lex_diff1)
   also
-  have "lex 0 (u *\<^sub>R (q - p))" using `lex p q` uv
+  have "lex 0 (u *\<^sub>R (q - p))" using \<open>lex p q\<close> uv
     by (simp add: lex_scale2_zero lex_diff2)
   finally (lex_trans)
   show "lex p comb"
@@ -201,10 +201,10 @@ proof -
     "0 \<le> u" "0 \<le> v" "u + v \<le> 1"
     by auto
   have "lex (u *\<^sub>R (q - r)) 0"
-    using uv `lex q r`
+    using uv \<open>lex q r\<close>
     by (simp add: lex_scale1_zero lex_diff1)
   also have "lex 0  (v *\<^sub>R (r - p))"
-    using uv `lex p r`
+    using uv \<open>lex p r\<close>
     by (simp add: lex_scale2_zero lex_diff2)
   finally (lex_trans) show "lex comb r"
     unfolding comb_def' uv
@@ -216,7 +216,7 @@ lemma lex_convex_self2:
   defines "r \<equiv> a *\<^sub>R p + (1 - a) *\<^sub>R q"
   shows "lex p r" (is ?th1)
     and "lex r q" (is ?th2)
-  using lex_convex3[OF `lex p q`, of q a "1 - a" 0 r]
+  using lex_convex3[OF \<open>lex p q\<close>, of q a "1 - a" 0 r]
       assms
   by (simp_all add: r_def)
 
@@ -235,7 +235,7 @@ lemma lex_translate_origin: "NO_MATCH 0 a \<Longrightarrow> lex a b = lex 0 (b -
   by (auto simp: lex_def)
 
 
-subsection {* Order prover setup *}
+subsection \<open>Order prover setup\<close>
 
 definition "lexs p q \<longleftrightarrow> (lex p q \<and> p \<noteq> q)"
 
@@ -279,7 +279,7 @@ declare
 declare not_sym[order add not_sym: linorder "op = :: point => point => bool" lex lexs]
 
 
-subsection {* Contradictions *}
+subsection \<open>Contradictions\<close>
 
 lemma
   assumes d: "distinct4 s p q r"
@@ -410,7 +410,7 @@ proof cases
   from s have "fst (r - s) = fst (x *\<^sub>R (t - s))" "snd (r - s) = snd (x *\<^sub>R (t - s))"
     by (auto simp: )
   hence "x = (if fst (t - s) = 0 then snd (r - s) / snd (t - s) else fst (r - s) / fst (t - s))"
-    using `s \<noteq> t`
+    using \<open>s \<noteq> t\<close>
     by (auto simp add: field_simps prod_eq_iff)
   also have "\<dots> \<le> 1"
     using assms
@@ -442,7 +442,7 @@ proof cases
   with contra1[OF assms(1)]
   have "\<not> (lex r q \<and> lex q p \<and> lex p s)" by blast
   hence "\<not> lex q p"
-    using `ccw s q p` contra1 cyclic assms nondegenerate by blast
+    using \<open>ccw s q p\<close> contra1 cyclic assms nondegenerate by blast
   thus False using assms by simp
 next
   assume "\<not> ccw s q p"
@@ -450,7 +450,7 @@ next
     by (metis assms(1) ccw'.cyclic ccw_def not_ccw'_eq psi_disjuncts)
   moreover
   from lex have "lex q r" "lex q s" "lex p r" "lex p s" by order+
-  ultimately show False using contra3[of r q p s] `distinct4 s r q p` by blast
+  ultimately show False using contra3[of r q p s] \<open>distinct4 s r q p\<close> by blast
 qed
 
 lemma not_coll_ordered_lexI:
@@ -464,16 +464,16 @@ lemma not_coll_ordered_lexI:
   shows "det3 x0 l r \<noteq> 0"
 proof
   assume "coll x0 l r"
-  from `coll x0 l r` have 1: "coll 0 (l - x0) (r - x0)"
+  from \<open>coll x0 l r\<close> have 1: "coll 0 (l - x0) (r - x0)"
     by (simp add: det3_def' algebra_simps)
-  from `lex r x0` have 2: "lex (r - x0) 0" by (auto simp add: lex_def)
-  from `lex l x0` have 3: "lex (l - x0) 0" by (auto simp add: lex_def)
-  from `ccw' x0 l x1` have 4: "ccw' 0 (l - x0) (x1 - x0)"
+  from \<open>lex r x0\<close> have 2: "lex (r - x0) 0" by (auto simp add: lex_def)
+  from \<open>lex l x0\<close> have 3: "lex (l - x0) 0" by (auto simp add: lex_def)
+  from \<open>ccw' x0 l x1\<close> have 4: "ccw' 0 (l - x0) (x1 - x0)"
     by (simp add: det3_def' ccw'_def algebra_simps)
-  from `ccw' x0 x1 r` have 5: "ccw' 0 (x1 - x0) (r - x0)"
+  from \<open>ccw' x0 x1 r\<close> have 5: "ccw' 0 (x1 - x0) (r - x0)"
     by (simp add: det3_def' ccw'_def algebra_simps)
-  from `lex x1 r` have 6: "lex 0 (r - x0 - (x1 - x0))" by (auto simp: lex_def)
-  from `lex x1 l` have 7: "lex 0 (l - x0 - (x1 - x0))" by (auto simp: lex_def)
+  from \<open>lex x1 r\<close> have 6: "lex 0 (r - x0 - (x1 - x0))" by (auto simp: lex_def)
+  from \<open>lex x1 l\<close> have 7: "lex 0 (l - x0 - (x1 - x0))" by (auto simp: lex_def)
   def r' \<equiv> "r - x0"
   def l' \<equiv> "l - x0"
   def x0' \<equiv> "x1 - x0"
@@ -488,7 +488,7 @@ proof
     by auto
   from assms have "l' \<noteq> 0"
     by (auto simp: l'_def)
-  from coll_scale[OF `coll 0 l' _` this]
+  from coll_scale[OF \<open>coll 0 l' _\<close> this]
   obtain y where y: "r' = y *\<^sub>R l'" by auto
   {
     assume "y > 0"
@@ -573,7 +573,7 @@ proof -
     hence "ccw' t s q"
       by (meson ccw_def ccws(2) not_ccw'_eq)
     moreover
-    from tsr tsp `coll t r p` have "coll t p s" "coll t p r" "coll t r s"
+    from tsr tsp \<open>coll t r p\<close> have "coll t p s" "coll t p r" "coll t r s"
       by (auto simp add: det3_def' algebra_simps)
     ultimately
     show "lex t p \<and> lex p r \<or> lex t r \<and> lex r p \<or> lex r p \<and> lex p t"
@@ -645,8 +645,8 @@ proof -
     from ccw_two_up_contra[OF this, of s] ccws distinct
     have False by auto
   } ultimately show "False"
-    using `0 \<le> det3 t p q`
-    `0 \<le> det3 t q r``0 \<le> det3 t r p`
+    using \<open>0 \<le> det3 t p q\<close>
+    \<open>0 \<le> det3 t q r\<close>\<open>0 \<le> det3 t r p\<close>
     by (auto simp: less_eq_real_def ccw'_def)
 qed
 
@@ -674,7 +674,7 @@ proof -
   with assms have "ccw' 0 ((1 - x) *\<^sub>R a) (b - x *\<^sub>R a)"
     by (simp add: algebra_simps ccw_def)
   thus "ccw 0 a b"
-    using `x < 1`
+    using \<open>x < 1\<close>
     by (simp add: ccw_def)
 qed
 
@@ -708,21 +708,21 @@ lemma lex_convex2:
   assumes "lex p q" "lex p r" "0 \<le> u" "u \<le> 1"
   shows "lex p (u *\<^sub>R q + (1 - u) *\<^sub>R r)"
 proof cases
-  note `lex p q`
+  note \<open>lex p q\<close>
   also
   assume "lex q r"
   hence "lex q (u *\<^sub>R q + (1 - u) *\<^sub>R r)"
-    using `0 \<le> u` `u \<le> 1`
+    using \<open>0 \<le> u\<close> \<open>u \<le> 1\<close>
     by (rule lex_convex_self2)
   finally (lex_trans) show ?thesis .
 next
-  note `lex p r`
+  note \<open>lex p r\<close>
   also
   assume "\<not> lex q r"
   hence "lex r q"
     by simp
   hence "lex r ((1 - u) *\<^sub>R r + (1 - (1 - u)) *\<^sub>R q)"
-    using `0 \<le> u` `u \<le> 1`
+    using \<open>0 \<le> u\<close> \<open>u \<le> 1\<close>
     by (intro lex_convex_self2) simp_all
   finally (lex_trans) show ?thesis by (simp add: ac_simps)
 qed
@@ -848,12 +848,12 @@ proof -
     } moreover {
       assume "v \<noteq> 0" "a \<noteq> b"
       have "coll c a b" using 2 by (auto simp: det3_def' algebra_simps)
-      from coll_ex_scaling[OF `a \<noteq> b` this]
+      from coll_ex_scaling[OF \<open>a \<noteq> b\<close> this]
       obtain r where c: "c = a + r *\<^sub>R (b - a)" by auto
       have *: "u *\<^sub>R (a + r *\<^sub>R (b - a)) + v *\<^sub>R d - a = (u * r) *\<^sub>R (b - a)  + (1 - u) *\<^sub>R (d - a)"
         by (auto simp: algebra_simps v)
       have "ccw' a b ?c"
-        using `v \<noteq> 0` uv abd
+        using \<open>v \<noteq> 0\<close> uv abd
         by (simp add: ccw'.translate_origin c *)
       hence ?thesis by (simp add: ccw_def)
     } ultimately have ?thesis by blast
@@ -899,7 +899,7 @@ proof -
   } moreover {
     assume 1: "coll a b d" and 2: "\<not> coll a b c"
     have "0 \<le> 1 - u" using assms by (auto )
-    from ccw_convex'[OF this `0 \<le> u` _ `ccw a b d` 1 `ccw a b c` 2]
+    from ccw_convex'[OF this \<open>0 \<le> u\<close> _ \<open>ccw a b d\<close> 1 \<open>ccw a b c\<close> 2]
     have ?thesis by (simp add: algebra_simps v)
   } ultimately show ?thesis by blast
 qed
@@ -926,7 +926,7 @@ proof (induction Ps)
       by (auto elim!: linorder_list0.sortedP_Cons intro: Cons)
     ultimately
     have "ccw' 0 P p"
-      using `distinct (P#Ps)`
+      using \<open>distinct (P#Ps)\<close>
       by (intro ccw_ncoll_imp_ccw Cons) auto
   }
   moreover
