@@ -85,7 +85,7 @@ project</a> with it.
 
 
     <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="Slicing.shtml">Slicing</a>, <a href="Dijkstra_Shortest_Path.shtml">Dijkstra_Shortest_Path</a></td></tr>
+        <td class="data"><a href="Collections.shtml">Collections</a>, <a href="Dijkstra_Shortest_Path.shtml">Dijkstra_Shortest_Path</a>, <a href="Slicing.shtml">Slicing</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

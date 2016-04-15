@@ -3,7 +3,6 @@ title = Liouville numbers
 author = Manuel Eberl <http://in.tum.de/~eberlm>
 date = 2015-12-28
 topic = Mathematics/Analysis
-depends-on = Algebraic_Numbers
 abstract =
   Liouville numbers are a class of transcendental numbers that can be approximated
   particularly well with rational numbers. Historically, they were the first
@@ -57,7 +56,6 @@ title = Descartes' Rule of Signs
 author = Manuel Eberl <http://in.tum.de/~eberlm>
 date = 2015-12-28
 topic = Mathematics/Analysis
-depends-on = Sturm_Tarski
 abstract =
   Descartes' Rule of Signs relates the number of positive real roots of a
   polynomial with the number of sign changes in its coefficient sequence.
@@ -74,7 +72,6 @@ title = Cardinality of Set Partitions
 author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
 date = 2015-12-12
 topic = Mathematics/Combinatorics
-depends-on = Discrete_Summation
 abstract =
   The theory's main theorem states that the cardinality of set partitions of
   size k on a carrier set of size n is expressed by Stirling numbers of the
@@ -107,7 +104,6 @@ title = Binary Multirelations
 author = Hitoshi Furusawa <http://www.sci.kagoshima-u.ac.jp/~furusawa/>, Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
 date = 2015-06-11
 topic = Mathematics/Algebra
-depends-on = Kleene_Algebra
 abstract =
   Binary multirelations associate elements of a set with its subsets; hence
   they are binary relations from a set to its power set. Applications include
@@ -123,7 +119,6 @@ title = The Generic Unwinding Theorem for CSP Noninterference Security
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2015-06-11
 topic = Computer Science/Security
-depends-on = Noninterference_Ipurge_Unwinding
 abstract =
   <p>
   The classical definition of noninterference security for a deterministic state
@@ -164,7 +159,6 @@ title = The Ipurge Unwinding Theorem for CSP Noninterference Security
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2015-06-11
 topic = Computer Science/Security
-depends-on = Noninterference_CSP, List_Interleaving
 abstract =
   <p>
   The definition of noninterference security for Communicating Sequential
@@ -228,7 +222,6 @@ title = Residuated Lattices
 author = Victor B. F. Gomes <mailto:vborgesferreiragomes1@sheffield.ac.uk>, Georg Struth <mailto:g.struth@sheffield.ac.uk>
 date = 2015-04-15
 topic = Mathematics/Algebra
-depends-on = Relation_Algebra
 abstract =
   The theory of residuated lattices, first proposed by Ward and Dilworth, is
   formalised in Isabelle/HOL. This includes concepts of residuated functions;
@@ -243,7 +236,6 @@ title = Relaxing Safely: Verified On-the-Fly Garbage Collection for x86-TSO
 author = Peter Gammie <http://peteg.org/>, Tony Hosking <https://www.cs.purdue.edu/homes/hosking/>, Kai Engelhardt <http://www.cse.unsw.edu.au/~kaie/>
 date = 2015-04-13
 topic = Computer Science/Algorithms/Concurrent
-depends-on = ConcurrentIMP
 abstract =
   <p>
   We use ConcurrentIMP to model Schism, a state-of-the-art real-time
@@ -258,7 +250,6 @@ title = Analysis of List Update Algorithms
 author = Maximilian P.L. Haslbeck <http://in.tum.de/~haslbema/>, Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2016-02-17
 topic = Computer Science/Algorithms/Online
-depends-on = List-Index, Regular-Sets
 abstract =
   <p>
   These theories formalize the quantitative analysis of a number of classical algorithms for the list update problem: 2-competitiveness of move-to-front, the lower bound of 2 for the competitive- ness of deterministic list update algorithms and 1.6-competitiveness of the randomized COMB algorithm, the best randomized list update algorithm known to date.
@@ -335,7 +326,6 @@ author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mai
 date = 2014-07-29
 topic = Computer Science/Functional Programming
 license = LGPL
-depends-on = Datatype_Order_Generator, Deriving
 abstract =
   We implemented a type class for "to-string" functions, similar to
   Haskell's Show class. Moreover, we provide instantiations for Isabelle/HOL's
@@ -353,7 +343,6 @@ title = Certification Monads
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2014-10-03
 topic = Computer Science/Functional Programming
-depends-on = Show, Partial_Function_MR
 abstract = This entry provides several monads intended for the development of stand-alone certifiers via code generation from Isabelle/HOL. More specifically, there are three flavors of error monads (the sum type, for the case where all monadic functions are total; an instance of the former, the so called check monad, yielding either success without any further information or an error message; as well as a variant of the sum type that accommodates partial functions by providing an explicit bottom element) and a parser monad built on top. All of this monads are heavily used in the IsaFoR/CeTA project which thus provides many examples of their usage.
 
 [CISC-Kernel]
@@ -641,7 +630,6 @@ title = Dijkstra's Shortest Path Algorithm
 author = Benedikt Nordhoff <mailto:b.n@wwu.de>, Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 topic = Computer Science/Algorithms
 date = 2012-01-30
-depends-on = Refine_Monadic, Collections
 abstract = We implement and prove correct Dijkstra's algorithm for the
  single source shortest path problem, conceived in 1956 by E. Dijkstra.
  The algorithm is implemented using the data refinement framework for monadic,
@@ -653,7 +641,6 @@ title = Refinement for Monadic Programs
 author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 topic = Computer Science/Programming Languages/Logics
 date = 2012-01-30
-depends-on = Automatic_Refinement
 abstract = We provide a framework for program and data refinement in Isabelle/HOL.
   The framework is based on a nondeterminism-monad with assertions, i.e.,
   the monad carries a set of results or an assertion failure.
@@ -875,7 +862,6 @@ abstract =
  The WS1S instance is described in the draft paper <a
  href="http://www21.in.tum.de/~traytel/papers/ws1s_derivatives/index.html">A
  Coalgebraic Decision Procedure for WS1S</a> by the author.
-depends-on = Coinductive_Languages, Deriving, Show, List-Index
 
 [Myhill-Nerode]
 title = The Myhill-Nerode Theorem Based on Regular Expressions
@@ -910,7 +896,6 @@ author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2004-03-30
 topic = Computer Science/Automata and Formal Languages
 abstract = This theory defines deterministic and nondeterministic automata in a functional representation: the transition function/relation and the finality predicate are just functions. Hence the state space may be infinite. It is shown how to convert regular expressions into such automata. A scanner (generator) is implemented with the help of functional automata: the scanner chops the input up into longest recognized substrings. Finally we also show how to convert a certain subclass of functional automata (essentially the finite deterministic ones) into regular sets.
-depends-on = Regular-Sets
 
 [Statecharts]
 title = Formalizing Statecharts using Hierarchical Automata
@@ -969,7 +954,6 @@ author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
 date = 2009-11-25
 topic = Computer Science/Automata and Formal Languages
 abstract = This work presents a machine-checked tree automata library for Standard-ML, OCaml and Haskell. The algorithms are efficient by using appropriate data structures like RB-trees. The available algorithms for non-deterministic automata include membership query, reduction, intersection, union, and emptiness check with computation of a witness for non-emptiness. The executable algorithms are derived from less-concrete, non-executable algorithms using data-refinement techniques. The concrete data structures are from the Isabelle Collections Framework. Moreover, this work contains a formalization of the class of tree-regular languages and its closure properties under set operations.
-depends-on = Collections
 
 [Depth-First-Search]
 title = Depth First Search
@@ -1017,7 +1001,6 @@ author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>, Ralph-Johan Back <htt
 date = 2010-05-28
 topic = Computer Science/Algorithms
 abstract = The verification of the Deutsch-Schorr-Waite graph marking algorithm is used as a benchmark in many formalizations of pointer programs. The main purpose of this mechanization is to show how data refinement of invariant based programs can be used in verifying practical algorithms. The verification starts with an abstract algorithm working on a graph given by a relation <i>next</i> on nodes. Gradually the abstract program is refined into Deutsch-Schorr-Waite graph marking algorithm where only one bit per graph node of additional memory is used for marking.
-depends-on = DataRefinementIBP
 extra-history =
   Change history:
   [2012-01-05]: Updated for the new definition of data refinement and the new syntax for demonic and angelic update statements
@@ -1046,7 +1029,6 @@ date = 2011-03-14
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 license = LGPL
 abstract = We provide a generic work-list algorithm to compute the transitive closure of finite relations where only successors of newly detected states are generated. This algorithm is then instantiated for lists over arbitrary carriers and red black trees (which are faster but require a linear order on the carrier), respectively.  Our formalization was performed as part of the IsaFoR/CeTA project where reflexive transitive closures of large tree automata have to be computed.
-depends-on = Collections, Abstract-Rewriting
 extra-history =
   Change history:
   [2014-09-04] added example simprocs in Finite_Transitive_Closure_Simprocs
@@ -1070,7 +1052,6 @@ abstract =
   This formalization was performed as part of the IsaFoR/CeTA project,
   and it has been used to certify size-change
   termination proofs where large transitive closures have to be computed.
-depends-on = Regular-Sets
 
 [MuchAdoAboutTwo]
 title = Much Ado About Two
@@ -1178,7 +1159,6 @@ title = Amortized Complexity Verified
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2014-07-07
 topic = Computer Science/Data Structures
-depends-on = Splay_Tree, Skew_Heap
 abstract =
   A framework for the analysis of the amortized complexity of (functional)
   data structures is formalized in Isabelle/HOL and applied to a number of
@@ -1196,7 +1176,6 @@ title = Parameterized Dynamic Tables
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
 date = 2015-06-07
 topic = Computer Science/Data Structures
-depends-on = Amortized_Complexity
 abstract =
   This article formalizes the amortized analysis of dynamic tables
   parameterized with their minimal and maximal load factors and the
@@ -1221,7 +1200,6 @@ author = Veronika Ortner <>, Norbert Schirmer <>
 date = 2008-02-29
 topic = Computer Science/Data Structures
 abstract = We present the verification of the normalisation of a binary decision diagram (BDD). The normalisation follows the original algorithm presented by Bryant in 1986 and transforms an ordered BDD in a reduced, ordered and shared BDD. The verification is based on Hoare logics.
-depends-on = Simpl
 
 [BinarySearchTree]
 title = Binary Search Trees
@@ -1346,7 +1324,6 @@ contributors = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, T
 date = 2009-11-25
 topic = Computer Science/Data Structures
 abstract = This development provides an efficient, extensible, machine checked collections framework. The library adopts the concepts of interface, implementation and generic algorithm from object-oriented programming and implements them in Isabelle/HOL. The framework features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). The code-generator of Isabelle/HOL can be used to generate efficient code.
-depends-on = Binomial-Heaps, Finger-Trees, Refine_Monadic
 extra-history =
   Change history:
   [2010-10-08]: New Interfaces: OrderedSet, OrderedMap, List.
@@ -1380,7 +1357,6 @@ abstract =
   <p>
   To support arbitrary nesting of sets, we define a linear order on sets based on a linear order of the elements and provide efficient implementations.
   It even allows to compare complements with non-complements.
-depends-on = Deriving
 extra-history =
   Change history:
   [2013-07-11]: add pretty printing for sets (revision 7f3f52c5f5fa)<br>
@@ -1415,7 +1391,6 @@ abstract =
   <p>
   This development is aimed at datatypes generated by the "old_datatype"
   command.
-depends-on = Collections, Deriving
 
 [Deriving]
 title = Deriving class instances for datatypes
@@ -1438,7 +1413,6 @@ abstract =
   With our new tactics we could remove
   several tedious proofs for (conditional) linear orders, and conditional equality operators
   within IsaFoR and the Container Framework.
-depends-on = Collections
 
 [List-Index]
 title = List Index
@@ -1473,7 +1447,6 @@ abstract =
   which contains several termination techniques. The provided theories have
   been essential to formalize matrix-interpretations and arctic
   interpretations.
-depends-on = Abstract-Rewriting
 extra-history =
   Change history:
   [2010-09-17]: Moved theory on arbitrary (ordered) semirings to Abstract Rewriting.
@@ -1488,7 +1461,6 @@ abstract =
  some of its properties are formalized. Properties which have been formalized
  include associativity of the tensor product and the mixed-product
  property.
-depends-on = Matrix
 
 [Huffman]
 title = The Textbook Proof of Huffman's Algorithm
@@ -1624,7 +1596,6 @@ author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2007-12-03
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics for adding concurrency through interleaving to a sequential semantics, which features dynamic thread creation, inter-thread communication via shared memory, lock synchronisation and joins. Also, threads can suspend themselves and be notified by others. We instantiate the framework with the adapted versions of both Jinja source and byte code and show type safety for the multithreaded case. Equally, the compiler from source to byte code is extended, for which we prove weak bisimilarity between the source code small step semantics and the defensive Jinja virtual machine. On top of this, we formalise the JMM and show the DRF guarantee and consistency. For description of the different parts, see Lochbihler's papers at FOOL 2008, ESOP 2010, ITP 2011, and ESOP 2012.
-depends-on = Collections, Coinductive
 extra-history =
   Change history:
   [2008-04-23]:
@@ -1963,7 +1934,6 @@ abstract =
 title = Kleene Algebra with Tests and Demonic Refinement Algebras
 author = Alasdair Armstrong <http://www.dcs.shef.ac.uk/~alasdair>, Victor B. F. Gomes <http://www.dcs.shef.ac.uk/~victor>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>
 date = 2014-01-23
-depends-on = Kleene_Algebra
 topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
 abstract =
  We formalise Kleene algebra with tests (KAT) and demonic refinement
@@ -1978,9 +1948,8 @@ abstract =
 
 [KAD]
 title = Kleene Algebras with Domain
-author = Victor B. F. Gomes <http://www.dcs.shef.ac.uk/~victor>, Walter Guttmann, Peter Höfner <http://www.hoefner-online.de/>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>, Tjark Weber <http://user.it.uu.se/~tjawe125/>
+author = Victor B. F. Gomes <http://www.dcs.shef.ac.uk/~victor>, Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>, Peter Höfner <http://www.hoefner-online.de/>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>, Tjark Weber <http://user.it.uu.se/~tjawe125/>
 date = 2016-04-12
-depends-on = Kleene_Algebra
 topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
 abstract =
   Kleene algebras with domain are Kleene algebras endowed with an
@@ -1999,7 +1968,6 @@ abstract =
 title = Regular Algebras
 author = Simon Foster <http://www-users.cs.york.ac.uk/~simonf>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>
 date = 2014-05-21
-depends-on = Kleene_Algebra
 topic = Computer Science/Automata and Formal Languages, Mathematics/Algebra
 abstract =
  Regular algebras axiomatise the equational theory of regular expressions as induced by
@@ -2024,7 +1992,6 @@ author = Viorel Preoteasa <http://users.abo.fi/vpreotea/>, Ralph-Johan Back <htt
 date = 2010-05-28
 topic = Computer Science/Programming Languages/Logics
 abstract = The invariant based programming is a technique of constructing correct programs by first identifying the basic situations (pre- and post-conditions and invariants) that can occur during the execution of the program, and then defining the transitions and proving that they preserve the invariants. Data refinement is a technique of building correct programs working on concrete datatypes as refinements of more abstract programs. In the theories presented here we formalize the predicate transformer semantics for invariant based programs and their data refinement.
-depends-on = LatticeProperties
 extra-history =
   Change history:
   [2012-01-05]: Moved some general complete lattice properties to the AFP entry Lattice Properties.
@@ -2124,7 +2091,6 @@ author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasse
 date = 2008-09-16
 topic = Computer Science/Programming Languages/Static Analysis
 abstract = Slicing is a widely-used technique with applications in e.g. compiler technology and software security. Thus verification of algorithms in these areas is often based on the correctness of slicing, which should ideally be proven independent of concrete programming languages and with the help of well-known verifying techniques such as proof assistants. As a first step in this direction, this contribution presents a framework for dynamic and static intraprocedural slicing based on control flow and program dependence graphs. Abstracting from concrete syntax we base the framework on a graph representation of the program fulfilling certain structural and well-formedness properties.<br><br>The formalization consists of the basic framework (in subdirectory Basic/), the correctness proof for dynamic slicing (in subdirectory Dynamic/), the correctness proof for static intraprocedural slicing (in subdirectory StaticIntra/) and instantiations of the framework with a simple While language (in subdirectory While/) and the sophisticated object-oriented bytecode language of Jinja (in subdirectory JinjaVM/). For more information on the framework, see the TPHOLS 2008 paper by Wasserrab and Lochbihler and the PLAS 2009 paper by Wasserrab et al.
-depends-on = Jinja
 
 [HRB-Slicing]
 title = Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer
@@ -2132,7 +2098,6 @@ author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasse
 date = 2009-11-13
 topic = Computer Science/Programming Languages/Static Analysis
 abstract = After verifying <a href="Slicing.shtml">dynamic and static interprocedural slicing</a>, we present a modular framework for static interprocedural slicing. To this end, we formalized the standard two-phase slicer from Horwitz, Reps and Binkley (see their TOPLAS 12(1) 1990 paper) together with summary edges as presented by Reps et al. (see FSE 1994). The framework is again modular in the programming language by using an abstract CFG, defined via structural and well-formedness properties. Using a weak simulation between the original and sliced graph, we were able to prove the correctness of static interprocedural slicing. We also instantiate our framework with a simple While language with procedures. This shows that the chosen abstractions are indeed valid.
-depends-on = Jinja
 
 [WorkerWrapper]
 title = The Worker/Wrapper Transformation
@@ -2171,7 +2136,6 @@ date = 2010-03-23
 topic = Computer Science/Security
 ignore = entry
 abstract = In this contribution, we show how correctness proofs for <a href="Slicing.shtml">intra-</a> and <a href="HRB-Slicing.shtml">interprocedural slicing</a> can be used to prove that slicing is able to guarantee information flow noninterference.  Moreover, we also illustrate how to lift the control flow graphs of the respective frameworks such that they fulfil the additional assumptions needed in the noninterference proofs. A detailed description of the intraprocedural proof and its interplay with the slicing framework can be found in the PLAS'09 paper by Wasserrab et al.
-depends-on = Slicing, HRB-Slicing
 
 
 [ComponentDependencies]
@@ -2241,7 +2205,6 @@ author = David Trachtenherz <http://www4.in.tum.de/~trachten/>
 date = 2011-02-23
 topic = Logic
 abstract = We introduce a theory of temporal logic operators using sets of natural numbers as time domain, formalized in a shallow embedding manner. The theory comprises special natural intervals (theory IL_Interval: open and closed intervals, continuous and modulo intervals, interval traversing results), operators for shifting intervals to left/right on the number axis as well as expanding/contracting intervals by constant factors (theory IL_IntervalOperators.thy), and ultimately definitions and results for unary and binary temporal operators on arbitrary natural sets (theory IL_TemporalOperators).
-depends-on = List-Infinite
 
 [Recursion-Theory-I]
 title = Recursion Theory I
@@ -2313,7 +2276,6 @@ abstract =
  and in other fields. This theory provides the definition of Free Group as
  the set of fully canceled words in the generators. The universal property is
  proven, as well as some isomorphisms results about Free Groups.
-depends-on = Ordinals_and_Cardinals
 extra-history =
  Change history:
  [2011-12-11]: Added the Ping Pong Lemma.
@@ -2345,7 +2307,6 @@ author = Hidetsune Kobayashi <>
 date = 2007-08-08
 topic = Mathematics/Algebra
 abstract = Convergence with respect to a valuation is discussed as convergence of a Cauchy sequence. Cauchy sequences of polynomials are defined. They are used to formalize Hensel's lemma.
-depends-on = Group-Ring-Module
 
 [Rank_Nullity_Theorem]
 title = Rank-Nullity Theorem in Linear Algebra
@@ -2415,7 +2376,6 @@ abstract =
   href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA-system</a>
   which contains several termination techniques. The provided theories have
   been essential to  formalize polynomial interpretations.
-depends-on = Abstract-Rewriting
 extra-history =
   Change history:
   [2010-09-17]: Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.
@@ -2542,7 +2502,6 @@ abstract =
  <p>
  The CAVA Automata Library is described in the paper: Peter Lammich, The
  CAVA Automata Library, Isabelle Workshop 2014.
-depends-on = Collections
 
 [LTL]
 title = Linear Temporal Logic
@@ -2574,7 +2533,6 @@ abstract =
  We use the Isabelle Refinement and Collection framework, as well as the
  Autoref tool, to obtain a refined version of our algorithm, from which
  efficiently executable code can be extracted.
-depends-on = CAVA_Automata
 
 [Gabow_SCC]
 title = Verified Efficient Implementation of Gabow's Strongly Connected Components Algorithm
@@ -2590,7 +2548,6 @@ abstract =
  when defining variants of the algorithm. We demonstrate this by
  verifying an algorithm for the emptiness check of generalized Büchi
  automata, re-using most of the existing proofs.
-depends-on = CAVA_Automata
 
 [Promela]
 title = Promela Formalization
@@ -2608,7 +2565,6 @@ abstract =
  generated from an SML parser, removes syntactic sugar and enriches it
  with type information. This further gets translated into a transition
  system, on which the semantic engine (read: successor function) operates.
-depends-on = CAVA_Automata
 
 [CAVA_LTL_Modelchecker]
 title = A Fully Verified Executable LTL Model Checker
@@ -2637,7 +2593,6 @@ abstract =
  An early version of this model checker is described in the
  <a href="http://www.in.tum.de/~nipkow/pubs/cav13.html">CAV 2013 paper</a>
  with the same title.
-depends-on = Gabow_SCC, Promela, LTL_to_GBA
 
 [Fermat3_4]
 title = Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples
@@ -2659,7 +2614,6 @@ author = Roelof Oosterhuis <http://www.roelofoosterhuis.nl/>
 date = 2007-08-12
 topic = Mathematics/Number Theory
 abstract = This document presents the mechanised proofs of the following results:<ul><li>any prime number of the form 4m+1 can be written as the sum of two squares;</li><li>any natural number can be written as the sum of four squares</li></ul>
-depends-on = Fermat3_4
 
 [Lehmer]
 title = Lehmer's Theorem
@@ -2677,7 +2631,6 @@ author = Simon Wimmer <mailto:simon.wimmer@tum.de>, Lars Noschinski <http://www2
 date = 2013-07-22
 topic = Mathematics/Number Theory
 abstract = In 1975, Pratt introduced a proof system for certifying primes. He showed that a number <i>p</i> is prime iff a primality certificate for <i>p</i> exists. By showing a logarithmic upper bound on the length of the certificates in size of the prime number, he concluded that the decision problem for prime numbers is in NP. This work formalizes soundness and completeness of Pratt's proof system as well as an upper bound for the size of the certificate.
-depends-on = Lehmer
 
 [ArrowImpossibilityGS]
 title = Arrow and Gibbard-Satterthwaite
@@ -2717,7 +2670,6 @@ author = Stefan Friedrich <>
 date = 2004-04-26
 topic = Mathematics/Topology
 abstract = This entry contains two theories. The first, <tt>Topology</tt>, develops the basic notions of general topology. The second, which can be viewed as a demonstration of the first, is called <tt>LList_Topology</tt>. It develops the topology of lazy lists.
-depends-on = Lazy-Lists-II
 
 [Knot_Theory]
 title = Knot Theory
@@ -2732,7 +2684,6 @@ abstract =
  invariance of the Bracket polynomial. Bracket polynomial is an invariant of
  framed links closely linked to the Jones polynomial. This is perhaps the first
  attempt to formalize any aspect of knot theory in an interactive proof assistant.
-depends-on = Matrix_Tensor
 
 [Graph_Theory]
 title = Graph Theory
@@ -2748,7 +2699,6 @@ title = Planarity Certificates
 author = Lars Noschinski <http://www21.in.tum.de/~noschinl/>
 date = 2015-11-11
 topic = Mathematics/Graph Theory
-depends-on = Simpl, Case_Labeling, Graph_Theory, List-Index, Transitive-Closure
 abstract =
  This development provides a formalization of planarity based on
  combinatorial maps and proves that Kuratowski's theorem implies
@@ -2939,7 +2889,6 @@ author = Stefan Friedrich <>
 date = 2004-04-26
 topic = Computer Science/Data Structures
 abstract = This theory contains some useful extensions to the LList (lazy list) theory by <a href="http://www.cl.cam.ac.uk/users/lcp/">Larry Paulson</a>, including finite, infinite, and positive llists over an alphabet, as well as the new constants take and drop and the prefix order of llists. Finally, the notions of safety and liveness in the sense of Alpern and Schneider (1985) are defined.
-depends-on = Coinductive
 
 [Ribbon_Proofs]
 title = Ribbon Proofs
@@ -2953,7 +2902,6 @@ title = The Königsberg Bridge Problem and the Friendship Theorem
 author = Wenda Li <mailto:wl302@cam.ac.uk>
 date = 2013-07-19
 topic = Mathematics/Graph Theory
-depends-on = Dijkstra_Shortest_Path
 abstract = This development provides a formalization of undirected graphs and simple graphs, which are based on Benedikt Nordhoff and Peter Lammich's simple formalization of labelled directed graphs in the archive. Then, with our formalization of graphs, we show both necessary and sufficient conditions for Eulerian trails and circuits as well as the fact that the Königsberg Bridge Problem does not have a solution. In addition, we show the Friendship Theorem in simple graphs.
 
 [IEEE_Floating_Point]
@@ -2987,7 +2935,6 @@ title = XML
 author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2014-10-03
 topic = Computer Science/Functional Programming, Computer Science/Data Structures
-depends-on = Show, Partial_Function_MR, Certification_Monads
 abstract =
  This entry provides an XML library for Isabelle/HOL. This includes parsing
  and pretty printing of XML trees as well as combinators for transforming XML
@@ -3018,7 +2965,6 @@ extra-history =
 [Incompleteness]
 title = Gödel's Incompleteness Theorems
 author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
-depends-on = HereditarilyFinite
 date = 2013-11-17
 topic = Logic
 abstract = Gödel's two incompleteness theorems are formalised, following a careful  <a href="http://journals.impan.gov.pl/dm/Inf/422-0-1.html">presentation</a> by Swierczkowski, in the theory of <a href="HereditarilyFinite.shtml">hereditarily finite sets</a>. This represents the first ever machine-assisted proof of the second incompleteness theorem. Compared with traditional formalisations using Peano arithmetic (see e.g. Boolos), coding is simpler, with no need to formalise the notion
@@ -3031,7 +2977,6 @@ title = Finite Automata in Hereditarily Finite Set Theory
 author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
 date = 2015-02-05
 topic = Computer Science/Automata and Formal Languages
-depends-on = HereditarilyFinite
 abstract = Finite Automata, both deterministic and non-deterministic, for regular languages.
   The Myhill-Nerode Theorem. Closure under intersection, concatenation, etc.
   Regular expressions define regular languages. Closure under reversal;
@@ -3042,7 +2987,6 @@ abstract = Finite Automata, both deterministic and non-deterministic, for regula
 title = Decreasing Diagrams
 author = Harald Zankl <http://cl-informatik.uibk.ac.at/users/hzankl>
 license = LGPL
-depends-on = Abstract-Rewriting
 date = 2013-11-01
 topic = Logic/Rewriting
 abstract = This theory contains a formalization of decreasing diagrams showing that any locally decreasing abstract rewrite system is confluent. We consider the valley (van Oostrom, TCS 1994) and the conversion version (van Oostrom, RTA 2008) and closely follow the original proofs. As an application we prove Newman's lemma.
@@ -3051,7 +2995,6 @@ abstract = This theory contains a formalization of decreasing diagrams showing t
 title = Decreasing Diagrams II
 author = Bertram Felgenhauer <mailto:bertram.felgenhauer@uibk.ac.at>
 license = LGPL
-depends-on = Abstract-Rewriting
 date = 2015-08-20
 topic = Logic/Rewriting
 abstract = This theory formalizes the commutation version of decreasing diagrams for Church-Rosser modulo. The proof follows Felgenhauer and van Oostrom (RTA 2013). The theory also provides important specializations, in particular van Oostrom’s conversion version (TCS 2008) of decreasing diagrams.
@@ -3134,7 +3077,6 @@ author = Alasdair Armstrong <http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/>
          Tjark Weber <http://user.it.uu.se/~tjawe125/>
 date = 2014-01-25
 topic = Mathematics/Algebra
-depends-on = Kleene_Algebra
 abstract = Tarski's algebra of binary relations is formalised along the lines of
 	the standard textbooks of Maddux and Schmidt and Ströhlein. This
 	includes relation-algebraic concepts such as subidentities, vectors and
@@ -3160,7 +3102,6 @@ title = The Jordan-Hölder Theorem
 author = Jakob von Raumer <mailto:jakob.raumer@student.kit.edu>
 date = 2014-09-09
 topic = Mathematics/Algebra
-depends-on = Secondary_Sylow
 abstract = This submission contains theories that lead to a formalization of the proof of the Jordan-Hölder theorem about composition series of finite groups. The theories formalize the notions of isomorphism classes of groups, simple groups, normal series, composition series, maximal normal subgroups. Furthermore, they provide proofs of the second isomorphism theorem for groups, the characterization theorem for maximal normal subgroups as well as many useful lemmas about normal subgroups and factor groups. The proof is inspired by course notes of Stuart Rankin.
 
 [Cayley_Hamilton]
@@ -3305,7 +3246,6 @@ abstract = This article contains a formalisation of the Akra-Bazzi method
  Some proof methods that facilitate applying the Master theorem are also
  included. For a more detailed explanation of the formalisation and the
  proof methods, see the accompanying paper (publication forthcoming).
-depends-on = Landau_Symbols
 
 [Cartan_FP]
 title = The Cartan Fixed Point Theorems
@@ -3403,7 +3343,6 @@ title = The Inductive Unwinding Theorem for CSP Noninterference Security
 topic = Computer Science/Security
 author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2015-08-18
-depends-on = Noninterference_Ipurge_Unwinding
 abstract =
   <p>
   The necessary and sufficient condition for CSP noninterference security stated by the Ipurge Unwinding Theorem is expressed in terms of a pair of event lists varying over the set of process traces. This does not render it suitable for the subsequent application of rule induction in the case of a process defined inductively, since rule induction may rather be applied to a single variable ranging over an inductively defined set.
@@ -3416,7 +3355,6 @@ title = Matrices, Jordan Normal Forms, and Spectral Radius Theory
 topic = Mathematics/Algebra
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
 date = 2015-08-21
-depends-on = Containers, Gauss_Jordan, Matrix, Abstract-Rewriting, Show, Polynomial_Interpolation, VectorSpace
 abstract =
   <p>
   Matrix interpretations are useful as measure functions in termination proving. In order to use these interpretations also for complexity analysis, the growth rate of matrix powers has to examined. Here, we formalized a central result of spectral radius theory, namely that the growth rate is polynomially bounded if and only if the spectral radius of a matrix is at most one.
@@ -3436,7 +3374,6 @@ title = Converting Linear Temporal Logic to Deterministic (Generalized) Rabin Au
 topic = Computer Science/Automata and Formal Languages
 author = Salomon Sickert <mailto:sickert@in.tum.de>
 date = 2015-09-04
-depends-on = Boolean_Expression_Checkers, List-Index, KBPs
 abstract = Recently, Javier Esparza and Jan Kretinsky proposed a new method directly translating linear temporal logic (LTL) formulas to deterministic (generalized) Rabin automata. Compared to the existing approaches of constructing a non-deterministic Buechi-automaton in the first step and then applying a determinization procedure (e.g. some variant of Safra's construction) in a second step, this new approach preservers a relation between the formula and the states of the resulting automaton. While the old approach produced a monolithic structure, the new method is compositional. Furthermore, in some cases the resulting automata are much smaller than the automata generated by existing approaches. In order to ensure the correctness of the construction, this entry contains a complete formalisation and verification of the translation. Furthermore from this basis executable code is generated.
 extra-history =
  Change history: [2015-09-23]: Enable code export for the eager unfolding optimisation and reduce running time of the generated tool. Moreover, add support for the mlton SML compiler.
@@ -3475,7 +3412,6 @@ title = Positional Determinacy of Parity Games
 author = Christoph Dittmann <http://logic.las.tu-berlin.de/Members/Dittmann/>
 date = 2015-11-02
 topic = Computer Science/Games
-depends-on = Coinductive
 abstract =
   We present a formalization of parity games (a two-player game on
   directed graphs) and a proof of their positional determinacy in
@@ -3493,7 +3429,6 @@ title = Latin Square
 author = Alexander Bentkamp <mailto:bentkamp@gmail.com>
 date = 2015-12-02
 topic = Mathematics/Combinatorics
-depends-on = Marriage
 abstract =
   A Latin Square is a n x n table filled with integers from 1 to n where each number appears exactly once in each row and each column. A Latin Rectangle is a partially filled n x n table with r filled rows and n-r empty rows, such that each number appears at most once in each row and each column. The main result of this theory is that any Latin Rectangle can be completed to a Latin Square.
 
@@ -3523,14 +3458,12 @@ abstract = The Stern-Brocot tree contains all rational numbers exactly once and 
   </p><p>
   The reasoning stays at an abstract level by appealing to the uniqueness of solutions of guarded recursive equations and lifting algebraic laws point-wise to trees and streams using applicative functors.
   </p>
-depends-on = Applicative_Lifting
 
 [Algebraic_Numbers]
 title = Algebraic Numbers in Isabelle/HOL
 topic = Mathematics/Algebra
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
 date = 2015-12-22
-depends-on = Sturm_Sequences, Partial_Function_MR, Sqrt_Babylonian, Show, Jordan_Normal_Form, Deriving, Polynomial_Factorization
 abstract = Based on existing libraries for matrices, factorization of rational polynomials, and Sturm's theorem, we formalized algebraic numbers in Isabelle/HOL. Our development serves as an implementation for real and complex numbers, and it admits to compute roots and completely factorize real and complex polynomials, provided that all coefficients are rational numbers. Moreover, we provide two implementations to display algebraic numbers, an injective and expensive one, or a faster but approximative version.
  </p><p>
  To this end, we mechanized several results on resultants, which also required us to prove that polynomials over a unique factorization domain form again a unique factorization domain.
@@ -3544,7 +3477,6 @@ title = Polynomial Interpolation
 topic = Mathematics/Algebra
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
 date = 2016-01-29
-depends-on = Sqrt_Babylonian
 abstract =
  We formalized three algorithms for polynomial interpolation over arbitrary
  fields: Lagrange's explicit expression, the recursive algorithm of Neville
@@ -3566,7 +3498,6 @@ title = Polynomial Factorization
 topic = Mathematics/Algebra
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
 date = 2016-01-29
-depends-on = Polynomial_Interpolation, Partial_Function_MR, Sqrt_Babylonian, Show, Jordan_Normal_Form
 abstract =
  Based on existing libraries for polynomial interpolation and matrices,
  we formalized several factorization algorithms for polynomials, including
@@ -3606,7 +3537,6 @@ abstract =
  to extract OCaml code and replace the unverified SSA construction
  algorithm of the <a href="http://dx.doi.org/10.1145/2579080">CompCertSSA
  project</a> with it.
-depends-on = Slicing, Dijkstra_Shortest_Path
 
 [PropResPI]
 title = Propositional Resolution and Prime Implicates Generation
