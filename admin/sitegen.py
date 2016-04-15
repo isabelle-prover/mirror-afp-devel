@@ -2,7 +2,7 @@
 # vim: set fileencoding=utf-8 :
 
 ##
-## Dependencies: Python 2.7
+## Dependencies: Python 2.7 or Python 3.5
 ## 
 ## This script reads a metadata file and generates the topics.shtml,
 ## index.shtml and the entry pages on afp.sf.net.
@@ -11,15 +11,23 @@
 ## For adding new entries see ../doc/editors/new-entry-checkin.html
 ## 
 
+# Cross-python compatibility
+from __future__ import print_function
+try:
+    import configparser
+except ImportError:
+    from six.moves import configparser
+
 from collections import OrderedDict
 from optparse import OptionParser
 from sys import argv, stderr
 from functools import partial
+from operator import itemgetter
 import codecs
-import ConfigParser
 import os
 import re
 from termcolor import colored
+
 
 # global config
 
@@ -339,20 +347,20 @@ def debug(message, indent = 0, title = ""):
 			debug("}", indent)
 		else:
 			if title:
-				print >> stderr, (u"Debug: {0}{1}: {2}".format(' ' * indent, title, message))
+				print(u"Debug: {0}{1}: {2}".format(' ' * indent, title, message), file=stderr)
 			else:
-				print >> stderr, (u"Debug: {0}{1}".format(' ' * indent, message))
+				print(u"Debug: {0}{1}".format(' ' * indent, message), file=stderr)
 
 def warn(message):
 	if options.enable_warnings:
-		print >> stderr, (colored(u"Warning: {0}".format(message), 'yellow', attrs=['bold']))
+		print(colored(u"Warning: {0}".format(message), 'yellow', attrs=['bold']), file=stderr)
 
 def notice(message):
 	if options.enable_warnings:
-		print >> stderr, (u"Notice: {0}".format(message))
+		print(u"Notice: {0}".format(message), file=stderr)
 
 def error(message, exception = None, abort = False):
-	print >> stderr, (colored(u"Error: {0}".format(message), 'red', attrs=['bold']))
+	print(colored(u"Error: {0}".format(message), 'red', attrs=['bold']), file=stderr)
 	if exception:
 		error("*** exception message:")
 		error(u"*** {0!s} {1!s}".format(exception, type(exception)))
@@ -366,9 +374,9 @@ def check_fs(meta_entries, directory):
 	meta_entries = set(k for k, _ in meta_entries.items())
 	# check for entries not existing in filesystem
 	for fs_missing in meta_entries - fs_entries:
-		print >> stderr, (colored(u"Check: In metadata: entry {0} doesn't exist in filesystem".format(fs_missing), 'yellow', attrs=['bold']))
+		print(colored(u"Check: In metadata: entry {0} doesn't exist in filesystem".format(fs_missing), 'yellow', attrs=['bold']), file=stderr)
 	for meta_missing in fs_entries - meta_entries:
-		print >> stderr, (colored(u"Check: In filesystem: entry {0} doesn't exist in metadata".format(meta_missing), 'yellow', attrs=['bold']))
+		print(colored(u"Check: In filesystem: entry {0} doesn't exist in metadata".format(meta_missing), 'yellow', attrs=['bold']), file=stderr)
 	return len(fs_entries ^ meta_entries)
 
 # takes the 'raw' data from metadata file as input and performs:
@@ -425,7 +433,7 @@ def validate(entry, attributes):
 # reads the metadata file and returns a dict mapping each entry to the attributes
 # specified. one can rely upon that they conform to the attribute_schema
 def parse(filename):
-	parser = ConfigParser.RawConfigParser(dict_type = OrderedDict)
+	parser = configparser.RawConfigParser(dict_type = OrderedDict)
 	try:
 		parser.readfp(codecs.open(filename, encoding='UTF-8', errors='strict'))
 		return OrderedDict((sec, validate(sec, dict(parser.items(sec)))) for sec in parser.sections())
@@ -451,7 +459,7 @@ def read_versions(filename):
 		error("Not processing releases")
 		return []
 	else:
-		versions.sort(None, lambda (v, d): d, True)
+		versions.sort(key = itemgetter(1), reverse = True)
 		return versions
 
 # reads the list of entry releases (metadata/releases)
@@ -533,7 +541,7 @@ def collect_years(entries):
 		(attributes['date'] if attributes['date'] != '' else 'unknown', entry, attributes)
 		for entry, attributes in entries
 	]
-	extracted.sort(None, lambda (y, e, a): y, True)
+	extracted.sort(key = itemgetter(0), reverse = True)
 	years = OrderedDict()
 	for date, entry, attributes in extracted:
 		key = date[0:4] if date != 'unknown' else date
@@ -601,14 +609,14 @@ def generate_author_list(authors, spacer, last_spacer, ignore_mail = True, ignor
 		else:
 			return name
 
-	authors = map(_to_str, authors)
+	authors = list(map(_to_str, authors))
 	if len(authors) == 0:
 		return ""
 	elif len(authors) == 1:
 		return authors[0]
 	else:
 		return u"{0}{1}{2}".format(
-	      spacer.join(authors[:len(authors)-1]),
+		  spacer.join(authors[:len(authors)-1]),
 		  last_spacer,
 		  authors[len(authors)-1]
 		)
@@ -666,7 +674,9 @@ def format_entry_pre_text(title, text):
 	)
 
 def depends_on_string(deps):
-	return ', '.join(html_entry_link.format(dep, dep + ".shtml") for dep in deps)
+	sorted_deps = list(deps)
+	sorted_deps.sort()
+	return ', '.join(html_entry_link.format(dep, dep + ".shtml") for dep in sorted_deps)
 
 def format_depends_on(deps):
 	if len(deps) == 0:
@@ -720,7 +730,7 @@ def generate_entry(entry, attributes, param):
 	elif param == "older":
 		if len(attributes['releases']) > 1:
 			str = ""
-			for version, release_dates in attributes['releases'].items()[1:]:
+			for version, release_dates in list(attributes['releases'].items())[1:]:
 				str += "".join(html_entry_older_release.format(version, release_date) for release_date in release_dates)
 			result = html_entry_older_list.format(str)
 		else:
