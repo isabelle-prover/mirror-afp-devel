@@ -81,7 +81,7 @@ ML, OCaml, Haskell, and Scala.
 
 
     <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="Collections.shtml">Collections</a>, <a href="Automatic_Refinement.shtml">Automatic_Refinement</a></td></tr>
+        <td class="data"><a href="Automatic_Refinement.shtml">Automatic_Refinement</a>, <a href="Collections.shtml">Collections</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

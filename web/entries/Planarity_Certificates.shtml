@@ -70,7 +70,7 @@ certificates for planarity (i.e., a combinatorial map) or non-planarity
 
 
     <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="Case_Labeling.shtml">Case_Labeling</a>, <a href="Transitive-Closure.shtml">Transitive-Closure</a>, <a href="Graph_Theory.shtml">Graph_Theory</a>, <a href="Simpl.shtml">Simpl</a>, <a href="List-Index.shtml">List-Index</a></td></tr>
+        <td class="data"><a href="Case_Labeling.shtml">Case_Labeling</a>, <a href="Graph_Theory.shtml">Graph_Theory</a>, <a href="List-Index.shtml">List-Index</a>, <a href="Simpl.shtml">Simpl</a>, <a href="Transitive-Closure.shtml">Transitive-Closure</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
