@@ -876,12 +876,82 @@ def check_deps(entries):
 		if not deps.issubset(keys):
 			warn(u"In entry {0}: Missing dependencies {1}".format(key, deps - keys))
 
+def normpath(path, *paths):
+	"""Return a normalized and absolute path (depending on current working directory)"""
+	return os.path.abspath(os.path.join(path, *paths))
+
+def theory_dict(articles):
+	"""Creates a dict with .thy files as key and the corresponding theory as value"""
+	thys = dict()
+	for a in articles:
+		for thy in articles[a]['thys']:
+			thys[thy] = a
+	return thys
+
+def add_theories(articles, thy_dir):
+	"""Add a set of paths to .thy files of an entry to entries[e]['thys']"""
+	for a in articles:
+		articles[a]['thys'] = set()
+		for root, _dirnames, filenames in os.walk(os.path.join(thy_dir, a)):
+			for f in filenames:
+				if f.endswith(".thy"):
+					articles[a]['thys'].add(normpath(root, f))
+
+def add_theory_dependencies(articles):
+	"""Adds dependencies by checking .thy-files"""
+	thys = theory_dict(articles)
+	pattern0 = re.compile("imports(.*?)begin", re.DOTALL)
+	for t in thys:
+		with open(t, 'r') as f:
+			content = f.read()
+		match0 = pattern0.search(content)
+		if match0 is not None:
+			#Go through imports and check if its a file in the AFP
+			#if yes, add dependency
+			imps = [normpath(os.path.dirname(t), x.strip(' \t"') + ".thy")
+			        for x in match0.group(1).split()]
+			for i in imps:
+				if i in thys:
+					articles[thys[t]]['depends-on'].add(thys[i])
+
+def add_root_dependencies(articles, thy_dir):
+	"""Adds dependencies by checking ROOT files"""
+	thys = theory_dict(articles)
+	for a in articles:
+		root = normpath(thy_dir, a, "ROOT")
+		with open(root, 'r') as root_file:
+			root_content = root_file.read()
+		#check for imports of the form "session ... = ... (AFP) +"
+		for line in root_content.splitlines():
+			if line.startswith("session"):
+				for word in [x.strip(' \t"') for x in line.split()]:
+					if word in articles:
+						articles[a]['depends-on'].add(word)
+		#run through every word in the root file and check if there's a corresponding AFP file
+		for word in [x.strip(' \t"') for x in root_content.split()]:
+			#catch Unicode error, since paths can only contain ASCII chars
+			try:
+				theory = normpath(thy_dir, a, word + ".thy")
+				if theory in thys:
+					articles[a]['depends-on'].add(thys[theory])
+			except UnicodeDecodeError:
+					pass
+
+def remove_self_imps(articles):
+	"""Remove self imports in "depends-on"-field"""
+	for a in articles:
+		try:
+			articles[a]['depends-on'].remove(a)
+		except KeyError:
+			pass
+
 if __name__ == "__main__":
-	parser = OptionParser(usage = "Usage: %prog [--no-warn] [--debug] [--check=THYS_DIR | --dest=DEST_DIR] metadata-dir")
+ 	parser = OptionParser(usage = "Usage: %prog [--no-warn] [--debug] [--check=THYS_DIR | --dest=DEST_DIR] [--depends=THYS_DIR] metadata-dir")
 	parser.add_option("--no-warn", action = "store_false", dest = "enable_warnings", default = True, help = "disable output of warnings")
 	parser.add_option("--check", action = "store", type = "string", dest = "thys_dir", help = "compare the contents of the metadata file with actual file system contents")
 	parser.add_option("--dest", action = "store", type = "string", dest = "dest_dir", help = "generate files for each template in the metadata directory")
 	parser.add_option("--debug", action = "store_true", dest = "enable_debug", default = False, help = "display debug output")
+ 	parser.add_option("--depends", action = "store", type = "string", dest = "depends_thys_dir", help = "generate 'depends-on' field from running regexes on the AFP")
 
 	(options, args) = parser.parse_args(argv)
 	if len(args) != 2:
@@ -900,6 +970,14 @@ if __name__ == "__main__":
 		warn("In metadata: No entries found")
 	check_deps(entries)
 
+        # generate depends-on entries
+	if options.depends_thys_dir:
+		add_theories(entries, options.depends_thys_dir)
+		for e in entries:
+			entries[e]['depends-on'] = set()
+		add_theory_dependencies(entries)
+		add_root_dependencies(entries, options.depends_thys_dir)
+		remove_self_imps(entries)
 
 	# perform check
 	if options.thys_dir:
