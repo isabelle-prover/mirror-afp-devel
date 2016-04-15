@@ -68,6 +68,10 @@ This theorem is the 45th theorem of the Top 100 Theorems list.
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Card_Number_Partitions.shtml">Card_Number_Partitions</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

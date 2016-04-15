@@ -69,6 +69,10 @@ Knowledge-based programs (KBPs) are a formalism for directly relating agents' kn
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Trie.shtml">Trie</a>, <a href="Transitive-Closure.shtml">Transitive-Closure</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->
