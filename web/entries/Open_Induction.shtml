@@ -65,10 +65,6 @@ A proof of the open induction schema based on J.-C. Raoult, Proving open propert
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 
-    <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="Well_Quasi_Orders.shtml">Well_Quasi_Orders</a></td></tr>
-
-
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->
