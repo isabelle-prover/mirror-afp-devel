@@ -1948,7 +1948,7 @@ abstract =
 
 [KAD]
 title = Kleene Algebras with Domain
-author = Victor B. F. Gomes <http://www.dcs.shef.ac.uk/~victor>, Walter Guttmann, Peter Höfner <http://www.hoefner-online.de/>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>, Tjark Weber <http://user.it.uu.se/~tjawe125/>
+author = Victor B. F. Gomes <http://www.dcs.shef.ac.uk/~victor>, Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>, Peter Höfner <http://www.hoefner-online.de/>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>, Tjark Weber <http://user.it.uu.se/~tjawe125/>
 date = 2016-04-12
 topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
 abstract =
