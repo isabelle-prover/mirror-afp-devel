@@ -57,9 +57,10 @@
     If you feel this is necessary for your submission, please email <a
 href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;">&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;</a>.</p>
 
-    <p>The submission must follow these Isabelle style guidelines:</p>
+    <p>The submission must follow the following Isabelle style rules.
+        For additional guidelines on Isabelle proofs, also see the this <a href="http://proofcraft.org/blog/isabelle-style.html">guide</a> (feel free to follow all of these; only the below are mandatory).</p>
     <ul>
-        <li>No use of the command <code>back</code>.</li>
+        <li>No use of the commands <code>sorry</code> or <code>back</code>.</li>
         
         <li>Instantiations must not use Isabelle-generated names such as
         <code>xa</code> &mdash; use Isar or <code>rename_tac</code> to avoid
@@ -74,6 +75,8 @@ href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#1
         applied to a state with <code>n+1</code> subgoals, it must be
         indented by <code>n</code> spaces relative to the first
         <code>apply</code> in the sequence.</li>
+        
+        <li>Only named lemmas should carry attributes such as <code>[simp]</code>.</li>
         
         <li>We prefer structured Isar proofs over apply style, but do not
         mandate them.</li>
