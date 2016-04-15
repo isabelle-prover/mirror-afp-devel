@@ -3,4 +3,4 @@
 # standard invocation of sitegen.py
 
 cd $(hg root)
-admin/sitegen.py --dest=web metadata $@
+admin/sitegen.py --dest=web --metadata=metadata thys $@

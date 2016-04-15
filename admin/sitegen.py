@@ -2,7 +2,7 @@
 # vim: set fileencoding=utf-8 :
 
 ##
-## Dependencies: Python 2.7
+## Dependencies: Python 2.7 or Python 3.5
 ## 
 ## This script reads a metadata file and generates the topics.shtml,
 ## index.shtml and the entry pages on afp.sf.net.
@@ -11,15 +11,23 @@
 ## For adding new entries see ../doc/editors/new-entry-checkin.html
 ## 
 
+# Cross-python compatibility
+from __future__ import print_function
+try:
+    import configparser
+except ImportError:
+    from six.moves import configparser
+
 from collections import OrderedDict
 from optparse import OptionParser
 from sys import argv, stderr
 from functools import partial
+from operator import itemgetter
 import codecs
-import ConfigParser
 import os
 import re
 from termcolor import colored
+
 
 # global config
 
@@ -231,8 +239,7 @@ attribute_schema = {
 	'abstract': (False, None, None),
 	'license': (False, "parse_license", "BSD"),
 	'ignore': (True, None, ""),
-	'extra*': (False, "parse_extra", None),
-	'depends-on': (False, "parse_depends_on", ""),
+	'extra*': (False, "parse_extra", None)
 }
 
 ### licenses
@@ -340,20 +347,20 @@ def debug(message, indent = 0, title = ""):
 			debug("}", indent)
 		else:
 			if title:
-				print >> stderr, (u"Debug: {0}{1}: {2}".format(' ' * indent, title, message))
+				print(u"Debug: {0}{1}: {2}".format(' ' * indent, title, message), file=stderr)
 			else:
-				print >> stderr, (u"Debug: {0}{1}".format(' ' * indent, message))
+				print(u"Debug: {0}{1}".format(' ' * indent, message), file=stderr)
 
 def warn(message):
 	if options.enable_warnings:
-		print >> stderr, (colored(u"Warning: {0}".format(message), 'yellow', attrs=['bold']))
+		print(colored(u"Warning: {0}".format(message), 'yellow', attrs=['bold']), file=stderr)
 
 def notice(message):
 	if options.enable_warnings:
-		print >> stderr, (u"Notice: {0}".format(message))
+		print(u"Notice: {0}".format(message), file=stderr)
 
 def error(message, exception = None, abort = False):
-	print >> stderr, (colored(u"Error: {0}".format(message), 'red', attrs=['bold']))
+	print(colored(u"Error: {0}".format(message), 'red', attrs=['bold']), file=stderr)
 	if exception:
 		error("*** exception message:")
 		error(u"*** {0!s} {1!s}".format(exception, type(exception)))
@@ -367,9 +374,9 @@ def check_fs(meta_entries, directory):
 	meta_entries = set(k for k, _ in meta_entries.items())
 	# check for entries not existing in filesystem
 	for fs_missing in meta_entries - fs_entries:
-		print >> stderr, (colored(u"Check: In metadata: entry {0} doesn't exist in filesystem".format(fs_missing), 'yellow', attrs=['bold']))
+		print(colored(u"Check: In metadata: entry {0} doesn't exist in filesystem".format(fs_missing), 'yellow', attrs=['bold']), file=stderr)
 	for meta_missing in fs_entries - meta_entries:
-		print >> stderr, (colored(u"Check: In filesystem: entry {0} doesn't exist in metadata".format(meta_missing), 'yellow', attrs=['bold']))
+		print(colored(u"Check: In filesystem: entry {0} doesn't exist in metadata".format(meta_missing), 'yellow', attrs=['bold']), file=stderr)
 	return len(fs_entries ^ meta_entries)
 
 # takes the 'raw' data from metadata file as input and performs:
@@ -426,7 +433,7 @@ def validate(entry, attributes):
 # reads the metadata file and returns a dict mapping each entry to the attributes
 # specified. one can rely upon that they conform to the attribute_schema
 def parse(filename):
-	parser = ConfigParser.RawConfigParser(dict_type = OrderedDict)
+	parser = configparser.RawConfigParser(dict_type = OrderedDict)
 	try:
 		parser.readfp(codecs.open(filename, encoding='UTF-8', errors='strict'))
 		return OrderedDict((sec, validate(sec, dict(parser.items(sec)))) for sec in parser.sections())
@@ -452,7 +459,7 @@ def read_versions(filename):
 		error("Not processing releases")
 		return []
 	else:
-		versions.sort(None, lambda (v, d): d, True)
+		versions.sort(key = itemgetter(1), reverse = True)
 		return versions
 
 # reads the list of entry releases (metadata/releases)
@@ -534,7 +541,7 @@ def collect_years(entries):
 		(attributes['date'] if attributes['date'] != '' else 'unknown', entry, attributes)
 		for entry, attributes in entries
 	]
-	extracted.sort(None, lambda (y, e, a): y, True)
+	extracted.sort(key = itemgetter(0), reverse = True)
 	years = OrderedDict()
 	for date, entry, attributes in extracted:
 		key = date[0:4] if date != 'unknown' else date
@@ -560,7 +567,7 @@ def parse_contributors(contributor, entry, key):
 	if contributor == "":
 		return "", None
 	else:
-	 	return parse_name_url(contributor, entry, key)
+		return parse_name_url(contributor, entry, key)
 
 # extracts name and URL from 'name <URL>' as a pair
 def parse_name_url(name, entry, key):
@@ -584,12 +591,6 @@ def month_of_date(date):
 def year_of_date(date):
 	return date.split("-")[0]
 
-# splits list of dependencies. returns empty list if no dependency is
-# given
-def parse_depends_on(dependency, **kwargs):
-	deps = [x.strip() for x in dependency.split(',')]
-	return filter(lambda x: x <> '', deps)
-
 def generate_link_list(entries):
 	return ''.join([html_topic_link.format(e) for e in entries])
 
@@ -608,14 +609,14 @@ def generate_author_list(authors, spacer, last_spacer, ignore_mail = True, ignor
 		else:
 			return name
 
-	authors = map(_to_str, authors)
+	authors = list(map(_to_str, authors))
 	if len(authors) == 0:
 		return ""
 	elif len(authors) == 1:
 		return authors[0]
 	else:
 		return u"{0}{1}{2}".format(
-	      spacer.join(authors[:len(authors)-1]),
+		  spacer.join(authors[:len(authors)-1]),
 		  last_spacer,
 		  authors[len(authors)-1]
 		)
@@ -673,7 +674,9 @@ def format_entry_pre_text(title, text):
 	)
 
 def depends_on_string(deps):
-	return ', '.join(html_entry_link.format(dep, dep + ".shtml") for dep in deps)
+	sorted_deps = list(deps)
+	sorted_deps.sort()
+	return ', '.join(html_entry_link.format(dep, dep + ".shtml") for dep in sorted_deps)
 
 def format_depends_on(deps):
 	if len(deps) == 0:
@@ -727,7 +730,7 @@ def generate_entry(entry, attributes, param):
 	elif param == "older":
 		if len(attributes['releases']) > 1:
 			str = ""
-			for version, release_dates in attributes['releases'].items()[1:]:
+			for version, release_dates in list(attributes['releases'].items())[1:]:
 				str += "".join(html_entry_older_release.format(version, release_date) for release_date in release_dates)
 			result = html_entry_older_list.format(str)
 		else:
@@ -868,28 +871,89 @@ def handle_template(entries, template, content):
 		output_filename = os.path.join(dest_subdir, template + output_suffix)
 		write_output(output_filename, content, partial(generator, not_ignored))
 
-# checks whether all dependencies are present
-def check_deps(entries):
-	keys = set(entries.keys())
-	for key, attributes in entries.items():
-		deps = set(attributes["depends-on"])
-		if not deps.issubset(keys):
-			warn(u"In entry {0}: Missing dependencies {1}".format(key, deps - keys))
+def normpath(path, *paths):
+	"""Return a normalized and absolute path (depending on current working directory)"""
+	return os.path.abspath(os.path.join(path, *paths))
+
+def theory_dict(articles):
+	"""Creates a dict with .thy files as key and the corresponding theory as value"""
+	thys = dict()
+	for a in articles:
+		for thy in articles[a]['thys']:
+			thys[thy] = a
+	return thys
+
+def add_theories(articles, thy_dir):
+	"""Add a set of paths to .thy files of an entry to entries[e]['thys']"""
+	for a in articles:
+		articles[a]['thys'] = set()
+		for root, _dirnames, filenames in os.walk(os.path.join(thy_dir, a)):
+			for f in filenames:
+				if f.endswith(".thy"):
+					articles[a]['thys'].add(normpath(root, f))
+
+def add_theory_dependencies(articles):
+	"""Adds dependencies by checking .thy-files"""
+	thys = theory_dict(articles)
+	pattern0 = re.compile("imports(.*?)begin", re.DOTALL)
+	for t in thys:
+		with open(t, 'r') as f:
+			content = f.read()
+		match0 = pattern0.search(content)
+		if match0 is not None:
+			#Go through imports and check if its a file in the AFP
+			#if yes, add dependency
+			imps = [normpath(os.path.dirname(t), x.strip(' \t"') + ".thy")
+				for x in match0.group(1).split()]
+			for i in imps:
+				if i in thys:
+					articles[thys[t]]['depends-on'].add(thys[i])
+
+def add_root_dependencies(articles, thy_dir):
+	"""Adds dependencies by checking ROOT files"""
+	thys = theory_dict(articles)
+	for a in articles:
+		root = normpath(thy_dir, a, "ROOT")
+		with open(root, 'r') as root_file:
+			root_content = root_file.read()
+		#check for imports of the form "session ... = ... (AFP) +"
+		for line in root_content.splitlines():
+			if line.startswith("session"):
+				for word in [x.strip(' \t"') for x in line.split()]:
+					if word in articles:
+						articles[a]['depends-on'].add(word)
+		#run through every word in the root file and check if there's a corresponding AFP file
+		for word in [x.strip(' \t"') for x in root_content.split()]:
+			#catch Unicode error, since paths can only contain ASCII chars
+			try:
+				theory = normpath(thy_dir, a, word + ".thy")
+				if theory in thys:
+					articles[a]['depends-on'].add(thys[theory])
+			except UnicodeDecodeError:
+					pass
+
+def remove_self_imps(articles):
+	"""Remove self imports in "depends-on"-field"""
+	for a in articles:
+		try:
+			articles[a]['depends-on'].remove(a)
+		except KeyError:
+			pass
 
 if __name__ == "__main__":
-	parser = OptionParser(usage = "Usage: %prog [--no-warn] [--debug] [--check=THYS_DIR | --dest=DEST_DIR] metadata-dir")
+	parser = OptionParser(usage = "Usage: %prog [--no-warn] [--debug] [--check] [--dest=DEST_DIR] --metadata=METADATA_DIR THYS_DIR")
 	parser.add_option("--no-warn", action = "store_false", dest = "enable_warnings", default = True, help = "disable output of warnings")
-	parser.add_option("--check", action = "store", type = "string", dest = "thys_dir", help = "compare the contents of the metadata file with actual file system contents")
+	parser.add_option("--check", action = "store_true", dest = "do_check", help = "compare the contents of the metadata file with actual file system contents")
 	parser.add_option("--dest", action = "store", type = "string", dest = "dest_dir", help = "generate files for each template in the metadata directory")
 	parser.add_option("--debug", action = "store_true", dest = "enable_debug", default = False, help = "display debug output")
+	parser.add_option("--metadata", action = "store", type = "string", dest = "metadata_dir", help = "metadata location")
 
 	(options, args) = parser.parse_args(argv)
 	if len(args) != 2:
-		parser.error("You must supply at least one parameter. For usage, supply --help.")
-	if not options.thys_dir and not options.dest_dir and not options.makefile_dir:
-		parser.error("You must supply at least one of --check or --dest or --makefile")
+		parser.error("You must supply the theories directory. For usage, supply --help.")
 
-	metadata_dir = args[1]
+	thys_dir = args[1]
+	metadata_dir = options.metadata_dir
 
 	# parse metadata
 	entries = parse(os.path.join(metadata_dir, "metadata"))
@@ -898,13 +962,18 @@ if __name__ == "__main__":
 	debug(entries, title = "Entries from metadata file")
 	if len(entries) == 0:
 		warn("In metadata: No entries found")
-	check_deps(entries)
 
+	# generate depends-on entries
+	for e in entries: entries[e]['depends-on'] = set()
+	add_theories(entries, thys_dir)
+	add_theory_dependencies(entries)
+	add_root_dependencies(entries, thys_dir)
+	remove_self_imps(entries)
 
 	# perform check
-	if options.thys_dir:
-		count = check_fs(entries, options.thys_dir)
-		output = "Checked directory {0}. Found {1} warnings.".format(options.thys_dir, count)
+	if options.do_check:
+		count = check_fs(entries, thys_dir)
+		output = "Checked directory {0}. Found {1} warnings.".format(thys_dir, count)
 		color = 'yellow' if count > 0 else 'green'
 		print(colored(output, color, attrs=['bold']))
 

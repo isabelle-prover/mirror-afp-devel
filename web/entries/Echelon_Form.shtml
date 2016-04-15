@@ -63,6 +63,10 @@ We formalize an algorithm to compute the Echelon Form of a matrix. We have prove
         <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
 
 
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Cayley_Hamilton.shtml">Cayley_Hamilton</a>, <a href="Gauss_Jordan.shtml">Gauss_Jordan</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->
