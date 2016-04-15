@@ -231,8 +231,7 @@ attribute_schema = {
 	'abstract': (False, None, None),
 	'license': (False, "parse_license", "BSD"),
 	'ignore': (True, None, ""),
-	'extra*': (False, "parse_extra", None),
-	'depends-on': (False, "parse_depends_on", ""),
+	'extra*': (False, "parse_extra", None)
 }
 
 ### licenses
@@ -560,7 +559,7 @@ def parse_contributors(contributor, entry, key):
 	if contributor == "":
 		return "", None
 	else:
-	 	return parse_name_url(contributor, entry, key)
+		return parse_name_url(contributor, entry, key)
 
 # extracts name and URL from 'name <URL>' as a pair
 def parse_name_url(name, entry, key):
@@ -583,12 +582,6 @@ def month_of_date(date):
 
 def year_of_date(date):
 	return date.split("-")[0]
-
-# splits list of dependencies. returns empty list if no dependency is
-# given
-def parse_depends_on(dependency, **kwargs):
-	deps = [x.strip() for x in dependency.split(',')]
-	return filter(lambda x: x <> '', deps)
 
 def generate_link_list(entries):
 	return ''.join([html_topic_link.format(e) for e in entries])
@@ -868,14 +861,6 @@ def handle_template(entries, template, content):
 		output_filename = os.path.join(dest_subdir, template + output_suffix)
 		write_output(output_filename, content, partial(generator, not_ignored))
 
-# checks whether all dependencies are present
-def check_deps(entries):
-	keys = set(entries.keys())
-	for key, attributes in entries.items():
-		deps = set(attributes["depends-on"])
-		if not deps.issubset(keys):
-			warn(u"In entry {0}: Missing dependencies {1}".format(key, deps - keys))
-
 def normpath(path, *paths):
 	"""Return a normalized and absolute path (depending on current working directory)"""
 	return os.path.abspath(os.path.join(path, *paths))
@@ -909,7 +894,7 @@ def add_theory_dependencies(articles):
 			#Go through imports and check if its a file in the AFP
 			#if yes, add dependency
 			imps = [normpath(os.path.dirname(t), x.strip(' \t"') + ".thy")
-			        for x in match0.group(1).split()]
+				for x in match0.group(1).split()]
 			for i in imps:
 				if i in thys:
 					articles[thys[t]]['depends-on'].add(thys[i])
@@ -946,20 +931,19 @@ def remove_self_imps(articles):
 			pass
 
 if __name__ == "__main__":
- 	parser = OptionParser(usage = "Usage: %prog [--no-warn] [--debug] [--check=THYS_DIR | --dest=DEST_DIR] [--depends=THYS_DIR] metadata-dir")
+	parser = OptionParser(usage = "Usage: %prog [--no-warn] [--debug] [--check] [--dest=DEST_DIR] --metadata=METADATA_DIR THYS_DIR")
 	parser.add_option("--no-warn", action = "store_false", dest = "enable_warnings", default = True, help = "disable output of warnings")
-	parser.add_option("--check", action = "store", type = "string", dest = "thys_dir", help = "compare the contents of the metadata file with actual file system contents")
+	parser.add_option("--check", action = "store_true", dest = "do_check", help = "compare the contents of the metadata file with actual file system contents")
 	parser.add_option("--dest", action = "store", type = "string", dest = "dest_dir", help = "generate files for each template in the metadata directory")
 	parser.add_option("--debug", action = "store_true", dest = "enable_debug", default = False, help = "display debug output")
- 	parser.add_option("--depends", action = "store", type = "string", dest = "depends_thys_dir", help = "generate 'depends-on' field from running regexes on the AFP")
+	parser.add_option("--metadata", action = "store", type = "string", dest = "metadata_dir", help = "metadata location")
 
 	(options, args) = parser.parse_args(argv)
 	if len(args) != 2:
-		parser.error("You must supply at least one parameter. For usage, supply --help.")
-	if not options.thys_dir and not options.dest_dir and not options.makefile_dir:
-		parser.error("You must supply at least one of --check or --dest or --makefile")
+		parser.error("You must supply the theories directory. For usage, supply --help.")
 
-	metadata_dir = args[1]
+	thys_dir = args[1]
+	metadata_dir = options.metadata_dir
 
 	# parse metadata
 	entries = parse(os.path.join(metadata_dir, "metadata"))
@@ -968,21 +952,18 @@ if __name__ == "__main__":
 	debug(entries, title = "Entries from metadata file")
 	if len(entries) == 0:
 		warn("In metadata: No entries found")
-	check_deps(entries)
 
-        # generate depends-on entries
-	if options.depends_thys_dir:
-		add_theories(entries, options.depends_thys_dir)
-		for e in entries:
-			entries[e]['depends-on'] = set()
-		add_theory_dependencies(entries)
-		add_root_dependencies(entries, options.depends_thys_dir)
-		remove_self_imps(entries)
+	# generate depends-on entries
+	for e in entries: entries[e]['depends-on'] = set()
+	add_theories(entries, thys_dir)
+	add_theory_dependencies(entries)
+	add_root_dependencies(entries, thys_dir)
+	remove_self_imps(entries)
 
 	# perform check
-	if options.thys_dir:
-		count = check_fs(entries, options.thys_dir)
-		output = "Checked directory {0}. Found {1} warnings.".format(options.thys_dir, count)
+	if options.do_check:
+		count = check_fs(entries, thys_dir)
+		output = "Checked directory {0}. Found {1} warnings.".format(thys_dir, count)
 		color = 'yellow' if count > 0 else 'green'
 		print(colored(output, color, attrs=['bold']))
 
