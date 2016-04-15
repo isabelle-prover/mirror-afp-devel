@@ -509,7 +509,6 @@ proof (rule irreducibleI)
     irr: "\<And> q. degree q \<noteq> 0 \<Longrightarrow> degree q < degree p \<Longrightarrow> \<not> q dvd p" by auto
   let ?r = "rat_of_int"
   let ?rp = "map_poly ?r"
-  note ri.degree_map_poly[simp]
   from p show rp: "degree (?rp p) \<noteq> 0" by auto
   from p have p0: "p \<noteq> 0" by auto
   fix g :: "rat poly"

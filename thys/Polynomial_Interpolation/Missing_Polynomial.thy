@@ -11,7 +11,6 @@ text \<open>The theory contains some basic results on polynomials which have not
 theory Missing_Polynomial
 imports 
   "~~/src/HOL/Library/Polynomial"
-  "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
   Missing_Unsorted
 begin
 
@@ -496,13 +495,10 @@ proof (rule ccontr)
 qed
 
 
-
 subsection \<open>Divisibility\<close>
 
-instance poly :: (field) ring_gcd ..
-
 context
-  fixes sort :: "'a :: idom"
+  assumes "SORT_CONSTRAINT('a :: idom)"
 begin
 lemma poly_linear_linear_factor: assumes 
   dvd: "[:b,1:] dvd (\<Prod> (a :: 'a) \<leftarrow> as. [: a, 1:])"

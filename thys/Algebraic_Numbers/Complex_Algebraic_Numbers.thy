@@ -141,7 +141,7 @@ proof -
   from alg_poly_cnj[OF this] have apc: "alg_poly (cnj x) p" .
   from ap have ap: "alg_poly x ?np" by simp
   from alg_poly_cnj[OF this] have apc': "alg_poly (cnj x) ?np" .  
-  from alg_poly_mult_rat[OF _ alg_poly_add_complex[OF ap apc'], of "inverse 2"]
+  from alg_poly_mult_rat[OF _ alg_poly_add[OF ap apc'], of "inverse 2"]
   have "alg_poly (1 / 2 * (x + cnj x)) ?Rep" unfolding root_poly_Re_def Let_def by auto
   also have "1 / 2 * (x + cnj x) = of_real (Re x)"
     by (cases x, auto)
@@ -151,7 +151,7 @@ proof -
   with Rep show "alg_poly (Re x) ?Rep" by auto 
   let ?q = "poly_add ?np (?n (poly_uminus p))"
   let ?mode = Uncertified_Factorization
-  from alg_poly_add_complex[OF ap, of "- cnj x" "?n (poly_uminus p)"] alg_poly_uminus[OF apc] 
+  from alg_poly_add[OF ap, of "- cnj x" "?n (poly_uminus p)"] alg_poly_uminus[OF apc] 
   have apq: "alg_poly (x - cnj x) ?q" by auto
   from alg_poly_factors_rat_poly[OF this] obtain pi where pi: "pi \<in> set (factors_of_rat_poly ?mode ?q)"
     and appi: "alg_poly (x - cnj x) pi" by auto

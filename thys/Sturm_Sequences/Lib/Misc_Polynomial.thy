@@ -32,21 +32,25 @@ lemma pderiv_div:
   shows "pderiv (p div q) = (q * pderiv p - p * pderiv q) div (q * q)"
         "q*q dvd (q * pderiv p - p * pderiv q)"
 proof-
-  note pderiv_mult[of q "p div q"]
-  also have "q * (p div q) = p" by (simp)
-  finally have "q * pderiv (p div q) = q * pderiv p div q - p * pderiv q div q"
-      by (simp add: algebra_simps dvd_div_mult[symmetric])
-  also have "... = (q * pderiv p - p * pderiv q) div q"
-      by (simp)
-  finally have A: "pderiv (p div q) * q div q =
-                   (q * pderiv p - p * pderiv q) div q div q"
-      by (simp add: algebra_simps del: div_diff)
-  thus "pderiv (p div q) = (q * pderiv p - p * pderiv q) div (q * q)"
-        by (simp add: algebra_simps poly_div_mult_right)
   from assms obtain r where "p = q * r" unfolding dvd_def by blast
   hence "q * pderiv p - p * pderiv q = (q * q) * pderiv r"
       by (simp add: algebra_simps pderiv_mult)
   thus "q*q dvd (q * pderiv p - p * pderiv q)" by simp
+  note 0 = pderiv_mult[of q "p div q"]
+  have 1: "q * (p div q) = p" 
+    by (metis assms(1) assms(2) dvd_def nonzero_mult_divide_cancel_left)
+  have f1: "pderiv (p div q) * (q * q) div (q * q) = pderiv (p div q)"
+    by simp
+  have f2: "pderiv p = q * pderiv (p div q) + p div q * pderiv q"
+    by (metis 0 1) 
+  have "p * pderiv q = pderiv q * (q * (p div q))"
+    by (metis 1 mult.commute) 
+  then have "p * pderiv q = q * (p div q * pderiv q)"
+    by fastforce
+  then have "q * pderiv p - p * pderiv q = q * (q * pderiv (p div q))"
+    using f2 by (metis add_diff_cancel_right' distrib_left)
+  then show "pderiv (p div q) = (q * pderiv p - p * pderiv q) div (q * q)"
+    using f1 by (metis mult.commute mult.left_commute)
 qed
 
 
@@ -84,7 +88,7 @@ proof-
         unfolding dvd_def by auto
     hence "d * (p div d) = d * (r * s)" "d * (q div d) = d * (r * t)" by simp_all
     hence A: "p = s * (r * d)" "q = t * (r * d)"
-        by (auto simp add: algebra_simps dvd_mult_div_cancel)
+        by (auto simp add: algebra_simps)
     have "r * d dvd p" "r * d dvd q" by (subst A, rule dvd_triv_right)+
     hence "d * r dvd d * 1" by (simp add: algebra_simps)
     hence "r dvd 1" using `d \<noteq> 0` by (subst (asm) dvd_mult_cancel_left, auto)
@@ -94,7 +98,7 @@ proof-
 qed
 
 lemma poly_div:
-  assumes "poly q x \<noteq> 0" and "q dvd p"
+  assumes "poly q x \<noteq> 0" and "(q::'a :: field poly) dvd p"
   shows "poly (p div q) x = poly p x / poly q x"
 proof-
   from assms have [simp]: "q \<noteq> 0" by force

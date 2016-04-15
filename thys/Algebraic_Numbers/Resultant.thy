@@ -1762,24 +1762,25 @@ proof -
   qed
 qed
   
-lemma resultant_computation_pseudo_divmod: assumes 
-    res: "pseudo_divmod f g = (q,r)"
-  and c: "c = coeff g (degree (g :: 'a :: idom_div poly))"
-  and e1: "e1 = pseudo_exponent f g * degree g"
-  and e2: "e2 = degree f - degree r"
-  and e3: "e3 = degree g * (degree f - degree r)"
-  and degg: "degree g > degree r" "degree f \<ge> degree g"
-  shows "resultant f g = exact_div ((- 1) ^ e3 * resultant r g) (c ^ (e1 - e2))"
+lemma resultant_computation_pseudo_divmod:
+  assumes res: "pseudo_divmod (f :: 'a :: idom_divide poly) g = (q,r)"
+    and c: "c = coeff g (degree g)"
+    and e1: "e1 = (Suc (degree f) - degree g) * degree g"
+    and e2: "e2 = degree f - degree r"
+    and e3: "e3 = degree g * (degree f - degree r)"
+    and degg: "degree g > degree r" "degree f \<ge> degree g"
+  shows "resultant f g = ((- 1) ^ e3 * resultant r g) div c ^ (e1 - e2)"
 proof -
   from degg have g: "g \<noteq> 0" by auto
   let ?c = "coeff g (degree g)"
   let ?m = "(-1)^e3"
-  let ?e = "pseudo_exponent f g"
+  let ?e = "(Suc (degree f) - degree g)"
   let ?e1 = "?e * degree g"
   let ?e2 = "if q = 0 then 0 else degree g + degree q - degree r"
   from g have "?c \<noteq> 0" by auto
   hence ce: "?c ^ ?e \<noteq> 0" and c0: "\<And> m. c ^ m \<noteq> 0" by (auto simp: c)
-  from pseudo_divmod[OF g res] have id: "smult (?c ^ ?e) f = g * q + r" and rg: "r = 0 \<or> degree r < degree g" by auto
+  from pseudo_divmod[OF g res]
+  have id: "smult (?c ^ ?e) f = g * q + r" and rg: "r = 0 \<or> degree r < degree g" by auto
   have deg_f: "degree f = degree (g * q + r)" 
     using arg_cong[OF id, of degree] unfolding degree_smult_eq using ce by (simp split: if_splits)
   from arg_cong[OF id, of "\<lambda> x. resultant x g", unfolded resultant_smult_left[OF ce]]
@@ -1800,11 +1801,13 @@ proof -
   qed auto
   hence e2': "e2 = (if q = 0 then 0 else degree g + degree q - degree r)"
     unfolding e2 deg_f by auto
-  from degg have e21: "e2 \<le> e1" using deg' e1 e2 deg_f deg unfolding pseudo_exponent_def by (cases "degree g", auto)
+  from degg have e21: "e2 \<le> e1" using deg' e1 e2 deg_f deg
+    
+    by (cases "q = 0", simp) (cases "degree g"; simp) 
   hence e1: "c ^ e1 = c ^ (e2 + (e1 - e2))" by simp
-  from e21 arg_cong[OF id, of "\<lambda> x. exact_div (exact_div x (c ^ e2)) (c ^ (e1 - e2))", 
-    unfolded this power_add mult.assoc exact_div_left[OF c0]]
-  show ?thesis by simp
+  from e21 arg_cong[OF id, of "\<lambda> x. (x div (c ^ e2)) div (c ^ (e1 - e2))", 
+    unfolded this power_add mult.assoc nonzero_mult_divide_cancel_left[OF c0]]
+  show ?thesis by auto
 qed
   
 text \<open>For the implementation function, we require @{class semiring_gcd} for computing GCDs
@@ -1813,25 +1816,40 @@ text \<open>For the implementation function, we require @{class semiring_gcd} fo
   future. Note that even the current proof does not require optimality of the GCD, any divisor
   would do.\<close>
 
-definition exact_div_poly :: "'a :: idom_div poly \<Rightarrow> 'a \<Rightarrow> 'a poly" where
-  "exact_div_poly p a = (map_poly (\<lambda> c. exact_div c a) p)"  
+definition divide_poly :: "'a :: idom_divide poly \<Rightarrow> 'a \<Rightarrow> 'a poly" where
+  "divide_poly p a = (map_poly (\<lambda> c. c div a) p)"  
+
+(* TODO: move? *)
+lemma dvd_imp_mult_div_cancel_left[simp]:
+  assumes "(a :: 'a :: semidom_divide) dvd b"
+  shows "a * (b div a) = b"
+proof(cases "b = 0")
+  case True then show ?thesis by auto
+next
+  case False
+    with dvdE[OF assms] obtain c where *: "b = a * c" by auto
+    also with False have "a \<noteq> 0" by auto
+    then have "a * c div a = c" by auto
+    also note *[symmetric]
+    finally show ?thesis.
+qed
   
 lemma smult_exact_div_poly: assumes "\<And> c. c \<in> set (coeffs p) \<Longrightarrow> a dvd c"
-  shows "smult a (exact_div_poly p a) = p" 
-  unfolding smult_map_poly exact_div_poly_def 
-  by (subst map_poly_compose, force+, subst map_poly_eqI, insert assms, auto)
+  shows "smult a (divide_poly p a) = p" 
+  unfolding smult_map_poly divide_poly_def
+by (subst map_poly_compose,simp,simp,rule map_poly_eqI, insert assms, auto)
 
-typedef (overloaded) 'a common_divisor = "{f. \<forall> x y :: 'a :: idom_div. f x y dvd x \<and> f x y dvd y}"
+typedef (overloaded) 'a common_divisor = "{f. \<forall> x y :: 'a :: idom_divide. f x y dvd x \<and> f x y dvd y}"
   by (rule exI[of _ "\<lambda> _ _. 1"], auto)
   
 setup_lifting type_definition_common_divisor
 
-lift_definition common_divisor :: "'a common_divisor \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a :: idom_div" is "\<lambda> x. x" .
+lift_definition common_divisor :: "'a common_divisor \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a :: idom_divide" is "\<lambda> x. x" .
 
 lemma common_divisor: "common_divisor f x y dvd x" "common_divisor f x y dvd y"
   by (transfer, auto)+
   
-definition common_divisor_list :: "'a common_divisor \<Rightarrow> 'a list \<Rightarrow> 'a :: idom_div" where
+definition common_divisor_list :: "'a common_divisor \<Rightarrow> 'a list \<Rightarrow> 'a :: idom_divide" where
   "common_divisor_list f xs = (let cd = common_divisor f in foldr cd xs 0)"
 
 lemma common_divisor_list_simps: "common_divisor_list cd [] = 0" 
@@ -1863,14 +1881,14 @@ lemma common_divisor_list_poly_non0: assumes "p \<noteq> 0"
 
   
 context fixes
-  cdf :: "'a :: idom_div common_divisor"
+  cdf :: "'a :: idom_divide common_divisor"
 begin
 function resultant_impl_main :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a" where
   "resultant_impl_main f g df dg = (
     if dg = 0 then coeff g 0 ^ df 
     else let 
        cd = common_divisor_list cdf (coeffs g);
-       pg = exact_div_poly g cd;
+       pg = divide_poly g cd;
        r = pseudo_mod f pg;
        dr = degree r;
        c = coeff pg dg;
@@ -1879,7 +1897,7 @@ function resultant_impl_main :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> nat
        rgr = resultant_impl_main pg r dg dr;
        rrg = (if even dg \<or> (even dr = even e2) then rgr else - rgr)
      in  
-       cd ^ df * (exact_div rrg (c ^ (e1 - e2))))" 
+       cd ^ df * (rrg div (c ^ (e1 - e2))))" 
   by pat_completeness auto
 
 termination 
@@ -1887,7 +1905,7 @@ proof (relation "measures [(\<lambda> (f,g,df,dg). if dg = degree g then 0 else 
   (\<lambda> (f,g,df,dg). degree g)]", goal_cases)
   case (2 f g df dg cg pg r dr)
   let ?cd = "common_divisor_list cdf (coeffs g)"
-  let ?pg = "exact_div_poly g  ?cd"
+  let ?pg = "divide_poly g  ?cd"
   from 2 have pd: "pseudo_mod f ?pg = r" and dg: "dg \<noteq> 0" by auto
   from 2 have dr: "dr = degree r" by auto
   show ?case
@@ -1901,7 +1919,7 @@ proof (relation "measures [(\<lambda> (f,g,df,dg). if dg = degree g then 0 else 
     have deg: "degree ?pg = degree g" using cg0 degree_smult_eq[of ?cd g]  
       by simp
     with g have pg: "?pg \<noteq> 0" by auto
-    from pseudo_mod[OF pg pd, unfolded deg] g
+    from pseudo_mod[OF pg, of f, unfolded deg pd] g
     show ?thesis by (auto simp: dr)
   qed (auto simp: dr)
 qed simp
@@ -1923,12 +1941,12 @@ proof (induct f g df dg rule: resultant_impl_main.induct)
   next
     case False
     obtain cg where cg: "cg = common_divisor_list cdf (coeffs g)" by blast
-    obtain pg where pg: "pg = exact_div_poly g cg" by blast
+    obtain pg where pg: "pg = divide_poly g cg" by blast
     obtain q r where div: "pseudo_divmod f pg = (q,r)" by force
     hence mod: "pseudo_mod f pg = r" unfolding pseudo_mod_def by simp
     let ?dr = "degree r"
     obtain c where c: "c = coeff pg dg" by blast
-    obtain e1 where e1: "e1 = pseudo_exponent f g * dg" by blast
+    obtain e1 where e1: "e1 = (Suc (degree f) - degree g) * dg" by blast
     obtain e2 where e2: "e2 = degree f - degree r" by blast
     obtain rgr where rgr: "rgr = resultant_impl_main pg r dg ?dr" by blast
     obtain rrg where rrg: "rrg = (if even ?dg \<or> even ?dr then rgr else - rgr)" by blast
@@ -1942,9 +1960,9 @@ proof (induct f g df dg rule: resultant_impl_main.induct)
     from False have dpg0: "degree pg \<noteq> 0" by simp
     with pseudo_divmod[OF g div] have dr: "degree r < degree pg" "degree r \<le> dg" unfolding dpg by auto
     note IH = 1(1)[OF False[folded dfg] cg pg mod[symmetric] refl c refl refl dpg refl dr(2)]
-    have e1': "e1 = pseudo_exponent f pg * dg" by (auto simp: e1 dpg pseudo_exponent_def)
-    have r: "resultant_impl_main f g df dg = cg ^ ?df * exact_div vrrg (c ^ (e1 - e2))" 
-      unfolding Let_def e1 e2 c rgr rrg mod[unfolded pg cg] vrrg split pseudo_exponent_def 
+    have e1': "e1 = (Suc (degree f) - dg) * dg" by (auto simp: e1 dpg )
+    have r: "resultant_impl_main f g df dg = cg ^ ?df * (vrrg div c ^ (e1 - e2))" 
+      unfolding Let_def e1 e2 c rgr rrg mod[unfolded pg cg] vrrg split  
         cg pg resultant_impl_main.simps[of f g] dfg
       using False by auto
     also have "vrrg = (if even dg \<or> even e2 then rrg else -rrg)" unfolding vrrg 
@@ -1952,7 +1970,7 @@ proof (induct f g df dg rule: resultant_impl_main.induct)
     also have "\<dots> = (-1)^(dg * e2) * rrg" by simp
     also have "\<dots> = (-1)^(dg * e2) * resultant r pg" unfolding rrg rgr IH
       by (subst resultant_swap[of r pg], simp)
-    also have "exact_div \<dots> (c ^ (e1 - e2)) = resultant f pg"
+    also have "\<dots> div (c ^ (e1 - e2)) = resultant f pg"
       by (subst resultant_computation_pseudo_divmod[OF div, folded dpg, OF c e1' e2  _ dr(1)[folded dpg] 
           1(4)[unfolded dfg(1)]], auto simp: e2)
     also have "cg ^ ?df * \<dots> = resultant f g" unfolding id resultant_smult_right[OF cg0] by simp
@@ -1974,7 +1992,7 @@ end
 lift_definition common_divisor_int_poly :: "int poly common_divisor" is gcd_int_poly
   using gcd_int_poly[OF refl] by auto       
   
-lift_definition gcd_divisor :: "'a :: {idom_div,semiring_gcd} common_divisor" is gcd
+lift_definition gcd_divisor :: "'a :: {idom_divide,semiring_gcd} common_divisor" is gcd
   by auto
 
 definition resultant_int_poly :: "int poly poly \<Rightarrow> int poly poly \<Rightarrow> int poly" where
