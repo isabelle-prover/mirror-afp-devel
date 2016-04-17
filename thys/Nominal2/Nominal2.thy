@@ -46,7 +46,7 @@ val simp_attr = Attrib.internal (K Simplifier.simp_add)
 val induct_attr = Attrib.internal (K Induct.induct_simp_add)
 *}
 
-section{* Interface for nominal_datatype *}
+section{* Interface for @{text nominal_datatype} *}
 
 ML {*
 fun get_cnstrs dts =
@@ -64,7 +64,7 @@ fun get_bn_fun_strs bn_funs =
 *}
 
 
-text {* Infrastructure for adding "_raw" to types and terms *}
+text {* Infrastructure for adding @{text "_raw"} to types and terms *}
 
 ML {*
 fun add_raw s = s ^ "_raw"
