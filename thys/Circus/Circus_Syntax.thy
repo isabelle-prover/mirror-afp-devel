@@ -187,7 +187,7 @@ fun define_chanset binding channel_constrs (name, chans) thy  =
       thy
       |> Named_Target.theory_init
       |> Specification.definition
-          (SOME (Binding.qualified true base_name binding, NONE, NoSyn), (Attrib.empty_binding, chanset_eq))
+          (SOME (Binding.qualify_name true binding base_name, NONE, NoSyn), (Attrib.empty_binding, chanset_eq))
       |> snd |> Local_Theory.exit_global
   end;
 
@@ -219,7 +219,7 @@ fun define_nameset binding (rec_binding, alphabet) (ns_binding, names) thy  =
       thy
       |> Named_Target.theory_init
       |> Specification.definition
-          (SOME (Binding.qualified true base_name binding, NONE, NoSyn), (Attrib.empty_binding, nameset_eq))
+          (SOME (Binding.qualify_name true binding base_name, NONE, NoSyn), (Attrib.empty_binding, nameset_eq))
       |> snd |> Local_Theory.exit_global
   end;
 
@@ -242,7 +242,7 @@ fun define_schema binding (ex_binding, expr) (alph_bind, alpha, state) thy =
     thy
     |> Named_Target.theory_init
     |> Specification.definition
-      (SOME (Binding.qualified true base_name binding, NONE, NoSyn), (Attrib.empty_binding, sc_eq))
+      (SOME (Binding.qualify_name true binding base_name, NONE, NoSyn), (Attrib.empty_binding, sc_eq))
     |> snd
     |> Local_Theory.exit_global
   end;
@@ -263,7 +263,7 @@ fun define_action binding (ex_binding, expr) alph_bind chan_bind thy =
     thy
     |> Named_Target.theory_init
     |> Specification.definition
-      (SOME (Binding.qualified true base_name binding, NONE, NoSyn), (Attrib.empty_binding, action_eq))
+      (SOME (Binding.qualify_name true binding base_name, NONE, NoSyn), (Attrib.empty_binding, action_eq))
     |> snd
     |> Local_Theory.exit_global
   end;

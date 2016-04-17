@@ -489,7 +489,7 @@ let
   (* generating the prefix for the theorem names *)
   val thms_name = 
     the_default (Binding.name (space_implode "_" qty_names)) opt_thms_name 
-  fun thms_suffix s = Binding.qualified true s thms_name 
+  fun thms_suffix s = Binding.qualify_name true thms_name s
   val case_names_attr = Attrib.internal (K (Rule_Cases.case_names cnstr_names))
 
   val infos = mk_infos qty_full_names qeq_iffs' qdistincts qstrong_exhaust_thms qstrong_induct_thms
