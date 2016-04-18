@@ -40,7 +40,7 @@ next
     by (simp add: monoid_closure.base)
   then have "s \<in> (\<lambda>k. nat \<bar>k\<bar>) ` monoid_closure S"
     by (auto intro!: image_eqI [where x = "int s"])
-  then show "(Gcd m\<in>monoid_closure S. nat \<bar>m\<bar>) dvd s"
+  then show "(GCD m\<in>monoid_closure S. nat \<bar>m\<bar>) dvd s"
     by (rule Gcd_dvd)
 qed
 
