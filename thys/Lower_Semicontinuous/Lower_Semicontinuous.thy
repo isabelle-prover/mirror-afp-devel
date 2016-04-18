@@ -18,7 +18,7 @@ proof (cases a)
     using rel_interior_real_semiline[of r]
     by (simp add: atLeast_def greaterThan_def)
 next case PInf thus ?thesis using rel_interior_empty by auto
-next case MInf thus ?thesis using rel_interior_univ2 by auto
+next case MInf thus ?thesis using rel_interior_UNIV by auto
 qed
 
 lemma closed_ereal_semiline:
@@ -1487,7 +1487,7 @@ lemma convex_with_UNIV_domain:
   assumes "convex_on UNIV f"
   assumes "domain f = UNIV"
   shows "(ALL x. f x > -\<infinity>) | (ALL x. f x = -\<infinity>)"
-by (metis assms convex_improper ereal_MInfty_lessI proper_iff rel_interior_univ2 UNIV_I)
+by (metis assms convex_improper ereal_MInfty_lessI proper_iff rel_interior_UNIV UNIV_I)
 
 
 lemma rel_interior_Epigraph:
