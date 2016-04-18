@@ -121,8 +121,7 @@ proof(simp add:wp_eval)
       show ?thesis by(simp add:Sup_trans_def Sup_exp_def empty)
     next
       assume ne: "?M \<noteq> {}"
-      hence "\<exists>x. x \<in> ?M" by(rule nonempty_witness)
-      then obtain x where xin: "x \<in> ?M" by(rule exE)
+      then obtain x where xin: "x \<in> ?M" by auto
       hence ffx: "feasible (fst x)" by(simp)
       with nQ bQ have "\<lambda>s. 0 \<tturnstile> fst x Q" by(auto)
       also from xin have "fst x Q \<tturnstile> Sup_trans (fst ` ?M) Q"
@@ -144,7 +143,7 @@ proof(simp add:wp_eval)
        and ne: "?M \<noteq> {}"
     show "?thesis P"
     proof(intro unitaryI2 nnegI2 bounded_byI2)
-      from nonempty_witness[OF ne] obtain x where xin: "x \<in> ?M" by(iprover)
+      from ne obtain x where xin: "x \<in> ?M" by auto
       hence sxin: "snd x \<in> snd ` ?M" by(simp)
       hence "le_utrans (Inf_utrans (snd ` ?M)) (snd x)"
         by(intro Inf_utrans_lower, auto)

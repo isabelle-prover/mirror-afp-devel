@@ -762,10 +762,8 @@ lemma wd_DC:
 lemma wd_SetDC:
   "\<lbrakk> \<And>x s. x \<in> S s \<Longrightarrow> well_def (a x); \<And>s. S s \<noteq> {};
      \<And>s. finite (S s) \<rbrakk> \<Longrightarrow> well_def (SetDC a S)"
-  by(iprover intro:well_defI healthy_wp_SetDC nearly_healthy_wlp_SetDC
-                   wp_under_wlp_SetDC sdp_SetDC sublinear_wp_SetDC cts_wp_SetDC
-                   nonempty_witness
-             dest:wd_dests)
+by (simp add: cts_wp_SetDC ex_in_conv healthy_intros(17) healthy_intros(18) sdp_intros(8) sublinear_intros(8) well_def_def wp_under_wlp_intros(8))
+
 
 lemma wd_SetPC:
   "\<lbrakk> \<And>x s. x \<in> (supp (p s)) \<Longrightarrow> well_def (a x); \<And>s. unitary (p s); \<And>s. finite (supp (p s));

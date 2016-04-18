@@ -105,7 +105,7 @@ next
   also have "... =  Max (insert (IArray.length (f x)) {IArray.length (f a) |a. a \<in> F})" find_theorems "max ?A (Max ?B)" 
   proof(rule Max_insert[symmetric])
     show "finite {IArray.length (f x) |x. x \<in> F}" using insert.hyps(1) by auto
-    show "{IArray.length (f x) |x. x \<in> F} \<noteq> {}" by (metis (lifting, mono_tags) False empty_Collect_eq nonempty_witness)
+    show "{IArray.length (f x) |x. x \<in> F} \<noteq> {}" by (metis (lifting, mono_tags) False empty_Collect_eq ex_in_conv)
   qed
   also have "...=  Max {IArray.length (f a) |a. a \<in> insert x F}" unfolding set_rw ..
   finally show ?thesis .
