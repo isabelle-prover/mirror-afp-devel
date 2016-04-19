@@ -81,7 +81,7 @@ fun divmod_poly_one_main_f :: "'a poly_f \<Rightarrow> 'a poly_f \<Rightarrow> '
 
 (* div mod where divisor has leading coefficient 1 *)
 definition divmod_poly_one_f :: "'a poly_f \<Rightarrow> 'a poly_f \<Rightarrow> 'a poly_f \<times> 'a poly_f" where
-  "divmod_poly_one_f p q = (let dp = degree_poly_f p; dq = degree_poly_f q;
+  "divmod_poly_one_f p q = (let dp = length p; dq = length q;
      (qu,re) = divmod_poly_one_main_f zero_poly_f (rev p) (rev q) (1 + dp - dq)
      in (qu,rev (dropWhile (op = 0f) re)))"
 
