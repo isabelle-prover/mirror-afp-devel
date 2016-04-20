@@ -167,12 +167,11 @@ definition yun_factorization_f :: "'a poly_f \<Rightarrow> ('a \<times> ('a poly
       q = smult_poly_f F (inverse_f F a) pp
       in (a, filter (\<lambda> (p,i). p \<noteq> one_poly_f F) (yun_factorization_main_f F 1 q [])))"
 
-fun list_to_poly_f :: "'a list \<Rightarrow> 'a poly_f" where
-  "list_to_poly_f (x # xs) = cCons_f F x (list_to_poly_f xs)"
-| "list_to_poly_f [] = []"
+fun poly_of_list_f :: "'a list \<Rightarrow> 'a poly_f" where
+  "poly_of_list_f xs = strip_while (HOL.eq 0f) xs"
 
-definition int_list_to_poly_f :: "int list \<Rightarrow> 'a poly_f" where
-  "int_list_to_poly_f xs = list_to_poly_f (map (of_int_f F) xs)"
+definition int_poly_of_list_f :: "int list \<Rightarrow> 'a poly_f" where
+  "int_poly_of_list_f xs = poly_of_list_f (map (of_int_f F) xs)"
 
 definition show_poly_f :: "'a poly_f \<Rightarrow> string" where
   "show_poly_f p = show_poly_main 0 (map (to_int_f F) p)"
@@ -193,7 +192,7 @@ fun irreducible_GFp_poly_main :: "GFp poly_f \<Rightarrow> GFp poly_f \<Rightarr
 
 definition irreducible_GFp_poly :: bool where
   "irreducible_GFp_poly = (let n = degree_poly_f f;
-    p = characteristic F; z = int_list_to_poly_f F [0,1] 
+    p = characteristic F; z = int_poly_of_list_f F [0,1] 
     in irreducible_GFp_poly_main z z (nat p) (n div 2))"
 end
 

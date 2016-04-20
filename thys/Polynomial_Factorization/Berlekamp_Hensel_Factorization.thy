@@ -53,7 +53,7 @@ definition berlekamp_resulting_mat :: "GFp poly_f \<Rightarrow> GFp mat" where
     in gauss_jordan_f F (mat_transpose QI))"
 
 definition berlekamp_basis :: "GFp poly_f \<Rightarrow> GFp poly_f list" where
-  "berlekamp_basis u = (map (list_to_poly_f F o list_of_vec) (find_base_vectors_f F (berlekamp_resulting_mat u)))"
+  "berlekamp_basis u = (map (poly_of_list_f F o list_of_vec) (find_base_vectors_f F (berlekamp_resulting_mat u)))"
 
 primrec berlekamp_factorization_main :: "GFp poly_f list \<Rightarrow> GFp poly_f list \<Rightarrow> nat \<Rightarrow> GFp poly_f list" where
   "berlekamp_factorization_main divs (v # vs) n = (
@@ -106,7 +106,7 @@ private partial_function (tailrec) prime_for_finite_factorization_main ::
   [code]: "prime_for_finite_factorization_main ps np f = (case ps of [] \<Rightarrow> 
     let (np',ps') = next_primes np
       in prime_for_finite_factorization_main ps' np' f
-    | (p # ps) \<Rightarrow> let F = GFp p; g = int_list_to_poly_f F f
+    | (p # ps) \<Rightarrow> let F = GFp p; g = int_poly_of_list_f F f
       in if gcd_poly_f F g (pderiv_poly_f F g) = one_poly_f F \<and> (* square_free modulo p *)
         gcd (leading_coeff_non_zero f) (int p) = 1  (* leading coefficient will have an inverse modulo p^m *)
       then int p else prime_for_finite_factorization_main ps np f)"
@@ -158,7 +158,7 @@ definition pre_hensel_factorization :: "int poly_f \<Rightarrow> GFp poly_f list
      M = mignotte_bounds g (dg div 2);
      a = leading_coeff_non_zero g;
      n = hensel_prime_power (nat p) (nat (2 * a * M));
-     f = int_list_to_poly_f F g;
+     f = int_poly_of_list_f F g;
      (_,fs) = berlekamp_factorization F f
      in (fs,(p,n)))"
 
@@ -237,7 +237,7 @@ partial_function (tailrec) linear_hensel_lifting_main :: "int \<Rightarrow> nat
        U = div_int_poly q (mm C (tt D H))
      in if U = zero_poly_f then (D,H) else let (* opt. iii *)
        (* H3 *)
-       U = int_list_to_poly_f Fp U;
+       U = int_poly_of_list_f Fp U;
        (A,B) = hensel_dupe_one U;
        (* H4 *)
        D = pp D (sm q (I B));
@@ -250,7 +250,7 @@ end
 definition linear_hensel_lifting_binary :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
   "linear_hensel_lifting_binary Fp k C D1 H1 = (let
     p = characteristic Fp;
-    G = int_list_to_poly_f Fp;
+    G = int_poly_of_list_f Fp;
     D1' = G D1;
     H1' = G H1;
     (_,S,T) = extended_gcd_poly_f Fp D1' H1';
@@ -291,7 +291,7 @@ partial_function (tailrec) quadratic_hensel_lifting_main :: "int \<Rightarrow> n
        pp = plus_poly_f Z;
        tt = times_poly_f Z;
        sm = smult_poly_f Z;
-       I' = int_list_to_poly_f Fq;
+       I' = int_poly_of_list_f Fq;
        I = map (to_int_f Fq);
        (* Z2 *)
        U = div_int_poly q (mm C (tt D H))
@@ -301,7 +301,7 @@ partial_function (tailrec) quadratic_hensel_lifting_main :: "int \<Rightarrow> n
        ID = I' D;
        IS = I' S;
        IT = I' T;
-       U = int_list_to_poly_f Fq U;
+       U = int_poly_of_list_f Fq U;
        (A,B) = hensel_dupe Fq q U ID IH IS IT;
        (* Z4 *)
        D' = pp D (sm q (I B));
@@ -309,7 +309,7 @@ partial_function (tailrec) quadratic_hensel_lifting_main :: "int \<Rightarrow> n
        (* Z5 *)
        U' = div_int_poly q (mm (pp (tt S D') (tt T H')) (one_poly_f Z));
        (* Z6 *)
-       U' = int_list_to_poly_f Fq U';
+       U' = int_poly_of_list_f Fq U';
        (A',B') = hensel_dupe Fq q U' ID IH IS IT;
        (* Z7 *)
        S = mm S (sm q (I A'));
@@ -324,7 +324,7 @@ end
 definition quadratic_hensel_lifting_binary :: "GFp ffield \<Rightarrow> nat \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<Rightarrow> int poly_f \<times> int poly_f" where
   "quadratic_hensel_lifting_binary Fp k C D1 H1 = (let
     p = characteristic Fp;
-    G = int_list_to_poly_f Fp;
+    G = int_poly_of_list_f Fp;
     I = map (to_int_f Fp);
     D1' = G D1;
     H1' = G H1;

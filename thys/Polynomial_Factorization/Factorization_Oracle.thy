@@ -20,10 +20,6 @@ imports
   "../Show/Show_Poly"
 begin
 
-fun list_to_poly :: "'a::comm_monoid_add list \<Rightarrow> 'a poly" where
-  "list_to_poly (a # as) = pCons a (list_to_poly as)"
-| "list_to_poly [] = 0"
-
 text \<open>input to factorization-oracle: content-free and square-free, 
   non-zero integer polynomial f,
   output: fully factored polynomial over the integers.\<close>
@@ -37,7 +33,7 @@ definition factorization_oracle_rat_poly :: "rat poly \<Rightarrow> rat \<times>
      ber_hen = (\<lambda> (q,i). let (b,f) = rat_to_normalized_int_poly q;
        fs = factorization_oracle_int_poly (coeffs f);
        gs = map (map of_int) fs;
-       hsi = map (\<lambda> h. (list_to_poly h,Suc i)) gs
+       hsi = map (\<lambda> h. (poly_of_list h,Suc i)) gs
        in (b^Suc i, hsi));
      pre_result = map ber_hen psi;
      factors = concat (map snd pre_result);
