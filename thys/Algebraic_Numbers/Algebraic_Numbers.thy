@@ -1606,7 +1606,7 @@ qed
 
 
 
-subsection {* poly_add for general *}
+subsection {* @{const poly_add} for general *}
 
 lemma poly_add_nonzero:
   fixes p q :: "'a :: field_char_0 poly"
