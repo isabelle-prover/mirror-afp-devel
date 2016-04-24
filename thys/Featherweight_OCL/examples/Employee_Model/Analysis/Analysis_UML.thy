@@ -82,7 +82,7 @@ done in our ``design model''
 (see \autoref{ex:employee-design:uml}).
 \endisatagafp
 \isatagannexa
-(see \url{http://afp.sourceforge.net/entries/Featherweight_OCL.shtml}).
+(see \url{http://isa-afp.org/entries/Featherweight_OCL.shtml}).
 \endisatagannexa
 To be precise, this theory contains the formalization of the data-part
 covered by the UML class model (see \autoref{fig:person-ana}):*}

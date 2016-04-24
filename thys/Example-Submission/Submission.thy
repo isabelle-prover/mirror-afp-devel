@@ -22,7 +22,7 @@ text {*
   Submission should be via the web page @{url "https://ci.isabelle.systems/afp-submission/"}.
 
   The tar file submission of the example you are reading is at
-  @{url "http://afp.sf.net/release/afp-Example-Submission-current.tar.gz"}.
+  @{url "http://isa-afp.org/release/afp-Example-Submission-current.tar.gz"}.
 *}
 
 section "Proof styles"
