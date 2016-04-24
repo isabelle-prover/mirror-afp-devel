@@ -1,9 +1,18 @@
 chapter AFP
 
 session "Nominal2" (AFP) = HOL +
-  options [document = false]
-  theories
+  options [timeout = 600]
+  theories [document = false]
     "~~/src/HOL/Library/Old_Datatype"
+    "~~/src/HOL/Library/Cardinality"
+    "~~/src/HOL/Library/FinFun"
+    "~~/src/HOL/Library/Infinite_Set"
+    "~~/src/HOL/Library/Phantom_Type"
+	(* cannot depend on HOL-Library image because of name clash with Library/FSet: *)
+    "~~/src/HOL/Quotient_Examples/FSet"
+  theories
     "Nominal2"
     "Atoms"
     "Eqvt"
+  document_files
+    "root.tex"

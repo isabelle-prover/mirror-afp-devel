@@ -3572,3 +3572,22 @@ abstract =
   a procedure for computing such implicates and establish its soundness
   and completeness.
 
+[Nominal2]
+title = Nominal 2
+author = Christian Urban <http://www.inf.kcl.ac.uk/staff/urbanc/>, Stefan Berghofer <http://www.in.tum.de/~berghofe>, Cezary Kaliszyk <>
+date = 2013-02-21
+topic = Tools
+abstract =
+  <p>Dealing with binders, renaming of bound variables, capture-avoiding
+  substitution, etc., is very often a major problem in formal
+  proofs, especially in proofs by structural and rule
+  induction. Nominal Isabelle is designed to make such proofs easy to
+  formalise: it provides an infrastructure for declaring nominal
+  datatypes (that is alpha-equivalence classes) and for defining
+  functions over them by structural recursion. It also provides
+  induction principles that have Barendregt’s variable convention
+  already built in.
+  </p><p>
+  This entry can be used as a more advanced replacement for
+  HOL/Nominal in the Isabelle distribution.
+  </p>

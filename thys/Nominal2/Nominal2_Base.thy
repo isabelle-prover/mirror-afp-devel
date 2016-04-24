@@ -18,7 +18,7 @@ declare [[typedef_overloaded]]
 
 section {* Atoms and Sorts *}
 
-text {* A simple implementation for atom_sorts is strings. *}
+text {* A simple implementation for @{text atom_sorts} is strings. *}
 (* types atom_sort = string *)
 
 text {* To deal with Church-like binding we use trees of  
@@ -762,7 +762,7 @@ instance int :: pure
 proof qed (rule permute_int_def)
 
 
-section {* Infrastructure for Equivariance and Perm_simp *}
+section {* Infrastructure for Equivariance and @{text Perm_simp} *}
 
 subsection {* Basic functions about permutations *}
 
@@ -792,7 +792,7 @@ lemmas [eqvt] =
   (* multisets *)
   permute_multiset
 
-subsection {* perm_simp infrastructure *}
+subsection {* @{text perm_simp} infrastructure *}
 
 definition
   "unpermute p = permute (- p)"
@@ -812,7 +812,7 @@ lemma eqvt_bound:
   shows "p \<bullet> unpermute p x \<equiv> x"
   unfolding unpermute_def by simp
 
-text {* provides perm_simp methods *}
+text {* provides @{text perm_simp} methods *}
 
 ML_file "nominal_permeq.ML"
 
@@ -1899,7 +1899,7 @@ simproc_setup fresh_fun_simproc ("a \<sharp> (f::'a::pt \<Rightarrow>'b::pt)") =
   end
 *}
 
-subsection {* helper functions for nominal_functions *}
+subsection {* helper functions for @{text nominal_functions} *}
 
 lemma THE_defaultI2:
   assumes "\<exists>!x. P x" "\<And>x. P x \<Longrightarrow> Q x"
@@ -3106,7 +3106,7 @@ lemma flip_at_base_simps [simp]:
   unfolding atom_eqvt [symmetric]
   by simp_all
 
-text {* the following two lemmas do not hold for at_base, 
+text {* the following two lemmas do not hold for @{text at_base}, 
   only for single sort atoms from at *}
 
 lemma flip_triple:
