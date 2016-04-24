@@ -66,14 +66,14 @@ We declare several types from the Isabelle library as applicative functors and i
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2015,
-  note    = {\url{http://afp.sf.net/entries/Applicative_Lifting.shtml},
+  note    = {\url{http://isa-afp.org/entries/Applicative_Lifting.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

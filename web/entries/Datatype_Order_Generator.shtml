@@ -69,14 +69,14 @@ command.
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Datatype_Order_Generator.shtml},
+  note    = {\url{http://isa-afp.org/entries/Datatype_Order_Generator.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
     <tr><td class="datahead">Depends on:</td>

@@ -13,7 +13,7 @@ VERSION=2016
 AFP_VERSION=afp-$VERSION
 ISABELLE_VERSION=Isabelle$VERSION
 
-DEST=afp@web.sourceforge.net:htdocs/
+DEST=afpweb@isa-afp.org:
 FILES=frs.sourceforge.net:/home/frs/project/afp/afp-$ISABELLE_VERSION/
 SRC=ssh://hg@bitbucket.org/isa-afp/$AFP_VERSION
 
@@ -23,7 +23,6 @@ else
     LN=$LOGNAME
 fi
 
-DEST=$LN,$DEST
 FILES=$LN@$FILES
 
 EXPORT_PRE=afp
@@ -188,10 +187,10 @@ if [ "$RESPONSE" == "y" ]; then
     fi
     echo
     echo "Publishing to [$DEST]"
-    chmod -R g=u web
+    chmod -R g-w web
     chmod -R a+r web
-    find web -type d | xargs chmod g+s
     find web -type d | xargs chmod a+x
+    chmod 755 web
     rsync -rplvz --links --rsh=ssh web/ $DEST && echo "Finished."
 else
     echo

@@ -53,14 +53,14 @@ This article presents a development of Category Theory in Isabelle/HOL. A Catego
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2010,
-  note    = {\url{http://afp.sf.net/entries/Category2.shtml},
+  note    = {\url{http://isa-afp.org/entries/Category2.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

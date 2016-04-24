@@ -59,14 +59,14 @@ structures from the Isabelle Collection Framework.
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Dijkstra_Shortest_Path.shtml},
+  note    = {\url{http://isa-afp.org/entries/Dijkstra_Shortest_Path.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
     <tr><td class="datahead">Depends on:</td>

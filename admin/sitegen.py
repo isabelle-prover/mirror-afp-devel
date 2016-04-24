@@ -5,7 +5,7 @@
 ## Dependencies: Python 2.7 or Python 3.5
 ## 
 ## This script reads a metadata file and generates the topics.shtml,
-## index.shtml and the entry pages on afp.sf.net.
+## index.shtml and the entry pages on isa-afp.org.
 ## 
 ## For meta data documentation see ../metadata/README
 ## For adding new entries see ../doc/editors/new-entry-checkin.html
@@ -209,7 +209,7 @@ bibtex_wrapper = u"""@article{{{0}-AFP,
   journal = {{Archive of Formal Proofs}},
   month   = {3},
   year    = {4},
-  note    = {{\\url{{http://afp.sf.net/entries/{0}.shtml}},
+  note    = {{\\url{{http://isa-afp.org/entries/{0}.shtml}},
             Formal proof development}},
   ISSN    = {{2150-914x}},
 }}"""
@@ -250,8 +250,8 @@ attribute_schema = {
 #   'url' contains the url of the license text
 
 licenses = {
-	'LGPL': ("GNU Lesser General Public License (LGPL)", "http://afp.sourceforge.net/LICENSE.LGPL"),
-	'BSD': ("BSD License", "http://afp.sourceforge.net/LICENSE"),
+	'LGPL': ("GNU Lesser General Public License (LGPL)", "http://isa-afp.org/LICENSE.LGPL"),
+	'BSD': ("BSD License", "http://isa-afp.org/LICENSE"),
 }
 
 ### template files

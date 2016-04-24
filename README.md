@@ -12,4 +12,4 @@ this repository by sending a request, including your bitbucket login, to
 
 Guidelines for maintaining entries can be found in the `doc/` directory.
 
-[1]: http://afp.sf.net
+[1]: http://isa-afp.org

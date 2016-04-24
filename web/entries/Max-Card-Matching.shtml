@@ -67,14 +67,14 @@ then <i>M</i> is a maximum cardinality matching.
   journal = {Archive of Formal Proofs},
   month   = jul,
   year    = 2011,
-  note    = {\url{http://afp.sf.net/entries/Max-Card-Matching.shtml},
+  note    = {\url{http://isa-afp.org/entries/Max-Card-Matching.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

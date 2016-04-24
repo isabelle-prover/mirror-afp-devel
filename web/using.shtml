@@ -35,19 +35,21 @@ Once you have downloaded the AFP, you can include its articles and theories in
 your own developments. If you would like to make your work available to others
 <i>without</i> having to include the AFP articles you depend on, here is how to do it.
 </p>
-
-<p>Let <code>PATH</code> be the absolute path where you have put the unpacked
-AFP directory that you downloaded. Add <code>PATH</code> on a separate line to
-the file <code>~/.isabelle/IsabelleXYZ/etc/components</code>, where XYZ is the
-Isabelle release you are working with, for example XYZ=2013. (In case you are
-working with the development version of Isabelle, the file is simply
-<code>~/.isabelle/etc/components</code>). You may need to create this file.</p>
+<p>
+If you are using Isabelle 2016, and have downloaded your AFP directory to
+<code>/home/myself/afp</code>, you should run the following commands
+<a href="#1">[1]</a> <a href="#2">[2]</a>:</p>
+<p>
+<pre class="code">
+    mkdir -p ~/.isabelle/Isabelle2016/etc/
+    echo "/home/myself/afp" >> ~/.isabelle/Isabelle2016/etc/components
+</pre>
 
 <p>
 You can now refer to article <code>ABC</code> from the AFP in some theory of
 yours via</p>
 
-<pre>
+<pre class="code">
     imports "$AFP/ABC/Some_ABC_Theory"
 </pre>
 
@@ -55,21 +57,23 @@ yours via</p>
 theories. Users of your distribution also need to install the AFP in the above
 manner.</p>
 
-<p>
-Example: you are using Isabelle2013, and have downloaded your afp directory to
-<code>/home/myself/afp</code>. You would add the line
-<code>/home/myself/afp</code> to the file
-<code>~/.isabelle/Isabelle2013/etc/components</code>. Note that shell expansion,
-e.g. <code>~/afp</code>, will not work in this file.
-</p>
 
-Note that referring to another AFP entry from <strong>inside an AFP
-entry</strong> is much easier: just use 
-<pre>
+Note that referring to <strong>another AFP entry from inside an AFP
+entry</strong> is much easier: 
+<pre class="code">
     imports "../ABC/Some_ABC_Theory"
-</pre> 
-in your theory. This is the preferred
-method for working inside the AFP.
+</pre>
+This is the preferred method for working inside the AFP,
+because it interacts correctly with multiple AFP installations side by side.
+
+<p>&nbsp;</p>
+
+<p>
+<a name="1">[1]:</a> Tested for Linux and Mac installations &dash; it should be the same under cygwin on Windows.
+</p>
+<p>
+<a name="2">[2]:</a> This is one method for installing the AFP as a component. Any other method for adding Isabelle components will work as well.</p>
+
 </td></tr> </tbody> </table>
 
 </div>

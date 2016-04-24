@@ -54,14 +54,14 @@ The abstract proof can be instantiated for a wide range of Gentzen and tableau s
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2014,
-  note    = {\url{http://afp.sf.net/entries/Abstract_Completeness.shtml},
+  note    = {\url{http://isa-afp.org/entries/Abstract_Completeness.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
     <tr><td class="datahead">Depends on:</td>

@@ -77,7 +77,7 @@ Everything happens in the release branch `afp/release`.
     will update the web pages on the server. The script will ask before
     it copies, so you can check locally if everything is as you want it.
 
-13. That's it. Changes should show up at <http://afp.sf.net>
+13. That's it. Changes should show up at <http://isa-afp.org>
 
 **New submission in devel**
 

@@ -2,11 +2,11 @@
 #
 # Author: Gerwin Klein, NICTA
 #
-# Cron job that copies development snapshot to SF.
+# Cron job that copies development snapshot to isa-afp.org.
 # 
 
 #SOURCE=~isatest/html-data/afp/
 SOURCE=~/afp/web/
-TARGET=lsf37,afp@web.sourceforge.net:htdocs/
+TARGET=afpweb@isa-afp.org:
 
 /usr/bin/rsync -vrplqz $SOURCE $TARGET

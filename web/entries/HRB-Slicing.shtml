@@ -60,14 +60,14 @@ After verifying <a href="Slicing.shtml">dynamic and static interprocedural slici
   journal = {Archive of Formal Proofs},
   month   = nov,
   year    = 2009,
-  note    = {\url{http://afp.sf.net/entries/HRB-Slicing.shtml},
+  note    = {\url{http://isa-afp.org/entries/HRB-Slicing.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
     <tr><td class="datahead">Depends on:</td>

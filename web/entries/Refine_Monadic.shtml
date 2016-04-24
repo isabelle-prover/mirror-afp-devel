@@ -89,14 +89,14 @@ In particular, the new definitions allow for projecting away ghost variables as 
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2012,
-  note    = {\url{http://afp.sf.net/entries/Refine_Monadic.shtml},
+  note    = {\url{http://isa-afp.org/entries/Refine_Monadic.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
     <tr><td class="datahead">Depends on:</td>
