@@ -68,14 +68,14 @@ program verification tool prototype based on the algebraic approach.
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2014,
-  note    = {\url{http://afp.sf.net/entries/KAT_and_DRA.shtml},
+  note    = {\url{http://isa-afp.org/entries/KAT_and_DRA.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
     <tr><td class="datahead">Depends on:</td>

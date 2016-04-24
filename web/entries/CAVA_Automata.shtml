@@ -79,14 +79,14 @@ CAVA Automata Library, Isabelle Workshop 2014.
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2014,
-  note    = {\url{http://afp.sf.net/entries/CAVA_Automata.shtml},
+  note    = {\url{http://isa-afp.org/entries/CAVA_Automata.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
     <tr><td class="datahead">Depends on:</td>

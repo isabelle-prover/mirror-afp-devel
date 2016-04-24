@@ -63,14 +63,14 @@ We provide a generic work-list algorithm to compute the transitive closure of fi
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2011,
-  note    = {\url{http://afp.sf.net/entries/Transitive-Closure.shtml},
+  note    = {\url{http://isa-afp.org/entries/Transitive-Closure.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
 
 
     <tr><td class="datahead">Depends on:</td>

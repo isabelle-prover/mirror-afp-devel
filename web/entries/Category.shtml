@@ -51,7 +51,7 @@ This development proves Yoneda's lemma and aims to be readable by humans. It onl
     <tr><td class="datahead" valign="top">Change history:</td>
         <td class="abstract">
 
-[2010-04-23]: The definition of the constant <tt>equinumerous</tt> was slightly too weak in the original submission and has been fixed in revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/8c2b5b3c995f">8c2b5b3c995f</a>.
+[2010-04-23]: The definition of the constant <tt>equinumerous</tt> was slightly too weak in the original submission and has been fixed in revision <a href="https://bitbucket.org/isa-afp/afp-devel/commits/8c2b5b3c995f">8c2b5b3c995f</a>.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
@@ -62,14 +62,14 @@ This development proves Yoneda's lemma and aims to be readable by humans. It onl
   journal = {Archive of Formal Proofs},
   month   = apr,
   year    = 2005,
-  note    = {\url{http://afp.sf.net/entries/Category.shtml},
+  note    = {\url{http://isa-afp.org/entries/Category.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

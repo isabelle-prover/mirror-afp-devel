@@ -53,14 +53,14 @@ This theory defines deterministic and nondeterministic automata in a functional 
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2004,
-  note    = {\url{http://afp.sf.net/entries/Functional-Automata.shtml},
+  note    = {\url{http://isa-afp.org/entries/Functional-Automata.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
     <tr><td class="datahead">Depends on:</td>

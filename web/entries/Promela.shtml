@@ -63,14 +63,14 @@ system, on which the semantic engine (read: successor function) operates.
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2014,
-  note    = {\url{http://afp.sf.net/entries/Promela.shtml},
+  note    = {\url{http://isa-afp.org/entries/Promela.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
     <tr><td class="datahead">Depends on:</td>

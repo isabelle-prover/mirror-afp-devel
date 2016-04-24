@@ -58,14 +58,14 @@ We formalize the type system, small-step operational semantics, and type soundne
   journal = {Archive of Formal Proofs},
   month   = mar,
   year    = 2006,
-  note    = {\url{http://afp.sf.net/entries/FeatherweightJava.shtml},
+  note    = {\url{http://isa-afp.org/entries/FeatherweightJava.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

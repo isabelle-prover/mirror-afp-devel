@@ -48,7 +48,7 @@ invented by Sleator and Tarjan [JACM 1985].
 This entry provides executable and verified functional splay trees.
 <p>
 The amortized complexity of splay trees is analyzed in the AFP entry
-<a href="http://afp.sourceforge.net/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
+<a href="http://isa-afp.org/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
@@ -59,14 +59,14 @@ The amortized complexity of splay trees is analyzed in the AFP entry
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2014,
-  note    = {\url{http://afp.sf.net/entries/Splay_Tree.shtml},
+  note    = {\url{http://isa-afp.org/entries/Splay_Tree.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

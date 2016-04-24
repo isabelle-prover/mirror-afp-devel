@@ -69,14 +69,14 @@ are precise algorithms to compute the floor and the ceiling of n-th roots.
   journal = {Archive of Formal Proofs},
   month   = jan,
   year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/Sqrt_Babylonian.shtml},
+  note    = {\url{http://isa-afp.org/entries/Sqrt_Babylonian.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
 
 
     <tr><td class="datahead">Depends on:</td>

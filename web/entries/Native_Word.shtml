@@ -70,14 +70,14 @@ proper test setup with compilation and execution of tests in all target language
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/Native_Word.shtml},
+  note    = {\url{http://isa-afp.org/entries/Native_Word.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

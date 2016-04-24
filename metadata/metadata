@@ -1219,7 +1219,7 @@ abstract =
  This entry provides executable and verified functional splay trees.
  <p>
  The amortized complexity of splay trees is analyzed in the AFP entry
- <a href="http://afp.sourceforge.net/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
+ <a href="http://isa-afp.org/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
 
 [Skew_Heap]
 title = Skew Heap
@@ -1233,7 +1233,7 @@ abstract =
  and verified functional skew heaps.
  <p>
  The amortized complexity of skew heaps is analyzed in the AFP entry
- <a href="http://afp.sourceforge.net/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
+ <a href="http://isa-afp.org/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
 
 [Priority_Queue_Braun]
 title = Priority Queues Based on Braun Trees
@@ -1699,7 +1699,7 @@ abstract =
   as infrastructure for Isar-setups.
   <p>
   This theory is drawn from the
-  <a href="http://afp.sourceforge.net/entries/Featherweight_OCL.shtml">Featherweight OCL</a>
+  <a href="http://isa-afp.org/entries/Featherweight_OCL.shtml">Featherweight OCL</a>
   project where
   it is used to construct a package for object-oriented data-type theories
   generated from UML class diagrams. The Featherweight OCL, for example, allows for
@@ -2859,7 +2859,7 @@ license = LGPL
 abstract = This development proves Yoneda's lemma and aims to be readable by humans. It only defines what is needed for the lemma: categories, functors and natural transformations. Limits, adjunctions and other important concepts are not included.
 extra-history =
     Change history:
-    [2010-04-23]: The definition of the constant <tt>equinumerous</tt> was slightly too weak in the original submission and has been fixed in revision <a href="http://afp.hg.sourceforge.net/hgweb/afp/afp/rev/8c2b5b3c995f">8c2b5b3c995f</a>.
+    [2010-04-23]: The definition of the constant <tt>equinumerous</tt> was slightly too weak in the original submission and has been fixed in revision <a href="https://bitbucket.org/isa-afp/afp-devel/commits/8c2b5b3c995f">8c2b5b3c995f</a>.
 
 [Category2]
 title = Category Theory
@@ -3303,7 +3303,7 @@ title = Stream Fusion in HOL with Code Generation
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Alexandra Maximova <mailto:amaximov@student.ethz.ch>
 date = 2014-10-10
 topic = Computer Science/Functional Programming
-abstract = Stream Fusion is a system for removing intermediate list data structures from functional programs, in particular Haskell. This entry adapts stream fusion to Isabelle/HOL and its code generator. We define stream types for finite and possibly infinite lists and stream versions for most of the fusible list functions in the theories List and Coinductive_List, and prove them correct with respect to the conversion functions between lists and streams. The Stream Fusion transformation itself is implemented as a simproc in the preprocessor of the code generator. [Brian Huffman's <a href="http://afp.sourceforge.net/entries/Stream-Fusion.shtml">AFP entry</a> formalises stream fusion in HOLCF for the domain of lazy lists to prove the GHC compiler rewrite rules correct. In contrast, this work enables Isabelle's code generator to perform stream fusion itself. To that end, it covers both finite and coinductive lists from the HOL library and the Coinductive entry. The fusible list functions require specification and proof principles different from Huffman's.]
+abstract = Stream Fusion is a system for removing intermediate list data structures from functional programs, in particular Haskell. This entry adapts stream fusion to Isabelle/HOL and its code generator. We define stream types for finite and possibly infinite lists and stream versions for most of the fusible list functions in the theories List and Coinductive_List, and prove them correct with respect to the conversion functions between lists and streams. The Stream Fusion transformation itself is implemented as a simproc in the preprocessor of the code generator. [Brian Huffman's <a href="http://isa-afp.org/entries/Stream-Fusion.shtml">AFP entry</a> formalises stream fusion in HOLCF for the domain of lazy lists to prove the GHC compiler rewrite rules correct. In contrast, this work enables Isabelle's code generator to perform stream fusion itself. To that end, it covers both finite and coinductive lists from the HOL library and the Coinductive entry. The fusible list functions require specification and proof principles different from Huffman's.]
 
 [Case_Labeling]
 title = Generating Cases from Labeled Subgoals

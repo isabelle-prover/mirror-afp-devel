@@ -58,14 +58,14 @@ This theory provides a compact formulation of Gauss-Jordan elimination for matri
   journal = {Archive of Formal Proofs},
   month   = aug,
   year    = 2011,
-  note    = {\url{http://afp.sf.net/entries/Gauss-Jordan-Elim-Fun.shtml},
+  note    = {\url{http://isa-afp.org/entries/Gauss-Jordan-Elim-Fun.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

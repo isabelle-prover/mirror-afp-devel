@@ -68,14 +68,14 @@ transfer-package is invoked several times.
   journal = {Archive of Formal Proofs},
   month   = oct,
   year    = 2014,
-  note    = {\url{http://afp.sf.net/entries/Lifting_Definition_Option.shtml},
+  note    = {\url{http://isa-afp.org/entries/Lifting_Definition_Option.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

@@ -71,14 +71,14 @@ illustrates the application of such method by examining two case studies.
   journal = {Archive of Formal Proofs},
   month   = dec,
   year    = 2013,
-  note    = {\url{http://afp.sf.net/entries/Tail_Recursive_Functions.shtml},
+  note    = {\url{http://isa-afp.org/entries/Tail_Recursive_Functions.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

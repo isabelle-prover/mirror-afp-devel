@@ -67,7 +67,7 @@ global context like definitions and data-type declarations as well
 as infrastructure for Isar-setups.
 <p>
 This theory is drawn from the
-<a href="http://afp.sourceforge.net/entries/Featherweight_OCL.shtml">Featherweight OCL</a>
+<a href="http://isa-afp.org/entries/Featherweight_OCL.shtml">Featherweight OCL</a>
 project where
 it is used to construct a package for object-oriented data-type theories
 generated from UML class diagrams. The Featherweight OCL, for example, allows for
@@ -88,14 +88,14 @@ transformations, correctness, etc.
   journal = {Archive of Formal Proofs},
   month   = sep,
   year    = 2015,
-  note    = {\url{http://afp.sf.net/entries/Isabelle_Meta_Model.shtml},
+  note    = {\url{http://isa-afp.org/entries/Isabelle_Meta_Model.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
         </td></tr>
 
     <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://afp.sourceforge.net/LICENSE">BSD License</a></td></tr>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

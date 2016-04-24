@@ -142,7 +142,7 @@ if [ -n "$DIFF" ]; then
 The status of the following AFP entries changed or remains FAIL: 
 $DIFF
 
-Full entry status at http://afp.sourceforge.net/status.shtml
+Full entry status at http://isa-afp.org/status.shtml
 
 $AFP_VERSION
 $ISA_VERSION
