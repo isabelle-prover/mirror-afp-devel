@@ -20,7 +20,7 @@ function fail()
 }
 
 
-    echo "`date`: start preparing devel snapshot" >> $LOG
+    echo "`hostname` `date`: start preparing devel snapshot" >> $LOG
     EXPORT=afp-devel
     STATUS=entry-status.txt
     AFPRELEASE=$WEB/release
