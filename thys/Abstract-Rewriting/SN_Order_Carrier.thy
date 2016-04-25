@@ -92,7 +92,7 @@ proof
     have "of_nat (nat (ceiling r)) \<ge> r" 
       by (metis ceiling_le_zero le_of_int_ceiling less_le_not_le nat_0_iff not_less of_nat_0 of_nat_nat)
   } note ceil_elim = this
-  def i \<equiv> "nat (ceiling ((f 0 - a) / \<delta>))"
+  define i where "i = nat (ceiling ((f 0 - a) / \<delta>))"
   from fi[of i] have "f i - f 0 \<le> - \<delta> * of_nat (nat (ceiling ((f 0 - a) / \<delta>)))" unfolding i_def by simp
   also have "\<dots> \<le> - \<delta> * ((f 0 - a) / \<delta>)" using ceil_elim[of "(f 0 - a) / \<delta>"] delta
     by (metis le_imp_neg_le minus_mult_commute mult_le_cancel_left_pos)

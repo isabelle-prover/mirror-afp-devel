@@ -38,8 +38,10 @@ private lemma ev4:
   assumes g: "negl g"
   shows   "eventually (\<lambda>x. ln (b*x) powr (-e/2) - ln x powr (-e/2) \<ge> g x) at_top"
 proof (rule smallo_imp_le)
-  def h1 \<equiv> "(\<lambda>x. (1 + ln b/ln x) powr (-e/2) - 1 + e/2 * (ln b/ln x))"
-  def h2 \<equiv> "\<lambda>x. ln x powr (- e / 2) * ((1 + ln b / ln x) powr (- e / 2) - 1)"
+  define h1 where [abs_def]:
+    "h1 x = (1 + ln b/ln x) powr (-e/2) - 1 + e/2 * (ln b/ln x)" for x
+  define h2 where [abs_def]:
+    "h2 x = ln x powr (- e / 2) * ((1 + ln b / ln x) powr (- e / 2) - 1)" for x
   from bep have "((\<lambda>x. ln b / ln x) \<longlongrightarrow> 0) at_top"
     by (simp add: tendsto_0_smallo_1)
   note one_plus_x_powr_taylor2_bigo[OF this, of "-e/2"]
@@ -83,7 +85,7 @@ private lemma ev2_aux:
   defines "f \<equiv> \<lambda>x. (1 + 1/ln (b*x) * ln (1 + hb / b * ln x powr (-1-e))) powr (-e/2)"
   obtains h where "eventually (\<lambda>x. f x \<ge> 1 + h x) at_top" "h \<in> o(\<lambda>x. 1 / ln x)"
 proof (rule that[of "\<lambda>x. f x - 1"])
-  def g \<equiv> "\<lambda>x. 1/ln (b*x) * ln (1 + hb / b * ln x powr (-1-e))"
+  define g where [abs_def]: "g x = 1/ln (b*x) * ln (1 + hb / b * ln x powr (-1-e))" for x
   have lim: "((\<lambda>x. ln (1 + hb / b * ln x powr (- 1 - e))) \<longlongrightarrow> 0) at_top"
     by (rule tendsto_eq_rhs[OF tendsto_ln[OF tendsto_add[OF tendsto_const, of _ 0]]])
        (insert bep, simp_all add: tendsto_0_smallo_1)
@@ -113,10 +115,11 @@ private lemma ev2:
     "eventually (\<lambda>x. f x \<ge> ln (b * x) powr (-e/2) + h x) at_top" 
     "eventually (\<lambda>x. \<bar>ln (b * x) powr (-e/2) + h x\<bar> < 1) at_top"
 proof -
-  def f' \<equiv> "\<lambda>x. (1 + 1 / ln (b*x) * ln (1 + hb / b * ln x powr (-1-e))) powr (-e/2)"
+  define f'
+    where "f' x = (1 + 1 / ln (b*x) * ln (1 + hb / b * ln x powr (-1-e))) powr (-e/2)" for x
   from ev2_aux obtain g where g: "eventually (\<lambda>x. 1 + g x \<le> f' x) at_top" "g \<in> o(\<lambda>x. 1 / ln x)"
     unfolding f'_def .
-  def h \<equiv> "\<lambda>x. ln (b*x) powr (-e/2) * g x"
+  define h where [abs_def]: "h x = ln (b*x) powr (-e/2) * g x" for x
   show ?thesis
   proof (rule that[of h])
     from bep g show "negl h" unfolding h_def
@@ -185,7 +188,7 @@ lemma asymptotics1:
 proof-
   let ?f = "\<lambda>x. (1 + c * inverse b * ln x powr -(1+e)) powr p"
   let ?g = "\<lambda>x. 1 + ln (b * x + hb * x / ln x powr (1 + e)) powr (- e / 2)"
-  def f \<equiv> "\<lambda>x. 1 - ?f x"
+  define f where [abs_def]: "f x = 1 - ?f x" for x
   from ev1[of c] have "negl f" unfolding f_def 
     by (subst landau_o.small.uminus_in_iff [symmetric]) simp
   from landau_o.smallD[OF this zero_less_one] 
@@ -193,7 +196,7 @@ proof-
     by eventually_elim (simp add: f_def)
 
   from ev21 guess g . note g = this
-  def h \<equiv> "\<lambda>x. -g x + f x + f x * ln (b*x) powr (-e/2) + f x * g x"
+  define h where [abs_def]: "h x = -g x + f x + f x * ln (b*x) powr (-e/2) + f x * g x" for x
   
   have A: "eventually (\<lambda>x. ?f x * ?g x \<ge> 1 + ln (b*x) powr (-e/2) - h x) at_top"
     using g(2,3) f
@@ -221,7 +224,7 @@ proof-
   let ?f = "\<lambda>x. (1 + c * inverse b * ln x powr -(1+e)) powr p"
   let ?g = "\<lambda>x. 1 - ln (b * x + hb * x / ln x powr (1 + e)) powr (- e / 2)"
   
-  def f \<equiv> "\<lambda>x. 1 - ?f x"
+  define f where [abs_def]: "f x = 1 - ?f x" for x
   from ev1[of c] have "negl f" unfolding f_def 
     by (subst landau_o.small.uminus_in_iff [symmetric]) simp
   from landau_o.smallD[OF this zero_less_one] 
@@ -229,7 +232,7 @@ proof-
     by eventually_elim (simp add: f_def)
 
   from ev22 guess g . note g = this
-  def h \<equiv> "\<lambda>x. -g x - f x + f x * ln (b*x) powr (-e/2) + f x * g x"
+  define h where [abs_def]: "h x = -g x - f x + f x * ln (b*x) powr (-e/2) + f x * g x" for x
   have "((\<lambda>x. ln (b * x + hb * x / ln x powr (1 + e)) powr - (e / 2)) \<longlongrightarrow> 0) at_top"
     apply (insert bep, intro tendsto_neg_powr, simp)
     apply (rule filterlim_compose[OF ln_at_top])

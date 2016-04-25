@@ -488,7 +488,7 @@ next
         ultimately show ?thesis by (simp add:pendingReqs_def) fastforce
       qed        
       have 8:"contains (dstate t1) (pending s1 p)" using Response1(1) by simp
-      def rs' \<equiv> "filter (\<lambda> x . x \<noteq> (pending s1 p)) rs"
+      define rs' where "rs' = filter (\<lambda> x . x \<noteq> (pending s1 p)) rs"
       have 9:"rs' \<in> pendingSeqs t1" 
       proof -
         have 9:"pending s1 p \<notin> set rs'" by (auto simp add:rs'_def)
@@ -1405,7 +1405,8 @@ proof -
       fix s1 s2 t1 t2 :: "('a,'b,'c)SLin_state" and a :: "('a,'b,'c,'d)SLin_action"
       assume reach:"reachable (composition) (s1,s2)"
       and trans:"(s1,s2) \<midarrow>a\<midarrow>(composition)\<longrightarrow> (t1,t2)"
-      def u \<equiv> "f (s1,s2)" def u' \<equiv> "f (t1,t2)"
+      define u where "u = f (s1,s2)"
+      define u' where "u' = f (t1,t2)"
       txt {* Lemmas and invariants *}
       have "pendingReqs s2 \<subseteq> pendingReqs u"
       proof -

@@ -733,7 +733,7 @@ next
   note this(1)
   also
 
-  def h \<equiv> "if listsum ?coll \<noteq> 0 then rec_nat f' (\<lambda>i _. g' i) else g'"
+  define h where "h = (if listsum ?coll \<noteq> 0 then rec_nat f' (\<lambda>i _. g' i) else g')"
   have "f' *\<^sub>R listsum ?coll + pdevs_val g' (pdevs_of_list (independent_pdevs ?ncoll))
       = pdevs_val h (pdevs_of_list (independent_pdevs (x#xs)))"
     by (simp add: h_def o_def Let_def)
@@ -804,7 +804,7 @@ next
   note this(1)
   also
 
-  def h \<equiv> "if listsum ?coll \<noteq> 0 then rec_nat f' (\<lambda>i _. g' i) else g'"
+  define h where "h = (if listsum ?coll \<noteq> 0 then rec_nat f' (\<lambda>i _. g' i) else g')"
   have "f' *\<^sub>R listsum ?coll + pdevs_val g' (pdevs_of_list (independent_pdevs ?ncoll))
       = pdevs_val h (pdevs_of_list (independent_pdevs (x#xs)))"
     by (simp add: h_def o_def Let_def)
@@ -1709,7 +1709,8 @@ next
       using seg H
       by (intro last_half_segments[symmetric]) simp
 
-    def r \<equiv> "?l + (0, abs (snd x - snd ?l) + abs (snd y - snd ?l) + abs (snd ?ml - snd ?l) + 1)"
+    define r
+      where "r = ?l + (0, abs (snd x - snd ?l) + abs (snd y - snd ?l) + abs (snd ?ml - snd ?l) + 1)"
 
     have d1: "x \<noteq> r" "y \<noteq> r" "?l \<noteq> r" "?ml \<noteq> r"
       by (auto simp: r_def plus_prod_def prod_eq_iff)
@@ -1890,12 +1891,14 @@ lemma det3_nonneg_segments_of_aform:
 proof safe
   fix a b c d
   assume seg: "((a, b), c, d) \<in> set (segments_of_aform X)" (is "?seg \<in> _")
-  def normal_of_segment\<equiv>"\<lambda>((a0, a1), b0, b1). (b1 - a1, a0 - b0)::real*real"
-  def support_of_segment\<equiv>"\<lambda>(a, b). normal_of_segment (a, b) \<bullet> a"
+  define normal_of_segment
+    where "normal_of_segment = (\<lambda>((a0, a1), b0, b1). (b1 - a1, a0 - b0)::real*real)"
+  define support_of_segment
+    where "support_of_segment = (\<lambda>(a, b). normal_of_segment (a, b) \<bullet> a)"
   have "closed ((\<lambda>x. x \<bullet> normal_of_segment ?seg) -` {..support_of_segment ?seg})" (is "closed ?cl")
     by (auto intro!: continuous_intros closed_vimage)
   moreover
-  def f \<equiv> "\<lambda>n i. e i * ( 1 - 1 / (Suc (Suc n)))"
+  define f where "f n i = e i * ( 1 - 1 / (Suc (Suc n)))" for n i
   have "\<forall>n. aform_val (f n) X \<in> ?cl"
   proof
     fix n
@@ -2586,7 +2589,7 @@ proof -
     "\<And>i::'a. i\<in>Basis \<Longrightarrow> j i < length (Basis_list::'a list)"
     "\<And>i::'a. i\<in>Basis \<Longrightarrow> i = Basis_list ! j i"
     by metis
-  def y \<equiv> "y' o j"
+  define y where "y = y' o j"
   with y' j have y: "\<And>i. i \<in> Basis \<Longrightarrow> ?inter i = Some (y i)"
     by (metis comp_def)
   hence y_le: "\<And>i. i \<in> Basis \<Longrightarrow> fst (y i) \<le> snd (y i)"

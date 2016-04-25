@@ -1094,7 +1094,7 @@ proof -
   obtain i where i: "i \<in> I"
     by (metis assms funcset_mem iso_tuple_UNIV_I)
   let ?zip = "zip [0..<length xs] xs"
-  def part \<equiv> "partition (p \<circ> snd) ?zip"
+  define part where "part = partition (p \<circ> snd) ?zip"
   let ?f =
     "(\<lambda>n. if n < degree (pdevs_of_list (filter p xs)) then e (map fst (fst part) ! n) else i)"
   let ?g =
@@ -1554,7 +1554,7 @@ lemma pdevs_of_list_setsum:
   assumes "e \<in> UNIV \<rightarrow> I"
   obtains f where "f \<in> UNIV \<rightarrow> I" "pdevs_val e (pdevs_of_list xs) = (\<Sum>P\<in>set xs. f P *\<^sub>R P)"
 proof -
-  def f \<equiv> "\<lambda>X. e (the (map_of (zip xs [0..<length xs]) X))"
+  define f where "f X = e (the (map_of (zip xs [0..<length xs]) X))" for X
   from assms have "f \<in> UNIV \<rightarrow> I"
     by (auto simp: f_def)
   moreover

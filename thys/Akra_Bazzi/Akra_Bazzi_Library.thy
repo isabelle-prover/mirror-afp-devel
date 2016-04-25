@@ -143,7 +143,7 @@ qed
 lemma one_plus_x_powr_taylor2:
   obtains k where "\<And>x. abs (x::real) \<le> 1/2 \<Longrightarrow> abs ((1 + x) powr p - 1 - p*x) \<le> k*x^2"
 proof-
-  def k \<equiv> "\<bar>p*(p - 1)\<bar> * max ((1/2) powr (p - 2)) ((3/2) powr (p - 2)) / 2"
+  define k where "k = \<bar>p*(p - 1)\<bar> * max ((1/2) powr (p - 2)) ((3/2) powr (p - 2)) / 2"
   show ?thesis
   proof (rule that[of k])
     fix x :: real assume "abs x \<le> 1/2"

@@ -363,7 +363,8 @@ proof -
         have comm: "?r *\<^sub>R r + ?s *\<^sub>R s = ?s *\<^sub>R s + ?r *\<^sub>R r"
           "?q *\<^sub>R q + ?p *\<^sub>R p = ?p *\<^sub>R p + ?q *\<^sub>R q"
           by simp_all
-        def K \<equiv> "(det3 r q s / det3 p r q / ?sum) *\<^sub>R p + (det3 s p r / det3 p r q  / ?sum) *\<^sub>R q"
+        define K
+          where "K = (det3 r q s / det3 p r q / ?sum) *\<^sub>R p + (det3 s p r / det3 p r q  / ?sum) *\<^sub>R q"
         note rewrs = eqs' comm srpq K_def[symmetric]
         from lex_convex_self2[OF _ s, of s r, unfolded rewrs]
            lex_convex_self2[OF _ r, of r s, unfolded rewrs]
@@ -474,9 +475,9 @@ proof
     by (simp add: det3_def' ccw'_def algebra_simps)
   from \<open>lex x1 r\<close> have 6: "lex 0 (r - x0 - (x1 - x0))" by (auto simp: lex_def)
   from \<open>lex x1 l\<close> have 7: "lex 0 (l - x0 - (x1 - x0))" by (auto simp: lex_def)
-  def r' \<equiv> "r - x0"
-  def l' \<equiv> "l - x0"
-  def x0' \<equiv> "x1 - x0"
+  define r' where "r' = r - x0"
+  define l' where "l' = l - x0"
+  define x0' where "x0' = x1 - x0"
   from 1 2 3 4 5 6 7
   have rs: "coll 0 l' r'" "lex r' 0"
     "lex l' 0"

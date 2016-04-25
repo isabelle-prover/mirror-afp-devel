@@ -57,7 +57,7 @@ lemma scaleR1_nonzero_eq:
   "e \<noteq> 0 \<Longrightarrow> ccw 0 (e *\<^sub>R a) b = (if e > 0 then ccw 0 a b else ccw 0 b a)"
 proof cases
   assume "e < 0"
-  def e' \<equiv> "- e"
+  define e' where "e' = - e"
   hence "e = -e'" "e' > 0" using \<open>e < 0\<close> by simp_all
   thus ?thesis by simp
 qed simp
@@ -97,7 +97,7 @@ proof -
     hence ?thesis using add3_self scaleR1_eq by blast
   } moreover {
     assume "x < 0"
-    def x' \<equiv> "-x"
+    define x' where "x' = - x"
     hence "x = -x'" "x' > 0" using \<open>x < 0\<close> by simp_all
     hence "ccw 0 a (x *\<^sub>R a + b) = ccw 0 (x' *\<^sub>R a + - b) (x' *\<^sub>R a)"
       by (subst uminus1[symmetric]) simp
@@ -169,7 +169,7 @@ lemma convex_hull:
   assumes oriented: "oriented a b"
   shows "ccw a b x"
 proof -
-  def D\<equiv>C
+  define D where "D = C"
   have D: "C \<subseteq> D" "\<And>c. c \<in> D \<Longrightarrow> ccw a b c" by (simp_all add: D_def ccw)
   show "ccw a b x"
     using \<open>finite C\<close> D ch

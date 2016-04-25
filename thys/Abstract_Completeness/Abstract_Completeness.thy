@@ -198,7 +198,7 @@ lemma in_cont_mkTree:
   shows "\<exists> sl' s'. s' \<in> S \<and> eff (shd (trim rs s)) s sl' \<and>
                  s' |\<in>| sl' \<and> t' = mkTree (stl (trim rs s)) s'"
 proof -
-  def sl' \<equiv> "pickEff (shd (trim rs s)) s"
+  define sl' where "sl' = pickEff (shd (trim rs s)) s"
   obtain s' where s': "s' |\<in>| sl'" and "t' = mkTree (stl (trim rs s)) s'"
     using t' unfolding sl'_def by auto
   moreover have 1: "enabled (shd (trim rs s)) s" using trim_enabled[OF s rs] .

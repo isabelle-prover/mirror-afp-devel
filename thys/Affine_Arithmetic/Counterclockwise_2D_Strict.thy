@@ -120,8 +120,8 @@ proof -
   with ne have p: "p = ((1 - s1 - s2) / (1 - s1)) *\<^sub>R q + (s2 / (1 - s1)) *\<^sub>R r"
     using ne
     by (simp add: prod_eq_iff inverse_eq_divide add_divide_distrib)
-  def k1 \<equiv> "(1 - s1 - s2) / (1 - s1)"
-  def k2 \<equiv> "s2 / (1 - s1)"
+  define k1 where "k1 = (1 - s1 - s2) / (1 - s1)"
+  define k2 where "k2 = s2 / (1 - s1)"
   have "det3 t r p = det3 0 (k1 *\<^sub>R q + (k2 - 1) *\<^sub>R r)
     (k1 *\<^sub>R q + (k2 - 1) *\<^sub>R r + (- s1 * (k1 - 1)) *\<^sub>R q - (s1 * k2) *\<^sub>R r)"
     unfolding s1 p k1_def[symmetric] k2_def[symmetric]

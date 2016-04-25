@@ -288,12 +288,12 @@ proof -
   thus ?thesis
   proof
     assume x: "x \<in> set (polychain_of (Pc + P) QRRs)"
-    def q \<equiv> "snd x - fst x"
+    define q where "q = snd x - fst x"
     from Polygon.in_set_polychain_of_imp_listsum[OF x]
     obtain d where d: "fst x = (Pc + P + listsum (take d QRRs))" by (auto simp: prod_eq_iff)
     from in_set_polychain_ofD[OF x]
     have q_in: "q \<in> set QRRs" by (simp add: q_def)
-    def R \<equiv> "set QRRs - {q}"
+    define R where "R = set QRRs - {q}"
     hence QRRs: "set QRRs = R \<union> {q}" "q \<notin> R" "finite R" using q_in by auto
     have "ccw' 0 q (-P)"
       using assms(3)
