@@ -51,6 +51,13 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 
 <tr><td class="entry">
 2016-04-27:
+<a href="entries/CYK.shtml">A formalisation of the Cocke-Younger-Kasami algorithm</a>
+<br>Author:
+Maksym Bortin
+</td></tr>
+
+<tr><td class="entry">
+2016-04-27:
 <a href="entries/ROBDD.shtml">Algorithms for Reduced Ordered Binary Decision Diagrams</a>
 <br>Author:
 <a href="http://liftm.de/">Julius Michaelis</a>,
