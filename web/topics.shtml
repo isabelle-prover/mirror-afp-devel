@@ -85,6 +85,7 @@
 <a href="entries/Hermite.shtml">Hermite</a> &nbsp;
 <a href="entries/Imperative_Insertion_Sort.shtml">Imperative_Insertion_Sort</a> &nbsp;
 <a href="entries/Formal_SSA.shtml">Formal_SSA</a> &nbsp;
+<a href="entries/ROBDD.shtml">ROBDD</a> &nbsp;
 
 <strong>Distributed:</strong>&nbsp;<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
 <a href="entries/GenClock.shtml">GenClock</a> &nbsp;
@@ -129,6 +130,7 @@
 <a href="entries/IEEE_Floating_Point.shtml">IEEE_Floating_Point</a> &nbsp;
 <a href="entries/Native_Word.shtml">Native_Word</a> &nbsp;
 <a href="entries/XML.shtml">XML</a> &nbsp;
+<a href="entries/ROBDD.shtml">ROBDD</a> &nbsp;
 </div>
 
 <h3>Functional Programming</h3>

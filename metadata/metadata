@@ -3608,3 +3608,17 @@ abstract =
   in the traces of the first operand. Both of these assumptions are
   shown, by means of counterexamples, to be necessary for the theorem to
   hold.
+
+[ROBDD]
+title = Algorithms for Reduced Ordered Binary Decision Diagrams
+author = Julius Michaelis <http://liftm.de/>, Maximilian Haslbeck <https://home.in.tum.de/~haslbecm/>, Peter Lammich <https://www21.in.tum.de/~lammich/>, Lars Hupel <https://www21.in.tum.de/~hupel/>
+date = 2016-04-27
+topic = Computer Science/Algorithms, Computer Science/Data Structures
+abstract =
+   We present a verified and executable implementation of ROBDDs in
+  Isabelle/HOL. Our implementation relates pointer-based computation in
+  the Heap monad to operations on an abstract definition of boolean
+  functions. Internally, we implemented the if-then-else combinator in a
+  recursive fashion, following the Shannon decomposition of the argument
+  functions. The implementation mixes and adapts known techniques and is
+  built with efficiency in mind.
