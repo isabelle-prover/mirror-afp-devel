@@ -863,6 +863,16 @@ proof -
   qed
 qed
 
+
+lemma ascending_chain_condition2:
+  "\<nexists>I::(nat \<Rightarrow> 'a set). (\<forall>n. ideal (I n) \<and> I n \<subset> I (n + 1))"
+proof (rule ccontr, auto)
+  fix I assume a: "\<forall>n. ideal (I n) \<and> I n \<subset> I (Suc n)"
+  hence "\<forall>n. ideal (I n)" "\<forall>n. I n \<subseteq> I (Suc n)" by auto
+  hence "\<exists>n. I(n)=I(n+1)" using ascending_chain_condition by auto
+  thus False using a by auto
+qed
+
 end
 
 class pir_div = pir + semiring_div
