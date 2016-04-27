@@ -50,6 +50,7 @@ Consensus_Refined
 Containers
 CoreC++
 CryptoBasedCompositionalProperties
+CYK
 DPT-SAT-Solver
 DataRefinementIBP
 Datatype_Order_Generator
