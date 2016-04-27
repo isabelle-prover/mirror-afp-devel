@@ -214,12 +214,12 @@ lemma matrix_to_iarray_echelon_form_of_column_k:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes k: "k<ncols A"
   and i: "i\<le>nrows A"
-  shows "matrix_to_iarray (fst (echelon_form_of_column_k (A,i,bezout) k)) 
+  shows "matrix_to_iarray (fst ((echelon_form_of_column_k bezout) (A,i) k)) 
   = fst (echelon_form_of_column_k_iarrays (matrix_to_iarray A, i, bezout) k)"
 proof (cases "i<nrows A")
   case False
   have i_eq: "i=nrows A" by (metis False dual_order.le_imp_less_or_eq i)
-  show "matrix_to_iarray (fst (echelon_form_of_column_k (A,i,bezout) k)) 
+  show "matrix_to_iarray (fst ((echelon_form_of_column_k bezout) (A,i) k)) 
     = fst (echelon_form_of_column_k_iarrays (matrix_to_iarray A, i, bezout) k)"
     unfolding echelon_form_of_column_k_efficient echelon_form_of_column_k_def Let_def
     unfolding echelon_form_of_column_k_iarrays_def Let_def snd_conv fst_conv
@@ -261,13 +261,13 @@ lemma snd_matrix_to_iarray_echelon_form_of_column_k:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes k: "k<ncols A"
   and i: "i\<le>nrows A"
-  shows "(snd (echelon_form_of_column_k (A,i,bezout) k)) 
-  = (snd (echelon_form_of_column_k_iarrays (matrix_to_iarray A, i, bezout) k))"
+  shows "snd ((echelon_form_of_column_k bezout) (A,i) k) 
+  = fst (snd (echelon_form_of_column_k_iarrays (matrix_to_iarray A, i, bezout) k))"
 proof (cases "i<nrows A")
   case False
   have i_eq: "i=nrows A" by (metis False dual_order.le_imp_less_or_eq i)
-  show "(snd (echelon_form_of_column_k (A,i,bezout) k)) 
-    = snd (echelon_form_of_column_k_iarrays (matrix_to_iarray A, i, bezout) k)"
+  show "snd ((echelon_form_of_column_k bezout) (A,i) k) 
+    = fst (snd (echelon_form_of_column_k_iarrays (matrix_to_iarray A, i, bezout) k))"
     unfolding echelon_form_of_column_k_efficient echelon_form_of_column_k_def Let_def
     unfolding echelon_form_of_column_k_iarrays_def Let_def snd_conv fst_conv
     unfolding i_eq matrix_to_iarray_nrows by auto
@@ -300,16 +300,9 @@ corollary fst_snd_matrix_to_iarray_echelon_form_of_column_k:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes k: "k<ncols A"
   and i: "i\<le>nrows A"
-  shows "fst(snd (echelon_form_of_column_k (A,i,bezout) k)) 
+  shows "snd ((echelon_form_of_column_k bezout) (A,i) k)
   = fst (snd (echelon_form_of_column_k_iarrays (matrix_to_iarray A, i, bezout) k))"
   using snd_matrix_to_iarray_echelon_form_of_column_k[OF assms] by simp
-
-lemma trd_matrix_to_iarray_echelon_form_of_column_k:
-  fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}"
-  shows "(snd (snd (echelon_form_of_column_k (A,i,bezout) k))) 
-  = snd (snd (echelon_form_of_column_k_iarrays (matrix_to_iarray A, i, bezout) k))"
-  unfolding echelon_form_of_column_k_def Let_def
-  unfolding echelon_form_of_column_k_iarrays_def Let_def snd_conv fst_conv by auto
 
 subsubsection{*Echelon form up to column k for immutable arrays*}
 
@@ -330,13 +323,13 @@ lemma foldl_echelon_form_column_k_eq:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}"
   assumes k: "k<ncols A"
   shows matrix_to_iarray_echelon_form_of_upt_k[code_unfold]: 
-  "matrix_to_iarray (echelon_form_of_upt_k A k bezout) 
+  "matrix_to_iarray (echelon_form_of_upt_k A k bezout)
   = echelon_form_of_upt_k_iarrays (matrix_to_iarray A) k bezout"
   and fst_foldl_ef_k_eq: "fst (snd (foldl echelon_form_of_column_k_iarrays 
   (matrix_to_iarray A,0,bezout) [0..<Suc k])) 
-  = fst (snd (foldl echelon_form_of_column_k (A,0,bezout) [0..<Suc k]))"
-  and fst_foldl_ef_k_less: 
-  "fst (snd (foldl echelon_form_of_column_k (A,0, bezout) [0..<Suc k])) \<le> nrows A"
+  = snd (foldl (echelon_form_of_column_k bezout) (A,0) [0..<Suc k])"
+  and fst_foldl_ef_k_less:
+  "snd (foldl (echelon_form_of_column_k bezout) (A,0) [0..<Suc k]) \<le> nrows A"
   using assms
 proof (induct k)
   show "matrix_to_iarray (echelon_form_of_upt_k A 0 bezout) 
@@ -344,9 +337,9 @@ proof (induct k)
     unfolding echelon_form_of_upt_k_def echelon_form_of_upt_k_iarrays_def
     by (simp, metis le0 matrix_to_iarray_echelon_form_of_column_k ncols_not_0 neq0_conv)
   show "fst (snd (foldl echelon_form_of_column_k_iarrays (matrix_to_iarray A, 0, bezout) [0..<Suc 0]))
-    = fst (snd (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc 0]))"
+    = snd (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc 0])"
     by (simp, metis le0 ncols_not_0 not_gr0 snd_matrix_to_iarray_echelon_form_of_column_k)
-  show "fst (snd (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc 0])) \<le> nrows A"
+  show "snd (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc 0]) \<le> nrows A"
     apply simp
     unfolding echelon_form_of_column_k_def Let_def snd_conv fst_conv 
     unfolding nrows_def by auto
@@ -356,37 +349,38 @@ next
     = echelon_form_of_upt_k_iarrays (matrix_to_iarray A) k bezout)"
     and  "(k < ncols A \<Longrightarrow>
     fst (snd (foldl echelon_form_of_column_k_iarrays (matrix_to_iarray A, 0, bezout) [0..<Suc k])) =
-    fst (snd (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc k])))"
-    and hyp3: "(k < ncols A \<Longrightarrow> fst (snd (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc k])) \<le> nrows A)"
+    snd (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k]))"
+    and hyp3: "(k < ncols A \<Longrightarrow> snd (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k]) \<le> nrows A)"
     and Suc_k_less_card: "Suc k < ncols A"
   hence hyp1: "matrix_to_iarray (echelon_form_of_upt_k A k bezout) 
     = echelon_form_of_upt_k_iarrays (matrix_to_iarray A) k bezout"
     and hyp2: "fst (snd (foldl echelon_form_of_column_k_iarrays 
-    (matrix_to_iarray A, 0, bezout) [0..<Suc k])) 
-    = fst (snd (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc k]))"
-    and hyp3: "fst (snd (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc k])) \<le> nrows A"
-    by auto          
-  hence hyp1_unfolded: "matrix_to_iarray (fst (foldl echelon_form_of_column_k (A,0,bezout) [0..<Suc k])) 
+    (matrix_to_iarray A, 0, bezout) [0..<Suc k]))
+    = snd (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k])"
+    and hyp3: "snd (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k]) \<le> nrows A"
+    by auto
+  hence hyp1_unfolded: "matrix_to_iarray (fst (foldl (echelon_form_of_column_k bezout) (A,0) [0..<Suc k])) 
     = fst (foldl echelon_form_of_column_k_iarrays (matrix_to_iarray A,0,bezout) [0..<Suc k])" 
     using hyp1 unfolding echelon_form_of_upt_k_def echelon_form_of_upt_k_iarrays_def by simp
   have upt_rw: "[0..<Suc (Suc k)] = [0..<Suc k] @ [(Suc k)]" by auto
-  let ?f="foldl echelon_form_of_column_k_iarrays (matrix_to_iarray A, 0, bezout) [0..<Suc k]"
-  let ?f2="(foldl echelon_form_of_column_k (A,0,bezout) [0..<(Suc k)])"
+  let ?f = "foldl echelon_form_of_column_k_iarrays (matrix_to_iarray A, 0, bezout) [0..<Suc k]"
+  let ?f2 = "foldl (echelon_form_of_column_k bezout) (A,0) [0..<(Suc k)]" term ?f2
   have fold_rw: "?f = (fst ?f, fst (snd ?f), snd (snd ?f))" by simp
-  have fold_rw': "?f2 = (fst ?f2, fst (snd ?f2), snd (snd ?f2))" by simp
-  have rw: "snd (snd (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc k])) 
-    = snd (snd (foldl echelon_form_of_column_k_iarrays (matrix_to_iarray A, 0, bezout) [0..<Suc k]))" 
-    unfolding snd_snd_foldl_echelon_form_of_column_k_iarrays
-    unfolding snd_snd_foldl_echelon_form_of_column_k ..
+  have fold_rw': "?f2 = (fst ?f2, snd ?f2)" by simp
+  have rw: "snd (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k])
+    = fst (snd (foldl echelon_form_of_column_k_iarrays (matrix_to_iarray A, 0, bezout) [0..<Suc k]))" 
+    using hyp2 by auto
   show "fst (snd (foldl echelon_form_of_column_k_iarrays (matrix_to_iarray A, 0, bezout) 
-    [0..<Suc (Suc k)])) = fst (snd (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc (Suc k)]))"
+    [0..<Suc (Suc k)])) = snd (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc (Suc k)])"
     unfolding upt_rw foldl_append unfolding List.foldl.simps apply (subst fold_rw) 
     apply (subst fold_rw') unfolding hyp2 unfolding hyp1_unfolded[symmetric]
-    unfolding rw
-  proof (rule fst_snd_matrix_to_iarray_echelon_form_of_column_k
-      [symmetric, of "Suc k" "fst ?f2"])
-    show "Suc k < ncols (fst ?f2)" using Suc_k_less_card unfolding ncols_def .
-    show "fst (snd ?f2) \<le> nrows (fst ?f2)" using hyp3 unfolding nrows_def .      
+    unfolding rw 
+    unfolding snd_snd_foldl_echelon_form_of_column_k_iarrays  
+    proof (rule fst_snd_matrix_to_iarray_echelon_form_of_column_k [symmetric])
+      show "Suc k < ncols (fst ?f2)" using Suc_k_less_card unfolding ncols_def .
+      show "fst (snd (foldl echelon_form_of_column_k_iarrays (matrix_to_iarray A, 0, bezout) [0..<Suc k]))
+    \<le> nrows (fst (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k]))"
+      by (metis hyp2 hyp3 nrows_def)      
   qed
   show "matrix_to_iarray (echelon_form_of_upt_k A (Suc k) bezout) 
     = echelon_form_of_upt_k_iarrays (matrix_to_iarray A) (Suc k) bezout"
@@ -394,15 +388,18 @@ next
       upt_rw foldl_append List.foldl.simps apply (subst fold_rw) apply (subst fold_rw') 
     unfolding hyp2 hyp1_unfolded[symmetric]
     unfolding rw
+    unfolding snd_snd_foldl_echelon_form_of_column_k_iarrays
   proof (rule matrix_to_iarray_echelon_form_of_column_k)
     show "Suc k < ncols (fst ?f2)" using Suc_k_less_card unfolding ncols_def .
-    show "fst (snd ?f2) \<le> nrows (fst ?f2)" using hyp3 unfolding nrows_def .
+    show "fst (snd (foldl echelon_form_of_column_k_iarrays (matrix_to_iarray A, 0, bezout) [0..<Suc k]))
+    \<le> nrows (fst (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k]))"
+    by (metis hyp2 hyp3 nrows_def)
   qed
-  show "fst (snd (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc (Suc k)])) \<le> nrows A"
+  show "snd (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc (Suc k)]) \<le> nrows A"
     unfolding upt_rw foldl_append unfolding List.foldl.simps apply (subst fold_rw')
     unfolding echelon_form_of_column_k_def Let_def
     using hyp3 le_antisym not_less_eq_eq unfolding nrows_def by fastforce
-qed 
+qed
 
 subsubsection{*Echelon form up to column k for immutable arrays*}
 

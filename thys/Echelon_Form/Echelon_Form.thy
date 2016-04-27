@@ -412,10 +412,10 @@ To do that, we have studied several options:
 
   \item The third option (and the chosen one) consists of defining the algorithm over bezout domains 
   and parametrizing the algorithm by a @{text "bezout"} operation which must satisfy 
-  suitable properties (i.e @{term "is_bezout_ext (bezout)"}). Then we can prove the correctness over 
+  suitable properties (i.e @{term "is_bezout_ext bezout"}). Then we can prove the correctness over 
   bezout domains and we will execute over euclidean domains, since we can prove that the 
   operation  @{term "euclid_ext2"} is an executable operation which satisfies 
-  @{term "is_bezout_ext (euclid_ext2)"}.
+  @{term "is_bezout_ext euclid_ext2"}.
 \end{enumerate}
 *}
 
@@ -456,17 +456,18 @@ text{*If every element in column @{term "k::nat"} over index @{term "i::nat"} ar
       whose coefficient is different from zero, its row is interchanged with row 
       @{term "i::nat"} and the bezout coefficients are used to produce a zero in its position.*}
 
+
 definition 
-  "echelon_form_of_column_k A' k = 
-    (let (A, i, bezout) = A' 
-     in if (\<forall>m\<ge>from_nat i. A $ m $ from_nat k = 0) \<or> (i = nrows A) then (A, i, bezout) else 
-        if (\<forall>m>from_nat i. A $ m $ from_nat k = 0) then (A, i + 1, bezout) else
+  "echelon_form_of_column_k bezout A' k = 
+    (let (A, i) = A' 
+     in if (\<forall>m\<ge>from_nat i. A $ m $ from_nat k = 0) \<or> (i = nrows A) then (A, i) else 
+        if (\<forall>m>from_nat i. A $ m $ from_nat k = 0) then (A, i + 1) else
             let n = (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> from_nat i \<le> n); 
                 interchange_A = interchange_rows A (from_nat i) n
            in
-            (bezout_iterate (interchange_A) (nrows A - 1) (from_nat i) (from_nat k) bezout, i + 1, bezout))"
+            (bezout_iterate (interchange_A) (nrows A - 1) (from_nat i) (from_nat k) bezout, i + 1))"
 
-definition "echelon_form_of_upt_k A k bezout = (fst (foldl echelon_form_of_column_k (A,0,bezout) [0..<Suc k]))"
+definition "echelon_form_of_upt_k A k bezout = (fst (foldl (echelon_form_of_column_k bezout) (A,0) [0..<Suc k]))"
 definition "echelon_form_of A bezout = echelon_form_of_upt_k A (ncols A - 1) bezout"
 
 subsubsection{*The executable definition:*}
@@ -481,7 +482,7 @@ end
 subsubsection{*Properties of the bezout matrix*}
 
 lemma bezout_matrix_works1:
-  assumes ib: "is_bezout_ext (bezout)"
+  assumes ib: "is_bezout_ext bezout"
   and a_not_b: "a \<noteq> b"
   shows "(bezout_matrix A a b j bezout ** A) $ a $ j = snd (snd (snd (snd (bezout (A $ a $ j) (A $ b $ j)))))"
 proof (unfold matrix_matrix_mult_def bezout_matrix_def Let_def, simp)
@@ -539,7 +540,7 @@ proof (unfold matrix_matrix_mult_def bezout_matrix_def Let_def, simp)
 qed
 
 lemma bezout_matrix_not_zero:
-  assumes ib: "is_bezout_ext (bezout)"
+  assumes ib: "is_bezout_ext bezout"
   and a_not_b: "a \<noteq> b"
   and Aaj: "A $ a $ j \<noteq> 0"
   shows "(bezout_matrix A a b j bezout ** A) $ a $ j \<noteq> 0"
@@ -554,7 +555,7 @@ qed
 
 lemma ua_vb_0:
   fixes a::"'a::bezout_domain"
-  assumes ib: "is_bezout_ext (bezout)" and nz: "snd (snd (snd (snd (bezout a b)))) \<noteq> 0"
+  assumes ib: "is_bezout_ext bezout" and nz: "snd (snd (snd (snd (bezout a b)))) \<noteq> 0"
   shows "fst (snd (snd (bezout a b))) * a + fst (snd (snd (snd (bezout a b)))) * b = 0"
 proof-
   obtain p q u v d where bz: "(p, q, u, v, d) = bezout a b" by (cases "bezout a b", auto)
@@ -578,7 +579,7 @@ qed
 
 lemma bezout_matrix_works2:
   fixes A::"'a::bezout_domain^'cols^'rows"
-  assumes ib: "is_bezout_ext (bezout)"
+  assumes ib: "is_bezout_ext bezout"
   and a_not_b: "a \<noteq> b"
   and not_0: "A $ a $ j \<noteq> 0 \<or> A $ b $ j \<noteq> 0"
   shows "(bezout_matrix A a b j bezout ** A) $ b $ j = 0"
@@ -635,7 +636,7 @@ proof (unfold matrix_matrix_mult_def bezout_matrix_def Let_def, auto)
 qed
 
 lemma bezout_matrix_preserves_previous_columns:
-  assumes ib: "is_bezout_ext (bezout)"
+  assumes ib: "is_bezout_ext bezout"
   and i_not_j: "i \<noteq> j"
   and Aik: "A $ i $ k \<noteq> 0"
   and b_k: "b<k"
@@ -727,7 +728,7 @@ qed
 
 lemma det_bezout_matrix:
   fixes A::"'a::{bezout_domain}^'cols^'rows::{finite,wellorder}"
-  assumes ib: "is_bezout_ext (bezout)"
+  assumes ib: "is_bezout_ext bezout"
   and a_less_b: "a < b"
   and aj: "A $ a $ j \<noteq> 0"
   shows "det (bezout_matrix A a b j bezout) = 1"
@@ -866,7 +867,7 @@ qed
 
 lemma invertible_bezout_matrix:
   fixes A::"'a::{bezout_ring_div}^'cols^'rows::{finite,wellorder}"
-  assumes ib: "is_bezout_ext (bezout)"
+  assumes ib: "is_bezout_ext bezout"
   and a_less_b: "a < b"
   and aj: "A $ a $ j \<noteq> 0"
   shows "invertible (bezout_matrix A a b j bezout)"
@@ -877,7 +878,7 @@ lemma invertible_bezout_matrix:
 lemma echelon_form_upt_k_bezout_matrix:
   fixes A k and i::"'b::mod_type"
   assumes e: "echelon_form_upt_k A k"
-  and ib: "is_bezout_ext (bezout)"
+  and ib: "is_bezout_ext bezout"
   and Aik_0: "A $ i $ from_nat k \<noteq> 0"
   and zero_i: "is_zero_row_upt_k i k A" 
   and i_less_n: "i<n"
@@ -1069,7 +1070,7 @@ lemma bezout_iterate_not_zero:
   assumes Aik_0: "A $ i $ from_nat k \<noteq> 0"
   and n: "n<nrows A"
   and a: "to_nat i \<le> n"
-  and ib: "is_bezout_ext (bezout)"
+  and ib: "is_bezout_ext bezout"
   shows "bezout_iterate A n i (from_nat k) bezout $ i $ from_nat k \<noteq> 0"
   using Aik_0 n a
 proof (induct n arbitrary: A)
@@ -1105,7 +1106,7 @@ qed
 lemma bezout_iterate_preserves:
   fixes A k and i::"'b::mod_type"
   assumes e: "echelon_form_upt_k A k"
-  and ib: "is_bezout_ext (bezout)"
+  and ib: "is_bezout_ext bezout"
   and Aik_0: "A $ i $ from_nat k \<noteq> 0"
   and n: "n<nrows A"
   and "b < from_nat k"
@@ -1188,7 +1189,7 @@ qed
 
 lemma bezout_iterate_preserves_below_n:
   assumes e: "echelon_form_upt_k A k"
-  and ib: "is_bezout_ext (bezout)"
+  and ib: "is_bezout_ext bezout"
   and Aik_0: "A $ i $ from_nat k \<noteq> 0"
   and n: "n<nrows A"
   and n_less_a: "n < to_nat a"
@@ -1262,7 +1263,7 @@ qed
 lemma bezout_iterate_zero_column_k:
   fixes A::"'a::bezout_domain^'cols::{mod_type}^'rows::{mod_type}"
   assumes e: "echelon_form_upt_k A k"
-  and ib: "is_bezout_ext (bezout)"
+  and ib: "is_bezout_ext bezout"
   and Aik_0: "A $ i $ from_nat k \<noteq> 0"
   and n: "n<nrows A"
   and i_le_a: "i<a"
@@ -1424,12 +1425,12 @@ proof -
 qed
 
 
-lemma condition1_part3: 
+lemma condition1_part3:
   fixes A k bezout
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
   else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
-  defines B: "B\<equiv>(fst(echelon_form_of_column_k (A,i,bezout) k))"
-  assumes e: "echelon_form_upt_k A k" and ib: "is_bezout_ext (bezout)"
+  defines B: "B \<equiv> fst ((echelon_form_of_column_k bezout) (A,i) k)"
+  assumes e: "echelon_form_upt_k A k" and ib: "is_bezout_ext bezout"
   and a: "is_zero_row_upt_k a (Suc k) B"
   and "a < b"
   and all_zero: "\<forall>m>from_nat i. A $ m $ from_nat k = 0"
@@ -1442,7 +1443,7 @@ proof (rule is_zero_row_upt_k_suc)
   have i_le_a: "from_nat i\<le>a"
     using condition1_index_le_zero_row[OF e a[unfolded AB[symmetric]]] unfolding i .
   show "A $ b $ from_nat k = 0" by (metis i_le_a all_zero assms(6) le_less_trans)
-  show "is_zero_row_upt_k b k A" 
+  show "is_zero_row_upt_k b k A"
     by (metis (poly_guards_query) AB a assms(6) e 
         echelon_form_upt_k_condition1 is_zero_row_upt_k_le)
 qed
@@ -1451,7 +1452,7 @@ lemma condition1_part4:
   fixes A k bezout i
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
   else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
-  defines B: "B\<equiv>(fst(echelon_form_of_column_k (A,i,bezout) k))"
+  defines B: "B\<equiv> fst ((echelon_form_of_column_k bezout) (A,i) k)"
   assumes e: "echelon_form_upt_k A k"
   assumes a: "is_zero_row_upt_k a (Suc k) A"
   and i_nrows: "i = nrows A"
@@ -1479,8 +1480,8 @@ lemma condition1_part5:
   and k bezout
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
     else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
-  defines B: "B\<equiv>(fst(echelon_form_of_column_k (A,i,bezout) k))"
-  assumes ib: "is_bezout_ext (bezout)" and e: "echelon_form_upt_k A k"
+  defines B: "B \<equiv> fst((echelon_form_of_column_k bezout) (A,i) k)"
+  assumes ib: "is_bezout_ext bezout" and e: "echelon_form_upt_k A k"
   assumes zero_a_B: "is_zero_row_upt_k a (Suc k) B"
   and ab: "a < b"
   and im: "from_nat i < m"
@@ -1643,7 +1644,7 @@ lemma condition2_part1:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}" and k bezout i
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
     else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
-  defines B:"B\<equiv>(fst(echelon_form_of_column_k (A,i,bezout) k))"
+  defines B:"B \<equiv> fst ((echelon_form_of_column_k bezout) (A,i) k)"
   assumes e: "echelon_form_upt_k A k"
   and ab: "a < b" and not_zero_aB: "\<not> is_zero_row_upt_k a (Suc k) B" 
   and not_zero_bB: "\<not> is_zero_row_upt_k b (Suc k) B"
@@ -1711,7 +1712,7 @@ lemma condition2_part3:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}" and k bezout i
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
     else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
-  defines B:"B\<equiv>(fst(echelon_form_of_column_k (A,i,bezout) k))"
+  defines B:"B \<equiv> fst ((echelon_form_of_column_k bezout) (A,i) k)"
   assumes e: "echelon_form_upt_k A k" and k: "k<ncols A"
   and ab: "a < b" and not_zero_aB: "\<not> is_zero_row_upt_k a (Suc k) B" 
   and not_zero_bB: "\<not> is_zero_row_upt_k b (Suc k) B"
@@ -1812,8 +1813,8 @@ lemma condition2_part5:
   fixes A::"'a::{bezout_domain}^'cols::{mod_type}^'rows::{mod_type}" and k bezout i
   defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
   else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
-  defines B:"B\<equiv>(fst(echelon_form_of_column_k (A,i,bezout) k))"
-  assumes ib: "is_bezout_ext (bezout)" and e: "echelon_form_upt_k A k" and k: "k<ncols A"
+  defines B:"B \<equiv> fst ((echelon_form_of_column_k bezout) (A,i) k)"
+  assumes ib: "is_bezout_ext bezout" and e: "echelon_form_upt_k A k" and k: "k<ncols A"
   and ab: "a < b" and not_zero_aB: "\<not> is_zero_row_upt_k a (Suc k) B" 
   and not_zero_bB: "\<not> is_zero_row_upt_k b (Suc k) B"
   and i_m:"from_nat i < m"
@@ -2058,19 +2059,19 @@ qed
 
 lemma echelon_echelon_form_column_k:
   fixes A::"'a::{bezout_domain}^'cols::{mod_type}^'rows::{mod_type}" and k bezout
-  defines i:"i\<equiv>(if \<forall>m. is_zero_row_upt_k m k A then 0 
+  defines i:"i \<equiv> (if \<forall>m. is_zero_row_upt_k m k A then 0 
   else to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1)"
-  defines B:"B\<equiv>(fst(echelon_form_of_column_k (A,i,bezout) k))"
-  assumes ib: "is_bezout_ext (bezout)" and e: "echelon_form_upt_k A k" and k: "k<ncols A"
+  defines B: "B \<equiv> fst ((echelon_form_of_column_k bezout) (A,i) k)"
+  assumes ib: "is_bezout_ext bezout" and e: "echelon_form_upt_k A k" and k: "k<ncols A"
   shows "echelon_form_upt_k B (Suc k)"
   unfolding echelon_form_upt_k_def echelon_form_of_column_k_def Let_def 
 proof auto
   fix a b
-  let ?B2="(fst (if \<forall>m\<ge>from_nat i. A $ m $ from_nat k = 0 then (A, i, bezout)
-    else if \<forall>m>from_nat i. A $ m $ from_nat k = 0 then (A, i + 1, bezout)
+  let ?B2="(fst (if \<forall>m\<ge>from_nat i. A $ m $ from_nat k = 0 then (A, i)
+    else if \<forall>m>from_nat i. A $ m $ from_nat k = 0 then (A, i + 1)
     else (bezout_iterate
     (interchange_rows A (from_nat i) (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> from_nat i \<le> n))
-    (nrows A - 1) (from_nat i) (from_nat k) bezout, i + 1, bezout)))"
+    (nrows A - 1) (from_nat i) (from_nat k) bezout, i + 1)))"
   show "is_zero_row_upt_k a (Suc k) B \<Longrightarrow> a < b \<Longrightarrow> is_zero_row_upt_k b (Suc k) B" 
   proof (unfold B echelon_form_of_column_k_def Let_def fst_conv snd_conv, auto)
     assume 1: "is_zero_row_upt_k a (Suc k) A" and 2: "a < b" 
@@ -2093,13 +2094,13 @@ proof auto
     fix m::'c assume 1: "is_zero_row_upt_k a (Suc k) A" and 2: "i = nrows A"
     show "is_zero_row_upt_k b (Suc k) A" by (rule condition1_part4[OF e 1 2[unfolded i]])
   next
-    let ?B2="(fst (if \<forall>m\<ge>from_nat i. A $ m $ from_nat k = 0 then (A, i, bezout)
-      else if \<forall>m>from_nat i. A $ m $ from_nat k = 0 then (A, i + 1, bezout)
+    let ?B2="(fst (if \<forall>m\<ge>from_nat i. A $ m $ from_nat k = 0 then (A, i)
+      else if \<forall>m>from_nat i. A $ m $ from_nat k = 0 then (A, i + 1)
       else (bezout_iterate
       (interchange_rows A (from_nat i)
       (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> from_nat i \<le> n))
       (nrows A - 1) (from_nat i) (from_nat k) bezout,
-      i + 1, bezout)))"
+      i + 1)))"
     fix m     
     assume 1: "is_zero_row_upt_k a (Suc k) ?B2"                 
       and 2: "a < b"
@@ -2492,14 +2493,13 @@ lemma
   assumes k: "k<ncols A" and ib: "is_bezout_ext bezout"
   shows echelon_echelon_form_of_upt_k:
   "echelon_form_upt_k (echelon_form_of_upt_k A k bezout) (Suc k)"
-  and "foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc k] =
-  (fst (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc k]), 
+  and "foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k] =
+  (fst (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k]), 
   if \<forall>m. is_zero_row_upt_k m (Suc k) 
-  (fst (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc k])) then 0
+  (fst (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k])) then 0
   else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) 
-  (fst (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc k]))) + 1,
-  bezout)"
-using k 
+  (fst (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k]))) + 1)"
+using k
 proof (induct k)
   let ?interchange="interchange_rows A 0 (LEAST n. A $ n $ 0 \<noteq> 0)"
   have i_rw: "(if \<forall>m. is_zero_row_upt_k m 0 A then 0 
@@ -2510,11 +2510,11 @@ proof (induct k)
     by (auto, subst i_rw[symmetric], rule echelon_echelon_form_column_k[OF ib echelon_form_upt_k_0], 
       simp add: ncols_def)
   have rw_upt: "[0..<Suc 0] = [0]" by simp
-  show "foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc 0] =
-    (fst (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc 0]),
-    if \<forall>m. is_zero_row_upt_k m (Suc 0) (fst (foldl echelon_form_of_column_k 
-    (A, 0, bezout) [0..<Suc 0])) then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc 0) 
-    (fst (foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc 0]))) + 1, bezout)"
+  show "foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc 0] =
+    (fst (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc 0]),
+    if \<forall>m. is_zero_row_upt_k m (Suc 0) (fst (foldl (echelon_form_of_column_k bezout) 
+    (A, 0) [0..<Suc 0])) then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc 0) 
+    (fst (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc 0]))) + 1)"
     unfolding rw_upt
     unfolding foldl.simps
     unfolding echelon_form_of_column_k_def
@@ -2586,68 +2586,54 @@ proof (induct k)
   qed
 next
   fix k
-  let ?fold="(foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc (Suc k)])"
-  let ?fold2="(foldl echelon_form_of_column_k (A, 0, bezout) [0..<(Suc k)])"
+  let ?fold="(foldl (echelon_form_of_column_k bezout)(A, 0) [0..<Suc (Suc k)])"
+  let ?fold2="(foldl (echelon_form_of_column_k bezout) (A, 0) [0..<(Suc k)])"
   assume "(k < ncols A \<Longrightarrow> echelon_form_upt_k (echelon_form_of_upt_k A k bezout) (Suc k))" and
-    "(k < ncols A \<Longrightarrow> foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc k] =
-    (fst ?fold2, if \<forall>m. is_zero_row_upt_k m (Suc k)  (fst ?fold2) then 0
-    else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (fst ?fold2)) + 1, bezout))"
-    and Suc_k: "Suc k < ncols A"
-  hence hyp_foldl: "foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc k] =
+    "(k < ncols A \<Longrightarrow> foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k] =
     (fst ?fold2, if \<forall>m. is_zero_row_upt_k m (Suc k) (fst ?fold2) then 0
-    else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (fst ?fold2)) + 1, bezout)" 
+    else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (fst ?fold2)) + 1))"
+    and Suc_k: "Suc k < ncols A"
+  hence hyp_foldl: "foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k] =
+    (fst ?fold2, if \<forall>m. is_zero_row_upt_k m (Suc k) (fst ?fold2) then 0
+    else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (fst ?fold2)) + 1)" 
     and hyp_echelon: "echelon_form_upt_k (echelon_form_of_upt_k A k bezout) (Suc k)" by auto
   have rw: "[0..<Suc (Suc k)]= [0..<(Suc k)] @ [(Suc k)]" by auto
   have rw2: "?fold2 = (echelon_form_of_upt_k A k bezout, if \<forall>m. is_zero_row_upt_k m (Suc k) 
-    (echelon_form_of_upt_k A k bezout) then 0 else 
-    to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (echelon_form_of_upt_k A k bezout)) + 1,
-    bezout)" unfolding echelon_form_of_upt_k_def using hyp_foldl by fast
+    (echelon_form_of_upt_k A k bezout) then 0 else
+    to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (echelon_form_of_upt_k A k bezout)) + 1)" 
+      unfolding echelon_form_of_upt_k_def using hyp_foldl by fast
   show "echelon_form_upt_k (echelon_form_of_upt_k A (Suc k) bezout) (Suc (Suc k))"
     unfolding echelon_form_of_upt_k_def 
     unfolding rw unfolding foldl_append unfolding foldl.simps unfolding rw2
   proof (rule echelon_echelon_form_column_k[OF ib hyp_echelon])
     show "Suc k < ncols (echelon_form_of_upt_k A k bezout)" using Suc_k unfolding ncols_def .
   qed
-  show "foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc (Suc k)] =
+  show "foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc (Suc k)] =
     (fst ?fold,
     if \<forall>m. is_zero_row_upt_k m (Suc (Suc k)) 
     (fst ?fold) then 0
     else to_nat
     (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) 
-    (fst ?fold)) + 1, bezout)"
+    (fst ?fold)) + 1)"
   proof (rule prod_eqI, metis fst_conv)
     def A'\<equiv>"(fst ?fold2)"
     let ?greatest="(GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) A')"
     have k: "k < ncols A'" using Suc_k unfolding ncols_def by auto
     have k2: "Suc k < ncols A'" using Suc_k unfolding ncols_def by auto
-    have fst_snd_foldl: "fst (snd ?fold2) = fst (snd (fst ?fold2,
+    have fst_snd_foldl: "snd ?fold2 = snd (fst ?fold2,
       if \<forall>m. is_zero_row_upt_k m (Suc k) (fst ?fold2) then 0
-      else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (fst ?fold2)) + 1, bezout))"
+      else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc k) (fst ?fold2)) + 1)"
       using hyp_foldl by simp
     have ncols_eq: "ncols A = ncols A'" unfolding A'_def ncols_def ..
     have rref_A': "echelon_form_upt_k A' (Suc k)"
       using hyp_echelon unfolding A'_def echelon_form_of_upt_k_def .
     show "snd ?fold = snd (fst ?fold, if \<forall>m. is_zero_row_upt_k m (Suc (Suc k)) (fst ?fold) then 0
-      else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (fst ?fold)) + 1, bezout)"
-    proof (rule prod_eqI)      
-      have bezout_eq: "(snd (snd (echelon_form_of_column_k 
-        (foldl echelon_form_of_column_k (A, 0, bezout) [0..<k]) k))) = bezout" 
-        using rw2 by auto
-      have bezout_eq2: "snd (snd ?fold) = bezout"
-        unfolding rw unfolding foldl_append 
-        unfolding foldl.simps unfolding echelon_form_of_column_k_def Let_def split_beta
-        using bezout_eq by auto
-      thus "snd (snd ?fold) = snd (snd (fst ?fold, if \<forall>m. is_zero_row_upt_k m (Suc (Suc k)) 
-        (fst ?fold) then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) 
-        (fst ?fold)) + 1, bezout))" unfolding snd_conv fst_conv .              
-      show "fst (snd ?fold) = fst (snd (fst ?fold, if \<forall>m. is_zero_row_upt_k m (Suc (Suc k)) 
-        (fst ?fold) then 0 else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k))
-        (fst ?fold)) + 1, bezout))"
+      else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (fst ?fold)) + 1)"
         unfolding fst_conv snd_conv unfolding rw 
         unfolding foldl_append unfolding foldl.simps
         unfolding echelon_form_of_column_k_def Let_def split_beta fst_snd_foldl 
         unfolding A'_def[symmetric]
-      proof (auto simp add: least_mod_type from_nat_0 bezout_eq from_nat_to_nat_greatest)
+      proof (auto simp add: least_mod_type from_nat_0 from_nat_to_nat_greatest)
         fix m assume "A' $ m $ from_nat (Suc k) \<noteq> 0"
         thus "\<exists>m. \<not> is_zero_row_upt_k m (Suc (Suc k)) A'" 
           and "\<exists>m. \<not> is_zero_row_upt_k m (Suc (Suc k)) A'"
@@ -2808,8 +2794,7 @@ next
           (LEAST n. A' $ n $ from_nat (Suc k) \<noteq> 0 \<and> ?greatest + 1 \<le> n))
           (nrows A' - Suc 0) (?greatest + 1) (from_nat (Suc k)) bezout))"
           by (rule echelon_foldl_condition7[OF ib rref_A' k2 1 2 3 4 ])
-      qed
-    qed
+     qed
   qed
 qed
 
@@ -2817,7 +2802,7 @@ subsubsection{*Proving the existence of invertible matrices which do the transfo
 
 lemma bezout_iterate_invertible:
   fixes A::"'a::{bezout_domain}^'cols^'rows::{mod_type}"
-  assumes ib: "is_bezout_ext (bezout)"
+  assumes ib: "is_bezout_ext bezout"
   assumes "n<nrows A"
   and "to_nat i\<le>n"
   and "A $ i $ j \<noteq> 0"
@@ -2871,8 +2856,8 @@ qed
 
 lemma echelon_form_of_column_k_invertible:
   fixes A::"'a::{bezout_domain}^'cols::{mod_type}^'rows::{mod_type}"
-  assumes ib: "is_bezout_ext (bezout)"
-  shows "\<exists>P. invertible P \<and> P**A = fst (echelon_form_of_column_k (A,i,bezout) k)"  
+  assumes ib: "is_bezout_ext bezout"
+  shows "\<exists>P. invertible P \<and> P ** A = fst ((echelon_form_of_column_k bezout) (A,i) k)"  
 proof -
   have "\<exists>P. invertible P \<and> P ** A = A" 
     by (simp add: exI[of _ "mat 1"] matrix_mul_lid invertible_def) 
@@ -2911,19 +2896,9 @@ proof -
   qed
 qed
 
-lemma snd_snd_foldl_echelon_form_of_column_k:
-  "snd (snd (foldl echelon_form_of_column_k (A, 0, bezout) [0..<k])) = bezout"
-proof (induct k)
-  case 0 thus ?case by auto
-next
-  case (Suc K)
-  thus ?case
-    by (auto simp add: split_beta echelon_form_of_column_k_def Let_def Suc.hyps)
-qed
-
 lemma echelon_form_of_upt_k_invertible:
   fixes A::"'a::{bezout_domain}^'cols::{mod_type}^'rows::{mod_type}"
-  assumes ib: "is_bezout_ext (bezout)"
+  assumes ib: "is_bezout_ext bezout"
   shows "\<exists>P. invertible P \<and> P**A = (echelon_form_of_upt_k A k bezout)"
 proof (induct k)
   case 0
@@ -2933,16 +2908,14 @@ proof (induct k)
 next
   case (Suc k)
   have set_rw: "[0..<Suc (Suc k)] = [0..<Suc k] @ [Suc k]" by simp
-  let ?foldl="(foldl echelon_form_of_column_k (A, 0, bezout) [0..<Suc k])"
-  have ib2: "is_bezout_ext (snd (snd ?foldl))"
-    using snd_snd_foldl_echelon_form_of_column_k
-    by (metis ib)
+  let ?foldl = "foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc k]"
   obtain P where invP: "invertible P" 
     and P: "P ** A = fst ?foldl"
     using Suc.hyps unfolding echelon_form_of_upt_k_def by auto
+    term ?foldl
   obtain Q where invQ: "invertible Q" and Q: 
-    "Q ** fst ?foldl = fst (echelon_form_of_column_k (fst ?foldl, fst (snd ?foldl), snd (snd ?foldl)) (Suc k))"
-    using echelon_form_of_column_k_invertible[OF ib2] by blast
+    "Q ** fst ?foldl = fst ((echelon_form_of_column_k bezout) (fst ?foldl, snd ?foldl) (Suc k))"
+    using echelon_form_of_column_k_invertible [OF ib] by blast
   show ?case 
   proof (rule exI[of _ "Q**P"], rule conjI)
     show "invertible (Q**P)" by (metis invP invQ invertible_mult)
@@ -2995,22 +2968,22 @@ corollary echelon_form_of_euclidean_invertible:
 subsection{*More efficient code equations*}
 
 definition
-  "echelon_form_of_column_k_efficient A' k =
-    (let (A, i, bezout) = A';
+  "echelon_form_of_column_k_efficient bezout A' k =
+    (let (A, i) = A';
          from_nat_k = from_nat k;
          from_nat_i = from_nat i;
          all_zero_below_i = (\<forall>m>from_nat_i. A $ m $ from_nat_k = 0)
-     in if  (i = nrows A) \<or> (A $ from_nat_i $ from_nat_k = 0) \<and> all_zero_below_i  then (A, i, bezout)
-           else if all_zero_below_i then (A, i + 1, bezout)
+     in if  (i = nrows A) \<or> (A $ from_nat_i $ from_nat_k = 0) \<and> all_zero_below_i  then (A, i)
+           else if all_zero_below_i then (A, i + 1)
            else
             let n = (LEAST n. A $ n $ from_nat_k \<noteq> 0 \<and> from_nat_i \<le> n);
                interchange_A = interchange_rows A (from_nat_i) n
             in
-              (bezout_iterate (interchange_A) (nrows A - 1) (from_nat_i) (from_nat_k) bezout, i + 1, bezout))"
+              (bezout_iterate (interchange_A) (nrows A - 1) (from_nat_i) (from_nat_k) bezout, i + 1))"
 
 lemma echelon_form_of_column_k_efficient[code]: 
-  "echelon_form_of_column_k (A,i,bezout) k
-    = echelon_form_of_column_k_efficient (A,i,bezout) k"
+  "(echelon_form_of_column_k bezout) (A,i) k
+    = (echelon_form_of_column_k_efficient bezout) (A,i) k"
   unfolding echelon_form_of_column_k_def echelon_form_of_column_k_efficient_def
   unfolding Let_def by force
 
