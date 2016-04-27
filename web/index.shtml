@@ -50,6 +50,13 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2016-04-27:
+<a href="entries/CYK.shtml">A formalisation of the Cocke-Younger-Kasami algorithm</a>
+<br>Author:
+Maksym Bortin
+</td></tr>
+
+<tr><td class="entry">
 2016-04-26:
 <a href="entries/Noninterference_Sequential_Composition.shtml">Conservation of CSP Noninterference Security under Sequential Composition</a>
 <br>Author:
