@@ -108,9 +108,8 @@ text \<open>
 inductive_set Clos :: "relation \<Rightarrow> nat \<Rightarrow> relation"
   for rel :: relation and n :: nat
 where
-  base: "(x, y) \<in> rel \<Longrightarrow> (x, y) \<in> Clos rel n"
-| step: "(x, z) \<in> Clos rel n \<Longrightarrow> (z, y) \<in> Clos rel n \<Longrightarrow> z < n \<Longrightarrow>
-    (x, y) \<in> Clos rel n"
+  base: "(x, y) \<in> Clos rel n" if "(x, y) \<in> rel"
+| step: "(x, y) \<in> Clos rel n" if "(x, z) \<in> Clos rel n" and "(z, y) \<in> Clos rel n" and "z < n"
 
 theorem Clos_closure:
   assumes "is_bound rel n"
@@ -227,9 +226,9 @@ text \<open>
 inductive Steps :: "relation \<Rightarrow> nat \<Rightarrow> nat \<times> nat \<Rightarrow> bool"
   for rel :: relation
 where
-  base: "(x, y) \<in> rel \<Longrightarrow> Steps rel 0 (x, y)"
-| copy: "Steps rel n (x, y) \<Longrightarrow> Steps rel (Suc n) (x, y)"
-| step: "Steps rel n (x, n) \<Longrightarrow> Steps rel n (n, y) \<Longrightarrow> Steps rel (Suc n) (x, y)"
+  base: "Steps rel 0 (x, y)" if "(x, y) \<in> rel"
+| copy: "Steps rel (Suc n) (x, y)" if "Steps rel n (x, y)"
+| step: "Steps rel (Suc n) (x, y)" if "Steps rel n (x, n)" and "Steps rel n (n, y)"
 
 lemma steps_equiv: "(x, y) \<in> steps rel n \<longleftrightarrow> Steps rel n (x, y)"
 proof
