@@ -3634,3 +3634,15 @@ abstract =
   recursive fashion, following the Shannon decomposition of the argument
   functions. The implementation mixes and adapts known techniques and is
   built with efficiency in mind.
+
+[No_FTL_observers]
+title = No Faster-Than-Light Observers
+author = Mike Stannett <mailto:m.stannett@sheffield.ac.uk>, István Németi <http://www.renyi.hu/~nemeti/>
+date = 2016-04-28
+topic = Mathematics/Physics
+abstract = 
+  We provide a formal proof within First Order Relativity Theory that no
+  observer can travel faster than the speed of light. Originally
+  reported in Stannett & Németi (2014) "Using Isabelle/HOL to verify
+  first-order relativity theory", Journal of Automated Reasoning 52(4),
+  pp. 361-378.
