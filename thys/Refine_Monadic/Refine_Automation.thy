@@ -93,7 +93,7 @@ structure Refine_Automation :REFINE_AUTOMATION = struct
       (list_comb (Free (name,param_types ---> fastype_of t'),param_vars),t');
 
     val ((lhs_t,(_,def_thm)),lthy) 
-      = Specification.definition (NONE,(Attrib.empty_binding,def_t)) lthy;
+      = Specification.definition NONE [] (Attrib.empty_binding,def_t) lthy;
 
     (*val _ = tracing "xxxx";*)
     val app_t = list_comb (lhs_t, params);
@@ -288,7 +288,7 @@ let
   val attribs = map (Attrib.check_src lthy) attribs_raw;
 
   val ((_,(_,def_thm)),lthy) = Specification.definition 
-    (SOME (fun_name,NONE,NoSyn),((Binding.empty,attribs),def_term)) lthy;
+    (SOME (fun_name,NONE,NoSyn)) [] ((Binding.empty,attribs),def_term) lthy;
 
   val folded_thm = Local_Defs.fold lthy [def_thm] thm';
 

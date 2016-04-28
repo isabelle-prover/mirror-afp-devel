@@ -12,19 +12,19 @@ sig
   include NOMINAL_FUNCTION_DATA
 
   val add_nominal_function: (binding * typ option * mixfix) list ->
-    (Attrib.binding * term) list ->  Nominal_Function_Common.nominal_function_config ->
+    Specification.multi_specs ->  Nominal_Function_Common.nominal_function_config ->
     (Proof.context -> tactic) -> local_theory -> nominal_info * local_theory
 
   val add_nominal_function_cmd: (binding * string option * mixfix) list ->
-    (Attrib.binding * string) list ->  Nominal_Function_Common.nominal_function_config ->
+    Specification.multi_specs_cmd ->  Nominal_Function_Common.nominal_function_config ->
     (Proof.context -> tactic) -> bool -> local_theory -> nominal_info * local_theory
 
   val nominal_function: (binding * typ option * mixfix) list ->
-    (Attrib.binding * term) list ->  Nominal_Function_Common.nominal_function_config ->
+    Specification.multi_specs ->  Nominal_Function_Common.nominal_function_config ->
     local_theory -> Proof.state
 
   val nominal_function_cmd: (binding * string option * mixfix) list ->
-    (Attrib.binding * string) list ->  Nominal_Function_Common.nominal_function_config ->
+    Specification.multi_specs_cmd ->  Nominal_Function_Common.nominal_function_config ->
     bool -> local_theory -> Proof.state
 
   val get_info : Proof.context -> term -> nominal_info
@@ -203,9 +203,9 @@ fun gen_add_nominal_function do_print prep default_constraint fixspec eqns confi
   end
 
 val add_nominal_function =
-  gen_add_nominal_function false Specification.check_spec (Type_Infer.anyT @{sort type})
+  gen_add_nominal_function false Specification.check_multi_specs (Type_Infer.anyT @{sort type})
 fun add_nominal_function_cmd a b c d int = 
-  gen_add_nominal_function int Specification.read_spec "_::type" a b c d
+  gen_add_nominal_function int Specification.read_multi_specs "_::type" a b c d
 
 fun gen_nominal_function do_print prep default_constraint fixspec eqns config lthy =
   let
@@ -218,9 +218,9 @@ fun gen_nominal_function do_print prep default_constraint fixspec eqns config lt
   end
 
 val nominal_function =
-  gen_nominal_function false Specification.check_spec (Type_Infer.anyT @{sort type})
+  gen_nominal_function false Specification.check_multi_specs (Type_Infer.anyT @{sort type})
 fun nominal_function_cmd a b c int = 
-  gen_nominal_function int Specification.read_spec "_::type" a b c
+  gen_nominal_function int Specification.read_multi_specs "_::type" a b c
 
 fun get_info ctxt t = Item_Net.retrieve (get_function ctxt) t
   |> the_single |> snd
@@ -241,7 +241,7 @@ local
      >> (fn opts => fold apply_opt opts default)
 in
   fun nominal_function_parser default_cfg =
-      config_parser default_cfg -- Parse.fixes -- Parse_Spec.where_alt_specs
+      config_parser default_cfg -- Parse.fixes -- Parse_Spec.where_multi_specs
 end
 
 

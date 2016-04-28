@@ -408,9 +408,9 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
     |> Class.instantiation (tycos, [], Syntax.read_sort (Proof_Context.init_global thy) "object")
     |> fold_map (fn _ => fn thy =>
         let val ((_, (_, ty)), thy) = Specification.definition_cmd
-                                       ( NONE
-                                       , ( (To_binding (To_string0 n_def ^ "_" ^ name ^ "_def"), [])
-                                         , of_semi__term expr)) false thy in
+                                       NONE []
+                                       ((To_binding (To_string0 n_def ^ "_" ^ name ^ "_def"), [])
+                                         , of_semi__term expr) false thy in
          (ty, thy)
         end) tycos
     |-> Class.prove_instantiation_exit_result (map o Morphism.thm) (fn ctxt => fn thms =>
@@ -420,7 +420,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
 | Theory_overloading (Overloading (n_c, e_c, n, e)) => in_theory
    (fn thy => thy
     |> Overloading.overloading_cmd [(To_string0 n_c, of_semi__term e_c, true)]
-    |> snd o Specification.definition_cmd (NONE, ((To_sbinding n, []), of_semi__term e)) false
+    |> snd o Specification.definition_cmd NONE [] ((To_sbinding n, []), of_semi__term e) false
     |> Local_Theory.exit_global)
 | Theory_consts (Consts (n, ty, symb)) => in_theory
    (Sign.add_consts_cmd [( To_sbinding n
@@ -437,7 +437,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
           (SOME ( To_sbinding name
                 , NONE
                 , Mixfix (Input.string ("(" ^ of_semi__term abbrev ^ ")"), [], 1000, Position.no_range)), e) in
-    (snd o Specification.definition_cmd (def, ((@{binding ""}, []), of_semi__term e)) false)
+    (snd o Specification.definition_cmd def [] ((@{binding ""}, []), of_semi__term e) false)
     end
 | Theory_lemmas (Lemmas_simp_thm (simp, s, l)) => in_local
    (fn lthy => (snd o Specification.theorems Thm.theoremK
@@ -486,9 +486,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
               |> fold (fn l => fold semi__command_state l o Proof.local_qed arg) l
               |> Proof.global_qed arg end))
 | Theory_axiomatization (Axiomatization (n, e)) => in_theory
-   (#2 o Specification.axiomatization_cmd
-                                     []
-                                     [((To_sbinding n, []), [of_semi__term e])])
+   (#2 o Specification.axiomatization_cmd [] [] [((To_sbinding n, []), [of_semi__term e])])
 | Theory_section _ => in_theory I
 | Theory_text _ => in_theory I
 | Theory_ML (SML ml) =>
@@ -1113,7 +1111,7 @@ ML\<open>
 fun exec_deep (env, output_header_thy, seri_args, filename_thy, tmp_export_code, l_obj) thy0 =
   let open Generation_mode in
   let val of_arg = META.isabelle_of_compiler_env_config META.isabelle_apply I in
-  let fun def s = in_local (snd o Specification.definition_cmd (NONE, ((@{binding ""}, []), s)) false) in
+  let fun def s = in_local (snd o Specification.definition_cmd NONE [] ((@{binding ""}, []), s) false) in
   let val name_main = Deep.mk_free (Proof_Context.init_global thy0)
                                    Deep0.Export_code_env.Isabelle.argument_main [] in
   thy0

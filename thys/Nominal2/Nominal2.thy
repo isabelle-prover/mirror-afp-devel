@@ -109,7 +109,7 @@ let
     (raw_bind bn, SOME (replace_typ dts_env ty), NoSyn)) bn_funs
   
   val bn_eqs' = map (fn (attr, trm) => 
-    (attr, replace_term (cnstrs_env @ bn_fun_env) dts_env trm)) bn_eqs
+    ((attr, replace_term (cnstrs_env @ bn_fun_env) dts_env trm), [])) bn_eqs
 in
   (bn_funs', bn_eqs') 
 end 
@@ -582,7 +582,7 @@ let
   val lthy = Named_Target.theory_init thy
 
   val ((bn_funs, bn_eqs), lthy') = 
-    Specification.read_spec bn_fun_strs bn_eq_strs lthy
+    Specification.read_multi_specs bn_fun_strs bn_eq_strs lthy
 
   fun prep_bn_fun ((bn, T), mx) = (bn, T, mx) 
   
@@ -727,7 +727,7 @@ val dt_parser =
 
 (* binding function parser *)
 val bnfun_parser = 
-  Scan.optional (@{keyword "binder"} |-- Parse.fixes -- Parse_Spec.where_alt_specs) ([], [])
+  Scan.optional (@{keyword "binder"} |-- Parse.fixes -- Parse_Spec.where_multi_specs) ([], [])
 
 (* main parser *)
 val main_parser =
