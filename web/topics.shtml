@@ -88,6 +88,7 @@
 <a href="entries/Imperative_Insertion_Sort.shtml">Imperative_Insertion_Sort</a> &nbsp;
 <a href="entries/Formal_SSA.shtml">Formal_SSA</a> &nbsp;
 <a href="entries/ROBDD.shtml">ROBDD</a> &nbsp;
+<a href="entries/Groebner_Bases.shtml">Groebner_Bases</a> &nbsp;
 
 <strong>Distributed:</strong>&nbsp;<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
 <a href="entries/GenClock.shtml">GenClock</a> &nbsp;
@@ -346,6 +347,7 @@
 <a href="entries/Algebraic_Numbers.shtml">Algebraic_Numbers</a> &nbsp;
 <a href="entries/Polynomial_Interpolation.shtml">Polynomial_Interpolation</a> &nbsp;
 <a href="entries/Polynomial_Factorization.shtml">Polynomial_Factorization</a> &nbsp;
+<a href="entries/Groebner_Bases.shtml">Groebner_Bases</a> &nbsp;
 </div>
 
 <h3>Analysis</h3>

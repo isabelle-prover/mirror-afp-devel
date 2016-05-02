@@ -3646,3 +3646,19 @@ abstract =
   reported in Stannett & Németi (2014) "Using Isabelle/HOL to verify
   first-order relativity theory", Journal of Automated Reasoning 52(4),
   pp. 361-378.
+
+[Groebner_Bases]
+title = Gröbner Bases Theory
+author = Fabian Immler <http://www.in.tum.de/~immler/>, Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>
+date = 2016-05-02
+topic = Mathematics/Algebra, Computer Science/Algorithms
+abstract = 
+  This formalization is concerned with the theory of Gröbner bases in
+  (commutative) multivariate polynomial rings over fields, originally
+  developed by Buchberger in his 1965 PhD thesis. Apart from the
+  statement and proof of the main theorem of the theory, the
+  formalization also implements Buchberger's algorithm for actually
+  computing Gröbner bases as a tail-recursive function, thus allowing to
+  effectively decide ideal membership in finitely generated polynomial
+  ideals. Furthermore, all functions can be executed on a concrete
+  representation of multivariate polynomials as association lists.

@@ -1,0 +1,12 @@
+chapter AFP
+
+session Groebner_Bases (AFP) = HOL +
+  options [timeout = 600]
+  theories [document = false]
+    "../Abstract-Rewriting/Abstract_Rewriting"
+    "~~/src/HOL/Library/AList"
+  theories
+    "Poly_Lists"
+  document_files
+    "root.tex"
+    "root.bib"
