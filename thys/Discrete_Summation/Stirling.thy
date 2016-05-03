@@ -1,4 +1,3 @@
-
 (* Authors: Amine Chaieb & Florian Haftmann, TU Muenchen 
             with contributions by Lukas Bulwahn and Manuel Eberl*)
 
@@ -97,7 +96,6 @@ next
   next
     case Suc
     from this have geq1: "Suc 0 \<le> n" by simp
-    find_theorems "_ dvd (fact _)"
     have "stirling (Suc (Suc n)) 2 = Suc n * stirling (Suc n) 2 + stirling (Suc n) (Suc 0)"
       by (simp only: stirling.simps(4)[of "Suc n"] numerals(2))
     also have "... = Suc n * (\<Sum>k=1..n. fact n div k) + fact n"

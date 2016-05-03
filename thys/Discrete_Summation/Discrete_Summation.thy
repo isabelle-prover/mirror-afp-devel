@@ -1,4 +1,3 @@
-
 (* Author: Florian Haftmann, TU Muenchen *)
 
 section {* Some basic facts about discrete summation *}
