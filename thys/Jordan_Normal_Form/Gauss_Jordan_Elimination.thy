@@ -11,7 +11,7 @@ text \<open>We define the elementary row operations and use them to implement th
   certain results on determinants, as well as determine a basis of the kernel
   of a matrix.\<close> 
 
-theory Gauss_Jordan
+theory Gauss_Jordan_Elimination
 imports Matrix
 begin
 

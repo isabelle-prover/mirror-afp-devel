@@ -11,6 +11,7 @@ session "Jordan_Normal_Form" (AFP) = "JNF-AFP-Lib" +
     Matrix_Complexity
     Jordan_Normal_Form_Existence
     Jordan_Normal_Form_Uniqueness
+    Spectral_Radius
   document_files
     "root.bib"
     "root.tex"
