@@ -3662,3 +3662,23 @@ abstract =
   effectively decide ideal membership in finitely generated polynomial
   ideals. Furthermore, all functions can be executed on a concrete
   representation of multivariate polynomials as association lists.
+
+[Bell_Numbers_Spivey]
+title = Spivey's Generalized Recurrence for Bell Numbers
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+date = 2016-05-04
+topic = Mathematics/Combinatorics
+abstract =
+  This entry defines the Bell numbers as the cardinality of set partitions for
+  a carrier set of given size, and derives Spivey's generalized recurrence
+  relation for Bell numbers following his elegant and intuitive combinatorial
+  proof.
+  <p>
+  As the set construction for the combinatorial proof requires construction of
+  three intermediate structures, the main difficulty of the formalization is
+  handling the overall combinatorial argument in a structured way.
+  The introduced proof structure allows us to compose the combinatorial argument
+  from its subparts, and supports to keep track how the detailed proof steps are
+  related to the overall argument. To obtain this structure, this entry uses set
+  monad notation for the set construction's definition, introduces suitable
+  predicates and rules, and follows a repeating structure in its Isar proof.
