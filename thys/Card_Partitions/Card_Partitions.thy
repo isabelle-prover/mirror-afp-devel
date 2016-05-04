@@ -4,7 +4,7 @@ section {* Cardinality of Set Partitions *}
 
 theory Card_Partitions
 imports
-  "../Discrete_Summation/Stirling"
+  "~~/src/HOL/Library/Stirling"
 begin
 
 subsection {* Definition of Set Partitions *}

@@ -4,7 +4,7 @@
 section {* Falling factorials *}
 
 theory Factorials
-imports Complex_Main Stirling
+imports Complex_Main "~~/src/HOL/Library/Stirling"
 begin
 
 primrec ffact :: "nat \<Rightarrow> 'a::comm_ring_1 \<Rightarrow> 'a"
