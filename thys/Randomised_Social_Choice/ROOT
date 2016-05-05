@@ -1,0 +1,12 @@
+chapter AFP
+
+session "Randomised_Social_Choice" (AFP) = "HOL-Probability" +
+  theories [document = false]
+    "../List-Index/List_Index"
+  theories
+    Randomised_Social_Choice
+    "Automation/SDS_Automation"
+  document_files
+    "root.tex"
+    "root.bib"
+
