@@ -3705,3 +3705,24 @@ abstract =
   Stochastic Dominance, but it should be easy to extend it to other
   domains – such as strict preferences – or other lottery extensions –
   such as Bilinear Dominance or Pairwise Comparison.
+
+[SDS_Impossibility]
+title = The Incompatibility of SD-Efficiency and SD-Strategy-Proofness
+author = Manuel Eberl <mailto:eberlm@in.tum.de>
+date = 2016-05-04
+topic = Mathematics/Economics
+abstract =
+  This formalisation contains the proof that there is no anonymous and
+  neutral Social Decision Scheme for at least four voters and
+  alternatives that fulfils both SD-Efficiency and SD-Strategy-
+  Proofness. The proof is a fully structured and quasi-human-redable
+  one. It was derived from the (unstructured) SMT proof of the case for
+  exactly four voters and alternatives by Brandl et al.  Their proof
+  relies on an unverified translation of the original problem to SMT,
+  and the proof that lifts the argument for exactly four voters and
+  alternatives to the general case is also not machine-checked.  In this
+  Isabelle proof, on the other hand, all of these steps are  fully
+  proven and machine-checked. This is particularly important seeing as a
+  previously published informal proof of a weaker statement contained a
+  mistake in precisely this lifting step.
+
