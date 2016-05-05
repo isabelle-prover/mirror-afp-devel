@@ -875,7 +875,7 @@ title = A formalisation of the Cocke-Younger-Kasami algorithm
 author = Maksym Bortin <mailto:Maksym.Bortin@nicta.com.au>
 date = 2016-04-27
 topic = Computer Science/Algorithms, Computer Science/Automata and Formal Languages
-abstract = 
+abstract =
   The theory provides a formalisation of the Cocke-Younger-Kasami
   algorithm (CYK for short), an approach to solving the word problem
   for context-free languages.  CYK decides if a word is in the
@@ -3640,7 +3640,7 @@ title = No Faster-Than-Light Observers
 author = Mike Stannett <mailto:m.stannett@sheffield.ac.uk>, István Németi <http://www.renyi.hu/~nemeti/>
 date = 2016-04-28
 topic = Mathematics/Physics
-abstract = 
+abstract =
   We provide a formal proof within First Order Relativity Theory that no
   observer can travel faster than the speed of light. Originally
   reported in Stannett & Németi (2014) "Using Isabelle/HOL to verify
@@ -3652,7 +3652,7 @@ title = Gröbner Bases Theory
 author = Fabian Immler <http://www.in.tum.de/~immler/>, Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>
 date = 2016-05-02
 topic = Mathematics/Algebra, Computer Science/Algorithms
-abstract = 
+abstract =
   This formalization is concerned with the theory of Gröbner bases in
   (commutative) multivariate polynomial rings over fields, originally
   developed by Buchberger in his 1965 PhD thesis. Apart from the
@@ -3682,3 +3682,26 @@ abstract =
   related to the overall argument. To obtain this structure, this entry uses set
   monad notation for the set construction's definition, introduces suitable
   predicates and rules, and follows a repeating structure in its Isar proof.
+
+[Randomised_Social_Choice]
+title = Randomised Social Choice Theory
+author = Manuel Eberl <eberlm@in.tum.de>
+date = 2016-05-05
+topic = Mathematics/Economics
+abstract =
+  This work contains a formalisation of basic Randomised Social Choice,
+  including Stochastic Dominance and Social Decision Schemes (SDSs)
+  along with some of their most important properties (Anonymity,
+  Neutrality, ex-post- and SD-Efficiency, SD-Strategy-Proofness) and two
+  particular SDSs – Random Dictatorship and Random Serial Dictatorship
+  (with proofs of the properties that they satisfy). Many important
+  properties of these concepts are also proven – such as the two
+  equivalent characterisations of Stochastic Dominance and the fact that
+  SD-efficiency of a lottery only depends on the support.  The entry
+  also provides convenient commands to define Preference Profiles, prove
+  their well-formedness, and automatically derive restrictions that
+  sufficiently nice SDSs need to satisfy on the defined profiles.
+  Currently, the formalisation focuses on weak preferences and
+  Stochastic Dominance, but it should be easy to extend it to other
+  domains – such as strict preferences – or other lottery extensions –
+  such as Bilinear Dominance or Pairwise Comparison.
