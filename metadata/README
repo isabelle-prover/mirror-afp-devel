@@ -78,12 +78,6 @@ files.
 
     Allowed values are BSD and LGPL.
 
-	Optionally, it can be documented which other entries are used by the
-	entry, using the depends-on key with a comma-separated list of entry
-	names:
-
-	depends-on = Refine_Monadic, Collections
-
 	Finally, sometimes existing entries get significant contributions from
 	other authors. These authors can be listed on a 'contributors' line.
 	A separate change-history entry should indicated what these people
