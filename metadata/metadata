@@ -1,3 +1,26 @@
+[MFMC_Countable]
+title = A formal proof of the max-flow min-cut theorem for countable networks
+author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+date = 2016-05-09
+topic = Mathematics/Graph Theory
+abstract = 
+  This article formalises a proof of the maximum-flow minimal-cut
+  theorem for networks with countably many edges.  A network is a
+  directed graph with non-negative real-valued edge labels and two
+  dedicated vertices, the source and the sink.  A flow in a network
+  assigns non-negative real numbers to the edges such that for all
+  vertices except for the source and the sink, the sum of values on
+  incoming edges equals the sum of values on outgoing edges.  A cut is a
+  subset of the vertices which contains the source, but not the sink.
+  Our theorem states that in every network, there is a flow and a cut
+  such that the flow saturates all the edges going out of the cut and is
+  zero on all the incoming edges.  The proof is based on the paper
+  <emph>The Max-Flow Min-Cut theorem for countable networks</emph> by
+  Aharoni et al.  As an application, we derive a characterisation of the
+  lifting operation for relations on discrete probability distributions,
+  which leads to a concise proof of its distributivity over relation
+  composition.
+
 [Liouville_Numbers]
 title = Liouville numbers
 author = Manuel Eberl <http://in.tum.de/~eberlm>

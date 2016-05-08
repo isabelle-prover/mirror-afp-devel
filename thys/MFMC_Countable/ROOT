@@ -1,0 +1,16 @@
+chapter AFP
+
+session "MFMC_Countable" (AFP) = "HOL-Probability" +
+  options [timeout = 600]
+
+  theories [document = false]
+    "~~/src/HOL/Library/Transitive_Closure_Table"
+    "~~/src/HOL/Library/Bourbaki_Witt_Fixpoint"
+    "../Coinductive/Complete_Partial_Order2"
+  
+  theories
+    Rel_PMF_Characterisation
+  
+  document_files
+    "root.tex"
+    "root.bib"
