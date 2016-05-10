@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+from configparser import RawConfigParser
+import os
+import re
+
+metadata = "metadata/metadata"
+
+parser = RawConfigParser()
+parser.read(metadata)
+
+pat = re.compile(r"""^NOTIFY="(.*)"$""")
+
+for entry in parser.sections():
+    config = os.path.join("thys", entry, "config")
+    if os.path.isfile(config):
+        with open(config, 'r') as f:
+            for line in f:
+                if line.startswith("NOTIFY"):
+                    result = pat.match(line).group(1)
+                    if result != "":
+                        parser[entry]["notify"] = result
+    if "notify" not in parser[entry]:
+        parser[entry]["notify"] = ""
+
+
+with open(metadata, 'w') as f:
+    parser.write(f)
