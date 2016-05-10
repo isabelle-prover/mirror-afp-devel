@@ -55,6 +55,74 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 	</tr>
 
 <tr><td class="entry">
+2016-05-09:
+<a href="entries/MFMC_Countable.shtml">A formal proof of the max-flow min-cut theorem for countable networks</a>
+<br>Author:
+<a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a>
+</td></tr>
+
+<tr><td class="entry">
+2016-05-05:
+<a href="entries/Randomised_Social_Choice.shtml">Randomised Social Choice Theory</a>
+<br>Author:
+Manuel Eberl
+</td></tr>
+
+<tr><td class="entry">
+2016-05-04:
+<a href="entries/Bell_Numbers_Spivey.shtml">Spivey's Generalized Recurrence for Bell Numbers</a>
+<br>Author:
+Lukas Bulwahn
+</td></tr>
+
+<tr><td class="entry">
+2016-05-04:
+<a href="entries/SDS_Impossibility.shtml">The Incompatibility of SD-Efficiency and SD-Strategy-Proofness</a>
+<br>Author:
+Manuel Eberl
+</td></tr>
+
+<tr><td class="entry">
+2016-05-02:
+<a href="entries/Groebner_Bases.shtml">Gröbner Bases Theory</a>
+<br>Author:
+<a href="http://www.in.tum.de/~immler/">Fabian Immler</a> and 
+<a href="http://www.risc.jku.at/home/amaletzk">Alexander Maletzky</a>
+</td></tr>
+
+<tr><td class="entry">
+2016-04-28:
+<a href="entries/No_FTL_observers.shtml">No Faster-Than-Light Observers</a>
+<br>Author:
+Mike Stannett and 
+<a href="http://www.renyi.hu/~nemeti/">István Németi</a>
+</td></tr>
+
+<tr><td class="entry">
+2016-04-27:
+<a href="entries/CYK.shtml">A formalisation of the Cocke-Younger-Kasami algorithm</a>
+<br>Author:
+Maksym Bortin
+</td></tr>
+
+<tr><td class="entry">
+2016-04-27:
+<a href="entries/ROBDD.shtml">Algorithms for Reduced Ordered Binary Decision Diagrams</a>
+<br>Author:
+<a href="http://liftm.de/">Julius Michaelis</a>,
+<a href="https://home.in.tum.de/~haslbecm/">Maximilian Haslbeck</a>,
+<a href="https://www21.in.tum.de/~lammich/">Peter Lammich</a> and 
+<a href="https://www21.in.tum.de/~hupel/">Lars Hupel</a>
+</td></tr>
+
+<tr><td class="entry">
+2016-04-26:
+<a href="entries/Noninterference_Sequential_Composition.shtml">Conservation of CSP Noninterference Security under Sequential Composition</a>
+<br>Author:
+Pasquale Noce
+</td></tr>
+
+<tr><td class="entry">
 2016-04-12:
 <a href="entries/KAD.shtml">Kleene Algebras with Domain</a>
 <br>Author:

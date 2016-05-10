@@ -1,0 +1,17 @@
+chapter AFP
+
+session Bell_Numbers_Spivey (AFP) = "HOL" +
+  options [timeout=600]
+  theories [document = false]
+    "../Discrete_Summation/Stirling"
+    "../Card_Number_Partitions/Additions_to_Main"
+    "~~/src/HOL/Eisbach/Eisbach"
+    "~~/src/HOL/Library/FuncSet"
+    "~~/src/HOL/Library/Monad_Syntax"
+  theories
+    "../Card_Partitions/Card_Partitions"
+    Set_Partition
+    Bell_Numbers
+  document_files
+    "root.bib"
+    "root.tex"

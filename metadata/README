@@ -17,7 +17,6 @@ files.
 
     Optional:
     contributors = <contributor1> [<<url1>>], <contributor2> ...
-    depends-on = <entry name> [, <entry name> ..]
     license = LGPL
 
     Example:
@@ -151,42 +150,22 @@ the script.
 In most cases, you don't have to change these generator lines.
 
 
-Invoking sitegen.py
--------------------
+Invoking sitegen
+----------------
 
-When invoking without arguments, the following help is displayed:
+The script can be invoked without any arguments:
 
-  Usage: sitegen.py [--no-warn] [--debug] [--check=THYS_DIR | --dest=DEST_DIR] metadata-dir
+  ./admin/sitegen
 
-The script requires one parameter to pass specifying the metadata folder.
-Secondly, you must specify at least one action (--check or --dest)
-(examples assume that you are in the root of the repository):
+Optionally, the following flags can be supplied:
 
-  --check=THYS_DIR
+  --check
 
-    If you specify the 'thys' folder, the script will perform a check whether
-    the entries in the metadata file corresponds to the folders in the
-    filesystem.
-    Example:
-
-      admin/sitegen.py --check=thys metadata
+    The script will perform a check whether the entries in the metadata file
+    corresponds to the folders in the filesystem.
 
     You might want to specify --no-warn when using --check if you're only
     interested in checking the rough structure of the metadata file.
-
-  --dest=DEST_DIR
-
-    If you specify a destination folder, the script will look for templates in
-    the metadata folder and generate a corresponding file in the destination
-    folder.
-
-    Example:
-
-      admin/sitegen.py --dest=/tmp/web metadata
-
-You may wish to supply both --check and --dest.
-
-The other parameters are optional. Provide --help to get an explanation.
 
   --no-warn
 

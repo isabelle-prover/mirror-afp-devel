@@ -39,6 +39,7 @@
 <a href="entries/MSO_Regex_Equivalence.shtml">MSO_Regex_Equivalence</a> &nbsp;
 <a href="entries/Formula_Derivatives.shtml">Formula_Derivatives</a> &nbsp;
 <a href="entries/Myhill-Nerode.shtml">Myhill-Nerode</a> &nbsp;
+<a href="entries/CYK.shtml">CYK</a> &nbsp;
 <a href="entries/Presburger-Automata.shtml">Presburger-Automata</a> &nbsp;
 <a href="entries/Functional-Automata.shtml">Functional-Automata</a> &nbsp;
 <a href="entries/Statecharts.shtml">Statecharts</a> &nbsp;
@@ -67,6 +68,7 @@
 <a href="entries/Roy_Floyd_Warshall.shtml">Roy_Floyd_Warshall</a> &nbsp;
 <a href="entries/Selection_Heap_Sort.shtml">Selection_Heap_Sort</a> &nbsp;
 <a href="entries/Dijkstra_Shortest_Path.shtml">Dijkstra_Shortest_Path</a> &nbsp;
+<a href="entries/CYK.shtml">CYK</a> &nbsp;
 <a href="entries/Boolean_Expression_Checkers.shtml">Boolean_Expression_Checkers</a> &nbsp;
 <a href="entries/Depth-First-Search.shtml">Depth-First-Search</a> &nbsp;
 <a href="entries/FFT.shtml">FFT</a> &nbsp;
@@ -85,6 +87,8 @@
 <a href="entries/Hermite.shtml">Hermite</a> &nbsp;
 <a href="entries/Imperative_Insertion_Sort.shtml">Imperative_Insertion_Sort</a> &nbsp;
 <a href="entries/Formal_SSA.shtml">Formal_SSA</a> &nbsp;
+<a href="entries/ROBDD.shtml">ROBDD</a> &nbsp;
+<a href="entries/Groebner_Bases.shtml">Groebner_Bases</a> &nbsp;
 
 <strong>Distributed:</strong>&nbsp;<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
 <a href="entries/GenClock.shtml">GenClock</a> &nbsp;
@@ -129,6 +133,7 @@
 <a href="entries/IEEE_Floating_Point.shtml">IEEE_Floating_Point</a> &nbsp;
 <a href="entries/Native_Word.shtml">Native_Word</a> &nbsp;
 <a href="entries/XML.shtml">XML</a> &nbsp;
+<a href="entries/ROBDD.shtml">ROBDD</a> &nbsp;
 </div>
 
 <h3>Functional Programming</h3>
@@ -269,6 +274,7 @@
 <a href="entries/Bounded_Deducibility_Security.shtml">Bounded_Deducibility_Security</a> &nbsp;
 <a href="entries/Network_Security_Policy_Verification.shtml">Network_Security_Policy_Verification</a> &nbsp;
 <a href="entries/Noninterference_Inductive_Unwinding.shtml">Noninterference_Inductive_Unwinding</a> &nbsp;
+<a href="entries/Noninterference_Sequential_Composition.shtml">Noninterference_Sequential_Composition</a> &nbsp;
 </div>
 
 <h2>Logic</h2>
@@ -341,6 +347,7 @@
 <a href="entries/Algebraic_Numbers.shtml">Algebraic_Numbers</a> &nbsp;
 <a href="entries/Polynomial_Interpolation.shtml">Polynomial_Interpolation</a> &nbsp;
 <a href="entries/Polynomial_Factorization.shtml">Polynomial_Factorization</a> &nbsp;
+<a href="entries/Groebner_Bases.shtml">Groebner_Bases</a> &nbsp;
 </div>
 
 <h3>Analysis</h3>
@@ -391,6 +398,8 @@
 <a href="entries/ArrowImpossibilityGS.shtml">ArrowImpossibilityGS</a> &nbsp;
 <a href="entries/SenSocialChoice.shtml">SenSocialChoice</a> &nbsp;
 <a href="entries/Vickrey_Clarke_Groves.shtml">Vickrey_Clarke_Groves</a> &nbsp;
+<a href="entries/Randomised_Social_Choice.shtml">Randomised_Social_Choice</a> &nbsp;
+<a href="entries/SDS_Impossibility.shtml">SDS_Impossibility</a> &nbsp;
 </div>
 
 <h3>Geometry</h3>
@@ -412,6 +421,7 @@
 <h3>Graph Theory</h3>
 
 <div class="list">
+<a href="entries/MFMC_Countable.shtml">MFMC_Countable</a> &nbsp;
 <a href="entries/ShortestPath.shtml">ShortestPath</a> &nbsp;
 <a href="entries/Gabow_SCC.shtml">Gabow_SCC</a> &nbsp;
 <a href="entries/Graph_Theory.shtml">Graph_Theory</a> &nbsp;
@@ -437,6 +447,7 @@
 <a href="entries/Discrete_Summation.shtml">Discrete_Summation</a> &nbsp;
 <a href="entries/Open_Induction.shtml">Open_Induction</a> &nbsp;
 <a href="entries/Latin_Square.shtml">Latin_Square</a> &nbsp;
+<a href="entries/Bell_Numbers_Spivey.shtml">Bell_Numbers_Spivey</a> &nbsp;
 </div>
 
 <h3>Category Theory</h3>
@@ -444,6 +455,12 @@
 <div class="list">
 <a href="entries/Category.shtml">Category</a> &nbsp;
 <a href="entries/Category2.shtml">Category2</a> &nbsp;
+</div>
+
+<h3>Physics</h3>
+
+<div class="list">
+<a href="entries/No_FTL_observers.shtml">No_FTL_observers</a> &nbsp;
 </div>
 
 <h3>Misc</h3>

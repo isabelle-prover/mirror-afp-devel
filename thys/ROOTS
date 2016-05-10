@@ -14,6 +14,7 @@ ArrowImpossibilityGS
 AutoFocus-Stream
 Automatic_Refinement
 BDD
+Bell_Numbers_Spivey
 BinarySearchTree
 Binomial-Heaps
 Binomial-Queues
@@ -50,6 +51,7 @@ Consensus_Refined
 Containers
 CoreC++
 CryptoBasedCompositionalProperties
+CYK
 DPT-SAT-Solver
 DataRefinementIBP
 Datatype_Order_Generator
@@ -98,6 +100,7 @@ GoedelGod
 GPU_Kernel_PL
 GraphMarkingIBP
 Graph_Theory
+Groebner_Bases
 Group-Ring-Module
 HRB-Slicing
 Heard_Of
@@ -150,6 +153,7 @@ Marriage
 Matrix
 Matrix_Tensor
 Max-Card-Matching
+MFMC_Countable
 MiniML
 MonoBoolTranAlgebra
 MSO_Regex_Equivalence
@@ -164,7 +168,9 @@ Noninterference_CSP
 Noninterference_Inductive_Unwinding
 Noninterference_Ipurge_Unwinding
 Noninterference_Generic_Unwinding
+Noninterference_Sequential_Composition
 NormByEval
+No_FTL_observers
 Open_Induction
 Ordinal
 Ordinals_and_Cardinals
@@ -195,8 +201,10 @@ PseudoHoops
 Psi_Calculi
 QR_Decomposition
 RIPEMD-160-SPARK
+ROBDD
 RSAPSS
 Ramsey-Infinite
+Randomised_Social_Choice
 Random_Graph_Subgraph_Threshold
 Rank_Nullity_Theorem
 Real_Impl
@@ -213,6 +221,7 @@ Ribbon_Proofs
 Robbins-Conjecture
 Roy_Floyd_Warshall
 SATSolverVerification
+SDS_Impossibility
 SIFPL
 SIFUM_Type_Systems
 Secondary_Sylow

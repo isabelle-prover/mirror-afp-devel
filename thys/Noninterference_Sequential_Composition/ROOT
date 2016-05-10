@@ -1,0 +1,12 @@
+chapter AFP
+
+session "Noninterference_Sequential_Composition" (AFP) = "HOL" +
+  theories [document = false]
+    "../Noninterference_Ipurge_Unwinding/DeterministicProcesses"
+  theories
+    Propaedeutics
+    SequentialComposition
+    Counterexamples
+  document_files
+    "root.bib"
+    "root.tex"
