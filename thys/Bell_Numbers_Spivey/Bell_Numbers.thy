@@ -8,7 +8,7 @@ imports
   "~~/src/HOL/Eisbach/Eisbach"
   "~~/src/HOL/Library/FuncSet"
   "~~/src/HOL/Library/Monad_Syntax"
-  "../Discrete_Summation/Stirling"
+  "~~/src/HOL/Library/Stirling"
   "../Card_Number_Partitions/Additions_to_Main"
   "Set_Partition"
 begin

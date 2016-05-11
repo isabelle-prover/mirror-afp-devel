@@ -3,7 +3,7 @@ chapter AFP
 session Bell_Numbers_Spivey (AFP) = "HOL" +
   options [timeout=600]
   theories [document = false]
-    "../Discrete_Summation/Stirling"
+    "~~/src/HOL/Library/Stirling"
     "../Card_Number_Partitions/Additions_to_Main"
     "~~/src/HOL/Eisbach/Eisbach"
     "~~/src/HOL/Library/FuncSet"
