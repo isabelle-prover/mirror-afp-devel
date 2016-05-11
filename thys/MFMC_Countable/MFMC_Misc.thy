@@ -5,7 +5,7 @@ section \<open>Preliminaries\<close>
 theory MFMC_Misc imports
   "~~/src/HOL/Probability/Probability"
   "~~/src/HOL/Library/Transitive_Closure_Table"
-  "../Coinductive/Complete_Partial_Order2"
+  "~~/src/HOL/Library/Complete_Partial_Order2"
   "~~/src/HOL/Library/Bourbaki_Witt_Fixpoint"
 begin
 
