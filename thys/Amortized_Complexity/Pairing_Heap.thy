@@ -35,6 +35,11 @@ fun pass\<^sub>2 :: "'a :: linorder tree \<Rightarrow> 'a tree" where
   "pass\<^sub>2 Leaf = Leaf"
 | "pass\<^sub>2 (Node l x r) = link(Node l x (pass\<^sub>2 r))"
 
+fun meld :: "'a :: linorder tree \<Rightarrow> 'a tree" where
+  "meld Leaf = Leaf"
+| "meld (Node lx x Leaf) = Node lx x Leaf" 
+| "meld (Node lx x (Node ly y ry)) = link (link (Node lx x (Node ly y (meld ry))))"
+
 fun del_min :: "'a :: linorder tree \<Rightarrow> 'a tree" where
   "del_min Leaf = Leaf"
 | "del_min (Node l _ Leaf) = pass\<^sub>2 (pass\<^sub>1 l)"
@@ -76,6 +81,9 @@ lemma pass\<^sub>1_struct: "\<exists>la a ra. pass\<^sub>1 (Node lx x rx) = Node
 lemma pass\<^sub>2_struct: "\<exists>la a. pass\<^sub>2 (Node lx x rx) = Node la a Leaf" 
   by (induction rx arbitrary: x lx rule: pass\<^sub>2.induct) 
   (simp, metis pass\<^sub>2.simps(2) link_struct)
+
+lemma "meld h = pass\<^sub>2 (pass\<^sub>1 h)"
+by (induction h rule: meld.induct) auto
 
 lemma \<Delta>\<Phi>\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t: "isRoot h \<Longrightarrow> \<Phi> (insert x h) - \<Phi> h \<le> log 2  (size h + 1)"
   by (simp split: tree.splits)
