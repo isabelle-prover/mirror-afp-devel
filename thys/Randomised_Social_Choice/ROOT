@@ -1,6 +1,7 @@
 chapter AFP
 
 session "Randomised_Social_Choice" (AFP) = "HOL-Probability" +
+  options [timeout = 300]
   theories [document = false]
     "../List-Index/List_Index"
   theories
