@@ -82,7 +82,7 @@ lemma pass\<^sub>2_struct: "\<exists>la a. pass\<^sub>2 (Node lx x rx) = Node la
   by (induction rx arbitrary: x lx rule: pass\<^sub>2.induct) 
   (simp, metis pass\<^sub>2.simps(2) link_struct)
 
-lemma "meld h = pass\<^sub>2 (pass\<^sub>1 h)"
+lemma meld_pass12: "meld h = pass\<^sub>2 (pass\<^sub>1 h)"
 by (induction h rule: meld.induct) auto
 
 lemma \<Delta>\<Phi>\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t: "isRoot h \<Longrightarrow> \<Phi> (insert x h) - \<Phi> h \<le> log 2  (size h + 1)"
@@ -145,13 +145,12 @@ next
   finally show ?case by (simp add: algebra_simps)
 qed simp_all
 
-lemma \<Delta>\<Phi>_pass1:
-  "h \<noteq> Leaf \<Longrightarrow> \<Phi> (pass\<^sub>1 h) - \<Phi> h \<le> 2*log 2 (size h) - len h + 2"
-proof -  
-  assume "h \<noteq> Leaf"
-  hence "upperbound h \<le> 2*log 2 (size h) - len h + 2" 
+lemma \<Delta>\<Phi>_pass1: assumes "h \<noteq> Leaf"
+  shows "\<Phi> (pass\<^sub>1 h) - \<Phi> h \<le> 2*log 2 (size h) - len h + 2"
+proof -
+  have "h \<noteq> Leaf \<Longrightarrow> upperbound h \<le> 2*log 2 (size h) - len h + 2" 
     by (induct h rule: upperbound.induct) (simp_all add: algebra_simps)
-  thus ?thesis using  \<Delta>\<Phi>_pass1_upperbound [of "h"] order_trans by blast
+  thus ?thesis using assms \<Delta>\<Phi>_pass1_upperbound [of "h"] order_trans by blast
 qed
 
 lemma \<Delta>\<Phi>_pass2: "h \<noteq> Leaf \<Longrightarrow> \<Phi> (pass\<^sub>2 h) - \<Phi> h \<le> log 2  (size h)"
@@ -170,6 +169,14 @@ proof (induction h rule: pass\<^sub>2.induct)
     thus ?thesis using "2.IH" 1 by simp
   qed simp
 qed simp
+
+lemma \<Delta>\<Phi>_meld: assumes "h \<noteq> Leaf"
+  shows "\<Phi> (meld h) - \<Phi> h \<le> 3 * log 2 (size h) - len h + 2"
+proof -
+  have "pass\<^sub>1 h \<noteq> Leaf" by (metis assms size_0_iff_Leaf size_pass\<^sub>1)
+  with assms \<Delta>\<Phi>_pass1[of h] \<Delta>\<Phi>_pass2[of "pass\<^sub>1 h"]
+  show ?thesis by (auto simp add: meld_pass12)
+qed
 
 lemma \<Delta>\<Phi>_del_min:  "lx \<noteq> Leaf \<Longrightarrow> \<Phi> (del_min (Node lx x Leaf)) - \<Phi> (Node lx x Leaf) 
   \<le> 3*log 2 (size lx) - len lx + 2"
