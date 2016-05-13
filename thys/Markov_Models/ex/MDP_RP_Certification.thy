@@ -346,7 +346,7 @@ proof -
       using valid_sub_certD[OF `valid_mdp_rp mdp` neg] by simp
   next
     show "wf ((S \<times> S \<inter> {(s, t). snd (witness (neg_cert c) !! t) < snd (witness (neg_cert c) !! s)})\<inverse>)" (is "wf ?F")
-      using `finite S`
+      using MDP.S_finite
       by (intro finite_acyclic_wf_converse acyclicI_order[where f="\<lambda>s. snd (witness (neg_cert c) !! s)"]) auto
 
     fix s D assume 2: "s \<in> S1" "D \<in> K s" and "?x s \<noteq> 0"
