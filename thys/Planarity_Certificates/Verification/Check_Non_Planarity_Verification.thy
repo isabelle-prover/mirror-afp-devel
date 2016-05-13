@@ -1456,7 +1456,7 @@ proof -
       using \<open>u \<in> U\<close> disj_UV by (auto simp: verts_G col_adj iadj_conv)
     then have "is_K33_outer_inv G (ig_verts_cnt G) blue"
       using \<open>U \<inter> V = {}\<close> by (subst is_K33_outer_last) (auto simp: arcs_G verts_G )
-    ultimately have ?thesis by fact }
+    ultimately have ?thesis by (rule that) }
   moreover
   { assume "u \<in> V"
     then have "U = {v \<in> set (ig_verts G). blue v}"
@@ -1468,7 +1468,7 @@ proof -
       using \<open>u \<in> V\<close> disj_UV by (auto simp: verts_G col_adj iadj_conv)
     then have "is_K33_outer_inv G (ig_verts_cnt G) blue"
       using \<open>U \<inter> V = {}\<close> by (subst is_K33_outer_last) (auto simp: arcs_G verts_G )
-    ultimately have ?thesis by fact }
+    ultimately have ?thesis by (rule that) }
   ultimately show ?thesis using verts_G u by blast
 qed
 
