@@ -138,7 +138,7 @@ proof transfer
   show "(\<forall>x. lookup xs x \<le> lookup ys x) = list_all (\<lambda>(k, v). lookup xs k \<le> lookup ys k) (AList.merge xs ys)"
   proof
     assume a1: "\<forall>x. lookup xs x \<le> lookup ys x"
-    show "list_all (\<lambda>(k, v). lookup xs k \<le> lookup ys k) (AList.merge xs ys)" unfolding pred_list_def
+    show "list_all (\<lambda>(k, v). lookup xs k \<le> lookup ys k) (AList.merge xs ys)" unfolding list_all_def
     proof (rule, rule)
       fix x k v
       from a1 show "lookup xs k \<le> lookup ys k" ..
@@ -146,7 +146,7 @@ proof transfer
   next
     assume "list_all (\<lambda>(k, v). lookup xs k \<le> lookup ys k) (AList.merge xs ys)"
     hence a2: "\<forall>(k, v)\<in>(set (AList.merge xs ys)). lookup xs k \<le> lookup ys k"
-      unfolding pred_list_def by simp
+      unfolding list_all_def by simp
     show "\<forall>x. lookup xs x \<le> lookup ys x"
     proof
       fix x
@@ -176,7 +176,7 @@ unfolding dummy_dvd_iff by (rule compute_dvd_pp)
 lemma list_all_merge_comm:
   assumes "list_all (\<lambda>(k, v). P (lookup xs k) (lookup ys k)) (AList.merge xs ys)"
   shows "list_all (\<lambda>(k, v). P (lookup xs k) (lookup ys k)) (AList.merge ys xs)"
-unfolding pred_list_def
+unfolding list_all_def
 proof (rule, rule)
   fix x k v
   assume "x \<in> set (AList.merge ys xs)" and "x = (k, v)"
@@ -188,7 +188,7 @@ proof (rule, rule)
     by (simp add: dom_merge Un_commute[of "fst ` set xs" "fst ` set ys"])
   from this obtain v' where a: "(k, v') \<in> set (AList.merge xs ys)" by auto
   from assms have "\<forall>(k, v)\<in>set (AList.merge xs ys). P (lookup xs k) (lookup ys k)"
-    unfolding pred_list_def .
+    unfolding list_all_def .
   from this a show "P (lookup xs k) (lookup ys k)" by auto
 qed
 
@@ -561,7 +561,7 @@ by (transfer, simp)
 lemma compute_equal_mpoly[code]:
   "(equal_class.equal (MP xs) (MP (ys::('a * 'b::{equal, zero}) list))) =
     list_all (\<lambda>(k, v). lookup_mpoly xs k = lookup_mpoly ys k) (AList.merge xs ys)"
-unfolding equal_mpoly_def pred_list_def
+unfolding equal_mpoly_def list_all_def
 proof (rule, clarsimp split: option.split)
   fix k v
   assume "\<forall>t. coeff (MP xs) t = coeff (MP ys) t"

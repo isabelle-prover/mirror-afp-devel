@@ -711,7 +711,7 @@ lemma Acc_property:
 proof -  
   def r \<equiv> "run\<^sub>t (delta \<Sigma>) (initial \<phi>) w" and r\<^sub>\<psi> \<equiv> "run\<^sub>t \<MM>.\<delta>\<^sub>\<R> \<MM>.q\<^sub>\<R> w"
   hence "finite (range r)"
-    using run\<^sub>t_finite[OF finite_reach] `range w \<subseteq> \<Sigma>` `finite \<Sigma>`
+    using run\<^sub>t_finite[OF finite_reach] bounded_w finite_\<Sigma>
     by (blast dest: finite_subset) 
 
   have "\<And>S. limit r\<^sub>\<psi> \<inter> S = {} \<longleftrightarrow> limit r \<inter> \<Union>(embed_transition_snd ` (\<Union> ((embed_transition (G \<psi>)) ` S))) = {}"

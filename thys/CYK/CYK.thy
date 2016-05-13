@@ -888,7 +888,7 @@ proof -
    next
     fix i'' assume j: "i'' < Suc i" 
     show "set(if i'' = i then inner G T i (Suc 0) j else T(i'', j)) = CYK G w i'' j"
-    proof(simp split: split_if, rule conjI, clarify, rule inner, clarify)
+    proof(simp split: if_split, rule conjI, clarify, rule inner, clarify)
      assume "i'' \<noteq> i"
      with j have "i'' < i" by simp
      with d h show "set(T(i'', j)) = CYK G w i'' j" by simp
