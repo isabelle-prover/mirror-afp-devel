@@ -163,7 +163,7 @@ proof -
   from this have inj: "inj_on f {0..<card A}"
     using bij_betw_imp_inj_on by blast
   from bij have image_f_eq: "A = f ` {0..<card A}"
-    using bij_betw_imageE by blast
+    using bij_betw_imp_surj_on by blast
   have "\<forall>x \<in> {P. partitions P {0..<card A}}. x \<subseteq> Pow {0..<card A}"
     by (auto elim: partitionsE)
   from this inj have "inj_on (op ` (op ` f)) {P. partitions P {0..<card A}}"
