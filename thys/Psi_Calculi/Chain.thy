@@ -104,8 +104,7 @@ proof -
       show ?case by force
     qed
   qed
-  with `\<And>X. \<lbrakk>X \<in> Xs; x \<in> supp X\<rbrakk> \<Longrightarrow> thesis`
-  show ?thesis by blast
+  with that show ?thesis by blast
 qed
 
 lemma supp_cart_prod_empty[simp]:
