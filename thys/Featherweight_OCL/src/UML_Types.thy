@@ -616,7 +616,7 @@ fun outer_syntax_command command_spec theory in_local =
   Outer_Syntax.command command_spec "assert that the given specification is true"
     (Parse.term >> (fn elems_concl => theory (fn thy =>
       case
-        lemma "code_unfold" Specification.theorem
+        lemma "code_unfold" (Specification.theorem true)
           (fn lthy => 
             let val expr = Value.value lthy (Syntax.read_term lthy elems_concl)
                 val thy = Proof_Context.theory_of lthy
@@ -629,7 +629,7 @@ fun outer_syntax_command command_spec theory in_local =
           thy
       of  NONE => 
             let val attr_simp = "simp" in
-            case lemma attr_simp Specification.theorem_cmd (K elems_concl) in_local thy of
+            case lemma attr_simp (Specification.theorem_cmd true) (K elems_concl) in_local thy of
                NONE => raise (ERROR "Assertion failed")
              | SOME thy => 
                 (writeln (disp_msg "OK" "simp" "finished the normalization");

@@ -455,7 +455,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
       false) lthy)
 | Theory_lemma (Lemma (n, l_spec, l_apply, o_by)) => in_local
    (fn lthy =>
-           Specification.theorem_cmd Thm.theoremK NONE (K I)
+           Specification.theorem_cmd true Thm.theoremK NONE (K I)
              (@{binding ""}, []) [] [] (Element.Shows [((To_sbinding n, [])
                                                        ,[((String.concatWith (" \<Longrightarrow> ")
                                                              (List.map of_semi__term l_spec)), [])])])
@@ -464,7 +464,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
         |> global_terminal_proof o_by)
 | Theory_lemma (Lemma_assumes (n, l_spec, concl, l_apply, o_by)) => in_local
    (fn lthy => lthy
-        |> Specification.theorem_cmd Thm.theoremK NONE (K I)
+        |> Specification.theorem_cmd true Thm.theoremK NONE (K I)
              (To_sbinding n, [])
              []
              (List.map (fn (n, (b, e)) =>
