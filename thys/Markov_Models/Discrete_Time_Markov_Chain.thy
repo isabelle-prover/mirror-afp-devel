@@ -141,7 +141,7 @@ lemma maximal_singleton[simp]: "maximal f {x} = {x}"
   by (auto simp add: maximal_def)
 
 lemma maximal_in_S: "maximal f S \<subseteq> S"
-  using assms by (auto simp: maximal_def)
+  by (auto simp: maximal_def)
 
 end
 

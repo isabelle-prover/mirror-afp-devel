@@ -2442,7 +2442,7 @@ proof(safe)
         by simp
     next
       show "continuous_on {0..t} (\<lambda>t. norm (XX t - Y t) + e / K)"
-        using assms t0_t_in_J J_subset G.ivl_subset_existence_ivl[OF t0_in_T2 x0_in_X tG]
+        using t0_t_in_J J_subset G.ivl_subset_existence_ivl[OF t0_in_T2 x0_in_X tG]
         by (auto simp add: XX_def Y_def intro!: continuous_intros)
     next
       fix s assume "0 \<le> s" "s \<le> t"
@@ -2529,7 +2529,7 @@ proof(safe)
         by simp
     next
       show "continuous_on {t..0} (\<lambda>t. norm (XX t - Y t) + e / K)"
-        using assms t0_t_in_J J_subset G.ivl_subset_existence_ivl'[OF t0_in_T2 x0_in_X tG]
+        using t0_t_in_J J_subset G.ivl_subset_existence_ivl'[OF t0_in_T2 x0_in_X tG]
         by (auto simp add: XX_def Y_def intro!: continuous_intros)
     next
       fix s assume "t \<le> s" "s \<le> 0"

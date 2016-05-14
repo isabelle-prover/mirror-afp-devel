@@ -884,8 +884,8 @@ proof (auto)
   assume *: "x \<in> recurrent_subset A" "return_time_function A x = 0"
   def K \<equiv> "{n::nat\<in>{1..}. (T^^n) x \<in> A}"
   have **: "return_time_function A x = Inf K"
-    using assms K_def return_time_function_def * by simp
-  have "K \<noteq> {}" using assms K_def recurrent_subset_def * by auto
+    using K_def return_time_function_def * by simp
+  have "K \<noteq> {}" using K_def recurrent_subset_def * by auto
   moreover have "0 \<notin> K" using K_def by auto
   ultimately have "Inf K >0"
     by (metis (no_types, lifting) K_def One_nat_def atLeast_iff cInf_lessD mem_Collect_eq neq0_conv not_le zero_less_Suc)
@@ -1662,7 +1662,7 @@ proof -
   ultimately have bij: "bij_betw g UNIV U" using bij_betw_def by auto
 
   def e \<equiv> "\<lambda> (i,j). d i j"
-  have pos: "\<And>x. e x \<ge> 0" using assms e_def by auto
+  have pos: "\<And>x. e x \<ge> 0" using e_def by auto
   have "(\<Sum>n. (\<Sum>i. d (i+1) (n+1+i))) = (\<Sum>n. (\<Sum>i. e(i+1, n+1+i)))" using e_def by simp
   also have "... = \<integral>\<^sup>+n. \<integral>\<^sup>+i.  e (i+1, n+1+i) \<partial>count_space UNIV  \<partial>count_space UNIV"
     using pos nn_integral_count_space_nat suminf_0_le by auto

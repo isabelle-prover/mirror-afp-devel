@@ -246,7 +246,7 @@ proof (rule ccontr)
     unfolding derived_clauses_are_finite_def by blast
  then obtain P1 P2 C where "resolvent P1 P2 C" "finite P1" "finite P2" and "\<not>finite C" by blast    
  from `resolvent P1 P2 C` `finite P1` `finite P2` and `\<not>finite C` show "False"
- using assms unfolding resolvent_def using finite_Diff and finite_Union by auto
+ unfolding resolvent_def using finite_Diff and finite_Union by auto
 qed
 
 
@@ -512,7 +512,7 @@ unfolding tautology_def by auto
 lemma simplify_involutive:
   shows "simplify (simplify S) = (simplify S)"
 proof -
-  from assms show ?thesis unfolding simplify_def strictly_redundant_def by auto
+  show ?thesis unfolding simplify_def strictly_redundant_def by auto
 qed
 
 lemma simplify_finite:

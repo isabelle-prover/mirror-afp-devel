@@ -382,7 +382,7 @@ begin
   qed
 
   lemma es_A2A: "succ_ok \<Longrightarrow> edge_succ (mk_map (mk_graph iG) iM) \<in> arcs (mk_graph iG) \<rightarrow> arcs (mk_graph iG)"
-    using succ_ok_imp_permutes[OF assms] by (auto dest: permutes_in_image)
+    using succ_ok_imp_permutes by (auto dest: permutes_in_image)
 
   lemma im_succ_le_length: "succ_ok \<Longrightarrow> i < length (ig_edges iG) \<Longrightarrow> im_succ iM i < length (ig_edges iG)"
     using is_map_final_def is_map_succ_perm_inv_def succ_perm(1) succ_perm(2) by auto

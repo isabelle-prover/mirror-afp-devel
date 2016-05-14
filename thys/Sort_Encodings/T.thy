@@ -208,7 +208,7 @@ lemma map_tNN_int[simp]: "map (TE.int \<xi> \<circ> tNN) Tl = map (Ik.int \<xi>)
 unfolding list_eq_iff list_all_iff by auto
 
 lemma t_int[simp]: "TE.int \<xi> (tT T) = Ik.int \<xi> T"
-using assms by (cases T, auto)
+by (cases T, auto)
 
 lemma map_t_int[simp]: "map (TE.int \<xi> \<circ> tT) Tl = map (Ik.int \<xi>) Tl"
 unfolding list_eq_iff list_all_iff by auto
@@ -462,7 +462,7 @@ definition
 "invt \<sigma> a \<equiv> if unprot \<sigma> \<or> protFw \<sigma> then a else (SOME b. eintT \<sigma> b \<and> eintF (Tag \<sigma>) [b] = a)"
 
 lemma unprot_invt[simp]: "unprot \<sigma> \<or> protFw \<sigma> \<Longrightarrow> invt \<sigma> a = a"
-using assms unfolding invt_def by auto
+unfolding invt_def by auto
 
 lemma invt_invt_inImage:
 assumes \<sigma>: "\<not> unprot \<sigma>" "\<not> protFw \<sigma>"

@@ -26,7 +26,7 @@ text {*
 *}
 lemma rewrite_B2_to_cases[simp]:
   shows "B2 s t f = (case s of None \<Rightarrow> True | (Some s1) \<Rightarrow> (case t of None \<Rightarrow> True | (Some t1) \<Rightarrow> f s1 t1))"
-using assms unfolding B2_def B_def by(cases s,cases t,simp+)
+unfolding B2_def B_def by(cases s,cases t,simp+)
 lemma rewrite_B_None[simp]:
   shows "None \<rightharpoonup> \<alpha> = True"
 unfolding B_def by(auto)

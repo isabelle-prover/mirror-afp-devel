@@ -153,11 +153,11 @@ begin
 
   lemma face_cycle_pred_succ[simp]:
     shows "face_cycle_pred (face_cycle_succ a) = a"
-    using assms unfolding face_cycle_pred_def face_cycle_succ_def by simp
+    unfolding face_cycle_pred_def face_cycle_succ_def by simp
 
   lemma face_cycle_succ_pred[simp]:
     shows "face_cycle_succ (face_cycle_pred a) = a"
-    using assms unfolding face_cycle_pred_def face_cycle_succ_def by simp
+    unfolding face_cycle_pred_def face_cycle_succ_def by simp
 
   lemma tail_face_cycle_succ: "a \<in> arcs G \<Longrightarrow> tail G (face_cycle_succ a) = head G a"
     by (auto simp: face_cycle_succ_def)

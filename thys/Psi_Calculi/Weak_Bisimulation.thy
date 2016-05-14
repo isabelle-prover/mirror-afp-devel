@@ -214,7 +214,6 @@ qed
 
 lemma weakBisimEqvt[simp]:
   shows "eqvt weakBisim"
-using assms
 by(auto simp add: eqvt_def weakBisimClosed)
 
 lemma statEqWeakBisim:

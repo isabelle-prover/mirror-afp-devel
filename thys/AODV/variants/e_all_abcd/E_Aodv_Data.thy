@@ -619,7 +619,7 @@ lemma proj3_update [simp]: "\<And>rt dip dsn dsk flg hops sip.
 lemma nhop_update_changed_kno_val [simp]: "\<And>rt ip dsn dsk hops nhip.
   rt \<noteq> update rt ip (dsn, kno, val, hops, nhip)
    \<Longrightarrow> the (nhop (update rt ip (dsn, kno, val, hops, nhip)) ip) = nhip"
-  using assms unfolding update_def
+  unfolding update_def
   by (clarsimp split: option.split_asm option.split if_split_asm) auto
 
 lemma flag_update [simp]: "\<And>rt dip dsn flg hops sip.

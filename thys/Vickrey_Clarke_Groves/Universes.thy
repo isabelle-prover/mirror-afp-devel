@@ -143,11 +143,11 @@ lemma allocationProperty:
 
 lemma lm011: 
   "possible_allocations_rel' G N \<subseteq> injectionsUniverse"
-  using assms injections_def by force
+  using injections_def by force
 
 lemma lm012: 
   "possible_allocations_rel G N \<subseteq> {a. (Range a) \<subseteq> N & (Domain a) \<in> all_partitions G}"
-  using assms injections_def by fastforce
+  using injections_def by fastforce
 
 lemma lm013: 
   "injections X Y = injections X Y" 
@@ -170,7 +170,7 @@ qed
 lemma lm016: 
   "possible_allocations_rel G N \<subseteq> 
    injectionsUniverse \<inter> {a. Range a \<subseteq> N & Domain a \<in> all_partitions G}"
-  using assms lm012 lm011 injections_def by fastforce
+  using lm012 lm011 injections_def by fastforce
 
 lemma lm017: 
   "possible_allocations_rel G N \<supseteq> 
@@ -214,7 +214,7 @@ lemma lm021:
 
 lemma lm022: 
   "allAllocations N G \<subseteq> partitionValuedUniverse"
-  using assms allocationInverseRangeDomainProperty is_partition_of_def is_non_overlapping_def 
+  using allocationInverseRangeDomainProperty is_partition_of_def is_non_overlapping_def 
   by auto blast
 
 corollary allAllocationsUniverse: 

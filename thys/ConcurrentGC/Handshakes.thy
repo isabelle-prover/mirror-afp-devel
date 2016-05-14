@@ -324,7 +324,7 @@ simps_of_case handshake_phase_rel_simps[simp]: handshake_phase_rel_def (splits: 
 
 lemma phase_rel_invD:
   "phase_rel_inv s \<Longrightarrow> (\<forall>m. sys_ghost_handshake_in_sync m s, sys_ghost_handshake_phase s, gc_phase s, sys_phase s, tso_pending_phase gc s) \<in> phase_rel"
-using assms by (simp add: phase_rel_inv_def)
+by (simp add: phase_rel_inv_def)
 
 lemma phases_rel_Id[iff]:
   "(\<forall>m. sys_ghost_handshake_in_sync m s, sys_ghost_handshake_phase s, gc_phase s, sys_phase s, tso_pending_phase gc s) \<in> phase_rel

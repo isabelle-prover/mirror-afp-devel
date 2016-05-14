@@ -535,11 +535,11 @@ text{* compat: *}
 
 lemma part_emp_R[simp]:
 "part I {} \<longleftrightarrow> I = {}"
-using assms unfolding part_def by auto
+unfolding part_def by auto
 
 lemma part_emp_L[simp]:
 "part {} P \<Longrightarrow> P \<subseteq> { {} }"
-using assms unfolding part_def by auto
+unfolding part_def by auto
 
 lemma finite_partJoin[simp]:
 assumes "finite P" and "finite Q"

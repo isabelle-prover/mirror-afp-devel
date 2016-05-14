@@ -147,7 +147,7 @@ begin
 
   lemma phiDefNodes_aux_in_unvisited:
     shows "phiDefNodes_aux g v un n \<subseteq> set un"
-  using assms proof (induction un arbitrary: n rule:removeAll_induct)
+  proof (induction un arbitrary: n rule:removeAll_induct)
     case (1 un)
     show ?case
     unfolding phiDefNodes_aux.simps

@@ -577,7 +577,6 @@ qed
 
 lemma distinct_independent_pdevs[simp]:
   shows "distinct (independent_pdevs xs)"
-  using assms
 proof (induct xs rule: independent_pdevs.induct)
   case 1 thus ?case by simp
 next
@@ -2260,7 +2259,6 @@ lemma list_cases4:
 
 lemma bound_intersect_2d_ud_segments_of_aform_le:
   "bound_intersect_2d_ud prec X xl = Some (m0, M0) \<Longrightarrow> m0 \<le> M0"
-  using assms
   by (cases "segments_of_aform X" rule: list_cases4)
     (auto simp: Let_def bound_intersect_2d_ud_def min_def max_def intersect_segment_xline_le
       if_split_eq1 split: option.split_asm prod.split_asm list.split_asm

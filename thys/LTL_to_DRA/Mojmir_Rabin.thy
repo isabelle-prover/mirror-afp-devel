@@ -197,7 +197,7 @@ theorem mojmir_accept_iff_rabin_accept_rank:
 proof
   def r \<equiv> "run\<^sub>t \<delta>\<^sub>\<R> q\<^sub>\<R> w" 
   have r_alt_def: "\<And>i. r i = (\<lambda>q. state_rank q i, w i, \<lambda>q. state_rank q (Suc i))"
-    using r_def state_rank_step_foldl[OF assms] run_foldl by fastforce
+    using r_def state_rank_step_foldl run_foldl by fastforce
 
   have F: "\<And>x. x \<in> fail_t \<longleftrightarrow> (r x) \<in> fail\<^sub>R"
     unfolding fail_t_def fail\<^sub>R_def r_alt_def by blast

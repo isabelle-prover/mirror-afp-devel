@@ -61,7 +61,7 @@ abbreviation "soldAllocations''' N \<Omega> ==
 lemma soldAllocationsEquivalence: 
   "soldAllocations N \<Omega> = soldAllocations' N \<Omega> & 
    soldAllocations' N \<Omega> = soldAllocations'' N \<Omega>"
-  using assms allAllocationsEquivalence by metis
+  using allAllocationsEquivalence by metis
 
 corollary soldAllocationsEquivalenceVariant: 
   "soldAllocations = soldAllocations'  & 

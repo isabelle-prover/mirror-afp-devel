@@ -71,7 +71,7 @@ lemma env_restr_below_itself:
 lemma env_restr_cont:  "cont (env_restr S)"
   apply (rule cont2cont_lambda)
   apply (case_tac "y \<in> S")
-  apply (auto simp add: assms)
+  apply auto
   done
 
 lemma env_restr_belowD:
@@ -114,7 +114,7 @@ lemmas env_restr_cont2cont[simp,cont2cont] = cont_compose[OF env_restr_cont]
 lemma env_delete_cont:  "cont (env_delete x)"
   apply (rule cont2cont_lambda)
   apply (case_tac "y = x")
-  apply (auto simp add: assms)
+  apply auto
   done
 lemmas env_delete_cont2cont[simp,cont2cont] = cont_compose[OF env_delete_cont]
 

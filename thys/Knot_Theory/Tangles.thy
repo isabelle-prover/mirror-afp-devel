@@ -54,7 +54,7 @@ proof (induct x)
  next
  case (prod z zs)
   have "(z*zs)\<circ>y = (z*(zs \<circ> y))" by auto
-  then have " is_tangle_diagram (z*(zs\<circ>y))" using assms prod by auto
+  then have " is_tangle_diagram (z*(zs\<circ>y))" using prod by auto
   moreover then have 1: "is_tangle_diagram zs" 
         using is_tangle_diagram.simps(2) prod.hyps prod.prems  by metis
   ultimately have "domain_wall (zs \<circ> y) = codomain_block z"
@@ -78,7 +78,7 @@ proof (induct x)
  next
  case (prod z zs)
   have "((z*zs) \<circ> y) = (z *(zs \<circ> y))" by auto
-  then have " is_tangle_diagram (z*(zs \<circ> y))" using assms prod by auto
+  then have "is_tangle_diagram (z*(zs \<circ> y))" using prod by auto
   then have "is_tangle_diagram (zs \<circ> y)" using is_tangle_diagram.simps(2) by metis
   then have "is_tangle_diagram y"  using prod.hyps by auto 
   then show ?case by auto

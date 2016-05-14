@@ -179,8 +179,8 @@ proof -
   have "i + 1 < length \<GG> \<Longrightarrow> subgroup (\<GG> ! i) G"
   proof (induction "length \<GG> - (i + 2)" arbitrary: i)
     case 0
-    hence i:"i + 2 = length \<GG>" using assms by simp
-    hence ii:"i + 1 = length \<GG> - 1" using assms by force
+    hence i:"i + 2 = length \<GG>" by simp
+    hence ii:"i + 1 = length \<GG> - 1" by force
     from i normal have "\<GG> ! i \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>" by auto
     with ii last notempty show "subgroup (\<GG> ! i) G" using last_conv_nth normal_imp_subgroup by fastforce
   next

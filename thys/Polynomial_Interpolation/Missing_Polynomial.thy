@@ -752,7 +752,7 @@ proof (cases "c = 0")
       case True thus ?thesis using c0 unfolding map_poly_def by simp
       next case False thus ?thesis
         unfolding map_poly_def
-        apply(subst fold_coeffs_pCons_not_0_0_eq) using assms by auto
+        apply(subst fold_coeffs_pCons_not_0_0_eq) by auto
     qed
   next case False thus ?thesis
     unfolding map_poly_def

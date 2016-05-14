@@ -107,7 +107,7 @@ lemma length_lang_pow_lb:
   by(induct n arbitrary: w) (fastforce simp: conc_def)+
 
 lemma lang_pow_subset_lists: "A \<subseteq> lists S \<Longrightarrow> A ^^ n \<subseteq> lists S"
-  by(induction n)(auto simp: conc_subset_lists[OF assms])
+  by (induct n) (auto simp: conc_subset_lists)
 
 lemma star_subset_lists: "A \<subseteq> lists S \<Longrightarrow> star A \<subseteq> lists S"
   unfolding star_def by(blast dest: lang_pow_subset_lists)

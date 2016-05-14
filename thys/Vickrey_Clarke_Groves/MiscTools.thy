@@ -63,7 +63,7 @@ lemma
 
 lemma lm001: 
   "((P \<union> Q) || X) = ((P || X) \<union> (Q||X))" 
-  unfolding restrict_def using assms by blast
+  unfolding restrict_def by blast
 
 text {* update behaves like P +* Q (paste), but without enlarging P's Domain. update is the set theoretic equivalent of the lambda function update @{term fun_upd} *}
 
@@ -149,7 +149,7 @@ corollary outsideUnion:
 
 lemma lm009: 
   "P = P \<union> {x}\<times>P``{x}" 
-  using assms by (metis outsideUnion sup.right_idem)
+  by (metis outsideUnion sup.right_idem)
 
 corollary lm010: 
   "R = (R outside {x}) +* ({x} \<times> (R `` {x}))" 
@@ -176,7 +176,7 @@ lemma rightUniqueTrivialCartes:
 (* Two constant functions can be combined to a function *)
 lemma lm014: 
   "runiq ((X \<times> {x}) +* (Y \<times> {y}))" 
-  using assms rightUniqueTrivialCartes trivial_singleton runiq_paste2 by metis
+  using rightUniqueTrivialCartes trivial_singleton runiq_paste2 by metis
 
 lemma lm015: 
   "(P || (X \<inter> Y)) \<subseteq> (P||X)    &    P outside (X \<union> Y) \<subseteq> P outside X" 
@@ -236,7 +236,7 @@ lemma lm022:
 (* The following corollary is essentially the same as lm022, however, is simplifies a proof in UniformTieBreaking.thy *)
 corollary argmaxProperty: 
   "(finite X & mx \<in> X & (\<forall>aa \<in> X-{mx}. f aa < f mx)) \<longrightarrow> argmax f X = {mx}"
-  using assms lm022 by metis
+  using lm022 by metis
 
 corollary lm023: 
   assumes "finite X" "mx \<in> X" "\<forall>x \<in> X. x \<noteq> mx \<longrightarrow> f x < f mx" 
@@ -277,7 +277,7 @@ lemma lm026:
 
 lemma lm027: 
   "inj_on Union (finestpart ` UNIV)" 
-  using assms lm026 by (metis inj_on_id inj_on_imageI)
+  using lm026 by (metis inj_on_id inj_on_imageI)
 
 lemma nonEqualitySetOfSets: 
   assumes "X \<noteq> Y" 
@@ -382,7 +382,7 @@ lemma lm039:
 
 lemma lm040: 
   "(P outside (X \<union> Y)) \<inter> (Q || X) = {}   &   (P outside X) \<inter> (Q || (X \<inter> Z)) = {}" 
-  using assms Outside_def restrict_def lm039 lm015 by fast
+  using Outside_def restrict_def lm039 lm015 by fast
 
 lemma lm041: 
   "P outside X    =    P || ((Domain P) - X)" 
@@ -535,8 +535,7 @@ corollary lm065:
   using assms lm064 by (metis Int_commute restrictedDomain)
 
 lemma lm066: 
-  "Range (R outside X) = R``((Domain R) - X)" 
-  using assms 
+  "Range (R outside X) = R``((Domain R) - X)"
   by (metis Diff_idemp ImageE Range.intros Range_outside_sub_Image_Domain lm041
             lm042 order_class.order.antisym subsetI)
 
@@ -714,7 +713,7 @@ lemma lm088:
 
 lemma lm089: 
   "Range(f outside X) \<supseteq> (Range f)-(f``X)" 
-  using assms Outside_def by blast
+  using Outside_def by blast
 
 lemma lm090: 
   assumes "runiq P" 
@@ -1273,13 +1272,13 @@ lemma lm161:
   fixes a::real 
   fixes b c 
   shows "a*b - a*c=a*(b-c)"
-  using assms by (metis real_scaleR_def real_vector.scale_right_diff_distrib)
+  by (metis real_scaleR_def real_vector.scale_right_diff_distrib)
 
 lemma lm162: 
   fixes a::real 
   fixes b c 
   shows "a*b - c*b=(a-c)*b"
-  using assms lm161 by (metis mult.commute)
+  using lm161 by (metis mult.commute)
 
 end
 

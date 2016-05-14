@@ -886,11 +886,11 @@ lemma stermsl_ctermsl [elim]:
 
 lemma stermsl_after_ctermsl [simp]:
   "(\<Union>x\<in>ctermsl p. stermsl x) = ctermsl p"
-  using assms by (induction p) auto
+  by (induct p) auto
 
 lemma stermsl_before_ctermsl [simp]:
   "(\<Union>x\<in>stermsl p. ctermsl x) = ctermsl p"
-  using assms by (induction p) simp_all
+  by (induct p) simp_all
 
 lemma ctermsl_no_choice: "p1 \<oplus> p2 \<notin> ctermsl p"
   by (induct p) simp_all
@@ -973,11 +973,11 @@ function dtermsl
 
 lemma stermsl_after_dtermsl [simp]:
   shows "(\<Union>x\<in>dtermsl p. stermsl x) = dtermsl p"
-  using assms by (induct p) simp_all
+  by (induct p) simp_all
 
 lemma stermsl_before_dtermsl [simp]:
   "(\<Union>x\<in>stermsl p. dtermsl x) = dtermsl p"
-  using assms by (induct p) simp_all
+  by (induct p) simp_all
 
 lemma dtermsl_no_choice [simp]: "p1 \<oplus> p2 \<notin> dtermsl p"
   by (induct p) simp_all

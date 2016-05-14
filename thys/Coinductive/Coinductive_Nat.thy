@@ -512,12 +512,12 @@ by(simp add: mcont_def monotone_epred cont_def epred_Sup)
 lemma enat_cocase_mono [partial_function_mono, cont_intro]: 
   "\<lbrakk> monotone orda ordb zero; \<And>n. monotone orda ordb (\<lambda>f. esuc f n) \<rbrakk>
   \<Longrightarrow> monotone orda ordb (\<lambda>f. co.case_enat (zero f) (esuc f) x)"
-by(cases x rule: co.enat.exhaust)(simp_all add: assms)
+by(cases x rule: co.enat.exhaust) simp_all
 
 lemma enat_cocase_mcont [cont_intro, simp]:
   "\<lbrakk> mcont luba orda lubb ordb zero; \<And>n. mcont luba orda lubb ordb (\<lambda>f. esuc f n) \<rbrakk>
   \<Longrightarrow> mcont luba orda lubb ordb (\<lambda>f. co.case_enat (zero f) (esuc f) x)"
-by(cases x rule: co.enat.exhaust)(simp_all add: assms)
+by(cases x rule: co.enat.exhaust) simp_all
 
 lemma eSuc_mono [partial_function_mono]:
   "monotone (fun_ord op \<le>) op \<le> f \<Longrightarrow> monotone (fun_ord op \<le>) op \<le> (\<lambda>x. eSuc (f x))"

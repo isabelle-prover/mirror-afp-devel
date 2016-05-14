@@ -271,7 +271,7 @@ definition visit :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a state stream \
 
 lemma visit_unique1:
   "visit I1 L1 \<omega> \<Longrightarrow> visit I2 L2 \<omega> \<Longrightarrow> I1 \<inter> I2 \<noteq> {}"
-  using assms by (auto simp: visit_def HLD_iff)
+  by (auto simp: visit_def HLD_iff)
 
 lemma visit_unique2:
   assumes "visit I1 L1 \<omega>" "visit I2 L2 \<omega>"
@@ -516,7 +516,7 @@ proof -
       using `x \<in> ?I` by (auto simp: mult_ac)
   qed
   also have "\<dots> = ennreal ((1 - p_H) / (1 - p_H * p_f))"
-    using p_j_pos assms p_H p_H_p_f_less_1
+    using p_j_pos p_H p_H_p_f_less_1
     by (subst nn_integral_cmult_indicator)
        (auto simp: emeasure_measure_pmf_finite setsum.reindex subset_eq mult_ac
              intro!: divide_nonneg_nonneg)

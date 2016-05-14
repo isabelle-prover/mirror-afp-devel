@@ -1437,7 +1437,6 @@ lemma bnFreshResidual[simp]:
   fixes \<alpha> :: "('a::fs_name) action"
 
   shows "(bn \<alpha>) \<sharp>* (\<alpha> \<prec> P) = bn \<alpha> \<sharp>* (subject \<alpha>)"
-using assms
 by(nominal_induct \<alpha> rule: action.strong_induct)
   (auto simp add: residualFresh fresh_some fresh_star_def)
 

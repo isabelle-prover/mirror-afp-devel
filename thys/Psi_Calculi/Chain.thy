@@ -490,7 +490,6 @@ lemma freshChainSym[simp]:
   and   yvec :: "name list"
   
   shows   "xvec \<sharp>* yvec = yvec \<sharp>* xvec"
-using assms
 by(auto simp add: fresh_star_def fresh_def name_list_supp)
 
 lemmas [eqvt] = perm_cart_prod[OF pt_name_inst, OF pt_name_inst, OF at_name_inst]

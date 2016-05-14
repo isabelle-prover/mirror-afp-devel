@@ -43,7 +43,7 @@ subsubsection {* Atomic steps of SK\_IPC preserve invariants *}
 lemma set_object_value_invariant:
   shows "atomic_step_invariant s = atomic_step_invariant (set_object_value ob va s)"
 proof -
-  show ?thesis using assms
+  show ?thesis
     unfolding atomic_step_invariant_def atomic_step_precondition_def ipc_precondition_def
       sp_subset_def set_object_value_def Let_def
     by (simp split add: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits)
@@ -52,7 +52,7 @@ qed
 lemma set_thread_value_invariant:
   shows "atomic_step_invariant s = atomic_step_invariant (s \<lparr> thread := thrst \<rparr>)"
 proof -
-  show ?thesis using assms
+  show ?thesis
     unfolding atomic_step_invariant_def atomic_step_precondition_def ipc_precondition_def
       sp_subset_def set_object_value_def Let_def
     by (simp split add: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits)

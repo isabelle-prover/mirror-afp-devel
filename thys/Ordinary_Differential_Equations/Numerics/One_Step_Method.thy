@@ -18,7 +18,6 @@ lemmas grid = steps
 
 lemma grid_ge_min:
   shows "t 0 \<le> t j"
-  using assms
 proof (induct j)
   fix j
   assume "t 0 \<le> t j"
@@ -46,7 +45,7 @@ where "stepsize j = t (Suc j) - t j"
 
 lemma grid_stepsize_nonneg:
   shows "stepsize j \<ge> 0"
-  using assms grid unfolding stepsize_def
+  using grid unfolding stepsize_def
   by (simp add: field_simps order_less_imp_le)
 
 lemma grid_stepsize_sum:

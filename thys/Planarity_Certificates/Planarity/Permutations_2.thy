@@ -56,7 +56,7 @@ lemma perm_rem_conv: "\<And>f x y. bij f \<Longrightarrow> perm_rem x f y = (
     if x = y then x
     else if f y = x then f (f y)
     else f y)"
-  using assms by (auto simp: perm_rem_simps)
+  by (auto simp: perm_rem_simps)
 
 lemma perm_rem_commutes:
   assumes "bij f" shows "perm_rem a (perm_rem b f) = perm_rem b (perm_rem a f)"

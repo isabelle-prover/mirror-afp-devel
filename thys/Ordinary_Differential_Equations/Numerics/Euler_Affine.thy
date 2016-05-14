@@ -880,7 +880,7 @@ lemma enclosure_Cons_iff:
   shows "enclosure f t0 t1 ((t0', CX, t1', X1) # ress0) \<longleftrightarrow>
     (f t1' \<in> X1 \<and> (\<forall>t\<in>{t0' .. t1'}. f t \<in> CX) \<and>
       t0 \<le> t0' \<and> t0' \<le> t1' \<and> t1' \<le> t1 \<and> enclosure f t0 t1 ress0)"
-  using assms by (auto simp: enclosure_def)
+  by (auto simp: enclosure_def)
 
 lemma enclosure_subst:
   assumes "enclosure f t0 t1 ress"

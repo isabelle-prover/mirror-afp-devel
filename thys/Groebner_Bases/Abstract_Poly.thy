@@ -1352,7 +1352,7 @@ qed
 
 lemma coeff_higher:
   shows "coeff (higher p s) t = (if s \<prec> t then coeff p t else 0)"
-using assms lp_max[of p] lc_not_0[of p] unfolding lp_def lc_def
+using lp_max[of p] lc_not_0[of p] unfolding lp_def lc_def
 proof transfer
   fix p::"'a \<Rightarrow> 'b" and t s::"'a"
   show "(if s \<prec> t then p t else 0) = (if s \<prec> t then p t else 0)" by simp

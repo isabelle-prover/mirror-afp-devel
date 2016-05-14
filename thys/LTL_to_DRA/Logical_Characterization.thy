@@ -338,7 +338,7 @@ proof (induction \<phi>)
           hence "suffix k w \<Turnstile> \<phi>"
             using `\<forall>j\<ge>i. suffix j w \<Turnstile> \<phi>` by blast
           hence "\<PP> \<phi> {G \<psi> |\<psi>. w \<Turnstile> F G \<psi>} (suffix k w) 0"
-            using assms LTL_FG_suffix 
+            using LTL_FG_suffix 
             by (blast dest: ltl_implies_provable[unfolded \<G>\<^sub>F\<^sub>G_alt_def])
           hence "\<PP> \<phi> {G \<psi> |\<psi>. w \<Turnstile> F G \<psi>} w k"
             unfolding subsequence_shift by auto

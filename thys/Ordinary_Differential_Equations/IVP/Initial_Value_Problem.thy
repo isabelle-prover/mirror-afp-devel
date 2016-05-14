@@ -38,7 +38,6 @@ proof
   also
   assume "x \<in> cbox (- r *\<^sub>R One) (r *\<^sub>R One)"
   hence "infnorm x \<le> r"
-    using assms
     by (auto simp: infnorm_def mem_box intro!: cSup_least)
   finally show "x \<in> cball 0 (sqrt(DIM('a)) * r)"
     by (auto simp: dist_norm mult_left_mono)
@@ -1109,7 +1108,7 @@ definition "iter_space = (Abs_bcontfun ` ((T \<rightarrow> X) \<inter> bcontfun 
 
 lemma iter_spaceI:
   "(\<And>x. x \<in> T \<Longrightarrow> Rep_bcontfun g x \<in> X) \<Longrightarrow> g t0 = x0 \<Longrightarrow> g \<in> iter_space"
-  by (force simp add: assms iter_space_def Rep_bcontfun Rep_bcontfun_inverse
+  by (force simp add: iter_space_def Rep_bcontfun Rep_bcontfun_inverse
     intro!: Rep_bcontfun)
 
 lemma const_in_subspace: "(\<lambda>_. x0) \<in> (T \<rightarrow> X) \<inter> bcontfun \<inter> {x. x t0 = x0}"
@@ -1293,7 +1292,7 @@ lemma fixed_point:
   using fixed_point' by simp_all
 
 lemma fixed_point_equality': "x \<in> iter_space \<and> P x = x \<Longrightarrow> fixed_point = x"
-  unfolding fixed_point_def using fixed_point_unique assms
+  unfolding fixed_point_def using fixed_point_unique
   by (rule the1_equality)
 
 lemma fixed_point_equality: "x \<in> iter_space \<Longrightarrow> P x = x \<Longrightarrow> fixed_point = x"
@@ -1916,13 +1915,13 @@ sublocale has_solution "i\<lparr>ivp_X:=X''\<rparr>"
 lemma is_solution_eq_is_solution_on_supersetdomain:
   shows "subset.is_solution = ivp.is_solution (i\<lparr>ivp_X:=X''\<rparr>)"
 proof -
-  interpret ivp': ivp "i\<lparr>ivp_X:=X''\<rparr>" using iv_defined assms by unfold_locales auto
-  show ?thesis using assms
+  interpret ivp': ivp "i\<lparr>ivp_X:=X''\<rparr>" using iv_defined by unfold_locales auto
+  show ?thesis
   proof (safe intro!: ext)
    fix x assume "is_solution x"
     moreover
     from is_solutionD[OF this] solution_continuous_on[OF this]
-    have "\<And>t. t \<in> subset.T \<Longrightarrow> x t \<in> subset.X" using assms
+    have "\<And>t. t \<in> subset.T \<Longrightarrow> x t \<in> subset.X"
       using segment_subset
       by (intro solution_in_subset; force intro!: continuous_on_subset
           continuous_on_subset[OF _ segment_subset]
@@ -1933,7 +1932,7 @@ proof -
 qed
 
 lemma sup_solution_is_solution: "is_solution x \<Longrightarrow> subset.is_solution x"
-  using assms superset
+  using superset
   by (subst is_solution_eq_is_solution_on_supersetdomain) auto
 
 lemma solutions_eq:

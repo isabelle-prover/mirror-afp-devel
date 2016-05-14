@@ -171,18 +171,18 @@ proof (rule iffI)
   assume prem: "partial_latin_square s n \<and> card s = n * n"
   have "\<forall>t. (without t) ` s \<subseteq> {0..<n} \<times> {0..<n}"
   proof
-    fix t show "(without t) ` s \<subseteq> {0..<n} \<times> {0..<n}" using assms partial_latin_square_def next_def atLeast0LessThan prem by (cases t) auto
+    fix t show "(without t) ` s \<subseteq> {0..<n} \<times> {0..<n}" using partial_latin_square_def next_def atLeast0LessThan prem by (cases t) auto
   qed
   then show "partial_latin_square s n \<and> card s = n * n \<Longrightarrow> latin_square s n"
     unfolding latin_square_def using partial_latin_square_def
-    by (metis assms bij_betw_def card_atLeastLessThan card_cartesian_product card_image card_subset_eq diff_zero finite_SigmaI finite_atLeastLessThan)
+    by (metis bij_betw_def card_atLeastLessThan card_cartesian_product card_image card_subset_eq diff_zero finite_SigmaI finite_atLeastLessThan)
 next
   assume prem:"latin_square s n"
   then have "bij_betw row_col s ({0..<n} \<times> {0..<n})" using latin_square_def by blast
   moreover have "partial_latin_square s n"
   proof -
     have "\<forall>t. \<forall>e\<in>s. (without t) e \<in> ({0..<n}\<times>{0..<n})" using prem latin_square_def bij_betwE by metis
-    then have 1:"\<forall>e\<in>s.\<forall>t. e t < n" using assms latin_square_def all_types_next_eqiv[of "\<lambda>t. \<forall>e\<in>s. e t < n"] bij_betwE by auto
+    then have 1:"\<forall>e\<in>s.\<forall>t. e t < n" using latin_square_def all_types_next_eqiv[of "\<lambda>t. \<forall>e\<in>s. e t < n"] bij_betwE by auto
     have 2:"(\<forall>t. inj_on (without t) s)" using prem bij_betw_def latin_square_def by auto
     from 1 2 show ?thesis using partial_latin_square_def by auto
   qed

@@ -1062,7 +1062,7 @@ assumes "ss \<in> seq ars" and "fst ss = a" and "lst ss = b" shows "(a,b) \<in> 
 qed
 
 lemma seq_vs_steps: shows "(a,b) \<in> (unlabel ars)^* = (\<exists>ss. fst ss = a \<and> lst ss = b \<and> ss \<in> seq ars)"
- using assms seq_imp_steps steps_imp_seq by metis
+ using seq_imp_steps steps_imp_seq by metis
 
 lemma D_imp_CR: assumes "\<forall>P. (peak ars P \<longrightarrow> (\<exists> \<sigma>' \<tau>'. DD ars r (fst P,snd P,\<sigma>',\<tau>')))" shows "CR (unlabel ars)" proof
  fix a b c assume A: "(a,b) \<in> (unlabel ars)^*" and B: "(a,c) \<in> (unlabel ars)^*" show "(b,c) \<in> (unlabel ars)\<^sup>\<down>" proof -

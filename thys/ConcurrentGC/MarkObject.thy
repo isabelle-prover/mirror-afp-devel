@@ -438,7 +438,6 @@ by (auto intro!: filter_False)
 lemma valid_W_inv_sys_read[simp]:
   "\<lbrakk> sys_mem_lock s \<noteq> Some p; valid_W_inv s \<rbrakk>
      \<Longrightarrow> sys_read p (mr_Mark r) (s sys) = mv_Mark (Option.map_option obj_mark (sys_heap s r))"
-using assms
 apply (clarsimp simp: sys_read_def fold_writes_def)
 apply (rule fold_invariant[where P="\<lambda>fr. Option.map_option obj_mark (heap (fr (s sys)) r) = Option.map_option obj_mark (sys_heap s r)"
                              and Q="\<lambda>w. \<forall>r fl. w \<noteq> mw_Mark r fl"])

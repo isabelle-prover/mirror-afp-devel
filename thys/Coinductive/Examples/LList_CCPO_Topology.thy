@@ -599,7 +599,7 @@ lemma mono_ext: assumes "xs \<le> ys" shows "extup a xs \<le> extup a ys" "extdo
   using assms[unfolded less_eq_list_def prefixeq_def] by (auto simp: less_eq_list_def prefixeq_ext)
 
 lemma set_ext: "set (extup a xs) \<subseteq> {a} \<union> set xs" "set (extdown a xs) \<subseteq> {a} \<union> set xs"
-  using assms by (induction xs arbitrary: a) auto
+  by (induction xs arbitrary: a) auto
 
 definition "lextup i l = Lim (at' l) (llist_of \<circ> extup i \<circ> list_of)"
 definition "lextdown i l = Lim (at' l) (llist_of \<circ> extdown i \<circ> list_of)"

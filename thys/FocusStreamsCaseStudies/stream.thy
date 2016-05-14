@@ -806,7 +806,6 @@ by (metis concat_inf_truncate_nonempty)
 
 lemma inf_truncate_append:
   "(inf_truncate z i @ [z (Suc i)]) = inf_truncate z (Suc i)"
-using assms
 by (metis inf_truncate.simps(2))
 
 

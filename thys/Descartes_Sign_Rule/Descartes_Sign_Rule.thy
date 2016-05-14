@@ -715,7 +715,7 @@ text \<open>
 lemma coeff_poly_times_one_minus_x:
   fixes g :: "'a :: linordered_idom poly"
   shows "coeff g n = (\<Sum>i\<le>n. coeff (g * [:1, -1:]) i)"
-  using assms by (induction n) simp_all
+  by (induction n) simp_all
 
 text \<open>
   We apply the previous lemma to the coefficient list of a polynomial and show: 

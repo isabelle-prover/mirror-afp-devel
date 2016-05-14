@@ -240,7 +240,7 @@ context del_vert_props begin
     by (auto simp: euler_char_def H.euler_char_def card_arcs_dv card_verts_dv face_cycles_dv)
 
   lemma adj_dv: "v \<rightarrow>\<^bsub>del_vert u\<^esub> w \<longleftrightarrow> v \<rightarrow>\<^bsub>G\<^esub> w"
-    using assms by (auto simp: arcs_ends_def arcs_dv ends_del_vert)
+    by (auto simp: arcs_ends_def arcs_dv ends_del_vert)
 
   lemma reachable_del_vertD:
     assumes "v \<rightarrow>\<^sup>*\<^bsub>del_vert u\<^esub> w" shows "v \<rightarrow>\<^sup>*\<^bsub>G\<^esub> w"

@@ -223,7 +223,7 @@ end
 
 lemma mod_star_conv: "h\<Turnstile>A*B 
   \<longleftrightarrow> (\<exists>hr as1 as2. h=(hr,as1\<union>as2) \<and> as1\<inter>as2={} \<and> (hr,as1)\<Turnstile>A \<and> (hr,as2)\<Turnstile>B)"
-  using assms unfolding times_assn_def
+  unfolding times_assn_def
   apply (cases h)
   by (auto simp: Abs_assn_inverse)
 

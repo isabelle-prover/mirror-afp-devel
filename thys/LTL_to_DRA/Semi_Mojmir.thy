@@ -1350,10 +1350,10 @@ proof -
     hence "\<And>token. x \<noteq> token_run token t"
       unfolding reach_def token_run.simps using bounded_w by fastforce
     hence "state_rank x t = None"
-      using pull_up_configuration_state_rank assms by auto
+      using pull_up_configuration_state_rank by auto
   }
   with state_rank_range show ?thesis
-    using assms  by blast
+    by blast
 qed
 
 subsection \<open>Step Function\<close>

@@ -598,7 +598,7 @@ text {*
 lemma unwinding_implies_view_partitioned: 
 shows view_partitioned
 proof-
-from assms unwinding_implies_view_partitioned_ind have view_partitioned_inductive: "view_partitioned_ind"
+from unwinding_implies_view_partitioned_ind have view_partitioned_inductive: "view_partitioned_ind"
   by blast
 have purged_relation: "\<forall> u execs . purged_relation u execs (purge execs u)"
   by(unfold purged_relation_def, unfold purge_def, auto)
@@ -624,7 +624,7 @@ shows NI_unrelated
 proof-
   {
     fix execs a n
-    from assms unwinding_implies_view_partitioned
+    from unwinding_implies_view_partitioned
       have vp: view_partitioned by blast
     from vp and vpeq_reflexive
       have 1: "\<forall> u . (run n (Some s0) execs 
@@ -1330,7 +1330,7 @@ shows NI_indirect_sources
 proof-
   {
     fix execs a n
-    from assms iunwinding_implies_view_partitioned1
+    from iunwinding_implies_view_partitioned1
       have vp: iview_partitioned by blast
     from vp and vpeq_reflexive
       have 1: "\<forall> u . run n (Some s0) (ipurge_l execs u) \<parallel> run n (Some s0) (ipurge_r execs u)  \<rightharpoonup> (\<lambda>rs rt. vpeq u rs rt \<and> current rs = current rt)"
@@ -1380,7 +1380,7 @@ qed
 
 theorem unwinding_implies_isecure: 
 shows isecure
-using unwinding_implies_NI_indirect_sources  unwinding_implies_NI_unrelated assms unfolding isecure_def by(auto)
+using unwinding_implies_NI_indirect_sources  unwinding_implies_NI_unrelated unfolding isecure_def by(auto)
 
 end
 end

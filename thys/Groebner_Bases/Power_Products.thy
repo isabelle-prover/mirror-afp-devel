@@ -433,7 +433,6 @@ by (simp add: in_indets_def)
 lemma empty_indets:
   shows "in_indets {} s = (s = 1)"
 proof -
-  from assms
   show ?thesis
   proof transfer
     fix s::"'a \<Rightarrow> nat"

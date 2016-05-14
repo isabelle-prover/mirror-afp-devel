@@ -373,7 +373,7 @@ proof-
   have "((\<lambda>_. 1) \<in> o(\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g)) \<longleftrightarrow>
           ((\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr 0) \<in> o(\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g))"
     by (rule sym, intro landau_o.small.in_cong gs_powr_0_eq_one) 
-  also from assms gs_pos dominating_chain' have "... \<longleftrightarrow> pos_list (map get_param gs)"
+  also from gs_pos dominating_chain' have "... \<longleftrightarrow> pos_list (map get_param gs)"
   proof (induction gs)
     case Nil
     have "(\<lambda>x::'b. 1::real) \<notin> o(\<lambda>x. 1)" by (auto dest!: landau_o.small_big_asymmetric)
@@ -395,7 +395,7 @@ proof-
   have "((\<lambda>_. 1) \<in> O(\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g)) \<longleftrightarrow>
           ((\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr 0) \<in> O(\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g))"
     by (rule sym, intro landau_o.big.in_cong gs_powr_0_eq_one) 
-  also from assms gs_pos dominating_chain' have "... \<longleftrightarrow> nonneg_list (map get_param gs)"
+  also from gs_pos dominating_chain' have "... \<longleftrightarrow> nonneg_list (map get_param gs)"
   proof (induction gs)
     case Nil
     then show ?case by (simp add: func_one)
@@ -416,7 +416,7 @@ proof-
   have "((\<lambda>_. 1) \<in> \<Theta>(\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g)) \<longleftrightarrow>
           ((\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr 0) \<in> \<Theta>(\<lambda>x. \<Prod>g\<leftarrow>gs. get_fun g x powr get_param g))"
     by (rule sym, intro landau_theta.in_cong gs_powr_0_eq_one) 
-  also from assms gs_pos dominating_chain' have "... \<longleftrightarrow> list_all (op= 0) (map get_param gs)"
+  also from gs_pos dominating_chain' have "... \<longleftrightarrow> list_all (op= 0) (map get_param gs)"
   proof (induction gs)
     case Nil
     then show ?case by (simp add: func_one)

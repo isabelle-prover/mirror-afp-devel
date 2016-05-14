@@ -1225,7 +1225,6 @@ shows
        InvariantVarsF (getF state') F0 {} \<and> 
        ((getConflictFlag state') \<or> (getQ state') = []) \<and> 
        currentLevel (getM state') = 0"
-using assms
 using InvariantsAfterInitializationStep[of "initialState" "{}" "F0" "initialize F0 initialState" "F0"]
 unfolding initialState_def
 unfolding InvariantConsistent_def

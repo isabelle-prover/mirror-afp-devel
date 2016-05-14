@@ -477,7 +477,6 @@ definition add_aform::"'a::real_vector aform \<Rightarrow> 'a aform \<Rightarrow
 
 lemma aform_val_add_aform:
   shows "aform_val e (add_aform X Y) = aform_val e X + aform_val e Y"
-  using assms
   by (auto simp: add_aform_def aform_val_def)
 
 definition add_aform'::"nat \<Rightarrow> nat \<Rightarrow> 'a::executable_euclidean_space aform \<Rightarrow> 'a aform \<Rightarrow> 'a aform"
@@ -561,7 +560,6 @@ definition aform_scaleR::"real aform \<Rightarrow> 'a::real_vector \<Rightarrow>
 
 lemma aform_val_scaleR_aform[simp]:
   shows "aform_val e (aform_scaleR X y) = aform_val e X *\<^sub>R y"
-  using assms
   by (auto simp: aform_scaleR_def aform_val_def scaleR_left_distrib)
 
 

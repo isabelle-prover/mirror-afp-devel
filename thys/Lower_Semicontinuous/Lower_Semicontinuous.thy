@@ -233,7 +233,7 @@ moreover
     from this obtain d where "d>0 & (!y : (ball x0 d). C < f y)" using `?rhs` by auto
     hence "EX T. open T & x0 : T & (!y : T. C < f y)" apply (rule_tac x="ball x0 d" in exI)
       apply (simp add: centre_in_ball) done
-  } hence "lsc_at x0 f" using assms lsc_at_ereal[of x0 f] by auto
+  } hence "lsc_at x0 f" using lsc_at_ereal[of x0 f] by auto
 }
 ultimately show ?thesis by auto
 qed

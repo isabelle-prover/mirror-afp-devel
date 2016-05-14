@@ -259,7 +259,7 @@ qed
 (* the function made by (summedBid bids) is always injective, that is, also with domain UNIV *)
 lemma summedBidInjective: 
   "inj_on (summedBid bids) UNIV" 
-  using assms fst_conv inj_on_inverseI by (metis (lifting)) 
+  using fst_conv inj_on_inverseI by (metis (lifting)) 
 
 (* restrict above to any set X *)
 corollary lm021: 
@@ -270,7 +270,7 @@ corollary lm021:
 lemma lm022: 
   "setsum snd (summedBidVectorRel bids N G) = 
    setsum (snd \<circ> (summedBid bids)) (N \<times> (Pow G - {{}}))" 
-  using assms lm021 setsum.reindex by blast 
+  using lm021 setsum.reindex by blast 
 
 (* remember: omega of (1,{11,12,13}) is {(1,{11}), (1,{12}), (1,{13})} *)
 corollary lm023: 
@@ -508,7 +508,7 @@ qed
 
 lemma lm054: 
   "runiq (summedBidVectorRel bids N G)" 
-  using assms graph_def image_Collect_mem domainOfGraph by (metis(no_types))
+  using graph_def image_Collect_mem domainOfGraph by (metis(no_types))
 
 corollary lm055: 
   "runiq (summedBidVectorRel bids N G || a)"
@@ -532,7 +532,7 @@ qed
 corollary lm057: 
   "setsum (summedBidVector bids N G) (a \<inter> (Domain (summedBidVectorRel bids N G))) = 
    setsum snd ((summedBidVectorRel bids N G) || a)" 
-  using assms setsumRestrictedToDomainInvariant lm055 by fast
+  using setsumRestrictedToDomainInvariant lm055 by fast
 
 corollary lm058: 
   assumes "a \<in> allAllocations N G" 
@@ -577,7 +577,7 @@ qed
 
 corollary lm061: 
   "setsum snd ((summedBid bids) ` a) = setsum (snd \<circ> (summedBid bids)) a"
-  using assms setsum.reindex lm021 by blast
+  using setsum.reindex lm021 by blast
 
 corollary lm062: 
   assumes "a \<in> allAllocations N G" 
@@ -761,7 +761,7 @@ lemma lm078:
 
 lemma lm079: 
   "partitionValuedUniverse \<subseteq> Pow (UNIV \<times> (UNIV - {{}}))" 
-  using assms is_non_overlapping_def by force
+  using is_non_overlapping_def by force
 
 corollary lm080: 
   "allocationsUniverse \<subseteq> runiqs \<inter> Pow (UNIV \<times> (UNIV - {{}}))" 
@@ -769,7 +769,7 @@ corollary lm080:
 
 corollary lm081: 
   "inj_on pseudoAllocation allocationsUniverse" 
-  using assms lm077 lm080 subset_inj_on by blast
+  using lm077 lm080 subset_inj_on by blast
 
 corollary lm082: 
   "inj_on pseudoAllocation (allAllocations N G)" 

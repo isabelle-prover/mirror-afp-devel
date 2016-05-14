@@ -62,7 +62,7 @@ context bidirected_digraph begin
     by (metis arev_arev)
 
   lemma in_arcs_eq: "in_arcs G w = arev ` out_arcs G w"
-    using assms by auto (metis arev_arev arev_in_arcs image_eqI in_out_arcs_conv tail_arev)
+    by auto (metis arev_arev arev_in_arcs image_eqI in_out_arcs_conv tail_arev)
 
   lemma inj_on_arev[intro!]: "inj_on arev S"
     by (metis arev_arev inj_on_inverseI)

@@ -163,7 +163,6 @@ proof -
   have "\<And>\<phi>. RETURN (gerth_ltl_to_gba_code \<phi>) 
     \<le> \<Down>(igbav_impl_rel_ext unit_rel nat_rel (\<langle>Id\<rangle>fun_set_rel)) 
       (gerth_ltl_to_gba \<phi>)"
-    using assms 
     unfolding gerth_ltl_to_gba_def[abs_def] gerth_ltl_to_gba_code_def[abs_def]
     apply (rule order_trans[OF create_name_igba_code.refine])
     apply (rule create_name_igba_impl.refine[THEN fun_relD, THEN nres_relD])

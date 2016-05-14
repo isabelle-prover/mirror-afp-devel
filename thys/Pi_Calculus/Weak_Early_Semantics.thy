@@ -126,7 +126,6 @@ lemma tauTransitionChain[simp]:
   and   P' :: pi
 
   shows "P \<Longrightarrow>\<^sup>^\<tau> \<prec> P' = P \<Longrightarrow>\<^sub>\<tau> P'"
-using assms
 apply(auto dest: Weak_Early_Step_Semantics.tauTransitionChain
       simp add: weakFreeTransition_def)
 by(erule rtrancl.cases) (auto intro: transitionI)

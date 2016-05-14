@@ -355,7 +355,7 @@ lemma nos_incD [dest]:
 
 lemma nos_inc_simp [simp]:
   "nos_inc \<xi> \<xi>' = (no \<xi> \<le> no \<xi>')"
-  using assms unfolding nos_inc_def ..
+  unfolding nos_inc_def ..
 
 lemmas oseq_nos_incs =
   open_seq_step_invariant [OF seq_nos_incs initiali_toy otoy_trans toy_trans,

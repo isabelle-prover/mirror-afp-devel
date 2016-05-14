@@ -1024,8 +1024,6 @@ proof goal_cases
   case (1 l l' c c' f f' s s')
   thus ?case
     apply (induct arbitrary: s s')
-    using assms
-    apply -
     apply (simp only: nfoldli_simps True_implies_equals)
     apply parametricity
     apply (simp only: nfoldli_simps True_implies_equals)
@@ -1279,7 +1277,7 @@ text {*
 lemma autoref_nfoldli[autoref_rules]:
   shows "(nfoldli, nfoldli)
   \<in> \<langle>Ra\<rangle>list_rel \<rightarrow> (Rb \<rightarrow> bool_rel) \<rightarrow> (Ra \<rightarrow> Rb \<rightarrow> \<langle>Rb\<rangle>nres_rel) \<rightarrow> Rb \<rightarrow> \<langle>Rb\<rangle>nres_rel"
-  using assms param_nfoldli .
+  by (rule param_nfoldli)
 
 text {* This constant is a placeholder to be converted to
   custom operations by pattern rules *}

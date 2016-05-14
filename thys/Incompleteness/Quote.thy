@@ -393,12 +393,12 @@ proof -
         \<turnstile> All j (All j' (SeqQuoteP (Var j) (Var j') (Var s) (Var k) IMP ConstP (Var j')))"
         (is "_ \<turnstile> ?scheme")
     proof (rule OrdIndH [where j=l])
-      show "atom l \<sharp> (k, ?scheme)" using atoms assms 
+      show "atom l \<sharp> (k, ?scheme)" using atoms
         by simp
     next
       show "{} \<turnstile> All k (OrdP (Var k) IMP (All2 l (Var k) (?scheme(k::= Var l)) IMP ?scheme))"
         apply (rule All_I Imp_I)+
-        using atoms assms 
+        using atoms
         apply (simp_all add: fresh_at_base fresh_finite_set_at_base)
         --{*freshness finally proved!*}
         apply (rule cut_same)

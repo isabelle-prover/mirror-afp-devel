@@ -257,7 +257,7 @@ by (metis replicate_Suc replicate_append_same)
 lemma map_eq_append_conv:
   "map f xs = ys @ zs \<longleftrightarrow> (\<exists>ys' zs'. map f ys' = ys \<and> map f zs' = zs \<and> xs = ys' @ zs')"
 apply(rule iffI)
- apply(metis append_eq_conv_conj append_take_drop_id assms drop_map take_map)
+ apply(metis append_eq_conv_conj append_take_drop_id drop_map take_map)
 by(clarsimp)
 
 lemma append_eq_map_conv:

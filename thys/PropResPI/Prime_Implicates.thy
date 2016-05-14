@@ -281,7 +281,7 @@ using assms unfolding all_fulfill_def all_resolvents_upon_def by auto
 
 lemma atoms_formula_resolvents:
   shows "atoms_formula (all_resolvents_upon S A) \<subseteq>  atoms_formula S"
-using assms unfolding all_resolvents_upon_def by auto
+unfolding all_resolvents_upon_def by auto
 
 text {* We define a partial saturation predicate that is restricted to a specific atom. *}
 
