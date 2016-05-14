@@ -93,7 +93,7 @@ qed(simp cong: SUP_cong add: A)
 lemma ereal_divide_le_posI:
   fixes x y z :: ereal
   shows "x > 0 \<Longrightarrow> z \<noteq> - \<infinity> \<Longrightarrow> z \<le> x * y \<Longrightarrow> z / x \<le> y"
-by (cases rule: ereal3_cases[of x y z])(auto simp: field_simps split: split_if_asm)
+by (cases rule: ereal3_cases[of x y z])(auto simp: field_simps split: if_split_asm)
 
 lemma add_diff_eq_ereal: fixes x y z :: ereal
   shows "x + (y - z) = x + y - z"
