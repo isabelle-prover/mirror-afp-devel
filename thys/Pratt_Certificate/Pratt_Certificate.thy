@@ -705,7 +705,7 @@ method_setup pratt = \<open>
 text \<open>
   The following two theorems serve as regression tests -- the first one computes the 
   certificate in ML automatically, whereas the second one uses a pre-computed certificate.
-  The first example should not take more than a few second; the second one no more than 
+  The first example should not take more than a few seconds; the second one no more than 
   30 seconds or so.
 \<close>
 
