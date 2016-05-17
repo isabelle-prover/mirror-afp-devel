@@ -22,139 +22,142 @@ by rule auto
 
 subsection {* Introduction and Elimination Rules *}
 
-text {* The definition of partitions is in the Card\_Partitions theory. *}
+text {* The definition of @{const partition_on} is in @{theory Disjoint_Sets}. *}
 
-lemma partitionsI:
+(* TODO: move the following theorems to Disjoint_Sets *)
+
+lemma partition_onI:
   assumes "\<And>p. p \<in> P \<Longrightarrow> p \<noteq> {}"
   assumes "\<Union>P = A"
   assumes "\<And>p p'. p \<in> P \<Longrightarrow> p' \<in> P \<Longrightarrow> p \<noteq> p' \<Longrightarrow> p \<inter> p' = {}"
-  shows "partitions P A"
-using assms unfolding partitions_def by blast
+  shows "partition_on A P"
+using assms unfolding partition_on_def disjoint_def by blast
 
-lemma partitionsE:
-  assumes "partitions P A"
+lemma partition_onE:
+  assumes "partition_on A P"
   obtains "\<And>p. p \<in> P \<Longrightarrow> p \<noteq> {}"
      "\<Union>P = A"
      "\<And>p p'. p \<in> P \<Longrightarrow> p' \<in> P \<Longrightarrow> p \<noteq> p' \<Longrightarrow> p \<inter> p' = {}"
-using assms unfolding partitions_def by blast
+using assms unfolding partition_on_def disjoint_def by blast
 
 subsection {* Basic Facts on Set Partitions *}
 
-lemma partitions_notemptyI:
-  assumes "partitions P A"
+lemma partition_on_notemptyI:
+  assumes "partition_on A P"
   assumes "A \<noteq> {}"
   shows "P \<noteq> {}"
-using assms by (auto elim: partitionsE)
+using assms by (auto elim: partition_onE)
 
-lemma partitions_disjoint:
-  assumes "partitions P A"
-  assumes "partitions Q B"
+lemma partition_on_disjoint:
+  assumes "partition_on A P"
+  assumes "partition_on B Q"
   assumes "A \<inter> B = {}"
   shows "P \<inter> Q = {}"
-using assms by (fastforce elim: partitionsE)
+using assms by (fastforce elim: partition_onE)
 
-lemma partitions_eq_implies_eq_carrier:
-  assumes "partitions Q A"
-  assumes "partitions Q B"
+lemma partition_on_eq_implies_eq_carrier:
+  assumes "partition_on A Q"
+  assumes "partition_on B Q"
   shows "A = B"
-using assms by (fastforce elim: partitionsE)
+using assms by (fastforce elim: partition_onE)
 
 subsection {* The Unique Part Containing an Element in a Set Partition *}
 
-lemma partitions_partitions_unique:
-  assumes "partitions P A"
+lemma partition_on_partition_on_unique:
+  assumes "partition_on A P"
   assumes "x \<in> A"
   shows "\<exists>!X. x \<in> X \<and> X \<in> P"
 proof -
-  from \<open>partitions P A\<close> have "\<Union>P = A"
-    by (auto elim: partitionsE)
+  from \<open>partition_on A P\<close> have "\<Union>P = A"
+    by (auto elim: partition_onE)
   from this \<open>x \<in> A\<close> obtain X where X: "x \<in> X \<and> X \<in> P" by blast
   {
     fix Y
     assume "x \<in> Y \<and> Y \<in> P"
     from this have "X = Y"
-      using X \<open>partitions P A\<close> by (meson partitionsE disjoint_iff_not_equal)
+      using X \<open>partition_on A P\<close> by (meson partition_onE disjoint_iff_not_equal)
   }
   from this X show ?thesis by auto
 qed
 
-lemma partitions_the_part_mem:
-  assumes "partitions P A"
+lemma partition_on_the_part_mem:
+  assumes "partition_on A P"
   assumes "x \<in> A"
   shows "(THE X. x \<in> X \<and> X \<in> P) \<in> P"
 proof -
   from \<open>x \<in> A\<close> have "\<exists>!X. x \<in> X \<and> X \<in> P"
-    using \<open>partitions P A\<close> by (simp add: partitions_partitions_unique)
+    using \<open>partition_on A P\<close> by (simp add: partition_on_partition_on_unique)
   from this show "(THE X. x \<in> X \<and> X \<in> P) \<in> P"
     by (metis (no_types, lifting) theI)
 qed
 
-lemma partitions_the_part_eq:
-  assumes "partitions P A"
+lemma partition_on_the_part_eq:
+  assumes "partition_on A P"
   assumes "x \<in> X" "X \<in> P"
   shows "(THE X. x \<in> X \<and> X \<in> P) = X"
 proof -
   from \<open>x \<in> X\<close> \<open>X \<in> P\<close> have "x \<in> A"
-    using \<open>partitions P A\<close> by (auto elim: partitionsE)
+    using \<open>partition_on A P\<close> by (auto elim: partition_onE)
   from this have "\<exists>!X. x \<in> X \<and> X \<in> P"
-    using \<open>partitions P A\<close> by (simp add: partitions_partitions_unique)
+    using \<open>partition_on A P\<close> by (simp add: partition_on_partition_on_unique)
   from \<open>x \<in> X\<close> \<open>X \<in> P\<close> this show "(THE X. x \<in> X \<and> X \<in> P) = X"
     by (auto intro!: the1_equality)
 qed
 
 subsection {* Cardinality of Parts in a Set Partition *}
 
-lemma partitions_le_set_elements:
+lemma partition_on_le_set_elements:
   assumes "finite A"
-  assumes "partitions P A"
+  assumes "partition_on A P"
   shows "card P \<le> card A"
 using assms
 proof (induct A arbitrary: P)
   case empty
-  from this show "card P \<le> card {}" by (simp add: partitions_empty)
+  from this show "card P \<le> card {}" by (simp add: partition_on_empty)
 next
   case (insert a A)
   show ?case
   proof (cases "{a} \<in> P")
     case True
-    have prop_partitions: "\<forall>p\<in>P. p \<noteq> {}" "\<Union>P = insert a A"
+    have prop_partition_on: "\<forall>p\<in>P. p \<noteq> {}" "\<Union>P = insert a A"
       "\<forall>p\<in>P. \<forall>p'\<in>P. p \<noteq> p' \<longrightarrow> p \<inter> p' = {}"
-      using \<open>partitions P (insert a A)\<close> by (fastforce elim: partitionsE)+
+      using \<open>partition_on (insert a A) P\<close> by (fastforce elim: partition_onE)+
     from this(2, 3) \<open>a \<notin> A\<close> \<open>{a} \<in> P\<close> have A_eq: "A = \<Union>(P - {{a}})"
       by auto (metis Int_iff UnionI empty_iff insert_iff)
-    from prop_partitions A_eq have partitions: "partitions (P - {{a}}) A"
-      by (intro partitionsI) auto
+    from prop_partition_on A_eq have partition_on: "partition_on A (P - {{a}})"
+      by (intro partition_onI) auto
     from insert.hyps(3) this have "card (P - {{a}}) \<le> card A" by simp
     from this insert(1, 2, 4) \<open>{a} \<in> P\<close> show ?thesis
-      using finite_elements[OF \<open>finite A\<close> partitions] by simp
+      using finite_elements[OF \<open>finite A\<close> partition_on] by simp
   next
     case False
-    from \<open>partitions P (insert a A)\<close> obtain p where p_def: "p \<in> P" "a \<in> p"
-      by (blast elim: partitionsE)
-    from \<open>partitions P (insert a A)\<close> p_def have a_notmem: "\<forall>p'\<in> P - {p}. a \<notin> p'"
-      by (blast elim: partitionsE)
-    from \<open>partitions P (insert a A)\<close> p_def have "p - {a} \<notin> P"
-      unfolding partitions_def
+    from \<open>partition_on (insert a A) P\<close> obtain p where p_def: "p \<in> P" "a \<in> p"
+      by (blast elim: partition_onE)
+    from \<open>partition_on (insert a A) P\<close> p_def have a_notmem: "\<forall>p'\<in> P - {p}. a \<notin> p'"
+      by (blast elim: partition_onE)
+    from \<open>partition_on (insert a A) P\<close> p_def have "p - {a} \<notin> P"
+      unfolding partition_on_def disjoint_def
       by (metis Diff_insert_absorb Diff_subset inf.orderE mk_disjoint_insert)
     let ?P' = "insert (p - {a}) (P - {p})"
-    have "partitions ?P' A"
-    proof (rule partitionsI)
-      from \<open>partitions P (insert a A)\<close> have "\<forall>p\<in>P. p \<noteq> {}" by (auto elim: partitionsE)
+    have "partition_on A ?P'"
+    proof (rule partition_onI)
+      from \<open>partition_on (insert a A) P\<close> have "\<forall>p\<in>P. p \<noteq> {}" by (auto elim: partition_onE)
       from this p_def \<open>{a} \<notin> P\<close> show "\<And>p'. p'\<in>insert (p - {a}) (P - {p}) \<Longrightarrow> p' \<noteq> {}"
         by (simp; metis (no_types) Diff_eq_empty_iff subset_singletonD)
     next
-      from \<open>partitions P (insert a A)\<close> have "\<Union>P = insert a A" by (auto elim: partitionsE)
+      from \<open>partition_on (insert a A) P\<close> have "\<Union>P = insert a A" by (auto elim: partition_onE)
       from p_def this \<open>a \<notin> A\<close> a_notmem show "\<Union>insert (p - {a}) (P - {p}) = A" by auto
     next
       show "\<And>pa pa'. pa\<in>insert (p - {a}) (P - {p}) \<Longrightarrow> pa'\<in>insert (p - {a}) (P - {p}) \<Longrightarrow> pa \<noteq> pa' \<Longrightarrow> pa \<inter> pa' = {}"
-        using \<open>partitions P (insert a A)\<close> p_def a_notmem
-        unfolding partitions_def by (metis disjoint_iff_not_equal insert_Diff insert_iff)
+        using \<open>partition_on (insert a A) P\<close> p_def a_notmem
+        unfolding partition_on_def disjoint_def
+        by (metis disjoint_iff_not_equal insert_Diff insert_iff)
     qed
-    have "finite P" using \<open>finite A\<close> \<open>partitions ?P' A\<close> finite_elements by fastforce
+    have "finite P" using \<open>finite A\<close> \<open>partition_on A ?P'\<close> finite_elements by fastforce
     have "card P = Suc (card (P - {p}))"
       using p_def \<open>finite P\<close> card.remove by fastforce
     also have "\<dots> = card ?P'" using \<open>p - {a} \<notin> P\<close> \<open>finite P\<close> by simp
-    also have "\<dots> \<le> card A" using \<open>partitions ?P' A\<close> insert.hyps(3) by simp
+    also have "\<dots> \<le> card A" using \<open>partition_on A ?P'\<close> insert.hyps(3) by simp
     also have "\<dots> \<le> card (insert a A)" by (simp add: card_insert_le \<open>finite A\<close> )
     finally show ?thesis .
   qed
@@ -162,80 +165,80 @@ qed
 
 subsection {* Operations on Set Partitions *}
 
-lemma partitions_union:
+lemma partition_on_union:
   assumes "A \<inter> B = {}"
-  assumes "partitions P A"
-  assumes "partitions Q B"
-  shows "partitions (P \<union> Q) (A \<union> B)"
-proof (rule partitionsI)
+  assumes "partition_on A P"
+  assumes "partition_on B Q"
+  shows "partition_on (A \<union> B) (P \<union> Q)"
+proof (rule partition_onI)
   fix X
   assume "X \<in> P \<union> Q"
-  from this \<open>partitions P A\<close> \<open>partitions Q B\<close> show "X \<noteq> {}"
-    by (auto elim: partitionsE)
+  from this \<open>partition_on A P\<close> \<open>partition_on B Q\<close> show "X \<noteq> {}"
+    by (auto elim: partition_onE)
 next
   show "\<Union>(P \<union> Q) = A \<union> B"
-    using \<open>partitions P A\<close> \<open>partitions Q B\<close> by (auto elim: partitionsE)
+    using \<open>partition_on A P\<close> \<open>partition_on B Q\<close> by (auto elim: partition_onE)
 next
   fix X Y
   assume "X \<in> P \<union> Q" "Y \<in> P \<union> Q" "X \<noteq> Y"
   from this assms show "X \<inter> Y = {}"
-    by (elim UnE partitionsE) auto
+    by (elim UnE partition_onE) auto
 qed
 
-lemma partitions_split1:
-  assumes "partitions (P \<union> Q) A"
-  shows "partitions P (\<Union>P)"
-proof (rule partitionsI)
+lemma partition_on_split1:
+  assumes "partition_on A (P \<union> Q)"
+  shows "partition_on (\<Union>P) P"
+proof (rule partition_onI)
   fix p
   assume "p \<in> P"
   from this assms show "p \<noteq> {}"
-    using Un_iff partitionsE by auto
+    using Un_iff partition_onE by auto
 next
   show "\<Union>P = \<Union>P" ..
 next
   fix p p'
   assume a: "p \<in> P" "p' \<in> P" "p \<noteq> p'"
   from this assms show "p \<inter> p' = {}"
-    using partitionsE subsetCE sup_ge1 by blast
+    using partition_onE subsetCE sup_ge1 by blast
 qed
 
-lemma partitions_split2:
-  assumes "partitions (P \<union> Q) A"
-  shows "partitions Q (\<Union>Q)"
-using assms partitions_split1 sup_commute by metis
+lemma partition_on_split2:
+  assumes "partition_on A (P \<union> Q)"
+  shows "partition_on (\<Union>Q) Q"
+using assms partition_on_split1 sup_commute by metis
 
-lemma partitions_intersect_on_elements:
-  assumes "partitions P (A \<union> C)"
+lemma partition_on_intersect_on_elements:
+  assumes "partition_on (A \<union> C) P"
   assumes "\<forall>X \<in> P. \<exists>x. x \<in> X \<inter> C"
-  shows "partitions ((\<lambda>X. X \<inter> C) ` P) C"
-proof (rule partitionsI)
+  shows "partition_on C ((\<lambda>X. X \<inter> C) ` P)"
+proof (rule partition_onI)
   fix p
   assume "p \<in> (\<lambda>X. X \<inter> C) ` P"
   from this assms show "p \<noteq> {}" by auto
 next
   have "\<Union>P = A \<union> C"
-    using assms by (auto elim: partitionsE)
+    using assms by (auto elim: partition_onE)
   from this show "\<Union>((\<lambda>X. X \<inter> C) ` P) = C" by auto
 next
   fix p p'
   assume "p \<in> (\<lambda>X. X \<inter> C) ` P" "p' \<in> (\<lambda>X. X \<inter> C) ` P" "p \<noteq> p'"
   from this assms(1) show "p \<inter> p' = {}"
-    by (blast elim: partitionsE)
+    by (blast elim: partition_onE)
 qed
 
-lemma partitions_insert_elements:
+lemma partition_on_insert_elements:
   assumes "A \<inter> B = {}"
-  assumes "partitions P B"
+  assumes "partition_on B P"
   assumes "f \<in> A \<rightarrow>\<^sub>E P"
-  shows "partitions ((\<lambda>X. X \<union> {x \<in> A. f x = X}) ` P) (A \<union> B)" (is "partitions ?P _")
-proof (rule partitionsI)
+  shows "partition_on (A \<union> B) ((\<lambda>X. X \<union> {x \<in> A. f x = X}) ` P)" (is "partition_on _ ?P")
+proof (rule partition_onI)
   fix X
   assume "X \<in> ?P"
-  from this \<open>partitions P B\<close> show "X \<noteq> {}"
-    by (auto elim: partitionsE)
+  from this \<open>partition_on B P\<close> show "X \<noteq> {}"
+    by (auto elim: partition_onE)
 next
   show "\<Union>?P = A \<union> B"
-    using \<open>partitions P B\<close> \<open>f \<in> A \<rightarrow>\<^sub>E P\<close> by (auto elim: partitionsE)
+    using \<open>partition_on B P\<close> \<open>f \<in> A \<rightarrow>\<^sub>E P\<close> by (auto elim: partition_onE)
 next
   fix X Y
   assume "X \<in> ?P" "Y \<in> ?P" "X \<noteq> Y"
@@ -243,44 +246,44 @@ next
   from \<open>Y \<in> ?P\<close> obtain Y' where Y': "Y = Y' \<union> {x \<in> A. f x = Y'}" "Y' \<in> P" by auto
   from \<open>X \<noteq> Y\<close> X' Y' have "X' \<noteq> Y'" by auto
   from this X' Y' have "X' \<inter> Y' = {}"
-    using \<open>partitions P B\<close> by (auto elim!: partitionsE)
+    using \<open>partition_on B P\<close> by (auto elim!: partition_onE)
   from X' Y' have "X' \<subseteq> B" "Y' \<subseteq> B"
-    using \<open>partitions P B\<close> by (auto elim!: partitionsE)
+    using \<open>partition_on B P\<close> by (auto elim!: partition_onE)
   from this \<open>X' \<inter> Y' = {}\<close> X' Y' \<open>X' \<noteq> Y'\<close> show "X \<inter> Y = {}"
     using \<open>A \<inter> B = {}\<close> by auto
 qed
 
-lemma partitions_map:
+lemma partition_on_map:
   assumes "inj_on f A"
-  assumes "partitions P A"
-  shows "partitions (op ` f ` P) (f ` A)"
+  assumes "partition_on A P"
+  shows "partition_on (f ` A) (op ` f ` P)"
 proof -
   {
     fix X Y
     assume "X \<in> P" "Y \<in> P" "f ` X \<noteq> f ` Y"
     moreover from assms have "\<forall>p\<in>P. \<forall>p'\<in>P. p \<noteq> p' \<longrightarrow> p \<inter> p' = {}" and "inj_on f (\<Union>P)"
-      by (auto elim!: partitionsE)
+      by (auto elim!: partition_onE)
     ultimately have "f ` X \<inter> f ` Y = {}"
       unfolding inj_on_def by auto (metis IntI empty_iff rev_image_eqI)+
   }
-  from assms this show "partitions (op ` f ` P) (f ` A)"
-    by (auto intro!: partitionsI elim!: partitionsE)
+  from assms this show "partition_on (f ` A) (op ` f ` P)"
+    by (auto intro!: partition_onI elim!: partition_onE)
 qed
 
-lemma set_of_partitions_map:
+lemma set_of_partition_on_map:
   assumes "inj_on f A"
-  shows "op ` (op ` f) ` {P. partitions P A} = {P. partitions P (f ` A)}"
+  shows "op ` (op ` f) ` {P. partition_on A P} = {P. partition_on (f ` A) P}"
 proof (rule set_eqI')
   fix x
-  assume "x \<in> op ` (op ` f) ` {P. partitions P A}"
-  from this \<open>inj_on f A\<close> show "x \<in> {P. partitions P (f ` A)}"
-    by (auto intro: partitions_map)
+  assume "x \<in> op ` (op ` f) ` {P. partition_on A P}"
+  from this \<open>inj_on f A\<close> show "x \<in> {P. partition_on (f ` A) P}"
+    by (auto intro: partition_on_map)
 next
   fix P
-  assume "P \<in> {P. partitions P (f ` A)}"
-  from this have "partitions P (f ` A)" by auto
+  assume "P \<in> {P. partition_on (f ` A) P}"
+  from this have "partition_on (f ` A) P" by auto
   from this have mem: "\<And>X x. X \<in> P \<Longrightarrow> x \<in> X \<Longrightarrow> x \<in> f ` A"
-    by (auto elim!: partitionsE)
+    by (auto elim!: partition_onE)
   have "op ` (f \<circ> the_inv_into A f) ` P = op ` f ` op ` (the_inv_into A f) ` P"
     by (simp add: image_comp comp_image)
   moreover have "P = op ` (f \<circ> the_inv_into A f) ` P"
@@ -323,10 +326,10 @@ next
   ultimately have P: "P = op ` f ` op ` (the_inv_into A f) ` P" by simp
   have A_eq: "A = the_inv_into A f ` f ` A" by (simp add: assms)
   from \<open>inj_on f A\<close> have "inj_on (the_inv_into A f) (f ` A)"
-    using \<open>partitions P (f ` A)\<close> by (simp add: inj_on_the_inv_into)
-  from this have  "op ` (the_inv_into A f) ` P \<in> {P. partitions P A}"
-    using \<open>partitions P (f ` A)\<close> by (subst A_eq, auto intro!: partitions_map)
-  from P this show "P \<in> op ` (op ` f) ` {P. partitions P A}" by (rule image_eqI)
+    using \<open>partition_on (f ` A) P\<close> by (simp add: inj_on_the_inv_into)
+  from this have  "op ` (the_inv_into A f) ` P \<in> {P. partition_on A P}"
+    using \<open>partition_on (f ` A) P\<close> by (subst A_eq, auto intro!: partition_on_map)
+  from P this show "P \<in> op ` (op ` f) ` {P. partition_on A P}" by (rule image_eqI)
 qed
 
 end

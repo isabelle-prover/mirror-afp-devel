@@ -150,13 +150,13 @@ subsection {* Definition of Bell Numbers *}
 
 definition Bell :: "nat \<Rightarrow> nat"
 where
-  "Bell n = card {P. partitions P {0..<n}}"
+  "Bell n = card {P. partition_on {0..<n} P}"
 
 text {* Show that definition holds for any set A with cardinality n *}
 
 lemma Bell_altdef:
   assumes "finite A"
-  shows "Bell (card A) = card {P. partitions P A}"
+  shows "Bell (card A) = card {P. partition_on A P}"
 proof -
   from \<open>finite A\<close> obtain f where bij: "bij_betw f {0..<card A} A"
     using ex_bij_betw_nat_finite by blast
@@ -164,84 +164,84 @@ proof -
     using bij_betw_imp_inj_on by blast
   from bij have image_f_eq: "A = f ` {0..<card A}"
     using bij_betw_imp_surj_on by blast
-  have "\<forall>x \<in> {P. partitions P {0..<card A}}. x \<subseteq> Pow {0..<card A}"
-    by (auto elim: partitionsE)
-  from this inj have "inj_on (op ` (op ` f)) {P. partitions P {0..<card A}}"
+  have "\<forall>x \<in> {P. partition_on {0..<card A} P}. x \<subseteq> Pow {0..<card A}"
+    by (auto elim: partition_onE)
+  from this inj have "inj_on (op ` (op ` f)) {P. partition_on {0..<card A} P}"
     by (intro inj_on_impl_inj_on_image[of _ "Pow {0..<card A}"]
      inj_on_impl_inj_on_image[of _ "{0..<card A}"]) blast+
-  moreover from inj have "op ` (op ` f) ` {P. partitions P {0..<card A}} = {P. partitions P A}"
-    by (subst image_f_eq, auto elim!: set_of_partitions_map)
-  ultimately have "bij_betw (op ` (op ` f)) {P. partitions P {0..<card A}} {P. partitions P A}"
+  moreover from inj have "op ` (op ` f) ` {P. partition_on {0..<card A} P} = {P. partition_on A P}"
+    by (subst image_f_eq, auto elim!: set_of_partition_on_map)
+  ultimately have "bij_betw (op ` (op ` f)) {P. partition_on {0..<card A} P} {P. partition_on A P}"
     by (auto intro: bij_betw_imageI)
   from this \<open>finite A\<close> show ?thesis
-    unfolding Bell_def by (subst BIJ[symmetric]) (auto intro: finitely_many_partitions)
+    unfolding Bell_def by (subst BIJ[symmetric]) (auto intro: finitely_many_partition_on)
 qed
 
 lemma Bell_0:
   "Bell 0 = 1"
-by (auto simp add: Bell_def partitions_empty)
+by (auto simp add: Bell_def partition_on_empty)
 
 subsection {* Construction of the Partitions *}
 
-definition construct_partitions :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set set set"
+definition construct_partition_on :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set set set"
 where
-  "construct_partitions B C =
+  "construct_partition_on B C =
     do {
        k  \<leftarrow> {0..card B};
        j  \<leftarrow> {0..card C};
-       P  \<leftarrow> {P. partitions P C \<and> card P = j};
+       P  \<leftarrow> {P. partition_on C P \<and> card P = j};
        B' \<leftarrow> {B'. B' \<subseteq> B \<and> card B' = k};
-       Q  \<leftarrow> {Q. partitions Q B'};
+       Q  \<leftarrow> {Q. partition_on B' Q};
        f  \<leftarrow> (B - B') \<rightarrow>\<^sub>E P;
        P'  \<leftarrow> {(\<lambda>X. X \<union> {x \<in> B - B'. f x = X}) ` P};
        {P' \<union> Q}
     }"
 
-lemma construct_partitions:
+lemma construct_partition_on:
   assumes "finite B" "finite C"
   assumes "B \<inter> C = {}"
-  shows "construct_partitions B C = {P. partitions P (B \<union> C)}"
+  shows "construct_partition_on B C = {P. partition_on (B \<union> C) P}"
 proof (rule set_eqI')
   fix Q'
-  assume "Q' \<in> construct_partitions B C"
+  assume "Q' \<in> construct_partition_on B C"
   from this obtain j k P P' Q B' f
     where "j \<le> card C"
     and "k \<le> card B"
-    and P: "partitions P C \<and> card P = j"
+    and P: "partition_on C P \<and> card P = j"
     and B': "B' \<subseteq> B \<and> card B' = k"
-    and Q: "partitions Q B'"
+    and Q: "partition_on B' Q"
     and f: "f \<in> B - B' \<rightarrow>\<^sub>E P"
     and P': "P' = (\<lambda>X. X \<union> {x \<in> B - B'. f x = X}) ` P"
     and Q': "Q' = P' \<union> Q"
-    unfolding construct_partitions_def by auto
-  from P f have "partitions P' (B - B' \<union> C)"
+    unfolding construct_partition_on_def by auto
+  from P f have "partition_on (B - B' \<union> C) P'"
     unfolding P' using \<open>B \<inter> C = {}\<close>
-    by (intro partitions_insert_elements) auto
-  from this Q have "partitions Q' ((B - B' \<union> C) \<union> B')"
-    unfolding Q' using B' \<open>B \<inter> C = {}\<close> by (auto intro: partitions_union)
-  from this have "partitions Q' (B \<union> C)"
+    by (intro partition_on_insert_elements) auto
+  from this Q have "partition_on ((B - B' \<union> C) \<union> B') Q'"
+    unfolding Q' using B' \<open>B \<inter> C = {}\<close> by (auto intro: partition_on_union)
+  from this have "partition_on (B \<union> C) Q'"
     using B' by (metis Diff_partition sup.assoc sup.commute)
-  from this show "Q' \<in> {P. partitions P (B \<union> C)}" by auto
+  from this show "Q' \<in> {P. partition_on (B \<union> C) P}" by auto
 next
   fix Q'
-  assume Q': "Q' \<in> {Q'. partitions Q' (B \<union> C)}"
-  from Q' have "{} \<notin> Q'" by (auto elim!: partitionsE)
+  assume Q': "Q' \<in> {Q'. partition_on (B \<union> C) Q'}"
+  from Q' have "{} \<notin> Q'" by (auto elim!: partition_onE)
   obtain Q where Q: "Q = ((\<lambda>X. if X \<subseteq> B then X else {}) ` Q') - {{}}" by blast
   obtain P' where P': "P' = ((\<lambda>X. if X \<subseteq> B then {} else X) ` Q') - {{}}" by blast
   from P' Q \<open>{} \<notin> Q'\<close> have Q'_prop: "Q' = P' \<union> Q" by auto
   have P'_nosubset: "\<forall>X \<in> P'. \<not> X \<subseteq> B"
     unfolding P' by auto
   moreover have "\<forall>X \<in> P'. X \<subseteq> B \<union> C"
-    using Q' P' by (auto elim: partitionsE)
+    using Q' P' by (auto elim: partition_onE)
   ultimately have P'_witness: "\<forall>X \<in> P'. \<exists>x. x \<in> X \<inter> C"
     using \<open>B \<inter> C = {}\<close> by fastforce
   obtain B' where B': "B' = \<Union>Q" by blast
-  have Q_prop: "partitions Q B'"
-    using B' Q' Q'_prop partitions_split2 mem_Collect_eq by blast
+  have Q_prop: "partition_on B' Q"
+    using B' Q' Q'_prop partition_on_split2 mem_Collect_eq by blast
   have "\<Union>P' = B - B' \<union> C"
   proof
     have "\<Union>Q' = B \<union> C" "\<forall>X\<in>Q'. \<forall>X'\<in>Q'. X \<noteq> X' \<longrightarrow> X \<inter> X' = {}"
-      using Q' unfolding partitions_def by auto
+      using Q' unfolding partition_on_def disjoint_def by auto
     from this show "\<Union>P' \<subseteq> B - B' \<union> C"
       unfolding P' B' Q by auto blast
   next
@@ -250,7 +250,7 @@ next
       fix x
       assume "x \<in> B - B' \<union> C"
       from this obtain X where X: "x \<in> X" "X \<in> Q'"
-        using Q' by (metis Diff_iff Un_iff mem_Collect_eq partitions_partitions_unique)
+        using Q' by (metis Diff_iff Un_iff mem_Collect_eq partition_on_partition_on_unique)
       have "\<forall>X \<in> Q'. X \<subseteq> B \<longrightarrow> X \<subseteq> B'"
         unfolding B' Q by auto
       from this X \<open>x \<in> B - B' \<union> C\<close> have "\<not> X \<subseteq> B"
@@ -259,11 +259,11 @@ next
       from this \<open>x \<in> X\<close> show "x \<in> \<Union>P'" by auto
     qed
   qed
-  from this have partitions_P': "partitions P' (B - B' \<union> C)"
-    using partitions_split1 Q'_prop Q' mem_Collect_eq by fastforce
+  from this have partition_on_P': "partition_on (B - B' \<union> C) P'"
+    using partition_on_split1 Q'_prop Q' mem_Collect_eq by fastforce
   obtain P where P: "P = (\<lambda>X. X \<inter> C) ` P'" by blast
-  from P partitions_P' P'_witness have "partitions P C"
-    using partitions_intersect_on_elements by auto
+  from P partition_on_P' P'_witness have "partition_on C P"
+    using partition_on_intersect_on_elements by auto
   obtain f where f: "f = (\<lambda>x. if x \<in> B - B' then (THE X. x \<in> X \<and> X \<in> P') \<inter> C else undefined)" by blast
   have P'_prop: "P' = (\<lambda>X. X \<union> {x \<in> B - B'. f x = X}) ` P"
   proof
@@ -271,7 +271,7 @@ next
       fix X
       assume "X \<in> P'"
       have X_subset: "X \<subseteq> (B - B') \<union> C"
-        using partitions_P' \<open>X \<in> P'\<close> by (auto elim: partitionsE)
+        using partition_on_P' \<open>X \<in> P'\<close> by (auto elim: partition_onE)
       have "X = X \<inter> C \<union> {x \<in> B - B'. f x = X \<inter> C}"
       proof
         {
@@ -284,8 +284,8 @@ next
             from this \<open>x \<in> X\<close> show ?thesis by simp
           next
             assume "x \<in> B - B'"
-            from partitions_P' \<open>x \<in> X\<close> \<open>X \<in> P'\<close> have "(THE X. x \<in> X \<and> X \<in> P') = X"
-              by (simp add: partitions_the_part_eq)
+            from partition_on_P' \<open>x \<in> X\<close> \<open>X \<in> P'\<close> have "(THE X. x \<in> X \<and> X \<in> P') = X"
+              by (simp add: partition_on_the_part_eq)
             from \<open>x \<in> B - B'\<close> this show ?thesis unfolding f by auto
           qed
         }
@@ -302,7 +302,7 @@ next
           next
             assume x_in: "x \<in> {x \<in> B - B'. f x = X \<inter> C}"
             from this have ex1: "\<exists>!X. x \<in> X \<and> X \<in> P'"
-              using partitions_P' by (auto intro!: partitions_partitions_unique)
+              using partition_on_P' by (auto intro!: partition_on_partition_on_unique)
             from x_in X_subset have eq: "(THE X. x \<in> X \<and> X \<in> P') \<inter> C = X \<inter> C"
               unfolding f by auto
            from P'_nosubset \<open>X \<in> P'\<close> have "\<not> X \<subseteq> B" by simp
@@ -312,7 +312,7 @@ next
            from this eq have y_in: "y \<in> (THE X. x \<in> X \<and> X \<in> P') \<inter> C" by simp
            from y y_in have "y \<in> X" "y \<in> (THE X. x \<in> X \<and> X \<in> P')" by auto
            moreover from y have "\<exists>!X. y \<in> X \<and> X \<in> P'"
-             using partitions_P' by (simp add: partitions_partitions_unique)
+             using partition_on_P' by (simp add: partition_on_partition_on_unique)
            moreover have "(THE X. x \<in> X \<and> X \<in> P') \<in> P'"
              using ex1 by (rule the1I2) auto
            ultimately have "(THE X. x \<in> X \<and> X \<in> P') = X" using \<open>X \<in> P'\<close> by auto
@@ -337,7 +337,7 @@ next
             fix x
             assume "x \<in> B - B'"
             from this have ex1: "\<exists>!X. x \<in> X \<and> X \<in> P'"
-              using partitions_P' by (auto intro!: partitions_partitions_unique)
+              using partition_on_P' by (auto intro!: partition_on_partition_on_unique)
             from this have in_p: "(THE X. x \<in> X \<and> X \<in> P') \<in> P'"
               and x_in: "x \<in> (THE X. x \<in> X \<and> X \<in> P')"
               by (metis (mono_tags, lifting) theI)+
@@ -352,7 +352,7 @@ next
               have "(THE X. x \<in> X \<and> X \<in> P') \<inter> X \<noteq> {}"
                 using P'_witness \<open>(THE X. x \<in> X \<and> X \<in> P') \<inter> C = X \<inter> C\<close> \<open>X \<in> P'\<close> by fastforce
               from this show "(THE X. x \<in> X \<and> X \<in> P') = X"
-                using partitions_P'[unfolded partitions_def] in_p \<open>X \<in> P'\<close> by metis
+                using partition_on_P'[unfolded partition_on_def disjoint_def] in_p \<open>X \<in> P'\<close> by metis
             qed
             also have "... \<longleftrightarrow> x \<in> X"
               using ex1 \<open>X \<in> P'\<close> x_in by (auto; metis (no_types, lifting) the_equality)
@@ -361,26 +361,26 @@ next
           from this show ?thesis by auto
         qed
         moreover have  "X \<subseteq> B - B' \<union> C"
-          using partitions_P' \<open>X \<in> P'\<close> by (blast elim: partitionsE)
+          using partition_on_P' \<open>X \<in> P'\<close> by (blast elim: partition_onE)
         ultimately have "X \<inter> C \<union> {x \<in> B. x \<notin> B' \<and> f x = X \<inter> C} = X" by auto
       }
       from this x_in_image have "x \<in> P'" unfolding P by auto
     }
     from this show "(\<lambda>X. X \<union> {x \<in> B - B'. f x = X}) ` P \<subseteq> P'" ..
   qed
-  from partitions_P' have f_prop: "f \<in> (B - B') \<rightarrow>\<^sub>E P"
-    unfolding f P by (auto simp add: partitions_the_part_mem)
+  from partition_on_P' have f_prop: "f \<in> (B - B') \<rightarrow>\<^sub>E P"
+    unfolding f P by (auto simp add: partition_on_the_part_mem)
   from Q B' have "B' \<subseteq> B" by auto
   obtain k where k: "k = card B'" by blast
   from \<open>finite B\<close> \<open>B' \<subseteq> B\<close> k have k_prop: "k \<in> {0..card B}" by (simp add: card_mono)
   obtain j where j: "j = card P" by blast
-  from j \<open>partitions P C\<close> have j_prop: "j \<in> {0..card C}"
-    by (simp add: assms(2) partitions_le_set_elements)
-  from \<open>partitions P C\<close> j have P_prop: "partitions P C \<and> card P = j" by auto
+  from j \<open>partition_on C P\<close> have j_prop: "j \<in> {0..card C}"
+    by (simp add: assms(2) partition_on_le_set_elements)
+  from \<open>partition_on C P\<close> j have P_prop: "partition_on C P \<and> card P = j" by auto
   from k \<open>B' \<subseteq> B\<close> have B'_prop: "B' \<subseteq> B \<and> card B' = k" by auto
-  show "Q' \<in> construct_partitions B C"
+  show "Q' \<in> construct_partition_on B C"
     using j_prop k_prop P_prop B'_prop Q_prop P'_prop f_prop Q'_prop
-    unfolding construct_partitions_def
+    unfolding construct_partition_on_def
     by (auto simp del: atLeastAtMost_iff) blast
 qed
 
@@ -388,9 +388,9 @@ subsection {* Injectivity of the Set Construction *}
 
 lemma injectivity:
   assumes "B \<inter> C = {}"
-  assumes P: "(partitions P C \<and> card P = j) \<and> (partitions P' C \<and> card P' = j')"
+  assumes P: "(partition_on C P \<and> card P = j) \<and> (partition_on C P' \<and> card P' = j')"
   assumes B': "(B' \<subseteq> B \<and> card B' = k) \<and> (B'' \<subseteq> B \<and> card B'' = k')"
-  assumes Q: "partitions Q B' \<and> partitions Q' B''"
+  assumes Q: "partition_on B' Q \<and> partition_on B'' Q'"
   assumes f: "f \<in> B - B' \<rightarrow>\<^sub>E P \<and> g \<in> B - B'' \<rightarrow>\<^sub>E P'"
   assumes P': "P'' \<in> {(\<lambda>X. X \<union> {x \<in> B - B'. f x = X}) ` P} \<and>
     P''' \<in> {(\<lambda>X. X \<union> {x \<in> B - B''. g x = X}) ` P'}"
@@ -399,24 +399,24 @@ lemma injectivity:
     and "P = P'" and "j = j'" and "k = k'"
 proof -
   have P_nonempty_sets: "\<forall>X\<in>P. \<exists>c\<in>C. c \<in> X" "\<forall>X\<in>P'. \<exists>c\<in>C. c \<in> X"
-    using P by (force elim: partitionsE)+
+    using P by (force elim: partition_onE)+
   have 1: "\<forall>X\<in>P''. \<exists>c\<in>C. c \<in> X" "\<forall>X\<in>P'''. \<exists>c\<in>C. c \<in> X"
     using P' P_nonempty_sets by fastforce+
   have 2: "\<forall>X\<in>Q. \<forall>x\<in>X. x \<notin> C" "\<forall>X\<in>Q'. \<forall>x\<in>X. x \<notin> C"
-    using \<open>B \<inter> C = {}\<close> Q B' by (auto elim: partitionsE)
+    using \<open>B \<inter> C = {}\<close> Q B' by (auto elim: partition_onE)
   from eq_result have "P'' = P'''" and "Q = Q'"
     by (auto dest: injectivity_union[OF _ 1 2])
   from this Q show "Q = Q'" and "B' = B''"
-    by (auto intro!: partitions_eq_implies_eq_carrier)
+    by (auto intro!: partition_on_eq_implies_eq_carrier)
   have subset_C: "\<forall>X\<in>P. X \<subseteq> C" "\<forall>X\<in>P'. X \<subseteq> C"
-    using P by (auto elim: partitionsE)
+    using P by (auto elim: partition_onE)
   have eq_image: "(\<lambda>X. X \<union> {x \<in> B - B'. f x = X}) ` P = (\<lambda>X. X \<union> {x \<in> B - B''. g x = X}) ` P'"
     using P' \<open>P'' = P'''\<close> by auto
   from this \<open>B \<inter> C = {}\<close>  show "P = P'"
     by (auto dest: injectivity_image_union[OF _ subset_C])
   have eq2: "(\<lambda>X. X \<union> {x \<in> B - B'. f x = X}) ` P = (\<lambda>X. X \<union> {x \<in> B - B'. g x = X}) ` P"
     using \<open>P = P'\<close> \<open>B' = B''\<close> eq_image by simp
-  from P have P_props: "\<forall>X \<in> P. X \<subseteq> C" "\<forall>X \<in> P. X \<noteq> {}" by (auto elim: partitionsE)
+  from P have P_props: "\<forall>X \<in> P. X \<subseteq> C" "\<forall>X \<in> P. X \<noteq> {}" by (auto elim: partition_onE)
   have invert: "\<forall>X\<in>P. (X \<union> {x \<in> B - B'. f x = X}) \<inter> C = X \<and> (X \<union> {x \<in> B - B'. g x = X}) \<inter> C = X"
     using \<open>B \<inter> C = {}\<close> P_props by auto
   have eq3: "\<forall>X \<in> P. (X \<union> {x \<in> B - B'. f x = X}) = (X \<union> {x \<in> B - B'. g x = X})"
@@ -425,7 +425,7 @@ proof -
   proof
     fix X
     assume "X \<in> P"
-    from this P have "X \<subseteq> C" by (auto elim: partitionsE)
+    from this P have "X \<subseteq> C" by (auto elim: partition_onE)
     have disjoint: "X \<inter> {x \<in> B - B'. f x = X} = {}" "X \<inter> {x \<in> B - B'. g x = X} = {}"
       using \<open>B \<inter> C = {}\<close> \<open>X \<subseteq> C\<close> by auto
     from eq3 \<open>X \<in> P\<close> have "X \<union> {x \<in> B - B'. f x = X} = X \<union> {x \<in> B - B'. g x = X}" by auto
@@ -448,17 +448,18 @@ proof -
   def C == "{n..<n + m}"
   have "A = B \<union> C" "B \<inter> C = {}" "finite B" "card B = n" "finite C" "card C = m"
     unfolding A_def B_def C_def by auto
-  have step1: "Bell (n + m) = card {P. partitions P A}"
+  have step1: "Bell (n + m) = card {P. partition_on A P}"
     unfolding Bell_def A_def ..
-  from \<open>A = B \<union> C\<close> \<open>B \<inter> C = {}\<close> \<open>finite B\<close> \<open>finite C\<close> have step2: "card {P. partitions P A} = card (construct_partitions B C)"
-    by (simp add: construct_partitions)
+  from \<open>A = B \<union> C\<close> \<open>B \<inter> C = {}\<close> \<open>finite B\<close> \<open>finite C\<close>
+  have step2: "card {P. partition_on A P} = card (construct_partition_on B C)"
+    by (simp add: construct_partition_on)
   note injectivity = injectivity[OF \<open>B \<inter> C = {}\<close>]
   let ?expr = "do {
     k  \<leftarrow> {0..card B};
     j  \<leftarrow> {0..card C};
-    P  \<leftarrow> {P. partitions P C \<and> card P = j};
+    P  \<leftarrow> {P. partition_on C P \<and> card P = j};
     B' \<leftarrow> {B'. B' \<subseteq> B \<and> card B' = k};
-    Q  \<leftarrow> {Q. partitions Q B'};
+    Q  \<leftarrow> {Q. partition_on B' Q};
     f  \<leftarrow> (B - B') \<rightarrow>\<^sub>E P;
     P'  \<leftarrow> {(\<lambda>X. X \<union> {x \<in> B - B'. f x = X}) ` P};
     {P' \<union> Q}
@@ -475,11 +476,11 @@ proof -
       let ?expr = "?comp j"
       let "?S \<bind> ?comp" = ?expr
       from \<open>finite C\<close> have "finite ?S"
-        by (intro finite_Collect_conjI disjI1 finitely_many_partitions)
+        by (intro finite_Collect_conjI disjI1 finitely_many_partition_on)
       {
         fix P
-        assume P: "P \<in> {P. partitions P C \<and> card P = j}"
-        from this have "partitions P C" by simp
+        assume P: "P \<in> {P. partition_on C P \<and> card P = j}"
+        from this have "partition_on C P" by simp
         let ?expr = "?comp P"
         let "?S \<bind> ?comp" = ?expr
         have "finite P"
@@ -494,12 +495,12 @@ proof -
           let "?S \<bind> ?comp" = ?expr
           from \<open>finite B\<close> have "finite B'"
             using B' by (auto simp add: finite_subset)
-          from \<open>finite B'\<close> have "finite {Q. partitions Q B'}"
-            by (rule finitely_many_partitions)
+          from \<open>finite B'\<close> have "finite {Q. partition_on B' Q}"
+            by (rule finitely_many_partition_on)
           moreover
           {
             fix Q
-            assume Q: "Q \<in> {Q. partitions Q B'}"
+            assume Q: "Q \<in> {Q. partition_on B' Q}"
             let ?expr = "?comp Q"
             let "?S \<bind> ?comp" = ?expr
             {
@@ -532,7 +533,7 @@ proof -
             ultimately have "card ?expr = j ^ (n - k)"
               by (simp add: card_bind_constant)
             moreover have "finite ?expr"
-              using \<open>finite ?S\<close> \<open>finite {P. partitions P C \<and> card P = j}\<close>
+              using \<open>finite ?S\<close> \<open>finite {P. partition_on C P \<and> card P = j}\<close>
               by (auto intro!: finite_bind)
             ultimately have "finite ?expr \<and> card ?expr = j ^ (n - k)" by blast
           } note inner = this
@@ -560,7 +561,7 @@ proof -
       } note inner = this
       moreover note \<open>finite ?S\<close>
       moreover have "card ?S = Stirling m j"
-        using \<open>finite C\<close> \<open>card C = m\<close> by (simp add: card_partitions)
+        using \<open>finite C\<close> \<open>card C = m\<close> by (simp add: card_partition_on)
       moreover have "disjoint_under ?comp ?S"
         by (injectivity_solver rule: local.injectivity(4))
       ultimately have "card ?expr = j ^ (n - k) * Stirling m j * (n choose k) * Bell k"
@@ -581,8 +582,8 @@ proof -
   moreover have "finite ?S" by simp
   moreover have "disjoint_under ?comp ?S"
     by (injectivity_solver rule: local.injectivity(6))
-  ultimately have step3: "card (construct_partitions B C) = (\<Sum>k\<le>n. \<Sum>j\<le>m. j ^ (n - k) * Stirling m j * (n choose k) * Bell k)"
-    unfolding construct_partitions_def
+  ultimately have step3: "card (construct_partition_on B C) = (\<Sum>k\<le>n. \<Sum>j\<le>m. j ^ (n - k) * Stirling m j * (n choose k) * Bell k)"
+    unfolding construct_partition_on_def
     using \<open>card B = n\<close> by (subst card_bind) (auto intro: setsum.cong)
   from step1 step2 step3 show ?thesis by auto
 qed
