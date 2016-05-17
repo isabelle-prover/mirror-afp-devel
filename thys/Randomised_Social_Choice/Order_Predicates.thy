@@ -280,7 +280,7 @@ qed
 
 lemma Max_wrt_among_mono:
   "le x y \<Longrightarrow> x \<in> Max_wrt_among le A \<Longrightarrow> y \<in> A \<Longrightarrow> y \<in> Max_wrt_among le A"
-  using assms not_outside by (auto simp: Max_wrt_among_preorder intro: trans)
+  using not_outside by (auto simp: Max_wrt_among_preorder intro: trans)
 
 lemma Max_wrt_mono:
   "le x y \<Longrightarrow> x \<in> Max_wrt le \<Longrightarrow> y \<in> Max_wrt le"

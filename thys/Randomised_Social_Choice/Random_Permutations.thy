@@ -24,9 +24,11 @@ lemma pmf_bind_pmf_of_set:
   shows   "pmf (bind_pmf (pmf_of_set A) f) x = 
              (\<Sum>xa\<in>A. pmf (f xa) x) / real_of_nat (card A)" (is "?lhs = ?rhs")
 proof -
-  from assms have "ereal ?lhs = ereal ?rhs"
-    by (subst ereal_pmf_bind) (simp_all add: nn_integral_pmf_of_set max_def pmf_nonneg)
-  thus ?thesis by simp
+  from assms have "card A > 0" by auto
+  with assms have "ennreal ?lhs = ennreal ?rhs"
+    by (subst ennreal_pmf_bind) (simp_all add: nn_integral_pmf_of_set max_def 
+          divide_ennreal [symmetric] ennreal_of_nat_eq_real_of_nat setsum_nonneg)
+  thus ?thesis by (subst (asm) ennreal_inj) (auto intro!: setsum_nonneg divide_nonneg_nonneg)
 qed
 
 text \<open>

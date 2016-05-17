@@ -55,14 +55,15 @@ proof -
   qed
 
   def q \<equiv> "embed_pmf (\<lambda>x. pmf p x + \<epsilon> * (pmf q' x - pmf p' x))"
-  have "(\<integral>\<^sup>+ x. ereal (pmf p x + \<epsilon> * (pmf q' x - pmf p' x)) \<partial>count_space UNIV) = 1"
+  have "(\<integral>\<^sup>+ x. ennreal (pmf p x + \<epsilon> * (pmf q' x - pmf p' x)) \<partial>count_space UNIV) = 1"
   proof (subst nn_integral_count_space')
-    have "(\<Sum>x\<in>supp. ereal (pmf p x + \<epsilon> * (pmf q' x - pmf p' x))) = 
-            ereal ((\<Sum>x\<in>supp. pmf p x) + \<epsilon> * ((\<Sum>x\<in>supp. pmf q' x) - (\<Sum>x\<in>supp. pmf p' x)))"
-      by (simp add: setsum.distrib setsum_right_distrib setsum_subtractf ring_distribs)
+    have "(\<Sum>x\<in>supp. ennreal (pmf p x + \<epsilon> * (pmf q' x - pmf p' x))) = 
+            ennreal ((\<Sum>x\<in>supp. pmf p x) + \<epsilon> * ((\<Sum>x\<in>supp. pmf q' x) - (\<Sum>x\<in>supp. pmf p' x)))"
+     by (subst setsum_ennreal[OF nonneg], rule ennreal_cong)
+        (auto simp: setsum_subtractf ring_distribs setsum.distrib setsum_right_distrib)
     also from finite_supp support have "\<dots> = 1"
       by (subst (1 2 3) setsum_pmf_eq_1) (auto simp: supp_def)
-    finally show "(\<Sum>x\<in>supp. ereal (pmf p x + \<epsilon> * (pmf q' x - pmf p' x))) = 1" .
+    finally show "(\<Sum>x\<in>supp. ennreal (pmf p x + \<epsilon> * (pmf q' x - pmf p' x))) = 1" .
   qed (insert nonneg finite_supp, simp_all)
   with nonneg have pmf_q: "pmf q x = pmf p x + \<epsilon> * (pmf q' x - pmf p' x)" for x
     unfolding q_def by (intro pmf_embed_pmf) simp_all

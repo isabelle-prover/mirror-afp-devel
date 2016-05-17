@@ -17,6 +17,9 @@ adhoc_overloading Monad_Syntax.bind bind_pmf
 lemma pmf_not_neg [simp]: "\<not>pmf p x < 0"
   by (simp add: not_less pmf_nonneg)
 
+lemma pmf_pos [simp]: "pmf p x \<noteq> 0 \<Longrightarrow> pmf p x > 0"
+  using pmf_nonneg[of p x] by linarith
+
 lemma set_pmf_eq': "set_pmf p = {x. pmf p x > 0}"
 proof safe
   fix x assume "x \<in> set_pmf p"
@@ -41,8 +44,8 @@ lemma map_pmf_of_set:
     (is "?lhs = ?rhs")
 proof (intro pmf_eqI)
   fix x
-  from assms have "ereal (pmf ?lhs x) = ereal (pmf ?rhs x)"
-    by (subst ereal_pmf_map)
+  from assms have "ennreal (pmf ?lhs x) = ennreal (pmf ?rhs x)"
+    by (subst ennreal_pmf_map)
        (simp_all add: emeasure_pmf_of_set mset_set_empty_iff count_image_mset Int_commute)
   thus "pmf ?lhs x = pmf ?rhs x" by simp
 qed
@@ -52,9 +55,12 @@ lemma pmf_bind_pmf_of_set:
   shows   "pmf (bind_pmf (pmf_of_set A) f) x = 
              (\<Sum>xa\<in>A. pmf (f xa) x) / real_of_nat (card A)" (is "?lhs = ?rhs")
 proof -
-  from assms have "ereal ?lhs = ereal ?rhs"
-    by (subst ereal_pmf_bind) (simp_all add: nn_integral_pmf_of_set max_def pmf_nonneg)
-  thus ?thesis by simp
+  from assms have "card A > 0" by auto
+  with assms have "ennreal ?lhs = ennreal ?rhs"
+    by (subst ennreal_pmf_bind) 
+       (simp_all add: nn_integral_pmf_of_set max_def pmf_nonneg divide_ennreal [symmetric] 
+        setsum_nonneg ennreal_of_nat_eq_real_of_nat)
+  thus ?thesis by (subst (asm) ennreal_inj) (auto intro!: setsum_nonneg divide_nonneg_nonneg)
 qed
 
 

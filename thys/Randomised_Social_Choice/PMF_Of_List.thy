@@ -26,6 +26,25 @@ lemma listsum_cong:
 
 lemma ereal_listsum: "listsum (map (\<lambda>x. ereal (f x)) xs) = ereal (listsum (map f xs))"
   by (induction xs) simp_all
+  
+lemma ennreal_listsum: 
+  assumes "\<And>x. x \<in> set xs \<Longrightarrow> f x \<ge> 0" 
+  shows   "listsum (map (\<lambda>x. ennreal (f x)) xs) = ennreal (listsum (map f xs))"
+using assms
+proof (induction xs)
+  case (Cons x xs)
+  from Cons have "(\<Sum>x\<leftarrow>x # xs. ennreal (f x)) = ennreal (f x) + ennreal (listsum (map f xs))" 
+    by simp
+  also from Cons.prems have "\<dots> = ennreal (f x + listsum (map f xs))" 
+    by (intro ennreal_plus [symmetric] listsum_nonneg) auto
+  finally show ?case by simp
+qed simp_all
+
+lemma ennreal_cong: "x = y \<Longrightarrow> ennreal x = ennreal y" by simp
+
+lemma ennreal_indicator: "ennreal (indicator A x) = indicator A x"
+  by (auto simp: indicator_def one_ereal_def)
+
 (* END TODO *)
 
 
@@ -42,34 +61,38 @@ lemma pmf_of_list_wfI:
 lemma pmf_of_list_aux:
   assumes "\<And>x. x \<in> set (map snd xs) \<Longrightarrow> x \<ge> 0"
   assumes "listsum (map snd xs) = 1"
-  shows "(\<integral>\<^sup>+ x. ereal (listsum (map snd [z\<leftarrow>xs . fst z = x])) \<partial>count_space UNIV) = 1"
+  shows "(\<integral>\<^sup>+ x. ennreal (listsum (map snd [z\<leftarrow>xs . fst z = x])) \<partial>count_space UNIV) = 1"
 proof -
-  have "(\<integral>\<^sup>+ x. ereal (listsum (map snd (filter (\<lambda>z. fst z = x) xs))) \<partial>count_space UNIV) =
-            (\<integral>\<^sup>+ x. ereal (listsum (map (\<lambda>(x',p). indicator {x'} x * p) xs)) \<partial>count_space UNIV)"
-    by (intro nn_integral_cong, subst listsum_map_filter) (auto intro: listsum_cong)
-  also have "\<dots> = (\<Sum>(x',p)\<leftarrow>xs. (\<integral>\<^sup>+ x. ereal (indicator {x'} x * p) \<partial>count_space UNIV))"
+  have "(\<integral>\<^sup>+ x. ennreal (listsum (map snd (filter (\<lambda>z. fst z = x) xs))) \<partial>count_space UNIV) =
+            (\<integral>\<^sup>+ x. ennreal (listsum (map (\<lambda>(x',p). indicator {x'} x * p) xs)) \<partial>count_space UNIV)"
+    by (intro nn_integral_cong ennreal_cong, subst listsum_map_filter) (auto intro: listsum_cong)
+  also have "\<dots> = (\<Sum>(x',p)\<leftarrow>xs. (\<integral>\<^sup>+ x. ennreal (indicator {x'} x * p) \<partial>count_space UNIV))"
     using assms(1)
   proof (induction xs)
     case (Cons x xs)
-    have "(\<integral>\<^sup>+ y. ereal (\<Sum>(x', p)\<leftarrow>x # xs. indicator {x'} y * p) \<partial>count_space UNIV) = 
-            (\<integral>\<^sup>+ y. ereal (indicator {fst x} y * snd x) + 
-            ereal (\<Sum>(x', p)\<leftarrow>xs. indicator {x'} y * p) \<partial>count_space UNIV)"
-      by (simp add: plus_ereal.simps [symmetric] case_prod_unfold del: plus_ereal.simps)
-    also have "\<dots> = (\<integral>\<^sup>+ y. ereal (indicator {fst x} y * snd x) \<partial>count_space UNIV) + 
-                      (\<integral>\<^sup>+ y. ereal (\<Sum>(x', p)\<leftarrow>xs. indicator {x'} y * p) \<partial>count_space UNIV)"
+    from Cons.prems have "snd x \<ge> 0" by simp
+    moreover have "b \<ge> 0" if "(a,b) \<in> set xs" for a b
+      using Cons.prems[of b] that by force
+    ultimately have "(\<integral>\<^sup>+ y. ennreal (\<Sum>(x', p)\<leftarrow>x # xs. indicator {x'} y * p) \<partial>count_space UNIV) = 
+            (\<integral>\<^sup>+ y. ennreal (indicator {fst x} y * snd x) + 
+            ennreal (\<Sum>(x', p)\<leftarrow>xs. indicator {x'} y * p) \<partial>count_space UNIV)"
+      by (intro nn_integral_cong, subst ennreal_plus [symmetric]) 
+         (auto simp: case_prod_unfold indicator_def intro!: listsum_nonneg)
+    also have "\<dots> = (\<integral>\<^sup>+ y. ennreal (indicator {fst x} y * snd x) \<partial>count_space UNIV) + 
+                      (\<integral>\<^sup>+ y. ennreal (\<Sum>(x', p)\<leftarrow>xs. indicator {x'} y * p) \<partial>count_space UNIV)"
       by (intro nn_integral_add)
          (force intro!: listsum_nonneg AE_I2 intro: Cons simp: indicator_def)+
-    also have "(\<integral>\<^sup>+ y. ereal (\<Sum>(x', p)\<leftarrow>xs. indicator {x'} y * p) \<partial>count_space UNIV) =
-               (\<Sum>(x', p)\<leftarrow>xs. (\<integral>\<^sup>+ y. ereal (indicator {x'} y * p) \<partial>count_space UNIV))"
+    also have "(\<integral>\<^sup>+ y. ennreal (\<Sum>(x', p)\<leftarrow>xs. indicator {x'} y * p) \<partial>count_space UNIV) =
+               (\<Sum>(x', p)\<leftarrow>xs. (\<integral>\<^sup>+ y. ennreal (indicator {x'} y * p) \<partial>count_space UNIV))"
       using Cons(1) by (intro Cons) simp_all
     finally show ?case by (simp add: case_prod_unfold)
   qed simp
-  also have "\<dots> = (\<Sum>(x',p)\<leftarrow>xs. ereal p * (\<integral>\<^sup>+ x. indicator {x'} x \<partial>count_space UNIV))"
+  also have "\<dots> = (\<Sum>(x',p)\<leftarrow>xs. ennreal p * (\<integral>\<^sup>+ x. indicator {x'} x \<partial>count_space UNIV))"
     using assms(1)
     by (intro listsum_cong, simp only: case_prod_unfold, subst nn_integral_cmult [symmetric])
        (auto intro!: assms(1) simp: max_def times_ereal.simps [symmetric] mult_ac ereal_indicator
              simp del: times_ereal.simps)+
-  also have "\<dots> = listsum (map snd xs)" by (simp add: case_prod_unfold ereal_listsum)
+  also from assms have "\<dots> = listsum (map snd xs)" by (simp add: case_prod_unfold ennreal_listsum)
   also have "\<dots> = 1" using assms(2) by simp
   finally show ?thesis .
 qed
@@ -106,17 +129,24 @@ lemma measure_Int_set_pmf:
   "measure (measure_pmf p) (A \<inter> set_pmf p) = measure (measure_pmf p) A"
   using emeasure_Int_set_pmf[of p A] by (simp add: Sigma_Algebra.measure_def)
 
-lemma measure_pmf_of_list:
+lemma emeasure_pmf_of_list:
   assumes "pmf_of_list_wf xs"
-  shows   "measure (pmf_of_list xs) A = listsum (map snd (filter (\<lambda>x. fst x \<in> A) xs))"
+  shows   "emeasure (pmf_of_list xs) A = ennreal (listsum (map snd (filter (\<lambda>x. fst x \<in> A) xs)))"
 proof -
   have "emeasure (pmf_of_list xs) A = nn_integral (measure_pmf (pmf_of_list xs)) (indicator A)"
     by simp
-  also have "\<dots> = ereal (\<Sum>x\<in>set_pmf (pmf_of_list xs). indicator A x * pmf (pmf_of_list xs) x)"
-    (is "_ = ereal ?S") using assms
-    by (subst nn_integral_measure_pmf_finite) 
-       (simp_all add: finite_set_pmf_of_list ereal_indicator [symmetric] pmf_pmf_of_list)
-  also have "?S = (\<Sum>x\<in>set (map fst xs). indicator A x * pmf (pmf_of_list xs) x)"
+  also from assms 
+    have "\<dots> = (\<Sum>x\<in>set_pmf (pmf_of_list xs) \<inter> A. ennreal (listsum (map snd [z\<leftarrow>xs . fst z = x])))"
+    by (subst nn_integral_measure_pmf_finite) (simp_all add: finite_set_pmf_of_list pmf_pmf_of_list)
+  also from assms 
+    have "\<dots> = ennreal (\<Sum>x\<in>set_pmf (pmf_of_list xs) \<inter> A. listsum (map snd [z\<leftarrow>xs . fst z = x]))"
+    by (subst setsum_ennreal) (auto simp: pmf_of_list_wf_def intro!: listsum_nonneg)
+  also have "\<dots> = ennreal (\<Sum>x\<in>set_pmf (pmf_of_list xs) \<inter> A. 
+      indicator A x * pmf (pmf_of_list xs) x)" (is "_ = ennreal ?S")
+    using assms by (intro ennreal_cong setsum.cong) (auto simp: pmf_pmf_of_list)
+  also have "?S = (\<Sum>x\<in>set_pmf (pmf_of_list xs). indicator A x * pmf (pmf_of_list xs) x)"
+    using assms by (intro setsum.mono_neutral_left set_pmf_of_list finite_set_pmf_of_list) auto
+  also have "\<dots> = (\<Sum>x\<in>set (map fst xs). indicator A x * pmf (pmf_of_list xs) x)"
     using assms by (intro setsum.mono_neutral_left set_pmf_of_list) (auto simp: set_pmf_eq)
   also have "\<dots> = (\<Sum>x\<in>set (map fst xs). indicator A x * 
                       listsum (map snd (filter (\<lambda>z. fst z = x) xs)))"
@@ -136,7 +166,13 @@ proof -
     by (intro setsum.cong refl) (simp_all add: setsum.delta)
   also have "\<dots> = listsum (map snd (filter (\<lambda>x. fst x \<in> A) xs))"
     by (subst listsum_map_filter, subst listsum_setsum_nth) simp_all
-  finally show ?thesis by (simp add: Sigma_Algebra.measure_def)
+  finally show ?thesis . 
 qed
+
+lemma measure_pmf_of_list:
+  assumes "pmf_of_list_wf xs"
+  shows   "measure (pmf_of_list xs) A = listsum (map snd (filter (\<lambda>x. fst x \<in> A) xs))"
+  using assms unfolding pmf_of_list_wf_def Sigma_Algebra.measure_def
+  by (subst emeasure_pmf_of_list [OF assms], subst enn2real_ennreal) (auto intro!: listsum_nonneg)
 
 end

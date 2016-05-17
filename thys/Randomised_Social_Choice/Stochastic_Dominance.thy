@@ -25,10 +25,10 @@ lemma setsum_lessThan_Suc_shift:
 
 lemma measure_return_pmf [simp]: "measure_pmf.prob (return_pmf x) A = indicator A x"
 proof -
-  have "ereal (measure_pmf.prob (return_pmf x) A) = 
+  have "ennreal (measure_pmf.prob (return_pmf x) A) = 
           emeasure (measure_pmf (return_pmf x)) A"
     by (simp add: measure_pmf.emeasure_eq_measure)
-  also have "\<dots> = ereal (indicator A x)" by (simp add: ereal_indicator)
+  also have "\<dots> = ennreal (indicator A x)" by (simp add: ennreal_indicator)
   finally show ?thesis by simp
 qed
 

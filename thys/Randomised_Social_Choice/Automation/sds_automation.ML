@@ -166,10 +166,10 @@ fun derive_orbit_equations_cmd wf_thm ps lthy =
   gen_derive_orbit_equations lthy wf_thm (map (Syntax.read_term lthy) ps)
 
 val optional_thm_parser = 
-  Scan.option (Args.parens Parse.xthm)
+  Scan.option (Args.parens Parse.thm)
 
 val optional_thms_parser = 
-  Scan.option (Args.parens Parse.xthms1)
+  Scan.option (Args.parens Parse.thms1)
 
 val _ =
   Outer_Syntax.local_theory_to_proof @{command_keyword derive_orbit_equations}

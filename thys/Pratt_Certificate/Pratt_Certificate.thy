@@ -2,7 +2,78 @@ theory Pratt_Certificate
 imports
   Complex_Main
   "../Lehmer/Lehmer"
+  "~~/src/HOL/Library/Code_Target_Numeral"
 begin
+
+(* TODO: Move? *)
+function mod_exp :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" where
+  "mod_exp b 0 m = 1 mod m"
+| "e > 0 \<Longrightarrow> even e \<Longrightarrow> mod_exp b e m = mod_exp ((b^2) mod m) (e div 2) m"
+| "odd e \<Longrightarrow> mod_exp b e m = (b * mod_exp ((b^2) mod m) (e div 2) m) mod m"
+  by fast simp_all
+termination
+  by (relation "measure (\<lambda>(_,e,_) \<Rightarrow> e)") (auto intro: div_less_dividend odd_pos)
+
+lemma mod_exp_correct: "mod_exp b e m = (b ^ e) mod m"
+proof (induction b e m rule: mod_exp.induct, goal_cases)
+  case (2 e b m)
+  from 2 have "mod_exp b e m = b ^ (2 * (e div 2)) mod m" 
+    by (subst power_mult) (simp add: power_mod)
+  also from 2 have "2 * (e div 2) = e" by simp
+  finally show ?case .
+next
+  case (3 e b m)
+  from 3 have "mod_exp b e m = b ^ (Suc (2 * (e div 2))) mod m"
+    by (simp only: power_mult power_Suc) (simp add: power_mod mod_mult_right_eq [symmetric])
+  also from 3 have "Suc (2 * (e div 2)) = e" by simp
+  finally show ?case .
+qed simp
+
+declare mod_exp.simps [simp del]
+
+lemma eval_mod_exp [simp]:
+  "mod_exp b 0 (Suc 0) = 0"
+  "m \<noteq> 1 \<Longrightarrow> mod_exp b 0 m = 1"
+  "mod_exp b 1 m = b mod m"
+  "mod_exp b (Suc 0) m = b mod m"
+  "mod_exp b (numeral (num.Bit0 n)) m = mod_exp (b\<^sup>2 mod m) (numeral n) m"
+  "mod_exp b (numeral (num.Bit1 n)) m = b * mod_exp (b\<^sup>2 mod m) (numeral n) m mod m"
+proof -
+  have "1 mod m = 1" if "m \<noteq> 1" using that 
+    by (cases m) auto
+  show "m \<noteq> 1 \<Longrightarrow> mod_exp b 0 m = 1" "mod_exp b 0 (Suc 0) = 0"
+    by (cases m) (simp_all add: mod_exp.simps)
+  show "mod_exp b 1 m = b mod m" by (simp add: mod_exp_correct)
+  show "mod_exp b (Suc 0) m = b mod m" by (simp add: mod_exp_correct)
+  have "numeral (num.Bit0 n) = (2 * numeral n :: nat)"
+    by (subst numeral.numeral_Bit0) (simp del: arith_simps)
+  also have "mod_exp b \<dots> m = mod_exp (b\<^sup>2 mod m) (numeral n) m"
+    by (subst mod_exp.simps(2)) (simp_all del: arith_simps)
+  finally show "mod_exp b (numeral (num.Bit0 n)) m = mod_exp (b\<^sup>2 mod m) (numeral n) m" by simp
+  have "numeral (num.Bit1 n) = Suc (2 * numeral n :: nat)"
+    by (subst numeral.numeral_Bit1) (simp del: arith_simps)
+  also have "mod_exp b \<dots> m = b * mod_exp (b\<^sup>2 mod m) (numeral n) m mod m"
+    by (subst mod_exp.simps(3)) (simp_all del: arith_simps)
+  finally show "mod_exp b (numeral (num.Bit1 n)) m = b * mod_exp (b\<^sup>2 mod m) (numeral n) m mod m" .
+qed
+
+(* 
+  Need to use @{term "b*b::nat"} here instead of squaring, otherwise code_unfold produces
+  infinite recursion
+  FIXME: Better performance using divMod or bit tests/bit shifts. Tail-recursive would also be good.
+*)
+lemma mod_exp_code [code]:
+  "mod_exp b e m = 
+    (if e = 0 then if m = 1 then 0 else 1 
+     else if even e then mod_exp ((b*b) mod m) (e div 2) m
+     else (b * mod_exp ((b*b) mod m) (e div 2) m) mod m)"
+  by (simp_all add: mod_exp.simps(2,3) power2_eq_square)
+
+lemmas mod_exp_code_unfold [code_unfold] = mod_exp_correct [symmetric]
+
+
+(* END TODO *)
+
 
 section {* Pratt's Primality Certificates *}
 text_raw {* \label{sec:pratt} *}
@@ -46,7 +117,7 @@ fun valid_cert :: "pratt list \<Rightarrow> bool" where
   "valid_cert [] = True"
 | R2: "valid_cert (Prime p#xs) \<longleftrightarrow> 1 < p \<and> valid_cert xs
     \<and> (\<exists> a . [a^(p - 1) = 1] (mod p) \<and> Triple p a (p - 1) \<in> set xs)"
-| R1: "valid_cert (Triple p a x # xs) \<longleftrightarrow> 0 < x  \<and> valid_cert xs \<and> (x=1 \<or>
+| R1: "valid_cert (Triple p a x # xs) \<longleftrightarrow> p > 1 \<and> 0 < x  \<and> valid_cert xs \<and> (x=1 \<or>
     (\<exists>q y. x = q * y \<and> Prime q \<in> set xs \<and> Triple p a y \<in> set xs
       \<and> [a^((p - 1) div q) \<noteq> 1] (mod p)))"
 
@@ -65,7 +136,7 @@ fun size_cert :: "pratt list \<Rightarrow> real" where
   "size_cert (x # xs) = 1 + size_pratt x + size_cert xs"
 
 
-section {* Soundness *}
+subsection {* Soundness *}
 
 text {*
   In Section \ref{sec:pratt} we introduced the predicates $\text{Prime}(p)$ and $(p, a, x)$.
@@ -141,7 +212,7 @@ qed
 
 
 
-section {* Completeness *}
+subsection {* Completeness *}
 
 text {*
   In this section we show completeness of Pratt's proof system, i.e., we show that for
@@ -196,7 +267,7 @@ text {*
 *}
 
 lemma correct_fpc:
-  assumes "valid_cert xs"
+  assumes "valid_cert xs" "p > 1"
   assumes "listprod qs = r" "r \<noteq> 0"
   assumes "\<forall> q \<in> set qs . Prime q \<in> set xs"
   assumes "\<forall> q \<in> set qs . [a^((p - 1) div q) \<noteq> 1] (mod p)"
@@ -449,7 +520,7 @@ proof (induction p rule: less_induct)
       show "\<forall> q \<in> set qs . Prime q \<in> set (concat ?cs)"
         using concat_set[of "prime_factors (p - 1)"] cs qs_eq by blast
       show "\<forall> q \<in> set qs . [a^((p - 1) div q) \<noteq> 1] (mod p)" using qs_eq a by auto
-    qed
+    qed (insert \<open>p > 3\<close>, simp_all)
     moreover
     { let ?k = "length qs"
 
@@ -502,5 +573,151 @@ proof -
   also have "\<dots> \<le> (6*log 2 p - 4) * (1 + 3 * log 2 p)" using len by simp
   finally show ?thesis using c by blast
 qed
+
+
+
+subsection \<open>Proof Method Setup\<close>
+
+text \<open>
+  Using the following `lazy disjunction', we can force the simplifier to fully simplify the 
+  first operand of the disjunction first and not evaluate the second one at all if the first 
+  one simplifies to @{term True}. This improved performance three-fold in our simple test.
+\<close>
+
+definition LAZY_DISJ where
+  "LAZY_DISJ a b \<longleftrightarrow> a \<or> b"
+
+lemma eval_LAZY_DISJ [simp]: "LAZY_DISJ False b = b" "LAZY_DISJ True b = True"
+  by (simp_all add: LAZY_DISJ_def)
+
+lemma LAZY_DISJ_cong [cong]: "a = a' \<Longrightarrow> LAZY_DISJ a b = LAZY_DISJ a' b"
+  by simp
+
+
+text \<open>
+  The following alternative definitions of valid certificates are better suited for 
+  evaluation by the simplifier than the original ones.
+\<close>
+
+context
+begin
+
+lemma valid_cert_Cons1:
+  "valid_cert (Prime p#xs) \<longleftrightarrow>
+     p > 1 \<and> (\<exists>t\<in>set xs. case t of Prime _ \<Rightarrow> False | 
+     Triple p' a x \<Rightarrow> p' = p \<and> x = p - 1 \<and> mod_exp a (p-1) p = 1 ) \<and> valid_cert xs"
+  (is "?lhs = ?rhs")
+proof
+  assume ?lhs thus ?rhs by (auto simp: mod_exp_correct cong_nat_def split: pratt.splits)
+next
+  assume ?rhs
+  hence "p > 1" "valid_cert xs" by blast+
+  moreover from \<open>?rhs\<close> obtain t where "t \<in> set xs" "case t of Prime _ \<Rightarrow> False | 
+     Triple p' a x \<Rightarrow> p' = p \<and> x = p - 1 \<and> [a^(p-1) = 1] (mod p)" 
+     by (auto simp: cong_nat_def mod_exp_correct cong: pratt.case_cong)
+  ultimately show ?lhs by (cases t) auto
+qed
+
+private lemma Suc_0_mod_eq_Suc_0_iff:
+  "Suc 0 mod n = Suc 0 \<longleftrightarrow> n \<noteq> Suc 0"
+proof -
+  consider "n = 0" | "n = Suc 0" | "n > 1" by (cases n) auto
+  thus ?thesis by cases auto
+qed
+
+private lemma Suc_0_eq_Suc_0_mod_iff:
+  "Suc 0 = Suc 0 mod n \<longleftrightarrow> n \<noteq> Suc 0"
+  using Suc_0_mod_eq_Suc_0_iff by (simp add: eq_commute)
+
+lemma valid_cert_Cons2:
+  "valid_cert (Triple p a x # xs) \<longleftrightarrow> x > 0 \<and> p > 1 \<and> (LAZY_DISJ (x = 1) (
+     (\<exists>t\<in>set xs. case t of Prime _ \<Rightarrow> False |
+        Triple p' a' y \<Rightarrow> p' = p \<and> a' = a \<and> y dvd x \<and> 
+        (let q = x div y in Prime q \<in> set xs \<and> mod_exp a ((p-1) div q) p \<noteq> 1)))) \<and> valid_cert xs"
+  (is "?lhs = ?rhs")
+proof
+  assume ?lhs
+  from \<open>?lhs\<close> have pos: "x > 0" and gt_1: "p > 1" and valid: "valid_cert xs" by simp_all
+  show ?rhs
+  proof (cases "x = 1")
+    case True
+    with \<open>?lhs\<close> show ?thesis by auto
+  next
+    case False
+    with \<open>?lhs\<close> have "(\<exists>q y. x = q * y \<and> Prime q \<in> set xs \<and> Triple p a y \<in> set xs
+      \<and> [a^((p - 1) div q) \<noteq> 1] (mod p))" by auto
+    then guess q y by (elim exE conjE) note qy = this
+    hence "(\<exists>t\<in>set xs. case t of Prime _ \<Rightarrow> False |
+        Triple p' a' y \<Rightarrow> p' = p \<and> a' = a \<and> y dvd x \<and> 
+        (let q = x div y in Prime q \<in> set xs \<and> mod_exp a ((p-1) div q) p \<noteq> 1))"
+     using pos by (intro bexI[of _ "Triple p a y"]) 
+       (auto simp: Suc_0_mod_eq_Suc_0_iff Suc_0_eq_Suc_0_mod_iff cong_nat_def mod_exp_correct)
+    with pos gt_1 valid show ?thesis unfolding LAZY_DISJ_def by blast
+  qed
+next
+  assume ?rhs
+  hence pos: "x > 0" and gt_1: "p > 1" and valid: "valid_cert xs" by simp_all
+  show ?lhs
+  proof (cases "x = 1")
+    case True
+    with \<open>?rhs\<close> show ?thesis by auto
+  next
+    case False
+    with \<open>?rhs\<close> obtain t where t: "t \<in> set xs" "case t of Prime x \<Rightarrow> False
+         | Triple p' a' y \<Rightarrow> p' = p \<and> a' = a \<and> y dvd x \<and> (let q = x div y
+              in Prime q \<in> set xs \<and> mod_exp a ((p - 1) div q) p \<noteq> 1)" by auto
+    then obtain y where y: "t = Triple p a y" "y dvd x" "let q = x div y in Prime q \<in> set xs \<and> 
+                              mod_exp a ((p - 1) div q) p \<noteq> 1" 
+      by (cases t rule: pratt.exhaust) auto
+    with gt_1 have y': "let q = x div y in Prime q \<in> set xs \<and> [a^((p - 1) div q) \<noteq> 1] (mod p)"
+      by (auto simp: cong_nat_def Let_def mod_exp_correct Suc_0_mod_eq_Suc_0_iff Suc_0_eq_Suc_0_mod_iff)
+    def q \<equiv> "x div y"
+    have "\<exists>q y. x = q * y \<and> Prime q \<in> set xs \<and> Triple p a y \<in> set xs
+                     \<and> [a^((p - 1) div q) \<noteq> 1] (mod p)"
+      by (rule exI[of _ q], rule exI[of _ y]) (insert t y y', auto simp: Let_def q_def)
+    with pos gt_1 valid show ?thesis unfolding LAZY_DISJ_def by simp
+  qed
+qed
+
+declare valid_cert.simps(2,3) [simp del]
+
+lemmas eval_valid_cert = valid_cert.simps(1) valid_cert_Cons1 valid_cert_Cons2
+
+private lemma bex_simps_lazy: "Bex {} P = False" "Bex (insert x A) P = LAZY_DISJ (P x) (Bex A P)"
+  unfolding LAZY_DISJ_def by simp_all
+
+lemma pratt_primeI:
+  assumes "valid_cert xs" "Prime p \<in> set xs"
+  shows   "prime p"
+  using pratt_sound[OF assms] by simp
+
+ML_file "pratt.ML"
+
+end
+
+
+method_setup pratt = \<open>
+  Scan.option (Scan.lift (Args.bracks Pratt.parse_cert)) >> 
+    (SIMPLE_METHOD o HEADGOAL oo Pratt.pratt_tac)
+\<close> "Prove primality of natural numbers using Pratt certificates."
+
+
+text \<open>
+  The following two theorems serve as regression tests -- the first one computes the 
+  certificate in ML automatically, whereas the second one uses a pre-computed certificate.
+  The first example should not take more than a few second; the second one no more than 
+  30 seconds or so.
+\<close>
+
+lemma "prime 2503"
+  by pratt
+
+lemma "prime 131059"
+  by (pratt [131059, (131059, 2, 131058), (131059, 2, 65529), (131059, 2, 21843),
+              (131059, 2, 7281), (131059, 2, 2427), (131059, 2, 809), (131059, 2, 1), 809,
+              (809, 3, 808), (809, 3, 404), (809, 3, 202), (809, 3, 101), (809, 3, 1), 101,
+              (101, 2, 100), (101, 2, 50), (101, 2, 25), (101, 2, 5), (101, 2, 1), 5,
+              (5, 2, 4), (5, 2, 2), (5, 2, 1), 3, (3, 2, 2), (3, 2, 1), 2, (2, 1, 1)])
+  
 
 end

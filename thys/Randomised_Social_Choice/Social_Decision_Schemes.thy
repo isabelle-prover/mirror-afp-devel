@@ -65,10 +65,10 @@ text \<open>
 abbreviation lottery_prob :: "'alt lottery \<Rightarrow> 'alt set \<Rightarrow> real" where
   "lottery_prob \<equiv> measure_pmf.prob"
 
-lemma lottery_prob_alts_superset: "p \<in> lotteries \<Longrightarrow> alts \<subseteq> A \<Longrightarrow> lottery_prob p A = 1"
-  by (metis UNIV_I antisym_conv emeasure_pmf ereal_eq_1(1) lotteries_on_def 
-            measure_pmf.emeasure_eq_measure measure_pmf.finite_measure_mono
-            measure_pmf.prob_le_1 mem_Collect_eq sets_measure_pmf)
+lemma lottery_prob_alts_superset: 
+  assumes "p \<in> lotteries" "alts \<subseteq> A"
+  shows   "lottery_prob p A = 1"
+  using assms by (subst measure_pmf.prob_eq_1) (auto simp: AE_measure_pmf_iff lotteries_on_def)
 
 lemma lottery_prob_alts: "p \<in> lotteries \<Longrightarrow> lottery_prob p alts = 1"
   by (rule lottery_prob_alts_superset) simp_all

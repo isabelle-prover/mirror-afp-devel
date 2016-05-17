@@ -182,7 +182,7 @@ qed
 lemma permutations_of_set_image_permutes:
   "\<sigma> permutes A \<Longrightarrow> map \<sigma> ` permutations_of_set A = permutations_of_set A"
   by (subst permutations_of_set_image_inj [symmetric])
-     (simp_all add: assms permutes_inj_on permutes_image)
+     (simp_all add: permutes_inj_on permutes_image)
 
 
 subsection \<open>Code generation\<close>

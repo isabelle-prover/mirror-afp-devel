@@ -248,7 +248,9 @@ lemma R39_d [simp]: "pmf (sds R39) d = 1/2 - pmf (sds R39) c"
 lemmas R12_b [simp] = R12.support
 
 lemma R12_c [simp]: "pmf (sds R12) c = 0"
-  using R12_R10.strategyproofness(1) lottery_conditions[OF R12.wf] by auto
+  using R12_R10.strategyproofness(1) lottery_conditions[OF R12.wf] 
+  by (auto simp del: pmf_nonneg)
+  
 
 lemma R12_d [simp]: "pmf (sds R12) d = 1 - pmf (sds R12) a"
   using lottery_conditions[OF R12.wf] by simp
@@ -265,7 +267,7 @@ proof -
   from R12_R44.strategyproofness(1) R44.support have "pmf (sds R44) a \<le> pmf (sds R12) a" by simp
   with R44_R12.strategyproofness(1) R44.support lottery_conditions[OF R44.wf]
     show "pmf (sds R44) a = pmf (sds R12) a" "pmf (sds R44) c = 0"
-         "pmf (sds R44) d = 1 - pmf (sds R12) a" by auto
+         "pmf (sds R44) d = 1 - pmf (sds R12) a" by (auto simp del: pmf_nonneg)
 qed (insert R44.support, simp_all)
 
 lemma R9_a [simp]: "pmf (sds R9) a = pmf (sds R35) a"
@@ -291,9 +293,9 @@ lemma R7 [simp]: "pmf (sds R7) a = 1/2" "pmf (sds R7) b = 0" "pmf (sds R7) c = 0
 proof -
   from R5_d_ge_one_half have "1/2 \<le> pmf (sds R5) d" by simp
   also from R5_R17.strategyproofness(1) R17.support lottery_conditions[OF R5.wf] lottery_conditions[OF R17.wf] 
-    have "\<dots> \<le> pmf (sds R17) d" by auto
+    have "\<dots> \<le> pmf (sds R17) d" by (auto simp del: pmf_nonneg)
   also from R17_R7.strategyproofness(1) lottery_conditions[OF R7.wf] lottery_conditions[OF R17.wf] R7.support
-    have "pmf (sds R17) d \<le> pmf (sds R7) d" by auto
+    have "pmf (sds R17) d \<le> pmf (sds R7) d" by (auto simp del: pmf_nonneg)
   finally have "pmf (sds R7) d \<ge> 1/2" .
   with R7_R43.strategyproofness(1) lottery_conditions[OF R7.wf] R7.support
     show "pmf (sds R7) a = 1/2" "pmf (sds R7) b = 0" "pmf (sds R7) c = 0" "pmf (sds R7) d = 1/2"
@@ -355,7 +357,7 @@ proof -
     from R19_R10.strategyproofness(1) have "pmf (sds R19) a \<ge> 1/2" by auto
     moreover from R19_R27.strategyproofness(1) have "pmf (sds R19) d \<ge> 1/2" by auto
     ultimately show "pmf (sds R19) a = 1/2" "pmf (sds R19) d = 1/2" "pmf (sds R19) b = 0"
-      using lottery_conditions[OF R19.wf] by auto
+      using lottery_conditions[OF R19.wf] by (auto simp del: pmf_nonneg)
   qed
   thus "pmf (sds R19) a = 1/2" "pmf (sds R19) b = 0" "pmf (sds R19) c = 0" "pmf (sds R19) d = 1/2" 
     by blast+
@@ -377,7 +379,7 @@ proof -
     lottery_conditions[OF R22.wf] lottery_conditions[OF R33.wf]
     have "\<dots> \<le> pmf (sds R22) a" by simp
   finally show "pmf (sds R22) a = 1/2" "pmf (sds R22) b = 0" "pmf (sds R22) c = 0" "pmf (sds R22) d = 1/2"
-    using R22_R29.strategyproofness(1) lottery_conditions[OF R22.wf] by auto
+    using R22_R29.strategyproofness(1) lottery_conditions[OF R22.wf] by (auto simp del: pmf_nonneg)
 qed
 
 lemma R28 [simp]: "pmf (sds R28) a = 1/2" "pmf (sds R28) b = 0" "pmf (sds R28) c = 0" "pmf (sds R28) d = 1/2"
@@ -391,7 +393,7 @@ proof -
     have "pmf (sds R32) a \<le> 1/2" by auto
   with R32_R22.strategyproofness(1) lottery_conditions[OF R32.wf] R32.support 
     show "pmf (sds R28) a = 1/2" "pmf (sds R28) b = 0" "pmf (sds R28) c = 0" "pmf (sds R28) d = 1/2"
-    by (auto simp: R32_d)
+    by (auto simp: R32_d simp del: pmf_nonneg)
 qed
 
 lemma R39 [simp]: "pmf (sds R39) a = 1/2" "pmf (sds R39) b = 0" "pmf (sds R39) c = 0" "pmf (sds R39) d = 1/2"
@@ -404,7 +406,8 @@ qed
 lemma R2 [simp]: "pmf (sds R2) a = 1/2" "pmf (sds R2) b = 0" "pmf (sds R2) c = 0" "pmf (sds R2) d = 1/2"
 proof -
   from R1_R2.strategyproofness(1) R2_R1.strategyproofness(1) lottery_conditions[OF R2.wf] lottery_conditions[OF R1.wf]
-    have "pmf (sds R2) a = 1/2" "pmf (sds R2) c + pmf (sds R2) d = 1/2" by (auto simp: algebra_simps)
+    have "pmf (sds R2) a = 1/2" "pmf (sds R2) c + pmf (sds R2) d = 1/2" 
+    by (auto simp: algebra_simps simp del: pmf_nonneg)
   with R39_R2.strategyproofness(1) lottery_conditions[OF R2.wf]
     show "pmf (sds R2) a = 1/2" "pmf (sds R2) b = 0" "pmf (sds R2) c = 0" "pmf (sds R2) d = 1/2"
     by auto
@@ -421,7 +424,7 @@ proof -
   from R6_R42.strategyproofness(1) 
     have "pmf (sds R42) a + pmf (sds R42) c \<le> pmf (sds R6) a + pmf (sds R6) c" by simp
   also from R6_R19.strategyproofness(1) lottery_conditions[OF R6.wf] 
-    have "pmf (sds R6) a + pmf (sds R6) c \<le> 1/2" by auto
+    have "pmf (sds R6) a + pmf (sds R6) c \<le> 1/2" by (auto simp del: pmf_nonneg)
   finally have "pmf (sds R42) a + pmf (sds R42) c \<le> 1 / 2" .
   moreover from R17_R11.strategyproofness(1) R11.support R17.support
        lottery_conditions[OF R11.wf] lottery_conditions[OF R17.wf]
@@ -435,28 +438,30 @@ proof -
     have "pmf (sds R3) d \<ge> 1/2" by (auto simp: R17_d)
   ultimately show "pmf (sds R42) a = 0" "pmf (sds R42) b = 0" "pmf (sds R42) c = 1/2" "pmf (sds R42) d = 1/2"
     using R42_R3.strategyproofness(1) lottery_conditions[OF R3.wf] lottery_conditions[OF R42.wf]
-    by auto
+    by linarith+
 qed
 
 lemma R37 [simp]: "pmf (sds R37) a = 1/2" "pmf (sds R37) b = 0" "pmf (sds R37) c = 1/2" "pmf (sds R37) d = 0"
 proof -
   from R37_R42.strategyproofness(1) lottery_conditions[OF R37.wf]
-    have "pmf (sds R37) a = 1/2 \<or> pmf (sds R37) a + pmf (sds R37) b > 1/2" by auto
+    have "pmf (sds R37) a = 1/2 \<or> pmf (sds R37) a + pmf (sds R37) b > 1/2"
+    by (auto simp del: pmf_nonneg)
   moreover from R37_R42.strategyproofness(2) lottery_conditions[OF R37.wf]
-    have "pmf (sds R37) c = 1/2 \<or> pmf (sds R37) c + pmf (sds R37) d > 1/2" by auto
+    have "pmf (sds R37) c = 1/2 \<or> pmf (sds R37) c + pmf (sds R37) d > 1/2" 
+    by (auto simp del: pmf_nonneg)
   ultimately show "pmf (sds R37) a = 1/2" "pmf (sds R37) b = 0" "pmf (sds R37) c = 1/2" "pmf (sds R37) d = 0"
-    using lottery_conditions[OF R37.wf] by auto
+    using lottery_conditions[OF R37.wf] by (auto simp del: pmf_nonneg)
 qed
 
 lemma R24 [simp]: "pmf (sds R24) a = 0" "pmf (sds R24) b = 0" "pmf (sds R24) d = 1 - pmf (sds R24) c"
-  using R42_R24.strategyproofness(1) lottery_conditions[OF R24.wf] by auto
+  using R42_R24.strategyproofness(1) lottery_conditions[OF R24.wf] by (auto simp del: pmf_nonneg)
 
 lemma R34 [simp]:
   "pmf (sds R34) a = 1 - pmf (sds R24) c" "pmf (sds R34) b = pmf (sds R24) c"
   "pmf (sds R34) c = 0" "pmf (sds R34) d = 0"
 proof -
   from R24_R34.strategyproofness(1) lottery_conditions[OF R34.wf] 
-    have "pmf (sds R34) b \<le> pmf (sds R24) c" by auto
+    have "pmf (sds R34) b \<le> pmf (sds R24) c" by (auto simp del: pmf_nonneg)
   moreover from R34_R24.strategyproofness(1) lottery_conditions[OF R34.wf] 
     have "pmf (sds R34) b \<ge> pmf (sds R24) c" by auto
   ultimately show bc: "pmf (sds R34) b = pmf (sds R24) c" by simp
@@ -468,13 +473,14 @@ proof -
 qed
 
 lemma R14 [simp]: "pmf (sds R14) b = 0" "pmf (sds R14) d = 0" "pmf (sds R14) c = 1 - pmf (sds R14) a"
-  using R14_R34.strategyproofness(1) R14.support lottery_conditions[OF R14.wf] by auto
+  using R14_R34.strategyproofness(1) R14.support lottery_conditions[OF R14.wf] 
+  by (auto simp del: pmf_nonneg)
 
 lemma R46 [simp]: "pmf (sds R46) a = 0" "pmf (sds R46) c = 0" "pmf (sds R46) d = 1 - pmf (sds R46) b"
   using R46_R37.strategyproofness(1) lottery_conditions[OF R46.wf] by auto
 
 lemma R20 [simp]: "pmf (sds R20) a = 0" "pmf (sds R20) c = 0" "pmf (sds R20) d = 1 - pmf (sds R20) b" 
-  using R46_R20.strategyproofness(1) lottery_conditions[OF R20.wf] by auto
+  using R46_R20.strategyproofness(1) lottery_conditions[OF R20.wf] by (auto simp del: pmf_nonneg)
 
 lemma R21 [simp]: "pmf (sds R21) d = 1 - pmf (sds R21) a" "pmf (sds R21) b = 0" "pmf (sds R21) c = 0"
   using R20_R21.strategyproofness(1) lottery_conditions[OF R21.wf] by auto
@@ -495,7 +501,7 @@ proof -
     have "pmf (sds R16) a \<ge> pmf (sds R14) a" by auto
   ultimately have "pmf (sds R16) c \<le> pmf (sds R9) a - pmf (sds R14) a" by simp
   also from R14_R9.strategyproofness(1) R9.support lottery_conditions[OF R9.wf]
-    have "pmf (sds R9) a - pmf (sds R14) a \<le> 0" by auto
+    have "pmf (sds R9) a - pmf (sds R14) a \<le> 0" by (auto simp del: pmf_nonneg)
   finally show "pmf (sds R16) b = 0" "pmf (sds R16) c = 0" "pmf (sds R16) d = 1 - pmf (sds R16) a"
     using lottery_conditions[OF R16.wf] R16.support by auto
 qed
@@ -511,7 +517,7 @@ proof -
     have "pmf (sds R40) a \<le> pmf (sds R9) a" by auto
   finally have B: "pmf (sds R12) a \<le> pmf (sds R9) a" by simp
   moreover from R14_R9.strategyproofness(1) lottery_conditions[OF R9.wf] R9.support 
-    have "pmf (sds R9) a \<le> pmf (sds R14) a" by auto
+    have "pmf (sds R9) a \<le> pmf (sds R14) a" by (auto simp del: pmf_nonneg)
   with R12_R14 have "pmf (sds R9) a \<le> pmf (sds R12) a" by simp
   ultimately show "pmf (sds R12) a = pmf (sds R9) a" by simp
 qed
@@ -521,7 +527,8 @@ lemma R9 [simp]: "pmf (sds R9) b = 0" "pmf (sds R9) d = 0" "pmf (sds R14) a = pm
   by auto
 
 lemma R23 [simp]: "pmf (sds R23) b = 0" "pmf (sds R23) c = 0" "pmf (sds R23) d = 1 - pmf (sds R23) a"
-  using R23_R19.strategyproofness(1) lottery_conditions[OF R23.wf] R23.support by auto
+  using R23_R19.strategyproofness(1) lottery_conditions[OF R23.wf] R23.support 
+  by (auto simp del: pmf_nonneg)
 
 lemma R35 [simp]: "pmf (sds R35) a = pmf (sds R21) a" "pmf (sds R35) b = 0" "pmf (sds R35) c = 0" "pmf (sds R35) d = 1 - pmf (sds R21) a"
 proof -
@@ -563,7 +570,7 @@ proof -
       using lottery_conditions[OF R47.wf] R47.support by simp
   }
   finally have "pmf (sds R4) c + pmf (sds R14) a \<le> 1"
-    using lottery_conditions[OF R47.wf] by simp
+    using lottery_conditions[OF R47.wf] by (auto simp del: pmf_nonneg)
   with R4_R18.strategyproofness(1) lottery_conditions[OF R4.wf] R4.support
     show "pmf (sds R4) a = pmf (sds R21) a" "pmf (sds R4) b = 0"
          "pmf (sds R4) c = 1 - pmf (sds R4) a" "pmf (sds R4) d = 0" by auto
@@ -579,7 +586,7 @@ proof -
     have "pmf (sds R26) a = pmf (sds R8) d" by auto
   with R8_R26.strategyproofness(2) R8.support lottery_conditions[OF R8.wf]
     show "pmf (sds R8) c = 0" "pmf (sds R8) d = 1 - pmf (sds R8) a" 
-         "pmf (sds R26) a = 1 - pmf (sds R8) a" by auto
+         "pmf (sds R26) a = 1 - pmf (sds R8) a" by (auto simp del: pmf_nonneg)
 qed
 
 lemma R21_R47: "pmf (sds R21) d \<le> pmf (sds R47) c"
@@ -597,7 +604,7 @@ proof -
     lottery_conditions[OF R30.wf] lottery_conditions[OF R47.wf]
     show "pmf (sds R30) a = pmf (sds R47) a" "pmf (sds R30) b = 0" 
          "pmf (sds R30) c = 0" "pmf (sds R30) d = 1 - pmf (sds R47) a"
-      by (auto simp: R30.support R47.support) (* tricky step! *)
+      by (auto simp: R30.support R47.support simp del: pmf_nonneg) (* tricky step! *)
 qed
 
 lemma R31_c_ge_one_half: "pmf (sds R31) c \<ge> 1/2"
@@ -606,7 +613,7 @@ proof -
   proof
     assume "pmf (sds R25) c = 0"
     with R25_R36.strategyproofness(1) lottery_conditions[OF R36.wf]
-       show "pmf (sds R25) a \<ge> 1/2" by auto
+       show "pmf (sds R25) a \<ge> 1/2" by (auto simp del: pmf_nonneg)
   next
     assume [simp]: "pmf (sds R25) b = 0"
     from R36_R25.strategyproofness(1) lottery_conditions[OF R25.wf]
@@ -614,16 +621,16 @@ proof -
     with R25_R36.strategyproofness(1) show "pmf (sds R25) a \<ge> 1/2" by auto
   qed
   hence "pmf (sds R26) a \<ge> 1/2"
-    using R25_R26.strategyproofness(1) lottery_conditions[OF R25.wf] by auto
+    using R25_R26.strategyproofness(1) lottery_conditions[OF R25.wf] by (auto simp del: pmf_nonneg)
   with lottery_conditions[OF R47.wf]
-    have "1/2 \<le> pmf (sds R26) a + pmf (sds R47) d" by simp
+    have "1/2 \<le> pmf (sds R26) a + pmf (sds R47) d" by (simp del: pmf_nonneg)
   also have "\<dots> = 1 - pmf (sds R8) a + pmf (sds R47) d" by simp
   also from R4_R8.strategyproofness(1) 
     have "1 - pmf (sds R8) a \<le> pmf (sds R21) d" by auto
   also note R21_R47
   also from R30_R41.strategyproofness(1) R41.support 
             lottery_conditions[OF R41.wf] lottery_conditions[OF R47.wf] 
-    have "pmf (sds R47) c + pmf (sds R47) d \<le> pmf (sds R41) d" by auto
+    have "pmf (sds R47) c + pmf (sds R47) d \<le> pmf (sds R41) d" by (auto simp del: pmf_nonneg)
   also from R41_R31.strategyproofness(1) R41.support lottery_conditions[OF R31.wf] 
        lottery_conditions[OF R41.wf]  
     have "pmf (sds R41) d \<le> pmf (sds R31) c" by auto
@@ -639,7 +646,7 @@ proof -
   have "pmf (sds R38) b + pmf (sds R38) d = pmf (sds R31) d + pmf (sds R31) b" by auto
   with R31_c_ge_one_half A lottery_conditions[OF R31.wf] lottery_conditions[OF R38.wf]
     show "pmf (sds R31) a = 0" "pmf (sds R31) c = 1/2" "pmf (sds R31) b + pmf (sds R31) d = 1/2"
-    by auto
+    by linarith+
 qed
 
 lemma absurd: False
@@ -647,6 +654,8 @@ lemma absurd: False
 
 
 (* TODO (Re-)move *)
+(* This is just to output a list of all the Strategy-Proofness conditions used in the proof *)
+(*
 ML_val \<open>
 let
 val thms = @{thms
@@ -744,7 +753,7 @@ in
  |> Pretty.string_of
  |> writeln
 end
-\<close>
+\<close>*)
 
 end
 

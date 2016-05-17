@@ -287,10 +287,10 @@ lemma favorites_altdef:
   "favorites R i = Max_wrt_among (R i) alts"
 proof (cases "i \<in> agents")
   assume "i \<in> agents"
-  with assms interpret total_preorder_on alts "R i" by simp
+  then interpret total_preorder_on alts "R i" by simp
   show ?thesis 
     by (simp add: favorites_def Max_wrt_total_preorder Max_wrt_among_total_preorder)
-qed (insert assms, simp_all add: favorites_def Max_wrt_def Max_wrt_among_def pref_profile_wf_def)
+qed (simp_all add: favorites_def Max_wrt_def Max_wrt_among_def pref_profile_wf_def)
 
 lemma favorites_no_agent [simp]: "i \<notin> agents \<Longrightarrow> favorites R i = {}"
   by (auto simp: favorites_def Max_wrt_def Max_wrt_among_def)
@@ -305,7 +305,7 @@ proof (cases "i \<in> agents")
 qed simp_all
 
 lemma favorites_subset_alts: "favorites R i \<subseteq> alts"
-  using assms by (auto simp: favorites_altdef')
+  by (auto simp: favorites_altdef')
 
 lemma finite_favorites [simp, intro]: "finite (favorites R i)"
   using favorites_subset_alts finite_alts  by (rule finite_subset)
@@ -461,7 +461,6 @@ lemma prefs_from_table_wfD:
        
 lemma pref_profile_from_tableI: 
   "prefs_from_table_wf agents alts xss \<Longrightarrow> pref_profile_wf agents alts (prefs_from_table xss)"
-using assms
 proof (intro pref_profile_wf.intro)
   assume wf: "prefs_from_table_wf agents alts xss"
   fix i assume i: "i \<in> agents"
