@@ -14,8 +14,6 @@ imports
   Order_Predicates 
   "~~/src/HOL/Library/Multiset"
   "~~/src/HOL/Library/Disjoint_Sets"
-  Missing_Multiset
-  Missing_Permutations
 begin
 
 text \<open>The type of preference profiles\<close>
@@ -68,9 +66,14 @@ sublocale preorder_family agents alts R
 lemmas prefs_undefined' = not_in_dom'
 
 lemma wf_update:
-  "i \<in> agents \<Longrightarrow> finite_total_preorder_on alts Ri' \<Longrightarrow> 
-     pref_profile_wf agents alts (R(i := Ri'))"
-  by (auto intro!: pref_profile_wf.intro split: if_splits)
+  assumes "i \<in> agents" "total_preorder_on alts Ri'"
+  shows   "pref_profile_wf agents alts (R(i := Ri'))"
+proof -
+  interpret total_preorder_on alts Ri' by fact
+  from finite_alts have "finite_total_preorder_on alts Ri'" by unfold_locales
+  with assms show ?thesis
+    by (auto intro!: pref_profile_wf.intro split: if_splits)
+qed
 
 lemma wf_permute_agents:
   assumes "\<sigma> permutes agents"
@@ -649,23 +652,6 @@ lemma of_weak_ranking_Collect_ge_Cons':
   "of_weak_ranking_Collect_ge (x#xs) = (\<lambda>y.
      (if y \<in> x then (\<Union>set (x#xs)) else of_weak_ranking_Collect_ge xs y))"
   by (auto simp: of_weak_ranking_Cons of_weak_ranking_Collect_ge_def fun_eq_iff)
-
-(* TODO Move *)
-lemma mset_set_set: "distinct xs \<Longrightarrow> mset_set (set xs) = mset xs"
-  by (induction xs) (simp_all add: add_ac)
-
-lemma image_mset_map_of: 
-  "distinct (map fst xs) \<Longrightarrow> {#the (map_of xs i). i \<in># mset (map fst xs)#} = mset (map snd xs)"
-proof (induction xs)
-  case (Cons x xs)
-  have "{#the (map_of (x # xs) i). i \<in># mset (map fst (x # xs))#} = 
-          {#the (if i = fst x then Some (snd x) else map_of xs i). 
-             i \<in># mset (map fst xs)#} + {#snd x#}" (is "_ = ?A + _") by simp
-  also from Cons.prems have "?A = {#the (map_of xs i). i :# mset (map fst xs)#}"
-    by (cases x, intro image_mset_cong) (auto simp: in_multiset_in_set)
-  also from Cons.prems have "\<dots> = mset (map snd xs)" by (intro Cons.IH) simp_all
-  finally show ?case by simp
-qed simp_all
 
 lemma anonymise_prefs_from_table:
   assumes "prefs_from_table_wf agents alts xs"

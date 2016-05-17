@@ -216,10 +216,6 @@ next
   qed simp_all
 qed
 
-(* TODO: Move *)
-lemma is_weak_ranking_rev [simp]: "is_weak_ranking (rev xs) \<longleftrightarrow> is_weak_ranking xs"
-  by (simp add: is_weak_ranking_iff)
-
 lemma eval_pref_classes_of_weak_ranking:
   assumes "\<Union>(set xss) = alts" "is_weak_ranking xss" "alts \<noteq> {}"
   shows   "pref_classes alts (of_weak_ranking xss) = pref_classes_lists_aux (hd xss) (tl xss)"
@@ -244,10 +240,6 @@ qed
 
 context preorder_on
 begin
-
-(* TODO: Move *)
-lemma preferred_alts_subset: "preferred_alts le x \<subseteq> carrier"
-  unfolding preferred_alts_def using not_outside by blast
 
 lemma SD_iff_pref_classes:
   assumes "p \<in> lotteries_on carrier" "q \<in> lotteries_on carrier"

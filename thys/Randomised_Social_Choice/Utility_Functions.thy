@@ -2,7 +2,7 @@ theory Utility_Functions
 imports
   Complex_Main
   "~~/src/HOL/Probability/Probability"
-  Missing_PMF
+  Lotteries
   Preference_Profiles
 begin
 

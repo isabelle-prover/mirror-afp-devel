@@ -15,45 +15,6 @@ imports
   "~~/src/HOL/Library/Permutations"
 begin
 
-(* TODO: Move? *)
-lemma UN_cong: "A = B \<Longrightarrow> (\<And>x. x \<in> A \<Longrightarrow> f x = g x) \<Longrightarrow> UNION A f = UNION B g"
-  by auto
-
-lemma list_bind_cong [fundef_cong]:
-  "(\<And>x. x \<in> set xs \<Longrightarrow> f x = g x) \<Longrightarrow> List.bind xs f = List.bind xs g"
-  by (induction xs) simp_all
-
-lemma set_list_bind: "set (List.bind xs f) = (\<Union>x\<in>set xs. set (f x))"
-  by (induction xs) simp_all
-
-lemma distinct_list_bind: 
-  assumes "distinct xs" "\<And>x. x \<in> set xs \<Longrightarrow> distinct (f x)" 
-          "disjoint_family_on (set \<circ> f) (set xs)"
-  shows   "distinct (List.bind xs f)"
-  using assms
-  by (induction xs)
-     (auto simp: disjoint_family_on_def distinct_map inj_on_def set_list_bind)
-
-lemma permutes_inj_on: "\<sigma> permutes A \<Longrightarrow> inj_on \<sigma> B"
-  by (drule permutes_inj) (unfold inj_on_def, blast)
-
-lemma remove_induct [case_names empty infinite remove]:
-  "P ({} :: 'a set) \<Longrightarrow> (\<And>A. infinite A \<Longrightarrow> P A) \<Longrightarrow> (\<And>A. finite A \<Longrightarrow> A \<noteq> {} \<Longrightarrow>
-     (\<And>x. x \<in> A \<Longrightarrow> P (A - {x})) \<Longrightarrow> P A) \<Longrightarrow> P a0"
-proof (induction_schema)
-  fix A and x :: 'a assume "finite A" "x \<in> A" "A \<noteq> {}"
-  moreover from this have "card A > 0" by (simp add: card_gt_0_iff)
-  ultimately show "(A - {x}, A) \<in> Wellfounded.measure card" by simp
-qed auto
-
-lemma finite_remove_induct [consumes 1, case_names empty remove]:
-  "finite a0 \<Longrightarrow> P {} \<Longrightarrow> (\<And>A. finite A \<Longrightarrow> A \<noteq> {} \<Longrightarrow>
-     (\<And>x. x \<in> A \<Longrightarrow> P (A - {x})) \<Longrightarrow> P A) \<Longrightarrow> P a0"
-  by (induction a0 rule: remove_induct) simp_all
-
-(* END TODO *)
-
-
 subsection \<open>Definition and general facts\<close>
 
 definition permutations_of_set :: "'a set \<Rightarrow> 'a list set" where
@@ -214,7 +175,7 @@ proof (cases "finite A")
                 (\<Union>y\<in>A. permutations_of_set_aux (y#acc) (A - {y}))"
         by (subst permutations_of_set_aux.simps) simp_all
       also have "\<dots> = (\<Union>y\<in>A. (\<lambda>xs. rev xs @ acc) ` (\<lambda>xs. y # xs) ` permutations_of_set (A - {y}))"
-        by (intro UN_cong refl, subst psubset) (auto simp: image_image)
+        by (intro SUP_cong refl, subst psubset) (auto simp: image_image)
       also from False have "\<dots> = (\<lambda>xs. rev xs @ acc) ` permutations_of_set A"
         by (subst (2) permutations_of_set_nonempty) (simp_all add: image_UN)
       finally show ?thesis .
@@ -251,7 +212,7 @@ lemma permutations_of_set_aux_list_refine:
   by (induction acc xs rule: permutations_of_set_aux_list.induct)
      (subst permutations_of_set_aux_list.simps,
       subst permutations_of_set_aux.simps,
-      simp_all add: set_list_bind cong: UN_cong)
+      simp_all add: set_list_bind cong: SUP_cong)
 
 
 text \<open>

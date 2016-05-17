@@ -13,7 +13,6 @@ imports
   "~~/src/HOL/Probability/Probability" 
   Preference_Profiles
   Order_Predicates
-  Missing_PMF
   Stochastic_Dominance
   SD_Efficiency
 begin
@@ -280,7 +279,7 @@ lemma SD_efficient':
 proof -
   interpret pref_profile_wf agents alts R by fact
   show ?thesis
-    using SD_efficient[of R] sds_wf[OF assms(1)] assms unfolding SD_efficient_def by blast
+    using SD_efficient[of R] sds_wf[OF assms(1)] assms unfolding SD_efficient_def' by blast
 qed
 
 
