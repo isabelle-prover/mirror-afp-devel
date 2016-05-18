@@ -990,7 +990,13 @@ subsection "The Transformation"
       next
         case True 
         note queryinlist=this
+
+
         then have gra2: "q \<in> set ys" using dp_ys_init by auto
+
+        have k_inbounds: "k < length init" 
+            using index_less_size_conv  queryinlist
+              by (simp)
       {
           fix y  e
           fix X::"bool list"
@@ -1531,19 +1537,11 @@ subsection "The Transformation"
  
           then have samesame: "ys' = ys" unfolding ys'_def step_def by auto (* BIT does nothing *)
 
- 
-
           have setxsbleibt: "set xs'' = set init" by auto
-          have [simp]: "set xs' = set init" by auto
-
-          have whatisk: "k = index xs' q" by auto
-          have "index (mtf2 (free_A ! n) (q) (swaps (paid_A ! n) (s_A n))) (q)
-              = (index (swaps (paid_A ! n) (s_A n)) (q) - free_A ! n)" 
-                apply(rule mtf2_q_after) using queryinlist by auto
-          then have whatisk': "k' = index xs'' q" by auto
-              
-          from dp_ys_init have [simp]: "set ys = set init" by simp
-         
+  
+          have whatisk': "k' = index xs'' q" apply(simp)
+              apply(rule mtf2_q_after[symmetric]) using queryinlist  by auto
+                
           have "(Inv ys' xs'')-(Inv ys xs')
               = {(x,y). x < y in ys  \<and> y < x in xs'' \<and>  ~ y < x in xs'}"
                     unfolding Inv_def using samesame by auto  
@@ -1568,24 +1566,33 @@ subsection "The Transformation"
                using all(4) apply(simp) 
                using all(3) apply(simp) done
 
+              note mine=mtf2_backwards_effect3[THEN conjunct1]
+
               from bq have "q < a in xs''" using 2 by auto
               then have "(k' < index xs'' a \<and> a \<in> set xs'')"
                 unfolding before_in_def
                   using  whatisk' by auto
               then have low : "k' \<le> index xs' a"
-                 unfolding xs''_def 
+                unfolding whatisk'
+                 unfolding xs''_def  
+                 apply(subst mtf2_q_after)
+                   apply(simp)
+                  using queryinlist apply(simp) 
+                 apply(rule mine)
+                    apply (simp add: queryinlist)
+                   using bq b apply(simp)
+                  apply(simp)
+                 apply(simp del: xs'_def)
+                 apply (metis "3" a before_in_def bq dp_xs'_init k'_def k_def max_0L mtf2_forward_beforeq nth_index whatisk' xs''_def)
+                using a by(simp)(* 
+
                  unfolding xs'_def xs_def
-                 using mtf2_backwards_effect3
-                 sledgehammer
-by (metis "3" \<open>index (mtf2 (free_A ! n) q (swaps (paid_A ! n) (s_A n))) q = index (swaps (paid_A ! n) (s_A n)) q - free_A ! n\<close> a before_in_def bq dp_xs'_init index_less_size_conv mtf2_forward_beforeq nth_index whatisk' xs''_def xs'_def xs_def)
- 
+                sledgehammer TODO: make this step readable  
+by (metis "3" mtf2_q_after a before_in_def bq dp_xs'_init index_less_size_conv mtf2_forward_beforeq nth_index whatisk' xs''_def xs'_def xs_def)
+ *)
               from bq have "a < q in xs'" using 3 by auto
               then have up: "(index xs' a < k )"
-                unfolding before_in_def
-                  using  whatisk by auto
-
-              term "{(xs'!i,q) | i. i\<in>{k'..<k}}"
-
+                unfolding before_in_def by auto
 
               from a have "a \<in> set xs'" by simp
               then have aa: "a = xs'!index xs' a" using nth_index by simp 
@@ -1594,7 +1601,7 @@ by (metis "3" \<open>index (mtf2 (free_A ! n) q (swaps (paid_A ! n) (s_A n))) q 
                 using low up by fastforce
 
               from bq aa show "(a, b) = (xs' ! index xs' a, q) \<and> index xs' a \<in> {k'..<k}"
-                    using inset by simp 
+                using inset by simp 
             qed 
           finally have a: "(Inv ys' xs'')-(Inv ys xs') \<subseteq> {(xs'!i,q)|i. i\<in>{k'..<k}}" (is "?M \<subseteq> ?UB") .
  
@@ -1611,10 +1618,7 @@ by (metis "3" \<open>index (mtf2 (free_A ! n) q (swaps (paid_A ! n) (s_A n))) q 
             have "\<dots> = card {k'..<k}"
                   apply(rule card_image)
                   apply(rule inj_on_nth)
-                    apply(simp)
-                      using whatisk queryinlist index_less_size_conv
-                      using atLeastLessThan_iff dp_xs'_init dual_order.strict_trans
-                        by metis 
+                    using k_inbounds by simp_all 
           also
             have "\<dots> = k-k'" by auto
           finally
