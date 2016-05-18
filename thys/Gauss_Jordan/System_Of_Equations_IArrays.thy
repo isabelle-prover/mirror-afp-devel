@@ -76,7 +76,7 @@ have "(GREATEST' b. A $ b \<noteq> 0) = from_nat a"
         by (metis Suc_diff_Suc Suc_eq_plus1_left diff_diff_cancel less_imp_le ia_less_length length_rev)      
       def ja\<equiv>"length [0..<IArray.length (vec_to_iarray A)] - to_nat y - 1"
       have ja_less_length: "ja < length [0..<IArray.length (vec_to_iarray A)]" unfolding ja_def 
-      by (metis diff_0_eq_0 diff_Suc_eq_diff_pred diff_Suc_less diff_right_commute ia_eq ia_less_length' neq0_conv)
+        using ia_eq ia_less_length' by (simp add: algebra_simps )
       have suc_i_le: "IArray.length (vec_to_iarray A)\<ge>Suc (to_nat y)" unfolding vec_to_iarray_def  using to_nat_less_card[of y] by auto
       have "?xs ! ja = [0..<IArray.length (vec_to_iarray A)] ! (length [0..<IArray.length (vec_to_iarray A)] - Suc ja)" unfolding rev_nth[OF ja_less_length] ..
       also have "... = 0 + (length [0..<IArray.length (vec_to_iarray A)] - Suc ja)" apply (rule nth_upt, auto simp del: IArray.length_def) unfolding ja_def     

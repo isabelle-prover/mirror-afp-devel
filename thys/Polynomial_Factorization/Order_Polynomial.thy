@@ -14,17 +14,6 @@ imports
   "../Polynomial_Interpolation/Missing_Polynomial"
 begin
 
-lemma order_linear[simp]: "order a [:- a, 1:] = Suc 0" unfolding order_def
-proof (rule Least_equality, intro notI)
-  assume "[:- a, 1:] ^ Suc (Suc 0) dvd [:- a, 1:]"
-  from dvd_imp_degree_le[OF this] show False by auto
-next
-  fix n
-  assume *: "\<not> [:- a, 1:] ^ Suc n dvd [:- a, 1:]"
-  thus "Suc 0 \<le> n" 
-    by (cases n, auto)
-qed
-
 declare order_power_n_n[simp]
 
 lemma linear_power_nonzero: "[: a, 1 :] ^ n \<noteq> 0"
@@ -129,7 +118,7 @@ proof -
 qed 
 
 lemma order_code[code]: "order (a::'a::idom_divide) p = 
-  (if p = 0 then Code.abort (STR ''order of polynomial 0 undefined'') (\<lambda> _. order a p) else if poly p a \<noteq> 0 then 0 else 
+  (if p = 0 then 0 else if poly p a \<noteq> 0 then 0 else 
   Suc (order a (p div [: -a, 1 :])))"
 proof (cases "p = 0")
   case False note p = this
@@ -146,7 +135,7 @@ proof (cases "p = 0")
       using p False order_mult[of "[: -a, 1 :]" q] by auto
     have q: "p div [: -a, 1 :] = q" using False p 
       by (metis mult_zero_left nonzero_mult_divide_cancel_left)
-    show ?thesis unfolding ord q using False True by auto
+    show ?thesis unfolding ord q using False True by (auto simp: order_linear)
   next
     case False
     with order_root[of p a] p show ?thesis by auto

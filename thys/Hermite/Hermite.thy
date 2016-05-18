@@ -2017,9 +2017,7 @@ proof -
       proof -
         have UNIV_rw: "UNIV = insert s (UNIV-{s})" by auto
         have UNIV_s_rw: "UNIV-{s} = insert (s + from_nat p) ((UNIV-{s}) - {s + from_nat p})" 
-          using p1 p2 unfolding ncols_def
-          by (auto, metis add_left_neutral diff_add_zero diff_is_0_eq diff_le_self le_less_trans 
-            less_diff_conv not_less_eq_eq to_nat_0 to_nat_from_nat_id)
+          using p1 p2 s_less unfolding ncols_def by (auto simp: algebra_simps)
         have setsum_rw: "(\<Sum>k\<in>UNIV-{s}. U $ s $ k * K $ k $ (s + from_nat p)) 
           = U $ s $ (s + from_nat p) * K $ (s + from_nat p) $ (s + from_nat p) 
           + (\<Sum>k\<in>(UNIV-{s})-{s + from_nat p}. U $ s $ k * K $ k $ (s + from_nat p))"
@@ -2039,10 +2037,9 @@ proof -
             proof (cases "x<s+from_nat p")
               case True
               def a\<equiv>"to_nat x - to_nat s"
-              have xa: "x=s+(from_nat a)" unfolding a_def
-                by (metis a_def add_to_nat_def diff_le_self dual_order.strict_iff_order 
-                  from_nat_to_nat_id le_add_diff_inverse le_less_trans to_nat_from_nat_id 
-                  to_nat_less_card to_nat_mono x_g_s) 
+              from x_g_s have "to_nat s < to_nat x" by (rule to_nat_mono)
+              hence xa: "x=s+(from_nat a)" unfolding a_def add_to_nat_def
+                by (simp add: less_imp_diff_less to_nat_less_card algebra_simps to_nat_from_nat_id)
               have "U $ s $ x =0" 
               proof (unfold xa, rule induct_step)
                 show a_p: "a<p" unfolding a_def using p2 unfolding ncols_def 

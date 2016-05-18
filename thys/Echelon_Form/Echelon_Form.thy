@@ -1367,9 +1367,11 @@ proof (rule ccontr)
     case True thus ?thesis using ai least_mod_type[of a] unfolding True from_nat_0 by auto
   next
     case False
-    have ai2: "a \<le> from_nat (i - 1)" using ai
-      by (metis False One_nat_def Suc_leI a diff_diff_cancel diff_le_self diff_self_eq_0
-        from_nat_suc le_Suc le_add_diff_inverse le_less_linear antisym to_nat_0 to_nat_from_nat)
+    from a have "a \<le> from_nat i - 1" by (intro leI) (auto dest: le_Suc)
+    also from False have "i \<noteq> 0" by (intro notI) (simp_all add: from_nat_0)
+    hence "i = (i - 1) + 1" by simp
+    also have "from_nat \<dots> = from_nat (i - 1) + 1" by (rule from_nat_suc)
+    finally have ai2: "a \<le> from_nat (i - 1)" by simp
     have "i = to_nat ((GREATEST' n. \<not> is_zero_row_upt_k n k A)) + 1" using i False
       by (metis from_nat_0)
     hence "i - 1 = to_nat (GREATEST' n. \<not> is_zero_row_upt_k n k A)" by simp

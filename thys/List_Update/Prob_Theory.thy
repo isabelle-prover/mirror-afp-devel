@@ -5,10 +5,6 @@ theory Prob_Theory
 imports Probability 
 begin
 
-
-adhoc_overloading Monad_Syntax.bind bind_pmf
-
-
 lemma integral_map_pmf[simp]:
   fixes f::"real \<Rightarrow> real" 
   shows "(\<integral>x. f x \<partial>(map_pmf g M)) = (\<integral>x. f (g x) \<partial>M)"
