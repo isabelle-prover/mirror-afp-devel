@@ -25,8 +25,8 @@
 <p>&nbsp;</p>
 
 <h1><font class="first">A</font>
-constructive
-proof
+<font class="first">C</font>onstructive
+<font class="first">P</font>roof
 for
 <font class="first">F</font>LP
 </h1>
@@ -34,7 +34,7 @@ for
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">A constructive proof for FLP</td></tr>
+        <td class="data" width="80%">A Constructive Proof for FLP</td></tr>
 
     <tr><td class="datahead">Author:</td>
         <td class="data">Benjamin Bisping (benjamin /dot/ bisping /at/ campus /dot/ tu-berlin /dot/ de), Paul-David Brodmann (p /dot/ brodmann /at/ tu-berlin /dot/ de), Tim Jungnickel (tim /dot/ jungnickel /at/ tu-berlin /dot/ de), Christina Rickmann (c /dot/ rickmann /at/ tu-berlin /dot/ de), Henning Seidler (henning /dot/ seidler /at/ mailbox /dot/ tu-berlin /dot/ de), Anke Stüber (anke /dot/ stueber /at/ campus /dot/ tu-berlin /dot/ de), Arno Wilhelm-Weidner (arno /dot/ wilhelm-weidner /at/ tu-berlin /dot/ de), Kirstin Peters (kirstin /dot/ peters /at/ tu-berlin /dot/ de) and <a href="https://www.mtv.tu-berlin.de/nestmann/">Uwe Nestmann</a></td></tr>
@@ -66,7 +66,7 @@ reused for further proofs of properties of distributed systems.
         <td class="formatted">
 			<pre>@article{FLP-AFP,
   author  = {Benjamin Bisping and Paul-David Brodmann and Tim Jungnickel and Christina Rickmann and Henning Seidler and Anke Stüber and Arno Wilhelm-Weidner and Kirstin Peters and Uwe Nestmann},
-  title   = {A constructive proof for FLP},
+  title   = {A Constructive Proof for FLP},
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2016,

@@ -1,5 +1,5 @@
 [MFMC_Countable]
-title = A formal proof of the max-flow min-cut theorem for countable networks
+title = A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
 date = 2016-05-09
 topic = Mathematics/Graph Theory
@@ -4006,7 +4006,7 @@ abstract =
 notify = eberlm@in.tum.de
 
 [FLP]
-title = A constructive proof for FLP
+title = A Constructive Proof for FLP
 author = Benjamin Bisping <mailto:benjamin.bisping@campus.tu-berlin.de>,  Paul-David Brodmann <mailto:p.brodmann@tu-berlin.de>,  Tim Jungnickel <mailto:tim.jungnickel@tu-berlin.de>,  Christina Rickmann <mailto:c.rickmann@tu-berlin.de>,  Henning Seidler <mailto:henning.seidler@mailbox.tu-berlin.de>,  Anke Stüber <mailto:anke.stueber@campus.tu-berlin.de>, Arno Wilhelm-Weidner <mailto:arno.wilhelm-weidner@tu-berlin.de>,  Kirstin Peters <mailto:kirstin.peters@tu-berlin.de>,  Uwe Nestmann <https://www.mtv.tu-berlin.de/nestmann/>
 date = 2016-05-18
 topic = Computer Science

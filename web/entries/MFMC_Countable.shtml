@@ -25,22 +25,22 @@
 <p>&nbsp;</p>
 
 <h1><font class="first">A</font>
-formal
-proof
+<font class="first">F</font>ormal
+<font class="first">P</font>roof
 of
 the
-max-flow
-min-cut
-theorem
+<font class="first">M</font>ax-Flow
+<font class="first">M</font>in-Cut
+<font class="first">T</font>heorem
 for
-countable
-networks
+<font class="first">C</font>ountable
+<font class="first">N</font>etworks
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">A formal proof of the max-flow min-cut theorem for countable networks</td></tr>
+        <td class="data" width="80%">A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks</td></tr>
 
     <tr><td class="datahead">Author:</td>
         <td class="data"><a href="http://www.infsec.ethz.ch/people/andreloc">Andreas Lochbihler</a></td></tr>
@@ -74,7 +74,7 @@ composition.
         <td class="formatted">
 			<pre>@article{MFMC_Countable-AFP,
   author  = {Andreas Lochbihler},
-  title   = {A formal proof of the max-flow min-cut theorem for countable networks},
+  title   = {A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks},
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2016,
