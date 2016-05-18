@@ -174,13 +174,13 @@ apply(force) apply(rule finite_lists_length_le) by auto
 
 
 lemma finite_config_BIT: assumes [simp]: "distinct init"
-  shows "finite (set_pmf (config'' (BIT_init, BIT_step) qs init n))" (is "finite ?D")
+  shows "finite (set_pmf (config_rand (BIT_init, BIT_step) init qs))" (is "finite ?D")
 proof -
   have a: "(fst \<circ> snd) ` ?D \<subseteq> {x. length x = length init}" using config_n_fst_init_length2 by force
   have c: "(snd \<circ> snd) ` ?D = {init}"
   proof -
-    have "(snd \<circ> snd) ` set_pmf (config'' (BIT_init, BIT_step) qs init n)
-                = set_pmf (map_pmf (snd \<circ> snd) (config'' (BIT_init, BIT_step) qs init n))" by(simp)
+    have "(snd \<circ> snd) ` set_pmf (config_rand (BIT_init, BIT_step) init qs)
+                = set_pmf (map_pmf (snd \<circ> snd) (config_rand (BIT_init, BIT_step) init qs))" by(simp)
     also have "\<dots> = {init}" apply(subst config_n_init) by simp
     finally show ?thesis .
   qed
@@ -1531,14 +1531,10 @@ subsection "The Transformation"
  
           then have samesame: "ys' = ys" unfolding ys'_def step_def by auto (* BIT does nothing *)
 
+ 
 
-          {
-            fix a b::'a
-            fix X::"'a list"
-            have "a < b in X \<Longrightarrow> a \<noteq> b" by (metis no_before_inI)
-          } note anotb=this
-
-          have setxsbleibt: "set xs'' = set xs'" by auto
+          have setxsbleibt: "set xs'' = set init" by auto
+          have [simp]: "set xs' = set init" by auto
 
           have whatisk: "k = index xs' q" by auto
           have "index (mtf2 (free_A ! n) (q) (swaps (paid_A ! n) (s_A n))) (q)
@@ -1546,176 +1542,85 @@ subsection "The Transformation"
                 apply(rule mtf2_q_after) using queryinlist by auto
           then have whatisk': "k' = index xs'' q" by auto
               
+          from dp_ys_init have [simp]: "set ys = set init" by simp
          
           have "(Inv ys' xs'')-(Inv ys xs')
-              = (Inv ys  xs'')-(Inv ys xs')" using samesame by auto
-          also have "\<dots> = {(x,y). x < y in ys  \<and> y < x in xs'' \<and> (~x < y in ys \<or> ~ y < x in xs')}"
-              unfolding Inv_def by auto 
-          also have "\<dots> = {(x,y). x < y in ys  \<and> y < x in xs'' \<and>  ~ y < x in xs'}"
-               by auto 
-          also have "\<dots> = {(x,y). x\<noteq>y \<and> x < y in ys  \<and> y < x in xs'' \<and>  ~ y < x in xs'}"
-               using anotb by force 
-          also have "\<dots> = {(x,y). x\<noteq>y \<and> x \<in> set xs'' \<and> y\<in> set xs'' \<and> x < y in ys  \<and> y < x in xs'' \<and>  ~ y < x in xs'}"
-            using before_in_setD1 before_in_setD2 by force
-          also have "\<dots>  = {(x,y). x\<noteq>y \<and> x \<in> set xs' \<and> y\<in> set xs'  \<and> x < y in ys  \<and> y < x in xs'' \<and>  ~ y < x in xs'}"
-               using setxsbleibt by force
-          also have "\<dots>  = {(x,y). x\<noteq>y \<and> x \<in> set xs' \<and> y\<in> set xs'  \<and> x < y in ys  \<and> y < x in xs'' \<and>  x < y in xs'}"
-               using not_before_in[where xs="xs'"] by force
-          also have "\<dots> = {(x,y). x\<noteq>y \<and> x \<in> set xs'' \<and> y\<in> set xs'' \<and> x < y in ys  \<and> y < x in xs'' \<and>  x < y in xs'}"
-            using setxsbleibt by force
-          also have "\<dots> = {(x,y). x\<noteq>y \<and>  x < y in ys  \<and> y < x in xs'' \<and>  x < y in xs'}"
-            using before_in_setD1 before_in_setD2 by force
-          also have "\<dots> \<subseteq> {(x,q)| x. x\<noteq>q \<and>  x < q in ys  \<and> q < x in xs'' \<and>  x < q in xs'}"
-            proof (rule subsetI) (* TODO: make shorter this proof *)
-              fix xa
-              assume " xa \<in> {(xa, y).
-                xa \<noteq> y \<and>
-                xa < y in ys \<and>
-                y < xa in xs'' \<and>
-                xa < y in xs'}"
-              then obtain f s where "xa = (f,s)" and
-                  "f \<noteq> s" and
-                "f < s in ys" and
-                "s < f in xs''" and
-                "f < s in xs'" by auto
-              note all=this
-              have "s=q" apply(rule swapped_by_mtf2[where xs="xs'" and x=f])
-               using queryinlist apply(simp add: all)
-               apply(simp add: all)
-               apply(rule before_in_setD1) using all apply(simp)
-               apply(rule before_in_setD2) using all apply(simp)
-               apply(rule all)
-               using all(4) apply(simp) done
-              with all show "xa \<in> {(xa, q) |xa.
-                 xa \<noteq> q \<and>
-                 xa < q in ys \<and>
-                 q < xa in xs'' \<and>
-                 xa < q in xs'}" by force
-            qed
-          also have "\<dots> = {(x,q)| x. x\<noteq>q \<and>  x < q in ys 
-                            \<and> (k' < index xs'' x \<and> x \<in> set xs'')
-                            \<and> (index xs' x < k \<and> q \<in> set xs')}" unfolding before_in_def
-            using whatisk whatisk' by auto
-          also have "\<dots> = {(x,q)| x. x\<noteq>q \<and>  x < q in ys 
-                            \<and> (k' < index xs'' x \<and> x \<in> set xs'')
-                            \<and> (index xs' x < k)}"
-                              using queryinlist by auto
-          also have "\<dots> \<subseteq> {(x,q)| x. x\<noteq>q       
-                            \<and> (k' < index xs'' x \<and> x \<in> set xs'')
-                            \<and> (index xs' x < k)}"
-                              using queryinlist by auto
-          also have "\<dots> = {(x,q)| x. x\<noteq>q       
-                            \<and> k' \<le> index xs' x  (* these elements moved *)
-                            \<and> index xs' x < k 
-                            \<and> x \<in> set xs''}"
-                              apply(auto)
-                            proof (goal_cases)
-                              case (1 x)
-                              have id: "(swaps (paid_A ! n) (s_A n) ! index (swaps (paid_A ! n) (s_A n)) x) = x"
-                                apply(rule nth_index) using 1 by auto
-                              have xa: "index xs'' (swaps (paid_A ! n) (s_A n) ! index (swaps (paid_A ! n) (s_A n)) x)  \<le> index xs' (q)"
-                                  unfolding xs''_def xs'_def xs_def apply(rule mtf2_forward_beforeq)
-                                    using queryinlist apply(simp)
-                                    apply(simp)
-                                    by (fact 1(4))
-                              
-                              have  "index xs' q - (free_A ! n) < index xs'' x
-                                  \<and> index xs'' x  \<le> index xs' (q)" apply(intro conjI)
-                                    unfolding xs''_def xs'_def xs_def apply(fact 1(2))
-                                    using id xa by auto
-                              then have 3: "index (swaps (paid_A ! n) (s_A n)) (q) - (free_A ! n)
-  < index (mtf2 (free_A ! n) (q) (swaps (paid_A ! n) (s_A n))) (swaps (paid_A ! n) (s_A n) ! index (swaps (paid_A ! n) (s_A n)) x) \<and>
-  index (mtf2 (free_A ! n) (q) (swaps (paid_A ! n) (s_A n))) (swaps (paid_A ! n) (s_A n) ! index (swaps (paid_A ! n) (s_A n)) x)
-  \<le> index (swaps (paid_A ! n) (s_A n)) (q)" using id by auto
-                              have qxs': "index (swaps (paid_A ! n) (s_A n)) (q) < length (swaps (paid_A ! n) (s_A n))"
-                                using queryinlist by auto
-                              have qinset: "q \<in> set (swaps (paid_A ! n) (s_A n))"
-                                using queryinlist by auto
-                              have dist: "distinct (swaps (paid_A ! n) (s_A n))" by auto
-                              have 4: "index (swaps (paid_A ! n) (s_A n)) x < length (swaps (paid_A ! n) (s_A n))"
-                                apply(rule index_less) using setinit 1 by auto
-                              from mtf2_backwards_effect3[OF qxs' qinset dist 3 4]
-                              have "index (swaps (paid_A ! n) (s_A n)) (q) - free_A ! n \<le> index (swaps (paid_A ! n) (s_A n)) x" by auto
-                              then show ?case by auto
-                            next                            
-                              case (2 x)
-                              let ?i=" index (swaps (paid_A ! n) (s_A n)) x"
-                              have a: "index xs'' q = index xs' q - free_A ! n" 
-                                unfolding xs''_def apply(rule mtf2_q_after)
-                                   using queryinlist by auto
-                              from 2(2) whatisk' have b: "index xs'' q \<le> index xs' x" by auto
-                              from a b have t: "index xs' q - (free_A ! n) \<le> index xs' x" by auto
-                              from 2(3) have t2: "index xs' x < index xs' q" by auto
-                              have qxs': "q \<in> set xs'" by (auto simp: queryinlist) 
-                              have distxs': "distinct xs'" by auto
-                              from t t2 have tt: "index xs' q - (free_A ! n) \<le> index xs' x \<and> index xs' x < index xs' q" by auto
-                               
-                              from mtf2_forward_effect3[OF qxs' distxs' tt]
-                                show ?case by(simp add: 2(4))
-                        qed
-                              
-          also have "\<dots> = {(xs'!i,q)|i. i\<in>{k'..<k}}"
-            apply(auto)
-            proof (rule, goal_cases)
-              case (1 x)
-              let ?i27="index (swaps (paid_A ! n) (s_A n))"
-              from 1 show "x = swaps (paid_A ! n) (s_A n) ! ?i27 x \<and> index (swaps (paid_A ! n) (s_A n)) (q) - free_A ! n \<le> ?i27 x \<and>
-                    ?i27 x < index (swaps (paid_A ! n) (s_A n)) (q)"
-                  by simp
-            next
-              case (2 i) (* elements between k' and k are different from q *)
-              let ?fA = "swaps (paid_A ! n) (s_A n)"
-              have "?fA ! index ?fA q = q" apply(rule nth_index) using ` q \<in> set init` by auto
-              have 1: "i \<noteq> index ?fA q" using 2 by (auto simp: q_def) 
+              = {(x,y). x < y in ys  \<and> y < x in xs'' \<and>  ~ y < x in xs'}"
+                    unfolding Inv_def using samesame by auto  
+          also have 
+            "\<dots> \<subseteq>  {(xs'!i,q)|i. i\<in>{k'..<k}}"
+           apply(clarify)
+           proof 
+              fix a b
+              assume 1: "a < b in ys"
+                and 2: "b < a in xs''"
+                and 3: "\<not> b < a in xs'"
+              then have anb: "a \<noteq> b"
+                  using no_before_inI by(force)
+              have a: "a \<in> set init"
+                  and b: "b \<in> set init"
+                    using  before_in_setD1[OF 1] before_in_setD2[OF 1] by auto
+              with anb 3 have 3: "a < b in xs'"                      
+                      by (simp add: not_before_in) 
+              note all= anb 1 2 3 a b 
+              have bq: "b=q" apply(rule swapped_by_mtf2[where xs="xs'" and x=a])
+               using queryinlist apply(simp_all add: all) 
+               using all(4) apply(simp) 
+               using all(3) apply(simp) done
 
-              have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length (swaps (paid_A ! n) (s_A n))"
-                by(rule index_le_size)
-              then have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length init" by auto
-              with 2 have a: "i<length init" by auto
-               {
-                  fix xs x y q
-                  have "x\<noteq>y \<Longrightarrow> x < length xs \<Longrightarrow> y < length xs \<Longrightarrow> xs ! x = q \<Longrightarrow> xs ! y = q \<Longrightarrow> \<not> distinct xs"  
-                  by (metis index_nth_id)
-                } note cool=this
+              from bq have "q < a in xs''" using 2 by auto
+              then have "(k' < index xs'' a \<and> a \<in> set xs'')"
+                unfolding before_in_def
+                  using  whatisk' by auto
+              then have low : "k' \<le> index xs' a"
+                 unfolding xs''_def 
+                 unfolding xs'_def xs_def
+                 using mtf2_backwards_effect3
+                 sledgehammer
+by (metis "3" \<open>index (mtf2 (free_A ! n) q (swaps (paid_A ! n) (s_A n))) q = index (swaps (paid_A ! n) (s_A n)) q - free_A ! n\<close> a before_in_def bq dp_xs'_init index_less_size_conv mtf2_forward_beforeq nth_index whatisk' xs''_def xs'_def xs_def)
+ 
+              from bq have "a < q in xs'" using 3 by auto
+              then have up: "(index xs' a < k )"
+                unfolding before_in_def
+                  using  whatisk by auto
 
-               have "\<not> distinct ?fA" apply(rule cool[of i "index ?fA q" ?fA q])
-                  apply(simp add: 1)
-                  apply(simp add: a)
-                  apply(rule index_less) using ` q \<in> set init` apply simp
-                  apply(simp)
-                  apply(simp add: 2 q_def)
-                  apply(rule nth_index) using ` q \<in> set init` by auto
-              then show ?case by simp
-            next
-              case (3 i)
-              have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length (swaps (paid_A ! n) (s_A n))"
-                by(rule index_le_size)
-              then have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length init" by auto
-              with 3(2) have a: "i<length init" by auto
-              have g: "index (swaps (paid_A ! n) (s_A n)) (swaps (paid_A ! n) (s_A n) ! i) = i"
-                  apply(rule index_nth_id) by(auto simp: a)
-              show ?case unfolding g using 3(1) by auto
-            next
-              case (4 i)
-              have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length (swaps (paid_A ! n) (s_A n))"
-                by(rule index_le_size)
-              then have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length init" by auto
-              with 4(2) have a: "i<length init" by auto
-              have g: "index (swaps (paid_A ! n) (s_A n)) (swaps (paid_A ! n) (s_A n) ! i)
-                        = i" apply(rule index_nth_id) by(auto simp: a)
-              show ?case unfolding g using 4 by auto
-            next
-              case (5 i)
-              have "index (swaps (paid_A ! n) (s_A n)) (q) < length (swaps (paid_A ! n) (s_A n))"
-                apply(rule index_less) by (auto simp: queryinlist) 
-              from order.strict_trans[OF 5(2) this] have g: "i < length (swaps (paid_A ! n) (s_A n))" by auto
-              have "swaps (paid_A ! n) (s_A n) ! i \<in> set (swaps (paid_A ! n) (s_A n))"
-                  apply(rule nth_mem) using g by auto
-              then show ?case by auto
-            qed
+              term "{(xs'!i,q) | i. i\<in>{k'..<k}}"
+
+
+              from a have "a \<in> set xs'" by simp
+              then have aa: "a = xs'!index xs' a" using nth_index by simp 
+
+              have inset: "index xs' a \<in> {k'..<k}"
+                using low up by fastforce
+
+              from bq aa show "(a, b) = (xs' ! index xs' a, q) \<and> index xs' a \<in> {k'..<k}"
+                    using inset by simp 
+            qed 
           finally have a: "(Inv ys' xs'')-(Inv ys xs') \<subseteq> {(xs'!i,q)|i. i\<in>{k'..<k}}" (is "?M \<subseteq> ?UB") .
  
-          have cardUBproj: "card {k'..<k} = k-k'" by auto
+          have card_of_UB: "card {(xs'!i,q)|i. i\<in>{k'..<k}} = k-k'" 
+          proof -
+            have e: "fst ` ?UB = (%i. xs' ! i) ` {k'..<k}" by force
+            have "card ?UB = card (fst ` ?UB)"
+                  apply(rule card_image[symmetric])
+                      using inj_on_def by fastforce
+          also
+            have "\<dots> = card ((%i. xs' ! i) ` {k'..<k})" 
+              by (simp only: e)
+          also
+            have "\<dots> = card {k'..<k}"
+                  apply(rule card_image)
+                  apply(rule inj_on_nth)
+                    apply(simp)
+                      using whatisk queryinlist index_less_size_conv
+                      using atLeastLessThan_iff dp_xs'_init dual_order.strict_trans
+                        by metis 
+          also
+            have "\<dots> = k-k'" by auto
+          finally
+            show ?thesis .
+          qed
+ 
           have flipit: "flip (index init q) b ! (index init q) =  (~ (b) ! (index init q))" apply(rule flip_itself)
             using queryinlist setinit by auto
 
@@ -1724,55 +1629,15 @@ subsection "The Transformation"
 
           have E0: "A = (\<Sum>(x,y)\<in>(Inv ys' xs'')-(Inv ys xs'). (if b'!(index init y) then 2::real else 1))" by auto
           also have E1: "\<dots> \<le> (\<Sum>(z,y)\<in>?UB. if flip (index init q) (b) ! (index init y) then 2::real else 1)" 
-              unfolding A_def b'_def apply(rule setsum_mono2)
-                apply(simp)
-                apply(rule a)
-                by(simp add: split_def)
+              unfolding b'_def apply(rule setsum_mono2[OF _ a]) 
+                by(simp_all add: split_def)
           also have "\<dots> = (\<Sum>(z,y)\<in>{x\<in>?UB. snd x=q}. if flip (index init q) (b) ! (index init y) then 2::real else 1)" by(simp only: q)
           also have "\<dots> = (\<Sum>z\<in>{x\<in>?UB. snd x=q}. if flip (index init q) (b) ! (index init (snd z)) then 2::real else 1)" by(simp add: split_def)
           also have "\<dots> = (\<Sum>z\<in>{x\<in>?UB. snd x=q}. if flip (index init q) (b) ! (index init q) then 2::real else 1)" by simp
           also have E2: "\<dots> = (\<Sum>z\<in>?UB. if flip (index init q) (b) ! (index init q) then 2::real else 1)" by(simp only: q)
           also have E3: "\<dots> = (\<Sum>y\<in>?UB. 1)" using flipit True by simp
           also have E4: "\<dots> = k-k'"
-            proof -             
-              { 
-                fix z y
-                assume "y\<in> fst ` ?UB"
-                then have "{x \<in> ?UB. fst x = y} = {(y,q)}" by (auto)
-              } note aah=this
-
-              have fstUB: "fst ` ?UB = {swaps (paid_A ! n) (s_A n) ! i|i. i\<in> {k'..<k}}" by force
-              let ?fstUB="{swaps (paid_A ! n) (s_A n) ! i|i. i\<in> {k'..<k}}"
-                   
-              term "card (fst ` ?UB)"
-              term "k-k'"
-              have  "fst ` ?UB =  (\<lambda>i. swaps (paid_A ! n) (s_A n) ! i) ` {k'..<k}" by force
-              then have  "card (fst ` ?UB) = card ((\<lambda>i. swaps (paid_A ! n) (s_A n) ! i) ` {k'..<k})" by auto
-              also have "\<dots> = card {k'..<k}"
-                  apply(rule card_image) apply(auto)
-                  apply(rule inj_on_nth) apply(auto)
-                  proof -
-                    fix i
-                    assume "index (swaps (paid_A ! n) (s_A n)) (q) - free_A ! n \<le> i"
-                        and isub: "i < index (swaps (paid_A ! n) (s_A n)) (q)"
-                    have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length (swaps (paid_A ! n) (s_A n))"
-                          by (rule index_le_size)
-                    then have "index (swaps (paid_A ! n) (s_A n)) (q) \<le> length init" by auto
-                    then show "i < length init" using isub by auto
-                  qed
-              also have "\<dots> = k-k'" by auto
-              finally have cardfst: "card (fst ` ?UB)= k-k'" .
-
-              have "(\<Sum>y\<in>?UB. 1) = (\<Sum>y\<in>fst ` ?UB. (\<Sum>y\<in>{x \<in> ?UB. fst x = y}. 1))" 
-                apply(rule setsum_image_gen) by (auto)
-              also have "\<dots> = (\<Sum>y\<in>fst ` ?UB. (\<Sum>y\<in>{(y,q)}. 1))" 
-                    using aah by auto
-              also have "\<dots> = (\<Sum>y\<in>fst ` ?UB. 1::real)"
-                   by auto
-              also have "\<dots> = card(fst ` ?UB)" by auto 
-              also have "\<dots> = k-k'" by(simp only: cardfst) 
-              finally show ?thesis .
-            qed              
+              by(simp only: real_of_card[symmetric] card_of_UB)  
           finally have result: "A \<le>  k-k'" .
           with True show ?thesis by auto
         qed
