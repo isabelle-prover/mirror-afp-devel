@@ -13,7 +13,7 @@ theory Gauss_Jordan_IArray_Impl
 imports 
   "../Polynomial_Interpolation/Missing_Unsorted"
   Matrix_IArray_Impl
-  Gauss_Jordan
+  Gauss_Jordan_Elimination
 begin
 
 lift_definition mat_swaprows_impl :: "nat \<Rightarrow> nat \<Rightarrow> 'a mat_impl \<Rightarrow> 'a mat_impl" is

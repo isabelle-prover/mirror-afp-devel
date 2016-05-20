@@ -11,7 +11,7 @@ text \<open>This theory contains copies of algorithms for Gauss Jordan Eliminati
 theory Gauss_Jordan_Field
 imports 
   Prime_Field
-  "../Jordan_Normal_Form/Gauss_Jordan"
+  "../Jordan_Normal_Form/Gauss_Jordan_Elimination"
 begin
 
 context 
@@ -30,7 +30,7 @@ definition addrow_f :: "'a \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a 
 definition eliminate_entries_f :: "'a mat \<Rightarrow> 'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> 'a mat" where
   [code_unfold]: "eliminate_entries_f = eliminate_entries_gen (op +f) (op *f) (ffield.uminus F) 0f"
 
-text \<open>@{const gauss_jordan} is not reused from @{theory Gauss_Jordan}, as here we take a 
+text \<open>@{const gauss_jordan} is not reused from @{theory Gauss_Jordan_Elimination}, as here we take a 
   more efficient version which only works on one matrix.\<close>
 context 
   fixes nr nc :: nat

@@ -1,0 +1,26 @@
+chapter AFP
+
+session "Perron_Frobenius" (AFP) = "Pre_Perron_Frobenius" +
+  options [timeout = 600]
+  theories
+    Cancel_Card_Constraint
+  theories
+    HMA_Connect
+  theories
+    Perron_Frobenius
+  theories
+    Spectral_Radius_Theory
+  document_files
+    "root.bib"
+    "root.tex"
+
+session "Pre_Perron_Frobenius" (AFP) = "Jordan_Normal_Form" +
+  options [document = false]
+  theories
+    "~~/src/HOL/Multivariate_Analysis/Brouwer_Fixpoint"
+    "~~/src/HOL/Multivariate_Analysis/Cartesian_Euclidean_Space"
+    "~~/src/HOL/Eisbach/Eisbach"
+    "../Echelon_Form/Code_Cayley_Hamilton"
+    "../Jordan_Normal_Form/Spectral_Radius"
+    "../Polynomial_Factorization/Polynomial_Divisibility"
+    "../Polynomial_Factorization/Order_Polynomial"

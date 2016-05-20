@@ -3791,6 +3791,32 @@ abstract =
 	as well as primality-testing and prime-factorization algorithms for integers.
 notify = rene.thiemann@uibk.ac.at akihisa.yamada@uibk.ac.at
 
+[Perron_Frobenius]
+title = Perron-Frobenius Theorem for Spectral Radius Analysis
+author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Ondřej Kunčar <http://www21.in.tum.de/~kuncar/>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
+notify = rene.thiemann@uibk.ac.at
+date = 2016-05-20
+topic = Mathematics/Algebra
+abstract = 
+  <p>The spectral radius of a matrix A is the maximum norm of all
+  eigenvalues of A. In previous work we already formalized that for a
+  complex matrix A, the values in A<sup>n</sup> grow polynomially in n
+  if and only if the spectral radius is at most one. One problem with
+  the above characterization is the determination of all
+  <em>complex</em> eigenvalues. In case A contains only non-negative
+  real values, a simplification is possible with the help of the Perron-
+  Frobenius theorem, which tells us that it suffices to consider only
+  the <em>real</em> eigenvalues of A, i.e., applying Sturm's method can
+  decide the polynomial growth of A<sup>n</sup>. </p><p> We formalize
+  the Perron-Frobenius theorem based on a proof via Brouwer's fixpoint
+  theorem, which is available in the HOL multivariate analysis (HMA)
+  library. Since the results on the spectral radius is based on matrices
+  in the Jordan normal form (JNF) library, we further develop a
+  connection which allows us to easily transfer theorems between HMA and
+  JNF. With this connection we derive the combined result: if A is a
+  non-negative real matrix, and no real eigenvalue of A is strictly
+  larger than one, then A<sup>n</sup> is polynomially bounded in n. </p>
+
 [Formal_SSA]
 title = Verified Construction of Static Single Assignment Form
 author = Sebastian Ullrich <mailto:sebasti@nullri.ch>, Denis Lohner <http://pp.ipd.kit.edu/person.php?id=88>
