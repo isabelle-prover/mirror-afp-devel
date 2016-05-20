@@ -1,0 +1,18 @@
+chapter AFP
+
+session Incredible_Proof_Machine (AFP) = HOL +
+  description {* The meta theory of the Incredible Proof Machine *}
+  options [timeout = 600]
+  theories [document = false]
+    "~~/src/HOL/Library/FSet"
+    "~~/src/HOL/Library/Stream"
+    "~~/src/HOL/Library/Sublist"
+    "~~/src/HOL/Library/Countable"
+  theories
+    "Incredible_Everything"
+    "Incredible_Propositional_Tasks"
+    "Incredible_Predicate_Tasks"
+  document_files
+    "root.bib"
+    "root.tex"
+

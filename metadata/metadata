@@ -4026,3 +4026,15 @@ abstract =
   that contradicts consensus. Our Isabelle formalization can also be
   reused for further proofs of properties of distributed systems.
 notify = henning.seidler@mailbox.tu-berlin.de
+
+[Incredible_Proof_Machine]
+title = The meta theory of the Incredible Proof Machine
+author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner/>, Denis Lohner <http://pp.ipd.kit.edu/person.php?id=88>
+date = 2016-05-20
+topic = Logic
+abstract = 
+  The <a href="http://incredible.pm">Incredible Proof Machine</a> is an
+  interactive visual theorem prover which represents proofs as port
+  graphs. We model this proof representation in Isabelle, and prove that
+  it is just as powerful as natural deduction.
+notify = breitner@kit.edu
