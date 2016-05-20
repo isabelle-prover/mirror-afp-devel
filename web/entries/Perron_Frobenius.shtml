@@ -53,8 +53,8 @@ complex matrix A, the values in A<sup>n</sup> grow polynomially in n
 if and only if the spectral radius is at most one. One problem with
 the above characterization is the determination of all
 <em>complex</em> eigenvalues. In case A contains only non-negative
-real values, a simplification is possible with the help of the Perron-
-Frobenius theorem, which tells us that it suffices to consider only
+real values, a simplification is possible with the help of the
+Perron-Frobenius theorem, which tells us that it suffices to consider only
 the <em>real</em> eigenvalues of A, i.e., applying Sturm's method can
 decide the polynomial growth of A<sup>n</sup>. </p><p> We formalize
 the Perron-Frobenius theorem based on a proof via Brouwer's fixpoint
