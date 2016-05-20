@@ -6,16 +6,23 @@ begin
 locale CoCallArityAnalysis =
   fixes cccExp :: "exp \<Rightarrow> (Arity \<rightarrow> AEnv \<times> CoCalls)"
 begin
-definition Aexp :: "exp \<Rightarrow> (Arity \<rightarrow> AEnv)" where "Aexp e = (\<Lambda> a. fst (cccExp e \<cdot> a))"
+
+definition Aexp :: "exp \<Rightarrow> (Arity \<rightarrow> AEnv)"
+  where "Aexp e = (\<Lambda> a. fst (cccExp e \<cdot> a))"
+
+sublocale ArityAnalysis Aexp.
+
+abbreviation Aexp_syn' ("\<A>\<^bsub>_\<^esub>") where "\<A>\<^bsub>a\<^esub> \<equiv> (\<lambda>e. Aexp e\<cdot>a)"
+abbreviation Aexp_bot_syn' ("\<A>\<^sup>\<bottom>\<^bsub>_\<^esub>") where "\<A>\<^sup>\<bottom>\<^bsub>a\<^esub> \<equiv> (\<lambda>e. fup\<cdot>(Aexp e)\<cdot>a)"
 
 lemma Aexp_eq:
-  "Aexp e\<cdot>a = fst (cccExp e \<cdot> a)"
+  "\<A>\<^bsub>a\<^esub> e = fst (cccExp e \<cdot> a)"
   unfolding Aexp_def by (rule beta_cfun) (intro cont2cont)
 
 lemma fup_Aexp_eq:
   "fup\<cdot>(Aexp e)\<cdot>a = fst (fup\<cdot>(cccExp e)\<cdot>a)"
   by (cases a)(simp_all add: Aexp_eq)
-  
+
 
 definition CCexp :: "exp \<Rightarrow> (Arity \<rightarrow> CoCalls)" where "CCexp \<Gamma> = (\<Lambda> a. snd (cccExp \<Gamma>\<cdot>a))"
 lemma CCexp_eq:
@@ -26,15 +33,18 @@ lemma fup_CCexp_eq:
   "fup\<cdot>(CCexp e)\<cdot>a = snd (fup\<cdot>(cccExp e)\<cdot>a)"
   by (cases a)(simp_all add: CCexp_eq)
 
-sublocale ArityAnalysis Aexp.
 sublocale CoCallAnalysis CCexp.
 
 definition CCfix :: "heap \<Rightarrow> (AEnv \<times> CoCalls) \<rightarrow> CoCalls"
   where "CCfix \<Gamma> = (\<Lambda> aeG. (\<mu> G'. ccBindsExtra \<Gamma>\<cdot>(fst aeG , G') \<squnion> snd aeG))"
 
+lemma CCfix_eq:
+  "CCfix \<Gamma>\<cdot>(ae,G) = (\<mu> G'. ccBindsExtra \<Gamma>\<cdot>(ae, G') \<squnion> G)"
+  unfolding CCfix_def
+  by simp
+
 lemma CCfix_unroll: "CCfix \<Gamma>\<cdot>(ae,G) = ccBindsExtra \<Gamma>\<cdot>(ae, CCfix \<Gamma>\<cdot>(ae,G)) \<squnion> G"
-  unfolding  CCfix_def
-  apply simp
+  unfolding  CCfix_eq
   apply (subst fix_eq)
   apply simp
   done
@@ -93,6 +103,15 @@ lemma CCfix_restr:
   apply (subst (1 2) ccBindsExtra_restr[OF assms])
   apply (auto)
   done
+
+lemma ccField_CCfix:
+  shows "ccField (CCfix \<Gamma>\<cdot>(ae, G)) \<subseteq> fv \<Gamma> \<union> ccField G"
+  unfolding CCfix_def
+  apply simp
+  apply (rule fix_ind[where P = "\<lambda> x . ccField x \<subseteq> fv \<Gamma> \<union> ccField G"])
+  apply (auto dest!: set_mp[OF ccField_ccBindsExtra])
+  done
+
 
 lemma CCfix_restr_subst':
   assumes "\<And> x' e a. (x',e) \<in> set \<Gamma> \<Longrightarrow> cc_restr S (CCexp e[x::=y]\<cdot>a) = cc_restr S (CCexp e\<cdot>a)"
@@ -166,15 +185,16 @@ where
   "ABind_nonrec x e = (\<Lambda> i. (if isVal e \<or> x--x\<notin>(snd i) then fst i x else up\<cdot>0))"
 
 lemma ABind_nonrec_eq:
-  "ABind_nonrec x e \<cdot> i = (if isVal e \<or> x--x\<notin>(snd i) then fst i x else up\<cdot>0)"
+  "ABind_nonrec x e\<cdot>(ae,G) = (if isVal e \<or> x--x\<notin>G then ae x else up\<cdot>0)"
   unfolding ABind_nonrec_def
-  apply (rule beta_cfun)
+  apply (subst beta_cfun)
   apply (rule cont_if_else_above)
   apply auto
   by (metis in_join join_self_below(4))
 
 lemma ABind_nonrec_eqvt[eqvt]: "\<pi> \<bullet> (ABind_nonrec x e) = ABind_nonrec (\<pi> \<bullet> x) (\<pi> \<bullet> e)"
   apply (rule cfun_eqvtI)
+  apply (case_tac xa, simp)
   unfolding ABind_nonrec_eq
   by perm_simp rule
 

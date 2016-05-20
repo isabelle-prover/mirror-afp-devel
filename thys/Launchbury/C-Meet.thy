@@ -67,12 +67,6 @@ lemma [simp]: "C\<cdot>r \<sqinter> r = r"
 lemma [simp]: "r \<sqinter> C\<cdot>r = r"
   by (auto intro: is_meetI simp add: below_C)
 
-lemma [simp]: "(r \<sqinter> Cpred\<cdot>r) = Cpred \<cdot> r"
-  by (metis Cpred_below below_refl is_meetI)
-
-lemma [simp]: "(Cpred\<cdot>r \<sqinter> r) = Cpred \<cdot> r"
-  by (metis Cpred_below below_refl is_meetI)
-
 lemma [simp]: "C\<cdot>r \<sqinter> C\<cdot>r' = C\<cdot>(r \<sqinter> r')"
   apply (rule is_meetI)
   apply (metis below_refl meet_below1 monofun_cfun_arg)

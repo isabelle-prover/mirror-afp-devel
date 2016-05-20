@@ -8,10 +8,10 @@ begin
 definition Afix ::  "heap \<Rightarrow> (AEnv \<rightarrow> AEnv)"
   where "Afix \<Gamma> = (\<Lambda> ae. (\<mu>  ae'. ABinds \<Gamma> \<cdot> ae' \<squnion> ae))"
 
-lemma Afix_eq: "Afix \<Gamma> \<cdot> ae = (\<mu>  ae'. (ABinds \<Gamma> \<cdot> ae') \<squnion> ae)"
+lemma Afix_eq: "Afix \<Gamma>\<cdot>ae = (\<mu> ae'. (ABinds \<Gamma>\<cdot>ae') \<squnion> ae)"
   unfolding Afix_def by simp
 
-lemma Afix_strict[simp]: "Afix \<Gamma> \<cdot> \<bottom> = \<bottom>"
+lemma Afix_strict[simp]: "Afix \<Gamma>\<cdot>\<bottom> = \<bottom>"
   unfolding Afix_eq
   by (rule fix_eqI) auto
 

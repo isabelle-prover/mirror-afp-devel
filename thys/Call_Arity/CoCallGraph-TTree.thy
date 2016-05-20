@@ -94,6 +94,10 @@ lemma ccApprox_single[simp]:
 lemma ccApprox_either[simp]: "ccApprox (t \<oplus>\<oplus> t') = ccApprox t \<squnion> ccApprox t'"
   by transfer' (rule CoCalls_eqI, auto)
 
+(* could work, but tricky
+lemma ccApprox_lub_nxt: "ccApprox t = (\<Squnion> x \<in>UNIV. ccApprox (nxt t x) \<squnion> (ccProd {x} (carrier (nxt t x))))"
+*)
+
 lemma wild_recursion:
   assumes "ccApprox  t \<sqsubseteq> G"
   assumes "\<And> x. x \<notin> S \<Longrightarrow> f x = empty"
@@ -215,7 +219,8 @@ proof(rule ccApprox_belowI)
   from `ccApprox t \<sqsubseteq> G` and `xs'' \<in> paths t`
   have  "ccFromList xs'' \<sqsubseteq> G"
     by (auto simp add: ccApprox_below_iff)
-  hence  "cc_restr (-seen_T) (ccFromList xs'') \<sqsubseteq> G" unfolding seen_T_def by simp
+  hence  "ccFromList xs'' G|` (- seen_T) \<sqsubseteq> G"
+    by (rule rev_below_trans[OF _ cc_restr_below_arg])
   moreover
   note assms(2)
   moreover
@@ -263,8 +268,7 @@ proof(rule ccApprox_belowI)
         apply (auto simp add: join_below_iff Diff_eq)
         apply (erule below_trans[OF ccProd_mono[OF order_refl subset4]])
         done
-      thus ?thesis using `x \<in> seen_T`
-        by (auto simp add: insert_Diff_if  ccProd_insert2[where S' = "set xs - seen_T" for xs])
+      thus ?thesis using `x \<in> seen_T` by simp
     next
       assume "x \<notin> seen_T"
 
@@ -284,11 +288,11 @@ proof(rule ccApprox_belowI)
         from seen_x
         have "seen  \<subseteq> ccNeighbors x G" by (simp add: subset_ccNeighbors   ccProd_comm)
         moreover
-        have "x \<notin>  seen" using True `seen \<inter> S = {}` by auto
+        have "x \<notin> seen" using True `seen \<inter> S = {}` by auto
   
         ultimately
         have "seen \<union> (set xs \<inter> - ?seen_T) \<subseteq> ccNeighbors x G - {x}\<inter>T" by auto
-        hence "ccProd (seen \<union> (set xs \<inter> - ?seen_T)) (set zs) \<sqsubseteq> ccProd (ccNeighbors x G  - {x}\<inter>T) (set zs)"
+        hence "ccProd (seen \<union> (set xs \<inter> - ?seen_T)) (set zs) \<sqsubseteq> ccProd (ccNeighbors x G - {x}\<inter>T) (set zs)"
           by (rule ccProd_mono1)
         also
         from `x \<in> S`  `zs \<in> paths (f x)`
@@ -854,6 +858,5 @@ next
     show ?case by (simp add: subset_ccNeighbors)
   qed
 qed
-
 
 end

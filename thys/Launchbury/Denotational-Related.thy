@@ -56,7 +56,7 @@ next
   case (Let as e \<rho> \<sigma>)
   have "\<lbrace>as\<rbrace>\<rho> \<triangleleft>\<triangleright>\<^sup>* \<N>\<lbrace>as\<rbrace>\<sigma>"
   proof (rule parallel_HSem_ind_different_ESem[OF pointwise_adm[OF similar_admI] fun_similar_fmap_bottom])
-    fix \<rho>' :: "var \<Rightarrow> Value" and \<sigma>' :: "var \<Rightarrow> CValue"
+    fix \<rho>' :: "var \<Rightarrow> Value" and \<sigma>' :: "var \<Rightarrow> C \<rightarrow> CValue"
     assume "\<rho>' \<triangleleft>\<triangleright>\<^sup>* \<sigma>'"
     show "\<rho> ++\<^bsub>domA as\<^esub> \<^bold>\<lbrakk> as \<^bold>\<rbrakk>\<^bsub>\<rho>'\<^esub> \<triangleleft>\<triangleright>\<^sup>* \<sigma> ++\<^bsub>domA as\<^esub> evalHeap as (\<lambda>e. \<N>\<lbrakk> e \<rbrakk>\<^bsub>\<sigma>'\<^esub>)"
     proof(rule pointwiseI, goal_cases)

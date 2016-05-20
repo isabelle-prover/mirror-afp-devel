@@ -7,7 +7,8 @@ inductive step :: "conf \<Rightarrow> conf \<Rightarrow> bool" (infix "\<Rightar
 | app\<^sub>2:  "(\<Gamma>, Lam [y]. e, Arg x # S) \<Rightarrow> (\<Gamma>, e[y ::= x] , S)"
 | var\<^sub>1:  "map_of \<Gamma> x = Some e \<Longrightarrow> (\<Gamma>, Var x, S) \<Rightarrow> (delete x \<Gamma>, e , Upd x # S)"
 | var\<^sub>2:  "x \<notin> domA \<Gamma> \<Longrightarrow> isVal e \<Longrightarrow> (\<Gamma>, e, Upd x # S) \<Rightarrow> ((x,e)# \<Gamma>, e , S)"
-| let\<^sub>1:  "atom ` domA \<Delta> \<sharp>* \<Gamma> \<Longrightarrow> atom ` domA \<Delta> \<sharp>* S \<Longrightarrow> (\<Gamma>, Let \<Delta> e, S) \<Rightarrow> (\<Delta>@\<Gamma>, e , S)"
+| let\<^sub>1:  "atom ` domA \<Delta> \<sharp>* \<Gamma> \<Longrightarrow> atom ` domA \<Delta> \<sharp>* S
+                           \<Longrightarrow> (\<Gamma>, Let \<Delta> e, S) \<Rightarrow> (\<Delta>@\<Gamma>, e , S)"
 | if\<^sub>1:  "(\<Gamma>, scrut ? e1 : e2, S) \<Rightarrow> (\<Gamma>, scrut, Alts e1 e2 # S)"
 | if\<^sub>2:  "(\<Gamma>, Bool b, Alts e1 e2 # S) \<Rightarrow> (\<Gamma>, if b then e1 else e2, S)"
 

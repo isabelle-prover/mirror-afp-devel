@@ -7,6 +7,8 @@ begin
 sublocale CoCallImplSafe.
 sublocale CallArityEnd2End.
 
+abbreviation transform_syn' ("\<T>\<^bsub>_\<^esub>") where "\<T>\<^bsub>a\<^esub> \<equiv> transform a"
+
 lemma end2end:
   "c \<Rightarrow>\<^sup>* c' \<Longrightarrow>
   \<not> boring_step c' \<Longrightarrow>
@@ -15,11 +17,12 @@ lemma end2end:
   \<exists>ae' ce' a' as' r'. consistent  (ae', ce', a', as', r') c' \<and> conf_transform  (ae, ce, a, as, r) c \<Rightarrow>\<^sub>G\<^sup>* conf_transform  (ae', ce', a', as', r') c'"
   by (rule card_arity_transform_safe)
 
-lemma end2end_closed:
+theorem end2end_closed:
   assumes closed: "fv e = ({} :: var set)"
-  assumes "([], e, []) \<Rightarrow>\<^sup>* (\<Gamma>,v,[])"
-  assumes "isVal v"
-  shows "\<exists> \<Gamma>' v' r. card (domA \<Gamma>) = card (domA \<Gamma>') \<and> isVal v' \<and> ([], transform 0 e, []) \<Rightarrow>\<^sup>* (\<Gamma>',v',[])"
+  assumes "([], e, []) \<Rightarrow>\<^sup>* (\<Gamma>,v,[])" and "isVal v"
+  obtains \<Gamma>' and v'
+  where "([], \<T>\<^bsub>0\<^esub> e, []) \<Rightarrow>\<^sup>* (\<Gamma>',v',[])" and "isVal v'"
+    and "card (domA \<Gamma>') \<le> card (domA \<Gamma>)"
 proof-
   note assms(2)
   moreover
@@ -65,9 +68,9 @@ proof-
   also have "card (domA (restrictA (- set r) \<Gamma>')) + card (set r \<inter> domA \<Gamma>') = card (domA \<Gamma>')"
     by (subst card_Un_disjoint[symmetric]) (auto intro: arg_cong[where f = card])
   finally
-  have "card (domA \<Gamma>) = card (domA \<Gamma>')".
+  have "card (domA \<Gamma>') \<le> card (domA \<Gamma>)" by simp
   with `([], transform 0 e, []) \<Rightarrow>\<^sup>* (\<Gamma>', ?v, [])`  `isVal ?v`
-  show ?thesis by blast
+  show thesis using that by blast
 qed
 
 lemma fresh_var_eqE[elim_format]: "fresh_var e = x \<Longrightarrow> x \<notin>  fv e"

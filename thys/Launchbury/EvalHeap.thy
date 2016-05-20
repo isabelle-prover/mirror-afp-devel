@@ -4,29 +4,11 @@ begin
 
 subsubsection {* Conversion from heaps to environments *} 
 
-fun evalHeap :: "('var \<times> 'exp) list \<Rightarrow> ('exp \<Rightarrow> 'value::{pure,pcpo}) \<Rightarrow> 'var \<Rightarrow> 'value"
+fun
+  evalHeap :: "('var \<times> 'exp) list \<Rightarrow> ('exp \<Rightarrow> 'value::{pure,pcpo}) \<Rightarrow> 'var \<Rightarrow> 'value"
 where
   "evalHeap [] _ = \<bottom>"
 | "evalHeap ((x,e)#h) eval = (evalHeap h eval) (x := eval e)"
-(*
-
-syntax
-  "_map_evalHeap" :: "['var \<Rightarrow> 'value, 'value, pttrn, ('var \<times> 'exp) list] => ('var \<Rightarrow> 'value)"    ("(2_[x := _ | '(x , _') \<in> _])" [1000,0,0,0] 900)
-
-
-abbreviation map_evalHeap :: "('var \<Rightarrow> 'value) \<Rightarrow>  ('var \<times> 'exp) list \<Rightarrow> ('exp \<Rightarrow> 'value::{pure,pcpo}) \<Rightarrow> ('var \<Rightarrow> 'value)"
-  where "map_evalHeap f \<Gamma> eval == f ++\<^bsub>domA \<Gamma>\<^esub> evalHeap \<Gamma> eval"
-
-translations
-  "f[x := v | (x,e) \<in> \<Gamma>]"== "CONST map_evalHeap f \<Gamma> (%e. v)"
-
-print_translation {*
-  [(@{const_syntax map_evalHeap}, fn _ => fn [f, g, Abs abs] =>
-    let val (x, t) = Syntax_Trans.atomic_abs_tr' abs
-    in Syntax.const @{syntax_const "_map_evalHeap"} $ f $ t $ x $ g end)]
-*}  -- {* To avoid eta-contraction of body,
-           suggested by Andreas Lochbihler in http://stackoverflow.com/a/23290443/946226 *}
-*)
 
 lemma cont2cont_evalHeap[simp, cont2cont]:
   "(\<And> e . e \<in> snd ` set h \<Longrightarrow> cont (\<lambda>\<rho>. eval \<rho> e)) \<Longrightarrow> cont (\<lambda> \<rho>. evalHeap h (eval \<rho>))"

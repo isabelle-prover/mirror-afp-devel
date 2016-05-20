@@ -11,7 +11,8 @@ related definitions.
 
 subsubsection {* The domain of a pcpo-valued function *}
 
-definition edom :: "('key \<Rightarrow> 'value::pcpo) \<Rightarrow> 'key set" where "edom m = {x. m x \<noteq> \<bottom>}"
+definition edom :: "('key \<Rightarrow> 'value::pcpo) \<Rightarrow> 'key set"
+  where "edom m = {x. m x \<noteq> \<bottom>}"
 
 lemma bot_edom[simp]: "edom \<bottom> = {}" by (simp add: edom_def)
 
@@ -61,7 +62,8 @@ subsubsection {* Restriction *}
 definition env_restr :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b::pcpo) \<Rightarrow> ('a \<Rightarrow> 'b)"
   where "env_restr S m = (\<lambda> x. if x \<in> S then m x else \<bottom>)"
 
-abbreviation env_restr_rev  (infixl "f|`"  110) where "env_restr_rev m S \<equiv> env_restr S m"
+abbreviation env_restr_rev  (infixl "f|`"  110)
+  where "env_restr_rev m S \<equiv> env_restr S m"
 
 notation (latex output) env_restr_rev ("_|\<^bsub>_\<^esub>")
 

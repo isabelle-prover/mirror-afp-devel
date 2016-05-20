@@ -9,18 +9,17 @@ This is the main correctness theorem, Theorem 2 from \cite{launchbury}.
 (* Another possible invariant seems to be: "edom \<rho> - domA \<Gamma> \<subseteq> set L" *)
 
 theorem correctness:
-  assumes "\<Gamma> : e \<Down>\<^bsub>L\<^esub> \<Delta> : z"
+  assumes "\<Gamma> : e \<Down>\<^bsub>L\<^esub> \<Delta> : v"
   and     "fv (\<Gamma>, e) \<subseteq> set L \<union> domA \<Gamma>"
-  shows   "\<lbrakk>e\<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> = \<lbrakk>z\<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<rho>\<^esub>" and "(\<lbrace>\<Gamma>\<rbrace>\<rho>) f|` domA \<Gamma> = (\<lbrace>\<Delta>\<rbrace>\<rho>) f|` domA \<Gamma>"
+  shows   "\<lbrakk>e\<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> = \<lbrakk>v\<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<rho>\<^esub>"
+  and     "(\<lbrace>\<Gamma>\<rbrace>\<rho>) f|` domA \<Gamma> = (\<lbrace>\<Delta>\<rbrace>\<rho>) f|` domA \<Gamma>"
   using assms
 proof(nominal_induct arbitrary: \<rho> rule:reds.strong_induct)
 case Lambda
   case 1 show ?case..
   case 2 show ?case..
 next
-case (Application y \<Gamma> e x L \<Delta> \<Theta> z e')
-  hence "y \<noteq> x" by (simp_all add: fresh_at_base)
-
+case (Application y \<Gamma> e x L \<Delta> \<Theta> v e')
   have Gamma_subset: "domA \<Gamma> \<subseteq> domA \<Delta>"
     by (rule reds_doesnt_forget[OF Application.hyps(8)])
 
@@ -48,29 +47,31 @@ case (Application y \<Gamma> e x L \<Delta> \<Theta> z e')
     show ?thesis by (auto simp add: lookup_HSem_other)
   qed
 
+  text_raw {* % nice proof start *}
   have "\<lbrakk> App e x \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> = (\<lbrakk> e \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub>) \<down>Fn (\<lbrace>\<Gamma>\<rbrace>\<rho>) x"
     by simp
   also have "\<dots> = (\<lbrakk> Lam [y]. e' \<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<rho>\<^esub>) \<down>Fn (\<lbrace>\<Gamma>\<rbrace>\<rho>) x"
     using Application.hyps(9)[OF prem1] by simp
   also have "\<dots> = (\<lbrakk> Lam [y]. e' \<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<rho>\<^esub>) \<down>Fn (\<lbrace>\<Delta>\<rbrace>\<rho>) x"
     unfolding *..
-  also have "\<dots> = (Fn \<cdot> (\<Lambda> v. \<lbrakk> e' \<rbrakk>\<^bsub>(\<lbrace>\<Delta>\<rbrace>\<rho>)(y := v)\<^esub>)) \<down>Fn (\<lbrace>\<Delta>\<rbrace>\<rho>) x"
+  also have "\<dots> = (Fn\<cdot>(\<Lambda> z. \<lbrakk> e' \<rbrakk>\<^bsub>(\<lbrace>\<Delta>\<rbrace>\<rho>)(y := z)\<^esub>)) \<down>Fn (\<lbrace>\<Delta>\<rbrace>\<rho>) x"
     by simp
   also have "\<dots> = \<lbrakk> e' \<rbrakk>\<^bsub>(\<lbrace>\<Delta>\<rbrace>\<rho>)(y := (\<lbrace>\<Delta>\<rbrace>\<rho>) x)\<^esub>"
     by simp
   also have "\<dots> = \<lbrakk> e'[y ::= x] \<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<rho>\<^esub>"
-    by (rule arg_cong[OF ESem_subst[OF `y \<noteq> x`]])
-  also have "\<dots> = \<lbrakk> z \<rbrakk>\<^bsub>\<lbrace>\<Theta>\<rbrace>\<rho>\<^esub>"
+    unfolding ESem_subst..
+  also have "\<dots> = \<lbrakk> v \<rbrakk>\<^bsub>\<lbrace>\<Theta>\<rbrace>\<rho>\<^esub>"
     by (rule Application.hyps(12)[OF prem2])
   finally
-  show ?case.
+  show "\<lbrakk> App e x \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> = \<lbrakk> v \<rbrakk>\<^bsub>\<lbrace>\<Theta>\<rbrace>\<rho>\<^esub>".
+  text_raw {* % nice proof end *}
   
   show "(\<lbrace>\<Gamma>\<rbrace>\<rho>) f|` domA \<Gamma> = (\<lbrace>\<Theta>\<rbrace>\<rho>) f|` domA \<Gamma>"
     using Application.hyps(10)[OF prem1]
           env_restr_eq_subset[OF Gamma_subset Application.hyps(13)[OF prem2]]
     by (rule trans)
 next
-case (Variable \<Gamma> x e L \<Delta> z)
+case (Variable \<Gamma> x e L \<Delta> v)
   hence [simp]:"x \<in> domA \<Gamma>" by (metis domA_from_set map_of_SomeD)
 
   let ?\<Gamma> = "delete x \<Gamma>"
@@ -99,7 +100,7 @@ case (Variable \<Gamma> x e L \<Delta> z)
     by (rule iterative_HSem', simp)
   finally
   have "(\<lbrace>\<Gamma>\<rbrace>\<rho>)f|` (- ?new) = (...) f|` (- ?new)" by simp
-  also have "\<dots> = (\<mu> \<rho>'. (\<rho> ++\<^bsub>domA \<Delta>\<^esub> (\<lbrace>\<Delta>\<rbrace>\<rho>'))( x := \<lbrakk> z \<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<rho>'\<^esub>)) f|` (- ?new)"
+  also have "\<dots> = (\<mu> \<rho>'. (\<rho> ++\<^bsub>domA \<Delta>\<^esub> (\<lbrace>\<Delta>\<rbrace>\<rho>'))( x := \<lbrakk> v \<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<rho>'\<^esub>)) f|` (- ?new)"
   proof (induction rule: parallel_fix_ind[where P ="\<lambda> x y. x f|` (- ?new) = y f|` (- ?new)"])
     case 1 show ?case by simp
   next
@@ -110,26 +111,26 @@ case (Variable \<Gamma> x e L \<Delta> z)
       and "(\<lbrace>?\<Gamma>\<rbrace>\<sigma>) f|` domA ?\<Gamma> = (\<lbrace>?\<Gamma>\<rbrace>\<sigma>') f|` domA ?\<Gamma>"
       using fv_subset by (auto intro: ESem_fresh_cong HSem_fresh_cong  env_restr_eq_subset[OF _ 3])
     from trans[OF this(1) Variable(3)[OF prem]] trans[OF this(2) Variable(4)[OF prem]]
-    have  "\<lbrakk> e \<rbrakk>\<^bsub>\<lbrace>?\<Gamma>\<rbrace>\<sigma>\<^esub> = \<lbrakk> z \<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<sigma>'\<^esub>"
+    have  "\<lbrakk> e \<rbrakk>\<^bsub>\<lbrace>?\<Gamma>\<rbrace>\<sigma>\<^esub> = \<lbrakk> v \<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<sigma>'\<^esub>"
        and "(\<lbrace>?\<Gamma>\<rbrace>\<sigma>) f|` domA ?\<Gamma> = (\<lbrace>\<Delta>\<rbrace>\<sigma>') f|` domA ?\<Gamma>".
     thus ?case
       using subset
-      by (auto intro!: ext simp add: lookup_override_on_eq  lookup_env_restr_eq dest: env_restr_eqD )
+      by (fastforce simp add: lookup_override_on_eq  lookup_env_restr_eq dest: env_restr_eqD )
   qed
-  also have "\<dots> = (\<mu> \<rho>'. (\<rho> ++\<^bsub>domA \<Delta>\<^esub> (\<lbrace>\<Delta>\<rbrace>\<rho>'))( x := \<lbrakk> z \<rbrakk>\<^bsub>\<rho>'\<^esub>)) f|` (-?new)"
+  also have "\<dots> = (\<mu> \<rho>'. (\<rho> ++\<^bsub>domA \<Delta>\<^esub> (\<lbrace>\<Delta>\<rbrace>\<rho>'))( x := \<lbrakk> v \<rbrakk>\<^bsub>\<rho>'\<^esub>)) f|` (-?new)"
     by (rule arg_cong[OF iterative_HSem'[symmetric], OF `x \<notin> domA \<Delta>`])
-  also have "\<dots> = (\<lbrace>(x,z) # \<Delta>\<rbrace>\<rho>)  f|` (-?new)"
+  also have "\<dots> = (\<lbrace>(x,v) # \<Delta>\<rbrace>\<rho>)  f|` (-?new)"
     by (rule arg_cong[OF iterative_HSem[symmetric], OF `x \<notin> domA \<Delta>`])
   finally
   show le: ?case by (rule env_restr_eq_subset[OF `domA \<Gamma> \<subseteq> (-?new)`])
 
-  have "\<lbrakk> Var x \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> = \<lbrakk> Var x \<rbrakk>\<^bsub>\<lbrace>(x, z) # \<Delta>\<rbrace>\<rho>\<^esub>"
+  have "\<lbrakk> Var x \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> = \<lbrakk> Var x \<rbrakk>\<^bsub>\<lbrace>(x, v) # \<Delta>\<rbrace>\<rho>\<^esub>"
     using env_restr_eqD[OF le, where x = x]
     by simp
-  also have "\<dots> = \<lbrakk> z \<rbrakk>\<^bsub>\<lbrace>(x, z) # \<Delta>\<rbrace>\<rho>\<^esub>"
+  also have "\<dots> = \<lbrakk> v \<rbrakk>\<^bsub>\<lbrace>(x, v) # \<Delta>\<rbrace>\<rho>\<^esub>"
     by (auto simp add: lookup_HSem_heap)
   finally
-  show "\<lbrakk> Var x \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> = \<lbrakk> z \<rbrakk>\<^bsub>\<lbrace>(x, z) # \<Delta>\<rbrace>\<rho>\<^esub>".
+  show "\<lbrakk> Var x \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> = \<lbrakk> v \<rbrakk>\<^bsub>\<lbrace>(x, v) # \<Delta>\<rbrace>\<rho>\<^esub>".
 next
 case (Bool b)
   case 1
@@ -137,7 +138,7 @@ case (Bool b)
   case 2
   show ?case by simp
 next
-case (IfThenElse \<Gamma> scrut L \<Delta> b e\<^sub>1 e\<^sub>2 \<Theta> z)
+case (IfThenElse \<Gamma> scrut L \<Delta> b e\<^sub>1 e\<^sub>2 \<Theta> v)
   have Gamma_subset: "domA \<Gamma> \<subseteq> domA \<Delta>"
     by (rule reds_doesnt_forget[OF IfThenElse.hyps(1)])
 
@@ -172,7 +173,7 @@ case (IfThenElse \<Gamma> scrut L \<Delta> b e\<^sub>1 e\<^sub>2 \<Theta> z)
           by (simp add: lookup_HSem_other)
       qed
     qed
-  also have "\<dots> = \<lbrakk> z \<rbrakk>\<^bsub>\<lbrace>\<Theta>\<rbrace>\<rho>\<^esub>"
+  also have "\<dots> = \<lbrakk> v \<rbrakk>\<^bsub>\<lbrace>\<Theta>\<rbrace>\<rho>\<^esub>"
     unfolding IfThenElse.hyps(5)[OF prem2]..
   finally
   show ?case.
@@ -182,7 +183,7 @@ case (IfThenElse \<Gamma> scrut L \<Delta> b e\<^sub>1 e\<^sub>2 \<Theta> z)
           env_restr_eq_subset[OF Gamma_subset IfThenElse.hyps(6)[OF prem2]]
     by (rule trans)
 next
-case (Let as \<Gamma> L body \<Delta> z)
+case (Let as \<Gamma> L body \<Delta> v)
   case 1
   { fix a
     assume a: "a \<in> domA  as"
@@ -205,7 +206,7 @@ case (Let as \<Gamma> L body \<Delta> z)
     by (simp)
   also have "\<dots> = \<lbrakk> body \<rbrakk>\<^bsub>\<lbrace>as @ \<Gamma>\<rbrace>\<rho>\<^esub>"
     by (rule arg_cong[OF HSem_merge[OF f1]])
-  also have "\<dots> = \<lbrakk> z \<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<rho>\<^esub>"
+  also have "\<dots> = \<lbrakk> v \<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<rho>\<^esub>"
     by (rule Let.hyps(4)[OF prem])
   finally
   show ?case.
