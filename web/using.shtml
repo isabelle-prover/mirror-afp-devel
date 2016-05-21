@@ -58,13 +58,18 @@ theories. Users of your distribution also need to install the AFP in the above
 manner.</p>
 
 
+<p>
 Note that referring to <strong>another AFP entry from inside an AFP
-entry</strong> is much easier: 
+entry</strong> is different and much easier: 
 <pre class="code">
     imports "../ABC/Some_ABC_Theory"
 </pre>
-This is the preferred method for working inside the AFP,
-because it interacts correctly with multiple AFP installations side by side.
+For working inside the AFP, this is the mandated option.
+It interacts correctly with multiple AFP installations side by side.
+</p>
+<p>You can also use this method in your own work outside the AFP, you only
+need to place the AFP entries you refer to next to your development in the
+correct location in the directory hierarchy.</p>
 
 <p>&nbsp;</p>
 
