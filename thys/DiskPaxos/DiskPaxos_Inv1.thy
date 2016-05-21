@@ -69,7 +69,7 @@ proof -
   from act
   have "\<forall>p. allRdBlks s' p \<subseteq> allRdBlks s p \<union> {\<lparr>block = disk s d q, proc = q\<rparr>}"
     by(auto simp add: Phase1or2ReadThen_def allRdBlks_def
-               split: split_if_asm)
+               split: if_split_asm)
   with inv1
   have "\<forall>p. finite (allRdBlks s' p)"
     by(blast dest: allRdBlks_finite)
@@ -159,7 +159,7 @@ proof -
   from act
   have "\<forall>pp. allRdBlks s' pp \<subseteq> allRdBlks s pp \<union> {\<lparr>block = disk s d p, proc = p\<rparr>}"
     by(auto simp add: Phase0Read_def allRdBlks_def
-               split: split_if_asm)
+               split: if_split_asm)
   with inv1
   have "\<forall>p. finite (allRdBlks s' p)"
       by(blast dest: allRdBlks_finite)

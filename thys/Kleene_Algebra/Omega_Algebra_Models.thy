@@ -46,29 +46,36 @@ lemma omega_weak_coinduct: "X x z \<Longrightarrow>
   (x, z) \<in> omega R" 
 by (metis omega.coinduct)
 
-lemma context_conjI_R:
-  assumes "Q" "Q ==> P" shows "P & Q"
-by (iprover intro: conjI assms)
-
 interpretation rel_omega_algebra: omega_algebra "op \<union>" "op O" Id "{}" "op \<subseteq>" "op \<subset>" rtrancl omega
 proof
-  fix x y z :: "'a rel"
+  fix x :: "'a rel"
   show "omega x \<subseteq> x O omega x"
     by (auto elim: omega_cases)
-  show "y \<subseteq> z \<union> x O y \<Longrightarrow> y \<subseteq> omega x \<union> x\<^sup>* O z"
-    apply auto
-    apply (rule omega_weak_coinduct[where X="\<lambda>a b. (a, b) \<in> x O y \<and> (a, b) \<notin> x\<^sup>* O z"])
-     apply (metis UnE in_mono relcompI rtrancl_refl)
-    apply (thin_tac "(a, b) \<in> y")
-    apply (thin_tac "(a, b) \<notin> x\<^sup>* O z")
-    apply clarsimp
-    apply (rename_tac a b c)
-    apply (rule_tac x="b" in exI)
-    apply simp
-    apply (rule context_conjI_R)
-     apply (metis rel_dioid.mult.assoc relcompI rtrancl_into_rtrancl rtrancl_refl rtrancl_idemp_self_comp)
-    apply (metis UnE in_mono relcompI rtrancl_refl)
-  done
+next
+  fix x y z :: "'a rel"
+  assume *: "y \<subseteq> z \<union> x O y"
+  {
+    fix a b
+    assume 1: "(a,b) \<in> y" and 2: "(a,b) \<notin> x\<^sup>* O z"
+    have "(a,b) \<in> omega x"
+    proof (rule omega_weak_coinduct[where X="\<lambda>a b. (a,b) \<in> x O y \<and> (a,b) \<notin> x\<^sup>* O z"])
+      show "(a,b) \<in> x O y \<and> (a,b) \<notin> x\<^sup>* O z"
+        using "*" "1" "2" by auto
+    next
+      fix a c
+      assume 1: "(a,c) \<in> x O y \<and> (a,c) \<notin> x\<^sup>* O z"
+      then obtain b where 2: "(a,b) \<in> x" and "(b,c) \<in> y"
+        by auto
+      then have "(b,c) \<in> x O y"
+        using "*" "1" by blast
+      moreover have "(b,c) \<notin> x\<^sup>* O z"
+        using "1" "2" by (meson relcomp.cases relcomp.intros converse_rtrancl_into_rtrancl)
+      ultimately show "\<exists>b. (a,b) \<in> x \<and> (b,c) \<in> x O y \<and> (b,c) \<notin> x\<^sup>* O z"
+        using "2" by blast
+    qed
+  }
+  then show "y \<subseteq> omega x \<union> x\<^sup>* O z"
+    by auto
 qed
 
 end

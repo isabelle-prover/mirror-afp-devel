@@ -26,7 +26,7 @@ fun procs :: "jvm_prog \<Rightarrow> ((cname \<times> mname) \<times> var list \
 lemma in_set_methodsI: "map_of ms M = \<lfloor>(Ts, T, mxs, mxl\<^sub>0, is, xt)\<rfloor>
   \<Longrightarrow> ((C', M), Heap # map Local [0..<length Ts] @ [Local (length Ts)], [Heap, Stack 0, Exception])
   \<in> set (methods C' ms)"
-  by (induct rule: methods.induct) (auto split: split_if_asm)
+  by (induct rule: methods.induct) (auto split: if_split_asm)
 
 lemma in_methods_in_msD: "((C, M), ins, outs) \<in> set (methods D ms)
   \<Longrightarrow> M \<in> set (map fst ms) \<and> D = C"
@@ -164,11 +164,7 @@ proof -
     `(M, Ts, T, mxs, mxl\<^sub>0, is, xt) \<in> set ms` `(C, D, fs, ms) \<in> set (PROG P)`
   have "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     by (fastforce intro: mdecl_visible simp: wf_jvm_prog_phi_def)
-  ultimately show ?thesis using `(\<And>D fs ms Ts T mb.
-    \<lbrakk>class (PROG P) C = \<lfloor>(D, fs, ms)\<rfloor>; PROG P \<turnstile> C sees M: Ts\<rightarrow>T = mb in C;
-    ins = Heap # map Local [0..<Suc (length Ts)]; outs = [Heap, Stack 0, Exception]\<rbrakk>
-    \<Longrightarrow> thesis)`
-    by blast
+  ultimately show ?thesis using that by blast
 qed
 
 declare has_method_def [simp]

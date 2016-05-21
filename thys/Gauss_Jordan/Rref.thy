@@ -204,7 +204,7 @@ lemma reduced_row_echelon_if_all_zero:
 
 subsubsection{*The definition of reduced row echelon form*}
 
-text{*Definition of reduced row echelon form, based on @{thm "reduced_row_echelon_form_upt_k_def"[no_vars]}*}
+text{*Definition of reduced row echelon form, based on @{text "reduced_row_echelon_form_upt_k_def"}*}
 definition reduced_row_echelon_form :: "'a::{zero, one}^'m::{mod_type}^'n::{finite, ord, plus, one} => bool"
   where "reduced_row_echelon_form A = reduced_row_echelon_form_upt_k A (ncols A)"
 

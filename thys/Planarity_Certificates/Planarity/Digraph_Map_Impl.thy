@@ -248,7 +248,7 @@ lemma distincts_lists_fcs: "distinct as \<Longrightarrow>distincts (lists_fcs as
   by (simp add: lists_fcs_def distincts_orbits_list)
 
 lemma face_cycle_set_ss: "a \<in> parcs G \<Longrightarrow> face_cycle_set a \<subseteq> parcs G"
-  using assms using in_face_cycle_setD with_proj_simps(2) by blast
+  using in_face_cycle_setD with_proj_simps(2) by blast
 
 lemma face_cycle_succ_neq:
   assumes "a \<in> parcs G" shows "face_cycle_succ a \<noteq> a"
@@ -365,7 +365,7 @@ lemma elems_all_maps_list:
   shows "\<Union>sset M = set (snd G)"
     using assms
     by (simp add: all_maps_list_def in_set_cyc_permutationss distincts_grouped_arcs union_grouped_out_arcs[symmetric])
-       (metis SUP_def set_map)
+       (metis set_map)
 
 lemma comb_planar_impl_altdef: "comb_planar_impl G = (\<exists>M\<in>set (all_maps_list G). genus_impl G M = 0)"
   unfolding comb_planar_impl_def Let_def genus_impl_def by (cases G) (simp add:  sign_simps)

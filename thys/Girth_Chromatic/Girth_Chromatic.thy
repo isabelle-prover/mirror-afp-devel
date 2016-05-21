@@ -94,7 +94,7 @@ begin
 
 lemma prob_eq:
   "prob A = (if A \<subseteq> Pow S_edges then (\<Sum>edges\<in>A. p^card edges * (1 - p)^card (S_edges - edges)) else 0)"
-  using emeasure_eq[of A] unfolding emeasure_eq_measure by simp
+  using emeasure_eq[of A] p_prob unfolding emeasure_eq_measure by (simp add: setsum_nonneg)
 
 lemma integral_finite_singleton: "integral\<^sup>L P f = (\<Sum>x\<in>Pow S_edges. f x * measure P {x})"
   using p_prob prob_eq unfolding P_def
@@ -134,11 +134,11 @@ lemma Markov_inequality:
   assumes "0 < c" "\<And>x. 0 \<le> f x"
   shows "prob {x \<in> space P. c \<le> f x} \<le> (\<integral>x. f x \<partial> P) / c"
 proof -
-  from assms have "(\<integral>\<^sup>+ x. ereal (f x) \<partial>P) = (\<integral>x. f x \<partial>P)"
+  from assms have "(\<integral>\<^sup>+ x. ennreal (f x) \<partial>P) = (\<integral>x. f x \<partial>P)"
     by (intro nn_integral_eq_integral) auto
   with assms show ?thesis
     using nn_integral_Markov_inequality[of f P "space P" "1 / c"]
-    by (simp cong: nn_integral_cong add: emeasure_eq_measure one_ereal_def)
+    by (simp cong: nn_integral_cong add: emeasure_eq_measure ennreal_mult[symmetric])
 qed
 
 end
@@ -491,7 +491,7 @@ proof -
     have inj_last_Cons: "\<And>A. inj_on (\<lambda>es. last es # es) A" by (rule inj_onI) simp
     { fix xs A assume "3 \<le> length xs - Suc 0" "hd xs = last xs"
       then have "xs \<in> (\<lambda>xs. last xs # xs) ` A \<longleftrightarrow> tl xs \<in> A"
-        by (cases xs) (auto simp: inj_image_mem_iff[OF inj_last_Cons] split: split_if_asm) }
+        by (cases xs) (auto simp: inj_image_mem_iff[OF inj_last_Cons] split: if_split_asm) }
     note image_mem_iff_inst = this
 
     { fix xs have "xs \<in> uwalks (edge_ugraph S_edges) \<Longrightarrow> set (tl xs) \<subseteq> S_verts"

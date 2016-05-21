@@ -200,7 +200,7 @@ lemma new_Addr_SomeI: "\<exists>a. new_Addr h = Some a"
 by(simp add: new_Addr_def)
 
 lemma sc_start_heap_ok: "sc_start_heap_ok P"
-by(simp add: sc.start_heap_ok_def sc.start_heap_data_def initialization_list_def sc.create_initial_object_simps sc_allocate_def case_option_conv_if new_Addr_SomeI sys_xcpts_list_def del: blank.simps split del: option.split split_if)
+by(simp add: sc.start_heap_ok_def sc.start_heap_data_def initialization_list_def sc.create_initial_object_simps sc_allocate_def case_option_conv_if new_Addr_SomeI sys_xcpts_list_def del: blank.simps split del: option.split if_split)
 
 lemma sc_wf_start_state_iff:
   "sc_wf_start_state P C M vs \<longleftrightarrow> (\<exists>Ts T meth D. P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>meth\<rfloor> in D \<and> P,sc_start_heap P \<turnstile>sc vs [:\<le>] Ts)"
@@ -212,7 +212,7 @@ proof
   fix h' a h hT
   assume "(h', a) \<in> sc_allocate P h hT"
   thus "sc_typeof_addr h' a = \<lfloor>hT\<rfloor>"
-    by(auto simp add: sc_allocate_def sc_typeof_addr_def rm.lookup_correct rm.update_correct dest: new_Addr_SomeD split: split_if_asm)
+    by(auto simp add: sc_allocate_def sc_typeof_addr_def rm.lookup_correct rm.update_correct dest: new_Addr_SomeD split: if_split_asm)
 next
   fix h h' hT a
   assume "(h', a) \<in> sc_allocate P h hT"
@@ -286,7 +286,7 @@ lemma sc_conf_upd_obj: "rm_lookup a h = Some(Obj C fs) \<Longrightarrow> (P,rm_u
 apply (unfold sc.conf_def)
 apply (rule val.induct)
 apply (auto simp:fun_upd_apply)
-apply (auto simp add: sc_typeof_addr_def rm.lookup_correct rm.update_correct split: split_if_asm)
+apply (auto simp add: sc_typeof_addr_def rm.lookup_correct rm.update_correct split: if_split_asm)
 done
 
 lemma sc_conf_upd_arr:
@@ -294,7 +294,7 @@ lemma sc_conf_upd_arr:
 apply(unfold sc.conf_def)
 apply (rule val.induct)
 apply (auto simp:fun_upd_apply)
-apply(auto simp add: sc_typeof_addr_def rm.lookup_correct rm.update_correct split: split_if_asm)
+apply(auto simp add: sc_typeof_addr_def rm.lookup_correct rm.update_correct split: if_split_asm)
 done
 
 lemma sc_oconf_hext: "P,h \<turnstile>sc obj \<surd> \<Longrightarrow> h \<unlhd>sc h' \<Longrightarrow> P,h' \<turnstile>sc obj \<surd>"
@@ -414,7 +414,7 @@ next
   fix h' hT h a
   assume "P \<turnstile>sc h \<surd>" "(h', a) \<in> sc_allocate P h hT" "is_htype P hT"
   thus "P \<turnstile>sc h' \<surd>"
-    by(auto simp add: sc_allocate_def dest!: new_Addr_SomeD intro: sc_hconf_new sc_oconf_blank split: split_if_asm)
+    by(auto simp add: sc_allocate_def dest!: new_Addr_SomeD intro: sc_hconf_new sc_oconf_blank split: if_split_asm)
 next
   fix h a al T v h'
   assume "P \<turnstile>sc h \<surd>"

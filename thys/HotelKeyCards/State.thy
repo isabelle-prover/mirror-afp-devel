@@ -8,7 +8,7 @@ theory State
 imports Basis
 begin
 
-declare split_if_asm[split]
+declare if_split_asm[split]
 (*>*)
 
 section{*A state based model*}

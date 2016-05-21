@@ -2,7 +2,7 @@ theory Polygon
 imports Counterclockwise_2D_Strict
 begin
 
-subsection {* Polygonal chains *}
+subsection \<open>Polygonal chains\<close>
 
 definition "polychain xs = (\<forall>i. Suc i<length xs \<longrightarrow> snd (xs ! i) = (fst (xs ! Suc i)))"
 
@@ -23,7 +23,7 @@ lemma polychain_appendI:
   "polychain xs \<Longrightarrow> polychain ys \<Longrightarrow> (xs \<noteq> [] \<Longrightarrow> ys \<noteq> [] \<Longrightarrow> snd (last xs) = fst (hd ys)) \<Longrightarrow>
     polychain (xs @ ys)"
   by (induct xs arbitrary: ys)
-    (auto simp add: polychain_Cons nth_append hd_conv_nth split: split_if_asm)
+    (auto simp add: polychain_Cons nth_append hd_conv_nth split: if_split_asm)
 
 fun pairself where "pairself f (x, y) = (f x, f y)"
 
@@ -152,7 +152,7 @@ lemma polychain_of_singleton_iff: "polychain_of p xs = [a] \<longleftrightarrow>
 lemma polychain_of_add: "polychain_of (x + y) xs = map ((op + (y, y))) (polychain_of x xs)"
   by (induct xs arbitrary: x y) (auto simp: algebra_simps)
 
-subsection {* Dirvec: Inverse of Polychain *}
+subsection \<open>Dirvec: Inverse of Polychain\<close>
 
 primrec dirvec where "dirvec (x, y) = (y - x)"
 
@@ -172,7 +172,7 @@ lemma map_dirvec_polychain_of[simp]: "map dirvec (polychain_of x xs) = xs"
   by (induct xs arbitrary: x) simp_all
 
 
-subsection {* Polychain of Sorted (@{term polychain_of}, @{term ccw'.sortedP}) *}
+subsection \<open>Polychain of Sorted (@{term polychain_of}, @{term ccw'.sortedP})\<close>
 
 lemma ccw'_sortedP_translateD:
   "linorder_list0.sortedP (ccw' x0) (map (op + x \<circ> g) xs) \<Longrightarrow>
@@ -288,12 +288,12 @@ proof -
   thus ?thesis
   proof
     assume x: "x \<in> set (polychain_of (Pc + P) QRRs)"
-    def q \<equiv> "snd x - fst x"
+    define q where "q = snd x - fst x"
     from Polygon.in_set_polychain_of_imp_listsum[OF x]
     obtain d where d: "fst x = (Pc + P + listsum (take d QRRs))" by (auto simp: prod_eq_iff)
     from in_set_polychain_ofD[OF x]
     have q_in: "q \<in> set QRRs" by (simp add: q_def)
-    def R \<equiv> "set QRRs - {q}"
+    define R where "R = set QRRs - {q}"
     hence QRRs: "set QRRs = R \<union> {q}" "q \<notin> R" "finite R" using q_in by auto
     have "ccw' 0 q (-P)"
       using assms(3)
@@ -322,7 +322,7 @@ lemma polychain_of_ccw_convex:
 proof (induct Ps arbitrary: P Q Pc)
   case Nil
   have eq: "e P *\<^sub>R P + e Q *\<^sub>R Q - P = (1 - e P) *\<^sub>R (- P) + e Q *\<^sub>R Q"
-    using `e \<in> _`
+    using \<open>e \<in> _\<close>
     by (auto simp add: algebra_simps)
   from Nil ccw'_sortedP_implies_distinct[OF Nil(2)]
   have "P \<noteq> Q" "e P < 1" "0 < e Q" "ccw' 0 P Q"
@@ -440,7 +440,7 @@ proof (induct zs arbitrary: x rule: list.induct)
             (auto elim!: ccw'.sortedP_Cons)
       qed
       thus "ccw' (snd (last (polychain_of (x + z) zs))) (x + z) (c, d)"
-         by (auto simp: last_map[symmetric, where f= snd] `zs \<noteq> []` intro: ccw'.cyclicI)
+         by (auto simp: last_map[symmetric, where f= snd] \<open>zs \<noteq> []\<close> intro: ccw'.cyclicI)
     qed
   }
   thus ?case

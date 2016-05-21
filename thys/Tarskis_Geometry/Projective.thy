@@ -1151,7 +1151,7 @@ proof -
       have "\<forall> t\<in>?S-{u}. ?d t *\<^sub>R proj2_rep t \<in> span (proj2_rep ` (?S - {u}))"
         by (simp add: span_clauses)
       ultimately have "proj2_rep u \<in> span (proj2_rep ` (?S - {u}))"
-        by (simp add: span_setsum)
+        by (metis (no_types, lifting) span_setsum)
 
       have "\<forall> t\<in>{r,p,q}. proj2_rep t \<in> span (proj2_rep ` (?S - {u}))"
       proof
@@ -1989,7 +1989,7 @@ proof -
       show "(ub w) *\<^sub>R w \<in> span (rows ?C)" by auto
     qed
     with span_setsum [of ?B "\<lambda> w. (ub w) *\<^sub>R w"] and `finite ?B`
-    have "(\<Sum> w\<in>?B. (ub w) *\<^sub>R w) \<in> span (rows ?C)" by simp
+    have "(\<Sum> w\<in>?B. (ub w) *\<^sub>R w) \<in> span (rows ?C)" by blast
     with `(\<Sum> w\<in>?B. (ub w) *\<^sub>R w) = x` show "x \<in> span (rows ?C)" by simp
   qed
   hence "span (rows ?C) = UNIV" by auto
@@ -2070,7 +2070,7 @@ proof -
   proof
     fix i
     have "range (op $ (p$i)) = insert (p$i$3) (range (op $ (?q$i)))"
-    proof    
+    proof
       show "range (op $ (p$i)) \<supseteq> insert (p$i$3) (range (op $ (?q$i)))" by auto
       show "range (op $ (p$i)) \<subseteq> insert (p$i$3) (range (op $ (?q$i)))"
       proof

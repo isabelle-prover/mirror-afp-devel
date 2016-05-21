@@ -85,7 +85,7 @@ proof-
            (is "?app ss\<^sub>1") and
       sum: "(map snd [(p',t') \<leftarrow> ss\<^sub>1 . p' = pc+1] \<Squnion>\<^bsub>f\<^esub> x) = ?s\<^sub>1" 
            (is "?map ss\<^sub>1 \<Squnion>\<^bsub>f\<^esub> x = _" is "?sum ss\<^sub>1 = _")
-      by (simp split: split_if_asm)
+      by (simp split: if_split_asm)
     from app less have "?app ss\<^sub>2" by (blast dest: trans_r lesub_step_typeD)
     moreover {
       from ss\<^sub>1 have map1: "set (?map ss\<^sub>1) \<subseteq> A" by auto
@@ -140,7 +140,7 @@ next
   have "?s\<^sub>1' = \<top> \<Longrightarrow> ?thesis" by simp
   moreover {
     assume "?s\<^sub>1' \<noteq> \<top>" 
-    with False have c: "s\<^sub>1 \<sqsubseteq>\<^sub>r c!pc" by (simp add: wtc split: split_if_asm)
+    with False have c: "s\<^sub>1 \<sqsubseteq>\<^sub>r c!pc" by (simp add: wtc split: if_split_asm)
     with less have "s\<^sub>2 \<sqsubseteq>\<^sub>r c!pc" ..
     with False c have ?thesis by (simp add: wtc)
   }
@@ -272,7 +272,7 @@ next
   from suc_pc have pc: "pc < size \<tau>s" by simp
   with stable have "?wtc \<noteq> \<top>" by (rule stable_wtc)
   with False have "?wtc = wti c pc (c!pc)" 
-    by (unfold wtc) (simp split: split_if_asm)
+    by (unfold wtc) (simp split: if_split_asm)
   also from pc False have "c!pc = \<tau>s!pc" .. 
   finally have "?wtc = wti c pc (\<tau>s!pc)" .
   also from stable suc_pc have "wti c pc (\<tau>s!pc) \<sqsubseteq>\<^sub>r \<tau>s!Suc pc" by (rule wti_less)

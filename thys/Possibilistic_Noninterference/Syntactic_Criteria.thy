@@ -198,7 +198,7 @@ theorem SC_discr_imp_SC_WbisT[intro]: "noWhile c \<Longrightarrow> SC_discr c \<
   by (induct c) (auto simp: presAtm_compatAtm)
 
 theorem SC_WbisT[intro]: "SC_WbisT c \<Longrightarrow> c \<approx>wT c"
-  by (induct c) (auto split: split_if_asm)
+  by (induct c) (auto split: if_split_asm)
 
 theorem SC_discr_imp_SC_ZObis[intro]: "SC_discr c \<Longrightarrow> SC_ZObis c"
   by (induct c) (auto simp: presAtm_compatAtm)
@@ -207,7 +207,7 @@ theorem SC_siso_imp_SC_ZObis[intro]: "SC_siso c \<Longrightarrow> SC_ZObis c"
   by (induct c) auto
   
 theorem SC_ZObis[intro]: "SC_ZObis c \<Longrightarrow> c \<approx>01 c"
-  by (induct c) (auto split: split_if_asm intro: discr_ZObis)
+  by (induct c) (auto split: if_split_asm intro: discr_ZObis)
 
 theorem SC_ZObis_imp_SC_Wbis[intro]: "SC_ZObis c \<Longrightarrow> SC_Wbis c"
   by (induct c) auto
@@ -216,7 +216,7 @@ theorem SC_WbisT_imp_SC_Wbis[intro]: "SC_WbisT c \<Longrightarrow> SC_Wbis c"
   by (induct c) auto
 
 theorem SC_Wbis[intro]: "SC_Wbis c \<Longrightarrow> c \<approx>w c"
-  by (induct c) (auto split: split_if_asm intro: discr_ZObis)
+  by (induct c) (auto split: if_split_asm intro: discr_ZObis)
 
 theorem SC_discr_imp_SC_BisT[intro]: "SC_discr c \<Longrightarrow> SC_BisT c"
   by (induct c) (auto simp: presAtm_compatAtm)
@@ -228,10 +228,10 @@ theorem SC_ZObis_imp_SC_BisT[intro]: "SC_ZObis c \<Longrightarrow> SC_BisT c"
   by (induct c) auto
 
 theorem SC_Wbis_imp_SC_BisT[intro]: "SC_Wbis c \<Longrightarrow> SC_BisT c"
-  by (induct c) (auto split: split_if_asm)
+  by (induct c) (auto split: if_split_asm)
 
 theorem SC_BisT[intro]: "SC_BisT c \<Longrightarrow> c \<approx>T c"
-  by (induct c) (auto split: split_if_asm)
+  by (induct c) (auto split: if_split_asm)
 
 (* reductions *)
 

@@ -304,7 +304,7 @@ using redT
 proof(cases rule: multithreaded_base.redT.cases[consumes 1, case_names redT_normal redT_acquire])
   case redT_acquire
   with ok show ?thesis
-    by(auto intro!: Status_no_wait_locksI dest: Status_no_wait_locks_PreStartD Status_no_wait_locks_FinishedD split: split_if_asm)
+    by(auto intro!: Status_no_wait_locksI dest: Status_no_wait_locks_PreStartD Status_no_wait_locks_FinishedD split: if_split_asm)
 next
   case redT_normal
   show ?thesis
@@ -316,7 +316,7 @@ next
     proof(cases "thr s t'")
       case None
       with redT_normal tst' show ?thesis
-        by(fastforce elim!: init_fin.cases dest: redT_updTs_new_thread simp add: final_thread.actions_ok_iff split: split_if_asm)
+        by(fastforce elim!: init_fin.cases dest: redT_updTs_new_thread simp add: final_thread.actions_ok_iff split: if_split_asm)
     next
       case (Some sxln)
       obtain status'' x'' ln'' 
@@ -344,19 +344,19 @@ lemma init_fin_Running_InitialThreadAction:
 using redT
 proof(cases rule: multithreaded_base.redT.cases[consumes 1, case_names redT_normal redT_acquire])
   case redT_acquire
-  with running not_running show ?thesis by(auto split: split_if_asm)
+  with running not_running show ?thesis by(auto split: if_split_asm)
 next
   case redT_normal
   show ?thesis
   proof(cases "thr s t")
     case None
     with redT_normal running not_running show ?thesis
-      by(fastforce simp add: final_thread.actions_ok_iff elim: init_fin.cases dest: redT_updTs_new_thread split: split_if_asm)
+      by(fastforce simp add: final_thread.actions_ok_iff elim: init_fin.cases dest: redT_updTs_new_thread split: if_split_asm)
   next
     case (Some a)
     with redT_normal running not_running show ?thesis
       apply(cases a)
-      apply(auto simp add: final_thread.actions_ok_iff split: split_if_asm elim: init_fin.cases)
+      apply(auto simp add: final_thread.actions_ok_iff split: if_split_asm elim: init_fin.cases)
       apply((drule (1) redT_updTs_Some)?, fastforce)+
       done
   qed
@@ -484,7 +484,7 @@ proof(rule thread_start_actions_okI)
       by(simp_all add: action_tid_def nth_append action_obs_def)
 
     from False have not_running: "\<And>x ln. thr ?start_state (action_tid (llist_of ?E') ?a) \<noteq> \<lfloor>((Running, x), ln)\<rfloor>"
-      by(auto simp add: start_state_def split_beta init_fin_lift_state_def split: split_if_asm)
+      by(auto simp add: start_state_def split_beta init_fin_lift_state_def split: if_split_asm)
     
     from a a_len have "?a < length ?E'" by(simp add: actions_def)
     from nth_concat_conv[OF this]
@@ -580,7 +580,7 @@ proof(rule thread_start_actions_okI)
       by(simp_all add: action_tid_def lnth_lappend2 action_obs_def)
 
     from False have not_running: "\<And>x ln. thr ?start_state (action_tid E ?a) \<noteq> \<lfloor>((Running, x), ln)\<rfloor>"
-      by(auto simp add: start_state_def split_beta init_fin_lift_state_def split: split_if_asm)
+      by(auto simp add: start_state_def split_beta init_fin_lift_state_def split: if_split_asm)
     
     from E obtain E' where E': "E = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E')"
       and \<tau>Runs: "mthr.if.mthr.Runs ?start_state E'" by(rule mthr.if.\<E>.cases)
@@ -1267,7 +1267,7 @@ lemma if_redT_known_addrs_new:
 using redT
 proof(cases)
   case redT_acquire thus ?thesis
-    by(cases s)(fastforce simp add: if.known_addrs_thr_def split: split_if_asm intro: rev_bexI)
+    by(cases s)(fastforce simp add: if.known_addrs_thr_def split: if_split_asm intro: rev_bexI)
 next
   case (redT_normal x x' m)
   note red = `t \<turnstile> (x, shr s) -ta\<rightarrow>i (x', m)`
@@ -1284,7 +1284,7 @@ next
       case None
       with redT_normal `thr s' t' = \<lfloor>(x'', ln'')\<rfloor>`
       obtain m'' where "NewThread t' x'' m'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
-        by(fastforce dest: redT_updTs_new_thread split: split_if_asm)
+        by(fastforce dest: redT_updTs_new_thread split: if_split_asm)
       with red have "known_addrs_if t' x'' \<subseteq> known_addrs_if t x" by(rule if_red_known_addrs_new_thread)
       also have "\<dots> \<subseteq> known_addrs_if t x \<union> new_obs_addrs_if \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" by simp
       finally have "ad \<in> known_addrs_if t x \<union> new_obs_addrs_if \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>" using ad by blast
@@ -1326,7 +1326,7 @@ lemma init_fin_redT_known_addrs_subset:
 using assms
 apply(cases)
  apply(rule subsetI)
- apply(clarsimp simp add: if.known_addrs_thr_def split: split_if_asm)
+ apply(clarsimp simp add: if.known_addrs_thr_def split: if_split_asm)
  apply(rename_tac status x status' x' m' a ws' t'' status'' x'' ln'')
  apply(case_tac "thr s t''")
   apply(drule (2) redT_updTs_new_thread)
@@ -1342,7 +1342,7 @@ apply(cases)
  apply(rule_tac x="(status'', x'')" in if.known_addrs_stateI)
   apply simp
  apply simp
-apply(auto simp add: if.known_addrs_state_def if.known_addrs_thr_def split: split_if_asm)
+apply(auto simp add: if.known_addrs_state_def if.known_addrs_thr_def split: if_split_asm)
 done
 
 lemma w_values_no_write_unchanged:
@@ -1379,7 +1379,7 @@ proof -
   proof(cases)
     case (redT_acquire x ln n)
     hence "if.known_addrs_state s' = if.known_addrs_state s"
-      by(auto 4 4 simp add: if.known_addrs_state_def if.known_addrs_thr_def split: split_if_asm dest: bspec)
+      by(auto 4 4 simp add: if.known_addrs_state_def if.known_addrs_thr_def split: if_split_asm dest: bspec)
     also note ka 
     also from redT_acquire have "shr s = shr s'" by simp
     finally have "if.known_addrs_state s' \<subseteq> allocated (shr s')" .
@@ -1417,7 +1417,7 @@ proof -
             fix ad''
             assume "ad'' \<in> w_addrs (w_values P vs (obs @ [ob])) \<union> new_obs_addrs_if (obs @ [ob])"
             hence "ad'' \<in> w_addrs (w_values P vs obs) \<union> new_obs_addrs_if obs \<or> v = Addr ad''"
-              by(auto simp add: ob w_addrs_def ran_def new_obs_addrs_if_def split: split_if_asm)
+              by(auto simp add: ob w_addrs_def ran_def new_obs_addrs_if_def split: if_split_asm)
             thus "ad'' \<in> allocated (shr s')"
             proof
               assume "ad'' \<in> w_addrs (w_values P vs obs) \<union> new_obs_addrs_if obs"
@@ -1518,7 +1518,7 @@ proof -
   proof(rule RedT_non_speculative_known_addrs_allocated)
     show "if.known_addrs_state ?start_state \<subseteq> allocated (shr ?start_state)"
       using known
-      by(auto simp add: if.known_addrs_state_def if.known_addrs_thr_def start_state_def init_fin_lift_state_def split_beta split: split_if_asm)
+      by(auto simp add: if.known_addrs_state_def if.known_addrs_thr_def start_state_def init_fin_lift_state_def split_beta split: if_split_asm)
     
     have "w_addrs ?vs_start \<subseteq> w_addrs (\<lambda>_. {})" by(rule w_addrs_lift_start_heap_obs)
     thus "w_addrs ?vs_start \<subseteq> allocated (shr ?start_state)" by simp
@@ -1620,7 +1620,7 @@ using redT
 proof(cases)
   case (redT_normal x x' m')
   with vs wfx ns show ?thesis
-    apply(clarsimp intro!: ts_okI split: split_if_asm)
+    apply(clarsimp intro!: ts_okI split: if_split_asm)
      apply(erule wfs_non_speculative_invar, auto dest: ts_okD)
     apply(rename_tac t' x' ln ws')
     apply(case_tac "thr s t'")
@@ -1630,7 +1630,7 @@ proof(cases)
     done
 next
   case (redT_acquire x ln n)
-  thus ?thesis using wfx by(auto intro!: ts_okI dest: ts_okD split: split_if_asm)
+  thus ?thesis using wfx by(auto intro!: ts_okI dest: ts_okD split: if_split_asm)
 qed
 
 lemma redT_wfs_non_speculative_vs_conf:
@@ -1686,15 +1686,15 @@ proof -
     next
       case InitialThreadAction
       with redT_normal ts_ok' vs show ?thesis
-        by(auto 4 3 intro!: ts_okI dest: ts_okD split: split_if_asm)
+        by(auto 4 3 intro!: ts_okI dest: ts_okD split: if_split_asm)
     next
       case ThreadFinishAction
       with redT_normal ts_ok' vs show ?thesis
-        by(auto 4 3 intro!: ts_okI dest: ts_okD split: split_if_asm)
+        by(auto 4 3 intro!: ts_okI dest: ts_okD split: if_split_asm)
     qed
   next
     case (redT_acquire x ln l)
-    thus ?thesis using vs ts_ok by(auto 4 3 intro!: ts_okI dest: ts_okD split: split_if_asm)
+    thus ?thesis using vs ts_ok by(auto 4 3 intro!: ts_okI dest: ts_okD split: if_split_asm)
   qed
 qed
 
@@ -2325,7 +2325,7 @@ proof -
         hence r_n': "r_n < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>" by simp
         hence eq_r_n: "\<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub> ! r_n \<approx> \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! r_n"
           using eq_r_n Cons_nth_drop_Suc[OF r_n, symmetric] Cons_nth_drop_Suc[OF r_n', symmetric]
-          by(simp add: eq_upto_seq_inconsist_simps split: action.split_asm obs_event.split_asm split_if_asm)
+          by(simp add: eq_upto_seq_inconsist_simps split: action.split_asm obs_event.split_asm if_split_asm)
         obtain tid_eq: "action_tid E r = action_tid ?E_sc r" 
           and obs_eq: "action_obs E r \<approx> action_obs ?E_sc r"
         proof(cases "r < ?r")
@@ -2459,7 +2459,7 @@ proof -
       proof(cases "enat r < llength E")
         case False
         then obtain "?same E" "?read E ws" "?tid E" "?obs E" "?actions E"
-          by(cases "llength E")(fastforce elim!: read_actions.cases simp add: actions_def split: split_if_asm)+
+          by(cases "llength E")(fastforce elim!: read_actions.cases simp add: actions_def split: if_split_asm)+
         with wf_exec `E \<in> ?\<E>` show ?thesis by blast
       next
         case True
@@ -2507,7 +2507,7 @@ proof -
           and ns': "non_speculative P (w_values P (w_values P (\<lambda>_. {}) (map snd ?start_heap_obs)) (map snd (concat (map (\<lambda>(t, ta). map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E'))))))
                (lmap snd (ltake (enat r_n) (llist_of (map (Pair t_r) \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>))))"
           using r r_conv r_m r_n
-          by(simp_all add: length_concat o_def split_def listsum_setsum_nth length_list_of_conv_the_enat less_min_eq1 atLeast0LessThan lnth_ltake split: split_if_asm cong: setsum.strong_cong)
+          by(simp_all add: length_concat o_def split_def listsum_setsum_nth length_list_of_conv_the_enat less_min_eq1 atLeast0LessThan lnth_ltake split: if_split_asm cong: setsum.strong_cong)
         hence ns: "non_speculative P (w_values P (\<lambda>_. {}) (map snd ?start_heap_obs)) 
                      (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E')))))"
           unfolding lconcat_llist_of[symmetric] lmap_lconcat lmap_llist_of[symmetric] llist.map_comp o_def split_def
@@ -3315,7 +3315,7 @@ proof
                 have "P,llist_of E'' \<turnstile> w'' \<le>hb length EE"
                   by(rule happens_before_change_prefix)(simp add: w''_len, simp add: E'_def EE_def)
                 with w'' adal_w'' j j' len len' have "w'' \<in> writes"
-                  by(auto simp add: writes_def EE_def min_def ac_simps split: split_if_asm)
+                  by(auto simp add: writes_def EE_def min_def ac_simps split: if_split_asm)
                 hence "llist_of E'' \<turnstile> w'' \<le>a w'" by(rule w'_maximal)
                 hence "llist_of E' \<turnstile> w'' \<le>a w'" using sim
                   by(rule action_order_change_prefix)(simp_all add: w'_len w''_len)
@@ -3355,7 +3355,7 @@ proof
           moreover from len_i have "i < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<longrightarrow> i < length \<lbrace>ta''\<rbrace>\<^bsub>o\<^esub>" using eq' j' by auto
           moreover from sim_i eq' ta''_j ta'_j
           have "(if \<exists>ad al v. \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v) then sim_action else op =) (\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i) (\<lbrace>ta''\<rbrace>\<^bsub>o\<^esub> ! i)"
-            by(cases "j = 0")(auto split: split_if_asm, (metis add_strict_left_mono add_0_right nth_take)+)
+            by(cases "j = 0")(auto split: if_split_asm, (metis add_strict_left_mono add_0_right nth_take)+)
           ultimately show ?thesis using red'' aok'' by blast
         next
           case False
@@ -3376,7 +3376,7 @@ proof
                       ta_hb_consistent P ?E (llist_of (map (Pair t) (drop i \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>))) \<and> 
                       (i < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> \<longrightarrow> i < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>) \<and>
                       (if \<exists>ad al v. \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i = NormalAction (ReadMem ad al v) then sim_action else op =) (\<lbrace>ta\<rbrace>\<^bsub>o\<^esub> ! i) (\<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> ! i)"
-    by(simp del: split_paired_Ex cong: conj_cong split del: split_if) blast
+    by(simp del: split_paired_Ex cong: conj_cong split del: if_split) blast
 qed
 
 end

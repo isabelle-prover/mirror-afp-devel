@@ -171,7 +171,7 @@ begin
     show False
     proof (cases "v = chooseNext g")
       case False
-      thus ?thesis using v v' defs_uses_disjoint[of n g] by (auto simp:substNext_def split:split_if_asm)
+      thus ?thesis using v v' defs_uses_disjoint[of n g] by (auto simp:substNext_def split:if_split_asm)
     next
       case [simp]: True
       from v' have n_defNode: "n = defNode g v'" by - (rule defNode_eq[symmetric], auto)
@@ -288,12 +288,12 @@ begin
 
   lemma phis_finite_inv:
     shows "finite (dom (phis' g))"
-  using phis_finite[of g] by - (rule finite_subset, auto split:split_if_asm)
+  using phis_finite[of g] by - (rule finite_subset, auto split:if_split_asm)
 
   lemma phis_wf_inv:
     assumes "phis' g (n, v) = Some args"
     shows "length (old.predecessors g n) = length args"
-  using phis_wf[of g] assms by (auto split:split_if_asm)
+  using phis_wf[of g] assms by (auto split:if_split_asm)
 
 
   sublocale step: CFG_SSA \<alpha>e \<alpha>n invar inEdges' Entry "defs" u_g p_g
@@ -303,7 +303,7 @@ begin
    apply (simp add:defs_uses_disjoint_inv[simplified])
    apply (simp add:defs_uses_disjoint)
   apply (rule defs_finite)
-  apply (auto simp: uses_in_\<alpha>n split: split_if_asm)[1]
+  apply (auto simp: uses_in_\<alpha>n split: if_split_asm)[1]
   apply (rename_tac g' n)
   apply (case_tac "g'=g")
    apply simp
@@ -313,7 +313,7 @@ begin
   apply (case_tac "g'=g")
    apply (simp add:phis_finite_inv)
    apply (simp add:phis_finite)
-  apply (auto simp: phis_in_\<alpha>n split: split_if_asm)[1]
+  apply (auto simp: phis_in_\<alpha>n split: if_split_asm)[1]
   apply (rename_tac g' n v args)
   apply (case_tac "g'=g")
    apply (simp add:phis_wf_inv)
@@ -339,11 +339,11 @@ begin
       with assms(1) have "n' \<in> set (\<alpha>n g)" by auto
       thus "phis g (n', v') = Some z \<Longrightarrow> (n, b) \<in> set (zip (old.predecessors g n') z) \<Longrightarrow> b \<notin> phiUses g n \<Longrightarrow> b \<in> uses g n" by (auto intro:phiUsesI)
     qed
-    thus ?thesis by (auto simp:step.allUses_def allUses_def zip_map2 intro!:imageI elim!:step.phiUsesE phiUsesE split:split_if_asm)
+    thus ?thesis by (auto simp:step.allUses_def allUses_def zip_map2 intro!:imageI elim!:step.phiUsesE phiUsesE split:if_split_asm)
   qed
 
   lemma allDefs_narrows[simp]: "v \<in> step.allDefs g n \<Longrightarrow> v \<in> allDefs g n"
-    by (auto simp:step.allDefs_def step.phiDefs_def phiDefs_def allDefs_def split:split_if_asm)
+    by (auto simp:step.allDefs_def step.phiDefs_def phiDefs_def allDefs_def split:if_split_asm)
 
   lemma allUses_def_ass_inv:
     assumes "v' \<in> step.allUses g n" "n \<in> set (\<alpha>n g)"
@@ -429,7 +429,7 @@ begin
     show ?thesis
     proof (cases "v\<^sub>0 = chooseNext g")
       case False
-      with v\<^sub>0 have "v = v\<^sub>0" by (simp add:substNext_def split:split_if_asm)
+      with v\<^sub>0 have "v = v\<^sub>0" by (simp add:substNext_def split:if_split_asm)
       with assms v\<^sub>0 show ?thesis by - (rule conventional, auto)
     next
       case True
@@ -550,7 +550,7 @@ begin
     assumes "phis' g (n,v) = Some vs" "v' \<in> set vs"
     shows "var g v' = var g v"
   proof-
-    from assms obtain vs\<^sub>0 v\<^sub>0 where 1: "phis g (n,v) = Some vs\<^sub>0" "v\<^sub>0 \<in> set vs\<^sub>0" "v' = substNext g v\<^sub>0" by (auto split:split_if_asm)
+    from assms obtain vs\<^sub>0 v\<^sub>0 where 1: "phis g (n,v) = Some vs\<^sub>0" "v\<^sub>0 \<in> set vs\<^sub>0" "v' = substNext g v\<^sub>0" by (auto split:if_split_asm)
     hence "var g v\<^sub>0 = var g v" by auto
     with 1 show ?thesis by auto
   qed
@@ -660,7 +660,7 @@ begin
   proof (rule step.pruned_def[THEN iffD2, rule_format])
     fix n v
     assume "v \<in> step.phiDefs g n" and[simp]: "n \<in> set (\<alpha>n g)"
-    hence "v \<in> phiDefs g n" "v \<noteq> chooseNext g" by (auto simp: step.CFG_SSA_defs CFG_SSA_defs split: split_if_asm)
+    hence "v \<in> phiDefs g n" "v \<noteq> chooseNext g" by (auto simp: step.CFG_SSA_defs CFG_SSA_defs split: if_split_asm)
     hence "liveVal g v" using assms by (auto simp: pruned_def)
     thus "step.liveVal g v" using `v \<noteq> chooseNext g` by (rule liveVal_inv)
   qed
@@ -715,7 +715,7 @@ begin
     from chooseNext[of g] obtain n where "(n,?v) \<in> dom (phis g)" by (auto simp: trivial_def isTrivialPhi_def phi_def split:option.splits)
     moreover have "(n,?v) \<notin> dom (phis' g)" by auto
     ultimately have "dom (phis' g) \<noteq> dom (phis g)" by auto
-    thus "dom (phis' g) \<subset> dom (phis g)" by (auto split:split_if_asm)
+    thus "dom (phis' g) \<subset> dom (phis g)" by (auto split:if_split_asm)
   qed (rule phis_finite)
 
   lemma step_preserves_inst:

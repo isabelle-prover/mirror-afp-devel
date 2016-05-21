@@ -67,7 +67,7 @@ lemma transpose_zero[simp]: "(transpose A = 0) = (A = 0)"
 subsection{*Theorems obtained from the AFP*}
 
 text{*The following theorems and definitions have been obtained from the AFP 
-@{url "http://afp.sourceforge.net/browser_info/current/HOL/Tarskis_Geometry/Linear_Algebra2.html"}.
+@{url "http://isa-afp.org/browser_info/current/HOL/Tarskis_Geometry/Linear_Algebra2.html"}.
 I have removed some restrictions over the type classes.*}
 
 lemma vector_matrix_left_distrib:
@@ -186,7 +186,7 @@ proof -
 qed
 
 text{*Here ends the statements obtained from AFP: 
-  @{url "http://afp.sourceforge.net/browser_info/current/HOL/Tarskis_Geometry/Linear_Algebra2.html"}
+  @{url "http://isa-afp.org/browser_info/current/HOL/Tarskis_Geometry/Linear_Algebra2.html"}
   which have been generalized.*}
 
 subsection{*Basic properties involving span, linearity and dimensions*}

@@ -571,7 +571,7 @@ lemma dhops_update_changed [simp]:
   assumes "rt \<noteq> update rt dip (osn, kno, val, hops, nhip)"
     shows "the (dhops (update rt dip (osn, kno, val, hops, nhip)) dip) = hops"
   using assms unfolding update_def                                                      
-  by (clarsimp split: option.split_asm option.split split_if_asm) auto
+  by (clarsimp split: option.split_asm option.split if_split_asm) auto
 
 lemma nhop_update_unk_val [simp]:
   "\<And>rt dip ip dsn hops.
@@ -583,7 +583,7 @@ lemma nhop_update_changed [simp]:
   assumes "update rt dip (dsn, dsk, flg, hops, sip) \<noteq> rt"
     shows "the (nhop (update rt dip (dsn, dsk, flg, hops, sip)) dip) = sip"
   using assms unfolding update_def
-  by (clarsimp split: option.splits split_if_asm) auto
+  by (clarsimp split: option.splits if_split_asm) auto
 
 lemma update_rt_split_asm:
   "\<And>rt ip dsn dsk flag hops sip.
@@ -597,13 +597,13 @@ lemma update_rt_split_asm:
 lemma sqn_update [simp]: "\<And>rt dip dsn flg hops sip.
   rt \<noteq> update rt dip (dsn, kno, flg, hops, sip)
   \<Longrightarrow> sqn (update rt dip (dsn, kno, flg, hops, sip)) dip = dsn"
-  unfolding update_def by (clarsimp split: option.split split_if_asm) auto
+  unfolding update_def by (clarsimp split: option.split if_split_asm) auto
 
 lemma sqnf_update [simp]: "\<And>rt dip dsn dsk flg hops sip.
   rt \<noteq> update rt dip (dsn, dsk, flg, hops, sip)
   \<Longrightarrow> sqnf (update rt dip (dsn, dsk, flg, hops, sip)) dip = dsk"
   unfolding update_def sqnf_def
-  by (clarsimp split: option.splits split_if_asm) auto
+  by (clarsimp split: option.splits if_split_asm) auto
 
 lemma update_kno_dsn_greater_zero:
   "\<And>rt dip ip dsn hops. 1 \<le> dsn \<Longrightarrow> 1 \<le> (sqn (update rt dip (dsn, kno, val, hops, ip)) dip)"
@@ -614,19 +614,19 @@ lemma proj3_update [simp]: "\<And>rt dip dsn dsk flg hops sip.
   rt \<noteq> update rt dip (dsn, dsk, flg, hops, sip)
   \<Longrightarrow> \<pi>\<^sub>3(the (update rt dip (dsn, dsk, flg, hops, sip) dip)) = dsk"
   unfolding update_def sqnf_def
-  by (clarsimp split: option.splits split_if_asm) auto
+  by (clarsimp split: option.splits if_split_asm) auto
 
 lemma nhop_update_changed_kno_val [simp]: "\<And>rt ip dsn dsk hops nhip.
   rt \<noteq> update rt ip (dsn, kno, val, hops, nhip)
    \<Longrightarrow> the (nhop (update rt ip (dsn, kno, val, hops, nhip)) ip) = nhip"
-  using assms unfolding update_def
-  by (clarsimp split: option.split_asm option.split split_if_asm) auto
+  unfolding update_def
+  by (clarsimp split: option.split_asm option.split if_split_asm) auto
 
 lemma flag_update [simp]: "\<And>rt dip dsn flg hops sip.
   rt \<noteq> update rt dip (dsn, kno, flg, hops, sip)
   \<Longrightarrow> the (flag (update rt dip (dsn, kno, flg, hops, sip)) dip) = flg"
   unfolding update_def
-  by (clarsimp split: option.split split_if_asm) auto
+  by (clarsimp split: option.split if_split_asm) auto
 
 lemma the_flag_Some [dest!]:
     fixes ip rt
@@ -648,7 +648,7 @@ lemma nhop_update [simp]: "\<And>rt dip dsn dsk flg hops sip.
   rt \<noteq> update rt dip (dsn, dsk, flg, hops, sip)
   \<Longrightarrow> the (nhop (update rt dip (dsn, dsk, flg, hops, sip)) dip) = sip"
   unfolding update_def sqnf_def
-  by (clarsimp split: option.splits split_if_asm) auto
+  by (clarsimp split: option.splits if_split_asm) auto
 
 lemma sqn_update_another [simp]:
     fixes dip ip rt dsn dsk flag hops nhip
@@ -667,7 +667,7 @@ lemma sqnf_update_another [simp]:
 lemma vD_update_val [dest]:
   "\<And>dip rt dip' dsn dsk hops nhip.
    dip \<in> vD(update rt dip' (dsn, dsk, val, hops, nhip)) \<Longrightarrow> (dip\<in>vD(rt) \<or> dip=dip')"
-   unfolding update_def vD_def by (clarsimp split: option.split_asm split_if_asm)
+   unfolding update_def vD_def by (clarsimp split: option.split_asm if_split_asm)
 
 subsubsection "Invalidating route entries"
 

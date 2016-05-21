@@ -290,10 +290,10 @@ proof -
       by(auto intro: list_all2_dropI)
   next
     case ALoad with less app app\<^sub>i succs
-    show ?thesis by(auto split: split_if_asm dest: Array_Array_widen)
+    show ?thesis by(auto split: if_split_asm dest: Array_Array_widen)
   next
     case AStore with less app app\<^sub>i succs
-    show ?thesis by(auto split: split_if_asm dest: Array_Array_widen)
+    show ?thesis by(auto split: if_split_asm dest: Array_Array_widen)
   next
     case (BinOpInstr bop)
     with less app app\<^sub>i succs show ?thesis

@@ -1,5 +1,5 @@
 theory PLTL
-imports StutterEquivalence
+  imports Main "../LTL/LTL" Samplers StutterEquivalence
 begin
 
 section {* Stuttering Invariant PLTL Formulas *}
@@ -10,75 +10,14 @@ text {*
   invariant to finite stuttering.
 *}
 
-subsection {* Syntax and semantics of PLTL *}
+notation False_ltlp ("false")
+  and Implies_ltlp ("implies")
+  and Atom_ltlp ("atom")
+  and Until_ltlp ("until")
+  and Next_ltlp ("next")
+  and atoms_pltl ("atoms")
 
-text {*
-  PLTL formulas are built from atomic formulas, propositional connectives,
-  and the temporal operators ``next'' and ``until''. The following data
-  type definition is parameterized by the type of states over which
-  formulas are evaluated.
-*}
-
-datatype 'a pltl =
-    "false"
-  | "atom" "'a \<Rightarrow> bool"
-  | "implies" "'a pltl" "'a pltl"
-  | "next" "'a pltl"
-  | "until" "'a pltl" "'a pltl"
-
-text {*
-  The semantics of PLTL formulas is defined inductively w.r.t.
-  @{text "\<omega>"}-sequences of states.
-*}
-
-fun holds_of :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a pltl \<Rightarrow> bool" ("_ \<Turnstile> _" [70,70] 40) where
-  "(\<sigma> \<Turnstile> false) = False"
-| "(\<sigma> \<Turnstile> atom p) = p (\<sigma> 0)"
-| "(\<sigma> \<Turnstile> implies \<phi> \<psi>) = ((\<sigma> \<Turnstile> \<phi>) \<longrightarrow> (\<sigma> \<Turnstile> \<psi>))"
-| "(\<sigma> \<Turnstile> next \<phi>) = (\<sigma>[1..] \<Turnstile> \<phi>)"
-| "(\<sigma> \<Turnstile> until \<phi> \<psi>) = (\<exists>k. \<sigma>[k..] \<Turnstile> \<psi> \<and> (\<forall>i<k. \<sigma>[i..] \<Turnstile> \<phi>))"
-
-text {*
-  Further connectives of PLTL can be defined as abbreviations.
-*}
-
-definition not where "not \<phi> = implies \<phi> false"
-
-definition true where "true = not false"
-
-definition or where "or \<phi> \<psi> = implies (not \<phi>) \<psi>"
-
-definition "and" where "and \<phi> \<psi> = not (or (not \<phi>) (not \<psi>))"
-
-definition eventually where "eventually \<phi> = until true \<phi>"
-
-definition always where "always \<phi> = not (eventually (not \<phi>))"
-
-text {*
-  These definitions give rise to the expected semantics.
-*}
-
-lemma holds_of_not [simp]: "(\<sigma> \<Turnstile> not \<phi>) = (\<not>(\<sigma> \<Turnstile> \<phi>))"
-  by (simp add: not_def)
-
-lemma holds_of_true [simp]: "\<sigma> \<Turnstile> true"
-  by (simp add: true_def)
-
-lemma holds_of_or [simp]: "(\<sigma> \<Turnstile> or \<phi> \<psi>) = (\<sigma> \<Turnstile> \<phi> \<or> \<sigma> \<Turnstile> \<psi>)"
-  by (auto simp add: or_def)
-
-lemma holds_of_and [simp]: "(\<sigma> \<Turnstile> and \<phi> \<psi>) = (\<sigma> \<Turnstile> \<phi> \<and> \<sigma> \<Turnstile> \<psi>)"
-  by (simp add: and_def)
-
-lemma holds_of_eventually [simp]: "(\<sigma> \<Turnstile> eventually \<phi>) = (\<exists>k. \<sigma>[k..] \<Turnstile> \<phi>)"
-  by (simp add: eventually_def)
-
-lemma holds_of_always [simp]: "(\<sigma> \<Turnstile> always \<phi>) = (\<forall>k. \<sigma>[k..] \<Turnstile> \<phi>)"
-  by (simp add: always_def)
-
-text {*
-  We also define finite conjunctions and disjunctions.
-*}
+subsection {* Finite Conjunctions and Disjunctions *}
 
 (* It would be tempting to define these operators as follows:
 
@@ -95,24 +34,24 @@ over lists of formulas, but working with sets is more natural
 in the following.
 *)
 
-definition OR where "OR \<Phi> \<equiv> SOME \<phi>. fold_graph or false \<Phi> \<phi>"
+definition OR where "OR \<Phi> \<equiv> SOME \<phi>. fold_graph Or_ltlp False_ltlp \<Phi> \<phi>"
 
-definition AND where "AND \<Phi> \<equiv> SOME \<phi>. fold_graph and true \<Phi> \<phi>"
+definition AND where "AND \<Phi> \<equiv> SOME \<phi>. fold_graph And_ltlp True_ltlp \<Phi> \<phi>"
 
-lemma fold_graph_OR: "finite \<Phi> \<Longrightarrow> fold_graph or false \<Phi> (OR \<Phi>)"
+lemma fold_graph_OR: "finite \<Phi> \<Longrightarrow> fold_graph Or_ltlp False_ltlp \<Phi> (OR \<Phi>)"
   unfolding OR_def by (rule someI2_ex[OF finite_imp_fold_graph])
 
-lemma fold_graph_AND: "finite \<Phi> \<Longrightarrow> fold_graph and true \<Phi> (AND \<Phi>)"
+lemma fold_graph_AND: "finite \<Phi> \<Longrightarrow> fold_graph And_ltlp True_ltlp \<Phi> (AND \<Phi>)"
   unfolding AND_def by (rule someI2_ex[OF finite_imp_fold_graph])
 
 lemma holds_of_OR [simp]: 
   assumes fin: "finite (\<Phi>::'a pltl set)"
-  shows "(\<sigma> \<Turnstile> OR \<Phi>) = (\<exists>\<phi>\<in>\<Phi>. \<sigma> \<Turnstile> \<phi>)"
+  shows "(\<sigma> \<Turnstile>\<^sub>p OR \<Phi>) = (\<exists>\<phi>\<in>\<Phi>. \<sigma> \<Turnstile>\<^sub>p \<phi>)"
 proof -
   {
     fix \<psi>::"'a pltl"
-    assume "fold_graph or false \<Phi> \<psi>"
-    hence "(\<sigma> \<Turnstile> \<psi>) = (\<exists>\<phi>\<in>\<Phi>. \<sigma> \<Turnstile> \<phi>)"
+    assume "fold_graph Or_ltlp False_ltlp \<Phi> \<psi>"
+    hence "(\<sigma> \<Turnstile>\<^sub>p \<psi>) = (\<exists>\<phi>\<in>\<Phi>. \<sigma> \<Turnstile>\<^sub>p \<phi>)"
       by (rule fold_graph.induct) auto
   }
   with fold_graph_OR[OF fin] show ?thesis by simp
@@ -120,49 +59,54 @@ qed
 
 lemma holds_of_AND [simp]: 
   assumes fin: "finite (\<Phi>::'a pltl set)"
-  shows "(\<sigma> \<Turnstile> AND \<Phi>) = (\<forall>\<phi>\<in>\<Phi>. \<sigma> \<Turnstile> \<phi>)"
+  shows "(\<sigma> \<Turnstile>\<^sub>p AND \<Phi>) = (\<forall>\<phi>\<in>\<Phi>. \<sigma> \<Turnstile>\<^sub>p \<phi>)"
 proof -
   {
     fix \<psi>::"'a pltl"
-    assume "fold_graph and true \<Phi> \<psi>"
-    hence "(\<sigma> \<Turnstile> \<psi>) = (\<forall>\<phi>\<in>\<Phi>. \<sigma> \<Turnstile> \<phi>)"
+    assume "fold_graph And_ltlp True_ltlp \<Phi> \<psi>"
+    hence "(\<sigma> \<Turnstile>\<^sub>p \<psi>) = (\<forall>\<phi>\<in>\<Phi>. \<sigma> \<Turnstile>\<^sub>p \<phi>)"
       by (rule fold_graph.induct) auto
   }
   with fold_graph_AND[OF fin] show ?thesis by simp
 qed
 
-
 subsection {* Next-Free PLTL Formulas *}
 
 text {*
   A PLTL formula is called \emph{next-free} if it does not contain any
-  subformula @{text "tnext f"}.
+  subformula.
 *}
 
-fun "next_free" where
-  "next_free false = True"
-| "next_free (atom p) = True"
-| "next_free (implies \<phi> \<psi>) = (next_free \<phi> \<and> next_free \<psi>)"
-| "next_free (next \<phi>) = False"
-| "next_free (until \<phi> \<psi>) = (next_free \<phi> \<and> next_free \<psi>)"
+fun next_free :: "'a pltl \<Rightarrow> bool"
+where
+  "next_free false\<^sub>p = True"
+| "next_free (atom\<^sub>p p) = True"
+| "next_free (\<phi> implies\<^sub>p \<psi>) = (next_free \<phi> \<and> next_free \<psi>)"
+| "next_free (X\<^sub>p \<phi>) = False"
+| "next_free (\<phi> U\<^sub>p \<psi>) = (next_free \<phi> \<and> next_free \<psi>)"
 
-lemma next_free_not [simp]: "next_free (not \<phi>) = next_free \<phi>"
-  by (simp add: not_def)
+lemma next_free_not [simp]: 
+  "next_free (not\<^sub>p \<phi>) = next_free \<phi>"
+  by (simp add: Not_ltlp_def)
 
-lemma next_free_true [simp]: "next_free true"
-  by (simp add: true_def)
+lemma next_free_true [simp]: 
+  "next_free true\<^sub>p"
+  by (simp add: True_ltlp_def)
 
-lemma next_free_or [simp]: "next_free (or \<phi> \<psi>) = (next_free \<phi> \<and> next_free \<psi>)"
-  by (simp add: or_def)
+lemma next_free_or [simp]: 
+  "next_free (\<phi> or\<^sub>p \<psi>) = (next_free \<phi> \<and> next_free \<psi>)"
+  by (simp add: Or_ltlp_def)
 
-lemma next_free_and [simp]: "next_free (and \<phi> \<psi>) = (next_free \<phi> \<and> next_free \<psi>)"
-  by (simp add: and_def)
+lemma next_free_and [simp]: "next_free (\<phi> and\<^sub>p \<psi>) = (next_free \<phi> \<and> next_free \<psi>)"
+  by (simp add: And_ltlp_def)
 
-lemma next_free_eventually [simp]: "next_free (eventually \<phi>) = next_free \<phi>"
-  by (simp add: eventually_def)
+lemma next_free_eventually [simp]: 
+  "next_free (F\<^sub>p \<phi>) = next_free \<phi>"
+  by (simp add: Eventually_ltlp_def)
 
-lemma next_free_always [simp]: "next_free (always \<phi>) = next_free \<phi>"
-  by (simp add: always_def)
+lemma next_free_always [simp]: 
+  "next_free (G\<^sub>p \<phi>) = next_free \<phi>"
+  by (simp add: Always_ltlp_def)
 
 lemma next_free_OR [simp]: 
   assumes fin: "finite (\<Phi>::'a pltl set)"
@@ -170,7 +114,7 @@ lemma next_free_OR [simp]:
 proof -
   {
     fix \<psi>::"'a pltl"
-    assume "fold_graph or false \<Phi> \<psi>"
+    assume "fold_graph Or_ltlp False_ltlp \<Phi> \<psi>"
     hence "next_free \<psi> = (\<forall>\<phi>\<in>\<Phi>. next_free \<phi>)"
       by (rule fold_graph.induct) auto
   }
@@ -183,7 +127,7 @@ lemma next_free_AND [simp]:
 proof -
   {
     fix \<psi>::"'a pltl"
-    assume "fold_graph and true \<Phi> \<psi>"
+    assume "fold_graph And_ltlp True_ltlp \<Phi> \<psi>"
     hence "next_free \<psi> = (\<forall>\<phi>\<in>\<Phi>. next_free \<phi>)"
       by (rule fold_graph.induct) auto
   }
@@ -200,7 +144,7 @@ text {*
 *}
 
 definition stutter_invariant where
-  "stutter_invariant \<phi> = (\<forall>\<sigma> \<tau>. \<sigma> \<approx> \<tau> \<longrightarrow> (\<sigma> \<Turnstile> \<phi>) = (\<tau> \<Turnstile> \<phi>))"
+  "stutter_invariant \<phi> = (\<forall>\<sigma> \<tau>. (\<sigma> \<approx> \<tau>) \<longrightarrow> (\<sigma> \<Turnstile>\<^sub>p \<phi>) = (\<tau> \<Turnstile>\<^sub>p \<phi>))"
 
 text {*
   Since stuttering equivalence is symmetric, it is enough to show an
@@ -208,27 +152,27 @@ text {*
 *}
 
 lemma stutter_invariantI [intro!]:
-  assumes "\<And>\<sigma> \<tau>. \<lbrakk>\<sigma> \<approx> \<tau>; \<sigma> \<Turnstile> \<phi>\<rbrakk> \<Longrightarrow> \<tau> \<Turnstile> \<phi>"
+  assumes "\<And>\<sigma> \<tau>. \<lbrakk>\<sigma> \<approx> \<tau>; \<sigma> \<Turnstile>\<^sub>p \<phi>\<rbrakk> \<Longrightarrow> \<tau> \<Turnstile>\<^sub>p \<phi>"
   shows "stutter_invariant \<phi>"
 proof -
   {
     fix \<sigma> \<tau>
-    assume st: "\<sigma> \<approx> \<tau>" and f: "\<sigma> \<Turnstile> \<phi>"
-    hence "\<tau> \<Turnstile> \<phi>" by (rule assms)
+    assume st: "\<sigma> \<approx> \<tau>" and f: "\<sigma> \<Turnstile>\<^sub>p \<phi>"
+    hence "\<tau> \<Turnstile>\<^sub>p \<phi>" by (rule assms)
   }
 moreover
   {
     fix \<sigma> \<tau>
-    assume st: "\<sigma> \<approx> \<tau>" and f: "\<tau> \<Turnstile> \<phi>"
+    assume st: "\<sigma> \<approx> \<tau>" and f: "\<tau> \<Turnstile>\<^sub>p \<phi>"
     from st have "\<tau> \<approx> \<sigma>" by (rule stutter_equiv_sym)
-    from this f have "\<sigma> \<Turnstile> \<phi>" by (rule assms)
+    from this f have "\<sigma> \<Turnstile>\<^sub>p \<phi>" by (rule assms)
   }
 ultimately show ?thesis by (auto simp: stutter_invariant_def)
 qed
 
 lemma stutter_invariantD [dest]:
   assumes "stutter_invariant \<phi>" and "\<sigma> \<approx> \<tau>"
-  shows "(\<sigma> \<Turnstile> \<phi>) = (\<tau> \<Turnstile> \<phi>)"
+  shows "(\<sigma> \<Turnstile>\<^sub>p \<phi>) = (\<tau> \<Turnstile>\<^sub>p \<phi>)"
   using assms by (auto simp: stutter_invariant_def)
 
 text {*
@@ -244,8 +188,8 @@ next
   show "stutter_invariant (atom p)"
   proof
     fix \<sigma> \<tau>
-    assume "\<sigma> \<approx> \<tau>" "\<sigma> \<Turnstile> atom p"
-    thus "\<tau> \<Turnstile> atom p" by (simp add: stutter_equiv_0)
+    assume "\<sigma> \<approx> \<tau>" "\<sigma> \<Turnstile>\<^sub>p atom p"
+    thus "\<tau> \<Turnstile>\<^sub>p atom p" by (simp add: stutter_equiv_0)
   qed
 next
   fix \<phi> \<psi> :: "'a pltl"
@@ -266,16 +210,16 @@ next
   show "stutter_invariant (until \<phi> \<psi>)"
   proof
     fix \<sigma> \<tau>
-    assume st: "\<sigma> \<approx> \<tau>" and unt: "\<sigma> \<Turnstile> until \<phi> \<psi>"
+    assume st: "\<sigma> \<approx> \<tau>" and unt: "\<sigma> \<Turnstile>\<^sub>p until \<phi> \<psi>"
     from unt obtain m
-      where 1: "\<sigma>[m..] \<Turnstile> \<psi>" and 2: "\<forall>j<m. \<sigma>[j..] \<Turnstile> \<phi>" by auto
+      where 1: "\<sigma>[m..] \<Turnstile>\<^sub>p \<psi>" and 2: "\<forall>j<m. \<sigma>[j..] \<Turnstile>\<^sub>p \<phi>" by auto
     from st obtain n
       where 3: "\<sigma>[m..] \<approx> \<tau>[n..]" and 4: "\<forall>i<n. \<exists>j<m. \<sigma>[j..] \<approx> \<tau>[i..]"
       by (rule stutter_equiv_suffixes_right)
-    from 1 3 stinv have "\<tau>[n..] \<Turnstile> \<psi>" by auto
+    from 1 3 stinv have "\<tau>[n..] \<Turnstile>\<^sub>p \<psi>" by auto
     moreover
-    from 2 4 stinv have "\<forall>i<n. \<tau>[i..] \<Turnstile> \<phi>" by force
-    ultimately show "\<tau> \<Turnstile> until \<phi> \<psi>" by auto
+    from 2 4 stinv have "\<forall>i<n. \<tau>[i..] \<Turnstile>\<^sub>p \<phi>" by force
+    ultimately show "\<tau> \<Turnstile>\<^sub>p until \<phi> \<psi>" by auto
   qed
 qed
 
@@ -294,33 +238,6 @@ text {*
   of a PLTL formula.
 *}
 
-fun atoms where
-  "atoms false = {}"
-| "atoms (atom p) = {p}"
-| "atoms (implies \<phi> \<psi>) = atoms \<phi> \<union> atoms \<psi>"
-| "atoms (next \<phi>) = atoms \<phi>"
-| "atoms (until \<phi> \<psi>) = atoms \<phi> \<union> atoms \<psi>"
-
-lemma atoms_finite [iff]: "finite (atoms \<phi>)"
-  by (induct \<phi>) auto
-
-lemma atoms_not [simp]: "atoms (not \<phi>) = atoms \<phi>"
-  by (simp add: not_def)
-
-lemma atoms_true [simp]: "atoms true = {}"
-  by (simp add: true_def)
-
-lemma atoms_or [simp]: "atoms (or \<phi> \<psi>) = atoms \<phi> \<union> atoms \<psi>"
-  by (simp add: or_def)
-
-lemma atoms_and [simp]: "atoms (and \<phi> \<psi>) = atoms \<phi> \<union> atoms \<psi>"
-  by (simp add: and_def)
-
-lemma atoms_eventually [simp]: "atoms (eventually \<phi>) = atoms \<phi>"
-  by (simp add: eventually_def)
-
-lemma atoms_always [simp]: "atoms (always \<phi>) = atoms \<phi>"
-  by (simp add: always_def)
 
 lemma atoms_OR [simp]: 
   assumes fin: "finite (\<Phi>::'a pltl set)"
@@ -328,7 +245,7 @@ lemma atoms_OR [simp]:
 proof -
   {
     fix \<psi>::"'a pltl"
-    assume "fold_graph or false \<Phi> \<psi>"
+    assume "fold_graph Or_ltlp False_ltlp \<Phi> \<psi>"
     hence "atoms \<psi> = (\<Union>\<phi>\<in>\<Phi>. atoms \<phi>)"
       by (rule fold_graph.induct) auto
   }
@@ -341,7 +258,7 @@ lemma atoms_AND [simp]:
 proof -
   {
     fix \<psi>::"'a pltl"
-    assume "fold_graph and true \<Phi> \<psi>"
+    assume "fold_graph And_ltlp True_ltlp \<Phi> \<psi>"
     hence "atoms \<psi> = (\<Union>\<phi>\<in>\<Phi>. atoms \<phi>)"
       by (rule fold_graph.induct) auto
   }
@@ -402,7 +319,7 @@ text {*
   evaluate that formula to the same value.  
 *}
 
-lemma pltl_seq_sim: "\<sigma> \<simeq>(atoms \<phi>)\<simeq> \<tau> \<Longrightarrow> (\<sigma> \<Turnstile> \<phi>) = (\<tau> \<Turnstile> \<phi>)"
+lemma pltl_seq_sim: "\<sigma> \<simeq>(atoms \<phi>)\<simeq> \<tau> \<Longrightarrow> (\<sigma> \<Turnstile>\<^sub>p \<phi>) = (\<tau> \<Turnstile>\<^sub>p \<phi>)"
   (is "?sim \<sigma> \<phi> \<tau> \<Longrightarrow> ?P \<sigma> \<phi> \<tau>")
 proof (induct \<phi> arbitrary: \<sigma> \<tau>)
   fix \<sigma> \<tau>
@@ -431,11 +348,12 @@ next
   assume ih: "\<And>\<sigma> \<tau>. ?sim \<sigma> \<phi> \<tau> \<Longrightarrow> ?P \<sigma> \<phi> \<tau>" 
              "\<And>\<sigma> \<tau>. ?sim \<sigma> \<psi> \<tau> \<Longrightarrow> ?P \<sigma> \<psi> \<tau>"
      and sim: "?sim \<sigma> (until \<phi> \<psi>) \<tau>"
-  from sim have "\<forall>i. \<sigma>[i..] \<simeq>atoms \<phi>\<simeq> \<tau>[i..]" "\<forall>j. \<sigma>[j..] \<simeq>atoms \<psi>\<simeq> \<tau>[j..]"
+  from sim have "\<forall>i. \<sigma>[i..] \<simeq>atoms \<phi>\<simeq> \<tau>[i..]" "\<forall>j. \<sigma>[j..] \<simeq> atoms \<psi> \<simeq> \<tau>[j..]"
     by (auto simp: seq_sim_def state_sim_def)
   with ih have "\<forall>i. ?P (\<sigma>[i..]) \<phi> (\<tau>[i..])" "\<forall>j. ?P (\<sigma>[j..]) \<psi> (\<tau>[j..])"
-    by (auto simp del: suffix_elt)
-  thus "?P \<sigma> (until \<phi> \<psi>) \<tau>" by (auto simp del: suffix_elt)
+    by blast+
+  thus "?P \<sigma> (until \<phi> \<psi>) \<tau>" 
+    by (meson semantics_pltl.simps(5))
 qed
 
 text {*
@@ -516,16 +434,15 @@ text {*
 
 definition characteristic_formula where
   "characteristic_formula A s \<equiv>
-   (and (AND { atom p | p . p \<in> A \<and> p s })
-        (AND { not (atom p) | p . p \<in> A \<and> \<not>(p s) }))"
+   ((AND { atom p | p . p \<in> A \<and> p s }) and\<^sub>p (AND { not\<^sub>p (atom p) | p . p \<in> A \<and> \<not>(p s) }))"
 
 lemma characteristic_holds: 
-  "finite A \<Longrightarrow> \<sigma> \<Turnstile> characteristic_formula A (\<sigma> 0)"
+  "finite A \<Longrightarrow> \<sigma> \<Turnstile>\<^sub>p characteristic_formula A (\<sigma> 0)"
   by (auto simp: characteristic_formula_def)
 
 lemma characteristic_state_sim:
   assumes fin: "finite A"
-  shows "(\<sigma> 0 ~A~ \<tau> 0) = (\<tau> \<Turnstile> characteristic_formula A (\<sigma> (0::nat)))"
+  shows "(\<sigma> 0 ~A~ \<tau> 0) = (\<tau> \<Turnstile>\<^sub>p characteristic_formula A (\<sigma> (0::nat)))"
 proof
   assume sim: "\<sigma> 0 ~A~ \<tau> 0"
   {
@@ -533,10 +450,10 @@ proof
     assume "p \<in> A"
     with sim have "p (\<tau> 0) = p (\<sigma> 0)" by (auto simp: state_sim_def)
   }
-  with fin show "\<tau> \<Turnstile> characteristic_formula A (\<sigma> 0)"
+  with fin show "\<tau> \<Turnstile>\<^sub>p characteristic_formula A (\<sigma> 0)"
     by (auto simp: characteristic_formula_def) (blast+)
 next
-  assume "\<tau> \<Turnstile> characteristic_formula A (\<sigma> 0)"
+  assume "\<tau> \<Turnstile>\<^sub>p characteristic_formula A (\<sigma> 0)"
   with fin show "\<sigma> 0 ~A~ \<tau> 0"
     by (auto simp: characteristic_formula_def state_sim_def)
 qed
@@ -555,7 +472,7 @@ text {*
 lemma ex_next_free_stutter_free_canonical:
   assumes A: "atoms \<phi> \<subseteq> A" and fin: "finite A"
   shows "\<exists>\<psi>. next_free \<psi> \<and> atoms \<psi> \<subseteq> A \<and>
-             (\<forall>\<sigma>. stutter_free \<sigma> \<and> canonical_sequence A \<sigma> \<longrightarrow> (\<sigma> \<Turnstile> \<psi>) = (\<sigma> \<Turnstile> \<phi>))"
+             (\<forall>\<sigma>. stutter_free \<sigma> \<and> canonical_sequence A \<sigma> \<longrightarrow> (\<sigma> \<Turnstile>\<^sub>p \<psi>) = (\<sigma> \<Turnstile>\<^sub>p \<phi>))"
     (is "\<exists>\<psi>. ?P \<phi> \<psi>")
 using A proof (induct \<phi>)
   txt {* The cases of @{text "false"} and atomic formulas are trivial. *}
@@ -588,10 +505,10 @@ next
     hence "\<And>k. stutter_free (\<sigma>[k..])" "\<And>k. canonical_sequence A (\<sigma>[k..])"
       by (auto simp: stutter_free_suffix canonical_suffix)
     with 1 2 
-    have "\<And>k. (\<sigma>[k..] \<Turnstile> \<phi>') = (\<sigma>[k..] \<Turnstile> \<phi>)"
-     and "\<And>k. (\<sigma>[k..] \<Turnstile> \<psi>') = (\<sigma>[k..] \<Turnstile> \<psi>)"
+    have "\<And>k. (\<sigma>[k..] \<Turnstile>\<^sub>p \<phi>') = (\<sigma>[k..] \<Turnstile>\<^sub>p \<phi>)"
+     and "\<And>k. (\<sigma>[k..] \<Turnstile>\<^sub>p \<psi>') = (\<sigma>[k..] \<Turnstile>\<^sub>p \<psi>)"
       by (blast+)
-    hence "(\<sigma> \<Turnstile> until \<phi>' \<psi>') = (\<sigma> \<Turnstile> until \<phi> \<psi>)"
+    hence "(\<sigma> \<Turnstile>\<^sub>p until \<phi>' \<psi>') = (\<sigma> \<Turnstile>\<^sub>p until \<phi> \<psi>)"
       by auto
   }
   with 1 2 have "?P (until \<phi> \<psi>) (until \<phi>' \<psi>')" by auto
@@ -607,27 +524,27 @@ next
     @{text "psi'"} that we will prove to be equivalent to @{text "next \<phi>"} over
     the stutter-free and canonical sequence @{text "\<sigma>"}. *}
   def stval \<equiv> "\<lambda>s. { p \<in> A . p s }"
-  def chi \<equiv> "\<lambda>val. (and (AND {atom p | p . p \<in> val}) 
-                        (AND {not (atom p) | p . p \<in> A - val}))"
-  def psi' \<equiv> "(or (and \<psi> (OR { always (chi val) | val . val \<subseteq> A }))
-                  (OR { and (chi val) (until (chi val) (and \<psi> (chi val'))) | val val'.
+  def chi \<equiv> "\<lambda>val. ((AND {atom p | p . p \<in> val}) and\<^sub>p
+                        (AND {not\<^sub>p (atom p) | p . p \<in> A - val}))"
+  def psi' \<equiv> "(Or_ltlp (\<psi> and\<^sub>p (OR {G\<^sub>p (chi val) | val . val \<subseteq> A }))
+                  (OR {(chi val) and\<^sub>p (until (chi val) ( \<psi> and\<^sub>p (chi val'))) | val val'.
                         val \<subseteq> A \<and> val' \<subseteq> A \<and> val' \<noteq> val }))"
-        (is "(or (and _ (OR ?ALW)) (OR ?UNT))")
+        (is "(Or_ltlp ( _ and\<^sub>p (OR ?ALW)) (OR ?UNT))")
 
-  have "\<And>s. {not (atom p) | p . p \<in> A - stval s}
-           = {not (atom p) | p . p \<in> A \<and> \<not>(p s)}"
+  have "\<And>s. {not\<^sub>p (atom p) | p . p \<in> A - stval s}
+           = {not\<^sub>p (atom p) | p . p \<in> A \<and> \<not>(p s)}"
     by (auto simp: stval_def)
   hence chi1: "\<And>s. chi (stval s) = characteristic_formula A s"
     by (auto simp: chi_def stval_def characteristic_formula_def)
   {
     fix val \<tau>
-    assume val: "val \<subseteq> A" and tau: "\<tau> \<Turnstile> chi val"
+    assume val: "val \<subseteq> A" and tau: "\<tau> \<Turnstile>\<^sub>p chi val"
     with fin have "val = stval (\<tau> 0)"
       by (auto simp: stval_def chi_def finite_subset)
   }
   note chi2 = this
 
-  have "?UNT \<subseteq> (\<lambda>(val,val'). and (chi val) (until (chi val) (and \<psi> (chi val'))))
+  have "?UNT \<subseteq> (\<lambda>(val,val'). (chi val) and\<^sub>p (until (chi val) (\<psi> and\<^sub>p (chi val'))))
                ` (Pow A \<times> Pow A)"
     (is "_ \<subseteq> ?S")
     by auto
@@ -646,7 +563,7 @@ next
   proof -
     from fin have at_chi: "\<And>val. val \<subseteq> A \<Longrightarrow> atoms (chi val) \<subseteq> A"
       by (auto simp: chi_def finite_subset)
-    with fin psi have at_alw: "atoms (and \<psi> (OR ?ALW)) \<subseteq> A"
+    with fin psi have at_alw: "atoms (\<psi> and\<^sub>p (OR ?ALW)) \<subseteq> A"
       by auto blast?    (** FRAGILE: auto leaves trivial goal about subset **)
     from fin fin_UNT psi at_chi have "atoms (OR ?UNT) \<subseteq> A"
       by auto (blast+)? (** FRAGILE: even more left-over goals here **)
@@ -656,7 +573,7 @@ next
   {
     fix \<sigma>
     assume st: "stutter_free \<sigma>" and can: "canonical_sequence A \<sigma>"
-    have "(\<sigma> \<Turnstile> next \<phi>) = (\<sigma> \<Turnstile> psi')"
+    have "(\<sigma> \<Turnstile>\<^sub>p next \<phi>) = (\<sigma> \<Turnstile>\<^sub>p psi')"
     proof (cases "\<sigma> (Suc 0) = \<sigma> 0")
       case True
       txt {* In the case of a stuttering transition at the beginning, we must have
@@ -681,20 +598,20 @@ next
         moreover have "\<sigma> i = \<sigma> 0" by (rule alleq)
         ultimately show "(\<sigma>[n..]) i = \<sigma> i" by simp
       qed
-      with st can psi have 1: "(\<sigma> \<Turnstile> next \<phi>) = (\<sigma> \<Turnstile> \<psi>)" by simp
+      with st can psi have 1: "(\<sigma> \<Turnstile>\<^sub>p next \<phi>) = (\<sigma> \<Turnstile>\<^sub>p \<psi>)" by simp
 
-      from fin have "\<sigma> \<Turnstile> chi (stval (\<sigma> 0))" by (simp add: chi1 characteristic_holds)
-      with suffix have "\<sigma> \<Turnstile> always (chi (stval (\<sigma> 0)))" (is "_ \<Turnstile> ?alw") by simp
+      from fin have "\<sigma> \<Turnstile>\<^sub>p chi (stval (\<sigma> 0))" by (simp add: chi1 characteristic_holds)
+      with suffix have "\<sigma> \<Turnstile>\<^sub>p G\<^sub>p (chi (stval (\<sigma> 0)))" (is "_ \<Turnstile>\<^sub>p ?alw") by simp
       moreover have "?alw \<in> ?ALW" by (auto simp: stval_def)
-      ultimately have 2: "\<sigma> \<Turnstile> OR ?ALW"
-        using fin by (auto simp: finite_subset simp del: holds_of_always)
+      ultimately have 2: "\<sigma> \<Turnstile>\<^sub>p OR ?ALW"
+        using fin by (auto simp: finite_subset simp del: semantics_pltl_sugar)
 
-      have 3: "\<not>(\<sigma> \<Turnstile> OR ?UNT)"
+      have 3: "\<not>(\<sigma> \<Turnstile>\<^sub>p OR ?UNT)"
       proof
-        assume unt: "\<sigma> \<Turnstile> OR ?UNT"
+        assume unt: "\<sigma> \<Turnstile>\<^sub>p OR ?UNT"
         with fin_UNT obtain val val' k where
           val: "val \<subseteq> A" "val' \<subseteq> A" "val' \<noteq> val" and
-          now: "\<sigma> \<Turnstile> chi val" and k: "\<sigma>[k..] \<Turnstile> chi val'"
+          now: "\<sigma> \<Turnstile>\<^sub>p chi val" and k: "\<sigma>[k..] \<Turnstile>\<^sub>p chi val'"
           by auto (blast+)?  (* FRAGILE: similar as above *)
         from `val \<subseteq> A` now have "val = stval (\<sigma> 0)" by (rule chi2)
         moreover
@@ -707,7 +624,7 @@ next
 
     next
       case False
-      txt {* Otherwise, @{text "\<sigma> \<Turnstile> next \<phi>"} is equivalent to @{text "\<sigma>"} satisfying
+      txt {* Otherwise, @{text "\<sigma> \<Turnstile>\<^sub>p next \<phi>"} is equivalent to @{text "\<sigma>"} satisfying
         the second disjunct of @{text "psi'"}. We show both implications separately. *}
       let ?val = "stval (\<sigma> 0)"
       let ?val' = "stval (\<sigma> 1)"
@@ -716,47 +633,47 @@ next
         
       show ?thesis
       proof
-        assume phi: "\<sigma> \<Turnstile> next \<phi>"
-        from fin have 1: "\<sigma> \<Turnstile> chi ?val" by (simp add: chi1 characteristic_holds)
+        assume phi: "\<sigma> \<Turnstile>\<^sub>p next \<phi>"
+        from fin have 1: "\<sigma> \<Turnstile>\<^sub>p chi ?val" by (simp add: chi1 characteristic_holds)
 
         from st can have "stutter_free (\<sigma>[1..])" "canonical_sequence A (\<sigma>[1..])"
           by (auto simp: stutter_free_suffix canonical_suffix)
-        with phi psi have 2: "\<sigma>[1..] \<Turnstile> \<psi>" by auto
+        with phi psi have 2: "\<sigma>[1..] \<Turnstile>\<^sub>p \<psi>" by auto
 
-        from fin have "\<sigma>[1..] \<Turnstile> characteristic_formula A ((\<sigma>[1..]) 0)"
+        from fin have "\<sigma>[1..] \<Turnstile>\<^sub>p characteristic_formula A ((\<sigma>[1..]) 0)"
           by (rule characteristic_holds)
-        hence 3: "\<sigma>[1..] \<Turnstile> chi ?val'" by (simp add: chi1)
+        hence 3: "\<sigma>[1..] \<Turnstile>\<^sub>p chi ?val'" by (simp add: chi1)
 
-        from 1 2 3 have "\<sigma> \<Turnstile> and (chi ?val) (until (chi ?val) (and \<psi> (chi ?val')))"
-          (is "_ \<Turnstile> ?unt")
+        from 1 2 3 have "\<sigma> \<Turnstile>\<^sub>p And_ltlp (chi ?val) (until (chi ?val) (And_ltlp \<psi> (chi ?val')))"
+          (is "_ \<Turnstile>\<^sub>p ?unt")
           by auto
         moreover from vals have "?unt \<in> ?UNT"
           by (auto simp: stval_def)
-        ultimately have "\<sigma> \<Turnstile> OR ?UNT"
+        ultimately have "\<sigma> \<Turnstile>\<^sub>p OR ?UNT"
           using fin_UNT[THEN holds_of_OR] by blast
-        thus "\<sigma> \<Turnstile> psi'" by (simp add: psi'_def)
+        thus "\<sigma> \<Turnstile>\<^sub>p psi'" by (simp add: psi'_def)
 
       next
-        assume psi': "\<sigma> \<Turnstile> psi'"
-        have "\<not>(\<sigma> \<Turnstile> OR ?ALW)"
+        assume psi': "\<sigma> \<Turnstile>\<^sub>p psi'"
+        have "\<not>(\<sigma> \<Turnstile>\<^sub>p OR ?ALW)"
         proof
-          assume "\<sigma> \<Turnstile> OR ?ALW"
-          with fin obtain val where 1: "val \<subseteq> A" and 2: "\<forall>n. \<sigma>[n..] \<Turnstile> chi val"
+          assume "\<sigma> \<Turnstile>\<^sub>p OR ?ALW"
+          with fin obtain val where 1: "val \<subseteq> A" and 2: "\<forall>n. \<sigma>[n..] \<Turnstile>\<^sub>p chi val"
             by (force simp: finite_subset)
-          from 2 have "\<sigma>[0..] \<Turnstile> chi val" ..
+          from 2 have "\<sigma>[0..] \<Turnstile>\<^sub>p chi val" ..
           with 1 have "val = ?val" by (simp add: chi2)
           moreover
-          from 2 have "\<sigma>[1..] \<Turnstile> chi val" ..
+          from 2 have "\<sigma>[1..] \<Turnstile>\<^sub>p chi val" ..
           with 1 have "val = ?val'" by (force dest: chi2)
           ultimately
           show "False" using vals by simp
         qed
-        with psi' have "\<sigma> \<Turnstile> OR ?UNT" by (simp add: psi'_def)
+        with psi' have "\<sigma> \<Turnstile>\<^sub>p OR ?UNT" by (simp add: psi'_def)
         with fin_UNT obtain val val' k where
           val: "val \<subseteq> A" "val' \<subseteq> A" "val' \<noteq> val" and
-          now: "\<sigma> \<Turnstile> chi val" and
-          k: "\<sigma>[k..] \<Turnstile> \<psi>" "\<sigma>[k..] \<Turnstile> chi val'" and
-          i: "\<forall>i<k. \<sigma>[i..] \<Turnstile> chi val"
+          now: "\<sigma> \<Turnstile>\<^sub>p chi val" and
+          k: "\<sigma>[k..] \<Turnstile>\<^sub>p \<psi>" "\<sigma>[k..] \<Turnstile>\<^sub>p chi val'" and
+          i: "\<forall>i<k. \<sigma>[i..] \<Turnstile>\<^sub>p chi val"
           by auto (blast+)?  (* FRAGILE: similar as above *)
 
         from val now have 1: "val = ?val" by (simp add: chi2)
@@ -771,8 +688,8 @@ next
         have 3: "k \<le> 1"
         proof (rule ccontr)
           assume "\<not>(k \<le> 1)"
-          with i have "\<sigma>[1..] \<Turnstile> chi val" by simp
-          with 1 have "\<sigma>[1..] \<Turnstile> characteristic_formula A (\<sigma> 0)" 
+          with i have "\<sigma>[1..] \<Turnstile>\<^sub>p chi val" by simp
+          with 1 have "\<sigma>[1..] \<Turnstile>\<^sub>p characteristic_formula A (\<sigma> 0)" 
             by (simp add: chi1)
           hence "(\<sigma> 0) ~A~ ((\<sigma>[1..]) 0)"
             using characteristic_state_sim[OF fin] by blast
@@ -785,7 +702,7 @@ next
         moreover
         from st can have "stutter_free (\<sigma>[1..])" "canonical_sequence A (\<sigma>[1..])"
           by (auto simp: stutter_free_suffix canonical_suffix)
-        ultimately show "\<sigma> \<Turnstile> next \<phi>" using `\<sigma>[k..] \<Turnstile> \<psi>` psi by auto
+        ultimately show "\<sigma> \<Turnstile>\<^sub>p next \<phi>" using `\<sigma>[k..] \<Turnstile>\<^sub>p \<psi>` psi by auto
       qed
     qed
   }
@@ -821,12 +738,12 @@ text {*
 theorem stutter_invariant_next_free:
   assumes phi: "stutter_invariant \<phi>"
   obtains \<psi> where "next_free \<psi>" "atoms \<psi> \<subseteq> atoms \<phi>"
-                  "\<forall>\<sigma>. (\<sigma> \<Turnstile> \<psi>) = (\<sigma> \<Turnstile> \<phi>)"
+                  "\<forall>\<sigma>. (\<sigma> \<Turnstile>\<^sub>p \<psi>) = (\<sigma> \<Turnstile>\<^sub>p \<phi>)"
 proof -
   have "atoms \<phi> \<subseteq> atoms \<phi>" "finite (atoms \<phi>)" by simp_all
   then obtain \<psi> where
     psi: "next_free \<psi>" "atoms \<psi> \<subseteq> atoms \<phi>" and
-    equiv: "\<forall>\<sigma>. stutter_free \<sigma> \<and> canonical_sequence (atoms \<phi>) \<sigma> \<longrightarrow> (\<sigma> \<Turnstile> \<psi>) = (\<sigma> \<Turnstile> \<phi>)"
+    equiv: "\<forall>\<sigma>. stutter_free \<sigma> \<and> canonical_sequence (atoms \<phi>) \<sigma> \<longrightarrow> (\<sigma> \<Turnstile>\<^sub>p \<psi>) = (\<sigma> \<Turnstile>\<^sub>p \<phi>)"
     by (blast dest: ex_next_free_stutter_free_canonical)
   from `next_free \<psi>` have sinv: "stutter_invariant \<psi>"
     by (rule next_free_stutter_invariant)
@@ -837,13 +754,13 @@ proof -
     from 1 `atoms \<psi> \<subseteq> atoms \<phi>` have 3: "\<tau> \<simeq> atoms \<psi> \<simeq> \<sigma>"
       by (rule seq_sim_mono)
 
-    from 1 have "(\<sigma> \<Turnstile> \<phi>) = (\<tau> \<Turnstile> \<phi>)" by (simp add: pltl_seq_sim)
-    also from phi stutter_reduced_equivalent have "... = (\<natural>\<tau> \<Turnstile> \<phi>)" by auto
+    from 1 have "(\<sigma> \<Turnstile>\<^sub>p \<phi>) = (\<tau> \<Turnstile>\<^sub>p \<phi>)" by (simp add: pltl_seq_sim)
+    also from phi stutter_reduced_equivalent have "... = (\<natural>\<tau> \<Turnstile>\<^sub>p \<phi>)" by auto
     also from 2[THEN canonical_reduced] equiv stutter_reduced_stutter_free 
-    have "... = (\<natural>\<tau> \<Turnstile> \<psi>)" by auto
-    also from sinv stutter_reduced_equivalent have "... = (\<tau> \<Turnstile> \<psi>)" by auto
-    also from 3 have "... = (\<sigma> \<Turnstile> \<psi>)" by (simp add: pltl_seq_sim)
-    finally have "(\<sigma> \<Turnstile> \<psi>) = (\<sigma> \<Turnstile> \<phi>)" by (rule sym)
+    have "... = (\<natural>\<tau> \<Turnstile>\<^sub>p \<psi>)" by auto
+    also from sinv stutter_reduced_equivalent have "... = (\<tau> \<Turnstile>\<^sub>p \<psi>)" by auto
+    also from 3 have "... = (\<sigma> \<Turnstile>\<^sub>p \<psi>)" by (simp add: pltl_seq_sim)
+    finally have "(\<sigma> \<Turnstile>\<^sub>p \<psi>) = (\<sigma> \<Turnstile>\<^sub>p \<phi>)" by (rule sym)
   }
   with psi that show ?thesis by blast
 qed
@@ -857,17 +774,17 @@ text {*
 
 theorem pltl_stutter_invariant:
   "stutter_invariant \<phi> \<longleftrightarrow> 
-   (\<exists>\<psi>. next_free \<psi> \<and> atoms \<psi> \<subseteq> atoms \<phi> \<and> (\<forall>\<sigma>. \<sigma> \<Turnstile> \<psi> \<longleftrightarrow> \<sigma> \<Turnstile> \<phi>))"
+   (\<exists>\<psi>. next_free \<psi> \<and> atoms \<psi> \<subseteq> atoms \<phi> \<and> (\<forall>\<sigma>. \<sigma> \<Turnstile>\<^sub>p \<psi> \<longleftrightarrow> \<sigma> \<Turnstile>\<^sub>p \<phi>))"
 proof -
   {
     assume "stutter_invariant \<phi>"
-    hence "\<exists>\<psi>. next_free \<psi> \<and> atoms \<psi> \<subseteq> atoms \<phi> \<and> (\<forall>\<sigma>. \<sigma> \<Turnstile> \<psi> \<longleftrightarrow> \<sigma> \<Turnstile> \<phi>)"
+    hence "\<exists>\<psi>. next_free \<psi> \<and> atoms \<psi> \<subseteq> atoms \<phi> \<and> (\<forall>\<sigma>. \<sigma> \<Turnstile>\<^sub>p \<psi> \<longleftrightarrow> \<sigma> \<Turnstile>\<^sub>p \<phi>)"
       by (rule stutter_invariant_next_free) blast
   }
 moreover
   {
     fix \<psi>
-    assume 1: "next_free \<psi>" and 2: "\<forall>\<sigma>. \<sigma> \<Turnstile> \<psi> \<longleftrightarrow> \<sigma> \<Turnstile> \<phi>"
+    assume 1: "next_free \<psi>" and 2: "\<forall>\<sigma>. \<sigma> \<Turnstile>\<^sub>p \<psi> \<longleftrightarrow> \<sigma> \<Turnstile>\<^sub>p \<phi>"
     from 1 have "stutter_invariant \<psi>" by (rule next_free_stutter_invariant)
     with 2 have "stutter_invariant \<phi>" by blast
   }

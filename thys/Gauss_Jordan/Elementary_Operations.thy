@@ -87,24 +87,24 @@ subsection{*Definitions of elementary row and column operations*}
 
 text{*Definitions of elementary row operations*}
 
-definition interchange_rows :: "('a::semiring_1) ^'n^'m => 'm => 'm \<Rightarrow> 'a ^'n^'m"
+definition interchange_rows :: "'a ^'n^'m => 'm => 'm \<Rightarrow> 'a ^'n^'m"
   where "interchange_rows A a b = (\<chi> i j. if i=a then A $ b $ j else if i=b then A $ a $ j else A $ i $ j)"
 
-definition mult_row :: "('a::semiring_1) ^'n^'m => 'm => 'a \<Rightarrow> 'a ^'n^'m"
+definition mult_row :: "('a::times) ^'n^'m => 'm => 'a \<Rightarrow> 'a ^'n^'m"
   where "mult_row A a q = (\<chi> i j. if i=a then q*(A $ a $ j) else A $ i $ j)"
 
-definition row_add :: "('a::semiring_1) ^'n^'m => 'm => 'm \<Rightarrow> 'a \<Rightarrow> 'a ^'n^'m"
+definition row_add :: "('a::{plus, times}) ^'n^'m => 'm => 'm \<Rightarrow> 'a \<Rightarrow> 'a ^'n^'m"
   where "row_add A a b q = (\<chi> i j. if i=a then (A $ a $ j) + q*(A $ b $ j) else A $ i $ j)"
 
 text{*Definitions of elementary column operations*}
 
-definition interchange_columns :: "('a::semiring_1) ^'n^'m => 'n => 'n \<Rightarrow> 'a ^'n^'m"
+definition interchange_columns :: "'a ^'n^'m => 'n => 'n \<Rightarrow> 'a ^'n^'m"
   where "interchange_columns A n m = (\<chi> i j. if j=n then A $ i $ m else if j=m then A $ i $ n else A $ i $ j)"
 
-definition mult_column ::  "('a::semiring_1) ^'n^'m => 'n => 'a \<Rightarrow> 'a ^'n^'m"
+definition mult_column :: "('a::times) ^'n^'m => 'n => 'a \<Rightarrow> 'a ^'n^'m"
   where " mult_column A n q = (\<chi> i j. if j=n then (A $ i $ j)*q else A $ i $ j)"
 
-definition column_add :: "('a::semiring_1) ^'n^'m => 'n => 'n \<Rightarrow> 'a \<Rightarrow> 'a ^'n^'m"
+definition column_add :: "('a::{plus, times}) ^'n^'m => 'n => 'n \<Rightarrow> 'a \<Rightarrow> 'a ^'n^'m"
   where "column_add A n m q = (\<chi> i j. if j=n then ((A $ i $ n) + (A $ i $ m)*q) else A $ i $ j)"
 
 subsection{*Properties about elementary row operations*}

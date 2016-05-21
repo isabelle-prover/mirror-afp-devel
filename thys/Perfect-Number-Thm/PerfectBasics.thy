@@ -5,9 +5,7 @@ imports Main "~~/src/HOL/Number_Theory/Primes" "~~/src/HOL/Algebra/Exponent"
 begin
 
 lemma setsum_mono2_nat: "finite (B::nat set) \<Longrightarrow> A <= B \<Longrightarrow> \<Sum> A <= \<Sum> B"
-by (auto simp add: setsum_mono2)
-
-lemma seteq_imp_setsumeq: "A=B ==> \<Sum> A = \<Sum> B" by simp
+  by (auto simp add: setsum_mono2)
 
 
 lemma exp_is_max_div:
@@ -18,24 +16,24 @@ proof (rule ccontr)
  hence a:"p dvd (m div (p^(exponent p m)))" by auto
  from m0 have "p^(exponent p m) dvd m" by (auto simp add: power_exponent_dvd)
  with a have "p*(p^exponent p m) dvd m"
-   by (metis (full_types) div_dvd_div div_mult_self2_is_id dvd_triv_right neq0_conv p 
-      zero_less_prime_power)
+   by (metis dvd_div_iff_mult mult_is_0)
  with p have "m=0" by (auto simp add: power_Suc_exponent_Not_dvd)
  with m0 show "False" by auto
 qed
 
 lemma coprime_exponent:
-  assumes p:"prime p" and m:"m>0"
-  shows "coprime p (m div (p^(exponent p m)))"
+  assumes "prime p" and "m > 0"
+  shows "coprime p (m div (p ^ exponent p m))"
 proof (rule ccontr)
-  assume " ~ coprime p (m div p ^ exponent p m)"
-  hence "EX q. prime q & q dvd p & q dvd (m div (p^(exponent p m)))"
-    by (metis dvd.dual_order.refl p prime_imp_coprime_nat)
-  hence "EX q. q = p & q dvd (m div (p^(exponent p m)))"
-    by (metis one_not_prime_nat p prime_def)
-  hence  "EX q. p dvd (m div (p^(exponent p m)))" by auto
-  hence "p dvd (m div (p^(exponent p m)))" by auto
-  with p m show "False" by (auto simp add: exp_is_max_div)
+  assume "\<not> coprime p (m div p ^ exponent p m)"
+  with \<open>prime p\<close> have "\<exists>q. prime q \<and> q dvd p \<and> q dvd m div p ^ exponent p m"
+    by (metis dvd_refl prime_imp_coprime_nat)
+  with \<open>prime p\<close> have "\<exists>q. q = p \<and> q dvd m div p ^ exponent p m"
+    by (metis one_not_prime_nat prime_def)
+  then have "p dvd m div p ^ exponent p m"
+    by auto
+  with assms show False
+    by (auto simp add: exp_is_max_div)
 qed
 
 lemma add_mult_distrib_three: "(x::nat)*(a+b+c)=x*a+x*b+x*c" 

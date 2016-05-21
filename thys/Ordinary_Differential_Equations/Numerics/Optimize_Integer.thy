@@ -1,16 +1,16 @@
-section {* Optimizations for Code Integer *}
+section \<open>Optimizations for Code Integer\<close>
 theory Optimize_Integer
 imports
   Complex_Main
   "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 
-text {* TODO: Missing? code post rule? *}
+text \<open>TODO: Missing? code post rule?\<close>
 
 lemma [code_post]: "int_of_integer (- 1) = - 1"
   by simp
 
-text {* shallowly embed log and power *}
+text \<open>shallowly embed log and power\<close>
 
 definition log2::"int \<Rightarrow> int"
   where "log2 a = floor (log 2 (of_int a))"

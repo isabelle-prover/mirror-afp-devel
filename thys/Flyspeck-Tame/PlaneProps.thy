@@ -101,9 +101,19 @@ assumes "g' \<in> set (generatePolygon n v f g)" "f \<in> set (nonFinals g)"
         "v \<in> \<V> f" "3 \<le> n" "n < 4+p"
 shows "g' \<in> set (next_plane0\<^bsub>p\<^esub> g)"
 proof -
-  have "\<not> final g" using assms(2)
-    by(auto simp: nonFinals_def finalGraph_def filter_empty_conv)
-  thus ?thesis using assms by(auto simp:next_plane0_def Bex_def)
+  from assms have
+    "\<exists>n\<in>{3..<4 + p}. g' \<in> set (generatePolygon n v f g)"
+    by auto
+  with assms have 
+    "\<exists>v\<in>\<V> f. \<exists>n\<in>{3..<4 + p}. g' \<in> set (generatePolygon n v f g)"
+    by auto
+  with assms have
+    "\<exists>f\<in>set (nonFinals g). \<exists>v\<in>\<V> f. \<exists>n\<in>{3..<4 + p}. g' \<in> set (generatePolygon n v f g)"
+    by auto
+  moreover have "\<not> final g" using assms(2)
+    by (auto simp: nonFinals_def finalGraph_def filter_empty_conv)
+  ultimately show ?thesis
+    by (simp add: next_plane0_def)
 qed
 
 
@@ -157,7 +167,7 @@ done
 
 lemma next_plane0_finals_incr:
  "g [next_plane0\<^bsub>p\<^esub>]\<rightarrow> g' \<Longrightarrow> f \<in> set(finals g) \<Longrightarrow> f \<in> set(finals g')"
-apply(auto simp:next_plane0_def generatePolygon_def split:split_if_asm)
+apply(auto simp:next_plane0_def generatePolygon_def split:if_split_asm)
 apply(erule subdivFace_pres_finals)
 apply (simp add:nonFinals_def)
 done

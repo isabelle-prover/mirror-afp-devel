@@ -99,7 +99,7 @@ private lemma powr_growth2:
   "\<exists>C c2. 0 < c2 \<and> C < Min (set bs) \<and> 
       eventually (\<lambda>x. \<forall>u\<in>{C * x..x}. c2 * x powr p' \<ge> u powr p') at_top"
 proof (intro exI conjI allI ballI)
-  def C \<equiv> "Min (set bs) / 2"
+  define C where "C = Min (set bs) / 2"
   from b_bounds bs_nonempty have C_pos: "C > 0" unfolding C_def by auto 
   thus "C < Min (set bs)" unfolding C_def by simp
   show "max (C powr p') 1 > 0" by simp
@@ -122,7 +122,7 @@ private lemma powr_growth1:
   "\<exists>C c1. 0 < c1 \<and> C < Min (set bs) \<and> 
       eventually (\<lambda>x. \<forall>u\<in>{C * x..x}. c1 * x powr p' \<le> u powr p') at_top"
 proof (intro exI conjI allI ballI)
-  def C \<equiv> "Min (set bs) / 2"
+  define C where "C = Min (set bs) / 2"
   from b_bounds bs_nonempty have C_pos: "C > 0" unfolding C_def by auto 
   thus "C < Min (set bs)" unfolding C_def by simp
   from C_pos show "min (C powr p') 1 > 0" by simp
@@ -144,12 +144,12 @@ qed
 private lemma powr_ln_powr_lower_bound:
   "a > 1 \<Longrightarrow> a \<le> x \<Longrightarrow> x \<le> b \<Longrightarrow>
      min (a powr p) (b powr p) * min (ln a powr p') (ln b powr p') \<le> x powr p * ln x powr p'"
-  using assms by (intro mult_mono powr_lower_bound) (auto intro: min.coboundedI1)
+  by (intro mult_mono powr_lower_bound) (auto intro: min.coboundedI1)
 
 private lemma powr_ln_powr_upper_bound:
   "a > 1 \<Longrightarrow> a \<le> x \<Longrightarrow> x \<le> b \<Longrightarrow>
      max (a powr p) (b powr p) * max (ln a powr p') (ln b powr p') \<ge> x powr p * ln x powr p'"
-  using assms by (intro mult_mono powr_upper_bound) (auto intro: max.coboundedI1)
+  by (intro mult_mono powr_upper_bound) (auto intro: max.coboundedI1)
 
 private lemma powr_ln_powr_upper_bound':
   "eventually (\<lambda>a. \<forall>b>a. \<exists>c. \<forall>x\<in>{a..b}. x powr p * ln x powr p' \<le> c) at_top"
@@ -176,10 +176,10 @@ private lemma powr_ln_powr_growth1: "\<exists>C c1. 0 < c1 \<and> C < Min (set b
   eventually (\<lambda>x. \<forall>u\<in>{C * x..x}. c1 * (x powr r * ln x powr r') \<le> u powr r * ln u powr r') at_top"
 proof (intro exI conjI)
   let ?C = "Min (set bs) / 2" and ?f = "\<lambda>x. x powr r * ln x powr r'"
-  def C \<equiv> "?C"
+  define C where "C = ?C"
   from b_bounds have C_pos: "C > 0" unfolding C_def by simp 
   let ?T = "min (C powr r) (1 powr r) * min ((1/2) powr r') (1 powr r')"
-  from C_pos show "?T > 0" unfolding min_def by (auto split: split_if)
+  from C_pos show "?T > 0" unfolding min_def by (auto split: if_split)
   from bs_nonempty b_bounds have C_pos: "C > 0" unfolding C_def by simp
   thus "C < Min (set bs)" by (simp add: C_def)
   
@@ -212,7 +212,7 @@ private lemma powr_ln_powr_growth2: "\<exists>C c1. 0 < c1 \<and> C < Min (set b
   eventually (\<lambda>x. \<forall>u\<in>{C * x..x}. c1 * (x powr r * ln x powr r') \<ge> u powr r * ln u powr r') at_top"
 proof (intro exI conjI)
   let ?C = "Min (set bs) / 2" and ?f = "\<lambda>x. x powr r * ln x powr r'"
-  def C \<equiv> "?C"
+  define C where "C = ?C"
   let ?T = "max (C powr r) (1 powr r) * max ((1/2) powr r') (1 powr r')"
   show "?T > 0" by simp
   from b_bounds bs_nonempty have C_pos: "C > 0" unfolding C_def by simp
@@ -259,9 +259,10 @@ private lemma master_integral:
     "(\<lambda>x::nat. x powr p * (1 + integral {a..x} (\<lambda>u. u powr p' / u powr (p+1)))) \<in> 
              \<Theta>(\<lambda>x::nat. d * x powr p + c * x powr p')"
 proof-
-  def e \<equiv> "a powr (p' - p)"
+  define e where "e = a powr (p' - p)"
   from assms have e: "e \<ge> 0" by (simp add: e_def)
-  def c \<equiv> "inverse (p' - p)" and d \<equiv> "1 - inverse (p' - p) * e"
+  define c where "c = inverse (p' - p)"
+  define d where "d = 1 - inverse (p' - p) * e"
   have "c \<noteq> 0" and "p > p' \<longrightarrow> d \<noteq> 0" 
     using e p a unfolding c_def d_def by (auto simp: field_simps)
   thus ?thesis
@@ -288,9 +289,10 @@ private lemma master_integral':
     "(\<lambda>x::nat. x powr p * (1 + integral {a..x} (\<lambda>u. u powr p * ln u powr (p'-1) / u powr (p+1)))) \<in>
        \<Theta>(\<lambda>x::nat. c * x powr p + d * x powr p * ln x powr p')"
 proof-
-  def e \<equiv> "ln a powr p'"
+  define e where "e = ln a powr p'"
   from assms have e: "e > 0" by (simp add: e_def)
-  def c \<equiv> "1 - inverse p' * e" and d \<equiv> "inverse p'"
+  define c where "c = 1 - inverse p' * e"
+  define d where "d = inverse p'"
   from assms e have "p' < 0 \<longrightarrow> c \<noteq> 0" "d \<noteq> 0" unfolding c_def d_def by (auto simp: field_simps)
   thus ?thesis
     apply (rule that) apply (rule landau_real_nat_transfer, rule bigthetaI_cong)

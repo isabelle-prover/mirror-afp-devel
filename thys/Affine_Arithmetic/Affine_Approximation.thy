@@ -1,4 +1,4 @@
-section {* Approximation with Affine Forms *}
+section \<open>Approximation with Affine Forms\<close>
 theory Affine_Approximation
 imports
   "~~/src/HOL/Library/Code_Target_Numeral"
@@ -10,18 +10,18 @@ imports
 keywords
   "approximate_affine" :: thy_decl
 begin
-text {*\label{sec:approxaffine}*}
+text \<open>\label{sec:approxaffine}\<close>
 
-text {* Approximate operations on affine forms. *}
+text \<open>Approximate operations on affine forms.\<close>
 
-subsection {* Intervals *}
+subsection \<open>Intervals\<close>
 
 definition One_pdevs_raw::"nat \<Rightarrow> 'a::executable_euclidean_space"
   where "One_pdevs_raw i = (if i < length (Basis_list::'a list) then Basis_list ! i else 0)"
 
 lemma zeros_One_pdevs_raw:
   "One_pdevs_raw -` {0::'a::executable_euclidean_space} = {length (Basis_list::'a list)..}"
-  by (auto simp: One_pdevs_raw_def split: split_if_asm dest!: nth_mem)
+  by (auto simp: One_pdevs_raw_def split: if_split_asm dest!: nth_mem)
 
 lemma nonzeros_One_pdevs_raw:
   "{i. One_pdevs_raw i \<noteq> (0::'a::executable_euclidean_space)} = - {length (Basis_list::'a list)..}"
@@ -149,9 +149,9 @@ lemma in_ivl_affine_of_ivlE:
   assumes "k \<in> {l .. u}"
   obtains e where "e \<in> UNIV \<rightarrow> {-1 .. 1}" "k = aform_val e (aform_of_ivl l u)"
 proof atomize_elim
-  def e \<equiv> "\<lambda>i. let b = if i <length (Basis_list::'a list) then
+  define e where [abs_def]: "e i = (let b = if i <length (Basis_list::'a list) then
     (the (map_of (zip [0..<length (Basis_list::'a list)] (Basis_list::'a list)) i)) else 0 in
-      ((k - (l + u) /\<^sub>R 2) \<bullet> b) / (((u - l) /\<^sub>R 2) \<bullet> b)"
+      ((k - (l + u) /\<^sub>R 2) \<bullet> b) / (((u - l) /\<^sub>R 2) \<bullet> b))" for i
   let ?B = "Basis_list::'a list"
 
   have "k = (1 / 2) *\<^sub>R (l + u) +
@@ -264,14 +264,14 @@ proof -
 qed
 
 
-subsection {* Approximate Operations *}
+subsection \<open>Approximate Operations\<close>
 
 definition max_pdev::"'a::euclidean_space pdevs \<Rightarrow> nat \<times> 'a" where
   "max_pdev x =
     fold (\<lambda>x y. if infnorm (snd x) > infnorm (snd y) then x else y) (list_of_pdevs x) (0, 0)"
 
 
-subsubsection {* set of generated endpoints *}
+subsubsection \<open>set of generated endpoints\<close>
 
 fun points_of_list where
   "points_of_list x0 [] = [x0]"
@@ -281,7 +281,7 @@ primrec points_of_aform where
   "points_of_aform (x, xs) = points_of_list x (list_of_pdevs xs)"
 
 
-subsubsection {* Approximate total deviation *}
+subsubsection \<open>Approximate total deviation\<close>
 
 definition listsum'::"nat \<Rightarrow> 'a list \<Rightarrow> 'a::executable_euclidean_space"
   where "listsum' p xs = fold (\<lambda>a b. eucl_truncate_up p (a + b)) xs 0"
@@ -348,7 +348,7 @@ lemmas abs_pdevs_val_le_tdev' = tdev'_le[OF abs_pdevs_val_le_tdev]
 lemma tdev'_uminus_pdevs[simp]: "tdev' p (uminus_pdevs x) = tdev' p x"
   by (auto simp: tdev'_def o_def rev_map filter_map rev_filter list_of_pdevs_def pdevs_domain_def)
 
-subsubsection {* truncate partial deviations *}
+subsubsection \<open>truncate partial deviations\<close>
 
 definition trunc_pdevs_raw::"nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a::executable_euclidean_space"
   where "trunc_pdevs_raw p x i = eucl_truncate_down p (x i)"
@@ -422,7 +422,7 @@ proof -
 qed
 
 
-subsubsection {* truncation with error bound *}
+subsubsection \<open>truncation with error bound\<close>
 
 definition "trunc_bound_eucl p s =
   (let
@@ -470,14 +470,13 @@ proof atomize_elim
 qed
 
 
-subsubsection {* Addition *}
+subsubsection \<open>Addition\<close>
 
 definition add_aform::"'a::real_vector aform \<Rightarrow> 'a aform \<Rightarrow> 'a aform"
   where "add_aform x y = (fst x + fst y, add_pdevs (snd x) (snd y))"
 
 lemma aform_val_add_aform:
   shows "aform_val e (add_aform X Y) = aform_val e X + aform_val e Y"
-  using assms
   by (auto simp: add_aform_def aform_val_def)
 
 definition add_aform'::"nat \<Rightarrow> nat \<Rightarrow> 'a::executable_euclidean_space aform \<Rightarrow> 'a aform \<Rightarrow> 'a aform"
@@ -554,18 +553,17 @@ proof atomize_elim
 qed
 
 
-subsubsection {* Scaling *}
+subsubsection \<open>Scaling\<close>
 
 definition aform_scaleR::"real aform \<Rightarrow> 'a::real_vector \<Rightarrow> 'a aform"
   where "aform_scaleR x y = (fst x *\<^sub>R y, pdevs_scaleR (snd x) y)"
 
 lemma aform_val_scaleR_aform[simp]:
   shows "aform_val e (aform_scaleR X y) = aform_val e X *\<^sub>R y"
-  using assms
   by (auto simp: aform_scaleR_def aform_val_def scaleR_left_distrib)
 
 
-subsubsection {* Multiplication *}
+subsubsection \<open>Multiplication\<close>
 
 definition mult_aform::"nat \<Rightarrow> real aform \<Rightarrow> real aform \<Rightarrow> real aform"
   where "mult_aform n x y = (fst x * fst y,
@@ -684,7 +682,7 @@ proof atomize_elim
 qed
 
 
-subsubsection {* Inf/Sup *}
+subsubsection \<open>Inf/Sup\<close>
 
 definition "Inf_aform' p X = truncate_down p (fst X - tdev' p (snd X))"
 
@@ -709,7 +707,7 @@ lemma Inf_aform'_le_Sup_aform'[intro]:
   by (metis Inf_aform' Inf_aform_le_Sup_aform Sup_aform' order.trans)
 
 
-subsubsection {* Inverse *}
+subsubsection \<open>Inverse\<close>
 
 definition inverse_aform'::"nat \<Rightarrow> nat \<Rightarrow> real aform \<Rightarrow> real aform" where
   "inverse_aform' p n X = (
@@ -800,16 +798,16 @@ lemma inverse_aform'E:
     "aform_val (e(n:=err)) (inverse_aform' p n X) = inverse (aform_val e X)"
     "err \<in> {-1 .. 1}"
 proof atomize_elim
-  def l \<equiv> "Inf_aform' p X"
-  def u \<equiv> "Sup_aform' p X"
-  def a \<equiv> "min (abs l) (abs u)"
-  def b \<equiv> "max (abs l) (abs u)"
-  def sq \<equiv> "truncate_up p (b * b)"
-  def alpha \<equiv> "- (real_divl p 1 sq)"
-  def d_max' \<equiv> "truncate_up p (real_divr p 1 a - alpha * a)"
-  def d_min' \<equiv> "truncate_down p (real_divl p 1 b - alpha * b)"
-  def zeta \<equiv> "truncate_up p ((d_min' + d_max') / 2)"
-  def delta \<equiv> "truncate_up p (zeta - d_min')"
+  define l where "l = Inf_aform' p X"
+  define u where "u = Sup_aform' p X"
+  define a where "a = min (abs l) (abs u)"
+  define b where "b = max (abs l) (abs u)"
+  define sq where "sq = truncate_up p (b * b)"
+  define alpha where "alpha = - (real_divl p 1 sq)"
+  define d_max' where "d_max' = truncate_up p (real_divr p 1 a - alpha * a)"
+  define d_min' where "d_min' = truncate_down p (real_divl p 1 b - alpha * b)"
+  define zeta where "zeta = truncate_up p ((d_min' + d_max') / 2)"
+  define delta where "delta = truncate_up p (zeta - d_min')"
   note vars = l_def u_def a_def b_def sq_def alpha_def d_max'_def d_min'_def zeta_def delta_def
   let ?x = "aform_val e X"
 
@@ -817,7 +815,7 @@ proof atomize_elim
   have "l \<le> u" by (auto simp: l_def u_def)
 
   hence a_def': "a = l" and b_def': "b = u" and "0 < a" "0 < b"
-    using `0 < l` by (simp_all add: a_def b_def)
+    using \<open>0 < l\<close> by (simp_all add: a_def b_def)
   have "0 < ?x"
     by (rule less_le_trans[OF Inf_pos order.trans[OF Inf_aform' Inf_aform], OF e])
   have "a \<le> ?x"
@@ -829,14 +827,14 @@ proof atomize_elim
 
   have "- inverse (b * b) \<le> alpha"
     by (auto simp add: alpha_def inverse_mult_distrib[symmetric] inverse_eq_divide sq_def
-      intro!: order_trans[OF real_divl] divide_left_mono truncate_up mult_pos_pos `0 < b`)
+      intro!: order_trans[OF real_divl] divide_left_mono truncate_up mult_pos_pos \<open>0 < b\<close>)
 
   {
-    note `0 < a`
+    note \<open>0 < a\<close>
     moreover
-    have "?x \<in> {a .. b}" using `a \<le> ?x` `?x \<le> b` by simp
+    have "?x \<in> {a .. b}" using \<open>a \<le> ?x\<close> \<open>?x \<le> b\<close> by simp
     moreover
-    note `- inverse (b * b) \<le> alpha`
+    note \<open>- inverse (b * b) \<le> alpha\<close>
     ultimately have "inverse ?x \<le> inverse a + alpha * (?x - a)"
       by (rule inverse_linear_upper)
     also have "\<dots> = alpha * ?x + (inverse a - alpha * a)"
@@ -875,12 +873,12 @@ proof atomize_elim
       by (simp add: algebra_simps)
     also
     {
-      note `0 < aform_val e X`
+      note \<open>0 < aform_val e X\<close>
       moreover
-      note `aform_val e X \<in> {aform_val e X .. b}`
+      note \<open>aform_val e X \<in> {aform_val e X .. b}\<close>
       moreover
 
-      note `- inverse (b * b) \<le> alpha`
+      note \<open>- inverse (b * b) \<le> alpha\<close>
       ultimately
       have "inverse b + alpha * (aform_val e X - b) \<le> inverse (aform_val e X)"
         by (rule inverse_linear_lower)
@@ -917,7 +915,7 @@ proof atomize_elim
   have "alpha * (aform_val e X) + zeta =
       aform_val (e(n:=0)) (inverse_aform' p n X) + (- e1 - e1' - e2)"
     unfolding inverse_aform'_def Let_def vars[symmetric]
-    using `0 < l`
+    using \<open>0 < l\<close>
     by (simp add: aform_val_def assms e1') (simp add: e1 e2 algebra_simps)
   also
   let ?err = "(- e1 - e1' - e2 + inverse (aform_val e X) - alpha * aform_val e X - zeta)"
@@ -928,7 +926,7 @@ proof atomize_elim
       by (blast intro: add_mono linerr_le abs_e1 abs_e1' abs_e2)
     also have "\<dots> \<le> pdevs_apply (snd (inverse_aform' p n X)) n"
       unfolding inverse_aform'_def Let_def vars[symmetric]
-      using `0 < l`
+      using \<open>0 < l\<close>
       by (auto simp add: inverse_aform'_def pdevs_apply_trunc_pdevs assms vars[symmetric]
         intro!: order.trans[OF _ listsum'_listsum_le])
     finally have "abs ?err \<le> abs (pdevs_apply (snd (inverse_aform' p n X)) n)" by simp
@@ -949,8 +947,8 @@ proof atomize_elim
 qed
 
 
-subsection {* Reduction (Summarization of Coefficients) *}
-text {*\label{sec:affinesummarize}*}
+subsection \<open>Reduction (Summarization of Coefficients)\<close>
+text \<open>\label{sec:affinesummarize}\<close>
 
 definition "pdevs_of_centered_ivl r = (inner_scaleR_pdevs r One_pdevs)"
 
@@ -1022,7 +1020,7 @@ proof atomize_elim
     by auto
   note this(1)
   also
-  def e'\<equiv>"\<lambda>i. if i < d then e i else e2 (i - d)"
+  define e' where "e' i = (if i < d then e i else e2 (i - d))" for i
   hence "aform_val e2 (aform_of_ivl (- ?t) ?t) =
       pdevs_val (\<lambda>i. e' (i + d)) (pdevs_of_ivl (- ?t) ?t)"
     by (auto simp: aform_of_ivl_def aform_val_def)
@@ -1044,7 +1042,7 @@ proof atomize_elim
 qed
 
 
-subsection {* Splitting with heuristics *}
+subsection \<open>Splitting with heuristics\<close>
 
 definition "split_aform_largest_uncond X =
     (let (i, x) = max_pdev (snd X) in split_aform X i)"
@@ -1055,8 +1053,8 @@ definition "split_aform_largest p t X =
     in [a, b])"
 
 
-subsection {* Approximating Expressions *}
-text {*\label{sec:affineexpr}*}
+subsection \<open>Approximating Expressions\<close>
+text \<open>\label{sec:affineexpr}\<close>
 
 datatype 'a realarith
   = Add "'a realarith" "'a realarith"
@@ -1148,7 +1146,7 @@ proof (induction ra arbitrary: X d e')
   proof (cases "approx_realarith p ra1 VS d")
     fix Y1
     assume Y1: "approx_realarith p ra1 VS d = Some Y1"
-    def d1 \<equiv> "max d (degree_aform Y1)"
+    define d1 where "d1 = max d (degree_aform Y1)"
     from Y1
     show ?case
     proof (cases "approx_realarith p ra2 VS d1")
@@ -1170,7 +1168,7 @@ proof (induction ra arbitrary: X d e')
         by (auto simp: d1_def)
       hence e1Y1: "aform_val e1 Y1 = aform_val e2 Y1" using e1
         by (auto simp: aform_val_def pdevs_val_setsum d1_def)
-      def d2 \<equiv> "max d1 (degree_aform Y2)"
+      define d2 where "d2 = max d1 (degree_aform Y2)"
       have "pdevs_apply (snd Y1) d2 = 0" "pdevs_apply (snd Y2) d2 = 0"
         by (auto simp: d1_def d2_def)
       from add_aform'E[of e2 Y1 d2 Y2, OF e2(1) this]
@@ -1178,7 +1176,7 @@ proof (induction ra arbitrary: X d e')
         "aform_val e2 (add_aform Y1 Y2) = aform_val (e2(d2 := err)) (add_aform' p d2 Y1 Y2)"
          "err \<in> {-1..1}"
          by blast
-      def e3 \<equiv> "e2(d2 := err)"
+      define e3 where "e3 = e2(d2 := err)"
       have "e2(max (max d (degree_aform Y1)) (degree_aform Y2) := err) =
         (\<lambda>a. if a = max (max d (degree_aform Y1)) (degree_aform Y2)
           then err else e2 a)"
@@ -1194,7 +1192,7 @@ next
   proof (cases "approx_realarith p ra1 VS d")
     fix Y1
     assume Y1: "approx_realarith p ra1 VS d = Some Y1"
-    def d1 \<equiv> "max d (degree_aform Y1)"
+    define d1 where "d1 = max d (degree_aform Y1)"
     from Y1 show ?case
     proof (cases "approx_realarith p ra2 VS d1")
       fix Y2
@@ -1215,7 +1213,7 @@ next
         by (auto simp: d1_def)
       hence e1Y1: "aform_val e1 Y1 = aform_val e2 Y1" using e1
         by (auto simp: aform_val_def pdevs_val_setsum d1_def)
-      def d2 \<equiv> "max d1 (degree_aform Y2)"
+      define d2 where "d2 = max d1 (degree_aform Y2)"
       have "pdevs_apply (snd Y1) d2 = 0" "pdevs_apply (snd Y2) d2 = 0"
         by (auto simp: d1_def d2_def)
       from mult_aform'E[of e2 Y1 d2 Y2,OF e2(1) this]
@@ -1223,7 +1221,7 @@ next
         "aform_val (e2(d2 := err)) (mult_aform' p d2 Y1 Y2) =
           aform_val e2 Y1 * aform_val e2 Y2"
         "err \<in> {-1 .. 1}" by blast
-      def e3 \<equiv> "e2(d2 := err)"
+      define e3 where "e3 = e2(d2 := err)"
       have "e2(max (max d (degree_aform Y1)) (degree_aform Y2) := err) =
         (\<lambda>a. if a = max (max d (degree_aform Y1)) (degree_aform Y2)
           then err else e2 a)"
@@ -1250,7 +1248,7 @@ next
 next
   case (Var x y)
   thus ?case
-    by (auto simp: aform_val_def inner_aform_def inner_add_left split: split_if_asm
+    by (auto simp: aform_val_def inner_aform_def inner_add_left split: if_split_asm
       intro!: exI[where x=e'])
 next
   case (Inverse ra)
@@ -1258,7 +1256,7 @@ next
   proof (cases "approx_realarith p ra VS d")
     fix Y
     assume Y: "approx_realarith p ra VS d = Some Y"
-    def d1 \<equiv> "max d (degree_aform Y)"
+    define d1 where "d1 = max d (degree_aform Y)"
     have d1: "pdevs_apply (snd Y) d1 = 0"
       by (auto simp: d1_def uminus_aform_def)
     from Inverse(1)[OF Inverse(2-3) Y Inverse (5)]
@@ -1302,7 +1300,7 @@ next
           using err e
           by (auto intro!: exI[where x="e(d1:=err)"] simp: d1_def fun_upd_def)
       } ultimately show ?case using Inverse Y
-        by (auto split: split_if_asm simp: Let_def)
+        by (auto split: if_split_asm simp: Let_def)
     qed
   qed simp
 qed
@@ -1336,7 +1334,7 @@ proof (induction ra arbitrary: X d e')
   proof (cases "approx_euclarith p ra1 VS d")
     fix Y1
     assume Y1: "approx_euclarith p ra1 VS d = Some Y1"
-    def d1 \<equiv> "max d (degree_aform Y1)"
+    define d1 where "d1 = max d (degree_aform Y1)"
     from Y1 show ?case
     proof (cases "approx_euclarith p ra2 VS d1")
       fix Y2
@@ -1357,7 +1355,7 @@ proof (induction ra arbitrary: X d e')
         by (auto simp: d1_def)
       hence e1Y1: "aform_val e1 Y1 = aform_val e2 Y1" using e1
         by (auto simp: aform_val_def pdevs_val_setsum d1_def)
-      def d2 \<equiv> "max d1 (degree_aform Y2)"
+      define d2 where "d2 = max d1 (degree_aform Y2)"
       have "pdevs_apply (snd Y1) d2 = 0" "pdevs_apply (snd Y2) d2 = 0"
         by (auto simp: d1_def d2_def)
       from aform_val_add_aform[of e2 Y1 Y2]
@@ -1419,7 +1417,7 @@ proof -
   have vs': "vs' \<in> Joints VS'"
     using assms(2-5)
     by (rule Joints_set_zip)
-  def d\<equiv>"fold max (map degree_aform (VS')) 0"
+  define d where "d = fold max (map degree_aform (VS')) 0"
   from assms obtain a b where approx: "approx_euclarith p ea VS' d = Some (a, b)"
     and X: "X = (a, summarize_threshold p t (max d (degree_aform (a, b))) b)"
     by (cases "approx_euclarith p ea VS' (fold max (map degree_aform (VS')) 0)")
@@ -1469,7 +1467,7 @@ lemma length_eq_NilI: "length [] = length []"
   by auto
 
 
-subsection {* Definition of Approximating Function using Affine Arithmetic *}
+subsection \<open>Definition of Approximating Function using Affine Arithmetic\<close>
 
 lemma interpret_Floatreal: "interpret_realarith (realarith.Num (real_of_float f)) vs = (real_of_float f)"
   by simp
@@ -1525,7 +1523,7 @@ lemma
   assumes "take (max_Var_realarith ra) ys = take (max_Var_realarith ra) zs"
   shows "interpret_realarith ra ys = interpret_realarith ra zs"
   using assms
-  by (induct ra) (auto dest!: take_max_eqD simp: take_Suc_eq split: split_if_asm)
+  by (induct ra) (auto dest!: take_max_eqD simp: take_Suc_eq split: if_split_asm)
 
 lemma
   interpret_euclarith_eq_take_max_VarI:
@@ -1546,7 +1544,7 @@ lemma approx_euclarith_outer2_shift_addvars:
     interpret_euclarith_eq_take_max_VarI[OF assms(6)]
   by simp
 
-ML {*
+ML \<open>
 fun dest_interpret_euclarith (Const (@{const_name "interpret_euclarith"}, _) $ b $ xs) = (b, xs)
   | dest_interpret_euclarith t = raise TERM ("interpret_euclarith", [t])
 
@@ -1678,22 +1676,22 @@ fun approximate_affine (name, term) lthy =
   in
      lthy'''
   end
-*}
+\<close>
 
-ML {*
+ML \<open>
 val _ =
   Outer_Syntax.local_theory @{command_keyword approximate_affine}
     "define approximation of term"
     (Parse.binding -- Parse.term >> approximate_affine)
-*}
+\<close>
 
 
-subsection {* Generic operations on Affine Forms in Euclidean Space *}
+subsection \<open>Generic operations on Affine Forms in Euclidean Space\<close>
 
 lemma listsum_Basis_list[simp]: "listsum (map f Basis_list) = (\<Sum>b\<in>Basis. f b)"
   by (subst listsum_distinct_conv_setsum_set) (auto simp: Basis_list distinct_Basis_list)
 
-subsubsection {* Adding *}
+subsubsection \<open>Adding\<close>
 
 fun add_componentwise::
   "'a::executable_euclidean_space list \<Rightarrow> ('a, 'a) euclarith"
@@ -1725,7 +1723,7 @@ lemma
   by (auto simp: valuate_def Joints2_def Joints_def)
 
 
-subsubsection {* Scale with fraction *}
+subsubsection \<open>Scale with fraction\<close>
 
 fun scaleQ_componentwise::
   "real \<Rightarrow> real \<Rightarrow> 'a::executable_euclidean_space list \<Rightarrow> ('a, 'a) euclarith"
@@ -1755,7 +1753,7 @@ lemma
   by (auto simp: valuate_def Joints2_def Joints_def)
 
 
-subsubsection {* scale with an interval *}
+subsubsection \<open>scale with an interval\<close>
 
 fun scaleR_ivl::
   "'a \<Rightarrow> 'a::executable_euclidean_space list \<Rightarrow> ('a, 'a) euclarith"
@@ -1819,13 +1817,13 @@ lemma
 proof -
   have deg_le_one: "degree (pdevs_of_ivl a b) \<le> 1"
     by (rule order_trans[OF degree_pdevs_of_ivl_le]) (auto simp: Basis_list_real_def)
-  def i \<equiv> "fold max (map degree_aform (Y#YS)) 0"
+  define i where "i = fold max (map degree_aform (Y#YS)) 0"
   have i: "\<And>Z. Z \<in> set (Y#YS) \<Longrightarrow> degree_aform Z \<le> i"
     unfolding i_def
     by (rule fold_max_le) auto
   let ?ivl = "(((a + b)/2)*\<^sub>R(hd Basis_list::'a),
       pdev_upd zero_pdevs i (((b - a)/2)*\<^sub>R(hd Basis_list::'a)))"
-  from in_ivl_affine_of_ivlE[OF `c\<in>{a..b}`] obtain e where e: "e \<in> UNIV \<rightarrow> {- 1..1}"
+  from in_ivl_affine_of_ivlE[OF \<open>c\<in>{a..b}\<close>] obtain e where e: "e \<in> UNIV \<rightarrow> {- 1..1}"
     and c: "c = aform_val e (aform_of_ivl a b)"
     by auto
   note c
@@ -1851,11 +1849,11 @@ proof -
       intro!: image_eqI[where x="(\<lambda>_. 0)(i:=e 0)"])
 
   have "pdevs_domain (snd ?ivl) \<inter> pdevs_domain (snd Y) = {}"
-    using i[of Y] by (auto split: split_if_asm)
+    using i[of Y] by (auto split: if_split_asm)
   moreover
   have "list_all (\<lambda>Y. pdevs_domain (snd ?ivl) \<inter> pdevs_domain (snd Y) = {}) YS"
     using i
-    by (force split: split_if_asm simp: list_all_iff)
+    by (force split: if_split_asm simp: list_all_iff)
   ultimately have Joints: "c*\<^sub>Rhd Basis_list#y#ys \<in> Joints (?ivl#Y#YS)"
     by (auto intro!: fresh_JointsI[OF assms(2) _ in_Aff])
   with approx_euclarith_outer2_shift[OF assms(1)[simplified scaleR_aform_ivl_def] Joints,
@@ -1868,7 +1866,7 @@ proof -
     by (auto simp: valuate_def Joints2_def Joints_def)
 qed
 
-text {* disjointness overapproximation *}
+text \<open>disjointness overapproximation\<close>
 
 definition disjoint_aforms where
   "disjoint_aforms X Y =

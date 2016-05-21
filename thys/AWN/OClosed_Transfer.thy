@@ -1510,7 +1510,7 @@ lemma netmask_initmissing_netgmap:
 
 lemma snd_initmissing [simp]:
   "snd (initmissing x)= snd x"
-  using assms unfolding initmissing_def by simp
+  unfolding initmissing_def by simp
 
 lemma initmnissing_snd_netgmap [simp]:
   assumes "initmissing (netgmap sr s) = (\<sigma>, \<zeta>)"

@@ -119,8 +119,6 @@ definition Etern_pred :: ex_pred where
 lemma correct_system:
   "I_pred s \<Longrightarrow> Etern_pred s"
 (*<*)
-
-using assms
 by (clarsimp simp: Etern_pred_def I_defs less_eq_list_def prefixeq_def)
 
 lemma p1_c1[simplified, intro]:

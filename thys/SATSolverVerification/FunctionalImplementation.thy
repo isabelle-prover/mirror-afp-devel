@@ -34,7 +34,6 @@ proof-
   "getSATFlag ?istate = UNDEF \<longrightarrow> InvariantEquivalentZL (getF ?istate) (getM ?istate) ?F0'" and
   "getSATFlag ?istate = FALSE \<longrightarrow> \<not> satisfiable ?F0'"
   "getSATFlag ?istate = TRUE  \<longrightarrow> satisfiable F0"
-    using assms
     using InvariantsAfterInitialization[of "F0"]
     using InvariantEquivalentZLAfterInitialization[of "F0"]
     unfolding InvariantVarsM_def

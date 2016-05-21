@@ -198,7 +198,7 @@ by(induct xs) simp_all
 lemma length_distinct: 
   "distinct (map fst xs) \<Longrightarrow> length (AList.delete k xs) 
   = (if k \<in> fst ` set xs then length xs - 1 else length xs)"
-  by(induct xs)(auto split: split_if_asm simp add: in_set_conv_nth)
+  by(induct xs)(auto split: if_split_asm simp add: in_set_conv_nth)
 
 lemma finite_Assoc_List_set_image:
   assumes "finite (Assoc_List.set ` A)"

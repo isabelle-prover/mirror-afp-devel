@@ -726,7 +726,7 @@ proof (erule seq_comp_failures.induct, (erule_tac [4] exE)+)
     assume "\<exists>n \<in> {..length xs}.
       \<exists>W \<in> if n = 0 then {X} else {}. x \<in> W"
     thus "x \<in> X"
-     by (simp split: split_if_asm)
+     by (simp split: if_split_asm)
   qed
 next
   fix xs X Y
@@ -741,7 +741,7 @@ next
     assume "\<exists>n \<in> {..length xs}.
       \<exists>W \<in> if n = 0 then {insert None X \<inter> Y} else {}. x \<in> W"
     thus "(x = None \<or> x \<in> X) \<and> x \<in> Y"
-     by (simp split: split_if_asm)
+     by (simp split: if_split_asm)
   next
     show "\<exists>U. (xs, U) \<in> failures P \<and> (\<exists>V. ([], V) \<in> failures Q \<and>
       insert None X \<inter> Y = insert None U \<inter> V)"
@@ -761,7 +761,7 @@ next
     assume "\<exists>n \<in> {..length xs + length ys}.
       \<exists>W \<in> if n = length ys then {Y} else {}. x \<in> W"
     thus "x \<in> Y"
-     by (simp split: split_if_asm)
+     by (simp split: if_split_asm)
   qed
 next
   fix xs X Y Rx Ry
@@ -3505,7 +3505,7 @@ lemma seq_comp_list_ref_union_closed [rule_format]:
  "(\<forall>X \<in> set (butlast (P # PS)). weakly_sequential X) \<longrightarrow>
   (\<forall>X \<in> set (P # PS). ref_union_closed X) \<longrightarrow>
     ref_union_closed (foldl op ; P PS)"
-proof (induction PS rule: rev_induct, simp, (rule impI)+, simp, split split_if_asm,
+proof (induction PS rule: rev_induct, simp, (rule impI)+, simp, split if_split_asm,
  simp, rule seq_comp_ref_union_closed, assumption+)
   fix PS and Q :: "'a option process"
   assume
@@ -3545,7 +3545,7 @@ theorem seq_comp_list_secure [rule_format]:
    "(\<forall>X \<in> set (butlast (P # PS)). ref_union_closed X \<and> sequential X) \<longrightarrow>
     (\<forall>X \<in> set (P # PS). secure X I D) \<longrightarrow>
       secure (foldl op ; P PS) I D"
-proof (induction PS rule: rev_induct, simp, (rule impI)+, simp, split split_if_asm,
+proof (induction PS rule: rev_induct, simp, (rule impI)+, simp, split if_split_asm,
  simp, rule seq_comp_secure [OF A], assumption+)
   fix PS Q
   assume

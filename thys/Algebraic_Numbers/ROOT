@@ -2,7 +2,7 @@ chapter AFP
 
 session Algebraic_Numbers (AFP) = Pre_Algebraic_Numbers +
   description {* Algebraic Numbers *}
-  options [timeout = 600]
+  options [timeout = 1200]
   theories
     "Missing_Multiset"
     "Missing_List"
@@ -13,19 +13,12 @@ session Algebraic_Numbers (AFP) = Pre_Algebraic_Numbers +
     "Ring_Hom_Poly"
     "Order_Polynomial"
     "Binary_Exponentiation"
-  theories
     "Explicit_Roots"
-  theories
     "Rational_Root_Test"
-  theories
     "Kronecker_Factorization"
-  theories
     "Square_Free_Factorization"
-  theories
     "Berlekamp_Hensel_Factorization"
-  theories
     "Rational_Factorization"
-  theories
     "Real_Factorization"
     "Show_Real_Approx"
   theories
@@ -36,7 +29,7 @@ session Algebraic_Numbers (AFP) = Pre_Algebraic_Numbers +
 
 session Pre_Algebraic_Numbers (AFP) = "Polynomial_Factorization" +
   description {* Theories from other AFP-entries and Extended Theories for Matrices *}
-  options [timeout = 600, document = false]
+  options [timeout = 1200, document = false]
   theories
     "../Deriving/Comparator_Generator/Compare_Rat"
     "../Deriving/Comparator_Generator/Compare_Real"

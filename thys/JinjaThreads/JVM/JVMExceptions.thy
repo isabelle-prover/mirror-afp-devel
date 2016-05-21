@@ -33,6 +33,6 @@ where "ex_table_of P C M == snd (snd (snd (the (snd (snd (snd(method P C M))))))
 lemma match_ex_table_SomeD:
   "match_ex_table P C pc xt = Some (pc',d') \<Longrightarrow> 
   \<exists>(f,t,D,h,d) \<in> set xt. matches_ex_entry P C pc (f,t,D,h,d) \<and> h = pc' \<and> d=d'"
-  by (induct xt) (auto split: split_if_asm)
+  by (induct xt) (auto split: if_split_asm)
 
 end

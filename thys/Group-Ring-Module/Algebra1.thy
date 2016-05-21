@@ -3235,11 +3235,10 @@ apply (erule disjE, erule exE, simp, simp,
 done 
 
 lemma asprod_pos_pos:"0 \<le> x \<Longrightarrow> 0 \<le> int n *\<^sub>a x" 
-apply (case_tac "n = 0", simp, simp,
-       simp only:zless_int[THEN sym, of "0" "n"],
-       simp del:of_nat_0_less_iff)
-apply (frule_tac w1 = "int n" in asprod_pos_mono[THEN sym, of _ "0" "x"],
-       simp add:asprod_n_0)
+apply (cases "n = 0")
+apply simp_all
+using asprod_pos_mono [THEN sym, of "int n" "0" "x"]
+apply (simp add:asprod_n_0)
 done
 
 lemma asprod_1_x[simp]:"1 *\<^sub>a x = x"
@@ -3547,12 +3546,12 @@ by (simp only:na_def an_def,
        simp add:tna_ant, subst aneg_less[of "ant (int n)" "0"],
        simp only:ant_0[THEN sym], subst ale_zle[of "0" "int n"], simp)
 
-lemma asprod_ge:"\<lbrakk>0 < b; N \<noteq> 0\<rbrakk>  \<Longrightarrow> an N \<le> int N *\<^sub>a b" 
-apply (frule aposs_le_1[of "b"], 
-       simp, simp only:zero_less_int_conv[THEN sym, of "N"],
-       frule asprod_pos_mono[THEN sym, of "int N" "1" "b"], simp)
-apply (simp only:ant_1[THEN sym], simp del:ant_1 add:asprod_amult,
-       simp add:an_def)
+lemma asprod_ge:
+  "0 < b \<Longrightarrow> N \<noteq> 0 \<Longrightarrow> an N \<le> int N *\<^sub>a b" 
+apply (frule aposs_le_1[of "b"])
+apply simp
+using asprod_pos_mono [THEN sym, of "int N" "1" "b"]
+apply (simp only: ant_1 [THEN sym], simp add: asprod_amult, simp add:an_def)
 done
 
 lemma an_npn:"an (n + m) = an n + an m"
@@ -4541,13 +4540,16 @@ done
 
 subsection "Lemmas required in Algebra6.thy"
 
-lemma ge2_zmult_pos:"\<lbrakk>2 \<le> m; 0 < z\<rbrakk> \<Longrightarrow> 1 < int m * z"
-by (cut_tac less_le_trans[of "1" "2" "m"],
-       simp only:zless_int[THEN sym, of "1" "m"],
-       subgoal_tac "0 \<le> int m",
-       frule pos_zmult_pos[of "int m" "z"], assumption+,
-       rule less_le_trans[of "1" "int m" "int m * z"],
-       simp+) 
+lemma ge2_zmult_pos:
+  "2 \<le> m \<Longrightarrow> 0 < z \<Longrightarrow> 1 < int m * z"
+proof -
+  assume a1: "0 < z"
+  assume a2: "2 \<le> m"
+  have "int m + - 1 * (int m * z) \<le> 0"
+    using a1 by (simp add: pos_zmult_pos)
+  then show ?thesis
+    using a2 by linarith
+qed
 
 lemma zmult_pos_mono:"\<lbrakk> (0::int) < w; w * z \<le> w * z'\<rbrakk> \<Longrightarrow> z \<le> z'"
 apply (rule contrapos_pp, simp+) 

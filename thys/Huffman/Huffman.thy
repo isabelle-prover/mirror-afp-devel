@@ -211,7 +211,7 @@ Procedure \textsc{Huffman} produces an optimal prefix code.
 subsection {* Overview of the Formalization *}
 
 text {*
-This report presents a formalization of the proof of Huffman's algorithm
+This document presents a formalization of the proof of Huffman's algorithm
 written using Isabelle/HOL \cite{nipkow-et-al-2008}. Our proof is based on the
 informal proofs given by Knuth and Cormen et al. The development was done
 independently of Laurent Th\'ery's Coq proof \cite{thery-2003,thery-2004},
@@ -224,7 +224,7 @@ induction rules. The remaining proofs are written using the structured proof
 format Isar \cite{wenzel-2008} and are accompanied by informal arguments and
 diagrams.
 
-The report is organized as follows. Section~\ref{trees-and-forests} defines
+The document is organized as follows. Section~\ref{trees-and-forests} defines
 the datatypes for binary code trees and forests and develops a small library of
 related functions. (Incidentally, there is nothing special about binary codes
 and binary trees. Huffman's algorithm and its proof can be generalized to
@@ -233,7 +233,7 @@ presents a functional implementation of the algorithm. Section~\ref{auxiliary}
 defines several tree manipulation functions needed for the proof.
 Section~\ref{formalization} presents three key lemmas and concludes with the
 optimality theorem. Section~\ref{related-work} compares our work with Th\'ery's
-Coq proof. Finally, Section~\ref{conclusion} concludes the report.
+Coq proof. Finally, Section~\ref{conclusion} concludes the document.
 *}
 
 subsection {* Overview of Isabelle's HOL Logic *}
@@ -2448,8 +2448,8 @@ gone unnoticed for the 56 years since its publication, under the scrutiny of
 leading computer scientists, seem extremely low; and the existence of a Coq
 proof should be sufficient to remove any remaining doubts.
 
-The main contribution of this report has been to demonstrate that the textbook
-proof of Huffman's algorithm can be elegantly formalized using
+The main contribution of this document has been to demonstrate that the
+textbook proof of Huffman's algorithm can be elegantly formalized using
 a state-of-the-art theorem prover such as Isabelle/HOL. In the process, we
 uncovered a few minor snags in the proof given in Cormen et
 al.~\cite{cormen-et-al-2001}.

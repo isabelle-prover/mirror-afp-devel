@@ -3795,7 +3795,7 @@ shows "\<forall>m1 m2.(mat nr nc m1)
               \<and>(mat nr nc m2)
               \<and>(\<forall> j < nc. \<forall> i < nr. m1 ! j ! i = m2 ! j ! i)
                   \<longrightarrow> (m1 = m2)"
- using  assms mat_eqI by blast
+ using mat_eqI by blast
 
 
 theorem tensor_compose_condn: 

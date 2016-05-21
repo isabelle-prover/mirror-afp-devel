@@ -182,8 +182,9 @@ proof -
   def g \<equiv> "gcd p q"
   note irr = irreducibleD[OF assms(1)]
   have dvd: "g dvd p" unfolding g_def by auto
-  have mg: "monic g" unfolding g_def using `monic p` 
-    by (metis leading_coeff_0_iff poly_gcd_monic)
+  have mg: "monic g" unfolding g_def using \<open>monic p\<close>
+    using poly_gcd_monic[of p q] by (auto simp add: lead_coeff_def)
+  hence [simp]: "g \<noteq> 0" by auto
   from dvd_imp_degree_le[OF dvd] irr have "degree g \<le> degree p" by force
   with dvd irr(2)[of g] have "degree g = 0 \<or> degree g = degree p" by linarith
   thus ?thesis
@@ -192,11 +193,13 @@ proof -
     with mg have "g = 1" using monic_degree_0 by blast
     thus ?thesis unfolding g_def by auto
   next
-    assume "degree g = degree p"
-    with dvd mg `monic p` have "g = p" 
-      by (metis degree_0 degree_mod_less g_def gcd_poly.simps 
-      irr(1) poly_divides_conv0 poly_dvd_antisym poly_gcd_commute poly_gcd_dvd2 smult_dvd_iff)
-    thus ?thesis unfolding g_def by auto
+    assume deg: "degree g = degree p"
+    def d \<equiv> "p div g"
+    with dvd have p: "p = g * d" by simp
+    with deg have "degree d = 0" by (cases "d = 0") (simp_all add: degree_mult_eq)
+    then obtain d' where [simp]: "d = [:d':]" by (elim degree_eq_zeroE)
+    with p mg assms(2) have "p = g" by (simp split: if_split_asm)
+    thus ?thesis by (simp add: g_def)
   qed
 qed
 
@@ -206,7 +209,7 @@ lemma irreducible_monic_gcd_twice:
   shows "gcd p q = 1 \<or> p = q"
 proof (cases "gcd p q = 1")
   case False note pq = this
-  have id: "gcd p q = gcd q p" by (simp add: poly_gcd_commute)
+  have id: "gcd p q = gcd q p" by (simp add: gcd.commute)
   have "p = gcd p q" using irreducible_monic_gcd[OF p] pq by force
   also have "\<dots> = q" using irreducible_monic_gcd[OF q] pq unfolding id by force
   finally show ?thesis by auto
@@ -236,7 +239,7 @@ proof -
         using rt unfolding rpoly.poly_map_poly_eval_poly[symmetric] by auto
       hence "[:-x,1:] dvd ?rp p" "[:-x,1:] dvd ?rp q" 
         unfolding poly_eq_0_iff_dvd by auto
-      hence "[:-x,1:] dvd gcd (?rp p) (?rp q)" by blast
+      hence "[:-x,1:] dvd gcd (?rp p) (?rp q)" by (rule gcd_greatest)
       also have "gcd (?rp p) (?rp q) = 1" 
         unfolding rpoly.map_poly_gcd[symmetric] gcd rpoly.map_poly_1 .. 
       finally show False by (simp add: dvd_iff_poly_eq_0)

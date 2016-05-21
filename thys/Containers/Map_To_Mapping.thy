@@ -76,8 +76,7 @@ val map_apply_simproc =
           in
             SOME (Thm.instantiate' [SOME cTr, SOME cTx] cts @{thm eq_map_apply})
           end
-      | _ => NONE),
-    identifier = []}
+      | _ => NONE)}
 *}
 
 lemma map_apply_parametric [transfer_rule]:

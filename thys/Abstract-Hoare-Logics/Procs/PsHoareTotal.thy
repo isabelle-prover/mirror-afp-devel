@@ -91,7 +91,7 @@ done
 lemma unfold_while:
  "(s -WHILE b DO c\<rightarrow> u) =
   (s -IF b THEN c;WHILE b DO c ELSE Do(\<lambda>s. {s})\<rightarrow> u)"
-by(auto elim: exec.cases intro:exec.intros split:split_if_asm)
+by(auto elim: exec.cases intro:exec.intros split:if_split_asm)
 
 theorem "C |\<turnstile>\<^sub>t D  \<Longrightarrow>  C |\<Turnstile>\<^sub>t D"
 apply(erule thoare.induct)
@@ -113,7 +113,7 @@ apply(erule thoare.induct)
    apply(erule wf_induct)
    apply clarify
    apply(drule unfold_while[THEN iffD1])
-   apply (simp split add:split_if_asm)
+   apply (simp split add:if_split_asm)
    apply fast
   apply(rule allI, rule allI)
   apply(erule wf_induct)

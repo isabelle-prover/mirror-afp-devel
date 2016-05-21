@@ -90,7 +90,6 @@ lemma psiCasesFresh[simp]:
   and   Cs :: "('c::fs_name \<times> ('a::fs_name, 'b::fs_name, 'c) psi) list"
   
   shows "x \<sharp> psiCases Cs = x \<sharp> Cs"
-using assms
 by(induct Cs)
   (auto simp add: fresh_list_nil fresh_list_cons)
 

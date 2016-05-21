@@ -395,13 +395,13 @@ proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
   with `h \<unlhd> h'` have "P,h' \<turnstile> w :\<le> U" by(rule conf_hext)
   ultimately have "\<exists>T. P,h' \<turnstile> a@ACell (nat (sint i)) : T \<and> P,h' \<turnstile> w :\<le> T" by blast 
   thus ?case using RedAAss
-    by(auto intro!: vs_confI split: split_if_asm dest: vs_confD simp add: take_Cons')(blast dest: vs_confD hext_heap_write intro: addr_loc_type_hext_mono conf_hext)+
+    by(auto intro!: vs_confI split: if_split_asm dest: vs_confD simp add: take_Cons')(blast dest: vs_confD hext_heap_write intro: addr_loc_type_hext_mono conf_hext)+
 next
   case (RedFAss h e D F v h' xs)
   hence "\<exists>T. P,h' \<turnstile> e@CField D F : T \<and> P,h' \<turnstile> v :\<le> T"
     by(force dest!: hext_heap_write intro!: addr_loc_type.intros intro: typeof_addr_hext_mono type_of_hext_type_of simp add: conf_def)
   thus ?case using RedFAss
-    by(auto intro!: vs_confI simp add: take_Cons' split: split_if_asm dest: vs_confD)(blast dest: vs_confD hext_heap_write intro: addr_loc_type_hext_mono conf_hext)+
+    by(auto intro!: vs_confI simp add: take_Cons' split: if_split_asm dest: vs_confD)(blast dest: vs_confD hext_heap_write intro: addr_loc_type_hext_mono conf_hext)+
 next
   case RedCallExternal thus ?case by(auto intro: red_external_non_speculative_vs_conf)
 qed(auto dest: vs_conf_allocate hext_allocate intro: vs_conf_hext simp add: take_Cons')

@@ -864,8 +864,8 @@ lemma degen_impl_aux_alt: "degeneralize_ext ecnv = (
   unfolding degeneralize_ext_def
   apply (cases "num_acc = 0")
   apply simp_all
-  apply (auto simp: E_of_succ_def succ_of_E_def split: split_if_asm) []
-  apply (fastforce simp: E_of_succ_def succ_of_E_def split: split_if_asm) []
+  apply (auto simp: E_of_succ_def succ_of_E_def split: if_split_asm) []
+  apply (fastforce simp: E_of_succ_def succ_of_E_def split: if_split_asm) []
   done
 
 schematic_goal degeneralize_ext_impl_aux:
@@ -940,7 +940,7 @@ lemma prod_impl_aux_alt:
     igbg_acc = \<lambda>(q,s). if s\<in>sa.V then igba.acc q else {}
   \<rparr>)"
   unfolding prod_def
-  apply (auto simp: succ_of_E_def E_of_succ_def split: split_if_asm)
+  apply (auto simp: succ_of_E_def E_of_succ_def split: if_split_asm)
   done
 
 schematic_goal prod_impl_aux:

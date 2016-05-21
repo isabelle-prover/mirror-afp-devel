@@ -168,7 +168,7 @@ in
   Outer_Syntax.local_theory @{command_keyword standard_shows_list}
     "use standard way to extend shows to shows_list, requires associativity lemma as parameter"
     (*standard way: "shows_list = shows_list_aux shows"*)
-    (Parse.xthm >> define_shows_list)
+    (Parse.thm >> define_shows_list)
 end
 *}
 
@@ -280,7 +280,7 @@ lemma shows_list_gen_cong [fundef_cong]:
 
 definition shows_quote :: "shows \<Rightarrow> shows"
 where
-  "shows_quote s = shows_between (shows (Char Nibble2 Nibble7)) s (shows (Char Nibble2 Nibble7))"
+  "shows_quote s = shows_between (shows (CHR 0x27)) s (shows (CHR 0x27))"
 
 text {*
   Don't use Haskell's existing "Show" class for code-generation, since it is not compatible to the
@@ -289,4 +289,3 @@ text {*
 code_reserved Haskell "Show"
 
 end
-

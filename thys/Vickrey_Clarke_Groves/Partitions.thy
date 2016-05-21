@@ -204,7 +204,8 @@ text {* Any partition of the empty set is empty. *}
 lemma emptyset_part_emptyset2:
   assumes "P partitions {}"
   shows "P = {}"
-  using assms is_non_overlapping_def is_partition_of_def by fast
+  using assms unfolding is_partition_of_def is_non_overlapping_def
+  by fastforce
 
 text {* Classical set-theoretical definition of ``all partitions of a set @{term A}'' *}
 definition all_partitions where 

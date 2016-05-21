@@ -4,7 +4,7 @@
 section {* A barebone conversion for discrete summation *}
 
 theory Summation_Conversion
-imports Factorials Summation
+imports Factorials Discrete_Summation
 begin
 
 text \<open>Extensible theorem collection for solving summation problems\<close>

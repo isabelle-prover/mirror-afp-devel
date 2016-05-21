@@ -44,7 +44,7 @@ proof (rule ccontr)
   from c have cc: "cc > 0" unfolding cc_def by simp
   def bbb \<equiv> "bb - 1"
   have id: "bb = 1 + bbb" and bbb: "bbb > 0" and bm1: "bbb \<ge> -1" unfolding bbb_def using bb by auto
-  have "\<exists> n. cc / bbb < of_nat n" by (rule ex_less_of_nat)
+  have "\<exists> n. cc / bbb < of_nat n" by (rule reals_Archimedean2)
   then obtain n where lt: "cc / bbb < of_nat n" by auto
   from not have "\<not> b ^ n \<le> c" by auto
   hence bnc: "b ^ n > c" by simp
@@ -248,8 +248,8 @@ end
 (* GCD and LCM part *)
 
 lemma dvd_abs_mult_left_int[simp]: "(abs (a :: int) * y dvd x) = (a * y dvd x)"
-  by (simp add: GCD.dvd_int_iff nat_abs_mult_distrib)
-
+  by (simp add: dvd_int_unfold_dvd_nat nat_abs_mult_distrib)
+  
 lemma gcd_abs_mult_right_int[simp]: "gcd x (\<bar>a\<bar> * (y :: int)) = gcd x (a * y)" 
   by (simp add: gcd_int_def nat_abs_mult_distrib)
 
@@ -359,7 +359,7 @@ proof -
   from y have y': "y' \<noteq> 0" unfolding id by auto
   have z: "z \<noteq> 0" unfolding z_def using y by auto
   have cop: "coprime x' y'" unfolding x'_def y'_def z_def 
-    using div_gcd_coprime_int y by blast
+    using div_gcd_coprime y by blast
   have "?r x / ?r y = ?r x' / ?r y'" unfolding id using z y y' by (auto simp: field_simps) 
   from assms[unfolded this] have quot: "quotient_of (?r x' / ?r y') = (a, b)" by auto
   from quotient_of_coprime[OF quot] have cop': "coprime a b" .
@@ -369,7 +369,7 @@ proof -
   have "?r x' * ?r b = ?r a * ?r y'" by (auto simp: field_simps)
   hence id': "x' * b = a * y'" unfolding of_int_mult[symmetric] by linarith
   from id'[symmetric] have "b dvd y' * a" unfolding mult.commute[of y'] by auto
-  with cop y' have "b dvd y'" by (metis coprime_dvd_mult_int)
+  with cop y' have "b dvd y'" by (metis coprime_dvd_mult)
   then obtain z' where ybz: "y' = b * z'" unfolding dvd_def by auto
   from id[unfolded y' this] have y: "y = b * (z * z')" by auto
   with `y \<noteq> 0` have zz: "z * z' \<noteq> 0" by auto

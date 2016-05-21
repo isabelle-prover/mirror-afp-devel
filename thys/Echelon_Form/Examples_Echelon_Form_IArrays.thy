@@ -7,11 +7,16 @@
 section{*Examples of computations using immutable arrays*}
 
 theory Examples_Echelon_Form_IArrays
-imports 
+imports
   Echelon_Form_Inverse_IArrays
   "~~/src/HOL/Library/Code_Target_Numeral"
   "../Gauss_Jordan/Examples_Gauss_Jordan_Abstract"
+  Examples_Echelon_Form_Abstract
 begin
+
+text{*The file @{file "Examples_Echelon_Form_Abstract.thy"} is only imported to 
+  include the definitions of matrices that we use in the following examples. 
+  Otherwise, it could be removed.*}
 
 subsection{*Computing echelon forms, determinants, characteristic polynomials and so on using
   immutable arrays*}
@@ -30,7 +35,7 @@ lift_definition gcd_integer :: "integer => integer => integer"
 
 lemma gcd_integer_code [code]:
 "gcd_integer l k = \<bar>if l = (0::integer) then k else gcd_integer l (\<bar>k\<bar> mod \<bar>l\<bar>)\<bar>"
-by transfer (simp add: gcd_code_int [symmetric] ac_simps)
+  by transfer (simp add: gcd_code_int [symmetric] ac_simps)
 
 end
 
@@ -39,7 +44,7 @@ code_printing
  | constant "gcd_integer :: integer => _ => _" \<rightharpoonup> (SML) "(PolyML.IntInf.gcd ((_),(_)))" (*Only for Poly/ML*)
  (* | constant "gcd_integer :: integer => _ => _" \<rightharpoonup> (SML) "(MLton.IntInf.gcd ((_),(_)))"*) (*Only for MLton*)
 
-lemma gcd_code[code]:
+lemma gcd_code [code]:
 "gcd a b = int_of_integer (gcd_integer (of_int a) (of_int b))"
   by (metis gcd_integer.abs_eq int_of_integer_integer_of_int integer_of_int_eq_of_int)
 
@@ -56,93 +61,85 @@ constant "divmod_integer :: integer => _ => _" \<rightharpoonup> (SML) "(IntInf.
 
 subsubsection{*Examples*}
 
+value "det test_int_3x3"
+
+value "det test_int_3x3_03"
+
+value "det test_int_6x6"
+
+value "det test_int_8x8"
+
+value "det test_int_20x20"
+
+value "charpoly test_real_3x3"
+  
+value "charpoly test_real_6x6"
+
+value "inverse_matrix test_int_3x3_02"
+
+value "matrix_to_iarray (echelon_form_of test_int_3x3 euclid_ext2)"
+
+value "matrix_to_iarray (echelon_form_of test_int_8x8 euclid_ext2)"
+
+text{*The following computations are much faster when code is exported.*}
+
+(*value "matrix_to_iarray (echelon_form_of_euclidean test_int_20x20)"*)
+
+(*value "echelon_form_of_iarrays (matrix_to_iarray test_int_20x20) euclid_ext2"*)
+
+(*value "matrix_to_iarray (echelon_form_of test_int_20x20 euclid_ext2)"*)
+
+text{*The following matrix will have an integer inverse since its determinant is equal to one*}
+
+value "det test_int_3x3_03"
+
+value "the (matrix_to_iarray_option (inverse_matrix test_int_3x3_03))"
+
+text{*We check that the previous inverse has been correctly computed:*}
+
+value "matrix_matrix_mult_iarray 
+              (matrix_to_iarray test_int_3x3_03) 
+              (the (matrix_to_iarray_option (inverse_matrix test_int_3x3_03)))"
+
+value "matrix_matrix_mult_iarray 
+              (the (matrix_to_iarray_option (inverse_matrix test_int_3x3_03)))
+              (matrix_to_iarray test_int_3x3_03)"
+
+text{*The following matrices have determinant different from zero, 
+    and thus do not have an integer inverse*}
+              
+value "det test_int_6x6"
+              
+value "matrix_to_iarray_option (inverse_matrix test_int_6x6)"
+
+value "det test_int_20x20"
+             
+value "matrix_to_iarray_option (inverse_matrix test_int_20x20)"
+
+text{*The inverse in dimension 20 has (trivial) inverse.*}
+
+value "the (matrix_to_iarray_option (inverse_matrix (mat 1::int^20^20)))"
+
+value "the (matrix_to_iarray_option (inverse_matrix (mat 1::int^20^20))) = matrix_to_iarray (mat 1::int^20^20)"
+
+
+definition "print_echelon_int (A::int^20^20) = echelon_form_of_iarrays (matrix_to_iarray A) euclid_ext2"
+
+text{*Performance is better when code is exported. In addition, it depends on the growth of 
+the integer coefficients of the matrices. For instance, @{text "test_int_20x20"}
+is a matrix of integer numbers between $-10$ and $10$. The computation of its echelon form (by means
+of @{text "print_echelon_int"}) needs about 2 seconds. However, the matrix @{text "test_int_20x20_2"}
+has elements between $0$ and $1010$. The computation of its echelon form (by means
+of @{text "print_echelon_int"} too) needs about 0.310 seconds. These benchmarks have been carried
+out in a laptop with an i5-3360M processor with 4 GB of RAM.*}
+
+export_code charpoly det echelon_form_of test_int_8x8 test_int_20x20 test_int_20x20_2 print_echelon_int
+  in SML module_name Echelon (*file "Echelon.sml"*)
+
 (*
-definition "matrix_20 = (
-  IArray[
-  IArray[3,2,3,6,2,8,5,9,8,7,5,4,7,8,9,8,7,4,5,2],
-  IArray[0,5,5,2,3,9,1,2,4,6,1,2,3,6,5,4,5,8,7,1],
-  IArray[8,7,9,1,4,-2,8,7,1,4,1,4,5,8,7,4,1,0,0,2],
-  IArray[0,1,5,6,5,1,3,5,4,9,3,2,1,4,5,6,9,8,7,4],
-  IArray[0,3,4,5,2,-4,0,2,1,0,0,0,1,2,4,5,1,1,2,0],
-  IArray[6,8,6,2,2,-3,2,4,7,9,1,2,3,6,5,4,1,2,8,7],
-  IArray[3,8,3,6,2,8,8,9,6,7,8,9,7,8,9,5,4,1,2,3,0],
-  IArray[0,8,5,2,8,9,1,2,4,6,4,6,5,8,7,9,8,7,4,5],
-  IArray[8,8,8,1,4,-2,8,7,1,4,5,5,5,6,4,5,1,2,3,6],
-  IArray[0,8,5,6,5,1,3,5,4,9::int,1,2,3,5,4,7,8,9,6,4],
-  IArray[3,2,3,6,2,8,5,9,8,7,5,4,7,3,9,8,7,4,5,2],
-  IArray[0,5,5,2,3,9,1,2,4,3,1,2,3,6,5,4,5,8,7,1],
-  IArray[1,7,9,1,4,-2,8,7,1,4,1,4,5,8,7,4,1,0,0,2],
-  IArray[1,1,5,6,5,1,3,5,4,9,3,4,5,6,9,8,7,4,5,4],
-  IArray[3,3,4,5,2,-4,0,2,1,0,0,3,1,2,4,5,1,1,2,0],
-  IArray[4,8,6,5,2,-3,2,4,2,9,1,2,3,2,5,4,1,2,8,7],
-  IArray[5,8,3,6,2,2,9,9,6,7,2,7,7,2,9,5,4,1,2,3,0],
-  IArray[2,8,5,2,8,9,5,2,4,6,4,6,5,2,7,1,8,7,4,5],
-  IArray[2,1,8,1,4,-2,8,3,1,4,5,5,5,6,4,5,1,2,3,6],
-  IArray[0,2,5,6,5,1,3,5,4,9::int,1,2,3,5,4,7,8,9,6,4]
-  ])"
+  PolyML.use "Echelon.sml"; open Echelon; open Timer; 
+  let val now=startCPUTimer (); in print_echelon_int (test_int_20x20); checkCPUTimes (now) end;
 *)
-
-definition "matrix_reals = (IArray 
-  [IArray[3,2,3,6,2,8],
-  IArray[0,5,5,2,3,9],
-  IArray[8,7,9,1,4,-2],
-  IArray[0,1,5,6,5,1],
-  IArray[0,3,4,5,2,-4],
-  IArray[6,8,6,2,2,-3::real]])"
-
-definition "matrix_int = (IArray 
-  [IArray[3,2,3,6,2,8],
-  IArray[0,5,5,2,3,9],
-  IArray[8,7,9,1,4,-2],
-  IArray[0,1,5,6,5,1],
-  IArray[0,3,4,5,2,-4],
-  IArray[6,8,6,2,2,-3::int]])"
-
-definition "Test1 = charpoly_iarrays (matrix_reals)"
-definition "Test2 = det_iarrays_rings (matrix_int)"
-
-(*value "det_iarrays_rings matrix_20"*)
-value "Test1"
-value "Test2"
-
-value "let A = (list_of_list_to_matrix 
-  [[3,2,3,6,2,8],
-  [0,5,5,2,3,9],
-  [8,7,9,1,4,-2],
-  [0,1,5,6,5,1],
-  [0,3,4,5,2,-4],
-  [6,8,6,2,2,-3]]::int^6^6) in det A"
-
-value "let A = (IArray[IArray[3,2,3,6],
-  IArray[0,5,5,2],IArray[8,7,9,1],IArray[0::int,1,5,6]]) in det_iarrays_rings A"
-
-value "let A = (list_of_list_to_matrix 
-  [[3,2,3,6,2,8],
-  [0,5,5,2,3,9],
-  [8,7,9,1,4,-2],
-  [0,1,5,6,5,1],
-  [0,3,4,5,2,-4],
-  [6,8,6,2,2,-3]]::real^6^6) in charpoly A"
-
-value "let A = (list_of_list_to_matrix 
-  [[3,2,3,6,2,8],
-  [0,5,5,2,3,9],
-  [8,7,9,1,4,-2],
-  [0,1,5,6,5,1],
-  [0,3,4,5,2,-4],
-  [6,8,6,2,2,-3]]::real^6^6) in charpoly A"
-
-text{*The following integer matrix is not invertible, so the result is @{text "None"}*}
-value "let A = (IArray[IArray[3,5,1],IArray[2,1,3],IArray[1,2,1::int]])
-  in (inverse_matrix_ring_iarray A)"
-
-text{*The following integer matrix is invertible*}
-
-value "let A = (IArray[IArray[1,-2,4],IArray[1,-1,1],IArray[0,1,-2::int]])
-  in (the (inverse_matrix_ring_iarray A))"
-
-export_code charpoly_iarrays matrix_reals (*matrix_20*) matrix_int Test1 Test2 
-  in SML module_name Echelon
 
 (*Analogously, code can be exported to Haskell using the file Code_Rational presented in the
   Gauss-Jordan AFP entry.*)

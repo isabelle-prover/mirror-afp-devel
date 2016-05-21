@@ -1343,7 +1343,7 @@ proof
     assume "infinite ?M"
     then have "INFM j. j \<in> ?M" by (simp add: Inf_many_def)
     then interpret infinitely_many "\<lambda>i. i \<in> ?M" by (unfold_locales) assumption
-    def [simp]: g \<equiv> "index"
+    define g where [simp]: "g = index"
     have "\<forall>i. (f (g i), f (g (Suc i))) \<in> s"
     proof
       fix i
@@ -1446,7 +1446,7 @@ proof -
         thus ?thesis using f1 f2 ab by auto
       next
         case True
-        def j \<equiv> "i - Suc n1"
+        define j where "j = i - Suc n1"
         have i: "i = Suc n1 + j" and j: "j < n2" using i True unfolding j_def by auto
         thus ?thesis using f2 by auto
       qed
@@ -1490,7 +1490,7 @@ proof -
       from True 1(3)[of i] 1(2) show ?thesis by (cases "Suc i = m1", auto)
     next
       case False 
-      def j \<equiv> "i - m1"
+      define j where "j = i - m1"
       have i: "i = m1 + j" and j: "j < m2" using i False unfolding j_def by auto
       thus ?thesis using False 2(3)[of j] by auto
     qed

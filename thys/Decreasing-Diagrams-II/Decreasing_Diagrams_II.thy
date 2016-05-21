@@ -454,7 +454,7 @@ proof -
   ultimately have "\<forall>x\<in>set_mset (ms_of_greek (as @ b' @ cs @ a' @ bs) - {#(?A,[])#}).
     \<exists>y\<in>set_mset (ms_of_greek [?A,?B] - {#(?A,[])#}). (x, y) \<in> letter_less r <*lex*> greek_less r"
   unfolding msog_append by (auto simp: a' msog_append ac_simps * adj_msog_single)
-  from one_step_implies_mult[OF *** ** this,of "{#(?A,[])#}"]
+  from one_step_implies_mult[OF ** this,of "{#(?A,[])#}"]
   have "(ms_of_greek (as @ b' @ cs @ a' @ bs), ms_of_greek [?A,?B]) \<in> mult (letter_less r <*lex*> greek_less r)"
   unfolding a' msog_append by (auto simp: a' ac_simps * adj_msog_single)
   then show ?thesis
@@ -704,7 +704,7 @@ proof (intro subrelI)
           with Cons show ?case by auto
         qed simp
         from 2(2) as' bs' cs' show "(u, v) \<in> valley' UNIV"
-        unfolding xs lconv_append by blast
+        unfolding xs lconv_append by auto (meson relcomp.simps) 
       qed
     next
       fix as bs assume *: "map fst xs = as @ ([Acute] @ [Grave]) @ bs"
@@ -957,7 +957,7 @@ proof (induct rule: dd_commute[of r "down L" "down R"])
     using `refl q` by (auto simp: under_def refl_on_def)
   from aux1[OF a'(1), of L] aux1[OF a'(1), of R] aux2[OF a'(1), of L]
        aux1[OF b'(1), of L] aux1[OF b'(1), of R] aux2[OF b'(1), of R]
-       aux3[of _ L] aux3[of _ R]
+       aux3[of L] aux3[of R]
   show ?case
   by (intro set_mp[OF _ pk[OF `(s, t) \<in> L a'` `(s, u) \<in> R b'`]], unfold UN_Un)
      (intro relcomp_mono rtrancl_mono Un_mono iffD2[OF converse_mono]; fast)

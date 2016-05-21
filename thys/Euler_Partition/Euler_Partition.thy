@@ -279,7 +279,7 @@ proof
   from assms(1) show "1 \<le> i" by (metis One_nat_def Suc_leI even_zero gr0I odd)
 next
   from assms(1) obtain j where "p (2 ^ j * i) \<noteq> 0"
-    unfolding odd_of_distinct_def by (auto split: split_if_asm) fastforce
+    unfolding odd_of_distinct_def by (auto split: if_split_asm) fastforce
   from assms(2)[OF this] show "i \<le> n"
     by (metis div_le_dividend div_mult_self1_is_id le_trans power_not_zero zero_not_eq_two)
 qed
@@ -290,7 +290,7 @@ lemma distinct_of_odd:
   shows "1 \<le> i \<and> i \<le> n"
 proof
   from assms(3) have index: "index i \<in> bitset (p (oddpart i))"
-    unfolding distinct_of_odd_def by (auto split: split_if_asm)
+    unfolding distinct_of_odd_def by (auto split: if_split_asm)
   have "i \<noteq> 0"
   proof
     assume zero: "i = 0"

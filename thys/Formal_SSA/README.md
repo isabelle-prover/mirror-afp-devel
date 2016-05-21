@@ -22,8 +22,8 @@ For running the formalization you need
 
 If you'd like to build the example interpretation with a While language you additionally need
 
-- the [archive of formal proofs (AFP)](http://afp.sf.net/) installed as an Isabelle component.
-  See [http://afp.sf.net/using.shtml](http://afp.sf.net/using.shtml) for details on how to do that.
+- the [archive of formal proofs (AFP)](http://isa-afp.org/) installed as an Isabelle component.
+  See [http://isa-afp.org/using.shtml](http://isa-afp.org/using.shtml) for details on how to do that.
 
 For building the CompCertSSA compiler using our SSA construction algorithm
 

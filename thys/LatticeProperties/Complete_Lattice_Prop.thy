@@ -106,7 +106,6 @@ end
 lemma Sup_less_fun_eq:
   "((Sup_less P w) i) = (Sup_less (\<lambda> v . P v i)) w"
   apply (simp add: Sup_less_def fun_eq_iff)
-  apply (auto simp add: SUP_def image_def simp del: Sup_image_eq)
   apply (rule arg_cong [of _ _ Sup])
   apply auto
   done

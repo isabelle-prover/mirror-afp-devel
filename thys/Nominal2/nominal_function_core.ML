@@ -667,7 +667,7 @@ fun define_function fdefname (fname, mixfix) domT ranT G default lthy =
       |> Syntax.check_term lthy
   in
     Local_Theory.define
-      ((Binding.name (function_name fname), mixfix),
+      ((Binding.name (fname ^ "C"), mixfix),
         ((Binding.concealed (Binding.name fdefname), []), f_def)) lthy
   end
 
@@ -1025,7 +1025,7 @@ fun prepare_nominal_function config defname [((fname, fT), mixfix)] abstract_qgl
     val RCss = map find_calls trees
 
     val ((G, GIntro_thms, G_elim, G_induct), lthy) =
-      PROFILE "def_graph" (define_graph (graph_name defname) fvar domT ranT clauses RCss) lthy
+      PROFILE "def_graph" (define_graph (defname ^ "_graph") fvar domT ranT clauses RCss) lthy
 
     val ((f, (_, f_defthm)), lthy) =
       PROFILE "def_fun" (define_function (defname ^ "_sumC_def") (fname, mixfix) domT ranT G default) lthy
@@ -1034,10 +1034,10 @@ fun prepare_nominal_function config defname [((fname, fT), mixfix)] abstract_qgl
     val trees = map (Function_Context_Tree.inst_tree lthy fvar f) trees
 
     val ((R, RIntro_thmss, R_elim), lthy) =
-      PROFILE "def_rel" (define_recursion_relation (rel_name defname) domT abstract_qglrs clauses RCss) lthy
+      PROFILE "def_rel" (define_recursion_relation (defname ^ "_rel") domT abstract_qglrs clauses RCss) lthy
 
     val (_, lthy) =
-      Local_Theory.abbrev Syntax.mode_default ((Binding.name (dom_name defname), NoSyn), mk_acc domT R) lthy
+      Local_Theory.abbrev Syntax.mode_default ((Binding.name (defname ^ "_dom"), NoSyn), mk_acc domT R) lthy
 
     val newthy = Proof_Context.theory_of lthy
     val clauses = map (transfer_clause_ctx newthy) clauses

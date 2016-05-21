@@ -61,13 +61,13 @@ proof(coinduction arbitrary: obs0 obs)
         case (WriteMem ad' al' v')
         hence "NormalAction (WriteMem ad al v) \<in> set (map snd obs0)"
           using adal ob tob v w_actions unfolding in_set_conv_nth
-          by(auto simp add: action_obs_def nth_append value_written.simps actions_def cong: conj_cong split: split_if_asm)
+          by(auto simp add: action_obs_def nth_append value_written.simps actions_def cong: conj_cong split: if_split_asm)
         thus ?thesis by(rule w_values_WriteMemD)
       next
         case (NewHeapElem ad' hT)
         hence "NormalAction (NewHeapElem ad hT) \<in> set (map snd obs0)"
           using adal ob tob v w_actions unfolding in_set_conv_nth
-          by(auto simp add: action_obs_def nth_append value_written.simps actions_def cong: conj_cong split: split_if_asm)
+          by(auto simp add: action_obs_def nth_append value_written.simps actions_def cong: conj_cong split: if_split_asm)
         thus ?thesis using NewHeapElem adal unfolding v[symmetric]
           by(fastforce simp add: value_written.simps intro!: w_values_new_actionD intro: rev_image_eqI)
       qed }
@@ -410,7 +410,7 @@ proof(intro exI conjI strip)
         by(rule thread_start_actions_ok_prefix)(subst (2) E_unfold1, simp add: E_unfold2)
 
       from w a a' a_def a'_E' have w_a': "w < Suc a'"
-        by cases(simp add: actions_def E'''_def min_def zero_enat_def eSuc_enat split: split_if_asm)
+        by cases(simp add: actions_def E'''_def min_def zero_enat_def eSuc_enat split: if_split_asm)
 
       from w sim have "w \<in> write_actions E''" by(rule write_actions_change_prefix)(simp add: w_a')
       moreover
@@ -711,12 +711,12 @@ proof -
             using red unfolding a complete_hb_def
             apply(subst (2) unfold_llist.code)
             apply(subst (asm) unfold_llist.code)
-            apply(auto simp add: split_beta simp del: split_paired_Ex split_paired_All split: split_if_asm)
+            apply(auto simp add: split_beta simp del: split_paired_Ex split_paired_All split: if_split_asm)
             apply(auto simp add: lfinite_eq_range_llist_of)
             done }
         hence ?lappend using red hb hb_c' unfolding obs complete_hb_def
           apply(subst unfold_llist.code)
-          apply(simp add: split_beta eq del: split_paired_Ex split_paired_All split del: split_if)
+          apply(simp add: split_beta eq del: split_paired_Ex split_paired_All split del: if_split)
           apply(intro exI conjI impI refl disjI1|rule refl|assumption|simp_all add: llist_of_eq_LNil_conv)+
           done
         thus ?thesis ..

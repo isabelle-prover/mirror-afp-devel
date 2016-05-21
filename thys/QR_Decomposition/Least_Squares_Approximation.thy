@@ -173,7 +173,7 @@ proof -
   qed
 qed
 
-definition "set_least_squares_solution A b = {x. \<forall>y. norm (b - A *v x) \<le> norm (b - A *v y)}"
+definition "set_least_squares_approximation A b = {x. \<forall>y. norm (b - A *v x) \<le> norm (b - A *v y)}"
 
 corollary least_squares_approximation4:
   fixes S::"'a::{euclidean_space} set"
@@ -319,11 +319,11 @@ next
 qed
 
 
-lemma in_set_least_squares_solution:
+lemma in_set_least_squares_approximation:
   fixes A::"real^'cols::{finite, wellorder}^'rows"
   assumes o: "A *v x - b \<in> orthogonal_complement (col_space A)"
-  shows "(x \<in> set_least_squares_solution A b)"
-proof (unfold set_least_squares_solution_def, auto)
+  shows "(x \<in> set_least_squares_approximation A b)"
+proof (unfold set_least_squares_approximation_def, auto)
   fix y 
   show " norm (b - A *v x) \<le> norm (b - A *v y)"
   proof (rule least_squares_approximation7)
@@ -336,12 +336,12 @@ proof (unfold set_least_squares_solution_def, auto)
   qed
 qed
 
-lemma in_set_least_squares_solution_eq:
+lemma in_set_least_squares_approximation_eq:
   fixes A::"real^'cols::{finite,wellorder}^'rows"
-  shows "(x \<in> set_least_squares_solution A b) = (transpose A ** A *v x = transpose A *v b)"
+  shows "(x \<in> set_least_squares_approximation A b) = (transpose A ** A *v x = transpose A *v b)"
 proof
-  assume x: "x \<in> set_least_squares_solution A b"
-  hence a: "\<forall>a. norm (b - A *v x) \<le> norm (b - A *v a)" unfolding set_least_squares_solution_def by simp
+  assume x: "x \<in> set_least_squares_approximation A b"
+  hence a: "\<forall>a. norm (b - A *v x) \<le> norm (b - A *v a)" unfolding set_least_squares_approximation_def by simp
   have "b - A *v x \<in> orthogonal_complement (col_space A)"
   proof (rule least_squares_approximation6)
     show "real_vector.subspace (col_space A)" using subspace_col_space[of A, unfolded op_vec_scaleR] .
@@ -361,36 +361,36 @@ next
   hence "(A *v x - b) \<in> null_space (transpose A)" unfolding null_space_def by simp
   hence "(A *v x - b) \<in> orthogonal_complement (col_space A)" 
     by (metis left_null_space_eq_null_space_transpose left_null_space_orthogonal_complement_col_space)
-  thus "x \<in> set_least_squares_solution A b" by (rule in_set_least_squares_solution)
+  thus "x \<in> set_least_squares_approximation A b" by (rule in_set_least_squares_approximation)
 qed
 
 
-lemma in_set_least_squares_solution_eq_full_rank:
+lemma in_set_least_squares_approximation_eq_full_rank:
   fixes A::"real^'cols::mod_type^'rows::mod_type"
   assumes r: "rank A = ncols A"
-  shows "(x \<in> set_least_squares_solution A b) = (x = matrix_inv (transpose A ** A)**transpose A *v b)"
+  shows "(x \<in> set_least_squares_approximation A b) = (x = matrix_inv (transpose A ** A)**transpose A *v b)"
 proof -
   have int_tA: "invertible (transpose A ** A)" using invertible_transpose_mult[OF r] .
   show ?thesis
   proof 
-    fix x assume "x \<in> set_least_squares_solution A b"
-    hence "transpose A ** A *v x = transpose A *v b" using in_set_least_squares_solution_eq by auto
+    fix x assume "x \<in> set_least_squares_approximation A b"
+    hence "transpose A ** A *v x = transpose A *v b" using in_set_least_squares_approximation_eq by auto
     thus "x = matrix_inv (transpose A ** A) ** transpose A *v b"
       by (metis int_tA matrix_inv_left matrix_vector_mul_assoc matrix_vector_mul_lid)
   next
     fix x assume "x = matrix_inv (transpose A ** A) ** transpose A *v b"
     hence "transpose A ** A *v x = transpose A *v b"
       by (metis int_tA matrix_inv_right matrix_vector_mul_assoc matrix_vector_mul_lid)
-    thus "x \<in> set_least_squares_solution A b" unfolding in_set_least_squares_solution_eq .
+    thus "x \<in> set_least_squares_approximation A b" unfolding in_set_least_squares_approximation_eq .
   qed
 qed
 
 
 
-lemma in_set_least_squares_solution_eq_full_rank_QR:
+lemma in_set_least_squares_approximation_eq_full_rank_QR:
   fixes A::"real^'cols::{mod_type}^'rows::{mod_type}"
   assumes r: "rank A = ncols A"
-  shows "(x \<in> set_least_squares_solution A b) = ((snd (QR_decomposition A)) *v x = transpose (fst (QR_decomposition A)) *v b)"
+  shows "(x \<in> set_least_squares_approximation A b) = ((snd (QR_decomposition A)) *v x = transpose (fst (QR_decomposition A)) *v b)"
 proof -
   let ?Q = "fst (QR_decomposition A)"
   let ?R = "snd (QR_decomposition A)"
@@ -398,8 +398,8 @@ proof -
     by (metis invertible_snd_QR_decomposition invertible_transpose r)
   have inv_inv_tR: "invertible (matrix_inv (transpose ?R))"
     by (metis inv_tR invertible_fst_Gauss_Jordan_PA matrix_inv_Gauss_Jordan_PA)
-  have "(x \<in> set_least_squares_solution A b) = (transpose A ** A *v x = transpose A *v b)"
-    using in_set_least_squares_solution_eq .
+  have "(x \<in> set_least_squares_approximation A b) = (transpose A ** A *v x = transpose A *v b)"
+    using in_set_least_squares_approximation_eq .
   also have "... = (transpose (?Q ** ?R) ** (?Q ** ?R) *v x = transpose (?Q ** ?R) *v b)"
     using QR_decomposition_mult[OF r] by simp
   also have "... = (transpose ?R ** transpose ?Q **  (?Q ** ?R) *v x  = transpose ?R ** transpose ?Q *v b)"
@@ -420,39 +420,39 @@ proof -
   also have "... = (?R *v x = transpose ?Q *v b)"
     unfolding orthogonal_matrix_fst_QR_decomposition[OF r]
     unfolding matrix_mul_lid ..
-  finally show "(x \<in> set_least_squares_solution A b) = (?R *v x = (transpose ?Q) *v b)" .
+  finally show "(x \<in> set_least_squares_approximation A b) = (?R *v x = (transpose ?Q) *v b)" .
 qed
 
 (*TODO: Maybe demonstrate that in this case there's only one solution.*)
-corollary in_set_least_squares_solution_eq_full_rank_QR2:
+corollary in_set_least_squares_approximation_eq_full_rank_QR2:
   fixes A::"real^'cols::{mod_type}^'rows::{mod_type}"
   assumes r: "rank A = ncols A"
-  shows "(x \<in> set_least_squares_solution A b) = (x = matrix_inv (snd (QR_decomposition A)) ** transpose (fst (QR_decomposition A)) *v b)"
+  shows "(x \<in> set_least_squares_approximation A b) = (x = matrix_inv (snd (QR_decomposition A)) ** transpose (fst (QR_decomposition A)) *v b)"
 proof -
   let ?Q = "fst (QR_decomposition A)"
   let ?R = "snd (QR_decomposition A)"
   have inv_R: "invertible ?R" by (metis invertible_snd_QR_decomposition r)
-  have "(x \<in> set_least_squares_solution A b) = (?R *v x = transpose ?Q *v b)"
-    using in_set_least_squares_solution_eq_full_rank_QR[OF r] .
+  have "(x \<in> set_least_squares_approximation A b) = (?R *v x = transpose ?Q *v b)"
+    using in_set_least_squares_approximation_eq_full_rank_QR[OF r] .
   also have "... = (matrix_inv ?R ** ?R *v x = matrix_inv ?R ** transpose ?Q *v b)"
     by (metis (hide_lams, no_types) Gauss_Jordan_PA_eq calculation fst_Gauss_Jordan_PA inv_R 
       inv_matrix_vector_mul_left invertible_fst_Gauss_Jordan_PA matrix_inv_Gauss matrix_vector_mul_assoc)
   also have "... = (x = matrix_inv ?R ** transpose ?Q *v b)"
     by (metis inv_R matrix_inv_left matrix_vector_mul_lid)
-  finally show "(x \<in> set_least_squares_solution A b) = (x = matrix_inv ?R ** transpose ?Q *v b)" .
+  finally show "(x \<in> set_least_squares_approximation A b) = (x = matrix_inv ?R ** transpose ?Q *v b)" .
 qed
 
-lemma set_least_squares_solution_unique_solution:
+lemma set_least_squares_approximation_unique_solution:
   fixes A::"real^'cols::{mod_type}^'rows::{mod_type}"
   assumes r: "rank A = ncols A"
-  shows "(set_least_squares_solution A b) = {matrix_inv (transpose A ** A)**transpose A *v b}"
-  by (metis (hide_lams, mono_tags) empty_iff in_set_least_squares_solution_eq_full_rank
+  shows "(set_least_squares_approximation A b) = {matrix_inv (transpose A ** A)**transpose A *v b}"
+  by (metis (hide_lams, mono_tags) empty_iff in_set_least_squares_approximation_eq_full_rank
     empty_iff insertI1 r subsetI subset_singletonD)
 
-lemma set_least_squares_solution_unique_solution_QR:
+lemma set_least_squares_approximation_unique_solution_QR:
   fixes A::"real^'cols::{mod_type}^'rows::{mod_type}"
   assumes r: "rank A = ncols A"
-  shows "(set_least_squares_solution A b) = {matrix_inv (snd (QR_decomposition A)) ** transpose (fst (QR_decomposition A)) *v b}"
-  by (metis (hide_lams, mono_tags) empty_iff in_set_least_squares_solution_eq_full_rank_QR2 insertI1 r subsetI subset_singletonD)
+  shows "(set_least_squares_approximation A b) = {matrix_inv (snd (QR_decomposition A)) ** transpose (fst (QR_decomposition A)) *v b}"
+  by (metis (hide_lams, mono_tags) empty_iff in_set_least_squares_approximation_eq_full_rank_QR2 insertI1 r subsetI subset_singletonD)
 
 end

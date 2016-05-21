@@ -86,7 +86,7 @@ definition "eqOn P env env1 \<equiv> \<forall> p. p \<in> P \<longrightarrow> en
 
 lemma eqOn_Un[simp]:
 "eqOn (P \<union> Q) env env1 \<longleftrightarrow> eqOn P env env1 \<and> eqOn Q env env1"
-using assms unfolding eqOn_def by auto
+unfolding eqOn_def by auto
 
 lemma eqOn_update[simp]:
 "eqOn P (env(p := \<pi>)) (env1(p := \<pi>)) \<longleftrightarrow> eqOn (P - {p}) env env1"
@@ -152,7 +152,7 @@ definition "cpt P env \<pi>l \<equiv> \<forall> p \<in> P. env p < length \<pi>l
 
 lemma cpt_Un[simp]:
 "cpt (P \<union> Q) env \<pi>l \<longleftrightarrow> cpt P env \<pi>l \<and> cpt Q env \<pi>l"
-using assms unfolding cpt_def by auto
+unfolding cpt_def by auto
 
 lemma cpt_singl[simp]:
 "cpt {p} env \<pi>l \<longleftrightarrow> env p < length \<pi>l"
@@ -179,7 +179,7 @@ where
 
 lemma eqOn_Un[simp]:
 "eqOn (P \<union> Q) env \<pi>l env1 \<pi>l1 \<longleftrightarrow> eqOn P env \<pi>l env1 \<pi>l1 \<and> eqOn Q env \<pi>l env1 \<pi>l1"
-using assms unfolding eqOn_def by auto
+unfolding eqOn_def by auto
 
 lemma eqOn_singl[simp]:
 "eqOn {p} env \<pi>l env1 \<pi>l1 \<longleftrightarrow> \<pi>l!(env p) = \<pi>l1!(env1 p)"

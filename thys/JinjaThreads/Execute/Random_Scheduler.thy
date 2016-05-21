@@ -124,7 +124,7 @@ lemma next_thread_eq_SomeD:
   and "thr'_invar active" "random_scheduler_invar seed T"
   shows "t \<in> thr'_\<alpha> active"
 using assms
-by(auto simp add: next_thread_def thr'.to_list_correct split: split_if_asm dest: select[of _ seed])
+by(auto simp add: next_thread_def thr'.to_list_correct split: if_split_asm dest: select[of _ seed])
 
 lemma random_scheduler_spec:
   assumes det: "\<alpha>.deterministic I"

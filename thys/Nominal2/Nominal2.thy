@@ -109,7 +109,7 @@ let
     (raw_bind bn, SOME (replace_typ dts_env ty), NoSyn)) bn_funs
   
   val bn_eqs' = map (fn (attr, trm) => 
-    (attr, replace_term (cnstrs_env @ bn_fun_env) dts_env trm)) bn_eqs
+    ((attr, replace_term (cnstrs_env @ bn_fun_env) dts_env trm), [])) bn_eqs
 in
   (bn_funs', bn_eqs') 
 end 
@@ -260,15 +260,15 @@ let
 
   val raw_fv_eqvt = 
     raw_prove_eqvt (raw_fvs @ raw_fv_bns) raw_fv_bns_induct (raw_fv_defs @ raw_perm_simps) 
-      (Local_Theory.restore lthy_tmp)
+      (Local_Theory.reset lthy_tmp)
     
   val raw_size_eqvt =
     let
       val RawDtInfo {raw_size_trms, raw_size_thms, raw_induct_thms, ...} = raw_dt_info
     in
       raw_prove_eqvt raw_size_trms raw_induct_thms (raw_size_thms @ raw_perm_simps) 
-        (Local_Theory.restore lthy_tmp)
-        |> map (rewrite_rule (Local_Theory.restore lthy_tmp)
+        (Local_Theory.reset lthy_tmp)
+        |> map (rewrite_rule (Local_Theory.reset lthy_tmp)
             @{thms permute_nat_def[THEN eq_reflection]})
         |> map (fn thm => thm RS @{thm sym})
     end 
@@ -489,7 +489,7 @@ let
   (* generating the prefix for the theorem names *)
   val thms_name = 
     the_default (Binding.name (space_implode "_" qty_names)) opt_thms_name 
-  fun thms_suffix s = Binding.qualified true s thms_name 
+  fun thms_suffix s = Binding.qualify_name true thms_name s
   val case_names_attr = Attrib.internal (K (Rule_Cases.case_names cnstr_names))
 
   val infos = mk_infos qty_full_names qeq_iffs' qdistincts qstrong_exhaust_thms qstrong_induct_thms
@@ -582,7 +582,7 @@ let
   val lthy = Named_Target.theory_init thy
 
   val ((bn_funs, bn_eqs), lthy') = 
-    Specification.read_spec bn_fun_strs bn_eq_strs lthy
+    Specification.read_multi_specs bn_fun_strs bn_eq_strs lthy
 
   fun prep_bn_fun ((bn, T), mx) = (bn, T, mx) 
   
@@ -727,7 +727,7 @@ val dt_parser =
 
 (* binding function parser *)
 val bnfun_parser = 
-  Scan.optional (@{keyword "binder"} |-- Parse.fixes -- Parse_Spec.where_alt_specs) ([], [])
+  Scan.optional (@{keyword "binder"} |-- Parse.fixes -- Parse_Spec.where_multi_specs) ([], [])
 
 (* main parser *)
 val main_parser =

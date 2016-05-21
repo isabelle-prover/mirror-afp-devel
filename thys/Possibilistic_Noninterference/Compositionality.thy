@@ -24,8 +24,8 @@ proof-
    by (metis PL.Atm_transT_invert presAtm_def)
   }
   moreover have "discr (Atm atm) \<Longrightarrow> presAtm atm"
-  by (metis Atm assms presAtm_def discr_transT)
-  ultimately show ?thesis using assms by blast
+    by (metis Atm presAtm_def discr_transT)
+  ultimately show ?thesis by blast
 qed
 
 theorem discr_If[simp]:
@@ -122,7 +122,7 @@ proof-
   }
   moreover have "discr0 (Atm atm) \<Longrightarrow> presAtm atm"
   by (metis Atm discr0_MtransT presAtm_def mustT_Atm transT_MtransT)
-  ultimately show ?thesis using assms by blast
+  ultimately show ?thesis by blast
 qed
 
 theorem discr0_If[simp]:

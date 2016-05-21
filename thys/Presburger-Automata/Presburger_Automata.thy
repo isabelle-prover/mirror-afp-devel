@@ -224,25 +224,43 @@ lemma add_leaves_mono:
 
 lemma add_leaves_binop_subset:
   "set (add_leaves (bdd_binop f b b') [f x y. x \<leftarrow> xs, y \<leftarrow> ys]) \<subseteq>
-   (\<Union>x\<in>set (add_leaves b xs). \<Union>y\<in>set (add_leaves b' ys). {f x y})"
-  apply (induct f b b' arbitrary: xs ys rule: bdd_binop.induct)
-  apply auto
-  apply (drule_tac ys1="[f x y. x \<leftarrow> add_leaves l xs, y \<leftarrow> List.insert y ys]" in
-    rev_subsetD [OF _ add_leaves_mono])
-  apply (simp add: image_eq_UN)
-  apply (drule meta_spec, drule meta_spec, drule subsetD, assumption)
-  apply (simp add: image_eq_UN)
-  apply (drule_tac ys1="[f x y. x \<leftarrow> List.insert x xs, y \<leftarrow> add_leaves l ys]" in
-    rev_subsetD [OF _ add_leaves_mono])
-  apply (simp add: image_eq_UN)
-  apply (drule meta_spec, drule meta_spec, drule subsetD, assumption)
-  apply (simp add: image_eq_UN)
-  apply (drule_tac ys1="[f x y. x \<leftarrow> add_leaves l\<^sub>1 xs, y \<leftarrow> add_leaves l\<^sub>2 ys]" in
-    rev_subsetD [OF _ add_leaves_mono])
-  apply (simp add: image_eq_UN)
-  apply (drule meta_spec, drule meta_spec, drule subsetD, assumption)
-  apply (simp add: image_eq_UN)
-  done
+   (\<Union>x\<in>set (add_leaves b xs). \<Union>y\<in>set (add_leaves b' ys). {f x y})" (is "?A \<subseteq> ?B")
+proof -
+  have "?A \<subseteq> (\<Union>x\<in>set (add_leaves b xs). f x ` set (add_leaves b' ys))"
+  proof (induct f b b' arbitrary: xs ys rule: bdd_binop.induct)
+    case (1 f x y xs ys) then show ?case by auto
+  next
+    case (2 f l r y xs ys) then show ?case
+    apply auto
+    apply (drule_tac ys1="[f x y. x \<leftarrow> add_leaves l xs, y \<leftarrow> List.insert y ys]" in
+      rev_subsetD [OF _ add_leaves_mono])
+    apply auto
+    apply (drule meta_spec, drule meta_spec, drule subsetD, assumption)
+    apply simp
+    done
+  next
+    case (3 f x l r xs ys) then show ?case
+    apply auto
+    apply (drule_tac ys1="[f x y. x \<leftarrow> List.insert x xs, y \<leftarrow> add_leaves l ys]" in
+      rev_subsetD [OF _ add_leaves_mono])
+    apply auto
+    apply (drule meta_spec, drule meta_spec, drule subsetD, assumption)
+    apply simp
+    done
+  next
+    case (4 f l\<^sub>1 r\<^sub>1 l\<^sub>2 r\<^sub>2 xs ys) then show ?case
+    apply auto
+    apply (drule_tac ys1="[f x y. x \<leftarrow> add_leaves l\<^sub>1 xs, y \<leftarrow> add_leaves l\<^sub>2 ys]" in
+      rev_subsetD [OF _ add_leaves_mono])
+    apply simp
+    apply (drule meta_spec, drule meta_spec, drule subsetD, assumption)
+    apply simp
+    done
+  qed
+  also have "(\<Union>x\<in>set (add_leaves b xs). f x ` set (add_leaves b' ys)) = ?B"
+    by auto
+  finally show ?thesis .
+qed
 
 
 section {* DFAs *}

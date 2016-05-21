@@ -54,14 +54,14 @@ proof (rule conjI; erule conjE)
     fix z z'
     assume "(p(x := y, inv p y := x)) z = (p(x := y, inv p y := x)) z'"
     from this a show "z = z'"
-      by (auto split: split_if_asm simp add: inv_f_eq inj_eq)
+      by (auto split: if_split_asm simp add: inv_f_eq inj_eq)
   qed
 next
   assume a: "inj p" "surj p" "p x = x"
   {
     fix x'
     from a have "(p(x := y, inv p y := x)) (((inv p)(y := x, x := inv p y)) x') = x'"
-      by (auto split: split_if_asm) (metis surj_f_inv_f)+
+      by (auto split: if_split_asm) (metis surj_f_inv_f)+
   }
   from this show "surj (p(x := y, inv p y := x))" by (metis surjI)
 qed
@@ -84,7 +84,7 @@ proof (rule bij_imp_permutes')
     by (auto elim: permutesE simp add: bij_inv_eq_iff)
       (simp add: assms(1) permutes_in_image permutes_inv)
   from assms have "inj (p(x := x, inv p x := p x))"
-    by (intro injI) (auto split: split_if_asm; metis permutes_inverses(2))+
+    by (intro injI) (auto split: if_split_asm; metis permutes_inverses(2))+
   from assms this show "bij (p(x := x, inv p x := p x))"
     by (metis UNIV_I bij_betw_imageI bij_betw_swap_iff permutes_inj permutes_surj surj_f_inv_f swap_def)
 qed
@@ -370,7 +370,7 @@ next
         from 1 2 bij have neq: "d (inv d' y') \<noteq> x \<and> d' (inv d y) \<noteq> x"
           by (metis Diff_iff bij_inv_eq_iff derangements_fixpoint singletonI)
         from eq have "(d(x := y, inv d y := x)) z = (d'(x := y', inv d' y' := x)) z" by auto
-        from y d_x d_d neq this show "d z = d' z" by (auto split: split_if_asm)
+        from y d_x d_d neq this show "d z = d' z" by (auto split: if_split_asm)
       qed
       from y this have "y = y' & d = d'" by auto
     }
@@ -474,7 +474,7 @@ lemma round_eqI:
   assumes "abs(real (n :: nat) - x) < 1 / 2"
   shows "round x = real (n :: nat)"
 using assms unfolding round_def
-by (simp add: floor_eq[of n] abs_real_def split: split_if_asm)
+by (simp add: floor_eq[of n] abs_real_def split: if_split_asm)
 
 theorem derangements_formula:
   assumes "n \<noteq> 0" "finite S" "card S = n"

@@ -204,7 +204,7 @@ structure Locale_Code :LOCALE_CODE = struct
         val pat = Thm.term_of cpat;
         val name = inst_name lthy pat;
         val ((_,(_,def_thm)),lthy) 
-          = Local_Theory.define ((Binding.name name,Mixfix.NoSyn),
+          = Local_Theory.define ((Binding.name name,NoSyn),
              ((Binding.name (Thm.def_name name),[]),pat)) lthy;
         val thms' = map (Local_Defs.fold lthy [def_thm]) thms;
       in ((def_thm,thms'),lthy) end)

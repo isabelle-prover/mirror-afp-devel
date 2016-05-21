@@ -88,7 +88,7 @@ next
   ultimately have "P,h' \<turnstile> x' (:\<le>) E(V\<mapsto>T)" 
     by(auto intro: IH[simplified])
   with `P,h' \<turnstile> x (:\<le>) E` show ?case
-    by(auto simp add: lconf_def split: split_if_asm)
+    by(auto simp add: lconf_def split: if_split_asm)
 next
   case (RedCallExternal s a U M Ts T' D vs ta va h' ta' e' s')
   from `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` have "hp s \<unlhd> h'" by(rule red_external_hext)

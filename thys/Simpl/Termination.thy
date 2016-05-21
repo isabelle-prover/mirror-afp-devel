@@ -770,7 +770,7 @@ next
   case Guard 
   thus ?case
     by (cases s) (auto elim: terminates_Normal_elim_cases intro: terminates.intros
-                  split: split_if_asm)
+                  split: if_split_asm)
 next
   case Throw thus ?case by simp
 next
@@ -1428,7 +1428,7 @@ next
   have "s \<notin> g" by fact
   thus ?case
     by (cases "merge_guards c")
-       (auto intro: terminates.intros split: split_if_asm simp add: Let_def)
+       (auto intro: terminates.intros split: if_split_asm simp add: Let_def)
 qed (fastforce intro: terminates.intros dest: exec_merge_guards_to_exec)+
 
 lemma terminates_merge_guards_to_terminates_Normal:

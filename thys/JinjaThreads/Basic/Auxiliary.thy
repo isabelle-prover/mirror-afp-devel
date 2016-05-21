@@ -257,7 +257,7 @@ by (metis replicate_Suc replicate_append_same)
 lemma map_eq_append_conv:
   "map f xs = ys @ zs \<longleftrightarrow> (\<exists>ys' zs'. map f ys' = ys \<and> map f zs' = zs \<and> xs = ys' @ zs')"
 apply(rule iffI)
- apply(metis append_eq_conv_conj append_take_drop_id assms drop_map take_map)
+ apply(metis append_eq_conv_conj append_take_drop_id drop_map take_map)
 by(clarsimp)
 
 lemma append_eq_map_conv:
@@ -319,7 +319,7 @@ by(induct xs) simp_all
 
 lemma dropWhile_eq_ConsD:
   "dropWhile P xs = y # ys \<Longrightarrow> y \<in> set xs \<and> \<not> P y"
-by(induct xs)(auto split: split_if_asm)
+by(induct xs)(auto split: if_split_asm)
 
 lemma dropWhile_eq_hd_conv: "dropWhile P xs = hd xs # rest \<longleftrightarrow> xs \<noteq> [] \<and> rest = tl xs \<and> \<not> P (hd xs)"
 by (metis append_Nil append_is_Nil_conv dropWhile_eq_Cons_conv list.sel(1) neq_Nil_conv takeWhile_dropWhile_id takeWhile_eq_Nil_conv list.sel(3))
@@ -549,7 +549,7 @@ by(induct xs arbitrary: A) auto
 lemma snd_o_Pair_conv_id: "snd o Pair a = id"
 by(simp add: o_def id_def)
 
-lemma if_split:
+lemma if_intro:
   "\<lbrakk> P \<Longrightarrow> A; \<not> P \<Longrightarrow> B \<rbrakk> \<Longrightarrow> if P then A else B"
 by(auto)
 

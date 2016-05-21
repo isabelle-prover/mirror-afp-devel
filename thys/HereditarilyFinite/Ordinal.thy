@@ -478,7 +478,7 @@ definition ord_recp :: "hf \<Rightarrow> (hf \<Rightarrow> hf) \<Rightarrow> (hf
        else y = H x)"
 
 lemma ord_recp_functional: "ord_recp T G H x y \<Longrightarrow> ord_recp T G H x y' \<Longrightarrow> y' = y"
-  by (auto simp: ord_recp_def ord_rec_Seq_functional split: split_if_asm)
+  by (auto simp: ord_recp_def ord_rec_Seq_functional split: if_split_asm)
 
 lemma ord_recp_succ_iff:
   assumes k: "Ord k" shows "ord_recp T G H (succ k) z \<longleftrightarrow> (\<exists>y. z = G y & ord_recp T G H k y)"

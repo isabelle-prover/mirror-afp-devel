@@ -60,7 +60,7 @@ by(induct vs, auto)
 
 lemma inline_call_eq_Val_aux:
   "inline_call e E = Val v \<Longrightarrow> call E = \<lfloor>aMvs\<rfloor> \<Longrightarrow> e = Val v"
-by(induct E)(auto split: split_if_asm)
+by(induct E)(auto split: if_split_asm)
 
 lemmas inline_call_eq_Val [dest] = inline_call_eq_Val_aux inline_call_eq_Val_aux[OF sym, THEN sym]
 
@@ -72,7 +72,7 @@ by(induct vs) auto
 
 lemma  fixes E :: "('a,'b, 'addr) exp" and Es :: "('a,'b, 'addr) exp list"
   shows inline_call_eq_Throw [dest]: "inline_call e E = Throw a \<Longrightarrow> call E = \<lfloor>aMvs\<rfloor> \<Longrightarrow> e = Throw a \<or> e = addr a"
-by(induct E rule: exp.induct)(fastforce split:split_if_asm)+
+by(induct E rule: exp.induct)(fastforce split:if_split_asm)+
 
 lemma Throw_eq_inline_call_eq [dest]:
   "inline_call e E = Throw a \<Longrightarrow> call E = \<lfloor>aMvs\<rfloor> \<Longrightarrow> Throw a = e \<or> addr a = e"
@@ -80,7 +80,7 @@ by(auto dest: inline_call_eq_Throw[OF sym])
 
 lemma is_vals_inline_calls [dest]:
   "\<lbrakk> is_vals (inline_calls e es); calls es = \<lfloor>aMvs\<rfloor> \<rbrakk> \<Longrightarrow> is_val e"
-by(induct es, auto split: split_if_asm)
+by(induct es, auto split: if_split_asm)
 
 lemma [dest]: "\<lbrakk> inline_calls e es = map Val vs; calls es = \<lfloor>aMvs\<rfloor> \<rbrakk> \<Longrightarrow> is_val e"
               "\<lbrakk> map Val vs = inline_calls e es; calls es = \<lfloor>aMvs\<rfloor> \<rbrakk> \<Longrightarrow> is_val e"
@@ -89,14 +89,14 @@ by(fastforce intro!: is_vals_inline_calls del: is_val.intros simp add: is_vals_c
 lemma inline_calls_eq_Val_Throw [dest]:
   "\<lbrakk> inline_calls e es = map Val vs @ Throw a # es'; calls es = \<lfloor>aMvs\<rfloor> \<rbrakk> \<Longrightarrow> e = Throw a \<or> is_val e"
 apply(induct es arbitrary: vs a es')
-apply(auto simp add: Cons_eq_append_conv split: split_if_asm)
+apply(auto simp add: Cons_eq_append_conv split: if_split_asm)
 done
 
 lemma Val_Throw_eq_inline_calls [dest]:
   "\<lbrakk> map Val vs @ Throw a # es' = inline_calls e es; calls es = \<lfloor>aMvs\<rfloor> \<rbrakk> \<Longrightarrow> Throw a = e \<or> is_val e"
 by(auto dest: inline_calls_eq_Val_Throw[OF sym])
 
-declare option.split [split del] split_if_asm [split]  split_if [split del]
+declare option.split [split del] if_split_asm [split]  if_split [split del]
 
 lemma call_inline_call [simp]:
   "call e = \<lfloor>aMvs\<rfloor> \<Longrightarrow> call (inline_call {v:T=vo; e'} e) = call e'"
@@ -107,40 +107,40 @@ apply(fastforce)
 apply(fastforce)
 apply(fastforce)
 apply(fastforce)
-apply(fastforce split: split_if)
+apply(fastforce split: if_split)
 apply(fastforce)
 apply(fastforce)
-apply(fastforce split: split_if)
+apply(fastforce split: if_split)
 apply(clarsimp)
- apply(fastforce split: split_if)
-apply(fastforce split: split_if)
+ apply(fastforce split: if_split)
+apply(fastforce split: if_split)
 apply(fastforce)
 apply(fastforce)
-apply(fastforce split: split_if)
-apply(fastforce split: split_if)
-apply(fastforce)
-apply(fastforce)
-apply(fastforce)
+apply(fastforce split: if_split)
+apply(fastforce split: if_split)
 apply(fastforce)
 apply(fastforce)
 apply(fastforce)
 apply(fastforce)
 apply(fastforce)
 apply(fastforce)
-apply(fastforce split: split_if)
+apply(fastforce)
+apply(fastforce)
+apply(fastforce)
+apply(fastforce split: if_split)
 done
 
-declare option.split [split] split_if [split] split_if_asm [split del]
+declare option.split [split] if_split [split] if_split_asm [split del]
 
 lemma fv_inline_call: "fv (inline_call e' e) \<subseteq> fv e \<union> fv e'"
   and fvs_inline_calls: "fvs (inline_calls e' es) \<subseteq> fvs es \<union> fv e'"
-by(induct e and es rule: call.induct calls.induct)(fastforce split: split_if_asm)+
+by(induct e and es rule: call.induct calls.induct)(fastforce split: if_split_asm)+
 
 lemma contains_insync_inline_call_conv:
   "contains_insync (inline_call e e') \<longleftrightarrow> contains_insync e \<and> call e' \<noteq> None \<or> contains_insync e'"
   and contains_insyncs_inline_calls_conv:
   "contains_insyncs (inline_calls e es') \<longleftrightarrow> contains_insync e \<and> calls es' \<noteq> None \<or> contains_insyncs es'"
-by(induct e' and es' rule: call.induct calls.induct)(auto split: split_if_asm simp add: is_vals_conv)
+by(induct e' and es' rule: call.induct calls.induct)(auto split: if_split_asm simp add: is_vals_conv)
 
 lemma contains_insync_inline_call [simp]:
   "call e' = \<lfloor>aMvs\<rfloor> \<Longrightarrow> contains_insync (inline_call e e') \<longleftrightarrow> contains_insync e \<or> contains_insync e'"
@@ -163,7 +163,7 @@ apply(fastforce dest: subsetD)+
 done
 
 lemma final_inline_callD: "\<lbrakk> final (inline_call E e); is_call e \<rbrakk> \<Longrightarrow> final E"
-by(induct e)(auto simp add: is_call_def split: split_if_asm)
+by(induct e)(auto simp add: is_call_def split: if_split_asm)
 
 lemma collapse_finalD: "\<lbrakk> final (collapse (e, es)); \<forall>e\<in>set es. is_call e \<rbrakk> \<Longrightarrow> final e"
 by(induct es arbitrary: e)(auto dest: final_inline_callD)

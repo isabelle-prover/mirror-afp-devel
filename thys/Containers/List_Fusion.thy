@@ -113,7 +113,7 @@ next
   fix s n
   assume "terminates_within s = Some n"
   then show "s \<in> terminates_on g"
-    by(induct rule: terminates_within.raw_induct[rotated 1, consumes 1])(auto simp add: split_beta split: split_if_asm intro: terminates_on.intros)
+    by(induct rule: terminates_within.raw_induct[rotated 1, consumes 1])(auto simp add: split_beta split: if_split_asm intro: terminates_on.intros)
 qed
 
 end
@@ -472,7 +472,7 @@ proof(rule wf_terminates)
   assume "fst ?g s"
   hence "filter_has_next g s" by simp
   thus "(snd (snd ?g s), s) \<in> ?R\<^sup>+"
-    by induct(subst filter_next.simps, auto simp add: split_beta filter_next.simps split del: split_if intro: trancl_into_trancl)
+    by induct(subst filter_next.simps, auto simp add: split_beta filter_next.simps split del: if_split intro: trancl_into_trancl)
 qed
 
 lemma has_next_filter_generator:
@@ -525,7 +525,7 @@ next
     case (Cons x' xs)
     from `x' # xs = list.unfoldr g s`[symmetric, simp]
     have [simp]: "fst (list.next g s) = x' \<and> list.has_next g s \<and> list.unfoldr g (snd (list.next g s)) = xs"
-      by(subst (asm) list.unfoldr.simps)(simp add: split_beta split: split_if_asm)
+      by(subst (asm) list.unfoldr.simps)(simp add: split_beta split: if_split_asm)
     from Cons.hyps(1)[of "snd (list.next g s)"] `x \<in> set (list.unfoldr g s)` `P x` show ?case
       by(subst has_next_filter_generator)(auto simp add: split_beta)
   qed
@@ -694,6 +694,6 @@ where "singleton_list_fusion gen state = (case list.unfoldr gen state of [_] \<R
 lemma singleton_list_fusion_code [code]:
   "singleton_list_fusion g s \<longleftrightarrow>
   list.has_next g s \<and> \<not> list.has_next g (snd (list.next g s))"
-by(auto 4 5 simp add: singleton_list_fusion_def split: list.split split_if_asm prod.splits elim: list.unfoldr.elims dest: sym)
+by(auto 4 5 simp add: singleton_list_fusion_def split: list.split if_split_asm prod.splits elim: list.unfoldr.elims dest: sym)
 
 end

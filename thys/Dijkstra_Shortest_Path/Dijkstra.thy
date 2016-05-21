@@ -810,7 +810,7 @@ begin
            refine_vcg)
     apply (auto 
       simp: \<alpha>s_def \<alpha>w_def \<alpha>r_def dinvarm_def res_invarm_def infty_unbox
-      split: split_if_asm
+      split: if_split_asm
     )
     done
 

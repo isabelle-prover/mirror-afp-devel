@@ -388,7 +388,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
             , List.map (fn (n, l) => ( ( (To_binding "", To_sbinding n)
                                        , List.map (fn s => (To_binding "", of_semi__typ s)) l)
                                      , NoSyn)) l)
-          , (To_binding "", To_binding ""))
+          , (To_binding "", To_binding "", To_binding ""))
         , [])]))
 | Theory_type_synonym (Type_synonym (n, v, l)) => in_theory
    (fn thy =>
@@ -398,7 +398,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
               (Isabelle_Typedecl.abbrev_cmd0 (SOME s_bind) thy (of_semi__typ l))) thy
      end)
 | Theory_type_notation (Type_notation (n, e)) => in_local
-   (Specification.type_notation_cmd true ("", true) [(To_string0 n, Mixfix (To_string0 e, [], 1000))])
+   (Specification.type_notation_cmd true ("", true) [(To_string0 n, Mixfix (Input.string (To_string0 e), [], 1000, Position.no_range))])
 | Theory_instantiation (Instantiation (n, n_def, expr)) => in_theory
    (fn thy =>
      let val name = To_string0 n
@@ -408,9 +408,9 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
     |> Class.instantiation (tycos, [], Syntax.read_sort (Proof_Context.init_global thy) "object")
     |> fold_map (fn _ => fn thy =>
         let val ((_, (_, ty)), thy) = Specification.definition_cmd
-                                       ( NONE
-                                       , ( (To_binding (To_string0 n_def ^ "_" ^ name ^ "_def"), [])
-                                         , of_semi__term expr)) false thy in
+                                       NONE []
+                                       ((To_binding (To_string0 n_def ^ "_" ^ name ^ "_def"), [])
+                                         , of_semi__term expr) false thy in
          (ty, thy)
         end) tycos
     |-> Class.prove_instantiation_exit_result (map o Morphism.thm) (fn ctxt => fn thms =>
@@ -420,24 +420,24 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
 | Theory_overloading (Overloading (n_c, e_c, n, e)) => in_theory
    (fn thy => thy
     |> Overloading.overloading_cmd [(To_string0 n_c, of_semi__term e_c, true)]
-    |> snd o Specification.definition_cmd (NONE, ((To_sbinding n, []), of_semi__term e)) false
+    |> snd o Specification.definition_cmd NONE [] ((To_sbinding n, []), of_semi__term e) false
     |> Local_Theory.exit_global)
 | Theory_consts (Consts (n, ty, symb)) => in_theory
    (Sign.add_consts_cmd [( To_sbinding n
                         , of_semi__typ ty
-                        , Mixfix ("(_) " ^ To_string0 symb, [], 1000))])
+                        , Mixfix (Input.string ("(_) " ^ To_string0 symb), [], 1000, Position.no_range))])
 | Theory_definition def => in_local
     let val (def, e) = case def of
         Definition e => (NONE, e)
       | Definition_where1 (name, (abbrev, prio), e) =>
           (SOME ( To_sbinding name
                 , NONE
-                , Mixfix ("(1" ^ of_semi__term abbrev ^ ")", [], To_nat prio)), e)
+                , Mixfix (Input.string ("(1" ^ of_semi__term abbrev ^ ")"), [], To_nat prio, Position.no_range)), e)
       | Definition_where2 (name, abbrev, e) =>
           (SOME ( To_sbinding name
                 , NONE
-                , Mixfix ("(" ^ of_semi__term abbrev ^ ")", [], 1000)), e) in
-    (snd o Specification.definition_cmd (def, ((@{binding ""}, []), of_semi__term e)) false)
+                , Mixfix (Input.string ("(" ^ of_semi__term abbrev ^ ")"), [], 1000, Position.no_range)), e) in
+    (snd o Specification.definition_cmd def [] ((@{binding ""}, []), of_semi__term e) false)
     end
 | Theory_lemmas (Lemmas_simp_thm (simp, s, l)) => in_local
    (fn lthy => (snd o Specification.theorems Thm.theoremK
@@ -455,7 +455,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
       false) lthy)
 | Theory_lemma (Lemma (n, l_spec, l_apply, o_by)) => in_local
    (fn lthy =>
-           Specification.theorem_cmd Thm.theoremK NONE (K I)
+           Specification.theorem_cmd true Thm.theoremK NONE (K I)
              (@{binding ""}, []) [] [] (Element.Shows [((To_sbinding n, [])
                                                        ,[((String.concatWith (" \<Longrightarrow> ")
                                                              (List.map of_semi__term l_spec)), [])])])
@@ -464,7 +464,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
         |> global_terminal_proof o_by)
 | Theory_lemma (Lemma_assumes (n, l_spec, concl, l_apply, o_by)) => in_local
    (fn lthy => lthy
-        |> Specification.theorem_cmd Thm.theoremK NONE (K I)
+        |> Specification.theorem_cmd true Thm.theoremK NONE (K I)
              (To_sbinding n, [])
              []
              (List.map (fn (n, (b, e)) =>
@@ -486,9 +486,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
               |> fold (fn l => fold semi__command_state l o Proof.local_qed arg) l
               |> Proof.global_qed arg end))
 | Theory_axiomatization (Axiomatization (n, e)) => in_theory
-   (#2 o Specification.axiomatization_cmd
-                                     []
-                                     [((To_sbinding n, []), [of_semi__term e])])
+   (#2 o Specification.axiomatization_cmd [] [] [((To_sbinding n, []), [of_semi__term e])])
 | Theory_section _ => in_theory I
 | Theory_text _ => in_theory I
 | Theory_ML (SML ml) =>
@@ -550,7 +548,7 @@ fun all_meta aux ret = let open META open META_overload in fn
                                      |> Local_Theory.new_group
                                      |> f
                                      |> Local_Theory.reset_group
-                                     |> Local_Theory.restore))) l
+                                     |> Local_Theory.reset))) l
        |> Local_Theory.exit_global)
 | META_boot_generation_syntax _ => ret o I
 | META_boot_setup_env _ => ret o I
@@ -1105,7 +1103,7 @@ end
 subsection\<open>Factoring All Meta Commands Together\<close>
 
 setup\<open>ML_Antiquotation.inline @{binding mk_string} (Scan.succeed
-"(fn ctxt => fn x => Pretty.string_of (Pretty.from_ML (pretty_ml (PolyML.prettyRepresentation (x, Config.get ctxt ML_Options.print_depth)))))")
+"(fn ctxt => fn x => ML_Pretty.string_of_polyml (ML_system_pretty (x, Config.get ctxt ML_Print_Depth.print_depth)))")
 \<close>
 
 ML\<open>
@@ -1113,7 +1111,7 @@ ML\<open>
 fun exec_deep (env, output_header_thy, seri_args, filename_thy, tmp_export_code, l_obj) thy0 =
   let open Generation_mode in
   let val of_arg = META.isabelle_of_compiler_env_config META.isabelle_apply I in
-  let fun def s = in_local (snd o Specification.definition_cmd (NONE, ((@{binding ""}, []), s)) false) in
+  let fun def s = in_local (snd o Specification.definition_cmd NONE [] ((@{binding ""}, []), s) false) in
   let val name_main = Deep.mk_free (Proof_Context.init_global thy0)
                                    Deep0.Export_code_env.Isabelle.argument_main [] in
   thy0
@@ -1174,7 +1172,7 @@ fun outer_syntax_command0 mk_string cmd_spec cmd_descr parser get_all_meta_embed
                                 (mk_string
                                   (Proof_Context.init_global
                                     (case n of NONE => thy
-                                             | SOME n => Config.put_global ML_Options.print_depth n thy))
+                                             | SOME n => Config.put_global ML_Print_Depth.print_depth n thy))
                                   name) in
                   (Gen_syntax_print n, thy)
                   end)

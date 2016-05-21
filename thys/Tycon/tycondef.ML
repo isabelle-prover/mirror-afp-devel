@@ -238,7 +238,7 @@ fun define_const
 
 fun add_qualified_thm name (dbind, thm) =
     yield_singleton Global_Theory.add_thms
-      ((Binding.qualified true name dbind, thm), [])
+      ((Binding.qualify_name true dbind name, thm), [])
 
 (******************************************************************************)
 (*************************** defining map functions ***************************)
@@ -497,8 +497,8 @@ fun domain_isomorphism
         val tc_eqn = Logic.mk_equals (tc_const newT, Abs ("", Term.itselfT newT, tc))
         val ((_, (_, tc_ldef)), lthy) = thy
           |> Class.instantiation ([full_tname], lhs_tfrees, @{sort tycon})
-          |> Specification.definition (NONE,
-              ((Binding.prefix_name "tc_" (Binding.suffix_name "_def" tbind), []), tc_eqn))
+          |> Specification.definition NONE []
+              ((Binding.prefix_name "tc_" (Binding.suffix_name "_def" tbind), []), tc_eqn)
         val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy)
         val tc_def = singleton (Proof_Context.export lthy ctxt_thy) tc_ldef
         val thy = lthy
@@ -769,7 +769,7 @@ fun domain_isomorphism
           |> Binding.prefix_name "fmapU_"
         val ((_, (_, fmap_ldef)), lthy) = thy
           |> Class.instantiation ([full_tname], lhs_tfrees, @{sort prefunctor})
-          |> Specification.definition (NONE, ((fmap_def_bind, []), fmap_eqn))
+          |> Specification.definition NONE [] ((fmap_def_bind, []), fmap_eqn)
         val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy)
         val fmap_def = singleton (Proof_Context.export lthy ctxt_thy) fmap_ldef
         fun tacf ctxt = EVERY

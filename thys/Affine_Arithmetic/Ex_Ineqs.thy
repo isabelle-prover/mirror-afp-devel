@@ -1,15 +1,15 @@
-section{* Examples on Proving Inequalities *}
+section\<open>Examples on Proving Inequalities\<close>
 theory Ex_Ineqs
 imports Affine_Code
 begin
-text{*\label{sec:examples}*}
+text\<open>\label{sec:examples}\<close>
 
-text {* The examples below are taken from
+text \<open>The examples below are taken from
   @{url "http://link.springer.com/chapter/10.1007/978-3-642-38088-4_26"},
   ``Formal Verification of Nonlinear Inequalities with Taylor Interval Approximations'',
   Alexey Solovyev, Thomas C. Hales,
   NASA Formal Methods 2013, LNCS 7871
-  *}
+\<close>
 
 primrec prove_pos::"nat \<Rightarrow> nat \<Rightarrow> real \<Rightarrow> real \<Rightarrow>
     (nat \<Rightarrow> real \<Rightarrow> 'a::executable_euclidean_space aform \<Rightarrow> _ \<Rightarrow> real aform option) \<Rightarrow>
@@ -29,7 +29,7 @@ approximate_affine schwefel "\<lambda>(x1, x2, x3).
 
 lemma
   "prove_pos 80 20 (FloatR  1 (-1)) (FloatR 1 1) schwefel (aform_of_ivl (-10,-10,-10) (10,10,10))"
-  by eval --"slow: 100s"
+  by eval \<comment>"slow: 100s"
 
 approximate_affine delta6 "\<lambda>(x1, x2, x3, x4, x5, x6).
   (x1 * x4 * (-x1 + x2 + x3 + -x4 + x5 + x6) +

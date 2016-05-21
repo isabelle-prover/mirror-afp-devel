@@ -37,7 +37,7 @@ lemma Invoke_handlers:
   \<exists>(f,t,D,h,d) \<in> set (relevant_entries P (Invoke n M) pc xt). 
    P \<turnstile> C \<preceq>\<^sup>* D \<and> pc \<in> {f..<t} \<and> pc' = h \<and> d' = d"
   by (induct xt) (auto simp add: relevant_entries_def matches_ex_entry_def 
-                                 is_relevant_entry_def split: split_if_asm)
+                                 is_relevant_entry_def split: if_split_asm)
 
 
 text {*
@@ -157,7 +157,7 @@ lemma exec_instr_xcpt_h:
 (*<*)
 proof -
   note [simp] = split_beta
-  note [split] = split_if_asm option.split_asm 
+  note [split] = if_split_asm option.split_asm 
   
   assume wt: ?wt ?correct
   hence pre: "preallocated h" by (simp add: correct_state_def hconf_def)
@@ -178,7 +178,7 @@ lemma conf_sys_xcpt:
 lemma match_ex_table_SomeD:
   "match_ex_table P C pc xt = Some (pc',d') \<Longrightarrow> 
   \<exists>(f,t,D,h,d) \<in> set xt. matches_ex_entry P C pc (f,t,D,h,d) \<and> h = pc' \<and> d=d'"
-  by (induct xt) (auto split: split_if_asm)
+  by (induct xt) (auto split: if_split_asm)
 
 
 text {*
@@ -260,7 +260,7 @@ proof -
       conf: "P,h \<turnstile> Addr xcp :\<le> Class D"
     proof (cases "ins!pc")
       case Return
-      with xp have False by (auto simp: split_beta split: split_if_asm)
+      with xp have False by (auto simp: split_beta split: if_split_asm)
       thus ?thesis ..
     next
       case New with xp
@@ -272,7 +272,7 @@ proof -
     next
       case Getfield with xp
       have [simp]: "xcp = addr_of_sys_xcpt NullPointer" 
-        by (simp add: split_beta split: split_if_asm)
+        by (simp add: split_beta split: if_split_asm)
       with Getfield match preh have "is_relevant_entry P (ins!pc) pc (f,t,D,pc',d')"
         by (simp add: is_relevant_entry_def)
       with match preh xt
@@ -280,7 +280,7 @@ proof -
     next
       case Putfield with xp
       have [simp]: "xcp = addr_of_sys_xcpt NullPointer" 
-        by (simp add: split_beta split: split_if_asm)
+        by (simp add: split_beta split: if_split_asm)
       with Putfield match preh have "is_relevant_entry P (ins!pc) pc (f,t,D,pc',d')"
         by (simp add: is_relevant_entry_def)
       with match preh xt
@@ -288,7 +288,7 @@ proof -
     next
       case Checkcast with xp
       have [simp]: "xcp = addr_of_sys_xcpt ClassCast" 
-        by (simp add: split_beta split: split_if_asm)
+        by (simp add: split_beta split: if_split_asm)
       with Checkcast match preh have "is_relevant_entry P (ins!pc) pc (f,t,D,pc',d')"
         by (simp add: is_relevant_entry_def)
       with match preh xt
@@ -638,7 +638,7 @@ lemma Checkcast_correct:
     fst (exec_instr (ins!pc) P h stk loc C M pc frs) = None \<rbrakk> 
 \<Longrightarrow> P,\<Phi> \<turnstile> \<sigma>'\<surd>"
 (*<*)
-  apply (clarsimp simp add: wf_jvm_prog_phi_def split: split_if_asm)
+  apply (clarsimp simp add: wf_jvm_prog_phi_def split: if_split_asm)
   apply (drule (1) sees_method_fun)
   apply (blast intro: Cast_conf2)
   done
@@ -686,7 +686,7 @@ proof -
     by auto
 
   from stk' i mC s' xc have "ref \<noteq> Null"
-    by (simp add: split_beta split:split_if_asm)
+    by (simp add: split_beta split:if_split_asm)
   moreover from ref oT have "P,h \<turnstile> ref :\<le> Class D" ..
   ultimately obtain a D' fs where 
     a: "ref = Addr a" and h: "h a = Some (D', fs)" and D': "P \<turnstile> D' \<preceq>\<^sup>* D"
@@ -1058,7 +1058,7 @@ lemma hconf_start:
   apply (drule sym)
   apply (unfold start_heap_def)
   apply (insert wf)
-  apply (auto simp add: fun_upd_apply is_class_xcpt split: split_if_asm)
+  apply (auto simp add: fun_upd_apply is_class_xcpt split: if_split_asm)
   done
 (*>*)
     

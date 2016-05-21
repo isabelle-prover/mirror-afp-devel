@@ -1232,7 +1232,7 @@ next
   have not_finished': "\<forall>i < Suc k. \<not> (CS (f i) = cs \<and> CSS (f i) = css)" by fact
   with simul 
   have not_finished: "\<forall>i<Suc k. \<not> (pcs i = [] \<and> pcss i = [])"
-    by (auto simp add: CS_def CSS_def S_def split: split_if_asm)
+    by (auto simp add: CS_def CSS_def S_def split: if_split_asm)
   show ?case
   proof (clarify)
     fix i
@@ -1318,7 +1318,7 @@ next
             moreover 
             from css' cs' pcs_pcss_Suc_i
             obtain "pcs (Suc i) = p'@ps" and "pcss (Suc i) = []"
-              by (simp split: split_if_asm)
+              by (simp split: if_split_asm)
             ultimately show ?thesis
               using pcs_i pcss_Nil f_i f_Suc_i
               by (simp add: CS_def CSS_def S_def p_def)
@@ -1343,7 +1343,7 @@ next
             from css' pcs_pcss_Suc_i
             obtain "pcs (Suc i) = cs'" "pcss (Suc i) = [(pnorm@ps, pabr@ps)]"
               apply (cases "pcss (Suc i)")
-              apply (auto split: split_if_asm)
+              apply (auto split: if_split_asm)
               done
             ultimately show ?thesis
               using pcs_i pcss_Nil f_i f_Suc_i   
@@ -1376,7 +1376,7 @@ next
             moreover
             from cs'' css'' css' False pcs_pcss_Suc_i
             obtain "pcs (Suc i) = cs'" "pcss (Suc i) = css'''@pcss i"
-              apply (auto  split: split_if_asm)
+              apply (auto  split: if_split_asm)
               apply (drule (4) last_butlast_app)
               by simp
             ultimately show ?thesis
@@ -1400,7 +1400,7 @@ next
                 by simp
               from css'' Cons pcss_i_not_Nil
               have "hd css'' = hd (pcss i)"
-                by (auto simp add: neq_Nil_conv split: split_if_asm)
+                by (auto simp add: neq_Nil_conv split: if_split_asm)
               with cs'' cs''_Nil
                 Nil_change_css_step [where ass="[hd css'']" and
                 css="tl css''" and ass'="[]" and 
@@ -1413,7 +1413,7 @@ next
               moreover
               from css' css'' cs''_Nil Cons pcss_i_not_Nil pcs_pcss_Suc_i
               obtain "pcs (Suc i) = cs'" "pcss (Suc i) = tl (pcss i)" 
-                apply (clarsimp  split: split_if_asm)
+                apply (clarsimp  split: if_split_asm)
                 apply (drule (4) last_butlast_tl)
                 by simp
               ultimately show ?thesis
@@ -1425,7 +1425,7 @@ next
               obtain pnorm pabr
                 where css'': "css''= [(pnorm@cs,pabr@cs)]@css" and
                 pcss_i: "pcss i = [(pnorm,pabr)]"
-                by (force simp add: neq_Nil_conv split: split_if_asm)
+                by (force simp add: neq_Nil_conv split: if_split_asm)
               with cs''_Nil step_i_full
               have "\<Gamma>\<turnstile>([],[(pnorm@cs,pabr@cs)]@css,t'') \<rightarrow> (cs',css',t')"
                 by simp
@@ -1443,7 +1443,7 @@ next
               moreover
               from css'' css' cs' pcss_i pcs_pcss_Suc_i
               obtain "pcs (Suc i) = ?pcs_Suc_i" "pcss (Suc i) = []"
-                by (simp split: split_if_asm xstate.splits)
+                by (simp split: if_split_asm xstate.splits)
               ultimately
               show ?thesis
                 using pcss_i cs'' cs''_Nil f_i f_Suc_i
@@ -1495,7 +1495,7 @@ proof -
   have "\<Gamma>\<turnstile> (pcs 0, pcss 0, S (f 0)) \<rightarrow>\<^sup>* (pcs k, pcss k, S (f k))".
   moreover from f_0 simul [rule_format, of 0]
   have "(pcs 0, pcss 0, S (f 0)) = ([c],[],s)"
-    by (auto split: split_if_asm simp add: CS_def CSS_def S_def)
+    by (auto split: if_split_asm simp add: CS_def CSS_def S_def)
   ultimately show ?thesis by simp
 qed
 
@@ -1573,7 +1573,7 @@ next
         by (auto simp add: CSS_def CS_def cong: if_cong)
       from c_unfinished [rule_format, of k] f_k pcs_pcss_k
       have pcs_pcss_empty: "\<not> (pcs = [] \<and> pcss = [])" 
-        by (auto simp add: CS_def CSS_def S_def split: split_if_asm)
+        by (auto simp add: CS_def CSS_def S_def split: if_split_asm)
       show ?thesis
       proof (cases "pcss = []")
         case True
@@ -1661,13 +1661,13 @@ next
               by (auto split: xstate.splits)
             from css'' Cons pcss_k_not_Nil
             have "hd css'' = hd pcss"
-              by (auto simp add: neq_Nil_conv split: split_if_asm)
+              by (auto simp add: neq_Nil_conv split: if_split_asm)
             with css' cs' css'' cs''_Nil Cons pcss_k_not_Nil f_Suc_k eq_i_Suc_k  
             show ?thesis
               apply (rule_tac x="cs'" in exI)
               apply (rule_tac x="tl pcss" in exI)
               apply (clarsimp split: xstate.splits 
-                       simp add: CS_def CSS_def neq_Nil_conv split: split_if_asm)
+                       simp add: CS_def CSS_def neq_Nil_conv split: if_split_asm)
               done
           next
             case Nil
@@ -1675,7 +1675,7 @@ next
             obtain pnorm pabr
               where css'': "css''= [(pnorm@cs,pabr@cs)]@css" and
               pcss_k: "pcss = [(pnorm,pabr)]"
-              by (force simp add: neq_Nil_conv split: split_if_asm)
+              by (force simp add: neq_Nil_conv split: if_split_asm)
             with cs''_Nil step_i_full
             have "\<Gamma>\<turnstile>([],[(pnorm@cs,pabr@cs)]@css,t'') \<rightarrow> (cs',css',t')"
               by simp
@@ -1780,7 +1780,7 @@ proof -
         by iprover
       from pcs_pcss [rule_format, of k] CS_f_k CSS_f_k 
       have finished: "pcs k = []" "pcss k = []"
-        by (auto simp add: CS_def CSS_def S_def split: split_if_asm)
+        by (auto simp add: CS_def CSS_def S_def split: if_split_asm)
       from pcs_pcss
       have simul: "\<forall>i\<le>k. (if pcss i = [] then CSS (f i)=css \<and> CS (f i)=pcs i@cs 
                    else CS (f i)=pcs i \<and> 
@@ -1830,7 +1830,7 @@ proof -
     def "g" \<equiv> "\<lambda>i. (pcs i, pcss i, S (f i))"
     from pcs_pcss [rule_format, of 0] f_0
     have "g 0 = ([c],[],s)"
-      by (auto split: split_if_asm simp add: CS_def CSS_def S_def g_def)
+      by (auto split: if_split_asm simp add: CS_def CSS_def S_def g_def)
     moreover
     from steps_hd_drop_suffix_infinite [OF f_0 f_step unfinished pcs_pcss]
     have "\<forall>i. \<Gamma>\<turnstile>g i \<rightarrow> g (Suc i)"

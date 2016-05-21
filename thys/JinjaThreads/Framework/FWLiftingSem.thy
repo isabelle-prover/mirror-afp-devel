@@ -111,7 +111,7 @@ theorem redT_invariant:
 using redT
 proof(cases rule: redT_elims)
   case acquire thus ?thesis using esinvP 
-    by(auto intro!: ts_invI split: split_if_asm dest: ts_invD)
+    by(auto intro!: ts_invI split: if_split_asm dest: ts_invD)
 next
   case (normal x x' m')
   with esinvP

@@ -193,7 +193,7 @@ proof -
       hence aok': "actions_ok' s t ta'"
         and subset: "actions_subset ta' ta" by simp_all
       from wakeup aok' have "Notified \<in> set \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> \<or> WokenUp \<in> set \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub>"
-        by(auto simp add: wset_actions_ok_def split: split_if_asm)
+        by(auto simp add: wset_actions_ok_def split: if_split_asm)
       from ta_Wakeup_no_join_no_lock_no_interrupt[OF wfs tst red' this]
       have no_join: "collect_cond_actions \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> = {}" 
         and no_lock: "collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> = {}" 

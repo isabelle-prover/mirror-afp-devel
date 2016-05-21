@@ -434,7 +434,7 @@ local
   val avoids_parser =
     Scan.optional (@{keyword "avoids"} |-- Parse.enum1 "|" single_avoid_parser) []
 
-  val main_parser = Parse.xname -- avoids_parser
+  val main_parser = Parse.name -- avoids_parser
 in
   val _ =
     Outer_Syntax.local_theory_to_proof @{command_keyword nominal_inductive}

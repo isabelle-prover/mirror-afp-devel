@@ -202,24 +202,27 @@ lemma div_rat_poly_step_sur:
  assumes "(case a of (a, b) \<Rightarrow> (rp a, rp b)) = (div_rat_poly_step (rp q) \<circ> rat_of_int) x pair"
    shows "\<exists>c'. pair = (case c' of (a, b) \<Rightarrow> (rp a, rp b))"
 proof -
-  from assms
-  obtain a1 a2 where a12_def:"(rp a1, rp a2) = div_rat_poly_step (rp q) (rat_of_int x) pair"
-      by (metis (lifting) case_prod_unfold comp_apply)
-  let ?b = "(coeff (pCons (rat_of_int x) (snd pair)) (degree (rp q)) / coeff (rp q) (degree (rp q)))"
-  have a1: "rp a1 = pCons ?b (fst pair)"
-   and a2: "rp a2 = pCons (rat_of_int x) (snd pair) - smult ?b (rp q)"
-    using a12_def unfolding div_rat_poly_step_def Let_def by (auto split: prod.splits)
-  obtain p12 where "rp a1 = pCons p12 (fst pair)" using a1 by simp
-  then obtain p1 where p1: "rp p1 = fst pair" 
-    by (metis pCons_cases pCons_eq_iff ri.map_poly_pCons_hom)
-  obtain p21 p22 where "rp p21 = pCons p22 (snd pair)" using a2
-    by (metis (no_types, lifting) a1 cancel_ab_semigroup_add_class.diff_right_commute 
-       cancel_comm_monoid_add_class.diff_cancel coeff_pCons_0 diff_0_right minus_diff_eq 
-       ri.coeff_map_poly_hom ri.map_poly_minus ri.map_poly_smult)
-  then obtain p2 where p2: "rp p2 = snd pair"
-    by (metis pCons_cases pCons_eq_iff ri.map_poly_pCons_hom)
-  hence "pair = (rp p1, rp p2)" using p1 p2 by simp
-  thus ?thesis by auto
+  obtain b1 b2 where pair: "pair = (b1, b2)" by (cases pair) simp
+  def p12 \<equiv> "coeff (pCons (rat_of_int x) b2) (degree (rp q)) / coeff (rp q) (degree (rp q))"
+  obtain a1 a2 where "a = (a1, a2)" by (cases a) simp
+  with assms pair have "(rp a1, rp a2) = div_rat_poly_step (rp q) (rat_of_int x) (b1, b2)"
+    by simp    
+  then have a1: "rp a1 = pCons p12 b1"
+    and "rp a2 = pCons (rat_of_int x) b2 - smult p12 (rp q)"
+    by (auto split: prod.splits simp add: Let_def div_rat_poly_step_def p12_def)
+  then obtain p21 p22 where "rp p21 = pCons p22 b2"
+    by (auto simp add: field_simps)
+      (metis coeff_pCons_0 ri.map_poly_hom_add ri.map_poly_smult ri.coeff_map_poly_hom ri.map_poly_smult)
+  moreover obtain p21' p21q where "p21 = pCons p21' p21q"
+    by (rule pCons_cases)
+  ultimately obtain p2 where "b2 = rp p2 "
+    by auto
+  moreover obtain a1' a1q where "a1 = pCons a1' a1q"
+    by (rule pCons_cases)
+  with a1 obtain p1 where "b1 = rp p1"
+    by auto
+  ultimately have "pair = (rp p1, rp p2)" using pair by simp
+  then show ?thesis by auto
 qed
 
 lemma  pdivmod_then_div_mod_int_poly:

@@ -587,7 +587,7 @@ next
         "(q', round ?cfg p', p', m') \<in> network ?cfg"
         "rcvd ?cfg' = (rcvd ?cfg)(p' := (rcvd ?cfg p')(q' := 
                           if q' \<in> ?SHO then Some m' else Some m''))"
-        by (auto simp: fg_rcv_msg_def split del: split_if_asm)
+        by (auto simp: fg_rcv_msg_def split del: if_split_asm)
       with False rcvd p rd have "(p, ?rd n, q, m) \<in> network ?cfg" by auto
       with rho rd show ?thesis by (auto simp: fg_invariant1)
     qed

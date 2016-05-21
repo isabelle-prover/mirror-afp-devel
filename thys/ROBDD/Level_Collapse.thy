@@ -196,7 +196,6 @@ lemma cirules2[sep_heap_rules]:
 
 lemma litci_rule[sep_heap_rules]:
   "<bdd_relator rp s> litci v s <\<lambda>(r,s'). bdd_relator (insert (bf_lit v,r) rp) s'>"
-using assms
   apply(unfold litci_def)
   apply(subgoal_tac "\<And>t ab bb. (* introducing some vars\<dots> *)
          <bdd_relator (insert (bf_False, ab) (insert (bf_True, t) rp)) bb * true> 

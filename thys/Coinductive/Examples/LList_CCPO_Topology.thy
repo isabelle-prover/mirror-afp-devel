@@ -247,7 +247,7 @@ lemma Lim_at'_lfinite: "lfinite xs \<Longrightarrow> Lim (at' xs) f = f xs"
 
 lemma filterlim_at'_list:
   "(f \<longlongrightarrow> y) (at' (x::'a llist)) \<Longrightarrow> f \<midarrow>x\<rightarrow> y"
-  unfolding at'_def by (auto split: split_if_asm simp: open_singleton_iff_lfinite)
+  unfolding at'_def by (auto split: if_split_asm simp: open_singleton_iff_lfinite)
 
 lemma tendsto_mcont_llist': "mcont lSup lprefix lSup lprefix f \<Longrightarrow> (f \<longlongrightarrow> f x) (at' (x :: 'a llist))"
 by(auto simp add: at'_def nhds_lfinite[symmetric] open_singleton_iff_lfinite tendsto_at_iff_tendsto_nhds[symmetric] intro: tendsto_mcont_llist)
@@ -390,7 +390,7 @@ proof (rule tendsto_closed[where x=xss, OF closed_Collect_eq])
   assume "lfinite xs" 
   then show "lmap f (lconcat' xs) = lconcat' (lmap (lmap f) xs)"
     by (induct xs rule: lfinite.induct) (auto simp: lmap_lappend_distrib)
-qed (intro isCont_lconcat' isCont_lappend isCont_LCons continuous_within_id isCont_lmap)+
+qed (intro isCont_lconcat' isCont_lappend isCont_LCons continuous_ident isCont_lmap)+
 
 lemmas tendsto_Sup[THEN tendsto_compose, tendsto_intros] =
   mcont_SUP[OF mcont_id' mcont_const, THEN tendsto_mcont]
@@ -441,7 +441,7 @@ lemma ldropWhile'_LNil_I[simp]: "\<forall>x \<in> lset xs. P x \<Longrightarrow>
 
 lemma lnull_ldropWhile': "lnull (ldropWhile' P xs) \<longleftrightarrow> (\<forall>x \<in> lset xs. P x)" (is "?lhs \<longleftrightarrow> _")
 proof (intro iffI ballI)
-  fix x assume "x \<in> lset xs" ?lhs then show "P x" by induct (simp_all split: split_if_asm)
+  fix x assume "x \<in> lset xs" ?lhs then show "P x" by induct (simp_all split: if_split_asm)
 qed simp
 
 lemma lhd_lfilter': "lhd (lfilter' P xs) = lhd (ldropWhile' (Not \<circ> P) xs)"
@@ -487,7 +487,7 @@ primrec up :: "'a :: order \<Rightarrow> 'a list \<Rightarrow> 'a list" where
 | "up a (x # xs) = (if a < x then x # up x xs else up a xs)"
 
 lemma set_upD: "x \<in> set (up y xs) \<Longrightarrow> x \<in> set xs \<and> y < x"
-  by (induct xs arbitrary: y) (auto split: split_if_asm intro: less_trans)
+  by (induct xs arbitrary: y) (auto split: if_split_asm intro: less_trans)
 
 lemma prefixeq_up: "prefixeq (up a xs) (up a (xs @  ys))"
   by (induction xs arbitrary: a) auto
@@ -599,7 +599,7 @@ lemma mono_ext: assumes "xs \<le> ys" shows "extup a xs \<le> extup a ys" "extdo
   using assms[unfolded less_eq_list_def prefixeq_def] by (auto simp: less_eq_list_def prefixeq_ext)
 
 lemma set_ext: "set (extup a xs) \<subseteq> {a} \<union> set xs" "set (extdown a xs) \<subseteq> {a} \<union> set xs"
-  using assms by (induction xs arbitrary: a) auto
+  by (induction xs arbitrary: a) auto
 
 definition "lextup i l = Lim (at' l) (llist_of \<circ> extup i \<circ> list_of)"
 definition "lextdown i l = Lim (at' l) (llist_of \<circ> extdown i \<circ> list_of)"

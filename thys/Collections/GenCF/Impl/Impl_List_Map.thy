@@ -486,7 +486,7 @@ done
 
 lemma list_map_autoref_isSng[autoref_rules]:
   "(list_map_isSng, op_map_isSng) \<in> \<langle>Rk,Rv\<rangle>list_map_rel \<rightarrow> bool_rel"
-  using assms unfolding list_map_rel_def
+  unfolding list_map_rel_def
   by (blast dest!: param_list_map_isSng list_map_autoref_isSng_aux)
 
 lemma list_map_autoref_size_aux:

@@ -42,11 +42,11 @@ ML {* Outer_Syntax.command @{command_keyword "print_applicative"}
   (Scan.succeed (Toplevel.keep (Applicative.print_afuns o Toplevel.context_of))) *}
 
 attribute_setup applicative_unfold =
-  {* Scan.lift (Scan.option Parse.xname >> Applicative.add_unfold_attrib) *}
+  {* Scan.lift (Scan.option Parse.name >> Applicative.add_unfold_attrib) *}
   "register rules for unfolding to applicative expressions"
 
 attribute_setup applicative_lifted =
-  {* Scan.lift (Parse.xname >> Applicative.forward_lift_attrib) *}
+  {* Scan.lift (Parse.name >> Applicative.forward_lift_attrib) *}
   "lift an equation to an applicative functor"
 
 subsection \<open>Overloaded applicative operators\<close>

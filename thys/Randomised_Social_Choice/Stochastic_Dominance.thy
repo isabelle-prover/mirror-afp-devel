@@ -4,46 +4,10 @@ theory Stochastic_Dominance
 imports 
   Complex_Main 
   "~~/src/HOL/Probability/Probability" 
-  Missing_PMF
+  Lotteries
   Preference_Profiles
   Utility_Functions
 begin
-
-(* TODO MOVE *)
-
-(* linordered_nonzero_semiring in isabelle-dev *)
-lemma indicator_leI:
-  "(x \<in> A \<Longrightarrow> y \<in> B) \<Longrightarrow> (indicator A x :: 'a :: linordered_semidom) \<le> indicator B y"
-  by (auto simp: indicator_def)
-
-lemma le_diff_iff': "a \<le> c \<Longrightarrow> b \<le> c \<Longrightarrow> c - a \<le> c - b \<longleftrightarrow> b \<le> (a::nat)"
-  by linarith
-
-lemma setsum_lessThan_Suc_shift:
-  "(\<Sum>i<Suc n. f i) = f 0 + (\<Sum>i<n. f (Suc i))"
-  by (induction n) (simp_all add: add_ac)
-
-lemma measure_return_pmf [simp]: "measure_pmf.prob (return_pmf x) A = indicator A x"
-proof -
-  have "ereal (measure_pmf.prob (return_pmf x) A) = 
-          emeasure (measure_pmf (return_pmf x)) A"
-    by (simp add: measure_pmf.emeasure_eq_measure)
-  also have "\<dots> = ereal (indicator A x)" by (simp add: ereal_indicator)
-  finally show ?thesis by simp
-qed
-
-lemma (in preorder_on) preferred_alts_refl [simp]: "x \<in> carrier \<Longrightarrow> x \<in> preferred_alts le x"
-  by (simp add: preferred_alts_def refl)
-
-lemma measure_pmf_ge_1: "measure_pmf.prob p A \<ge> 1 \<longleftrightarrow> measure_pmf.prob p A = 1"
-  by (auto intro!: antisym)
-
-lemma measure_pmf_posI: "x \<in> set_pmf p \<Longrightarrow> x \<in> A \<Longrightarrow> measure_pmf.prob p A > 0"
-  using measure_measure_pmf_not_zero[of p A] by (subst zero_less_measure_iff) blast
-
-
-(* END TODO *)
-
 
 subsection \<open>Definition of Stochastic Dominance\<close>
 
@@ -111,7 +75,7 @@ proof
   also from assms have "measure_pmf.prob (return_pmf x) (preferred_alts le x) = 1"
     by (simp add: indicator_def)
   finally have "AE y in q. y \<succeq>[le] x"
-    by (simp add: measure_pmf_ge_1 measure_pmf.prob_eq_1 preferred_alts_def)
+    by (simp add: measure_pmf.measure_ge_1_iff measure_pmf.prob_eq_1 preferred_alts_def)
   thus "\<forall>y\<in>set_pmf q. y \<succeq>[le] x" by (simp add: AE_measure_pmf_iff)
 next
   assume A: "\<forall>y\<in>set_pmf q. x \<preceq>[le] y"
@@ -255,44 +219,46 @@ text \<open>
   one agent strongly prefers the other lottery.
 \<close>
 lemma SD_efficient_def:
-  "SD_efficient R p \<longleftrightarrow>
-     \<not>(\<exists>q\<in>lotteries_on alts. (\<forall>i\<in>agents. q \<succeq>[SD(R i)] p) \<and> (\<exists>i\<in>agents. q \<succ>[SD(R i)] p))" 
-  (is "_ \<longleftrightarrow> ?rhs")
+  "SD_efficient R p \<longleftrightarrow> \<not>(\<exists>q\<in>lotteries_on alts. q \<succ>[Pareto (SD \<circ> R)] p)"
 proof -
   have "SD_efficient R p \<longleftrightarrow> \<not>(\<exists>q\<in>lotteries_on {x. \<exists>i. R i x x}. q \<succ>[Pareto (SD \<circ> R)] p)"
     unfolding SD_efficient_auxdef ..
   also from nonempty_agents obtain i where i: "i \<in> agents" by blast
   with preorder_on.refl[of alts "R i"] 
     have "{x. \<exists>i. R i x x} = alts" by (auto intro!: exI[of _ i] not_outside)
-  also have "(\<not> (\<exists>q\<in>lotteries_on alts. p \<prec>[Pareto (SD \<circ> R)] q)) \<longleftrightarrow> ?rhs"
-    by (subst SD.Pareto_strict_iff) simp_all
   finally show ?thesis .
 qed
+
+
+lemma SD_efficient_def':
+  "SD_efficient R p \<longleftrightarrow>
+     \<not>(\<exists>q\<in>lotteries_on alts. (\<forall>i\<in>agents. q \<succeq>[SD(R i)] p) \<and> (\<exists>i\<in>agents. q \<succ>[SD(R i)] p))" 
+  unfolding SD_efficient_def SD.Pareto_iff strongly_preferred_def [abs_def] by auto
 
 lemma SD_inefficientI:
   assumes "q \<in> lotteries_on alts" "\<And>i. i \<in> agents \<Longrightarrow> q \<succeq>[SD(R i)] p" 
           "i \<in> agents" "q \<succ>[SD(R i)] p"
   shows   "\<not>SD_efficient R p" 
-  using assms unfolding SD_efficient_def by blast
+  using assms unfolding SD_efficient_def' by blast
 
 lemma SD_inefficientI':
   assumes "q \<in> lotteries_on alts" "\<And>i. i \<in> agents \<Longrightarrow> q \<succeq>[SD(R i)] p" 
           "\<exists>i \<in> agents. q \<succ>[SD(R i)] p"
   shows   "\<not>SD_efficient R p" 
-  using assms unfolding SD_efficient_def by blast
+  using assms unfolding SD_efficient_def' by blast
 
 lemma SD_inefficientE:
   assumes "\<not>SD_efficient R p" 
   obtains q i where
     "q \<in> lotteries_on alts" "\<And>i. i \<in> agents \<Longrightarrow> q \<succeq>[SD(R i)] p" 
     "i \<in> agents" "q \<succ>[SD(R i)] p"
-  using assms unfolding SD_efficient_def by blast
+  using assms unfolding SD_efficient_def' by blast
    
 lemma SD_efficientD:
   assumes "SD_efficient R p" "q \<in> lotteries_on alts" 
       and "\<And>i. i \<in> agents \<Longrightarrow> q \<succeq>[SD(R i)] p" "\<exists>i\<in>agents. \<not>(q \<preceq>[SD(R i)] p)"
   shows False
-  using assms unfolding SD_efficient_def strongly_preferred_def by blast
+  using assms unfolding SD_efficient_def' strongly_preferred_def by blast
 
 lemma SD_efficient_singleton_iff:
   assumes [simp]: "x \<in> alts"
@@ -313,7 +279,7 @@ proof -
     hence "x \<in> pareto_losers R" by simp
   }
   ultimately show ?thesis by blast
-qed  
+qed
 
 end
 

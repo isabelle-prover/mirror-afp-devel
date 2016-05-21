@@ -58,7 +58,7 @@ where "Set_project A a = {b. (a, b) \<in> A}"
 
 lemma Set_project_set [code]:
   "Set_project (set xs) a = set (List.map_filter (\<lambda>(a', b). if a = a' then Some b else None) xs)"
-by(auto simp add: Set_project_def map_filter_def intro: rev_image_eqI split: split_if_asm)
+by(auto simp add: Set_project_def map_filter_def intro: rev_image_eqI split: if_split_asm)
 
 
 text{* Redefine map Val vs *}
@@ -437,7 +437,7 @@ code_pred (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow
 apply(erule casts_to.cases)
   apply(fastforce split: ty.splits)
  apply simp
-apply(fastforce simp add: appendPath_def path_via_def split: split_if_asm)
+apply(fastforce simp add: appendPath_def path_via_def split: if_split_asm)
 done
 
 code_pred 

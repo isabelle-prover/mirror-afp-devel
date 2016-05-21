@@ -29,7 +29,7 @@ where
 lemma NewThread_memory_exec_instr:
   "\<lbrakk> (ta, s) \<in> exec_instr I P t h stk loc C M pc frs; NewThread t' x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk> \<Longrightarrow> m = fst (snd s)"
 apply(cases I)
-apply(auto split: split_if_asm simp add: split_beta ta_upd_simps)
+apply(auto split: if_split_asm simp add: split_beta ta_upd_simps)
 apply(auto dest!: red_ext_aggr_new_thread_heap simp add: extRet2JVM_def split: extCallRet.split)
 done
 
@@ -46,7 +46,7 @@ lemma exec_instr_Wakeup_no_Lock_no_Join_no_Interrupt:
   "\<lbrakk> (ta, s) \<in> exec_instr I P t h stk loc C M pc frs; Notified \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<or> WokenUp \<in> set \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> \<rbrakk>
   \<Longrightarrow> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = {} \<and> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> = {} \<and> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub> = {}"
 apply(cases I)
-apply(auto split: split_if_asm simp add: split_beta ta_upd_simps dest: red_external_aggr_Wakeup_no_Join)
+apply(auto split: if_split_asm simp add: split_beta ta_upd_simps dest: red_external_aggr_Wakeup_no_Join)
 done
 
 lemma mexec_instr_Wakeup_no_Join:
@@ -166,7 +166,7 @@ apply(cases "fst x")
 apply(auto elim!: jvmd_NormalE simp add: split_beta)
 apply(rename_tac [!] stk loc C M pc frs)
 apply(case_tac [!] "instrs_of P C M ! pc")
-apply(auto split: split_if_asm simp add: split_beta check_def is_Ref_def has_method_def)
+apply(auto split: if_split_asm simp add: split_beta check_def is_Ref_def has_method_def)
 apply(frule red_external_aggr_Suspend_StaySame, simp, drule red_external_aggr_Suspend_waitD, simp, fastforce)+
 done
 
@@ -180,7 +180,7 @@ lemma exec_instr_New_Thread_exists_thread_object:
      NewThread t' x h'' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<rbrakk>
   \<Longrightarrow> \<exists>C. typeof_addr h' (thread_id2addr t') = \<lfloor>Class_type C\<rfloor> \<and> P \<turnstile> C \<preceq>\<^sup>* Thread"
 apply(cases ins)
-apply(fastforce simp add: split_beta ta_upd_simps split: split_if_asm intro: red_external_aggr_new_thread_exists_thread_object)+
+apply(fastforce simp add: split_beta ta_upd_simps split: if_split_asm intro: red_external_aggr_new_thread_exists_thread_object)+
 done
 
 lemma exec_New_Thread_exists_thread_object:
@@ -197,7 +197,7 @@ lemma exec_instr_preserve_tconf:
      P,h \<turnstile> t' \<surd>t \<rbrakk>
   \<Longrightarrow> P,h' \<turnstile> t' \<surd>t"
 apply(cases ins)
-apply(auto intro: tconf_hext_mono hext_allocate hext_heap_write red_external_aggr_preserves_tconf split: split_if_asm sum.split_asm simp add: split_beta has_method_def intro!: is_native.intros)
+apply(auto intro: tconf_hext_mono hext_allocate hext_heap_write red_external_aggr_preserves_tconf split: if_split_asm sum.split_asm simp add: split_beta has_method_def intro!: is_native.intros)
 done
 
 lemma exec_preserve_tconf:

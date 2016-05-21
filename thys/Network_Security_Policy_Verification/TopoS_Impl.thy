@@ -22,7 +22,7 @@ subsection{*Utility Functions*}
         apply(induction x)
          apply(simp)
         apply(clarsimp)
-        apply(simp split: split_if_asm)
+        apply(simp split: if_split_asm)
          by(blast)+
       have set_backlinks_simp: "\<And> x. \<forall>(s,r) \<in> set x. (r,s) \<in> set x \<Longrightarrow> set (backlinks x) = set x"
         apply(simp add: backlinks_set)
@@ -113,7 +113,7 @@ local
       of SOME x => x
       | NONE => raise TERM ("could not evaluate", []);
 in
-  fun visualize_edges ctxt (edges: term) (coloredges: (string * term) list) (graphviz_header: string): int = 
+  fun visualize_edges ctxt (edges: term) (coloredges: (string * term) list) (graphviz_header: string) = 
     let
       val _ = writeln("visualize_edges");
       val (biflows, uniflows) = partition_by_biflows ctxt edges;

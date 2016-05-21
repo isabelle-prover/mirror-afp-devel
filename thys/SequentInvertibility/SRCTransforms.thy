@@ -210,13 +210,13 @@ lemma midMultiset:
   assumes "\<Gamma> \<oplus> A = \<Gamma>' \<oplus> B" and "A \<noteq> B"
   shows "\<exists> \<Gamma>''. \<Gamma> = \<Gamma>'' \<oplus> B \<and> \<Gamma>' = \<Gamma>'' \<oplus> A"
 proof-
-  from assms have "A :# \<Gamma>'"
+  from assms have "A \<in># \<Gamma>'"
       proof-
       from assms have "set_mset (\<Gamma> \<oplus> A) = set_mset (\<Gamma>' \<oplus> B)" by auto
       then have "set_mset \<Gamma> \<union> {A} = set_mset \<Gamma>' \<union> {B}" by auto
       then have "set_mset \<Gamma> \<union> {A} \<subseteq> set_mset \<Gamma>' \<union> {B}" by simp
       then have "A \<in> set_mset \<Gamma>'" using assms by auto
-      thus "A :# \<Gamma>'" by simp
+      thus "A \<in># \<Gamma>'" by simp
       qed
   then have "\<Gamma>' \<ominus> A \<oplus> A = \<Gamma>'" by (auto simp add:multiset_eq_iff)
   then have "\<exists> \<Gamma>''. \<Gamma>' = \<Gamma>'' \<oplus> A" apply (rule_tac x="\<Gamma>' \<ominus> A" in exI) by auto
@@ -230,7 +230,7 @@ qed
    contained in the extended multisets *)
 lemma extendID:
 assumes "extend S (\<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>) = (\<Gamma> \<Rightarrow>* \<Delta>)"
-shows "At i :# \<Gamma> \<and> At i :# \<Delta>"
+shows "At i \<in># \<Gamma> \<and> At i \<in># \<Delta>"
 using assms
 proof-
   from assms have "\<exists> \<Gamma>' \<Delta>'. \<Gamma> = \<Gamma>' \<oplus> At i \<and> \<Delta> = \<Delta>' \<oplus> At i" 
@@ -241,7 +241,7 @@ qed
 
 lemma extendFalsum:
 assumes "extend S (\<LM> ff \<RM> \<Rightarrow>* \<Empt>) = (\<Gamma> \<Rightarrow>* \<Delta>)"
-shows "ff :# \<Gamma>"
+shows "ff \<in># \<Gamma>"
 proof-
   from assms have "\<exists> \<Gamma>'. \<Gamma> = \<Gamma>' \<oplus> ff" 
     using extend_def[where forms=S and seq="\<LM>ff \<RM> \<Rightarrow>* \<Empt>"]
@@ -253,7 +253,7 @@ qed
 (* Lemma that says if a propositional variable is in both the antecedent and succedent of a sequent,
    then it is derivable from idupRules *)
 lemma containID:
-assumes a:"At i :# \<Gamma> \<and> At i :# \<Delta>"
+assumes a:"At i \<in># \<Gamma> \<and> At i \<in># \<Delta>"
     and b:"Ax \<subseteq> R"
 shows "(\<Gamma> \<Rightarrow>* \<Delta>,0) \<in> derivable R*"
 proof-
@@ -271,7 +271,7 @@ proof-
 qed
 
 lemma containFalsum:
-assumes a: "ff :# \<Gamma>"
+assumes a: "ff \<in># \<Gamma>"
    and  b: "Ax \<subseteq> R"
 shows "(\<Gamma> \<Rightarrow>* \<Delta>,0) \<in> derivable R*"
 proof-
@@ -496,8 +496,8 @@ case 0
     {assume "c = (\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>)"
      then have "extend S (\<LM>At i\<RM> \<Rightarrow>*\<LM>At i\<RM>) = (\<Gamma> \<Rightarrow>* \<Delta>)" using split and `r = ([],c)`
           by (auto simp add:extendRule_def)
-     then have "At i :# \<Gamma> \<and> At i :# \<Delta>" using extendID by auto
-     then have "At i :# \<Gamma> + \<Gamma>' \<and> At i :# \<Delta> + \<Delta>'" by auto
+     then have "At i \<in># \<Gamma> \<and> At i \<in># \<Delta>" using extendID by auto
+     then have "At i \<in># \<Gamma> + \<Gamma>' \<and> At i \<in># \<Delta> + \<Delta>'" by auto
      then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable R*" 
           using c and containID[where \<Gamma>="\<Gamma>+\<Gamma>'" and \<Delta>="\<Delta>+\<Delta>'" and R=R and i=i] by auto
     }
@@ -505,8 +505,8 @@ case 0
     {assume "c = (\<LM>ff\<RM> \<Rightarrow>* \<Empt>)"
      then have "extend S (\<LM>ff\<RM> \<Rightarrow>*\<Empt>) = (\<Gamma> \<Rightarrow>* \<Delta>)" using split and `r = ([],c)`
           by (auto simp add:extendRule_def)
-     then have "ff :# \<Gamma>" using extendFalsum by auto
-     then have "ff :# \<Gamma> + \<Gamma>'" by auto
+     then have "ff \<in># \<Gamma>" using extendFalsum by auto
+     then have "ff \<in># \<Gamma> + \<Gamma>'" by auto
      then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable R*" 
           using c and containFalsum[where \<Gamma>="\<Gamma>+\<Gamma>'" and \<Delta>="\<Delta>+\<Delta>'" and R=R] by auto
     }

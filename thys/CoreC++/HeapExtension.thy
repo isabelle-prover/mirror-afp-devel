@@ -127,7 +127,7 @@ and evals_hext:  "P,E \<turnstile> \<langle>es,(h,l)\<rangle> [\<Rightarrow>] \<
 proof (induct rule:eval_evals_inducts)
   case New thus ?case
     by(fastforce intro!: hext_new intro:someI simp:new_Addr_def
-                split:split_if_asm simp del:fun_upd_apply)
+                split:if_split_asm simp del:fun_upd_apply)
 next
   case FAss thus ?case
     by(auto simp:sym[THEN hext_upd_obj] simp del:fun_upd_apply
@@ -139,7 +139,7 @@ qed (auto elim!: hext_trans)
 subsection {* @{text"\<unlhd>"} and conformance *}
 
 lemma conf_hext: "h \<unlhd> h' \<Longrightarrow> P,h \<turnstile> v :\<le> T \<Longrightarrow> P,h' \<turnstile> v :\<le> T"
-by(cases T)(induct v,auto dest: hext_objD split:split_if_asm)+
+by(cases T)(induct v,auto dest: hext_objD split:if_split_asm)+
 
 lemma confs_hext: "P,h \<turnstile> vs [:\<le>] Ts \<Longrightarrow> h \<unlhd> h' \<Longrightarrow> P,h' \<turnstile> vs [:\<le>] Ts"
 by (erule list_all2_mono, erule conf_hext, assumption)

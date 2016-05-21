@@ -1372,7 +1372,6 @@ proof -
     where "atom g1 \<sharp> (g2,f1,k1,f2,k2,g,x,y)" "atom g2 \<sharp> (f1,k1,f2,k2,g,x,y)"
     by (metis obtain_fresh)
   thus ?thesis
-    using assms
     by (auto simp: SeqAppendP.simps [of g1 g2] intro: UnionP_Mem1 [THEN cut2] RestrictedP_Mem [THEN cut3])
 qed
 
@@ -1382,7 +1381,6 @@ proof -
     where "atom g1 \<sharp> (g2,f1,k1,f2,k2,g,x,x',y)" "atom g2 \<sharp> (f1,k1,f2,k2,g,x,x',y)"
     by (metis obtain_fresh)
   thus ?thesis
-    using assms
     by (auto simp: SeqAppendP.simps [of g1 g2] intro: UnionP_Mem2 [THEN cut2] ShiftP_Mem1 [THEN cut4])
 qed
 

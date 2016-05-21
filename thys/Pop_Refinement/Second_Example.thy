@@ -920,7 +920,7 @@ next
     by (auto simp: high_proc_no_low_output_change_def)
     with ExecLow ExecHigh Body LowOut
     show "\<exists>\<sigma>'. body p \<rhd> \<sigma> \<leadsto> Some \<sigma>' \<and> the (\<sigma>' ''lowOut'') = u"
-    by (metis (hide_lams, no_types) ExecSeqOK body_split_def)
+    by (auto simp add: body_split_def dest: ExecSeqOK)
   qed
 next
   -- {* Processing of high input: *}

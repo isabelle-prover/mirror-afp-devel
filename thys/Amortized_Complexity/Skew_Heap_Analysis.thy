@@ -28,23 +28,13 @@ lemma Gexp: "2 ^ G h \<le> size h + 1"
 by (induction h) auto
 
 corollary Glog: "G h \<le> log 2 (size1 h)"
-proof -
-  have "G h = log 2 (2 ^ G h)" by (simp add: log_nat_power)
-  also have "log 2 (2 ^ G h) \<le> log 2 (size h + 1)"
-    by(simp del: G.simps of_nat_Suc) (metis Gexp Suc_eq_plus1)
-  finally show ?thesis by(simp add: size1_def)
-qed
+by (metis Gexp le_log2_of_power size1_def)
 
 lemma Dexp: "2 ^ D h \<le> size h + 1"
 by (induction h) auto
 
 corollary Dlog: "D h \<le> log 2 (size1 h)"
-proof -
-  have "D h = log 2 (2 ^ D h)" by (simp add: log_nat_power)
-  also have "log 2 (2 ^ D h) \<le> log 2 (size h + 1)"
-    by(simp del: D.simps of_nat_Suc) (metis Dexp Suc_eq_plus1)
-  finally show ?thesis by(simp add: size1_def)
-qed
+by (metis Dexp le_log2_of_power size1_def)
 
 function t\<^sub>m\<^sub>e\<^sub>l\<^sub>d :: "'a::linorder heap \<Rightarrow> 'a heap \<Rightarrow> nat" where
 "t\<^sub>m\<^sub>e\<^sub>l\<^sub>d Leaf h = 1" |
@@ -107,7 +97,7 @@ proof -
   also have "log 2 (size1 t1 + size1 t2 - 1) \<le> log 2 (size1 t1 + size1 t2)" by(simp add: size1_def)
   also have "log 2 (size1 t1) + log 2 (size1 t2) \<le> 2 * log 2 (real(size1 t1) + (size1 t2))"
     by(rule plus_log_le_2log_plus) (auto simp: size1_def)
-  finally show ?thesis by(simp add: of_nat_Suc)
+  finally show ?thesis by(simp)
 qed
 
 fun nxt\<^sub>p\<^sub>q :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
@@ -125,16 +115,16 @@ and inv = "\<lambda>_. True"
 and t = t\<^sub>p\<^sub>q and \<Phi> = \<Phi>
 and U = "\<lambda>f h. case f of
   Insert _ \<Rightarrow> 3 * log 2 (size1 h + 2) + 2 | Delmin \<Rightarrow> 3 * log 2 (size1 h + 2) + 4"
-proof
-  case goal1 show ?case by auto
+proof (standard, goal_cases)
+  case 1 show ?case by auto
 next
-  case goal2 thus ?case by auto
+  case 2 thus ?case by auto
 next
-  case goal3 thus ?case by(simp)
+  case 3 thus ?case by(simp)
 next
-  case goal4 show ?case by(simp)
+  case 4 show ?case by(simp)
 next
-  case goal5
+  case (5 s f)
   show ?case
   proof (cases f)
    case (Insert a)
@@ -150,7 +140,7 @@ next
       have [arith]: "log 2 (2 + (real (size t1) + real (size t2))) \<le>
                log 2 (4 + (real (size t1) + real (size t2)))" by simp
       from Del_min Node show ?thesis using a_meld_ub[of t1 t2]
-        by (simp add: of_nat_Suc size1_def)
+        by (simp add: size1_def)
     qed
   qed
 qed

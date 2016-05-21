@@ -56,12 +56,12 @@ fun lseg
 | "lseg (x#l) (Some p) s = (\<exists>\<^sub>Aq. p \<mapsto>\<^sub>r Node x q * lseg l q s)"
 | "lseg (_#_) None _ = false"
 
-lemma lseg_split_iff1[simp, sep_dflt_simps]: 
+lemma lseg_if_splitf1[simp, sep_dflt_simps]: 
   "lseg l None None = \<up>(l=[])"
   apply (cases l, simp_all)
   done
 
-lemma lseg_split_iff2[simp, sep_dflt_simps]: 
+lemma lseg_if_splitf2[simp, sep_dflt_simps]: 
   "lseg (x#xs) p q 
     = (\<exists>\<^sub>App n. pp \<mapsto>\<^sub>r (Node x n) * lseg xs n q * \<up>(p=Some pp))"
   apply (cases p, simp_all)

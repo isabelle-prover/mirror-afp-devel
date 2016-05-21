@@ -352,7 +352,7 @@ proof-
   have "\<And> \<pi> \<pi>'. wfp UNIV \<pi> \<and> wfp UNIV \<pi>' \<longrightarrow>
                  \<phi> [] [\<pi>,\<pi>'] = f (stateOf \<pi>) (stateOf \<pi>') \<and>
                  \<psi> [] [\<pi>,\<pi>'] = g (stateOf \<pi>) (stateOf \<pi>')"
-  using assms unfolding \<phi>_def \<psi>_def f_def g_def eqButGH_def eqOnGL_def
+  unfolding \<phi>_def \<psi>_def f_def g_def eqButGH_def eqOnGL_def
   by (fastforce simp add: scon_def eqOnUC_0_Suc0)
   from fall2_imp_alw_index[of \<phi> \<psi>, OF this]
   show ?thesis unfolding nonintSfmla_def nonintSI_def \<phi>_def \<psi>_def .
@@ -725,14 +725,14 @@ using assms unfolding purgeIdle_def by (metis filter_set member_filter)
 
 lemma purgeIdle_Nil_iff:
 "purgeIdle sl = [] \<longleftrightarrow> (\<forall>s\<in>set sl. \<not> isState s)"
-using assms unfolding purgeIdle_def filter_empty_conv by auto
+unfolding purgeIdle_def filter_empty_conv by auto
 
 lemma purgeIdle_Cons_iff:
 "purgeIdle sl = s # sll
  \<longleftrightarrow>
  (\<exists> sl1 sl2. sl = sl1 @ s # sl2 \<and>
             (\<forall>s1\<in>set sl1. \<not> isState s1) \<and> isState s \<and> purgeIdle sl2 = sll)"
-using assms unfolding purgeIdle_def filter_eq_Cons_iff by auto
+unfolding purgeIdle_def filter_eq_Cons_iff by auto
 
 lemma purgeIdle_map_Idle[simp]:
 "purgeIdle (map Idle s) = []"

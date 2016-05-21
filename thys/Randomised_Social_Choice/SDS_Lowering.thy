@@ -66,6 +66,11 @@ proof -
 qed
 
 
+lemma lotteries_on_subset: "A \<subseteq> B \<Longrightarrow> p \<in> lotteries_on A \<Longrightarrow> p \<in> lotteries_on B"
+  unfolding lotteries_on_def by blast
+
+lemma lottery_prob_carrier: "p \<in> lotteries_on A \<Longrightarrow> measure_pmf.prob p A = 1"
+  by (auto simp: measure_pmf.prob_eq_1 lotteries_on_def AE_measure_pmf_iff)
 
 context
   fixes agents alts R agents' alts' R'
@@ -100,56 +105,115 @@ proof (cases "i \<in> agents")
     by (auto simp: preferred_alts_def R'_def lift_pref_profile_def Ri.refl)
 qed (auto simp: preferred_alts_def R'_def lift_pref_profile_def i x)
 
+lemma lift_pref_profile_Pareto_iff:
+  "x \<preceq>[Pareto(R')] y \<longleftrightarrow> x \<in> alts' \<and> y \<in> alts' \<and> (x \<notin> alts \<or> x \<preceq>[Pareto(R)] y)"
+proof -
+  from R.nonempty_agents obtain i where i: "i \<in> agents" by blast
+  then interpret Ri: finite_total_preorder_on alts "R i" by simp
+  show ?thesis unfolding R'.Pareto_iff R.Pareto_iff unfolding R'_def lift_pref_profile_def
+    using election i by (auto simp: preorder_on.refl[OF R.in_dom] 
+      simp del: R.nonempty_alts R.nonempty_agents  intro: Ri.not_outside)
+qed
+
+lemma lift_pref_profile_Pareto_strict_iff:
+  "x \<prec>[Pareto(R')] y \<longleftrightarrow> x \<in> alts' \<and> y \<in> alts' \<and> (x \<notin> alts \<and> y \<in> alts \<or> x \<prec>[Pareto(R)] y)"
+  by (auto simp: strongly_preferred_def lift_pref_profile_Pareto_iff R.Pareto.not_outside)
 
 lemma pareto_losers_lift_pref_profile:
   shows   "pareto_losers R' = pareto_losers R \<union> (alts' - alts)"
-proof safe
-  fix x assume "x \<in> pareto_losers R'"
-  thus "x \<in> alts'" using R'.pareto_loser_in_alts by blast
-next
-  fix x assume x: "x \<in> pareto_losers R'" "x \<notin> pareto_losers R" "x \<in> alts"
-  from x(1) obtain y where y: "y \<succ>[Pareto(R')] x" by (auto simp: pareto_losers_def)
+proof -
+  have A: "x \<in> alts" "y \<in> alts" if "x \<prec>[Pareto(R)] y" for x y
+    using that R.Pareto.not_outside unfolding strongly_preferred_def by auto
+  have B: "x \<in> alts'" if "x \<in> alts" for x using election that by blast
+  from R.nonempty_alts obtain x where x: "x \<in> alts" by blast
+  thus ?thesis unfolding pareto_losers_def lift_pref_profile_Pareto_strict_iff [abs_def]
+    by (auto dest: A B)
+qed
 
-  have "y \<succeq>[R i] x" if i: "i \<in> agents" for i
+context
+begin
+private lemma lift_SD_iff_agent:
+  assumes "p \<in> lotteries_on alts" "q \<in> lotteries_on alts" and i: "i \<in> agents"
+  shows   "p \<preceq>[SD(R' i)] q \<longleftrightarrow> p \<preceq>[SD(R i)] q"
+proof -
+  from i interpret Ri: preorder_on alts "R i" by simp
+  from i election have i': "i \<in> agents'" by blast
+  then interpret R'i: preorder_on alts' "R' i" by simp
+  from assms election have "p \<in> lotteries_on alts'" "q \<in> lotteries_on alts'"
+    by (auto intro: lotteries_on_subset)
+  with assms election i' show ?thesis
+    by (auto simp: Ri.SD_preorder R'i.SD_preorder 
+          preferred_alts_lift_pref_profile lottery_prob_carrier)
+qed
+
+private lemma lift_SD_iff_nonagent:
+  assumes "p \<in> lotteries_on alts" "q \<in> lotteries_on alts" and i: "i \<in> agents' - agents"
+  shows   "p \<preceq>[SD(R' i)] q"
+proof -
+  from i election have i': "i \<in> agents'" by blast
+  then interpret R'i: preorder_on alts' "R' i" by simp
+  from assms election have "p \<in> lotteries_on alts'" "q \<in> lotteries_on alts'"
+    by (auto intro: lotteries_on_subset)
+  with assms election i' show ?thesis
+    by (auto simp: R'i.SD_preorder preferred_alts_lift_pref_profile lottery_prob_carrier)
+qed
+
+lemmas lift_SD_iff = lift_SD_iff_agent lift_SD_iff_nonagent
+
+lemma lift_SD_iff':
+  "p \<in> lotteries_on alts \<Longrightarrow> q \<in> lotteries_on alts \<Longrightarrow> i \<in> agents' \<Longrightarrow>
+     p \<preceq>[SD(R' i)] q \<longleftrightarrow> i \<notin> agents \<or> p \<preceq>[SD(R i)] q"
+  by (cases "i \<in> agents") (simp_all add: lift_SD_iff)
+
+end
+
+lemma lift_SD_strict_iff:
+  assumes "p \<in> lotteries_on alts" "q \<in> lotteries_on alts" and i: "i \<in> agents"
+  shows   "p \<prec>[SD(R' i)] q \<longleftrightarrow> p \<prec>[SD(R i)] q"
+  using assms by (simp add: strongly_preferred_def lift_SD_iff)
+
+lemma lift_Pareto_SD_iff:
+  assumes "p \<in> lotteries_on alts" "q \<in> lotteries_on alts"
+  shows   "p \<preceq>[Pareto(SD \<circ> R')] q \<longleftrightarrow> p \<preceq>[Pareto(SD \<circ> R)] q"
+  using assms election by (auto simp: R.SD.Pareto_iff R'.SD.Pareto_iff lift_SD_iff')
+
+lemma lift_Pareto_SD_strict_iff:
+  assumes "p \<in> lotteries_on alts" "q \<in> lotteries_on alts"
+  shows   "p \<prec>[Pareto(SD \<circ> R')] q \<longleftrightarrow> p \<prec>[Pareto(SD \<circ> R)] q"
+  using assms by (simp add: strongly_preferred_def lift_Pareto_SD_iff)
+
+lemma lift_SD_efficient_iff:
+  assumes p: "p \<in> lotteries_on alts"
+  shows   "SD_efficient R' p \<longleftrightarrow> SD_efficient R p"
+proof
+  assume eff: "SD_efficient R' p"
+  have "\<not>(q \<succ>[Pareto(SD \<circ> R)] p)" if q: "q \<in> lotteries_on alts" for q
   proof -
-    from i interpret total_preorder_on alts "R i" by simp
-    from y i election have "y \<succeq>[R' i] x" by (auto simp: R'.Pareto_strict_iff)
-    with i x show "y \<succeq>[R i] x" by (auto simp: R'_def lift_pref_profile_def refl)
+    from q election have q': "q \<in> lotteries_on alts'" by (blast intro: lotteries_on_subset)
+    with eff have "\<not>(q \<succ>[Pareto(SD \<circ> R')] p)" by (simp add: R'.SD_efficient_def)
+    with p q show ?thesis by (simp add: lift_Pareto_SD_strict_iff)
   qed
-  moreover from y obtain i where "i \<in> agents'" "y \<succ>[R' i] x" by (auto simp: R'.Pareto_strict_iff)
-  with x have "i \<in> agents" "y \<succ>[R i] x" by (auto simp: R'_def lift_pref_profile_strict_iff)
-  ultimately have "y \<succ>[Pareto(R)] x" unfolding R.Pareto_strict_iff by auto
-  with x show False by (simp add: pareto_losers_def)
+  thus "SD_efficient R p" by (simp add: R.SD_efficient_def)
 next
-  fix x assume "x \<in> pareto_losers R"
-  then obtain y where y: "y \<succ>[Pareto(R)] x" by (auto simp: pareto_losers_def)
-  hence [simp]: "x \<in> alts" "y \<in> alts"
-    using R.Pareto.not_outside[of x y] by (simp_all add: strongly_preferred_def)
-  
-  have "y \<succeq>[R' i] x" if i: "i \<in> agents'" for i
-  proof (cases "i \<in> agents")
-    case True
-    from y True election have "y \<succeq>[R i] x" by (auto simp: R.Pareto_strict_iff)
-    with i election show "y \<succeq>[R' i] x" by (auto simp: R'_def lift_pref_profile_def refl)
-  qed (insert election i, auto simp: R'_def lift_pref_profile_def)
-  moreover from y obtain i where "i \<in> agents" "y \<succ>[R i] x" by (auto simp: R.Pareto_strict_iff)
-  with election have "i \<in> agents'" "y \<succ>[R' i] x" 
-    by (auto simp: R'_def lift_pref_profile_strict_iff)
-  ultimately have "y \<succ>[Pareto(R')] x" unfolding R'.Pareto_strict_iff by auto
-  thus "x \<in> pareto_losers R'" by (rule pareto_losersI)
-next
-  fix x assume x: "x \<in> alts'" "x \<notin> alts"
-  from \<open>agents \<noteq> {}\<close> obtain i where i: "i \<in> agents" by blast
-  from \<open>alts \<noteq> {}\<close> obtain y where y: "y \<in> alts" by blast
-  from R_wf election interpret pref_profile_wf agents' alts' R'
-    unfolding R'_def by (intro lift_pref_profile_wf) auto
-
-  from x y election have "y \<succeq>[R' j] x" if "j \<in> agents'" for j
-    using that by (auto simp: R'_def lift_pref_profile_def)
-  moreover from i election have "i \<in> agents'" by blast
-  moreover from x y i election have "y \<succ>[R' i] x"
-    by (auto simp: strongly_preferred_def R'_def lift_pref_profile_def)
-  ultimately show "x \<in> pareto_losers R'" by (rule pareto_losersI[OF R'.Pareto_strictI])
+  assume eff: "SD_efficient R p"
+  have "\<not>(q \<succ>[Pareto(SD \<circ> R')] p)" if q: "q \<in> lotteries_on alts'" for q
+  proof
+    assume less: "q \<succ>[Pareto(SD \<circ> R')] p"
+    from R'.SD_efficient_lottery_exists[OF q] guess q' . note q' = this
+    have "x \<notin> set_pmf q'" if x: "x \<in> alts' - alts" for x
+    proof -
+      from x have "x \<in> pareto_losers R'" by (simp add: pareto_losers_lift_pref_profile)
+      with R'.SD_efficient_no_pareto_loser[OF q'(3,1)] show "x \<notin> set_pmf q'" by blast
+    qed
+    with q' have "q' \<in> lotteries_on alts" by (auto simp: lotteries_on_def)
+    moreover from q' less have "q' \<succ>[Pareto(SD \<circ> R')] p" 
+      by (auto intro: R'.SD.Pareto.strict_weak_trans)
+    with \<open>q' \<in> lotteries_on alts\<close> p have "q' \<succ>[Pareto(SD \<circ> R)] p"
+      by (subst (asm) lift_Pareto_SD_strict_iff)
+    ultimately have "\<not>SD_efficient R p" by (auto simp: R.SD_efficient_def)
+    with eff show False by contradiction
+  qed
+  thus "SD_efficient R' p" by (simp add: R'.SD_efficient_def)
 qed
 
 end
@@ -286,61 +350,10 @@ sublocale sd_efficient_sds agents' alts' lowered
 proof
   fix R assume R_wf: "lowered.is_pref_profile R"
   interpret R: pref_profile_wf agents' alts' R by fact
-  show "SD_efficient R (lowered R)"
-  proof (unfold R.SD_efficient_def, safe)
-    fix q i 
-    assume q: "q \<in> lowered.lotteries"
-    assume i: "i \<in> agents'"
-    assume weak: "\<forall>i\<in>agents'. q \<succeq>[SD(R i)] lowered R"
-    assume strong: "q \<succ>[SD(R i)] lowered R"
-    from R_wf interpret R': pref_profile_wf agents alts "lift R" by simp
-
-    have pmf_zero: "pmf (lowered R) x = 0" if x: "x \<notin> alts'" for x
-      using x lowered.sds_wf[OF R_wf]
-      by (auto simp: lotteries_on_def set_pmf_eq lift_pref_profile_def)
-
-    from SD_efficient have "SD_efficient (lift R) (lowered R)" unfolding lowered_def o_def
-      using R_wf by simp
-    moreover have q': "q \<in> lotteries" using q lowered_lotteries by blast
-    moreover have "q \<succeq>[SD(lift R i)] lowered R" if i: "i \<in> agents" for i
-    proof (cases "i \<in> agents'")
-      assume i: "i \<in> agents'"
-      with agents'_subset have [simp]: "i \<in> agents" by blast
-      show ?thesis
-      proof (rule R'.SD_pref_profileI) 
-        fix x assume x: "x \<in> alts"
-        show "lowered.lottery_prob (lowered R) (preferred_alts (lift R i) x)
-                \<le> lowered.lottery_prob q (preferred_alts (lift R i) x)"
-        using i bspec[OF weak i] agents'_subset R_wf x q' lowered_lotteries
-          by (simp add: lottery_prob_alts R.SD_pref_profile preferred_alts_lift)
-      qed (auto simp: lowered.sds_wf R_wf q')
-    next
-      assume i': "i \<notin> agents'"
-      from i have "total_preorder_on alts (lift R i)" by simp
-      with i' agents'_subset i q q' R_wf show ?thesis
-        by (intro R'.SD_pref_profileI)
-           (auto intro!: lowered.sds_wf 
-                 simp: lift_pref_profile_def preferred_alts_def lottery_prob_alts)
-    qed
-    moreover have "\<exists>i\<in>agents. \<not>(q \<preceq>[SD(lift R i)] lowered R)"
-    proof
-      from i agents'_subset show i': "i \<in> agents" by blast
-      from i interpret R: total_preorder_on alts' "R i"
-        using R_wf by (simp add: i)
-      from strong have "\<not>(q \<preceq>[SD(R i)] lowered R)" 
-        by (simp add: strongly_preferred_def)
-      then obtain x where x: "x \<in> alts'" and
-         "lowered.lottery_prob (lowered R) (preferred_alts (R i) x)
-           < lowered.lottery_prob q (preferred_alts (R i) x)"
-        using q i R_wf by (force simp: R.SD_pref_profile lowered.sds_wf)
-      moreover from x alts'_subset have "x \<in> alts" by blast
-      ultimately show "\<not>(q \<preceq>[SD(lift R i)] lowered R)"
-        using q i i' R_wf 
-        by (auto intro!: bexI[of _ x] lowered.sds_wf 
-                 simp: preferred_alts_lift not_le R'.SD_pref_profile)
-    qed
-    ultimately show False by (rule R'.SD_efficientD)
-  qed
+  from R_wf agents'_subset alts'_subset show "SD_efficient R (lowered R)"
+    unfolding lowered_def o_def
+    by (subst lift_SD_efficient_iff [symmetric])
+       (insert SD_efficient R_wf lowered.sds_wf[OF R_wf], auto simp: lowered_def)
 qed
 
 end
@@ -361,30 +374,27 @@ proof (unfold_locales, safe)
   from i agents'_subset have i': "i \<in> agents" by blast
   interpret R: pref_profile_wf agents' alts' R by fact
   from R_wf interpret liftR: pref_profile_wf agents alts "lift R" by simp
- 
+
   def lift_Ri' \<equiv> "\<lambda>x y. x \<in> alts \<and> y \<in> alts \<and> (x = y \<or> x \<notin> alts' \<or> (y \<in> alts' \<and> Ri' x y))"
   def S \<equiv> "(lift R)(i := lift_Ri')"
   from Ri' interpret Ri': total_preorder_on alts' Ri' .
-  have [simp]: "total_preorder_on alts lift_Ri'" using Ri'.total
+  have wf_lift_Ri': "total_preorder_on alts lift_Ri'" using Ri'.total
     by unfold_locales (auto simp: lift_Ri'_def intro: Ri'.trans)
-  from lift_wf[OF R_wf] Ri' i agents'_subset have [simp]: "sds S \<in> lotteries" 
-    by (auto intro!: sds_wf simp: S_def pref_profile_wf_def)
+  from agents'_subset i have S_altdef: "S = lift (R(i := Ri'))"
+    by (auto simp: fun_eq_iff lift_pref_profile_def lift_Ri'_def S_def)
+  have "lowered (R(i := Ri')) \<in> lowered.lotteries"
+    by (intro lowered.sds_wf R.wf_update i Ri')
+  hence sds_S_wf: "sds S \<in> lowered.lotteries" by (simp add: S_altdef lowered_def)
 
-  have "manipulable_profile (lift R) i lift_Ri'"
-  proof -
-    from manipulable have "sds (lift R) \<prec>[SD (R i)] sds (lift (R(i := Ri')))" 
-      unfolding lowered.manipulable_profile_def unfolding lowered_def o_def .
-    also from i agents'_subset have "lift (R(i := Ri')) = S"
-      by (intro ext) (auto simp: lift_pref_profile_def lift_Ri'_def S_def)
-    finally show ?thesis using i i' alts'_subset R_wf
-      unfolding manipulable_profile_def S_def [symmetric] strongly_preferred_def
-      by (auto simp: R.SD_pref_profile liftR.SD_pref_profile sds_wf
-            lottery_prob_alts preferred_alts_lift)
-  qed
-  moreover from R_wf i agents'_subset
-    have "\<not>manipulable_profile (lift R) i lift_Ri'"
-    by (intro strategyproof) auto
-  ultimately show False by contradiction
+  from manipulable have "lowered R \<prec>[SD (R i)] sds (lift (R(i := Ri')))"
+    unfolding lowered.manipulable_profile_def by (simp add: lowered_def)
+  also note S_altdef [symmetric]
+  finally have "lowered R \<prec>[SD (lift R i)] sds S"
+    using R_wf i lowered.sds_wf[OF R_wf] sds_S_wf
+      by (subst lift_SD_strict_iff) (simp_all add: agents'_subset alts'_subset)
+  hence "manipulable_profile (lift R) i lift_Ri'"
+    by (simp add: manipulable_profile_def lowered_def S_def)
+  with strategyproof[OF lift_wf[OF R_wf] i' wf_lift_Ri'] show False by contradiction
 qed
 
 end

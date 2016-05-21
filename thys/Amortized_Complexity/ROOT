@@ -1,6 +1,6 @@
 chapter AFP
 
-session Amortized_Complexity (AFP) = "HOL-Probability" +
+session Amortized_Complexity (AFP) = HOL +
 
   options [timeout = 600]
 

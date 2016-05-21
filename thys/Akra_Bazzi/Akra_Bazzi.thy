@@ -110,7 +110,8 @@ proof-
       by (subst (asm) bchoice_iff, subst (asm) bchoice_iff) blast
     then guess ee :: "_ \<Rightarrow> real" and hh :: "_ \<Rightarrow> nat \<Rightarrow> real" 
       by (elim exE conjE) note eh = this
-    def e \<equiv> "Min {ee i |i. i < k}" and hs \<equiv> "map hh (upt 0 k)"
+    define e where "e = Min {ee i |i. i < k}"
+    define hs where "hs = map hh (upt 0 k)"
     have e_pos: "e > 0" unfolding e_def using eh k_not_0 by (subst Min_gr_iff) auto
     moreover have "length hs = k" unfolding hs_def by (simp_all add: length_ts)
     moreover have hs_growth: "\<forall>h\<in>set hs. (\<lambda>x. h x) \<in> O(\<lambda>x. real x / ln (real x) powr (1+e))"
@@ -228,7 +229,7 @@ proof-
   qed
   from bchoice[OF this] obtain hb where hb:
       "\<forall>h\<in>set hs. hb h > 0 \<and> eventually (\<lambda>x. \<bar>h x\<bar> \<le> hb h * real x / ln (real x) powr (1 + e)) at_top" by blast
-  def hb' \<equiv> "max 1 (Max {hb h |h. h \<in> set hs})"
+  define hb' where "hb' = max 1 (Max {hb h |h. h \<in> set hs})"
   have "hb' > 0" unfolding hb'_def by simp
   moreover have "\<forall>h\<in>set hs. eventually (\<lambda>x. \<bar>h (nat \<lfloor>x\<rfloor>)\<bar> \<le> hb' * x / ln x powr (1 + e)) at_top"
   proof (intro ballI, rule eventually_mp[OF always_eventually eventually_conj], clarify)
@@ -340,7 +341,7 @@ lemma gx1:
   assumes "x \<ge> gx1" "i < k"
   shows  "(ts!i) x \<ge> gx0"
 proof-
-  def mb \<equiv> "Min (set bs)/2"
+  define mb where "mb = Min (set bs)/2"
   from b_bounds bs_nonempty have mb_pos: "mb > 0" unfolding mb_def by simp
   from h_bound guess hb . note hb = this
   from e_pos have "((\<lambda>x. hb * ln x powr -(1 + e)) \<longlongrightarrow> 0) at_top"
@@ -473,7 +474,7 @@ proof-
     by (subst (asm) eventually_at_top_linorder) (erule ex_mono, blast)
   then guess X by (elim exE conjE) note X = this
 
-  def x\<^sub>0'_min \<equiv> "max A (max X (max a0 (max gx1 (max 1 (real x\<^sub>1 + 1)))))"
+  define x\<^sub>0'_min where "x\<^sub>0'_min = max A (max X (max a0 (max gx1 (max 1 (real x\<^sub>1 + 1)))))"
   {
   fix x\<^sub>0' :: real assume x0'_props: "x\<^sub>0' \<ge> x\<^sub>0'_min" "x\<^sub>0' \<in> \<nat>"
   hence x0'_ge_x1: "x\<^sub>0' \<ge> real (x\<^sub>1+1)" and x0'_ge_1: "x\<^sub>0' \<ge> 1" and x0'_ge_X: "x\<^sub>0' \<ge> X" 
@@ -491,10 +492,10 @@ proof-
     unfolding x\<^sub>0'_min_def by simp_all
   with gx0_le_gx1 have f2'_nonneg: "\<And>x. x \<ge> x\<^sub>0' \<Longrightarrow> f2' x \<ge> 0" by (force intro!: f2'_nonneg)
            
-  def bm \<equiv> "Min (set bs)"
-  def x\<^sub>1' \<equiv> "2 * x\<^sub>0' * inverse bm"
-  def fb2 \<equiv> "Min {f2' x |x. x \<in> {x\<^sub>0'..x\<^sub>1'}}"
-  def gb2 \<equiv> "SOME c. \<forall>x\<in>{x\<^sub>0'..x\<^sub>1'}. g' x \<le> c"
+  define bm where "bm = Min (set bs)"
+  define x\<^sub>1' where "x\<^sub>1' = 2 * x\<^sub>0' * inverse bm"
+  define fb2 where "fb2 = Min {f2' x |x. x \<in> {x\<^sub>0'..x\<^sub>1'}}"
+  define gb2 where "gb2 = (SOME c. \<forall>x\<in>{x\<^sub>0'..x\<^sub>1'}. g' x \<le> c)"
   
   from b_bounds bs_nonempty have "bm > 0" "bm < 1" unfolding bm_def by auto
   hence "1 < 2 * inverse bm" by (simp add: field_simps)
@@ -608,7 +609,7 @@ lemma bigomega_f:
   obtains a where "a \<ge> A" "f \<in> \<Omega>(\<lambda>x. x powr p *(1 + integral (\<lambda>u. g' u / u powr (p+1)) a x))"
 proof-
   from bigomega_f_aux[of A] guess a . note a = this
-  def a' \<equiv> "real (max (nat \<lceil>a\<rceil>) 0) + 1"
+  define a' where "a' = real (max (nat \<lceil>a\<rceil>) 0) + 1"
   note a
   moreover have "a' \<in> \<nat>" by (auto simp: max_def a'_def)
   moreover have "a' \<ge> a + 1" unfolding a'_def by linarith
@@ -707,7 +708,7 @@ proof-
     by (subst (asm) eventually_at_top_linorder) fast
   then guess X by (elim exE conjE) note X = this
   
-  def x\<^sub>0'_min \<equiv> "max A (max X (max 1 (max a0 (max gx3 (real x\<^sub>1 + 1)))))"
+  define x\<^sub>0'_min where "x\<^sub>0'_min = max A (max X (max 1 (max a0 (max gx3 (real x\<^sub>1 + 1)))))"
   {
   fix x\<^sub>0' :: real assume x0'_props: "x\<^sub>0' \<ge> x\<^sub>0'_min" "x\<^sub>0' \<in> \<nat>"
   hence x0'_ge_x1: "x\<^sub>0' \<ge> real (x\<^sub>1+1)" and x0'_ge_1: "x\<^sub>0' \<ge> 1" and x0'_ge_X: "x\<^sub>0' \<ge> X" 
@@ -725,9 +726,9 @@ proof-
     using order.trans[OF f_nonneg f'_ge_f] gc1(1) x0'_ge_x1 x0_le_x1
     by (simp add: zero_le_mult_iff del: f'.simps)
   
-  def bm \<equiv> "Min (set bs)"
-  def x\<^sub>1' \<equiv> "2 * x\<^sub>0' * inverse bm"
-  def fb1 \<equiv> "Max {f' x |x. x \<in> {x\<^sub>0'..x\<^sub>1'}}"
+  define bm where "bm = Min (set bs)"
+  define x\<^sub>1' where "x\<^sub>1' = 2 * x\<^sub>0' * inverse bm"
+  define fb1 where "fb1 = Max {f' x |x. x \<in> {x\<^sub>0'..x\<^sub>1'}}"
   
 from b_bounds bs_nonempty have "bm > 0" "bm < 1" unfolding bm_def by auto
   hence "1 < 2 * inverse bm" by (simp add: field_simps)
@@ -827,7 +828,7 @@ lemma bigo_f:
   obtains a where "a > A" "f \<in> O(\<lambda>x. x powr p *(1 + integral (\<lambda>u. g' u / u powr (p + 1)) a x))"
 proof-
   from bigo_f_aux[of A] guess a . note a = this
-  def a' \<equiv> "real (max (nat \<lceil>a\<rceil>) 0) + 1"
+  define a' where "a' = real (max (nat \<lceil>a\<rceil>) 0) + 1"
   note a
   moreover have "a' \<in> \<nat>" by (auto simp: max_def a'_def)
   moreover have "a' \<ge> a + 1" unfolding a'_def by linarith

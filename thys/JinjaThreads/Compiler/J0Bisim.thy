@@ -251,18 +251,18 @@ next
   thus ?case using eefin by(auto elim!: red_cases)
 next
   case BinOp
-  thus ?case using eefin by(auto elim!: red_cases split: split_if_asm)
+  thus ?case using eefin by(auto elim!: red_cases split: if_split_asm)
 next
   case AAcc
-  thus ?case using eefin by(auto elim!: red_cases split: split_if_asm)
+  thus ?case using eefin by(auto elim!: red_cases split: if_split_asm)
 next
-  case AAss thus ?case using eefin by(auto elim!: red_cases split: split_if_asm)
+  case AAss thus ?case using eefin by(auto elim!: red_cases split: if_split_asm)
 next
-  case ALen thus ?case using eefin by(auto elim!: red_cases split: split_if_asm)
+  case ALen thus ?case using eefin by(auto elim!: red_cases split: if_split_asm)
 next
   case FAcc thus ?case using eefin by(auto elim!: red_cases)
 next
-  case FAss thus ?case using eefin by(auto elim!: red_cases split: split_if_asm)
+  case FAss thus ?case using eefin by(auto elim!: red_cases split: if_split_asm)
 next
   case (Call obj M pns E' x x')
   note IHobj = `\<And>x E' x'. \<lbrakk>call obj = \<lfloor>aMvs\<rfloor>; P,t \<turnstile> \<langle>inline_call ee obj,(h, x)\<rangle> -ta\<rightarrow> \<langle>E',(h', x')\<rangle>\<rbrakk>
@@ -346,7 +346,7 @@ next
   case Nil_exp thus ?case by simp
 next
   case Cons_exp
-  thus ?case using eefin by(auto elim!: reds_cases split: split_if_asm)
+  thus ?case using eefin by(auto elim!: reds_cases split: if_split_asm)
 qed
 
 lemma assumes sees: "P \<turnstile> class_type_of T sees M:Us\<rightarrow>U = \<lfloor>(pns, body)\<rfloor> in D"
@@ -370,7 +370,7 @@ next
   have "x(V := vo) = x'" by(auto dest: is_call_red_state_unchanged)
   hence "x' V = vo" by auto
   with BlockRed show ?case by(simp)
-qed(fastforce split: split_if_asm)+
+qed(fastforce split: if_split_asm)+
 
 lemma wf_state_ConsD: "wf_state (e, e' # es) \<Longrightarrow> wf_state (e', es)"
 by(simp)
@@ -915,7 +915,7 @@ proof -
     and pns: "length pns = length Ts" by simp_all
   with vs len have fv: "fv (blocks pns Ts vs body) \<subseteq> {this}" by auto
   with len vs sees show ?thesis unfolding start_state_def
-    by(auto intro!: red_red0.mbisimI)(auto intro!: bisim_red_red0.intros wset_thread_okI simp add: is_call_def split: split_if_asm)
+    by(auto intro!: red_red0.mbisimI)(auto intro!: bisim_red_red0.intros wset_thread_okI simp add: is_call_def split: if_split_asm)
 qed
 
 end

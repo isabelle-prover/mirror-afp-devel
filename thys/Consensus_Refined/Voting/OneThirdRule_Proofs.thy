@@ -143,7 +143,7 @@ proof-
   from new_dec and nxt obtain v where 
     p_dec_v: "decision (sc' p) = Some v" 
     and two_thirds_v: "TwoThirds (\<mu> p) v"
-    apply(auto simp add: OTR_nextState_def split: split_if_asm)
+    apply(auto simp add: OTR_nextState_def split: if_split_asm)
     by (metis exE_some)
   then have "2 * N div 3 < card {q. last_vote (sc q) = v}" using send
     by(auto simp add: get_msgs_benign OTR_sendMsg_def TwoThirds_def HOV_def 
@@ -227,7 +227,7 @@ proof(simp add: PO_rhoare_defs OTR_trans_step_def, safe)
         have 
           w_MFR: "?w = Min {z. MFR (\<mu> p) z}" (is "?w = Min ?MFRs") and dom_maj: "dom (\<mu> p) \<in> majs" 
           using old new nxt[THEN spec, where x=p]
-          by(auto simp add: OTR_nextState_def majs_def dom_def split: split_if_asm)
+          by(auto simp add: OTR_nextState_def majs_def dom_def split: if_split_asm)
         from dom_maj have not_empty: "dom (\<mu> p) \<noteq> {}" by(elim majorities.quorum_non_empty)
         from MFR_exists obtain mfr_v where mfr_v: "mfr_v \<in> ?MFRs"
           by fastforce

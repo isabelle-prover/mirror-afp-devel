@@ -42,7 +42,6 @@ maximum value. *}
 
 lemma remove_max_max_lemma:
   shows "fst (foldl f (m, t) l) =  Max (set (m # l))"
-using assms
 proof (induct l arbitrary: m t rule: rev_induct)
   case (snoc x xs)
   let ?a = "foldl f (m, t) xs"
@@ -80,7 +79,7 @@ proof (induct l arbitrary: l' m m' t' rule: rev_induct)
   thus ?case
     using snoc(2)
     apply (cases "?a")
-    apply (auto split: split_if_asm, (simp add: union_lcomm union_commute)+) 
+    apply (auto split: if_split_asm, (simp add: union_lcomm union_commute)+) 
     by (metis union_assoc)
 qed simp
 

@@ -230,7 +230,7 @@ lemma sublinear_wp_SetDC:
       and hp:  "\<And>s a. a \<in> S s \<Longrightarrow> healthy (wp (p a))"
       and ne:  "\<And>s. S s \<noteq> {}"
   shows "sublinear (wp (SetDC p S))"
-proof(rule sublinearI, simp add:wp_eval del:Inf_image_eq, rule cInf_greatest)
+proof(rule sublinearI, simp add:wp_eval, rule cInf_greatest)
   fix P::"'s \<Rightarrow> real" and Q::"'s \<Rightarrow> real" and s::'s and x y
   and a::real and b::real and c::real
   assume sP: "sound P" and sQ: "sound Q"

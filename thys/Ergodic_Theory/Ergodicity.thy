@@ -1,4 +1,4 @@
-(*  Author:  Sébastien Gouëzel   sebastien.gouezel@univ-rennes1.fr 
+(*  Author:  Sébastien Gouëzel   sebastien.gouezel@univ-rennes1.fr
     License: BSD
 *)
 
@@ -98,7 +98,7 @@ proof -
     using preimage_included_then_null_or_conull by auto
   have "A \<subseteq> B" unfolding B_def using T_vrestr_0 assms(1) by blast
   then have "emeasure M B > 0" using assms(2)
-    by (metis `B \<in> sets M` dual_order.strict_iff_order emeasure_eq_0 emeasure_nonneg)
+    by (metis `B \<in> sets M` emeasure_eq_0 zero_less_iff_neq_zero)
   then have "B \<notin> null_sets M" by auto
   then have i: "space M - B \<in> null_sets M" using * by auto
   then show  "space M - (\<Union>n. (T^^n)--`A) \<in> null_sets M" using B_def by auto

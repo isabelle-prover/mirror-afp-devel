@@ -71,7 +71,7 @@ proof
   show "\<And>x. 1\<^sub>\<sigma> \<cdot> x = x"
     by (auto simp: mr_simp)
   show "\<And>x. x \<cdot> 1\<^sub>\<sigma> = x"
-    by (simp add: mr_simp) force
+    by (auto simp add: mr_simp) (metis UN_singleton)
   show "\<And>x. 1\<^sub>\<pi> \<parallel> x = x"
     by (simp add: mr_simp)
   show "\<And>x y z. x \<parallel> y \<parallel> z = x \<parallel> (y \<parallel> z)"
@@ -360,11 +360,11 @@ lemma cl5: "(R \<cdot> S) \<cdot> (T \<cdot> {}) = R \<cdot> (S \<cdot> (T \<cdo
     hence "\<exists>B. (a,B) \<in> R \<and> (\<exists>f. (\<forall>b \<in> B. (\<exists> C. (b,C) \<in> S \<and> (\<forall>x \<in> C. (x,{}) \<in> T \<cdot> {}) \<and> f b = {})) \<and> A = \<Union>((\<lambda>x. f x) ` B))"
       by (clarsimp simp: mr_simp) fastforce
     hence "\<exists>B. (a,B) \<in> R \<and> (\<forall>b \<in> B. (\<exists> C. (b,C) \<in> S \<and> (\<forall>x \<in> C. (x,{}) \<in> T \<cdot> {}))) \<and> A = {}"
-      by (metis (erased, hide_lams) SUP_bot_conv(2) SUP_def)
+      by (metis (erased, hide_lams) SUP_bot_conv(2))
     hence "\<exists>B. (a,B) \<in> R \<and> (\<exists>f. (\<forall>b \<in> B. (b,f b) \<in> S \<and> (\<forall>x \<in> f b. (x,{}) \<in> T \<cdot> {}))) \<and> A = {}" 
       by metis
     hence "\<exists>B. (a,B) \<in> R \<and> (\<exists>f. (\<forall>b \<in> B. (b,f b) \<in> S) \<and> (\<forall>x \<in> \<Union>((\<lambda>x. f x) ` B). (x,{}) \<in> T \<cdot> {})) \<and> A = {}"
-      by (metis SUP_def UN_E) 
+      by (metis UN_E) 
     hence "\<exists>C B. (a,B) \<in> R \<and> (\<exists>f. (\<forall>b \<in> B. (b, f b) \<in> S) \<and> C =  \<Union>((\<lambda>x. f x) ` B) \<and> (\<forall>x \<in> C. (x,{}) \<in> T \<cdot> {})) \<and> A = {}"
       by metis
     hence "\<exists>C. (a,C) \<in> R \<cdot> S \<and> (\<forall>x \<in> C. (x,{}) \<in> T \<cdot> {}) \<and> A = {}"
@@ -447,7 +447,7 @@ lemma p_id_assoc1: "(1\<^sub>\<pi> \<cdot> R) \<cdot> S = 1\<^sub>\<pi> \<cdot> 
   by (clarsimp simp: mr_simp)
 
 lemma p_id_assoc2: "(R \<cdot> 1\<^sub>\<pi>) \<cdot> T = R \<cdot> (1\<^sub>\<pi> \<cdot> T)"
-  by (clarsimp simp: mr_simp, blast+)
+  by (auto simp add: mr_simp cong del: strong_SUP_cong, blast+)
 
 lemma seq_conc_subdistrl: 
 assumes "P \<subseteq> 1\<^sub>\<sigma>"
@@ -569,7 +569,7 @@ proof -
   hence "(\<exists>B. B \<noteq> {} \<and> (\<forall>x \<in> B. (x,{x}) \<in> d (R - 1\<^sub>\<pi>))) \<and> A \<noteq> {}" 
     using assms(2) by (clarsimp simp: mr_simp)
   hence "(\<exists>B. B \<noteq> {} \<and> (\<exists>f. (\<forall>x \<in> B. (x,{x}) \<in> d (R - 1\<^sub>\<pi>) \<and> f x \<noteq> {}) \<and> A = \<Union> ((\<lambda>x. (f x)) ` B)))"
-    by (metis SUP_def UN_constant)
+    by (metis UN_constant)
   hence "(a,A) \<in> NC \<cdot> (d (R - 1\<^sub>\<pi>) \<cdot> NC)"
     by (clarsimp simp: mrd_simp) metis
   thus ?thesis

@@ -230,7 +230,7 @@ proof -
   then have "card {x, (snd y, w)} \<le> in_degree G w"
     unfolding in_degree_def by (intro card_mono) auto
   then show ?thesis using `fst x \<noteq> snd y` inc_w
-    by (auto simp: card_insert_if split: split_if_asm)
+    by (auto simp: card_insert_if split: if_split_asm)
 qed
 
 lemma (in pair_pseudo_graph) gen_iapath_same2E:
@@ -381,7 +381,7 @@ lemma card_ig_neighbors_indegree:
   shows "card (ig_neighbors G u) = in_degree (mk_graph G) u"
 proof -
   have inj2: "inj_on (\<lambda>e. ig_opposite G e u) {e \<in> parcs (mk_graph G). snd e = u}"
-    unfolding ig_opposite_def by (rule inj_onI) (fastforce split: split_if_asm)
+    unfolding ig_opposite_def by (rule inj_onI) (fastforce split: if_split_asm)
 
   have "ig_neighbors G u = (\<lambda>e. ig_opposite G e u) ` {e \<in> parcs (mk_graph G). snd e = u}"
     using assms unfolding ig_neighbors_def
@@ -1456,7 +1456,7 @@ proof -
       using \<open>u \<in> U\<close> disj_UV by (auto simp: verts_G col_adj iadj_conv)
     then have "is_K33_outer_inv G (ig_verts_cnt G) blue"
       using \<open>U \<inter> V = {}\<close> by (subst is_K33_outer_last) (auto simp: arcs_G verts_G )
-    ultimately have ?thesis by fact }
+    ultimately have ?thesis by (rule that) }
   moreover
   { assume "u \<in> V"
     then have "U = {v \<in> set (ig_verts G). blue v}"
@@ -1468,7 +1468,7 @@ proof -
       using \<open>u \<in> V\<close> disj_UV by (auto simp: verts_G col_adj iadj_conv)
     then have "is_K33_outer_inv G (ig_verts_cnt G) blue"
       using \<open>U \<inter> V = {}\<close> by (subst is_K33_outer_last) (auto simp: arcs_G verts_G )
-    ultimately have ?thesis by fact }
+    ultimately have ?thesis by (rule that) }
   ultimately show ?thesis using verts_G u by blast
 qed
 

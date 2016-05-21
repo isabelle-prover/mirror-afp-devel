@@ -199,7 +199,7 @@ begin
 
   sublocale G': gba G'
     apply unfold_locales
-    apply (auto simp add: G'_gba_fields G'_fields split: split_if_asm)
+    apply (auto simp add: G'_gba_fields G'_fields split: if_split_asm)
     done
 
   lemma L_sim1: "\<lbrakk>range r \<subseteq> V; L (r i) l\<rbrakk> \<Longrightarrow> G'.L (f (r i)) l"
@@ -247,7 +247,7 @@ begin
   lemma finite_G'_V:
     assumes "finite V"
     shows "finite G'.V"
-    using assms by (auto simp add: G'_gba_fields G'_fields split: split_if_asm)
+    using assms by (auto simp add: G'_gba_fields G'_fields split: if_split_asm)
 
 end
 
@@ -305,7 +305,7 @@ begin
   sublocale gbg: gb_graph "to_gbg_ext m"
     apply unfold_locales 
     using V0_ss E_ss F_ss
-    apply (auto simp: to_gbg_ext_def split: split_if_asm)
+    apply (auto simp: to_gbg_ext_def split: if_split_asm)
     done
 
   definition is_acc :: "'Q word \<Rightarrow> bool" where "is_acc r \<equiv> (\<exists>\<^sub>\<infinity>i. r i \<in> F)"
@@ -569,8 +569,8 @@ lemma mk_acc_impl_correct:
   using FIN apply (simp_all)
   apply (rule ext) apply auto []
 
-  apply (rule ext) apply (auto split: split_if_asm simp: nth_append nth_Cons') []
-  apply (rule ext) apply (auto split: split_if_asm simp: nth_append nth_Cons' 
+  apply (rule ext) apply (auto split: if_split_asm simp: nth_append nth_Cons') []
+  apply (rule ext) apply (auto split: if_split_asm simp: nth_append nth_Cons' 
     fun_comp_eq_conv) []
 
   apply (rule ext) apply (auto simp: fun_comp_eq_conv) []
@@ -823,10 +823,10 @@ begin
           and 0: "(q,n)\<in>g_V0 ?G'"
         hence G1: "(q,q')\<in>E\<^sup>* \<and> n'\<le>num_acc"
           apply (induction rule: rtrancl_induct2)
-          by (auto simp: degeneralize_ext_def split: split_if_asm)
+          by (auto simp: degeneralize_ext_def split: if_split_asm)
         
         from 0 have G2: "q\<in>V0 \<and> n\<le>num_acc"
-          by (auto simp: degeneralize_ext_def split: split_if_asm)
+          by (auto simp: degeneralize_ext_def split: if_split_asm)
         note G1 G2
       } thus ?thesis by fastforce
     qed
@@ -838,7 +838,7 @@ begin
     "degen.is_run T m r \<Longrightarrow> is_run (fst o r)"
     unfolding degen.is_run_def is_run_def
     unfolding degeneralize_ext_def
-    apply (clarsimp split: split_if_asm simp: ipath_def)
+    apply (clarsimp split: if_split_asm simp: ipath_def)
     apply (metis fst_conv)+
     done
 
@@ -846,13 +846,13 @@ begin
     assumes "path (degen.E T m) u p v" 
     shows "path E (fst u) (map fst p) (fst v)"
     using assms
-    by induction (auto simp: degeneralize_ext_def path_simps split: split_if_asm)
+    by induction (auto simp: degeneralize_ext_def path_simps split: if_split_asm)
 
   lemma degen_V0_sound: 
     assumes "u \<in> degen.V0 T m" 
     shows "fst u \<in> V0"
     using assms
-    by (auto simp: degeneralize_ext_def path_simps split: split_if_asm)
+    by (auto simp: degeneralize_ext_def path_simps split: if_split_asm)
 
 
   lemma degen_visit_acc:
@@ -865,7 +865,7 @@ begin
     then obtain qh nh where [simp]: "qnh=(qh,nh)" by (cases qnh)
     from `((q,n),qnh) \<in> degen.E T m` 
     have "nh=n \<or> (nh=(n+1) mod num_acc \<and> n\<in>acc q)"
-      by (auto simp: degeneralize_ext_def split: split_if_asm)
+      by (auto simp: degeneralize_ext_def split: if_split_asm)
     thus ?case proof
       assume [simp]: "nh=n"
       from path_prepend obtain qa where "(qa, n) \<in> set p" and "n \<in> acc qa" 
@@ -1143,7 +1143,7 @@ begin
       by clarsimp (metis Suc_pred gr_implies_not0 neq0_conv) 
     moreover note `snd (r k) \<noteq> n`
     ultimately have "n \<in> acc (fst (r (k - 1)))"
-      by (auto simp: degeneralize_ext_def split: split_if_asm)
+      by (auto simp: degeneralize_ext_def split: if_split_asm)
     moreover have "k - 1 < j" using A LEK_EQN 
       apply (rule_tac ccontr)
       apply clarsimp
@@ -1303,10 +1303,10 @@ begin
     apply (auto simp: prod_def) []
 
     using igba.acc_bound
-    apply (auto simp: prod_def split: split_if_asm) []
+    apply (auto simp: prod_def split: if_split_asm) []
 
     using igba.acc_ss
-    apply (fastforce simp: prod_def split: split_if_asm) []
+    apply (fastforce simp: prod_def split: if_split_asm) []
     done
   
   sublocale prod: igb_graph prod using prod_invar .
@@ -1372,7 +1372,7 @@ begin
       from A have "prod.acc (r i) = igba.acc (fst (r i))"
         unfolding prod_fields
         apply safe
-        apply (clarsimp_all split: split_if_asm)
+        apply (clarsimp_all split: if_split_asm)
         by (metis UNIV_I comp_apply imageI snd_conv subsetD)
     } note [simp] = this
     show ?thesis

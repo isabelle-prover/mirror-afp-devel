@@ -253,7 +253,7 @@ proof -
     fix x::"'a"
     assume "x \<in> ?L"
     hence "(if t dvd x then c * p (x divide t) else 0) \<noteq> 0" by simp
-    hence "t dvd x" and cp_not_zero: "c * p (x divide t) \<noteq> 0" by (simp_all split: split_if_asm)
+    hence "t dvd x" and cp_not_zero: "c * p (x divide t) \<noteq> 0" by (simp_all split: if_split_asm)
     show "x \<in> ?R"
     proof
       from dvd_divide[OF \<open>t dvd x\<close>] show "x = t * (x divide t)" by (simp add: ac_simps)
@@ -1048,7 +1048,7 @@ proof -
     fix s::"'a"
     assume "s \<in> {x. (if t \<prec> x then p x else 0) \<noteq> 0}"
     hence "(if t \<prec> s then p s else 0) \<noteq> 0" by simp
-    hence "p s \<noteq> 0" by (simp split: split_if_asm)
+    hence "p s \<noteq> 0" by (simp split: if_split_asm)
     thus "s \<in> {t. p t \<noteq> 0}" by simp
   qed
   from finite_subset[OF this fin] show "finite {s. (if t \<prec> s then p s else 0) \<noteq> 0}" .
@@ -1063,7 +1063,7 @@ proof -
     fix s::"'a"
     assume "s \<in> {x. (if x \<prec> t then p x else 0) \<noteq> 0}"
     hence "(if s \<prec> t then p s else 0) \<noteq> 0" by simp
-    hence "p s \<noteq> 0" by (simp split: split_if_asm)
+    hence "p s \<noteq> 0" by (simp split: if_split_asm)
     thus "s \<in> {t. p t \<noteq> 0}" by simp
   qed
   from finite_subset[OF this fin] show "finite {s. (if s \<prec> t then p s else 0) \<noteq> 0}" .
@@ -1352,7 +1352,7 @@ qed
 
 lemma coeff_higher:
   shows "coeff (higher p s) t = (if s \<prec> t then coeff p t else 0)"
-using assms lp_max[of p] lc_not_0[of p] unfolding lp_def lc_def
+using lp_max[of p] lc_not_0[of p] unfolding lp_def lc_def
 proof transfer
   fix p::"'a \<Rightarrow> 'b" and t s::"'a"
   show "(if s \<prec> t then p t else 0) = (if s \<prec> t then p t else 0)" by simp
@@ -1388,7 +1388,7 @@ next
         and b: "\<And>t. p t \<noteq> 0 \<Longrightarrow> ord t (linorder.Max ord {t. p t \<noteq> 0})"
         and c: "(\<And>s u. ord s (linorder.Max ord {t. p t \<noteq> 0}) \<Longrightarrow>
                 ord (s * u) (linorder.Max ord {t. p t \<noteq> 0} * u))"
-      hence "t dvd s" and a: "c * p (s divide t) \<noteq> 0" by (simp_all split: split_if_asm)
+      hence "t dvd s" and a: "c * p (s divide t) \<noteq> 0" by (simp_all split: if_split_asm)
       from \<open>t dvd s\<close> obtain u::"'a" where "s = t * u" unfolding dvd_def ..
       hence "s divide t = u" using times_divide_2 by simp
       hence "p u \<noteq> 0" using a by simp

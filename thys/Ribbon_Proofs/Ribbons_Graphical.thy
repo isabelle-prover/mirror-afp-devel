@@ -70,7 +70,7 @@ lemma linearityD2:
   "linearity E \<Longrightarrow> (\<forall>e f. e \<in> set E \<and> f \<in> set E \<and> e \<noteq> f \<longrightarrow> 
     fst3 e |\<inter>| fst3 f = {||} \<and>
     thd3 e |\<inter>| thd3 f = {||})"
-using assms unfolding linearity_def by auto
+unfolding linearity_def by auto
 
 inductive
   wf_ass :: "assertion_gadget \<Rightarrow> bool" and

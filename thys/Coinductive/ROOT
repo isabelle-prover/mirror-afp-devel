@@ -2,7 +2,7 @@ chapter AFP
 
 session Coinductive (AFP) = "HOL-Library" +
   options [timeout = 600]
-  theories
+  theories [document = false]
     "~~/src/HOL/Library/Stream"
     "~~/src/HOL/Library/Extended_Nat"
     "~~/src/HOL/Library/Infinite_Set"

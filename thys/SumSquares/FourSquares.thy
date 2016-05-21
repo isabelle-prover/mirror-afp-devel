@@ -461,7 +461,7 @@ proof -
       hence "zprime (int p)" by (simp only: prime_impl_zprime_int)
       hence "is_sum4sq (int p)" by (rule zprime_is_sum4sq)
       with x have "is_sum4sq((int p)*?X)" by (simp add: is_mult_sum4sq)
-      thus "is_sum4sq (int p * int (prod ps))" by (auto simp only: int_mult)
+      thus "is_sum4sq (int p * int (prod ps))" by (auto simp only: of_nat_mult)
     qed
     with ps npos have "is_sum4sq n" by auto }
   ultimately have "is_sum4sq n" by auto

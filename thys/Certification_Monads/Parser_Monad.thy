@@ -12,8 +12,8 @@ imports
 begin
 
 (*It might be nice to be able to enter things like CHR ''\t'', ... directly.*)
-abbreviation (input) "tab \<equiv> Char Nibble0 Nibble9"
-abbreviation (input) "carriage_return \<equiv> Char Nibble0 NibbleD"
+abbreviation (input) "tab \<equiv> CHR 0x09"
+abbreviation (input) "carriage_return \<equiv> CHR 0x0D"
 abbreviation (input) "wspace \<equiv> [CHR '' '', CHR ''\<newline>'', tab, carriage_return]"
 
 definition "trim = dropWhile (\<lambda>c. c \<in> set wspace)"

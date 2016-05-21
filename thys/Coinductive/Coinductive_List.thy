@@ -697,6 +697,8 @@ qed
 lemma llist_ccpo [simp, cont_intro]: "class.ccpo lSup op \<sqsubseteq> (mk_less op \<sqsubseteq>)"
 by(unfold_locales)(auto dest: lprefix_antisym intro: lprefix_trans chain_lprefix_lSup chain_lSup_lprefix simp add: mk_less_def)
 
+lemmas [cont_intro] = ccpo.admissible_leI[OF llist_ccpo]
+
 lemma llist_partial_function_definitions:
   "partial_function_definitions op \<sqsubseteq> lSup"
 by(unfold_locales)(auto dest: lprefix_antisym intro: lprefix_trans chain_lprefix_lSup chain_lSup_lprefix)
@@ -910,10 +912,6 @@ by(cases "Y = {}")(simp_all add: mcont_lset[THEN mcont_contD])
 
 lemma lfinite_lSupD: "lfinite (lSup A) \<Longrightarrow> \<forall>xs \<in> A. lfinite xs"
 by(induct ys\<equiv>"lSup A" arbitrary: A rule: lfinite_induct) fastforce+
-
-lemmas [cont_intro, simp] =
-  admissible_leI[OF complete_lattice_ccpo', where luba=lSup and orda="op \<sqsubseteq>"]
-  admissible_leI[OF complete_lattice_ccpo', where luba=llist.lub_fun and orda=llist.le_fun]
 
 lemma monotone_enat_le_lprefix_case [cont_intro, simp]:
   "monotone op \<le> op \<sqsubseteq> (\<lambda>x. f x (eSuc x)) \<Longrightarrow> monotone op \<le> op \<sqsubseteq> (\<lambda>x. case x of 0 \<Rightarrow> LNil | eSuc x' \<Rightarrow> f x' x)"
@@ -1559,10 +1557,10 @@ proof -
   qed simp
   also have "fst (prod_lub lSup lSup ?C) = xs"
     unfolding prod_lub_def fst_conv
-    by(subst image_image)(simp add: mcont_contD[OF mcont_ltake1, symmetric] ltake_all del: Sup_image_eq)
+    by(subst image_image)(simp add: mcont_contD[OF mcont_ltake1, symmetric] ltake_all)
   also have "snd (prod_lub lSup lSup ?C) = ys"
     unfolding prod_lub_def snd_conv
-    by(subst image_image)(simp add: mcont_contD[OF mcont_ltake1, symmetric] ltake_all del: Sup_image_eq)
+    by(subst image_image)(simp add: mcont_contD[OF mcont_ltake1, symmetric] ltake_all)
   finally show ?thesis .
 qed
 
@@ -2233,11 +2231,10 @@ lemma ltake_enat_lprefix_imp_lprefix:
   assumes "\<And>n. lprefix (ltake (enat n) xs) (ltake (enat n) ys)"
   shows "lprefix xs ys"
 proof -
-  note [cont_intro] = ccpo.admissible_leI[OF llist_ccpo]
   have "ccpo.admissible Sup op \<le> (\<lambda>n. ltake n xs \<sqsubseteq> ltake n ys)" by simp
   hence "ltake (Sup (range enat)) xs \<sqsubseteq> ltake (Sup (range enat)) ys"
     by(rule ccpo.admissibleD)(auto intro: assms)
-  thus ?thesis by(simp add: ltake_all del: Sup_image_eq)
+  thus ?thesis by(simp add: ltake_all)
 qed
 
 lemma lprefix_conv_lappend: "xs \<sqsubseteq> ys \<longleftrightarrow> (\<exists>zs. ys = lappend xs zs)" (is "?lhs \<longleftrightarrow> ?rhs")
@@ -2811,7 +2808,7 @@ proof(coinduction arbitrary: xs rule: llist.coinduct_strong)
   case (Eq_llist xs)
   have ?lnull by(auto simp add: lset_lnull)
   moreover have ?LCons
-    by(clarsimp split: split_if_asm split del: split_if simp add: ltl_ltakeWhile)(auto 4 3 simp add: not_lnull_conv)
+    by(clarsimp split: if_split_asm split del: if_split simp add: ltl_ltakeWhile)(auto 4 3 simp add: not_lnull_conv)
   ultimately show ?case ..
 qed
 
@@ -2896,7 +2893,7 @@ proof
   proof(induct len arbitrary: xs)
     case 0 thus ?case by(simp add: zero_enat_def[symmetric] lnth_0_conv_lhd)
   next
-    case (Suc len) thus ?case by(cases xs)(auto split: split_if_asm simp add: eSuc_enat[symmetric])
+    case (Suc len) thus ?case by(cases xs)(auto split: if_split_asm simp add: eSuc_enat[symmetric])
   qed
 qed
 
@@ -3642,7 +3639,7 @@ proof(coinduction arbitrary: xs ys)
   case (Eq_llist xs ys)
   hence ?lnull by(cases ys)(auto simp add: lset_lnull)
   moreover from Eq_llist have ?LCons
-    by(auto 4 3 intro: lsorted_ltlI ldistinct_ltlI simp add: not_lnull_conv insert_eq_iff lsorted_LCons split: split_if_asm)
+    by(auto 4 3 intro: lsorted_ltlI ldistinct_ltlI simp add: not_lnull_conv insert_eq_iff lsorted_LCons split: if_split_asm)
   ultimately show ?case ..
 qed
 
@@ -4036,7 +4033,7 @@ proof(intro iffI strip)
 next
   fix x
   assume "x \<in> lset xs" "lfilter P xs = LNil"
-  thus "\<not> P x" by induction(simp_all split: split_if_asm)
+  thus "\<not> P x" by induction(simp_all split: if_split_asm)
 qed
 end
 
@@ -4168,7 +4165,7 @@ proof
           unfolding in_lset_conv_lnth by auto
         hence "\<not> P (lnth ?xs' m)" by(auto dest: lset_ltakeWhileD) }
       hence "{n. enat n < llength xs \<and> P (lnth xs n)} \<subseteq> insert (the_enat (llength ?xs')) (?f ` ?A)"
-        using n by(subst (1 2) xs)(cases "llength ?xs", auto simp add: lnth_lappend not_less not_le lnth_LCons' eSuc_enat split: split_if_asm intro!: rev_image_eqI)
+        using n by(subst (1 2) xs)(cases "llength ?xs", auto simp add: lnth_lappend not_less not_le lnth_LCons' eSuc_enat split: if_split_asm intro!: rev_image_eqI)
       ultimately show ?case by(auto intro: finite_subset)
     qed }
   thus "lfinite xs \<or> finite {n. enat n < llength xs \<and> P (lnth xs n)}" by blast
@@ -4290,7 +4287,7 @@ next
     with `Suc n \<le> m` have "n \<le> m'" by simp
     moreover from `enat (Suc n) < llength xs`
     obtain x xs' where xs [simp]: "xs = LCons x xs'" by(cases xs) simp
-    from `ldistinct (lfilter P xs)` have "ldistinct (lfilter P xs')" by(simp split: split_if_asm)
+    from `ldistinct (lfilter P xs)` have "ldistinct (lfilter P xs')" by(simp split: if_split_asm)
     moreover from `enat (Suc n) < llength xs` `enat m < llength xs`
     have "enat n < llength xs'" "enat m' < llength xs'" by(simp_all add: Suc_ile_eq)
     moreover note `P a`
@@ -4659,7 +4656,7 @@ proof
       and xss': "set xss' \<subseteq> {xs. lnull xs}" unfolding lconcat_eq_LCons_conv by blast
     have "xs = lconcat (LCons xs' xss'')" by simp
     hence "?concl (LCons xs' xss'')" by(rule lfinite_LConsI)
-    thus ?case using `lfinite xs` xss' by(auto split: split_if_asm)
+    thus ?case using `lfinite xs` xss' by(auto split: if_split_asm)
   qed
 next
   assume "?rhs"

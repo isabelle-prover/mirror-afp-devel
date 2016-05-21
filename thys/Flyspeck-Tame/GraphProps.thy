@@ -292,7 +292,7 @@ qed
 
 (*
 lemma C0[dest]: "f \<in> set (facesAt g v) \<Longrightarrow> v \<in> \<V> g"
-  by (simp add: facesAt_def split: split_if_asm)
+  by (simp add: facesAt_def split: if_split_asm)
 *)
 
 lemma len_faces_sum: "|faces g| = |finals g| + |nonFinals g|"
@@ -315,7 +315,7 @@ lemma distinct_no_loop2:
  "\<lbrakk> distinct(vertices f); v \<in> \<V> f; u \<in> \<V> f; u \<noteq> v \<rbrakk> \<Longrightarrow> f \<bullet> v \<noteq> v"
 apply(frule split_list[of v])
 apply(clarsimp simp: nextVertex_def neq_Nil_conv hd_append
-  split:list.splits split_if_asm)
+  split:list.splits if_split_asm)
 done
 
 lemma distinct_no_loop1:
@@ -396,7 +396,7 @@ lemma unroll_between_next2:
  "\<lbrakk> distinct(vertices f); u \<in> \<V> f; v \<in> \<V> f; u \<noteq> v \<rbrakk> \<Longrightarrow>
   between (vertices f) u (f \<bullet> v) = between (vertices f) u v @ [v]"
 using split_between[OF _ _ _ next_between2]
-by (simp add: between_next_empty split:split_if_asm)
+by (simp add: between_next_empty split:if_split_asm)
 
 
 lemma nextVertex_eq_lemma:

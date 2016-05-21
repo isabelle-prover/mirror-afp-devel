@@ -185,7 +185,7 @@ proof -
       by (auto dest: list_all2_lengthD)
 
     from Invoke succs have ST: "ST!n \<noteq> NT" and ST': "ST'!n \<noteq> NT"
-      by (auto split: split_if_asm)
+      by (auto split: if_split_asm)
     
     from ST' app\<^sub>i Invoke obtain D Ts T m C' where
       D:   "ST' ! n = Class D" and

@@ -179,7 +179,7 @@ proof (insert assms(4), elim multE[OF assms(1)])
   fix I J K
   assume "N = I + K" "M = I + J" "J \<noteq> {#}" "\<forall>k \<in> set_mset K. \<exists>j \<in> set_mset J. (k, j) \<in> R"
   thus "(image_mset f N, image_mset f M) \<in> mult R'" using assms(2,3)
-  by (intro multI, auto simp del: mem_set_mset_iff) blast
+    by (intro multI) (auto, blast)
 qed
 
 

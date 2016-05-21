@@ -139,12 +139,14 @@ lemma Sup_range_comp: "(\<Squnion> range p) o S = \<Squnion> (range (\<lambda> w
 lemma Sup_less_comp: "(Sup_less P) w o S = Sup_less (\<lambda> w . ((P w) o S)) w"
   apply (simp add: Sup_less_def fun_eq_iff, safe)
   apply (subgoal_tac "((\<lambda>f. f (S x)) ` {y. \<exists>v<w. \<forall>x. y x = P v x}) = ((\<lambda>f. f x) ` {y. \<exists>v<w. \<forall>x. y x = P v (S x)})")
-  by (auto simp add: SUP_def simp del: Sup_image_eq)
+  apply (auto cong del: strong_SUP_cong)
+  done
 
 lemma Sup_less_assert: "Sup_less (\<lambda>w. {. (p w)::'a::complete_distrib_lattice .}) w = {.Sup_less p w.}"
   apply (simp add: Sup_less_def assert_Sup image_def)
   apply (subgoal_tac "{y. \<exists>v<w. y = {. p v .}} = {y. \<exists>x. (\<exists>v<w. x = p v) \<and> y = {. x .}}")
-  by auto
+  apply (auto simp add: image_def cong del: strong_SUP_cong)
+  done
 
 
 declare mono_comp[simp]
@@ -152,7 +154,7 @@ declare mono_comp[simp]
 theorem hoare_fixpoint:
   "mono_mono F \<Longrightarrow>
    (!! w f . mono f \<and> \<Turnstile> Sup_less p w {| f |} y \<Longrightarrow> \<Turnstile> p w {| F f |} y) \<Longrightarrow> \<Turnstile> (Sup (range p)) {| lfp F |} y"
-  apply (simp add: mono_mono_def hoare_refinement_post assert_Sup_range Sup_range_comp del: Sup_image_eq)
+  apply (simp add: mono_mono_def hoare_refinement_post assert_Sup_range Sup_range_comp)
   apply (rule lfp_wf_induction)
   apply auto
   apply (simp add: Sup_less_comp [THEN sym])

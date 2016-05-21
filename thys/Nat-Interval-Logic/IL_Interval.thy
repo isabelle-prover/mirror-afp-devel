@@ -460,7 +460,7 @@ done
 corollary iMOD_Suc: "
   x \<in> [r, mod m] \<Longrightarrow> (Suc x \<in> [r, mod m]) = (m = Suc 0)"
 apply (simp add: iMOD_iff, safe)
-apply (simp add: mod_Suc, split split_if_asm)
+apply (simp add: mod_Suc, split if_split_asm)
 apply simp+
 done
 
@@ -1431,11 +1431,11 @@ apply (rule subst[OF mod_partition_Union[of m], where
   P="\<lambda>x. (\<Union>k\<le>Max A div m. A \<inter> [k*m\<dots>,m - Suc 0]) = x"])
  apply assumption
 apply (rule set_eqI)
-apply (simp add: Bex_def iIN_iff)
+apply (simp add: iIN_iff)
 apply (rule iffI, blast)
 apply clarsimp
 apply (rename_tac x x1)
-apply (rule_tac x="x div m" in exI)
+apply (rule_tac x="x div m" in bexI)
 apply (frule in_imp_not_empty[where A=A])
 apply (frule_tac Max_ge, assumption)
 apply (cut_tac n=x and k="x div m" and m=m in div_imp_le_less)

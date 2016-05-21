@@ -92,7 +92,7 @@ lemmas set_list[simp] = distinct_set_list[THEN conjunct2]
 lemma set_list_set[simp]: "set (list (set xl)) = set xl" by auto
 
 lemma length_list[simp]: "finite A \<Longrightarrow> length (list A) = card A"
-by (metis assms distinct_card distinct_set_list)
+by (metis distinct_card distinct_set_list)
 
 lemma list_all_mp[elim]:
 assumes "list_all (\<lambda> a. \<phi> a \<longrightarrow> \<psi> a) al" and "list_all \<phi> al"

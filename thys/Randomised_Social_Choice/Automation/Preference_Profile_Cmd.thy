@@ -13,7 +13,6 @@ imports
   Complex_Main
   "../Social_Decision_Schemes"
   "../Preference_Profiles"
-  "../Missing_Permutations"
   QSOpt_Exact
 keywords
   "preference_profile" :: thy_goal

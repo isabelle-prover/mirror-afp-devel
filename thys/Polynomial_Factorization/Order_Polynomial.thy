@@ -12,7 +12,6 @@ polynomial.\<close>
 theory Order_Polynomial
 imports 
   "../Polynomial_Interpolation/Missing_Polynomial"
-  "~~/src/HOL/Library/Poly_Deriv"
 begin
 
 lemma order_linear[simp]: "order a [:- a, 1:] = Suc 0" unfolding order_def
@@ -26,25 +25,7 @@ next
     by (cases n, auto)
 qed
 
-lemma order_linear_power[simp]: "order a ([:- a, 1:]^Suc n) = Suc n" 
-proof (induct n)
-  case (Suc n)
-  let ?p = "[: -a , 1 :]"
-  have id: "?p ^ Suc (Suc n) = ?p ^ Suc n * ?p" by simp
-  show ?case unfolding id
-  proof (subst order_mult)
-    show "order a (?p ^ Suc n) + order a ?p = Suc (Suc n)"
-      unfolding Suc by simp
-  next
-    {
-      assume "?p ^ Suc n * ?p = 0"
-      from arg_cong[OF this, of degree]
-        degree_linear_power[of "-a" "Suc (Suc n)", unfolded id]
-      have False by simp
-    }
-    thus "?p ^ Suc n * ?p \<noteq> 0" by auto
-  qed
-qed simp
+declare order_power_n_n[simp]
 
 lemma linear_power_nonzero: "[: a, 1 :] ^ n \<noteq> 0"
 proof
@@ -56,7 +37,7 @@ qed
 lemma order_linear_power': "order a ([: b, 1:]^Suc n) = (if b = -a then Suc n else 0)"
 proof (cases "b = -a")
   case True
-  thus ?thesis unfolding True order_linear_power by simp
+  thus ?thesis unfolding True order_power_n_n by simp
 next
   case False
   let ?p = "[: b, 1:]^Suc n"
@@ -75,11 +56,8 @@ qed
 lemma order_linear': "order a [: b, 1:] = (if b = -a then 1 else 0)"
   using order_linear_power'[of a b 0] by simp
 
-lemma order_smult: "c \<noteq> 0 \<Longrightarrow> order x (smult c p) = order x p"
-  using order_root[of "[: c:]" x] order_mult[of "[: c :]" p x]
-  by (cases "p = 0", auto)
-
-lemma degree_div_less: assumes p: "p \<noteq> 0" and dvd: "r dvd p" and deg: "degree r \<noteq> 0" 
+lemma degree_div_less:
+  assumes p: "(p::'a::field poly) \<noteq> 0" and dvd: "r dvd p" and deg: "degree r \<noteq> 0" 
   shows "degree (p div r) < degree p"
 proof -
   from dvd obtain q where prq: "p = r * q" unfolding dvd_def by auto
@@ -150,9 +128,9 @@ proof -
   qed
 qed 
 
-lemma order_code[code]: "order a p = 
-  (if p = 0 then Code.abort (STR ''order of polynomial 0 undefined'') (\<lambda> _. order a p) else if poly p a \<noteq> 0 then 0 else 
-  Suc (order a (p div [: -a, 1 :])))"
+lemma order_code[code]: "order (a::'a::idom_divide) p = 
+  (if p = 0 then Code.abort (STR ''order of polynomial 0 undefined'') (\<lambda> _. order a p) 
+   else if poly p a \<noteq> 0 then 0 else Suc (order a (p div [: -a, 1 :])))"
 proof (cases "p = 0")
   case False note p = this
   note order = order[OF p]
@@ -166,8 +144,8 @@ proof (cases "p = 0")
     then obtain q where p: "p = [: -a, 1 :] * q" unfolding dvd_def by auto
     have ord: "order a p = order a [: -a, 1 :] + order a q"
       using p False order_mult[of "[: -a, 1 :]" q] by auto
-    have q: "p div [: -a, 1 :] = q"
-      by (metis False div_mult_self1_is_id mult_zero_left p)
+    have q: "p div [: -a, 1 :] = q" using False p 
+      by (metis mult_zero_left nonzero_mult_divide_cancel_left)
     show ?thesis unfolding ord q using False True by auto
   next
     case False

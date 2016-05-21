@@ -482,7 +482,7 @@ next
   moreover have "Q = <\<nu>x>P"
   proof  -
     have "Q \<in> summands (<\<nu>x>P)" by fact
-    thus ?thesis by(auto simp add: split_if)
+    thus ?thesis by(auto simp add: if_split)
   qed
   ultimately show ?case by(blast intro: SumIdemp Trans)
 next
@@ -1162,7 +1162,7 @@ proof -
    next
      case(Res x Q P)
      have "P \<in> summands (<\<nu>x>Q)" by fact
-     hence PeqQ: "P = <\<nu>x>Q" by(simp add: split_if)
+     hence PeqQ: "P = <\<nu>x>Q" by(simp add: if_split)
      have "P \<oplus> \<zero> \<equiv>\<^sub>e <\<nu>x>Q"
      proof -
        have "P \<oplus> \<zero> \<equiv>\<^sub>e P" by(rule SumZero)
@@ -2096,7 +2096,7 @@ lemma depthZero:
 
   shows "P = \<zero>"
 using assms
-apply(nominal_induct P rule: pi.strong_inducts, auto simp add: uhnf_def max_def split_if) 
+apply(nominal_induct P rule: pi.strong_inducts, auto simp add: uhnf_def max_def if_split) 
 apply(case_tac "depth pi1 \<le> depth pi2")
 by auto
 
@@ -2144,7 +2144,7 @@ next
     proof(nominal_induct Q' avoiding: P rule: pi.strong_inducts)
       case PiNil
       have "\<zero> \<in> summands Q" by fact
-      hence False by(nominal_induct Q rule: pi.strong_inducts, auto simp add: split_if)
+      hence False by(nominal_induct Q rule: pi.strong_inducts, auto simp add: if_split)
       thus ?case by simp
     next
       case(Output a b Q' P)
@@ -2296,22 +2296,22 @@ next
     next
       case(Match a b P' P)
       have "[a\<frown>b]P' \<in> summands Q" by fact
-      hence False by(nominal_induct Q rule: pi.strong_inducts, auto simp add: split_if)
+      hence False by(nominal_induct Q rule: pi.strong_inducts, auto simp add: if_split)
       thus ?case by simp
     next
       case(Mismatch a b P' P)
       have "[a\<noteq>b]P' \<in> summands Q" by fact
-      hence False by(nominal_induct Q rule: pi.strong_inducts, auto simp add: split_if)
+      hence False by(nominal_induct Q rule: pi.strong_inducts, auto simp add: if_split)
       thus ?case by simp
     next
       case(Sum P' Q' P)
       have "P' \<oplus> Q' \<in> summands Q" by fact
-      hence False by(nominal_induct Q rule: pi.strong_inducts, auto simp add: split_if)
+      hence False by(nominal_induct Q rule: pi.strong_inducts, auto simp add: if_split)
       thus ?case by simp
     next
       case(Par P' Q' P)
       have "P' \<parallel> Q' \<in> summands Q" by fact
-      hence False by(nominal_induct Q rule: pi.strong_inducts, auto simp add: split_if)
+      hence False by(nominal_induct Q rule: pi.strong_inducts, auto simp add: if_split)
       thus ?case by simp
     next
       case(Res x Q'' P)
@@ -2320,7 +2320,7 @@ next
       have PQdepth: "depth P + depth Q \<le> Suc n" by fact
       have Q''summQ: "<\<nu>x>Q'' \<in> summands Q" by fact
       hence "\<exists>a Q'. a \<noteq> x \<and> Q'' = a{x}.Q'"
-        by(nominal_induct Q rule: pi.strong_inducts, auto simp add: split_if pi.inject name_abs_eq name_calc)  
+        by(nominal_induct Q rule: pi.strong_inducts, auto simp add: if_split pi.inject name_abs_eq name_calc)  
       then obtain a Q' where aineqx: "a \<noteq> x" and Q'eqQ'': "Q'' = a{x}.Q'"
         by blast
       with Qhnf  Q''summQ have QTrans: "Q \<longmapsto>a<\<nu>x> \<prec> Q'" by(simp add: summandTransition uhnf_def)
@@ -2367,7 +2367,7 @@ next
     next
       case(Bang P' P)
       have "!P' \<in> summands Q" by fact
-      hence False by(nominal_induct Q rule: pi.strong_inducts, auto simp add: split_if) 
+      hence False by(nominal_induct Q rule: pi.strong_inducts, auto simp add: if_split) 
       thus ?case by simp
     qed
   qed

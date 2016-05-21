@@ -775,14 +775,14 @@ lemma HNextPart_Inv2c_chosen:
   shows  "chosen s' \<in> allInput s' \<union> {NotAnInput}"
 using hnp outpt' inp_dblk inv2c
 proof(auto simp add: HNextPart_def Inv2c_def Inv2c_inner_def
-           split: split_if_asm)
+           split: if_split_asm)
 qed
 
 lemma HNextPart_chosen:
   assumes hnp: "HNextPart s s'"
   shows  "chosen s' = NotAnInput \<longrightarrow> (\<forall>p. outpt s' p = NotAnInput)"
 using hnp
-proof(auto simp add: HNextPart_def split: split_if_asm)
+proof(auto simp add: HNextPart_def split: if_split_asm)
   fix p pa
   assume o1: "outpt s' p \<noteq> NotAnInput"
   and    o2: "outpt s' (SOME p. outpt s' p \<noteq> NotAnInput) = NotAnInput"

@@ -159,7 +159,7 @@ lemma run_if[run_elims]:
   obtains "c" "run t h h' r"
         | "\<not>c" "run e h h' r"
   using assms
-  by (auto split: split_if_asm)
+  by (auto split: if_split_asm)
   
 lemma run_case_option[run_elims]:
   assumes "run (case x of None \<Rightarrow> n | Some y \<Rightarrow> s y) \<sigma> \<sigma>' r"

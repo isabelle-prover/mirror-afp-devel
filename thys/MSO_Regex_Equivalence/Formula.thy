@@ -99,10 +99,10 @@ definition [simp]: "wf_formula n \<phi> \<equiv> pre_wf_formula n \<phi> \<and> 
 
 lemma max_idx_vars: "pre_wf_formula n \<phi> \<Longrightarrow> \<forall>p \<in> FOV \<phi> \<union> SOV \<phi>. p < n"
   by (induct \<phi> arbitrary: n)
-   (auto split: split_if_asm, (metis Un_iff diff_Suc_less less_SucE less_imp_diff_less)+)
+   (auto split: if_split_asm, (metis Un_iff diff_Suc_less less_SucE less_imp_diff_less)+)
 
 lemma finite_FOV: "finite (FOV \<phi>)"
-  by (induct \<phi>) (auto split: split_if_asm)
+  by (induct \<phi>) (auto split: if_split_asm)
 
 subsection {* ENC *}
 

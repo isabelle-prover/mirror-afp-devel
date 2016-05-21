@@ -31,7 +31,7 @@ lemma cyclerecD: fixes xs :: "'a :: dlo list" shows
 apply(induct as arbitrary: j)
  apply (simp)
 apply(case_tac a)
-apply(auto split:split_if_asm)
+apply(auto split:if_split_asm)
 done
 
 lemma cycleD: fixes xs :: "'a :: dlo list" shows

@@ -15,10 +15,10 @@ sig
     thm list -> declaration
 
   val add_partial_function_mr: string -> (binding * typ option * mixfix) list ->
-    (Attrib.binding * term) list -> local_theory -> local_theory
+    Specification.multi_specs -> local_theory -> local_theory
 
   val add_partial_function_mr_cmd: string -> (binding * string option * mixfix) list ->
-    (Attrib.binding * string) list -> local_theory -> local_theory
+    Specification.multi_specs_cmd -> local_theory -> local_theory
 end;
 
 
@@ -296,14 +296,14 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
   in fold register nums lthy
   end;
 
-val add_partial_function_mr = gen_add_partial_function_mr Specification.check_spec;
-val add_partial_function_mr_cmd = gen_add_partial_function_mr Specification.read_spec;
+val add_partial_function_mr = gen_add_partial_function_mr Specification.check_multi_specs;
+val add_partial_function_mr_cmd = gen_add_partial_function_mr Specification.read_multi_specs;
 
-val mode = @{keyword "("} |-- Parse.xname --| @{keyword ")"};
+val mode = @{keyword "("} |-- Parse.name --| @{keyword ")"};
 
 val _ =
   Outer_Syntax.local_theory @{command_keyword partial_function_mr} "define mutually recursive partial functions"
-    ((mode -- (Parse.fixes -- Parse_Spec.where_alt_specs))
+    ((mode -- (Parse.fixes -- Parse_Spec.where_multi_specs))
       >> (fn (mode, (fixes, specs)) => add_partial_function_mr_cmd mode fixes specs));
 
 end

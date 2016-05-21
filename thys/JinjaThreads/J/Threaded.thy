@@ -254,7 +254,7 @@ lemma sync_es_ok_J_start_state:
   "\<lbrakk> wf_J_prog P; P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(pns, body)\<rfloor> in D; length Ts = length vs \<rbrakk>
   \<Longrightarrow> sync_es_ok (thr (J_start_state P C M vs)) m"
 apply(rule ts_okI)
-apply(clarsimp simp add: start_state_def split_beta split: split_if_asm)
+apply(clarsimp simp add: start_state_def split_beta split: if_split_asm)
 apply(drule (1) sees_wf_mdecl)
 apply(clarsimp simp add: wf_mdecl_def)
 apply(drule WT_expr_locks)
@@ -315,7 +315,7 @@ lemma (in J_heap_base) lock_ok_J_start_state:
   "\<lbrakk> wf_J_prog P; P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(pns, body)\<rfloor> in D; length Ts = length vs \<rbrakk>
   \<Longrightarrow> lock_ok (locks (J_start_state P C M vs)) (thr (J_start_state P C M vs))"
 apply(rule lock_okI)
-apply(auto simp add: start_state_def split: split_if_asm)
+apply(auto simp add: start_state_def split: if_split_asm)
 apply(drule (1) sees_wf_mdecl)
 apply(clarsimp simp add: wf_mdecl_def)
 apply(drule WT_expr_locks)
@@ -497,7 +497,7 @@ qed
 lemma lock_ok_thr_updI:
   "\<And>ln. \<lbrakk> lock_ok ls ts; ts t = \<lfloor>((e, xs), ln)\<rfloor>; expr_locks e = expr_locks e' \<rbrakk>
   \<Longrightarrow> lock_ok ls (ts(t \<mapsto> ((e', xs'), ln)))"
-by(rule lock_okI)(auto split: split_if_asm dest: lock_okD2 lock_okD1)
+by(rule lock_okI)(auto split: if_split_asm dest: lock_okD2 lock_okD1)
 
 context J_heap_base begin 
 
@@ -532,17 +532,17 @@ proof -
     have "sync_es_ok (redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>) h'"
       by(rule sync_ok_redT_updTs)
     with aoe' have aoes': "sync_es_ok ?ts' m'"
-      by(auto intro!: ts_okI dest: ts_okD split: split_if_asm)
+      by(auto intro!: ts_okI dest: ts_okD split: if_split_asm)
     have "lock_ok ls' ?ts'"
     proof(rule lock_okI)
       fix t'' l
       assume "?ts' t'' = None"
       hence "ts t'' = None"
-        by(auto split: split_if_asm intro: redT_updTs_None)
+        by(auto split: if_split_asm intro: redT_updTs_None)
       with loes have "has_locks (ls $ l) t'' = 0"
         by(auto dest: lock_okD1)
       moreover from `?ts' t'' = None` 
-      have "t \<noteq> t''" by(simp split: split_if_asm)
+      have "t \<noteq> t''" by(simp split: if_split_asm)
       ultimately show "has_locks (ls' $ l) t'' = 0"
         by(simp add: red_mthr.redT_has_locks_inv[OF redT])
     next
@@ -621,7 +621,7 @@ proof -
       fix t'' l
       assume rtutes: "ts' t'' = None"
       with ts' have tst'': "ts t'' = None"
-        by(simp split: split_if_asm)
+        by(simp split: if_split_asm)
       with tst have tt'': "t \<noteq> t''" by auto
       from tst'' loes have "has_locks (ls $ l) t'' = 0"
         by(auto dest: lock_okD1)

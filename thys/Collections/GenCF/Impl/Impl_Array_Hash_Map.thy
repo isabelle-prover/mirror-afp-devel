@@ -763,7 +763,7 @@ thm ahm_rehash_aux'_def
       and a'_eq_a: "\<And>k. k \<notin> it \<Longrightarrow> ahm_\<alpha>_aux bhc a' k = ahm_\<alpha>_aux bhc a k" 
       and a'_None: "\<And>k. k \<in> it \<Longrightarrow> ahm_\<alpha>_aux bhc a' k = None"
       and [simp]: "sz = array_length a'" 
-      by (auto split: split_if_asm simp: I_def)
+      by (auto split: if_split_asm simp: I_def)
     from it_sub finite_dom_ahm_\<alpha>_aux[OF bhc inv] 
         have "finite it" by(rule finite_subset)
     moreover with `k \<in> it` have "card it > 0" by (auto simp add: card_gt_0_iff)

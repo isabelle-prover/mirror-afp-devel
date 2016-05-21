@@ -408,7 +408,7 @@ lemma split_rule:
   using hoare_tripleD[OF Q] apply simp
   done
 
-lemmas decon_split_if = if_rule_split split_rule
+lemmas decon_if_split = if_rule_split split_rule
   -- "Use with care: Complete splitting of if statements"
 
 lemma case_prod_rule: 

@@ -527,7 +527,8 @@ proof -
         using jordan_matrix_pow[of n_as k] by auto
       hence "mat_elements ?jmk \<subseteq> {0} \<union> \<Union> set (map mat_elements ?As)"
         using diag_block_mat_elements[of ?As] by auto
-      hence e_mem: "e \<in> {0} \<union> \<Union> set (map mat_elements ?As)" using e by auto
+      hence e_mem: "e \<in> {0} \<union> \<Union> set (map mat_elements ?As)"
+        using e by blast
       show "norm e \<le> ?g k c"
       proof (cases "e = 0")
         case False

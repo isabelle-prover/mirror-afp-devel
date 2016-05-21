@@ -125,7 +125,7 @@ begin
      apply(simp_all add:def_scheme)
    apply(simp add: OclValid_def)
    by(auto simp:foundation13 StrongEq_def false_def true_def defined_def bot_fun_def null_fun_def def_body
-           split: split_if_asm)
+           split: if_split_asm)
 
    lemma def_valid_then_def: "\<upsilon>(f x) = (\<delta>(f x))"
    apply(rule ext, rename_tac "\<tau>",subst foundation22[symmetric])
@@ -137,7 +137,7 @@ begin
    apply(simp add: OclValid_def valid_def, subst cp_StrongEq)
    apply(subst (2) cp_defined, simp, simp add: cp_defined[symmetric])
    by(auto simp:foundation13 StrongEq_def false_def true_def defined_def bot_fun_def null_fun_def def_body
-           split: split_if_asm)
+           split: if_split_asm)
 end
 
 subsection{*  Property Profiles for Single  *}
@@ -262,7 +262,7 @@ proof -
    apply(simp)
   apply(simp add: def_scheme')
  apply(simp add: defined_def OclValid_def false_def true_def 
-              bot_fun_def null_fun_def def_scheme' split: split_if_asm, rule def_body')
+              bot_fun_def null_fun_def def_scheme' split: if_split_asm, rule def_body')
  by(simp add: true_def)+
 qed
 
@@ -286,7 +286,7 @@ sublocale profile_bin\<^sub>d_\<^sub>d < profile_bin_scheme_defined defined
     apply(erule StrongEq_L_subst2_rev, simp, simp)+
   apply(simp add: def_scheme)
  apply(simp add: defined_def OclValid_def false_def true_def bot_fun_def null_fun_def def_scheme)
- apply(rule def_body, simp_all add: true_def false_def split:split_if_asm)
+ apply(rule def_body, simp_all add: true_def false_def split:if_split_asm)
 done
 
 locale profile_bin\<^sub>d_\<^sub>v =
@@ -326,7 +326,7 @@ context profile_bin\<^sub>S\<^sub>t\<^sub>r\<^sub>o\<^sub>n\<^sub>g\<^sub>E\<^su
       (* definedness *)
       lemma defargs: "\<tau> \<Turnstile> f x y \<Longrightarrow> (\<tau> \<Turnstile> \<upsilon> x) \<and> (\<tau> \<Turnstile> \<upsilon> y)"
          by(simp add: def_scheme OclValid_def true_def invalid_def valid_def bot_option_def
-               split: bool.split_asm HOL.split_if_asm)
+               split: bool.split_asm HOL.if_split_asm)
 
       lemma defined_args_valid' : "\<delta> (f x y) = (\<upsilon> x and \<upsilon> y)"
       by(auto intro!: transform2_rev defined_and_I simp:foundation10 defined_args_valid)
@@ -370,7 +370,7 @@ sublocale profile_bin\<^sub>v_\<^sub>v < profile_bin_scheme valid valid
          foundation1 foundation10' foundation16' foundation18 foundation21 foundation22 foundation9)
   apply(simp add: def_scheme)
  apply(simp add: defined_def OclValid_def false_def true_def 
-              bot_fun_def null_fun_def def_scheme split: split_if_asm, rule def_body)
+              bot_fun_def null_fun_def def_scheme split: if_split_asm, rule def_body)
  by (metis OclValid_def foundation18' true_def)+
 
 end

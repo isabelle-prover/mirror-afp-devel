@@ -50,14 +50,6 @@ done
 
 subsection {* Basic definitions *}
 
-(* 
-Symbols: 
-  diamond: \<diamond>
-  box: \<box>
-  circ: \<circ>
-  bigcirc: \<bigcirc>
-*)
-
 lemma UNIV_nat: "\<nat> = (UNIV::nat set)"
 by (simp add: Nats_def)
 
@@ -86,13 +78,13 @@ definition iLast :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> boo
   where "iLast t0 I P \<equiv> P (iprev t0 I)"
 
 syntax
-  "_iNext" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<bigcirc> _ _ _./ _)" [0, 0, 10] 10)
+  "_iNext" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<circle> _ _ _./ _)" [0, 0, 10] 10)
   "_iLast" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus> _ _ _./ _)" [0, 0, 10] 10)
 translations
-  "\<bigcirc> t t0 I. P" \<rightleftharpoons> "CONST iNext t0 I (\<lambda>t. P)"
+  "\<circle> t t0 I. P" \<rightleftharpoons> "CONST iNext t0 I (\<lambda>t. P)"
   "\<ominus> t t0 I. P" \<rightleftharpoons> "CONST iLast t0 I (\<lambda>t. P)"
 
-lemma "\<bigcirc> t 10 [0\<dots>]. (t + 10 > 10)"
+lemma "\<circle> t 10 [0\<dots>]. (t + 10 > 10)"
 by (simp add: iNext_def iT_inext_if)
 
 text {* The following versions of Next and Last operator differ in the cases
@@ -112,20 +104,20 @@ definition iLastStrong :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarro
   where "iLastStrong t0 I P \<equiv> (\<diamond> t {iprev t0 I} \<down>< t0. P t)"
 
 syntax
-  "_iNextWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<bigcirc>\<^sub>W _ _ _./ _)" [0, 0, 10] 10)
-  "_iNextStrong" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<bigcirc>\<^sub>S _ _ _./ _)" [0, 0, 10] 10)
+  "_iNextWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<circle>\<^sub>W _ _ _./ _)" [0, 0, 10] 10)
+  "_iNextStrong" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<circle>\<^sub>S _ _ _./ _)" [0, 0, 10] 10)
   "_iLastWeak"   :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus>\<^sub>W _ _ _./ _)" [0, 0, 10] 10)
   "_iLastStrong" :: "Time \<Rightarrow> Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool" ("(3\<ominus>\<^sub>S _ _ _./ _)" [0, 0, 10] 10)
 translations
-  "\<bigcirc>\<^sub>W t t0 I. P" \<rightleftharpoons> "CONST iNextWeak t0 I (\<lambda>t. P)"
-  "\<bigcirc>\<^sub>S t t0 I. P" \<rightleftharpoons> "CONST iNextStrong t0 I (\<lambda>t. P)"
+  "\<circle>\<^sub>W t t0 I. P" \<rightleftharpoons> "CONST iNextWeak t0 I (\<lambda>t. P)"
+  "\<circle>\<^sub>S t t0 I. P" \<rightleftharpoons> "CONST iNextStrong t0 I (\<lambda>t. P)"
   "\<ominus>\<^sub>W t t0 I. P" \<rightleftharpoons> "CONST iLastWeak t0 I (\<lambda>t. P)"
   "\<ominus>\<^sub>S t t0 I. P" \<rightleftharpoons> "CONST iLastStrong t0 I (\<lambda>t. P)"
 
 
 text {* Some examples for Next and Last operator *}
 
-lemma "\<bigcirc> t 5 [0\<dots>,10]. ([0::int,10,20,30,40,50,60,70,80,90] ! t < 80)"
+lemma "\<circle> t 5 [0\<dots>,10]. ([0::int,10,20,30,40,50,60,70,80,90] ! t < 80)"
 by (simp add: iNext_def iIN_inext)
 
 lemma "\<ominus> t 5 [0\<dots>,10]. ([0::int,10,20,30,40,50,60,70,80,90] ! t < 80)"
@@ -367,12 +359,12 @@ lemma iSince_disj_distrib: "
 unfolding iSince_def by blast
 
 lemma 
-  iNext_iff: "(\<bigcirc> t t0 I. P t) = (\<box> t [\<dots>0] \<oplus> (inext t0 I). P t)" and
+  iNext_iff: "(\<circle> t t0 I. P t) = (\<box> t [\<dots>0] \<oplus> (inext t0 I). P t)" and
   iLast_iff: "(\<ominus> t t0 I. P t) = (\<box> t [\<dots>0] \<oplus> (iprev t0 I). P t)"
 by (fastforce simp: iTL_Next_defs iT_add iIN_0)+
 
 lemma 
-  iNext_iEx_iff: "(\<bigcirc> t t0 I. P t) = (\<diamond> t [\<dots>0] \<oplus> (inext t0 I). P t)" and
+  iNext_iEx_iff: "(\<circle> t t0 I. P t) = (\<diamond> t [\<dots>0] \<oplus> (inext t0 I). P t)" and
   iLast_iEx_iff: "(\<ominus> t t0 I. P t) = (\<diamond> t [\<dots>0] \<oplus> (iprev t0 I). P t)"
 by (fastforce simp: iTL_Next_defs iT_add iIN_0)+
 
@@ -413,12 +405,12 @@ apply (subst Not_eq_iff[symmetric])
 apply (simp add: iprev_singleton_cut_less_not_empty_iff)
 done
 
-lemma iNextWeak_iff : "(\<bigcirc>\<^sub>W t t0 I. P t) = ((\<bigcirc> t t0 I. P t) \<or> (I \<down>> t0 = {}) \<or> t0 \<notin> I)"
+lemma iNextWeak_iff : "(\<circle>\<^sub>W t t0 I. P t) = ((\<circle> t t0 I. P t) \<or> (I \<down>> t0 = {}) \<or> t0 \<notin> I)"
 apply (unfold iTL_defs)
 apply (simp add: inext_singleton_cut_greater_empty_iff[symmetric] cut_greater_singleton)
 done
 
-lemma iNextStrong_iff : "(\<bigcirc>\<^sub>S t t0 I. P t) = ((\<bigcirc> t t0 I. P t) \<and> (I \<down>> t0 \<noteq> {}) \<and> t0 \<in> I)"
+lemma iNextStrong_iff : "(\<circle>\<^sub>S t t0 I. P t) = ((\<circle> t t0 I. P t) \<and> (I \<down>> t0 \<noteq> {}) \<and> t0 \<in> I)"
 apply (unfold iTL_defs)
 apply (simp add: inext_singleton_cut_greater_not_empty_iff[symmetric] cut_greater_singleton)
 done
@@ -440,20 +432,20 @@ lemmas iTL_Next_iff =
 
 
 lemma 
-  iNext_iff_singleton       : "(\<bigcirc> t t0 I. P t) = (\<box> t {inext t0 I}. P t)" and
+  iNext_iff_singleton       : "(\<circle> t t0 I. P t) = (\<box> t {inext t0 I}. P t)" and
   iLast_iff_singleton       : "(\<ominus> t t0 I. P t) = (\<box> t {iprev t0 I}. P t)"
 by (fastforce simp: iTL_Next_defs iT_add iIN_0)+
 lemmas iNextLast_iff_singleton = iNext_iff_singleton iLast_iff_singleton
 
 lemma 
-  iNext_iEx_iff_singleton   : "(\<bigcirc> t t0 I. P t) = (\<diamond> t {inext t0 I}. P t)" and
+  iNext_iEx_iff_singleton   : "(\<circle> t t0 I. P t) = (\<diamond> t {inext t0 I}. P t)" and
   iLast_iEx_iff_singleton   : "(\<ominus> t t0 I. P t) = (\<diamond> t {iprev t0 I}. P t)"
 by (fastforce simp: iTL_Next_defs iT_add iIN_0)+
 
 
 lemma 
-  iNextWeak_iAll_conv:  "(\<bigcirc>\<^sub>W t t0 I. P t) = (\<box> t ({inext t0 I} \<down>> t0). P t)" and
-  iNextStrong_iEx_conv: "(\<bigcirc>\<^sub>S t t0 I. P t) = (\<diamond> t ({inext t0 I} \<down>> t0). P t)" and
+  iNextWeak_iAll_conv:  "(\<circle>\<^sub>W t t0 I. P t) = (\<box> t ({inext t0 I} \<down>> t0). P t)" and
+  iNextStrong_iEx_conv: "(\<circle>\<^sub>S t t0 I. P t) = (\<diamond> t ({inext t0 I} \<down>> t0). P t)" and
   iLastWeak_iAll_conv:  "(\<ominus>\<^sub>W t t0 I. P t) = (\<box> t ({iprev t0 I} \<down>< t0). P t)" and
   iLastStrong_iEx_conv: "(\<ominus>\<^sub>S t t0 I. P t) = (\<diamond> t ({iprev t0 I} \<down>< t0). P t)"
 by (simp_all add: iTL_Next_defs)
@@ -470,15 +462,15 @@ lemma empty_iff_iAll_False:   "(I = {}) = (\<box> t I. False)" by blast
 lemma not_empty_iff_iEx_True: "(I \<noteq> {}) = (\<diamond> t I. True)" by blast
 
 lemma 
-  iNext_True: "\<bigcirc> t t0 I. True" and
-  iNextWeak_True: "(\<bigcirc>\<^sub>W t t0 I. True)" and
-  iNext_False: "\<not> (\<bigcirc> t t0 I. False)" and
-  iNextStrong_False: "\<not> (\<bigcirc>\<^sub>S t t0 I. False)"
+  iNext_True: "\<circle> t t0 I. True" and
+  iNextWeak_True: "(\<circle>\<^sub>W t t0 I. True)" and
+  iNext_False: "\<not> (\<circle> t t0 I. False)" and
+  iNextStrong_False: "\<not> (\<circle>\<^sub>S t t0 I. False)"
 by (simp_all add: iTL_defs)
 
 lemma
-  iNextStrong_True: "(\<bigcirc>\<^sub>S t t0 I. True) = (I \<down>> t0 \<noteq> {} \<and> t0 \<in> I)" and
-  iNextWeak_False: "(\<not> (\<bigcirc>\<^sub>W t t0 I. False)) = (I \<down>> t0 \<noteq> {} \<and> t0 \<in> I)"
+  iNextStrong_True: "(\<circle>\<^sub>S t t0 I. True) = (I \<down>> t0 \<noteq> {} \<and> t0 \<in> I)" and
+  iNextWeak_False: "(\<not> (\<circle>\<^sub>W t t0 I. False)) = (I \<down>> t0 \<noteq> {} \<and> t0 \<in> I)"
 by (simp_all add: iTL_defs ex_in_conv inext_singleton_cut_greater_not_empty_iff)
 
 
@@ -900,9 +892,9 @@ done
 text {* Negation and temporal operators *}
  
 lemma 
-  not_iNext[simp]: "(\<not> (\<bigcirc> t t0 I. P t)) = (\<bigcirc> t t0 I. \<not> P t)" and
-  not_iNextWeak[simp]: "(\<not> (\<bigcirc>\<^sub>W t t0 I. P t)) = (\<bigcirc>\<^sub>S t t0 I. \<not> P t)" and
-  not_iNextStrong[simp]: "(\<not> (\<bigcirc>\<^sub>S t t0 I. P t)) = (\<bigcirc>\<^sub>W t t0 I. \<not> P t)" and
+  not_iNext[simp]: "(\<not> (\<circle> t t0 I. P t)) = (\<circle> t t0 I. \<not> P t)" and
+  not_iNextWeak[simp]: "(\<not> (\<circle>\<^sub>W t t0 I. P t)) = (\<circle>\<^sub>S t t0 I. \<not> P t)" and
+  not_iNextStrong[simp]: "(\<not> (\<circle>\<^sub>S t t0 I. P t)) = (\<circle>\<^sub>W t t0 I. \<not> P t)" and
   not_iLast[simp]: "(\<not> (\<ominus> t t0 I. P t)) = (\<ominus> t t0 I. \<not> P t)" and
   not_iLastWeak[simp]: "(\<not> (\<ominus>\<^sub>W t t0 I. P t)) = (\<ominus>\<^sub>S t t0 I. \<not> P t)" and
   not_iLastStrong[simp]: "(\<not> (\<ominus>\<^sub>S t t0 I. P t)) = (\<ominus>\<^sub>W t t0 I. \<not> P t)"
@@ -1173,7 +1165,7 @@ apply blast
 done
 
 lemma iNext_induct_rule: "
-  \<lbrakk> P (iMin I); \<box> t I. (P t \<longrightarrow> (\<bigcirc> t' t I. P t')); t \<in> I \<rbrakk> \<Longrightarrow> P t"
+  \<lbrakk> P (iMin I); \<box> t I. (P t \<longrightarrow> (\<circle> t' t I. P t')); t \<in> I \<rbrakk> \<Longrightarrow> P t"
 apply (rule inext_induct[of _ I])
   apply simp
  apply (drule_tac t=n in ispec, assumption)
@@ -1182,7 +1174,7 @@ apply assumption
 done
 
 lemma iNext_induct: "
-  \<lbrakk> P (iMin I); \<box> t I. (P t \<longrightarrow> (\<bigcirc> t' t I. P t')) \<rbrakk> \<Longrightarrow> \<box> t I. P t"
+  \<lbrakk> P (iMin I); \<box> t I. (P t \<longrightarrow> (\<circle> t' t I. P t')) \<rbrakk> \<Longrightarrow> \<box> t I. P t"
 by (rule iallI, rule iNext_induct_rule)
 
 lemma iLast_induct_rule: "
@@ -1257,42 +1249,42 @@ lemma iWeakSince_conj_not: "finite I \<Longrightarrow>
 by (simp only: iWeakSince_iSince_conv iSince_conj_not, blast)
 
 
-lemma iNextStrong_imp_iNextWeak: "(\<bigcirc>\<^sub>S t t0 I. P t) \<longrightarrow> (\<bigcirc>\<^sub>W t t0 I. P t)"
+lemma iNextStrong_imp_iNextWeak: "(\<circle>\<^sub>S t t0 I. P t) \<longrightarrow> (\<circle>\<^sub>W t t0 I. P t)"
 unfolding iTL_Next_defs by blast
 lemma iLastStrong_imp_iLastWeak: "(\<ominus>\<^sub>S t t0 I. P t) \<longrightarrow> (\<ominus>\<^sub>W t t0 I. P t)"
 unfolding iTL_Next_defs by blast
 
 lemma infin_imp_iNextWeak_iNextStrong_eq_iNext: "
   \<lbrakk> infinite I; t0 \<in> I \<rbrakk> \<Longrightarrow> 
-  ((\<bigcirc>\<^sub>W t t0 I. P t) = (\<bigcirc> t t0 I. P t)) \<and> ((\<bigcirc>\<^sub>S t t0 I. P t) = (\<bigcirc> t t0 I. P t))"
+  ((\<circle>\<^sub>W t t0 I. P t) = (\<circle> t t0 I. P t)) \<and> ((\<circle>\<^sub>S t t0 I. P t) = (\<circle> t t0 I. P t))"
 by (simp add: iTL_Next_iff nat_cut_greater_infinite_not_empty)
 
-lemma infin_imp_iNextWeak_eq_iNext: "\<lbrakk> infinite I; t0 \<in> I \<rbrakk> \<Longrightarrow> (\<bigcirc>\<^sub>W t t0 I. P t) = (\<bigcirc> t t0 I. P t)"
+lemma infin_imp_iNextWeak_eq_iNext: "\<lbrakk> infinite I; t0 \<in> I \<rbrakk> \<Longrightarrow> (\<circle>\<^sub>W t t0 I. P t) = (\<circle> t t0 I. P t)"
 by (simp add: infin_imp_iNextWeak_iNextStrong_eq_iNext)
-lemma infin_imp_iNextStrong_eq_iNext: "\<lbrakk> infinite I; t0 \<in> I \<rbrakk> \<Longrightarrow> (\<bigcirc>\<^sub>S t t0 I. P t) = (\<bigcirc> t t0 I. P t)"
+lemma infin_imp_iNextStrong_eq_iNext: "\<lbrakk> infinite I; t0 \<in> I \<rbrakk> \<Longrightarrow> (\<circle>\<^sub>S t t0 I. P t) = (\<circle> t t0 I. P t)"
 by (simp add: infin_imp_iNextWeak_iNextStrong_eq_iNext)
-lemma infin_imp_iNextStrong_eq_iNextWeak: "\<lbrakk> infinite I; t0 \<in> I \<rbrakk> \<Longrightarrow> (\<bigcirc>\<^sub>S t t0 I. P t) = (\<bigcirc>\<^sub>W t t0 I. P t)"
+lemma infin_imp_iNextStrong_eq_iNextWeak: "\<lbrakk> infinite I; t0 \<in> I \<rbrakk> \<Longrightarrow> (\<circle>\<^sub>S t t0 I. P t) = (\<circle>\<^sub>W t t0 I. P t)"
 by (simp add: infin_imp_iNextWeak_eq_iNext infin_imp_iNextStrong_eq_iNext)
 
 lemma 
-  not_in_iNext_eq: "t0 \<notin> I \<Longrightarrow> (\<bigcirc> t t0 I. P t) = (P t0)" and
+  not_in_iNext_eq: "t0 \<notin> I \<Longrightarrow> (\<circle> t t0 I. P t) = (P t0)" and
   not_in_iLast_eq: "t0 \<notin> I \<Longrightarrow> (\<ominus> t t0 I. P t) = (P t0)"
 by (simp_all add: iTL_defs not_in_inext_fix not_in_iprev_fix)
 
 lemma 
-  not_in_iNextWeak_eq: "t0 \<notin> I \<Longrightarrow> (\<bigcirc>\<^sub>W t t0 I. P t)" and
+  not_in_iNextWeak_eq: "t0 \<notin> I \<Longrightarrow> (\<circle>\<^sub>W t t0 I. P t)" and
   not_in_iLastWeak_eq: "t0 \<notin> I \<Longrightarrow> (\<ominus>\<^sub>W t t0 I. P t)"
 by (simp_all add: iNextWeak_iff iLastWeak_iff)
 
 lemma 
-  not_in_iNextStrong_eq: "t0 \<notin> I \<Longrightarrow> \<not> (\<bigcirc>\<^sub>S t t0 I. P t)" and
+  not_in_iNextStrong_eq: "t0 \<notin> I \<Longrightarrow> \<not> (\<circle>\<^sub>S t t0 I. P t)" and
   not_in_iLastStrong_eq: "t0 \<notin> I \<Longrightarrow> \<not> (\<ominus>\<^sub>S t t0 I. P t)"
 by (simp_all add: iNextStrong_iff iLastStrong_iff)
 
 lemma 
-  iNext_UNIV: "(\<bigcirc> t t0 UNIV. P t) = P (Suc t0)" and
-  iNextWeak_UNIV: "(\<bigcirc>\<^sub>W t t0 UNIV. P t) = P (Suc t0)" and
-  iNextStrong_UNIV: "(\<bigcirc>\<^sub>S t t0 UNIV. P t) = P (Suc t0)"
+  iNext_UNIV: "(\<circle> t t0 UNIV. P t) = P (Suc t0)" and
+  iNextWeak_UNIV: "(\<circle>\<^sub>W t t0 UNIV. P t) = P (Suc t0)" and
+  iNextStrong_UNIV: "(\<circle>\<^sub>S t t0 UNIV. P t) = P (Suc t0)"
 by (simp_all add: iTL_Next_defs inext_UNIV cut_greater_singleton)
 
 lemma 
@@ -1305,7 +1297,7 @@ lemmas iTL_Next_UNIV =
   iNext_UNIV iNextWeak_UNIV iNextStrong_UNIV
   iLast_UNIV iLastWeak_UNIV iLastStrong_UNIV
 
-lemma inext_nth_iNext_Suc: "(\<bigcirc> t (I \<rightarrow> n) I. P t) = P (I \<rightarrow> Suc n)"
+lemma inext_nth_iNext_Suc: "(\<circle> t (I \<rightarrow> n) I. P t) = P (I \<rightarrow> Suc n)"
 by (simp add: iNext_def)
 
 lemma iprev_nth_iLast_Suc: "(\<ominus> t (I \<leftarrow> n) I. P t) = P (I \<leftarrow> Suc n)"

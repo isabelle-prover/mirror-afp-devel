@@ -1,31 +1,31 @@
-(*  
+(*
     Author:      Salomon Sickert
     License:     BSD
 *)
 
-section \<open>LTL (in Negation-Normal-Form)\<close>
+section \<open>LTL (in Negation-Normal-Form, FGXU-Syntax)\<close>
 
-theory LTL
-  imports Main "Aux/Words2"
+theory LTL_FGXU
+  imports Main "~~/src/HOL/Library/Omega_Words_Fun"
 begin
 
 text \<open>Inspired/Based on schimpf/LTL\<close>
 
 subsection \<open>Syntax\<close>
 
-datatype (vars: 'a) ltl  = 
-    LTLTrue      
-  | LTLFalse      
-  | LTLProp 'a    
-  | LTLPropNeg 'a  
-  | LTLAnd "'a ltl" "'a ltl"  
-  | LTLOr "'a ltl" "'a ltl"  
+datatype (vars: 'a) ltl  =
+    LTLTrue
+  | LTLFalse
+  | LTLProp 'a
+  | LTLPropNeg 'a
+  | LTLAnd "'a ltl" "'a ltl"
+  | LTLOr "'a ltl" "'a ltl"
   | LTLNext "'a ltl"
   | LTLGlobal (theG: "'a ltl")
   | LTLFinal "'a ltl"
   | LTLUntil "'a ltl" "'a ltl"
 
-notation 
+notation
       LTLTrue     ("true")
   and LTLFalse    ("false")
   and LTLProp     ("p'(_')")
@@ -50,8 +50,8 @@ where
 | "w \<Turnstile> X \<phi> = (suffix 1 w \<Turnstile> \<phi>)"
 | "w \<Turnstile> G \<phi> = (\<forall>k. suffix k w \<Turnstile> \<phi>)"
 | "w \<Turnstile> F \<phi> = (\<exists>k. suffix k w \<Turnstile> \<phi>)"
-| "w \<Turnstile> \<phi> U \<psi> = (\<exists>k. suffix k w \<Turnstile> \<psi> \<and> (\<forall>j < k. suffix j w \<Turnstile> \<phi>))" 
- 
+| "w \<Turnstile> \<phi> U \<psi> = (\<exists>k. suffix k w \<Turnstile> \<psi> \<and> (\<forall>j < k. suffix j w \<Turnstile> \<phi>))"
+
 fun ltl_prop_entailment :: "['a ltl set, 'a ltl] \<Rightarrow> bool" (infix "\<Turnstile>\<^sub>P" 80)
 where
   "\<A> \<Turnstile>\<^sub>P true = True"
@@ -67,10 +67,10 @@ lemma LTL_G_one_step_unfolding:
   (is "?lhs \<longleftrightarrow> ?rhs")
 proof
   assume ?lhs
-  hence "w \<Turnstile> \<phi>" 
+  hence "w \<Turnstile> \<phi>"
     using suffix_0[of w] ltl_semantics.simps(8)[of w \<phi>] by metis
   moreover
-  from `?lhs` have "w \<Turnstile> X (G \<phi>)" 
+  from `?lhs` have "w \<Turnstile> X (G \<phi>)"
     by simp
   ultimately
   show ?rhs by simp
@@ -81,15 +81,15 @@ next
   hence "\<forall>k > 0. suffix k w \<Turnstile> \<phi>"
     by (metis Suc_eq_plus1 gr0_implies_Suc)
   moreover
-  from `?rhs` have "(suffix 0 w) \<Turnstile> \<phi>" by simp 
+  from `?rhs` have "(suffix 0 w) \<Turnstile> \<phi>" by simp
   ultimately
-  show ?lhs 
-    using neq0_conv ltl_semantics.simps(8)[of w \<phi>] by blast 
-qed 
+  show ?lhs
+    using neq0_conv ltl_semantics.simps(8)[of w \<phi>] by blast
+qed
 
-lemma LTL_F_one_step_unfolding: 
+lemma LTL_F_one_step_unfolding:
   "w \<Turnstile> F \<phi> \<longleftrightarrow> (w \<Turnstile> \<phi> \<or> w \<Turnstile> X (F \<phi>))"
-  (is "?lhs \<longleftrightarrow> ?rhs")     
+  (is "?lhs \<longleftrightarrow> ?rhs")
 proof
   assume ?lhs
   then obtain k where "suffix k w \<Turnstile> \<phi>" by fastforce
@@ -97,12 +97,12 @@ proof
 next
   assume ?rhs
   thus ?lhs
-    using suffix_0[of w] suffix_suffix[of _ 1 w] by (metis ltl_semantics.simps(7) ltl_semantics.simps(9)) 
-qed 
+    using suffix_0[of w] suffix_suffix[of _ 1 w] by (metis ltl_semantics.simps(7) ltl_semantics.simps(9))
+qed
 
-lemma LTL_U_one_step_unfolding: 
+lemma LTL_U_one_step_unfolding:
   "w \<Turnstile> \<phi> U \<psi> \<longleftrightarrow> (w \<Turnstile> \<psi> \<or> (w \<Turnstile> \<phi> \<and> w \<Turnstile> X (\<phi> U \<psi>)))"
-  (is "?lhs \<longleftrightarrow> ?rhs")     
+  (is "?lhs \<longleftrightarrow> ?rhs")
 proof
   assume ?lhs
   then obtain k where "suffix k w \<Turnstile> \<psi>" and "\<forall>j<k. suffix j w \<Turnstile> \<phi>"
@@ -122,88 +122,88 @@ next
       {
         fix j assume "j < 1 + k"
         hence "suffix j w \<Turnstile> \<phi>"
-          using `w \<Turnstile> \<phi> \<and> w \<Turnstile> X (\<phi> U \<psi>)` `\<forall>j<k. suffix j (suffix 1 w) \<Turnstile> \<phi>`[unfolded suffix_suffix] 
+          using `w \<Turnstile> \<phi> \<and> w \<Turnstile> X (\<phi> U \<psi>)` `\<forall>j<k. suffix j (suffix 1 w) \<Turnstile> \<phi>`[unfolded suffix_suffix]
           by (cases j) simp+
       }
-      ultimately 
+      ultimately
       show ?thesis
         by auto
   qed force
-qed 
+qed
 
-lemma LTL_GF_infinitely_many_suffixes: 
-  "w \<Turnstile> G (F \<phi>) = (\<exists>\<^sub>\<infinity>i. suffix i w \<Turnstile> \<phi>)" 
+lemma LTL_GF_infinitely_many_suffixes:
+  "w \<Turnstile> G (F \<phi>) = (\<exists>\<^sub>\<infinity>i. suffix i w \<Turnstile> \<phi>)"
   (is "?lhs = ?rhs")
 proof
   let ?S = "{i | i j. suffix (i + j) w \<Turnstile> \<phi>}"
   let ?S' = "{i + j | i j. suffix (i + j) w \<Turnstile> \<phi>}"
 
   assume ?lhs
-  hence "infinite ?S" 
+  hence "infinite ?S"
     by auto
   moreover
-  have "\<forall>s \<in> ?S. \<exists>s' \<in> ?S'. s \<le> s'" 
+  have "\<forall>s \<in> ?S. \<exists>s' \<in> ?S'. s \<le> s'"
     by fastforce
   ultimately
-  have "infinite ?S'" 
+  have "infinite ?S'"
     using infinite_nat_iff_unbounded_le le_trans by meson
   moreover
-  have "?S' = {k | k. suffix k w \<Turnstile> \<phi>}" 
+  have "?S' = {k | k. suffix k w \<Turnstile> \<phi>}"
     using monoid_add_class.add.left_neutral by metis
   ultimately
-  have "infinite {k | k. suffix k w \<Turnstile> \<phi>}" 
-    by metis 
+  have "infinite {k | k. suffix k w \<Turnstile> \<phi>}"
+    by metis
   thus ?rhs unfolding Inf_many_def by force
 next
   assume ?rhs
   {
     fix i
-    from `?rhs` obtain k where "i \<le> k" and "suffix k w \<Turnstile> \<phi>" 
+    from `?rhs` obtain k where "i \<le> k" and "suffix k w \<Turnstile> \<phi>"
       using INFM_nat_le[of "\<lambda>n. suffix n w \<Turnstile> \<phi>"] by blast
-    then obtain j where "k = i + j" 
-      using ordered_cancel_comm_monoid_diff_class.le_iff_add[of i k] by fast
-    hence "suffix j (suffix i w) \<Turnstile> \<phi>" 
+    then obtain j where "k = i + j"
+      using le_iff_add[of i k] by fast
+    hence "suffix j (suffix i w) \<Turnstile> \<phi>"
       using `suffix k w \<Turnstile> \<phi>` suffix_suffix by fastforce
     hence "suffix i w \<Turnstile> F \<phi>" by auto
   }
   thus ?lhs by auto
 qed
 
-lemma LTL_FG_almost_all_suffixes: 
+lemma LTL_FG_almost_all_suffixes:
   "w \<Turnstile> F G \<phi> = (\<forall>\<^sub>\<infinity>i. suffix i w \<Turnstile> \<phi>)"
   (is "?lhs = ?rhs")
 proof
   let ?S = "{k. \<not> suffix k w \<Turnstile> \<phi>}"
 
   assume ?lhs
-  then obtain i where "suffix i w \<Turnstile> G \<phi>"  
+  then obtain i where "suffix i w \<Turnstile> G \<phi>"
     by fastforce
-  hence "\<And>j. j \<ge> i \<Longrightarrow> (suffix j w \<Turnstile> \<phi>)" 
+  hence "\<And>j. j \<ge> i \<Longrightarrow> (suffix j w \<Turnstile> \<phi>)"
     using le_iff_add[of i] by auto
   hence "\<And>j. \<not>suffix j w \<Turnstile> \<phi> \<Longrightarrow> j < i"
     using le_less_linear by blast
-  hence "?S \<subseteq> {k. k < i}" 
+  hence "?S \<subseteq> {k. k < i}"
     by blast
   hence "finite ?S"
-    using finite_subset by fast  
-  thus ?rhs 
+    using finite_subset by fast
+  thus ?rhs
     unfolding Alm_all_def Inf_many_def by presburger
-next 
+next
   assume ?rhs
   obtain S where S_def: "S = {k. \<not> suffix k w \<Turnstile> \<phi>}" by blast
-  hence "finite S" 
+  hence "finite S"
     using `?rhs` unfolding Alm_all_def Inf_many_def by fast
   then obtain i where "i = Max S" by blast
   {
     fix j
     assume "i < j"
-    hence "j \<notin> S" 
+    hence "j \<notin> S"
       using `i = Max S` Max.coboundedI[OF `finite S`] less_le_not_le by blast
     hence "suffix j w \<Turnstile> \<phi>" using S_def by fast
   }
   hence "\<forall>j > i. (suffix j w \<Turnstile> \<phi>)" by simp
   hence "suffix (Suc i) w \<Turnstile> G \<phi>" by auto
-  thus ?lhs 
+  thus ?lhs
     using ltl_semantics.simps(9)[of w "G \<phi>"] by blast
 qed
 
@@ -216,7 +216,7 @@ proof -
     then obtain m where "\<forall>n\<ge>m. suffix n (suffix i w) \<Turnstile> \<phi>"
       by blast
     hence "\<forall>n\<ge>i+m. suffix n w \<Turnstile> \<phi>"
-      unfolding suffix_suffix by (metis Nat.le_iff_add add_leE add_le_cancel_left) 
+      unfolding suffix_suffix by (metis le_iff_add add_leE add_le_cancel_left)
     thus ?l
       by auto
   qed (metis suffix_suffix trans_le_add2)
@@ -228,7 +228,7 @@ lemma LTL_GF_suffix:
   "(suffix i w) \<Turnstile> G (F \<phi>) = w \<Turnstile> G (F \<phi>)"
 proof -
   have "(\<forall>m. \<exists>n\<ge>m. suffix n w \<Turnstile> \<phi>) = (\<forall>m. \<exists>n\<ge>m. suffix n (suffix i w) \<Turnstile> \<phi>)" (is "?l = ?r")
-  proof 
+  proof
     assume ?l
     thus ?r
       by (metis suffix_suffix add_leE add_le_cancel_left le_Suc_ex)
@@ -269,7 +269,7 @@ proof -
       from insert obtain \<psi> where "\<chi> = G \<psi>"
         by blast
       have "\<exists>i. \<forall>j. suffix i w \<Turnstile> G \<psi> = suffix (i + j) w \<Turnstile> G \<psi>"
-        by (metis LTL_suffix_G plus_nat.add_0 suffix_0 suffix_suffix) 
+        by (metis LTL_suffix_G plus_nat.add_0 suffix_0 suffix_suffix)
       then obtain i\<^sub>2 where "\<And>j. suffix i\<^sub>2 w \<Turnstile> \<chi> = suffix (i\<^sub>2 + j) w \<Turnstile> \<chi>"
         unfolding `\<chi> = G \<psi>` by blast
       ultimately
@@ -294,8 +294,8 @@ proof -
   obtain j where "suffix j w \<Turnstile> G \<psi>"
     using assms by fastforce
   thus "suffix i w \<Turnstile> G \<psi>"
-    by (cases "i \<le> j", insert assms, unfold le_iff_add, blast, 
-        metis (erased, lifting) LTL_suffix_G `suffix j w \<Turnstile> G \<psi>` le_add_diff_inverse nat_le_linear suffix_suffix) 
+    by (cases "i \<le> j", insert assms, unfold le_iff_add, blast,
+        metis (erased, lifting) LTL_suffix_G `suffix j w \<Turnstile> G \<psi>` le_add_diff_inverse nat_le_linear suffix_suffix)
 qed
 
 subsection \<open>Subformulae\<close>
@@ -303,7 +303,7 @@ subsection \<open>Subformulae\<close>
 subsubsection \<open>Propositions\<close>
 
 fun propos :: "'a ltl \<Rightarrow>'a ltl set"
-where 
+where
   "propos true = {}"
 | "propos false = {}"
 | "propos (\<phi> and \<psi>) = propos \<phi> \<union> propos \<psi>"
@@ -311,7 +311,7 @@ where
 | "propos \<phi> = {\<phi>}"
 
 fun nested_propos :: "'a ltl \<Rightarrow>'a ltl set"
-where 
+where
   "nested_propos true = {}"
 | "nested_propos false = {}"
 | "nested_propos (\<phi> and \<psi>) = nested_propos \<phi> \<union> nested_propos \<psi>"
@@ -335,7 +335,7 @@ lemma LTL_prop_entailment_restrict_to_propos:
   by (induction \<phi>) auto
 
 lemma propos_foldl:
-  assumes "\<And>x y. propos (f x y) = propos x \<union> propos y" 
+  assumes "\<And>x y. propos (f x y) = propos x \<union> propos y"
   shows "\<Union>{propos y |y. y = i \<or> y \<in> set xs} = propos (foldl f i xs)"
 proof (induction xs rule: rev_induct)
   case (snoc x xs)
@@ -356,7 +356,7 @@ subsubsection \<open>G-Subformulae\<close>
 text \<open>Notation for paper: mathds{G}\<close>
 
 fun G_nested_propos :: "'a ltl \<Rightarrow>'a ltl set" ("\<^bold>G")
-where 
+where
   "\<^bold>G (\<phi> and \<psi>) = \<^bold>G \<phi> \<union> \<^bold>G \<psi>"
 | "\<^bold>G (\<phi> or \<psi>) = \<^bold>G \<phi> \<union> \<^bold>G \<psi>"
 | "\<^bold>G (F \<phi>) = \<^bold>G \<phi>"
@@ -366,7 +366,7 @@ where
 | "\<^bold>G \<phi> = {}"
 
 lemma G_nested_finite:
-  "finite (\<^bold>G \<phi>)" 
+  "finite (\<^bold>G \<phi>)"
   by (induction \<phi>) auto
 
 lemma G_nested_propos_alt_def:
@@ -379,13 +379,13 @@ lemma G_nested_propos_Only_G:
 
 lemma G_not_in_G:
   "G \<phi> \<notin> \<^bold>G \<phi>"
-proof - 
+proof -
   have "\<And>\<chi>. \<chi> \<in> \<^bold>G \<phi> \<Longrightarrow> size \<phi> \<ge> size \<chi>"
     by (induction \<phi>) fastforce+
   thus ?thesis
     by fastforce
 qed
- 
+
 lemma G_subset_G:
   "\<psi> \<in> \<^bold>G \<phi> \<Longrightarrow> \<^bold>G \<psi> \<subseteq> \<^bold>G \<phi>"
   "G \<psi> \<in> \<^bold>G \<phi> \<Longrightarrow> \<^bold>G \<psi> \<subseteq> \<^bold>G \<phi>"
@@ -420,7 +420,7 @@ lemma [trans]:
 
 subsubsection \<open>Quotient Type for Propositional Equivalence\<close>
 
-quotient_type 'a ltl_prop_equiv_quotient = "'a ltl" / "op \<equiv>\<^sub>P" 
+quotient_type 'a ltl_prop_equiv_quotient = "'a ltl" / "op \<equiv>\<^sub>P"
   morphisms Rep Abs
   by (simp add: ltl_prop_equiv_equivp)
 
@@ -431,18 +431,18 @@ instantiation ltl_prop_equiv_quotient :: (type) equal begin
 lift_definition ltl_prop_equiv_quotient_eq_test :: "'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> bool" is "\<lambda>x y. x \<equiv>\<^sub>P y"
   by (metis ltl_prop_equiv_quotient.abs_eq_iff)
 
-definition 
+definition
   eq: "equal_class.equal \<equiv> ltl_prop_equiv_quotient_eq_test"
 
-instance    
+instance
   by (standard; simp add: eq ltl_prop_equiv_quotient_eq_test.rep_eq, metis Quotient_ltl_prop_equiv_quotient Quotient_rel_rep)
-  
+
 end
 
 lemma ltl\<^sub>P_abs_rep: "Abs (Rep \<phi>) = \<phi>"
   by (meson Quotient3_abs_rep Quotient3_ltl_prop_equiv_quotient)
 
-lift_definition ltl_prop_entails_abs :: "'a ltl set \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> bool" ("_ \<up>\<Turnstile>\<^sub>P _") is "op \<Turnstile>\<^sub>P" 
+lift_definition ltl_prop_entails_abs :: "'a ltl set \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> bool" ("_ \<up>\<Turnstile>\<^sub>P _") is "op \<Turnstile>\<^sub>P"
   by (simp add: ltl_prop_equiv_def)
 
 lift_definition ltl_prop_implies_abs :: "'a ltl\<^sub>P \<Rightarrow> 'a ltl\<^sub>P \<Rightarrow> bool" ("_ \<up>\<longrightarrow>\<^sub>P _") is "op \<longrightarrow>\<^sub>P"
@@ -460,7 +460,7 @@ lemma ltl_prop_equiv_implies_ltl_equiv:
 
 subsection \<open>Substitution\<close>
 
-fun subst :: "'a ltl \<Rightarrow> ('a ltl \<rightharpoonup> 'a ltl) \<Rightarrow> 'a ltl" 
+fun subst :: "'a ltl \<Rightarrow> ('a ltl \<rightharpoonup> 'a ltl) \<Rightarrow> 'a ltl"
 where
   "subst true m = true"
 | "subst false m = false"
@@ -541,7 +541,7 @@ lemma And_append_syntactic:
   by (induction xs rule: list_nonempty_induct) simp+
 
 lemma And_append_S:
-  "S \<Turnstile>\<^sub>P And (xs @ ys) = S \<Turnstile>\<^sub>P And xs and And ys" 
+  "S \<Turnstile>\<^sub>P And (xs @ ys) = S \<Turnstile>\<^sub>P And xs and And ys"
   using And_prop_entailment[of S] by auto
 
 lemma And_append:
@@ -559,15 +559,15 @@ where
 
 lemma foldl_LTLAnd_prop_entailment_abs:
   "S \<up>\<Turnstile>\<^sub>P foldl and_abs i xs = (S \<up>\<Turnstile>\<^sub>P i \<and> (\<forall>y\<in>set xs. S \<up>\<Turnstile>\<^sub>P y))"
-  by (induction xs arbitrary: i) 
+  by (induction xs arbitrary: i)
      (simp_all add: and_abs_def ltl_prop_entails_abs.abs_eq, metis ltl_prop_entails_abs.rep_eq)
 
 lemma And_prop_entailment_abs:
   "S \<up>\<Turnstile>\<^sub>P \<up>And xs = (\<forall>x \<in> set xs. S \<up>\<Turnstile>\<^sub>P x)"
   by (simp add: foldl_LTLAnd_prop_entailment_abs ltl_prop_entails_abs.abs_eq)
 
-lemma and_abs_conjunction: 
-  "S \<up>\<Turnstile>\<^sub>P \<phi> \<up>and \<psi> \<longleftrightarrow> S \<up>\<Turnstile>\<^sub>P \<phi> \<and> S \<up>\<Turnstile>\<^sub>P \<psi>" 
+lemma and_abs_conjunction:
+  "S \<up>\<Turnstile>\<^sub>P \<phi> \<up>and \<psi> \<longleftrightarrow> S \<up>\<Turnstile>\<^sub>P \<phi> \<and> S \<up>\<Turnstile>\<^sub>P \<psi>"
   by (metis and_abs.abs_eq ltl\<^sub>P_abs_rep ltl_prop_entailment.simps(3) ltl_prop_entails_abs.abs_eq)
 
 subsubsection \<open>Or\<close>
@@ -622,7 +622,7 @@ lemma Or_append_syntactic:
   by (induction xs rule: list_nonempty_induct) simp+
 
 lemma Or_append_S:
-  "S \<Turnstile>\<^sub>P Or (xs @ ys) = S \<Turnstile>\<^sub>P Or xs or Or ys" 
+  "S \<Turnstile>\<^sub>P Or (xs @ ys) = S \<Turnstile>\<^sub>P Or xs or Or ys"
   using Or_prop_entailment[of S] by auto
 
 lemma Or_append:
@@ -686,7 +686,7 @@ lift_definition eval\<^sub>G_abs :: "'a ltl set \<Rightarrow> 'a ltl\<^sub>P \<R
 
 subsection \<open>Finite Quotient Set\<close>
 
-text \<open>If we restrict formulas to a finite set of propositions, the set of quotients of these is finite\<close> 
+text \<open>If we restrict formulas to a finite set of propositions, the set of quotients of these is finite\<close>
 
 lemma Rep_Abs_prop_entailment[simp]:
   "A \<Turnstile>\<^sub>P Rep (Abs \<phi>) = A \<Turnstile>\<^sub>P \<phi>"
@@ -703,7 +703,7 @@ lemma sat_models_invariant:
 
 lemma sat_models_inj:
   "inj sat_models"
-  using Quotient3_ltl_prop_equiv_quotient[THEN Quotient3_rel_rep] 
+  using Quotient3_ltl_prop_equiv_quotient[THEN Quotient3_rel_rep]
   by (auto simp add: ltl_prop_equiv_def inj_on_def)
 
 lemma sat_models_finite_image:
@@ -744,15 +744,15 @@ proof -
   qed
   hence Equal: "{sat_models (Abs \<phi>) | \<phi>. nested_propos \<phi> \<subseteq> P} = {{A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P} | \<phi>. nested_propos \<phi> \<subseteq> P}"
     by (metis (lifting, no_types))
-  
-  have Finite: "finite {{A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P} | \<phi>. nested_propos \<phi> \<subseteq> P}" 
+
+  have Finite: "finite {{A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P} | \<phi>. nested_propos \<phi> \<subseteq> P}"
   proof -
     let ?map = "\<lambda>P S. {A \<union> B | A B. A \<in> S \<and> B \<subseteq> UNIV - P}"
     obtain S' where S'_def: "S' = {{A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P} | \<phi>. nested_propos \<phi> \<subseteq> P}"
       by blast
     obtain S where S_def: "S = {{A | A. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi>} | \<phi>. nested_propos \<phi> \<subseteq> P}"
       by blast
-    
+
     -- \<open>Prove S and ?map applied to it is finite\<close>
     hence "S \<subseteq> Pow (Pow P)"
       by blast
@@ -760,14 +760,14 @@ proof -
       using `finite P` finite_Pow_iff infinite_super by fast
     hence "finite {?map P A | A. A \<in> S}"
       by fastforce
-    
+
     -- \<open>Prove that S' can be embedded into S using ?map\<close>
 
     have "S' \<subseteq> {?map P A | A. A \<in> S}"
     proof
       fix A
       assume "A \<in> S'"
-      then obtain \<phi> where "nested_propos \<phi> \<subseteq> P" 
+      then obtain \<phi> where "nested_propos \<phi> \<subseteq> P"
         and "A = {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}"
         using S'_def by blast
       then have "?map P {A | A. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi>} = A"
@@ -782,9 +782,9 @@ proof -
 
     show ?thesis
       using rev_finite_subset[OF `finite {?map P A | A. A \<in> S}` `S' \<subseteq> {?map P A | A. A \<in> S}`]
-      unfolding S'_def . 
+      unfolding S'_def .
   qed
-  
+
   have Finite2: "finite {sat_models (Abs \<phi>) | \<phi>. nested_propos \<phi> \<subseteq> P}"
     unfolding Equal using Finite by blast
   have Equal2: "sat_models ` {Abs \<phi> | \<phi>. nested_propos \<phi> \<subseteq> P} = {sat_models (Abs \<phi>) | \<phi>. nested_propos \<phi> \<subseteq> P}"
@@ -805,11 +805,11 @@ proof -
 qed
 
 locale lift_ltl_transformer =
-  fixes 
+  fixes
     f :: "'a ltl \<Rightarrow> 'b \<Rightarrow> 'a ltl"
   assumes
     respectfulness: "\<phi> \<equiv>\<^sub>P \<psi> \<Longrightarrow> f \<phi> \<nu> \<equiv>\<^sub>P f \<psi> \<nu>"
-  assumes 
+  assumes
     nested_propos_bounded: "nested_propos (f \<phi> \<nu>) \<subseteq> nested_propos \<phi>"
 begin
 
@@ -834,7 +834,7 @@ where
 lemma finite_abs_reach:
   "finite (abs_reach (Abs \<phi>))"
 proof -
-  { 
+  {
     fix w
     have "nested_propos (foldl f \<phi> w) \<subseteq> nested_propos \<phi>"
       by (induction w arbitrary: \<phi>) (simp, metis foldl_Cons nested_propos_bounded subset_trans)

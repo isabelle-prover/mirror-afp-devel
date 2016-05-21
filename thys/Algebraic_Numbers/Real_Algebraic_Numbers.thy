@@ -852,6 +852,128 @@ lemma normalize_rai[simp]: "real_of_rai (normalize_rai mode x) = real_of_rai x"
 (* ********************* *)
 subsubsection \<open>Comparisons\<close>
 
+fun eq_fun_rai :: "rai_intern \<Rightarrow> rai_intern \<Rightarrow> bool" where
+  "eq_fun_rai (Some (_,_,p1,l1,r1)) (Some (_,_,p2,l2,r2)) = (l1 \<le> r2 \<and> l2 \<le> r1 \<and>
+    (let f = gcd_rat_poly p1 p2;
+         l = max l1 l2;
+         r = min r1 r2
+       in root_info.l_r (count_roots_interval_rat f) l r \<noteq> 0))"
+| "eq_fun_rai None None = True"
+| "eq_fun_rai _ _ = False"
+
+lemma eq_fun_rai: assumes "rai_cond rai1" "rai_cond rai2"
+  shows "(rai_real rai1 = rai_real rai2) = (eq_fun_rai rai1 rai2)" (is "?l = ?r")
+proof (cases rai1)
+  case (Some t1)
+  then obtain un1 ri1 p1 l1 r1 where rai1: "rai1 = Some (un1,ri1,p1,l1,r1)" by (cases t1, auto)
+  note ri1 = rai_condD[OF assms(1)[unfolded rai1]]
+  show ?thesis
+  proof (cases rai2)
+    case None
+    with ri1(3) show ?thesis by (simp add: rai1)
+  next
+    case (Some t2)
+    then obtain un2 ri2 p2 l2 r2 where rai2: "rai2 = Some (un2,ri2,p2,l2,r2)" by (cases t2, auto)
+    def f \<equiv> "gcd_rat_poly p1 p2"
+    def l \<equiv> "max l1 l2"
+    def r \<equiv> "min r1 r2"
+    note ri2 = rai_condD[OF assms(2)[unfolded rai2]]
+    from ri1(5) ri2(5) have f: "f \<noteq> 0" unfolding f_def by auto
+    have r: "?r = (l1 \<le> r2 \<and> l2 \<le> r1 \<and> root_info.l_r (count_roots_interval_rat f) l r \<noteq> 0)"
+      unfolding f_def l_def r_def rai1 rai2 by simp
+    let ?x1 = "the_unique_root (p1,l1,r1)" let ?x2 = "the_unique_root (p2,l2,r2)"
+    have l: "?l = (?x1 = ?x2)" unfolding rai1 rai2 by (simp add: rai_real_def)
+    let ?R = real_of_rat
+    note un1 = the_unique_root[OF ri1(7)]
+    note un2 = the_unique_root[OF ri2(7)]
+    show "?l = ?r"
+    proof (cases "l1 \<le> r2 \<and> l2 \<le> r1")
+      case False
+      hence r: "?r = False" unfolding r by auto
+      from False have choice: "?R l1 > ?R r2 \<or> ?R l2 > ?R r1" unfolding of_rat_less by auto
+      from un1 have 1: "?R l1 \<le> ?x1" "?x1 \<le> ?R r1" by blast+
+      from un2 have 2: "?R l2 \<le> ?x2" "?x2 \<le> ?R r2" by blast+
+      from 1 2 choice have "?x1 \<noteq> ?x2" by auto
+      hence l: "?l = False" unfolding l by simp
+      show ?thesis unfolding l r by auto
+    next
+      case True
+      from order_trans[OF un1(1-2)] order_trans[OF un2(1-2)] have "l1 \<le> r1" "l2 \<le> r2" 
+        unfolding of_rat_less_eq by auto
+      with True have "l \<le> r" using ri1(7) unfolding l_def r_def by auto
+      from root_info_condD(1)[OF count_roots_interval_rat[OF f] this] True
+      have r: "?r = (card {x. root_cond (f, l, r) x} \<noteq> 0)" unfolding r by auto
+      also have "\<dots> = ({x. root_cond (f, l, r) x} \<noteq> {})"
+        by (subst card_0_eq, unfold root_cond_def[abs_def] split, 
+          rule finite_subset[OF _ finite_rpoly_roots[OF f]], auto)
+      also have "\<dots> = (\<exists> x. ?R l \<le> x \<and> x \<le> ?R r \<and> rpoly f x = 0)" unfolding root_cond_def by auto
+      finally have r: "?r = (\<exists> x. ?R l \<le> x \<and> x \<le> ?R r \<and> rpoly f x = 0)" .
+      show ?thesis
+      proof (cases "?x1 = ?x2")
+        case True
+        have ?r unfolding r
+        proof (intro exI[of _ ?x2] conjI)
+          show "?R l \<le> ?x2" "?x2 \<le> ?R r" using  un2(1-2) un1(1-2)[unfolded True]
+            unfolding l_def r_def by auto
+          let ?Rp = "real_of_rat_poly"
+          {
+            fix p
+            assume "rpoly p ?x2 = 0"
+            hence "poly (?Rp p) ?x2 = 0" by (simp add: eval_poly_def)
+            hence "[: -?x2, 1 :] dvd ?Rp p" by (simp add: poly_eq_0_iff_dvd)
+          }
+          from this[OF un1(3)[unfolded True]] this[OF un2(3)]
+          have "[: -?x2, 1 :] dvd gcd (?Rp p1) (?Rp p2)" by auto
+          also have "gcd (?Rp p1) (?Rp p2) = ?Rp f" unfolding f_def by (simp add: rpoly.map_poly_gcd)
+          finally have "poly (?Rp f) ?x2 = 0" by (simp add: poly_eq_0_iff_dvd)
+          thus "rpoly f ?x2 = 0" by (simp add: eval_poly_def)
+        qed
+        with True show ?thesis unfolding l by simp
+      next
+        case False
+        hence l: "?l = False" unfolding l by simp
+        have "\<not> ?r"
+        proof 
+          assume ?r
+          from this[unfolded r] obtain x where 
+            lx: "?R l \<le> x" and xr: "x \<le> ?R r" and x: "rpoly f x = 0" by auto
+          have max: "?R (max l1 l2) = max (?R l1) (?R l2)" by (simp add: max_def of_rat_less_eq)
+          have min: "?R (min r1 r2) = min (?R r1) (?R r2)" by (simp add: min_def of_rat_less_eq)
+          from lx xr have x1: "?R l1 \<le> x" "x \<le> ?R r1" and x2: "?R l2 \<le> x" "x \<le> ?R r2" 
+            unfolding l_def r_def max min by auto
+          have "f dvd p1" unfolding f_def by auto
+          from this[unfolded dvd_def] obtain g1 where p1: "p1 = f * g1" by auto
+          have "f dvd p2" unfolding f_def by auto
+          from this[unfolded dvd_def] obtain g2 where p2: "p2 = f * g2" by auto
+          have p1: "rpoly p1 x = 0" unfolding p1 using x by (simp add: eval_poly_def)
+          have p2: "rpoly p2 x = 0" unfolding p2 using x by (simp add: eval_poly_def)
+          from p1 x1 have x1: "root_cond (p1,l1,r1) x" by (simp add: root_cond_def)
+          from p2 x2 have x2: "root_cond (p2,l2,r2) x" by (simp add: root_cond_def)
+          from un1(5)[OF x1] un2(5)[OF x2] have "?x1 = ?x2" by simp
+          with False show False ..
+        qed
+        thus ?thesis unfolding l by simp
+      qed
+    qed
+  qed
+next
+  case None note rai1 = this
+  show ?thesis
+  proof (cases rai2)
+    case (Some t2)
+    then obtain un2 ri2 p2 l2 r2 where rai2: "rai2 = Some (un2,ri2,p2,l2,r2)" by (cases t2, auto)
+    note ri2 = rai_condD[OF assms(2)[unfolded rai2]]
+    from rai1 rai2 ri2(3) show ?thesis by simp
+  qed (simp add: rai1)
+qed
+
+declare eq_fun_rai.simps[simp del]
+      
+lift_definition eq_rai :: "real_alg_intern \<Rightarrow> real_alg_intern \<Rightarrow> bool" is eq_fun_rai .
+
+lemma eq_rai: "(real_of_rai x = real_of_rai y) = (eq_rai x y)"
+  by (transfer, insert eq_fun_rai, auto)
+
 definition info_fun_rai :: "rai_intern \<Rightarrow> rat poly \<times> nat" where
   "info_fun_rai rai \<equiv> case rai of None \<Rightarrow> (poly_rat 0,1) 
     | Some (un,ri,p,l,r) \<Rightarrow> (p,root_info.inf_r ri r)"
@@ -1078,10 +1200,13 @@ lemma info_rai_inj: "info_rai x = info_rai y \<Longrightarrow> real_of_rai x = r
   by (transfer, rule rai_info_fun(1), auto)
 
 context
+begin
+
+context
   fixes cr1 cr2 :: "rat \<Rightarrow> rat \<Rightarrow> nat"
 begin
-partial_function (option) compare_rai_intern_main :: "rat \<Rightarrow> rat \<Rightarrow> rat \<Rightarrow> rat \<Rightarrow> order option " where
-  [code]: "compare_rai_intern_main l1 r1 l2 r2 = (if r1 < l2 then Some Lt else if r2 < l1 then Some Gt 
+partial_function (tailrec) compare_rai_intern_main :: "rat \<Rightarrow> rat \<Rightarrow> rat \<Rightarrow> rat \<Rightarrow> order" where
+  [code]: "compare_rai_intern_main l1 r1 l2 r2 = (if r1 < l2 then Lt else if r2 < l1 then Gt 
     else let 
       (l1',r1') = tighten_poly_bounds cr1 l1 r1;
       (l2',r2') = tighten_poly_bounds cr2 l2 r2
@@ -1094,78 +1219,101 @@ lemma compare_rai_intern_main: assumes ri1: "root_info_cond ri1 p1"
   and cr2: "cr2 = root_info.l_r ri2"  
   and ur1: "unique_root (p1,l1,r1)"
   and ur2: "unique_root (p2,l2,r2)"
-  and res: "compare_rai_intern_main l1 r1 l2 r2 = Some res"
- shows "res = compare (the_unique_root (p1,l1,r1)) (the_unique_root (p2,l2,r2))"
+  and diff: "the_unique_root (p1,l1,r1) \<noteq> the_unique_root (p2,l2,r2)"
+ shows "compare_rai_intern_main l1 r1 l2 r2 = compare (the_unique_root (p1,l1,r1)) (the_unique_root (p2,l2,r2))"
 proof -
-  obtain x where x: "x = the_unique_root (p1,l1,r1)" by auto
-  obtain y where y: "y = the_unique_root (p2,l2,r2)" by auto
   let ?r = real_of_rat
-  let ?P = "\<lambda> l1 r1 l2 r2 res. unique_root (p1,l1,r1) \<longrightarrow> unique_root (p2,l2,r2) \<longrightarrow> 
-    x = the_unique_root (p1,l1,r1) \<longrightarrow> y = the_unique_root (p2,l2,r2) \<longrightarrow>
-    res = compare (the_unique_root (p1,l1,r1)) (the_unique_root (p2,l2,r2))"
-  show ?thesis 
-  proof (induct rule: compare_rai_intern_main.raw_induct[OF _ res, of ?P, rule_format, OF _ ur1 ur2 x y])
-    case (1 cri l1 r1 l2 r2 res)
-    note ur = 1(3-4)
-    note xy = 1(5-6)
-    note simps = compare_rai_intern_main.simps[of l1 r1 l2 r2]
-    note res = 1(2)
-    note urx = the_unique_root[OF ur(1), folded xy]
-    note ury = the_unique_root[OF ur(2), folded xy]
-    show ?case 
-    proof (cases "r1 < l2")
-      case True
-      with res have l: "res = Lt" and lt: "?r r1 < ?r l2" unfolding simps of_rat_less by auto
-      show ?thesis unfolding l xy[symmetric] using lt True urx(2) ury(1)
-        by (auto simp: compare_real_def comparator_of_def)
-    next
-      case False note le = this
-      show ?thesis
-      proof (cases "r2 < l1")
+  {
+    fix d x y
+    assume d: "d = (r1 - l1) + (r2 - l2)" and xy: "x = the_unique_root (p1,l1,r1)" "y = the_unique_root (p2,l2,r2)"
+    def delta \<equiv> "abs (x - y) / 4"
+    have delta: "delta > 0" and diff: "x \<noteq> y" unfolding delta_def using diff xy by auto
+    let ?rel' = "{(x, y). 0 \<le> y \<and> delta_gt delta x y}"
+    let ?rel = "inv_image ?rel' ?r"
+    have SN: "SN ?rel" by (rule SN_inv_image[OF delta_gt_SN[OF delta]])
+    from d ur1 ur2
+    have ?thesis unfolding xy[symmetric] using xy
+    proof (induct d arbitrary: l1 r1 l2 r2 rule: SN_induct[OF SN])
+      case (1 d l1 r1 l2 r2)
+      note IH = 1(1)
+      note d = 1(2)
+      note ur = 1(3-4)
+      note xy = 1(5-6)
+      note simps = compare_rai_intern_main.simps[of l1 r1 l2 r2]
+      note urx = the_unique_root[OF ur(1), folded xy]
+      note ury = the_unique_root[OF ur(2), folded xy]
+      show ?case (is "?l = _")
+      proof (cases "r1 < l2")
         case True
-        with res le have l: "res = Gt" and lt: "?r r2 < ?r l1" unfolding simps of_rat_less by auto
-        show ?thesis unfolding l xy[symmetric] using lt True ury(2) urx(1) 
+        hence l: "?l = Lt" and lt: "?r r1 < ?r l2" unfolding simps of_rat_less by auto
+        show ?thesis unfolding l using lt True urx(2) ury(1) 
           by (auto simp: compare_real_def comparator_of_def)
       next
-        case False
-        obtain l1' r1' where tb1: "tighten_poly_bounds cr1 l1 r1 = (l1',r1')" by force
-        obtain l2' r2' where tb2: "tighten_poly_bounds cr2 l2 r2 = (l2',r2')" by force
-        from False le res tb1 tb2 have res: "cri l1' r1' l2' r2' = Some res" unfolding simps 
-          by auto
-        from tighten_poly_bounds[OF tb1 ur(1) ri1 cr1]
-        have rc1: "root_cond (p1, l1', r1') (the_unique_root (p1, l1, r1))" 
-          and bnd1: "l1 \<le> l1'" "l1' \<le> r1'" "r1' \<le> r1" and d1: "r1' - l1' = (r1 - l1) / 2" by auto
-        from unique_root_sub_interval[OF ur(1) rc1 bnd1(1,3)] xy
-        have ur1: "unique_root (p1, l1', r1')" and x: "x = the_unique_root (p1, l1', r1')" by auto
-        from tighten_poly_bounds[OF tb2 ur(2) ri2 cr2]
-        have rc2: "root_cond (p2, l2', r2') (the_unique_root (p2, l2, r2))" 
-          and bnd2: "l2 \<le> l2'" "l2' \<le> r2'" "r2' \<le> r2" and d2: "r2' - l2' = (r2 - l2) / 2" by auto
-        from unique_root_sub_interval[OF ur(2) rc2 bnd2(1,3)] xy          
-        have ur2: "unique_root (p2, l2', r2')" and y: "y = the_unique_root (p2, l2', r2')" by auto
-        from 1(1)[OF res ur1 ur2 x y, folded x y]
-        show ?thesis unfolding xy by simp
+        case False note le = this
+        show ?thesis
+        proof (cases "r2 < l1")
+          case True
+          with le have l: "?l = Gt" and lt: "?r r2 < ?r l1" unfolding simps of_rat_less by auto
+          show ?thesis unfolding l using lt True ury(2) urx(1) 
+            by (auto simp: compare_real_def comparator_of_def)
+        next
+          case False
+          obtain l1' r1' where tb1: "tighten_poly_bounds cr1 l1 r1 = (l1',r1')" by force
+          obtain l2' r2' where tb2: "tighten_poly_bounds cr2 l2 r2 = (l2',r2')" by force
+          from False le tb1 tb2 have l: "?l = compare_rai_intern_main l1' r1' l2' r2'" unfolding simps 
+            by auto
+          from tighten_poly_bounds[OF tb1 ur(1) ri1 cr1]
+          have rc1: "root_cond (p1, l1', r1') (the_unique_root (p1, l1, r1))" 
+            and bnd1: "l1 \<le> l1'" "l1' \<le> r1'" "r1' \<le> r1" and d1: "r1' - l1' = (r1 - l1) / 2" by auto
+          from unique_root_sub_interval[OF ur(1) rc1 bnd1(1,3)] xy
+          have ur1: "unique_root (p1, l1', r1')" and x: "x = the_unique_root (p1, l1', r1')" by auto
+          from tighten_poly_bounds[OF tb2 ur(2) ri2 cr2]
+          have rc2: "root_cond (p2, l2', r2') (the_unique_root (p2, l2, r2))" 
+            and bnd2: "l2 \<le> l2'" "l2' \<le> r2'" "r2' \<le> r2" and d2: "r2' - l2' = (r2 - l2) / 2" by auto
+          from unique_root_sub_interval[OF ur(2) rc2 bnd2(1,3)] xy
+          have ur2: "unique_root (p2, l2', r2')" and y: "y = the_unique_root (p2, l2', r2')" by auto
+          def d' \<equiv> "d/2"
+          have d': "d' = r1' - l1' + (r2' - l2')" unfolding d'_def d d1 d2 by (simp add: field_simps)
+          have d'0: "d' \<ge> 0" using bnd1 bnd2 unfolding d' by auto
+          have dd: "d - d' = d/2" unfolding d'_def by simp
+          have "abs (x - y) \<le> 2 * ?r d"
+          proof (rule ccontr)
+            assume "\<not> ?thesis"
+            hence lt: "2 * ?r d < abs (x - y)" by auto
+            have "r1 - l1 \<le> d" "r2 - l2 \<le> d" unfolding d using bnd1 bnd2 by auto
+            from this[folded of_rat_less_eq[where 'a = real]] lt 
+            have "?r (r1 - l1) < abs (x - y) / 2" "?r (r2 - l2) < abs (x - y) / 2" 
+              and dd: "?r r1 - ?r l1 \<le> ?r d" "?r r2 - ?r l2 \<le> ?r d" by (auto simp: of_rat_diff)
+            from le have "r1 \<ge> l2" by auto hence r1l2: "?r r1 \<ge> ?r l2" unfolding of_rat_less_eq by auto
+            from False have "r2 \<ge> l1" by auto hence r2l1: "?r r2 \<ge> ?r l1" unfolding of_rat_less_eq by auto            
+            show False
+            proof (cases "x \<le> y")
+              case True
+              from urx(1-2) dd(1) have "?r r1 \<le> x + ?r d" by auto 
+              with r1l2 have "?r l2 \<le> x + ?r d" by auto
+              with True lt ury(2) dd(2) show False by auto
+            next
+              case False
+              from ury(1-2) dd(2) have "?r r2 \<le> y + ?r d" by auto 
+              with r2l1 have "?r l1 \<le> y + ?r d" by auto
+              with False lt urx(2) dd(1) show False by auto
+            qed              
+          qed
+          hence dd': "delta_gt delta (?r d) (?r d')" unfolding delta_gt_def of_rat_diff[symmetric] delta_def dd by auto
+          show ?thesis unfolding l
+            by (rule IH[OF _ d' ur1 ur2 x y], insert d'0 dd', auto)
+        qed
       qed
     qed
-  qed
+  }            
+  thus ?thesis by auto
 qed
 end
 
-context
-begin
-private lift_definition compare_rat_rai :: "rat \<Rightarrow> real_alg_intern \<Rightarrow> order" is
-  "\<lambda> x y. case y of None \<Rightarrow> compare x 0 | Some (un,ri,p,l,r) \<Rightarrow>
-    case tighten_poly_bounds_for_x (root_info.l_r ri) x l r of (l',r') \<Rightarrow> compare x l'" .
-
-private definition compare_code_intern :: "rai_intern \<Rightarrow> rai_intern \<Rightarrow> order" where
-  [code del, simp]: "compare_code_intern x y = compare (rai_real x) (rai_real y)"
-
-lemma [code]: "compare_code_intern x y = compare_code_intern x y" by simp
-
 private fun compare_rai_intern :: "rai_intern \<Rightarrow> rai_intern \<Rightarrow> order" where
-  "compare_rai_intern (Some x) (Some y) =
-    (if info_fun_rai (Some x) = info_fun_rai (Some y) then Eq else (case x of (un,ri,p,l,r) \<Rightarrow> (case y of (un',ri',p',l',r')
-      \<Rightarrow> (case compare_rai_intern_main (root_info.l_r ri) (root_info.l_r ri') l r l' r' of Some res \<Rightarrow> res | None \<Rightarrow>
-      Code.abort (STR ''error in compare_rai_intern_main'') (\<lambda> _. compare_code_intern (Some x) (Some y))))))"
+  "compare_rai_intern (Some x) (Some y) = (if eq_fun_rai (Some x) (Some y) then Eq 
+    else (case x of (un,ri,p,l,r) \<Rightarrow> (case y of (un',ri',p',l',r')
+      \<Rightarrow> compare_rai_intern_main (root_info.l_r ri) (root_info.l_r ri') l r l' r')))"
 | "compare_rai_intern (Some (un,ri,p,l,r)) None = (if sgn r = 1 then Gt else Lt)"
 | "compare_rai_intern None (Some (un,ri,p,l,r)) = (if sgn r = 1 then Lt else Gt)"
 | "compare_rai_intern None None = Eq"
@@ -1199,23 +1347,18 @@ next
   next
     case (Some xt2) note x2 = this
     show ?thesis
-    proof (cases "info_fun_rai x1 = info_fun_rai x2")
+    proof (cases "eq_fun_rai x1 x2")
       case True
-      with x1 x2 have "?l = Eq" by simp
-      with rai_info_fun(1)[OF assms True] show ?thesis by simp
+      with x1 x2 eq_fun_rai[OF assms] show ?thesis by simp
     next
       case False
       obtain un2 ri2 p2 l2 r2 where xt2: "xt2 = (un2,ri2,p2,l2,r2)" by (cases xt2, auto)
       let ?cri = "compare_rai_intern_main (root_info.l_r ri1) (root_info.l_r ri2) l1 r1 l2 r2"
       note rc2 = rai_condD[OF rc2[unfolded x2 xt2]]
-      from False x1 xt1 x2 xt2 have id: "?l = (case ?cri of Some res \<Rightarrow> res | None \<Rightarrow> ?r)"
-        by (simp, unfold Code.abort_def compare_code_intern_def, auto)
-      also have "\<dots> = ?r"
-      proof (cases ?cri)
-        case (Some res)
-        show ?thesis unfolding Some using compare_rai_intern_main[OF rc1(9) refl rc2(9) refl rc1(7) rc2(7) Some]
-          x1 xt1 x2 xt2 by (simp add: rai_real_def)
-      qed simp
+      from False xt1 xt2 x1 x2 have "?l = ?cri" by simp 
+      also have "\<dots> = ?r" 
+        by (subst compare_rai_intern_main[OF rc1(9) refl rc2(9) refl rc1(7) rc2(7)],
+        insert eq_fun_rai[OF assms] x1 x2 xt1 xt2 False, auto simp: rai_real_def)
       finally show ?thesis .
     qed
   qed
@@ -1226,7 +1369,44 @@ lift_definition compare_rai :: "real_alg_intern \<Rightarrow> real_alg_intern \<
 lemma compare_rai: "compare_rai x1 x2 = compare (real_of_rai x1) (real_of_rai x2)"
   by (transfer, rule compare_rai_intern, auto)
 
-lemma compare_rat_rai: "of_rat x \<noteq> real_of_rai y \<Longrightarrow> compare_rat_rai x y = compare (of_rat x) (real_of_rai y)"
+lift_definition eq_rat_rai :: "rat \<Rightarrow> real_alg_intern \<Rightarrow> bool" is
+  "\<lambda> x y. case y of None \<Rightarrow> x = 0 | Some (un,ri,p,l,r) \<Rightarrow> l \<le> x \<and> x \<le> r \<and> poly p x = 0" .
+
+lemma eq_rat_rai: "eq_rat_rai x y = (of_rat x = real_of_rai y)"
+proof (transfer)
+  fix x y
+  assume y: "y \<in> Collect rai_cond"
+  show "(case y of None \<Rightarrow> x = 0 | Some (un, ri, p, l, r) \<Rightarrow> l \<le> x \<and> x \<le> r \<and> poly p x = 0) =
+           (real_of_rat x = rai_real y)" (is "?l = ?r")
+  proof (cases y)
+    case (Some tup)
+    then obtain un ri p l r where id: "y = Some (un, ri, p, l, r)" by (cases tup, auto)
+    from y[unfolded id] have "rai_cond (Some (un, ri, p, l, r))" by auto
+    note ri = rai_condD[OF this]
+    note un = the_unique_root[OF ri(7)]
+    have l: "?l = (l \<le> x \<and> x \<le> r \<and> poly p x = 0)" unfolding id by auto
+    have r: "?r = (of_rat x = the_unique_root (p,l,r))" unfolding id by (simp add: rai_real_def)
+    show ?thesis
+    proof
+      assume ?r
+      from un(1-3)[folded this[unfolded r], unfolded of_rat_less_eq] show ?l unfolding l
+        by (simp add: eval_poly_def)
+    next
+      let ?R = real_of_rat
+      assume ?l
+      from this[unfolded l] have "?R l \<le> ?R x" "?R x \<le> ?R r" "rpoly p (?R x) = 0"
+        unfolding of_rat_less_eq by (auto simp: eval_poly_def)
+      hence "root_cond (p,l,r) (?R x)" by (simp add: root_cond_def)
+      from un(5)[OF this] show ?r unfolding r by simp
+    qed
+  qed simp
+qed 
+
+lift_definition compare_rat_rai_main :: "rat \<Rightarrow> real_alg_intern \<Rightarrow> order" is
+  "\<lambda> x y. case y of None \<Rightarrow> compare x 0 | Some (un,ri,p,l,r) \<Rightarrow>
+    case tighten_poly_bounds_for_x (root_info.l_r ri) x l r of (l',r') \<Rightarrow> compare x l'" .
+
+lemma compare_rat_rai_main: "of_rat x \<noteq> real_of_rai y \<Longrightarrow> compare_rat_rai_main x y = compare (of_rat x) (real_of_rai y)"
 proof (transfer)
   fix x y
   let ?r = "real_of_rat"
@@ -1265,6 +1445,13 @@ proof (transfer)
       by (auto simp: compare_real_def compare_rat_def comparator_of_def)
   qed
 qed
+
+definition compare_rat_rai :: "rat \<Rightarrow> real_alg_intern \<Rightarrow> order" where
+  "compare_rat_rai x y = (if eq_rat_rai x y then Eq else compare_rat_rai_main x y)"
+
+lemma compare_rat_rai: "compare_rat_rai x y = compare (of_rat x) (real_of_rai y)"
+  by (cases "eq_rat_rai x y", auto simp: compare_rat_rai_def eq_rat_rai compare_rat_rai_main)
+
 end
 
 
@@ -2307,7 +2494,7 @@ next
     note y = rai_condD[OF y[unfolded yt]]
     from x(1,5) have ax: "alg_poly ?x ?p1" unfolding root_cond_def alg_poly_def by simp
     from y(1,5) have ay: "alg_poly ?y ?p2" unfolding root_cond_def alg_poly_def by simp
-    from alg_poly_add_real[OF ax ay] have axy: "alg_poly (?x + ?y) ?p" .
+    from alg_poly_add[OF ax ay] have axy: "alg_poly (?x + ?y) ?p" .
     from alg_polyD[OF this] have p: "?p \<noteq> 0" and rt: "rpoly ?p (?x + ?y) = 0" .
     have bnd: "\<And>l1 r1 l2 r2. root_cond (?p1, l1, r1) ?x \<Longrightarrow>
       root_cond (?p2, l2, r2) ?y \<Longrightarrow> root_cond (?p, l1 + l2, r1 + r2) (?x + ?y)"
@@ -3049,46 +3236,13 @@ proof (cases x)
   qed
 qed simp
 
-fun compare_radt :: "real_alg_dt \<Rightarrow> real_alg_dt \<Rightarrow> order" where 
-  "compare_radt (Rational r) (Rational q) = (compare r q)"
-| "compare_radt (Irrational xx) (Irrational yy) = (compare_rai xx yy)"
-| "compare_radt (Rational r) (Irrational xx) = (compare_rai (of_rat_rai r) xx)"
-| "compare_radt (Irrational xx) (Rational r) = (compare_rai xx (of_rat_rai r))"
+fun equal_radt :: "real_alg_dt \<Rightarrow> real_alg_dt \<Rightarrow> bool" where
+  "equal_radt (Rational r) (Rational q) = (r = q)" 
+| "equal_radt (Irrational xx) (Irrational yy) = (eq_rai xx yy)"
+| "equal_radt (Rational r) (Irrational yy) = (eq_rat_rai r yy)"
+| "equal_radt (Irrational xx) (Rational q) = (eq_rat_rai q xx)"
 
-lemma compare_radt: assumes x: "radt_cond x" and y: "radt_cond y"
-  shows "compare_radt x y = compare (real_of_radt x) (real_of_radt y)"
-proof (cases x)
-  case (Rational r) note xx = this
-  show ?thesis
-  proof (cases y)
-    case (Rational q) note yy = this
-    show ?thesis unfolding xx yy by (simp add: compare_rat_def compare_real_def comparator_of_def of_rat_less)
-  next
-    case (Irrational yy) note yy = this
-    from compare_rai[of "of_rat_rai r" yy]
-    show ?thesis unfolding xx yy by (simp add: of_rat_rai)
-  qed
-next
-  case (Irrational xx) note xx = this
-  show ?thesis
-  proof (cases y)
-    case (Rational q) note yy = this
-    from compare_rai[of xx "of_rat_rai q"]
-    show ?thesis unfolding xx yy 
-      by (simp add: of_rat_rai)
-  next
-    case (Irrational yy) note yy = this
-    from compare_rai[of xx yy]
-    show ?thesis unfolding xx yy by (simp add: compare_rai)
-  qed
-qed
-
-fun equal_radt :: "real_alg_dt \<Rightarrow> real_alg_dt \<Rightarrow> bool" where 
-  "equal_radt (Rational r) (Rational q) = (r = q)"
-| "equal_radt x y = (case compare_radt x y of Eq \<Rightarrow> True | _ \<Rightarrow> False)"
-
-lemma equal_radt: assumes x: "radt_cond x" and y: "radt_cond y"
-  shows "equal_radt x y \<longleftrightarrow> real_of_radt x = real_of_radt y"
+lemma equal_radt[simp]: "equal_radt x y = (real_of_radt x = real_of_radt y)"
 proof (cases x)
   case (Rational r) note xx = this
   show ?thesis
@@ -3097,20 +3251,56 @@ proof (cases x)
     show ?thesis unfolding xx yy by simp
   next
     case (Irrational yy) note yy = this
-    show ?thesis using compare_radt[OF x y]
-      by (cases "compare (real_of_radt x) (real_of_radt y)", auto simp: xx yy)
+    from eq_rat_rai[of r yy]
+    show ?thesis unfolding xx yy by simp
   qed
 next
   case (Irrational xx) note xx = this
   show ?thesis
   proof (cases y)
     case (Rational q) note yy = this
-    show ?thesis using compare_radt[OF x y]
-      by (cases "compare (real_of_radt x) (real_of_radt y)", auto simp: xx yy)
+    from eq_rat_rai[of q xx]
+    show ?thesis unfolding xx yy by auto
   next
     case (Irrational yy) note yy = this
-    show ?thesis using compare_radt[OF x y]
-      by (cases "compare (real_of_radt x) (real_of_radt y)", auto simp: xx yy)
+    from eq_rai[of xx yy]
+    show ?thesis unfolding xx yy by simp
+  qed
+qed
+
+fun compare_radt :: "real_alg_dt \<Rightarrow> real_alg_dt \<Rightarrow> order" where 
+  "compare_radt (Rational r) (Rational q) = (compare r q)"
+| "compare_radt (Irrational xx) (Irrational yy) = (compare_rai xx yy)"
+| "compare_radt (Rational r) (Irrational xx) = (compare_rat_rai r xx)"
+| "compare_radt (Irrational xx) (Rational r) = (invert_order (compare_rat_rai r xx))"
+
+(* TODO move *)
+lemma invert_order_compare_real[simp]: "\<And> x y :: real. invert_order (compare x y) = compare y x" 
+  by (simp add: comparator_of_def compare_is_comparator_of)
+
+lemma compare_radt: "compare_radt x y = compare (real_of_radt x) (real_of_radt y)"
+proof (cases x)
+  case (Rational r) note xx = this
+  show ?thesis
+  proof (cases y)
+    case (Rational q) note yy = this
+    show ?thesis unfolding xx yy by (simp add: compare_rat_def compare_real_def comparator_of_def of_rat_less)
+  next
+    case (Irrational yy) note yy = this
+    from compare_rat_rai[of r yy]
+    show ?thesis unfolding xx yy by (simp add: of_rat_rai)
+  qed
+next
+  case (Irrational xx) note xx = this
+  show ?thesis
+  proof (cases y)
+    case (Rational q) note yy = this
+    from compare_rat_rai[of q xx]
+    show ?thesis unfolding xx yy by simp
+  next
+    case (Irrational yy) note yy = this
+    from compare_rai[of xx yy]
+    show ?thesis unfolding xx yy by (simp add: compare_rai)
   qed
 qed
 

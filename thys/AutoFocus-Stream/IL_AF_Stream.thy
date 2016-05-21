@@ -77,7 +77,7 @@ lemma f_join_aux_nth[rule_format]: "
   \<forall>n i. i < card (I \<inter> {n..<n + length xs}) \<longrightarrow>
   (f_join_aux xs n I) ! i = xs ! (((I \<inter> {n..<n + length xs}) \<rightarrow> i) - n)"
 apply (induct xs, simp)
-apply (clarsimp split del: split_if)
+apply (clarsimp split del: if_split)
 apply (subgoal_tac "{n..<Suc (n + length xs)} = insert n {Suc n..<Suc (n + length xs)}")
  prefer 2
  apply fastforce
@@ -1139,7 +1139,7 @@ text {* Streams and temporal operators cycle start/finish events *}
 lemma i_shrink_eq_NoMsg_iAll_start_event_conv: "
   \<lbrakk> 0 < k; \<And>t. event t = (t mod k = 0); t0 = t * k \<rbrakk> \<Longrightarrow>
   ((s \<div>\<^sub>i k) t = \<NoMsg>) =
-  (s t0 = \<NoMsg> \<and> (\<bigcirc> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 ([0\<dots>] \<oplus> t'). event t2)))"
+  (s t0 = \<NoMsg> \<and> (\<circle> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 ([0\<dots>] \<oplus> t'). event t2)))"
 apply (case_tac "k = Suc 0")
  apply (simp add: iT_add iT_not_empty iNext_True)
 apply (drule neq_le_trans[OF not_sym], simp)
@@ -1165,9 +1165,9 @@ done
 lemma i_shrink_eq_Msg_iUntil_start_event_conv: "
   \<lbrakk> 0 < k; m \<noteq> \<NoMsg>; \<And>t. event t = (t mod k = 0); t0 = t * k \<rbrakk> \<Longrightarrow>
   ((s \<div>\<^sub>i k) t = m) = (
-  (s t0 = m \<and> (\<bigcirc> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 ([0\<dots>] \<oplus> t'). event t2))) \<or>
-  (\<bigcirc> t' t0 [0\<dots>]. (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t'). (
-    s t2 = m \<and> \<not> event t2 \<and> (\<bigcirc> t'' t2 [0\<dots>].
+  (s t0 = m \<and> (\<circle> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 ([0\<dots>] \<oplus> t'). event t2))) \<or>
+  (\<circle> t' t0 [0\<dots>]. (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t'). (
+    s t2 = m \<and> \<not> event t2 \<and> (\<circle> t'' t2 [0\<dots>].
       (s t3 = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t''). event t4))))))"
 apply (case_tac "k = Suc 0")
  apply (simp add: iT_add iT_not_empty iNext_iff)
@@ -1312,7 +1312,7 @@ done
 lemma i_shrink_eq_NoMsg_iAll_finish_event_conv: "
   \<lbrakk> 1 < k; \<And>t. event t = (t mod k = k - 1); t0 = t * k \<rbrakk> \<Longrightarrow>
   ((s \<div>\<^sub>i k) t = \<NoMsg>) =
-  (s t0 = \<NoMsg> \<and> (\<bigcirc> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 ([0\<dots>] \<oplus> t'). (event t2 \<and> s t2 = \<NoMsg>))))"
+  (s t0 = \<NoMsg> \<and> (\<circle> t' t0 [0\<dots>]. (s t1 = \<NoMsg>. t1 \<U> t2 ([0\<dots>] \<oplus> t'). (event t2 \<and> s t2 = \<NoMsg>))))"
 apply (simp add: i_shrink_eq_NoMsg_iAll_conv iT_add)
 apply (unfold iTL_defs Ball_def Bex_def)
 apply (simp add: iT_iff div_mult_cancel iFROM_cut_less iFROM_inext)
@@ -1361,8 +1361,8 @@ lemma i_shrink_eq_Msg_iUntil_finish_event_conv: "
   ((s \<div>\<^sub>i k) t = m) = (
   (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t0). event t2 \<and> s t2 = m) \<or>
   (\<not> event t1. t1 \<U> t2 ([0\<dots>] \<oplus> t0). (\<not> event t2 \<and> s t2 = m \<and> (
-    \<bigcirc> t' t2 [0\<dots>]. (s t3 = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t'). event t4 \<and> s t4 = \<NoMsg>)))))"
-apply (simp add: i_shrink_eq_Msg_iSince_conv split del: split_if)
+    \<circle> t' t2 [0\<dots>]. (s t3 = \<NoMsg>. t3 \<U> t4 ([0\<dots>] \<oplus> t'). event t4 \<and> s t4 = \<NoMsg>)))))"
+apply (simp add: i_shrink_eq_Msg_iSince_conv split del: if_split)
 apply (simp only: iTL_defs iT_add iT_cut_greater iT_cut_less Ball_def Bex_def iT_iff iFROM_inext)
 apply (subgoal_tac "t * k < t * k + k - Suc 0")
  prefer 2
@@ -1374,7 +1374,7 @@ apply (rule iffI)
   apply (rule le_pred_imp_less, simp)
   apply (simp only: mult.commute[of t k])
   apply (rule between_imp_mod_le[of "k - Suc 0 - Suc 0" k t])
-  apply (simp split del: split_if)+
+  apply (simp split del: if_split)+
  apply (elim exE conjE, rename_tac t1)
  apply (drule_tac x=t1 in order_le_imp_less_or_eq, erule disjE)
   prefer 2
@@ -1383,7 +1383,7 @@ apply (rule iffI)
   apply (clarsimp simp add: mod_pred iIN_iff)
  apply (rule disjI2)
  apply (rule_tac x=t1 in exI)
- apply (simp split del: split_if)
+ apply (simp split del: if_split)
  apply (rule conjI)
   apply (rule_tac x="t * k + k - Suc 0" in exI)
   apply (clarsimp simp: mod_pred iIN_iff)
@@ -1410,7 +1410,7 @@ apply (drule_tac y=t1 in order_le_imp_less_or_eq, erule disjE)
  prefer 2
  apply (drule_tac t=t1 in sym)
  apply (clarsimp simp: iIN_iff, rename_tac t3)
- apply (split split_if_asm)
+ apply (split if_split_asm)
   apply (subgoal_tac "t2 = Suc (t * k)")
    prefer 2
    apply simp

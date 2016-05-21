@@ -18,7 +18,7 @@ proof -
   let ?X = "{(\<Psi>, P \<oplus> \<tau>.(P), \<tau>.(P)) | \<Psi> P. True}"
   let ?Y = "{(\<Psi>, \<tau>.(P), P \<oplus> \<tau>.(P)) | \<Psi> P. True}"
 
-  from assms have "(\<Psi>, P \<oplus> \<tau>.(P), \<tau>.(P)) \<in> ?X \<union> ?Y" by auto
+  have "(\<Psi>, P \<oplus> \<tau>.(P), \<tau>.(P)) \<in> ?X \<union> ?Y" by auto
   moreover have "eqvt(?X \<union> ?Y)" by(auto simp add: eqvt_def eqvts)
   ultimately show ?thesis
   proof(coinduct rule: weakTransitiveCoinduct)
@@ -114,7 +114,7 @@ lemma tauLaw4:
 proof -
   let ?X = "{(\<Psi>, \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q), \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)) | \<Psi> P \<alpha> Q. True}"
   let ?Y = "{(\<Psi>, \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q), \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)) | \<Psi> P \<alpha> Q. True}"
-  from assms have "(\<Psi>, \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q), \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)) \<in> ?X \<union> ?Y" by auto
+  have "(\<Psi>, \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q), \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)) \<in> ?X \<union> ?Y" by auto
   moreover have "eqvt(?X \<union> ?Y)" by(fastforce simp add: eqvt_def eqvts)
   ultimately show ?thesis
   proof(coinduct rule: weakTransitiveCoinduct)

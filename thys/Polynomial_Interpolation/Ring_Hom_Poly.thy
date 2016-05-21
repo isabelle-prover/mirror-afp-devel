@@ -9,6 +9,7 @@ theory Ring_Hom_Poly
 imports 
   Ring_Hom
   Missing_Polynomial
+  "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
   Rat
 begin
 
@@ -321,8 +322,8 @@ lemma map_poly_pdivmod:
 proof -
   let ?mp = "map_poly hom"
   obtain r s where dm: "pdivmod p q = (r,s)" by force  
-  hence r: "r = p div q" and s: "s = p mod q" 
-    by (auto simp add: div_poly_code mod_poly_code)
+  hence r: "r = p div q" and s: "s = p mod q"
+    by (auto simp add: pdivmod_def)
   from dm[folded pdivmod_pdivmodrel] have "pdivmod_rel p q r s" by auto
   from this[unfolded pdivmod_rel_def]
   have eq: "p = r * q + s" and cond: "(if q = 0 then r = 0 else s = 0 \<or> degree s < degree q)" by auto
@@ -337,22 +338,17 @@ proof -
 qed
 
 lemma map_poly_div: "map_poly hom (p div q) = map_poly hom p div map_poly hom q"
-  using map_poly_pdivmod[of p q] unfolding div_poly_code by (metis fst_map_prod)
+  using map_poly_pdivmod[of p q] unfolding pdivmod_def by simp
 
 lemma map_poly_mod: "map_poly hom (p mod q) = map_poly hom p mod map_poly hom q"
-  using map_poly_pdivmod[of p q] unfolding mod_poly_code by (metis snd_map_prod)
+  using map_poly_pdivmod[of p q] unfolding pdivmod_def by simp
 
 lemma map_poly_gcd: "map_poly hom (gcd p q) = gcd (map_poly hom p) (map_poly hom q)"
-proof (induct p q rule: gcd_poly.induct)
-  case (1 p)
-  show ?case unfolding map_poly_simp_0 gcd_poly.simps 
-    map_poly_smult degree_map_poly hom_inverse coeff_map_poly by simp
-next
-  case (2 p q)
-  assume p: "p \<noteq> 0"
-  hence mp: "map_poly hom p \<noteq> 0" unfolding map_poly_0_iff .
-  note simp = gcd_poly.simps(2)
-  show ?case unfolding simp[OF p] simp[OF mp] 2(2) map_poly_mod by simp
+proof (induct p q rule: gcd_eucl.induct)
+  case (1 p b)
+  thus ?case
+    by (cases "b = 0")
+       (simp_all add: gcd_non_0 coeff_map_poly normalize_poly_def map_poly_mod)
 qed
   
 lemma map_poly_power: "map_poly hom (p ^ n) = (map_poly hom p) ^ n"

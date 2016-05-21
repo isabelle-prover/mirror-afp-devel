@@ -18,7 +18,7 @@ proof (cases a)
     using rel_interior_real_semiline[of r]
     by (simp add: atLeast_def greaterThan_def)
 next case PInf thus ?thesis using rel_interior_empty by auto
-next case MInf thus ?thesis using rel_interior_univ2 by auto
+next case MInf thus ?thesis using rel_interior_UNIV by auto
 qed
 
 lemma closed_ereal_semiline:
@@ -84,7 +84,7 @@ proof-
   }
   hence "EX x l. x \<longlonglongrightarrow> x0 & (f o x) \<longlonglongrightarrow> l & ~(f x0 <= l)"
      apply(rule_tac x="x o r" in exI) apply(rule_tac x=l in exI)
-     using r_def x_def by (auto simp add: o_assoc lim_subseq)
+     using r_def x_def by (auto simp add: o_assoc LIMSEQ_subseq_LIMSEQ)
   hence "~?lhs" unfolding lsc_at_def by blast
 }
 moreover
@@ -233,7 +233,7 @@ moreover
     from this obtain d where "d>0 & (!y : (ball x0 d). C < f y)" using `?rhs` by auto
     hence "EX T. open T & x0 : T & (!y : T. C < f y)" apply (rule_tac x="ball x0 d" in exI)
       apply (simp add: centre_in_ball) done
-  } hence "lsc_at x0 f" using assms lsc_at_ereal[of x0 f] by auto
+  } hence "lsc_at x0 f" using lsc_at_ereal[of x0 f] by auto
 }
 ultimately show ?thesis by auto
 qed
@@ -1060,7 +1060,7 @@ next
     hence "(SUM j : s. a j) = 0"
       using insert by auto
     hence "ALL j. (j : s --> a j = 0)"
-      using setsum_nonneg_0[where 'b=real] insert by fastforce
+      using insert by (simp add: setsum_nonneg_eq_0_iff)
     hence ?case using insert.hyps(1-3) `a i = 1`
       by (simp add: zero_ereal_def[symmetric] one_ereal_def[symmetric]) }
   moreover
@@ -1487,7 +1487,7 @@ lemma convex_with_UNIV_domain:
   assumes "convex_on UNIV f"
   assumes "domain f = UNIV"
   shows "(ALL x. f x > -\<infinity>) | (ALL x. f x = -\<infinity>)"
-by (metis assms convex_improper ereal_MInfty_lessI proper_iff rel_interior_univ2 UNIV_I)
+by (metis assms convex_improper ereal_MInfty_lessI proper_iff rel_interior_UNIV UNIV_I)
 
 
 lemma rel_interior_Epigraph:
@@ -1533,7 +1533,7 @@ proof-
   qed
   ultimately have "A Int rel_interior(Epigraph UNIV f) ~= {}"
     by (metis assms(1) convex_Epigraph convex_UNIV
-       open_inter_closure_eq_empty open_inter_closure_rel_interior)
+       open_Int_closure_eq_empty open_inter_closure_rel_interior)
   then obtain x0 z0 where "(x0,z0):A & x0 : rel_interior (domain f) & f x0 < ereal z0"
     using rel_interior_Epigraph[of f] assms by auto
   thus ?thesis apply(rule_tac x="x0" in bexI) using A_def by auto
@@ -1624,8 +1624,8 @@ proof-
   { fix e::real assume "e>0"
     hence "INFIMUM (ball x e) f <= min (f x) (Liminf (at x) f)"
       unfolding min_Liminf_at apply (subst SUP_upper) by auto
-    hence "EX y. y : ball x e & f y <= z"
-      using Inf_le_iff_less[of "ball x e" f "min (f x) (Liminf (at x) f)"] z_def by (auto simp: Bex_def)
+    hence "\<exists>y. y \<in> ball x e \<and> f y \<le> z"
+      using Inf_le_iff_less [of f "ball x e" "min (f x) (Liminf (at x) f)"] z_def by (auto simp add: Bex_def)
     hence "EX y. dist x y < e & y : domain f" unfolding domain_def ball_def using z_def by auto
   } hence "x:closure(domain f)" unfolding closure_approachable by (auto simp add: dist_commute)
 } ultimately show ?thesis by auto
@@ -1802,15 +1802,15 @@ lemma lsc_hull_of_convex:
   assumes "convex_on UNIV f"
   assumes "x : rel_interior (domain f)"
   shows "((%m. f((1-m)*\<^sub>R x + m *\<^sub>R y)) \<longlongrightarrow> (lsc_hull f) y) (at 1 within {0..<1})"
-proof-
-let "?g m" = "f((1-m)*\<^sub>R x + m *\<^sub>R y)"
-{ assume "y=x" hence "?g = (%m. f y)" by (simp add: algebra_simps)
-  hence "(?g \<longlongrightarrow> f y) (at 1 within {0..<1})" by (simp add: tendsto_const)
-  moreover have "(lsc_hull f) y = f y" by (metis `y=x` assms lsc_hull_of_convex_agrees_onRI)
-  ultimately have ?thesis by auto
-}
-moreover
-{ assume "y~=x"
+         (is "(?g \<longlongrightarrow> _ y) _")
+proof (cases "y=x")
+  case True
+    hence "?g = (%m. f y)" by (simp add: algebra_simps)
+    hence "(?g \<longlongrightarrow> f y) (at 1 within {0..<1})" by simp
+    moreover have "(lsc_hull f) y = f y" by (metis `y=x` assms lsc_hull_of_convex_agrees_onRI)
+    ultimately show ?thesis by auto
+next
+  case False
   have aux: "ALL m. y - ((1 - m) *\<^sub>R x + m *\<^sub>R y) = (1-m)*\<^sub>R (y-x)" by (simp add: algebra_simps)
   have "(lsc_hull f) y = min (f y) (Liminf (at y) f)" by (metis lsc_hull_liminf_at)
   also have "... <= Liminf (at 1 within {0..<1}) ?g" unfolding min_Liminf_at unfolding Liminf_within
@@ -1849,8 +1849,7 @@ moreover
     ultimately have "Limsup (at 1 within {0..<1}) ?g = (lsc_hull f) y
                    & Liminf (at 1 within {0..<1}) ?g = (lsc_hull f) y"
       using * by auto
-  hence ?thesis apply (subst Liminf_eq_Limsup) using nontr by auto
-} ultimately show ?thesis by auto
+  thus ?thesis apply (subst Liminf_eq_Limsup) using nontr by auto
 qed
 
 end

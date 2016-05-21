@@ -434,7 +434,7 @@ proof -
     fix l
     assume "\<not> aliveImpl (ref l) ?s_alloc"
     hence "\<not> aliveImpl (ref l) (Rep_Store s)"
-      by (simp add: aliveImpl_def split: Value.splits split_if_asm)
+      by (simp add: aliveImpl_def split: Value.splits if_split_asm)
     with s have "vals (Rep_Store s) l = init (ltype l)"
       by (simp add: Store_def)
     thus "vals ?s_alloc l = init (ltype l)"
@@ -489,7 +489,7 @@ proof -
       case False
       from unalive
       have "\<not> aliveImpl (ref l) (Rep_Store s)"
-        by (simp add: aliveImpl_def split: Value.splits split_if_asm)
+        by (simp add: aliveImpl_def split: Value.splits if_split_asm)
       with s have "vals (Rep_Store s) l = init (ltype l)"
         by (simp add: Store_def)
       with False show ?thesis 
@@ -612,13 +612,13 @@ proof
   proof (cases t)
     case (new_instance C) 
     with alive_alloc show ?thesis 
-      by (cases x) (auto split: split_if_asm 
+      by (cases x) (auto split: if_split_asm 
                          simp add: alive_def new_def alloc_def aliveImpl_def
                               alloc_new_instance_in_Store [THEN Abs_Store_inverse])
   next
     case (new_array T l)
     with alive_alloc show ?thesis
-      by (cases x) (auto split: split_if_asm
+      by (cases x) (auto split: if_split_asm
                          simp add: alive_def new_def alloc_def aliveImpl_def
                          alloc_new_array_in_Store [THEN Abs_Store_inverse])
   qed

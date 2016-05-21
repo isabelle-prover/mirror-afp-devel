@@ -402,7 +402,7 @@ lemma liftT_substT_strange:
   apply (induct T and rT and fT arbitrary: n k and n k and n k
     rule: liftT.induct liftrT.induct liftfT.induct)
   apply simp_all
-  apply (thin_tac "\<And>x. PROP P x" for P)
+  apply (thin_tac "\<And>x. PROP P x" for P :: "_ \<Rightarrow> prop")
   apply (drule_tac x=n in meta_spec)
   apply (drule_tac x="Suc k" in meta_spec)
   apply simp
@@ -454,7 +454,7 @@ lemma substT_substT:
   apply (induct T and rT and fT arbitrary: i j U V and i j U V and i j U V
     rule: liftT.induct liftrT.induct liftfT.induct)
   apply (simp_all add: diff_Suc split add: nat.split)
-  apply (thin_tac "\<And>x. PROP P x" for P)
+  apply (thin_tac "\<And>x. PROP P x" for P :: "_ \<Rightarrow> prop")
   apply (drule_tac x="Suc i" in meta_spec)
   apply (drule_tac x="Suc j" in meta_spec)
   apply simp
@@ -776,7 +776,7 @@ theorem wf_subst:
   apply (erule well_formed_cases)
   apply (rule wf_all)
   apply simp
-  apply (thin_tac "\<And>x. PROP P x" for P)
+  apply (thin_tac "\<And>x. PROP P x" for P :: "_ \<Rightarrow> prop")
   apply (drule_tac x="TVarB type1 \<Colon> \<Delta>" in meta_spec)
   apply simp
   apply (erule well_formed_cases)
@@ -1985,7 +1985,7 @@ lemma matchs_mono:
   using H
   apply (induct rule: matchs_induct)
   apply (rule M_Nil)
-  apply (simp split add: split_if_asm)
+  apply (simp split add: if_split_asm)
   apply (rule M_Cons)
   apply simp_all
   done
@@ -2022,7 +2022,7 @@ theorem matchs_tl:
   shows "fps\<langle>l\<rangle>\<^sub>? = \<bottom> \<Longrightarrow> \<turnstile> fps [\<rhd>] fs \<Rightarrow> ts"
   using H
   apply (induct fps "(l, t) \<Colon> fs" ts arbitrary: l t fs rule: matchs_induct)
-  apply (simp_all split add: split_if_asm)
+  apply (simp_all split add: if_split_asm)
   apply (rule M_Nil)
   apply (rule M_Cons)
   apply auto
@@ -2355,7 +2355,7 @@ theorem reorder_prop:
   apply (drule bpspec)
   apply assumption
   apply (erule exE)
-  apply (simp split add: split_if_asm)
+  apply (simp split add: if_split_asm)
   apply (auto dest: assoc_set)
   done
 

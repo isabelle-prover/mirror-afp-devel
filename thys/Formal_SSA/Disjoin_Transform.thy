@@ -102,7 +102,7 @@ next
 next
   case 5
   from "5.prems" show ?case by -(rule "5.IH", auto elim:subcmd.cases newname.cases)
-qed (auto elim!:subcmd.cases newname.cases split:split_if_asm)
+qed (auto elim!:subcmd.cases newname.cases split:if_split_asm)
 
 lemma transform_disjoint': "subcmd (transform c) (leftmostCmd c') \<Longrightarrow> lhs c' \<inter> rhs c' = {}"
   by (induction c') (auto dest: transform_disjoint)

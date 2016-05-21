@@ -58,12 +58,21 @@ lemma alg_poly_1_2i: "alg_poly (1 / (2 * \<i>)) poly_1_2i"
   by (simp add: eval_poly_def)
 
 definition root_poly_Re :: "rat poly \<Rightarrow> rat poly" where
-  "root_poly_Re p = poly_mult_rat (1/2) (poly_add p p)"
+  "root_poly_Re p = (let np = normalize_rat_poly p in poly_mult_rat (inverse 2) (poly_add np np))"
+  
+lemma root_poly_Re_via_int_polys_code[code]: 
+  "root_poly_Re p = (let np = snd (rat_to_int_poly p) in poly_mult_rat (inverse 2) (map_poly of_int (poly_add_int np np)))"
+  unfolding root_poly_Re_def Let_def poly_add_via_int_polys_unfold ..
 
 definition root_poly_Im :: "rat poly \<Rightarrow> rat poly list" where
-  "root_poly_Im p = (let fs = factors_of_rat_poly Uncertified_Factorization (poly_add p (poly_uminus p))
-    in remdups ((if (\<exists> f \<in> set fs. coeff f 0 = 0) then [[:0,1:]] else [])) @ [ poly_mult poly_1_2i f . 
+  "root_poly_Im p = (let fs = factors_of_rat_poly Uncertified_Factorization 
+    (poly_add (normalize_rat_poly p) (normalize_rat_poly (poly_uminus p)))
+    in remdups ((if (\<exists> f \<in> set fs. coeff f 0 = 0) then [[:0,1:]] else [])) @ 
+      [ poly_mult (normalize_rat_poly poly_1_2i) (normalize_rat_poly f) . 
     f \<leftarrow> fs])"
+    
+lemma poly_1_2i_code_unfold[code_unfold]: "snd (rat_to_int_poly poly_1_2i) = [:1,0,4:]"
+  by code_simp
 
 context inj_field_hom_0
 begin
@@ -126,29 +135,35 @@ lemma alg_poly_root_poly: assumes "rpoly p x = 0" and p: "p \<noteq> 0"
 proof -
   let ?Rep = "root_poly_Re p"
   let ?Imp = "root_poly_Im p"
+  let ?n = "normalize_rat_poly"
+  let ?np = "?n p"
   from assms have ap: "alg_poly x p" by auto
   from alg_poly_cnj[OF this] have apc: "alg_poly (cnj x) p" .
-  from alg_poly_mult_rat[OF _ alg_poly_add_complex[OF ap apc], of "1/2"]
-  have "alg_poly (1 / 2 * (x + cnj x)) ?Rep" unfolding root_poly_Re_def by auto
+  from ap have ap: "alg_poly x ?np" by simp
+  from alg_poly_cnj[OF this] have apc': "alg_poly (cnj x) ?np" .  
+  from alg_poly_mult_rat[OF _ alg_poly_add[OF ap apc'], of "inverse 2"]
+  have "alg_poly (1 / 2 * (x + cnj x)) ?Rep" unfolding root_poly_Re_def Let_def by auto
   also have "1 / 2 * (x + cnj x) = of_real (Re x)"
     by (cases x, auto)
   finally have Rep: "?Rep \<noteq> 0" and rt: "rpoly ?Rep (complex_of_real (Re x)) = 0" unfolding alg_poly_def by auto
   from rt[folded poly_complex_of_rat_poly, unfolded poly_complex_to_real]
   have "rpoly ?Rep (Re x) = 0" unfolding poly_real_of_rat_poly .
   with Rep show "alg_poly (Re x) ?Rep" by auto 
-  let ?q = "poly_add p (poly_uminus p)"
+  let ?q = "poly_add ?np (?n (poly_uminus p))"
   let ?mode = Uncertified_Factorization
-  from alg_poly_add_complex[OF ap alg_poly_uminus[OF apc]] 
+  from alg_poly_add[OF ap, of "- cnj x" "?n (poly_uminus p)"] alg_poly_uminus[OF apc] 
   have apq: "alg_poly (x - cnj x) ?q" by auto
   from alg_poly_factors_rat_poly[OF this] obtain pi where pi: "pi \<in> set (factors_of_rat_poly ?mode ?q)"
     and appi: "alg_poly (x - cnj x) pi" by auto
+  hence appi': "alg_poly (x - cnj x) (?n pi)" by simp
   have id: "1 / (2 * \<i>) * (x - cnj x) = of_real (Im x)"
     by (cases x, auto)
+  from alg_poly_1_2i have 12: "alg_poly (1 / (2 * \<i>)) (?n poly_1_2i)" by simp
   have "\<exists> qi \<in> set ?Imp. (alg_poly (1 / (2 * \<i>) * (x - cnj x)) qi)" 
   proof (cases "x - cnj x = 0")
     case False 
     have "1 / (2 * \<i>) \<noteq> 0" by auto
-    from alg_poly_mult_complex[OF alg_poly_1_2i appi this False] pi
+    from alg_poly_mult_complex[OF 12 appi' this False] pi
     show ?thesis unfolding root_poly_Im_def Let_def by auto
   next
     case True
@@ -600,6 +615,78 @@ proof -
   qed simp
   also have "?exp pis = (\<Prod>(x, i)\<leftarrow>xis. [:- x, 1:] ^ Suc i)" unfolding xis ..
   finally show ?thesis unfolding p xis by simp
+qed
+
+lemma distinct_factorize_complex_main:
+  assumes "factorize_complex_main p = Some fctrs"
+  shows   "distinct (map fst (snd fctrs))"
+proof -
+  from assms have solvable: "\<forall>x\<in>set (snd (yun_factorization gcd p)). degree (fst x) \<le> 2 \<or> 
+                                 (\<forall>x\<in>set (coeffs (fst x)). x \<in> \<rat>)"
+    by (auto simp add: factorize_complex_main_def case_prod_unfold 
+                       Let_def map_concat o_def split: if_splits)
+  have sqf: "square_free_factorization p 
+               (fst (yun_factorization gcd p), snd (yun_factorization gcd p))"
+    by (rule yun_factorization) simp
+    
+  have "map fst (snd fctrs) = 
+        concat (map (\<lambda>x. remdups (roots_of_complex_main (fst x))) (snd (yun_factorization gcd p)))" 
+    using assms by (auto simp add: factorize_complex_main_def case_prod_unfold 
+                           Let_def map_concat o_def split: if_splits)
+  also have "distinct \<dots>"
+  proof (rule distinct_concat, goal_cases)
+    case 1
+    show ?case
+    proof (subst distinct_map, safe)
+      from square_free_factorizationD(5)[OF sqf]
+        show "distinct (snd (yun_factorization gcd p))" .
+      show "inj_on (\<lambda>x. remdups (roots_of_complex_main (fst x))) (set (snd (yun_factorization gcd p)))"
+      proof (rule inj_onI, clarify, goal_cases)
+        case (1 a1 b1 a2 b2)
+        {
+          assume neq: "(a1, b1) \<noteq> (a2, b2)"
+          from 1(1,2)[THEN square_free_factorizationD(2)[OF sqf]] 
+            have "degree a1 \<noteq> 0" "degree a2 \<noteq> 0" by blast+
+          hence [simp]: "a1 \<noteq> 0" "a2 \<noteq> 0" by auto
+          from square_free_factorizationD(3)[OF sqf 1(1,2) neq]
+            have "coprime a1 a2" .
+          
+          from solvable 1(1) have "{z. poly a1 z = 0} = set (roots_of_complex_main a1)"
+            by (intro roots_of_complex_main [symmetric]) auto
+          also have "set (roots_of_complex_main a1) = set (roots_of_complex_main a2)"
+            using 1(3) by (subst (1 2) set_remdups [symmetric]) (simp only: fst_conv)
+          also from solvable 1(2) have "\<dots> = {z. poly a2 z = 0}"
+            by (intro roots_of_complex_main) auto
+          finally have "{z. poly a1 z = 0} = {z. poly a2 z = 0}" .
+          with coprime_imp_no_common_roots[OF \<open>coprime a1 a2\<close>] 
+            have "{z. poly a1 z = 0} = {}" by auto
+          with fundamental_theorem_of_algebra constant_degree
+            have "degree a1 = 0" by auto
+          with \<open>degree a1 \<noteq> 0\<close> have False by contradiction
+        }
+        thus ?case by blast
+      qed
+    qed
+  
+  next
+    case (3 ys zs)
+    then obtain a1 b1 a2 b2 where ab:
+      "(a1, b1) \<in> set (snd (yun_factorization gcd p))"
+      "(a2, b2) \<in> set (snd (yun_factorization gcd p))"
+      "ys = remdups (roots_of_complex_main a1)" "zs = remdups (roots_of_complex_main a2)"
+      by auto
+    with 3 have neq: "(a1,b1) \<noteq> (a2,b2)" by auto
+    from ab(1,2)[THEN square_free_factorizationD(2)[OF sqf]] 
+      have [simp]: "a1 \<noteq> 0" "a2 \<noteq> 0" by auto
+    
+    from square_free_factorizationD(3)[OF sqf ab(1,2) neq] have "coprime a1 a2" .
+    have "set ys = {z. poly a1 z = 0}" "set zs = {z. poly a2 z = 0}"
+      by (insert solvable ab(1,2), subst ab, subst set_remdups,
+          rule roots_of_complex_main; (auto) [])+
+    with coprime_imp_no_common_roots[OF \<open>coprime a1 a2\<close>] show ?case by auto
+  qed auto
+  
+  finally show ?thesis .
 qed
 
 lemma factorize_complex_poly: assumes fp: "factorize_complex_poly p = Some (c,qis)"

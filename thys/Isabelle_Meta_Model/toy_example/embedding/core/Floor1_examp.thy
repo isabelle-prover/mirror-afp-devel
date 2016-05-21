@@ -163,7 +163,7 @@ definition "check_export_code f_writeln f_warning f_error f_raise l_report msg_l
   if l_err = [] then
     ()
   else
-    f_raise (String.of_nat (length l_err) @@ msg_last))"
+    f_raise (String.nat_to_digit10 (length l_err) @@ msg_last))"
 
 definition "print_examp_instance_defassoc_gen name l_toyi env =
  (case D_toy_semantics env of Gen_only_analysis \<Rightarrow> [] | Gen_default \<Rightarrow> [] | Gen_only_design \<Rightarrow>
@@ -239,7 +239,7 @@ definition "print_examp_def_st1 = (\<lambda> ToyDefSt name l \<Rightarrow> boots
                                  ([], 0)
         ; (l_inst, l_defst) =
         List.fold (\<lambda> (pos, _, ToyDefCoreAdd toyi) \<Rightarrow> \<lambda>(l_inst, l_defst).
-                     let i_name = case Inst_name toyi of Some x \<Rightarrow> x | None \<Rightarrow> S.flatten [name, \<open>_object\<close>, String.of_natural pos] in
+                     let i_name = case Inst_name toyi of Some x \<Rightarrow> x | None \<Rightarrow> S.flatten [name, \<open>_object\<close>, String.natural_to_digit10 pos] in
                        ( map_instance_single (map_prod id (map_prod id (map_data_shallow_self (\<lambda>Oid self \<Rightarrow>
                            (case L.assoc self l of
                               Some (_, ToyDefCoreBinding name) \<Rightarrow> ShallB_str name
@@ -263,7 +263,7 @@ definition "print_pre_post = (\<lambda> ToyDefPP name s_pre s_post \<Rightarrow>
   (\<lambda>f env. (L.flatten [f env], env))
   (\<lambda>env.
     let pref_name = case name of Some n \<Rightarrow> n
-                               | None \<Rightarrow> \<open>WFF_\<close> @@ String.of_nat (length (D_input_meta env))
+                               | None \<Rightarrow> \<open>WFF_\<close> @@ String.nat_to_digit10 (length (D_input_meta env))
       ; f_comp = \<lambda>None \<Rightarrow> id | Some (_, f) \<Rightarrow> f
       ; f_conv = \<lambda>msg.
           \<lambda> ToyDefPPCoreAdd toy_def_state \<Rightarrow>

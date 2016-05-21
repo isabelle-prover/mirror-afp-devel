@@ -67,7 +67,7 @@ lemma def_ass_ts_ok_J_start_state:
   def_ass_ts_ok (thr (J_start_state P C M vs)) h"
 apply(rule ts_okI)
 apply(drule (1) sees_wf_mdecl)
-apply(clarsimp simp add: wf_mdecl_def start_state_def split: split_if_asm)
+apply(clarsimp simp add: wf_mdecl_def start_state_def split: if_split_asm)
 done
 
 end
@@ -140,7 +140,7 @@ lemma sconf_type_ts_ok_J_start_state:
   \<Longrightarrow> sconf_type_ts_ok (J_sconf_type_ET_start P C M) (thr (J_start_state P C M vs)) (shr (J_start_state P C M vs))"
 apply(erule wf_start_state.cases)
 apply(rule ts_invI)
-apply(simp add: start_state_def split: split_if_asm)
+apply(simp add: start_state_def split: if_split_asm)
 apply(frule (1) sees_wf_mdecl)
 apply(auto simp add: wf_mdecl_def J_sconf_type_ET_start_def sconf_type_ok_def sconf_def type_ok_def)
    apply(erule hconf_start_heap)
@@ -300,7 +300,7 @@ proof(induct rule: red_reds.inducts)
   moreover from `sync_ok (insync(a) e)` have "sync_ok e" by simp
   moreover note `hconf (hp s)` `P,hp s \<turnstile> t \<surd>t`
   moreover from `\<forall>l. expr_locks (insync(a) e) l \<le> has_locks (ls $ l) t`
-  have "\<forall>l. expr_locks e l \<le> has_locks (ls $ l) t" by(force split: split_if_asm)
+  have "\<forall>l. expr_locks e l \<le> has_locks (ls $ l) t" by(force split: if_split_asm)
   moreover from `?wakeup (insync(a) e) s` have "?wakeup e s" by auto
   ultimately have "?concl e s ta" by(rule IH)
   thus ?case by(fastforce intro: red_reds.SynchronizedRed2)
@@ -331,13 +331,13 @@ next
 next
   case (UnlockSynchronized a v s)
   from `\<forall>l. expr_locks (insync(a) Val v) l \<le> has_locks (ls $ l) t`
-  have "has_lock (ls $ a) t" by(force split: split_if_asm)
+  have "has_lock (ls $ a) t" by(force split: if_split_asm)
   with UnlockSynchronized have False by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
   thus ?case ..
 next
   case (SynchronizedThrow2 a ad s)
   from `\<forall>l. expr_locks (insync(a) Throw ad) l \<le> has_locks (ls $ l) t`
-  have "has_lock (ls $ a) t" by(force split: split_if_asm)
+  have "has_lock (ls $ a) t" by(force split: if_split_asm)
   with SynchronizedThrow2 have False
     by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
   thus ?case ..
@@ -346,7 +346,7 @@ next
 qed
  (simp_all add: is_val_iff contains_insync_conv contains_insyncs_conv red_mthr.actions_ok'_empty
    red_mthr.actions_ok'_ta_upd_obs thread_action'_to_thread_action.simps red_mthr.actions_ok_iff
-  split: split_if_asm del: split_paired_Ex,
+  split: if_split_asm del: split_paired_Ex,
   (blast intro: red_reds.intros elim: add_leE)+)
 
 end

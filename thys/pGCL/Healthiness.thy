@@ -426,31 +426,30 @@ next
       }
       ultimately show ?thesis by(simp add:image_def)
     next
-      assume cnz: "c \<noteq> 0"
-      have "inverse c * ?V \<le> inverse c * ?U"
-      proof(simp add:mult.assoc[symmetric] cnz del:Inf_image_eq, rule cInf_greatest)
-        from nonempty show "(\<lambda>a. wp (prog a) P s) ` S s \<noteq> {}" by(auto)
-        fix x assume "x \<in> (\<lambda>a. wp (prog a) P s) ` S s"
-        then obtain a where ain: "a \<in> S s" and rwx: "x = wp (prog a) P s" by(auto)
-        have "Inf (op * c ` (\<lambda>a. wp (prog a) P s) ` S s) \<le> c * x"
-        proof(intro cInf_lower bdd_belowI)
-          from ain show "c * x \<in> op * c ` (\<lambda>a. wp (prog a) P s) ` S s"
-            by(auto simp:rwx)
-          fix z assume "z \<in> op * c ` (\<lambda>a. wp (prog a) P s) ` S s"
-          then obtain b where "b \<in> S s" and rwz: "z = c * wp (prog b) P s" by(auto)
-          with sP have "0 \<le> wp (prog b) P s" by(auto dest:healthy)
-          with pos show "0 \<le> z" by(auto simp:rwz intro:mult_nonneg_nonneg)
+      assume "c \<noteq> 0"
+      from nonempty have "S s \<noteq> {}" by blast
+      then have "inverse c * (INF x:S s. c * wp (prog x) P s) \<le> (INF a:S s. wp (prog a) P s)"
+      proof (rule cINF_greatest)
+        fix x
+        assume "x \<in> S s"
+        have "bdd_below ((\<lambda>x. c * wp (prog x) P s) ` S s)"
+        proof (rule bdd_belowI [of _ 0])
+          fix z
+          assume "z \<in> (\<lambda>x. c * wp (prog x) P s) ` S s"
+          then obtain b where "b \<in> S s" and rwz: "z = c * wp (prog b) P s" by auto
+          with sP have "0 \<le> wp (prog b) P s" by (auto dest: healthy)
+          with pos show "0 \<le> z" by (auto simp: rwz intro: mult_nonneg_nonneg)
         qed
-        moreover from pos have "0 \<le> inverse c" by(simp)
-        ultimately
-        have "inverse c * Inf (op * c ` (\<lambda>a. wp (prog a) P s) ` S s) \<le> inverse c * (c * x)"
-          by(auto intro:mult_left_mono)
-        also from cnz have "... = x" by(simp)
-        finally show "inverse c * Inf (op * c ` (\<lambda>a. wp (prog a) P s) ` S s) \<le> x" .
+        then have "(INF x:S s. c * wp (prog x) P s) \<le> c * wp (prog x) P s"
+        using \<open>x \<in> S s\<close> by (rule cINF_lower)
+        with \<open>c \<noteq> 0\<close> show "inverse c * (INF x:S s. c * wp (prog x) P s) \<le> wp (prog x) P s"
+          by (simp add: mult_div_mono_left pos)
       qed
+      with \<open>c \<noteq> 0\<close> have "inverse c * ?V \<le> inverse c * ?U"
+        by (simp add: mult.assoc [symmetric])
       with pos have "c * (inverse c * ?V) \<le> c * (inverse c * ?U)"
         by(auto intro:mult_left_mono)
-      with cnz show ?thesis by(simp add:mult.assoc[symmetric])
+      with \<open>c \<noteq> 0\<close> show ?thesis by (simp add:mult.assoc [symmetric])
     qed
   qed
   also have "... = Inf ((\<lambda>a. c * wp (prog a) P s) ` S s)"

@@ -11,12 +11,12 @@ use "/usr/local/lib/mlton/sml/mlyacc-lib/stream.sml";
 use "/usr/local/lib/mlton/sml/mlyacc-lib/parser2.sml";
 
 (* Load LTL parser *)
-use "ltl/datatypes.sml";
-use "ltl/ltl.yacc.sig";
-use "ltl/ltl.yacc.sml";
-use "ltl/ltl.lex.sml";
-use "ltl/glue.sml";
-use "ltl/compiler.sml";
+use "../../LTL/parser/datatypes.sml";
+use "../../LTL/parser/ltl.yacc.sig";
+use "../../LTL/parser/ltl.yacc.sml";
+use "../../LTL/parser/ltl.lex.sml";
+use "../../LTL/parser/glue.sml";
+use "../../LTL/parser/compiler.sml";
 
 (* Load CLI Interface *)
 use "LTL_to_DRA_CLI.sml";

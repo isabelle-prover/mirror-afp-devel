@@ -89,10 +89,10 @@ next
   proof (intro iffI allI impI)
     fix a b
     assume prime: ?r and "x dvd a * b"
-    hence "nat (abs x) dvd nat (abs a) * nat (abs b)" 
-      using GCD.dvd_int_iff nat_abs_mult_distrib by auto
+    then have "nat (abs x) dvd nat (abs a) * nat (abs b)"
+      using dvd_int_unfold_dvd_nat nat_abs_mult_distrib by simp
     from prime_dvd_mult_nat[OF prime this]
-    show "x dvd a \<or> x dvd b" using GCD.dvd_int_iff by auto
+    show "x dvd a \<or> x dvd b" using dvd_int_unfold_dvd_nat by auto
   next
     assume ?l
     show "Primes.prime (nat (abs x))" unfolding Primes.prime_def
@@ -141,8 +141,8 @@ next
     with False have x: "Primes.prime (nat (abs x))" by auto
     from False y[unfolded properfactor_def factor_idom] have dvd: "y dvd x" and ndvd: "\<not> x dvd y" 
       by (auto, cases "y = 0", auto)
-    from dvd have dvd: "nat (abs y) dvd nat (abs x)" using GCD.dvd_int_iff by blast
-    from ndvd have ndvd: "\<not> nat (abs x) dvd nat (abs y)" using GCD.dvd_int_iff by blast
+    from dvd have dvd: "nat (abs y) dvd nat (abs x)" using dvd_int_unfold_dvd_nat by blast
+    from ndvd have ndvd: "\<not> nat (abs x) dvd nat (abs y)" using dvd_int_unfold_dvd_nat by blast
     from dvd x[unfolded Primes.prime_def] have "nat (abs y) = 1 \<or> nat (abs y) = nat (abs x)" by auto
     with ndvd have "nat (abs y) = 1" by auto
     thus "y = 1 \<or> y = -1" by auto

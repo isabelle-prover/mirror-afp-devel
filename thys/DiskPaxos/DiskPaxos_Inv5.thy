@@ -629,9 +629,9 @@ proof -
     by auto
   from pnq act
   have "(UN qq d. rdBy s' q qq d) \<subseteq> (UN qq d. rdBy s q qq d)" 
-    by(auto simp add: EndPhase1_def InitializePhase_def rdBy_def split: split_if_asm, blast)
+    by(auto simp add: EndPhase1_def InitializePhase_def rdBy_def split: if_split_asm, blast)
   hence "{block br | br. br \<in> (UN qq d. rdBy s' q qq d)} \<subseteq> {block br | br. br \<in> (UN qq d. rdBy s q qq d)}" (is "?R' \<subseteq> ?R")
-    by blast
+    by auto blast
   from union_inclusion[OF dblock union_inclusion[OF disk' this]]
   show ?thesis
     by(auto simp add: blocksOf_def)  
@@ -955,7 +955,7 @@ proof(auto simp add: HInv5_inner_def HInv5_inner_R_def)
   have inv2a': "Inv2a_inner s' q" by (auto simp add: Inv2a_def)
   from act pnq phase'
   have "phase s q = 2" 
-    by(auto simp add: Fail_def split: split_if_asm)
+    by(auto simp add: Fail_def split: if_split_asm)
   with inv HFail_HInv5_q1[OF act pnq inv2a'] P
   show "maxBalInp s' (bal (dblock s' q)) (inp (dblock s' q))"
     by(auto simp add: HInv5_inner_def HInv5_inner_R_def)
@@ -1043,11 +1043,11 @@ proof -
   from pnq act
   have "(UN qq d. rdBy s' q qq d) \<subseteq> (UN qq d. rdBy s q qq d)" 
     by(auto simp add: EndPhase0_def InitializePhase_def 
-                rdBy_def split: split_if_asm, blast)
+                rdBy_def split: if_split_asm, blast)
   hence "{block br | br. br \<in> (UN qq d. rdBy s' q qq d)} \<subseteq> 
          {block br | br. br \<in> (UN qq d. rdBy s q qq d)}" 
     (is "?R' \<subseteq> ?R")
-    by blast
+    by auto blast
   from union_inclusion[OF dblock union_inclusion[OF disk' this]]
   show ?thesis
     by(auto simp add: blocksOf_def)  

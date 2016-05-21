@@ -166,7 +166,7 @@ next
   moreover from red have "dom (x(V := vo)) \<subseteq> dom x'"
     by(auto dest: red_lcl_incr del: subsetI)
   ultimately have "fv e' - {V} \<subseteq> dom x' - {V}"
-    by(auto split: split_if_asm)
+    by(auto split: if_split_asm)
   thus ?case by(auto simp del: fun_upd_apply)
 qed(fastforce dest: red_lcl_incr del: subsetI)+
 
@@ -176,7 +176,7 @@ lemma is_call_red_state_unchanged:
   and is_calls_reds_state_unchanged:
   "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; calls es = \<lfloor>aMvs\<rfloor>; \<not> synthesized_call P (hp s) aMvs \<rbrakk> \<Longrightarrow> s' = s \<and> ta = \<epsilon>"
 apply(induct rule: red_reds.inducts)
-apply(fastforce split: split_if_asm simp add: synthesized_call_def)+
+apply(fastforce split: if_split_asm simp add: synthesized_call_def)+
 done
 
 lemma called_methodD:
@@ -191,7 +191,7 @@ lemma called_methodD:
                            P \<turnstile> class_type_of hT sees M: Us\<rightarrow>U = \<lfloor>(pns, body)\<rfloor> in D \<and>
                            length vs = length pns \<and> length Us = length pns"
 apply(induct rule: red_reds.inducts)
-apply(auto split: split_if_asm simp add: synthesized_call_def)
+apply(auto split: if_split_asm simp add: synthesized_call_def)
 apply(fastforce)
 done
 
@@ -785,7 +785,7 @@ lemma fixes e :: "('a, 'b, 'addr) exp" and es :: "('a, 'b, 'addr) exp list"
   shows \<tau>move0_callD: "call e = \<lfloor>(a, M, vs)\<rfloor> \<Longrightarrow> \<tau>move0 P h e \<longleftrightarrow> (synthesized_call P h (a, M, vs) \<longrightarrow> \<tau>external' P h a M)"
   and \<tau>moves0_callsD: "calls es = \<lfloor>(a, M, vs)\<rfloor> \<Longrightarrow> \<tau>moves0 P h es \<longleftrightarrow> (synthesized_call P h (a, M, vs) \<longrightarrow> \<tau>external' P h a M)"
 apply(induct e and es rule: call.induct calls.induct)
-apply(auto split: split_if_asm simp add: is_vals_conv)
+apply(auto split: if_split_asm simp add: is_vals_conv)
 apply(fastforce simp add: synthesized_call_def map_eq_append_conv \<tau>external'_def \<tau>external_def dest: sees_method_fun)+
 done
 
@@ -820,7 +820,7 @@ next
   have red: "extTA2J0 P,P,t \<turnstile> \<langle>e, (h, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>"
     and "\<tau>move0 P h e"  and "no_call P h e" by auto
   from red_dom_lcl[OF red] `fv e = {}` 
-  have "dom xs' = {}" by(auto split:split_if_asm)
+  have "dom xs' = {}" by(auto split:if_split_asm)
   hence "xs' = empty" by(auto)
   moreover
   from wwf red have "fv e' \<subseteq> fv e" by(rule red_fv_subset)
@@ -845,7 +845,7 @@ next
   from `\<tau>red0 (extTA2J0 P) P t h (e, empty) (e', xs')` 
   have red: "extTA2J0 P,P,t \<turnstile> \<langle>e, (h, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>" and "\<tau>move0 P h e" and "no_call P h e" by auto
   from red_dom_lcl[OF red] `fv e = {}`
-  have "dom xs' = {}" by(auto split:split_if_asm)
+  have "dom xs' = {}" by(auto split:if_split_asm)
   hence "xs' = empty" by auto
   moreover from wwf red have "fv e' \<subseteq> fv e" by(rule red_fv_subset)
   with `fv e = {}` have "fv e' = {}" by blast

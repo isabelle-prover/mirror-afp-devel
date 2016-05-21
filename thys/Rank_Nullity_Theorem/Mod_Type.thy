@@ -396,7 +396,7 @@ proof (clarify)
   have card_less: "int CARD('a) - 1 < int CARD('a)" by auto
   have not_zero: "1 mod int CARD('a) \<noteq> 0"
     by (metis (hide_lams, mono_tags) Rep_Abs_1 Rep_mod zero_neq_one)
-  have int_card: "int (CARD('a) - 1) = int CARD('a) - 1" using zdiff_int[of 1 "CARD ('a)"]
+  have int_card: "int (CARD('a) - 1) = int CARD('a) - 1" using of_nat_diff[of 1 "CARD ('a)"]
     using size1 by simp
   have "a = Abs' (Rep a)" by (metis (hide_lams, mono_tags) Rep_0 add_0_right add_def'
       monoid_add_class.add.right_neutral)
@@ -467,7 +467,7 @@ qed
 lemma from_nat_suc:
 shows "from_nat (j + 1) = from_nat j + 1"
 unfolding from_nat_def o_def Abs'_def add_def' Rep_1 Rep_Abs_mod
-unfolding of_nat_add apply (subst mod_add_left_eq) unfolding int_1 ..
+unfolding of_nat_add apply (subst mod_add_left_eq) unfolding of_nat_1 ..
 
 lemma to_nat_plus_1_set:
 shows "to_nat a + 1 \<in> {1..<CARD('a)+1}"
@@ -499,7 +499,7 @@ proof
   proof (unfold type_definition_def Rep_bit0_def [abs_def]
       Abs_bit0_def [abs_def] Abs_bit0'_def, intro conjI)
     show "\<forall>x::'a bit0. Rep_bit0 x \<in> {0::int..<int CARD('a bit0)}"
-      unfolding card_bit0 unfolding int_mult
+      unfolding card_bit0 unfolding of_nat_mult
       using Rep_bit0 [where ?'a = "'a"] by simp
     show "\<forall>x::'a bit0. Abs_bit0 (Rep_bit0 x mod int CARD('a bit0)) = x"
       by (metis Rep_bit0_inverse bit0.Rep_mod)
@@ -537,7 +537,7 @@ proof
     have int_2: "int 2 = 2" by auto
    show "\<forall>x::'a bit1. Rep_bit1 x \<in> {0::int..<int CARD('a bit1)}"
       unfolding card_bit1
-      unfolding int_Suc int_mult
+      unfolding of_nat_Suc of_nat_mult
       using Rep_bit1 [where ?'a = "'a"] unfolding int_2 unfolding add.commute ..
    show "\<forall>x::'a bit1. Abs_bit1 (Rep_bit1 x mod int CARD('a bit1)) = x"
       by (metis Rep_bit1_inverse bit1.Rep_mod)

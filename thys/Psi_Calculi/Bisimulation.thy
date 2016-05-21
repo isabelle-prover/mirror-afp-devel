@@ -202,7 +202,6 @@ qed
 
 lemma bisimEqvt[simp]:
   shows "eqvt bisim"
-using assms
 by(auto simp add: eqvt_def bisimClosed)
 
 lemma statEqBisim:

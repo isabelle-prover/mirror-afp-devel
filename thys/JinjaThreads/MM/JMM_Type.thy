@@ -176,7 +176,7 @@ next
   fix h' h hT a
   assume "(h', a) \<in> jmm_allocate h hT" "P \<turnstile>jmm h \<surd>" "is_htype P hT"
   thus "P \<turnstile>jmm h' \<surd>"
-    by(fastforce simp add: jmm_hconf_def jmm_heap_ops_defs ran_def split: split_if_asm)
+    by(fastforce simp add: jmm_hconf_def jmm_heap_ops_defs ran_def split: if_split_asm)
 next
   fix h a al v h' T
   assume "jmm_heap_write h a al v h'" "P \<turnstile>jmm h \<surd>"
@@ -284,7 +284,7 @@ next
   fix h' a h hT
   assume "(h', a) \<in> jmm_allocate h hT"
   thus "jmm_allocated h' = insert a (jmm_allocated h) \<and> a \<notin> jmm_allocated h"
-    by(auto simp add: jmm_heap_ops_defs split: split_if_asm)
+    by(auto simp add: jmm_heap_ops_defs split: if_split_asm)
 next
   fix h a al v h'
   assume "jmm_heap_write h a al v h'"

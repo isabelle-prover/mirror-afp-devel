@@ -1,10 +1,10 @@
-section {* Counterclockwise *}
+section \<open>Counterclockwise\<close>
 theory Counterclockwise
 imports "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
 begin
-text {*\label{sec:counterclockwise}*}
+text \<open>\label{sec:counterclockwise}\<close>
 
-subsection {* Auxiliary Lemmas *}
+subsection \<open>Auxiliary Lemmas\<close>
 
 lemma convex3_alt:
   fixes x y z::"'a::real_vector"
@@ -41,7 +41,7 @@ lemma fold_if_in_set:
   "fold (\<lambda>x m. if P x m then x else m) xs x \<in> set (x#xs)"
   by (induct xs arbitrary: x) auto
 
-subsection {* Sort Elements of a List *}
+subsection \<open>Sort Elements of a List\<close>
 
 locale linorder_list0 = fixes LE::"'a \<Rightarrow> 'a \<Rightarrow> bool"
 begin
@@ -79,7 +79,7 @@ proof (induct xs rule: selsort.induct)
   show ?case
     unfolding selsort.simps
     by (auto simp: Let_def length_remove1
-      simp del: selsort.simps split: split_if_asm
+      simp del: selsort.simps split: if_split_asm
       intro!: Suc_pred
       dest!: fold_min_eqI1)
 qed simp
@@ -213,7 +213,7 @@ proof (cases xs)
       by auto
     moreover have "LE (MIN z y) y" "LE (MIN z y) z" using Cons.prems
       by (auto intro!: MIN_le1 MIN_le2)
-    ultimately have "LE ?f y" "LE ?f z" using Cons.prems `?f \<in> S`
+    ultimately have "LE ?f y" "LE ?f z" using Cons.prems \<open>?f \<in> S\<close>
       by (auto intro!: trans[of ?f "MIN z y"])
     thus ?case
       using IH[of "MIN z y"]
@@ -241,7 +241,7 @@ qed (auto intro!: Nil)
 end
 
 
-subsection {* Abstract CCW Systems *}
+subsection \<open>Abstract CCW Systems\<close>
 
 locale ccw_system0 =
   fixes ccw::"'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"

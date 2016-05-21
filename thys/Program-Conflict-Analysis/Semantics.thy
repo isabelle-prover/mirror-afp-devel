@@ -36,7 +36,7 @@ definition
 
 definition
   -- "The monitors of a configuration are the monitors of all its stacks"
-  "mon_c fg c == \<Union> { mon_s fg s | s . s :# c }"
+  "mon_c fg c == \<Union> { mon_s fg s | s . s \<in># c }"
 
 -- "The monitors of a step label are the monitors of procedures that are called by this step"
 definition mon_e :: "('b, 'c, 'd, 'a, 'e) flowgraph_rec_scheme \<Rightarrow> ('c, 'f) label \<Rightarrow> 'a set" where
@@ -94,9 +94,9 @@ lemma mon_s_uncons[simp]: "mon_s fg (a#as) = mon_n fg a \<union> mon_s fg as"
 lemma mon_c_unconc: "mon_c fg (a+b) = mon_c fg a \<union> mon_c fg b"
   by (unfold mon_c_def) auto
 
-lemma mon_cI: "\<lbrakk>s:#c; m\<in>mon_s fg s\<rbrakk> \<Longrightarrow> m\<in>mon_c fg c"
+lemma mon_cI: "\<lbrakk>s \<in># c; m\<in>mon_s fg s\<rbrakk> \<Longrightarrow> m\<in>mon_c fg c"
   by (unfold mon_c_def, auto)
-lemma mon_cD: "\<lbrakk>m\<in>mon_c fg c\<rbrakk> \<Longrightarrow> \<exists>s. s:#c \<and> m\<in>mon_s fg s"
+lemma mon_cD: "\<lbrakk>m\<in>mon_c fg c\<rbrakk> \<Longrightarrow> \<exists>s. s \<in># c \<and> m\<in>mon_s fg s"
   by (unfold mon_c_def, auto)
 
 lemma mon_s_mono: "set s \<subseteq> set s' \<Longrightarrow> mon_s fg s \<subseteq> mon_s fg s'"
@@ -136,7 +136,8 @@ lemma valid_split1:
   apply (drule mon_cD)+
   apply auto
   apply (subgoal_tac "{#s#}+{#sa#} \<le># c+c'")
-  apply (auto dest: mset_le_mono_add iff add: mset_le_single_conv[symmetric] simp del: mset_le_single_conv)
+  apply (auto dest!: multi_member_split simp add: ac_simps)
+  using mset_le_incr_right2 apply blast
   done
   
 lemma valid_split2: 
@@ -172,9 +173,9 @@ lemma atU_s_decomp[simp]: "atU_s U (s@s') = (atU_s U s \<or> (s=[] \<and> atU_s 
 
 -- {* A configuration is {\em at} @{term U} if it contains a stack that is at @{term U} *}
 definition
-  "atU U c == \<exists>s. s:#c \<and> atU_s U s"
+  "atU U c == \<exists>s. s \<in># c \<and> atU_s U s"
 
-lemma atU_fmt: "\<lbrakk>atU U c; !!ui r. \<lbrakk>ui#r :# c; ui\<in>U\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
+lemma atU_fmt: "\<lbrakk>atU U c; !!ui r. \<lbrakk>ui#r \<in># c; ui\<in>U\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
   apply (unfold atU_def)
   apply auto
   apply (case_tac s)
@@ -375,7 +376,7 @@ lemma (in flowgraph) trss_c'_split_s: "\<lbrakk>
 
 lemma trss_c_cases[cases set, case_names c_case]: "!!s c. \<lbrakk> 
     ((s,c),w,(s',c'))\<in>trcl (trss fg); 
-    !!csp. \<lbrakk> c'=csp+c; !!s. s:#csp \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> 
+    !!csp. \<lbrakk> c'=csp+c; !!s. s \<in># csp \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> 
                                                (u,Spawn p,v)\<in>edges fg \<and> 
                                                initialproc fg p\<rbrakk> 
             \<Longrightarrow> P 
@@ -390,7 +391,7 @@ next
   then obtain sh ch where SPLIT1: "((s,c),e,(sh,ch))\<in>trss fg" and SPLIT2: "((sh,ch),w,(s',c'))\<in>trcl (trss fg)" by (fast dest: trcl_uncons)
   from SPLIT2 show ?case proof (rule IHP(1))
     fix csp
-    assume C'FMT: "c'=csp+ch" and CSPFMT: "!!s. s :# csp \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> (u,Spawn p, v)\<in>edges fg \<and> initialproc fg p"
+    assume C'FMT: "c'=csp+ch" and CSPFMT: "!!s. s \<in># csp \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> (u,Spawn p, v)\<in>edges fg \<and> initialproc fg p"
     from SPLIT1 show ?thesis
     proof (rule trss_c_cases_s)
       assume "ch=c" with C'FMT CSPFMT IHP(3) show ?case by blast
@@ -400,14 +401,14 @@ next
       with C'FMT have "c'=({#[entry fg p]#}+csp)+c" by (simp add: union_ac)
       moreover 
       from EFMT SPLIT1 have "\<exists>u v. (u,Spawn p, v)\<in>edges fg" by (blast elim!: trss.cases)
-      hence "!!s. s :# {#[entry fg p]#} + csp \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> (u,Spawn p, v)\<in>edges fg \<and> initialproc fg p" using CSPFMT by (unfold initialproc_def, erule_tac mset_un_cases) (auto)
+      hence "!!s. s \<in># {#[entry fg p]#} + csp \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> (u,Spawn p, v)\<in>edges fg \<and> initialproc fg p" using CSPFMT by (unfold initialproc_def, erule_tac mset_un_cases) (auto)
       ultimately show ?case using IHP(3) by blast
     qed
   qed
 qed
 
 lemma (in flowgraph) c_of_initial_no_mon: 
-  assumes A: "!!s. s:#csp \<Longrightarrow> \<exists>p. s=[entry fg p] \<and> initialproc fg p" 
+  assumes A: "!!s. s \<in># csp \<Longrightarrow> \<exists>p. s=[entry fg p] \<and> initialproc fg p" 
   shows "mon_c fg csp = {}"
   by (unfold mon_c_def) (auto dest: A initial_no_mon)
   
@@ -433,8 +434,8 @@ corollary (in flowgraph) trss_c_no_mon:
 proof -
   fix csp x
   assume "x\<in>mon_c fg csp"
-  then obtain s where "s:#csp" and M: "x\<in>mon_s fg s" by (unfold mon_c_def, auto) 
-  moreover assume "\<forall>s. 0 < count csp s \<longrightarrow> (\<exists>p. s = [entry fg p] \<and> (\<exists>u v. (u, Spawn p, v) \<in> edges fg) \<and> initialproc fg p)"
+  then obtain s where "s \<in># csp" and M: "x\<in>mon_s fg s" by (unfold mon_c_def, auto) 
+  moreover assume "\<forall>s. s \<in># csp \<longrightarrow> (\<exists>p. s = [entry fg p] \<and> (\<exists>u v. (u, Spawn p, v) \<in> edges fg) \<and> initialproc fg p)"
   ultimately obtain p u v where "s=[entry fg p]" and "(u,Spawn p,v)\<in>edges fg" by blast
   hence "mon_s fg s = {}" by (simp)
   with M have False by simp

@@ -1,10 +1,10 @@
-section {* Euclidean Space: Explicit Representation *}
+section \<open>Euclidean Space: Explicit Representation\<close>
 theory Euclidean_Space_Explicit
 imports
   "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
 begin
 
-subsection {* Explicit Sum for Composition of Components *}
+subsection \<open>Explicit Sum for Composition of Components\<close>
 
 definition (in plus) plusE :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "+\<^sub>E" 65) where "plusE = plus"
 
@@ -16,7 +16,7 @@ lemma setsumE_singleton: "setsumE f {a} = f a" by (simp add: setsumE_def)
 lemmas euclidean_representationE =
   euclidean_representation[simplified setsumE_def[symmetric], symmetric]
 
-subsection {* Conversion for Explicit Representation *}
+subsection \<open>Conversion for Explicit Representation\<close>
 
 lemma scaleR_real_1: "scaleR x 1 = x" by simp
 
@@ -56,7 +56,7 @@ lemmas [euclidean_Inner] = plus_prod_def scaleR_prod_def fst_conv snd_conv
   mult_zero_right
   mult_1_right
 
-ML {*
+ML \<open>
 
 fun Basis_simps ctxt =
   (put_simpset (HOL_basic_ss) ctxt)
@@ -102,7 +102,7 @@ fun euclidify ctxt = rewrite_outer_eucl ctxt
     then_conv Simplifier.rewrite (Inner_simps ctxt))) ctxt
   ;
 
-*}
+\<close>
 
 lemma
   "(\<lambda>(x1::real, x2::real) (y1::real, y2::real) (z1::real, z2::real, z3::real).
@@ -112,9 +112,9 @@ lemma
        (xa \<bullet> (1, 0)) *\<^sub>R (0, 0, 1, 0) +\<^sub>E
        (x \<bullet> (0, 1) * (x \<bullet> (1, 0)) + 1) *\<^sub>R (0, 1, 0, 0) +\<^sub>E
        (x \<bullet> (1, 0) + x \<bullet> (0, 1)) *\<^sub>R (1, 0, 0, 0))"
-  by (tactic {*
+  by (tactic \<open>
     CONVERSION (HOLogic.Trueprop_conv (HOLogic.eq_conv (euclidify @{context}) Conv.all_conv)) 1
-  *}) (rule refl)
+\<close>) (rule refl)
 
 lemma "(\<lambda>(x1, x2) (y1, y2). (x1 + x2, x2 * x1 + 1, y1, y2)::real*real*real*real) =
     (\<lambda>x xa.
@@ -122,21 +122,21 @@ lemma "(\<lambda>(x1, x2) (y1, y2). (x1 + x2, x2 * x1 + 1, y1, y2)::real*real*re
        (xa \<bullet> (1, 0)) *\<^sub>R (0, 0, 1, 0) +\<^sub>E
        (x \<bullet> (0, 1) * (x \<bullet> (1, 0)) + 1) *\<^sub>R (0, 1, 0, 0) +\<^sub>E
        (x \<bullet> (1, 0) + x \<bullet> (0, 1)) *\<^sub>R (1, 0, 0, 0))"
-  by (tactic {*
+  by (tactic \<open>
     CONVERSION (HOLogic.Trueprop_conv (HOLogic.eq_conv (euclidify @{context}) Conv.all_conv)) 1
-  *}) (rule refl)
+\<close>) (rule refl)
 
 lemma "(\<lambda>x y. x + y::real) = (\<lambda>x y. (x \<bullet> 1 + y \<bullet> 1) *\<^sub>R 1)"
-  by (tactic {*
+  by (tactic \<open>
     CONVERSION (HOLogic.Trueprop_conv (HOLogic.eq_conv (euclidify @{context}) Conv.all_conv)) 1
-  *}) (rule refl)
+\<close>) (rule refl)
 
 lemma
   "(\<lambda>x y. (x \<bullet> (1, 0, 0) + y \<bullet> (0, 0, 1)) *\<^sub>R (1, 0) + (x \<bullet> (1, 0, 0) + y \<bullet> (0, 0, 1)) *\<^sub>R (1, 0)) =
   (\<lambda>(x::real*real*real) (y::real*real*real). 0 *\<^sub>R (0, 1) +\<^sub>E
     (x \<bullet> (1, 0, 0) + y \<bullet> (0, 0, 1) + (x \<bullet> (1, 0, 0) + y \<bullet> (0, 0, 1))) *\<^sub>R (1, 0)::real*real)"
-  by (tactic {*
+  by (tactic \<open>
     CONVERSION (HOLogic.Trueprop_conv (HOLogic.eq_conv (euclidify @{context}) Conv.all_conv)) 1
-  *}) (rule refl)
+\<close>) (rule refl)
 
 end

@@ -148,7 +148,7 @@ by(force)
 
 lemma match_ex_table_shift_eq_None_conv [simp]:
   "match_ex_table P C pc (shift n xt) = None \<longleftrightarrow> pc < n \<or> match_ex_table P C (pc - n) xt = None"
-by(induct xt)(auto simp add: match_ex_entry split: split_if_asm)
+by(induct xt)(auto simp add: match_ex_entry split: if_split_asm)
 
 lemma match_ex_table_shift_pc_None:
   "pc \<ge> n \<Longrightarrow> match_ex_table P C pc (shift n xt) = None \<longleftrightarrow> match_ex_table P C (pc - n) xt = None"
@@ -157,7 +157,7 @@ by(simp add: match_ex_table_shift_eq_None_conv)
 lemma match_ex_table_shift_eq_Some_conv [simp]:
   "match_ex_table P C pc (shift n xt) = \<lfloor>(pc', d)\<rfloor> \<longleftrightarrow>
    pc \<ge> n \<and> pc' \<ge> n \<and> match_ex_table P C (pc - n) xt = \<lfloor>(pc' - n, d)\<rfloor>"
-by(induct xt)(auto simp add: match_ex_entry split: split_if_asm)
+by(induct xt)(auto simp add: match_ex_entry split: if_split_asm)
 
 lemma match_ex_table_shift:
  "match_ex_table P C pc xt = \<lfloor>(pc', d)\<rfloor> \<Longrightarrow> match_ex_table P C (n + pc) (shift n xt) = \<lfloor>(n + pc', d)\<rfloor>"
@@ -168,7 +168,7 @@ lemma match_ex_table_shift_pcD:
 by(simp add: match_ex_table_shift_eq_Some_conv)
 
 lemma match_ex_table_pcsD: "match_ex_table P C pc xt = \<lfloor>(pc', D)\<rfloor> \<Longrightarrow> pc \<in> pcs xt"
-by(induct xt)(auto split: split_if_asm simp add: match_ex_entry)
+by(induct xt)(auto split: if_split_asm simp add: match_ex_entry)
 
 
 definition stack_xlift :: "nat \<Rightarrow> ex_table \<Rightarrow> ex_table"
@@ -266,7 +266,7 @@ lemma fixes e :: "'addr expr1" and es :: "'addr expr1 list"
   shows match_ex_table_compxE2_not_same: "match_ex_table P C pc (compxE2 e n d) = \<lfloor>(pc', d')\<rfloor> \<Longrightarrow> pc \<noteq> pc'"
   and match_ex_table_compxEs2_not_same:"match_ex_table P C pc (compxEs2 es n d) = \<lfloor>(pc', d')\<rfloor> \<Longrightarrow> pc \<noteq> pc'"
 apply(induct e n d and es n d rule: compxE2_compxEs2_induct)
-apply(auto simp add: match_ex_table_append match_ex_entry simp del: compxE2_size_convs compxEs2_size_convs compxE2_stack_xlift_convs compxEs2_stack_xlift_convs split: split_if_asm)
+apply(auto simp add: match_ex_table_append match_ex_entry simp del: compxE2_size_convs compxEs2_size_convs compxE2_stack_xlift_convs compxEs2_stack_xlift_convs split: if_split_asm)
 done
 
 end

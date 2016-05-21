@@ -4,41 +4,38 @@ imports
   "../Numerics/Optimize_Float"
 begin
 
-subsection {* Van der Pol oscillator *}
-text {*\label{sec:vanderpol}*}
-approximate_affine vanderpol "\<lambda>(x::real, y::real). (y, y * (1 + - x*x) + - x)"
+subsection \<open>Van der Pol oscillator\<close>
+text \<open>\label{sec:vanderpol}\<close>
+
+abbreviation "vanderpol_real \<equiv> \<lambda>(x::real, y::real). (y, y * (1 + - x*x) + - x)"
+
+approximate_affine vanderpol vanderpol_real
+
+abbreviation "of_matrix22 \<equiv> \<lambda>a b c d. \<lambda>(e, f). (a * e + b * f, c * e + d * f)::real*real"
+
+abbreviation "vanderpol_d_real \<equiv> \<lambda>(x, y). of_matrix22 0 1 (- (1 + 2 * x * y)) (- x * x + 1)"
 
 lemma vanderpol_fderiv:
-  "((\<lambda>(x::real, y::real). (y, y * (1 + - x*x) + - x))
-    has_derivative
-   (case x of (x, y) \<Rightarrow> \<lambda>(dx, dy). (dy, - (y * (2 * (dx * x))) + dy * (1 + - (x * x)) + - dx)))
-   (at x within X)"
-  by (auto intro!: derivative_eq_intros simp:  split_beta inverse_eq_divide)
+  "(vanderpol_real has_derivative vanderpol_d_real x) (at x within X)"
+  by (auto intro!: derivative_eq_intros ext simp: split_beta inverse_eq_divide algebra_simps)
 
-approximate_affine vanderpol_d "\<lambda>(x::real, y) (dx, dy). (dy,
-        - (y * (2 * (dx * x))) +
-        dy * (1 + - (x * x)) +
-        - dx)"
+approximate_affine vanderpol_d vanderpol_d_real
 
 abbreviation "vanderpol_ivp \<equiv> \<lambda>optns args. uncurry_options vanderpol optns (hd args) (tl args)"
 abbreviation "vanderpol_d_ivp \<equiv> \<lambda>optns args. uncurry_options vanderpol_d optns (hd args) (hd (tl args)) (tl (tl args))"
 
 interpretation vanderpol: aform_approximate_ivp
   vanderpol_ivp vanderpol_d_ivp
-  "\<lambda>(x::real, y::real). (y, y * (1 + - x*x) + - x)"
-  "\<lambda>(x::real, y) (dx, dy).
-    (dy,
-        - (y * (2 * (dx * x))) +
-        dy * (1 + - (x * x)) +
-        - dx)"
+  vanderpol_real
+  vanderpol_d_real
   apply unfold_locales
   unfolding list.sel
   apply (rule Joints2_JointsI)
   apply (rule vanderpol, assumption, assumption)
-  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
+  apply (drule length_set_of_apprs, simp)\<comment>"TODO: prove in affine-approximation"
   apply (rule vanderpol_fderiv)
   apply (rule vanderpol_d[THEN Joints2_JointsI]) apply assumption apply assumption
-  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
+  apply (drule length_set_of_apprs, simp)\<comment>"TODO: prove in affine-approximation"
   apply (auto intro!: continuous_intros simp: split_beta)
   apply intro_locales
   done
@@ -65,8 +62,8 @@ definition "vanderpoltest =
     result_fun = ivls_result 20 40
   \<rparr>)"
 
-text {* @{term "vanderpoltest [aform_of_ivl (FloatR 5 (- 2), FloatR 146 (- 6)) (FloatR 49 (- 5), FloatR 149 (- 6))]"}
-  proves a stable limit-cycle. *}
+text \<open>@{term "vanderpoltest [aform_of_ivl (FloatR 5 (- 2), FloatR 146 (- 6)) (FloatR 49 (- 5), FloatR 149 (- 6))]"}
+  proves a stable limit-cycle.\<close>
 value "vanderpoltest [aform_of_ivl (FloatR 5 (- 2), FloatR 146 (- 6)) (FloatR 49 (- 5), FloatR 149 (- 6))]"
 
 end

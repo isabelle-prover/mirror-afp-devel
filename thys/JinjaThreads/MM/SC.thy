@@ -161,7 +161,7 @@ notation sc.confs ("_,_ \<turnstile>sc _ [:\<le>] _" [51,51,51,51] 50)
 notation sc.hext ("_ \<unlhd>sc _" [51,51] 50)
 
 lemma sc_start_heap_ok: "sc_start_heap_ok P"
-apply(simp add: sc.start_heap_ok_def sc.start_heap_data_def initialization_list_def sc.create_initial_object_simps sc_allocate_def sys_xcpts_list_def case_option_conv_if new_Addr_SomeI del: blank.simps split del: option.split split_if)
+apply(simp add: sc.start_heap_ok_def sc.start_heap_data_def initialization_list_def sc.create_initial_object_simps sc_allocate_def sys_xcpts_list_def case_option_conv_if new_Addr_SomeI del: blank.simps split del: option.split if_split)
 done
 
 lemma sc_wf_start_state_iff:
@@ -174,7 +174,7 @@ proof
   fix h' a h hT
   assume "(h', a) \<in> sc_allocate P h hT"
   thus "sc_typeof_addr h' a = \<lfloor>hT\<rfloor>"
-    by(auto simp add: sc_allocate_def sc_typeof_addr_def dest: new_Addr_SomeD split: split_if_asm)
+    by(auto simp add: sc_allocate_def sc_typeof_addr_def dest: new_Addr_SomeD split: if_split_asm)
 next
   fix h' h hT a
   assume "(h', a) \<in> sc_allocate P h hT"
@@ -241,14 +241,14 @@ lemma sc_conf_upd_obj: "h a = Some(Obj C fs) \<Longrightarrow> (P,h(a\<mapsto>(O
 apply (unfold sc.conf_def)
 apply (rule val.induct)
 apply (auto simp:fun_upd_apply)
-apply (auto simp add: sc_typeof_addr_def split: split_if_asm)
+apply (auto simp add: sc_typeof_addr_def split: if_split_asm)
 done
 
 lemma sc_conf_upd_arr: "h a = Some(Arr T f el) \<Longrightarrow> (P,h(a\<mapsto>(Arr T f' el')) \<turnstile>sc x :\<le> T') = (P,h \<turnstile>sc x :\<le> T')"
 apply(unfold sc.conf_def)
 apply (rule val.induct)
 apply (auto simp:fun_upd_apply)
-apply(auto simp add: sc_typeof_addr_def split: split_if_asm)
+apply(auto simp add: sc_typeof_addr_def split: if_split_asm)
 done
 
 lemma sc_oconf_hext: "P,h \<turnstile>sc obj \<surd> \<Longrightarrow> h \<unlhd>sc h' \<Longrightarrow> P,h' \<turnstile>sc obj \<surd>"
@@ -324,7 +324,7 @@ next
   fix h h' hT a
   assume "P \<turnstile>sc h \<surd>" "(h', a) \<in> sc_allocate P h hT" "is_htype P hT"
   thus "P \<turnstile>sc h' \<surd>"
-    by(auto simp add: sc_allocate_def dest!: new_Addr_SomeD intro: sc_hconf_new sc_oconf_init split: split_if_asm)
+    by(auto simp add: sc_allocate_def dest!: new_Addr_SomeD intro: sc_hconf_new sc_oconf_init split: if_split_asm)
 next
   fix h a al T v h'
   assume "P \<turnstile>sc h \<surd>"

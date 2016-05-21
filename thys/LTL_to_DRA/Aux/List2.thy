@@ -6,7 +6,7 @@
 section \<open>Auxiliary List Facts\<close>
 
 theory List2                  
-  imports Main "../../List-Index/List_Index"
+  imports Main "~~/src/HOL/Library/Omega_Words_Fun" "../../List-Index/List_Index" 
 begin
 
 subsection \<open>remdups\_fwd\<close>
@@ -198,7 +198,7 @@ qed
     
 lemma takeWhile_foo:
   "x \<notin> set ys \<Longrightarrow> ys = takeWhile (\<lambda>y. y \<noteq> x) (ys @ x # zs)"
-  using takeWhile_eq_all_conv takeWhile_tail by (metis (mono_tags, lifting)) 
+  by (metis (mono_tags, lifting) append_Nil2 takeWhile.simps(2) takeWhile_append2)
 
 lemma takeWhile_split:
   "x \<in> set xs \<Longrightarrow> y \<in> set (takeWhile (\<lambda>y. y \<noteq> x) xs) \<Longrightarrow> \<exists>xs' xs'' xs'''. xs = xs' @ y # xs'' @ x # xs'''"
@@ -248,5 +248,37 @@ qed
 lemma set_foldl_append:
   "set (foldl op @ i xs) = set i \<union> \<Union>{set x | x. x \<in> set xs}"
   by (induction xs arbitrary: i) auto
+
+subsection \<open>Short-circuited Version of @{const foldl}\<close>
+
+fun foldl_break :: "('b \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> 'b \<Rightarrow> 'a list \<Rightarrow> 'b"
+where
+  "foldl_break f s a [] = a" 
+| "foldl_break f s a (x # xs) = (if s a then a else foldl_break f s (f a x) xs)"
+
+lemma foldl_break_append:
+  "foldl_break f s a (xs @ ys) = (if s (foldl_break f s a xs) then foldl_break f s a xs else (foldl_break f s (foldl_break f s a xs) ys))"
+  by (induction xs arbitrary: a) (cases ys, auto)
+
+subsection \<open>Suffixes\<close>
+
+-- \<open>Non empty suffixes of finite words - specialised!\<close>
+
+fun suffixes
+where
+  "suffixes [] = []"
+| "suffixes (x#xs) = (suffixes xs) @ [x#xs]"
+
+lemma suffixes_append:
+  "suffixes (xs @ ys) = (suffixes ys) @ (map (\<lambda>zs. zs @ ys) (suffixes xs))"
+  by (induction xs) simp_all
+
+lemma suffixes_alt_def:
+  "suffixes xs = rev (prefix (length xs) (\<lambda>i. drop i xs))"
+proof (induction xs rule: rev_induct)
+  case (snoc x xs)
+    show ?case
+      by (simp add: subsequence_def suffixes_append snoc rev_map)
+qed simp
 
 end

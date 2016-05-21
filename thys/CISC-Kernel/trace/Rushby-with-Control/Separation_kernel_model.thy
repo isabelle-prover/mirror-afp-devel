@@ -546,7 +546,6 @@ by(auto split add: int_point_t.splits  ev_consume_t.splits ev_wait_stage_t.split
 lemma ipc_precondition_after_cswitch[simp]:
 shows "ipc_precondition d dir partner page ((\<down> s)\<lparr>current := new_current\<rparr>) 
           = ipc_precondition d dir partner page (\<down> s)"
-using assms
 unfolding ipc_precondition_def
 by(auto split add: ipc_direction_t.splits)
 

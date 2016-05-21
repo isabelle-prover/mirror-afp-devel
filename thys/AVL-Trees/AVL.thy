@@ -478,7 +478,7 @@ proof(induct r rule:rightmost_item.induct)
   show ?case (is "\<forall>x. ?P x") 
   proof
     fix x
-    from assms 2 have "is_ord (MKT rn rl rr rh)" by auto
+    from 2 have "is_ord (MKT rn rl rr rh)" by auto
     moreover from 2 have "n < rightmost_item (MKT rn rl rr rh)" 
       by (metis is_ord.simps(2) ritem_in_rset tree.simps(2))
     moreover from 2 have "x \<in> set_of l \<longrightarrow> x < rightmost_item (MKT rn rl rr rh)"
@@ -501,7 +501,7 @@ proof (induct t rule: delete_max_induct)
   from MKT have "avl l" and "avl ?r" by simp_all
   let ?t' = "mkt_bal_l n l (snd (delete_max ?r))"
   from MKT have "avl (snd(delete_max ?r))" by (auto simp add: avl_delete_max)
-  with assms MKT  ritem_not_in_ltree[of n l ?r h]
+  with MKT ritem_not_in_ltree[of n l ?r h]
   have "set_of ?t' = (set_of l) \<union> (set_of ?r) - {rightmost_item ?r} \<union> {n}" 
     by (auto simp add:set_of_mkt_bal_l simp del: mkt_bal_l.simps)
   moreover have "n \<notin> {rightmost_item ?r}" 
@@ -589,8 +589,8 @@ proof(induct t rule:delete_max_induct)
   case(MKT n l rn rl rr rh h)
   let ?r = "MKT rn rl rr rh"
   let ?r' = "snd(delete_max ?r)"
-  from MKT assms have "\<forall>h. is_ord(MKT n l ?r' h)" by (auto simp: set_of_delete_max)
-  moreover from MKT assms have "avl(?r')" by (auto simp: avl_delete_max)
+  from MKT have "\<forall>h. is_ord(MKT n l ?r' h)" by (auto simp: set_of_delete_max)
+  moreover from MKT have "avl(?r')" by (auto simp: avl_delete_max)
   moreover note MKT is_ord_mkt_bal_l[of n l ?r']
   ultimately show ?case by (auto split:prod.splits simp del:is_ord.simps mkt_bal_l.simps)
 qed auto

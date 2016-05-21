@@ -153,7 +153,7 @@ definition "intFF f al \<equiv> toFull (resOf f) (intF f (map2 fromFull (arOf f)
 definition "intPF p al \<equiv> intP p (map2 fromFull (parOf p) al)"
 
 lemma intTF: "intTF \<sigma> a"
-using assms unfolding intTF_def by auto
+unfolding intTF_def by auto
 
 lemma ex_toFull: "\<exists> F. bij_betw F {a::univ. intT \<sigma> a} (UNIV::univ set)"
 by (metis inf card_of_ordIso card_of_UNIV countable_univ UnE
@@ -166,7 +166,7 @@ lemma toFull_fromFull[simp]: "toFull \<sigma> (fromFull \<sigma> a) = a"
 by (metis UNIV_I bij_betw_inv_into_right fromFull_def toFull)
 
 lemma fromFull_toFull[simp]: "intT \<sigma> a \<Longrightarrow> fromFull \<sigma> (toFull \<sigma> a) = a"
-by (metis CollectI assms bij_betw_inv_into_left toFull fromFull_def)
+by (metis CollectI bij_betw_inv_into_left toFull fromFull_def)
 
 lemma fromFull_inj[simp]: "fromFull \<sigma> a = fromFull \<sigma> b \<longleftrightarrow> a = b"
 by (metis toFull_fromFull)

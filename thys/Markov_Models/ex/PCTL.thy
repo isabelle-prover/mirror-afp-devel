@@ -1,7 +1,7 @@
-(* Author: Johannes Hölzl <hoelzl@in.tum.de> 
+(* Author: Johannes Hölzl <hoelzl@in.tum.de>
    Author: Tobias Nipkow <nipkow@in.tum.de> *)
 theory PCTL
-imports 
+imports
   "../Discrete_Time_Markov_Chain"
   "../../Gauss-Jordan-Elim-Fun/Gauss_Jordan_Elim_Fun"
   "~~/src/HOL/Library/While_Combinator"
@@ -12,7 +12,7 @@ section {* Adapt Gauss-Jordan elimination to DTMCs *}
 
 locale Finite_DTMC =
   fixes K :: "'s \<Rightarrow> 's pmf" and S :: "'s set" and \<rho> :: "'s \<Rightarrow> real" and \<iota> :: "'s \<Rightarrow> 's \<Rightarrow> real"
-  assumes \<iota>_nonneg: "\<And>s t. 0 \<le> \<iota> s t" and \<rho>_nonneg: "\<And>s. 0 \<le> \<rho> s"
+  assumes \<iota>_nonneg[simp]: "\<And>s t. 0 \<le> \<iota> s t" and \<rho>_nonneg[simp]: "\<And>s. 0 \<le> \<rho> s"
   assumes measurable_\<iota>: "(\<lambda>(a, b). \<iota> a b) \<in> borel_measurable (count_space UNIV \<Otimes>\<^sub>M count_space UNIV)"
   assumes finite_S[simp]: "finite S" and S_not_empty: "S \<noteq> {}"
   assumes E_closed: "(\<Union>s\<in>S. set_pmf (K s)) \<subseteq> S"
@@ -89,7 +89,7 @@ lemma gauss_jordan'_correct:
   shows "\<forall>s\<in>S. (\<Sum>s'\<in>S. M s s' * f s') = a s"
 proof -
   note `gauss_jordan' M a = Some f`
-  moreover def M' \<equiv> "\<lambda>i j. if j = card S then 
+  moreover def M' \<equiv> "\<lambda>i j. if j = card S then
     a (order i) else M (order i) (order j)"
   ultimately obtain sol where sol: "gauss_jordan M' (card S) = Some sol"
     and f: "f = (\<lambda>i. sol (iorder i) (card S))"
@@ -108,7 +108,7 @@ lemma gauss_jordan'_complete:
   assumes unique: "\<And>y. \<forall>s\<in>S. (\<Sum>s'\<in>S. M s s' * y s') = a s \<Longrightarrow> \<forall>s\<in>S. y s = x s"
   shows "\<exists>y. gauss_jordan' M a = Some y"
 proof -
-  def M' \<equiv> "\<lambda>i j. if j = card S then 
+  def M' \<equiv> "\<lambda>i j. if j = card S then
     a (order i) else M (order i) (order j)"
 
   { fix x
@@ -191,13 +191,13 @@ abbreviation "E s \<equiv> set_pmf (K s)"
 
 primrec svalid :: "'s sform \<Rightarrow> 's set"
 and pvalid :: "'s pform \<Rightarrow> 's stream \<Rightarrow> bool"
-and reward :: "'s eform \<Rightarrow> 's stream \<Rightarrow> ereal" where
+and reward :: "'s eform \<Rightarrow> 's stream \<Rightarrow> ennreal" where
 "svalid true           = S" |
 "svalid (Label L)      = {s \<in> S. s \<in> L}" |
 "svalid (Neg F)        = S - svalid F" |
 "svalid (And F1 F2)    = svalid F1 \<inter> svalid F2" |
 "svalid (Prob rel r F) = {s \<in> S. inrealrel rel r \<P>(\<omega> in T s. pvalid F (s ## \<omega>)) }" |
-"svalid (Exp rel r F)  = {s \<in> S. inrealrel rel (ereal r) (\<integral>\<^sup>+ \<omega>. reward F (s ## \<omega>) \<partial>T s) }" |
+"svalid (Exp rel r F)  = {s \<in> S. inrealrel rel (ennreal r) (\<integral>\<^sup>+ \<omega>. reward F (s ## \<omega>) \<partial>T s) }" |
 
 "pvalid (X F)        = nxt (HLD (svalid F))" |
 "pvalid (U k F1 F2)  = bound_until k (HLD (svalid F1)) (HLD (svalid F2))" |
@@ -220,12 +220,7 @@ lemma pvalid_sets[measurable]: "Measurable.pred R.S (pvalid F)"
   by (cases F) (auto intro!: svalid_sets)
 
 lemma reward_measurable[measurable]: "reward F \<in> borel_measurable R.S"
-  by (cases F) (auto intro!: borel_measurable_ereal borel_measurable_setsum borel_measurable_add
-    measurable_compose[OF measurable_snth])
-
-lemma reward_nonneg: "0 \<le> reward F \<omega>"
-  by (cases F)
-     (auto intro!: setsum_nonneg add_nonneg_nonneg reward_until_nonneg \<rho>_nonneg \<iota>_nonneg)
+  by (cases F) auto
 
 subsection {* Implementation of @{text Sat} *}
 
@@ -411,11 +406,11 @@ fun ProbU :: "'s \<Rightarrow> nat \<Rightarrow> 's set \<Rightarrow> 's set \<R
   (if q \<in> S1 - S2 then (\<Sum>q'\<in>S. \<tau> q q' * ProbU q' k S1 S2)
                   else if q \<in> S2 then 1 else 0)"
 
-fun ExpCumm :: "'s \<Rightarrow> nat \<Rightarrow> ereal" where
+fun ExpCumm :: "'s \<Rightarrow> nat \<Rightarrow> ennreal" where
 "ExpCumm s 0       = 0" |
 "ExpCumm s (Suc k) = \<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * (\<iota> s s' + ExpCumm s' k))"
 
-fun ExpState :: "'s \<Rightarrow> nat \<Rightarrow> ereal" where
+fun ExpState :: "'s \<Rightarrow> nat \<Rightarrow> ennreal" where
 "ExpState s 0       = \<rho> s" |
 "ExpState s (Suc k) = (\<Sum>s'\<in>S. \<tau> s s' * ExpState s' k)"
 
@@ -435,13 +430,13 @@ definition ProbUinfty :: "'s set \<Rightarrow> 's set \<Rightarrow> ('s \<Righta
 
 subsubsection {* @{text ExpFuture}, compute unbounded reward *}
 
-definition ExpFuture :: "'s set \<Rightarrow> ('s \<Rightarrow> ereal) option" where
+definition ExpFuture :: "'s set \<Rightarrow> ('s \<Rightarrow> ennreal) option" where
   "ExpFuture F = do {
       let N = Prob0 S F ;
       let Y = Prob1 N S F ;
       sol \<leftarrow> gauss_jordan' (LES (S - Y \<union> F))
         (\<lambda>i. if i \<in> Y \<and> i \<notin> F then - \<rho> i - (\<Sum>s'\<in>S. \<tau> i s' * \<iota> i s') else 0) ;
-      Some (\<lambda>s. if s \<in> Y then ereal (sol s) else \<infinity>)
+      Some (\<lambda>s. if s \<in> Y then ennreal (sol s) else \<infinity>)
     }"
 
 subsubsection {* @{text Sat} *}
@@ -458,7 +453,7 @@ fun Sat :: "'s sform \<Rightarrow> 's set option" where
 
 "Sat (Exp rel r (Cumm k))      = Some {s \<in> S. inrealrel rel r (ExpCumm s k) }" |
 "Sat (Exp rel r (State k))     = Some {s \<in> S. inrealrel rel r (ExpState s k) }" |
-"Sat (Exp rel r (Future F))    = do { F \<leftarrow> Sat F ; E \<leftarrow> ExpFuture F ; Some {q \<in> S. inrealrel rel (ereal r) (E q) } }"
+"Sat (Exp rel r (Future F))    = do { F \<leftarrow> Sat F ; E \<leftarrow> ExpFuture F ; Some {q \<in> S. inrealrel rel (ennreal r) (E q) } }"
 
 
 lemma prob_sum:
@@ -469,7 +464,7 @@ lemma nn_integral_eq_sum:
   "s \<in> S \<Longrightarrow> f \<in> borel_measurable R.S \<Longrightarrow> (\<integral>\<^sup>+x. f x \<partial>T s) = (\<Sum>t\<in>S. \<tau> s t * (\<integral>\<^sup>+x. f (t ## x) \<partial>T t))"
   unfolding nn_integral_T using E_closed
   by (subst nn_integral_measure_pmf_support[OF finite_S])
-     (auto simp: mult.commute nn_integral_nonneg)
+     (auto simp: mult.commute)
 
 lemma T_space[simp]: "measure (T s) (space R.S) = 1"
   using T.prob_space by simp
@@ -480,14 +475,14 @@ lemma emeasure_T_space[simp]: "emeasure (T s) (space R.S) = 1"
 lemma \<tau>_distr[simp]: "s \<in> S \<Longrightarrow> (\<Sum>t\<in>S. \<tau> s t) = 1"
   using prob_sum[of s "\<lambda>_. True"] by simp
 
-lemma ProbU: 
+lemma ProbU:
   "q \<in> S \<Longrightarrow> ProbU q k (svalid F1) (svalid F2) = \<P>(\<omega> in T q. pvalid (U k F1 F2) (q ## \<omega>))"
 proof (induct k arbitrary: q)
   case 0 with T.prob_space show ?case by simp
 next
   case (Suc k)
 
-  have "\<P>(\<omega> in T q. pvalid (U (Suc k) F1 F2) (q ## \<omega>)) = 
+  have "\<P>(\<omega> in T q. pvalid (U (Suc k) F1 F2) (q ## \<omega>)) =
     (if q \<in> svalid F2 then 1 else if q \<in> svalid F1 then
       \<Sum>t\<in>S. \<tau> q t * \<P>(\<omega> in T t. pvalid (U k F1 F2) (t ## \<omega>)) else 0)"
     using `q \<in> S` by (subst prob_sum) simp_all
@@ -527,7 +522,7 @@ proof -
     show ?thesis
     proof (rule nn_integral_reward_until_finite)
       have "acc `` {s} \<subseteq> S"
-        using E_rtrancl_closed[of s _ _ E] `s \<in> S` by auto 
+        using E_rtrancl_closed[of s _ _ E] `s \<in> S` by auto
       then show "finite (acc `` {s})"
         using finite_S by (auto dest: finite_subset)
       show "AE \<omega> in T s. (ev (HLD (svalid F))) \<omega>"
@@ -587,7 +582,7 @@ proof (rule unique)
     using svalid_subset_S by (auto simp: Prob0_def)
 next
   fix s assume s: "s \<in> S" "s \<notin> Prob0 (svalid F1) (svalid F2) \<union> svalid F2"
-  have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * l s') = 
+  have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * l s') =
     (\<Sum>s'\<in>S. \<tau> s s' * l s' - (if s' = s then 1 else 0) * l s')"
     by (auto intro!: setsum.cong simp: field_simps)
   also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * l s') - l s"
@@ -612,7 +607,7 @@ next
     moreover have "l s = 0"
       using `s \<in> S` P0 sol[THEN bspec, of s] Prob0_subset_S
         Prob0_imp_not_Psi[OF svalid_subset_S svalid_subset_S P0]
-      by (auto simp: LES_def single_l split: split_if_asm)
+      by (auto simp: LES_def single_l split: if_split_asm)
     ultimately show "l s = \<P>(\<omega> in T s. pvalid (U\<^sup>\<infinity> F1 F2) (s ## \<omega>))" by simp
   next
     assume s: "s \<in> svalid F2"
@@ -654,7 +649,7 @@ proof -
     assume "\<not> ?thesis"
     from nn_integral_PInf_AE[OF _ this] `s\<in>S`
     have "AE \<omega> in T s. ev (HLD ?F) (s ## \<omega>)"
-      by (simp split: split_if_asm)
+      by (simp split: if_split_asm)
     with * show False ..
   qed
 qed
@@ -666,8 +661,8 @@ lemma existence_of_ExpFuture:
   assumes N_def: "N \<equiv> Prob0 S (svalid F)" (is "_ \<equiv> Prob0 S ?F")
   assumes Y_def: "Y \<equiv> Prob1 N S (svalid F)"
   assumes s: "s \<in> S" "s \<notin> S - (Y - ?F)"
-  shows "real_of_ereal (\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s) - (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) =
-    (\<Sum>s'\<in>S. \<tau> s s' * real_of_ereal (\<integral>\<^sup>+\<omega>. reward (Future F) (s' ## \<omega>) \<partial>T s'))"
+  shows "enn2real (\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s) - (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) =
+    (\<Sum>s'\<in>S. \<tau> s s' * enn2real (\<integral>\<^sup>+\<omega>. reward (Future F) (s' ## \<omega>) \<partial>T s'))"
 proof -
   let ?R = "reward (Future F)"
 
@@ -679,40 +674,40 @@ proof -
   from s have "s \<notin> ?F" by auto
 
   let ?E = "\<lambda>s'. \<integral>\<^sup>+ \<omega>. reward (Future F) (s' ## \<omega>) \<partial>T s'"
-  have *: "(\<Sum>s'\<in>S. \<tau> s s' * ?E s') = (\<Sum>s'\<in>S. ereal (\<tau> s s' * real_of_ereal (?E s')))"
+  have *: "(\<Sum>s'\<in>S. \<tau> s s' * ?E s') = (\<Sum>s'\<in>S. ennreal (\<tau> s s' * enn2real (?E s')))"
   proof (rule setsum.cong)
     fix s' assume "s' \<in> S"
-    show "\<tau> s s' * ?E s' = ereal (\<tau> s s' * real_of_ereal (?E s'))"
+    show "\<tau> s s' * ?E s' = ennreal (\<tau> s s' * enn2real (?E s'))"
     proof cases
       assume "\<tau> s s' \<noteq> 0"
       with `s \<in> S` `s' \<in> S` have "s' \<in> E s" by (simp add: set_pmf_iff)
       from `s \<notin> ?F` AE_until have "AE \<omega> in T s. (HLD S suntil HLD ?F) (s ## \<omega>)"
         using svalid_subset_S `s \<in> S` by simp
       with nn_integral_reward_finite[OF `s' \<in> S`, of F] `s \<in> S` `s' \<in> E s` `s \<notin> ?F`
-      have "\<bar>?E s'\<bar> \<noteq> \<infinity>"
-        by (simp add: nn_integral_nonneg AE_T_iff[of _ s] AE_measure_pmf_iff suntil_Stream
+      have "?E s' \<noteq> \<infinity>"
+        by (simp add: AE_T_iff[of _ s] AE_measure_pmf_iff suntil_Stream
                  del: reward.simps)
-      then show ?thesis by (cases "?E s'") auto
-    qed (simp add: zero_ereal_def[symmetric])
+      then show ?thesis by (cases "?E s'") (auto simp: ennreal_mult)
+    qed simp
   qed simp
 
   have "AE \<omega> in T s. ?R (s ## \<omega>) = \<rho> s + \<iota> s (shd \<omega>) + ?R \<omega>"
-    using `s \<notin> svalid F` by (auto simp: ev_Stream)
+    using `s \<notin> svalid F` by (auto simp: ev_Stream )
   then have "(\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s) = (\<integral>\<^sup>+\<omega>. (\<rho> s + \<iota> s (shd \<omega>)) + ?R \<omega> \<partial>T s)"
     by (rule nn_integral_cong_AE)
   also have "\<dots> = (\<integral>\<^sup>+\<omega>. \<rho> s + \<iota> s (shd \<omega>) \<partial>T s) +
     (\<integral>\<^sup>+\<omega>. ?R \<omega> \<partial>T s)"
     using `s \<in> S`
     by (subst nn_integral_add)
-       (auto simp add: space_PiM PiE_iff reward_nonneg \<iota>_nonneg \<rho>_nonneg simp del: reward.simps)
-  also have "\<dots> = ereal (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) + (\<integral>\<^sup>+\<omega>. ?R \<omega> \<partial>T s)"
+       (auto simp add: space_PiM PiE_iff simp del: reward.simps)
+  also have "\<dots> = ennreal (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) + (\<integral>\<^sup>+\<omega>. ?R \<omega> \<partial>T s)"
     using `s \<in> S`
     by (subst nn_integral_eq_sum)
-       (auto simp: field_simps setsum.distrib setsum_right_distrib[symmetric] \<rho>_nonneg \<iota>_nonneg)
+       (auto simp: field_simps setsum.distrib setsum_right_distrib[symmetric] ennreal_mult[symmetric] setsum_nonneg)
   finally show ?thesis
     apply (simp del: reward.simps)
     apply (subst nn_integral_eq_sum[OF `s \<in> S` reward_measurable])
-    apply (simp del: reward.simps add: *)
+    apply (simp del: reward.simps ennreal_plus add: * ennreal_plus[symmetric] setsum_nonneg)
     done
 qed
 
@@ -722,8 +717,8 @@ lemma uniqueness_of_ExpFuture:
   assumes Y_def: "Y \<equiv> Prob1 N S (svalid F)"
   assumes const_def: "const \<equiv> \<lambda>s. if s \<in> Y \<and> s \<notin> svalid F then - \<rho> s - (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s') else 0"
   assumes sol: "\<And>s. s\<in>S \<Longrightarrow> (\<Sum>s'\<in>S. LES (S - Y \<union> ?F) s s' * l s') = const s"
-  shows "\<forall>s\<in>S. l s = real_of_ereal (\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s)"
-    (is "\<forall>s\<in>S. l s = real_of_ereal (\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s)")
+  shows "\<forall>s\<in>S. l s = enn2real (\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s)"
+    (is "\<forall>s\<in>S. l s = enn2real (\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s)")
 proof (rule unique)
   show "S \<subseteq> S" "?F \<subseteq> S" using svalid_subset_S by auto
   show "S - (Y - ?F) \<subseteq> S" "Prob0 S ?F \<subseteq> S - (Y - ?F)" "?F \<subseteq> S - (Y - ?F)"
@@ -732,13 +727,13 @@ proof (rule unique)
        (auto simp add: Prob0_iff dest!: T.AE_contr)
 next
   fix s assume "s \<in> S" "s \<notin> S - (Y - ?F)"
-  then show "real_of_ereal (\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s) - (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) =
-    (\<Sum>s'\<in>S. \<tau> s s' * real_of_ereal (\<integral>\<^sup>+\<omega>. ?R (s' ## \<omega>) \<partial>T s'))"
+  then show "enn2real (\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s) - (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) =
+    (\<Sum>s'\<in>S. \<tau> s s' * enn2real (\<integral>\<^sup>+\<omega>. ?R (s' ## \<omega>) \<partial>T s'))"
     by (rule existence_of_ExpFuture[OF N_def Y_def])
 next
   fix s assume "s \<in> S" "s \<notin> S - (Y - ?F)"
   then have "s \<in> Y" "s \<notin> ?F" by auto
-  have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * l s') = 
+  have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * l s') =
     (\<Sum>s'\<in>S. \<tau> s s' * l s' - (if s' = s then 1 else 0) * l s')"
     by (auto intro!: setsum.cong simp: field_simps)
   also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * l s') - l s"
@@ -751,7 +746,7 @@ next
   fix s assume s: "s \<in> S - (Y - ?F)"
   with sol[of s] have "l s = 0"
     by (cases "s \<in> ?F") (simp_all add: const_def LES_def single_l)
-  also have "0 = real_of_ereal (\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s)"
+  also have "0 = enn2real (\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s)"
   proof cases
     assume "s \<in> ?F" then show ?thesis
       by (simp add: HLD_iff ev_Stream)
@@ -761,11 +756,8 @@ next
     with infinite_reward[of s F] show ?thesis
       by (simp add: Y_def N_def del: reward.simps)
   qed
-  finally show "l s = real_of_ereal (\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s)" .
+  finally show "l s = enn2real (\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s)" .
 qed
-
-lemma inrealrel_ereal[simp]: "inrealrel r (ereal x) (ereal y) \<longleftrightarrow> inrealrel r x y"
-  by (cases r) auto
 
 subsection {* Soundness of @{const Sat} *}
 
@@ -773,7 +765,7 @@ theorem Sat_sound:
   "Sat F \<noteq> None \<Longrightarrow> Sat F = Some (svalid F)"
 proof (induct F rule: Sat.induct)
   case (5 rel r F)
-  { fix q assume "q \<in> S" 
+  { fix q assume "q \<in> S"
     with svalid_subset_S have "setsum (\<tau> q) (svalid F) = \<P>(\<omega> in T q. HLD (svalid F) \<omega>)"
       by (subst prob_sum[OF `q\<in>S`]) (auto intro!: setsum.mono_neutral_cong_left) }
   with 5 show ?case
@@ -791,7 +783,7 @@ next
   ultimately obtain l where eq: "Sat F1 = Some (svalid F1)" "Sat F2 = Some (svalid F2)"
     and l: "gauss_jordan' distr constants = Some l"
     by atomize_elim (simp add: ProbUinfty_def split: bind_split_asm)
-    
+
   from l have P: "ProbUinfty (svalid F1) (svalid F2) = Some l"
     unfolding ProbUinfty_def constants_def distr_def by simp
 
@@ -807,32 +799,31 @@ next
 next
   case (8 rel r k)
   { fix s assume "s \<in> S"
-    then have "ExpCumm s k = (\<integral>\<^sup>+ x. ereal (\<Sum>i<k. \<rho> ((s ## x) !! i) + \<iota> ((s ## x) !! i) (x !! i)) \<partial>T s)"
+    then have "ExpCumm s k = (\<integral>\<^sup>+ x. ennreal (\<Sum>i<k. \<rho> ((s ## x) !! i) + \<iota> ((s ## x) !! i) (x !! i)) \<partial>T s)"
     proof (induct k arbitrary: s)
       case 0 then show ?case by simp
     next
-      case (Suc k) 
-      have "(\<integral>\<^sup>+\<omega>. ereal (\<Sum>i<Suc k. \<rho> ((s ## \<omega>) !! i) + \<iota> ((s ## \<omega>) !! i) (\<omega> !! i)) \<partial>T s)
-        = (\<integral>\<^sup>+\<omega>. ereal (\<rho> s + \<iota> s (\<omega> !! 0)) + ereal (\<Sum>i<k. \<rho> (\<omega> !! i) + \<iota> (\<omega> !! i) (\<omega> !! (Suc i))) \<partial>T s)"
+      case (Suc k)
+      have "(\<integral>\<^sup>+\<omega>. ennreal (\<Sum>i<Suc k. \<rho> ((s ## \<omega>) !! i) + \<iota> ((s ## \<omega>) !! i) (\<omega> !! i)) \<partial>T s)
+        = (\<integral>\<^sup>+\<omega>. ennreal (\<rho> s + \<iota> s (\<omega> !! 0)) + ennreal (\<Sum>i<k. \<rho> (\<omega> !! i) + \<iota> (\<omega> !! i) (\<omega> !! (Suc i))) \<partial>T s)"
         by (auto intro!: nn_integral_cong
-                 simp: setsum.reindex lessThan_Suc_eq_insert_0 Zero_notin_Suc)
-      also have "\<dots> = (\<integral>\<^sup>+\<omega>. \<rho> s + \<iota> s (\<omega> !! 0) \<partial>T s) + 
+                 simp del: ennreal_plus
+                 simp: ennreal_plus[symmetric] setsum_nonneg setsum.reindex lessThan_Suc_eq_insert_0 Zero_notin_Suc)
+      also have "\<dots> = (\<integral>\<^sup>+\<omega>. \<rho> s + \<iota> s (\<omega> !! 0) \<partial>T s) +
           (\<integral>\<^sup>+\<omega>. (\<Sum>i<k. \<rho> (\<omega> !! i) + \<iota> (\<omega> !! i) (\<omega> !! (Suc i))) \<partial>T s)"
         using `s \<in> S`
-        by (intro nn_integral_add AE_I2)
-           (auto intro!: setsum_nonneg add_nonneg_nonneg \<iota>_nonneg \<rho>_nonneg)
-      also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s')) + 
+        by (intro nn_integral_add AE_I2) (auto simp: setsum_nonneg)
+      also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s')) +
         (\<integral>\<^sup>+\<omega>. (\<Sum>i<k. \<rho> (\<omega> !! i) + \<iota> (\<omega> !! i) (\<omega> !! (Suc i))) \<partial>T s)"
-        using `s \<in> S` by (subst nn_integral_eq_sum) (auto simp: \<rho>_nonneg \<iota>_nonneg)
-      also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s')) + 
+        using `s \<in> S` by (subst nn_integral_eq_sum)
+          (auto simp del: ennreal_plus simp: ennreal_plus[symmetric] ennreal_mult[symmetric] setsum_nonneg)
+      also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s')) +
         (\<Sum>s'\<in>S. \<tau> s s' * ExpCumm s' k)"
         using `s \<in> S` by (subst nn_integral_eq_sum) (auto simp: Suc)
       also have "\<dots> = ExpCumm s (Suc k)"
         using `s \<in> S`
-        by (simp add: field_simps setsum.distrib setsum_right_distrib[symmetric]
-                      setsum_ereal[symmetric] plus_ereal.simps[symmetric] \<iota>_nonneg \<rho>_nonneg
-                      ereal_pos_distrib pmf_nonneg
-                 del: setsum_ereal)
+        by (simp add: field_simps setsum.distrib setsum_right_distrib[symmetric] ennreal_mult[symmetric]
+            ennreal_plus[symmetric] setsum_nonneg del: ennreal_plus)
       finally show ?case by simp
     qed }
   then show ?case by auto
@@ -840,10 +831,10 @@ next
 next
   case (9 rel r k)
   { fix s assume "s \<in> S"
-    then have "ExpState s k = (\<integral>\<^sup>+ x. ereal (\<rho> ((s ## x) !! k)) \<partial>T s)"
+    then have "ExpState s k = (\<integral>\<^sup>+ x. ennreal (\<rho> ((s ## x) !! k)) \<partial>T s)"
     proof (induct k arbitrary: s)
       case (Suc k) then show ?case by (simp add: nn_integral_eq_sum[of s])
-    qed (simp add: \<rho>_nonneg) }
+    qed simp }
   then show ?case by auto
 
 next
@@ -857,13 +848,13 @@ next
     where l: "gauss_jordan' (LES (S - Y \<union> ?F)) const = Some l"
     and F: "Sat F = Some ?F"
     by (auto simp: ExpFuture_def Let_def split: bind_split_asm)
-  
+
   from l have EF: "ExpFuture ?F =
-    Some (\<lambda>s. if s \<in> Y then ereal (l s) else \<infinity>)"
+    Some (\<lambda>s. if s \<in> Y then ennreal (l s) else \<infinity>)"
     unfolding ExpFuture_def N_def Y_def const_def by auto
 
   let ?R = "reward (Future F)"
-  have l_eq: "\<forall>s\<in>S. l s = real_of_ereal (\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s)"
+  have l_eq: "\<forall>s\<in>S. l s = enn2real (\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s)"
   proof (rule uniqueness_of_ExpFuture[OF N_def Y_def const_def])
     fix s assume "s \<in> S"
     show "\<And>s. s\<in>S \<Longrightarrow> (\<Sum>s'\<in>S. LES (S - Y \<union> ?F) s s' * l s') = const s"
@@ -874,11 +865,11 @@ next
       unfolding Y_def N_def by auto
     then have "AE \<omega> in T s. (HLD S suntil HLD ?F) (s ## \<omega>)"
       using svalid_subset_S by (auto simp add: Prob1_iff)
-    from nn_integral_reward_finite[OF `s \<in> S`] this nn_integral_nonneg
-    have "\<bar>\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s\<bar> \<noteq> \<infinity>"
-      by (simp add: nn_integral_nonneg)
-    with l_eq `s \<in> S` have "(\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s) = ereal (l s)"
-      by auto }
+    from nn_integral_reward_finite[OF `s \<in> S`] this
+    have "(\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s) \<noteq> \<infinity>"
+      by (simp add: )
+    with l_eq `s \<in> S` have "(\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s) = ennreal (l s)"
+      by (auto simp: less_top) }
   moreover
   { fix s assume "s \<in> S" "s \<notin> Y"
     with infinite_reward[of s F]
@@ -901,7 +892,7 @@ proof (induct F rule: Sat.induct)
     by (auto intro!: Sat_sound)
 
   def constants \<equiv> "\<lambda>s::'s. if s \<in> svalid \<Psi> then 1 else (0::real)"
-  def distr \<equiv> "LES (Prob0 (svalid \<Phi>) (svalid \<Psi>) \<union> svalid \<Psi>)" 
+  def distr \<equiv> "LES (Prob0 (svalid \<Phi>) (svalid \<Psi>) \<union> svalid \<Psi>)"
   have "\<exists>l. gauss_jordan' distr constants = Some l"
   proof (rule gauss_jordan'_complete[OF _ uniqueness_of_ProbU])
     show "\<forall>s\<in>S. (\<Sum>s'\<in>S. distr s s' * \<P>(\<omega> in T s'. pvalid (U\<^sup>\<infinity> \<Phi> \<Psi>) (s' ## \<omega>))) = constants s"
@@ -949,10 +940,10 @@ next
   let ?E = "\<lambda>s'. \<integral>\<^sup>+ \<omega>. reward (Future \<Phi>) (s' ## \<omega>) \<partial>T s'"
   have "\<exists>l. gauss_jordan' (LES (S - Y \<union> ?F)) const = Some l"
   proof (rule gauss_jordan'_complete[OF _ uniqueness_of_ExpFuture[OF N_def Y_def const_def]])
-    show "\<forall>s\<in>S. (\<Sum>s'\<in>S. LES (S - Y \<union> svalid \<Phi>) s s' * real_of_ereal (?E s')) = const s"
+    show "\<forall>s\<in>S. (\<Sum>s'\<in>S. LES (S - Y \<union> svalid \<Phi>) s s' * enn2real (?E s')) = const s"
     proof
       fix s assume "s \<in> S"
-      show "(\<Sum>s'\<in>S. LES (S - Y \<union> svalid \<Phi>) s s' * real_of_ereal (?E s')) = const s"
+      show "(\<Sum>s'\<in>S. LES (S - Y \<union> svalid \<Phi>) s s' * enn2real (?E s')) = const s"
       proof cases
         assume s: "s \<in> S - (Y - svalid \<Phi>)"
         show ?thesis
@@ -968,10 +959,10 @@ next
       next
         assume s: "s \<notin> S - (Y - svalid \<Phi>)"
 
-        have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * real_of_ereal (?E s')) =
-          (\<Sum>s'\<in>S. \<tau> s s' * real_of_ereal (?E s') - (if s' = s then 1 else 0) * real_of_ereal (?E s'))"
+        have "(\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * enn2real (?E s')) =
+          (\<Sum>s'\<in>S. \<tau> s s' * enn2real (?E s') - (if s' = s then 1 else 0) * enn2real (?E s'))"
           by (auto intro!: setsum.cong simp: field_simps)
-        also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * real_of_ereal (?E s')) - real_of_ereal (?E s)"
+        also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * enn2real (?E s')) - enn2real (?E s)"
           using `s \<in> S` by (simp add: setsum_subtractf single_l)
         finally show ?thesis
           using s `s \<in> S` existence_of_ExpFuture[OF N_def Y_def `s \<in> S` s]

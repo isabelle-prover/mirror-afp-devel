@@ -31,7 +31,7 @@ by (induct list) auto
 
 lemma butlastIsSubset: 
   shows "set (butlast list) \<subseteq> set list"
-by (induct list) (auto split: split_if_asm)
+by (induct list) (auto split: if_split_asm)
 
 lemma setListIsSetButlastAndLast: 
   shows "set list \<subseteq> set (butlast list) \<union> {last list}" 
@@ -117,7 +117,7 @@ lemma uniqAppendElement:
   assumes "uniq l" 
   shows "e \<notin> set l = uniq (l @ [e])"
 using assms
-by (induct l) (auto split: split_if_asm)
+by (induct l) (auto split: if_split_asm)
 
 lemma uniqImpliesNotLastMemButlast:
   assumes "uniq l"
@@ -309,10 +309,10 @@ proof-
           by simp
         from `a \<in> set l'` `b \<in> set l'` Cons
         have "firstPos a l' = firstPos b l'"
-          by (simp split: split_if_asm)
+          by (simp split: if_split_asm)
         with Cons 
         have ?case
-          by (simp split: split_if_asm)
+          by (simp split: if_split_asm)
       }
       note *** = this
       moreover
@@ -367,7 +367,7 @@ proof-
     assume "precedes a b (b # list)"
     hence "a \<in> set (b # list)" "firstPos a (b # list) <= 0"
       unfolding precedes_def
-      by (auto split: split_if_asm)
+      by (auto split: if_split_asm)
     hence  "firstPos a (b # list) = 0"
       by auto
     with `a \<noteq> b` 
@@ -420,7 +420,7 @@ proof-
   from `precedes a b l` 
   have "a \<in> set l" "b \<in> set l" "firstPos a l \<le> firstPos b l"
     unfolding precedes_def
-    by (auto split: split_if_asm)
+    by (auto split: if_split_asm)
   thus ?thesis
     using firstPosAppend[of "a" "l" "l'"]
     using firstPosAppend[of "b" "l" "l'"]
@@ -819,7 +819,7 @@ proof-
   from `precedes a b l` 
   have "a \<in> set l" "b \<in> set l" "firstPos a l \<le> firstPos b l"
     unfolding precedes_def
-    by (auto split: split_if_asm)
+    by (auto split: if_split_asm)
 
   from `p @ s = l` `b \<in> set p` 
   have "firstPos b l = firstPos b p"
@@ -1166,13 +1166,9 @@ definition
 "multiset_le a b r == a = b \<or> (a, b) \<in> mult r"
 
 lemma multisetEmptyLeI:
-assumes
-"trans r"
-shows
-"multiset_le {#} a r"
+  "multiset_le {#} a r"
 unfolding multiset_le_def
-using assms
-using one_step_implies_mult[of "r" "a" "{#}" "{#}"]
+using one_step_implies_mult[of "a" "{#}" r "{#}"]
 by auto
 
 lemma multisetUnionLessMono2:
@@ -1256,7 +1252,7 @@ next
   case (Cons x a')
   thus ?case
     using assms
-    using multisetEmptyLeI[of "r" "{#x#}"]
+    using multisetEmptyLeI[of "{#x#}" "r"]
     using multisetUnionLeMono[of "r" "mset (list_diff a' b)" "mset a'" "{#}" "{#x#}"]
     using multisetUnionLeMono1[of "r" "mset (list_diff a' b)" "mset a'" "{#x#}"]
     by auto

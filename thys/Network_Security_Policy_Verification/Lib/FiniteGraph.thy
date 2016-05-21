@@ -13,7 +13,7 @@ text{* A graph @{text "G=(V,E)"} consits of a set of vertices @{text V}, also ca
 (* Inspired by
 Title: Dijkstra's Shortest Path Algorithm
 Author: Benedikt Nordhoff and Peter Lammich
-http://afp.sourceforge.net/entries/Dijkstra_Shortest_Path.shtml
+http://isa-afp.org/entries/Dijkstra_Shortest_Path.shtml
 *)
 
 section {* Graph  *}
@@ -300,8 +300,8 @@ lemmas graph_ops=add_node_def delete_node_def add_edge_def delete_edge_def delet
 (*Inspired by 
 Benedikt Nordhoff and Peter Lammich
 Dijkstra's Shortest Path Algorithm
-http://afp.sourceforge.net/entries/Dijkstra_Shortest_Path.shtml*)
-(*more a literal copy of http://afp.sourceforge.net/browser_info/current/AFP/Dijkstra_Shortest_Path/Graph.html*)
+http://isa-afp.org/entries/Dijkstra_Shortest_Path.shtml*)
+(*more a literal copy of http://isa-afp.org/browser_info/current/AFP/Dijkstra_Shortest_Path/Graph.html*)
 
   text {* Successors of a node. *}
   definition succ :: "'v graph \<Rightarrow> 'v \<Rightarrow> 'v set"

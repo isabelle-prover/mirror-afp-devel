@@ -672,7 +672,7 @@ by (simp)
 lemma eq_poly_refl[simp]: "p =p p" unfolding eq_poly_def by auto
 
 lemma eq_poly_trans[trans]: "\<lbrakk>p1 =p p2; p2 =p p3\<rbrakk> \<Longrightarrow> p1 =p p3"
-using assms unfolding eq_poly_def by auto
+unfolding eq_poly_def by auto
 
 lemma poly_add_comm: "poly_add p q =p poly_add q p" unfolding eq_poly_def by (auto simp: field_simps)
 
@@ -875,7 +875,7 @@ lemma poly_ge_refl[simp]: "p \<ge>p p"
 unfolding poly_ge_def using ge_refl by auto
 
 lemma poly_ge_trans[trans]: "\<lbrakk>p1 \<ge>p p2; p2 \<ge>p p3\<rbrakk> \<Longrightarrow> p1 \<ge>p p3"
-using assms unfolding poly_ge_def using ge_trans by blast
+unfolding poly_ge_def using ge_trans by blast
 
 
 lemma pos_assign_monom: fixes \<alpha> :: "('v,'a :: poly_carrier)assign"
@@ -931,13 +931,13 @@ abbreviation poly_GT :: "('v,'a)poly rel"
 where "poly_GT \<equiv> {(p,q) | p q. p >p q \<and> q \<ge>p zero_poly}"
 
 lemma poly_compat: "\<lbrakk>p1 \<ge>p p2; p2 >p p3\<rbrakk> \<Longrightarrow> p1 >p p3"
-using assms unfolding poly_ge_def poly_gt_def using compat by blast
+unfolding poly_ge_def poly_gt_def using compat by blast
 
 lemma poly_compat2: "\<lbrakk>p1 >p p2; p2 \<ge>p p3\<rbrakk> \<Longrightarrow> p1 >p p3"
-using assms unfolding poly_ge_def poly_gt_def using compat2 by blast
+unfolding poly_ge_def poly_gt_def using compat2 by blast
 
 lemma poly_gt_trans[trans]: "\<lbrakk>p1 >p p2; p2 >p p3\<rbrakk> \<Longrightarrow> p1 >p p3"
-using assms unfolding poly_gt_def using gt_trans by blast
+unfolding poly_gt_def using gt_trans by blast
 
 lemma poly_GT_SN: "SN poly_GT"
 proof

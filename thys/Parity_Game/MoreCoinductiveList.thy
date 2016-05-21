@@ -59,7 +59,7 @@ proof-
 qed
 
 lemma enat_ltl_Suc: "enat n < llength (ltl xs) \<Longrightarrow> enat (Suc n) < llength xs"
-  by (metis assms eSuc_enat ldrop_ltl leD leI lnull_ldrop)
+  by (metis eSuc_enat ldrop_ltl leD leI lnull_ldrop)
 
 lemma infinite_small_llength [intro]: "\<not>lfinite xs \<Longrightarrow> enat n < llength xs"
   using enat_iless lfinite_conv_llength_enat neq_iff by blast
@@ -114,7 +114,7 @@ proof (cases)
   assume "\<not>lnull xs"
   then obtain v0 where "xs = LCons v0 (ltl xs)" by (metis lhd_LCons_ltl)
   hence "ltake (eSuc (enat n)) xs = LCons v0 (ltake (enat n) (ltl xs))"
-    by (metis assms ltake_eSuc_LCons)
+    by (metis ltake_eSuc_LCons)
   hence "lset (ltake (enat (Suc n)) xs) = lset (LCons v0 (ltake (enat n) (ltl xs)))"
     by (simp add: eSuc_enat)
   thus ?thesis using lset_LCons[of v0 "ltake (enat n) (ltl xs)"] by blast

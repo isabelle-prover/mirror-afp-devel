@@ -711,7 +711,7 @@ lemma Acc_property:
 proof -  
   def r \<equiv> "run\<^sub>t (delta \<Sigma>) (initial \<phi>) w" and r\<^sub>\<psi> \<equiv> "run\<^sub>t \<MM>.\<delta>\<^sub>\<R> \<MM>.q\<^sub>\<R> w"
   hence "finite (range r)"
-    using run\<^sub>t_finite[OF finite_reach] `range w \<subseteq> \<Sigma>` `finite \<Sigma>`
+    using run\<^sub>t_finite[OF finite_reach] bounded_w finite_\<Sigma>
     by (blast dest: finite_subset) 
 
   have "\<And>S. limit r\<^sub>\<psi> \<inter> S = {} \<longleftrightarrow> limit r \<inter> \<Union>(embed_transition_snd ` (\<Union> ((embed_transition (G \<psi>)) ` S))) = {}"
@@ -724,7 +724,7 @@ proof -
     show "?thesis S"
       unfolding r_def r\<^sub>\<psi>_def product_run_embed_limit_finiteness[OF 1 2, unfolded ltl.sel comp_def, symmetric] 
       using product_run_embed_limit_finiteness_snd[OF  `finite (range r)`[unfolded r_def delta.simps initial.simps]]
-      by (simp del: simple_product.simps product.simps product_initial_state.simps add: comp_def) fast
+      by (auto simp del: simple_product.simps product.simps product_initial_state.simps simp add: comp_def cong del: strong_SUP_cong)
   qed
   hence "limit r \<inter> fst (Acc \<Sigma> \<pi> (G \<psi>)) = {} \<and> limit r \<inter> snd (Acc \<Sigma> \<pi> (G \<psi>)) \<noteq> {} 
      \<longleftrightarrow> limit r\<^sub>\<psi> \<inter> fst (\<MM>.Acc\<^sub>\<R> (the (\<pi> (G \<psi>)))) = {} \<and> limit r\<^sub>\<psi> \<inter> snd (\<MM>.Acc\<^sub>\<R> (the (\<pi> (G \<psi>)))) \<noteq> {}"

@@ -312,7 +312,7 @@ proof -
     note aok = `actions_ok s t ta`
     show False
     proof(cases "\<exists>w. wset s t = \<lfloor>InWS w\<rfloor>")
-      case True with aok show ?thesis by(auto simp add: wset_actions_ok_def split: split_if_asm)
+      case True with aok show ?thesis by(auto simp add: wset_actions_ok_def split: if_split_asm)
     next
       case False
       with dead tst
@@ -856,7 +856,7 @@ proof
           next
             case (interrupt t')
             from tst red aok have "not_final_thread s t"
-              by(auto simp add: wset_actions_ok_def not_final_thread_iff split: split_if_asm dest: final_no_red)
+              by(auto simp add: wset_actions_ok_def not_final_thread_iff split: if_split_asm dest: final_no_red)
             with `all_final_except s (deadlocked s \<union> final_threads s)`
             have "t \<in> deadlocked s \<union> final_threads s" by(rule all_final_exceptD)
             moreover have "t \<notin> deadlocked s" using Red by(blast dest: red_no_deadlock)
@@ -983,7 +983,7 @@ proof
           fix T
           assume "not_final_thread s' T"
           hence "not_final_thread s T" using wst tst s'
-            by(auto simp add: not_final_thread_iff split: split_if_asm)
+            by(auto simp add: not_final_thread_iff split: if_split_asm)
           with `all_final_except s (deadlocked s)` `thr s t = \<lfloor>(x, ln)\<rfloor>`
           show "T \<in> deadlocked s" by-(erule all_final_exceptD)
         qed

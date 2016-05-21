@@ -372,7 +372,7 @@ begin
         \<and> map_to_set (\<alpha> \<sigma>) = it \<inter> Collect P"
         in iterate_rule_insert_P)
       apply (auto simp: I empty_correct update_dj_correct map_to_set_def AUX)
-      apply (auto split: split_if_asm)
+      apply (auto split: if_split_asm)
       apply (rule ext)
       apply (auto simp: Map.restrict_map_def)
       apply force

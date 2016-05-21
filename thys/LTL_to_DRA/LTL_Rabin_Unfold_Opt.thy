@@ -350,7 +350,7 @@ proof -
       by (rule common_range_limit)
     hence "limit r\<^sub>\<A> = range (suffix (j + i + 1) r\<^sub>\<A>)"
       and "limit r\<^sub>\<UU> = range (suffix (j + i) r\<^sub>\<UU>)"
-      by (metis limit_range_suffix)+
+      by (meson le_add1 limit_range_suffix_incr)+
     moreover
     have "\<And>j. j \<ge> i \<Longrightarrow> r\<^sub>\<A> (Suc j) \<in> M_fin \<pi>\<^sub>\<A> \<longleftrightarrow> r\<^sub>\<UU> j \<in> M\<^sub>\<UU>_fin \<pi>\<^sub>\<UU>"
     proof -

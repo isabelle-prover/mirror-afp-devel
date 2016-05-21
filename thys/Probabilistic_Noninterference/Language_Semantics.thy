@@ -699,8 +699,8 @@ lemma WtFT_le_1[simp]: "WtFT cl \<le> 1" (is "?L \<le> 1")
 proof-
   let ?N = "length cl"
   have "?L \<le> setsum (\<lambda> n::nat. 1/?N) {..< ?N}"
-  unfolding WtFT_def apply(rule setsum_mono2) using assms by auto
-  also have "... \<le> 1" using assms
+  unfolding WtFT_def apply(rule setsum_mono2) by auto
+  also have "... \<le> 1"
   by (metis divide_zero le_cases neq0_conv not_one_le_zero of_nat_0 setsum_not_0 setsum_equal)
   finally show ?thesis .
 qed
@@ -718,7 +718,7 @@ lemma WtFT_lt_1[simp]: "WtFT cl \<noteq> 1 \<Longrightarrow> WtFT cl < 1"
 using WtFT_le_1 by (auto simp add: le_less)
 
 lemma lt_1_WtFT[simp]: "WtFT cl \<noteq> 1 \<Longrightarrow> 0 < 1 - WtFT cl"
-using assms le_1_WtFT by (metis le_1_WtFT eq_iff_diff_eq_0 less_eq_real_def)
+using le_1_WtFT by (metis le_1_WtFT eq_iff_diff_eq_0 less_eq_real_def)
 
 lemma notFinished_WtFT[simp]:
 assumes "n < length cl" and "\<not> finished (cl ! n)"
@@ -958,7 +958,7 @@ proof(cases "wt_cont_eff c1 s i")
 qed
 
 lemma cont_Seq_not_eq_finished[simp]: "\<not> finished c2 \<Longrightarrow> \<not> finished (cont (Seq c1 c2) s i)"
-using assms by (cases "finished (cont c1 s i)") auto
+by (cases "finished (cont c1 s i)") auto
 
 lemma cont_While_False[simp]: "tval tst s = False \<Longrightarrow> cont (While tst c) s i = Done"
 unfolding cont_def by simp
@@ -986,7 +986,7 @@ proof-
    proof(cases "wt_cont_eff c1 s i")
      case (fields _ c1' _)
      thus ?thesis
-     using assms unfolding eff_def by(cases c1') auto
+     unfolding eff_def by(cases c1') auto
    qed
   }
   thus ?thesis by auto
@@ -1462,13 +1462,11 @@ qed
 lemma setsum_wt[simp]:
 assumes "proper c"
 shows "setsum (wt c s) {..< brn c} = 1"
-using assms proof(induct c arbitrary: s rule: proper_induct)
+using assms proof (induct c arbitrary: s rule: proper_induct)
   case (Par cl)
   let ?w = "\<lambda> n. 1 / (length cl) * setsum (wt (cl ! n) s) {..< brn (cl ! n)}"
   show ?case
-  apply(rule setsum_UN_introL
-  [of _ "{..< length cl}" "%n. {brnL cl n ..<+ brn (cl!n)}" _ ?w])
-  proof-
+  proof (rule setsum_UN_introL [of _ "%n. {brnL cl n ..<+ brn (cl!n)}" "{..< length cl}" _ ?w])
     have "1 = setsum (\<lambda> n. 1 / (length cl)) {..< length cl}"
     using Par by simp
     also have "... = setsum ?w {..< length cl}" using Par by simp
@@ -1502,9 +1500,7 @@ next
   next
     case False note nf = False
     show ?thesis
-    apply(rule setsum_UN_introL
-    [of _ "{..< length cl}" "%n. {brnL cl n ..<+ brn (cl!n)}" _ w])
-    proof-
+    proof (rule setsum_UN_introL [of _ "%n. {brnL cl n ..<+ brn (cl!n)}" "{..< length cl}" _ w])
       show "1 = setsum w {..< length cl}"
       proof(cases "?wtF = 1")
         case True note sch = True

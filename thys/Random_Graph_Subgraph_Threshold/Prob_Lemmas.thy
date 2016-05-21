@@ -60,11 +60,11 @@ lemma markov_inequality:
 proof -
   --{* proof adapted from @{thm [source] edge_space.Markov_inequality}, but generalized to arbitrary
        @{term prob_space}s *}
-  have "(\<integral>\<^sup>+ x. ereal (X x) \<partial>M) = (\<integral>x. X x \<partial>M)"
+  have "(\<integral>\<^sup>+ x. ennreal (X x) \<partial>M) = (\<integral>x. X x \<partial>M)"
     using assms by (intro nn_integral_eq_integral) auto
   thus ?thesis
     using assms nn_integral_Markov_inequality[of X M "space M" "1 / t"]
-    by (auto cong: nn_integral_cong simp: emeasure_eq_measure one_ereal_def)
+    by (auto cong: nn_integral_cong simp: emeasure_eq_measure ennreal_mult[symmetric])
 qed
 
 text{* $\Var[X] = \Ex[X^2] - \Ex[X]^2 $ *}
@@ -199,7 +199,7 @@ using A by auto
 
 lemma expectation_X_Y: "\<mu> = (\<Sum>i\<in>I. expectation (X i))"
 unfolding \<mu>_def Y_def[abs_def] X_def
-by simp
+by (simp add: less_top[symmetric])
 
 lemma expectation_X_non_zero: "\<exists>i \<in> I. 0 < expectation (X i)"
 unfolding X_def using prob_non_zero expectation_indicator by simp
@@ -208,12 +208,11 @@ corollary \<mu>_non_zero[simp]: "0 < \<mu>"
 unfolding expectation_X_Y
 using expectation_X_non_zero
 by (auto intro!: setsum_lower finite_I
-         simp add: expectation_indicator X_def measure_nonneg
-         simp del: integral_indicator)
+         simp add: expectation_indicator X_def)
 
 lemma \<Delta>\<^sub>d_nonneg: "0 \<le> \<Delta>\<^sub>d"
 unfolding \<Delta>\<^sub>d_def
-by (simp add: setsum_nonneg measure_nonneg)
+by (simp add: setsum_nonneg)
 
 corollary \<mu>_sq_non_zero[simp]: "0 < \<mu>^2"
 by (rule zero_less_power) simp
@@ -224,7 +223,7 @@ by (auto simp: setsum_square product_indicator)
 
 lemma integrable_Y_sq[simp]: "integrable M (\<lambda>y. (Y y)^2)"
 unfolding Y_square_unfold
-by (simp add: sets.Int)
+by (simp add: sets.Int less_top[symmetric])
 
 lemma measurable_Y[measurable]: "Y \<in> borel_measurable M"
 unfolding Y_def[abs_def] X_def by simp
@@ -234,7 +233,7 @@ proof -
   let ?ei = "\<lambda>i j. expectation (rind (A i \<inter> A j))"
 
   have "expectation (\<lambda>x. (Y x)^2) = (\<Sum>i \<in> I. \<Sum>j \<in> I. ?ei i j)"
-    unfolding Y_square_unfold by (simp add: sets.Int)
+    unfolding Y_square_unfold by (simp add: less_top[symmetric])
   also have "\<dots> = (\<Sum>i \<in> I. \<Sum>j \<in> I. if i = j then ?ei i j else ?ei i j)"
     by simp
   also have "\<dots> = (\<Sum>i \<in> I. (\<Sum>j | j \<in> I \<and> i = j. ?ei i j) + (\<Sum>j | j \<in> I \<and> i \<noteq> j. ?ei i j))"
@@ -301,7 +300,7 @@ proof -
           fix i
           assume "i \<in> I"
           show "(\<Sum>j | j \<in> I \<and> ineq_indep i j. ?p' i j) \<le> (\<Sum>j\<in>I. ?p' i j)"
-            by (rule setsum_upper[OF finite_I]) (simp add: measure_nonneg zero_le_mult_iff)
+            by (rule setsum_upper[OF finite_I]) (simp add: zero_le_mult_iff)
         qed
       also have "\<dots> = (\<Sum>i \<in> I. prob (A i))^2"
         by (fact setsum_square[symmetric])

@@ -88,7 +88,6 @@ qed
 
 lemma safe_hd_restr_stack[simp]:
   "Some a = safe_hd (restr_stack V (a # S)) \<longleftrightarrow> restr_stack V (a # S) = a # restr_stack V S"
-  using assms
   apply (cases a)
   apply (auto split: if_splits)
   apply (thin_tac "P a" for P)

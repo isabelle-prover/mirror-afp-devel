@@ -125,7 +125,7 @@ must decrease according to a well founded and transitive relation.
 theorem hoare_diagram:
   "dmono D \<Longrightarrow> (\<forall> w i j . \<Turnstile> X w i  {| D(i,j) |} Sup_less X w j) \<Longrightarrow> 
     \<Turnstile> (Sup (range X)) {| pt D |} (Sup(range X) \<sqinter> -(grd (step D)))"
-  apply (simp add: hoare_step pt_def del: Sup_image_eq)
+  apply (simp add: hoare_step pt_def)
   apply (rule hoare_fixpoint)
   apply auto
   apply (simp add: dgr_def)
@@ -218,9 +218,9 @@ theorem (in DiagramTermination) hoare_diagram2:
   "dmono D \<Longrightarrow> (\<forall> u i j . \<Turnstile> X u i  {| D(i, j) |} SUP_L_P X (pair u i) j) \<Longrightarrow> 
     \<Turnstile> (Sup (range X)) {| pt D |} ((Sup (range  X)) \<sqinter> (-(grd (step D))))"
   apply (frule_tac X = "SUP_LE_P X" in hoare_diagram)
-  apply (auto simp del: Sup_image_eq)
+  apply auto
   apply (simp add: SUP_LE_P_def)
-  apply (unfold SUP_def hoare_Sup [THEN sym])
+  apply (unfold hoare_Sup [THEN sym])
   apply auto
   apply (rule_tac Q = "SUP_L_P X (pair p i) j" in hoare_mono)
   apply auto
@@ -241,7 +241,7 @@ theorem (in DiagramTermination) hoare_diagram3:
   apply (rule hoare_mono)
   apply auto
   apply (rule hoare_pre)
-  apply (auto simp add: SUP_def simp del: Sup_image_eq)
+  apply auto
   apply (rule hoare_diagram2)
   by auto
 
@@ -289,9 +289,9 @@ definition
 lemma  grd_dgr:
   "((grd (step D) i)::('a::complete_boolean_algebra)) = \<Squnion> {P . \<exists> j . P = grd (D(i,j))}"
   apply (simp add: grd_def step_def)
-  apply (unfold step_def INF_def uminus_Inf)
+  apply (unfold step_def uminus_Inf)
   apply (case_tac "(uminus ` range (\<lambda>j::'b. D (i, j) \<bottom>)) = {P::'a. \<exists>j::'b. P = - D (i, j) \<bottom>}")
-  apply auto
+  apply (auto cong del: strong_SUP_cong)
   done
 
 lemma  grd_dgr_set:

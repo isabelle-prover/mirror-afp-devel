@@ -63,7 +63,7 @@ lemma lookup_delete: "Mapping.lookup (Mapping.delete k m) k' = (if k = k' then N
   by transfer auto
 
 lemma keys_map_values: "Mapping.keys (map_values f m) = Mapping.keys m - {k\<in>Mapping.keys m. f k (the (Mapping.lookup m k)) = None}"
-  by transfer (auto simp: Option.bind_def split: option.splits)
+  by transfer (auto simp add: bind_eq_Some_conv)
 
 lemma map_default_eq: "Mapping.map_default k v f m = m \<longleftrightarrow> (\<exists>v. Mapping.lookup m k = Some v \<and> f v = v)"
   apply (clarsimp simp: Mapping.map_default_def Mapping.default_def)

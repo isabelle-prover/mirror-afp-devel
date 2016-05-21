@@ -1,4 +1,4 @@
-section {* CCW Vector Space *}
+section \<open>CCW Vector Space\<close>
 theory Counterclockwise_Vector
 imports Counterclockwise
 begin
@@ -57,8 +57,8 @@ lemma scaleR1_nonzero_eq:
   "e \<noteq> 0 \<Longrightarrow> ccw 0 (e *\<^sub>R a) b = (if e > 0 then ccw 0 a b else ccw 0 b a)"
 proof cases
   assume "e < 0"
-  def e' \<equiv> "- e"
-  hence "e = -e'" "e' > 0" using `e < 0` by simp_all
+  define e' where "e' = - e"
+  hence "e = -e'" "e' > 0" using \<open>e < 0\<close> by simp_all
   thus ?thesis by simp
 qed simp
 
@@ -97,12 +97,12 @@ proof -
     hence ?thesis using add3_self scaleR1_eq by blast
   } moreover {
     assume "x < 0"
-    def x' \<equiv> "-x"
-    hence "x = -x'" "x' > 0" using `x < 0` by simp_all
+    define x' where "x' = - x"
+    hence "x = -x'" "x' > 0" using \<open>x < 0\<close> by simp_all
     hence "ccw 0 a (x *\<^sub>R a + b) = ccw 0 (x' *\<^sub>R a + - b) (x' *\<^sub>R a)"
       by (subst uminus1[symmetric]) simp
     also have "\<dots> = ccw 0 (- b) a"
-      unfolding add2_self by (simp add: `x' > 0`)
+      unfolding add2_self by (simp add: \<open>x' > 0\<close>)
     also have "\<dots> = ccw 0 a b"
       by simp
     finally have ?thesis .
@@ -128,7 +128,7 @@ proof -
   have "ccw 0 a (setsum f (insert x X))"
     using fin ncoll
   proof (induction X)
-    case empty thus ?case using `x \<in> X` ncoll
+    case empty thus ?case using \<open>x \<in> X\<close> ncoll
       by auto
   next
     case (insert y F)
@@ -137,7 +137,7 @@ proof -
     thus ?case
       by (simp add: insert_commute)
   qed
-  thus ?thesis using `insert x X = X` by simp
+  thus ?thesis using \<open>insert x X = X\<close> by simp
 qed
 
 lemma setsum2:
@@ -169,10 +169,10 @@ lemma convex_hull:
   assumes oriented: "oriented a b"
   shows "ccw a b x"
 proof -
-  def D\<equiv>C
+  define D where "D = C"
   have D: "C \<subseteq> D" "\<And>c. c \<in> D \<Longrightarrow> ccw a b c" by (simp_all add: D_def ccw)
   show "ccw a b x"
-    using `finite C` D ch
+    using \<open>finite C\<close> D ch
   proof (induct arbitrary: x)
     case empty thus ?case by simp
   next
@@ -190,11 +190,11 @@ proof -
         and x: "x = u *\<^sub>R c + v *\<^sub>R d"
         by blast
       have "ccw a b d"
-        by (auto intro: insert.hyps(3)[OF `C \<subseteq> D`] insert.prems `d \<in> convex hull C`)
+        by (auto intro: insert.hyps(3)[OF \<open>C \<subseteq> D\<close>] insert.prems \<open>d \<in> convex hull C\<close>)
       from insert
       have "ccw a b c"
         by simp
-      from convex2[OF `0 \<le> u` `0 \<le> v` `u + v = 1` `ccw a b c` `ccw a b d` `oriented a b`]
+      from convex2[OF \<open>0 \<le> u\<close> \<open>0 \<le> v\<close> \<open>u + v = 1\<close> \<open>ccw a b c\<close> \<open>ccw a b d\<close> \<open>oriented a b\<close>]
       have ?case by (simp add: x)
     } ultimately show ?case by blast
   qed

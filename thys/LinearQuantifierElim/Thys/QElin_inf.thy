@@ -142,7 +142,7 @@ next
     } ultimately show ?thesis by force
   next
     case 2 thus ?thesis using Atom
-      by (fastforce simp: nolb_def EQ2_def depends\<^sub>R_def field_simps split: split_if_asm)
+      by (fastforce simp: nolb_def EQ2_def depends\<^sub>R_def field_simps split: if_split_asm)
   qed (insert Atom, auto)
 next
   case Or thus ?case by(simp add:Ball_def)(metis order_refl innermost_intvl2)
@@ -191,7 +191,7 @@ next
           by(force simp: iprod_left_add_distrib)
       qed
     } ultimately show ?thesis by (metis less_linear)
-  qed (insert Atom, auto split:split_if_asm intro: less_add_one)
+  qed (insert Atom, auto split:if_split_asm intro: less_add_one)
 next
   case And thus ?case
     apply clarsimp
@@ -256,7 +256,7 @@ next
   { assume "\<not> R.I (inf\<^sub>- f) xs"
     and "\<forall>rcs \<in> set ?ebs. \<not> R.I (subst f rcs) xs"
     hence noE: "\<forall>e \<in> EQ f xs. \<not> R.I f (e#xs)" using `nqfree f`
-      by (force simp:set_ebounds I_subst diff_divide_distrib eval_def split:split_if_asm)
+      by (force simp:set_ebounds I_subst diff_divide_distrib eval_def split:if_split_asm)
     hence "x \<notin> EQ f xs" using x by fastforce
     obtain l where "l \<in> LB f xs" "l < x"
       using LBex[OF `nqfree f` x `\<not> R.I(inf\<^sub>- f) xs` `x \<notin> EQ f xs`] ..

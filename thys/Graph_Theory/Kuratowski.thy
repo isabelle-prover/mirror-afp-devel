@@ -867,7 +867,7 @@ proof -
   qed
   then have "inner_verts p = []" by simp
   then show "p = [(u,v)]" using p
-    by (cases p) (auto simp: gen_iapath_def apath_def inner_verts_def split: split_if_asm)
+    by (cases p) (auto simp: gen_iapath_def apath_def inner_verts_def split: if_split_asm)
   then show "(u,v) \<in> parcs G"
     using p by (auto simp: gen_iapath_def apath_def)
 qed

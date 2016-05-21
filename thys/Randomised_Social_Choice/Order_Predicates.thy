@@ -11,35 +11,9 @@ imports
   Main
   "~~/src/HOL/Library/Disjoint_Sets"
   "~~/src/HOL/Library/Permutations"
-  Missing_Permutations
   "../List-Index/List_Index"
 begin
 
-(* TODO: Move *)
-lemma assumes "disjoint (A \<union> B)"
-      shows   disjoint_unionD1: "disjoint A" and disjoint_unionD2: "disjoint B"
-  using assms by (simp_all add: disjoint_def)
-
-definition is_singleton :: "'a set \<Rightarrow> bool" where
-  "is_singleton A \<longleftrightarrow> (\<exists>x. A = {x})"
-
-lemma is_singletonI [simp, intro!]: "is_singleton {x}"
-  unfolding is_singleton_def by simp
-
-lemma is_singletonI': "A \<noteq> {} \<Longrightarrow> (\<And>x y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> x = y) \<Longrightarrow> is_singleton A"
-  unfolding is_singleton_def by blast
-
-lemma is_singletonE: "is_singleton A \<Longrightarrow> (\<And>x. A = {x} \<Longrightarrow> P) \<Longrightarrow> P"
-  unfolding is_singleton_def by blast
-
-lemma is_singleton_altdef: "is_singleton A \<longleftrightarrow> card A = 1"
-  unfolding is_singleton_def
-  by (auto elim!: card_1_singletonE is_singletonE simp del: One_nat_def)
-  
-lemma is_singleton_the_elem: "is_singleton A \<longleftrightarrow> A = {the_elem A}"
-  by (auto simp: is_singleton_def)
-
-(* END TODO *)
 
 
 subsection \<open>Basic Operations on Relations\<close>
@@ -149,6 +123,20 @@ abbreviation (input) weakly_not_preferred ("_ \<succeq>[_] _" [51,10,51] 60) whe
 abbreviation (input) strongly_not_preferred ("_ \<succ>[_] _" [51,10,51] 60) where
   "a \<succ>[R] b \<equiv> b \<prec>[R] a"
 
+context preorder_on
+begin
+
+lemma strict_trans: "a \<prec>[le] b \<Longrightarrow> b \<prec>[le] c \<Longrightarrow> a \<prec>[le] c"
+  unfolding strongly_preferred_def by (blast intro: trans)
+
+lemma weak_strict_trans: "a \<preceq>[le] b \<Longrightarrow> b \<prec>[le] c \<Longrightarrow> a \<prec>[le] c"
+  unfolding strongly_preferred_def by (blast intro: trans)
+
+lemma strict_weak_trans: "a \<prec>[le] b \<Longrightarrow> b \<preceq>[le] c \<Longrightarrow> a \<prec>[le] c"
+  unfolding strongly_preferred_def by (blast intro: trans)
+
+end
+  
 lemma (in total_preorder_on) not_weakly_preferred_iff:
   "a \<in> carrier \<Longrightarrow> b \<in> carrier \<Longrightarrow> \<not>a \<preceq>[le] b \<longleftrightarrow> b \<prec>[le] a"
   using total[of a b] by (auto simp: strongly_preferred_def)
@@ -280,7 +268,7 @@ qed
 
 lemma Max_wrt_among_mono:
   "le x y \<Longrightarrow> x \<in> Max_wrt_among le A \<Longrightarrow> y \<in> A \<Longrightarrow> y \<in> Max_wrt_among le A"
-  using assms not_outside by (auto simp: Max_wrt_among_preorder intro: trans)
+  using not_outside by (auto simp: Max_wrt_among_preorder intro: trans)
 
 lemma Max_wrt_mono:
   "le x y \<Longrightarrow> x \<in> Max_wrt le \<Longrightarrow> y \<in> Max_wrt le"
@@ -417,6 +405,9 @@ next
   thus "is_weak_ranking xs"
     by (intro is_weak_rankingI) (auto simp: disjoint_def distinct_conv_nth)
 qed (simp_all add: is_weak_ranking_nonempty)
+
+lemma is_weak_ranking_rev [simp]: "is_weak_ranking (rev xs) \<longleftrightarrow> is_weak_ranking xs"
+  by (simp add: is_weak_ranking_iff)
 
 lemma is_weak_ranking_map_inj:
   assumes "is_weak_ranking xs" "inj_on f (\<Union>set xs)"
@@ -677,10 +668,6 @@ termination proof (relation "Wellfounded.measure card")
     by (intro psubset_card_mono) auto
   thus "(A - ?B, A) \<in> measure card" by simp
 qed simp_all
-
-(* TODO Move *)
-lemma Int_emptyI: "(\<And>x. x \<in> A \<Longrightarrow> x \<in> B \<Longrightarrow> False) \<Longrightarrow> A \<inter> B = {}"
-  by blast
 
 lemma weak_ranking_aux_Union:
   "A \<subseteq> carrier \<Longrightarrow> \<Union>set (weak_ranking_aux A) = A"
@@ -1024,9 +1011,15 @@ lemma weak_ranking_eq_iff:
 definition preferred_alts :: "'alt relation \<Rightarrow> 'alt \<Rightarrow> 'alt set" where
   "preferred_alts R x = {y. y \<succeq>[R] x}"
 
+lemma (in preorder_on) preferred_alts_refl [simp]: "x \<in> carrier \<Longrightarrow> x \<in> preferred_alts le x"
+  by (simp add: preferred_alts_def refl)  
+
 lemma (in preorder_on) preferred_alts_altdef:
   "preferred_alts le x = {y\<in>carrier. y \<succeq>[le] x}"
   by (auto simp: preferred_alts_def intro: not_outside)
+  
+lemma (in preorder_on) preferred_alts_subset: "preferred_alts le x \<subseteq> carrier"
+  unfolding preferred_alts_def using not_outside by blast
 
 
 subsection \<open>Rankings\<close>

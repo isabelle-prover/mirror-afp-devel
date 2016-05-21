@@ -30,7 +30,6 @@ where
 lemma partition_split:
   shows "set (fst (partition_split r x xs)) = set xs - (rel_ext r `` {x})"
     and "set (snd (partition_split r x xs)) = set xs \<inter> (rel_ext r `` {x})"
-using assms
 proof(induct xs)
   case Nil
   { case 1 with Nil show ?case

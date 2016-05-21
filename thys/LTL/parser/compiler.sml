@@ -16,18 +16,18 @@ exception LtlError of string;
 local
   open Ltl_Dt
 in
-  fun toString LTLcTrue = "true"
-    | toString LTLcFalse = "false"
-    | toString (LTLcProp p) = "p(" ^ p ^ ")"
-    | toString (LTLcNeg f) = "(" ^ "~ " ^ toString f ^ ")"
-    | toString (LTLcAnd (fl,fr)) = "(" ^ (toString fl) ^ " & " ^ (toString fr) ^ ")"
-    | toString (LTLcOr (fl,fr)) = "(" ^ (toString fl) ^ " | " ^ (toString fr) ^ ")"
-    | toString (LTLcImplies (fl,fr)) = "(" ^ (toString fl) ^ " --> " ^ (toString fr) ^ ")"
-    | toString (LTLcNext f) = "(" ^ "X " ^ toString f ^ ")"
-    | toString (LTLcFinal f) = "(" ^ "F " ^ toString f ^ ")"
-    | toString (LTLcGlobal f) = "(" ^ "G " ^ toString f ^ ")"
-    | toString (LTLcUntil (fl,fr)) = "(" ^ (toString fl) ^ " U " ^ (toString fr) ^ ")"
-    | toString (LTLcRelease (fl,fr)) = "(" ^ (toString fl) ^ " V " ^ (toString fr) ^ ")";
+  fun toString True_ltlc = "true"
+    | toString False_ltlc = "false"
+    | toString (Prop_ltlc p) = "p(" ^ p ^ ")"
+    | toString (Not_ltlc f) = "(" ^ "~ " ^ toString f ^ ")"
+    | toString (And_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " & " ^ (toString fr) ^ ")"
+    | toString (Or_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " | " ^ (toString fr) ^ ")"
+    | toString (Implies_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " --> " ^ (toString fr) ^ ")"
+    | toString (Next_ltlc f) = "(" ^ "X " ^ toString f ^ ")"
+    | toString (Final_ltlc f) = "(" ^ "F " ^ toString f ^ ")"
+    | toString (Global_ltlc f) = "(" ^ "G " ^ toString f ^ ")"
+    | toString (Until_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " U " ^ (toString fr) ^ ")"
+    | toString (Release_ltlc (fl,fr)) = "(" ^ (toString fl) ^ " V " ^ (toString fr) ^ ")";
 end
 
 fun compile grab =

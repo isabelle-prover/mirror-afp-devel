@@ -258,7 +258,7 @@ lemma ufa_union_correct: "\<lbrakk> ufa_invar l; x<length l; y<length l \<rbrakk
   \<Longrightarrow> ufa_\<alpha> (ufa_union l x y) = per_union (ufa_\<alpha> l) x y"
   unfolding ufa_\<alpha>_def per_union_def
   by (auto simp: ufa_union_aux
-    split: split_if_asm
+    split: if_split_asm
   )
 
 lemma ufa_compress_aux:

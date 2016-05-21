@@ -111,7 +111,7 @@ proof
   thus "wbisim1 t s1' s2 \<and> (\<lambda>(((e, xs), exs), h) (((e', xs'), exs'), h'). sim12_size e < sim12_size e')\<^sup>+\<^sup>+ s1' s1 \<or>
        (\<exists>s2'. (\<tau>trsys.silent_movet (mexecd (compP2 P) t) (\<tau>MOVE2 (compP2 P))) s2 s2' \<and> wbisim1 t s1' s2')"
     using bisim' s1 s1' s2
-    by -(rule delay_bisimulation_base.simulation_silent1I', auto split del: split_if)
+    by -(rule delay_bisimulation_base.simulation_silent1I', auto split del: if_split)
 next
   fix s1 s2 s2'
   assume "wbisim1 t s1 s2" and "\<tau>trsys.silent_move (mexecd (compP2 P) t) (\<tau>MOVE2 (compP2 P)) s2 s2'"
@@ -129,7 +129,7 @@ next
   thus "wbisim1 t s1 s2' \<and> (\<lambda>(xcpfrs, h) (xcpfrs', h). sim21_size (compP2 P) xcpfrs xcpfrs')\<^sup>+\<^sup>+ s2' s2 \<or>
        (\<exists>s1'. \<tau>trsys.silent_movet (mred1 P t) (\<tau>MOVE1 P) s1 s1' \<and> wbisim1 t s1' s2')"
     using bisim' s1 s2 s2'
-    by -(rule delay_bisimulation_base.simulation_silent2I', auto split del: split_if)
+    by -(rule delay_bisimulation_base.simulation_silent2I', auto split del: if_split)
 next
   fix s1 s2 tl1 s1'
   assume "wbisim1 t s1 s2" and "mred1 P t s1 tl1 s1'" and "\<not> \<tau>MOVE1 P s1 tl1 s1'"
@@ -168,7 +168,7 @@ next
     apply auto
     apply(rename_tac stk loc C M pc frs)
     apply(case_tac "instrs_of (compP2 P) C M ! pc")
-    apply(simp_all split: split_if_asm)
+    apply(simp_all split: if_split_asm)
     apply(auto dest!: \<tau>external_red_external_aggr_TA_empty simp add: check_def has_method_def \<tau>external_def \<tau>external'_def)
     done
   from \<tau>Red1_simulates_exec_1_not_\<tau>[OF wf exec bisim \<tau>] obtain e' xs' exs' ta' e'' xs'' exs''
@@ -515,7 +515,7 @@ proof -
   qed simp
   thus ?thesis
     using sees sees' unfolding start_state_def
-    by -(rule Red1_execd.mbisimI, auto split: split_if_asm intro: wset_thread_okI simp add: compP2_def compMb2_def)
+    by -(rule Red1_execd.mbisimI, auto split: if_split_asm intro: wset_thread_okI simp add: compP2_def compMb2_def)
 qed
 
 lemmas \<tau>red1_Val_simps = \<tau>red1r_Val \<tau>red1t_Val \<tau>reds1r_map_Val \<tau>reds1t_map_Val

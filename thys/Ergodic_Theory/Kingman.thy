@@ -4,8 +4,18 @@
 
 theory Kingman
 imports Ergodicity Fekete
-
 begin
+
+lemma e2ennreal_Liminf:
+  "F \<noteq> bot \<Longrightarrow> e2ennreal (Liminf F f) = Liminf F (\<lambda>n. e2ennreal (f n))"
+  by (rule Liminf_compose_continuous_mono[symmetric])
+     (auto simp: mono_def e2ennreal_mono continuous_on_e2ennreal)
+
+lemma e2ennreal_ereal: "e2ennreal (ereal x) = ennreal x"
+  unfolding ennreal.abs_eq by (cases "0 \<le> x") (auto simp add: e2ennreal_neg max.absorb2)
+
+lemma e2ennreal_eq_infty[simp]: "0 \<le> x \<Longrightarrow> e2ennreal x = top \<longleftrightarrow> x = \<infinity>"
+  by (cases x) (auto simp: e2ennreal_infty e2ennreal_ereal)
 
 section {*Subcocycles, subadditive ergodic theory*}
 
@@ -28,6 +38,11 @@ subsection {*Definition and basic properties*}
 
 definition subcocycle::"(nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> bool"
   where "subcocycle u = ((\<forall>n. integrable M (u n)) \<and> (\<forall>n m x. u (n+m) x \<le> u n x + u m ((T^^n) x)))"
+
+lemma subcocycle_ineq:
+  assumes "subcocycle u"
+  shows "u (n+m) x \<le> u n x + u m ((T^^n) x)"
+using assms unfolding subcocycle_def by blast
 
 lemma subcocycle_0_nonneg:
   assumes "subcocycle u"
@@ -487,8 +502,8 @@ proof -
   def I \<equiv> "\<lambda>N K e x. (indicator (- B N K e) x)::real"
   have I_meas [measurable]: "I N K e \<in> borel_measurable M" for N K e unfolding I_def by auto
   have I_int: "integrable M (I N K e)" for N K e
-    unfolding I_def  apply (subst integrable_cong[where ?g = "indicator (space M - B N K e)"], auto)
-    unfolding indicator_def by auto
+    unfolding I_def  apply (subst integrable_cong[where ?g = "indicator (space M - B N K e)::_ \<Rightarrow> real"], auto)
+    by (auto split: split_indicator simp: less_top[symmetric])
 
   have main: "AE x in M. limsup (\<lambda>n. u n x / n) \<le> F K e x + abs(F K e x) * ereal(real_cond_exp M Invariants (I N K e) x)"
     if "N>(1::nat)" "K>(0::real)" "e>(0::real)" for N K e
@@ -722,7 +737,7 @@ proof -
   proof -
     have "\<And>e. e > (0::real) \<Longrightarrow> AE x in M. limsup (\<lambda>n. u n x / n) \<le> real_of_ereal(max (l x) (-ereal K)) + ereal e"
       using bound2 `K>0` unfolding F_def by auto
-    then show ?thesis by (rule AE_upper_bound_inf_ereal2, auto)
+    then show ?thesis by (rule AE_upper_bound_inf_ereal, auto)
   qed
   then have "AE x in M. \<forall>K\<in>{(0::nat)<..}. limsup (\<lambda>n. u n x / n) \<le> real_of_ereal(max (l x) (-ereal K))"
     by (rule AE_count_union, auto)
@@ -1025,23 +1040,32 @@ proof -
 
   have "(\<integral>\<^sup>+ x. -subcocycle_lim_ereal u x \<partial>M) = (\<integral>\<^sup>+ x. liminf (\<lambda>n. -u (n+1) x / (n+1)) \<partial>M)"
     apply (rule nn_integral_cong_AE) using AE_1(1) by auto
-  also have "... \<le> liminf  (\<lambda>n. \<integral>\<^sup>+ x. -u (n+1) x / (n+1) \<partial>M)"
-    apply (rule nn_integral_liminf, simp add: int_F) using F_pos by fastforce
+  also have "... \<le> liminf (\<lambda>n. \<integral>\<^sup>+ x. -u (n+1) x / (n+1) \<partial>M)"
+    apply (subst e2ennreal_Liminf)
+    apply (simp_all add: e2ennreal_ereal)
+    using F_pos by (intro nn_integral_liminf) (simp add: int_F)
   also have "... = - subcocycle_avg_ereal u"
   proof -
     have "(\<lambda>n. (\<integral>x. u (n+1) x / (n+1) \<partial>M)) \<longlonglongrightarrow> subcocycle_avg_ereal u"
       by (rule LIMSEQ_ignore_initial_segment[OF subcocycle_int_tendsto_avg_ereal[OF assms(1)]])
     with tendsto_cmult_ereal[OF _ this, of "-1"]
     have "(\<lambda>n.  (\<integral>x. - u (n+1) x / (n+1) \<partial>M)) \<longlonglongrightarrow> - subcocycle_avg_ereal u" by simp
-    then have "liminf (\<lambda>n. (\<integral>x. - u (n+1) x / (n+1) \<partial>M)) = - subcocycle_avg_ereal u"
+    then have "- subcocycle_avg_ereal u = liminf (\<lambda>n. (\<integral>x. - u (n+1) x / (n+1) \<partial>M))"
       by (simp add: tendsto_iff_Liminf_eq_Limsup)
-    moreover have "ereal(\<integral>x. - u (n+1) x / (n+1) \<partial>M) = (\<integral>\<^sup>+ x. ereal (-u (n + 1) x / (n+1)) \<partial>M)" for n
-      apply (rule nn_integral_eq_integral[OF int_F, symmetric]) using F_pos by fastforce
-    ultimately show ?thesis by auto
+    moreover have "(\<integral>\<^sup>+ x. ennreal (-u (n + 1) x / (n+1)) \<partial>M) = ennreal(\<integral>x. - u (n+1) x / (n+1) \<partial>M)" for n
+      apply (rule nn_integral_eq_integral[OF int_F]) using F_pos by fastforce
+    ultimately show ?thesis
+      by (auto simp: e2ennreal_Liminf e2ennreal_ereal)
   qed
   finally have "(\<integral>\<^sup>+ x. -subcocycle_lim_ereal u x \<partial>M) \<le> - subcocycle_avg_ereal u" by simp
-  then have *: "(\<integral>\<^sup>+ x. -subcocycle_lim_ereal u x \<partial>M) < \<infinity>" using assms(2) ereal_uminus_eq_reorder by auto
-  have **: "AE x in M. - subcocycle_lim_ereal u x \<noteq> \<infinity>" apply (rule nn_integral_PInf_AE) using * by auto
+  also have "\<dots> < \<infinity>" using assms(2)
+    by (cases "subcocycle_avg_ereal u") (auto simp: e2ennreal_ereal e2ennreal_neg)
+  finally have *: "(\<integral>\<^sup>+ x. -subcocycle_lim_ereal u x \<partial>M) < \<infinity>" .
+  have "AE x in M. e2ennreal (- subcocycle_lim_ereal u x) \<noteq> \<infinity>"
+    apply (rule nn_integral_PInf_AE) using * by auto
+  then have **: "AE x in M. - subcocycle_lim_ereal u x \<noteq> \<infinity>"
+    using AE_1(3) by eventually_elim simp
+
   {
     fix x assume H: "- subcocycle_lim_ereal u x \<noteq> \<infinity>"
                     "(\<lambda>n. u n x / n) \<longlonglongrightarrow> subcocycle_lim_ereal u x"
@@ -1065,7 +1089,10 @@ proof -
   then show "AE x in M. (\<lambda>n. u n x / n) \<longlonglongrightarrow> subcocycle_lim u x" by simp
 
   have "(\<integral>\<^sup>+x. abs(subcocycle_lim u x) \<partial>M) = (\<integral>\<^sup>+x. -subcocycle_lim_ereal u x \<partial>M)"
-    apply (rule nn_integral_cong_AE) using AE_2 unfolding subcocycle_lim_def by auto
+    apply (rule nn_integral_cong_AE)
+    using AE_2 unfolding subcocycle_lim_def abs_real_of_ereal
+    apply eventually_elim
+    by (auto simp: e2ennreal_ereal)
   then have A: "(\<integral>\<^sup>+x. abs(subcocycle_lim u x) \<partial>M) < \<infinity>" using * by auto
   show int_Gr: "integrable M (subcocycle_lim u)" apply (rule integrableI_bounded) using A by auto
 
@@ -1082,10 +1109,10 @@ proof -
       finally have A: "(\<integral>x. subcocycle_lim u x \<partial>M) \<le>  (\<integral>x. u n x / n \<partial>M)" by auto
 
       have "(\<integral>\<^sup>+x. abs(u n x) / n \<partial>M) = (\<integral>\<^sup>+x. - u n x / n \<partial>M)"
-        apply (rule nn_integral_cong) using F_pos[OF `n>0`] abs_of_nonneg by fastforce
+        apply (rule nn_integral_cong) using F_pos[OF `n>0`] abs_of_nonneg by (intro arg_cong[where f=ennreal]) fastforce
       also have "... = (\<integral>x. - u n x / n \<partial>M)"
         apply (rule nn_integral_eq_integral) using F_pos[OF `n>0`] int_F by auto
-      also have "... \<le> (\<integral>x. - subcocycle_lim u x \<partial>M)" using A by auto
+      also have "... \<le> (\<integral>x. - subcocycle_lim u x \<partial>M)" using A by (auto intro!: ennreal_leI)
       also have "... = (\<integral>\<^sup>+x. - subcocycle_lim u x \<partial>M)"
         apply (rule nn_integral_eq_integral[symmetric]) using int_Gr AE_2(4) by auto
       also have "... = (\<integral>\<^sup>+x. abs(subcocycle_lim u x) \<partial>M)"
@@ -1100,7 +1127,7 @@ proof -
   qed
   moreover have "norm((- u n x /n)  - (-subcocycle_lim u x)) = abs(u n x / n - subcocycle_lim u x)"
     for n x by auto
-  ultimately show "(\<lambda>n. \<integral>\<^sup>+ x. ereal \<bar>u n x / real n - subcocycle_lim u x\<bar> \<partial>M) \<longlonglongrightarrow> 0"
+  ultimately show "(\<lambda>n. \<integral>\<^sup>+ x. ennreal \<bar>u n x / real n - subcocycle_lim u x\<bar> \<partial>M) \<longlonglongrightarrow> 0"
     by auto
 qed
 
@@ -1191,8 +1218,8 @@ proof -
       have "(\<integral>\<^sup>+x. abs(u n x / n - subcocycle_lim u x) \<partial>M)
         = (\<integral>\<^sup>+x. abs((v n x / n - subcocycle_lim v x) + (w n x / n - subcocycle_lim w x)) \<partial>M)"
         apply (rule nn_integral_cong_AE) using AE(3) by auto
-      also have "... \<le> (\<integral>\<^sup>+x. ereal(abs(v n x / n - subcocycle_lim v x)) + abs(w n x / n - subcocycle_lim w x) \<partial>M)"
-        by (rule nn_integral_mono, auto)
+      also have "... \<le> (\<integral>\<^sup>+x. ennreal(abs(v n x / n - subcocycle_lim v x)) + abs(w n x / n - subcocycle_lim w x) \<partial>M)"
+        by (rule nn_integral_mono, auto simp add: ennreal_plus[symmetric] simp del: ennreal_plus)
       also have "... = (\<integral>\<^sup>+x. abs(v n x / n - subcocycle_lim v x) \<partial>M) + (\<integral>\<^sup>+x. abs(w n x / n - subcocycle_lim w x) \<partial>M)"
         by (rule nn_integral_add, auto, measurable)
       finally have "(\<integral>\<^sup>+x. abs(u n x / n - subcocycle_lim u x) \<partial>M)
@@ -1205,12 +1232,9 @@ proof -
 
     have "(\<lambda>n. (\<integral>\<^sup>+x. abs(v n x / n - subcocycle_lim v x) \<partial>M) + (\<integral>\<^sup>+x. abs(w n x / n - subcocycle_lim w x) \<partial>M))
               \<longlonglongrightarrow> 0 + 0"
-      by (rule tendsto_add_ereal_general[OF _ v(3) w(3)], simp)
+      by (rule tendsto_add[OF v(3) w(3)])
     then show "(\<lambda>n. (\<integral>\<^sup>+x. abs(v n x / n - subcocycle_lim v x) \<partial>M) + (\<integral>\<^sup>+x. abs(w n x / n - subcocycle_lim w x) \<partial>M))
               \<longlonglongrightarrow> 0" by simp
-
-    show "eventually (\<lambda>n. (\<integral>\<^sup>+x. abs(u n x / n - subcocycle_lim u x) \<partial>M) \<ge> 0) sequentially"
-      using nn_integral_nonneg not_eventuallyD by blast
   qed
 qed
 

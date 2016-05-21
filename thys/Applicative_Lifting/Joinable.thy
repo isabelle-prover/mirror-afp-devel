@@ -1,6 +1,6 @@
 (* Author: Joshua Schneider, ETH Zurich *)
 
-section \<open>Formalisation of the normal form algorithm\<close>
+section \<open>Formalisation of idiomatic terms and lifting\<close>
 
 subsection \<open>Immediate joinability under a relation\<close>
 
@@ -11,8 +11,7 @@ begin
 subsubsection \<open>Definition and basic properties\<close>
 
 definition joinable :: "('a \<times> 'b) set \<Rightarrow> ('a \<times> 'a) set"
-where
-  "joinable R = {(x, y). \<exists>z. (x, z) \<in> R \<and> (y, z) \<in> R}"
+where "joinable R = {(x, y). \<exists>z. (x, z) \<in> R \<and> (y, z) \<in> R}"
 
 lemma joinable_simp: "(x, y) \<in> joinable R \<longleftrightarrow> (\<exists>z. (x, z) \<in> R \<and> (y, z) \<in> R)"
 unfolding joinable_def by simp
@@ -144,8 +143,7 @@ qed
 subsubsection \<open>Predicate version\<close>
 
 definition joinablep :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
-where
-  "joinablep P x y \<longleftrightarrow> (\<exists>z. P x z \<and> P y z)"
+where "joinablep P x y \<longleftrightarrow> (\<exists>z. P x z \<and> P y z)"
 
 lemma joinablep_joinable[pred_set_conv]:
   "joinablep (\<lambda>x y. (x, y) \<in> R) = (\<lambda>x y. (x, y) \<in> joinable R)"

@@ -295,14 +295,14 @@ lemma cancel: "x>(0::real) \<Longrightarrow> c * x ^ 2 * y * z \<le> u * v \<Lon
 by(simp add: power2_eq_square power3_eq_cube)
 
 interpretation S34: Splay_Analysis "root 3 4" "1/3"
-proof
-  case goal2 thus ?case
+proof (standard, goal_cases)
+  case 2 thus ?case
     by(simp add: root_simps)
       (auto simp: powr_numeral numeral_eq_Suc split_mult_pos_le intro!: mult_mono)
 next
-  case goal3 thus ?case by(simp add: root_simps cancel nl3)
+  case 3 thus ?case by(simp add: root_simps cancel nl3)
 next
-  case goal4 thus ?case by(simp add: root_simps cancel nl4)
+  case 4 thus ?case by(simp add: root_simps cancel nl4)
 qed simp
 
 
@@ -340,32 +340,32 @@ and U = "\<lambda>f t. case f of
   Splay _ \<Rightarrow> (3/2) * log 2 (size1 t) + 1 |
   Insert _ \<Rightarrow> 2 * log 2 (size1 t) + 3/2 |
   Delete _ \<Rightarrow> 3 * log 2 (size1 t) + 2"
-proof
-  case goal1 show ?case by simp
+proof (standard, goal_cases)
+  case 1 show ?case by simp
 next
-  case goal2 show ?case
+  case (2 _ f) show ?case
   proof (cases f)
     case (Splay a)
-    with bst_splay[OF goal2, of a] show ?thesis by (auto split: tree.split)
+    with bst_splay[OF 2, of a] show ?thesis by (auto split: tree.split)
   next
     case (Insert a)
-    with bst_splay[OF goal2, of a] show ?thesis
-      by (auto simp: splay_bstL[OF goal2] splay_bstR[OF goal2] split: tree.split)
+    with bst_splay[OF 2, of a] show ?thesis
+      by (auto simp: splay_bstL[OF 2] splay_bstR[OF 2] split: tree.split)
   next
     case [simp]: (Delete a)
-    with goal2 show ?thesis by(simp add: bst_delete)
+    with 2 show ?thesis by(simp add: bst_delete)
   qed
 next
-  case goal3 show ?case
+  case (3 s) show ?case
     by(induction s)(simp_all add: S34.\<phi>_def)
 next
-  case goal4 show ?case by simp
+  case 4 show ?case by simp
 next
-  case goal5
+  case (5 s f)
   show ?case (is "?l \<le> ?r")
   proof(cases f)
     case (Splay a)
-    thus ?thesis using S34.A_ub3[OF goal5] by(simp add: S34.A_def log4_log2)
+    thus ?thesis using S34.A_ub3[OF 5] by(simp add: S34.A_def log4_log2)
   next
     case [simp]: (Insert a)
     show ?thesis
@@ -379,7 +379,7 @@ next
       let ?Plr = "S34.\<Phi> l + S34.\<Phi> r"  let ?Ps = "S34.\<Phi> s"
       let ?slr = "real(size1 l) + real(size1 r)" let ?LR = "log 2 (1 + ?slr)"
       have opt: "?t + S34.\<Phi> (splay a s) - ?Ps  \<le> 3/2 * log 2 (real (size1 s)) + 1"
-        using S34.A_ub3[OF goal5, simplified S34.A_def, of a]
+        using S34.A_ub3[OF 5, simplified S34.A_def, of a]
         by (simp add: log4_log2)
       from less_linear[of e a]
       show ?thesis
@@ -440,7 +440,7 @@ next
       let ?lslr = "log 2 (real (size ls) + (real (size rs) + 2))"
       have "?lslr \<ge> 0" by simp
       have opt: "?t + S34.\<Phi> (splay a s) - ?Ps  \<le> 3/2 * log 2 (real (size1 s)) + 1"
-        using S34.A_ub3[OF goal5, simplified S34.A_def, of a]
+        using S34.A_ub3[OF 5, simplified S34.A_def, of a]
         by (simp add: log4_log2 field_simps)
       show ?thesis
       proof (cases "e=a")
@@ -461,7 +461,7 @@ next
           then obtain l' y' r' where [simp]:
             "splay_max (Node ll y lr) = Node l' y' r'"
             using splay_max_Leaf_iff tree.exhaust by blast
-          have "bst l" using bst_splay[OF goal5, of a] by simp
+          have "bst l" using bst_splay[OF 5, of a] by simp
           have "S34.\<Phi> r' \<ge> 0" apply (induction r') by (auto simp add: S34.\<phi>_def)
           have optm: "real(t_splay_max l) + S34.\<Phi> (splay_max l) - S34.\<Phi> l
             \<le> 3/2 * log 2 (real (size1 l)) + 1"

@@ -20,7 +20,7 @@ apply(auto intro!: ext)
  apply(clarify)
  apply(rule exec_1_d_NormalI)
   apply(assumption)
- apply(simp add: exec_d_def split: split_if_asm)
+ apply(simp add: exec_d_def split: if_split_asm)
 apply(erule jvmd_NormalE, auto)
 done
 
@@ -123,7 +123,7 @@ proof -
   have checkins: "check_instr (ins ! pc) P h stk loc C M pc Frs"
     by(clarsimp simp add: check_def)
   from sees `\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<noteq> []` exec obtain M' n where [simp]: "ins ! pc = Invoke M' n"
-    by(cases "ins ! pc", auto split: split_if_asm simp add: split_beta ta_upd_simps)
+    by(cases "ins ! pc", auto split: if_split_asm simp add: split_beta ta_upd_simps)
   from `wf_jvm_prog\<^bsub>\<Phi>\<^esub> P` obtain wfmd where wfp: "wf_prog wfmd P" by(auto dest: wt_jvm_progD)
   
   from checkins have "n < length stk" "is_Ref (stk ! n)" by auto
@@ -135,7 +135,7 @@ proof -
   obtain Us Us' U D' where "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some Us"
     and "P \<turnstile> class_type_of Ta sees M':Us'\<rightarrow>U = Native in D'" and "D'\<bullet>M'(Us') :: U"
     and "P \<turnstile> Us [\<le>] Us'"
-    by(auto simp add: confs_conv_map min_def split_beta has_method_def external_WT'_iff split: split_if_asm)
+    by(auto simp add: confs_conv_map min_def split_beta has_method_def external_WT'_iff split: if_split_asm)
   moreover with `typeof_addr h a = \<lfloor>Ta\<rfloor>` `n < length stk` exec sees `stk ! n = Addr a`
   obtain ta' va h' where "ta = extTA2JVM P ta'" "\<sigma>' = extRet2JVM n h' stk loc C M pc Frs va"
     "(ta', va, h') \<in> red_external_aggr P t a M' (rev (take n stk)) h"
@@ -326,7 +326,7 @@ proof -
     where "start_heap_ok" and "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>m\<rfloor> in D"
     and "P,start_heap \<turnstile> vs [:\<le>] Ts" by cases
   with wf BV_correct_initial[OF wf this] show ?thesis
-    by(cases m)(auto simp add: correct_jvm_state_def start_state_def JVM_start_state'_def intro: lock_thread_okI ts_okI split: split_if_asm)
+    by(cases m)(auto simp add: correct_jvm_state_def start_state_def JVM_start_state'_def intro: lock_thread_okI ts_okI split: if_split_asm)
 qed
 
 end
@@ -446,7 +446,7 @@ proof -
     case None
     with assms show ?thesis
       apply(cases "instrs_of P C M ! pc")
-      apply(auto simp add: exec_1_iff lock_ok_las_def finfun_upd_apply split_beta final_thread.actions_ok_iff split: split_if_asm dest: red_external_aggr_ta_satisfiable[where final=JVM_final])
+      apply(auto simp add: exec_1_iff lock_ok_las_def finfun_upd_apply split_beta final_thread.actions_ok_iff split: if_split_asm dest: red_external_aggr_ta_satisfiable[where final=JVM_final])
       apply(fastforce simp add: final_thread.actions_ok_iff lock_ok_las_def dest: red_external_aggr_ta_satisfiable[where final=JVM_final])
       apply(fastforce simp add: finfun_upd_apply intro: exI[where x="K$ None"] exI[where x="K$ \<lfloor>(t, 0)\<rfloor>"] may_lock.intros)+
       done
@@ -579,7 +579,7 @@ next
         and Ts: "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some Ts"
         and [simp]: "xcp = None"
         apply(cases xcp)
-        apply(simp add: is_Ref_def has_method_def external_WT'_iff check_def lock_ok_las'_def confs_conv_map split_beta split: split_if_asm option.splits)
+        apply(simp add: is_Ref_def has_method_def external_WT'_iff check_def lock_ok_las'_def confs_conv_map split_beta split: if_split_asm option.splits)
         apply(auto simp add: lock_ok_las'_def)[2]
         apply(fastforce simp add: is_native.simps lock_ok_las'_def dest: sees_method_fun)+
         done
@@ -611,13 +611,13 @@ next
     next
       case MEnter
       with exec sees naok ws have False
-        by(cases xcp)(auto split: split_if_asm simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
+        by(cases xcp)(auto split: if_split_asm simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
       thus ?thesis ..
     next
       case MExit
       with exec sees False check ws obtain a where [simp]: "hd stk = Addr a" "xcp = None" "ws t = None"
         and ta: "ta = \<lbrace>Unlock\<rightarrow>a, SyncUnlock a\<rbrace> \<or> ta = \<lbrace>UnlockFail\<rightarrow>a\<rbrace>"
-        by(cases xcp)(fastforce split: split_if_asm simp add: lock_ok_las'_def finfun_upd_apply is_Ref_def check_def)+
+        by(cases xcp)(fastforce split: if_split_asm simp add: lock_ok_las'_def finfun_upd_apply is_Ref_def check_def)+
       from ta show ?thesis
       proof(rule disjE)
         assume ta: "ta = \<lbrace>Unlock\<rightarrow>a, SyncUnlock a\<rbrace>"
@@ -648,7 +648,7 @@ next
           by(auto simp add: final_thread.actions_subset_iff collect_locks'_def finfun_upd_apply ta_upd_simps)
         ultimately show ?thesis by(fastforce simp add: ta_upd_simps)
       qed
-    qed(case_tac [!] xcp, auto simp add: split_beta lock_ok_las'_def split: split_if_asm)
+    qed(case_tac [!] xcp, auto simp add: split_beta lock_ok_las'_def split: if_split_asm)
   qed
   thus "\<exists>ta' x' m'. mexecd P t (x, shr s) ta' (x', m') \<and> 
                    (final_thread.actions_ok JVM_final s t ta' \<or>
@@ -669,7 +669,7 @@ next
   have "exec_d P t (xcp, shr s, f # Frs) \<noteq> TypeError" by(auto dest: no_type_error)
   then obtain \<Sigma> where "exec_d P t (xcp, shr s, f # Frs) = Normal \<Sigma>" by(auto)
   hence "exec P t (xcp, shr s, f # Frs) = \<Sigma>"
-    by(auto simp add: exec_d_def check_def split: split_if_asm)
+    by(auto simp add: exec_d_def check_def split: if_split_asm)
   with progress[OF wf `\<Phi> \<turnstile> t: (xcp, shr s, f # Frs) \<surd>`]
   obtain ta \<sigma> where "(ta, \<sigma>) \<in> \<Sigma>" unfolding exec_1_iff by blast
   with `x = (xcp, frs)` `frs = f # Frs` `\<Phi> \<turnstile> t: (xcp, shr s, f # Frs) \<surd>`
@@ -982,15 +982,15 @@ proof(cases i)
     ultimately have "ta''' = ta'''' \<and> va' = va'' \<and> h' = h''"
       by(rule red_external_deterministic[OF det]) }
   with assms Invoke show ?thesis
-    by(clarsimp simp add: split_beta split: split_if_asm) blast
+    by(clarsimp simp add: split_beta split: if_split_asm) blast
 next
   case MExit
   { assume "final_thread.actions_ok final s t \<lbrace>UnlockFail\<rightarrow>the_Addr (hd stk)\<rbrace>"
     and "final_thread.actions_ok final s t \<lbrace>Unlock\<rightarrow>the_Addr (hd stk), SyncUnlock (the_Addr (hd stk))\<rbrace>"
     hence False 
       by(auto simp add: final_thread.actions_ok_iff lock_ok_las_def finfun_upd_apply elim!: allE[where x="the_Addr (hd stk)"]) }
-  with assms MExit show ?thesis by(auto split: split_if_asm)
-qed(auto simp add: split_beta split: split_if_asm dest: deterministic_heap_ops_readD[OF det] deterministic_heap_ops_writeD[OF det] deterministic_heap_ops_allocateD[OF det])
+  with assms MExit show ?thesis by(auto split: if_split_asm)
+qed(auto simp add: split_beta split: if_split_asm dest: deterministic_heap_ops_readD[OF det] deterministic_heap_ops_writeD[OF det] deterministic_heap_ops_allocateD[OF det])
 
 lemma exec_1_deterministic:
   assumes wf: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"

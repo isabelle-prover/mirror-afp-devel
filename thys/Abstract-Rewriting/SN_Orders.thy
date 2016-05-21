@@ -324,7 +324,7 @@ lemma non_inf_image:
 proof
   fix a g
   assume s: "\<And> i. (g i, g (Suc i)) \<in> s"
-  def h \<equiv> "f o g"
+  define h where "h = f o g"
   from image[OF s] have h: "\<And> i. (h i, h (Suc i)) \<in> r" unfolding h_def comp_def .
   from non_infE[OF ni, of h] have "\<And> a. \<exists> i. (h i, a) \<notin> r" using h by blast
   thus "\<exists>i. (g i, a) \<notin> s" using image unfolding h_def comp_def by blast

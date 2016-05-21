@@ -5,10 +5,10 @@ imports
   "../ODE_Auxiliarities"
 begin
 
-subsection {* (Counter)Example of Mean Value Theorem in Euclidean Space *}
-text {* \label{sec:countermvt} *}
+subsection \<open>(Counter)Example of Mean Value Theorem in Euclidean Space\<close>
+text \<open>\label{sec:countermvt}\<close>
 
-text {* There is no exact analogon of the mean value theorem in the multivariate case! *}
+text \<open>There is no exact analogon of the mean value theorem in the multivariate case!\<close>
 
 lemma MVT_wrong: assumes
     "\<And>J a u (f::real*real\<Rightarrow>real*real).

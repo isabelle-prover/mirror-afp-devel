@@ -1,4 +1,4 @@
-(* 
+(*
   Theory: PDF_Transformations.thy
   Author: Manuel Eberl
 
@@ -10,6 +10,9 @@ section {* Measure Space Transformations *}
 theory PDF_Transformations
 imports Density_Predicates
 begin
+
+lemma not_top_le_1_ennreal[simp]: "\<not> top \<le> (1::ennreal)"
+  by (simp add: top_unique)
 
 lemma range_int: "range int = {n. n \<ge> 0}"
 proof (intro equalityI subsetI)
@@ -29,66 +32,62 @@ lemma Int_stable_Icc: "Int_stable (range (\<lambda>(a, b). {a .. b::real}))"
   by (auto simp: Int_stable_def)
 
 lemma distr_mult_real:
-  assumes "c \<noteq> 0" "has_density M lborel (f :: real \<Rightarrow> ereal)"
+  assumes "c \<noteq> 0" "has_density M lborel (f :: real \<Rightarrow> ennreal)"
   shows "has_density (distr M borel (op * c)) lborel (\<lambda>x. f (x / c) * inverse (abs c))"
             (is "has_density ?M' _ ?f'")
 proof
   from assms(2) have "M = density lborel f" by (rule has_densityD)
-  also from assms have Mf: "f \<in> borel_measurable borel"
+  also from assms have Mf[measurable]: "f \<in> borel_measurable borel"
     by (auto dest: has_densityD)
   hence "distr (density lborel f) borel (op * c) = density lborel ?f'" (is "?M1 = ?M2")
   proof (intro measure_eqI)
-    fix X assume X: "X \<in> sets (distr (density lborel f) borel (op * c))"
+    fix X assume X[measurable]: "X \<in> sets (distr (density lborel f) borel (op * c))"
     with assms have "emeasure ?M1 X = \<integral>\<^sup>+x. f x * indicator X (c * x) \<partial>lborel"
       by (subst emeasure_distr, simp, simp, subst emeasure_density)
-         (auto dest: has_densityD intro!: measurable_sets_borel nn_integral_cong 
+         (auto dest: has_densityD intro!: measurable_sets_borel nn_integral_cong
                split: split_indicator)
     also from assms(1) and X have "... = \<integral>\<^sup>+x. ?f' x * indicator X x \<partial>lborel"
-      apply (subst lborel_distr_mult'[of "inverse c"], simp, subst nn_integral_density)
-      apply (auto intro!: borel_measurable_ereal_times Mf) [4]
-      apply (subst nn_integral_distr)
-      apply (auto intro!: borel_measurable_ereal_times Mf simp: field_simps)
+      apply (subst lborel_distr_mult'[of "inverse c"])
+      apply simp
+      apply (subst nn_integral_density)
+      apply (simp_all add: nn_integral_distr field_simps)
       done
     also from X have "... = emeasure ?M2 X"
-      by (subst emeasure_density)
-         (auto intro!: measurable_compose[OF borel_measurable_divide Mf] 
-                       borel_measurable_ereal_times)
+      by (subst emeasure_density) auto
     finally show "emeasure ?M1 X = emeasure ?M2 X" .
   qed simp
   finally show "distr M borel (op * c) = density lborel ?f'" .
-qed (insert assms, auto dest: has_densityD intro!: ereal_0_le_mult)
+qed (insert assms, auto dest: has_densityD)
 
 lemma distr_uminus_real:
-  assumes "has_density M lborel (f :: real \<Rightarrow> ereal)"
+  assumes "has_density M lborel (f :: real \<Rightarrow> ennreal)"
   shows "has_density (distr M borel uminus) lborel (\<lambda>x. f (- x))"
 proof-
-  from assms have "has_density (distr M borel (op * (- 1))) lborel 
-                       (\<lambda>x. f (x / -1) * ereal (inverse (abs (-1))))"
+  from assms have "has_density (distr M borel (op * (- 1))) lborel
+                       (\<lambda>x. f (x / -1) * ennreal (inverse (abs (-1))))"
     by (intro distr_mult_real) simp_all
   also have "op * (-1) = (uminus :: real \<Rightarrow> real)" by (intro ext) simp
-  also have "(\<lambda>x. f (x / -1) * ereal (inverse (abs (-1)))) = (\<lambda>x. f (-x))"
-    by (intro ext) (simp add: one_ereal_def[symmetric])
+  also have "(\<lambda>x. f (x / -1) * ennreal (inverse (abs (-1)))) = (\<lambda>x. f (-x))"
+    by (intro ext) (simp add: one_ennreal_def[symmetric])
   finally show ?thesis .
 qed
 
 lemma distr_plus_real:
-  assumes "has_density M lborel (f :: real \<Rightarrow> ereal)"
+  assumes "has_density M lborel (f :: real \<Rightarrow> ennreal)"
   shows "has_density (distr M borel (op + c)) lborel (\<lambda>x. f (x - c))"
 proof
   from assms have "M = density lborel f" by (rule has_densityD)
-  also from assms have Mf: "f \<in> borel_measurable borel"
+  also from assms have Mf[measurable]: "f \<in> borel_measurable borel"
     by (auto dest: has_densityD)
   hence "distr (density lborel f) borel (op + c) = density lborel (\<lambda>x. f (x - c))" (is "?M1 = ?M2")
   proof (intro measure_eqI)
     fix X assume X: "X \<in> sets (distr (density lborel f) borel (op + c))"
     with assms have "emeasure ?M1 X = \<integral>\<^sup>+x. f x * indicator X (c + x) \<partial>lborel"
       by (subst emeasure_distr, simp, simp, subst emeasure_density)
-         (auto dest: has_densityD intro!: measurable_sets_borel nn_integral_cong 
+         (auto dest: has_densityD intro!: measurable_sets_borel nn_integral_cong
                split: split_indicator)
     also from X have "... = \<integral>\<^sup>+x. f (x - c) * indicator X x \<partial>lborel"
-      by (subst lborel_distr_plus[where c = "-c", symmetric], subst nn_integral_distr)
-          (auto intro!: borel_measurable_ereal_times Mf 
-                measurable_compose[OF borel_measurable_uminus borel_measurable_indicator])
+      by (subst lborel_distr_plus[where c = "-c", symmetric], subst nn_integral_distr) auto
     also from X have "... = emeasure ?M2 X"
       by (subst emeasure_density)
          (auto simp: emeasure_density intro!: measurable_compose[OF borel_measurable_diff Mf])
@@ -112,17 +111,17 @@ proof (rule distr_bij_count_space[symmetric])
 qed
 
 lemma distr_uminus_ring_count_space:
-  assumes "has_density M (count_space UNIV) (f :: _ :: ring \<Rightarrow> ereal)"
+  assumes "has_density M (count_space UNIV) (f :: _ :: ring \<Rightarrow> ennreal)"
   shows "has_density (distr M (count_space UNIV) uminus) (count_space UNIV) (\<lambda>x. f (- x))"
 proof
   from assms have "M = density (count_space UNIV) f" by (rule has_densityD)
-  also have "distr (density (count_space UNIV) f) (count_space UNIV) uminus = 
+  also have "distr (density (count_space UNIV) f) (count_space UNIV) uminus =
                density (count_space UNIV)(\<lambda>x. f (- x))" (is "?M1 = ?M2")
   proof (intro measure_eqI)
     fix X assume X: "X \<in> sets (distr (density (count_space UNIV) f) (count_space UNIV) uminus)"
     with assms have "emeasure ?M1 X = \<integral>\<^sup>+x. f x * indicator X (-x) \<partial>count_space UNIV"
       by (subst emeasure_distr, simp, simp, subst emeasure_density)
-         (auto dest: has_densityD intro!: measurable_sets_borel nn_integral_cong 
+         (auto dest: has_densityD intro!: measurable_sets_borel nn_integral_cong
                split: split_indicator)
     also from X have "... = emeasure ?M2 X"
       by (subst count_space_uminus) (simp_all add: nn_integral_distr emeasure_density)
@@ -132,17 +131,17 @@ proof
 qed (insert assms, auto dest: has_densityD)
 
 lemma distr_plus_ring_count_space:
-  assumes "has_density M (count_space UNIV) (f :: _ :: ring \<Rightarrow> ereal)"
+  assumes "has_density M (count_space UNIV) (f :: _ :: ring \<Rightarrow> ennreal)"
   shows "has_density (distr M (count_space UNIV) (op + c)) (count_space UNIV) (\<lambda>x. f (x - c))"
 proof
   from assms have "M = density (count_space UNIV) f" by (rule has_densityD)
-  also have "distr (density (count_space UNIV) f) (count_space UNIV) (op + c) = 
+  also have "distr (density (count_space UNIV) f) (count_space UNIV) (op + c) =
                density (count_space UNIV)(\<lambda>x. f (x - c))" (is "?M1 = ?M2")
   proof (intro measure_eqI)
     fix X assume X: "X \<in> sets (distr (density (count_space UNIV) f) (count_space UNIV) (op + c))"
     with assms have "emeasure ?M1 X = \<integral>\<^sup>+x. f x * indicator X (c + x) \<partial>count_space UNIV"
       by (subst emeasure_distr, simp, simp, subst emeasure_density)
-         (auto dest: has_densityD intro!: measurable_sets_borel nn_integral_cong 
+         (auto dest: has_densityD intro!: measurable_sets_borel nn_integral_cong
                split: split_indicator)
     also from X have "... = emeasure ?M2 X"
       by (subst count_space_plus[of "-c"]) (simp_all add: nn_integral_distr emeasure_density)
@@ -156,14 +155,13 @@ lemma subprob_density_distr_real_eq:
   assumes dens: "has_subprob_density M lborel f"
   assumes Mh: "h \<in> borel_measurable borel"
   assumes Mg: "g \<in> borel_measurable borel"
-  assumes nonneg_g: "\<And>x. g x \<ge> 0"
   assumes measure_eq:
-    "\<And>a b. a \<le> b \<Longrightarrow> emeasure (distr (density lborel f) lborel h) {a..b} = 
+    "\<And>a b. a \<le> b \<Longrightarrow> emeasure (distr (density lborel f) lborel h) {a..b} =
                           emeasure (density lborel g) {a..b}"
   shows "has_subprob_density (distr M borel (h :: real \<Rightarrow> real)) lborel g"
 proof (rule has_subprob_densityI)
   from dens have sets_M: "sets M = sets borel" by (auto dest: has_subprob_densityD)
-  have meas_M[simp]: "measurable M = measurable borel" 
+  have meas_M[simp]: "measurable M = measurable borel"
     by (intro ext, subst measurable_cong_sets[OF sets_M refl]) auto
   from Mh and dens show subprob_space: "subprob_space (distr M borel h)"
     by (intro subprob_space.subprob_space_distr) (auto dest: has_subprob_densityD)
@@ -176,7 +174,7 @@ proof (rule has_subprob_densityI)
     }
     thus "(\<Union>i::nat. {-real i..real i}) = UNIV" by blast
   next
-    fix i :: nat 
+    fix i :: nat
     from subprob_space have "emeasure (distr M borel h) {-real i..real i} \<le> 1"
       by (intro subprob_space.subprob_emeasure_le_1) (auto dest: has_subprob_densityD)
     thus "emeasure (distr M borel h) {- real i..real i} \<noteq> \<infinity>" by auto
@@ -193,18 +191,14 @@ qed (insert assms, auto)
 
 lemma subprob_density_distr_real_exp:
   assumes dens: "has_subprob_density M lborel f"
-  shows "has_subprob_density (distr M borel exp) lborel 
-           (\<lambda>x. if x > 0 then f (ln x) * ereal (inverse x) else 0)"
+  shows "has_subprob_density (distr M borel exp) lborel
+           (\<lambda>x. if x > 0 then f (ln x) * ennreal (inverse x) else 0)"
            (is "has_subprob_density _ _ ?g")
 proof (rule subprob_density_distr_real_eq[OF dens])
-  fix x from dens show "?g x \<ge> 0" by (auto intro!: ereal_0_le_mult dest: has_subprob_densityD)
-next
-  from dens have Mg': "(\<lambda>x. f (ln x) * ereal (inverse x)) \<in> borel_measurable borel"
-    by (intro borel_measurable_ereal_times borel_measurable_ereal
-              measurable_compose[OF borel_measurable_ln]) (auto dest: has_subprob_densityD)
-  thus Mg: "?g \<in> borel_measurable borel" 
-    by (intro measurable_If) simp_all
-  from dens have Mf: "f \<in> borel_measurable borel" by (auto dest: has_subprob_densityD)
+  from dens have [measurable]: "f \<in> borel_measurable borel"
+    by (auto dest: has_subprob_densityD)
+
+  have Mf: "(\<lambda>x. f (ln x) * ennreal (inverse x)) \<in> borel_measurable borel" by simp
 
   fix a b :: real assume "a \<le> b"
 
@@ -223,8 +217,7 @@ next
     by (subst decomp, intro plus_emeasure[symmetric]) auto
   also have "emeasure ?M1 ?C = 0" by (subst emeasure_distr) auto
   also have "0 = emeasure ?M2 ?C"
-    by (subst emeasure_density, simp add: Mg, simp, rule sym, subst nn_integral_0_iff)
-       (auto intro!: borel_measurable_ereal_times measurable_If measurable_compose[OF _ Mf])
+    by (subst emeasure_density, simp, simp, rule sym, subst nn_integral_0_iff) auto
   also have "emeasure ?M1 (\<Union>i. ?A i \<inter> {a..b}) = (SUP i. emeasure ?M1 (?A i \<inter> {a..b}))"
     by (rule SUP_emeasure_incseq[symmetric])
        (auto simp: incseq_def max_def not_le dest: order.strict_trans1)
@@ -235,17 +228,17 @@ next
     from `a \<le> b` have A: "?A i \<inter> {a..b} = {max ?a a..b}" (is "?E = ?F") by auto
     hence "emeasure ?M1 ?E = emeasure ?M1 ?F" by simp
     also have "strict_mono_on ln {max (inverse (real (Suc i))) a..b}"
-      by (rule strict_mono_onI, subst ln_less_cancel_iff) 
+      by (rule strict_mono_onI, subst ln_less_cancel_iff)
          (auto dest: inv_le simp del: of_nat_Suc)
-    with `a \<le> b` True dens 
+    with `a \<le> b` True dens
       have "emeasure ?M1 ?F = emeasure (density lborel (\<lambda>x. f (ln x) * inverse x)) ?F"
       by (intro emeasure_density_distr_interval)
          (auto simp: Mf not_less not_le range_exp dest: has_subprob_densityD dest!: inv_le
                intro!: DERIV_ln continuous_on_inverse continuous_on_id simp del: of_nat_Suc)
     also note A[symmetric]
     also have "emeasure (density lborel (\<lambda>x. f (ln x) * inverse x)) ?E = emeasure ?M2 ?E"
-      by (subst (1 2) emeasure_density) 
-         (auto simp: Mg Mg' intro!: nn_integral_cong split: split_indicator dest!: inv_le simp del: of_nat_Suc)
+      by (subst (1 2) emeasure_density)
+         (auto intro!: nn_integral_cong split: split_indicator dest!: inv_le simp del: of_nat_Suc)
     finally show "emeasure ?M1 (?A i \<inter> {a..b}) = emeasure ?M2 (?A i \<inter> {a..b})" .
   qed simp
   hence "(SUP i. emeasure ?M1 (?A i \<inter> {a..b})) = (SUP i. emeasure ?M2 (?A i \<inter> {a..b}))" by simp
@@ -256,22 +249,18 @@ next
     by (rule plus_emeasure) (auto dest: inv_le simp del: of_nat_Suc)
   also note decomp[symmetric]
   finally show "emeasure ?M1 {a..b} = emeasure ?M2 {a..b}" .
-qed simp
-
+qed (insert dens, auto dest!: has_subprob_densityD(1))
 
 lemma subprob_density_distr_real_inverse_aux:
   assumes dens: "has_subprob_density M lborel f"
-  shows "has_subprob_density (distr M borel (\<lambda>x. - inverse x)) lborel 
-              (\<lambda>x. f (-inverse x) * ereal (inverse (x * x)))"
+  shows "has_subprob_density (distr M borel (\<lambda>x. - inverse x)) lborel
+              (\<lambda>x. f (-inverse x) * ennreal (inverse (x * x)))"
            (is "has_subprob_density _ _ ?g")
 proof (rule subprob_density_distr_real_eq[OF dens])
-  fix x from dens show "?g x \<ge> 0" 
-    by (auto intro!: ereal_0_le_mult dest: has_subprob_densityD simp: field_simps)
-next
   from dens have Mf[measurable]: "f \<in> borel_measurable borel" by (auto dest: has_subprob_densityD)
   show Mg: "?g \<in> borel_measurable borel" by measurable
 
-  have surj[simp]: "surj (\<lambda>x. - inverse x :: real)" 
+  have surj[simp]: "surj (\<lambda>x. - inverse x :: real)"
     by (intro surjI[of _ "\<lambda>x. - inverse x"]) (simp add: field_simps)
   fix a b :: real assume "a \<le> b"
   let ?A1 = "\<lambda>i. {..-inverse (Suc i) :: real}" and  ?A2 = "\<lambda>i. {inverse (Suc i) :: real ..}"
@@ -290,18 +279,18 @@ next
   moreover have "\<And>x. x < 0 \<Longrightarrow> \<exists>i. x \<le> -inverse (Suc i)"
   proof (rule ccontr)
     fix x :: real assume "x < 0" "\<not>(\<exists>i. x \<le> -inverse (Suc i))"
-    hence "x \<ge> 0" 
+    hence "x \<ge> 0"
       by (intro tendsto_ge_const[of sequentially], simp)
          (auto intro!: always_eventually less_imp_le LIMSEQ_inverse_real_of_nat_add_minus simp: not_le)
     with `x < 0` show False by simp
   qed
-  hence B: "(\<Union>i. ?A1 i) = {..<0}" 
+  hence B: "(\<Union>i. ?A1 i) = {..<0}"
     by (auto simp: le_minus_iff[of _ "inverse x" for x] dest!: inv_le simp del: of_nat_Suc)
   ultimately have C: "UNIV = (\<Union>i. ?A1 i) \<union> (\<Union>i. ?A2 i) \<union> {0}" by (subst A, subst B) force
   have UN_Int_distrib: "\<And>f A. (\<Union>i. f i) \<inter> A = (\<Union>i. f i \<inter> A)" by blast
   have decomp: "{a..b} = (\<Union>i. ?A1 i \<inter> {a..b}) \<union> (\<Union>i. ?A2 i \<inter> {a..b}) \<union> ?C" (is "_ = ?D \<union> ?E \<union> _")
     by (subst Int_UNIV_left[symmetric], simp only: C Int_Un_distrib2 UN_Int_distrib)
-       (simp split: split_if)
+       (simp split: if_split)
   have "emeasure ?M1 {a..b} = emeasure ?M1 ?D + emeasure ?M1 ?E + emeasure ?M1 ?C"
     apply (subst decomp)
     apply (subst plus_emeasure[symmetric], simp, simp, simp)
@@ -309,8 +298,8 @@ next
     apply (auto dest!: inv_le simp: not_le le_minus_iff[of _ "inverse x" for x] simp del: of_nat_Suc)
     done
   also have "(\<lambda>x. - inverse x) -` {0 :: real} = {0}" by (auto simp: field_simps)
-  hence "emeasure ?M1 ?C = 0" 
-    by (subst emeasure_distr)  (auto split: split_if simp: emeasure_density Mf)
+  hence "emeasure ?M1 ?C = 0"
+    by (subst emeasure_distr)  (auto split: if_split simp: emeasure_density Mf)
   also have "emeasure ?M2 {0} = 0" by (simp add: emeasure_density)
   hence "0 = emeasure ?M2 ?C"
     by (rule_tac sym, rule_tac order.antisym, rule_tac order.trans, rule_tac emeasure_mono[of _ "{0}"]) simp_all
@@ -324,12 +313,12 @@ next
     from `a \<le> b` have A: "?A1 i \<inter> {a..b} = {a..min ?a b}" (is "?F = ?G") by auto
     hence "emeasure ?M1 ?F = emeasure ?M1 ?G" by simp
     also have "strict_mono_on (\<lambda>x. -inverse x) {a..min ?a b}"
-      by (rule strict_mono_onI) 
+      by (rule strict_mono_onI)
          (auto simp: le_minus_iff[of _ "inverse x" for x] dest!: inv_le simp del: of_nat_Suc)
-    with `a \<le> b` True dens 
+    with `a \<le> b` True dens
       have "emeasure ?M1 ?G = emeasure ?M2 ?G"
       by (intro emeasure_density_distr_interval)
-         (auto simp: Mf not_less dest: has_subprob_densityD inv_le 
+         (auto simp: Mf not_less dest: has_subprob_densityD inv_le
                intro!: derivative_eq_intros continuous_on_mult continuous_on_inverse continuous_on_id)
     also note A[symmetric]
     finally show "emeasure ?M1 (?A1 i \<inter> {a..b}) = emeasure ?M2 (?A1 i \<inter> {a..b})" .
@@ -349,10 +338,10 @@ next
     hence "emeasure ?M1 ?F = emeasure ?M1 ?G" by simp
     also have "strict_mono_on (\<lambda>x. -inverse x) {max ?a a..b}"
       by (rule strict_mono_onI) (auto dest!: inv_le simp: not_le simp del: of_nat_Suc)
-    with `a \<le> b` True dens 
+    with `a \<le> b` True dens
       have "emeasure ?M1 ?G = emeasure ?M2 ?G"
       by (intro emeasure_density_distr_interval)
-         (auto simp: Mf not_less dest: has_subprob_densityD inv_le 
+         (auto simp: Mf not_less dest: has_subprob_densityD inv_le
                intro!: derivative_eq_intros continuous_on_mult continuous_on_inverse continuous_on_id)
     also note A[symmetric]
     finally show "emeasure ?M1 (?A2 i \<inter> {a..b}) = emeasure ?M2 (?A2 i \<inter> {a..b})" .
@@ -360,7 +349,7 @@ next
   hence "(SUP i. emeasure ?M1 (?A2 i \<inter> {a..b})) = (SUP i. emeasure ?M2 (?A2 i \<inter> {a..b}))" by simp
   also have "... = emeasure ?M2 (\<Union>i. ?A2 i \<inter> {a..b})"
     by (rule SUP_emeasure_incseq)
-       (auto simp: incseq_def max_def not_le dest: order.strict_trans1) 
+       (auto simp: incseq_def max_def not_le dest: order.strict_trans1)
   also have "emeasure ?M2 ?D + emeasure ?M2 ?E + emeasure ?M2 ?C = emeasure ?M2 {a..b}"
     apply (subst (4) decomp)
     apply (subst plus_emeasure, simp, simp)
@@ -373,27 +362,27 @@ qed simp
 
 lemma subprob_density_distr_real_inverse:
   assumes dens: "has_subprob_density M lborel f"
-  shows "has_subprob_density (distr M borel inverse) lborel (\<lambda>x. f (inverse x) * ereal (inverse (x * x)))"
+  shows "has_subprob_density (distr M borel inverse) lborel (\<lambda>x. f (inverse x) * ennreal (inverse (x * x)))"
 proof (unfold has_subprob_density_def, intro conjI)
-  let ?g' = "(\<lambda>x. f (-inverse x) * ereal (inverse (x * x)))"
+  let ?g' = "(\<lambda>x. f (-inverse x) * ennreal (inverse (x * x)))"
   have prob: "has_subprob_density (distr M borel (\<lambda>x. -inverse x)) lborel ?g'"
     by (rule subprob_density_distr_real_inverse_aux[OF assms])
   from assms have sets_M: "sets M = sets borel" by (auto dest: has_subprob_densityD)
   have [simp]: "measurable M = measurable borel"
     by (intro ext, subst measurable_cong_sets[OF sets_M refl]) auto
   from prob have dens: "has_density (distr M lborel (\<lambda>x. -inverse x)) lborel
-                 (\<lambda>x. f (-inverse x) * ereal (inverse (x * x)))"
+                 (\<lambda>x. f (-inverse x) * ennreal (inverse (x * x)))"
     unfolding has_subprob_density_def by (simp cong: distr_cong)
   from distr_uminus_real[OF this]
-    show "has_density (distr M borel inverse) lborel 
-              (\<lambda>x. f (inverse x) * ereal (inverse (x * x)))"
+    show "has_density (distr M borel inverse) lborel
+              (\<lambda>x. f (inverse x) * ennreal (inverse (x * x)))"
     by (simp add: distr_distr o_def cong: distr_cong)
   show "subprob_space (distr M borel inverse)"
     by (intro subprob_space.subprob_space_distr has_subprob_densityD[OF assms]) simp_all
 qed
 
 lemma distr_convolution_real:
-  assumes "has_density M lborel (f :: (real \<times> real) \<Rightarrow> ereal)"
+  assumes "has_density M lborel (f :: (real \<times> real) \<Rightarrow> ennreal)"
   shows "has_density (distr M borel (case_prod op+)) lborel (\<lambda>z. \<integral>\<^sup>+x. f (x, z - x) \<partial>lborel)"
             (is "has_density ?M' _ ?f'")
 proof
@@ -402,39 +391,35 @@ proof
 
   from assms have sets_M: "sets M = sets borel" by (auto dest: has_densityD)
   hence [simp]: "space M = UNIV" by (subst sets_eq_imp_space_eq[OF sets_M]) simp
-  from sets_M have [simp]: "measurable M = measurable borel" 
+  from sets_M have [simp]: "measurable M = measurable borel"
     by (intro ext measurable_cong_sets) simp_all
   have M_add: "case_prod op+ \<in> borel_measurable (borel :: (real \<times> real) measure)"
     by (simp add: borel_prod[symmetric])
 
   show "distr M borel (case_prod op+) = density lborel ?f'"
   proof (rule measure_eqI)
-    fix X :: "real set" assume X: "X \<in> sets (distr M borel (case_prod op+))"
+    fix X :: "real set" assume X[measurable]: "X \<in> sets (distr M borel (case_prod op+))"
     hence "emeasure (distr M borel (case_prod op+)) X = emeasure M ((\<lambda>(x, y). x + y) -` X)"
       by (simp_all add: M_add emeasure_distr)
     also from X have "... = \<integral>\<^sup>+z. f z * indicator ((\<lambda>(x, y). x + y) -` X) z \<partial>(lborel \<Otimes>\<^sub>M lborel)"
-      by (simp add: emeasure_density has_densityD[OF assms] 
+      by (simp add: emeasure_density has_densityD[OF assms]
                      measurable_sets_borel[OF M_add] lborel_prod)
     also have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+y. f (x, y) * indicator ((\<lambda>(x, y). x + y) -` X) (x,y) \<partial>lborel \<partial>lborel"
       apply (rule lborel.nn_integral_fst[symmetric])
-      apply (rule borel_measurable_ereal_times, simp add: Mf lborel_prod)
-      apply (rule borel_measurable_indicator, simp only: lborel_prod sets_lborel)
-      apply (insert X, simp add: measurable_sets_borel[OF M_add])
+      apply measurable
+      apply (simp_all add: borel_prod)
       done
-    also have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+y. f (x, y) * indicator ((\<lambda>(x, y). x + y) -` X) (x,y) 
+    also have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+y. f (x, y) * indicator ((\<lambda>(x, y). x + y) -` X) (x,y)
                           \<partial>distr lborel borel (op + (-x)) \<partial>lborel"
       by (rule nn_integral_cong, subst lborel_distr_plus) simp
-    also have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+z. f (x, z-x) * indicator ((\<lambda>(x, y). x + y) -` X) (x, z-x) 
+    also have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+z. f (x, z-x) * indicator ((\<lambda>(x, y). x + y) -` X) (x, z-x)
                           \<partial>lborel \<partial>lborel"
-      apply (rule nn_integral_cong, subst nn_integral_distr, simp)
-      apply (intro borel_measurable_ereal_times, simp)
-      apply (intro measurable_compose[OF measurable_Pair borel_measurable_indicator])
-      apply (rule borel_measurable_const)
-      apply (rule measurable_id)
-      apply (insert X)
-      apply (subst borel_prod)
-      apply (simp add: borel_prod measurable_sets_borel[OF M_add])
-      apply (simp)
+      apply (rule nn_integral_cong)
+      apply (subst nn_integral_distr)
+      apply simp_all
+      apply measurable
+      apply (subst space_count_space)
+      apply auto
       done
     also have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+z. f (x, z-x) * indicator X z \<partial>lborel \<partial>lborel"
       by (intro nn_integral_cong) (simp split: split_indicator)
@@ -447,21 +432,21 @@ proof
       by (simp add: emeasure_density)
     finally show "emeasure (distr M borel (case_prod op+)) X = emeasure (density lborel ?f') X" .
   qed (insert assms, auto dest: has_densityD)
-qed (simp_all add: nn_integral_nonneg)
+qed simp_all
 
 lemma distr_convolution_ring_count_space:
   assumes C: "countable (UNIV :: 'a set)"
-  assumes "has_density M (count_space UNIV) (f :: (('a :: ring) \<times> 'a) \<Rightarrow> ereal)"
-  shows "has_density (distr M (count_space UNIV) (case_prod op+)) (count_space UNIV) 
+  assumes "has_density M (count_space UNIV) (f :: (('a :: ring) \<times> 'a) \<Rightarrow> ennreal)"
+  shows "has_density (distr M (count_space UNIV) (case_prod op+)) (count_space UNIV)
              (\<lambda>z. \<integral>\<^sup>+x. f (x, z - x) \<partial>count_space UNIV)"
             (is "has_density ?M' _ ?f'")
 proof
   let ?CS = "count_space UNIV :: 'a measure" and ?CSP = "count_space UNIV :: ('a \<times> 'a) measure"
   show Mf': "(\<lambda>z. \<integral>\<^sup>+ x. f (x, z - x) \<partial>count_space UNIV) \<in> borel_measurable ?CS" by simp
 
-  from assms have sets_M: "sets M = UNIV" and [simp]: "space M = UNIV" 
+  from assms have sets_M: "sets M = UNIV" and [simp]: "space M = UNIV"
     by (auto dest: has_densityD)
-  from assms have [simp]: "measurable M = measurable (count_space UNIV)" 
+  from assms have [simp]: "measurable M = measurable (count_space UNIV)"
     by (intro ext measurable_cong_sets) (simp_all add: sets_M)
 
   interpret sigma_finite_measure ?CS by (rule sigma_finite_measure_count_space_countable[OF C])
@@ -471,11 +456,11 @@ proof
     hence "emeasure (distr M ?CS (case_prod op+)) X = emeasure M ((\<lambda>(x, y). x + y) -` X)"
       by (simp_all add: emeasure_distr)
     also from X have "... = \<integral>\<^sup>+z. f z * indicator ((\<lambda>(x, y). x + y) -` X) z \<partial>(?CS \<Otimes>\<^sub>M ?CS)"
-      by (simp add: emeasure_density has_densityD[OF assms(2)] 
+      by (simp add: emeasure_density has_densityD[OF assms(2)]
                      sets_M pair_measure_countable C)
     also have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+y. f (x, y) * indicator ((\<lambda>(x, y). x + y) -` X) (x,y) \<partial>?CS \<partial>?CS"
       by (rule nn_integral_fst[symmetric]) (simp add: pair_measure_countable C)
-    also have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+y. f (x, y) * indicator ((\<lambda>(x, y). x + y) -` X) (x,y) 
+    also have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+y. f (x, y) * indicator ((\<lambda>(x, y). x + y) -` X) (x,y)
                           \<partial>distr ?CS ?CS (op + (-x)) \<partial>?CS"
       by (rule nn_integral_cong, subst count_space_plus) simp
     also have "... = \<integral>\<^sup>+x. \<integral>\<^sup>+z. f (x, z-x) * indicator ((\<lambda>(x, y). x + y) -` X) (x, z-x) \<partial>?CS \<partial>?CS"
@@ -491,7 +476,6 @@ proof
     also have "... = emeasure (density ?CS ?f') X" using X by (simp add: emeasure_density)
     finally show "emeasure (distr M ?CS (case_prod op+)) X = emeasure (density ?CS ?f') X" .
   qed (insert assms, auto dest: has_densityD)
-qed (simp_all add: nn_integral_nonneg)
+qed simp_all
 
 end
-

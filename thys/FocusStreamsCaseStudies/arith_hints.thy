@@ -58,7 +58,6 @@ qed
 
 lemma arith_modZero1:
   "(t + n * t) mod Suc n = 0"
-using assms
 by (metis mod_mult_self1_is_0 mult_Suc)
 
 lemma arith_modZero2:

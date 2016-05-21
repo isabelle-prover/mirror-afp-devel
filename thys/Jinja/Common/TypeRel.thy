@@ -453,7 +453,7 @@ where
 
 lemma map_of_remap_SomeD:
   "map_of (map (\<lambda>((k,k'),x). (k,(k',x))) t) k = Some (k',x) \<Longrightarrow> map_of t (k, k') = Some x"
-(*<*)by (induct t) (auto simp:fun_upd_apply split: split_if_asm)(*>*)
+(*<*)by (induct t) (auto simp:fun_upd_apply split: if_split_asm)(*>*)
 
 
 lemma has_visible_field:
@@ -600,7 +600,7 @@ lemma method_code [code]:
 apply (rule sym, rule the_eqI)
 apply (simp add: method_def eval_Method_i_i_i_o_o_o_o_conv)
 apply (rule arg_cong [where f=The])
-apply (auto simp add: SUP_def Sup_fun_def Sup_bool_def fun_eq_iff)
+apply (auto simp add: Sup_fun_def Sup_bool_def fun_eq_iff)
 done
 
 lemma eval_Fields_conv:
@@ -624,7 +624,7 @@ lemma field_code [code]:
 apply (rule sym, rule the_eqI)
 apply (simp add: field_def eval_sees_field_i_i_i_o_o_conv)
 apply (rule arg_cong [where f=The])
-apply (auto simp add: SUP_def Sup_fun_def Sup_bool_def fun_eq_iff)
+apply (auto simp add: Sup_fun_def Sup_bool_def fun_eq_iff)
 done
 
 (*<*)

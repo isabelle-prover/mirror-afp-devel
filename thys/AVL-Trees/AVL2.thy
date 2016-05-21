@@ -98,13 +98,13 @@ lemma height_l_bal:
  "height l = height r + 2
   \<Longrightarrow> height (l_bal\<^sub>0 n l r) = height r + 2 \<or>
       height (l_bal\<^sub>0 n l r)  = height r + 3"
-  by (cases l) (auto split: tree\<^sub>0.split split_if_asm)
+  by (cases l) (auto split: tree\<^sub>0.split if_split_asm)
 
 lemma height_r_bal:
  "height r = height l + 2
   \<Longrightarrow> height (r_bal\<^sub>0 n l r) = height l + 2 \<or>
       height (r_bal\<^sub>0 n l r) = height l + 3"
-  by (cases r) (auto split: tree\<^sub>0.split split_if_asm)
+  by (cases r) (auto split: tree\<^sub>0.split if_split_asm)
 
 lemma height_insrt:
  "is_bal t

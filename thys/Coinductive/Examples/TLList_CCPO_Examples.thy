@@ -30,10 +30,10 @@ proof(rule iffI ballI)+
   thus "\<not> P x"
   proof(induct rule: tllist_set_induct)
     case (find xs)
-    thus ?case by(cases xs)(simp_all split: split_if_asm)
+    thus ?case by(cases xs)(simp_all split: if_split_asm)
   next
     case (step xs x)
-    thus ?case by(cases xs)(simp_all split: split_if_asm)
+    thus ?case by(cases xs)(simp_all split: if_split_asm)
   qed
 next
   assume ?rhs

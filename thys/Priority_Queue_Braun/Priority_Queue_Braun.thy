@@ -96,14 +96,29 @@ done
 lemma del_left_mset:
   "del_left t = (x,t') \<Longrightarrow> braun t \<Longrightarrow> t \<noteq> Leaf
   \<Longrightarrow> mset_tree t' = mset_tree t - {#x#}"
-apply(induction t arbitrary: x t' rule: del_left.induct)
-   apply(auto simp: ac_simps mset_iff_set_tree[symmetric]
+proof (induction t arbitrary: x t' rule: del_left.induct)
+  case 1 then show ?case by simp
+next
+  case "2_1" then show ?case
+    by (auto simp: ac_simps multiset_diff_union_assoc
      dest!: del_left_elem split: prod.splits)
-   apply(simp add: multiset_eq_iff)
-  apply(simp add: multiset_eq_iff)
- apply(simp add: multiset_eq_iff)
-apply(fastforce simp: multiset_eq_iff)
-done
+next
+  case ("2_2" l x v u w y t)
+  from "2_2" obtain t' where t: "t = \<langle>\<langle>v, u, w\<rangle>, x, t'\<rangle>"
+    by (auto split: prod.splits)
+  from "2_2" have y: "y \<in># mset_tree l"
+    by (auto dest!: del_left_elem split: prod.splits)
+  then have "l \<noteq> \<langle>\<rangle>"  by auto
+  with t "2_2.prems" "2_2.IH" [of y t']
+    have "mset_tree t' = mset_tree l - {#y#}"
+    by (auto simp: dest!: del_left_elem split: prod.splits)
+  with y have "mset_tree l = mset_tree t' + {#y#}"
+    by simp
+  with t show ?case
+    by (simp add: ac_simps multiset_diff_union_assoc)
+next
+  case 3 then show ?case by simp
+qed
 
 lemma del_left_heap:
   "del_left t = (x,t') \<Longrightarrow> heap t \<Longrightarrow> braun t \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> heap t'"
@@ -196,8 +211,10 @@ next
     have "mset_tree t = {#a#} + mset_tree(sift_down r y l')"
       using assms del_left_mset[OF del] del_left_size[OF del]
         del_left_braun[OF del]del_left_elem[OF del]
-      by(subst mset_sift_down)
-        (auto simp: ac_simps multiset_eq_iff mset_iff_set_tree[symmetric]) }
+      apply (subst mset_sift_down)
+      apply (auto simp: ac_simps multiset_diff_union_assoc)
+      apply (simp_all add: multiset_eq_iff)
+      done }
   thus ?thesis by(auto split: prod.split)
 qed
 

@@ -2590,7 +2590,7 @@ where
        let psS = printList (procDescr f prog) (procs g\<^sub>0) [] [] ''  '' in
        ''Initially running: '' @ psS)"
 
-abbreviation "lf \<equiv> Char Nibble0 NibbleA"
+abbreviation "lf \<equiv> CHR 0x0A"
 
 fun printConfig 
   :: "(integer \<Rightarrow> string) \<Rightarrow> program \<Rightarrow> gState option \<Rightarrow> gState \<Rightarrow> string" 

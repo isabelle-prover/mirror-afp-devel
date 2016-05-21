@@ -54,8 +54,8 @@ begin
       definition eventually :: "'a \<Rightarrow> 'a"  ("\<diamond> (_)" [900] 900) where
         "\<diamond> p = (SUP i . p !! i)"
 
-      definition "next" :: "'a \<Rightarrow> 'a"  ("\<Odot> (_)" [900] 900) where
-        "\<Odot> p = p !! (Suc 0)"
+      definition "next" :: "'a \<Rightarrow> 'a"  ("\<circle> (_)" [900] 900) where
+        "\<circle> p = p !! (Suc 0)"
 
       definition until :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "until" 65) where 
         "(p until q) = (SUP n . (INFIMUM {i . i < n}  (at p)) \<sqinter> (q !! n))"
@@ -74,7 +74,7 @@ to prove $-(p\ until\ -p) = \Box\; p$.
               have "(INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<le> (SUP i:{i. i < 0}. - p i) \<squnion> p 0"
                 by (rule INF_lower, simp)
               also have "... \<le> (INF i:{i. i \<le> 0}. p i)"
-                by (simp add: INF_def)
+                by simp
               finally show "(INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<le> (INF i:{i. i \<le> 0}. p i)"
                 by simp
             next

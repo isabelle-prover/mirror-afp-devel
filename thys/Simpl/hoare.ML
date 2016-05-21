@@ -135,20 +135,25 @@ fun dest_Un (Const (@{const_name Lattices.sup}, _) $ t1 $ t2) = dest_Un t1 @ des
 fun mk_UN' dT rT t = 
   let
     val dTs = HOLogic.mk_setT dT;
+    val rTs = HOLogic.mk_setT rT;
   in
-    Const (@{const_name Complete_Lattices.SUPREMUM},
-      dTs --> (dT --> rT) --> rT) $
-      Const (@{const_name Orderings.top}, dTs) $ t
+    Const (@{const_name Complete_Lattices.Sup}, rTs --> rT) $
+      (Const (@{const_name image}, (dT --> rT) --> dTs --> rTs) $ t $
+      Const (@{const_name Orderings.top}, dTs))
   end;
 
 fun mk_UN ((x, T), P) = mk_UN' T (fastype_of P) (absfree (x, T) P);
 
-fun dest_UN (Const (@{const_name Complete_Lattices.SUPREMUM}, _) $ Const (@{const_name Orderings.top}, _) $ Abs (x, T, t)) =
+fun dest_UN (Const (@{const_name Complete_Lattices.Sup}, _) $
+      (Const (@{const_name Set.image}, _) $ Abs (x, T, t) $
+      Const (@{const_name Orderings.top}, _))) =
       let val (vars, body) = dest_UN t
       in ((x, T) :: vars, body) end
   | dest_UN t = ([], t);
 
-fun tap_UN (Const (@{const_name Complete_Lattices.SUPREMUM}, _) $ Const (@{const_name Orderings.top}, _) $ t) = SOME t
+fun tap_UN (Const (@{const_name Complete_Lattices.Sup}, _) $
+     (Const (@{const_name Set.image}, _) $ t $
+     Const (@{const_name Orderings.top}, _))) = SOME t
   | tap_UN _ = NONE;
 
 
@@ -569,7 +574,7 @@ structure Hoare_Data = Generic_Data
   type T = hoare_data;
 
   val empty = make_hoare_data
-               (Symtab.empty: proc_info Symtab.table) (* smlnj needs typing *)
+               (Symtab.empty: proc_info Symtab.table)
                ([]:string list list)
                (Function)
                (stamp (),(K (K NONE)): Proof.context -> term -> term option)
@@ -1581,10 +1586,9 @@ fun assertion_simp_tac ctxt state_kind thms i =
 (* simplify equality test on strings (and datatype-constructors) and propagate result*)
 fun string_eq_simp_tac ctxt =
   simp_tac (put_simpset HOL_basic_ss ctxt
-    addsimps (@{thms list.inject} @ @{thms char.inject}
-      @ @{thms list.distinct} @ @{thms simp_thms}));
-    
-
+    addsimps @{thms list.inject list.distinct Char_eq_Char_iff
+      cut_eq_simps simp_thms});
+   
 
 fun assertion_string_eq_simp_tac ctxt state_kind thms i =
     assertion_simp_tac ctxt state_kind thms i THEN_MAYBE string_eq_simp_tac ctxt i;
@@ -2957,8 +2961,8 @@ val ss =
   simpset_of
     (put_simpset (simpset_of @{theory_context Fun}) @{context}
       addsimps (@{thm StateFun.lookup_def} :: @{thm StateFun.id_id_cancel}
-      :: @{thms list.inject} @ @{thms char.inject}
-      @ @{thms list.distinct} @ @{thms simp_thms})
+      :: @{thms list.inject list.distinct Char_eq_Char_iff
+      cut_eq_simps simp_thms})
     addsimprocs [Record.simproc, StateFun.lazy_conj_simproc]
     |> fold Simplifier.add_cong @{thms block_conj_cong});
 
@@ -3098,11 +3102,11 @@ local
 val state_fun_update_ss =
   simpset_of (put_simpset HOL_basic_ss @{context}
     addsimps ([@{thm StateFun.update_def}, @{thm id_def}, @{thm fun_upd_apply}, @{thm if_True}, @{thm if_False}]
-      @ @{thms list.inject} @ @{thms char.inject}
-      @ @{thms list.distinct} @ @{thms simp_thms} @ K_fun_convs)
+      @ @{thms list.inject list.distinct Char_eq_Char_iff
+      cut_eq_simps simp_thms} @ K_fun_convs)
     addsimprocs [DistinctTreeProver.distinct_simproc ["distinct_fields", "distinct_fields_globals"]]
     |> Simplifier.add_cong @{thm imp_cong} (* K_fun_congs  FIXME: Stefan fragen*)
-    |> Splitter.add_split @{thm split_if});
+    |> Splitter.add_split @{thm if_split});
 
 in
 

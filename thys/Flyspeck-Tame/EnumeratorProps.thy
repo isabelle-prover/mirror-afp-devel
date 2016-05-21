@@ -85,7 +85,7 @@ lemmas enumBase_simps = enumBase_length enumBase_bound
 
 lemma enumAppend_bound: "ls \<in> set ((enumAppend nmax) lss) \<Longrightarrow>
  \<forall> y \<in> set lss. \<forall> z \<in> set y. z \<le> nmax \<Longrightarrow> x \<in> set ls \<Longrightarrow> x \<le>  nmax"
-by (auto simp add: enumAppend_def split: split_if_asm)
+by (auto simp add: enumAppend_def split: if_split_asm)
 
 
 lemma enumAppend_bound_rec: "ls \<in> set (((enumAppend nmax) ^^ n) lss) \<Longrightarrow>
@@ -137,7 +137,7 @@ proof -
         apply (rule_tac ih2)
         by (auto simp: enumAppend_def)
     qed
-    with xs snoc show "xa \<le> x" by (auto simp: enumAppend_def split:split_if_asm)
+    with xs snoc show "xa \<le> x" by (auto simp: enumAppend_def split:if_split_asm)
   qed
   then show "xa \<le> xb" apply (cases "xb = b") apply (simp add: beq)
   proof (rule_tac ih2)
@@ -158,7 +158,7 @@ lemma enumAppend_length1: "\<And>ls. ls \<in> set ((enumAppend nmax ^^ n) lss) \
  (\<forall>l \<in> set lss. |l| = k) \<Longrightarrow> |ls| = k + n"
 apply (induct n)
 apply simp
-by (auto simp add:enumAppend_def split: split_if_asm)
+by (auto simp add:enumAppend_def split: if_split_asm)
 
 lemma enumAppend_length2: "\<And>ls. ls \<in> set ((enumAppend nmax ^^ n) lss) \<Longrightarrow>
  (\<And>l. l \<in> set lss \<Longrightarrow> |l| = k) \<Longrightarrow> K = k + n \<Longrightarrow> |ls| = K"
@@ -175,13 +175,13 @@ by(simp add: enum_def enumTab_def tabulate2_def tabulate_def)
 (*********** enumerator *********)
 
 lemma enumerator_hd: "ls \<in> set (enumerator m n) \<Longrightarrow> hd ls = 0"
-by (auto simp: enumerator_def split: split_if_asm)
+by (auto simp: enumerator_def split: if_split_asm)
 
 lemma enumerator_last: "ls \<in> set (enumerator m n) \<Longrightarrow> last ls = (n - 1)"
-by (auto simp: enumerator_def split: split_if_asm)
+by (auto simp: enumerator_def split: if_split_asm)
 
 lemma enumerator_length: "ls \<in> set (enumerator m n) \<Longrightarrow> 2 \<le> length ls"
-by (auto simp: enumerator_def split: split_if_asm)
+by (auto simp: enumerator_def split: if_split_asm)
 
 lemmas set_enumerator_simps = enumerator_hd enumerator_last enumerator_length
 
@@ -202,12 +202,12 @@ qed
 
 lemma enumerator_bound: "ls \<in> set (enumerator m nmax) \<Longrightarrow>
  0 < nmax \<Longrightarrow> x \<in> set ls \<Longrightarrow> x < nmax"
-apply (auto simp: enumerator_def split: split_if_asm)
+apply (auto simp: enumerator_def split: if_split_asm)
 apply (subgoal_tac "x \<le> nmax - 2") apply arith
 apply (rule_tac enumAppend_bound_rec) by(auto simp:enumBase_simps)
 
 lemma enumerator_bound2: "ls \<in> set (enumerator m nmax) \<Longrightarrow> 1 < nmax \<Longrightarrow> x \<in> set (butlast ls) \<Longrightarrow> x < nmax - Suc 0"
-apply (auto simp: enumerator_def split: split_if_asm)
+apply (auto simp: enumerator_def split: if_split_asm)
 apply (subgoal_tac "x \<le>  (nmax - 2)") apply arith
 apply (rule_tac enumAppend_bound_rec) by(auto simp:enumBase_simps)
 
@@ -221,7 +221,7 @@ apply (rule_tac enumerator_length) by auto
 
 
 lemma enumerator_increase: "\<And> as bs. ls \<in> set (enumerator m nmax) \<Longrightarrow>  as @ bs = ls \<Longrightarrow> \<forall> x \<in> set as. \<forall> y \<in> set bs. x \<le> y"
-apply (auto simp: enumerator_def del: Nat.diff_is_0_eq' split: split_if_asm intro: enumAppend_increase_rec)
+apply (auto simp: enumerator_def del: Nat.diff_is_0_eq' split: if_split_asm intro: enumAppend_increase_rec)
 apply (case_tac as) apply simp apply simp
 apply (case_tac bs rule: rev_exhaust)  apply simp apply simp apply auto
 apply (drule_tac enumAppend_bound_rec) apply (auto simp:enumBase_simps)

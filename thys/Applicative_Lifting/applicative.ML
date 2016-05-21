@@ -942,6 +942,6 @@ val normalize_wrapper_tac = WRAPPER normalize_eq_tac;
 val lifting_wrapper_tac = WRAPPER general_normalize_eq_tac;
 
 val parse_opt_afun = Scan.peek (fn context =>
-  Scan.option Parse.xname >> Option.map (intern context #> afun_of_generic context));
+  Scan.option Parse.name >> Option.map (intern context #> afun_of_generic context));
 
 end;

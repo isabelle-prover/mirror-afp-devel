@@ -5,7 +5,7 @@ imports
   "~~/src/HOL/Decision_Procs/Approximation"
 begin
 
-subsection {* Example 3 *}
+subsection \<open>Example 3\<close>
 
 approximate_affine e3 "\<lambda>(t, x). (1::real, x*x + t*t::real)"
 
@@ -26,10 +26,10 @@ interpretation e3: aform_approximate_ivp
   apply unfold_locales
   apply (rule e3[THEN Joints2_JointsI])
   unfolding list.sel apply assumption apply assumption
-  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
+  apply (drule length_set_of_apprs, simp)\<comment>"TODO: prove in affine-approximation"
   apply (rule e3_fderiv)
   apply (rule e3_d[THEN Joints2_JointsI]) apply assumption apply assumption
-  apply (drule length_set_of_apprs, simp)--"TODO: prove in affine-approximation"
+  apply (drule length_set_of_apprs, simp)\<comment>"TODO: prove in affine-approximation"
   apply (auto intro!: continuous_intros simp: split_beta')
   done
 
@@ -44,70 +44,70 @@ definition "e3test = (\<lambda>_::unit. euler_series_result e3_ivp e3_d_ivp e3_o
 
 lemma e3test: "e3test () =
   Some (FloatR 32 (- 8),
-   [(FloatR 31 (- 8), (FloatR 62 (- 9), FloatR 4774828 (- 22)), (FloatR 64 (- 9), FloatR 4796453 (- 22)),
-     FloatR 32 (- 8), (FloatR 32 (- 8), FloatR 4796405 (- 22)), FloatR 32 (- 8), FloatR 4796453 (- 22)),
-    (FloatR 30 (- 8), (FloatR 60 (- 9), FloatR 4753458 (- 22)), (FloatR 62 (- 9), FloatR 4774874 (- 22)),
-     FloatR 31 (- 8), (FloatR 31 (- 8), FloatR 4774829 (- 22)), FloatR 31 (- 8), FloatR 4774874 (- 22)),
-    (FloatR 29 (- 8), (FloatR 58 (- 9), FloatR 4732291 (- 22)), (FloatR 60 (- 9), FloatR 4753502 (- 22)),
-     FloatR 30 (- 8), (FloatR 30 (- 8), FloatR 4753458 (- 22)), FloatR 30 (- 8), FloatR 4753502 (- 22)),
-    (FloatR 28 (- 8), (FloatR 56 (- 9), FloatR 4711325 (- 22)), (FloatR 58 (- 9), FloatR 4732333 (- 22)),
-     FloatR 29 (- 8), (FloatR 29 (- 8), FloatR 4732292 (- 22)), FloatR 29 (- 8), FloatR 4732333 (- 22)),
-    (FloatR 27 (- 8), (FloatR 54 (- 9), FloatR 4690555 (- 22)), (FloatR 56 (- 9), FloatR 4711365 (- 22)),
-     FloatR 28 (- 8), (FloatR 28 (- 8), FloatR 4711325 (- 22)), FloatR 28 (- 8), FloatR 4711365 (- 22)),
-    (FloatR 26 (- 8), (FloatR 52 (- 9), FloatR 4669980 (- 22)), (FloatR 54 (- 9), FloatR 4690593 (- 22)),
-     FloatR 27 (- 8), (FloatR 27 (- 8), FloatR 4690555 (- 22)), FloatR 27 (- 8), FloatR 4690593 (- 22)),
-    (FloatR 25 (- 8), (FloatR 50 (- 9), FloatR 4649595 (- 22)), (FloatR 52 (- 9), FloatR 4670016 (- 22)),
-     FloatR 26 (- 8), (FloatR 26 (- 8), FloatR 4669980 (- 22)), FloatR 26 (- 8), FloatR 4670016 (- 22)),
-    (FloatR 24 (- 8), (FloatR 48 (- 9), FloatR 4629399 (- 22)), (FloatR 50 (- 9), FloatR 4649630 (- 22)),
-     FloatR 25 (- 8), (FloatR 25 (- 8), FloatR 4649595 (- 22)), FloatR 25 (- 8), FloatR 4649630 (- 22)),
-    (FloatR 23 (- 8), (FloatR 46 (- 9), FloatR 4609388 (- 22)), (FloatR 48 (- 9), FloatR 4629432 (- 22)),
-     FloatR 24 (- 8), (FloatR 24 (- 8), FloatR 4629399 (- 22)), FloatR 24 (- 8), FloatR 4629432 (- 22)),
-    (FloatR 22 (- 8), (FloatR 44 (- 9), FloatR 4589560 (- 22)), (FloatR 46 (- 9), FloatR 4609419 (- 22)),
-     FloatR 23 (- 8), (FloatR 23 (- 8), FloatR 4609388 (- 22)), FloatR 23 (- 8), FloatR 4609419 (- 22)),
-    (FloatR 21 (- 8), (FloatR 42 (- 9), FloatR 4569911 (- 22)), (FloatR 44 (- 9), FloatR 4589589 (- 22)),
-     FloatR 22 (- 8), (FloatR 22 (- 8), FloatR 4589560 (- 22)), FloatR 22 (- 8), FloatR 4589589 (- 22)),
-    (FloatR 20 (- 8), (FloatR 40 (- 9), FloatR 4550440 (- 22)), (FloatR 42 (- 9), FloatR 4569939 (- 22)),
-     FloatR 21 (- 8), (FloatR 21 (- 8), FloatR 4569911 (- 22)), FloatR 21 (- 8), FloatR 4569939 (- 22)),
-    (FloatR 19 (- 8), (FloatR 38 (- 9), FloatR 4531142 (- 22)), (FloatR 40 (- 9), FloatR 4550466 (- 22)),
-     FloatR 20 (- 8), (FloatR 20 (- 8), FloatR 4550440 (- 22)), FloatR 20 (- 8), FloatR 4550466 (- 22)),
-    (FloatR 18 (- 8), (FloatR 36 (- 9), FloatR 4512017 (- 22)), (FloatR 38 (- 9), FloatR 4531167 (- 22)),
-     FloatR 19 (- 8), (FloatR 19 (- 8), FloatR 4531143 (- 22)), FloatR 19 (- 8), FloatR 4531167 (- 22)),
-    (FloatR 17 (- 8), (FloatR 34 (- 9), FloatR 4493060 (- 22)), (FloatR 36 (- 9), FloatR 4512040 (- 22)),
-     FloatR 18 (- 8), (FloatR 18 (- 8), FloatR 4512017 (- 22)), FloatR 18 (- 8), FloatR 4512040 (- 22)),
-    (FloatR 16 (- 8), (FloatR 32 (- 9), FloatR 4474270 (- 22)), (FloatR 34 (- 9), FloatR 4493082 (- 22)),
-     FloatR 17 (- 8), (FloatR 17 (- 8), FloatR 4493060 (- 22)), FloatR 17 (- 8), FloatR 4493082 (- 22)),
-    (FloatR 15 (- 8), (FloatR 30 (- 9), FloatR 4455644 (- 22)), (FloatR 32 (- 9), FloatR 4474290 (- 22)),
-     FloatR 16 (- 8), (FloatR 16 (- 8), FloatR 4474270 (- 22)), FloatR 16 (- 8), FloatR 4474290 (- 22)),
-    (FloatR 14 (- 8), (FloatR 28 (- 9), FloatR 4437179 (- 22)), (FloatR 30 (- 9), FloatR 4455663 (- 22)),
-     FloatR 15 (- 8), (FloatR 15 (- 8), FloatR 4455644 (- 22)), FloatR 15 (- 8), FloatR 4455663 (- 22)),
-    (FloatR 13 (- 8), (FloatR 26 (- 9), FloatR 4418873 (- 22)), (FloatR 28 (- 9), FloatR 4437196 (- 22)),
-     FloatR 14 (- 8), (FloatR 14 (- 8), FloatR 4437179 (- 22)), FloatR 14 (- 8), FloatR 4437196 (- 22)),
-    (FloatR 12 (- 8), (FloatR 24 (- 9), FloatR 4400724 (- 22)), (FloatR 26 (- 9), FloatR 4418889 (- 22)),
-     FloatR 13 (- 8), (FloatR 13 (- 8), FloatR 4418873 (- 22)), FloatR 13 (- 8), FloatR 4418889 (- 22)),
-    (FloatR 11 (- 8), (FloatR 22 (- 9), FloatR 4382728 (- 22)), (FloatR 24 (- 9), FloatR 4400738 (- 22)),
-     FloatR 12 (- 8), (FloatR 12 (- 8), FloatR 4400724 (- 22)), FloatR 12 (- 8), FloatR 4400738 (- 22)),
-    (FloatR 10 (- 8), (FloatR 20 (- 9), FloatR 4364885 (- 22)), (FloatR 22 (- 9), FloatR 4382742 (- 22)),
-     FloatR 11 (- 8), (FloatR 11 (- 8), FloatR 4382728 (- 22)), FloatR 11 (- 8), FloatR 4382742 (- 22)),
-    (FloatR 9 (- 8), (FloatR 18 (- 9), FloatR 4347191 (- 22)), (FloatR 20 (- 9), FloatR 4364897 (- 22)),
-     FloatR 10 (- 8), (FloatR 10 (- 8), FloatR 4364885 (- 22)), FloatR 10 (- 8), FloatR 4364897 (- 22)),
-    (FloatR 8 (- 8), (FloatR 16 (- 9), FloatR 4329644 (- 22)), (FloatR 18 (- 9), FloatR 4347202 (- 22)),
-     FloatR 9 (- 8), (FloatR 9 (- 8), FloatR 4347191 (- 22)), FloatR 9 (- 8), FloatR 4347202 (- 22)),
-    (FloatR 7 (- 8), (FloatR 14 (- 9), FloatR 4312242 (- 22)), (FloatR 16 (- 9), FloatR 4329654 (- 22)),
-     FloatR 8 (- 8), (FloatR 8 (- 8), FloatR 4329644 (- 22)), FloatR 8 (- 8), FloatR 4329654 (- 22)),
-    (FloatR 6 (- 8), (FloatR 12 (- 9), FloatR 4294983 (- 22)), (FloatR 14 (- 9), FloatR 4312251 (- 22)),
-     FloatR 7 (- 8), (FloatR 7 (- 8), FloatR 4312242 (- 22)), FloatR 7 (- 8), FloatR 4312251 (- 22)),
-    (FloatR 5 (- 8), (FloatR 10 (- 9), FloatR 4277864 (- 22)), (FloatR 12 (- 9), FloatR 4294990 (- 22)),
-     FloatR 6 (- 8), (FloatR 6 (- 8), FloatR 4294983 (- 22)), FloatR 6 (- 8), FloatR 4294990 (- 22)),
-    (FloatR 4 (- 8), (FloatR 8 (- 9), FloatR 4260884 (- 22)), (FloatR 10 (- 9), FloatR 4277870 (- 22)),
-     FloatR 5 (- 8), (FloatR 5 (- 8), FloatR 4277864 (- 22)), FloatR 5 (- 8), FloatR 4277870 (- 22)),
-    (FloatR 3 (- 8), (FloatR 6 (- 9), FloatR 4244040 (- 22)), (FloatR 8 (- 9), FloatR 4260889 (- 22)), FloatR 4 (- 8),
-     (FloatR 4 (- 8), FloatR 4260884 (- 22)), FloatR 4 (- 8), FloatR 4260889 (- 22)),
-    (FloatR 2 (- 8), (FloatR 4 (- 9), FloatR 4227329 (- 22)), (FloatR 6 (- 9), FloatR 4244044 (- 22)), FloatR 3 (- 8),
-     (FloatR 3 (- 8), FloatR 4244040 (- 22)), FloatR 3 (- 8), FloatR 4244044 (- 22)),
-    (FloatR 1 (- 8), (FloatR 2 (- 9), FloatR 4210751 (- 22)), (FloatR 4 (- 9), FloatR 4227333 (- 22)), FloatR 2 (- 8),
-     (FloatR 2 (- 8), FloatR 4227330 (- 22)), FloatR 2 (- 8), FloatR 4227333 (- 22)),
-    (FloatR 0 0, (FloatR 0 (- 9), FloatR 4194304 (- 22)), (FloatR 2 (- 9), FloatR 4210754 (- 22)), FloatR 1 (- 8),
-     (FloatR 1 (- 8), FloatR 4210751 (- 22)), FloatR 1 (- 8), FloatR 4210754 (- 22))])"
+       [(FloatR 31 (- 8), (FloatR 62 (- 9), FloatR 9549658 (- 23)), (FloatR 64 (- 9), FloatR 9592906 (- 23)),
+         FloatR 32 (- 8), (FloatR 32 (- 8), FloatR 9592812 (- 23)), FloatR 32 (- 8), FloatR 9592906 (- 23)),
+        (FloatR 30 (- 8), (FloatR 60 (- 9), FloatR 9506917 (- 23)), (FloatR 62 (- 9), FloatR 9549748 (- 23)),
+         FloatR 31 (- 8), (FloatR 31 (- 8), FloatR 9549658 (- 23)), FloatR 31 (- 8), FloatR 9549748 (- 23)),
+        (FloatR 29 (- 8), (FloatR 58 (- 9), FloatR 9464583 (- 23)), (FloatR 60 (- 9), FloatR 9507004 (- 23)),
+         FloatR 30 (- 8), (FloatR 30 (- 8), FloatR 9506918 (- 23)), FloatR 30 (- 8), FloatR 9507004 (- 23)),
+        (FloatR 28 (- 8), (FloatR 56 (- 9), FloatR 9422650 (- 23)), (FloatR 58 (- 9), FloatR 9464666 (- 23)),
+         FloatR 29 (- 8), (FloatR 29 (- 8), FloatR 9464584 (- 23)), FloatR 29 (- 8), FloatR 9464666 (- 23)),
+        (FloatR 27 (- 8), (FloatR 54 (- 9), FloatR 9381111 (- 23)), (FloatR 56 (- 9), FloatR 9422729 (- 23)),
+         FloatR 28 (- 8), (FloatR 28 (- 8), FloatR 9422650 (- 23)), FloatR 28 (- 8), FloatR 9422729 (- 23)),
+        (FloatR 26 (- 8), (FloatR 52 (- 9), FloatR 9339960 (- 23)), (FloatR 54 (- 9), FloatR 9381186 (- 23)),
+         FloatR 27 (- 8), (FloatR 27 (- 8), FloatR 9381111 (- 23)), FloatR 27 (- 8), FloatR 9381186 (- 23)),
+        (FloatR 25 (- 8), (FloatR 50 (- 9), FloatR 9299191 (- 23)), (FloatR 52 (- 9), FloatR 9340031 (- 23)),
+         FloatR 26 (- 8), (FloatR 26 (- 8), FloatR 9339960 (- 23)), FloatR 26 (- 8), FloatR 9340031 (- 23)),
+        (FloatR 24 (- 8), (FloatR 48 (- 9), FloatR 9258799 (- 23)), (FloatR 50 (- 9), FloatR 9299259 (- 23)),
+         FloatR 25 (- 8), (FloatR 25 (- 8), FloatR 9299191 (- 23)), FloatR 25 (- 8), FloatR 9299259 (- 23)),
+        (FloatR 23 (- 8), (FloatR 46 (- 9), FloatR 9218777 (- 23)), (FloatR 48 (- 9), FloatR 9258863 (- 23)),
+         FloatR 24 (- 8), (FloatR 24 (- 8), FloatR 9258799 (- 23)), FloatR 24 (- 8), FloatR 9258863 (- 23)),
+        (FloatR 22 (- 8), (FloatR 44 (- 9), FloatR 9179120 (- 23)), (FloatR 46 (- 9), FloatR 9218838 (- 23)),
+         FloatR 23 (- 8), (FloatR 23 (- 8), FloatR 9218777 (- 23)), FloatR 23 (- 8), FloatR 9218838 (- 23)),
+        (FloatR 21 (- 8), (FloatR 42 (- 9), FloatR 9139823 (- 23)), (FloatR 44 (- 9), FloatR 9179178 (- 23)),
+         FloatR 22 (- 8), (FloatR 22 (- 8), FloatR 9179121 (- 23)), FloatR 22 (- 8), FloatR 9179178 (- 23)),
+        (FloatR 20 (- 8), (FloatR 40 (- 9), FloatR 9100880 (- 23)), (FloatR 42 (- 9), FloatR 9139878 (- 23)),
+         FloatR 21 (- 8), (FloatR 21 (- 8), FloatR 9139824 (- 23)), FloatR 21 (- 8), FloatR 9139878 (- 23)),
+        (FloatR 19 (- 8), (FloatR 38 (- 9), FloatR 9062286 (- 23)), (FloatR 40 (- 9), FloatR 9100932 (- 23)),
+         FloatR 20 (- 8), (FloatR 20 (- 8), FloatR 9100880 (- 23)), FloatR 20 (- 8), FloatR 9100932 (- 23)),
+        (FloatR 18 (- 8), (FloatR 36 (- 9), FloatR 9024034 (- 23)), (FloatR 38 (- 9), FloatR 9062334 (- 23)),
+         FloatR 19 (- 8), (FloatR 19 (- 8), FloatR 9062286 (- 23)), FloatR 19 (- 8), FloatR 9062334 (- 23)),
+        (FloatR 17 (- 8), (FloatR 34 (- 9), FloatR 8986121 (- 23)), (FloatR 36 (- 9), FloatR 9024080 (- 23)),
+         FloatR 18 (- 8), (FloatR 18 (- 8), FloatR 9024035 (- 23)), FloatR 18 (- 8), FloatR 9024080 (- 23)),
+        (FloatR 16 (- 8), (FloatR 32 (- 9), FloatR 8948541 (- 23)), (FloatR 34 (- 9), FloatR 8986164 (- 23)),
+         FloatR 17 (- 8), (FloatR 17 (- 8), FloatR 8986121 (- 23)), FloatR 17 (- 8), FloatR 8986164 (- 23)),
+        (FloatR 15 (- 8), (FloatR 30 (- 9), FloatR 8911288 (- 23)), (FloatR 32 (- 9), FloatR 8948580 (- 23)),
+         FloatR 16 (- 8), (FloatR 16 (- 8), FloatR 8948541 (- 23)), FloatR 16 (- 8), FloatR 8948580 (- 23)),
+        (FloatR 14 (- 8), (FloatR 28 (- 9), FloatR 8874358 (- 23)), (FloatR 30 (- 9), FloatR 8911325 (- 23)),
+         FloatR 15 (- 8), (FloatR 15 (- 8), FloatR 8911288 (- 23)), FloatR 15 (- 8), FloatR 8911325 (- 23)),
+        (FloatR 13 (- 8), (FloatR 26 (- 9), FloatR 8837747 (- 23)), (FloatR 28 (- 9), FloatR 8874392 (- 23)),
+         FloatR 14 (- 8), (FloatR 14 (- 8), FloatR 8874359 (- 23)), FloatR 14 (- 8), FloatR 8874392 (- 23)),
+        (FloatR 12 (- 8), (FloatR 24 (- 9), FloatR 8801448 (- 23)), (FloatR 26 (- 9), FloatR 8837778 (- 23)),
+         FloatR 13 (- 8), (FloatR 13 (- 8), FloatR 8837747 (- 23)), FloatR 13 (- 8), FloatR 8837778 (- 23)),
+        (FloatR 11 (- 8), (FloatR 22 (- 9), FloatR 8765457 (- 23)), (FloatR 24 (- 9), FloatR 8801476 (- 23)),
+         FloatR 12 (- 8), (FloatR 12 (- 8), FloatR 8801448 (- 23)), FloatR 12 (- 8), FloatR 8801476 (- 23)),
+        (FloatR 10 (- 8), (FloatR 20 (- 9), FloatR 8729770 (- 23)), (FloatR 22 (- 9), FloatR 8765483 (- 23)),
+         FloatR 11 (- 8), (FloatR 11 (- 8), FloatR 8765457 (- 23)), FloatR 11 (- 8), FloatR 8765483 (- 23)),
+        (FloatR 9 (- 8), (FloatR 18 (- 9), FloatR 8694382 (- 23)), (FloatR 20 (- 9), FloatR 8729794 (- 23)),
+         FloatR 10 (- 8), (FloatR 10 (- 8), FloatR 8729770 (- 23)), FloatR 10 (- 8), FloatR 8729794 (- 23)),
+        (FloatR 8 (- 8), (FloatR 16 (- 9), FloatR 8659289 (- 23)), (FloatR 18 (- 9), FloatR 8694403 (- 23)),
+         FloatR 9 (- 8), (FloatR 9 (- 8), FloatR 8694382 (- 23)), FloatR 9 (- 8), FloatR 8694403 (- 23)),
+        (FloatR 7 (- 8), (FloatR 14 (- 9), FloatR 8624485 (- 23)), (FloatR 16 (- 9), FloatR 8659307 (- 23)),
+         FloatR 8 (- 8), (FloatR 8 (- 8), FloatR 8659289 (- 23)), FloatR 8 (- 8), FloatR 8659307 (- 23)),
+        (FloatR 6 (- 8), (FloatR 12 (- 9), FloatR 8589966 (- 23)), (FloatR 14 (- 9), FloatR 8624501 (- 23)),
+         FloatR 7 (- 8), (FloatR 7 (- 8), FloatR 8624485 (- 23)), FloatR 7 (- 8), FloatR 8624501 (- 23)),
+        (FloatR 5 (- 8), (FloatR 10 (- 9), FloatR 8555729 (- 23)), (FloatR 12 (- 9), FloatR 8589980 (- 23)),
+         FloatR 6 (- 8), (FloatR 6 (- 8), FloatR 8589966 (- 23)), FloatR 6 (- 8), FloatR 8589980 (- 23)),
+        (FloatR 4 (- 8), (FloatR 8 (- 9), FloatR 8521768 (- 23)), (FloatR 10 (- 9), FloatR 8555740 (- 23)),
+         FloatR 5 (- 8), (FloatR 5 (- 8), FloatR 8555729 (- 23)), FloatR 5 (- 8), FloatR 8555740 (- 23)),
+        (FloatR 3 (- 8), (FloatR 6 (- 9), FloatR 8488080 (- 23)), (FloatR 8 (- 9), FloatR 8521777 (- 23)),
+         FloatR 4 (- 8), (FloatR 4 (- 8), FloatR 8521768 (- 23)), FloatR 4 (- 8), FloatR 8521777 (- 23)),
+        (FloatR 2 (- 8), (FloatR 4 (- 9), FloatR 8454659 (- 23)), (FloatR 6 (- 9), FloatR 8488087 (- 23)),
+         FloatR 3 (- 8), (FloatR 3 (- 8), FloatR 8488080 (- 23)), FloatR 3 (- 8), FloatR 8488087 (- 23)),
+        (FloatR 1 (- 8), (FloatR 2 (- 9), FloatR 8421503 (- 23)), (FloatR 4 (- 9), FloatR 8454665 (- 23)),
+         FloatR 2 (- 8), (FloatR 2 (- 8), FloatR 8454660 (- 23)), FloatR 2 (- 8), FloatR 8454665 (- 23)),
+        (FloatR 0 0, (FloatR 0 (- 9), FloatR 8388608 (- 23)), (FloatR 2 (- 9), FloatR 8421507 (- 23)), FloatR 1 (- 8),
+         (FloatR 1 (- 8), FloatR 8421503 (- 23)), FloatR 1 (- 8), FloatR 8421507 (- 23))])"
    by eval
 
 
@@ -130,8 +130,8 @@ lemma last_enclosure: "e3.enclosure
           ivp_X = UNIV\<rparr>)
      0 (FloatR 32 (- 8))
      (map set_res_of_ivl_res
-       [(FloatR 31 (- 8), (FloatR 62 (- 9), FloatR 4774828 (- 22)), (FloatR 64 (- 9), FloatR 4796453 (- 22)),
-         FloatR 32 (- 8), (FloatR 32 (- 8), FloatR 4796405 (- 22)), FloatR 32 (- 8), FloatR 4796453 (- 22))])"
+       [(FloatR 31 (- 8), (FloatR 62 (- 9), FloatR 9549658 (- 23)), (FloatR 64 (- 9), FloatR 9592906 (- 23)),
+         FloatR 32 (- 8), (FloatR 32 (- 8), FloatR 9592812 (- 23)), FloatR 32 (- 8), FloatR 9592906 (- 23))])"
   using certification
   unfolding e3.enclosure_def
   apply (subst (asm) list.map)
@@ -145,14 +145,14 @@ lemma
     ivp_x0 = (0, 1), ivp_T = {0..1 / 8}, ivp_X = UNIV\<rparr>"
   "ivp.solution    \<lparr>ivp_f = \<lambda>(s::real, t::real, x::real). (1, x * x + t * t), ivp_t0 = 0,
     ivp_x0 = (0, 1), ivp_T = {0..1 / 8}, ivp_X = UNIV\<rparr> (1 / 8) \<in>
-    {(1 / 8, 4796405 / 4194304) .. (1 / 8, 4796453 / 4194304)}"
+    {(1 / 8, 2398203 / 2097152) .. (1 / 8, 4796453 / 4194304)}"
   using certification(1) last_enclosure
   by (simp_all add: e3.enclosure_def)
 
-subsubsection {* Comparison with bounds analytically obtained by Walter~\cite{walter} in section 9,
-  Example V. *}
+subsubsection \<open>Comparison with bounds analytically obtained by Walter~\cite{walter} in section 9,
+  Example V.\<close>
 
-text {* First approximation. *}
+text \<open>First approximation.\<close>
 
 notepad begin
   fix solution
@@ -169,7 +169,7 @@ notepad begin
   with Walter have "solution ?x \<in> {1.142857139 .. 1.287426955}" by blast
 end
 
-text {* Better approximation. *}
+text \<open>Better approximation.\<close>
 
 notepad begin
   fix solution::"real\<Rightarrow>real"

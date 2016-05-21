@@ -56,11 +56,11 @@ fun average xs = Time.fromReal (Time.toReal (sum xs) / real (length xs));
 fun time f x =
   let
     val timer = Timer.startRealTimer ();
-    val res = TimeLimit.timeLimit timeout (fn () => uncurry f x) ();
+    val res = Timeout.apply timeout (fn () => uncurry f x) ();
     val time = Timer.checkRealTimer timer;
   in
     Res (res, time)
-  end handle TimeLimit.TimeOut => TO;
+  end handle Timeout.TIMEOUT _ => TO;
 *}
 
 ML {*

@@ -31,8 +31,8 @@ proof (cases "(a \<le> b \<and> poly p a = 0 \<and> p \<noteq> 0) \<or> (a = b \
         hence "{x. a \<le> x \<and> x \<le> b \<and> poly p x = 0} = 
                {x. a < x \<and> x \<le> b \<and> poly p x = 0}"
         by (auto simp: less_eq_real_def)
-        thus ?thesis using poly_card_roots_less_leq assms False' 
-            by (auto split: split_if_asm)
+        thus ?thesis using poly_card_roots_less_leq False' 
+            by (auto split: if_split_asm)
     next
       case True
         have "{x. a \<le> x \<and> x \<le> b} = {a..b}"
@@ -76,14 +76,14 @@ proof (cases "poly p b = 0 \<and> a < b \<and> p \<noteq> 0")
                      "{x. a < x \<and> x \<le> b} = {a<..b}" by auto
         with True False have "card {x. a < x \<and> x \<le> b} = 0" "card {x. a < x \<and> x < b} = 0"
           by (auto simp add: card_eq_0_iff infinite_Ioo infinite_Ioc)
-        with True False' assms show ?thesis 
+        with True False' show ?thesis 
             by (auto simp: count_roots_between_correct)
     next
       case False
         with False' have "{x. a < x \<and> x < b \<and> poly p x = 0} = 
                           {x. a < x \<and> x \<le> b \<and> poly p x = 0}"
           by (auto simp: less_eq_real_def)
-      thus ?thesis using poly_card_roots_less_leq assms False by auto
+      thus ?thesis using poly_card_roots_less_leq False by auto
   qed
 next
   case True
@@ -142,7 +142,7 @@ qed
 
 lemma poly_card_roots:
   "card {x::real. poly p x = 0} = count_roots p"
-  using assms count_roots_correct by simp
+  using count_roots_correct by simp
 
 lemma poly_no_roots:
   "(\<forall>x. poly p x \<noteq> 0) \<longleftrightarrow> ( p \<noteq> 0 \<and> count_roots p = 0)"
@@ -156,11 +156,11 @@ lemma poly_pos:
 
 lemma poly_card_roots_greater:
   "card {x::real. x > a \<and> poly p x = 0} = count_roots_above p a"
-  using assms count_roots_above_correct by simp
+  using count_roots_above_correct by simp
 
 lemma poly_card_roots_leq:
   "card {x::real. x \<le> a \<and> poly p x = 0} = count_roots_below p a"
-  using assms  count_roots_below_correct by simp
+  using count_roots_below_correct by simp
 
 lemma poly_card_roots_geq:
   "card {x::real. x \<ge> a \<and> poly p x = 0} = (
@@ -185,7 +185,7 @@ proof (cases "poly p a = 0 \<and> p \<noteq> 0")
           by (auto simp: less_eq_real_def)
       thus ?thesis by simp
     qed auto
-    thus ?thesis using assms False 
+    thus ?thesis using False 
         by (auto intro: poly_card_roots_greater)
 next
   case True
@@ -195,7 +195,7 @@ next
     ultimately have "card {x. x \<ge> a \<and> poly p x = 0} = 
                          Suc (card {x. x > a \<and> poly p x = 0})"
         using card_insert_disjoint by auto
-    thus ?thesis using assms True by (auto intro: poly_card_roots_greater)
+    thus ?thesis using True by (auto intro: poly_card_roots_greater)
 qed
 
 lemma poly_card_roots_less:
@@ -221,7 +221,7 @@ proof (cases "poly p a = 0 \<and> p \<noteq> 0")
           by (auto simp: less_eq_real_def)
       thus ?thesis by simp
     qed auto
-    thus ?thesis using assms False 
+    thus ?thesis using False 
         by (auto intro: poly_card_roots_leq)
 next
   case True
@@ -232,7 +232,7 @@ next
                      (card {x. x \<le> a \<and> poly p x = 0})"
         using card_insert_disjoint by auto
     also note count_roots_below_correct[symmetric]
-    finally show ?thesis using assms True by simp
+    finally show ?thesis using True by simp
 qed
 
 
@@ -322,7 +322,7 @@ next
                (if poly p b = 0 then 1 else 0))" by auto
     thus ?case using prems unfolding Let_def
         by (subst (asm) poly_no_roots_less_less[symmetric, unfolded Let_def], 
-        auto split: split_if_asm simp: less_eq_real_def) 
+        auto split: if_split_asm simp: less_eq_real_def) 
 qed
 
 lemma poly_pos_between_leq_less:
@@ -538,7 +538,7 @@ lemma PR_TAG_intro_prio1:
   "PR_TAG f = (\<lambda>x. poly p x) 
        \<Longrightarrow> PR_TAG (\<lambda>x. f x / a) = (\<lambda>x. poly (smult (inverse a) p) x)"
   "PR_TAG (\<lambda>x. x^n :: real) = (\<lambda>x. poly (monom 1 n) x)"
-using assms by (simp_all add: PR_TAG_def field_simps poly_monom)
+by (simp_all add: PR_TAG_def field_simps poly_monom)
 
 lemma PR_TAG_intro_prio2:
   "PR_TAG (\<lambda>x. 1 / b) = (\<lambda>x. inverse b)"
@@ -557,7 +557,7 @@ lemma PR_TAG_intro_prio2:
        \<Longrightarrow> PR_TAG (\<lambda>x. f x * (f x)^n :: real) = (\<lambda>x. poly p x)"
   "PR_TAG (\<lambda>x. (f x)^(m+n) :: real) = (\<lambda>x. poly p x)
        \<Longrightarrow> PR_TAG (\<lambda>x. (f x)^m * (f x)^n :: real) = (\<lambda>x. poly p x)"
-using assms by (simp_all add: PR_TAG_def field_simps poly_monom power_add)
+by (simp_all add: PR_TAG_def field_simps poly_monom power_add)
 
 lemma sturm_meta_spec: "(\<And>x::real. P x) \<Longrightarrow> P x" by simp
 lemma sturm_imp_conv: 

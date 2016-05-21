@@ -2,7 +2,7 @@
 
 # Get email when automated build fails. May be empty.
 # values: "email1 email2 .. emailn"
-NOTIFY="tuong@lri.fr wolff@lri.fr"
+NOTIFY="tuong@users.gforge.inria.fr wolff@lri.fr"
 
 # Participate in frequent (nightly) build (only for small submissions)
 # values: "yes" "no"

@@ -63,7 +63,7 @@ begin
 
     have [simp]: "\<And>u p V. dom (\<lambda>v. if (u, v) \<in> E \<and> v \<notin> V then Some (u # p)
                      else None) = E``{u} - V"
-      by (auto split: split_if_asm)
+      by (auto split: if_split_asm)
 
 
     {
@@ -140,7 +140,7 @@ begin
         using INV WSU NVD apply (fastforce
           simp: inv_def restrict_map_def 
           intro!: path_conc path1
-          split: split_if_asm
+          split: if_split_asm
         ) []
         done
     } note ip_aux=this
@@ -159,7 +159,7 @@ begin
 
       apply (auto 
         simp: inv_def dom_def
-        split: split_if_asm) []
+        split: if_split_asm) []
       apply simp
       apply (auto simp: inv_def) []
       apply (auto simp: var_def brk_rel_def) []
@@ -209,7 +209,7 @@ begin
     using WSS
     apply (auto 
       simp: Map.map_add_def
-      split: option.splits split_if_asm
+      split: option.splits if_split_asm
       intro!: ext[where 'a='a and 'b="'b list option"])
 
     apply fastforce+

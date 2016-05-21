@@ -82,7 +82,7 @@ proof-
       by (induction p xs ls eq gs rule: part_aux_induct) auto
   } note C = this
   note ABC = A B C
-  from ABC[of "f p" xs "[]" "[p]" "[]"] assms show ?thesis unfolding part_def
+  from ABC[of "f p" xs "[]" "[p]" "[]"] show ?thesis unfolding part_def
     by (intro prod_eqI) simp_all
 qed
 
@@ -93,9 +93,9 @@ by pat_completeness simp_all
 termination by (relation "Wellfounded.measure length") (simp_all add: part less_Suc_eq_le)
 
 private lemma filter_mset_union:
-  "(\<And>x. x \<in># A \<Longrightarrow> P x \<Longrightarrow> Q x \<Longrightarrow> False) \<Longrightarrow> 
-       filter_mset P A + filter_mset Q A = filter_mset (\<lambda>x. P x \<or> Q x) A"
-  by (subst multiset_eq_iff) force
+  assumes "\<And>x. x \<in># A \<Longrightarrow> P x \<Longrightarrow> Q x \<Longrightarrow> False"
+  shows "filter_mset P A + filter_mset Q A = filter_mset (\<lambda>x. P x \<or> Q x) A" (is "?lhs = ?rhs")
+  using assms by (auto simp add: count_eq_zero_iff intro!: multiset_eqI) blast
 
 private lemma multiset_of_sort: "mset (sort xs) = mset xs"
 proof (induction xs rule: sort.induct)
@@ -252,7 +252,7 @@ proof-
       by (induction p xs ls eq gs rule: group_part_aux_induct) auto
   } note C = this
   note ABC = A B C
-  from ABC[of "f p" xs "[]" "p" "[]"] assms show ?thesis unfolding group_part_def
+  from ABC[of "f p" xs "[]" "p" "[]"] show ?thesis unfolding group_part_def
     by (intro prod_eqI) simp_all
 qed
 

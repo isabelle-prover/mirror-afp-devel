@@ -1,4 +1,4 @@
-header{*Preliminaries: Definitions of tangles and links*}
+section{*Preliminaries: Definitions of tangles and links*}
 theory Preliminaries
 imports Main
 begin
@@ -278,9 +278,9 @@ proof(induction x)
    with step1 and domain_zero_sum  
             have "domain a= 0" 
                        using Cons.prems `domain_block y = 0` by linarith
-   then  have "brick_is_cup a" 
+   then have "brick_is_cup a" 
                using brickcount_zero_implies_brick_is_cup by auto
-   with assms have "a=cup" 
+   then have "a=cup" 
         using brick_is_cup_def by (metis `domain a = 0` brickcount_zero_implies_cup)
    with step2 have "is_cup (a#y)" 
         using is_cup_def by auto

@@ -519,7 +519,7 @@ context heap begin
 lemma binop_progress:
   "\<lbrakk> typeof\<^bsub>h\<^esub> v1 = \<lfloor>T1\<rfloor>; typeof\<^bsub>h\<^esub> v2 = \<lfloor>T2\<rfloor>; P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T \<rbrakk>
   \<Longrightarrow> \<exists>va. binop bop v1 v2 = \<lfloor>va\<rfloor>"
-by(cases bop)(auto del: disjCI split del: split_if)
+by(cases bop)(auto del: disjCI split del: if_split)
 
 lemma binop_type:
   assumes wf: "wf_prog wf_md P"
@@ -529,7 +529,7 @@ lemma binop_type:
   and "binop bop v1 v2 = \<lfloor>Inr a\<rfloor> \<Longrightarrow> P,h \<turnstile> Addr a :\<le> Class Throwable"
 using type
 apply(case_tac [!] bop)
-apply(auto split: split_if_asm simp add: conf_def wf_preallocatedD[OF wf pre])
+apply(auto split: if_split_asm simp add: conf_def wf_preallocatedD[OF wf pre])
 done
 
 lemma binop_relevant_class:
@@ -539,7 +539,7 @@ lemma binop_relevant_class:
   and sup: "P \<turnstile> cname_of h a \<preceq>\<^sup>* C"
   shows "binop_relevant_class bop P C"
 using assms
-by(cases bop)(auto split: split_if_asm)
+by(cases bop)(auto split: if_split_asm)
 
 end
 

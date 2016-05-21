@@ -11,4 +11,6 @@ session "Ergodic_Theory" (AFP) = "HOL-Probability" +
     Ergodicity
     Fekete
     Kingman
+    Banach_Density
+    Gouezel_Karlsson
   document_files "root.tex"

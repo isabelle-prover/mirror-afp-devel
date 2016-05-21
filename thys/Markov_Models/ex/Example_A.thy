@@ -75,8 +75,7 @@ definition tau :: "state \<Rightarrow> state \<Rightarrow> real" where
     | _ \<Rightarrow> 0)"
 
 lift_definition K :: "state \<Rightarrow> state pmf" is tau
-  by (auto simp: tau_def nn_integral_count_space_finite UNIV_state zero_ereal_def ereal_max[symmetric]
-           split: state.split prod.split simp del: ereal_max)
+  by (auto simp: tau_def nn_integral_count_space_finite UNIV_state split: state.split simp del: ennreal_plus)
 
 text {* We use the @{text finite_pmf}-locale which introduces the point measure @{text tau.M}, and
   provides us with the necessary simplifier setup. *}
@@ -94,7 +93,7 @@ lemma A_E_eq:
   "set_pmf (K x) = (case x of A \<Rightarrow> {B, C1} | B \<Rightarrow> {B, C1} | _ \<Rightarrow> {C1, C2, C3})"
   using state.nchotomy by transfer (auto simp: tau_def split: prod.split state.split)
 
-lemma A_essential: "A.essential_class {C1, C2, C3}"  
+lemma A_essential: "A.essential_class {C1, C2, C3}"
   by (rule A.essential_classI2) (auto simp: A_E_eq)
 
 lemma A_aperiodic: "A.aperiodic {C1, C2, C3}"
@@ -107,7 +106,7 @@ proof safe
   then have "A.period {C1, C2, C3} = Gcd (A.period_set C1)"
     by (rule A.period_eq) simp
   also have "\<dots> = 1"
-    by (rule Gcd_eq_one) (simp add: A_E_eq A.period_set_def A.p_Suc' A.p_0 eq measure_pmf_single pmf_positive)
+    by (rule Gcd_nat_eq_one) (simp add: A_E_eq A.period_set_def A.p_Suc' A.p_0 eq measure_pmf_single pmf_positive)
   finally show "A.period {C1, C2, C3} = 1" .
 qed
 
@@ -116,8 +115,7 @@ subsection {* The stationary distribution @{text n} *}
 text {* Similar to @{text tau} we introduce @{text n} using the @{text finite_pmf}-locale. *}
 
 lift_definition n :: "state pmf" is "\<lambda>C1 \<Rightarrow> 0.3 | C2 \<Rightarrow> 0.3 | C3 \<Rightarrow> 0.4 | _ \<Rightarrow> 0"
-  by (auto simp: UNIV_state nn_integral_count_space_finite zero_ereal_def ereal_max[symmetric]
-           split: state.split simp del: ereal_max)
+  by (auto simp: UNIV_state nn_integral_count_space_finite split: state.split)
 
 lemma stationary_distribution_N: "A.stationary_distribution n"
   unfolding A.stationary_distribution_def
@@ -140,17 +138,17 @@ lemma n_is_limit:
 lemma C_is_pos_recurrent: "x \<in> {C1, C2, C3} \<Longrightarrow> A.pos_recurrent x"
   using A.stationary_distributionD(1)[OF A_essential _ stationary_distribution_N] by auto
 
-lemma C_recurrence_time: 
+lemma C_recurrence_time:
   assumes x: "x \<in> {C1, C2, C3}"
   shows "A.U' x x = 1 / pmf n x"
 proof -
   from A.stationary_distributionD(2)[OF A_essential _ stationary_distribution_N _]
   have "A.stat {C1, C2, C3} = n" by simp
   with x have "1 / pmf n x = 1 / emeasure (A.stat {C1, C2, C3}) {x}"
-    by (simp add: emeasure_pmf_single one_ereal_def pmf_eq_0_set_pmf)
+    by (simp add: emeasure_pmf_single pmf_positive divide_ennreal ennreal_1[symmetric] del: ennreal_1)
   also have "\<dots> = A.U' x x"
     unfolding A.stat_def using x
-    by (subst emeasure_point_measure_finite) (simp_all add: nn_integral_nonneg divide_ereal_def inverse_ereal_ge0I A.U'_def)
+    by (subst emeasure_point_measure_finite) (simp_all add:  A.U'_def)
   finally show ?thesis ..
 qed
 

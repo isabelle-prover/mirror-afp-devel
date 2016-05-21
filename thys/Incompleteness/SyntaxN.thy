@@ -932,7 +932,7 @@ lemma ContraProve: "H \<turnstile> B \<Longrightarrow> insert (Neg B) H \<turnst
   by (metis Swap thin1)
 
 lemma Disj_IE1: "insert B H \<turnstile> C \<Longrightarrow> insert (A OR B) H \<turnstile> A OR C"
-  by (metis Assume Disj_mono assms)
+  by (metis Assume Disj_mono)
 
 lemmas Disj_IE1H = Disj_IE1 Disj_IE1 [THEN rotate2] Disj_IE1 [THEN rotate3] Disj_IE1 [THEN rotate4] Disj_IE1 [THEN rotate5]
                  Disj_IE1 [THEN rotate6] Disj_IE1 [THEN rotate7] Disj_IE1 [THEN rotate8]
@@ -1189,10 +1189,10 @@ lemma Eats_cong: "\<lbrakk>H \<turnstile> t EQ t'; H \<turnstile> u EQ u'\<rbrak
   by (metis Conj_I anti_deduction Eats_cong1 cut1)
 
 lemma HPair_cong: "\<lbrakk>H \<turnstile> t EQ t'; H \<turnstile> u EQ u'\<rbrakk> \<Longrightarrow> H \<turnstile> HPair t u EQ HPair t' u'"
-  by (metis HPair_def Eats_cong Refl assms)
+  by (metis HPair_def Eats_cong Refl)
 
 lemma SUCC_cong: "H \<turnstile> t EQ t' \<Longrightarrow> H \<turnstile> SUCC t EQ SUCC t'"
-  by (metis Eats_cong SUCC_def assms)
+  by (metis Eats_cong SUCC_def)
 
 subsection{*Substitution for Equalities*}
 

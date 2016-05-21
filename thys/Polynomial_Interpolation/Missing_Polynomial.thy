@@ -36,6 +36,16 @@ lemma degree2_coeffs: "degree p = 2 \<Longrightarrow>
   \<exists> a b c. p = [: c, b, a :] \<and> a \<noteq> 0"
   by (metis Suc_1 Suc_neq_Zero degree1_coeffs degree_pCons_eq_if nat.inject pCons_cases)
 
+lemma poly_zero:
+  fixes p :: "'a :: comm_ring_1 poly"
+  assumes x: "poly p x = 0" shows "p = 0 \<longleftrightarrow> degree p = 0"
+proof
+  assume degp: "degree p = 0"
+  hence "poly p x = coeff p (degree p)" by(subst degree_0_id[OF degp,symmetric], simp)
+  hence "coeff p (degree p) = 0" using x by auto
+  thus "p = 0" by auto
+qed auto
+
 lemma coeff_monom_Suc: "coeff (monom a (Suc d) * p) (Suc i) = coeff (monom a d * p) i"
   by (simp add: monom_Suc)
 
@@ -484,48 +494,11 @@ proof (rule ccontr)
   with order_2[OF p, of a] show False by blast
 qed
 
-lemma coprime_poly_factor: 
-  assumes cop: "coprime (p :: 'a :: field poly) (q * r)" and r: "r \<noteq> 0"
-  shows "coprime p q"
-proof (cases "q = 0")
-  case True
-  with assms show ?thesis by auto
-next
-  case False note q = this
-  with r have qr0: "q * r \<noteq> 0" by auto
-  let ?g = "gcd p (q * r)"
-  let ?g' = "gcd p q"
-  have d0: "degree ?g = 0" unfolding cop by simp
-  have "?g' dvd ?g" by simp
-  from dvd_imp_degree_le[OF this] poly_gcd_monic[of p "q * r"] qr0
-  have "degree ?g' \<le> degree ?g" by auto
-  with d0 have "degree ?g' = 0" by auto
-  with poly_gcd_monic[of p q] q 
-  show ?thesis using monic_degree_0[of ?g'] by auto
-qed
-
-
 
 subsection \<open>Divisibility\<close>
 
-instance poly :: (field) ring_gcd
-proof 
-  fix a b :: "'a poly"
-  show "normalize (gcd a b) = gcd a b" by (simp add: normalize_poly_def poly_gcd_monic)
-  show "lcm a b = normalize (a * b) div gcd a b" 
-  proof (cases "a * b = 0") 
-    case False
-    show ?thesis unfolding lcm_poly_def normalize_poly_def
-    by (subst div_smult_right, insert False, auto simp: div_smult_left)
-       (metis coeff_degree_mult divide_divide_eq_left divide_inverse_commute inverse_eq_divide)
-  next
-    case True
-    thus ?thesis by (metis div_0 lcm_poly_def normalize_0)
-  qed
-qed auto
-
 context
-  fixes sort :: "'a :: idom"
+  assumes "SORT_CONSTRAINT('a :: idom)"
 begin
 lemma poly_linear_linear_factor: assumes 
   dvd: "[:b,1:] dvd (\<Prod> (a :: 'a) \<leftarrow> as. [: a, 1:])"
@@ -779,7 +752,7 @@ proof (cases "c = 0")
       case True thus ?thesis using c0 unfolding map_poly_def by simp
       next case False thus ?thesis
         unfolding map_poly_def
-        apply(subst fold_coeffs_pCons_not_0_0_eq) using assms by auto
+        apply(subst fold_coeffs_pCons_not_0_0_eq) by auto
     qed
   next case False thus ?thesis
     unfolding map_poly_def

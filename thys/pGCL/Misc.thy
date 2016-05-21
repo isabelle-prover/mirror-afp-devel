@@ -89,10 +89,6 @@ next
   ultimately show ?thesis by(simp add:min.absorb2)
 qed
 
-lemma nonempty_witness:
-  "S \<noteq> {} \<Longrightarrow> \<exists>x. x \<in> S"
-  by(blast)
-
 lemma finite_set_least:
   fixes S::"'a::linorder set"
   assumes finite: "finite S"

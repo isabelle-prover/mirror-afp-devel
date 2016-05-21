@@ -430,17 +430,17 @@ proof (rule ccontr, auto)
     hence ass3: "?B ps \<Longrightarrow> False"
       and IH: "?B (p#ps)" by simp_all
     hence p: "zprime (int p)" and "int p dvd int(prod(p#ps))"
-      by (auto simp add: primel_def prime_impl_zprime_int int_mult)
+      by (auto simp add: primel_def prime_impl_zprime_int of_nat_mult)
     moreover with IH have pqfN: "is_qfN (int p) N"
       and "int p dvd P*int(prod(p#ps))" and "is_qfN (P*int(prod(p#ps))) N"
       by auto
     ultimately obtain S where S: "P*int(prod(p#ps)) = S*(int p) \<and> is_qfN S N"
       using qfN_div_prime_general by blast
-    hence "(int p)*(P* int(prod ps) - S) = 0" by (auto simp add: int_mult)
+    hence "(int p)*(P* int(prod ps) - S) = 0" by (auto simp add: of_nat_mult)
     with p S have "is_qfN (P*int(prod ps)) N" by (auto simp add: zprime_def)
     moreover from IH have "primel ps" by (simp add: primel_def)
     moreover from IH have "\<forall> R. zprime R \<and> R dvd int(prod ps) \<longrightarrow> is_qfN R N"
-      by (auto simp add: int_mult)
+      by (auto simp add: of_nat_mult)
     ultimately have "?B ps" by simp
     with ass3 show False by simp
   qed
@@ -935,10 +935,10 @@ proof (rule ccontr, simp)
       then obtain im::int where "int n = 4*im" by (auto simp add: dvd_def)
       moreover obtain m::nat where "m = nat im" by auto
       ultimately have m: "n = 4*m" by arith
-      with B have "is_qfN (P*int m) 3" by (auto simp add: int_mult)
+      with B have "is_qfN (P*int m) 3" by (auto simp add: of_nat_mult)
       moreover from m Bn have "m > 0" by auto
       moreover from m Bn have "?A (int m)"
-        by (auto simp add: int_mult)
+        by (auto simp add: of_nat_mult)
       ultimately have Bm: "?B m" by simp
       from Bn m have "m < n" by arith
       with IH Bm show False by auto

@@ -1,73 +1,185 @@
-structure LTL_to_DRA_Translator : sig
+structure LTL : sig
+  datatype 'a set = Set of 'a list | Coset of 'a list
+  type 'a ltln
   datatype 'a ltl = LTLTrue | LTLFalse | LTLProp of 'a | LTLPropNeg of 'a |
     LTLAnd of 'a ltl * 'a ltl | LTLOr of 'a ltl * 'a ltl | LTLNext of 'a ltl |
     LTLGlobal of 'a ltl | LTLFinal of 'a ltl | LTLUntil of 'a ltl * 'a ltl
-  datatype 'a set = Set of 'a list | Coset of 'a list
   datatype ('a, 'b) mapping = Mapping of ('a * 'b) list
   datatype 'a ltl_prop_equiv_quotient = Abs of 'a ltl
-  datatype 'a ltlc = LTLcTrue | LTLcFalse | LTLcProp of 'a | LTLcNeg of 'a ltlc
-    | LTLcAnd of 'a ltlc * 'a ltlc | LTLcOr of 'a ltlc * 'a ltlc |
-    LTLcImplies of 'a ltlc * 'a ltlc | LTLcIff of 'a ltlc * 'a ltlc |
-    LTLcNext of 'a ltlc | LTLcFinal of 'a ltlc | LTLcGlobal of 'a ltlc |
-    LTLcUntil of 'a ltlc * 'a ltlc | LTLcRelease of 'a ltlc * 'a ltlc
+  datatype 'a ltlc = True_ltlc | False_ltlc | Prop_ltlc of 'a |
+    Not_ltlc of 'a ltlc | And_ltlc of 'a ltlc * 'a ltlc |
+    Or_ltlc of 'a ltlc * 'a ltlc | Implies_ltlc of 'a ltlc * 'a ltlc |
+    Next_ltlc of 'a ltlc | Final_ltlc of 'a ltlc | Global_ltlc of 'a ltlc |
+    Until_ltlc of 'a ltlc * 'a ltlc | Release_ltlc of 'a ltlc * 'a ltlc
+  datatype mode = Nop | Fast | Slow
+  val iff_ltlc : 'a ltlc -> 'a ltlc -> 'a ltlc
   val ltlc_to_rabin :
-    string ltlc ->
-      ((string ltl_prop_equiv_quotient *
-         (string ltl, (string ltl_prop_equiv_quotient list)) mapping) *
-        (string set *
-          (string ltl_prop_equiv_quotient *
-            (string ltl, (string ltl_prop_equiv_quotient list)) mapping)))
-        set *
-        ((string ltl_prop_equiv_quotient *
-           (string ltl, (string ltl_prop_equiv_quotient list)) mapping) *
-          (((string ltl_prop_equiv_quotient *
-              (string ltl, (string ltl_prop_equiv_quotient list)) mapping) *
-             (string set *
-               (string ltl_prop_equiv_quotient *
-                 (string ltl, (string ltl_prop_equiv_quotient list)) mapping)))
-             set *
+    bool ->
+      mode ->
+        string ltlc ->
+          ((string ltl_prop_equiv_quotient *
+             (string ltl, (string ltl_prop_equiv_quotient list)) mapping) *
+            (string set *
+              (string ltl_prop_equiv_quotient *
+                (string ltl, (string ltl_prop_equiv_quotient list)) mapping)))
+            set *
             ((string ltl_prop_equiv_quotient *
                (string ltl, (string ltl_prop_equiv_quotient list)) mapping) *
-              (string set *
-                (string ltl_prop_equiv_quotient *
-                  (string ltl, (string ltl_prop_equiv_quotient list)) mapping)))
-              set
-              set)
-            set)
-  val ltlc_to_rabin_UU :
-    string ltlc ->
-      ((string ltl_prop_equiv_quotient *
-         (string ltl, (string ltl_prop_equiv_quotient list)) mapping) *
-        (string set *
-          (string ltl_prop_equiv_quotient *
-            (string ltl, (string ltl_prop_equiv_quotient list)) mapping)))
-        set *
-        ((string ltl_prop_equiv_quotient *
-           (string ltl, (string ltl_prop_equiv_quotient list)) mapping) *
-          (((string ltl_prop_equiv_quotient *
-              (string ltl, (string ltl_prop_equiv_quotient list)) mapping) *
-             (string set *
-               (string ltl_prop_equiv_quotient *
-                 (string ltl, (string ltl_prop_equiv_quotient list)) mapping)))
-             set *
-            ((string ltl_prop_equiv_quotient *
-               (string ltl, (string ltl_prop_equiv_quotient list)) mapping) *
-              (string set *
-                (string ltl_prop_equiv_quotient *
-                  (string ltl, (string ltl_prop_equiv_quotient list)) mapping)))
-              set
-              set)
-            set)
+              (((string ltl_prop_equiv_quotient *
+                  (string ltl, (string ltl_prop_equiv_quotient list)) mapping) *
+                 (string set *
+                   (string ltl_prop_equiv_quotient *
+                     (string ltl, (string ltl_prop_equiv_quotient list))
+                       mapping)))
+                 set *
+                ((string ltl_prop_equiv_quotient *
+                   (string ltl, (string ltl_prop_equiv_quotient list))
+                     mapping) *
+                  (string set *
+                    (string ltl_prop_equiv_quotient *
+                      (string ltl, (string ltl_prop_equiv_quotient list))
+                        mapping)))
+                  set
+                  set)
+                set)
 end = struct
 
-datatype 'a ltl = LTLTrue | LTLFalse | LTLProp of 'a | LTLPropNeg of 'a |
-  LTLAnd of 'a ltl * 'a ltl | LTLOr of 'a ltl * 'a ltl | LTLNext of 'a ltl |
-  LTLGlobal of 'a ltl | LTLFinal of 'a ltl | LTLUntil of 'a ltl * 'a ltl;
+datatype nat = Nat of IntInf.int;
+
+fun integer_of_nat (Nat x) = x;
+
+fun equal_nata m n = (((integer_of_nat m) : IntInf.int) = (integer_of_nat n));
 
 type 'a equal = {equal : 'a -> 'a -> bool};
 val equal = #equal : 'a equal -> 'a -> 'a -> bool;
 
+val equal_nat = {equal = equal_nata} : nat equal;
+
+fun list_all p [] = true
+  | list_all p (x :: xs) = p x andalso list_all p xs;
+
+datatype 'a set = Set of 'a list | Coset of 'a list;
+
 fun eq A_ a b = equal A_ a b;
+
+fun membera A_ [] y = false
+  | membera A_ (x :: xs) y = eq A_ x y orelse membera A_ xs y;
+
+fun member A_ x (Coset xs) = not (membera A_ xs x)
+  | member A_ x (Set xs) = membera A_ xs x;
+
+fun less_eq_set A_ (Coset []) (Set []) = false
+  | less_eq_set A_ a (Coset ys) = list_all (fn y => not (member A_ y a)) ys
+  | less_eq_set A_ (Set xs) b = list_all (fn x => member A_ x b) xs;
+
+fun equal_seta A_ a b = less_eq_set A_ a b andalso less_eq_set A_ b a;
+
+fun equal_set A_ = {equal = equal_seta A_} : 'a set equal;
+
+datatype 'a ltln = True_ltln | False_ltln | Prop_ltln of 'a | Nprop_ltln of 'a |
+  And_ltln of 'a ltln * 'a ltln | Or_ltln of 'a ltln * 'a ltln |
+  Next_ltln of 'a ltln | Until_ltln of 'a ltln * 'a ltln |
+  Release_ltln of 'a ltln * 'a ltln;
+
+fun equal_ltlna A_ (Until_ltln (x81, x82)) (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Next_ltln x7) (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) (Next_ltln x7) = false
+  | equal_ltlna A_ (Next_ltln x7) (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Until_ltln (x81, x82)) (Next_ltln x7) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Until_ltln (x81, x82)) (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) (Next_ltln x7) = false
+  | equal_ltlna A_ (Next_ltln x7) (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Until_ltln (x81, x82)) (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) (Next_ltln x7) = false
+  | equal_ltlna A_ (Next_ltln x7) (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (Nprop_ltln x4) (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Nprop_ltln x4) (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Until_ltln (x81, x82)) (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Nprop_ltln x4) (Next_ltln x7) = false
+  | equal_ltlna A_ (Next_ltln x7) (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Nprop_ltln x4) (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Nprop_ltln x4) (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Prop_ltln x3) (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) (Prop_ltln x3) = false
+  | equal_ltlna A_ (Prop_ltln x3) (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Until_ltln (x81, x82)) (Prop_ltln x3) = false
+  | equal_ltlna A_ (Prop_ltln x3) (Next_ltln x7) = false
+  | equal_ltlna A_ (Next_ltln x7) (Prop_ltln x3) = false
+  | equal_ltlna A_ (Prop_ltln x3) (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) (Prop_ltln x3) = false
+  | equal_ltlna A_ (Prop_ltln x3) (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) (Prop_ltln x3) = false
+  | equal_ltlna A_ (Prop_ltln x3) (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Nprop_ltln x4) (Prop_ltln x3) = false
+  | equal_ltlna A_ False_ltln (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) False_ltln = false
+  | equal_ltlna A_ False_ltln (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Until_ltln (x81, x82)) False_ltln = false
+  | equal_ltlna A_ False_ltln (Next_ltln x7) = false
+  | equal_ltlna A_ (Next_ltln x7) False_ltln = false
+  | equal_ltlna A_ False_ltln (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) False_ltln = false
+  | equal_ltlna A_ False_ltln (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) False_ltln = false
+  | equal_ltlna A_ False_ltln (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Nprop_ltln x4) False_ltln = false
+  | equal_ltlna A_ False_ltln (Prop_ltln x3) = false
+  | equal_ltlna A_ (Prop_ltln x3) False_ltln = false
+  | equal_ltlna A_ True_ltln (Release_ltln (x91, x92)) = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) True_ltln = false
+  | equal_ltlna A_ True_ltln (Until_ltln (x81, x82)) = false
+  | equal_ltlna A_ (Until_ltln (x81, x82)) True_ltln = false
+  | equal_ltlna A_ True_ltln (Next_ltln x7) = false
+  | equal_ltlna A_ (Next_ltln x7) True_ltln = false
+  | equal_ltlna A_ True_ltln (Or_ltln (x61, x62)) = false
+  | equal_ltlna A_ (Or_ltln (x61, x62)) True_ltln = false
+  | equal_ltlna A_ True_ltln (And_ltln (x51, x52)) = false
+  | equal_ltlna A_ (And_ltln (x51, x52)) True_ltln = false
+  | equal_ltlna A_ True_ltln (Nprop_ltln x4) = false
+  | equal_ltlna A_ (Nprop_ltln x4) True_ltln = false
+  | equal_ltlna A_ True_ltln (Prop_ltln x3) = false
+  | equal_ltlna A_ (Prop_ltln x3) True_ltln = false
+  | equal_ltlna A_ True_ltln False_ltln = false
+  | equal_ltlna A_ False_ltln True_ltln = false
+  | equal_ltlna A_ (Release_ltln (x91, x92)) (Release_ltln (y91, y92)) =
+    equal_ltlna A_ x91 y91 andalso equal_ltlna A_ x92 y92
+  | equal_ltlna A_ (Until_ltln (x81, x82)) (Until_ltln (y81, y82)) =
+    equal_ltlna A_ x81 y81 andalso equal_ltlna A_ x82 y82
+  | equal_ltlna A_ (Next_ltln x7) (Next_ltln y7) = equal_ltlna A_ x7 y7
+  | equal_ltlna A_ (Or_ltln (x61, x62)) (Or_ltln (y61, y62)) =
+    equal_ltlna A_ x61 y61 andalso equal_ltlna A_ x62 y62
+  | equal_ltlna A_ (And_ltln (x51, x52)) (And_ltln (y51, y52)) =
+    equal_ltlna A_ x51 y51 andalso equal_ltlna A_ x52 y52
+  | equal_ltlna A_ (Nprop_ltln x4) (Nprop_ltln y4) = eq A_ x4 y4
+  | equal_ltlna A_ (Prop_ltln x3) (Prop_ltln y3) = eq A_ x3 y3
+  | equal_ltlna A_ False_ltln False_ltln = true
+  | equal_ltlna A_ True_ltln True_ltln = true;
+
+fun equal_ltln A_ = {equal = equal_ltlna A_} : 'a ltln equal;
+
+fun equal_lista A_ [] (x21 :: x22) = false
+  | equal_lista A_ (x21 :: x22) [] = false
+  | equal_lista A_ (x21 :: x22) (y21 :: y22) =
+    eq A_ x21 y21 andalso equal_lista A_ x22 y22
+  | equal_lista A_ [] [] = true;
+
+fun equal_list A_ = {equal = equal_lista A_} : ('a list) equal;
+
+datatype 'a ltl = LTLTrue | LTLFalse | LTLProp of 'a | LTLPropNeg of 'a |
+  LTLAnd of 'a ltl * 'a ltl | LTLOr of 'a ltl * 'a ltl | LTLNext of 'a ltl |
+  LTLGlobal of 'a ltl | LTLFinal of 'a ltl | LTLUntil of 'a ltl * 'a ltl;
 
 fun equal_ltla A_ (LTLFinal x9) (LTLUntil (x101, x102)) = false
   | equal_ltla A_ (LTLUntil (x101, x102)) (LTLFinal x9) = false
@@ -175,41 +287,6 @@ fun equal_ltla A_ (LTLFinal x9) (LTLUntil (x101, x102)) = false
 
 fun equal_ltl A_ = {equal = equal_ltla A_} : 'a ltl equal;
 
-datatype nat = Nat of IntInf.int;
-
-fun integer_of_nat (Nat x) = x;
-
-fun equal_nata m n = (((integer_of_nat m) : IntInf.int) = (integer_of_nat n));
-
-val equal_nat = {equal = equal_nata} : nat equal;
-
-fun pred_list p [] = true
-  | pred_list p (x :: xs) = p x andalso pred_list p xs;
-
-datatype 'a set = Set of 'a list | Coset of 'a list;
-
-fun membera A_ [] y = false
-  | membera A_ (x :: xs) y = eq A_ x y orelse membera A_ xs y;
-
-fun member A_ x (Coset xs) = not (membera A_ xs x)
-  | member A_ x (Set xs) = membera A_ xs x;
-
-fun less_eq_set A_ (Coset []) (Set []) = false
-  | less_eq_set A_ a (Coset ys) = pred_list (fn y => not (member A_ y a)) ys
-  | less_eq_set A_ (Set xs) b = pred_list (fn x => member A_ x b) xs;
-
-fun equal_seta A_ a b = less_eq_set A_ a b andalso less_eq_set A_ b a;
-
-fun equal_set A_ = {equal = equal_seta A_} : 'a set equal;
-
-fun equal_lista A_ [] (x21 :: x22) = false
-  | equal_lista A_ (x21 :: x22) [] = false
-  | equal_lista A_ (x21 :: x22) (y21 :: y22) =
-    eq A_ x21 y21 andalso equal_lista A_ x22 y22
-  | equal_lista A_ [] [] = true;
-
-fun equal_list A_ = {equal = equal_lista A_} : ('a list) equal;
-
 val equal_literal = {equal = (fn a => fn b => ((a : string) = b))} :
   string equal;
 
@@ -233,8 +310,8 @@ fun equal_mappinga A_ B_ (Mapping xs) (Mapping ys) =
     val ks = map fst xs;
     val ls = map fst ys;
   in
-    pred_list (membera A_ ks) ls andalso
-      pred_list
+    list_all (membera A_ ks) ls andalso
+      list_all
         (fn k =>
           membera A_ ls k andalso
             equal_option B_ (map_of A_ xs k) (map_of A_ ys k))
@@ -244,13 +321,33 @@ fun equal_mappinga A_ B_ (Mapping xs) (Mapping ys) =
 fun equal_mapping A_ B_ = {equal = equal_mappinga A_ B_} :
   ('a, 'b) mapping equal;
 
-fun equal_proda A_ B_ (x1, x2) (y1, y2) = eq A_ x1 y1 andalso eq B_ x2 y2;
+datatype enat = Enat of nat | Infinity_enat;
 
-fun equal_prod A_ B_ = {equal = equal_proda A_ B_} : ('a * 'b) equal;
+fun less_eq_nat m n = IntInf.<= (integer_of_nat m, integer_of_nat n);
+
+fun less_eq_enat Infinity_enat (Enat n) = false
+  | less_eq_enat q Infinity_enat = true
+  | less_eq_enat (Enat m) (Enat n) = less_eq_nat m n;
+
+fun less_nat m n = IntInf.< (integer_of_nat m, integer_of_nat n);
+
+fun less_enat Infinity_enat q = false
+  | less_enat (Enat m) Infinity_enat = true
+  | less_enat (Enat m) (Enat n) = less_nat m n;
 
 type 'a ord = {less_eq : 'a -> 'a -> bool, less : 'a -> 'a -> bool};
 val less_eq = #less_eq : 'a ord -> 'a -> 'a -> bool;
 val less = #less : 'a ord -> 'a -> 'a -> bool;
+
+val ord_enat = {less_eq = less_eq_enat, less = less_enat} : enat ord;
+
+fun equal_proda A_ B_ (x1, x2) (y1, y2) = eq A_ x1 y1 andalso eq B_ x2 y2;
+
+fun equal_prod A_ B_ = {equal = equal_proda A_ B_} : ('a * 'b) equal;
+
+fun equal_unita u v = true;
+
+val equal_unit = {equal = equal_unita} : unit equal;
 
 val ord_integer =
   {less_eq = (fn a => fn b => IntInf.<= (a, b)),
@@ -331,11 +428,16 @@ fun equal_ltl_prop_equiv_quotient A_ =
 
 datatype num = One | Bit0 of num | Bit1 of num;
 
-datatype 'a ltlc = LTLcTrue | LTLcFalse | LTLcProp of 'a | LTLcNeg of 'a ltlc |
-  LTLcAnd of 'a ltlc * 'a ltlc | LTLcOr of 'a ltlc * 'a ltlc |
-  LTLcImplies of 'a ltlc * 'a ltlc | LTLcIff of 'a ltlc * 'a ltlc |
-  LTLcNext of 'a ltlc | LTLcFinal of 'a ltlc | LTLcGlobal of 'a ltlc |
-  LTLcUntil of 'a ltlc * 'a ltlc | LTLcRelease of 'a ltlc * 'a ltlc;
+datatype 'a ltlc = True_ltlc | False_ltlc | Prop_ltlc of 'a |
+  Not_ltlc of 'a ltlc | And_ltlc of 'a ltlc * 'a ltlc |
+  Or_ltlc of 'a ltlc * 'a ltlc | Implies_ltlc of 'a ltlc * 'a ltlc |
+  Next_ltlc of 'a ltlc | Final_ltlc of 'a ltlc | Global_ltlc of 'a ltlc |
+  Until_ltlc of 'a ltlc * 'a ltlc | Release_ltlc of 'a ltlc * 'a ltlc;
+
+datatype 'a seq = Empty | Insert of 'a * 'a pred | Join of 'a pred * 'a seq
+and 'a pred = Seq of (unit -> 'a seq);
+
+datatype mode = Nop | Fast | Slow;
 
 fun id x = (fn xa => xa) x;
 
@@ -362,11 +464,9 @@ fun list_ex p [] = false
 
 fun bex (Set xs) p = list_ex p xs;
 
-fun less_nat m n = IntInf.< (integer_of_nat m, integer_of_nat n);
-
 fun upt i j = (if less_nat i j then i :: upt (suc i) j else []);
 
-fun ball (Set xs) p = pred_list p xs;
+fun ball (Set xs) p = list_all p xs;
 
 fun max A_ a b = (if less_eq A_ a b then b else a);
 
@@ -398,6 +498,9 @@ fun inserta A_ x xs = (if membera A_ xs x then xs else x :: xs);
 
 fun union A_ = fold (inserta A_);
 
+fun funpow n f =
+  (if equal_nata n zero_nat then id else f o funpow (minus_nat n one_nat) f);
+
 fun filtera p [] = []
   | filtera p (x :: xs) = (if p x then x :: filtera p xs else filtera p xs);
 
@@ -414,10 +517,6 @@ fun gen_dfs succs ins memb s (x :: xs) =
   (if memb x s then gen_dfs succs ins memb s xs
     else gen_dfs succs ins memb (ins x s) (succs x @ xs))
   | gen_dfs succs ins memb s [] = s;
-
-fun and_absa (Abs xa) (Abs x) = Abs (LTLAnd (xa, x));
-
-fun and_abs xs = foldl and_absa (Abs LTLTrue) xs;
 
 fun remove_constants_P (LTLAnd (phi, psi)) =
   (case remove_constants_P phi of LTLTrue => remove_constants_P psi
@@ -1344,7 +1443,38 @@ fun update A_ k v [] = [(k, v)]
   | update A_ k v (p :: ps) =
     (if eq A_ (fst p) k then (k, v) :: ps else p :: update A_ k v ps);
 
-fun theG (LTLGlobal x8) = x8;
+fun norm_rep A_ B_ (i, (qa, (nua, pa))) (q, (nu, p)) =
+  let
+    val eq_q = eq A_ qa q;
+    val eq_p = eq A_ pa p;
+    val qaa = (if eq_q then q else (if eq A_ qa p then p else qa));
+    val pb = (if eq_p then p else (if eq A_ pa q then q else pa));
+  in
+    (i orelse eq_q andalso (eq_p andalso eq B_ nua nu), (qaa, (nua, pb)))
+  end;
+
+fun foldl_break f s a [] = a
+  | foldl_break f s a (x :: xs) =
+    (if s a then a else foldl_break f s (f a x) xs);
+
+fun norm_fold A_ B_ (q, (nu, p)) xs =
+  foldl_break (norm_rep A_ B_) fst
+    (false, (q, (nu, (if eq A_ q p then q else p)))) xs;
+
+fun list_dfs A_ B_ succ s (x :: xs) =
+  let
+    val (memb, sa) = let
+                       val (i, xa) = norm_fold A_ B_ x s;
+                     in
+                       (if i then (i, s) else (i, xa :: s))
+                     end;
+  in
+    list_dfs A_ B_ succ sa (if memb then xs else succ x @ xs)
+  end
+  | list_dfs A_ B_ succ s [] = s;
+
+fun iff_ltlc phi psi =
+  And_ltlc (Implies_ltlc (phi, psi), Implies_ltlc (psi, phi));
 
 fun remdups A_ [] = []
   | remdups A_ (x :: xs) =
@@ -1373,6 +1503,16 @@ fun lookup A_ (Mapping xs) = map_of A_ xs;
 
 fun updatea A_ k v (Mapping xs) = Mapping (update A_ k v xs);
 
+fun bind (Seq g) f = Seq (fn _ => apply f (g ()))
+and apply f Empty = Empty
+  | apply f (Insert (x, p)) = Join (f x, Join (bind p f, Empty))
+  | apply f (Join (p, xq)) = Join (bind p f, apply f xq);
+
+fun eval A_ (Seq f) = memberb A_ (f ())
+and memberb A_ Empty x = false
+  | memberb A_ (Insert (y, p)) x = eq A_ x y orelse eval A_ p x
+  | memberb A_ (Join (p, xq)) x = eval A_ p x orelse memberb A_ xq x;
+
 fun unf_G (LTLFinal phi) = LTLOr (LTLFinal phi, unf_G phi)
   | unf_G (LTLGlobal phi) = LTLGlobal phi
   | unf_G (LTLUntil (phi, psi)) =
@@ -1394,6 +1534,16 @@ fun gen_length n (x :: xs) = gen_length (suc n) xs
 fun size_list x = gen_length zero_nat x;
 
 fun card A_ (Set xs) = size_list (remdups A_ xs);
+
+fun not_n True_ltln = False_ltln
+  | not_n False_ltln = True_ltln
+  | not_n (Prop_ltln a) = Nprop_ltln a
+  | not_n (Nprop_ltln a) = Prop_ltln a
+  | not_n (And_ltln (phi, psi)) = Or_ltln (not_n phi, not_n psi)
+  | not_n (Or_ltln (phi, psi)) = And_ltln (not_n phi, not_n psi)
+  | not_n (Until_ltln (phi, psi)) = Release_ltln (not_n phi, not_n psi)
+  | not_n (Release_ltln (phi, psi)) = Until_ltln (not_n phi, not_n psi)
+  | not_n (Next_ltln phi) = Next_ltln (not_n phi);
 
 fun g_list A_ (LTLAnd (phi, psi)) =
   union (equal_ltl A_) (g_list A_ phi) (g_list A_ psi)
@@ -1417,17 +1567,50 @@ fun mk_ora x y =
     | LTLGlobal _ => LTLOr (x, y) | LTLFinal _ => LTLOr (x, y)
     | LTLUntil (_, _) => LTLOr (x, y));
 
-fun eval_G A_ s (LTLAnd (phi, psi)) = LTLAnd (eval_G A_ s phi, eval_G A_ s psi)
-  | eval_G A_ s (LTLOr (phi, psi)) = LTLOr (eval_G A_ s phi, eval_G A_ s psi)
-  | eval_G A_ s (LTLGlobal phi) =
-    (if member (equal_ltl A_) (LTLGlobal phi) s then LTLTrue else LTLFalse)
-  | eval_G A_ s LTLTrue = LTLTrue
-  | eval_G A_ s LTLFalse = LTLFalse
-  | eval_G A_ s (LTLProp v) = LTLProp v
-  | eval_G A_ s (LTLPropNeg v) = LTLPropNeg v
-  | eval_G A_ s (LTLNext v) = LTLNext v
-  | eval_G A_ s (LTLFinal v) = LTLFinal v
-  | eval_G A_ s (LTLUntil (v, va)) = LTLUntil (v, va);
+fun holds p = eval equal_unit p ();
+
+fun ltlc_to_ltlna false True_ltlc = True_ltln
+  | ltlc_to_ltlna false False_ltlc = False_ltln
+  | ltlc_to_ltlna false (Prop_ltlc q) = Prop_ltln q
+  | ltlc_to_ltlna false (And_ltlc (phi, psi)) =
+    And_ltln (ltlc_to_ltlna false phi, ltlc_to_ltlna false psi)
+  | ltlc_to_ltlna false (Or_ltlc (phi, psi)) =
+    Or_ltln (ltlc_to_ltlna false phi, ltlc_to_ltlna false psi)
+  | ltlc_to_ltlna false (Implies_ltlc (phi, psi)) =
+    Or_ltln (ltlc_to_ltlna true phi, ltlc_to_ltlna false psi)
+  | ltlc_to_ltlna false (Final_ltlc phi) =
+    Until_ltln (True_ltln, ltlc_to_ltlna false phi)
+  | ltlc_to_ltlna false (Global_ltlc phi) =
+    Release_ltln (False_ltln, ltlc_to_ltlna false phi)
+  | ltlc_to_ltlna false (Until_ltlc (phi, psi)) =
+    Until_ltln (ltlc_to_ltlna false phi, ltlc_to_ltlna false psi)
+  | ltlc_to_ltlna false (Release_ltlc (phi, psi)) =
+    Release_ltln (ltlc_to_ltlna false phi, ltlc_to_ltlna false psi)
+  | ltlc_to_ltlna true True_ltlc = False_ltln
+  | ltlc_to_ltlna true False_ltlc = True_ltln
+  | ltlc_to_ltlna true (Prop_ltlc q) = Nprop_ltln q
+  | ltlc_to_ltlna true (And_ltlc (nu, mu)) =
+    Or_ltln (ltlc_to_ltlna true nu, ltlc_to_ltlna true mu)
+  | ltlc_to_ltlna true (Or_ltlc (nu, mu)) =
+    And_ltln (ltlc_to_ltlna true nu, ltlc_to_ltlna true mu)
+  | ltlc_to_ltlna true (Implies_ltlc (phi, psi)) =
+    And_ltln (ltlc_to_ltlna false phi, ltlc_to_ltlna true psi)
+  | ltlc_to_ltlna true (Final_ltlc phi) =
+    Release_ltln (False_ltln, ltlc_to_ltlna true phi)
+  | ltlc_to_ltlna true (Global_ltlc phi) =
+    Until_ltln (True_ltln, ltlc_to_ltlna true phi)
+  | ltlc_to_ltlna true (Until_ltlc (nu, mu)) =
+    Release_ltln (ltlc_to_ltlna true nu, ltlc_to_ltlna true mu)
+  | ltlc_to_ltlna true (Release_ltlc (nu, mu)) =
+    Until_ltln (ltlc_to_ltlna true nu, ltlc_to_ltlna true mu)
+  | ltlc_to_ltlna b (Not_ltlc psi) = ltlc_to_ltlna (not b) psi
+  | ltlc_to_ltlna b (Next_ltlc phi) = Next_ltln (ltlc_to_ltlna b phi);
+
+fun ltlc_to_ltln phi = ltlc_to_ltlna false phi;
+
+fun and_absa (Abs xa) (Abs x) = Abs (LTLAnd (xa, x));
+
+fun and_abs xs = foldl and_absa (Abs LTLTrue) xs;
 
 fun mk_anda x y =
   (case y of LTLTrue => x | LTLFalse => LTLFalse | LTLProp _ => LTLAnd (x, y)
@@ -1437,6 +1620,10 @@ fun mk_anda x y =
     | LTLUntil (_, _) => LTLAnd (x, y));
 
 fun tabulate ks f = Mapping (map (fn k => (k, f k)) ks);
+
+val bot_pred : 'a pred = Seq (fn _ => Empty);
+
+fun single x = Seq (fn _ => Insert (x, bot_pred));
 
 fun af_letter_simp A_ LTLTrue nu = LTLTrue
   | af_letter_simp A_ LTLFalse nu = LTLFalse
@@ -1602,6 +1789,56 @@ fun unf_simp A_ (LTLAnd (phi, psi)) =
   | unf_simp A_ (LTLPropNeg v) = LTLPropNeg v
   | unf_simp A_ (LTLNext v) = LTLNext v;
 
+fun eSuc i =
+  (case i of Enat n => Enat (suc n) | Infinity_enat => Infinity_enat);
+
+fun theG (LTLGlobal x8) = x8;
+
+fun mk_orb x y =
+  (case x of True_ltln => True_ltln | False_ltln => y
+    | Prop_ltln _ =>
+      (case y of True_ltln => True_ltln | False_ltln => x
+        | Prop_ltln _ => Or_ltln (x, y) | Nprop_ltln _ => Or_ltln (x, y)
+        | And_ltln (_, _) => Or_ltln (x, y) | Or_ltln (_, _) => Or_ltln (x, y)
+        | Next_ltln _ => Or_ltln (x, y) | Until_ltln (_, _) => Or_ltln (x, y)
+        | Release_ltln (_, _) => Or_ltln (x, y))
+    | Nprop_ltln _ =>
+      (case y of True_ltln => True_ltln | False_ltln => x
+        | Prop_ltln _ => Or_ltln (x, y) | Nprop_ltln _ => Or_ltln (x, y)
+        | And_ltln (_, _) => Or_ltln (x, y) | Or_ltln (_, _) => Or_ltln (x, y)
+        | Next_ltln _ => Or_ltln (x, y) | Until_ltln (_, _) => Or_ltln (x, y)
+        | Release_ltln (_, _) => Or_ltln (x, y))
+    | And_ltln (_, _) =>
+      (case y of True_ltln => True_ltln | False_ltln => x
+        | Prop_ltln _ => Or_ltln (x, y) | Nprop_ltln _ => Or_ltln (x, y)
+        | And_ltln (_, _) => Or_ltln (x, y) | Or_ltln (_, _) => Or_ltln (x, y)
+        | Next_ltln _ => Or_ltln (x, y) | Until_ltln (_, _) => Or_ltln (x, y)
+        | Release_ltln (_, _) => Or_ltln (x, y))
+    | Or_ltln (_, _) =>
+      (case y of True_ltln => True_ltln | False_ltln => x
+        | Prop_ltln _ => Or_ltln (x, y) | Nprop_ltln _ => Or_ltln (x, y)
+        | And_ltln (_, _) => Or_ltln (x, y) | Or_ltln (_, _) => Or_ltln (x, y)
+        | Next_ltln _ => Or_ltln (x, y) | Until_ltln (_, _) => Or_ltln (x, y)
+        | Release_ltln (_, _) => Or_ltln (x, y))
+    | Next_ltln _ =>
+      (case y of True_ltln => True_ltln | False_ltln => x
+        | Prop_ltln _ => Or_ltln (x, y) | Nprop_ltln _ => Or_ltln (x, y)
+        | And_ltln (_, _) => Or_ltln (x, y) | Or_ltln (_, _) => Or_ltln (x, y)
+        | Next_ltln _ => Or_ltln (x, y) | Until_ltln (_, _) => Or_ltln (x, y)
+        | Release_ltln (_, _) => Or_ltln (x, y))
+    | Until_ltln (_, _) =>
+      (case y of True_ltln => True_ltln | False_ltln => x
+        | Prop_ltln _ => Or_ltln (x, y) | Nprop_ltln _ => Or_ltln (x, y)
+        | And_ltln (_, _) => Or_ltln (x, y) | Or_ltln (_, _) => Or_ltln (x, y)
+        | Next_ltln _ => Or_ltln (x, y) | Until_ltln (_, _) => Or_ltln (x, y)
+        | Release_ltln (_, _) => Or_ltln (x, y))
+    | Release_ltln (_, _) =>
+      (case y of True_ltln => True_ltln | False_ltln => x
+        | Prop_ltln _ => Or_ltln (x, y) | Nprop_ltln _ => Or_ltln (x, y)
+        | And_ltln (_, _) => Or_ltln (x, y) | Or_ltln (_, _) => Or_ltln (x, y)
+        | Next_ltln _ => Or_ltln (x, y) | Until_ltln (_, _) => Or_ltln (x, y)
+        | Release_ltln (_, _) => Or_ltln (x, y)));
+
 fun remdups_fwd_acc A_ acc [] = []
   | remdups_fwd_acc A_ acc (x :: xs) =
     (if member A_ x acc then [] else [x]) @
@@ -1611,22 +1848,66 @@ fun remdups_fwd A_ xs = remdups_fwd_acc A_ bot_set xs;
 
 fun the (SOME x2) = x2;
 
+fun adjunct p Empty = Join (p, Empty)
+  | adjunct p (Insert (x, q)) = Insert (x, sup_pred q p)
+  | adjunct p (Join (q, xq)) = Join (q, adjunct p xq)
+and sup_pred (Seq f) (Seq g) =
+  Seq (fn _ =>
+        (case f () of Empty => g ()
+          | Insert (x, p) => Insert (x, sup_pred p (Seq g))
+          | Join (p, xq) => adjunct (Seq g) (Join (p, xq))));
+
 fun simple_product delta_1 delta_2 =
   (fn (q_1, q_2) => fn nu => (delta_1 q_1 nu, delta_2 q_2 nu));
 
-fun vars_list A_ (LTLAnd (phi, psi)) =
-  union A_ (vars_list A_ phi) (vars_list A_ psi)
-  | vars_list A_ (LTLOr (phi, psi)) =
-    union A_ (vars_list A_ phi) (vars_list A_ psi)
-  | vars_list A_ (LTLFinal phi) = vars_list A_ phi
-  | vars_list A_ (LTLGlobal phi) = vars_list A_ phi
-  | vars_list A_ (LTLNext phi) = vars_list A_ phi
-  | vars_list A_ (LTLUntil (phi, psi)) =
-    union A_ (vars_list A_ phi) (vars_list A_ psi)
-  | vars_list A_ (LTLProp a) = [a]
-  | vars_list A_ (LTLPropNeg a) = [a]
-  | vars_list A_ LTLTrue = []
-  | vars_list A_ LTLFalse = [];
+fun eq_i_i A_ xa xb =
+  bind (single (xa, xb))
+    (fn (x, xaa) => (if eq A_ x xaa then single () else bot_pred));
+
+fun mk_andb x y =
+  (case x of True_ltln => y | False_ltln => False_ltln
+    | Prop_ltln _ =>
+      (case y of True_ltln => x | False_ltln => False_ltln
+        | Prop_ltln _ => And_ltln (x, y) | Nprop_ltln _ => And_ltln (x, y)
+        | And_ltln (_, _) => And_ltln (x, y) | Or_ltln (_, _) => And_ltln (x, y)
+        | Next_ltln _ => And_ltln (x, y) | Until_ltln (_, _) => And_ltln (x, y)
+        | Release_ltln (_, _) => And_ltln (x, y))
+    | Nprop_ltln _ =>
+      (case y of True_ltln => x | False_ltln => False_ltln
+        | Prop_ltln _ => And_ltln (x, y) | Nprop_ltln _ => And_ltln (x, y)
+        | And_ltln (_, _) => And_ltln (x, y) | Or_ltln (_, _) => And_ltln (x, y)
+        | Next_ltln _ => And_ltln (x, y) | Until_ltln (_, _) => And_ltln (x, y)
+        | Release_ltln (_, _) => And_ltln (x, y))
+    | And_ltln (_, _) =>
+      (case y of True_ltln => x | False_ltln => False_ltln
+        | Prop_ltln _ => And_ltln (x, y) | Nprop_ltln _ => And_ltln (x, y)
+        | And_ltln (_, _) => And_ltln (x, y) | Or_ltln (_, _) => And_ltln (x, y)
+        | Next_ltln _ => And_ltln (x, y) | Until_ltln (_, _) => And_ltln (x, y)
+        | Release_ltln (_, _) => And_ltln (x, y))
+    | Or_ltln (_, _) =>
+      (case y of True_ltln => x | False_ltln => False_ltln
+        | Prop_ltln _ => And_ltln (x, y) | Nprop_ltln _ => And_ltln (x, y)
+        | And_ltln (_, _) => And_ltln (x, y) | Or_ltln (_, _) => And_ltln (x, y)
+        | Next_ltln _ => And_ltln (x, y) | Until_ltln (_, _) => And_ltln (x, y)
+        | Release_ltln (_, _) => And_ltln (x, y))
+    | Next_ltln _ =>
+      (case y of True_ltln => x | False_ltln => False_ltln
+        | Prop_ltln _ => And_ltln (x, y) | Nprop_ltln _ => And_ltln (x, y)
+        | And_ltln (_, _) => And_ltln (x, y) | Or_ltln (_, _) => And_ltln (x, y)
+        | Next_ltln _ => And_ltln (x, y) | Until_ltln (_, _) => And_ltln (x, y)
+        | Release_ltln (_, _) => And_ltln (x, y))
+    | Until_ltln (_, _) =>
+      (case y of True_ltln => x | False_ltln => False_ltln
+        | Prop_ltln _ => And_ltln (x, y) | Nprop_ltln _ => And_ltln (x, y)
+        | And_ltln (_, _) => And_ltln (x, y) | Or_ltln (_, _) => And_ltln (x, y)
+        | Next_ltln _ => And_ltln (x, y) | Until_ltln (_, _) => And_ltln (x, y)
+        | Release_ltln (_, _) => And_ltln (x, y))
+    | Release_ltln (_, _) =>
+      (case y of True_ltln => x | False_ltln => False_ltln
+        | Prop_ltln _ => And_ltln (x, y) | Nprop_ltln _ => And_ltln (x, y)
+        | And_ltln (_, _) => And_ltln (x, y) | Or_ltln (_, _) => And_ltln (x, y)
+        | Next_ltln _ => And_ltln (x, y) | Until_ltln (_, _) => And_ltln (x, y)
+        | Release_ltln (_, _) => And_ltln (x, y)));
 
 fun af_G_letter_simp A_ LTLTrue nu = LTLTrue
   | af_G_letter_simp A_ LTLFalse nu = LTLFalse
@@ -1687,22 +1968,664 @@ fun af_G_letter_simp A_ LTLTrue nu = LTLTrue
 fun af_G_letter_abs A_ (Abs phi) nu =
   Abs (remove_and_or A_ (af_G_letter_simp A_ phi nu));
 
-fun delta_L A_ B_ sigma delta q_0 =
+val zero_enat : enat = Enat zero_nat;
+
+fun minus_enat (Enat a) Infinity_enat = zero_enat
+  | minus_enat Infinity_enat n = Infinity_enat
+  | minus_enat (Enat a) (Enat b) = Enat (minus_nat a b);
+
+fun min A_ a b = (if less_eq A_ a b then a else b);
+
+fun mk_next_pow n x =
+  (case x of True_ltln => True_ltln | False_ltln => False_ltln
+    | Prop_ltln _ => funpow n Next_ltln x | Nprop_ltln _ => funpow n Next_ltln x
+    | And_ltln (_, _) => funpow n Next_ltln x
+    | Or_ltln (_, _) => funpow n Next_ltln x
+    | Next_ltln _ => funpow n Next_ltln x
+    | Until_ltln (_, _) => funpow n Next_ltln x
+    | Release_ltln (_, _) => funpow n Next_ltln x);
+
+fun is_constant True_ltln = true
+  | is_constant False_ltln = true
+  | is_constant (Prop_ltln v) = false
+  | is_constant (Nprop_ltln v) = false
+  | is_constant (And_ltln (v, va)) = false
+  | is_constant (Or_ltln (v, va)) = false
+  | is_constant (Next_ltln v) = false
+  | is_constant (Until_ltln (v, va)) = false
+  | is_constant (Release_ltln (v, va)) = false;
+
+fun the_enat_0 (Enat i) = i
+  | the_enat_0 Infinity_enat = zero_nat;
+
+fun combine binop (phi, i) (psi, j) =
   let
-    val start = map (fn nu => (q_0, (nu, delta q_0 nu))) sigma;
-    val succ = (fn (_, (_, q)) => map (fn nu => (q, (nu, delta q nu))) sigma);
+    val chi =
+      binop (mk_next_pow (the_enat_0 (minus_enat i j)) phi)
+        (mk_next_pow (the_enat_0 (minus_enat j i)) psi);
   in
-    gen_dfs succ (insert (equal_prod B_ (equal_prod A_ B_)))
-      (member (equal_prod B_ (equal_prod A_ B_))) bot_set start
+    (chi, (if is_constant chi then Infinity_enat else min ord_enat i j))
   end;
 
-fun eval_G_abs A_ xa (Abs x) = Abs (eval_G A_ xa x);
+fun iterate A_ f x n =
+  (if equal_nata n zero_nat then x
+    else let
+           val xa = f x;
+         in
+           (if eq A_ x xa then x else iterate A_ f xa (minus_nat n one_nat))
+         end);
 
-fun impl_test B_ ifex_of b1 b2 =
-  equal_ifex B_ (normif_alist B_ [] (ifex_of b1) (ifex_of b2) Trueif) Trueif;
+fun mk_next x =
+  (case x of True_ltln => True_ltln | False_ltln => False_ltln
+    | Prop_ltln _ => Next_ltln x | Nprop_ltln _ => Next_ltln x
+    | And_ltln (_, _) => Next_ltln x | Or_ltln (_, _) => Next_ltln x
+    | Next_ltln _ => Next_ltln x | Until_ltln (_, _) => Next_ltln x
+    | Release_ltln (_, _) => Next_ltln x);
 
-fun ltl_prop_implies A_ phi psi =
-  impl_test (equal_ltl A_) (ifex_of_ltl A_) phi psi;
+fun delta_L A_ B_ sigma delta q_0 =
+  Set let
+        val start = map (fn nu => (q_0, (nu, delta q_0 nu))) sigma;
+        val succ =
+          (fn (_, (_, q)) => map (fn nu => (q, (nu, delta q nu))) sigma);
+      in
+        list_dfs B_ A_ succ [] start
+      end;
+
+fun remove_until (Until_ltln (x, y)) = remove_until y
+  | remove_until (Or_ltln (x, y)) = Or_ltln (remove_until x, remove_until y)
+  | remove_until True_ltln = True_ltln
+  | remove_until False_ltln = False_ltln
+  | remove_until (Prop_ltln v) = Prop_ltln v
+  | remove_until (Nprop_ltln v) = Nprop_ltln v
+  | remove_until (And_ltln (v, va)) = And_ltln (v, va)
+  | remove_until (Next_ltln v) = Next_ltln v
+  | remove_until (Release_ltln (v, va)) = Release_ltln (v, va);
+
+fun mk_until x y =
+  (case x
+    of True_ltln =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Until_ltln (True_ltln, remove_until y)
+        | Nprop_ltln _ => Until_ltln (True_ltln, remove_until y)
+        | And_ltln (_, _) => Until_ltln (True_ltln, remove_until y)
+        | Or_ltln (_, _) => Until_ltln (True_ltln, remove_until y)
+        | Next_ltln _ => Until_ltln (True_ltln, remove_until y)
+        | Until_ltln (_, _) => Until_ltln (True_ltln, remove_until y)
+        | Release_ltln (_, _) => Until_ltln (True_ltln, remove_until y))
+    | False_ltln => y
+    | Prop_ltln _ =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Until_ltln (x, y) | Nprop_ltln _ => Until_ltln (x, y)
+        | And_ltln (_, _) => Until_ltln (x, y)
+        | Or_ltln (_, _) => Until_ltln (x, y) | Next_ltln _ => Until_ltln (x, y)
+        | Until_ltln (_, _) => Until_ltln (x, y)
+        | Release_ltln (_, _) => Until_ltln (x, y))
+    | Nprop_ltln _ =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Until_ltln (x, y) | Nprop_ltln _ => Until_ltln (x, y)
+        | And_ltln (_, _) => Until_ltln (x, y)
+        | Or_ltln (_, _) => Until_ltln (x, y) | Next_ltln _ => Until_ltln (x, y)
+        | Until_ltln (_, _) => Until_ltln (x, y)
+        | Release_ltln (_, _) => Until_ltln (x, y))
+    | And_ltln (_, _) =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Until_ltln (x, y) | Nprop_ltln _ => Until_ltln (x, y)
+        | And_ltln (_, _) => Until_ltln (x, y)
+        | Or_ltln (_, _) => Until_ltln (x, y) | Next_ltln _ => Until_ltln (x, y)
+        | Until_ltln (_, _) => Until_ltln (x, y)
+        | Release_ltln (_, _) => Until_ltln (x, y))
+    | Or_ltln (_, _) =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Until_ltln (x, y) | Nprop_ltln _ => Until_ltln (x, y)
+        | And_ltln (_, _) => Until_ltln (x, y)
+        | Or_ltln (_, _) => Until_ltln (x, y) | Next_ltln _ => Until_ltln (x, y)
+        | Until_ltln (_, _) => Until_ltln (x, y)
+        | Release_ltln (_, _) => Until_ltln (x, y))
+    | Next_ltln _ =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Until_ltln (x, y) | Nprop_ltln _ => Until_ltln (x, y)
+        | And_ltln (_, _) => Until_ltln (x, y)
+        | Or_ltln (_, _) => Until_ltln (x, y) | Next_ltln _ => Until_ltln (x, y)
+        | Until_ltln (_, _) => Until_ltln (x, y)
+        | Release_ltln (_, _) => Until_ltln (x, y))
+    | Until_ltln (_, _) =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Until_ltln (x, y) | Nprop_ltln _ => Until_ltln (x, y)
+        | And_ltln (_, _) => Until_ltln (x, y)
+        | Or_ltln (_, _) => Until_ltln (x, y) | Next_ltln _ => Until_ltln (x, y)
+        | Until_ltln (_, _) => Until_ltln (x, y)
+        | Release_ltln (_, _) => Until_ltln (x, y))
+    | Release_ltln (_, _) =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Until_ltln (x, y) | Nprop_ltln _ => Until_ltln (x, y)
+        | And_ltln (_, _) => Until_ltln (x, y)
+        | Or_ltln (_, _) => Until_ltln (x, y) | Next_ltln _ => Until_ltln (x, y)
+        | Until_ltln (_, _) => Until_ltln (x, y)
+        | Release_ltln (_, _) => Until_ltln (x, y)));
+
+fun size_ltln True_ltln = suc zero_nat
+  | size_ltln False_ltln = suc zero_nat
+  | size_ltln (Prop_ltln x3) = suc zero_nat
+  | size_ltln (Nprop_ltln x4) = suc zero_nat
+  | size_ltln (And_ltln (x51, x52)) =
+    plus_nat (plus_nat (size_ltln x51) (size_ltln x52)) (suc zero_nat)
+  | size_ltln (Or_ltln (x61, x62)) =
+    plus_nat (plus_nat (size_ltln x61) (size_ltln x62)) (suc zero_nat)
+  | size_ltln (Next_ltln x7) = plus_nat (size_ltln x7) (suc zero_nat)
+  | size_ltln (Until_ltln (x81, x82)) =
+    plus_nat (plus_nat (size_ltln x81) (size_ltln x82)) (suc zero_nat)
+  | size_ltln (Release_ltln (x91, x92)) =
+    plus_nat (plus_nat (size_ltln x91) (size_ltln x92)) (suc zero_nat);
+
+fun syntactical_implies_i_i A_ x xa =
+  sup_pred
+    (bind (single (x, xa))
+      (fn a =>
+        (case a of (_, True_ltln) => single () | (_, False_ltln) => bot_pred
+          | (_, Prop_ltln _) => bot_pred | (_, Nprop_ltln _) => bot_pred
+          | (_, And_ltln (_, _)) => bot_pred | (_, Or_ltln (_, _)) => bot_pred
+          | (_, Next_ltln _) => bot_pred | (_, Until_ltln (_, _)) => bot_pred
+          | (_, Release_ltln (_, _)) => bot_pred)))
+    (sup_pred
+      (bind (single (x, xa))
+        (fn a =>
+          (case a of (True_ltln, _) => bot_pred | (False_ltln, _) => single ()
+            | (Prop_ltln _, _) => bot_pred | (Nprop_ltln _, _) => bot_pred
+            | (And_ltln (_, _), _) => bot_pred | (Or_ltln (_, _), _) => bot_pred
+            | (Next_ltln _, _) => bot_pred | (Until_ltln (_, _), _) => bot_pred
+            | (Release_ltln (_, _), _) => bot_pred)))
+      (sup_pred
+        (bind (single (x, xa))
+          (fn (phi, phia) =>
+            (if equal_ltlna A_ phi phia
+              then bind (eq_i_i (equal_ltln A_) phi phi) (fn () => single ())
+              else bot_pred)))
+        (sup_pred
+          (bind (single (x, xa))
+            (fn a =>
+              (case a of (True_ltln, _) => bot_pred
+                | (False_ltln, _) => bot_pred | (Prop_ltln _, _) => bot_pred
+                | (Nprop_ltln _, _) => bot_pred
+                | (And_ltln (phi, _), chi) =>
+                  bind (syntactical_implies_i_i A_ phi chi) (fn () => single ())
+                | (Or_ltln (_, _), _) => bot_pred | (Next_ltln _, _) => bot_pred
+                | (Until_ltln (_, _), _) => bot_pred
+                | (Release_ltln (_, _), _) => bot_pred)))
+          (sup_pred
+            (bind (single (x, xa))
+              (fn a =>
+                (case a of (True_ltln, _) => bot_pred
+                  | (False_ltln, _) => bot_pred | (Prop_ltln _, _) => bot_pred
+                  | (Nprop_ltln _, _) => bot_pred
+                  | (And_ltln (_, psi), chi) =>
+                    bind (syntactical_implies_i_i A_ psi chi)
+                      (fn () => single ())
+                  | (Or_ltln (_, _), _) => bot_pred
+                  | (Next_ltln _, _) => bot_pred
+                  | (Until_ltln (_, _), _) => bot_pred
+                  | (Release_ltln (_, _), _) => bot_pred)))
+            (sup_pred
+              (bind (single (x, xa))
+                (fn a =>
+                  (case a of (_, True_ltln) => bot_pred
+                    | (_, False_ltln) => bot_pred | (_, Prop_ltln _) => bot_pred
+                    | (_, Nprop_ltln _) => bot_pred
+                    | (phi, And_ltln (psi, chi)) =>
+                      bind (syntactical_implies_i_i A_ phi psi)
+                        (fn () =>
+                          bind (syntactical_implies_i_i A_ phi chi)
+                            (fn () => single ()))
+                    | (_, Or_ltln (_, _)) => bot_pred
+                    | (_, Next_ltln _) => bot_pred
+                    | (_, Until_ltln (_, _)) => bot_pred
+                    | (_, Release_ltln (_, _)) => bot_pred)))
+              (sup_pred
+                (bind (single (x, xa))
+                  (fn a =>
+                    (case a of (_, True_ltln) => bot_pred
+                      | (_, False_ltln) => bot_pred
+                      | (_, Prop_ltln _) => bot_pred
+                      | (_, Nprop_ltln _) => bot_pred
+                      | (_, And_ltln (_, _)) => bot_pred
+                      | (phi, Or_ltln (psi, _)) =>
+                        bind (syntactical_implies_i_i A_ phi psi)
+                          (fn () => single ())
+                      | (_, Next_ltln _) => bot_pred
+                      | (_, Until_ltln (_, _)) => bot_pred
+                      | (_, Release_ltln (_, _)) => bot_pred)))
+                (sup_pred
+                  (bind (single (x, xa))
+                    (fn a =>
+                      (case a of (_, True_ltln) => bot_pred
+                        | (_, False_ltln) => bot_pred
+                        | (_, Prop_ltln _) => bot_pred
+                        | (_, Nprop_ltln _) => bot_pred
+                        | (_, And_ltln (_, _)) => bot_pred
+                        | (phi, Or_ltln (_, chi)) =>
+                          bind (syntactical_implies_i_i A_ phi chi)
+                            (fn () => single ())
+                        | (_, Next_ltln _) => bot_pred
+                        | (_, Until_ltln (_, _)) => bot_pred
+                        | (_, Release_ltln (_, _)) => bot_pred)))
+                  (sup_pred
+                    (bind (single (x, xa))
+                      (fn a =>
+                        (case a of (True_ltln, _) => bot_pred
+                          | (False_ltln, _) => bot_pred
+                          | (Prop_ltln _, _) => bot_pred
+                          | (Nprop_ltln _, _) => bot_pred
+                          | (And_ltln (_, _), _) => bot_pred
+                          | (Or_ltln (phi, psi), chi) =>
+                            bind (syntactical_implies_i_i A_ phi chi)
+                              (fn () =>
+                                bind (syntactical_implies_i_i A_ psi chi)
+                                  (fn () => single ()))
+                          | (Next_ltln _, _) => bot_pred
+                          | (Until_ltln (_, _), _) => bot_pred
+                          | (Release_ltln (_, _), _) => bot_pred)))
+                    (sup_pred
+                      (bind (single (x, xa))
+                        (fn a =>
+                          (case a of (_, True_ltln) => bot_pred
+                            | (_, False_ltln) => bot_pred
+                            | (_, Prop_ltln _) => bot_pred
+                            | (_, Nprop_ltln _) => bot_pred
+                            | (_, And_ltln (_, _)) => bot_pred
+                            | (_, Or_ltln (_, _)) => bot_pred
+                            | (_, Next_ltln _) => bot_pred
+                            | (phi, Until_ltln (_, chi)) =>
+                              bind (syntactical_implies_i_i A_ phi chi)
+                                (fn () => single ())
+                            | (_, Release_ltln (_, _)) => bot_pred)))
+                      (sup_pred
+                        (bind (single (x, xa))
+                          (fn a =>
+                            (case a of (True_ltln, _) => bot_pred
+                              | (False_ltln, _) => bot_pred
+                              | (Prop_ltln _, _) => bot_pred
+                              | (Nprop_ltln _, _) => bot_pred
+                              | (And_ltln (_, _), _) => bot_pred
+                              | (Or_ltln (_, _), _) => bot_pred
+                              | (Next_ltln _, _) => bot_pred
+                              | (Until_ltln (phi, psi), chi) =>
+                                bind (syntactical_implies_i_i A_ phi chi)
+                                  (fn () =>
+                                    bind (syntactical_implies_i_i A_ psi chi)
+                                      (fn () => single ()))
+                              | (Release_ltln (_, _), _) => bot_pred)))
+                        (sup_pred
+                          (bind (single (x, xa))
+                            (fn a =>
+                              (case a of (True_ltln, _) => bot_pred
+                                | (False_ltln, _) => bot_pred
+                                | (Prop_ltln _, _) => bot_pred
+                                | (Nprop_ltln _, _) => bot_pred
+                                | (And_ltln (_, _), _) => bot_pred
+                                | (Or_ltln (_, _), _) => bot_pred
+                                | (Next_ltln _, _) => bot_pred
+                                | (Until_ltln (_, _), True_ltln) => bot_pred
+                                | (Until_ltln (_, _), False_ltln) => bot_pred
+                                | (Until_ltln (_, _), Prop_ltln _) => bot_pred
+                                | (Until_ltln (_, _), Nprop_ltln _) => bot_pred
+                                | (Until_ltln (_, _), And_ltln (_, _)) =>
+                                  bot_pred
+                                | (Until_ltln (_, _), Or_ltln (_, _)) =>
+                                  bot_pred
+                                | (Until_ltln (_, _), Next_ltln _) => bot_pred
+                                | (Until_ltln (phi, psi), Until_ltln (chi, nu))
+                                  => bind (syntactical_implies_i_i A_ phi chi)
+                                       (fn () =>
+ bind (syntactical_implies_i_i A_ psi nu) (fn () => single ()))
+                                | (Until_ltln (_, _), Release_ltln (_, _)) =>
+                                  bot_pred
+                                | (Release_ltln (_, _), _) => bot_pred)))
+                          (sup_pred
+                            (bind (single (x, xa))
+                              (fn a =>
+                                (case a of (True_ltln, _) => bot_pred
+                                  | (False_ltln, _) => bot_pred
+                                  | (Prop_ltln _, _) => bot_pred
+                                  | (Nprop_ltln _, _) => bot_pred
+                                  | (And_ltln (_, _), _) => bot_pred
+                                  | (Or_ltln (_, _), _) => bot_pred
+                                  | (Next_ltln _, _) => bot_pred
+                                  | (Until_ltln (_, _), _) => bot_pred
+                                  | (Release_ltln (_, chi), phi) =>
+                                    bind (syntactical_implies_i_i A_ chi phi)
+                                      (fn () => single ()))))
+                            (sup_pred
+                              (bind (single (x, xa))
+                                (fn a =>
+                                  (case a of (_, True_ltln) => bot_pred
+                                    | (_, False_ltln) => bot_pred
+                                    | (_, Prop_ltln _) => bot_pred
+                                    | (_, Nprop_ltln _) => bot_pred
+                                    | (_, And_ltln (_, _)) => bot_pred
+                                    | (_, Or_ltln (_, _)) => bot_pred
+                                    | (_, Next_ltln _) => bot_pred
+                                    | (_, Until_ltln (_, _)) => bot_pred
+                                    | (chi, Release_ltln (phi, psi)) =>
+                                      bind (syntactical_implies_i_i A_ chi phi)
+(fn () => bind (syntactical_implies_i_i A_ chi psi) (fn () => single ())))))
+                              (sup_pred
+                                (bind (single (x, xa))
+                                  (fn a =>
+                                    (case a of (True_ltln, _) => bot_pred
+                                      | (False_ltln, _) => bot_pred
+                                      | (Prop_ltln _, _) => bot_pred
+                                      | (Nprop_ltln _, _) => bot_pred
+                                      | (And_ltln (_, _), _) => bot_pred
+                                      | (Or_ltln (_, _), _) => bot_pred
+                                      | (Next_ltln _, _) => bot_pred
+                                      | (Until_ltln (_, _), _) => bot_pred
+                                      | (Release_ltln (_, _), True_ltln) =>
+bot_pred
+                                      | (Release_ltln (_, _), False_ltln) =>
+bot_pred
+                                      | (Release_ltln (_, _), Prop_ltln _) =>
+bot_pred
+                                      | (Release_ltln (_, _), Nprop_ltln _) =>
+bot_pred
+                                      | (Release_ltln (_, _), And_ltln (_, _))
+=> bot_pred
+                                      | (Release_ltln (_, _), Or_ltln (_, _)) =>
+bot_pred
+                                      | (Release_ltln (_, _), Next_ltln _) =>
+bot_pred
+                                      | (Release_ltln (_, _), Until_ltln (_, _))
+=> bot_pred
+                                      |
+(Release_ltln (phi, psi), Release_ltln (chi, nu)) =>
+bind (syntactical_implies_i_i A_ phi chi)
+  (fn () => bind (syntactical_implies_i_i A_ psi nu) (fn () => single ())))))
+                                (sup_pred
+                                  (bind (single (x, xa))
+                                    (fn a =>
+                                      (case a of (True_ltln, _) => bot_pred
+| (False_ltln, _) => bot_pred | (Prop_ltln _, _) => bot_pred
+| (Nprop_ltln _, _) => bot_pred | (And_ltln (_, _), _) => bot_pred
+| (Or_ltln (_, _), _) => bot_pred | (Next_ltln _, _) => bot_pred
+| (Until_ltln (_, _), _) => bot_pred
+| (Release_ltln (True_ltln, _), _) => bot_pred
+| (Release_ltln (False_ltln, _), True_ltln) => bot_pred
+| (Release_ltln (False_ltln, _), False_ltln) => bot_pred
+| (Release_ltln (False_ltln, _), Prop_ltln _) => bot_pred
+| (Release_ltln (False_ltln, _), Nprop_ltln _) => bot_pred
+| (Release_ltln (False_ltln, _), And_ltln (_, _)) => bot_pred
+| (Release_ltln (False_ltln, _), Or_ltln (_, _)) => bot_pred
+| (Release_ltln (False_ltln, phi), Next_ltln psi) =>
+  bind (syntactical_implies_i_i A_ (Release_ltln (False_ltln, phi)) psi)
+    (fn () => single ())
+| (Release_ltln (False_ltln, _), Until_ltln (_, _)) => bot_pred
+| (Release_ltln (False_ltln, _), Release_ltln (_, _)) => bot_pred
+| (Release_ltln (Prop_ltln _, _), _) => bot_pred
+| (Release_ltln (Nprop_ltln _, _), _) => bot_pred
+| (Release_ltln (And_ltln (_, _), _), _) => bot_pred
+| (Release_ltln (Or_ltln (_, _), _), _) => bot_pred
+| (Release_ltln (Next_ltln _, _), _) => bot_pred
+| (Release_ltln (Until_ltln (_, _), _), _) => bot_pred
+| (Release_ltln (Release_ltln (_, _), _), _) => bot_pred)))
+                                  (sup_pred
+                                    (bind (single (x, xa))
+                                      (fn a =>
+(case a of (True_ltln, _) => bot_pred | (False_ltln, _) => bot_pred
+  | (Prop_ltln _, _) => bot_pred | (Nprop_ltln _, _) => bot_pred
+  | (And_ltln (_, _), _) => bot_pred | (Or_ltln (_, _), _) => bot_pred
+  | (Next_ltln _, True_ltln) => bot_pred | (Next_ltln _, False_ltln) => bot_pred
+  | (Next_ltln _, Prop_ltln _) => bot_pred
+  | (Next_ltln _, Nprop_ltln _) => bot_pred
+  | (Next_ltln _, And_ltln (_, _)) => bot_pred
+  | (Next_ltln _, Or_ltln (_, _)) => bot_pred
+  | (Next_ltln _, Next_ltln _) => bot_pred
+  | (Next_ltln phi, Until_ltln (True_ltln, psi)) =>
+    bind (syntactical_implies_i_i A_ phi (Until_ltln (True_ltln, psi)))
+      (fn () => single ())
+  | (Next_ltln _, Until_ltln (False_ltln, _)) => bot_pred
+  | (Next_ltln _, Until_ltln (Prop_ltln _, _)) => bot_pred
+  | (Next_ltln _, Until_ltln (Nprop_ltln _, _)) => bot_pred
+  | (Next_ltln _, Until_ltln (And_ltln (_, _), _)) => bot_pred
+  | (Next_ltln _, Until_ltln (Or_ltln (_, _), _)) => bot_pred
+  | (Next_ltln _, Until_ltln (Next_ltln _, _)) => bot_pred
+  | (Next_ltln _, Until_ltln (Until_ltln (_, _), _)) => bot_pred
+  | (Next_ltln _, Until_ltln (Release_ltln (_, _), _)) => bot_pred
+  | (Next_ltln _, Release_ltln (_, _)) => bot_pred
+  | (Until_ltln (_, _), _) => bot_pred | (Release_ltln (_, _), _) => bot_pred)))
+                                    (bind (single (x, xa))
+                                      (fn a =>
+(case a of (True_ltln, _) => bot_pred | (False_ltln, _) => bot_pred
+  | (Prop_ltln _, _) => bot_pred | (Nprop_ltln _, _) => bot_pred
+  | (And_ltln (_, _), _) => bot_pred | (Or_ltln (_, _), _) => bot_pred
+  | (Next_ltln _, True_ltln) => bot_pred | (Next_ltln _, False_ltln) => bot_pred
+  | (Next_ltln _, Prop_ltln _) => bot_pred
+  | (Next_ltln _, Nprop_ltln _) => bot_pred
+  | (Next_ltln _, And_ltln (_, _)) => bot_pred
+  | (Next_ltln _, Or_ltln (_, _)) => bot_pred
+  | (Next_ltln phi, Next_ltln psi) =>
+    bind (syntactical_implies_i_i A_ phi psi) (fn () => single ())
+  | (Next_ltln _, Until_ltln (_, _)) => bot_pred
+  | (Next_ltln _, Release_ltln (_, _)) => bot_pred
+  | (Until_ltln (_, _), _) => bot_pred
+  | (Release_ltln (_, _), _) => bot_pred)))))))))))))))))));
+
+fun syntactical_implies A_ x1 x2 = holds (syntactical_implies_i_i A_ x1 x2);
+
+fun remove_release (Release_ltln (x, y)) = remove_release y
+  | remove_release (And_ltln (x, y)) =
+    And_ltln (remove_release x, remove_release y)
+  | remove_release True_ltln = True_ltln
+  | remove_release False_ltln = False_ltln
+  | remove_release (Prop_ltln v) = Prop_ltln v
+  | remove_release (Nprop_ltln v) = Nprop_ltln v
+  | remove_release (Or_ltln (v, va)) = Or_ltln (v, va)
+  | remove_release (Next_ltln v) = Next_ltln v
+  | remove_release (Until_ltln (v, va)) = Until_ltln (v, va);
+
+fun mk_release x y =
+  (case x of True_ltln => y
+    | False_ltln =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Release_ltln (False_ltln, remove_release y)
+        | Nprop_ltln _ => Release_ltln (False_ltln, remove_release y)
+        | And_ltln (_, _) => Release_ltln (False_ltln, remove_release y)
+        | Or_ltln (_, _) => Release_ltln (False_ltln, remove_release y)
+        | Next_ltln _ => Release_ltln (False_ltln, remove_release y)
+        | Until_ltln (_, _) => Release_ltln (False_ltln, remove_release y)
+        | Release_ltln (_, _) => Release_ltln (False_ltln, remove_release y))
+    | Prop_ltln _ =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Release_ltln (x, y)
+        | Nprop_ltln _ => Release_ltln (x, y)
+        | And_ltln (_, _) => Release_ltln (x, y)
+        | Or_ltln (_, _) => Release_ltln (x, y)
+        | Next_ltln _ => Release_ltln (x, y)
+        | Until_ltln (_, _) => Release_ltln (x, y)
+        | Release_ltln (_, _) => Release_ltln (x, y))
+    | Nprop_ltln _ =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Release_ltln (x, y)
+        | Nprop_ltln _ => Release_ltln (x, y)
+        | And_ltln (_, _) => Release_ltln (x, y)
+        | Or_ltln (_, _) => Release_ltln (x, y)
+        | Next_ltln _ => Release_ltln (x, y)
+        | Until_ltln (_, _) => Release_ltln (x, y)
+        | Release_ltln (_, _) => Release_ltln (x, y))
+    | And_ltln (_, _) =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Release_ltln (x, y)
+        | Nprop_ltln _ => Release_ltln (x, y)
+        | And_ltln (_, _) => Release_ltln (x, y)
+        | Or_ltln (_, _) => Release_ltln (x, y)
+        | Next_ltln _ => Release_ltln (x, y)
+        | Until_ltln (_, _) => Release_ltln (x, y)
+        | Release_ltln (_, _) => Release_ltln (x, y))
+    | Or_ltln (_, _) =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Release_ltln (x, y)
+        | Nprop_ltln _ => Release_ltln (x, y)
+        | And_ltln (_, _) => Release_ltln (x, y)
+        | Or_ltln (_, _) => Release_ltln (x, y)
+        | Next_ltln _ => Release_ltln (x, y)
+        | Until_ltln (_, _) => Release_ltln (x, y)
+        | Release_ltln (_, _) => Release_ltln (x, y))
+    | Next_ltln _ =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Release_ltln (x, y)
+        | Nprop_ltln _ => Release_ltln (x, y)
+        | And_ltln (_, _) => Release_ltln (x, y)
+        | Or_ltln (_, _) => Release_ltln (x, y)
+        | Next_ltln _ => Release_ltln (x, y)
+        | Until_ltln (_, _) => Release_ltln (x, y)
+        | Release_ltln (_, _) => Release_ltln (x, y))
+    | Until_ltln (_, _) =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Release_ltln (x, y)
+        | Nprop_ltln _ => Release_ltln (x, y)
+        | And_ltln (_, _) => Release_ltln (x, y)
+        | Or_ltln (_, _) => Release_ltln (x, y)
+        | Next_ltln _ => Release_ltln (x, y)
+        | Until_ltln (_, _) => Release_ltln (x, y)
+        | Release_ltln (_, _) => Release_ltln (x, y))
+    | Release_ltln (_, _) =>
+      (case y of True_ltln => True_ltln | False_ltln => False_ltln
+        | Prop_ltln _ => Release_ltln (x, y)
+        | Nprop_ltln _ => Release_ltln (x, y)
+        | And_ltln (_, _) => Release_ltln (x, y)
+        | Or_ltln (_, _) => Release_ltln (x, y)
+        | Next_ltln _ => Release_ltln (x, y)
+        | Until_ltln (_, _) => Release_ltln (x, y)
+        | Release_ltln (_, _) => Release_ltln (x, y)));
+
+fun rewrite_syn_imp A_ (And_ltln (phi, psi)) =
+  (if syntactical_implies A_ phi psi then rewrite_syn_imp A_ phi
+    else (if syntactical_implies A_ psi phi then rewrite_syn_imp A_ psi
+           else (if syntactical_implies A_ phi (not_n psi) orelse
+                      syntactical_implies A_ psi (not_n phi)
+                  then False_ltln
+                  else mk_andb (rewrite_syn_imp A_ phi)
+                         (rewrite_syn_imp A_ psi))))
+  | rewrite_syn_imp A_ (Or_ltln (phi, psi)) =
+    (if syntactical_implies A_ phi psi then rewrite_syn_imp A_ psi
+      else (if syntactical_implies A_ psi phi then rewrite_syn_imp A_ phi
+             else (if syntactical_implies A_ (not_n phi) psi orelse
+                        syntactical_implies A_ (not_n psi) phi
+                    then True_ltln
+                    else mk_orb (rewrite_syn_imp A_ phi)
+                           (rewrite_syn_imp A_ psi))))
+  | rewrite_syn_imp A_ (Until_ltln (phi, psi)) =
+    (if syntactical_implies A_ phi psi then rewrite_syn_imp A_ psi
+      else (if syntactical_implies A_ (not_n phi) psi
+             then mk_until True_ltln (rewrite_syn_imp A_ psi)
+             else mk_until (rewrite_syn_imp A_ phi) (rewrite_syn_imp A_ psi)))
+  | rewrite_syn_imp A_ (Release_ltln (phi, psi)) =
+    (if syntactical_implies A_ psi phi then rewrite_syn_imp A_ psi
+      else (if syntactical_implies A_ psi (not_n phi)
+             then mk_release False_ltln (rewrite_syn_imp A_ psi)
+             else mk_release (rewrite_syn_imp A_ phi) (rewrite_syn_imp A_ psi)))
+  | rewrite_syn_imp A_ (Next_ltln phi) = mk_next (rewrite_syn_imp A_ phi)
+  | rewrite_syn_imp A_ True_ltln = True_ltln
+  | rewrite_syn_imp A_ False_ltln = False_ltln
+  | rewrite_syn_imp A_ (Prop_ltln v) = Prop_ltln v
+  | rewrite_syn_imp A_ (Nprop_ltln v) = Nprop_ltln v;
+
+fun pure_universal A_ True_ltln = true
+  | pure_universal A_ False_ltln = true
+  | pure_universal A_ (And_ltln (nua, nu)) =
+    pure_universal A_ nua andalso pure_universal A_ nu
+  | pure_universal A_ (Or_ltln (nua, nu)) =
+    pure_universal A_ nua andalso pure_universal A_ nu
+  | pure_universal A_ (Until_ltln (nua, nu)) =
+    pure_universal A_ nua andalso pure_universal A_ nu
+  | pure_universal A_ (Release_ltln (nua, nu)) =
+    equal_ltlna A_ nua False_ltln orelse pure_universal A_ nu
+  | pure_universal A_ (Next_ltln nu) = pure_universal A_ nu
+  | pure_universal A_ (Prop_ltln v) = false
+  | pure_universal A_ (Nprop_ltln v) = false;
+
+fun pure_eventual A_ True_ltln = true
+  | pure_eventual A_ False_ltln = true
+  | pure_eventual A_ (And_ltln (mua, mu)) =
+    pure_eventual A_ mua andalso pure_eventual A_ mu
+  | pure_eventual A_ (Or_ltln (mua, mu)) =
+    pure_eventual A_ mua andalso pure_eventual A_ mu
+  | pure_eventual A_ (Until_ltln (mua, mu)) =
+    equal_ltlna A_ mua True_ltln orelse pure_eventual A_ mu
+  | pure_eventual A_ (Release_ltln (mua, mu)) =
+    pure_eventual A_ mua andalso pure_eventual A_ mu
+  | pure_eventual A_ (Next_ltln mu) = pure_eventual A_ mu
+  | pure_eventual A_ (Prop_ltln v) = false
+  | pure_eventual A_ (Nprop_ltln v) = false;
+
+fun suspendable A_ True_ltln = true
+  | suspendable A_ False_ltln = true
+  | suspendable A_ (And_ltln (xia, xi)) =
+    suspendable A_ xia andalso suspendable A_ xi
+  | suspendable A_ (Or_ltln (xia, xi)) =
+    suspendable A_ xia andalso suspendable A_ xi
+  | suspendable A_ (Until_ltln (phi, xi)) =
+    equal_ltlna A_ phi True_ltln andalso pure_universal A_ xi orelse
+      suspendable A_ xi
+  | suspendable A_ (Release_ltln (phi, xi)) =
+    equal_ltlna A_ phi False_ltln andalso pure_eventual A_ xi orelse
+      suspendable A_ xi
+  | suspendable A_ (Next_ltln xi) = suspendable A_ xi
+  | suspendable A_ (Prop_ltln v) = false
+  | suspendable A_ (Nprop_ltln v) = false;
+
+fun rewrite_modal A_ True_ltln = True_ltln
+  | rewrite_modal A_ False_ltln = False_ltln
+  | rewrite_modal A_ (And_ltln (phi, psi)) =
+    And_ltln (rewrite_modal A_ phi, rewrite_modal A_ psi)
+  | rewrite_modal A_ (Or_ltln (phi, psi)) =
+    Or_ltln (rewrite_modal A_ phi, rewrite_modal A_ psi)
+  | rewrite_modal A_ (Until_ltln (phi, psi)) =
+    (if pure_eventual A_ psi orelse suspendable A_ psi then rewrite_modal A_ psi
+      else Until_ltln (rewrite_modal A_ phi, rewrite_modal A_ psi))
+  | rewrite_modal A_ (Release_ltln (phi, psi)) =
+    (if pure_universal A_ psi orelse suspendable A_ psi
+      then rewrite_modal A_ psi
+      else Release_ltln (rewrite_modal A_ phi, rewrite_modal A_ psi))
+  | rewrite_modal A_ (Next_ltln phi) =
+    (if suspendable A_ phi then rewrite_modal A_ phi
+      else Next_ltln (rewrite_modal A_ phi))
+  | rewrite_modal A_ (Prop_ltln v) = Prop_ltln v
+  | rewrite_modal A_ (Nprop_ltln v) = Nprop_ltln v;
+
+fun rewrite_X_enat True_ltln = (True_ltln, Infinity_enat)
+  | rewrite_X_enat False_ltln = (False_ltln, Infinity_enat)
+  | rewrite_X_enat (Prop_ltln a) = (Prop_ltln a, zero_enat)
+  | rewrite_X_enat (Nprop_ltln a) = (Nprop_ltln a, zero_enat)
+  | rewrite_X_enat (And_ltln (phi, psi)) =
+    combine mk_andb (rewrite_X_enat phi) (rewrite_X_enat psi)
+  | rewrite_X_enat (Or_ltln (phi, psi)) =
+    combine mk_orb (rewrite_X_enat phi) (rewrite_X_enat psi)
+  | rewrite_X_enat (Until_ltln (phi, psi)) =
+    combine mk_until (rewrite_X_enat phi) (rewrite_X_enat psi)
+  | rewrite_X_enat (Release_ltln (phi, psi)) =
+    combine mk_release (rewrite_X_enat phi) (rewrite_X_enat psi)
+  | rewrite_X_enat (Next_ltln phi) = let
+                                       val (phia, n) = rewrite_X_enat phi;
+                                     in
+                                       (phia, eSuc n)
+                                     end;
+
+fun snd (x1, x2) = x2;
+
+fun rewrite_X phi = let
+                      val t = rewrite_X_enat phi;
+                    in
+                      mk_next_pow (the_enat_0 (snd t)) (fst t)
+                    end;
+
+fun rewrite_iter_slow A_ phi =
+  iterate (equal_ltln A_) (rewrite_syn_imp A_ o rewrite_modal A_ o rewrite_X)
+    phi (size_ltln phi);
+
+fun rewrite_iter_fast A_ phi =
+  iterate (equal_ltln A_) (rewrite_modal A_ o rewrite_X) phi (size_ltln phi);
+
+fun simplify A_ Nop = id
+  | simplify A_ Fast = rewrite_iter_fast A_
+  | simplify A_ Slow = rewrite_iter_slow A_;
 
 fun index_option A_ n [] y = NONE
   | index_option A_ n (x :: xs) y =
@@ -1786,6 +2709,32 @@ fun af_letter_opt_simp A_ LTLTrue nu = LTLTrue
 fun af_letter_abs_opt A_ (Abs phi) nu =
   Abs (remove_and_or A_ (af_letter_opt_simp A_ phi nu));
 
+fun atoms_list A_ (And_ltln (phi, psi)) =
+  union A_ (atoms_list A_ phi) (atoms_list A_ psi)
+  | atoms_list A_ (Or_ltln (phi, psi)) =
+    union A_ (atoms_list A_ phi) (atoms_list A_ psi)
+  | atoms_list A_ (Until_ltln (phi, psi)) =
+    union A_ (atoms_list A_ phi) (atoms_list A_ psi)
+  | atoms_list A_ (Release_ltln (phi, psi)) =
+    union A_ (atoms_list A_ phi) (atoms_list A_ psi)
+  | atoms_list A_ (Next_ltln phi) = atoms_list A_ phi
+  | atoms_list A_ (Prop_ltln a) = [a]
+  | atoms_list A_ (Nprop_ltln a) = [a]
+  | atoms_list A_ True_ltln = []
+  | atoms_list A_ False_ltln = [];
+
+fun eval_G A_ s (LTLAnd (phi, psi)) = LTLAnd (eval_G A_ s phi, eval_G A_ s psi)
+  | eval_G A_ s (LTLOr (phi, psi)) = LTLOr (eval_G A_ s phi, eval_G A_ s psi)
+  | eval_G A_ s (LTLGlobal phi) =
+    (if member (equal_ltl A_) (LTLGlobal phi) s then LTLTrue else LTLFalse)
+  | eval_G A_ s LTLTrue = LTLTrue
+  | eval_G A_ s LTLFalse = LTLFalse
+  | eval_G A_ s (LTLProp v) = LTLProp v
+  | eval_G A_ s (LTLPropNeg v) = LTLPropNeg v
+  | eval_G A_ s (LTLNext v) = LTLNext v
+  | eval_G A_ s (LTLFinal v) = LTLFinal v
+  | eval_G A_ s (LTLUntil (v, va)) = LTLUntil (v, va);
+
 fun sink B_ sigma delta q_0 q =
   not (eq B_ q_0 q) andalso ball sigma (fn nu => eq B_ (delta q nu) q);
 
@@ -1795,6 +2744,25 @@ fun nxt B_ sigma delta q_0 =
       (filtera (fn q => not (sink B_ sigma delta q_0 q))
          (map (fn q => delta q nu) qs) @
         [q_0]));
+
+fun ltln_to_ltl A_ True_ltln = LTLTrue
+  | ltln_to_ltl A_ False_ltln = LTLFalse
+  | ltln_to_ltl A_ (Prop_ltln q) = LTLProp q
+  | ltln_to_ltl A_ (Nprop_ltln q) = LTLPropNeg q
+  | ltln_to_ltl A_ (And_ltln (phi, psi)) =
+    LTLAnd (ltln_to_ltl A_ phi, ltln_to_ltl A_ psi)
+  | ltln_to_ltl A_ (Or_ltln (phi, psi)) =
+    LTLOr (ltln_to_ltl A_ phi, ltln_to_ltl A_ psi)
+  | ltln_to_ltl A_ (Until_ltln (phi, psi)) =
+    (if equal_ltlna A_ phi True_ltln then LTLFinal (ltln_to_ltl A_ psi)
+      else LTLUntil (ltln_to_ltl A_ phi, ltln_to_ltl A_ psi))
+  | ltln_to_ltl A_ (Release_ltln (phi, psi)) =
+    (if equal_ltlna A_ phi False_ltln then LTLGlobal (ltln_to_ltl A_ psi)
+      else LTLOr (LTLGlobal (ltln_to_ltl A_ psi),
+                   LTLUntil
+                     (ltln_to_ltl A_ psi,
+                       LTLAnd (ltln_to_ltl A_ phi, ltln_to_ltl A_ psi))))
+  | ltln_to_ltl A_ (Next_ltln phi) = LTLNext (ltln_to_ltl A_ phi);
 
 fun init q_0 = [q_0];
 
@@ -1901,26 +2869,6 @@ fun af_G_letter_opt_simp A_ LTLTrue nu = LTLTrue
 fun af_G_letter_abs_opt A_ (Abs phi) nu =
   Abs (remove_and_or A_ (af_G_letter_opt_simp A_ phi nu));
 
-fun ltl_prop_entailment A_ a LTLTrue = true
-  | ltl_prop_entailment A_ a LTLFalse = false
-  | ltl_prop_entailment A_ a (LTLAnd (phi, psi)) =
-    ltl_prop_entailment A_ a phi andalso ltl_prop_entailment A_ a psi
-  | ltl_prop_entailment A_ a (LTLOr (phi, psi)) =
-    ltl_prop_entailment A_ a phi orelse ltl_prop_entailment A_ a psi
-  | ltl_prop_entailment A_ a (LTLProp v) = member (equal_ltl A_) (LTLProp v) a
-  | ltl_prop_entailment A_ a (LTLPropNeg v) =
-    member (equal_ltl A_) (LTLPropNeg v) a
-  | ltl_prop_entailment A_ a (LTLNext v) = member (equal_ltl A_) (LTLNext v) a
-  | ltl_prop_entailment A_ a (LTLGlobal v) =
-    member (equal_ltl A_) (LTLGlobal v) a
-  | ltl_prop_entailment A_ a (LTLFinal v) = member (equal_ltl A_) (LTLFinal v) a
-  | ltl_prop_entailment A_ a (LTLUntil (v, va)) =
-    member (equal_ltl A_) (LTLUntil (v, va)) a;
-
-fun ltl_prop_entails_abs A_ xb (Abs x) = ltl_prop_entailment A_ xb x;
-
-fun ltl_prop_implies_abs A_ (Abs xb) (Abs x) = ltl_prop_implies A_ xb x;
-
 fun max_rank_of_C A_ delta_M q_0_M sigma psi =
   card (equal_ltl_prop_equiv_quotient A_)
     (filter
@@ -1940,6 +2888,24 @@ fun succeed_filt A_ delta q_0 f i (r, (nu, uu)) =
           ((not (f q) orelse eq A_ q q_0) andalso f qa)
       end)
     r;
+
+fun ltl_prop_entailment A_ a LTLTrue = true
+  | ltl_prop_entailment A_ a LTLFalse = false
+  | ltl_prop_entailment A_ a (LTLAnd (phi, psi)) =
+    ltl_prop_entailment A_ a phi andalso ltl_prop_entailment A_ a psi
+  | ltl_prop_entailment A_ a (LTLOr (phi, psi)) =
+    ltl_prop_entailment A_ a phi orelse ltl_prop_entailment A_ a psi
+  | ltl_prop_entailment A_ a (LTLProp v) = member (equal_ltl A_) (LTLProp v) a
+  | ltl_prop_entailment A_ a (LTLPropNeg v) =
+    member (equal_ltl A_) (LTLPropNeg v) a
+  | ltl_prop_entailment A_ a (LTLNext v) = member (equal_ltl A_) (LTLNext v) a
+  | ltl_prop_entailment A_ a (LTLGlobal v) =
+    member (equal_ltl A_) (LTLGlobal v) a
+  | ltl_prop_entailment A_ a (LTLFinal v) = member (equal_ltl A_) (LTLFinal v) a
+  | ltl_prop_entailment A_ a (LTLUntil (v, va)) =
+    member (equal_ltl A_) (LTLUntil (v, va)) a;
+
+fun ltl_prop_entails_abs A_ xb (Abs xa) = ltl_prop_entailment A_ xb xa;
 
 fun acc_inf_C A_ delta_M q_0_M pi chi ((uu, m), (nu, uv)) =
   let
@@ -2029,78 +2995,15 @@ fun ltl_to_generalized_rabin_C A_ delta delta_M q_0 q_0_M m_fin_C sigma phi =
       ((q_0 phi, tabulate (g_list A_ phi) (init o q_0_M o theG)), alpha))
   end;
 
-fun m_fin_C_af A_ phia pi ((phi, m), uu) =
-  not (ltl_prop_implies_abs A_
-        let
-          val g = keys pi;
-          val g_L =
-            filtera (fn x => member (equal_ltl A_) x g) (g_list A_ phia);
-          val mk_conj =
-            (fn chi =>
-              foldl (fn a => fn x => and_absa a (eval_G_abs A_ g x)) (Abs chi)
-                (drop (the (lookup (equal_ltl A_) pi chi))
-                  (the (lookup (equal_ltl A_) m chi))));
-        in
-          and_abs (map mk_conj g_L)
-        end
-        phi);
+fun impl_test B_ ifex_of b1 b2 =
+  equal_ifex B_ (normif_alist B_ [] (ifex_of b1) (ifex_of b2) Trueif) Trueif;
 
-fun ltl_to_generalized_rabin_C_af A_ =
-  ltl_to_generalized_rabin_C A_ (af_letter_abs A_) (af_G_letter_abs A_) Abs Abs
-    (m_fin_C_af A_);
+fun ltl_prop_implies A_ phi psi =
+  impl_test (equal_ltl A_) (ifex_of_ltl A_) phi psi;
 
-fun ltl_to_generalized_rabin_C_af_simp A_ phi =
-  ltl_to_generalized_rabin_C_af A_ (map Set (sublists (vars_list A_ phi))) phi;
+fun ltl_prop_implies_abs A_ (Abs xb) (Abs x) = ltl_prop_implies A_ xb x;
 
-fun ltlc_to_ltl false LTLcTrue = LTLTrue
-  | ltlc_to_ltl false LTLcFalse = LTLFalse
-  | ltlc_to_ltl false (LTLcProp q) = LTLProp q
-  | ltlc_to_ltl false (LTLcNeg phi) = ltlc_to_ltl true phi
-  | ltlc_to_ltl false (LTLcAnd (phi, psi)) =
-    LTLAnd (ltlc_to_ltl false phi, ltlc_to_ltl false psi)
-  | ltlc_to_ltl false (LTLcOr (phi, psi)) =
-    LTLOr (ltlc_to_ltl false phi, ltlc_to_ltl false psi)
-  | ltlc_to_ltl false (LTLcImplies (phi, psi)) =
-    LTLOr (ltlc_to_ltl true phi, ltlc_to_ltl false psi)
-  | ltlc_to_ltl false (LTLcIff (phi, psi)) =
-    LTLAnd
-      (LTLOr (ltlc_to_ltl true phi, ltlc_to_ltl false psi),
-        LTLOr (ltlc_to_ltl false phi, ltlc_to_ltl true psi))
-  | ltlc_to_ltl false (LTLcFinal phi) = LTLFinal (ltlc_to_ltl false phi)
-  | ltlc_to_ltl false (LTLcGlobal phi) = LTLGlobal (ltlc_to_ltl false phi)
-  | ltlc_to_ltl false (LTLcUntil (phi, psi)) =
-    LTLUntil (ltlc_to_ltl false phi, ltlc_to_ltl false psi)
-  | ltlc_to_ltl false (LTLcRelease (phi, psi)) =
-    LTLOr (LTLGlobal (ltlc_to_ltl false psi),
-            LTLUntil
-              (ltlc_to_ltl false psi,
-                LTLAnd (ltlc_to_ltl false phi, ltlc_to_ltl false psi)))
-  | ltlc_to_ltl true LTLcTrue = LTLFalse
-  | ltlc_to_ltl true LTLcFalse = LTLTrue
-  | ltlc_to_ltl true (LTLcProp q) = LTLPropNeg q
-  | ltlc_to_ltl true (LTLcNeg phi) = ltlc_to_ltl false phi
-  | ltlc_to_ltl true (LTLcAnd (phi, psi)) =
-    LTLOr (ltlc_to_ltl true phi, ltlc_to_ltl true psi)
-  | ltlc_to_ltl true (LTLcOr (phi, psi)) =
-    LTLAnd (ltlc_to_ltl true phi, ltlc_to_ltl true psi)
-  | ltlc_to_ltl true (LTLcImplies (phi, psi)) =
-    LTLAnd (ltlc_to_ltl false phi, ltlc_to_ltl true psi)
-  | ltlc_to_ltl true (LTLcIff (phi, psi)) =
-    LTLOr (LTLAnd (ltlc_to_ltl true phi, ltlc_to_ltl false psi),
-            LTLAnd (ltlc_to_ltl false phi, ltlc_to_ltl true psi))
-  | ltlc_to_ltl true (LTLcFinal phi) = LTLGlobal (ltlc_to_ltl true phi)
-  | ltlc_to_ltl true (LTLcGlobal phi) = LTLFinal (ltlc_to_ltl true phi)
-  | ltlc_to_ltl true (LTLcUntil (phi, psi)) =
-    LTLOr (LTLGlobal (ltlc_to_ltl true psi),
-            LTLUntil
-              (ltlc_to_ltl true psi,
-                LTLAnd (ltlc_to_ltl true phi, ltlc_to_ltl true psi)))
-  | ltlc_to_ltl true (LTLcRelease (phi, psi)) =
-    LTLUntil (ltlc_to_ltl true phi, ltlc_to_ltl true psi)
-  | ltlc_to_ltl b (LTLcNext phi) = LTLNext (ltlc_to_ltl b phi);
-
-fun ltlc_to_rabin phi =
-  ltl_to_generalized_rabin_C_af_simp equal_literal (ltlc_to_ltl false phi);
+fun eval_G_abs A_ xa (Abs x) = Abs (eval_G A_ xa x);
 
 fun m_fin_C_af_UU A_ phia pi ((phi, m), (nu, uu)) =
   not (ltl_prop_implies_abs A_
@@ -2125,11 +3028,34 @@ fun ltl_to_generalized_rabin_C_af_UU A_ =
   ltl_to_generalized_rabin_C A_ (af_letter_abs_opt A_) (af_G_letter_abs_opt A_)
     (Abs o unf) (Abs o unf_G) (m_fin_C_af_UU A_);
 
-fun ltl_to_generalized_rabin_C_af_UU_simp A_ phi =
-  ltl_to_generalized_rabin_C_af_UU A_ (map Set (sublists (vars_list A_ phi)))
-    phi;
+fun m_fin_C_af A_ phia pi ((phi, m), uu) =
+  not (ltl_prop_implies_abs A_
+        let
+          val g = keys pi;
+          val g_L =
+            filtera (fn x => member (equal_ltl A_) x g) (g_list A_ phia);
+          val mk_conj =
+            (fn chi =>
+              foldl (fn a => fn x => and_absa a (eval_G_abs A_ g x)) (Abs chi)
+                (drop (the (lookup (equal_ltl A_) pi chi))
+                  (the (lookup (equal_ltl A_) m chi))));
+        in
+          and_abs (map mk_conj g_L)
+        end
+        phi);
 
-fun ltlc_to_rabin_UU phi =
-  ltl_to_generalized_rabin_C_af_UU_simp equal_literal (ltlc_to_ltl false phi);
+fun ltl_to_generalized_rabin_C_af A_ =
+  ltl_to_generalized_rabin_C A_ (af_letter_abs A_) (af_G_letter_abs A_) Abs Abs
+    (m_fin_C_af A_);
 
-end; (*struct LTL_to_DRA_Translator*)
+fun ltlc_to_rabin eager mode phi_c =
+  let
+    val phi_n = ltlc_to_ltln phi_c;
+    val sigma = map Set (sublists (atoms_list equal_literal phi_n));
+    val phi = ltln_to_ltl equal_literal (simplify equal_literal mode phi_n);
+  in
+    (if eager then ltl_to_generalized_rabin_C_af_UU equal_literal sigma phi
+      else ltl_to_generalized_rabin_C_af equal_literal sigma phi)
+  end;
+
+end; (*struct LTL*)

@@ -52,7 +52,7 @@ lemma set_quicksort_acc [simp]: "set (quicksort_acc ac xs) = set ac \<union> set
   and set_quicksort_part [simp]:
   "set (quicksort_part ac x lts eqs gts zs) =
   set ac \<union> {x} \<union> set lts \<union> set eqs \<union> set gts \<union> set zs"
-by(induct ac xs and ac x lts eqs gts zs rule: quicksort_acc_quicksort_part.induct)(auto split: split_if_asm)
+by(induct ac xs and ac x lts eqs gts zs rule: quicksort_acc_quicksort_part.induct)(auto split: if_split_asm)
 
 lemma set_quicksort [simp]: "set (quicksort xs) = set xs"
 by(simp add: quicksort_def)
@@ -322,10 +322,8 @@ declare [[code drop:
   wf
   Min
   Inf_fin
-  INFIMUM
   Max
   Sup_fin
-  SUPREMUM
   "Inf :: 'a set set \<Rightarrow> 'a set"
   "Sup :: 'a set set \<Rightarrow> 'a set"
   sorted_list_of_set
@@ -710,7 +708,7 @@ lemma Set_remove_code [code]:
                      | Some _ \<Rightarrow> RBT_set (RBT_Set2.remove x rbt))"
   and remove_Complement [set_complement_code]:
   "\<And>x A. Set.remove x (Complement A) = Complement (Set.insert x A)"
-by(auto split: option.split split_if_asm dest: equal.equal_eq[OF ID_ceq] simp add: DList_set_def DList_Set.member_remove RBT_set_def)
+by(auto split: option.split if_split_asm dest: equal.equal_eq[OF ID_ceq] simp add: DList_set_def DList_Set.member_remove RBT_set_def)
 
 lemma Set_uminus_code [code, set_complement_code]:
   "- A = Complement A"
@@ -907,12 +905,6 @@ lemmas Predicate_Inf_code [code] = Inf_code[where ?'a = "_ :: type Predicate.pre
 lemmas Predicate_Sup_code [code] = Sup_code[where ?'a = "_ :: type Predicate.pred"]
 lemmas Inf_fun_code [code] = Inf_code[where ?'a = "_ :: type \<Rightarrow> _ :: complete_lattice"]
 lemmas Sup_fun_code [code] = Sup_code[where ?'a = "_ :: type \<Rightarrow> _ :: complete_lattice"]
-
-lemma INF_code [code]: "INFIMUM A f = Inf (f ` A)"
-by(rule INF_def)
-
-lemma SUP_code [code]: "SUPREMUM A f = Sup (f ` A)"
-by(rule SUP_def)
 
 lift_definition min_sls :: "'a :: linorder semilattice_set" is min by unfold_locales
 
@@ -1515,19 +1507,19 @@ proof -
   show ?generic by(auto intro: rev_image_eqI)
 
   have "set (fold (\<lambda>(x, y) rest. if x \<in> A then y # rest else rest) rxs []) = set rxs `` A"
-    by(induct rxs rule: rev_induct)(auto split: split_if_asm)
+    by(induct rxs rule: rev_induct)(auto split: if_split_asm)
   thus ?Set_Monad by(auto)
 
   { fix dxs :: "('a \<times> 'b) list"
     have "fold (\<lambda>(x, y) acc. if x \<in> B then insert y acc else acc) dxs {} = set dxs `` B"
-      by(induct dxs rule: rev_induct)(auto split: split_if_asm) }
+      by(induct dxs rule: rev_induct)(auto split: if_split_asm) }
   thus ?DList_set
     by(clarsimp simp add: DList_set_def Collect_member ceq_prod_def ID_Some DList_Set.fold.rep_eq split: option.split)
 
 
   { fix rbt :: "(('c \<times> 'd) \<times> unit) list"
     have "fold (\<lambda>(a, _). case a of (x, y) \<Rightarrow> \<lambda>acc. if x \<in> C then insert y acc else acc) rbt {} = (fst ` set rbt) `` C"
-      by(induct rbt rule: rev_induct)(auto simp add: split_beta split: split_if_asm) }
+      by(induct rbt rule: rev_induct)(auto simp add: split_beta split: if_split_asm) }
   thus ?RBT_set
     by(clarsimp simp add: RBT_set_def ccompare_prod_def ID_Some RBT_Set2.fold.rep_eq member_conv_keys RBT_Set2.keys.rep_eq RBT_Impl.fold_def RBT_Impl.keys_def split: option.split)
 qed
@@ -1549,7 +1541,7 @@ next
   note [[show_types]]
   { fix a :: 'a and b :: 'c and X :: "('a \<times> 'b) set"
     have "fold (\<lambda>(y', z) A. if b = y' then insert (a, z) A else A) ys X = X \<union> {a} \<times> {c. (b, c) \<in> set ys}"
-      by(induct ys arbitrary: X rule: rev_induct)(auto split: split_if_asm) }
+      by(induct ys arbitrary: X rule: rev_induct)(auto split: if_split_asm) }
   thus ?case using snoc by(cases x)(simp add: insert_relcomp)
 qed
 
@@ -1932,7 +1924,6 @@ derive (rbt) set_impl nat
 derive (set_RBT) set_impl int (* shows usage of constant names *)
 derive (dlist) set_impl Enum.finite_1 Enum.finite_2 Enum.finite_3
 derive (rbt) set_impl integer natural
-derive (dlist) set_impl nibble
 derive (rbt) set_impl char
 
 instantiation sum :: (set_impl, set_impl) set_impl begin

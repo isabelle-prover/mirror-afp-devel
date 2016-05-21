@@ -138,7 +138,7 @@ lemma RSD_pareto_eqclass_indiff_set:
 
 lemma RSD_pareto_eqclass_empty [simp, intro!]:
   "alts \<noteq> {} \<Longrightarrow> RSD_pareto_eqclass {} alts R alts"
-  using assms by (auto intro!: RSD_pareto_eqclassI)
+  by (auto intro!: RSD_pareto_eqclassI)
 
 lemma (in pref_profile_wf) RSD_pareto_eqclass_insert:
   assumes "RSD_pareto_eqclass agents' alts R A" "finite alts"

@@ -32,7 +32,7 @@ by auto
 declare stream.map_ident[simp]
 
 lemma smap_eq_SCons_conv:
-  "smap f xs = y ## ys \<longleftrightarrow> 
+  "smap f xs = y ## ys \<longleftrightarrow>
   (\<exists>x xs'. xs = x ## xs' \<and> y = f x \<and> ys = smap f xs')"
 by(cases xs)(auto)
 
@@ -95,7 +95,7 @@ by simp
 
 declare szip_unfold [simp, nitpick_simp]
 
-lemma szip_shift: 
+lemma szip_shift:
   "length xs = length us
   \<Longrightarrow> szip (xs @- ys) (us @- zs) = zip xs us @- szip ys zs"
 by(induct xs arbitrary: us)(auto simp add: Suc_length_conv)
@@ -124,7 +124,7 @@ by(simp add: stream_of_llist_def)
 lemma lhd_llist_of_stream [simp]: "lhd (llist_of_stream xs) = shd xs"
 by(simp add: llist_of_stream_def)
 
-lemma stream_of_llist_llist_of_stream [simp]: 
+lemma stream_of_llist_llist_of_stream [simp]:
   "stream_of_llist (llist_of_stream xs) = xs"
 by(coinduction arbitrary: xs) simp_all
 
@@ -147,12 +147,20 @@ by(fact stream_from_llist)
 
 declare stream.exhaust[cases type: stream]
 
+locale stream_from_llist_setup
+begin
 setup_lifting stream_from_llist
+end
+
+context
+begin
+
+interpretation stream_from_llist_setup .
 
 lemma cr_streamI: "\<not> lfinite xs \<Longrightarrow> cr_stream xs (stream_of_llist xs)"
 by(simp add: cr_stream_def Abs_stream_inverse)
 
-lemma llist_of_stream_unfold_stream [simp]: 
+lemma llist_of_stream_unfold_stream [simp]:
   "llist_of_stream (unfold_stream SHD STL x) = unfold_llist (\<lambda>_. False) SHD STL x"
 by(coinduction arbitrary: x) auto
 
@@ -183,7 +191,7 @@ next
     case (shd xs)
     thus ?case using llist.set_sel(1)[of "llist_of_stream xs"] by simp
   next
-    case stl 
+    case stl
     thus ?case
       by(auto simp add: ltl_llist_of_stream[symmetric] simp del: ltl_llist_of_stream dest: in_lset_ltlD)
   qed
@@ -243,7 +251,7 @@ by(auto simp add: pcr_stream_def cr_stream_def intro!: rel_funI relcomppI dest: 
 lemma llist_of_stream_transfer [transfer_rule]: "(pcr_stream op = ===> op =) id llist_of_stream"
 by(simp add: rel_fun_def stream.pcr_cr_eq cr_stream_def)
 
-lemma stream_of_llist_transfer [transfer_rule]: 
+lemma stream_of_llist_transfer [transfer_rule]:
   "(eq_onp (\<lambda>xs. \<not> lfinite xs) ===> pcr_stream op =) (\<lambda>xs. xs) stream_of_llist"
 by(simp add: eq_onp_def rel_fun_def stream.pcr_cr_eq cr_stream_def)
 
@@ -261,14 +269,14 @@ by(auto simp add: cr_stream_def pcr_stream_def intro!: rel_funI relcomppI dest: 
 lemma snth_transfer [transfer_rule]: "(pcr_stream op = ===> op =) lnth snth"
 by(rule rel_funI)(clarsimp simp add: stream.pcr_cr_eq cr_stream_def fun_eq_iff)
 
-lemma siterate_transfer [transfer_rule]: 
+lemma siterate_transfer [transfer_rule]:
   "(op = ===> op = ===> pcr_stream op =) iterates siterate"
 by(rule rel_funI)+(clarsimp simp add: stream.pcr_cr_eq cr_stream_def)
 
 context
   fixes xs
   assumes inf: "\<not> lfinite xs"
-  notes [transfer_rule] = eq_onpI[where P="\<lambda>xs. \<not> lfinite xs", OF inf]  
+  notes [transfer_rule] = eq_onpI[where P="\<lambda>xs. \<not> lfinite xs", OF inf]
 begin
 
 lemma smap_stream_of_llist [simp]:
@@ -278,11 +286,11 @@ by transfer simp
 lemma sset_stream_of_llist [simp]:
   assumes "\<not> lfinite xs"
   shows "sset (stream_of_llist xs) = lset xs"
-by transfer simp        
+by transfer simp
 
 end
 
-lemma llist_all2_llist_of_stream [simp]: 
+lemma llist_all2_llist_of_stream [simp]:
   "llist_all2 P (llist_of_stream xs) (llist_of_stream ys) = stream_all2 P xs ys"
 apply(cases xs ys rule: stream.Abs_cases[case_product stream.Abs_cases])
 apply(simp add: llist_all2_def stream_all2_def)
@@ -345,7 +353,7 @@ by transfer simp
 
 lemma smap_of_seq [simp]: "smap f (of_seq g) = of_seq (f \<circ> g)"
 by transfer simp
-
+end
 
 subsection{* Function iteration @{const siterate}  and @{term sconst} *}
 
@@ -388,7 +396,7 @@ lemma scount_eq_0I: "alw (not P) \<omega> \<Longrightarrow> scount P \<omega> = 
 lemma scount_eq_0D: "scount P \<omega> = 0 \<Longrightarrow> alw (not P) \<omega>"
 proof (induction rule: alw.coinduct)
   case (alw \<omega>) with scount.simps[of P \<omega>] show ?case
-    by (simp split: split_if_asm)
+    by (simp split: if_split_asm)
 qed
 
 lemma scount_eq_0_iff: "scount P \<omega> = 0 \<longleftrightarrow> alw (not P) \<omega>"
@@ -421,7 +429,7 @@ qed
 lemma scount_finite: "ev (alw (not P)) \<omega> \<Longrightarrow> scount P \<omega> < \<infinity>"
   using scount_eq_card[of P \<omega>] by auto
 
-lemma scount_infinite: 
+lemma scount_infinite:
   "alw (ev P) \<omega> \<Longrightarrow> scount P \<omega> = \<infinity>"
 proof (coinduction arbitrary: \<omega> rule: enat_coinduct)
   case (Eq_enat \<omega>)
@@ -436,7 +444,7 @@ lemma scount_infinite_iff: "scount P \<omega> = \<infinity> \<longleftrightarrow
 
 lemma scount_eq:
   "scount P \<omega> = (if alw (ev P) \<omega> then \<infinity> else enat (card {i. P (sdrop i \<omega>)}))"
-  by (auto simp: scount_infinite_iff scount_eq_card not_alw_iff not_ev_iff) 
+  by (auto simp: scount_infinite_iff scount_eq_card not_alw_iff not_ev_iff)
 
 subsection \<open> First index of an element \<close>
 
@@ -458,7 +466,7 @@ lemma less_sfirstD:
   using assms
 proof (induction n arbitrary: \<omega>)
   case (Suc n) then show ?case
-    by (auto simp: sfirst.simps[of _ \<omega>] eSuc_enat[symmetric] split: split_if_asm)
+    by (auto simp: sfirst.simps[of _ \<omega>] eSuc_enat[symmetric] split: if_split_asm)
 qed (simp add: enat_0 sfirst_eq_0)
 
 lemma sfirst_finite: "sfirst P \<omega> < \<infinity> \<longleftrightarrow> ev P \<omega>"
@@ -468,7 +476,7 @@ proof
   then show "ev P \<omega>"
   proof (induction n arbitrary: \<omega>)
     case (Suc n) then show ?case
-      by (auto simp add: eSuc_enat[symmetric] sfirst.simps[of P \<omega>] split: split_if_asm)
+      by (auto simp add: eSuc_enat[symmetric] sfirst.simps[of P \<omega>] split: if_split_asm)
   qed (auto simp add: enat_0 sfirst_eq_0)
 next
   assume "ev P \<omega>" then show "sfirst P \<omega> < \<infinity>"
@@ -511,7 +519,7 @@ proof (rule antisym)
       apply (auto simp add: enat_0_iff image_iff eSuc_enat_iff)
       done
     with 3[of "stl \<omega>"] show ?case
-      by (auto simp: inf.absorb1 eSuc_Inf[symmetric] simp del: Inf_image_eq)
+      by (auto simp: inf.absorb1 eSuc_Inf[symmetric])
   qed simp_all
 qed
 

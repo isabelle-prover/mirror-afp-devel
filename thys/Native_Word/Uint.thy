@@ -396,7 +396,7 @@ lemma term_of_uint_code [code]:
   defines "TR \<equiv> typerep.Typerep" and "bit0 \<equiv> STR ''Numeral_Type.bit0''" 
   shows
   "term_of_class.term_of x = 
-   Code_Evaluation.App (Code_Evaluation.Const (STR ''Uint.Abs_uint'') (TR (STR ''fun'') [TR (STR ''Word.word'')  [TR (STR ''Uint.dflt_size'') []], TR (STR ''Uint.uint'') []]))
+   Code_Evaluation.App (Code_Evaluation.Const (STR ''Uint.uint.Abs_uint'') (TR (STR ''fun'') [TR (STR ''Word.word'')  [TR (STR ''Uint.dflt_size'') []], TR (STR ''Uint.uint'') []]))
        (term_of_class.term_of (Rep_uint' x))"
   by(simp add: term_of_anything)
 

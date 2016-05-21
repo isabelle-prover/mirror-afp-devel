@@ -258,8 +258,8 @@ qed
 lemma welltyped_commute:
   "\<lbrakk>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; \<Phi> \<turnstile> t:\<sigma> \<surd>\<rbrakk> \<Longrightarrow> P,t \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>' = P,t \<turnstile> \<sigma> -ta-jvm\<rightarrow> \<sigma>'"
 apply(rule iffI)
- apply(erule exec_1_d.cases, simp, fastforce simp add: exec_d_def exec_1_iff split: split_if_asm)
-by(auto dest!: no_type_error intro!: exec_1_d.intros simp add: exec_d_def exec_1_iff split: split_if_asm)
+ apply(erule exec_1_d.cases, simp, fastforce simp add: exec_d_def exec_1_iff split: if_split_asm)
+by(auto dest!: no_type_error intro!: exec_1_d.intros simp add: exec_d_def exec_1_iff split: if_split_asm)
 
 end
 

@@ -6,9 +6,9 @@ begin
 section\<open>First Cartan Theorem\<close>
 
 text\<open>Ported from HOL Light. See
-      Gianni Ciolli · Graziano Gentili · Marco Maggesi.
+      Gianni Ciolli, Graziano Gentili, Marco Maggesi.
       A Certified Proof of the Cartan Fixed Point Theorems.
-      J Automated Reasoning (2011) 47:319–336    DOI 10.1007/s10817-010-9198-6\<close>
+      J Automated Reasoning (2011) 47:319--336    DOI 10.1007/s10817-010-9198-6\<close>
 
 lemma deriv_left_inverse:
   assumes "f holomorphic_on S" and "g holomorphic_on T"
@@ -184,9 +184,9 @@ next
   have holdffm: "(\<lambda>z. deriv f ((f ^^ m) z)) holomorphic_on s" for m
     apply (rule holomorphic_on_compose_gen [where g="deriv f" and t=s, unfolded o_def])
     using s \<open>z \<in> s\<close> holfm holf fms_sb by (auto intro: holomorphic_intros)
-  have f_cd_w: "\<And>w. w \<in> s \<Longrightarrow> f complex_differentiable at w"
+  have f_cd_w: "\<And>w. w \<in> s \<Longrightarrow> f field_differentiable at w"
     using holf holomorphic_on_imp_differentiable_at s by blast
-  have f_cd_mw: "\<And>m w. w \<in> s \<Longrightarrow> (f^^m) complex_differentiable at w"
+  have f_cd_mw: "\<And>m w. w \<in> s \<Longrightarrow> (f^^m) field_differentiable at w"
     using holfm holomorphic_on_imp_differentiable_at s by auto
   have der_fm [simp]: "deriv (f ^^ m) z = 1" for m
     apply (induction m, simp add: deriv_ident)
@@ -281,8 +281,7 @@ proof -
     proof cases
       assume "n = 0" then show ?thesis by force
     next
-      assume "n = 1" then show ?thesis
-        by simp (metis Zero_not_Suc \<open>n = 1\<close> comp_id funpow.simps(2) funpow_simps_right(1) higher_deriv_id)
+      assume "n = 1" then show ?thesis by force
     next
       assume n1: "n > 1"
       then have "(deriv ^^ n) f z = 0"
@@ -359,7 +358,7 @@ proof -
         apply (auto intro!: holomorphic_higher_deriv holomorphic_intros assms Suc)
         done
       also have "... = u * deriv ((deriv ^^ n) f) z"
-        apply (rule complex_derivative_cmult)
+        apply (rule deriv_cmult)
         using Suc \<open>open s\<close> holf holomorphic_higher_deriv holomorphic_on_imp_differentiable_at by blast
       finally show ?case by simp
     qed
@@ -442,12 +441,12 @@ proof -
       using nou ballg
       apply (auto simp: dist_norm norm_mult holomorphic_on_const)
       done
-    have cdf: "f complex_differentiable at 0"
+    have cdf: "f field_differentiable at 0"
       using \<open>0 < r\<close> holf holomorphic_on_imp_differentiable_at by auto
-    have cdg: "g complex_differentiable at 0"
+    have cdg: "g field_differentiable at 0"
       using \<open>0 < r\<close> holg holomorphic_on_imp_differentiable_at by auto
-    have cd_fug: "(\<lambda>a. f (u * g a)) complex_differentiable at 0"
-      apply (rule complex_differentiable_compose [where g=f and f = "\<lambda>a. (u * g a)", unfolded o_def])
+    have cd_fug: "(\<lambda>a. f (u * g a)) field_differentiable at 0"
+      apply (rule field_differentiable_compose [where g=f and f = "\<lambda>a. (u * g a)", unfolded o_def])
       apply (rule derivative_intros)+
       using cdf cdg
       apply auto
@@ -457,12 +456,11 @@ proof -
     then have "deriv f 0 * deriv g 0 = 1"
       by (metis open_ball \<open>0 < r\<close> ballf centre_in_ball deriv_left_inverse gf holf holg image_subsetI)
     then have equ: "deriv f 0 * deriv (\<lambda>a. u * g a) 0 = u"
-      by (simp add: cdg complex_derivative_cmult)
+      by (simp add: cdg deriv_cmult)
     have der1: "deriv (\<lambda>a. f (u * g a) / u) 0 = 1"
-      apply (simp add: field_class.field_divide_inverse complex_derivative_cmult_right [OF cd_fug])
+      apply (simp add: field_class.field_divide_inverse deriv_cmult_right [OF cd_fug])
       apply (subst complex_derivative_chain [where g=f and f = "\<lambda>a. (u * g a)", unfolded o_def])
-      apply (rule derivative_intros)+
-      using cdf cdg apply (auto simp: equ)
+      apply (rule derivative_intros cdf cdg | simp add: equ)+
       done
     have fugeq: "\<And>w. w \<in> ball 0 r \<Longrightarrow> f (u * g w) / u = w"
       apply (rule first_Cartan_dim_1 [OF hol1, where z=0])

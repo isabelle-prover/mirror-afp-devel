@@ -395,7 +395,7 @@ proof (induct y n rule: root_newton_int_main.induct)
   from 1(4) have n0: "n \<ge> 0" .
   def y' \<equiv> "(n div (y ^ pm) + y * int pm) div (int p)"
   from y0 n0 have y'0: "y' \<ge> 0" unfolding y'_def
-    by (metis Divides.transfer_nat_int_function_closures(1) add_increasing nonneg_int_cases zero_zle_int of_nat_mult of_nat_power)
+    by (metis Divides.transfer_nat_int_function_closures(1) add_increasing nonneg_int_cases of_nat_0_le_iff of_nat_mult of_nat_power)
   let ?rt = "root_newton_int_main"
   from 1(5) have rt: "?rt y n = (x,b)" by auto
   from y0 n0 have not: "\<not> (y < 0 \<or> n < 0)" "(y < 0 \<or> n < 0) = False" by auto
@@ -473,7 +473,7 @@ proof (induct y n rule: root_newton_int_main.induct)
           def s \<equiv> "n div y ^ pm + y * int pm"
           def S \<equiv> "NY + Y"
           have Y0: "Y \<ge> 0" using y0 unfolding Y_def
-            by (metis "1.prems"(2) mult_nonneg_nonneg of_int_0_le_iff zero_zle_int)
+            by (metis "1.prems"(2) mult_nonneg_nonneg of_int_0_le_iff of_nat_0_le_iff)
           have S0: "S > 0" using NY0 Y0 unfolding S_def by auto
           from p have p0: "p > 0" by auto
           have "?n / ?y ^ pm  < of_int (floor (?n / ?y^pm)) + 1"
@@ -521,7 +521,7 @@ proof (induct y n rule: root_newton_int_main.induct)
     with rt have x: "x = y" by simp
     with 1(2) True have n: "n = y ^ p" by auto
     show ?thesis unfolding n x using y0 unfolding p
-      by (metis add_le_less_mono add_less_cancel_left lessI less_add_one monoid_add_class.add.right_neutral ordered_cancel_comm_monoid_diff_class.le_iff_add power_strict_mono)
+      by (metis add_le_less_mono add_less_cancel_left lessI less_add_one add.right_neutral le_iff_add power_strict_mono)
   qed
 qed
 
@@ -1004,7 +1004,7 @@ proof (cases "p = 0")
     also have "of_int a * rat_of_int n ^ p = of_int (a * n ^ p)" unfolding of_int_mult of_int_power ..
     finally have id: "a * n ^ p = b * z ^ p" by linarith
     from quotient_of_coprime[OF quo] have cop: "coprime (z ^ p) (n ^ p)"
-       by (metis gcd.commute coprime_exp_int)
+       by (metis gcd.commute coprime_exp)
     from coprime_crossproduct_int[OF quotient_of_coprime[OF q] this] arg_cong[OF id, of abs]
     have "\<bar>n ^ p\<bar> = \<bar>b\<bar>"
       by (simp add: field_simps abs_mult)

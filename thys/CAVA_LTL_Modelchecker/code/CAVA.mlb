@@ -3,6 +3,7 @@ $(SML_LIB)/basis/mlton.mlb
 
 local
     Unsynchronized.sml
+    Miscellaneous.sml
     ann "nonexhaustiveMatch ignore" 
         "redundantMatch ignore"
     in

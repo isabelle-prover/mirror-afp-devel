@@ -93,7 +93,7 @@ structure Refine_Automation :REFINE_AUTOMATION = struct
       (list_comb (Free (name,param_types ---> fastype_of t'),param_vars),t');
 
     val ((lhs_t,(_,def_thm)),lthy) 
-      = Specification.definition (NONE,(Attrib.empty_binding,def_t)) lthy;
+      = Specification.definition NONE [] (Attrib.empty_binding,def_t) lthy;
 
     (*val _ = tracing "xxxx";*)
     val app_t = list_comb (lhs_t, params);
@@ -288,7 +288,7 @@ let
   val attribs = map (Attrib.check_src lthy) attribs_raw;
 
   val ((_,(_,def_thm)),lthy) = Specification.definition 
-    (SOME (fun_name,NONE,Mixfix.NoSyn),((Binding.empty,attribs),def_term)) lthy;
+    (SOME (fun_name,NONE,NoSyn)) [] ((Binding.empty,attribs),def_term) lthy;
 
   val folded_thm = Local_Defs.fold lthy [def_thm] thm';
 
@@ -422,7 +422,7 @@ ML {* Outer_Syntax.local_theory
   (Parse.binding 
     -- Parse.opt_attribs
     -- Scan.optional (@{keyword "for"} |-- Scan.repeat1 Args.var) []
-    --| @{keyword "uses"} -- Parse.xthm
+    --| @{keyword "uses"} -- Parse.thm
     -- Scan.optional (@{keyword "is"} |-- Scan.repeat1 Args.name_inner_syntax) []
   >> (fn ((((name,attribs),params),raw_thm),pats) => fn lthy => let
     val thm = 
@@ -472,12 +472,12 @@ declare [[ cd_patterns "_ = ?f" "_ == ?f" ]]
 ML {* 
   let
     val modes = (Scan.optional
-     (@{keyword "("} |-- Parse.list1 Parse.xname --| @{keyword ")"}) [])
+     (@{keyword "("} |-- Parse.list1 Parse.name --| @{keyword ")"}) [])
   in
     Outer_Syntax.local_theory 
     @{command_keyword prepare_code_thms} 
     "Refinement framework: Prepare theorems for code generation" 
-    (modes -- Parse.xthms1
+    (modes -- Parse.thms1
       >> (fn (modes,raw_thms) => fn lthy => let
         val thms = Attrib.eval_thms lthy raw_thms
       in

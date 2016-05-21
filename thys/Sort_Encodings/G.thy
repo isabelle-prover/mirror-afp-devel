@@ -566,13 +566,13 @@ lemma map_int_g[simp]:
 apply(rule nth_equalityI) unfolding list_all_length by auto
 
 lemma satA_gA[simp]: "GE.satA \<xi> (gA at) \<longleftrightarrow> Ik.satA \<xi> at"
-using assms by (cases at) (auto simp add: intP_def)
+by (cases at) (auto simp add: intP_def)
 
 lemma satL_gL[simp]: "GE.satL \<xi> (gL l) \<longleftrightarrow> Ik.satL \<xi> l"
-using assms apply(cases l) by auto
+by (cases l) auto
 
 lemma satC_map_gL[simp]: "GE.satC \<xi> (map gL c) \<longleftrightarrow> Ik.satC \<xi> c"
-unfolding GE.satC_def Ik.satC_def using assms by (induct c, auto)
+unfolding GE.satC_def Ik.satC_def by (induct c) auto
 
 lemma wtE_not_grdLit_unprot[simp]: (* crucial: *)
 assumes "Ik.wtE \<xi>" and "\<not> unprot (tpOfV x)"

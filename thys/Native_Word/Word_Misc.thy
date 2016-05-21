@@ -255,9 +255,10 @@ by (metis of_nat_inverse of_nat_numeral uno_simps(2) word_of_nat zdiv_int of_nat
   have r: "x - ?q * y = of_nat (n - ?q' * m)"
     and "y \<le> x - ?q * y \<Longrightarrow> of_nat (n - ?q' * m) - y = of_nat (n - ?q' * m - m)"
     using n m unfolding q
-    by(simp_all add: word_sub_wi word_mult_def uint_nat unat_of_nat of_nat_mult [symmetric] word_of_nat[symmetric] zdiff_int word_le_nat_alt del: of_nat_mult)
+    by (simp_all add: word_sub_wi word_mult_def uint_nat unat_of_nat of_nat_mult [symmetric] word_of_nat[symmetric] of_nat_diff word_le_nat_alt del: of_nat_mult)
+      (metis diff_diff_left less_imp_diff_less of_nat_diff of_nat_inverse word_of_nat)
   thus ?thesis using n m div_half_nat[OF `m \<noteq> 0`, of n] unfolding q
-    by(simp add: word_le_nat_alt word_div_def word_mod_def uint_nat unat_of_nat zmod_int[symmetric] zdiv_int[symmetric] word_of_nat[symmetric])(simp add: Let_def split del: split_if split: split_if_asm)
+    by(simp add: word_le_nat_alt word_div_def word_mod_def uint_nat unat_of_nat zmod_int[symmetric] zdiv_int[symmetric] word_of_nat[symmetric])(simp add: Let_def split del: if_split split: if_split_asm)
 qed
 
 
@@ -311,7 +312,9 @@ next
   note y = this
   obtain n where n: "x = of_nat n" "n < 2 ^ len_of TYPE('a)" by(cases x)
   hence "int n div 2 + 2 ^ (len_of TYPE('a) - Suc 0) < 2 ^ len_of TYPE('a)"
-    by(cases "len_of TYPE('a)")(simp_all, simp only: int_numeral[symmetric] zdiv_int[symmetric] of_nat_power [symmetric])
+    by (cases "len_of TYPE('a)")
+      (simp_all, simp only: of_nat_numeral [where ?'a = int, symmetric]
+      zdiv_int [symmetric] of_nat_power [symmetric])
   with y n have "sint (x >> 1) = uint (x >> 1)"
     by(simp add: sint_uint sbintrunc_mod2p shiftr_div_2n)(simp add: int_mod_eq' uint_nat unat_of_nat)
   moreover have "uint y + 2 ^ (len_of TYPE('a) - Suc 0) < 2 ^ len_of TYPE('a)" using y

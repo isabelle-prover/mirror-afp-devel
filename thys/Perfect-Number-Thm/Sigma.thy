@@ -128,7 +128,7 @@ shows "(\<Sum> {p^m | m . m<=(n::nat)}) = (\<Sum> i = 0 .. n . p^i)" (is "?l = ?
 proof -
   have "?l = setsum (%x. x) {(op ^ p) m |m . m<= n}" by auto
   also have "... = setsum (%x. x) ((op ^ p)`{m . m<= n})"
-    by(rule seteq_imp_setsumeq) auto
+    by (simp add: setcompr_eq_image)
   moreover with p have "inj_on (op ^p) {m . m<=n}"
     by (simp add: inj_on_def)
   ultimately have "?l = setsum (op ^ p) {m . m<=n}"
@@ -154,16 +154,19 @@ proof -
 qed
 
 lemma prodsums_eq_sumprods:
-fixes p::nat and m::nat
-assumes "coprime p m"
-shows "(\<Sum>{p^f|f. f<=n})*(\<Sum>{b. b dvd m}) = (\<Sum> {p^f*b| f b. f <= n & b dvd m})"
-proof-
-  have "ALL x f. x dvd m \<longrightarrow> coprime (p ^ f) x"
-    by (metis assms coprime_exp_nat gcd_1_nat gcd_nat.absorb_iff1 gcd.commute gcd_semilattice_nat.inf_left_commute)
-  thus ?thesis
-    by(auto simp: imp_ex setsum_mult_setsum_if_inj[OF mult_inj_if_coprime_nat]
-            intro!: arg_cong[where f = "setsum (%x. x)"])
+  fixes p :: nat and m :: nat
+  assumes "coprime p m"
+  shows " \<Sum>{p ^ f |f. f \<le> n} * \<Sum>{b. b dvd m} = \<Sum>{p ^ f * b |f b. f \<le> n \<and> b dvd m}"
+proof -
+  have "coprime (p ^ f) x" if "x dvd m" for x f
+    unfolding gcd.commute [of _ x]
+    by (rule coprime_exp, rule coprime_divisors[OF that dvd_refl])
+       (insert assms, simp add: gcd.commute)
+  then show ?thesis
+    by (auto simp: imp_ex setsum_mult_setsum_if_inj [OF mult_inj_if_coprime_nat]
+             intro!: arg_cong [where f = "setsum (\<lambda>x. x)"])
 qed
+
 declare [[simproc add: finite_Collect]]
 
 lemma rewrite_for_sigma_semimultiplicative:
@@ -188,21 +191,21 @@ qed
 lemma div_decomp_comp:
   fixes a::nat
   shows "coprime m n \<Longrightarrow> a dvd m*n \<longleftrightarrow> (\<exists>b c. a = b * c & b dvd m & c dvd n)"
-by (auto simp only: division_decomp_nat mult_dvd_mono)
+by (auto simp only: division_decomp mult_dvd_mono)
 
 theorem sigma_semimultiplicative:
   assumes p: "prime p" and cop: "coprime p m"
   shows "sigma (p^n) * sigma m = sigma (p^n * m)" (is "?l = ?r")
 proof -
   from cop have cop2: "coprime (p^n) m"
-    by (auto simp add: coprime_exp_nat gcd_commute_nat)
+    by (auto simp add: coprime_exp gcd.commute)
   have "?l = (\<Sum> {a . a dvd p^n})*(\<Sum> {b . b dvd m})" by (simp add: sigma_def)
   also from p have "... = (\<Sum> {p^f| f . f<=n})*(\<Sum> {b . b dvd m})"
     by (simp add: pr_pow_div_eq_sm_pr_pow)
   also from cop  have "... = (\<Sum> {p^f*b| f b . f<=n & b dvd m})"
     by (auto simp add: prodsums_eq_sumprods prime_def)
   also have "... = (\<Sum> {a*b| a b . a dvd (p^n) & b dvd m})"
-    by(rule seteq_imp_setsumeq,rule rewrite_for_sigma_semimultiplicative[OF p])
+    by (simp add: p rewrite_for_sigma_semimultiplicative)
   finally have "?l = \<Sum>{c. c dvd (p^n*m)}" by (subst div_decomp_comp[OF cop2])
   thus "?l = sigma (p^n*m)" by (auto simp add: sigma_def)
 qed

@@ -257,7 +257,7 @@ context subdiv1_contr begin
     using subdiv_distinct_arcs not_in_arcs_G by (auto simp: proj_arcs_H_def)
 
   lemma proj_arcs_H_in_arcs_G: "a \<in> arcs H \<Longrightarrow> proj_arcs_H a \<in> arcs G"
-    using assms subdiv_distinct_arcs in_arcs_G by (auto simp: proj_arcs_H_def arcs_H)
+    using subdiv_distinct_arcs in_arcs_G by (auto simp: proj_arcs_H_def arcs_H)
 
   lemma proj_arcs_eq_swap:
     assumes "a \<notin> {uv,vu,wu,wv}"

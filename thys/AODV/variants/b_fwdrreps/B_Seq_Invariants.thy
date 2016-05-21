@@ -146,7 +146,7 @@ lemma dests_bigger_than_sqn:
         by (metis domI option.sel)
     show ?thesis
       by inv_cterms
-         (clarsimp split: split_if_asm option.split_asm
+         (clarsimp split: if_split_asm option.split_asm
                    elim!: sqninv indests)+
   qed
 
@@ -593,7 +593,7 @@ lemma rerr_invalid_any_step_invariant:
                               \<union> {PRerr-:2..PRerr-:5} \<longrightarrow> (\<forall>ip\<in>dom(dests \<xi>). ip\<in>iD(rt \<xi>)
                                                           \<and> the (dests \<xi> ip) = sqn (rt \<xi>) ip))
                          \<and> (l = PPkt-:14 \<longrightarrow> dip \<xi>\<in>iD(rt \<xi>)))"
-      by inv_cterms (clarsimp split: split_if_asm option.split_asm simp: domIff)+
+      by inv_cterms (clarsimp split: if_split_asm option.split_asm simp: domIff)+
     show ?thesis
       by (inv_cterms inv add: onl_invariant_sterms [OF aodv_wf dests_inv])
   qed
@@ -623,7 +623,7 @@ lemma dests_vD_inc_sqn:
              \<longrightarrow> (\<forall>ip\<in>dom(dests \<xi>). ip\<in>vD(rt \<xi>) \<and> the (dests \<xi> ip) = inc (sqn (rt \<xi>) ip)))
            \<and> (l = PRerr-:1
              \<longrightarrow> (\<forall>ip\<in>dom(dests \<xi>). ip\<in>vD(rt \<xi>) \<and> the (dests \<xi> ip) > sqn (rt \<xi>) ip)))"
-  by inv_cterms (clarsimp split: split_if_asm option.split_asm)+
+  by inv_cterms (clarsimp split: if_split_asm option.split_asm)+
 
 text \<open>Proposition 7.27\<close>
 

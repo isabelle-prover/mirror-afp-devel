@@ -974,10 +974,6 @@ lemma Collect_eqvt [eqvt]:
   unfolding permute_set_eq permute_fun_def
   by (auto simp: permute_bool_def)
 
-lemma inter_eqvt [eqvt]:
-  shows "p \<bullet> (A \<inter> B) = (p \<bullet> A) \<inter> (p \<bullet> B)"
-  unfolding Int_def by simp
-
 lemma Bex_eqvt [eqvt]:
   shows "p \<bullet> (\<exists>x \<in> S. P x) = (\<exists>x \<in> (p \<bullet> S). (p \<bullet> P) x)"
   unfolding Bex_def by simp
@@ -999,14 +995,22 @@ lemma UNIV_eqvt [eqvt]:
   unfolding UNIV_def 
   by (perm_simp) (rule refl)
 
+lemma inter_eqvt [eqvt]:
+  shows "p \<bullet> (A \<inter> B) = (p \<bullet> A) \<inter> (p \<bullet> B)"
+  unfolding Int_def by simp
+
+lemma Inter_eqvt [eqvt]:
+  shows "p \<bullet> \<Inter>S = \<Inter>(p \<bullet> S)"
+  unfolding Inter_eq by simp
+
 lemma union_eqvt [eqvt]:
   shows "p \<bullet> (A \<union> B) = (p \<bullet> A) \<union> (p \<bullet> B)"
   unfolding Un_def by simp
 
-lemma UNION_eqvt [eqvt]:
-  shows "p \<bullet> (UNION A f) = (UNION (p \<bullet> A) (p \<bullet> f))"
-unfolding UNION_eq
-by (perm_simp) (simp)
+lemma Union_eqvt [eqvt]:
+  shows "p \<bullet> \<Union>A = \<Union>(p \<bullet> A)"
+  unfolding Union_eq
+  by perm_simp rule
 
 lemma Diff_eqvt [eqvt]:
   fixes A B :: "'a::pt set"
@@ -1030,16 +1034,6 @@ lemma vimage_eqvt [eqvt]:
   shows "p \<bullet> (f -` A) = (p \<bullet> f) -` (p \<bullet> A)"
   unfolding vimage_def by simp
 
-lemma Union_eqvt [eqvt]:
-  shows "p \<bullet> (\<Union> S) = \<Union> (p \<bullet> S)"
-  unfolding Union_eq by simp
-
-lemma Inter_eqvt [eqvt]:
-  shows "p \<bullet> (\<Inter> S) = \<Inter> (p \<bullet> S)"
-  unfolding Inter_eq by simp
-
-thm foldr.simps
-
 lemma foldr_eqvt[eqvt]:
   "p \<bullet> foldr f xs = foldr (p \<bullet> f) (p \<bullet> xs)"
   apply(induct xs)
@@ -1052,7 +1046,6 @@ lemma foldr_eqvt[eqvt]:
 lemma Sigma_eqvt:
   shows "(p \<bullet> (X \<times> Y)) = (p \<bullet> X) \<times> (p \<bullet> Y)"
 unfolding Sigma_def
-unfolding SUP_def
 by (perm_simp) (rule refl)
 
 text {* 
@@ -1109,7 +1102,7 @@ begin
 
 instance 
 apply standard
-unfolding Inf_fun_def INF_def
+unfolding Inf_fun_def
 apply(perm_simp)
 apply(rule refl)
 done 
@@ -2146,30 +2139,22 @@ proof -
 qed
 
 lemma Union_supports_multiset:
-  shows "\<Union>{supp x | x. x :# M} supports M"
+  shows "\<Union>{supp x | x. x \<in># M} supports M"
 proof -
-  have sw: "\<And>a b. ((\<And>x. x :# M \<Longrightarrow> (a \<rightleftharpoons> b) \<bullet> x = x) \<Longrightarrow> (a \<rightleftharpoons> b) \<bullet> M = M)"
-    unfolding permute_multiset_def 
-    apply(induct M)
-    apply(simp_all)
-    done
-  show "(\<Union>{supp x | x. x :# M}) supports M"
-    unfolding supports_def
-    apply(clarify)
-    apply(rule sw)
-    apply(rule swap_fresh_fresh)
-    apply(simp_all only: fresh_def)
-    apply(auto)
-    apply(metis neq0_conv)+
-    done
+  have sw: "\<And>a b. ((\<And>x. x \<in># M \<Longrightarrow> (a \<rightleftharpoons> b) \<bullet> x = x) \<Longrightarrow> (a \<rightleftharpoons> b) \<bullet> M = M)"
+    unfolding permute_multiset_def by (induct M) simp_all
+  have "(\<Union>x\<in>set_mset M. supp x) supports M"
+    by (auto intro!: sw swap_fresh_fresh simp add: fresh_def supports_def)
+  also have "(\<Union>x\<in>set_mset M. supp x) = (\<Union>{supp x | x. x \<in># M})"
+    by auto
+  finally show "(\<Union>{supp x | x. x \<in># M}) supports M" .
 qed
 
 lemma Union_included_multiset:
   fixes M::"('a::fs multiset)" 
   shows "(\<Union>{supp x | x. x \<in># M}) \<subseteq> supp M"
 proof -
-  have "(\<Union>{supp x | x. x \<in># M}) = (\<Union>{supp x | x. x \<in> set_mset M})" by simp
-  also have "... \<subseteq> (\<Union>x \<in> set_mset M. supp x)" by auto
+  have "(\<Union>{supp x | x. x \<in># M}) = (\<Union>x \<in> set_mset M. supp x)" by auto
   also have "... = supp (set_mset M)"
     by (simp add: supp_of_finite_sets)
   also have " ... \<subseteq> supp M" by (rule supp_set_mset)
@@ -2178,7 +2163,7 @@ qed
 
 lemma supp_of_multisets:
   fixes M::"('a::fs multiset)"
-  shows "(supp M) = (\<Union>{supp x | x. x :# M})"
+  shows "(supp M) = (\<Union>{supp x | x. x \<in># M})"
 apply(rule subset_antisym)
 apply(rule supp_is_subset)
 apply(rule Union_supports_multiset)

@@ -13,7 +13,7 @@ method_setup clarsimp_all =
 
 lemma div_Suc:
   "(Suc m) div n = (if (Suc m) mod n = 0 then Suc (m div n) else m div n)"
-proof(simp add: mod_Suc split: split_if, intro conjI impI)
+proof(simp add: mod_Suc split: if_split, intro conjI impI)
   assume "Suc (m mod n) = n"
   thus "Suc m div n = Suc (m div n)"
     by (metis Divides.mod_less Divides.mult_div_cancel diff_Suc_Suc div_mult_self2_is_id
@@ -122,7 +122,7 @@ qed
 lemma Max_by_UNION_distrib:
   "\<lbrakk>finite A; A = (\<Union>x\<in>S. f x); S \<noteq> {}; {} \<notin> f ` S; inj_on cmp_f A\<rbrakk> \<Longrightarrow> 
     Max_by cmp_f A = Max_by cmp_f (Max_by cmp_f ` (f ` S))"
-  by(force  simp only: SUP_def intro!: Max_by_Union_distrib)
+  by(force intro!: Max_by_Union_distrib)
 
 lemma Max_by_eta:
   "Max_by f = (\<lambda>S. (SOME x. x \<in> S \<and> f x = Max (f ` S)))"
@@ -228,9 +228,10 @@ proof-
       by(auto simp add: map_graph_def fun_graph_def vs_def)
   also have "... \<le> (\<Union>p\<in>S. (\<lambda>r. ((r, p), the (v_hist r p))) ` {0..<r})" 
     using assms(1)
-    apply(auto simp add: map_graph_def fun_graph_def image_def)
-      apply (metis leI option.distinct(2))
-    by (metis option.sel)
+    apply auto
+    apply (auto simp add: map_graph_def fun_graph_def image_def)
+    apply (metis le_less_linear option.distinct(1))
+    done
   also note I=finite_subset[OF calculation] 
   have "finite vs"
     by(auto intro: I assms(2) nat_seg_image_imp_finite[where n=r])    
@@ -268,7 +269,7 @@ lemma vote_set_upd:
         else vote_set v_hist {p} - {(r, the (v_hist r p))}
       )
   "
-  by(auto simp add: vote_set_def const_map_is_Some split: split_if_asm)
+  by(auto simp add: vote_set_def const_map_is_Some split: if_split_asm)
 
 lemma finite_vote_set_upd:
   " finite (vote_set v_hist {a}) \<Longrightarrow> 

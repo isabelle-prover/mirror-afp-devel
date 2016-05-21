@@ -1,13 +1,13 @@
-section {* Intersection *}
+section \<open>Intersection\<close>
 theory Intersection
 imports
   Polygon
   Counterclockwise_2D_Arbitrary
   Affine_Code
 begin
-text {*\label{sec:intersection}*}
+text \<open>\label{sec:intersection}\<close>
 
-subsection {* Polygons and @{term ccw}, @{term lex}, @{term psi}, @{term coll} *}
+subsection \<open>Polygons and @{term ccw}, @{term lex}, @{term psi}, @{term coll}\<close>
 
 lemma polychain_of_ccw_conjunction:
   assumes sorted: "ccw'.sortedP 0 Ps"
@@ -54,7 +54,7 @@ proof (induction Ps arbitrary: Pc z rule: list.induct)
         have 0: "\<And>e. e < length Ps \<Longrightarrow> ccw' 0 P (Ps ! e)"
           by (rule ccw') (simp add: )
         have 2: "0 < e \<Longrightarrow> ccw' 0 (P + listsum (take e Ps)) (Ps ! e)"
-          using `e < length Ps`
+          using \<open>e < length Ps\<close>
           by (auto intro!: ccw'.add1 0 ccw'.setsum2 sorted' ccw'.sorted_nth_less
             simp: listsum_setsum_nth)
         have "ccw Pc (Pc + P + listsum (take e Ps)) (Pc + P + listsum (take (Suc e) Ps))"
@@ -65,7 +65,7 @@ proof (induction Ps arbitrary: Pc z rule: list.induct)
           by (rule cyclic)
         moreover
         have "0 < e \<Longrightarrow> ccw 0 (Ps ! e) (- listsum (take e Ps))"
-          using `e < length Ps`
+          using \<open>e < length Ps\<close>
           by (auto simp add: take_Suc_eq add.assoc[symmetric]
               listsum_setsum_nth
             intro!: ccw'_imp_ccw ccw'.setsum2 sorted' ccw'.sorted_nth_less)
@@ -174,7 +174,7 @@ next
 qed
 
 
-subsection {* Orient all entries *}
+subsection \<open>Orient all entries\<close>
 
 lift_definition nlex_pdevs::"point pdevs \<Rightarrow> point pdevs"
   is "\<lambda>x n. if lex 0 (x n) then - x n else x n" by simp
@@ -254,7 +254,7 @@ lemma lex_nlex_pdevs: "lex (pdevs_apply (nlex_pdevs x) i) 0"
   by (auto simp: lex_def algebra_simps prod_eq_iff)
 
 
-subsection {* Lowest Vertex *}
+subsection \<open>Lowest Vertex\<close>
 
 definition lowest_vertex::"'a::ordered_euclidean_space aform \<Rightarrow> 'a" where
   "lowest_vertex X = fst X - listsum (map snd (list_of_pdevs (snd X)))"
@@ -282,7 +282,7 @@ proof -
       snd_setsum atLeast0LessThan)
   finally show ?thesis
     by (auto simp: aform_val_def lowest_vertex_def minus_le_iff snd_abs abs_real_def assms
-      split: split_if_asm)
+      split: if_split_asm)
 qed
 
 lemma listsum_nonposI:
@@ -293,7 +293,7 @@ lemma listsum_nonposI:
 lemma center_le_lowest:
   "fst (fst X) \<le> fst (lowest_vertex (fst X, nlex_pdevs (snd X)))"
   by (auto simp: lowest_vertex_def fst_listsum intro!: listsum_nonposI)
-    (auto simp: lex_def list_all_iff list_of_pdevs_def dest!: in_set_butlastD split: split_if_asm)
+    (auto simp: lex_def list_all_iff list_of_pdevs_def dest!: in_set_butlastD split: if_split_asm)
 
 lemma lowest_vertex_eq_center_iff:
   "lowest_vertex (x0, nlex_pdevs (snd X)) = x0 \<longleftrightarrow> snd X = zero_pdevs"
@@ -303,11 +303,11 @@ proof
     by (auto simp: lowest_vertex_def)
   thus "snd X = zero_pdevs"
     by (subst (asm) listsum_nlex_eq_zero_iff)
-     (auto simp: list_all_iff list_of_pdevs_def split: split_if_asm intro!: pdevs_eqI)
+     (auto simp: list_all_iff list_of_pdevs_def split: if_split_asm intro!: pdevs_eqI)
 qed (simp add: lowest_vertex_def)
 
 
-subsection {* Collinear Generators *}
+subsection \<open>Collinear Generators\<close>
 
 lemma scaleR_le_self_cancel:
   fixes c::"'a::ordered_real_vector"
@@ -324,7 +324,7 @@ lemma pdevs_val_coll:
 proof cases
   assume "listsum xs = 0"
   have "pdevs_of_list xs = zero_pdevs"
-    by (auto intro!: pdevs_eqI listsum_nlex_eq_zeroI[OF nlex `listsum xs = 0`]
+    by (auto intro!: pdevs_eqI listsum_nlex_eq_zeroI[OF nlex \<open>listsum xs = 0\<close>]
       simp: pdevs_apply_pdevs_of_list list_all_iff dest!: nth_mem)
   hence "0 \<in> {-1 .. 1::real}" "pdevs_val f (pdevs_of_list xs) = 0 *\<^sub>R listsum xs"
     by simp_all
@@ -334,7 +334,7 @@ next
   have "listsum (map abs xs) \<ge> 0"
     by (auto intro!: listsum_nonneg)
   hence [simp]: "\<not>listsum (map abs xs) \<le> 0"
-    by (metis `listsum xs \<noteq> 0` abs_le_zero_iff antisym_conv listsum_abs)
+    by (metis \<open>listsum xs \<noteq> 0\<close> abs_le_zero_iff antisym_conv listsum_abs)
 
   have collist: "list_all (coll 0 (listsum xs)) xs"
   proof (rule list_allI)
@@ -345,13 +345,13 @@ next
       using coll by (auto simp: list_all_iff intro!: coll_listsum)
     finally (coll_trans)
     show "coll 0 (listsum xs) y"
-      by (simp add: coll_commute `x \<noteq> 0`)
+      by (simp add: coll_commute \<open>x \<noteq> 0\<close>)
   qed
 
   {
     fix i assume "i < length xs"
     hence "\<exists>r. xs ! i = r *\<^sub>R (listsum xs)"
-      by (metis (mono_tags) coll_scale nth_mem `listsum xs \<noteq> 0` list_all_iff collist)
+      by (metis (mono_tags) coll_scale nth_mem \<open>listsum xs \<noteq> 0\<close> list_all_iff collist)
   } then obtain r where r: "\<And>i. i < length xs \<Longrightarrow> (xs ! i) = r i *\<^sub>R (listsum xs)"
     by metis
   let ?coll = "pdevs_of_list xs"
@@ -374,7 +374,7 @@ next
   also note eq
   finally have less: "\<bar>?e\<bar> *\<^sub>R abs (listsum xs) \<le> listsum (map abs xs)" by (simp add: abs_scaleR)
   also have "\<bar>listsum xs\<bar> = listsum (map abs xs)"
-    using coll `x \<noteq> 0` nlex
+    using coll \<open>x \<noteq> 0\<close> nlex
     by (rule abs_listsum_coll)
   finally have "?e \<in> {-1 .. 1}"
     by (auto simp add: less_le scaleR_le_self_cancel)
@@ -417,7 +417,7 @@ lemma pdevs_val_coll_strict:
 proof cases
   assume "listsum xs = 0"
   have "pdevs_of_list xs = zero_pdevs"
-    by (auto intro!: pdevs_eqI listsum_nlex_eq_zeroI[OF nlex `listsum xs = 0`]
+    by (auto intro!: pdevs_eqI listsum_nlex_eq_zeroI[OF nlex \<open>listsum xs = 0\<close>]
       simp: pdevs_apply_pdevs_of_list list_all_iff dest!: nth_mem)
   hence "0 \<in> {-1 <..< 1::real}" "pdevs_val f (pdevs_of_list xs) = 0 *\<^sub>R listsum xs"
     by simp_all
@@ -427,7 +427,7 @@ next
   have "listsum (map abs xs) \<ge> 0"
     by (auto intro!: listsum_nonneg)
   hence [simp]: "\<not>listsum (map abs xs) \<le> 0"
-    by (metis `listsum xs \<noteq> 0` abs_le_zero_iff antisym_conv listsum_abs)
+    by (metis \<open>listsum xs \<noteq> 0\<close> abs_le_zero_iff antisym_conv listsum_abs)
 
   have "\<exists>x \<in> set xs. x \<noteq> 0"
   proof (rule ccontr)
@@ -436,7 +436,7 @@ next
     hence "listsum xs = 0"
       by (auto simp: listsum_eq_0_iff_nonpos list_all_iff less_eq_prod_def prod_eq_iff fst_listsum
         snd_listsum)
-    thus False using `listsum xs \<noteq> 0` by simp
+    thus False using \<open>listsum xs \<noteq> 0\<close> by simp
   qed
   then obtain i where i: "i < length xs" "xs ! i \<noteq> 0"
     by (metis in_set_conv_nth)
@@ -453,13 +453,13 @@ next
       using coll by (auto simp: list_all_iff intro!: coll_listsum)
     finally (coll_trans)
     show "coll 0 (listsum xs) y"
-      by (simp add: coll_commute `x \<noteq> 0`)
+      by (simp add: coll_commute \<open>x \<noteq> 0\<close>)
   qed
 
   {
     fix i assume "i < length xs"
     hence "\<exists>r. xs ! i = r *\<^sub>R (listsum xs)"
-      by (metis (mono_tags, lifting) `listsum xs \<noteq> 0` coll_scale collist list_all_iff nth_mem)
+      by (metis (mono_tags, lifting) \<open>listsum xs \<noteq> 0\<close> coll_scale collist list_all_iff nth_mem)
   } then obtain r where r: "\<And>i. i < length xs \<Longrightarrow> (xs ! i) = r i *\<^sub>R (listsum xs)"
     by metis
   let ?coll = "pdevs_of_list xs"
@@ -482,7 +482,7 @@ next
   also note eq
   finally have less: "\<bar>?e\<bar> *\<^sub>R abs (listsum xs) < listsum (map abs xs)" by (simp add: abs_scaleR)
   also have "\<bar>listsum xs\<bar> = listsum (map abs xs)"
-    using coll `x \<noteq> 0` nlex
+    using coll \<open>x \<noteq> 0\<close> nlex
     by (rule abs_listsum_coll)
   finally have "?e \<in> {-1 <..< 1}"
     by (auto simp add: less_le scaleR_le_self_cancel)
@@ -490,7 +490,7 @@ next
 qed
 
 
-subsection {* Independent Generators *}
+subsection \<open>Independent Generators\<close>
 
 fun independent_pdevs::"point list \<Rightarrow> point list"
   where
@@ -515,7 +515,7 @@ proof atomize_elim
     let ?c2 = "y \<in> set (independent_pdevs (filter (Not \<circ> coll 0 z) zs))"
     from 2
     have "?c1 \<or> ?c2"
-      by (auto simp: Let_def split: split_if_asm)
+      by (auto simp: Let_def split: if_split_asm)
     thus ?case
     proof
       assume ?c2
@@ -538,7 +538,7 @@ proof (induct xs rule: independent_pdevs.induct)
   case (2 y ys)
   from 2(1)[OF refl prod.collapse refl] 2(2)
   show ?case
-    by (auto simp: Let_def split: split_if_asm)
+    by (auto simp: Let_def split: if_split_asm)
 qed simp
 
 lemma independent_pdevs_pairwise_non_coll:
@@ -566,18 +566,17 @@ next
     fix x assume "x \<noteq> 0" "z + listsum ?c \<noteq> 0"
       "coll 0 x (z + listsum ?c)"
     hence "x \<notin> set (independent_pdevs ?nc)"
-      using listsum_filter_coll_ex_scale[OF `z \<noteq> 0`, of "z#zs"]
+      using listsum_filter_coll_ex_scale[OF \<open>z \<noteq> 0\<close>, of "z#zs"]
       by (auto elim!: in_set_independent_pdevsE  simp: coll_commute)
-        (metis (no_types) `x \<noteq> 0` coll_scale coll_scaleR)
+        (metis (no_types) \<open>x \<noteq> 0\<close> coll_scale coll_scaleR)
   } note nc = this
-  from 2(2,3,4,5) nc[OF `x \<noteq> 0`] nc[OF `y \<noteq> 0`]
+  from 2(2,3,4,5) nc[OF \<open>x \<noteq> 0\<close>] nc[OF \<open>y \<noteq> 0\<close>]
   show ?case
-    by (auto simp: Let_def IH coll_commute split: split_if_asm)
+    by (auto simp: Let_def IH coll_commute split: if_split_asm)
 qed
 
 lemma distinct_independent_pdevs[simp]:
   shows "distinct (independent_pdevs xs)"
-  using assms
 proof (induct xs rule: independent_pdevs.induct)
   case 1 thus ?case by simp
 next
@@ -622,7 +621,7 @@ next
   from 2(2)
   have "x \<in> set (independent_pdevs (filter (Not \<circ> coll 0 y) ys)) \<or>
     x = y + listsum (filter (coll 0 y) ys)"
-    by (auto simp: Let_def split: split_if_asm)
+    by (auto simp: Let_def split: if_split_asm)
   thus ?case
   proof
     assume "x \<in> set (independent_pdevs (filter (Not \<circ> coll 0 y) ys))"
@@ -711,7 +710,7 @@ next
 
   have "list_all (\<lambda>x. lex x 0) (filter (coll 0 x) (x#xs))"
     using 2(2) by (auto simp: inner_prod_def list_all_iff)
-  from pdevs_val_coll[OF list_all_filter this `x \<noteq> 0` f]
+  from pdevs_val_coll[OF list_all_filter this \<open>x \<noteq> 0\<close> f]
   obtain f' where "pdevs_val f (pdevs_of_list ?coll) = f' *\<^sub>R listsum (filter (coll 0 x) (x#xs))"
     and f': "f' \<in> {-1 .. 1}"
     by blast
@@ -733,7 +732,7 @@ next
   note this(1)
   also
 
-  def h \<equiv> "if listsum ?coll \<noteq> 0 then rec_nat f' (\<lambda>i _. g' i) else g'"
+  define h where "h = (if listsum ?coll \<noteq> 0 then rec_nat f' (\<lambda>i _. g' i) else g')"
   have "f' *\<^sub>R listsum ?coll + pdevs_val g' (pdevs_of_list (independent_pdevs ?ncoll))
       = pdevs_val h (pdevs_of_list (independent_pdevs (x#xs)))"
     by (simp add: h_def o_def Let_def)
@@ -782,7 +781,7 @@ next
 
   have "list_all (\<lambda>x. lex x 0) (filter (coll 0 x) (x#xs))"
     using 2(2) by (auto simp: inner_prod_def list_all_iff)
-  from pdevs_val_coll_strict[OF list_all_filter this `x \<noteq> 0` f]
+  from pdevs_val_coll_strict[OF list_all_filter this \<open>x \<noteq> 0\<close> f]
   obtain f' where "pdevs_val f (pdevs_of_list ?coll) = f' *\<^sub>R listsum (filter (coll 0 x) (x#xs))"
     and f': "f' \<in> {-1 <..< 1}"
     by blast
@@ -804,7 +803,7 @@ next
   note this(1)
   also
 
-  def h \<equiv> "if listsum ?coll \<noteq> 0 then rec_nat f' (\<lambda>i _. g' i) else g'"
+  define h where "h = (if listsum ?coll \<noteq> 0 then rec_nat f' (\<lambda>i _. g' i) else g')"
   have "f' *\<^sub>R listsum ?coll + pdevs_val g' (pdevs_of_list (independent_pdevs ?ncoll))
       = pdevs_val h (pdevs_of_list (independent_pdevs (x#xs)))"
     by (simp add: h_def o_def Let_def)
@@ -846,7 +845,7 @@ next
 qed
 
 
-subsection {* Independent Oriented Generators*}
+subsection \<open>Independent Oriented Generators\<close>
 
 definition "inl p = independent_pdevs (map snd (list_of_pdevs (nlex_pdevs p)))"
 
@@ -864,7 +863,7 @@ lemma
 
 lemma in_set_inl_lex: "x \<in> set (inl xs) \<Longrightarrow> lex x 0"
   by (auto simp: inl_def list_of_pdevs_def dest!: in_set_independent_pdevs_invariant_nlex
-    split: split_if_asm)
+    split: if_split_asm)
 
 interpretation ccw0: linorder_list "ccw 0" "set (inl (snd X))"
 proof unfold_locales
@@ -941,11 +940,11 @@ proof -
   obtain e' where "e' \<in> UNIV \<rightarrow> {-1 .. 1}" "pdevs_val e X = pdevs_val e' (nlex_pdevs X)"
     by auto
   note this(2)
-  also from pdevs_val_of_list_of_pdevs2[OF `e' \<in> _`]
+  also from pdevs_val_of_list_of_pdevs2[OF \<open>e' \<in> _\<close>]
   obtain e'' where "e'' \<in> UNIV \<rightarrow> {-1 .. 1}" "\<dots> = pdevs_val e'' (pdevs_of_list ?l)"
     by metis
   note this(2)
-  also from pdevs_val_independent_pdevs[OF l `e'' \<in> _`]
+  also from pdevs_val_independent_pdevs[OF l \<open>e'' \<in> _\<close>]
   obtain e'''
   where "e''' \<in> UNIV \<rightarrow> {-1 .. 1}"
     and "\<dots> = pdevs_val e''' (pdevs_of_list (independent_pdevs ?l))"
@@ -954,7 +953,7 @@ proof -
   also have "\<dots> = pdevs_val e''' (pdevs_of_list (inl X))"
     by (simp add: inl_def)
   finally have "pdevs_val e X = pdevs_val e''' (pdevs_of_list (inl X))" .
-  thus thesis using `e''' \<in> _` ..
+  thus thesis using \<open>e''' \<in> _\<close> ..
 qed
 
 lemma pdevs_val_pdevs_of_list_inlE:
@@ -965,25 +964,25 @@ proof -
   have "pdevs_val e (pdevs_of_list (inl X)) = pdevs_val e (pdevs_of_list (independent_pdevs ?l))"
     by (simp add: inl_def)
   also
-  from pdevs_val_independent_pdevs2[OF `e \<in> _`]
+  from pdevs_val_independent_pdevs2[OF \<open>e \<in> _\<close>]
   obtain e'
   where "pdevs_val e (pdevs_of_list (independent_pdevs ?l)) = pdevs_val e' (pdevs_of_list ?l)"
     and "e' \<in> UNIV \<rightarrow> I"
     by auto
   note this(1)
   also
-  from pdevs_val_of_list_of_pdevs[OF `e' \<in> _` `0 \<in> I`, of "nlex_pdevs X"]
+  from pdevs_val_of_list_of_pdevs[OF \<open>e' \<in> _\<close> \<open>0 \<in> I\<close>, of "nlex_pdevs X"]
   obtain e'' where "pdevs_val e' (pdevs_of_list ?l) = pdevs_val e'' (nlex_pdevs X)"
     and "e'' \<in> UNIV \<rightarrow> I"
     by metis
   note this(1)
   also
-  from pdevs_val_nlex_pdevs2[OF `e'' \<in> _` `_ = I`]
+  from pdevs_val_nlex_pdevs2[OF \<open>e'' \<in> _\<close> \<open>_ = I\<close>]
   obtain e''' where "pdevs_val e'' (nlex_pdevs X) = pdevs_val e''' X" "e''' \<in> UNIV \<rightarrow> I"
     by metis
   note this(1)
   finally have "pdevs_val e (pdevs_of_list (inl X)) = pdevs_val e''' X" .
-  thus ?thesis using `e''' \<in> UNIV \<rightarrow> I` ..
+  thus ?thesis using \<open>e''' \<in> UNIV \<rightarrow> I\<close> ..
 qed
 
 lemma listsum_nlex_eq_listsum_inl:
@@ -995,7 +994,7 @@ lemma Affine_inl: "Affine (fst X, pdevs_of_list (inl (snd X))) = Affine X"
     elim: pdevs_val_pdevs_of_list_inlE[of _ _ "snd X"] pdevs_val_pdevs_of_list_inl2E[of _ "snd X"])
 
 
-subsection {* Half Segments *}
+subsection \<open>Half Segments\<close>
 
 definition half_segments_of_aform::"point aform \<Rightarrow> (point*point) list"
   where "half_segments_of_aform X =
@@ -1098,7 +1097,7 @@ proof -
   also note inl_def
   also
   let ?l = "map snd (list_of_pdevs (nlex_pdevs (snd X)))"
-  from pdevs_val_independent_pdevs2[OF `e'' \<in> _`]
+  from pdevs_val_independent_pdevs2[OF \<open>e'' \<in> _\<close>]
   obtain e'''
   where "pdevs_val e'' (pdevs_of_list (independent_pdevs ?l)) = pdevs_val e''' (pdevs_of_list ?l)"
     and "e''' \<in> UNIV \<rightarrow> {0..2}"
@@ -1106,7 +1105,7 @@ proof -
   note this(1)
   also
   have "0 \<in> {0 .. 2::real}" by simp
-  from pdevs_val_of_list_of_pdevs[OF `e''' \<in> _` this, of "nlex_pdevs (snd X)"]
+  from pdevs_val_of_list_of_pdevs[OF \<open>e''' \<in> _\<close> this, of "nlex_pdevs (snd X)"]
   obtain e'''' where "pdevs_val e''' (pdevs_of_list ?l) = pdevs_val e'''' (nlex_pdevs (snd X))"
     and "e'''' \<in> UNIV \<rightarrow> {0 .. 2}"
     by metis
@@ -1118,14 +1117,14 @@ proof -
       pdevs_val (\<lambda>i. e'''' i - 1) (nlex_pdevs (snd X))"
     by (simp add: pdevs_val_minus)
   also
-  have "(\<lambda>i. e'''' i - 1) \<in> UNIV \<rightarrow> {-1 .. 1}" using `e'''' \<in> _` by auto
+  have "(\<lambda>i. e'''' i - 1) \<in> UNIV \<rightarrow> {-1 .. 1}" using \<open>e'''' \<in> _\<close> by auto
   from pdevs_val_nlex_pdevs2[OF this]
   obtain f where "f \<in> UNIV \<rightarrow>  {-1 .. 1}"
     and "pdevs_val (\<lambda>i. e'''' i - 1) (nlex_pdevs (snd X)) = pdevs_val f (snd X)"
     by auto
   note this(2)
   finally have "y2 = aform_val f X" by (simp add: aform_val_def)
-  thus ?thesis using `f \<in> _` ..
+  thus ?thesis using \<open>f \<in> _\<close> ..
 qed
 
 lemma fst_hd_half_segments_of_aform:
@@ -1162,23 +1161,23 @@ proof -
   also
   obtain e' where "e' \<in> UNIV \<rightarrow> {-1 <..< 1}"
     "pdevs_val e (snd X) = pdevs_val e' (nlex_pdevs (snd X))"
-    using pdevs_val_nlex_pdevs[OF `e \<in> _`]
+    using pdevs_val_nlex_pdevs[OF \<open>e \<in> _\<close>]
     by auto
   note this(2)
   also obtain e'' where "e'' \<in> UNIV \<rightarrow> {-1 <..< 1}"
     "\<dots> = pdevs_val e'' (pdevs_of_list (map snd (list_of_pdevs (nlex_pdevs (snd X)))))"
-    by (metis pdevs_val_of_list_of_pdevs2[OF `e' \<in> _`])
+    by (metis pdevs_val_of_list_of_pdevs2[OF \<open>e' \<in> _\<close>])
   note this(2)
   also
   obtain e''' where "e''' \<in> UNIV \<rightarrow> {-1 <..< 1}" "\<dots> = pdevs_val e''' (pdevs_of_list (inl (snd X)))"
     unfolding inl_def
     using
       pdevs_val_independent_pdevs_strict[OF list_all_list_of_pdevsI,
-        OF lex_nlex_pdevs list_of_pdevs_all_nonzero `e'' \<in> _`]
+        OF lex_nlex_pdevs list_of_pdevs_all_nonzero \<open>e'' \<in> _\<close>]
     by metis
   note this(2)
   also
-  from pdevs_val_selsort_ccw[OF distinct_inl `e''' \<in> _`]
+  from pdevs_val_selsort_ccw[OF distinct_inl \<open>e''' \<in> _\<close>]
   obtain f where "f \<in> UNIV \<rightarrow> {-1 <..< 1}"
     "\<dots> = pdevs_val f (pdevs_of_list (linorder_list0.selsort (ccw 0) (inl (snd X))))"
     (is "_ = pdevs_val _ (pdevs_of_list ?sl)")
@@ -1201,7 +1200,7 @@ proof -
     (is "_ = pdevs_val ?f' (pdevs_of_list ?ssl)")
     by (subst pdevs_val_cmul) (simp add: pdevs_of_list_map_scaleR)
   also
-  have "distinct ?ssl" "?f' \<in> UNIV \<rightarrow> {0<..<1}" using `f \<in> _`
+  have "distinct ?ssl" "?f' \<in> UNIV \<rightarrow> {0<..<1}" using \<open>f \<in> _\<close>
     by (auto simp: distinct_map_scaleRI Pi_iff algebra_simps real_0_less_add_iff)
   from pdevs_of_list_setsum[OF this]
   obtain g where "g \<in> UNIV \<rightarrow> {0<..<1}"
@@ -1213,7 +1212,7 @@ proof -
     by simp
   also
   have "ccw' (fst seg) (snd seg) \<dots>"
-    using `g \<in> _` _ len `seg \<in> _`[unfolded half_segments_of_aform_def Let_def]
+    using \<open>g \<in> _\<close> _ len \<open>seg \<in> _\<close>[unfolded half_segments_of_aform_def Let_def]
     by (rule in_polychain_of_ccw) (simp add: ccw'_sortedP_scaled_inl)
   finally show ?thesis .
 qed
@@ -1316,7 +1315,7 @@ proof -
     by (auto simp add: half_segments_of_aform_def Let_def
         dirvec_hd_polychain_of dirvec_last_polychain_of length_greater_0_conv[symmetric]
       simp del: polychain_of.simps length_greater_0_conv
-      split: split_if_asm)
+      split: if_split_asm)
 qed
 
 lemma map_fst_half_segments_aux_eq: "[] \<noteq> half_segments_of_aform X \<Longrightarrow>
@@ -1396,7 +1395,7 @@ lemma distinct_snd_half_segments:
     dest: in_set_inl_nonzero in_set_inl_lex)
 
 
-subsection {* Mirror *}
+subsection \<open>Mirror\<close>
 
 definition "mirror_point x y = 2 *\<^sub>R x - y"
 
@@ -1432,7 +1431,7 @@ proof safe
   have eq: "(map (pairself (mirror_point (fst X))) (half_segments_of_aform X) ! n) =
     (2 *\<^sub>R fst X - fst ((half_segments_of_aform X) ! n),
      2 *\<^sub>R fst X - snd ((half_segments_of_aform X) ! n))"
-    using `n < length ?m`
+    using \<open>n < length ?m\<close>
     by (cases "half_segments_of_aform X ! n") (auto simp add: mirror_point_def)
   show "ccw' (fst (?m ! n)) (snd (?m ! n)) (aform_val e X)"
     using le
@@ -1508,7 +1507,7 @@ lemma eq_self_mirror_iff: fixes x::"'a::real_vector" shows "x = mirror_point y x
   by (auto simp: mirror_point_def algebra_simps scaleR_2[symmetric])
 
 
-subsection {* Full Segments *}
+subsection \<open>Full Segments\<close>
 
 definition segments_of_aform::"point aform \<Rightarrow> (point * point) list"
   where "segments_of_aform X =
@@ -1709,7 +1708,8 @@ next
       using seg H
       by (intro last_half_segments[symmetric]) simp
 
-    def r \<equiv> "?l + (0, abs (snd x - snd ?l) + abs (snd y - snd ?l) + abs (snd ?ml - snd ?l) + 1)"
+    define r
+      where "r = ?l + (0, abs (snd x - snd ?l) + abs (snd y - snd ?l) + abs (snd ?ml - snd ?l) + 1)"
 
     have d1: "x \<noteq> r" "y \<noteq> r" "?l \<noteq> r" "?ml \<noteq> r"
       by (auto simp: r_def plus_prod_def prod_eq_iff)
@@ -1717,7 +1717,7 @@ next
       unfolding map_comp_map[symmetric]
       unfolding o_def distinct_map_mirror_point_eq
       by (rule distinct_snd_half_segments)
-    from distinct_in_set_butlastD[OF `y \<in> _` this]
+    from distinct_in_set_butlastD[OF \<open>y \<in> _\<close> this]
     have "?l \<noteq> y"
       by (simp add: neq_Nil lowest_vertex_eq_mirror_last last_map)
     moreover have "?l \<noteq> ?ml"
@@ -1753,7 +1753,7 @@ next
     } moreover {
       assume d3: "x \<noteq> ?ml" "y \<noteq> ?ml"
 
-      from `x \<in> set _`
+      from \<open>x \<in> set _\<close>
       have "x \<in> set (map snd (half_segments_of_aform X))" by force
       hence "x \<in> set (tl (map fst (half_segments_of_aform X)))"
         using d3
@@ -1763,12 +1763,12 @@ next
       have "?l \<noteq> x"
         by (simp add: fst_hd_half_segments_of_aform neq_Nil hd_map)
 
-      from lxml[OF `x \<noteq> ?ml`] `ccw' ?l ?ml y`
+      from lxml[OF \<open>x \<noteq> ?ml\<close>] \<open>ccw' ?l ?ml y\<close>
       have d4: "x \<noteq> y"
         by (rule neq_left_right_of lxml)
 
       have "distinct5 x ?ml y r ?l"
-        using d1 d2 `?l \<noteq> x` d3 d4
+        using d1 d2 \<open>?l \<noteq> x\<close> d3 d4
         by simp_all
       moreover
       note _
@@ -1792,7 +1792,7 @@ next
       hence "ccw ?l r y"
         unfolding r_def by (rule lex_ccw_left) simp
       moreover
-      from `x \<noteq> ?ml` have "ccw ?l x ?ml"
+      from \<open>x \<noteq> ?ml\<close> have "ccw ?l x ?ml"
         by (simp add: ccw_def lxml)
       moreover
       from lmy have "ccw ?l ?ml y"
@@ -1803,7 +1803,7 @@ next
 
       moreover
       {
-        have "x \<noteq> ?l" using `?l \<noteq> x` by simp
+        have "x \<noteq> ?l" using \<open>?l \<noteq> x\<close> by simp
         moreover
         have "lex (?m y) (?m ?ml)"
           using mirror_y
@@ -1814,7 +1814,7 @@ next
         from a have "lex ?ml x"
           unfolding mirror_eq_last
           by (rule lex_half_segments_last)
-        moreover note `lex y ?l` `lex x ?l` `ccw' ?l x ?ml` `ccw' ?l ?ml y`
+        moreover note \<open>lex y ?l\<close> \<open>lex x ?l\<close> \<open>ccw' ?l x ?ml\<close> \<open>ccw' ?l ?ml y\<close>
         ultimately
         have ncoll: "\<not> coll ?l x y"
           by (rule not_coll_ordered_lexI)
@@ -1833,7 +1833,7 @@ lemma polychain_of_segments_of_aform1:
   shows "False"
   using assms
   by (auto simp: segments_of_aform_def Let_def half_segments_of_aform_def add_is_1
-    split: split_if_asm)
+    split: if_split_asm)
 
 lemma polychain_of_segments_of_aform2:
   assumes "segments_of_aform X = [x, y]"
@@ -1861,7 +1861,7 @@ lemma segments_of_aform_line_segment:
   assumes "e \<in> UNIV \<rightarrow> {-1 .. 1}"
   shows "aform_val e X \<in> closed_segment (fst x) (snd x)"
 proof -
-  from pdevs_val_pdevs_of_list_inl2E[OF `e \<in> _`, of "snd X"]
+  from pdevs_val_pdevs_of_list_inl2E[OF \<open>e \<in> _\<close>, of "snd X"]
   obtain e' where e': "pdevs_val e (snd X) = pdevs_val e' (pdevs_of_list (inl (snd X)))"
     "e' \<in> UNIV \<rightarrow> {- 1..1}" .
   from e' have "0 \<le> 1 + e' 0" by (auto simp: Pi_iff dest!: spec[where x=0])
@@ -1874,7 +1874,7 @@ proof -
 qed
 
 
-subsection {* Continuous Generalization *}
+subsection \<open>Continuous Generalization\<close>
 
 lemma LIMSEQ_minus_fract_mult:
   "(\<lambda>n. r * (1 - 1 / real (Suc (Suc n)))) \<longlonglongrightarrow> r"
@@ -1890,12 +1890,14 @@ lemma det3_nonneg_segments_of_aform:
 proof safe
   fix a b c d
   assume seg: "((a, b), c, d) \<in> set (segments_of_aform X)" (is "?seg \<in> _")
-  def normal_of_segment\<equiv>"\<lambda>((a0, a1), b0, b1). (b1 - a1, a0 - b0)::real*real"
-  def support_of_segment\<equiv>"\<lambda>(a, b). normal_of_segment (a, b) \<bullet> a"
+  define normal_of_segment
+    where "normal_of_segment = (\<lambda>((a0, a1), b0, b1). (b1 - a1, a0 - b0)::real*real)"
+  define support_of_segment
+    where "support_of_segment = (\<lambda>(a, b). normal_of_segment (a, b) \<bullet> a)"
   have "closed ((\<lambda>x. x \<bullet> normal_of_segment ?seg) -` {..support_of_segment ?seg})" (is "closed ?cl")
     by (auto intro!: continuous_intros closed_vimage)
   moreover
-  def f \<equiv> "\<lambda>n i. e i * ( 1 - 1 / (Suc (Suc n)))"
+  define f where "f n i = e i * ( 1 - 1 / (Suc (Suc n)))" for n i
   have "\<forall>n. aform_val (f n) X \<in> ?cl"
   proof
     fix n
@@ -1929,7 +1931,7 @@ lemma det3_nonneg_segments_of_aformI:
   using assms det3_nonneg_segments_of_aform by (auto simp: list_all_iff)
 
 
-subsection {* Intersection of Vertical Line with Segment *}
+subsection \<open>Intersection of Vertical Line with Segment\<close>
 
 fun intersect_segment_xline'::"nat \<Rightarrow> point * point \<Rightarrow> real \<Rightarrow> point option"
   where "intersect_segment_xline' p ((x0, y0), (x1, y1)) xl =
@@ -1976,10 +1978,10 @@ proof (cases p0)
       assume "x0 = x1" "x = x1" "m = min y0 y1" "M = max y0 y1"
       hence ?thesis
         by (force simp: abs_le_iff p0 p1 min_def max_def algebra_simps dest: segment_bound
-          split: split_if_asm)
+          split: if_split_asm)
     } thus ?thesis
       using assms
-      by (auto simp: abs_le_iff p0 p1 split: split_if_asm
+      by (auto simp: abs_le_iff p0 p1 split: if_split_asm
         intro!: truncate_up_le truncate_down_le
         add_right_mono_le[OF truncate_down]
         add_right_mono_le[OF real_divl]
@@ -1995,8 +1997,8 @@ lemma
   fixes x0 x1 b::real
   assumes "x0 \<le> x1" "(x, b) \<in> closed_segment (x0, y0) (x1, y1)"
   shows "x \<le> x1"
-  using assms using mult_left_mono[OF `x0 \<le> x1`, where c="1 - u" for u]
-  by (force simp add: min_def max_def split: split_if_asm
+  using assms using mult_left_mono[OF \<open>x0 \<le> x1\<close>, where c="1 - u" for u]
+  by (force simp add: min_def max_def split: if_split_asm
     simp add: algebra_simps not_le closed_segment_def)
 
 lemma
@@ -2004,8 +2006,8 @@ lemma
   fixes x0 x1 b::real
   assumes "x0 \<le> x1" "(x, b) \<in> closed_segment (x0, y0) (x1, y1)"
   shows "x0 \<le> x"
-  using assms using mult_left_mono[OF `x0 \<le> x1`]
-  by (force simp add: min_def max_def split: split_if_asm
+  using assms using mult_left_mono[OF \<open>x0 \<le> x1\<close>]
+  by (force simp add: min_def max_def split: if_split_asm
     simp add: algebra_simps not_le closed_segment_def)
 
 lemma intersect_segment_xline'_eq_None:
@@ -2014,7 +2016,7 @@ lemma intersect_segment_xline'_eq_None:
   shows "closed_segment p0 p1 \<inter> {p. fst p = x} = {}"
   using assms
   by (cases p0, cases p1)
-    (auto simp: abs_le_iff split: split_if_asm dest: in_segment_fst_le in_segment_fst_ge)
+    (auto simp: abs_le_iff split: if_split_asm dest: in_segment_fst_le in_segment_fst_ge)
 
 fun intersect_segment_xline
   where "intersect_segment_xline prec ((a, b), (c, d)) x =
@@ -2029,7 +2031,7 @@ lemma intersect_segment_xline:
   shows "closed_segment p0 p1 \<inter> {p. fst p = x} \<subseteq> {(x, m) .. (x, M)}"
   using assms
   by (cases p0, cases p1)
-    (auto simp: closed_segment_commute split: split_if_asm simp del: intersect_segment_xline'.simps
+    (auto simp: closed_segment_commute split: if_split_asm simp del: intersect_segment_xline'.simps
       dest!: intersect_segment_xline')
 
 lemma intersect_segment_xline_fst_snd:
@@ -2043,7 +2045,7 @@ lemma intersect_segment_xline_eq_None:
   shows "closed_segment p0 p1 \<inter> {p. fst p = x} = {}"
   using assms
   by (cases p0, cases p1)
-     (auto simp: closed_segment_commute split: split_if_asm simp del: intersect_segment_xline'.simps
+     (auto simp: closed_segment_commute split: if_split_asm simp del: intersect_segment_xline'.simps
       dest!: intersect_segment_xline'_eq_None)
 
 lemma inter_image_empty_iff: "(X \<inter> {p. f p = x} = {}) \<longleftrightarrow> (x \<notin> f ` X)"
@@ -2058,13 +2060,13 @@ lemma intersect_segment_xline_eq_empty:
   shows "intersect_segment_xline prec (p0, p1) x = None"
   using assms
   by (cases p0, cases p1)
-    (auto simp: inter_image_empty_iff closed_segment_real split: split_if_asm)
+    (auto simp: inter_image_empty_iff closed_segment_real split: if_split_asm)
 
 lemma intersect_segment_xline_le:
   assumes "intersect_segment_xline prec y xl = Some (m0, M0)"
   shows "m0 \<le> M0"
   using assms
-  by (cases y) (auto simp: min_def split: split_if_asm intro!: truncate_up_le truncate_down_le
+  by (cases y) (auto simp: min_def split: if_split_asm intro!: truncate_up_le truncate_down_le
     order_trans[OF real_divl] order_trans[OF _ real_divr] mult_right_mono)
 
 lemma intersect_segment_xline_None_iff:
@@ -2073,7 +2075,7 @@ lemma intersect_segment_xline_None_iff:
   by (auto intro!: intersect_segment_xline_eq_empty dest!: intersect_segment_xline_eq_None)
 
 
-subsection {* Bounds on Vertical Intersection with Oriented List of Segments *}
+subsection \<open>Bounds on Vertical Intersection with Oriented List of Segments\<close>
 
 primrec bound_intersect_2d where
   "bound_intersect_2d prec [] x = None"
@@ -2130,7 +2132,7 @@ proof atomize_elim
         thus ?thesis using Some1 mM Cons(2) X' m''
           by (cases mM''')
             (force simp: max_def min_def simp del: intersect_segment_xline.simps
-              split: option.split_asm split_if_asm dest!: max
+              split: option.split_asm if_split_asm dest!: max
               intro!: exI[where x= "if M' \<ge> snd mM''' then X' else X"]
               exI[where x= "if M' \<ge> snd mM''' then m'' else fst mM'''"])
       qed
@@ -2177,7 +2179,7 @@ proof atomize_elim
           by (cases mM''')
             (force simp: max_def min_def
               simp del: intersect_segment_xline.simps
-              split: option.split_asm split_if_asm
+              split: option.split_asm if_split_asm
               dest!: min
               intro!: exI[where x= "if m' \<le> fst mM''' then X' else X"]
                 exI[where x= "if m' \<le> fst mM''' then M'' else snd mM'''"])
@@ -2224,7 +2226,7 @@ proof -
     unfolding bound_intersect_2d_eq_None_iff by auto
   hence "closed_segment p1 p2 \<inter> {p. fst p = x} \<noteq> {}"
     by (simp add: intersect_segment_xline_None_iff)
-  thus ?thesis using `(p1, p2) \<in> set Xs` by auto
+  thus ?thesis using \<open>(p1, p2) \<in> set Xs\<close> by auto
 qed
 
 lemma bound_intersect_2d_le:
@@ -2235,7 +2237,7 @@ proof -
 qed
 
 
-subsection {* Bounds on Vertical Intersection with General List of Segments *}
+subsection \<open>Bounds on Vertical Intersection with General List of Segments\<close>
 
 definition "bound_intersect_2d_ud prec X xl =
   (case segments_of_aform X of
@@ -2257,10 +2259,9 @@ lemma list_cases4:
 
 lemma bound_intersect_2d_ud_segments_of_aform_le:
   "bound_intersect_2d_ud prec X xl = Some (m0, M0) \<Longrightarrow> m0 \<le> M0"
-  using assms
   by (cases "segments_of_aform X" rule: list_cases4)
     (auto simp: Let_def bound_intersect_2d_ud_def min_def max_def intersect_segment_xline_le
-      split_if_eq1 split: option.split_asm prod.split_asm list.split_asm
+      if_split_eq1 split: option.split_asm prod.split_asm list.split_asm
       dest!: bound_intersect_2d_le)
 
 lemma pdevs_domain_eq_empty_iff[simp]: "pdevs_domain (snd X) = {} \<longleftrightarrow> snd X = zero_pdevs"
@@ -2358,7 +2359,7 @@ proof safe
       using u
       by (cases "u = 0 \<or> u = 1")
         (auto simp: u(1) intro: det3_nonneg_scaleR_segment1 det3_nonneg_scaleR_segment2
-          det3_nonneg_segments_of_aformI[OF `e \<in> _` lh X1(1)])
+          det3_nonneg_segments_of_aformI[OF \<open>e \<in> _\<close> lh X1(1)])
 
     from X2 have ne2: "fst (fst X2) \<noteq> fst (snd X2)" by simp
     moreover
@@ -2376,7 +2377,7 @@ proof safe
       using v
       by (cases "v = 0 \<or> v = 1")
         (auto simp: v(1) intro: det3_nonneg_scaleR_segment1 det3_nonneg_scaleR_segment2
-          det3_nonneg_segments_of_aformI[OF `e \<in> _` lh X2(1)])
+          det3_nonneg_segments_of_aformI[OF \<open>e \<in> _\<close> lh X2(1)])
 
     from in_set_segments_of_aform_aform_valE
         [of "fst X1" "snd X1" X, unfolded prod.collapse, OF X1(1)]
@@ -2443,7 +2444,7 @@ proof safe
         ultimately
         have "fst (fst X1) > fst p1" by simp
         from ccw_contr_on_line_left[OF coll this]
-        show ?thesis using `snd p1 \<le> M` by simp
+        show ?thesis using \<open>snd p1 \<le> M\<close> by simp
       next
         case True
         have "fst (snd X1) * (1 - u) \<le> fst (fst X1) * (1 - u)"
@@ -2458,7 +2459,7 @@ proof safe
         ultimately
         have "fst (snd X1) < fst p1" by simp
         from ccw_contr_on_line_right[OF coll' this]
-        show ?thesis using `snd p1 \<le> M` by simp
+        show ?thesis using \<open>snd p1 \<le> M\<close> by simp
       qed
     } moreover {
       have "(fst p2, snd (aform_val e X)) = aform_val e X"
@@ -2482,7 +2483,7 @@ proof safe
         ultimately
         have "fst (fst X2) < fst p2" by simp
         from ccw_contr_on_line_right[OF coll this]
-        show ?thesis using `m \<le> snd p2` by simp
+        show ?thesis using \<open>m \<le> snd p2\<close> by simp
       next
         case True
         have "(1 - v) * fst (snd X2) \<ge> (1 - v) * fst (fst X2)"
@@ -2497,7 +2498,7 @@ proof safe
         ultimately
         have "fst (snd X2) > fst p2" by simp
         from ccw_contr_on_line_left[OF coll' this]
-        show ?thesis using `m \<le> snd p2` by simp
+        show ?thesis using \<open>m \<le> snd p2\<close> by simp
       qed
     } ultimately have "aform_val e X \<in> {(xl, m) .. (xl, M)}"
       by (auto simp: less_eq_prod_def fst_aform_val)
@@ -2530,7 +2531,7 @@ proof safe
     hence "aform_val e X = fst X"
       by (simp add: aform_val_def)
     with len assms have "aform_val e X \<in> {(xl, m0) .. (xl, M0)}"
-      by (auto simp: bound_intersect_2d_ud_def Let_def split: split_if_asm)
+      by (auto simp: bound_intersect_2d_ud_def Let_def split: if_split_asm)
   } ultimately have "aform_val e X \<in> {(xl, m0)..(xl, M0)}"
     by arith
   thus "(a, b) \<in> {(fst (a, b), m0)..(fst (a, b), M0)}"
@@ -2539,7 +2540,7 @@ proof safe
 qed
 
 
-subsection {* Approximation from Orthogonal Directions *}
+subsection \<open>Approximation from Orthogonal Directions\<close>
 
 definition inter_aform_plane_ortho::
   "nat \<Rightarrow> 'a::executable_euclidean_space aform \<Rightarrow> 'a \<Rightarrow> real \<Rightarrow> 'a aform option"
@@ -2586,7 +2587,7 @@ proof -
     "\<And>i::'a. i\<in>Basis \<Longrightarrow> j i < length (Basis_list::'a list)"
     "\<And>i::'a. i\<in>Basis \<Longrightarrow> i = Basis_list ! j i"
     by metis
-  def y \<equiv> "y' o j"
+  define y where "y = y' o j"
   with y' j have y: "\<And>i. i \<in> Basis \<Longrightarrow> ?inter i = Some (y i)"
     by (metis comp_def)
   hence y_le: "\<And>i. i \<in> Basis \<Longrightarrow> fst (y i) \<le> snd (y i)"
@@ -2611,7 +2612,7 @@ proof -
       have "{aform_val e (inner2_aform Z n i)} = {aform_val e (inner2_aform Z n i)} \<inter> {x. fst x = g}"
         by (auto simp: g inner2_def)
       also
-      from y[OF `i \<in> Basis`]
+      from y[OF \<open>i \<in> Basis\<close>]
       have "?inter i = Some (fst (y i), snd (y i))" by simp
       note bound_intersect_2d_ud_segments_of_aform[OF this e]
       finally have "x \<bullet> i \<in> {fst (y i) .. snd (y i)}"
@@ -2645,7 +2646,7 @@ proof -
 qed
 
 
-subsection {* Example *}
+subsection \<open>Example\<close>
 
 value [code]
   "inter_aform_plane_ortho 53
@@ -2655,7 +2656,7 @@ value [code]
     (real \<times> real \<times> real) aform option"
 
 
-subsection {* ``Completeness'' of Intersection *}
+subsection \<open>``Completeness'' of Intersection\<close>
 
 abbreviation "encompasses x seg \<equiv> det3 (fst seg) (snd seg) x \<ge> 0"
 
@@ -2731,7 +2732,7 @@ next
         elim!: ccw'.sortedP_Cons ccw'.sortedP_Nil
         intro!: triangle_encompassing_polychain_of)
     thus ?case
-      by (rule set_rev_mp[OF _ hull_mono]) (auto simp: `snd y = fst z`)
+      by (rule set_rev_mp[OF _ hull_mono]) (auto simp: \<open>snd y = fst z\<close>)
   next
     assume *: "list_all (encompasses p) ((fst x, snd y) # z # w # ws)"
     from Cons.prems
@@ -2749,7 +2750,7 @@ next
       have "ccw'.sortedP (fst (fst x, snd y)) (map snd (butlast ((fst x, snd y) # z # w # ws)))"
         using Cons.prems(3)
         by (auto elim!: ccw'.sortedP_Cons intro!: ccw'.sortedP.Cons ccw'.sortedP.Nil
-          split: split_if_asm)
+          split: if_split_asm)
       ultimately have "p \<in> convex hull set (map fst ((fst x, snd y)#z#w#ws))"
         by (rule Cons.hyps)
     }

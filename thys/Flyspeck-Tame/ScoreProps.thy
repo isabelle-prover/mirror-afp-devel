@@ -52,7 +52,7 @@ definition deleteAround' :: "graph \<Rightarrow> vertex \<Rightarrow> (vertex \<
 
 
 lemma deleteAround_eq: "deleteAround g v ps = deleteAround' g v ps"
-apply (auto simp add: deleteAround_def deleteAround'_def split: split_if_asm)
+apply (auto simp add: deleteAround_def deleteAround'_def split: if_split_asm)
 apply (unfold nextV2[THEN eq_reflection], simp)
 done
 
@@ -242,12 +242,12 @@ next
     "ExcessNotAtRec ps g
     \<le> b + ExcessNotAtRec (deleteAround g a ps) g"
     with H1 E show ?thesis
-      by (simp add: max_def split: split_if_asm)
+      by (simp add: max_def split: if_split_asm)
   next
     assume "\<not> ExcessNotAtRec ps g
        \<le> b + ExcessNotAtRec (deleteAround g a ps) g"
     with H2 E show ?thesis
-      by (simp add: max_def split: split_if_asm)
+      by (simp add: max_def split: if_split_asm)
   qed
 qed
 
@@ -325,7 +325,7 @@ proof -
         then have
         "f \<bullet> a \<notin> set [fst p. p \<leftarrow> deleteAround g a ps]"
           by (auto simp add: facesAt_def deleteAround_eq deleteAround'_def
-            removeKeyList_eq split: split_if_asm)
+            removeKeyList_eq split: if_split_asm)
         moreover
         have "set (ExcessNotAtRecList (deleteAround g a ps) g)
           \<subseteq> set [fst p. p \<leftarrow> deleteAround g a ps]"

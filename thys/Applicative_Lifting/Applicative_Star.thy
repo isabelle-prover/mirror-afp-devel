@@ -4,7 +4,7 @@ subsection \<open>Ultrafilter\<close>
 
 theory Applicative_Star imports
   "Applicative"
-  "~~/src/HOL/NSA/StarDef"
+  "~~/src/HOL/Nonstandard_Analysis/StarDef"
 begin
 
 applicative star (C, K, W)

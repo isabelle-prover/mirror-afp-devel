@@ -129,7 +129,7 @@ next
   assume "\<And>t. r1 = s1 \<Longrightarrow> le_rexp r2 s2 \<Longrightarrow> le_rexp s2 t \<Longrightarrow> le_rexp r2 t"
          "\<And>t. r1 \<noteq> s1 \<Longrightarrow> le_rexp r1 s1 \<Longrightarrow> le_rexp s1 t \<Longrightarrow> le_rexp r1 t"
          "le_rexp (Plus r1 r2) (Plus s1 s2)" "le_rexp (Plus s1 s2) t"
-  thus "le_rexp (Plus r1 r2) t" by (cases t) (auto split: split_if_asm intro: le_rexp_antisym)
+  thus "le_rexp (Plus r1 r2) t" by (cases t) (auto split: if_split_asm intro: le_rexp_antisym)
 next
   fix r1 r2 s1 s2 t assume "le_rexp (Times s1 s2) t" thus "le_rexp (Plus r1 r2) t" by (cases t) auto
 next
@@ -137,7 +137,7 @@ next
   assume "\<And>t. r1 = s1 \<Longrightarrow> le_rexp r2 s2 \<Longrightarrow> le_rexp s2 t \<Longrightarrow> le_rexp r2 t"
          "\<And>t. r1 \<noteq> s1 \<Longrightarrow> le_rexp r1 s1 \<Longrightarrow> le_rexp s1 t \<Longrightarrow> le_rexp r1 t"
          "le_rexp (Times r1 r2) (Times s1 s2)" "le_rexp (Times s1 s2) t"
-  thus "le_rexp (Times r1 r2) t" by (cases t) (auto split: split_if_asm intro: le_rexp_antisym)
+  thus "le_rexp (Times r1 r2) t" by (cases t) (auto split: if_split_asm intro: le_rexp_antisym)
 qed auto
 
 instance proof

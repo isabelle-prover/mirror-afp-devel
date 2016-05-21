@@ -58,11 +58,11 @@ next
   show ?case
   proof(cases "is_write_action ob \<and> (ad, al) \<in> action_loc_aux P ob \<and> (is_new_action ob \<longrightarrow> \<not> b)")
     case True thus ?thesis using mrw
-      by(fastforce elim!: is_write_action.cases intro: action_loc_aux_intros split: split_if_asm)
+      by(fastforce elim!: is_write_action.cases intro: action_loc_aux_intros split: if_split_asm)
   next
     case False
     with mrw have "mrw_values P vs0 obs (ad, al) = \<lfloor>(v, b)\<rfloor>"
-      by(cases "ob" rule: mrw_value_cases)(auto split: split_if_asm simp add: addr_locs_def split: htype.split_asm)
+      by(cases "ob" rule: mrw_value_cases)(auto split: if_split_asm simp add: addr_locs_def split: htype.split_asm)
     moreover
     { assume "vs0 (ad, al) = \<lfloor>(v, b)\<rfloor>"
       hence "\<exists>wa. wa \<in> set (obs @ [ob]) \<and> is_write_action wa \<and> (ad, al) \<in> action_loc_aux P wa \<and> (b \<longrightarrow> \<not> is_new_action wa)"
@@ -171,18 +171,18 @@ proof -
         assume "\<not> ?thesis"
         hence "?i < wa'" by simp
         hence "snd (obs ! wa') \<in> set obs''" using obs wa' unfolding in_set_conv_nth
-          by -(rule exI[where x="wa' - Suc (length obs')"], auto elim!: write_actions.cases actionsE simp add: action_obs_def lnth_llist_of actions_def nth_append map_eq_append_conv nth_Cons' split: split_if_asm)
+          by -(rule exI[where x="wa' - Suc (length obs')"], auto elim!: write_actions.cases actionsE simp add: action_obs_def lnth_llist_of actions_def nth_append map_eq_append_conv nth_Cons' split: if_split_asm)
         moreover from wa' have "is_write_action (snd (obs ! wa'))"
-          by cases(auto simp add: action_obs_def nth_append actions_def split: split_if_asm)
+          by cases(auto simp add: action_obs_def nth_append actions_def split: if_split_asm)
         moreover from adal' wa' have "(ad, al) \<in> action_loc_aux P (snd (obs ! wa'))"
-          by(auto simp add: action_obs_def nth_append nth_Cons' actions_def split: split_if_asm elim!: write_actions.cases)
+          by(auto simp add: action_obs_def nth_append nth_Cons' actions_def split: if_split_asm elim!: write_actions.cases)
         ultimately show False using last[of "snd (obs ! wa')"] b by simp
       qed
     next
       assume new_wa': "\<not> is_new_action (action_obs ?E wa')"
       with wa' adal' obtain v' where "NormalAction (WriteMem ad al v') \<in> set (map snd obs)"
         unfolding in_set_conv_nth
-        by (fastforce elim!: write_actions.cases is_write_action.cases simp add: action_obs_def actions_def nth_append split: split_if_asm intro!: exI[where x=wa'])
+        by (fastforce elim!: write_actions.cases is_write_action.cases simp add: action_obs_def actions_def nth_append split: if_split_asm intro!: exI[where x=wa'])
       from mrw_values_WriteMemD[OF this, of P vs0] mrw have b by simp
       with new obs_i have "\<not> is_new_action (action_obs ?E ?i)" by simp
       moreover
@@ -191,14 +191,14 @@ proof -
         assume "\<not> ?thesis"
         hence "?i < wa'" by simp
         hence "snd (obs ! wa') \<in> set obs''" using obs wa' unfolding in_set_conv_nth
-          by -(rule exI[where x="wa' - Suc (length obs')"], auto elim!: write_actions.cases actionsE simp add: action_obs_def lnth_llist_of actions_def nth_append map_eq_append_conv nth_Cons' split: split_if_asm)
+          by -(rule exI[where x="wa' - Suc (length obs')"], auto elim!: write_actions.cases actionsE simp add: action_obs_def lnth_llist_of actions_def nth_append map_eq_append_conv nth_Cons' split: if_split_asm)
         moreover from wa' have "is_write_action (snd (obs ! wa'))"
-          by cases(auto simp add: action_obs_def nth_append actions_def split: split_if_asm)
+          by cases(auto simp add: action_obs_def nth_append actions_def split: if_split_asm)
         moreover from adal' wa' have "(ad, al) \<in> action_loc_aux P (snd (obs ! wa'))"
-          by(auto simp add: action_obs_def nth_append nth_Cons' actions_def split: split_if_asm elim!: write_actions.cases)
+          by(auto simp add: action_obs_def nth_append nth_Cons' actions_def split: if_split_asm elim!: write_actions.cases)
         ultimately have "is_new_action (snd (obs ! wa'))" using last[of "snd (obs ! wa')"] by simp
         moreover from new_wa' wa' have "\<not> is_new_action (snd (obs ! wa'))"
-          by(auto elim!: write_actions.cases simp add: action_obs_def nth_append actions_def split: split_if_asm)
+          by(auto elim!: write_actions.cases simp add: action_obs_def nth_append actions_def split: if_split_asm)
         ultimately show False by contradiction
       qed
       ultimately
@@ -481,7 +481,6 @@ qed
 lemma ta_seq_consist_into_non_speculative:
   "\<lbrakk> ta_seq_consist P vs obs; \<forall>adal. set_option (vs adal) \<subseteq> vs' adal \<times> UNIV \<rbrakk>
   \<Longrightarrow> non_speculative P vs' obs"
-using assms
 proof(coinduction arbitrary: vs' obs vs)
   case (non_speculative vs' obs vs)
   thus ?case
@@ -517,7 +516,7 @@ proof -
     where E': "E' = llist_of (list_of (ltake (enat r) E) @ [(t, NormalAction (ReadMem ad al v))])"
     and v: "v = value_written P (ltake (enat r) E) w' (ad, al)"
     and mrw'': "P,E' \<turnstile> r \<leadsto>mrw w'"
-    and w': "w' < r" by(fastforce simp add: length_list_of_conv_the_enat min_def split: split_if_asm)
+    and w': "w' < r" by(fastforce simp add: length_list_of_conv_the_enat min_def split: if_split_asm)
 
   from E' r have sim: "ltake (enat (Suc r)) E' [\<approx>] ltake (enat (Suc r)) E"
     by(subst E_unfold)(simp add: ltake_lappend llist_of_list_of_append min_def, auto simp add: eSuc_enat[symmetric] zero_enat_def[symmetric] eq_into_sim_actions)
@@ -807,7 +806,7 @@ proof(rule ta_seq_consist_nthI)
     and sc: "ta_seq_consist P empty (ltake (enat i) (lmap snd (ltake r E)))"
   from i_len have "enat i < r" by simp
   with sc have "ta_seq_consist P empty (ltake (enat i) (lmap snd E))"
-    by(simp add: min_def split: split_if_asm)
+    by(simp add: min_def split: if_split_asm)
   hence ns: "non_speculative P (\<lambda>_. {}) (ltake (enat i) (lmap snd E))"
     by(rule ta_seq_consist_into_non_speculative) simp
   from i_len have "i \<in> actions E" by(simp add: actions_def)
@@ -876,7 +875,7 @@ proof(rule ta_seq_consist_nthI)
 
     from adal_w "write" have "mrw_value P ?vs (snd (lnth E (ws i))) (ad, al) \<noteq> None"
       by(cases "snd (lnth E (ws i))" rule: mrw_value_cases)
-        (auto simp add: action_obs_def split: split_if_asm elim: write_actions.cases)
+        (auto simp add: action_obs_def split: if_split_asm elim: write_actions.cases)
     then obtain b v where vb: "mrw_value P ?vs (snd (lnth E (ws i))) (ad, al) = Some (v, b)" by auto
     moreover
     from `E \<turnstile> ?w \<le>a ws i` obs_w'

@@ -112,7 +112,7 @@ lemma set_less_eq_aux_empty [simp]: "A \<sqsubseteq>' {} \<longleftrightarrow> A
 by(auto simp add: set_less_eq_aux_def finite_complement_partition)
 
 lemma set_less_aux_antisym: "\<lbrakk> A \<sqsubset>' B; B \<sqsubset>' A \<rbrakk> \<Longrightarrow> False"
-by(auto simp add: set_less_aux_def split: split_if_asm)
+by(auto simp add: set_less_aux_def split: if_split_asm)
 
 lemma set_less_aux_conv_set_less_eq_aux:
   "A \<sqsubset>' B \<longleftrightarrow> A \<sqsubseteq>' B \<and> \<not> B \<sqsubseteq>' A"
@@ -523,10 +523,10 @@ lemma set_less_eq_refl [iff]: "A \<sqsubseteq> A"
 by(auto simp add: set_less_eq_def2 not_in_complement_partition)
 
 lemma set_less_eq_antisym: "\<lbrakk> A \<sqsubseteq> B; B \<sqsubseteq> A \<rbrakk> \<Longrightarrow> A = B"
-by(auto simp add: set_less_eq_def2 set_less_eq_aux''_finite not_in_complement_partition not_in_complement_partition_False del: equalityI split: split_if_asm dest: set_less_eq_aux_antisym set_less_eq_aux''_antisym)
+by(auto simp add: set_less_eq_def2 set_less_eq_aux''_finite not_in_complement_partition not_in_complement_partition_False del: equalityI split: if_split_asm dest: set_less_eq_aux_antisym set_less_eq_aux''_antisym)
 
 lemma set_less_eq_trans: "\<lbrakk> A \<sqsubseteq> B; B \<sqsubseteq> C \<rbrakk> \<Longrightarrow> A \<sqsubseteq> C"
-by(auto simp add: set_less_eq_def split: split_if_asm intro: set_less_eq_aux''_trans)
+by(auto simp add: set_less_eq_def split: if_split_asm intro: set_less_eq_aux''_trans)
 
 lemma set_less_eq_total: "A \<sqsubseteq> B \<or> B \<sqsubseteq> A"
 by(auto simp add: set_less_eq_def2 set_less_eq_aux''_finite not_in_complement_partition not_in_complement_partition_False intro: set_less_eq_aux_finite_total2 finite_subset[OF subset_UNIV] del: disjCI dest: set_less_eq_aux''_total)
@@ -2147,152 +2147,55 @@ lemma proper_interval_natural_simps [code]:
   "proper_interval (Some x) (Some y) \<longleftrightarrow> y - x > 1"
 by(transfer, simp)+
 
-lemma le_Nibble0_iff: "x \<le> Nibble0 \<longleftrightarrow> x = Nibble0"
-by(auto simp add: nibble_less_eq_def nibble_of_nat_of_nibble dest: arg_cong[where f="nibble_of_nat"])
-
-lemma Nibble0_less_iff: "Nibble0 < x \<longleftrightarrow> x \<noteq> Nibble0"
-by(auto simp add: nibble_less_def neq0_conv[symmetric] nibble_of_nat_of_nibble simp del: neq0_conv dest: arg_cong[where f="nibble_of_nat"])
-
-lemma le_NibbleF: "x \<le> NibbleF"
-using nat_of_nibble_less_16[of x] by(simp add: nibble_less_eq_def)
-
-lemma NibbleF_le_iff: "NibbleF \<le> x \<longleftrightarrow> x = NibbleF"
-using nat_of_nibble_less_16[of x]
-by(auto simp add: nibble_less_eq_def less_eq_Suc_le nibble_of_nat_of_nibble dest: arg_cong[where f="nibble_of_nat"])
-
-lemma nat_of_char_less_256: "nat_of_char x < 256"
-proof(cases x)
-  case (Char x1 x2)
-  with nat_of_nibble_less_16[of x1] nat_of_nibble_less_16[of x2]
-  show ?thesis by(simp add: nat_of_char_Char)
-qed
-
-instantiation nibble :: proper_interval begin
-fun proper_interval_nibble :: "nibble proper_interval" where
-  "proper_interval_nibble None None \<longleftrightarrow> True"
-| "proper_interval_nibble None (Some x) \<longleftrightarrow> x \<noteq> Nibble0"
-| "proper_interval_nibble (Some x) None \<longleftrightarrow> x \<noteq> NibbleF"
-| "proper_interval_nibble (Some x) (Some y) \<longleftrightarrow> nat_of_nibble y - nat_of_nibble x > 1"
-instance
-proof intro_classes
-  fix y :: nibble
-
-  { assume "y \<noteq> Nibble0" 
-    hence "Nibble0 < y" by(auto simp add: Nibble0_less_iff)
-    hence "\<exists>z. z < y" .. }
-  thus "proper_interval None (Some y) = (\<exists>z. z < y)"
-    by(auto simp add: nibble_less_def exI[where x=Nibble0] Nibble0_less_iff)
-
-  fix x :: nibble
-  { assume "x \<noteq> NibbleF"
-    hence "nat_of_nibble x < 15"
-    proof(rule contrapos_np)
-      assume "\<not> nat_of_nibble x < 15"
-      with nat_of_nibble_less_16[of x] have "nat_of_nibble x = 15" by simp
-      hence "nibble_of_nat (nat_of_nibble x) = NibbleF" by simp
-      thus "x = NibbleF" by(simp add: nibble_of_nat_of_nibble)
-    qed
-    hence "x < NibbleF" by(simp add: nibble_less_def)
-    hence "\<exists>z. x < z" .. }
-  moreover
-  { fix z
-    assume "NibbleF < z"
-    hence False using nat_of_nibble_less_16[of z]
-      by(simp add: nibble_less_def less_eq_Suc_le) }
-  ultimately show "proper_interval (Some x) None = (\<exists>z. x < z)" by(auto)
-  
-  { assume gt: "nat_of_nibble y - nat_of_nibble x > 1"
-    let ?z = "nibble_of_nat (nat_of_nibble x + 1)"
-    from gt nat_of_nibble_less_16[of y] have 14: "nat_of_nibble x < 14" by auto
-    with gt have "x < ?z" "?z < y" by(simp_all add: nibble_less_def nat_of_nibble_of_nat)
-    hence "\<exists>z. x < z \<and> z < y" by blast }
-  moreover
-  { fix z
-    assume "x < z" "z < y"
-    hence "1 < nat_of_nibble y - nat_of_nibble x" by(simp add: nibble_less_def) }
-  ultimately show "proper_interval (Some x) (Some y) = (\<exists>z>x. z < y)" by auto
-qed simp
-end
-
 lemma char_less_iff_nat_of_char: "x < y \<longleftrightarrow> nat_of_char x < nat_of_char y"
-  (is "?lhs \<longleftrightarrow> ?rhs")
-proof
-  assume "?lhs"
-  moreover obtain x1 x2 where x: "x = Char x1 x2" by(cases x)
-  moreover obtain y1 y2 where y: "y = Char y1 y2" by(cases y)
-  ultimately have "x1 < y1 \<or> x1 = y1 \<and> x2 < y2" (is "?C1 \<or> ?C2") by(simp add: less_char_Char)
-  thus ?rhs
-  proof
-    assume ?C1
-    from nat_of_nibble_less_16[of x2] x
-    have "nat_of_char x < (nat_of_nibble x1 + 1) * 16" by(simp add: nat_of_char_def)
-    also have "\<dots> \<le> nat_of_nibble y1 * 16" using `?C1` by(simp add: nibble_less_def less_eq_Suc_le)
-    also have "\<dots> \<le> nat_of_char y" using y by(simp add: nat_of_char_def)
-    finally show ?thesis .
-  next
-    assume ?C2 thus ?thesis using x y by(simp add: nat_of_char_def nibble_less_def)
-  qed
-next
-  assume "?rhs"
-  moreover obtain x1 x2 where x: "x = Char x1 x2" by(cases x)
-  moreover obtain y1 y2 where y: "y = Char y1 y2" by(cases y)
-  moreover 
-  { assume "x1 > y1"
-    have "nat_of_char y < (nat_of_nibble y1 + 1) * 16"
-      using y nat_of_nibble_less_16[of y2] by(simp add: nat_of_char_def)
-    also have "\<dots> \<le> nat_of_nibble x1 * 16" using `y1 < x1`
-      by(simp add: nibble_less_def less_eq_Suc_le)
-    also have "\<dots> \<le> nat_of_char x" using x by(simp add: nat_of_char_def)
-    finally have False using `?rhs` by simp }
-  moreover
-  { assume "x1 = y1"
-    with `?rhs` x y have "x2 < y2" 
-      by(simp add: nat_of_char_def nibble_less_def) }
-  ultimately show ?lhs by(cases "x1 > y1")(auto simp add: less_char_Char)
-qed
+  by (fact less_char_def)
 
 lemma nat_of_char_inject [simp]: "nat_of_char x = nat_of_char y \<longleftrightarrow> x = y"
-by(auto dest: arg_cong[where f=char_of_nat] simp add: char_of_nat_of_char)
+  by (fact nat_of_char_eq_iff)
 
 lemma char_le_iff_nat_of_char: "x \<le> y \<longleftrightarrow> nat_of_char x \<le> nat_of_char y"
-unfolding le_less by(auto simp add: char_less_iff_nat_of_char)
+  by (fact less_eq_char_def)
 
 instantiation char :: proper_interval begin
 fun proper_interval_char :: "char proper_interval" where
   "proper_interval_char None None \<longleftrightarrow> True"
-| "proper_interval_char None (Some x) \<longleftrightarrow> x \<noteq> Char Nibble0 Nibble0"
-| "proper_interval_char (Some x) None \<longleftrightarrow> x \<noteq> Char NibbleF NibbleF"
+| "proper_interval_char None (Some x) \<longleftrightarrow> x \<noteq> 0"
+| "proper_interval_char (Some x) None \<longleftrightarrow> x \<noteq> CHR 0xFF"
 | "proper_interval_char (Some x) (Some y) \<longleftrightarrow> nat_of_char y - nat_of_char x > 1"
 instance
 proof intro_classes
-  note [simp] = less_char_Char less_eq_char_Char
-
   fix y :: char
-  { assume "y \<noteq> Char Nibble0 Nibble0"
-    hence "Char Nibble0 Nibble0 < y" 
-      by(cases y)(auto simp add: not_less Nibble0_less_iff le_Nibble0_iff) }
+  { assume "y \<noteq> 0"
+    hence "0 < y" 
+      by (simp add: char_less_iff_nat_of_char nat_of_char_eq_iff [symmetric]) }
   moreover
   { fix z :: char
-    assume "z < Char Nibble0 Nibble0"
-    hence False by(cases z)(auto simp add: less_le le_Nibble0_iff) }
-  ultimately show "proper_interval None (Some y) = (\<exists>z. z < y)" by(auto)
+    assume "z < 0"
+    hence False
+      by (simp add: char_less_iff_nat_of_char nat_of_char_eq_iff [symmetric]) }
+  ultimately show "proper_interval None (Some y) = (\<exists>z. z < y)"
+    by auto
 
   fix x :: char
-  { assume "x \<noteq> Char NibbleF NibbleF"
-    hence "x < Char NibbleF NibbleF"
-      by(cases x)(auto simp add: not_less less_le le_NibbleF)
+  { assume "x \<noteq> CHR 0xFF"
+    then have "x < CHR 0xFF"
+      by (auto simp add: neq_iff char_less_iff_nat_of_char)
+        (insert nat_of_char_less_256 [of x], simp)
     hence "\<exists>z. x < z" .. }
   moreover
   { fix z :: char
-    assume "Char NibbleF NibbleF < z"
-    hence "False" by(cases z)(auto simp add: less_le NibbleF_le_iff) }
+    assume "CHR 0xFF < z"
+    hence "False"
+      by (simp add: char_less_iff_nat_of_char)
+        (insert nat_of_char_less_256 [of z], simp) }
   ultimately show "proper_interval (Some x) None = (\<exists>z. x < z)" by auto
 
   { assume gt: "nat_of_char y - nat_of_char x > 1"
     let ?z = "char_of_nat (nat_of_char x + 1)"
-    from gt nat_of_char_less_256[of y] have 255: "nat_of_char x < 255" by auto
+    from gt nat_of_char_less_256[of y]
+    have 255: "nat_of_char x < 255" by arith
     with gt have "x < ?z" "?z < y"
-      by(simp_all add: char_less_iff_nat_of_char nat_of_char_of_nat)
+      by (simp_all add: char_less_iff_nat_of_char)
     hence "\<exists>z. x < z \<and> z < y" by blast }
   moreover
   { fix z

@@ -265,14 +265,17 @@ subsubsection{*Properties about @{term "Gauss_Jordan_iarrays_PA"}*}
 
 lemma matrix_to_iarray_fst_Gauss_Jordan_PA: 
 shows "matrix_to_iarray (fst (Gauss_Jordan_PA A)) = fst (Gauss_Jordan_iarrays_PA (matrix_to_iarray A))"
-unfolding Gauss_Jordan_PA_def Gauss_Jordan_iarrays_PA_def using matrix_to_iarray_fst_Gauss_Jordan_upt_k_PA
-by (metis One_nat_def Suc_eq_plus1_left add_diff_inverse diff_le_self less_Suc0 matrix_to_iarray_ncols n_not_Suc_n nat_neq_iff ncols_not_0 not_le)
+  unfolding Gauss_Jordan_PA_def Gauss_Jordan_iarrays_PA_def 
+  using matrix_to_iarray_fst_Gauss_Jordan_upt_k_PA[of "ncols A - 1" A]
+  by (simp add: ncols_def ncols_eq_card_columns)
+
 
 
 lemma matrix_to_iarray_snd_Gauss_Jordan_PA: 
 shows "matrix_to_iarray (snd (Gauss_Jordan_PA A)) = snd (Gauss_Jordan_iarrays_PA (matrix_to_iarray A))"
-unfolding Gauss_Jordan_PA_def Gauss_Jordan_iarrays_PA_def using matrix_to_iarray_snd_Gauss_Jordan_upt_k_PA
-by (metis One_nat_def Suc_eq_plus1_left add_diff_inverse diff_le_self less_Suc0 matrix_to_iarray_ncols n_not_Suc_n nat_neq_iff ncols_not_0 not_le)
+  unfolding Gauss_Jordan_PA_def Gauss_Jordan_iarrays_PA_def 
+  using matrix_to_iarray_snd_Gauss_Jordan_upt_k_PA[of "ncols A - 1" A]
+  by (simp add: ncols_def ncols_eq_card_columns)
 
 lemma Gauss_Jordan_iarrays_PA_mult:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"

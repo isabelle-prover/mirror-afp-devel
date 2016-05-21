@@ -125,8 +125,10 @@ lemma dvd_div_ge_1 :
   fixes a b :: nat
   assumes "a \<ge> 1" "b dvd a"
   shows "a div b \<ge> 1"
-  by (metis assms div_by_1 div_dvd_div div_less gcd_lcm_complete_lattice_nat.top_greatest
-      gcd_lcm_complete_lattice_nat.top_le not_less)
+proof -
+  from \<open>b dvd a\<close> obtain c where "a = b * c" ..
+  with \<open>a \<ge> 1\<close> show ?thesis by simp
+qed
 
 lemma dvd_nat_bounds :
  fixes n p :: nat
@@ -237,7 +239,7 @@ proof -
       } thus "inj_on (\<lambda>a. a div gcd a n) ?F" unfolding inj_on_def by blast
       { fix m assume "m \<in> ?F"
         hence "m div gcd m n \<in> ?RF" using dvd_div_ge_1
-          by (fastforce simp add: div_le_mono div_gcd_coprime_nat)
+          by (fastforce simp add: div_le_mono div_gcd_coprime)
       } thus "(\<lambda>a. a div gcd a n) ` ?F \<subseteq> ?RF" by blast
     qed force+
   } hence phi'_eq:"\<And>d. d dvd n \<Longrightarrow> phi' d = card {m \<in> {1 .. n}. n div gcd m n = d}"
@@ -482,8 +484,8 @@ proof -
     have cp:"coprime (ord a div gcd n (ord a)) (n div gcd n (ord a))"
     proof -
       have "coprime (n div gcd n (ord a)) (ord a div gcd n (ord a))"
-        using div_gcd_coprime_nat[of n "ord a"] ge_1 by fastforce
-      thus ?thesis by (simp add: gcd_commute_nat)
+        using div_gcd_coprime[of n "ord a"] ge_1 by fastforce
+      thus ?thesis by (simp add: gcd.commute)
     qed
     have dvd_d:"(ord a div gcd n (ord a)) dvd d"
     proof -
@@ -491,7 +493,7 @@ proof -
         by (metis dvd_triv_right mult.commute)
       hence "ord a div gcd n (ord a) dvd d * (n div gcd n (ord a))"
         by (simp add:  mult.commute)
-      thus ?thesis using coprime_dvd_mult_nat[OF cp, of d] by fastforce
+      thus ?thesis using coprime_dvd_mult[OF cp, of d] by fastforce
     qed
     have "d > 0" using d_elem by simp
     hence "ord a div gcd n (ord a) \<le> d" using dvd_d by (simp add : Nat.dvd_imp_le)

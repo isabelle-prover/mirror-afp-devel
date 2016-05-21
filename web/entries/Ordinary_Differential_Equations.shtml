@@ -49,7 +49,8 @@ We formalize initial value problems (IVPs) of ODEs and prove the existence of a 
     <tr><td class="datahead" valign="top">Change history:</td>
         <td class="abstract">
 
-[2014-02-13]: added an implementation of the Euler method based on affine arithmetic
+[2014-02-13]: added an implementation of the Euler method based on affine arithmetic<br>
+[2016-04-14]: added flow and variational equation
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>

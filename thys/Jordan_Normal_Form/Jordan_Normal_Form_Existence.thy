@@ -992,7 +992,7 @@ lemma jb_imp_diff_ev: "jb A i j \<Longrightarrow> diff_ev A i j"
 
 private lemma ev_blocks_diag: 
   "same_diag A B \<Longrightarrow> ev_blocks B \<Longrightarrow> ev_blocks A"
-  using assms unfolding ev_blocks_def ev_blocks_part_def same_diag_def by auto
+  unfolding ev_blocks_def ev_blocks_part_def same_diag_def by auto
 
 private lemma inv_all_imp_inv_from: "inv_all p A \<Longrightarrow> inv_from p A k"
   unfolding inv_all_def inv_from_def by auto

@@ -40,7 +40,7 @@ lemma to_vec_eq_iff: "to_vec M = to_vec N \<longleftrightarrow> M = N"
 
 subsection{*Some preliminary lemmas and results*}
 
-lemma invertible_iff_is_unit':
+lemma invertible_iff_is_unit:
   fixes A::"'a::{comm_ring_1}^'n^'n"
   shows "invertible A \<longleftrightarrow> (det A) dvd 1"
 proof 
@@ -50,7 +50,7 @@ proof
   also have "... = det (A ** B)" unfolding AB_mat ..
   also have "... = det A * det B" unfolding det_mul ..
   finally have "1 = det A * det B" by simp
-  thus "(det A) dvd 1" unfolding is_unit_def dvd_def by auto
+  thus "(det A) dvd 1" unfolding dvd_def by auto
 next
   assume det_unit: "(det A) dvd 1"
   from this obtain a where a: "(det A) * a = 1" unfolding dvd_def by auto
@@ -67,11 +67,6 @@ next
         to_vec_from_vec to_vec_one by simp
   qed
 qed
-
-lemma invertible_iff_is_unit:
-  fixes A::"'a::{comm_ring_1, semiring_div}^'n^'n"
-  shows "invertible A \<longleftrightarrow> is_unit (det A)"
-  using invertible_iff_is_unit' unfolding is_unit_def .
 
 definition "minorM M i j = (\<chi> k l. if k = i \<and> l = j then 1 else if k = i \<or> l = j then 0 else M $ k $ l)"
 

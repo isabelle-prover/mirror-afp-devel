@@ -1,4 +1,4 @@
-(*  
+(*
     Author:      Salomon Sickert
     License:     BSD
 *)
@@ -11,7 +11,7 @@ begin
 
 subsection \<open>Definitions\<close>
 
-locale semi_mojmir_def = 
+locale semi_mojmir_def =
   fixes
     --\<open>Alphapet\<close>
     \<Sigma> :: "'a set"
@@ -20,14 +20,14 @@ locale semi_mojmir_def =
     \<delta> :: "('b, 'a) DTS"
   fixes
     --\<open>Initial State\<close>
-    q\<^sub>0 :: "'b"  
+    q\<^sub>0 :: "'b"
   fixes
     --\<open>$\omega$-Word\<close>
     w :: "'a word"
 begin
 
 definition sink :: "'b \<Rightarrow> bool"
-where 
+where
   "sink q \<equiv> (q\<^sub>0 \<noteq> q) \<and> (\<forall>\<nu> \<in> \<Sigma>. \<delta> q \<nu> = q)"
 
 declare sink_def [code]
@@ -70,7 +70,7 @@ definition max_rank :: "nat"
 where
   "max_rank = card (reach \<Sigma> \<delta> q\<^sub>0 - {q. sink q})"
 
-subsubsection \<open>Iterative Computation of State-Ranks\<close> 
+subsubsection \<open>Iterative Computation of State-Ranks\<close>
 
 fun initial :: "'b \<Rightarrow> nat option"
 where
@@ -83,11 +83,11 @@ where
 fun step :: "('b \<Rightarrow> nat option) \<Rightarrow> 'a \<Rightarrow> ('b \<Rightarrow> nat option)"
 where
   "step r \<nu> q = (
-    if 
-      \<not>sink q \<and> pre_ranks r \<nu> q \<noteq> {} 
-    then 
+    if
+      \<not>sink q \<and> pre_ranks r \<nu> q \<noteq> {}
+    then
       Some (card {q'. \<not>sink q' \<and> pre_ranks r \<nu> q' \<noteq> {} \<and> Min (pre_ranks r \<nu> q') < Min (pre_ranks r \<nu> q)})
-    else 
+    else
       None)"
 
 subsubsection \<open>Properties of Tokens\<close>
@@ -110,20 +110,20 @@ locale semi_mojmir = semi_mojmir_def +
     bounded_w: "range w \<subseteq> \<Sigma>"
 begin
 
-lemma nonempty_\<Sigma>: "\<Sigma> \<noteq> {}" 
+lemma nonempty_\<Sigma>: "\<Sigma> \<noteq> {}"
   using bounded_w by blast
 
 lemma bounded_w': "w i \<in> \<Sigma>"
   using bounded_w by blast
 
---\<open>Naming Scheme: 
+--\<open>Naming Scheme:
 
 This theory uses the following naming scheme to consistently name variables.
 
 * Tokens: x, y, z
 * Time: n, m
 * Rank: i, j, k
-* States: p, q\<close>  
+* States: p, q\<close>
 
 lemma sink_rev_step:
   "\<not>sink q \<Longrightarrow> q = \<delta> q' \<nu> \<Longrightarrow> \<nu> \<in> \<Sigma> \<Longrightarrow> \<not>sink q'"
@@ -134,7 +134,7 @@ subsection \<open>Token Run\<close>
 
 lemma token_stays_in_sink:
   assumes "sink q"
-  assumes "token_run x n = q" 
+  assumes "token_run x n = q"
   shows "token_run x (n + m) = q"
 proof (cases "x \<le> n")
   case True
@@ -151,7 +151,7 @@ proof (cases "x \<le> n")
         have "\<And>x. w x \<in> \<Sigma>"
           using bounded_w by auto
         ultimately
-        have "\<And>t. token_run x (n + m)  = q \<Longrightarrow> token_run x (n + m + 1) = q" 
+        have "\<And>t. token_run x (n + m)  = q \<Longrightarrow> token_run x (n + m + 1) = q"
           using `sink q`[unfolded sink_def] upt_add_eq_append[OF le0, of "n + m" 1]
           using Suc_diff_le by simp
         with Suc show ?case
@@ -196,7 +196,7 @@ lemma token_run_mergepoint:
     and "y = Suc m \<or> token_run x m \<noteq> token_run y m"
     and "token_run x (Suc m) = token_run y (Suc m)"
   using assms by (induction n)
-    ((metis add_0_iff le_Suc_eq le_add1 less_imp_Suc_add), 
+    ((metis add_0_iff le_Suc_eq le_add1 less_imp_Suc_add),
      (metis add_Suc_right le_add1 less_or_eq_imp_le order_trans))
 
 subsubsection \<open>Step Lemmas\<close>
@@ -248,7 +248,7 @@ proof
   assume "x \<le> n"
   ultimately
   have "token_run x (Suc n) = token_run y (Suc n)"
-    using token_run_merge_Suc by blast 
+    using token_run_merge_Suc by blast
   thus "y \<in> configuration (token_run x (Suc n)) (Suc n)"
     using configuration_token `y \<le> n` by simp
 qed
@@ -314,7 +314,7 @@ proof (cases "x \<le> n")
     let ?q = "token_run x n"
     from False have "n \<in> configuration ?q n" and "configuration ?q n \<noteq> {}"
       by auto
-    then obtain i where "i \<le> n" and "oldest_token ?q n = Some i" 
+    then obtain i where "i \<le> n" and "oldest_token ?q n = Some i"
       by (metis Min.coboundedI oldest_token.simps configuration_finite)
     moreover
     hence "i \<le> x"
@@ -347,15 +347,15 @@ proof -
   from assms have "i = Min (configuration (token_run x n) n)"
     and "j = Min (configuration (token_run x (Suc n)) (Suc n))"
     by (metis oldest_token.elims option.discI option.sel)+
-  thus ?thesis 
-    using Min_antimono[OF configuration_monotonic_Suc[OF assms(1)] configuration_non_empty[OF assms(1)] configuration_finite] by blast   
+  thus ?thesis
+    using Min_antimono[OF configuration_monotonic_Suc[OF assms(1)] configuration_non_empty[OF assms(1)] configuration_finite] by blast
 qed
 
 subsubsection \<open>Pull-Up and Push-Down\<close>
 
 lemma push_down_oldest_token_configuration:
-  "oldest_token q n = Some x \<Longrightarrow> x \<in> configuration q n"  
-  by (metis configuration_Min_in oldest_token.simps option.distinct(2) option.inject) 
+  "oldest_token q n = Some x \<Longrightarrow> x \<in> configuration q n"
+  by (metis configuration_Min_in oldest_token.simps option.distinct(2) option.inject)
 
 lemma push_down_oldest_token_token_run:
   "oldest_token q n = Some x \<Longrightarrow> token_run x n = q"
@@ -378,7 +378,7 @@ text \<open>The senior of a token is always in the same state\<close>
 lemma senior_same_state:
   "token_run (senior x n) n = token_run x n"
 proof -
-  have X: "{t. t \<le> n \<and> token_run t n = token_run x n} \<noteq> {}" 
+  have X: "{t. t \<le> n \<and> token_run t n = token_run x n} \<noteq> {}"
     by (cases "x \<le> n") auto
   show ?thesis
     using Min_in[OF _ X] by force
@@ -451,7 +451,7 @@ proof -
   have "senior x n < senior y n"
     using assms(2) by fastforce
   thus ?thesis
-    using assms(1)[unfolded senior_same_state[symmetric, of x n]] 
+    using assms(1)[unfolded senior_same_state[symmetric, of x n]]
     unfolding older_seniors.simps by blast
 qed
 
@@ -468,10 +468,10 @@ lemma older_seniors_recursive:
   assumes "os \<noteq> {}"
   shows "os = {Max os} \<union> older_seniors (Max os) n"
   (is "?lhs = ?rhs")
-proof 
+proof
   show "?lhs \<subseteq> ?rhs"
   proof
-    fix x 
+    fix x
     assume "x \<in> ?lhs"
     show "x \<in> ?rhs"
     proof (cases "x = Max os")
@@ -489,7 +489,7 @@ proof
         from `x \<in> ?lhs` obtain y where "x = senior y n" and "\<not> sink (token_run x n)"
           unfolding os_def older_seniors.simps by blast
         ultimately
-        show ?thesis 
+        show ?thesis
           unfolding older_seniors.simps by blast
     qed blast
   qed
@@ -523,26 +523,26 @@ subsubsection \<open>Monotonicity\<close>
 lemma older_seniors_monotonic_Suc:
   assumes "x \<le> n"
   shows "older_seniors x n \<supseteq> older_seniors x (Suc n)"
-proof 
+proof
   fix y
   assume "y \<in> older_seniors x (Suc n)"
-  then obtain ox where "y = senior ox (Suc n)" 
-    and "y < senior x (Suc n)" 
-    and "\<not> sink (token_run y (Suc n))" 
+  then obtain ox where "y = senior ox (Suc n)"
+    and "y < senior x (Suc n)"
+    and "\<not> sink (token_run y (Suc n))"
     unfolding older_seniors.simps by blast
 
   hence "y = senior y n"
     using senior_senior senior_le_token senior_monotonic_Suc assms
-    by (metis add.commute add.left_commute dual_order.order_iff_strict linear not_add_less1 not_less ordered_cancel_comm_monoid_diff_class.le_iff_add)
+    by (metis add.commute add.left_commute dual_order.order_iff_strict linear not_add_less1 not_less le_iff_add)
   moreover
   have "y < senior x n"
-    using assms less_le_trans[OF `y < senior x (Suc n)` senior_monotonic_Suc] 
+    using assms less_le_trans[OF `y < senior x (Suc n)` senior_monotonic_Suc]
     by blast
   moreover
   have "\<not> sink (token_run y n)"
     using `\<not> sink (token_run y (Suc n))` token_stays_in_sink
     unfolding Suc_eq_plus1 by metis
- 
+
   ultimately
   show "y \<in> older_seniors x n"
     unfolding older_seniors.simps by blast
@@ -585,7 +585,7 @@ lemma pull_up_senior_older_seniors_le:
   "senior x n \<le> senior y n \<Longrightarrow> older_seniors x n \<subseteq> older_seniors y n"
   using pull_up_senior_older_seniors pull_up_senior_older_seniors_less
   unfolding dual_order.order_iff_strict by blast
-  
+
 lemma push_down_older_seniors_senior:
   assumes "\<not> sink (token_run x n)"
   assumes "\<not> sink (token_run y n)"
@@ -616,14 +616,14 @@ proof
     proof (rule ccontr)
       assume "\<not>senior y n \<le> senior y (Suc n)"
       moreover
-      have "senior y n \<le> n" 
+      have "senior y n \<le> n"
         by (metis assms(2) senior_le_token le_trans)
       ultimately
       have "\<forall>z. senior y n \<noteq> senior z (Suc n)"
-        using token_run_merge_Suc[unfolded senior_token_run[symmetric], OF `y \<le> n`] 
+        using token_run_merge_Suc[unfolded senior_token_run[symmetric], OF `y \<le> n`]
         by (metis senior_senior le_refl)
       hence "senior y n \<notin> older_seniors x (Suc n)"
-        using assms by simp 
+        using assms by simp
       moreover
       have "senior y n \<in> older_seniors x n"
         using assms `older_seniors y n \<subset> older_seniors x n` older_seniors_subset_2 by meson
@@ -633,7 +633,7 @@ proof
     qed
     hence "s < senior y (Suc n)"
       using `s \<in> older_seniors y n` by fastforce
-    ultimately 
+    ultimately
     have "s \<in> older_seniors y (Suc n)"
       unfolding older_seniors.simps by blast
   }
@@ -648,12 +648,12 @@ proof
       using token_run_merge_Suc[OF assms(2,1)] unfolding senior_token_run by blast
     ultimately
     have "s \<in> older_seniors y (Suc n)"
-      by (metis assms(5) older_seniors_senior_simp) 
+      by (metis assms(5) older_seniors_senior_simp)
   }
   ultimately
   show "older_seniors y n \<subseteq> older_seniors y (Suc n)"
     using assms by blast
-qed (metis older_seniors_monotonic_Suc assms(2))    
+qed (metis older_seniors_monotonic_Suc assms(2))
 
 lemma older_seniors_tower''2:
   assumes "x \<le> n"
@@ -663,16 +663,16 @@ lemma older_seniors_tower''2:
   assumes "older_seniors x n = older_seniors x (n + m)"
   assumes "older_seniors y n \<subseteq> older_seniors x n"
   shows "older_seniors y n = older_seniors y (n + m)"
-  using assms 
+  using assms
 proof (induction m arbitrary: n)
   case (Suc m)
-    have "\<not>sink (token_run x (n + m))" and "\<not>sink (token_run y (n + m))"   
+    have "\<not>sink (token_run x (n + m))" and "\<not>sink (token_run y (n + m))"
       using `\<not>sink (token_run x (n + Suc m))` `\<not>sink (token_run y (n + Suc m))`
       using token_stays_in_sink[of _ _ "n + m" 1]
       unfolding Suc_eq_plus1 add.assoc[symmetric] by metis+
     moreover
     have "older_seniors x n = older_seniors x (n + m)"
-      using Suc.prems(5) older_seniors_stable[OF `x \<le> n`] 
+      using Suc.prems(5) older_seniors_stable[OF `x \<le> n`]
       unfolding Suc_eq_plus1 add.assoc by blast
     moreover
     hence "older_seniors x (n + m) = older_seniors x (Suc (n + m))"
@@ -683,7 +683,7 @@ proof (induction m arbitrary: n)
     also
     have "\<dots> = older_seniors y (Suc (n + m))"
       using older_seniors_tower''[OF _ _ `\<not>sink (token_run x (n + m))` `\<not>sink (token_run y (n + m))` `older_seniors x (n + m) = older_seniors x (Suc (n + m))`] Suc
-      by (metis `older_seniors x n = older_seniors x (n + m)` add.commute add.left_commute calculation ordered_cancel_comm_monoid_diff_class.le_iff_add)
+      by (metis `older_seniors x n = older_seniors x (n + m)` add.commute add.left_commute calculation le_iff_add)
     finally
     show ?case
       unfolding add_Suc_right .
@@ -706,7 +706,7 @@ next
     let ?os = "older_seniors x n"
     have "?os \<noteq> {}"
       using Suc.prems(1) by blast
-     
+
     hence "y = Max ?os \<or> y \<in> older_seniors (Max ?os) n"
       using Suc.prems(1) older_seniors_recursive by blast
     moreover
@@ -720,9 +720,9 @@ next
       moreover
       from Suc.hyps(2) have "card (older_seniors (Max ?os) n) = c"
         unfolding older_seniors_recursive_card[OF `?os \<noteq> {}`] by blast
-      ultimately 
+      ultimately
       have "older_seniors s n = older_seniors s (Suc n)"
-        by (metis Suc.hyps(1) `older_seniors (Max ?os) n = older_seniors (Max ?os) (Suc n)`) 
+        by (metis Suc.hyps(1) `older_seniors (Max ?os) n = older_seniors (Max ?os) (Suc n)`)
     }
     ultimately
     show ?case
@@ -740,7 +740,7 @@ proof (induction m)
       using Suc.IH[OF Suc.prems(1,2)] by blast
     also
     have "\<dots> = older_seniors y (n + Suc m)"
-      using older_seniors_tower'[of y x "n + m"] Suc.prems unfolding add_Suc_right 
+      using older_seniors_tower'[of y x "n + m"] Suc.prems unfolding add_Suc_right
       by (metis `older_seniors x n = older_seniors x (n + m)`)
     finally
     show ?case .
@@ -762,14 +762,14 @@ proof -
   have "sink (token_run x n)"
     using assms by (metis option.distinct(1) rank.simps)
   hence "sink (token_run x (Suc n))"
-    using token_stays_in_sink by (metis (erased, hide_lams) Suc_leD le_Suc_ex not_less_eq_eq) 
+    using token_stays_in_sink by (metis (erased, hide_lams) Suc_leD le_Suc_ex not_less_eq_eq)
   thus ?thesis
     by simp
 qed
 
 lemma rank_Some_time:
   "rank x n = Some j \<Longrightarrow> x \<le> n"
-  by (metis option.distinct(1) rank.simps) 
+  by (metis option.distinct(1) rank.simps)
 
 lemma rank_Some_sink:
   "rank x n = Some j \<Longrightarrow> \<not>sink (token_run x n)"
@@ -777,7 +777,7 @@ lemma rank_Some_sink:
 
 lemma rank_Some_card:
   "rank x n = Some j \<Longrightarrow> card (older_seniors x n) = j"
-  by (metis option.distinct(1) option.inject rank.simps) 
+  by (metis option.distinct(1) option.inject rank.simps)
 
 lemma rank_initial:
   "\<exists>i. rank x x = Some i"
@@ -819,7 +819,7 @@ proof -
     by simp
   moreover
   from assms have "y \<le> n"
-    by (metis dual_order.trans linear not_less older_seniors_older option.distinct(1) rank.simps) 
+    by (metis dual_order.trans linear not_less older_seniors_older option.distinct(1) rank.simps)
   moreover
   have "older_seniors y n \<subset> older_seniors x n"
     using older_seniors_subset assms(1) by presburger
@@ -857,13 +857,13 @@ proof -
   have "?S1 \<subseteq> ?S0"
     unfolding reach_def token_run.simps using bounded_w by fastforce
   hence "finite ?S1" and C1: "card ?S1 \<le> card ?S0"
-    using finite_reach card_mono finite_subset 
-   apply (simp add: finite_subset) by (metis `{token_run x n |x n. True} - Collect sink \<subseteq> reach \<Sigma> \<delta> q\<^sub>0 - Collect sink` card_mono finite_Diff local.finite_reach) 
+    using finite_reach card_mono finite_subset
+   apply (simp add: finite_subset) by (metis `{token_run x n |x n. True} - Collect sink \<subseteq> reach \<Sigma> \<delta> q\<^sub>0 - Collect sink` card_mono finite_Diff local.finite_reach)
   hence "finite ?S2" and C2: "card ?S2 \<le> card ?S1"
     using finite_imageI card_image_le by blast+
   moreover
   have "?S3 \<subseteq> ?S2"
-  proof 
+  proof
     fix s
     assume "s \<in> ?S3"
     hence "s = senior s n" and "\<not>sink (token_run s n)"
@@ -876,9 +876,9 @@ proof -
     using card_mono finite_subset by blast+
   moreover
   have "senior x n \<in> ?S3" and "senior x n \<notin> ?S4" and "?S4 \<subseteq> ?S3"
-    using assms older_seniors_not_self_referential senior_same_state by auto  
+    using assms older_seniors_not_self_referential senior_same_state by auto
   hence "?S4 \<subset> ?S3"
-    by blast 
+    by blast
   ultimately
   have "finite ?S4" and C4: "card ?S4 < card ?S3"
     using psubset_card_mono finite_subset by blast+
@@ -888,9 +888,9 @@ qed
 
 lemma rank_upper_bound:
   "rank x n = Some i \<Longrightarrow> i < max_rank"
-  using older_seniors_card_bounded unfolding max_rank_def 
+  using older_seniors_card_bounded unfolding max_rank_def
   by (fast dest: rank_Some_card rank_Some_time rank_Some_sink )
-    
+
 lemma rank_range:
   "\<exists>i. range (rank x) \<subseteq> {None} \<union> Some ` {0..<i}"
 proof
@@ -941,7 +941,7 @@ subsubsection \<open>Pulled-Up Lemmas\<close>
 
 lemma rank_senior_senior:
   "x \<le> n \<Longrightarrow> rank (senior x n) n = rank x n"
-  by (metis Nat.le_iff_add add.commute add.left_commute pull_up_senior_rank senior_le_token senior_senior) 
+  by (metis le_iff_add add.commute add.left_commute pull_up_senior_rank senior_le_token senior_senior)
 
 subsubsection \<open>Stable Rank\<close>
 
@@ -951,7 +951,7 @@ where
 
 lemma stable_rank_unique:
   assumes "stable_rank x i"
-  assumes "stable_rank x j" 
+  assumes "stable_rank x j"
   shows "i = j"
 proof -
   from assms obtain n m where "\<And>n'. n' \<ge> n \<Longrightarrow> rank x n' = Some i"
@@ -959,26 +959,26 @@ proof -
     unfolding stable_rank_def MOST_nat_le by blast
   hence "rank x (n + m) = Some i" and "rank x (n + m) = Some j"
     by (metis add.commute le_add1)+
-  thus ?thesis 
+  thus ?thesis
     by simp
 qed
 
 lemma stable_rank_equiv_token_squats:
   "token_squats x = (\<exists>i. stable_rank x i)"
   (is "?lhs = ?rhs")
-proof 
+proof
   assume ?lhs
   def ranks \<equiv> "{j | j n. rank x n = Some j}"
   hence "ranks \<subseteq> {0..<max_rank}" and "the (rank x x) \<in> ranks"
     using rank_upper_bound rank_initial[of x] unfolding ranks_def by fastforce+ (* Takes roughly 10s *)
   hence "finite ranks" and "ranks \<noteq> {}"
     using finite_reach finite_atLeastAtMost infinite_super by fast+
-  
+
   def i \<equiv> "Min ranks"
   obtain n where "rank x n = Some i"
     using Min_in[OF `finite ranks` `ranks \<noteq> {}`]
     unfolding i_def ranks_def by blast
-  
+
   have "\<And>j. j \<in> ranks \<Longrightarrow> j \<ge> i"
     using Min_in[OF `finite ranks` `ranks \<noteq> {}`] unfolding i_def
     by (metis Min.coboundedI `finite ranks`)
@@ -1023,7 +1023,7 @@ proof -
   have "m \<ge> n"
     by (metis `n \<le> n_j` le_trans max.cobounded2 m_def)
   have "\<exists>q'. x \<in> configuration q' m \<and> y \<in> configuration q' m"
-    using push_down_configuration_token_run[OF assms(3,4)] 
+    using push_down_configuration_token_run[OF assms(3,4)]
     using token_run_merge[of x n y]
     using pull_up_token_run_tokens[of x m y]
     using `m \<ge> n`[unfolded le_iff_add] by force
@@ -1045,29 +1045,29 @@ proof (cases i j rule: linorder_cases)
     {
       hence "card (older_seniors (senior y n) n) < card (older_seniors x n)"
         using assms rank_Some_card senior_same_state by force
-      hence "senior y n \<in> older_seniors x n" 
+      hence "senior y n \<in> older_seniors x n"
         by (metis older_seniors_card_le rank_Some_sink assms(4) older_seniors_senior_simp older_seniors_subset_2)
       moreover
       have "older_seniors x n = older_seniors x (n + m)"
         by (metis assms(2,3) rank_Some_card rank_Some_time card_subset_eq[OF older_seniors_finite] older_seniors_monotonic)
       ultimately
       have "older_seniors (senior y n) n = older_seniors (senior y n) (n + m)" and "senior y n \<in> older_seniors x (n + m)"
-        using older_seniors_tower rank_Some_time assms(2) by blast+ 
+        using older_seniors_tower rank_Some_time assms(2) by blast+
     }
     moreover
     have "rank (senior y n) n = Some i"
       by (metis assms(4) rank_Some_time rank_senior_senior)
     ultimately
     have "rank (senior y n) (n + m) = Some i"
-      by (metis rank_older_seniors_bounded[OF _ assms(3)] rank_Some_card) 
-    moreover 
+      by (metis rank_older_seniors_bounded[OF _ assms(3)] rank_Some_card)
+    moreover
     have "senior y n \<le> n"
-      by (metis `rank (senior y n) n = Some i` rank_Some_time) 
-    hence "senior y n \<in> configuration (token_run y (n + m)) (n + m)"   
+      by (metis `rank (senior y n) n = Some i` rank_Some_time)
+    hence "senior y n \<in> configuration (token_run y (n + m)) (n + m)"
       by (metis (full_types) token_run_merge[OF _ rank_Some_time[OF assms(4)] senior_same_state] configuration_token trans_le_add1)
     ultimately
     show ?thesis
-      by (metis pull_up_configuration_rank Nat.le_iff_add add.assoc assms(4) configuration_token rank_Some_time)
+      by (metis pull_up_configuration_rank le_iff_add add.assoc assms(4) configuration_token rank_Some_time)
 next
   case equal
     hence "x \<le> n" and "y \<le> n" and "token_run x n = token_run y n"
@@ -1076,8 +1076,8 @@ next
     hence "token_run x (n + m) = token_run y (n + m)"
       using token_run_merge by blast
     ultimately
-    show ?thesis 
-      by (metis assms(3) equal rank_senior_senior senior_token_run le_iff_add add.assoc)   
+    show ?thesis
+      by (metis assms(3) equal rank_senior_senior senior_token_run le_iff_add add.assoc)
 qed (insert `i \<le> j`, linarith)
 
 lemma stable_rank_alt_def:
@@ -1100,7 +1100,7 @@ proof
       using `rank x n = Some j` rank_monotonic by blast
     moreover
     have "j \<le> j'"
-      using `rank x (n + m) = Some j'` `rank x m' = Some j`  `n + m < m'` rank_monotonic 
+      using `rank x (n + m) = Some j'` `rank x m' = Some j`  `n + m < m'` rank_monotonic
       by (metis add_Suc_right less_imp_Suc_add)
     ultimately
     have "rank x (n + m) = Some j"
@@ -1117,7 +1117,7 @@ lemma stable_rank_tower:
   assumes "rank y n = Some i"
   assumes "stable_rank y i"
   shows "stable_rank x j"
-  using assms rank_tower[OF `j \<le> i`] stable_rank_alt_def[of y n i] 
+  using assms rank_tower[OF `j \<le> i`] stable_rank_alt_def[of y n i]
   unfolding stable_rank_def[of x j, unfolded MOST_nat_le] by (metis le_Suc_ex)
 
 subsection \<open>Senior States\<close>
@@ -1182,7 +1182,7 @@ lemma card_older_senior_senior_states:
   (is "?lhs = ?rhs")
 proof -
   have "inj_on (\<lambda>t. token_run t n) (older_seniors x n)"
-    unfolding inj_on_def using senior_same_state 
+    unfolding inj_on_def using senior_same_state
     by (fastforce simp del: token_run.simps)
   moreover
   have "token_run x n = q"
@@ -1216,10 +1216,10 @@ next
       using Some by force
     finally
     show ?thesis .
-qed 
+qed
 
 lemma state_rank_eq_rank_SOME:
-  "state_rank q n = (if configuration q n \<noteq> {} then rank (SOME x. x \<in> configuration q n) n else None)" 
+  "state_rank q n = (if configuration q n \<noteq> {} then rank (SOME x. x \<in> configuration q n) n else None)"
 proof (cases "oldest_token q n")
   case (Some x)
     thus ?thesis
@@ -1229,7 +1229,7 @@ qed (unfold state_rank_eq_rank; metis not_Some_eq oldest_token.elims option.simp
 
 lemma rank_eq_state_rank:
   "x \<le> n \<Longrightarrow> rank x n = state_rank (token_run x n) n"
-  unfolding state_rank_eq_rank_SOME[of "token_run x n"] 
+  unfolding state_rank_eq_rank_SOME[of "token_run x n"]
   by (metis all_not_in_conv configuration_token pull_up_configuration_rank someI_ex)
 
 subsubsection \<open>Pull-Up and Push-Down\<close>
@@ -1261,13 +1261,13 @@ lemma state_rank_distinct:
   assumes ranked_1: "state_rank p n = Some i"
   assumes ranked_2: "state_rank q n = Some j"
   shows "i \<noteq> j"
-proof 
+proof
   assume "i = j"
   obtain x y where "x \<in> configuration p n" and "y \<in> configuration q n"
     using assms push_down_state_rank_tokens by blast
   hence "rank x n = Some i" and "rank y n = Some j"
-    using assms pull_up_configuration_rank unfolding state_rank_eq_rank_SOME 
-    by (metis all_not_in_conv someI_ex)+ 
+    using assms pull_up_configuration_rank unfolding state_rank_eq_rank_SOME
+    by (metis all_not_in_conv someI_ex)+
   hence "x \<in> configuration q n"
     using `y \<in> configuration q n` push_down_rank_tokens
     unfolding `i = j` by auto
@@ -1323,7 +1323,7 @@ proof -
   proof (cases rule: senior_states_cases_subset[of p n q])
     case equal
       thus ?thesis
-        using assms state_rank_distinct i_def j_def 
+        using assms state_rank_distinct i_def j_def
         by (metis less_irrefl option.sel)
   qed auto
   ultimately
@@ -1337,7 +1337,7 @@ lemma state_rank_oldest_token_le:
   assumes "oldest_token p n = Some x"
   assumes "oldest_token q n = Some y"
   shows "i \<le> j \<longleftrightarrow> x \<le> y"
-  using state_rank_oldest_token[OF assms] assms state_rank_distinct oldest_token_equal 
+  using state_rank_oldest_token[OF assms] assms state_rank_distinct oldest_token_equal
   by (cases "x = y") ((metis option.sel order_refl), (metis le_eq_less_or_eq option.inject))
 
 lemma state_rank_in_function_set:
@@ -1345,15 +1345,15 @@ lemma state_rank_in_function_set:
       (\<forall>x. x \<in> reach \<Sigma> \<delta> q\<^sub>0 \<longrightarrow> f x \<in> {None} \<union> Some ` {0..<max_rank})}"
 proof -
   {
-    fix x 
+    fix x
     assume "x \<notin> reach \<Sigma> \<delta> q\<^sub>0"
     hence "\<And>token. x \<noteq> token_run token t"
       unfolding reach_def token_run.simps using bounded_w by fastforce
     hence "state_rank x t = None"
-      using pull_up_configuration_state_rank assms by auto
+      using pull_up_configuration_state_rank by auto
   }
   with state_rank_range show ?thesis
-    using assms  by blast
+    by blast
 qed
 
 subsection \<open>Step Function\<close>
@@ -1367,7 +1367,7 @@ lemma pre_oldest_configuration_range:
 proof -
   have "{x. \<exists>q'. oldest_token q' n = Some x \<and> q = \<delta> q' (w n)} \<subseteq> {0..n}"
     (is "?lhs \<subseteq> ?rhs")
-  proof 
+  proof
     fix x
     assume "x \<in> ?lhs"
     then obtain q' where "oldest_token q' n = Some x"
@@ -1375,9 +1375,9 @@ proof -
     thus "x \<in> ?rhs"
       unfolding atLeastAtMost_iff using oldest_token_bounded[of q' n x] by blast
   qed
-  thus ?thesis   
-    by (cases "q = q\<^sub>0") fastforce+ 
-qed 
+  thus ?thesis
+    by (cases "q = q\<^sub>0") fastforce+
+qed
 
 lemma pre_oldest_configuration_finite:
   "finite (pre_oldest_tokens q n)"
@@ -1394,8 +1394,8 @@ lemma pre_oldest_configuration_element:
   assumes "oldest_token q' n = Some ot"
   assumes "q = \<delta> q' (w n)"
   shows "ot \<in> pre_oldest_tokens q n"
-proof 
-  show "ot \<in> {ot. \<exists>q'. oldest_token q' n = Some ot \<and> q = \<delta> q' (w n)}" 
+proof
+  show "ot \<in> {ot. \<exists>q'. oldest_token q' n = Some ot \<and> q = \<delta> q' (w n)}"
     (is "_ \<in> ?A")
     using assms by blast
   show "?A \<subseteq> pre_oldest_tokens q n"
@@ -1414,7 +1414,7 @@ lemma pre_oldest_configuration_initial_state_2:
 lemma pre_oldest_configuration_tokens:
   "pre_oldest_tokens q n \<noteq> {} \<longleftrightarrow> configuration q (Suc n) \<noteq> {}"
   (is "?lhs \<longleftrightarrow> ?rhs")
-proof 
+proof
   assume ?lhs
   then obtain ot where ot_def: "ot \<in> pre_oldest_tokens q n"
     by blast
@@ -1466,7 +1466,7 @@ proof (cases "oldest_token q (Suc n)")
       unfolding pre_oldest_configuration_tokens .
     let ?ot = "Min (pre_oldest_tokens q n)"
     {
-      {   
+      {
         {
           assume "ot < Suc n"
           hence "ot \<noteq> Suc n"
@@ -1479,14 +1479,14 @@ proof (cases "oldest_token q (Suc n)")
             hence "token \<in> configuration q (Suc n)"
               using `q = \<delta> q' (w n)` by (rule configuration_step)
             hence "ot \<le> token"
-              using Some by (metis Min.coboundedI `configuration q (Suc n) \<noteq> {}` configuration_finite oldest_token.simps option.inject) 
+              using Some by (metis Min.coboundedI `configuration q (Suc n) \<noteq> {}` configuration_finite oldest_token.simps option.inject)
           }
           hence "Min (configuration q' n) = ot"
             by (metis Min_eqI `ot \<in> configuration q' n` configuration_finite)
           hence "oldest_token q' n = Some ot"
             using `ot \<in> configuration q' n` unfolding oldest_token.simps by auto
           hence "ot \<in> pre_oldest_tokens q n"
-            using `q = \<delta> q' (w n)` by (rule pre_oldest_configuration_element) 
+            using `q = \<delta> q' (w n)` by (rule pre_oldest_configuration_element)
         }
         moreover
         {
@@ -1501,7 +1501,7 @@ proof (cases "oldest_token q (Suc n)")
         ultimately
         have "ot \<in> pre_oldest_tokens q n"
           using Some[THEN oldest_token_bounded] by linarith
-      }   
+      }
       moreover
       {
         fix ot' q'
@@ -1522,7 +1522,7 @@ proof (cases "oldest_token q (Suc n)")
     }
     ultimately
     show ?thesis
-      unfolding pre_oldest_configuration_tokens oldest_token.simps 
+      unfolding pre_oldest_configuration_tokens oldest_token.simps
       by (metis `configuration q (Suc n) \<noteq> {}`)
 qed (unfold pre_oldest_configuration_tokens oldest_token.simps, metis option.distinct(2))
 
@@ -1550,8 +1550,8 @@ lemma pre_ranks_element:
   assumes "state_rank q' n = Some r"
   assumes "q = \<delta> q' (w n)"
   shows "r \<in> pre_ranks (\<lambda>q. state_rank q n) (w n) q"
-proof 
-  show "r \<in> {i. \<exists>q'. (\<lambda>q. state_rank q n) q' = Some i \<and> q = \<delta> q' (w n)}" 
+proof
+  show "r \<in> {i. \<exists>q'. (\<lambda>q. state_rank q n) q' = Some i \<and> q = \<delta> q' (w n)}"
     (is "_ \<in> ?A")
     using assms by blast
   show "?A \<subseteq> pre_ranks (\<lambda>q. state_rank q n) (w n) q"
@@ -1570,7 +1570,7 @@ lemma pre_ranks_tokens:
   assumes "\<not>sink q"
   shows "pre_ranks (\<lambda>q. state_rank q n) (w n) q \<noteq> {} \<longleftrightarrow> configuration q (Suc n) \<noteq> {}"
   (is "?lhs = ?rhs")
-proof 
+proof
   assume ?lhs
   thus ?rhs
   proof (cases "q \<noteq> q\<^sub>0")
@@ -1597,7 +1597,7 @@ next
       using `token_run token (Suc n) = q` unfolding token_run.simps Suc_diff_le[OF `token \<le> n`] by fastforce
     hence "\<not>sink q'"
       using `\<not>sink q` sink_rev_step bounded_w by blast
-    then obtain r where "state_rank q' n = Some r" 
+    then obtain r where "state_rank q' n = Some r"
       using `\<not>sink q` configuration_non_empty[OF `token \<le> n`] unfolding `token_run token n = q'` by simp
     with `q = \<delta> q' (w n)` have ?lhs
       using pre_ranks_element by blast
@@ -1614,7 +1614,7 @@ lemma pre_ranks_pre_oldest_token_Min_state_special:
   (is "?lhs \<longleftrightarrow> ?rhs")
 proof
   from assms have "pre_oldest_tokens q n \<noteq> {}"
-    and "pre_ranks  (\<lambda>q. state_rank q n) (w n) q \<noteq> {}" 
+    and "pre_ranks  (\<lambda>q. state_rank q n) (w n) q \<noteq> {}"
     using pre_ranks_tokens pre_oldest_configuration_tokens by simp_all
 
   {
@@ -1628,14 +1628,14 @@ proof
       fix q'
       assume "q = \<delta> q' (w n)"
       hence "\<not>sink q'"
-        using `\<not>sink q` bounded_w unfolding sink_def 
+        using `\<not>sink q` bounded_w unfolding sink_def
         using calculation by blast
       {
         fix i
         assume "state_rank q' n = Some i"
         hence "False"
           using `q = \<delta> q' (w n)`
-        using Min.coboundedI[OF pre_ranks_finite, of _ n "(w n)" q] 
+        using Min.coboundedI[OF pre_ranks_finite, of _ n "(w n)" q]
         unfolding `?lhs` using state_rank_upper_bound[of q' n] by fastforce
       }
       hence "state_rank q' n = None"
@@ -1663,7 +1663,7 @@ proof
           moreover
           have "Suc n \<le> t"
             using `q = \<delta> q' (w n)`
-            using Min.coboundedI[OF pre_oldest_configuration_finite, of _ q n] 
+            using Min.coboundedI[OF pre_oldest_configuration_finite, of _ q n]
             unfolding `?rhs` using `oldest_token q' n = Some t` by auto
           ultimately
           have "False"
@@ -1674,10 +1674,10 @@ proof
     }
     hence X: "{i. \<exists>q'.  (\<lambda>q. state_rank q n) q' = Some i \<and> q = \<delta> q' (w n)} = {}"
       by fastforce
-    
+
     have "q = q\<^sub>0"
       apply (rule ccontr)
-      using `pre_ranks (\<lambda>q. state_rank q n) (w n) q \<noteq> {}`  
+      using `pre_ranks (\<lambda>q. state_rank q n) (w n) q \<noteq> {}`
       unfolding pre_ranks.simps X by simp
     hence "pre_ranks (\<lambda>q. state_rank q n) (w n) q = {max_rank}"
       unfolding pre_ranks.simps X by force
@@ -1694,10 +1694,10 @@ lemma pre_ranks_pre_oldest_token_Min_state:
   defines "min_ot \<equiv> Min (pre_oldest_tokens q n)"
   shows "state_rank q' n = Some min_r \<longleftrightarrow> oldest_token q' n = Some min_ot"
   (is "?lhs \<longleftrightarrow> ?rhs")
-proof 
+proof
   from assms have "pre_oldest_tokens q n \<noteq> {}" and "\<not>sink q'"
-    and "pre_ranks (\<lambda>q. state_rank q n) (w n) q \<noteq> {}" 
-    using pre_ranks_tokens pre_oldest_configuration_tokens bounded_w unfolding sink_def 
+    and "pre_ranks (\<lambda>q. state_rank q n) (w n) q \<noteq> {}"
+    using pre_ranks_tokens pre_oldest_configuration_tokens bounded_w unfolding sink_def
     by (simp_all, metis rangeI subset_iff)
 
   {
@@ -1715,8 +1715,8 @@ proof
             assume "oldest_token q'' n = Some ot''"
             moreover
             have "\<not>sink q''"
-              using `q = \<delta> q'' (w n)` assms unfolding sink_def 
-              by (metis rangeI subset_eq bounded_w) 
+              using `q = \<delta> q'' (w n)` assms unfolding sink_def
+              by (metis rangeI subset_eq bounded_w)
             then obtain r'' where "state_rank q'' n = Some r''"
               using `oldest_token q'' n = Some ot''` by (metis state_rank_Some)
             moreover
@@ -1743,8 +1743,8 @@ proof
         }
         moreover
         have "ot \<ge> min_ot"
-          using Min.coboundedI[OF pre_oldest_configuration_finite] pre_oldest_configuration_element  
-          unfolding min_ot_def by (metis assms(2) calculation(1)) 
+          using Min.coboundedI[OF pre_oldest_configuration_finite] pre_oldest_configuration_element
+          unfolding min_ot_def by (metis assms(2) calculation(1))
         ultimately
         show ?thesis
           by simp
@@ -1757,13 +1757,13 @@ proof
     proof (cases min_ot "Suc n" rule: linorder_cases)
       case less
         then obtain r where "state_rank q' n = Some r"
-          using `?rhs` `\<not>sink q'` by (metis state_rank_Some) 
+          using `?rhs` `\<not>sink q'` by (metis state_rank_Some)
         moreover
         {
           {
             fix r''
             assume "r'' \<in> pre_ranks (\<lambda>q. state_rank q n) (w n) q - {max_rank}"
-            then obtain q'' where "state_rank q'' n = Some r''" 
+            then obtain q'' where "state_rank q'' n = Some r''"
               and "q = \<delta> q'' (w n)"
               using pre_ranks_state_obtain by blast
             moreover
@@ -1771,7 +1771,7 @@ proof
                using push_down_state_rank_oldest_token by fastforce
             moreover
             hence "min_ot \<le> ot''"
-              using `q = \<delta> q'' (w n)` pre_oldest_configuration_element Min.coboundedI pre_oldest_configuration_finite 
+              using `q = \<delta> q'' (w n)` pre_oldest_configuration_element Min.coboundedI pre_oldest_configuration_finite
               unfolding min_ot_def by metis
             ultimately
             have "r \<le> r''"
@@ -1789,21 +1789,21 @@ proof
         }
         moreover
         have "r \<ge> min_r"
-          using Min.coboundedI[OF pre_ranks_finite] pre_ranks_element  
-          unfolding min_r_def by (metis assms(2) calculation(1)) 
+          using Min.coboundedI[OF pre_ranks_finite] pre_ranks_element
+          unfolding min_r_def by (metis assms(2) calculation(1))
         ultimately
         show ?thesis
-          by simp 
+          by simp
     qed (insert not_less, blast intro: oldest_token_bounded Suc_lessD)+
   }
-qed 
+qed
 
 lemma Min_pre_ranks_pre_oldest_tokens:
   fixes n
   defines "r \<equiv> (\<lambda>q. state_rank q n)"
   assumes "configuration p (Suc n) \<noteq> {}"
       and "configuration q (Suc n) \<noteq> {}"
-  assumes "\<not>sink q" 
+  assumes "\<not>sink q"
       and "\<not>sink p"
   shows "Min (pre_ranks r (w n) p) < Min (pre_ranks r (w n) q) \<longleftrightarrow> Min (pre_oldest_tokens p n) < Min (pre_oldest_tokens q n)"
   (is "?lhs \<longleftrightarrow> ?rhs")
@@ -1818,9 +1818,9 @@ proof
   {
     let ?min_i = "Min (pre_ranks r (w n) p)"
     let ?min_j = "Min (pre_ranks r (w n) q)"
-  
+
     assume ?lhs
-    
+
     have "?min_i \<in> pre_ranks r (w n) p" and "?min_j \<in> pre_ranks r (w n) q"
       using Min_in[OF pre_ranks_finite] assms pre_ranks_tokens by presburger+
     hence "?min_i \<le> max_rank" and "?min_j \<le> max_rank"
@@ -1854,17 +1854,17 @@ proof
         show ?thesis
           by simp
     qed simp
-    moreover  
+    moreover
     {
       fix ot\<^sub>q
       assume "ot\<^sub>q \<in> pre_oldest_tokens q n - {Suc n}"
-      then obtain q' where "oldest_token q' n = Some ot\<^sub>q" and "q = \<delta> q' (w n)" 
+      then obtain q' where "oldest_token q' n = Some ot\<^sub>q" and "q = \<delta> q' (w n)"
         using pre_oldest_configuration_obtain by blast
       moreover
       hence "\<not>sink q'"
         using `\<not>sink q` `\<And>x. w x \<in> \<Sigma>` unfolding sink_def by auto
       then obtain r\<^sub>q where "state_rank q' n = Some r\<^sub>q"
-        unfolding assms state_rank.simps using `oldest_token q' n = Some ot\<^sub>q`  
+        unfolding assms state_rank.simps using `oldest_token q' n = Some ot\<^sub>q`
         by (metis oldest_token.simps option.distinct(2))
       moreover
       hence "r\<^sub>q \<in> pre_ranks r (w n) q"
@@ -1882,17 +1882,17 @@ proof
     show ?rhs
       using pre_oldest_configuration_Min by blast
   }
-  
+
   {
     def ot_p \<equiv> "Min (pre_oldest_tokens p n)"
     def ot_q \<equiv> "Min (pre_oldest_tokens q n)"
     assume ?rhs
     hence "ot_p < ot_q"
       unfolding ot_p_def ot_q_def .
-    
+
     have "oldest_token p (Suc n) = Some ot_p" and "oldest_token q (Suc n) = Some ot_q"
       unfolding ot_p_def ot_q_def oldest_token_rec pre_oldest_configuration_tokens by (metis assms)+
-   
+
    (* Min oldest \<longleftrightarrow> Min rank *)
     def min_r\<^sub>p \<equiv> "Min (pre_ranks r (w n) p)"
     hence "min_r\<^sub>p \<in> pre_ranks r (w n) p"
@@ -1908,7 +1908,7 @@ proof
           using Min_in[OF pre_oldest_configuration_finite ] assms pre_oldest_configuration_tokens by presburger
         hence "ot_q \<in> {0..Suc n}"
           using pre_oldest_configuration_range[of q n]
-          unfolding ot_q_def by blast 
+          unfolding ot_q_def by blast
         hence "ot_q \<le> Suc n"
           by simp
         ultimately
@@ -1918,7 +1918,7 @@ proof
       case greater
         moreover
         have "min_r\<^sub>p \<in> {0..max_rank}"
-          using pre_ranks_range `min_r\<^sub>p \<in> pre_ranks r (w n) p` 
+          using pre_ranks_range `min_r\<^sub>p \<in> pre_ranks r (w n) p`
           unfolding r_def ..
         ultimately
         show ?thesis
@@ -1997,13 +1997,13 @@ proof (cases "sink q")
             by (metis `configuration q (Suc n) \<noteq> {}` `\<not>sink q` Min_pre_ranks_pre_oldest_tokens)
           also
           have "\<dots> \<longleftrightarrow> \<not>sink q' \<and> (\<exists>x y. oldest_token q' (Suc n) = Some y \<and> oldest_token q (Suc n) = Some x \<and> y < x)"
-            unfolding oldest_token_rec by (metis pre_oldest_configuration_tokens `configuration q (Suc n) \<noteq> {}` option.distinct(2) option.sel) 
+            unfolding oldest_token_rec by (metis pre_oldest_configuration_tokens `configuration q (Suc n) \<noteq> {}` option.distinct(2) option.sel)
           finally
           show "q' \<in> ?S \<longleftrightarrow> q' \<in> ?S'"
             unfolding senior_states.simps by blast
         qed
         thus ?thesis
-          using `\<not>sink q` `configuration q (Suc n) \<noteq> {}` 
+          using `\<not>sink q` `configuration q (Suc n) \<noteq> {}`
           unfolding step.simps pre_ranks_tokens[OF `\<not>sink q`] by presburger
       qed
       finally

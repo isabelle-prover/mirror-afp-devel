@@ -16,10 +16,10 @@ lemma p_ub':
   assumes 2: "\<And>s. s \<in> S1 \<Longrightarrow> x s \<noteq> 0 \<Longrightarrow> (\<exists>t\<in>S2. (s, t) \<in> (SIGMA s:S1. \<Union>D\<in>K s. set_pmf D)\<^sup>*)"
   assumes 3: "\<And>s. s \<in> S - S1 - S2 \<Longrightarrow> x s = 0"
   assumes 4: "\<And>s. s \<in> S2 \<Longrightarrow> x s = 1"
-  shows "real_of_ereal (p s) \<le> x s"
+  shows "enn2real (p s) \<le> x s"
 proof (rule p_ub[OF 1 _ 4])
-  fix s assume "s \<in> S" "p s = 0" with 2[of s] p_pos[of s] p_nonneg[of s] p_S2[of s] 3[of s] show "x s = 0" 
-    by (metis zero_neq_one not_less DiffI)
+  fix s assume "s \<in> S" "p s = 0" with 2[of s] p_pos[of s] p_S2[of s] 3[of s] show "x s = 0"
+    by (cases "x s = 0") auto
 qed
 
 lemma n_lb':
@@ -29,7 +29,7 @@ lemma n_lb':
   assumes 2: "\<And>s D. s \<in> S1 \<Longrightarrow> D \<in> K s \<Longrightarrow> x s \<noteq> 0 \<Longrightarrow> \<exists>t\<in>D. ((t, s) \<in> R \<and> t \<in> S1 \<and> x t \<noteq> 0) \<or> t \<in> S2"
   assumes 3: "\<And>s. s \<in> S - S1 - S2 \<Longrightarrow> x s = 0"
   assumes 4: "\<And>s. s \<in> S2 \<Longrightarrow> x s = 1"
-  shows "x s \<le> real_of_ereal (n s)"
+  shows "x s \<le> enn2real (n s)"
 proof (rule n_lb[OF 1 _ 4])
   fix s assume *: "s \<in> S" "n s = 0"
   show "x s = 0"
@@ -39,7 +39,7 @@ proof (rule n_lb[OF 1 _ 4])
       by (metis DiffI zero_neq_one)
     have "0 < n s"
       by (intro n_pos[of "\<lambda>s. x s \<noteq> 0", OF `x s \<noteq> 0` `s \<in> S1` `wf R`])
-         (metis ereal_0_less_1 n_S2 2)
+         (metis zero_less_one n_S2 2)
     with `n s = 0` show False by auto
   qed
 qed
@@ -48,7 +48,7 @@ end
 
 no_notation Stream.snth (infixl "!!" 100) -- {* we use @{text "!!"} for IArray *}
 
-subsection {* Computable representation *} 
+subsection {* Computable representation *}
 
 record mdp_reachability_problem =
   state_count :: nat
@@ -76,6 +76,18 @@ lemma lookup_eq_map_of: "lookup d xs x = (case map_of xs x of Some x \<Rightarro
 lemma lookup_in_set:
   "distinct (map fst xs) \<Longrightarrow> x \<in> set xs \<Longrightarrow> lookup d xs (fst x) = snd x"
   unfolding lookup_eq_map_of by (subst map_of_is_SomeI[where y="snd x"]) simp_all
+
+lemma lookup_not_in_set:
+  "x \<notin> fst ` set xs \<Longrightarrow> lookup d xs x = d"
+  unfolding lookup_eq_map_of
+  by (subst map_of_eq_None_iff[of xs x, THEN iffD2]) auto
+
+lemma lookup_nonneg:
+  "(\<And>x v. (x, v) \<in> set xs \<Longrightarrow> 0 \<le> v) \<Longrightarrow> (0::'a::ordered_comm_monoid_add) \<le> lookup 0 xs x"
+  apply (induction xs)
+  apply simp
+  apply force
+  done
 
 lemma sparse_mult_eq_setsum_lookup:
   fixes xs :: "(nat \<times> 'a::comm_semiring_1) list"
@@ -116,15 +128,15 @@ proof -
        (auto simp: list_all_iff lookup_eq_map_of map_of_eq_None_iff[THEN iffD2])
   finally show ?thesis .
 qed
-  
+
 definition
   "valid_mdp_rp mdp \<longleftrightarrow>
-    0 < state_count mdp \<and> 
+    0 < state_count mdp \<and>
     IArray.length (distrs mdp) = state_count mdp \<and>
     IArray.length (states1 mdp) = state_count mdp \<and>
     IArray.length (states2 mdp) = state_count mdp \<and>
     (\<forall>i<state_count mdp. \<not> (states1 mdp !! i \<and> states2 mdp !! i) \<and>
-      list_all (\<lambda>ds. distinct (map fst ds) \<and> list_all (\<lambda>(n, x). 0 \<le> x \<and> n < state_count mdp) ds \<and> 
+      list_all (\<lambda>ds. distinct (map fst ds) \<and> list_all (\<lambda>(n, x). 0 \<le> x \<and> n < state_count mdp) ds \<and>
                      listsum (map snd ds) = 1) (distrs mdp !! i) \<and>
       \<not> List.null (distrs mdp !! i))"
 
@@ -133,7 +145,7 @@ definition
     IArray.length (witness c) = state_count mdp \<and>
     IArray.length (solution c) = state_count mdp \<and>
     (\<forall>i<state_count mdp.
-      if states2 mdp !! i then solution c !! i = 1 
+      if states2 mdp !! i then solution c !! i = 1
       else if states1 mdp !! i then 0 \<le> solution c !! i \<and>
         (list_all (\<lambda>ds. ord (sparse_mult ds (solution c)) (solution c !! i)) (distrs mdp !! i)) \<and>
         (0 < solution c !! i \<longrightarrow> check (distrs mdp !! i) (witness c !! i))
@@ -193,12 +205,12 @@ lemma valid_pos_certD:
   using valid_sub_certD(5)[OF assms(1) assms(2)[unfolded valid_pos_cert_def] assms(3,4)] assms(5-) by auto
 
 lemma valid_neg_certD:
-  assumes "valid_mdp_rp mdp" "valid_neg_cert mdp c" "i < state_count mdp" "states1 mdp !! i" 
+  assumes "valid_mdp_rp mdp" "valid_neg_cert mdp c" "i < state_count mdp" "states1 mdp !! i"
     "0 < solution c !! i" "witness c !! i = (js, n)"
   shows "list_all2 (\<lambda>j ds. j < state_count mdp \<and> snd (witness c !! j) < n \<and> lookup 0 ds j \<noteq> 0 \<and> 0 < solution c !! j) js (distrs mdp !! i)"
   using valid_sub_certD(5)[OF assms(1) assms(2)[unfolded valid_neg_cert_def] assms(3)] assms(4-) by auto
 
-context 
+context
   fixes mdp c
   assumes rp: "valid_mdp_rp mdp"
   assumes cert: "valid_cert mdp c"
@@ -214,32 +226,31 @@ lift_definition K :: "nat \<Rightarrow> nat pmf set" is
   "\<lambda>i. if i < state_count mdp then
      { (\<lambda>j. of_rat (lookup 0 D j) :: real) | D. D \<in> set (distrs mdp !! i) }
      else { indicator {0} }"
-proof (auto split: split_if_asm simp del: IArray.sub_def)
+proof (auto split: if_split_asm simp del: IArray.sub_def)
   fix n D assume n: "n < state_count mdp" and D: "D \<in> set (distrs mdp !! n)"
   from valid_mdp_rpD(3)[OF rp this] show nn: "\<And>i. 0 \<le> lookup 0 D i"
     by (auto simp add: lookup_eq_map_of split: option.split dest: map_of_SomeD)
-  show "(\<integral>\<^sup>+ x. ereal (real_of_rat (lookup 0 D x)) \<partial>count_space UNIV) = 1"
+  show "(\<integral>\<^sup>+ x. ennreal (real_of_rat (lookup 0 D x)) \<partial>count_space UNIV) = 1"
     using valid_mdp_rpD(2,3,4,5)[OF rp n D]
     apply (subst nn_integral_count_space'[of "{..< state_count mdp}"])
-    apply (auto intro: nn simp: of_rat_setsum[symmetric])
-    defer
+    apply (auto intro: nn lookup_not_in_set simp: of_rat_setsum[symmetric] lookup_nonneg)
     apply (subst listsum_eq_setsum_lookup[symmetric])
     apply (auto simp: list_all_iff lookup_eq_map_of split: option.split)
     done
 next
-  show "(\<integral>\<^sup>+ x. ereal (indicator {0} x) \<partial>count_space UNIV) = 1"
+  show "(\<integral>\<^sup>+ x. ennreal (indicator {0} x) \<partial>count_space UNIV) = 1"
     by (subst nn_integral_count_space'[of "{0}"]) auto
 qed
 
-interpretation MDP: Reachability_Problem K S S1 S2 
+interpretation MDP: Reachability_Problem K S S1 S2
 proof
   show "S1 \<inter> S2 = {}" "S1 \<subseteq> S" "S2 \<subseteq> S"
     using valid_mdp_rpD(1)[OF rp] by auto
   show "finite S" "S \<noteq> {}"
     using `valid_mdp_rp mdp` by (auto simp add: valid_mdp_rp_def)
-  show "\<And>s. K s \<noteq> {}" 
+  show "\<And>s. K s \<noteq> {}"
     using valid_mdp_rpD(6)[OF rp] by transfer simp
-  show "\<And>s. finite (K s)" 
+  show "\<And>s. finite (K s)"
     by transfer simp
 
   fix s assume "s \<in> S" then show "(\<Union>D\<in>K s. set_pmf D) \<subseteq> S"
@@ -247,8 +258,8 @@ proof
     by transfer (auto simp: lookup_eq_map_of split: option.splits dest!: map_of_SomeD)
 qed
 
-definition "P_max s = real_of_ereal (MDP.p s)"
-definition "P_min s = real_of_ereal (MDP.n s)"
+definition "P_max s = enn2real (MDP.p s)"
+definition "P_min s = enn2real (MDP.n s)"
 
 lemma
   assumes "i < state_count mdp"
@@ -260,7 +271,7 @@ proof -
   note pos = this(1)[unfolded valid_pos_cert_def] and neg = this(2)[unfolded valid_neg_cert_def]
 
   let ?x = "\<lambda>s. real_of_rat (solution (pos_cert c) !! s)"
-  have "real_of_ereal (MDP.p i) \<le> ?x i"
+  have "enn2real (MDP.p i) \<le> ?x i"
   proof (rule MDP.p_ub')
     show "i \<in> S" using assms by simp
   next
@@ -299,7 +310,7 @@ proof -
       show ?case
       proof cases
         assume "t \<in> S1"
-        with less.hyps[OF ord _ `0 < ?x t`] X show ?thesis 
+        with less.hyps[OF ord _ `0 < ?x t`] X show ?thesis
           by auto
       next
         assume "t \<notin> S1"
@@ -318,7 +329,7 @@ proof -
     by (simp add: P_max_def)
 
   let ?x = "\<lambda>s. real_of_rat (solution (neg_cert c) !! s)"
-  have "?x i \<le> real_of_ereal (MDP.n i)"
+  have "?x i \<le> enn2real (MDP.n i)"
   proof (rule MDP.n_lb')
     show "i \<in> S" using assms by simp
   next
@@ -335,7 +346,7 @@ proof -
       using valid_sub_certD[OF `valid_mdp_rp mdp` neg] by simp
   next
     show "wf ((S \<times> S \<inter> {(s, t). snd (witness (neg_cert c) !! t) < snd (witness (neg_cert c) !! s)})\<inverse>)" (is "wf ?F")
-      using `finite S`
+      using MDP.S_finite
       by (intro finite_acyclic_wf_converse acyclicI_order[where f="\<lambda>s. snd (witness (neg_cert c) !! s)"]) auto
 
     fix s D assume 2: "s \<in> S1" "D \<in> K s" and "?x s \<noteq> 0"
@@ -356,7 +367,7 @@ proof -
       unfolding eq by (auto dest: list_all2_nthD2 list_all2_lengthD)
     with a `s \<in> S1` have js_a: "js ! a \<in> D" "(js ! a, s) \<in> ?F"
       by (auto simp: set_pmf_iff)
-    
+
     show "\<exists>t\<in>D. (t, s) \<in> ?F \<and> t \<in> S1 \<and> ?x t \<noteq> 0 \<or> t \<in> S2"
     proof cases
       assume "js ! a \<in> S1" with js_a `0 < ?x (js ! a)` show ?thesis by auto
@@ -370,7 +381,7 @@ proof -
     qed
   next
     fix s assume "s \<in> S - S1 - S2" then show "?x s = 0"
-      using valid_sub_certD(1)[OF `valid_mdp_rp mdp` neg, of s] by simp      
+      using valid_sub_certD(1)[OF `valid_mdp_rp mdp` neg, of s] by simp
   qed
   then show ?min
     by (simp add: P_min_def)

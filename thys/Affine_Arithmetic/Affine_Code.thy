@@ -1,12 +1,12 @@
-section {* Implementation *}
+section \<open>Implementation\<close>
 theory Affine_Code
 imports
   Affine_Approximation
 begin
 
-text {* Implementing partial deviations as sorted lists of coefficients. *}
+text \<open>Implementing partial deviations as sorted lists of coefficients.\<close>
 
-subsection {* Reverse Sorted, Distinct Association Lists *}
+subsection \<open>Reverse Sorted, Distinct Association Lists\<close>
 
 typedef (overloaded) ('a, 'b) slist =
   "{xs::('a::linorder \<times> 'b) list. distinct (map fst xs) \<and> sorted (rev (map fst xs))}"
@@ -33,7 +33,7 @@ lift_definition Pdevs::"(nat, 'a::zero) slist \<Rightarrow> 'a pdevs"
 
 code_datatype Pdevs
 
-subsection {* Degree *}
+subsection \<open>Degree\<close>
 
 primrec degree_list::"(nat \<times> 'a::zero) list \<Rightarrow> nat" where
   "degree_list [] = 0"
@@ -45,7 +45,7 @@ lemma degree_list_eq_zeroD:
   assumes "degree_list xs = 0"
   shows "the_default 0 (map_of xs i) = 0"
   using assms
-  by (induct xs) (auto simp: Pdevs_raw_def sorted_append split: split_if_asm)
+  by (induct xs) (auto simp: Pdevs_raw_def sorted_append split: if_split_asm)
 
 lemma degree_slist_eq_zeroD: "degree_slist xs = 0 \<Longrightarrow> degree (Pdevs xs) = 0"
   unfolding degree_eq_Suc_max
@@ -57,7 +57,7 @@ proof (transfer, goal_cases)
   thus ?case
     by (induct xs)
       (auto simp: Pdevs_raw_def sorted_append map_of_eq_None_iff[symmetric]
-        split: split_if_asm option.split_asm)
+        split: if_split_asm option.split_asm)
 qed
 
 lemma degree_slist_zero:
@@ -66,7 +66,7 @@ proof (transfer, goal_cases)
   case (1 xs n j)
   thus ?case
     by (induct xs)
-      (auto simp: Pdevs_raw_def sorted_append split: split_if_asm option.split)
+      (auto simp: Pdevs_raw_def sorted_append split: if_split_asm option.split)
 qed
 
 lemma compute_degree[code]: "degree (Pdevs xs) = degree_slist xs"
@@ -74,7 +74,7 @@ lemma compute_degree[code]: "degree (Pdevs xs) = degree_slist xs"
     (auto dest: degree_slist_eq_zeroD degree_slist_eq_SucD intro!: degree_eqI degree_slist_zero)
 
 
-subsection {* Auxiliary Definitions *}
+subsection \<open>Auxiliary Definitions\<close>
 
 fun binop where
   "binop f z [] [] = []"
@@ -87,14 +87,14 @@ fun binop where
 
 lemma set_binop_elemD1:
   "(a, b) \<in> set (binop f z xs ys) \<Longrightarrow> (a \<in> set (map fst xs) \<or> a \<in> set (map fst ys))"
-  by (induct f z xs ys rule: binop.induct) (auto split: split_if_asm)
+  by (induct f z xs ys rule: binop.induct) (auto split: if_split_asm)
 
 lemma set_binop_elemD2:
   "(a, b) \<in> set (binop f z xs ys) \<Longrightarrow>
     (\<exists>x\<in>set (map snd xs). b = f x z) \<or>
     (\<exists>y\<in>set (map snd ys). b = f z y) \<or>
     (\<exists>x\<in>set (map snd xs). \<exists>y\<in>set (map snd ys). b = f x y)"
-  by (induct f z xs ys rule: binop.induct) (auto split: split_if_asm)
+  by (induct f z xs ys rule: binop.induct) (auto split: if_split_asm)
 
 abbreviation "rsorted\<equiv>\<lambda>x. sorted (rev x)"
 
@@ -136,7 +136,7 @@ lemma length_merge_sorted_eq:
   by (induction f z xs ys rule: binop.induct) auto
 
 
-subsection {* Pointswise Addition *}
+subsection \<open>Pointswise Addition\<close>
 
 lift_definition add_slist::"(nat, 'a::{plus, zero}) slist \<Rightarrow> (nat, 'a) slist \<Rightarrow> (nat, 'a) slist" is
   "\<lambda>xs ys. binop op + 0 xs ys"
@@ -161,14 +161,14 @@ lemma compute_add_pdevs[code]: "add_pdevs (Pdevs xs) (Pdevs ys) = Pdevs (add_sli
   by (rule pdevs_eqI) simp
 
 
-subsection {* Set of Coefficients *}
+subsection \<open>Set of Coefficients\<close>
 
 lift_definition set_slist::"(nat, 'a::real_vector) slist \<Rightarrow> (nat * 'a) set" is set .
 
 lemma finite_set_slist[intro, simp]: "finite (set_slist xs)"
   by transfer simp
 
-subsection {* Domain *}
+subsection \<open>Domain\<close>
 
 lift_definition list_of_slist::"('a::linorder, 'b::zero) slist \<Rightarrow> ('a * 'b) list"
   is "\<lambda>xs. filter (\<lambda>x. snd x \<noteq> 0) xs" .
@@ -212,7 +212,7 @@ lift_definition slist_of_pdevs::"'a pdevs \<Rightarrow> (nat, 'a::real_vector) s
     filter_map o_def distinct_map image_def
     intro!: distinct_filter sorted_filter[of "\<lambda>x. x", simplified])
 
-subsection {* Application *}
+subsection \<open>Application\<close>
 
 lift_definition slist_apply::"('a::linorder, 'b::zero) slist \<Rightarrow> 'a \<Rightarrow> 'b" is
   "\<lambda>xs i. the_default 0 (map_of xs i)" .
@@ -221,7 +221,7 @@ lemma compute_pdevs_apply[code]: "pdevs_apply (Pdevs x) i = slist_apply x i"
   by transfer (auto simp: Pdevs_raw_def)
 
 
-subsection {* Total Deviation *}
+subsection \<open>Total Deviation\<close>
 
 lift_definition tdev_slist::"(nat, 'a::ordered_euclidean_space) slist \<Rightarrow> 'a" is
   "listsum o map (abs o snd)" .
@@ -268,7 +268,7 @@ proof -
 qed
 
 
-subsection {* Minkowski Sum *}
+subsection \<open>Minkowski Sum\<close>
 
 lemma dropWhile_rsorted_eq_filter:
   "rsorted (map fst xs) \<Longrightarrow> dropWhile (\<lambda>(i, x). i \<ge> (m::nat)) xs = filter (\<lambda>(i, x). i < m) xs"
@@ -328,7 +328,7 @@ lemma compute_msum_pdevs[code]: "msum_pdevs m (Pdevs xs) (Pdevs ys) = Pdevs (msu
   by (rule pdevs_eqI) (auto simp: pdevs_apply_msum_slist pdevs_apply_msum_pdevs)
 
 
-subsection {* Unary Operations *}
+subsection \<open>Unary Operations\<close>
 
 lift_definition map_slist::"('a \<Rightarrow> 'b) \<Rightarrow> (nat, 'a) slist \<Rightarrow> (nat, 'b) slist" is "\<lambda>f. map (apsnd f)"
   by simp
@@ -353,7 +353,7 @@ lemma compute_scaleR_pdves[code]: "scaleR_pdevs r (Pdevs xs) = Pdevs (map_slist 
     "trunc_err_pdevs p (Pdevs xs) = Pdevs (map_slist (\<lambda>x. eucl_truncate_down p x - x) xs)"
   by (auto intro!: pdevs_eqI simp: pdevs_apply_map_slist zero_prod_def)
 
-subsection {* Filter *}
+subsection \<open>Filter\<close>
 
 lift_definition filter_slist::"(nat \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> (nat, 'a) slist \<Rightarrow> (nat, 'a) slist"
   is "\<lambda>P xs. filter (\<lambda>(i, x). (P i x)) xs"
@@ -373,7 +373,7 @@ lemma compute_filter_pdevs[code]: "filter_pdevs P (Pdevs xs) = Pdevs (filter_sli
   by (auto simp: pdevs_apply_filter_slist intro!: pdevs_eqI)
 
 
-subsection {* Constant *}
+subsection \<open>Constant\<close>
 
 lift_definition zero_slist::"(nat, 'a) slist" is "[]" by simp
 
@@ -420,7 +420,7 @@ lemma compute_One_pdevs[code]: "One_pdevs = Pdevs One_slist"
   by (rule pdevs_eqI) (simp add: pdevs_apply_One_slist)
 
 
-subsection {* Update *}
+subsection \<open>Update\<close>
 
 primrec update_list::"nat \<Rightarrow> 'a \<Rightarrow> (nat * 'a) list \<Rightarrow> (nat * 'a) list"
   where
@@ -437,21 +437,21 @@ lemma in_set_update_listD:
   assumes "y \<in> set (update_list n x ys)"
   shows "y = (n, x) \<or> (y \<in> set ys)"
   using assms
-  by (induct ys) (auto split: split_if_asm)
+  by (induct ys) (auto split: if_split_asm)
 
 lemma in_set_update_listI:
   "y = (n, x) \<or> (fst y \<noteq> n \<and> y \<in> set ys) \<Longrightarrow> y \<in> set (update_list n x ys)"
-  by (induct ys) (auto split: split_if_asm)
+  by (induct ys) (auto split: if_split_asm)
 
 lemma in_set_update_list: "(n, x) \<in> set (update_list n x xs)"
   by (induct xs) simp_all
 
 lemma overwrite_update_list: "(a, b) \<in> set xs \<Longrightarrow> (a, b) \<notin> set (update_list n x xs) \<Longrightarrow> a = n"
-  by (induct xs) (auto split: split_if_asm)
+  by (induct xs) (auto split: if_split_asm)
 
 lemma insert_update_list:
   "distinct (map fst xs) \<Longrightarrow> rsorted (map fst xs) \<Longrightarrow> (a, b) \<in> set (update_list a x xs) \<Longrightarrow> b = x"
-  by (induct xs) (force split: split_if_asm simp: sorted_append)+
+  by (induct xs) (force split: if_split_asm simp: sorted_append)+
 
 lemma set_update_list_eq: "distinct (map fst xs) \<Longrightarrow> rsorted (map fst xs) \<Longrightarrow>
     set (update_list n x xs) = insert (n, x) (set xs - {x. fst x = n})"
@@ -472,7 +472,7 @@ lemma compute_pdev_upd[code]: "pdev_upd (Pdevs xs) n x = Pdevs (update_slist n x
   by (rule pdevs_eqI) (auto simp: pdevs_apply_update_slist)
 
 
-subsection {* Approximate Total Deviation *}
+subsection \<open>Approximate Total Deviation\<close>
 
 lift_definition fold_slist::"('a \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> (nat, 'a::zero) slist \<Rightarrow> 'b \<Rightarrow> 'b"
   is "\<lambda>f xs z. fold (f o snd) (filter (\<lambda>x. snd x \<noteq> 0) xs) z" .
@@ -492,7 +492,7 @@ lemma compute_tdev'[code]:
   unfolding tdev'_def listsum'_def compute_list_of_pdevs
   by transfer (auto simp: o_def fold_map)
 
-subsection {* Equality *}
+subsection \<open>Equality\<close>
 
 lemma slist_apply_list_of_slist_eq: "slist_apply a i = the_default 0 (map_of (list_of_slist a) i)"
   by (transfer)
@@ -505,7 +505,7 @@ lemma compute_equal_pdevs[code]:
     compute_list_of_pdevs[symmetric])
 
 
-subsection {* From List of Generators *}
+subsection \<open>From List of Generators\<close>
 
 lift_definition slist_of_list::"'a::zero list \<Rightarrow> (nat, 'a) slist"
   is "\<lambda>xs. rev (zip [0..<length xs] xs)"

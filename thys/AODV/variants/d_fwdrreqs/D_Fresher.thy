@@ -114,8 +114,8 @@ lemma iD_nsqn_sqn [elim, simp]:
 lemma nsqn_update_changed_kno_val [simp]: "\<And>rt ip dsn dsk hops nhip.
   rt \<noteq> update rt ip (dsn, kno, val, hops, nhip, {})
    \<Longrightarrow> nsqn (update rt ip (dsn, kno, val, hops, nhip, {})) ip = dsn"
-  using assms unfolding nsqn\<^sub>r_def update_def
-  by (clarsimp simp: kD_nsqn split: option.split_asm option.split split_if_asm)
+  unfolding nsqn\<^sub>r_def update_def
+  by (clarsimp simp: kD_nsqn split: option.split_asm option.split if_split_asm)
      (metis fun_upd_triv)
 
 lemma nsqn_addpreRT_inv [simp]:
@@ -621,7 +621,7 @@ lemma rt_strictly_fresher_trans [elim, trans]:
  qed
 
 lemma rt_strictly_fresher_irefl [simp]: "\<not> (rt \<sqsubset>\<^bsub>dip\<^esub> rt)"
-  using assms unfolding rt_strictly_fresher_def
+  unfolding rt_strictly_fresher_def
   by clarsimp
 
 lemma rt_fresher_trans_rt_strictly_fresher [elim, trans]:

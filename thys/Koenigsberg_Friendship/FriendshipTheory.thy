@@ -632,7 +632,7 @@ proof -
     qed
   moreover have "\<Union>((\<lambda>x. {n. R x n}) ` A) = (\<Union>x\<in>A. {n. R x n})" by auto
   moreover have "finite ((\<lambda>x. {n. R x n}) ` A )" by (metis assms(3) finite_imageI)
-  moreover have "finite (\<Union>((\<lambda>x. {n. R x n}) ` A))" by (metis (full_types) Union_image_eq assms(1) 
+  moreover have "finite (\<Union>((\<lambda>x. {n. R x n}) ` A))" by (metis (full_types) assms(1) 
     assms(2) assms(3) card_eq_0_iff finite_UN_I less_nat_zero_code)
   moreover have " card A = card ((\<lambda>x. {n. R x n}) ` A)" 
     proof -

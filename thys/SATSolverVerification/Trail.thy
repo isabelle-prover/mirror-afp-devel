@@ -62,7 +62,7 @@ lemma elementMemElements [simp]:
   assumes "x \<in> set M"
   shows "element x \<in> set (elements M)"
 using assms
-by (induct M) (auto split: split_if_asm)
+by (induct M) (auto split: if_split_asm)
 
 lemma elementsAppend [simp]:
   shows "elements (a @ b) = elements a @ elements b"
@@ -138,7 +138,7 @@ proof (induct M)
       by (auto simp add: uniqAppendIff)
     with Cons
     have ?case
-      by (auto split: split_if_asm)
+      by (auto split: if_split_asm)
   }
   moreover
   {
@@ -150,7 +150,7 @@ proof (induct M)
       by (auto simp add: uniqAppendIff)
     with Cons
     have ?case
-      by (auto split: split_if_asm)
+      by (auto split: if_split_asm)
   }
   moreover
   {
@@ -190,8 +190,7 @@ by (induct t) auto
 
 lemma markedElementIsMarkedTrue: 
   shows "(m \<in> set (markedElements M)) = ((m, True) \<in> set M)"
-using assms
-by (induct M) (auto split: split_if_asm)
+by (induct M) (auto split: if_split_asm)
 
 lemma markedElementsAppend: 
   shows "markedElements (M1 @ M2) = markedElements M1 @ markedElements M2"
@@ -438,7 +437,7 @@ lemma markedElementIsMemberOfItsMarkedElementsTo:
   "element e \<in> set (markedElementsTo (element e) M)"
 using assms
 unfolding markedElementsTo_def
-by (induct M) (auto split: split_if_asm)
+by (induct M) (auto split: if_split_asm)
 
 lemma markedElementsToPrefixElement: 
   assumes "isPrefix p M" and "e \<in> set (elements p)"
@@ -585,7 +584,7 @@ proof (induct M)
     from `precedes a b (elements (m # M'))`
     have "a \<in> set (elements (m # M'))" "b \<in> set (elements (m # M'))"
       unfolding precedes_def
-      by (auto split: split_if_asm)
+      by (auto split: if_split_asm)
     from `a \<noteq> element m` `a \<in> set (elements (m # M'))`
     have "a \<in> set (elements M')"
       by simp
@@ -639,7 +638,7 @@ proof (induct M)
     moreover
     from `d \<noteq> element m` `d \<in> set (markedElements (m # M'))`
     have "d \<in> set (markedElements M')"
-      by (simp split: split_if_asm)
+      by (simp split: if_split_asm)
     from `uniq (elements (m # M'))` `d \<in> set (markedElements M')`
     have "1 \<le> elementLevel d M'"
       using elementLevelMarkedGeq1[of "M'" "d"]
@@ -648,7 +647,7 @@ proof (induct M)
     have ?case
       unfolding elementLevel_def
       unfolding markedElementsTo_def
-      by (auto split: split_if_asm)
+      by (auto split: if_split_asm)
   }
   moreover
   {
@@ -669,7 +668,7 @@ proof (induct M)
     from `precedes e d (elements (m # M'))`
     have "e \<in> set (elements (m # M'))" "d \<in> set (elements (m # M'))"
       unfolding precedes_def
-      by (auto split: split_if_asm)
+      by (auto split: if_split_asm)
     from `e \<noteq> element m` `e \<in> set (elements (m # M'))`
     have "e \<in> set (elements M')"
       by simp
@@ -680,7 +679,7 @@ proof (induct M)
     moreover
     from `d \<noteq> element m` `d \<in> set (markedElements (m # M'))`
     have "d \<in> set (markedElements M')"
-      by (simp split: split_if_asm)
+      by (simp split: if_split_asm)
     ultimately
     have "elementLevel e M' < elementLevel d M'"
       using `uniq (elements (m # M'))` Cons
@@ -950,7 +949,7 @@ proof (induct M arbitrary: i k)
   }
   ultimately
   show ?case
-    by (auto split: split_if_asm)
+    by (auto split: if_split_asm)
 qed simp
 
 lemma isPrefixPrefixToLevel_auxLowerLevel:
@@ -1212,7 +1211,7 @@ proof (induct M arbitrary: i)
       unfolding prefixToLevel_def
       unfolding elementLevel_def
       unfolding markedElementsTo_def
-      by (simp split: split_if_asm)
+      by (simp split: if_split_asm)
   next
     case False
     with `e \<in> set (elements (m # M'))`
@@ -1226,7 +1225,7 @@ proof (induct M arbitrary: i)
       have "(elementLevel e M') + i + 1 \<le> level"
         unfolding elementLevel_def
         unfolding markedElementsTo_def
-        by (simp split: split_if_asm)
+        by (simp split: if_split_asm)
       moreover
       have "elementLevel e M' \<ge> 0"
         by auto
@@ -1244,10 +1243,10 @@ proof (induct M arbitrary: i)
       with `e \<noteq> element m` `elementLevel e (m # M') + i \<le> level` have "elementLevel e M' + i \<le> level"
         unfolding elementLevel_def
         unfolding markedElementsTo_def
-        by (simp split: split_if_asm)
+        by (simp split: if_split_asm)
       with `e \<in> set (elements M')` have "e \<in> set (elements (prefixToLevel_aux M' level i))"
         using Cons
-        by (auto split: split_if_asm)
+        by (auto split: if_split_asm)
       with `e \<noteq> element m` False show ?thesis
         by simp
     qed
@@ -1309,7 +1308,7 @@ proof (induct M)
     from Cons
     have "currentLevel M' = 0" and "markedElements M' = []" and "\<not> marked a"
       unfolding currentLevel_def
-      by (auto split: split_if_asm)
+      by (auto split: if_split_asm)
     thus ?thesis
       using Cons
       unfolding prefixToLevel_def
@@ -1605,7 +1604,7 @@ lemma lastMarkedNotInPrefixBeforeLastMarked:
   shows "\<not> (lastMarked M) \<in> set (elements (prefixBeforeLastMarked M))"
 using assms
 unfolding lastMarked_def
-by (induct M) (auto split: split_if_asm simp add: markedElementsAreElements)
+by (induct M) (auto split: if_split_asm simp add: markedElementsAreElements)
 
 lemma uniqImpliesPrefixBeforeLastMarkedIsPrefixBeforeLastMarked:
   assumes "markedElements M \<noteq> []" and "(lastMarked M) \<notin> set (elements M)"
@@ -1630,7 +1629,7 @@ next
       by auto
     thus ?thesis
       using Cons
-      by (auto split: split_if_asm simp add: markedElementsAreElements)
+      by (auto split: if_split_asm simp add: markedElementsAreElements)
   qed
 qed
 
@@ -1639,6 +1638,6 @@ lemma markedElementsAreElementsBeforeLastDecisionAndLastDecision:
   shows "(markedElements M) = (markedElements (prefixBeforeLastMarked M)) @ [lastMarked M]"
 using assms
 unfolding lastMarked_def
-by (induct M) (auto split: split_if_asm)
+by (induct M) (auto split: if_split_asm)
 
 end

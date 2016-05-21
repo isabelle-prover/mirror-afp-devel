@@ -5,8 +5,6 @@ session LTL_to_GBA (AFP) = CAVA_Automata +
   theories [document = false]
     "../Stuttering_Equivalence/PLTL"
   theories
-    LTL
-    LTL_Rewrite
     LTL_Stutter
     LTL_to_GBA
     LTL_to_GBA_impl

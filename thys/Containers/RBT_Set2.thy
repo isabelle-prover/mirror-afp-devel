@@ -262,7 +262,7 @@ by transfer (simp add: linorder.rbt_lookup_rbt_delete[OF set_linorder] ID_ccompa
 
 lemma member_bulkload [simp]:
   "member (bulkload xs) (x :: 'a) \<longleftrightarrow> x \<in> set xs"
-by transfer (auto simp add: linorder.rbt_lookup_rbt_bulkload[OF set_linorder] rbt_comps map_of_map_Pair_const split: split_if_asm)
+by transfer (auto simp add: linorder.rbt_lookup_rbt_bulkload[OF set_linorder] rbt_comps map_of_map_Pair_const split: if_split_asm)
 
 lemma member_conv_keys: "member t = (\<lambda>x :: 'a. x \<in> set (keys t))"
 by(transfer)(simp add: ID_ccompare_neq_None linorder.rbt_lookup_keys[OF set_linorder] ord.is_rbt_rbt_sorted)
@@ -296,7 +296,7 @@ by(auto simp add: member_lookup fun_eq_iff lookup_meet[OF ID_ccompare_neq_None] 
 
 lemma member_inter_list [simp]:
   "member (inter_list (t :: 'a set_rbt) xs) = (\<lambda>x. member t x \<and> x \<in> set xs)"
-by transfer(auto simp add: ID_ccompare_neq_None fun_eq_iff linorder.rbt_lookup_fold_rbt_insert[OF set_linorder] ord.Empty_is_rbt map_of_map_Pair_key ord.rbt_lookup.simps rel_option_iff split: split_if_asm option.split_asm)
+by transfer(auto simp add: ID_ccompare_neq_None fun_eq_iff linorder.rbt_lookup_fold_rbt_insert[OF set_linorder] ord.Empty_is_rbt map_of_map_Pair_key ord.rbt_lookup.simps rel_option_iff split: if_split_asm option.split_asm)
 
 lemma member_filter [simp]:
   "member (filter P (t :: 'a set_rbt)) = (\<lambda>x. member t x \<and> P x)"

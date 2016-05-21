@@ -83,13 +83,6 @@ begin
   instance by(intro_classes)(simp_all add: def_hashmap_size_nat_def)
 end
 
-instantiation "nibble" :: hashable
-begin
-  definition [simp]: "hashcode (c :: nibble) = uint32_of_int (int (nat_of_nibble c))"
-  definition "def_hashmap_size = (\<lambda>_ :: nibble itself. 16)"
-  instance by(intro_classes)(simp_all add: def_hashmap_size_nibble_def)
-end
-
 instantiation char :: hashable
 begin
   definition [simp]: "hashcode (c :: char) == uint32_of_int (int (nat_of_char c))"

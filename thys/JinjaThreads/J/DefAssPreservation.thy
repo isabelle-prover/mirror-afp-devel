@@ -43,7 +43,7 @@ apply blast
 apply blast
 apply blast
 apply blast
-apply(force split: split_if_asm)
+apply(force split: if_split_asm)
 apply blast
 apply blast
 apply blast
@@ -95,7 +95,7 @@ next
   case RedCall thus ?case by(auto dest!:sees_wf_mdecl[OF wf] simp:wf_mdecl_def elim!:D_mono')
 next
   case BlockRed thus ?case
-    by(auto simp:hyperset_defs elim!:D_mono' simp del:fun_upd_apply split: split_if_asm)
+    by(auto simp:hyperset_defs elim!:D_mono' simp del:fun_upd_apply split: if_split_asm)
 next
   case SynchronizedRed1 thus ?case by(auto elim!: D_mono[OF red_lA_incr])
 next

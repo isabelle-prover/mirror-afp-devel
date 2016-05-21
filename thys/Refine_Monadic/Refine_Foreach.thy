@@ -925,9 +925,12 @@ subsection {* FOREACH with empty sets *}
 
 lemma FOREACHoci_emp [simp] :
   "FOREACHoci R \<Phi> {} c f \<sigma> = do {ASSERT (\<Phi> {} \<sigma>); RETURN \<sigma>}"
-apply (simp add: FOREACHoci_def bind_RES image_def)
-apply (simp add: WHILEIT_unfold FOREACH_cond_def)
-done
+proof -
+  have "\<And>xs. {xs. xs = [] \<and> distinct xs \<and> sorted_by_rel R xs} = {[]}"
+    by auto
+  then show ?thesis
+    by (simp add: FOREACHoci_def bind_RES image_def WHILEIT_unfold FOREACH_cond_def)
+qed
 
 lemma FOREACHoi_emp [simp] :
   "FOREACHoi R \<Phi> {} f \<sigma> = do {ASSERT (\<Phi> {} \<sigma>); RETURN \<sigma>}"
@@ -1021,8 +1024,6 @@ proof goal_cases
   case (1 l l' c c' f f' s s')
   thus ?case
     apply (induct arbitrary: s s')
-    using assms
-    apply -
     apply (simp only: nfoldli_simps True_implies_equals)
     apply parametricity
     apply (simp only: nfoldli_simps True_implies_equals)
@@ -1276,7 +1277,7 @@ text {*
 lemma autoref_nfoldli[autoref_rules]:
   shows "(nfoldli, nfoldli)
   \<in> \<langle>Ra\<rangle>list_rel \<rightarrow> (Rb \<rightarrow> bool_rel) \<rightarrow> (Ra \<rightarrow> Rb \<rightarrow> \<langle>Rb\<rangle>nres_rel) \<rightarrow> Rb \<rightarrow> \<langle>Rb\<rangle>nres_rel"
-  using assms param_nfoldli .
+  by (rule param_nfoldli)
 
 text {* This constant is a placeholder to be converted to
   custom operations by pattern rules *}

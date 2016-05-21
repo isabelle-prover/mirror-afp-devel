@@ -2533,7 +2533,7 @@ term "op *\<^sub>R"
 
 (*One example of the use of *\<^sub>R, *s and *k appears in the following theorem (obtained from AFP entry 
   about Tarski's Geometry, 
-  see http://afp.sourceforge.net/browser_info/devel/AFP/Tarskis_Geometry/Linear_Algebra2.html)*)
+  see http://isa-afp.org/browser_info/devel/AFP/Tarskis_Geometry/Linear_Algebra2.html)*)
 (*
   lemma scalar_matrix_vector_assoc:
   fixes A :: "real^('m::finite)^('n::finite)"

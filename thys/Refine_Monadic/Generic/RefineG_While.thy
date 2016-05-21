@@ -143,7 +143,7 @@ proof -
     apply (rule transfer_RECT'[where fr="while b f"])
     apply (rule while_unfold)
     unfolding WHILEI_body_def
-    apply (split split_if, intro allI impI conjI)+
+    apply (split if_split, intro allI impI conjI)+
     apply simp_all
 
     apply (rule order_trans[OF _ ibind_mono[OF REF order_refl]])
@@ -168,9 +168,7 @@ lemma WHILE_mono_prover_rule[refine_mono]:
   "\<lbrakk>\<And>x. flat_ge (f x) (f' x)\<rbrakk> \<Longrightarrow> flat_ge (WHILEIT I b f s0) (WHILEIT I b f' s0)"
   unfolding WHILE_def WHILEI_def WHILEI_body_def
     WHILET_def WHILEIT_def
-  using assms apply -
-  apply (refine_mono)+
-  done
+  by refine_mono+
 
 end
 
@@ -257,7 +255,7 @@ lemma WHILEI_rule:
       apply (rule I0)
     
       unfolding WHILEI_body_def
-      apply (split split_if)+
+      apply (split if_split)+
       apply (intro impI conjI)
       apply simp_all
       apply (rule ibind_rule)
@@ -281,7 +279,7 @@ lemma WHILEIT_rule:
   unfolding WHILEIT_def
   apply (rule RECT_rule[OF WHILEI_body_trimono WF, where pre=I,OF I0])
   unfolding WHILEI_body_def
-  apply (split split_if)+
+  apply (split if_split)+
   apply (intro impI conjI)
   apply simp_all
 

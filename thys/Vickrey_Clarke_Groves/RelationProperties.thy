@@ -31,7 +31,7 @@ lemma injflip: "inj_on flip A"
   by (metis flip_flip inj_on_def)
 
 lemma lm01: "card P = card (P^-1)" 
-  using assms card_image flip_conv injflip by metis
+  using card_image flip_conv injflip by metis
 
 lemma cardinalityOneTheElemIdentity: "(card X = 1) = (X={the_elem X})" 
   by (metis One_nat_def card_Suc_eq card_empty empty_iff the_elem_eq)

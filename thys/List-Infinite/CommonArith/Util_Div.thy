@@ -421,7 +421,7 @@ lemma zmod_zminus_eq_conv_pos: "
   0 < (m::int) \<Longrightarrow> (a mod - m = b mod - m) = (a mod m = b mod m)"
 apply (simp only: mod_minus_right neg_equal_iff_equal)
 apply (simp only: zmod_zminus1_eq_if)
-apply (split split_if)+
+apply (split if_split)+
 apply (safe, simp_all)
 apply (insert pos_mod_bound[of m a] pos_mod_bound[of m b], simp_all)
 done
@@ -745,7 +745,7 @@ lemma div_Suc: "
   0 < n \<Longrightarrow> Suc m div n = (if Suc (m mod n) = n then Suc (m div n) else m div n)"
 apply (drule Suc_leI, drule le_imp_less_or_eq)
 apply (case_tac "n = Suc 0", simp)
-apply (split split_if, intro conjI impI)
+apply (split if_split, intro conjI impI)
  apply (rule_tac t="Suc m" and s="m + 1" in subst, simp)
  apply (subst div_add1_eq2, simp+)
 apply (insert le_neq_trans[OF mod_less_divisor[THEN Suc_leI, of n m]], simp)
@@ -861,7 +861,7 @@ apply (rule subst[of
   "if a mod m \<le> b mod m then 0 else Suc 0"
   "(m + a mod m - Suc(b mod m)) div m"])
  prefer 2 apply (rule div_diff1_eq_if)
-apply (split split_if, rule conjI)
+apply (split if_split, rule conjI)
  apply simp
 apply (clarsimp simp: linorder_not_le)
 apply (rule sym)
@@ -930,7 +930,7 @@ lemma mod_pred: "
   0 < n \<Longrightarrow>
   (n - Suc 0) mod m = (
     if n mod m = 0 then m - Suc 0 else n mod m - Suc 0)"
-apply (split split_if, rule conjI)
+apply (split if_split, rule conjI)
  apply (simp add: mod_0_imp_mod_pred)
 apply clarsimp
 apply (case_tac "m = Suc 0", simp)
@@ -984,7 +984,7 @@ apply simp_all
 done
 
 lemma mod_eq_divisor_minus_Suc_0_conv: "Suc 0 < k \<Longrightarrow> (x mod k = k - Suc 0) = (Suc x mod k = 0)"
-by (simp only: mod_Suc, split split_if, fastforce)
+by (simp only: mod_Suc, split if_split, fastforce)
 
 
 subsubsection {* Some auxiliary facts about @{text div} *}

@@ -1,12 +1,13 @@
-section {* Euler method on Affine Forms *}
+section \<open>Euler method on Affine Forms\<close>
 theory Euler_Affine
 imports
   "~~/src/HOL/Decision_Procs/Dense_Linear_Order"
   "../IVP/Picard_Lindeloef_Qualitative"
+  "../Library/Linear_ODE"
   Euler_Affine_Code
 begin
 
-text{*\label{sec:euleraform}*}
+text\<open>\label{sec:euleraform}\<close>
 
 lemma inf_le_sup_same1: "inf a (b::'a::ordered_euclidean_space) \<le> sup a d"
   by (metis inf.coboundedI1 sup.cobounded1)
@@ -29,9 +30,9 @@ proof safe
     using xy assms by auto
 qed
 
-subsection {* operations on intervals *}
+subsection \<open>operations on intervals\<close>
 
-text {* include separate type of intervals in @{text approximate_sets0} *}
+text \<open>include separate type of intervals in \<open>approximate_sets0\<close>\<close>
 
 type_synonym 'a ivl = "'a*'a"
 
@@ -66,7 +67,7 @@ locale approximate_sets = approximate_sets0 +
   assumes set_of_appr_convex: "convex (set_of_appr X)"
   assumes set_of_apprs_set_of_appr: "[x] \<in> set_of_apprs [X] \<longleftrightarrow> x \<in> set_of_appr X"
   assumes set_of_apprs_switch: "x#y#xs \<in> set_of_apprs (X#Y#XS) \<Longrightarrow> y#x#xs \<in> set_of_apprs (Y#X#XS)"
-  assumes set_of_apprs_rotate: "x#y#xs \<in> set_of_apprs (X#Y#XS) \<Longrightarrow> y#xs@[x] \<in> set_of_apprs (Y#XS@[X])" --"TODO: better use the set (zip ...) property?"
+  assumes set_of_apprs_rotate: "x#y#xs \<in> set_of_apprs (X#Y#XS) \<Longrightarrow> y#xs@[x] \<in> set_of_apprs (Y#XS@[X])"
   assumes set_of_apprs_Nil: "xs \<in> set_of_apprs [] \<Longrightarrow> xs = []"
   assumes length_set_of_apprs: "xs \<in> set_of_apprs XS \<Longrightarrow> length xs = length XS"
   assumes set_of_apprs_Cons_ex: "xs \<in> set_of_apprs (X#XS) \<Longrightarrow> (\<exists>y ys. xs = y#ys \<and> y \<in> set_of_appr X \<and> ys \<in> set_of_apprs XS)"
@@ -127,11 +128,7 @@ locale approximate_ivp = approximate_ivp0 + approximate_sets +
      ode_d_approx optns (X'#DX'#XS) = (Some D') \<Longrightarrow>
      (ode_d x dx # x # dx # xs) \<in> set_of_apprs (D' # X' # DX' # XS)"
   assumes cont_fderiv: "continuous_on UNIV (\<lambda>((t::real, x), (dt::real, y)). ode_d x y)"
-    --{* TODO: get rid of the reals *}
-    --{* TODO: NOTE: if UNIV is too strong, then also a bound on
-      @{term "(\<lambda>(x, y). ode_d x y) ` (X \<times> cball 0 1)"} suffices for every step
-      (cf. @{thm compact_continuously_diff.ex_onorm_bound}) -- but this would need to be computed
-      in every step *}
+    \<comment>\<open>TODO: get rid of the reals\<close>
 begin
 
 lemma fderiv'[derivative_intros]: "((\<lambda>(t, y). ode y) has_derivative (\<lambda>(t, x) (dt, dx). ode_d x dx) (t, x)) (at (t, x) within X)"
@@ -178,8 +175,8 @@ proof -
   have "integral {t0..t1} (\<lambda>t. ode (x t)) =
     (t1 - t0) *\<^sub>R integral {0..1} (\<lambda>t. ode (x (t0 + t * (t1 - t0))))"
     using ivl
-    by (intro mvt_integral(2)[of _ "\<lambda>t1. integral {t0..t1} (\<lambda>t. ode (x t))" "\<lambda>t u. u *\<^sub>R ode (x t)"
-        t0 "t1 - t0", simplified, OF _ cont_ode_x])
+    by (intro mvt_integral[of _ "\<lambda>t1. integral {t0..t1} (\<lambda>t. ode (x t))" "\<lambda>t u. u *\<^sub>R ode (x t)"
+        t0 "t1 - t0", simplified])
       (auto intro!: integral_has_vector_derivative[OF cont_ode_x]
       simp: has_vector_derivative_def[symmetric])
   also
@@ -212,7 +209,7 @@ lemma picard_approx_ivl:
       sup_real_def min_def max_def zero_le_mult_iff not_le inner_add_left not_less bb
       intro: mult_right_mono mult_nonneg_nonpos mult_right_mono_neg)
 
-text {* automatic Picard operator *}
+text \<open>automatic Picard operator\<close>
 
 lemma P_appr_Some_ode_approxE:
   assumes "P_appr optns X0 h X = Some R"
@@ -264,7 +261,7 @@ obtains
   using assms
 proof (induct i arbitrary: X)
   case (Suc i) thus ?case
-    by (cases "P_appr optns X0 h X") (auto simp: split: split_if_asm )
+    by (cases "P_appr optns X0 h X") (auto simp: split: if_split_asm )
 qed simp
 
 lemma extend_appr_ivl:
@@ -425,7 +422,7 @@ lemma global_ivp_simps[simp]:
   "ivp_X (global_ivp t0 x0) = UNIV"
   by (simp_all add: global_ivp_def)
 
-text {* execution of @{term euler_step} *}
+text \<open>execution of @{term euler_step}\<close>
 context
   fixes optns x0 X0 h RES_ivl RES
   assumes x0: "x0 \<in> set_of_appr X0"
@@ -433,7 +430,7 @@ context
   assumes euler_step_returns: "euler_step optns X0 = Some (h, RES_ivl, RES)"
 begin
 
-text {* intermediate results *}
+text \<open>intermediate results\<close>
 context
   fixes n i CX X0' F D ERR S S' X1 CX1 t0 t1
   assumes pos_step: "0 < h"
@@ -482,22 +479,109 @@ proof (unfold_locales, simp_all add: step_ivp_def)
   finally show "x0 \<in> set_of_appr CX" .
 qed
 
-interpretation continuous T X f
+interpretation continuous_rhs T X f
   using iv_defined
   by unfold_locales (auto simp add: step_ivp_def split_beta
     intro!: continuous_on_compose2[of _ ode _ snd] has_derivative_continuous_on[OF fderiv] continuous_intros)
 
-interpretation compact_domain X
-  by standard (auto simp: step_ivp_def set_of_appr_eq compact_interval)
+lemma Blinfun_ode_d[simp]: "blinfun_apply (Blinfun (\<lambda>(dt, y). ode_d b y)) = (\<lambda>(dt, y). ode_d b y)"
+  by (subst bounded_linear_Blinfun_apply)
+    (auto intro!: has_derivative_bounded_linear fderiv'[THEN has_derivative_eq_rhs])
 
-interpretation derivative_on_convex T X f "\<lambda>(t, x) (dt, dx). ode_d x dx"
-  by standard
-    (auto simp: step_ivp_def step_less set_of_appr_eq  nonneg_step less_imp_le convex_real_interval
-      convex_closed_interval
-      simp del: inf_of_appr sup_of_appr
-      intro!: derivative_eq_intros has_derivative_eq_rhs[OF has_derivative_compose, of snd])
+interpretation derivative_set_bounded T X f "\<lambda>(t, x) (dt, dx). ode_d x dx" "Pair_of_list ` set_of_apprs [CX, F]"
+  "{inf_of_appr D .. sup_of_appr D}"
+proof
+  have "Pair_of_list ` set_of_apprs [CX, F] \<subseteq> set_of_appr CX \<times> set_of_appr F"
+    by (auto elim!: set_of_apprsE dest!: set_of_apprs_Nil)
+  moreover have "bounded (\<dots>)"
+    by (rule set_of_appr_compact compact_imp_bounded bounded_Times)+
+  ultimately show "bounded (Pair_of_list ` set_of_apprs [CX, F])"
+    by (blast intro: bounded_subset)
+  show "compact {inf_of_appr D .. sup_of_appr D}" "convex {inf_of_appr D..sup_of_appr D}"
+    by (simp_all add: compact_interval convex_closed_interval)
+  fix t x
+  assume "t \<in> T" "x \<in> X"
+  hence x: "[x] \<in> set_of_apprs [CX]" by (auto simp: step_ivp_def set_of_apprs_set_of_appr)
+  with ode_approx
+  have "[x, ode x] \<in> set_of_apprs [CX, F]"
+    by (auto intro!: ode_approx bounded_total_ode intro: set_of_apprs_switch)
+  thus "(x, ivp_f (step_ivp t0 x0 t1 CX) (t, x)) \<in> Pair_of_list ` set_of_apprs [CX, F]"
+    by (auto simp: step_ivp_def)
+next
+  fix t x d
+  assume "t \<in> T"
+  assume "(x, d) \<in> Pair_of_list ` set_of_apprs [CX, F]"
+  then obtain xs where xs: "Pair_of_list xs = (x, d)" "xs \<in> set_of_apprs [CX, F]" by auto
+  hence "xs = [x, d]"
+    by (auto elim!: set_of_apprsE dest!: set_of_apprs_Nil)
+  with xs have "[x, d] \<in> set_of_apprs [CX, F]" by simp
+  hence "[x, d, ode_d x d] \<in> set_of_apprs [CX, F, D]"
+    by (auto intro!: ode_d_approx bounded_ode_d intro: set_of_apprs_switch set_of_apprs_rotate3)
+  hence "ode_d x d \<in> set_of_appr D"
+    unfolding set_of_apprs_set_of_appr[symmetric]
+    by (blast intro: set_of_apprs_Cons)
+  thus "(case (t, x) of (t, x) \<Rightarrow> \<lambda>(dt, dx). ode_d x dx) (1, d) \<in> {inf_of_appr D .. sup_of_appr D}"
+    by auto
+next
+  show "T \<noteq> {}" "X \<noteq> {}" using iv_defined by auto
+  show "(f has_derivative (case tx of (t, x) \<Rightarrow> \<lambda>(dt, dx). ode_d x dx)) (at tx within T \<times> X)"
+    if "tx \<in> T \<times> X" for tx
+    using that
+    by (auto intro!: derivative_eq_intros simp: split_beta)
+qed
 
-interpretation unique_on_closed_cont_diff "step_ivp t0 x0 t1 CX" t1 "\<lambda>(t, x) (dt, dx). ode_d x dx"
+lemma t0': "ivp_t0 (step_ivp t0 x0 t1 CX) = t0"
+  by (simp add: step_ivp_def)
+
+lemma interval': "T = {t0..t1}"
+  by (auto simp: step_ivp_def)
+
+lemma blinfun_of_matrix_works':
+  fixes f::"'d::euclidean_space \<Rightarrow> 'e::euclidean_space"
+  assumes "bounded_linear f"
+  shows "blinfun_of_matrix (\<lambda>i j. (f j) \<bullet> i) x = f x"
+  using blinfun_of_matrix_works[of "Blinfun f"]
+  by (auto simp: bounded_linear_Blinfun_apply assms)
+
+lemma bounded_linear_ode_d: "bounded_linear (ode_d x)"
+  by (auto intro!: has_derivative_bounded_linear derivative_eq_intros)
+
+lemma continuous_on_ode_d[continuous_intros]:
+  assumes "continuous_on s f1"
+  assumes "continuous_on s f2"
+  shows "continuous_on s (\<lambda>x. ode_d (f1 x) (f2 x))"
+  by (rule continuous_on_compose2[OF cont_fderiv, where f="\<lambda>x. ((0, f1 x), (0, f2 x))",
+      simplified split_beta' fst_conv snd_conv])
+    (auto intro!: continuous_intros assms)
+
+lemma local_lipschitz_ode: "local_lipschitz UNIV UNIV (\<lambda>t::real. ode)"
+  apply (rule c1_implies_local_lipschitz[where f'="\<lambda>(t, x). blinfun_of_matrix (\<lambda>i j. ode_d x j \<bullet> i)"])
+  subgoal
+    by (auto intro!: derivative_eq_intros ext simp: blinfun_of_matrix_works' bounded_linear_ode_d)
+  subgoal
+    by (force simp: split_beta' blinfun_of_matrix_apply
+      intro: has_derivative_bounded_linear fderiv continuous_on_blinfun_componentwise
+        continuous_intros)
+  subgoal by simp
+  subgoal by simp
+  done
+
+definition "L_CX = (SOME L. \<forall>t. lipschitz X (\<lambda>x. f (t, x)) L)"
+
+lemma L_CX: "lipschitz X (\<lambda>x. f (t, x)) L_CX"
+proof -
+  from local_lipschitz_ode have "local_lipschitz {t0} (set_of_appr CX) (\<lambda>t::real. ode)"
+    by (rule local_lipschitz_on_subset) auto
+  from local_lipschitz_on_compact_implies_lipschitz[OF this]
+  obtain L where "\<forall>t. lipschitz X (\<lambda>x. f (t, x)) L"
+    by (force simp: set_of_appr_compact)
+  then have "\<forall>t. lipschitz X (\<lambda>x. f (t, x)) L_CX"
+    unfolding L_CX_def
+    by (rule someI)
+  then show ?thesis ..
+qed
+
+interpretation unique_on_closed "step_ivp t0 x0 t1 CX" t1 L_CX
 proof unfold_locales
   let ?step = "step_ivp t0 x0 t1 CX"
   fix t x
@@ -526,52 +610,17 @@ proof unfold_locales
   also note set_of_appr_eq[symmetric]
   finally show "ivp_x0 ?step + integral {ivp_t0 ?step..t} (\<lambda>t. ivp_f ?step (t, x t)) \<in> ivp_X ?step"
     using xt0 by simp
-qed (rule continuous_on_subset[where s=UNIV ], simp_all add: step_ivp_def cont_fderiv)
-
-interpretation derivative_set_bounded T X f "\<lambda>(t, x) (dt, dx). ode_d x dx" "Pair_of_list ` set_of_apprs [CX, F]"
-  "{inf_of_appr D .. sup_of_appr D}"
-proof
-  have "Pair_of_list ` set_of_apprs [CX, F] \<subseteq> set_of_appr CX \<times> set_of_appr F"
-    by (auto elim!: set_of_apprsE dest!: set_of_apprs_Nil)
-  moreover have "bounded (\<dots>)"
-    by (rule set_of_appr_compact compact_imp_bounded bounded_Times)+
-  ultimately show "bounded (Pair_of_list ` set_of_apprs [CX, F])"
-    by (blast intro: bounded_subset)
-  show "bounded {inf_of_appr D .. sup_of_appr D}"
-    by (simp add: bounded_closed_interval)
-  fix t x
-  assume "t \<in> T" "x \<in> X"
-  hence x: "[x] \<in> set_of_apprs [CX]" by (auto simp: step_ivp_def set_of_apprs_set_of_appr)
-  with ode_approx
-  have "[x, ode x] \<in> set_of_apprs [CX, F]"
-    by (auto intro!: ode_approx bounded_total_ode intro: set_of_apprs_switch)
-  thus "(x, ivp_f (step_ivp t0 x0 t1 CX) (t, x)) \<in> Pair_of_list ` set_of_apprs [CX, F]"
-    by (auto simp: step_ivp_def)
 next
-  fix t x d
-  assume "t \<in> T"
-  assume "(x, d) \<in> Pair_of_list ` set_of_apprs [CX, F]"
-  then obtain xs where xs: "Pair_of_list xs = (x, d)" "xs \<in> set_of_apprs [CX, F]" by auto
-  hence "xs = [x, d]"
-    by (auto elim!: set_of_apprsE dest!: set_of_apprs_Nil)
-  with xs have "[x, d] \<in> set_of_apprs [CX, F]" by simp
-  hence "[x, d, ode_d x d] \<in> set_of_apprs [CX, F, D]"
-    by (auto intro!: ode_d_approx bounded_ode_d intro: set_of_apprs_switch set_of_apprs_rotate3)
-  hence "ode_d x d \<in> set_of_appr D"
-    unfolding set_of_apprs_set_of_appr[symmetric]
-    by (blast intro: set_of_apprs_Cons)
-  thus "(case (t, x) of (t, x) \<Rightarrow> \<lambda>(dt, dx). ode_d x dx) (1, d) \<in> {inf_of_appr D .. sup_of_appr D}"
+  show "closed X"
+    using compact_eq_bounded_closed set_of_appr_compact
     by auto
-qed (simp add: is_interval_closed_interval)
+next
+  show "lipschitz X (\<lambda>x. f (t, x)) L_CX" for t
+    by (rule L_CX)
+qed
 
 lemma solution_t0': "solution t0 = x0"
   using solution_t0 by (simp add: step_ivp_def)
-
-lemma t0': "ivp_t0 (step_ivp t0 x0 t1 CX) = t0"
-  by (simp add: step_ivp_def)
-
-lemma interval': "T = {t0..t1}"
-  by (auto simp: step_ivp_def)
 
 lemma euler_consistent_solution':
   assumes "t1' \<in> {t0 .. t1}"
@@ -668,11 +717,11 @@ proof -
       fix i::'a assume "i \<in> Basis"
       show "inf 0 ((h * h / 2) *\<^sub>R inf_of_appr D) \<bullet> i \<le> (h' * h' / 2) *\<^sub>R inf_of_appr D \<bullet> i"
         using assms
-        unfolding inner_Basis_inf_left[OF `i \<in> Basis`] inner_zero_left inf_real_def inner_scaleR_left
+        unfolding inner_Basis_inf_left[OF \<open>i \<in> Basis\<close>] inner_zero_left inf_real_def inner_scaleR_left
         by (intro min_zero_mult_nonneg_le) (auto intro!: mult_mono)
       show "(h' * h' / 2) *\<^sub>R sup_of_appr D \<bullet> i \<le> sup 0 ((h * h / 2) *\<^sub>R sup_of_appr D) \<bullet> i"
         using assms
-        unfolding inner_Basis_sup_left[OF `i \<in> Basis`] inner_zero_left sup_real_def inner_scaleR_left
+        unfolding inner_Basis_sup_left[OF \<open>i \<in> Basis\<close>] inner_zero_left sup_real_def inner_scaleR_left
         by (intro max_zero_mult_nonneg_le) (auto intro!: mult_mono)
     qed
     also
@@ -694,7 +743,7 @@ proof -
 qed
 
 lemma unique_on_open_global: "unique_on_open (global_ivp t0 x0)"
-proof (unfold_locales, safe)
+proof (unfold_locales)
   let ?ivp = "(global_ivp t0 x0)"
   show "ivp_t0 ?ivp \<in> ivp_T ?ivp" "ivp_x0 ?ivp \<in> ivp_X ?ivp"
     by (simp_all add: global_ivp_def)
@@ -704,38 +753,20 @@ proof (unfold_locales, safe)
     by (auto simp: global_ivp_def intro!: continuous_intros fderiv' has_derivative_continuous_on)
   fix I t x
   assume "t \<in> (ivp_T ?ivp)" "x \<in> (ivp_X ?ivp)"
-  --{* TODO: make local lipschitz based on open sets *}
-  with open_contains_cball[of "(ivp_T ?ivp)"] `open (ivp_T ?ivp)`
-    open_contains_cball[of "(ivp_X ?ivp)"] `open (ivp_X ?ivp)`
+  \<comment>\<open>TODO: make local lipschitz based on open sets\<close>
+  with open_contains_cball[of "(ivp_T ?ivp)"] \<open>open (ivp_T ?ivp)\<close>
+    open_contains_cball[of "(ivp_X ?ivp)"] \<open>open (ivp_X ?ivp)\<close>
   obtain u v where uv: "cball t u \<subseteq> (ivp_T ?ivp)" "cball x v \<subseteq> (ivp_X ?ivp)" "u > 0" "v > 0"
     by blast
   def w \<equiv> "min u v"
   have "cball t w \<subseteq> (ivp_T ?ivp)" "cball x w \<subseteq> (ivp_X ?ivp)" "w > 0" using uv by (auto simp: w_def)
   have "cball t w = {t - w .. t + w}" by (auto simp: dist_real_def)
-  from cube_in_cball'[OF `w > 0`] obtain w' where w':
+  from cbox_in_cball'[OF \<open>w > 0\<close>] obtain w' where w':
     "w'>0" "w' \<le> w" "\<And>y. y\<in>{x - setsum (op *\<^sub>R w') Basis..x + setsum (op *\<^sub>R w') Basis} \<Longrightarrow> y \<in> cball x w"
-    by metis
-  interpret ccd:compact_continuously_diff
-      "{t - w' .. t + w'}" "{x - setsum (op *\<^sub>R w') Basis..x + setsum (op *\<^sub>R w') Basis}"
-      "\<lambda>(t, x). ode x" "\<lambda>(t, x) (dt, dx). ode_d x dx"
-    using `w > 0`
-    using fderiv' cont_fderiv w'
-    by unfold_locales
-      (auto intro!: convex_closed_interval compact_interval split_beta'
-        continuous_intros add_nonneg_nonneg
-        intro: continuous_on_subset
-        simp: algebra_simps eucl_le[where 'a='a])
-  let ?u = w' and ?L = ccd.onorm_bound
-  have subset: "cball x w' \<subseteq> {x - setsum (op *\<^sub>R w') Basis..x + setsum (op *\<^sub>R w') Basis}"
-    unfolding scaleR_setsum_right[symmetric]
-    by (rule cball_in_cube)
-  have "\<forall>t'\<in>cball t ?u \<inter> I. lipschitz (cball x ?u \<inter> ivp_X (global_ivp t0 x0))
-    (\<lambda>y. ivp_f (global_ivp t0 x0) (t', y)) ?L"
-    using ccd.lipschitz(1) w'
-    by (force intro!: lipschitz_subset[OF _ subset])
-  thus "\<exists>u>0. \<exists>L\<ge>0. \<forall>t'\<in>cball t u \<inter> I. lipschitz (cball x u \<inter> (ivp_X ?ivp))
-    (\<lambda>y. (ivp_f ?ivp) (t', y)) L"
-    using `?u > 0` ccd.lipschitz by blast
+    by (metis cbox_interval)
+next
+  show "local_lipschitz (ivp_T (global_ivp t0 x0)) (ivp_X (global_ivp t0 x0)) (\<lambda>t x. ivp_f (global_ivp t0 x0) (t, x))"
+    using local_lipschitz_ode by simp
 qed
 
 lemma unique_on_intermediate_euler_step:
@@ -748,7 +779,7 @@ proof -
   interpret step: unique_solution "(step_ivp t0 x0 t1 CX)" .
   from iv_defined have "t0 \<le> t1" by (auto simp: step_ivp_def)
   interpret euler: ivp "(euler_ivp t0 x0 t1)"
-    using `t0 \<le> t1`
+    using \<open>t0 \<le> t1\<close>
     by unfold_locales auto
   have euler_ivp_step_ivp: "euler_ivp t0 x0 t1 = step_ivp t0 x0 t1 CX\<lparr>ivp_X := UNIV\<rparr>"
     by (simp add: step_ivp_def)
@@ -765,13 +796,13 @@ proof -
     ivp_t0 = t0, ivp_x0 = x0,
     ivp_T = J,
     ivp_X = UNIV\<rparr>"
-  from J(4) interpret max_ivp: unique_solution max_ivp
+  from J(6) interpret max_ivp: unique_solution max_ivp
     by (auto simp: global_ivp_def max_ivp_def)
   {
     fix t1 x
     assume "ivp.is_solution (euler_ivp t0 x0 t1) x"
     hence "\<And>t. t\<in>{t0 .. t1} \<Longrightarrow> x t = ivp.solution max_ivp t"
-      using J(5)[where K2="{t0 .. t1}"]
+      using J(7)[where K2="{t0 .. t1}"]
       by (auto simp: euler_ivp_def global_ivp_def max_ivp_def is_interval_closed_interval)
   } note solution_eqI = this
   interpret euler: unique_solution "(euler_ivp t0 x0 t1)"
@@ -788,11 +819,11 @@ proof -
   {
     fix t assume "t \<in> {t0 .. t1}"
     thus "euler.solution t \<in> set_of_appr RES_ivl"
-      using error_overapproximation_ivl[of "t - t0"] `t0 \<le> t1` step_eq step_eq_euler
+      using error_overapproximation_ivl[of "t - t0"] \<open>t0 \<le> t1\<close> step_eq step_eq_euler
       by auto
   }
   show "euler.solution t1 \<in> set_of_appr RES"
-    using error_overapproximation `t0 \<le> t1` step_eq step_eq_euler
+    using error_overapproximation \<open>t0 \<le> t1\<close> step_eq step_eq_euler
     by (auto simp add:  step_ivp_def)
 qed
 
@@ -821,7 +852,7 @@ proof -
     using pos_prestep euler_step_returns
     by (auto simp: euler_step_def split: split_option_bind_asm)
   from cert_stepsize_pos[OF intermediate_results(1) pos_prestep] have "0 < h" .
-  from unique_on_intermediate_euler_step[OF `0 < h` assms intermediate_results(1-11)]
+  from unique_on_intermediate_euler_step[OF \<open>0 < h\<close> assms intermediate_results(1-11)]
   show ?th1 "\<And>t. ?ass2 t \<Longrightarrow> ?th2 t" ?th3 by -
 qed
 
@@ -849,7 +880,7 @@ lemma enclosure_Cons_iff:
   shows "enclosure f t0 t1 ((t0', CX, t1', X1) # ress0) \<longleftrightarrow>
     (f t1' \<in> X1 \<and> (\<forall>t\<in>{t0' .. t1'}. f t \<in> CX) \<and>
       t0 \<le> t0' \<and> t0' \<le> t1' \<and> t1' \<le> t1 \<and> enclosure f t0 t1 ress0)"
-  using assms by (auto simp: enclosure_def)
+  by (auto simp: enclosure_def)
 
 lemma enclosure_subst:
   assumes "enclosure f t0 t1 ress"
@@ -865,7 +896,7 @@ lemma enclosure_mono:
   using assms
   by (induct ress) (auto simp: enclosure_Cons_iff)
 
-text {* execution of @{term advance_euler} *}
+text \<open>execution of @{term advance_euler}\<close>
 
 lemma advance_euler_enclosure:
   assumes pos_prestep: "0 < stepsize optns"
@@ -888,18 +919,19 @@ proof -
   from sol_step(1)
   interpret u2: unique_solution "euler_ivp t1 (ivp.solution (euler_ivp t0 x0 t1) t1) t2" by simp
   have "t1 \<le> t2" using u2.iv_defined by simp
-  from `t0 \<le> t1` `t1 \<le> t2`
+  from \<open>t0 \<le> t1\<close> \<open>t1 \<le> t2\<close>
   interpret connected_unique_solutions
     "euler_ivp t0 x0 t2"
     "euler_ivp t0 x0 t1"
     "euler_ivp t1 (ivp.solution (euler_ivp t0 x0 t1) t1) t2"
-     t1 t2
+     t1
+    using u1.solution_t0 u2.solution_t0
     by unfold_locales auto
   have "enclosure (ivp.solution (euler_ivp t0 x0 t2)) t0 t2 (map set_res_of_appr_res xs)"
-    by (auto intro!: enclosure_mono[OF `t1 \<le> t2`] enclosure_subst[OF encl]
+    by (auto intro!: enclosure_mono[OF \<open>t1 \<le> t2\<close>] enclosure_subst[OF encl]
       simp: solution1_eq_solution)
   thus ?encl ?sol
-    using sol_step `t0 \<le> t1` `t1 \<le> t2` encl
+    using sol_step \<open>t0 \<le> t1\<close> \<open>t1 \<le> t2\<close> encl
     by (auto simp: ys enclosure_Cons_iff solution2_eq_solution)
   show ?unique by unfold_locales
 qed
@@ -1063,7 +1095,7 @@ locale aform_approximate_ivp = aform_approximate_ivp0 +
     inter_aform_plane
 begin
 
-text {* TODO: prove these lemmas generically *}
+text \<open>TODO: prove these lemmas generically\<close>
 
 lemma ivls_of_aforms:
   assumes "enclosure f t0 t1 (map set_res_of_appr_res xs)"
@@ -1101,7 +1133,7 @@ next
   show ?case
     using Cons
     by (cases x) (fastforce simp: min_def max_def enclosure_Cons_iff
-      split: split_if_asm option.split
+      split: if_split_asm option.split
       intro: inf_cases sup_cases inf.coboundedI1 inf.coboundedI2 le_infI2 le_supI1 le_supI2
         sup.coboundedI1 sup.coboundedI2)
 qed
@@ -1190,4 +1222,3 @@ qed
 end
 
 end
-

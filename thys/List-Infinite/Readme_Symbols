@@ -7,7 +7,6 @@ Modifications of src/Pure/Thy/html.ML (the Pure and HOL logics must be rebuild
 afterwards):
 
   - Additions:
-    ("\\<bigcirc>", (1, "&#x25CB;")),
     ("\\<up>", (1, "<span class=\"largersymbolstyle\">&#x2191;</span>")),
     ("\\<down>", (1, "<span class=\"largersymbolstyle\">&#x2193;</span>")),
     ("\\<updown>", (1, "<span class=\"largersymbolstyle\">&#x2195;</span>")),

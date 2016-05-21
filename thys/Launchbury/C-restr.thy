@@ -97,8 +97,7 @@ qed
 lemma demand_C_case[simp]: "demand (C_case\<cdot>f) = C \<cdot> (demand f)"
 proof(cases "demand (C_case\<cdot>f) = C\<^sup>\<infinity>")
   case True
-  with assms
-  have "C_case\<cdot>f\<cdot>C\<^sup>\<infinity> = \<bottom>"
+  then have "C_case\<cdot>f\<cdot>C\<^sup>\<infinity> = \<bottom>"
     by (metis infinity_bot_demand)
   with True
   show ?thesis apply auto by (metis infinity_bot_demand)

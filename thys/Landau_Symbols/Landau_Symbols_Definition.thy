@@ -397,7 +397,7 @@ lemma smallI:
 
 lemma smallD:
   "f \<in> l(g) \<Longrightarrow> c > 0 \<Longrightarrow> eventually (\<lambda>x. R \<bar>f x\<bar> (c * \<bar>g x\<bar>)) at_top"
-  using assms unfolding l_def by blast
+  unfolding l_def by blast
 
 lemma smallD_nonneg:
   assumes "f \<in> l(g)" "eventually (\<lambda>x. f x \<ge> 0) at_top" "c > 0"
@@ -946,7 +946,7 @@ proof-
     qed
     ultimately have "(\<lambda>x. inverse (f x)) \<in> O(\<lambda>x. inverse (g x))" by (rule landau_o.bigI)
   }
-  thus ?thesis using assms unfolding bigtheta_def 
+  thus ?thesis unfolding bigtheta_def 
     by (force simp: bigomega_iff_bigo bigtheta_sym)
 qed
 

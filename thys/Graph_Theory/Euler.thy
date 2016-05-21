@@ -411,7 +411,7 @@ proof -
       using `euler_trail u p v` by (auto simp: euler_trail_def dest: arc_balancedI_trail)
     then show ?thesis
       using `euler_trail u p v` deg
-      by (auto simp add: euler_trail_def trail_def arc_set_balanced_all split: split_if_asm)
+      by (auto simp add: euler_trail_def trail_def arc_set_balanced_all split: if_split_asm)
   qed
   ultimately show ?thesis by blast
 qed

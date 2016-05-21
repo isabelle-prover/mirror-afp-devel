@@ -200,7 +200,7 @@ apply simp
 apply simp
 apply simp apply (iprover dest:sqUn_lem)
 apply simp apply (iprover dest:sqUn_lem)
-apply(clarsimp split: split_if_asm) apply (iprover dest:diff_lem) apply(iprover dest: sqUn_lem)
+apply(clarsimp split: if_split_asm) apply (iprover dest:diff_lem) apply(iprover dest: sqUn_lem)
 apply simp apply (iprover dest:sqUn_lem)
 apply simp
 apply simp apply (iprover dest:sqUn_lem)

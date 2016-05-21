@@ -6,7 +6,6 @@ session "MFMC_Countable" (AFP) = "HOL-Probability" +
   theories [document = false]
     "~~/src/HOL/Library/Transitive_Closure_Table"
     "~~/src/HOL/Library/Bourbaki_Witt_Fixpoint"
-    "../Coinductive/Complete_Partial_Order2"
   
   theories
     Rel_PMF_Characterisation

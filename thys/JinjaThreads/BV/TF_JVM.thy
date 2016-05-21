@@ -139,7 +139,7 @@ theorem (in start_context) exec_pres_type:
   apply(force split: option.splits)
 
   -- ALoad
-  apply(clarsimp split: split_if_asm)
+  apply(clarsimp split: if_split_asm)
    apply(rule conjI)
     apply(fastforce split: option.splits)
    apply(erule allE)+
@@ -155,7 +155,7 @@ theorem (in start_context) exec_pres_type:
   apply arith
 
   -- AStore
-  apply(clarsimp split: split_if_asm)
+  apply(clarsimp split: if_split_asm)
    apply(rule conjI)
     apply(fastforce split: option.splits)
    apply(erule allE)+
@@ -171,7 +171,7 @@ theorem (in start_context) exec_pres_type:
   apply arith
 
   -- ALength
-  apply(clarsimp split: split_if_asm)
+  apply(clarsimp split: if_split_asm)
    apply(rule conjI)
     apply(fastforce split: option.splits)
    apply(erule allE)+
@@ -306,7 +306,7 @@ theorem (in start_context) exec_pres_type:
 
   -- Invoke
   apply(rename_tac the_s M n)
-  apply (clarsimp split: split_if_asm)
+  apply (clarsimp split: if_split_asm)
    apply(rule conjI)
     apply(fastforce split: option.splits)
    apply fastforce

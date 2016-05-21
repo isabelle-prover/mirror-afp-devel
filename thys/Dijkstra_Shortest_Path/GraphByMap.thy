@@ -254,14 +254,14 @@ begin
     show "gbm_\<alpha> (gbm_add_node v g) = add_node v (gbm_\<alpha> g)"
       unfolding gbm_\<alpha>_def gbm_add_node_def
       by (auto simp: m1.correct m2.correct s3.correct add_node_def
-        split: option.split split_if_asm)
+        split: option.split if_split_asm)
     
     thus "gbm_invar (gbm_add_node v g)"  
       unfolding gbm_invar_def
       apply (simp)
       unfolding gbm_\<alpha>_def gbm_add_node_def add_node_def 
       apply (auto simp: m1.correct m2.correct s3.correct add_node_def
-        split: option.split split_if_asm elim!: ranE)
+        split: option.split if_split_asm elim!: ranE)
       done
   qed
 
@@ -276,7 +276,7 @@ begin
       by (auto simp: restrict_map_def option_bind_alt
         m1.correct m2.correct s3.correct m1.map_value_image_filter_correct
         delete_node_def
-        split: option.split split_if_asm option.split_asm)
+        split: option.split if_split_asm option.split_asm)
 
     thus "gbm_invar (gbm_delete_node v g)"  
       unfolding gbm_invar_def
@@ -284,7 +284,7 @@ begin
       unfolding gbm_\<alpha>_def gbm_delete_node_def delete_node_def 
       apply (auto simp: restrict_map_def option_bind_alt
         m1.correct m2.correct s3.correct m1.map_value_image_filter_correct
-        split: option.split split_if_asm option.split_asm elim!: ranE)
+        split: option.split if_split_asm option.split_asm elim!: ranE)
       done
   qed
 
@@ -298,13 +298,13 @@ begin
       unfolding gbm_\<alpha>_def gbm_add_edge_def
       apply (auto simp: m1.correct m2.correct s3.correct 
         Let_def
-        split: option.split split_if_asm)
+        split: option.split if_split_asm)
       unfolding add_edge_def
       (* Strange: This is at the limit of auto's capabilities:
         Iterated auto [] works., but auto on all goals seems not to
         terminate. Using fastforce instead.
         *)
-      apply (fastforce split: split_if_asm
+      apply (fastforce split: if_split_asm
         simp: m1.correct m2.correct s3.correct 
       )+
       done
@@ -315,7 +315,7 @@ begin
       unfolding gbm_\<alpha>_def gbm_add_edge_def
       apply (force simp: m1.correct m2.correct s3.correct
         Let_def
-        split: option.split split_if_asm elim!: ranE)
+        split: option.split if_split_asm elim!: ranE)
       done
   qed
 
@@ -329,7 +329,7 @@ begin
       unfolding gbm_\<alpha>_def gbm_delete_edge_def delete_edge_def
       apply (auto simp: m1.correct m2.correct s3.correct 
         Let_def
-        split: option.split split_if_asm)
+        split: option.split if_split_asm)
       done
     
     thus "gbm_invar (gbm_delete_edge v e v' g)"  
@@ -338,7 +338,7 @@ begin
       unfolding gbm_\<alpha>_def gbm_delete_edge_def
       apply (auto simp: m1.correct m2.correct s3.correct
         Let_def
-        split: option.split split_if_asm elim!: ranE)
+        split: option.split if_split_asm elim!: ranE)
       done
   qed
 

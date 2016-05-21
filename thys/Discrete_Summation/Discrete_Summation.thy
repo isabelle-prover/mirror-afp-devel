@@ -1,9 +1,8 @@
-
 (* Author: Florian Haftmann, TU Muenchen *)
 
 section {* Some basic facts about discrete summation *}
 
-theory Summation
+theory Discrete_Summation
 imports Main
 begin
 

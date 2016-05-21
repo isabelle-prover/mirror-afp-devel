@@ -73,17 +73,13 @@ fun lderiv0 where
   | (True, True) \<Rightarrow> FBase (Z m)
   | _ \<Rightarrow> FBool False)"
 
-fun rderiv0 where
-  "rderiv0 (bs1, bs2) (Fo m) = (if bs1 ! m then FBase (Z m) else FBase (Fo m))"
-| "rderiv0 (bs1, bs2) (Z m) = (if bs1 ! m then FBool False else FBase (Z m))"
-| "rderiv0 (bs1, bs2) (Less m1 m2) = (case (bs1 ! m1, bs1 ! m2) of
-    (False, False) \<Rightarrow> FBase (Less m1 m2)
-  | (False, True) \<Rightarrow> FAnd (FBase (Fo m1)) (FBase (Z m2))
-  | _ \<Rightarrow> FBool False)"
-| "rderiv0 (bs1, bs2) (In m M) = (case (bs1 ! m, bs2 ! M) of
-    (False, _) \<Rightarrow> FBase (In m M)
-  | (True, True) \<Rightarrow> FBase (Z m)
-  | _ \<Rightarrow> FBool False)"
+primrec rev where
+  "rev (Fo m) = Fo m"
+| "rev (Z m) = Z m"
+| "rev (Less m1 m2) = Less m2 m1"
+| "rev (In m M) = In m M"
+
+abbreviation "rderiv0 v \<equiv> map_aformula rev id o lderiv0 v o rev"
 
 primrec nullable0 where
   "nullable0 (Fo m) = False"
@@ -267,11 +263,11 @@ next
        Fo m \<Rightarrow> {FBase (Fo m), FBase (Z m), FBool False}
      | Z m \<Rightarrow> {FBase (Z m), FBool False}
      | Less m1 m2 \<Rightarrow> {FBase (Less m1 m2),
-        FAnd (FBase (Fo m1)) (FBase (Z m2)),
-        FAnd (FBase (Z m1)) (FBase (Z m2)),
-        FAnd (FBool False) (FBase (Z m2)),
-        FAnd (FBase (Fo m1)) (FBool False),
-        FAnd (FBase (Z m1)) (FBool False),
+        FAnd (FBase (Z m2)) (FBase (Fo m1)) ,
+        FAnd (FBase (Z m2)) (FBase (Z m1)),
+        FAnd (FBase (Z m2)) (FBool False),
+        FAnd (FBool False) (FBase (Fo m1)),
+        FAnd (FBool False) (FBase (Z m1)),
         FAnd (FBool False) (FBool False),
        FBool False}
      | In i I \<Rightarrow> {FBase (In i I),  FBase (Z i), FBool False})

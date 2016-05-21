@@ -55,13 +55,16 @@ lemma pmf_random_dictatorship:
               real (card (favorites R i))) / real (card agents)"
 proof -
   from assms(1) interpret pref_profile_wf agents alts R .
-  have "ereal (pmf (RD R) x) = 
-          ereal ((\<Sum>i\<in>agents. pmf (pmf_of_set (favorites R i)) x) / real (card agents))"
-    (is "_ = ereal (?p / _)") unfolding random_dictatorship_def
-    by (simp_all add: ereal_pmf_bind nn_integral_pmf_of_set max_def pmf_nonneg)
+  from \<open>agents \<noteq> {}\<close> have "card agents > 0" by (auto simp del: nonempty_agents)
+  hence "ennreal (pmf (RD R) x) = 
+           ennreal ((\<Sum>i\<in>agents. pmf (pmf_of_set (favorites R i)) x) / real (card agents))"
+    (is "_ = ennreal (?p / _)") unfolding random_dictatorship_def
+    by (simp_all add: ennreal_pmf_bind nn_integral_pmf_of_set max_def 
+          divide_ennreal [symmetric] ennreal_of_nat_eq_real_of_nat setsum_nonneg)
   also have "?p = (\<Sum>i\<in>agents. indicator (favorites R i) x / real (card (favorites R i)))"
     by (intro setsum.cong) (simp_all add: favorites_nonempty)
-  finally show ?thesis by simp
+  finally show ?thesis 
+    by (subst (asm) ennreal_inj) (auto intro!: setsum_nonneg divide_nonneg_nonneg)
 qed
 
 

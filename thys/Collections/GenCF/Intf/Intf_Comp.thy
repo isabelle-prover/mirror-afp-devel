@@ -75,7 +75,7 @@ lemma (in linorder) class_to_linorder:
   "linorder (dflt_cmp op \<le> op <)"
   apply (unfold_locales)
   unfolding dflt_cmp_def
-  by (auto split: split_if_asm)
+  by (auto split: if_split_asm)
 
 lemma restrict_linorder: "\<lbrakk>linorder_on D cmp ; D'\<subseteq>D\<rbrakk> \<Longrightarrow> linorder_on D' cmp"
   apply (rule linorder_on.intro)
@@ -183,7 +183,7 @@ lemma univ_wo: "well_order_on UNIV univ_order_rel"
 lemma univ_linorder[intro?]: "linorder univ_cmp"
   apply unfold_locales
   unfolding univ_cmp_def 
-  apply (auto split: split_if_asm)
+  apply (auto split: if_split_asm)
   using univ_wo
   apply -
   unfolding well_order_on_def linear_order_on_def partial_order_on_def
@@ -630,7 +630,7 @@ proof -
 
   show ?thesis
     apply unfold_locales
-    apply (auto simp: dflt_cmp_def split: split_if_asm)
+    apply (auto simp: dflt_cmp_def split: if_split_asm)
     done
 qed
 
@@ -683,7 +683,7 @@ proof -
     apply (simp only: EQ)
     apply unfold_locales
     unfolding cmp_combine_def
-    by (auto split: split_if_asm)
+    by (auto split: if_split_asm)
 qed
 
 lemma img_eq_linorder[intro?]:
@@ -711,7 +711,7 @@ lemma univ_eq_linorder[intro?]:
   apply rule
   apply unfold_locales
   unfolding univ_cmp_def
-  apply (auto split: split_if_asm)
+  apply (auto split: if_split_asm)
   done
   
 lemma extend_eq_linorder[intro?]:

@@ -167,7 +167,6 @@ by(simp add: wellFormedSubst_def)
 
 lemma wellFormedCons[simp]:
   shows "wellFormedSubst((xvec, Tvec)#\<sigma>) = (length xvec = length Tvec \<and> distinct xvec \<and> wellFormedSubst \<sigma>)"
-using assms
 by(simp add: wellFormedSubst_def) auto
 
 lemma wellFormedAppend[simp]:
