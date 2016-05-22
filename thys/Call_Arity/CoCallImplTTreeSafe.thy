@@ -48,7 +48,6 @@ end
 context CoCallAritySafe
 begin
 
-
 lemma carrier_AnalBinds_below:
   "carrier ((Texp.AnalBinds  \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)) x) \<subseteq> edom ((ABinds \<Delta>)\<cdot>(Aheap \<Delta> e\<cdot>a))"
 by (auto simp add: Texp.AnalBinds_lookup Texp_def split: option.splits 

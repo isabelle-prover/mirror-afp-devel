@@ -69,6 +69,7 @@ text {* The other direction. *}
 fun heapToAssn :: "heap \<Rightarrow> assn"
   where "heapToAssn [] = ANil" 
   | "heapToAssn ((v,e)#\<Gamma>) = ACons v e (heapToAssn \<Gamma>)"
+
 declare heapToAssn.simps[simp del]
 
 lemma heapToAssn_eqvt[simp,eqvt]: "p \<bullet> heapToAssn \<Gamma> =  heapToAssn (p \<bullet> \<Gamma>)"

@@ -4,7 +4,7 @@ begin
 
 subsubsection {* Prefix-closed sets of lists *}
 
-definition downset where
+definition downset :: "'a list set \<Rightarrow> bool" where
   "downset xss = (\<forall>x n. x \<in> xss \<longrightarrow> take n x \<in> xss)"
 
 lemma downsetE[elim]:
@@ -72,7 +72,7 @@ lemma downset_set_subset:
   "downset ({xs. set xs \<subseteq> S})"
 by (auto dest: in_set_butlastD)
 
-subsubsection {* The type of infinite labled trees *}
+subsubsection {* The type of infinite labeled trees *}
 
 typedef 'a ttree = "{xss :: 'a list set . [] \<in> xss \<and> downset xss}" by auto
 
@@ -84,9 +84,8 @@ lift_definition possible ::"'a ttree \<Rightarrow> 'a \<Rightarrow> bool"
   is "\<lambda> xss x. \<exists> xs. x#xs \<in> xss".
 
 lift_definition nxt ::"'a ttree \<Rightarrow> 'a \<Rightarrow> 'a ttree"
-  is "\<lambda> xss x. insert [] {xs | x' xs . x'#xs \<in> xss \<and> x' = x}"
-  apply (auto simp add: downset_def)
-  by (metis take_Suc_Cons)
+  is "\<lambda> xss x. insert [] {xs | xs. x#xs \<in> xss}"
+  by (auto simp add: downset_def take_Suc_Cons[symmetric] simp del: take_Suc_Cons)
 
 subsubsection {* Trees as set of paths *}
 
@@ -280,7 +279,8 @@ lemma carrier_intersect: "carrier (t \<inter>\<inter> t') \<subseteq> carrier t 
 
 subsubsection {* Disjoint union of trees *}
 
-lift_definition either :: "'a ttree \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" (infixl "\<oplus>\<oplus>" 80) is "op \<union>"
+lift_definition either :: "'a ttree \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" (infixl "\<oplus>\<oplus>" 80)
+  is "op \<union>"
   by (auto simp add: downset_def)
   
 lemma either_empty1[simp]: "empty \<oplus>\<oplus> t = t"
@@ -319,15 +319,12 @@ lemma paths_Either: "paths (Either ts) = insert [] (\<Union>(paths ` ts))"
 
 subsubsection {* Merging of trees *}
 
+lemma ex_ex_eq_hint: "(\<exists>x. (\<exists>xs ys. x = f xs ys \<and> P xs ys) \<and> Q x) \<longleftrightarrow> (\<exists>xs ys. Q (f xs ys) \<and> P xs ys)"
+  by auto
+
 lift_definition both :: "'a ttree \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" (infixl "\<otimes>\<otimes>" 86)
   is "\<lambda> xss yss . \<Union> {xs \<otimes> ys | xs ys. xs \<in> xss \<and> ys \<in> yss}"
-  apply (auto simp add: downset_def)
-  apply (metis interleave_intros(1))
-  apply (drule_tac n = n in interleave_take)
-  apply auto
-  apply metis
-  done
-
+  by (force simp: ex_ex_eq_hint dest: interleave_butlast)
 
 lemma both_assoc[simp]: "t \<otimes>\<otimes> (t' \<otimes>\<otimes> t'') = (t \<otimes>\<otimes> t') \<otimes>\<otimes> t''"
   apply transfer
@@ -482,10 +479,9 @@ qed
 
 subsubsection {* Removing elements from a tree *}
 
-lift_definition without :: "'a \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" is "\<lambda> x xss. filter (\<lambda> x'. x' \<noteq> x) ` xss"
-  apply (auto intro: downset_filter)
-  apply (metis filter.simps(1) imageI)
-  done
+lift_definition without :: "'a \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree"
+  is "\<lambda> x xss. filter (\<lambda> x'. x' \<noteq> x) ` xss"
+  by (auto intro: downset_filter)(metis filter.simps(1) imageI)
 
 lemma paths_withoutI:
   assumes "xs \<in> paths t"
@@ -503,9 +499,7 @@ lemma carrier_without[simp]: "carrier (without x t) = carrier t - {x}"
   by transfer auto
 
 lift_definition ttree_restr :: "'a set \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" is "\<lambda> S xss. filter (\<lambda> x'. x' \<in> S) ` xss"
-  apply (auto intro: downset_filter)
-  apply (metis filter.simps(1) imageI)
-  done
+  by (auto intro: downset_filter)(metis filter.simps(1) imageI)
 
 lemma filter_paths_conv_free_restr:
   "filter (\<lambda> x' . x' \<in> S) ` paths t = paths (ttree_restr S t)" by transfer auto
@@ -639,14 +633,15 @@ subsubsection {* Substituting trees for every node *}
 definition f_nxt :: "('a \<Rightarrow> 'a ttree) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow> 'a ttree)"
   where "f_nxt f T x = (if x \<in> T then f(x:=empty) else f)"
 
+fun substitute' :: "('a \<Rightarrow> 'a ttree) \<Rightarrow> 'a set \<Rightarrow> 'a ttree \<Rightarrow> 'a list \<Rightarrow> bool" where
+    substitute'_Nil: "substitute' f T t [] \<longleftrightarrow> True"
+  | substitute'_Cons: "substitute' f T t (x#xs) \<longleftrightarrow>
+        possible t x \<and> substitute' (f_nxt f T x) T (nxt t x \<otimes>\<otimes> f x) xs"
+
 lemma f_nxt_mono1: "(\<And> x. paths (f x) \<subseteq> paths (f' x)) \<Longrightarrow> paths (f_nxt f T x x') \<subseteq> paths (f_nxt f' T x x')"
   unfolding f_nxt_def by auto
   
 lemma f_nxt_empty_set[simp]: "f_nxt f {} x = f" by (simp add: f_nxt_def)
-
-fun substitute' :: "('a \<Rightarrow> 'a ttree) \<Rightarrow> 'a set \<Rightarrow> 'a ttree \<Rightarrow> 'a list \<Rightarrow> bool"
-  where substitute'_Nil: "substitute' f T t [] \<longleftrightarrow> True"
-     |  substitute'_Cons: "substitute' f T t (x#xs) \<longleftrightarrow> possible t x \<and> substitute' (f_nxt f T x) T (nxt t x \<otimes>\<otimes> f x) xs"
 
 lemma downset_substitute: "downset (Collect (substitute' f T t))"
 apply (rule) unfolding mem_Collect_eq
@@ -656,8 +651,9 @@ proof-
   thus "substitute' f T t (butlast x)" by(induction t x rule: substitute'.induct) (auto)
 qed
 
-lift_definition substitute :: "('a \<Rightarrow> 'a ttree) \<Rightarrow> 'a set \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" is "\<lambda> f T t. Collect (substitute' f T t)"
-    by (simp add: downset_substitute)
+lift_definition substitute :: "('a \<Rightarrow> 'a ttree) \<Rightarrow> 'a set \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree"
+  is "\<lambda> f T t. Collect (substitute' f T t)"
+  by (simp add: downset_substitute)
 
 lemma elim_substitute'[pred_set_conv]: "substitute' f T t xs \<longleftrightarrow> xs \<in> paths (substitute f T t)" by transfer auto
 
@@ -1189,19 +1185,13 @@ qed
 
 text {* An alternative characterization of substitution *}
 
-inductive substitute'' :: "('a \<Rightarrow> 'a ttree) \<Rightarrow> 'a set \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
-  where substitute''_Nil: "substitute'' f T [] []"
-     |  substitute''_Cons: "zs \<in> paths (f x) \<Longrightarrow> xs' \<in> interleave xs zs \<Longrightarrow> substitute'' (f_nxt f T x) T xs' ys \<Longrightarrow> substitute'' f T (x#xs) (x#ys)"
+inductive substitute'' :: "('a \<Rightarrow> 'a ttree) \<Rightarrow> 'a set \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
+  substitute''_Nil: "substitute'' f T [] []"
+  | substitute''_Cons:
+    "zs \<in> paths (f x) \<Longrightarrow> xs' \<in> interleave xs zs \<Longrightarrow> substitute'' (f_nxt f T x) T xs' ys
+       \<Longrightarrow> substitute'' f T (x#xs) (x#ys)"
 inductive_cases substitute''_NilE[elim]: "substitute'' f T xs []"  "substitute'' f T [] xs"
 inductive_cases substitute''_ConsE[elim]: "substitute'' f T (x#xs) ys"
-
-(*
-lemma substitute''_thunk_induct[consumes 1, case_names Nil Val Thunk]:
-  assumes "substitute'' f T xs ys"
-  assumes "\<And> f T. P f T [] []"
-  assumes "\<And> zs f x xs' xs T ys. zs \<in> paths (f x) \<Longrightarrow> xs' \<in> xs \<otimes> zs \<Longrightarrow> substitute'' (f_nxt f T x) T xs' ys \<Longrightarrow> P (f_nxt f T x) T xs' ys \<Longrightarrow> P f T (x # xs) (x # ys)"
-  shows "P f T xs ys "
-*)
 
 lemma substitute_substitute'':
   "xs \<in> paths (substitute f T t) \<longleftrightarrow> (\<exists> xs' \<in> paths t. substitute'' f T xs' xs)"
@@ -1246,7 +1236,6 @@ qed
 lemma paths_substitute_substitute'':
   "paths (substitute f T t) = \<Union>((\<lambda> xs . Collect (substitute'' f T xs)) ` paths t)"
   by (auto simp add: substitute_substitute'')
-
 
 lemma ttree_rest_substitute2:
   assumes "\<And> x. carrier (f x) \<subseteq> S"

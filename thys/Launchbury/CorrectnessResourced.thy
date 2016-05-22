@@ -13,8 +13,6 @@ case Lambda
   case 2 show ?case..
 next
 case (Application y \<Gamma> e x L \<Delta> \<Theta> z e')
-  hence "y \<noteq> x" by (simp_all add: fresh_at_base)
-
   have Gamma_subset: "domA \<Gamma> \<subseteq> domA \<Delta>"
     by (rule reds_doesnt_forget[OF Application.hyps(8)])
 
@@ -55,7 +53,7 @@ case (Application y \<Gamma> e x L \<Delta> \<Theta> z e')
   also have "CFn\<cdot>(\<Lambda> v. (\<N>\<lbrakk> e' \<rbrakk>\<^bsub>(\<N>\<lbrace>\<Delta>\<rbrace>\<rho>)(y := v)\<^esub>)) \<down>CFn ((\<N>\<lbrace>\<Delta>\<rbrace>\<rho>) x) = (\<N>\<lbrakk> e' \<rbrakk>\<^bsub>(\<N>\<lbrace>\<Delta>\<rbrace>\<rho>)(y := (\<N>\<lbrace>\<Delta>\<rbrace>\<rho>) x)\<^esub>)"
     by simp
   also have "\<dots> = (\<N>\<lbrakk> e'[y ::= x] \<rbrakk>\<^bsub>(\<N>\<lbrace>\<Delta>\<rbrace>\<rho>)\<^esub>)"
-    unfolding ESem_subst[OF `y \<noteq> x`]..
+    unfolding ESem_subst..
   also have "\<dots> \<sqsubseteq> \<N>\<lbrakk> z \<rbrakk>\<^bsub>\<N>\<lbrace>\<Theta>\<rbrace>\<rho>\<^esub>"
     using Application.hyps(12)[OF prem2].
   finally

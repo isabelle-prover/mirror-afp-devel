@@ -148,6 +148,16 @@ proof-
   unfolding meet_def' by (simp add: glb_above)
 qed
 
+lemma below_meet[simp]:
+  fixes x y :: "'a :: Finite_Meet_cpo"
+  assumes "x \<sqsubseteq> z"
+  shows "(x \<sqinter> z) = x" by (metis assms glb_bin meet_def')
+
+lemma below_meet2[simp]:
+  fixes x y :: "'a :: Finite_Meet_cpo"
+  assumes "z \<sqsubseteq> x"
+  shows "(x \<sqinter> z) = z" by (metis assms below_meet meet_comm)
+
 lemma meet_aboveI:
   fixes x y z :: "'a :: Finite_Meet_cpo"
   shows "z \<sqsubseteq> x \<Longrightarrow> z \<sqsubseteq> y \<Longrightarrow> z \<sqsubseteq> x \<sqinter> y" by (simp add: meet_above_iff)

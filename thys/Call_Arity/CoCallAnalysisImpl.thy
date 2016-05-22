@@ -141,6 +141,13 @@ begin
 sublocale CoCallArityAnalysis cCCexp.
 sublocale ArityAnalysis Aexp.
 
+abbreviation Aexp_syn'' ("\<A>\<^bsub>_\<^esub>") where "\<A>\<^bsub>a\<^esub> e \<equiv> Aexp e\<cdot>a"
+abbreviation Aexp_bot_syn'' ("\<A>\<^sup>\<bottom>\<^bsub>_\<^esub>") where "\<A>\<^sup>\<bottom>\<^bsub>a\<^esub> e \<equiv> fup\<cdot>(Aexp e)\<cdot>a"
+
+abbreviation ccExp_syn'' ("\<G>\<^bsub>_\<^esub>") where "\<G>\<^bsub>a\<^esub> e \<equiv> CCexp e\<cdot>a"
+abbreviation ccExp_bot_syn'' ("\<G>\<^sup>\<bottom>\<^bsub>_\<^esub>") where "\<G>\<^sup>\<bottom>\<^bsub>a\<^esub> e \<equiv> fup\<cdot>(CCexp e)\<cdot>a"
+
+
 lemma cCCexp_eq[simp]:
   "cCCexp (Var x)\<cdot>n =      (esing x \<cdot> (up \<cdot> n),                                   \<bottom>)"
   "cCCexp (Lam [x]. e)\<cdot>n = combined_restrict (fv (Lam [x]. e)) (fst (cCCexp e\<cdot>(pred\<cdot>n)), predCC (fv (Lam [x]. e)) (\<Lambda> a. snd(cCCexp e\<cdot>a))\<cdot>n)"
@@ -153,32 +160,43 @@ by (simp_all)
 declare cCCexp.simps[simp del]
 
 
-lemma Aexp_simps[simp]:
-  "Aexp (Var x)\<cdot>n = esing x\<cdot>(up\<cdot>n)"
-  "Aexp (Lam [x]. e)\<cdot>n = Aexp e\<cdot>(pred\<cdot>n) f|` fv (Lam [x]. e)"
-  "Aexp (App e x)\<cdot>n = Aexp e\<cdot>(inc\<cdot>n) \<squnion> esing x\<cdot>(up\<cdot>0)"
-  "\<not> nonrec \<Gamma> \<Longrightarrow> Aexp (Let \<Gamma> e)\<cdot>n = (Afix \<Gamma>\<cdot>(Aexp e\<cdot>n \<squnion> (\<lambda>_.up\<cdot>0) f|` thunks \<Gamma>)) f|` (fv (Let \<Gamma> e))"
-  "x \<notin> fv e \<Longrightarrow> Aexp (let x be e in exp)\<cdot>n = (fup\<cdot>(Aexp e)\<cdot>(ABind_nonrec x e \<cdot> (Aexp exp\<cdot>n, CCexp exp\<cdot>n)) \<squnion> Aexp exp\<cdot>n) f|` (fv (let x be e in exp))"
-  "Aexp (Bool b)\<cdot>n = \<bottom>"
-  "Aexp (scrut ? e1 : e2)\<cdot>n = Aexp scrut\<cdot>0 \<squnion> Aexp e1\<cdot>n \<squnion> Aexp e2\<cdot>n"
+lemma Aexp_pre_simps:
+  "\<A>\<^bsub>a\<^esub> (Var x) = esing x\<cdot>(up\<cdot>a)"
+  "\<A>\<^bsub>a\<^esub> (Lam [x]. e) = Aexp e\<cdot>(pred\<cdot>a) f|` fv (Lam [x]. e)"
+  "\<A>\<^bsub>a\<^esub> (App e x) = Aexp e\<cdot>(inc\<cdot>a) \<squnion> esing x\<cdot>(up\<cdot>0)"
+  "\<not> nonrec \<Gamma> \<Longrightarrow>
+     \<A>\<^bsub>a\<^esub> (Let \<Gamma> e) = (Afix \<Gamma>\<cdot>(\<A>\<^bsub>a\<^esub> e \<squnion> (\<lambda>_.up\<cdot>0) f|` thunks \<Gamma>)) f|` (fv (Let \<Gamma> e))"
+  "x \<notin> fv e \<Longrightarrow>
+     \<A>\<^bsub>a\<^esub> (let x be e in exp) =
+        (fup\<cdot>(Aexp e)\<cdot>(ABind_nonrec x e\<cdot>(\<A>\<^bsub>a\<^esub> exp, CCexp exp\<cdot>a)) \<squnion> \<A>\<^bsub>a\<^esub> exp)
+            f|` (fv (let x be e in exp))"
+  "\<A>\<^bsub>a\<^esub> (Bool b) = \<bottom>"
+  "\<A>\<^bsub>a\<^esub> (scrut ? e1 : e2) = \<A>\<^bsub>0\<^esub> scrut \<squnion> \<A>\<^bsub>a\<^esub> e1 \<squnion> \<A>\<^bsub>a\<^esub> e2"
  by (simp add: cccFix_eq Aexp_eq fup_Aexp_eq CCexp_eq fup_CCexp_eq)+
 
 
-lemma CCexp_simps[simp]:
+lemma CCexp_pre_simps:
   "CCexp (Var x)\<cdot>n = \<bottom>"
   "CCexp (Lam [x]. e)\<cdot>n = predCC (fv (Lam [x]. e)) (CCexp e)\<cdot>n"
   "CCexp (App e x)\<cdot>n = CCexp e\<cdot>(inc\<cdot>n) \<squnion> ccProd {x} (insert x (fv e))"
-  "\<not> nonrec \<Gamma> \<Longrightarrow> CCexp (Let \<Gamma> e)\<cdot>n = cc_restr (fv (Let \<Gamma> e)) (CCfix \<Gamma>\<cdot>(Afix \<Gamma>\<cdot>(Aexp e\<cdot>n  \<squnion> (\<lambda>_.up\<cdot>0) f|` (thunks \<Gamma>)), CCexp e\<cdot>n))"
+  "\<not> nonrec \<Gamma> \<Longrightarrow>
+      CCexp (Let \<Gamma> e)\<cdot>n = cc_restr (fv (Let \<Gamma> e))
+        (CCfix \<Gamma>\<cdot>(Afix \<Gamma>\<cdot>(Aexp e\<cdot>n \<squnion> (\<lambda>_.up\<cdot>0) f|` thunks \<Gamma>), CCexp e\<cdot>n))"
   "x \<notin> fv e \<Longrightarrow> CCexp (let x be e in exp)\<cdot>n =
-    cc_restr (fv (let x be e in exp)) (ccBind x e \<cdot>(Aheap_nonrec x e\<cdot>(Aexp exp\<cdot>n, CCexp exp\<cdot>n), CCexp exp\<cdot>n) \<squnion> ccProd (fv e) (ccNeighbors x (CCexp exp\<cdot>n) - (if isVal e then {} else {x})) \<squnion> CCexp exp\<cdot>n)"
+    cc_restr (fv (let x be e in exp))
+       (ccBind x e \<cdot>(Aheap_nonrec x e\<cdot>(Aexp exp\<cdot>n, CCexp exp\<cdot>n), CCexp exp\<cdot>n)
+       \<squnion> ccProd (fv e) (ccNeighbors x (CCexp exp\<cdot>n) - (if isVal e then {} else {x})) \<squnion> CCexp exp\<cdot>n)"
   "CCexp (Bool b)\<cdot>n = \<bottom>"
-  "CCexp (scrut ? e1 : e2)\<cdot>n = CCexp scrut\<cdot>0 \<squnion> (CCexp e1\<cdot>n \<squnion> CCexp e2\<cdot>n) \<squnion> ccProd (edom (Aexp scrut\<cdot>0)) (edom (Aexp e1\<cdot>n) \<union> edom (Aexp e2\<cdot>n))"
+  "CCexp (scrut ? e1 : e2)\<cdot>n =
+       CCexp scrut\<cdot>0 \<squnion>
+       (CCexp e1\<cdot>n \<squnion> CCexp e2\<cdot>n) \<squnion>
+       ccProd (edom (Aexp scrut\<cdot>0)) (edom (Aexp e1\<cdot>n) \<union> edom (Aexp e2\<cdot>n))"
 by (simp add: cccFix_eq Aexp_eq fup_Aexp_eq CCexp_eq fup_CCexp_eq predCC_eq)+
 
 lemma 
-  shows ccField_CCexp: "ccField (CCexp e\<cdot>n) \<subseteq> fv e" and Aexp_edom': "edom (Aexp e\<cdot>n) \<subseteq> fv e"
-  apply (induction e arbitrary: n rule: exp_induct_rec)
-  apply (auto simp add: predCC_eq dest!: set_mp[OF ccField_cc_restr] set_mp[OF ccField_ccProd_subset])
+  shows ccField_CCexp: "ccField (CCexp e\<cdot>a) \<subseteq> fv e" and Aexp_edom': "edom (\<A>\<^bsub>a\<^esub> e) \<subseteq> fv e"
+  apply (induction e arbitrary: a rule: exp_induct_rec)
+  apply (auto simp add: CCexp_pre_simps predCC_eq Aexp_pre_simps dest!: set_mp[OF ccField_cc_restr] set_mp[OF ccField_ccProd_subset])
   apply fastforce+
   done
 
@@ -193,10 +211,29 @@ by (cases n) (auto dest: set_mp[OF ccField_CCexp])
 lemma cc_restr_fup_ccExp_useless[simp]: "cc_restr (fv e) (fup\<cdot>(CCexp e)\<cdot>n) = fup\<cdot>(CCexp e)\<cdot>n"
   by (rule cc_restr_noop[OF ccField_fup_CCexp])
 
-
 sublocale EdomArityAnalysis Aexp by standard (rule Aexp_edom')
 
-
+lemma CCexp_simps[simp]:
+  "\<G>\<^bsub>a\<^esub>(Var x) = \<bottom>"
+  "\<G>\<^bsub>0\<^esub>(Lam [x]. e) = (fv (Lam [x]. e))²"
+  "\<G>\<^bsub>inc\<cdot>a\<^esub>(Lam [x]. e) = cc_delete x (\<G>\<^bsub>a\<^esub> e)"
+  "\<G>\<^bsub>a\<^esub> (App e x) = \<G>\<^bsub>inc\<cdot>a\<^esub> e \<squnion> {x} G\<times>insert x (fv e)"
+  "\<not> nonrec \<Gamma> \<Longrightarrow> \<G>\<^bsub>a\<^esub> (Let \<Gamma> e) =
+    (CCfix \<Gamma>\<cdot>(Afix \<Gamma>\<cdot>(\<A>\<^bsub>a\<^esub> e \<squnion> (\<lambda>_.up\<cdot>0) f|` thunks \<Gamma>), \<G>\<^bsub>a\<^esub> e)) G|` (- domA \<Gamma>)"
+  "x \<notin> fv e' \<Longrightarrow> \<G>\<^bsub>a\<^esub> (let x be e' in e) =
+    cc_delete x
+       (ccBind x e' \<cdot>(Aheap_nonrec x e'\<cdot>(\<A>\<^bsub>a\<^esub> e, \<G>\<^bsub>a\<^esub> e), \<G>\<^bsub>a\<^esub> e)
+       \<squnion> fv e' G\<times> (ccNeighbors x (\<G>\<^bsub>a\<^esub> e) - (if isVal e' then {} else {x})) \<squnion> \<G>\<^bsub>a\<^esub> e)"
+  "\<G>\<^bsub>a\<^esub> (Bool b) = \<bottom>"
+  "\<G>\<^bsub>a\<^esub> (scrut ? e1 : e2) =
+       \<G>\<^bsub>0\<^esub> scrut \<squnion> (\<G>\<^bsub>a\<^esub> e1 \<squnion> \<G>\<^bsub>a\<^esub> e2) \<squnion>
+       edom (\<A>\<^bsub>0\<^esub> scrut) G\<times> (edom (\<A>\<^bsub>a\<^esub> e1) \<union> edom (\<A>\<^bsub>a\<^esub> e2))"
+by (auto simp add: CCexp_pre_simps Diff_eq cc_restr_cc_restr[symmetric] predCC_eq 
+            simp del: cc_restr_cc_restr cc_restr_join
+            intro!: cc_restr_noop
+            dest!: set_mp[OF ccField_cc_delete] set_mp[OF ccField_cc_restr]  set_mp[OF ccField_CCexp]
+                   set_mp[OF ccField_CCfix] set_mp[OF ccField_ccBind]  set_mp[OF ccField_ccProd_subset] elem_to_ccField
+     )
 
 definition Aheap where
   "Aheap \<Gamma> e = (\<Lambda> a. if nonrec \<Gamma> then (case_prod Aheap_nonrec (hd \<Gamma>))\<cdot>(Aexp e\<cdot>a, CCexp e\<cdot>a) else  (Afix \<Gamma> \<cdot> (Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0) f|` thunks \<Gamma>)) f|` domA \<Gamma>)"
@@ -231,28 +268,37 @@ proof
     by perm_simp rule
 qed
 
-lemma Aexp_lam_simp[simp]: "Aexp (Lam [x]. e) \<cdot> n = env_delete x (Aexp e \<cdot> (pred \<cdot> n))"
+lemma Aexp_lam_simp: "Aexp (Lam [x]. e) \<cdot> n = env_delete x (Aexp e \<cdot> (pred \<cdot> n))"
 proof-
-  have "Aexp (Lam [x]. e) \<cdot> n = Aexp e\<cdot>(pred\<cdot>n) f|` (fv e - {x})" by simp
+  have "Aexp (Lam [x]. e) \<cdot> n = Aexp e\<cdot>(pred\<cdot>n) f|` (fv e - {x})" by (simp add: Aexp_pre_simps)
   also have "... = env_delete x (Aexp e\<cdot>(pred\<cdot>n)) f|` (fv e - {x})" by simp
   also have "\<dots> = env_delete x (Aexp e\<cdot>(pred\<cdot>n))"
      by (rule env_restr_useless) (auto dest: set_mp[OF Aexp_edom])
   finally show ?thesis.
 qed
-declare Aexp_simps(2)[simp del]
 
-lemma Aexp_Let_simp1[simp]:
-  "\<not> nonrec \<Gamma> \<Longrightarrow> Aexp (Let \<Gamma> e)\<cdot>n = (Afix \<Gamma>\<cdot>(Aexp e\<cdot>n \<squnion> (\<lambda>_.up\<cdot>0) f|` thunks \<Gamma>)) f|` (- domA \<Gamma>)"
-  unfolding Aexp_simps
-  by (rule env_restr_cong) (auto dest!: set_mp[OF Afix_edom] set_mp[OF Aexp_edom] set_mp[OF thunks_domA])
+lemma Aexp_Let_simp1:
+  "\<not> nonrec \<Gamma> \<Longrightarrow> \<A>\<^bsub>a\<^esub> (Let \<Gamma> e) = (Afix \<Gamma>\<cdot>(\<A>\<^bsub>a\<^esub> e \<squnion> (\<lambda>_.up\<cdot>0) f|` thunks \<Gamma>)) f|` (- domA \<Gamma>)"
+  unfolding Aexp_pre_simps
+  by (rule env_restr_cong) (auto simp add: dest!: set_mp[OF Afix_edom] set_mp[OF Aexp_edom] set_mp[OF thunks_domA])
 
-lemma Aexp_Let_simp2[simp]:
-  "x \<notin> fv e \<Longrightarrow> Aexp (let x be e in exp)\<cdot>n = env_delete x (fup\<cdot>(Aexp e)\<cdot>(ABind_nonrec x e \<cdot> (Aexp exp\<cdot>n, CCexp exp\<cdot>n)) \<squnion> Aexp exp\<cdot>n)"
-  unfolding Aexp_simps env_delete_restr
+lemma Aexp_Let_simp2:
+  "x \<notin> fv e \<Longrightarrow> \<A>\<^bsub>a\<^esub>(let x be e in exp) = env_delete x (\<A>\<^sup>\<bottom>\<^bsub>ABind_nonrec x e \<cdot> (\<A>\<^bsub>a\<^esub> exp, CCexp exp\<cdot>a)\<^esub> e \<squnion> \<A>\<^bsub>a\<^esub> exp)"
+  unfolding Aexp_pre_simps env_delete_restr
   by (rule env_restr_cong) (auto dest!: set_mp[OF fup_Aexp_edom]  set_mp[OF Aexp_edom])
 
-declare Aexp_simps(4)[simp del]
-declare Aexp_simps(5)[simp del]
+lemma Aexp_simps[simp]:
+  "\<A>\<^bsub>a\<^esub>(Var x) = esing x\<cdot>(up\<cdot>a)"
+  "\<A>\<^bsub>a\<^esub>(Lam [x]. e) = env_delete x (\<A>\<^bsub>pred\<cdot>a\<^esub> e)"
+  "\<A>\<^bsub>a\<^esub>(App e x) = Aexp e\<cdot>(inc\<cdot>a) \<squnion> esing x\<cdot>(up\<cdot>0)"
+  "\<not> nonrec \<Gamma> \<Longrightarrow> \<A>\<^bsub>a\<^esub>(Let \<Gamma> e) =
+      (Afix \<Gamma>\<cdot>(\<A>\<^bsub>a\<^esub> e \<squnion> (\<lambda>_.up\<cdot>0) f|` thunks \<Gamma>)) f|` (- domA \<Gamma>)"
+  "x \<notin> fv e' \<Longrightarrow> \<A>\<^bsub>a\<^esub>(let x be e' in e) =
+      env_delete x (\<A>\<^sup>\<bottom>\<^bsub>ABind_nonrec x e'\<cdot>(\<A>\<^bsub>a\<^esub> e, \<G>\<^bsub>a\<^esub> e)\<^esub> e' \<squnion> \<A>\<^bsub>a\<^esub> e)"
+  "\<A>\<^bsub>a\<^esub>(Bool b) = \<bottom>"
+  "\<A>\<^bsub>a\<^esub>(scrut ? e1 : e2) = \<A>\<^bsub>0\<^esub> scrut \<squnion> \<A>\<^bsub>a\<^esub> e1 \<squnion> \<A>\<^bsub>a\<^esub> e2"
+ by (simp_all add: Aexp_lam_simp Aexp_Let_simp1 Aexp_Let_simp2, simp_all add: Aexp_pre_simps)
+
 
 end
 

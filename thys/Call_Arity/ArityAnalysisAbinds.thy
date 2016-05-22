@@ -10,7 +10,7 @@ subsubsection {* Lifting arity analysis to recursive groups *}
 definition ABind :: "var \<Rightarrow> exp \<Rightarrow> (AEnv \<rightarrow> AEnv)"
   where "ABind v e = (\<Lambda> ae. fup\<cdot>(Aexp e)\<cdot>(ae v))"
 
-lemma ABind_eq[simp]: "ABind v e \<cdot> ae = fup\<cdot>(Aexp e)\<cdot>(ae v)"
+lemma ABind_eq[simp]: "ABind v e \<cdot> ae = \<A>\<^sup>\<bottom>\<^bsub>ae v\<^esub> e"
   unfolding ABind_def by (simp add: cont_fun)
 
 fun ABinds :: "heap \<Rightarrow> (AEnv \<rightarrow> AEnv)"

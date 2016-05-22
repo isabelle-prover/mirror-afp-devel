@@ -286,7 +286,8 @@ lemma fresh_star_set_subset:
 
 subsubsection {* The set of free variables of an expression *}
 
-definition fv :: "'a::pt \<Rightarrow> 'b::at_base set" where "fv e = {v. atom v \<in> supp e}"
+definition fv :: "'a::pt \<Rightarrow> 'b::at_base set"
+  where "fv e = {v. atom v \<in> supp e}"
 
 lemma fv_eqvt[simp,eqvt]: "\<pi> \<bullet> (fv e) = fv (\<pi> \<bullet> e)"
   unfolding fv_def by simp

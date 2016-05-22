@@ -103,16 +103,4 @@ lemma C_case_Cinf[simp]: "C_case \<cdot> f \<cdot> C\<^sup>\<infinity> = f \<cdo
   unfolding Cinf_def
   by (subst fix_eq) simp
 
-fixrec Cpred :: "C \<rightarrow> C" where "Cpred\<cdot>(C\<cdot>r) = r"
-
-lemma Cpred_strict[simp]: "Cpred\<cdot>\<bottom> = \<bottom>" by fixrec_simp
-
-lemma Cpred_below: "Cpred\<cdot>r \<sqsubseteq> r"
-  by (cases r) (simp_all add: below_C)
-
-lemma C_Cpred_id[simp]:
-  "r \<noteq> \<bottom> \<Longrightarrow> C\<cdot>(Cpred\<cdot>r) = r"
-  by (cases r) auto
-
-
 end

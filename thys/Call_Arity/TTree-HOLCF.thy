@@ -231,33 +231,6 @@ lemma ttree_restr_anything_cont[THEN cont_compose, simp, cont2cont]:
   apply auto
   done
 
-(* Not true, it seems:
-
-lemma ttree_restr_mono1:
-  "S \<subseteq> S' \<Longrightarrow> ttree_restr S t \<sqsubseteq> ttree_restr S' t"
-apply transfer
-apply auto
-apply (erule rev_image_eqI)
-
-lemma cont_ccTTree1:
-  "cont (\<lambda> S. ttree_restr S G)"
-  (* Not true*)
-  apply (rule set_ttree_contI)
-  apply transfer'
-  apply (auto simp add: filter_empty_conv)
-  apply (erule_tac x = xb in ballE) 
-  apply auto
-  
-
-lemma cont_ccTTree2:
-  "cont (ttree_restr S)"
-  by (rule ttree_contI2[where t = "\<lambda> xs.{filter (\<lambda> x'. x' \<in> S) xs}"])
-     (transfer, auto)
-
-lemmas cont_ccTTree = cont_compose2[where c = ttree_restr, OF cont_ccTTree1 cont_ccTTree2, simp, cont2cont]
-*)
-
-
 instance ttree :: (type) Finite_Join_cpo
 proof
   fix x y :: "'a ttree"

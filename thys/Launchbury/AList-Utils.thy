@@ -1,7 +1,7 @@
 theory "AList-Utils"
 imports Main "~~/src/HOL/Library/AList"
 begin
-
+declare implies_True_equals [simp] False_implies_equals[simp]
 text {* We want to have @{text delete} and @{text update} back in the namespace. *}
 
 abbreviation delete where "delete \<equiv> AList.delete"
@@ -65,6 +65,9 @@ lemma domA_clearjunk[simp]: "domA (clearjunk \<Gamma>) = domA \<Gamma>"
 
 lemma the_map_option_domA[simp]: "x \<in> domA \<Gamma> \<Longrightarrow> the (map_option f (map_of \<Gamma> x)) = f (the (map_of \<Gamma> x))"
   by (induction \<Gamma>) auto
+
+lemma map_of_domAD: "map_of \<Gamma> x = Some e \<Longrightarrow> x \<in> domA \<Gamma>"
+  using dom_map_of_conv_domA by fastforce
 
 lemma restrictA_noop: "domA \<Gamma> \<subseteq> S \<Longrightarrow> restrictA S \<Gamma> = \<Gamma>"
   unfolding restrict_eq by (induction \<Gamma>) auto
