@@ -435,7 +435,7 @@ proof (intro equalityI subsetI)
     proof (intro ex1I[of _ "length u"])
       fix p assume "m < n" "snd (x ! p) ! m \<and> p < length x"
       with star_Arbitrary_ExceptD[OF uzv(2)] Arbitrary_ExceptD[OF uzv(3)] star_Arbitrary_ExceptD[OF uzv(4)]
-        show "p = length u" by (cases rule: nat_less_cases) (auto simp: nth_append uzv(1))
+      show "p = length u" by (cases rule: linorder_cases) (auto simp: nth_append uzv(1))
     qed (auto dest!: Arbitrary_ExceptD)
     then obtain p where p: "p < length x" "snd (x ! p) ! m"
       "\<And>q. snd (x ! q) ! m \<and> q < length x \<longrightarrow> q = p" by auto
