@@ -48,7 +48,7 @@ begin
 definition "of_semi__val_fun = (\<lambda> Sval \<Rightarrow> \<open>val\<close>
                                 | Sfun \<Rightarrow> \<open>fun\<close>)"
 
-fun' of_semi__term' where \<open>of_semi__term' e = (\<lambda>
+fun of_semi__term' where \<open>of_semi__term' e = (\<lambda>
     SML_string s \<Rightarrow> \<open>"%s"\<close> (To_string (escape_sml s))
   | SML_rewrite val_fun e1 symb e2 \<Rightarrow> \<open>%s %s %s %s\<close> (of_semi__val_fun val_fun) (of_semi__term' e1) (To_string symb) (of_semi__term' e2)
   | SML_basic l \<Rightarrow> \<open>%s\<close> (String_concat \<open> \<close> (L.map To_string l))

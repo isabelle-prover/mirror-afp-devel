@@ -261,7 +261,7 @@ definition "of_semi__command_state = (
   | Command_apply_end l_apply \<Rightarrow> \<open>  apply_end(%s)
 \<close> (String_concat \<open>, \<close> (L.map of_semi__method l_apply)))"
 
-definition' \<open>of_semi__command_proof = (
+definition \<open>of_semi__command_proof = (
   let thesis = \<open>?thesis\<close>
     ; scope_thesis_gen = \<lambda>proof show when. \<open>  proof - %s show %s%s
 \<close> proof
@@ -351,7 +351,7 @@ definition "of_setup _ = (\<lambda> Setup e \<Rightarrow> \<open>setup \<open>%s
 
 definition "of_thm _ = (\<lambda> Thm thm \<Rightarrow> \<open>thm %s\<close> (of_semi__thm_attribute_l1 thm))"
 
-definition' \<open>of_interpretation _ = (\<lambda> Interpretation n loc_n loc_param tac \<Rightarrow>
+definition \<open>of_interpretation _ = (\<lambda> Interpretation n loc_n loc_param tac \<Rightarrow>
   \<open>interpretation %s: %s%s
 %s\<close> (To_string n)
     (To_string loc_n)
@@ -378,7 +378,7 @@ definition "of_semi__theory env =
 
 definition "String_concat_map s f l = String_concat s (L.map f l)"
 
-definition' \<open>of_semi__theories env =
+definition \<open>of_semi__theories env =
  (\<lambda> Theories_one t \<Rightarrow> of_semi__theory env t
   | Theories_locale data l \<Rightarrow> 
       \<open>locale %s =
