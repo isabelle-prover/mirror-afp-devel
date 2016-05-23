@@ -598,9 +598,7 @@ lemma fresh_at_path_Nil[simp]:
 lemma fresh_at_path_Cons[simp]:
   "fresh_at_path t (i#is) = fresh_at t [i] \<union> fresh_at_path (iAnts t ! i) is"
   unfolding fresh_at_path_def
-  apply (auto split: if_splits)
-  apply (metis empty_iff fresh_at_Nil in_set_inits)
-  done
+  by (fastforce split: if_splits)
   
 lemma globalize_local_consts:
   assumes "is' \<in> it_paths (globalize is f t)"
