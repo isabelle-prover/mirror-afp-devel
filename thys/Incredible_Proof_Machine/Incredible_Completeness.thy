@@ -61,8 +61,8 @@ lemma mem_vertices: "v |\<in>| vertices \<longleftrightarrow>  (fst v \<in> set 
   unfolding vertices_def fmember.rep_eq ffUnion.rep_eq 
   by (cases v)(auto simp add: Abs_fset_inverse Bex_def )
 
-lemma prefixeq_vertices: "(c,is) |\<in>| vertices \<Longrightarrow> prefixeq is' is \<Longrightarrow> (c, is') |\<in>| vertices"
-  by (cases is') (auto simp add: mem_vertices intro!: imageI elim: it_paths_prefixeq)
+lemma prefixeq_vertices: "(c,is) |\<in>| vertices \<Longrightarrow> prefix is' is \<Longrightarrow> (c, is') |\<in>| vertices"
+  by (cases is') (auto simp add: mem_vertices intro!: imageI elim: it_paths_prefix)
 
 lemma none_vertices[simp]: "(c, []) |\<in>| vertices \<longleftrightarrow> c \<in> set conclusions"
   by (simp add: mem_vertices)
@@ -190,7 +190,7 @@ lemma hyp_edge_from_valid_out_port:
   assumes "tree_at (it' c) is = HNode n s ants"
   shows "valid_out_port (hyp_edge_from c is n s)"
 using assms
-by(auto simp add: hyp_edge_from_def intro: hyp_port_outPort it_paths_prefix hyp_port_prefix  hyps_exist')
+by(auto simp add: hyp_edge_from_def intro: hyp_port_outPort it_paths_strict_prefix hyp_port_strict_prefix hyps_exist')
 
 lemma hyp_edge_to_valid_in_port:
   assumes "is \<in> it_paths (it' c)"
@@ -203,7 +203,7 @@ using assms by (auto simp add: hyp_edge_to_def)
 inductive scope' :: "'form vertex \<Rightarrow> ('form,'var) in_port \<Rightarrow> 'form \<times> nat list \<Rightarrow> bool" where
   "c \<in> set conclusions \<Longrightarrow>
    is' \<in> (op # 0) ` it_paths (it' c) \<Longrightarrow>
-   prefixeq (is@[i]) is' \<Longrightarrow> 
+   prefix (is@[i]) is' \<Longrightarrow> 
    ip = in_port_at (c,is) i \<Longrightarrow>
    scope' (c, is) ip (c, is')"
 
@@ -215,7 +215,7 @@ lemma scope_valid:
 by (auto elim: scope_cases)
 
 lemma scope_valid_inport:
-  "v' |\<in>| vertices \<Longrightarrow> scope' v ip  v' \<longleftrightarrow> (\<exists> i. fst v = fst v' \<and> prefixeq (snd v@[i]) (snd v') \<and> ip = in_port_at v i)"
+  "v' |\<in>| vertices \<Longrightarrow> scope' v ip  v' \<longleftrightarrow> (\<exists> i. fst v = fst v' \<and> prefix (snd v@[i]) (snd v') \<and> ip = in_port_at v i)"
 by (cases v; cases v')  (auto simp add: scope'.simps mem_vertices)
 
 definition terminal_path_from :: "'form \<Rightarrow> nat list => ('form, 'var) edge'' list" where
@@ -240,7 +240,7 @@ lemma edge_step:
   assumes "(((a, b), ba), ((aa, bb), bc)) \<in> edges"
   obtains 
     i where "a = aa" and "b = bb@[i]" and "bc = in_port_at (aa,bb) i"  and "hyps (nodeOf (a, b)) ba = None"
-  | i where "a = aa" and "prefixeq (b@[i]) bb" and "hyps (nodeOf (a, b)) ba = Some (in_port_at (a,b) i)"
+  | i where "a = aa" and "prefix (b@[i]) bb" and "hyps (nodeOf (a, b)) ba = Some (in_port_at (a,b) i)"
 using assms
 proof(cases rule: edges.cases[consumes 1, case_names Reg Hyp])
   case (Reg c "is")
@@ -250,20 +250,20 @@ proof(cases rule: edges.cases[consumes 1, case_names Reg Hyp])
 next
   case (Hyp c "is" n s)
   let ?i = "hyp_port_i_for (it' c) is (subst s (freshen n anyP))"
-  from Hyp have "a = aa" and "prefixeq (b@[?i]) bb" and
+  from Hyp have "a = aa" and "prefix (b@[?i]) bb" and
     "hyps (nodeOf (a, b)) ba = Some (in_port_at (a,b) ?i)"
   by (auto simp add: edge_at_def edge_from_def edge_to_def hyp_edge_at_def hyp_edge_to_def hyp_edge_from_def
-      intro: hyp_port_prefixeq hyps_exist' hyp_port_hyps)
+      intro: hyp_port_prefix hyps_exist' hyp_port_hyps)
   thus thesis by (rule that)
 qed
 
 lemma path_has_prefixes:
   assumes "path v v' pth"
   assumes "snd v' = []"
-  assumes "prefixeq (is' @ [i]) (snd v)"
+  assumes "prefix (is' @ [i]) (snd v)"
   shows "((fst v, is'), (in_port_at (fst v, is') i)) \<in> snd ` set pth"
   using assms
-  by (induction rule: path.induct)(auto elim!: edge_step dest: prefixeq_snocD)
+  by (induction rule: path.induct)(auto elim!: edge_step dest: prefix_snocD)
   
 lemma in_scope: "valid_in_port (v', p') \<Longrightarrow> v \<in> scope (v', p') \<longleftrightarrow> scope' v' p' v"
 proof
@@ -291,7 +291,7 @@ proof
       by (rule Some(3))
     hence "(v',p') \<in> set (map (edge_to c) (inits is))"
       unfolding terminal_path_from_def by auto
-    then obtain is' where "prefixeq is' is" and "(v',p') = edge_to c is'"
+    then obtain is' where "prefix is' is" and "(v',p') = edge_to c is'"
       by auto
     show "scope' v' p' (c, 0#is)"
     proof(cases "is'" rule: rev_cases)
@@ -306,7 +306,7 @@ proof
       with `(v',p') = edge_to c is'`
       have "v' = (c, 0 # is'')" and "p' = in_port_at v' i"
         by (auto simp add: edge_to_def)
-      with `c \<in> set conclusions` `is \<in> it_paths (it' c)` `prefixeq is' is`[unfolded snoc]
+      with `c \<in> set conclusions` `is \<in> it_paths (it' c)` `prefix is' is`[unfolded snoc]
       show ?thesis
         by (auto intro!: scope'.intros)
     qed
@@ -317,7 +317,7 @@ next
   then obtain c is' i "is" where
     "v' = (c, is')" and "v = (c, is)" and "c \<in> set conclusions" and
     "p' = in_port_at v' i" and
-    "is \<in> op # 0 ` it_paths (it' c)" and  "prefixeq (is' @ [i]) is"
+    "is \<in> op # 0 ` it_paths (it' c)" and  "prefix (is' @ [i]) is"
     by (auto simp add: scope'.simps)
 
   from `scope' v' p' v`
@@ -330,7 +330,7 @@ next
     assume "terminal_vertex t"
     hence "snd t = []" by auto
 
-    from path_has_prefixes[OF `path (c,is) t pth` `snd t = []`, simplified, OF `prefixeq (is' @ [i]) is`]
+    from path_has_prefixes[OF `path (c,is) t pth` `snd t = []`, simplified, OF `prefix (is' @ [i]) is`]
     show "((c, is'), p') \<in> snd ` set pth" unfolding `p' = _ ` `v' = _ `.
   qed
   thus "v \<in> scope (v', p')" using `v =_` `v' = _` by simp
@@ -386,7 +386,7 @@ proof
     using valid_edges by auto
 
   from assms
-  have "\<exists> i. fst v\<^sub>1 = fst v\<^sub>2 \<and> prefixeq (snd v\<^sub>1@[i]) (snd v\<^sub>2) \<and> p' = in_port_at v\<^sub>1 i"
+  have "\<exists> i. fst v\<^sub>1 = fst v\<^sub>2 \<and> prefix (snd v\<^sub>1@[i]) (snd v\<^sub>2) \<and> p' = in_port_at v\<^sub>1 i"
     by (cases v\<^sub>1; cases v\<^sub>2; auto elim!: edge_step)
   hence "scope' v\<^sub>1 p' v\<^sub>2"
     unfolding scope_valid_inport[OF `v\<^sub>2 |\<in>| vertices`].
@@ -616,9 +616,9 @@ proof
   finally
   have "freshenLC (vidx v) var \<in> fresh_at_path (it' c') is''"
     using `v |\<in>| vertices` by auto
-  then obtain is''' where "prefixeq is''' is''"  and "freshenLC (vidx v) var \<in> fresh_at (it' c') is'''"
+  then obtain is''' where "prefix is''' is''"  and "freshenLC (vidx v) var \<in> fresh_at (it' c') is'''"
     unfolding fresh_at_path_def by auto
-  then obtain i' is'''' where "prefixeq (is''''@[i']) is''" 
+  then obtain i' is'''' where "prefix (is''''@[i']) is''" 
       and "freshenLC (vidx v) var \<in> fresh_at (it' c') (is''''@[i'])"
     using append_butlast_last_id[where xs = is''', symmetric]
     apply (cases "is''' = []")
@@ -626,9 +626,9 @@ proof
     apply metis
     done
 
-  from  `is'' \<in> it_paths (it' c')` `prefixeq (is''''@[i']) is''`
-  have "(is''''@[i']) \<in> it_paths (it' c')" by (rule it_paths_prefixeq)
-  hence "is'''' \<in> it_paths (it' c')" using append_prefixeqD it_paths_prefixeq by blast
+  from  `is'' \<in> it_paths (it' c')` `prefix (is''''@[i']) is''`
+  have "(is''''@[i']) \<in> it_paths (it' c')" by (rule it_paths_prefix)
+  hence "is'''' \<in> it_paths (it' c')" using append_prefixD it_paths_prefix by blast
 
   from this `freshenLC (vidx v) var \<in> fresh_at (it' c') (is''''@[i'])`
   have "c = c' \<and> is = 0 # is'''' \<and> var \<in> a_fresh (inPorts' (iNodeOf (tree_at (it' c') is'''')) ! i')"
@@ -654,11 +654,11 @@ proof
           `i < length (inPorts' (nodeOf (c, is)))` `i' < length (inPorts' (nodeOf (c, is)))`]
   have "i' = i" by (auto simp add: `is=_` `c'=c`)
    
-  from  `prefixeq (is''''@[i']) is''`
-  have "prefixeq (is @ [i']) is'" by (simp add: `is'=_` `is=_`)
+  from  `prefix (is''''@[i']) is''`
+  have "prefix (is @ [i']) is'" by (simp add: `is'=_` `is=_`)
 
  
-  from `c \<in> set conclusions`  `is'' \<in> it_paths (it' c')` `prefixeq (is @ [i']) is'`
+  from `c \<in> set conclusions`  `is'' \<in> it_paths (it' c')` `prefix (is @ [i']) is'`
       `p = in_port_at (c, is) i`
   have "scope' v p v'"
   unfolding `v=_` `v'=_` `c' = _` `is' = _`  `i'=_` by (auto intro: scope'.intros)

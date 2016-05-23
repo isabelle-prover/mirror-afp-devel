@@ -161,10 +161,10 @@ subsection {* Definitions *}
 (* isabelle 2013 *)
 
 abbreviation subl::"'a list \<Rightarrow> 'a list \<Rightarrow> bool" ("_ \<le> _") 
-where "l1 \<le> l2 == Sublist.prefixeq l1 l2"
+where "l1 \<le> l2 == Sublist.prefix l1 l2"
 
 lemma list_diff_empty_eq: "l1 - l2 = [] \<Longrightarrow> l2 \<le> l1 \<Longrightarrow> l1 = l2"
-by (auto simp: prefixeq_def)
+by (auto simp: prefix_def)
 
 
 (* end isabelle 2013 *)
@@ -261,10 +261,10 @@ lemma R1_idem2: "R1 (R1 x) = R1 x"
 by (auto simp: rp_defs design_defs)
 
 lemma R2_idem: "R2 o R2 = R2"
-by (auto simp: rp_defs design_defs fun_eq_iff prefixeq_def)
+by (auto simp: rp_defs design_defs fun_eq_iff prefix_def)
 
 lemma R2_idem2: "R2 (R2 x) = R2 x"
-by (auto simp: rp_defs design_defs fun_eq_iff prefixeq_def)
+by (auto simp: rp_defs design_defs fun_eq_iff prefix_def)
 
 lemma R3_idem: "R3 o R3 = R3"
 by (auto simp: rp_defs design_defs fun_eq_iff split: cond_splits)
@@ -273,17 +273,17 @@ lemma R3_idem2: "R3 (R3 x) = R3 x"
 by (auto simp: R3_idem[simplified Fun.comp_def fun_eq_iff] fun_eq_iff)
 
 lemma R1_R2_commute: "(R1 o R2) = (R2 o R1)"
-by (auto simp: rp_defs design_defs fun_eq_iff prefixeq_def)
+by (auto simp: rp_defs design_defs fun_eq_iff prefix_def)
 
 lemma R1_R3_commute: "(R1 o R3) = (R3 o R1)"
 by (auto simp: rp_defs design_defs fun_eq_iff split: cond_splits)
 
 lemma R2_R3_commute: "R2 o R3 = R3 o R2"
-by (auto simp: rp_defs design_defs fun_eq_iff prefixeq_def split: cond_splits elim: prefixE)
+by (auto simp: rp_defs design_defs fun_eq_iff prefix_def split: cond_splits)
 
 lemma R_abs_R1: "R o R1 = R"
 apply (auto simp: R_def)
-apply (subst R1_idem[symmetric]) back back
+apply (subst (3) R1_idem[symmetric])
 apply (auto)
 done
 
@@ -291,7 +291,7 @@ lemma R_abs_R2: "R o R2 = R"
 by (auto simp: rp_defs design_defs fun_eq_iff)
 
 lemma R_abs_R3: "R o R3 = R"
-by (auto simp: rp_defs design_defs fun_eq_iff split: cond_splits elim: prefixE)
+by (auto simp: rp_defs design_defs fun_eq_iff split: cond_splits)
 
 lemma R_is_R1:
   assumes A: "P is R healthy"
@@ -313,7 +313,7 @@ proof -
     using assms by (simp_all only: Healthy_def)
   moreover
   have "(R P) is R2 healthy"
-    by (auto simp add: design_defs rp_defs fun_eq_iff prefixeq_def prefix_def split: cond_splits)
+    by (auto simp add: design_defs rp_defs fun_eq_iff prefix_def split: cond_splits)
   ultimately show ?thesis by simp
 qed
 
@@ -374,7 +374,7 @@ lemma J_is_R1: "J is R1 healthy"
   by (auto simp: rp_defs design_defs fun_eq_iff elim: alpha_d_more_eqE)
 
 lemma J_is_R2: "J is R2 healthy"
-  by (auto simp: rp_defs design_defs fun_eq_iff prefix_def prefixeq_def
+  by (auto simp: rp_defs design_defs fun_eq_iff prefix_def
     elim!: alpha_d_more_eqE intro!: alpha_d_more_eqI)
 
 lemma R1_H2_commute2: "R1 (H2 P) = H2 (R1 P)"
@@ -385,9 +385,9 @@ lemma R1_H2_commute: "R1 o H2 = H2 o R1"
 by (auto simp: R1_H2_commute2)
 
 lemma R2_H2_commute2: "R2 (H2 P) = H2 (R2 P)"
-apply (auto simp add: fun_eq_iff rp_defs design_defs prefix_def)
+apply (auto simp add: fun_eq_iff rp_defs design_defs strict_prefix_def)
 apply (rule_tac b="ba\<lparr>tr := tr a @ tr ba\<rparr>" in comp_intro)
-apply (auto simp: fun_eq_iff prefix_def prefixeq_def
+apply (auto simp: fun_eq_iff prefix_def
   elim!: alpha_d_more_eqE alpha_rp_eqE intro!: alpha_d_more_eqI alpha_rp.equality)
 apply (rule_tac b="ba\<lparr>tr := tr a @ tr ba\<rparr>" in comp_intro,
   auto simp: elim: alpha_d_more_eqE alpha_rp_eqE intro: alpha_d_more_eqI alpha_rp.equality)
@@ -401,7 +401,7 @@ lemma R2_H2_commute: "R2 o H2 = H2 o R2"
 by (auto simp: R2_H2_commute2)
 
 lemma R3_H2_commute2: "R3 (H2 P) = H2 (R3 P)"
-apply (auto simp: fun_eq_iff rp_defs design_defs prefix_def 
+apply (auto simp: fun_eq_iff rp_defs design_defs strict_prefix_def 
             elim: alpha_d_more_eqE split: cond_splits)
 done
 

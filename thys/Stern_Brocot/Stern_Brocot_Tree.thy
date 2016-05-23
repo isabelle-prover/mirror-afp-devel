@@ -321,12 +321,12 @@ next
     by(simp add: stern_brocot_iterate_aux_def split: dir.splits del: split_paired_Ex)(fastforce simp: LL_UR_Det)
 qed
 
-lemma stern_brocot_fractions_not_repeated_prefix:
+lemma stern_brocot_fractions_not_repeated_strict_prefix:
   assumes "root (traverse_tree path stern_brocot_iterate) = root (traverse_tree path' stern_brocot_iterate)"
-  assumes pp': "prefix path path'"
+  assumes pp': "strict_prefix path path'"
   shows False
 proof -
-  from pp' obtain d ds where pp': "path' = path @ [d] @ ds" by (auto elim!: prefixE')
+  from pp' obtain d ds where pp': "path' = path @ [d] @ ds" by (auto elim!: strict_prefixE')
   def m \<equiv> "root (traverse_tree path (stern_brocot_iterate_aux I))"
   then have Dm: "Det m = 1" and Pm: "0 < snd (mediant m)"
     using stern_brocot_iterate_aux_Det[where path="path" and m="I"] by simp_all
@@ -391,12 +391,12 @@ qed
 lemma lists_not_eq:
   assumes "xs \<noteq> ys"
   obtains
-    (c1) "prefix xs ys"
-  | (c2) "prefix ys xs"
+    (c1) "strict_prefix xs ys"
+  | (c2) "strict_prefix ys xs"
   | (c3) ps x y xs' ys'
           where "xs = ps @ x # xs'" and "ys = ps @ y # ys'" and "x \<noteq> y"
 using assms
-by (cases xs ys rule: prefixeq_cases)
+by (cases xs ys rule: prefix_cases)
    (blast dest: parallel_decomp prefix_order.neq_le_trans)+
 
 lemma stern_brocot_fractions_not_repeated:
@@ -406,7 +406,7 @@ proof(rule ccontr)
   assume "path \<noteq> path'"
   then show False using assms
     by (cases path path' rule: lists_not_eq)
-       (blast intro: stern_brocot_fractions_not_repeated_prefix sym
+       (blast intro: stern_brocot_fractions_not_repeated_strict_prefix sym
                      stern_brocot_fractions_not_repeated_parallel)+
 qed
 

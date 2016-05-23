@@ -359,7 +359,7 @@ begin
     let ?n\<^sub>v = "defNode g v"
     let ?n\<^sub>v\<^sub>' = "defNode g v'"
     from assms(2) asm have 1: "?n\<^sub>v \<in> set ns" using allUses_def_ass[of v g n] by (simp add:defAss_defNode)
-    then obtain ns\<^sub>v where ns\<^sub>v: "prefixeq (ns\<^sub>v@[?n\<^sub>v]) ns" by (rule prefix_split_first)
+    then obtain ns\<^sub>v where ns\<^sub>v: "prefix (ns\<^sub>v@[?n\<^sub>v]) ns" by (rule prefix_split_first)
     with asm have 2: "g \<turnstile> Entry g-ns\<^sub>v@[?n\<^sub>v]\<rightarrow>?n\<^sub>v" by auto
     show "\<exists>n \<in> set ns. v' \<in> step.allDefs g n"
     proof (cases "v = chooseNext g")

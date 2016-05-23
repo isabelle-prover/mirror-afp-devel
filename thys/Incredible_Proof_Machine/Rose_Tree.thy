@@ -62,28 +62,28 @@ using assms
 by (induction "is" arbitrary: t)(auto intro!: it_paths_intros elim!: it_paths_ConsE)
 
 
-lemma it_paths_prefix:
+lemma it_paths_strict_prefix:
   assumes "is \<in> it_paths t"
-  assumes "prefix is' is"
+  assumes "strict_prefix is' is"
   shows "is' \<in> it_paths t"
 proof-
   from assms(2)
-  obtain is'' where "is = is' @ is''" using prefixE' by blast
+  obtain is'' where "is = is' @ is''" using strict_prefixE' by blast
   from assms(1)[unfolded this]
   show ?thesis
     by(induction is' arbitrary: t) (auto elim!: it_paths_ConsE intro!: it_paths_intros)
 qed
 
-lemma it_paths_prefixeq:
+lemma it_paths_prefix:
   assumes "is \<in> it_paths t"
-  assumes "prefixeq is' is"
+  assumes "prefix is' is"
   shows "is' \<in> it_paths t"
-using assms it_paths_prefix  prefixI by fastforce
+using assms it_paths_strict_prefix strict_prefixI by fastforce
 
 lemma it_paths_butlast:
   assumes "is \<in> it_paths t"
   shows "butlast is \<in> it_paths t"
-using assms prefixeq_butlast by (rule it_paths_prefixeq)
+using assms prefixeq_butlast by (rule it_paths_prefix)
 
 lemma it_path_SnocI:
   assumes "is \<in> it_paths t" 

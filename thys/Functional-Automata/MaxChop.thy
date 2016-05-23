@@ -103,18 +103,18 @@ apply (clarify)
 apply (rename_tac xs1 ys1 xss1 ys)
 apply (simp split: list.split_asm)
  apply (simp add: is_maxpref_def)
- apply (blast intro: prefixeq_append[THEN iffD2])
+ apply (blast intro: prefix_append[THEN iffD2])
 apply (rule conjI)
  apply (clarify)
  apply (simp (no_asm_use) add: is_maxpref_def)
- apply (blast intro: prefixeq_append[THEN iffD2])
+ apply (blast intro: prefix_append[THEN iffD2])
 apply (clarify)
 apply (rename_tac us uss)
 apply (subgoal_tac "xs1=us")
  apply simp
 apply simp
 apply (simp (no_asm_use) add: is_maxpref_def)
-apply (blast intro: prefixeq_append[THEN iffD2] prefix_order.antisym)
+apply (blast intro: prefix_append[THEN iffD2] prefix_order.antisym)
 done
 
 end
