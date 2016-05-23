@@ -77,13 +77,17 @@ proof -
       using \<open>m < n\<close> by auto }
   note general = this
 
-  { assume "m < n" then have ?thesis using general m by metis }
-  moreover
-  { assume "m = n" then have ?thesis using m by metis}
-  moreover
-  { assume "n < m" then have ?thesis using general m by metis }
-  ultimately
-  show ?thesis by (metis nat_less_cases)
+  show ?thesis
+  proof (cases m n rule: linorder_cases)
+    case less
+    then show ?thesis using general m by metis
+  next
+    case equal
+    then show ?thesis using m by metis
+  next
+    case greater
+    then show ?thesis using general m by metis
+  qed
 qed
 
 lemma permutes_in_funpow_image:
