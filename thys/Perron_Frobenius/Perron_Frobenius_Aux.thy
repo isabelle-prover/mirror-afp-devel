@@ -9,8 +9,6 @@ theory Perron_Frobenius_Aux
 imports HMA_Connect
 begin
 
-(* TODO: move into Matrix *)
-
 definition real_nonneg_mat :: "complex mat \<Rightarrow> bool" where
   "real_nonneg_mat A \<equiv> \<forall> a \<in> mat_elements A. a \<in> \<real> \<and> Re a \<ge> 0"
 

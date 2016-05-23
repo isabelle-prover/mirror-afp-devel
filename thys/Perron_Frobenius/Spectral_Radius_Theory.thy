@@ -2,9 +2,9 @@ section \<open>Combining Spectral Radius Theory with Perron Frobenius theorem\<c
 
 theory Spectral_Radius_Theory
 imports 
-  Square_Free_Factorization_Patched
+  "../Polynomial_Factorization/Square_Free_Factorization"
+  "../Jordan_Normal_Form/Spectral_Radius"
   Perron_Frobenius
-  Eigenvector_Homomorphism
 begin
 
 abbreviation spectral_radius where "spectral_radius \<equiv> Spectral_Radius.spectral_radius"
@@ -75,24 +75,6 @@ next
   case True
   with A show ?thesis
     by (intro exI[of _ 0], auto simp: norm_bound_def)
-qed
-
-(* TODO: move *)
-lemma (in ring_hom) char_poly_matrix_hom: assumes A: "A \<in> carrier\<^sub>m n n"
-  shows "char_poly_matrix (mat\<^sub>h A) = map\<^sub>m (map_poly hom) (char_poly_matrix A)"
-proof -
-  interpret p: ring_hom "map_poly hom" by (rule ring_hom_map_poly)
-  show ?thesis
-    unfolding char_poly_matrix_def
-    by (rule mat_eqI, insert A, auto simp: mat_scalar_mult_def)
-qed
-
-lemma (in ring_hom) char_poly_hom: assumes A: "A \<in> carrier\<^sub>m n n"
-  shows "char_poly (map\<^sub>m hom A) = map_poly hom (char_poly A)"
-proof -
-  interpret p: ring_hom "map_poly hom" by (rule ring_hom_map_poly)
-  show ?thesis
-    unfolding char_poly_def p.hom_det[symmetric] char_poly_matrix_hom[OF A] ..
 qed
 
 text \<open>The following lemma is the same as @{thm perron_frobenius_spectral_radius_complex}, 

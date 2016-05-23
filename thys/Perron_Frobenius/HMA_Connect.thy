@@ -7,9 +7,8 @@ subsection \<open>Transfer rules to convert theorems from JNF to HMA and vice-ve
 theory HMA_Connect
 imports 
   "~~/src/HOL/Eisbach/Eisbach" 
-  "$AFP/Jordan_Normal_Form/Spectral_Radius" 
-  "$AFP/Gauss_Jordan/Elementary_Operations" 
-  "$AFP/Echelon_Form/Code_Cayley_Hamilton"
+  "../Jordan_Normal_Form/Spectral_Radius" 
+  "../Echelon_Form/Code_Cayley_Hamilton" (* defines matpow *)
   Bij_Nat
   Cancel_Card_Constraint
 begin
@@ -601,5 +600,22 @@ method transfer_hma uses rule = (
   rule rule, 
   (unfold vec_carrier_def mat_carrier_def)?, 
   auto)
+
+text \<open>Now it becomes easy to transfer results which are not yet proven in HMA, such as:\<close>
+
+lemma matrix_add_vect_distrib: "(A + B) *v v = A *v v + B *v v"
+  by (transfer_hma rule: mat_mult_vec_left_distrib)
+
+lemma eigen_value_root_charpoly: 
+  "eigen_value A k \<longleftrightarrow> poly (charpoly (A :: 'a :: field ^ 'n ^ 'n)) k = 0"
+  by (transfer_hma rule: eigenvalue_root_char_poly)
+
+lemma finite_spectrum: fixes A :: "'a :: field ^ 'n ^ 'n"
+  shows "finite (Collect (eigen_value A))" 
+  by (transfer_hma rule: card_finite_spectrum(1)[unfolded spectrum_def])
+
+lemma non_empty_spectrum: fixes A :: "complex ^ 'n ^ 'n"
+  shows "Collect (eigen_value A) \<noteq> {}"
+  by (transfer_hma rule: spectrum_non_empty[unfolded spectrum_def])
 
 end

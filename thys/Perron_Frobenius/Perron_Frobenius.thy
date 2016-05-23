@@ -14,25 +14,6 @@ hide_fact (open) Matrix.vec_eq_iff
 no_notation
   vec_index (infixl "$" 100)
 
-text \<open>We need some properties for eigenvalues, etc. for the type-based
-  version (HMA), which are only available from the set-based version (JNF).
-  To this end, we just invoke HMA-connect.\<close>
-
-lemma matrix_add_vect_distrib: "(A + B) *v v = A *v v + B *v v"
-  by (transfer_hma rule: mat_mult_vec_left_distrib)
-
-lemma eigen_value_root_charpoly: 
-  "eigen_value A k \<longleftrightarrow> poly (charpoly (A :: 'a :: field ^ 'n ^ 'n)) k = 0"
-  by (transfer_hma rule: eigenvalue_root_char_poly)
-
-lemma finite_spectrum: fixes A :: "'a :: field ^ 'n ^ 'n"
-  shows "finite (Collect (eigen_value A))" 
-  by (transfer_hma rule: card_finite_spectrum(1)[unfolded spectrum_def])
-
-lemma non_empty_spectrum: fixes A :: "complex ^ 'n ^ 'n"
-  shows "Collect (eigen_value A) \<noteq> {}"
-  by (transfer_hma rule: spectrum_non_empty[unfolded spectrum_def])
-
 lemma spectral_radius_ev:  
   "\<exists> ev v. eigen_vector A v ev \<and> norm ev = spectral_radius A"
 proof -

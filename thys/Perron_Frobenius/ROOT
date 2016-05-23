@@ -22,5 +22,4 @@ session "Pre_Perron_Frobenius" (AFP) = "Jordan_Normal_Form" +
     "~~/src/HOL/Eisbach/Eisbach"
     "../Echelon_Form/Code_Cayley_Hamilton"
     "../Jordan_Normal_Form/Spectral_Radius"
-    "../Polynomial_Factorization/Polynomial_Divisibility"
-    "../Polynomial_Factorization/Order_Polynomial"
+    "../Polynomial_Factorization/Square_Free_Factorization"
