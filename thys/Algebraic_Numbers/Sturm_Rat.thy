@@ -112,19 +112,10 @@ proof (induct p q rule: sturm_aux_rat.induct)
     using 1 by (cases "degree q = 0", auto)
 qed
 
-lemma pderiv_rat: "pderiv (real_of_rat_poly p) = real_of_rat_poly (pderiv p)"
-proof (induct p rule: pderiv.induct)
-  case (1 a p)
-  show ?case 
-    unfolding pderiv.simps
-      rpoly.map_poly_pCons_hom
-      rpoly.map_poly_0_iff using 1 by (cases "p = 0", auto)
-qed
-
 definition sturm_rat where "sturm_rat p = sturm_aux_rat p (pderiv p)"
 
 lemma sturm_rat: "sturm (real_of_rat_poly p) = map real_of_rat_poly (sturm_rat p)"
-  unfolding sturm_rat_def sturm_def pderiv_rat sturm_aux_rat ..
+  unfolding sturm_rat_def sturm_def rpoly.map_poly_pderiv sturm_aux_rat ..
 
 definition sturm_squarefree_rat where
   "sturm_squarefree_rat p = sturm_rat (p div (gcd_rat_poly p (pderiv p)))"
@@ -132,7 +123,7 @@ definition sturm_squarefree_rat where
 lemma sturm_squarefree_rat: "sturm_squarefree (real_of_rat_poly p) 
   = map real_of_rat_poly (sturm_squarefree_rat p)"
   unfolding sturm_squarefree_rat_def sturm_squarefree_def gcd_rat_poly
-    rpoly.map_poly_gcd[symmetric] rpoly.map_poly_div[symmetric] pderiv_rat sturm_rat ..
+    rpoly.map_poly_gcd[symmetric] rpoly.map_poly_div[symmetric] rpoly.map_poly_pderiv sturm_rat ..
 
 definition poly_inf_rat :: "rat poly \<Rightarrow> rat" where 
   "poly_inf_rat p \<equiv> sgn (coeff p (degree p))"

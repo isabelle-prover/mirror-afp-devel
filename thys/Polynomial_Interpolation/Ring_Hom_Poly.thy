@@ -214,8 +214,6 @@ proof -
     apply(subst(6) poly_as_sum_of_monoms'[OF le_refl, symmetric])
     using monom_hom by auto
 qed
-
-
 end
 
 locale map_poly_semiring_hom = semiring_hom
@@ -316,6 +314,16 @@ lemma pdivmod_pdivmodrel: "pdivmod_rel p q r s \<longleftrightarrow> pdivmod p q
 
 context inj_field_hom
 begin
+
+lemma map_poly_pderiv: "pderiv (map_poly hom p) = map_poly hom (pderiv p)"
+proof (induct p rule: pderiv.induct)
+  case (1 a p)
+  show ?case 
+    unfolding pderiv.simps
+      map_poly_pCons_hom
+      map_poly_0_iff using 1 by (cases "p = 0", auto)
+qed
+
 lemma map_poly_pdivmod: 
   "map_prod (map_poly hom) (map_poly hom) (pdivmod p q) = pdivmod (map_poly hom p) (map_poly hom q)"
   (is "?l = ?r")

@@ -79,6 +79,7 @@ locale inj_semiring_hom = semiring_hom +
 begin
   sublocale semiring_hom..
   lemma hom_0_iff[simp]: "hom x = 0 \<longleftrightarrow> x = 0" using hom_inj[of _ 0] by auto
+  lemma hom_1_iff[simp]: "hom x = 1 \<longleftrightarrow> x = 1" using hom_inj[of _ 1] by auto
   lemma hom_eq_iff[simp]: "hom x = hom y \<longleftrightarrow> x = y" using hom_inj by auto
 end
 

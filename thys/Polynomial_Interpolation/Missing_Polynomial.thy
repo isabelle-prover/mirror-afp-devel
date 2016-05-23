@@ -252,6 +252,9 @@ subsection \<open>Monic Polynomials\<close>
 
 abbreviation monic where "monic p \<equiv> coeff p (degree p) = 1"
 
+lemma normalize_monic: "monic p \<Longrightarrow> normalize p = p"
+  by (simp add: normalize_poly_def)
+
 lemma lcoeff_monic_mult: assumes monic: "monic (p :: 'a :: comm_semiring_1 poly)"
   shows "coeff (p * q) (degree p + degree q) = coeff q (degree q)"
 proof -
