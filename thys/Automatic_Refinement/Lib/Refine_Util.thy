@@ -383,7 +383,7 @@ ML {*
       Scan.lift (Args.mode "asm" -- Scan.optional (Args.parens (Scan.repeat Parse.nat)) [0]) --
       Scan.optional (Scan.lift
         (Parse.and_list1 
-          (Parse.position Args.var -- (Args.$$$ "=" |-- Parse.!!! Args.name_inner_syntax)) --|
+          (Parse.position Args.var -- (Args.$$$ "=" |-- Parse.!!! Args.embedded_inner_syntax)) --|
           Args.$$$ "in")) [] --
       Attrib.thms >>
       (fn (((quant, (asm, occL)), insts), thms) => fn ctxt => METHOD 
