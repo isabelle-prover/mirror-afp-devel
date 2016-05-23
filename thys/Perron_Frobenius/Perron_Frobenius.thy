@@ -230,7 +230,7 @@ lemma mult_B_mono: assumes "\<And> i. v $ i \<ge> w $ i"
 private lemma non_emptyS: "S \<noteq> {}"
 proof -
   let ?v = "(\<chi> i. norm (max_v $ i)) :: real ^ 'n"
-  have "norm1 max_v = 1" by fact
+  have "norm1 max_v = 1" by (rule max_v_ev(3))
   hence nv: "norm1 ?v = 1" unfolding norm1_def by auto
   {
     fix i
