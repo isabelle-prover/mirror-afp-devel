@@ -5,7 +5,6 @@ subsection \<open>Perron-Frobenius theorem via Brouwer's fixpoint theorem.\<clos
 theory Perron_Frobenius
 imports
   "~~/src/HOL/Multivariate_Analysis/Brouwer_Fixpoint"
-  "~~/src/HOL/Multivariate_Analysis/Cartesian_Euclidean_Space"
   Perron_Frobenius_Aux
 begin
 

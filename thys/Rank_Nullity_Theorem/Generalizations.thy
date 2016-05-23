@@ -8,7 +8,7 @@ section{*Generalizations*}
 
 theory Generalizations
 imports
-  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+  "~~/src/HOL/Multivariate_Analysis/Determinants"
 begin
 
 subsection{*Generalization of parts of the HMA library*}

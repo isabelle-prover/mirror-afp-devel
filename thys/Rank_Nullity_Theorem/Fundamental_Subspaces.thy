@@ -9,7 +9,6 @@ section{*Fundamental Subspaces*}
 
 theory Fundamental_Subspaces
 imports 
-    "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
     Miscellaneous
 begin
 
