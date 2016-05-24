@@ -252,7 +252,7 @@ proof -
     apply (rule conjI)
     apply (rule_tac x="(relation_of x)" in exI, simp)
     apply (subst CSP_is_rd, simp add: relation_of_CSP)
-    apply (auto simp add: csp_defs prefixeq_def design_defs rp_defs fun_eq_iff split: cond_splits)
+    apply (auto simp add: csp_defs design_defs rp_defs fun_eq_iff split: cond_splits)
     done
   qed
   then show "(\<Sqinter> relation_of ` A) is CSP1 healthy" by (simp add: design_defs)
@@ -282,7 +282,7 @@ proof -
     apply (erule Set.imageE, simp add: relation_of)
     apply (subst CSP_is_rd, simp add: relation_of_CSP)
     apply (subst (asm) CSP_is_rd, simp add: relation_of_CSP)
-    apply (auto simp add: csp_defs rp_defs prefixeq_def design_defs fun_eq_iff split: cond_splits)
+    apply (auto simp add: csp_defs rp_defs prefix_def design_defs fun_eq_iff split: cond_splits)
     apply (subgoal_tac "b\<lparr>tr := zs, ok := False\<rparr> = c\<lparr>tr := zs, ok := False\<rparr>", auto)
     apply (subgoal_tac "b\<lparr>tr := zs, ok := False\<rparr> = c\<lparr>tr := zs, ok := False\<rparr>", auto)
     apply (subgoal_tac "b\<lparr>tr := zs, ok := False\<rparr> = c\<lparr>tr := zs, ok := False\<rparr>", auto)
@@ -312,19 +312,19 @@ proof -
     apply (simp_all)
     apply (erule Set.imageE, simp add: relation_of)
     apply (subst (asm) CSP_is_rd, simp add: relation_of_CSP)
-    apply (simp add: csp_defs prefixeq_def design_defs rp_defs fun_eq_iff split: cond_splits)
+    apply (simp add: csp_defs prefix_def design_defs rp_defs fun_eq_iff split: cond_splits)
     apply (rule_tac x="x" in exI, simp)
     apply (rule conjI)
     apply (rule_tac x="relation_of xa" in exI, simp)
     apply (subst CSP_is_rd, simp add: relation_of_CSP)
-    apply (simp add: csp_defs prefixeq_def design_defs rp_defs fun_eq_iff split: cond_splits)
+    apply (simp add: csp_defs prefix_def design_defs rp_defs fun_eq_iff split: cond_splits)
     apply (insert *)
     apply (erule non_emptyE)
     apply (rule_tac x="Collect (relation_of x)" in exI, simp)
     apply (rule conjI)
     apply (rule_tac x="(relation_of x)" in exI, simp)
     apply (subst CSP_is_rd, simp add: relation_of_CSP)
-    apply (simp add: csp_defs prefixeq_def design_defs rp_defs fun_eq_iff split: cond_splits)
+    apply (simp add: csp_defs prefix_def design_defs rp_defs fun_eq_iff split: cond_splits)
     apply (erule exE | erule conjE)+
     apply (simp_all)
     apply (erule Set.imageE, simp add: relation_of)
@@ -332,9 +332,9 @@ proof -
     apply (rule conjI)
     apply (rule_tac x="(relation_of xa)" in exI, simp)
     apply (subst CSP_is_rd, simp add: relation_of_CSP)
-    apply (simp add: csp_defs prefixeq_def design_defs rp_defs fun_eq_iff split: cond_splits)
+    apply (simp add: csp_defs prefix_def design_defs rp_defs fun_eq_iff split: cond_splits)
     apply (subst (asm) CSP_is_rd, simp add: relation_of_CSP)
-    apply (simp add: csp_defs prefixeq_def design_defs rp_defs fun_eq_iff split: cond_splits)
+    apply (simp add: csp_defs prefix_def design_defs rp_defs fun_eq_iff split: cond_splits)
     done
   qed
   then show "(\<Sqinter> relation_of ` A) is R healthy" by (simp add: design_defs)
@@ -353,7 +353,7 @@ lemma Inf_is_action: "A \<noteq> {} \<Longrightarrow> \<Sqinter> relation_of ` A
 lemma CSP1_Sup: "A \<noteq> {} \<Longrightarrow> (\<Squnion> relation_of ` A) is CSP1 healthy"
   apply (auto simp add: design_defs csp_defs fun_eq_iff)
   apply (subst CSP_is_rd, simp add: relation_of_CSP)
-  apply (simp add: csp_defs prefixeq_def design_defs rp_defs split: cond_splits)
+  apply (simp add: csp_defs prefix_def design_defs rp_defs split: cond_splits)
 done
 
 lemma CSP2_Sup: "A \<noteq> {} \<Longrightarrow> (\<Squnion> relation_of ` A) is CSP2 healthy"

@@ -63,7 +63,7 @@ by (simp add: H2_CSP1_commute[simplified Fun.comp_def fun_eq_iff, rule_format] f
 
 lemma CSP1_R_commute:
   "CSP1 (R P) = R (CSP1 P)"
-by (auto simp: csp_defs rp_defs fun_eq_iff prefixeq_def split: cond_splits)
+by (auto simp: csp_defs rp_defs fun_eq_iff prefix_def split: cond_splits)
 
 lemma CSP2_R_commute:
   "CSP2 (R P) = R (CSP2 P)"
@@ -85,12 +85,12 @@ using A by (auto simp: is_CSP_process_def design_defs)
 lemma CSP_is_CSP2:
   assumes A: "is_CSP_process P"
   shows "P is CSP2 healthy"
-using A by (simp add: design_defs prefixeq_def is_CSP_process_def)
+using A by (simp add: design_defs prefix_def is_CSP_process_def)
 
 lemma CSP_is_R:
   assumes A: "is_CSP_process P"
   shows "P is R healthy"
-using A by (simp add: design_defs prefixeq_def is_CSP_process_def)
+using A by (simp add: design_defs prefix_def is_CSP_process_def)
 
 lemma t_or_f_a: "P(a, b) \<Longrightarrow> ((P(a, b\<lparr>ok := True\<rparr>)) \<or> (P(a, b\<lparr>ok := False\<rparr>)))"
 apply (case_tac "ok b", auto)
@@ -190,7 +190,7 @@ proof -
     using assms by (simp_all only: Healthy_def)
   moreover
   have "(R P ;; R Q) is R healthy"
-    apply (auto simp add: design_defs rp_defs prefixeq_def fun_eq_iff split: cond_splits)
+    apply (auto simp add: design_defs rp_defs prefix_def fun_eq_iff split: cond_splits)
     apply (erule_tac x="zs @ zsa" in allE, auto split: cond_splits)+
     apply (rule_tac b=a in comp_intro, auto split: cond_splits)
     apply (rule_tac x="zs" in exI, auto split: cond_splits)
@@ -241,7 +241,7 @@ lemma rd_H1_H2: "(R((\<not> H1 (\<lambda> (A, A'). P (A, A'\<lparr>ok := False\<
                                   \<turnstile> H1 (\<lambda> (A, A'). P (A, A'\<lparr>ok := True\<rparr>)))) = 
                         (R((\<not>(H1 o H2) (\<lambda> (A, A'). P (A, A'\<lparr>ok := False\<rparr>))) 
                                   \<turnstile> (H1 o H2) (\<lambda> (A, A'). P (A, A'\<lparr>ok := True\<rparr>))))"
-apply (auto simp: design_defs rp_defs prefixeq_def fun_eq_iff split: cond_splits elim: alpha_d_more_eqE)
+apply (auto simp: design_defs rp_defs prefix_def fun_eq_iff split: cond_splits elim: alpha_d_more_eqE)
 apply (subgoal_tac "b\<lparr>tr := zs, ok := False\<rparr> = ba\<lparr>ok := False\<rparr>", auto intro: alpha_d.equality)
 apply (subgoal_tac "b\<lparr>tr := zs, ok := False\<rparr> = ba\<lparr>ok := False\<rparr>", auto intro: alpha_d.equality)
 apply (subgoal_tac "b\<lparr>tr := zs, ok := False\<rparr> = ba\<lparr>ok := False\<rparr>", auto intro: alpha_d.equality)

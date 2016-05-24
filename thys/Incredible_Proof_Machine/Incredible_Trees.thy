@@ -172,7 +172,7 @@ lemma iwf_outPort:
      (auto 4 4 elim!: it_paths_RNodeE  dest: list_all2_lengthD list_all2_nthD2)
 
 inductive_set hyps_along for t "is" where
- "prefixeq (is'@[i]) is \<Longrightarrow>
+ "prefix (is'@[i]) is \<Longrightarrow>
   i < length (inPorts' (iNodeOf (tree_at t is'))) \<Longrightarrow>
   hyps (iNodeOf (tree_at t is')) h = Some (inPorts' (iNodeOf (tree_at t is')) ! i) \<Longrightarrow>
   subst (iSubst (tree_at t is')) (freshen (iAnnot (tree_at t is')) (labelsOut (iNodeOf (tree_at t is')) h)) \<in> hyps_along t is"
@@ -197,24 +197,24 @@ proof-
     fix x
     assume "x \<in> hyps_along t (i # is)"
     then obtain is' i' h where
-      "prefixeq (is'@[i']) (i#is)"
+      "prefix (is'@[i']) (i#is)"
       and "i' < length (inPorts' (iNodeOf (tree_at t is')))"
       and "hyps (iNodeOf (tree_at t is')) h = Some (inPorts' (iNodeOf (tree_at t is')) ! i')"
       and [simp]: "x = subst (iSubst (tree_at t is')) (freshen (iAnnot (tree_at t is')) (labelsOut (iNodeOf (tree_at t is')) h))"
     by (auto elim!: hyps_along.cases)
     from this(1)
     show "x \<in> ?S2 \<union> ?S3"
-    proof(cases rule: prefixeq_app_Cons_elim)
+    proof(cases rule: prefix_app_Cons_elim)
       assume "is' = []" and "i' = i"
       with `hyps (iNodeOf (tree_at t is')) h = Some _`
       have "x \<in> ?S2" by auto
       thus ?thesis..
     next
       fix is''
-      assume [simp]: "is' = i # is''" and "prefixeq (is'' @ [i']) is"
+      assume [simp]: "is' = i # is''" and "prefix (is'' @ [i']) is"
       have "tree_at t is' = tree_at ?t' is''" by simp
 
-      note `prefixeq (is'' @ [i']) is`
+      note `prefix (is'' @ [i']) is`
            `i' < length (inPorts' (iNodeOf (tree_at t is')))`
            `hyps (iNodeOf (tree_at t is')) h = Some (inPorts' (iNodeOf (tree_at t is')) ! i')`
       from this[unfolded `tree_at t is' = tree_at ?t' is''`]
@@ -228,7 +228,7 @@ proof-
     assume "x \<in> ?S2 \<union> ?S3"
     thus "x \<in> ?S1"
     proof
-      have "prefixeq ([]@[i]) (i#is)" by simp
+      have "prefix ([]@[i]) (i#is)" by simp
       moreover
       from `iwf _ t _`
       have "length (iAnts t) \<le> length (inPorts' (iNodeOf (tree_at t []))) "
@@ -315,7 +315,7 @@ qed
 definition hyp_port_for' :: "('form, 'rule, 'subst, 'var) itree \<Rightarrow> nat list \<Rightarrow> 'form \<Rightarrow> nat list \<times> nat \<times> ('form, 'var) out_port" where
   "hyp_port_for' t is f = (SOME x.
    (case x of (is', i, h) \<Rightarrow> 
-      prefixeq (is' @ [i]) is \<and>
+      prefix (is' @ [i]) is \<and>
       i < length (inPorts' (iNodeOf (tree_at t is'))) \<and>
       hyps (iNodeOf (tree_at t is')) h =  Some (inPorts' (iNodeOf (tree_at t is')) ! i) \<and>
       f = subst (iSubst  (tree_at t is')) (freshen (iAnnot (tree_at t is')) (labelsOut (iNodeOf (tree_at t is')) h))
@@ -324,7 +324,7 @@ definition hyp_port_for' :: "('form, 'rule, 'subst, 'var) itree \<Rightarrow> na
 lemma hyp_port_for_spec':
   assumes "f \<in> hyps_along t is"
   shows "(case hyp_port_for' t is f of (is', i, h) \<Rightarrow> 
-      prefixeq (is' @ [i]) is \<and>
+      prefix (is' @ [i]) is \<and>
       i < length (inPorts' (iNodeOf (tree_at t is'))) \<and>
       hyps (iNodeOf (tree_at t is')) h =  Some (inPorts' (iNodeOf (tree_at t is')) ! i) \<and>
       f = subst (iSubst  (tree_at t is')) (freshen (iAnnot (tree_at t is')) (labelsOut (iNodeOf (tree_at t is')) h)))"
@@ -337,21 +337,21 @@ definition hyp_port_i_for ::  "('form, 'rule, 'subst, 'var) itree \<Rightarrow> 
 definition hyp_port_h_for :: "('form, 'rule, 'subst, 'var) itree \<Rightarrow> nat list \<Rightarrow> 'form \<Rightarrow> ('form, 'var) out_port"
   where "hyp_port_h_for t is f = snd (snd (hyp_port_for' t is f))"
 
-lemma hyp_port_prefixeq:
-  assumes "f \<in> hyps_along t is"
-  shows "prefixeq (hyp_port_path_for t is f@[hyp_port_i_for t is f]) is"
-using hyp_port_for_spec'[OF assms] unfolding hyp_port_path_for_def hyp_port_i_for_def by auto
-
 lemma hyp_port_prefix:
   assumes "f \<in> hyps_along t is"
-  shows "prefix (hyp_port_path_for t is f) is"
-using hyp_port_prefixeq[OF assms] by (simp add: prefixI' prefix_order.dual_order.strict_trans1)
+  shows "prefix (hyp_port_path_for t is f@[hyp_port_i_for t is f]) is"
+using hyp_port_for_spec'[OF assms] unfolding hyp_port_path_for_def hyp_port_i_for_def by auto
+
+lemma hyp_port_strict_prefix:
+  assumes "f \<in> hyps_along t is"
+  shows "strict_prefix (hyp_port_path_for t is f) is"
+using hyp_port_prefix[OF assms] by (simp add: strict_prefixI' prefix_order.dual_order.strict_trans1)
 
 lemma hyp_port_it_paths:
   assumes "is \<in> it_paths t"
   assumes "f \<in> hyps_along t is"
   shows "hyp_port_path_for t is f \<in> it_paths t"
-using assms by (rule it_paths_prefix[OF _ hyp_port_prefix] )
+using assms by (rule it_paths_strict_prefix[OF _ hyp_port_strict_prefix] )
 
 
 lemma hyp_port_hyps:

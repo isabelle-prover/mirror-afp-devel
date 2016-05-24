@@ -404,7 +404,7 @@ next
   have "length \<GG> > 1"
   proof (rule ccontr)
     assume "\<not> 1 < length \<GG>"
-    hence "length \<GG> = 1" by (metis add.commute nat_less_cases not_add_less1 quotients_length) 
+    hence "length \<GG> = 1" by (simp add: Suc_leI antisym notempty)
     hence "carrier G = {\<one>}" using hd last by (metis composition_series_length_one composition_series_triv_group)
     hence "order G = 1" unfolding order_def by auto
     with simple show "False" unfolding simple_group_def simple_group_axioms_def by auto

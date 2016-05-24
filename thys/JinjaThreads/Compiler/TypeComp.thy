@@ -204,7 +204,7 @@ by(simp add:ty\<^sub>i'_def)
 
 lemma ty\<^sub>i'_antimono2:
  "\<lbrakk> E \<le> E'; A \<subseteq> A' \<rbrakk> \<Longrightarrow> P \<turnstile> ty\<^sub>i' ST E' \<lfloor>A'\<rfloor> \<le>' ty\<^sub>i' ST E \<lfloor>A\<rfloor>"
-by(auto simp:ty\<^sub>i'_def ty\<^sub>l_def list_all2_conv_all_nth less_eq_list_def prefixeq_def)
+by(auto simp:ty\<^sub>i'_def ty\<^sub>l_def list_all2_conv_all_nth less_eq_list_def prefix_def)
 
 declare ty\<^sub>i'_antimono [intro!] after_def[simp] pair_conv_ty\<^sub>i'[simp] pair_eq_ty\<^sub>i'_conv[simp]
 
@@ -554,7 +554,7 @@ corollary wt_instrs_ext_prefix [trans]:
   "\<lbrakk> \<turnstile> is\<^sub>1,xt\<^sub>1 [::] \<tau>s\<^sub>1@\<tau>s\<^sub>2; \<turnstile> is\<^sub>2,xt\<^sub>2 [::] \<tau>s\<^sub>3;
      size \<tau>s\<^sub>1 = size is\<^sub>1; \<tau>s\<^sub>3 \<le> \<tau>s\<^sub>2 \<rbrakk>
   \<Longrightarrow> \<turnstile> is\<^sub>1@is\<^sub>2, xt\<^sub>1 @ shift (size is\<^sub>1) xt\<^sub>2 [::] \<tau>s\<^sub>1@\<tau>s\<^sub>2"
-by(bestsimp simp:less_eq_list_def prefixeq_def elim: wt_instrs_ext dest:wt_instrs_extR)
+by(bestsimp simp:less_eq_list_def prefix_def elim: wt_instrs_ext dest:wt_instrs_extR)
 
 
 corollary wt_instrs_app:

@@ -1900,7 +1900,7 @@ proof -
       from H[rule_format, of ?c, unfolded matrix_mult_vsum[symmetric], OF x]
       have "x = 0" by vector }
   }
-  ultimately show ?thesis unfolding matrix_left_invertible_ker by blast
+  ultimately show ?thesis unfolding matrix_left_invertible_ker by auto
 qed
 
   

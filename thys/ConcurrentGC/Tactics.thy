@@ -27,7 +27,7 @@ text{*
 subsection{* Constructors for sets of locations. *}
 
 abbreviation prefixed :: "location \<Rightarrow> location set" where
-  "prefixed p \<equiv> { l . prefixeq p l }"
+  "prefixed p \<equiv> { l . prefix p l }"
 
 abbreviation suffixed :: "location \<Rightarrow> location set" where
   "suffixed p \<equiv> { l . suffixeq p l }"
@@ -194,7 +194,7 @@ lemmas loc_simps =
   bex_simps
   append.simps list.simps rev.simps (* evaluate string equality *)
   Char_eq_Char_iff cut_eq_simps (* evaluate character equality *)
-  prefixeq_code suffixeq_to_prefixeq
+  prefix_code suffixeq_to_prefix
   mem_Collect_eq Un_iff UNION_eq Compl_iff insertI1 insertI2 singleton_iff Diff_iff UNIV_I
   if_True if_False
   fun_upd_same fun_upd_other process_name.simps
@@ -219,7 +219,7 @@ lemmas eq_imp_simps =
   - we may as well simplify under our non-recursive datatypes.
 *)
 declare dom_def[simp]
-declare suffixeq_to_prefixeq[simp]
+declare suffixeq_to_prefix[simp]
 
 declare gc_phase.case_cong[cong]
 declare mem_write_action.case_cong[cong]
