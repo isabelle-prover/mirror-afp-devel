@@ -67,7 +67,7 @@ definition "txt f = start_map'''' O.text o (\<lambda>_ design_analysis. [Text (f
 definition "txt' s = txt (\<lambda>_. s)"
 definition "txt'' = txt' o S.flatten"
 
-definition' thy_class ::
+definition thy_class ::
   (* polymorphism weakening needed by code_reflect *)
   "_ embedding'" where \<open>thy_class =
   Embed_theories

@@ -287,19 +287,19 @@ definition of_bool where "of_bool b = case_bool
   (b \<open>true\<close>)
   (b \<open>false\<close>)"
 
-definition' \<open>sml_escape =
+definition \<open>sml_escape =
   String.replace_chars (\<lambda>x. if x = CHR 0x0A then \<open>\n\<close>
                             else if x = CHR 0x05 then \<open>\005\<close>
                             else if x = CHR 0x06 then \<open>\006\<close>
                             else if x = CHR 0x7F then \<open>\127\<close>
                             else \<degree>x\<degree>)\<close>
 
-definition' \<open>of_string a b =
+definition \<open>of_string a b =
  (\<lambda>x. b (S.flatten [ \<open>(META.SS_base (META.ST "\<close>
                   , sml_escape x
                   , \<open>"))\<close>]))\<close>
 
-definition' \<open>of_string\<^sub>b\<^sub>a\<^sub>s\<^sub>e a b =
+definition \<open>of_string\<^sub>b\<^sub>a\<^sub>s\<^sub>e a b =
  (\<lambda>x. b (S.flatten [ \<open>(META.ST "\<close>
                   , sml_escape (String\<^sub>b\<^sub>a\<^sub>s\<^sub>e.to_String x)
                   , \<open>")\<close>]))\<close>
