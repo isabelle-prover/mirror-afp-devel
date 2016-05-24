@@ -6,7 +6,7 @@
 *) 
 
 theory Lexer
-  imports Derivatives
+  imports "../Regular-Sets/Derivatives"
 begin
 
 section {* Values *}
@@ -462,7 +462,6 @@ where
 
 lemma lexer_correct_None:
   shows "s \<notin> lang r \<longleftrightarrow> lexer r s = None"
-using assms
 apply(induct s arbitrary: r)
 apply(simp add: nullable_iff)
 apply(drule_tac x="deriv a r" in meta_spec)
@@ -471,7 +470,6 @@ done
 
 lemma lexer_correct_Some:
   shows "s \<in> lang r \<longleftrightarrow> (\<exists>v. lexer r s = Some(v) \<and> s \<in> r \<rightarrow> v)"
-using assms
 apply(induct s arbitrary: r)
 apply(auto simp add: Posix_mkeps nullable_iff)[1]
 apply(drule_tac x="deriv a r" in meta_spec)

@@ -81,7 +81,6 @@ by (auto split: prod.split option.split)
 
 lemma L_fst_simp:
   shows "lang r = lang (fst (simp r))"
-using assms
 by (induct r) (auto)
 
 lemma Posix_simp:
