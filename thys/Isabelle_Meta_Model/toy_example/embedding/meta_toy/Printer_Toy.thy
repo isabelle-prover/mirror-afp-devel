@@ -61,7 +61,7 @@ fun of_ctxt2_term_aux where "of_ctxt2_term_aux l e =
   | T_lambda s c \<Rightarrow> of_ctxt2_term_aux (s # l) c) e"
 definition "of_ctxt2_term = of_ctxt2_term_aux []"
 
-definition' \<open>of_toy_ctxt _ (floor :: (* polymorphism weakening needed by code_reflect *)
+definition \<open>of_toy_ctxt _ (floor :: (* polymorphism weakening needed by code_reflect *)
                                      String.literal) ctxt = 
  (let f_inv = \<lambda> T_inv b (ToyProp_ctxt n s) \<Rightarrow> \<open>  %sInv %s : "%s"\<close>
               (if b then \<open>Existential\<close> else \<open>\<close>)
