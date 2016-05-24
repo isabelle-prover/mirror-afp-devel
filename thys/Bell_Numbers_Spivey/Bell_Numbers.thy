@@ -174,7 +174,8 @@ proof -
   ultimately have "bij_betw (op ` (op ` f)) {P. partition_on {0..<card A} P} {P. partition_on A P}"
     by (auto intro: bij_betw_imageI)
   from this \<open>finite A\<close> show ?thesis
-    unfolding Bell_def by (subst BIJ[symmetric]) (auto intro: finitely_many_partition_on)
+    unfolding Bell_def
+    by (subst bij_betw_iff_card[symmetric]) (auto intro: finitely_many_partition_on)
 qed
 
 lemma Bell_0:
