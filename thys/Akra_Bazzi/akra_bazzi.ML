@@ -601,7 +601,7 @@ fun parse_assoc key scan = Scan.lift (Args.$$$ key -- Args.colon) -- scan >> snd
 val parse_param = 
   let 
     fun term_with_type T = 
-      Scan.peek (fn context => Args.name_inner_syntax >> 
+      Scan.peek (fn context => Args.embedded_inner_syntax >> 
         read_term_with_type (Context.proof_of context) T);
   in 
     parse_assoc "recursion" Attrib.thm >> (fn x => (SOME x, NONE, NONE, NONE)) ||

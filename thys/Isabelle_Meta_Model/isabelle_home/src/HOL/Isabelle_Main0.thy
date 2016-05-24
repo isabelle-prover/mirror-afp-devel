@@ -36,8 +36,6 @@
  ******************************************************************************)
 
 theory   Isabelle_Main0
-imports  "../Pure/Isar/Isabelle_isar_syn"
-         "Tools/Function/Isabelle_fun"
-         "ex/Isabelle_Cartouche_Examples"
+imports  "ex/Isabelle_Cartouche_Examples"
 begin
 end

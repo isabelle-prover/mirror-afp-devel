@@ -316,35 +316,15 @@ section\<open>Extensions of Isabelle Commands\<close>
            fun\<acute>, definition\<acute> or code_reflect\<acute> *)
 text \<open>
 \begin{matharray}{rcl}
-  @{command_def "fun'"} & : & @{text "local_theory \<rightarrow> local_theory"} \\
-  @{command_def "definition'"} & : & @{text "local_theory \<rightarrow> local_theory"} \\
   @{command_def "code_reflect'"} & : & @{text "theory \<rightarrow> theory"}
 \end{matharray}
 
 @{rail \<open>
-  @@{command "fun'"} target? functionopts? fixes \<newline>
-                     @'where' equations
-  ;
-  @@{command "definition'"} target? \<newline>
-                            (decl @'where')? thmdecl prop
-  ;
   @@{command "code_reflect'"} @'open'? string \<newline>
     ( @'datatypes' ( string '=' ( '_' | ( string + '|' ) + @'and' ) ) ) ? \<newline>
     ( @'functions' ( string + ) ) ? ( @'file' string ) ?
   ;
 \<close>}
-\<close>
-
-text\<open>
-@{command fun'} has the same semantics as @{command fun} 
-except that it is possible to write the quote symbol (i.e., the symbol \verb|"|)
-in all recursive enclosing cartouches.
-\<close>
-
-text\<open>
-@{command definition'} has the same semantics as @{command definition}
-except that it is possible to write the quote symbol (i.e., the symbol \verb|"|)
-in all recursive enclosing cartouches.
 \<close>
 
 text\<open>
