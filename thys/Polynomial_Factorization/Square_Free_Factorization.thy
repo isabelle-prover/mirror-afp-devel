@@ -997,6 +997,45 @@ proof -
   show ?thesis unfolding square_free_factorization_def using 1 2 3 4 5 by blast
 qed
 
+lemma square_free_smult: "square_free f \<Longrightarrow> square_free (smult c f)"
+  by (cases "c = 0", unfold square_free_def, insert dvd_smult_cancel[of _ c], auto)
+  
+lemma monic_square_free_factorization: assumes mon: "monic f" and sf: "square_free f"
+  shows "\<exists> P. finite P \<and> f = \<Prod>P \<and> P \<subseteq> {q. irreducible q \<and> monic q}"
+proof -
+  from mon have f0: "f \<noteq> 0" by auto
+  from monic_irreducible_factorization[OF assms(1)] obtain P n where
+    P: "finite P" "P \<subseteq> {q. irreducible q \<and> monic q}" and f: "f = (\<Prod>a\<in>P. a ^ Suc (n a))" by auto
+  have *: "\<forall> a \<in> P. n a = 0"
+  proof (rule ccontr)
+    assume "\<not> ?thesis"
+    then obtain a where a: "a \<in> P" and n: "n a \<noteq> 0" by auto
+    have "f = a ^ (Suc (n a)) * (\<Prod>b\<in>P - {a}. b ^ Suc (n b))"
+      unfolding f by (rule setprod.remove[OF P(1) a])
+    with n have "a * a dvd f" by (cases "n a", auto)
+    with sf[unfolded square_free_def] f0 have "degree a = 0" by auto
+    with a P(2)[unfolded irreducible_def] show False by auto
+  qed
+  have "f = \<Prod> P" unfolding f
+    by (rule setprod.cong[OF refl], insert *, auto)
+  with P show ?thesis by auto
+qed
+
+lemma square_free_listprod_distinct: 
+  assumes sf: "square_free (listprod us)"
+  and us: "\<And> u. u \<in> set us \<Longrightarrow> degree u \<noteq> 0"
+  shows "distinct us"
+proof (rule ccontr)
+  assume "\<not> distinct us"
+  from not_distinct_decomp[OF this] obtain xs ys zs u where
+     "us = xs @ u # ys @ u # zs" by auto
+  hence dvd: "u * u dvd listprod us" and u: "u \<in> set us" by auto
+  from dvd us[OF u] sf have "listprod us = 0" unfolding square_free_def by auto
+  hence "0 \<in> set us" by (simp add: listprod_zero_iff)
+  from us[OF this] show False by auto
+qed
+
+
 subsection \<open>Yun factorization and homomorphisms\<close>
 lemma (in inj_field_hom_0) yun_factorization_main_hom:
   defines hp: "hp \<equiv> map_poly hom"
