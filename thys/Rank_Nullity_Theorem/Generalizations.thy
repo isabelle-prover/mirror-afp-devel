@@ -178,7 +178,7 @@ lemma  subspace_mul: "subspace S \<Longrightarrow> x \<in> S \<Longrightarrow> s
 lemma subspace_neg: "subspace S \<Longrightarrow> x \<in> S \<Longrightarrow> - x \<in> S" 
 by (metis scale_minus_left scale_one subspace_mul)
 
-lemma subspace_sub: "subspace S \<Longrightarrow> x \<in> S \<Longrightarrow> y \<in> S \<Longrightarrow> x - y \<in> S"
+lemma subspace_diff: "subspace S \<Longrightarrow> x \<in> S \<Longrightarrow> y \<in> S \<Longrightarrow> x - y \<in> S"
   by (metis diff_conv_add_uminus subspace_add subspace_neg)
   
 lemma subspace_setsum:
@@ -422,7 +422,7 @@ lemma span_neg: "x \<in> span S ==> - x \<in> span S"
   by (metis subspace_neg subspace_span)
 
 lemma span_sub: "x \<in> span S ==> y \<in> span S ==> x - y \<in> span S"
-  by (metis subspace_span subspace_sub)
+  by (metis subspace_span subspace_diff)
 
 lemma span_setsum: "finite A ==> \<forall>x \<in> A. f x \<in> span S ==> setsum f A \<in> span S"
   by (rule subspace_setsum, rule subspace_span)
@@ -1959,7 +1959,7 @@ proof -
   also have "\<dots> \<longleftrightarrow> (\<forall>x \<in> S. \<forall>y \<in> S. f (x - y) = 0 \<longrightarrow> x - y = 0)"
     by (simp add: linear.linear_sub[OF lf])
   also have "\<dots> \<longleftrightarrow> (\<forall>x \<in> S. f x = 0 \<longrightarrow> x = 0)"
-    using `subspace S` subspace_def[of S] subspace_sub[of S] by auto
+    using `subspace S` subspace_def[of S] subspace_diff[of S] by auto
   finally show ?thesis .
 qed
 
