@@ -50,6 +50,15 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2016-05-24:
+<a href="entries/Posix-Lexing.shtml">POSIX Lexing with Derivatives of Regular Expressions</a>
+<br>Author:
+<a href="http://kcl.academia.edu/FahadAusaf">Fahad Ausaf</a>,
+<a href="https://rd.host.cs.st-andrews.ac.uk">Roy Dyckhoff</a> and 
+<a href="http://www.inf.kcl.ac.uk/staff/urbanc/">Christian Urban</a>
+</td></tr>
+
+<tr><td class="entry">
 2016-05-20:
 <a href="entries/Perron_Frobenius.shtml">Perron-Frobenius Theorem for Spectral Radius Analysis</a>
 <br>Author:

@@ -37,6 +37,7 @@
 <h3>Automata and Formal Languages</h3>
 
 <div class="list">
+<a href="entries/Posix-Lexing.shtml">Posix-Lexing</a> &nbsp;
 <a href="entries/KBPs.shtml">KBPs</a> &nbsp;
 <a href="entries/Regular-Sets.shtml">Regular-Sets</a> &nbsp;
 <a href="entries/Regex_Equivalence.shtml">Regex_Equivalence</a> &nbsp;
