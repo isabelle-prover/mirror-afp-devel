@@ -1668,7 +1668,7 @@ have cEpi: "convex (Epigraph UNIV f)" by (metis assms convex_EpigraphI convex_UN
   hence "affine M" using vertical_line_affine by auto
   moreover have "rel_interior (Epigraph UNIV f) Int M ~= {}" using r_def M_def by auto
   ultimately have *: "closure (Epigraph UNIV f) Int M = closure (Epigraph UNIV f Int M)"
-    using convex_affine_closure_inter[of "Epigraph UNIV f" M] cEpi by auto
+    using convex_affine_closure_Int[of "Epigraph UNIV f" M] cEpi by auto
   have "Epigraph UNIV f Int M = {x} \<times> {m. f x <= ereal m}"
     unfolding Epigraph_def M_def by auto
   moreover have "closed({x} \<times> {m. f x<= ereal m})" apply (subst closed_Times)

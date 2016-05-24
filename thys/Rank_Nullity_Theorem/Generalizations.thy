@@ -1985,7 +1985,7 @@ end
 context linear
 begin
 
-lemma independent_injective_on_span_image:
+lemma independent_inj_on_image:
   assumes iS: "B.independent S"
     and fi: "inj_on f (B.span S)"
   shows "C.independent (f ` S)"

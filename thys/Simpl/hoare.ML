@@ -1192,7 +1192,7 @@ fun procedures_definition locname procs thy =
 
 (* outer syntax *)
 
-val var_declP  = Parse.name -- (@{keyword "::"} |-- Parse.!!! Parse.typ_group);
+val var_declP  = Parse.name -- (@{keyword "::"} |-- Parse.!!! Parse.embedded);
 val var_declP' = Parse.name >> (fn n => (n,""));
 
 val localsP = Scan.repeat var_declP;
@@ -1216,10 +1216,10 @@ val proc_decl = proc_decl_statespace >> pair Function || proc_decl_record >> pai
 
 val loc_decl = Scan.optional (@{keyword "where"} |-- localsP --| @{keyword "in"}) []
 
-val proc_body = Parse.term_group (*>> BodyTerm*)
+val proc_body = Parse.embedded (*>> BodyTerm*)
 
 
-fun proc_specs x = (Parse.!!! (Scan.repeat (Parse_Spec.thm_name ":" -- Parse.prop_group))
+fun proc_specs x = (Parse.!!! (Scan.repeat (Parse_Spec.thm_name ":" -- Parse.embedded))
     >> map (fn ((thm_name, _), prop) => (Binding.name_of thm_name, prop))) x
 
 val par_loc =
