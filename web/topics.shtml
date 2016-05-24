@@ -37,6 +37,7 @@
 <h3>Automata and Formal Languages</h3>
 
 <div class="list">
+<a href="entries/Posix-Lexing.shtml">Posix-Lexing</a> &nbsp;
 <a href="entries/KBPs.shtml">KBPs</a> &nbsp;
 <a href="entries/Regular-Sets.shtml">Regular-Sets</a> &nbsp;
 <a href="entries/Regex_Equivalence.shtml">Regex_Equivalence</a> &nbsp;
@@ -442,6 +443,7 @@
 <h3>Combinatorics</h3>
 
 <div class="list">
+<a href="entries/Card_Equiv_Relations.shtml">Card_Equiv_Relations</a> &nbsp;
 <a href="entries/Card_Partitions.shtml">Card_Partitions</a> &nbsp;
 <a href="entries/Card_Number_Partitions.shtml">Card_Number_Partitions</a> &nbsp;
 <a href="entries/Well_Quasi_Orders.shtml">Well_Quasi_Orders</a> &nbsp;

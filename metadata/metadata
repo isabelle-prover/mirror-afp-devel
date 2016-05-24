@@ -1,3 +1,43 @@
+[Card_Equiv_Relations]
+title = Cardinality of Equivalence Relations
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+notify = lukas.bulwahn@gmail.com
+date = 2016-05-24
+topic = Mathematics/Combinatorics
+abstract = 
+  This entry provides formulae for counting the number of equivalence
+  relations and partial equivalence relations over a finite carrier set
+  with given cardinality.  To count the number of equivalence relations,
+  we provide bijections between equivalence relations and set
+  partitions, and then transfer the main results of the two AFP entries,
+  Cardinality of Set Partitions and Spivey's Generalized Recurrence for
+  Bell Numbers, to theorems on equivalence relations. To count the
+  number of partial equivalence relations, we observe that counting
+  partial equivalence relations over a set A is equivalent to counting
+  all equivalence relations over all subsets of the set A. From this
+  observation and the results on equivalence relations, we show that the
+  cardinality of partial equivalence relations over a finite set of
+  cardinality n is equal to the n+1-th Bell number.
+
+[Posix-Lexing]
+title = POSIX Lexing with Derivatives of Regular Expressions
+author = Fahad Ausaf <http://kcl.academia.edu/FahadAusaf>, Roy Dyckhoff <https://rd.host.cs.st-andrews.ac.uk>, Christian Urban <http://www.inf.kcl.ac.uk/staff/urbanc/>
+notify = christian.urban@kcl.ac.uk
+date = 2016-05-24
+topic = Computer Science/Automata and Formal Languages
+abstract = 
+  Brzozowski introduced the notion of derivatives for regular
+  expressions. They can be used for a very simple regular expression
+  matching algorithm. Sulzmann and Lu cleverly extended this algorithm
+  in order to deal with POSIX matching, which is the underlying
+  disambiguation strategy for regular expressions needed in lexers. In
+  this entry we give our inductive definition of what a POSIX value is
+  and show (i) that such a value is unique (for given regular expression
+  and string being matched) and (ii) that Sulzmann and Lu's algorithm
+  always generates such a value (provided that the regular expression
+  matches the string). We also prove the correctness of an optimised
+  version of the POSIX matching algorithm.
+
 [MFMC_Countable]
 title = A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
@@ -1170,7 +1210,7 @@ author = Alwen Tiu <http://users.cecs.anu.edu.au/~tiu/>
 date = 2005-06-24
 topic = Computer Science/Algorithms/Distributed
 abstract = We formalize the generalized Byzantine fault-tolerant clock synchronization protocol of Schneider. This protocol abstracts from particular algorithms or implementations for clock synchronization. This abstraction includes several assumptions on the behaviors of physical clocks and on general properties of concrete algorithms/implementations. Based on these assumptions the correctness of the protocol is proved by Schneider. His proof was later verified by Shankar using the theorem prover EHDM (precursor to PVS). Our formalization in Isabelle/HOL is based on Shankar's formalization.
-notify = kleing@cse.unsw.edu.au" # Alwen.Tiu@loria.fr
+notify = kleing@cse.unsw.edu.au
 
 [ClockSynchInst]
 title = Instances of Schneider's generalized protocol of clock synchronization
@@ -2758,7 +2798,7 @@ date = 2014-05-28
 topic = Computer Science/System Description Languages
 abstract =
 	We present an executable formalization of the language Promela, the
-	description lasebastien.gouezel@univ-rennes1.frnguage for models of the model checker SPIN. This
+	description language for models of the model checker SPIN. This
 	formalization is part of the work for a completely verified model
 	checker (CAVA), but also serves as a useful (and executable!)
 	description of the semantics of the language itself, something that is
@@ -3699,7 +3739,7 @@ author = Sebastien Gouezel <mailto:sebastien.gouezel@univ-rennes1.fr>
 date = 2015-12-01
 topic = Mathematics/Probability Theory
 abstract = Ergodic theory is the branch of mathematics that studies the behaviour of measure preserving transformations, in finite or infinite measure. It interacts both with probability theory (mainly through measure theory) and with geometry as a lot of interesting examples are from geometric origin. We implement the first definitions and theorems of ergodic theory, including notably Poicaré recurrence theorem for finite measure preserving systems (together with the notion of conservativity in general), induced maps, Kac's theorem, Birkhoff theorem (arguably the most important theorem in ergodic theory), and variations around it such as conservativity of the corresponding skew product, or Atkinson lemma.
-notify = sebastien.gouezel@univ-rennes1.fr","hoelzl@in.tum.de
+notify = sebastien.gouezel@univ-rennes1.fr hoelzl@in.tum.de
 
 [Latin_Square]
 title = Latin Square

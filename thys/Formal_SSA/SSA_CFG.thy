@@ -700,7 +700,7 @@ begin
     next
       case phi
       then obtain vs where vs: "phi g v = Some vs" by auto
-      from "1.prems"(3) 2 obtain ns' where ns': "g \<turnstile> Entry g-ns'\<rightarrow>?V" "prefixeq ns' ns"
+      from "1.prems"(3) 2 obtain ns' where ns': "g \<turnstile> Entry g-ns'\<rightarrow>?V" "prefix ns' ns"
         by (rule old.path2_split_ex, auto)
       let ?V' = "last (butlast ns')"
       from ns' phi have nontriv: "length ns' \<ge> 2"
@@ -711,13 +711,13 @@ begin
         by - (rule phiArg_exI, auto simp: phi_def phis_same_var phiArg_def)
       show thesis
       proof (rule "1.IH"[rule_format])
-        show "length (butlast ns') < length ns" using ns' by (cases ns', auto simp: old.path2_not_Nil2 dest: prefixeq_length_le)
+        show "length (butlast ns') < length ns" using ns' by (cases ns', auto simp: old.path2_not_Nil2 dest: prefix_length_le)
         show "v' \<in> allUses g ?V'" using v'(1) by simp
       next
         fix n
         assume "n \<in> set (butlast ns')" "var g v' \<in> oldDefs g n"
         thus thesis
-          using ns'(2)[THEN set_mono_prefixeq] v'(2) by - (rule "1.prems"(1)[of n], auto dest: in_set_butlastD)
+          using ns'(2)[THEN set_mono_prefix] v'(2) by - (rule "1.prems"(1)[of n], auto dest: in_set_butlastD)
       qed (rule 3(1))
     qed
   qed
@@ -831,7 +831,7 @@ begin
       assume dom: "old.dominates g ?P ?Q"
       then obtain pqs where pqs: "g \<turnstile> ?P-pqs\<rightarrow>?Q" "?P \<notin> set (tl pqs)" by (rule old.dominates_path, auto intro: old.simple_path2)
       from p obtain ns\<^sub>2 where ns\<^sub>2: "g \<turnstile> y-ns\<^sub>2\<rightarrow>n" "suffixeq ns\<^sub>2 ns" by - (rule old.path2_split_first_last, auto)
-      from q obtain ms\<^sub>1 where ms\<^sub>1: "g \<turnstile> ?Q-ms\<^sub>1\<rightarrow>y" "prefixeq ms\<^sub>1 ms" by - (rule old.path2_split_first_last, auto)
+      from q obtain ms\<^sub>1 where ms\<^sub>1: "g \<turnstile> ?Q-ms\<^sub>1\<rightarrow>y" "prefix ms\<^sub>1 ms" by - (rule old.path2_split_first_last, auto)
       have "var g q \<noteq> var g p"
       proof (rule conventional[OF _ _ _ p(3)])
         let ?path = "(pqs@tl ms\<^sub>1)@tl ns\<^sub>2"
@@ -842,7 +842,7 @@ begin
         have[simp]: "q \<in> allVars g" "p \<in> allVars g" using p q by auto
         have "?P \<notin> set (tl ms)" using q
           by - (rule conventional'[where v'=p and v=q], auto)
-        hence "?P \<notin> set (tl ms\<^sub>1)" using ms\<^sub>1(2)[simplified, THEN prefixeq_tl_subset] by auto
+        hence "?P \<notin> set (tl ms\<^sub>1)" using ms\<^sub>1(2)[simplified, THEN prefix_tl_subset] by auto
         ultimately
         show "?P \<notin> set (tl ?path)" using pqs(2)
           by - (rule notI, auto dest: subsetD[OF set_tl_append'])

@@ -624,7 +624,7 @@ local_setup {* Cimp.locset @{thm "mut_mo_valid_ref_locs_def"} *}
 
 lemma mut_hs_get_roots_loop_locs_subseteq_hs_get_roots:
   "mut_hs_get_roots_loop_locs \<subseteq> prefixed ''hs_get_roots_''"
-by (auto simp: mut_hs_get_roots_loop_locs_def intro: append_prefixeqD)
+by (auto simp: mut_hs_get_roots_loop_locs_def intro: append_prefixD)
 
 lemma mut_m_ghost_handshake_phase_not_hp_Idle:
   "\<lbrakk> atS (mutator m) mut_hs_get_roots_loop_locs s; mut_m.handshake_invL m s; handshake_phase_inv s\<down> \<rbrakk>

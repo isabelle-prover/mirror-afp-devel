@@ -69,7 +69,7 @@ proof -
   also have "... = (norm (v - ?p))^2 + (norm(?p - y))^2"
   proof (rule phytagorean_theorem_norm, rule in_orthogonal_complement_imp_orthogonal) 
     show "?p - y \<in> S" unfolding proj_onto_def proj_def[abs_def]
-    proof (rule real_vector.subspace_sub[OF subspace_S _ y], 
+    proof (rule real_vector.subspace_diff[OF subspace_S _ y], 
         rule real_vector.subspace_setsum[OF subspace_S])
       show "finite X" by (metis euclidean_space.independent_bound_general ind_X)
       show "\<forall>x\<in>X. (v \<bullet> x / (x \<bullet> x)) *\<^sub>R x \<in> S" 
@@ -311,7 +311,7 @@ next
     by (metis (hide_lams, no_types) add_diff_cancel_left add_ac(1) add_diff_add add_diff_cancel)
   also have "... = norm (v - p)^2 + norm (p - y)^2" 
   proof (rule phytagorean_theorem_norm, rule in_orthogonal_complement_imp_orthogonal)
-    show "p - y \<in> S" by (metis assms(3) assms(4) subspace_S real_vector.subspace_sub)
+    show "p - y \<in> S" by (metis assms(3) assms(4) subspace_S real_vector.subspace_diff)
     show "v - p \<in> orthogonal_complement S" by (metis assms(2)) 
   qed
   finally have "norm (v - p)^2 \<le> norm (v - y)^2" by auto

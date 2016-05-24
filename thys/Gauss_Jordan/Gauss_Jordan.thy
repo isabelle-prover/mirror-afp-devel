@@ -2273,7 +2273,7 @@ proof (rule ccontr, simp)
 assume "rank A = 0"
 hence "row_space A = {} \<or> row_space A = {0}" unfolding rank_def row_rank_def using vec.dim_zero_eq by blast
 hence "row_space A = {0}" unfolding row_space_def using vec.span_0 by blast
-hence "rows A = {} \<or> rows A = {0}" unfolding row_space_def using vec.span_0_imp_set_empty_or_0 by blast
+hence "rows A = {} \<or> rows A = {0}" unfolding row_space_def using vec.span_0_imp_set_empty_or_0 by auto
 hence "rows A = {0}" unfolding rows_def row_def by force
 hence "A = 0" unfolding rows_def row_def vec_nth_inverse
    by (auto, metis (mono_tags) mem_Collect_eq singleton_iff vec_lambda_unique zero_index)

@@ -89,7 +89,7 @@ ML {*
 
     val parse_cpat =
       Args.context --
-        Scan.lift Args.name_inner_syntax >> (fn (ctxt, str) => 
+        Scan.lift Args.embedded_inner_syntax >> (fn (ctxt, str) => 
           Proof_Context.read_term_pattern ctxt str
           |> Thm.cterm_of ctxt 
         );

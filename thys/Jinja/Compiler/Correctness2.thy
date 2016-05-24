@@ -19,7 +19,7 @@ counter. *}
 
 definition before :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> nat \<Rightarrow> instr list \<Rightarrow> bool"
    ("(_,_,_,_/ \<rhd> _)" [51,0,0,0,51] 50) where
- "P,C,M,pc \<rhd> is \<longleftrightarrow> prefixeq is (drop pc (instrs_of P C M))"
+ "P,C,M,pc \<rhd> is \<longleftrightarrow> prefix is (drop pc (instrs_of P C M))"
 
 definition at :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> nat \<Rightarrow> instr \<Rightarrow> bool"
    ("(_,_,_,_/ \<triangleright> _)" [51,0,0,0,51] 50) where
@@ -30,7 +30,7 @@ lemma [simp]: "P,C,M,pc \<rhd> []"
 
 
 lemma [simp]: "P,C,M,pc \<rhd> (i#is) = (P,C,M,pc \<triangleright> i \<and> P,C,M,pc + 1 \<rhd> is)"
-(*<*)by(fastforce simp add:before_def at_def prefixeq_def drop_Suc drop_tl)(*>*)
+(*<*)by(fastforce simp add:before_def at_def prefix_def drop_Suc drop_tl)(*>*)
 
 (*<*)
 declare drop_drop[simp del]
@@ -39,7 +39,7 @@ declare drop_drop[simp del]
 
 lemma [simp]: "P,C,M,pc \<rhd> (is\<^sub>1 @ is\<^sub>2) = (P,C,M,pc \<rhd> is\<^sub>1 \<and> P,C,M,pc + size is\<^sub>1 \<rhd> is\<^sub>2)"
 (*<*)
-apply(simp add:before_def prefixeq_def)
+apply(simp add:before_def prefix_def)
 apply(subst add.commute)
 apply(simp add: drop_drop[symmetric])
 apply fastforce
@@ -52,7 +52,7 @@ declare drop_drop[simp]
 
 
 lemma [simp]: "P,C,M,pc \<triangleright> i \<Longrightarrow> instrs_of P C M ! pc = i"
-(*<*)by(clarsimp simp add:at_def prefix_def nth_via_drop)(*>*)
+(*<*)by(clarsimp simp add:at_def strict_prefix_def nth_via_drop)(*>*)
 
 
 lemma beforeM:

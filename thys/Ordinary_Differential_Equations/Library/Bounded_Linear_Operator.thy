@@ -96,7 +96,7 @@ lemma blinop_apply_times_blinop[simp]: "(f * g) $ x = f $ (g $ x)"
 
 instance
 proof
-  from not_open_singleton[of "0::'a"] have "{0::'a} \<noteq> UNIV" by auto
+  from not_open_singleton[of "0::'a"] have "{0::'a} \<noteq> UNIV" by force
   then obtain x :: 'a where "x \<noteq> 0" by auto
   show "0 \<noteq> (1::'a blinop)"
     apply transfer

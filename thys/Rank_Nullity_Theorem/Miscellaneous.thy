@@ -385,7 +385,7 @@ lemma independent_image_matrix_vector_mult:
 fixes P::"'a::{field}^'n^'m"
 assumes ind_B: "vec.independent B" and inv_P: "invertible P"
 shows "vec.independent ((op *v P)` B)"
-proof (rule vec.independent_injective_on_span_image)
+proof (rule vec.independent_inj_on_image)
   show "vec.independent B" using ind_B .
   show "inj_on (op *v P) (vec.span B)" 
     using inj_matrix_vector_mult[OF inv_P] unfolding inj_on_def by simp

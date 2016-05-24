@@ -47,7 +47,7 @@ begin
 
 definition "To_oid = (\<lambda>Oid n \<Rightarrow> To_nat n)"
 
-definition' \<open>of_toy_def_base = (\<lambda> ToyDefInteger i \<Rightarrow> To_string i
+definition \<open>of_toy_def_base = (\<lambda> ToyDefInteger i \<Rightarrow> To_string i
                                 | ToyDefReal (i1, i2) \<Rightarrow> \<open>%s.%s\<close> (To_string i1) (To_string i2)
                                 | ToyDefString s \<Rightarrow> \<open>"%s"\<close> (To_string s))\<close>
 
@@ -62,7 +62,7 @@ fun of_toy_list_attr where
                             | ToyAttrCast ty (ToyAttrNoCast x) _ \<Rightarrow> \<open>(%s :: %s)\<close> (f x) (To_string ty)
                             | ToyAttrCast ty l _ \<Rightarrow> \<open>%s \<rightarrow> toyAsType( %s )\<close> (of_toy_list_attr f l) (To_string ty)) e"
 
-definition' \<open>of_toy_instance_single toyi =
+definition \<open>of_toy_instance_single toyi =
  (let (s_left, s_right) =
     case Inst_name toyi of
       None \<Rightarrow> (case Inst_ty toyi of Some ty \<Rightarrow> (\<open>(\<close>, \<open> :: %s)\<close> (To_string ty)))

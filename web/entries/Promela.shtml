@@ -44,7 +44,7 @@
 
 
 We present an executable formalization of the language Promela, the
-description lasebastien.gouezel@univ-rennes1.frnguage for models of the model checker SPIN. This
+description language for models of the model checker SPIN. This
 formalization is part of the work for a completely verified model
 checker (CAVA), but also serves as a useful (and executable!)
 description of the semantics of the language itself, something that is

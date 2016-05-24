@@ -56,7 +56,7 @@ definition "of\<^sub>e\<^sub>n\<^sub>v_semi__theory env =
             (\<lambda> Theory_section section_title \<Rightarrow> of\<^sub>e\<^sub>n\<^sub>v_section env section_title
              | x \<Rightarrow> of_semi__theory env x)"
 
-definition' \<open>of\<^sub>e\<^sub>n\<^sub>v_semi__theories env =
+definition \<open>of\<^sub>e\<^sub>n\<^sub>v_semi__theories env =
  (\<lambda> Theories_one t \<Rightarrow> of\<^sub>e\<^sub>n\<^sub>v_semi__theory env t
   | Theories_locale data l \<Rightarrow> 
       \<open>locale %s =

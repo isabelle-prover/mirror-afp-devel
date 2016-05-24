@@ -314,7 +314,7 @@ subsection {* Define @{term lfilter} as continuous extension *}
 definition "lfilter' P l = Lim (at' l) (\<lambda>xs. llist_of (filter P (list_of xs)))"
 
 lemma tendsto_lfilter: "(lfilter' P \<longlongrightarrow> lfilter' P xs) (at' xs)"
-  by (rule tendsto_Lim_at'[OF lfilter'_def]) (auto simp add: lfinite_eq_range_llist_of less_eq_list_def prefixeq_def)
+  by (rule tendsto_Lim_at'[OF lfilter'_def]) (auto simp add: lfinite_eq_range_llist_of less_eq_list_def prefix_def)
 
 lemma isCont_lfilter[THEN isCont_o2[rotated]]: "isCont (lfilter' P) l"
   by (simp add: isCont_def filterlim_at'_list tendsto_lfilter)
@@ -366,7 +366,7 @@ definition "lconcat' xs = Lim (at' xs) (\<lambda>xs. foldr lappend (list_of xs) 
 
 lemma tendsto_lconcat': "(lconcat' \<longlongrightarrow> lconcat' xss) (at' xss)"
   apply (rule tendsto_Lim_at'[OF lconcat'_def])
-  apply (auto simp add: lfinite_eq_range_llist_of less_eq_list_def prefixeq_def)
+  apply (auto simp add: lfinite_eq_range_llist_of less_eq_list_def prefix_def)
   apply (induct_tac xa)
   apply simp_all
   done
@@ -416,7 +416,7 @@ definition "ldropWhile' P xs = Lim (at' xs) (\<lambda>xs. llist_of (dropWhile P 
 lemma tendsto_ldropWhile':
   "(ldropWhile' P \<longlongrightarrow> ldropWhile' P xs) (at' xs)"
   by (rule tendsto_Lim_at'[OF ldropWhile'_def])
-     (auto simp add: lfinite_eq_range_llist_of less_eq_list_def prefixeq_def dropWhile_append dropWhile_False)
+     (auto simp add: lfinite_eq_range_llist_of less_eq_list_def prefix_def dropWhile_append dropWhile_False)
 
 lemma isCont_ldropWhile'[THEN isCont_o2[rotated]]: "isCont (ldropWhile' P) l"
   by (simp add: isCont_def filterlim_at'_list tendsto_ldropWhile')
@@ -462,7 +462,7 @@ lemma mono_edrop: "edrop n xs \<le> edrop n (xs @ ys)"
   by (induct xs arbitrary: n) (auto split: enat_cosplit)
 
 lemma edrop_mono: "xs \<le> ys \<Longrightarrow> edrop n xs \<le> edrop n ys"
-  using mono_edrop[of n xs] by (auto simp add: less_eq_list_def prefixeq_def) 
+  using mono_edrop[of n xs] by (auto simp add: less_eq_list_def prefix_def) 
 
 definition "ldrop' n xs = Lim (at' xs) (llist_of \<circ> edrop n \<circ> list_of)"
 
@@ -489,11 +489,11 @@ primrec up :: "'a :: order \<Rightarrow> 'a list \<Rightarrow> 'a list" where
 lemma set_upD: "x \<in> set (up y xs) \<Longrightarrow> x \<in> set xs \<and> y < x"
   by (induct xs arbitrary: y) (auto split: if_split_asm intro: less_trans)
 
-lemma prefixeq_up: "prefixeq (up a xs) (up a (xs @  ys))"
+lemma prefix_up: "prefix (up a xs) (up a (xs @  ys))"
   by (induction xs arbitrary: a) auto
 
 lemma mono_up: "xs \<le> ys \<Longrightarrow> up a xs \<le> up a ys"
-  unfolding less_eq_list_def by (subst (asm) prefixeq_def) (auto intro!: prefixeq_up)
+  unfolding less_eq_list_def by (subst (asm) prefix_def) (auto intro!: prefix_up)
 
 lemma sorted_up: "sorted (up a xs)"
   by (induction xs arbitrary: a) (auto dest: set_upD intro: less_imp_le sorted.Cons)
@@ -590,13 +590,13 @@ fun extup extdown  :: "int \<Rightarrow> int list \<Rightarrow> int list" where
 | "extdown i [] = []"
 | "extdown i (x # xs) = (if i \<ge> x then extdown x xs else i # extup x xs)"
 
-lemma prefixeq_ext: 
-  "prefixeq (extup a xs) (extup a (xs @  ys))"
-  "prefixeq (extdown a xs) (extdown a (xs @  ys))"
+lemma prefix_ext: 
+  "prefix (extup a xs) (extup a (xs @  ys))"
+  "prefix (extdown a xs) (extdown a (xs @  ys))"
   by (induction xs arbitrary: a) auto
 
 lemma mono_ext: assumes "xs \<le> ys" shows "extup a xs \<le> extup a ys" "extdown a xs \<le> extdown a ys"
-  using assms[unfolded less_eq_list_def prefixeq_def] by (auto simp: less_eq_list_def prefixeq_ext)
+  using assms[unfolded less_eq_list_def prefix_def] by (auto simp: less_eq_list_def prefix_ext)
 
 lemma set_ext: "set (extup a xs) \<subseteq> {a} \<union> set xs" "set (extdown a xs) \<subseteq> {a} \<union> set xs"
   by (induction xs arbitrary: a) auto
@@ -682,7 +682,7 @@ proof (rule order_tendstoI)
   moreover 
   { fix zs assume "ys \<le> zs" "llist_of zs \<le> xs"
     then obtain ys' where zs: "zs = ys @ ys'"
-      by (auto simp: prefixeq_def less_eq_list_def)
+      by (auto simp: prefix_def less_eq_list_def)
     with `llist_of zs \<le> xs` have nonneg: "0 \<le> listsum ys'"
       using xs by (auto simp: lprefix_conv_lappend listsum_setsum_nth setsum_nonneg)
     note `a < listsum ys`
@@ -763,7 +763,7 @@ proof (induct "length xs" arbitrary: xs ys rule: less_induct)
 qed
 
 lemma f_mono: "xs \<le> ys \<Longrightarrow> f xs \<le> f ys"
-  by (auto simp: less_eq_list_def prefixeq_def f_mono')
+  by (auto simp: less_eq_list_def prefix_def f_mono')
 
 definition "f' l = Lim (at' l) (\<lambda>l. llist_of (f (list_of l)))"
 

@@ -188,14 +188,14 @@ definition (in gc) handshake_invL :: "('field, 'mut, 'ref) gc_pred" where
 lemma hs_get_roots_locs_subseteq_hp_IdleMarkSweep_locs:
   "hs_get_roots_locs \<subseteq> hp_IdleMarkSweep_locs"
 by (auto simp: hs_get_roots_locs_def hp_IdleMarkSweep_locs_def mark_loop_locs_def
-        intro: append_prefixeqD)
+        intro: append_prefixD)
 
 lemma hs_get_work_locs_subseteq_hp_IdleMarkSweep_locs:
   "hs_get_work_locs \<subseteq> hp_IdleMarkSweep_locs"
 apply (simp add: hs_get_work_locs_def hp_IdleMarkSweep_locs_def mark_loop_locs_def)
 apply clarsimp
 apply (drule mp)
- apply (auto intro: append_prefixeqD)[1]
+ apply (auto intro: append_prefixD)[1]
 apply auto
 done
 

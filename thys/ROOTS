@@ -36,6 +36,7 @@ Cayley_Hamilton
 Certification_Monads
 Circus
 CISC-Kernel
+Card_Equiv_Relations
 Card_Partitions
 ClockSynchInst
 CofGroups
@@ -190,6 +191,7 @@ Perfect-Number-Thm
 Pi_Calculus
 Polynomials
 Pop_Refinement
+Posix-Lexing
 Possibilistic_Noninterference
 Pratt_Certificate
 Presburger-Automata

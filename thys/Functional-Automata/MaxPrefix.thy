@@ -11,7 +11,7 @@ begin
 definition
  is_maxpref :: "('a list => bool) => 'a list => 'a list => bool" where
 "is_maxpref P xs ys =
- (prefixeq xs ys & (xs=[] | P xs) & (!zs. prefixeq zs ys & P zs --> prefixeq zs xs))"
+ (prefix xs ys & (xs=[] | P xs) & (!zs. prefix zs ys & P zs --> prefix zs xs))"
 
 type_synonym 'a splitter = "'a list => 'a list * 'a list"
 
@@ -29,7 +29,7 @@ declare if_split[split del]
 
 lemma maxsplit_lemma: "!!(ps::'a list) res.
   (maxsplit P res ps qs = (xs,ys)) =
-  (if EX us. prefixeq us qs & P(ps@us) then xs@ys=ps@qs & is_maxpref P xs (ps@qs)
+  (if EX us. prefix us qs & P(ps@us) then xs@ys=ps@qs & is_maxpref P xs (ps@qs)
    else (xs,ys)=res)"
 apply(unfold is_maxpref_def)
 apply (induct "qs")
@@ -38,21 +38,21 @@ apply (induct "qs")
 apply simp
 apply (erule thin_rl)
 apply clarify
-apply (case_tac "EX us. prefixeq us qs & P (ps @ a # us)")
- apply (subgoal_tac "EX us. prefixeq us (a # qs) & P (ps @ us)")
+apply (case_tac "EX us. prefix us qs & P (ps @ a # us)")
+ apply (subgoal_tac "EX us. prefix us (a # qs) & P (ps @ us)")
   apply simp
- apply (blast intro: prefixeq_Cons[THEN iffD2])
+ apply (blast intro: prefix_Cons[THEN iffD2])
 apply (subgoal_tac "~P(ps@[a])")
  prefer 2 apply blast
 apply (simp (no_asm_simp))
-apply (case_tac "EX us. prefixeq us (a#qs) & P (ps @ us)")
+apply (case_tac "EX us. prefix us (a#qs) & P (ps @ us)")
  apply simp
  apply clarify
  apply (case_tac "us")
   apply (rule iffI)
-   apply (simp add: prefixeq_Cons prefixeq_append)
+   apply (simp add: prefix_Cons prefix_append)
    apply blast
-  apply (simp add: prefixeq_Cons prefixeq_append)
+  apply (simp add: prefix_Cons prefix_append)
   apply clarify
   apply (erule disjE)
    apply (fast dest: prefix_order.antisym)
@@ -73,7 +73,7 @@ done
 declare if_split[split add]
 
 lemma is_maxpref_Nil[simp]:
- "~(? us. prefixeq us xs & P us) ==> is_maxpref P ps xs = (ps = [])"
+ "~(? us. prefix us xs & P us) ==> is_maxpref P ps xs = (ps = [])"
 apply(unfold is_maxpref_def)
 apply blast
 done

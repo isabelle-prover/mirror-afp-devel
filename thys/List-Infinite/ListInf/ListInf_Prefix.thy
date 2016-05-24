@@ -11,8 +11,8 @@ begin
 
 subsection {* Additional list prefix results *}
 
-lemma prefixeq_eq_prefix_take_ex: "prefixeq xs ys = (\<exists>n. ys \<down> n = xs)"
-apply (unfold prefixeq_def, safe)
+lemma prefix_eq_prefix_take_ex: "prefix xs ys = (\<exists>n. ys \<down> n = xs)"
+apply (unfold prefix_def, safe)
 apply (rule_tac x="length xs" in exI, simp)
 apply (rule_tac x="ys \<up> n" in exI, simp)
 done
@@ -20,58 +20,58 @@ done
 lemma prefix_take_eq_prefix_take_ex: "(ys \<down> (length xs) = xs) = (\<exists>n. ys \<down> n = xs)"
 by (fastforce simp: min_def)
 
-lemma prefixeq_eq_prefix_take: "prefixeq xs ys = (ys \<down> (length xs) = xs)"
-by (simp only: prefixeq_eq_prefix_take_ex prefix_take_eq_prefix_take_ex)
+lemma prefix_eq_prefix_take: "prefix xs ys = (ys \<down> (length xs) = xs)"
+by (simp only: prefix_eq_prefix_take_ex prefix_take_eq_prefix_take_ex)
 
 lemma strict_prefix_take_eq_strict_prefix_take_ex: "
   (ys \<down> (length xs) = xs \<and> xs \<noteq> ys) =
   ((\<exists>n. ys \<down> n = xs) \<and> xs \<noteq> ys)"
 by (simp add: prefix_take_eq_prefix_take_ex)
 
-lemma prefix_eq_strict_prefix_take_ex: "prefix xs ys = ((\<exists>n. ys \<down> n = xs) \<and> xs \<noteq> ys)"
-by (simp add: prefix_def prefixeq_eq_prefix_take_ex)
-lemma prefix_eq_strict_prefix_take: "prefix xs ys = (ys \<down> (length xs) = xs \<and> xs \<noteq> ys)"
-by (simp only: prefix_eq_strict_prefix_take_ex strict_prefix_take_eq_strict_prefix_take_ex)
+lemma strict_prefix_eq_strict_prefix_take_ex: "strict_prefix xs ys = ((\<exists>n. ys \<down> n = xs) \<and> xs \<noteq> ys)"
+by (simp add: strict_prefix_def prefix_eq_prefix_take_ex)
+lemma strict_prefix_eq_strict_prefix_take: "strict_prefix xs ys = (ys \<down> (length xs) = xs \<and> xs \<noteq> ys)"
+by (simp only: strict_prefix_eq_strict_prefix_take_ex strict_prefix_take_eq_strict_prefix_take_ex)
 
 
 
-lemma take_imp_prefixeq: "prefixeq (xs \<down> n) xs"
-by (rule take_is_prefixeq)
+lemma take_imp_prefix: "prefix (xs \<down> n) xs"
+by (rule take_is_prefix)
 
-lemma eq_imp_prefixeq: "xs = (ys::'a list) \<Longrightarrow> prefixeq xs ys"
+lemma eq_imp_prefix: "xs = (ys::'a list) \<Longrightarrow> prefix xs ys"
 by simp
 
-lemma le_take_imp_prefixeq: "a \<le> b \<Longrightarrow> prefixeq (xs \<down> a) (xs \<down> b)"
-by (fastforce simp: prefixeq_eq_prefix_take_ex min_def)
+lemma le_take_imp_prefix: "a \<le> b \<Longrightarrow> prefix (xs \<down> a) (xs \<down> b)"
+by (fastforce simp: prefix_eq_prefix_take_ex min_def)
 
-lemma take_prefixeq_imp_le: "
-  \<lbrakk> a \<le> length xs; prefixeq (xs \<down> a) (xs \<down> b) \<rbrakk> \<Longrightarrow> a \<le> b"
-by (drule prefixeq_length_le, simp)
+lemma take_prefix_imp_le: "
+  \<lbrakk> a \<le> length xs; prefix (xs \<down> a) (xs \<down> b) \<rbrakk> \<Longrightarrow> a \<le> b"
+by (drule prefix_length_le, simp)
 
 lemma take_prefixeq_le_conv: "
-  a \<le> length xs \<Longrightarrow> prefixeq (xs \<down> a) (xs \<down> b) = (a \<le> b)"
+  a \<le> length xs \<Longrightarrow> prefix (xs \<down> a) (xs \<down> b) = (a \<le> b)"
 apply (rule iffI)
- apply (rule take_prefixeq_imp_le, assumption+)
-apply (rule le_take_imp_prefixeq, assumption+)
+ apply (rule take_prefix_imp_le, assumption+)
+apply (rule le_take_imp_prefix, assumption+)
 done
-lemma append_imp_prefixeq[simp, intro]: "prefixeq a (a @ b)"
-by (unfold prefixeq_def, blast)
+lemma append_imp_prefix[simp, intro]: "prefix a (a @ b)"
+by (unfold prefix_def, blast)
 
-lemma prefixeq_imp_take_eq: "
-  \<lbrakk> n \<le> length xs; prefixeq xs ys \<rbrakk> \<Longrightarrow> xs \<down> n = ys \<down> n"
-by (clarsimp simp: prefixeq_def)
+lemma prefix_imp_take_eq: "
+  \<lbrakk> n \<le> length xs; prefix xs ys \<rbrakk> \<Longrightarrow> xs \<down> n = ys \<down> n"
+by (clarsimp simp: prefix_def)
 
-lemma prefixeq_length_le_eq_conv: "(prefixeq xs ys \<and> length ys \<le> length xs) = (xs = ys)"
+lemma prefix_length_le_eq_conv: "(prefix xs ys \<and> length ys \<le> length xs) = (xs = ys)"
 apply (rule iffI)
  apply (erule conjE)
- apply (frule prefixeq_length_le)
- apply (simp add: prefixeq_eq_prefix_take)
+ apply (frule prefix_length_le)
+ apply (simp add: prefix_eq_prefix_take)
 apply simp
 done
 
-lemma take_length_prefixeq_conv: "
-  length xs \<le> length ys \<Longrightarrow> prefixeq (ys \<down> length xs) xs = prefixeq xs ys"
-by (fastforce simp: prefixeq_eq_prefix_take)
+lemma take_length_prefix_conv: "
+  length xs \<le> length ys \<Longrightarrow> prefix (ys \<down> length xs) xs = prefix xs ys"
+by (fastforce simp: prefix_eq_prefix_take)
 
 lemma append_eq_imp_take: "
   \<lbrakk> k \<le> length xs; length r1 = k; r1 @ r2 = xs \<rbrakk> \<Longrightarrow> r1 = xs \<down> k"
@@ -91,13 +91,13 @@ apply fastforce
 done
 
 
-lemma prefixeq_refl: "prefixeq xs (xs::'a list)"
+lemma prefix_refl: "prefix xs (xs::'a list)"
 by (rule prefix_order.order_refl)
 
-lemma prefixeq_trans: "\<lbrakk> prefixeq xs ys; prefixeq (ys::'a list) zs \<rbrakk> \<Longrightarrow> prefixeq xs zs"
+lemma prefix_trans: "\<lbrakk> prefix xs ys; prefix (ys::'a list) zs \<rbrakk> \<Longrightarrow> prefix xs zs"
 by (rule prefix_order.order_trans)
 
-lemma prefixeq_antisym: "\<lbrakk> prefixeq xs ys; prefixeq (ys::'a list) xs \<rbrakk> \<Longrightarrow> xs = ys"
+lemma prefixeq_antisym: "\<lbrakk> prefix xs ys; prefix (ys::'a list) xs \<rbrakk> \<Longrightarrow> xs = ys"
 by (rule prefix_order.antisym)
 
 
@@ -396,31 +396,31 @@ corollary inf_prefix_hd[simp]: "hd ((a # xs) \<sqinter> (a # ys)) = a"
 by simp
 
 
-lemma inf_prefixeq_le1: "prefixeq (xs \<sqinter> ys) xs"
-by (simp add: inf_prefix_takeL take_imp_prefixeq)
+lemma inf_prefix_le1: "prefix (xs \<sqinter> ys) xs"
+by (simp add: inf_prefix_takeL take_imp_prefix)
 
-lemma inf_prefixeq_le2: "prefixeq (xs \<sqinter> ys) ys"
-by (simp add: inf_prefix_takeR take_imp_prefixeq)
+lemma inf_prefix_le2: "prefix (xs \<sqinter> ys) ys"
+by (simp add: inf_prefix_takeR take_imp_prefix)
 
-lemma le_inf_prefix_iff: "prefixeq x (y \<sqinter> z) = (prefixeq x y \<and> prefixeq x z)"
+lemma le_inf_prefix_iff: "prefix x (y \<sqinter> z) = (prefix x y \<and> prefix x z)"
 apply (rule iffI)
- apply (blast intro: prefix_order.order_trans inf_prefixeq_le1 inf_prefixeq_le2)
-apply (clarsimp simp: prefixeq_def)
+ apply (blast intro: prefix_order.order_trans inf_prefix_le1 inf_prefix_le2)
+apply (clarsimp simp: prefix_def)
 done
 
-lemma le_imp_le_inf_prefixeq: "\<lbrakk> prefixeq x y; prefixeq x z \<rbrakk> \<Longrightarrow> prefixeq x (y \<sqinter> z)"
+lemma le_imp_le_inf_prefix: "\<lbrakk> prefix x y; prefix x z \<rbrakk> \<Longrightarrow> prefix x (y \<sqinter> z)"
 by (rule le_inf_prefix_iff[THEN iffD2], simp)
 
 interpretation prefix:
   semilattice_inf
     "op \<sqinter> :: 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
-    "prefixeq"
     "prefix"
+    "strict_prefix"
 apply intro_locales
 apply (rule class.semilattice_inf_axioms.intro)
-apply (rule inf_prefixeq_le1)
-apply (rule inf_prefixeq_le2)
-apply (rule le_imp_le_inf_prefixeq, assumption+)
+apply (rule inf_prefix_le1)
+apply (rule inf_prefix_le2)
+apply (rule le_imp_le_inf_prefix, assumption+)
 done
 
 
@@ -450,8 +450,8 @@ by (simp add: iprefix_eq_iprefix_take iprefix_take_eq_iprefix_take_ex)
 lemma i_take_imp_iprefix[intro]: "f \<Down> n \<sqsubseteq> f"
 by (simp add: iprefix_eq_iprefix_take)
 
-lemma i_take_prefixeq_le_conv: "prefixeq (f \<Down> a) (f \<Down> b) = (a \<le> b)"
-by (fastforce simp: prefixeq_eq_prefix_take list_eq_iff)
+lemma i_take_prefix_le_conv: "prefix (f \<Down> a) (f \<Down> b) = (a \<le> b)"
+by (fastforce simp: prefix_eq_prefix_take list_eq_iff)
 
 lemma i_append_imp_iprefix[simp,intro]: "xs \<sqsubseteq> xs \<frown> f"
 by (simp add: iprefix_def)
@@ -460,11 +460,11 @@ lemma iprefix_imp_take_eq: "
   \<lbrakk> n \<le> length xs; xs \<sqsubseteq> f \<rbrakk> \<Longrightarrow> xs \<down> n = f \<Down> n"
 by (clarsimp simp: iprefix_eq_iprefix_take_ex min_eqR)
 
-lemma prefixeq_iprefix_trans: "\<lbrakk> prefixeq xs ys; ys \<sqsubseteq> f \<rbrakk> \<Longrightarrow> xs \<sqsubseteq> f"
-by (fastforce simp: iprefix_eq_iprefix_take_ex prefixeq_eq_prefix_take_ex)
+lemma prefixeq_iprefix_trans: "\<lbrakk> prefix xs ys; ys \<sqsubseteq> f \<rbrakk> \<Longrightarrow> xs \<sqsubseteq> f"
+by (fastforce simp: iprefix_eq_iprefix_take_ex prefix_eq_prefix_take_ex)
 
-lemma i_take_length_prefix_conv: "prefixeq (f \<Down> length xs) xs = (xs \<sqsubseteq> f)"
-by (simp add: iprefix_eq_iprefix_take prefixeq_length_le_eq_conv[symmetric])
+lemma i_take_length_prefix_conv: "prefix (f \<Down> length xs) xs = (xs \<sqsubseteq> f)"
+by (simp add: iprefix_eq_iprefix_take prefix_length_le_eq_conv[symmetric])
 
 lemma iprefixI[intro?]: "f = xs \<frown> g \<Longrightarrow> xs \<sqsubseteq> f"
 by (unfold iprefix_def, simp)
@@ -478,21 +478,21 @@ by (unfold iprefix_def, simp)
 lemma same_prefix_iprefix[simp]: "(xs @ ys \<sqsubseteq> xs \<frown> f) = (ys \<sqsubseteq> f)"
 by (simp add: iprefix_eq_iprefix_take)
 
-lemma prefix_iprefix[simp]: "prefixeq xs ys \<Longrightarrow> xs \<sqsubseteq> ys \<frown> f"
-by (clarsimp simp: prefixeq_def iprefix_def i_append_assoc[symmetric] simp del: i_append_assoc)
+lemma prefix_iprefix[simp]: "prefix xs ys \<Longrightarrow> xs \<sqsubseteq> ys \<frown> f"
+by (clarsimp simp: prefix_def iprefix_def i_append_assoc[symmetric] simp del: i_append_assoc)
 
 lemma append_iprefixD: "xs @ ys \<sqsubseteq> f \<Longrightarrow> xs \<sqsubseteq> f"
 by (clarsimp simp: iprefix_def i_append_assoc[symmetric] simp del: i_append_assoc)
 
-lemma iprefix_length_le_imp_prefixeq: "
-  \<lbrakk> xs \<sqsubseteq> ys \<frown> f; length xs \<le> length ys \<rbrakk> \<Longrightarrow> prefixeq xs ys"
-by (clarsimp simp: iprefix_eq_iprefix_take_ex take_is_prefixeq)
+lemma iprefix_length_le_imp_prefix: "
+  \<lbrakk> xs \<sqsubseteq> ys \<frown> f; length xs \<le> length ys \<rbrakk> \<Longrightarrow> prefix xs ys"
+by (clarsimp simp: iprefix_eq_iprefix_take_ex take_is_prefix)
 
 lemma iprefix_i_append: "
-  (xs \<sqsubseteq> ys \<frown> f) = (prefixeq xs ys \<or> (\<exists>zs. xs = ys @ zs \<and> zs \<sqsubseteq> f))"
+  (xs \<sqsubseteq> ys \<frown> f) = (prefix xs ys \<or> (\<exists>zs. xs = ys @ zs \<and> zs \<sqsubseteq> f))"
 apply (rule iffI)
  apply (case_tac "length xs \<le> length ys")
-  apply (blast intro: iprefix_length_le_imp_prefixeq)
+  apply (blast intro: iprefix_length_le_imp_prefix)
  apply (rule disjI2)
  apply (rule_tac x="f \<Down> (length xs - length ys)" in exI)
  apply (simp add: iprefix_eq_iprefix_take)
@@ -504,11 +504,11 @@ lemma i_append_one_iprefix: "
 by (simp add: iprefix_eq_iprefix_take i_take_Suc_conv_app_nth)
 
 lemma iprefix_same_length_le: "
-  \<lbrakk> xs \<sqsubseteq> f; ys \<sqsubseteq> f; length xs \<le> length ys \<rbrakk> \<Longrightarrow> prefixeq xs ys"
-by (clarsimp simp: iprefix_eq_iprefix_take_ex i_take_prefixeq_le_conv)
+  \<lbrakk> xs \<sqsubseteq> f; ys \<sqsubseteq> f; length xs \<le> length ys \<rbrakk> \<Longrightarrow> prefix xs ys"
+by (clarsimp simp: iprefix_eq_iprefix_take_ex i_take_prefix_le_conv)
 
 lemma iprefix_same_cases: "
-  \<lbrakk> xs \<sqsubseteq> f; ys \<sqsubseteq> f \<rbrakk> \<Longrightarrow> prefixeq xs ys \<or> prefixeq ys xs"
+  \<lbrakk> xs \<sqsubseteq> f; ys \<sqsubseteq> f \<rbrakk> \<Longrightarrow> prefix xs ys \<or> prefix ys xs"
 apply (case_tac "length xs \<le> length ys")
 apply (simp add: iprefix_same_length_le)+
 done

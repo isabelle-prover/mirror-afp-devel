@@ -42,7 +42,7 @@ apply (rule_tac b=b in comp_intro)
 apply (split cond_splits, simp_all)+
 prefer 3
 apply (split cond_splits, simp_all)+
-apply (auto simp add: prefixeq_def)
+apply (auto simp add: prefix_def)
 done
 
 lemma Skip_is_CSP4: "(relation_of Skip) is CSP4 healthy"
@@ -54,7 +54,7 @@ apply (rule_tac b=b in comp_intro)
 apply (split cond_splits, simp_all)+
 prefer 3
 apply (split cond_splits, simp_all)+
-apply (auto simp add: prefixeq_def)
+apply (auto simp add: prefix_def)
 done
 
 
@@ -63,16 +63,16 @@ apply (auto simp: relation_of_Skip fun_eq_iff rp_defs true_def design_defs)
 apply (clarsimp split: cond_splits)+
 apply (case_tac "ok aa", simp_all)
 apply (erule disjE)+
-apply (clarsimp simp: prefixeq_def)
-apply (clarsimp simp: prefixeq_def)
+apply (clarsimp simp: prefix_def)
+apply (clarsimp simp: prefix_def)
 apply (erule disjE)+
-apply (clarsimp simp: prefixeq_def)
-apply (clarsimp simp: prefixeq_def)
+apply (clarsimp simp: prefix_def)
+apply (clarsimp simp: prefix_def)
 apply (erule disjE)+
-apply (clarsimp simp: prefixeq_def)
-apply (clarsimp simp: prefixeq_def)
+apply (clarsimp simp: prefix_def)
+apply (clarsimp simp: prefix_def)
 apply (case_tac "ok aa", simp_all)
-apply (clarsimp simp: prefixeq_def)
+apply (clarsimp simp: prefix_def)
 apply (clarsimp split: cond_splits)+
 apply (rule_tac b=a in comp_intro)
 apply (clarsimp split: cond_splits)+
@@ -110,20 +110,20 @@ apply (case_tac "tr aa \<le> tr ba", simp_all)
 apply (case_tac "ok ba", simp_all)
 apply (case_tac "tr ba \<le> tr c", simp_all)
 apply (rule disjI1)
-apply (simp add: prefixeq_def)
+apply (simp add: prefix_def)
 apply (erule exE)+
 apply (rule_tac x="zs@zsa" in exI, simp)
 apply (rule disjI1)
-apply (simp add: prefixeq_def)
+apply (simp add: prefix_def)
 apply (erule exE | erule conjE)+
 apply (rule_tac x="zs@zsa" in exI, simp)
 apply (split cond_splits)+
 apply (simp_all add: true_def)
 apply (erule disjE)
-apply (simp add: prefixeq_def)
+apply (simp add: prefix_def)
 apply (erule exE | erule conjE)+
 apply (rule_tac x="zs@zsa" in exI, simp)
-apply (auto simp add: prefixeq_def)
+apply (auto simp add: prefix_def)
 done
 
 
@@ -136,20 +136,20 @@ apply (case_tac "tr aa \<le> tr ba", simp_all)
 apply (case_tac "ok ba", simp_all)
 apply (case_tac "tr ba \<le> tr c", simp_all)
 apply (rule disjI1)
-apply (simp add: prefixeq_def)
+apply (simp add: prefix_def)
 apply (erule exE)+
 apply (rule_tac x="zs@zsa" in exI, simp)
 apply (rule disjI1)
-apply (simp add: prefixeq_def)
+apply (simp add: prefix_def)
 apply (erule exE | erule conjE)+
 apply (rule_tac x="zs@zsa" in exI, simp)
 apply (split cond_splits)+
 apply (simp_all add: true_def)
 apply (erule disjE)
-apply (simp add: prefixeq_def)
+apply (simp add: prefix_def)
 apply (erule exE | erule conjE)+
 apply (rule_tac x="zs@zsa" in exI, simp)
-apply (auto simp add: prefixeq_def)
+apply (auto simp add: prefix_def)
 done
 
 subsection {* Chaos *}
@@ -211,23 +211,23 @@ apply (case_tac "tr aa \<le> tr ab", simp_all)
 apply (case_tac "ok ab", simp_all)
 apply (case_tac "tr ab \<le> tr bb", simp_all)
 apply (rule disjI1)
-apply (simp add: prefixeq_def)
+apply (simp add: prefix_def)
 apply (erule exE)+
 apply (rule_tac x="zs@zsa" in exI, simp)
 apply (rule_tac b=bb in comp_intro)
 apply (split cond_splits, simp_all)+
 apply (rule disjI1)
-apply (simp add: prefixeq_def)
+apply (simp add: prefix_def)
 apply (erule exE | erule conjE)+
 apply (rule_tac x="zs@zsa" in exI, simp)
 apply (rule_tac b=bb in comp_intro)
 apply (split cond_splits, simp_all)+
 apply (simp_all add: true_def)
 apply (erule disjE)
-apply (simp add: prefixeq_def)
+apply (simp add: prefix_def)
 apply (erule exE | erule conjE)+
 apply (rule_tac x="zs@zsa" in exI, simp)
-apply (auto simp add: prefixeq_def)
+apply (auto simp add: prefix_def)
 done
 
 
@@ -289,23 +289,23 @@ apply (case_tac "ok bb", simp_all)
 apply (case_tac "tr bb \<le> tr c", simp_all)
 apply (case_tac "ok ca", simp_all)
 apply (case_tac "tr ca \<le> tr c", simp_all)
-apply (simp add: prefixeq_def)
+apply (simp add: prefix_def)
 apply (erule exE)+
 apply (erule_tac x="zs@zsa" in allE, simp)
 apply (rule_tac b=bb in comp_intro, simp_all)
 apply (split cond_splits, simp_all add: true_def)+
 apply (case_tac "ok ca", simp_all)
 apply (case_tac "tr ca \<le> tr c", simp_all)
-apply (simp add: prefixeq_def)
+apply (simp add: prefix_def)
 apply (erule exE | erule conjE)+
 apply (rule_tac x="zsa@zs" in exI, simp)
 apply (rule_tac b=bb in comp_intro, simp_all)
 apply (split cond_splits, simp_all)+
 apply (case_tac "tr bb \<le> tr c", simp_all)
-apply (simp add: prefixeq_def)
+apply (simp add: prefix_def)
 apply (erule exE | erule conjE)+
 apply (erule_tac x="zsa@zs" in allE, simp)
-apply (auto simp add: prefixeq_def)
+apply (auto simp add: prefix_def)
 done
 
 
@@ -475,7 +475,7 @@ apply (rule comp_intro)
 apply (split cond_splits, simp_all)+
 prefer 3
 apply (split cond_splits, simp_all)+
-apply (auto simp: prefixeq_def)
+apply (auto simp: prefix_def)
 done
 
 
@@ -632,7 +632,7 @@ defer
 apply (split cond_splits, simp_all)+
 prefer 3
 apply (split cond_splits, simp_all)+
-apply (auto simp add: prefixeq_def)
+apply (auto simp add: prefix_def)
 done
 
 
@@ -657,7 +657,7 @@ lemma Var_is_action:
   apply (rule seq_CSP)
   apply (auto simp: relation_of_CSP1 relation_of_R)
   apply (rule rd_is_CSP)
-  apply (auto simp: csp_defs rp_defs design_defs fun_eq_iff prefixeq_def increase_def decrease_def
+  apply (auto simp: csp_defs rp_defs design_defs fun_eq_iff prefix_def increase_def decrease_def
                split: cond_splits)
 done
 
@@ -1009,7 +1009,7 @@ lemma relation_of_Hide:
   by (simp add: Hide_def action_of_inverse Hide_is_CSP)
 
 lemma mono_Hide : "mono(\<lambda> P. P \\ cs)"
-by (auto simp: mono_def less_eq_action ref_def prefixeq_def utp_defs relation_of_Hide rp_defs)
+by (auto simp: mono_def less_eq_action ref_def prefix_def utp_defs relation_of_Hide rp_defs)
 
 subsection {* Recursion *}
 

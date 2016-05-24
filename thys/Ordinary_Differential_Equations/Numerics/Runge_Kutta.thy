@@ -144,7 +144,7 @@ proof (rule dense_eq0_I, cases)
     by (simp add: dist_commute)
   moreover have "dist (I *\<^sub>R y) ((\<Sum>(x, k)\<in>p. content k *\<^sub>R f x) *\<^sub>R y) \<le> norm y * e"
     using f_less
-    by (auto simp add: scaleR_dist_distrib_right[symmetric] dist_real_def
+    by (auto simp add: scaleR_dist_distrib_right[symmetric] dist_real_def mult.commute [of _ "norm y"]
       intro!: mult_left_mono)
   ultimately
   have "dist P (I *\<^sub>R y) \<le> e + norm y * e"

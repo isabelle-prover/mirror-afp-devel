@@ -22,8 +22,8 @@ lemma not_in_butlast[simp]: "\<lbrakk>x \<in> set ys; x \<notin> set (butlast ys
 lemma in_set_butlastI: "x \<in> set xs \<Longrightarrow> x \<noteq> last xs \<Longrightarrow> x \<in> set (butlast xs)"
   by (metis append_butlast_last_id append_is_Nil_conv list.distinct(1) rotate1.simps(2) set_ConsD set_rotate1 split_list)
 
-lemma butlast_prefix: "xs \<noteq> [] \<Longrightarrow> prefix (butlast xs) xs"
-  by (metis append_butlast_last_id prefixI')
+lemma butlast_strict_prefix: "xs \<noteq> [] \<Longrightarrow> strict_prefix (butlast xs) xs"
+  by (metis append_butlast_last_id strict_prefixI')
 
 lemma set_tl: "set (tl xs) \<subseteq> set xs"
   by (metis suffixeq_set_subset suffixeq_tl)
@@ -38,24 +38,24 @@ lemma suffixeq_unsnoc:
 
 lemma prefix_split_first:
   assumes "x \<in> set xs"
-  obtains as where "prefixeq (as@[x]) xs" and "x \<notin> set as"
+  obtains as where "prefix (as@[x]) xs" and "x \<notin> set as"
 proof atomize_elim
   from assms obtain as bs where "xs = as@x#bs \<and> x \<notin> set as" by (atomize_elim, rule split_list_first)
-  thus "\<exists>as. prefixeq (as@[x]) xs \<and> x \<notin> set as" by -(rule exI[where x = as], auto)
+  thus "\<exists>as. prefix (as@[x]) xs \<and> x \<notin> set as" by -(rule exI[where x = as], auto)
 qed
 
 lemma in_prefix[elim]:
-  assumes "prefixeq xs ys" and "x \<in> set xs"
+  assumes "prefix xs ys" and "x \<in> set xs"
   shows "x \<in> set ys"
-using assms by (auto elim!:prefixeqE)
+using assms by (auto elim!:prefixE)
 
 lemma strict_prefix_butlast:
-  assumes "prefixeq xs (butlast ys)" "ys \<noteq> []"
-  shows "prefix xs ys"
-using assms unfolding append_butlast_last_id[symmetric] by (auto simp add:less_le butlast_prefix prefix_order.le_less_trans)
+  assumes "prefix xs (butlast ys)" "ys \<noteq> []"
+  shows "strict_prefix xs ys"
+using assms unfolding append_butlast_last_id[symmetric] by (auto simp add:less_le butlast_strict_prefix prefix_order.le_less_trans)
 
-lemma prefixeq_tl_subset: "prefixeq xs ys \<Longrightarrow> set (tl xs) \<subseteq> set (tl ys)"
-  by (metis Nil_tl prefix_bot.bot.extremum prefixeq_def set_mono_prefixeq tl_append2)
+lemma prefix_tl_subset: "prefix xs ys \<Longrightarrow> set (tl xs) \<subseteq> set (tl ys)"
+  by (metis Nil_tl prefix_bot.bot.extremum prefix_def set_mono_prefix tl_append2)
 
 lemma suffixeq_tl_subset: "suffixeq xs ys \<Longrightarrow> set (tl xs) \<subseteq> set (tl ys)"
   by (metis append_Nil suffixeq_def suffixeq_set_subset suffixeq_tl suffixeq_trans tl_append2)
@@ -199,18 +199,18 @@ lemma singleton_list_hd_last: "length xs = 1 \<Longrightarrow> hd xs = last xs"
 lemma distinct_hd_tl: "distinct xs \<Longrightarrow> hd xs \<notin> set (tl xs)"
   by (metis distinct.simps(2) hd_Cons_tl in_set_member list.sel(2) member_rec(2))
 
-lemma set_mono_prefix: "prefix xs ys \<Longrightarrow> set xs \<subseteq> set (butlast ys)"
-  by (metis append_butlast_last_id prefixE prefix_simps(1) prefixeq_snoc set_mono_prefixeq)
+lemma set_mono_strict_prefix: "strict_prefix xs ys \<Longrightarrow> set xs \<subseteq> set (butlast ys)"
+  by (metis append_butlast_last_id strict_prefixE strict_prefix_simps(1) prefix_snoc set_mono_prefix)
 
 lemma set_butlast_distinct: "distinct xs \<Longrightarrow> set (butlast xs) \<inter> {last xs} = {}"
   by (metis append_butlast_last_id butlast.simps(1) distinct_append inf_bot_right inf_commute list.set(1) set_simps(2))
 
 lemma disjoint_elem[elim]: "A \<inter> B = {} \<Longrightarrow> x \<in> A \<Longrightarrow> x \<notin> B" by auto
 
-lemma prefixeq_butlastD[elim]: "prefixeq xs (butlast ys) \<Longrightarrow> prefixeq xs ys"
+lemma prefix_butlastD[elim]: "prefix xs (butlast ys) \<Longrightarrow> prefix xs ys"
   using strict_prefix_butlast by fastforce
 
-lemma butlast_prefixeq: "prefixeq xs ys \<Longrightarrow> prefixeq (butlast xs) (butlast ys)"
+lemma butlast_prefix: "prefix xs ys \<Longrightarrow> prefix (butlast xs) (butlast ys)"
   by (induction xs ys rule: list_induct2'; auto)
 
 lemma hd_in_butlast: "length xs > 1 \<Longrightarrow> hd xs \<in> set (butlast xs)"
