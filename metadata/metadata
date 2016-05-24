@@ -1,3 +1,24 @@
+[Card_Equiv_Relations]
+title = Cardinality of Equivalence Relations
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+notify = lukas.bulwahn@gmail.com
+date = 2016-05-24
+topic = Mathematics/Combinatorics
+abstract = 
+  This entry provides formulae for counting the number of equivalence
+  relations and partial equivalence relations over a finite carrier set
+  with given cardinality.  To count the number of equivalence relations,
+  we provide bijections between equivalence relations and set
+  partitions, and then transfer the main results of the two AFP entries,
+  Cardinality of Set Partitions and Spivey's Generalized Recurrence for
+  Bell Numbers, to theorems on equivalence relations. To count the
+  number of partial equivalence relations, we observe that counting
+  partial equivalence relations over a set A is equivalent to counting
+  all equivalence relations over all subsets of the set A. From this
+  observation and the results on equivalence relations, we show that the
+  cardinality of partial equivalence relations over a finite set of
+  cardinality n is equal to the n+1-th Bell number.
+
 [Posix-Lexing]
 title = POSIX Lexing with Derivatives of Regular Expressions
 author = Fahad Ausaf <http://kcl.academia.edu/FahadAusaf>, Roy Dyckhoff <https://rd.host.cs.st-andrews.ac.uk>, Christian Urban <http://www.inf.kcl.ac.uk/staff/urbanc/>

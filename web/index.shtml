@@ -51,6 +51,13 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 
 <tr><td class="entry">
 2016-05-24:
+<a href="entries/Card_Equiv_Relations.shtml">Cardinality of Equivalence Relations</a>
+<br>Author:
+Lukas Bulwahn
+</td></tr>
+
+<tr><td class="entry">
+2016-05-24:
 <a href="entries/Posix-Lexing.shtml">POSIX Lexing with Derivatives of Regular Expressions</a>
 <br>Author:
 <a href="http://kcl.academia.edu/FahadAusaf">Fahad Ausaf</a>,
