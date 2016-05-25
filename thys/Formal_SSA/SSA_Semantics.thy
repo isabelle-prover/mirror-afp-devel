@@ -99,7 +99,7 @@ begin
           from ns'(1) have "length ns' \<ge> 2" by auto
           with ns' have bns': "g \<turnstile> Entry g-butlast ns'\<rightarrow>?n''" "?n'' \<in> set (old.predecessors g n)"
             by (auto elim: old.path2_unsnoc)
-          with asm obtain ns'' where ns'': "g \<turnstile> ?n\<^sub>v-ns''\<rightarrow>?n''" "suffixeq ns'' (butlast ns')" "?n\<^sub>v \<notin> set (tl ns'')"
+          with asm obtain ns'' where ns'': "g \<turnstile> ?n\<^sub>v-ns''\<rightarrow>?n''" "suffix ns'' (butlast ns')" "?n\<^sub>v \<notin> set (tl ns'')"
             by - (rule old.path2_split_first_last, auto)
           with bns' snoc.prems(2) have "g \<turnstile> ?n\<^sub>v-(ns''@[n])@tl ms\<rightarrow>m" by - (rule old.path2_app, auto)
           hence "defNode g v' \<notin> set (tl (ns''@[n]@tl ms))"

@@ -193,13 +193,13 @@ begin
     liveSimple': "\<lbrakk>n \<in> set (\<alpha>n g); val \<in> uses g n\<rbrakk> \<Longrightarrow> liveVal' g [val]"
   | livePhi': "\<lbrakk>liveVal' g (v#vs); phiArg g v v'\<rbrakk> \<Longrightarrow> liveVal' g (v'#v#vs)"
 
-  lemma liveVal'_suffixeq:
-    assumes "liveVal' g vs" "suffixeq vs' vs" "vs' \<noteq> []"
+  lemma liveVal'_suffix:
+    assumes "liveVal' g vs" "suffix vs' vs" "vs' \<noteq> []"
     shows "liveVal' g vs'"
   using assms proof induction
     case (liveSimple' n v)
     from liveSimple'.prems have "vs' = [v]"
-      by (metis append_Nil butlast.simps(2) suffixeqI suffixeq_antisym suffixeq_unsnoc)
+      by (metis append_Nil butlast.simps(2) suffixI suffix_antisym suffix_unsnoc)
     with liveSimple'.hyps show ?case by (auto intro: liveVal'.liveSimple')
   next
     case (livePhi' v vs v')
@@ -209,8 +209,8 @@ begin
       with livePhi' show ?thesis by - (auto intro: liveVal'.livePhi')
     next
       case False
-      with livePhi'.prems have "suffixeq vs' (v#vs)"
-        by (metis list.sel(3) self_append_conv2 suffixeqI suffixeq_take tl_append2)
+      with livePhi'.prems have "suffix vs' (v#vs)"
+        by (metis list.sel(3) self_append_conv2 suffixI suffix_take tl_append2)
       with livePhi'.prems(2) show ?thesis by - (rule livePhi'.IH)
     qed
   qed
@@ -233,9 +233,9 @@ begin
         with livePhi.hyps asm show thesis by - (rule livePhi.prems, rule livePhi')
       next
         case True
-        then obtain vs' where "suffixeq (v'#vs') (v#vs)"
-          by - (drule split_list_last, auto simp: suffixeq_def)
-        with asm show thesis by - (rule livePhi.prems, rule liveVal'_suffixeq, simp_all)
+        then obtain vs' where "suffix (v'#vs') (v#vs)"
+          by - (drule split_list_last, auto simp: Sublist.suffix_def)
+        with asm show thesis by - (rule livePhi.prems, rule liveVal'_suffix, simp_all)
       qed
     qed
   qed
@@ -619,9 +619,9 @@ begin
         hence[simp]: "substitution g = v" unfolding substitution_def
         by - (rule the1_equality, auto intro!: isTrivialPhi_det[unfolded trivial_def])
   
-        obtain vs'\<^sub>2 where vs'\<^sub>2: "suffixeq (v'#vs'\<^sub>2) (v'#vs')" "v' \<notin> set vs'\<^sub>2"
-          using split_list_last[of v' "v'#vs'"] by (auto simp: suffixeq_def)
-        with `liveVal' g (v'#vs')` have "liveVal' g (v'#vs'\<^sub>2)" by - (rule liveVal'_suffixeq, simp_all)
+        obtain vs'\<^sub>2 where vs'\<^sub>2: "suffix (v'#vs'\<^sub>2) (v'#vs')" "v' \<notin> set vs'\<^sub>2"
+          using split_list_last[of v' "v'#vs'"] by (auto simp: Sublist.suffix_def)
+        with `liveVal' g (v'#vs')` have "liveVal' g (v'#vs'\<^sub>2)" by - (rule liveVal'_suffix, simp_all)
         thus thesis
         proof (cases rule: liveVal'.cases)
           case (liveSimple' n)
@@ -633,8 +633,8 @@ begin
           from vs'\<^sub>2(2) livePhi'(1) have[simp]: "v'' \<noteq> v'" by auto
           show thesis
           proof (rule "1.hyps"[rule_format, of "length vs''" vs'' v''])
-            show "length vs'' < length vs" using `vs = v'#vs'` livePhi'(1) vs'\<^sub>2(1)[THEN suffixeq_ConsD2]
-              by (auto simp: suffixeq_def)
+            show "length vs'' < length vs" using `vs = v'#vs'` livePhi'(1) vs'\<^sub>2(1)[THEN suffix_ConsD2]
+              by (auto simp: Sublist.suffix_def)
           next
             fix vs''\<^sub>2
             assume asm: "step.liveVal' g (v''#vs''\<^sub>2)"

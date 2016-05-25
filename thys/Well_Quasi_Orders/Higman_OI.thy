@@ -15,14 +15,14 @@ begin
 
 subsection \<open>Some facts about the suffix relation\<close>
 
-lemma wfp_on_suffix:
-  "wfp_on suffix A"
+lemma wfp_on_strict_suffix:
+  "wfp_on strict_suffix A"
 by (rule wfp_on_mono [OF subset_refl, of _ _ "measure_on length A"])
-   (auto simp: suffix_def)
+   (auto simp: strict_suffix_def)
 
-lemma po_on_suffix:
-  "po_on suffix A"
-by (force simp: suffix_def po_on_def transp_on_def irreflp_on_def)
+lemma po_on_strict_suffix:
+  "po_on strict_suffix A"
+by (force simp: strict_suffix_def po_on_def transp_on_def irreflp_on_def)
 
 
 subsection \<open>Lexicographic Order on Infinite Sequences\<close>
@@ -144,10 +144,10 @@ lemma higman:
   assumes "almost_full_on P A"
   shows "almost_full_on (list_emb P) (lists A)"
 proof
-  interpret minimal_element suffix "lists A"
-    by (unfold_locales) (intro po_on_suffix wfp_on_suffix)+
+  interpret minimal_element strict_suffix "lists A"
+    by (unfold_locales) (intro po_on_strict_suffix wfp_on_strict_suffix)+
   fix f presume "f \<in> SEQ (lists A)"
-  with qo_on_LEXEQ [OF po_on_imp_transp_on [OF po_on_suffix]] and dc_on_LEXEQ and open_on_good
+  with qo_on_LEXEQ [OF po_on_imp_transp_on [OF po_on_strict_suffix]] and dc_on_LEXEQ and open_on_good
     show "good (list_emb P) f"
   proof (induct rule: open_induct_on)
     case (less f)
@@ -165,10 +165,10 @@ proof
         by (auto simp: f'_def dest: list.set_sel)
       have [simp]: "\<And>i. \<phi> 0 \<le> i \<Longrightarrow> h (\<phi> (i - \<phi> 0)) # f' i = f (\<phi> (i - \<phi> 0))"
         "\<And>i. i < \<phi> 0 \<Longrightarrow> f' i = f i" using ne by (auto simp: f'_def h_def)
-      moreover have "suffix (f' (\<phi> 0)) (f (\<phi> 0))" using ne by (auto simp: f'_def)
-      ultimately have "LEX suffix f' f" by (auto simp: LEX_def)
-      with LEX_imp_not_LEX [OF this] have "strict (LEXEQ suffix) f' f"
-        using po_on_suffix [of UNIV] unfolding po_on_def irreflp_on_def transp_on_def by blast
+      moreover have "strict_suffix (f' (\<phi> 0)) (f (\<phi> 0))" using ne by (auto simp: f'_def)
+      ultimately have "LEX strict_suffix f' f" by (auto simp: LEX_def)
+      with LEX_imp_not_LEX [OF this] have "strict (LEXEQ strict_suffix) f' f"
+        using po_on_strict_suffix [of UNIV] unfolding po_on_def irreflp_on_def transp_on_def by blast
       from less(2) [OF f' this] have "good (list_emb P) f'" .
       then obtain i j where "i < j" and emb: "list_emb P (f' i) (f' j)" by (auto simp: good_def)
       consider "j < \<phi> 0" | "\<phi> 0 \<le> i" | "i < \<phi> 0" and "\<phi> 0 \<le> j" by arith
