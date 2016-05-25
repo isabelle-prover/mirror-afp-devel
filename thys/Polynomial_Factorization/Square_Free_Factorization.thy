@@ -21,10 +21,10 @@ begin
 hide_const Coset.order
 
 context
-  assumes "SORT_CONSTRAINT('a::field)"
+  assumes "SORT_CONSTRAINT('a::idom)"
 begin
 
-definition square_free :: "'a poly \<Rightarrow> bool" where 
+definition square_free :: "'a :: idom poly \<Rightarrow> bool" where 
   "square_free p = (p \<noteq> 0 \<longrightarrow> (\<forall> q. degree q \<noteq> 0 \<longrightarrow> \<not> (q * q dvd p)))"
 
 lemma square_freeI:  
@@ -35,6 +35,39 @@ proof (intro allI impI notI)
   assume dq: "degree q \<noteq> 0" and dvd: "q * q dvd p"
   from assms[OF dq _ dvd] dq show False by (cases "q = 0", auto)
 qed
+
+lemma square_free_factor: assumes "p \<noteq> 0"
+  and dvd: "a dvd p"
+  and sf: "square_free p"
+  shows "square_free a"
+proof (intro square_freeI)
+  fix q
+  assume q: "degree q \<noteq> 0" and "q * q dvd a"
+  hence "q * q dvd p" using dvd unfolding dvd_def by (auto simp: field_simps)
+  with sf[unfolded square_free_def] q `p \<noteq> 0` show False by auto
+qed
+
+lemma square_free_listprod_distinct: 
+  assumes sf: "square_free (listprod us)"
+  and us: "\<And> u. u \<in> set us \<Longrightarrow> degree u \<noteq> 0"
+  shows "distinct us"
+proof (rule ccontr)
+  assume "\<not> distinct us"
+  from not_distinct_decomp[OF this] obtain xs ys zs u where
+     "us = xs @ u # ys @ u # zs" by auto
+  hence dvd: "u * u dvd listprod us" and u: "u \<in> set us" by auto
+  from dvd us[OF u] sf have "listprod us = 0" unfolding square_free_def by auto
+  hence "0 \<in> set us" by (simp add: listprod_zero_iff)
+  from us[OF this] show False by auto
+qed
+end
+
+context
+  assumes "SORT_CONSTRAINT('a::field)"
+begin
+
+lemma square_free_smult: "square_free (f :: 'a poly) \<Longrightarrow> square_free (smult c f)"
+  by (cases "c = 0", unfold square_free_def, insert dvd_smult_cancel[of _ c], auto)
 
 definition square_free_factorization :: "'a poly \<Rightarrow> 'a \<times> ('a poly \<times> nat) list \<Rightarrow> bool" where
   "square_free_factorization p cbs \<equiv> case cbs of (c,bs) \<Rightarrow>
@@ -51,6 +84,14 @@ lemma square_free_factorizationD: assumes "square_free_factorization p (c,bs)"
   "p = 0 \<Longrightarrow> c = 0 \<and> bs = []"
   "distinct bs"
   using assms unfolding square_free_factorization_def split by blast+
+
+lemma square_free_factorization_listprod: assumes "square_free_factorization p (c,bs)"
+  shows "p = smult c (listprod (map (\<lambda> (a,i). a ^ Suc i) bs))"
+proof -
+  note sff = square_free_factorizationD[OF assms]
+  show ?thesis unfolding sff(1) 
+    by (simp add: setprod.distinct_set_conv_list[OF sff(5)])
+qed
 
 lemma irreducible_dvd_pow: fixes p :: "'a poly" 
   assumes irr: "irreducible p"
@@ -899,17 +940,6 @@ lemma square_free_factorization_root:
   using square_free_factorization_order_root[OF sff p] p
   unfolding order_root by auto
 
-lemma square_free_factor: assumes "p \<noteq> 0"
-  and dvd: "a dvd p"
-  and sf: "square_free p"
-  shows "square_free a"
-proof (intro square_freeI)
-  fix q
-  assume q: "degree q \<noteq> 0" and "q * q dvd a"
-  hence "q * q dvd p" using dvd unfolding dvd_def by (auto simp: field_simps)
-  with sf[unfolded square_free_def] q `p \<noteq> 0` show False by auto
-qed
-
 lemma square_free_factorization_factor: 
   assumes sff: "square_free_factorization p (c, bs1 @ (a,i) # bs2)"
   and r: "degree r \<noteq> 0" and s: "degree s \<noteq> 0"
@@ -996,11 +1026,8 @@ proof -
   } note 3 = this
   show ?thesis unfolding square_free_factorization_def using 1 2 3 4 5 by blast
 qed
-
-lemma square_free_smult: "square_free f \<Longrightarrow> square_free (smult c f)"
-  by (cases "c = 0", unfold square_free_def, insert dvd_smult_cancel[of _ c], auto)
   
-lemma monic_square_free_factorization: assumes mon: "monic f" and sf: "square_free f"
+lemma monic_square_free_factorization: assumes mon: "monic (f :: 'a :: field poly)" and sf: "square_free f"
   shows "\<exists> P. finite P \<and> f = \<Prod>P \<and> P \<subseteq> {q. irreducible q \<and> monic q}"
 proof -
   from mon have f0: "f \<noteq> 0" by auto
@@ -1020,21 +1047,6 @@ proof -
     by (rule setprod.cong[OF refl], insert *, auto)
   with P show ?thesis by auto
 qed
-
-lemma square_free_listprod_distinct: 
-  assumes sf: "square_free (listprod us)"
-  and us: "\<And> u. u \<in> set us \<Longrightarrow> degree u \<noteq> 0"
-  shows "distinct us"
-proof (rule ccontr)
-  assume "\<not> distinct us"
-  from not_distinct_decomp[OF this] obtain xs ys zs u where
-     "us = xs @ u # ys @ u # zs" by auto
-  hence dvd: "u * u dvd listprod us" and u: "u \<in> set us" by auto
-  from dvd us[OF u] sf have "listprod us = 0" unfolding square_free_def by auto
-  hence "0 \<in> set us" by (simp add: listprod_zero_iff)
-  from us[OF this] show False by auto
-qed
-
 
 subsection \<open>Yun factorization and homomorphisms\<close>
 lemma (in inj_field_hom_0) yun_factorization_main_hom:
