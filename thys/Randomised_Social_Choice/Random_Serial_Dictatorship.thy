@@ -11,7 +11,6 @@ theory Random_Serial_Dictatorship
 imports
   Complex_Main
   Social_Decision_Schemes
-  Random_Permutations
   Random_Dictatorship
 begin
 
