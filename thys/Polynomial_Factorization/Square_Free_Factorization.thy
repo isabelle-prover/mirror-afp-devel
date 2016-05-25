@@ -24,7 +24,7 @@ context
   assumes "SORT_CONSTRAINT('a::idom)"
 begin
 
-definition square_free :: "'a :: idom poly \<Rightarrow> bool" where 
+definition square_free :: "'a poly \<Rightarrow> bool" where 
   "square_free p = (p \<noteq> 0 \<longrightarrow> (\<forall> q. degree q \<noteq> 0 \<longrightarrow> \<not> (q * q dvd p)))"
 
 lemma square_freeI:  
@@ -62,12 +62,95 @@ proof (rule ccontr)
 qed
 end
 
+lemma coprime_pderiv_imp_square_free: assumes "coprime f (pderiv f)"
+  shows "square_free f"
+proof (rule ccontr)
+  from assms have f0: "f \<noteq> 0" by (cases f, auto)
+  assume "\<not> square_free f"
+  then obtain g where g: "degree g \<noteq> 0" and "g * g dvd f" unfolding square_free_def by auto
+  then obtain h where f: "f = g * (g * h)" unfolding dvd_def by (auto simp: ac_simps)
+  have "pderiv f = g * ((g * pderiv h + h * pderiv g) + h * pderiv g)" 
+    unfolding f pderiv_mult[of g] by (simp add: field_simps)
+  hence "g dvd pderiv f" unfolding dvd_def by blast
+  moreover have "g dvd f" unfolding f dvd_def by blast
+  ultimately have dvd: "g dvd (gcd f (pderiv f))" by simp
+  have "gcd f (pderiv f) \<noteq> 0" using f0 by simp
+  with g dvd have "degree (gcd f (pderiv f)) \<noteq> 0"
+    by (metis degree_0 is_unit_gcd is_unit_iff_degree)
+  hence "\<not> coprime f (pderiv f)" by auto
+  with assms show False by simp
+qed
+
+lemma square_free_rsquarefree: assumes f: "f \<noteq> 0" "square_free f" 
+  shows "rsquarefree f"
+  unfolding rsquarefree_def
+proof (rule conjI[OF f(1)], rule allI)
+  fix x
+  show "order x f = 0 \<or> order x f = 1"
+  proof (rule ccontr)
+    assume "\<not> ?thesis"
+    then obtain n where ord: "order x f = Suc (Suc n)" 
+      by (cases "order x f"; cases "order x f - 1"; auto)
+    def p \<equiv> "[:-x,1:]"
+    from order_divides[of x "Suc (Suc 0)" f, unfolded ord]
+    have "p * p dvd f" "degree p \<noteq> 0" unfolding p_def by auto
+    hence "\<not> square_free f" using f(1) unfolding square_free_def by auto
+    with assms show False by auto
+  qed
+qed
+    
+lemma square_free_coprime_pderiv: assumes f: "(f :: 'a :: field_char_0 poly) \<noteq> 0"
+  and "square_free f"
+  shows "coprime f (pderiv f)"
+proof (rule ccontr)
+  let ?g = "gcd f (pderiv f)"
+  def G \<equiv> ?g
+  from poly_gcd_monic[of f "pderiv f"] f have mon: "monic ?g"
+    unfolding lead_coeff_def by auto
+  assume cop: "\<not> coprime f (pderiv f)"
+  have deg: "degree G \<noteq> 0" 
+  proof (cases "degree G")
+    case 0
+    from degree0_coeffs[OF this] cop mon show ?thesis by (auto simp: G_def one_poly_def)
+  qed auto
+  have gf: "G dvd f" unfolding G_def by auto
+  have gf': "G dvd pderiv f" unfolding G_def by auto
+  from irreducible_factor[OF deg] obtain g r where g: "irreducible g" and G: "G = g * r" by auto
+  from gf have gf: "g dvd f" unfolding G by (rule dvd_mult_left)
+  from gf' have gf': "g dvd pderiv f" unfolding G by (rule dvd_mult_left)
+  have g0: "degree g \<noteq> 0" using g unfolding irreducible_def by auto
+  from gf obtain k where fgk: "f = g * k" unfolding dvd_def by auto
+  have id1: "pderiv f = g * pderiv k + k * pderiv g" unfolding fgk pderiv_mult by simp
+  from gf' obtain h where "pderiv f = g * h" unfolding dvd_def by auto
+  from id1[unfolded this] have "k * pderiv g = g * (h - pderiv k)" by (simp add: field_simps)
+  hence "g dvd k * pderiv g" unfolding dvd_def by auto
+  from irreducible_dvd_mult[OF g this] g0
+  have "g dvd k" unfolding dvd_pderiv_iff by auto
+  then obtain h where k: "k = g * h" unfolding dvd_def by auto
+  with fgk have "g * g dvd f" by auto
+  with g0 have "\<not> square_free f" unfolding square_free_def using f by auto
+  with assms show False by simp
+qed
+  
+
+lemma square_free_iff_coprime: "square_free (f :: 'a :: field_char_0 poly) = 
+  (f \<noteq> 0 \<longrightarrow> coprime f (pderiv f))"
+proof (cases "f = 0")
+  case True
+  thus ?thesis unfolding square_free_def by simp
+next
+  case False note f = this
+  with coprime_pderiv_imp_square_free[of f] square_free_coprime_pderiv[OF False]
+  show ?thesis by auto
+qed 
+
 context
   assumes "SORT_CONSTRAINT('a::field)"
 begin
 
 lemma square_free_smult: "square_free (f :: 'a poly) \<Longrightarrow> square_free (smult c f)"
   by (cases "c = 0", unfold square_free_def, insert dvd_smult_cancel[of _ c], auto)
+
 
 definition square_free_factorization :: "'a poly \<Rightarrow> 'a \<times> ('a poly \<times> nat) list \<Rightarrow> bool" where
   "square_free_factorization p cbs \<equiv> case cbs of (c,bs) \<Rightarrow>
@@ -1108,5 +1191,11 @@ lemma (in inj_field_hom_0) yun_factorization_hom:
   unfolding Let_def hp hpi
   unfolding map_poly_0_iff coeff_map_poly_hom hom_inverse[symmetric] map_poly_smult[symmetric] map_poly_mult[symmetric]
     by (rule if_cong[OF refl], force, subst yun_monic_factorization, auto)
+
+lemma (in inj_field_hom_0) square_free_map_poly: "square_free (map_poly hom f) = square_free f"
+proof -
+  interpret inj_ring_hom "map_poly hom" by (rule inj_ring_hom_map_poly)
+  show ?thesis unfolding square_free_iff_coprime map_poly_pderiv map_poly_gcd[symmetric] by simp
+qed
 
 end
