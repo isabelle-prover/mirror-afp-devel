@@ -2105,15 +2105,15 @@ proof -
   {
     fix p Z \<sigma>
     assume defined: "p \<in> dom \<Gamma>"
-    def Specs == "(\<Union>p\<in>dom \<Gamma>. \<Union>Z. 
+    define Specs where "Specs = (\<Union>p\<in>dom \<Gamma>. \<Union>Z. 
             {({s. s=Z \<and> 
               \<Gamma>\<turnstile>\<langle>Call p,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
               \<Gamma>\<turnstile>Call p\<down>Normal s},
              p,
              {t. \<Gamma>\<turnstile>\<langle>Call p,Normal Z\<rangle> \<Rightarrow> Normal t},
              {t. \<Gamma>\<turnstile>\<langle>Call p,Normal Z\<rangle> \<Rightarrow> Abrupt t})})"
-    def Specs_wf == "(\<lambda>p \<sigma>. (\<lambda>(P,q,Q,A). 
-                       (P \<inter> {s. ((s,q),\<sigma>,p) \<in> termi_call_steps \<Gamma>}, q, Q, A)) ` Specs)"
+    define Specs_wf where "Specs_wf p \<sigma> = (\<lambda>(P,q,Q,A). 
+                       (P \<inter> {s. ((s,q),\<sigma>,p) \<in> termi_call_steps \<Gamma>}, q, Q, A)) ` Specs" for p \<sigma>
     have "\<Gamma>,Specs_wf p \<sigma>
             \<turnstile>\<^sub>t\<^bsub>/F\<^esub>({\<sigma>} \<inter>
                  {s. s = Z \<and> \<Gamma>\<turnstile>\<langle>the (\<Gamma> p),Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 

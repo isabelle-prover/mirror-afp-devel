@@ -1745,7 +1745,7 @@ proof -
   show ?thesis
   proof (cases "\<exists>i. CS (f i) = cs \<and> CSS (f i) = css")
     case True
-    def k\<equiv>"(LEAST i. CS (f i) = cs \<and> CSS (f i) = css)"
+    define k where "k = (LEAST i. CS (f i) = cs \<and> CSS (f i) = css)"
     from True
     obtain CS_f_k: "CS (f k) = cs" and CSS_f_k: "CSS (f k) = css" 
       apply -
@@ -1827,7 +1827,7 @@ proof -
                            [(fst (last (pcss i))@cs,(snd (last (pcss i)))@cs)]@
                            css)"
       by iprover
-    def "g" \<equiv> "\<lambda>i. (pcs i, pcss i, S (f i))"
+    define g where "g i = (pcs i, pcss i, S (f i))" for i
     from pcs_pcss [rule_format, of 0] f_0
     have "g 0 = ([c],[],s)"
       by (auto split: if_split_asm simp add: CS_def CSS_def S_def g_def)
@@ -1876,7 +1876,7 @@ next
     f_0: "f 0 = (c1# c2#cs,css,Normal s)" and
     f_step: "\<forall>i. \<Gamma>\<turnstile>f i \<rightarrow> f (Suc i)"
     by (auto simp add: inf_def)
-  def g\<equiv>"\<lambda>i. case i of 0 \<Rightarrow> (Seq c1 c2#cs,css,Normal s) | Suc j \<Rightarrow> f j" 
+  define g where "g i = (case i of 0 \<Rightarrow> (Seq c1 c2#cs,css,Normal s) | Suc j \<Rightarrow> f j)" for i
   with f_0 have
     "\<Gamma>\<turnstile>g 0 \<rightarrow> g (Suc 0)"
     by (auto intro: step.intros)
@@ -1915,7 +1915,7 @@ next
     f_0: "f 0 = (c # While b c #cs,css,Normal s)" and
     f_step: "\<forall>i. \<Gamma>\<turnstile>f i \<rightarrow> f (Suc i)"
     by (auto simp add: inf_def)
-  def h\<equiv>"\<lambda>i. case i of 0 \<Rightarrow> (While b c#cs,css,Normal s) | Suc j \<Rightarrow> f j" 
+  define h where "h i = (case i of 0 \<Rightarrow> (While b c#cs,css,Normal s) | Suc j \<Rightarrow> f j)"  for i
   with b f_0 have
     "\<Gamma>\<turnstile>h 0 \<rightarrow> h (Suc 0)"
     by (auto intro: step.intros)
@@ -1952,7 +1952,7 @@ next
     f_0: "f 0 = ([c1],(cs,c2#cs)#css,Normal s)" and
     f_step: "\<forall>i. \<Gamma>\<turnstile>f i \<rightarrow> f (Suc i)"
     by (auto simp add: inf_def)
-  def h\<equiv>"\<lambda>i. case i of 0 \<Rightarrow> (Catch c1 c2#cs,css,Normal s) | Suc j \<Rightarrow> f j" 
+  define h where "h i = (case i of 0 \<Rightarrow> (Catch c1 c2#cs,css,Normal s) | Suc j \<Rightarrow> f j)"  for i
   with f_0 have
     "\<Gamma>\<turnstile>h 0 \<rightarrow> h (Suc 0)"
     by (auto intro: step.intros)
@@ -2583,7 +2583,7 @@ proof (simp only: termi_call_steps_def wf_iff_no_infinite_down_chain,
       step_css: "\<forall>i. \<Gamma>\<turnstile>([the (\<Gamma> (p i))],[],Normal (s i)) \<rightarrow>\<^sup>+ 
                          ([the (\<Gamma> (p (Suc i)))],css i,Normal (s (Suc i)))"
       by blast
-    def f == "\<lambda>i. ([the (\<Gamma> (p i))], seq css i,Normal (s i)::('a,'c) xstate)"
+    define f where "f i = ([the (\<Gamma> (p i))], seq css i,Normal (s i)::('a,'c) xstate)" for i
     have "f 0 = ([the (\<Gamma> (p 0))],[],Normal (s 0))"
       by (simp add: f_def)
     moreover
@@ -2631,10 +2631,10 @@ proof (simp only: termi_call_steps_def wf_iff_no_infinite_down_chain,
     done
   show "False"
   proof -
-    def CSS \<equiv> "\<lambda>i. (SOME css.  
+    define CSS where "CSS i = (SOME css.  
                       \<Gamma>\<turnstile>([the (\<Gamma> (p i))],[], Normal (s i)) \<rightarrow>\<^sup>+
-                      ([the (\<Gamma> (p (i+1)))],css,Normal (s (i+1))))"
-    def f == "\<lambda>i. ([the (\<Gamma> (p i))], seq CSS i,Normal (s i)::('a,'c) xstate)"
+                      ([the (\<Gamma> (p (i+1)))],css,Normal (s (i+1))))" for i
+    define f where "f i = ([the (\<Gamma> (p i))], seq CSS i,Normal (s i)::('a,'c) xstate)" for i
     have "f 0 = ([the (\<Gamma> (p 0))],[],Normal (s 0))"
       by (simp add: f_def)
     moreover
@@ -3827,15 +3827,15 @@ proof -
   {
     fix p Z \<sigma>
     assume defined: "p \<in> dom \<Gamma>"
-    def Specs == "(\<Union>p\<in>dom \<Gamma>. \<Union>Z. 
+    define Specs where "Specs = (\<Union>p\<in>dom \<Gamma>. \<Union>Z. 
             {({s. s=Z \<and> 
               \<Gamma>\<turnstile>\<langle>Call p,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
               \<Gamma>\<turnstile>Call p\<down>Normal s},
              p,
              {t. \<Gamma>\<turnstile>\<langle>Call p,Normal Z\<rangle> \<Rightarrow> Normal t},
              {t. \<Gamma>\<turnstile>\<langle>Call p,Normal Z\<rangle> \<Rightarrow> Abrupt t})})"
-    def Specs_wf == "(\<lambda>p \<sigma>. (\<lambda>(P,q,Q,A). 
-                       (P \<inter> {s. ((s,q),\<sigma>,p) \<in> termi_call_steps \<Gamma>}, q, Q, A)) ` Specs)"
+    define Specs_wf where "Specs_wf p \<sigma> = (\<lambda>(P,q,Q,A). 
+                       (P \<inter> {s. ((s,q),\<sigma>,p) \<in> termi_call_steps \<Gamma>}, q, Q, A)) ` Specs" for p \<sigma>
     have "\<Gamma>,Specs_wf p \<sigma>
             \<turnstile>\<^sub>t\<^bsub>/F\<^esub>({\<sigma>} \<inter>
                  {s. s = Z \<and> \<Gamma>\<turnstile>\<langle>the (\<Gamma> p),Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 

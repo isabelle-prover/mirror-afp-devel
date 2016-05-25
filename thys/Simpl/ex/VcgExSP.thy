@@ -590,7 +590,7 @@ lemma (in Fac_impl) Fac_spec4:
   shows "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>{\<sigma>} \<acute>R :== PROC Fac(\<acute>N) \<lbrace>\<acute>R = fac \<^bsup>\<sigma>\<^esup>N\<rbrace>" 
   (is "\<forall>\<sigma>. \<Gamma>,\<Theta>\<turnstile>(?Pre \<sigma>) ?Fac (?Post \<sigma>)")
 proof (hoare_rule HoarePartial.ProcRec1)
-  def "\<Theta>'"=="(\<Theta>\<union>(\<Union>\<sigma>. {(?Pre \<sigma>, Fac_'proc, ?Post \<sigma>,{})}))"
+  define \<Theta>' where "\<Theta>' = \<Theta> \<union> (\<Union>\<sigma>. {(?Pre \<sigma>, Fac_'proc, ?Post \<sigma>,{})})"
   have Fac_spec: "\<forall>\<sigma>. \<Gamma>,\<Theta>'\<turnstile>(?Pre \<sigma>) ?Fac (?Post \<sigma>)"
     by (unfold \<Theta>'_def, rule allI, rule hoarep.Asm) simp
   txt {* We have to name the fact @{text "Fac_spec"}, so that the vcg can

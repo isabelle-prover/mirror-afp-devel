@@ -645,7 +645,7 @@ lemma (in Fac_impl) Fac_spec:
   shows "\<forall>n. \<Gamma>\<turnstile>\<lbrace>\<acute>N=n\<rbrace> \<acute>R :== PROC Fac(\<acute>N) \<lbrace>\<acute>R = fac n\<rbrace>" 
   (is "\<forall>n. \<Gamma>\<turnstile>(?Pre n) ?Fac (?Post n)")
 proof (hoare_rule HoarePartial.ProcRec1)
-  def "\<Theta>'"=="(\<Union>n. {(?Pre n, Fac_'proc, ?Post n,{}::('a, 'b) vars_scheme set)})"
+  define \<Theta>' where "\<Theta>' = (\<Union>n. {(?Pre n, Fac_'proc, ?Post n,{}::('a, 'b) vars_scheme set)})"
   have Fac_spec: "\<forall>n. \<Gamma>,\<Theta>'\<turnstile>(?Pre n) ?Fac (?Post n)"
     by (unfold \<Theta>'_def, rule allI, rule hoarep.Asm) auto
   txt {* We have to name the fact @{text "Fac_spec"}, so that the vcg can

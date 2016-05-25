@@ -1278,7 +1278,7 @@ proof -
   show ?thesis
   proof (cases "\<exists>i. final (head (f i))")
     case True
-    def k\<equiv>"(LEAST i. final (head (f i)))"
+    define k where "k = (LEAST i. final (head (f i)))"
     have less_k: "\<forall>i<k. \<not> final (head (f i))"
       apply (intro allI impI)
       apply (unfold k_def)
@@ -1326,7 +1326,7 @@ proof -
       obtain "\<Gamma>\<turnstile>(Seq Skip c\<^sub>2,s') \<rightarrow> (c\<^sub>2,s')" and
         f_Suc_k: "f (k + 1) = (c\<^sub>2,s')"
         by (fastforce elim: step.cases intro: step.intros)
-      def g\<equiv>"\<lambda>i. f (i + (k + 1))"
+      define g where "g i = f (i + (k + 1))" for i
       from f_Suc_k
       have g_0: "g 0 = (c\<^sub>2,s')"
         by (simp add: g_def)
@@ -1347,7 +1347,7 @@ proof -
       obtain "\<Gamma>\<turnstile>(Seq Throw c\<^sub>2,s') \<rightarrow> (Throw,s')" and
         f_Suc_k: "f (k + 1) = (Throw,s')"
         by (fastforce elim: step_elim_cases intro: step.intros)
-      def g\<equiv>"\<lambda>i. f (i + (k + 1))"
+      define g where "g i = f (i + (k + 1))" for i
       from f_Suc_k
       have g_0: "g 0 = (Throw,s')"
         by (simp add: g_def)
@@ -1398,7 +1398,7 @@ proof -
   show ?thesis
   proof (cases "\<exists>i. final (head (f i))")
     case True
-    def k\<equiv>"(LEAST i. final (head (f i)))"
+    define k where "k = (LEAST i. final (head (f i)))"
     have less_k: "\<forall>i<k. \<not> final (head (f i))"
       apply (intro allI impI)
       apply (unfold k_def)
@@ -1463,7 +1463,7 @@ proof -
       obtain "\<Gamma>\<turnstile>(Catch Throw c\<^sub>2,s') \<rightarrow> (c\<^sub>2,s')" and
         f_Suc_k: "f (k + 1) = (c\<^sub>2,s')"
         by (fastforce elim: step_elim_cases intro: step.intros)
-      def g\<equiv>"\<lambda>i. f (i + (k + 1))"
+      define g where "g i = f (i + (k + 1))" for i
       from f_Suc_k
       have g_0: "g 0 = (c\<^sub>2,s')"
         by (simp add: g_def)
@@ -2310,8 +2310,8 @@ proof (simp only: termi_call_steps_def wf_iff_no_infinite_down_chain,
                 \<Gamma>\<turnstile>Call p \<down> Normal s \<and>
                 (\<exists>c. \<Gamma>\<turnstile> (Call p, Normal s) \<rightarrow>\<^sup>+ (c, Normal t) \<and> redex c = Call q))
              (f (Suc i)) (f i)"
-  def s\<equiv>"\<lambda>i::nat. fst (f i)" 
-  def p\<equiv>"\<lambda>i::nat. snd (f i)::'b"
+  define s where "s i = fst (f i)" for i :: nat
+  define p where "p i = (snd (f i)::'b)" for i :: nat
   from inf
   have inf': "\<forall>i. \<Gamma>\<turnstile>Call (p i) \<down> Normal (s i) \<and>
                (\<exists>c. \<Gamma>\<turnstile> (Call (p i), Normal (s i)) \<rightarrow>\<^sup>+ (c, Normal (s (i+1))) \<and> 
@@ -2335,7 +2335,7 @@ proof (simp only: termi_call_steps_def wf_iff_no_infinite_down_chain,
       steps_c: "\<forall>i. \<Gamma>\<turnstile> (Call (p i), Normal (s i)) \<rightarrow>\<^sup>+ (c i, Normal (s (i+1)))" and
       red_c:   "\<forall>i. redex (c i) = Call (p (i+1))"
       by auto
-    def g\<equiv>"\<lambda>i. (seq c (p 0) i,Normal (s i)::('a,'c) xstate)"
+    define g where "g i = (seq c (p 0) i,Normal (s i)::('a,'c) xstate)" for i
     from red_c [rule_format, of 0]
     have "g 0 = (Call (p 0), Normal (s 0))"
       by (simp add: g_def)
