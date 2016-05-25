@@ -174,5 +174,7 @@ proof -
     unfolding p c fs pre_result_def by auto
 qed
   
+lemma factorization_oracle_rat_poly_0[simp]: "factorization_oracle_rat_poly 0 = (0,[])"
+  unfolding factorization_oracle_rat_poly_def by simp
 
 end

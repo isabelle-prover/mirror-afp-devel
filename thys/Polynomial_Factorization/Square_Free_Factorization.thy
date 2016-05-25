@@ -36,6 +36,15 @@ proof (intro allI impI notI)
   from assms[OF dq _ dvd] dq show False by (cases "q = 0", auto)
 qed
 
+lemma irreducible_square_free: "irreducible p \<Longrightarrow> square_free p"
+proof (intro square_freeI)
+  fix q
+  show "irreducible p \<Longrightarrow> degree q \<noteq> 0 \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> q * q dvd p \<Longrightarrow> False"
+    using irreducibleD(2)[of p q] irreducibleD(1)[of p]
+    by (metis add_diff_cancel_left' degree_mult_eq degree_smult_eq 
+      dvd_mult_left irreducible_dvd_smult linorder_neqE_nat not_less0 zero_less_diff)
+qed
+
 lemma square_free_factor: assumes "p \<noteq> 0"
   and dvd: "a dvd p"
   and sf: "square_free p"
@@ -257,6 +266,9 @@ definition yun_factorization :: "'a poly \<Rightarrow> 'a \<times> ('a poly \<ti
       c = coeff p (degree p);
       q = smult (inverse c) p
     in (c, yun_monic_factorization q)))"
+
+lemma yun_factorization_0[simp]: "yun_factorization 0 = (0,[])"
+  unfolding yun_factorization_def by simp
 end
 
 locale monic_factorization =
