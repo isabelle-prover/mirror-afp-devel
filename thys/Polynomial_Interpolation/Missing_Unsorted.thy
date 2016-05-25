@@ -455,4 +455,12 @@ proof (induct xs arbitrary: i)
     by (cases i, auto)
 qed simp
 
+lemma listprod_dvd: assumes "(x :: 'a :: comm_monoid_mult) \<in> set xs"
+  shows "x dvd listprod xs"
+proof -
+  from assms[unfolded in_set_conv_decomp] obtain ys zs where xs: "xs = ys @ x # zs" by auto
+  show ?thesis unfolding xs dvd_def by (intro exI[of _ "listprod (ys @ zs)"], simp add: ac_simps)
+qed
+
+
 end
