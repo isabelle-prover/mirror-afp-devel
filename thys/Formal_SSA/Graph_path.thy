@@ -14,7 +14,7 @@ theory Graph_path imports
   "../Dijkstra_Shortest_Path/GraphSpec"
 begin
 
-hide_const "Omega_Words_Fun.prefix"
+hide_const "Omega_Words_Fun.prefix" "Omega_Words_Fun.suffix"
 
 type_synonym ('n, 'ed) edge = "('n \<times> 'ed \<times> 'n)"
 
@@ -343,7 +343,7 @@ begin
   proof-
     from assms(2) obtain ns\<^sub>1 ns\<^sub>2 where "ns = ns\<^sub>1@x#ns\<^sub>2" by atomize_elim (rule split_list)
     with assms[simplified this] show thesis
-      by - (rule that, auto dest:path2_split(1) path2_split(2) intro: suffixeqI)
+      by - (rule that, auto dest:path2_split(1) path2_split(2) intro: suffixI)
   qed
 
   lemma path2_split_ex':
@@ -553,7 +553,7 @@ begin
 
   lemma path2_split_first_last:
     assumes "g \<turnstile> n-ns\<rightarrow>m" "x \<in> set ns"
-    obtains ns\<^sub>1 ns\<^sub>3 ns\<^sub>2 where "ns = ns\<^sub>1@ns\<^sub>3@ns\<^sub>2" "prefix (ns\<^sub>1@[x]) ns" "suffixeq (x#ns\<^sub>2) ns"
+    obtains ns\<^sub>1 ns\<^sub>3 ns\<^sub>2 where "ns = ns\<^sub>1@ns\<^sub>3@ns\<^sub>2" "prefix (ns\<^sub>1@[x]) ns" "suffix (x#ns\<^sub>2) ns"
         and "g \<turnstile> n-ns\<^sub>1@[x]\<rightarrow>x"  "x \<notin> set ns\<^sub>1"
         and "g \<turnstile> x-ns\<^sub>3\<rightarrow>x"
         and "g \<turnstile> x-x#ns\<^sub>2\<rightarrow>m" "x \<notin> set ns\<^sub>2"
@@ -566,7 +566,7 @@ begin
     proof (rule that[OF _ _ _ 2(1) 1(2) 4 3(2)])
       show "ns = ns\<^sub>1 @ (ns\<^sub>3 @ [x]) @ ns\<^sub>2" using 1(1) 3(1) by simp
       show "prefix (ns\<^sub>1@[x]) ns" using 1 by auto
-      show "suffixeq (x#ns\<^sub>2) ns" using 1 3 by (metis suffixeq_def suffixeq_trans)
+      show "suffix (x#ns\<^sub>2) ns" using 1 3 by (metis Sublist.suffix_def suffix_trans)
     qed
   qed
 
@@ -622,11 +622,11 @@ begin
 
   lemma path2_split_last_prop:
     assumes "g \<turnstile> n-ns\<rightarrow>m" "\<exists>x\<in>set ns. P x"
-    obtains n' ns' where "g \<turnstile> n'-ns'\<rightarrow>m" "P n'" "\<forall>x \<in> set (tl ns'). \<not>P x" "suffixeq ns' ns"
+    obtains n' ns' where "g \<turnstile> n'-ns'\<rightarrow>m" "P n'" "\<forall>x \<in> set (tl ns'). \<not>P x" "suffix ns' ns"
   proof-
     obtain ns'' n' ns' where 1: "ns = ns''@n'#ns'" "P n'" "\<forall>x \<in> set ns'. \<not>P x" by - (rule split_list_last_propE[OF assms(2)])
     with assms(1) have "g \<turnstile> n'-n'#ns'\<rightarrow>m" by - (rule path2_split(2), auto)
-    with 1 show thesis by - (rule that, auto simp:suffixeq_def)
+    with 1 show thesis by - (rule that, auto simp: Sublist.suffix_def)
   qed
 
   lemma path2_prefix[elim]:
@@ -1071,27 +1071,27 @@ begin
     thus ?case by (cases ns', auto)
   qed auto
 
-  lemma EntryPath_suffixeq:
-    assumes "EntryPath g ns" "suffixeq ns' ns" "ns' \<noteq> []"
+  lemma EntryPath_suffix:
+    assumes "EntryPath g ns" "suffix ns' ns" "ns' \<noteq> []"
     shows "EntryPath g ns'"
   using assms proof (induction arbitrary: ns')
     case EntryPath_triv
     thus ?case
-      by (metis EntryPath.EntryPath_triv append_Nil append_is_Nil_conv list.sel(3) suffixeq_def tl_append2)
+      by (metis EntryPath.EntryPath_triv append_Nil append_is_Nil_conv list.sel(3) Sublist.suffix_def tl_append2)
   next
     case (EntryPath_snoc g ns m)
     from EntryPath_snoc.prems obtain ns'' where [simp]: "ns' = ns''@[m]"
-      by - (erule suffixeq_unsnoc, auto)
+      by - (erule suffix_unsnoc, auto)
     show ?case
     proof (cases "ns'' = []")
       case True
       thus ?thesis by auto
     next
       case False
-      from EntryPath_snoc.prems(1) have "suffixeq ns'' ns" by (auto simp: suffixeq_def)
-      with False have "last ns'' = last ns" by (auto simp: suffixeq_def)
+      from EntryPath_snoc.prems(1) have "suffix ns'' ns" by (auto simp: Sublist.suffix_def)
+      with False have "last ns'' = last ns" by (auto simp: Sublist.suffix_def)
       moreover from False have "EntryPath g ns''" using EntryPath_snoc.prems(1)
-        by - (rule EntryPath_snoc.IH, auto simp: suffixeq_def)
+        by - (rule EntryPath_snoc.IH, auto simp: Sublist.suffix_def)
       ultimately show ?thesis using EntryPath_snoc.hyps(2)
         by - (simp, rule EntryPath.EntryPath_snoc, simp_all)
     qed

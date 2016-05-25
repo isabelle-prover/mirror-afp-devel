@@ -425,10 +425,10 @@ Then at least one of Q and R does not dominate P. *}
       with ns\<^sub>1 ms show ?thesis by - (rule that, auto)
     next
       case False
-      then obtain m' ms' where ms': "g \<turnstile> m'-ms'\<rightarrow>defNode g s" "m' \<in> set ns\<^sub>1 \<union> set ns\<^sub>2" "set (tl ms') \<inter> (set ns\<^sub>1 \<union> set ns\<^sub>2) = {}" "suffixeq ms' ms"
+      then obtain m' ms' where ms': "g \<turnstile> m'-ms'\<rightarrow>defNode g s" "m' \<in> set ns\<^sub>1 \<union> set ns\<^sub>2" "set (tl ms') \<inter> (set ns\<^sub>1 \<union> set ns\<^sub>2) = {}" "suffix ms' ms"
         by - (rule old.path2_split_last_prop[OF ms(2), of "\<lambda>x. x \<in> set ns\<^sub>1 \<union> set ns\<^sub>2"], auto)
       from this(4) ms(3) have 2: "defNode g r \<notin> set ms'"
-        by (auto dest:suffixeq_set_subset)
+        by (auto dest:suffix_set_subset)
       {
         fix n\<^sub>1 ns\<^sub>1 n\<^sub>2 ns\<^sub>2
         assume 4: "m' \<in> set ns\<^sub>1"
@@ -686,11 +686,11 @@ does not contain R. *}
           from rs(1) obtain X xs where xs: "g \<turnstile> X-xs\<rightarrow>?R" "var g r \<in> oldDefs g X" "old.EntryPath g xs"
             by - (rule allDef_path_from_simpleDef[of r g], auto simp del: phiArg_def)
           then obtain X xs where xs: "g \<turnstile> X-xs\<rightarrow>?R" "var g r \<in> oldDefs g X" "\<forall>x \<in> set (tl xs). var g r \<notin> oldDefs g x" "old.EntryPath g xs"
-            by - (rule old.path2_split_last_prop[OF xs(1), of "\<lambda>x. var g r \<in> oldDefs g x"], auto dest: old.EntryPath_suffixeq)
+            by - (rule old.path2_split_last_prop[OF xs(1), of "\<lambda>x. var g r \<in> oldDefs g x"], auto dest: old.EntryPath_suffix)
           then obtain x where x: "x \<in> defs g X" "var g x = var g r" by (auto simp: oldDefs_def old.path2_def)
           hence[simp]: "X = defNode g x" using xs by - (rule defNode_eq[symmetric], auto)
           from xs obtain xs where xs: "g \<turnstile> X-xs\<rightarrow>?R" "X \<notin> set (tl xs)" "old.EntryPath g xs"
-            by - (rule old.simple_path2, auto dest: old.EntryPath_suffixeq)
+            by - (rule old.simple_path2, auto dest: old.EntryPath_suffix)
 
           txt {* By Definition 2 there are two definitions
 of v that render s necessary. Since R dominates S, the SSA property yields that
@@ -763,9 +763,9 @@ contradiction, s is unnecessary and the sought-after q. *}
                 have "old.shortestPath g z < old.shortestPath g ?R" using asm(1) xs(3)
                   by - (subst old.path2_last[OF xs(1)], rule old.EntryPath_butlast_less_last)
                 moreover
-                from ys asm(2) obtain ys' where ys': "g \<turnstile> z-ys'\<rightarrow>?S" "suffixeq ys' ys"
-                  by - (rule old.path2_split_ex, auto simp: suffixeq_def)
-                have "old.dominates g ?R z" using ys(2) set_tl[of ys] suffixeq_tl_subset[OF ys'(2)]
+                from ys asm(2) obtain ys' where ys': "g \<turnstile> z-ys'\<rightarrow>?S" "suffix ys' ys"
+                  by - (rule old.path2_split_ex, auto simp: Sublist.suffix_def)
+                have "old.dominates g ?R z" using ys(2) set_tl[of ys] suffix_tl_subset[OF ys'(2)]
                   by - (rule old.dominates_extend[OF dom ys'(1)], auto)
                 hence "old.shortestPath g ?R \<le> old.shortestPath g z"
                   by (rule old.dominates_shortestPath_order, auto)
@@ -814,8 +814,8 @@ contradiction, s is unnecessary and the sought-after q. *}
                 assume asm: "z \<in> set rr'" "z \<in> set (tl ss')"
                 then obtain ss'\<^sub>1 where ss'\<^sub>1: "g \<turnstile> ?S-ss'\<^sub>1\<rightarrow>z" "prefix ss'\<^sub>1 ss'" using ss'
                   by - (rule old.path2_split_ex[OF ss'(1), of z], auto)
-                from asm obtain rr'\<^sub>2 where rr'\<^sub>2: "g \<turnstile> z-rr'\<^sub>2\<rightarrow>R'" "suffixeq rr'\<^sub>2 rr'"
-                  using rr' by - (rule old.path2_split_ex, auto simp: suffixeq_def)
+                from asm obtain rr'\<^sub>2 where rr'\<^sub>2: "g \<turnstile> z-rr'\<^sub>2\<rightarrow>R'" "suffix rr'\<^sub>2 rr'"
+                  using rr' by - (rule old.path2_split_ex, auto simp: Sublist.suffix_def)
                 let ?path = "butlast ys'@(ys@tl (ss'\<^sub>1@tl rr'\<^sub>2))"
                 have "var g s \<noteq> var g r"
                 proof (rule conventional)
@@ -828,7 +828,7 @@ contradiction, s is unnecessary and the sought-after q. *}
                   have "?R \<notin> set (tl ss')"
                     using rs S'(1) by - (rule conventional''[OF ss'], auto)
                   thus "defNode g r \<notin> set (tl ?path)"
-                    using ys(1) ss'\<^sub>1(1) suffixeq_tl_subset[OF rr'\<^sub>2(2)] ys'(2) ys(2) rr'(2) prefix_tl_subset[OF ss'\<^sub>1(2)]
+                    using ys(1) ss'\<^sub>1(1) suffix_tl_subset[OF rr'\<^sub>2(2)] ys'(2) ys(2) rr'(2) prefix_tl_subset[OF ss'\<^sub>1(2)]
                     by (auto simp: List.butlast_tl[symmetric] old.path2_not_Nil dest: in_set_butlastD)
                 qed
                 hence False using y by simp

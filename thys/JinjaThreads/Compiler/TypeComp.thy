@@ -863,16 +863,16 @@ next
 qed
 
 abbreviation postfix :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"  ("(_/ \<bind> _)" [51, 50] 50) where
-  "postfix xs ys \<equiv> suffixeq ys xs"
+  "postfix xs ys \<equiv> suffix ys xs"
 
 lemma postfix_conv_eq_length_drop: 
   "ST' \<bind> ST \<longleftrightarrow> length ST \<le> length ST' \<and> drop (length ST' - length ST) ST' = ST"
 apply(auto)
-apply (metis append_eq_conv_conj append_take_drop_id diff_is_0_eq drop_0 linorder_not_less nat_le_linear suffixeq_take)
-apply (metis append_take_drop_id length_drop suffixeq_take same_append_eq size_list_def)
-by (metis suffixeq_drop)
+apply (metis append_eq_conv_conj append_take_drop_id diff_is_0_eq drop_0 linorder_not_less nat_le_linear suffix_take)
+apply (metis append_take_drop_id length_drop suffix_take same_append_eq size_list_def)
+by (metis suffix_drop)
 
-declare suffixeq_ConsI[simp]
+declare suffix_ConsI[simp]
 
 context TC0 begin
 
@@ -891,7 +891,7 @@ by(induct E A ST0 e and E A ST0 es rule: compT_compTs_induct) auto
 declare after_def[simp del] pair_eq_ty\<^sub>i'_conv[simp del]
 
 end
-declare suffixeq_ConsI[simp del]
+declare suffix_ConsI[simp del]
 
 (* FIXME *)
 lemma fun_of_simp [simp]: "fun_of S x y = ((x,y) \<in> S)" 
@@ -956,7 +956,7 @@ proof(induct E A ST e and E A ST es arbitrary: T and Ts rule: compT_compTs_induc
       by (fastforce simp add: ty\<^sub>i'_def hyperset_defs intro!: ty\<^sub>l_antimono)
     moreover { fix \<tau>
       assume \<tau>: "\<tau> \<in> set (compT E A ST e\<^sub>1)"
-      hence "\<forall>ST' LT'. \<tau> = \<lfloor>(ST', LT')\<rfloor> \<longrightarrow> ST' \<bind> ST" by(auto intro: compT_ST_prefix[OF suffixeq_refl])
+      hence "\<forall>ST' LT'. \<tau> = \<lfloor>(ST', LT')\<rfloor> \<longrightarrow> ST' \<bind> ST" by(auto intro: compT_ST_prefix[OF suffix_refl])
       with \<tau> have "?Q \<tau>" unfolding postfix_conv_eq_length_drop using `\<B> (try e\<^sub>1 catch(C i) e\<^sub>2) (length E)`
         by(fastforce dest!: compT_LT_prefix simp add: ty\<^sub>i'_def) }
     ultimately
@@ -1027,7 +1027,7 @@ next
       show "length ST \<le> length ST' \<and> P \<turnstile> \<lfloor>(drop (length ST' - length ST) ST',  LT')\<rfloor> \<le>' ty\<^sub>i' ST (E @ [Class Object]) ?A2"
       proof(cases "\<lfloor>(ST', LT')\<rfloor> \<in> set ?\<tau>s2")
         case True
-        from compT_ST_prefix[OF suffixeq_refl this] compT_LT_prefix[OF this B2]
+        from compT_ST_prefix[OF suffix_refl this] compT_LT_prefix[OF this B2]
         show ?thesis unfolding postfix_conv_eq_length_drop by(simp add: ty\<^sub>i'_def)
       next
         case False

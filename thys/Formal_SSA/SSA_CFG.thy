@@ -457,10 +457,10 @@ begin
       by - (atomize_elim, rule Entry_reachesE, auto)
     ultimately have "defNode g v \<in> set ns" using assms(1)
       by - (rule defAss_defNode, auto)
-    with ns(1) obtain ns' where "g \<turnstile> defNode g v-ns'\<rightarrow>m" "suffixeq ns' ns"
-      by (rule path2_split_ex', auto simp: suffixeq_def)
+    with ns(1) obtain ns' where "g \<turnstile> defNode g v-ns'\<rightarrow>m" "suffix ns' ns"
+      by (rule path2_split_ex', auto simp: Sublist.suffix_def)
     thus thesis using ns(2)
-      by - (rule that, assumption, rule EntryPath_suffixeq, auto)
+      by - (rule that, assumption, rule EntryPath_suffix, auto)
   qed
 
   lemma defUse_path_dominated:
@@ -469,11 +469,11 @@ begin
   proof (rule dominatesI)
     fix es
     assume asm: "g \<turnstile> Entry g-es\<rightarrow>n'"
-    from assms(1,4) obtain ns' where ns': "g \<turnstile> n'-ns'\<rightarrow>n" "suffixeq ns' ns"
-      by - (rule path2_split_ex, auto simp: suffixeq_def)
+    from assms(1,4) obtain ns' where ns': "g \<turnstile> n'-ns'\<rightarrow>n" "suffix ns' ns"
+      by - (rule path2_split_ex, auto simp: Sublist.suffix_def)
     from assms have "defAss g n v" by - (rule allUses_def_ass, auto)
     with asm ns'(1) assms(3) have "defNode g v \<in> set (es@tl ns')" by - (rule defAss_defNode, auto)
-    with suffixeq_tl_subset[OF ns'(2)] assms(2) show "defNode g v \<in> set es" by auto
+    with suffix_tl_subset[OF ns'(2)] assms(2) show "defNode g v \<in> set es" by auto
   next
     show "n' \<in> set (\<alpha>n g)" using assms(1,4) by auto
   qed
@@ -745,10 +745,10 @@ begin
         by - (rule phiArg_exI, auto simp: phi_def phis_same_var phiArg_def)
       with 3(1) obtain n where n: "n \<in> set (butlast ns)" "var g v' \<in> oldDefs g n"
         by - (rule oldDef_defAss[of v' g], auto)
-      with ns obtain ns' where "g \<turnstile> n-ns'\<rightarrow>?V" "suffixeq ns' ns"
-        by - (rule old.path2_split_ex'[OF ns(1)], auto intro: in_set_butlastD simp: suffixeq_def)
+      with ns obtain ns' where "g \<turnstile> n-ns'\<rightarrow>?V" "suffix ns' ns"
+        by - (rule old.path2_split_ex'[OF ns(1)], auto intro: in_set_butlastD simp: Sublist.suffix_def)
       with n(2) v'(2) ns(2) show thesis
-        by - (rule that, assumption, erule old.EntryPath_suffixeq, auto)
+        by - (rule that, assumption, erule old.EntryPath_suffix, auto)
     qed
   qed
 
@@ -813,9 +813,9 @@ begin
       assume y: "y \<in> set ns"
       from p(1,3) have dom: "old.dominates g (defNode g p) n" by - (rule allUses_dominated, auto)
       moreover
-      obtain ns' where "g \<turnstile> y-ns'\<rightarrow>n" "suffixeq ns' ns"
+      obtain ns' where "g \<turnstile> y-ns'\<rightarrow>n" "suffix ns' ns"
         by (rule old.path2_split_first_last[OF p(1) y], auto)
-      ultimately have "old.dominates g (defNode g p) y" using suffixeq_tl_subset[of ns' ns] p(2)
+      ultimately have "old.dominates g (defNode g p) y" using suffix_tl_subset[of ns' ns] p(2)
         by - (rule old.dominates_extend[where ms=ns'], auto)
     }
     with assms y have dom: "old.dominates g (defNode g p) y" "old.dominates g (defNode g q) y" by auto
@@ -830,14 +830,14 @@ begin
       assume[simp]: "p \<noteq> q" "var g p = var g q"
       assume dom: "old.dominates g ?P ?Q"
       then obtain pqs where pqs: "g \<turnstile> ?P-pqs\<rightarrow>?Q" "?P \<notin> set (tl pqs)" by (rule old.dominates_path, auto intro: old.simple_path2)
-      from p obtain ns\<^sub>2 where ns\<^sub>2: "g \<turnstile> y-ns\<^sub>2\<rightarrow>n" "suffixeq ns\<^sub>2 ns" by - (rule old.path2_split_first_last, auto)
+      from p obtain ns\<^sub>2 where ns\<^sub>2: "g \<turnstile> y-ns\<^sub>2\<rightarrow>n" "suffix ns\<^sub>2 ns" by - (rule old.path2_split_first_last, auto)
       from q obtain ms\<^sub>1 where ms\<^sub>1: "g \<turnstile> ?Q-ms\<^sub>1\<rightarrow>y" "prefix ms\<^sub>1 ms" by - (rule old.path2_split_first_last, auto)
       have "var g q \<noteq> var g p"
       proof (rule conventional[OF _ _ _ p(3)])
         let ?path = "(pqs@tl ms\<^sub>1)@tl ns\<^sub>2"
         show "g \<turnstile> ?P-?path\<rightarrow>n" using pqs ms\<^sub>1 ns\<^sub>2
           by (auto simp del:append_assoc intro:old.path2_app)
-        have "?P \<notin> set (tl ns\<^sub>2)" using p(2) ns\<^sub>2(2)[THEN suffixeq_tl_subset, THEN subsetD] by auto
+        have "?P \<notin> set (tl ns\<^sub>2)" using p(2) ns\<^sub>2(2)[THEN suffix_tl_subset, THEN subsetD] by auto
         moreover
         have[simp]: "q \<in> allVars g" "p \<in> allVars g" using p q by auto
         have "?P \<notin> set (tl ms)" using q

@@ -26,15 +26,15 @@ lemma butlast_strict_prefix: "xs \<noteq> [] \<Longrightarrow> strict_prefix (bu
   by (metis append_butlast_last_id strict_prefixI')
 
 lemma set_tl: "set (tl xs) \<subseteq> set xs"
-  by (metis suffixeq_set_subset suffixeq_tl)
+  by (metis suffix_set_subset suffix_tl)
 
 lemma in_set_tlD[elim]: "x \<in> set (tl xs) \<Longrightarrow> x \<in> set xs"
   using set_tl[of xs] by auto
 
-lemma suffixeq_unsnoc:
-  assumes "suffixeq xs ys" "xs \<noteq> []"
+lemma suffix_unsnoc:
+  assumes "suffix xs ys" "xs \<noteq> []"
   obtains x where "xs = butlast xs@[x]" "ys = butlast ys@[x]"
-  by (metis append_butlast_last_id append_is_Nil_conv assms(1) assms(2) last_appendR suffixeq_def)
+  by (metis append_butlast_last_id append_is_Nil_conv assms(1) assms(2) last_appendR suffix_def)
 
 lemma prefix_split_first:
   assumes "x \<in> set xs"
@@ -57,11 +57,11 @@ using assms unfolding append_butlast_last_id[symmetric] by (auto simp add:less_l
 lemma prefix_tl_subset: "prefix xs ys \<Longrightarrow> set (tl xs) \<subseteq> set (tl ys)"
   by (metis Nil_tl prefix_bot.bot.extremum prefix_def set_mono_prefix tl_append2)
 
-lemma suffixeq_tl_subset: "suffixeq xs ys \<Longrightarrow> set (tl xs) \<subseteq> set (tl ys)"
-  by (metis append_Nil suffixeq_def suffixeq_set_subset suffixeq_tl suffixeq_trans tl_append2)
+lemma suffix_tl_subset: "suffix xs ys \<Longrightarrow> set (tl xs) \<subseteq> set (tl ys)"
+  by (metis append_Nil suffix_def suffix_set_subset suffix_tl suffix_trans tl_append2)
 
 lemma set_tl_append': "set (tl (xs @ ys)) \<subseteq> set (tl xs) \<union> set ys"
-  by (metis list.sel(2) order_refl set_append suffixeq_set_subset suffixeq_tl tl_append2)
+  by (metis list.sel(2) order_refl set_append suffix_set_subset suffix_tl tl_append2)
 
 lemma last_in_tl: "length xs > 1 \<Longrightarrow> last xs \<in> set (tl xs)"
   by (metis One_nat_def diff_Suc_Suc last_in_set last_tl length_tl less_numeral_extra(4) list.size(3) zero_less_diff)
