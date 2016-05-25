@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-section {* Big-Step Semantics for Simpl *}
+section \<open>Big-Step Semantics for Simpl\<close>
 theory Semantic imports Language begin
 
 notation
@@ -69,10 +69,10 @@ lemma not_isFault_iff: "(\<not> isFault t) = (\<forall>f. t \<noteq> Fault f)"
   by (auto elim: isFaultE)
 
 (* ************************************************************************* *)
-subsection {* Big-Step Execution: @{text "\<Gamma>\<turnstile>\<langle>c, s\<rangle> \<Rightarrow> t"} *}
+subsection \<open>Big-Step Execution: \<open>\<Gamma>\<turnstile>\<langle>c, s\<rangle> \<Rightarrow> t\<close>\<close>
 (* ************************************************************************* *)
 
-text {* The procedure environment *}
+text \<open>The procedure environment\<close>
 type_synonym ('s,'p,'f) body = "'p \<Rightarrow> ('s,'p,'f) com option"
 
 inductive 
@@ -444,7 +444,7 @@ lemma exec_assoc: "\<Gamma>\<turnstile>\<langle>Seq c1 (Seq c2 c3),s\<rangle> \<
 
 
 (* ************************************************************************* *)
-subsection {* Big-Step Execution with Recursion Limit: @{text "\<Gamma>\<turnstile>\<langle>c, s\<rangle> =n\<Rightarrow> t"} *}
+subsection \<open>Big-Step Execution with Recursion Limit: \<open>\<Gamma>\<turnstile>\<langle>c, s\<rangle> =n\<Rightarrow> t\<close>\<close>
 (* ************************************************************************* *)
 
 inductive "execn"::"[('s,'p,'f) body,('s,'p,'f) com,('s,'f) xstate,nat,('s,'f) xstate] 
@@ -1197,8 +1197,8 @@ by (auto simp add: final_notin_def intro: exec_Seq')
 
 
 (* ************************************************************************* *)
-subsection {* Lemmas about @{const "sequence"}, @{const "flatten"} and 
- @{const "normalize"} *}
+subsection \<open>Lemmas about @{const "sequence"}, @{const "flatten"} and 
+ @{const "normalize"}\<close>
 (* ************************************************************************ *)
 
 lemma execn_sequence_app: "\<And>s s' t.
@@ -1547,7 +1547,7 @@ lemma exec_normalize_iff_exec:
   by (auto intro: exec_to_exec_normalize exec_normalize_to_exec)
     
 (* ************************************************************************* *)
-subsection {* Lemmas about @{term "c\<^sub>1 \<subseteq>\<^sub>g c\<^sub>2"} *}
+subsection \<open>Lemmas about @{term "c\<^sub>1 \<subseteq>\<^sub>g c\<^sub>2"}\<close>
 (* ************************************************************************ *)
 
 lemma execn_to_execn_subseteq_guards: "\<And>c s t n. \<lbrakk>c \<subseteq>\<^sub>g c'; \<Gamma>\<turnstile>\<langle>c,s\<rangle> =n\<Rightarrow> t\<rbrakk>
@@ -1953,7 +1953,7 @@ qed
 
   
 (* ************************************************************************* *)
-subsection {* Lemmas about @{const "merge_guards"} *}
+subsection \<open>Lemmas about @{const "merge_guards"}\<close>
 (* ************************************************************************ *)
 
 
@@ -2210,7 +2210,7 @@ corollary exec_merge_guards_to_exec:
   by (rule iffD2 [OF exec_iff_exec_merge_guards])
 
 (* ************************************************************************* *)
-subsection {* Lemmas about @{const "mark_guards"} *}
+subsection \<open>Lemmas about @{const "mark_guards"}\<close>
 (* ************************************************************************ *)
 
 lemma execn_to_execn_mark_guards:
@@ -2863,7 +2863,7 @@ proof -
 qed
 
 (* ************************************************************************* *)
-subsection {* Lemmas about @{const "strip_guards"} *}
+subsection \<open>Lemmas about @{const "strip_guards"}\<close>
 (* ************************************************************************* *)
 
 lemma execn_to_execn_strip_guards:
@@ -3767,7 +3767,7 @@ proof -
 qed
 
 (* ************************************************************************* *)
-subsection {* Lemmas about @{term "c\<^sub>1 \<inter>\<^sub>g c\<^sub>2"} *}
+subsection \<open>Lemmas about @{term "c\<^sub>1 \<inter>\<^sub>g c\<^sub>2"}\<close>
 (* ************************************************************************* *)
 
 lemma inter_guards_execn_Normal_noFault: 

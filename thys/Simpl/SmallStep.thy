@@ -26,14 +26,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-section {* Small-Step Semantics and Infinite Computations*}
+section \<open>Small-Step Semantics and Infinite Computations\<close>
 
 theory SmallStep imports Termination
 begin
 
-text {* The redex of a statement is the substatement, which is actually altered
+text \<open>The redex of a statement is the substatement, which is actually altered
 by the next step in the small-step semantics.
-*}
+\<close>
 
 primrec redex:: "('s,'p,'f)com \<Rightarrow> ('s,'p,'f)com"
 where
@@ -50,7 +50,7 @@ where
 "redex (Catch c\<^sub>1 c\<^sub>2) = redex c\<^sub>1"
 
 
-subsection {*Small-Step Computation: @{text "\<Gamma>\<turnstile>(c, s) \<rightarrow> (c', s')"}*}
+subsection \<open>Small-Step Computation: \<open>\<Gamma>\<turnstile>(c, s) \<rightarrow> (c', s')\<close>\<close>
 
 type_synonym ('s,'p,'f) config = "('s,'p,'f)com  \<times> ('s,'f) xstate"
 inductive "step"::"[('s,'p,'f) body,('s,'p,'f) config,('s,'p,'f) config] \<Rightarrow> bool"
@@ -138,12 +138,12 @@ inductive_cases step_Normal_elim_cases [cases set]:
  "\<Gamma>\<turnstile>(Catch c1 c2,Normal s) \<rightarrow> u"
 
 
-text {* The final configuration is either of the form @{text "(Skip,_)"} for normal
+text \<open>The final configuration is either of the form \<open>(Skip,_)\<close> for normal
 termination, or @{term "(Throw,Normal s)"} in case the program was started in 
 a @{term "Normal"} state and terminated abruptly. The @{const "Abrupt"} state is not used to
 model abrupt termination, in contrast to the big-step semantics. Only if the
 program starts in an @{const "Abrupt"} states it ends in the same @{term "Abrupt"}
-state.*}
+state.\<close>
 
 definition final:: "('s,'p,'f) config \<Rightarrow> bool" where
 "final cfg = (fst cfg=Skip \<or> (fst cfg=Throw \<and> (\<exists>s. snd cfg=Normal s)))"
@@ -168,7 +168,7 @@ abbreviation
 
 
 (* ************************************************************************ *)
-subsection {* Structural Properties of Small Step Computations *}
+subsection \<open>Structural Properties of Small Step Computations\<close>
 (* ************************************************************************ *)
 
 lemma redex_not_Seq: "redex c = Seq c1 c2 \<Longrightarrow> P"
@@ -377,7 +377,7 @@ next
 qed
 
 (* ************************************************************************ *)
-subsection {* Equivalence between Small-Step and Big-Step Semantics *}
+subsection \<open>Equivalence between Small-Step and Big-Step Semantics\<close>
 (* ************************************************************************ *)
 
 theorem exec_impl_steps:
@@ -967,7 +967,7 @@ next
 qed
 
 (* ************************************************************************ *)
-subsection {* Infinite Computations: @{text "\<Gamma>\<turnstile>(c, s) \<rightarrow> \<dots>(\<infinity>)"}*}
+subsection \<open>Infinite Computations: \<open>\<Gamma>\<turnstile>(c, s) \<rightarrow> \<dots>(\<infinity>)\<close>\<close>
 (* ************************************************************************ *)
 
 definition inf:: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) config \<Rightarrow> bool"
@@ -979,7 +979,7 @@ lemma not_infI: "\<lbrakk>\<And>f. \<lbrakk>f 0 = cfg; \<And>i. \<Gamma>\<turnst
   by (auto simp add: inf_def)
 
 (* ************************************************************************ *)
-subsection {* Equivalence between Termination and the Absence of Infinite Computations*}
+subsection \<open>Equivalence between Termination and the Absence of Infinite Computations\<close>
 (* ************************************************************************ *)
 
 
@@ -1092,12 +1092,12 @@ next
     by (blast dest: step_preserves_termination)
 qed
 
-ML {*
+ML \<open>
   ML_Thms.bind_thm ("tranclp_induct2", Split_Rule.split_rule @{context}
     (Rule_Insts.read_instantiate @{context}
       [((("a", 0), Position.none), "(aa,ab)"), ((("b", 0), Position.none), "(ba,bb)")] []
       @{thm tranclp_induct}));
-*}
+\<close>
 
 lemma steps_preserves_termination': 
   assumes steps: "\<Gamma>\<turnstile>(c,s) \<rightarrow>\<^sup>+ (c',s')"
@@ -2161,12 +2161,12 @@ next
   finally show ?case .
 qed
 
-ML {*
+ML \<open>
   ML_Thms.bind_thm ("trancl_induct2", Split_Rule.split_rule @{context}
     (Rule_Insts.read_instantiate @{context}
       [((("a", 0), Position.none), "(aa, ab)"), ((("b", 0), Position.none), "(ba, bb)")] []
       @{thm trancl_induct}));
-*}
+\<close>
 
 lemma steps_redex':
   assumes steps: "\<Gamma>\<turnstile> (r, s) \<rightarrow>\<^sup>+ (r', s')"
@@ -2783,14 +2783,14 @@ corollary terminates_iff_no_infinite_computation:
   done
 
 (* ************************************************************************* *)
-subsection {* Generalised Redexes *} 
+subsection \<open>Generalised Redexes\<close> 
 (* ************************************************************************* *)
 
-text {*
+text \<open>
 For an important lemma for the completeness proof of the Hoare-logic for
 total correctness we need a generalisation of @{const "redex"} that not only
 yield the redex itself but all the enclosing statements as well.
-*}
+\<close>
 
 primrec redexes:: "('s,'p,'f)com \<Rightarrow> ('s,'p,'f)com set"
 where

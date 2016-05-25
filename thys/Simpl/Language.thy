@@ -26,15 +26,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-section {* The Simpl Syntax *}
+section \<open>The Simpl Syntax\<close>
 
 theory Language imports "~~/src/HOL/Library/Old_Recdef" begin
 
-subsection {* The Core Language *}
+subsection \<open>The Core Language\<close>
 
-text {* We use a shallow embedding of boolean expressions as well as assertions
+text \<open>We use a shallow embedding of boolean expressions as well as assertions
 as sets of states. 
-*}
+\<close>
 
 type_synonym 's bexp = "'s set"
 type_synonym 's assn = "'s set"
@@ -57,7 +57,7 @@ datatype (dead 's, 'p, 'f) com =
 
 
 
-subsection {* Derived Language Constructs *}
+subsection \<open>Derived Language Constructs\<close>
 
 definition
   raise:: "('s \<Rightarrow> 's) \<Rightarrow> ('s,'p,'f) com" where
@@ -160,10 +160,10 @@ lemma snd_guaranteeStripPair: "snd (guaranteeStripPair f g) = g"
   by (simp add: guaranteeStripPair_def)
 
 
-subsection {* Operations on Simpl-Syntax *}
+subsection \<open>Operations on Simpl-Syntax\<close>
 
 
-subsubsection {* Normalisation of Sequential Composition: @{text "sequence"}, @{text "flatten"} and @{text "normalize"} *}
+subsubsection \<open>Normalisation of Sequential Composition: \<open>sequence\<close>, \<open>flatten\<close> and \<open>normalize\<close>\<close>
 
 primrec flatten:: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com list" 
 where
@@ -425,8 +425,8 @@ lemma normalize_guards [simp]:
   "normalize (guards gs c) = guards gs (normalize c)"
   by (induct gs) auto
 
-text {* Sequencial composition with guards in the body is not preserved by
-        normalize *}
+text \<open>Sequencial composition with guards in the body is not preserved by
+        normalize\<close>
 lemma normalize_while [simp]:
   "normalize (while gs b c) = guards gs
       (While b (sequence Seq (flatten (normalize c) @ flatten (guards gs Skip))))" 
@@ -452,7 +452,7 @@ lemmas normalize_simps =
   normalize_while normalize_whileAnno normalize_whileAnnoG normalize_specAnno
 
 
-subsubsection {* Stripping Guards: @{text "strip_guards"} *}
+subsubsection \<open>Stripping Guards: \<open>strip_guards\<close>\<close>
 
 primrec strip_guards:: "'f set \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
 where
@@ -570,7 +570,7 @@ lemmas strip_guards_simps = strip_guards.simps strip_guards_raise
   strip_guards_while strip_guards_whileAnno strip_guards_whileAnnoG
   strip_guards_specAnno
 
-subsubsection {* Marking Guards: @{text "mark_guards"} *}
+subsubsection \<open>Marking Guards: \<open>mark_guards\<close>\<close>
 
 primrec mark_guards:: "'f \<Rightarrow> ('s,'p,'g) com \<Rightarrow> ('s,'p,'f) com"
 where
@@ -703,7 +703,7 @@ lemma dest_Guard_guaranteeStrip [simp]: "dest_Guard (guaranteeStrip f g c) = (f,
 
 lemmas dest_Guard_simps = dest_Guard.simps dest_Guard_guaranteeStrip
 
-subsubsection {* Merging Guards: @{text merge_guards}*}
+subsubsection \<open>Merging Guards: \<open>merge_guards\<close>\<close>
 
 primrec merge_guards:: "('s,'p,'f) com \<Rightarrow> ('s,'p,'f) com"
 where
@@ -836,9 +836,9 @@ lemma merge_guards_specAnno [simp]:
     specAnno P (\<lambda>s. merge_guards (c undefined)) Q A"
   by (simp add: specAnno_def)
 
-text {* @{term "merge_guards"} for guard-lists as in @{const guards}, @{const while}
+text \<open>@{term "merge_guards"} for guard-lists as in @{const guards}, @{const while}
  and @{const whileAnnoG} may have funny effects since the guard-list has to
- be merged with the body statement too.*}
+ be merged with the body statement too.\<close>
 
 lemmas merge_guards_simps = merge_guards.simps merge_guards_raise 
   merge_guards_condCatch merge_guards_bind merge_guards_bseq merge_guards_block
@@ -876,7 +876,7 @@ where
 "nothrows Throw = False" |
 "nothrows (Catch c\<^sub>1 c\<^sub>2) = (nothrows c\<^sub>1 \<and> nothrows c\<^sub>2)"
 
-subsubsection {* Intersecting Guards: @{text "c\<^sub>1 \<inter>\<^sub>g c\<^sub>2"}*}
+subsubsection \<open>Intersecting Guards: \<open>c\<^sub>1 \<inter>\<^sub>g c\<^sub>2\<close>\<close>
 
 inductive_set com_rel ::"(('s,'p,'f) com \<times> ('s,'p,'f) com) set"
 where
@@ -1079,7 +1079,7 @@ lemmas inter_guards_simps = inter_guards_Skip inter_guards_Basic inter_guards_Sp
   inter_guards_DynCom inter_guards_Guard inter_guards_Throw 
   inter_guards_Catch
 
-subsubsection {* Subset on Guards: @{text "c\<^sub>1 \<subseteq>\<^sub>g c\<^sub>2"} *} 
+subsubsection \<open>Subset on Guards: \<open>c\<^sub>1 \<subseteq>\<^sub>g c\<^sub>2\<close>\<close> 
 
 
 consts subseteq_guards:: "('s,'p,'f) com \<times> ('s,'p,'f) com \<Rightarrow> bool"
