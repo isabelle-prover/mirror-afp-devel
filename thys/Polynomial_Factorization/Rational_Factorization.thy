@@ -482,13 +482,7 @@ begin
 definition initial_factorization_rat :: "rat poly \<Rightarrow> rat \<times> (rat poly \<times> nat) list" where
   "initial_factorization_rat p = (
     if mode = Check_Irreducible \<or> mode = Check_Root_Free then (if p = 0 then (0,[]) else (1,[(p,1)]))
-    else 
-    case factorization_oracle_rat_poly p of 
-      (c,pis) \<Rightarrow> if p = smult c ((\<Prod>(q, i)\<leftarrow>pis. q ^ i)) \<and> list_all (\<lambda> (p,i). i \<noteq> 0 \<and> p \<noteq> 0) pis 
-      then (c,pis) 
-      else Code.abort (String.implode (''error in factorization-oracle on input '' @
-        show_poly p)) (\<lambda> _. case yun_factorization gcd_rat_poly p of 
-        (c,pis) \<Rightarrow> (c, map (\<lambda> (p,i). (p, Suc i)) pis)))"
+    else factorization_oracle_rat_poly p)"
 
 lemma initial_factorization_rat: assumes res: "initial_factorization_rat p = (c,qis)"
   shows "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" "(q,i) \<in> set qis \<Longrightarrow> i \<noteq> 0 \<and> q \<noteq> 0"
@@ -501,25 +495,9 @@ proof -
     with res show ?thesis by (cases "p = 0", auto)
   next
     case False note mode = this
-    show ?thesis
-    proof (cases "p = smult d (\<Prod>(q, i)\<leftarrow>pis. q ^ i) \<and> list_all (\<lambda> (p,i). i \<noteq> 0 \<and> p \<noteq> 0) pis")
-      case True
-      with mode res have id: "c = d" "qis = pis" by auto
-      with True show ?thesis by (auto simp: list_all_iff)
-    next
-      case False
-      obtain d pis where yun: "yun_factorization gcd p = (d,pis)" by force
-      with res False mode have id: "c = d" "qis = map (\<lambda> (p,i). (p, Suc i)) pis" by auto
-      from square_free_factorizationD(1,2,5)[OF yun_factorization(1)[OF yun]]
-      have p: "p = smult d (\<Prod>(a, i)\<in>set pis. a ^ Suc i)" and pis: "distinct pis" 
-        and nz: "\<And> p i. (p,i) \<in> set pis \<Longrightarrow> p \<noteq> 0" by fastforce+
-      have "(\<Prod>(a, i)\<in>set pis. a ^ Suc i) = (\<Prod>(a, i)\<leftarrow>pis. a ^ Suc i)"
-        by (rule setprod.distinct_set_conv_list[OF pis])
-      also have "\<dots> = (\<Prod>(a, i)\<leftarrow>qis. a ^ i)" unfolding id
-        by (induct pis, auto)
-      finally have p: "p = smult d (\<Prod>(a, i)\<leftarrow>qis. a ^ i)" unfolding p by auto
-      with id nz show ?thesis by auto
-    qed
+    with fo res have id: "c = d" "qis = pis" by auto
+    from factorization_oracle_rat_poly[OF fo] 
+    show ?thesis unfolding id by force
   qed
   thus "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" "(q,i) \<in> set qis \<Longrightarrow> i \<noteq> 0 \<and> q \<noteq> 0" by blast+
 qed
