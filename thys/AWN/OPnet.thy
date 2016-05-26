@@ -73,7 +73,7 @@ lemma net_par_oreachable_is_subnet:
   assumes "(\<sigma>, st) \<in> oreachable (opnet np (p1 \<parallel> p2)) S U"
     shows "\<exists>s t. st = SubnetS s t"
   proof -
-    def p \<equiv> "(\<sigma>, st)"
+    define p where "p = (\<sigma>, st)"
     with assms have "p \<in> oreachable (opnet np (p1 \<parallel> p2)) S U" by simp
     hence "\<exists>\<sigma> s t. p = (\<sigma>, SubnetS s t)"
       by induct (auto dest!: opartial_net_preserves_subnets)
