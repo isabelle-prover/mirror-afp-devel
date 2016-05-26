@@ -5,9 +5,9 @@ session "Posix-Lexing" (AFP) = HOL +
   options [timeout = 600]
 
   theories [document = false]
-     "Regular_Set" 
-     "Regular_Exp"
-     "Derivatives" 
+     "../Regular-Sets/Regular_Set" 
+     "../Regular-Sets/Regular_Exp"
+     "../Regular-Sets/Derivatives" 
 
   theories
     "Lexer" 
