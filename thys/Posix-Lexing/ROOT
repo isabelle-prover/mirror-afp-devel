@@ -1,13 +1,8 @@
 chapter AFP
 
-session "Posix-Lexing" (AFP) = HOL +
+session "Posix-Lexing" (AFP) = "Regular-Sets" +
 
   options [timeout = 600]
-
-  theories [document = false]
-     "../Regular-Sets/Regular_Set" 
-     "../Regular-Sets/Regular_Exp"
-     "../Regular-Sets/Derivatives" 
 
   theories
     "Lexer" 
