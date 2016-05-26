@@ -492,7 +492,7 @@ next
 
 next
   case (edc_rand vs vs' \<Gamma> \<delta> e f dst t')
-  def t \<equiv> "dist_param_type dst"
+  define t where "t = dist_param_type dst"
   note invar = cdens_ctxt_invarD[OF edc_rand.prems(2)]
   from edc_rand have t1: "\<Gamma> \<turnstile> e : t" and t2: "t' = dist_result_type dst" by (auto simp: t_def)
 
@@ -619,7 +619,7 @@ next
 
 next
   case (edc_rand_det e vs' vs \<Gamma> \<delta> dst t')
-  def t \<equiv> "dist_param_type dst"
+  define t where "t = dist_param_type dst"
   note invar = cdens_ctxt_invarD[OF edc_rand_det.prems(2)]
   from edc_rand_det have t1: "\<Gamma> \<turnstile> e : t" and t2: "t' = dist_result_type dst" by (auto simp: t_def)
   let ?e1 = "map_vars Suc (branch_prob_cexpr (vs, vs', \<Gamma>, \<delta>))" and

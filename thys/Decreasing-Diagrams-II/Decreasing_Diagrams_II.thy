@@ -303,7 +303,7 @@ lemma wf_greek_less:
   shows "wf (greek_less r)"
 proof -
   obtain q where "r \<subseteq> q" and "well_order q" by (metis total_well_order_extension `wf r`)
-  def q' \<equiv> "q - Id"
+  define q' where "q' = q - Id"
   from `well_order q` have "reflcl q' = q"
   by (auto simp add: well_order_on_def linear_order_on_def partial_order_on_def preorder_on_def
       refl_on_def q'_def)
