@@ -1,13 +1,13 @@
 chapter AFP
 
-session Featherweight_OCL (AFP) in "src" = HOL +
+session Featherweight_OCL (AFP) = HOL +
   description {* Featherweight-OCL *}
   options [document_variants = "annex-a=annexa,-theory,-afp,-proof,-ML:document=afp,-annexa:outline=-annexa,afp,/proof,/ML",
            show_question_marks = false]
   theories
     "UML_Main"
-    "../examples/Employee_Model/Analysis/Analysis_OCL"
-    "../examples/Employee_Model/Design/Design_OCL"
+    "examples/Employee_Model/Analysis/Analysis_OCL"
+    "examples/Employee_Model/Design/Design_OCL"
   document_files
     "conclusion.tex"
     "figures/AbstractSimpleChair.pdf"

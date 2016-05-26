@@ -10,12 +10,12 @@ session "HOLCF-HOL-Library" = HOLCF +
     "~~/src/HOL/Library/LaTeXsugar"
     "~~/src/HOL/Library/Infinite_Set"
 
-session "HOLCF-Nominal2" in "../Nominal2" = "HOLCF-HOL-Library" +
+session "HOLCF-Nominal2" = "HOLCF-HOL-Library" +
   options [document = false, timeout=300]
   theories
-    "Nominal2"
-    "Atoms"
-    "Eqvt"
+    "../Nominal2/Nominal2"
+    "../Nominal2/Atoms"
+    "../Nominal2/Eqvt"
 
 session Launchbury (AFP) = "HOLCF-Nominal2" +
   options [timeout = 300]
