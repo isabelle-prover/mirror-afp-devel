@@ -219,7 +219,7 @@ lemma scope_valid_inport:
 by (cases v; cases v')  (auto simp add: scope'.simps mem_vertices)
 
 definition terminal_path_from :: "'form \<Rightarrow> nat list => ('form, 'var) edge'' list" where
-   "terminal_path_from c is = map (edge_at c) (rev (inits is))"
+   "terminal_path_from c is = map (edge_at c) (rev (prefixes is))"
 
 lemma terminal_path_from_Nil[simp]:
   "terminal_path_from c [] = [edge_at c []]"
@@ -289,7 +289,7 @@ proof
     ultimately
     have "(v', p') \<in> snd ` set (terminal_path_from c is)"
       by (rule Some(3))
-    hence "(v',p') \<in> set (map (edge_to c) (inits is))"
+    hence "(v',p') \<in> set (map (edge_to c) (prefixes is))"
       unfolding terminal_path_from_def by auto
     then obtain is' where "prefix is' is" and "(v',p') = edge_to c is'"
       by auto

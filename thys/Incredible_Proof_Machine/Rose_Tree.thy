@@ -1,5 +1,5 @@
 theory Rose_Tree
-imports Main Inits
+imports Main "~~/src/HOL/Library/Sublist"
 begin
 
 text \<open>For theory @{text Incredible_Trees} we need rose trees; this theory contains
