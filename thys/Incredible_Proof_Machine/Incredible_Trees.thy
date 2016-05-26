@@ -3,7 +3,6 @@ imports
   "~~/src/HOL/Library/Sublist" 
   "~~/src/HOL/Library/Countable"
   Entailment
-  Inits
   Rose_Tree
   Abstract_Rules_To_Incredible
 begin
@@ -179,6 +178,12 @@ inductive_set hyps_along for t "is" where
 
 lemma hyps_along_Nil[simp]: "hyps_along t [] = {}"
   by (auto simp add: hyps_along.simps)
+
+lemma prefix_app_Cons_elim:
+  assumes "prefix (xs@[y]) (z#zs)"
+  obtains "xs = []" and "y = z"
+   | xs' where "xs = z#xs'" and "prefix (xs'@[y]) zs"
+using assms by (cases xs) auto
 
 lemma hyps_along_Cons:
   assumes "iwf fc t ent"
@@ -589,7 +594,7 @@ lemma fresh_at_Cons[simp]:
   by (auto simp add: Let_def)
 
 definition fresh_at_path where
-  "fresh_at_path t is = \<Union>(fresh_at t ` set (inits is))"
+  "fresh_at_path t is = \<Union>(fresh_at t ` set (prefixes is))"
 
 lemma fresh_at_path_Nil[simp]:
   "fresh_at_path t [] = {}"
