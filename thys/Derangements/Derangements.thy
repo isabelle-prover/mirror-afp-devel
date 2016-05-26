@@ -404,7 +404,7 @@ proof (induct n rule: count_derangements.induct)
     unfolding 3(2) 3(1)[unfolded Suc_eq_plus1] ..
   also have "(n + 1) * (?f (n + 1) + ?f n) = ?f (n + 2)"
   proof -
-    def f \<equiv> "\<lambda>n. ((fact n) :: real) * (\<Sum>k = 0..n. (- 1) ^ k / fact k)"
+    define f where "f n = ((fact n) :: real) * (\<Sum>k = 0..n. (- 1) ^ k / fact k)" for n
     have f_eq: "\<And>n. f (n + 1) = (n + 1) * f n + (- 1) ^ (n + 1)"
     proof -
       fix n

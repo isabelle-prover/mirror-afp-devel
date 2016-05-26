@@ -57,7 +57,7 @@ proof -
     by (rule contf continuous_intros)+
   have holf': "(\<lambda>u. (f u - y)) holomorphic_on (ball z r)"
     by (simp add: holf holomorphic_on_diff holomorphic_on_const)
-  def a \<equiv> "(2 * pi)/(fact n)"
+  define a where "a = (2 * pi)/(fact n)"
   have "0 < a"  by (simp add: a_def)
   have "B0/r^(Suc n)*2 * pi * r = a*((fact n)*B0/r^n)"
     using \<open>0 < r\<close> by (simp add: a_def divide_simps)

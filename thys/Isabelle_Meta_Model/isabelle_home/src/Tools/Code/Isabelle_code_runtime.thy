@@ -182,7 +182,7 @@ fun gen_code_reflect prep_type prep_const all_public raw_datatypes raw_functions
       |> apsnd flat;
     val functions = map (prep_const thy) raw_functions;
     val consts = constrs @ functions;
-    val program = Code_Thingol.consts_program (Proof_Context.theory_of ctxt) consts;
+    val program = Code_Thingol.consts_program ctxt consts;
     val result = evaluation_code ctxt module_name program tycos consts all_public
       |> (apsnd o apsnd) (chop (length constrs));
   in

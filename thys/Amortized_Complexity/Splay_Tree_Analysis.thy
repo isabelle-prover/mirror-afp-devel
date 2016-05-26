@@ -34,7 +34,7 @@ assumes hyps: "lb \<noteq> \<langle>\<rangle>" and IH: "t_splay x lb + \<Phi> lb
  prems: "size lb = size lb1 + size lb2 + 1" "X \<in> subtrees lb"
 shows "t_splay x lb + \<Phi> t' - \<Phi> t \<le> 3 * (\<phi> t - \<phi> X)"
 proof -
-  def [simp]: B' == "Node lb2 b A'"
+  define B' where [simp]: "B' = Node lb2 b A'"
   have "t_splay x lb + \<Phi> t' - \<Phi> t = t_splay x lb + \<Phi> lb1 + \<Phi> lb2 - \<Phi> lb + \<phi> B' + \<phi> A' - \<phi> B"
     using prems
     by(auto simp: A_def size_if_splay algebra_simps in_set_tree_if split: tree.split)

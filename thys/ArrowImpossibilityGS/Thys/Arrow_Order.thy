@@ -156,8 +156,9 @@ proof -
     assume d1: "a\<noteq>b" "a'\<noteq>b'" and d2: "a\<noteq>b'" "b\<noteq>a'" and
       "P : Prof" "P' : Prof" and 1: "\<forall>i. (a,b) : P i \<longleftrightarrow> (a',b') : P' i"
     assume "(a,b) : F P"
-    def Q \<equiv> "%i. let L = (if a=a' then P i else below (P i) a' a)
-                  in if b=b' then L else above L b b'"
+    define Q where
+      "Q i = (let L = (if a=a' then P i else below (P i) a' a)
+              in if b=b' then L else above L b b')" for i
     have "Q : Prof" using `P : Prof`
       by(simp add:Q_def Prof_def Pi_def above_Lin below_Lin)
     hence "F Q : Lin" using `F : SWF` by(simp add:Pi_def)
