@@ -3197,10 +3197,6 @@ fun compare_radt :: "real_alg_dt \<Rightarrow> real_alg_dt \<Rightarrow> order" 
 | "compare_radt (Rational r) (Irrational xx) = (compare_rat_rai r xx)"
 | "compare_radt (Irrational xx) (Rational r) = (invert_order (compare_rat_rai r xx))"
 
-(* TODO move *)
-lemma invert_order_compare_real[simp]: "\<And> x y :: real. invert_order (compare x y) = compare y x" 
-  by (simp add: comparator_of_def compare_is_comparator_of)
-
 lemma compare_radt: "compare_radt x y = compare (real_of_radt x) (real_of_radt y)"
 proof (cases x)
   case (Rational r) note xx = this

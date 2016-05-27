@@ -935,5 +935,17 @@ proof (induct n)
   show ?case using degree_mult_eq[OF p pn] Suc by auto
 qed simp
 
+lemma coeff_Poly: "coeff (Poly xs) i = (nth_default 0 xs i)"
+  unfolding nth_default_coeffs_eq[of "Poly xs", symmetric] coeffs_Poly by simp
+
+lemma rsquarefree_def': "rsquarefree p = (p \<noteq> 0 \<and> (\<forall>a. order a p \<le> 1))"
+proof -
+  have "\<And> a. order a p \<le> 1 \<longleftrightarrow> order a p = 0 \<or> order a p = 1" by linarith
+  thus ?thesis unfolding rsquarefree_def by auto
+qed
+
+lemma order_listprod: "(\<And> p. p \<in> set ps \<Longrightarrow> p \<noteq> 0) \<Longrightarrow> order x (listprod ps) = listsum (map (order x) ps)"
+  by (induct ps, auto, subst order_mult, auto simp: listprod_zero_iff)
+
 
 end

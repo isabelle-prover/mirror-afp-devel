@@ -349,7 +349,8 @@ proof -
       r: "r \<in> set (factors_of_rat_poly ?mode2 s)" and       
       q: "q \<in> set (roots_of_rai_intern_monic_irr r)"
       unfolding d by auto
-    from frp2(1)[OF refl r] have "poly_type_cond Monic_Root_Free r" 
+    from frp1(1)[OF refl s] have "square_free s" by auto
+    with frp2(1)[OF refl r] have "poly_type_cond Monic_Root_Free r" 
       by (auto simp: poly_type_cond_def)
     from roots_of_rai_intern_monic_irr[OF this] q
     have "rai_cond q" by auto
@@ -370,8 +371,8 @@ proof -
         r: "r \<in> set (factors_of_rat_poly ?mode2 s)" and       
         q: "q \<in> set (roots_of_rai_intern_monic_irr r)" and
         x: "x = rai_real q" by auto
-      from frp1(1)[OF refl s] have s0: "s \<noteq> 0" by auto
-      from frp2(1)[OF refl r] have mrf: "poly_type_cond Monic_Root_Free r" "Monic_Root_Free \<le> Monic_Root_Free" 
+      from frp1(1)[OF refl s] have s0: "s \<noteq> 0" and "square_free s" by auto
+      with frp2(1)[OF refl r] have mrf: "poly_type_cond Monic_Root_Free r" "Monic_Root_Free \<le> Monic_Root_Free" 
         by (auto simp: poly_type_cond_def)
       from roots_of_rai_intern_monic_irr[OF mrf] q have rt: "rpoly r x = 0" unfolding x by auto
       from frp2(2)[OF refl s0, of x] rt r have rt: "rpoly s x = 0" by auto
@@ -383,10 +384,10 @@ proof -
       assume rt: "rpoly p x = 0"
       from rt frp1(2)[OF refl p, of x] obtain s where s: "s \<in> set (factors_of_rat_poly ?mode1 p)" 
         and rt: "rpoly s x = 0" by auto
-      from frp1(1)[OF refl s] have s0: "s \<noteq> 0" by auto
+      from frp1(1)[OF refl s] have s0: "s \<noteq> 0" and sf: "square_free s" by auto
       from rt frp2(2)[OF refl s0, of x] obtain r where r: "r \<in> set (factors_of_rat_poly ?mode2 s)" 
         and rt: "rpoly r x = 0" by auto
-      from frp2(1)[OF refl r] have mrf: "poly_type_cond Monic_Root_Free r" "Monic_Root_Free \<le> Monic_Root_Free" 
+      from frp2(1)[OF refl r] sf have mrf: "poly_type_cond Monic_Root_Free r" "Monic_Root_Free \<le> Monic_Root_Free" 
         by (auto simp: poly_type_cond_def)    
       from roots_of_rai_intern_monic_irr(1)[OF mrf] rt obtain q where 
         q: "q \<in> set (roots_of_rai_intern_monic_irr r)" and

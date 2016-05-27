@@ -16,6 +16,7 @@ imports
   "../Matrix/Utility"
   Polynomial_Divisibility
   Order_Polynomial
+  Fundamental_Theorem_Algebra_Factorized
 begin
 
 hide_const Coset.order
@@ -106,6 +107,22 @@ proof (rule conjI[OF f(1)], rule allI)
     hence "\<not> square_free f" using f(1) unfolding square_free_def by auto
     with assms show False by auto
   qed
+qed
+
+lemma rsquarefree_square_free_complex: assumes "rsquarefree (p :: complex poly)"
+  shows "square_free p"
+proof (rule square_freeI)
+  fix q
+  assume d: "degree q \<noteq> 0" and dvd: "q * q dvd p"
+  from d have "\<not> constant (poly q)" by (simp add: constant_degree)
+  from fundamental_theorem_of_algebra[OF this] obtain x where "poly q x = 0" by auto
+  hence "[:-x,1:] dvd q" by (simp add: poly_eq_0_iff_dvd)
+  then obtain k where q: "q = [:-x,1:] * k" unfolding dvd_def by auto
+  from dvd obtain l where p: "p = q * q * l" unfolding dvd_def by auto
+  from p[unfolded q] have "p = [:-x,1:]^2 * (k * k * l)" by algebra
+  hence "[:-x,1:]^2 dvd p" unfolding dvd_def by blast
+  from this[unfolded order_divides] have "p = 0 \<or> \<not> order x p \<le> 1" by auto
+  thus False using assms unfolding rsquarefree_def' by auto
 qed
     
 lemma square_free_coprime_pderiv: assumes f: "(f :: 'a :: field_char_0 poly) \<noteq> 0"
