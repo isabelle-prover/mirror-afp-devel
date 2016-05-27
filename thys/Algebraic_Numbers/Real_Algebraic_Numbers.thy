@@ -89,28 +89,32 @@ type_synonym rai_intern = "rai_intern_flat option"
 definition poly_type_cond :: "poly_type \<Rightarrow> rat poly \<Rightarrow> bool" where
   "poly_type_cond ty p = (case ty of 
     Monic_Irreducible \<Rightarrow> monic p \<and> irreducible p | 
-    Monic_Root_Free \<Rightarrow> monic p \<and> root_free p |
-    Arbitrary_Poly \<Rightarrow> True)"
+    Monic_Root_Free \<Rightarrow> monic p \<and> root_free p \<and> square_free p |
+    Arbitrary_Poly \<Rightarrow> square_free p)"
 
-lemma poly_type_cond_arbitrary[simp]: "poly_type_cond Arbitrary_Poly p = True" 
+lemma poly_type_cond_arbitrary[simp]: "poly_type_cond Arbitrary_Poly p = square_free p" 
   unfolding poly_type_cond_def by auto
 
-lemma poly_type_cond_MI_D: "poly_type_cond ty p \<Longrightarrow> ty \<le> Monic_Irreducible \<Longrightarrow> irreducible p \<and> monic p \<and> root_free p"
-  unfolding poly_type_cond_def using irreducible_root_free by auto
+lemma poly_type_cond_square_free_D: "poly_type_cond ty p \<Longrightarrow> square_free p"
+  unfolding poly_type_cond_def using irreducible_square_free
+  by (cases ty, auto)
 
-lemma poly_type_cond_RF_D: "poly_type_cond ty p \<Longrightarrow> ty \<le> Monic_Root_Free \<Longrightarrow> monic p \<and> root_free p"
-  unfolding poly_type_cond_def using irreducible_root_free by auto
+lemma poly_type_cond_MI_D: "poly_type_cond ty p \<Longrightarrow> ty \<le> Monic_Irreducible \<Longrightarrow> irreducible p \<and> monic p \<and> root_free p \<and> square_free p"
+  unfolding poly_type_cond_def using irreducible_root_free irreducible_square_free by auto
+
+lemma poly_type_cond_RF_D: "poly_type_cond ty p \<Longrightarrow> ty \<le> Monic_Root_Free \<Longrightarrow> monic p \<and> root_free p \<and> square_free p"
+  unfolding poly_type_cond_def using irreducible_root_free irreducible_square_free by auto
 
 lemma poly_type_cond_MI_I: "monic p \<Longrightarrow> irreducible p \<Longrightarrow> poly_type_cond ty p"
-  using irreducible_root_free by (cases ty, auto simp: poly_type_cond_def)
+  using irreducible_root_free irreducible_square_free by (cases ty, auto simp: poly_type_cond_def)
 
-lemma poly_type_cond_RF_I: "monic p \<Longrightarrow> root_free p \<Longrightarrow> Monic_Root_Free \<le> ty \<Longrightarrow> poly_type_cond ty p"
+lemma poly_type_cond_RF_I: "monic p \<Longrightarrow> root_free p \<Longrightarrow> square_free p \<Longrightarrow> Monic_Root_Free \<le> ty \<Longrightarrow> poly_type_cond ty p"
   by (cases ty, auto simp: poly_type_cond_def)
 
-lemma poly_type_cond_AP_I: "Arbitrary_Poly \<le> ty \<Longrightarrow> poly_type_cond ty p" by auto
+lemma poly_type_cond_AP_I: "square_free p \<Longrightarrow> Arbitrary_Poly \<le> ty \<Longrightarrow> poly_type_cond ty p" by auto
 
 lemma poly_type_cond_mono: "ty \<le> ty' \<Longrightarrow> poly_type_cond ty p \<Longrightarrow> poly_type_cond ty' p"
-  by (cases ty; cases ty'; auto simp: poly_type_cond_def irreducible_root_free)
+  by (cases ty; cases ty'; auto simp: poly_type_cond_def irreducible_root_free irreducible_square_free)
 
 definition rai_cond :: "rai_intern \<Rightarrow> bool" where
   "rai_cond plr = (case plr of Some (un,ri,p,l,r) \<Rightarrow> 
@@ -626,7 +630,7 @@ end
 lemma rai_normalize_poly_flat: 
   assumes res: "rai_normalize_poly_flat mode (un,ri,p,l,r) = (un',ri',p',l',r')"
     and ur: "unique_root (p,l,r)" and p0: "p \<noteq> 0" and ri: "root_info_cond ri p"
-    and un: "poly_type_cond un p"
+    and un: "un = Monic_Irreducible \<or> mode = Check_Root_Free \<Longrightarrow> poly_type_cond un p"
   shows "unique_root (p',l,r)" "p' \<noteq> 0" "l' = l" "r' = r" 
     "un' \<le> factorization_guarantee mode" "poly_type_cond un' p'"
     "the_unique_root (p',l,r) = the_unique_root (p,l,r)" "root_info_cond ri' p'" "monic p'"
@@ -662,8 +666,12 @@ proof -
       \<and> the_unique_root (p,l,r) = the_unique_root (q,l,r) \<and> unique_root (q,l,r)
       \<and> rai_normalize_poly_main mode l r (map fst pis) = 
         (factorization_guarantee mode,ri,q,l,r)"
-    from ur have "unique_root (p, l, r)" .
-    with fact(2) have "\<exists> ri q. ?prop ri q" unfolding fact(1) id
+    from ur have ur': "unique_root (p, l, r)" .
+    from fact(2-) un have "\<And> q i. (q, i) \<in> set pis \<Longrightarrow>
+      (mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q) \<and>
+      (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> i \<noteq> 0 \<and> monic q \<and> square_free q" 
+      by (cases mode, auto simp: poly_type_cond_square_free_D)
+    from this ur' have "\<exists> ri q. ?prop ri q" unfolding fact(1) id
     proof (induct pis)
       case Nil
       from Nil(2)[unfolded unique_root_def root_cond_def]
@@ -1509,6 +1517,7 @@ definition monic_poly :: "'a :: field poly \<Rightarrow> 'a poly" where
 lemma monic_poly: "rpoly (monic_poly p) x = 0 \<longleftrightarrow> rpoly p x = 0" "p \<noteq> 0 \<Longrightarrow> monic (monic_poly p)" 
   "irreducible (monic_poly p) = irreducible p"
   "(monic_poly p = 0) = (p = 0)"
+  "square_free (monic_poly p) = square_free p"
 proof (cases "p = 0")
   case True
   show "rpoly (monic_poly p) x = 0 \<longleftrightarrow> rpoly p x = 0" unfolding True monic_poly_def by simp
@@ -1529,26 +1538,14 @@ next
   show "irreducible (monic_poly p) = irreducible p" unfolding id
     by (rule irreducible_smult[OF c])
   show "(monic_poly p = 0) = (p = 0)" unfolding id using c by simp
+  show "(square_free (monic_poly p)) = square_free p" unfolding id using c
+    square_free_smult[of p c] square_free_smult[of "smult c p" "inverse c"] by auto  
 qed
 
 (* TODO: one might try to carry over un also for Monic_Root_Poly *)
 definition uminus_rai_fun :: "rai_intern \<Rightarrow> rai_intern" where
   "uminus_rai_fun \<equiv> map_option (\<lambda> (un,ri,p,l,r) \<Rightarrow> let p' = monic_poly (poly_uminus p) in 
      (un_weaken un, count_roots_interval_rat p', p', -r, -l))"
-
-lemma poly_uminus_irreducible: assumes p: "irreducible p" "monic p" 
-  and x: "alg_poly x p"
-  shows "irreducible (poly_uminus p)"
-proof -
-  from alg_poly_uminus[OF x] have y: "alg_poly (-x) (poly_uminus p)" .
-  show ?thesis
-  proof (rule irreducible_preservation[OF p x y])
-    fix q
-    assume "alg_poly (-x) q"
-    from alg_poly_uminus[OF this] have "alg_poly x (poly_uminus q)" by simp
-    thus "alg_poly x (poly_uminus q) \<and> degree (poly_uminus q) \<le> degree q" by auto
-  qed simp
-qed
 
 lemma uminus_rai_main: assumes x: "rai_cond x"
   defines y: "y \<equiv> uminus_rai_fun x"
@@ -1584,13 +1581,16 @@ proof (cases x)
   have rc: "root_cond (?mp, - r, - l) (- ?x)"
     using *(1-6) unfolding root_cond_def y x 
     by (auto simp: of_rat_minus sgn_minus_rat monic_poly(1))
+  have xp: "alg_poly ?x p" using *(1,5) unfolding root_cond_def split alg_poly_def by auto
   {
     assume mi: "un \<le> Monic_Irreducible"
-    have "alg_poly ?x p" using *(1,5) unfolding root_cond_def split alg_poly_def by auto
-    from poly_uminus_irreducible[OF _ _ this] poly_type_cond_MI_D[OF un mi] *(5) 
+    from poly_uminus_irreducible poly_type_cond_MI_D[OF un mi] *(5) 
     have "irreducible ?mp"  "monic ?mp" by (auto simp: monic_poly)
   } note mi = this
-  with mi have un: "poly_type_cond un' ?mp" by (cases un, auto simp: poly_type_cond_def un'_def)
+  from poly_type_cond_square_free_D[OF un] have sf: "square_free p" by simp
+  hence sf: "square_free ?mp" unfolding monic_poly
+    by (rule poly_uminus_square_free)
+  from mi sf have un: "poly_type_cond un' ?mp" by (cases un, auto simp: poly_type_cond_def un'_def)
   show ?thesis unfolding y x
     by (rule rai_cond_realI, insert * rc count_roots_interval_rat[of ?mp], 
       auto simp: of_rat_minus sgn_minus_rat, insert inj un, auto simp: monic_poly(4))
@@ -1608,23 +1608,6 @@ subsubsection\<open>Inverse\<close>
 (* TODO: one might try to carry over un also for Monic_Root_Poly *)
 definition "inverse_rai_fun \<equiv> map_option (\<lambda> (un,_,p,l,r) \<Rightarrow> let p' = monic_poly (poly_inverse p) in
     (un_weaken un, count_roots_interval_rat p', p', inverse r, inverse l))"
-
-lemma poly_inverse_irreducible: assumes p: "irreducible p" "monic p" 
-  and x: "alg_poly x p"
-  and x0: "x \<noteq> 0"
-  shows "irreducible (poly_inverse p)"
-proof -
-  from alg_poly_inverse[OF x0 x] have y: "alg_poly (inverse x) (poly_inverse p)" .
-  from x0 have ix0: "inverse x \<noteq> 0" by auto
-  show ?thesis
-  proof (rule irreducible_preservation[OF p x y degree_poly_inverse_le])
-    fix q
-    assume "alg_poly (inverse x) q"
-    from alg_poly_inverse[OF ix0 this] have "alg_poly x (poly_inverse q)" by simp
-    with degree_poly_inverse_le
-    show " alg_poly x (poly_inverse q) \<and> degree (poly_inverse q) \<le> degree q" by auto
-  qed
-qed
 
 lemma inverse_rai_main: assumes x: "rai_cond x"
   defines y: "y \<equiv> inverse_rai_fun x"
@@ -1666,13 +1649,16 @@ proof (cases x)
   have rc: "root_cond (?mp, inverse r, inverse l) (inverse ?x)"
     using * unfolding root_cond_def y x split
     by (auto simp: of_rat_inverse real_of_rat_sgn inverse_le_iff_sgn rpoly_inverse[OF x0] monic_poly)
+  have xp: "alg_poly ?x p" using *(1,5) unfolding root_cond_def split alg_poly_def by auto
   {
     assume mi: "un \<le> Monic_Irreducible"
-    have "alg_poly ?x p" using *(1,5) unfolding root_cond_def split alg_poly_def by auto
-    from poly_inverse_irreducible[OF _ _ this x0] poly_type_cond_MI_D[OF un mi] *(5) 
+    from poly_inverse_irreducible[OF _ _ xp x0] poly_type_cond_MI_D[OF un mi] *(5) 
     have "irreducible ?mp"  "monic ?mp" by (auto simp: monic_poly)
   } note mi = this
-  with mi have un: "poly_type_cond un' ?mp" by (cases un, auto simp: poly_type_cond_def un'_def)
+  from poly_type_cond_square_free_D[OF un] have sf: "square_free p" by simp
+  hence sf: "square_free ?mp" unfolding monic_poly
+    by (rule poly_inverse_square_free)
+  from mi sf have un: "poly_type_cond un' ?mp" by (cases un, auto simp: poly_type_cond_def un'_def)
   show ?thesis unfolding y x
     by (rule rai_cond_realI, insert * rc count_roots_interval_rat[of ?mp], 
       auto simp: of_rat_inverse real_of_rat_sgn inverse_le_iff_sgn rpoly_inverse[OF x0]) 
@@ -2191,13 +2177,17 @@ proof (cases x)
   have cr': "root_info_cond (?c ?p) ?p"
     by (rule count_roots_interval_rat[OF p'])
   note ur = tighten_bound_root[OF n ur rc refl _ cr refl cr' refl tight p p' sgnl il(1), unfolded id2, OF refl]
-  from the_unique_root(5)[OF ur(1-2)] ur
-  have rc: "rai_cond (Some ?tight)" and id: "rai_real (Some ?tight) = root n (rai_real x)"
-    unfolding x tight rai_cond_def option.simps
-    by (auto simp: rai_real_def)
   obtain un ri p l r where norm: "?norm = (un,ri,p,l,r)" by (cases ?norm, auto)
-  from rai_normalize_poly_flat_rai_cond[OF rc norm, folded y]
-  show ?thesis unfolding id[symmetric] by simp 
+  from ur(8) have cond: "un1 = Monic_Irreducible \<or> Uncertified_Factorization = Check_Root_Free \<Longrightarrow>
+     poly_type_cond un1 P" by auto
+  from the_unique_root(5)[OF ur(1-2)] 
+  have id: "root n (rai_real x) = the_unique_root (P, L, R)"
+    unfolding x tight rai_cond_def option.simps by (simp add: rai_real_def)
+  note * = rai_normalize_poly_flat[OF norm[unfolded tight] ur(1,3,7) cond] 
+  from * ur
+  have "rai_cond y" unfolding y norm by (auto simp: rai_cond_def)
+  thus ?thesis unfolding y norm unfolding id[symmetric] using *
+    by (metis id norm rai_condD(8) the_equality unique_root_def unique_root_defs(2) y)
 qed (simp add: y root_rai_fun_pos_def)
 
 end
@@ -2384,20 +2374,6 @@ end
 
 
 (* addition *)
-definition poly_add_rat :: "rat \<Rightarrow> rat poly \<Rightarrow> rat poly" where
-  "poly_add_rat r p \<equiv> p \<circ>\<^sub>p [:-r,1:]"
-
-lemma degree_poly_add_rat[simp]: "degree (poly_add_rat r p) = degree p"
-  unfolding poly_add_rat_def degree_pcompose by auto
-
-lemma rpoly_add_rat: "rpoly (poly_add_rat r p) x = rpoly p (x - of_rat r)"
-  unfolding poly_add_rat_def rpoly_poly_compose
-  by (simp add: eval_poly_def)
-
-lemma poly_add_rat_0[simp]: "poly_add_rat r p = 0 \<longleftrightarrow> p = 0"
-  unfolding poly_add_rat_def 
-  by (rule pcompose_eq_0, auto)
-
 context
 begin
 (* TODO: one might try to carry over un also for Monic_Root_Poly *)
@@ -2411,24 +2387,6 @@ private fun add_rat_rai_fun :: "rat \<Rightarrow> rai_intern \<Rightarrow> rai_i
       let (l,r) = tighten_poly_bounds_for_x cr 0 l r
       in Some (un_weaken un2,ri,p,l,r))"
 | "add_rat_rai_fun r1 None = of_rat_rai_fun r1"
-
-lemma alg_poly_add_rat: assumes "alg_poly x p"
-  shows "alg_poly (of_rat r + x) (poly_add_rat r p)"
-  using assms unfolding alg_poly_def rpoly_add_rat by simp
-
-lemma poly_add_rat_irreducible: assumes p: "irreducible p" "monic p" 
-  and x: "alg_poly x p"
-  shows "irreducible (poly_add_rat r p)"
-proof -
-  from alg_poly_add_rat[OF x] have y: "alg_poly (of_rat r + x) (poly_add_rat r p)" .
-  show ?thesis
-  proof (rule irreducible_preservation[OF p x y])
-    fix q
-    assume "alg_poly (of_rat r + x) q"
-    from alg_poly_add_rat[OF this, of "-r"] have "alg_poly x (poly_add_rat (-r) q)" by simp
-    thus "alg_poly x (poly_add_rat (- r) q) \<and> degree (poly_add_rat (- r) q) \<le> degree q" by auto
-  qed simp
-qed
 
 definition normalize_rat_poly :: "rat poly \<Rightarrow> rat poly" where
   "normalize_rat_poly p = map_poly of_int (snd (rat_to_int_poly p))"
@@ -2602,13 +2560,15 @@ next
       by blast+
     from unique_root_sub_interval[OF ur rc[unfolded xy] lr''] have ur: "unique_root (?mp, l', r')"
       and tur: "the_unique_root (?mp,l',r') = ?x + ?y" unfolding xy by auto
+    have yp2: "alg_poly ?y p2" using y(1,5) unfolding root_cond_def split alg_poly_def by auto
+    from poly_type_cond_square_free_D[OF y(10)] have "square_free p2" .
+    hence sf: "square_free ?mp" unfolding monic_poly by (rule poly_add_rat_square_free)
     {
       assume mi: "un2 \<le> Monic_Irreducible"
-      have "alg_poly ?y p2" using y(1,5) unfolding root_cond_def split alg_poly_def by auto
-      from poly_add_rat_irreducible[OF _ _ this] poly_type_cond_MI_D[OF y(10) mi] y(5) 
+      from poly_add_rat_irreducible poly_type_cond_MI_D[OF y(10) mi] y(5) 
       have "irreducible ?mp"  "monic ?mp" by (auto simp: monic_poly)
-    } 
-    hence un: "poly_type_cond ?un2 ?mp" by (cases un2, auto simp: poly_type_cond_def)
+    }
+    with sf have un: "poly_type_cond ?un2 ?mp" by (cases un2, auto simp: poly_type_cond_def)
     have rc: "rai_cond (Some (?un2, ?ri, ?mp, l', r'))"
       unfolding rai_cond_def using zero lr' un
       by (auto simp: ur mp ri)
@@ -2632,20 +2592,6 @@ end
 (* ********************* *)
 subsubsection\<open>Multiplication\<close>
 
-definition poly_mult_rat :: "rat \<Rightarrow> rat poly \<Rightarrow> rat poly" where
-  "poly_mult_rat r p \<equiv> p \<circ>\<^sub>p [:0,inverse r:]"
-
-lemma degree_poly_mult_rat_le: "degree (poly_mult_rat r p) \<le> degree p"
-  unfolding poly_mult_rat_def degree_pcompose by auto
-
-lemma rpoly_mult_rat: "rpoly (poly_mult_rat r p) x = rpoly p (x * inverse (of_rat r))"
-  unfolding poly_mult_rat_def rpoly_poly_compose
-  by (simp add: eval_poly_def)
-
-lemma poly_mult_rat_0[simp]: "r \<noteq> 0 \<Longrightarrow> poly_mult_rat r p = 0 \<longleftrightarrow> p = 0"
-  unfolding poly_mult_rat_def 
-  by (rule pcompose_eq_0, auto)
-
 context
 begin
 (* TODO: one might try to carry over un also for Monic_Root_Poly *)
@@ -2656,31 +2602,6 @@ private fun mult_rat_rai_fun_pos :: "rat \<Rightarrow> rai_intern_flat \<Rightar
       cr = root_info.l_r ri;
       (l,r) = (l2*r1,r2*r1)
     in (un_weaken un2,ri,p,l,r))"
-
-lemma alg_poly_mult_rat: assumes r: "r \<noteq> 0"
-  and "alg_poly x p"
-  shows "alg_poly (of_rat r * x) (poly_mult_rat r p)"
-  using assms
-  unfolding alg_poly_def rpoly_mult_rat by (simp add: field_simps)
-
-lemma poly_mult_rat_irreducible: assumes p: "irreducible p" "monic p" 
-  and x: "alg_poly x p"
-  and r: "r \<noteq> 0"
-  shows "irreducible (poly_mult_rat r p)"
-proof -
-  from alg_poly_mult_rat[OF r x] have y: "alg_poly (of_rat r * x) (poly_mult_rat r p)" .
-  from r have ir: "inverse r \<noteq> 0" by auto
-  show ?thesis
-  proof (rule irreducible_preservation[OF p x y degree_poly_mult_rat_le])
-    fix q
-    assume "alg_poly (of_rat r * x) q"
-    from alg_poly_mult_rat[OF ir this] have "alg_poly x (poly_mult_rat (inverse r) q)"
-      using r by (simp add: field_simps)
-    with degree_poly_mult_rat_le
-    show " alg_poly x (poly_mult_rat (inverse r) q) \<and> degree (poly_mult_rat (inverse r) q) \<le> degree q" by auto
-  qed
-qed
-
 
 private fun mult_rai_fun_pos :: "rai_intern_flat \<Rightarrow> rai_intern_flat \<Rightarrow> rai_intern_flat" where
   "mult_rai_fun_pos (un1,ri1,p1,l1,r1) (un2,ri2,p2,l2,r2) = (
@@ -2721,7 +2642,7 @@ proof -
   let ?ri = "count_roots_interval_rat ?mp"
   let ?lr = "root_info.l_r"
   note y = rai_condD[OF y[unfolded yt]]
-  from y(5) r1 have p: "?p \<noteq> 0" by simp
+  from y(5) r1 have p: "?p \<noteq> 0" and r10: "r1 \<noteq> 0" by auto
   hence mp: "?mp \<noteq> 0" by (simp add: monic_poly)
   from y(1)[unfolded root_cond_def split] 
   have rt: "rpoly p2 ?y = 0" and bnd: "of_rat l2 \<le> ?y" "?y \<le> of_rat r2" by auto
@@ -2753,13 +2674,15 @@ proof -
   let ?un2 = "un_weaken un2"
   from z[unfolded yt, simplified, unfolded Let_def lr[symmetric] split]
   have z: "z = (?un2, ?ri, ?mp, l, r)" by simp
+  have yp2: "alg_poly ?y p2" using y(1,5) unfolding root_cond_def split alg_poly_def by auto
+  from poly_type_cond_square_free_D[OF y(10)] have "square_free p2" .
+  hence sf: "square_free ?mp" unfolding monic_poly by (rule poly_mult_rat_square_free[OF r10])
   {
     assume mi: "un2 \<le> Monic_Irreducible"
-    have "alg_poly ?y p2" using y(1,5) unfolding root_cond_def split alg_poly_def by auto
-    from poly_mult_rat_irreducible[OF _ _ this] r1 poly_type_cond_MI_D[OF y(10) mi] y(5) 
+    from poly_mult_rat_irreducible r1 poly_type_cond_MI_D[OF y(10) mi] y(5) 
     have "irreducible ?mp"  "monic ?mp" by (auto simp: monic_poly)
   } note un = this
-  hence un: "poly_type_cond ?un2 ?mp" by (cases un2, auto simp: poly_type_cond_def)
+  with sf have un: "poly_type_cond ?un2 ?mp" by (cases un2, auto simp: poly_type_cond_def)
   have rc: "rai_cond (Some z)" unfolding z using y(2,4) un
     by (simp add: rai_cond_def ur count_roots_interval_rat[OF mp] mp sgnr sgnl)
   thus ?thesis unfolding yt xy unfolding z by (simp add: rai_real_def)
@@ -3811,6 +3734,5 @@ proof -
   show ?thesis unfolding normalize_rat_poly_def q1_def[symmetric] q2_def[symmetric] poly_mult_int_def
     by (rule poly_mult_hom, standard)
 qed
-
 
 end
