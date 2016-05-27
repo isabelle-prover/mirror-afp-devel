@@ -292,16 +292,30 @@ qed
 definition poly_inverse :: "'a :: field poly \<Rightarrow> 'a poly" where
   [code del]: "poly_inverse p = (\<Sum> i \<le> degree p. monom (coeff p (degree p - i)) i)"
 
-lemma poly_inverse_code[code]: 
-  "poly_inverse p = (listsum (map (\<lambda> i. monom (coeff p (degree p - i)) i) [0 ..< Suc (degree p)]))"
-  (is "_ = ?r")
-proof -
-  have "poly_inverse p = setsum (\<lambda> i. monom (coeff p (degree p - i)) i) (set [0 ..< Suc (degree p)])"
-    unfolding poly_inverse_def
-    by (rule setsum.cong, auto)
-  also have "\<dots> = ?r" unfolding setsum.set_conv_list
-    by (subst distinct_remdups_id, auto)
-  finally show ?thesis .
+(* TODO: move *)
+lemma coeff_Poly: "coeff (Poly xs) i = (nth_default 0 xs i)"
+  unfolding nth_default_coeffs_eq[of "Poly xs", symmetric] coeffs_Poly by simp
+  
+lemma poly_inverse_rev_coeffs[code]: 
+  "poly_inverse p = poly_of_list (rev (coeffs p))"
+proof (cases "p = 0")
+  case True
+  thus ?thesis by (auto simp: poly_inverse_def)
+next
+  case False
+  show ?thesis unfolding poly_of_list_def poly_eq_iff
+  proof 
+    fix n
+    have "coeff (poly_inverse p) n = (if n \<le> degree p then coeff p (degree p - n) else 0)"
+      unfolding poly_inverse_def coeff_setsum coeff_monom
+      by (cases "n \<le> degree p", auto, subst setsum.remove[of _ n], auto)
+    also have "\<dots> = coeff (Poly (rev (coeffs p))) n"
+      unfolding poly_inverse_def coeff_setsum coeff_monom coeff_Poly
+      by (cases "n < length (coeffs p)", 
+        auto simp: nth_default_def length_coeffs_degree[OF False], subst rev_nth,
+        auto simp: length_coeffs_degree[OF False] coeffs_nth[OF False])
+    finally show "coeff (poly_inverse p) n = coeff (Poly (rev (coeffs p))) n" .
+  qed
 qed  
 
 lemma degree_poly_inverse_le: "degree (poly_inverse p) \<le> degree p"
