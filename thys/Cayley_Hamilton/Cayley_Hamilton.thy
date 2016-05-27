@@ -322,12 +322,12 @@ theorem Cayley_Hamilton:
   shows "poly_mat (charpoly A) A = 0"
 proof -
 text %visible \<open>\hrulefill ~~ Part 1 ~~ \hrulefill\<close>
-  def n \<equiv> "CARD('n) - 1"
+  define n where "n = CARD('n) - 1"
   then have d_charpoly: "n + 1 = degree (charpoly A)" and 
       d_adj: "n = max_degree (adjugate (\<^bold>X - \<^bold>C A))"
     by %invisible (simp_all add: degree_charpoly n_def max_degree_adjugate monom_0 diag_1[symmetric])
 
-  def B \<equiv> "\<lambda>i. map_sq_matrix (\<lambda>p. coeff p i) (adjugate (\<^bold>X - \<^bold>C A))"
+  define B where "B i = map_sq_matrix (\<lambda>p. coeff p i) (adjugate (\<^bold>X - \<^bold>C A))" for i
   have A_eq_B: "adjugate (\<^bold>X - \<^bold>C A) = (\<Sum>i\<le>n. X^i *\<^sub>S \<^bold>C (B i))"
     by %invisible (simp add: map_sq_matrix_smult setsum_map_sq_matrix B_def d_adj
                         degree_le_max_degree poly_as_sum_of_monoms' cong: map_sq_matrix_cong)

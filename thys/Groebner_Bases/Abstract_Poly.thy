@@ -125,10 +125,9 @@ lemma zero_not_one_mpoly:
   shows "0 \<noteq> (1::('a, 'b) mpoly)"
 unfolding one_mpoly_def
 proof (transfer, rule)
-  def f1 \<equiv> "\<lambda>_::'a. 0::'b"
-  def f2 \<equiv> "\<lambda>t::'a. (if t = 1 then 1 else 0::'b)"
+  define f1 f2 :: "'a \<Rightarrow> 'b" where "f1 t = 0" and "f2 t = (if t = 1 then 1 else 0)" for t
   assume "(\<lambda>_. 0::'b) = (\<lambda>t::'a. if t = 1 then 1 else 0)"
-  hence "f1 = f2" unfolding f1_def f2_def by simp
+  hence "f1 = f2" unfolding f1_def [abs_def] f2_def [abs_def] by simp
   hence "f1 1 = f2 1" by simp
   hence "0 = (if 1 = (1::'a pp) then 1 else 0::'b)" unfolding f1_def f2_def by simp
   hence "0 = (1::'b)" by simp
@@ -1895,7 +1894,7 @@ proof (induct s arbitrary: x Q rule: wfP_induct[OF wf_ord_strict])
     qed
   next
     case False
-    def Q1 \<equiv> "{lp p | p. p \<in> Q}"
+    define Q1 where "Q1 = {lp p | p. p \<in> Q}"
     from \<open>x \<in> Q\<close> have "lp x \<in> Q1" unfolding Q1_def by auto
     from wf_ord_strict have "wf {(x, y). x \<prec> y}" unfolding wfP_def .
     from wfE_min[OF this \<open>lp x \<in> Q1\<close>] obtain t where
@@ -1912,7 +1911,7 @@ proof (induct s arbitrary: x Q rule: wfP_induct[OF wf_ord_strict])
     from \<open>t \<in> Q1\<close> obtain p where "lp p = t" and "p \<in> Q" unfolding Q1_def by auto
     hence "p \<noteq> 0" using False by auto
     hence "lp p \<prec> s" using bounded[rule_format, OF \<open>p \<in> Q\<close>] by auto
-    def Q2 \<equiv> "{tail p | p. p \<in> Q \<and> lp p = t}"
+    define Q2 where "Q2 = {tail p | p. p \<in> Q \<and> lp p = t}"
     from \<open>p \<in> Q\<close> \<open>lp p = t\<close> have "tail p \<in> Q2" unfolding Q2_def by auto
     have "\<And>q. q \<in> Q2 \<Longrightarrow> q = 0 \<or> lp q \<prec> lp p"
     proof -
@@ -1974,7 +1973,7 @@ proof (intro wfI_min)
     qed
   next
     case False
-    def Q1 \<equiv> "{lp p | p. p \<in> Q}"
+    define Q1 where "Q1 = {lp p | p. p \<in> Q}"
     from \<open>x \<in> Q\<close> have "lp x \<in> Q1" unfolding Q1_def by auto
     from wf_ord_strict have "wf {(x, y). x \<prec> y}" unfolding wfP_def .
     from wfE_min[OF this \<open>lp x \<in> Q1\<close>] obtain t where
@@ -1988,7 +1987,7 @@ proof (intro wfI_min)
       hence "\<not> lp q \<prec> t" by simp
       thus "t \<preceq> lp q" by simp
     qed
-    def Q2 \<equiv> "{tail p | p. p \<in> Q \<and> lp p = t}"
+    define Q2 where "Q2 = {tail p | p. p \<in> Q \<and> lp p = t}"
     from \<open>t \<in> Q1\<close> obtain p where "lp p = t" and "p \<in> Q" unfolding Q1_def by auto
     hence "tail p \<in> Q2" unfolding Q2_def by auto
     have "\<forall>y\<in>Q2. y = 0 \<or> lp y \<prec> t"

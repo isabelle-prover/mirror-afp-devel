@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Posix-Lexing" (AFP) = HOL +
+session "Posix-Lexing" (AFP) = "Regular-Sets" +
 
   options [timeout = 600]
 

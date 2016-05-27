@@ -45,7 +45,7 @@ chapter{* Example: The Employee Design Model *} (* UML part *)
 theory
   Design_UML
 imports
-  "../../../src/UML_Main"
+  "../../../UML_Main"
 begin
 
 text {* \label{ex:employee-design:uml} *}

@@ -334,7 +334,7 @@ lemma onode_sos_dest_is_net_state'':
   assumes "((\<sigma>, NodeS i p R), a, (\<sigma>', s')) \<in> onode_sos S"
     shows "\<exists>\<zeta>' R'. s' = NodeS i \<zeta>' R'"
   proof -
-    def ns' \<equiv> "(\<sigma>', s')"
+    define ns' where "ns' = (\<sigma>', s')"
     with assms have "((\<sigma>, NodeS i p R), a, ns') \<in> onode_sos S" by simp
     then obtain \<sigma>'' \<zeta>' R' where "ns' = (\<sigma>'', NodeS i \<zeta>' R')"
       by (metis onode_sos_dest_is_net_state')

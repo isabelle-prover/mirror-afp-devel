@@ -22,20 +22,20 @@ where
 subsubsection {* Dedicated Facts for Bijection Proof *}
 
 lemma equiv_equiv_relation_of:
-  assumes "partitions P A"
+  assumes "partition_on A P"
   shows "equiv A (equiv_relation_of P)"
 proof (rule equivI)
   show "refl_on A (equiv_relation_of P)"
   proof (rule refl_onI)
     show "equiv_relation_of P \<subseteq> A \<times> A"
       unfolding equiv_relation_of_def
-      using \<open>partitions P A\<close> by (auto elim: partitionsE)
+      using \<open>partition_on A P\<close> by (auto elim: partition_onE)
   next
     fix x
     assume "x \<in> A"
     from this show "(x, x) \<in> equiv_relation_of P"
       unfolding equiv_relation_of_def
-      using \<open>partitions P A\<close> by (auto elim!: partitionsE)
+      using \<open>partition_on A P\<close> by (auto elim!: partition_onE)
   qed
 next
   show "sym (equiv_relation_of P)"
@@ -49,7 +49,7 @@ next
       and "x \<in> X\<^sub>1" "y \<in> X\<^sub>1" and "y \<in> X\<^sub>2" "z \<in> X\<^sub>2"
       unfolding equiv_relation_of_def by auto
     from this have "X\<^sub>1 = X\<^sub>2"
-      using \<open>partitions P A\<close> partitionsE disjoint_iff_not_equal by blast
+      using \<open>partition_on A P\<close> partition_onE disjoint_iff_not_equal by blast
     from this show "(x, z) \<in> equiv_relation_of P"
       using \<open>x \<in> X\<^sub>1\<close> \<open>z \<in> X\<^sub>2\<close> \<open>X\<^sub>2 \<in> P\<close>
       unfolding equiv_relation_of_def by auto
@@ -85,10 +85,10 @@ next
   qed
 qed
 
-lemma partitions_partition_of:
+lemma partition_on_partition_of:
   assumes "equiv A R"
-  shows "partitions (partition_of R) A"
-proof (rule partitionsI)
+  shows "partition_on A (partition_of R)"
+proof (rule partition_onI)
   fix X
   assume "X \<in> partition_of R"
   from this show "X \<noteq> {}"
@@ -161,7 +161,7 @@ next
 qed
 
 lemma partition_of_equiv_relation_of:
-  assumes "partitions P A"
+  assumes "partition_on A P"
   shows "partition_of (equiv_relation_of P) = P"
 proof
   show "partition_of (equiv_relation_of P) \<subseteq> P"
@@ -174,10 +174,10 @@ proof
       unfolding partition_of_def by (auto elim: quotientE)
     from this have X_eq: "X = {y. \<exists>X\<in>P. x \<in> X \<and> y \<in> X}"
       unfolding equiv_relation_of_def by auto
-    from X_eq \<open>X \<noteq> {}\<close> \<open>partitions P A\<close> have "x \<in> A"
-      using partitions_no_partition_outside_carrier by force
-    from X_eq \<open>partitions P A\<close> \<open>x \<in> A\<close> show "X \<in> P"
-      using the_unique_part_alternative_def partitions_the_part_mem by force
+    from X_eq \<open>X \<noteq> {}\<close> \<open>partition_on A P\<close> have "x \<in> A"
+      using partition_on_no_partition_outside_carrier by force
+    from X_eq \<open>partition_on A P\<close> \<open>x \<in> A\<close> show "X \<in> P"
+      using the_unique_part_alternative_def partition_on_the_part_mem by force
   qed
 next
   show "P \<subseteq> partition_of (equiv_relation_of P)"
@@ -185,10 +185,10 @@ next
     fix X
     assume "X \<in> P"
     from \<open>X \<in> P\<close> have "X \<noteq> {}"
-      using \<open>partitions P A\<close> partitionsE by auto
+      using \<open>partition_on A P\<close> partition_onE by auto
     from this obtain x where "x \<in> X" by auto
     have "X = {(x, y). \<exists>X\<in>P. x \<in> X \<and> y \<in> X} `` {x}"
-      using \<open>partitions P A\<close> \<open>x \<in> X\<close> \<open>X \<in> P\<close> partitions_part_characteristic by fastforce
+      using \<open>partition_on A P\<close> \<open>x \<in> X\<close> \<open>X \<in> P\<close> partition_on_part_characteristic by fastforce
     from \<open>X \<noteq> {}\<close> this show "X \<in> partition_of (equiv_relation_of P)"
       unfolding partition_of_def equiv_relation_of_def
       by (auto intro!: quotientI simp only:)
@@ -196,7 +196,7 @@ next
 qed
 
 lemma equiv_relation_of_eq:
-  assumes "partitions P A"
+  assumes "partition_on A P"
   shows "(A // equiv_relation_of P) = P"
 using assms partition_of_eq partition_of_equiv_relation_of
   equiv_equiv_relation_of by force
@@ -204,28 +204,28 @@ using assms partition_of_eq partition_of_equiv_relation_of
 subsubsection {* Bijection Proof *}
 
 lemma bij_betw_partition_of:
-  "bij_betw partition_of {R. equiv A R} {P. partitions P A}"
+  "bij_betw partition_of {R. equiv A R} {P. partition_on A P}"
 proof (rule bij_betw_byWitness[where f'="equiv_relation_of"])
  show "\<forall>R\<in>{R. equiv A R}. equiv_relation_of (partition_of R) = R"
    by (simp add: equiv_relation_of_partition_of)
- show "\<forall>P\<in>{P. partitions P A}. partition_of (equiv_relation_of P) = P"
+ show "\<forall>P\<in>{P. partition_on A P}. partition_of (equiv_relation_of P) = P"
    by (simp add: partition_of_equiv_relation_of)
- show "partition_of ` {R. equiv A R} \<subseteq> {P. partitions P A}"
-   using partitions_partition_of by auto
- show "equiv_relation_of ` {P. partitions P A} \<subseteq> {R. equiv A R}"
+ show "partition_of ` {R. equiv A R} \<subseteq> {P. partition_on A P}"
+   using partition_on_partition_of by auto
+ show "equiv_relation_of ` {P. partition_on A P} \<subseteq> {R. equiv A R}"
    using equiv_equiv_relation_of by auto
 qed
 
 lemma bij_betw_partition_of_equiv_with_k_classes:
-  "bij_betw partition_of {R. equiv A R \<and> card (A // R) = k} {P. partitions P A \<and> card P = k}"
+  "bij_betw partition_of {R. equiv A R \<and> card (A // R) = k} {P. partition_on A P \<and> card P = k}"
 proof (rule bij_betw_byWitness[where f'="equiv_relation_of"])
  show "\<forall>R\<in>{R. equiv A R \<and> card (A // R) = k}. equiv_relation_of (partition_of R) = R"
    by (auto simp add: equiv_relation_of_partition_of)
- show "\<forall>P\<in>{P. partitions P A \<and> card P = k}. partition_of (equiv_relation_of P) = P"
+ show "\<forall>P\<in>{P. partition_on A P \<and> card P = k}. partition_of (equiv_relation_of P) = P"
    by (auto simp add: partition_of_equiv_relation_of)
- show "partition_of ` {R. equiv A R \<and> card (A // R) = k} \<subseteq> {P. partitions P A \<and> card P = k}"
-   using partitions_partition_of by (auto simp add: partition_of_eq)
- show "equiv_relation_of ` {P. partitions P A \<and> card P = k} \<subseteq> {R. equiv A R \<and> card (A // R) = k}"
+ show "partition_of ` {R. equiv A R \<and> card (A // R) = k} \<subseteq> {P. partition_on A P \<and> card P = k}"
+   using partition_on_partition_of by (auto simp add: partition_of_eq)
+ show "equiv_relation_of ` {P. partition_on A P \<and> card P = k} \<subseteq> {R. equiv A R \<and> card (A // R) = k}"
    using equiv_equiv_relation_of by (auto simp add: equiv_relation_of_eq)
 qed
 
@@ -235,20 +235,20 @@ lemma finite_equiv:
   assumes "finite A"
   shows "finite {R. equiv A R}"
 proof -
-  have "bij_betw partition_of {R. equiv A R} {P. partitions P A}"
+  have "bij_betw partition_of {R. equiv A R} {P. partition_on A P}"
     by (rule bij_betw_partition_of)
   from this show "finite {R. equiv A R}"
-    using \<open>finite A\<close> finitely_many_partitions by (simp add: bij_betw_finite)
+    using \<open>finite A\<close> finitely_many_partition_on by (simp add: bij_betw_finite)
 qed
 
 subsection {* Cardinality of Equivalence Relations *}
 
 theorem card_equiv_rel_eq_card_partitions:
-  "card {R. equiv A R} = card {P. partitions P A}"
+  "card {R. equiv A R} = card {P. partition_on A P}"
 proof -
-  have "bij_betw partition_of {R. equiv A R} {P. partitions P A}"
+  have "bij_betw partition_of {R. equiv A R} {P. partition_on A P}"
     by (rule bij_betw_partition_of)
-  from this show "card {R. equiv A R} = card {P. partitions P A}"
+  from this show "card {R. equiv A R} = card {P. partition_on A P}"
     by (rule bij_betw_same_card)
 qed
 
@@ -263,11 +263,11 @@ corollary card_equiv_rel_eq_sum_Stirling:
 using assms card_equiv_rel_eq_Bell Bell_Stirling_eq by simp
 
 theorem card_equiv_k_classes_eq_card_partitions_k_parts:
-  "card {R. equiv A R \<and> card (A // R) = k} = card {P. partitions P A \<and> card P = k}"
+  "card {R. equiv A R \<and> card (A // R) = k} = card {P. partition_on A P \<and> card P = k}"
 proof -
-  have "bij_betw partition_of {R. equiv A R \<and> card (A // R) = k} {P. partitions P A \<and> card P = k}"
+  have "bij_betw partition_of {R. equiv A R \<and> card (A // R) = k} {P. partition_on A P \<and> card P = k}"
     by (rule bij_betw_partition_of_equiv_with_k_classes)
-  from this show "card {R. equiv A R \<and> card (A // R) = k} = card {P. partitions P A \<and> card P = k}"
+  from this show "card {R. equiv A R \<and> card (A // R) = k} = card {P. partition_on A P \<and> card P = k}"
     by (rule bij_betw_same_card)
 qed
 
@@ -275,6 +275,6 @@ corollary
   assumes "finite A"
   shows "card {R. equiv A R \<and> card (A // R) = k} = Stirling (card A) k"
 using card_equiv_k_classes_eq_card_partitions_k_parts
-  card_partitions[OF \<open>finite A\<close>] by metis
+  card_partition_on[OF \<open>finite A\<close>] by metis
 
 end
