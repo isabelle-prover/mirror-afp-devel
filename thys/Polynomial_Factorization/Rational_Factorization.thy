@@ -647,7 +647,7 @@ proof -
     have dvd: "q dvd p" unfolding p qis i dvd_def 
       by (auto intro!: exI[of _ "smult c ((\<Prod>(x, y)\<leftarrow>ys @ zs. x ^ y) * (q ^ ii))"])
     have "square_free q" 
-      by (rule square_free_factor[OF p0 dvd sf])    
+      by (rule square_free_factor[OF dvd sf])    
   }
   ultimately
   show "(mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q) \<and>
@@ -767,7 +767,7 @@ proof -
           mem: "(p, i) \<in> set pis" and q: "q = smult a p" and a: "a \<noteq> 0" by auto
         from irr[OF mem] have irr: "mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible p" 
           and i: "i \<noteq> 0" and sf: "square_free p" by auto
-        from square_free_smult[OF sf] have sf: "square_free q" unfolding q .
+        from square_free_smult[OF a sf] have sf: "square_free q" unfolding q .
         have "mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q" unfolding q using irr a by auto
         note this sf
       }

@@ -129,13 +129,14 @@ proof -
     hence a0: "a \<noteq> 0" by auto
     obtain b fs where oracl: "oracl (a, i) = (b,fs)" by force
     obtain c g where rp: "rat_to_normalized_int_poly a = (c,g)" by force    
+    from rat_to_normalized_int_poly[OF rp] have c0: "c \<noteq> 0" by auto
     let ?g = "map_poly rat_of_int g"
     from oracl[unfolded oracl_def split rp Let_def]
     have b: "b = c ^ Suc i" and fs: "fs = map (\<lambda>h. (h, Suc i)) (map ?rp (oracle_wrapper g))" by auto
     def ii \<equiv> "Suc i" def og \<equiv> "map ?rp (oracle_wrapper g)"
     note rp = rat_to_normalized_int_poly[OF rp]
     from rp a0 a have g: "content g = 1" "degree g \<noteq> 0" "g \<noteq> 0" by auto
-    from square_free_smult[OF a(1)[unfolded rp(1)], of "inverse c"] rp(2) 
+    from square_free_smult[OF _ a(1)[unfolded rp(1)], of "inverse c"] c rp(2) 
     have sfgg: "square_free ?g" by simp
     hence sfg: "square_free g" unfolding square_free_def dvd_def by force
     have g2: "listprod (oracle_wrapper g) = g" "\<And> f. f\<in>set (oracle_wrapper g) \<Longrightarrow> degree f \<noteq> 0"
@@ -163,7 +164,7 @@ proof -
         with f have df: "degree f \<noteq> 0" by auto
         from listprod_dvd[OF h, unfolded g2(1)] have "h dvd g" .
         hence "f dvd ?g" unfolding f dvd_def by auto
-        from square_free_factor[OF _ this sfgg] g(3) j df
+        from square_free_factor[OF this sfgg] j df
         show ?case by auto
       qed
       with p show "?prop (ai # psi) f j" unfolding ai by auto

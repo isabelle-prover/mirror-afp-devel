@@ -26,15 +26,15 @@ context
 begin
 
 definition square_free :: "'a poly \<Rightarrow> bool" where 
-  "square_free p = (p \<noteq> 0 \<longrightarrow> (\<forall> q. degree q \<noteq> 0 \<longrightarrow> \<not> (q * q dvd p)))"
+  "square_free p = (p \<noteq> 0 \<and> (\<forall> q. degree q \<noteq> 0 \<longrightarrow> \<not> (q * q dvd p)))"
 
 lemma square_freeI:  
   assumes "\<And> q. degree q \<noteq> 0 \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> q * q dvd p \<Longrightarrow> False"
+  and p: "p \<noteq> 0"
   shows "square_free p" unfolding square_free_def
-proof (intro allI impI notI)
-  fix q
-  assume dq: "degree q \<noteq> 0" and dvd: "q * q dvd p"
-  from assms[OF dq _ dvd] dq show False by (cases "q = 0", auto)
+proof (intro allI conjI[OF p] impI notI, goal_cases)
+  case (1 q)
+  from assms(1)[OF 1(1) _ 1(2)] 1(1) show False by (cases "q = 0", auto)
 qed
 
 lemma irreducible_square_free: "irreducible p \<Longrightarrow> square_free p"
@@ -44,18 +44,17 @@ proof (intro square_freeI)
     using irreducibleD(2)[of p q] irreducibleD(1)[of p]
     by (metis add_diff_cancel_left' degree_mult_eq degree_smult_eq 
       dvd_mult_left irreducible_dvd_smult linorder_neqE_nat not_less0 zero_less_diff)
-qed
+qed (auto simp: irreducible_def)
 
-lemma square_free_factor: assumes "p \<noteq> 0"
-  and dvd: "a dvd p"
+lemma square_free_factor: assumes dvd: "a dvd p"
   and sf: "square_free p"
   shows "square_free a"
 proof (intro square_freeI)
   fix q
   assume q: "degree q \<noteq> 0" and "q * q dvd a"
   hence "q * q dvd p" using dvd unfolding dvd_def by (auto simp: field_simps)
-  with sf[unfolded square_free_def] q `p \<noteq> 0` show False by auto
-qed
+  with sf[unfolded square_free_def] q show False by auto
+qed (insert dvd sf, auto simp: square_free_def)
 
 lemma square_free_listprod_distinct: 
   assumes sf: "square_free (listprod us)"
@@ -77,7 +76,7 @@ lemma coprime_pderiv_imp_square_free: assumes "coprime f (pderiv f)"
 proof (rule ccontr)
   from assms have f0: "f \<noteq> 0" by (cases f, auto)
   assume "\<not> square_free f"
-  then obtain g where g: "degree g \<noteq> 0" and "g * g dvd f" unfolding square_free_def by auto
+  then obtain g where g: "degree g \<noteq> 0" and "g * g dvd f" using f0 unfolding square_free_def by auto
   then obtain h where f: "f = g * (g * h)" unfolding dvd_def by (auto simp: ac_simps)
   have "pderiv f = g * ((g * pderiv h + h * pderiv g) + h * pderiv g)" 
     unfolding f pderiv_mult[of g] by (simp add: field_simps)
@@ -91,10 +90,10 @@ proof (rule ccontr)
   with assms show False by simp
 qed
 
-lemma square_free_rsquarefree: assumes f: "f \<noteq> 0" "square_free f" 
+lemma square_free_rsquarefree: assumes f: "square_free f" 
   shows "rsquarefree f"
   unfolding rsquarefree_def
-proof (rule conjI[OF f(1)], rule allI)
+proof (intro conjI allI)
   fix x
   show "order x f = 0 \<or> order x f = 1"
   proof (rule ccontr)
@@ -107,7 +106,7 @@ proof (rule conjI[OF f(1)], rule allI)
     hence "\<not> square_free f" using f(1) unfolding square_free_def by auto
     with assms show False by auto
   qed
-qed
+qed (insert f, auto simp: square_free_def)
 
 lemma rsquarefree_square_free_complex: assumes "rsquarefree (p :: complex poly)"
   shows "square_free p"
@@ -123,12 +122,13 @@ proof (rule square_freeI)
   hence "[:-x,1:]^2 dvd p" unfolding dvd_def by blast
   from this[unfolded order_divides] have "p = 0 \<or> \<not> order x p \<le> 1" by auto
   thus False using assms unfolding rsquarefree_def' by auto
-qed
+qed (insert assms, auto simp: rsquarefree_def)
     
-lemma square_free_coprime_pderiv: assumes f: "(f :: 'a :: field_char_0 poly) \<noteq> 0"
-  and "square_free f"
+lemma square_free_coprime_pderiv: fixes f :: "'a :: field_char_0 poly"
+  assumes "square_free f"
   shows "coprime f (pderiv f)"
 proof (rule ccontr)
+  from assms have f: "f \<noteq> 0" unfolding square_free_def by auto
   let ?g = "gcd f (pderiv f)"
   def G \<equiv> ?g
   from poly_gcd_monic[of f "pderiv f"] f have mon: "monic ?g"
@@ -160,23 +160,18 @@ qed
   
 
 lemma square_free_iff_coprime: "square_free (f :: 'a :: field_char_0 poly) = 
-  (f \<noteq> 0 \<longrightarrow> coprime f (pderiv f))"
-proof (cases "f = 0")
-  case True
-  thus ?thesis unfolding square_free_def by simp
-next
-  case False note f = this
-  with coprime_pderiv_imp_square_free[of f] square_free_coprime_pderiv[OF False]
-  show ?thesis by auto
-qed 
+  (coprime f (pderiv f))"
+  using coprime_pderiv_imp_square_free[of f] square_free_coprime_pderiv[of f] by auto
 
 context
   assumes "SORT_CONSTRAINT('a::field)"
 begin
 
-lemma square_free_smult: "square_free (f :: 'a poly) \<Longrightarrow> square_free (smult c f)"
-  by (cases "c = 0", unfold square_free_def, insert dvd_smult_cancel[of _ c], auto)
+lemma square_free_smult: "c \<noteq> 0 \<Longrightarrow> square_free (f :: 'a poly) \<Longrightarrow> square_free (smult c f)"
+  by (unfold square_free_def, insert dvd_smult_cancel[of _ c], auto)
 
+lemma square_free_smult_iff[simp]: "c \<noteq> 0 \<Longrightarrow> square_free (smult c f) = square_free (f :: 'a poly)"
+  using square_free_smult[of c f] square_free_smult[of "inverse c" "smult c f"] by auto
 
 definition square_free_factorization :: "'a poly \<Rightarrow> 'a \<times> ('a poly \<times> nat) list \<Rightarrow> bool" where
   "square_free_factorization p cbs \<equiv> case cbs of (c,bs) \<Rightarrow>
@@ -202,6 +197,7 @@ proof -
     by (simp add: setprod.distinct_set_conv_list[OF sff(5)])
 qed
 
+(* TODO: move *)
 lemma irreducible_dvd_pow: fixes p :: "'a poly" 
   assumes irr: "irreducible p"
   shows "p dvd q ^ Suc n \<Longrightarrow> p dvd q"
@@ -670,7 +666,7 @@ proof (rule square_freeI)
   with as_monic[OF bi] as_monic[OF ai] arg_cong[OF ba, of "\<lambda> p. coeff p (degree p)"] 
   have "a = b" unfolding coeff_smult degree_smult_eq by auto
   with neq show False by auto
-qed
+qed (insert A_monic[of i], auto)
 
 
 lemma setprod_A_is_p_B_bound: assumes "B n = 1"
@@ -1096,7 +1092,7 @@ proof -
   finally have 1: "p = smult c (setprod (\<lambda> (a,i). a ^ Suc i) (set ?new))" by simp
   from sff(4) have 4: "p \<noteq> 0" by auto
   from sff(5) no_mem rs have 5: "distinct ?new" by auto
-  note sf = square_free_factor[OF a0 _ sfa]
+  note sf = square_free_factor[OF _ sfa]
   from sff(2) sf[of r] sf[of s] r s 
   have 2: "\<And> a i. (a,i) \<in> set ?new \<Longrightarrow> square_free a \<and> degree a \<noteq> 0"
     unfolding a by auto
