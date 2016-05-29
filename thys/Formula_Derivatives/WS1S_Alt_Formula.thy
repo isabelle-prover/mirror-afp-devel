@@ -341,7 +341,10 @@ lemma bounded_check_eqv_sound:
   unfolding bounded_check_eqv_def by (rule WS1S_Alt.bounded_check_eqv_soundness)
 
 code_reflect WS1S_Alt
-  datatypes nat="_" and atomic="_" and order="_" and aformula="_" and idx="_"
-  functions check_eqv
+  datatypes nat and atomic = _ and order = _ and aformula = _ and idx = _
+  functions check_eqv "0::nat" "1::nat" Suc
+    "plus :: nat \<Rightarrow> _" "minus :: nat \<Rightarrow> _"
+    "times :: nat \<Rightarrow> _" "divide :: nat \<Rightarrow> _" "Divides.mod :: nat \<Rightarrow> _"
+    nat_of_integer integer_of_nat
 
 end
