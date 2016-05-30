@@ -120,7 +120,6 @@ subsection\<open>Interface Between the Reflected and the Native\<close>
 
 ML\<open>
  val To_string0 = String.implode o META.to_list
- fun To_nat (Code_Numeral.Nat i) = i
 \<close>
 
 ML\<open>
@@ -128,15 +127,14 @@ structure From = struct
  val string = META.SS_base o META.ST
  val binding = string o Binding.name_of
  (*fun term ctxt s = string (XML.content_of (YXML.parse_body (Syntax.string_of_term ctxt s)))*)
- val nat = Code_Numeral.Nat
- val internal_oid = META.Oid o nat
+ val internal_oid = META.Oid o Code_Numeral.natural_of_integer
  val option = Option.map
  val list = List.map
  fun pair f1 f2 (x, y) = (f1 x, f2 y)
  fun pair3 f1 f2 f3 (x, y, z) = (f1 x, f2 y, f3 z)
 
  structure Pure = struct
- val indexname = pair string nat
+ val indexname = pair string Code_Numeral.natural_of_integer
  val class = string
  val sort = list class
  fun typ e = (fn
@@ -148,7 +146,7 @@ structure From = struct
      Const (s, t) => (META.Const o pair string typ) (s, t)
    | Free (s, t) => (META.Free o pair string typ) (s, t)
    | Var (i, t) => (META.Var o pair indexname typ) (i, t)
-   | Bound i => (META.Bound o nat) i
+   | Bound i => (META.Bound o Code_Numeral.natural_of_integer) i
    | Abs (s, ty, t) => (META.Abs o pair3 string typ term) (s, ty, t)
    | op $ (term1, term2) => (META.App o pair term term) (term1, term2)
   ) e
@@ -167,7 +165,7 @@ fun in_local decl thy =
   |> Local_Theory.exit_global
 \<close>
 
-ML\<open>fun List_mapi f = META.mapi (f o To_nat)\<close>
+ML\<open>fun List_mapi f = META.mapi (f o Code_Numeral.integer_of_natural)\<close>
 
 ML\<open>
 structure Ty' = struct
@@ -299,7 +297,7 @@ fun semi__method expr = let open META open Method open META_overload in case exp
       Basic (fn ctxt => SIMPLE_METHOD' (Induct_Tacs.case_tac ctxt (of_semi__term e) [] NONE))
   | Method_blast n =>
       Basic (case n of NONE => SIMPLE_METHOD' o blast_tac
-                     | SOME lim => fn ctxt => SIMPLE_METHOD' (depth_tac ctxt (To_nat lim)))
+                     | SOME lim => fn ctxt => SIMPLE_METHOD' (depth_tac ctxt (Code_Numeral.integer_of_natural lim)))
   | Method_clarify => Basic (fn ctxt => (SIMPLE_METHOD' (fn i => CHANGED_PROP (clarify_tac ctxt i))))
   | Method_metis (l_opt, l) =>
       Basic (fn ctxt => (METHOD oo Metis_Tactic.metis_method)
@@ -432,7 +430,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
       | Definition_where1 (name, (abbrev, prio), e) =>
           (SOME ( To_sbinding name
                 , NONE
-                , Mixfix (Input.string ("(1" ^ of_semi__term abbrev ^ ")"), [], To_nat prio, Position.no_range)), e)
+                , Mixfix (Input.string ("(1" ^ of_semi__term abbrev ^ ")"), [], Code_Numeral.integer_of_natural prio, Position.no_range)), e)
       | Definition_where2 (name, abbrev, e) =>
           (SOME ( To_sbinding name
                 , NONE
@@ -1297,7 +1295,7 @@ structure TOY_parse = struct
                                            | _ => Scan.fail "Syntax error")
                         || Parse.number >> (fn s => META.Mult_nat
                                                       (case Int.fromString s of
-                                                         SOME i => From.nat i
+                                                         SOME i => Code_Numeral.natural_of_integer i
                                                        | NONE => Scan.fail "Syntax error"))
   val term_base =
        Parse.number >> (META.ToyDefInteger o From.string)
