@@ -21,13 +21,22 @@ datatype root_info = Root_Info (l_r: "rat \<Rightarrow> rat \<Rightarrow> nat") 
 hide_const (open) l_r
 hide_const (open) inf_r
 
-definition count_roots_interval :: "real poly \<Rightarrow> (real \<Rightarrow> real \<Rightarrow> nat) \<times> (real \<Rightarrow> nat)" where
-  "count_roots_interval p = (let ps = sturm_squarefree p
+definition count_roots_interval_sf :: "real poly \<Rightarrow> (real \<Rightarrow> real \<Rightarrow> nat) \<times> (real \<Rightarrow> nat)" where
+  "count_roots_interval_sf p = (let ps = sturm_squarefree p
     in ((\<lambda> a b. sign_changes ps a - sign_changes ps b + (if poly p a = 0 then 1 else 0)),
        (\<lambda> a. sign_changes_neg_inf ps - sign_changes ps a)))"
 
-lemma count_roots_interval: assumes p: "p \<noteq> 0" 
-  and cr: "count_roots_interval p = (cr,nr)"
+definition count_roots_interval :: "real poly \<Rightarrow> (real \<Rightarrow> real \<Rightarrow> nat) \<times> (real \<Rightarrow> nat)" where
+  "count_roots_interval p = (let ps = sturm p
+    in ((\<lambda> a b. sign_changes ps a - sign_changes ps b + (if poly p a = 0 then 1 else 0)),
+       (\<lambda> a. sign_changes_neg_inf ps - sign_changes ps a)))"
+
+lemma count_roots_interval_iff: "square_free p \<Longrightarrow> count_roots_interval p = count_roots_interval_sf p"
+  unfolding count_roots_interval_def count_roots_interval_sf_def sturm_squarefree_def
+    square_free_iff_coprime by (cases "p = 0", auto)
+
+lemma count_roots_interval_sf: assumes p: "p \<noteq> 0" 
+  and cr: "count_roots_interval_sf p = (cr,nr)"
   shows "a \<le> b \<Longrightarrow> cr a b = (card {x. a \<le> x \<and> x \<le> b \<and> poly p x = 0})"
     "nr a = card {x. x \<le> a \<and> poly p x = 0}"
 proof -
@@ -37,10 +46,17 @@ proof -
   have RS: "finite ?R" "finite ?S" "?R \<inter> ?S = {}"  using p by (auto simp: poly_roots_finite)   
   show "a \<le> b \<Longrightarrow> cr a b = (card {x. a \<le> x \<and> x \<le> b \<and> poly p x = 0})"
     "nr a = card {x. x \<le> a \<and> poly p x = 0}" using cr unfolding arg_cong[OF id, of card] card_Un_disjoint[OF RS] 
-    count_roots_interval_def count_roots_between_correct[symmetric]
+    count_roots_interval_sf_def count_roots_between_correct[symmetric]
     count_roots_below_correct[symmetric] count_roots_below_def
     count_roots_between_def Let_def using p by auto
 qed
+
+lemma count_roots_interval: assumes p: "p \<noteq> 0" 
+  and cr: "count_roots_interval p = (cr,nr)"
+  and sf: "square_free p"
+  shows "a \<le> b \<Longrightarrow> cr a b = (card {x. a \<le> x \<and> x \<le> b \<and> poly p x = 0})"
+    "nr a = card {x. x \<le> a \<and> poly p x = 0}"
+  using count_roots_interval_sf[OF p cr[unfolded count_roots_interval_iff[OF sf]]] by blast+
 
 definition root_cond :: "rat poly \<times> rat \<times> rat \<Rightarrow> real \<Rightarrow> bool" where
   "root_cond plr x = (case plr of (p,l,r) \<Rightarrow> of_rat l \<le> x \<and> x \<le> of_rat r \<and> rpoly p x = 0)"
@@ -53,6 +69,11 @@ lemma root_info_condD: "root_info_cond ri p \<Longrightarrow> a \<le> b \<Longri
   "root_info_cond ri p \<Longrightarrow> root_info.inf_r ri a = card {x. x \<le> real_of_rat a \<and> rpoly p x = 0}"
   unfolding root_info_cond_def by auto
 
+definition count_roots_interval_sf_rat :: "rat poly \<Rightarrow> root_info" where
+  [code del]: "count_roots_interval_sf_rat  p = (let pp = real_of_rat_poly p;
+    (cr,nr) = count_roots_interval_sf pp
+  in Root_Info (\<lambda> a b. cr (of_rat a) (of_rat b)) (\<lambda> a. nr (of_rat a)))"
+
 definition count_roots_interval_rat :: "rat poly \<Rightarrow> root_info" where
   [code del]: "count_roots_interval_rat  p = (let pp = real_of_rat_poly p;
     (cr,nr) = count_roots_interval pp
@@ -61,19 +82,19 @@ definition count_roots_interval_rat :: "rat poly \<Rightarrow> root_info" where
 definition count_roots_rat :: "rat poly \<Rightarrow> nat" where
   [code del]: "count_roots_rat  p = (count_roots (real_of_rat_poly p))"
 
-lemma count_roots_interval_rat: assumes p: "p \<noteq> 0" 
-  shows "root_info_cond (count_roots_interval_rat p) p"
+lemma count_roots_interval_sf_rat: assumes p: "p \<noteq> 0" 
+  shows "root_info_cond (count_roots_interval_sf_rat p) p"
 proof -  
   let ?p = "real_of_rat_poly p"
   let ?r = real_of_rat
-  let ?ri = "count_roots_interval_rat p"
+  let ?ri = "count_roots_interval_sf_rat p"
   from p have p: "?p \<noteq> 0" using real_of_rat_poly_0 by auto
-  obtain cr nr where cr: "count_roots_interval ?p = (cr,nr)" by force
+  obtain cr nr where cr: "count_roots_interval_sf ?p = (cr,nr)" by force
   have "?ri = Root_Info (\<lambda>a b. cr (?r a) (?r b)) (\<lambda>a. nr (?r a))"
-    unfolding count_roots_interval_rat_def Let_def cr by auto
+    unfolding count_roots_interval_sf_rat_def Let_def cr by auto
   hence id: "root_info.l_r ?ri = (\<lambda>a b. cr (?r a) (?r b))" "root_info.inf_r ?ri = (\<lambda>a. nr (?r a))"
     by auto
-  note cr = count_roots_interval[OF p cr]
+  note cr = count_roots_interval_sf[OF p cr]
   show ?thesis unfolding root_info_cond_def id
   proof (intro conjI impI allI)
     fix a
@@ -88,6 +109,19 @@ proof -
       poly_real_of_rat_poly by simp
   qed
 qed
+
+lemma count_roots_interval_rat: assumes p: "p \<noteq> 0" 
+  and sf: "square_free p"
+  shows "root_info_cond (count_roots_interval_rat p) p"
+proof -
+  have sf: "square_free (real_of_rat_poly p)"
+    by (subst inj_field_hom_0.square_free_map_poly, unfold_locales, rule sf)
+  show ?thesis
+  using count_roots_interval_sf_rat[OF p]
+  unfolding count_roots_interval_rat_def count_roots_interval_sf_rat_def 
+    Let_def count_roots_interval_iff[OF sf] .
+qed
+
 
 lemma count_roots_rat: "count_roots_rat p = card {x. rpoly p x = (0 :: real)}"
   unfolding count_roots_rat_def count_roots_correct poly_real_of_rat_poly ..
@@ -195,15 +229,26 @@ proof -
   finally show ?thesis .
 qed
 
+lemma count_roots_interval_rat_sf_code[code]:
+  "count_roots_interval_sf_rat p = (let ps = sturm_squarefree_rat p
+    in Root_Info 
+      (\<lambda> a b. sign_changes_rat ps a - sign_changes_rat ps b + (if poly p a = 0 then 1 else 0))
+      (\<lambda> a. sign_changes_neg_inf_rat ps - sign_changes_rat ps a))"
+  unfolding count_roots_interval_sf_rat_def Let_def count_roots_interval_sf_def split
+    sturm_squarefree_rat sign_changes_rat poly_real_of_rat_poly rpoly.eval_poly_poly rpoly.hom_0_iff
+    sign_changes_neg_inf_rat
+    by simp
+
 lemma count_roots_interval_rat_code[code]:
-  "count_roots_interval_rat p = (let ps = sturm_squarefree_rat p
+  "count_roots_interval_rat p = (let ps = sturm_rat p
     in Root_Info 
       (\<lambda> a b. sign_changes_rat ps a - sign_changes_rat ps b + (if poly p a = 0 then 1 else 0))
       (\<lambda> a. sign_changes_neg_inf_rat ps - sign_changes_rat ps a))"
   unfolding count_roots_interval_rat_def Let_def count_roots_interval_def split
-    sturm_squarefree_rat sign_changes_rat poly_real_of_rat_poly rpoly.eval_poly_poly rpoly.hom_0_iff
+    sturm_rat sign_changes_rat poly_real_of_rat_poly rpoly.eval_poly_poly rpoly.hom_0_iff
     sign_changes_neg_inf_rat
     by simp
+
 
 lemma count_roots_rat_code[code]:
   "count_roots_rat p = (if real_of_rat_poly p = 0 then 0 else let ps = sturm_squarefree_rat p

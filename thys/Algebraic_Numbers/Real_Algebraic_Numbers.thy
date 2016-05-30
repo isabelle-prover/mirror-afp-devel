@@ -630,7 +630,7 @@ end
 lemma rai_normalize_poly_flat: 
   assumes res: "rai_normalize_poly_flat mode (un,ri,p,l,r) = (un',ri',p',l',r')"
     and ur: "unique_root (p,l,r)" and p0: "p \<noteq> 0" and ri: "root_info_cond ri p"
-    and un: "un = Monic_Irreducible \<or> mode = Check_Root_Free \<Longrightarrow> poly_type_cond un p"
+    and un: "un = Monic_Irreducible \<or> mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> poly_type_cond un p"
   shows "unique_root (p',l,r)" "p' \<noteq> 0" "l' = l" "r' = r" 
     "un' \<le> factorization_guarantee mode" "poly_type_cond un' p'"
     "the_unique_root (p',l,r) = the_unique_root (p,l,r)" "root_info_cond ri' p'" "monic p'"
@@ -647,18 +647,25 @@ proof -
     case False
     from False res have res: "rai_normalize_poly_main mode l r (factors_of_rat_poly mode p) = ?y" 
       by auto
-    obtain c pis where fact: "factorize_rat_poly mode p = (c,pis)" by force
+    obtain c pis where fact: "factorize_sf_rat_poly mode p = (c,pis)" by force
     from res have y: "rai_normalize_poly_main mode l r (map fst pis) = ?y" 
       unfolding factors_of_rat_poly_def fact by auto
-    note fact = factorize_rat_poly[OF fact]
+    from un have "mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p" 
+      by (auto simp: poly_type_cond_square_free_D)
+    note fact = factorize_sf_rat_poly[OF fact this]
+    note sff = square_free_factorizationD[OF fact(1)]
+    note sff' = square_free_factorizationD'[OF fact(1)]
     let ?p = "\<lambda> pis. smult c (\<Prod>(q, i)\<leftarrow>pis. q ^ i)"
-    from fact(1) p0 have c0: "c \<noteq> 0" by auto
-    have id: "the_unique_root (smult c (\<Prod>(x, y)\<leftarrow>pis. x ^ y), l, r)
-      = the_unique_root (\<Prod>(x, y)\<leftarrow>pis. x ^ y, l, r)"
-      "unique_root (smult c (\<Prod>(x, y)\<leftarrow>pis. x ^ y), l, r)
-      = unique_root (\<Prod>(x, y)\<leftarrow>pis. x ^ y, l, r)"
+    from sff(1) p0 have c0: "c \<noteq> 0" by auto
+    interpret rp: inj_ring_hom real_of_rat_poly by (rule rpoly.inj_ring_hom_map_poly)
+    have id1: "the_unique_root (smult c (\<Prod>(x, y)\<leftarrow>pis. x ^ Suc y), l, r)
+      = the_unique_root (listprod (map fst pis), l, r)"
       by (rule the_unique_root_cong, simp add: rpoly_smult_0_iff[OF c0], 
-        rule unique_root_cong, simp add: rpoly_smult_0_iff[OF c0])
+       force simp add: eval_poly_def listprod_zero_iff o_def)
+    have id2: "unique_root (smult c (\<Prod>(x, y)\<leftarrow>pis. x ^ Suc y), l, r)
+      = unique_root (listprod (map fst pis), l, r)"
+      by (rule unique_root_cong, simp add: rpoly_smult_0_iff[OF c0], 
+       force simp add: eval_poly_def listprod_zero_iff o_def)
     let ?r = "real_of_rat r"
     let ?l = "real_of_rat l"
     let ?prop = "\<lambda> ri q. root_info_cond ri q \<and> monic q 
@@ -667,11 +674,11 @@ proof -
       \<and> rai_normalize_poly_main mode l r (map fst pis) = 
         (factorization_guarantee mode,ri,q,l,r)"
     from ur have ur': "unique_root (p, l, r)" .
-    from fact(2-) un have "\<And> q i. (q, i) \<in> set pis \<Longrightarrow>
+    from sff'(1) have p_id: "p = smult c (\<Prod>(a, i)\<leftarrow>pis. a ^ Suc i)" by auto
+    from fact(2-) sff(2) have "\<And> q i. (q, i) \<in> set pis \<Longrightarrow>
       (mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q) \<and>
-      (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> i \<noteq> 0 \<and> monic q \<and> square_free q" 
-      by (cases mode, auto simp: poly_type_cond_square_free_D)
-    from this ur' have "\<exists> ri q. ?prop ri q" unfolding fact(1) id
+      (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> monic q \<and> square_free q" by auto
+    from this ur' have "\<exists> ri q. ?prop ri q" unfolding p_id id1 id2
     proof (induct pis)
       case Nil
       from Nil(2)[unfolded unique_root_def root_cond_def]
@@ -684,29 +691,23 @@ proof -
       def ri \<equiv> "count_roots_interval_rat p" 
       def cr \<equiv> "root_info.l_r ri"
       from Cons(2)[of p i] have irr: "poly_type_cond (factorization_guarantee mode) p" 
-       and i: "i \<noteq> 0" and mon: "monic p" and p0: "p \<noteq> 0" 
+       and mon: "monic p" and p0: "p \<noteq> 0" 
        unfolding pi by (cases mode, auto simp: poly_type_cond_def)
-      then obtain j where i: "i = Suc j" by (cases i, auto)
+      from poly_type_cond_square_free_D[OF irr] have sf: "square_free p" .
       note unique = the_unique_root[OF Cons(3)]
       from unique(4)[unfolded root_cond_def] have "?l \<le> ?r" by auto
       hence lr: "l \<le> r" by (simp add: of_rat_less_eq)
-      note cri = count_roots_interval_rat[OF p0, folded ri_def]
+      note cri = count_roots_interval_rat[OF p0 sf, folded ri_def]
       note ri = root_info_condD[OF cri, folded cr_def]
       note cr_lr = ri(1)[OF lr]
       from finite_rpoly_roots[OF p0] have fin: "finite (Collect (root_cond (p, l, r)))" 
         unfolding root_cond_def[abs_def] by auto  
-      let ?pq = "(\<Prod>a\<leftarrow>pi # pis. case a of (a, b) \<Rightarrow> a ^ b)"
-      let ?q = "(\<Prod>a\<leftarrow> pis. case a of (a, b) \<Rightarrow> a ^ b)"
+      let ?pq = "listprod (map fst (pi # pis))"
+      let ?q = "listprod (map fst pis)"
       {
         fix y :: real
-        have "(rpoly ?pq y = 0) = (rpoly p y = 0 \<or> rpoly ?q y = 0)"
-          unfolding rpoly.poly_map_poly_eval_poly[symmetric] pi
-             semiring_hom.hom_listprod[OF rpoly.semiring_hom_map_poly]
-             list.simps split rpoly.map_poly_mult listprod.Cons
-             semiring_hom.hom_power[OF rpoly.semiring_hom_map_poly]
-           unfolding 
-             poly_listprod_zero_iff poly_mult_zero_iff poly_power_zero_iff i
-           unfolding rpoly.poly_map_poly_eval_poly root_cond_def by auto
+        have "(rpoly ?pq y = 0) = (rpoly p y = 0 \<or> rpoly ?q y = 0)" 
+          unfolding rpoly.poly_map_poly_eval_poly[symmetric] pi by simp
       } note pq_expand = this
       show ?case
       proof (cases "cr l r = 0")
@@ -763,6 +764,7 @@ proof -
     "un' \<le> factorization_guarantee mode" "poly_type_cond un' p'"
     "the_unique_root (p',l,r) = the_unique_root (p,l,r)" "root_info_cond ri' p'" "monic p'" by blast+
 qed
+
 
 lemma rai_normalize_poly_flat_rai_cond: fixes mode :: factorization_mode 
   assumes rc: "rai_cond (Some x)" 
@@ -894,6 +896,9 @@ proof (cases rai1)
     let ?R = real_of_rat
     note un1 = the_unique_root[OF ri1(7)]
     note un2 = the_unique_root[OF ri2(7)]
+    from poly_type_cond_square_free_D[OF ri1(10)] have sf1: "square_free p1" .
+    have "f dvd p1" unfolding f_def by auto
+    from square_free_factor[OF this sf1] have sf: "square_free f" .
     show "?l = ?r"
     proof (cases "l1 \<le> r2 \<and> l2 \<le> r1")
       case False
@@ -909,7 +914,7 @@ proof (cases rai1)
       from order_trans[OF un1(1-2)] order_trans[OF un2(1-2)] have "l1 \<le> r1" "l2 \<le> r2" 
         unfolding of_rat_less_eq by auto
       with True have "l \<le> r" using ri1(7) unfolding l_def r_def by auto
-      from root_info_condD(1)[OF count_roots_interval_rat[OF f] this] True
+      from root_info_condD(1)[OF count_roots_interval_rat[OF f sf] this] True
       have r: "?r = (card {x. root_cond (f, l, r) x} \<noteq> 0)" unfolding r by auto
       also have "\<dots> = ({x. root_cond (f, l, r) x} \<noteq> {})"
         by (subst card_0_eq, unfold root_cond_def[abs_def] split, 
@@ -1538,8 +1543,7 @@ next
   show "irreducible (monic_poly p) = irreducible p" unfolding id
     by (rule irreducible_smult[OF c])
   show "(monic_poly p = 0) = (p = 0)" unfolding id using c by simp
-  show "(square_free (monic_poly p)) = square_free p" unfolding id using c
-    square_free_smult[of p c] square_free_smult[of "smult c p" "inverse c"] by auto  
+  show "(square_free (monic_poly p)) = square_free p" unfolding id using c by simp
 qed
 
 (* TODO: one might try to carry over un also for Monic_Root_Poly *)
@@ -1592,7 +1596,7 @@ proof (cases x)
     by (rule poly_uminus_square_free)
   from mi sf have un: "poly_type_cond un' ?mp" by (cases un, auto simp: poly_type_cond_def un'_def)
   show ?thesis unfolding y x
-    by (rule rai_cond_realI, insert * rc count_roots_interval_rat[of ?mp], 
+    by (rule rai_cond_realI, insert * rc count_roots_interval_rat[OF _ sf], 
       auto simp: of_rat_minus sgn_minus_rat, insert inj un, auto simp: monic_poly(4))
 qed (simp add: y uminus_rai_fun_def)
 
@@ -1660,7 +1664,7 @@ proof (cases x)
     by (rule poly_inverse_square_free)
   from mi sf have un: "poly_type_cond un' ?mp" by (cases un, auto simp: poly_type_cond_def un'_def)
   show ?thesis unfolding y x
-    by (rule rai_cond_realI, insert * rc count_roots_interval_rat[of ?mp], 
+    by (rule rai_cond_realI, insert * rc count_roots_interval_rat[OF _ sf], 
       auto simp: of_rat_inverse real_of_rat_sgn inverse_le_iff_sgn rpoly_inverse[OF x0]) 
     (insert inj un, auto simp: monic_poly)
 qed (simp add: y inverse_rai_fun_def)
@@ -2065,7 +2069,7 @@ end
 
 private definition root_rai_fun_pos :: "rai_intern \<Rightarrow> rai_intern" where
   "root_rai_fun_pos \<equiv> map_option (\<lambda> (un,ri,p,l,r) \<Rightarrow> 
-  let p' = poly_nth_root n p; ri' = count_roots_interval_rat p' in 
+  let p' = poly_nth_root n p; ri' = count_roots_interval_sf_rat p' in 
   rai_normalize_poly_flat Uncertified_Factorization 
     (tighten_bound_root p' p ri' (root_info.l_r ri') (root_info.l_r ri)
       (initial_lower_bound l, initial_upper_bound r) (l,r)))"
@@ -2161,7 +2165,7 @@ proof (cases x)
   from ** have "?x \<le> of_rat r" by auto
   note iu = initial_upper_bound[OF x0 this]
   let ?p = "poly_nth_root n p"
-  let ?c = "count_roots_interval_rat"
+  let ?c = "count_roots_interval_sf_rat"
   let ?lr = "root_info.l_r"
   from x0 have id: "root n ?x ^ n = ?x" using n real_root_pow_pos by blast
   have rc: "root_cond (?p, ?l, ?r) (root n ?x)"
@@ -2175,10 +2179,10 @@ proof (cases x)
   obtain un1 Cr P L R where tight: "?tight = (un1,Cr,P,L,R)" by (cases ?tight, auto)
   from the_unique_root(5)[OF ur *(1)] have id2: "the_unique_root (p,l,r) = ?x" .
   have cr': "root_info_cond (?c ?p) ?p"
-    by (rule count_roots_interval_rat[OF p'])
+    by (rule count_roots_interval_sf_rat[OF p'])
   note ur = tighten_bound_root[OF n ur rc refl _ cr refl cr' refl tight p p' sgnl il(1), unfolded id2, OF refl]
   obtain un ri p l r where norm: "?norm = (un,ri,p,l,r)" by (cases ?norm, auto)
-  from ur(8) have cond: "un1 = Monic_Irreducible \<or> Uncertified_Factorization = Check_Root_Free \<Longrightarrow>
+  from ur(8) have cond: "un1 = Monic_Irreducible \<or> Uncertified_Factorization \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow>
      poly_type_cond un1 P" by auto
   from the_unique_root(5)[OF ur(1-2)] 
   have id: "root n (rai_real x) = the_unique_root (P, L, R)"
@@ -2236,6 +2240,21 @@ end
 
 (* ********************* *)
 subsubsection\<open>Addition\<close>
+
+context
+  fixes bnd_update :: "'a \<Rightarrow> 'a" 
+  and bnd_get :: "'a \<Rightarrow> rat \<times> rat"
+begin
+partial_function (tailrec) tighten_poly_bounds_binary_list
+  :: "'a \<Rightarrow> (rat poly \<times> root_info)list \<Rightarrow> (rat poly \<times> root_info)list
+    \<Rightarrow> rat \<Rightarrow> rat \<Rightarrow> nat \<Rightarrow> (rat poly \<times> root_info) \<times> rat \<times> rat" where
+  [code]: "tighten_poly_bounds_binary_list bnd todo old l r n = (case todo of Nil
+    \<Rightarrow> if n = 1 then (hd old, l, r) else let bnd' = bnd_update bnd in (case bnd_get bnd of (l,r) \<Rightarrow> 
+      tighten_poly_bounds_binary_list bnd' old [] l r 0)
+   | Cons (p,ri) todo \<Rightarrow> let m = root_info.l_r ri l r in 
+      if m = 0 then tighten_poly_bounds_binary_list bnd todo old l r n
+      else tighten_poly_bounds_binary_list bnd todo ((p,ri) # old) l r (n + m))"
+end
 
 context
   fixes cr1 :: "rat \<Rightarrow> rat \<Rightarrow> nat"
@@ -2409,10 +2428,28 @@ lemma normalize_rat_poly2[simp]: "root_info_cond r (normalize_rat_poly p) = root
   "the_unique_root (normalize_rat_poly p,x,y) = the_unique_root (p,x,y)"
   unfolding root_info_cond_def root_cond_def unique_root_def the_unique_root_def by auto
 
+private fun add_rai_fun' :: "rai_intern \<Rightarrow> rai_intern \<Rightarrow> rai_intern" where
+  "add_rai_fun' (Some (un1,ri1,p1,l1,r1)) (Some (un2,ri2,p2,l2,r2)) = (
+    let p = poly_add (normalize_rat_poly p1) (normalize_rat_poly p2);
+      ps = factors_of_rat_poly Uncertified_Factorization p;
+      psri = map (\<lambda> p. (p, count_roots_interval_rat p)) ps;
+      ((p',ri'),l,r) = tighten_poly_bounds_binary_list 
+        (\<lambda> (l1,r1,l2,r2). let 
+          (l1',r1') = tighten_poly_bounds (root_info.l_r ri1) l1 r1;
+          (l2',r2') = tighten_poly_bounds (root_info.l_r ri2) l2 r2
+         in (l1',r1',l2',r2'))
+        (\<lambda> (l1,r1,l2,r2). (l1 + l2, r1 + r2))
+        (l1,r1,l2,r2) psri [] (l1 + l2) (r1 + r2) 0
+    in if l \<le> 0 \<and> 0 \<le> r \<and> poly p' 0 = 0 then None else 
+      let (l',r') = tighten_poly_bounds_for_x (root_info.l_r ri') 0 l r
+      in Some (Arbitrary_Poly,ri',p',l',r'))"
+| "add_rai_fun' None y = y"
+| "add_rai_fun' x None = x"
+
 private fun add_rai_fun :: "rai_intern \<Rightarrow> rai_intern \<Rightarrow> rai_intern" where
   "add_rai_fun (Some (un1,ri1,p1,l1,r1)) (Some (un2,ri2,p2,l2,r2)) = (
     let p = poly_add (normalize_rat_poly p1) (normalize_rat_poly p2);
-      ri = count_roots_interval_rat p;
+      ri = count_roots_interval_sf_rat p;
       cr = root_info.l_r ri;
       (l,r) = tighten_poly_bounds_binary (root_info.l_r ri1) (root_info.l_r ri2) cr 
         (\<lambda> l1 r1 l2 r2. (l1 + l2, r1 + r2)) l1 r1 l2 r2;
@@ -2422,6 +2459,10 @@ private fun add_rai_fun :: "rai_intern \<Rightarrow> rai_intern \<Rightarrow> ra
       in Some (un',ri',p',l',r'))"
 | "add_rai_fun None y = y"
 | "add_rai_fun x None = x"
+
+lemma add_rai_main': assumes x: "rai_cond x" and y: "rai_cond y"
+  defines z: "z \<equiv> add_rai_fun' x y"
+  shows "rai_cond z \<and> (rai_real z = rai_real x + rai_real y)" oops
 
 lemma add_rai_main: assumes x: "rai_cond x" and y: "rai_cond y"
   defines z: "z \<equiv> add_rai_fun x y"
@@ -2444,7 +2485,7 @@ next
     let ?p1 = "normalize_rat_poly p1"
     let ?p2 = "normalize_rat_poly p2"
     let ?p = "poly_add ?p1 ?p2"    
-    let ?ri = "count_roots_interval_rat ?p"
+    let ?ri = "count_roots_interval_sf_rat ?p"
     let ?lr = "root_info.l_r"
     obtain l r where tb: "tighten_poly_bounds_binary (?lr ri1) (?lr ri2) (?lr ?ri)
       (\<lambda>l1 r1 l2 r2. (l1 + l2, r1 + r2)) l1 r1 l2 r2 = (l,r)" by force
@@ -2457,7 +2498,7 @@ next
     have bnd: "\<And>l1 r1 l2 r2. root_cond (?p1, l1, r1) ?x \<Longrightarrow>
       root_cond (?p2, l2, r2) ?y \<Longrightarrow> root_cond (?p, l1 + l2, r1 + r2) (?x + ?y)"
       unfolding root_cond_def split using rt by auto
-    note ri = count_roots_interval_rat[OF p]
+    note ri = count_roots_interval_sf_rat[OF p]
     have xy: "?x = the_unique_root (p1,l1,r1)" "?y = the_unique_root (p2,l2,r2)" by (auto simp: rai_real_def)
     hence xy: "?x = the_unique_root (?p1,l1,r1)" "?y = the_unique_root (?p2,l2,r2)" by auto
     have "root_cond (?p,l,r) (?x + ?y) \<and> unique_root (?p,l,r)"
@@ -2465,7 +2506,7 @@ next
         auto simp: field_simps)
     hence rc: "root_cond (?p,l,r) (?x + ?y)" and ur: "unique_root (?p,l,r)" by auto
     from the_unique_root(5)[OF ur rc] have xy: " ?x + ?y = the_unique_root (?p,l,r)" by auto
-    let ?ri = "count_roots_interval_rat ?p"
+    let ?ri = "count_roots_interval_sf_rat ?p"
     let ?norm = "rai_normalize_poly_flat Uncertified_Factorization (Arbitrary_Poly,?ri,?p,l,r)"
     obtain un' ri' p' l' r' where norm: "?norm = (un',ri',p',l',r')" by (cases ?norm, auto)
     from rai_normalize_poly_flat[OF norm ur p ri]
@@ -2522,7 +2563,9 @@ next
   from y(1)[unfolded root_cond_def split] 
   have rt: "rpoly p2 ?y = 0" and bnd: "of_rat l2 \<le> ?y" "?y \<le> of_rat r2" by auto
   from rt have rt: "rpoly ?p (?x + ?y) = 0" unfolding rpoly_add_rat by simp
-  note ri = count_roots_interval_rat[OF mp]
+  from poly_type_cond_square_free_D[OF y(10)] have "square_free p2" .
+  hence sf: "square_free ?mp" unfolding monic_poly by (rule poly_add_rat_square_free)
+  note ri = count_roots_interval_rat[OF mp sf]
   obtain l r where lr: "l = l2 + r1" "r = r2 + r1" by force
   from bnd have bnd: "of_rat l \<le> ?x + ?y" "?x + ?y \<le> of_rat r" unfolding lr of_rat_add by auto
   with rt have rc: "root_cond (?mp,l,r) (?x + ?y)" unfolding root_cond_def by (auto simp: monic_poly)
@@ -2561,8 +2604,6 @@ next
     from unique_root_sub_interval[OF ur rc[unfolded xy] lr''] have ur: "unique_root (?mp, l', r')"
       and tur: "the_unique_root (?mp,l',r') = ?x + ?y" unfolding xy by auto
     have yp2: "alg_poly ?y p2" using y(1,5) unfolding root_cond_def split alg_poly_def by auto
-    from poly_type_cond_square_free_D[OF y(10)] have "square_free p2" .
-    hence sf: "square_free ?mp" unfolding monic_poly by (rule poly_add_rat_square_free)
     {
       assume mi: "un2 \<le> Monic_Irreducible"
       from poly_add_rat_irreducible poly_type_cond_MI_D[OF y(10) mi] y(5) 
@@ -2603,10 +2644,24 @@ private fun mult_rat_rai_fun_pos :: "rat \<Rightarrow> rai_intern_flat \<Rightar
       (l,r) = (l2*r1,r2*r1)
     in (un_weaken un2,ri,p,l,r))"
 
+private fun mult_rai_fun_pos' :: "rai_intern_flat \<Rightarrow> rai_intern_flat \<Rightarrow> rai_intern_flat" where
+  "mult_rai_fun_pos' (un1,ri1,p1,l1,r1) (un2,ri2,p2,l2,r2) = (
+    let p = poly_mult (normalize_rat_poly p1) (normalize_rat_poly p2);
+      ps = factors_of_rat_poly Uncertified_Factorization p;
+      psri = map (\<lambda> p. (p, count_roots_interval_rat p)) ps;
+      ((p',ri'),l,r) = tighten_poly_bounds_binary_list 
+        (\<lambda> (l1,r1,l2,r2). let 
+          (l1',r1') = tighten_poly_bounds (root_info.l_r ri1) l1 r1;
+          (l2',r2') = tighten_poly_bounds (root_info.l_r ri2) l2 r2
+         in (l1',r1',l2',r2'))
+        (\<lambda> (l1,r1,l2,r2). (l1 * l2, r1 * r2))
+        (l1,r1,l2,r2) psri [] (l1 * l2) (r1 * r2) 0
+    in (Arbitrary_Poly,ri',p',l,r))"
+
 private fun mult_rai_fun_pos :: "rai_intern_flat \<Rightarrow> rai_intern_flat \<Rightarrow> rai_intern_flat" where
   "mult_rai_fun_pos (un1,ri1,p1,l1,r1) (un2,ri2,p2,l2,r2) = (
     let p = poly_mult (normalize_rat_poly p1) (normalize_rat_poly p2);
-      ri = count_roots_interval_rat p;
+      ri = count_roots_interval_sf_rat p;
       (l,r) = tighten_poly_bounds_binary (root_info.l_r ri1) (root_info.l_r ri2) (root_info.l_r ri) 
         (\<lambda> l1 r1 l2 r2. (l1 * l2, r1 * r2)) l1 r1 l2 r2;
       (un',ri',p',_) = rai_normalize_poly_flat Uncertified_Factorization (Arbitrary_Poly,ri,p,l,r)    
@@ -2648,7 +2703,9 @@ proof -
   have rt: "rpoly p2 ?y = 0" and bnd: "of_rat l2 \<le> ?y" "?y \<le> of_rat r2" by auto
   from rt have rt: "rpoly ?mp (?x * ?y) = 0" unfolding monic_poly rpoly_mult_rat using r1
     by (simp add: field_simps)
-  note ri = count_roots_interval_rat[OF mp]
+  from poly_type_cond_square_free_D[OF y(10)] have "square_free p2" .
+  hence sf: "square_free ?mp" unfolding monic_poly by (rule poly_mult_rat_square_free[OF r10])
+  note ri = count_roots_interval_rat[OF mp sf]
   obtain l r where lr: "l = l2 * r1" "r = r2 * r1" by force
   from bnd r1 have bnd: "of_rat l \<le> ?x * ?y" "?x * ?y \<le> of_rat r" unfolding lr of_rat_mult by auto
   with rt have rc: "root_cond (?mp,l,r) (?x * ?y)" unfolding root_cond_def by auto
@@ -2675,8 +2732,6 @@ proof -
   from z[unfolded yt, simplified, unfolded Let_def lr[symmetric] split]
   have z: "z = (?un2, ?ri, ?mp, l, r)" by simp
   have yp2: "alg_poly ?y p2" using y(1,5) unfolding root_cond_def split alg_poly_def by auto
-  from poly_type_cond_square_free_D[OF y(10)] have "square_free p2" .
-  hence sf: "square_free ?mp" unfolding monic_poly by (rule poly_mult_rat_square_free[OF r10])
   {
     assume mi: "un2 \<le> Monic_Irreducible"
     from poly_mult_rat_irreducible r1 poly_type_cond_MI_D[OF y(10) mi] y(5) 
@@ -2684,10 +2739,15 @@ proof -
   } note un = this
   with sf have un: "poly_type_cond ?un2 ?mp" by (cases un2, auto simp: poly_type_cond_def)
   have rc: "rai_cond (Some z)" unfolding z using y(2,4) un
-    by (simp add: rai_cond_def ur count_roots_interval_rat[OF mp] mp sgnr sgnl)
+    by (simp add: rai_cond_def ur ri mp sgnr sgnl)
   thus ?thesis unfolding yt xy unfolding z by (simp add: rai_real_def)
 qed
 
+lemma mult_rai_fun_pos': assumes x: "rai_cond (Some x)" and y: "rai_cond (Some y)"
+  defines z: "z \<equiv> mult_rai_fun_pos' x y"
+  assumes pos: "rai_real (Some x) > 0" "rai_real (Some y) > 0"
+  shows "rai_cond (Some z) \<and> (rai_real (Some z) = rai_real (Some x) * rai_real (Some y))" 
+  oops
 
 lemma mult_rai_fun_pos: assumes x: "rai_cond (Some x)" and y: "rai_cond (Some y)"
   defines z: "z \<equiv> mult_rai_fun_pos x y"
@@ -2702,7 +2762,7 @@ proof -
   let ?p1 = "normalize_rat_poly p1"
   let ?p2 = "normalize_rat_poly p2"
   let ?p = "poly_mult ?p1 ?p2"
-  let ?ri = "count_roots_interval_rat ?p"
+  let ?ri = "count_roots_interval_sf_rat ?p"
   let ?lr = "root_info.l_r"
   obtain l r where tb: "tighten_poly_bounds_binary (?lr ri1) (?lr ri2) (?lr ?ri)
       (\<lambda>l1 r1 l2 r2. (l1 * l2, r1 * r2)) l1 r1 l2 r2 = (l,r)" by force
@@ -2735,7 +2795,7 @@ proof -
     have "root_cond (?p, l1 * l2, r1 * r2) (?x * ?y)"
       unfolding root_cond_def split using rt l r by auto
   } note bnd = this
-  note ri = count_roots_interval_rat[OF p]
+  note ri = count_roots_interval_sf_rat[OF p]
   have xy: "?x = the_unique_root (?p1,l1,r1)" "?y = the_unique_root (?p2,l2,r2)" by (auto simp: rai_real_def)
   {
     fix l1 r1 l2 r2 l1' r1' l2' r2' l l' r r' :: rat
@@ -2790,8 +2850,7 @@ proof -
     by (rule tb(1))
   hence rc: "root_cond (?p,l,r) (?x * ?y)" and ur: "unique_root (?p,l,r)" by auto
   from the_unique_root(5)[OF ur rc] have xy: " ?x * ?y = the_unique_root (?p,l,r)" by auto
-  let ?ri = "count_roots_interval_rat ?p"
-
+  let ?ri = "count_roots_interval_sf_rat ?p"
   let ?norm = "rai_normalize_poly_flat Uncertified_Factorization (Arbitrary_Poly,?ri,?p,l,r)"
   obtain un' ri' p' l' r' where norm: "?norm = (un',ri',p',l',r')" by (cases ?norm, auto)
   from rai_normalize_poly_flat[OF norm ur p ri]

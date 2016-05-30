@@ -46,7 +46,7 @@ value (code) "show_lines (complex_roots_of_rat_poly testpoly)"
 
 text \<open>Factorize polynomials over the rational, real, and complex numbers.\<close>
 
-value (code) "show_factorization (factorize_rat_poly Full_Factorization testpoly)" 
+value (code) "show_factorization (factorize_rat_poly testpoly)" 
 value (code) "show_factorization (the (factorize_real_poly testpoly))"
 value (code) "show_factorization (the (factorize_complex_poly testpoly))"
 
@@ -67,8 +67,9 @@ value (code) "show (csqrt (1 + \<i>))"
 
 subsection \<open>Example Application: Compute Norms of Eigenvalues\<close>
 
-text \<open>For complexity analysis of some matrix $A$ it is important to compute the norms
-  of its eigenvalues, since they determine the spectral radius of $A$, and hence,
+text \<open>For complexity analysis of some matrix $A$ it is important to compute the spectral
+  radius of a matrix, i.e., the maximal norm of all complex eigenvalues, 
+  since the spectral radius determines
   the growth rates of matrix-powers $A^n$, cf.~\cite{JNF-AFP} for a formalized statement
   of this fact.\<close>
 
@@ -81,9 +82,9 @@ definition "testmat = mat_of_rows_list 3 [
   [7,1,5 :: rat]
   ]"
 
-definition "test_ev_show_precise = show ([ cmod ev. ev \<leftarrow> eigenvalues testmat])"
+definition "spectral_radius_test = show (Max (set [ norm ev. ev \<leftarrow> eigenvalues testmat]))"
 value (code) "char_poly testmat"
-value (code) test_ev_show_precise
+value (code) spectral_radius_test
 
 text \<open>Since the precise show function requires validation of the factorization
   provided by the oracle, it is usually much slower than the approximative one

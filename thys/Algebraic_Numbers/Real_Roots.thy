@@ -36,7 +36,7 @@ definition root_bounds :: "rat poly \<Rightarrow> rat \<times> rat" where
 definition roots_of_rai_intern_monic_irr :: "rat poly \<Rightarrow> rai_intern list" where
   "roots_of_rai_intern_monic_irr p = (if degree p = 1
     then [of_rat_rai_fun (- coeff p 0) ] else 
-    let ri = count_roots_interval_rat p;
+    let ri = count_roots_interval_sf_rat p;
         cr = root_info.l_r ri
       in map (rai_normalize No_Guarantee o Some) (roots_of_rai_main p ri cr [root_bounds p] []))"
 
@@ -144,13 +144,13 @@ proof -
     case False
     let ?r = real_of_rat
     let ?rp = "map_poly ?r"
-    def ri \<equiv> "count_roots_interval_rat p"
+    def ri \<equiv> "count_roots_interval_sf_rat p"
     def cr \<equiv> "root_info.l_r ri"
     def bnds \<equiv> "[root_bounds p]"
     def empty \<equiv> "Nil :: rai_intern_flat list"
     have empty: "Ball (Some ` set empty) rai_cond" unfolding empty_def by auto
     from mon have p: "p \<noteq> 0" by auto
-    from count_roots_interval_rat[OF this] have ri: "root_info_cond ri p" unfolding ri_def .    
+    from count_roots_interval_sf_rat[OF this] have ri: "root_info_cond ri p" unfolding ri_def .    
     from False 
     have rr: "?rr = (?norm o Some) ` set (roots_of_rai_main p ri cr bnds empty)"
       unfolding d ri_def cr_def Let_def bnds_def empty_def by auto
@@ -339,7 +339,8 @@ proof -
   let ?mode1 = Uncertified_Factorization
   let ?mode2 = Check_Root_Free
   note d = roots_of_rai_intern_def
-  note frp1 = factors_of_rat_poly[of ?mode1]
+  have "?mode1 \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p" by auto
+  note frp1 = factors_of_rat_poly[OF _ this]
   note frp2 = factors_of_rat_poly[of ?mode2]
   {
     fix q r
@@ -349,8 +350,8 @@ proof -
       r: "r \<in> set (factors_of_rat_poly ?mode2 s)" and       
       q: "q \<in> set (roots_of_rai_intern_monic_irr r)"
       unfolding d by auto
-    from frp1(1)[OF refl s] have "square_free s" by auto
-    with frp2(1)[OF refl r] have "poly_type_cond Monic_Root_Free r" 
+    from frp1(1)[OF refl _ s] have "square_free s" by auto
+    with frp2(1)[OF refl this r] have "poly_type_cond Monic_Root_Free r" 
       by (auto simp: poly_type_cond_def)
     from roots_of_rai_intern_monic_irr[OF this] q
     have "rai_cond q" by auto
@@ -371,20 +372,22 @@ proof -
         r: "r \<in> set (factors_of_rat_poly ?mode2 s)" and       
         q: "q \<in> set (roots_of_rai_intern_monic_irr r)" and
         x: "x = rai_real q" by auto
-      from frp1(1)[OF refl s] have s0: "s \<noteq> 0" and "square_free s" by auto
-      with frp2(1)[OF refl r] have mrf: "poly_type_cond Monic_Root_Free r" "Monic_Root_Free \<le> Monic_Root_Free" 
+      from frp1(1)[OF refl _ s] have s0: "s \<noteq> 0" and "square_free s" by auto
+      note frp2 = frp2[OF _ this(2)]
+      from frp2(1)[OF refl r] have mrf: "poly_type_cond Monic_Root_Free r" "Monic_Root_Free \<le> Monic_Root_Free" 
         by (auto simp: poly_type_cond_def)
       from roots_of_rai_intern_monic_irr[OF mrf] q have rt: "rpoly r x = 0" unfolding x by auto
       from frp2(2)[OF refl s0, of x] rt r have rt: "rpoly s x = 0" by auto
-      from frp1(2)[OF refl p, of x] rt s have rt: "rpoly p x = 0" by auto
+      from frp1(2)[OF refl _ p, of _ x] rt s have rt: "rpoly p x = 0" by auto
     }
     moreover
     {
       fix x :: real
       assume rt: "rpoly p x = 0"
-      from rt frp1(2)[OF refl p, of x] obtain s where s: "s \<in> set (factors_of_rat_poly ?mode1 p)" 
+      from rt frp1(2)[OF refl _ p, of _ x] obtain s where s: "s \<in> set (factors_of_rat_poly ?mode1 p)" 
         and rt: "rpoly s x = 0" by auto
-      from frp1(1)[OF refl s] have s0: "s \<noteq> 0" and sf: "square_free s" by auto
+      from frp1(1)[OF refl _ s] have s0: "s \<noteq> 0" and sf: "square_free s" by auto
+      note frp2 = frp2[OF _ this(2)]
       from rt frp2(2)[OF refl s0, of x] obtain r where r: "r \<in> set (factors_of_rat_poly ?mode2 s)" 
         and rt: "rpoly r x = 0" by auto
       from frp2(1)[OF refl r] sf have mrf: "poly_type_cond Monic_Root_Free r" "Monic_Root_Free \<le> Monic_Root_Free" 
@@ -562,11 +565,12 @@ proof (cases "degree p \<ge> 3")
 next
   case True
   let ?mode = Uncertified_Factorization
-  note factors_of_rat_poly = factors_of_rat_poly[of ?mode]
+  have "?mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p" by auto
+  note factors_of_rat_poly = factors_of_rat_poly[of ?mode, OF _ this]
   {
     fix q
     assume "q \<in> set (factors_of_rat_poly ?mode p)"
-    from factors_of_rat_poly(1)[OF refl this] have "q \<noteq> 0" by auto
+    from factors_of_rat_poly(1)[OF refl _ this] have "q \<noteq> 0" by auto
     from real_roots_of_rat_poly_all[OF this]
     have "set (real_roots_of_rat_poly_all q) = {x. rpoly q x = 0}" by auto
   } note all = this
@@ -576,7 +580,7 @@ next
   also have "\<dots> = (\<Union> ((\<lambda> p. {x. rpoly p x = 0}) ` set (factors_of_rat_poly ?mode p)))"
     using all by blast
   finally have l: "?l = (\<Union> ((\<lambda> p. {x. rpoly p x = 0}) ` set (factors_of_rat_poly ?mode p)))" .
-  show ?thesis unfolding l factors_of_rat_poly(2)[OF refl p] by auto
+  show ?thesis using l factors_of_rat_poly(2)[OF refl _ p] by auto
 qed
 
 text \<open>The upcoming functions no longer demand a rational polynomial as input.\<close>
