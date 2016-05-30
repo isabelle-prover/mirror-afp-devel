@@ -74,6 +74,12 @@ proof -
     thus ?thesis using oracle_sound_id by auto
   qed
 qed
+
+definition oracle_wrapper_rat :: "rat poly \<Rightarrow> rat \<times> rat poly list" where
+  "oracle_wrapper_rat q \<equiv> let (b,f) = rat_to_normalized_int_poly q; 
+       fs = oracle_wrapper f; (* this invokes the oracle and checks validity *) 
+       gs = map (map_poly of_int) fs
+     in (b, gs)"
     
 
 text \<open>Factorization oracle for rational polynomials: a wrapper to the integer-factorization oracle.\<close>
@@ -81,12 +87,8 @@ text \<open>Factorization oracle for rational polynomials: a wrapper to the inte
 definition factorization_oracle_rat_poly :: "rat poly \<Rightarrow> rat \<times> (rat poly \<times> nat) list" where
   "factorization_oracle_rat_poly p = (let
      (a,psi) = yun_factorization gcd_rat_poly p;
-     oracle = (\<lambda> (q,i). let (b,f) = rat_to_normalized_int_poly q; 
-       (* f is content-free, square-free, degree f \<noteq> 0 *)
-         fs = oracle_wrapper f; (* this invokes the oracle and checks validity *) 
-         gs = map (map_poly of_int) fs;
-         hsi = map (\<lambda> h. (h,Suc i)) gs
-       in (b^Suc i, hsi));
+     oracle = (\<lambda> (q,i). case oracle_wrapper_rat q of (b,fs) \<Rightarrow>  
+         (b^Suc i, map (\<lambda> f. (f,i)) fs));
      pre_result = map oracle psi;
      factors = concat (map snd pre_result);
      b = a * listprod (map fst pre_result)
@@ -95,84 +97,40 @@ definition factorization_oracle_rat_poly :: "rat poly \<Rightarrow> rat \<times>
 text \<open>The wrapper ensures a valid factorization + square-free factors.\<close>
 
 lemma factorization_oracle_rat_poly: assumes "factorization_oracle_rat_poly p = (c,fs)"
-  shows "p = smult c (\<Prod>(f, i)\<leftarrow>fs. f ^ i)"
-    "\<And> f i. (f,i) \<in> set fs \<Longrightarrow> square_free f \<and> degree f \<noteq> 0 \<and> i \<noteq> 0"
+  shows "square_free_factorization p (c,fs)"
 proof -
   obtain a psi where yun: "yun_factorization gcd p = (a,psi)" by force
   from yun_factorization[OF this] have sff: "square_free_factorization p (a,psi)" by auto
-  def oracl \<equiv> "(\<lambda> (q,i). let (b,f) = rat_to_normalized_int_poly q;
-       fs = oracle_wrapper f;  
-       gs = map (map_poly rat_of_int) fs;
-       hsi = map (\<lambda> h. (h,Suc i)) gs
-       in (b^Suc i, hsi))"
-  def pre_result \<equiv> "map oracl psi"
+  obtain oracl where oracl: "oracl = (\<lambda> (q,i). case oracle_wrapper_rat q of (b,fs) \<Rightarrow>  
+         (b^Suc i, map (\<lambda> f. (f,i)) fs))" by auto
+  obtain pre_result where pre_result: "pre_result = map oracl psi" by blast
   from assms[unfolded factorization_oracle_rat_poly_def yun gcd_rat_poly split Let_def]
   have c: "c = a * listprod (map fst pre_result)" and fs: "fs = concat (map snd pre_result)"
-    unfolding pre_result_def oracl_def by auto
-  note p = square_free_factorization_listprod[OF sff]
-  note sff = square_free_factorizationD[OF sff]
-  let ?id = "\<lambda> psi. (\<Prod>(a, i)\<leftarrow>psi. a ^ Suc i) =
-    smult (listprod (map (fst o oracl) psi))
-     (\<Prod>(x, y) \<leftarrow> (concat (map (snd o oracl) psi)). x ^ y)"
-  let ?prop = "\<lambda> psi f i. (f, i) \<in> set (concat (map snd (map oracl psi))) \<longrightarrow>
-           square_free f \<and> degree f \<noteq> 0 \<and> i \<noteq> 0"
-  let ?rp = "map_poly rat_of_int"  
-  interpret inj_ring_hom ?rp by (rule ri.inj_ring_hom_map_poly)
-  have "?id psi \<and> (\<forall> f i. ?prop psi f i)"
-    unfolding fs pre_result_def using sff(2)
-  proof (induct psi)
-    case (Cons ai psi)
-    obtain a i where ai: "ai = (a,i)" by force
-    note IH = Cons(1)[OF Cons(2)]
-    from IH[of "\<lambda> _ x. x"] have id: "?id psi" and p: "\<And> f i. ?prop psi f i" by (auto simp: o_def)
-    from Cons(2) ai have a: "square_free a" "degree a \<noteq> 0" by auto
-    hence a0: "a \<noteq> 0" by auto
+    unfolding pre_result oracl by auto
+  show ?thesis
+  proof (rule square_free_factorization_further_factorization[OF sff _ oracl pre_result c fs])
+    fix a i d gs
+    assume ai: "(a,i) \<in> set psi" and a: "oracle_wrapper_rat a = (d,gs)"
     obtain b fs where oracl: "oracl (a, i) = (b,fs)" by force
     obtain c g where rp: "rat_to_normalized_int_poly a = (c,g)" by force    
     from rat_to_normalized_int_poly[OF rp] have c0: "c \<noteq> 0" by auto
-    let ?g = "map_poly rat_of_int g"
-    from oracl[unfolded oracl_def split rp Let_def]
-    have b: "b = c ^ Suc i" and fs: "fs = map (\<lambda>h. (h, Suc i)) (map ?rp (oracle_wrapper g))" by auto
-    def ii \<equiv> "Suc i" def og \<equiv> "map ?rp (oracle_wrapper g)"
-    note rp = rat_to_normalized_int_poly[OF rp]
-    from rp a0 a have g: "content g = 1" "degree g \<noteq> 0" "g \<noteq> 0" by auto
-    from square_free_smult[OF _ a(1)[unfolded rp(1)], of "inverse c"] c rp(2) 
-    have sfgg: "square_free ?g" by simp
-    hence sfg: "square_free g" unfolding square_free_def dvd_def by force
-    have g2: "listprod (oracle_wrapper g) = g" "\<And> f. f\<in>set (oracle_wrapper g) \<Longrightarrow> degree f \<noteq> 0"
-      using oracle_soundD[OF oracle_wrapper g(1) sfg g(2)] by auto
-    have "a * a ^ i = a ^ Suc i" by simp
-    also have "a ^ Suc i = smult b (?g ^ Suc i)" unfolding rp(1) smult_power b ..
-    also have "?g = ?rp (listprod (oracle_wrapper g))" unfolding g2 ..
-    also have "\<dots> ^ Suc i = (\<Prod>(x, y)\<leftarrow>fs. x ^ y)" unfolding fs ii_def[symmetric]
-      hom_listprod listprod_power og_def[symmetric]
-      by (induct og, auto)
-    finally have id2: "a * a ^ i = smult b (\<Prod>(x, y)\<leftarrow>fs. x ^ y)" .
-    have *: "(\<Prod>(a, i)\<leftarrow>(a, i) # psi. a ^ Suc i) = a ^ Suc i * (\<Prod>(a, i)\<leftarrow>psi. a ^ Suc i)" by simp
-    have id: "?id (ai # psi)" unfolding ai * id
-      by (simp add: oracl id2 ac_simps)
-    show ?case unfolding id
-    proof (rule conjI, force simp: o_def, intro allI)
-      fix f j
-      have "?prop [(a,i)] f j" 
-      proof (intro impI, goal_cases)
-        case 1
-        hence fj: "(f, j) \<in> set fs" using oracl by simp
-        from this[unfolded fs] obtain h where j: "j \<noteq> 0" and h: "h \<in> set (oracle_wrapper g)"
-          and f: "f = map_poly rat_of_int h" by auto
-        from g2(2)[OF h] have "degree h \<noteq> 0" .
-        with f have df: "degree f \<noteq> 0" by auto
-        from listprod_dvd[OF h, unfolded g2(1)] have "h dvd g" .
-        hence "f dvd ?g" unfolding f dvd_def by auto
-        from square_free_factor[OF this sfgg] j df
-        show ?case by auto
-      qed
-      with p show "?prop (ai # psi) f j" unfolding ai by auto
-    qed
-  qed simp
-  thus "p = smult c (\<Prod>(f, i)\<leftarrow> fs. f ^ i)"  
-    "\<And> f i. (f,i) \<in> set fs \<Longrightarrow> square_free f \<and> degree f \<noteq> 0 \<and> i \<noteq> 0" 
-    unfolding p c fs pre_result_def by auto
+    let ?r = "map_poly rat_of_int"
+    from a[unfolded oracl oracle_wrapper_rat_def rp Let_def split]
+    have c: "c = d" and gs: "gs = map ?r (oracle_wrapper g)" by auto
+    note rp = rat_to_normalized_int_poly[OF rp, unfolded c]
+    note sff = square_free_factorizationD[OF sff]
+    from sff(2)[OF ai] have da: "degree a \<noteq> 0" and a: "a \<noteq> 0" and sf: "square_free a" by auto
+    interpret ri: inj_ring_hom ?r by (rule ri.inj_ring_hom_map_poly)
+    from rp(1-2) da have dg: "degree g \<noteq> 0" by auto
+    from sf rp(1) rp(2) have sfg: "square_free (?r g)" by simp
+    hence "square_free g" unfolding square_free_def by (force simp: dvd_def)
+    from oracle_soundD[OF oracle_wrapper rp(3)[OF a] this dg]
+    have id: "listprod (oracle_wrapper g) = g" and 
+      deg: "\<And> f. f \<in> set (oracle_wrapper g) \<Longrightarrow> degree f \<noteq> 0"
+      by auto
+    show "a = smult d (listprod gs) \<and> (\<forall>f\<in>set gs. degree f \<noteq> 0)" unfolding rp(1) gs
+      using deg by (auto, subst ri.hom_listprod[symmetric], unfold id, simp)
+  qed
 qed
   
 lemma factorization_oracle_rat_poly_0[simp]: "factorization_oracle_rat_poly 0 = (0,[])"
