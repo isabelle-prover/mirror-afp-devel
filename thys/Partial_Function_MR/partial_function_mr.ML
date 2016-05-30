@@ -303,7 +303,7 @@ val mode = @{keyword "("} |-- Parse.name --| @{keyword ")"};
 
 val _ =
   Outer_Syntax.local_theory @{command_keyword partial_function_mr} "define mutually recursive partial functions"
-    ((mode -- (Parse.fixes -- Parse_Spec.where_multi_specs))
+    (mode -- Parse_Spec.specification
       >> (fn (mode, (fixes, specs)) => add_partial_function_mr_cmd mode fixes specs));
 
 end
