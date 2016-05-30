@@ -604,15 +604,15 @@ fun normalize_factorization :: "'a :: field \<times> ('a poly \<times> nat) list
       polys = concat (map snd powers)
       in (const, polys))"  
 
-definition factorize_rat_poly :: "rat poly \<Rightarrow> rat \<times> (rat poly \<times> nat) list" where
-  "factorize_rat_poly p = (let 
+definition factorize_sf_rat_poly :: "rat poly \<Rightarrow> rat \<times> (rat poly \<times> nat) list" where
+  "factorize_sf_rat_poly p = (let 
       main = factorize_rat_poly_start p 
     in if mode = Check_Root_Free then main else normalize_factorization main)"
               
-lemma factorize_rat_poly_0[simp]: "factorize_rat_poly 0 = (0,[])" 
-  unfolding factorize_rat_poly_def by (simp add: Let_def)
+lemma factorize_sf_rat_poly_0[simp]: "factorize_sf_rat_poly 0 = (0,[])" 
+  unfolding factorize_sf_rat_poly_def by (simp add: Let_def)
                                                
-lemma factorize_rat_poly: assumes fp: "factorize_rat_poly p = (c,qis)"
+lemma factorize_sf_rat_poly: assumes fp: "factorize_sf_rat_poly p = (c,qis)"
   and mode: "mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p"
   shows "square_free_factorization p (c,qis)"
   and "(q,i) \<in> set qis \<Longrightarrow> 
@@ -621,7 +621,7 @@ lemma factorize_rat_poly: assumes fp: "factorize_rat_poly p = (c,qis)"
     monic q"
 proof -
   obtain d pis where fps: "factorize_rat_poly_start p = (d,pis)" by force
-  note fp = fp[unfolded factorize_rat_poly_def fps Let_def, unfolded normalize_factorization.simps]
+  note fp = fp[unfolded factorize_sf_rat_poly_def fps Let_def, unfolded normalize_factorization.simps]
   note fact = factorize_rat_poly_start[OF fps mode]
   have main: "square_free_factorization p (c,qis) \<and> 
     ((q,i) \<in> set qis \<longrightarrow> (mode \<in> {Full_Factorization, Check_Irreducible} \<longrightarrow> irreducible q) \<and>
@@ -674,4 +674,27 @@ proof -
 qed
     
 end
+
+definition factorize_rat_poly :: "rat poly \<Rightarrow> rat \<times> (rat poly \<times> nat) list" where
+  "factorize_rat_poly p = (case factorize_sf_rat_poly Full_Factorization p
+    of (c, fis) \<Rightarrow> (c, map (\<lambda> (f,i). (f, Suc i)) fis))"
+              
+lemma factorize_rat_poly_0[simp]: "factorize_rat_poly 0 = (0,[])" 
+  unfolding factorize_rat_poly_def by (simp add: Let_def)
+                                               
+lemma factorize_rat_poly: assumes fp: "factorize_rat_poly p = (c,qis)"
+  shows "p = smult c (\<Prod> (q,i) \<leftarrow> qis. q ^ i)" 
+    and "\<And> q i. (q,i) \<in> set qis \<Longrightarrow> irreducible q \<and> i \<noteq> 0"
+proof -
+  obtain d fis where fact: "factorize_sf_rat_poly Full_Factorization p = (d,fis)" by force
+  from factorize_sf_rat_poly[OF this] have sf: "square_free_factorization p (d, fis)"
+    and fis: "\<And> f i. (f,i) \<in> set fis \<Longrightarrow> irreducible f" by auto
+  from fp[unfolded factorize_rat_poly_def fact split] have c: "c = d" and qis: 
+    "qis = map (\<lambda>(f, i). (f, Suc i)) fis" by auto
+  with fis show "\<And> q i. (q,i) \<in> set qis \<Longrightarrow> irreducible q \<and> i \<noteq> 0" by auto
+  show "p = smult c (\<Prod> (q,i) \<leftarrow> qis. q ^ i)"
+    unfolding square_free_factorizationD'(1)[OF sf] c qis
+    by (rule arg_cong[of _ _ "smult d"], induct fis, auto)
+qed
+
 end
