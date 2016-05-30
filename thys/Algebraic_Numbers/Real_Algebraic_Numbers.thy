@@ -645,120 +645,84 @@ proof -
     with assms res show ?thesis by (auto simp: poly_type_cond_def)
   next
     case False
-    from False res have res: "rai_normalize_poly_main mode l r (factors_of_rat_poly mode p) = ?y" 
-      by auto
-    obtain c pis where fact: "factorize_sf_rat_poly mode p = (c,pis)" by force
-    from res have y: "rai_normalize_poly_main mode l r (map fst pis) = ?y" 
-      unfolding factors_of_rat_poly_def fact by auto
+    obtain fs where fs: "factors_of_rat_poly mode p = fs" by auto
+    from False res fs have res: "rai_normalize_poly_main mode l r fs = ?y" by auto
     from un have "mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p" 
       by (auto simp: poly_type_cond_square_free_D)
-    note fact = factorize_sf_rat_poly[OF fact this]
-    note sff = square_free_factorizationD[OF fact(1)]
-    note sff' = square_free_factorizationD'[OF fact(1)]
-    let ?p = "\<lambda> pis. smult c (\<Prod>(q, i)\<leftarrow>pis. q ^ i)"
-    from sff(1) p0 have c0: "c \<noteq> 0" by auto
+    note fact = factors_of_rat_poly[OF fs this]
+    note fact = fact(1) fact(2-)[OF _ p0]
     interpret rp: inj_ring_hom real_of_rat_poly by (rule rpoly.inj_ring_hom_map_poly)
-    have id1: "the_unique_root (smult c (\<Prod>(x, y)\<leftarrow>pis. x ^ Suc y), l, r)
-      = the_unique_root (listprod (map fst pis), l, r)"
-      by (rule the_unique_root_cong, simp add: rpoly_smult_0_iff[OF c0], 
-       force simp add: eval_poly_def listprod_zero_iff o_def)
-    have id2: "unique_root (smult c (\<Prod>(x, y)\<leftarrow>pis. x ^ Suc y), l, r)
-      = unique_root (listprod (map fst pis), l, r)"
-      by (rule unique_root_cong, simp add: rpoly_smult_0_iff[OF c0], 
-       force simp add: eval_poly_def listprod_zero_iff o_def)
+    from ur have ur': "unique_root (p, l, r)" .
     let ?r = "real_of_rat r"
     let ?l = "real_of_rat l"
+    def x \<equiv> "the_unique_root (p,l,r)"
     let ?prop = "\<lambda> ri q. root_info_cond ri q \<and> monic q 
       \<and> poly_type_cond (factorization_guarantee mode) q 
-      \<and> the_unique_root (p,l,r) = the_unique_root (q,l,r) \<and> unique_root (q,l,r)
-      \<and> rai_normalize_poly_main mode l r (map fst pis) = 
+      \<and> x = the_unique_root (q,l,r) \<and> unique_root (q,l,r)
+      \<and> rai_normalize_poly_main mode l r fs = 
         (factorization_guarantee mode,ri,q,l,r)"
-    from ur have ur': "unique_root (p, l, r)" .
-    from sff'(1) have p_id: "p = smult c (\<Prod>(a, i)\<leftarrow>pis. a ^ Suc i)" by auto
-    from fact(2-) sff(2) have "\<And> q i. (q, i) \<in> set pis \<Longrightarrow>
+    note unique = the_unique_root[OF ur', folded x_def] 
+    from unique(3) have "rpoly p x = 0" .
+    from fact(3)[OF _ this] have ex1: "\<exists>!q. q \<in> set fs \<and> rpoly q x = 0" . 
+    hence ex: "\<exists>q. q \<in> set fs \<and> rpoly q x = 0" by auto
+    from fact(1-2) have "\<And> q. q \<in> set fs \<Longrightarrow>
       (mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q) \<and>
-      (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> monic q \<and> square_free q" by auto
-    from this ur' have "\<exists> ri q. ?prop ri q" unfolding p_id id1 id2
-    proof (induct pis)
-      case Nil
-      from Nil(2)[unfolded unique_root_def root_cond_def]
-      obtain x where "rpoly 1 (x :: real) = 0" 
-        by (auto simp add: rai_real_def rpoly_smult_0_iff[OF c0])
-      thus ?case by (simp add: eval_poly_def)
-    next
-      case (Cons pi pis)
-      obtain p i where pi: "pi = (p,i)" by force
-      def ri \<equiv> "count_roots_interval_rat p" 
+      (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> monic q \<and> square_free q" 
+      "\<And> q (x :: real). q \<in> set fs \<Longrightarrow> rpoly q x = 0 \<Longrightarrow> rpoly p x = 0"
+      by auto
+    with ex have "\<exists> ri q. ?prop ri q" 
+    proof (induct fs)
+      case (Cons f fs)
+      def ri \<equiv> "count_roots_interval_rat f" 
       def cr \<equiv> "root_info.l_r ri"
-      from Cons(2)[of p i] have irr: "poly_type_cond (factorization_guarantee mode) p" 
-       and mon: "monic p" and p0: "p \<noteq> 0" 
-       unfolding pi by (cases mode, auto simp: poly_type_cond_def)
-      from poly_type_cond_square_free_D[OF irr] have sf: "square_free p" .
-      note unique = the_unique_root[OF Cons(3)]
+      from Cons(3)[of f] have ptc: "poly_type_cond (factorization_guarantee mode) f" 
+        and mon: "monic f" and p0: "f \<noteq> 0" and sf: "square_free f"
+        by (cases mode, auto simp: poly_type_cond_def)
       from unique(4)[unfolded root_cond_def] have "?l \<le> ?r" by auto
       hence lr: "l \<le> r" by (simp add: of_rat_less_eq)
       note cri = count_roots_interval_rat[OF p0 sf, folded ri_def]
       note ri = root_info_condD[OF cri, folded cr_def]
       note cr_lr = ri(1)[OF lr]
-      from finite_rpoly_roots[OF p0] have fin: "finite (Collect (root_cond (p, l, r)))" 
-        unfolding root_cond_def[abs_def] by auto  
-      let ?pq = "listprod (map fst (pi # pis))"
-      let ?q = "listprod (map fst pis)"
-      {
-        fix y :: real
-        have "(rpoly ?pq y = 0) = (rpoly p y = 0 \<or> rpoly ?q y = 0)" 
-          unfolding rpoly.poly_map_poly_eval_poly[symmetric] pi by simp
-      } note pq_expand = this
+      from finite_rpoly_roots[OF p0] have fin: "finite (Collect (root_cond (f, l, r)))" 
+        unfolding root_cond_def[abs_def] by auto
       show ?case
       proof (cases "cr l r = 0")
         case True
-        hence id: "rai_normalize_poly_main mode l r  (map fst (pi # pis))
-          = rai_normalize_poly_main mode l r (map fst pis)"
-          unfolding pi by (simp add: cr_def ri_def)
-        from True[unfolded cr_lr] fin have empty: "\<And> x. \<not> root_cond (p,l,r) x" by auto
-        {
-          fix x 
-          assume "?l \<le> x" "x \<le> ?r"
-          hence "(rpoly ?pq x = 0) = (rpoly ?q x = 0)"
-            unfolding pq_expand using empty[of x] unfolding root_cond_def by auto
-        } note id2 = this
-        show ?thesis unfolding id
-          by (subst the_unique_root_cong[of l r, OF id2], force, force,
-          rule Cons(1), rule Cons(2), force, subst unique_root_cong[of l r, OF id2, symmetric],
-          insert Cons(3), auto)
+        hence id: "rai_normalize_poly_main mode l r (f # fs)
+          = rai_normalize_poly_main mode l r fs"
+          by (simp add: cr_def ri_def)
+        from True[unfolded cr_lr] fin have empty: "\<not> root_cond (f,l,r) x" by auto
+        from Cons(2) empty unique(1-4) have "\<exists>q. q \<in> set fs \<and> rpoly q x = 0" by (auto simp: root_cond_def)
+        from Cons(1)[OF this Cons(3)] Cons(4) show ?thesis unfolding id by auto
       next
         case False
-        hence id: "rai_normalize_poly_main mode l r (map fst (pi # pis))
-          = (factorization_guarantee mode,ri,p,l,r)"
-          unfolding pi by (simp add: cr_def ri_def)
+        hence id: "rai_normalize_poly_main mode l r (f # fs)
+          = (factorization_guarantee mode,ri,f,l,r)"
+          by (simp add: cr_def ri_def)
         from False have "cr l r > 0" by auto
-        from this[unfolded cr_lr card_gt_0_iff] obtain x where x: "root_cond (p,l,r) x" by auto
-        hence rt: "rpoly p x = 0" unfolding root_cond_def by auto        
+        from this[unfolded cr_lr card_gt_0_iff] obtain y where rc: "root_cond (f,l,r) y" by auto
         {
           fix y
-          assume y: "?l \<le> y" "y \<le> ?r"
-          have "(rpoly ?pq y = 0) = (rpoly p y = 0)" (is "?left = ?right")
-          proof (cases "rpoly ?pq y = 0")
-            case True
-            from rt have "rpoly ?pq x = 0" unfolding pq_expand by simp
-            with y x True have rc1: "root_cond (?pq,l,r) x" and 
-              rc2: "root_cond (?pq,l,r) y" unfolding root_cond_def
-              by auto
-            from unique(5)[OF rc1] unique(5)[OF rc2] have yx: "y = x" by auto
-            with rt True show ?thesis by auto
-          next
-            case False
-            thus ?thesis unfolding pq_expand by auto
-          qed
-        } note id2 = this
+          assume y: "root_cond (f,l,r) y"
+          hence rt: "rpoly f y = 0" unfolding root_cond_def by auto
+          from Cons(4)[OF _ this] y have "root_cond (p,l,r) y" unfolding root_cond_def by auto
+          from unique(5)[OF this] have "y = x" by simp
+        } note un = this        
+        from un[OF rc] rc have rc: "root_cond (f, l, r) x" by simp
+        have ur: "unique_root (f, l, r)" unfolding unique_root_def
+        proof
+          fix z
+          assume "root_cond (f,l,r) z"
+          from un[OF rc] un[OF this] show "z = x" by simp
+        qed (rule rc)
+        from the_unique_root(5)[OF this rc]
         show ?thesis
-          by (rule exI[of _ ri], rule exI[of _ p], unfold id, intro conjI, 
-          rule cri, rule mon, rule irr, rule the_unique_root_cong[OF id2], force, force,
-          subst unique_root_cong[OF id2, symmetric], insert Cons(3), auto)
+          by (intro exI[of _ ri] exI[of _ f], unfold id, intro conjI,
+          auto simp: cri mon ptc ur)
       qed
-    qed
+    qed simp
     then obtain ri q where main: "?prop ri q" by blast
-    with y show ?thesis by (cases mode, auto simp: poly_type_cond_def)
+    with res show ?thesis unfolding x_def by auto
   qed
   thus "unique_root (p',l,r)" "p' \<noteq> 0" "l' = l" "r' = r" 
     "un' \<le> factorization_guarantee mode" "poly_type_cond un' p'"
