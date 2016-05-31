@@ -1886,7 +1886,7 @@ abstract =
 	efficient for practical purposes while being based on a formal <i>model</i>
 	on which properties of the package can be proven such as termination of certain
 	transformations, correctness, etc.
-notify = tuong@lri.fr wolff@lri.fr
+notify = tuong@users.gforge.inria.fr wolff@lri.fr
 
 [PCF]
 title = Logical Relations for PCF
@@ -3354,7 +3354,7 @@ extra-history =
 	<a href="https://bitbucket.org/isa-afp/afp-devel/commits/9091ce05cb20d4ad3dc1961c18f1846d85e87f8e">afp-devel@9091ce05cb20</a> and
 	<a href="https://projects.brucker.ch/hol-testgen/log/trunk?rev=10241">hol-testgen@10241</a><br>
 	&nbsp;&nbsp;&nbsp;New Entry: Featherweight OCL
-notify = brucker@spamfence.net wolff@lri.fr frederic.tuong@lri.fr
+notify = brucker@spamfence.net tuong@users.gforge.inria.fr wolff@lri.fr
 
 [Relation_Algebra]
 title = Relation Algebra
