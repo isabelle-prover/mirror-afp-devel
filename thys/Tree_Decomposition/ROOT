@@ -1,0 +1,10 @@
+session Tree_Decomposition = HOL +
+  options [timeout = 600]
+  theories
+    TreeDecomposition
+    TreewidthTree
+    TreewidthCompleteGraph
+    ExampleInstantiations
+  document_files
+    "root.tex"
+    "root.bib"

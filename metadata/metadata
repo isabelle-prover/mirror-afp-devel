@@ -3178,6 +3178,19 @@ topic = Mathematics/Graph Theory
 abstract = This development provides a formalization of undirected graphs and simple graphs, which are based on Benedikt Nordhoff and Peter Lammich's simple formalization of labelled directed graphs in the archive. Then, with our formalization of graphs, we show both necessary and sufficient conditions for Eulerian trails and circuits as well as the fact that the Königsberg Bridge Problem does not have a solution. In addition, we show the Friendship Theorem in simple graphs.
 notify =
 
+[Tree_Decomposition]
+title = Tree Decomposition
+author = Christoph Dittmann <http://logic.las.tu-berlin.de/Members/Dittmann/>
+notify = christoph.dittmann@tu-berlin.de
+date = 2016-05-31
+topic = Mathematics/Graph Theory
+abstract = 
+  We formalize tree decompositions and tree width in Isabelle/HOL,
+  proving that trees have treewidth 1.  We also show that every edge of
+  a tree decomposition is a separation of the underlying graph. As an
+  application of this theorem we prove that complete graphs of size n
+  have treewidth n-1.
+
 [IEEE_Floating_Point]
 title = A Formal Model of IEEE Floating Point Arithmetic
 author = Lei Yu <mailto:ly271@cam.ac.uk>
