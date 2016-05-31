@@ -1,4 +1,3 @@
-
 (* Author: Andreas Lochbihler, ETH Zurich
    Author: Peter Gammie *)
 
@@ -12,12 +11,13 @@ text \<open>
 
 theory Bird_Tree imports Stern_Brocot_Tree begin
 
-definition bird :: "fraction tree"
-where "bird = tree_recurse (recip o succ) (succ o recip) (1, 1)"
+corec bird :: "fraction tree"
+where
+  "bird = Node (1, 1) (map_tree recip (map_tree succ bird)) (map_tree succ (map_tree recip bird))"
 
 lemma bird_unfold:
   "bird = Node (1, 1) (pure recip \<diamondop> (pure succ \<diamondop> bird)) (pure succ \<diamondop> (pure recip \<diamondop> bird))"
-by(auto simp add: bird_def map_tree_ap_tree_pure_tree intro: tree.expand)
+using bird.code unfolding map_tree_ap_tree_pure_tree[symmetric] .
 
 lemma bird_simps [simp]:
   "root bird = (1, 1)"
@@ -26,19 +26,13 @@ lemma bird_simps [simp]:
 by(subst bird_unfold, simp)+
 
 lemma mirror_bird: "mirror bird = pure recip \<diamondop> bird" (is "?lhs = ?rhs")
-proof -
-  let ?R = "\<lambda>t. Node (1, 1) (pure succ \<diamondop> (pure recip \<diamondop> t)) (pure recip \<diamondop> (pure succ \<diamondop> t))"
-  have "mirror bird = ?R (mirror bird)"
-    by(rule tree.expand)(simp add: mirror_ap_tree mirror_pure)
-  note tree_recurse_unique[OF this[unfolded map_tree_ap_tree_pure_tree tree.map_comp]]
-  moreover
-  def t \<equiv> "pure recip \<diamondop> bird"
-  have "t = ?R t"
-    apply(rule tree.expand; simp add: t_def)
-    apply(applicative_lifting; simp add: split_beta)
-    done
-  note tree_recurse_unique[OF this[unfolded map_tree_ap_tree_pure_tree tree.map_comp]]
-  ultimately show ?thesis by(simp add: t_def)
+proof(rule sym)
+  let ?F = "\<lambda>t. Node (1, 1) (map_tree succ (map_tree recip t)) (map_tree recip (map_tree succ t))"
+  have *: "mirror bird = ?F (mirror bird)"
+    by(rule tree.expand; simp add: mirror_ap_tree mirror_pure map_tree_ap_tree_pure_tree[symmetric])
+  show "t = mirror bird" when "t = ?F t" for t using that by corec_unique (fact *)
+  show "pure recip \<diamondop> bird = ?F (pure recip \<diamondop> bird)"
+    by(rule tree.expand; simp add: map_tree_ap_tree_pure_tree; applicative_lifting; simp add: split_beta)
 qed
 
 primcorec even_odd_mirror :: "bool \<Rightarrow> 'a tree \<Rightarrow> 'a tree"
@@ -105,32 +99,6 @@ lemma even_odd_mirror_path_injective [simp]:
   "odd_mirror_path path = odd_mirror_path path' \<longleftrightarrow> path = path'"
 by (induct path arbitrary: path') (case_tac path', simp_all split: dir.splits)+
 
-lemma bird_rec_unique':
-  fixes ROOT LEFT RIGHT
-  defines [simp]: "ROOT \<equiv> None" and [simp]: "LEFT \<equiv> Some True" and [simp]: "RIGHT \<equiv> Some False"
-  assumes A: "t = Node x (Node y (map_tree ll t) (map_tree lr t)) (Node z (map_tree rl t) (map_tree rr t))"
-  shows "map_tree H t =
-   unfold_tree
-     (\<lambda>(f, s). f (case s of None \<Rightarrow> x | Some True \<Rightarrow> y | Some False \<Rightarrow> z)) 
-     (\<lambda>(f, s). case s of None \<Rightarrow> (f, LEFT) | Some True \<Rightarrow> (f \<circ> ll, ROOT) | Some False \<Rightarrow> (f \<circ> rl, ROOT))
-     (\<lambda>(f, s). case s of None \<Rightarrow> (f, RIGHT) | Some True \<Rightarrow> (f \<circ> lr, ROOT) | Some False => (f \<circ> rr, ROOT))
-     (H, ROOT)"
-   (is "?lhs H = ?rhs (H, ROOT)")
-proof -
-  have [simp]: "root t = x" "root (left t) = y" "root (right t) = z"
-    "left (left t) = map_tree ll t" "left (right t) = map_tree rl t"
-    "right (left t) = map_tree lr t" "right (right t) = map_tree rr t"
-    by(subst A, simp)+
-  let ?R = "\<lambda>l r. \<exists>H. 
-    l = ?lhs H \<and> r = ?rhs (H, ROOT) \<or>
-    l = left (?lhs H) \<and> r = ?rhs (H, LEFT) \<or>
-    l = right (?lhs H) \<and> r = ?rhs (H, RIGHT)"
-  have "?R (?lhs H) (?rhs (H, ROOT))" by blast
-  thus ?thesis by(rule tree.coinduct[where ?R="?R"])(auto)
-qed
-
-lemmas bird_rec_unique = bird_rec_unique'[where H=id, simplified tree.map_id]
- 
 lemma odd_mirror_bird_stern_brocot:
   "odd_mirror bird = stern_brocot_recurse"
 proof -
@@ -138,20 +106,15 @@ proof -
   let ?rssr = "map_tree (recip \<circ> succ \<circ> succ \<circ> recip)"
   let ?srrs = "map_tree (succ \<circ> recip \<circ> recip \<circ> succ)"
   let ?srsr = "map_tree (succ \<circ> recip \<circ> succ \<circ> recip)"
-
-  note [simp] = map_tree_ap_tree_pure_tree[symmetric]
-
   let ?R = "\<lambda>t. Node (1, 1) (Node (1, 2) (?rssr t) (?rsrs t)) (Node (2, 1) (?srsr t) (?srrs t))"
-  have "odd_mirror bird = ?R (odd_mirror bird)"
-    by(rule tree.expand; simp; intro conjI; rule tree.expand; simp; intro conjI) -- \<open>Expand the tree twice\<close>
-      (applicative_lifting; simp)+
-  note bird_rec_unique[OF this]
-  moreover
-  have "stern_brocot_recurse = ?R stern_brocot_recurse"
+
+  have *: "stern_brocot_recurse = ?R stern_brocot_recurse"
     by(rule tree.expand; simp; intro conjI; rule tree.expand; simp; intro conjI) -- \<open>Expand the tree twice\<close>
       (applicative_lifting, simp add: split_beta)+
-  note bird_rec_unique[OF this]
-  ultimately show ?thesis by simp
+  show "f = stern_brocot_recurse" when "f = ?R f" for f using that * by corec_unique
+  show "odd_mirror bird = ?R (odd_mirror bird)"
+    by(rule tree.expand; simp; intro conjI; rule tree.expand; simp; intro conjI) -- \<open>Expand the tree twice\<close>
+      (applicative_lifting; simp)+
 qed
 
 theorem bird_rationals:

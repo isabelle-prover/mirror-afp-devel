@@ -252,7 +252,7 @@ fun define_raw_fvs raw_dt_info bn_info bclausesss lthy =
     val fv_bn_eqs = map (mk_fv_bn_eqs lthy fv_map fv_bn_map raw_cns_info bclausesss) bn_info
   
     val all_fun_names = map (fn s => (Binding.name s, NONE, NoSyn)) (fv_names @ fv_bn_names)
-    val all_fun_eqs = map (fn t => ((Attrib.empty_binding, t), [])) (flat fv_eqs @ flat fv_bn_eqs)
+    val all_fun_eqs = map (fn t => ((Attrib.empty_binding, t), [], [])) (flat fv_eqs @ flat fv_bn_eqs)
 
     val (_, lthy') = Function.add_function all_fun_names all_fun_eqs
       Function_Common.default_config (pat_completeness_simp (raw_inject_thms @ raw_distinct_thms)) lthy
@@ -324,7 +324,7 @@ fun define_raw_bn_perms raw_dt_info bn_info lthy =
       val perm_bn_eqs = map (mk_perm_bn_eqs lthy perm_bn_map raw_cns_info) bn_info
 
       val all_fun_names = map (fn s => (Binding.name s, NONE, NoSyn)) perm_bn_names
-      val all_fun_eqs = map (fn t => ((Attrib.empty_binding, t), [])) (flat perm_bn_eqs)
+      val all_fun_eqs = map (fn t => ((Attrib.empty_binding, t), [], [])) (flat perm_bn_eqs)
 
       val prod_simps = @{thms prod.inject HOL.simp_thms}
 
@@ -412,7 +412,7 @@ fun mk_perm_eq ty_perm_assoc cnstr =
   
     val eq = HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs, rhs))  
   in
-    ((Attrib.empty_binding, eq), [])
+    ((Attrib.empty_binding, eq), [], [])
   end
 
 

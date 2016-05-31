@@ -7,6 +7,7 @@ theory Cotree imports
   Main
   "../Applicative_Lifting/Applicative"
   "~~/src/Tools/Adhoc_Overloading"
+  "~~/src/HOL/Library/BNF_Corec"
 begin
 
 context notes [[bnf_internals]]
@@ -56,50 +57,45 @@ context
   and g32 :: "'a \<Rightarrow> 'a"
 begin
 
-primcorec unfold_tree :: "'a \<Rightarrow> 'b tree"
+corec unfold_tree :: "'a \<Rightarrow> 'b tree"
 where "unfold_tree a = Node (g1 a) (unfold_tree (g22 a)) (unfold_tree (g32 a))"
+
+lemma unfold_tree_simps [simp]:
+  "root (unfold_tree a) = g1 a"
+  "left (unfold_tree a) = unfold_tree (g22 a)"
+  "right (unfold_tree a) = unfold_tree (g32 a)"
+by(subst unfold_tree.code; simp; fail)+
 
 end
 
-lemma corec_unfold_tree:
-  "corec_tree ROOT (\<lambda>_. False) l LEFT (\<lambda>_. False) r RIGHT = unfold_tree ROOT LEFT RIGHT"
-by(auto simp add: unfold_tree_def intro: corec_tree_cong)
-
-lemma unfold_tree_unique':
+lemma unfold_tree_unique:
   assumes "\<And>s. root (f s) = ROOT s"
   and "\<And>s. left (f s) = f (LEFT s)"
   and "\<And>s. right (f s) = f (RIGHT s)"
-  shows "f = unfold_tree ROOT LEFT RIGHT"
-unfolding unfold_tree_def corec_tree_def
-apply(rule tree.dtor_corec_unique)
-apply(clarsimp simp add: BNF_Composition.id_bnf_def o_def fun_eq_iff map_pre_tree_def)
-apply(case_tac "f x")
-apply(simp add: tree.dtor_ctor fun_eq_iff assms[symmetric])
-apply(simp add: Node_def tree.dtor_ctor BNF_Composition.id_bnf_def)
-done
-
-lemmas unfold_tree_unique = unfold_tree_unique'[THEN fun_cong]
+  shows "f s = unfold_tree ROOT LEFT RIGHT s"
+by(rule unfold_tree.unique[THEN fun_cong])(auto simp add: fun_eq_iff assms intro: tree.expand)
 
 subsection {* Applicative functor for @{typ "'a tree"} *}
 
 context fixes x :: "'a" begin
-primcorec pure_tree :: "'a tree"
+corec pure_tree :: "'a tree"
 where "pure_tree = Node x pure_tree pure_tree"
 end
 
-lemmas pure_tree_unfold = pure_tree.ctr
-   and pure_tree_simps = pure_tree.simps
+lemmas pure_tree_unfold = pure_tree.code
+
+lemma pure_tree_simps [simp]: 
+  "root (pure_tree x) = x"
+  "left (pure_tree x) = pure_tree x"
+  "right (pure_tree x) = pure_tree x"
+by(subst pure_tree_unfold; simp; fail)+
 
 adhoc_overloading pure pure_tree
 
 lemma map_pure_tree [simp]: "map_tree f (pure x) = pure (f x)"
 by(coinduction arbitrary: x) auto
 
-lemma pure_tree_unique:
-  assumes "t = Node x t t"
-  shows "t = pure x"
-unfolding pure_tree_def corec_unfold_tree
-by(rule unfold_tree_unique)(subst assms; simp)+
+lemmas pure_tree_unique = pure_tree.unique
 
 primcorec ap_tree :: "('a \<Rightarrow> 'b) tree \<Rightarrow> 'a tree \<Rightarrow> 'b tree"
 where
@@ -195,30 +191,31 @@ lemma map_unfold_tree [simp]: fixes l r x
  shows "map_tree G (unf F) = unf (G \<circ> F)"
 by(coinduction arbitrary: F G)(auto 4 3 simp add: unf_def o_assoc)
 
-definition tree_recurse :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a tree"
-where "tree_recurse l r x \<equiv> unfold_tree (\<lambda>f. f x) (\<lambda>f. f \<circ> l) (\<lambda>f. f \<circ> r) id"
+friend_of_corec map_tree :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+  "map_tree f t = Node (f (root t)) (map_tree f (left t)) (map_tree f (right t))"
+subgoal by (rule tree.expand; simp)
+subgoal by (fold relator_eq; transfer_prover)
+done
+
+context fixes l :: "'a \<Rightarrow> 'a" and r :: "'a \<Rightarrow> 'a" and x :: "'a" begin
+corec tree_recurse :: "'a tree"
+where "tree_recurse = Node x (map_tree l tree_recurse) (map_tree r tree_recurse)"
+end
 
 lemma tree_recurse_simps [simp]:
   "root (tree_recurse l r x) = x"
   "left (tree_recurse l r x) = map_tree l (tree_recurse l r x)"
   "right (tree_recurse l r x) = map_tree r (tree_recurse l r x)"
-unfolding tree_recurse_def by simp_all
+by(subst tree_recurse.code; simp; fail)+
 
 lemma tree_recurse_unfold:
   "tree_recurse l r x = Node x (map_tree l (tree_recurse l r x)) (map_tree r (tree_recurse l r x))"
-by(rule tree.expand) simp
-
-lemma tree_recurse_unique:
-  assumes "t = Node x (map_tree l t) (map_tree r t)"
-  shows "t = tree_recurse l r x"
-unfolding tree_recurse_def
-by(rule unfold_tree_unique[where f="\<lambda>f. map_tree f t" and x=id, unfolded tree.map_id])
-  (subst assms; simp add: tree.map_comp)+
+by(fact tree_recurse.code)
 
 lemma tree_recurse_fusion:
   assumes "h \<circ> l = l' \<circ> h" and "h \<circ> r = r' \<circ> h"
   shows "map_tree h (tree_recurse l r x) = tree_recurse l' r' (h x)"
-by(rule tree_recurse_unique)(simp add: tree.expand tree.map_comp assms)
+by(rule tree_recurse.unique)(simp add: tree.expand assms)
 
 subsubsection {* Tree iteration *}
 
@@ -269,7 +266,6 @@ lemma traverse_tree_ap [simp]:
   "traverse_tree path (f \<diamondop> x) = traverse_tree path f \<diamondop> traverse_tree path x"
 by (induct path arbitrary: f x) (simp_all split: dir.splits)
 
-
 context fixes l r :: "'a \<Rightarrow> 'a" begin
 
 primrec traverse_dir :: "dir \<Rightarrow> 'a \<Rightarrow> 'a"
@@ -287,7 +283,6 @@ lemma traverse_tree_tree_iterate:
    tree_iterate l r (traverse_path l r path s)"
 by (induct path arbitrary: s) (simp_all split: dir.splits)
 
-
 text{*
 
 \citeauthor{DBLP:journals/jfp/Hinze09} shows that if the tree
@@ -302,7 +297,7 @@ lemma tree_recurse_iterate:
     "\<And>x. f x \<epsilon> = x"
     "\<And>x. f \<epsilon> x = x"
   shows "tree_recurse (f l) (f r) \<epsilon> = tree_iterate (\<lambda>x. f x l) (\<lambda>x. f x r) \<epsilon>"
-apply(rule tree_recurse_unique[symmetric])
+apply(rule tree_recurse.unique[symmetric])
 apply(rule tree.expand)
 apply(simp add: tree_iterate_fusion[where r'="\<lambda>x. f x r" and l'="\<lambda>x. f x l"] fun_eq_iff monoid)
 done

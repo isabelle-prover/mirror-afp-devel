@@ -304,7 +304,7 @@ definition \<open>of_string\<^sub>b\<^sub>a\<^sub>s\<^sub>e a b =
                   , sml_escape (String\<^sub>b\<^sub>a\<^sub>s\<^sub>e.to_String x)
                   , \<open>")\<close>]))\<close>
 
-definition of_nat where "of_nat a b = (\<lambda>x. b (S.flatten [\<open>(Code_Numeral.Nat \<close>, String.natural_to_digit10 x, \<open>)\<close>]))"
+definition of_nat where "of_nat a b = (\<lambda>x. b (S.flatten [\<open>(Code_Numeral.natural_of_integer \<close>, String.natural_to_digit10 x, \<open>)\<close>]))"
 
 end
 

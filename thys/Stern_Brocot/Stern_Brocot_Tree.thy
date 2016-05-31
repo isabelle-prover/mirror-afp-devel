@@ -94,22 +94,34 @@ where "succ \<equiv> \<lambda>(m, n). (m + n, n)"
 abbreviation recip :: "fraction \<Rightarrow> fraction"
 where "recip \<equiv> \<lambda>(m, n). (n, m)"
 
-definition stern_brocot_recurse :: "fraction tree"
-where "stern_brocot_recurse = tree_recurse (recip \<circ> succ \<circ> recip) succ (1, 1)"
+corec stern_brocot_recurse :: "fraction tree"
+where
+  "stern_brocot_recurse =
+   Node (1, 1)
+     (map_tree recip (map_tree succ (map_tree recip stern_brocot_recurse)))
+     (map_tree succ stern_brocot_recurse)"
 
+text \<open>Actually, we would like to write the specification below, but @{text "op \<diamondop>"} cannot be registered as friendly due to varying type parameters\<close>
 lemma stern_brocot_unfold:
   "stern_brocot_recurse =
    Node (1, 1)
         (pure recip \<diamondop> (pure succ \<diamondop> (pure recip \<diamondop> stern_brocot_recurse)))
         (pure succ \<diamondop> stern_brocot_recurse)"
-unfolding stern_brocot_recurse_def
-by (rule tree_recurse_unique[symmetric])(subst tree_recurse_unfold, simp add: map_tree_ap_tree_pure_tree o_def)+
+by(fact stern_brocot_recurse.code[unfolded map_tree_ap_tree_pure_tree[symmetric]])
 
 lemma stern_brocot_simps [simp]:
   "root stern_brocot_recurse = (1, 1)"
   "left stern_brocot_recurse = pure recip \<diamondop> (pure succ \<diamondop> (pure recip \<diamondop> stern_brocot_recurse))"
   "right stern_brocot_recurse = pure succ \<diamondop> stern_brocot_recurse"
 by (subst stern_brocot_unfold, simp)+
+
+lemma stern_brocot_conv:
+  "stern_brocot_recurse = tree_recurse (recip \<circ> succ \<circ> recip) succ (1, 1)"
+apply(rule tree_recurse.unique)
+apply(subst stern_brocot_unfold)
+apply(simp add: o_assoc)
+apply(rule conjI; applicative_nf; simp)
+done
 
 subsection {* Basic properties *}
 
@@ -257,7 +269,7 @@ proof -
    unfolding mediant_I_F(2)[symmetric]
    by (rule tree_recurse_fusion)(simp_all add: fun_eq_iff mediant_def times_matrix_def times_vector_def LL_def UR_def)[2]
  also have "\<dots> = ?lhs"
-   by (simp add: stern_brocot_recurse_def recip_succ_recip times_vector_def LL_def UR_def)
+   by (simp add: stern_brocot_conv recip_succ_recip times_vector_def LL_def UR_def)
  finally show ?thesis by simp
 qed
 
@@ -481,11 +493,14 @@ section {* Linearising the Stern-Brocot Tree *}
 
 subsection {* Turning a tree into a stream *}
 
-primcorec tree_chop :: "'a tree \<Rightarrow> 'a tree"
-where
+corec tree_chop :: "'a tree \<Rightarrow> 'a tree"
+where "tree_chop t = Node (root (left t)) (right t) (tree_chop (left t))"
+
+lemma tree_chop_sel [simp]:
   "root (tree_chop t) = root (left t)"
-| "left (tree_chop t) = right t"
-| "right (tree_chop t) = tree_chop (left t)"
+  "left (tree_chop t) = right t"
+  "right (tree_chop t) = tree_chop (left t)"
+by(subst tree_chop.code; simp; fail)+
 
 text {* @{const tree_chop} is a idiom homomorphism *}
 
@@ -500,10 +515,13 @@ by(coinduction arbitrary: f x rule: tree.coinduct_strong) auto
 lemma tree_chop_plus: "tree_chop (t + t') = tree_chop t + tree_chop t'"
 by(simp add: plus_tree_def)
 
-primcorec stream :: "'a tree \<Rightarrow> 'a stream"
-where
+corec stream :: "'a tree \<Rightarrow> 'a stream"
+where "stream t = root t ## stream (tree_chop t)"
+
+lemma stream_sel [simp]:
   "shd (stream t) = root t"
-| "stl (stream t) = stream (tree_chop t)"
+  "stl (stream t) = stream (tree_chop t)"
+by(subst stream.code; simp; fail)+
 
 text{* @{const "stream"} is an idiom homomorphism. *}
 
@@ -533,23 +551,21 @@ by(induct n)(simp_all only: numeral.simps stream_plus stream_1)
 
 subsection {* Split the Stern-Brocot tree into numerators and denumerators *}
 
-definition num :: "nat tree"
-where "num = pure fst \<diamondop> stern_brocot_recurse"
+corec num_den :: "bool \<Rightarrow> nat tree"
+where
+  "num_den x =
+   Node 1
+     (if x then num_den True else num_den True + num_den False)
+     (if x then num_den True + num_den False else num_den False)"
 
-definition den :: "nat tree"
-where "den = pure snd \<diamondop> stern_brocot_recurse"
+abbreviation num where "num \<equiv> num_den True"
+abbreviation den where "den \<equiv> num_den False"
 
 lemma num_unfold: "num = Node 1 num (num + den)"
-unfolding num_def den_def
-apply(rule tree.expand; simp; intro conjI)
-apply(applicative_lifting; simp add: split_beta)+
-done
+by(subst num_den.code; simp)
 
 lemma den_unfold: "den = Node 1 (num + den) den"
-unfolding num_def den_def
-apply(rule tree.expand; simp; intro conjI)
-apply(applicative_lifting; simp add: split_beta)+
-done
+by(subst num_den.code; simp)
 
 lemma num_simps [simp]:
   "root num = 1"
@@ -565,8 +581,7 @@ by (subst den_unfold, simp)+
 
 lemma stern_brocot_num_den:
   "pure_tree Pair \<diamondop> num \<diamondop> den = stern_brocot_recurse"
-unfolding stern_brocot_recurse_def
-apply(rule tree_recurse_unique)
+apply(rule stern_brocot_recurse.unique)
 apply(subst den_unfold)
 apply(subst num_unfold)
 apply(simp; intro conjI)
@@ -576,15 +591,26 @@ done
 lemma den_eq_chop_num: "den = tree_chop num"
 by(coinduction rule: tree.coinduct_strong) simp
 
-primcorec num_mod_den :: "nat tree"
+lemma num_conv: "num = pure fst \<diamondop> stern_brocot_recurse"
+unfolding stern_brocot_num_den[symmetric]
+apply(simp add: map_tree_ap_tree_pure_tree stern_brocot_num_den[symmetric])
+apply(applicative_lifting; simp)
+done
+
+lemma den_conv: "den = pure snd \<diamondop> stern_brocot_recurse"
+unfolding stern_brocot_num_den[symmetric]
+apply(simp add: map_tree_ap_tree_pure_tree stern_brocot_num_den[symmetric])
+apply(applicative_lifting; simp)
+done
+
+corec num_mod_den :: "nat tree"
 where "num_mod_den = Node 0 num num_mod_den"
 
-lemma num_mod_den_unique: "x = Node 0 num x \<Longrightarrow> x = num_mod_den"
-proof(coinduction arbitrary: x rule: tree.coinduct_strong)
-  case (Eq_tree x)
-  show ?case
-    by(subst (1 2 3 4) Eq_tree)(simp add: eqTrueI[OF Eq_tree])
-qed
+lemma num_mod_den_simps [simp]:
+  "root num_mod_den = 0"
+  "left num_mod_den = num"
+  "right num_mod_den = num_mod_den"
+by(subst num_mod_den.code; simp; fail)+
 
 text{*
   The arithmetic transformations need the precondition that @{const den} contains only
@@ -625,11 +651,11 @@ proof(rule eq_pure_tree_TrueI)
   then obtain p where "x = root (traverse_tree p den)"
     by(blast dest: set_tree_pathD)
   with stern_brocot_denominator_non_zero[of p]
-  show "0 < x" by(simp add: den_def split_beta)
+  show "0 < x" by(simp add: den_conv split_beta)
 qed
 
 lemma num_mod_den: "num mod den = num_mod_den"
-by(rule num_mod_den_unique)(rule tree.expand, simp add: mod_tree_lemma1 den_gt_0 mod_tree_lemma2)
+by(rule num_mod_den.unique)(rule tree.expand, simp add: mod_tree_lemma1 den_gt_0 mod_tree_lemma2)
 
 lemma tree_chop_den: "tree_chop den = num + den - 2 * (num mod den)"
 proof -
@@ -651,16 +677,12 @@ proof -
   have den'_gt_0: "pure (op < 0) \<diamondop> den' = pure True"
     unfolding den'_def den_gt_0[symmetric] by applicative_nf simp
   have num_mod_den'2_unique: "\<And>x. x = Node 0 (2 * num') x \<Longrightarrow> x = 2 * num_mod_den'"
-  proof(coinduction rule: tree.coinduct_strong)
-    case (Eq_tree x)
-    show ?case
-      by(subst (1 2 3 4) Eq_tree)(simp add: eqTrueI[OF Eq_tree])
-  qed
+    by(corec_unique)(rule tree.expand; simp)
   have num'_plus_den'_minus_chop_den': "num' + den' - tree_chop den' = 2 * num_mod_den'"
     by(rule num_mod_den'2_unique)(rule tree.expand, simp add: tree_chop_plus den'_eq_chop_num')
 
   have "tree_chop den = pure nat \<diamondop> (tree_chop den')"
-    unfolding den_def tree_chop_ap_tree tree_chop_pure_tree den'_def by applicative_nf simp
+    unfolding den_conv tree_chop_ap_tree tree_chop_pure_tree den'_def by applicative_nf simp
   also have "tree_chop den' = num' + den' - tree_chop den' + tree_chop den' - 2 * num_mod_den'"
     by(subst num'_plus_den'_minus_chop_den') simp
   also have "\<dots> = num' + den' - 2 * (num' mod den')"
@@ -685,31 +707,49 @@ text {*
   time and every further element in constant time.
 *}
 
+friend_of_corec smap :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a stream \<Rightarrow> 'a stream"
+where "smap f xs = SCons (f (shd xs)) (smap f (stl xs))"
+subgoal by(rule stream.expand) simp
+subgoal by(fold relator_eq)(transfer_prover)
+done
+
 definition step :: "nat \<times> nat \<Rightarrow> nat \<times> nat"
 where "step = (\<lambda>(n, d). (d, n + d - 2 * (n mod d)))"
 
-definition stern_brocot_loopless :: "fraction stream"
-where "stern_brocot_loopless \<equiv> siterate step (1, 1)"
+corec stern_brocot_loopless :: "fraction stream"
+where "stern_brocot_loopless = (1, 1) ## smap step stern_brocot_loopless"
 
-lemma stern_brocot_loopless_rec:
-  "stern_brocot_loopless = (1, 1) ## smap step stern_brocot_loopless"
-by(rule stream.expand) (simp add: stern_brocot_loopless_def smap_siterate)
+lemmas stern_brocot_loopless_rec = stern_brocot_loopless.code
 
-definition fusc :: "nat stream"
-where "fusc \<equiv> smap fst stern_brocot_loopless"
+friend_of_corec plus where "s + s' = (shd s + shd s') ## (stl s + stl s')"
+subgoal by (rule stream.expand; simp add: plus_stream_shd plus_stream_stl)
+subgoal by transfer_prover
+done
 
-definition fusc' :: "nat stream"
-where "fusc' \<equiv> smap snd stern_brocot_loopless"
+friend_of_corec minus where "t - t' = (shd t - shd t') ## (stl t - stl t')"
+subgoal by (rule stream.expand; simp add: minus_stream_def)
+subgoal by transfer_prover
+done
 
-lemma fusc_unfold: "fusc = 1 ## fusc'"
-unfolding fusc_def fusc'_def
-by (subst stern_brocot_loopless_rec) (simp add: stream.map_comp o_def split_def step_def)
+friend_of_corec times where "t * t' = (shd t * shd t') ## (stl t * stl t')"
+subgoal by (rule stream.expand; simp add: times_stream_def)
+subgoal by transfer_prover
+done
+
+friend_of_corec mod where "t mod t' = (shd t mod shd t') ## (stl t mod stl t')"
+subgoal by (rule stream.expand; simp add: mod_stream_def)
+subgoal by transfer_prover
+done
+
+corec fusc' :: "nat stream"
+where "fusc' = 1 ## (((1 ## fusc') + fusc') - 2 * ((1 ## fusc') mod fusc'))"
+
+definition fusc where "fusc = 1 ## fusc'"
+
+lemma fusc_unfold: "fusc = 1 ## fusc'" by(fact fusc_def)
 
 lemma fusc'_unfold: "fusc' = 1 ## (fusc + fusc' - 2 * (fusc mod fusc'))"
-unfolding fusc_def fusc'_def
-apply(subst stern_brocot_loopless_rec; simp)
-apply(applicative_lifting; clarsimp simp add: step_def)
-done
+by(subst fusc'.code)(simp add: fusc_def)
 
 lemma fusc_simps [simp]:
   "shd fusc = 1"
@@ -723,60 +763,25 @@ by(subst fusc'_unfold, simp)+
 
 subsection {* Equivalence with Dijkstra's fusc function *}
 
-lemma siterate_unique: "xs = x ## smap f xs \<Longrightarrow> xs = siterate f x"
-proof(coinduction arbitrary: xs x)
-  case (Eq_stream xs x)
-  have "smap f xs = f x ## smap f (smap f xs)" by(subst Eq_stream) simp
-  then show ?case by(subst (1 2) Eq_stream) auto
-qed
+lemma stern_brocot_loopless_siterate: "stern_brocot_loopless = siterate step (1, 1)"
+by(rule stern_brocot_loopless.unique[symmetric])(rule stream.expand; simp add: smap_siterate[symmetric])
 
-lemma fusc_fusc'_iterate: "pure Pair \<diamondop> fusc \<diamondop> fusc' = siterate step (1, 1)"
-apply(rule siterate_unique)
+lemma fusc_fusc'_iterate: "pure Pair \<diamondop> fusc \<diamondop> fusc' = stern_brocot_loopless"
+apply(rule stern_brocot_loopless.unique)
 apply(rule stream.expand; simp add: step_def)
 apply(applicative_lifting; simp)
 done
 
-lemma fusc_fusc'_unique:
-  assumes xs: "xs = 1 ## xs'"
-  and xs': "xs' = 1 ## (xs + xs' - 2 * (xs mod xs'))"
-  shows "xs = fusc" "xs' = fusc'"
-proof -
-  have [simp]: "shd xs = 1" "stl xs = xs'"
-    "shd xs' = 1" "stl xs' = xs + xs' - 2 * (xs mod xs')"
-    using assms by (metis Stream.stream.sel)+
-  have eq: "pure Pair \<diamondop> xs \<diamondop> xs' = pure Pair \<diamondop> fusc \<diamondop> fusc'"
-    unfolding fusc_fusc'_iterate
-    apply(rule siterate_unique)
-    apply(rule stream.expand; simp add: step_def)
-    apply(applicative_lifting; simp)
-    done
-  have "xs = pure fst \<diamondop> (pure Pair \<diamondop> xs \<diamondop> xs')" by applicative_lifting simp
-  also have "\<dots> = fusc" unfolding eq by applicative_lifting simp
-  finally show "xs = fusc" .
-
-  have "xs' = pure snd \<diamondop> (pure Pair \<diamondop> xs \<diamondop> xs')" by applicative_lifting simp
-  also have "\<dots> = fusc'" unfolding eq by applicative_lifting simp
-  finally show "xs' = fusc'" .
-qed
-
-lemma fusc_num: "fusc = stream num"
-  and fusc'_den: "fusc' = stream den"
-proof -
-  have "stream num = 1 ## stream den"
-    by (rule stream.expand) (simp add: den_eq_chop_num)
-  moreover have "stream den = 1 ## (stream num + stream den - 2 * (stream num mod stream den))"
-      by (rule stream.expand)(simp add: tree_chop_den)
-  ultimately show "fusc = stream num" "fusc' = stream den"
-    by(rule fusc_fusc'_unique[symmetric])+
-qed
-
 theorem stern_brocot_loopless:
   "stream stern_brocot_recurse = stern_brocot_loopless" (is "?lhs = ?rhs")
-proof -
-  have "?lhs = stream (pure_tree Pair \<diamondop> num \<diamondop> den)" by (simp only: stern_brocot_num_den)
-  also have "\<dots> = pure Pair \<diamondop> fusc \<diamondop> fusc'" by (simp add: fusc_num fusc'_den)
-  also have "\<dots> = ?rhs" by (simp add: stern_brocot_loopless_def step_def fusc_fusc'_iterate)
-  finally show ?thesis .
+proof(rule stern_brocot_loopless.unique)
+  have eq: "?lhs = stream (pure_tree Pair \<diamondop> num \<diamondop> den)" by (simp only: stern_brocot_num_den)
+  have num: "stream num = 1 ## stream den"
+    by (rule stream.expand) (simp add: den_eq_chop_num)
+  have den: "stream den = 1 ## (stream num + stream den - 2 * (stream num mod stream den))"
+    by (rule stream.expand)(simp add: tree_chop_den)
+  show "?lhs = (1, 1) ## smap step ?lhs" unfolding eq
+    by(rule stream.expand)(simp add: den_eq_chop_num[symmetric] tree_chop_den; applicative_lifting; simp add: step_def)
 qed
 
 end
