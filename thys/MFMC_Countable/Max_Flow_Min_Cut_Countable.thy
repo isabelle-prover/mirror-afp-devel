@@ -1,5 +1,4 @@
 (* Author: Andreas Lochbihler, ETH Zurich *)
-
 theory Max_Flow_Min_Cut_Countable imports
   MFMC_Misc
 begin
@@ -8,7 +7,7 @@ section \<open>Graphs\<close>
 
 type_synonym 'v edge = "'v \<times> 'v"
 
-record 'v graph = 
+record 'v graph =
   edge :: "'v \<Rightarrow> 'v \<Rightarrow> bool"
 
 abbreviation edges :: "('v, 'more) graph_scheme \<Rightarrow> 'v edge set" ("\<^bold>E\<index>")
@@ -60,7 +59,7 @@ inductive_simps cycle_Nil [simp]: "cycle G Nil"
 abbreviation cycles :: "('v, 'more) graph_scheme \<Rightarrow> 'v path set"
 where "cycles G \<equiv> Collect (cycle G)"
 
-lemma countable_cycles [simp]: 
+lemma countable_cycles [simp]:
   assumes "countable (\<^bold>V\<^bsub>G\<^esub>)"
   shows "countable (cycles G)"
 proof -
@@ -91,7 +90,7 @@ proof cases
     by(subst distinct_card; simp add: filter_map o_def split_def)
   also have "\<dots> = (if x \<in> set p then 1 else 0)" using cycle
     by(auto simp add: cycle_edges_def filter_empty_conv length_filter_conv_card card_eq_1_iff in_set_conv_nth dest: nth_eq_iff_index_eq)
-  also have "\<dots> = length [y \<leftarrow> map snd (cycle_edges p). y = x]" using cycle 
+  also have "\<dots> = length [y \<leftarrow> map snd (cycle_edges p). y = x]" using cycle
     apply(auto simp add: cycle_edges_def filter_empty_conv Suc_length_conv intro!: exI[where x=x])
     apply(drule split_list_first)
     apply(auto dest: split_list_first simp add: append_eq_Cons_conv rotate1_append filter_empty_conv split: if_split_asm dest: in_set_tlD)
@@ -136,11 +135,11 @@ qed
 section \<open>Network and Flow\<close>
 
 record 'v network = "'v graph" +
-  capacity :: "'v edge \<Rightarrow> ereal"
+  capacity :: "'v edge \<Rightarrow> ennreal"
   source :: "'v"
   sink :: "'v"
 
-type_synonym 'v flow = "'v edge \<Rightarrow> ereal"
+type_synonym 'v flow = "'v edge \<Rightarrow> ennreal"
 
 inductive_set support_flow :: "'v flow \<Rightarrow> 'v edge set"
   for f
@@ -149,20 +148,14 @@ where "f e > 0 \<Longrightarrow> e \<in> support_flow f"
 lemma support_flow_conv: "support_flow f = {e. f e > 0}"
 by(auto simp add: support_flow.simps)
 
-lemma not_in_support_flowD: "x \<notin> support_flow f \<Longrightarrow> f x \<le> 0"
+lemma not_in_support_flowD: "x \<notin> support_flow f \<Longrightarrow> f x = 0"
 by(simp add: support_flow_conv)
 
-definition d_OUT :: "'v flow \<Rightarrow> 'v \<Rightarrow> ereal"
+definition d_OUT :: "'v flow \<Rightarrow> 'v \<Rightarrow> ennreal"
 where "d_OUT g x = (\<Sum>\<^sup>+ y. g (x, y))"
 
-definition d_IN :: "'v flow \<Rightarrow> 'v \<Rightarrow> ereal"
+definition d_IN :: "'v flow \<Rightarrow> 'v \<Rightarrow> ennreal"
 where "d_IN g y = (\<Sum>\<^sup>+ x. g (x, y))"
-
-lemma d_OUT_nonneg: "0 \<le> d_OUT g x"
-by(simp add: d_OUT_def nn_integral_nonneg)
-
-lemma d_IN_nonneg: "0 \<le> d_IN g x"
-by(simp add: d_IN_def nn_integral_nonneg)
 
 lemma d_OUT_mono: "(\<And>y. f (x, y) \<le> g (x, y)) \<Longrightarrow> d_OUT f x \<le> d_OUT g x"
 by(auto simp add: d_OUT_def le_fun_def intro: nn_integral_mono)
@@ -170,33 +163,29 @@ by(auto simp add: d_OUT_def le_fun_def intro: nn_integral_mono)
 lemma d_IN_mono: "(\<And>x. f (x, y) \<le> g (x, y)) \<Longrightarrow> d_IN f y \<le> d_IN g y"
 by(auto simp add: d_IN_def le_fun_def intro: nn_integral_mono)
 
-lemma d_OUT_neq_MInfty [simp]: "\<not> d_OUT g x = -\<infinity>"
-using d_OUT_nonneg[of g x] by auto
-
-lemma d_IN_neq_MInfty [simp]: "\<not> d_IN g x = -\<infinity>"
-using d_IN_nonneg[of g x] by auto
-
 lemma d_OUT_0 [simp]: "d_OUT (\<lambda>_. 0) x = 0"
 by(simp add: d_OUT_def)
 
 lemma d_IN_0 [simp]: "d_IN (\<lambda>_. 0) x = 0"
 by(simp add: d_IN_def)
 
-lemma d_OUT_add: 
-  assumes "\<And>e. f e \<ge> 0" "\<And>e. g e \<ge> 0"
-  shows "d_OUT (\<lambda>e. f e + g e) x = d_OUT f x + d_OUT g x"
-unfolding d_OUT_def by(simp add: nn_integral_add assms)
+lemma d_OUT_add: "d_OUT (\<lambda>e. f e + g e) x = d_OUT f x + d_OUT g x"
+unfolding d_OUT_def by(simp add: nn_integral_add)
 
-lemma d_IN_add: 
-  assumes "\<And>e. f e \<ge> 0" "\<And>e. g e \<ge> 0"
-  shows "d_IN (\<lambda>e. f e + g e) x = d_IN f x + d_IN g x"
-unfolding d_IN_def by(simp add: nn_integral_add assms)
+lemma d_IN_add: "d_IN (\<lambda>e. f e + g e) x = d_IN f x + d_IN g x"
+unfolding d_IN_def by(simp add: nn_integral_add)
 
-lemma d_OUT_cmult: "0 \<le> c \<Longrightarrow> d_OUT (\<lambda>e. c * f e) x = c * d_OUT f x"
+lemma d_OUT_cmult: "d_OUT (\<lambda>e. c * f e) x = c * d_OUT f x"
 by(simp add: d_OUT_def nn_integral_cmult)
 
-lemma d_IN_cmult: "0 \<le> c \<Longrightarrow> d_IN (\<lambda>e. c * f e) x = c * d_IN f x"
+lemma d_IN_cmult: "d_IN (\<lambda>e. c * f e) x = c * d_IN f x"
 by(simp add: d_IN_def nn_integral_cmult)
+
+lemma d_OUT_ge_point: "f (x, y) \<le> d_OUT f x"
+by(auto simp add: d_OUT_def intro!: nn_integral_ge_point)
+
+lemma d_IN_ge_point: "f (y, x) \<le> d_IN f x"
+by(auto simp add: d_IN_def intro!: nn_integral_ge_point)
 
 lemma d_OUT_monotone_convergence_SUP:
   assumes "incseq (\<lambda>n y. f n (x, y))"
@@ -209,12 +198,12 @@ lemma d_IN_monotone_convergence_SUP:
 unfolding d_IN_def by(rule nn_integral_monotone_convergence_SUP[OF assms]) simp
 
 lemma d_OUT_diff:
-  assumes "\<And>y. 0 \<le> g (x, y)" "\<And>y. g (x, y) \<le> f (x, y)" "d_OUT g x \<noteq> \<infinity>"
+  assumes "\<And>y. g (x, y) \<le> f (x, y)" "d_OUT g x \<noteq> \<top>"
   shows "d_OUT (\<lambda>e. f e - g e) x = d_OUT f x - d_OUT g x"
 using assms by(simp add: nn_integral_diff d_OUT_def)
 
 lemma d_IN_diff:
-  assumes "\<And>x. 0 \<le> g (x, y)" "\<And>x. g (x, y) \<le> f (x, y)" "d_IN g y \<noteq> \<infinity>"
+  assumes "\<And>x. g (x, y) \<le> f (x, y)" "d_IN g y \<noteq> \<top>"
   shows "d_IN (\<lambda>e. f e - g e) y = d_IN f y - d_IN g y"
 using assms by(simp add: nn_integral_diff d_IN_def)
 
@@ -222,20 +211,20 @@ lemma fixes G (structure)
   shows d_OUT_alt_def: "(\<And>y. (x, y) \<notin> \<^bold>E \<Longrightarrow> g (x, y) = 0) \<Longrightarrow> d_OUT g x = (\<Sum>\<^sup>+  y\<in>\<^bold>O\<^bold>U\<^bold>T x. g (x, y))"
   and d_IN_alt_def: "(\<And>x. (x, y) \<notin> \<^bold>E \<Longrightarrow> g (x, y) = 0) \<Longrightarrow> d_IN g y = (\<Sum>\<^sup>+ x\<in>\<^bold>I\<^bold>N y. g (x, y))"
 unfolding d_OUT_def d_IN_def
-by(subst (1 2) nn_integral_max_0[symmetric]; fastforce simp add: max_def d_OUT_def d_IN_def nn_integral_count_space_indicator outgoing_def incoming_def intro!: nn_integral_cong split: split_indicator)+
+by(fastforce simp add: max_def d_OUT_def d_IN_def nn_integral_count_space_indicator outgoing_def incoming_def intro!: nn_integral_cong split: split_indicator)+
 
 lemma d_OUT_alt_def2: "d_OUT g x = (\<Sum>\<^sup>+ y\<in>{y. (x, y) \<in> support_flow g}. g (x, y))"
   and d_IN_alt_def2: "d_IN g y = (\<Sum>\<^sup>+ x\<in>{x. (x, y) \<in> support_flow g}. g (x, y))"
 unfolding d_OUT_def d_IN_def
-by(subst (1 2) nn_integral_max_0[symmetric]; auto simp add: max_def d_OUT_def d_IN_def nn_integral_count_space_indicator outgoing_def incoming_def support_flow.simps intro!: nn_integral_cong split: split_indicator)+
+by(auto simp add: max_def d_OUT_def d_IN_def nn_integral_count_space_indicator outgoing_def incoming_def support_flow.simps intro!: nn_integral_cong split: split_indicator)+
 
-definition d_diff :: "('v edge \<Rightarrow> ereal) \<Rightarrow> 'v \<Rightarrow> ereal"
+definition d_diff :: "('v edge \<Rightarrow> ennreal) \<Rightarrow> 'v \<Rightarrow> ennreal"
 where "d_diff g x = d_OUT g x - d_IN g x"
 
-abbreviation KIR :: "('v edge \<Rightarrow> ereal) \<Rightarrow> 'v \<Rightarrow> bool"
+abbreviation KIR :: "('v edge \<Rightarrow> ennreal) \<Rightarrow> 'v \<Rightarrow> bool"
 where "KIR f x \<equiv> d_OUT f x = d_IN f x"
 
-inductive_set SINK :: "('v edge \<Rightarrow> ereal) \<Rightarrow> 'v set"
+inductive_set SINK :: "('v edge \<Rightarrow> ennreal) \<Rightarrow> 'v set"
   for f
 where SINK: "d_OUT f x = 0 \<Longrightarrow> x \<in> SINK f"
 
@@ -246,7 +235,7 @@ proof(rule subsetI; erule SINK.cases; hypsubst)
   fix x
   assume "d_OUT g x = 0"
   moreover have "d_OUT f x \<le> d_OUT g x" using assms by(rule d_OUT_mono)
-  ultimately have "d_OUT f x = 0" using d_OUT_nonneg[of f x] by simp
+  ultimately have "d_OUT f x = 0" by simp
   thus "x \<in> SINK f" ..
 qed
 
@@ -275,11 +264,10 @@ proof -
     also have "\<dots> = (SUP f:Y. \<Sum>\<^sup>+ y\<in>{y. (x, y) \<in> support_flow (Sup Y)}. f (x, y))" using Y
       by(rule nn_integral_monotone_convergence_SUP_countable)(auto simp add: chain' intro: countable')
     also have "\<dots> = ?rhs1 x" unfolding d_OUT_alt_def2
-      by(subst (1 2) nn_integral_max_0[symmetric])
-        (auto 4 3 simp add: support_flow_Sup max_def nn_integral_count_space_indicator intro!: nn_integral_cong SUP_cong split: split_indicator dest: not_in_support_flowD)
+      by(auto 4 3 simp add: support_flow_Sup max_def nn_integral_count_space_indicator intro!: nn_integral_cong SUP_cong split: split_indicator dest: not_in_support_flowD)
     finally show "?OUT x" . }
   note out = this
-  
+
   have chain'': "Complete_Partial_Order.chain op \<le> ((\<lambda>f x. f (x, y)) ` Y)" for y using chain
     by(rule chain_imageI)(simp add: le_fun_def)
   have countable'': "countable {x. (x, y) \<in> support_flow (Sup Y)}" for y
@@ -290,11 +278,10 @@ proof -
   also have "\<dots> = (SUP f:Y. \<Sum>\<^sup>+ x\<in>{x. (x, y) \<in> support_flow (Sup Y)}. f (x, y))" using Y
     by(rule nn_integral_monotone_convergence_SUP_countable)(simp_all add: chain'' countable'')
   also have "\<dots> = ?rhs2" unfolding d_IN_alt_def2
-    by(subst (1 2) nn_integral_max_0[symmetric])
-      (auto 4 3 simp add: support_flow_Sup max_def nn_integral_count_space_indicator intro!: nn_integral_cong SUP_cong split: split_indicator dest: not_in_support_flowD)
+    by(auto 4 3 simp add: support_flow_Sup max_def nn_integral_count_space_indicator intro!: nn_integral_cong SUP_cong split: split_indicator dest: not_in_support_flowD)
   finally show ?IN .
 
-  show ?SINK by(rule set_eqI)(simp add: SINK.simps out SUP_ereal_eq_0_iff_nonneg d_OUT_nonneg Y)
+  show ?SINK by(rule set_eqI)(simp add: SINK.simps out Y bot_ennreal[symmetric])
 qed
 
 lemma
@@ -302,91 +289,87 @@ lemma
   and Y: "Y \<noteq> {}"
   and countable: "countable (support_flow f)"
   and bounded: "\<And>g e. g \<in> Y \<Longrightarrow> g e \<le> f e"
-  and nonneg: "\<And>g e. g \<in> Y \<Longrightarrow> 0 \<le> g e"
-  shows d_OUT_Inf: "d_OUT f x \<noteq> \<infinity> \<Longrightarrow> d_OUT (Inf Y) x = (INF g:Y. d_OUT g x)" (is "_ \<Longrightarrow> ?OUT" is "_ \<Longrightarrow> ?lhs1 = ?rhs1")
-  and d_IN_Inf: "d_IN f x \<noteq> \<infinity> \<Longrightarrow> d_IN (Inf Y) x = (INF g:Y. d_IN g x)" (is "_ \<Longrightarrow> ?IN" is "_ \<Longrightarrow> ?lhs2 = ?rhs2")
+  shows d_OUT_Inf: "d_OUT f x \<noteq> top \<Longrightarrow> d_OUT (Inf Y) x = (INF g:Y. d_OUT g x)" (is "_ \<Longrightarrow> ?OUT" is "_ \<Longrightarrow> ?lhs1 = ?rhs1")
+  and d_IN_Inf: "d_IN f x \<noteq> top \<Longrightarrow> d_IN (Inf Y) x = (INF g:Y. d_IN g x)" (is "_ \<Longrightarrow> ?IN" is "_ \<Longrightarrow> ?lhs2 = ?rhs2")
 proof -
   text \<open>We take a detour here via suprema because we have more theorems about @{const nn_integral}
     with suprema than with infinma.\<close>
 
   from Y obtain g0 where g0: "g0 \<in> Y" by auto
   have g0_le_f: "g0 e \<le> f e" for e by(rule bounded[OF g0])
-  have f_nonneg: "0 \<le> f e" for e using g0_le_f[of e] nonneg[OF g0, of e] by simp
-  have INF_nonneg: "0 \<le> (INF g:Y. g e)" for e
-    by(auto intro!: INF_greatest intro: nonneg)
 
-  have "support_flow (SUP g:Y. (\<lambda>e. f e - g e)) \<subseteq> support_flow f" 
-    by(clarsimp simp add: support_flow.simps less_SUP_iff elim!: less_le_trans intro!: ereal_diff_le_self nonneg)
+  have "support_flow (SUP g:Y. (\<lambda>e. f e - g e)) \<subseteq> support_flow f"
+    by(clarsimp simp add: support_flow.simps less_SUP_iff elim!: less_le_trans intro!: diff_le_self_ennreal)
   then have countable': "countable (support_flow (SUP g:Y. (\<lambda>e. f e - g e)))" by(rule countable_subset)(rule countable)
 
   have "Complete_Partial_Order.chain op \<ge> Y" using chain by(simp add: chain_dual)
   hence chain': "Complete_Partial_Order.chain op \<le> ((\<lambda>g e. f e - g e) ` Y)"
-    by(rule chain_imageI)(auto simp add: le_fun_def intro: ereal_minus_mono)
+    by(rule chain_imageI)(auto simp add: le_fun_def intro: ennreal_minus_mono)
 
-  { assume finite: "d_OUT f x \<noteq> \<infinity>"
-    have finite' [simp]: "f (x, y) \<noteq> \<infinity>" for y using finite
-      by(rule neq_PInf_trans)(auto simp add: d_OUT_def intro: nn_integral_ge_point)
-    have [simp]: "\<bar>f (x, y)\<bar> \<noteq> \<infinity>" for y using f_nonneg by simp
-  
-    have finite'_g: "g (x, y) \<noteq> \<infinity>" if "g \<in> Y" for g y using finite'[of y]
-      by(rule neq_PInf_trans)(rule bounded[OF that])
-    have finite'_g': "\<bar>g (x, y)\<bar> \<noteq> \<infinity>" if "g \<in> Y" for g y 
-      using finite'_g[OF that, of y] by(simp add: nonneg[OF that])
-  
-    have finite1: "(\<Sum>\<^sup>+ y. f (x, y) - (INF g:Y. g (x, y))) \<noteq> \<infinity>"
-      using finite by(rule neq_PInf_trans)(auto simp add: d_OUT_def ereal_diff_le_self INF_nonneg intro!: nn_integral_mono)
-    have finite2: "d_OUT g x \<noteq> \<infinity>" if "g \<in> Y" for g using finite
-      by(rule neq_PInf_trans)(auto intro: d_OUT_mono bounded[OF that])
+  { assume finite: "d_OUT f x \<noteq> top"
+    have finite' [simp]: "f (x, y) \<noteq> \<top>" for y using finite
+      by(rule neq_top_trans) (rule d_OUT_ge_point)
+
+    have finite'_g: "g (x, y) \<noteq> \<top>" if "g \<in> Y" for g y using finite'[of y]
+      by(rule neq_top_trans)(rule bounded[OF that])
+
+    have finite1: "(\<Sum>\<^sup>+ y. f (x, y) - (INF g:Y. g (x, y))) \<noteq> top"
+      using finite by(rule neq_top_trans)(auto simp add: d_OUT_def intro!: nn_integral_mono)
+    have finite2: "d_OUT g x \<noteq> top" if "g \<in> Y" for g using finite
+      by(rule neq_top_trans)(auto intro: d_OUT_mono bounded[OF that])
+
+    have bounded1: "(\<Sqinter>g\<in>Y. d_OUT g x) \<le> d_OUT f x"
+      using Y by (blast intro: INF_lower2 d_OUT_mono bounded)
 
     have "?lhs1 = (\<Sum>\<^sup>+ y. INF g:Y. g (x, y))" by(simp add: d_OUT_def)
     also have "\<dots> = d_OUT f x - (\<Sum>\<^sup>+ y. f (x, y) - (INF g:Y. g (x, y)))" unfolding d_OUT_def
+      using finite1 g0_le_f
       apply(subst nn_integral_diff[symmetric])
-      apply(auto simp add: AE_count_space g0_le_f finite1 intro!: ereal_diff_positive ereal_diff_le_self INF_lower2[OF g0] INF_nonneg nn_integral_cong)
-      apply(subst ereal_minus_minus; simp add: ereal_diff_add_inverse)
+      apply(auto simp add: AE_count_space intro!: diff_le_self_ennreal INF_lower2[OF g0] nn_integral_cong diff_diff_ennreal[symmetric])
       done
     also have "(\<Sum>\<^sup>+ y. f (x, y) - (INF g:Y. g (x, y))) = d_OUT (\<lambda>e. SUP g:Y. f e - g e) x"
-      unfolding d_OUT_def by(subst SUP_ereal_minus_right)(simp_all add: Y f_nonneg)
+      unfolding d_OUT_def by(subst SUP_const_minus_ennreal)(simp_all add: Y)
     also have "\<dots> = (SUP h:(\<lambda>g e. f e - g e) ` Y. d_OUT h x)" using countable' chain' Y
       by(subst d_OUT_Sup[symmetric])(simp_all add: SUP_apply[abs_def])
-    also have "\<dots> = (SUP g:Y. d_OUT (\<lambda>e. f e - g e) x)" unfolding SUP_def image_image ..
+    also have "\<dots> = (SUP g:Y. d_OUT (\<lambda>e. f e - g e) x)" unfolding image_image ..
     also have "\<dots> = (SUP g:Y. d_OUT f x - d_OUT g x)"
-      by(rule SUP_cong[OF refl] d_OUT_diff)+(auto intro: nonneg bounded simp add: finite2)
-    also have "\<dots> = d_OUT f x - ?rhs1" by(subst SUP_ereal_minus_right)(simp_all add: Y)
+      by(rule SUP_cong[OF refl] d_OUT_diff)+(auto intro: bounded simp add: finite2)
+    also have "\<dots> = d_OUT f x - ?rhs1" by(subst SUP_const_minus_ennreal)(simp_all add: Y)
     also have "d_OUT f x - \<dots> = ?rhs1"
-      by(subst ereal_minus_minus)(simp_all add: d_OUT_nonneg finite ereal_diff_add_inverse)
+      using Y by(subst diff_diff_ennreal)(simp_all add: bounded1 finite)
     finally show ?OUT .
   next
-    assume finite: "d_IN f x \<noteq> \<infinity>"
-    have finite' [simp]: "f (y, x) \<noteq> \<infinity>" for y using finite
-      by(rule neq_PInf_trans)(auto simp add: d_IN_def intro: nn_integral_ge_point)
-    have [simp]: "\<bar>f (y, x)\<bar> \<noteq> \<infinity>" for y using f_nonneg by simp
-  
-    have finite'_g: "g (y, x) \<noteq> \<infinity>" if "g \<in> Y" for g y using finite'[of y]
-      by(rule neq_PInf_trans)(rule bounded[OF that])
-    have finite'_g': "\<bar>g (y, x)\<bar> \<noteq> \<infinity>" if "g \<in> Y" for g y 
-      using finite'_g[OF that, of y] by(simp add: nonneg[OF that])
-  
-    have finite1: "(\<Sum>\<^sup>+ y. f (y, x) - (INF g:Y. g (y, x))) \<noteq> \<infinity>"
-      using finite by(rule neq_PInf_trans)(auto simp add: d_IN_def ereal_diff_le_self INF_nonneg intro!: nn_integral_mono)
-    have finite2: "d_IN g x \<noteq> \<infinity>" if "g \<in> Y" for g using finite
-      by(rule neq_PInf_trans)(auto intro: d_IN_mono bounded[OF that])
+    assume finite: "d_IN f x \<noteq> top"
+    have finite' [simp]: "f (y, x) \<noteq> \<top>" for y using finite
+      by(rule neq_top_trans) (rule d_IN_ge_point)
+
+    have finite'_g: "g (y, x) \<noteq> \<top>" if "g \<in> Y" for g y using finite'[of y]
+      by(rule neq_top_trans)(rule bounded[OF that])
+
+    have finite1: "(\<Sum>\<^sup>+ y. f (y, x) - (INF g:Y. g (y, x))) \<noteq> top"
+      using finite by(rule neq_top_trans)(auto simp add: d_IN_def diff_le_self_ennreal intro!: nn_integral_mono)
+    have finite2: "d_IN g x \<noteq> top" if "g \<in> Y" for g using finite
+      by(rule neq_top_trans)(auto intro: d_IN_mono bounded[OF that])
+
+    have bounded1: "(\<Sqinter>g\<in>Y. d_IN g x) \<le> d_IN f x"
+      using Y by (blast intro: INF_lower2 d_IN_mono bounded)
 
     have "?lhs2 = (\<Sum>\<^sup>+ y. INF g:Y. g (y, x))" by(simp add: d_IN_def)
     also have "\<dots> = d_IN f x - (\<Sum>\<^sup>+ y. f (y, x) - (INF g:Y. g (y, x)))" unfolding d_IN_def
+      using finite1 g0_le_f
       apply(subst nn_integral_diff[symmetric])
-      apply(auto simp add: AE_count_space g0_le_f finite1 intro!: ereal_diff_positive ereal_diff_le_self INF_lower2[OF g0] INF_nonneg nn_integral_cong)
-      apply(subst ereal_minus_minus; simp add: ereal_diff_add_inverse)
+      apply(auto simp add: AE_count_space intro!: diff_le_self_ennreal INF_lower2[OF g0] nn_integral_cong diff_diff_ennreal[symmetric])
       done
     also have "(\<Sum>\<^sup>+ y. f (y, x) - (INF g:Y. g (y, x))) = d_IN (\<lambda>e. SUP g:Y. f e - g e) x"
-      unfolding d_IN_def by(subst SUP_ereal_minus_right)(simp_all add: Y f_nonneg)
+      unfolding d_IN_def by(subst SUP_const_minus_ennreal)(simp_all add: Y)
     also have "\<dots> = (SUP h:(\<lambda>g e. f e - g e) ` Y. d_IN h x)" using countable' chain' Y
       by(subst d_IN_Sup[symmetric])(simp_all add: SUP_apply[abs_def])
-    also have "\<dots> = (SUP g:Y. d_IN (\<lambda>e. f e - g e) x)" unfolding SUP_def image_image ..
+    also have "\<dots> = (SUP g:Y. d_IN (\<lambda>e. f e - g e) x)" unfolding image_image ..
     also have "\<dots> = (SUP g:Y. d_IN f x - d_IN g x)"
-      by(rule SUP_cong[OF refl] d_IN_diff)+(auto intro: nonneg bounded simp add: finite2)
-    also have "\<dots> = d_IN f x - ?rhs2" by(subst SUP_ereal_minus_right)(simp_all add: Y)
+      by(rule SUP_cong[OF refl] d_IN_diff)+(auto intro: bounded simp add: finite2)
+    also have "\<dots> = d_IN f x - ?rhs2" by(subst SUP_const_minus_ennreal)(simp_all add: Y)
     also have "d_IN f x - \<dots> = ?rhs2"
-      by(subst ereal_minus_minus)(simp_all add: d_IN_nonneg finite ereal_diff_add_inverse)
+      by(subst diff_diff_ennreal)(simp_all add: finite bounded1)
     finally show ?IN . }
 qed
 
@@ -394,8 +377,7 @@ inductive flow :: "('v, 'more) network_scheme \<Rightarrow> 'v flow \<Rightarrow
   for \<Delta> (structure) and f
 where
   flow: "\<lbrakk> \<And>e. f e \<le> capacity \<Delta> e;
-     \<And>x. \<lbrakk> x \<noteq> source \<Delta>; x \<noteq> sink \<Delta> \<rbrakk> \<Longrightarrow> KIR f x;
-     \<And>e. 0 \<le> f e \<rbrakk>
+     \<And>x. \<lbrakk> x \<noteq> source \<Delta>; x \<noteq> sink \<Delta> \<rbrakk> \<Longrightarrow> KIR f x \<rbrakk>
   \<Longrightarrow> flow \<Delta> f"
 
 lemma flowD_capacity: "flow \<Delta> f \<Longrightarrow> f e \<le> capacity \<Delta> e"
@@ -404,16 +386,13 @@ by(cases e)(simp add: flow.simps)
 lemma flowD_KIR: "\<lbrakk> flow \<Delta> f; x \<noteq> source \<Delta>; x \<noteq> sink \<Delta> \<rbrakk> \<Longrightarrow> KIR f x"
 by(simp add: flow.simps)
 
-lemma flowD_nonneg: "flow \<Delta> f \<Longrightarrow> 0 \<le> f e"
-by(rule flow.cases)
-
 lemma flowD_capacity_OUT: "flow \<Delta> f \<Longrightarrow> d_OUT f x \<le> d_OUT (capacity \<Delta>) x"
 by(rule d_OUT_mono)(erule flowD_capacity)
 
 lemma flowD_capacity_IN: "flow \<Delta> f \<Longrightarrow> d_IN f x \<le> d_IN (capacity \<Delta>) x"
 by(rule d_IN_mono)(erule flowD_capacity)
 
-abbreviation value_flow :: "('v, 'more) network_scheme \<Rightarrow> ('v edge \<Rightarrow> ereal) \<Rightarrow> ereal"
+abbreviation value_flow :: "('v, 'more) network_scheme \<Rightarrow> ('v edge \<Rightarrow> ennreal) \<Rightarrow> ennreal"
 where "value_flow \<Delta> f \<equiv> d_OUT f (source \<Delta>)"
 
 subsection \<open>Cut\<close>
@@ -447,9 +426,8 @@ locale countable_network =
   fixes \<Delta> :: "('v, 'more) network_scheme" (structure)
   assumes countable_E [simp]: "countable \<^bold>E"
   and source_neq_sink [simp]: "source \<Delta> \<noteq> sink \<Delta>"
-  and capacity_nonneg: "0 \<le> capacity \<Delta> e"
   and capacity_outside: "e \<notin> \<^bold>E \<Longrightarrow> capacity \<Delta> e = 0"
-  and capacity_finite [simp]: "capacity \<Delta> e \<noteq> \<infinity>"
+  and capacity_finite [simp]: "capacity \<Delta> e \<noteq> \<top>"
 begin
 
 lemma sink_neq_source [simp]: "sink \<Delta> \<noteq> source \<Delta>"
@@ -458,18 +436,18 @@ using source_neq_sink[symmetric] .
 lemma countable_V [simp]: "countable \<^bold>V"
 unfolding "\<^bold>V_def" using countable_E by auto
 
-lemma flowD_outside: 
+lemma flowD_outside:
   assumes g: "flow \<Delta> g"
   shows "e \<notin> \<^bold>E \<Longrightarrow> g e = 0"
-using flowD_capacity[OF g, of e] capacity_outside[of e] flowD_nonneg[OF g, of e] by simp
+using flowD_capacity[OF g, of e] capacity_outside[of e] by simp
 
 lemma flowD_finite:
   assumes "flow \<Delta> g"
-  shows "g e \<noteq> \<infinity>"
-using flowD_capacity[OF assms, of e] by auto
+  shows "g e \<noteq> \<top>"
+using flowD_capacity[OF assms, of e] by (auto simp: top_unique)
 
 lemma zero_flow [simp]: "flow \<Delta> (\<lambda>_. 0)"
-by(rule flow.intros)(simp_all add: capacity_nonneg)
+by(rule flow.intros) simp_all
 
 end
 
@@ -490,57 +468,53 @@ lemma value_flow_cleanup:
   assumes [simp]: "\<And>x. f (x, source \<Delta>) = 0"
   shows "value_flow \<Delta> (cleanup f) = value_flow \<Delta> f"
 unfolding d_OUT_def
-by(subst (1 2) nn_integral_max_0[symmetric])(auto simp add: not_less intro!: nn_integral_cong intro: antisym)
-
-lemma cleanup_nonneg: "0 \<le> cleanup f e"
-by(cases e)(auto intro: ereal_diff_positive)
+by (auto simp add: not_less intro!: nn_integral_cong intro: antisym)
 
 lemma KIR_cleanup:
   assumes KIR: "KIR f x"
-  and nonneg: "\<And>e. f e \<ge> 0"
-  and finite_IN: "d_IN f x \<noteq> \<infinity>"
+  and finite_IN: "d_IN f x \<noteq> \<top>"
   shows "KIR (cleanup f) x"
 proof -
-  from finite_IN KIR have finite_OUT: "d_OUT f x \<noteq> \<infinity>" by simp
+  from finite_IN KIR have finite_OUT: "d_OUT f x \<noteq> \<top>" by simp
 
-  have finite_IN: "(\<Sum>\<^sup>+ y\<in>A. f (y, x)) \<noteq> \<infinity>" for A
-    using finite_IN by(rule neq_PInf_trans)(auto simp add: d_IN_def nn_integral_count_space_indicator nonneg intro!: nn_integral_mono split: split_indicator)
-  have finite_OUT: "(\<Sum>\<^sup>+ y\<in>A. f (x, y)) \<noteq> \<infinity>" for A
-    using finite_OUT by(rule neq_PInf_trans)(auto simp add: d_OUT_def nn_integral_count_space_indicator nonneg intro!: nn_integral_mono split: split_indicator)
-  have finite_in: "f (x, y) \<noteq> \<infinity>" for y using \<open>d_OUT f x \<noteq> \<infinity>\<close>
-    by(rule neq_PInf_trans)(auto simp add: d_OUT_def intro: nn_integral_ge_point)
+  have finite_IN: "(\<Sum>\<^sup>+ y\<in>A. f (y, x)) \<noteq> \<top>" for A
+    using finite_IN by(rule neq_top_trans)(auto simp add: d_IN_def nn_integral_count_space_indicator intro!: nn_integral_mono split: split_indicator)
+  have finite_OUT: "(\<Sum>\<^sup>+ y\<in>A. f (x, y)) \<noteq> \<top>" for A
+    using finite_OUT by(rule neq_top_trans)(auto simp add: d_OUT_def nn_integral_count_space_indicator intro!: nn_integral_mono split: split_indicator)
+  have finite_in: "f (x, y) \<noteq> \<top>" for y using \<open>d_OUT f x \<noteq> \<top>\<close>
+    by(rule neq_top_trans) (rule d_OUT_ge_point)
 
   let ?M = "{y. f (x, y) > f (y, x)}"
 
   have "d_OUT (cleanup f) x = (\<Sum>\<^sup>+ y\<in>?M. f (x, y) - f (y, x))"
     by(auto simp add: d_OUT_def nn_integral_count_space_indicator intro!: nn_integral_cong)
   also have "\<dots> = (\<Sum>\<^sup>+ y\<in>?M. f (x, y)) - (\<Sum>\<^sup>+ y\<in>?M. f (y, x))" using finite_IN
-    by(subst nn_integral_diff)(auto simp add: nonneg AE_count_space)
+    by(subst nn_integral_diff)(auto simp add: AE_count_space)
   also have "\<dots> = (d_OUT f x - (\<Sum>\<^sup>+ y\<in>{y. f (x, y) \<le> f (y, x)}. f (x, y))) - (\<Sum>\<^sup>+ y\<in>?M. f (y, x))"
-    unfolding d_OUT_def d_IN_def using finite_IN finite_OUT nonneg
+    unfolding d_OUT_def d_IN_def using finite_IN finite_OUT
     apply(simp add: nn_integral_count_space_indicator)
     apply(subst (2) nn_integral_diff[symmetric])
     apply(auto simp add: AE_count_space finite_in split: split_indicator intro!: arg_cong2[where f="op -"] intro!: nn_integral_cong)
     done
   also have "\<dots> = (d_IN f x - (\<Sum>\<^sup>+ y\<in>?M. f (y, x))) - (\<Sum>\<^sup>+ y\<in>{y. f (x, y) \<le> f (y, x)}. f (x, y))"
-    using KIR by(simp add: diff_diff_commute_ereal)
+    using KIR by(simp add: diff_diff_commute_ennreal)
   also have "\<dots> = (\<Sum>\<^sup>+ y\<in>{y. f (x, y) \<le> f (y, x)}. f (y, x)) - (\<Sum>\<^sup>+ y\<in>{y. f (x, y) \<le> f (y, x)}. f (x, y))"
-    using finite_IN nonneg
+    using finite_IN finite_IN[of "{ _ }"]
     apply(simp add: d_IN_def nn_integral_count_space_indicator)
     apply(subst nn_integral_diff[symmetric])
-    apply(auto simp add: d_IN_def AE_count_space split: split_indicator intro: arg_cong2[where f="op -"] intro!: nn_integral_cong)
+    apply(auto simp add: d_IN_def AE_count_space split: split_indicator intro!: arg_cong2[where f="op -"] intro!: nn_integral_cong)
     done
   also have "\<dots> = (\<Sum>\<^sup>+ y\<in>{y. f (x, y) \<le> f (y, x)}. f (y, x) - f (x, y))" using finite_OUT
-    by(subst nn_integral_diff)(auto simp add: nonneg AE_count_space)
-  also have "\<dots> = d_IN (cleanup f) x" using nonneg finite_in
-    by(auto simp add: d_IN_def nn_integral_count_space_indicator intro!: nn_integral_cong split: split_indicator)
+    by(subst nn_integral_diff)(auto simp add: AE_count_space)
+  also have "\<dots> = d_IN (cleanup f) x" using finite_in
+    by(auto simp add: d_IN_def nn_integral_count_space_indicator intro!: ennreal_diff_self nn_integral_cong split: split_indicator)
   finally show "KIR (cleanup f) x" .
 qed
 
 locale flow_attainability = countable_network \<Delta>
   for \<Delta> :: "('v, 'more) network_scheme" (structure)
   +
-  assumes finite_capacity: "\<And>x. x \<noteq> sink \<Delta> \<Longrightarrow> d_IN (capacity \<Delta>) x \<noteq> \<infinity> \<or> d_OUT (capacity \<Delta>) x \<noteq> \<infinity>"
+  assumes finite_capacity: "\<And>x. x \<noteq> sink \<Delta> \<Longrightarrow> d_IN (capacity \<Delta>) x \<noteq> \<top> \<or> d_OUT (capacity \<Delta>) x \<noteq> \<top>"
   and no_loop: "\<And>x. \<not> edge \<Delta> x x"
   and source_in: "\<And>x. \<not> edge \<Delta> x (source \<Delta>)"
 begin
@@ -565,32 +539,32 @@ proof -
   finally show ?thesis by simp
 qed
 
-lemma flowD_finite_IN: 
+lemma flowD_finite_IN:
   assumes f: "flow \<Delta> f" and x: "x \<noteq> sink \<Delta>"
-  shows "d_IN f x \<noteq> \<infinity>"
+  shows "d_IN f x \<noteq> top"
 proof(cases "x = source \<Delta>")
   case True thus ?thesis by(simp add: flowD_source_IN[OF f])
 next
   case False
   from finite_capacity[OF x] show ?thesis
   proof
-    assume *: "d_IN (capacity \<Delta>) x \<noteq> \<infinity>"
+    assume *: "d_IN (capacity \<Delta>) x \<noteq> \<top>"
     from flowD_capacity[OF f] have "d_IN f x \<le> d_IN (capacity \<Delta>) x" by(rule d_IN_mono)
-    also have "\<dots> < \<infinity>" using * by simp
+    also have "\<dots> < \<top>" using * by (simp add: less_top)
     finally show ?thesis by simp
   next
-    assume *: "d_OUT (capacity \<Delta>) x \<noteq> \<infinity>"
+    assume *: "d_OUT (capacity \<Delta>) x \<noteq> \<top>"
     have "d_IN f x = d_OUT f x" using flowD_KIR[OF f False x] by simp
     also have "\<dots> \<le> d_OUT (capacity \<Delta>) x" using flowD_capacity[OF f] by(rule d_OUT_mono)
-    also have "\<dots> < \<infinity>" using * by simp
+    also have "\<dots> < \<top>" using * by (simp add: less_top)
     finally show ?thesis by simp
   qed
 qed
 
 lemma flowD_finite_OUT:
   assumes "flow \<Delta> f" "x \<noteq> source \<Delta>" "x \<noteq> sink \<Delta>"
-  shows "d_OUT f x \<noteq> \<infinity>"
-using flowD_KIR[OF assms] by(simp add: flowD_finite_IN assms)
+  shows "d_OUT f x \<noteq> \<top>"
+using flowD_KIR[OF assms] assms by(simp add: flowD_finite_IN)
 
 end
 
@@ -598,11 +572,9 @@ locale flow_network = flow_attainability
   +
   fixes g :: "'v flow"
   assumes g: "flow \<Delta> g"
-  and g_finite: "value_flow \<Delta> g \<noteq> \<infinity>"
+  and g_finite: "value_flow \<Delta> g \<noteq> \<top>"
   and nontrivial: "\<^bold>V - {source \<Delta>, sink \<Delta>} \<noteq> {}"
 begin
-
-lemma g_nonneg: "0 \<le> g e" using g by(rule flowD_nonneg)
 
 lemma g_outside: "e \<notin> \<^bold>E \<Longrightarrow> g e = 0"
 by(rule flowD_outside)(rule g)
@@ -610,12 +582,12 @@ by(rule flowD_outside)(rule g)
 lemma g_loop [simp]: "g (x, x) = 0"
 by(rule g_outside)(simp add: no_loop)
 
-lemma finite_IN_g: "x \<noteq> sink \<Delta> \<Longrightarrow> d_IN g x \<noteq> \<infinity>"
+lemma finite_IN_g: "x \<noteq> sink \<Delta> \<Longrightarrow> d_IN g x \<noteq> top"
 by(rule flowD_finite_IN[OF g])
 
-lemma finite_OUT_g: 
+lemma finite_OUT_g:
   assumes "x \<noteq> sink \<Delta>"
-  shows "d_OUT g x \<noteq> \<infinity>"
+  shows "d_OUT g x \<noteq> top"
 proof(cases "x = source \<Delta>")
   case True
   with g_finite show ?thesis by simp
@@ -628,8 +600,8 @@ qed
 lemma g_source_in [simp]: "g (x, source \<Delta>) = 0"
 by(rule g_outside)(simp add: source_in)
 
-lemma finite_g [simp]: "g e \<noteq> \<infinity>"
-by(rule flowD_finite[OF g])
+lemma finite_g [simp]: "g e \<noteq> top"
+  by(rule flowD_finite[OF g])
 
 
 definition enum_v :: "nat \<Rightarrow> 'v"
@@ -654,23 +626,21 @@ proof -
   with \<open>i' > i\<close> show ?thesis by blast
 qed
 
-fun h_plus :: "nat \<Rightarrow> 'v edge \<Rightarrow> ereal"
+fun h_plus :: "nat \<Rightarrow> 'v edge \<Rightarrow> ennreal"
 where
   "h_plus 0 (x, y) = (if x = source \<Delta> then g (x, y) else 0)"
-| "h_plus (Suc i) (x, y) = 
-  (if enum_v (Suc i) = x \<and> d_OUT (h_plus i) x < d_IN (h_plus i) x then 
+| "h_plus (Suc i) (x, y) =
+  (if enum_v (Suc i) = x \<and> d_OUT (h_plus i) x < d_IN (h_plus i) x then
    let total = d_IN (h_plus i) x - d_OUT (h_plus i) x;
        share = g (x, y) - h_plus i (x, y);
        shares = d_OUT g x - d_OUT (h_plus i) x
    in h_plus i (x, y) + share * total / shares
    else h_plus i (x, y))"
 
+
 lemma h_plus_le_g: "h_plus i e \<le> g e"
-  and h_plus_nonneg: "0 \<le> h_plus i e"
 proof(induction i arbitrary: e and e)
-  case 0
-  { case 1 thus ?case by(cases e)(simp add: g_nonneg) }
-  { case 2 thus ?case by(cases e)(simp add: g_nonneg) }
+  case 0 thus ?case by(cases e) simp
 next
   case (Suc i)
   { fix x y
@@ -683,14 +653,12 @@ next
     def shares \<equiv> "d_OUT g x - d_OUT (h_plus i) x"
     def total \<equiv> "d_IN (h_plus i) x - d_OUT (h_plus i) x"
     let ?h = "h_plus i (x, y) + share * total / shares"
-    have share_nonneg: "0 \<le> share" using \<open>h_plus i (x, y) \<le> g _\<close>
-      by(auto simp add: share_def ereal_le_minus_iff)
 
     have "d_OUT (h_plus i) x \<le> d_OUT g x" by(rule d_OUT_mono)(rule Suc.IH)
-    also have "\<dots> < \<infinity>" using finite_OUT_g[of x] x by simp
-    finally have "d_OUT (h_plus i) x \<noteq> \<infinity>" by simp
+    also have "\<dots> < top" using finite_OUT_g[of x] x by (simp add: less_top)
+    finally have "d_OUT (h_plus i) x \<noteq> \<top>" by simp
     then have shares_eq: "shares = (\<Sum>\<^sup>+ y. g (x, y) - h_plus i (x, y))" unfolding shares_def d_OUT_def
-      by(subst nn_integral_diff)(simp_all add: AE_count_space Suc.IH(1) Suc.IH(2))
+      by(subst nn_integral_diff)(simp_all add: AE_count_space Suc.IH)
 
     have *: "share / shares \<le> 1"
     proof (cases "share = 0")
@@ -698,59 +666,55 @@ next
     next
       case False
       hence "share > 0" using `h_plus i (x, y) \<le> g _`
-        by(simp add: share_def dual_order.strict_iff_order ereal_diff_positive)
+        by(simp add: share_def dual_order.strict_iff_order)
       moreover have "share \<le> shares" unfolding share_def shares_eq by(rule nn_integral_ge_point)simp
-      ultimately show ?thesis by(simp add: ereal_divide_le_posI)
+      ultimately show ?thesis by(simp add: divide_le_posI_ennreal)
     qed
-  
+
     note shares_def[THEN meta_eq_to_obj_eq]
     also have "d_OUT g x = d_IN g x" by(rule flowD_KIR[OF g x])
     also have "d_IN (h_plus i) x \<le> d_IN g x" by(rule d_IN_mono)(rule Suc.IH)
-    ultimately have *: "total \<le> shares" unfolding total_def by(simp add: ereal_minus_mono)
-    moreover have "total > 0" unfolding total_def using less by(clarsimp simp add: ereal_less_minus_iff)
-    ultimately have "total / shares \<le> 1" by(intro ereal_divide_le_posI)(simp_all)
-    hence "share * (total / shares) \<le> share * 1" using share_nonneg
-      by(rule ereal_mult_left_mono)
-    hence "?h \<le> h_plus i (x, y) + share" by(simp add: ereal_times_divide_eq add_mono)
-    also have "\<dots> = g (x, y)" unfolding share_def using \<open>h_plus i (x, y) \<le> g _\<close> \<open>0 \<le> h_plus i (x, y)\<close>
-      unfolding add_diff_eq_ereal add.commute by(clarsimp simp add: add_diff_eq_ereal[symmetric])
-    also have "?h \<ge> 0" using \<open>0 \<le> h_plus i (x, y)\<close> share_nonneg \<open>total > 0\<close>
-      by(intro ereal_add_nonneg_nonneg zero_le_divide_ereal)(simp_all add: shares_eq nn_integral_nonneg)
+    ultimately have *: "total \<le> shares" unfolding total_def by(simp add: ennreal_minus_mono)
+    moreover have "total > 0" unfolding total_def using less by (clarsimp simp add: diff_gr0_ennreal)
+    ultimately have "total / shares \<le> 1" by(intro divide_le_posI_ennreal)(simp_all)
+    hence "share * (total / shares) \<le> share * 1"
+      by(rule mult_left_mono) simp
+    hence "?h \<le> h_plus i (x, y) + share" by(simp add: ennreal_times_divide add_mono)
+    also have "\<dots> = g (x, y)" unfolding share_def using \<open>h_plus i (x, y) \<le> g _\<close> finite_g[of "(x, y)"]
+      by simp
     moreover
     note calculation }
   note * = this
-  { case (1 e) show ?case using Suc.IH * by(cases e)clarsimp }
-  { case (2 e) show ?case using Suc.IH * by(cases e)clarsimp }
+  show ?case using Suc.IH * by(cases e) clarsimp
 qed
 
 lemma h_plus_outside: "e \<notin> \<^bold>E \<Longrightarrow> h_plus i e = 0"
-by (metis eq_iff g_outside h_plus_le_g h_plus_nonneg)
+by (metis g_outside h_plus_le_g le_zero_eq)
 
-lemma h_plus_not_infty [simp]: "h_plus i e \<noteq> \<infinity>"
-using h_plus_le_g[of i e] by auto
+lemma h_plus_not_infty [simp]: "h_plus i e \<noteq> top"
+using h_plus_le_g[of i e] by (auto simp: top_unique)
 
 lemma h_plus_mono: "h_plus i e \<le> h_plus (Suc i) e"
 proof(cases e)
   case [simp]: (Pair x y)
   { assume "d_OUT (h_plus i) x < d_IN (h_plus i) x"
     hence "h_plus i (x, y) + 0 \<le> h_plus i (x, y) + (g (x, y) - h_plus i (x, y)) * (d_IN (h_plus i) x - d_OUT (h_plus i) x) / (d_OUT g x - d_OUT (h_plus i) x)"
-      by(intro add_left_mono zero_le_divide_ereal ereal_0_le_mult ereal_diff_positive d_OUT_mono le_funI)
-        (simp_all add: h_plus_le_g) }
+      by(intro add_left_mono d_OUT_mono le_funI) (simp_all add: h_plus_le_g) }
   then show ?thesis by clarsimp
 qed
 
 lemma h_plus_mono': "i \<le> j \<Longrightarrow> h_plus i e \<le> h_plus j e"
 by(induction rule: dec_induct)(auto intro: h_plus_mono order_trans)
 
-lemma d_OUT_h_plus_not_infty': "x \<noteq> sink \<Delta> \<Longrightarrow> d_OUT (h_plus i) x \<noteq> \<infinity>"
-using d_OUT_mono[of "h_plus i" x g, OF h_plus_le_g] finite_OUT_g[of x] by auto
+lemma d_OUT_h_plus_not_infty': "x \<noteq> sink \<Delta> \<Longrightarrow> d_OUT (h_plus i) x \<noteq> top"
+using d_OUT_mono[of "h_plus i" x g, OF h_plus_le_g] finite_OUT_g[of x] by (auto simp: top_unique)
 
 lemma h_plus_OUT_le_IN:
   assumes "x \<noteq> source \<Delta>"
   shows "d_OUT (h_plus i) x \<le> d_IN (h_plus i) x"
 proof(induction i)
   case 0
-  thus ?case using assms by(simp add: d_OUT_def d_IN_nonneg)
+  thus ?case using assms by(simp add: d_OUT_def)
 next
   case (Suc i)
   have "d_OUT (h_plus (Suc i)) x \<le> d_IN (h_plus i) x"
@@ -761,23 +725,21 @@ next
     case True
     hence x: "x \<noteq> sink \<Delta>" and le: "d_OUT (h_plus i) x < d_IN (h_plus i) x" using range_enum_v by auto
     let ?r = "\<lambda>y. (g (x, y) - h_plus i (x, y)) * (d_IN (h_plus i) x - d_OUT (h_plus i) x) / (d_OUT g x - d_OUT (h_plus i) x)"
-    have "0 \<le> ?r y" for y
-       by(intro zero_le_divide_ereal ereal_0_le_mult ereal_diff_positive h_plus_le_g Suc.IH d_OUT_mono le_funI)
-    then have "d_OUT (h_plus (Suc i)) x = d_OUT (h_plus i) x + (\<Sum>\<^sup>+ y. ?r y)"
-      using True unfolding d_OUT_def h_plus.simps by(simp add: AE_count_space h_plus_nonneg nn_integral_add)
+    have "d_OUT (h_plus (Suc i)) x = d_OUT (h_plus i) x + (\<Sum>\<^sup>+ y. ?r y)"
+      using True unfolding d_OUT_def h_plus.simps by(simp add: AE_count_space nn_integral_add)
     also from True have "x \<noteq> source \<Delta>" "x \<noteq> sink \<Delta>" using range_enum_v by auto
     from flowD_KIR[OF g this] le d_IN_mono[of "h_plus i" x g, OF h_plus_le_g]
     have le': "d_OUT (h_plus i) x < d_OUT g x" by(simp)
-    then have "(\<Sum>\<^sup>+ y. ?r y) = 
+    then have "(\<Sum>\<^sup>+ y. ?r y) =
       (d_IN (h_plus i) x - d_OUT (h_plus i) x) * ((\<Sum>\<^sup>+ y. g (x, y) - h_plus i (x, y)) / (d_OUT g x - d_OUT (h_plus i) x))"
-      by(subst mult.commute, subst ereal_times_divide_eq[symmetric])
-        (simp add: nn_integral_cmult nn_integral_divide Suc.IH ereal_diff_positive ereal_diff_gr0)
+      by(subst mult.commute, subst ennreal_times_divide[symmetric])
+        (simp add: nn_integral_cmult nn_integral_divide Suc.IH diff_gr0_ennreal)
     also have "(\<Sum>\<^sup>+ y. g (x, y) - h_plus i (x, y)) = d_OUT g x - d_OUT (h_plus i) x" using x
-      by(subst nn_integral_diff)(simp_all add: d_OUT_def[symmetric] h_plus_nonneg h_plus_le_g d_OUT_h_plus_not_infty')
-    also have "\<dots> / \<dots> = 1" using le' d_OUT_nonneg[of "h_plus i" x] finite_OUT_g[of x] x
-      by(auto simp add: ereal_minus_eq_PInfty_iff ereal_diff_eq_MInfty_iff dest: ereal_diff_gr0)
+      by(subst nn_integral_diff)(simp_all add: d_OUT_def[symmetric] h_plus_le_g d_OUT_h_plus_not_infty')
+    also have "\<dots> / \<dots> = 1" using le' finite_OUT_g[of x] x
+      by(auto intro!: ennreal_divide_self dest: diff_gr0_ennreal simp: less_top[symmetric])
     also have "d_OUT (h_plus i) x + (d_IN (h_plus i) x - d_OUT (h_plus i) x) * 1 = d_IN (h_plus i) x" using x
-      by(simp add: add_diff_eq_ereal ereal_diff_add_inverse d_OUT_nonneg d_OUT_h_plus_not_infty')
+      by (simp add: Suc)
     finally show ?thesis by simp
   qed
   also have "\<dots> \<le> d_IN (h_plus (Suc i)) x" by(rule d_IN_mono)(rule h_plus_mono)
@@ -796,30 +758,28 @@ next
   case True
   from enum have x: "x \<noteq> source \<Delta>" and sink: "x \<noteq> sink \<Delta>" using range_enum_v by auto
   let ?r = "\<lambda>y. (g (x, y) - h_plus i (x, y)) * (d_IN (h_plus i) x - d_OUT (h_plus i) x) / (d_OUT g x - d_OUT (h_plus i) x)"
-  have "0 \<le> ?r y" for y
-     by(intro zero_le_divide_ereal ereal_0_le_mult ereal_diff_positive h_plus_le_g h_plus_OUT_le_IN x d_OUT_mono le_funI)
-  then have "d_OUT (h_plus (Suc i)) x = d_OUT (h_plus i) x + (\<Sum>\<^sup>+ y. ?r y)"
-    using True enum unfolding d_OUT_def h_plus.simps by(simp add: AE_count_space h_plus_nonneg nn_integral_add)
+  have "d_OUT (h_plus (Suc i)) x = d_OUT (h_plus i) x + (\<Sum>\<^sup>+ y. ?r y)"
+    using True enum unfolding d_OUT_def h_plus.simps by(simp add: AE_count_space nn_integral_add)
   also from True enum have "x \<noteq> source \<Delta>" "x \<noteq> sink \<Delta>" using range_enum_v by auto
   from flowD_KIR[OF g this] True d_IN_mono[of "h_plus i" x g, OF h_plus_le_g]
   have le': "d_OUT (h_plus i) x < d_OUT g x" by(simp)
-  then have "(\<Sum>\<^sup>+ y. ?r y ) = 
+  then have "(\<Sum>\<^sup>+ y. ?r y ) =
     (d_IN (h_plus i) x - d_OUT (h_plus i) x) * ((\<Sum>\<^sup>+ y. g (x, y) - h_plus i (x, y)) / (d_OUT g x - d_OUT (h_plus i) x))"
-    by(subst mult.commute, subst ereal_times_divide_eq[symmetric])
-      (simp add: nn_integral_cmult nn_integral_divide h_plus_OUT_le_IN[OF x] ereal_diff_positive ereal_diff_gr0)
+    by(subst mult.commute, subst ennreal_times_divide[symmetric])
+      (simp add: nn_integral_cmult nn_integral_divide h_plus_OUT_le_IN[OF x] diff_gr0_ennreal)
   also have "(\<Sum>\<^sup>+ y. g (x, y) - h_plus i (x, y)) = d_OUT g x - d_OUT (h_plus i) x" using sink
-    by(subst nn_integral_diff)(simp_all add: d_OUT_def[symmetric] h_plus_nonneg h_plus_le_g d_OUT_h_plus_not_infty')
-  also have "\<dots> / \<dots> = 1" using le' d_OUT_nonneg[of "h_plus i" x] finite_OUT_g[of x] sink
-    by(auto simp add: ereal_minus_eq_PInfty_iff ereal_diff_eq_MInfty_iff dest: ereal_diff_gr0)
+    by(subst nn_integral_diff)(simp_all add: d_OUT_def[symmetric] h_plus_le_g d_OUT_h_plus_not_infty')
+  also have "\<dots> / \<dots> = 1" using le' finite_OUT_g[of x] sink
+    by(auto intro!: ennreal_divide_self dest: diff_gr0_ennreal simp: less_top[symmetric])
   also have "d_OUT (h_plus i) x + (d_IN (h_plus i) x - d_OUT (h_plus i) x) * 1 = d_IN (h_plus i) x" using sink
-    by(simp add: add_diff_eq_ereal ereal_diff_add_inverse d_OUT_nonneg d_OUT_h_plus_not_infty')
+    by (simp add: h_plus_OUT_le_IN x)
   finally show ?thesis .
 qed
 
 lemma h_plus_source_in [simp]: "h_plus i (x, source \<Delta>) = 0"
 by(induction i)simp_all
 
-lemma h_plus_sum_finite: "(\<Sum>\<^sup>+ e. h_plus i e) \<noteq> \<infinity>"
+lemma h_plus_sum_finite: "(\<Sum>\<^sup>+ e. h_plus i e) \<noteq> top"
 proof(induction i)
   case 0
   have "(\<Sum>\<^sup>+ e\<in>UNIV. h_plus 0 e) = (\<Sum>\<^sup>+ (x, y). h_plus 0 (x, y))"
@@ -827,7 +787,7 @@ proof(induction i)
   also have "\<dots> = (\<Sum>\<^sup>+ (x, y)\<in>range (Pair (source \<Delta>)). h_plus 0 (x, y))"
     by(auto simp add: nn_integral_count_space_indicator intro!: nn_integral_cong)
   also have "\<dots> = value_flow \<Delta> g" by(simp add: d_OUT_def nn_integral_count_space_reindex)
-  also have "\<dots> < \<infinity>" using g_finite by simp
+  also have "\<dots> < \<top>" using g_finite by (simp add: less_top)
   finally show ?case by simp
 next
   case (Suc i)
@@ -848,28 +808,32 @@ next
     have "(\<Sum>\<^sup>+ e. h_plus (Suc i) e) =
       (\<Sum>\<^sup>+ e\<in>UNIV. h_plus i e) + (\<Sum>\<^sup>+ (x, y). ((g (x, y) - h_plus i (x, y)) * (d_IN (h_plus i) x - d_OUT (h_plus i) x) / (d_OUT g x - d_OUT (h_plus i) x)) * indicator (range (Pair xi)) (x, y))"
       (is "_ = ?IH + ?rest" is "_ = _ + \<integral>\<^sup>+ (x, y). ?f x y * _ \<partial>_") using xi True
-      by(subst nn_integral_add[symmetric])(auto simp add: xi_def h_plus_nonneg split_beta AE_count_space intro!: nn_integral_cong split: split_indicator intro!: zero_le_divide_ereal ereal_0_le_mult ereal_diff_positive h_plus_le_g h_plus_OUT_le_IN d_OUT_mono le_funI)
+      by(subst nn_integral_add[symmetric])(auto simp add: xi_def split_beta AE_count_space intro!: nn_integral_cong split: split_indicator intro!: h_plus_le_g h_plus_OUT_le_IN d_OUT_mono le_funI)
     also have "?rest = (\<Sum>\<^sup>+ (x, y)\<in>range (Pair xi). ?f x y)"
       by(simp add: nn_integral_count_space_indicator split_def)
     also have "\<dots> = (\<Sum>\<^sup>+ y. ?f xi y)" by(simp add: nn_integral_count_space_reindex)
     also have "\<dots> = (\<Sum>\<^sup>+ y. g (xi, y) - h_plus i (xi, y)) * ((d_IN (h_plus i) xi - d_OUT (h_plus i) xi) / (d_OUT g xi - d_OUT (h_plus i) xi))"
       (is "_ = ?integral * ?factor")  using True less
-      by(simp add: nn_integral_multc ereal_diff_positive nn_integral_divide ereal_diff_gr0 ereal_times_divide_eq)
+      by(simp add: nn_integral_multc nn_integral_divide diff_gr0_ennreal ennreal_times_divide)
     also have "?integral = d_OUT g xi - d_OUT (h_plus i) xi" unfolding d_OUT_def using xi
-      by(subst nn_integral_diff)(simp_all add: h_plus_nonneg h_plus_le_g d_OUT_def[symmetric] d_OUT_h_plus_not_infty')
+      by(subst nn_integral_diff)(simp_all add: h_plus_le_g d_OUT_def[symmetric] d_OUT_h_plus_not_infty')
     also have "\<dots> * ?factor = (d_IN (h_plus i) xi - d_OUT (h_plus i) xi)" using xi
-      by (simp add: ereal_diff_gr0 ereal_minus_eq_PInfty_iff ereal_mult_divide finite_OUT_g less)
-    also have "\<dots> \<noteq> \<infinity>" using h_plus_OUT_eq_IN[OF refl, of i, folded xi_def, symmetric] xi
-      by(simp add: ereal_minus_eq_PInfty_iff d_OUT_h_plus_not_infty')
+      apply (subst ennreal_times_divide)
+      apply (subst mult.commute)
+      apply (subst ennreal_mult_divide_eq)
+      apply (simp_all add: diff_gr0_ennreal finite_OUT_g less zero_less_iff_neq_zero[symmetric])
+      done
+    also have "\<dots> \<noteq> \<top>" using h_plus_OUT_eq_IN[OF refl, of i, folded xi_def, symmetric] xi
+      by(simp add: d_OUT_h_plus_not_infty')
     ultimately show ?thesis using Suc.IH by simp
   qed
 qed
 
-lemma d_OUT_h_plus_not_infty [simp]: "d_OUT (h_plus i) x \<noteq> \<infinity>"
+lemma d_OUT_h_plus_not_infty [simp]: "d_OUT (h_plus i) x \<noteq> top"
 proof -
   have "d_OUT (h_plus i) x \<le> (\<Sum>\<^sup>+ y\<in>UNIV. \<Sum>\<^sup>+ x. h_plus i (x, y))"
     unfolding d_OUT_def by(rule nn_integral_mono nn_integral_ge_point)+ simp
-  also have "\<dots> < \<infinity>" by(simp add: nn_integral_snd_count_space h_plus_sum_finite)
+  also have "\<dots> < \<top>" using h_plus_sum_finite by(simp add: nn_integral_snd_count_space less_top)
   finally show ?thesis by simp
 qed
 
@@ -881,11 +845,10 @@ unfolding enum_cycle_def using from_nat_into[of "cycles \<Delta>" n] by simp
 
 context
   fixes h' :: "'v flow"
-  assumes h'_nonneg: "0 \<le> h' e"
-  and finite_h': "h' e \<noteq> \<infinity>"
+  assumes finite_h': "h' e \<noteq> top"
 begin
 
-fun h_minus_aux :: "nat \<Rightarrow> 'v edge \<Rightarrow> ereal"
+fun h_minus_aux :: "nat \<Rightarrow> 'v edge \<Rightarrow> ennreal"
 where
   "h_minus_aux 0 e = 0"
 | "h_minus_aux (Suc j) e =
@@ -893,40 +856,35 @@ where
      h_minus_aux j e + Min {h' e' - h_minus_aux j e'|e'. e'\<in>set (cycle_edges (enum_cycle j))}
    else h_minus_aux j e)"
 
-lemma h_minus_aux_nonneg: "0 \<le> h_minus_aux j e"
-  and h_minus_aux_le_h': "h_minus_aux j e \<le> h' e"
+lemma h_minus_aux_le_h': "h_minus_aux j e \<le> h' e"
 proof(induction j e rule: h_minus_aux.induct)
-  case 0: (1 e)
-  { case 1 show ?case by simp }
-  { case 2 show ?case using h'_nonneg by simp }
+  case 0: (1 e) show ?case by simp
 next
   case Suc: (2 j e)
-  { case 1 show ?case using Suc [[simproc add: finite_Collect]]
-      by(cases e)(auto intro: h'_nonneg intro!: ereal_add_nonneg_nonneg Min.boundedI ereal_diff_positive) }
-  { case 2
-    { assume e: "e \<in> set (cycle_edges (enum_cycle j))"
-      then have "h_minus_aux j e + Min {h' e' - h_minus_aux j e' |e'. e' \<in> set (cycle_edges (enum_cycle j))} \<le>
-        h_minus_aux j e + (h' e - h_minus_aux j e)"
-        using [[simproc add: finite_Collect]] by(cases e rule: prod.exhaust)(auto intro!: add_mono Min_le)
-      also have "\<dots> = h' e" using e finite_h'[of e] Suc.IH
-        by(cases e rule: prod.exhaust)(auto simp add: add_diff_eq_ereal intro!: ereal_diff_add_inverse; metis ereal_infty_less_eq(1))
-      also note calculation }
-    then show ?case using Suc by clarsimp }
+  { assume e: "e \<in> set (cycle_edges (enum_cycle j))"
+    then have "h_minus_aux j e + Min {h' e' - h_minus_aux j e' |e'. e' \<in> set (cycle_edges (enum_cycle j))} \<le>
+      h_minus_aux j e + (h' e - h_minus_aux j e)"
+      using [[simproc add: finite_Collect]] by(cases e rule: prod.exhaust)(auto intro!: add_mono Min_le)
+    also have "\<dots> = h' e" using e finite_h'[of e] Suc.IH(2)[of e]
+      by(cases e rule: prod.exhaust)
+        (auto simp add: add_diff_eq_ennreal top_unique intro!: ennreal_add_diff_cancel_left)
+    also note calculation }
+  then show ?case using Suc by clarsimp
 qed
 
-lemma h_minus_aux_finite [simp]: "h_minus_aux j e \<noteq> \<infinity>"
-using h_minus_aux_le_h'[of j e] finite_h'[of e] by auto
+lemma h_minus_aux_finite [simp]: "h_minus_aux j e \<noteq> top"
+using h_minus_aux_le_h'[of j e] finite_h'[of e] by (auto simp: top_unique)
 
 lemma h_minus_aux_mono: "h_minus_aux j e \<le> h_minus_aux (Suc j) e"
 proof(cases "e \<in> set (cycle_edges (enum_cycle j)) = True")
   case True
-  have "h_minus_aux j e + 0 \<le> h_minus_aux (Suc j) e" unfolding h_minus_aux.simps True if_True 
+  have "h_minus_aux j e + 0 \<le> h_minus_aux (Suc j) e" unfolding h_minus_aux.simps True if_True
     using True [[simproc add: finite_Collect]]
-    by(cases e)(rule add_mono, auto intro!: Min.boundedI simp add: ereal_diff_positive h_minus_aux_le_h')
+    by(cases e)(rule add_mono, auto intro!: Min.boundedI simp add: h_minus_aux_le_h')
   thus ?thesis by simp
 qed simp
 
-lemma d_OUT_h_minus_aux: 
+lemma d_OUT_h_minus_aux:
   assumes "cycles \<Delta> \<noteq> {}"
   shows "d_OUT (h_minus_aux j) x = d_IN (h_minus_aux j) x"
 proof(induction j)
@@ -935,42 +893,37 @@ next
   case (Suc j)
   def C \<equiv> "enum_cycle j"
   def \<delta> \<equiv> "Min {h' e' - h_minus_aux j e' |e'. e' \<in> set (cycle_edges C)}"
-  have "cycle_edges C \<noteq> []" unfolding C_def
-    by(rule cycle_edges_not_Nil)(rule cycle_enum_cycle[OF assms])
-  then have \<delta>_nonneg: "0 \<le> \<delta>" using [[simproc add: finite_Collect]]
-    by(auto simp add: \<delta>_def intro!: Min.boundedI ereal_diff_positive h_minus_aux_le_h')
-      (fastforce simp add: neq_Nil_conv)
 
   have "d_OUT (h_minus_aux (Suc j)) x =
     (\<Sum>\<^sup>+ y. h_minus_aux j (x, y) + (if (x, y) \<in> set (cycle_edges C) then \<delta> else 0))"
     unfolding d_OUT_def by(simp add: if_distrib C_def \<delta>_def cong del: if_weak_cong)
   also have "\<dots> = d_OUT (h_minus_aux j) x + (\<Sum>\<^sup>+ y. \<delta> * indicator (set (cycle_edges C)) (x, y))"
     (is "_ = _ + ?add")
-    by(subst nn_integral_add)(auto simp add: \<delta>_nonneg h_minus_aux_nonneg AE_count_space d_OUT_def intro!: arg_cong2[where f="op +"] nn_integral_cong)
+    by(subst nn_integral_add)(auto simp add: AE_count_space d_OUT_def intro!: arg_cong2[where f="op +"] nn_integral_cong)
   also have "?add = (\<Sum>\<^sup>+ e\<in>range (Pair x). \<delta> * indicator {(x', y). (x', y) \<in> set (cycle_edges C) \<and> x' = x} e)"
     by(auto simp add: nn_integral_count_space_reindex intro!: nn_integral_cong split: split_indicator)
   also have "\<dots> = \<delta> * card (set (filter (\<lambda>(x', y). x' = x) (cycle_edges C)))"
     using [[simproc add: finite_Collect]]
-    apply(subst nn_integral_cmult_indicator; auto simp add: \<delta>_nonneg)
+    apply(subst nn_integral_cmult_indicator; auto)
     apply(subst emeasure_count_space; auto simp add: split_def)
     done
   also have "card (set (filter (\<lambda>(x', y). x' = x) (cycle_edges C))) = card (set (filter (\<lambda>(x', y). y = x) (cycle_edges C)))"
     unfolding C_def by(rule cycle_enter_leave_same)(rule cycle_enum_cycle[OF assms])
   also have "\<delta> * \<dots> =  (\<Sum>\<^sup>+ e\<in>range (\<lambda>x'. (x', x)). \<delta> * indicator {(x', y). (x', y) \<in> set (cycle_edges C) \<and> y = x} e)"
     using [[simproc add: finite_Collect]]
-    apply(subst nn_integral_cmult_indicator; auto simp add: \<delta>_nonneg)
+    apply(subst nn_integral_cmult_indicator; auto)
     apply(subst emeasure_count_space; auto simp add: split_def)
     done
   also have "\<dots> = (\<Sum>\<^sup>+ x'. \<delta> * indicator (set (cycle_edges C)) (x', x))"
     by(auto simp add: nn_integral_count_space_reindex intro!: nn_integral_cong split: split_indicator)
   also have "d_OUT (h_minus_aux j) x + \<dots> = (\<Sum>\<^sup>+ x'. h_minus_aux j (x', x) + \<delta> * indicator (set (cycle_edges C)) (x', x))"
-    unfolding Suc.IH d_IN_def by(simp add: nn_integral_add[symmetric] h_minus_aux_nonneg \<delta>_nonneg)
+    unfolding Suc.IH d_IN_def by(simp add: nn_integral_add[symmetric])
   also have "\<dots> = d_IN (h_minus_aux (Suc j)) x" unfolding d_IN_def
     by(auto intro!: nn_integral_cong simp add: \<delta>_def C_def split: split_indicator)
   finally show ?case .
 qed
 
-lemma h_minus_aux_source: 
+lemma h_minus_aux_source:
   assumes "cycles \<Delta> \<noteq> {}"
   shows "h_minus_aux j (source \<Delta>, y) = 0"
 proof(induction j)
@@ -1001,58 +954,47 @@ proof -
   then obtain e' where e: "e' \<in> set (cycle_edges C)"
     and "Min ?A = h' e' - h_minus_aux j e'" by auto
   hence "h_minus_aux (Suc j) e' = h' e'"
-    by(simp add: C_def add_diff_eq_ereal ereal_diff_add_inverse h_minus_aux_nonneg)
+    by(simp add: C_def h_minus_aux_le_h')
   with e show ?thesis by blast
 qed
 
 end
 
-fun h_minus :: "nat \<Rightarrow> 'v edge \<Rightarrow> ereal"
+fun h_minus :: "nat \<Rightarrow> 'v edge \<Rightarrow> ennreal"
 where
   "h_minus 0 e = 0"
 | "h_minus (Suc i) e = h_minus i e + (SUP j. h_minus_aux (\<lambda>e'. h_plus (Suc i) e' - h_minus i e') j e)"
 
-lemma h_minus_nonneg: "0 \<le> h_minus i e"
-  and h_minus_le_h_plus: "h_minus i e \<le> h_plus i e"
+lemma h_minus_le_h_plus: "h_minus i e \<le> h_plus i e"
 proof(induction i e rule: h_minus.induct)
-  case 0: (1 e)
-  { case 1 show ?case by simp }
-  { case 2 show ?case by(simp add: h_plus_nonneg) }
+  case 0: (1 e) show ?case by simp
 next
   case Suc: (2 i e)
-  note IH = Suc.IH(3-4)[OF UNIV_I]
+  note IH = Suc.IH(2)[OF UNIV_I]
   let ?h' = "\<lambda>e'. h_plus (Suc i) e' - h_minus i e'"
-  have h'1: "?h' e' \<ge> 0" for e' by(rule ereal_diff_positive IH h_plus_mono order_trans)+
-  have h'2: "?h' e' \<noteq> \<infinity>" for e' using IH(1)[of e'] by(simp add: ereal_minus_eq_PInfty_iff)
-  note h' = h'1 h'2
+  have h': "?h' e' \<noteq> top" for e' using IH(1)[of e'] by(simp add: )
 
-  { case 1 show ?case using IH(1)[of e]
-      by(auto intro!: ereal_add_nonneg_nonneg SUP_upper2 simp add: h_minus_aux_nonneg[OF h']) }
-  { case 2
-    have "(\<Squnion>j. h_minus_aux ?h' j e) \<le> ?h' e" by(rule SUP_least)(rule h_minus_aux_le_h'[OF h'])
-    hence "h_minus (Suc i) e \<le> h_minus i e + \<dots>" by(simp add: add_mono)
-    also have "\<dots> = h_plus (Suc i) e" using IH[of e]
-      by(auto simp add: add_diff_eq_ereal intro: ereal_diff_add_inverse)
-    finally show ?case . }
+  have "(\<Squnion>j. h_minus_aux ?h' j e) \<le> ?h' e" by(rule SUP_least)(rule h_minus_aux_le_h'[OF h'])
+  hence "h_minus (Suc i) e \<le> h_minus i e + \<dots>" by(simp add: add_mono)
+  also have "\<dots> = h_plus (Suc i) e" using IH[of e] h_plus_mono[of i e]
+    by auto
+  finally show ?case .
 qed
 
-lemma h':
-  shows h'_nonneg: "h_plus (Suc i) e - h_minus i e \<ge> 0"
-  and finite_h': "h_plus (Suc i) e - h_minus i e \<noteq> \<infinity>"
-subgoal by(blast intro: ereal_diff_positive h_minus_nonneg h_minus_le_h_plus h_plus_mono order_trans)
-using h_minus_nonneg by(simp add: ereal_minus_eq_PInfty_iff)
+lemma finite_h': "h_plus (Suc i) e - h_minus i e \<noteq> top"
+  by simp
 
 lemma h_minus_mono: "h_minus i e \<le> h_minus (Suc i) e"
 proof -
   have "h_minus i e + 0 \<le> h_minus (Suc i) e" unfolding h_minus.simps
-    by(rule add_mono; simp add: SUP_upper2 h_minus_aux_nonneg[OF h'])
+    by(rule add_mono; simp add: SUP_upper2)
   thus ?thesis by simp
 qed
 
-lemma h_minus_finite [simp]: "h_minus i e \<noteq> \<infinity>"
+lemma h_minus_finite [simp]: "h_minus i e \<noteq> \<top>"
 proof -
   have "h_minus i e \<le> h_plus i e" by(rule h_minus_le_h_plus)
-  also have "\<dots> < \<infinity>" by simp
+  also have "\<dots> < \<top>" by (simp add: less_top[symmetric])
   finally show ?thesis by simp
 qed
 
@@ -1063,30 +1005,30 @@ proof(induction i)
   case (Suc i)
   let ?h' = "\<lambda>e. h_plus (Suc i) e - h_minus i e"
   have "d_OUT (\<lambda>e. h_minus (Suc i) e) x = d_OUT (h_minus i) x + d_OUT (\<lambda>e. SUP j. h_minus_aux ?h' j e) x"
-    by(simp add: d_OUT_add h_minus_nonneg SUP_upper2 h_minus_aux_nonneg[OF h'])
+    by(simp add: d_OUT_add SUP_upper2)
   also have "d_OUT (\<lambda>e. SUP j. h_minus_aux ?h' j e) x = (SUP j. d_OUT (h_minus_aux ?h' j) x)"
-    by(rule d_OUT_monotone_convergence_SUP incseq_SucI le_funI h_minus_aux_mono[OF h'])+
+    by(rule d_OUT_monotone_convergence_SUP incseq_SucI le_funI h_minus_aux_mono finite_h')+
   also have "\<dots> = (SUP j. d_IN (h_minus_aux ?h' j) x)"
-    by(rule SUP_cong[OF refl])(rule d_OUT_h_minus_aux[OF h' cycles])
+    by(rule SUP_cong[OF refl])(rule d_OUT_h_minus_aux[OF finite_h' cycles])
   also have "\<dots> = d_IN (\<lambda>e. SUP j. h_minus_aux ?h' j e) x"
-    by(rule d_IN_monotone_convergence_SUP[symmetric] incseq_SucI le_funI h_minus_aux_mono[OF h'])+
+    by(rule d_IN_monotone_convergence_SUP[symmetric] incseq_SucI le_funI h_minus_aux_mono finite_h')+
   also have "d_OUT (h_minus i) x + \<dots> = d_IN (\<lambda>e. h_minus (Suc i) e) x" using Suc.IH
-    by(simp add: d_IN_add h_minus_nonneg SUP_upper2 h_minus_aux_nonneg[OF h'])
+    by(simp add: d_IN_add SUP_upper2)
   finally show ?case .
 qed simp
 
-lemma h_minus_source: 
+lemma h_minus_source:
   assumes "cycles \<Delta> \<noteq> {}"
   shows "h_minus n (source \<Delta>, y) = 0"
-by(induction n)(simp_all add: h_minus_aux_source[OF h' assms])
+by(induction n)(simp_all add: h_minus_aux_source[OF finite_h' assms])
 
 lemma h_minus_source_in [simp]: "h_minus i (x, source \<Delta>) = 0"
-using h_minus_le_h_plus[of i "(x, source \<Delta>)"] h_minus_nonneg[of i "(x, source \<Delta>)"] by simp
+using h_minus_le_h_plus[of i "(x, source \<Delta>)"] by simp
 
-lemma h_minus_OUT_finite [simp]: "d_OUT (h_minus i) x \<noteq> \<infinity>"
+lemma h_minus_OUT_finite [simp]: "d_OUT (h_minus i) x \<noteq> top"
 proof -
   have "d_OUT (h_minus i) x \<le> d_OUT (h_plus i) x" by(rule d_OUT_mono)(rule h_minus_le_h_plus)
-  also have "\<dots> < \<infinity>" by simp
+  also have "\<dots> < \<top>" by (simp add: less_top[symmetric])
   finally show ?thesis by simp
 qed
 
@@ -1099,16 +1041,13 @@ proof(cases i)
   from assms have cycles: "cycles \<Delta> \<noteq> {}" by auto
   with assms from_nat_into_surj[of "cycles \<Delta>" C] obtain j where j: "C = enum_cycle j"
     by(auto simp add: enum_cycle_def)
-  from h_minus_aux_cycle[of "?h'" j, OF h' cycles] j
+  from h_minus_aux_cycle[of "?h'" j, OF finite_h' cycles] j
   obtain e where e: "e \<in> set (cycle_edges C)" and "h_minus_aux ?h' (Suc j) e = ?h' e" by(auto)
   then have "h_plus (Suc i) e = h_minus i e + h_minus_aux ?h' (Suc j) e"
-    apply(simp add: add_diff_eq_ereal)
-    apply(subst add.commute)
-    apply(subst add_diff_eq_ereal[symmetric])
-    apply(simp add: h_minus_nonneg)
-    done
+    using order_trans[OF h_minus_le_h_plus h_plus_mono]
+    by (subst eq_commute) simp
   also have "\<dots> \<le> h_minus (Suc i) e" unfolding h_minus.simps
-    by(intro ereal_add_mono SUP_upper; simp)
+    by(intro add_mono SUP_upper; simp)
   finally show ?thesis using e h_minus_le_h_plus[of "Suc i" e] Suc by auto
 next
   case 0
@@ -1119,46 +1058,40 @@ next
   with e 0 show ?thesis by(auto simp del: h_plus.simps)
 qed
 
-abbreviation lim_h_plus :: "'v edge \<Rightarrow> ereal"
+abbreviation lim_h_plus :: "'v edge \<Rightarrow> ennreal"
 where "lim_h_plus e \<equiv> SUP n. h_plus n e"
 
-abbreviation lim_h_minus :: "'v edge \<Rightarrow> ereal"
+abbreviation lim_h_minus :: "'v edge \<Rightarrow> ennreal"
 where "lim_h_minus e \<equiv> SUP n. h_minus n e"
-
-lemma lim_h_plus_nonneg: "0 \<le> lim_h_plus e"
-by(rule SUP_upper2; simp add: h_plus_nonneg)
-
-lemma lim_h_minus_nonneg: "0 \<le> lim_h_minus e"
-by(rule SUP_upper2; simp add: h_minus_nonneg)
 
 lemma lim_h_plus_le_g: "lim_h_plus e \<le> g e"
 by(rule SUP_least)(rule h_plus_le_g)
 
-lemma lim_h_plus_finite [simp]: "lim_h_plus e \<noteq> \<infinity>"
+lemma lim_h_plus_finite [simp]: "lim_h_plus e \<noteq> top"
 proof -
   have "lim_h_plus e \<le> g e" by(rule lim_h_plus_le_g)
-  also have "\<dots> < \<infinity>" by simp
-  finally show ?thesis by simp
+  also have "\<dots> < top" by (simp add: less_top[symmetric])
+  finally show ?thesis unfolding less_top .
 qed
 
 lemma lim_h_minus_le_lim_h_plus: "lim_h_minus e \<le> lim_h_plus e"
 by(rule SUP_mono)(blast intro: h_minus_le_h_plus)
 
-lemma lim_h_minus_finite [simp]: "lim_h_minus e \<noteq> \<infinity>"
+lemma lim_h_minus_finite [simp]: "lim_h_minus e \<noteq> top"
 proof -
   have "lim_h_minus e \<le> lim_h_plus e" by(rule lim_h_minus_le_lim_h_plus)
-  also have "\<dots> < \<infinity>" by simp
-  finally show ?thesis by simp
+  also have "\<dots> < top" unfolding less_top[symmetric] by (rule lim_h_plus_finite)
+  finally show ?thesis unfolding less_top[symmetric] by simp
 qed
 
-lemma lim_h_minus_IN_finite [simp]: 
+lemma lim_h_minus_IN_finite [simp]:
   assumes "x \<noteq> sink \<Delta>"
-  shows "d_IN lim_h_minus x \<noteq> \<infinity>"
+  shows "d_IN lim_h_minus x \<noteq> top"
 proof -
   have "d_IN lim_h_minus x \<le> d_IN lim_h_plus x"
     by(intro d_IN_mono le_funI lim_h_minus_le_lim_h_plus)
   also have "\<dots> \<le> d_IN g x" by(intro d_IN_mono le_funI lim_h_plus_le_g)
-  also have "\<dots> < \<infinity>" using assms by(simp add: finite_IN_g)
+  also have "\<dots> < \<top>" using assms by(simp add: finite_IN_g less_top[symmetric])
   finally show ?thesis by simp
 qed
 
@@ -1180,7 +1113,7 @@ proof(cases "x \<in> \<^bold>V")
       moreover then obtain i'' where i': "i' = Suc i''" by(cases i') auto
       ultimately have "d_OUT (h_plus i') x = d_IN (h_plus i'') x" using  \<open>x \<noteq> source \<Delta>\<close>
         by(simp add: h_plus_OUT_eq_IN)
-      moreover have "i \<le> i''" using `i < i'` i' by simp 
+      moreover have "i \<le> i''" using `i < i'` i' by simp
       then have "d_IN (h_plus i) x \<le> d_IN (h_plus i'') x" by(intro d_IN_mono h_plus_mono')
       ultimately have "d_IN (h_plus i) x \<le> d_OUT (h_plus i') x" by simp
       thus "\<exists>i'\<in>UNIV. d_IN (h_plus i) x \<le> d_OUT (h_plus i') x" by blast
@@ -1211,14 +1144,11 @@ proof -
   finally show ?thesis .
 qed
 
-definition h :: "'v edge \<Rightarrow> ereal"
+definition h :: "'v edge \<Rightarrow> ennreal"
 where "h e = lim_h_plus e - (if cycles \<Delta> \<noteq> {} then lim_h_minus e else 0)"
 
-lemma h_nonneg: "0 \<le> h e"
-by(auto simp add: h_def lim_h_plus_nonneg ereal_diff_positive lim_h_minus_le_lim_h_plus)
-
 lemma h_le_lim_h_plus: "h e \<le> lim_h_plus e"
-by(simp add: h_def lim_h_minus_nonneg)(metis ereal_minus(7) ereal_minus_mono lim_h_minus_nonneg order_refl)
+by (simp add: h_def)
 
 lemma h_le_g: "h e \<le> g e"
 using h_le_lim_h_plus[of e] lim_h_plus_le_g[of e] by simp
@@ -1234,10 +1164,8 @@ next
   fix x
   assume "x \<noteq> source \<Delta>" "x \<noteq> sink \<Delta>"
   then show "KIR h x"
-    by(cases "cycles \<Delta> = {}")(auto simp add: h_def[abs_def] lim_h_plus_OUT_IN d_OUT_diff d_IN_diff lim_h_minus_nonneg lim_h_minus_le_lim_h_plus lim_h_minus_OUT_IN)
-next
-  fix e
-  show "0 \<le> h e" by(rule h_nonneg)
+    by (cases "cycles \<Delta> = {}")
+       (auto simp add: h_def[abs_def] lim_h_plus_OUT_IN d_OUT_diff d_IN_diff lim_h_minus_le_lim_h_plus lim_h_minus_OUT_IN)
 qed
 
 lemma value_h_plus: "value_flow \<Delta> (h_plus i) = value_flow \<Delta> g" (is "?lhs = ?rhs")
@@ -1253,7 +1181,7 @@ qed
 
 lemma value_h: "value_flow \<Delta> h = value_flow \<Delta> g" (is "?lhs = ?rhs")
 proof(rule antisym)
-  have "?lhs \<le> value_flow \<Delta> lim_h_plus" using ereal_minus_mono lim_h_minus_nonneg
+  have "?lhs \<le> value_flow \<Delta> lim_h_plus" using ennreal_minus_mono
     by(fastforce simp add: h_def intro!: d_OUT_mono)
   also have "\<dots> \<le> ?rhs" by(rule d_OUT_mono)(rule lim_h_plus_le_g)
   finally show "?lhs \<le> ?rhs" .
@@ -1263,23 +1191,20 @@ proof(rule antisym)
 qed
 
 
-definition h_diff :: "nat \<Rightarrow> 'v edge \<Rightarrow> ereal"
+definition h_diff :: "nat \<Rightarrow> 'v edge \<Rightarrow> ennreal"
 where "h_diff i e = h_plus i e - (if cycles \<Delta> \<noteq> {} then h_minus i e else 0)"
-
-lemma h_diff_nonneg: "0 \<le> h_diff i e"
-by(simp add: h_diff_def h_plus_nonneg ereal_diff_positive h_minus_le_h_plus)
 
 lemma d_IN_h_source [simp]: "d_IN (h_diff i) (source \<Delta>) = 0"
 by(simp add: d_IN_def h_diff_def cong del: if_weak_cong)
 
 lemma h_diff_le_h_plus: "h_diff i e \<le> h_plus i e"
-by(simp add: h_diff_def)(metis (full_types) ereal_minus(7) ereal_minus_mono h_minus_nonneg order_refl)
+by(simp add: h_diff_def)
 
 lemma h_diff_le_g: "h_diff i e \<le> g e"
 using h_diff_le_h_plus[of i e] h_plus_le_g[of i e] by simp
 
 lemma h_diff_loop [simp]: "h_diff i (x, x) = 0"
-using h_diff_nonneg[of i "(x, x)"] h_diff_le_g[of i "(x, x)"] by simp
+using h_diff_le_g[of i "(x, x)"] by simp
 
 lemma supp_h_diff_edges: "support_flow (h_diff i) \<subseteq> \<^bold>E"
 proof
@@ -1299,11 +1224,12 @@ proof(cases "cycles \<Delta> \<noteq> {}")
 next
   case cycles: True
   then have "d_OUT (h_diff i) x = d_OUT (h_plus i) x - d_OUT (h_minus i) x"
-    unfolding h_diff_def[abs_def] using assms by(simp add: h_minus_nonneg h_minus_le_h_plus d_OUT_diff)
+    unfolding h_diff_def[abs_def] using assms
+    by (simp add: h_minus_le_h_plus d_OUT_diff)
   also have "\<dots> \<le> d_IN (h_plus i) x - d_IN (h_minus i) x" using cycles assms
-    by(intro ereal_minus_mono h_plus_OUT_le_IN)(simp_all add: d_OUT_h_minus)
-  also have "\<dots> = d_IN (h_diff i) x" using cycles 
-    unfolding h_diff_def[abs_def] by(subst d_IN_diff)(simp_all add: h_minus_nonneg h_minus_le_h_plus d_OUT_h_minus[symmetric])
+    by(intro ennreal_minus_mono h_plus_OUT_le_IN)(simp_all add: d_OUT_h_minus)
+  also have "\<dots> = d_IN (h_diff i) x" using cycles
+    unfolding h_diff_def[abs_def] by(subst d_IN_diff)(simp_all add: h_minus_le_h_plus d_OUT_h_minus[symmetric])
   finally show ?thesis .
 qed
 
@@ -1313,7 +1239,7 @@ lemma h_diff_cycle:
 proof -
   from h_minus_cycle[OF assms, of i] obtain e
     where e: "e \<in> set (cycle_edges p)" and "h_minus i e = h_plus i e" by auto
-  hence "h_diff i e = 0" using assms h_plus_nonneg by(auto simp add: h_diff_def)
+  hence "h_diff i e = 0" using assms by(auto simp add: h_diff_def)
   with e show ?thesis by blast
 qed
 
@@ -1355,38 +1281,36 @@ proof -
       with 0 have False by(simp add: support_flow.simps) }
     hence "(x, y) \<notin> ?supp" using x y
       by(auto simp add: X_def intro: converse_rtrancl_into_rtrancl)
-    then have "h_diff i (x, y) = 0" using h_diff_nonneg[of i "(x, y)"] 
+    then have "h_diff i (x, y) = 0"
       by(simp add: support_flow.simps) }
   note acyclic = this
 
   { fix y
     assume "y \<notin> X"
-    hence "(y, x) \<notin> ?supp" by(auto simp add: X_def support_flow.simps)
-    hence "h_diff i (y, x) = 0" using h_diff_nonneg[of i "(y, x)"] by(simp add: support_flow.simps) }
+    hence "(y, x) \<notin> ?supp" by(auto simp add: X_def support_flow.simps intro: not_in_support_flowD)
+    hence "h_diff i (y, x) = 0"  by(simp add: support_flow.simps) }
   note in_X = this
 
   let ?diff = "\<lambda>x. (\<Sum>\<^sup>+ y. h_diff i (x, y) * indicator X x * indicator X y)"
-  have finite2: "(\<Sum>\<^sup>+ x. ?diff x) \<noteq> \<infinity>" (is "?lhs \<noteq> _")
+  have finite2: "(\<Sum>\<^sup>+ x. ?diff x) \<noteq> top" (is "?lhs \<noteq> _")
   proof -
     have "?lhs \<le> (\<Sum>\<^sup>+ x\<in>UNIV. \<Sum>\<^sup>+ y. h_plus i (x, y))"
-      apply(intro nn_integral_mono)
-      apply(auto simp add: h_diff_def h_plus_nonneg split: split_indicator)
-      by (metis ereal_minus(7) ereal_minus_mono h_minus_nonneg order_refl)
+      by(intro nn_integral_mono)(auto simp add: h_diff_def split: split_indicator)
     also have "\<dots> = (\<Sum>\<^sup>+ e. h_plus i e)" by(rule nn_integral_fst_count_space)
-    also have "\<dots> < \<infinity>" by(simp add: h_plus_sum_finite)
+    also have "\<dots> < \<top>" by(simp add: h_plus_sum_finite less_top[symmetric])
     finally show ?thesis by simp
   qed
-  have finite1: "?diff x \<noteq> \<infinity>" for x
-    using finite2 by(rule neq_PInf_trans)(rule nn_integral_ge_point, simp)
-  have finite3: "(\<Sum>\<^sup>+ x. d_OUT (h_diff i) x * indicator (X - {source \<Delta>}) x) \<noteq> \<infinity>" (is "?lhs \<noteq> _")
+  have finite1: "?diff x \<noteq> top" for x
+    using finite2 by(rule neq_top_trans)(rule nn_integral_ge_point, simp)
+  have finite3: "(\<Sum>\<^sup>+ x. d_OUT (h_diff i) x * indicator (X - {source \<Delta>}) x) \<noteq> \<top>" (is "?lhs \<noteq> _")
   proof -
     have "?lhs \<le> (\<Sum>\<^sup>+ x\<in>UNIV. \<Sum>\<^sup>+ y. h_plus i (x, y))" unfolding d_OUT_def
       apply(simp add: nn_integral_multc[symmetric])
       apply(intro nn_integral_mono)
-      apply(auto simp add: h_diff_def h_plus_nonneg split: split_indicator)
-      by (metis ereal_minus(7) ereal_minus_mono h_minus_nonneg order_refl)
+      apply(auto simp add: h_diff_def split: split_indicator)
+      done
     also have "\<dots> = (\<Sum>\<^sup>+ e. h_plus i e)" by(rule nn_integral_fst_count_space)
-    also have "\<dots> < \<infinity>" by(simp add: h_plus_sum_finite)
+    also have "\<dots> < \<top>" by(simp add: h_plus_sum_finite less_top[symmetric])
     finally show ?thesis by simp
   qed
 
@@ -1399,20 +1323,22 @@ proof -
   also have "\<dots> = (\<Sum>\<^sup>+ x\<in>UNIV. \<Sum>\<^sup>+ y. h_diff i (x, y) * indicator X x * indicator (- X) y)"
     by(subst nn_integral_snd_count_space[where f="case_prod _", simplified])(simp add: nn_integral_fst_count_space[where f="case_prod _", simplified])
   also have "\<dots> = (\<Sum>\<^sup>+ x\<in>UNIV. (\<Sum>\<^sup>+ y. h_diff i (x, y) * indicator X x * indicator (- X) y) + (?diff x - ?diff x))"
-    by(simp add: nn_integral_nonneg finite1)
+    by(simp add: finite1)
   also have "\<dots> = (\<Sum>\<^sup>+ x\<in>UNIV. (\<Sum>\<^sup>+ y. h_diff i (x, y) * indicator X x * indicator (- X) y + h_diff i (x, y) * indicator X x * indicator X y) - ?diff x)"
-    unfolding add_diff_eq_ereal by(subst nn_integral_add[symmetric])(simp_all add: h_diff_nonneg)
+    apply (subst add_diff_eq_ennreal)
+    apply simp
+    by(subst nn_integral_add[symmetric])(simp_all add:)
   also have "\<dots> = (\<Sum>\<^sup>+ x\<in>UNIV. (\<Sum>\<^sup>+ y. h_diff i (x, y) * indicator X x) - ?diff x)"
     by(auto intro!: nn_integral_cong arg_cong2[where f="op -"] split: split_indicator)
   also have "\<dots> = (\<Sum>\<^sup>+ x\<in>UNIV. \<Sum>\<^sup>+ y\<in>UNIV. h_diff i (x, y) * indicator X x) - (\<Sum>\<^sup>+ x. ?diff x)"
-    by(subst nn_integral_diff)(auto simp add: nn_integral_nonneg AE_count_space h_diff_nonneg finite2 intro!: nn_integral_mono split: split_indicator)
+    by(subst nn_integral_diff)(auto simp add: AE_count_space finite2 intro!: nn_integral_mono split: split_indicator)
   also have "(\<Sum>\<^sup>+ x\<in>UNIV. \<Sum>\<^sup>+ y\<in>UNIV. h_diff i (x, y) * indicator X x) = (\<Sum>\<^sup>+ x. d_OUT (h_diff i) x * indicator X x)"
     unfolding d_OUT_def by(simp add: nn_integral_multc)
   also have "\<dots> = (\<Sum>\<^sup>+ x. d_OUT (h_diff i) x * indicator (X - {source \<Delta>}) x + value_flow \<Delta> (h_diff i) * indicator X (source \<Delta>) * indicator {source \<Delta>} x)"
     by(rule nn_integral_cong)(simp split: split_indicator)
   also have "\<dots> = (\<Sum>\<^sup>+ x. d_OUT (h_diff i) x * indicator (X - {source \<Delta>}) x) + value_flow \<Delta> (h_diff i) * indicator X (source \<Delta>)"
     (is "_ = ?out" is "_ = _ + ?value")
-    by(subst nn_integral_add)(simp_all add: d_OUT_nonneg one_ereal_def[symmetric] max_def)
+    by(subst nn_integral_add) simp_all
   also have "(\<Sum>\<^sup>+ x\<in>UNIV. \<Sum>\<^sup>+ y. h_diff i (x, y) * indicator X x * indicator X y) =
              (\<Sum>\<^sup>+ x\<in>UNIV. \<Sum>\<^sup>+ y. h_diff i (x, y) * indicator X y)"
     using acyclic by(intro nn_integral_cong)(simp split: split_indicator)
@@ -1422,11 +1348,11 @@ proof -
     by(simp add: nn_integral_multc)
   also have "\<dots> = (\<Sum>\<^sup>+ y. d_IN (h_diff i) y * indicator (X - {source \<Delta>}) y)"
     by(rule nn_integral_cong)(simp split: split_indicator)
-  also have "?out - \<dots> = (\<Sum>\<^sup>+ x. d_OUT (h_diff i) x * indicator (X - {source \<Delta>}) x) - \<dots> + ?value"
-    by (simp add: add.commute add_diff_eq_ereal)
-  also have "\<dots> \<le> 0 + ?value" using h_diff_OUT_le_IN
-    by(intro nn_integral_mono add_right_mono ereal_diff_nonpos)(auto split: split_indicator simp add: finite3)
-  also have "\<dots> \<le> value_flow \<Delta> (h_diff i)" by(simp split: split_indicator add: d_OUT_nonneg)
+  also have "?out - \<dots> \<le> (\<Sum>\<^sup>+ x. d_OUT (h_diff i) x * indicator (X - {source \<Delta>}) x) - \<dots> + ?value"
+    by (auto simp add: add_ac intro!: add_diff_le_ennreal)
+  also have "\<dots> \<le> 0 + ?value" using h_diff_OUT_le_IN finite3
+    by(intro nn_integral_mono add_right_mono)(auto split: split_indicator intro!: diff_eq_0_ennreal nn_integral_mono simp add: less_top)
+  also have "\<dots> \<le> value_flow \<Delta> (h_diff i)" by(simp split: split_indicator)
   also have "\<dots> \<le> value_flow \<Delta> (h_plus i)" by(rule d_OUT_mono le_funI h_diff_le_h_plus)+
   finally show ?thesis .
 qed
@@ -1438,11 +1364,11 @@ proof -
   have [tendsto_intros]: "(\<lambda>i. h_minus i e) \<longlonglongrightarrow> lim_h_minus e" for e
     by(rule LIMSEQ_SUP incseq_SucI h_minus_mono)+
   have "(\<lambda>i. h_diff i e) \<longlonglongrightarrow> lim_h_plus e - (if cycles \<Delta> \<noteq> {} then lim_h_minus e else 0)" for e
-    by(auto intro!: tendsto_intros tendsto_diff_ereal simp add: h_diff_def lim_h_plus_nonneg lim_h_minus_nonneg)
+    by(auto intro!: tendsto_intros tendsto_diff_ennreal simp add: h_diff_def simp del: Sup_eq_top_iff SUP_eq_top_iff)
   then have "d_IN h x = (\<Sum>\<^sup>+ y. liminf (\<lambda>i. h_diff i (y, x)))"
     by(simp add: d_IN_def h_def tendsto_iff_Liminf_eq_Limsup)
   also have "\<dots> \<le> liminf (\<lambda>i. d_IN (h_diff i) x)" unfolding d_IN_def
-    by(rule nn_integral_liminf)(simp_all add: h_diff_nonneg)
+    by(rule nn_integral_liminf) simp_all
   also have "\<dots> \<le> liminf (\<lambda>i. value_flow \<Delta> h)" using d_IN_h_le_value'[of _ x]
     by(intro Liminf_mono eventually_sequentiallyI)(auto simp add: value_h_plus value_h)
   also have "\<dots> = value_flow \<Delta> h" by(simp add: Liminf_const)
@@ -1458,11 +1384,11 @@ end
 subsection \<open>Residual network\<close>
 
 context countable_network begin
-              
+
 definition residual_network :: "'v flow \<Rightarrow> ('v, 'more) network_scheme"
 where "residual_network f =
-  \<lparr>edge = \<lambda>x y. edge \<Delta> x y \<or> edge \<Delta> y x \<and> y \<noteq> source \<Delta>, 
-   capacity = \<lambda>(x, y). if edge \<Delta> x y then capacity \<Delta> (x, y) - f (x, y) else if y = source \<Delta> then 0 else f (y, x), 
+  \<lparr>edge = \<lambda>x y. edge \<Delta> x y \<or> edge \<Delta> y x \<and> y \<noteq> source \<Delta>,
+   capacity = \<lambda>(x, y). if edge \<Delta> x y then capacity \<Delta> (x, y) - f (x, y) else if y = source \<Delta> then 0 else f (y, x),
    source = source \<Delta>, sink = sink \<Delta>, \<dots> = network.more \<Delta> \<rparr>"
 
 lemma residual_network_sel [simp]:
@@ -1489,7 +1415,7 @@ lemma wf_residual_networkD:
 by(auto simp add: wf_residual_network.simps)
 
 lemma residual_countable_network:
-  assumes wf: "wf_residual_network" 
+  assumes wf: "wf_residual_network"
   and f: "flow \<Delta> f"
   shows "countable_network (residual_network f)" (is "countable_network ?\<Delta>")
 proof
@@ -1499,20 +1425,19 @@ proof
   then show "countable \<^bold>E\<^bsub>?\<Delta>\<^esub>" unfolding "\<^bold>E_residual_network" by simp
 
   show "source ?\<Delta> \<noteq> sink ?\<Delta>" by simp
-  show "0 \<le> capacity ?\<Delta> e" for e by(cases e)(auto intro!: ereal_diff_positive flowD_capacity[OF f] flowD_nonneg[OF f])
   show "capacity ?\<Delta> e = 0" if "e \<notin> \<^bold>E\<^bsub>?\<Delta>\<^esub>" for e using that by(cases e)(auto intro: flowD_outside[OF f])
-  show "capacity ?\<Delta> e \<noteq> \<infinity>" for e
-    using flowD_finite[OF f] flowD_nonneg[OF f] by(cases e)(auto simp add: ereal_minus_eq_PInfty_iff)
+  show "capacity ?\<Delta> e \<noteq> top" for e
+    using flowD_finite[OF f] by(cases e) auto
 qed
 
 end
 
-locale antiparallel_edges = countable_network \<Delta> 
+locale antiparallel_edges = countable_network \<Delta>
   for \<Delta> :: "('v, 'more) network_scheme" (structure)
 begin
 
 text \<open>We eliminate the assumption of antiparallel edges by adding a vertex for every edge.
-  Thus, antiparallel edges are split up into a cycle of 4 edges. This idea already appears in 
+  Thus, antiparallel edges are split up into a cycle of 4 edges. This idea already appears in
   @{cite Aharoni1983EJC}.\<close>
 
 datatype (plugins del: transfer size) 'v' vertex = Vertex 'v' | Edge 'v' 'v'
@@ -1600,11 +1525,9 @@ lemma \<Delta>''_countable_network: "countable_network \<Delta>''"
 proof
   show "countable \<^bold>E\<^bsub>\<Delta>''\<^esub>" unfolding "\<^bold>E_\<Delta>''" by(simp)
   show "source \<Delta>'' \<noteq> sink \<Delta>''" by auto
-  show "0 \<le> capacity \<Delta>'' e" for e
-    by(cases "(capacity \<Delta>, e)" rule: split.cases)(auto simp add: capacity_nonneg)
   show "capacity \<Delta>'' e = 0" if "e \<notin> \<^bold>E\<^bsub>\<Delta>''\<^esub>" for e using that
     by(cases "(capacity \<Delta>, e)" rule: split.cases)(auto simp add: capacity_outside)
-  show "capacity \<Delta>'' e \<noteq> \<infinity>" for e by(cases "(capacity \<Delta>, e)" rule: split.cases)(auto)
+  show "capacity \<Delta>'' e \<noteq> top" for e by(cases "(capacity \<Delta>, e)" rule: split.cases)(auto)
 qed
 
 interpretation \<Delta>'': countable_network \<Delta>'' by(rule \<Delta>''_countable_network)
@@ -1616,7 +1539,7 @@ proof -
   interpret flow_attainability \<Delta> using _ assms by(rule flow_attainability.intro) unfold_locales
   show ?thesis
   proof
-    show "d_IN (capacity \<Delta>'') v \<noteq> \<infinity> \<or> d_OUT (capacity \<Delta>'') v \<noteq> \<infinity>" if "v \<noteq> sink \<Delta>''" for v
+    show "d_IN (capacity \<Delta>'') v \<noteq> \<top> \<or> d_OUT (capacity \<Delta>'') v \<noteq> \<top>" if "v \<noteq> sink \<Delta>''" for v
       using that finite_capacity by(cases v)(simp_all add: max_def)
     show "\<not> edge \<Delta>'' v v" for v by(auto elim: edg.cases)
     show "\<not> edge \<Delta>'' v (source \<Delta>'')" for v by(simp add: source_in)
@@ -1629,8 +1552,6 @@ lemma flow_split [simp]:
 proof
   show "split f e \<le> capacity \<Delta>'' e" for e
     by(cases "(f, e)" rule: split.cases)(auto intro: flowD_capacity[OF assms] intro: SUP_upper2 assms)
-  show "0 \<le> split f e" for e
-    by(cases "(f, e)" rule: split.cases)(auto simp add: d_OUT_nonneg flowD_nonneg[OF assms])
   show "KIR (split f) x" if "x \<noteq> source \<Delta>''" "x \<noteq> sink \<Delta>''" for x
     using that by(cases "x")(auto dest: flowD_KIR[OF assms])
 qed
@@ -1653,7 +1574,7 @@ proof -
     also have "\<dots> = (\<Sum>\<^sup>+ z. f (z, Edge x y) * indicator {Vertex x} z)"
       unfolding d_IN_def by(rule nn_integral_cong)(simp split: split_indicator add: \<Delta>''.flowD_outside[OF f])
     finally show "f (Edge x y, Vertex y) = f (Vertex x, Edge x y)"
-      using flowD_nonneg[OF f] by(simp add: max_def)
+      by(simp add: max_def)
   qed
   also have "\<dots> = d_OUT f (Vertex x)"
     by(auto intro!: nn_integral_cong \<Delta>''.flowD_outside[OF f] simp add: nn_integral_count_space_indicator d_OUT_def split: split_indicator)
@@ -1666,7 +1587,6 @@ lemma flow_collect [simp]:
 proof
   show "collect f e \<le> capacity \<Delta> e" for e using flowD_capacity[OF f, of "(case_prod Edge e, Vertex (snd e))"]
     by(cases e)(simp)
-  show "0 \<le> collect f e" for e using flowD_nonneg[OF f] by(simp add: split_beta)
 
   fix x
   assume x: "x \<noteq> source \<Delta>" "x \<noteq> sink \<Delta>"
@@ -1681,7 +1601,7 @@ qed
 lemma value_collect: "flow \<Delta>'' f \<Longrightarrow> value_flow \<Delta> (collect f) = value_flow \<Delta>'' f"
 by(simp add: d_OUT_collect)
 
-lemma \<Delta>''_wf_residual_network: 
+lemma \<Delta>''_wf_residual_network:
   assumes no_loop: "\<And>x. \<not> edge \<Delta> x x"
   shows "\<Delta>''.wf_residual_network"
 by(auto simp add: \<Delta>''.wf_residual_network.simps assms elim!: edg.cases)
@@ -1693,7 +1613,7 @@ subsection \<open>The attainability theorem\<close>
 context flow_attainability begin
 
 lemma residual_flow_attainability:
-  assumes wf: "wf_residual_network" 
+  assumes wf: "wf_residual_network"
   and f: "flow \<Delta> f"
   shows "flow_attainability (residual_network f)" (is "flow_attainability ?\<Delta>")
 proof -
@@ -1702,51 +1622,51 @@ proof -
   proof
     fix x
     assume sink: "x \<noteq> sink ?\<Delta>"
-    then consider (source) "x = source \<Delta>" | (IN) "d_IN (capacity \<Delta>) x \<noteq> \<infinity>" | (OUT) "x \<noteq> source \<Delta>" "d_OUT (capacity \<Delta>) x \<noteq> \<infinity>"
+    then consider (source) "x = source \<Delta>" | (IN) "d_IN (capacity \<Delta>) x \<noteq> \<top>" | (OUT) "x \<noteq> source \<Delta>" "d_OUT (capacity \<Delta>) x \<noteq> \<top>"
       using finite_capacity[of x] by auto
-    then show "d_IN (capacity ?\<Delta>) x \<noteq> \<infinity> \<or> d_OUT (capacity ?\<Delta>) x \<noteq> \<infinity>" 
+    then show "d_IN (capacity ?\<Delta>) x \<noteq> \<top> \<or> d_OUT (capacity ?\<Delta>) x \<noteq> \<top>"
     proof(cases)
       case source
       hence "d_IN (capacity ?\<Delta>) x = 0" by(simp add: d_IN_def source_in)
       thus ?thesis by simp
     next
       case IN
-      have "d_IN (capacity ?\<Delta>) x = 
-        (\<Sum>\<^sup>+ y. (capacity \<Delta> (y, x) - f (y, x)) * indicator \<^bold>E (y, x) + 
+      have "d_IN (capacity ?\<Delta>) x =
+        (\<Sum>\<^sup>+ y. (capacity \<Delta> (y, x) - f (y, x)) * indicator \<^bold>E (y, x) +
               (if x = source \<Delta> then 0 else f (x, y) * indicator \<^bold>E (x, y)))"
         using flowD_outside[OF f] unfolding d_IN_def
         by(auto intro!: nn_integral_cong split: split_indicator dest: wf_residual_networkD[OF wf])
-      also have "\<dots> = (\<Sum>\<^sup>+ y. (capacity \<Delta> (y, x) - f (y, x)) * indicator \<^bold>E (y, x)) + 
+      also have "\<dots> = (\<Sum>\<^sup>+ y. (capacity \<Delta> (y, x) - f (y, x)) * indicator \<^bold>E (y, x)) +
         (\<Sum>\<^sup>+ y. (if x = source \<Delta> then 0 else f (x, y) * indicator \<^bold>E (x, y)))"
         (is "_ = ?in + ?out")
-        by(subst nn_integral_add)(auto simp add: AE_count_space flowD_nonneg[OF f] split: split_indicator intro!: ereal_diff_positive flowD_capacity[OF f])
+        by(subst nn_integral_add)(auto simp add: AE_count_space split: split_indicator intro!: flowD_capacity[OF f])
       also have "\<dots> \<le> d_IN (capacity \<Delta>) x + (if x = source \<Delta> then 0 else d_OUT f x)" (is "_ \<le> ?in + ?rest")
         unfolding d_IN_def d_OUT_def
-        by(rule ereal_add_mono)(auto intro!: nn_integral_mono split: split_indicator simp add: capacity_nonneg flowD_nonneg[OF f] nn_integral_0_iff_AE AE_count_space intro!: ereal_diff_le_self)
+        by(rule add_mono)(auto intro!: nn_integral_mono split: split_indicator simp add: nn_integral_0_iff_AE AE_count_space intro!: diff_le_self_ennreal)
       also consider (source) "x = source \<Delta>" | (inner) "x \<noteq> source \<Delta>" "x \<noteq> sink \<Delta>" using sink by auto
-      then have "?rest < \<infinity>"
+      then have "?rest < \<top>"
       proof cases
         case inner
-        show ?thesis using inner flowD_finite_OUT[OF f inner] by simp
+        show ?thesis using inner flowD_finite_OUT[OF f inner] by (simp add: less_top)
       qed simp
-      ultimately show ?thesis using IN sink by auto
+      ultimately show ?thesis using IN sink by (auto simp: less_top[symmetric] top_unique)
     next
       case OUT
-      have "d_OUT (capacity ?\<Delta>) x = 
-        (\<Sum>\<^sup>+ y. (capacity \<Delta> (x, y) - f (x, y)) * indicator \<^bold>E (x, y) + 
+      have "d_OUT (capacity ?\<Delta>) x =
+        (\<Sum>\<^sup>+ y. (capacity \<Delta> (x, y) - f (x, y)) * indicator \<^bold>E (x, y) +
               (if y = source \<Delta> then 0 else f (y, x) * indicator \<^bold>E (y, x)))"
         using flowD_outside[OF f] unfolding d_OUT_def
         by(auto intro!: nn_integral_cong split: split_indicator dest: wf_residual_networkD[OF wf] simp add: source_in)
-      also have "\<dots> = (\<Sum>\<^sup>+ y. (capacity \<Delta> (x, y) - f (x, y)) * indicator \<^bold>E (x, y)) + 
+      also have "\<dots> = (\<Sum>\<^sup>+ y. (capacity \<Delta> (x, y) - f (x, y)) * indicator \<^bold>E (x, y)) +
         (\<Sum>\<^sup>+ y. (if y = source \<Delta> then 0 else f (y, x) * indicator \<^bold>E (y, x)))"
         (is "_ = ?in + ?out")
-        by(subst nn_integral_add)(auto simp add: AE_count_space flowD_nonneg[OF f] split: split_indicator intro!: ereal_diff_positive flowD_capacity[OF f])
+        by(subst nn_integral_add)(auto simp add: AE_count_space split: split_indicator intro!: flowD_capacity[OF f])
       also have "\<dots> \<le> d_OUT (capacity \<Delta>) x + d_IN f x" (is "_ \<le> ?out + ?rest")
         unfolding d_IN_def d_OUT_def
-        by(rule ereal_add_mono)(auto intro!: nn_integral_mono split: split_indicator simp add: capacity_nonneg flowD_nonneg[OF f] nn_integral_0_iff_AE AE_count_space intro!: ereal_diff_le_self)
+        by(rule add_mono)(auto intro!: nn_integral_mono split: split_indicator simp add: nn_integral_0_iff_AE AE_count_space intro!: diff_le_self_ennreal)
       also have "?rest = d_OUT f x" using flowD_KIR[OF f OUT(1)] sink by simp
       also have "?out + \<dots> \<le> ?out + ?out" by(intro add_left_mono d_OUT_mono flowD_capacity[OF f])
-      finally show ?thesis using OUT by auto
+      finally show ?thesis using OUT by (auto simp: top_unique)
     qed
   next
     show "\<not> edge ?\<Delta> x x" for x by(simp add: no_loop)
@@ -1769,87 +1689,91 @@ by(cases e) simp
 lemma
   fixes \<Delta> (structure)
   assumes f_outside: "\<And>e. e \<notin> \<^bold>E \<Longrightarrow> f e = 0"
-  and g_nonneg: "\<And>e. g e \<ge> 0"
   and g_le_f: "\<And>x y. edge \<Delta> x y \<Longrightarrow> g (y, x) \<le> f (x, y)"
-  shows OUT_plus_flow: "d_IN g x \<noteq> \<infinity> \<Longrightarrow> d_OUT (f \<oplus> g) x = d_OUT f x + (\<Sum>\<^sup>+ y\<in>UNIV. g (x, y) * indicator \<^bold>E (x, y)) - (\<Sum>\<^sup>+ y. g (y, x) * indicator \<^bold>E (x, y))"
+  shows OUT_plus_flow: "d_IN g x \<noteq> top \<Longrightarrow> d_OUT (f \<oplus> g) x = d_OUT f x + (\<Sum>\<^sup>+ y\<in>UNIV. g (x, y) * indicator \<^bold>E (x, y)) - (\<Sum>\<^sup>+ y. g (y, x) * indicator \<^bold>E (x, y))"
     (is "_ \<Longrightarrow> ?OUT" is "_ \<Longrightarrow> _ = _ + ?g_out - ?g_out'")
-  and IN_plus_flow: "d_OUT g x \<noteq> \<infinity> \<Longrightarrow> d_IN (f \<oplus> g) x = d_IN f x + (\<Sum>\<^sup>+ y\<in>UNIV. g (y, x) * indicator \<^bold>E (y, x)) - (\<Sum>\<^sup>+ y. g (x, y) * indicator \<^bold>E (y, x))"
+  and IN_plus_flow: "d_OUT g x \<noteq> top \<Longrightarrow> d_IN (f \<oplus> g) x = d_IN f x + (\<Sum>\<^sup>+ y\<in>UNIV. g (y, x) * indicator \<^bold>E (y, x)) - (\<Sum>\<^sup>+ y. g (x, y) * indicator \<^bold>E (y, x))"
     (is "_ \<Longrightarrow> ?IN" is "_ \<Longrightarrow> _ = _ + ?g_in - ?g_in'")
 proof -
-  assume "d_IN g x \<noteq> \<infinity>"
-  then have finite1: "(\<Sum>\<^sup>+ y. g (y, x) * indicator A (f y)) \<noteq> \<infinity>" for A f
-    by(rule neq_PInf_trans)(auto split: split_indicator simp add: g_nonneg d_IN_def intro!: nn_integral_mono)
+  assume "d_IN g x \<noteq> top"
+  then have finite1: "(\<Sum>\<^sup>+ y. g (y, x) * indicator A (f y)) \<noteq> top" for A f
+    by(rule neq_top_trans)(auto split: split_indicator simp add: d_IN_def intro!: nn_integral_mono)
 
   have "d_OUT (f \<oplus> g) x = (\<Sum>\<^sup>+ y. (g (x, y) + (f (x, y) - g (y, x))) * indicator \<^bold>E (x, y))"
-    unfolding d_OUT_def by(rule nn_integral_cong)(simp split: split_indicator add: add_diff_eq_ereal add.commute)
+    unfolding d_OUT_def by(rule nn_integral_cong)(simp split: split_indicator add: add_diff_eq_ennreal add.commute ennreal_diff_add_assoc g_le_f)
   also have "\<dots> = ?g_out + (\<Sum>\<^sup>+ y. (f (x, y) - g (y, x)) * indicator \<^bold>E (x, y))"
     (is "_ = _ + ?rest")
-    by(subst nn_integral_add[symmetric])(auto simp add: AE_count_space g_nonneg g_le_f split: split_indicator intro!: nn_integral_cong ereal_diff_positive)
+    by(subst nn_integral_add[symmetric])(auto simp add: AE_count_space g_le_f split: split_indicator intro!: nn_integral_cong)
   also have "?rest = (\<Sum>\<^sup>+ y. f (x, y) * indicator \<^bold>E (x, y)) - ?g_out'" (is "_ = ?f - _")
     apply(subst nn_integral_diff[symmetric])
-    apply(auto intro!: nn_integral_cong split: split_indicator simp add: g_nonneg AE_count_space g_le_f finite1)
+    apply(auto intro!: nn_integral_cong split: split_indicator simp add: AE_count_space g_le_f finite1)
     done
   also have "?f = d_OUT f x" unfolding d_OUT_def using f_outside
     by(auto intro!: nn_integral_cong split: split_indicator)
-  finally show ?OUT by(simp add: add_diff_eq_ereal add.commute)
+  also have "(\<Sum>\<^sup>+ y. g (x, y) * indicator \<^bold>E (x, y)) + (d_OUT f x - (\<Sum>\<^sup>+ y. g (y, x) * indicator \<^bold>E (x, y))) =
+     d_OUT f x + ?g_out - ?g_out'"
+     by (subst ennreal_diff_add_assoc[symmetric])
+        (auto simp: ac_simps d_OUT_def intro!: nn_integral_mono g_le_f split: split_indicator)
+  finally show ?OUT .
 next
-  assume "d_OUT g x \<noteq> \<infinity>"
-  then have finite2: "(\<Sum>\<^sup>+ y. g (x, y) * indicator A (f y)) \<noteq> \<infinity> " for A f
-    by(rule neq_PInf_trans)(auto split: split_indicator simp add: g_nonneg d_OUT_def intro!: nn_integral_mono)
+  assume "d_OUT g x \<noteq> top"
+  then have finite2: "(\<Sum>\<^sup>+ y. g (x, y) * indicator A (f y)) \<noteq> top" for A f
+    by(rule neq_top_trans)(auto split: split_indicator simp add: d_OUT_def intro!: nn_integral_mono)
 
   have "d_IN (f \<oplus> g) x = (\<Sum>\<^sup>+ y. (g (y, x) + (f (y, x) - g (x, y))) * indicator \<^bold>E (y, x))"
-    unfolding d_IN_def by(rule nn_integral_cong)(simp split: split_indicator add: add_diff_eq_ereal add.commute)
+    unfolding d_IN_def by(rule nn_integral_cong)(simp split: split_indicator add: add_diff_eq_ennreal add.commute ennreal_diff_add_assoc g_le_f)
   also have "\<dots> = (\<Sum>\<^sup>+ y\<in>UNIV. g (y, x) * indicator \<^bold>E (y, x)) + (\<Sum>\<^sup>+ y. (f (y, x) - g (x, y)) * indicator \<^bold>E (y, x))"
     (is "_ = _ + ?rest")
-    by(subst nn_integral_add[symmetric])(auto simp add: AE_count_space g_nonneg g_le_f split: split_indicator intro!: nn_integral_cong ereal_diff_positive)
+    by(subst nn_integral_add[symmetric])(auto simp add: AE_count_space g_le_f split: split_indicator intro!: nn_integral_cong)
   also have "?rest = (\<Sum>\<^sup>+ y. f (y, x) * indicator \<^bold>E (y, x))- ?g_in'"
-    by(subst nn_integral_diff[symmetric])(auto intro!: nn_integral_cong split: split_indicator simp add: add_ac add_diff_eq_ereal g_nonneg AE_count_space g_le_f finite2)
+    by(subst nn_integral_diff[symmetric])(auto intro!: nn_integral_cong split: split_indicator simp add: add_ac add_diff_eq_ennreal AE_count_space g_le_f finite2)
   also have "(\<Sum>\<^sup>+ y. f (y, x) * indicator \<^bold>E (y, x)) = d_IN f x"
     unfolding d_IN_def using f_outside by(auto intro!: nn_integral_cong split: split_indicator)
-  finally show ?IN by(simp add: add_diff_eq_ereal add.commute)
+  also have "(\<Sum>\<^sup>+ y. g (y, x) * indicator \<^bold>E (y, x)) + (d_IN f x - (\<Sum>\<^sup>+ y. g (x, y) * indicator \<^bold>E (y, x))) =
+     d_IN f x + ?g_in - ?g_in'"
+     by (subst ennreal_diff_add_assoc[symmetric])
+        (auto simp: ac_simps d_IN_def intro!: nn_integral_mono g_le_f split: split_indicator)
+  finally show ?IN .
 qed
 
 context countable_network begin
 
 lemma d_IN_plus_flow:
-  assumes wf: "wf_residual_network" 
+  assumes wf: "wf_residual_network"
   and f: "flow \<Delta> f"
   and g: "flow (residual_network f) g"
   shows "d_IN (f \<oplus> g) x \<le> d_IN f x + d_IN g x"
 proof -
-  have "d_IN (f \<oplus> g) x \<le> (\<Sum>\<^sup>+ y. f (y, x) + g (y, x))" unfolding d_IN_def 
-    by(rule nn_integral_mono)(auto intro: ereal_diff_le_self simp add: flowD_nonneg[OF g] flowD_nonneg[OF f])
-  also have "\<dots> = d_IN f x + d_IN g x" 
-    by(subst nn_integral_add)(simp_all add: d_IN_def flowD_nonneg[OF f] flowD_nonneg[OF g])
+  have "d_IN (f \<oplus> g) x \<le> (\<Sum>\<^sup>+ y. f (y, x) + g (y, x))" unfolding d_IN_def
+    by(rule nn_integral_mono)(auto intro: diff_le_self_ennreal)
+  also have "\<dots> = d_IN f x + d_IN g x"
+    by(subst nn_integral_add)(simp_all add: d_IN_def)
   finally show ?thesis .
 qed
 
 lemma scale_flow:
   assumes f: "flow \<Delta> f"
-  and c_nonneg: "0 \<le> c"
   and c: "c \<le> 1"
   shows "flow \<Delta> (\<lambda>e. c * f e)"
 proof(intro flow.intros)
   fix e
-  from c flowD_nonneg[OF f] have "c * f e \<le> 1 * f e" by(rule ereal_mult_right_mono)
+  from c have "c * f e \<le> 1 * f e" by(rule mult_right_mono) simp
   also have "\<dots> \<le> capacity \<Delta> e" using flowD_capacity[OF f, of e] by simp
   finally show "c * f e \<le> \<dots>" .
 next
-  show "0 \<le> c * f e" for e using flowD_nonneg[OF f, of e] c_nonneg by simp
-next
   fix x
   assume x: "x \<noteq> source \<Delta>" "x \<noteq> sink \<Delta>"
-  have "d_OUT (\<lambda>e. c * f e) x = c * d_OUT f x" by(simp add: d_OUT_cmult c_nonneg)
+  have "d_OUT (\<lambda>e. c * f e) x = c * d_OUT f x" by(simp add: d_OUT_cmult)
   also have "d_OUT f x = d_IN f x" using f x by(rule flowD_KIR)
-  also have "c * \<dots> = d_IN (\<lambda>e. c * f e) x" by(simp add: d_IN_cmult c_nonneg)
+  also have "c * \<dots> = d_IN (\<lambda>e. c * f e) x" by(simp add: d_IN_cmult)
   finally show "KIR (\<lambda>e. c * f e) x" .
 qed
 
 lemma value_scale_flow:
-  "0 \<le> c \<Longrightarrow> value_flow \<Delta> (\<lambda>e. c * f e) = c * value_flow \<Delta> f"
+  "value_flow \<Delta> (\<lambda>e. c * f e) = c * value_flow \<Delta> f"
 by(rule d_OUT_cmult)
 
-lemma value_flow: 
+lemma value_flow:
   assumes f: "flow \<Delta> f"
   and source_out: "\<And>y. edge \<Delta> (source \<Delta>) y \<longleftrightarrow> y = x"
   shows "value_flow \<Delta> f = f (source \<Delta>, x)"
@@ -1858,7 +1782,7 @@ proof -
     by(rule d_OUT_alt_def)(simp add: flowD_outside[OF f])
   also have "\<dots> = (\<Sum>\<^sup>+ y. f (source \<Delta>, y) * indicator {x} y)"
     by(subst nn_integral_count_space_indicator)(auto intro!: nn_integral_cong split: split_indicator simp add: outgoing_def source_out)
-  also have "\<dots> = f (source \<Delta>, x)" using flowD_nonneg[OF f] by(simp add: one_ereal_def[symmetric] max_def)
+  also have "\<dots> = f (source \<Delta>, x)" by(simp add: one_ennreal_def[symmetric] max_def)
   finally show ?thesis .
 qed
 
@@ -1867,7 +1791,7 @@ end
 context flow_attainability begin
 
 lemma value_plus_flow:
-  assumes wf: "wf_residual_network" 
+  assumes wf: "wf_residual_network"
   and f: "flow \<Delta> f"
   and g: "flow (residual_network f) g"
   shows "value_flow \<Delta> (f \<oplus> g) = value_flow \<Delta> f + value_flow \<Delta> g"
@@ -1876,7 +1800,7 @@ proof -
   have "value_flow \<Delta> (f \<oplus> g) = (\<Sum>\<^sup>+ y. f (source \<Delta>, y) + g (source \<Delta>, y))"
     unfolding d_OUT_def by(rule nn_integral_cong)(simp add: flowD_outside[OF f] RES.flowD_outside[OF g] source_in)
   also have "\<dots> = value_flow \<Delta> f + value_flow \<Delta> g" unfolding d_OUT_def
-    by(rule nn_integral_add)(simp_all add: flowD_nonneg[OF f] flowD_nonneg[OF g])
+    by(rule nn_integral_add) simp_all
   finally show ?thesis .
 qed
 
@@ -1889,92 +1813,82 @@ proof
   fix e
   { assume e: "e \<in> \<^bold>E"
     hence "(f \<oplus> g) e = f e + g e - g (prod.swap e)" by(cases e) simp
-    also have "\<dots> \<le> f e + g e - 0" by(rule ereal_minus_mono)(simp_all add: flowD_nonneg[OF g])
-    also have "\<dots> \<le> f e + (capacity \<Delta> e - f e)" 
+    also have "\<dots> \<le> f e + g e - 0" by(rule ennreal_minus_mono) simp_all
+    also have "\<dots> \<le> f e + (capacity \<Delta> e - f e)"
       using e flowD_capacity[OF g, of e] by(simp split: prod.split_asm add: add_mono)
-    also have "\<dots> = capacity \<Delta> e" using flowD_capacity[OF f, of e] apply(simp add: add_diff_eq_ereal)
-      apply(subst add.commute)
-      apply(subst add_diff_eq_ereal[symmetric])
-      apply(auto simp add: flowD_nonneg[OF f])
-      done
+    also have "\<dots> = capacity \<Delta> e" using flowD_capacity[OF f, of e]
+      by simp
     also note calculation }
-  thus "(f \<oplus> g) e \<le> capacity \<Delta> e" by(cases e)(auto simp add: capacity_nonneg)
-next
-  fix e
-  { assume "e \<in> \<^bold>E"
-    hence "g (prod.swap e) \<le> f e" using flowD_capacity[OF g, of "prod.swap e"] flowD_nonneg[OF f]
-      by(cases e)(auto split: if_split_asm dest: wf_residual_networkD[OF wf] elim: order_trans)
-    hence "0 \<le> f e - g (prod.swap e)" by(rule ereal_diff_positive)
-    also have "\<dots> \<le> f e + g e - g (prod.swap e)" using flowD_nonneg[OF g, of e]
-      by (metis add.right_neutral add_mono ereal_minus_mono order_refl)
-    also note calculation }
-  then show "0 \<le> (f \<oplus> g) e" by(cases e)simp
+  thus "(f \<oplus> g) e \<le> capacity \<Delta> e" by(cases e) auto
 next
   fix x
   assume x: "x \<noteq> source \<Delta>" "x \<noteq> sink \<Delta>"
-  have g_nonneg: "0 \<le> g e" for e using g by(rule flowD_nonneg)
   have g_le_f: "g (y, x) \<le> f (x, y)" if "edge \<Delta> x y" for x y
-    using that flowD_capacity[OF g, of "(y, x)"] flowD_nonneg[OF f]
+    using that flowD_capacity[OF g, of "(y, x)"]
     by(auto split: if_split_asm dest: wf_residual_networkD[OF wf] elim: order_trans)
 
   interpret RES: flow_attainability "residual_network f" using wf f by(rule residual_flow_attainability)
 
-  have finite1: "(\<Sum>\<^sup>+ y. g (y, x) * indicator A (f y)) \<noteq> \<infinity>" for A f
+  have finite1: "(\<Sum>\<^sup>+ y. g (y, x) * indicator A (f y)) \<noteq> \<top>" for A f
     using RES.flowD_finite_IN[OF g, of x]
-    by(rule neq_PInf_trans)(auto simp add: x d_IN_def flowD_nonneg[OF g] split: split_indicator intro: nn_integral_mono)
-  have finite2: "(\<Sum>\<^sup>+ y. g (x, y) * indicator A (f y)) \<noteq> \<infinity>" for A f
+    by(rule neq_top_trans)(auto simp add: x d_IN_def split: split_indicator intro: nn_integral_mono)
+  have finite2: "(\<Sum>\<^sup>+ y. g (x, y) * indicator A (f y)) \<noteq> \<top>" for A f
     using RES.flowD_finite_OUT[OF g, of x]
-    by(rule neq_PInf_trans)(auto simp add: x d_OUT_def flowD_nonneg[OF g] split: split_indicator intro: nn_integral_mono)
+    by(rule neq_top_trans)(auto simp add: x d_OUT_def split: split_indicator intro: nn_integral_mono)
 
-  have "d_OUT (f \<oplus> g) x = d_OUT f x + (\<Sum>\<^sup>+ y\<in>UNIV. g (x, y) * indicator \<^bold>E (x, y)) - (\<Sum>\<^sup>+ y. g (y, x) * indicator \<^bold>E (x, y))"
+  have "d_OUT (f \<oplus> g) x = d_OUT f x + (\<Sum>\<^sup>+ y. g (x, y) * indicator \<^bold>E (x, y)) - (\<Sum>\<^sup>+ y. g (y, x) * indicator \<^bold>E (x, y))"
     (is "_ = ?f + ?g_out - ?g_in")
-    using flowD_outside[OF f] g_nonneg g_le_f RES.flowD_finite_IN[OF g, of x]
+    using flowD_outside[OF f] g_le_f RES.flowD_finite_IN[OF g, of x]
     by(rule OUT_plus_flow)(simp_all add: x)
   also have "?f = d_IN f x" using f x by(auto dest: flowD_KIR)
   also have "?g_out = (\<Sum>\<^sup>+ y. g (x, y) * indicator (- \<^bold>E) (y, x))"
   proof -
     have "(\<Sum>\<^sup>+ y. g (x, y) * indicator (- \<^bold>E) (y, x)) =
-          (\<Sum>\<^sup>+ y\<in>UNIV. g (x, y) * indicator \<^bold>E (x, y)) + (\<Sum>\<^sup>+ y. g (x, y) * indicator (- \<^bold>E) (x, y) * indicator (- \<^bold>E) (y, x))"
-      by(subst nn_integral_add[symmetric])(auto simp add: AE_count_space g_nonneg dest: wf_residual_networkD[OF wf] split: split_indicator intro!: nn_integral_cong)
+          (\<Sum>\<^sup>+ y. g (x, y) * indicator \<^bold>E (x, y)) + (\<Sum>\<^sup>+ y. g (x, y) * indicator (- \<^bold>E) (x, y) * indicator (- \<^bold>E) (y, x))"
+      by(subst nn_integral_add[symmetric])(auto simp add: AE_count_space dest: wf_residual_networkD[OF wf] split: split_indicator intro!: nn_integral_cong)
     also have "(\<Sum>\<^sup>+ y. g (x, y) * indicator (- \<^bold>E) (x, y) * indicator (- \<^bold>E) (y, x)) = 0"
       using RES.flowD_outside[OF g]
       by(auto simp add: nn_integral_0_iff_AE AE_count_space split: split_indicator)
     finally show ?thesis by simp
   qed
   also have "\<dots> = (\<Sum>\<^sup>+ y. g (x, y) - g (x, y) * indicator \<^bold>E (y, x))"
-    by(rule nn_integral_cong)(simp split: split_indicator add: flowD_nonneg[OF g] RES.flowD_finite[OF g])
+    by(rule nn_integral_cong)(simp split: split_indicator add: RES.flowD_finite[OF g])
   also have "\<dots> = d_OUT g x - (\<Sum>\<^sup>+ y. g (x, y) * indicator \<^bold>E (y, x))"
     (is "_ = _ - ?g_in_E") unfolding d_OUT_def
-    by(subst nn_integral_diff)(simp_all add: AE_count_space flowD_nonneg[OF g] finite2 split: split_indicator)
+    by(subst nn_integral_diff)(simp_all add: AE_count_space finite2 split: split_indicator)
+  also have "d_IN f x + (d_OUT g x - (\<Sum>\<^sup>+ y. g (x, y) * indicator \<^bold>E (y, x))) - ?g_in =
+    ((d_IN f x + d_OUT g x) - (\<Sum>\<^sup>+ y. g (x, y) * indicator \<^bold>E (y, x))) - ?g_in"
+    by (subst add_diff_eq_ennreal) (auto simp: d_OUT_def intro!: nn_integral_mono split: split_indicator)
   also have "d_OUT g x = d_IN g x" using x g by(auto dest: flowD_KIR)
   also have "\<dots> = (\<Sum>\<^sup>+ y\<in>UNIV. g (y, x) * indicator (- \<^bold>E) (y, x)) + (\<Sum>\<^sup>+ y. g (y, x) * indicator \<^bold>E (y, x))"
     (is "_ = ?x + ?g_in_E'")
-    by(subst nn_integral_add[symmetric])(auto intro!: nn_integral_cong simp add: d_IN_def AE_count_space flowD_nonneg[OF g] split: split_indicator)
+    by(subst nn_integral_add[symmetric])(auto intro!: nn_integral_cong simp add: d_IN_def AE_count_space split: split_indicator)
   also have "?x = ?g_in"
   proof -
     have "?x = (\<Sum>\<^sup>+ y. g (y, x) * indicator (- \<^bold>E) (x, y) * indicator (- \<^bold>E) (y, x)) + ?g_in"
-      by(subst nn_integral_add[symmetric])(auto simp add: AE_count_space g_nonneg dest: wf_residual_networkD[OF wf] split: split_indicator intro!: nn_integral_cong)
+      by(subst nn_integral_add[symmetric])(auto simp add: AE_count_space  dest: wf_residual_networkD[OF wf] split: split_indicator intro!: nn_integral_cong)
     also have "(\<Sum>\<^sup>+ y. g (y, x) * indicator (- \<^bold>E) (x, y) * indicator (- \<^bold>E) (y, x)) = 0"
       using RES.flowD_outside[OF g]
       by(auto simp add: nn_integral_0_iff_AE AE_count_space split: split_indicator)
     finally show ?thesis by simp
   qed
-  also have "d_IN f x + (?g_in + ?g_in_E' - ?g_in_E) - ?g_in = 
-             d_IN f x + ?g_in_E' - ?g_in_E + (?g_in - ?g_in)"
-    by(simp add: add_ac add_diff_eq_ereal diff_diff_commute_ereal del: ereal_x_minus_x)
-  also have "?g_in - ?g_in = 0" by(simp add: nn_integral_nonneg finite1)
-  also have "d_IN f x + ?g_in_E' - ?g_in_E = d_IN (f \<oplus> g) x"
-    using flowD_outside[OF f] g_nonneg g_le_f RES.flowD_finite_OUT[OF g, of x]
+  also have "(d_IN f x + (?g_in + ?g_in_E') - ?g_in_E) - ?g_in =
+    d_IN f x + ?g_in_E' + ?g_in - ?g_in - ?g_in_E"
+    by (subst diff_diff_commute_ennreal) (simp add: ac_simps)
+  also have "\<dots> = d_IN f x + ?g_in_E' - ?g_in_E"
+    by (subst ennreal_add_diff_cancel_right) (simp_all add: finite1)
+  also have "\<dots> = d_IN (f \<oplus> g) x"
+    using flowD_outside[OF f]  g_le_f RES.flowD_finite_OUT[OF g, of x]
     by(rule IN_plus_flow[symmetric])(simp_all add: x)
   finally show "KIR (f \<oplus> g) x" by simp
 qed
 
 definition minus_flow :: "'v flow \<Rightarrow> 'v flow \<Rightarrow> 'v flow" (infixl "\<ominus>" 65)
 where
-  "f \<ominus> g = (\<lambda>(x, y). if edge \<Delta> x y then max 0 (f (x, y) - g (x, y)) else if edge \<Delta> y x then max 0 (g (y, x) - f (y, x)) else 0)"
+  "f \<ominus> g = (\<lambda>(x, y). if edge \<Delta> x y then f (x, y) - g (x, y) else if edge \<Delta> y x then g (y, x) - f (y, x) else 0)"
 
 lemma minus_flow_simps [simp]:
-  "(f \<ominus> g) (x, y) = (if edge \<Delta> x y then max 0 (f (x, y) - g (x, y)) else if edge \<Delta> y x then max 0 (g (y, x) - f (y, x)) else 0)"
+  "(f \<ominus> g) (x, y) = (if edge \<Delta> x y then f (x, y) - g (x, y) else if edge \<Delta> y x then g (y, x) - f (y, x) else 0)"
 by(simp add: minus_flow_def)
 
 lemma minus_flow:
@@ -1982,94 +1896,124 @@ lemma minus_flow:
   and f: "flow \<Delta> f"
   and g: "flow \<Delta> g"
   and value_le: "value_flow \<Delta> g \<le> value_flow \<Delta> f"
-  and f_finite: "f (source \<Delta>, x) \<noteq> \<infinity>"
+  and f_finite: "f (source \<Delta>, x) \<noteq> \<top>"
   and source_out: "\<And>y. edge \<Delta> (source \<Delta>) y \<longleftrightarrow> y = x"
   shows "flow (residual_network g) (f \<ominus> g)" (is "flow ?\<Delta> ?f")
 proof
   show "?f e \<le> capacity ?\<Delta> e" for e
-    using value_le f_finite flowD_nonneg[OF f] flowD_nonneg[OF g] flowD_capacity[OF g] flowD_capacity[OF f]
-    by(cases e)(auto simp add: source_in source_out value_flow[OF f source_out] value_flow[OF g source_out] intro!: ereal_diff_le_self ereal_diff_nonpos ereal_diff_positive ereal_minus_mono)
-  show "0 \<le> ?f e" for e by(cases e) auto
-  
+    using value_le f_finite flowD_capacity[OF g] flowD_capacity[OF f]
+    by(cases e)(auto simp add: source_in source_out value_flow[OF f source_out] value_flow[OF g source_out] less_top
+                     intro!: diff_le_self_ennreal diff_eq_0_ennreal ennreal_minus_mono)
+
   fix x
   assume "x \<noteq> source ?\<Delta>" "x \<noteq> sink ?\<Delta>"
   hence x: "x \<noteq> source \<Delta>" "x \<noteq> sink \<Delta>" by simp_all
 
-  have finite_f_in: "(\<Sum>\<^sup>+ y. f (y, x) * indicator A y) \<noteq> \<infinity>" for A
+  have finite_f_in: "(\<Sum>\<^sup>+ y. f (y, x) * indicator A y) \<noteq> top" for A
     using flowD_finite_IN[OF f, of x]
-    by(rule neq_PInf_trans)(auto simp add: x d_IN_def flowD_nonneg[OF f] split: split_indicator intro!: nn_integral_mono)
-  have finite_f_out: "(\<Sum>\<^sup>+ y. f (x, y) * indicator A y) \<noteq> \<infinity>" for A
+    by(rule neq_top_trans)(auto simp add: x d_IN_def split: split_indicator intro!: nn_integral_mono)
+  have finite_f_out: "(\<Sum>\<^sup>+ y. f (x, y) * indicator A y) \<noteq> top" for A
     using flowD_finite_OUT[OF f, of x]
-    by(rule neq_PInf_trans)(auto simp add: x d_OUT_def flowD_nonneg[OF f] split: split_indicator intro!: nn_integral_mono)
+    by(rule neq_top_trans)(auto simp add: x d_OUT_def split: split_indicator intro!: nn_integral_mono)
+  have finite_f[simp]: "f (x, y) \<noteq> top" "f (y, x) \<noteq> top" for y
+    using finite_f_in[of "{y}"] finite_f_out[of "{y}"] by auto
 
-  have finite_g_in: "(\<Sum>\<^sup>+ y. g (y, x) * indicator A y) \<noteq> \<infinity>" for A
+  have finite_g_in: "(\<Sum>\<^sup>+ y. g (y, x) * indicator A y) \<noteq> top" for A
     using flowD_finite_IN[OF g, of x]
-    by(rule neq_PInf_trans)(auto simp add: x d_IN_def flowD_nonneg[OF g] split: split_indicator intro!: nn_integral_mono)
-  have finite_g_out: "(\<Sum>\<^sup>+ y. g (x, y) * indicator A y) \<noteq> \<infinity>" for A
+    by(rule neq_top_trans)(auto simp add: x d_IN_def split: split_indicator intro!: nn_integral_mono)
+  have finite_g_out: "(\<Sum>\<^sup>+ y. g (x, y) * indicator A y) \<noteq> top" for A
     using flowD_finite_OUT[OF g x]
-    by(rule neq_PInf_trans)(auto simp add: x d_OUT_def flowD_nonneg[OF g] split: split_indicator intro!: nn_integral_mono)
+    by(rule neq_top_trans)(auto simp add: x d_OUT_def split: split_indicator intro!: nn_integral_mono)
+  have finite_g[simp]: "g (x, y) \<noteq> top" "g (y, x) \<noteq> top" for y
+    using finite_g_in[of "{y}"] finite_g_out[of "{y}"] by auto
 
   have "d_OUT (f \<ominus> g) x = (\<Sum>\<^sup>+ y. (f (x, y) - g (x, y)) * indicator \<^bold>E (x, y) * indicator {y. g (x, y) \<le> f (x, y)} y) +
     (\<Sum>\<^sup>+ y. (g (y, x) - f (y, x)) * indicator \<^bold>E (y, x) * indicator {y. f (y, x) < g (y, x)} y)"
     (is "_ = ?out + ?in" is "_ = (\<Sum>\<^sup>+ y\<in>_. _ * ?f_ge_g y) + (\<Sum>\<^sup>+ y\<in>_. _ * ?g_gt_f y)")
-    using flowD_finite[OF g] flowD_nonneg[OF g]
-    apply(subst (1 2) nn_integral_max_0[symmetric])
+    using flowD_finite[OF g]
     apply(subst nn_integral_add[symmetric])
-    apply(auto 4 4 simp add: d_OUT_def not_le max.absorb_iff1[symmetric] intro!: nn_integral_cong dest!: wf_residual_networkD[OF wf] split: split_indicator intro: ereal_diff_nonpos)
+    apply(auto 4 4 simp add: d_OUT_def not_le less_top[symmetric] intro!: nn_integral_cong
+           dest!: wf_residual_networkD[OF wf] split: split_indicator intro!: diff_eq_0_ennreal)
     done
-  also have "?out = (\<Sum>\<^sup>+ y. (f (x, y) - g (x, y)) * ?f_ge_g y)"
-    using flowD_outside[OF f] flowD_outside[OF g] by(auto intro!: nn_integral_cong split: split_indicator)
-  also have "\<dots> = (\<Sum>\<^sup>+ y\<in>UNIV. f (x, y) * ?f_ge_g y) - (\<Sum>\<^sup>+ y. g (x, y) * ?f_ge_g y)" (is "_ = ?f_out - ?g_out")
-    using flowD_nonneg[OF g] flowD_nonneg[OF f] finite_g_out
-    by(subst nn_integral_diff[symmetric])(auto simp add: AE_count_space split: split_indicator intro!: nn_integral_cong)
-  also have "?f_out = d_OUT f x - (\<Sum>\<^sup>+ y. f (x, y) * indicator {y. f (x, y) < g (x, y)} y)" (is "_ = _ - ?f_out_less")
-    unfolding d_OUT_def using flowD_nonneg[OF f] flowD_finite[OF f] using finite_f_out
-    by(subst nn_integral_diff[symmetric])(auto split: split_indicator intro!: nn_integral_cong)
-  also have "?g_out = d_OUT g x - (\<Sum>\<^sup>+ y. g (x, y) * indicator {y. f (x, y) < g (x, y)} y)" (is "_ = _ - ?g_less_f")
-    unfolding d_OUT_def using flowD_nonneg[OF g] flowD_finite[OF g] finite_g_out
-    by(subst nn_integral_diff[symmetric])(auto split: split_indicator intro!: nn_integral_cong)
   also have "?in = (\<Sum>\<^sup>+ y. (g (y, x) - f (y, x)) * ?g_gt_f y)"
     using flowD_outside[OF f] flowD_outside[OF g] by(auto intro!: nn_integral_cong split: split_indicator)
   also have "\<dots> = (\<Sum>\<^sup>+ y\<in>UNIV. g (y, x) * ?g_gt_f y) - (\<Sum>\<^sup>+ y. f (y, x) * ?g_gt_f y)" (is "_ = ?g_in - ?f_in")
-    using flowD_nonneg[OF f] finite_f_in
+    using finite_f_in
     by(subst nn_integral_diff[symmetric])(auto simp add: AE_count_space split: split_indicator intro!: nn_integral_cong)
-  also have "KIR f x" using f x by(rule flowD_KIR)
-  also have "KIR g x" using g x by(rule flowD_KIR)
-  also have "d_IN f x - ?f_out_less - (d_IN g x - ?g_less_f) + (?g_in - ?f_in) = (d_IN f x - ?f_in) - (d_IN g x - ?g_in) + (?g_less_f - ?f_out_less)"
-    using x
-    apply(subst ereal_minus_minus, simp add: d_IN_nonneg flowD_finite_IN[OF g])+
-    apply(subst add_diff_eq_ereal)+
-    apply(subst diff_add_eq_ereal)+
-    apply(subst add.assoc)
-    apply(subst (2) add.commute)
-    apply(subst add.assoc[symmetric])
-    apply(subst diff_diff_commute_ereal)
-    apply(subst (2) diff_diff_commute_ereal)
-    apply(subst (3) diff_diff_commute_ereal)
-    apply simp
+  also have "?out = (\<Sum>\<^sup>+ y. (f (x, y) - g (x, y)) * ?f_ge_g y)"
+    using flowD_outside[OF f] flowD_outside[OF g] by(auto intro!: nn_integral_cong split: split_indicator)
+  also have "\<dots> = (\<Sum>\<^sup>+ y. f (x, y) * ?f_ge_g y) - (\<Sum>\<^sup>+ y. g (x, y) * ?f_ge_g y)" (is "_ = ?f_out - ?g_out")
+    using finite_g_out
+    by(subst nn_integral_diff[symmetric])(auto simp add: AE_count_space split: split_indicator intro!: nn_integral_cong)
+  also have "?f_out = d_OUT f x - (\<Sum>\<^sup>+ y. f (x, y) * indicator {y. f (x, y) < g (x, y)} y)" (is "_ = _ - ?f_out_less")
+    unfolding d_OUT_def using flowD_finite[OF f] using finite_f_out
+    by(subst nn_integral_diff[symmetric])(auto split: split_indicator intro!: nn_integral_cong)
+  also have "?g_out = d_OUT g x - (\<Sum>\<^sup>+ y. g (x, y) * indicator {y. f (x, y) < g (x, y)} y)" (is "_ = _ - ?g_less_f")
+    unfolding d_OUT_def using flowD_finite[OF g] finite_g_out
+    by(subst nn_integral_diff[symmetric])(auto split: split_indicator intro!: nn_integral_cong)
+  also have "d_OUT f x - ?f_out_less - (d_OUT g x - ?g_less_f) + (?g_in - ?f_in) =
+    (?g_less_f + (d_OUT f x - ?f_out_less)) - d_OUT g x + (?g_in - ?f_in)"
+    by (subst diff_diff_ennreal')
+       (auto simp: ac_simps d_OUT_def nn_integral_diff[symmetric] finite_g_out finite_f_out intro!: nn_integral_mono split: split_indicator )
+  also have "\<dots> = ?g_less_f + d_OUT f x - ?f_out_less - d_OUT g x + (?g_in - ?f_in)"
+    by (subst add_diff_eq_ennreal)
+       (auto simp: d_OUT_def intro!: nn_integral_mono split: split_indicator)
+  also have "\<dots> = d_OUT f x + ?g_less_f - ?f_out_less - d_OUT g x + (?g_in - ?f_in)"
+    by (simp add: ac_simps)
+  also have "\<dots> = d_OUT f x + (?g_less_f - ?f_out_less) - d_OUT g x + (?g_in - ?f_in)"
+    by (subst add_diff_eq_ennreal[symmetric])
+       (auto intro!: nn_integral_mono split: split_indicator)
+  also have "\<dots> = (?g_in - ?f_in) + ((?g_less_f - ?f_out_less) + d_OUT f x - d_OUT g x)"
+    by (simp add: ac_simps)
+  also have "\<dots> = ((?g_in - ?f_in) + ((?g_less_f - ?f_out_less) + d_OUT f x)) - d_OUT g x"
+    apply (subst add_diff_eq_ennreal)
+    apply (simp_all add: d_OUT_def)
+    apply (subst nn_integral_diff[symmetric])
+    apply (auto simp: AE_count_space finite_f_out nn_integral_add[symmetric] not_less diff_add_cancel_ennreal intro!: nn_integral_mono split: split_indicator)
     done
+  also have "\<dots> = ((?g_less_f - ?f_out_less) + (d_OUT f x + (?g_in - ?f_in))) - d_OUT g x"
+    by (simp add: ac_simps)
+  also have "\<dots> = ((?g_less_f - ?f_out_less) + (d_IN f x + (?g_in - ?f_in))) - d_IN g x"
+    unfolding flowD_KIR[OF f x] flowD_KIR[OF g x] ..
+  also have "\<dots> = (?g_less_f - ?f_out_less) + ((d_IN f x + (?g_in - ?f_in)) - d_IN g x)"
+    apply (subst (2) add_diff_eq_ennreal)
+    apply (simp_all add: d_IN_def)
+    apply (subst nn_integral_diff[symmetric])
+    apply (auto simp: AE_count_space finite_f_in finite_f_out nn_integral_add[symmetric] not_less  ennreal_ineq_diff_add[symmetric]
+                intro!: nn_integral_mono split: split_indicator)
+    done
+  also have "\<dots> = (?g_less_f - ?f_out_less) + (d_IN f x + ?g_in - d_IN g x - ?f_in)"
+    by (subst (2) add_diff_eq_ennreal) (auto intro!: nn_integral_mono split: split_indicator simp: diff_diff_commute_ennreal)
+  also have "\<dots> = (?g_less_f - ?f_out_less) + (d_IN f x - (d_IN g x - ?g_in) - ?f_in)"
+    apply (subst diff_diff_ennreal')
+    apply (auto simp: d_IN_def intro!: nn_integral_mono split: split_indicator)
+    apply (subst nn_integral_diff[symmetric])
+    apply (auto simp: AE_count_space finite_g_in intro!: nn_integral_mono split: split_indicator)
+    done
+  also have "\<dots> =(d_IN f x - ?f_in) - (d_IN g x - ?g_in) + (?g_less_f - ?f_out_less)"
+    by (simp add: ac_simps diff_diff_commute_ennreal)
   also have "?g_less_f - ?f_out_less = (\<Sum>\<^sup>+ y. (g (x, y) - f (x, y)) * indicator {y. f (x, y) < g (x, y)} y)" using finite_f_out
-    by(subst nn_integral_diff[symmetric])(auto simp add: flowD_nonneg[OF f] AE_count_space split: split_indicator intro!: nn_integral_cong)
+    by(subst nn_integral_diff[symmetric])(auto simp add: AE_count_space split: split_indicator intro!: nn_integral_cong)
   also have "\<dots> = (\<Sum>\<^sup>+ y. (g (x, y) - f (x, y)) * indicator \<^bold>E (x, y) * indicator {y. f (x, y) < g (x, y)} y)" (is "_ = ?diff_out")
     using flowD_outside[OF f] flowD_outside[OF g] by(auto intro!: nn_integral_cong split: split_indicator)
   also have "d_IN f x - ?f_in = (\<Sum>\<^sup>+ y. f (y, x) * indicator {y. g (y, x) \<le> f (y, x)} y)"
     unfolding d_IN_def using finite_f_in
     apply(subst nn_integral_diff[symmetric])
-    apply(auto simp add: flowD_nonneg[OF f] AE_count_space split: split_indicator intro!: nn_integral_cong)
+    apply(auto simp add: AE_count_space split: split_indicator intro!: nn_integral_cong)
     done
   also have "d_IN g x - ?g_in = (\<Sum>\<^sup>+ y. g (y, x) * indicator {y. g (y, x) \<le> f (y, x)} y)"
     unfolding d_IN_def using finite_g_in
-    by(subst nn_integral_diff[symmetric])(auto simp add: flowD_nonneg[OF g] flowD_finite[OF g] AE_count_space split: split_indicator intro!: nn_integral_cong)
+    by(subst nn_integral_diff[symmetric])(auto simp add: flowD_finite[OF g] AE_count_space split: split_indicator intro!: nn_integral_cong)
   also have "(\<Sum>\<^sup>+ y\<in>UNIV. f (y, x) * indicator {y. g (y, x) \<le> f (y, x)} y) - \<dots> = (\<Sum>\<^sup>+ y. (f (y, x) - g (y, x)) * indicator {y. g (y, x) \<le> f (y, x)} y)"
     using finite_g_in
-    by(subst nn_integral_diff[symmetric])(auto simp add: flowD_nonneg[OF g] flowD_finite[OF g] AE_count_space split: split_indicator intro!: nn_integral_cong)
+    by(subst nn_integral_diff[symmetric])(auto simp add: flowD_finite[OF g] AE_count_space split: split_indicator intro!: nn_integral_cong)
   also have "\<dots> = (\<Sum>\<^sup>+ y. (f (y, x) - g (y, x)) * indicator \<^bold>E (y, x) * indicator {y. g (y, x) \<le> f (y, x)} y)"
     using flowD_outside[OF f] flowD_outside[OF g] by(auto intro!: nn_integral_cong split: split_indicator)
   also have "\<dots> + ?diff_out = d_IN ?f x"
-    using flowD_finite[OF g] flowD_nonneg[OF g]
-    apply(subst (1 2) nn_integral_max_0[symmetric])
+    using flowD_finite[OF g]
     apply(subst nn_integral_add[symmetric])
-    apply(auto 4 4 simp add: d_IN_def not_le max.absorb_iff1[symmetric] intro!: nn_integral_cong dest!: wf_residual_networkD[OF wf] split: split_indicator intro: ereal_diff_nonpos)
+    apply(auto 4 4 simp add: d_IN_def not_le less_top[symmetric] intro!: nn_integral_cong
+               dest!: wf_residual_networkD[OF wf] split: split_indicator intro: diff_eq_0_ennreal)
     done
   finally show "KIR ?f x" .
 qed
@@ -2086,45 +2030,44 @@ proof -
   also have "\<dots> = (\<Sum>\<^sup>+ y. (f (source \<Delta>, y) - g (source \<Delta>, y)) * indicator {x} y)"
     by(subst nn_integral_count_space_indicator)(auto intro!: nn_integral_cong split: split_indicator simp add: outgoing_def source_out)
   also have "\<dots> = f (source \<Delta>, x) - g (source \<Delta>, x)"
-    using value_le flowD_nonneg[OF f] value_flow[OF f source_out] value_flow[OF g source_out]
-    by(auto simp add: one_ereal_def[symmetric] max_def not_le intro: antisym ereal_diff_positive)
+    using value_le value_flow[OF f source_out] value_flow[OF g source_out]
+    by(auto simp add: one_ennreal_def[symmetric] max_def not_le intro: antisym)
   also have "\<dots> = value_flow \<Delta> f - value_flow \<Delta> g" using f g source_out by(simp add: value_flow)
   finally show ?value .
 qed
 
 context
   fixes \<alpha>
-  defines "\<alpha> \<equiv> (SUP g:{g. flow \<Delta> g}. value_flow \<Delta> g)" 
+  defines "\<alpha> \<equiv> (SUP g:{g. flow \<Delta> g}. value_flow \<Delta> g)"
 begin
 
-lemma \<alpha>_nonneg: "0 \<le> \<alpha>"
-unfolding \<alpha>_def by(rule SUP_upper2[where i="\<lambda>_. 0"]) simp_all
-
 lemma flow_by_value:
-  assumes "0 \<le> v" "v < \<alpha>"
-  and real[rule_format]: "\<forall>f. \<alpha> = \<infinity> \<longrightarrow> flow \<Delta> f \<longrightarrow> value_flow \<Delta> f < \<alpha>"
+  assumes "v < \<alpha>"
+  and real[rule_format]: "\<forall>f. \<alpha> = \<top> \<longrightarrow> flow \<Delta> f \<longrightarrow> value_flow \<Delta> f < \<alpha>"
   obtains f where "flow \<Delta> f" "value_flow \<Delta> f = v"
 proof -
-  have \<alpha>_pos: "\<alpha> > 0" using assms by simp
+  have \<alpha>_pos: "\<alpha> > 0" using assms by (auto simp add: zero_less_iff_neq_zero)
   from \<open>v < \<alpha>\<close> obtain f where f: "flow \<Delta> f" and v: "v < value_flow \<Delta> f"
     unfolding \<alpha>_def less_SUP_iff by blast
-  have [simp]: "value_flow \<Delta> f \<noteq> \<infinity>"
+  have [simp]: "value_flow \<Delta> f \<noteq> \<top>"
   proof
-    assume val: "value_flow \<Delta> f = \<infinity>"
+    assume val: "value_flow \<Delta> f = \<top>"
     from f have "value_flow \<Delta> f \<le> \<alpha>" unfolding \<alpha>_def by(blast intro: SUP_upper2)
-    with val have "\<alpha> = \<infinity>" by simp
+    with val have "\<alpha> = \<top>" by (simp add: top_unique)
     from real[OF this f] val show False by simp
   qed
   let ?f = "\<lambda>e. (v / value_flow \<Delta> f) * f e"
-  note f moreover have "0 \<le> v / value_flow \<Delta> f" using \<open>0 \<le> v\<close> v by simp
-  moreover have "v / value_flow \<Delta> f \<le> 1" using \<open>0 \<le> v\<close> v
-    by(cases v "value_flow \<Delta> f" rule: ereal2_cases)(simp_all)
-  ultimately have "flow \<Delta> ?f" by(rule scale_flow)
+  note f
+  moreover
+  have *: "0 < value_flow \<Delta> f"
+    using \<open>v < value_flow \<Delta> f\<close> by (auto simp add: zero_less_iff_neq_zero)
+  then have "v / value_flow \<Delta> f \<le> 1" using v
+    by (auto intro!: divide_le_posI_ennreal)
+  ultimately have "flow \<Delta> ?f" by (rule scale_flow)
   moreover {
-    have *: "0 < value_flow \<Delta> f" using \<open>0 \<le> v\<close> \<open>v < value_flow \<Delta> f\<close> by simp
-    have "value_flow \<Delta> ?f = (v / value_flow \<Delta> f) * value_flow \<Delta> f"
-      using \<open>0 \<le> v / _\<close> by(rule value_scale_flow)
-    also have "\<dots> = v" using * by(auto simp add: ereal_times_divide_eq[symmetric])
+    have "value_flow \<Delta> ?f = v * (value_flow \<Delta> f / value_flow \<Delta> f)"
+      by(subst value_scale_flow)(simp add: divide_ennreal_def ac_simps)
+    also have "\<dots> = v" using * by(subst ennreal_divide_self) (auto simp: less_top[symmetric])
     also note calculation }
   ultimately show ?thesis by(rule that)
 qed
@@ -2133,29 +2076,34 @@ theorem ex_max_flow':
   assumes wf: "wf_residual_network"
   assumes source_out: "\<And>y. edge \<Delta> (source \<Delta>) y \<longleftrightarrow> y = x"
   and nontrivial: "\<^bold>V - {source \<Delta>, sink \<Delta>} \<noteq> {}"
-  and real: "\<alpha> = ereal \<alpha>'"
+  and real: "\<alpha> = ennreal \<alpha>'" and \<alpha>'_nonneg[simp]: "0 \<le> \<alpha>'"
   shows "\<exists>f. flow \<Delta> f \<and> value_flow \<Delta> f = \<alpha> \<and> (\<forall>x. d_IN f x \<le> value_flow \<Delta> f)"
 proof -
-  have \<alpha>'_nonneg: "0 \<le> \<alpha>'" using \<alpha>_nonneg real by simp
+  have \<alpha>'_not_neg[simp]: "\<not> \<alpha>' < 0"
+    using \<alpha>'_nonneg by linarith
 
   let ?v = "\<lambda>i. (1 - (1 / 2) ^ i) * \<alpha>"
+  let ?v_r = "\<lambda>i. ennreal ((1 - (1 / 2) ^ i) * \<alpha>')"
+  have v_eq: "?v i = ?v_r i" for i
+    by (auto simp: real ennreal_mult power_le_one ennreal_lessI ennreal_minus[symmetric]
+                   ennreal_power[symmetric] divide_ennreal_def)
   have "\<exists>f. flow \<Delta> f \<and> value_flow \<Delta> f = ?v i" for i :: nat
   proof(cases "\<alpha> = 0")
     case True thus ?thesis by(auto intro!: exI[where x="\<lambda>_. 0"])
   next
     case False
-    have "0 \<le> ?v i" unfolding real \<alpha>'_nonneg 
-      by(simp add: one_ereal_def field_simps)(metis (no_types, hide_lams) \<alpha>'_nonneg mult_left_cancel mult_left_mono mult_numeral_1_right numeral_le_iff power_commutes power_mono power_mult_distrib power_not_zero semiring_norm(68) zero_le_numeral zero_neq_numeral)
-    moreover from False \<alpha>_nonneg have "?v i < \<alpha>" using real by(simp add: one_ereal_def field_simps)
-    ultimately obtain f where "flow \<Delta> f" and "value_flow \<Delta> f = ?v i"
+    then have "?v i < \<alpha>"
+      unfolding v_eq by (auto simp: real field_simps intro!: ennreal_lessI) (simp_all add: less_le)
+    then obtain f where "flow \<Delta> f" and "value_flow \<Delta> f = ?v i"
       by(rule flow_by_value)(simp add: real)
     thus ?thesis by blast
   qed
   then obtain f_aux where f_aux: "\<And>i. flow \<Delta> (f_aux i)"
-    and value_aux: "\<And>i. value_flow \<Delta> (f_aux i) = ?v i" by moura
+    and value_aux: "\<And>i. value_flow \<Delta> (f_aux i) = ?v_r i"
+    unfolding v_eq by moura
 
-  def f_i \<equiv> "rec_nat (\<lambda>_. 0) (\<lambda>i f_i. 
-    let g = f_aux (Suc i) \<ominus> f_i; 
+  def f_i \<equiv> "rec_nat (\<lambda>_. 0) (\<lambda>i f_i.
+    let g = f_aux (Suc i) \<ominus> f_i;
       k_i = SOME k. k \<le> g \<and> flow (residual_network f_i) k \<and> value_flow (residual_network f_i) k = value_flow (residual_network f_i) g \<and> (\<forall>x. d_IN k x \<le> value_flow (residual_network f_i) k)
     in f_i \<oplus> k_i)"
   let ?P = "\<lambda>i k. k \<le> f_aux (Suc i) \<ominus> f_i i \<and> flow (residual_network (f_i i)) k \<and> value_flow (residual_network (f_i i)) k = value_flow (residual_network (f_i i)) (f_aux (Suc i) \<ominus> f_i i) \<and> (\<forall>x. d_IN k x \<le> value_flow (residual_network (f_i i)) k)"
@@ -2174,19 +2122,22 @@ proof -
     interpret fn: flow_network \<Delta> "f_i i" by(rule that)
     interpret RES: flow_attainability "?RES" using wf fn.g by(rule residual_flow_attainability)
     have le: "value_flow \<Delta> (f_i i) \<le> value_flow \<Delta> (f_aux (Suc i))"
-      unfolding value_aux value_f_i using \<alpha>'_nonneg by(simp add: one_ereal_def real field_simps)
+      unfolding value_aux value_f_i
+      unfolding v_eq by (rule ennreal_leI) (auto simp: field_simps)
     with wf f_aux fn.g have res_flow: "flow ?RES (f_aux (Suc i) \<ominus> f_i i)"
-      using flowD_finite[OF f_aux] source_out by(rule minus_flow)
+      using flowD_finite[OF f_aux] source_out
+      by(rule minus_flow)
     show value': ?value_diff by(simp add: value_minus_flow[OF f_aux fn.g le source_out])
-    also have "\<dots> < \<infinity>" by(simp add: ereal_minus_eq_PInfty_iff value_aux real \<alpha>'_nonneg not_less)
-    finally have "value_flow ?RES (f_aux (Suc i) \<ominus> f_i i) \<noteq> \<infinity>" by simp
+    also have "\<dots> < \<top>"
+      unfolding value_aux v_eq by (auto simp: less_top[symmetric])
+    finally have "value_flow ?RES (f_aux (Suc i) \<ominus> f_i i) \<noteq> \<top>" by simp
     then have fn': "flow_network ?RES (f_aux (Suc i) \<ominus> f_i i)"
       using nontrivial res_flow by(unfold_locales) simp_all
     then interpret fn': flow_network "?RES" "f_aux (Suc i) \<ominus> f_i i" .
-    from fn'.flow_cleanup show ?k_i ?value_k_i ?IN_k_i unfolding k_i_def by(rule someI2_ex; blast)+ 
+    from fn'.flow_cleanup show ?k_i ?value_k_i ?IN_k_i unfolding k_i_def by(rule someI2_ex; blast)+
   qed
 
-  have fn_i: "flow_network \<Delta> (f_i i)" 
+  have fn_i: "flow_network \<Delta> (f_i i)"
     and value_f_i: "value_flow \<Delta> (f_i i) = value_flow \<Delta> (f_aux i)"
     and d_IN_i: "d_IN (f_i i) x \<le> value_flow \<Delta> (f_i i)"  for i x
   proof(induction i)
@@ -2198,7 +2149,7 @@ proof -
     case (Suc i)
     interpret fn: flow_network \<Delta> "f_i i" using Suc.IH(1) .
     let ?RES = "residual_network (f_i i)"
-    
+
     have k_i: "flow ?RES (k_i i)"
       and value_k_i: "value_flow ?RES (k_i i) = value_flow ?RES (f_aux (Suc i) \<ominus> f_i i)"
       and d_IN_k_i: "d_IN (k_i i) x \<le> value_flow ?RES (k_i i)" for x
@@ -2206,17 +2157,17 @@ proof -
 
     interpret RES: flow_attainability "?RES" using wf fn.g by(rule residual_flow_attainability)
     have le: "value_flow \<Delta> (f_i i) \<le> value_flow \<Delta> (f_aux (Suc i))"
-      unfolding value_aux Suc.IH(2) using \<alpha>'_nonneg by(simp add: one_ereal_def real field_simps)
+      unfolding value_aux Suc.IH(2) v_eq using \<alpha>'_nonneg by(intro ennreal_leI)(simp add: real field_simps)
     { case 1 show ?case unfolding f_i_simps
       proof
         show "flow \<Delta> (f_i i \<oplus> k_i i)" using wf fn.g k_i by(rule flow_residual_add)
-        with RES.flowD_finite[OF k_i] show "value_flow \<Delta> (f_i i \<oplus> k_i i) \<noteq> \<infinity>"
-          by(simp add: value_flow[OF _ source_out] ereal_minus_eq_PInfty_iff flowD_nonneg[OF k_i])
+        with RES.flowD_finite[OF k_i] show "value_flow \<Delta> (f_i i \<oplus> k_i i) \<noteq> \<top>"
+          by(simp add: value_flow[OF _ source_out])
       qed(rule nontrivial) }
     from value_k_i have value_k: "value_flow ?RES (k_i i) = value_flow \<Delta> (f_aux (Suc i)) - value_flow \<Delta> (f_aux i)"
       by(simp add: value_minus_flow[OF f_aux fn.g le source_out] Suc.IH)
     { case 2 show ?case using value_k
-        by(simp add: source_out value_plus_flow[OF wf fn.g k_i] Suc.IH add_diff_eq_ereal value_aux one_ereal_def real) }
+        by(auto simp add: source_out value_plus_flow[OF wf fn.g k_i] Suc.IH value_aux field_simps intro!: ennreal_leI) }
     note value_f = this
     { case 3
       have "d_IN (f_i i \<oplus> k_i i) x \<le> d_IN (f_i i) x + d_IN (k_i i) x"
@@ -2224,37 +2175,48 @@ proof -
       also have "\<dots> \<le> value_flow \<Delta> (f_i i) + d_IN (k_i i) x" using Suc.IH(3) by(rule add_right_mono)
       also have "\<dots> \<le> value_flow \<Delta> (f_i i) + value_flow ?RES (k_i i)" using d_IN_k_i by(rule add_left_mono)
       also have "\<dots> = value_flow \<Delta> (f_i (Suc i))" unfolding value_f Suc.IH(2) value_k
-        by(simp add: value_aux real one_ereal_def)
+        by(auto simp add: value_aux field_simps intro!: ennreal_leI)
       finally show ?case by simp }
   qed
   interpret fn: flow_network \<Delta> "f_i i" for i by(rule fn_i)
-  note k_i = k_i[OF fn_i value_f_i] and value_k_i = value_k_i[OF fn_i value_f_i] 
+  note k_i = k_i[OF fn_i value_f_i] and value_k_i = value_k_i[OF fn_i value_f_i]
     and IN_k_i = IN_k_i[OF fn_i value_f_i] and value_diff = value_diff[OF fn_i value_f_i]
 
-  from fn.finite_g fn.g_nonneg
-  obtain f_i' where f_i': "\<And>i e. f_i i e = ereal (f_i' i e)"
-    by(atomize_elim)((subst choice_iff[symmetric])+, simp add: not_infty_ereal[symmetric])
-  have f_i'_nonneg: "0 \<le> f_i' i e" for i e using fn.g_nonneg[of i e] by(simp add: f_i')
+  have "\<exists>x\<ge>0. f_i i e = ennreal x" for i e
+    using fn.finite_g[of i e] by (cases "f_i i e") auto
+  then obtain f_i' where f_i': "\<And>i e. f_i i e = ennreal (f_i' i e)" and [simp]: "\<And>i e. 0 \<le> f_i' i e"
+    by metis
 
   { fix i e
     obtain x y :: 'v where e: "e = (x, y)" by(cases e)
-    have "k_i i (x, y) \<le> d_IN (k_i i) y" unfolding d_IN_def by(rule nn_integral_ge_point) simp
+    have "k_i i (x, y) \<le> d_IN (k_i i) y" by (rule d_IN_ge_point)
     also have "\<dots> \<le> value_flow (residual_network (f_i i)) (k_i i)" by(rule IN_k_i)
-    also have "\<dots> < \<infinity>" using value_k_i[of i] value_diff[of i]
-      by(simp add: value_k_i value_f_i value_aux one_ereal_def real)
-    finally have "k_i i e \<noteq> \<infinity>" by(simp add: e) }
-  with flowD_nonneg[OF k_i] obtain k_i' where k_i': "\<And>i e. k_i i e = ereal (k_i' i e)"
-    by(atomize_elim)((subst choice_iff[symmetric])+, simp add: not_infty_ereal[symmetric])
-  have k_i'_nonneg: "0 \<le> k_i' i e" for i e using flowD_nonneg[OF k_i, of i e] by(simp add: k_i')
+    also have "\<dots> < \<top>" using value_k_i[of i] value_diff[of i]
+      by(simp add: value_k_i value_f_i value_aux real less_top[symmetric])
+    finally have "\<exists>x\<ge>0. k_i i e = ennreal x"
+      by(cases "k_i i e")(auto simp add: e) }
+  then obtain k_i' where k_i': "\<And>i e. k_i i e = ennreal (k_i' i e)" and k_i'_nonneg[simp]: "\<And>i e. 0 \<le> k_i' i e"
+    by metis
+
+  have wf_k: "(x, y) \<in> \<^bold>E \<Longrightarrow> k_i i (y, x) \<le> f_i i (x, y) + k_i i (x, y)" for i x y
+    using flowD_capacity[OF k_i, of i "(y, x)"]
+    by (auto split: if_split_asm dest: wf_residual_networkD[OF wf] elim: order_trans)
+
+  have f_i'_0[simp]: "f_i' 0 = (\<lambda>_. 0)" using f_i_simps(1) by (simp del: f_i_simps add: fun_eq_iff f_i')
+
+  have f_i'_Suc[simp]: "f_i' (Suc i) e =  (if e \<in> \<^bold>E then f_i' i e + (k_i' i e - k_i' i (prod.swap e)) else 0)" for i e
+    using f_i_simps(2)[of i, unfolded fun_eq_iff, THEN spec, of e] wf_k[of "fst e" "snd e" i]
+    by (auto simp del: f_i_simps ennreal_plus
+             simp add: fun_eq_iff f_i' k_i' ennreal_plus[symmetric] ennreal_minus split: if_split_asm)
 
   have k_i'_le: "k_i' i e \<le> \<alpha>' / 2 ^ (Suc i)" for i e
   proof -
     obtain x y where e: "e = (x, y)" by(cases e)
-    have "k_i' i (x, y) \<le> d_IN (k_i' i) y" unfolding d_IN_def by(rule nn_integral_ge_point) simp
+    have "k_i' i (x, y) \<le> d_IN (k_i' i) y" by (rule d_IN_ge_point)
     also have "\<dots> \<le> value_flow (residual_network (f_i i)) (k_i' i)"
       using IN_k_i[of i y] by(simp add: k_i'[abs_def])
     also have "\<dots> = \<alpha>' / 2 ^ (Suc i)" using value_k_i[of i] value_diff[of i]
-      by(simp add: value_f_i value_aux real k_i'[abs_def] one_ereal_def field_simps)
+      by(simp add: value_f_i value_aux real k_i'[abs_def] field_simps ennreal_minus mult_le_cancel_left1)
     finally show ?thesis using e by simp
   qed
 
@@ -2265,56 +2227,46 @@ proof -
 
     { fix i
       from False \<alpha>'_nonneg have "\<alpha>' = 0" by simp
-      moreover have "f_i i (x, y) \<le> d_IN (f_i i) y" unfolding d_IN_def
-        by(rule nn_integral_ge_point) simp
-      ultimately have "f_i i (x, y) = 0" using flowD_nonneg[OF fn.g, of i e] d_IN_i[of i y]
-        by(simp add: value_f_i value_aux real zero_ereal_def[symmetric]) }
+      moreover have "f_i i (x, y) \<le> d_IN (f_i i) y" by (rule d_IN_ge_point)
+      ultimately have "f_i i (x, y) = 0" using d_IN_i[of i y]
+        by(simp add: value_f_i value_aux real) }
     thus ?thesis by(simp add: f_i' convergent_const)
   next
     case \<alpha>'_pos: True
     show ?thesis
     proof(rule real_Cauchy_convergent Cauchy_real_Suc_diff)+
       fix n
-      { fix e
-        have "k_i n e \<le> d_IN (k_i n) (snd e)"
-          unfolding d_IN_def by(cases e)(auto intro!: nn_integral_ge_point)
-        also have "\<dots> \<le> value_flow (residual_network (f_i n)) (k_i n)" by(rule IN_k_i)
-        also have "\<dots> = \<alpha> / 2 ^ (Suc n)" using value_k_i[of n] value_diff[of n]
-          by(simp add: value_f_i value_aux real one_ereal_def field_simps)
-        also have "\<dots> \<le> \<alpha> / 2 ^ n" using \<alpha>'_nonneg by(simp add: real field_simps)
-        also have "0 \<le> k_i n e" by(rule flowD_nonneg[OF k_i])
-        moreover note calculation }
-      from this[of e] this[of "prod.swap e"] ereal_minus_mono
-      have "\<bar>k_i n e - k_i n (prod.swap e)\<bar> \<le> \<alpha> / 2 ^ n"
-         by(cases "k_i n e - k_i n (prod.swap e) \<ge> 0")(auto simp add: real ereal_uminus_le_reorder intro: order_trans ereal_diff_le_self, fastforce)
-      then have "\<bar>f_i (Suc n) e - f_i n e\<bar> \<le> \<alpha> / 2 ^ n"
-        apply(cases e)
-        apply(clarsimp simp add: flowD_outside[OF fn.g])
-        apply(subst add.commute)
-        apply(subst diff_diff_commute_ereal)
-        apply(subst add_diff_eq_ereal[symmetric])
-        apply(simp add: flowD_nonneg[OF fn.g] \<alpha>_nonneg)
-        done
-      thus "\<bar>f_i' (Suc n) e - f_i' n e\<bar> \<le> \<alpha>' / 2 ^ n" by(simp add: real f_i' del: f_i_simps)
+      have "\<bar>k_i' n e - k_i' n (prod.swap e)\<bar> \<le> \<bar>k_i' n e\<bar> + \<bar>k_i' n (prod.swap e)\<bar>"
+        by (rule abs_triangle_ineq4)
+      then have "\<bar>k_i' n e - k_i' n (prod.swap e)\<bar> \<le> \<alpha>' / 2 ^ n"
+        using k_i'_le[of n e] k_i'_le[of n "prod.swap e"] by simp
+      then have "\<bar>f_i' (Suc n) e - f_i' n e\<bar> \<le> \<alpha>' / 2 ^ n"
+        using flowD_outside[OF fn.g] by (cases e) (auto simp: f_i')
+      thus "\<bar>f_i' (Suc n) e - f_i' n e\<bar> \<le> \<alpha>' / 2 ^ n" by simp
     qed simp
   qed
   then obtain f' where f': "\<And>e. (\<lambda>i. f_i' i e) \<longlonglongrightarrow> f' e" unfolding convergent_def by metis
-  hence f: "\<And>e. (\<lambda>i. f_i i e) \<longlonglongrightarrow> ereal (f' e)" unfolding f_i' by simp
+  hence f: "\<And>e. (\<lambda>i. f_i i e) \<longlonglongrightarrow> ennreal (f' e)" unfolding f_i' by simp
 
   have f'_nonneg: "0 \<le> f' e" for e
-    using ereal_Inf_lim[OF _ f, of e "{0..}"] by(simp add: flowD_nonneg[OF fn.g])
+    by (rule LIMSEQ_le_const[OF f']) auto
 
   let ?k = "\<lambda>i x y. (k_i' i (x, y) - k_i' i (y, x)) * indicator \<^bold>E (x, y)"
-  have setsum_i: "f_i i (x, y) = (\<Sum>j<i. ?k j x y)" for x y i
-    by(induction i)(simp_all add: add_diff_eq_ereal k_i')
-  hence setsum_i': "f_i' i (x, y) = (\<Sum>j<i. ?k j x y)" for x y i by(simp add: f_i')
+  have setsum_i': "f_i' i (x, y) = (\<Sum>j<i. ?k j x y)" for x y i
+    by (induction i) auto
 
   have summable_nk: "summable (\<lambda>i. \<bar>?k i x y\<bar>)" for x y
   proof(rule summable_rabs_comparison_test)
-    have "\<bar>?k i x y\<bar> \<le> \<alpha>' * (1 / 2) ^ i" for i
-      using k_i'_le[of i "(x, y)"] k_i'_le[of i "(y, x)"] \<alpha>'_nonneg k_i'_nonneg[of i "(x, y)"] k_i'_nonneg[of i "(y, x)"]
-      by(auto simp add: abs_real_def power_divide split: split_indicator)
-    thus "\<exists>N. \<forall>i\<ge>N. \<bar>?k i x y\<bar> \<le> \<alpha>' * (1 / 2) ^ i" by auto
+    show "\<exists>N. \<forall>i\<ge>N. \<bar>?k i x y\<bar> \<le> \<alpha>' * (1 / 2) ^ i"
+    proof (intro exI allI impI)
+      fix i have "\<bar>?k i x y\<bar> \<le> k_i' i (x, y) + k_i' i (y, x)"
+        by (auto intro!: abs_triangle_ineq4[THEN order_trans] split: split_indicator)
+      also have "\<dots> \<le> \<alpha>' * (1 / 2) ^ i"
+        using k_i'_le[of i "(x, y)"] k_i'_le[of i "(y, x)"] \<alpha>'_nonneg k_i'_nonneg[of i "(x, y)"] k_i'_nonneg[of i "(y, x)"]
+        by(auto simp add: abs_real_def power_divide split: split_indicator)
+      finally show "\<bar>?k i x y\<bar> \<le> \<alpha>' * (1 / 2) ^ i"
+        by simp
+    qed
     show "summable (\<lambda>i. \<alpha>' * (1 / 2) ^ i)"
       by(rule summable_mult complete_algebra_summable_geometric)+ simp
   qed
@@ -2329,50 +2281,51 @@ proof -
     have "f' e \<le> Sup {..capacity \<Delta> e}" using _ f
       by(rule ereal_Sup_lim)(simp add: flowD_capacity[OF fn.g])
     then show "f' e \<le> capacity \<Delta> e" by simp
-
-    from f'_nonneg show "0 \<le> ereal (f' e)" by simp
   next
     fix x
     assume x: "x \<noteq> source \<Delta>" "x \<noteq> sink \<Delta>"
 
     have integrable_f_i: "integrable (count_space UNIV) (\<lambda>y. f_i' i (x, y))" for i
-      using flowD_finite_OUT[OF fn.g x, of i] by(auto intro!: integrableI_bounded simp add: f_i' f_i'_nonneg d_OUT_def)
+      using flowD_finite_OUT[OF fn.g x, of i] by(auto intro!: integrableI_bounded simp add: f_i' d_OUT_def less_top)
     have integrable_f_i': "integrable (count_space UNIV) (\<lambda>y. f_i' i (y, x))" for i
-      using flowD_finite_IN[OF fn.g, of x i] x by(auto intro!: integrableI_bounded simp add: f_i' f_i'_nonneg d_IN_def)
+      using flowD_finite_IN[OF fn.g, of x i] x by(auto intro!: integrableI_bounded simp add: f_i' d_IN_def less_top)
 
-    have integral_k_bounded: "(\<Sum>\<^sup>+ y. norm (?k i x y)) \<le> \<alpha> / 2 ^ i" (is ?thesis1)
-      and integral_k'_bounded: "(\<Sum>\<^sup>+ y. norm (?k i y x)) \<le> \<alpha> / 2 ^ i" (is ?thesis2) for i
+    have integral_k_bounded: "(\<Sum>\<^sup>+ y. norm (?k i x y)) \<le> \<alpha>' / 2 ^ i" (is ?thesis1)
+      and integral_k'_bounded: "(\<Sum>\<^sup>+ y. norm (?k i y x)) \<le> \<alpha>' / 2 ^ i" (is ?thesis2) for i
     proof -
       def b \<equiv> "\<Sum>\<^sup>+ y. k_i i (x, y) + k_i i (y, x)"
       have "b = d_OUT (k_i i) x + d_IN (k_i i) x" unfolding b_def
-        by(subst nn_integral_add)(simp_all add: flowD_nonneg[OF k_i] d_OUT_def d_IN_def)
+        by(subst nn_integral_add)(simp_all add: d_OUT_def d_IN_def)
       also have "d_OUT (k_i i) x = d_IN (k_i i) x" using k_i by(rule flowD_KIR)(simp_all add: x)
       also have "\<dots> + \<dots> \<le> value_flow \<Delta> (k_i i) + value_flow \<Delta> (k_i i)"
         using IN_k_i[of i x, simplified] by-(rule add_mono)
-      also have "\<dots> = \<alpha> / 2 ^ i" using value_k_i[of i] value_diff[of i] 
-        by(simp add: value_aux value_f_i one_ereal_def real field_simps)
+      also have "\<dots> \<le> \<alpha>' / 2 ^ i" using value_k_i[of i] value_diff[of i]
+        by(simp add: value_aux value_f_i  field_simps ennreal_minus_if ennreal_plus_if mult_le_cancel_left1
+                del: ennreal_plus)
       also have "(\<Sum>\<^sup>+ y\<in>UNIV. norm (?k i x y)) \<le> b" and "(\<Sum>\<^sup>+ y. norm (?k i y x)) \<le> b" unfolding b_def
-        by(rule nn_integral_mono; simp add: abs_real_def k_i' k_i'_nonneg split: split_indicator)+
+        by(rule nn_integral_mono; simp add: abs_real_def k_i' ennreal_plus_if del:  ennreal_plus split: split_indicator)+
       ultimately show ?thesis1 ?thesis2 by(auto)
     qed
 
     have integrable_k: "integrable (count_space UNIV) (\<lambda>y. ?k i x y)"
       and integrable_k': "integrable (count_space UNIV) (\<lambda>y. ?k i y x)" for i
-      using integral_k_bounded[of i] integral_k'_bounded[of i] real by(auto intro!: integrableI_bounded)
+      using integral_k_bounded[of i] integral_k'_bounded[of i] real
+      by(auto intro!: integrableI_bounded simp: less_top[symmetric] top_unique ennreal_divide_eq_top_iff)
 
     have summable'_k: "summable (\<lambda>i. \<integral> y. \<bar>?k i x y\<bar> \<partial>count_space UNIV)"
     proof(rule summable_comparison_test)
       have "\<bar>\<integral> y. \<bar>?k i x y\<bar> \<partial>count_space UNIV\<bar> \<le> \<alpha>' * (1 / 2) ^ i" for i
-        using integral_norm_bound_ereal[OF integrable_norm, OF integrable_k, of i] integral_k_bounded[of i]
+        using integral_norm_bound_ennreal[OF integrable_norm, OF integrable_k, of i] integral_k_bounded[of i]
         by(bestsimp simp add: real power_divide dest: order_trans)
-      thus "\<exists>N. \<forall>i\<ge>N. norm (\<integral> y. \<bar>?k i x y\<bar> \<partial>count_space UNIV) \<le> \<alpha>' * (1 / 2) ^ i" by auto
+      thus "\<exists>N. \<forall>i\<ge>N. norm (\<integral> y. \<bar>?k i x y\<bar> \<partial>count_space UNIV) \<le> \<alpha>' * (1 / 2) ^ i"
+        by auto
       show "summable (\<lambda>i. \<alpha>' * (1 / 2) ^ i)"
         by(rule summable_mult complete_algebra_summable_geometric)+ simp
     qed
     have summable'_k': "summable (\<lambda>i. \<integral> y. \<bar>?k i y x\<bar> \<partial>count_space UNIV)"
     proof(rule summable_comparison_test)
       have "\<bar>\<integral> y. \<bar>?k i y x\<bar> \<partial>count_space UNIV\<bar> \<le> \<alpha>' * (1 / 2) ^ i" for i
-        using integral_norm_bound_ereal[OF integrable_norm, OF integrable_k', of i] integral_k'_bounded[of i]
+        using integral_norm_bound_ennreal[OF integrable_norm, OF integrable_k', of i] integral_k'_bounded[of i]
         by(bestsimp simp add: real power_divide dest: order_trans)
       thus "\<exists>N. \<forall>i\<ge>N. norm (\<integral> y. \<bar>?k i y x\<bar> \<partial>count_space UNIV) \<le> \<alpha>' * (1 / 2) ^ i" by auto
       show "summable (\<lambda>i. \<alpha>' * (1 / 2) ^ i)"
@@ -2385,14 +2338,14 @@ proof -
     finally have "(\<lambda>i. \<Sum>j<i. \<integral> y. ?k j x y \<partial>count_space UNIV) \<longlonglongrightarrow> \<dots>" unfolding sums_def .
     also have "(\<lambda>i. \<Sum>j<i. \<integral> y. ?k j x y \<partial>count_space UNIV) = (\<lambda>i. \<integral> y. f_i' i (x, y) \<partial>count_space UNIV)"
       unfolding setsum_i' by(rule ext integral_setsum[symmetric] integrable_k)+
-    finally have "(\<lambda>i. ereal (\<integral> y. f_i' i (x, y) \<partial>count_space UNIV)) \<longlonglongrightarrow> ereal (\<integral> y. f' (x, y) \<partial>count_space UNIV)" by simp
-    also have "(\<lambda>i. ereal (\<integral> y. f_i' i (x, y) \<partial>count_space UNIV)) = (\<lambda>i. d_OUT (f_i i) x)"
-      unfolding d_OUT_def f_i' by(rule ext nn_integral_eq_integral[symmetric] integrable_f_i)+(simp add: f_i'_nonneg)
-    also have "ereal (\<integral> y. f' (x, y) \<partial>count_space UNIV) = d_OUT f' x"
+    finally have "(\<lambda>i. ennreal (\<integral> y. f_i' i (x, y) \<partial>count_space UNIV)) \<longlonglongrightarrow> ennreal (\<integral> y. f' (x, y) \<partial>count_space UNIV)" by simp
+    also have "(\<lambda>i. ennreal (\<integral> y. f_i' i (x, y) \<partial>count_space UNIV)) = (\<lambda>i. d_OUT (f_i i) x)"
+      unfolding d_OUT_def f_i' by(rule ext nn_integral_eq_integral[symmetric] integrable_f_i)+ simp
+    also have "ennreal (\<integral> y. f' (x, y) \<partial>count_space UNIV) = d_OUT f' x"
       unfolding d_OUT_def by(rule nn_integral_eq_integral[symmetric])(simp_all add: f'_nonneg, simp add: suminf[symmetric] integrable_suminf integrable_k summable_nk summable'_k)
     also have "(\<lambda>i. d_OUT (f_i i) x) = (\<lambda>i. d_IN (f_i i) x)"
       using flowD_KIR[OF fn.g x] by(simp)
-    finally have *: "(\<lambda>i. d_IN (f_i i) x) \<longlonglongrightarrow> d_OUT (\<lambda>x. ereal (f' x)) x" .
+    finally have *: "(\<lambda>i. d_IN (f_i i) x) \<longlonglongrightarrow> d_OUT (\<lambda>x. ennreal (f' x)) x" .
 
     have "(\<lambda>i. \<integral> y. ?k i y x \<partial>count_space UNIV) sums \<integral> y. (\<Sum>i. ?k i y x) \<partial>count_space UNIV"
       using integrable_k' by(rule sums_integral)(simp_all add: summable_nk summable'_k')
@@ -2400,32 +2353,36 @@ proof -
     finally have "(\<lambda>i. \<Sum>j<i. \<integral> y. ?k j y x \<partial>count_space UNIV) \<longlonglongrightarrow> \<dots>" unfolding sums_def .
     also have "(\<lambda>i. \<Sum>j<i. \<integral> y. ?k j y x \<partial>count_space UNIV) = (\<lambda>i. \<integral> y. f_i' i (y, x) \<partial>count_space UNIV)"
       unfolding setsum_i' by(rule ext integral_setsum[symmetric] integrable_k')+
-    finally have "(\<lambda>i. ereal (\<integral> y. f_i' i (y, x) \<partial>count_space UNIV)) \<longlonglongrightarrow> ereal (\<integral> y. f' (y, x) \<partial>count_space UNIV)" by simp
-    also have "(\<lambda>i. ereal (\<integral> y. f_i' i (y, x) \<partial>count_space UNIV)) = (\<lambda>i. d_IN (f_i i) x)"
-      unfolding d_IN_def f_i' by(rule ext nn_integral_eq_integral[symmetric] integrable_f_i')+(simp add: f_i'_nonneg)
-    also have "ereal (\<integral> y. f' (y, x) \<partial>count_space UNIV) = d_IN f' x"
+    finally have "(\<lambda>i. ennreal (\<integral> y. f_i' i (y, x) \<partial>count_space UNIV)) \<longlonglongrightarrow> ennreal (\<integral> y. f' (y, x) \<partial>count_space UNIV)" by simp
+    also have "(\<lambda>i. ennreal (\<integral> y. f_i' i (y, x) \<partial>count_space UNIV)) = (\<lambda>i. d_IN (f_i i) x)"
+      unfolding d_IN_def f_i' by(rule ext nn_integral_eq_integral[symmetric] integrable_f_i')+ simp
+    also have "ennreal (\<integral> y. f' (y, x) \<partial>count_space UNIV) = d_IN f' x"
       unfolding d_IN_def by(rule nn_integral_eq_integral[symmetric])(simp_all add: f'_nonneg, simp add: suminf[symmetric] integrable_suminf integrable_k' summable_nk summable'_k')
     finally show "d_OUT f' x = d_IN f' x" using * by(blast intro: LIMSEQ_unique)
   qed
   moreover
   { have "incseq (\<lambda>i. value_flow \<Delta> (f_i i))"
-      by(rule incseq_SucI)(simp add: value_aux value_f_i real one_ereal_def field_simps \<alpha>'_nonneg del: f_i_simps)
+      by(rule incseq_SucI)(simp add: value_aux value_f_i real field_simps \<alpha>'_nonneg ennreal_leI del: f_i_simps)
     then have "(\<lambda>i. value_flow \<Delta> (f_i i)) \<longlonglongrightarrow> (SUP i. value_flow \<Delta> (f_i i))" by(rule LIMSEQ_SUP)
     also have "(SUP i. value_flow \<Delta> (f_i i)) = \<alpha>"
     proof -
       have "\<alpha> - (SUP i. value_flow \<Delta> (f_i i)) = (INF i. \<alpha> - value_flow \<Delta> (f_i i))"
-        by(simp add: INF_ereal_minus_right real)
-      also have "\<alpha> - value_flow \<Delta> (f_i i) = \<alpha> / 2 ^ i" for i
-        by(simp add: value_f_i value_aux real one_ereal_def field_simps)
-      hence "(INF i. \<alpha> - value_flow \<Delta> (f_i i)) = (INF i. \<alpha> / 2  ^ i)"
+        by(simp add: ennreal_SUP_const_minus real)
+      also have "\<alpha> - value_flow \<Delta> (f_i i) = \<alpha>' / 2 ^ i" for i
+        by(simp add: value_f_i value_aux real ennreal_minus_if field_simps mult_le_cancel_left1)
+      hence "(INF i. \<alpha> - value_flow \<Delta> (f_i i)) = (INF i. ennreal (\<alpha>' / 2  ^ i))"
         by(auto intro: INF_cong)
       also have "\<dots> = 0"
       proof(rule LIMSEQ_unique)
-        show "(\<lambda>i. \<alpha> / 2 ^ i) \<longlonglongrightarrow> (INF i. \<alpha> / 2  ^ i)"
-          by(rule LIMSEQ_INF)(simp add: field_simps real \<alpha>'_nonneg decseq_SucI)
-      qed(simp add: zero_ereal_def LIMSEQ_divide_realpow_zero real)
+        show "(\<lambda>i. \<alpha>' / 2 ^ i) \<longlonglongrightarrow> (INF i. ennreal (\<alpha>' / 2  ^ i))"
+          by(rule LIMSEQ_INF)(simp add: field_simps real decseq_SucI)
+      qed(simp add: LIMSEQ_divide_realpow_zero real ennreal_0[symmetric] del: ennreal_0)
       finally show "(SUP i. value_flow \<Delta> (f_i i)) = \<alpha>"
-        by(subst (asm) ereal_diff_eq_0_iff)(simp_all add: real)
+        apply (intro antisym)
+        apply (auto simp: \<alpha>_def intro!: SUP_mono fn.g) []
+        apply (rule ennreal_minus_eq_0)
+        apply assumption
+        done
     qed
     also have "(\<lambda>i. value_flow \<Delta> (f_i i)) \<longlonglongrightarrow> value_flow \<Delta> f'"
       by(simp add: value_flow[OF flow source_out] value_flow[OF fn.g source_out] f)
@@ -2436,7 +2393,7 @@ proof -
     have "d_IN f' x = \<integral>\<^sup>+ y. liminf (\<lambda>i. f_i i (y, x)) \<partial>count_space UNIV" unfolding d_IN_def using f
       by(simp add: tendsto_iff_Liminf_eq_Limsup)
     also have "\<dots> \<le> liminf (\<lambda>i. d_IN (f_i i) x)" unfolding d_IN_def
-      by(rule nn_integral_liminf)(simp_all add: flowD_nonneg[OF fn.g])
+      by(rule nn_integral_liminf)(simp_all add:)
     also have "\<dots> \<le> liminf (\<lambda>i. \<alpha>)" using d_IN_i[of _ x] fn.g
       by(auto intro!: Liminf_mono SUP_upper2 eventually_sequentiallyI simp add: \<alpha>_def)
     also have "\<dots> = value_flow \<Delta> f'" using value_f by(simp add: Liminf_const)
@@ -2447,7 +2404,7 @@ qed
 theorem ex_max_flow'': -- \<open>eliminate assumption of no antiparallel edges using locale @{const wf_residual_network}\<close>
   assumes source_out: "\<And>y. edge \<Delta> (source \<Delta>) y \<longleftrightarrow> y = x"
   and nontrivial: "\<^bold>E \<noteq> {}"
-  and real: "\<alpha> = ereal \<alpha>'"
+  and real: "\<alpha> = ennreal \<alpha>'" and nn[simp]: "0 \<le> \<alpha>'"
   shows "\<exists>f. flow \<Delta> f \<and> value_flow \<Delta> f = \<alpha> \<and> (\<forall>x. d_IN f x \<le> value_flow \<Delta> f)"
 proof -
   interpret antiparallel_edges \<Delta> ..
@@ -2476,18 +2433,18 @@ proof -
     then have "\<dots> \<le> ?lhs" by(blast intro: SUP_upper2)
     finally show "value_flow \<Delta> g \<le> ?lhs" .
   qed
-  with real have eq: "(SUP g : {g. flow \<Delta>'' g}. value_flow \<Delta>'' g) = ereal \<alpha>'" by(simp add: \<alpha>_def)
+  with real have eq: "(SUP g : {g. flow \<Delta>'' g}. value_flow \<Delta>'' g) = ennreal \<alpha>'" by(simp add: \<alpha>_def)
   from \<Delta>''.ex_max_flow'[OF wf_\<Delta>'' source_out' nontrivial' eq]
   obtain f where f: "flow \<Delta>'' f"
     and "value_flow \<Delta>'' f = \<alpha>"
-    and IN: "\<And>x. d_IN f x \<le> value_flow \<Delta>'' f" unfolding eq real by blast
+    and IN: "\<And>x. d_IN f x \<le> value_flow \<Delta>'' f" unfolding eq real using nn by blast
   hence "flow \<Delta> (collect f)" and "value_flow \<Delta> (collect f) = \<alpha>" by(simp_all add: value_collect)
   moreover {
     fix x
     have "d_IN (collect f) x = (\<Sum>\<^sup>+ y\<in>range (\<lambda>y. Edge y x). f (y, Vertex x))"
       by(simp add: nn_integral_count_space_reindex d_IN_def)
     also have "\<dots> \<le> d_IN f (Vertex x)" unfolding d_IN_def
-      by(subst (2) nn_integral_max_0[symmetric])(auto intro!: nn_integral_mono simp add: nn_integral_count_space_indicator split: split_indicator)
+      by (auto intro!: nn_integral_mono simp add: nn_integral_count_space_indicator split: split_indicator)
     also have "\<dots> \<le> value_flow \<Delta> (collect f)" using IN[of "Vertex x"] f by(simp add: value_collect)
     also note calculation }
   ultimately show ?thesis by blast
@@ -2535,36 +2492,35 @@ by(simp_all add: \<Delta>'_def)
 private lemma "\<^bold>E_\<Delta>'": "\<^bold>E\<^bsub>\<Delta>'\<^esub> = {(SOURCE, Inner (source \<Delta>))} \<union> (\<lambda>(x, y). (Inner x, Inner y)) ` \<^bold>E"
 by(auto elim: edge'.cases)
 
-private lemma \<Delta>'_countable_network: 
-  assumes "\<alpha> \<noteq> \<infinity>"
+private lemma \<Delta>'_countable_network:
+  assumes "\<alpha> \<noteq> \<top>"
   shows "countable_network \<Delta>'"
 proof
   show "countable \<^bold>E\<^bsub>\<Delta>'\<^esub>" unfolding "\<^bold>E_\<Delta>'" by simp
-  show "source \<Delta>' \<noteq> sink \<Delta>'" by simp  
-  show "0 \<le> capacity \<Delta>' e" for e by(cases e rule: capacity'.cases)(simp_all add: \<alpha>_nonneg capacity_nonneg)
+  show "source \<Delta>' \<noteq> sink \<Delta>'" by simp
   show "capacity \<Delta>' e = 0" if "e \<notin> \<^bold>E\<^bsub>\<Delta>'\<^esub>" for e using that unfolding "\<^bold>E_\<Delta>'"
     by(cases e rule: capacity'.cases)(auto intro: capacity_outside)
-  show "capacity \<Delta>' e \<noteq> \<infinity>" for e by(cases e rule: capacity'.cases)(simp_all add: assms)
+  show "capacity \<Delta>' e \<noteq> \<top>" for e by(cases e rule: capacity'.cases)(simp_all add: assms)
 qed
 
 private lemma \<Delta>'_flow_attainability:
-  assumes "\<alpha> \<noteq> \<infinity>"
+  assumes "\<alpha> \<noteq> \<top>"
   shows "flow_attainability \<Delta>'"
 proof -
   interpret \<Delta>': countable_network \<Delta>' using assms by(rule \<Delta>'_countable_network)
   show ?thesis
   proof
-    show "d_IN (capacity \<Delta>') x \<noteq> \<infinity> \<or> d_OUT (capacity \<Delta>') x \<noteq> \<infinity>" if sink: "x \<noteq> sink \<Delta>'" for x
+    show "d_IN (capacity \<Delta>') x \<noteq> \<top> \<or> d_OUT (capacity \<Delta>') x \<noteq> \<top>" if sink: "x \<noteq> sink \<Delta>'" for x
     proof(cases x)
       case (Inner x')
-      consider (source) "x' = source \<Delta>" | (IN) "x' \<noteq> source \<Delta>" "d_IN (capacity \<Delta>) x' \<noteq> \<infinity>" | (OUT) "d_OUT (capacity \<Delta>) x' \<noteq> \<infinity>"
+      consider (source) "x' = source \<Delta>" | (IN) "x' \<noteq> source \<Delta>" "d_IN (capacity \<Delta>) x' \<noteq> \<top>" | (OUT) "d_OUT (capacity \<Delta>) x' \<noteq> \<top>"
         using finite_capacity[of x'] sink Inner by(auto)
       thus ?thesis
       proof(cases)
         case source
         with Inner have "d_IN (capacity \<Delta>') x = (\<Sum>\<^sup>+ y. \<alpha> * indicator {SOURCE :: 'v node} y)"
           unfolding d_IN_def by(intro nn_integral_cong)(simp split: split_indicator)
-        also have "\<dots> = \<alpha>" by(simp add: max_def one_ereal_def[symmetric] \<alpha>_nonneg)
+        also have "\<dots> = \<alpha>" by(simp add: max_def)
         finally show ?thesis using assms by simp
       next
         case IN
@@ -2604,11 +2560,11 @@ private lemma d_OUT_lift_SOURCE [simp]: "d_OUT (lift f) SOURCE = value_flow \<De
 proof -
   have "?lhs = (\<Sum>\<^sup>+ y. lift f (SOURCE, y) * indicator {Inner (source \<Delta>)} y)"
     unfolding d_OUT_def by(rule nn_integral_cong)(case_tac x; simp)
-  also have "\<dots> = ?rhs" by(simp add: nn_integral_count_space_indicator max_def d_OUT_nonneg)
+  also have "\<dots> = ?rhs" by(simp add: nn_integral_count_space_indicator max_def)
   finally show ?thesis .
 qed
 
-private lemma d_IN_lift_Inner [simp]: 
+private lemma d_IN_lift_Inner [simp]:
   assumes "x \<noteq> source \<Delta>"
   shows "d_IN (lift f) (Inner x) = d_IN f x" (is "?lhs = ?rhs")
 proof -
@@ -2623,14 +2579,13 @@ proof -
   have "?lhs = (\<Sum>\<^sup>+ y. lift f (y, Inner (source \<Delta>)) * indicator {SOURCE} y) + (\<Sum>\<^sup>+ y\<in>range Inner. lift f (y, Inner (source \<Delta>)))"
     (is "_ = ?SOURCE + ?rest")
     unfolding d_IN_def
-    apply(subst (1 3) nn_integral_max_0[symmetric])
     apply(subst nn_integral_count_space_indicator, simp)
     apply(subst nn_integral_add[symmetric])
-    apply(auto simp add: AE_count_space d_OUT_nonneg max_def not_Inner_conv split: split_indicator intro!: nn_integral_cong)
+    apply(auto simp add: AE_count_space max_def not_Inner_conv split: split_indicator intro!: nn_integral_cong)
     done
   also have "?rest = d_IN f (source \<Delta>)" by(simp add: nn_integral_count_space_reindex d_IN_def)
   also have "?SOURCE = value_flow \<Delta> f"
-    by(simp add: max_def one_ereal_def[symmetric] d_OUT_nonneg)
+    by(simp add: max_def one_ennreal_def[symmetric] )
   finally show ?thesis .
 qed
 
@@ -2640,8 +2595,6 @@ private lemma flow_lift [simp]:
 proof
   show "lift f e \<le> capacity \<Delta>' e" for e
     by(cases e rule: capacity'.cases)(auto intro: flowD_capacity[OF assms] simp add: \<alpha>_def intro: SUP_upper2 assms)
-  show "0 \<le> lift f e" for e
-    by(cases "(f, e)" rule: lift.cases)(auto simp add: d_OUT_nonneg flowD_nonneg[OF assms])
 
   fix x
   assume x: "x \<noteq> source \<Delta>'" "x \<noteq> sink \<Delta>'"
@@ -2659,17 +2612,16 @@ private lemma flow_unlift [simp]:
 proof
   show "unlift f e \<le> capacity \<Delta> e" for e using flowD_capacity[OF f, of "map_prod Inner Inner e"]
     by(cases e)(simp)
-  show "0 \<le> unlift f e" for e using flowD_nonneg[OF f] by(simp add: split_beta)
 next
   fix x
   assume x: "x \<noteq> source \<Delta>" "x \<noteq> sink \<Delta>"
   have "d_OUT (unlift f) x = (\<Sum>\<^sup>+ y\<in>range Inner. f (Inner x, y))"
     by(simp add: nn_integral_count_space_reindex d_OUT_def)
-  also have "\<dots> = d_OUT f (Inner x)" using flowD_nonneg[OF f, of "(Inner x, SOURCE)"] flowD_capacity[OF f, of "(Inner x, SOURCE)"]
+  also have "\<dots> = d_OUT f (Inner x)" using flowD_capacity[OF f, of "(Inner x, SOURCE)"]
     by(auto simp add: nn_integral_count_space_indicator d_OUT_def not_Inner_conv intro!: nn_integral_cong split: split_indicator)
   also have "\<dots> = d_IN f (Inner x)" using x flowD_KIR[OF f, of "Inner x"] by(simp)
   also have "\<dots> = (\<Sum>\<^sup>+ y\<in>range Inner. f (y, Inner x))"
-    using x flowD_nonneg[OF f, of "(SOURCE, Inner x)"] flowD_capacity[OF f, of "(SOURCE, Inner x)"]
+    using x flowD_capacity[OF f, of "(SOURCE, Inner x)"]
     by(auto simp add: nn_integral_count_space_indicator d_IN_def not_Inner_conv intro!: nn_integral_cong split: split_indicator)
   also have "\<dots> = d_IN (unlift f) x" by(simp add: nn_integral_count_space_reindex d_IN_def)
   finally show "KIR (unlift f) x" .
@@ -2681,17 +2633,17 @@ private lemma value_unlift:
 proof -
   have "value_flow \<Delta> (unlift f) = (\<Sum>\<^sup>+ y\<in>range Inner. f (Inner (source \<Delta>), y))"
     by(simp add: nn_integral_count_space_reindex d_OUT_def)
-  also have "\<dots> = d_OUT f (Inner (source \<Delta>))" using flowD_nonneg[OF f, of "(Inner (source \<Delta>), SOURCE)"] flowD_capacity[OF f, of "(Inner (source \<Delta>), SOURCE)"]
+  also have "\<dots> = d_OUT f (Inner (source \<Delta>))" using flowD_capacity[OF f, of "(Inner (source \<Delta>), SOURCE)"]
     by(auto simp add: nn_integral_count_space_indicator d_OUT_def not_Inner_conv intro!: nn_integral_cong split: split_indicator)
   also have "\<dots> = d_IN f (Inner (source \<Delta>))" using flowD_KIR[OF f, of "Inner (source \<Delta>)"] by(simp)
   also have "\<dots> = (\<Sum>\<^sup>+ y. f (y, Inner (source \<Delta>)) * indicator {SOURCE} y)"
-    unfolding d_IN_def using flowD_nonneg[OF f] flowD_capacity[OF f, of "(x, Inner (source \<Delta>))" for x]
+    unfolding d_IN_def using flowD_capacity[OF f, of "(x, Inner (source \<Delta>))" for x]
     by(intro nn_integral_cong)(auto intro!: antisym split: split_indicator if_split_asm elim: meta_allE)
-  also have "\<dots> = max 0 (f (SOURCE, Inner (source \<Delta>)))" by(simp add: one_ereal_def[symmetric])
+  also have "\<dots> = f (SOURCE, Inner (source \<Delta>))" by simp
   also have "\<dots> = (\<Sum>\<^sup>+ y. f (SOURCE, y) * indicator {Inner (source \<Delta>)} y)"
-    by(simp add: one_ereal_def[symmetric])
+    by(simp add: one_ennreal_def[symmetric])
   also have "\<dots> = value_flow \<Delta>' f" unfolding d_OUT_def
-    unfolding d_OUT_def using flowD_nonneg[OF f] flowD_capacity[OF f, of "(SOURCE, Inner x)" for x] flowD_capacity[OF f, of "(SOURCE, SOURCE)"]
+    unfolding d_OUT_def using flowD_capacity[OF f, of "(SOURCE, Inner x)" for x] flowD_capacity[OF f, of "(SOURCE, SOURCE)"]
     apply(intro nn_integral_cong)
     apply(case_tac x)
     apply(auto intro!: antisym split: split_indicator if_split_asm elim: meta_allE)
@@ -2699,15 +2651,11 @@ proof -
   finally show ?thesis .
 qed
 
-theorem ex_max_flow: 
+theorem ex_max_flow:
   "\<exists>f. flow \<Delta> f \<and> value_flow \<Delta> f = \<alpha> \<and> (\<forall>x. d_IN f x \<le> value_flow \<Delta> f)"
 proof(cases "\<alpha>")
-  case MInf
-  moreover have "0 \<le> \<alpha>" unfolding \<alpha>_def by(rule SUP_upper2[where i="\<lambda>_. 0"]) simp_all
-  ultimately show ?thesis by simp
-next
   case (real \<alpha>')
-  hence \<alpha>: "\<alpha> \<noteq> \<infinity>" by simp
+  hence \<alpha>: "\<alpha> \<noteq> \<top>" by simp
   then interpret \<Delta>': flow_attainability \<Delta>' by(rule \<Delta>'_flow_attainability)
 
   have source_out: "edge \<Delta>' (source \<Delta>') y \<longleftrightarrow> y = Inner (source \<Delta>)" for y by(auto)
@@ -2729,11 +2677,11 @@ next
     then have "\<dots> \<le> ?lhs" by(blast intro: SUP_upper2)
     finally show "value_flow \<Delta> g \<le> ?lhs" .
   qed
-  also have "\<dots> = ereal \<alpha>'" using real by(simp add: \<alpha>_def)
+  also have "\<dots> = ennreal \<alpha>'" using real by(simp add: \<alpha>_def)
   finally obtain f where f: "flow \<Delta>' f"
     and value_f: "value_flow \<Delta>' f = (\<Squnion>g\<in>{g. flow \<Delta>' g}. value_flow \<Delta>' g)"
     and IN_f: "\<And>x. d_IN f x \<le> value_flow \<Delta>' f"
-    by(blast dest: \<Delta>'.ex_max_flow''[OF source_out nontrivial])
+    using \<open>0 \<le> \<alpha>'\<close> by(blast dest: \<Delta>'.ex_max_flow''[OF source_out nontrivial])
   have "flow \<Delta> (unlift f)" using f by simp
   moreover have "value_flow \<Delta> (unlift f) = \<alpha>" using f eq value_f by(simp add: value_unlift \<alpha>_def)
   moreover {
@@ -2741,21 +2689,21 @@ next
     have "d_IN (unlift f) x = (\<Sum>\<^sup>+ y\<in>range Inner. f (y, Inner x))"
       by(simp add: nn_integral_count_space_reindex d_IN_def)
     also have "\<dots> \<le> d_IN f (Inner x)" unfolding d_IN_def
-      by(auto intro!: nn_integral_mono simp add: nn_integral_count_space_indicator flowD_nonneg[OF f] split: split_indicator)
+      by(auto intro!: nn_integral_mono simp add: nn_integral_count_space_indicator split: split_indicator)
     also have "\<dots> \<le> value_flow \<Delta> (unlift f)" using IN_f[of "Inner x"] f by(simp add: value_unlift)
     also note calculation }
   ultimately show ?thesis by blast
 next
-  case PInf
+  case top
   show ?thesis
-  proof(cases "\<exists>f. flow \<Delta> f \<and> value_flow \<Delta> f = \<infinity>")
+  proof(cases "\<exists>f. flow \<Delta> f \<and> value_flow \<Delta> f = \<top>")
     case True
-    with PInf show ?thesis by auto
+    with top show ?thesis by auto
   next
     case False
-    hence real: "\<forall>f. \<alpha> = \<infinity> \<longrightarrow> flow \<Delta> f \<longrightarrow> value_flow \<Delta> f < \<alpha>" using PInf by auto
+    hence real: "\<forall>f. \<alpha> = \<top> \<longrightarrow> flow \<Delta> f \<longrightarrow> value_flow \<Delta> f < \<alpha>" using top by (auto simp: less_top)
     { fix i
-      have "(0 :: ereal) \<le> 2 * 2 ^ i" "2 * 2 ^ i < \<alpha>" using PInf by simp_all
+      have "2 * 2 ^ i < \<alpha>" using top by (simp_all add: ennreal_mult_less_top power_less_top_ennreal)
       from flow_by_value[OF this real] have "\<exists>f. flow \<Delta> f \<and> value_flow \<Delta> f = 2 * 2 ^ i" by blast }
     then obtain f_i where f_i: "\<And>i. flow \<Delta> (f_i i)"
       and value_i: "\<And>i. value_flow \<Delta> (f_i i) = 2 * 2 ^ i" by metis
@@ -2764,23 +2712,22 @@ next
     proof
       fix e
       have "f e \<le> (\<Sum>\<^sup>+ i. (SUP i. f_i i e) / (2 * 2 ^ i))" unfolding f_def
-        by(rule nn_integral_mono)(auto intro!: ereal_divide_right_mono SUP_upper)
+        by(rule nn_integral_mono)(auto intro!: divide_right_mono_ennreal SUP_upper)
       also have "\<dots> = (SUP i. f_i i e) / 2 * (\<Sum>\<^sup>+ i. 1 / 2 ^ i)"
         apply(subst nn_integral_cmult[symmetric])
-        apply(auto intro!: zero_le_divide_ereal nn_integral_cong intro: SUP_upper2 flowD_nonneg[OF f_i] simp add: one_ereal_def)
-        apply(subst ereal_times_divide_eq[symmetric])
-        apply(simp add: mult.commute divide_ereal_def inverse_eq_divide)
+        apply(auto intro!: nn_integral_cong intro: SUP_upper2
+          simp: divide_ennreal_def ennreal_inverse_mult power_less_top_ennreal mult_ac)
         done
-      also have "(\<Sum>\<^sup>+ i. 1 / 2 ^ i) = (\<Sum>i. ereal ((1 / 2) ^ i))"
-        by(simp add: nn_integral_count_space_nat one_ereal_def power_divide)
-      also have "\<dots> = ereal (\<Sum>i. (1 / 2) ^ i)"
-        by(rule suminf_ereal' complete_algebra_summable_geometric)+ simp
+      also have "(\<Sum>\<^sup>+ i. 1 / 2 ^ i) = (\<Sum>i. ennreal ((1 / 2) ^ i))"
+        by(simp add: nn_integral_count_space_nat power_divide divide_ennreal[symmetric] ennreal_power[symmetric])
+      also have "\<dots> = ennreal (\<Sum>i. (1 / 2) ^ i)"
+        by(intro suminf_ennreal2 complete_algebra_summable_geometric) simp_all
       also have "\<dots> = 2" by(subst suminf_geometric; simp)
       also have "(SUP i. f_i i e) / 2 * 2 = (SUP i. f_i i e)"
-        by(simp add: ereal_times_divide_eq[symmetric])
+        by (simp add: ennreal_divide_times)
       also have "\<dots> \<le> capacity \<Delta> e" by(rule SUP_least)(rule flowD_capacity[OF f_i])
       finally show "f e \<le> capacity \<Delta> e" .
-  
+
       fix x
       assume x: "x \<noteq> source \<Delta>" "x \<noteq> sink \<Delta>"
       have "d_OUT f x = (\<Sum>\<^sup>+ i\<in>UNIV. \<Sum>\<^sup>+ y. f_i i (x, y) / (2 * 2 ^ i))"
@@ -2796,16 +2743,17 @@ next
         by(subst nn_integral_snd_count_space[where f="case_prod _", simplified])
           (simp add: nn_integral_fst_count_space[where f="case_prod _", simplified])
       finally show "KIR f x" .
-    qed(simp add: f_def nn_integral_nonneg)
+    qed
     moreover {
       have "value_flow \<Delta> f = (\<Sum>\<^sup>+ i. value_flow \<Delta> (f_i i) / (2 * 2 ^ i))"
         unfolding d_OUT_def f_def
         by(subst nn_integral_snd_count_space[where f="case_prod _", simplified])
           (simp add: nn_integral_fst_count_space[where f="case_prod _", simplified] nn_integral_divide[symmetric])
-      also have "\<dots> = \<infinity>" by(simp add: value_i)
-      finally have "value_flow \<Delta> f = \<infinity>" .
+      also have "\<dots> = \<top>"
+        by(simp add: value_i ennreal_mult_less_top power_less_top_ennreal)
+      finally have "value_flow \<Delta> f = \<top>" .
     }
-    ultimately show ?thesis using PInf by auto
+    ultimately show ?thesis using top by auto
   qed
 qed
 
@@ -2818,25 +2766,24 @@ end
 section \<open>Webs and currents\<close>
 
 record 'v web = "'v graph" +
-  weight :: "'v \<Rightarrow> ereal"
+  weight :: "'v \<Rightarrow> ennreal"
   A :: "'v set"
   B :: "'v set"
 
 lemma vertex_weight_update [simp]: "vertex (weight_update f \<Gamma>) = vertex \<Gamma>"
 by(simp add: vertex_def fun_eq_iff)
 
-type_synonym 'v current = "'v edge \<Rightarrow> ereal"
+type_synonym 'v current = "'v edge \<Rightarrow> ennreal"
 
 inductive current :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> bool"
   for \<Gamma> f
 where
-  current: 
+  current:
   "\<lbrakk> \<And>x. d_OUT f x \<le> weight \<Gamma> x;
      \<And>x. d_IN f x \<le> weight \<Gamma> x;
      \<And>x. x \<notin> A \<Gamma> \<Longrightarrow> d_OUT f x \<le> d_IN f x;
      \<And>a. a \<in> A \<Gamma> \<Longrightarrow> d_IN f a = 0;
      \<And>b. b \<in> B \<Gamma> \<Longrightarrow> d_OUT f b = 0;
-     \<And>e. 0 \<le> f e;
      \<And>e. e \<notin> \<^bold>E\<^bsub>\<Gamma>\<^esub> \<Longrightarrow> f e = 0 \<rbrakk>
   \<Longrightarrow> current \<Gamma> f"
 
@@ -2855,9 +2802,6 @@ by(simp add: current.simps)
 lemma currentD_OUT: "\<lbrakk> current \<Gamma> f; b \<in> B \<Gamma> \<rbrakk> \<Longrightarrow> d_OUT f b = 0"
 by(simp add: current.simps)
 
-lemma currentD_nonneg: "current \<Gamma> f \<Longrightarrow> 0 \<le> f e"
-by(blast elim: current.cases)
-
 lemma currentD_outside: "\<lbrakk> current \<Gamma> f; \<not> edge \<Gamma> x y \<rbrakk> \<Longrightarrow> f (x, y) = 0"
 by(blast elim: current.cases)
 
@@ -2867,12 +2811,12 @@ by(blast elim: current.cases)
 lemma currentD_OUT_eq_0:
   assumes "current \<Gamma> f"
   shows "d_OUT f x = 0 \<longleftrightarrow> (\<forall>y. f (x, y) = 0)"
-by(simp add: d_OUT_def nn_integral_0_iff currentD_nonneg[OF assms] emeasure_count_space_eq_0)
+by(simp add: d_OUT_def nn_integral_0_iff emeasure_count_space_eq_0)
 
 lemma currentD_IN_eq_0:
   assumes "current \<Gamma> f"
   shows "d_IN f x = 0 \<longleftrightarrow> (\<forall>y. f (y, x) = 0)"
-by(simp add: d_IN_def nn_integral_0_iff currentD_nonneg[OF assms] emeasure_count_space_eq_0)
+by(simp add: d_IN_def nn_integral_0_iff emeasure_count_space_eq_0)
 
 lemma current_support_flow:
   fixes \<Gamma> (structure)
@@ -2881,29 +2825,22 @@ lemma current_support_flow:
 using currentD_outside[OF assms] by(auto simp add: support_flow.simps intro: ccontr)
 
 lemma currentD_outside_IN: "\<lbrakk> current \<Gamma> f; x \<notin> \<^bold>V\<^bsub>\<Gamma>\<^esub> \<rbrakk> \<Longrightarrow> d_IN f x = 0"
-by(auto simp add: d_IN_def vertex_def nn_integral_0_iff currentD_nonneg AE_count_space emeasure_count_space_eq_0 dest: currentD_outside)
+by(auto simp add: d_IN_def vertex_def nn_integral_0_iff  AE_count_space emeasure_count_space_eq_0 dest: currentD_outside)
 
 lemma currentD_outside_OUT: "\<lbrakk> current \<Gamma> f; x \<notin> \<^bold>V\<^bsub>\<Gamma>\<^esub> \<rbrakk> \<Longrightarrow> d_OUT f x = 0"
-by(auto simp add: d_OUT_def vertex_def nn_integral_0_iff currentD_nonneg AE_count_space emeasure_count_space_eq_0 dest: currentD_outside)
-
-lemma weight_nonneg: "current \<Gamma> f \<Longrightarrow> 0 \<le> weight \<Gamma> x"
-by(drule currentD_weight_OUT)(rule order_trans[OF d_OUT_nonneg])
+by(auto simp add: d_OUT_def vertex_def nn_integral_0_iff  AE_count_space emeasure_count_space_eq_0 dest: currentD_outside)
 
 lemma currentD_weight_in: "current \<Gamma> h \<Longrightarrow> h (x, y) \<le> weight \<Gamma> y"
-using _ currentD_weight_IN unfolding d_IN_def by(rule order_trans[OF nn_integral_ge_point]) simp_all
+  by (metis order_trans d_IN_ge_point currentD_weight_IN)
 
 lemma currentD_weight_out: "current \<Gamma> h \<Longrightarrow> h (x, y) \<le> weight \<Gamma> x"
-using _ currentD_weight_OUT unfolding d_OUT_def by(rule order_trans[OF nn_integral_ge_point]) simp_all
-
-lemma weight_le_0_iff: "current \<Gamma> f \<Longrightarrow> weight \<Gamma> x \<le> 0 \<longleftrightarrow> weight \<Gamma> x = 0"
-by(drule weight_nonneg[of _ _ x]) simp
+  by (metis order_trans d_OUT_ge_point currentD_weight_OUT)
 
 lemma current_leI:
   fixes \<Gamma> (structure)
   assumes f: "current \<Gamma> f"
   and le: "\<And>e. g e \<le> f e"
   and OUT_IN: "\<And>x. x \<notin> A \<Gamma> \<Longrightarrow> d_OUT g x \<le> d_IN g x"
-  and nonneg: "\<And>e. 0 \<le> g e"
   shows "current \<Gamma> g"
 proof
   show "d_OUT g x \<le> weight \<Gamma> x" for x
@@ -2911,12 +2848,12 @@ proof
   show "d_IN g x \<le> weight \<Gamma> x" for x
     using d_IN_mono[of g x f, OF le] currentD_weight_IN[OF f] by(rule order_trans)
   show "d_IN g a = 0" if "a \<in> A \<Gamma>" for a
-    using d_IN_mono[of g a f, OF le] d_IN_nonneg[of g a] currentD_IN[OF f that] by auto
+    using d_IN_mono[of g a f, OF le] currentD_IN[OF f that] by auto
   show "d_OUT g b = 0" if "b \<in> B \<Gamma>" for b
-    using d_OUT_mono[of g b f, OF le] d_OUT_nonneg[of g b] currentD_OUT[OF f that] by auto
-  show "g e = 0" if "e \<notin> \<^bold>E" for e 
-    using nonneg[of e] currentD_outside'[OF f that] le[of e] by simp
-qed(blast intro: nonneg OUT_IN)+
+    using d_OUT_mono[of g b f, OF le] currentD_OUT[OF f that] by auto
+  show "g e = 0" if "e \<notin> \<^bold>E" for e
+    using currentD_outside'[OF f that] le[of e] by simp
+qed(blast intro: OUT_IN)+
 
 lemma current_weight_mono:
   "\<lbrakk> current \<Gamma> f; edge \<Gamma> = edge \<Gamma>'; A \<Gamma> = A \<Gamma>'; B \<Gamma> = B \<Gamma>'; \<And>x. weight \<Gamma> x \<le> weight \<Gamma>' x \<rbrakk>
@@ -2929,7 +2866,7 @@ where "zero_current \<equiv> \<lambda>_. 0"
 lemma SINK_0 [simp]: "SINK zero_current = UNIV"
 by(auto simp add: SINK.simps)
 
-lemma current_0 [simp]: "current \<Gamma> zero_current \<longleftrightarrow> (\<forall>x. 0 \<le> weight \<Gamma> x)"
+lemma current_0 [simp]: "current \<Gamma> zero_current"
 by(auto simp add: current.simps)
 
 inductive web_flow :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> bool"
@@ -2976,13 +2913,13 @@ qed
 lemma SAT_Sup_upper: "f \<in> Y \<Longrightarrow> SAT \<Gamma> f \<subseteq> SAT \<Gamma> (Sup Y)"
 by(rule SAT_mono)(rule Sup_upper[THEN le_funD])
 
-lemma currentD_SAT: 
+lemma currentD_SAT:
   assumes "current \<Gamma> f"
   shows "x \<in> SAT \<Gamma> f \<longleftrightarrow> x \<in> A \<Gamma> \<or> d_IN f x = weight \<Gamma> x"
 using currentD_weight_IN[OF assms, of x] by(auto simp add: SAT.simps)
 
 abbreviation terminal :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> 'v set" ("TER\<index>")
-where "terminal \<Gamma> f \<equiv> SAT \<Gamma> f \<inter> SINK f" 
+where "terminal \<Gamma> f \<equiv> SAT \<Gamma> f \<inter> SINK f"
 
 subsection \<open>Separation\<close>
 
@@ -3060,7 +2997,7 @@ proof
   fix x y p
   assume x: "x \<in> A" and y: "y \<in> B" and p: "path G x p y"
   from separatingD[OF assms p x y] have "\<exists>z \<in> set (x # p). z \<in> S" by auto
-  from split_list_last_prop[OF this] obtain ys z zs where decomp: "x # p = ys @ z # zs" 
+  from split_list_last_prop[OF this] obtain ys z zs where decomp: "x # p = ys @ z # zs"
     and z: "z \<in> S" and last: "\<And>z. z \<in> set zs \<Longrightarrow> z \<notin> S" by auto
   from decomp consider (empty) "ys = []" "x = z" "p = zs"
     | (Cons) ys' where "ys = x # ys'" "p = ys' @ z # zs"
@@ -3112,7 +3049,7 @@ lemma roofedD: "\<And>B. \<lbrakk> x \<in> roofed_gen G B S; path G x p y; y \<i
 unfolding roofed_def by blast
 
 lemma separating_RF_A:
-  fixes A B 
+  fixes A B
   assumes "separating_gen G A B X"
   shows "A \<subseteq> roofed_gen G B X"
 by(rule subsetI roofedI)+(erule separatingD[OF assms])
@@ -3150,7 +3087,7 @@ proof(rule equalityI)
   show "?rhs \<subseteq> ?lhs" by(rule roofed_mono)(blast intro: roofed_greaterI)
   show "?lhs \<subseteq> ?rhs" by(rule roofed_mono')(blast intro: in_roofed_mono)
 qed
-  
+
 lemma RF_essential: fixes \<Gamma> (structure) shows "RF (\<E> S) = RF S"
 proof(intro set_eqI iffI)
   fix x
@@ -3184,12 +3121,12 @@ lemma essentialE_RF:
   assumes "essential \<Gamma> B S x"
   obtains p y where "path \<Gamma> x p y" "y \<in> B" "distinct (x # p)" "\<And>z. z \<in> set p \<Longrightarrow> z \<notin> roofed_gen \<Gamma> B S"
 proof -
-  from assms obtain p y where p: "path \<Gamma> x p y" and y: "y \<in> B" 
+  from assms obtain p y where p: "path \<Gamma> x p y" and y: "y \<in> B"
     and bypass: "\<And>z. \<lbrakk> x \<noteq> y; z \<in> set p \<rbrakk> \<Longrightarrow> z = x \<or> z \<notin> S" by(rule essentialE) blast
   from p obtain p' where p': "path \<Gamma> x p' y" and distinct: "distinct (x # p')"
     and subset: "set p' \<subseteq> set p" by(rule rtrancl_path_distinct)
   { fix z
-    assume z: "z \<in> set p'" 
+    assume z: "z \<in> set p'"
     hence "y \<in> set p'" using rtrancl_path_last[OF p', symmetric] p'
       by(auto elim: rtrancl_path.cases intro: last_in_set)
     with distinct z subset have neq: "x \<noteq> y" and "z \<in> set p" by(auto)
@@ -3213,7 +3150,7 @@ lemma \<E>_E_RF:
 using assms by(auto elim: essentialE_RF)
 
 lemma in_roofed_essentialD:
-  fixes \<Gamma> (structure) 
+  fixes \<Gamma> (structure)
   assumes RF: "x \<in> RF S"
   and ess: "essential \<Gamma> (B \<Gamma>) S x"
   shows "x \<in> S"
@@ -3248,7 +3185,7 @@ lemma roofed_circI: fixes \<Gamma> (structure) shows
   "\<lbrakk> x \<in> RF T; x \<in> T \<Longrightarrow> \<not> essential \<Gamma> (B \<Gamma>) T x \<rbrakk> \<Longrightarrow> x \<in> RF\<^sup>\<circ> T"
 by(simp add: roofed_circ_def)
 
-lemma roofed_circE: 
+lemma roofed_circE:
   fixes \<Gamma> (structure)
   assumes "x \<in> RF\<^sup>\<circ> T"
   obtains "x \<in> RF T" "\<not> essential \<Gamma> (B \<Gamma>) T x"
@@ -3260,7 +3197,7 @@ by(auto intro: essential_mono)
 lemma roofed_circ_essential: fixes \<Gamma> (structure) shows "RF\<^sup>\<circ> (\<E> S) = RF\<^sup>\<circ> S"
 unfolding roofed_circ_def RF_essential \<E>_\<E> ..
 
-lemma essential_RF: fixes B 
+lemma essential_RF: fixes B
   shows "essential G B (roofed_gen G B S) = essential G B S"  (is "essential _ _ ?RF = _")
 proof(intro ext iffI)
   show "essential G B S x" if "essential G B ?RF x" for x using that
@@ -3333,7 +3270,7 @@ proof -
     by(clarsimp simp add: roofed_def)
   have "f (y, x) = 0" for y
   proof(cases "edge \<Gamma> y x")
-    case edge: True 
+    case edge: True
     have "d_OUT f y = 0"
     proof(cases "y \<in> TER f")
       case False
@@ -3341,10 +3278,10 @@ proof -
         by(auto simp add: roofed_def intro: rtrancl_path.step intro!: exI rev_bexI)
       thus "d_OUT f y = 0" by(rule waveD_OUT[OF w])
     qed(auto simp add: SINK.simps)
-    moreover have "f (y, x) \<le> d_OUT f y" unfolding d_OUT_def by(rule nn_integral_ge_point) simp
-    ultimately show ?thesis using currentD_nonneg[OF f, of "(y, x)"] by simp
+    moreover have "f (y, x) \<le> d_OUT f y" by (rule d_OUT_ge_point)
+    ultimately show ?thesis by simp
   qed(simp add: currentD_outside[OF f])
-  then show "d_IN f x = 0" unfolding d_IN_def using currentD_nonneg[OF f]
+  then show "d_IN f x = 0" unfolding d_IN_def
     by(simp add: nn_integral_0_iff emeasure_count_space_eq_0)
 qed
 
@@ -3387,9 +3324,6 @@ next
   also have "\<dots> = 0" using Y by simp
   finally show ?case .
 next
-  show "0 \<le> Sup Y e" for e
-    using Y currentD_nonneg[OF current, of _ e] by(fastforce intro: SUP_upper2)
-next
   fix e
   assume "e \<notin> \<^bold>E"
   from currentD_outside'[OF current this] have "f e = 0" if "f \<in> Y" for f using that by simp
@@ -3408,7 +3342,7 @@ proof
   { fix x y p
     assume p: "path \<Gamma> x p y" and y: "y \<in> B \<Gamma>"
     def P \<equiv> "{x} \<union> set p"
-  
+
     let ?f = "\<lambda>f. SINK f \<inter> P"
     have "Complete_Partial_Order.chain op \<supseteq> (?f ` Y)" using chain
       by(rule chain_imageI)(auto dest: SINK_mono')
@@ -3416,7 +3350,7 @@ proof
     hence "finite (?f ` Y)" by(rule finite_subset)(simp add: P_def)
     ultimately have "(\<Inter>(?f ` Y)) \<in> ?f ` Y"
       by(rule ccpo.in_chain_finite[OF complete_lattice_ccpo_dual])(simp add: Y)
-    then obtain f where f: "f \<in> Y" and eq: "\<Inter>(?f ` Y) = ?f f" by clarify 
+    then obtain f where f: "f \<in> Y" and eq: "\<Inter>(?f ` Y) = ?f f" by clarify
     hence *: "(\<Inter>f\<in>Y. SINK f) \<inter> P = SINK f \<inter> P" by(clarsimp simp add: prod_lub_def Y)+
     { fix g
       assume "g \<in> Y" "f \<le> g"
@@ -3437,7 +3371,7 @@ proof
       by(auto simp add: wave.simps dest: separatingD)
     with subset show " (\<exists>z\<in>set p. z \<in> TER (Sup Y)) \<or> x \<in> TER (Sup Y)" by blast
   qed
-  
+
   fix x
   assume "x \<notin> RF (TER (Sup Y))"
   then obtain p y where y: "y \<in> B \<Gamma>"
@@ -3462,7 +3396,7 @@ proof
       with y p have "x \<notin> RF (TER f)" by(auto simp add: roofed_def)
       with wave[OF f] have "d_OUT f x = 0" by(blast elim: wave.cases)
       moreover have "d_OUT g x \<le> d_OUT f x" using \<open>g \<le> f\<close>[THEN le_funD] by(rule d_OUT_mono)
-      ultimately show ?thesis using d_OUT_nonneg[of g x] by simp
+      ultimately show ?thesis by simp
     qed }
   thus "d_OUT (Sup Y) x = 0" using chain Y by(simp add: d_OUT_Sup)
 qed
@@ -3470,7 +3404,6 @@ qed
 lemma ex_maximal_wave: -- \<open>Corollary 4.4\<close>
   fixes \<Gamma> (structure)
   assumes countable: "countable \<^bold>E"
-  and weight_nonneg [simp]: "\<And>x. 0 \<le> weight \<Gamma> x"
   shows "\<exists>f. current \<Gamma> f \<and> wave \<Gamma> f \<and> (\<forall>w. current \<Gamma> w \<and> wave \<Gamma> w \<and> f \<le> w \<longrightarrow> f = w)"
 proof -
   def Field_r \<equiv> "{f. current \<Gamma> f \<and> wave \<Gamma> f}"
@@ -3484,7 +3417,7 @@ proof -
     fix Y
     assume "Y \<in> Chains r"
     hence Y: "Complete_Partial_Order.chain op \<le> Y"
-      and w: "\<And>f. f \<in> Y \<Longrightarrow> wave \<Gamma> f" 
+      and w: "\<And>f. f \<in> Y \<Longrightarrow> wave \<Gamma> f"
       and f: "\<And>f. f \<in> Y \<Longrightarrow> current \<Gamma> f"
       by(auto simp add: Chains_def r_def chain_def Field_r_def)
     show "\<exists>w \<in> Field r. \<forall>f \<in> Y. (f, w) \<in> r"
@@ -3522,7 +3455,7 @@ proof -
     hence z: "z \<notin> RF (TER g)" by(auto dest: bypass)
     with w have OUT: "d_OUT g z = 0" and IN: "d_IN g z = 0" by(rule waveD_OUT wave_not_RF_IN_zero[OF g])+
     with z have "z \<notin> A \<Gamma>" "weight \<Gamma> z > 0" by(auto intro!: roofed_greaterI simp add: SAT.simps SINK.simps)
-    moreover from IN d_IN_mono[of f z g, OF le] d_IN_nonneg[of f z] have "d_IN f z \<le> 0" by(simp)
+    moreover from IN d_IN_mono[of f z g, OF le] have "d_IN f z \<le> 0" by(simp)
     ultimately have "z \<notin> TER f" by(auto simp add: SAT.simps)
     then show "z = x \<or> z \<notin> TER f" by simp
   qed
@@ -3541,7 +3474,7 @@ proof
     assume x: "x \<in> \<E> (TER g)"
     hence "x \<in> TER f" using subset by blast
     moreover have "essential \<Gamma> (B \<Gamma>) (TER f) x" using g w le x by(rule essential_leI)
-    ultimately show "x \<in> \<E> (TER f)" by simp 
+    ultimately show "x \<in> \<E> (TER f)" by simp
   qed
 
   show "\<dots> \<subseteq> \<E> (TER g)"
@@ -3554,7 +3487,7 @@ proof
       assume x: "x \<notin> RF (TER g)"
       with w have OUT: "d_OUT g x = 0" and IN: "d_IN g x = 0" by(rule waveD_OUT wave_not_RF_IN_zero[OF g])+
       with x have "x \<notin> A \<Gamma>" "weight \<Gamma> x > 0" by(auto intro!: roofed_greaterI simp add: SAT.simps SINK.simps)
-      moreover from IN d_IN_mono[of f x g, OF le] have "d_IN f x \<le> 0" by(simp) 
+      moreover from IN d_IN_mono[of f x g, OF le] have "d_IN f x \<le> 0" by(simp)
       ultimately show "x \<notin> TER f" by(auto simp add: SAT.simps)
     qed
     moreover have "x \<notin> RF\<^sup>\<circ> (TER g)"
@@ -3573,23 +3506,23 @@ qed
 
 subsection \<open>Hindrances and looseness\<close>
 
-inductive hindrance_by :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> ereal \<Rightarrow> bool"
+inductive hindrance_by :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> ennreal \<Rightarrow> bool"
   for \<Gamma> (structure) and f and \<epsilon>
-where 
-  hindrance_by: 
-  "\<lbrakk> a \<in> A \<Gamma>; a \<notin> \<E> (TER f); d_OUT f a < weight \<Gamma> a; \<epsilon> < weight \<Gamma> a - d_OUT f a; 0 \<le> \<epsilon> \<rbrakk> \<Longrightarrow> hindrance_by \<Gamma> f \<epsilon>"
+where
+  hindrance_by:
+  "\<lbrakk> a \<in> A \<Gamma>; a \<notin> \<E> (TER f); d_OUT f a < weight \<Gamma> a; \<epsilon> < weight \<Gamma> a - d_OUT f a \<rbrakk> \<Longrightarrow> hindrance_by \<Gamma> f \<epsilon>"
 
 inductive hindrance :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> bool"
   for \<Gamma> (structure) and f
-where 
-  hindrance: 
+where
+  hindrance:
   "\<lbrakk> a \<in> A \<Gamma>; a \<notin> \<E> (TER f); d_OUT f a < weight \<Gamma> a \<rbrakk> \<Longrightarrow> hindrance \<Gamma> f"
 
 inductive hindered :: "('v, 'more) web_scheme \<Rightarrow> bool"
   for \<Gamma> (structure)
 where hindered: "\<lbrakk> hindrance \<Gamma> f; current \<Gamma> f; wave \<Gamma> f \<rbrakk> \<Longrightarrow> hindered \<Gamma>"
 
-inductive hindered_by :: "('v, 'more) web_scheme \<Rightarrow> ereal \<Rightarrow> bool"
+inductive hindered_by :: "('v, 'more) web_scheme \<Rightarrow> ennreal \<Rightarrow> bool"
   for \<Gamma> (structure) and \<epsilon>
 where hindered_by: "\<lbrakk> hindrance_by \<Gamma> f \<epsilon>; current \<Gamma> f; wave \<Gamma> f \<rbrakk> \<Longrightarrow> hindered_by \<Gamma> \<epsilon>"
 
@@ -3599,12 +3532,12 @@ lemma hindrance_into_hindrance_by:
 using assms
 proof cases
   case (hindrance a)
-  let ?\<epsilon> = "if weight \<Gamma> a = \<infinity> then 1 else (weight \<Gamma> a - d_OUT f a) / 2"
-  from \<open>d_OUT f a < weight \<Gamma> a\<close> have "weight \<Gamma> a - d_OUT f a > 0" "weight \<Gamma> a \<noteq> \<infinity> \<Longrightarrow> weight \<Gamma> a - d_OUT f a < \<infinity>" 
-    by(simp_all add: ereal_diff_gr0 ereal_minus_eq_PInfty_iff)
-  from ereal_mult_strict_left_mono[of 1 2, OF _ this]
+  let ?\<epsilon> = "if weight \<Gamma> a = \<top> then 1 else (weight \<Gamma> a - d_OUT f a) / 2"
+  from \<open>d_OUT f a < weight \<Gamma> a\<close> have "weight \<Gamma> a - d_OUT f a > 0" "weight \<Gamma> a \<noteq> \<top> \<Longrightarrow> weight \<Gamma> a - d_OUT f a < \<top>"
+    by(simp_all add: diff_gr0_ennreal less_top diff_less_top_ennreal)
+  from ennreal_mult_strict_left_mono[of 1 2, OF _ this]
   have "0 < ?\<epsilon>" and "?\<epsilon> < weight \<Gamma> a - d_OUT f a" using \<open>d_OUT f a < weight \<Gamma> a\<close>
-    by(simp_all add: ereal_divide_less_iff ereal_less_divide_iff ereal_diff_gr0)
+    by(auto intro!: diff_gr0_ennreal simp: ennreal_zero_less_divide divide_less_ennreal)
   with hindrance show ?thesis by(auto intro!: hindrance_by.intros)
 qed
 
@@ -3648,7 +3581,7 @@ using looseD_hindrance[OF assms]
 by simp
 
 context
-  fixes \<Gamma> \<Gamma>' :: "('v, 'more) web_scheme" 
+  fixes \<Gamma> \<Gamma>' :: "('v, 'more) web_scheme"
   assumes [simp]: "edge \<Gamma> = edge \<Gamma>'" "A \<Gamma> = A \<Gamma>'" "B \<Gamma> = B \<Gamma>'"
   and weight_eq: "\<And>x. x \<notin> A \<Gamma>' \<Longrightarrow> weight \<Gamma> x = weight \<Gamma>' x"
   and weight_le: "\<And>a. a \<in> A \<Gamma>' \<Longrightarrow> weight \<Gamma> a \<ge> weight \<Gamma>' a"
@@ -3673,7 +3606,7 @@ lemma wave_eq_web: -- \<open>Observation 4.6\<close>
 by(simp add: wave.simps separating_eq TER_eq roofed_eq)
 
 lemma current_mono_web: "current \<Gamma>' f \<Longrightarrow> current \<Gamma> f"
-apply(rule current, simp_all add: currentD_OUT_IN currentD_IN currentD_OUT currentD_nonneg currentD_outside')
+apply(rule current, simp_all add: currentD_OUT_IN currentD_IN currentD_OUT  currentD_outside')
 subgoal for x by(cases "x \<in> A \<Gamma>'")(auto dest!: weight_eq weight_le dest: currentD_weight_OUT intro: order_trans)
 subgoal for x by(cases "x \<in> A \<Gamma>'")(auto dest!: weight_eq weight_le dest: currentD_weight_IN intro: order_trans)
 done
@@ -3704,9 +3637,9 @@ text \<open>
   @{text "A"}-vertices in the set must saturate the vertex; @{term "S \<subseteq> SAT \<Gamma> f"} is not enough.
 
   With the original definition of orthogonal current, the reduction from networks to webs fails because
-  the induced flow need not saturate edges going out of the source. Consider the network with three 
-  nodes @{text s}, @{text x}, and @{text t} and edges @{text "(s, x)"} and @{text "(x, t)"} with 
-  capacity @{text 1}. Then, the corresponding web has the vertices @{text "(s, x)"} and 
+  the induced flow need not saturate edges going out of the source. Consider the network with three
+  nodes @{text s}, @{text x}, and @{text t} and edges @{text "(s, x)"} and @{text "(x, t)"} with
+  capacity @{text 1}. Then, the corresponding web has the vertices @{text "(s, x)"} and
   @{text "(x, t)"} and one edge from @{text "(s, x)"} to @{text "(x, t)"}. Clearly, the zero current
   @{term [source] zero_current} is a web-flow and @{text "TER zero_current = {(s, x)}"}, which is essential.
   Moreover, @{term [source] zero_current} and @{text "{(s, x)}"} are orthogonal because
@@ -3740,7 +3673,6 @@ by(rule linkage.cases)
 abbreviation linkable :: "('v, 'more) web_scheme \<Rightarrow> bool"
 where "linkable \<Gamma> \<equiv> \<exists>f. web_flow \<Gamma> f \<and> linkage \<Gamma> f"
 
-
 subsection \<open>Trimming\<close>
 
 context
@@ -3751,7 +3683,7 @@ begin
 inductive trimming :: "'v current \<Rightarrow> bool"
   for g
 where
-  trimming: 
+  trimming:
   -- \<open>omits the condition that @{term f} is a wave\<close>
   "\<lbrakk> current \<Gamma> g; wave \<Gamma> g; g \<le> f; \<And>x. \<lbrakk> x \<in> RF\<^sup>\<circ> (TER f); x \<notin> A \<Gamma> \<rbrakk> \<Longrightarrow> KIR g x; \<E> (TER g) - A \<Gamma> = \<E> (TER f) - A \<Gamma> \<rbrakk>
   \<Longrightarrow> trimming g"
@@ -3768,7 +3700,7 @@ lemma ex_trimming: -- \<open>Lemma 4.8\<close>
   assumes f: "current \<Gamma> f"
   and w: "wave \<Gamma> f"
   and countable: "countable \<^bold>E"
-  and weight_finite: "\<And>x. weight \<Gamma> x \<noteq> \<infinity>"
+  and weight_finite: "\<And>x. weight \<Gamma> x \<noteq> \<top>"
   shows "\<exists>g. trimming g"
 proof -
   def F \<equiv> "{g. current \<Gamma> g \<and> wave \<Gamma> g \<and> g \<le> f \<and> \<E> (TER g) = \<E> (TER f)}"
@@ -3776,26 +3708,26 @@ proof -
   have in_F [simp]: "g \<in> F \<longleftrightarrow> current \<Gamma> g \<and> wave \<Gamma> g \<and> (\<forall>e. g e \<le> f e) \<and> \<E> (TER g) = \<E> (TER f)" for g
     by(simp add: F_def le_fun_def)
 
-  have f_finite [simp]: "f e \<noteq> \<infinity>" for e
+  have f_finite [simp]: "f e \<noteq> \<top>" for e
   proof(cases e)
     case (Pair x y)
-    have "f (x, y) \<le> d_IN f y" unfolding d_IN_def by(rule nn_integral_ge_point) simp
+    have "f (x, y) \<le> d_IN f y" by (rule d_IN_ge_point)
     also have "\<dots> \<le> weight \<Gamma> y" by(rule currentD_weight_IN[OF f])
-    also have "\<dots> < \<infinity>" by(simp add: weight_finite)
+    also have "\<dots> < \<top>" by(simp add: weight_finite less_top[symmetric])
     finally show ?thesis using Pair by simp
   qed
 
   have chainD: "Inf M \<in> F" if M: "M \<in> Chains leq" and nempty: "M \<noteq> {}" for M
   proof -
     from nempty obtain g0 where g0: "g0 \<in> M" by auto
-    have g0_le_f: "g0 e \<le> f e" and g: "current \<Gamma> g0" and w0: "wave \<Gamma> g0" for e 
+    have g0_le_f: "g0 e \<le> f e" and g: "current \<Gamma> g0" and w0: "wave \<Gamma> g0" for e
       using Chains_FieldD[OF M g0] by(cases e, auto simp add: leq_def)
 
-    have finite_OUT: "d_OUT f x \<noteq> \<infinity>" for x using weight_finite[of x]
-      by(rule neq_PInf_trans)(rule currentD_weight_OUT[OF f])
-    have finite_IN: "d_IN f x \<noteq> \<infinity>" for x using weight_finite[of x]
-      by(rule neq_PInf_trans)(rule currentD_weight_IN[OF f])
-   
+    have finite_OUT: "d_OUT f x \<noteq> \<top>" for x using weight_finite[of x]
+      by(rule neq_top_trans)(rule currentD_weight_OUT[OF f])
+    have finite_IN: "d_IN f x \<noteq> \<top>" for x using weight_finite[of x]
+      by(rule neq_top_trans)(rule currentD_weight_IN[OF f])
+
     from M have "M \<in> Chains {(g, g'). g' \<le> g}"
       by(rule mono_Chains[THEN subsetD, rotated])(auto simp add: leq_def in_restrict_rel_iff)
     then have chain: "Complete_Partial_Order.chain op \<ge> M" by(rule Chains_into_chain)
@@ -3804,17 +3736,16 @@ proof -
     have countable': "countable (support_flow f)"
       using current_support_flow[OF f] by(rule countable_subset)(rule countable)
 
-    have OUT_M: "d_OUT (Inf M) x = (INF g:M. d_OUT g x)" for x using chain' nempty countable' _ _ finite_OUT
-      by(rule d_OUT_Inf)(auto dest!: Chains_FieldD[OF M] currentD_nonneg simp add: leq_def)
-    have IN_M: "d_IN (Inf M) x = (INF g:M. d_IN g x)" for x using chain' nempty countable' _ _ finite_IN
-      by(rule d_IN_Inf)(auto dest!: Chains_FieldD[OF M] currentD_nonneg simp add: leq_def)
-        
+    have OUT_M: "d_OUT (Inf M) x = (INF g:M. d_OUT g x)" for x using chain' nempty countable' _ finite_OUT
+      by(rule d_OUT_Inf)(auto dest!: Chains_FieldD[OF M]  simp add: leq_def)
+    have IN_M: "d_IN (Inf M) x = (INF g:M. d_IN g x)" for x using chain' nempty countable' _ finite_IN
+      by(rule d_IN_Inf)(auto dest!: Chains_FieldD[OF M]  simp add: leq_def)
+
     have c: "current \<Gamma> (Inf M)" using g
     proof(rule current_leI)
       show "(Inf M) e \<le> g0 e" for e using g0 by(auto intro: INF_lower)
       show "d_OUT (\<Sqinter>M) x \<le> d_IN (\<Sqinter>M) x" if "x \<notin> A \<Gamma>" for x
         by(auto 4 4 simp add: IN_M OUT_M leq_def intro!: INF_mono dest: Chains_FieldD[OF M] intro: currentD_OUT_IN[OF _ that])
-      show "0 \<le> (Inf M) e" for e by(auto intro!: INF_greatest dest!: Chains_FieldD[OF M] intro: currentD_nonneg simp add: leq_def)
     qed
 
     have INF_le_f: "Inf M e \<le> f e" for e using g0 by(auto intro!: INF_lower2 g0_le_f)
@@ -3822,7 +3753,7 @@ proof -
     proof(rule essential_eq_leI; intro subsetI)
       fix x
       assume x: "x \<in> \<E> (TER f)"
-      hence "x \<in> SINK (Inf M)" using d_OUT_mono[of "Inf M" x f, OF INF_le_f] d_OUT_nonneg[of "Inf M" x]
+      hence "x \<in> SINK (Inf M)" using d_OUT_mono[of "Inf M" x f, OF INF_le_f]
         by(auto simp add: SINK.simps)
       moreover from x have "x \<in> SAT \<Gamma> g" if "g \<in> M" for g using Chains_FieldD[OF M that] by(auto simp add: leq_def)
       hence "x \<in> SAT \<Gamma> (Inf M)" by(auto simp add: SAT.simps IN_M intro!: INF_greatest)
@@ -3839,13 +3770,13 @@ proof -
       hence "x \<notin> RF (\<E> (TER (Inf M)))" unfolding RF_essential .
       hence "x \<notin> RF (TER f)" unfolding eq RF_essential .
       hence "d_OUT f x = 0" by(rule waveD_OUT[OF w])
-      with d_OUT_mono[of _ x f, OF INF_le_f] d_OUT_nonneg[of "Inf M" x]
-      show "d_OUT (Inf M) x = 0" by (metis antisym)
+      with d_OUT_mono[of _ x f, OF INF_le_f]
+      show "d_OUT (Inf M) x = 0" by (metis le_zero_eq)
     qed
     from c w' INF_le_f eq show ?thesis by simp
   qed
 
-  def trim1 \<equiv> 
+  def trim1 \<equiv>
    "\<lambda>g. if trimming g then g
         else let z = SOME z. z \<in> RF\<^sup>\<circ> (TER g) \<and> z \<notin> A \<Gamma> \<and> \<not> KIR g z;
             factor = d_OUT g z / d_IN g z
@@ -3873,26 +3804,27 @@ proof -
       using False by(auto simp add: trim1_def z_def Let_def)
 
     from currentD_OUT_IN[OF g A] neq have less: "d_OUT g z < d_IN g z" by auto
-    hence "?factor \<le> 1" (is "?factor \<le> _") using d_OUT_nonneg[of g z]
-      by(cases "d_OUT g z" "d_IN g z" rule: ereal2_cases) simp_all
+    hence "?factor \<le> 1" (is "?factor \<le> _")
+      by (auto intro!: divide_le_posI_ennreal simp: zero_less_iff_neq_zero)
     hence le': "?factor * g (y, x) \<le> 1 * g (y, x)" for y x
-      by(rule ereal_mult_right_mono)(simp add: currentD_nonneg[OF g])
+      by(rule mult_right_mono) simp
     hence le: "trim1 g e \<le> g e" for e by(cases e)simp
     moreover {
       have c: "current \<Gamma> (trim1 g)" using g le
       proof(rule current_leI)
-        show nonneg: "0 \<le> trim1 g e" for e
-          using currentD_nonneg[OF g, of e] d_OUT_nonneg[of g z] d_IN_nonneg[of g z] by(cases e) simp
-
         fix x
         assume x: "x \<notin> A \<Gamma>"
         have "d_OUT (trim1 g) x \<le> d_OUT g x" unfolding d_OUT_def using le' by(auto intro: nn_integral_mono)
         also have "\<dots> \<le> d_IN (trim1 g) x"
         proof(cases "x = z")
           case True
-          have "d_OUT g x = d_IN (trim1 g) x" unfolding d_IN_def 
-            using True d_IN_nonneg[of g x] d_OUT_nonneg[of g x] currentD_weight_IN[OF g, of x] currentD_OUT_IN[OF g x]
-            by(auto simp add: nn_integral_divide nn_integral_cmult d_IN_def[symmetric] ereal_times_divide_eq[symmetric] weight_finite)
+          have "d_OUT g x = d_IN (trim1 g) x" unfolding d_IN_def
+            using True currentD_weight_IN[OF g, of x] currentD_OUT_IN[OF g x]
+            apply (cases "d_IN g x = 0")
+            apply(auto simp add: nn_integral_divide nn_integral_cmult d_IN_def[symmetric] ennreal_divide_times)
+            apply (subst ennreal_divide_self)
+            apply (auto simp: less_top[symmetric] top_unique weight_finite)
+            done
           thus ?thesis by simp
         next
           case False
@@ -3907,7 +3839,7 @@ proof -
       proof(rule essential_eq_leI; intro subsetI)
         fix x
         assume x: "x \<in> \<E> (TER g)"
-        hence "x \<in> SINK (trim1 g)" using d_OUT_mono[of "trim1 g" x g, OF le] d_OUT_nonneg[of "trim1 g" x]
+        hence "x \<in> SINK (trim1 g)" using d_OUT_mono[of "trim1 g" x g, OF le]
           by(auto simp add: SINK.simps)
         moreover from x have "x \<noteq> z" using RF by(auto simp add: roofed_circ_def)
         hence "d_IN (trim1 g) x = d_IN g x" unfolding d_IN_def by simp
@@ -3918,14 +3850,14 @@ proof -
       proof
         have "separating \<Gamma> (\<E> (TER f))" by(rule separating_essential)(rule waveD_separating[OF w])
         then show "separating \<Gamma> (TER (trim1 g))" unfolding eq[symmetric] by(rule separating_weakening) auto
-  
+
         fix x
         assume "x \<notin> RF (TER (trim1 g))"
         hence "x \<notin> RF (\<E> (TER (trim1 g)))" unfolding RF_essential .
         hence "x \<notin> RF (TER f)" unfolding eq RF_essential .
         hence "d_OUT f x = 0" by(rule waveD_OUT[OF w])
-        with d_OUT_mono[of _ x f, OF le_f[THEN le_funD]] d_OUT_nonneg[of "trim1 g" x]
-        show "d_OUT (trim1 g) x = 0" by (metis antisym)
+        with d_OUT_mono[of _ x f, OF le_f[THEN le_funD]]
+        show "d_OUT (trim1 g) x = 0" by (metis le_zero_eq)
       qed
       ultimately have "trim1 g \<in> F" by(simp add: F_def) }
     ultimately show ?thesis using that by(simp add: le_fun_def del: trim1)
@@ -3959,24 +3891,24 @@ proof -
       assume "\<not> ?thesis"
       hence "d_IN g x = 0" using currentD_outside[OF g, of _ x]
         by(force simp add: d_IN_def nn_integral_0_iff_AE AE_count_space not_less)
-      with currentD_OUT_IN[OF g A] d_OUT_nonneg[of g x] show "KIR g x" by simp
+      with currentD_OUT_IN[OF g A] show "KIR g x" by simp
     qed
     then obtain y where y: "edge \<Gamma> y x" and gr0: "g (y, x) > 0" by blast
 
-    have [simp]: "g (y, x) \<noteq> \<infinity>"
+    have [simp]: "g (y, x) \<noteq> \<top>"
     proof -
-      have "g (y, x) \<le> d_OUT g y" unfolding d_OUT_def by(rule nn_integral_ge_point) simp
+      have "g (y, x) \<le> d_OUT g y" by (rule d_OUT_ge_point)
       also have "\<dots> \<le> weight \<Gamma> y" by(rule currentD_weight_OUT[OF g])
-      also have "\<dots> < \<infinity>" by(simp add: weight_finite)
+      also have "\<dots> < \<top>" by(simp add: weight_finite less_top[symmetric])
       finally show ?thesis by simp
     qed
-    
+
     from neq have factor: "d_OUT g x / d_IN g x \<noteq> 1"
-      by(cases "d_OUT g x" "d_IN g x" rule: ereal2_cases) simp_all
-    
+      by (simp add: divide_eq_1_ennreal)
+
     have "trim1 g (y, x) = g (y, x) * (d_OUT g x / d_IN g x)"
       by(clarsimp simp add: False trim1_def Let_def x_def[symmetric] mult.commute)
-    moreover have "\<dots> \<noteq> g (y, x) * 1" unfolding ereal_mult_cancel_left using gr0 factor by auto
+    moreover have "\<dots> \<noteq> g (y, x) * 1" unfolding ennreal_mult_cancel_left using gr0 factor by auto
     ultimately have "trim1 g (y, x) \<noteq> g (y, x)" by auto
     hence "trim1 g \<noteq> g" by(auto simp add: fun_eq_iff)
     moreover have "trim1 g = g" using f_Field unfolding g_def by(rule fixp_above_unfold[symmetric])
@@ -4001,10 +3933,10 @@ proof(rule set_eqI)
     show ?thesis
     proof
       assume x: "x \<in> \<E> (TER f)"
-      hence "x \<in> TER g" using d_OUT_mono[of g x f, OF trimmingD_le[OF trimming]] True d_OUT_nonneg[of g x]
+      hence "x \<in> TER g" using d_OUT_mono[of g x f, OF trimmingD_le[OF trimming]] True
         by(simp add: SINK.simps SAT.A)
       moreover from x have "essential \<Gamma> (B \<Gamma>) (TER f) x" by simp
-      then obtain p y where p: "path \<Gamma> x p y" and y: "y \<in> B \<Gamma>" 
+      then obtain p y where p: "path \<Gamma> x p y" and y: "y \<in> B \<Gamma>"
         and bypass: "\<And>z. z \<in> set p \<Longrightarrow> z \<notin> RF (TER f)" by(rule essentialE_RF) blast
       from p y have "essential \<Gamma> (B \<Gamma>) (\<E> (TER g)) x"
       proof(rule essentialI)
@@ -4038,10 +3970,10 @@ qed
 subsection \<open>Composition of waves via quotients\<close>
 
 definition quotient_web :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> ('v, 'more) web_scheme"
-where -- \<open>Modifications to original Definition 4.9: No incoming edges to nodes in @{const A}, 
+where -- \<open>Modifications to original Definition 4.9: No incoming edges to nodes in @{const A},
   @{term "B \<Gamma> - A \<Gamma>"} is not part of @{const A} such that @{const A} contains only vertices
-  is disjoint from @{const B}. The weight of vertices in @{const B} saturated by @{term f} is 
-  therefore set to @{term "0 :: ereal"}.\<close>
+  is disjoint from @{const B}. The weight of vertices in @{const B} saturated by @{term f} is
+  therefore set to @{term "0 :: ennreal"}.\<close>
   "quotient_web \<Gamma> f =
    \<lparr>edge = \<lambda>x y. edge \<Gamma> x y \<and> x \<notin> roofed_circ \<Gamma> (TER\<^bsub>\<Gamma>\<^esub> f) \<and> y \<notin> roofed \<Gamma> (TER\<^bsub>\<Gamma>\<^esub> f),
     weight = \<lambda>x. if x \<in> RF\<^sup>\<circ>\<^bsub>\<Gamma>\<^esub> (TER\<^bsub>\<Gamma>\<^esub> f) \<or> x \<in> TER\<^bsub>\<Gamma>\<^esub> f \<inter> B \<Gamma> then 0 else weight \<Gamma> x,
@@ -4081,21 +4013,21 @@ lemma restrict_current_simps [simp]: fixes \<Gamma> (structure) shows
 by(simp add: restrict_current_def)
 
 lemma d_OUT_restrict_current_outside: fixes \<Gamma> (structure) shows
-  "x \<in> RF\<^sup>\<circ> (TER f) \<Longrightarrow> d_OUT (g \<upharpoonleft> \<Gamma> / f) x = 0" 
+  "x \<in> RF\<^sup>\<circ> (TER f) \<Longrightarrow> d_OUT (g \<upharpoonleft> \<Gamma> / f) x = 0"
 by(simp add: d_OUT_def)
 
 lemma d_IN_restrict_current_outside: fixes \<Gamma> (structure) shows
-  "x \<in> RF (TER f) \<Longrightarrow> d_IN (g \<upharpoonleft> \<Gamma> / f) x = 0" 
+  "x \<in> RF (TER f) \<Longrightarrow> d_IN (g \<upharpoonleft> \<Gamma> / f) x = 0"
 by(simp add: d_IN_def)
 
-lemma restrict_current_le: "0 \<le> g e \<Longrightarrow> (g \<upharpoonleft> \<Gamma> / f) e \<le> g e"
+lemma restrict_current_le: "(g \<upharpoonleft> \<Gamma> / f) e \<le> g e"
 by(cases e)(clarsimp split: split_indicator)
 
 lemma d_OUT_restrict_current_le: "d_OUT (g \<upharpoonleft> \<Gamma> / f) x \<le> d_OUT g x"
-unfolding d_OUT_def by(subst (1 2) nn_integral_max_0[symmetric])(rule nn_integral_mono, simp split: split_indicator)
+unfolding d_OUT_def by(rule nn_integral_mono, simp split: split_indicator)
 
 lemma d_IN_restrict_current_le: "d_IN (g \<upharpoonleft> \<Gamma> / f) x \<le> d_IN g x"
-unfolding d_IN_def by(subst (1 2) nn_integral_max_0[symmetric])(rule nn_integral_mono, simp split: split_indicator)
+unfolding d_IN_def by(rule nn_integral_mono, simp split: split_indicator)
 
 lemma restrict_current_IN_not_RF:
   fixes \<Gamma> (structure)
@@ -4131,7 +4063,7 @@ lemma restrict_current_nonneg: "0 \<le> g e \<Longrightarrow> 0 \<le> (g \<uphar
 by(cases e) simp
 
 lemma in_SINK_restrict_current: "x \<in> SINK g \<Longrightarrow> x \<in> SINK (g \<upharpoonleft> \<Gamma> / f)"
-using d_OUT_restrict_current_le[of \<Gamma> f g x] d_OUT_nonneg[of "g \<upharpoonleft> \<Gamma> / f" x]
+using d_OUT_restrict_current_le[of \<Gamma> f g x]
 by(simp add: SINK.simps)
 
 lemma SAT_restrict_current:
@@ -4143,13 +4075,13 @@ proof(intro set_eqI iffI; (elim UnE DiffE)?)
   show "x \<in> ?rhs" if "x \<in> SAT ?\<Gamma> ?g" for x using that
   proof cases
     case IN
-    thus ?thesis using currentD_weight_OUT[OF f, of x] d_OUT_nonneg[of f x]
-      by(cases "x \<in> RF (TER f)")(auto simp add: d_IN_nonneg d_IN_restrict_current_outside roofed_circ_def restrict_current_IN_not_RF[OF g] SAT.IN currentD_IN[OF g] weight_le_0_iff[OF g] roofed_greaterI SAT.A SINK.simps RF_in_B split: if_split_asm intro: essentialI[OF rtrancl_path.base])
+    thus ?thesis using currentD_weight_OUT[OF f, of x]
+      by(cases "x \<in> RF (TER f)")(auto simp add: d_IN_restrict_current_outside roofed_circ_def restrict_current_IN_not_RF[OF g] SAT.IN currentD_IN[OF g] roofed_greaterI SAT.A SINK.simps RF_in_B split: if_split_asm intro: essentialI[OF rtrancl_path.base])
   qed(simp add: roofed_greaterI)
   show "x \<in> SAT ?\<Gamma> ?g" if "x \<in> RF (TER f)" for x using that
     by(auto simp add: SAT.simps roofed_circ_def d_IN_restrict_current_outside)
   show "x \<in> SAT ?\<Gamma> ?g" if "x \<in> SAT \<Gamma> g" "x \<notin> A \<Gamma>" for x using that
-    by(auto simp add: SAT.simps roofed_circ_def d_IN_restrict_current_outside restrict_current_IN_not_RF[OF g] d_IN_nonneg)
+    by(auto simp add: SAT.simps roofed_circ_def d_IN_restrict_current_outside restrict_current_IN_not_RF[OF g])
 qed
 
 lemma current_restrict_current:
@@ -4165,7 +4097,7 @@ proof
     using d_IN_restrict_current_le[of \<Gamma> f g x] currentD_weight_IN[OF g, of x]
     by(auto simp add: d_IN_restrict_current_outside roofed_circ_def)
       (subst d_IN_restrict_current_outside[of x \<Gamma> f g]; simp add: roofed_greaterI)
-  
+
   fix x
   assume "x \<notin> A ?\<Gamma>"
   hence x: "x \<notin> \<E> (TER f) - B \<Gamma>" by simp
@@ -4182,7 +4114,7 @@ proof
       by(clarsimp simp add: roofed_def)
     from g False have "d_IN ?g x = d_IN g x" by(rule restrict_current_IN_not_RF)
     moreover have "d_OUT ?g x \<le> d_OUT g x"
-      by(rule d_OUT_mono restrict_current_le currentD_nonneg[OF g])+
+      by(rule d_OUT_mono restrict_current_le)+
     moreover have "x \<notin> A \<Gamma>"
       using separatingD[OF waveD_separating[OF w] p _ z] bypass by blast
     note currentD_OUT_IN[OF g this]
@@ -4191,8 +4123,7 @@ proof
 next
   show "d_IN ?g a = 0" if "a \<in> A ?\<Gamma>" for a using that by(rule restrict_current_IN_A)
   show "d_OUT ?g b = 0" if "b \<in> B ?\<Gamma>" for b
-    using d_OUT_restrict_current_le[of \<Gamma> f g b] currentD_OUT[OF g, of b] that d_OUT_nonneg[of ?g b] by simp
-  show "0 \<le> ?g e" for e using currentD_nonneg[OF g, of e] by(rule restrict_current_nonneg)
+    using d_OUT_restrict_current_le[of \<Gamma> f g b] currentD_OUT[OF g, of b] that by simp
   show "?g e = 0" if "e \<notin> \<^bold>E\<^bsub>?\<Gamma>\<^esub>" for e using that currentD_outside'[OF g, of e]
     by(cases e)(auto split: split_indicator)
 qed
@@ -4230,8 +4161,8 @@ proof
 
     { assume "x \<notin> ?TER"
       hence "x \<notin> SINK ?g" using SAT by(simp)
-      hence "x \<notin> SINK g" using d_OUT_restrict_current_le[of \<Gamma> f g x] d_OUT_nonneg[of ?g x]
-        by(simp add: SINK.simps)
+      hence "x \<notin> SINK g" using d_OUT_restrict_current_le[of \<Gamma> f g x]
+        by(auto simp add: SINK.simps)
       hence "x \<in> RF (TER g)" using waveD_OUT[OF w'] by(auto simp add: SINK.simps)
       from roofedD[OF this p' y] \<open>x \<notin> SINK g\<close> have "(\<exists>z\<in>set p. z \<in> ?TER)"
         using TER_restrict_current[OF f w g] by blast }
@@ -4240,7 +4171,7 @@ proof
 
   fix x
   assume "x \<notin> RF\<^bsub>?\<Gamma>\<^esub> ?TER"
-  hence "x \<notin> RF (TER g)" 
+  hence "x \<notin> RF (TER g)"
   proof(rule contrapos_nn)
     assume *: "x \<in> RF (TER g)"
     show "x \<in> RF\<^bsub>?\<Gamma>\<^esub> ?TER"
@@ -4253,7 +4184,7 @@ proof
     qed
   qed
   with w' have "d_OUT g x = 0" by(rule waveD_OUT)
-  with d_OUT_restrict_current_le[of \<Gamma> f g x] d_OUT_nonneg[of "g \<upharpoonleft> \<Gamma> / f" x]
+  with d_OUT_restrict_current_le[of \<Gamma> f g x]
   show "d_OUT ?g x = 0" by simp
 qed
 
@@ -4266,18 +4197,11 @@ by(simp add: plus_current_def)
 lemma plus_zero_current [simp]: "plus_current f zero_current = f"
 by(simp add: fun_eq_iff)
 
-lemma support_flow_plus_current: 
-  assumes "\<And>e. f e \<ge> 0" "\<And>e. g e \<ge> 0"
-  shows "support_flow (plus_current f g) \<subseteq> support_flow f \<union> support_flow g"
-using assms
-apply(clarsimp simp add: support_flow.simps)
-subgoal for x y by(cases "f (x, y)" "g (x, y)" rule: ereal2_cases) auto
-done
+lemma support_flow_plus_current: "support_flow (plus_current f g) \<subseteq> support_flow f \<union> support_flow g"
+by(clarsimp simp add: support_flow.simps)
 
-lemma SINK_plus_current:
-  assumes "\<And>e. 0 \<le> f e" "\<And>e. 0 \<le> g e"
-  shows "SINK (plus_current f g) = SINK f \<inter> SINK g"
-by(auto simp add: SINK.simps set_eq_iff d_OUT_def nn_integral_0_iff assms emeasure_count_space_eq_0 ereal_add_nonneg_eq_0_iff)
+lemma SINK_plus_current: "SINK (plus_current f g) = SINK f \<inter> SINK g"
+by(auto simp add: SINK.simps set_eq_iff d_OUT_def nn_integral_0_iff emeasure_count_space_eq_0 add_eq_0_iff_both_eq_0)
 
 abbreviation plus_web :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> 'v current \<Rightarrow> 'v current" ("_ \<frown>\<index> _" [66, 66] 65)
 where "plus_web \<Gamma> f g \<equiv> plus_current f (g \<upharpoonleft> \<Gamma> / f)"
@@ -4285,14 +4209,14 @@ where "plus_web \<Gamma> f g \<equiv> plus_current f (g \<upharpoonleft> \<Gamma
 context
   fixes \<Gamma> :: "('v, 'more) web_scheme" (structure) and f g
   assumes f: "current \<Gamma> f"
-  and w: "wave \<Gamma> f" 
+  and w: "wave \<Gamma> f"
   and g: "current (quotient_web \<Gamma> f) g"
 begin
 
 lemma OUT_plus_current: "d_OUT (plus_current f g) x = (if x \<in> RF\<^sup>\<circ> (TER f) then d_OUT f x else d_OUT g x)" (is "d_OUT ?g _ = _")
 proof -
   have "d_OUT ?g x = d_OUT f x + d_OUT g x" unfolding plus_current_def
-    by(subst d_OUT_add)(simp_all add: currentD_nonneg[OF f] currentD_nonneg[OF g])
+    by(subst d_OUT_add) simp_all
   also have "\<dots> = (if x \<in> RF\<^sup>\<circ> (TER f) then d_OUT f x else d_OUT g x)"
   proof(cases "x \<in> RF\<^sup>\<circ> (TER f)")
     case True
@@ -4309,7 +4233,7 @@ qed
 lemma IN_plus_current: "d_IN (plus_current f g) x = (if x \<in> RF (TER f) then d_IN f x else d_IN g x)" (is "d_IN ?g _ = _")
 proof -
   have "d_IN ?g x = d_IN f x + d_IN g x" unfolding plus_current_def
-    by(subst d_IN_add)(simp_all add: currentD_nonneg[OF f] currentD_nonneg[OF g])
+    by(subst d_IN_add) simp_all
   also consider (RF) "x \<in> RF (TER f) - (B \<Gamma> - A \<Gamma>)" | (B) "x \<in> RF (TER f)" "x \<in> B \<Gamma> - A \<Gamma>" | (beyond) "x \<notin> RF (TER f)" by blast
   then have "d_IN f x + d_IN g x = (if x \<in> RF (TER f) then d_IN f x else d_IN g x)"
   proof(cases)
@@ -4319,7 +4243,7 @@ proof -
     thus ?thesis using RF by simp
   next
     case B
-    hence "d_IN g x = 0" using currentD_outside_IN[OF g, of x] currentD_weight_IN[OF g, of x] d_IN_nonneg[of g x]
+    hence "d_IN g x = 0" using currentD_outside_IN[OF g, of x] currentD_weight_IN[OF g, of x]
       by(auto dest: vertex_quotient_webD simp add: roofed_circ_def)
     with B show ?thesis by simp
   next
@@ -4334,21 +4258,21 @@ lemma current_plus_current: "current \<Gamma> (plus_current f g)" (is "current _
 proof
   show "d_OUT ?g x \<le> weight \<Gamma> x" for x
     using currentD_weight_OUT[OF g, of x] currentD_weight_OUT[OF f, of x]
-    by(auto simp add: OUT_plus_current split: if_split_asm elim: order_trans intro: weight_nonneg[OF f])
+    by(auto simp add: OUT_plus_current split: if_split_asm elim: order_trans)
   show "d_IN ?g x \<le> weight \<Gamma> x" for x
     using currentD_weight_IN[OF f, of x] currentD_weight_IN[OF g, of x]
-    by(auto simp add: IN_plus_current roofed_circ_def split: if_split_asm elim: order_trans intro: weight_nonneg[OF f])
+    by(auto simp add: IN_plus_current roofed_circ_def split: if_split_asm elim: order_trans)
   show "d_OUT ?g x \<le> d_IN ?g x" if "x \<notin> A \<Gamma>" for x
   proof(cases "x \<in> \<E> (TER f)")
     case False
     thus ?thesis
-      using d_IN_nonneg[of f x] currentD_OUT_IN[OF f that] currentD_OUT_IN[OF g, of x] that 
+      using currentD_OUT_IN[OF f that] currentD_OUT_IN[OF g, of x] that
       by(auto simp add: OUT_plus_current IN_plus_current roofed_circ_def SINK.simps)
   next
     case True
     with that have "d_OUT f x = 0" "weight \<Gamma> x \<le> d_IN f x"
       by(auto simp add: SINK.simps elim: SAT.cases)
-    thus ?thesis using that True currentD_OUT_IN[OF g, of x] d_IN_nonneg[of f x] currentD_weight_OUT[OF g, of x]
+    thus ?thesis using that True currentD_OUT_IN[OF g, of x] currentD_weight_OUT[OF g, of x]
       by(auto simp add: OUT_plus_current IN_plus_current roofed_circ_def intro: roofed_greaterI split: if_split_asm)
   qed
   show "d_IN ?g a = 0" if "a \<in> A \<Gamma>" for a
@@ -4356,7 +4280,6 @@ proof
   show "d_OUT ?g b = 0" if "b \<in> B \<Gamma>" for b
     using that currentD_OUT[OF f that] currentD_OUT[OF g, of b] that
     by(auto simp add: OUT_plus_current SINK.simps roofed_circ_def intro: roofed_greaterI)
-  show "0 \<le> ?g e" for e using currentD_nonneg[OF f, of e] currentD_nonneg[OF g, of e] by simp
   show "?g e = 0" if "e \<notin> \<^bold>E" for e using currentD_outside'[OF f, of e] currentD_outside'[OF g, of e] that
     by(cases e) auto
 qed
@@ -4376,7 +4299,7 @@ next
     case False
     with x RF * have "weight \<Gamma> x \<le> d_IN g x"
       by(auto elim!: SAT.cases split: if_split_asm simp add: essential_BI)
-    also have "\<dots> \<le> d_IN ?g x" unfolding plus_current_def by(intro d_IN_mono ereal_le_add_self2 currentD_nonneg[OF f])
+    also have "\<dots> \<le> d_IN ?g x" unfolding plus_current_def by(intro d_IN_mono) simp
     finally show ?thesis ..
   next
     case True
@@ -4433,7 +4356,7 @@ proof
   let ?\<Gamma> = "quotient_web \<Gamma> f"
   let ?TER = "TER\<^bsub>?\<Gamma>\<^esub>"
 
-  show "separating \<Gamma> (TER ?g)" using separating_TER_plus_current[OF wave_A_in_RF[OF w]] by(rule separating) 
+  show "separating \<Gamma> (TER ?g)" using separating_TER_plus_current[OF wave_A_in_RF[OF w]] by(rule separating)
 
   fix x
   assume x: "x \<notin> RF (TER ?g)"
@@ -4479,31 +4402,26 @@ end
 
 lemma d_OUT_plus_web:
   fixes \<Gamma> (structure)
-  assumes f: "\<And>y. 0 \<le> f (x, y)" and g: "\<And>y. 0 \<le> g (x, y)"
   shows "d_OUT (f \<frown> g) x = d_OUT f x + d_OUT (g \<upharpoonleft> \<Gamma> / f) x" (is "?lhs = ?rhs")
 proof -
   have "?lhs = d_OUT f x + (\<Sum>\<^sup>+ y. (if x \<in> RF\<^sup>\<circ> (TER f) then 0 else g (x, y) * indicator (- RF (TER f)) y))"
-    unfolding d_OUT_def using f g
-    by(subst nn_integral_add[symmetric])(auto simp add: ereal_le_add_self intro!: nn_integral_cong split: split_indicator)
+    unfolding d_OUT_def by(subst nn_integral_add[symmetric])(auto intro!: nn_integral_cong split: split_indicator)
   also have "\<dots> = ?rhs" by(auto simp add: d_OUT_def intro!: arg_cong2[where f="op +"] nn_integral_cong)
   finally show "?thesis" .
 qed
 
 lemma d_IN_plus_web:
   fixes \<Gamma> (structure)
-  assumes f: "\<And>x. 0 \<le> f (x, y)" and g: "\<And>x. 0 \<le> g (x, y)"
   shows "d_IN (f \<frown> g) y = d_IN f y + d_IN (g \<upharpoonleft> \<Gamma> / f) y" (is "?lhs = ?rhs")
 proof -
   have "?lhs = d_IN f y + (\<Sum>\<^sup>+ x. (if y \<in> RF (TER f) then 0 else g (x, y) * indicator (- RF\<^sup>\<circ> (TER f)) x))"
-    unfolding d_IN_def using f g
-    by(subst nn_integral_add[symmetric])(auto simp add: ereal_le_add_self intro!: nn_integral_cong split: split_indicator)
+    unfolding d_IN_def by(subst nn_integral_add[symmetric])(auto intro!: nn_integral_cong split: split_indicator)
   also have "\<dots> = ?rhs" by(auto simp add: d_IN_def intro!: arg_cong2[where f="op +"] nn_integral_cong)
   finally show ?thesis .
 qed
 
-lemma plus_web_greater: 
-  "(e \<in> (- RF\<^sup>\<circ>\<^bsub>\<Gamma>\<^esub> (TER\<^bsub>\<Gamma>\<^esub> f)) \<times> (- RF\<^bsub>\<Gamma>\<^esub> (TER\<^bsub>\<Gamma>\<^esub> f)) \<Longrightarrow> 0 \<le> g e) \<Longrightarrow> f e \<le> (f \<frown>\<^bsub>\<Gamma>\<^esub> g) e"
-by(cases e)(auto simp add: ereal_le_add_self split: split_indicator)
+lemma plus_web_greater: "f e \<le> (f \<frown>\<^bsub>\<Gamma>\<^esub> g) e"
+by(cases e)(auto split: split_indicator)
 
 lemma current_plus_web:
   fixes \<Gamma> (structure)
@@ -4568,13 +4486,13 @@ proof
 
   from RF_f have "x \<in> SINK f"
     by(auto simp add: roofed_circ_def SINK.simps dest: waveD_OUT[OF w])
-  thus "x \<in> SINK (f \<frown> g)" using currentD_nonneg[OF f] currentD_nonneg[OF g] SINK
+  thus "x \<in> SINK (f \<frown> g)" using SINK
     by(simp add: SINK.simps d_OUT_plus_web)
   show "x \<in> SAT \<Gamma> (f \<frown> g)"
   proof(cases "x \<in> TER f")
     case True
     hence "x \<in> SAT \<Gamma> f" by simp
-    moreover have "\<dots> \<subseteq> SAT \<Gamma> (f \<frown> g)" by(rule SAT_mono plus_web_greater currentD_nonneg[OF g])+
+    moreover have "\<dots> \<subseteq> SAT \<Gamma> (f \<frown> g)" by(rule SAT_mono plus_web_greater)+
     ultimately show ?thesis by blast
   next
     case False
@@ -4604,13 +4522,13 @@ proof
       qed }
     ultimately have "d_IN ?g x = d_IN g x" unfolding d_IN_def
       by(intro nn_integral_cong)(clarsimp split: split_indicator simp add: currentD_outside[OF g])
-    hence "d_IN (f \<frown> g) x \<ge> d_IN g x" using currentD_nonneg[OF f] currentD_nonneg[OF g]
-      by(simp add: d_IN_plus_web ereal_le_add_self2 d_IN_nonneg)
+    hence "d_IN (f \<frown> g) x \<ge> d_IN g x"
+      by(simp add: d_IN_plus_web)
     with \<open>x \<in> TER g\<close> show ?thesis by(auto elim!: SAT.cases intro: SAT.intros)
   qed
 qed
 
-qualified lemma SINK_TER_in'': 
+qualified lemma SINK_TER_in'':
   assumes "\<And>x. x \<notin> RF (TER g) \<Longrightarrow> d_OUT g x = 0"
   shows "x \<in> SINK g"
 using RF_g by(auto simp add: roofed_circ_def SINK.simps assms)
@@ -4659,11 +4577,11 @@ next
     assume RF: "x \<in> RF (TER (f \<frown> g))" and p: "path \<Gamma> x p y" and y: "y \<in> B \<Gamma>"
     from roofedD[OF RF p y] obtain z where z: "z \<in> set (x # p)" and TER: "z \<in> TER (f \<frown> g)" by auto
     from TER have SINK: "z \<in> SINK f"
-      by(auto simp add: SINK.simps d_OUT_plus_web currentD_nonneg[OF f] currentD_nonneg[OF g] ereal_add_nonneg_eq_0_iff d_OUT_nonneg)
+      by(auto simp add: SINK.simps d_OUT_plus_web add_eq_0_iff_both_eq_0)
     from TER have "z \<in> SAT \<Gamma> (f \<frown> g)" by simp
     hence SAT: "z \<in> SAT \<Gamma> f \<union> SAT \<Gamma> g"
-      by(cases "z \<in> RF (TER f)")(auto simp add: currentD_SAT[OF f] currentD_SAT[OF g] currentD_SAT[OF fg] d_IN_plus_web currentD_nonneg[OF f] currentD_nonneg[OF g] d_IN_restrict_current_outside restrict_current_IN_not_RF[OF g] wave_not_RF_IN_zero[OF f w])
-    
+      by(cases "z \<in> RF (TER f)")(auto simp add: currentD_SAT[OF f] currentD_SAT[OF g] currentD_SAT[OF fg] d_IN_plus_web d_IN_restrict_current_outside restrict_current_IN_not_RF[OF g] wave_not_RF_IN_zero[OF f w])
+
     show "(\<exists>z\<in>set p. z \<in> TER f \<union> TER g) \<or> x \<in> TER f \<union> TER g"
     proof(cases "z \<in> RF (TER g)")
       case False
@@ -4696,7 +4614,7 @@ proof(rule set_eqI iffI)+
     from TER have SINK: "z \<in> SINK f" if "f \<in> Y" for f using that by(auto simp add: SINK_Sup[OF Y])
 
     from Y(2) obtain f where y: "f \<in> Y" by blast
-    
+
     show "(\<exists>z\<in>set p. z \<in> RF (\<Union>f\<in>Y. TER f)) \<or> x \<in> RF (\<Union>f\<in>Y. TER f)"
     proof(cases "\<exists>f\<in>Y. z \<in> RF (TER f)")
       case True
@@ -4707,7 +4625,7 @@ proof(rule set_eqI iffI)+
       case False
       hence *: "d_IN f z = 0" if "f \<in> Y" for f using that by(auto intro: wave_not_RF_IN_zero[OF f w])
       hence "d_IN (Sup Y) z = 0" using Y(2) by(simp add: d_IN_Sup[OF Y])
-      with TER have "z \<in> SAT \<Gamma> f" using weight_nonneg[OF f[OF y], of z] *[OF y]
+      with TER have "z \<in> SAT \<Gamma> f" using *[OF y]
         by(simp add: SAT.simps)
       with SINK[OF y] have "z \<in> TER f" by simp
       with z y show ?thesis by(auto intro: roofed_greaterI)
@@ -4741,8 +4659,7 @@ qed
 
 lemma loose_quotient_web:
   fixes \<Gamma> :: "('v, 'more) web_scheme" (structure)
-  assumes weight_nonneg: "\<And>x. weight \<Gamma> x \<ge> 0"
-  and weight_finite: "\<And>x. weight \<Gamma> x \<noteq> \<infinity>"
+  assumes weight_finite: "\<And>x. weight \<Gamma> x \<noteq> \<top>"
   and f: "current \<Gamma> f"
   and w: "wave \<Gamma> f"
   and maximal: "\<And>w. \<lbrakk> current \<Gamma> w; wave \<Gamma> w; f \<le> w \<rbrakk> \<Longrightarrow> f = w"
@@ -4751,21 +4668,21 @@ proof
   fix g
   assume g: "current ?\<Gamma> g" and w': "wave ?\<Gamma> g"
   let ?g = "plus_current f g"
-  from f w g have "current \<Gamma> ?g" "wave \<Gamma> ?g" by(rule current_plus_current wave_plus_current)+(rule w')
-  moreover have "f \<le> ?g" by(clarsimp simp add: le_fun_def currentD_nonneg[OF g] ereal_le_add_self)
+  from f w g have "current \<Gamma> ?g" "wave \<Gamma> ?g" by(rule current_plus_current wave_plus_current)+ (rule w')
+  moreover have "f \<le> ?g" by(clarsimp simp add: le_fun_def add_eq_0_iff_both_eq_0)
   ultimately have eq: "f = ?g" by(rule maximal)
   have "g e = 0" for e
   proof(cases e)
     case (Pair x y)
-    have "f e \<le> d_OUT f x" unfolding d_OUT_def Pair by(rule nn_integral_ge_point) simp
+    have "f e \<le> d_OUT f x" unfolding Pair by (rule d_OUT_ge_point)
     also have "\<dots> \<le> weight \<Gamma> x" by(rule currentD_weight_OUT[OF f])
-    also have "\<dots> < \<infinity>" by(simp add: weight_finite)
-    finally show "g e = 0" using Pair eq[THEN fun_cong, of e] currentD_nonneg[OF f, of e]
-      by(cases "f e" "g e" rule: ereal2_cases)(simp_all add: fun_eq_iff)
+    also have "\<dots> < \<top>" by(simp add: weight_finite less_top[symmetric])
+    finally show "g e = 0" using Pair eq[THEN fun_cong, of e]
+      by(cases "f e" "g e" rule: ennreal2_cases)(simp_all add: fun_eq_iff)
   qed
   thus "g = (\<lambda>_. 0)" by(simp add: fun_eq_iff)
 next
-  have 0: "current ?\<Gamma> zero_current" by(simp add: weight_nonneg)
+  have 0: "current ?\<Gamma> zero_current" by(simp add: )
   show "\<not> hindrance ?\<Gamma> zero_current"
   proof
     assume "hindrance ?\<Gamma> zero_current"
@@ -4794,8 +4711,7 @@ next
     from not_essentialD[OF this p''] y obtain z where neq: "x \<noteq> y"
       and "z \<in> set p'" "z \<noteq> x" "z \<in> TER\<^bsub>?\<Gamma>\<^esub> zero_current" by auto
     moreover with subset RF[of z] have "z \<in> TER f"
-      using weight_nonneg[of z] currentD_weight_OUT[OF f, of z] d_OUT_nonneg[of f z]
-        currentD_weight_IN[OF f, of z] d_IN_nonneg[of f z] 
+      using currentD_weight_OUT[OF f, of z] currentD_weight_IN[OF f, of z]
       by(auto simp add: roofed_circ_def SINK.simps intro: SAT.IN split: if_split_asm)
     ultimately show False using bypass[of z] subset by auto
   qed
@@ -4833,73 +4749,67 @@ locale web =
   and disjoint: "A \<Gamma> \<inter> B \<Gamma> = {}"
   and no_loop: "\<And>x. \<not> edge \<Gamma> x x"
   and weight_outside: "\<And>x. x \<notin> \<^bold>V \<Longrightarrow> weight \<Gamma> x = 0"
-  and weight_nonneg: "\<And>x. 0 \<le> weight \<Gamma> x"
-  and weight_finite [simp]: "\<And>x. weight \<Gamma> x \<noteq> \<infinity>"
+  and weight_finite [simp]: "\<And>x. weight \<Gamma> x \<noteq> \<top>"
 begin
 
 lemma web_weight_update:
   assumes "\<And>x. \<not> vertex \<Gamma> x \<Longrightarrow> w x = 0"
-  and "\<And>x. 0 \<le> w x"
-  and "\<And>x. w x \<noteq> \<infinity>"
+  and "\<And>x. w x \<noteq> \<top>"
   shows "web (\<Gamma>\<lparr>weight := w\<rparr>)"
 by unfold_locales(simp_all add: A_in B_out A_vertex disjoint no_loop assms)
-
-lemma weight_le_0 [simp]: "weight \<Gamma> x \<le> 0 \<longleftrightarrow> weight \<Gamma> x = 0"
-using weight_nonneg[of x] by(simp)
 
 lemma currentI [intro?]:
   assumes "\<And>x. d_OUT f x \<le> weight \<Gamma> x"
   and "\<And>x. d_IN f x \<le> weight \<Gamma> x"
   and OUT_IN: "\<And>x. \<lbrakk> x \<notin> A \<Gamma>; x \<notin> B \<Gamma> \<rbrakk> \<Longrightarrow> d_OUT f x \<le> d_IN f x"
-  and nonneg: "\<And>e. 0 \<le> f e"
   and outside: "\<And>e. e \<notin> \<^bold>E \<Longrightarrow> f e = 0"
   shows "current \<Gamma> f"
 proof
   show "d_IN f a = 0" if "a \<in> A \<Gamma>" for a using that
-    by(auto simp add: d_IN_def nn_integral_0_iff nonneg emeasure_count_space_eq_0 A_in intro: outside)
+    by(auto simp add: d_IN_def nn_integral_0_iff emeasure_count_space_eq_0 A_in intro: outside)
   show "d_OUT f b = 0" if "b \<in> B \<Gamma>" for b using that
-    by(auto simp add: d_OUT_def nn_integral_0_iff nonneg emeasure_count_space_eq_0 B_out intro: outside)
+    by(auto simp add: d_OUT_def nn_integral_0_iff emeasure_count_space_eq_0 B_out intro: outside)
   then show "d_OUT f x \<le> d_IN f x" if "x \<notin> A \<Gamma>" for x using OUT_IN[OF that]
-    by(cases "x \<in> B \<Gamma>")(auto simp add: d_IN_nonneg)
+    by(cases "x \<in> B \<Gamma>") auto
 qed(blast intro: assms)+
 
 lemma currentD_finite_IN:
   assumes f: "current \<Gamma> f"
-  shows "d_IN f x \<noteq> \<infinity>"
+  shows "d_IN f x \<noteq> \<top>"
 proof(cases "x \<in> \<^bold>V")
   case True
   have "d_IN f x \<le> weight \<Gamma> x" using f by(rule currentD_weight_IN)
-  also have "\<dots> < \<infinity>" using True weight_finite[of x] by simp
+  also have "\<dots> < \<top>" using True weight_finite[of x] by (simp add: less_top[symmetric])
   finally show ?thesis by simp
 next
   case False
-  then have "d_IN f x = 0" using currentD_nonneg[OF f] 
+  then have "d_IN f x = 0"
     by(auto simp add: d_IN_def nn_integral_0_iff emeasure_count_space_eq_0 vertex_def intro: currentD_outside[OF f])
   thus ?thesis by simp
 qed
 
 lemma currentD_finite_OUT:
   assumes f: "current \<Gamma> f"
-  shows "d_OUT f x \<noteq> \<infinity>"
+  shows "d_OUT f x \<noteq> \<top>"
 proof(cases "x \<in> \<^bold>V")
   case True
   have "d_OUT f x \<le> weight \<Gamma> x" using f by(rule currentD_weight_OUT)
-  also have "\<dots> < \<infinity>" using True weight_finite[of x] by simp
+  also have "\<dots> < \<top>" using True weight_finite[of x] by (simp add: less_top[symmetric])
   finally show ?thesis by simp
 next
   case False
-  then have "d_OUT f x = 0" using currentD_nonneg[OF f] 
+  then have "d_OUT f x = 0"
     by(auto simp add: d_OUT_def nn_integral_0_iff emeasure_count_space_eq_0 vertex_def intro: currentD_outside[OF f])
   thus ?thesis by simp
 qed
 
 lemma currentD_finite:
   assumes f: "current \<Gamma> f"
-  shows "f e \<noteq> \<infinity>"
+  shows "f e \<noteq> \<top>"
 proof(cases e)
   case (Pair x y)
-  have "f (x, y) \<le> d_OUT f x" unfolding d_OUT_def by(rule nn_integral_ge_point)simp
-  also have "\<dots> < \<infinity>" using currentD_finite_OUT[OF f] by simp
+  have "f (x, y) \<le> d_OUT f x" by (rule d_OUT_ge_point)
+  also have "\<dots> < \<top>" using currentD_finite_OUT[OF f] by (simp add: less_top[symmetric])
   finally show ?thesis by(simp add: Pair)
 qed
 
@@ -4934,7 +4844,7 @@ proof
        apply(auto elim!: not_roofedE)[1]
       apply(auto simp add: roofed_circ_def roofed_idem elim: essentialE_RF)
       done
-    from that have "p = []" using p y B RF bypass 
+    from that have "p = []" using p y B RF bypass
       by(auto 4 3 simp add: vertex_def dest!: rtrancl_path_nth[where i=0])
     with p have xy: "x = y" by(simp add: rtrancl_path_simps)
     with B y have "x \<notin> TER f" by simp
@@ -4950,8 +4860,7 @@ proof
     qed
     thus ?thesis by(simp add: weight_outside)
   qed
-  show "0 \<le> weight ?\<Gamma> x" for x by(simp add: weight_nonneg)
-  show "weight ?\<Gamma> x \<noteq> \<infinity>" for x by simp
+  show "weight ?\<Gamma> x \<noteq> \<top>" for x by simp
 qed
 
 end
@@ -4981,11 +4890,11 @@ end
 subsection \<open>Subtraction of a wave\<close>
 
 definition minus_web :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> ('v, 'more) web_scheme" (infixl "\<ominus>" 65) -- \<open>Definition 6.6\<close>
-where "\<Gamma> \<ominus> f = \<Gamma>\<lparr>weight := \<lambda>x. if x \<in> A \<Gamma> then weight \<Gamma> x - d_OUT f x else weight \<Gamma> x - d_IN f x + d_OUT f x\<rparr>"
+where "\<Gamma> \<ominus> f = \<Gamma>\<lparr>weight := \<lambda>x. if x \<in> A \<Gamma> then weight \<Gamma> x - d_OUT f x else weight \<Gamma> x + d_OUT f x - d_IN f x\<rparr>"
 
 lemma minus_web_sel [simp]:
   "edge (\<Gamma> \<ominus> f) = edge \<Gamma>"
-  "weight (\<Gamma> \<ominus> f) x = (if x \<in> A \<Gamma> then weight \<Gamma> x - d_OUT f x else weight \<Gamma> x - d_IN f x + d_OUT f x)"
+  "weight (\<Gamma> \<ominus> f) x = (if x \<in> A \<Gamma> then weight \<Gamma> x - d_OUT f x else weight \<Gamma> x + d_OUT f x - d_IN f x)"
   "A (\<Gamma> \<ominus> f) = A \<Gamma>"
   "B (\<Gamma> \<ominus> f) = B \<Gamma>"
   "\<^bold>V\<^bsub>\<Gamma> \<ominus> f\<^esub> = \<^bold>V\<^bsub>\<Gamma>\<^esub>"
@@ -5007,7 +4916,8 @@ lemma (in web) web_minus_web:
   shows "web (\<Gamma> \<ominus> f)"
 unfolding minus_web_def
 apply(rule web_weight_update)
-apply(auto simp add: weight_outside d_OUT_nonneg d_IN_nonneg currentD_weight_IN[OF f] currentD_outside_OUT[OF f] currentD_outside_IN[OF f] currentD_weight_OUT[OF f] ereal_diff_positive currentD_finite_OUT[OF f] ereal_minus_eq_PInfty_iff)
+apply(auto simp: weight_outside currentD_weight_IN[OF f] currentD_outside_OUT[OF f]
+                 currentD_outside_IN[OF f] currentD_weight_OUT[OF f] currentD_finite_OUT[OF f])
 done
 
 section \<open>Bipartite webs\<close>
@@ -5018,9 +4928,8 @@ locale countable_bipartite_web =
   and A_vertex: "A \<Gamma> \<subseteq> \<^bold>V"
   and bipartite_E: "edge \<Gamma> x y \<Longrightarrow> x \<in> A \<Gamma> \<and> y \<in> B \<Gamma>"
   and disjoint: "A \<Gamma> \<inter> B \<Gamma> = {}"
-  and weight_nonneg: "weight \<Gamma> x \<ge> 0"
   and weight_outside: "\<And>x. x \<notin> \<^bold>V \<Longrightarrow> weight \<Gamma> x = 0"
-  and weight_finite [simp]: "\<And>x. weight \<Gamma> x \<noteq> \<infinity>"
+  and weight_finite [simp]: "\<And>x. weight \<Gamma> x \<noteq> \<top>"
   and countable_E [simp]: "countable \<^bold>E"
 begin
 
@@ -5040,7 +4949,7 @@ lemma B_out: "x \<in> B \<Gamma> \<Longrightarrow> \<not> edge \<Gamma> x y"
 using disjoint by(auto dest: bipartite_E)
 
 sublocale countable_web using disjoint
-by(unfold_locales)(auto simp add: A_in B_out A_vertex no_loop weight_outside weight_nonneg edge_antiparallel)
+by(unfold_locales)(auto simp add: A_in B_out A_vertex no_loop weight_outside  edge_antiparallel)
 
 lemma currentD_OUT':
   assumes f: "current \<Gamma> f"
@@ -5057,15 +4966,14 @@ using currentD_outside_IN[OF f, of x] x currentD_IN[OF f, of x] bipartite_V by a
 lemma current_bipartiteI [intro?]:
   assumes OUT: "\<And>x. d_OUT f x \<le> weight \<Gamma> x"
   and IN: "\<And>x. d_IN f x \<le> weight \<Gamma> x"
-  and nonneg: "\<And>e. 0 \<le> f e"
   and outside: "\<And>e. e \<notin> \<^bold>E \<Longrightarrow> f e = 0"
   shows "current \<Gamma> f"
 proof
   fix x
   assume "x \<notin> A \<Gamma>" "x \<notin> B \<Gamma>"
-  hence "d_OUT f x = 0" by(auto simp add: d_OUT_def nn_integral_0_iff nonneg emeasure_count_space_eq_0 intro!: outside dest: bipartite_E)
-  then show "d_OUT f x \<le> d_IN f x" by(simp add: d_IN_nonneg)
-qed(rule OUT IN nonneg outside)+
+  hence "d_OUT f x = 0" by(auto simp add: d_OUT_def nn_integral_0_iff emeasure_count_space_eq_0 intro!: outside dest: bipartite_E)
+  then show "d_OUT f x \<le> d_IN f x" by simp
+qed(rule OUT IN outside)+
 
 lemma wave_bipartiteI [intro?]:
   assumes sep: "separating \<Gamma> (TER f)"
@@ -5083,41 +4991,41 @@ qed
 subsection \<open>Hindered webs with reduced weights\<close>
 
 context
-  fixes u :: "'v \<Rightarrow> ereal"
+  fixes u :: "'v \<Rightarrow> ennreal"
   and \<epsilon>
-  defines "\<epsilon> \<equiv> (\<integral>\<^sup>+ y. u y \<partial>count_space (B \<Gamma>))" 
-  assumes u_nonneg: "\<And>x. 0 \<le> u x"
-  and u_outside: "\<And>x. x \<notin> B \<Gamma> \<Longrightarrow> u x = 0"
-  and finite_\<epsilon>: "\<epsilon> \<noteq> \<infinity>"
+  defines "\<epsilon> \<equiv> (\<integral>\<^sup>+ y. u y \<partial>count_space (B \<Gamma>))"
+  assumes u_outside: "\<And>x. x \<notin> B \<Gamma> \<Longrightarrow> u x = 0"
+  and finite_\<epsilon>: "\<epsilon> \<noteq> \<top>"
 begin
 
 private lemma u_A: "x \<in> A \<Gamma> \<Longrightarrow> u x = 0"
 using u_outside[of x] disjoint by auto
 
-private lemma u_finite: "u y \<noteq> \<infinity>"
+private lemma u_finite: "u y \<noteq> \<top>"
 proof(cases "y \<in> B \<Gamma>")
   case True
   have "u y \<le> \<epsilon>" unfolding \<epsilon>_def by(rule nn_integral_ge_point)(simp add: True)
-  also have "\<dots> < \<infinity>" using finite_\<epsilon> by simp
+  also have "\<dots> < \<top>" using finite_\<epsilon> by (simp add: less_top[symmetric])
   finally show ?thesis by simp
 qed(simp add: u_outside)
 
 lemma hindered_reduce: -- \<open>Lemma 6.7\<close>
+  assumes u: "u \<le> weight \<Gamma>"
   assumes hindered_by: "hindered_by (\<Gamma>\<lparr>weight := weight \<Gamma> - u\<rparr>) \<epsilon>" (is "hindered_by ?\<Gamma> _")
   shows "hindered \<Gamma>"
 proof -
   note [simp] = u_finite
   let ?TER = "TER\<^bsub>?\<Gamma>\<^esub>"
-  from hindered_by obtain f 
+  from hindered_by obtain f
     where hindrance_by: "hindrance_by ?\<Gamma> f \<epsilon>"
     and f: "current ?\<Gamma> f"
     and w: "wave ?\<Gamma> f" by cases
   from hindrance_by obtain a where a: "a \<in> A \<Gamma>" "a \<notin> \<E>\<^bsub>?\<Gamma>\<^esub> (?TER f)"
-    and a_le: "d_OUT f a < weight \<Gamma> a" 
+    and a_le: "d_OUT f a < weight \<Gamma> a"
     and \<epsilon>_less: "weight \<Gamma> a - d_OUT f a > \<epsilon>"
     and \<epsilon>_nonneg: "\<epsilon> \<ge> 0" by(auto simp add: u_A hindrance_by.simps)
 
-  from f have f': "current \<Gamma> f" by(rule current_weight_mono)(auto intro: ereal_diff_le_self u_nonneg)
+  from f have f': "current \<Gamma> f" by(rule current_weight_mono)(auto intro: diff_le_self_ennreal)
 
   write Some ("\<langle>_\<rangle>")
 
@@ -5126,8 +5034,8 @@ proof -
     | (Some x, Some y) \<Rightarrow> edge \<Gamma> x y \<or> edge \<Gamma> y x
     | _ \<Rightarrow> False"
   def cap \<equiv> "\<lambda>e. case e of
-      (None, Some y) \<Rightarrow> if y \<in> \<^bold>V then u y else 0 
-    | (Some x, Some y) \<Rightarrow> if edge \<Gamma> x y \<and> x \<noteq> a then f (x, y) else if edge \<Gamma> y x then max (weight \<Gamma> x) (weight \<Gamma> y) + 1 else 0 
+      (None, Some y) \<Rightarrow> if y \<in> \<^bold>V then u y else 0
+    | (Some x, Some y) \<Rightarrow> if edge \<Gamma> x y \<and> x \<noteq> a then f (x, y) else if edge \<Gamma> y x then max (weight \<Gamma> x) (weight \<Gamma> y) + 1 else 0
     | _ \<Rightarrow> 0"
   def \<Psi> \<equiv> "\<lparr>edge = edge', capacity = cap, source = None, sink = Some a\<rparr>"
 
@@ -5135,8 +5043,8 @@ proof -
     "edge' None \<langle>y\<rangle> \<longleftrightarrow> y \<in> \<^bold>V \<and> y \<notin> A \<Gamma>"
     "edge' xo None \<longleftrightarrow> False"
     "edge' \<langle>x\<rangle> \<langle>y\<rangle> \<longleftrightarrow> edge \<Gamma> x y \<or> edge \<Gamma> y x"
-    for xo x y by(simp_all add: edge'_def split: option.split) 
-  
+    for xo x y by(simp_all add: edge'_def split: option.split)
+
   have edge_None1E [elim!]: thesis if "edge' None y" "\<And>z. \<lbrakk> y = \<langle>z\<rangle>; z \<in> \<^bold>V; z \<notin> A \<Gamma> \<rbrakk> \<Longrightarrow> thesis" for y thesis
     using that by(simp add: edge'_def split: option.split_asm sum.split_asm)
   have edge_Some1E [elim!]: thesis if "edge' \<langle>x\<rangle> y" "\<And>z. \<lbrakk> y = \<langle>z\<rangle>; edge \<Gamma> x z \<or> edge \<Gamma> z x \<rbrakk> \<Longrightarrow> thesis" for x y thesis
@@ -5147,7 +5055,7 @@ proof -
   have cap_simps [simp]:
     "cap (None, \<langle>y\<rangle>) = (if y \<in> \<^bold>V then u y else 0)"
     "cap (xo, None) = 0"
-    "cap (\<langle>x\<rangle>, \<langle>y\<rangle>) = 
+    "cap (\<langle>x\<rangle>, \<langle>y\<rangle>) =
     (if edge \<Gamma> x y \<and> x \<noteq> a then f (x, y) else if edge \<Gamma> y x then max (weight \<Gamma> x) (weight \<Gamma> y) + 1 else 0)"
     for xo x y by(simp_all add: cap_def split: option.split)
 
@@ -5158,15 +5066,13 @@ proof -
     "sink \<Psi> = \<langle>a\<rangle>"
     by(simp_all add: \<Psi>_def)
 
-  have cap_nonneg: "cap e \<ge> 0" for e using weight_nonneg
-    by(auto simp add: cap_def u_nonneg currentD_nonneg[OF f] max_def split: prod.split option.split)
   have cap_outside1: "\<not> vertex \<Gamma> x \<Longrightarrow> cap (\<langle>x\<rangle>, y) = 0" for x y
     by(cases y)(auto simp add: vertex_def)
   have capacity_A_weight: "d_OUT cap \<langle>x\<rangle> \<le> weight \<Gamma> x" if "x \<in> A \<Gamma>" for x
   proof -
     have "d_OUT cap \<langle>x\<rangle> \<le> (\<Sum>\<^sup>+ y\<in>range Some. f (x, the y))"
       using that disjoint a(1) unfolding d_OUT_def
-      by(auto 4 4 intro!: nn_integral_mono simp add: nn_integral_count_space_indicator notin_range_Some currentD_outside[OF f] currentD_nonneg[OF f] split: split_indicator dest: edge_antiparallel bipartite_E)
+      by(auto 4 4 intro!: nn_integral_mono simp add: nn_integral_count_space_indicator notin_range_Some currentD_outside[OF f] split: split_indicator dest: edge_antiparallel bipartite_E)
     also have "\<dots> = d_OUT f x" by(simp add: d_OUT_def nn_integral_count_space_reindex)
     also have "\<dots> \<le> weight \<Gamma> x" using f' by(rule currentD_weight_OUT)
     finally show ?thesis .
@@ -5179,25 +5085,25 @@ proof -
   next
     fix v
     assume "v \<noteq> sink \<Psi>"
-    consider (sink) "v = None" | (A) x where "v = \<langle>x\<rangle>" "x \<in> A \<Gamma>" 
+    consider (sink) "v = None" | (A) x where "v = \<langle>x\<rangle>" "x \<in> A \<Gamma>"
       | (B) y where "v = \<langle>y\<rangle>" "y \<notin> A \<Gamma>" "y \<in> \<^bold>V" | (outside) x where "v = \<langle>x\<rangle>" "x \<notin> \<^bold>V"
       by(cases v) auto
-    then show "d_IN (capacity \<Psi>) v \<noteq> \<infinity> \<or> d_OUT (capacity \<Psi>) v \<noteq> \<infinity>"
+    then show "d_IN (capacity \<Psi>) v \<noteq> \<top> \<or> d_OUT (capacity \<Psi>) v \<noteq> \<top>"
     proof cases
       case sink thus ?thesis by(simp add: d_IN_def)
     next
       case (A x)
-      thus ?thesis using capacity_A_weight[of x] by auto
+      thus ?thesis using capacity_A_weight[of x] by (auto simp: top_unique)
     next
       case (B y)
       have "d_IN (capacity \<Psi>) v \<le> (\<Sum>\<^sup>+ x. f (the x, y) * indicator (range Some) x + u y * indicator {None} x)"
-        using B disjoint bipartite_V a(1) unfolding d_IN_def 
-        by(auto 4 4 intro!: nn_integral_mono simp add: nn_integral_count_space_indicator notin_range_Some currentD_outside[OF f] currentD_nonneg[OF f] split: split_indicator dest: edge_antiparallel bipartite_E)
-      also have "\<dots> = (\<Sum>\<^sup>+ x\<in>range Some. f (the x, y)) + max 0 (u y)"
-        by(subst nn_integral_add)(simp_all add: currentD_nonneg[OF f] u_nonneg nn_integral_count_space_indicator)
-      also have "\<dots> = d_IN f y + max 0 (u y)" by(simp add: d_IN_def nn_integral_count_space_reindex)
+        using B disjoint bipartite_V a(1) unfolding d_IN_def
+        by(auto 4 4 intro!: nn_integral_mono simp add: nn_integral_count_space_indicator notin_range_Some currentD_outside[OF f] split: split_indicator dest: edge_antiparallel bipartite_E)
+      also have "\<dots> = (\<Sum>\<^sup>+ x\<in>range Some. f (the x, y)) + u y"
+        by(subst nn_integral_add)(simp_all add: nn_integral_count_space_indicator)
+      also have "\<dots> = d_IN f y + u y" by(simp add: d_IN_def nn_integral_count_space_reindex)
       also have "d_IN f y \<le> weight \<Gamma> y" using f' by(rule currentD_weight_IN)
-      finally show ?thesis by(auto simp add: max_def add_right_mono split: if_split_asm)
+      finally show ?thesis by(auto simp add: add_right_mono top_unique split: if_split_asm)
     next
       case outside
       hence "d_OUT (capacity \<Psi>) v = 0"
@@ -5205,13 +5111,11 @@ proof -
       thus ?thesis by simp
     qed
   next
-    show "capacity \<Psi> e \<noteq> \<infinity>" for e using weight_finite
+    show "capacity \<Psi> e \<noteq> \<top>" for e using weight_finite
       by(auto simp add: cap_def max_def vertex_def currentD_finite[OF f'] split: option.split prod.split simp del: weight_finite)
     show "capacity \<Psi> e = 0" if "e \<notin> \<^bold>E\<^bsub>\<Psi>\<^esub>" for e
       using that bipartite_V disjoint
       by(auto simp add: cap_def max_def intro: u_outside split: option.split prod.split)
-    show "0 \<le> capacity \<Psi> e" for e using weight_nonneg currentD_nonneg[OF f]
-      by(auto simp add: cap_def u_nonneg max_def split: option.split prod.split)
     show "\<not> edge \<Psi> x (source \<Psi>)" for x  by simp
     show "\<not> edge \<Psi> x x" for x by(cases x)(simp_all add: no_loop)
     show "source \<Psi> \<noteq> sink \<Psi>" by simp
@@ -5225,10 +5129,10 @@ proof -
     also have "\<dots> \<le> \<integral>\<^sup>+ y. cap (None, y) \<partial>count_space (range Some)" unfolding d_OUT_def
       by(auto simp add: nn_integral_count_space_indicator notin_range_Some intro!: nn_integral_mono split: split_indicator)
     also have "\<dots> \<le> \<epsilon>" unfolding \<epsilon>_def
-      by(subst (2) nn_integral_max_0[symmetric])(subst (2) nn_integral_count_space_indicator, auto simp add: nn_integral_count_space_reindex u_outside intro!: nn_integral_mono split: split_indicator)
+      by (subst (2) nn_integral_count_space_indicator, auto simp add: nn_integral_count_space_reindex u_outside intro!: nn_integral_mono split: split_indicator)
     finally show ?thesis by simp
   qed
-  then have finite_flow: "\<alpha> \<noteq> \<infinity>" using finite_\<epsilon> by auto
+  then have finite_flow: "\<alpha> \<noteq> \<top>" using finite_\<epsilon> by (auto simp: top_unique)
 
   from \<Psi>.ex_max_flow
   obtain j where j: "flow \<Psi> j"
@@ -5237,20 +5141,24 @@ proof -
     unfolding \<alpha>_def by auto
 
   have j_le_f: "j (Some x, Some y) \<le> f (x, y)" if "edge \<Gamma> x y" for x y
-    using that flowD_capacity[OF j, of "(Some x, Some y)"] a(1) disjoint currentD_nonneg[OF f]
+    using that flowD_capacity[OF j, of "(Some x, Some y)"] a(1) disjoint
     by(auto split: if_split_asm dest: bipartite_E intro: order_trans)
 
-  have IN_j_finite [simp]: "d_IN j x \<noteq> \<infinity>" for x using finite_flow by(rule neq_PInf_trans)(simp add: IN_j)
-  have OUT_j_finite: "d_OUT j x \<noteq> \<infinity>" for x
+  have IN_j_finite [simp]: "d_IN j x \<noteq> \<top>" for x using finite_flow by(rule neq_top_trans)(simp add: IN_j)
+
+  have j_finite[simp]: "j (x, y) < \<top>" for x y
+    by (rule le_less_trans[OF d_IN_ge_point]) (simp add: IN_j_finite[of y] less_top[symmetric])
+
+  have OUT_j_finite: "d_OUT j x \<noteq> \<top>" for x
   proof(cases "x = source \<Psi> \<or> x = sink \<Psi>")
     case True thus ?thesis
     proof cases
       case left thus ?thesis using finite_flow value_j by simp
     next
       case right
-      have "d_OUT (capacity \<Psi>) \<langle>a\<rangle> \<noteq> \<infinity>" using capacity_A_weight[of a] a(1) by(auto)
+      have "d_OUT (capacity \<Psi>) \<langle>a\<rangle> \<noteq> \<top>" using capacity_A_weight[of a] a(1) by(auto simp: top_unique)
       thus ?thesis unfolding right[simplified]
-        by(rule neq_PInf_trans)(rule d_OUT_mono flowD_capacity[OF j])+
+        by(rule neq_top_trans)(rule d_OUT_mono flowD_capacity[OF j])+
     qed
   next
     case False then show ?thesis by(simp add: flowD_KIR[OF j])
@@ -5264,7 +5172,7 @@ proof -
       case True
       have "d_IN j \<langle>x\<rangle> \<le> \<alpha>" by(rule IN_j)
       also have "\<dots> \<le> \<epsilon>" by(rule \<alpha>_le)
-      also have "\<epsilon> < weight \<Gamma> a" using \<epsilon>_less d_OUT_nonneg[of f a] ereal_diff_le_self less_le_trans by blast 
+      also have "\<epsilon> < weight \<Gamma> a" using \<epsilon>_less diff_le_self_ennreal less_le_trans by blast
       finally show ?thesis using True by(auto intro: order.strict_implies_order)
     next
       case False
@@ -5280,55 +5188,56 @@ proof -
       case True
       have "d_IN j \<langle>x\<rangle> \<le> d_IN cap \<langle>x\<rangle>" using flowD_capacity[OF j] by(auto intro: d_IN_mono)
       also have "\<dots> \<le> (\<Sum>\<^sup>+ z. f (the z, x) * indicator (range Some) z) + (\<Sum>\<^sup>+ z :: 'v option. u x * indicator {None} z)"
-        using True disjoint 
-        by(subst nn_integral_add[symmetric])(auto simp add: vertex_def currentD_outside[OF f] currentD_nonneg[OF f'] u_nonneg d_IN_def B_out intro!: nn_integral_mono split: split_indicator)
+        using True disjoint
+        by(subst nn_integral_add[symmetric])(auto simp add: vertex_def currentD_outside[OF f] d_IN_def B_out intro!: nn_integral_mono split: split_indicator)
       also have "\<dots> = d_IN f x + u x"
-        by(simp add: nn_integral_count_space_indicator[symmetric] nn_integral_count_space_reindex d_IN_def max_def u_nonneg)
-      also have "\<dots> \<le> weight \<Gamma> x" using currentD_weight_IN[OF f, of x] u_finite[of x] u_nonneg by(simp add: ereal_le_minus)
+        by(simp add: nn_integral_count_space_indicator[symmetric] nn_integral_count_space_reindex d_IN_def)
+      also have "\<dots> \<le> weight \<Gamma> x" using currentD_weight_IN[OF f, of x] u_finite[of x]
+        using \<epsilon>_less u by (auto simp add: ennreal_le_minus_iff le_fun_def)
       finally show ?thesis .
     next
       case False
       with xA have "x \<notin> \<^bold>V" using bipartite_V by blast
-      then have "d_IN j \<langle>x\<rangle> = 0" using False 
-        by(auto simp add: d_IN_def nn_integral_0_iff flowD_nonneg[OF j] emeasure_count_space_eq_0 vertex_def edge'_def split: option.split_asm intro!: \<Psi>.flowD_outside[OF j])
-      also have "0 \<le> weight \<Gamma> x" by(rule weight_nonneg)
-      finally show ?thesis .
+      then have "d_IN j \<langle>x\<rangle> = 0" using False
+        by(auto simp add: d_IN_def nn_integral_0_iff emeasure_count_space_eq_0 vertex_def edge'_def split: option.split_asm intro!: \<Psi>.flowD_outside[OF j])
+      then show ?thesis
+        by simp
     qed
   qed
 
   let ?j = "j \<circ> map_prod Some Some \<circ> prod.swap"
 
-  have finite_j_OUT: "(\<Sum>\<^sup>+ y\<in>\<^bold>O\<^bold>U\<^bold>T x. j (\<langle>x\<rangle>, \<langle>y\<rangle>)) \<noteq> \<infinity>" (is "?j_OUT \<noteq> _") if "x \<in> A \<Gamma>" for x
+  have finite_j_OUT: "(\<Sum>\<^sup>+ y\<in>\<^bold>O\<^bold>U\<^bold>T x. j (\<langle>x\<rangle>, \<langle>y\<rangle>)) \<noteq> \<top>" (is "?j_OUT \<noteq> _") if "x \<in> A \<Gamma>" for x
     using currentD_finite_OUT[OF f', of x]
-    by(rule neq_PInf_trans)(auto intro!: nn_integral_mono j_le_f simp add: d_OUT_def nn_integral_count_space_indicator outgoing_def currentD_nonneg[OF f'] split: split_indicator)
+    by(rule neq_top_trans)(auto intro!: nn_integral_mono j_le_f simp add: d_OUT_def nn_integral_count_space_indicator outgoing_def split: split_indicator)
   have j_OUT_eq: "?j_OUT x = d_OUT j \<langle>x\<rangle>" if "x \<in> A \<Gamma>" for x
   proof -
     have "?j_OUT x = (\<Sum>\<^sup>+ y\<in>range Some. j (Some x, y))" using that disjoint
       by(simp add: nn_integral_count_space_reindex)(auto 4 4 simp add: nn_integral_count_space_indicator outgoing_def intro!: nn_integral_cong \<Psi>.flowD_outside[OF j] dest: bipartite_E split: split_indicator)
     also have "\<dots> = d_OUT j \<langle>x\<rangle>"
-      by(auto simp add: d_OUT_def nn_integral_count_space_indicator notin_range_Some intro!: nn_integral_cong \<Psi>.flowD_outside[OF j] split: split_indicator)  
+      by(auto simp add: d_OUT_def nn_integral_count_space_indicator notin_range_Some intro!: nn_integral_cong \<Psi>.flowD_outside[OF j] split: split_indicator)
     finally show ?thesis .
   qed
 
   def g \<equiv> "f \<oplus> ?j"
   have g_simps: "g (x, y) = (f \<oplus> ?j) (x, y)" for x y by(simp add: g_def)
 
-  have OUT_g_A: "d_OUT g x = d_OUT f x + (d_IN j \<langle>x\<rangle> - d_OUT j \<langle>x\<rangle>)" if "x \<in> A \<Gamma>" for x
+  have OUT_g_A: "d_OUT g x = d_OUT f x + d_IN j \<langle>x\<rangle> - d_OUT j \<langle>x\<rangle>" if "x \<in> A \<Gamma>" for x
   proof -
     have "d_OUT g x = (\<Sum>\<^sup>+ y\<in>\<^bold>O\<^bold>U\<^bold>T x. f (x, y) + j (\<langle>y\<rangle>, \<langle>x\<rangle>) - j (\<langle>x\<rangle>, \<langle>y\<rangle>))"
       by(auto simp add: d_OUT_def g_simps currentD_outside[OF f'] outgoing_def nn_integral_count_space_indicator intro!: nn_integral_cong)
     also have "\<dots> = (\<Sum>\<^sup>+ y\<in>\<^bold>O\<^bold>U\<^bold>T x. f (x, y) + j (\<langle>y\<rangle>, \<langle>x\<rangle>)) - (\<Sum>\<^sup>+ y\<in>\<^bold>O\<^bold>U\<^bold>T x. j (\<langle>x\<rangle>, \<langle>y\<rangle>))"
       (is "_ = _ - ?j_OUT") using finite_j_OUT[OF that]
-      by(subst nn_integral_diff)(auto simp add: flowD_nonneg[OF j] AE_count_space outgoing_def intro!: order_trans[OF j_le_f] ereal_le_add_self)
+      by(subst nn_integral_diff)(auto simp add: AE_count_space outgoing_def intro!: order_trans[OF j_le_f])
     also have "\<dots> = (\<Sum>\<^sup>+ y\<in>\<^bold>O\<^bold>U\<^bold>T x. f (x, y)) + (\<Sum>\<^sup>+ y\<in>\<^bold>O\<^bold>U\<^bold>T x. j (Some y, Some x)) - ?j_OUT"
-      (is "_ = ?f + ?j_IN - _") by(subst nn_integral_add)(simp_all add: flowD_nonneg[OF j] currentD_nonneg[OF f])
+      (is "_ = ?f + ?j_IN - _") by(subst nn_integral_add) simp_all
     also have "?f = d_OUT f x" by(subst d_OUT_alt_def[where G=\<Gamma>])(simp_all add: currentD_outside[OF f])
     also have "?j_OUT = d_OUT j \<langle>x\<rangle>" using that by(rule j_OUT_eq)
     also have "?j_IN = (\<Sum>\<^sup>+ y\<in>range Some. j (y, \<langle>x\<rangle>))" using that disjoint
       by(simp add: nn_integral_count_space_reindex)(auto 4 4 simp add: nn_integral_count_space_indicator outgoing_def intro!: nn_integral_cong \<Psi>.flowD_outside[OF j] split: split_indicator dest: bipartite_E)
     also have "\<dots> = d_IN j (Some x)" using that disjoint
       by(auto 4 3 simp add: d_IN_def nn_integral_count_space_indicator notin_range_Some intro!: nn_integral_cong \<Psi>.flowD_outside[OF j] split: split_indicator)
-    finally show ?thesis by(simp add: add_diff_eq_ereal)
+    finally show ?thesis by simp
   qed
 
   have OUT_g_B: "d_OUT g x = 0" if "x \<notin> A \<Gamma>" for x
@@ -5337,14 +5246,14 @@ proof -
 
   have OUT_g_a: "d_OUT g a < weight \<Gamma> a" using a(1)
   proof -
-    have "d_OUT g a = d_OUT f a + (d_IN j \<langle>a\<rangle> - d_OUT j \<langle>a\<rangle>)" using a(1) by(rule OUT_g_A)
+    have "d_OUT g a = d_OUT f a + d_IN j \<langle>a\<rangle> - d_OUT j \<langle>a\<rangle>" using a(1) by(rule OUT_g_A)
     also have "\<dots> \<le> d_OUT f a + d_IN j \<langle>a\<rangle>"
-      unfolding add_diff_eq_ereal by(rule ereal_diff_le_self)(rule d_OUT_nonneg)
-    also have "\<dots> < weight \<Gamma> a - (\<epsilon> - d_IN j \<langle>a\<rangle>)"
-      using \<epsilon>_less currentD_finite_OUT[OF f'] IN_j_le_weight[of a]
-      by(cases "d_OUT f a" "weight \<Gamma> a" "\<epsilon>" "d_IN j \<langle>a\<rangle>" rule: ereal3_cases[case_product ereal_cases])simp_all
+      by(rule diff_le_self_ennreal)
+    also have "\<dots> < weight \<Gamma> a + d_IN j \<langle>a\<rangle> - \<epsilon>"
+      using finite_\<epsilon> \<epsilon>_less currentD_finite_OUT[OF f']
+      by (simp add: less_diff_eq_ennreal less_top ac_simps)
     also have "\<dots> \<le> weight \<Gamma> a"
-      by(simp add: ereal_diff_le_mono_left ereal_diff_positive IN_j[THEN order_trans, OF \<alpha>_le])
+      using IN_j[THEN order_trans, OF \<alpha>_le] by (simp add: ennreal_minus_le_iff)
     finally show ?thesis .
   qed
 
@@ -5352,28 +5261,28 @@ proof -
   proof -
     have "d_OUT ?j x = (\<Sum>\<^sup>+ y\<in>range Some. j (y, \<langle>x\<rangle>))" by(simp add: d_OUT_def nn_integral_count_space_reindex)
     also have "\<dots> = d_IN j \<langle>x\<rangle> - (\<Sum>\<^sup>+ y. j (y, \<langle>x\<rangle>) * indicator {None} y)" unfolding d_IN_def
-      by(subst nn_integral_diff[symmetric])(auto simp add: flowD_nonneg[OF j] max_def \<Psi>.flowD_finite[OF j] AE_count_space nn_integral_count_space_indicator split: split_indicator intro!: nn_integral_cong)
-    also have "\<dots> = d_IN j \<langle>x\<rangle> - j (None, \<langle>x\<rangle>)" by(simp add: max_def flowD_nonneg[OF j])
+      by(subst nn_integral_diff[symmetric])(auto simp add: max_def \<Psi>.flowD_finite[OF j] AE_count_space nn_integral_count_space_indicator split: split_indicator intro!: nn_integral_cong)
+    also have "\<dots> = d_IN j \<langle>x\<rangle> - j (None, \<langle>x\<rangle>)" by(simp add: max_def)
     finally show ?thesis .
   qed
-  
-  have OUT_jj_finite [simp]: "d_OUT ?j x \<noteq> \<infinity>" for x using flowD_nonneg[OF j]
-    by(simp add: OUT_jj ereal_minus_eq_PInfty_iff)
+
+  have OUT_jj_finite [simp]: "d_OUT ?j x \<noteq> \<top>" for x
+    by(simp add: OUT_jj)
 
   have IN_g: "d_IN g x = d_IN f x + j (None, \<langle>x\<rangle>)" for x
   proof(cases "x \<in> B \<Gamma>")
     case True
-    have finite: "(\<Sum>\<^sup>+ y\<in>\<^bold>I\<^bold>N x. j (Some y, Some x)) \<noteq> \<infinity>" using currentD_finite_IN[OF f', of x]
-      by(rule neq_PInf_trans)(auto intro!: nn_integral_mono j_le_f simp add: d_IN_def nn_integral_count_space_indicator incoming_def currentD_nonneg[OF f'] split: split_indicator)
+    have finite: "(\<Sum>\<^sup>+ y\<in>\<^bold>I\<^bold>N x. j (Some y, Some x)) \<noteq> \<top>" using currentD_finite_IN[OF f', of x]
+      by(rule neq_top_trans)(auto intro!: nn_integral_mono j_le_f simp add: d_IN_def nn_integral_count_space_indicator incoming_def split: split_indicator)
 
     have "d_IN g x = d_IN (f \<oplus> ?j) x" by(simp add: g_def)
     also have "\<dots> = (\<Sum>\<^sup>+ y\<in>\<^bold>I\<^bold>N x. f (y, x) + j (Some x, Some y) - j (Some y, Some x))"
       by(auto simp add: d_IN_def currentD_outside[OF f'] incoming_def nn_integral_count_space_indicator intro!: nn_integral_cong)
     also have "\<dots> = (\<Sum>\<^sup>+ y\<in>\<^bold>I\<^bold>N x. f (y, x) + j (Some x, Some y)) - (\<Sum>\<^sup>+ y\<in>\<^bold>I\<^bold>N x. j (Some y, Some x))"
       (is "_ = _ - ?j_IN") using finite
-      by(subst nn_integral_diff)(auto simp add: flowD_nonneg[OF j] AE_count_space incoming_def intro!: order_trans[OF j_le_f] ereal_le_add_self)
+      by(subst nn_integral_diff)(auto simp add: AE_count_space incoming_def intro!: order_trans[OF j_le_f])
     also have "\<dots> = (\<Sum>\<^sup>+ y\<in>\<^bold>I\<^bold>N x. f (y, x)) + (\<Sum>\<^sup>+ y\<in>\<^bold>I\<^bold>N x. j (Some x, Some y)) - ?j_IN"
-      (is "_ = ?f + ?j_OUT - _") by(subst nn_integral_add)(simp_all add: flowD_nonneg[OF j] currentD_nonneg[OF f])
+      (is "_ = ?f + ?j_OUT - _") by(subst nn_integral_add) simp_all
     also have "?f = d_IN f x" by(subst d_IN_alt_def[where G=\<Gamma>])(simp_all add: currentD_outside[OF f])
     also have "?j_OUT = (\<Sum>\<^sup>+ y\<in>range Some. j (Some x, y))" using True disjoint
       by(simp add: nn_integral_count_space_reindex)(auto 4 4 simp add: nn_integral_count_space_indicator incoming_def intro!: nn_integral_cong \<Psi>.flowD_outside[OF j] split: split_indicator dest: bipartite_E)
@@ -5384,20 +5293,20 @@ proof -
       by(simp add: nn_integral_count_space_reindex)(auto 4 4 simp add: nn_integral_count_space_indicator incoming_def intro!: nn_integral_cong \<Psi>.flowD_outside[OF j] dest: bipartite_E split: split_indicator)
     also have "\<dots> = d_IN j (Some x) - (\<Sum>\<^sup>+ y :: 'v option. j (None, Some x) * indicator {None} y)"
       unfolding d_IN_def using flowD_capacity[OF j, of "(None, Some x)"]
-      by(subst nn_integral_diff[symmetric])(auto simp add: nn_integral_count_space_indicator flowD_nonneg[OF j] max_def AE_count_space intro!: nn_integral_cong split: split_indicator if_split_asm)
+      by(subst nn_integral_diff[symmetric])
+        (auto simp add: nn_integral_count_space_indicator AE_count_space top_unique image_iff
+              intro!: nn_integral_cong ennreal_diff_self split: split_indicator if_split_asm)
     also have "d_IN f x + d_IN j (Some x) - \<dots> = d_IN f x + j (None, Some x)"
-      apply(simp add: max_def flowD_nonneg[OF j])
-      apply(subst ereal_minus_minus, simp add: d_IN_nonneg)
-      apply(subst (2) add.commute)
-      apply(subst add.assoc[symmetric])
-      apply(subst add_diff_eq_ereal[symmetric])
-      apply(auto simp add: d_IN_nonneg add.commute)
+      using ennreal_add_diff_cancel_right[OF IN_j_finite[of "Some x"], of "d_IN f x + j (None, Some x)"]
+      apply(subst diff_diff_ennreal')
+      apply(auto simp add: d_IN_def intro!: nn_integral_ge_point ennreal_diff_le_mono_left)
+      apply(simp add: ac_simps)
       done
     finally show ?thesis .
   next
     case False
     hence "d_IN g x = 0" "d_IN f x = 0" "j (None, \<langle>x\<rangle>) = 0"
-      using disjoint currentD_IN[OF f', of x] bipartite_V currentD_outside_IN[OF f'] u_outside[OF False] flowD_capacity[OF j, of "(None, \<langle>x\<rangle>)"] flowD_nonneg[OF j, of "(None, \<langle>x\<rangle>)"]
+      using disjoint currentD_IN[OF f', of x] bipartite_V currentD_outside_IN[OF f'] u_outside[OF False] flowD_capacity[OF j, of "(None, \<langle>x\<rangle>)"]
       by(cases "vertex \<Gamma> x"; auto simp add: d_IN_def nn_integral_0_iff_AE AE_count_space g_simps dest: bipartite_E split: if_split_asm)+
     thus ?thesis by simp
   qed
@@ -5407,11 +5316,11 @@ proof -
     show "d_OUT g x \<le> weight \<Gamma> x" for x
     proof(cases "x \<in> A \<Gamma>")
       case False
-      thus ?thesis using weight_nonneg by(simp add: OUT_g_B)
+      thus ?thesis by(simp add: OUT_g_B)
     next
       case True
       with OUT_g_a show ?thesis
-        by(cases "x = a")(simp_all add: OUT_g_A flowD_KIR[OF j] d_IN_nonneg currentD_weight_OUT[OF f'])
+        by(cases "x = a")(simp_all add: OUT_g_A flowD_KIR[OF j] currentD_weight_OUT[OF f'])
     qed
 
     show "d_IN g x \<le> weight \<Gamma> x" for x
@@ -5419,17 +5328,16 @@ proof -
       case False
       hence "d_IN g x = 0" using disjoint
         by(auto simp add: d_IN_def nn_integral_0_iff_AE AE_count_space g_simps dest: bipartite_E)
-      thus ?thesis using weight_nonneg by simp
+      thus ?thesis by simp
     next
       case True
       have "d_IN g x \<le> (weight \<Gamma> x - u x) + u x" unfolding IN_g
-        using currentD_weight_IN[OF f, of x] flowD_capacity[OF j, of "(None, Some x)"] True bipartite_V u_nonneg[of x]
-        by(intro ereal_add_mono)(simp_all split: if_split_asm)
-      also have "\<dots> = weight \<Gamma> x" by(simp add: diff_add_eq_ereal add_diff_eq_ereal[symmetric] u_nonneg)
+        using currentD_weight_IN[OF f, of x] flowD_capacity[OF j, of "(None, Some x)"] True bipartite_V
+        by(intro add_mono)(simp_all split: if_split_asm)
+      also have "\<dots> = weight \<Gamma> x"
+        using u by (intro diff_add_cancel_ennreal) (simp add: le_fun_def)
       finally show ?thesis .
     qed
-    show "0 \<le> g e" for e using j_le_f[of "fst e" "snd e"] flowD_nonneg[OF j, of "map_prod Some Some (prod.swap e)"]
-      by(cases e)(auto simp add: g_simps, metis dual_order.trans ereal_diff_positive ereal_le_add_self)
     show "g e = 0" if "e \<notin> \<^bold>E" for e using that
       by(cases e)(auto simp add: g_simps)
   qed
@@ -5448,14 +5356,14 @@ proof -
   have [simp]: "reachable a" by(auto simp add: reachable_def)
 
   have AB_edge: "edge G x y" if "edge \<Gamma> y x" for x y
-    using that weight_nonneg[of x] weight_nonneg[of y]
-    by(auto dest: edge_antiparallel simp add: min_def ereal_add_nonneg_eq_0_iff le_neq_trans)
+    using that
+    by(auto dest: edge_antiparallel simp add: min_def le_neq_trans add_eq_0_iff_both_eq_0)
   have reachable_AB: "reachable y" if "reachable x" "(x, y) \<in> \<^bold>E" for x y
     using that by(auto simp add: reachable_def simp del: G_sel dest!: AB_edge intro: rtrancl_path.step)
   have reachable_BA: "g (x, y) = 0" if "reachable y" "(x, y) \<in> \<^bold>E" "\<not> reachable x" for x y
   proof(rule ccontr)
     assume "g (x, y) \<noteq> 0"
-    with currentD_nonneg[OF g, of "(x, y)"] have "g (x, y) > 0" by simp
+    then have "g (x, y) > 0" by (simp add: zero_less_iff_neq_zero)
     hence "edge G x y" using that by simp
     then have "reachable x" using \<open>reachable y\<close>
       unfolding reachable_def by(rule converse_rtranclp_into_rtranclp)
@@ -5468,25 +5376,24 @@ proof -
       by(cases "p = []")(auto 4 3 simp add: vertex_def elim: rtrancl_path.cases split: if_split_asm)
   qed
 
-  have finite_j_IN: "(\<integral>\<^sup>+ y. j (Some y, Some x) \<partial>count_space (\<^bold>I\<^bold>N x)) \<noteq> \<infinity>" for x
+  have finite_j_IN: "(\<integral>\<^sup>+ y. j (Some y, Some x) \<partial>count_space (\<^bold>I\<^bold>N x)) \<noteq> \<top>" for x
   proof -
     have "(\<integral>\<^sup>+ y. j (Some y, Some x) \<partial>count_space (\<^bold>I\<^bold>N x)) \<le> d_IN f x"
-      by(auto intro!: nn_integral_mono j_le_f simp add: d_IN_def nn_integral_count_space_indicator incoming_def currentD_nonneg[OF f'] split: split_indicator)
-    thus ?thesis using currentD_finite_IN[OF f', of x] by auto
+      by(auto intro!: nn_integral_mono j_le_f simp add: d_IN_def nn_integral_count_space_indicator incoming_def split: split_indicator)
+    thus ?thesis using currentD_finite_IN[OF f', of x] by (auto simp: top_unique)
   qed
   have j_outside: "j (x, y) = 0" if "\<not> edge \<Psi> x y" for x y
-    using that flowD_capacity[OF j, of "(x, y)"] flowD_nonneg[OF j, of "(x, y)"] \<Psi>.capacity_outside[of "(x, y)"]
+    using that flowD_capacity[OF j, of "(x, y)"] \<Psi>.capacity_outside[of "(x, y)"]
     by(auto)
 
   def h \<equiv> "\<lambda>(x, y). if reachable x \<and> reachable y then g (x, y) else 0"
   have h_simps [simp]: "h (x, y) = (if reachable x \<and> reachable y then g (x, y) else 0)" for x y
     by(simp add: h_def)
-  have h_le_g: "h e \<le> g e" for e by(cases e)(simp add: currentD_nonneg[OF g])
-  have h_nonneg: "0 \<le> h e" for e by(cases e)(simp add: currentD_nonneg[OF g])
+  have h_le_g: "h e \<le> g e" for e by(cases e) simp
 
   have OUT_h: "d_OUT h x = (if reachable x then d_OUT g x else 0)" for x
   proof -
-    have "d_OUT h x = (\<Sum>\<^sup>+ y\<in>\<^bold>O\<^bold>U\<^bold>T x. h (x, y))" using h_nonneg h_le_g currentD_outside[OF g]
+    have "d_OUT h x = (\<Sum>\<^sup>+ y\<in>\<^bold>O\<^bold>U\<^bold>T x. h (x, y))" using h_le_g currentD_outside[OF g]
       by(intro d_OUT_alt_def) auto
     also have "\<dots> = (\<Sum>\<^sup>+ y\<in>\<^bold>O\<^bold>U\<^bold>T x. if reachable x then g (x, y) else 0)"
       by(auto intro!: nn_integral_cong simp add: outgoing_def dest: reachable_AB)
@@ -5497,7 +5404,7 @@ proof -
   have IN_h: "d_IN h x = (if reachable x then d_IN g x else 0)" for x
   proof -
     have "d_IN h x = (\<Sum>\<^sup>+ y\<in>\<^bold>I\<^bold>N x. h (y, x))"
-      using h_nonneg h_le_g currentD_outside[OF g] by(intro d_IN_alt_def) auto
+      using h_le_g currentD_outside[OF g] by(intro d_IN_alt_def) auto
     also have "\<dots> = (\<Sum>\<^sup>+ y\<in>\<^bold>I\<^bold>N x. if reachable x then g (y, x) else 0)"
       by(auto intro!: nn_integral_cong simp add: incoming_def dest: reachable_BA)
     also have "\<dots> = (if reachable x then d_IN g x else 0)"
@@ -5509,15 +5416,15 @@ proof -
   proof(rule current_leI)
     show "d_OUT h x \<le> d_IN h x" if "x \<notin> A \<Gamma>" for x
       by(simp add: OUT_h IN_h currentD_OUT_IN[OF g that])
-  qed(rule h_nonneg)
+  qed
 
   have reachable_full: "j (None, \<langle>y\<rangle>) = u y" if reach: "reachable y" for y
   proof(rule ccontr)
     assume "j (None, \<langle>y\<rangle>) \<noteq> u y"
-    with flowD_capacity[OF j, of "(None, \<langle>y\<rangle>)"] u_nonneg[of y]
-    have le: "j (None, \<langle>y\<rangle>) < u y" by(auto split: if_split_asm simp add: u_outside \<Psi>.flowD_outside[OF j])
-    then obtain y: "y \<in> B \<Gamma>" and uy: "u y > 0" using u_outside[of y] flowD_nonneg[OF j, of "(None, \<langle>y\<rangle>)"]
-      by(cases "y \<in> B \<Gamma>") simp_all
+    with flowD_capacity[OF j, of "(None, \<langle>y\<rangle>)"]
+    have le: "j (None, \<langle>y\<rangle>) < u y" by(auto split: if_split_asm simp add: u_outside \<Psi>.flowD_outside[OF j] zero_less_iff_neq_zero)
+    then obtain y: "y \<in> B \<Gamma>" and uy: "u y > 0" using u_outside[of y]
+      by(cases "y \<in> B \<Gamma>"; cases "u y = 0") (auto simp add: zero_less_iff_neq_zero)
 
     from reach obtain q where q: "path G y q a" and distinct: "distinct (y # q)"
       unfolding reachable_alt_def by(auto elim: rtrancl_path_distinct)
@@ -5537,10 +5444,10 @@ proof -
       thus ?thesis using e by(simp)
     qed
     have \<zeta>_pos: "0 < \<zeta>" unfolding \<zeta>_def using le
-      by(auto intro: Min_grI j_free ereal_diff_gr0)
+      by(auto intro: Min_grI j_free diff_gr0_ennreal)
     have \<zeta>_le: "\<zeta> \<le> cap' e" if "e \<in> set ?E" for e using that unfolding \<zeta>_def by auto
-    have finite_\<zeta> [simplified]: "\<zeta> < \<infinity>" unfolding \<zeta>_def using flowD_nonneg[OF j]
-      by(intro Min_less_iff[THEN iffD2])(auto simp add: ereal_minus_eq_PInfty_iff)
+    have finite_\<zeta> [simplified]: "\<zeta> < \<top>" unfolding \<zeta>_def
+      by(intro Min_less_iff[THEN iffD2])(auto simp add: less_top[symmetric])
 
     have E_antiparallel: "(x', y') \<in> set ?E \<Longrightarrow> (y', x') \<notin> set ?E" for x' y'
       using distinct
@@ -5551,7 +5458,7 @@ proof -
     have OUT_j': "d_OUT ?j' x' = \<zeta> * card (set [(x'', y) \<leftarrow> E. x'' = x']) + d_OUT j x'" for x'
     proof -
       have "d_OUT ?j' x' = d_OUT (\<lambda>e. if e \<in> set E then \<zeta> else 0) x' + d_OUT j x'"
-        using \<zeta>_pos by(intro d_OUT_add)(auto simp add: flowD_nonneg[OF j])
+        using \<zeta>_pos by(intro d_OUT_add)
       also have "d_OUT (\<lambda>e. if e \<in> set E then \<zeta> else 0) x' = \<integral>\<^sup>+ y. \<zeta> * indicator (set E) (x', y) \<partial>count_space UNIV"
         unfolding d_OUT_def by(rule nn_integral_cong)(simp)
       also have "\<dots> = (\<integral>\<^sup>+ e. \<zeta> * indicator (set E) e \<partial>embed_measure (count_space UNIV) (Pair x'))"
@@ -5564,7 +5471,7 @@ proof -
     have IN_j': "d_IN ?j' x' = \<zeta> * card (set [(y, x'') \<leftarrow> E. x'' = x']) + d_IN j x'" for x'
     proof -
       have "d_IN ?j' x' = d_IN (\<lambda>e. if e \<in> set E then \<zeta> else 0) x' + d_IN j x'"
-        using \<zeta>_pos by(intro d_IN_add)(auto simp add: flowD_nonneg[OF j])
+        using \<zeta>_pos by(intro d_IN_add)
       also have "d_IN (\<lambda>e. if e \<in> set E then \<zeta> else 0) x' = \<integral>\<^sup>+ y. \<zeta> * indicator (set E) (y, x') \<partial>count_space UNIV"
         unfolding d_IN_def by(rule nn_integral_cong)(simp)
       also have "\<dots> = (\<integral>\<^sup>+ e. \<zeta> * indicator (set E) e \<partial>embed_measure (count_space UNIV) (\<lambda>y. (y, x')))"
@@ -5590,7 +5497,7 @@ proof -
         case None
         have "\<zeta> \<le> u y - j (None, Some y)" by(simp add: \<zeta>_def)
         then have "\<zeta> + j (None, Some y) \<le> u y"
-          by (metis \<zeta>_pos abs_ereal_ge0 ereal_le_minus_iff flowD_nonneg j less_imp_le not_MInfty_nonneg u_finite)
+          using \<zeta>_pos by (auto simp add: ennreal_le_minus_iff)
         thus ?thesis using reachable_V[OF reach] None \<Psi>.flowD_outside[OF j, of "(Some y, None)"] uy
           by(auto simp add: j'_def E_def)
       next
@@ -5605,29 +5512,23 @@ proof -
           have "\<zeta> \<le> f (x', y') + j (Some y', Some x') - j (Some x', Some y')"
             using e backward Some(1) by(simp add: g_simps)
           hence "\<zeta> + j (Some x', Some y') - j (Some y', Some x') \<le> (f (x', y') + j (Some y', Some x') - j (Some x', Some y')) + j (Some x', Some y') - j (Some y', Some x')"
-            by(intro ereal_minus_mono add_right_mono) simp_all
+            by(intro ennreal_minus_mono add_right_mono) simp_all
           also have "\<dots> = f (x', y')"
-            apply(subst ereal_diff_add_assoc2)
-            apply(subst ereal_diff_add_assoc2)
-            apply(subst add_diff_eq_ereal[symmetric])
-            apply(simp add: flowD_nonneg[OF j] \<Psi>.flowD_finite[OF j])
-            apply(subst ereal_diff_add_assoc2[symmetric])
-            apply(subst add_diff_eq_ereal[symmetric])
-            apply(simp add: flowD_nonneg[OF j] \<Psi>.flowD_finite[OF j])
-            done
+            using j_le_f[OF \<open>edge \<Gamma> x' y'\<close>]
+            by(simp_all add: add_increasing2 less_top diff_add_assoc2_ennreal)
           finally show ?thesis using Some backward
-            by(auto simp add: currentD_nonneg[OF f] j'_def E_def dest: in_set_tlD E_antiparallel)
+            by(auto simp add: j'_def E_def dest: in_set_tlD E_antiparallel)
         next
           case forward
-          have "\<zeta> + j (Some x', Some y') - j (Some y', Some x') \<le> \<zeta> + j (Some x', Some y')" 
-            using flowD_nonneg[OF j] by(rule ereal_diff_le_self)
-          also have "j (Some x', Some y') \<le> d_IN j (Some y')" unfolding d_IN_def
-            by(rule nn_integral_ge_point) simp
+          have "\<zeta> + j (Some x', Some y') - j (Some y', Some x') \<le> \<zeta> + j (Some x', Some y')"
+            by(rule diff_le_self_ennreal)
+          also have "j (Some x', Some y') \<le> d_IN j (Some y')"
+            by(rule d_IN_ge_point)
           also have "\<dots> \<le> weight \<Gamma> y'" by(rule IN_j_le_weight)
           also have "\<zeta> \<le> 1" using e forward by simp
           finally have "\<zeta> + j (Some x', Some y') - j (Some y', Some x') \<le> max (weight \<Gamma> x') (weight \<Gamma> y') + 1"
             by(simp add: add_left_mono add_right_mono max_def)(metis (no_types, lifting) add.commute add_right_mono less_imp_le less_le_trans not_le)
-          then show ?thesis using Some forward e weight_nonneg
+          then show ?thesis using Some forward e
             by(auto simp add: j'_def E_def max_def dest: in_set_tlD E_antiparallel)
         next
           case a'
@@ -5640,10 +5541,10 @@ proof -
       next
         case (old x' y')
         hence "j' e \<le> j e" using \<zeta>_pos
-          by(auto simp add: j'_def E_def flowD_nonneg[OF j] intro!: ereal_diff_le_self)
+          by(auto simp add: j'_def E_def intro!: diff_le_self_ennreal)
         also have "j e \<le> capacity \<Psi> e" using j by(rule flowD_capacity)
         finally show ?thesis .
-      qed(auto simp add: j'_def E_def \<Psi>.flowD_outside[OF j] uy u_nonneg flowD_nonneg[OF j])
+      qed(auto simp add: j'_def E_def \<Psi>.flowD_outside[OF j] uy)
     next
       fix x'
       assume x': "x' \<noteq> source \<Psi>" "x' \<noteq> sink \<Psi>"
@@ -5669,30 +5570,27 @@ proof -
       qed
       also have "\<zeta> * \<dots> + d_OUT j x' =  d_IN ?j' x'"
         unfolding flowD_KIR[OF j x'] by(rule IN_j'[symmetric])
-      also have "?j' e \<ge> 0" for e using flowD_nonneg[OF j] \<zeta>_pos by(simp)
-      moreover have "d_IN ?j' x' \<noteq> \<infinity>"
-        using \<Psi>.flowD_finite_IN[OF j x'(2)] finite_\<zeta> IN_j'[of x'] by auto
+      also have "d_IN ?j' x' \<noteq> \<top>"
+        using \<Psi>.flowD_finite_IN[OF j x'(2)] finite_\<zeta> IN_j'[of x'] by (auto simp: top_add ennreal_mult_eq_top_iff)
       ultimately show "KIR j' x'" unfolding j'_def by(rule KIR_cleanup)
-    next
-      show "0 \<le> j' e" for e unfolding j'_def by(rule cleanup_nonneg)
     qed
     hence "value_flow \<Psi> j' \<le> \<alpha>" unfolding \<alpha>_def by(auto intro: SUP_upper)
     moreover have "value_flow \<Psi> j' > value_flow \<Psi> j"
     proof -
       have "value_flow \<Psi> j + 0 < value_flow \<Psi> j + \<zeta> * 1"
-        using \<zeta>_pos value_j d_OUT_nonneg[of j None] finite_flow by(intro ereal_less_add)simp_all
+        using \<zeta>_pos value_j finite_flow by simp
       also have "[(x', y') \<leftarrow> E. x' = None] = [(None, Some y)]"
         using q_Nil by(cases q)(auto simp add: E_def filter_map cong: filter_cong split_beta)
       hence "\<zeta> * 1 \<le> \<zeta> * card (set [(x', y') \<leftarrow> E. x' = None])" using \<zeta>_pos
-        by(intro ereal_mult_left_mono)(auto simp add: E_def real_of_nat_ge_one_iff neq_Nil_conv card_insert)
+        by(intro mult_left_mono)(auto simp add: E_def real_of_nat_ge_one_iff neq_Nil_conv card_insert)
       also have "value_flow \<Psi> j + \<dots> = value_flow \<Psi> ?j'"
         using OUT_j' by(simp add: add.commute)
       also have "\<dots> = value_flow \<Psi> j'" unfolding j'_def
         by(subst value_flow_cleanup)(auto simp add: E_def \<Psi>.flowD_outside[OF j])
       finally show ?thesis by(simp add: add_left_mono)
     qed
-    ultimately show False using finite_flow d_OUT_nonneg[of j' "source \<Psi>"] \<zeta>_pos value_j
-      by(cases "value_flow \<Psi> j" \<zeta> rule: ereal2_cases) simp_all
+    ultimately show False using finite_flow \<zeta>_pos value_j
+      by(cases "value_flow \<Psi> j" \<zeta> rule: ennreal2_cases) simp_all
   qed
 
   have sep_h: "y \<in> TER h" if reach: "reachable y" and y: "y \<in> B \<Gamma>" and TER: "y \<in> ?TER f" for y
@@ -5704,7 +5602,7 @@ proof -
     then obtain p' where p': "path G y p' a" and distinct: "distinct (y # p')" by(rule rtrancl_path_distinct)
 
     have SINK: "y \<in> SINK h" using y disjoint
-      by(auto simp add: SINK.simps d_OUT_def nn_integral_0_iff currentD_nonneg[OF g] emeasure_count_space_eq_0 intro: currentD_outside[OF g] dest: bipartite_E)
+      by(auto simp add: SINK.simps d_OUT_def nn_integral_0_iff emeasure_count_space_eq_0 intro: currentD_outside[OF g] dest: bipartite_E)
     have hg: "d_IN h y = d_IN g y" using reach by(simp add: IN_h)
     also have "\<dots> = d_IN f y + j (None, Some y)" by(simp add: IN_g)
     also have "d_IN f y = weight \<Gamma> y - u y" using currentD_weight_IN[OF f, of y] y disjoint TER
@@ -5712,7 +5610,8 @@ proof -
     also have "d_IN h y < weight \<Gamma> y" using y' currentD_weight_IN[OF g, of y] y disjoint SINK
       by(auto intro: SAT.intros)
     ultimately have le: "j (None, Some y) < u y"
-      by(cases "weight \<Gamma> y" "u y" "j (None, Some y)" rule: ereal3_cases) auto
+      by(cases "weight \<Gamma> y" "u y" "j (None, Some y)" rule: ennreal3_cases; cases "u y \<le> weight \<Gamma> y")
+        (auto simp: ennreal_minus ennreal_plus[symmetric] add_top ennreal_less_iff ennreal_neg simp del: ennreal_plus)
     moreover from reach have "j (None, \<langle>y\<rangle>) = u y" by(rule reachable_full)
     ultimately show False by simp
   qed
@@ -5737,10 +5636,10 @@ proof -
         have "d_OUT h x \<le> d_OUT g x" using h_le_g by(rule d_OUT_mono)
         also from * have "x \<noteq> a" using a by auto
         then have "d_OUT j (Some x) = d_IN j (Some x)" by(auto intro: flowD_KIR[OF j])
-        hence "d_OUT g x \<le> d_OUT f x" using OUT_g_A[OF x] IN_j[of "Some x"] finite_flow 
-          by(auto simp add: d_IN_nonneg split: if_split_asm)
+        hence "d_OUT g x \<le> d_OUT f x" using OUT_g_A[OF x] IN_j[of "Some x"] finite_flow
+          by(auto split: if_split_asm)
         also have "\<dots> = 0" using * by(auto elim: SINK.cases)
-        finally have "x \<in> SINK h" using d_OUT_nonneg[of h x] by(simp add: SINK.simps)
+        finally have "x \<in> SINK h" by(simp add: SINK.simps)
         with x show "x \<in> TER h" by(simp add: SAT.A)
       qed
       from p p_eq x y have "path ?\<Gamma> x [y] y" "x \<in> A ?\<Gamma>" "y \<in> B ?\<Gamma>" by simp_all
@@ -5757,13 +5656,13 @@ proof -
     assume *: "a \<in> \<E> (TER h)"
 
     have "j (Some a, Some y) = 0" for y
-      using flowD_capacity[OF j, of "(Some a, Some y)"] a(1) disjoint flowD_nonneg[OF j, of "(Some a, Some y)"]
+      using flowD_capacity[OF j, of "(Some a, Some y)"] a(1) disjoint
       by(auto split: if_split_asm dest: bipartite_E)
     then have "d_OUT f a \<le> d_OUT g a" unfolding d_OUT_def
       -- \<open>This step requires that @{term j} does not decrease the outflow of @{term a}. That's
-          why we set the capacity of the outgoing edges from @{term "Some a"} in @{term \<Psi>} to @{term "0 :: ereal"}\<close>
-      by(intro nn_integral_mono)(auto simp add: g_simps currentD_outside[OF f] intro: ereal_le_add_self flowD_nonneg[OF j])
-    then have "a \<in> SINK f" using d_OUT_nonneg[of f a] OUT_g_a * by(simp add: SINK.simps)
+          why we set the capacity of the outgoing edges from @{term "Some a"} in @{term \<Psi>} to @{term "0 :: ennreal"}\<close>
+      by(intro nn_integral_mono)(auto simp add: g_simps currentD_outside[OF f] intro: )
+    then have "a \<in> SINK f" using OUT_g_a * by(simp add: SINK.simps)
     with a(1) have "a \<in> ?TER f" by(auto intro: SAT.A)
     with a(2) have a': "\<not> essential \<Gamma> (B \<Gamma>) (?TER f) a" by simp
 
@@ -5771,7 +5670,7 @@ proof -
       by(auto 4 4 simp add: essential_def elim: rtrancl_path.cases dest: bipartite_E)
     from not_essentialD[OF a' rtrancl_path.step, OF ay rtrancl_path.base y]
     have TER: "y \<in> ?TER f" by simp
-   
+
     have "reachable y" using \<open>reachable a\<close> by(rule reachable_AB)(simp add: ay)
     hence "y \<in> TER h" using y TER by(rule sep_h)
     with y' show False by contradiction
@@ -5781,17 +5680,17 @@ proof -
     have "d_OUT h a = d_OUT g a" by(simp add: OUT_g_a)
     also have "\<dots> \<le> d_OUT f a + \<integral>\<^sup>+ y. j (Some y, Some a) \<partial>count_space UNIV"
       unfolding d_OUT_def d_IN_def
-      by(subst nn_integral_add[symmetric])(auto simp add: currentD_nonneg[OF f] flowD_nonneg[OF j] g_simps intro!: nn_integral_mono ereal_diff_le_self)
+      by(subst nn_integral_add[symmetric])(auto simp add: g_simps intro!: nn_integral_mono diff_le_self_ennreal)
     also have "(\<integral>\<^sup>+ y. j (Some y, Some a) \<partial>count_space UNIV) = (\<integral>\<^sup>+ y. j (y, Some a) \<partial>embed_measure (count_space UNIV) Some)"
       by(simp add: nn_integral_embed_measure measurable_embed_measure1)
     also have "\<dots> \<le> d_IN j (Some a)" unfolding d_IN_def
-      by(auto simp add: embed_measure_count_space nn_integral_count_space_indicator flowD_nonneg[OF j] intro!: nn_integral_mono split: split_indicator)
+      by(auto simp add: embed_measure_count_space nn_integral_count_space_indicator intro!: nn_integral_mono split: split_indicator)
     also have "\<dots> \<le> \<alpha>" by(rule IN_j)
     also have "\<dots> \<le> \<epsilon>" by(rule \<alpha>_le)
     also have "d_OUT f a + \<dots> < d_OUT f a + (weight \<Gamma> a - d_OUT f a)" using \<epsilon>_less
-      by(intro ereal_less_add)(simp_all add: d_OUT_nonneg currentD_finite_OUT[OF f'])
+      using currentD_finite_OUT[OF f'] by (simp add: ennreal_add_left_cancel_less)
     also have "\<dots> = weight \<Gamma> a"
-      by(simp add: ereal_diff_add_assoc2 add_diff_eq_ereal d_OUT_nonneg currentD_finite_OUT[OF f'])
+      using a_le by simp
     finally show "d_OUT h a < weight \<Gamma> a" by(simp add: add_left_mono)
   qed
   then show ?thesis using h w' by(blast intro: hindered.intros)
@@ -5803,7 +5702,7 @@ corollary hindered_reduce_current: -- \<open>Corollary 6.8\<close>
   fixes \<epsilon> g
   defines "\<epsilon> \<equiv> \<Sum>\<^sup>+ x\<in>B \<Gamma>. d_IN g x - d_OUT g x"
   assumes g: "current \<Gamma> g"
-  and \<epsilon>_finite: "\<epsilon> \<noteq> \<infinity>"
+  and \<epsilon>_finite: "\<epsilon> \<noteq> \<top>"
   and hindered: "hindered_by (\<Gamma> \<ominus> g) \<epsilon>"
   shows "hindered \<Gamma>"
 proof -
@@ -5817,34 +5716,37 @@ proof -
     "web.more \<Gamma>' = web.more \<Gamma>"
     for x by(simp_all add: \<Gamma>'_def)
   have "countable_bipartite_web \<Gamma>'"
-    by unfold_locales(simp_all add: A_in B_out A_vertex disjoint bipartite_V no_loop weight_outside currentD_outside_OUT[OF g] weight_nonneg currentD_weight_OUT[OF g] ereal_diff_positive edge_antiparallel ereal_minus_eq_PInfty_iff, rule bipartite_E)
+    by unfold_locales(simp_all add: A_in B_out A_vertex disjoint bipartite_V no_loop weight_outside currentD_outside_OUT[OF g]  currentD_weight_OUT[OF g] edge_antiparallel, rule bipartite_E)
   then interpret \<Gamma>': countable_bipartite_web \<Gamma>' .
   let ?u = "\<lambda>x. (d_IN g x - d_OUT g x) * indicator (- A \<Gamma>) x"
-  
+
   have "hindered \<Gamma>'"
   proof(rule \<Gamma>'.hindered_reduce)
-    show "?u x \<ge> 0" for x by(simp split: split_indicator add: currentD_OUT_IN[OF g] ereal_diff_positive)
     show "?u x = 0" if "x \<notin> B \<Gamma>'" for x using that bipartite_V
       by(cases "vertex \<Gamma>' x")(auto simp add: currentD_outside_OUT[OF g] currentD_outside_IN[OF g])
 
     have *: "(\<Sum>\<^sup>+ x\<in>B \<Gamma>'. ?u x) = \<epsilon>" using disjoint
       by(auto intro!: nn_integral_cong simp add: \<epsilon>_def nn_integral_count_space_indicator currentD_outside_OUT[OF g] currentD_outside_IN[OF g] not_vertex split: split_indicator)
-    thus "(\<Sum>\<^sup>+ x\<in>B \<Gamma>'. ?u x) \<noteq> \<infinity>" using \<epsilon>_finite by simp
+    thus "(\<Sum>\<^sup>+ x\<in>B \<Gamma>'. ?u x) \<noteq> \<top>" using \<epsilon>_finite by simp
 
     have **: "\<Gamma>'\<lparr>weight := weight \<Gamma>' - ?u\<rparr> = \<Gamma> \<ominus> g"
-      by(rule web.equality)(simp_all add: fun_eq_iff currentD_IN[OF g] currentD_finite_OUT[OF g] ereal_minus_minus d_OUT_nonneg ereal_diff_add_assoc2)
+      using currentD_weight_IN[OF g] currentD_OUT_IN[OF g] currentD_IN[OF g] currentD_finite_OUT[OF g]
+      by(intro web.equality)(simp_all add: fun_eq_iff diff_diff_ennreal' ennreal_diff_le_mono_left)
     show "hindered_by (\<Gamma>'\<lparr>weight := weight \<Gamma>' - ?u\<rparr>) (\<Sum>\<^sup>+ x\<in>B \<Gamma>'. ?u x)"
       unfolding * ** by(fact hindered)
+    show "(\<lambda>x. (d_IN g x - d_OUT g x) * indicator (- A \<Gamma>) x) \<le> weight \<Gamma>'"
+      using currentD_weight_IN[OF g]
+      by (simp add: le_fun_def ennreal_diff_le_mono_left)
   qed
   then show ?thesis
-    by(rule hindered_mono_web[rotated -1])(simp_all add: ereal_diff_le_self d_OUT_nonneg)
+    by(rule hindered_mono_web[rotated -1]) simp_all
 qed
 
 end
 
 subsection \<open>Reduced weight in a loose web\<close>
 
-definition reduce_weight :: "('v, 'more) web_scheme \<Rightarrow> 'v \<Rightarrow> real \<Rightarrow> ('v, 'more) web_scheme" 
+definition reduce_weight :: "('v, 'more) web_scheme \<Rightarrow> 'v \<Rightarrow> real \<Rightarrow> ('v, 'more) web_scheme"
 where "reduce_weight \<Gamma> x r = \<Gamma>\<lparr>weight := \<lambda>y. weight \<Gamma> y - (if x = y then r else 0)\<rparr>"
 
 lemma reduce_weight_sel [simp]:
@@ -5854,7 +5756,7 @@ lemma reduce_weight_sel [simp]:
   "vertex (reduce_weight \<Gamma> x r) = vertex \<Gamma>"
   "weight (reduce_weight \<Gamma> x r) y = (if x = y then weight \<Gamma> x - r else weight \<Gamma> y)"
   "web.more (reduce_weight \<Gamma> x r) = web.more \<Gamma>"
-by(simp_all add: reduce_weight_def zero_ereal_def[symmetric] vertex_def fun_eq_iff)
+by(simp_all add: reduce_weight_def zero_ennreal_def[symmetric] vertex_def fun_eq_iff)
 
 lemma essential_reduce_weight [simp]: "essential (reduce_weight \<Gamma> x r) = essential \<Gamma>"
 by(simp add: fun_eq_iff essential_def)
@@ -5897,15 +5799,15 @@ proof -
     "edge' SINK SINK \<longleftrightarrow> False"
     "edge' xo SOURCE \<longleftrightarrow> False"
     for x y yo xo by(simp_all add: edge'_def split: vertex.split)
-  have edge'E: "thesis" if "edge' xo yo" 
+  have edge'E: "thesis" if "edge' xo yo"
     "\<And>x y. \<lbrakk> xo = \<langle>x\<rangle>; yo = \<langle>y\<rangle>; edge \<Gamma> x y \<or> edge \<Gamma> y x \<rbrakk> \<Longrightarrow> thesis"
-    "\<And>x. \<lbrakk> xo = \<langle>x\<rangle>; yo = SINK; x \<in> A \<Gamma> \<rbrakk> \<Longrightarrow> thesis" 
+    "\<And>x. \<lbrakk> xo = \<langle>x\<rangle>; yo = SINK; x \<in> A \<Gamma> \<rbrakk> \<Longrightarrow> thesis"
     "\<And>x. \<lbrakk> xo = SOURCE; yo = \<langle>b\<rangle> \<rbrakk> \<Longrightarrow> thesis"
     "\<And>y. \<lbrakk> xo = SINK; yo = \<langle>y\<rangle>; y \<in> A \<Gamma> \<rbrakk> \<Longrightarrow> thesis"
     for xo yo thesis using that by(auto simp add: edge'_def split: option.split_asm vertex.split_asm)
-  have edge'_Inner1 [elim!]: "thesis" if "edge' \<langle>x\<rangle> yo" 
+  have edge'_Inner1 [elim!]: "thesis" if "edge' \<langle>x\<rangle> yo"
     "\<And>y. \<lbrakk> yo = \<langle>y\<rangle>; edge \<Gamma> x y \<or> edge \<Gamma> y x \<rbrakk> \<Longrightarrow> thesis"
-    "\<lbrakk> yo = SINK; x \<in> A \<Gamma> \<rbrakk> \<Longrightarrow> thesis" 
+    "\<lbrakk> yo = SINK; x \<in> A \<Gamma> \<rbrakk> \<Longrightarrow> thesis"
     for x yo thesis using that by(auto elim: edge'E)
   have edge'_Inner2 [elim!]: "thesis" if "edge' xo \<langle>y\<rangle>"
     "\<And>x. \<lbrakk> xo = \<langle>x\<rangle>; edge \<Gamma> x y \<or> edge \<Gamma> y x \<rbrakk> \<Longrightarrow> thesis"
@@ -5916,9 +5818,9 @@ proof -
     "\<And>y. \<lbrakk> yo = \<langle>y\<rangle>; y \<in> A \<Gamma> \<rbrakk> \<Longrightarrow> thesis"
     for yo thesis using that by(auto elim: edge'E)
   have edge'_SINK2 [elim!]: "thesis" if "edge' xo SINK"
-    "\<And>x. \<lbrakk> xo = \<langle>x\<rangle>; x \<in> A \<Gamma> \<rbrakk> \<Longrightarrow> thesis" 
+    "\<And>x. \<lbrakk> xo = \<langle>x\<rangle>; x \<in> A \<Gamma> \<rbrakk> \<Longrightarrow> thesis"
     for xo thesis using that by(auto elim: edge'E)
-    
+
   def cap \<equiv> "\<lambda>xoyo. case xoyo of
       (\<langle>x\<rangle>, \<langle>y\<rangle>) \<Rightarrow> if edge \<Gamma> x y then h 0 (x, y) else if edge \<Gamma> y x then max (weight \<Gamma> x) (weight \<Gamma> y) else 0
     | (\<langle>x\<rangle>, SINK) \<Rightarrow> if x \<in> A \<Gamma> then weight \<Gamma> x - d_OUT (h 0) x else 0
@@ -5941,21 +5843,19 @@ proof -
     "sink \<Psi> = SINK"
     by(simp_all add: \<Psi>_def)
 
-  have cap_nonneg: "cap e \<ge> 0" for e using currentD_weight_IN[OF h, of 0 b] currentD_weight_OUT[OF h, of 0]
-    by(auto simp add: cap_def max_def weight_nonneg currentD_nonneg[OF h] ereal_diff_positive split: prod.split vertex.split)
   have cap_outside1: "\<not> vertex \<Gamma> x \<Longrightarrow> cap (\<langle>x\<rangle>, y) = 0" for x y using A_vertex
     by(cases y)(auto simp add: vertex_def)
   have capacity_A_weight: "d_OUT cap \<langle>x\<rangle> \<le> 2 * weight \<Gamma> x" if "x \<in> A \<Gamma>" for x
   proof -
     have "d_OUT cap \<langle>x\<rangle> \<le> (\<Sum>\<^sup>+ y. h 0 (x, inner y) * indicator (range Inner) y + weight \<Gamma> x * indicator {SINK} y)"
       using that disjoint unfolding d_OUT_def
-      by(auto intro!: nn_integral_mono ereal_diff_le_self simp add: A_in currentD_nonneg[OF h] notin_range_Inner d_OUT_nonneg split: split_indicator)
+      by(auto intro!: nn_integral_mono diff_le_self_ennreal simp add: A_in notin_range_Inner  split: split_indicator)
     also have "\<dots> = (\<Sum>\<^sup>+ y\<in>range Inner. h 0 (x, inner y)) + weight \<Gamma> x"
-      by(auto simp add: nn_integral_count_space_indicator nn_integral_add currentD_nonneg[OF h] weight_nonneg max_def)
+      by(auto simp add: nn_integral_count_space_indicator nn_integral_add)
     also have "(\<Sum>\<^sup>+ y\<in>range Inner. h 0 (x, inner y)) = d_OUT (h 0) x"
       by(simp add: d_OUT_def nn_integral_count_space_reindex)
     also have "\<dots> \<le> weight \<Gamma> x" using h by(rule currentD_weight_OUT)
-    finally show ?thesis by(simp add: add_right_mono mult_2_ereal)
+    finally show ?thesis unfolding one_add_one[symmetric] distrib_right by(simp add: add_right_mono)
   qed
   have flow_attainability: "flow_attainability \<Psi>"
   proof
@@ -5969,23 +5869,23 @@ proof -
     then consider (source) "v = SOURCE" | (A) x where "v = \<langle>x\<rangle>" "x \<in> A \<Gamma>"
       | (B) y where "v = \<langle>y\<rangle>" "y \<notin> A \<Gamma>" "y \<in> \<^bold>V" | (outside) x where "v = \<langle>x\<rangle>" "x \<notin> \<^bold>V"
       by(cases v) auto
-    then show "d_IN (capacity \<Psi>) v \<noteq> \<infinity> \<or> d_OUT (capacity \<Psi>) v \<noteq> \<infinity>"
+    then show "d_IN (capacity \<Psi>) v \<noteq> \<top> \<or> d_OUT (capacity \<Psi>) v \<noteq> \<top>"
     proof cases
       case source thus ?thesis by(simp add: d_IN_def)
     next
       case (A x)
-      thus ?thesis using capacity_A_weight[of x] by auto
+      thus ?thesis using capacity_A_weight[of x] by (auto simp: top_unique ennreal_mult_eq_top_iff)
     next
       case (B y)
       have "d_IN (capacity \<Psi>) v \<le> (\<Sum>\<^sup>+ x. h 0 (inner x, y) * indicator (range Inner) x + weight \<Gamma> b * indicator {SOURCE} x)"
-        using B bipartite_V 
-        by(auto 4 4 intro!: nn_integral_mono simp add: ereal_diff_le_self nn_integral_nonneg weight_nonneg d_IN_def notin_range_Inner nn_integral_count_space_indicator currentD_outside[OF h] split: split_indicator dest: bipartite_E)
+        using B bipartite_V
+        by(auto 4 4 intro!: nn_integral_mono simp add: diff_le_self_ennreal   d_IN_def notin_range_Inner nn_integral_count_space_indicator currentD_outside[OF h] split: split_indicator dest: bipartite_E)
       also have "\<dots> = (\<Sum>\<^sup>+ x\<in>range Inner. h 0 (inner x, y)) + weight \<Gamma> b"
-        by(simp add: nn_integral_add currentD_nonneg[OF h] weight_nonneg max_def nn_integral_count_space_indicator)
+        by(simp add: nn_integral_add nn_integral_count_space_indicator)
       also have "(\<Sum>\<^sup>+ x\<in>range Inner. h 0 (inner x, y)) = d_IN (h 0) y"
         by(simp add: d_IN_def nn_integral_count_space_reindex)
       also have "d_IN (h 0) y \<le> weight \<Gamma> y" using h by(rule currentD_weight_IN)
-      finally show ?thesis by(auto simp add: max_def add_right_mono split: if_split_asm)
+      finally show ?thesis by(auto simp add: top_unique add_right_mono split: if_split_asm)
     next
       case outside
       hence "d_OUT (capacity \<Psi>) v = 0" using A_vertex
@@ -5993,11 +5893,10 @@ proof -
       thus ?thesis by simp
     qed
   next
-    show "capacity \<Psi> e \<noteq> \<infinity>" for e 
-      by(auto simp add: cap_def max_def vertex_def currentD_finite[OF h] ereal_minus_eq_PInfty_iff split: vertex.split prod.split)
-    show "capacity \<Psi> e = 0" if "e \<notin> \<^bold>E\<^bsub>\<Psi>\<^esub>" for e using that  
+    show "capacity \<Psi> e \<noteq> \<top>" for e
+      by(auto simp add: cap_def max_def vertex_def currentD_finite[OF h] split: vertex.split prod.split)
+    show "capacity \<Psi> e = 0" if "e \<notin> \<^bold>E\<^bsub>\<Psi>\<^esub>" for e using that
       by(auto simp add: cap_def max_def split: prod.split; split vertex.split)+
-    show "0 \<le> capacity \<Psi> e" for e using cap_nonneg[of e] by simp
     show "\<not> edge \<Psi> x (source \<Psi>)" for x using b by(auto simp add: B_out)
     show "\<not> edge \<Psi> x x" for x by(cases x)(simp_all add: no_loop)
     show "source \<Psi> \<noteq> sink \<Psi>" by simp
@@ -6006,21 +5905,21 @@ proof -
   def \<alpha> \<equiv> "SUP f:{f. flow \<Psi> f}. value_flow \<Psi> f"
 
   def f \<equiv> "\<lambda>n xoyo. case xoyo of
-      (\<langle>x\<rangle>, \<langle>y\<rangle>) \<Rightarrow> if edge \<Gamma> x y then max (h 0 (x, y) - h n (x, y)) 0 else if edge \<Gamma> y x then max (h n (y, x) - h 0 (y, x)) 0 else 0
+      (\<langle>x\<rangle>, \<langle>y\<rangle>) \<Rightarrow> if edge \<Gamma> x y then h 0 (x, y) - h n (x, y) else if edge \<Gamma> y x then h n (y, x) - h 0 (y, x) else 0
     | (SOURCE, \<langle>y\<rangle>) \<Rightarrow> if y = b then d_IN (h n) b - d_IN (h 0) b else 0
-    | (\<langle>x\<rangle>, SINK) \<Rightarrow> if x \<in> A \<Gamma> then max (d_OUT (h n) x - d_OUT (h 0) x) 0 else 0
-    | (SINK, \<langle>y\<rangle>) \<Rightarrow> if y \<in> A \<Gamma> then max (d_OUT (h 0) y - d_OUT (h n) y) 0 else 0
+    | (\<langle>x\<rangle>, SINK) \<Rightarrow> if x \<in> A \<Gamma> then d_OUT (h n) x - d_OUT (h 0) x else 0
+    | (SINK, \<langle>y\<rangle>) \<Rightarrow> if y \<in> A \<Gamma> then d_OUT (h 0) y - d_OUT (h n) y else 0
     | _ \<Rightarrow> 0"
   have f_cases: thesis if "\<And>x y. e = (\<langle>x\<rangle>, \<langle>y\<rangle>) \<Longrightarrow> thesis" "\<And>y. e = (SOURCE, \<langle>y\<rangle>) \<Longrightarrow> thesis"
-    "\<And>x. e = (\<langle>x\<rangle>, SINK) \<Longrightarrow> thesis" "\<And>y. e = (SINK, \<langle>y\<rangle>) \<Longrightarrow> thesis" "e = (SINK, SINK) \<Longrightarrow> thesis" 
+    "\<And>x. e = (\<langle>x\<rangle>, SINK) \<Longrightarrow> thesis" "\<And>y. e = (SINK, \<langle>y\<rangle>) \<Longrightarrow> thesis" "e = (SINK, SINK) \<Longrightarrow> thesis"
     "\<And>xo. e = (xo, SOURCE) \<Longrightarrow> thesis" "e = (SOURCE, SINK) \<Longrightarrow> thesis"
     for e :: "'v vertex edge" and thesis
     using that by(cases e; cases "fst e" "snd e" rule: vertex.exhaust[case_product vertex.exhaust]) simp_all
   have f_simps [simp]:
-    "f n (\<langle>x\<rangle>, \<langle>y\<rangle>) = (if edge \<Gamma> x y then max (h 0 (x, y) - h n (x, y)) 0 else if edge \<Gamma> y x then max (h n (y, x) - h 0 (y, x)) 0 else 0)"
+    "f n (\<langle>x\<rangle>, \<langle>y\<rangle>) = (if edge \<Gamma> x y then h 0 (x, y) - h n (x, y) else if edge \<Gamma> y x then h n (y, x) - h 0 (y, x) else 0)"
     "f n (SOURCE, \<langle>y\<rangle>) = (if y = b then d_IN (h n) b - d_IN (h 0) b else 0)"
-    "f n (\<langle>x\<rangle>, SINK) = (if x \<in> A \<Gamma> then max (d_OUT (h n) x - d_OUT (h 0) x) 0 else 0)"
-    "f n (SINK, \<langle>y\<rangle>) = (if y \<in> A \<Gamma> then max (d_OUT (h 0) y - d_OUT (h n) y) 0 else 0)"
+    "f n (\<langle>x\<rangle>, SINK) = (if x \<in> A \<Gamma> then d_OUT (h n) x - d_OUT (h 0) x else 0)"
+    "f n (SINK, \<langle>y\<rangle>) = (if y \<in> A \<Gamma> then d_OUT (h 0) y - d_OUT (h n) y else 0)"
     "f n (SOURCE, SINK) = 0"
     "f n (SINK, SINK) = 0"
     "f n (xo, SOURCE) = 0"
@@ -6029,30 +5928,25 @@ proof -
   proof(rule trans)
     show "d_OUT (f n) SOURCE = (\<Sum>\<^sup>+ y. f n (SOURCE, y) * indicator {\<langle>b\<rangle>} y)" unfolding d_OUT_def
       apply(rule nn_integral_cong) subgoal for x by(cases x) auto done
-    show "\<dots> = d_IN (h n) b - d_IN (h 0) b" using h0_b[of n] ereal_diff_positive
+    show "\<dots> = d_IN (h n) b - d_IN (h 0) b" using h0_b[of n]
       by(auto simp add: max_def)
   qed
-  have f_nonneg: "0 \<le> f n e" for e n using h0_b[of n]
-    by(cases e rule: f_cases)(simp_all add: ereal_diff_positive d_OUT_nonneg)
 
   have OUT_f_outside: "d_OUT (f n) \<langle>x\<rangle> = 0" if "x \<notin> \<^bold>V" for x n using A_vertex that
-    apply(clarsimp simp add: d_OUT_def nn_integral_0_iff f_nonneg[of n] emeasure_count_space_eq_0)
+    apply(clarsimp simp add: d_OUT_def nn_integral_0_iff emeasure_count_space_eq_0)
     subgoal for y by(cases y)(auto simp add: vertex_def)
     done
   have IN_f_outside: "d_IN (f n) \<langle>x\<rangle> = 0" if "x \<notin> \<^bold>V" for x n using b_V that
-    apply(clarsimp simp add: d_IN_def nn_integral_0_iff f_nonneg emeasure_count_space_eq_0)
+    apply(clarsimp simp add: d_IN_def nn_integral_0_iff emeasure_count_space_eq_0)
     subgoal for y by(cases y)(auto simp add: currentD_outside_OUT[OF h] vertex_def)
     done
 
   have f: "flow \<Psi> (f n)" for n
   proof
     show f_le: "f n e \<le> capacity \<Psi> e" for e
-      apply(cases e rule: f_cases)
-      apply(auto dest: edge_antiparallel simp add: d_OUT_nonneg currentD_nonneg[OF h] currentD_weight_out[OF h] currentD_weight_IN[OF h] weight_nonneg not_le currentD_weight_OUT[OF h] le_max_iff_disj intro: ereal_diff_le_mono_left ereal_minus_mono)
-      apply(rule ereal_diff_positive)
-      apply(rule currentD_weight_OUT[OF h])
-      done
-    show "0 \<le> f n e" for e by(rule f_nonneg)
+      using currentD_weight_out[OF h] currentD_weight_IN[OF h] currentD_weight_OUT[OF h]
+      by(cases e rule: f_cases)
+        (auto dest: edge_antiparallel simp add: not_le le_max_iff_disj intro: ennreal_minus_mono ennreal_diff_le_mono_left)
 
     fix xo
     assume "xo \<noteq> source \<Psi>" "xo \<noteq> sink \<Psi>"
@@ -6065,9 +5959,9 @@ proof -
     next
       case A
 
-      have finite1: "(\<Sum>\<^sup>+ y. h n (x, y) * indicator A y) \<noteq> \<infinity>" for A n
+      have finite1: "(\<Sum>\<^sup>+ y. h n (x, y) * indicator A y) \<noteq> \<top>" for A n
         using currentD_finite_OUT[OF h, of n x, unfolded d_OUT_def]
-        by(rule neq_PInf_trans)(auto intro!: nn_integral_mono simp add: currentD_nonneg[OF h] split: split_indicator)
+        by(rule neq_top_trans)(auto intro!: nn_integral_mono simp add: split: split_indicator)
 
       let ?h0_ge_hn = "{y. h 0 (x, y) \<ge> h n (x, y)}"
       let ?h0_lt_hn = "{y. h 0 (x, y) < h n (x, y)}"
@@ -6075,167 +5969,153 @@ proof -
       have "d_OUT (f n) \<langle>x\<rangle> = (\<Sum>\<^sup>+ y. f n (\<langle>x\<rangle>, y) * indicator (range Inner) y + f n (\<langle>x\<rangle>, y) * indicator {SINK} y)"
         unfolding d_OUT_def by(intro nn_integral_cong)(auto split: split_indicator simp add: notin_range_Inner)
       also have "\<dots> = (\<Sum>\<^sup>+ y\<in>range Inner. f n (\<langle>x\<rangle>, y)) + f n (\<langle>x\<rangle>, SINK)"
-        by(simp add: nn_integral_add f_nonneg nn_integral_count_space_indicator max.left_commute max.commute)
+        by(simp add: nn_integral_add nn_integral_count_space_indicator max.left_commute max.commute)
       also have "(\<Sum>\<^sup>+ y\<in>range Inner. f n (\<langle>x\<rangle>, y)) = (\<Sum>\<^sup>+ y. h 0 (x, y) - h n (x, y))" using A
-        apply(subst (2) nn_integral_max_0[symmetric])
         apply(simp add: nn_integral_count_space_reindex cong: nn_integral_cong_simp outgoing_def)
-        apply(auto simp add: nn_integral_count_space_indicator outgoing_def A_in max.commute currentD_outside[OF h] intro!: nn_integral_cong split: split_indicator dest: edge_antiparallel)
+        apply(auto simp add: nn_integral_count_space_indicator outgoing_def A_in max.absorb1 currentD_outside[OF h] intro!: nn_integral_cong split: split_indicator dest: edge_antiparallel)
         done
       also have "\<dots> = (\<Sum>\<^sup>+ y. h 0 (x, y) * indicator ?h0_ge_hn y) - (\<Sum>\<^sup>+ y. h n (x, y) * indicator ?h0_ge_hn y)"
         apply(subst nn_integral_diff[symmetric])
-        apply(simp_all add: currentD_nonneg[OF h] AE_count_space finite1 split: split_indicator)
-        apply(subst (1 2) nn_integral_max_0[symmetric])
+        apply(simp_all add: AE_count_space finite1 split: split_indicator)
         apply(rule nn_integral_cong; auto simp add: max_def not_le split: split_indicator)
-        by (metis (full_types) antisym_conv ereal_diff_nonpos le_less less_irrefl)
+        by (metis diff_eq_0_ennreal le_less not_le top_greatest)
       also have "(\<Sum>\<^sup>+ y. h n (x, y) * indicator ?h0_ge_hn y) = d_OUT (h n) x - (\<Sum>\<^sup>+ y. h n (x, y) * indicator ?h0_lt_hn y)"
         unfolding d_OUT_def
         apply(subst nn_integral_diff[symmetric])
-        apply(auto simp add: AE_count_space currentD_nonneg[OF h] finite1 currentD_finite[OF h] split: split_indicator intro!: nn_integral_cong)
+        apply(auto simp add: AE_count_space finite1 currentD_finite[OF h] split: split_indicator intro!: nn_integral_cong)
         done
-      also have "(\<Sum>\<^sup>+ y. h 0 (x, y) * indicator ?h0_ge_hn y) - \<dots> + f n (\<langle>x\<rangle>, SINK) = 
-        (\<Sum>\<^sup>+ y. h 0 (x, y) * indicator ?h0_ge_hn y) + (\<Sum>\<^sup>+ y. h n (x, y) * indicator ?h0_lt_hn y) + max (- d_OUT (h n) x) (- d_OUT (h 0) x)"
-        apply(subst ereal_minus_minus)
-         apply(simp add: d_OUT_nonneg currentD_finite_OUT[OF h])
-        apply(auto simp add: max_def A)
-         apply (metis (no_types, lifting) add.comm_neutral add_diff_eq_ereal ereal_diff_gr0 ereal_minus(8) le_less not_le)
-         using minus_ereal_def apply blast
-         apply(subst add_diff_eq_ereal)
-         apply(subst diff_add_eq_ereal)
-         apply(subst add_diff_eq_ereal[symmetric])
-         apply(simp add: currentD_finite_OUT[OF h] d_OUT_nonneg)
-         using minus_ereal_def apply blast
-        by (simp add: ereal_diff_nonpos)
+      also have "(\<Sum>\<^sup>+ y. h 0 (x, y) * indicator ?h0_ge_hn y) - \<dots> + f n (\<langle>x\<rangle>, SINK) =
+        (\<Sum>\<^sup>+ y. h 0 (x, y) * indicator ?h0_ge_hn y) + (\<Sum>\<^sup>+ y. h n (x, y) * indicator ?h0_lt_hn y) - min (d_OUT (h n) x) (d_OUT (h 0) x)"
+        using finite1[of n "{_}"] A finite1[of n UNIV]
+        apply (subst diff_diff_ennreal')
+        apply (auto simp: d_OUT_def finite1 AE_count_space nn_integral_diff[symmetric] top_unique nn_integral_add[symmetric]
+                    split: split_indicator intro!: nn_integral_mono ennreal_diff_self)
+        apply (simp add: min_def not_le diff_eq_0_ennreal finite1 less_top[symmetric])
+        apply (subst diff_add_assoc2_ennreal)
+        apply (auto simp: add_diff_eq_ennreal intro!: nn_integral_mono split: split_indicator)
+        apply (subst diff_diff_commute_ennreal)
+        apply (simp add: ennreal_add_diff_cancel )
+        done
       also have "\<dots> = (\<Sum>\<^sup>+ y. h n (x, y) * indicator ?h0_lt_hn y) - (d_OUT (h 0) x - (\<Sum>\<^sup>+ y. h 0 (x, y) * indicator ?h0_ge_hn y)) + f n (SINK, \<langle>x\<rangle>)"
         apply(rule sym)
-        apply(subst ereal_minus_minus)
-         apply(simp add: d_OUT_nonneg currentD_finite_OUT[OF h])
-        apply(auto simp add: max_def A)
-          apply (simp add: add.commute ereal_add_uminus_conv_diff)
-          using ereal_diff_gr0 not_le apply blast
-         apply(subst add_diff_eq_ereal)
-         apply(subst diff_add_eq_ereal)
-         apply(subst add_diff_eq_ereal[symmetric])
-         apply(simp add: currentD_finite_OUT[OF h] d_OUT_nonneg)
-         apply (metis (no_types, lifting) add.commute ereal_diff_nonpos minus_ereal_def)
-         apply(subst add_diff_eq_ereal)
-         apply(subst diff_add_eq_ereal)
-         apply(subst add_diff_eq_ereal[symmetric])
-         apply(simp add: currentD_finite_OUT[OF h] d_OUT_nonneg)
-         by (simp add: add.commute minus_ereal_def)
+        using finite1[of 0 "{_}"] A finite1[of 0 UNIV]
+        apply (subst diff_diff_ennreal')
+        apply (auto simp: d_OUT_def finite1 AE_count_space nn_integral_diff[symmetric] top_unique nn_integral_add[symmetric]
+                    split: split_indicator intro!: nn_integral_mono ennreal_diff_self)
+        apply (simp add: min_def not_le diff_eq_0_ennreal finite1 less_top[symmetric])
+        apply (subst diff_add_assoc2_ennreal)
+        apply (auto simp: add_diff_eq_ennreal intro!: nn_integral_mono split: split_indicator)
+        apply (subst diff_diff_commute_ennreal)
+        apply (simp_all add: ennreal_add_diff_cancel ac_simps)
+        done
       also have "d_OUT (h 0) x - (\<Sum>\<^sup>+ y. h 0 (x, y) * indicator ?h0_ge_hn y) = (\<Sum>\<^sup>+ y. h 0 (x, y) * indicator ?h0_lt_hn y)"
         unfolding d_OUT_def
         apply(subst nn_integral_diff[symmetric])
-        apply(auto simp add: AE_count_space currentD_nonneg[OF h] finite1 currentD_finite[OF h] split: split_indicator intro!: nn_integral_cong)
+        apply(auto simp add: AE_count_space finite1 currentD_finite[OF h] split: split_indicator intro!: nn_integral_cong)
         done
       also have "(\<Sum>\<^sup>+ y. h n (x, y) * indicator ?h0_lt_hn y) - \<dots> = (\<Sum>\<^sup>+ y. h n (x, y) - h 0 (x, y))"
-        using currentD_nonneg[OF h]
         apply(subst nn_integral_diff[symmetric])
         apply(simp_all add: AE_count_space finite1 order.strict_implies_order split: split_indicator)
-        apply(subst (1 2) nn_integral_max_0[symmetric])
-        apply(rule nn_integral_cong; auto simp add: max_def not_less split: split_indicator)
-        apply(rule antisym)
-        apply(rule ereal_diff_nonpos; simp add: currentD_finite[OF h])
-        apply simp
+        apply(rule nn_integral_cong; auto simp add: currentD_finite[OF h] top_unique less_top[symmetric] not_less split: split_indicator intro!: diff_eq_0_ennreal)
         done
       also have "\<dots> = (\<Sum>\<^sup>+ y\<in>range Inner. f n (y, \<langle>x\<rangle>))" using A
-        apply(subst (1) nn_integral_max_0[symmetric])
         apply(simp add: nn_integral_count_space_reindex cong: nn_integral_cong_simp outgoing_def)
         apply(auto simp add: nn_integral_count_space_indicator outgoing_def A_in max.commute currentD_outside[OF h] intro!: nn_integral_cong split: split_indicator dest: edge_antiparallel)
         done
       also have "\<dots> + f n (SINK, \<langle>x\<rangle>) = (\<Sum>\<^sup>+ y. f n (y, \<langle>x\<rangle>) * indicator (range Inner) y + f n (y, \<langle>x\<rangle>) * indicator {SINK} y)"
-        by(simp add: nn_integral_add f_nonneg nn_integral_count_space_indicator max.left_commute max.commute)
+        by(simp add: nn_integral_add nn_integral_count_space_indicator)
       also have "\<dots> = d_IN (f n) \<langle>x\<rangle>"
-        using A b disjoint unfolding d_IN_def 
+        using A b disjoint unfolding d_IN_def
         by(intro nn_integral_cong)(auto split: split_indicator simp add: notin_range_Inner)
       finally show ?thesis using A by simp
     next
       case (B x)
 
-      have finite1: "(\<Sum>\<^sup>+ y. h n (y, x) * indicator A y) \<noteq> \<infinity>" for A n
+      have finite1: "(\<Sum>\<^sup>+ y. h n (y, x) * indicator A y) \<noteq> \<top>" for A n
         using currentD_finite_IN[OF h, of n x, unfolded d_IN_def]
-        by(rule neq_PInf_trans)(auto intro!: nn_integral_mono simp add: currentD_nonneg[OF h] split: split_indicator)
+        by(rule neq_top_trans)(auto intro!: nn_integral_mono split: split_indicator)
+
+      have finite_h[simp]: "h n (y, x) < \<top>" for y n
+        using finite1[of n "{y}"] by (simp add: less_top)
 
       let ?h0_gt_hn = "{y. h 0 (y, x) > h n (y, x)}"
       let ?h0_le_hn = "{y. h 0 (y, x) \<le> h n (y, x)}"
 
-      have "d_IN (f n) \<langle>x\<rangle> = (\<Sum>\<^sup>+ y. f n (y, \<langle>x\<rangle>) * indicator (range Inner) y + f n (y, \<langle>x\<rangle>) * indicator {SOURCE} y)"
-        using B disjoint unfolding d_IN_def 
-        by(intro nn_integral_cong)(auto split: split_indicator simp add: notin_range_Inner)
-      also have "\<dots> = (\<Sum>\<^sup>+ y\<in>range Inner. f n (y, \<langle>x\<rangle>)) + f n (SOURCE, \<langle>x\<rangle>)" using h0_b[of n]
-        by(simp add: nn_integral_add f_nonneg nn_integral_count_space_indicator ereal_diff_positive max_def)
-      also have "(\<Sum>\<^sup>+ y\<in>range Inner. f n (y, \<langle>x\<rangle>)) = (\<Sum>\<^sup>+ y. h 0 (y, x) - h n (y, x))"
-        using B disjoint
-        apply(subst (2) nn_integral_max_0[symmetric])
-        apply(simp add: nn_integral_count_space_reindex cong: nn_integral_cong_simp outgoing_def)
-        apply(auto simp add: nn_integral_count_space_indicator outgoing_def B_out max.commute currentD_outside[OF h] intro!: nn_integral_cong split: split_indicator dest: edge_antiparallel)
-        done
-      also have "\<dots> = (\<Sum>\<^sup>+ y. h 0 (y, x) * indicator ?h0_gt_hn y) - (\<Sum>\<^sup>+ y. h n (y, x) * indicator ?h0_gt_hn y)"
-        using currentD_nonneg[OF h]
-        apply(subst nn_integral_diff[symmetric])
-        apply(simp_all add: AE_count_space finite1 order.strict_implies_order split: split_indicator)
-        apply(subst (1 2) nn_integral_max_0[symmetric])
-        apply(rule nn_integral_cong; auto simp add: max_def not_less split: split_indicator)
-        apply(rule antisym)
-        apply(rule ereal_diff_nonpos; simp add: currentD_finite[OF h])
-        apply simp
-        done
-      also have "(\<Sum>\<^sup>+ y. h 0 (y, x) * indicator ?h0_gt_hn y) = d_IN (h 0) x - (\<Sum>\<^sup>+ y. h 0 (y, x) * indicator ?h0_le_hn y)"
-        unfolding d_IN_def
-        apply(subst nn_integral_diff[symmetric])
-        apply(auto simp add: AE_count_space currentD_nonneg[OF h] finite1 currentD_finite[OF h] split: split_indicator intro!: nn_integral_cong)
-        done
-      also have "(\<Sum>\<^sup>+ y. h n (y, x) * indicator ?h0_gt_hn y) = d_IN (h n) x - (\<Sum>\<^sup>+ y. h n (y, x) * indicator ?h0_le_hn y)"
-        unfolding d_IN_def
-        apply(subst nn_integral_diff[symmetric])
-        apply(auto simp add: AE_count_space currentD_nonneg[OF h] finite1 currentD_finite[OF h] split: split_indicator intro!: nn_integral_cong)
-        done
-      also have "d_IN (h 0) x - (\<Sum>\<^sup>+ y. h 0 (y, x) * indicator ?h0_le_hn y) - (d_IN (h n) x - (\<Sum>\<^sup>+ y. h n (y, x) * indicator ?h0_le_hn y)) + f n (SOURCE, \<langle>x\<rangle>) =
-                (d_IN (h 0) x - d_IN (h n) x + f n (SOURCE, \<langle>x\<rangle>)) + (\<Sum>\<^sup>+ y. h n (y, x) * indicator ?h0_le_hn y) - (\<Sum>\<^sup>+ y. h 0 (y, x) * indicator ?h0_le_hn y)"
-        apply(subst diff_diff_commute_ereal)
-        apply(subst ereal_minus_minus, simp add: d_IN_nonneg currentD_finite_IN[OF h])
-        apply(subst ereal_diff_add_assoc2)
-        apply(subst (2) diff_add_eq_ereal)
-        proof -
-          have "d_IN (h 0) x - d_IN (h n) x + f n (SOURCE, \<langle>x\<rangle>) + (\<Sum>\<^sup>+ v. h n (v, x) * indicator {v. h 0 (v, x) \<le> h n (v, x)} v) = d_IN (h 0) x - d_IN (h n) x + (\<Sum>\<^sup>+ v. h n (v, x) * indicator {v. h 0 (v, x) \<le> h n (v, x)} v) - - f n (SOURCE, \<langle>x\<rangle>)"
-            by (metis ereal_diff_add_assoc2 ereal_minus(6))
-          then show "d_IN (h 0) x - d_IN (h n) x + (\<Sum>\<^sup>+ v. h n (v, x) * indicator {v. h 0 (v, x) \<le> h n (v, x)} v) + f n (SOURCE, \<langle>x\<rangle>) - (\<Sum>\<^sup>+ v. h 0 (v, x) * indicator {v. h 0 (v, x) \<le> h n (v, x)} v) = d_IN (h 0) x - d_IN (h n) x + f n (SOURCE, \<langle>x\<rangle>) + (\<Sum>\<^sup>+ v. h n (v, x) * indicator {v. h 0 (v, x) \<le> h n (v, x)} v) - (\<Sum>\<^sup>+ v. h 0 (v, x) * indicator {v. h 0 (v, x) \<le> h n (v, x)} v)"
-            using ereal_minus(6) by presburger
-        qed
-      also have "d_IN (h 0) x - d_IN (h n) x + f n (SOURCE, \<langle>x\<rangle>) = 0"
+      have eq: "d_IN (h 0) x + f n (SOURCE, \<langle>x\<rangle>) = d_IN (h n) x"
       proof(cases "x = b")
-        case True thus ?thesis
-          apply(simp add: add_diff_eq_ereal ereal_diff_add_assoc2[symmetric])
-          apply(subst add_diff_eq_ereal[symmetric])
-          apply(simp add: d_IN_nonneg currentD_finite_IN[OF h])
-          done
+        case True with currentD_finite_IN[OF h, of _ b] show ?thesis
+          by(simp add: add_diff_self_ennreal h0_b)
       next
         case False
         with B SAT have "x \<in> SAT \<Gamma> (h n)" "x \<in> SAT \<Gamma> (h 0)" by auto
         with B disjoint have "d_IN (h n) x = d_IN (h 0) x" by(auto simp add: currentD_SAT[OF h])
-        thus ?thesis using False by(simp add: d_IN_nonneg currentD_finite_IN[OF h])
+        thus ?thesis using False by(simp add: currentD_finite_IN[OF h])
       qed
-      also note comm_monoid_add_class.add_0
+
+      have "d_IN (f n) \<langle>x\<rangle> = (\<Sum>\<^sup>+ y. f n (y, \<langle>x\<rangle>) * indicator (range Inner) y + f n (y, \<langle>x\<rangle>) * indicator {SOURCE} y)"
+        using B disjoint unfolding d_IN_def
+        by(intro nn_integral_cong)(auto split: split_indicator simp add: notin_range_Inner)
+      also have "\<dots> = (\<Sum>\<^sup>+ y\<in>range Inner. f n (y, \<langle>x\<rangle>)) + f n (SOURCE, \<langle>x\<rangle>)" using h0_b[of n]
+        by(simp add: nn_integral_add nn_integral_count_space_indicator max_def)
+      also have "(\<Sum>\<^sup>+ y\<in>range Inner. f n (y, \<langle>x\<rangle>)) = (\<Sum>\<^sup>+ y. h 0 (y, x) - h n (y, x))"
+        using B disjoint
+        apply(simp add: nn_integral_count_space_reindex cong: nn_integral_cong_simp outgoing_def)
+        apply(auto simp add: nn_integral_count_space_indicator outgoing_def B_out max.commute currentD_outside[OF h] intro!: nn_integral_cong split: split_indicator dest: edge_antiparallel)
+        done
+      also have "\<dots> = (\<Sum>\<^sup>+ y. h 0 (y, x) * indicator ?h0_gt_hn y) - (\<Sum>\<^sup>+ y. h n (y, x) * indicator ?h0_gt_hn y)"
+        apply(subst nn_integral_diff[symmetric])
+        apply(simp_all add: AE_count_space finite1 order.strict_implies_order split: split_indicator)
+        apply(rule nn_integral_cong; auto simp add: currentD_finite[OF h] top_unique less_top[symmetric] not_less split: split_indicator intro!: diff_eq_0_ennreal)
+        done
+      also have eq_h_0: "(\<Sum>\<^sup>+ y. h 0 (y, x) * indicator ?h0_gt_hn y) = d_IN (h 0) x - (\<Sum>\<^sup>+ y. h 0 (y, x) * indicator ?h0_le_hn y)"
+        unfolding d_IN_def
+        apply(subst nn_integral_diff[symmetric])
+        apply(auto simp add: AE_count_space finite1 currentD_finite[OF h] split: split_indicator intro!: nn_integral_cong)
+        done
+      also have eq_h_n: "(\<Sum>\<^sup>+ y. h n (y, x) * indicator ?h0_gt_hn y) = d_IN (h n) x - (\<Sum>\<^sup>+ y. h n (y, x) * indicator ?h0_le_hn y)"
+        unfolding d_IN_def
+        apply(subst nn_integral_diff[symmetric])
+        apply(auto simp add: AE_count_space finite1 currentD_finite[OF h] split: split_indicator intro!: nn_integral_cong)
+        done
+      also have "d_IN (h 0) x - (\<Sum>\<^sup>+ y. h 0 (y, x) * indicator ?h0_le_hn y) - (d_IN (h n) x - (\<Sum>\<^sup>+ y. h n (y, x) * indicator ?h0_le_hn y)) + f n (SOURCE, \<langle>x\<rangle>) =
+                (\<Sum>\<^sup>+ y. h n (y, x) * indicator ?h0_le_hn y) - (\<Sum>\<^sup>+ y. h 0 (y, x) * indicator ?h0_le_hn y)"
+        apply (subst diff_add_assoc2_ennreal)
+        subgoal by (auto simp add: eq_h_0[symmetric] eq_h_n[symmetric] split: split_indicator intro!: nn_integral_mono)
+        apply (subst diff_add_assoc2_ennreal)
+        subgoal by (auto simp: d_IN_def split: split_indicator intro!: nn_integral_mono)
+        apply (subst diff_diff_commute_ennreal)
+        apply (subst diff_diff_ennreal')
+        subgoal
+          by (auto simp: d_IN_def split: split_indicator intro!: nn_integral_mono) []
+        subgoal
+          unfolding eq_h_n[symmetric]
+          by (rule add_increasing2)
+             (auto simp add: d_IN_def split: split_indicator intro!: nn_integral_mono)
+        apply (subst diff_add_assoc2_ennreal[symmetric])
+        unfolding eq
+        using currentD_finite_IN[OF h]
+        apply simp_all
+        done
       also have "(\<Sum>\<^sup>+ y. h n (y, x) * indicator ?h0_le_hn y) - (\<Sum>\<^sup>+ y. h 0 (y, x) * indicator ?h0_le_hn y) = (\<Sum>\<^sup>+ y. h n (y, x) - h 0 (y, x))"
         apply(subst nn_integral_diff[symmetric])
-        apply(simp_all add: AE_count_space currentD_nonneg[OF h] max_def finite1 split: split_indicator)
-        apply(subst (1 2) nn_integral_max_0[symmetric])
-        apply(rule nn_integral_cong; auto simp add: max_def not_le split: split_indicator)
-        by (metis (full_types) antisym_conv ereal_diff_nonpos le_less less_irrefl)
+        apply(simp_all add: AE_count_space max_def finite1 split: split_indicator)
+        apply(rule nn_integral_cong; auto simp add: not_le split: split_indicator)
+        by (metis diff_eq_0_ennreal le_less not_le top_greatest)
       also have "\<dots> = (\<Sum>\<^sup>+ y\<in>range Inner. f n (\<langle>x\<rangle>, y))" using B disjoint
-        apply(subst nn_integral_max_0[symmetric])
         apply(simp add: nn_integral_count_space_reindex cong: nn_integral_cong_simp outgoing_def)
         apply(auto simp add: B_out currentD_outside[OF h] max.commute intro!: nn_integral_cong split: split_indicator dest: edge_antiparallel)
         done
       also have "\<dots> = (\<Sum>\<^sup>+ y. f n (\<langle>x\<rangle>, y) * indicator (range Inner) y)"
-        by(simp add: nn_integral_add f_nonneg nn_integral_count_space_indicator max.left_commute max.commute)
+        by(simp add: nn_integral_add nn_integral_count_space_indicator max.left_commute max.commute)
       also have "\<dots> = d_OUT (f n) \<langle>x\<rangle>"  using B disjoint
         unfolding d_OUT_def by(intro nn_integral_cong)(auto split: split_indicator simp add: notin_range_Inner)
       finally show ?thesis using B by(simp)
     qed
   qed
-  
+
   have "weight \<Gamma> b - d_IN (h 0) b = (SUP n. value_flow \<Psi> (f n))"
-    by(simp add: OUT_f_SOURCE SUP_ereal_minus_left currentD_finite_IN[OF h] IN)
+    using OUT_f_SOURCE currentD_finite_IN[OF h, of 0 b] IN
+    by (simp add: SUP_diff_ennreal less_top)
   also have "(SUP n. value_flow \<Psi> (f n)) \<le> \<alpha>" unfolding \<alpha>_def
     apply(rule SUP_least)
     apply(rule SUP_upper)
@@ -6247,16 +6127,16 @@ proof -
     assume f: "flow \<Psi> f"
     have "d_OUT f SOURCE = (\<Sum>\<^sup>+ y. f (SOURCE, y) * indicator {\<langle>b\<rangle>} y)" unfolding d_OUT_def
       apply(rule nn_integral_cong)
-      subgoal for x using flowD_capacity[OF f, of "(SOURCE, x)"] flowD_nonneg[OF f, of "(SOURCE, x)"]
+      subgoal for x using flowD_capacity[OF f, of "(SOURCE, x)"]
         by(auto split: split_indicator)
       done
-    also have "\<dots> = f (SOURCE, \<langle>b\<rangle>)" by(simp add: flowD_nonneg[OF f] max_def)
+    also have "\<dots> = f (SOURCE, \<langle>b\<rangle>)" by(simp add: max_def)
     also have "\<dots> \<le> weight \<Gamma> b - d_IN (h 0) b" using flowD_capacity[OF f, of "(SOURCE, \<langle>b\<rangle>)"] by simp
     finally show "d_OUT f SOURCE \<le> \<dots>" .
   qed
   ultimately have \<alpha>: "\<alpha> = weight \<Gamma> b - d_IN (h 0) b" by(rule antisym[rotated])
-  hence \<alpha>_finite: "\<alpha> \<noteq> \<infinity>" by(simp add: ereal_minus_eq_PInfty_iff)
-  
+  hence \<alpha>_finite: "\<alpha> \<noteq> \<top>" by simp
+
   from \<Psi>.ex_max_flow
   obtain g where g: "flow \<Psi> g"
     and value_g: "value_flow \<Psi> g = \<alpha>"
@@ -6269,7 +6149,7 @@ proof -
   have g_SOURCE: "g (SOURCE, \<langle>x\<rangle>) = (if x = b then \<alpha> else 0)" for x
   proof(cases "x = b")
     case True
-    have "g (SOURCE, \<langle>x\<rangle>) = (\<Sum>\<^sup>+ y. g (SOURCE, y) * indicator {\<langle>x\<rangle>} y)" by(simp add: max_def flowD_nonneg[OF g])
+    have "g (SOURCE, \<langle>x\<rangle>) = (\<Sum>\<^sup>+ y. g (SOURCE, y) * indicator {\<langle>x\<rangle>} y)" by(simp add: max_def)
     also have "\<dots> = value_flow \<Psi> g" unfolding d_OUT_def using True
       by(intro nn_integral_cong)(auto split: split_indicator intro: \<Psi>.flowD_outside[OF g])
     finally show ?thesis using value_g by(simp add: True)
@@ -6278,43 +6158,40 @@ proof -
   let ?g = "\<lambda>(x, y). g (\<langle>y\<rangle>, \<langle>x\<rangle>)"
 
   def h' \<equiv> "h 0 \<oplus> ?g"
-  have h'_simps: "h' (x, y) = (if edge \<Gamma> x y then h 0 (x, y) - g (\<langle>x\<rangle>, \<langle>y\<rangle>) + g (\<langle>y\<rangle>, \<langle>x\<rangle>) else 0)" for x y
-    by(simp add: h'_def ereal_diff_add_assoc2)
-  have h'_nonneg: "h' e \<ge> 0" for e using flowD_nonneg[OF g, of "(\<langle>snd e\<rangle>, \<langle>fst e\<rangle>)"] flowD_capacity[OF g, of "(\<langle>fst e\<rangle>, \<langle>snd e\<rangle>)"]
-    by(cases e)(simp add: h'_simps ereal_diff_positive split: if_split_asm)
-  
+  have h'_simps: "h' (x, y) = (if edge \<Gamma> x y then h 0 (x, y) + g (\<langle>y\<rangle>, \<langle>x\<rangle>) - g (\<langle>x\<rangle>, \<langle>y\<rangle>) else 0)" for x y
+    by(simp add: h'_def)
+
   have OUT_h'_B [simp]: "d_OUT h' x = 0" if "x \<in> B \<Gamma>" for x using that unfolding d_OUT_def
-    by(simp add: nn_integral_0_iff h'_nonneg emeasure_count_space_eq_0)(simp add: h'_simps B_out)
+    by(simp add: nn_integral_0_iff emeasure_count_space_eq_0)(simp add: h'_simps B_out)
   have IN_h'_A [simp]: "d_IN h' x = 0" if "x \<in> A \<Gamma>" for x using that unfolding d_IN_def
-    by(simp add: nn_integral_0_iff h'_nonneg emeasure_count_space_eq_0)(simp add: h'_simps A_in)
+    by(simp add: nn_integral_0_iff emeasure_count_space_eq_0)(simp add: h'_simps A_in)
   have h'_outside: "h' e = 0" if "e \<notin> \<^bold>E" for e unfolding h'_def using that by(rule plus_flow_outside)
   have OUT_h'_outside: "d_OUT h' x = 0" and IN_h'_outside: "d_IN h' x = 0" if "x \<notin> \<^bold>V" for x using that
-    by(auto simp add: d_OUT_def d_IN_def nn_integral_0_iff h'_nonneg emeasure_count_space_eq_0 vertex_def intro: h'_outside)
+    by(auto simp add: d_OUT_def d_IN_def nn_integral_0_iff emeasure_count_space_eq_0 vertex_def intro: h'_outside)
+
+  have g_le_OUT: "g (SINK, \<langle>x\<rangle>) \<le> d_OUT g \<langle>x\<rangle>" for x
+    by (subst flowD_KIR[OF g]) (simp_all add: d_IN_ge_point)
 
   have OUT_g_A: "d_OUT ?g x = d_OUT g \<langle>x\<rangle> - g (SINK, \<langle>x\<rangle>)" if "x \<in> A \<Gamma>" for x
   proof -
     have "d_OUT ?g x = (\<Sum>\<^sup>+ y\<in>range Inner. g (y, \<langle>x\<rangle>))"
       by(simp add: nn_integral_count_space_reindex d_OUT_def)
-    also have "\<dots> = d_IN g \<langle>x\<rangle> - (\<Sum>\<^sup>+ y. g (y, \<langle>x\<rangle>) * indicator {SINK} y)" unfolding d_IN_def 
-      using that b disjoint flowD_capacity[OF g, of "(SOURCE, \<langle>x\<rangle>)"] flowD_nonneg[OF g, of "(SOURCE, \<langle>x\<rangle>)"] flowD_nonneg[OF g, of "(SINK, \<langle>x\<rangle>)"]
-      apply(subst nn_integral_diff[symmetric])
-      apply(auto simp add: nn_integral_count_space_indicator notin_range_Inner max_def intro!: nn_integral_cong split: split_indicator if_split_asm)
-      apply(simp add: flowD_nonneg[OF g])
-      done
-    also have "\<dots> = d_OUT g \<langle>x\<rangle> - g (SINK, \<langle>x\<rangle>)" by(simp add: flowD_KIR[OF g] max_def flowD_nonneg[OF g])
+    also have "\<dots> = d_IN g \<langle>x\<rangle> - (\<Sum>\<^sup>+ y. g (y, \<langle>x\<rangle>) * indicator {SINK} y)" unfolding d_IN_def
+      using that b disjoint flowD_capacity[OF g, of "(SOURCE, \<langle>x\<rangle>)"]
+      by(subst nn_integral_diff[symmetric])
+        (auto simp add: nn_integral_count_space_indicator notin_range_Inner max_def intro!: nn_integral_cong split: split_indicator if_split_asm)
+    also have "\<dots> = d_OUT g \<langle>x\<rangle> - g (SINK, \<langle>x\<rangle>)" by(simp add: flowD_KIR[OF g] max_def)
     finally show ?thesis .
   qed
   have IN_g_A: "d_IN ?g x = d_OUT g \<langle>x\<rangle> - g (\<langle>x\<rangle>, SINK)" if "x \<in> A \<Gamma>" for x
   proof -
     have "d_IN ?g x = (\<Sum>\<^sup>+ y\<in>range Inner. g (\<langle>x\<rangle>, y))"
       by(simp add: nn_integral_count_space_reindex d_IN_def)
-    also have "\<dots> = d_OUT g \<langle>x\<rangle> - (\<Sum>\<^sup>+ y. g (\<langle>x\<rangle>, y) * indicator {SINK} y)" unfolding d_OUT_def 
-      using that b disjoint flowD_capacity[OF g, of "(\<langle>x\<rangle>, SOURCE)"] flowD_nonneg[OF g, of "(\<langle>x\<rangle>, SOURCE)"] flowD_nonneg[OF g, of "(\<langle>x\<rangle>, SINK)"]
-      apply(subst nn_integral_diff[symmetric])
-      apply(auto simp add: nn_integral_count_space_indicator notin_range_Inner max_def intro!: nn_integral_cong split: split_indicator if_split_asm)
-      apply(simp add: flowD_nonneg[OF g])
-      done
-    also have "\<dots> = d_OUT g \<langle>x\<rangle> - g (\<langle>x\<rangle>, SINK)" by(simp add: max_def flowD_nonneg[OF g])
+    also have "\<dots> = d_OUT g \<langle>x\<rangle> - (\<Sum>\<^sup>+ y. g (\<langle>x\<rangle>, y) * indicator {SINK} y)" unfolding d_OUT_def
+      using that b disjoint flowD_capacity[OF g, of "(\<langle>x\<rangle>, SOURCE)"]
+      by(subst nn_integral_diff[symmetric])
+        (auto simp add: nn_integral_count_space_indicator notin_range_Inner max_def intro!: nn_integral_cong split: split_indicator if_split_asm)
+    also have "\<dots> = d_OUT g \<langle>x\<rangle> - g (\<langle>x\<rangle>, SINK)" by(simp add: max_def)
     finally show ?thesis .
   qed
   have OUT_g_B: "d_OUT ?g x = d_IN g \<langle>x\<rangle> - g (SOURCE, \<langle>x\<rangle>)" if "x \<in> B \<Gamma>" for x
@@ -6322,12 +6199,10 @@ proof -
     have "d_OUT ?g x = (\<Sum>\<^sup>+ y\<in>range Inner. g (y, \<langle>x\<rangle>))"
       by(simp add: nn_integral_count_space_reindex d_OUT_def)
     also have "\<dots> = d_IN g \<langle>x\<rangle> - (\<Sum>\<^sup>+ y. g (y, \<langle>x\<rangle>) * indicator {SOURCE} y)" unfolding d_IN_def
-      using that b disjoint flowD_capacity[OF g, of "(SINK, \<langle>x\<rangle>)"] flowD_nonneg[OF g, of "(SINK, \<langle>x\<rangle>)"] flowD_nonneg[OF g, of "(SOURCE, \<langle>x\<rangle>)"]
-      apply(subst nn_integral_diff[symmetric])
-      apply(auto simp add: nn_integral_count_space_indicator notin_range_Inner max_def intro!: nn_integral_cong split: split_indicator if_split_asm)
-      apply(simp add: flowD_nonneg[OF g])
-      done
-    also have "\<dots> = d_IN g \<langle>x\<rangle> - g (SOURCE, \<langle>x\<rangle>)" by(simp add: max_def flowD_nonneg[OF g])
+      using that b disjoint flowD_capacity[OF g, of "(SINK, \<langle>x\<rangle>)"]
+      by(subst nn_integral_diff[symmetric])
+        (auto simp add: nn_integral_count_space_indicator notin_range_Inner max_def intro!: nn_integral_cong split: split_indicator if_split_asm)
+    also have "\<dots> = d_IN g \<langle>x\<rangle> - g (SOURCE, \<langle>x\<rangle>)" by(simp add: max_def)
     finally show ?thesis .
   qed
   have IN_g_B: "d_IN ?g x = d_OUT g \<langle>x\<rangle>" if "x \<in> B \<Gamma>" for x
@@ -6339,12 +6214,12 @@ proof -
     finally show ?thesis .
   qed
 
-  have finite_g_IN: "d_IN ?g x \<noteq> \<infinity>" for x using \<alpha>_finite
-  proof(rule neq_PInf_trans)
+  have finite_g_IN: "d_IN ?g x \<noteq> \<top>" for x using \<alpha>_finite
+  proof(rule neq_top_trans)
     have "d_IN ?g x = (\<Sum>\<^sup>+ y\<in>range Inner. g (\<langle>x\<rangle>, y))"
       by(auto simp add: d_IN_def nn_integral_count_space_reindex)
     also have "\<dots> \<le> d_OUT g \<langle>x\<rangle>" unfolding d_OUT_def
-      by(auto simp add: nn_integral_count_space_indicator flowD_nonneg[OF g] intro!: nn_integral_mono split: split_indicator)
+      by(auto simp add: nn_integral_count_space_indicator intro!: nn_integral_mono split: split_indicator)
     also have "\<dots> = d_IN g \<langle>x\<rangle>" by(rule flowD_KIR[OF g]) simp_all
     also have "\<dots> \<le> \<alpha>" using IN_g value_g by simp
     finally show "d_IN ?g x \<le> \<alpha>" .
@@ -6355,7 +6230,7 @@ proof -
     have "d_OUT h' x = d_OUT (h 0) x + (\<Sum>\<^sup>+ y. ?g (x, y) * indicator \<^bold>E (x, y)) - (\<Sum>\<^sup>+ y. ?g (y, x) * indicator \<^bold>E (x, y))"
       unfolding h'_def
       apply(subst OUT_plus_flow[of \<Gamma> "h 0" ?g, OF currentD_outside'[OF h]])
-      apply(auto simp add: flowD_nonneg[OF g] g_le_h0 finite_g_IN)
+      apply(auto simp add: g_le_h0 finite_g_IN)
       done
     also have "(\<Sum>\<^sup>+ y. ?g (x, y) * indicator \<^bold>E (x, y)) = d_OUT ?g x" unfolding d_OUT_def using that
       by(auto simp add: A_in split: split_indicator intro!: nn_integral_cong \<Psi>.flowD_outside[OF g])
@@ -6363,34 +6238,38 @@ proof -
     also have "(\<Sum>\<^sup>+ y. ?g (y, x) * indicator \<^bold>E (x, y)) = d_IN ?g x" using that unfolding d_IN_def
       by(auto simp add: A_in split: split_indicator intro!: nn_integral_cong \<Psi>.flowD_outside[OF g])
     also have "\<dots> = d_OUT g \<langle>x\<rangle> - g (\<langle>x\<rangle>, SINK)" using that by(rule IN_g_A)
-    also have "d_OUT (h 0) x + (d_OUT g \<langle>x\<rangle> - g (SINK, \<langle>x\<rangle>)) - \<dots> = d_OUT (h 0) x - g (SINK, \<langle>x\<rangle>) + g (\<langle>x\<rangle>, SINK)"
-      apply(subst ereal_minus_minus, simp add: d_OUT_nonneg \<Psi>.flowD_finite_OUT[OF g])
-      apply(subst add_diff_eq_ereal)
-      apply(subst ereal_diff_add_assoc2)
-      apply(subst ereal_diff_add_assoc2)
-      apply(subst add_diff_eq_ereal[symmetric])
-      apply(simp add: d_OUT_nonneg \<Psi>.flowD_finite_OUT[OF g])
+    also have "d_OUT (h 0) x + (d_OUT g \<langle>x\<rangle> - g (SINK, \<langle>x\<rangle>)) - \<dots> = d_OUT (h 0) x + g (\<langle>x\<rangle>, SINK) - g (SINK, \<langle>x\<rangle>)"
+      apply(simp add: g_le_OUT add_diff_eq_ennreal d_OUT_ge_point)
+      apply(subst diff_diff_commute_ennreal)
+      apply(simp add: add_increasing d_OUT_ge_point g_le_OUT diff_diff_ennreal')
+      apply(subst add.assoc)
+      apply(subst (2) add.commute)
+      apply(subst add.assoc[symmetric])
+      apply(subst ennreal_add_diff_cancel_right)
+      apply(simp_all add: \<Psi>.flowD_finite_OUT[OF g])
       done
-    finally show ?thesis by (simp add: diff_add_eq_ereal) 
+    finally show ?thesis .
   qed
 
-  have finite_g_OUT: "d_OUT ?g x \<noteq> \<infinity>" for x using \<alpha>_finite
-  proof(rule neq_PInf_trans)
+  have finite_g_OUT: "d_OUT ?g x \<noteq> \<top>" for x using \<alpha>_finite
+  proof(rule neq_top_trans)
     have "d_OUT ?g x = (\<Sum>\<^sup>+ y\<in>range Inner. g (y, \<langle>x\<rangle>))"
       by(auto simp add: d_OUT_def nn_integral_count_space_reindex)
     also have "\<dots> \<le> d_IN g \<langle>x\<rangle>" unfolding d_IN_def
-      by(auto simp add: nn_integral_count_space_indicator flowD_nonneg[OF g] intro!: nn_integral_mono split: split_indicator)
+      by(auto simp add: nn_integral_count_space_indicator intro!: nn_integral_mono split: split_indicator)
     also have "\<dots> \<le> \<alpha>" using IN_g value_g by simp
     finally show "d_OUT ?g x \<le> \<alpha>" .
   qed
 
   have IN_h'_B: "d_IN h' x = d_IN (h 0) x + g (SOURCE, \<langle>x\<rangle>)" if "x \<in> B \<Gamma>" for x
   proof -
+    have g_le: "g (SOURCE, \<langle>x\<rangle>) \<le> d_IN g \<langle>x\<rangle>"
+      by (rule d_IN_ge_point)
+
     have "d_IN h' x = d_IN (h 0) x + (\<Sum>\<^sup>+ y. g (\<langle>x\<rangle>, \<langle>y\<rangle>) * indicator \<^bold>E (y, x)) - (\<Sum>\<^sup>+ y. g (\<langle>y\<rangle>, \<langle>x\<rangle>) * indicator \<^bold>E (y, x))"
       unfolding h'_def
-      apply(subst IN_plus_flow[of \<Gamma> "h 0" ?g, OF currentD_outside'[OF h]])
-      apply(auto simp add: flowD_nonneg[OF g] g_le_h0 finite_g_OUT)
-      done
+      by(subst IN_plus_flow[of \<Gamma> "h 0" ?g, OF currentD_outside'[OF h]])
+        (auto simp add: g_le_h0 finite_g_OUT)
     also have "(\<Sum>\<^sup>+ y. g (\<langle>x\<rangle>, \<langle>y\<rangle>) * indicator \<^bold>E (y, x)) = d_IN ?g x" unfolding d_IN_def using that
       by(intro nn_integral_cong)(auto split: split_indicator intro!: \<Psi>.flowD_outside[OF g] simp add: B_out)
     also have "\<dots> = d_OUT g \<langle>x\<rangle>" using that by(rule IN_g_B)
@@ -6398,12 +6277,9 @@ proof -
       by(intro nn_integral_cong)(auto split: split_indicator intro!: \<Psi>.flowD_outside[OF g] simp add: B_out)
     also have "\<dots> = d_IN g \<langle>x\<rangle> - g (SOURCE, \<langle>x\<rangle>)" using that by(rule OUT_g_B)
     also have "d_IN (h 0) x + d_OUT g \<langle>x\<rangle> - \<dots> = d_IN (h 0) x + g (SOURCE, \<langle>x\<rangle>)"
-      apply(simp add: flowD_KIR[OF g])
-      apply(subst ereal_minus_minus, simp add: d_IN_nonneg \<Psi>.flowD_finite_IN[OF g])
-      apply(subst ereal_diff_add_assoc2)
-      apply(subst add_diff_eq_ereal[symmetric])
-      apply(simp add: d_IN_nonneg \<Psi>.flowD_finite_IN[OF g])
-      done
+      using \<Psi>.flowD_finite_IN[OF g] g_le
+      by(cases "d_IN (h 0) x"; cases "d_IN g \<langle>x\<rangle>"; cases "d_IN g \<langle>x\<rangle>"; cases "g (SOURCE, \<langle>x\<rangle>)")
+        (auto simp: flowD_KIR[OF g] top_add ennreal_minus_if ennreal_plus_if simp del: ennreal_plus)
     finally show ?thesis .
   qed
 
@@ -6417,24 +6293,23 @@ proof -
     proof(cases rule: cases)
       case A
       then have "d_OUT h' x = d_OUT (h 0) x + g (\<langle>x\<rangle>, SINK) - g (SINK, \<langle>x\<rangle>)" by(simp add: OUT_h'_A)
-      also have "\<dots> \<le> d_OUT (h 0) x + g (\<langle>x\<rangle>, SINK)" by(rule ereal_diff_le_self)(rule flowD_nonneg[OF g])
+      also have "\<dots> \<le> d_OUT (h 0) x + g (\<langle>x\<rangle>, SINK)" by(rule diff_le_self_ennreal)
       also have "g (\<langle>x\<rangle>, SINK) \<le> weight \<Gamma> x - d_OUT (h 0) x"
         using flowD_capacity[OF g, of "(\<langle>x\<rangle>, SINK)"] A by simp
       also have "d_OUT (h 0) x + \<dots> = weight \<Gamma> x"
-        by(simp add: add_diff_eq_ereal ereal_diff_add_inverse d_OUT_nonneg currentD_finite_OUT[OF h])
+        by(simp add: add_diff_eq_ennreal add_diff_inverse_ennreal  currentD_finite_OUT[OF h] currentD_weight_OUT[OF h])
       finally show ?thesis by(simp add: add_left_mono)
-    qed(simp_all add: OUT_h'_outside weight_nonneg)
+    qed(simp_all add: OUT_h'_outside )
 
     show "d_IN h' x \<le> weight \<Gamma> x"
     proof(cases rule: cases)
       case B
       hence "d_IN h' x = d_IN (h 0) x + g (SOURCE, \<langle>x\<rangle>)" by(rule IN_h'_B)
-      also have "\<dots> \<le> weight \<Gamma> x" 
-        by(simp add: g_SOURCE \<alpha> currentD_weight_IN[OF h] add_diff_eq_ereal ereal_diff_add_inverse d_IN_nonneg currentD_finite_IN[OF h])
+      also have "\<dots> \<le> weight \<Gamma> x"
+        by(simp add: g_SOURCE \<alpha> currentD_weight_IN[OF h] add_diff_eq_ennreal add_diff_inverse_ennreal currentD_finite_IN[OF h])
       finally show ?thesis .
-    qed(simp_all add: weight_nonneg IN_h'_outside)
+    qed(simp_all add:  IN_h'_outside)
   next
-    show "h' e \<ge> 0" for e by(rule h'_nonneg)
     show "h' e = 0" if "e \<notin> \<^bold>E" for e using that by(simp split: prod.split_asm add: h'_simps)
   qed
   moreover
@@ -6444,12 +6319,12 @@ proof -
     proof(cases "x = b")
       case True
       have "d_IN h' x = weight \<Gamma> x" using that True
-        by(simp add: IN_h'_B g_SOURCE \<alpha> currentD_weight_IN[OF h] add_diff_eq_ereal ereal_diff_add_inverse d_IN_nonneg currentD_finite_IN[OF h])
+        by(simp add: IN_h'_B g_SOURCE \<alpha> currentD_weight_IN[OF h] add_diff_eq_ennreal add_diff_inverse_ennreal currentD_finite_IN[OF h])
       thus ?thesis by(simp add: SAT.simps)
     next
       case False
       have "d_IN h' x = d_IN (h 0) x" using that False by(simp add: IN_h'_B g_SOURCE)
-      also have "\<dots> = weight \<Gamma> x" 
+      also have "\<dots> = weight \<Gamma> x"
         using SAT[of 0, THEN subsetD, of x] False that currentD_SAT[OF h, of x 0] disjoint by auto
       finally show ?thesis by(simp add: SAT.simps)
     qed
@@ -6457,7 +6332,7 @@ proof -
   moreover
   have "wave \<Gamma> h'"
   proof
-    have "separating \<Gamma> (B \<Gamma> \<inter> \<^bold>V)" 
+    have "separating \<Gamma> (B \<Gamma> \<inter> \<^bold>V)"
     proof
       fix x y p
       assume x: "x \<in> A \<Gamma>" and y: "y \<in> B \<Gamma>" and p: "path \<Gamma> x p y"
@@ -6474,10 +6349,10 @@ qed
 end
 
 lemma countable_bipartite_web_reduce_weight:
-  assumes "weight \<Gamma> x \<ge> w" "w \<ge> 0"
+  assumes "weight \<Gamma> x \<ge> w"
   shows "countable_bipartite_web (reduce_weight \<Gamma> x w)"
 using bipartite_V A_vertex bipartite_E disjoint assms
-by unfold_locales (auto 4 3 simp add: ereal_minus_eq_PInfty_iff weight_outside weight_nonneg ereal_diff_positive)
+by unfold_locales (auto 4 3 simp add: weight_outside )
 
 lemma unhinder: -- "Lemma 6.9"
   assumes loose: "loose \<Gamma>"
@@ -6491,14 +6366,14 @@ proof(rule ccontr)
 
   from b disjoint have bnA: "b \<notin> A \<Gamma>" by blast
 
-  def wb \<equiv> "real_of_ereal (weight \<Gamma> b)"
-  have wb_conv: "weight \<Gamma> b = ereal wb" by(simp add: wb_def ereal_real weight_nonneg)
+  def wb \<equiv> "enn2real (weight \<Gamma> b)"
+  have wb_conv: "weight \<Gamma> b = ennreal wb" by(simp add: wb_def less_top[symmetric])
   have wb_pos: "wb > 0" using wb by(simp add: wb_conv)
 
   def \<epsilon> \<equiv> "\<lambda>n :: nat. min \<delta> wb / (n + 2)"
   have \<epsilon>_pos: "\<epsilon> n > 0" for n using wb_pos \<delta> by(simp add: \<epsilon>_def)
   have \<epsilon>_nonneg: "0 \<le> \<epsilon> n" for n using \<epsilon>_pos[of n] by simp
-  have *: "\<epsilon> n \<le> min wb \<delta> / 2" for n using wb_pos \<delta> 
+  have *: "\<epsilon> n \<le> min wb \<delta> / 2" for n using wb_pos \<delta>
     by(auto simp add: \<epsilon>_def field_simps min_def)
   have \<epsilon>_le: "\<epsilon> n \<le> wb" and \<epsilon>_less: "\<epsilon> n < wb" and \<epsilon>_less_\<delta>: "\<epsilon> n < \<delta>" and \<epsilon>_le': "\<epsilon> n \<le> wb / 2" for n
     using *[of n] \<epsilon>_pos[of n] by(auto)
@@ -6518,21 +6393,21 @@ proof(rule ccontr)
 
   from wb have "b \<in> \<^bold>V" using weight_outside[of b] by(auto intro: ccontr)
   interpret \<Gamma>': countable_bipartite_web "\<Gamma>' n" for n unfolding \<Gamma>'_def
-    by(rule countable_bipartite_web_reduce_weight)(simp_all add: wb_conv \<epsilon>_le \<epsilon>_nonneg)
+    using wb_pos by(intro countable_bipartite_web_reduce_weight)(simp_all add: wb_conv \<epsilon>_le \<epsilon>_nonneg)
 
   obtain g where g: "\<And>n. current (\<Gamma>' n) (g n)"
     and w: "\<And>n. wave (\<Gamma>' n) (g n)"
-    and hind: "\<And>n. hindrance (\<Gamma>' n) (g n)" using hindered[OF \<epsilon>_pos, unfolded wb_conv ereal_less_eq, OF \<epsilon>_less_\<delta>]
+    and hind: "\<And>n. hindrance (\<Gamma>' n) (g n)" using hindered[OF \<epsilon>_pos, unfolded wb_conv ennreal_less_iff, OF \<epsilon>_less_\<delta>]
     unfolding hindered.simps \<Gamma>'_def by atomize_elim metis
   from g have g\<Gamma>: "current \<Gamma> (g n)" for n
-    by(rule current_weight_mono)(auto simp add: \<epsilon>_nonneg ereal_diff_le_self)
+    by(rule current_weight_mono)(auto simp add: \<epsilon>_nonneg diff_le_self_ennreal)
   note [simp] = currentD_finite[OF g\<Gamma>]
 
   have b_TER: "b \<in> TER\<^bsub>\<Gamma>' n\<^esub> (g n)" for n
   proof(rule ccontr)
     assume b': "b \<notin> TER\<^bsub>\<Gamma>' n\<^esub> (g n)"
     then have TER: "TER\<^bsub>\<Gamma>' n\<^esub> (g n) = TER (g n)" using b \<epsilon>_nonneg[of n]
-      by(auto simp add: SAT.simps split: if_split_asm intro: ereal_diff_le_mono_left)
+      by(auto simp add: SAT.simps split: if_split_asm intro: ennreal_diff_le_mono_left)
     from w[of n] TER have "wave \<Gamma> (g n)" by(simp add: wave.simps separating_gen.simps)
     moreover have "hindrance \<Gamma> (g n)" using hind[of n] TER bnA b'
       by(auto simp add: hindrance.simps split: if_split_asm)
@@ -6551,26 +6426,29 @@ proof(rule ccontr)
 
   def g' \<equiv> "\<lambda>n (x, y). if y = b then g n (x, y) * factor n else g n (x, y)"
   have g'_simps: "g' n (x, y) = (if y = b then g n (x, y) * factor n else g n (x, y))" for n x y by(simp add: g'_def)
-  have g'_le_g: "g' n e \<le> g n e" for n e using currentD_nonneg[OF g, of n e] factor_le_1[of n]
-    by(cases e "g n e" rule: prod.exhaust[case_product ereal_cases])
+  have g'_le_g: "g' n e \<le> g n e" for n e using factor_le_1[of n]
+    by(cases e "g n e" rule: prod.exhaust[case_product ennreal_cases])
       (auto simp add: g'_simps field_simps mult_left_le)
 
   have "4 + (n * 6 + n * (n * 2)) \<noteq> (0 :: real)" for n :: nat
     by(metis (mono_tags, hide_lams) add_is_0 of_nat_eq_0_iff of_nat_numeral zero_neq_numeral)
   then have IN_g': "d_IN (g' n) x = (if x = b then weight \<Gamma> b - \<epsilon> 0 else d_IN (g n) x)" for x n
-    using b_TER[of n] bnA factor_pos[of n] factor[of n]
-    by(auto simp add: d_IN_def g'_simps nn_integral_divide nn_integral_cmult currentD_SAT[OF g] wb_conv \<epsilon>_def field_simps ereal_min[symmetric] simp del: ereal_min)
+    using b_TER[of n] bnA factor_pos[of n] factor[of n] wb_pos \<delta>
+    by(auto simp add: d_IN_def g'_simps nn_integral_divide nn_integral_cmult currentD_SAT[OF g] wb_conv \<epsilon>_def field_simps
+                      ennreal_minus ennreal_mult'[symmetric] intro!: arg_cong[where f=ennreal])
   have OUT_g': "d_OUT (g' n) x = d_OUT (g n) x - g n (x, b) * (1 - factor n)" for n x
   proof -
     have "d_OUT (g' n) x = (\<Sum>\<^sup>+ y. g n (x, y)) - (\<Sum>\<^sup>+ y. (g n (x, y) * (1 - factor n)) * indicator {b} y)"
-      using currentD_nonneg[OF g, of n "(x, b)"] factor_le_1[of n] factor_pos[of n]
+      using factor_le_1[of n] factor_pos[of n]
       apply(cases "g n (x, b)")
       apply(subst nn_integral_diff[symmetric])
-      apply(auto simp add: g'_simps nn_integral_divide d_OUT_def max_def AE_count_space mult_left_le intro!: nn_integral_cong split: split_indicator)
-      apply(simp_all add: currentD_nonneg[OF g] field_simps)
+      apply(auto simp add: g'_simps nn_integral_divide d_OUT_def AE_count_space mult_left_le ennreal_mult_eq_top_iff
+                           ennreal_mult'[symmetric] ennreal_minus_if
+                 intro!: nn_integral_cong split: split_indicator)
+      apply(simp_all add: field_simps)
       done
     also have "\<dots> = d_OUT (g n) x - g n (x, b) * (1 - factor n)" using factor_le_1[of n]
-      by(subst nn_integral_indicator_singleton)(simp_all add: d_OUT_def max_def currentD_nonneg[OF g] field_simps)
+      by(subst nn_integral_indicator_singleton)(simp_all add: d_OUT_def field_simps)
     finally show ?thesis .
   qed
 
@@ -6578,13 +6456,10 @@ proof(rule ccontr)
   proof
     show "d_OUT (g' n) x \<le> weight (\<Gamma>' 0) x" for x
       using b_TER[of n] currentD_weight_OUT[OF g, of n x] \<epsilon>_le[of 0] factor_le_1[of n]
-      apply(auto simp add: OUT_g' SINK.simps ereal_diff_le_mono_left currentD_nonneg[OF g] )
-      apply(simp add: currentD_OUT_eq_0[OF g] ereal_diff_positive wb_conv)
-      done
+      by(auto simp add: OUT_g' SINK.simps ennreal_diff_le_mono_left)
     show "d_IN (g' n) x \<le> weight (\<Gamma>' 0) x" for x
-      using d_IN_mono[of "g' n" x, OF g'_le_g] currentD_weight_IN[OF g, of n x] d_IN_nonneg[of "g' n" x] b_TER[of n] b
-      by(auto simp add: ereal_diff_positive IN_g' SAT.simps wb_conv \<epsilon>_def)
-    show "0 \<le> g' n e" for e using factor_pos[of n] by(cases e)(simp add: g'_simps currentD_nonneg[OF g])
+      using d_IN_mono[of "g' n" x, OF g'_le_g] currentD_weight_IN[OF g, of n x] b_TER[of n] b
+      by(auto simp add: IN_g' SAT.simps wb_conv \<epsilon>_def)
     show "g' n e = 0" if "e \<notin> \<^bold>E\<^bsub>\<Gamma>' 0\<^esub>" for e using that by(cases e)(clarsimp simp add: g'_simps currentD_outside[OF g])
   qed
 
@@ -6620,7 +6495,7 @@ proof(rule ccontr)
     case (step k)
     note step.IH
     also have "f k \<le> (f k \<frown>\<^bsub>\<Gamma>' 0\<^esub> g' (k + 1))"
-      by(rule le_funI plus_web_greater currentD_nonneg[OF g'])+
+      by(rule le_funI plus_web_greater)+
     also have "\<dots> = f (Suc k)" by simp
     finally show ?case .
   qed simp
@@ -6628,7 +6503,7 @@ proof(rule ccontr)
     by(rule chain_imageI[where le_a="op \<le>"])(simp_all add: f_inc)
   have "countable (support_flow (f n))" for n using current_support_flow[OF f, of n]
     by(rule countable_subset) simp
-  hence supp_f: "countable (support_flow (SUP n. f n))" unfolding SUP_def by(subst support_flow_Sup)simp
+  hence supp_f: "countable (support_flow (SUP n. f n))" by(subst support_flow_Sup)simp
 
   have RF_f: "RF (TER\<^bsub>\<Gamma>' 0\<^esub> (f n)) = RF (\<Union>i\<le>n. TER\<^bsub>\<Gamma>' 0\<^esub> (g' i))" for n
   proof(induction n)
@@ -6649,24 +6524,24 @@ proof(rule ccontr)
   qed
 
   def g\<omega> \<equiv> "SUP n. f n"
-  have g\<omega>: "current (\<Gamma>' 0) g\<omega>" unfolding g\<omega>_def SUP_def using chain_f
+  have g\<omega>: "current (\<Gamma>' 0) g\<omega>" unfolding g\<omega>_def using chain_f
     by(rule current_Sup)(auto simp add: f supp_f)
-  have w\<omega>: "wave (\<Gamma>' 0) g\<omega>" unfolding g\<omega>_def SUP_def using chain_f
+  have w\<omega>: "wave (\<Gamma>' 0) g\<omega>" unfolding g\<omega>_def using chain_f
     by(rule wave_lub)(auto simp add: fw  supp_f)
   from g\<omega> have g\<omega>': "current (\<Gamma>' n) g\<omega>" for n using wb_pos \<delta>
-    by(elim current_weight_mono)(simp_all add: ereal_diff_positive \<epsilon>_le wb_conv \<epsilon>_def field_simps)
+    by(elim current_weight_mono)(auto simp add: \<epsilon>_le wb_conv \<epsilon>_def field_simps ennreal_minus_if min_le_iff_disj)
 
-  have SINK_g\<omega>: "SINK g\<omega> = (\<Inter>n. SINK (f n))" unfolding g\<omega>_def SUP_def
+  have SINK_g\<omega>: "SINK g\<omega> = (\<Inter>n. SINK (f n))" unfolding g\<omega>_def
     by(subst SINK_Sup[OF chain_f])(simp_all add: supp_f)
   have SAT_g\<omega>: "SAT (\<Gamma>' 0) (f n) \<subseteq> SAT (\<Gamma>' 0) g\<omega>" for n
-    unfolding g\<omega>_def SUP_def by(rule SAT_Sup_upper) simp
+    unfolding g\<omega>_def by(rule SAT_Sup_upper) simp
 
   have g_b_out: "g n (b, x) = 0" for n x using b_TER[of n] by(simp add: SINK.simps currentD_OUT_eq_0[OF g])
   have g'_b_out: "g' n (b, x) = 0" for n x by(simp add: g'_simps g_b_out)
   have "f n (b, x) = 0" for n x by(induction n)(simp_all add: g_b_out g'_b_out)
   hence b_SINK_f: "b \<in> SINK (f n)" for n by(simp add: SINK.simps d_OUT_def)
   hence b_SINK_g\<omega>: "b \<in> SINK g\<omega>" by(simp add: SINK_g\<omega>)
-  
+
   have RF_circ: "RF\<^sup>\<circ>\<^bsub>\<Gamma>' n\<^esub> (TER\<^bsub>\<Gamma>' 0\<^esub> (g' n)) = RF\<^sup>\<circ>\<^bsub>\<Gamma>' 0\<^esub> (TER\<^bsub>\<Gamma>' 0\<^esub> (g' n))" for n by(simp add: roofed_circ_def)
   have edge_restrict_\<Gamma>': "edge (quotient_web (\<Gamma>' 0) (g' n)) = edge (quotient_web (\<Gamma>' n) (g n))" for n
     by(simp add: fun_eq_iff TER_g' RF_circ)
@@ -6684,11 +6559,12 @@ proof(rule ccontr)
   proof
     have *: "wave (quotient_web (\<Gamma>' 0) (g' n)) (g\<omega> \<upharpoonleft> \<Gamma>' 0 / g' n)"
       using g' w' g\<omega> w\<omega> by(rule wave_restrict_current)
-    have "d_IN (g\<omega> \<upharpoonleft> \<Gamma>' n / g n) b = 0" 
+    have "d_IN (g\<omega> \<upharpoonleft> \<Gamma>' n / g n) b = 0"
       by(rule d_IN_restrict_current_outside roofed_greaterI b_TER)+
     hence SAT_subset: "SAT (quotient_web (\<Gamma>' 0) (g' n)) (g\<omega> \<upharpoonleft> \<Gamma>' n / g n) \<subseteq> SAT ?\<Gamma>' (g\<omega> \<upharpoonleft> \<Gamma>' n / g n)"
       using b_TER[of n] wb_pos
-      by(auto simp add: SAT.simps d_IN_nonneg TER_g' RF_circ wb_conv \<epsilon>_def field_simps)
+      by(auto simp add: SAT.simps TER_g' RF_circ wb_conv \<epsilon>_def field_simps
+                        ennreal_minus_if split: if_split_asm)
     hence TER_subset: "TER\<^bsub>quotient_web (\<Gamma>' 0) (g' n)\<^esub> (g\<omega> \<upharpoonleft> \<Gamma>' n / g n) \<subseteq> TER\<^bsub>?\<Gamma>'\<^esub> (g\<omega> \<upharpoonleft> \<Gamma>' n / g n)"
       using SINK_g' by(auto simp add: restrict_curr_g')
 
@@ -6700,7 +6576,7 @@ proof(rule ccontr)
       with waveD_separating[OF *, THEN separatingD, simplified, OF p'] TER_g'[of n] SINK_g' SAT_g' restrict_curr_g' SAT_subset xy
       show "(\<exists>z\<in>set p. z \<in> ?TER) \<or> x \<in> ?TER" by auto
     qed
-    
+
     show "d_OUT (g\<omega> \<upharpoonleft> \<Gamma>' n / g n) x = 0" if "x \<notin> RF\<^bsub>?\<Gamma>'\<^esub> ?TER" for x
       unfolding restrict_curr_g'[symmetric] using TER_subset that
       by(intro waveD_OUT[OF *])(auto simp add: TER_g' restrict_curr_g' RF_restrict intro: in_roofed_mono)
@@ -6709,7 +6585,7 @@ proof(rule ccontr)
   have RF_g\<omega>: "RF (TER\<^bsub>\<Gamma>' 0\<^esub> g\<omega>) = RF (\<Union>n. TER\<^bsub>\<Gamma>' 0\<^esub> (g' n))"
   proof -
     have "RF\<^bsub>\<Gamma>' 0\<^esub> (TER\<^bsub>\<Gamma>' 0\<^esub> g\<omega>) = RF (\<Union>i. TER\<^bsub>\<Gamma>' 0\<^esub> (f i))"
-      unfolding g\<omega>_def SUP_def by(subst RF_TER_Sup[OF _ _ chain_f])(auto simp add: f fw supp_f)
+      unfolding g\<omega>_def by(subst RF_TER_Sup[OF _ _ chain_f])(auto simp add: f fw supp_f)
     also have "\<dots> = RF (\<Union>i. RF (TER\<^bsub>\<Gamma>' 0\<^esub> (f i)))" by(simp add: roofed_UN)
     also have "\<dots> = RF (\<Union>i. \<Union>j\<le>i. TER\<^bsub>\<Gamma>' 0\<^esub> (g' j))" unfolding RF_f roofed_UN by simp
     also have "(\<Union>i. \<Union>j\<le>i. TER\<^bsub>\<Gamma>' 0\<^esub> (g' j)) = (\<Union>i. TER\<^bsub>\<Gamma>' 0\<^esub> (g' i))" by auto
@@ -6720,7 +6596,7 @@ proof(rule ccontr)
     apply(intro set_eqI)
     apply(simp add: SAT.simps IN_plus_current[OF g w g\<omega>r] IN_plus_current[OF g' w' g\<omega>r'] TER_g')
     apply(cases "d_IN (g\<omega> \<upharpoonleft> \<Gamma>' n / g n) b")
-    apply(auto simp add: SAT.simps wb_conv d_IN_plus_web[OF currentD_nonneg[OF g] currentD_nonneg[OF g\<omega>]] d_IN_plus_web[OF currentD_nonneg[OF g'] currentD_nonneg[OF g\<omega>]] IN_g')
+    apply(auto simp add: SAT.simps wb_conv d_IN_plus_web IN_g')
     apply(simp_all add: wb_conv IN_g_b restrict_curr_g' \<epsilon>_def field_simps)
     apply(metis TER_g' b_TER roofed_greaterI)+
     done
@@ -6767,7 +6643,7 @@ proof(rule ccontr)
     done
 
   have b_SAT: "b \<in> SAT (\<Gamma>' 0) (h 0)" using b_TER[of 0]
-    by(auto simp add: h_def SAT.simps d_IN_plus_web[OF currentD_nonneg[OF g] currentD_nonneg[OF g\<omega>]] intro: order_trans ereal_le_add_self d_IN_nonneg)
+    by(auto simp add: h_def SAT.simps d_IN_plus_web intro: order_trans)
   have b_T: "b \<in> T" using b_SINK_g\<omega> b_TER by(simp add: T_def)(metis SAT_g\<omega> subsetD f_simps(1))
 
   have essential: "b \<in> \<E> T"
@@ -6794,7 +6670,7 @@ proof(rule ccontr)
     qed(rule h0)
     ultimately have "h 0 = zero_current" by(rule looseD_wave[OF loose])
     then have "d_IN (h 0) b = 0" by(simp)
-    with b_SAT wb \<open>b \<notin> A \<Gamma>\<close> show False by(simp add: SAT.simps wb_conv \<epsilon>_def)
+    with b_SAT wb \<open>b \<notin> A \<Gamma>\<close> show False by(simp add: SAT.simps wb_conv \<epsilon>_def ennreal_minus_if split: if_split_asm)
   qed
 
   def S \<equiv> "{x \<in> RF (T \<inter> B \<Gamma>) \<inter> A \<Gamma>. essential \<Gamma> (T \<inter> B \<Gamma>) (RF (T \<inter> B \<Gamma>) \<inter> A \<Gamma>) x}"
@@ -6833,7 +6709,7 @@ proof(rule ccontr)
       from * obtain y where xy: "h n (x, y) \<noteq> 0" using currentD_OUT_eq_0[OF h, of n x] by auto
       then have edge: "edge \<Gamma> x y" using currentD_outside[OF h] by(auto)
       hence p: "path \<Gamma> x [y] y" by(simp add: rtrancl_path_simps)
-  
+
       from bipartite_E[OF edge] have x: "x \<in> A \<Gamma>" and y: "y \<in> B \<Gamma>" by simp_all
       moreover have "x \<in> RF (RF (T \<inter> B \<Gamma>))"
       proof
@@ -6863,11 +6739,11 @@ proof(rule ccontr)
       with that show ?thesis by contradiction
     qed
   qed
-      
+
   have B_vertex: "vertex \<Gamma>_h y" if T: "y \<in> T" and B: "y \<in> B \<Gamma>" and w: "weight \<Gamma> y > 0" for y
   proof -
     from T B disjoint \<epsilon>_less[of 0] w
-    have "d_IN (h 0) y > 0" using IN_h_\<E>[of y 0] by(cases "y \<in> A \<Gamma>")(auto simp add: essential_BI wb_conv)
+    have "d_IN (h 0) y > 0" using IN_h_\<E>[of y 0] by(cases "y \<in> A \<Gamma>")(auto simp add: essential_BI wb_conv ennreal_minus_if)
     then obtain x where xy: "h 0 (x, y) \<noteq> 0" using currentD_IN_eq_0[OF h, of 0 y] by(auto)
     then have edge: "edge \<Gamma> x y" using currentD_outside[OF h] by(auto)
     from xy have "d_OUT (h 0) x \<noteq> 0" by(auto simp add: currentD_OUT_eq_0[OF h])
@@ -6881,12 +6757,11 @@ proof(rule ccontr)
     show "A \<Gamma>_h \<subseteq> \<^bold>V\<^bsub>\<Gamma>_h\<^esub>" using S_vertex by auto
     show "x \<in> A \<Gamma>_h \<and> y \<in> B \<Gamma>_h" if "edge \<Gamma>_h x y" for x y using that by auto
     show "A \<Gamma>_h \<inter> B \<Gamma>_h = {}" using disjoint by(auto simp add: S_def)
-    show "0 \<le> weight \<Gamma>_h x" for x by(simp add: weight_nonneg)
     have "\<^bold>E\<^bsub>\<Gamma>_h\<^esub> \<subseteq> \<^bold>E" by auto
     thus "countable \<^bold>E\<^bsub>\<Gamma>_h\<^esub>" by(rule countable_subset) simp
-    show "weight \<Gamma>_h x \<noteq> \<infinity>" for x by(simp split: split_indicator)
+    show "weight \<Gamma>_h x \<noteq> \<top>" for x by(simp split: split_indicator)
     show "weight \<Gamma>_h x = 0" if "x \<notin> \<^bold>V\<^bsub>\<Gamma>_h\<^esub>" for x
-      using that S_vertex B_vertex[of x] weight_nonneg[of x]
+      using that S_vertex B_vertex[of x]
       by(cases "weight \<Gamma>_h x > 0")(auto split: split_indicator)
   qed
   then interpret \<Gamma>_h: countable_bipartite_web \<Gamma>_h .
@@ -6914,15 +6789,14 @@ proof(rule ccontr)
 
   have h': "current \<Gamma>_h (h n)" for n
   proof
-    show "d_OUT (h n) x \<le> weight \<Gamma>_h x" for x 
+    show "d_OUT (h n) x \<le> weight \<Gamma>_h x" for x
       using currentD_weight_OUT[OF h, of n x] \<epsilon>_nonneg[of n] \<Gamma>'.currentD_OUT'[OF h, of x n] OUT_not_S
-      by(auto split: split_indicator if_split_asm elim: order_trans intro: ereal_diff_le_self in_roofed_mono simp add: OUT_h_b weight_nonneg roofed_circ_def)
-      
+      by(auto split: split_indicator if_split_asm elim: order_trans intro: diff_le_self_ennreal in_roofed_mono simp add: OUT_h_b  roofed_circ_def)
+
     show "d_IN (h n) x \<le> weight \<Gamma>_h x" for x
       using currentD_weight_IN[OF h, of n x] currentD_IN[OF h, of x n] \<epsilon>_nonneg[of n] b_T b \<Gamma>'.currentD_IN'[OF h, of x n] IN_h_nT[of x n]
-      by(cases "x \<in> B \<Gamma>")(auto 4 3 split: split_indicator split: if_split_asm elim: order_trans intro: ereal_diff_le_self simp add: S_def weight_nonneg roofed_circ_def RF_in_B)
+      by(cases "x \<in> B \<Gamma>")(auto 4 3 split: split_indicator split: if_split_asm elim: order_trans intro: diff_le_self_ennreal simp add: S_def  roofed_circ_def RF_in_B)
 
-    show "0 \<le> h n e" for e by(rule currentD_nonneg[OF h])
     show "h n e = 0" if "e \<notin> \<^bold>E\<^bsub>\<Gamma>_h\<^esub>" for e
       using that OUT_not_S[of "fst e" n] currentD_outside'[OF h, of e n] \<Gamma>'.currentD_IN'[OF h, of "snd e" n] disjoint
       apply(cases "e \<in> \<^bold>E")
@@ -6951,31 +6825,30 @@ proof(rule ccontr)
     apply(rule tendsto_mult_right_zero)
     apply(rule lim_1_over_real_power[where s=1, simplified])
     done
-  then have "(INF n. ereal (\<epsilon> n)) = 0" using wb_pos \<delta>
+  then have "(INF n. ennreal (\<epsilon> n)) = 0" using wb_pos \<delta>
     apply(simp add: \<epsilon>_def)
     apply(rule INF_Lim_ereal)
     apply(rule decseq_SucI)
     apply(simp add: field_simps min_def)
-    apply(simp add: zero_ereal_def add.commute)
+    apply(simp add: add.commute ennreal_0[symmetric] del: ennreal_0)
     done
   then have "(SUP n. d_IN (h n) b) = weight \<Gamma>_h b" using essential b bnA wb IN_h_\<E>[of b]
-    by(simp add: SUP_ereal_minus_right)
+    by(simp add: SUP_const_minus_ennreal)
   moreover have "d_IN (h 0) b \<le> d_IN (h n) b" for n using essential b bnA wb_pos \<delta> IN_h_\<E>[of b]
-    by(simp add: wb_conv \<epsilon>_def field_simps)
+    by(simp add: wb_conv \<epsilon>_def field_simps ennreal_minus_if min_le_iff_disj)
   moreover have b_V: "b \<in> \<^bold>V\<^bsub>\<Gamma>_h\<^esub>" using b wb essential by(auto dest: B_vertex)
   ultimately have "\<exists>h'. current \<Gamma>_h h' \<and> wave \<Gamma>_h h' \<and> B \<Gamma>_h \<inter> \<^bold>V\<^bsub>\<Gamma>_h\<^esub> \<subseteq> SAT \<Gamma>_h h'"
     by(rule \<Gamma>_h.unhinder_bipartite[OF h'])
-  then obtain h' where h': "current \<Gamma>_h h'" and h'w: "wave \<Gamma>_h h'" 
+  then obtain h' where h': "current \<Gamma>_h h'" and h'w: "wave \<Gamma>_h h'"
     and B_SAT': "B \<Gamma>_h \<inter> \<^bold>V\<^bsub>\<Gamma>_h\<^esub> \<subseteq> SAT \<Gamma>_h h'" by blast
 
   have h'': "current \<Gamma> h'"
   proof
     show "d_OUT h' x \<le> weight \<Gamma> x" for x using currentD_weight_OUT[OF h', of x]
-      by(auto split: split_indicator_asm elim: order_trans intro: weight_nonneg)
+      by(auto split: split_indicator_asm elim: order_trans intro: )
     show "d_IN h' x \<le> weight \<Gamma> x" for x using currentD_weight_IN[OF h', of x]
-      by(auto split: split_indicator_asm elim: order_trans intro: weight_nonneg)
-    show "0 \<le> h' e" for e by(rule currentD_nonneg[OF h'])
-    show "h' e = 0" if "e \<notin> \<^bold>E" for e using currentD_outside'[OF h', of e] that by auto 
+      by(auto split: split_indicator_asm elim: order_trans intro: )
+    show "h' e = 0" if "e \<notin> \<^bold>E" for e using currentD_outside'[OF h', of e] that by auto
   qed
   moreover have "wave \<Gamma> h'"
   proof
@@ -7006,10 +6879,7 @@ proof(rule ccontr)
           hence "y \<in> SAT \<Gamma>_h h'" using B_SAT' right y by auto
           with right y disjoint show ?thesis
             by(auto simp add: currentD_SAT[OF h'] currentD_SAT[OF h''] S_def)
-        next
-          case False
-          with weight_nonneg[of y] show ?thesis by(auto simp add: SAT.simps d_IN_nonneg)
-        qed
+        qed(auto simp add: SAT.simps)
         with currentD_OUT[OF h', of y] y right have "y \<in> TER h'" by(auto simp add: SINK)
         thus ?thesis using py by simp
       qed
@@ -7028,12 +6898,12 @@ subsection \<open>Single-vertex saturation in unhindered bipartite webs\<close>
 text \<open>
   The proof of lemma 6.10 in @{cite "AharoniBergerGeorgakopoulusPerlsteinSpruessel2011JCT"} is flawed.
   The transfinite steps (taking the least upper bound) only preserves unhinderedness, but not looseness.
-  However, the single steps to non-limit ordinals assumes that @{text "\<Omega> - f\<^sub>i"} is loose in order to 
+  However, the single steps to non-limit ordinals assumes that @{text "\<Omega> - f\<^sub>i"} is loose in order to
   apply Lemma 6.9.
 
   Counterexample: The bipartite web with three nodes @{text a\<^sub>1}, @{text a\<^sub>2}, @{text a\<^sub>3} in @{text A}
   and two nodes @{text b\<^sub>1}, @{text b\<^sub>2} in @{text B} and edges @{text "(a\<^sub>1, b\<^sub>1)"}, @{text "(a\<^sub>2, b\<^sub>1)"},
-  @{text "(a\<^sub>2, b\<^sub>2)"}, @{text "(a\<^sub>3, b\<^sub>2)"} and weights @{text "a\<^sub>1 = a\<^sub>3 = 1"} and @{text "a\<^sub>2 = 2"} and 
+  @{text "(a\<^sub>2, b\<^sub>2)"}, @{text "(a\<^sub>3, b\<^sub>2)"} and weights @{text "a\<^sub>1 = a\<^sub>3 = 1"} and @{text "a\<^sub>2 = 2"} and
   @{text "b\<^sub>1 = 3"} and @{text "b\<^sub>2 = 2"}.
   Then, we can get a sequence of weight reductions on @{text b\<^sub>2} from @{text 2} to @{text "1.5"},
   @{text "1.25"}, @{text "1.125"}, etc. with limit @{text 1}.
@@ -7052,9 +6922,7 @@ lemma countable_bipartite_web_minus_web:
   assumes f: "current \<Gamma> f"
   shows "countable_bipartite_web (\<Gamma> \<ominus> f)"
 using bipartite_V A_vertex bipartite_E disjoint currentD_finite_OUT[OF f] currentD_weight_OUT[OF f] currentD_weight_IN[OF f] currentD_outside_OUT[OF f] currentD_outside_IN[OF f]
-apply(unfold_locales)
-apply(auto simp add: ereal_minus_eq_PInfty_iff ereal_diff_positive d_OUT_nonneg weight_outside)
-done
+by unfold_locales (auto simp add:  weight_outside)
 
 lemma current_plus_current_minus:
   assumes f: "current \<Gamma> f"
@@ -7063,12 +6931,11 @@ lemma current_plus_current_minus:
 proof
   interpret \<Gamma>: countable_bipartite_web "\<Gamma> \<ominus> f" using f by(rule countable_bipartite_web_minus_web)
   show "d_OUT ?fg x \<le> weight \<Gamma> x" for x
-    using currentD_weight_OUT[OF g, of x] currentD_OUT[OF g, of x] currentD_finite_OUT[OF f, of x] currentD_OUT[OF f, of x] currentD_outside_IN[OF f, of x] currentD_outside_OUT[OF f, of x]
-    by(cases "x \<in> A \<Gamma> \<or> x \<in> B \<Gamma>")(auto simp add: ereal_le_minus add.commute nn_integral_nonneg d_OUT_def nn_integral_add currentD_nonneg[OF f] currentD_nonneg[OF g] weight_nonneg not_vertex split: if_split_asm)
+    using currentD_weight_OUT[OF g, of x] currentD_OUT[OF g, of x] currentD_finite_OUT[OF f, of x] currentD_OUT[OF f, of x] currentD_outside_IN[OF f, of x] currentD_outside_OUT[OF f, of x] currentD_weight_OUT[OF f, of x]
+    by(cases "x \<in> A \<Gamma> \<or> x \<in> B \<Gamma>")(auto simp add: add.commute d_OUT_def nn_integral_add not_vertex ennreal_le_minus_iff split: if_split_asm)
   show "d_IN ?fg x \<le> weight \<Gamma> x" for x
     using currentD_weight_IN[OF g, of x] currentD_IN[OF g, of x] currentD_finite_IN[OF f, of x] currentD_OUT[OF f, of x] currentD_outside_IN[OF f, of x] currentD_outside_OUT[OF f, of x] currentD_weight_IN[OF f, of x]
-    by(cases "x \<in> A \<Gamma> \<or> x \<in> B \<Gamma>")(auto simp add: ereal_le_minus add.commute nn_integral_nonneg d_IN_def nn_integral_add currentD_nonneg[OF f] currentD_nonneg[OF g] weight_nonneg not_vertex split: if_split_asm)
-  show "0 \<le> ?fg e" for e using currentD_nonneg[OF f, of e] currentD_nonneg[OF g, of e] by(cases e)(simp)
+    by(cases "x \<in> A \<Gamma> \<or> x \<in> B \<Gamma>")(auto simp add: add.commute  d_IN_def nn_integral_add not_vertex ennreal_le_minus_iff split: if_split_asm)
   show "?fg e = 0" if "e \<notin> \<^bold>E" for e using that currentD_outside'[OF f, of e] currentD_outside'[OF g, of e] by(cases e) simp
 qed
 
@@ -7091,7 +6958,7 @@ proof
     proof cases
       case right
       with y disjoint have "y \<in> TER ?fg" using currentD_OUT[OF fg y]
-        by(auto simp add: SAT.simps SINK.simps d_IN_def nn_integral_nonneg nn_integral_add currentD_nonneg[OF f] currentD_nonneg[OF g] ereal_le_add_mono1)
+        by(auto simp add: SAT.simps SINK.simps d_IN_def nn_integral_add not_le add_increasing2)
       thus ?thesis using py by simp
     next
       case x': left
@@ -7102,12 +6969,12 @@ proof
       proof cases
         case left
         hence "x \<in> TER ?fg" using x x'
-          by(auto simp add: SAT.simps SINK.simps d_OUT_def nn_integral_nonneg nn_integral_add currentD_nonneg[OF f] currentD_nonneg[OF g])
+          by(auto simp add: SAT.simps SINK.simps d_OUT_def nn_integral_add)
         thus ?thesis ..
       next
         case right
         hence "y \<in> TER ?fg" using disjoint y currentD_OUT[OF fg y] currentD_OUT[OF f y] currentD_finite_IN[OF f, of y]
-          by(auto simp add: ereal_minus_le add.commute SINK.simps SAT.simps d_IN_def nn_integral_nonneg nn_integral_add currentD_nonneg[OF f] currentD_nonneg[OF g] split: if_split_asm)
+          by(auto simp add: add.commute SINK.simps SAT.simps d_IN_def nn_integral_add ennreal_minus_le_iff split: if_split_asm)
         with py show ?thesis by auto
       qed
     qed
@@ -7119,8 +6986,9 @@ lemma minus_plus_current:
   and g: "current (\<Gamma> \<ominus> f) g"
   shows "\<Gamma> \<ominus> plus_current f g = \<Gamma> \<ominus> f \<ominus> g" (is "?lhs = ?rhs")
 proof(rule web.equality)
-  have "weight ?lhs x = weight ?rhs x" for x using currentD_finite_OUT[OF f, of x] currentD_finite_IN[OF f, of x]
-    by(simp add: ereal_diff_add_assoc2 add.assoc d_IN_def d_OUT_def nn_integral_add nn_integral_nonneg currentD_nonneg[OF f] currentD_nonneg[OF g] ereal_diff_add_eq_diff_diff_swap)
+  have "weight ?lhs x = weight ?rhs x" for x
+    using currentD_weight_IN[OF f, of x] currentD_weight_IN[OF g, of x]
+    by (auto simp add: d_IN_def d_OUT_def nn_integral_add diff_add_eq_diff_diff_swap_ennreal add_increasing2 diff_add_assoc2_ennreal add.assoc)
   thus "weight ?lhs = weight ?rhs" ..
 qed simp_all
 
@@ -7137,7 +7005,7 @@ proof
   let ?fg = "plus_current f g"
   have fg: "current \<Gamma> ?fg" using f g by(rule current_plus_current_minus)
   moreover have "wave \<Gamma> ?fg" using f w g w' by(rule wave_plus_current_minus)
-  moreover from hind obtain a where a: "a \<in> A \<Gamma>" and n\<E>: "a \<notin> \<E>\<^bsub>\<Gamma> \<ominus> f\<^esub> (TER\<^bsub>\<Gamma> \<ominus> f\<^esub> g)" 
+  moreover from hind obtain a where a: "a \<in> A \<Gamma>" and n\<E>: "a \<notin> \<E>\<^bsub>\<Gamma> \<ominus> f\<^esub> (TER\<^bsub>\<Gamma> \<ominus> f\<^esub> g)"
     and wa: "d_OUT g a < weight (\<Gamma> \<ominus> f) a" by cases auto
   from a have "hindrance \<Gamma> ?fg"
   proof
@@ -7151,16 +7019,16 @@ proof
       from bypass[of y] py have "y \<notin> TER ?fg" by(auto intro: roofed_greaterI)
       with currentD_OUT[OF fg y] have "y \<notin> SAT \<Gamma> ?fg" by(auto simp add: SINK.simps)
       hence "y \<notin> SAT (\<Gamma> \<ominus> f) g" using y currentD_OUT[OF f y] currentD_finite_IN[OF f, of y]
-        by(auto simp add: SAT.simps d_IN_def nn_integral_add nn_integral_nonneg currentD_nonneg[OF f] currentD_nonneg[OF g] ereal_minus_le add.commute)
+        by(auto simp add: SAT.simps d_IN_def nn_integral_add ennreal_minus_le_iff add.commute)
       hence "essential (\<Gamma> \<ominus> f) (B (\<Gamma> \<ominus> f)) (TER\<^bsub>\<Gamma> \<ominus> f\<^esub> g) a" using p py y
         by(auto intro!: essentialI)
       moreover from \<E> a have "a \<in> TER\<^bsub>\<Gamma> \<ominus> f\<^esub> g"
-        by(auto simp add: SAT.A SINK_plus_current currentD_nonneg[OF f] currentD_nonneg[OF g])
+        by(auto simp add: SAT.A SINK_plus_current)
       ultimately have "a \<in> \<E>\<^bsub>\<Gamma> \<ominus> f\<^esub> (TER\<^bsub>\<Gamma> \<ominus> f\<^esub> g)" by blast
       thus False using n\<E> by contradiction
     qed
     show "d_OUT ?fg a < weight \<Gamma> a" using a wa currentD_finite_OUT[OF f, of a]
-      by(simp add: d_OUT_def ereal_less_minus nn_integral_nonneg add.commute nn_integral_add currentD_nonneg[OF f] currentD_nonneg[OF g])
+      by(simp add: d_OUT_def less_diff_eq_ennreal less_top add.commute nn_integral_add)
   qed
   ultimately have "hindered \<Gamma>" by(blast intro: hindered.intros)
   with unhindered show False by contradiction
@@ -7178,16 +7046,16 @@ proof
   let ?g = "plus_current f g"
   from f g have "current \<Gamma> ?g" by(rule current_plus_current_minus)
   moreover from f w g w' have "wave \<Gamma> ?g" by(rule wave_plus_current_minus)
-  moreover have "f \<le> ?g" by(clarsimp simp add: le_fun_def currentD_nonneg[OF g] ereal_le_add_self)
+  moreover have "f \<le> ?g" by(clarsimp simp add: le_fun_def)
   ultimately have eq: "f = ?g" by(rule maximal)
   have "g e = 0" for e
   proof(cases e)
     case (Pair x y)
     have "f e \<le> d_OUT f x" unfolding d_OUT_def Pair by(rule nn_integral_ge_point) simp
     also have "\<dots> \<le> weight \<Gamma> x" by(rule currentD_weight_OUT[OF f])
-    also have "\<dots> < \<infinity>" by(simp)
-    finally show "g e = 0" using Pair eq[THEN fun_cong, of e] currentD_nonneg[OF f, of e]
-      by(cases "f e" "g e" rule: ereal2_cases)(simp_all add: fun_eq_iff)
+    also have "\<dots> < \<top>" by(simp add: less_top[symmetric])
+    finally show "g e = 0" using Pair eq[THEN fun_cong, of e]
+      by(cases "f e" "g e" rule: ennreal2_cases)(simp_all add: fun_eq_iff)
   qed
   thus "g = (\<lambda>_. 0)" by(simp add: fun_eq_iff)
 next
@@ -7199,8 +7067,8 @@ next
     have "hindrance \<Gamma> f"
     proof
       show a': "x \<in> A \<Gamma>" using a by simp
-      with weight show "d_OUT f x < weight \<Gamma> x" 
-        by(simp add: ereal_less_minus d_OUT_nonneg currentD_finite_OUT[OF f])
+      with weight show "d_OUT f x < weight \<Gamma> x"
+        by(simp add: less_diff_eq_ennreal less_top[symmetric] currentD_finite_OUT[OF f])
       show "x \<notin> \<E> (TER f)"
       proof
         assume "x \<in> \<E> (TER f)"
@@ -7210,7 +7078,7 @@ next
           by(cases)(auto 4 3 elim: rtrancl_path.cases dest: bipartite_E)
         hence "y \<notin> (TER f)" using bypass[of y] by(auto intro: roofed_greaterI)
         hence "weight ?\<Gamma> y > 0" using currentD_OUT[OF f y] disjoint y
-          by(auto simp add: SINK.simps SAT.simps ereal_diff_gr0)
+          by(auto simp add: SINK.simps SAT.simps diff_gr0_ennreal)
         hence "y \<notin> TER\<^bsub>?\<Gamma>\<^esub> zero_current" using y disjoint by(auto)
         hence "essential ?\<Gamma> (B ?\<Gamma>) (TER\<^bsub>?\<Gamma>\<^esub> zero_current) x" using p y py by(auto intro!: essentialI)
         with a have "x \<in> \<E>\<^bsub>?\<Gamma>\<^esub> (TER\<^bsub>?\<Gamma>\<^esub> zero_current)" by simp
@@ -7251,11 +7119,10 @@ proof -
   proof
     show "d_OUT (f - g) x \<le> weight (\<Gamma> \<ominus> g) x" for x unfolding fun_diff_def
       using currentD_weight_OUT[OF f, of x] currentD_weight_IN[OF g, of x]
-      by(subst d_OUT_diff)(simp_all add: currentD_nonneg[OF g] le currentD_finite_OUT[OF g] currentD_OUT'[OF f] currentD_OUT'[OF g] ereal_diff_positive ereal_minus_mono)
+      by(subst d_OUT_diff)(simp_all add: le currentD_finite_OUT[OF g] currentD_OUT'[OF f] currentD_OUT'[OF g] ennreal_minus_mono)
     show "d_IN (f - g) x \<le> weight (\<Gamma> \<ominus> g) x" for x unfolding fun_diff_def
       using currentD_weight_IN[OF f, of x] currentD_weight_OUT[OF g, of x]
-      by(subst d_IN_diff)(simp_all add: currentD_nonneg[OF g] le currentD_finite_IN[OF g] currentD_IN[OF f] currentD_IN[OF g] ereal_diff_positive ereal_minus_mono)
-    show "0 \<le> (f - g) e" for e by(simp add: ereal_diff_positive le)
+      by(subst d_IN_diff)(simp_all add: le currentD_finite_IN[OF g] currentD_IN[OF f] currentD_IN[OF g] ennreal_minus_mono)
     show "(f - g) e = 0" if "e \<notin> \<^bold>E\<^bsub>\<Gamma> \<ominus> g\<^esub>" for e using that currentD_outside'[OF f] currentD_outside'[OF g] by simp
   qed
 qed
@@ -7267,12 +7134,12 @@ lemma
   shows wave_minus: "wave (\<Gamma> \<ominus> g) (f - g)"
   and TER_minus: "TER f \<subseteq> TER\<^bsub>\<Gamma> \<ominus> g\<^esub> (f - g)"
 proof
-  have "x \<in> SINK f \<Longrightarrow> x \<in> SINK (f - g)" for x using d_OUT_mono[of g _ f, OF le, of x] d_OUT_nonneg[of g x]
-    by(auto simp add: SINK.simps fun_diff_def d_OUT_diff currentD_nonneg[OF g] le currentD_finite_OUT[OF g])
+  have "x \<in> SINK f \<Longrightarrow> x \<in> SINK (f - g)" for x using d_OUT_mono[of g _ f, OF le, of x]
+    by(auto simp add: SINK.simps fun_diff_def d_OUT_diff le currentD_finite_OUT[OF g])
   moreover have "x \<in> SAT \<Gamma> f \<Longrightarrow> x \<in> SAT (\<Gamma> \<ominus> g) (f - g)" for x
-    by(auto simp add: SAT.simps currentD_OUT'[OF g] fun_diff_def d_IN_diff currentD_nonneg[OF g] le currentD_finite_IN[OF g] ereal_minus_mono)
+    by(auto simp add: SAT.simps currentD_OUT'[OF g] fun_diff_def d_IN_diff le currentD_finite_IN[OF g] ennreal_minus_mono)
   ultimately show TER: "TER f \<subseteq> TER\<^bsub>\<Gamma> \<ominus> g\<^esub> (f - g)" by(auto)
-  
+
   from w have "separating \<Gamma> (TER f)" by(rule waveD_separating)
   thus "separating (\<Gamma> \<ominus> g) (TER\<^bsub>\<Gamma> \<ominus> g\<^esub> (f - g))" using TER by(simp add: separating_weakening)
 
@@ -7280,12 +7147,9 @@ proof
   assume "x \<notin> RF\<^bsub>\<Gamma> \<ominus> g\<^esub> (TER\<^bsub>\<Gamma> \<ominus> g\<^esub> (f - g))"
   hence "x \<notin> RF (TER f)" using TER by(auto intro: in_roofed_mono)
   hence "d_OUT f x = 0" by(rule waveD_OUT[OF w])
-  moreover have "0 \<le> f e" for e using currentD_nonneg[OF g, of e] le[of e] by simp
-  ultimately show "d_OUT (f - g) x = 0" using currentD_nonneg[OF g] unfolding d_OUT_def
-    apply(subst nn_integral_max_0[symmetric])
-    apply(simp add: nn_integral_0_iff emeasure_count_space_eq_0)
-    apply(auto simp add: max_def intro: antisym)
-    done
+  moreover have "0 \<le> f e" for e using le[of e] by simp
+  ultimately show "d_OUT (f - g) x = 0" unfolding d_OUT_def
+    by(simp add: nn_integral_0_iff emeasure_count_space_eq_0)
 qed
 
 lemma (in -) essential_minus_web [simp]: "essential (\<Gamma> \<ominus> f) = essential \<Gamma>"
@@ -7295,28 +7159,21 @@ lemma (in -) RF_in_essential: fixes B shows "essential \<Gamma> B S x \<Longrigh
 by(auto intro: roofed_greaterI elim!: essentialE_RF dest: roofedD)
 
 lemma (in -) d_OUT_fun_upd:
-  assumes "f (x, y) \<noteq> \<infinity>" "f (x, y) \<ge> 0" "k \<noteq> \<infinity>" "k \<ge> 0"
+  assumes "f (x, y) \<noteq> \<top>" "f (x, y) \<ge> 0" "k \<noteq> \<top>" "k \<ge> 0"
   shows "d_OUT (f((x, y) := k)) x' = (if x = x' then d_OUT f x - f (x, y) + k else d_OUT f x')"
   (is "?lhs = ?rhs")
 proof(cases "x = x'")
   case True
   have "?lhs = (\<Sum>\<^sup>+ y'. f (x, y') + k * indicator {y} y') - (\<Sum>\<^sup>+ y'. f (x, y') * indicator {y} y')"
     unfolding d_OUT_def using assms True
-    apply(subst (1 2 3) nn_integral_max_0[symmetric])
-    apply(subst nn_integral_diff[symmetric])
-    prefer 6 apply(subst (1 2) nn_integral_max_0[symmetric])
-    apply(auto intro!: nn_integral_cong simp add: AE_count_space split: split_indicator)
-    apply(simp_all add: nn_integral_max_0)
-    apply(auto simp add: max_def ereal_le_add_self ereal_diff_add_inverse)
-    done
+    by(subst nn_integral_diff[symmetric])
+      (auto intro!: nn_integral_cong simp add: AE_count_space split: split_indicator)
   also have "(\<Sum>\<^sup>+ y'. f (x, y') + k * indicator {y} y') = d_OUT f x + (\<Sum>\<^sup>+ y'. k * indicator {y} y')"
     unfolding d_OUT_def using assms
-    apply(subst (1 2 3) nn_integral_max_0[symmetric])
-    apply(subst nn_integral_add[symmetric])
-    apply(auto intro!: nn_integral_cong simp add: max_def split: split_indicator)
-    done
+    by(subst nn_integral_add[symmetric])
+      (auto intro!: nn_integral_cong split: split_indicator)
   also have "\<dots> - (\<Sum>\<^sup>+ y'. f (x, y') * indicator {y} y') = ?rhs" using True assms
-    by(simp add: max_def ereal_diff_add_assoc2)
+    by(subst diff_add_assoc2_ennreal[symmetric])(auto simp add: d_OUT_def intro!: nn_integral_ge_point)
   finally show ?thesis .
 qed(simp add: d_OUT_def)
 
@@ -7326,7 +7183,7 @@ lemma unhindered_saturate1: -- "Lemma 6.10"
   shows "\<exists>f. current \<Gamma> f \<and> d_OUT f a = weight \<Gamma> a \<and> \<not> hindered (\<Gamma> \<ominus> f)"
 proof -
   from a A_vertex have a_vertex: "vertex \<Gamma> a" by auto
-  from unhindered have "\<not> hindrance \<Gamma> zero_current" by(auto intro!: hindered.intros simp add: weight_nonneg)
+  from unhindered have "\<not> hindrance \<Gamma> zero_current" by(auto intro!: hindered.intros simp add: )
   then have a_\<E>: "a \<in> \<E> (A \<Gamma>)" if "weight \<Gamma> a > 0"
   proof(rule contrapos_np)
     assume "a \<notin> \<E> (A \<Gamma>)"
@@ -7338,14 +7195,14 @@ proof -
 
   def F \<equiv> "\<lambda>(\<epsilon>, h :: 'v current). plus_current \<epsilon> h"
   have F_simps: "F (\<epsilon>, h) = plus_current \<epsilon> h" for \<epsilon> h by(simp add: F_def)
-  def Fld \<equiv> "{(\<epsilon>, h). 
+  def Fld \<equiv> "{(\<epsilon>, h).
      current \<Gamma> \<epsilon> \<and> (\<forall>x. x \<noteq> a \<longrightarrow> d_OUT \<epsilon> x = 0) \<and>
      current (\<Gamma> \<ominus> \<epsilon>) h \<and> wave (\<Gamma> \<ominus> \<epsilon>) h \<and>
      \<not> hindered (\<Gamma> \<ominus> F (\<epsilon>, h))}"
   def leq \<equiv> "restrict_rel Fld {(f, f'). f \<le> f'}"
   have Fld: "Field leq = Fld" by(auto simp add: leq_def)
-  have F_I [intro?]: "(\<epsilon>, h) \<in> Field leq" 
-    if "current \<Gamma> \<epsilon>" and "\<And>x. x \<noteq> a \<Longrightarrow> d_OUT \<epsilon> x = 0" 
+  have F_I [intro?]: "(\<epsilon>, h) \<in> Field leq"
+    if "current \<Gamma> \<epsilon>" and "\<And>x. x \<noteq> a \<Longrightarrow> d_OUT \<epsilon> x = 0"
     and "current (\<Gamma> \<ominus> \<epsilon>) h" and "wave (\<Gamma> \<ominus> \<epsilon>) h"
     and "\<not> hindered (\<Gamma> \<ominus> F (\<epsilon>, h))"
     for \<epsilon> h using that by(simp add: Fld Fld_def)
@@ -7360,17 +7217,17 @@ proof -
   proof(rule antisym)
     have "\<epsilon> (x, y) \<le> d_OUT \<epsilon> x" unfolding d_OUT_def by(rule nn_integral_ge_point) simp
     with OUT_\<epsilon>[OF that] show "\<epsilon> (x, y) \<le> 0" by simp
-  qed(rule \<epsilon>_curr[OF that(1), THEN currentD_nonneg])
+  qed simp
   have IN_\<epsilon>: "d_IN \<epsilon> x = \<epsilon> (a, x)" if "(\<epsilon>, h) \<in> Field leq" for \<epsilon> h x
   proof(rule trans)
     show "d_IN \<epsilon> x = (\<Sum>\<^sup>+ y. \<epsilon> (y, x) * indicator {a} y)" unfolding d_IN_def
       by(rule nn_integral_cong)(simp add: out_\<epsilon>[OF that] split: split_indicator)
-  qed(simp add: max_def \<epsilon>_curr[THEN currentD_nonneg, OF that])
+  qed(simp add: max_def \<epsilon>_curr[OF that])
   have leqI: "((\<epsilon>, h), (\<epsilon>', h')) \<in> leq" if "\<epsilon> \<le> \<epsilon>'" "h \<le> h'" "(\<epsilon>, h) \<in> Field leq" "(\<epsilon>', h') \<in> Field leq" for \<epsilon> h \<epsilon>' h'
     using that unfolding Fld by(simp add: leq_def in_restrict_rel_iff)
 
-  have chain_Field: "Sup M \<in> Field leq" if M: "M \<in> Chains leq" and nempty: "M \<noteq> {}" for M 
-    unfolding Sup_prod_def SUP_def
+  have chain_Field: "Sup M \<in> Field leq" if M: "M \<in> Chains leq" and nempty: "M \<noteq> {}" for M
+    unfolding Sup_prod_def
   proof
     from nempty obtain \<epsilon> h where in_M: "(\<epsilon>, h) \<in> M" by auto
     with M have Field: "(\<epsilon>, h) \<in> Field leq" by(rule Chains_FieldD)
@@ -7388,9 +7245,9 @@ proof -
     then have "support_flow (Sup (fst ` M)) \<subseteq> \<^bold>E" by(auto elim!: support_flow.cases intro: ccontr)
     hence supp_flow1: "countable (support_flow (Sup (fst ` M)))" by(rule countable_subset) simp
 
-    show SM1: "current \<Gamma> (Sup (fst ` M))" unfolding SUP_def
+    show SM1: "current \<Gamma> (Sup (fst ` M))"
       by(rule current_Sup[OF chain1 _ _ supp_flow1])(auto dest: Chains_FieldD[OF M, THEN \<epsilon>_curr] simp add: nempty)
-    show OUT1_na: "d_OUT (Sup (fst ` M)) x = 0" if "x \<noteq> a" for x using that unfolding SUP_def
+    show OUT1_na: "d_OUT (Sup (fst ` M)) x = 0" if "x \<noteq> a" for x using that
       by(subst d_OUT_Sup[OF chain1 _ supp_flow1])(auto simp add: nempty intro!: SUP_eq_const dest: Chains_FieldD[OF M, THEN OUT_\<epsilon>])
 
     interpret SM1: countable_bipartite_web "\<Gamma> \<ominus> Sup (fst ` M)"
@@ -7408,18 +7265,18 @@ proof -
       unfolding OUT1 by(auto intro!: SUP_eq_const simp add: nempty OUT_\<epsilon> dest!: Chains_FieldD[OF M])
     have OUT1_le: "(\<Squnion>\<epsilon>h\<in>M. d_OUT (fst \<epsilon>h) x) \<le> weight \<Gamma> x" for x
       using currentD_weight_OUT[OF SM1, of x] OUT1[of x] by(simp add: split_beta)
-    have OUT1_nonneg: "0 \<le> (\<Squnion>\<epsilon>h\<in>M. d_OUT (fst \<epsilon>h) x)" for x using in_M by(rule SUP_upper2)(simp add: d_OUT_nonneg)
+    have OUT1_nonneg: "0 \<le> (\<Squnion>\<epsilon>h\<in>M. d_OUT (fst \<epsilon>h) x)" for x using in_M by(rule SUP_upper2)(simp add: )
     have IN1: "d_IN (Sup (fst ` M)) x = (SUP (\<epsilon>, h):M. d_IN \<epsilon> x)" for x
       by(subst d_IN_Sup[OF chain1 _ supp_flow1])(simp_all add: nempty split_beta)
     have IN1_le: "(\<Squnion>\<epsilon>h\<in>M. d_IN (fst \<epsilon>h) x) \<le> weight \<Gamma> x" for x
-      using currentD_weight_IN[OF SM1, of x] IN1[of x] by(simp add: split_beta) 
-    have IN1_nonneg: "0 \<le> (\<Squnion>\<epsilon>h\<in>M. d_IN (fst \<epsilon>h) x)" for x using in_M by(rule SUP_upper2)(simp add: d_IN_nonneg)
+      using currentD_weight_IN[OF SM1, of x] IN1[of x] by(simp add: split_beta)
+    have IN1_nonneg: "0 \<le> (\<Squnion>\<epsilon>h\<in>M. d_IN (fst \<epsilon>h) x)" for x using in_M by(rule SUP_upper2) simp
     have IN1': "d_IN (Sup (fst ` M)) x = (SUP (\<epsilon>, h):M. \<epsilon> (a, x))" for x
       unfolding IN1 by(rule SUP_cong[OF refl])(auto dest!: Chains_FieldD[OF M] IN_\<epsilon>)
 
     have directed: "\<exists>\<epsilon>k''\<in>M. F (snd \<epsilon>k) + F (fst \<epsilon>k') \<le> F (snd \<epsilon>k'') + F (fst \<epsilon>k'')"
       if mono: "\<And>f g. (\<And>z. f z \<le> g z) \<Longrightarrow> F f \<le> F g" "\<epsilon>k \<in> M" "\<epsilon>k' \<in> M"
-      for \<epsilon>k \<epsilon>k' and F :: "_ \<Rightarrow> ereal"
+      for \<epsilon>k \<epsilon>k' and F :: "_ \<Rightarrow> ennreal"
       using chainD[OF chain that(2-3)]
     proof cases
       case left
@@ -7451,64 +7308,49 @@ proof -
       have "d_OUT h x \<le> d_OUT ?h x" using \<epsilon>h by(intro d_OUT_mono)(auto intro: SUP_upper2)
       also have OUT: "\<dots> = (SUP h:snd ` M. d_OUT h x)" using chain2 _ supp_flow2
         by(rule d_OUT_Sup)(simp_all add: nempty)
-      also have "\<dots> = \<dots> + (SUP \<epsilon>:fst ` M. d_OUT \<epsilon> x) - (SUP \<epsilon>:fst ` M. d_OUT \<epsilon> x)" 
-        using currentD_weight_OUT[OF SM1, of x] OUT1_nonneg[of x] OUT1_le[of x]
-        by(auto simp add: add_diff_eq_ereal[symmetric])
+      also have "\<dots> = \<dots> + (SUP \<epsilon>:fst ` M. d_OUT \<epsilon> x) - (SUP \<epsilon>:fst ` M. d_OUT \<epsilon> x)"
+        using OUT1_le[of x]
+        by (intro ennreal_add_diff_cancel_right[symmetric] neq_top_trans[OF weight_finite, of _ x]) simp
       also have "\<dots> = (SUP (\<epsilon>, k):M. d_OUT k x + d_OUT \<epsilon> x) - (SUP \<epsilon>:fst ` M. d_OUT \<epsilon> x)" unfolding split_def
-        by(subst SUP_ereal_add_directed[OF _ _ directed_OUT])(simp_all add: d_OUT_nonneg)
+        by(subst SUP_add_directed_ennreal[OF directed_OUT])(simp_all add: )
       also have "(SUP (\<epsilon>, k):M. d_OUT k x + d_OUT \<epsilon> x) \<le> weight \<Gamma> x"
-        apply(rule SUP_least)
-        apply(auto dest!: Chains_FieldD[OF M] dest: currentD_weight_OUT[OF h, where x=x] split: if_split_asm)
-        apply(frule currentD_weight_OUT[OF h, where x=x])
-        apply(simp split: if_split_asm)
-         apply(frule currentD_finite_OUT[OF \<epsilon>_curr, where x=x])
-         apply(simp add: ereal_le_minus d_OUT_nonneg)
-        apply(frule currentD_OUT'[OF \<epsilon>_curr, where x=x], simp)
-        apply(frule h)
-        apply(frule (1) countable_bipartite_web_minus_web[OF \<epsilon>_curr, THEN countable_bipartite_web.currentD_OUT', where x=x], simp)
-        apply(simp add: weight_nonneg)
+        apply(clarsimp dest!: Chains_FieldD[OF M] intro!: SUP_least)
+        subgoal premises that for \<epsilon> h
+          using currentD_weight_OUT[OF h[OF that], of x] currentD_weight_OUT[OF \<epsilon>_curr[OF that], of x]
+             countable_bipartite_web_minus_web[OF \<epsilon>_curr, THEN countable_bipartite_web.currentD_OUT', OF that h[OF that], where x=x]
+          by (auto simp add: ennreal_le_minus_iff split: if_split_asm)
         done
       also have "(SUP \<epsilon>:fst ` M. d_OUT \<epsilon> x) = d_OUT (Sup (fst ` M)) x" using OUT1 by(simp add: split_beta)
       finally show "d_OUT h x \<le> weight ?\<Gamma> x"
-        using \<Gamma>.currentD_OUT'[OF h[OF Field], of x] currentD_weight_IN[OF SM1, of x]
-        by(auto simp add: ereal_minus_mono d_OUT_nonneg ereal_le_add_mono1 ereal_diff_positive)
+        using \<Gamma>.currentD_OUT'[OF h[OF Field], of x] currentD_weight_IN[OF SM1, of x] by(auto simp add: ennreal_minus_mono)
 
       have "d_IN h x \<le> d_IN ?h x" using \<epsilon>h by(intro d_IN_mono)(auto intro: SUP_upper2)
       also have IN: "\<dots> = (SUP h:snd ` M. d_IN h x)" using chain2 _ supp_flow2
         by(rule d_IN_Sup)(simp_all add: nempty)
       also have "\<dots> = \<dots> + (SUP \<epsilon>:fst ` M. d_IN \<epsilon> x) - (SUP \<epsilon>:fst ` M. d_IN \<epsilon> x)"
-        using currentD_weight_IN[OF SM1, of x] IN1_nonneg[of x] IN1_le[of x]
-        by(auto simp add: add_diff_eq_ereal[symmetric])
+        using IN1_le[of x]
+        by (intro ennreal_add_diff_cancel_right[symmetric] neq_top_trans[OF weight_finite, of _ x]) simp
       also have "\<dots> = (SUP (\<epsilon>, k):M. d_IN k x + d_IN \<epsilon> x) - (SUP \<epsilon>:fst ` M. d_IN \<epsilon> x)" unfolding split_def
-        by(subst SUP_ereal_add_directed[OF _ _ directed_IN])(simp_all add: d_IN_nonneg)
+        by(subst SUP_add_directed_ennreal[OF directed_IN])simp_all
       also have "(SUP (\<epsilon>, k):M. d_IN k x + d_IN \<epsilon> x) \<le> weight \<Gamma> x"
-        apply(rule SUP_least)
-        apply(auto dest!: Chains_FieldD[OF M] dest: currentD_weight_OUT[OF h, where x=x] split: if_split_asm)
-        apply(frule currentD_weight_IN[OF h, where x=x])
-        apply(simp split: if_split_asm)
-         apply(frule currentD_IN[OF \<epsilon>_curr], simp)
-         apply simp
-         apply(erule order_trans)
-         apply(rule ereal_diff_le_self)
-         apply(rule d_OUT_nonneg)
-        apply(frule currentD_OUT'[OF \<epsilon>_curr, where x=x], simp)
-        apply(frule h)
-        apply(frule (1) countable_bipartite_web_minus_web[OF \<epsilon>_curr, THEN countable_bipartite_web.currentD_OUT', where x=x], simp)
-        apply(simp add: weight_nonneg)
-        apply(frule currentD_finite_IN[OF \<epsilon>_curr, where x=x])
-        apply(simp add: ereal_le_minus d_IN_nonneg)
+        apply(clarsimp dest!: Chains_FieldD[OF M] intro!: SUP_least)
+        subgoal premises that for \<epsilon> h
+          using currentD_weight_OUT[OF h, OF that, where x=x] currentD_weight_IN[OF h, OF that, where x=x]
+            countable_bipartite_web_minus_web[OF \<epsilon>_curr, THEN countable_bipartite_web.currentD_OUT', OF that h[OF that], where x=x]
+            currentD_OUT'[OF \<epsilon>_curr, OF that, where x=x] currentD_IN[OF \<epsilon>_curr, OF that, of x] currentD_weight_IN[OF \<epsilon>_curr, OF that, where x=x]
+          by(auto simp add: ennreal_le_minus_iff
+                     split: if_split_asm intro: add_increasing2 order_trans[rotated])
         done
       also have "(SUP \<epsilon>:fst ` M. d_IN \<epsilon> x) = d_IN (Sup (fst ` M)) x" using IN1 by(simp add: split_beta)
       finally show "d_IN h x \<le> weight ?\<Gamma> x"
         using currentD_IN[OF h[OF Field], of x] currentD_weight_OUT[OF SM1, of x]
-        by(auto simp add: ereal_minus_mono ereal_diff_positive ereal_le_add_mono1 d_OUT_nonneg)
-
-      show "0 \<le> h e" for e by(rule currentD_nonneg[OF H])
+        by(auto simp add: ennreal_minus_mono)
+          (auto simp add: ennreal_le_minus_iff add_increasing2)
       show "h e = 0" if "e \<notin> \<^bold>E\<^bsub>?\<Gamma>\<^esub>" for e using currentD_outside'[OF H, of e] that by simp
     qed
 
     from nempty have "snd ` M \<noteq> {}" by simp
-    from chain2 this _ supp_flow2 show current: "current ?\<Gamma> ?h" 
+    from chain2 this _ supp_flow2 show current: "current ?\<Gamma> ?h"
       by(rule current_Sup)(clarify; rule hM2; simp)
 
     have wM: "wave ?\<Gamma> h" if "(\<epsilon>, h) \<in> M" for \<epsilon> h
@@ -7516,7 +7358,7 @@ proof -
       let ?\<Gamma>' = "\<Gamma> \<ominus> \<epsilon>"
       have subset: "TER\<^bsub>?\<Gamma>'\<^esub> h \<subseteq> TER\<^bsub>?\<Gamma>\<^esub> h"
         using currentD_OUT'[OF SM1] currentD_OUT'[OF \<epsilon>_curr[OF Chains_FieldD[OF M that]]] that
-        by(auto 4 7 elim!: SAT.cases intro: SAT.intros elim!: order_trans[rotated] intro: ereal_minus_mono d_IN_mono intro!: SUP_upper2 split: if_split_asm)
+        by(auto 4 7 elim!: SAT.cases intro: SAT.intros elim!: order_trans[rotated] intro: ennreal_minus_mono d_IN_mono intro!: SUP_upper2 split: if_split_asm)
 
       from h_w[OF Chains_FieldD[OF M], OF that] have "separating ?\<Gamma>' (TER\<^bsub>?\<Gamma>'\<^esub> h)" by(rule waveD_separating)
       then show "separating ?\<Gamma> (TER\<^bsub>?\<Gamma>\<^esub> h)" using subset by(auto intro: separating_weakening)
@@ -7526,23 +7368,22 @@ proof -
 
     def f \<equiv> "F (Sup (fst ` M), Sup (snd ` M))"
     have supp_flow: "countable (support_flow f)"
-      using supp_flow1 supp_flow2 support_flow_plus_current[of "Sup (fst ` M)" ?h, OF currentD_nonneg[OF SM1] currentD_nonneg[OF current]]
+      using supp_flow1 supp_flow2 support_flow_plus_current[of "Sup (fst ` M)" ?h]
       unfolding f_def F_simps by(blast intro: countable_subset)
     have f_alt: "f = Sup ((\<lambda>(\<epsilon>, h). plus_current \<epsilon> h) ` M)"
       apply(simp add: fun_eq_iff split_def f_def nempty F_def)
       apply(subst (1 2) add.commute)
-      apply(subst SUP_ereal_add_directed)
-      prefer 3
+      apply(subst SUP_add_directed_ennreal)
       apply(rule directed)
-      apply(auto dest!: Chains_FieldD[OF M] simp add: currentD_nonneg[OF \<epsilon>_curr] currentD_nonneg[OF h])
+      apply(auto dest!: Chains_FieldD[OF M])
       done
     have f_curr: "current \<Gamma> f" unfolding f_def F_simps using SM1 current by(rule current_plus_current_minus)
     have IN_f: "d_IN f x = d_IN (Sup (fst ` M)) x + d_IN (Sup (snd ` M)) x" for x
       unfolding f_def F_simps plus_current_def
-      by(rule d_IN_add SM1[THEN currentD_nonneg] current[THEN currentD_nonneg])+
+      by(rule d_IN_add SM1 current)+
     have OUT_f: "d_OUT f x = d_OUT (Sup (fst ` M)) x + d_OUT (Sup (snd ` M)) x" for x
       unfolding f_def F_simps plus_current_def
-      by(rule d_OUT_add SM1[THEN currentD_nonneg] current[THEN currentD_nonneg])+
+      by(rule d_OUT_add SM1 current)+
 
     show "\<not> hindered (\<Gamma> \<ominus> f)" (is "\<not> hindered ?\<Omega>") -- \<open>Assertion 6.11\<close>
     proof
@@ -7551,31 +7392,33 @@ proof -
       from hindrance obtain z where z: "z \<in> A \<Gamma>" and z\<E>: "z \<notin> \<E>\<^bsub>?\<Omega>\<^esub> (TER\<^bsub>?\<Omega>\<^esub> g)"
         and OUT_z: "d_OUT g z < weight ?\<Omega> z" by cases auto
       def \<delta> \<equiv> "weight ?\<Omega> z - d_OUT g z"
-      have \<delta>_pos: "\<delta> > 0" using OUT_z by(simp add: \<delta>_def ereal_diff_gr0 del: minus_web_sel)
-      hence \<delta>_nonneg: "\<delta> \<ge> 0" by simp
-      then have \<delta>_finite[simp]: "\<delta> \<noteq> \<infinity>" "\<bar>\<delta>\<bar> \<noteq> \<infinity>" using z
-        by(simp_all add: \<delta>_def ereal_minus_eq_PInfty_iff)
-      
-      have "\<exists>(\<epsilon>, h) \<in> M. d_OUT f a - d_OUT (plus_current \<epsilon> h) a < \<delta>"
+      have \<delta>_pos: "\<delta> > 0" using OUT_z by(simp add: \<delta>_def diff_gr0_ennreal del: minus_web_sel)
+      then have \<delta>_finite[simp]: "\<delta> \<noteq> \<top>" using z
+        by(simp_all add: \<delta>_def)
+
+      have "\<exists>(\<epsilon>, h) \<in> M. d_OUT f a < d_OUT (plus_current \<epsilon> h) a + \<delta>"
       proof(rule ccontr)
         assume "\<not> ?thesis"
-        hence greater: "d_OUT f a - d_OUT (plus_current \<epsilon> h) a \<ge> \<delta>" if "(\<epsilon>, h) \<in> M" for \<epsilon> h using that by auto
+        hence greater: "d_OUT (plus_current \<epsilon> h) a + \<delta> \<le> d_OUT f a" if "(\<epsilon>, h) \<in> M" for \<epsilon> h using that by auto
 
         have chain'': "Complete_Partial_Order.chain op \<le> ((\<lambda>(\<epsilon>, h). plus_current \<epsilon> h) ` M)"
           using chain' by(rule chain_imageI)(auto simp add: le_fun_def add_mono)
-        then have "d_OUT f a = (SUP (\<epsilon>, h):M. d_OUT (plus_current \<epsilon> h) a)" using nempty supp_flow
+
+        have "d_OUT f a + 0 < d_OUT f a + \<delta>"
+          using currentD_finite_OUT[OF f_curr, of a] by (simp add: \<delta>_pos)
+        also have "d_OUT f a + \<delta> = (SUP (\<epsilon>, h):M. d_OUT (plus_current \<epsilon> h) a) + \<delta>"
+          using chain'' nempty supp_flow
           unfolding f_alt by(subst d_OUT_Sup)(simp_all add: plus_current_def[abs_def] split_def)
-        hence "d_OUT f a - \<delta> < \<dots>" using \<delta>_pos using d_OUT_nonneg[of f a] currentD_finite_OUT[OF f_curr, of a]
-          by(simp add: ereal_between(1))
-        moreover have "\<dots> \<le> d_OUT f a - \<delta>"
+        also have "\<dots> \<le> d_OUT f a"
+          unfolding ennreal_SUP_add_left[symmetric, OF nempty]
         proof(rule SUP_least, clarify)
-          show "d_OUT (plus_current \<epsilon> h) a \<le> d_OUT f a - \<delta>" if "(\<epsilon>, h) \<in> M" for \<epsilon> h
+          show "d_OUT (plus_current \<epsilon> h) a + \<delta> \<le> d_OUT f a" if "(\<epsilon>, h) \<in> M" for \<epsilon> h
             using greater[OF that] currentD_finite_OUT[OF Chains_FieldD[OF M that, THEN f], of a]
-            by(simp add: ereal_le_minus d_OUT_nonneg add.commute F_def)
+            by(auto simp add: ennreal_le_minus_iff add.commute F_def)
         qed
-        ultimately show False by simp
+        finally show False by simp
       qed
-      then obtain \<epsilon> h where hM: "(\<epsilon>, h) \<in> M" and close: "d_OUT f a - d_OUT (plus_current \<epsilon> h) a < \<delta>" by blast
+      then obtain \<epsilon> h where hM: "(\<epsilon>, h) \<in> M" and close: "d_OUT f a < d_OUT (plus_current \<epsilon> h) a + \<delta>" by blast
       have Field: "(\<epsilon>, h) \<in> Field leq" using hM by(rule Chains_FieldD[OF M])
       then have \<epsilon>: "current \<Gamma> \<epsilon>"
         and unhindered_h: "\<not> hindered (\<Gamma> \<ominus> F (\<epsilon>, h))"
@@ -7600,9 +7443,9 @@ proof -
         have "d_OUT k x = (if x = a then (\<Sum>\<^sup>+ y. Sup (fst ` M) (a, y) - \<epsilon> (a, y)) else 0)"
           using currentD_outside[OF SM1] currentD_outside[OF \<epsilon>]
           by(auto simp add: k_alt d_OUT_def intro!: nn_integral_cong)
-        also have "(\<Sum>\<^sup>+ y. Sup (fst ` M) (a, y) - \<epsilon> (a, y)) = d_OUT (Sup (fst `M)) a - d_OUT \<epsilon> a" 
+        also have "(\<Sum>\<^sup>+ y. Sup (fst ` M) (a, y) - \<epsilon> (a, y)) = d_OUT (Sup (fst `M)) a - d_OUT \<epsilon> a"
           using currentD_finite_OUT[OF \<epsilon>, of a] hM unfolding d_OUT_def
-          by(subst nn_integral_diff[symmetric])(auto simp add: currentD_nonneg[OF \<epsilon>] AE_count_space intro!: SUP_upper2)
+          by(subst nn_integral_diff[symmetric])(auto simp add: AE_count_space intro!: SUP_upper2)
         finally show ?thesis .
       qed
       have IN_k: "d_IN k y = (if edge \<Gamma> a y then Sup (fst ` M) (a, y) - \<epsilon> (a, y) else 0)" for y
@@ -7610,34 +7453,43 @@ proof -
         have "d_IN k y = (\<Sum>\<^sup>+ x. (if edge \<Gamma> x y then Sup (fst ` M) (a, y) - \<epsilon> (a, y) else 0) * indicator {a} x)"
           unfolding d_IN_def by(rule nn_integral_cong)(auto simp add: k_alt outgoing_def split: split_indicator)
         also have "\<dots> = (if edge \<Gamma> a y then Sup (fst ` M) (a, y) - \<epsilon> (a, y) else 0)" using hM
-          by(auto simp add: max_def intro!: ereal_diff_positive SUP_upper2)
+          by(auto simp add: max_def intro!: SUP_upper2)
         finally show ?thesis .
       qed
 
       have OUT_\<epsilon>h: "d_OUT ?\<epsilon>h x = d_OUT \<epsilon> x + d_OUT h x" for x
-        unfolding plus_current_def by(rule d_OUT_add currentD_nonneg[OF \<epsilon>] currentD_nonneg[OF h_curr])+
+        unfolding plus_current_def by(rule d_OUT_add)+
       have IN_\<epsilon>h: "d_IN ?\<epsilon>h x = d_IN \<epsilon> x + d_IN h x" for x
-        unfolding plus_current_def by(rule d_IN_add currentD_nonneg[OF \<epsilon>] currentD_nonneg[OF h_curr])+
-      
+        unfolding plus_current_def by(rule d_IN_add)+
+
+      have OUT1_le': "d_OUT (Sup (fst`M)) x \<le> weight \<Gamma> x" for x
+        using OUT1_le[of x] unfolding OUT1 by (simp add: split_beta')
+
       have k: "current (\<Gamma> \<ominus> ?\<epsilon>h) k"
       proof
         fix x
         show "d_OUT k x \<le> weight (\<Gamma> \<ominus> ?\<epsilon>h) x"
-          using a OUT1_na[of x] currentD_weight_OUT[OF hM2[OF hM], of x] currentD_weight_IN[OF \<epsilon>h_curr, of x] currentD_finite_OUT[OF SM1, of x]
-          h.currentD_finite_OUT[OF h_curr]
-          by(auto simp add: OUT_k OUT_\<epsilon>h IN_\<epsilon>h currentD_OUT'[OF \<epsilon>] OUT_\<epsilon> IN_\<epsilon>[OF Field] h.currentD_OUT'[OF h_curr] ereal_diff_positive d_OUT_nonneg currentD_finite_OUT[OF \<epsilon>] ereal_minus_le ereal_le_minus ereal_diff_add_eq_diff_diff_swap ereal_diff_add_assoc2[symmetric] add_left_mono)
-            (simp add: add.commute add_left_mono)
-        show "d_IN k x \<le> weight (\<Gamma> \<ominus> ?\<epsilon>h) x"
-          using currentD_weight_IN[OF \<epsilon>h_curr, of x] currentD_weight_OUT[OF \<epsilon>h_curr, of x] currentD_finite_IN[OF \<epsilon>h_curr] IN_\<epsilon>[OF Field, of x]
-            currentD_weight_IN[OF hM2[OF hM], of x] currentD_finite_IN[OF SM1] currentD_finite[OF \<epsilon>]
-          apply(auto simp add: IN_k outgoing_def A_in ereal_diff_positive ereal_le_add_mono1 d_OUT_nonneg ereal_minus_mono ereal_le_minus d_IN_nonneg IN_\<epsilon>h IN_\<epsilon> ereal_diff_add_eq_diff_diff_swap)
-          apply(simp add: currentD_nonneg[OF \<epsilon>] d_IN_nonneg ereal_le_minus add_ac)
-          apply(subst add_diff_eq_ereal)
-          apply(subst ereal_diff_add_assoc2)
-          using IN1'
-          apply(simp add: currentD_nonneg[OF \<epsilon>] add.commute split_beta)
+          using a OUT1_na[of x] currentD_weight_OUT[OF hM2[OF hM], of x] currentD_weight_IN[OF \<epsilon>h_curr, of x]
+            currentD_weight_IN[OF \<epsilon>, of x] OUT1_le'[of x]
+          apply(auto simp add: diff_add_eq_diff_diff_swap_ennreal diff_add_assoc2_ennreal[symmetric]
+                               OUT_k OUT_\<epsilon> OUT_\<epsilon>h IN_\<epsilon>h currentD_OUT'[OF \<epsilon>] IN_\<epsilon>[OF Field] h.currentD_OUT'[OF h_curr])
+          apply(subst diff_diff_commute_ennreal)
+          apply(intro ennreal_minus_mono)
+          apply(auto simp add: ennreal_le_minus_iff ac_simps less_imp_le OUT1)
           done
-        show "0 \<le> k e" for e using hM by(cases e)(auto simp add: k_alt intro!: ereal_diff_positive SUP_upper2)
+
+        have *: "(\<Squnion>xa\<in>M. fst xa (a, x)) \<le> d_IN (Sup (fst`M)) x"
+          unfolding IN1 by (intro SUP_subset_mono) (auto simp: split_beta' d_IN_ge_point)
+        also have "\<dots> \<le> weight \<Gamma> x"
+          using IN1_le[of x] IN1 by (simp add: split_beta')
+        finally show "d_IN k x \<le> weight (\<Gamma> \<ominus> ?\<epsilon>h) x"
+          using currentD_weight_IN[OF \<epsilon>h_curr, of x] currentD_weight_OUT[OF \<epsilon>h_curr, of x]
+            currentD_weight_IN[OF hM2[OF hM], of x] IN_\<epsilon>[OF Field, of x] *
+          apply(auto simp add: IN_k outgoing_def IN_\<epsilon>h IN_\<epsilon> A_in diff_add_eq_diff_diff_swap_ennreal)
+          apply(subst diff_diff_commute_ennreal)
+          apply(intro ennreal_minus_mono[OF _ order_refl])
+          apply(auto simp add: ennreal_le_minus_iff ac_simps intro: order_trans add_mono)
+          done
         show "k e = 0" if "e \<notin> \<^bold>E\<^bsub>\<Gamma> \<ominus> ?\<epsilon>h\<^esub>" for e using that by(cases e)(simp add: k_alt)
       qed
 
@@ -7649,40 +7501,46 @@ proof -
         have "q = (\<Sum>\<^sup>+ y. d_IN k y)" using a IN1 OUT1 OUT1_na unfolding q_alt
           by(auto simp add: nn_integral_count_space_indicator OUT_k IN_\<epsilon>[OF Field] OUT_\<epsilon> currentD_outside[OF \<epsilon>] outgoing_def no_loop A_in IN_k intro!: nn_integral_cong split: split_indicator)
         also have "\<dots> = d_OUT (Sup (fst ` M)) a - d_OUT \<epsilon> a" using currentD_finite_OUT[OF \<epsilon>, of a] hM currentD_outside[OF SM1] currentD_outside[OF \<epsilon>]
-          by(subst d_OUT_diff[symmetric])(auto simp add: currentD_nonneg[OF \<epsilon>] d_OUT_def IN_k intro!: SUP_upper2 nn_integral_cong)
+          by(subst d_OUT_diff[symmetric])(auto simp add: d_OUT_def IN_k intro!: SUP_upper2 nn_integral_cong)
         finally show ?thesis .
       qed
-      have q_finite: "q \<noteq> \<infinity>" using currentD_finite_OUT[OF SM1, of a] 
-        by(simp add: q_simps ereal_minus_eq_PInfty_iff)
-      have q_nonneg: "0 \<le> q" using hM by(auto simp add: q_simps intro!: ereal_diff_positive d_OUT_mono SUP_upper2)
-      have q_less_\<delta>: "q < \<delta>" using close 
+      have q_finite: "q \<noteq> \<top>" using currentD_finite_OUT[OF SM1, of a]
+        by(simp add: q_simps)
+      have q_nonneg: "0 \<le> q" using hM by(auto simp add: q_simps intro!: d_OUT_mono SUP_upper2)
+      have q_less_\<delta>: "q < \<delta>" using close
         unfolding q_simps \<delta>_def OUT_\<epsilon>h OUT_f
-        apply(rule le_less_trans[rotated])
-        apply(subst ereal_diff_add_eq_diff_diff_swap)
-         subgoal by(simp add: currentD_finite_OUT[OF \<epsilon>] d_OUT_nonneg)
-        apply(subst diff_diff_commute_ereal)
-        apply(rule ereal_minus_mono)
-         apply(subst add_diff_eq_ereal[symmetric])
-        apply(auto intro!: ereal_le_add_self ereal_diff_positive d_OUT_mono SUP_upper2 hM)
-        done
-      
+      proof -
+        let ?F = "d_OUT (Sup (fst`M)) a" and ?S = "d_OUT (Sup (snd`M)) a"
+          and ?\<epsilon> = "d_OUT \<epsilon> a" and ?h = "d_OUT h a" and ?w = "weight (\<Gamma> \<ominus> f) z - d_OUT g z"
+        have "?F + ?h \<le> ?F + ?S"
+          using hM by (auto intro!: add_mono d_OUT_mono SUP_upper2)
+        also assume "?F + ?S < ?\<epsilon> + ?h + ?w"
+        finally have "?h + ?F < ?h + (?w + ?\<epsilon>)"
+          by (simp add: ac_simps)
+        then show "?F - ?\<epsilon> < ?w"
+          using currentD_finite_OUT[OF \<epsilon>, of a] hM unfolding ennreal_add_left_cancel_less
+          by (subst minus_less_iff_ennreal) (auto intro!: d_OUT_mono SUP_upper2 simp: less_top)
+      qed
+
       def g' \<equiv> "plus_current g (Sup (snd ` M) - h)"
-      have g'_simps: "g' e = g e + Sup (snd ` M) e - h e" for e by(simp add: g'_def add_diff_eq_ereal)
-      have OUT_g': "d_OUT g' x = d_OUT g x + (d_OUT (Sup (snd ` M)) x - d_OUT h x)" for x using hM
-        unfolding g'_simps[abs_def] using currentD_nonneg[OF g] \<epsilon>h.currentD_finite_OUT[OF k] hM currentD_nonneg[OF k] currentD_nonneg[OF h_curr] h.currentD_finite_OUT[OF h_curr] currentD_nonneg[OF current]
+      have g'_simps: "g' e = g e + Sup (snd ` M) e - h e" for e
+        using hM by(auto simp add: g'_def intro!: add_diff_eq_ennreal intro: SUP_upper2)
+      have OUT_g': "d_OUT g' x = d_OUT g x + (d_OUT (Sup (snd ` M)) x - d_OUT h x)" for x
+        unfolding g'_simps[abs_def] using \<epsilon>h.currentD_finite_OUT[OF k] hM h.currentD_finite_OUT[OF h_curr] hM
         apply(subst d_OUT_diff)
-         apply(auto simp add: add_diff_eq_ereal[symmetric] k_simps intro: ereal_le_add_mono2 intro!: ereal_diff_positive SUP_upper2)
+         apply(auto simp add: add_diff_eq_ennreal[symmetric] k_simps intro: add_increasing intro!: SUP_upper2)
         apply(subst d_OUT_add)
-         apply(auto simp add: add_diff_eq_ereal[symmetric] k_simps intro: ereal_le_add_mono2 intro!: ereal_diff_positive)
-        apply(simp add: add_diff_eq_ereal SUP_apply[abs_def])
+         apply(auto simp add: add_diff_eq_ennreal[symmetric] k_simps intro: add_increasing intro!:)
+        apply(simp add: add_diff_eq_ennreal SUP_apply[abs_def])
+        apply(auto simp add: g'_def intro!: add_diff_eq_ennreal[symmetric] d_OUT_mono intro: SUP_upper2)
         done
       have IN_g': "d_IN g' x = d_IN g x + (d_IN (Sup (snd ` M)) x - d_IN h x)" for x
-        unfolding g'_simps[abs_def] using currentD_nonneg[OF g] \<epsilon>h.currentD_finite_IN[OF k] hM currentD_nonneg[OF k] currentD_nonneg[OF h_curr] h.currentD_finite_IN[OF h_curr] currentD_nonneg[OF current]
+        unfolding g'_simps[abs_def] using \<epsilon>h.currentD_finite_IN[OF k] hM h.currentD_finite_IN[OF h_curr] hM
         apply(subst d_IN_diff)
-         apply(auto simp add: add_diff_eq_ereal[symmetric] k_simps intro: ereal_le_add_mono2 intro!: ereal_diff_positive SUP_upper2)
+         apply(auto simp add: add_diff_eq_ennreal[symmetric] k_simps intro: add_increasing intro!: SUP_upper2)
         apply(subst d_IN_add)
-         apply(auto simp add: add_diff_eq_ereal[symmetric] k_simps intro: ereal_le_add_mono2 intro!: ereal_diff_positive SUP_upper)
-        apply(simp add: add_diff_eq_ereal SUP_apply[abs_def])
+         apply(auto simp add: add_diff_eq_ennreal[symmetric] k_simps intro: add_increasing intro!: SUP_upper)
+        apply(auto simp add: g'_def SUP_apply[abs_def] intro!: add_diff_eq_ennreal[symmetric] d_IN_mono intro: SUP_upper2)
         done
 
       have h': "current (\<Gamma> \<ominus> Sup (fst ` M)) h" using hM by(rule hM2)
@@ -7691,35 +7549,36 @@ proof -
       interpret \<Gamma>: web ?\<Gamma> using k by(rule \<epsilon>h.web_minus_web)
       note [simp] = \<epsilon>h.weight_minus_web[OF k] h.weight_minus_web[OF h_curr]
         weight_minus_web[OF f_curr] SM1.weight_minus_web[OF h', simplified]
-      
+
       interpret \<Omega>: countable_bipartite_web "\<Gamma> \<ominus> f" using f_curr by(rule countable_bipartite_web_minus_web)
-      
+
       have *: "\<Gamma> \<ominus> f = \<Gamma> \<ominus> Sup (fst ` M) \<ominus> Sup (snd ` M)" unfolding f_def F_simps
         using SM1 current by(rule minus_plus_current)
       have OUT_\<epsilon>k: "d_OUT (Sup (fst ` M)) x = d_OUT \<epsilon> x + d_OUT k x" for x
-        using OUT1'[of x] currentD_finite_OUT[OF \<epsilon>]
-        by(auto simp add: OUT_k OUT_\<epsilon> add_diff_eq_ereal ereal_diff_add_assoc2)
+        using OUT1'[of x] currentD_finite_OUT[OF \<epsilon>] hM
+        by(auto simp add: OUT_k OUT_\<epsilon> add_diff_self_ennreal SUP_upper2)
       have IN_\<epsilon>k: "d_IN (Sup (fst ` M)) x = d_IN \<epsilon> x + d_IN k x" for x
-        using IN1'[of x] currentD_finite_IN[OF \<epsilon>] currentD_nonneg[OF \<epsilon>] currentD_outside[OF \<epsilon>] currentD_outside[OF \<epsilon>_curr]
-        by(auto simp add: IN_k IN_\<epsilon>[OF Field] add_diff_eq_ereal ereal_diff_add_assoc2 split_beta nempty dest!: Chains_FieldD[OF M] intro!: SUP_eq_const)
+        using IN1'[of x] currentD_finite_IN[OF \<epsilon>] currentD_outside[OF \<epsilon>] currentD_outside[OF \<epsilon>_curr]
+        by(auto simp add: IN_k IN_\<epsilon>[OF Field] add_diff_self_ennreal split_beta nempty
+                dest!: Chains_FieldD[OF M] intro!: SUP_eq_const intro: SUP_upper2[OF hM])
       have **: "?\<Gamma> = \<Gamma> \<ominus> Sup (fst ` M) \<ominus> h"
       proof(rule web.equality)
         show "weight ?\<Gamma> = weight (\<Gamma> \<ominus> Sup (fst ` M) \<ominus> h)"
           using OUT_\<epsilon>k OUT_\<epsilon>h currentD_finite_OUT[OF \<epsilon>] IN_\<epsilon>k IN_\<epsilon>h currentD_finite_IN[OF \<epsilon>]
-          by(auto simp add: ereal_diff_add_eq_diff_diff_swap d_IN_nonneg d_OUT_nonneg diff_diff_commute_ereal)
+          by(auto simp add: diff_add_eq_diff_diff_swap_ennreal diff_diff_commute_ennreal)
       qed simp_all
       have g'_alt: "g' = plus_current (Sup (snd ` M)) g - h"
-        by(simp add: fun_eq_iff g'_simps add_diff_eq_ereal add.commute)
+        by(simp add: fun_eq_iff g'_simps add_diff_eq_ennreal add.commute)
 
       have "current (\<Gamma> \<ominus> Sup (fst ` M)) (plus_current (Sup (snd ` M)) g)" using current g unfolding *
         by(rule SM1.current_plus_current_minus)
       hence g': "current ?\<Gamma> g'" unfolding * ** g'_alt using hM2[OF hM]
-        by(rule SM1.current_minus)(auto intro!: ereal_le_add_mono1 SUP_upper2 currentD_nonneg[OF g] hM)
+        by(rule SM1.current_minus)(auto intro!: add_increasing2 SUP_upper2 hM)
 
       have "wave (\<Gamma> \<ominus> Sup (fst ` M)) (plus_current (Sup (snd ` M)) g)" using current wave g g_w
         unfolding * by(rule SM1.wave_plus_current_minus)
       then have g'_w: "wave ?\<Gamma> g'" unfolding * ** g'_alt using hM2[OF hM]
-        by(rule SM1.wave_minus)(auto intro!: ereal_le_add_mono1 SUP_upper2 currentD_nonneg[OF g] hM)
+        by(rule SM1.wave_minus)(auto intro!: add_increasing2 SUP_upper2 hM)
 
       have "hindrance_by ?\<Gamma> g' q"
       proof
@@ -7727,7 +7586,7 @@ proof -
         show "z \<notin> \<E>\<^bsub>?\<Gamma>\<^esub> (TER\<^bsub>?\<Gamma>\<^esub> g')"
         proof
           assume "z \<in> \<E>\<^bsub>?\<Gamma>\<^esub> (TER\<^bsub>?\<Gamma>\<^esub> g')"
-          hence OUT_z: "d_OUT g' z = 0" 
+          hence OUT_z: "d_OUT g' z = 0"
             and ess: "essential ?\<Gamma> (B \<Gamma>) (TER\<^bsub>?\<Gamma>\<^esub> g') z" by(simp_all add: SINK.simps)
           from ess obtain p y where p: "path \<Gamma> z p y" and y: "y \<in> B \<Gamma>"
             and bypass: "\<And>z. z \<in> set p \<Longrightarrow> z \<notin> RF (TER\<^bsub>?\<Gamma>\<^esub> g')" by(rule essentialE_RF) auto
@@ -7735,21 +7594,21 @@ proof -
           from p z y obtain py: "p = [y]" and edge: "edge \<Gamma> z y" using disjoint
             by(cases)(auto 4 3 elim: rtrancl_path.cases dest: bipartite_E)
           hence yRF: "y \<notin> RF (TER\<^bsub>?\<Gamma>\<^esub> g')" using bypass[of y] by(auto)
-          with wave_not_RF_IN_zero[OF g' g'_w, of y] have IN_g'_y: "d_IN g' y = 0" 
+          with wave_not_RF_IN_zero[OF g' g'_w, of y] have IN_g'_y: "d_IN g' y = 0"
             by(auto intro: roofed_greaterI)
-          with yRF y y' have w_y: "weight ?\<Gamma> y > 0" using \<Gamma>.weight_nonneg[of y] currentD_OUT[OF g', of y]
-            by(auto simp add: RF_in_B currentD_SAT[OF g'] SINK.simps)
+          with yRF y y' have w_y: "weight ?\<Gamma> y > 0" using currentD_OUT[OF g', of y]
+            by(auto simp add: RF_in_B currentD_SAT[OF g'] SINK.simps zero_less_iff_neq_zero)
           have "y \<notin> SAT (\<Gamma> \<ominus> f) g"
           proof
             assume "y \<in> SAT (\<Gamma> \<ominus> f) g"
             with y disjoint have IN_g_y: "d_IN g y = weight (\<Gamma> \<ominus> f) y" by(auto simp add: currentD_SAT[OF g])
+            have "0 < weight \<Gamma> y - d_IN (\<Squnion>x\<in>M. fst x) y - d_IN h y"
+              using y' w_y unfolding ** by auto
             have "d_IN g' y > 0"
-              using y' SM1.currentD_finite_IN[OF current] currentD_finite_IN[OF SM1] w_y unfolding **
-              apply(simp add: IN_g' IN_f IN_g_y)
-              apply(simp add: ereal_diff_add_eq_diff_diff_swap d_IN_nonneg add_diff_eq_ereal)
-              apply(subst diff_add_eq_ereal)
-              apply(subst add_diff_eq_ereal[symmetric])
-              apply(simp add: d_IN_nonneg)
+              using y' w_y hM unfolding **
+              apply(simp add: IN_g' IN_f IN_g_y diff_add_eq_diff_diff_swap_ennreal)
+              apply(subst add_diff_eq_ennreal)
+              apply(auto intro!: SUP_upper2 d_IN_mono simp: diff_add_self_ennreal diff_gt_0_iff_gt_ennreal)
               done
             with IN_g'_y show False by simp
           qed
@@ -7760,20 +7619,17 @@ proof -
           with z\<E> show False by contradiction
         qed
         have "\<delta> \<le> weight ?\<Gamma> z - d_OUT g' z"
-          unfolding ** OUT_g' using z currentD_finite_OUT[OF SM1] \<Omega>.currentD_finite_OUT[OF g] h.currentD_finite_OUT[OF h_curr]
-          apply(simp add: \<delta>_def OUT_f ereal_diff_add_eq_diff_diff_swap d_OUT_nonneg ereal_minus_minus)
-          apply(simp add: diff_diff_commute_ereal diff_add_eq_ereal)
-          apply(subst (3) diff_diff_commute_ereal)
-          apply(subst add_diff_eq_ereal[symmetric])
-          apply simp
+          unfolding ** OUT_g' using z
+          apply (simp add: \<delta>_def OUT_f diff_add_eq_diff_diff_swap_ennreal)
+          apply (subst (5) diff_diff_commute_ennreal)
+          apply (rule ennreal_minus_mono[OF _ order_refl])
+          apply (auto simp add: ac_simps diff_add_eq_diff_diff_swap_ennreal[symmetric] add_diff_self_ennreal
+                      intro!: ennreal_minus_mono[OF order_refl] SUP_upper2[OF hM] d_OUT_mono)
           done
         then show q_z: "q < weight ?\<Gamma> z - d_OUT g' z" using q_less_\<delta> by simp
         then show "d_OUT g' z < weight ?\<Gamma> z" using q_nonneg z
-          apply(auto simp add: ereal_less_minus d_OUT_nonneg \<Gamma>.currentD_finite_OUT[OF g'])
-          apply(erule le_less_trans[rotated])
-          apply(erule ereal_le_add_self2)
-          done
-        show "q \<ge> 0" by(rule q_nonneg)
+          by(auto simp add: less_diff_eq_ennreal less_top[symmetric] ac_simps \<Gamma>.currentD_finite_OUT[OF g']
+                  intro: le_less_trans[rotated] add_increasing)
       qed
       then have hindered_by: "hindered_by (\<Gamma> \<ominus> ?\<epsilon>h \<ominus> k) q" using g' g'_w by(rule hindered_by.intros)
       then have "hindered (\<Gamma> \<ominus> ?\<epsilon>h)" using q_finite unfolding q_def by -(rule \<epsilon>h.hindered_reduce_current[OF k])
@@ -7789,13 +7645,13 @@ proof -
         let
           \<Omega> = \<Gamma> \<ominus> f \<ominus> k;
           y = SOME y. y \<in> \<^bold>O\<^bold>U\<^bold>T\<^bsub>\<Omega>\<^esub> a \<and> weight \<Omega> y > 0;
-          \<delta> = SOME \<delta>. \<delta> > 0 \<and> \<delta> < real_of_ereal (min (weight \<Omega> a) (weight \<Omega> y)) \<and> \<not> hindered (reduce_weight \<Omega> y \<delta>)
+          \<delta> = SOME \<delta>. \<delta> > 0 \<and> \<delta> < enn2real (min (weight \<Omega> a) (weight \<Omega> y)) \<and> \<not> hindered (reduce_weight \<Omega> y \<delta>)
         in
           (plus_current \<epsilon> (zero_current((a, y) := \<delta>)), plus_current h k)
       else (\<epsilon>, h)"
 
   have zero: "(zero_current, zero_current) \<in> Field leq"
-    by(rule F_I)(simp_all add: unhindered weight_nonneg F_def)
+    by(rule F_I)(simp_all add: unhindered  F_def)
 
   have a_\<E>: "a \<in> \<E>\<^bsub>\<Gamma> \<ominus> F \<epsilon>h\<^esub> (TER\<^bsub>\<Gamma> \<ominus> F \<epsilon>h\<^esub> k)" (is "_ \<in> \<E>\<^bsub>?\<Gamma>\<^esub> ?TER")
     if that: "\<epsilon>h \<in> Field leq"
@@ -7807,7 +7663,7 @@ proof -
        by(cases \<epsilon>h; simp add: f unhindered'; fail)+
 
     from less have "d_OUT k a < weight (\<Gamma> \<ominus> F \<epsilon>h) a" using a currentD_finite_OUT[OF f, of a]
-      by(simp add: d_OUT_def nn_integral_add currentD_nonneg[OF f] currentD_nonneg[OF k] ereal_less_minus nn_integral_nonneg add.commute)
+      by(simp add: d_OUT_def nn_integral_add less_diff_eq_ennreal add.commute less_top[symmetric])
     with _ \<E> have "hindrance (\<Gamma> \<ominus> F \<epsilon>h) k" by(rule hindrance)(simp add: a)
     then have "hindered (\<Gamma> \<ominus> F \<epsilon>h)" using k k_w ..
     with unhindered show False by contradiction
@@ -7842,22 +7698,22 @@ proof -
       qed
 
       have "d_OUT (plus_current (F \<epsilon>h) k) x = d_OUT (F \<epsilon>h) x + d_OUT k x" for x
-        by(simp add: d_OUT_def nn_integral_add currentD_nonneg[OF f[OF that]] currentD_nonneg[OF k])
+        by(simp add: d_OUT_def nn_integral_add)
       then show "d_OUT zero_current a < weight ?\<Omega> a" using less a_\<E> [OF that k k_w less] a
-        by(simp add: SINK.simps ereal_diff_gr0)
+        by(simp add: SINK.simps diff_gr0_ennreal)
     qed
     hence "hindered ?\<Omega>"
-      by(auto intro!: hindered.intros ereal_diff_positive order_trans[OF currentD_weight_OUT[OF k]] order_trans[OF currentD_weight_IN[OF k]])
+      by(auto intro!: hindered.intros order_trans[OF currentD_weight_OUT[OF k]] order_trans[OF currentD_weight_IN[OF k]])
     moreover have "\<not> hindered ?\<Omega>" using unhindered'[OF that] k k_w by(rule \<Gamma>.unhindered_minus_web)
     ultimately show False by contradiction
   qed
 
-  have increasing: "\<epsilon>h \<le> sat \<epsilon>h \<and> sat \<epsilon>h \<in> Field leq" if "\<epsilon>h \<in> Field leq" for \<epsilon>h 
+  have increasing: "\<epsilon>h \<le> sat \<epsilon>h \<and> sat \<epsilon>h \<in> Field leq" if "\<epsilon>h \<in> Field leq" for \<epsilon>h
   proof(cases \<epsilon>h)
     case (Pair \<epsilon> h)
     with that have that: "(\<epsilon>, h) \<in> Field leq" by simp
     have f: "current \<Gamma> (F (\<epsilon>, h))" and unhindered: "\<not> hindered (\<Gamma> \<ominus> F (\<epsilon>, h))"
-      and \<epsilon>: "current \<Gamma> \<epsilon>"  
+      and \<epsilon>: "current \<Gamma> \<epsilon>"
       and h: "current (\<Gamma> \<ominus> \<epsilon>) h" and h_w: "wave (\<Gamma> \<ominus> \<epsilon>) h" and OUT_\<epsilon>: "x \<noteq> a \<Longrightarrow> d_OUT \<epsilon> x = 0" for x
       using that by(rule f unhindered' \<epsilon>_curr OUT_\<epsilon> h h_w)+
     interpret \<Gamma>: countable_bipartite_web "\<Gamma> \<ominus> F (\<epsilon>, h)" using f by(rule countable_bipartite_web_minus_web)
@@ -7865,7 +7721,7 @@ proof -
 
     let ?P_k = "\<lambda>k. current (\<Gamma> \<ominus> F (\<epsilon>, h)) k \<and> wave (\<Gamma> \<ominus> F (\<epsilon>, h)) k \<and> (\<forall>k'. current (\<Gamma> \<ominus> F (\<epsilon>, h)) k' \<and> wave (\<Gamma> \<ominus> F (\<epsilon>, h)) k' \<and> k \<le> k' \<longrightarrow> k = k')"
     def k \<equiv> "Eps ?P_k"
-    have "Ex ?P_k" using \<Gamma>.weight_nonneg by(intro ex_maximal_wave)(simp_all)
+    have "Ex ?P_k" by(intro ex_maximal_wave)(simp_all)
     hence "?P_k k" unfolding k_def by(rule someI_ex)
     hence k: "current (\<Gamma> \<ominus> F (\<epsilon>, h)) k" and k_w: "wave (\<Gamma> \<ominus> F (\<epsilon>, h)) k"
       and maximal: "\<And>k'. \<lbrakk> current (\<Gamma> \<ominus> F (\<epsilon>, h)) k'; wave (\<Gamma> \<ominus> F (\<epsilon>, h)) k'; k \<le> k' \<rbrakk> \<Longrightarrow> k = k'" by blast+
@@ -7873,9 +7729,9 @@ proof -
 
     let ?fk = "plus_current (F (\<epsilon>, h)) k"
     have IN_fk: "d_IN ?fk x = d_IN (F (\<epsilon>, h)) x + d_IN k x" for x
-      by(simp add: d_IN_def nn_integral_add currentD_nonneg[OF f] currentD_nonneg[OF k])
+      by(simp add: d_IN_def nn_integral_add)
     have OUT_fk: "d_OUT ?fk x = d_OUT (F (\<epsilon>, h)) x + d_OUT k x" for x
-      by(simp add: d_OUT_def nn_integral_add currentD_nonneg[OF f] currentD_nonneg[OF k])
+      by(simp add: d_OUT_def nn_integral_add)
     have fk: "current \<Gamma> ?fk" using f k by(rule current_plus_current_minus)
 
     show ?thesis
@@ -7884,16 +7740,16 @@ proof -
 
       def \<Omega> \<equiv> "\<Gamma> \<ominus> F (\<epsilon>, h) \<ominus> k"
       have B_\<Omega> [simp]: "B \<Omega> = B \<Gamma>" by(simp add: \<Omega>_def)
-      
+
       have loose: "loose \<Omega>" unfolding \<Omega>_def using unhindered k k_w maximal by(rule \<Gamma>.loose_minus_web)
       interpret \<Omega>: countable_bipartite_web \<Omega> using k unfolding \<Omega>_def
         by(rule \<Gamma>.countable_bipartite_web_minus_web)
 
       have a_\<E>: "a \<in> \<E>\<^bsub>\<Gamma> \<ominus> F (\<epsilon>, h)\<^esub> (TER\<^bsub>\<Gamma> \<ominus> F (\<epsilon>, h)\<^esub> k)" using that k k_w less by(rule a_\<E>)
-      then have weight_\<Omega>_a: "weight \<Omega> a = weight \<Gamma> a - d_OUT (F (\<epsilon>, h)) a" 
+      then have weight_\<Omega>_a: "weight \<Omega> a = weight \<Gamma> a - d_OUT (F (\<epsilon>, h)) a"
         using a disjoint by(auto simp add: roofed_circ_def \<Omega>_def SINK.simps)
-      then have weight_a: "0 < weight \<Omega> a" using less a_\<E> 
-        by(simp add: OUT_fk SINK.simps ereal_diff_gr0)
+      then have weight_a: "0 < weight \<Omega> a" using less a_\<E>
+        by(simp add: OUT_fk SINK.simps diff_gr0_ennreal)
 
       let ?P_y = "\<lambda>y. y \<in> \<^bold>O\<^bold>U\<^bold>T\<^bsub>\<Omega>\<^esub> a \<and> weight \<Omega> y > 0"
       def y \<equiv> "Eps ?P_y"
@@ -7906,11 +7762,11 @@ proof -
         by(auto split: if_split_asm simp add: SINK.simps currentD_SAT[OF k] roofed_circ_def RF_in_B \<Gamma>.currentD_finite_IN[OF k])
       hence IN_k_y: "d_IN k y = 0" by(rule wave_not_RF_IN_zero[OF k k_w])
 
-      def bound \<equiv> "real_of_ereal (min (weight \<Omega> a) (weight \<Omega> y))"
+      def bound \<equiv> "enn2real (min (weight \<Omega> a) (weight \<Omega> y))"
       have bound_pos: "bound > 0" using weight_y weight_a using \<Omega>.weight_finite
-        by(cases "weight \<Omega> a" "weight \<Omega> y" rule: ereal2_cases)
-          (simp_all add: bound_def ereal_min[symmetric] del: ereal_min split: if_split_asm)
-      
+        by(cases "weight \<Omega> a" "weight \<Omega> y" rule: ennreal2_cases)
+          (simp_all add: bound_def min_def split: if_split_asm)
+
       let ?P_\<delta> = "\<lambda>\<delta>. \<delta> > 0 \<and> \<delta> < bound \<and> \<not> hindered (reduce_weight \<Omega> y \<delta>)"
       def \<delta> \<equiv> "Eps ?P_\<delta>"
       let ?\<Omega> = "reduce_weight \<Omega> y \<delta>"
@@ -7920,10 +7776,9 @@ proof -
       hence "?P_\<delta> \<delta>" unfolding \<delta>_def by(rule someI_ex)
       hence \<delta>_pos: "0 < \<delta>" and \<delta>_le_bound: "\<delta> < bound" and unhindered': "\<not> hindered ?\<Omega>" by blast+
       from \<delta>_pos have \<delta>_nonneg: "0 \<le> \<delta>" by simp
-      from \<delta>_le_bound have \<delta>_le_a: "\<delta> < weight \<Omega> a" and \<delta>_le_y: "\<delta> < weight \<Omega> y"
-        using \<Omega>.weight_nonneg[of a] \<Omega>.weight_nonneg[of y]
-        by(cases "weight \<Omega> a" "weight \<Omega> y" rule: ereal2_cases;
-           simp add: bound_def ereal_min[symmetric] del: ereal_min)+
+      from \<delta>_le_bound \<delta>_pos have \<delta>_le_a: "\<delta> < weight \<Omega> a" and \<delta>_le_y: "\<delta> < weight \<Omega> y"
+        by(cases "weight \<Omega> a" "weight \<Omega> y" rule: ennreal2_cases;
+           simp add: bound_def min_def ennreal_less_iff split: if_split_asm)+
 
       let ?\<Gamma> = "\<Gamma> \<ominus> ?fk"
       interpret \<Gamma>': countable_bipartite_web ?\<Gamma> by(rule countable_bipartite_web_minus_web fk)+
@@ -7942,14 +7797,14 @@ proof -
           by(rule nn_integral_cong) simp
         show "\<dots> = (if x = y then \<delta> else 0)" using \<delta>_pos by(simp add: max_def)
       qed
-      
+
       have g: "current ?\<Gamma> ?g"
       proof
         show "d_OUT ?g x \<le> weight ?\<Gamma> x" for x
         proof(cases "x = a")
           case False
           then show ?thesis using currentD_weight_OUT[OF fk, of x] currentD_weight_IN[OF fk, of x]
-            by(auto simp add: OUT_g zero_ereal_def[symmetric] \<Gamma>'.weight_nonneg ereal_diff_positive)
+            by(auto simp add: OUT_g zero_ennreal_def[symmetric])
         next
           case True
           then show ?thesis using \<delta>_le_a a a_\<E> \<delta>_pos unfolding OUT_g
@@ -7959,13 +7814,12 @@ proof -
         proof(cases "x = y")
           case False
           then show ?thesis using currentD_weight_OUT[OF fk, of x] currentD_weight_IN[OF fk, of x]
-            by(auto simp add: IN_g zero_ereal_def[symmetric] \<Gamma>'.weight_nonneg ereal_diff_positive)
+            by(auto simp add: IN_g zero_ennreal_def[symmetric])
         next
           case True
           then show ?thesis using \<delta>_le_y y_B a_\<E> \<delta>_pos currentD_OUT[OF k, of y] IN_k_y
             by(simp add: OUT_g \<Omega>_def SINK.simps OUT_fk IN_fk IN_g split: if_split_asm)
         qed
-        show "0 \<le> ?g e" for e using \<delta>_pos by simp
         show "?g e = 0" if "e \<notin> \<^bold>E\<^bsub>?\<Gamma>\<^esub>" for e using y_OUT that by(auto simp add: \<Omega>_def outgoing_def)
       qed
       interpret \<Gamma>'': web "\<Gamma> \<ominus> ?fk \<ominus> ?g" using g by(rule \<Gamma>'.web_minus_web)
@@ -7977,21 +7831,21 @@ proof -
       have sat: "sat (\<epsilon>, h) = (?\<epsilon>', ?h')" using less
         by(simp add: sat_def k_def \<Omega>_def Let_def y_def bound_def \<delta>_def)
 
-      have le: "(\<epsilon>, h) \<le> (?\<epsilon>', ?h')" using \<delta>_pos currentD_nonneg[OF k] 
-        by(auto simp add: le_fun_def ereal_le_add_mono1 ereal_le_add_mono2)
-      
-      have "current (\<Gamma> \<ominus> \<epsilon>) ((\<lambda>_. 0)((a, y) := ereal \<delta>))" using g
-        by(rule current_weight_mono)(auto simp add: weight_minus_web[OF \<epsilon>] intro!: ereal_minus_mono d_OUT_mono d_IN_mono, simp_all add: F_def ereal_le_add_mono1 currentD_nonneg[OF h] currentD_nonneg[OF k])
+      have le: "(\<epsilon>, h) \<le> (?\<epsilon>', ?h')" using \<delta>_pos
+        by(auto simp add: le_fun_def add_increasing2 add_increasing)
+
+      have "current (\<Gamma> \<ominus> \<epsilon>) ((\<lambda>_. 0)((a, y) := ennreal \<delta>))" using g
+        by(rule current_weight_mono)(auto simp add: weight_minus_web[OF \<epsilon>] intro!: ennreal_minus_mono d_OUT_mono d_IN_mono, simp_all add: F_def add_increasing2)
       with \<epsilon> have \<epsilon>': "current \<Gamma> ?\<epsilon>'" by(rule current_plus_current_minus)
-      moreover have "d_OUT ?\<epsilon>' x = 0" if "x \<noteq> a" for x unfolding plus_current_def using that
-        by(subst d_OUT_add)(simp_all add: currentD_nonneg[OF \<epsilon>] \<delta>_nonneg d_OUT_fun_upd OUT_\<epsilon>)
+      moreover have eq_0: "d_OUT ?\<epsilon>' x = 0" if "x \<noteq> a" for x unfolding plus_current_def using that
+        by(subst d_OUT_add)(simp_all add: \<delta>_nonneg d_OUT_fun_upd OUT_\<epsilon>)
       moreover
       from \<epsilon>' interpret \<epsilon>': countable_bipartite_web "\<Gamma> \<ominus> ?\<epsilon>'" by(rule countable_bipartite_web_minus_web)
       from \<epsilon> interpret \<epsilon>: countable_bipartite_web "\<Gamma> \<ominus> \<epsilon>" by(rule countable_bipartite_web_minus_web)
       have g': "current (\<Gamma> \<ominus> \<epsilon>) ?g" using g
         apply(rule current_weight_mono)
-        apply(auto simp add: weight_minus_web[OF \<epsilon>] intro!: ereal_minus_mono d_OUT_mono d_IN_mono)
-        apply(simp_all add: F_def ereal_le_add_mono1 currentD_nonneg[OF h] currentD_nonneg[OF k])
+        apply(auto simp add: weight_minus_web[OF \<epsilon>] intro!: ennreal_minus_mono d_OUT_mono d_IN_mono)
+        apply(simp_all add: F_def add_increasing2)
         done
       have k': "current (\<Gamma> \<ominus> \<epsilon> \<ominus> h) k" using k unfolding F_simps minus_plus_current[OF \<epsilon> h] .
       with h have "current (\<Gamma> \<ominus> \<epsilon>) (plus_current h k)" by(rule \<epsilon>.current_plus_current_minus)
@@ -7999,38 +7853,38 @@ proof -
         unfolding F_simps minus_plus_current[OF \<epsilon> h] \<epsilon>.minus_plus_current[OF h k', symmetric]
         by(rule \<epsilon>.current_plus_current_minus)
       then have "current (\<Gamma> \<ominus> \<epsilon> \<ominus> ?g) (plus_current (plus_current h k) ?g - ?g)" using g'
-        by(rule \<epsilon>.current_minus)(auto simp add: currentD_nonneg[OF h] currentD_nonneg[OF k] ereal_le_add_mono2)
+        by(rule \<epsilon>.current_minus)(auto simp add: add_increasing)
       then have h'': "current (\<Gamma> \<ominus> ?\<epsilon>') ?h'"
         by(rule arg_cong2[where f=current, THEN iffD1, rotated -1])
-          (simp_all add: minus_plus_current[OF \<epsilon> g'] fun_eq_iff add_diff_eq_ereal[symmetric])
+          (simp_all add: minus_plus_current[OF \<epsilon> g'] fun_eq_iff add_diff_eq_ennreal[symmetric])
       moreover have "wave (\<Gamma> \<ominus> ?\<epsilon>') ?h'"
       proof
         have "separating (\<Gamma> \<ominus> \<epsilon>) (TER\<^bsub>\<Gamma> \<ominus> \<epsilon>\<^esub> (plus_current h k))"
           using k k_w unfolding F_simps minus_plus_current[OF \<epsilon> h]
           by(intro waveD_separating \<epsilon>.wave_plus_current_minus[OF h h_w])
         moreover have "TER\<^bsub>\<Gamma> \<ominus> \<epsilon>\<^esub> (plus_current h k) \<subseteq> TER\<^bsub>\<Gamma> \<ominus> ?\<epsilon>'\<^esub> (plus_current h k)"
-          by(auto 4 4 simp add: SAT.simps weight_minus_web[OF \<epsilon>] weight_minus_web[OF \<epsilon>'] split: if_split_asm elim: order_trans[rotated] intro!: ereal_minus_mono d_IN_mono ereal_le_add_self \<delta>_nonneg)
-        ultimately show sep: "separating (\<Gamma> \<ominus> ?\<epsilon>') (TER\<^bsub>\<Gamma> \<ominus> ?\<epsilon>'\<^esub> ?h')" 
+          by(auto 4 4 simp add: SAT.simps weight_minus_web[OF \<epsilon>] weight_minus_web[OF \<epsilon>'] split: if_split_asm elim: order_trans[rotated] intro!: ennreal_minus_mono d_IN_mono add_increasing2 \<delta>_nonneg)
+        ultimately show sep: "separating (\<Gamma> \<ominus> ?\<epsilon>') (TER\<^bsub>\<Gamma> \<ominus> ?\<epsilon>'\<^esub> ?h')"
           by(simp add: minus_plus_current[OF \<epsilon> g'] separating_weakening)
       qed(rule h'')
       moreover
-      have "\<not> hindered (\<Gamma> \<ominus> F (?\<epsilon>', ?h'))" using unhindered' 
+      have "\<not> hindered (\<Gamma> \<ominus> F (?\<epsilon>', ?h'))" using unhindered'
       proof(rule contrapos_nn)
         assume "hindered (\<Gamma> \<ominus> F (?\<epsilon>', ?h'))"
         thus "hindered ?\<Omega>"
         proof(rule hindered_mono_web[rotated -1])
-          show "weight ?\<Omega> z = weight (\<Gamma> \<ominus> F (?\<epsilon>', ?h')) z" if "z \<notin> A (\<Gamma> \<ominus> F (?\<epsilon>', ?h'))" for z 
+          show "weight ?\<Omega> z = weight (\<Gamma> \<ominus> F (?\<epsilon>', ?h')) z" if "z \<notin> A (\<Gamma> \<ominus> F (?\<epsilon>', ?h'))" for z
             using that unfolding F'
             apply(cases "z = y")
             apply(simp_all add: \<Omega>_def minus_plus_current[OF fk g] \<Gamma>'.weight_minus_web[OF g] IN_g)
-            apply(simp_all add: plus_current_def d_IN_add currentD_nonneg[OF k] currentD_nonneg[OF f] d_IN_nonneg ereal_diff_add_eq_diff_diff_swap currentD_finite_IN[OF f])
+            apply(simp_all add: plus_current_def d_IN_add diff_add_eq_diff_diff_swap_ennreal currentD_finite_IN[OF f])
             done
           have "y \<noteq> a" using y_B a disjoint by auto
-          then show "weight (\<Gamma> \<ominus> F (?\<epsilon>', ?h')) z \<le> weight ?\<Omega> z" if "z \<in> A (\<Gamma> \<ominus> F (?\<epsilon>', ?h'))" for z 
+          then show "weight (\<Gamma> \<ominus> F (?\<epsilon>', ?h')) z \<le> weight ?\<Omega> z" if "z \<in> A (\<Gamma> \<ominus> F (?\<epsilon>', ?h'))" for z
             using that y_B disjoint \<delta>_nonneg unfolding F'
             apply(cases "z = a")
             apply(simp_all add: \<Omega>_def minus_plus_current[OF fk g] \<Gamma>'.weight_minus_web[OF g] OUT_g)
-            apply(auto simp add: ereal_diff_le_self plus_current_def d_OUT_add currentD_nonneg[OF k] currentD_nonneg[OF f] d_OUT_nonneg ereal_diff_add_eq_diff_diff_swap currentD_finite_OUT[OF f])
+            apply(auto simp add: plus_current_def d_OUT_add diff_add_eq_diff_diff_swap_ennreal currentD_finite_OUT[OF f])
             done
         qed(simp_all add: \<Omega>_def)
       qed
@@ -8050,7 +7904,7 @@ proof -
 
   def f \<equiv> "fixp_above (zero_current, zero_current)"
   have Field: "f \<in> Field leq" using fixp_above_Field[OF zero] unfolding f_def .
-  then have f: "current \<Gamma> (F f)" and unhindered: "\<not> hindered (\<Gamma> \<ominus> F f)" 
+  then have f: "current \<Gamma> (F f)" and unhindered: "\<not> hindered (\<Gamma> \<ominus> F f)"
     by(cases f; simp add: f unhindered'; fail)+
   interpret \<Gamma>: countable_bipartite_web "\<Gamma> \<ominus> F f" using f by(rule countable_bipartite_web_minus_web)
   note [simp] = weight_minus_web[OF f]
@@ -8058,7 +7912,7 @@ proof -
 
   let ?P_k = "\<lambda>k. current (\<Gamma> \<ominus> F f) k \<and> wave (\<Gamma> \<ominus> F f) k \<and> (\<forall>k'. current (\<Gamma> \<ominus> F f) k' \<and> wave (\<Gamma> \<ominus> F f) k' \<and> k \<le> k' \<longrightarrow> k = k')"
   def k \<equiv> "Eps ?P_k"
-  have "Ex ?P_k" using \<Gamma>.weight_nonneg by(intro ex_maximal_wave)(simp_all)
+  have "Ex ?P_k" by(intro ex_maximal_wave)(simp_all)
   hence "?P_k k" unfolding k_def by(rule someI_ex)
   hence k: "current (\<Gamma> \<ominus> F f) k" and k_w: "wave (\<Gamma> \<ominus> F f) k"
     and maximal: "\<And>k'. \<lbrakk> current (\<Gamma> \<ominus> F f) k'; wave (\<Gamma> \<ominus> F f) k'; k \<le> k' \<rbrakk> \<Longrightarrow> k = k'" by blast+
@@ -8066,9 +7920,9 @@ proof -
 
   let ?fk = "plus_current (F f) k"
   have IN_fk: "d_IN ?fk x = d_IN (F f) x + d_IN k x" for x
-    by(simp add: d_IN_def nn_integral_add currentD_nonneg[OF f] currentD_nonneg[OF k])
+    by(simp add: d_IN_def nn_integral_add)
   have OUT_fk: "d_OUT ?fk x = d_OUT (F f) x + d_OUT k x" for x
-    by(simp add: d_OUT_def nn_integral_add currentD_nonneg[OF f] currentD_nonneg[OF k])
+    by(simp add: d_OUT_def nn_integral_add)
   have fk: "current \<Gamma> ?fk" using f k by(rule current_plus_current_minus)
 
   have "d_OUT ?fk a \<ge> weight \<Gamma> a"
@@ -8084,10 +7938,10 @@ proof -
       by(rule \<Gamma>.countable_bipartite_web_minus_web)
 
     have a_\<E>: "a \<in> \<E>\<^bsub>\<Gamma> \<ominus> F f\<^esub> (TER\<^bsub>\<Gamma> \<ominus> F f\<^esub> k)" using Field k k_w less by(rule a_\<E>)
-    then have "weight \<Omega> a = weight \<Gamma> a - d_OUT (F f) a" 
+    then have "weight \<Omega> a = weight \<Gamma> a - d_OUT (F f) a"
       using a disjoint by(auto simp add: roofed_circ_def \<Omega>_def SINK.simps)
-    then have weight_a: "0 < weight \<Omega> a" using less a_\<E> 
-      by(simp add: OUT_fk SINK.simps ereal_diff_gr0)
+    then have weight_a: "0 < weight \<Omega> a" using less a_\<E>
+      by(simp add: OUT_fk SINK.simps diff_gr0_ennreal)
 
     let ?P_y = "\<lambda>y. y \<in> \<^bold>O\<^bold>U\<^bold>T\<^bsub>\<Omega>\<^esub> a \<and> weight \<Omega> y > 0"
     def y \<equiv> "Eps ?P_y"
@@ -8096,11 +7950,11 @@ proof -
     hence "y \<in> \<^bold>O\<^bold>U\<^bold>T\<^bsub>\<Omega>\<^esub> a" and weight_y: "weight \<Omega> y > 0" by blast+
     then have y_B: "y \<in> B \<Omega>" by(auto simp add: outgoing_def \<Omega>_def dest: bipartite_E)
 
-    def bound \<equiv> "real_of_ereal (min (weight \<Omega> a) (weight \<Omega> y))"
+    def bound \<equiv> "enn2real (min (weight \<Omega> a) (weight \<Omega> y))"
     have bound_pos: "bound > 0" using weight_y weight_a \<Omega>.weight_finite
-      by(cases "weight \<Omega> a" "weight \<Omega> y" rule: ereal2_cases)
-        (simp_all add: bound_def ereal_min[symmetric] del: ereal_min split: if_split_asm)
-    
+      by(cases "weight \<Omega> a" "weight \<Omega> y" rule: ennreal2_cases)
+        (simp_all add: bound_def min_def split: if_split_asm)
+
     let ?P_\<delta> = "\<lambda>\<delta>. \<delta> > 0 \<and> \<delta> < bound \<and> \<not> hindered (reduce_weight \<Omega> y \<delta>)"
     def \<delta> \<equiv> "Eps ?P_\<delta>"
     from \<Omega>.unhinder[OF loose _ weight_y bound_pos] y_B disjoint have "Ex ?P_\<delta>" by(auto simp add: \<Omega>_def)
@@ -8111,7 +7965,7 @@ proof -
     have sat: "?f' = sat f" using less by(simp add: sat_def k_def \<Omega>_def Let_def y_def bound_def \<delta>_def split_def)
     also have "\<dots> = f" unfolding f_def using fixp_above_unfold[OF zero] by simp
     finally have "fst ?f' (a, y) = fst f (a, y)" by simp
-    hence "\<delta> = 0" using currentD_finite[OF \<epsilon>_curr[OF Field']] currentD_nonneg[OF \<epsilon>_curr[OF Field']]
+    hence "\<delta> = 0" using currentD_finite[OF \<epsilon>_curr[OF Field']] \<delta>_pos
       by(cases "fst f (a, y)") simp_all
     with \<delta>_pos show False by simp
   qed
@@ -8122,7 +7976,7 @@ proof -
     using unhindered k k_w by(rule \<Gamma>.unhindered_minus_web)
   ultimately show ?thesis by blast
 qed
-  
+
 end
 
 subsection \<open>Linkability of unhindered bipartite webs\<close>
@@ -8131,11 +7985,10 @@ context countable_bipartite_web begin
 
 theorem unhindered_linkable:
   assumes unhindered: "\<not> hindered \<Gamma>"
-  and weight_nonneg: "\<And>x. 0 \<le> weight \<Gamma> x"
   shows "linkable \<Gamma>"
 proof(cases "A \<Gamma> = {}")
   case True
-  thus ?thesis by(auto intro!: exI[where x="zero_current"] linkage.intros simp add: web_flow_iff weight_nonneg)
+  thus ?thesis by(auto intro!: exI[where x="zero_current"] linkage.intros simp add: web_flow_iff )
 next
   case nempty: False
 
@@ -8154,7 +8007,7 @@ next
     and unhindered: "\<not> hindered (\<Gamma> \<ominus> f n)" for n
   proof(induction n)
     case 0
-    { case 1 thus ?case by(simp add: weight_nonneg) }
+    { case 1 thus ?case by(simp add: ) }
     { case 2 thus ?case by simp }
     { case 3 thus ?case using unhindered by simp }
   next
@@ -8176,12 +8029,12 @@ next
       proof(cases "m = n")
         case True
         then show ?thesis unfolding f_Suc using OUT True
-          by(simp add: d_OUT_def nn_integral_add currentD_nonneg[OF Suc.IH(1)] currentD_nonneg[OF f'] enum_A add_diff_eq_ereal ereal_diff_add_assoc2)
+          by(simp add: d_OUT_def nn_integral_add enum_A add_diff_self_ennreal less_imp_le)
       next
         case False
         hence "m < n" using 2 by simp
         thus ?thesis using Suc.IH(2)[OF \<open>m < n\<close>] unfolding f_Suc
-          by(simp add: d_OUT_def nn_integral_add currentD_nonneg[OF Suc.IH(1)] currentD_nonneg[OF f'] ereal_le_add_self nn_integral_nonneg) 
+          by(simp add: d_OUT_def nn_integral_add add_increasing2 )
       qed
       ultimately show ?case by(rule antisym) }
     { case 3 show ?case unfolding f_Suc minus_plus_current[OF Suc.IH(1) f'] by(rule unhindered') }
@@ -8190,10 +8043,10 @@ next
 
   have Ex_P: "Ex (?P (f n) (enum n))" for n using unhindered by(rule \<Gamma>.unhindered_saturate1)(simp add: enum_A)
   have f_mono: "f n \<le> f (Suc n)" for n using someI_ex[OF Ex_P, of n]
-    by(auto simp add: le_fun_def f_Suc enum_A intro: ereal_le_add_self dest: currentD_nonneg)
+    by(auto simp add: le_fun_def f_Suc enum_A intro: add_increasing2 dest: )
   hence incseq: "incseq f" by(rule incseq_SucI)
   hence chain: "Complete_Partial_Order.chain op \<le> (range f)" by(rule incseq_chain_range)
-    
+
   def g \<equiv> "Sup (range f)"
   have "support_flow g \<subseteq> \<^bold>E"
     by(auto simp add: g_def support_flow.simps currentD_outside[OF f] elim: contrapos_pp)
@@ -8220,7 +8073,7 @@ subsection \<open>Reduction to bipartite webs\<close>
 
 definition bipartite_web_of :: "('v, 'more) web_scheme \<Rightarrow> ('v + 'v, 'more) web_scheme"
 where
-  "bipartite_web_of \<Gamma> = 
+  "bipartite_web_of \<Gamma> =
   \<lparr>edge = \<lambda>uv uv'. case (uv, uv') of (Inl u, Inr v) \<Rightarrow> edge \<Gamma> u v \<or> u = v \<and> u \<in> vertices \<Gamma> \<and> u \<notin> A \<Gamma> \<and> v \<notin> B \<Gamma> | _ \<Rightarrow> False,
    weight = \<lambda>uv. case uv of Inl u \<Rightarrow> if u \<in> B \<Gamma> then 0 else weight \<Gamma> u | Inr u \<Rightarrow> if u \<in> A \<Gamma> then 0 else weight \<Gamma> u,
    A = Inl ` (vertices \<Gamma> - B \<Gamma>),
@@ -8247,7 +8100,7 @@ by(auto)
 lemma edge_bipartite_webE:
   fixes \<Gamma> (structure)
   assumes "edge (bipartite_web_of \<Gamma>) uv uv'"
-  obtains u v where "uv = Inl u" "uv' = Inr v" "edge \<Gamma> u v" 
+  obtains u v where "uv = Inl u" "uv' = Inr v" "edge \<Gamma> u v"
     | u where "uv = Inl u" "uv' = Inr u" "u \<in> \<^bold>V" "u \<notin> A \<Gamma>" "u \<notin> B \<Gamma>"
 using assms by(cases uv uv' rule: sum.exhaust[case_product sum.exhaust]) auto
 
@@ -8298,7 +8151,7 @@ next
   proof(cases e)
     case (Pair x y)
     with that have "path ?\<Gamma> (Inl x) [Inr y] (Inr y)" by(auto intro!: rtrancl_path.intros)
-    from separatingD[OF sep this] that Pair show ?thesis 
+    from separatingD[OF sep this] that Pair show ?thesis
       by(fastforce simp add: vertex_def inmarked_def outmarked_def tailmarked_def headmarked_def)
   qed
 
@@ -8347,12 +8200,12 @@ end
 
 lemma current_bipartite_web_finite:
   assumes f: "current (bipartite_web_of \<Gamma>) f" (is "current ?\<Gamma> _")
-  shows "f e \<noteq> \<infinity>"
+  shows "f e \<noteq> \<top>"
 proof(cases e)
   case (Pair x y)
   have "f e \<le> d_OUT f x" unfolding Pair d_OUT_def by(rule nn_integral_ge_point) simp
   also have "\<dots> \<le> weight ?\<Gamma> x" by(rule currentD_weight_OUT[OF f])
-  also have "\<dots> < \<infinity>" by(cases x)(simp_all)
+  also have "\<dots> < \<top>" by(cases x)(simp_all add: less_top[symmetric])
   finally show ?thesis by simp
 qed
 
@@ -8369,8 +8222,8 @@ proof -
   have "d_OUT (current_of_bipartite f) x = \<integral>\<^sup>+ y. f (Inl x, y) * indicator \<^bold>E (x, projr y) \<partial>count_space (range Inr)"
     by(simp add: d_OUT_def nn_integral_count_space_reindex)
   also have "\<dots> = d_OUT f (Inl x) - \<integral>\<^sup>+ y. f (Inl x, y) * indicator {Inr x} y \<partial>count_space UNIV" (is "_ = _ - ?rest")
-    unfolding d_OUT_def by(subst nn_integral_diff[symmetric])(auto 4 4 simp add: currentD_nonneg[OF f] max_def current_bipartite_web_finite[OF f] AE_count_space nn_integral_count_space_indicator no_loop split: split_indicator intro!: nn_integral_cong intro: currentD_outside[OF f] elim: edge_bipartite_webE)
-  finally show ?thesis by(simp add: max_def currentD_nonneg[OF f])
+    unfolding d_OUT_def by(subst nn_integral_diff[symmetric])(auto 4 4 simp add: current_bipartite_web_finite[OF f] AE_count_space nn_integral_count_space_indicator no_loop split: split_indicator intro!: nn_integral_cong intro: currentD_outside[OF f] elim: edge_bipartite_webE)
+  finally show ?thesis by simp
 qed
 
 lemma d_IN_current_of_bipartite:
@@ -8380,8 +8233,8 @@ proof -
   have "d_IN (current_of_bipartite f) x = \<integral>\<^sup>+ y. f (y, Inr x) * indicator \<^bold>E (projl y, x) \<partial>count_space (range Inl)"
     by(simp add: d_IN_def nn_integral_count_space_reindex)
   also have "\<dots> = d_IN f (Inr x) - \<integral>\<^sup>+ y. f (y, Inr x) * indicator {Inl x} y \<partial>count_space UNIV" (is "_ = _ - ?rest")
-    unfolding d_IN_def by(subst nn_integral_diff[symmetric])(auto 4 4 simp add: currentD_nonneg[OF f] max_def current_bipartite_web_finite[OF f] AE_count_space nn_integral_count_space_indicator no_loop split: split_indicator intro!: nn_integral_cong intro: currentD_outside[OF f] elim: edge_bipartite_webE)
-  finally show ?thesis by(simp add: max_def currentD_nonneg[OF f])
+    unfolding d_IN_def by(subst nn_integral_diff[symmetric])(auto 4 4 simp add: current_bipartite_web_finite[OF f] AE_count_space nn_integral_count_space_indicator no_loop split: split_indicator intro!: nn_integral_cong intro: currentD_outside[OF f] elim: edge_bipartite_webE)
+  finally show ?thesis by simp
 qed
 
 lemma current_current_of_bipartite: -- \<open>Lemma 6.3\<close>
@@ -8391,33 +8244,33 @@ lemma current_current_of_bipartite: -- \<open>Lemma 6.3\<close>
 proof
   fix x
   have "d_OUT ?f x \<le> d_OUT f (Inl x)"
-    by(simp add: d_OUT_current_of_bipartite[OF f] max_def ereal_diff_le_self currentD_nonneg[OF f])
+    by(simp add: d_OUT_current_of_bipartite[OF f] diff_le_self_ennreal)
   also have "\<dots> \<le> weight \<Gamma> x"
-    using currentD_weight_OUT[OF f, of "Inl x"] d_OUT_nonneg[of f "Inl x"] weight_nonneg[of x]
+    using currentD_weight_OUT[OF f, of "Inl x"]
     by(simp split: if_split_asm)
   finally show "d_OUT ?f x \<le> weight \<Gamma> x" .
 next
   fix x
   have "d_IN ?f x \<le> d_IN f (Inr x)"
-    by(simp add: d_IN_current_of_bipartite[OF f] max_def ereal_diff_le_self currentD_nonneg[OF f])
+    by(simp add: d_IN_current_of_bipartite[OF f] diff_le_self_ennreal)
   also have "\<dots> \<le> weight \<Gamma> x"
-    using currentD_weight_IN[OF f, of "Inr x"] d_IN_nonneg[of f "Inr x"] weight_nonneg[of x]
+    using currentD_weight_IN[OF f, of "Inr x"]
     by(simp split: if_split_asm)
   finally show "d_IN ?f x \<le> weight \<Gamma> x" .
 next
   have OUT: "d_OUT ?f b = 0" if "b \<in> B \<Gamma>" for b using that
-    by(auto simp add: d_OUT_def nn_integral_0_iff emeasure_count_space_eq_0 currentD_nonneg[OF f] intro!: currentD_outside[OF f] dest: B_out)
+    by(auto simp add: d_OUT_def nn_integral_0_iff emeasure_count_space_eq_0 intro!: currentD_outside[OF f] dest: B_out)
   show "d_OUT ?f x \<le> d_IN ?f x" if A: "x \<notin> A \<Gamma>" for x
   proof(cases "x \<in> B \<Gamma> \<or> x \<notin> \<^bold>V")
     case True
     then show ?thesis
     proof
       assume "x \<in> B \<Gamma>"
-      with OUT[OF this] d_IN_nonneg[of ?f x] show ?thesis by auto
+      with OUT[OF this] show ?thesis by auto
     next
       assume "x \<notin> \<^bold>V"
-      hence "d_OUT ?f x = 0" by(auto simp add: d_OUT_def vertex_def nn_integral_0_iff currentD_nonneg[OF f] emeasure_count_space_eq_0 intro!: currentD_outside[OF f])
-      thus ?thesis using d_IN_nonneg[of ?f x] by simp
+      hence "d_OUT ?f x = 0" by(auto simp add: d_OUT_def vertex_def nn_integral_0_iff emeasure_count_space_eq_0 intro!: currentD_outside[OF f])
+      thus ?thesis by simp
     qed
   next
     case B [simplified]: False
@@ -8429,16 +8282,15 @@ next
       hence *: "d_IN f (Inr x) < d_OUT f (Inl x)" by(simp add: not_less)
       also have "\<dots> \<le> weight \<Gamma> x" using currentD_weight_OUT[OF f, of "Inl x"] B by simp
       finally have "Inr x \<notin> TER\<^bsub>?\<Gamma>\<^esub> f" using A by(auto elim!: SAT.cases)
-      moreover have "Inl x \<notin> TER\<^bsub>?\<Gamma>\<^esub> f" using * d_IN_nonneg[of f "Inr x"] by(auto simp add: SINK.simps)
+      moreover have "Inl x \<notin> TER\<^bsub>?\<Gamma>\<^esub> f" using * by(auto simp add: SINK.simps)
       moreover have "path ?\<Gamma> (Inl x) [Inr x] (Inr x)"
         by(rule rtrancl_path.step)(auto intro!: rtrancl_path.base simp add: no_loop A B)
       ultimately show False using waveD_separating[OF w] A B by(auto dest!: separatingD)
     qed
-    hence "d_OUT f (Inl x) - ?rest \<le> d_IN f (Inr x) - ?rest" by(rule ereal_minus_mono) simp
+    hence "d_OUT f (Inl x) - ?rest \<le> d_IN f (Inr x) - ?rest" by(rule ennreal_minus_mono) simp
     also have "\<dots> =  d_IN ?f x" by(simp add: d_IN_current_of_bipartite[OF f])
     finally show ?thesis .
   qed
-  show "0 \<le> ?f e" for e by(cases e)(simp add: currentD_nonneg[OF f])
   show "?f e = 0" if "e \<notin> \<^bold>E" for e using that by(cases e)(auto)
 qed
 
@@ -8464,10 +8316,10 @@ proof(rule set_eqI)
       using currentD_outside[OF f, of "Inl x" "Inr x"]
       by(simp add: d_IN_current_of_bipartite[OF f] no_loop)
     moreover have "d_OUT ?f x = 0" using B currentD_outside[OF f, of "Inl x" "Inr x"]
-      by(simp add: d_OUT_current_of_bipartite[OF f] no_loop)(auto simp add: d_OUT_def currentD_nonneg[OF f] nn_integral_0_iff emeasure_count_space_eq_0 intro!: currentD_outside[OF f] elim!: edge_bipartite_webE dest: B_out)
+      by(simp add: d_OUT_current_of_bipartite[OF f] no_loop)(auto simp add: d_OUT_def nn_integral_0_iff emeasure_count_space_eq_0 intro!: currentD_outside[OF f] elim!: edge_bipartite_webE dest: B_out)
     moreover have "d_OUT f (Inr x) = 0" using B disjoint by(intro currentD_OUT[OF f]) auto
     ultimately show ?thesis using B
-      by(auto simp add: separating_of_bipartite_def Let_def SINK.simps SAT.simps d_IN_nonneg)
+      by(auto simp add: separating_of_bipartite_def Let_def SINK.simps SAT.simps)
   next
     case outside
     with current_current_of_bipartite[OF f w] have "d_OUT ?f x = 0" "d_IN ?f x = 0"
@@ -8487,7 +8339,7 @@ proof(rule set_eqI)
       have "f (Inl x, Inr x) \<le> d_OUT f (Inl x)"
         unfolding d_OUT_def by(rule nn_integral_ge_point) simp
       with l have 0: "f (Inl x, Inr x) = 0"
-        using currentD_nonneg[OF f, of "(Inl x, Inr x)"] by(auto simp add: SINK.simps)
+        by(auto simp add: SINK.simps)
       with l have "x \<in> SINK ?f"  by(simp add: SINK.simps d_OUT_current_of_bipartite[OF f])
       moreover from r have "Inr x \<in> SAT ?\<Gamma> f" by auto
       with inner have "x \<in> SAT \<Gamma> ?f"
@@ -8499,11 +8351,12 @@ proof(rule set_eqI)
       also have "\<dots> \<le> weight \<Gamma> x" using inner by simp
       also have "\<dots> \<le> d_IN ?f x" using inner * by(auto elim: SAT.cases)
       also have "\<dots> \<le> d_IN f (Inr x)"
-        by(simp add: d_IN_current_of_bipartite[OF f] max_def ereal_diff_le_self currentD_nonneg[OF f])
+        by(simp add: d_IN_current_of_bipartite[OF f] max_def diff_le_self_ennreal)
       ultimately have eq: "d_IN ?f x = d_IN f (Inr x)" by simp
       hence 0: "f (Inl x, Inr x) = 0"
-        using ereal_minus_eq_minus_iff[of "d_IN f (Inr x)" "f (Inl x, Inr x)" 0] currentD_weight_IN[OF f, of "Inr x"] inner
-        by(auto simp add: d_IN_current_of_bipartite[OF f] max_def currentD_nonneg[OF f])
+        using ennreal_minus_cancel_iff[of "d_IN f (Inr x)" "f (Inl x, Inr x)" 0] currentD_weight_IN[OF f, of "Inr x"] inner
+          d_IN_ge_point[of f "Inl x" "Inr x"]
+        by(auto simp add: d_IN_current_of_bipartite[OF f] top_unique)
       have "Inl x \<in> ?TER" "Inr x \<in> ?TER" using inner * currentD_OUT[OF f, of "Inr x"]
         by(auto simp add: SAT.simps SINK.simps d_OUT_current_of_bipartite[OF f] 0 eq)
       thus "x \<in> separating_of_bipartite ?TER" unfolding separating_of_bipartite_def Let_def by blast
@@ -8548,7 +8401,7 @@ proof
     then show ?thesis
     proof cases
       case Inl
-      thus ?thesis using d_OUT_nonneg[of ?f x] currentD_nonneg[OF f, of "(Inl x, Inr x)"]
+      thus ?thesis
         by(auto simp add: SINK.simps d_OUT_current_of_bipartite[OF f] max_def)
     next
       case Inr
@@ -8560,7 +8413,7 @@ proof
 qed
 
 end
-            
+
 context countable_web begin
 
 lemma countable_bipartite_web_of: "countable_bipartite_web (bipartite_web_of \<Gamma>)" (is "countable_bipartite_web ?\<Gamma>")
@@ -8574,8 +8427,7 @@ proof
     by(cases x y rule: sum.exhaust[case_product sum.exhaust])(auto simp add: inj_image_mem_iff vertex_def B_out A_in)
   show "A ?\<Gamma> \<inter> B ?\<Gamma> = {}" by auto
   show "countable \<^bold>E\<^bsub>?\<Gamma>\<^esub>" by(simp add: E_bipartite_web)
-  show "weight ?\<Gamma> x \<noteq> \<infinity>" for x by(cases x) simp_all
-  show "weight ?\<Gamma> x \<ge> 0" for x by(cases x)(simp_all add: weight_nonneg)
+  show "weight ?\<Gamma> x \<noteq> \<top>" for x by(cases x) simp_all
   show "weight (bipartite_web_of \<Gamma>) x = 0" if "x \<notin> \<^bold>V\<^bsub>?\<Gamma>\<^esub>" for x using that
     by(cases x)(auto simp add: weight_outside)
 qed
@@ -8603,7 +8455,7 @@ proof
       apply(intro nn_integral_cong)
       subgoal for y by(cases y)(auto split: split_indicator)
       done
-    also have "\<dots> = f (Inl x, Inr x)" by(simp add: max_def currentD_nonneg[OF f])
+    also have "\<dots> = f (Inl x, Inr x)" by simp
     finally show ?thesis .
   qed
   have IN: "d_IN f (Inr x) = f (Inl x, Inr x)" for x
@@ -8613,10 +8465,10 @@ proof
       apply(intro nn_integral_cong)
       subgoal for y by(cases y)(auto split: split_indicator)
       done
-    also have "\<dots> = f (Inl x, Inr x)" by(simp add: max_def currentD_nonneg[OF f])
+    also have "\<dots> = f (Inl x, Inr x)" by simp
     finally show ?thesis .
   qed
-  
+
   let ?TER = "TER\<^bsub>?\<Gamma>\<^esub> f"
   from hind obtain a where a: "a \<in> A ?\<Gamma>" and n\<E>: "a \<notin> \<E>\<^bsub>?\<Gamma>\<^esub> (TER\<^bsub>?\<Gamma>\<^esub> f)"
     and OUT_a: "d_OUT f a < weight ?\<Gamma> a" by cases
@@ -8646,7 +8498,7 @@ proof
   qed
   moreover
 
-  from A have "d_OUT f (Inl a') = 0" using currentD_outside[OF f, of "Inl a'" "Inr a'"] 
+  from A have "d_OUT f (Inl a') = 0" using currentD_outside[OF f, of "Inl a'" "Inr a'"]
     by(simp add: OUT no_loop)
   with b v have TER: "Inl a' \<in> ?TER" by(simp add: SAT.A SINK.simps)
   with n\<E> a' have ness: "\<not> essential ?\<Gamma> (B ?\<Gamma>) ?TER (Inl a')" by simp
@@ -8666,8 +8518,8 @@ proof
       from step(2) have "path ?\<Gamma> (Inl a') [Inr x] (Inr x)" by(simp add: rtrancl_path_simps)
       from not_essentialD[OF ness this] bypass[of x] step(1)
       have "Inr x \<in> ?TER" by simp
-      with bypass[of x] step(1) have "d_IN f (Inr x) > 0" using weight_nonneg[of x] 
-        by(auto simp add: currentD_SAT[OF f])
+      with bypass[of x] step(1) have "d_IN f (Inr x) > 0"
+        by(auto simp add: currentD_SAT[OF f] zero_less_iff_neq_zero)
       hence x: "Inl x \<notin> ?TER" by(auto simp add: SINK.simps OUT IN)
       from step(1) have "set (x # p') \<subseteq> set p" by auto
       with \<open>path \<Gamma> x p' y\<close> x y show False
@@ -8682,16 +8534,21 @@ proof
         from separatingD[OF waveD_separating[OF w] this] step.prems(1) step.prems(3) bypass[of z] x \<open>edge \<Gamma> x z\<close>
         have "Inr z \<in> ?TER" by(force simp add: B_out inj_image_mem_iff)
         with bypass[of z] step.prems(3) \<open>edge \<Gamma> x z\<close> have "d_IN f (Inr z) > 0"
-          using weight_nonneg[of z] by(auto simp add: currentD_SAT[OF f] A_in)
+          by(auto simp add: currentD_SAT[OF f] A_in zero_less_iff_neq_zero)
         hence x: "Inl z \<notin> ?TER" by(auto simp add: SINK.simps OUT IN)
         with step.IH[OF this] step.prems(2,3) show False by auto
       qed
     qed
   qed
-  moreover have "d_OUT zero_current a' < weight \<Gamma> a'" using OUT_a d_OUT_nonneg[of f a] a' b by simp
+  moreover have "d_OUT zero_current a' < weight \<Gamma> a'"
+    using OUT_a a' b by (auto simp: zero_less_iff_neq_zero)
   ultimately have "hindrance \<Gamma> zero_current" by(rule hindrance)
   with looseD_hindrance[OF loose] show False by contradiction
 qed
+
+lemma (in -) divide_less_1_iff_ennreal: "a / b < (1::ennreal) \<longleftrightarrow> (0 < b \<and> a < b \<or> b = 0 \<and> a = 0 \<or> b = top)"
+  by (cases a; cases b; cases "b = 0")
+     (auto simp: divide_ennreal ennreal_less_iff ennreal_top_divide)
 
 lemma linkable_bipartite_web_ofD:
   assumes link: "linkable (bipartite_web_of \<Gamma>)" (is "linkable ?\<Gamma>")
@@ -8705,14 +8562,14 @@ proof -
   have IN_le_OUT: "d_IN f' x \<le> d_OUT f' x" if "x \<notin> B \<Gamma>" for x
   proof(cases "x \<in> \<^bold>V")
     case True
-    have "d_IN f' x = d_IN f (Inr x) - max 0 (f (Inl x, Inr x))" (is "_ = _ - ?rest")
-      by(simp add: f'_def d_IN_current_of_bipartite[OF f] max_def currentD_nonneg[OF f])
+    have "d_IN f' x = d_IN f (Inr x) - f (Inl x, Inr x)" (is "_ = _ - ?rest")
+      by(simp add: f'_def d_IN_current_of_bipartite[OF f])
     also have "\<dots> \<le> weight ?\<Gamma> (Inr x) - ?rest"
-      using currentD_weight_IN[OF f, of "Inr x"] by(rule ereal_minus_mono) simp
-    also have "\<dots> \<le> weight ?\<Gamma> (Inl x) - ?rest" using that weight_nonneg[of "x"] ereal_minus_mono by(auto)
+      using currentD_weight_IN[OF f, of "Inr x"] by(rule ennreal_minus_mono) simp
+    also have "\<dots> \<le> weight ?\<Gamma> (Inl x) - ?rest" using that ennreal_minus_mono by(auto)
     also have "weight ?\<Gamma> (Inl x) = d_OUT f (Inl x)" using that linkageD[OF link, of "Inl x"] True by auto
     also have "\<dots> - ?rest = d_OUT f' x"
-      by(simp add: f'_def d_OUT_current_of_bipartite[OF f] max_def currentD_nonneg[OF f])
+      by(simp add: f'_def d_OUT_current_of_bipartite[OF f])
     finally show ?thesis .
   next
     case False
@@ -8725,7 +8582,7 @@ proof -
     proof(cases "a \<in> \<^bold>V")
       case True
       from that have "a \<notin> B \<Gamma>" using disjoint by auto
-      with that True linkageD[OF link, of "Inl a"] ereal_minus_eq_minus_iff[of _ _ 0] currentD_outside[OF f, of "Inl a" "Inr a"]
+      with that True linkageD[OF link, of "Inl a"] ennreal_minus_cancel_iff[of _ _ 0] currentD_outside[OF f, of "Inl a" "Inr a"]
       show ?thesis by(clarsimp simp add: f'_def d_OUT_current_of_bipartite[OF f] max_def no_loop)
     next
       case False
@@ -8737,13 +8594,13 @@ proof -
   def F \<equiv> "{g. (\<forall>e. 0 \<le> g e) \<and> (\<forall>e. e \<notin> \<^bold>E \<longrightarrow> g e = 0) \<and>
     (\<forall>x. x \<notin> B \<Gamma> \<longrightarrow> d_IN g x \<le> d_OUT g x) \<and>
     linkage \<Gamma> g \<and>
-    (\<forall>x\<in>A \<Gamma>. d_IN g x = 0) \<and> 
-    (\<forall>x. d_OUT g x \<le> weight \<Gamma> x) \<and> 
+    (\<forall>x\<in>A \<Gamma>. d_IN g x = 0) \<and>
+    (\<forall>x. d_OUT g x \<le> weight \<Gamma> x) \<and>
     (\<forall>x. d_IN g x \<le> weight \<Gamma> x) \<and>
     (\<forall>x\<in>B \<Gamma>. d_OUT g x = 0) \<and> g \<le> f'}"
   def leq \<equiv> "restrict_rel F {(f, f'). f' \<le> f}"
   have F: "Field leq = F" by(auto simp add: leq_def)
-  have F_I [intro?]: "f \<in> Field leq" if "\<And>e. 0 \<le> f e" and "\<And>e. e \<notin> \<^bold>E \<Longrightarrow> f e = 0" 
+  have F_I [intro?]: "f \<in> Field leq" if "\<And>e. 0 \<le> f e" and "\<And>e. e \<notin> \<^bold>E \<Longrightarrow> f e = 0"
     and "\<And>x. x \<notin> B \<Gamma> \<Longrightarrow> d_IN f x \<le> d_OUT f x" and "linkage \<Gamma> f"
     and "\<And>x. x \<in> A \<Gamma> \<Longrightarrow> d_IN f x = 0" and "\<And>x. d_OUT f x \<le> weight \<Gamma> x"
     and "\<And>x. d_IN f x \<le> weight \<Gamma> x" and "\<And>x. x \<in> B \<Gamma> \<Longrightarrow> d_OUT f x = 0"
@@ -8758,24 +8615,24 @@ proof -
   have F_weight_IN: "d_IN f x \<le> weight \<Gamma> x" if "f \<in> Field leq" for f x using that by(simp add: F F_def)
   have F_le: "f e \<le> f' e" if "f \<in> Field leq" for f e using that by(cases e)(simp add: F F_def le_fun_def)
 
-  have F_finite_OUT: "d_OUT f x \<noteq> \<infinity>" if "f \<in> Field leq" for f x
+  have F_finite_OUT: "d_OUT f x \<noteq> \<top>" if "f \<in> Field leq" for f x
   proof -
     have "d_OUT f x \<le> weight \<Gamma> x" by(rule F_weight_OUT[OF that])
-    also have "\<dots> < \<infinity>" by(simp)
+    also have "\<dots> < \<top>" by(simp add: less_top[symmetric])
     finally show ?thesis by simp
   qed
 
-  have F_finite: "f e \<noteq> \<infinity>" if "f \<in> Field leq" for f e
+  have F_finite: "f e \<noteq> \<top>" if "f \<in> Field leq" for f e
   proof(cases e)
     case (Pair x y)
     have "f e \<le> d_OUT f x" unfolding Pair d_OUT_def by(rule nn_integral_ge_point) simp
-    also have "\<dots> < \<infinity>" by(simp add: F_finite_OUT[OF that])
+    also have "\<dots> < \<top>" by(simp add: F_finite_OUT[OF that] less_top[symmetric])
     finally show ?thesis by simp
   qed
 
   have f': "f' \<in> Field leq"
   proof
-    show "0 \<le> f' e" for e by(cases e)(simp add: f'_def currentD_nonneg[OF f])
+    show "0 \<le> f' e" for e by(cases e)(simp add: f'_def)
     show "f' e = 0" if "e \<notin> \<^bold>E" for e using that by(clarsimp split: split_indicator_asm simp add: f'_def)
     show "d_IN f' x \<le> d_OUT f' x" if "x \<notin> B \<Gamma>" for x using that by(rule IN_le_OUT)
     show "linkage \<Gamma> f'" by(rule link)
@@ -8785,10 +8642,10 @@ proof -
     show "d_OUT f' x = 0" if "x \<in> B \<Gamma>" for x using that currentD_OUT[OF f, of "Inr x"] disjoint
       currentD_outside[OF f, of "Inl x" "Inr x"] currentD_outside_OUT[OF f, of "Inl x"]
       by(cases "x \<in> \<^bold>V")(auto simp add: d_OUT_current_of_bipartite[OF f] no_loop f'_def)
-    show "d_OUT f' x \<le> weight \<Gamma> x" for x using currentD_weight_OUT[OF f, of "Inl x"] weight_nonneg[of x]
-      by(simp add: d_OUT_current_of_bipartite[OF f] ereal_diff_le_mono_left f'_def currentD_nonneg[OF f] split: if_split_asm)
-    show "d_IN f' x \<le> weight \<Gamma> x" for x using currentD_weight_IN[OF f, of "Inr x"] weight_nonneg[of x]
-      by(simp add: d_IN_current_of_bipartite[OF f] ereal_diff_le_mono_left f'_def currentD_nonneg[OF f] split: if_split_asm)
+    show "d_OUT f' x \<le> weight \<Gamma> x" for x using currentD_weight_OUT[OF f, of "Inl x"]
+      by(simp add: d_OUT_current_of_bipartite[OF f] ennreal_diff_le_mono_left f'_def split: if_split_asm)
+    show "d_IN f' x \<le> weight \<Gamma> x" for x using currentD_weight_IN[OF f, of "Inr x"]
+      by(simp add: d_IN_current_of_bipartite[OF f] ennreal_diff_le_mono_left f'_def split: if_split_asm)
   qed simp
 
   have F_leI: "g \<in> Field leq" if f: "f \<in> Field leq" and le: "\<And>e. g e \<le> f e"
@@ -8798,9 +8655,9 @@ proof -
   proof
     show "g e = 0" if "e \<notin> \<^bold>E" for e using nonneg[of e] F_outside[OF f that] le[of e] by simp
     show "d_IN g a = 0" if "a \<in> A \<Gamma>" for a
-      using d_IN_mono[of g a f, OF le] d_IN_nonneg[of g a] F_IN[OF f that] by auto
+      using d_IN_mono[of g a f, OF le] F_IN[OF f that] by auto
     show "d_OUT g b = 0" if "b \<in> B \<Gamma>" for b
-      using d_OUT_mono[of g b f, OF le] d_OUT_nonneg[of g b] F_OUT[OF f that] by auto
+      using d_OUT_mono[of g b f, OF le] F_OUT[OF f that] by auto
     show "d_OUT g x \<le> weight \<Gamma> x" for x
       using d_OUT_mono[of g x f, OF le] F_weight_OUT[OF f] by(rule order_trans)
     show "d_IN g x \<le> weight \<Gamma> x" for x
@@ -8819,16 +8676,16 @@ proof -
     hence chain': "Complete_Partial_Order.chain op \<le> M" by(simp add: chain_dual)
 
     have "support_flow f' \<subseteq> \<^bold>E" using F_outside[OF f'] by(auto intro: ccontr simp add: support_flow.simps)
-    then have countable': "countable (support_flow f')" 
+    then have countable': "countable (support_flow f')"
       by(rule countable_subset)(simp add: E_bipartite_web countable "\<^bold>V_def")
 
-    have finite_OUT: "d_OUT f' x \<noteq> \<infinity>" for x using weight_finite[of x]
-      by(rule neq_PInf_trans)(rule F_weight_OUT[OF f'])
-    have finite_IN: "d_IN f' x \<noteq> \<infinity>" for x using weight_finite[of x]
-      by(rule neq_PInf_trans)(rule F_weight_IN[OF f'])
-    have OUT_M: "d_OUT (Inf M) x = (INF g:M. d_OUT g x)" for x using chain' nempty countable' _ _ finite_OUT
+    have finite_OUT: "d_OUT f' x \<noteq> \<top>" for x using weight_finite[of x]
+      by(rule neq_top_trans)(rule F_weight_OUT[OF f'])
+    have finite_IN: "d_IN f' x \<noteq> \<top>" for x using weight_finite[of x]
+      by(rule neq_top_trans)(rule F_weight_IN[OF f'])
+    have OUT_M: "d_OUT (Inf M) x = (INF g:M. d_OUT g x)" for x using chain' nempty countable' _ finite_OUT
       by(rule d_OUT_Inf)(auto dest!: Chains_FieldD[OF M] simp add: leq_def F_nonneg F_le)
-    have IN_M: "d_IN (Inf M) x = (INF g:M. d_IN g x)" for x using chain' nempty countable' _ _ finite_IN
+    have IN_M: "d_IN (Inf M) x = (INF g:M. d_IN g x)" for x using chain' nempty countable' _ finite_IN
       by(rule d_IN_Inf)(auto dest!: Chains_FieldD[OF M] simp add: leq_def F_nonneg F_le)
 
     show "Inf M \<in> F" using g0 unfolding F[symmetric]
@@ -8844,7 +8701,7 @@ proof -
 
   let ?P = "\<lambda>g z. z \<notin> A \<Gamma> \<and> z \<notin> B \<Gamma> \<and> d_OUT g z > d_IN g z"
 
-  def link \<equiv> 
+  def link \<equiv>
    "\<lambda>g. if \<exists>z. ?P g z then
           let z = SOME z. ?P g z; factor = d_IN g z / d_OUT g z
           in (\<lambda>(x, y). (if x = z then factor else 1) * g (x, y))
@@ -8862,15 +8719,15 @@ proof -
     have link [simp]: "link g (x, y) = (if x = z then ?factor else 1) * g (x, y)" for x y
       using True by(auto simp add: link_def z_def Let_def)
 
-    have "?factor \<le> 1" (is "?factor \<le> _") using d_IN_nonneg[of g z] less
-      by(cases "d_OUT g z" "d_IN g z" rule: ereal2_cases) simp_all
+    have "?factor \<le> 1" (is "?factor \<le> _") using less
+      by(cases "d_OUT g z" "d_IN g z" rule: ennreal2_cases) (simp_all add: ennreal_less_iff divide_ennreal)
     hence le': "?factor * g (x, y) \<le> 1 * g (x, y)" for y x
-      by(rule ereal_mult_right_mono)(simp add: F_nonneg[OF g])
+      by(rule mult_right_mono)(simp add: F_nonneg[OF g])
     hence le: "link g e \<le> g e" for e by(cases e)simp
     have "link g \<in> Field leq" using g le
     proof(rule F_leI)
       show nonneg: "0 \<le> link g e" for e
-        using F_nonneg[OF g, of e] d_OUT_nonneg[of g z] d_IN_nonneg[of g z] by(cases e) simp
+        using F_nonneg[OF g, of e] by(cases e) simp
       show "linkage \<Gamma> (link g)" using that A F_link[OF g] by(clarsimp simp add: linkage.simps d_OUT_def)
 
       fix x
@@ -8879,9 +8736,10 @@ proof -
       also have "\<dots> \<le> d_OUT (link g) x"
       proof(cases "x = z")
         case True
-        have "d_IN g x = d_OUT (link g) x" unfolding d_OUT_def 
-          using True d_OUT_nonneg[of g x] d_IN_nonneg[of g x] F_weight_IN[OF g, of x] F_IN_OUT[OF g x] F_finite_OUT F_finite_OUT[OF g, of x]
-          by(auto simp add: nn_integral_divide nn_integral_cmult d_OUT_def[symmetric] ereal_times_divide_eq[symmetric])
+        have "d_IN g x = d_OUT (link g) x" unfolding d_OUT_def
+          using True F_weight_IN[OF g, of x] F_IN_OUT[OF g x] F_finite_OUT F_finite_OUT[OF g, of x]
+          by(cases "d_OUT g z = 0")
+            (auto simp add: nn_integral_divide nn_integral_cmult d_OUT_def[symmetric] ennreal_divide_times less_top)
         thus ?thesis by simp
       next
         case False
@@ -8909,7 +8767,6 @@ proof -
     show "d_IN g x \<le> weight \<Gamma> x" for x using g by(rule F_weight_IN)
     show "d_IN g x = 0" if "x \<in> A \<Gamma>" for x using g that by(rule F_IN)
     show B: "d_OUT g x = 0" if "x \<in> B \<Gamma>" for x using g that by(rule F_OUT)
-    show "0 \<le> g e" for e using g by(rule F_nonneg)
     show "g e = 0" if "e \<notin> \<^bold>E" for e using g that by(rule F_outside)
 
     show KIR: "KIR g x" if A: "x \<notin> A \<Gamma>" and B: "x \<notin> B \<Gamma>" for x
@@ -8926,21 +8783,22 @@ proof -
         assume "\<not> ?thesis"
         hence "d_OUT g z = 0" using F_outside[OF g]
           by(force simp add: d_OUT_def nn_integral_0_iff_AE AE_count_space not_less)
-        with less d_IN_nonneg[of g z] show False by simp
+        with less show False by simp
       qed
       then obtain y where y: "edge \<Gamma> z y" and gr0: "g (z, y) > 0" by blast
-      have "?factor < 1" (is "?factor < _") using d_IN_nonneg[of g z] less
-        by(cases "d_OUT g z" "d_IN g z" rule: ereal2_cases) simp_all
+      have "?factor < 1" (is "?factor < _") using less
+        by(cases "d_OUT g z" "d_IN g z" rule: ennreal2_cases)
+          (auto simp add: ennreal_less_iff divide_ennreal)
 
-      hence le': "?factor * g (z, y) < 1 * g (z, y)" using gr0
-        by(rule ereal_mult_strict_right_mono)(simp add: gr0 F_finite[OF g])
+      hence le': "?factor * g (z, y) < 1 * g (z, y)" using gr0 F_finite[OF g]
+        by(intro ennreal_mult_strict_right_mono) (auto simp: less_top)
       hence "link g (z, y) \<noteq> g (z, y)" using Ex by(auto simp add: link_def z_def Let_def)
       hence "link g \<noteq> g" by(auto simp add: fun_eq_iff)
       moreover have "link g = g" using f' unfolding g_def by(rule fixp_above_unfold[symmetric])
       ultimately show False by contradiction
     qed
     show "d_OUT g x \<le> d_IN g x" if "x \<notin> A \<Gamma>" for x using KIR[of x] that B[of x]
-      by(cases "x \<in> B \<Gamma>")(auto simp add: d_IN_nonneg)
+      by(cases "x \<in> B \<Gamma>") auto
   qed
   ultimately show ?thesis by blast
 qed
@@ -8972,7 +8830,7 @@ proof -
   let ?T = "\<E> (TER f)"
 
   have RFc: "RF\<^sup>\<circ> (TER h) = RF\<^sup>\<circ> (TER f)"
-    by(subst (1 2) roofed_circ_essential[symmetric])(simp only: trimming_\<E>[OF w trim])  
+    by(subst (1 2) roofed_circ_essential[symmetric])(simp only: trimming_\<E>[OF w trim])
   have OUT_k: "d_OUT k x = (if x \<in> RF\<^sup>\<circ> (TER f) then d_OUT h x else d_OUT g x)" for x
     using OUT_plus_current[OF h w', of g] web_flowD_current[OF wg] unfolding eq k_def RFc by simp
   have RF: "RF (TER h) = RF (TER f)"
@@ -9000,7 +8858,7 @@ proof -
     qed
   qed
 
-  have h_le_k: "h e \<le> k e" for e using currentD_nonneg[OF g, of e] unfolding k_def plus_current_def by(rule ereal_le_add_self)
+  have h_le_k: "h e \<le> k e" for e unfolding k_def plus_current_def by(rule add_increasing2) simp_all
   hence "SAT \<Gamma> h \<subseteq> SAT \<Gamma> k" by(rule SAT_mono)
   hence SAT: "?T \<subseteq> SAT \<Gamma> k" using TER by(auto simp add: elim!: SAT.cases intro: SAT.intros)
   show "orthogonal_current \<Gamma> k ?T"
@@ -9010,10 +8868,10 @@ proof -
   next
     fix x
     assume x: "x \<in> ?T" and A: "x \<in> A \<Gamma>" and B: "x \<notin> B \<Gamma>"
-    with d_OUT_mono[of h x f, OF h_le_f] d_OUT_nonneg[of h x] have "d_OUT h x = 0" by(auto simp add: SINK.simps)
+    with d_OUT_mono[of h x f, OF h_le_f] have "d_OUT h x = 0" by(auto simp add: SINK.simps)
     moreover from linkageD[OF link, of x] x A have "d_OUT g x = weight ?\<Gamma> x" by simp
     ultimately show "d_OUT k x = weight \<Gamma> x" using x A currentD_IN[OF f A] B
-      by(auto simp add: d_OUT_add currentD_nonneg[OF h] currentD_nonneg[OF g] roofed_circ_def k_def plus_current_def )
+      by(auto simp add: d_OUT_add roofed_circ_def k_def plus_current_def )
   next
     fix u v
     assume v: "v \<in> RF ?T" and u: "u \<notin> RF\<^sup>\<circ> ?T"
@@ -9021,7 +8879,7 @@ proof -
     also have "\<dots> \<le> d_OUT f u" unfolding d_OUT_def by(rule nn_integral_ge_point) simp
     also have "\<dots> = 0" using u using RF_essential[of \<Gamma> "TER f"]
       by(auto simp add: roofed_circ_def SINK.simps intro: waveD_OUT[OF w])
-    finally have "h (u, v) = 0" using currentD_nonneg[OF h, of "(u, v)"] by simp
+    finally have "h (u, v) = 0" by simp
     moreover have "g (u, v) = 0" using g v RF_essential[of \<Gamma> "TER f"]
       by(auto intro: currentD_outside simp add: roofed_circ_def)
     ultimately show "k (u, v) = 0" by(simp add: k_def)
@@ -9037,14 +8895,14 @@ proof -
   interpret bi: countable_bipartite_web "bipartite_web_of \<Gamma>" by(rule countable_bipartite_web_of)
   have "\<not> hindered (bipartite_web_of \<Gamma>)" using assms by(rule unhindered_bipartite_web_of)
   then have "linkable (bipartite_web_of \<Gamma>)"
-    by(rule bi.unhindered_linkable)(simp add: weight_nonneg bipartite_web_of_def split: sum.split)
+    by(rule bi.unhindered_linkable)
   then show ?thesis by(rule linkable_bipartite_web_ofD) simp
 qed
 
 lemma ex_orthogonal_current: -- \<open>Lemma 4.15\<close>
   "\<exists>f S. web_flow \<Gamma> f \<and> separating \<Gamma> S \<and> orthogonal_current \<Gamma> f S"
 proof -
-  from ex_maximal_wave[OF countable weight_nonneg]
+  from ex_maximal_wave[OF countable]
   obtain f where f: "current \<Gamma> f"
     and w: "wave \<Gamma> f"
     and maximal: "\<And>w. \<lbrakk> current \<Gamma> w; wave \<Gamma> w; f \<le> w \<rbrakk> \<Longrightarrow> f = w" by blast
@@ -9052,7 +8910,7 @@ proof -
 
   let ?\<Gamma> = "quotient_web \<Gamma> f"
   interpret \<Gamma>: countable_web "?\<Gamma>" by(rule countable_web_quotient_web)
-  have "loose ?\<Gamma>" using f w maximal by(rule loose_quotient_web[OF weight_nonneg weight_finite])
+  have "loose ?\<Gamma>" using f w maximal by(rule loose_quotient_web[OF  weight_finite])
   then have "linkable ?\<Gamma>" by(rule \<Gamma>.loose_linkable)
   then obtain g where wg: "web_flow ?\<Gamma> g" and link: "linkage ?\<Gamma> g" by blast
 
@@ -9105,8 +8963,6 @@ proof
     using currentD_weight_OUT[OF f, of e] currentD_weight_IN[OF f, of e]
     by(simp add: flow_of_current_def)
 
-  show "0 \<le> ?f e" for e by(simp add: flow_of_current_def max_def d_OUT_nonneg d_IN_nonneg)
-
   fix x
   assume x: "x \<noteq> source \<Delta>" "x \<noteq> sink \<Delta>"
   have "d_OUT ?f x = (\<Sum>\<^sup>+ y. d_IN f (x, y))" unfolding d_OUT_def
@@ -9124,9 +8980,9 @@ proof
     by(auto intro!: nn_integral_cong currentD_outside_OUT[OF f] simp add: nn_integral_count_space_indicator split: split_indicator)
   also have "\<dots> = (\<Sum>\<^sup>+ z\<in>{z. edge \<Delta> z x}. max (d_OUT f (z, x)) (d_IN f (z, x)))"
   proof(rule nn_integral_cong)
-    show "d_OUT f (z, x) = max (d_OUT f (z, x)) (d_IN f (z, x))" 
+    show "d_OUT f (z, x) = max (d_OUT f (z, x)) (d_IN f (z, x))"
       if "z \<in> space (count_space {z. edge \<Delta> z x})" for z using currentD_IN[OF f] that
-      by(cases "z = source \<Delta>")(simp_all add: max_absorb1 d_OUT_nonneg currentD_IN[OF f] KIR x)
+      by(cases "z = source \<Delta>")(simp_all add: max_absorb1  currentD_IN[OF f] KIR x)
   qed
   also have "\<dots> = (\<Sum>\<^sup>+ z. max (d_OUT f (z, x)) (d_IN f (z, x)))"
     by(auto intro!: nn_integral_cong currentD_outside_OUT[OF f] currentD_outside_IN[OF f] simp add: nn_integral_count_space_indicator max_def split: split_indicator)
@@ -9279,7 +9135,7 @@ proof -
       hence "(x, z) \<in> SAT \<Gamma> f" by(rule orthogonal_currentD_SAT[OF ortho])
       with False have "d_IN f (x, z) \<ge> capacity \<Delta> (x, z)" by(auto simp add: SAT.simps \<Gamma>_def)
       ultimately have "\<not> capacity \<Delta> (x, z) > 0" by auto
-      hence "\<not> edge \<Delta> x z" by(auto intro: capacity_pos)
+      hence "\<not> edge \<Delta> x z" using capacity_pos[of "(x, z)"] by auto
       moreover with q have "b = (x, z)" by cases(auto simp add: \<Gamma>_def)
       with b have "edge \<Delta> x z" by(simp add: \<Gamma>_def)
       ultimately show False by contradiction
@@ -9289,7 +9145,7 @@ proof -
     have "(u, x) \<in> RF\<^sup>\<circ> S" using orthogonal_currentD_in[OF ortho, of "(x, z)" "(u, x)"] gt0 xz
       by(fastforce intro: roofed_greaterI)
     hence ux_RF: "(u, x) \<in> RF (\<E> S)" and ux_\<E>: "(u, x) \<notin> \<E> S" unfolding RF_essential by(simp_all add: roofed_circ_def)
-    
+
     from ux e have "edge \<Gamma> (u, x) (x, y)" by(simp add: \<Gamma>_def)
     hence "path \<Gamma> (u, x) ((x, y) # ?p) ?t" using p'' ..
     from roofedD[OF ux_RF this t] ux_\<E>
@@ -9316,7 +9172,7 @@ proof
   show "?f (x, y) = capacity \<Delta> (x, y)"
   proof(cases "x = source \<Delta>")
     case False
-    with orthogonal_currentD_SAT[OF ortho S] 
+    with orthogonal_currentD_SAT[OF ortho S]
     have "weight \<Gamma> (x, y) \<le> d_IN f (x, y)" by cases(simp_all add: \<Gamma>_def)
     with False currentD_OUT_IN[OF f, of "(x, y)"] currentD_weight_IN[OF f, of "(x, y)"]
     show ?thesis by(simp add: flow_of_current_def \<Gamma>_def max_def)
@@ -9357,18 +9213,18 @@ next
       from q have "path \<Delta> (snd xy) (map snd q) (snd b)" unfolding xy_def[symmetric]
         by(induction)(auto intro: rtrancl_path.intros simp add: \<Gamma>_def)
       with b have "path \<Delta> y (map snd q) (sink \<Delta>)" by(auto simp add: xy_def \<Gamma>_def)
-      from roofedD[OF y[unfolded cut_of_sep_def] this] have "\<exists>z\<in>set (y # map snd q). z \<in> ?S" 
+      from roofedD[OF y[unfolded cut_of_sep_def] this] have "\<exists>z\<in>set (y # map snd q). z \<in> ?S"
         by(auto intro: roofed_greaterI simp add: cut_of_sep_def)
       from split_list_last_prop[OF this] obtain xs z ys where decomp: "y # map snd q = xs @ z # ys"
         and z: "z \<in> ?S" and last: "\<And>z. z \<in> set ys \<Longrightarrow> z \<notin> ?S" by auto
-      from decomp obtain x' xs' z'' ys' where decomp': "(x', y) # q = xs' @ (z'', z) # ys'" 
+      from decomp obtain x' xs' z'' ys' where decomp': "(x', y) # q = xs' @ (z'', z) # ys'"
         and "xs = map snd xs'" and ys: "ys = map snd ys'" and x': "xs' = [] \<Longrightarrow> x' = x"
         by(fastforce simp add: Cons_eq_append_conv map_eq_append_conv)
       from cut z have z_sink: "z \<noteq> sink \<Delta>" by cases(auto)
       then have "ys' \<noteq> []" using rtrancl_path_last[OF q] decomp' b x' q
         by(auto simp add: Cons_eq_append_conv \<Gamma>_def elim: rtrancl_path.cases)
       then obtain w z''' ys'' where ys': "ys' = (w, z''') # ys''" by(auto simp add: neq_Nil_conv)
-      from q[THEN rtrancl_path_nth, of "length xs'"] decomp' ys' x' have "edge \<Gamma> (z'', z) (w, z''')" 
+      from q[THEN rtrancl_path_nth, of "length xs'"] decomp' ys' x' have "edge \<Gamma> (z'', z) (w, z''')"
         by(auto simp add: Cons_eq_append_conv nth_append)
       hence w: "w = z" and zz''': "edge \<Delta> z z'''" by(auto simp add: \<Gamma>_def)
       from ys' ys last[of z'''] have "z''' \<notin> ?S" by simp
@@ -9382,7 +9238,7 @@ next
       assume "(u, x) \<in> RF\<^sup>\<circ> S"
       hence ux_RF: "(u, x) \<in> RF (\<E> S)" and ux_\<E>: "(u, x) \<notin> \<E> S"
         unfolding RF_essential by(simp_all add: roofed_circ_def)
-      
+
       have "x \<noteq> sink \<Delta>" using p xy by cases(auto simp add: sink_out)
       with p have nNil: "p \<noteq> []" by(auto elim: rtrancl_path.cases)
       with p have "edge \<Delta> x (hd p)" by cases auto
@@ -9401,7 +9257,7 @@ next
         apply(simp add: last_conv_nth nth_tl)
         done
       moreover have "length p - 1 < length (?x # ?p)" by simp
-      ultimately have t: "?t \<in> B \<Gamma>" using rtrancl_path_nth[OF p', of "length p - 1"] 
+      ultimately have t: "?t \<in> B \<Gamma>" using rtrancl_path_nth[OF p', of "length p - 1"]
         by(cases p)(simp_all add: \<Gamma>_def split: if_split_asm)
       from roofedD[OF ux_RF p' t] ux_\<E> consider (X) "(x, hd p) \<in> \<E> S"
         | (z) z z' where "(z, z') \<in> set (zip p (tl p))" "(z, z') \<in> \<E> S" by auto
@@ -9415,7 +9271,7 @@ next
     qed
     ultimately show ?thesis unfolding \<open>v = x\<close> by(rule orthogonal_currentD_in[OF ortho])
   qed
-  then have "d_IN f (x, y) = 0" unfolding d_IN_def using currentD_nonneg[OF f] 
+  then have "d_IN f (x, y) = 0" unfolding d_IN_def
     by(simp add: nn_integral_0_iff emeasure_count_space_eq_0)
   with currentD_OUT_IN[OF f A] show "flow_of_current \<Delta> f (x, y) = 0"
     by(simp add: flow_of_current_def max_def)
@@ -9445,12 +9301,12 @@ interpretation \<Delta>'': countable_network \<Delta>'' by(rule \<Delta>''_count
 lemma d_IN_Edge:
   assumes f: "flow \<Delta>'' f"
   shows "d_IN f (Edge x y) = f (Vertex x, Edge x y)"
-by(subst d_IN_alt_def[OF \<Delta>''.flowD_outside[OF f], of _ \<Delta>''])(simp_all add: IN_Edge nn_integral_count_space_indicator max_def flowD_nonneg[OF f] \<Delta>''.flowD_outside[OF f])
+by(subst d_IN_alt_def[OF \<Delta>''.flowD_outside[OF f], of _ \<Delta>''])(simp_all add: IN_Edge nn_integral_count_space_indicator max_def \<Delta>''.flowD_outside[OF f])
 
 lemma d_OUT_Edge:
   assumes f: "flow \<Delta>'' f"
   shows "d_OUT f (Edge x y) = f (Edge x y, Vertex y)"
-by(subst d_OUT_alt_def[OF \<Delta>''.flowD_outside[OF f], of _ \<Delta>''])(simp_all add: OUT_Edge nn_integral_count_space_indicator max_def flowD_nonneg[OF f] \<Delta>''.flowD_outside[OF f])
+by(subst d_OUT_alt_def[OF \<Delta>''.flowD_outside[OF f], of _ \<Delta>''])(simp_all add: OUT_Edge nn_integral_count_space_indicator max_def \<Delta>''.flowD_outside[OF f])
 
 lemma orthogonal_cut':
   assumes ortho: "orthogonal \<Delta>'' f S"
@@ -9513,14 +9369,13 @@ proof -
     show "\<not> edge ?\<Gamma> x x" for x by(auto simp add: no_loop)
     show "weight ?\<Gamma> x = 0" if "x \<notin> \<^bold>V\<^bsub>?\<Gamma>\<^esub>" for x using that undead
       by(cases x)(auto intro!: capacity_outside)
-    show "0 \<le> weight ?\<Gamma> x" for x using capacity_nonneg[of x] by(cases x) simp
-    show "weight ?\<Gamma> x \<noteq> \<infinity>" for x using capacity_finite[of x] by(cases x) simp
+    show "weight ?\<Gamma> x \<noteq> \<top>" for x using capacity_finite[of x] by(cases x) simp
     show "\<not> edge ?\<Gamma> y x" if "edge ?\<Gamma> x y" for x y using that by(auto simp add: edge_antiparallel)
     have "\<^bold>E\<^bsub>?\<Gamma>\<^esub> \<subseteq> \<^bold>E \<times> \<^bold>E" by auto
     thus "countable \<^bold>E\<^bsub>?\<Gamma>\<^esub>" by(rule countable_subset)(simp)
   qed
-  from web.ex_orthogonal_current obtain f S 
-    where f: "web_flow (web_of_network \<Delta>) f" 
+  from web.ex_orthogonal_current obtain f S
+    where f: "web_flow (web_of_network \<Delta>) f"
     and S: "separating (web_of_network \<Delta>) S"
     and ortho: "orthogonal_current (web_of_network \<Delta>) f S" by blast+
   let ?f = "flow_of_current \<Delta> f" and ?S = "cut_of_sep \<Delta> S"
@@ -9573,7 +9428,7 @@ proof -
     capacity = \<lambda>(x, y). if x = sink \<Delta> \<or> y = source \<Delta> then 0 else capacity \<Delta> (x, y),
     source = source \<Delta>,
     sink = sink \<Delta>\<rparr>"
-  have \<Delta>'_sel [simp]: 
+  have \<Delta>'_sel [simp]:
     "edge \<Delta>' x y \<longleftrightarrow> edge \<Delta> x y \<and> capacity \<Delta> (x, y) > 0 \<and> y \<noteq> source \<Delta> \<and> x \<noteq> sink \<Delta>"
     "capacity \<Delta>' (x, y) = (if x = sink \<Delta> \<or> y = source \<Delta> then 0 else capacity \<Delta> (x, y))"
     "source \<Delta>' = source \<Delta>"
@@ -9585,19 +9440,18 @@ proof -
     have "\<^bold>E\<^bsub>\<Delta>'\<^esub> \<subseteq> \<^bold>E" by auto
     then show "countable \<^bold>E\<^bsub>\<Delta>'\<^esub>" by(rule countable_subset) simp
     show "capacity \<Delta>' e = 0" if "e \<notin> \<^bold>E\<^bsub>\<Delta>'\<^esub>" for e
-      using capacity_outside[of e] that capacity_nonneg[of e] by(auto split: if_split_asm intro: ccontr)
-  qed(auto simp add: capacity_nonneg split: if_split_asm)
+      using capacity_outside[of e] that by(auto split: if_split_asm intro: ccontr)
+  qed(auto simp add: split: if_split_asm)
 
   have "\<exists>f S. flow \<Delta>' f \<and> cut \<Delta>' S \<and> orthogonal \<Delta>' f S" by(rule \<Delta>'.max_flow_min_cut''') auto
   then obtain f S where f: "flow \<Delta>' f" and cut: "cut \<Delta>' S" and ortho: "orthogonal \<Delta>' f S" by blast
   have "flow \<Delta> f"
   proof
-    show "f e \<le> capacity \<Delta> e" for e using flowD_capacity[OF f, of e] flowD_nonneg[OF f, of e]
-      by(cases e)(simp split: if_split_asm add: capacity_nonneg)
+    show "f e \<le> capacity \<Delta> e" for e using flowD_capacity[OF f, of e]
+      by(cases e)(simp split: if_split_asm)
     show "KIR f x" if "x \<noteq> source \<Delta>" "x \<noteq> sink \<Delta>" for x using flowD_KIR[OF f, of x] that by simp
-    show "0 \<le> f e" for e by(rule flowD_nonneg[OF f])
   qed
-  moreover have "cut \<Delta> S" using cut by(simp add: cut.simps) 
+  moreover have "cut \<Delta> S" using cut by(simp add: cut.simps)
   moreover have "orthogonal \<Delta> f S"
   proof
     show "f (x, y) = capacity \<Delta> (x, y)" if edge: "edge \<Delta> x y" and x: "x \<in> S" and y: "y \<notin> S" for x y
@@ -9607,7 +9461,7 @@ proof -
     next
       case False
       from cut y x have xy: "y \<noteq> source \<Delta> \<and> x \<noteq> sink \<Delta>" by(cases) auto
-      with xy edge False have "capacity \<Delta> (x, y) = 0" using capacity_nonneg[of "(x, y)"] by simp
+      with xy edge False have "capacity \<Delta> (x, y) = 0" by simp
       with \<Delta>'.flowD_outside[OF f, of "(x, y)"] False show ?thesis by simp
     qed
 

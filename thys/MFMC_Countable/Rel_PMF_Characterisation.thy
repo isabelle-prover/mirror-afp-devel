@@ -56,8 +56,8 @@ proof -
     "edge' Sink yv \<longleftrightarrow> False"
     "edge' (Left x) Sink \<longleftrightarrow> False"
     for xv yv x y by(simp_all add: edge'_def split: vertex.split)
-  have edge'_cases[cases pred]: thesis if "edge' xv yv" 
-    "\<And>x. \<lbrakk> xv = Source; yv = Left x; x \<in> set_pmf p \<rbrakk> \<Longrightarrow> thesis" 
+  have edge'_cases[cases pred]: thesis if "edge' xv yv"
+    "\<And>x. \<lbrakk> xv = Source; yv = Left x; x \<in> set_pmf p \<rbrakk> \<Longrightarrow> thesis"
     "\<And>x y. \<lbrakk> xv = Left x; yv = Right y; R x y; x \<in> set_pmf p; y \<in> set_pmf q \<rbrakk> \<Longrightarrow> thesis"
     "\<And>y. \<lbrakk> xv = Right y; yv = Sink; y \<in> set_pmf q \<rbrakk> \<Longrightarrow> thesis"
     for thesis xv yv using that by(simp add: edge'_def split: prod.split_asm vertex.split_asm)
@@ -74,16 +74,16 @@ proof -
     and edge'3: "y \<in> set_pmf q \<Longrightarrow> edge' (Right y) Sink"
     for x y by simp_all
   note edge'I[intro] = this
-  
+
   def cap \<equiv> "(\<lambda>(xv, yv). case (xv, yv) of
       (Source, Left x) \<Rightarrow> pmf p x
     | (Left x, Right y) \<Rightarrow> if R x y \<and> x \<in> set_pmf p \<and> y \<in> set_pmf q then 2 else 0
     | (Right y, Sink) \<Rightarrow> pmf q y
     | _ \<Rightarrow> 0) :: ('a, 'b) vertex flow"
   have cap_simps [simp]:
-    "cap (xv, Left x) = (if xv = Source then ereal (pmf p x) else 0)"
+    "cap (xv, Left x) = (if xv = Source then ennreal (pmf p x) else 0)"
     "cap (Left x, Right y) = (if R x y \<and> x \<in> set_pmf p \<and> y \<in> set_pmf q then 2 else 0)"
-    "cap (Right y, yv) = (if yv = Sink then ereal (pmf q y) else 0)"
+    "cap (Right y, yv) = (if yv = Sink then ennreal (pmf q y) else 0)"
     "cap (Source, Right y) = 0"
     "cap (Source, Sink) = 0"
     "cap (xv, Source) = 0"
@@ -110,18 +110,17 @@ proof -
     show "source \<Delta> \<noteq> sink \<Delta>" by simp
     show "capacity \<Delta> e = 0" if "e \<notin> \<^bold>E" for e using that
       by(cases e)(auto simp add: edge'_def pmf_eq_0_set_pmf split: vertex.split_asm)
-    show "0 \<le> capacity \<Delta> e" for e by(auto simp add: cap_def pmf_nonneg split: prod.split vertex.split)
-    show "capacity \<Delta> e \<noteq> \<infinity>" for e by(auto simp add: cap_def split: prod.split vertex.split)
+    show "capacity \<Delta> e \<noteq> top" for e by(auto simp add: cap_def split: prod.split vertex.split)
     have "\<^bold>E \<subseteq> ((Pair Source \<circ> Left) ` set_pmf p) \<union> (map_prod Left Right ` (set_pmf p \<times> set_pmf q)) \<union> ((\<lambda>y. (Right y, Sink)) ` set_pmf q)"
       by(auto elim: edge'_cases)
     thus "countable \<^bold>E" by(rule countable_subset) auto
   qed
-  from network.max_flow_min_cut obtain f S 
+  from network.max_flow_min_cut obtain f S
     where f: "flow \<Delta> f" and cut: "cut \<Delta> S" and ortho: "orthogonal \<Delta> f S" by blast
   from cut obtain Source: "Source \<in> S" and Sink: "Sink \<notin> S" by cases simp
 
-  have f_finite [simp]: "f e \<noteq> \<infinity>" "\<bar>f e\<bar> \<noteq> \<infinity>" "f e \<noteq> - \<infinity>" for e
-    using network.flowD_finite[OF f, of e] flowD_nonneg[OF f, of e] by simp_all
+  have f_finite [simp]: "f e < top" for e
+    using network.flowD_finite[OF f, of e] by (simp_all add: less_top)
 
   have OUT_cap_Source: "d_OUT cap Source = 1"
   proof -
@@ -136,9 +135,9 @@ proof -
   have OUT_cap_Right: "d_OUT cap (Right y) = pmf q y" for y
     by(subst d_OUT_alt_def[of _ \<Delta>])(simp_all add: pmf_eq_0_set_pmf pmf_nonneg nn_integral_count_space_indicator max_def)
   have IN_f_Left: "d_IN f (Left x) = f (Source, Left x)" for x
-    by(subst d_IN_alt_def[of _ \<Delta>])(simp_all add: nn_integral_count_space_indicator max_def network.flowD_outside[OF f] flowD_nonneg[OF f])
+    by(subst d_IN_alt_def[of _ \<Delta>])(simp_all add: nn_integral_count_space_indicator max_def network.flowD_outside[OF f])
   have OUT_f_Right: "d_OUT f (Right y) = f (Right y, Sink)" for y
-    by(subst d_OUT_alt_def[of _ \<Delta>])(simp_all add: nn_integral_count_space_indicator max_def network.flowD_outside[OF f] flowD_nonneg[OF f])
+    by(subst d_OUT_alt_def[of _ \<Delta>])(simp_all add: nn_integral_count_space_indicator max_def network.flowD_outside[OF f])
 
   have S_LR: "Right y \<in> S" if Left: "Left x \<in> S" and edge: "R x y" "x \<in> set_pmf p" "y \<in> set_pmf q" for x y
   proof(rule ccontr)
@@ -150,7 +149,8 @@ proof -
     also have "\<dots> \<le> d_IN cap (Left x)" using flowD_capacity_IN[OF f, of "Left x"] by simp
     also have "\<dots> = pmf p x" by(rule IN_cap_Left)
     also have "\<dots> \<le> 1" by(simp add: pmf_le_1)
-    finally show False by simp
+    finally show False
+      unfolding ennreal_numeral[symmetric] ennreal_1[symmetric] by (subst (asm) ennreal_le_iff) auto
   qed
 
   have "value_flow \<Delta> f \<le> 1" using flowD_capacity_OUT[OF f, of Source] by(simp add: OUT_cap_Source)
@@ -161,16 +161,16 @@ proof -
     have "value_flow \<Delta> f = (\<Sum>\<^sup>+ x\<in>range Left. f (Source, x))" unfolding d_OUT_def
       by(auto simp add: nn_integral_count_space_indicator intro!: nn_integral_cong network.flowD_outside[OF f] split: split_indicator)
     also have "\<dots> = (\<Sum>\<^sup>+ x. f (Source, Left x) * indicator ?L x) + (\<Sum>\<^sup>+ x. f (Source, Left x) * indicator (- ?L) x)"
-      by(subst nn_integral_add[symmetric])(auto simp add: flowD_nonneg[OF f] nn_integral_count_space_reindex intro!: nn_integral_cong split: split_indicator)
+      by(subst nn_integral_add[symmetric])(auto simp add: nn_integral_count_space_reindex intro!: nn_integral_cong split: split_indicator)
     also have "(\<Sum>\<^sup>+ x. f (Source, Left x) * indicator (- ?L) x) = (\<Sum>\<^sup>+ x\<in>- ?L. cap (Source, Left x))"
       using orthogonalD_out[OF ortho _ Source]
-      apply(auto simp add: set_pmf_iff network.flowD_outside[OF f] flowD_nonneg[OF f] nn_integral_count_space_indicator intro!: nn_integral_cong split: split_indicator)
-      subgoal for x by(cases "x \<in> set_pmf p")(auto simp add: set_pmf_iff zero_ereal_def[symmetric] network.flowD_outside[OF f])
+      apply(auto simp add: set_pmf_iff network.flowD_outside[OF f] nn_integral_count_space_indicator intro!: nn_integral_cong split: split_indicator)
+      subgoal for x by(cases "x \<in> set_pmf p")(auto simp add: set_pmf_iff zero_ennreal_def[symmetric] network.flowD_outside[OF f])
       done
     also have "\<dots> = (\<Sum>\<^sup>+ x\<in>- ?L. pmf p x)" by simp
     also have "\<dots> = emeasure (measure_pmf p) (- ?L)" by(simp add: nn_integral_pmf)
     also have "(\<Sum>\<^sup>+ x. f (Source, Left x) * indicator ?L x) = (\<Sum>\<^sup>+ x\<in>?L. d_IN f (Left x))"
-      by(subst d_IN_alt_def[of _ \<Delta>])(auto simp add: network.flowD_outside[OF f] nn_integral_count_space_indicator max_def flowD_nonneg[OF f] intro!: nn_integral_cong)
+      by(subst d_IN_alt_def[of _ \<Delta>])(auto simp add: network.flowD_outside[OF f] nn_integral_count_space_indicator intro!: nn_integral_cong)
     also have "\<dots> = (\<Sum>\<^sup>+ x\<in>?L. d_OUT f (Left x))"
       by(rule nn_integral_cong flowD_KIR[OF f, symmetric])+ simp_all
     also have "\<dots> = (\<Sum>\<^sup>+ x. \<Sum>\<^sup>+ y. f (Left x, y) * indicator (range Right) y * indicator ?L x)"
@@ -221,20 +221,20 @@ proof -
       have finite: "(\<Sum>\<^sup>+ y. f (Source, Left y) * indicator (- {x}) y) \<noteq> \<infinity>"
       proof -
         have "(\<Sum>\<^sup>+ y. f (Source, Left y) * indicator (- {x}) y) \<le> (\<Sum>\<^sup>+ y\<in>range Left. f (Source, y))"
-          by(auto simp add: nn_integral_count_space_reindex flowD_nonneg[OF f] intro!: nn_integral_mono split: split_indicator)
+          by(auto simp add: nn_integral_count_space_reindex intro!: nn_integral_mono split: split_indicator)
         also have "\<dots> = value_flow \<Delta> f"
           by(auto simp add: d_OUT_def nn_integral_count_space_indicator intro!: nn_integral_cong network.flowD_outside[OF f] split: split_indicator)
-        finally show ?thesis using val by auto
+        finally show ?thesis using val by (auto simp: top_unique)
       qed
       have "value_flow \<Delta> f = (\<Sum>\<^sup>+ y\<in>range Left. f (Source, y))"
         by(auto simp add: d_OUT_def nn_integral_count_space_indicator intro!: nn_integral_cong network.flowD_outside[OF f] split: split_indicator)
       also have "\<dots> = (\<Sum>\<^sup>+ y. f (Source, Left y) * indicator (- {x}) y) + (\<Sum>\<^sup>+ y. f (Source, Left y) * indicator {x} y)"
-        by(subst nn_integral_add[symmetric])(auto simp add: nn_integral_count_space_reindex flowD_nonneg[OF f] intro!: nn_integral_cong split: split_indicator)
+        by(subst nn_integral_add[symmetric])(auto simp add: nn_integral_count_space_reindex intro!: nn_integral_cong split: split_indicator)
       also have "\<dots> < (\<Sum>\<^sup>+ y. f (Source, Left y) * indicator (- {x}) y) + (\<Sum>\<^sup>+ y. pmf p y * indicator {x} y)" using * finite
-        by(auto simp add: max_def pmf_nonneg flowD_nonneg[OF f] not_le intro: ereal_less_add)
+        by(auto simp add:)
       also have "\<dots> \<le> (\<Sum>\<^sup>+ y. pmf p y * indicator (- {x}) y) + (\<Sum>\<^sup>+ y. pmf p y * indicator {x} y)"
         using flowD_capacity[OF f, of "(Source, Left _)"]
-        by(auto intro!: ereal_add_mono nn_integral_mono split: split_indicator)
+        by(auto intro!: nn_integral_mono split: split_indicator)
       also have "\<dots> = (\<Sum>\<^sup>+ y. pmf p y)"
         by(subst nn_integral_add[symmetric])(auto simp add: pmf_nonneg intro!: nn_integral_cong split: split_indicator)
       also have "\<dots> = 1" unfolding nn_integral_pmf by simp
@@ -272,20 +272,20 @@ proof -
       have finite: "(\<Sum>\<^sup>+ x. f (Right x, Sink) * indicator (- {y}) x) \<noteq> \<infinity>"
       proof -
         have "(\<Sum>\<^sup>+ x. f (Right x, Sink) * indicator (- {y}) x) \<le> (\<Sum>\<^sup>+ x\<in>range Right. f (x, Sink))"
-          by(auto simp add: nn_integral_count_space_reindex flowD_nonneg[OF f] intro!: nn_integral_mono split: split_indicator)
+          by(auto simp add: nn_integral_count_space_reindex intro!: nn_integral_mono split: split_indicator)
         also have "\<dots> = d_IN f Sink"
           by(auto simp add: d_IN_def nn_integral_count_space_indicator intro!: nn_integral_cong network.flowD_outside[OF f] split: split_indicator)
-        finally show ?thesis using IN_Sink by auto
+        finally show ?thesis using IN_Sink by (auto simp: top_unique)
       qed
       have "d_IN f Sink = (\<Sum>\<^sup>+ x\<in>range Right. f (x, Sink))"
         by(auto simp add: d_IN_def nn_integral_count_space_indicator intro!: nn_integral_cong network.flowD_outside[OF f] split: split_indicator)
       also have "\<dots> = (\<Sum>\<^sup>+ x. f (Right x, Sink) * indicator (- {y}) x) + (\<Sum>\<^sup>+ x. f (Right x, Sink) * indicator {y} x)"
-        by(subst nn_integral_add[symmetric])(auto simp add: nn_integral_count_space_reindex flowD_nonneg[OF f] intro!: nn_integral_cong split: split_indicator)
+        by(subst nn_integral_add[symmetric])(auto simp add: nn_integral_count_space_reindex intro!: nn_integral_cong split: split_indicator)
       also have "\<dots> < (\<Sum>\<^sup>+ x. f (Right x, Sink) * indicator (- {y}) x) + (\<Sum>\<^sup>+ x. pmf q x * indicator {y} x)" using * finite
-        by(auto simp add: max_def pmf_nonneg flowD_nonneg[OF f] not_le intro: ereal_less_add)
+        by auto
       also have "\<dots> \<le> (\<Sum>\<^sup>+ x. pmf q x * indicator (- {y}) x) + (\<Sum>\<^sup>+ x. pmf q x * indicator {y} x)"
         using flowD_capacity[OF f, of "(Right _, Sink)"]
-        by(auto intro!: ereal_add_mono nn_integral_mono split: split_indicator)
+        by(auto intro!: nn_integral_mono split: split_indicator)
       also have "\<dots> = (\<Sum>\<^sup>+ x. pmf q x)"
         by(subst nn_integral_add[symmetric])(auto simp add: pmf_nonneg intro!: nn_integral_cong split: split_indicator)
       also have "\<dots> = 1" unfolding nn_integral_pmf by simp
@@ -293,14 +293,14 @@ proof -
     qed
   qed
 
-  let ?z = "\<lambda>(x, y). real_of_ereal (f (Left x, Right y))"
-  have nonneg: "\<And>xy. 0 \<le> ?z xy" by(clarsimp simp add: flowD_nonneg[OF f] real_of_ereal_pos)
+  let ?z = "\<lambda>(x, y). enn2real (f (Left x, Right y))"
+  have nonneg: "\<And>xy. 0 \<le> ?z xy" by clarsimp
   have prob: "(\<Sum>\<^sup>+ xy. ?z xy) = 1"
   proof -
-    have "(\<Sum>\<^sup>+ xy. ?z xy) = (\<Sum>\<^sup>+ x. \<Sum>\<^sup>+ y. (ereal \<circ> ?z) (x, y))"
+    have "(\<Sum>\<^sup>+ xy. ?z xy) = (\<Sum>\<^sup>+ x. \<Sum>\<^sup>+ y. (ennreal \<circ> ?z) (x, y))"
       unfolding nn_integral_fst_count_space by(simp add: split_def o_def)
     also have "\<dots> = (\<Sum>\<^sup>+ x. (\<Sum>\<^sup>+y\<in>range Right. f (Left x, y)))"
-      by(auto simp add: ereal_real flowD_nonneg[OF f] nn_integral_count_space_reindex intro!: nn_integral_cong)
+      by(auto simp add: nn_integral_count_space_reindex intro!: nn_integral_cong)
     also have "\<dots> = (\<Sum>\<^sup>+ x. d_OUT f (Left x))"
       by(auto simp add: d_OUT_def nn_integral_count_space_indicator split: split_indicator intro!: nn_integral_cong network.flowD_outside[OF f])
     also have "\<dots> = (\<Sum>\<^sup>+ x. d_IN f (Left x))" using flowD_KIR[OF f] by simp
@@ -311,21 +311,21 @@ proof -
   qed
   note z = nonneg prob
   def z \<equiv> "embed_pmf ?z"
-  have z_sel [simp]: "pmf z (x, y) = real_of_ereal (f (Left x, Right y))" for x y
+  have z_sel [simp]: "pmf z (x, y) = enn2real (f (Left x, Right y))" for x y
     by(simp add: z_def pmf_embed_pmf[OF z])
 
   show ?thesis
   proof
     show "R x y" if "(x, y) \<in> set_pmf z" for x y
-      using that network.flowD_outside[OF f, of "(Left x, Right y)"] unfolding set_pmf_iff 
-      by(auto simp add: real_of_ereal_eq_0)
-    
+      using that network.flowD_outside[OF f, of "(Left x, Right y)"] unfolding set_pmf_iff
+      by(auto simp add: enn2real_eq_0_iff)
+
     show "map_pmf fst z = p"
     proof(rule pmf_eqI)
       fix x
       have "pmf (map_pmf fst z) x = (\<Sum>\<^sup>+ e\<in>range (Pair x). pmf z e)"
-        by(auto simp add: ereal_pmf_map nn_integral_measure_pmf nn_integral_count_space_indicator intro!: nn_integral_cong split: split_indicator)
-      also have "\<dots> = (\<Sum>\<^sup>+ y\<in>range Right. f (Left x, y))" by(simp add: nn_integral_count_space_reindex ereal_real)
+        by(auto simp add: ennreal_pmf_map nn_integral_measure_pmf nn_integral_count_space_indicator intro!: nn_integral_cong split: split_indicator)
+      also have "\<dots> = (\<Sum>\<^sup>+ y\<in>range Right. f (Left x, y))" by(simp add: nn_integral_count_space_reindex)
       also have "\<dots> = d_OUT f (Left x)"
         by(auto simp add: d_OUT_def nn_integral_count_space_indicator intro!: nn_integral_cong network.flowD_outside[OF f] split: split_indicator)
       also have "\<dots> = d_IN f (Left x)" by(rule flowD_KIR[OF f]) simp_all
@@ -338,8 +338,8 @@ proof -
     proof(rule pmf_eqI)
       fix y
       have "pmf (map_pmf snd z) y = (\<Sum>\<^sup>+ e\<in>range (\<lambda>x. (x, y)). pmf z e)"
-        by(auto simp add: ereal_pmf_map nn_integral_measure_pmf nn_integral_count_space_indicator intro!: nn_integral_cong split: split_indicator)
-      also have "\<dots> = (\<Sum>\<^sup>+ x\<in>range Left. f (x, Right y))" by(simp add: nn_integral_count_space_reindex ereal_real)
+        by(auto simp add: ennreal_pmf_map nn_integral_measure_pmf nn_integral_count_space_indicator intro!: nn_integral_cong split: split_indicator)
+      also have "\<dots> = (\<Sum>\<^sup>+ x\<in>range Left. f (x, Right y))" by(simp add: nn_integral_count_space_reindex)
       also have "\<dots> = d_IN f (Right y)"
         by(auto simp add: d_IN_def nn_integral_count_space_indicator intro!: nn_integral_cong network.flowD_outside[OF f] split: split_indicator)
       also have "\<dots> = d_OUT f (Right y)" by(simp add: flowD_KIR[OF f])
@@ -353,7 +353,7 @@ qed
 end
 
 corollary rel_pmf_distr_mono: "rel_pmf R OO rel_pmf S \<le> rel_pmf (R OO S)"
--- \<open>This fact has already been proven for the registration of @{typ "'a pmf"} as a BNF, 
+-- \<open>This fact has already been proven for the registration of @{typ "'a pmf"} as a BNF,
   but this proof is much shorter and more elegant. See @{cite HoelzlLochbihlerTraytel2015ITP} for a
   comparison of formalisations.\<close>
 proof(intro le_funI le_boolI rel_pmf_measureI, elim relcomppE)
