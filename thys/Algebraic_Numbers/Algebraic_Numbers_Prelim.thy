@@ -126,6 +126,7 @@ lemma factors_of_rat_poly:
     (mode = Check_Root_Free \<longrightarrow> root_free q) "
   "p \<noteq> 0 \<Longrightarrow> rp p x = 0 \<longleftrightarrow> (\<exists> q \<in> set qs. rp q x = 0)"
   "p \<noteq> 0 \<Longrightarrow> rp p x = 0 \<Longrightarrow> \<exists>! q \<in> set qs. rp q x = 0"
+  "distinct qs"
 proof -
   obtain c qis where factt: "factorize_sf_rat_poly mode p = (c,qis)" by force
   from assms[unfolded factors_of_rat_poly_def factt] have qs: "qs = map fst qis" by auto
@@ -147,7 +148,10 @@ proof -
     show "monic q \<and> square_free q \<and> degree q \<noteq> 0 \<and> degree q \<le> degree p \<and> 
       (mode \<in> {Full_Factorization, Check_Irreducible} \<longrightarrow> irreducible q) \<and> 
       (mode = Check_Root_Free \<longrightarrow> root_free q)" by auto
-  }
+  } note * = this
+  from sff'(2) have "square_free (listprod qs)" unfolding qs by auto  
+  thus "distinct qs" 
+    by (rule square_free_listprod_distinct, insert *, auto)
   assume p: "p \<noteq> 0"
   from fact(1) p have c: "c \<noteq> 0" using sff(1) by auto
   let ?r = "of_rat :: rat \<Rightarrow> 'a"

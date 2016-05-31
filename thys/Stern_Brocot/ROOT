@@ -5,6 +5,7 @@ session Stern_Brocot (AFP) = Applicative_Lifting +
   theories [document=false]
     "../Applicative/Applicative_Stream"
     "~~/src/HOL/Library/Sublist"
+    "~~/src/HOL/Library/BNF_Corec"
   theories
     Bird_Tree
   document_files

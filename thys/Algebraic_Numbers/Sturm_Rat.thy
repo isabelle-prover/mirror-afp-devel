@@ -110,12 +110,12 @@ proof -
   qed
 qed
 
-lemma count_roots_interval_rat: assumes p: "p \<noteq> 0" 
-  and sf: "square_free p"
+lemma count_roots_interval_rat: assumes sf: "square_free p"
   shows "root_info_cond (count_roots_interval_rat p) p"
 proof -
   have sf: "square_free (real_of_rat_poly p)"
     by (subst inj_field_hom_0.square_free_map_poly, unfold_locales, rule sf)
+  from sf have p: "p \<noteq> 0" unfolding square_free_def by auto
   show ?thesis
   using count_roots_interval_sf_rat[OF p]
   unfolding count_roots_interval_rat_def count_roots_interval_sf_rat_def 
