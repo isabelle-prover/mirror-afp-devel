@@ -160,7 +160,7 @@ fun permutations eq xs =
   end
 
 fun probability (lott1 : lottery) xs =
-  lott1 |> filter (member op aconv xs o fst) |> (fn xs => fold (fn x => fn y => snd x +/ y) xs Rat.zero)
+  lott1 |> filter (member op aconv xs o fst) |> (fn xs => fold (fn x => fn y => snd x + y) xs Rat.zero)
 
 fun uniform_lottery xs = 
   let
@@ -175,9 +175,9 @@ fun stochastic_dominance p (lott1, lott2) =
       | go _ [_] = true
       | go (prob1 : Rat.rat, prob2 : Rat.rat) (xs::xss) = 
           let 
-            val (prob1, prob2) = (prob1 +/ probability lott1 xs, prob2 +/ probability lott2 xs)
+            val (prob1, prob2) = (prob1 + probability lott1 xs, prob2 + probability lott2 xs)
           in  
-            prob1 <=/ prob2 andalso go (prob1, prob2) xss
+            prob1 <= prob2 andalso go (prob1, prob2) xss
           end
   in
     go (Rat.zero, Rat.zero) p
@@ -379,7 +379,7 @@ fun find_inefficiency_witness p lottery =
         val get_val = the_default Rat.zero o AList.lookup op= assignments
         val i =
           slack_vars 
-          |> find_first (snd #> exists (fn x => get_val x >/ Rat.zero)) 
+          |> find_first (snd #> exists (fn x => get_val x > Rat.zero)) 
           |> Option.map fst
       in 
         if diff = Rat.zero then 
