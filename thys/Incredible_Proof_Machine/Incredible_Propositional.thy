@@ -1,7 +1,6 @@
 theory Incredible_Propositional imports
   Abstract_Rules_To_Incredible
   Propositional_Formulas
-  Stream_Ext
 begin
 
 text \<open>Our concrete interpretation with propositional logic will cover conjunction and implication
