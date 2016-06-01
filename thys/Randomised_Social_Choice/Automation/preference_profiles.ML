@@ -340,7 +340,7 @@ in
 fun lp_constr_to_qsopt_constr n (lhs, slack, rhs) =
   let
     val n = Rat.of_int n
-    val lhs' = (Rat.of_int (~1), slack) :: map (fn x => (n, x)) lhs
+    val lhs' = (@~1, slack) :: map (fn x => (n, x)) lhs
   in
     (lhs', EQ, Rat.of_int rhs)
   end
