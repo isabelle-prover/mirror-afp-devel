@@ -374,7 +374,7 @@ notify = adbrucker@0x5f.org wolff@lri.fr lukas.a.bruegger@gmail.com
 title = Loop freedom of the (untimed) AODV routing protocol
 author = Timothy Bourke <http://www.tbrk.org/>, Peter Höfner <http://www.hoefner-online.de/>
 date = 2014-10-23
-topic = Computer Science/Process Calculi
+topic = Computer Science/Concurrency/Process Calculi
 abstract =
 	<p>
 	The Ad hoc On-demand Distance Vector (AODV) routing protocol allows
@@ -521,7 +521,7 @@ notify =
 title = Mechanization of the Algebra for Wireless Networks (AWN)
 author = Timothy Bourke <http://www.tbrk.org>
 date = 2014-03-08
-topic = Computer Science/Process Calculi
+topic = Computer Science/Concurrency/Process Calculi
 abstract =
 	<p>
 	AWN is a process algebra developed for modelling and analysing
@@ -643,7 +643,7 @@ notify =
 title = CCS in nominal logic
 author = Jesper Bengtson <http://www.itu.dk/people/jebe>
 date = 2012-05-29
-topic = Computer Science/Process Calculi
+topic = Computer Science/Concurrency/Process Calculi
 abstract = We formalise a large portion of CCS as described in Milner's book 'Communication and Concurrency' using the nominal datatype package in Isabelle. Our results include many of the standard theorems of bisimulation equivalence and congruence, for both weak and strong versions. One main goal of this formalisation is to keep the machine-checked proofs as close to their pen-and-paper counterpart as possible.
 	<p>
 	This entry is described in detail in <a href="http://www.itu.dk/people/jebe/files/thesis.pdf">Bengtson's thesis</a>.
@@ -653,7 +653,7 @@ notify =
 title = The pi-calculus in nominal logic
 author = Jesper Bengtson <http://www.itu.dk/people/jebe>
 date = 2012-05-29
-topic = Computer Science/Process Calculi
+topic = Computer Science/Concurrency/Process Calculi
 abstract = We formalise the pi-calculus using the nominal datatype package, based on ideas from the nominal logic by Pitts et al., and demonstrate an implementation in Isabelle/HOL. The purpose is to derive powerful induction rules for the semantics in order to conduct machine checkable proofs, closely following the intuitive arguments found in manual proofs. In this way we have covered many of the standard theorems of bisimulation equivalence and congruence, both late and early, and both strong and weak in a uniform manner. We thus provide one of the most extensive formalisations of a the pi-calculus ever done inside a theorem prover.
 	<p>
 	A significant gain in our formulation is that agents are identified up to alpha-equivalence, thereby greatly reducing the arguments about bound names. This is a normal strategy for manual proofs about the pi-calculus, but that kind of hand waving has previously been difficult to incorporate smoothly in an interactive theorem prover. We show how the nominal logic formalism and its support in Isabelle accomplishes this and thus significantly reduces the tedium of conducting completely formal proofs. This improves on previous work using weak higher order abstract syntax since we do not need extra assumptions to filter out exotic terms and can keep all arguments within a familiar first-order logic.
@@ -665,7 +665,7 @@ notify =
 title = Psi-calculi in Isabelle
 author = Jesper Bengtson <http://www.itu.dk/people/jebe>
 date = 2012-05-29
-topic = Computer Science/Process Calculi
+topic = Computer Science/Concurrency/Process Calculi
 abstract = Psi-calculi are extensions of the pi-calculus, accommodating arbitrary nominal datatypes to represent not only data but also communication channels, assertions and conditions, giving it an expressive power beyond the applied pi-calculus and the concurrent constraint pi-calculus.
 	<p>
 	We have formalised psi-calculi in the interactive theorem prover Isabelle using its nominal datatype package. One distinctive feature is that the framework needs to treat binding sequences, as opposed to single binders, in an efficient way. While different methods for formalising single binder calculi have been proposed over the last decades, representations for such binding sequences are not very well explored.
@@ -679,7 +679,7 @@ notify =
 title = Analysing and Comparing Encodability Criteria for Process Calculi
 author = Kirstin Peters <mailto:kirstin.peters@tu-berlin.de>, Rob van Glabbeek <http://theory.stanford.edu/~rvg/>
 date = 2015-08-10
-topic = Computer Science/Process Calculi
+topic = Computer Science/Concurrency/Process Calculi
 abstract = Encodings or the proof of their absence are the main way to
 	compare process calculi. To analyse the quality of encodings and to rule out
 	trivial or meaningless encodings, they are augmented with quality
@@ -704,7 +704,7 @@ title = Isabelle/Circus
 author = Abderrahmane Feliachi <mailto:abderrahmane.feliachi@lri.fr>, Burkhart Wolff <mailto:wolff@lri.fr>, Marie-Claude Gaudel <mailto:mcg@lri.fr>
 contributors = Makarius Wenzel <mailto:Makarius.wenzel@lri.fr>
 date = 2012-05-27
-topic = Computer Science/Process Calculi, Computer Science/System Description Languages
+topic = Computer Science/Concurrency/Process Calculi, Computer Science/System Description Languages
 abstract = The Circus specification language combines elements for complex data and behavior specifications, using an integration of Z and CSP with a refinement calculus. Its semantics is based on Hoare and He's Unifying Theories of Programming (UTP). Isabelle/Circus is a formalization of the UTP and the Circus language in Isabelle/HOL. It contains proof rules and tactic support that allows for proofs of refinement for Circus processes (involving both data and behavioral aspects).
 	<p>
 	The Isabelle/Circus environment supports a syntax for the semantic definitions which is close to textbook presentations of Circus. This article contains an extended version of corresponding VSTTE Paper together with the complete formal development of its underlying commented theories.
@@ -4088,7 +4088,7 @@ notify = eberlm@in.tum.de
 title = A Constructive Proof for FLP
 author = Benjamin Bisping <mailto:benjamin.bisping@campus.tu-berlin.de>,  Paul-David Brodmann <mailto:p.brodmann@tu-berlin.de>,  Tim Jungnickel <mailto:tim.jungnickel@tu-berlin.de>,  Christina Rickmann <mailto:c.rickmann@tu-berlin.de>,  Henning Seidler <mailto:henning.seidler@mailbox.tu-berlin.de>,  Anke Stüber <mailto:anke.stueber@campus.tu-berlin.de>, Arno Wilhelm-Weidner <mailto:arno.wilhelm-weidner@tu-berlin.de>,  Kirstin Peters <mailto:kirstin.peters@tu-berlin.de>,  Uwe Nestmann <https://www.mtv.tu-berlin.de/nestmann/>
 date = 2016-05-18
-topic = Computer Science
+topic = Computer Science/Concurrency
 abstract =
   The impossibility of distributed consensus with one faulty process is
   a result with important consequences for real world distributed
