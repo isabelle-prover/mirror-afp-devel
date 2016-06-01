@@ -1,6 +1,7 @@
 (*  
     Author:      René Thiemann 
                  Akihisa Yamada
+                 Jose Divason
     License:     BSD
 *)
 section \<open>Missing Polynomial\<close>
@@ -10,7 +11,7 @@ text \<open>The theory contains some basic results on polynomials which have not
 
 theory Missing_Polynomial
 imports 
-  "~~/src/HOL/Library/Polynomial"
+  "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
   Missing_Unsorted
 begin
 
@@ -946,6 +947,44 @@ qed
 
 lemma order_listprod: "(\<And> p. p \<in> set ps \<Longrightarrow> p \<noteq> 0) \<Longrightarrow> order x (listprod ps) = listsum (map (order x) ps)"
   by (induct ps, auto, subst order_mult, auto simp: listprod_zero_iff)
+
+lemma irreducible_dvd_eq:
+assumes "irreducible a"
+and "irreducible b"
+and "a dvd b"
+and "monic a" and "monic b" 
+shows "a = b"
+  using assms
+  by (metis (no_types, lifting) coeff_smult degree_smult_eq irreducibleD(1) irreducible_dvd_smult 
+    mult.right_neutral smult_1_left)
+
+lemma monic_gcd:
+  assumes "a \<noteq> 0 \<or> b \<noteq>0"
+  shows "monic (gcd a b)"
+  by (metis assms lead_coeff_def poly_gcd_monic)
+
+lemma monic_irreducible_gcd: "monic f \<Longrightarrow> irreducible f \<Longrightarrow> gcd f u \<in> {1,f}"
+  by (metis zero_neq_one gcd_dvd1 insert_iff irreducible_dvd_eq irreducible_dvd_smult 
+    irreducible_smult leading_coeff_0_iff monic_degree_0 monic_gcd)
+
+lemma monic_gcd_dvd: assumes fg: "f dvd g" and mon: "monic f" and gcd: "gcd g h \<in> {1,g}"
+  shows "gcd f h \<in> {1,f}"
+proof (cases "gcd g h = 1")
+  case True
+  with fg show ?thesis by (metis coprime_divisors dvd_refl insertCI)
+next
+  case False
+  with gcd have gcd: "gcd g h = g" by auto
+  with fg mon show ?thesis
+    by (metis dvd_gcdD2 gcd_proj1_iff insertI2 insert_absorb2 insert_eq_iff 
+      insert_not_empty normalize_monic)
+qed
+
+lemma monom_power: "(monom a b)^n = monom (a^n) (b*n)" 
+  by (induct n, auto simp add: mult_monom)
+
+lemma poly_const_pow: "[:a:]^b = [:a^b:]"
+  by (metis Groups.mult_ac(2) monom_0 monom_power mult_zero_right)
 
 
 end

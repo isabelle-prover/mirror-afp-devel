@@ -146,7 +146,6 @@ proof (cases "q * r = 0")
     THEN conjunct2, rule_format, OF q r] dvd show ?thesis
     using p q r by (simp add: factorid_carrier)
 qed auto
-
 end
 
 lemma dvd_gcd_mult: fixes p :: "'a :: field poly"
@@ -257,12 +256,77 @@ proof (cases "p = 0")
   qed
 qed auto
 
+lemma poly_gcd_monic_factor:
+  "monic p \<Longrightarrow>  gcd (p * q) (p * r) = p * gcd q r"
+  by (rule gcdI [symmetric]) (simp_all add: normalize_mult normalize_monic dvd_gcd_mult)
+
+
 hide_const (open) Divisibility.irreducible
 hide_fact (open) Divisibility.irreducibleI
 hide_fact (open) Divisibility.irreducibleD
 hide_fact (open) Divisibility.irreducible_def
 
-hide_const irreducible
-hide_fact irreducible_def
+hide_const (open) irreducible
+
+context
+  assumes "SORT_CONSTRAINT('a :: field)"
+begin
+
+lemma irreducible_dvd_pow: fixes p :: "'a poly" 
+  assumes irr: "irreducible p"
+  shows "p dvd q ^ Suc n \<Longrightarrow> p dvd q"
+proof (induct n)
+  case (Suc n)
+  have "q ^ Suc (Suc n) = q * q ^ Suc n" by simp
+  from irreducible_dvd_mult[OF irr Suc(2)[unfolded this]] Suc(1)
+  show ?case by auto
+qed simp
+
+lemma irreducible_dvd_setprod: fixes p :: "'a poly"
+  assumes irr: "irreducible p"
+  and dvd: "p dvd setprod f as"
+  shows "\<exists> a \<in> as. p dvd f a"
+proof -
+  from irr[unfolded irreducible_def] have deg: "degree p \<noteq> 0" by auto
+  hence p1: "\<not> p dvd 1" unfolding dvd_def
+    by (metis degree_1 div_mult_self1_is_id div_poly_less linorder_neqE_nat mult_not_zero not_less0 zero_neq_one)
+  from dvd show ?thesis
+  proof (induct as rule: infinite_finite_induct)
+    case (insert a as)
+    hence "setprod f (insert a as) = f a * setprod f as" by auto
+    from irreducible_dvd_mult[OF irr insert(4)[unfolded this]]
+    show ?case using insert(3) by auto
+  qed (insert p1, auto)
+qed
+
+lemma irreducible_dvd_listprod: fixes p :: "'a poly"
+  assumes irr: "irreducible p"
+  and dvd: "p dvd listprod as"
+  shows "\<exists> a \<in> set as. p dvd a"
+proof -
+  from irr[unfolded irreducible_def] have deg: "degree p \<noteq> 0" by auto
+  hence p1: "\<not> p dvd 1" unfolding dvd_def
+    by (metis degree_1 div_mult_self1_is_id div_poly_less linorder_neqE_nat mult_not_zero not_less0 zero_neq_one)
+  from dvd show ?thesis
+  proof (induct as)
+    case (Cons a as)
+    hence "listprod (Cons a as) = a * listprod as" by auto
+    from irreducible_dvd_mult[OF irr Cons(2)[unfolded this]] Cons(1)
+    show ?case by auto
+  qed (insert p1, auto)
+qed
+
+
+lemma dvd_mult: fixes p :: "'a poly" 
+  assumes "p dvd q * r"
+  and "degree p \<noteq> 0" 
+shows "\<exists> s t. irreducible s \<and> p = s * t \<and> (s dvd q \<or> s dvd r)"
+proof -
+  from irreducible_factor[OF assms(2)] obtain s t
+  where irred: "irreducible s" and p: "p = s * t" by auto
+  from `p dvd q * r` p have s: "s dvd q * r" unfolding dvd_def by auto
+  from irreducible_dvd_mult[OF irred s] p irred show ?thesis by auto
+qed  
+end
 
 end

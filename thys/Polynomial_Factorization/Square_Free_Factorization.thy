@@ -108,6 +108,27 @@ proof (intro conjI allI)
   qed
 qed (insert f, auto simp: square_free_def)
 
+lemma square_free_setprodD: assumes sf: "square_free (\<Prod> fs)"
+  and fin: "finite fs"
+  and f: "f \<in> fs"
+  and g: "g \<in> fs"
+  and fg: "f \<noteq> g"
+  shows "coprime f g"
+proof -
+  have "(\<Prod> fs) = f * (\<Prod> (fs - {f}))"
+    by (rule setprod.remove[OF fin f])
+  also have "(\<Prod> (fs - {f})) = g * (\<Prod> (fs - {f} - {g}))"
+    by (rule setprod.remove, insert fin g fg, auto)
+  finally obtain k where sf: "square_free (f * g * k)" using sf by (simp add: ac_simps)
+  from sf[unfolded square_free_def] have 0: "f \<noteq> 0" "g \<noteq> 0" 
+    and dvd: "\<And> q. q * q dvd f * g * k \<Longrightarrow> degree q = 0"
+    by auto
+  have "gcd f g * gcd f g dvd f * g * k" by (simp add: mult_dvd_mono)
+  from dvd[OF this] have "degree (gcd f g) = 0" . 
+  moreover have "gcd f g \<noteq> 0" using 0 by auto
+  ultimately show "coprime f g" using is_unit_gcd is_unit_iff_degree by blast
+qed
+
 lemma rsquarefree_square_free_complex: assumes "rsquarefree (p :: complex poly)"
   shows "square_free p"
 proof (rule square_freeI)
@@ -196,69 +217,6 @@ proof -
   show ?thesis unfolding sff(1) 
     by (simp add: setprod.distinct_set_conv_list[OF sff(5)])
 qed
-
-(* TODO: move *)
-lemma irreducible_dvd_pow: fixes p :: "'a poly" 
-  assumes irr: "irreducible p"
-  shows "p dvd q ^ Suc n \<Longrightarrow> p dvd q"
-proof (induct n)
-  case (Suc n)
-  have "q ^ Suc (Suc n) = q * q ^ Suc n" by simp
-  from irreducible_dvd_mult[OF irr Suc(2)[unfolded this]] Suc(1)
-  show ?case by auto
-qed simp
-
-(* TODO: move *)
-lemma irreducible_dvd_setprod: fixes p :: "'a poly"
-  assumes irr: "irreducible p"
-  and dvd: "p dvd setprod f as"
-  shows "\<exists> a \<in> as. p dvd f a"
-proof -
-  from irr[unfolded irreducible_def] have deg: "degree p \<noteq> 0" by auto
-  hence p1: "\<not> p dvd 1" unfolding dvd_def
-    by (metis degree_1 div_mult_self1_is_id div_poly_less linorder_neqE_nat mult_not_zero not_less0 zero_neq_one)
-  from dvd show ?thesis
-  proof (induct as rule: infinite_finite_induct)
-    case (insert a as)
-    hence "setprod f (insert a as) = f a * setprod f as" by auto
-    from irreducible_dvd_mult[OF irr insert(4)[unfolded this]]
-    show ?case using insert(3) by auto
-  qed (insert p1, auto)
-qed
-
-(* TODO: move *)
-lemma irreducible_dvd_listprod: fixes p :: "'a poly"
-  assumes irr: "irreducible p"
-  and dvd: "p dvd listprod as"
-  shows "\<exists> a \<in> set as. p dvd a"
-proof -
-  from irr[unfolded irreducible_def] have deg: "degree p \<noteq> 0" by auto
-  hence p1: "\<not> p dvd 1" unfolding dvd_def
-    by (metis degree_1 div_mult_self1_is_id div_poly_less linorder_neqE_nat mult_not_zero not_less0 zero_neq_one)
-  from dvd show ?thesis
-  proof (induct as)
-    case (Cons a as)
-    hence "listprod (Cons a as) = a * listprod as" by auto
-    from irreducible_dvd_mult[OF irr Cons(2)[unfolded this]] Cons(1)
-    show ?case by auto
-  qed (insert p1, auto)
-qed
-
-
-lemma dvd_mult: fixes p :: "'a poly" 
-  assumes "p dvd q * r"
-  and "degree p \<noteq> 0" 
-shows "\<exists> s t. irreducible s \<and> p = s * t \<and> (s dvd q \<or> s dvd r)"
-proof -
-  from irreducible_factor[OF assms(2)] obtain s t
-  where irred: "irreducible s" and p: "p = s * t" by auto
-  from `p dvd q * r` p have s: "s dvd q * r" unfolding dvd_def by auto
-  from irreducible_dvd_mult[OF irred s] p irred show ?thesis by auto
-qed  
-
-lemma poly_gcd_monic_factor:
-  "monic p \<Longrightarrow>  gcd (p * q) (p * r) = p * gcd q r"
-  by (rule gcdI [symmetric]) (simp_all add: normalize_mult normalize_monic dvd_gcd_mult)
 end
 
 subsection \<open>Yun's factorization algorithm\<close>
@@ -1273,7 +1231,7 @@ lemma square_free_factorization_factorI:
   shows "square_free_factorization p (c, bs1 @ ((r,i) # (s,i) # bs2))"
   using square_free_factorization_listprodI[of p c bs1 "[r,s]" i bs2] sff r s a by auto
   
-lemma monic_square_free_factorization: assumes mon: "monic (f :: 'a :: field poly)" 
+lemma monic_square_free_irreducible_factorization: assumes mon: "monic (f :: 'a :: field poly)" 
   and sf: "square_free f"
   shows "\<exists> P. finite P \<and> f = \<Prod>P \<and> P \<subseteq> {q. irreducible q \<and> monic q}"
 proof -
@@ -1294,6 +1252,41 @@ proof -
     by (rule setprod.cong[OF refl], insert *, auto)
   with P show ?thesis by auto
 qed
+
+lemma monic_factorization_uniqueness:
+fixes P::"'a::field poly set"
+assumes finite_P: "finite P" 
+  and PQ: "\<Prod>P = \<Prod>Q" 
+  and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
+and finite_Q: "finite Q" 
+  and Q: "Q \<subseteq> {q. irreducible q \<and> monic q}"
+shows "P = Q" 
+proof (rule; rule subsetI)
+  fix x assume x: "x \<in> P"
+  have irr_x: "irreducible x" using x P by auto
+  have "\<exists>a\<in>Q. x dvd id a"
+  proof (rule irreducible_dvd_setprod)
+    show "irreducible x" using x P by auto
+    show "x dvd setprod id Q" using PQ x 
+      by (metis dvd_refl dvd_setprod finite_P id_apply setprod.cong)
+  qed
+  from this obtain a where a: "a\<in>Q" and x_dvd_a: "x dvd a" unfolding id_def by blast
+  have "x=a" using x P a Q irreducible_dvd_eq[OF irr_x _ x_dvd_a] by fast
+  thus "x \<in> Q" using a by simp
+next
+  fix x assume x: "x \<in> Q"
+  have irr_x: "irreducible x" using x Q by auto
+  have "\<exists>a\<in>P. x dvd id a"
+  proof (rule irreducible_dvd_setprod)
+    show "irreducible x" using x Q by auto
+    show "x dvd setprod id P" using PQ x 
+      by (metis dvd_refl dvd_setprod finite_Q id_apply setprod.cong)
+  qed
+  from this obtain a where a: "a\<in>P" and x_dvd_a: "x dvd a" unfolding id_def by blast
+  have "x=a" using x P a Q irreducible_dvd_eq[OF irr_x _ x_dvd_a] by fast
+  thus "x \<in> P" using a by simp
+qed
+
 
 subsection \<open>Yun factorization and homomorphisms\<close>
 lemma (in inj_field_hom_0) yun_factorization_main_hom:

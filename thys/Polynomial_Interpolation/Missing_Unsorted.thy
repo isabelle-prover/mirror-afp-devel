@@ -1,6 +1,7 @@
 (*  
     Author:      René Thiemann 
                  Akihisa Yamada
+                 Jose Divason
     License:     BSD
 *)
 section \<open>Missing Unsorted\<close>
@@ -461,6 +462,28 @@ proof -
   from assms[unfolded in_set_conv_decomp] obtain ys zs where xs: "xs = ys @ x # zs" by auto
   show ?thesis unfolding xs dvd_def by (intro exI[of _ "listprod (ys @ zs)"], simp add: ac_simps)
 qed
+
+lemma dvd_setprod: 
+fixes A::"'b set" 
+assumes "\<exists>b\<in>A. a dvd f b" "finite A"
+shows "a dvd setprod f A" 
+using assms(2,1)
+proof (induct A)
+  case (insert x A)
+  thus ?case 
+    using comm_monoid_mult_class.dvd_mult dvd_mult2 insert_iff setprod.insert by auto
+qed auto
+
+context
+  fixes xs :: "'a :: comm_monoid_mult list"
+begin
+lemma listprod_filter: "listprod (filter f xs) * listprod (filter (\<lambda> x. \<not> f x) xs) = listprod xs"
+  by (induct xs, auto simp: ac_simps)
+
+lemma listprod_partition: assumes "partition f xs = (ys, zs)"
+  shows "listprod xs = listprod ys * listprod zs"
+  using assms by (subst listprod_filter[symmetric, of f], auto simp: o_def)
+end
 
 
 end
