@@ -1,7 +1,6 @@
 theory Incredible_Predicate imports
   Abstract_Rules_To_Incredible
   Predicate_Formulas
-  Stream_Ext
 begin
 
 text \<open>Our example interpretation with predicate logic will cover implication and the

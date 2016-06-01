@@ -75,14 +75,14 @@ This formalization covers the following aspects:
 \begin{itemize}
 \item We formalize the definition of port graphs, proof graphs and the conditions for such a proof
       graph to be a valid graph (theory \isa{Incredible_Deduction}).
-\item We provide a formal description of natural deduction (theory \isa{Natural_Deduction}), 
+\item We provide a formal description of natural deduction (theory \isa{Natural_Deduction}),
       which connects to the existing theories in the AFP entry “Abstract
       Completeness” \cite{Abstract_Completeness-AFP}.
 \item For every proof graph, we construct a corresponding natural deduction derivation tree
       (theory  \isa{Incredible_Correctness}).
 \item Conversely, if we have a natural deduction derivation tree, we can construct a proof graph
       thereof (theory \isa{Incredible_Completeness}).
-      
+
       This is the much harder direction, mostly because the freshness side condition for locally
       fixed constants (such as in the introduction rule for the universal quantifier) is a local
       check in natural deduction, but a global check in proofs graphs, and thus some elaborate
@@ -111,7 +111,6 @@ We would like to thank Andreas Lochbihler for helpful comments.
 \theory{Entailment}
 \theory{Indexed\string_FSet}
 \theory{Rose\string_Tree}
-\theory{Stream\string_Ext}
 
 \clearpage
 \section{Abstract formulas, rules and tasks}
