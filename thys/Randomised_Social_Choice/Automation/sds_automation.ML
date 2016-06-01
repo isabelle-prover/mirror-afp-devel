@@ -301,7 +301,7 @@ val derive_ex_post_conditions_cmd =
   gen_derive_support_conditions_cmd [prepare_find_ex_post_conditions]
 
 fun pretty_rat r =
-  case Rat.quotient_of_rat r of
+  case Rat.dest r of
     (x, 1) => Pretty.str (Int.toString x)
   | (x, y) => Pretty.strs [Int.toString x, "/", Int.toString y]
 
@@ -374,7 +374,7 @@ val _ =
 
 
 val parse_rat =
-  (Parse.int -- Scan.optional (Args.$$$ "/" |-- Parse.int) 1) >> Rat.rat_of_quotient
+  (Parse.int -- Scan.optional (Args.$$$ "/" |-- Parse.int) 1) >> Rat.make
 
 val parse_support = Args.bracks (Parse.list1 Parse.term)
 

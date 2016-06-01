@@ -19,12 +19,12 @@ structure Rat_Utils : RAT_UTILS =
 struct
 
 fun rat_to_string r =
-  case Rat.quotient_of_rat r of
+  case Rat.dest r of
     (a, 1) => Int.toString a
   | (a, b) => (if a < 0 then "~ " else "") ^ Int.toString (abs a) ^ " / " ^ Int.toString b
 
 fun pretty_rat r =
-  case Rat.quotient_of_rat r of
+  case Rat.dest r of
     (a, 1) => (if a < 0 then "-" else "") ^ Int.toString a
   | (a, b) => (if a < 0 then "- " else "") ^ Int.toString (abs a) ^ " / " ^ Int.toString b
 
@@ -34,9 +34,9 @@ fun string_to_rat s =
     val (s1, s2) = (s1, s2') |> apsnd (Substring.triml 1) |> apply2 Substring.string
   in
     if Substring.isEmpty s2' then
-      Option.map Rat.rat_of_int (Int.fromString s1)
+      Option.map Rat.of_int (Int.fromString s1)
     else
-      Option.mapPartial (fn x => Option.map (fn y => Rat.rat_of_quotient (x, y)) 
+      Option.mapPartial (fn x => Option.map (fn y => Rat.make (x, y)) 
         (Int.fromString s2)) (Int.fromString s1)
   end
 
@@ -48,16 +48,16 @@ fun dest_num x =
 fun dest_rat_number t =
   case t of 
     (Const (@{const_name "Rings.divide_class.divide"},_)) $ a $ b
-      => Rat.rat_of_quotient (snd (dest_num a), snd (dest_num b))
+      => Rat.make (snd (dest_num a), snd (dest_num b))
   | (Const (@{const_name "Groups.uminus_class.uminus"},_)) $ a 
-      => Rat.neg (dest_rat_number a)
+      => ~ (dest_rat_number a)
   | (Const (@{const_name "Rat.field_char_0_class.of_rat"},_)) $ a => dest_rat_number a
   |  (Const (@{const_name "Rat.Frct"}, _) $ (Const (@{const_name "Product_Type.Pair"}, _) $ a $ b))
-      => Rat.rat_of_quotient (snd (dest_num a), snd (dest_num b))
-  | _ => Rat.rat_of_int (snd (dest_num t));
+      => Rat.make (snd (dest_num a), snd (dest_num b))
+  | _ => Rat.of_int (snd (dest_num t));
 
 fun mk_rat_number ty r =
-  case Rat.quotient_of_rat r of
+  case Rat.dest r of
     (a, 1) => HOLogic.mk_number ty a
   | (a, b) => 
       Const (@{const_name Rings.divide_class.divide}, ty --> ty --> ty) $ 
@@ -383,7 +383,7 @@ type T = Rat.rat
 val print = Rat_Utils.rat_to_string
 val read = Rat_Utils.string_to_rat
 val compare = Rat.ord
-val from_int = Rat.rat_of_int
+val from_int = Rat.of_int
 val negate = Rat.neg
 
 end)
