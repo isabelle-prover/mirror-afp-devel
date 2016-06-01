@@ -235,13 +235,8 @@
 <a href="entries/Formal_SSA.shtml">Formal_SSA</a> &nbsp;
 
 <strong>Misc:</strong>&nbsp;<a href="entries/JiveDataStoreModel.shtml">JiveDataStoreModel</a> &nbsp;
-<a href="entries/Case_Labeling.shtml">Case_Labeling</a> &nbsp;
-</div>
-
-<h3>Refinement</h3>
-
-<div class="list">
 <a href="entries/Pop_Refinement.shtml">Pop_Refinement</a> &nbsp;
+<a href="entries/Case_Labeling.shtml">Case_Labeling</a> &nbsp;
 </div>
 
 <h3>System Description Languages</h3>
