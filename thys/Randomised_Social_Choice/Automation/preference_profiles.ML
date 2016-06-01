@@ -160,11 +160,11 @@ fun permutations eq xs =
   end
 
 fun probability (lott1 : lottery) xs =
-  lott1 |> filter (member op aconv xs o fst) |> (fn xs => fold (fn x => fn y => snd x +/ y) xs Rat.zero)
+  lott1 |> filter (member op aconv xs o fst) |> (fn xs => fold (fn x => fn y => snd x + y) xs @0)
 
 fun uniform_lottery xs = 
   let
-    val p = Rat.rat_of_quotient (1, length xs)
+    val p = Rat.make (1, length xs)
   in
     map (fn x => (x, p)) xs
   end
@@ -175,12 +175,12 @@ fun stochastic_dominance p (lott1, lott2) =
       | go _ [_] = true
       | go (prob1 : Rat.rat, prob2 : Rat.rat) (xs::xss) = 
           let 
-            val (prob1, prob2) = (prob1 +/ probability lott1 xs, prob2 +/ probability lott2 xs)
+            val (prob1, prob2) = (prob1 + probability lott1 xs, prob2 + probability lott2 xs)
           in  
-            prob1 <=/ prob2 andalso go (prob1, prob2) xss
+            prob1 <= prob2 andalso go (prob1, prob2) xss
           end
   in
-    go (Rat.zero, Rat.zero) p
+    go (@0, @0) p
   end
 
 fun strict_stochastic_dominance p (lott1, lott2) =
@@ -339,10 +339,10 @@ in
 
 fun lp_constr_to_qsopt_constr n (lhs, slack, rhs) =
   let
-    val n = Rat.rat_of_int n
-    val lhs' = (Rat.rat_of_int (~1), slack) :: map (fn x => (n, x)) lhs
+    val n = Rat.of_int n
+    val lhs' = (@~1, slack) :: map (fn x => (n, x)) lhs
   in
-    (lhs', EQ, Rat.rat_of_int rhs)
+    (lhs', EQ, Rat.of_int rhs)
   end
 
 fun mk_inefficiency_lp_qsopt p support =
@@ -350,14 +350,14 @@ fun mk_inefficiency_lp_qsopt p support =
     val constrs = mk_inefficiency_lp p support
     val alts = alts_of_profile p
     val n = length support
-    val sum = map (fn x => (Rat.one, x))
+    val sum = map (fn x => (@1, x))
     val alt_ids = alts ~~ List.tabulate (length alts, Int.toString);
     fun mk_lottery_var x = "q" ^ the (AList.lookup op aconv alt_ids x)
     val lottery_vars = map mk_lottery_var alts
     val slack_vars = map #2 constrs
  
     val constrs' = map (lp_constr_to_qsopt_constr n) constrs
-    val eq = (sum lottery_vars, EQ, Rat.one)
+    val eq = (sum lottery_vars, EQ, @1)
   in
     (MAXIMIZE, sum slack_vars, eq :: constrs', [])
   end
@@ -376,13 +376,13 @@ fun find_inefficiency_witness p lottery =
 
     fun process_solution (diff, assignments) = 
       let
-        val get_val = the_default Rat.zero o AList.lookup op= assignments
+        val get_val = the_default @0 o AList.lookup op= assignments
         val i =
           slack_vars 
-          |> find_first (snd #> exists (fn x => get_val x >/ Rat.zero)) 
+          |> find_first (snd #> exists (fn x => get_val x > @0)) 
           |> Option.map fst
       in 
-        if diff = Rat.zero then 
+        if diff = @0 then 
           NONE 
         else 
           Option.map (fn i => (alts ~~ map get_val lottery_vars, i)) i

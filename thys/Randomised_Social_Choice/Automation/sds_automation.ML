@@ -300,11 +300,6 @@ val derive_support_conditions_cmd =
 val derive_ex_post_conditions_cmd =
   gen_derive_support_conditions_cmd [prepare_find_ex_post_conditions]
 
-fun pretty_rat r =
-  case Rat.quotient_of_rat r of
-    (x, 1) => Pretty.str (Int.toString x)
-  | (x, y) => Pretty.strs [Int.toString x, "/", Int.toString y]
-
 fun find_inefficient_supports p =
   map (fn (x,_,_) => ([x], NONE)) (pareto_losers p) @
   map (fn (x,y,_) => (x, SOME y)) (find_minimal_inefficient_supports p)
@@ -315,7 +310,8 @@ fun find_sd_inefficient_supports_cmd ts lthy =
     fun pretty_lott lott = Pretty.block [Pretty.str "witness:", Pretty.brk 1,
       Pretty.list "[" "]" 
         (map (fn (x,y) => Pretty.block 
-          [Syntax.pretty_term lthy x, Pretty.str ":", Pretty.brk 1, pretty_rat y]) lott)]
+          [Syntax.pretty_term lthy x, Pretty.str ":",
+            Pretty.brk 1, Pretty.str (Rat.string_of_rat y)]) lott)]
     fun pretty (p, supp, lott) =
       Pretty.block ([
         Syntax.pretty_term lthy p, Pretty.brk 1,
@@ -374,7 +370,7 @@ val _ =
 
 
 val parse_rat =
-  (Parse.int -- Scan.optional (Args.$$$ "/" |-- Parse.int) 1) >> Rat.rat_of_quotient
+  (Parse.int -- Scan.optional (Args.$$$ "/" |-- Parse.int) 1) >> Rat.make
 
 val parse_support = Args.bracks (Parse.list1 Parse.term)
 
