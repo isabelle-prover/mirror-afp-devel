@@ -30,10 +30,6 @@
 
 <h2>Computer Science</h2>
 
-<div class="list">
-<a href="entries/FLP.shtml">FLP</a> &nbsp;
-</div>
-
 <h3>Automata and Formal Languages</h3>
 
 <div class="list">
@@ -163,10 +159,12 @@
 <a href="entries/Parity_Game.shtml">Parity_Game</a> &nbsp;
 </div>
 
-<h3>Process Calculi</h3>
+<h3>Concurrency</h3>
 
 <div class="list">
-<a href="entries/AODV.shtml">AODV</a> &nbsp;
+<a href="entries/FLP.shtml">FLP</a> &nbsp;
+
+<strong>Process Calculi:</strong>&nbsp;<a href="entries/AODV.shtml">AODV</a> &nbsp;
 <a href="entries/AWN.shtml">AWN</a> &nbsp;
 <a href="entries/CCS.shtml">CCS</a> &nbsp;
 <a href="entries/Pi_Calculus.shtml">Pi_Calculus</a> &nbsp;
