@@ -600,8 +600,8 @@ fun disp_msg title msg status = title ^ ": '" ^ msg ^ "' " ^ status
 fun lemma msg specification_theorem concl in_local thy =
   SOME
     (in_local (fn lthy =>
-           specification_theorem Thm.theoremK NONE (K I) (@{binding ""}, []) [] [] 
-             (Element.Shows [((@{binding ""}, []),[(concl lthy, [])])])
+           specification_theorem Thm.theoremK NONE (K I) Attrib.empty_binding [] [] 
+             (Element.Shows [(Attrib.empty_binding, [(concl lthy, [])])])
              false lthy
         |> Proof.global_terminal_proof
              ((Method.Combinator ( Method.no_combinator_info
