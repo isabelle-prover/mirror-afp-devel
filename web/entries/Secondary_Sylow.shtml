@@ -69,6 +69,11 @@ use of an implementation of group actions and their properties.
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Jordan_Hoelder.shtml">Jordan_Hoelder</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

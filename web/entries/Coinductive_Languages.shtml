@@ -86,6 +86,11 @@ without further ado.</p>
         <td class="data"><a href="Regular-Sets.shtml">Regular-Sets</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Formula_Derivatives.shtml">Formula_Derivatives</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

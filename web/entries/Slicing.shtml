@@ -68,6 +68,11 @@ Slicing is a widely-used technique with applications in e.g. compiler technology
         <td class="data"><a href="Jinja.shtml">Jinja</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Formal_SSA.shtml">Formal_SSA</a>, <a href="InformationFlowSlicing.shtml">InformationFlowSlicing</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

@@ -74,6 +74,7 @@ conditions for a residuated boolean algebra to form a relation algebra.
         <td class="data"><a href="Kleene_Algebra.shtml">Kleene_Algebra</a>, <a href="Relation_Algebra.shtml">Relation_Algebra</a></td></tr>
 
 
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

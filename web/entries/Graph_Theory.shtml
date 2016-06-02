@@ -65,6 +65,11 @@ This formalization is used to prove characterizations of Euler Trails, Shortest 
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Planarity_Certificates.shtml">Planarity_Certificates</a>, <a href="ShortestPath.shtml">ShortestPath</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

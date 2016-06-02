@@ -89,6 +89,7 @@ larger than one, then A<sup>n</sup> is polynomially bounded in n. </p>
         <td class="data"><a href="Echelon_Form.shtml">Echelon_Form</a>, <a href="Jordan_Normal_Form.shtml">Jordan_Normal_Form</a>, <a href="Polynomial_Factorization.shtml">Polynomial_Factorization</a></td></tr>
 
 
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

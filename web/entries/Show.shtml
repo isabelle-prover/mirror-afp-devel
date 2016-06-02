@@ -83,6 +83,11 @@ datatypes similar to Haskell's "deriving Show".
         <td class="data"><a href="Datatype_Order_Generator.shtml">Datatype_Order_Generator</a>, <a href="Deriving.shtml">Deriving</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Algebraic_Numbers.shtml">Algebraic_Numbers</a>, <a href="Certification_Monads.shtml">Certification_Monads</a>, <a href="Formula_Derivatives.shtml">Formula_Derivatives</a>, <a href="Jordan_Normal_Form.shtml">Jordan_Normal_Form</a>, <a href="Polynomial_Factorization.shtml">Polynomial_Factorization</a>, <a href="Real_Impl.shtml">Real_Impl</a>, <a href="XML.shtml">XML</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

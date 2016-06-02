@@ -82,6 +82,7 @@ cardinality n is equal to the n+1-th Bell number.
         <td class="data"><a href="Bell_Numbers_Spivey.shtml">Bell_Numbers_Spivey</a>, <a href="Card_Partitions.shtml">Card_Partitions</a></td></tr>
 
 
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

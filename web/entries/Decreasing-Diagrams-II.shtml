@@ -68,6 +68,7 @@ This theory formalizes the commutation version of decreasing diagrams for Church
         <td class="data"><a href="Abstract-Rewriting.shtml">Abstract-Rewriting</a>, <a href="Well_Quasi_Orders.shtml">Well_Quasi_Orders</a></td></tr>
 
 
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

@@ -63,6 +63,11 @@ We introduce a theory of infinite lists in HOL formalized as functions over natu
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="AutoFocus-Stream.shtml">AutoFocus-Stream</a>, <a href="Nat-Interval-Logic.shtml">Nat-Interval-Logic</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

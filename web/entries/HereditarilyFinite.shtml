@@ -79,6 +79,11 @@ which has been <a href="Incompleteness.shtml">formalised separately</a>.
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Finite_Automata_HF.shtml">Finite_Automata_HF</a>, <a href="Incompleteness.shtml">Incompleteness</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

@@ -71,6 +71,11 @@ We introduce a theory of temporal logic operators using sets of natural numbers 
         <td class="data"><a href="List-Infinite.shtml">List-Infinite</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="AutoFocus-Stream.shtml">AutoFocus-Stream</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

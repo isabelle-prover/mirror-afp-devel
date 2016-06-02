@@ -74,6 +74,11 @@ the partition function and related recurrence relations.
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Bell_Numbers_Spivey.shtml">Bell_Numbers_Spivey</a>, <a href="Euler_Partition.shtml">Euler_Partition</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

@@ -67,6 +67,11 @@ We formalize an algorithm to compute the Echelon Form of a matrix. We have prove
         <td class="data"><a href="Cayley_Hamilton.shtml">Cayley_Hamilton</a>, <a href="Gauss_Jordan.shtml">Gauss_Jordan</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Hermite.shtml">Hermite</a>, <a href="Perron_Frobenius.shtml">Perron_Frobenius</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->
