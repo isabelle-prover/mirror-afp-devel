@@ -148,6 +148,7 @@ html_contributors = u"""
 # {5}: license
 # {6}: entry
 # {7}: depends-on
+# {8}: used-by
 # {{...}} is for escaping, because Py's format syntax collides with SSI
 html_entry_header_wrapper = u"""
 <table width="80%" class="data">
@@ -164,6 +165,7 @@ html_entry_header_wrapper = u"""
     <tr><td class="datahead">License:</td>
         <td class="data">{5}</td></tr>
 {7}
+{8}
 
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
@@ -182,6 +184,12 @@ html_entry_header_wrapper = u"""
 html_entry_depends_on_wrapper = u"""
 
     <tr><td class="datahead">Depends on:</td>
+        <td class="data">{0}</td></tr>
+"""
+
+html_entry_used_by_wrapper = u"""
+
+    <tr><td class="datahead">Used by:</td>
         <td class="data">{0}</td></tr>
 """
 
@@ -685,6 +693,13 @@ def format_depends_on(deps):
 	else:
 		return html_entry_depends_on_wrapper.format(depends_on_string(deps))
 
+def format_used_by(deps):
+	if len(deps) == 0:
+		return ''
+	else:
+		# We can reuse the depends_on_string function here
+		return html_entry_used_by_wrapper.format(depends_on_string(deps))
+
 def format_opt_contributors(contributors):
 	if contributors == [("",None)]:
 		return ""
@@ -727,6 +742,7 @@ def generate_entry(entry, attributes, param):
 			html_license_link.format(attributes['license'][0], attributes['license'][1]),
 			entry,
 			format_depends_on(attributes['depends-on']),
+			format_used_by(attributes['used_by']),
 		)
 	elif param == "older":
 		if len(attributes['releases']) > 1:
@@ -941,6 +957,13 @@ def remove_self_imps(articles):
 		except KeyError:
 			pass
 
+def add_used_by(articles):
+	for a in articles:
+		articles[a]['used_by'] = set()
+	for a in articles:
+		for d in articles[a]['depends-on']:
+			articles[d]['used_by'].add(a)
+
 if __name__ == "__main__":
 	parser = OptionParser(usage = "Usage: %prog [--no-warn] [--debug] [--check] [--dest=DEST_DIR] --metadata=METADATA_DIR THYS_DIR")
 	parser.add_option("--no-warn", action = "store_false", dest = "enable_warnings", default = True, help = "disable output of warnings")
@@ -964,12 +987,13 @@ if __name__ == "__main__":
 	if len(entries) == 0:
 		warn("In metadata: No entries found")
 
-	# generate depends-on entries
+	# generate depends-on and used-by entries
 	for e in entries: entries[e]['depends-on'] = set()
 	add_theories(entries, thys_dir)
 	add_theory_dependencies(entries)
 	add_root_dependencies(entries, thys_dir)
 	remove_self_imps(entries)
+	add_used_by(entries)
 
 	# perform check
 	if options.do_check:
