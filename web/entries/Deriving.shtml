@@ -83,6 +83,11 @@ within IsaFoR and the Container Framework.
         <td class="data"><a href="Collections.shtml">Collections</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Algebraic_Numbers.shtml">Algebraic_Numbers</a>, <a href="Containers.shtml">Containers</a>, <a href="Datatype_Order_Generator.shtml">Datatype_Order_Generator</a>, <a href="Formula_Derivatives.shtml">Formula_Derivatives</a>, <a href="LTL_to_GBA.shtml">LTL_to_GBA</a>, <a href="MSO_Regex_Equivalence.shtml">MSO_Regex_Equivalence</a>, <a href="Promela.shtml">Promela</a>, <a href="Show.shtml">Show</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

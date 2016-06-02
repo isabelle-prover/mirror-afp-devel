@@ -65,6 +65,11 @@ We provide a wrapper around the partial-function command that supports mutual re
         <td class="data"><a href="http://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Certification_Monads.shtml">Certification_Monads</a>, <a href="Polynomial_Factorization.shtml">Polynomial_Factorization</a>, <a href="XML.shtml">XML</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

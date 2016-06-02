@@ -77,6 +77,7 @@ it is just as powerful as natural deduction.
         <td class="data"><a href="Abstract_Completeness.shtml">Abstract_Completeness</a></td></tr>
 
 
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

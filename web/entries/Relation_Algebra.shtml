@@ -73,6 +73,11 @@ relations and Boolean matrices.
         <td class="data"><a href="Kleene_Algebra.shtml">Kleene_Algebra</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Residuated_Lattices.shtml">Residuated_Lattices</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

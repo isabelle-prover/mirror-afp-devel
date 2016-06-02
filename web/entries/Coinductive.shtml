@@ -104,6 +104,11 @@ added examples
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="JinjaThreads.shtml">JinjaThreads</a>, <a href="Lazy-Lists-II.shtml">Lazy-Lists-II</a>, <a href="MFMC_Countable.shtml">MFMC_Countable</a>, <a href="Markov_Models.shtml">Markov_Models</a>, <a href="Parity_Game.shtml">Parity_Game</a>, <a href="Stream_Fusion_Code.shtml">Stream_Fusion_Code</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

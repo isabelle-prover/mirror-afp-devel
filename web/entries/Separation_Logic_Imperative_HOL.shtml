@@ -84,6 +84,11 @@ ML, OCaml, Haskell, and Scala.
         <td class="data"><a href="Automatic_Refinement.shtml">Automatic_Refinement</a>, <a href="Collections.shtml">Collections</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="ROBDD.shtml">ROBDD</a>, <a href="UpDown_Scheme.shtml">UpDown_Scheme</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

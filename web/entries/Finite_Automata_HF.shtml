@@ -76,6 +76,7 @@ Brzozowski's minimization algorithm. Uniqueness up to isomorphism of minimal DFA
         <td class="data"><a href="HereditarilyFinite.shtml">HereditarilyFinite</a>, <a href="Regular-Sets.shtml">Regular-Sets</a></td></tr>
 
 
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

@@ -78,6 +78,7 @@ To this end, we mechanized several results on resultants, which also required us
         <td class="data"><a href="Abstract-Rewriting.shtml">Abstract-Rewriting</a>, <a href="Containers.shtml">Containers</a>, <a href="Deriving.shtml">Deriving</a>, <a href="Jordan_Normal_Form.shtml">Jordan_Normal_Form</a>, <a href="Polynomial_Factorization.shtml">Polynomial_Factorization</a>, <a href="Polynomial_Interpolation.shtml">Polynomial_Interpolation</a>, <a href="Show.shtml">Show</a>, <a href="Sturm_Sequences.shtml">Sturm_Sequences</a></td></tr>
 
 
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

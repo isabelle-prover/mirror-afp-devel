@@ -67,6 +67,11 @@ This entry provides several monads intended for the development of stand-alone c
         <td class="data"><a href="Partial_Function_MR.shtml">Partial_Function_MR</a>, <a href="Show.shtml">Show</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="XML.shtml">XML</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

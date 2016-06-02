@@ -91,6 +91,11 @@ based on homogeneous sequences.
         <td class="data"><a href="Abstract-Rewriting.shtml">Abstract-Rewriting</a>, <a href="Open_Induction.shtml">Open_Induction</a>, <a href="Regular-Sets.shtml">Regular-Sets</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Decreasing-Diagrams-II.shtml">Decreasing-Diagrams-II</a>, <a href="Myhill-Nerode.shtml">Myhill-Nerode</a>, <a href="Open_Induction.shtml">Open_Induction</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

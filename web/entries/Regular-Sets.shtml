@@ -73,6 +73,11 @@ This is a library of constructions on regular expressions and languages. It prov
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Abstract-Rewriting.shtml">Abstract-Rewriting</a>, <a href="Coinductive_Languages.shtml">Coinductive_Languages</a>, <a href="Containers.shtml">Containers</a>, <a href="Finite_Automata_HF.shtml">Finite_Automata_HF</a>, <a href="Functional-Automata.shtml">Functional-Automata</a>, <a href="List_Update.shtml">List_Update</a>, <a href="Myhill-Nerode.shtml">Myhill-Nerode</a>, <a href="Regex_Equivalence.shtml">Regex_Equivalence</a>, <a href="Transitive-Closure-II.shtml">Transitive-Closure-II</a>, <a href="Well_Quasi_Orders.shtml">Well_Quasi_Orders</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

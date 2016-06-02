@@ -70,6 +70,11 @@ The Gauss-Jordan algorithm states that any matrix over a field can be transforme
         <td class="data"><a href="Rank_Nullity_Theorem.shtml">Rank_Nullity_Theorem</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Echelon_Form.shtml">Echelon_Form</a>, <a href="Jordan_Normal_Form.shtml">Jordan_Normal_Form</a>, <a href="QR_Decomposition.shtml">QR_Decomposition</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->
