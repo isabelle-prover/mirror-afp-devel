@@ -55,7 +55,7 @@ lemma max_bag_card_lower_bound_1: assumes "V \<noteq> {}" shows "max_bag_card > 
     card_gt_0_iff emptyE Max_gr_iff[OF bag_cards_finite bag_cards_nonempty[OF assms]] by auto
 qed
 lemma max_bag_card_upper_bound_V: "V \<noteq> {} \<Longrightarrow> max_bag_card \<le> card V" unfolding max_bag_card_def
-  using Max_le_iff[OF bag_cards_finite bag_cards_nonempty[OF assms]] bag_bound_V by blast
+  using Max_le_iff[OF bag_cards_finite bag_cards_nonempty] bag_bound_V by blast
 
 lemma width_upper_bound_V: "V \<noteq> {} \<Longrightarrow> width < card V" unfolding width_def
   using max_bag_card_upper_bound_V max_bag_card_lower_bound_1
