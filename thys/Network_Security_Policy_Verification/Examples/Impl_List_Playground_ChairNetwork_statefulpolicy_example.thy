@@ -5,14 +5,12 @@ begin
 
 text{*An example of our chair network [simplified]*}
 
-abbreviation "V\<equiv>TopoS_Vertices.V"
-
 text{*Our access control view on the network*}
-  definition ChairNetwork_empty :: "vString list_graph" where
-    "ChairNetwork_empty \<equiv> \<lparr> nodesL = [V ''WebSrv'', V ''FilesSrv'', V ''Printer'',
-                                V ''Students'',
-                                V ''Employees'',
-                                V ''Internet''],
+  definition ChairNetwork_empty :: "string list_graph" where
+    "ChairNetwork_empty \<equiv> \<lparr> nodesL = [''WebSrv'', ''FilesSrv'', ''Printer'',
+                                ''Students'',
+                                ''Employees'',
+                                ''Internet''],
                       edgesL = [] \<rparr>"
   
   lemma "wf_list_graph ChairNetwork_empty" by eval
@@ -20,25 +18,25 @@ text{*Our access control view on the network*}
 
 subsection{*Our security requirements*}
   subsubsection{*We have a server with confidential data*}
-    definition ConfidentialChairData::"(vString SecurityInvariant)" where
+    definition ConfidentialChairData::"(string SecurityInvariant)" where
       "ConfidentialChairData \<equiv> new_configured_list_SecurityInvariant SINVAR_BLPtrusted_impl.SINVAR_LIB_BLPtrusted \<lparr> 
-          node_properties = [V ''FilesSrv'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
-                             V ''Employees'' \<mapsto> \<lparr> privacy_level = 0, trusted = True \<rparr>], 
+          node_properties = [''FilesSrv'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
+                             ''Employees'' \<mapsto> \<lparr> privacy_level = 0, trusted = True \<rparr>], 
           model_global_properties = () 
           \<rparr>"
 
 
   subsubsection{* accessibly by employees and students*}
     definition "PrintingACL \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_CommunicationPartners \<lparr> 
-          node_properties = [V ''Printer'' \<mapsto> Master [V ''Employees'', V ''Students''],
-                             V ''Employees'' \<mapsto> Care,
-                             V ''Students'' \<mapsto> Care], 
+          node_properties = [''Printer'' \<mapsto> Master [''Employees'', ''Students''],
+                             ''Employees'' \<mapsto> Care,
+                             ''Students'' \<mapsto> Care], 
           model_global_properties = () 
           \<rparr>"
 
   subsubsection{* Printers are information sinks *}
     definition "PrintingSink \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_Sink \<lparr> 
-          node_properties = [V ''Printer'' \<mapsto> Sink], 
+          node_properties = [''Printer'' \<mapsto> Sink], 
           model_global_properties = () 
           \<rparr>"
 
@@ -46,15 +44,15 @@ subsection{*Our security requirements*}
 
   subsubsection{*Students and Employees may access each other but are not accessible from the outside*}
     definition "InternalSubnet \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_SubnetsInGW \<lparr> 
-          node_properties = [V ''Students'' \<mapsto> Member, V ''Employees'' \<mapsto> Member], 
+          node_properties = [''Students'' \<mapsto> Member, ''Employees'' \<mapsto> Member], 
           model_global_properties = () 
           \<rparr>"
 
 
   subsubsection{* The files server is only accessibly by employees*}
     definition "FilesSrcACL \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_CommunicationPartners \<lparr> 
-          node_properties = [V ''FilesSrv'' \<mapsto> Master [V ''Employees''],
-                             V ''Employees'' \<mapsto> Care], 
+          node_properties = [''FilesSrv'' \<mapsto> Master [''Employees''],
+                             ''Employees'' \<mapsto> Care], 
           model_global_properties = () 
           \<rparr>"
 
@@ -136,17 +134,17 @@ visualize_edges @{context} @{term "flows_fixL ChairNetwork_stateful_v3"}
 
 subsection{*An example of bad side-effects in access control policies*}
 
-  definition ACL_not_with::"(vString SecurityInvariant)" where
+  definition ACL_not_with::"(string SecurityInvariant)" where
     "ACL_not_with \<equiv> new_configured_list_SecurityInvariant SINVAR_ACLnotCommunicateWith_impl.SINVAR_LIB_ACLnotCommunicateWith \<lparr> 
-        node_properties = [V ''A'' \<mapsto> {V ''C''},
-                           V ''B'' \<mapsto> {},
-                           V ''C'' \<mapsto> {}], 
+        node_properties = [''A'' \<mapsto> {''C''},
+                           ''B'' \<mapsto> {},
+                           ''C'' \<mapsto> {}], 
         model_global_properties = () 
         \<rparr>"
 
-  definition simple_network :: "vString list_graph" where
-    "simple_network \<equiv> \<lparr> nodesL = [V ''A'', V ''B'', V ''C''],
-                      edgesL = [(V ''B'', V ''A''), (V ''B'', V ''C'')] \<rparr>"
+  definition simple_network :: "string list_graph" where
+    "simple_network \<equiv> \<lparr> nodesL = [''A'', ''B'', ''C''],
+                      edgesL = [(''B'', ''A''), (''B'', ''C'')] \<rparr>"
   
   lemma "wf_list_graph ChairNetwork_empty" by eval
   lemma "\<forall>m \<in> set [ACL_not_with]. implc_sinvar m simple_network" by eval
@@ -154,10 +152,10 @@ subsection{*An example of bad side-effects in access control policies*}
 
   lemma "implc_get_offending_flows [ACL_not_with] simple_network = []" by eval
   lemma "implc_get_offending_flows [ACL_not_with] 
-    \<lparr> nodesL = [V ''A'', V ''B'', V ''C''], edgesL = [(V ''B'', V ''A''), (V ''B'', V ''C''), (V ''A'', V ''B'')] \<rparr> =
-      [[(V ''B'', V ''C'')], [(V ''A'', V ''B'')]]" by eval
+    \<lparr> nodesL = [''A'', ''B'', ''C''], edgesL = [(''B'', ''A''), (''B'', ''C''), (''A'', ''B'')] \<rparr> =
+      [[(''B'', ''C'')], [(''A'', ''B'')]]" by eval
   lemma "implc_get_offending_flows [ACL_not_with] 
-    \<lparr> nodesL = [V ''A'', V ''B'', V ''C''], edgesL = [(V ''B'', V ''A''), (V ''B'', V ''C''), (V ''C'', V ''B'')] \<rparr> =
+    \<lparr> nodesL = [''A'', ''B'', ''C''], edgesL = [(''B'', ''A''), (''B'', ''C''), (''C'', ''B'')] \<rparr> =
       []" by eval
 
 value "generate_valid_stateful_policy_IFSACS simple_network [ACL_not_with]"

@@ -5,13 +5,12 @@ begin
 section{*Distributed Web Application Example*}
 
 text{* 
-    The symbolic policy names are of type @{typ vString}. This is just a wrapped string, e.g. @{term "V ''WebFrnt''"}
+    The symbolic policy names are of type @{typ string}, e.g. @{term "''WebFrnt''"}
 *}
-abbreviation "V\<equiv>TopoS_Vertices.V"
 
 text{*We start with the empty policy, only the entities are defined.*}
-definition policy :: "vString list_graph" where
-    "policy \<equiv> \<lparr> nodesL = [V ''WebFrnt'', V ''DB'', V ''Log'', V ''WebApp'', V ''INET''],
+definition policy :: "string list_graph" where
+    "policy \<equiv> \<lparr> nodesL = [''WebFrnt'', ''DB'', ''Log'', ''WebApp'', ''INET''],
                 edgesL = [] \<rparr>"
 
 text{*Sanity check*}
@@ -20,9 +19,9 @@ lemma "wf_list_graph policy" by eval
 
 
 text{*Defining the security invariants*}
-definition LogSink_m::"(vString SecurityInvariant)" where
+definition LogSink_m::"(string SecurityInvariant)" where
   "LogSink_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_Sink \<lparr> 
-          node_properties = [V ''Log'' \<mapsto> Sink], 
+          node_properties = [''Log'' \<mapsto> Sink], 
           model_global_properties = () 
           \<rparr>"
 
@@ -31,30 +30,30 @@ text{*
 1 - confidential
 *}
 --"trusted: can access any security clearance, privacy-level 0: can reveal to anyone. I.e. can declassify"
-definition BLP_m::"(vString SecurityInvariant)" where
+definition BLP_m::"(string SecurityInvariant)" where
     "BLP_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_BLPtrusted \<lparr> 
-          node_properties = [V ''DB'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
-                             V ''Log'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
-                             V ''WebApp'' \<mapsto> \<lparr> privacy_level = 0, trusted = True \<rparr> 
+          node_properties = [''DB'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
+                             ''Log'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
+                             ''WebApp'' \<mapsto> \<lparr> privacy_level = 0, trusted = True \<rparr> 
                              ], 
           model_global_properties = () 
           \<rparr>"
 
-definition Subnet_m::"(vString SecurityInvariant)" where
+definition Subnet_m::"(string SecurityInvariant)" where
     "Subnet_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_SubnetsInGW \<lparr> 
-          node_properties = [V ''DB'' \<mapsto> Member,
-                             V ''Log'' \<mapsto> Member,
-                             V ''WebApp'' \<mapsto> Member,
-                             V ''WebFrnt'' \<mapsto> InboundGateway (*DMZ*)
+          node_properties = [''DB'' \<mapsto> Member,
+                             ''Log'' \<mapsto> Member,
+                             ''WebApp'' \<mapsto> Member,
+                             ''WebFrnt'' \<mapsto> InboundGateway (*DMZ*)
                              ], 
           model_global_properties = () 
           \<rparr>"
 
 
-definition DBACL_m::"(vString SecurityInvariant)" where
+definition DBACL_m::"(string SecurityInvariant)" where
     "DBACL_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_CommunicationPartners \<lparr> 
-          node_properties = [V ''DB'' \<mapsto> Master [V ''WebApp''],
-                             V ''WebApp'' \<mapsto> Care
+          node_properties = [''DB'' \<mapsto> Master [''WebApp''],
+                             ''WebApp'' \<mapsto> Care
                              ], 
           model_global_properties = () 
           \<rparr>"
@@ -76,10 +75,10 @@ definition "max_policy = generate_valid_topology security_invariants \<lparr>nod
 text{*Calculating the maximum policy (executing it).*}
 value "max_policy"
 lemma "max_policy = 
-   \<lparr>nodesL = [V ''WebFrnt'', V ''DB'', V ''Log'', V ''WebApp'', V ''INET''],
-    edgesL = [(V ''WebFrnt'', V ''WebFrnt''), (V ''WebFrnt'', V ''Log''), (V ''WebFrnt'', V ''WebApp''), (V ''WebFrnt'', V ''INET''), (V ''DB'', V ''DB''),
-              (V ''DB'', V ''Log''), (V ''DB'', V ''WebApp''), (V ''Log'', V ''Log''), (V ''WebApp'', V ''WebFrnt''), (V ''WebApp'', V ''DB''),
-              (V ''WebApp'', V ''Log''), (V ''WebApp'', V ''WebApp''), (V ''WebApp'', V ''INET''), (V ''INET'', V ''WebFrnt''), (V ''INET'', V ''INET'')]\<rparr>"
+   \<lparr>nodesL = [''WebFrnt'', ''DB'', ''Log'', ''WebApp'', ''INET''],
+    edgesL = [(''WebFrnt'', ''WebFrnt''), (''WebFrnt'', ''Log''), (''WebFrnt'', ''WebApp''), (''WebFrnt'', ''INET''), (''DB'', ''DB''),
+              (''DB'', ''Log''), (''DB'', ''WebApp''), (''Log'', ''Log''), (''WebApp'', ''WebFrnt''), (''WebApp'', ''DB''),
+              (''WebApp'', ''Log''), (''WebApp'', ''WebApp''), (''WebApp'', ''INET''), (''INET'', ''WebFrnt''), (''INET'', ''INET'')]\<rparr>"
 by eval (*proof by eval means it can be directly executed*)
 
 text{*
@@ -94,10 +93,10 @@ lemma "all_security_requirements_fulfilled security_invariants max_policy" by ev
 text{*This holds in general: @{thm generate_valid_topology_sound}.*}
 
 text{*fine-tuning generated policy.*}
-definition "my_policy = \<lparr>nodesL = [V ''WebFrnt'', V ''DB'', V ''Log'', V ''WebApp'', V ''INET''],
-    edgesL = [(V ''WebFrnt'', V ''WebFrnt''), (V ''WebFrnt'', V ''Log''), (V ''WebFrnt'', V ''WebApp''), (V ''DB'', V ''DB''), (V ''DB'', V ''Log''),
-              (V ''DB'', V ''WebApp''), (V ''Log'', V ''Log''), (V ''WebApp'', V ''WebFrnt''), (V ''WebApp'', V ''DB''), (V ''WebApp'', V ''Log''), (V ''WebApp'', V ''WebApp''),
-              (V ''WebApp'', V ''INET''), (V ''INET'', V ''WebFrnt''), (V ''INET'', V ''INET'')]\<rparr>"
+definition "my_policy = \<lparr>nodesL = [''WebFrnt'', ''DB'', ''Log'', ''WebApp'', ''INET''],
+    edgesL = [(''WebFrnt'', ''WebFrnt''), (''WebFrnt'', ''Log''), (''WebFrnt'', ''WebApp''), (''DB'', ''DB''), (''DB'', ''Log''),
+              (''DB'', ''WebApp''), (''Log'', ''Log''), (''WebApp'', ''WebFrnt''), (''WebApp'', ''DB''), (''WebApp'', ''Log''), (''WebApp'', ''WebApp''),
+              (''WebApp'', ''INET''), (''INET'', ''WebFrnt''), (''INET'', ''INET'')]\<rparr>"
 lemma "all_security_requirements_fulfilled security_invariants my_policy" by eval
 lemma "set (edgesL my_policy) \<subset> set (edgesL max_policy)" by eval
 
@@ -198,11 +197,11 @@ iterate_edges_ML @{context} @{term "flows_stateL stateful_policy"}
 
 lemma "set (flows_stateL stateful_policy) \<subseteq> set (flows_fixL stateful_policy)" by eval
 
-definition stateful_flows :: "(vString \<times> vString) list" where
+definition stateful_flows :: "(string \<times> string) list" where
   "stateful_flows \<equiv> [(src, dst) \<leftarrow> flows_stateL stateful_policy. src \<noteq> dst]"
 value "stateful_flows"
 
-definition stateless_flows :: "(vString \<times> vString) list" where
+definition stateless_flows :: "(string \<times> string) list" where
   "stateless_flows \<equiv> [(src, dst) \<leftarrow> flows_fixL stateful_policy. src \<noteq> dst \<and> (src, dst) \<notin> set stateful_flows]"
 value "stateless_flows"
 

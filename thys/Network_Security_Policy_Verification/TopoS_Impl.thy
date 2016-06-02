@@ -102,9 +102,9 @@ fun partition_by_biflows ctxt (t: term) : (term * term) =
 
 local
   fun get_tune_node_format (edges: term) : term -> string -> string =
-    if (fastype_of edges) = @{typ "(TopoS_Vertices.vString \<times> TopoS_Vertices.vString) list"}
+    if (fastype_of edges) = @{typ "(string \<times> string) list"}
     then
-      tune_Vstring_format
+      tune_string_vertex_format
     else
       Graphviz.default_tune_node_format;
 
@@ -157,7 +157,7 @@ in
   val _ = Pretty.writeln (Syntax.pretty_term (Config.put show_types true @{context}) uniflows);
 end;
 
-val t = fastype_of @{term "[(TopoS_Vertices.V ''x'', 2::nat)]"};
+val t = fastype_of @{term "[(''x'', 2::nat)]"};
 
 *}
 ML_val{*(*
@@ -178,9 +178,9 @@ local
    let
      val (node, config) = HOLogic.dest_prod node_config;
      (*TODO: tune node format? There must be a better way ...*)
-     val tune_node_format = if (fastype_of node) = @{typ "TopoS_Vertices.vString"}
+     val tune_node_format = if (fastype_of node) = @{typ "string"}
       then
-        tune_Vstring_format
+        tune_string_vertex_format
       else
         Graphviz.default_tune_node_format;
      val node_str = Graphviz.node_to_string ctxt tune_node_format node;
