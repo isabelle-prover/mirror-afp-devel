@@ -85,6 +85,11 @@ such as Bilinear Dominance or Pairwise Comparison.
         <td class="data"><a href="List-Index.shtml">List-Index</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="SDS_Impossibility.shtml">SDS_Impossibility</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

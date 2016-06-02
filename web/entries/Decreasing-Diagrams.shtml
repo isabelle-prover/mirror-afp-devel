@@ -67,6 +67,7 @@ This theory contains a formalization of decreasing diagrams showing that any loc
         <td class="data"><a href="Abstract-Rewriting.shtml">Abstract-Rewriting</a></td></tr>
 
 
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

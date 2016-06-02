@@ -70,6 +70,11 @@ simplifier are provided.
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="LTL_to_DRA.shtml">LTL_to_DRA</a>, <a href="LTL_to_GBA.shtml">LTL_to_GBA</a>, <a href="Stuttering_Equivalence.shtml">Stuttering_Equivalence</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

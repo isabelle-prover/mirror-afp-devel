@@ -7,7 +7,8 @@ Computer Science
   Data Structures
   Functional Programming
   Games
-  Process Calculi
+  Concurrency
+    Process Calculi
   Programming Languages
     Language Definitions
     Lambda Calculi
@@ -17,7 +18,6 @@ Computer Science
     Static Analysis
     Transformations
     Misc
-  Refinement
   System Description Languages
   Security
 Logic

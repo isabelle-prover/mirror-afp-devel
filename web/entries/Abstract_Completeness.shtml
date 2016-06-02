@@ -68,6 +68,11 @@ The abstract proof can be instantiated for a wide range of Gentzen and tableau s
         <td class="data"><a href="Collections.shtml">Collections</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Incredible_Proof_Machine.shtml">Incredible_Proof_Machine</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

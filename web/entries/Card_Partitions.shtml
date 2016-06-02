@@ -78,6 +78,11 @@ of these explanations.
         <td class="data"><a href="Discrete_Summation.shtml">Discrete_Summation</a></td></tr>
 
 
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Bell_Numbers_Spivey.shtml">Bell_Numbers_Spivey</a>, <a href="Card_Equiv_Relations.shtml">Card_Equiv_Relations</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->

@@ -67,6 +67,7 @@ We present the verification of the normalisation of a binary decision diagram (B
         <td class="data"><a href="Simpl.shtml">Simpl</a></td></tr>
 
 
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->
