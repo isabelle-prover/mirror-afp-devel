@@ -535,6 +535,7 @@ next
     using i 1 l 3 unfolding intT_def by auto
   qed(insert l, auto)
   show ?case apply(cases "unprot ?r \<or> protFw ?r")
+  using [[unfold_abs_def = false]]
   unfolding Ik.int.simps TE.int.simps tT.simps unfolding intF_def using Fn 0 by auto
 qed
 
@@ -549,6 +550,7 @@ proof-
    have "intT (Ik.Ik.tpOf (Tl!i)) (Ik.int \<xi> (Tl!i))" using Ik.wt_int[OF \<xi> wt] .
   }
   thus ?thesis
+  using [[unfold_abs_def = false]]
   using assms unfolding intT_def list_all_length
   unfolding list_eq_iff apply clarsimp by (metis inImage_ntsem unprot_ntsem)
 qed
@@ -577,6 +579,7 @@ next
   have 0: "map2 ntsem ?ar (map (Ik.int \<xi>) Tl) = map (TE.int ?e\<xi> \<circ> tNN) Tl"
   unfolding ar apply(rule map_int_tNN[OF _ \<xi>]) using Fn by simp
   show ?case apply(cases "unprot ?r \<or> protFw ?r")
+  using [[unfold_abs_def = false]]
   unfolding  Ik.int.simps TE.int.simps tT.simps unfolding intF_def using Fn 0 by auto
 qed
 
@@ -591,6 +594,7 @@ proof-
    have "intT (Ik.Ik.tpOf (Tl!i)) (Ik.int \<xi> (Tl!i))" using wt_int[OF \<xi> wt] .
   }
   thus ?thesis
+  using [[unfold_abs_def = false]]
   using assms unfolding intT_def list_all_length
   unfolding list_eq_iff apply clarsimp by (metis inImage_ntsem unprot_ntsem)
 qed

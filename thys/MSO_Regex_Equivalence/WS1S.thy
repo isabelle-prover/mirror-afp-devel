@@ -159,7 +159,7 @@ proof (induct w rule: rev_induct)
   then obtain n where "w = cut_same x (w @- sconst x) @ replicate n x" by blast
   thus ?case
     by (cases "a = x")
-     (auto simp: id_def[symmetric] siterate.code[of id, unfolded id_apply, symmetric]
+     (auto simp: id_def[symmetric] siterate.code[of id, simplified id_apply, symmetric]
       replicate_append_same[symmetric] intro!: exI[of _ "Suc n"])
 qed (simp add: id_def[symmetric])
 
@@ -167,7 +167,7 @@ lemma set_cut_same: "set (cut_same x (w @- sconst x)) \<subseteq> set w"
 proof (induct w rule: rev_induct)
   case (snoc a w)
   thus ?case by (cases "a = x")
-    (auto simp: id_def[symmetric] siterate.code[of id, unfolded id_apply, symmetric])
+    (auto simp: id_def[symmetric] siterate.code[of id, simplified id_apply, symmetric])
 qed  (simp add: id_def[symmetric])
 
 lemma stream_enc_cut_same:
@@ -198,7 +198,7 @@ lemma enc_unique_length: "v \<in> enc (w, I) \<Longrightarrow> \<forall>v'. leng
   by auto
 
 lemma sdrop_sconst: "sdrop n s = sconst x \<Longrightarrow> n \<le> m \<Longrightarrow> s !! m = x"
-  by (metis le_iff_add sdrop_snth snth_siterate[of id, unfolded id_funpow id_apply])
+  by (metis le_iff_add sdrop_snth snth_siterate[of id, simplified id_funpow id_apply])
 
 lemma fin_cut_same_tl:
   assumes "\<exists>n. sdrop n s = sconst x" 
@@ -216,7 +216,7 @@ proof -
       min_def[symmetric] by (auto simp: drop_map drop_stake)
   also have "(\<lambda>n. map \<pi> (stake (min - n) (sdrop n s)) = replicate (min - n) (\<pi> x) \<or> sdrop n s = sconst x) =
      (\<lambda>n. smap \<pi> (sdrop n s) = sconst (\<pi> x))"
-  proof (rule ext, unfold smap_alt snth_siterate[of id, unfolded id_funpow id_apply], safe)
+  proof (rule ext, unfold smap_alt snth_siterate[of id, simplified id_funpow id_apply], safe)
     fix n m
     assume "map \<pi> (stake (min - n) (sdrop n s)) = replicate (min - n) (\<pi> x)"
     hence "\<forall>y\<in>set (stake (min - n) (sdrop n s)). \<pi> y = \<pi> x"
@@ -568,7 +568,7 @@ lemma stream_enc_welldef: "\<lbrakk>stream_enc (w, I) = stream_enc (w', I'); wf_
 proof (induction \<phi> arbitrary: w w' I I')
   case (FQ a m) thus ?case using enc_atom_welldef[of I I' m]
     by (simp split: sum.splits add: smap2_alt shift_snth)
-      (metis snth_siterate[of id, unfolded id_funpow id_apply])
+      (metis snth_siterate[of id, simplified id_funpow id_apply])
 next
   case (FLess m1 m2) thus ?case using enc_atom_welldef[of I I' m1] enc_atom_welldef[of I I' m2]
     by (auto split: sum.splits simp add: smap2_alt)

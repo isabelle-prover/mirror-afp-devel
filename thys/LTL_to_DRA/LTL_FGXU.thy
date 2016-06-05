@@ -412,7 +412,7 @@ lemma ltl_prop_implies_equiv:
 
 lemma ltl_prop_equiv_equivp:
   "equivp (op \<equiv>\<^sub>P)"
-  by (blast intro: equivpI[of "op \<equiv>\<^sub>P", unfolded transp_def symp_def reflp_def ltl_prop_equiv_def])
+  by (blast intro: equivpI[of "op \<equiv>\<^sub>P", simplified transp_def symp_def reflp_def ltl_prop_equiv_def])
 
 lemma [trans]:
   "\<phi> \<equiv>\<^sub>P \<psi> \<Longrightarrow> \<psi> \<equiv>\<^sub>P \<chi> \<Longrightarrow> \<phi> \<equiv>\<^sub>P \<chi>"
@@ -452,6 +452,7 @@ subsubsection \<open>Propositional Equivalence implies LTL Equivalence\<close>
 
 lemma ltl_prop_implication_implies_ltl_implication:
   "w \<Turnstile> \<phi> \<Longrightarrow> \<phi> \<longrightarrow>\<^sub>P \<psi> \<Longrightarrow> w \<Turnstile> \<psi>"
+  using [[unfold_abs_def = false]]
   unfolding ltl_prop_implies_def ltl_models_equiv_prop_entailment by simp
 
 lemma ltl_prop_equiv_implies_ltl_equiv:

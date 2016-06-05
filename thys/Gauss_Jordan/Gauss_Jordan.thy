@@ -1552,8 +1552,14 @@ next
       fst (if \<forall>m. is_zero_row_upt_k m (Suc (Suc k)) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)])) then 0
       else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]))) + 1,
       snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]))"
-      unfolding rw unfolding foldl_append unfolding foldl.simps unfolding Gauss_Jordan_column_k_def Let_def fst_foldl unfolding A'_def[symmetric]
-    proof (auto, unfold from_nat_0 from_nat_to_nat_greatest)
+      apply (simp only: rw)
+      apply (simp only: foldl_append)
+      apply (simp only: foldl.simps)
+      apply (simp only: Gauss_Jordan_column_k_def Let_def fst_foldl)
+      apply (simp only: A'_def[symmetric])
+      apply auto
+      apply (simp_all only: from_nat_0 from_nat_to_nat_greatest)
+    proof -
       fix m assume "\<forall>m. is_zero_row_upt_k m (Suc k) A'" and "\<forall>m\<ge>0. A' $ m $ from_nat (Suc k) = 0"
       thus "is_zero_row_upt_k m (Suc (Suc k)) A'" using foldl_Gauss_condition_1 by blast
     next

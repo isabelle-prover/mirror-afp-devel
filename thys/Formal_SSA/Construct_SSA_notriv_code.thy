@@ -549,18 +549,18 @@ begin
     from assms(2) have [dest!]: "\<And>x vs. Mapping.lookup (phis g) (x, snd next) = Some vs \<Longrightarrow> x = fst next \<and> vs = next_args"
       by (auto simp add: keys_dom_lookup dest: ssa.phis_disj [where n'="fst next"])
     show ?thesis
-    unfolding phi_equiv_mapping_def
+    apply (simp only: phi_equiv_mapping_def)
     apply (subgoal_tac "finite (dom (Mapping.lookup (phis'_codem g next (substitution_code g next) nodes_of_phis)))")
      prefer 2
      apply (subst dom_phis'_codem)
       apply (rule nodes_of_phis_finite [OF assms(1)], assumption)
-      using assms(2) [unfolded keys_dom_lookup]
+      using assms(2) [simplified keys_dom_lookup]
       apply clarsimp
      apply (clarsimp simp: ssa.phis_finite split: option.splits)
      apply (rule nodes_of_phis_finite [OF assms(1)], assumption)
-     using assms(2) [unfolded keys_dom_lookup]
+     using assms(2) [simplified keys_dom_lookup]
      apply clarsimp
-    unfolding phis'_codem_correct [OF assms(1,2)]
+    apply (simp_all only: phis'_codem_correct [OF assms(1,2)])
     apply (intro ballI)
     apply (rename_tac v)
     apply (subst(asm) ssa.keys_phidefNodes [OF ssa.phis_finite])

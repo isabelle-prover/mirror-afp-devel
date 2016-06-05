@@ -219,6 +219,7 @@ lemma poly_y_x_swapped:
   using poly_y_x_fixed_deg[of p, folded d_def] setsum.commute by auto
 
 lemma poly2_poly_y_x[simp]: "poly2 (poly_y_x p) x y = poly2 p y x"
+  using [[unfold_abs_def = false]]
   apply(subst(3) poly_as_sum_of_monoms[symmetric])
   apply(subst poly_as_sum_of_monoms[symmetric,of "coeff p _"])
   unfolding poly_y_x_def

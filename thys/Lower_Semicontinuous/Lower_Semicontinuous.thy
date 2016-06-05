@@ -393,7 +393,7 @@ moreover
     hence "(%i. f (x i)) \<longlonglongrightarrow> - A" using tendsto_uminus_ereal[of "(%i. - f (x i))" A] by auto
     hence "(f o x) \<longlonglongrightarrow> -A" unfolding o_def by auto
     hence "f x0 >= - A" apply (subst usc_at_mem[of x0 "f" x]) using usc x_def by auto
-    hence "-f x0 <= A" unfolding ereal_uminus_le_reorder by auto
+    hence "-f x0 <= A" by (auto simp: ereal_uminus_le_reorder)
   } hence "lsc_at x0 (%x. -f x)" unfolding lsc_at_def by auto
 } ultimately show ?thesis by blast
 qed

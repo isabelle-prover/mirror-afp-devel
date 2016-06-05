@@ -218,7 +218,7 @@ proof(simp add:wp_eval)
   have feasible_lfp_loop:
     "feasible (lfp_trans ?X)"
   proof(intro feasibleI bounded_byI2 nnegI2,
-        simp_all add:wp_Loop1[unfolded wp_eval] soundI2 hwp)
+        simp_all add:wp_Loop1[simplified wp_eval] soundI2 hwp)
     fix P::"'s expect" and b::real
     assume bP: "bounded_by b P" and nP: "nneg P"
     hence sP: "sound P" by(auto)
@@ -242,7 +242,7 @@ proof(simp add:wp_eval)
   have unitary_gfp:
     "\<And>P. unitary P \<Longrightarrow> unitary (gfp_trans ?Y P)"
   proof(intro unitaryI2 nnegI2 bounded_byI2,
-      simp_all add:wlp_Loop1[unfolded wp_eval] hwlp)
+      simp_all add:wlp_Loop1[simplified wp_eval] hwlp)
     fix P::"'s expect"
     assume uP: "unitary P"
     show "\<lambda>s. 0 \<tturnstile> gfp_exp (\<lambda>Q s. \<guillemotleft> G \<guillemotright> s * wlp body Q s + \<guillemotleft> \<N> G \<guillemotright> s * P s)"
@@ -504,7 +504,7 @@ proof(rule le_trans_antisym)
                                  (\<lambda>P s. bound_of P)"
           by(intro le_transI, simp add:wp_eval, auto intro: lfp_loop_fp[unfolded negate_embed])
         have "equiv_trans (?F ?X) ?X"
-        unfolding wp_eval
+        apply (simp only: wp_eval)
         by(intro iffD1[OF equiv_trans_comm, OF lfp_trans_unfold]
                  wp_loop_step_mono[OF hb] wp_loop_step_sound[OF hb], (blast|rule X)+)
       }
@@ -520,8 +520,7 @@ proof(rule le_trans_antisym)
                    healthy_sound[OF healthy_wp_loop] hb)
 
   show "le_trans ?X ?Y"
-    unfolding wp_eval
-  proof(rule lfp_trans_lowerbound)
+  proof(simp only: wp_eval, rule lfp_trans_lowerbound)
     from hb cb have "bd_cts_tr ?F" by(rule cts_wp_loopstep)
     with iterates_increasing[OF hb] iterates_healthy[OF hb]
     have "equiv_trans (?F ?Y) (Sup_trans (range (?F o (iterates body G))))"

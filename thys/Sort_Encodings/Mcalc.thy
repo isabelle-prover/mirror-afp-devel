@@ -171,6 +171,7 @@ using wt proof (induct T)
   using Fn unfolding list_all2_length list_all_iff by auto
   have 1: "proj ?\<sigma> ?a = ?a" using proj_id[OF 0] .
   show ?case
+  using [[unfold_abs_def = false]]
   unfolding Ik.int.simps int.simps tpOf.simps 1
   unfolding I_intF_def apply(rule arg_cong[of _ _ "intF f"])
   proof (rule nth_equalityI, safe)

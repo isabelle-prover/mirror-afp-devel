@@ -577,8 +577,8 @@ section "Upper Bound on the Cost of BIT"
  
 
 lemma t_BIT_ub2: "(qs!n) \<notin> set init \<Longrightarrow> t_BIT n \<le> Suc(size init)"
-unfolding t_BIT_def  apply(simp) unfolding t_def BIT_step_def
-apply(simp) apply(simp add: bind_return_pmf)
+apply(simp add: t_BIT_def t_def BIT_step_def)
+apply(simp add: bind_return_pmf)
 proof (goal_cases)
   case 1
   note qs=this
@@ -611,8 +611,8 @@ proof (goal_cases)
  qed
 
 lemma t_BIT_ub: "(qs!n) \<in> set init \<Longrightarrow> t_BIT n \<le> size init"
-unfolding t_BIT_def  apply(simp) unfolding t_def BIT_step_def
-apply(simp) apply(simp add: bind_return_pmf)
+apply(simp add: t_BIT_def t_def BIT_step_def)
+apply(simp add: bind_return_pmf)
 proof (goal_cases)
   case 1
   note qs=this 

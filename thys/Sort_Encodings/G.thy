@@ -557,6 +557,7 @@ proof (induct T)
   have 0: "map (Ik.int \<xi>) Tl = map (GE.int \<xi> \<circ> gT) Tl"
   apply(rule nth_equalityI) using Fn unfolding list_all_length by auto
   show ?case
+  using [[unfold_abs_def = false]]
   unfolding Ik.int.simps GE.int.simps gT.simps unfolding intF_def
   using Fn by (simp add: 0)
 qed auto

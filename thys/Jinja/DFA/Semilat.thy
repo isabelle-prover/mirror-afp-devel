@@ -308,10 +308,9 @@ done
 lemma some_lub_conv:
   "\<lbrakk> acyclic r; is_lub (r^* ) x y u \<rbrakk> \<Longrightarrow> some_lub (r^* ) x y = u"
 (*<*)
-apply (unfold some_lub_def is_lub_def)
+apply (simp only: some_lub_def is_lub_def)
 apply (rule someI2)
- apply (unfold is_lub_def)
- apply assumption
+ apply (simp only: is_lub_def)
 apply (blast intro: antisymD dest!: acyclic_impl_antisym_rtrancl)
 done
 (*>*)

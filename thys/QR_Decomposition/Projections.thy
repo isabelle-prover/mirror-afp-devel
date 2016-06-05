@@ -121,7 +121,7 @@ next
   have "v \<bullet> x = v \<bullet> (\<Sum>a\<in>B. f a *\<^sub>R a)" unfolding f ..
   also have "... = (\<Sum>a\<in>B. v \<bullet> (f a *\<^sub>R a))" unfolding inner_setsum_right ..
   also have "... = (\<Sum>a\<in>B. f a * (v \<bullet> a))" unfolding inner_scaleR_right ..
-  also have "... = 0" using setsum.neutral o unfolding orthogonal_def inner_commute by simp
+  also have "... = 0" using setsum.neutral o by (simp add: orthogonal_def inner_commute)
   finally show "orthogonal v x" unfolding orthogonal_def .
 qed
 

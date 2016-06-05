@@ -628,7 +628,7 @@ proof -
              (x (t 0) + s0) t j))
           \<le> B * stepsize j ^ p"
       unfolding s_def dist_norm[symmetric]
-      unfolding dist_commute
+      apply (simp only: dist_commute)
       using \<open>t j \<le> t1\<close>
       by (rule fg')
     thus "norm

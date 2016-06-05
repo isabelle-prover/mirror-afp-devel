@@ -33,13 +33,13 @@ inductive_set ltln_rel for R where
   \<Longrightarrow> (Release_ltln a b,Release_ltln a' b') \<in> ltln_rel R"
 
 lemmas ltln_rel_induct[induct set] 
-  = ltln_rel.induct[unfolded relAPP_def[of ltln_rel, symmetric]]
+  = ltln_rel.induct[simplified relAPP_def[of ltln_rel, symmetric]]
 lemmas ltln_rel_cases[cases set] 
-  = ltln_rel.cases[unfolded relAPP_def[of ltln_rel, symmetric]]
+  = ltln_rel.cases[simplified relAPP_def[of ltln_rel, symmetric]]
 lemmas ltln_rel_intros 
-  = ltln_rel.intros[unfolded relAPP_def[of ltln_rel, symmetric]]
+  = ltln_rel.intros[simplified relAPP_def[of ltln_rel, symmetric]]
 
-inductive_simps ltln_rel_left_simps[unfolded relAPP_def[of ltln_rel, symmetric]]: 
+inductive_simps ltln_rel_left_simps[simplified relAPP_def[of ltln_rel, symmetric]]: 
   "(True_ltln,z) \<in> ltln_rel R"
   "(False_ltln,z) \<in> ltln_rel R"
   "(Prop_ltln p, z) \<in> ltln_rel R"

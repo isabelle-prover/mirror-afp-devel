@@ -433,7 +433,7 @@ proof (coinduction arbitrary: r s x rule: language_coinduct_upto_regular)
   then show ?case
     by (subst (3 4) Lang[symmetric])
       (auto simp: Times_PlusR[symmetric] simp del: Times_PlusR
-        intro!: exI[where 'a = "'a language"] Lang[unfolded Plus_ACI])
+        intro!: exI[where 'a = "'a language"] Lang[simplified Plus_ACI])
 qed
 
 theorem ardenR: "Plus r (Times x s) \<le> x \<Longrightarrow> Times r (Star s) \<le> x"

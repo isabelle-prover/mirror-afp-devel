@@ -839,8 +839,8 @@ proof (cases "{x. a< x\<and> x< b \<and> poly p x=0 }\<noteq>{}", induct "degree
         unfolding max_rp_def by linarith
       ultimately have "?R=cross p' a b + sign (poly p' a)"
         unfolding p' cross_def poly_mult
-        using variation_mult_neg_1[of "poly max_rp a", unfolded mult.commute]
-          variation_mult_pos(2)[of "poly max_rp b",unfolded mult.commute] `poly p' b\<noteq>0`
+        using variation_mult_neg_1[of "poly max_rp a", simplified mult.commute]
+          variation_mult_pos(2)[of "poly max_rp b", simplified mult.commute] `poly p' b\<noteq>0`
         by auto
       moreover have "?L=- cross p' a b + sign (poly p' b)"
         proof -
@@ -880,7 +880,7 @@ proof (cases "{x. a< x\<and> x< b \<and> poly p x=0 }\<noteq>{}", induct "degree
         using `poly max_rp b \<noteq> 0` False max_rp_def poly_power zero_le_even_power [of "order max_r p" "b - max_r"]
         by (auto simp add: le_less)
       ultimately have "?R=cross p' a b"
-        unfolding p' mult.commute cross_def using variation_mult_pos
+        apply (simp only: p' mult.commute cross_def) using variation_mult_pos
         by auto
       thus ?thesis unfolding max_r_sign_def sjump_def using False by auto
     qed
@@ -988,11 +988,12 @@ proof -
   have "p\<noteq>0" and "q\<noteq>0" using `poly (p * q) a \<noteq>0` by auto
   def g\<equiv>"gcd p q"
   obtain p' q' where p':"p= p'*g" and q':"q=q'*g"
-    using poly_gcd_dvd1 poly_gcd_dvd2 dvd_def[of "gcd p q", unfolded mult.commute] g_def by metis
+    using poly_gcd_dvd1 poly_gcd_dvd2 dvd_def[of "gcd p q", simplified mult.commute] g_def by metis
   hence "coprime p' q'" using gcd_coprime_poly `p\<noteq>0` unfolding g_def by auto
   have "p'\<noteq>0" "q'\<noteq>0" "g \<noteq>0" using p' q' `p\<noteq>0` `q\<noteq>0` by auto
   have "?L=cindex a b q' p' + cindex a b p' q'"
-    unfolding p' q' mult.commute using cindex_mult[OF `p'\<noteq>0` `g\<noteq>0`] cindex_mult[OF `q'\<noteq>0` `g\<noteq>0`]
+    apply (simp only: p' q' mult.commute)
+    using cindex_mult[OF `p'\<noteq>0` `g\<noteq>0`] cindex_mult[OF `q'\<noteq>0` `g\<noteq>0`]
     by auto
   also have "... =(\<Sum>x | a < x \<and> x < b \<and> poly (p' * q') x = 0. sjump (p' * q') x)"
     using  cindex_sjump[OF `p'\<noteq>0` `q'\<noteq>0` `coprime p' q'`, of a b] .

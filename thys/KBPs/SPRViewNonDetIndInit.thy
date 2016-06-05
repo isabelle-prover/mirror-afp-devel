@@ -247,7 +247,7 @@ next
 
   have "envTrans eact aact'' (tLast (t \<^bsub>\<^esub>\<bowtie>\<^bsub>a\<^esub> t'))
       = sSplice a (envTrans eact aact (tLast t)) s'"
-    unfolding envTrans_def sSplice_def
+    apply (simp only: envTrans_def sSplice_def)
     using tSplice_es[OF tLen[symmetric]] aact''_fst aact''_snd
     apply clarsimp
     done

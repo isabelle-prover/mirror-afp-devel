@@ -151,7 +151,7 @@ proof -
   interpret Semilat A r f by fact
   show ?thesis
     apply(insert semilat)
-    apply (unfold semilat_Def closed_def plussub_def lesub_def 
+    apply (simp only: semilat_Def closed_def plussub_def lesub_def 
               lift2_def le_def)
     apply (simp add: err_def' split: err.split)
     done

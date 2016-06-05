@@ -1024,7 +1024,7 @@ end
 
 lemmas bisim1_bisims1_inducts = 
   J1_JVM_heap_base.bisim1'_bisims1'.inducts
-  [unfolded J1_JVM_heap_base.bisim1'_eq_bisim1 J1_JVM_heap_base.bisims1'_eq_bisims1, 
+  [simplified J1_JVM_heap_base.bisim1'_eq_bisim1 J1_JVM_heap_base.bisims1'_eq_bisims1, 
   consumes 1,
   case_names bisim1Val2 bisim1New bisim1NewThrow
   bisim1NewArray bisim1NewArrayThrow bisim1NewArrayFail bisim1Cast bisim1CastThrow bisim1CastFail

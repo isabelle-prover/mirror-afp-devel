@@ -332,12 +332,12 @@ next
       next
         case False hence "lv ?bx d \<ge> lv ?bp d" by auto
         from l2_disjoint[OF _ p_grid x_grid x_nochild_p this] `d < dm` and base_length[OF p_spg']
-        show ?thesis unfolding l2_commutative by auto
+        show ?thesis by (auto simp: l2_commutative)
       qed
       hence "l2_\<phi> (p ! d) (x ! d) = 0" using base_out[OF `d < dm`] p_spg' x_spg by auto
       hence "\<exists> d \<in> {0..<Suc d}. l2_\<phi> (p ! d) (x ! d) = 0" by auto
       from setprod_zero[OF _ this]
-      show "?F x = 0" unfolding l2_commutative by auto
+      show "?F x = 0" by (auto simp: l2_commutative)
     qed
   qed
   finally show ?case .

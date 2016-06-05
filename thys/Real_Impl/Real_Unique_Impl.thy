@@ -148,8 +148,8 @@ proof
         let ?n2 = "rat_of_int n2"
         let ?z1 = "rat_of_int z1"
         let ?z2 = "rat_of_int z2"
-        from arg_cong[OF eq[unfolded id], of "\<lambda> x. x * ?sq ?n1 * ?sq ?n2",
-          unfolded field_simps]
+        from arg_cong[OF eq[simplified id], of "\<lambda> x. x * ?sq ?n1 * ?sq ?n2",
+          simplified field_simps]
         have "?sq (?n1 * ?z2) * ?b2 = ?sq (?n2 * ?z1) * ?b1"
           using pos by auto
         moreover have "?n1 * ?z2 \<noteq> 0" "?n2 * ?z1 \<noteq> 0" using z1 z2 pos by auto

@@ -540,9 +540,13 @@ qed
 lemma dvd_ideal_generated_singleton':
   assumes b_dvd_a: "b dvd a"
   shows "ideal_generated {a} \<subseteq> ideal_generated {b}"
-  unfolding ideal_generated_singleton using assms unfolding dvd_def
-  apply auto unfolding mult_commute unfolding mult_assoc[symmetric] by blast
-
+  apply (simp only: ideal_generated_singleton)
+  using assms unfolding dvd_def
+  apply auto
+  apply (simp_all only: mult_commute)
+  unfolding mult_assoc[symmetric]
+  apply blast
+  done
 
 
 lemma ideal_generated_subset2:
@@ -566,8 +570,10 @@ proof
       by (rule obtain_setsum_ideal_generated[OF x], simp)
     hence "x = f a * a + f b * b " unfolding setsum_two_elements[OF False] by simp
     also have "... = f a * (c * k) + f b * (c * k')" unfolding k k' by simp
-    also have "... = (f a * k) * c + (f b * k') * c" unfolding mult_assoc unfolding mult_commute ..
-    also have "... = (f a * k +  f b * k') * c" unfolding mult_commute unfolding distrib_left ..
+    also have "... = (f a * k) * c + (f b * k') * c"
+      by (simp only: mult_assoc) (simp only: mult_commute)
+    also have "... = (f a * k +  f b * k') * c"
+      by (simp only: mult_commute) (simp only: distrib_left)
     finally have "x = (f a * k + f b * k') * c" .
     thus ?thesis unfolding ideal_generated_singleton by auto
   qed
