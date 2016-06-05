@@ -2,13 +2,10 @@ chapter AFP
 
 session "Decreasing-Diagrams" (AFP) = "Abstract-Rewriting" +
   options [timeout = 3600]
-  
   theories [document = false]
     "~~/src/HOL/Library/Multiset"
-     
   theories
     Decreasing_Diagrams
-    
   document_files
     "root.bib"
     "root.tex"

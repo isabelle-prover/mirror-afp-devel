@@ -4,11 +4,8 @@ session "Perron_Frobenius" (AFP) = "Pre_Perron_Frobenius" +
   options [timeout = 600]
   theories
     Cancel_Card_Constraint
-  theories
     HMA_Connect
-  theories
     Perron_Frobenius
-  theories
     Spectral_Radius_Theory
   document_files
     "root.bib"
