@@ -76,7 +76,7 @@ begin
     by (simp add: is_index_def)
 
   lemma is_index_correct: "is_index f s idx \<Longrightarrow> ci_\<alpha> idx = index f s"
-    by (unfold is_index_def index_map_def ci_\<alpha>_def)
+    by (simp only: is_index_def index_map_def ci_\<alpha>_def)
        (simp add: index_map_correct)
 
   definition lookup :: "'i \<Rightarrow> 'm \<Rightarrow> 's" where

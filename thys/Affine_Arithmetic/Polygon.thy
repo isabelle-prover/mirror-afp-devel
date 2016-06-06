@@ -205,8 +205,7 @@ lemma snd_plus_commute: "snd \<circ> op + (x0, x0) = op + x0 o snd"
 lemma ccw'_sortedP_renormalize:
   "ccw'.sortedP a (map snd (polychain_of (x0 + x) xs)) \<longleftrightarrow>
    ccw'.sortedP (a - x0) (map snd (polychain_of x xs))"
-  unfolding polychain_of_add add.commute
-  by (simp add: snd_plus_commute)
+  by (simp add: polychain_of_add add.commute snd_plus_commute)
 
 lemma ccw'_sortedP_polychain_of01:
   shows "ccw'.sortedP 0 [u] \<Longrightarrow> ccw'.sortedP x0 (map snd (polychain_of x0 [u]))"

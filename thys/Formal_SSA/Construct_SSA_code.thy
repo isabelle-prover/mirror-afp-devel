@@ -150,7 +150,7 @@ begin
   proof (induction un arbitrary: n rule:removeAll_induct)
     case (1 un)
     show ?case
-    unfolding phiDefNodes_aux.simps
+    apply (simp only: phiDefNodes_aux.simps)
     apply (auto elim!: fold_union_elem)
      apply (rename_tac m n')
      apply (drule_tac x2=n and n2=n' in 1)

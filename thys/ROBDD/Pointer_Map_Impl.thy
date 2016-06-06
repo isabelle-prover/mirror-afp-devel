@@ -26,10 +26,9 @@ begin
    apply(unfold star_aci(1))
    apply blast
   apply(rule_tac p = "getentryi p" and h = "(x,y)" in preciseD[OF is_hashmap_prec])
-  apply(unfold star_aci(2)[symmetric])
-  apply(unfold star_aci(1)[symmetric]) (* black unfold magic *)
-  apply(unfold star_aci(2)[symmetric])
-  apply blast
+  apply(simp only: star_aci(2)[symmetric])
+  apply(simp only: star_aci(1)[symmetric]) (* black unfold magic *)
+  apply(simp only: star_aci(2)[symmetric])
   done
 
   definition pointermap_empty where

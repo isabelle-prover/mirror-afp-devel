@@ -472,7 +472,7 @@ lemma lemma2_6_6_b' : assumes "trans r" and i: "irrefl r" and "(Q + M, Q + N) \<
 lemma lemma2_6_9: assumes t: "trans r" and "(M,N) \<in> mul r" shows "(Q+M,Q+N) \<in> mul r" proof -
  obtain I J K where F1:"N = I + J" and F2:"M = I + K"and F3:"set_mset K \<subseteq> dm r J" and F4:"J \<noteq> {#}"
   using assms unfolding mul_def by auto
- have "Q+N=Q+I+J" and "Q+M=Q+I+K" unfolding F1 F2 union_commute union_lcomm by auto
+ have "Q+N=Q+I+J" and "Q+M=Q+I+K" by (auto simp: F1 F2 union_commute union_lcomm)
  thus ?thesis using assms(1) F3 F4 unfolding mul_def by auto
 qed
 
@@ -725,7 +725,7 @@ shows "(lexmax r (\<tau> @ \<upsilon> @ \<sigma>''), lexmax r (\<tau> @ \<upsilo
  have "lexmax r (\<tau> @ \<upsilon> @ \<sigma>'') = (lexmax r (\<tau> @ \<upsilon>) + ((lexmax r \<sigma>'') -s (dl r (\<tau>@\<upsilon>))))"
   unfolding append_assoc[symmetric] using lemma3_2_2 by fast
  moreover have x:"\<dots> = lexmax r (\<tau>@\<upsilon>) + (((lexmax r \<sigma>'') -s dl r \<upsilon>) -s dl r \<tau>)"
-  unfolding lemma2_6_1_list lemmaA_3_9 Un_commute by auto
+  by (auto simp: lemma2_6_1_list lemmaA_3_9 Un_commute)
  moreover have "(\<dots>,lexmax r (\<tau>@\<upsilon>) + (lexmax r \<sigma>' -s dl r \<tau>)) \<in> mul_eq r" (is "(_,?R) \<in> _")
   using lemma2_6_6_a[OF t lemma2_6_5_a'[OF t D_eq(2)[OF assms(1,2,4)]]] unfolding dl_def by auto
  moreover have "(?R,lexmax r (\<tau>@\<upsilon>) + lexmax r \<sigma>) \<in> mul_eq r"
@@ -736,14 +736,14 @@ shows "(lexmax r (\<tau> @ \<upsilon> @ \<sigma>''), lexmax r (\<tau> @ \<upsilo
 lemma claim1: assumes t: "trans r" and "D r \<tau> \<sigma> \<sigma>' \<tau>'"
 shows "(r|\<sigma>@\<tau>'| + ((r|\<upsilon>'| -s r \<down>l (\<sigma>@\<tau>')) \<inter>s r \<down>l \<tau>),r|\<sigma>| + r|\<tau>| ) \<in> mul_eq r" (is "(?F+?H,?G) \<in> _")
 proof -
- have 1: "(?F,?G) \<in> mul_eq r" using assms(2) unfolding D_def unfolding union_commute by auto
+ have 1: "(?F,?G) \<in> mul_eq r" using assms(2) unfolding D_def by (auto simp: union_commute)
  have 2: "set_mset ?H \<subseteq> (dm r ?G) - (dm r ?F)" (is "(?L \<subseteq> _)") proof -
   have "set_mset ?H = set_mset ((lexmax r \<upsilon>' \<inter>s dl r \<tau>) -s dl r (\<sigma>@\<tau>'))" unfolding lemmaA_3_11 by auto
   moreover have  "\<dots> \<subseteq> (dl r \<tau> - dl r (\<sigma>@\<tau>'))" unfolding diff_def intersect_def by auto
   moreover have "... \<subseteq> ((dl r \<sigma> \<union> dl r \<tau>) - dl r (\<sigma>@\<tau>'))" by auto
   ultimately show ?thesis unfolding lemma2_6_1_multiset lemma3_2_1[OF t] by auto
  qed
-show ?thesis using lemma2_6_7_a[OF t 2 1] unfolding union_commute by auto
+show ?thesis using lemma2_6_7_a[OF t 2 1] by (auto simp: union_commute)
 qed
 
 lemma step3: assumes t:"trans r" and "D r \<tau> \<sigma> \<sigma>' \<tau>'"
@@ -1383,7 +1383,8 @@ qed
 lemma DD_subset_ds:
 assumes t:"trans r" and DD: "DD ars r (\<tau>,\<sigma>,\<sigma>',\<tau>')" and "set_mset (measure r (\<tau>,\<sigma>)) \<subseteq> ds r S" shows "set_mset (measure r (\<sigma>',\<tau>')) \<subseteq> ds r S" proof -
  have d1:"(r|labels \<tau> @ labels \<sigma>'|, r|labels \<tau>| + r|labels \<sigma>| ) \<in> mul_eq r" using DD unfolding DD_def D2_def D_def by auto
- have d2:"(r|labels \<sigma> @ labels \<tau>'|, r|labels \<sigma>| + r|labels \<tau>| ) \<in> mul_eq r" using DD unfolding DD_def D2_def D_def apply auto unfolding union_commute by auto
+ have d2:"(r|labels \<sigma> @ labels \<tau>'|, r|labels \<sigma>| + r|labels \<tau>| ) \<in> mul_eq r" using DD unfolding DD_def D2_def D_def
+  by (auto simp: union_commute)
  show ?thesis using DD_subset_helper[OF t d1] DD_subset_helper[OF t d2] assms(3) unfolding measure_def by auto
 qed
 
@@ -1579,7 +1580,7 @@ proof -
      snd \<beta>_step = fst \<sigma>1 \<and> lst \<sigma>1 = fst \<sigma>2 \<and> lst \<sigma>2 = fst \<sigma>3' \<and> lst \<sigma>3' = lst \<gamma>1''' \<and> fst \<gamma>1''' = fst \<gamma>3" by metis
 
     have ih2: "!!y. (y, (s, [\<alpha>_step] @ \<rho>_step),(s,[\<beta>_step] @ \<upsilon>_step)) \<in> pex r \<Longrightarrow> peak ars y \<Longrightarrow> \<exists>\<sigma>' \<tau>'. DD ars r (fst y, snd y, \<sigma>', \<tau>')"
-    using IH unfolding pex_def measure_def apply auto unfolding union_commute by auto
+    using IH unfolding pex_def measure_def by (auto simp: union_commute)
 
     from local_decreasing_extended_imp_decreasing[OF LTb t i ih2] obtain \<tau>1 \<tau>2 \<tau>3' \<delta>1''' where taus:"{\<tau>1,\<tau>2,\<tau>3',\<delta>1'''} \<subseteq> seq ars" and
     onetwo2: "set (labels \<tau>1) \<subseteq> ds r {fst \<alpha>_step} \<and> length (labels \<tau>2) \<le> 1 \<and> set (labels \<tau>2) \<subseteq> {fst \<beta>_step} \<and>
@@ -1643,7 +1644,7 @@ proof -
     have c1234l:"set (labels_conv ?c1234) \<subseteq> ds r {fst \<alpha>_step,fst \<beta>_step}" using conv_concat_labels[OF c123(1) c4(1)] c123l c4 by auto
     hence "set_mset (r|labels_conv ?c1234| ) \<subseteq> ds r {fst \<alpha>_step,fst \<beta>_step}" using submultiset_implies_subset[OF lexmax_le_multiset[OF t]] by auto
     hence "set_mset (measure_conv r ?c1234) \<subseteq> dm r {#fst \<beta>_step, fst \<alpha>_step#}" unfolding measure_conv_def dm_def by auto
-    hence m: "set_mset (measure_conv r ?c1234) \<subseteq> dm r {#fst \<alpha>_step, fst \<beta>_step#}" unfolding union_commute by auto
+    hence m: "set_mset (measure_conv r ?c1234) \<subseteq> dm r {#fst \<alpha>_step, fst \<beta>_step#}" by (auto simp: union_commute)
 
     from c1234 m obtain \<rho> where \<rho>:"\<rho> \<in> conv ars" and \<rho>m:"set_mset (measure_conv r \<rho>) \<subseteq> dm r {# fst \<alpha>_step, fst \<beta>_step#}"
     and eq1: "fst \<rho> = lst \<tau>3'" and eq2: "lst_conv \<rho> = lst \<sigma>3'" by auto

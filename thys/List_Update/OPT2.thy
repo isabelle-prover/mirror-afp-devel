@@ -234,7 +234,7 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
             qed
 
           show "T\<^sub>p [x, y] (y # \<sigma>') (OPT2 (y # \<sigma>') [x, y]) \<le> T\<^sub>p_opt [x, y] (y # \<sigma>')" unfolding Nil
-            apply(simp) unfolding t\<^sub>p_def using less(3) apply(simp)
+            apply(simp add: t\<^sub>p_def) using less(3) apply(simp)
             using up by(simp)
         next
           case (Cons b rest2)

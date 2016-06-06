@@ -602,10 +602,10 @@ qed
 abbreviation "hm_delete \<equiv> ht_delete"
 lemma hm_delete_rule': 
   "<is_hashmap' m l ht> hm_delete k ht <is_hashmap (m |` (-{k}))>"
-  unfolding is_hashmap'_def[of m] is_hashtable_def
+  apply (simp only: is_hashmap'_def[of m] is_hashtable_def)
   apply sep_auto
   apply (rule cons_post_rule)
-  using complete_ht_delete[unfolded is_hashtable_def]
+  using complete_ht_delete[simplified is_hashtable_def]
   apply sep_auto
   apply (simp add: is_hashmap_def is_hashmap'_def)
   apply (sep_auto)

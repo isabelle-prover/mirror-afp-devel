@@ -267,7 +267,7 @@ lemma lm027:
 
 lemma lm028: 
   "Range Q \<union> (Range (P outside (Domain Q))) = Range (P +* Q)"
-  unfolding paste_def Range_Un_eq Un_commute by (metis(no_types))
+  by (simp add: paste_def Range_Un_eq Un_commute)
 
 lemma lm029: 
   assumes "a1 \<in> injectionsUniverse" 

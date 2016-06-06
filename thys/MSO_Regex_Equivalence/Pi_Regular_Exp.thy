@@ -118,11 +118,11 @@ proof (induct r)
   have "\<guillemotleft>\<guillemotleft>Plus r s\<guillemotright>\<guillemotright> = \<guillemotleft>flatten PLUS (toplevel_summands \<guillemotleft>r\<guillemotright> \<union> toplevel_summands \<guillemotleft>s\<guillemotright>)\<guillemotright>"
     (is "_ = \<guillemotleft>flatten PLUS ?U\<guillemotright>") by simp
   also have "\<dots> = flatten PLUS (ACI_norm ` toplevel_summands (flatten PLUS ?U))"
-    unfolding ACI_norm_flatten ..
+    by (simp only: ACI_norm_flatten)
   also have "toplevel_summands (flatten PLUS ?U) = ?U"
     by (intro toplevel_summands_flatten) (auto intro: Plus_toplevel_summands)
   also have "flatten PLUS (ACI_norm ` ?U) = flatten PLUS (toplevel_summands \<guillemotleft>r\<guillemotright> \<union> toplevel_summands \<guillemotleft>s\<guillemotright>)"
-    unfolding image_Un toplevel_summands_ACI_norm[symmetric] Plus ..
+    by (simp only: image_Un toplevel_summands_ACI_norm[symmetric] Plus)
   finally show ?case by simp
 qed auto
 

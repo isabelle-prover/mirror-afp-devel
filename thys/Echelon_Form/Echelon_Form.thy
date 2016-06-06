@@ -2631,6 +2631,7 @@ next
       using hyp_echelon unfolding A'_def echelon_form_of_upt_k_def .
     show "snd ?fold = snd (fst ?fold, if \<forall>m. is_zero_row_upt_k m (Suc (Suc k)) (fst ?fold) then 0
       else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (fst ?fold)) + 1)"
+        using [[unfold_abs_def = false]]
         unfolding fst_conv snd_conv unfolding rw 
         unfolding foldl_append unfolding foldl.simps
         unfolding echelon_form_of_column_k_def Let_def split_beta fst_snd_foldl 

@@ -107,6 +107,7 @@ proof -
       thus "norm (v - ?p) \<le> norm (v - y)" by simp
     qed
     show "?p \<in> S" 
+      using [[unfold_abs_def = false]]
     proof (unfold proj_onto_def proj_def, rule real_vector.subspace_setsum)
       show "real_vector.subspace S" using subspace_S .
       show "finite X" by (metis euclidean_space.independent_bound_general ind_X)

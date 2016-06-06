@@ -16,10 +16,8 @@ begin
     interpret ccpo: ccpo lub le lt by fact
     show ?thesis
       apply unfold_locales
-      unfolding mk_less_def fun_ord_def fun_lub_def
+      apply (simp_all only: mk_less_def fun_ord_def fun_lub_def)
       apply simp
-      apply simp
-
       using ccpo.order_trans apply blast
       using ccpo.antisym apply blast
       using ccpo.ccpo_Sup_upper apply (blast intro: chain_f_apply)
@@ -73,7 +71,7 @@ begin
 
   interpretation flat_ord: ccpo "flat_lub b" "flat_ord b" "mk_less (flat_ord b)"
     apply unfold_locales
-    unfolding mk_less_def flat_ord_def apply auto [4]
+    apply (simp_all only: mk_less_def flat_ord_def) apply auto [4]
     apply (erule flat_ord_chain_cases, auto) []
     apply (erule flat_ord_chain_cases, auto) []
     done

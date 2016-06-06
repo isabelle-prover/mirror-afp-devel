@@ -129,8 +129,7 @@ lemma wp_loop_unfold:
       and h: "healthy (wp body)"
   shows "wp (do G \<longrightarrow> body od) P =
    (\<lambda>s. \<guillemotleft>\<N> G\<guillemotright> s * P s + \<guillemotleft>G\<guillemotright> s * wp body (wp (do G \<longrightarrow> body od) P) s)"
-  unfolding wp_eval
-proof -
+proof (simp only: wp_eval)
   let "?X t" = "wp (body ;; Embed t \<^bsub>\<guillemotleft> G \<guillemotright>\<^esub>\<oplus> Skip)"
   have "equiv_trans (lfp_trans ?X)
     (wp (body ;; Embed (lfp_trans ?X) \<^bsub>\<guillemotleft> G \<guillemotright>\<^esub>\<oplus> Skip))"

@@ -119,7 +119,7 @@ proof
       unfolding plus_iarray_def Let_def 
       unfolding of_fun_nth[OF i3]
       unfolding of_fun_nth[OF i4]
-      unfolding add.commute ..
+      by (simp only: add.commute)
   qed
   show "a + b + c = a + (b + c)"
   proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, auto, unfold IArray.length_def[symmetric] IArray.sub_def[symmetric])

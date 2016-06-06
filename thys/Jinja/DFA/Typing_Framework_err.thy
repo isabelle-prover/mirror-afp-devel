@@ -114,7 +114,7 @@ lemma mono_lift:
     \<forall>s p t. s \<in> A \<and> p < n \<and> s \<sqsubseteq>\<^sub>r t \<longrightarrow> app p t \<longrightarrow> set (step p s) {\<sqsubseteq>\<^bsub>r\<^esub>} set (step p t) \<rbrakk>
   \<Longrightarrow>  mono (Err.le r) (err_step n app step) n (err A)"
 (*<*)
-apply (unfold app_mono_def SemilatAlg.mono_def err_step_def)
+apply (simp only: app_mono_def SemilatAlg.mono_def err_step_def)
 apply clarify
 apply (case_tac \<tau>)
  apply simp 

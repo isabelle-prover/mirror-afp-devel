@@ -92,6 +92,7 @@ lemma ACI_norm_REV: "\<guillemotleft>REV \<guillemotleft>r\<guillemotright>\<gui
 proof (induct r)
   case (Plus r s)
   show ?case
+    using [[unfold_abs_def = false]]
     unfolding REV.simps ACI_norm.simps Plus[symmetric] image_Un[symmetric]
       toplevel_summands.simps(1) toplevel_summands_ACI_norm toplevel_summands_REV
     unfolding toplevel_summands.simps(1)[symmetric] ACI_norm_flatten toplevel_summands_REV
