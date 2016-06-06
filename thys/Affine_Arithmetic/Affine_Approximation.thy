@@ -1615,7 +1615,7 @@ fun approximate_affine (name, term) lthy =
     val ((approx, (_, def_raw)), lthy') = Local_Theory.define
       ((name, NoSyn), ((Binding.empty, []), approx_raw)) lthy
     val (_, lthy'') = Local_Theory.notes
-      [((Thm.def_binding name, [Code.add_default_eqn_attrib]), [([def_raw], [])])] lthy'
+      [((Thm.def_binding name, [Code.add_default_eqn_attrib Code.Equation]), [([def_raw], [])])] lthy'
 
     (* correctness theorem *)
     (* shows "(vs, interpret_euclarith ea vs) \<in> Joints2 VS X" *)

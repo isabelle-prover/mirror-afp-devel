@@ -216,7 +216,8 @@ structure Locale_Code :LOCALE_CODE = struct
         |> fold Code.del_eqn thms  (* Code generator may get confused by invalid
                                       code equations that some tools (definition)
                                       seem to produce here *)
-        |> fold Code.add_eqn thms';
+        |> fold (Code.add_eqn (Code.Equation, false)) thms';
+          (*FIXME default code equation!?*)
     in thy end)
   end
 
