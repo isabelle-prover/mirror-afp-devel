@@ -28,8 +28,6 @@ imports
   "../Polynomial_Factorization/Rational_Factorization"
 begin
 
-hide_const (open) RBT.filter
-
 subsection \<open>Polynomial Evaluation of Rational Polynomials in Fields.\<close>
 
 abbreviation rpoly :: "rat poly \<Rightarrow> 'a :: field_char_0 \<Rightarrow> 'a"
