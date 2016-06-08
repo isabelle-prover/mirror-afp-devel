@@ -6,7 +6,7 @@ imports
 begin
 
 lemma compute_bitlen[code]: "bitlen a = (if a > 0 then log2 a + 1 else 0)"
-  by (simp add: bitlen_def log2_def)
+  by (simp add: bitlen_alt_def log2_def)
 
 lemma compute_real_of_float[code]:
   "real_of_float (Float m e) = (if e \<ge> 0 then m * 2 ^ nat e else m / power_int 2 (-e))"
