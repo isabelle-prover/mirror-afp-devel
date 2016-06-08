@@ -50,7 +50,7 @@ fun merge :: "'a :: linorder tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" w
 | "merge (Node lx x Leaf) (Node ly y Leaf) = link (Node lx x (Node ly y Leaf))"
 
 fun insert :: "'a \<Rightarrow> 'a :: linorder tree \<Rightarrow> 'a tree" where
-  "insert x = merge (Node Leaf x Leaf)"
+  "insert x h = merge (Node Leaf x Leaf) h"
 
 fun isRoot :: "'a :: linorder tree \<Rightarrow> bool" where
   "isRoot h = (case h of Leaf \<Rightarrow> True | Node _ _ r \<Rightarrow> r = Leaf)"
