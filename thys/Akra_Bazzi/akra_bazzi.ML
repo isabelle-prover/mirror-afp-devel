@@ -150,8 +150,8 @@ fun ANY' tacs n = fold (curry op APPEND) (map (fn t => t n) tacs) no_tac
 
 (* find recursion variable, set up a measure function for it and apply it to prove termination *)
 fun akra_bazzi_relation_tac ctxt =
-  case Facts.lookup (Context.Proof ctxt) (Proof_Context.facts_of ctxt) "local.termination" of
-    SOME (_, [thm]) =>
+  case Proof_Context.lookup_fact ctxt "local.termination" of
+    SOME {thms = [thm], ...} =>
       let
         val prems = Thm.prems_of thm
         val relT = prems |> hd |> dest_comb |> snd |> dest_comb |> snd |> dest_Var |> snd 
