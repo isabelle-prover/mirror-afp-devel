@@ -249,7 +249,8 @@ fun preference_profile_aux agents alts (binding, args) lthy =
     val (agentT, altT) = apply2 (dest_Type' o fastype_of) (agents, alts)
     val alt_setT = HOLogic.mk_setT altT
     fun define t = 
-      Local_Theory.define ((binding, NoSyn), ((Binding.suffix_name "_def" binding, []), t)) lthy
+      Local_Theory.define ((binding, NoSyn), 
+        ((Binding.suffix_name "_def" binding, @{attributes [code]}), t)) lthy
     val ty = HOLogic.mk_prodT (agentT, HOLogic.listT (HOLogic.mk_setT altT))
     val args' = 
       args |> map (fn x => x ||> map (HOLogic.mk_set altT) ||> HOLogic.mk_list alt_setT)
@@ -352,13 +353,17 @@ fun preference_profile ((agents, alts), args) lthy =
 fun preference_profile_cmd ((agents, alts), argss) lthy =
   let
     val read = Syntax.read_term lthy
+    fun read' ty t = Syntax.parse_term lthy t |> Type.constraint ty |> Syntax.check_term lthy 
+    val agents' = read agents
     val alts' = read alts
-    fun read_pref_elem ts = map read ts
+    val agentT = agents' |> fastype_of |> dest_Type |> snd |> hd
+    val altT = alts' |> fastype_of |> dest_Type |> snd |> hd
+    fun read_pref_elem ts = map (read' altT) ts
     fun read_prefs prefs = map read_pref_elem prefs
     fun prep (binding, args) = 
-      (binding, map (fn (agent, prefs) => (read agent, read_prefs prefs)) args)
+      (binding, map (fn (agent, prefs) => (read' agentT agent, read_prefs prefs)) args)
   in
-    preference_profile ((read agents, alts'), map prep argss) lthy
+    preference_profile ((agents', alts'), map prep argss) lthy
   end
 
 val parse_prefs = 

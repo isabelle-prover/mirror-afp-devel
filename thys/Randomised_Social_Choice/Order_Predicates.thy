@@ -306,8 +306,11 @@ inductive of_weak_ranking :: "'alt set list \<Rightarrow> 'alt relation" where
 
 lemma of_weak_ranking_Nil [simp]: "of_weak_ranking [] = (\<lambda>_ _. False)"
   by (intro ext) (simp add: of_weak_ranking.simps)
+
+lemma of_weak_ranking_Nil' [code]: "of_weak_ranking [] x y = False"
+  by simp
   
-lemma of_weak_ranking_Cons:
+lemma of_weak_ranking_Cons [code]:
   "x \<succeq>[of_weak_ranking (z#zs)] y \<longleftrightarrow> x \<in> z \<and> y \<in> (\<Union>set (z#zs)) \<or> x \<succeq>[of_weak_ranking zs] y" 
       (is "?lhs \<longleftrightarrow> ?rhs")
 proof 
@@ -429,10 +432,10 @@ proof -
 qed
 
 
-lemma is_weak_ranking_Nil [simp]: "is_weak_ranking []"
+lemma is_weak_ranking_Nil [simp, code]: "is_weak_ranking []"
   by (auto simp: is_weak_ranking_def)
 
-lemma is_finite_weak_ranking_Nil [simp]: "is_finite_weak_ranking []"
+lemma is_finite_weak_ranking_Nil [simp, code]: "is_finite_weak_ranking []"
   by (auto simp: is_finite_weak_ranking_def)
 
 lemma is_weak_ranking_Cons_empty [simp]:
@@ -456,12 +459,12 @@ lemma is_weak_ranking_append:
   by (simp only: is_weak_ranking_iff)
      (auto dest: disjointD disjoint_unionD1 disjoint_unionD2 intro: disjoint_union)
 
-lemma is_weak_ranking_Cons:
+lemma is_weak_ranking_Cons [code]:
   "is_weak_ranking (x # xs) \<longleftrightarrow> 
       x \<noteq> {} \<and> is_weak_ranking xs \<and> x \<inter> \<Union>set xs = {}"
   using is_weak_ranking_append[of "[x]" xs] by auto
 
-lemma is_finite_weak_ranking_Cons:
+lemma is_finite_weak_ranking_Cons [code]:
   "is_finite_weak_ranking (x # xs) \<longleftrightarrow> 
       x \<noteq> {} \<and> finite x \<and> is_finite_weak_ranking xs \<and> x \<inter> \<Union>set xs = {}"
   by (auto simp add: is_finite_weak_ranking_def is_weak_ranking_Cons)
