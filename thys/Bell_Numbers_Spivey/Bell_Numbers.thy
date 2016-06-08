@@ -109,12 +109,15 @@ lemma injectivity_solver_prep_assms:
 using assms by simp
 
 method injectivity_solver uses rule =
-  ((drule injectivity_solver_prep_assms)+)?;
-  rule disjoint_underI;
-  (rule disjoint_bind | rule disjoint_bind')+; erule disjoint_singleton;
-  (elim injectivity_solver_CollectE)?;
-  rule rule;
-  assumption+
+  insert method_facts,
+  use nothing in \<open>
+    ((drule injectivity_solver_prep_assms)+)?;
+    rule disjoint_underI;
+    (rule disjoint_bind | rule disjoint_bind')+; erule disjoint_singleton;
+    (elim injectivity_solver_CollectE)?;
+    rule rule;
+    assumption+
+  \<close>
 
 subsubsection {* Cardinality Theorems for Set.bind *}
 
@@ -521,7 +524,7 @@ proof -
               using \<open>finite B\<close> \<open>finite P\<close> by (auto intro: finite_PiE)
             moreover have "disjoint_under ?comp ?S"
               using P B' Q
-              by - (injectivity_solver rule: local.injectivity(1))
+              by (injectivity_solver rule: local.injectivity(1))
             moreover have "card ?S = j ^ (n - k)"
             proof -
               have "card (B - B') = n - k"
@@ -542,7 +545,7 @@ proof -
             using B' \<open>finite B'\<close> by (auto simp add: Bell_altdef[symmetric])
           moreover have "disjoint_under ?comp ?S"
             using P B'
-            by - (injectivity_solver rule: local.injectivity(2))
+            by (injectivity_solver rule: local.injectivity(2))
           ultimately have "card ?expr = j ^ (n - k) * Bell k"
             by (subst card_bind_constant) auto
           moreover have "finite ?expr"
@@ -553,7 +556,7 @@ proof -
           using \<open>card B = n\<close> \<open>finite B\<close> by (simp add: n_subsets)
         moreover have "disjoint_under ?comp ?S"
           using P
-          by - (injectivity_solver rule: local.injectivity(3))
+          by (injectivity_solver rule: local.injectivity(3))
         ultimately have "card ?expr = j ^ (n - k) * (n choose k) * Bell k"
           by (subst card_bind_constant) auto
         moreover have "finite ?expr"
