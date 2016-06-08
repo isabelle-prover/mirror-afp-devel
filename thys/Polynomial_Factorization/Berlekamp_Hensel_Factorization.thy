@@ -144,7 +144,7 @@ definition pre_hensel_factorization :: "int poly_f \<Rightarrow> GFp poly_f list
      dg = degree_poly_f g;
      M = mignotte_bounds g (dg div 2);
      a = leading_coeff_non_zero g;
-     n = hensel_prime_power (nat p) (nat (2 * a * M));
+     n = hensel_prime_power (nat p) (nat (2 * abs a * M));
      f = int_poly_of_list_f F g;
      (_,fs) = berlekamp_factorization F f
      in (fs,(p,n)))"
