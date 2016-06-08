@@ -540,7 +540,7 @@ proof -
     by (rule nn_cond_exp_intg) auto
   also have "\<dots> = \<integral>\<^sup>+ x. ennreal (f x * max (g x) 0 + f x * max (- g x) 0) \<partial>M"
     unfolding h_def
-    by (intro nn_integral_cong) (auto simp: ennreal_mult abs_mult split: split_max)
+    by (intro nn_integral_cong)(auto simp: ennreal_mult[symmetric] abs_mult split: split_max)
   also have "... < \<infinity>"
     using integrable_add[OF int1 int2, THEN integrableD(2)] by (auto simp add: less_top)
   finally have *: "(\<integral>\<^sup>+x. f x * nn_cond_exp M F h x \<partial>M) < \<infinity>" by simp
