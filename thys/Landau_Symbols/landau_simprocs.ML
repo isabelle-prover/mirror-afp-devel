@@ -198,10 +198,12 @@ fun cancel_factor_conv' ctxt ct =
       in
         Option.map do_cancel (try (fn () => Goal.prove ctxt [] [] prop tac) ())
       end
+    fun not_one (Const (@{const_name Groups.one}, _)) = false
+      | not_one _ = true
     fun cancel (leaf1 as (t1, _, _)) (leaf2 as (t2, _, _)) = 
-      if t1 = t2 then cancel' leaf1 leaf2 else NONE
+      if t1 = t2 andalso not_one t1 then cancel' leaf1 leaf2 else NONE
   in
-    case get_first (fn leaf1 => get_first (cancel leaf1) g_leaves) f_leaves of
+    case (get_first (fn leaf1 => get_first (cancel leaf1) g_leaves) f_leaves) of
       NONE => raise CTERM ("cancel_factor_conv", [ct])
     | SOME thm => thm
   end

@@ -27,7 +27,8 @@ definition "eventually_nonneg f \<longleftrightarrow> eventually (\<lambda>x. (f
 
 named_theorems eventually_nonzero_simps
 
-lemmas [eventually_nonzero_simps] = eventually_not_equal eventually_ln_not_equal
+lemmas [eventually_nonzero_simps] = 
+  eventually_nonzero_def [symmetric] eventually_nonneg_def [symmetric]
 
 lemma eventually_nonzeroD: "eventually_nonzero f \<Longrightarrow> eventually (\<lambda>x. f x \<noteq> 0) at_top"
   by (simp add: eventually_nonzero_def)
@@ -161,6 +162,8 @@ definition bigtheta :: "(('a::order) \<Rightarrow> ('b :: linordered_field)) \<R
   where "\<Theta>(g) = O(g) \<inter> \<Omega>(g)"
 
 text {* The following is a set of properties that all Landau symbols satisfy. *}
+
+named_theorems landau_divide_simps
 
 locale landau_symbol =
   fixes L L' :: "(('a::order) \<Rightarrow> ('b :: linordered_field)) \<Rightarrow> ('a \<Rightarrow> 'b) set"
@@ -309,6 +312,16 @@ proof-
   thus ?thesis by (simp only: divide_right_iff assms)
 qed
 
+lemma inverse_eq1:
+  assumes "eventually (\<lambda>x. g x \<noteq> 0) at_top"
+  shows   "f \<in> L(\<lambda>x. inverse (g x)) \<longleftrightarrow> (\<lambda>x. f x * g x) \<in> L(\<lambda>_. 1)"
+  using divide_eq1[of g f "\<lambda>_. 1"] by (simp add: divide_inverse assms)
+
+lemma inverse_eq2:
+  assumes "eventually (\<lambda>x. f x \<noteq> 0) at_top"
+  shows   "(\<lambda>x. inverse (f x)) \<in> L(g) \<longleftrightarrow> (\<lambda>x. 1) \<in> L(\<lambda>x. f x * g x)"
+  using divide_eq2[of f "\<lambda>_. 1" g] by (simp add: divide_inverse assms mult_ac)
+
 lemma inverse_flip:
   assumes "eventually (\<lambda>x. g x \<noteq> 0) at_top"
   assumes "eventually (\<lambda>x. h x \<noteq> 0) at_top"
@@ -343,6 +356,9 @@ lemma lift_trans_bigtheta':
   assumes "\<And>g h. g \<in> \<Theta>(h) \<Longrightarrow> (\<lambda>x. t x (g x)) \<in> \<Theta>(\<lambda>x. t x (h x))"
   shows   "f \<in> L(\<lambda>x. t x (h x))"
   using cong_bigtheta[OF assms(3)[OF assms(2)]] assms(1)  by simp
+
+lemmas [landau_divide_simps] = 
+  inverse_cancel divide_left_iff divide_eq1 divide_eq2 inverse_eq1 inverse_eq2
 
 end
 
@@ -879,9 +895,19 @@ proof (rule landau_o.bigI)
     by (auto elim!: eventually_mono dest: order.trans)
 qed
 
+lemma smallomegaD [dest]:
+  assumes "f \<in> \<omega>(g)"
+  shows   "eventually (\<lambda>x. \<bar>f x\<bar> \<ge> c * \<bar>g x\<bar>) at_top"
+proof (cases "c > 0")
+  case False
+  show ?thesis 
+    by (intro always_eventually allI, rule order.trans[of _ 0])
+       (insert False, auto intro!: mult_nonpos_nonneg)
+qed (blast dest: landau_omega.smallD[OF assms, of c])
+
 declare landau_o.smallI landau_omega.bigI landau_omega.smallI [intro]
 declare landau_o.bigE landau_omega.bigE [elim]
-declare landau_o.smallD landau_omega.smallD [dest]
+declare landau_o.smallD
 
 lemma (in landau_symbol) bigtheta_trans1': 
   "f \<in> L(g) \<Longrightarrow> h \<in> \<Theta>(g) \<Longrightarrow> f \<in> L(h)"
@@ -925,6 +951,65 @@ lemmas landau_trans [trans] =
   bigo_bigomega_trans bigo_smallomega_trans smallo_bigomega_trans smallo_smallomega_trans 
   bigomega_bigo_trans bigomega_smallo_trans smallomega_bigo_trans smallomega_smallo_trans
 
+
+lemma bigo_compose_aux:
+  assumes "f \<in> O(g)" "\<And>c. eventually (\<lambda>x. (h x:: 'a :: linorder) \<ge> c) at_top"
+  shows   "(\<lambda>x. f (h x)) \<in> O(\<lambda>x. g (h x))"
+proof -
+  from landau_o.bigE[OF assms(1)] guess c . note c = this
+  from eventually_at_top_compose[OF assms(2) c(2)] show ?thesis by (rule bigoI)
+qed
+
+lemma smallo_compose_aux:
+  assumes "f \<in> o(g)" "\<And>c. eventually (\<lambda>x. (h x:: 'a :: linorder) \<ge> c) at_top"
+  shows   "(\<lambda>x. f (h x)) \<in> o(\<lambda>x. g (h x))"
+proof -
+  from eventually_at_top_compose[OF assms(2) landau_o.smallD[OF assms(1)]] 
+    show ?thesis by (rule landau_o.smallI)
+qed
+
+lemma bigomega_compose_aux:
+  assumes "f \<in> \<Omega>(g)" "\<And>c. eventually (\<lambda>x. (h x:: 'a :: linorder) \<ge> c) at_top"
+  shows   "(\<lambda>x. f (h x)) \<in> \<Omega>(\<lambda>x. g (h x))"
+  using bigo_compose_aux[of g f, OF _ assms(2)] assms by (simp add: bigomega_iff_bigo)
+
+lemma smallomega_compose_aux:
+  assumes "f \<in> \<omega>(g)" "\<And>c. eventually (\<lambda>x. (h x:: 'a :: linorder) \<ge> c) at_top"
+  shows   "(\<lambda>x. f (h x)) \<in> \<omega>(\<lambda>x. g (h x))"
+  using smallo_compose_aux[of g f, OF _ assms(2)] assms by (simp add: smallomega_iff_smallo)
+
+lemma bigtheta_compose_aux:
+  assumes "f \<in> \<Theta>(g)" "\<And>c. eventually (\<lambda>x. (h x:: 'a :: linorder) \<ge> c) at_top"
+  shows   "(\<lambda>x. f (h x)) \<in> \<Theta>(\<lambda>x. g (h x))"
+  using bigo_compose_aux[of f g, OF _ assms(2)] bigomega_compose_aux[of f g, OF _ assms(2)]
+     assms(1) by (simp add: bigtheta_def)
+
+
+
+lemma bigo_compose:
+  assumes "f \<in> O(g)" "filterlim h at_top at_top"
+  shows   "(\<lambda>x. f (h x)) \<in> O(\<lambda>x. g (h x :: 'a :: linorder))"
+  using assms unfolding filterlim_at_top by (intro bigo_compose_aux[of f g h]) simp_all
+
+lemma smallo_compose:
+  assumes "f \<in> o(g)" "filterlim h at_top at_top"
+  shows   "(\<lambda>x. f (h x)) \<in> o(\<lambda>x. g (h x :: 'a :: linorder))"
+  using assms unfolding filterlim_at_top by (intro smallo_compose_aux[of f g h]) simp_all
+
+lemma bigomega_compose:
+  assumes "f \<in> \<Omega>(g)" "filterlim h at_top at_top"
+  shows   "(\<lambda>x. f (h x)) \<in> \<Omega>(\<lambda>x. g (h x :: 'a :: linorder))"
+  using assms unfolding filterlim_at_top by (intro bigomega_compose_aux[of f g h]) simp_all
+
+lemma smallomega_compose:
+  assumes "f \<in> \<omega>(g)" "filterlim h at_top at_top"
+  shows   "(\<lambda>x. f (h x)) \<in> \<omega>(\<lambda>x. g (h x :: 'a :: linorder))"
+  using assms unfolding filterlim_at_top by (intro smallomega_compose_aux[of f g h]) simp_all
+
+lemma bigtheta_compose:
+  assumes "f \<in> \<Theta>(g)" "filterlim h at_top at_top"
+  shows   "(\<lambda>x. f (h x)) \<in> \<Theta>(\<lambda>x. g (h x :: 'a :: linorder))"
+  using assms unfolding filterlim_at_top by (intro bigtheta_compose_aux[of f g h]) simp_all
 
 
 lemma bigtheta_inverse [simp]: 
@@ -1301,6 +1386,19 @@ proof (rule landau_o.smallI)
   qed
 qed
 
+lemma smallo_powr_nonneg:
+  fixes f :: "('a::order) \<Rightarrow> real"
+  assumes "f \<in> o(g)" "p > 0" "eventually (\<lambda>x. f x \<ge> 0) at_top" "eventually (\<lambda>x. g x \<ge> 0) at_top"
+  shows   "(\<lambda>x. f x powr p) \<in> o(\<lambda>x. g x powr p)"
+proof -
+  from assms(3) have "(\<lambda>x. f x powr p) \<in> \<Theta>(\<lambda>x. \<bar>f x\<bar> powr p)" 
+    by (intro bigthetaI_cong) (auto elim!: eventually_mono)
+  also have "(\<lambda>x. \<bar>f x\<bar> powr p) \<in> o(\<lambda>x. \<bar>g x\<bar> powr p)" by (intro smallo_powr) fact+
+  also from assms(4) have "(\<lambda>x. \<bar>g x\<bar> powr p) \<in> \<Theta>(\<lambda>x. g x powr p)"
+    by (intro bigthetaI_cong) (auto elim!: eventually_mono)
+  finally show ?thesis .
+qed
+
 lemma bigtheta_powr:
   fixes f :: "('a::order) \<Rightarrow> real"
   shows "f \<in> \<Theta>(g) \<Longrightarrow> (\<lambda>x. \<bar>f x\<bar> powr p) \<in> \<Theta>(\<lambda>x. \<bar>g x\<bar> powr p)"
@@ -1308,6 +1406,19 @@ apply (cases "p < 0")
 apply (subst bigtheta_inverse[symmetric], subst (1 2) powr_minus[symmetric])
 unfolding bigtheta_def apply (auto simp: bigomega_iff_bigo intro!: bigo_powr)
 done
+
+lemma bigo_powr_nonneg:
+  fixes f :: "('a::order) \<Rightarrow> real"
+  assumes "f \<in> O(g)" "p \<ge> 0" "eventually (\<lambda>x. f x \<ge> 0) at_top" "eventually (\<lambda>x. g x \<ge> 0) at_top"
+  shows   "(\<lambda>x. f x powr p) \<in> O(\<lambda>x. g x powr p)"
+proof -
+  from assms(3) have "(\<lambda>x. f x powr p) \<in> \<Theta>(\<lambda>x. \<bar>f x\<bar> powr p)" 
+    by (intro bigthetaI_cong) (auto elim!: eventually_mono)
+  also have "(\<lambda>x. \<bar>f x\<bar> powr p) \<in> O(\<lambda>x. \<bar>g x\<bar> powr p)" by (intro bigo_powr) fact+
+  also from assms(4) have "(\<lambda>x. \<bar>g x\<bar> powr p) \<in> \<Theta>(\<lambda>x. g x powr p)"
+    by (intro bigthetaI_cong) (auto elim!: eventually_mono)
+  finally show ?thesis .
+qed
 
 lemma zero_in_smallo [simp]: "(\<lambda>_. 0) \<in> o(f)"
   by (intro landau_o.smallI) simp_all

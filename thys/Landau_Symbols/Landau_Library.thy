@@ -12,6 +12,11 @@ begin
 
 subsection {* Filters *}
 
+lemma eventually_at_top_compose:
+  assumes "\<And>c. eventually (\<lambda>x. (f x:: 'a :: linorder) \<ge> c) F" "eventually P at_top"
+  shows   "eventually (\<lambda>x. P (f x)) F"
+  using assms filterlim_at_top filterlim_iff by blast
+
 lemma filterlim_abs_real: "filterlim (abs::real \<Rightarrow> real) at_top at_top"
 proof (subst filterlim_cong[OF refl refl])
   from eventually_ge_at_top[of "0::real"] show "eventually (\<lambda>x::real. \<bar>x\<bar> = x) at_top"
@@ -116,7 +121,7 @@ lemma zero_powr [simp]: "(0::real) powr x = 0"
   unfolding powr_def by simp
 
 lemma powr_negD: "(a::real) powr b \<le> 0 \<Longrightarrow> a = 0"
-  unfolding powr_def by (simp split: if_split_asm)
+  unfolding powr_def by (simp split: split_if_asm)
 
 lemma inverse_powr [simp]:
   assumes "(x::real) \<ge> 0"
