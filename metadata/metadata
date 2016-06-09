@@ -4125,8 +4125,8 @@ notify = kleing@unsw.edu.au
 date = 2016-06-09
 topic = Computer Science/Data Structures
 abstract = 
-  This entry contains an extension to the Isabelle library for fixed-
-  width machine words. In particular, the entry adds quickcheck setup
+  This entry contains an extension to the Isabelle library for
+  fixed-width machine words. In particular, the entry adds quickcheck setup
   for words, printing as hexadecimals, additional operations, reasoning
   about alignment, signed words, enumerations of words, normalisation of
   word numerals, and an extensive library of properties about generic
