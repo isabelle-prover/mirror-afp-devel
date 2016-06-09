@@ -4117,3 +4117,19 @@ abstract =
   graphs. We model this proof representation in Isabelle, and prove that
   it is just as powerful as natural deduction.
 notify = breitner@kit.edu
+
+[Word_Lib]
+title = Finite Machine Word Library
+author = Joel Beeren<>, Matthew Fernandez<>, Xin Gao<>, Gerwin Klein <http://www.cse.unsw.edu.au/~kleing/>, Rafal Kolanski<>, Japheth Lim<>, Corey Lewis<>, Daniel Matichuk<>, Thomas Sewell<>
+notify = kleing@unsw.edu.au
+date = 2016-06-09
+topic = Computer Science/Data Structures
+abstract = 
+  This entry contains an extension to the Isabelle library for fixed-
+  width machine words. In particular, the entry adds quickcheck setup
+  for words, printing as hexadecimals, additional operations, reasoning
+  about alignment, signed words, enumerations of words, normalisation of
+  word numerals, and an extensive library of properties about generic
+  fixed-width words, as well as an instantiation of many of these to the
+  commonly used 32 and 64-bit bases.
+

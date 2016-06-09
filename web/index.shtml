@@ -50,6 +50,21 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2016-06-09:
+<a href="entries/Word_Lib.shtml">Finite Machine Word Library</a>
+<br>Author:
+Joel Beeren,
+Matthew Fernandez,
+Xin Gao,
+<a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a>,
+Rafal Kolanski,
+Japheth Lim,
+Corey Lewis,
+Daniel Matichuk and 
+Thomas Sewell
+</td></tr>
+
+<tr><td class="entry">
 2016-05-31:
 <a href="entries/Tree_Decomposition.shtml">Tree Decomposition</a>
 <br>Author:
