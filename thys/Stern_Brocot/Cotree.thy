@@ -145,10 +145,10 @@ by(coinduction arbitrary: u v w)(auto)
 lemma ap_tree_W_tree: "pure (\<lambda>f x. f x x) \<diamondop> f \<diamondop> x = f \<diamondop> x \<diamondop> x"
 by(coinduction arbitrary: f x)(auto)
 
-applicative tree (C, K, W) for
+applicative tree (K, W) for
   pure: pure_tree
   ap: ap_tree
-by(rule ap_tree_identity[unfolded id_def] ap_tree_composition[unfolded o_def[abs_def]] ap_tree_homomorphism ap_tree_interchange ap_tree_K_tree ap_tree_C_tree ap_tree_W_tree)+
+by(rule ap_tree_homomorphism ap_tree_composition[unfolded o_def[abs_def]] ap_tree_K_tree ap_tree_W_tree ap_tree_interchange)+
 
 declare map_tree_ap_tree_pure_tree[symmetric, applicative_unfold]
 
