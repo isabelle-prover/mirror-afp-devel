@@ -3779,6 +3779,11 @@ abstract = Applicative functors augment computations with effects by lifting fun
 extra-history =
   Change history:
   [2016-03-03]: added formalisation of lifting with combinators<br>
+  [2016-06-10]:
+  implemented automatic derivation of lifted combinator reductions;
+  support arbitrary lifted relations using relators;
+  improved compatibility with locale interpretation
+  (revision ec336f354f37)<br>
 notify = andreas.lochbihler@inf.ethz.ch
 
 [Stern_Brocot]
