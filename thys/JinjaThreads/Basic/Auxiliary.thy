@@ -9,13 +9,15 @@ section {* Auxiliary Definitions and Lemmata *}
 theory Auxiliary
 imports
   Complex_Main
-  "~~/src/HOL/Library/FinFun_Syntax"
+  "~~/src/HOL/Library/FinFun"
   "~~/src/HOL/Library/Transitive_Closure_Table"
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
   "~~/src/HOL/Library/Code_Char"
   "~~/src/HOL/Library/Monad_Syntax"
   "~~/src/HOL/Library/Infinite_Set"
 begin
+
+unbundle finfun_syntax
 
 (* FIXME move and possibly turn into a general simproc *)
 lemma nat_add_max_le[simp]:
