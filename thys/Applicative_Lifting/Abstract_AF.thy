@@ -43,7 +43,7 @@ applicative af
 for
   pure: af_pure
   ap: af_ap
-using af_identity af_composition af_homomorphism af_interchange
+using af_homomorphism af_composition af_identity af_interchange
 unfolding id_def comp_def[abs_def]
 .
 

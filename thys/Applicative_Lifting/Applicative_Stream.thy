@@ -10,7 +10,7 @@ theory Applicative_Stream imports
   "~~/src/HOL/Library/Stream"
 begin
 
-primcorec ap_stream :: "('a \<Rightarrow> 'b) stream \<Rightarrow> 'a stream \<Rightarrow> 'b stream"
+primcorec (transfer) ap_stream :: "('a \<Rightarrow> 'b) stream \<Rightarrow> 'a stream \<Rightarrow> 'b stream"
 where
     "shd (ap_stream f x) = shd f (shd x)"
   | "stl (ap_stream f x) = ap_stream (stl f) (stl x)"
@@ -18,7 +18,9 @@ where
 adhoc_overloading Applicative.pure sconst
 adhoc_overloading Applicative.ap ap_stream
 
-context begin interpretation applicative_syntax .
+context begin
+interpretation applicative_syntax .
+interpretation lifting_syntax .
 
 lemma ap_stream_id: "pure (\<lambda>x. x) \<diamondop> x = x"
 by (coinduction arbitrary: x) simp
@@ -32,23 +34,35 @@ by (coinduction arbitrary: f) auto
 lemma ap_stream_composition: "pure (\<lambda>g f x. g (f x)) \<diamondop> g \<diamondop> f \<diamondop> x = g \<diamondop> (f \<diamondop> x)"
 by (coinduction arbitrary: g f x) auto
 
-applicative stream (C, K, W)
+applicative stream (S, K)
 for
   pure: sconst
   ap: ap_stream
+  rel: stream_all2
+  set: sset
 proof -
-  fix f :: "('c \<Rightarrow> 'b \<Rightarrow> 'a) stream" and x y
-  show "pure (\<lambda>f x y. f y x) \<diamondop> f \<diamondop> x \<diamondop> y = f \<diamondop> y \<diamondop> x"
-    by (coinduction arbitrary: f x y) auto
+  fix g :: "('b \<Rightarrow> 'a \<Rightarrow> 'c) stream" and f x
+  show "pure (\<lambda>g f x. g x (f x)) \<diamondop> g \<diamondop> f \<diamondop> x = g \<diamondop> x \<diamondop> (f \<diamondop> x)"
+    by (coinduction arbitrary: g f x) auto
 next
   fix x :: "'b stream" and y :: "'a stream"
   show "pure (\<lambda>x y. x) \<diamondop> x \<diamondop> y = x"
     by (coinduction arbitrary: x y) auto
 next
-  fix f :: "('b \<Rightarrow> 'b \<Rightarrow> 'a) stream" and x
-  show "pure (\<lambda>f x. f x x) \<diamondop> f \<diamondop> x = f \<diamondop> x \<diamondop> x"
-    by (coinduction arbitrary: f x) auto
-qed(rule ap_stream_id ap_stream_homo ap_stream_interchange ap_stream_composition)+
+  fix R :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
+  show "(R ===> stream_all2 R) pure pure"
+  proof
+    fix x y
+    assume "R x y"
+    then show "stream_all2 R (pure x) (pure y)"
+      by coinduction simp
+  qed
+next
+  fix R and f :: "('a \<Rightarrow> 'b) stream" and g :: "('a \<Rightarrow> 'c) stream" and x
+  assume [transfer_rule]: "stream_all2 (eq_on (sset x) ===> R) f g"
+  have [transfer_rule]: "stream_all2 (eq_on (sset x)) x x" by(simp add: stream.rel_refl_strong)
+  show "stream_all2 R (f \<diamondop> x) (g \<diamondop> x)" by transfer_prover
+qed (rule ap_stream_homo)
 
 lemma smap_applicative[applicative_unfold]: "smap f x = pure f \<diamondop> x"
 unfolding ap_stream_def by (coinduction arbitrary: x) auto
