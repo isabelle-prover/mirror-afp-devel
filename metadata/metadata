@@ -4,7 +4,7 @@ author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
 notify = lukas.bulwahn@gmail.com
 date = 2016-05-24
 topic = Mathematics/Combinatorics
-abstract = 
+abstract =
   This entry provides formulae for counting the number of equivalence
   relations and partial equivalence relations over a finite carrier set
   with given cardinality.  To count the number of equivalence relations,
@@ -25,7 +25,7 @@ author = Fahad Ausaf <http://kcl.academia.edu/FahadAusaf>, Roy Dyckhoff <https:/
 notify = christian.urban@kcl.ac.uk
 date = 2016-05-24
 topic = Computer Science/Automata and Formal Languages
-abstract = 
+abstract =
   Brzozowski introduced the notion of derivatives for regular
   expressions. They can be used for a very simple regular expression
   matching algorithm. Sulzmann and Lu cleverly extended this algorithm
@@ -81,6 +81,31 @@ abstract =
 	Value Theorem for polynomials, and the boundedness of polynomials on compact
 	intervals.
 notify = eberlm@in.tum.de
+
+[Noninterference_Concurrent_Composition]
+title = Conservation of CSP Noninterference Security under Concurrent Composition
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
+notify = pasquale.noce.lavoro@gmail.com
+date = 2016-06-13
+topic = Computer Science/Security
+abstract =
+  <p>In his outstanding work on Communicating Sequential Processes,
+  Hoare has defined two fundamental binary operations allowing to
+  compose the input processes into another, typically more complex,
+  process: sequential composition and concurrent composition.
+  Particularly, the output of the latter operation is a process in which
+  any event not shared by both operands can occur whenever the operand
+  that admits the event can engage in it, whereas any event shared by
+  both operands can occur just in case both can engage in it.</p>
+  <p>This paper formalizes Hoare's definition of concurrent composition
+  and proves, in the general case of a possibly intransitive policy,
+  that CSP noninterference security is conserved under this operation.
+  This result, along with the previous analogous one concerning
+  sequential composition, enables the construction of more and more
+  complex processes enforcing noninterference security by composing,
+  sequentially or concurrently, simpler secure processes, whose security
+  can in turn be proven using either the definition of security, or
+  unwinding theorems.</p>
 
 [Triangle]
 title = Basic Geometric Properties of Triangles
@@ -3184,7 +3209,7 @@ author = Christoph Dittmann <http://logic.las.tu-berlin.de/Members/Dittmann/>
 notify = christoph.dittmann@tu-berlin.de
 date = 2016-05-31
 topic = Mathematics/Graph Theory
-abstract = 
+abstract =
   We formalize tree decompositions and tree width in Isabelle/HOL,
   proving that trees have treewidth 1.  We also show that every edge of
   a tree decomposition is a separation of the underlying graph. As an
@@ -3850,7 +3875,7 @@ author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Ondřej Kunčar <ht
 notify = rene.thiemann@uibk.ac.at
 date = 2016-05-20
 topic = Mathematics/Algebra
-abstract = 
+abstract =
   <p>The spectral radius of a matrix A is the maximum norm of all
   eigenvalues of A. In previous work we already formalized that for a
   complex matrix A, the values in A<sup>n</sup> grow polynomially in n
@@ -4111,7 +4136,7 @@ title = The meta theory of the Incredible Proof Machine
 author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner/>, Denis Lohner <http://pp.ipd.kit.edu/person.php?id=88>
 date = 2016-05-20
 topic = Logic
-abstract = 
+abstract =
   The <a href="http://incredible.pm">Incredible Proof Machine</a> is an
   interactive visual theorem prover which represents proofs as port
   graphs. We model this proof representation in Isabelle, and prove that
@@ -4124,7 +4149,7 @@ author = Joel Beeren<>, Matthew Fernandez<>, Xin Gao<>, Gerwin Klein <http://www
 notify = kleing@unsw.edu.au
 date = 2016-06-09
 topic = Computer Science/Data Structures
-abstract = 
+abstract =
   This entry contains an extension to the Isabelle library for
   fixed-width machine words. In particular, the entry adds quickcheck setup
   for words, printing as hexadecimals, additional operations, reasoning
