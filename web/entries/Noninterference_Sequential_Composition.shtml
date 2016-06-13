@@ -49,21 +49,22 @@ under
         <td class="abstract">
 
 
-In his outstanding work on Communicating Sequential Processes, Hoare
+<p>In his outstanding work on Communicating Sequential Processes, Hoare
 has defined two fundamental binary operations allowing to compose the
 input processes into another, typically more complex, process:
 sequential composition and concurrent composition. Particularly, the
 output of the former operation is a process that initially behaves
 like the first operand, and then like the second operand once the
 execution of the first one has terminated successfully, as long as it
-does.  This paper formalizes Hoare's definition of sequential
+does.</p>
+<p>This paper formalizes Hoare's definition of sequential
 composition and proves, in the general case of a possibly intransitive
 policy, that CSP noninterference security is conserved under this
 operation, provided that successful termination cannot be affected by
 confidential events and cannot occur as an alternative to other events
 in the traces of the first operand. Both of these assumptions are
 shown, by means of counterexamples, to be necessary for the theorem to
-hold.
+hold.</p>
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
