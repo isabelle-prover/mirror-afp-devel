@@ -168,6 +168,7 @@ Native_Word
 Network_Security_Policy_Verification
 Nominal2
 Noninterference_CSP
+Noninterference_Concurrent_Composition
 Noninterference_Inductive_Unwinding
 Noninterference_Ipurge_Unwinding
 Noninterference_Generic_Unwinding

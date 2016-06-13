@@ -1,0 +1,10 @@
+chapter AFP
+
+session "Noninterference_Concurrent_Composition" (AFP) = "HOL" +
+  theories [document = false]
+    "../Noninterference_Sequential_Composition/Propaedeutics"
+  theories
+    ConcurrentComposition
+  document_files
+    "root.bib"
+    "root.tex"
