@@ -689,7 +689,7 @@ next
     have "(\<lambda>n. emeasure M (K k n)) \<longlonglongrightarrow> 0" using Suc.IH K_def by simp
     hence "\<And>i. (\<lambda>n. emeasure M (K k (n-i-1))) \<longlonglongrightarrow> 0" using seq_offset_neg by auto
     hence "(\<lambda>n. (\<Sum>i\<in>{..<N}. emeasure M (K k (n-i-1)))) \<longlonglongrightarrow> 0"
-      using tendsto_setsum [where ?S = "{..<N}" and ?a = "\<lambda>_. 0"] by fastforce
+      using tendsto_setsum [of "{..<N}" _ "\<lambda>_. 0"] by fastforce
     hence "eventually (\<lambda>n. (\<Sum>i\<in>{..<N}. emeasure M (K k (n-i-1))) < e2) sequentially"
       using `e2 > 0` by (simp add: order_tendsto_iff)
     then obtain N2 where N2bound: "\<And>n. n > N2 \<Longrightarrow>  (\<Sum>i\<in>{..<N}. emeasure M (K k (n-i-1))) < e2"
