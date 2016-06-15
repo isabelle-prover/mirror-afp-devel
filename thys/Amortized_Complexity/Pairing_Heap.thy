@@ -35,22 +35,22 @@ fun pass\<^sub>2 :: "'a :: linorder tree \<Rightarrow> 'a tree" where
   "pass\<^sub>2 Leaf = Leaf"
 | "pass\<^sub>2 (Node l x r) = link(Node l x (pass\<^sub>2 r))"
 
-fun meld :: "'a :: linorder tree \<Rightarrow> 'a tree" where
-  "meld Leaf = Leaf"
-| "meld (Node lx x Leaf) = Node lx x Leaf" 
-| "meld (Node lx x (Node ly y ry)) = link (link (Node lx x (Node ly y (meld ry))))"
+fun mergepairs :: "'a :: linorder tree \<Rightarrow> 'a tree" where
+  "mergepairs Leaf = Leaf"
+| "mergepairs (Node lx x Leaf) = Node lx x Leaf" 
+| "mergepairs (Node lx x (Node ly y ry)) = link (link (Node lx x (Node ly y (mergepairs ry))))"
 
 fun del_min :: "'a :: linorder tree \<Rightarrow> 'a tree" where
   "del_min Leaf = Leaf"
 | "del_min (Node l _ Leaf) = pass\<^sub>2 (pass\<^sub>1 l)"
 
-fun merge :: "'a :: linorder tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-  "merge Leaf h = h"
-| "merge h Leaf = h"
-| "merge (Node lx x Leaf) (Node ly y Leaf) = link (Node lx x (Node ly y Leaf))"
+fun meld :: "'a :: linorder tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
+  "meld Leaf h = h"
+| "meld h Leaf = h"
+| "meld (Node lx x Leaf) (Node ly y Leaf) = link (Node lx x (Node ly y Leaf))"
 
 fun insert :: "'a \<Rightarrow> 'a :: linorder tree \<Rightarrow> 'a tree" where
-  "insert x h = merge (Node Leaf x Leaf) h"
+  "insert x h = meld (Node Leaf x Leaf) h"
 
 fun isRoot :: "'a :: linorder tree \<Rightarrow> bool" where
   "isRoot h = (case h of Leaf \<Rightarrow> True | Node _ _ r \<Rightarrow> r = Leaf)"
@@ -68,8 +68,8 @@ lemma size_pass\<^sub>1[simp]: "size (pass\<^sub>1 h) = size h"
 lemma size_pass\<^sub>2: "size (pass\<^sub>2 h) = size h" 
   by (induct h rule: pass\<^sub>2.induct) simp_all
 
-lemma size_merge[simp]: 
-  "isRoot h1 \<Longrightarrow> isRoot h2 \<Longrightarrow> size (merge h1 h2) = size h1 + size h2"
+lemma size_meld[simp]: 
+  "isRoot h1 \<Longrightarrow> isRoot h2 \<Longrightarrow> size (meld h1 h2) = size h1 + size h2"
   by (simp split: tree.splits)
 
 lemma link_struct: "\<exists>la a. link (Node lx x (Node ly y ry)) = Node la a ry" 
@@ -82,15 +82,15 @@ lemma pass\<^sub>2_struct: "\<exists>la a. pass\<^sub>2 (Node lx x rx) = Node la
   by (induction rx arbitrary: x lx rule: pass\<^sub>2.induct) 
   (simp, metis pass\<^sub>2.simps(2) link_struct)
 
-lemma meld_pass12: "meld h = pass\<^sub>2 (pass\<^sub>1 h)"
-by (induction h rule: meld.induct) auto
+lemma mergepairs_pass12: "mergepairs h = pass\<^sub>2 (pass\<^sub>1 h)"
+by (induction h rule: mergepairs.induct) auto
 
 lemma \<Delta>\<Phi>\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t: "isRoot h \<Longrightarrow> \<Phi> (insert x h) - \<Phi> h \<le> log 2  (size h + 1)"
   by (simp split: tree.splits)
 
-lemma \<Delta>\<Phi>\<^sub>m\<^sub>e\<^sub>r\<^sub>g\<^sub>e:
+lemma \<Delta>\<Phi>\<^sub>m\<^sub>e\<^sub>l\<^sub>d:
   assumes "h1 = Node lx x Leaf \<and> h2 = Node ly y Leaf" 
-  shows "\<Phi> (merge h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> 2*log 2 (size h1 + size h2)" 
+  shows "\<Phi> (meld h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> 2*log 2 (size h1 + size h2)" 
 proof -
   let ?h = "Node lx x (Node ly y Leaf)"
   have "\<Phi> (link ?h) - \<Phi> ?h \<le> log 2  (1 + size lx + size ly)" by (simp add: algebra_simps)
@@ -170,12 +170,12 @@ proof (induction h rule: pass\<^sub>2.induct)
   qed simp
 qed simp
 
-lemma \<Delta>\<Phi>_meld: assumes "h \<noteq> Leaf"
-  shows "\<Phi> (meld h) - \<Phi> h \<le> 3 * log 2 (size h) - len h + 2"
+lemma \<Delta>\<Phi>_mergepairs: assumes "h \<noteq> Leaf"
+  shows "\<Phi> (mergepairs h) - \<Phi> h \<le> 3 * log 2 (size h) - len h + 2"
 proof -
   have "pass\<^sub>1 h \<noteq> Leaf" by (metis assms size_0_iff_Leaf size_pass\<^sub>1)
   with assms \<Delta>\<Phi>_pass1[of h] \<Delta>\<Phi>_pass2[of "pass\<^sub>1 h"]
-  show ?thesis by (auto simp add: meld_pass12)
+  show ?thesis by (auto simp add: mergepairs_pass12)
 qed
 
 lemma \<Delta>\<Phi>_del_min:  "lx \<noteq> Leaf \<Longrightarrow> \<Phi> (del_min (Node lx x Leaf)) - \<Phi> (Node lx x Leaf) 
@@ -195,7 +195,7 @@ proof -
   ultimately show ?thesis by linarith
 qed
 
-lemma merge_isRoot: "isRoot h1 \<Longrightarrow> isRoot h2 \<Longrightarrow> isRoot (merge h1 h2)"
+lemma merge_isRoot: "isRoot h1 \<Longrightarrow> isRoot h2 \<Longrightarrow> isRoot (meld h1 h2)"
   by (simp split: tree.splits)
 
 lemma insert_isRoot: "isRoot h \<Longrightarrow> isRoot (insert x h)"
