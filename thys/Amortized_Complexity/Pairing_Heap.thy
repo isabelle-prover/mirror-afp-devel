@@ -238,7 +238,7 @@ fun t :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree \<Rightarrow> 
 | "t (Insert a) _ = 1"
 
 fun U :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree \<Rightarrow> real" where
-  "U (Insert a) h = 1 + log 2 (size h + 1)"
+  "U (Insert a) h = log 2 (size h + 1) + 1"
 | "U Del_min h = 3*log 2 (size h + 1) + 5"
 
 interpretation pairing: amor
