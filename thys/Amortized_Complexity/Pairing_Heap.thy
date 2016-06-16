@@ -62,7 +62,7 @@ fun \<Phi> :: "'a tree \<Rightarrow> real" where
 lemma link_size[simp]: "size (link h) = size h" 
   by (cases h rule: link.cases) simp_all
 
-lemma size_pass\<^sub>1[simp]: "size (pass\<^sub>1 h) = size h" 
+lemma size_pass\<^sub>1: "size (pass\<^sub>1 h) = size h" 
   by (induct h rule: pass\<^sub>1.induct) simp_all
 
 lemma size_pass\<^sub>2: "size (pass\<^sub>2 h) = size h" 
@@ -122,7 +122,7 @@ next
   let ?h = "Node lx x ?rx"
   let ?t ="log 2 (1 + size lx + size ly) - log 2 (1 + size ly + size ?ry)"
   have "\<Phi> (pass\<^sub>1 ?h) - \<Phi> ?h \<le> ?t + upperbound ?ry" 
-    using "4.IH" by (simp add: algebra_simps)
+    using "4.IH" by (simp add: size_pass\<^sub>1 algebra_simps)
   also have "?t \<le> 2*log 2  (size ?h) - 2*log 2 (size ?ry) - 2"
   proof -
     have "log 2  (1 + size lx + size ly) + log 2  (size ?ry) - 2*log 2  (size ?h) 
@@ -175,7 +175,7 @@ lemma \<Delta>\<Phi>_mergepairs: assumes "h \<noteq> Leaf"
 proof -
   have "pass\<^sub>1 h \<noteq> Leaf" by (metis assms size_0_iff_Leaf size_pass\<^sub>1)
   with assms \<Delta>\<Phi>_pass1[of h] \<Delta>\<Phi>_pass2[of "pass\<^sub>1 h"]
-  show ?thesis by (auto simp add: mergepairs_pass12)
+  show ?thesis by (auto simp add: size_pass\<^sub>1 mergepairs_pass12)
 qed
 
 lemma \<Delta>\<Phi>_del_min:  "lx \<noteq> Leaf \<Longrightarrow> \<Phi> (del_min (Node lx x Leaf)) - \<Phi> (Node lx x Leaf) 
