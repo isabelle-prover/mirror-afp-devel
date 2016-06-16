@@ -20,7 +20,7 @@ fun link :: "'a :: linorder tree \<Rightarrow> 'a tree" where
   "link Leaf = Leaf"
 | "link (Node lx x Leaf) = Node lx x Leaf"
 | "link (Node lx x (Node ly y ry)) = 
-    (if x < y then Node (Node ly y lx) x else Node (Node lx x ly) y) ry"
+    (if x < y then Node (Node ly y lx) x ry else Node (Node lx x ly) y ry)"
 
 fun pass\<^sub>1 :: "'a :: linorder tree \<Rightarrow> 'a tree" where
   "pass\<^sub>1 Leaf = Leaf"
@@ -53,7 +53,7 @@ fun insert :: "'a \<Rightarrow> 'a :: linorder tree \<Rightarrow> 'a tree" where
   "insert x h = meld (Node Leaf x Leaf) h"
 
 fun isRoot :: "'a :: linorder tree \<Rightarrow> bool" where
-  "isRoot h = (case h of Leaf \<Rightarrow> True | Node _ _ r \<Rightarrow> r = Leaf)"
+  "isRoot h = (case h of Leaf \<Rightarrow> True | Node l x r \<Rightarrow> r = Leaf)"
 
 fun \<Phi> :: "'a tree \<Rightarrow> real" where
   "\<Phi> Leaf = 0"
@@ -277,4 +277,3 @@ proof
 qed simp_all
 
 end
-        
