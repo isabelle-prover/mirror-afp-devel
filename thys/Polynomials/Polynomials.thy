@@ -788,7 +788,7 @@ next
     by (simp add: mc Cons id, simp add: field_simps)
 qed
 
-(* the list of variables occuring in p *)
+(* the list of variables occurring in p *)
 definition poly_vars_list :: "('v,'a)poly \<Rightarrow> 'v list"
 where "poly_vars_list p = remdups (concat (map (map fst o fst) p))"
 
