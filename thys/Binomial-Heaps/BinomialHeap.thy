@@ -1006,7 +1006,7 @@ proof -
   let ?MT = "tree_to_multiset (getMinTree q)"
   from m_meld m_rem m_rev m_children 
     multiset_diff_union_assoc[OF head_subset_min, of "?Q - ?MT"]
-    mset_le_multiset_union_diff_commute[OF min_subset_q, of "?MT"]
+    mset_subset_eq_multiset_union_diff_commute[OF min_subset_q, of "?MT"]
   show ?thesis by (simp add: deleteMin_def union_ac Let_def findMin_def)
 qed
 

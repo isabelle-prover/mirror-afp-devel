@@ -428,7 +428,7 @@ proof -
   also from i 
     have "{#weak_ranking (R x). x \<in># \<dots>#} =
             {#weak_ranking (R x). x \<in># mset_set agents#} - {#weak_ranking (R i)#}"
-      by (subst image_mset_Diff) (simp_all add: in_multiset_in_set mset_le_single)
+      by (subst image_mset_Diff) (simp_all add: in_multiset_in_set mset_subset_eq_single)
   also have "{#weak_ranking Ri'#} + \<dots> = 
                anonymous_profile R - {#weak_ranking (R i)#} + {#weak_ranking Ri'#}"
     by (simp add: anonymous_profile_def add_ac o_def)

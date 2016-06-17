@@ -1507,7 +1507,7 @@ next
       case empty then show ?case by auto
     next
       case (add F' f)
-        from add have "f \<in># F" by (simp add: mset_le_insertD)
+        from add have "f \<in># F" by (simp add: mset_subset_eq_insertD)
         with F have "\<not> is_unit f" by auto
         then have "\<not> is_unit (msetprod F' * f)" by (simp add: is_unit_mult_iff)
         with add show ?case by auto

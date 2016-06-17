@@ -28,8 +28,8 @@ proof -
     proof (cases "x \<in># ps")
       case True
       then obtain qs where ps: "ps = qs + {#x#}" by (metis insert_DiffM2)
-      show ?thesis unfolding ps mset_le_mono_add_right_cancel
-        by (auto dest: mset_le_insertD)
+      show ?thesis unfolding ps mset_subset_eq_mono_add_right_cancel
+        by (auto dest: mset_subset_eq_insertD)
     next
       case False
       hence id: "(ps \<subseteq># xs + {#x#}) = (ps \<subseteq># xs)"

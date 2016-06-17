@@ -107,7 +107,7 @@ lemma remove_max_multiset_size:
   "\<lbrakk>\<not> is_empty l; inv l; (m, l') = remove_max l\<rbrakk> \<Longrightarrow> 
                size (multiset l) > size (multiset l')"
 using remove_max_multiset[of l m l']
-by (metis mset_less_size multi_psub_of_add_self)
+by (metis mset_subset_size multi_psub_of_add_self)
 
 lemma remove_max_set: 
   "\<lbrakk>\<not> is_empty l; inv l; (m, l') = remove_max l\<rbrakk> \<Longrightarrow> 

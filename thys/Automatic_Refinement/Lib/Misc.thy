@@ -840,16 +840,16 @@ subsubsection {* Pointwise ordering *}
   lemma mset_empty_minimal[simp, intro!]: "{#} \<le># c"
     using empty_le .
   lemma mset_empty_least[simp]: "c \<le># {#} = (c={#})"
-    using le_empty .
+    using subset_eq_empty .
   lemma mset_empty_leastI[intro!]: "c={#} \<Longrightarrow> c \<le># {#}"
     by (simp only: mset_empty_least)
 
-  lemma mset_le_incr_right1: "a\<le>#(b::'a multiset) \<Longrightarrow> a\<le>#b+c" using mset_le_mono_add[of a b "{#}" c, simplified] .
+  lemma mset_le_incr_right1: "a\<le>#(b::'a multiset) \<Longrightarrow> a\<le>#b+c" using mset_subset_eq_mono_add[of a b "{#}" c, simplified] .
   lemma mset_le_incr_right2: "a\<le>#(b::'a multiset) \<Longrightarrow> a\<le>#c+b" using mset_le_incr_right1
     by (auto simp add: union_commute)
   lemmas mset_le_incr_right = mset_le_incr_right1 mset_le_incr_right2
 
-  lemma mset_le_decr_left1: "a+c\<le>#(b::'a multiset) \<Longrightarrow> a\<le>#b" using mset_le_incr_right1 mset_le_mono_add_right_cancel
+  lemma mset_le_decr_left1: "a+c\<le>#(b::'a multiset) \<Longrightarrow> a\<le>#b" using mset_le_incr_right1 mset_subset_eq_mono_add_right_cancel
     by blast
   lemma mset_le_decr_left2: "c+a\<le>#(b::'a multiset) \<Longrightarrow> a\<le>#b" using mset_le_decr_left1
     by (auto simp add: union_ac)
@@ -877,7 +877,7 @@ subsubsection {* Pointwise ordering *}
   lemma mset_le_subtract_right: "A+B \<le># (X::'a multiset) \<Longrightarrow> A \<le># X-B \<and> B\<le>#X"
     by (auto dest: mset_le_subtract[of "A+B" "X" "B"] mset_le_union)
 
-  lemma mset_le_addE: "\<lbrakk> xs \<le># (ys::'a multiset); !!zs. ys=xs+zs \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P" using mset_le_exists_conv
+  lemma mset_le_addE: "\<lbrakk> xs \<le># (ys::'a multiset); !!zs. ys=xs+zs \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P" using mset_subset_eq_exists_conv
     by blast
 
   lemma mset_le_sub_add_eq[simp,intro]: "A\<le>#(B::'a multiset) \<Longrightarrow> B-A+A = B"
@@ -889,7 +889,7 @@ subsubsection {* Pointwise ordering *}
     shows "P"
   proof -
     { assume C: "a \<in># A" "b \<in># A-{#a#}" 
-      with mset_le_mono_add[of "{#a#}" "{#a#}" "{#b#}" "A-{#a#}"] have "{#a#}+{#b#} \<le># A" by auto
+      with mset_subset_eq_mono_add[of "{#a#}" "{#a#}" "{#b#}" "A-{#a#}"] have "{#a#}+{#b#} \<le># A" by auto
     } moreover {
       assume C: "a \<in># A" "\<not> (b \<in># A-{#a#})"
       with A have "b \<in># B"
@@ -898,7 +898,7 @@ subsubsection {* Pointwise ordering *}
       assume C: "\<not> (a \<in># A)" "b \<in># B-{#a#}"
       with A have "a \<in># B"
         by (meson mset_le_trans_elem mset_un_iff multi_member_this)
-       with C mset_le_mono_add[of "{#a#}" "{#a#}" "{#b#}" "B-{#a#}"] have "{#a#}+{#b#} \<le># B" by auto
+       with C mset_subset_eq_mono_add[of "{#a#}" "{#a#}" "{#b#}" "B-{#a#}"] have "{#a#}+{#b#} \<le># B" by auto
     } moreover {
       assume C: "\<not> (a \<in># A)" "\<not> (b \<in># B-{#a#})"
       with A have "a \<in># B \<and> b \<in># A"
@@ -927,7 +927,7 @@ subsubsection {* Pointwise ordering *}
   lemma mset_le_single_conv1[simp]: "(M+{#a#} \<le># {#b#}) = (M={#} \<and> a=b)"
   proof (auto)
     assume A: "M+{#a#} \<le># {#b#}" thus "a=b" by (auto dest: mset_le_decr_left2)
-    with A mset_le_mono_add_right_cancel[of M "{#a#}" "{#}", simplified] show "M={#}" by blast
+    with A mset_subset_eq_mono_add_right_cancel[of M "{#a#}" "{#}", simplified] show "M={#}" by blast
   qed
 
   lemma mset_le_single_conv2[simp]: "({#a#}+M \<le># {#b#}) = (M={#} \<and> a=b)"
@@ -939,7 +939,7 @@ subsubsection {* Pointwise ordering *}
   lemma mset_le_distrib[consumes 1, case_names dist]: "\<lbrakk>(X::'a multiset)\<le>#A+B; !!Xa Xb. \<lbrakk>X=Xa+Xb; Xa\<le>#A; Xb\<le>#B\<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
     by (auto elim!: mset_le_addE mset_distrib)
 
-  lemma mset_le_mono_add_single: "\<lbrakk>a \<in># ys; b \<in># ws\<rbrakk> \<Longrightarrow> {#a#} + {#b#} \<le># ys + ws" using mset_le_mono_add[of "{#a#}" _ "{#b#}", simplified] .
+  lemma mset_le_mono_add_single: "\<lbrakk>a \<in># ys; b \<in># ws\<rbrakk> \<Longrightarrow> {#a#} + {#b#} \<le># ys + ws" using mset_subset_eq_mono_add[of "{#a#}" _ "{#b#}", simplified] .
 
   lemma mset_size1elem: "\<lbrakk>size P \<le> 1; q \<in># P\<rbrakk> \<Longrightarrow> P={#q#}"
     by (auto elim: mset_size_le1_cases)

@@ -185,7 +185,7 @@ apply(induction t rule: del_min.induct)
   apply simp
  apply simp
 apply auto
-by (metis Multiset.diff_le_self subsetD set_mset_mono set_mset_tree mset_del_min)
+by (metis Multiset.diff_subset_eq_self subsetD set_mset_mono set_mset_tree mset_del_min)
 
 
 subsection{* Analysis *}
