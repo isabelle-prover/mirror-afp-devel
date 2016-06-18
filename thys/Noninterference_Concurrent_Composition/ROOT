@@ -1,8 +1,7 @@
 chapter AFP
 
-session "Noninterference_Concurrent_Composition" (AFP) = "HOL" +
-  theories [document = false]
-    "../Noninterference_Sequential_Composition/Propaedeutics"
+session "Noninterference_Concurrent_Composition" (AFP) = "Noninterference_Sequential_Composition" +
+  options [timeout = 300]
   theories
     ConcurrentComposition
   document_files
