@@ -7,7 +7,7 @@
 subsubsection{* Verification Examples with Automated VCG *}
 
 theory VC_KAD_Examples2
-imports  VC_KAD GCD Binomial "$ISABELLE_HOME/src/HOL/Eisbach/Eisbach"
+imports  VC_KAD GCD Binomial "~~/src/HOL/Eisbach/Eisbach"
 
 begin
 

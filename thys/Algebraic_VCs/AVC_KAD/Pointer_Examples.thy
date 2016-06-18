@@ -7,7 +7,7 @@
 subsubsection{* KAD Component for Pointer Programs *}
 
 theory Pointer_Examples
-  imports VC_KAD_Examples2 "$ISABELLE_HOME/src/HOL/Hoare/Heap"
+  imports VC_KAD_Examples2 "~~/src/HOL/Hoare/Heap"
 
 begin
 

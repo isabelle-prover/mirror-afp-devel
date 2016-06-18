@@ -7,7 +7,7 @@
 subsubsection {* Verification Examples with Automated VCG *}
 
 theory VC_KAT_Examples2
-  imports VC_KAT GCD "$ISABELLE_HOME/src/HOL/Eisbach/Eisbach"
+  imports VC_KAT GCD "~~/src/HOL/Eisbach/Eisbach"
 
 begin
 

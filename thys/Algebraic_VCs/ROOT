@@ -1,15 +1,13 @@
 chapter AFP
 
-session "Algebraic_VCs" (AFP) = "HOL" +
+session "Algebraic_VCs" (AFP) = "KAT_and_DRA" +
   options [timeout = 900]
   theories [document = false]
-    "../KAT_and_DRA/SingleSorted/PHL_KAT" 
-    "../KAT_and_DRA/SingleSorted/KAT_Models"
     "../KAD/Modal_Kleene_Algebra_Applications"
     "../KAD/Modal_Kleene_Algebra"
     "../KAD/Modal_Kleene_Algebra_Models"
-    "$ISABELLE_HOME/src/HOL/Eisbach/Eisbach"
-    "$ISABELLE_HOME/src/HOL/Hoare/Heap"
+    "~~/src/HOL/Eisbach/Eisbach"
+    "~~/src/HOL/Hoare/Heap"
   theories
     "AVC_KAT/VC_KAT_scratch"
     "AVC_KAD/VC_KAD_scratch"
