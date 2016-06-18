@@ -37,7 +37,7 @@
         <td class="data" width="80%">The Cartan Fixed Point Theorems</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.cl.cam.ac.uk/~lp15/">Lawrence Paulson</a></td></tr>
+        <td class="data"><a href="http://www.cl.cam.ac.uk/~lp15/">Lawrence C. Paulson</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2016-03-08</td></tr>
@@ -58,7 +58,7 @@ machines".
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Cartan_FP-AFP,
-  author  = {Lawrence Paulson},
+  author  = {Lawrence C. Paulson},
   title   = {The Cartan Fixed Point Theorems},
   journal = {Archive of Formal Proofs},
   month   = mar,

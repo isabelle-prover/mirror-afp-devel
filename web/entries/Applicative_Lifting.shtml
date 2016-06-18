@@ -56,6 +56,11 @@ We declare several types from the Isabelle library as applicative functors and i
         <td class="abstract">
 
 [2016-03-03]: added formalisation of lifting with combinators<br>
+[2016-06-10]:
+implemented automatic derivation of lifted combinator reductions;
+support arbitrary lifted relations using relators;
+improved compatibility with locale interpretation
+(revision ec336f354f37)<br>
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
