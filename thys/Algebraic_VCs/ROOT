@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Algebraic_VCs" (AFP) = "KAT_and_DRA" +
-  options [timeout = 900]
+  options [timeout = 600]
   theories [document = false]
     "../KAD/Modal_Kleene_Algebra_Applications"
     "../KAD/Modal_Kleene_Algebra"
