@@ -1,3 +1,23 @@
+[Algebraic_VCs]
+title = Program Construction and Verification Components Based on Kleene Algebra
+author = Victor B. F. Gomes <mailto:victor.gomes@cl.cam.ac.uk>, Georg Struth <mailto:g.struth@sheffield.ac.uk>
+notify = victor.gomes@cl.cam.ac.uk, g.struth@sheffield.ac.uk
+date = 2016-06-18
+topic = Mathematics/Algebra
+abstract = 
+  Variants of Kleene algebra support program construction and
+  verification by algebraic reasoning. This entry provides a
+  verification component for Hoare logic based on Kleene algebra with
+  tests, verification components for weakest preconditions and strongest
+  postconditions based on Kleene algebra with domain and a component for
+  step-wise refinement based on refinement Kleene algebra with tests. In
+  addition to these components for the partial correctness of while
+  programs, a verification component for total correctness based on
+  divergence Kleene algebras and one for (partial correctness) of
+  recursive programs based on domain quantales are provided. Finally we
+  have integrated memory models for programs with pointers and a program
+  trace semantics into the weakest precondition component.
+
 [Card_Equiv_Relations]
 title = Cardinality of Equivalence Relations
 author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>

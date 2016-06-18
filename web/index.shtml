@@ -50,6 +50,14 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2016-06-18:
+<a href="entries/Algebraic_VCs.shtml">Program Construction and Verification Components Based on Kleene Algebra</a>
+<br>Author:
+Victor B. F. Gomes and 
+Georg Struth
+</td></tr>
+
+<tr><td class="entry">
 2016-06-13:
 <a href="entries/Noninterference_Concurrent_Composition.shtml">Conservation of CSP Noninterference Security under Concurrent Composition</a>
 <br>Author:
