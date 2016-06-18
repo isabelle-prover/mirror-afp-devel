@@ -3967,22 +3967,48 @@ author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
 date = 2016-04-26
 topic = Computer Science/Security
 abstract =
-	In his outstanding work on Communicating Sequential Processes, Hoare
+	<p>In his outstanding work on Communicating Sequential Processes, Hoare
 	has defined two fundamental binary operations allowing to compose the
 	input processes into another, typically more complex, process:
 	sequential composition and concurrent composition. Particularly, the
 	output of the former operation is a process that initially behaves
 	like the first operand, and then like the second operand once the
 	execution of the first one has terminated successfully, as long as it
-	does.  This paper formalizes Hoare's definition of sequential
+	does.</p>
+  <p>This paper formalizes Hoare's definition of sequential
 	composition and proves, in the general case of a possibly intransitive
 	policy, that CSP noninterference security is conserved under this
 	operation, provided that successful termination cannot be affected by
 	confidential events and cannot occur as an alternative to other events
 	in the traces of the first operand. Both of these assumptions are
 	shown, by means of counterexamples, to be necessary for the theorem to
-	hold.
-notify = pasquale.noce@arjosystems.com
+	hold.</p>
+notify = pasquale.noce.lavoro@gmail.com
+
+[Noninterference_Concurrent_Composition]
+title = Conservation of CSP Noninterference Security under Concurrent Composition
+author = Pasquale Noce <mailto:pasquale.noce.lavoro@gmail.com>
+notify = pasquale.noce.lavoro@gmail.com
+date = 2016-06-13
+topic = Computer Science/Security
+abstract =
+  <p>In his outstanding work on Communicating Sequential Processes,
+  Hoare has defined two fundamental binary operations allowing to
+  compose the input processes into another, typically more complex,
+  process: sequential composition and concurrent composition.
+  Particularly, the output of the latter operation is a process in which
+  any event not shared by both operands can occur whenever the operand
+  that admits the event can engage in it, whereas any event shared by
+  both operands can occur just in case both can engage in it.</p>
+  <p>This paper formalizes Hoare's definition of concurrent composition
+  and proves, in the general case of a possibly intransitive policy,
+  that CSP noninterference security is conserved under this operation.
+  This result, along with the previous analogous one concerning
+  sequential composition, enables the construction of more and more
+  complex processes enforcing noninterference security by composing,
+  sequentially or concurrently, simpler secure processes, whose security
+  can in turn be proven using either the definition of security, or
+  unwinding theorems.</p>
 
 [ROBDD]
 title = Algorithms for Reduced Ordered Binary Decision Diagrams
@@ -4128,3 +4154,19 @@ abstract =
   graphs. We model this proof representation in Isabelle, and prove that
   it is just as powerful as natural deduction.
 notify = breitner@kit.edu
+
+[Word_Lib]
+title = Finite Machine Word Library
+author = Joel Beeren<>, Matthew Fernandez<>, Xin Gao<>, Gerwin Klein <http://www.cse.unsw.edu.au/~kleing/>, Rafal Kolanski<>, Japheth Lim<>, Corey Lewis<>, Daniel Matichuk<>, Thomas Sewell<>
+notify = kleing@unsw.edu.au
+date = 2016-06-09
+topic = Computer Science/Data Structures
+abstract =
+  This entry contains an extension to the Isabelle library for
+  fixed-width machine words. In particular, the entry adds quickcheck setup
+  for words, printing as hexadecimals, additional operations, reasoning
+  about alignment, signed words, enumerations of words, normalisation of
+  word numerals, and an extensive library of properties about generic
+  fixed-width words, as well as an instantiation of many of these to the
+  commonly used 32 and 64-bit bases.
+
