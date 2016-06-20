@@ -92,12 +92,15 @@ by(subst pure_tree_unfold; simp; fail)+
 
 adhoc_overloading pure pure_tree
 
+lemma pure_tree_parametric [transfer_rule]: "(rel_fun A (rel_tree A)) pure pure"
+by(rule rel_funI)(coinduction, auto)
+
 lemma map_pure_tree [simp]: "map_tree f (pure x) = pure (f x)"
 by(coinduction arbitrary: x) auto
 
 lemmas pure_tree_unique = pure_tree.unique
 
-primcorec ap_tree :: "('a \<Rightarrow> 'b) tree \<Rightarrow> 'a tree \<Rightarrow> 'b tree"
+primcorec (transfer) ap_tree :: "('a \<Rightarrow> 'b) tree \<Rightarrow> 'a tree \<Rightarrow> 'b tree"
 where
   "root (ap_tree f x) = root f (root x)"
 | "left (ap_tree f x) = ap_tree (left f) (left x)"
@@ -148,7 +151,14 @@ by(coinduction arbitrary: f x)(auto)
 applicative tree (K, W) for
   pure: pure_tree
   ap: ap_tree
-by(rule ap_tree_homomorphism ap_tree_composition[unfolded o_def[abs_def]] ap_tree_K_tree ap_tree_W_tree ap_tree_interchange)+
+  rel: rel_tree
+  set: set_tree
+proof -
+  fix R :: "'b \<Rightarrow> 'c \<Rightarrow> bool" and f :: "('a \<Rightarrow> 'b) tree" and g x
+  assume [transfer_rule]: "rel_tree (rel_fun (eq_on (set_tree x)) R) f g"
+  have [transfer_rule]: "rel_tree (eq_on (set_tree x)) x x" by(rule tree.rel_refl_strong) simp
+  show "rel_tree R (f \<diamondop> x) (g \<diamondop> x)" by transfer_prover
+qed(rule ap_tree_homomorphism ap_tree_composition[unfolded o_def[abs_def]] ap_tree_K_tree ap_tree_W_tree ap_tree_interchange pure_tree_parametric)+
 
 declare map_tree_ap_tree_pure_tree[symmetric, applicative_unfold]
 

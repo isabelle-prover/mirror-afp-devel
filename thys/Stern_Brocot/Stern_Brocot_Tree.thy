@@ -620,13 +620,11 @@ text{*
 
 lemma mod_tree_lemma1:
   fixes x :: "nat tree"
-  assumes "pure (op < 0) \<diamondop> y = pure True"
+  assumes "\<forall>i\<in>set_tree y. 0 < i"
   shows "x mod (x + y) = x"
 proof -
-  have "x mod (x + y) = pure (\<lambda>b x. if b then x else 0) \<diamondop> (pure (op < 0) \<diamondop> y) \<diamondop> x"
-    by applicative_lifting simp
-  also have "\<dots> = x" unfolding assms by applicative_lifting simp
-  finally show ?thesis .
+  have "rel_tree op = (x mod (x + y)) x" by applicative_lifting(simp add: assms)
+  thus ?thesis by(unfold tree.rel_eq)
 qed
 
 lemma mod_tree_lemma2:
@@ -637,25 +635,14 @@ by applicative_lifting simp
 lemma set_tree_pathD: "x \<in> set_tree t \<Longrightarrow> \<exists>p. x = root (traverse_tree p t)"
 by(induct rule: set_tree_induct)(auto intro: exI[where x="[]"] exI[where x="L # p" for p] exI[where x="R # p" for p])
 
-lemma eq_pure_tree_TrueI:
-  "(\<And>x. x \<in> set_tree t \<Longrightarrow> P x) \<Longrightarrow> pure P \<diamondop> t = pure True"
-proof(coinduction arbitrary: t)
-  case (Eq_tree t)
-  thus ?case by(cases t) auto
-qed
-
-lemma den_gt_0: "pure (op < 0) \<diamondop> den = pure True"
-proof(rule eq_pure_tree_TrueI)
-  fix x
-  assume "x \<in> set_tree den"
-  then obtain p where "x = root (traverse_tree p den)"
-    by(blast dest: set_tree_pathD)
-  with stern_brocot_denominator_non_zero[of p]
-  show "0 < x" by(simp add: den_conv split_beta)
+lemma den_gt_0: "0 < x" if "x \<in> set_tree den"
+proof -
+  from that obtain p where "x = root (traverse_tree p den)" by(blast dest: set_tree_pathD)
+  with stern_brocot_denominator_non_zero[of p] show "0 < x" by(simp add: den_conv split_beta)
 qed
 
 lemma num_mod_den: "num mod den = num_mod_den"
-by(rule num_mod_den.unique)(rule tree.expand, simp add: mod_tree_lemma1 den_gt_0 mod_tree_lemma2)
+by(rule num_mod_den.unique)(rule tree.expand, simp add: mod_tree_lemma2 mod_tree_lemma1 den_gt_0)
 
 lemma tree_chop_den: "tree_chop den = num + den - 2 * (num mod den)"
 proof -
@@ -674,8 +661,6 @@ proof -
   have num_mod_den'_simps [simp]: "root num_mod_den' = 0" "left num_mod_den' = num'" "right num_mod_den' = num_mod_den'"
     by(simp_all add: num_mod_den'_def num'_def)
   have den'_eq_chop_num': "den' = tree_chop num'" by(simp add: den'_def num'_def den_eq_chop_num)
-  have den'_gt_0: "pure (op < 0) \<diamondop> den' = pure True"
-    unfolding den'_def den_gt_0[symmetric] by applicative_nf simp
   have num_mod_den'2_unique: "\<And>x. x = Node 0 (2 * num') x \<Longrightarrow> x = 2 * num_mod_den'"
     by(corec_unique)(rule tree.expand; simp)
   have num'_plus_den'_minus_chop_den': "num' + den' - tree_chop den' = 2 * num_mod_den'"
@@ -688,13 +673,9 @@ proof -
   also have "\<dots> = num' + den' - 2 * (num' mod den')"
     unfolding num_mod_den'_def num'_def den'_def num_mod_den[symmetric]
     by applicative_lifting(simp add: zmod_int)
-  also have "\<dots> = pure (\<lambda>n d b. if b then n + d - 2 * (n mod d) else 0) \<diamondop> num' \<diamondop> den' \<diamondop> pure True"
-    by applicative_lifting simp
-  also have "\<dots> = pure (\<lambda>n d b. if b then n + d - 2 * (n mod d) else 0) \<diamondop> num' \<diamondop> den' \<diamondop> (pure (op < 0) \<diamondop> den')"
-    unfolding den'_gt_0 ..
-  also have "\<dots> = pure int \<diamondop> (num + den - 2 * (num mod den))" unfolding num'_def den'_def
-    by applicative_lifting (clarsimp simp add: of_nat_diff zmod_int le)
-  also have "pure nat \<diamondop> \<dots> = num + den - 2 * (num mod den)" by(applicative_nf) simp
+  also have [unfolded tree.rel_eq]: "rel_tree op = \<dots> (pure int \<diamondop> (num + den - 2 * (num mod den)))"
+    unfolding num'_def den'_def by(applicative_lifting)(simp add: of_nat_diff zmod_int le den_gt_0)
+  also have "pure nat \<diamondop> (pure int \<diamondop> (num + den - 2 * (num mod den))) = num + den - 2 * (num mod den)" by(applicative_nf) simp
   finally show ?thesis .
 qed
 
