@@ -153,7 +153,7 @@ proof -
   thus ?thesis using assms \<Delta>\<Phi>_pass1_upperbound [of "h"] order_trans by blast
 qed
 
-lemma \<Delta>\<Phi>_pass2: "h \<noteq> Leaf \<Longrightarrow> \<Phi> (pass\<^sub>2 h) - \<Phi> h \<le> log 2  (size h)"
+lemma \<Delta>\<Phi>_pass2: "h \<noteq> Leaf \<Longrightarrow> \<Phi> (pass\<^sub>2 h) - \<Phi> h \<le> log 2 (size h)"
 proof (induction h rule: pass\<^sub>2.induct)
   case (2 lx x rx)
   thus ?case 
@@ -238,8 +238,8 @@ fun t :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree \<Rightarrow> 
 | "t (Insert a) _ = 1"
 
 fun U :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree \<Rightarrow> real" where
-  "U (Insert a) h = log 2 (size h + 1) + 1"
-| "U Del_min h = 3*log 2 (size h + 1) + 5"
+  "U (Insert a) h = log 2 (1 + size h) + 1"
+| "U Del_min h = 3*log 2 (1 + size h) + 5"
 
 interpretation pairing: amor
 where init = "Leaf" 
@@ -260,15 +260,15 @@ proof
     thus ?thesis
     proof (cases s)
       case [simp]: (Node lx x rx)
-      have "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx \<le> 2 + len lx"
+      have "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx \<le> len lx + 2"
         by (induct lx rule: pass\<^sub>1.induct) simp_all
-      hence "t f s \<le> 1 + \<dots>" by simp 
-      moreover have "\<Phi> (del_min s) - \<Phi> s \<le> 3*log 2 (size s + 1) - len lx + 2" using goal5
+      hence "t f s \<le> \<dots> + 1" by simp 
+      moreover have "\<Phi> (del_min s) - \<Phi> s \<le> 3*log 2 (1 + size s) - len lx + 2" using goal5
       proof (cases lx)
         case [simp]: (Node ly y ry) 
         have "\<Phi> (del_min s) - \<Phi> s \<le> 3*log 2 (size lx) - len lx + 2"
           using  \<Delta>\<Phi>_del_min[of "lx" "x"] goal5 by simp
-        also have "\<dots> \<le> 3*log 2 (size s + 1) - len lx + 2" by fastforce
+        also have "\<dots> \<le> 3*log 2 (1 + size s) - len lx + 2" by fastforce
         finally show ?thesis by blast
       qed simp
       ultimately show ?thesis by auto
