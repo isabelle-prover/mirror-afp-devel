@@ -11,22 +11,14 @@ object profile extends isabelle.CI_Profile
   val afp = Path.explode("$ISABELLE_HOME/afp")
   val afp_thys = afp + Path.explode("thys")
 
-  val mail_properties = {
-    val props0 = System.getProperties()
-    props0.setProperty("mail.smtp.host", "localhost")
-    props0.setProperty("mail.smtp.port", "25")
-    props0.setProperty("mail.smtp.auth", "false")
-    props0
-  }
-
   case class Mail(subject: String, recipients: List[String], text: String) {
-    def send(): Unit = {
-      import java.util._
-      import javax.mail._
-      import javax.mail.internet._
-      import javax.activation._
+    import java.util._
+    import javax.mail._
+    import javax.mail.internet._
+    import javax.activation._
 
-      val session = Session.getDefaultInstance(mail_properties)
+    def send(): Unit = {
+      val session = Session.getDefaultInstance(System.getProperties())
       val message = new MimeMessage(session)
       message.setFrom(new InternetAddress("ci@isabelle.systems", "Isabelle/Jenkins"))
       message.setSubject(subject)
@@ -109,7 +101,12 @@ object profile extends isabelle.CI_Profile
   def pre_hook(args: List[String]) =
     println(s"Build for AFP id ${hg_id(afp)}")
 
-  def post_hook(results: Build.Results) =
+  def post_hook(results: Build.Results) = {
+    val canSendMails = System.getProperties().containsKey("mail.smtp.host")
+
+    if (!isTestboard && !canSendMails)
+      println(s"Not a testboard run, but mail configuration not found. Check ${Isabelle_System.getenv_strict("ISABELLE_CI_PROPERTIES")}.")
+
     if (!results.ok) {
       val metadata = {
         val path = afp + Path.explode("metadata/metadata")
@@ -124,9 +121,10 @@ object profile extends isabelle.CI_Profile
 
       for (name <- results.sessions) {
         val result = results(name)
-        if (!result.ok && !results.cancelled(name) && !isTestboard)
+        if (!result.ok && !results.cancelled(name) && !isTestboard && canSendMails)
           metadata.notify(name, result, results.info(name))
       }
     }
+  }
 
 }
