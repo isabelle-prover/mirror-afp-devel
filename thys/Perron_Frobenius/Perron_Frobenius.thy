@@ -13,10 +13,10 @@ hide_fact (open) Matrix.vec_eq_iff
 no_notation
   vec_index (infixl "$" 100)
 
-lemma spectral_radius_ev:  
+lemma spectral_radius_ev:
   "\<exists> ev v. eigen_vector A v ev \<and> norm ev = spectral_radius A"
 proof -
-  from non_empty_spectrum[of A] finite_spectrum[of A] have 
+  from non_empty_spectrum[of A] finite_spectrum[of A] have
     "spectral_radius A \<in> norm ` (Collect (eigen_value A))"
     unfolding spectral_radius_ev_def by auto
   thus ?thesis unfolding eigen_value_def[abs_def] by auto
@@ -30,7 +30,7 @@ proof -
     finite_spectrum[of A] show ?thesis by auto
 qed
 
-text \<open>For Perron-Frobenius it is useful to use the linear norm, and 
+text \<open>For Perron-Frobenius it is useful to use the linear norm, and
   not the Euclidean norm.\<close>
 
 definition norm1 :: "'a :: real_normed_field ^ 'n \<Rightarrow> real" where
@@ -42,9 +42,9 @@ lemma norm1_ge_0: "norm1 v \<ge> 0" unfolding norm1_def
 lemma norm1_0[simp]: "norm1 0 = 0" unfolding norm1_def by auto
 
 lemma norm1_nonzero: assumes "v \<noteq> 0"
-  shows "norm1 v > 0" 
+  shows "norm1 v > 0"
 proof -
-  from `v \<noteq> 0` obtain i where vi: "v $ i \<noteq> 0" unfolding vec_eq_iff 
+  from `v \<noteq> 0` obtain i where vi: "v $ i \<noteq> 0" unfolding vec_eq_iff
     using Finite_Cartesian_Product.vec_eq_iff zero_index by force
   have "setsum (\<lambda> i. norm (v $ i)) (UNIV - {i}) \<ge> 0"
     by (rule setsum_nonneg, auto)
@@ -54,9 +54,9 @@ proof -
   also have "\<dots> = norm1 v" unfolding norm1_def
     by (simp add: setsum.remove)
   finally show "norm1 v > 0" .
-qed 
+qed
 
-lemma norm1_0_iff[simp]: "(norm1 v = 0) = (v = 0)" 
+lemma norm1_0_iff[simp]: "(norm1 v = 0) = (v = 0)"
   using norm1_0 norm1_nonzero by (cases "v = 0", force+)
 
 lemma norm1_scaleR[simp]: "norm1 (r *\<^sub>R v) = abs r * norm1 v" unfolding norm1_def setsum_right_distrib
@@ -68,20 +68,20 @@ lemma normalize_eigen_vector: assumes "eigen_vector (A :: 'a :: real_normed_fiel
   shows "eigen_vector A ((1 / norm1 v) *\<^sub>R v) ev" "norm1 ((1 / norm1 v) *\<^sub>R v) = 1"
 proof -
   let ?v = "(1 / norm1 v) *\<^sub>R v"
-  from assms[unfolded eigen_vector_def] 
+  from assms[unfolded eigen_vector_def]
   have nz: "v \<noteq> 0" and id: "A *v v = ev *s v" by auto
   from nz have norm1: "norm1 v \<noteq> 0" by auto
   thus "norm1 ?v = 1" by simp
   from norm1 nz have nz: "?v \<noteq> 0" by auto
-  have "A *v ?v = (1 / norm1 v) *\<^sub>R (A *v v)" 
+  have "A *v ?v = (1 / norm1 v) *\<^sub>R (A *v v)"
     by (auto simp: vec_eq_iff matrix_vector_mult_def real_vector.scale_setsum_right)
   also have "A *v v = ev *s v" unfolding id ..
   also have "(1 / norm1 v) *\<^sub>R (ev *s v) = ev *s ?v"
     by (auto simp: vec_eq_iff)
   finally show "eigen_vector A ?v ev" using nz unfolding eigen_vector_def by auto
 qed
-  
-  
+
+
 lemma norm1_cont[simp]: "isCont norm1 v" unfolding norm1_def[abs_def] by auto
 
 lemma norm1_ge_norm: "norm1 v \<ge> norm v" unfolding norm1_def norm_vec_def
@@ -91,25 +91,25 @@ text \<open>The following continuity lemmas have been proven with hints from Fab
 
 lemma tendsto_matrix_vector_mult[tendsto_intros]:
   "(op *v (A :: 'a :: real_normed_algebra_1 ^ 'n ^ 'k) \<longlongrightarrow> A *v v) (at v within S)"
-  unfolding matrix_vector_mult_def[abs_def] 
+  unfolding matrix_vector_mult_def[abs_def]
   by (auto intro!: tendsto_intros)
 
 lemma tendsto_matrix_matrix_mult[tendsto_intros]:
   "(op ** (A :: 'a :: real_normed_algebra_1 ^ 'n ^ 'k) \<longlongrightarrow> A ** B) (at B within S)"
-  unfolding matrix_matrix_mult_def[abs_def] 
+  unfolding matrix_matrix_mult_def[abs_def]
   by (auto intro!: tendsto_intros)
 
 lemma matrix_vect_scaleR: "(A :: 'a :: real_normed_algebra_1 ^ 'n ^ 'k) *v (a *\<^sub>R v) = a *\<^sub>R (A *v v)"
   unfolding vec_eq_iff
-  by (auto simp: matrix_vector_mult_def scaleR_vec_def scaleR_setsum_right 
+  by (auto simp: matrix_vector_mult_def scaleR_vec_def scaleR_setsum_right
   intro!: setsum.cong)
-  
-lemma (in inj_semiring_hom) map_vector_0: "(map_vector hom v = 0) = (v = 0)" 
+
+lemma (in inj_semiring_hom) map_vector_0: "(map_vector hom v = 0) = (v = 0)"
   unfolding vec_eq_iff map_vector_def by auto
 
-(* TODO: transfer does not work as expected, since it generalizes over hom. 
+(* TODO: transfer does not work as expected, since it generalizes over hom.
   how can one tell transfer, not to perform this generalization? *)
-lemma (in semiring_hom) map_vector_vmult:  
+lemma (in semiring_hom) map_vector_vmult:
   "(map_matrix hom A) *v (map_vector hom v) = map_vector hom (A *v v)"
 proof -
   have *: "\<And> hom. semiring_hom hom \<Longrightarrow> (map_matrix hom A) *v (map_vector hom v) = map_vector hom (A *v v)"
@@ -135,64 +135,49 @@ private definition max_v_ev :: "(complex^'n) \<times> complex" where
 private definition "max_v = (1 / norm1 (fst max_v_ev)) *\<^sub>R fst max_v_ev"
 private definition "max_ev = snd max_v_ev"
 
-private lemma max_v_ev: 
-  "eigen_vector A max_v max_ev" 
-  "norm max_ev = sr" 
+private lemma max_v_ev:
+  "eigen_vector A max_v max_ev"
+  "norm max_ev = sr"
   "norm1 max_v = 1"
 proof -
   obtain v ev where id: "max_v_ev = (v,ev)" by force
   from spectral_radius_ev[of A] someI_ex[of "\<lambda> v_ev. eigen_vector A (fst v_ev) (snd v_ev)
   \<and> norm (snd v_ev) = sr", folded max_v_ev_def, unfolded id]
   have v: "eigen_vector A v ev" and ev: "norm ev = sr" by auto
-  from normalize_eigen_vector[OF v] ev 
+  from normalize_eigen_vector[OF v] ev
   show "eigen_vector A max_v max_ev" "norm max_ev = sr" "norm1 max_v = 1"
     unfolding max_v_def max_ev_def id by auto
 qed
 
-text \<open>In the definition of S, we use the linear norm instead of the 
-  default euclidean norm which is defined via the type-class. 
+text \<open>In the definition of S, we use the linear norm instead of the
+  default euclidean norm which is defined via the type-class.
   The reason is that S is not convex if one uses the euclidean norm.\<close>
 
 private definition B :: "real ^ 'n ^ 'n" where "B \<equiv> \<chi> i j. Re (A $ i $ j)"
-private definition S where "S = {v :: real ^ 'n . norm1 v = 1 \<and> (\<forall> i. v $ i \<ge> 0) \<and> 
+private definition S where "S = {v :: real ^ 'n . norm1 v = 1 \<and> (\<forall> i. v $ i \<ge> 0) \<and>
   (\<forall> i. (B *v v) $ i \<ge> sr * (v $ i))}"
 private definition f :: "real ^ 'n \<Rightarrow> real ^ 'n" where
   "f v = (1 / norm1 (B *v v)) *\<^sub>R (B *v v)"
 
-private lemma closedS: "closed S" unfolding S_def
-proof (intro closed_Collect_conj)
-  show "closed {v :: real ^ 'n. \<forall>i. 0 \<le> v $ i}"
-    using closed_interval_right_cart[of "0 :: real ^ 'n"] by auto
-  show "closed {v :: real ^ 'n. norm1 v = 1}" 
-    by (rule closed_Collect_eq, auto)
-  def C \<equiv> "(B + mat (-sr))"
-  {
-    fix i :: 'n and v
-    have id: "\<And> f. setsum f (UNIV :: 'n set) = f i + setsum f (UNIV - {i})"
-      by (rule setsum.remove, auto)
-    have "(sr * v $ i \<le> (B *v v) $ i) = (0 \<le> (B *v v) $ i - sr * v $ i)" by auto
-    also have "(B *v v) $ i - sr * v $ i = (B *v v) $ i + (mat (-sr) *v v) $ i" 
-      by (auto simp: matrix_vector_mult_def mat_def id)
-    also have "\<dots> = (C *v v) $ i" unfolding C_def matrix_add_vect_distrib
-      by auto
-    finally have "(sr * v $ i \<le> (B *v v) $ i) = (0 \<le> (C *v v) $ i)" .
-  } note id = this
-  show "closed {v. \<forall>i. sr * v $ i \<le> (B *v v) $ i}" unfolding id
-    by (auto simp: Collect_all_eq matrix_vector_mult_def intro!: closed_Collect_le)
-qed
+private lemma closedS: "closed S"
+  unfolding S_def matrix_vector_mult_def[abs_def]
+proof (intro closed_Collect_conj closed_Collect_all closed_Collect_le closed_Collect_eq)
+  show "continuous_on UNIV norm1"
+    by (simp add: continuous_at_imp_continuous_on)
+qed (auto intro!: continuous_intros continuous_on_component)
 
-private lemma boundedS: "bounded S" 
+private lemma boundedS: "bounded S"
 proof -
   {
     fix v :: "real ^ 'n"
     from norm1_ge_norm[of v] have "norm1 v = 1 \<Longrightarrow> norm v \<le> 1" by auto
   }
   thus ?thesis
-  unfolding S_def bounded_iff 
+  unfolding S_def bounded_iff
   by (auto intro!: exI[of _ 1])
 qed
-  
-private lemma compactS: "compact S" 
+
+private lemma compactS: "compact S"
   using boundedS closedS
   by (simp add: compact_eq_bounded_closed)
 
@@ -218,7 +203,7 @@ proof -
     also have "\<dots> = (norm max_ev) * norm (max_v $ i)" using max_v_ev by auto
     also have "\<dots> = norm ((max_ev *s max_v) $ i)" by (auto simp: norm_mult)
     also have "max_ev *s max_v = A *v max_v" using max_v_ev(1)[unfolded eigen_vector_def] by auto
-    also have "norm ((A *v max_v) $ i) \<le> (B *v ?v) $ i" 
+    also have "norm ((A *v max_v) $ i) \<le> (B *v ?v) $ i"
       unfolding matrix_vector_mult_def vec_lambda_beta
       by (rule setsum_norm_le, auto simp: norm_mult B_norm)
     finally have "sr * (?v $ i) \<le> (B *v ?v) $ i" .
@@ -233,12 +218,12 @@ proof (rule convexI)
   assume *: "v \<in> S" "w \<in> S" "0 \<le> a" "0 \<le> b" "a + b = (1 :: real)"
   let ?lin = "a *\<^sub>R v + b *\<^sub>R w"
   from * have 1: "norm1 v = 1" "norm1 w = 1" unfolding S_def by auto
-  have "norm1 ?lin = a * norm1 v + b * norm1 w" 
+  have "norm1 ?lin = a * norm1 v + b * norm1 w"
     unfolding norm1_def setsum_right_distrib setsum.distrib[symmetric]
   proof (rule setsum.cong)
     fix i :: 'n
     from * have "v $ i \<ge> 0" "w $ i \<ge> 0" unfolding S_def by auto
-    thus "norm (?lin $ i) = a * norm (v $ i) + b * norm (w $ i)" 
+    thus "norm (?lin $ i) = a * norm (v $ i) + b * norm (w $ i)"
       using *(3-4) by auto
   qed simp
   also have "\<dots> = 1" using *(5) 1 by auto
@@ -252,14 +237,14 @@ proof (rule convexI)
     from a b have "a * (sr * v $ i) + b * (sr * w $ i) \<le> a * (B *v v) $ i + b * (B *v w) $ i" by auto
   } note le = this
   have switch[simp]: "\<And> x y. x * a * y = a * x * y"  "\<And> x y. x * b * y = b * x * y" by auto
-  show "a *\<^sub>R v + b *\<^sub>R w \<in> S" using * norm1 le unfolding S_def 
+  show "a *\<^sub>R v + b *\<^sub>R w \<in> S" using * norm1 le unfolding S_def
     by (auto simp: matrix_vect_scaleR matrix_vector_right_distrib ring_distribs)
 qed
 
-private abbreviation (input) r :: "real \<Rightarrow> complex" where 
+private abbreviation (input) r :: "real \<Rightarrow> complex" where
   "r \<equiv> of_real"
 
-private abbreviation rv :: "real ^'n \<Rightarrow> complex ^'n" where 
+private abbreviation rv :: "real ^'n \<Rightarrow> complex ^'n" where
   "rv v \<equiv> \<chi> i. r (v $ i)"
 
 interpretation r: inj_semiring_hom r
@@ -270,19 +255,19 @@ private lemma rv_0: "(rv v = 0) = (v = 0)"
 
 private lemma rv_mult: "A *v rv v = rv (B *v v)"
 proof -
-  have "map_matrix r B = A" 
-    using rnnA unfolding map_matrix_def B_def real_non_neg_mat_def map_vector_def mat_elements_h_def 
+  have "map_matrix r B = A"
+    using rnnA unfolding map_matrix_def B_def real_non_neg_mat_def map_vector_def mat_elements_h_def
     by vector
-  thus ?thesis 
-    using r.map_vector_vmult[of B] 
+  thus ?thesis
+    using r.map_vector_vmult[of B]
     unfolding map_vector_def by auto
 qed
 
 context
   assumes zero_no_ev: "\<And> v. v \<in> S \<Longrightarrow> A *v rv v \<noteq> 0"
 begin
-private lemma normB_S: assumes v: "v \<in> S" 
-  shows "norm1 (B *v v) \<noteq> 0" 
+private lemma normB_S: assumes v: "v \<in> S"
+  shows "norm1 (B *v v) \<noteq> 0"
 proof -
   from zero_no_ev[OF v, unfolded rv_mult rv_0]
   show ?thesis by auto
@@ -292,7 +277,7 @@ private lemma image_f: "f ` S \<subseteq> S"
 proof -
   {
     fix v
-    assume v: "v \<in> S"    
+    assume v: "v \<in> S"
     hence norm: "norm1 v = 1" and ge: "\<And> i. v $ i \<ge> 0" "\<And> i. sr * v $ i \<le> (B *v v) $ i" unfolding S_def by auto
     from normB_S[OF v] have normB: "norm1 (B *v v) > 0" using norm1_nonzero by auto
     have fv: "f v = (1 / norm1 (B *v v)) *\<^sub>R (B *v v)" unfolding f_def by auto
@@ -304,10 +289,10 @@ proof -
       fix i
       have 1: "f v $ i \<ge> 0" unfolding fv c_def[symmetric] using c ge
         by (auto simp: matrix_vector_mult_def setsum_right_distrib B_norm intro!: setsum_nonneg)
-      have id1: "\<And> i. (B *v f v) $ i = c * ((B *v (B *v v)) $ i)" 
+      have id1: "\<And> i. (B *v f v) $ i = c * ((B *v (B *v v)) $ i)"
         unfolding f_def c_def matrix_vect_scaleR by simp
-      have id3: "\<And> i. sr * f v $ i = c * ((B *v (sr *\<^sub>R v)) $ i)" 
-        unfolding f_def c_def[symmetric] matrix_vect_scaleR by auto      
+      have id3: "\<And> i. sr * f v $ i = c * ((B *v (sr *\<^sub>R v)) $ i)"
+        unfolding f_def c_def[symmetric] matrix_vect_scaleR by auto
       have 2: "sr * f v $ i \<le> (B *v f v) $ i" unfolding id1 id3
         unfolding real_mult_le_cancel_iff2[OF `c > 0`]
         by (rule mult_B_mono, insert ge(2), auto)
@@ -318,12 +303,12 @@ proof -
   thus ?thesis by blast
 qed
 
-private lemma cont_f: "continuous_on S f" 
+private lemma cont_f: "continuous_on S f"
   unfolding f_def[abs_def] continuous_on using normB_S
   unfolding norm1_def
   by (auto intro!: tendsto_eq_intros)
 
-qualified lemma perron_frobenius_positive_ev: 
+qualified lemma perron_frobenius_positive_ev:
   "\<exists> v. eigen_vector A v (r sr) \<and> real_non_neg_vec v"
 proof -
   from brouwer[OF compactS convexS non_emptyS cont_f image_f]
@@ -335,7 +320,7 @@ proof -
   have ev: "B *v v = ev *s v" unfolding ev_def[symmetric] scalar_mult_eq_scaleR by simp
   with v[unfolded S_def] have ge: "\<And> i. sr * v $ i \<le> ev * v $ i" by auto
   have "A *v rv v = rv (B *v v)" unfolding rv_mult ..
-  also have "\<dots> = ev *s rv v" unfolding ev vec_eq_iff 
+  also have "\<dots> = ev *s rv v" unfolding ev vec_eq_iff
     by (simp add: scaleR_conv_of_real scaleR_vec_def)
   finally have ev: "A *v rv v = ev *s rv v" .
   from v have v0: "v \<noteq> 0" unfolding S_def by auto
@@ -354,7 +339,7 @@ proof -
 qed
 end
 
-qualified lemma perron_frobenius_both: 
+qualified lemma perron_frobenius_both:
   "\<exists> v. eigen_vector A v (r sr) \<and> real_non_neg_vec v"
 proof (cases "\<forall> v \<in> S. A *v rv v \<noteq> 0")
   case True
@@ -369,7 +354,7 @@ next
   hence "eigen_value A 0" unfolding eigen_value_def ..
   from spectral_radius_max[OF this] have 0: "0 \<le> sr" by auto
   from v[unfolded S_def] have ge: "\<And> i. sr * v $ i \<le> (B *v v) $ i" by auto
-  from v[unfolded S_def] have rnn: "real_non_neg_vec (rv v)" 
+  from v[unfolded S_def] have rnn: "real_non_neg_vec (rv v)"
     unfolding real_non_neg_vec_def vec_elements_h_def by auto
   from v0 obtain i where "v $ i \<noteq> 0" unfolding vec_eq_iff by auto
   from v have "v $ i \<ge> 0" unfolding S_def by auto
@@ -385,14 +370,14 @@ end
 text \<open>Perron Frobenius: The largest complex eigenvalue of a real-valued non-negative matrix
   is a real one, and it has a real-valued non-negative eigenvector.\<close>
 
-lemma perron_frobenius: 
+lemma perron_frobenius:
   assumes "real_non_neg_mat A"
   shows "\<exists>v. eigen_vector A v (of_real (spectral_radius A)) \<and> real_non_neg_vec v"
   by (rule Perron_Frobenius.perron_frobenius_both[OF assms])
 
 text \<open>And a version which ignores the eigenvector.\<close>
 
-lemma perron_frobenius_eigen_value: 
+lemma perron_frobenius_eigen_value:
   assumes "real_non_neg_mat A"
   shows "eigen_value A (of_real (spectral_radius A))"
   using perron_frobenius[OF assms] unfolding eigen_value_def by blast

@@ -2,8 +2,8 @@
     License: BSD
 *)
 
-theory SG_Library_Complement
-  imports "~~/src/HOL/Probability/Probability"
+theory SG_Library_Complement *)
+  imports(* "~~/src/HOL/Probability/Probability"*_)
 begin
 
 section {*SG Libary complements*}

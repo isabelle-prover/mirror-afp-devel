@@ -10,6 +10,12 @@ theory LList_CCPO_Topology imports
   "../Coinductive_List_Prefix"
 begin
 
+lemma closed_Collect_eq_isCont:
+  fixes f g :: "'a :: t2_space \<Rightarrow> 'b::t2_space"
+  assumes f: "\<And>x. isCont f x" and g: "\<And>x. isCont g x"
+  shows "closed {x. f x = g x}"
+  by (intro closed_Collect_eq continuous_at_imp_continuous_on ballI assms)
+
 instantiation llist :: (type) ccpo_topology
 begin
 
@@ -25,7 +31,7 @@ subsection {* Continuity and closedness of predefined constants *}
 
 lemma tendsto_mcont_llist: "mcont lSup lprefix lSup lprefix f \<Longrightarrow> f \<midarrow>l\<rightarrow> f l"
   by (auto simp add: Sup_llist_def[abs_def] intro!: tendsto_mcont)
-  
+
 lemma tendsto_ltl[THEN tendsto_compose, tendsto_intros]: "ltl \<midarrow>l\<rightarrow> ltl l"
   by (intro tendsto_mcont_llist mcont_ltl)
 
@@ -109,7 +115,7 @@ lemma closure_eq_lfinite:
   shows "{xs. Q xs} = closure {xs. lfinite xs \<and> Q xs}"
 proof (rule closure_unique[symmetric])
   fix T assume T: "{xs. lfinite xs \<and> Q xs} \<subseteq> T" and "closed T"
-  
+
   show "{xs. Q xs} \<subseteq> T"
   proof clarify
     fix xs :: "'a llist"
@@ -161,7 +167,7 @@ proof -
       show ?case
         by (auto simp: closed_def[symmetric] lnull_def)
     next
-      case LCons 
+      case LCons
       show ?case
       proof
         show ?lhd
@@ -200,7 +206,7 @@ lemma eventually_lfinite: "eventually lfinite (at' x)"
   apply (auto simp: lstrict_prefix_def intro!: lstrict_prefix_lfinite1)
   done
 
-lemma eventually_nhds_llist: 
+lemma eventually_nhds_llist:
   "eventually P (nhds l) \<longleftrightarrow> (\<exists>xs\<le>l. lfinite xs \<and> (\<forall>ys\<ge>xs. ys \<le> l \<longrightarrow> P ys))"
   unfolding eventually_nhds
 proof safe
@@ -326,7 +332,7 @@ lemma lfilter'_LNil: "lfilter' P LNil = LNil"
   by simp
 
 lemma lfilter'_LCons [simp]: "lfilter' P (LCons a xs) = (if P a then LCons a (lfilter' P xs) else lfilter' P xs)"
-  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
+  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq_isCont])
      (auto intro!: isCont_lfilter isCont_LCons isCont_If)
 
 lemma ldistinct_lfilter': "ldistinct l \<Longrightarrow> ldistinct (lfilter' P l)"
@@ -334,18 +340,18 @@ lemma ldistinct_lfilter': "ldistinct l \<Longrightarrow> ldistinct (lfilter' P l
      (auto intro!: distinct_filter dest: ldistinct_lprefix simp: lfinite_eq_range_llist_of)
 
 lemma lfilter'_lmap: "lfilter' P (lmap f xs) = lmap f (lfilter' (P \<circ> f) xs)"
-  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
+  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq_isCont])
      (auto simp add: filter_map comp_def intro!: isCont_lmap isCont_lfilter)
 
 lemma lfilter'_lfilter': "lfilter' P (lfilter' Q xs) = lfilter' (\<lambda>x. Q x \<and> P x) xs"
-  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq]) (auto intro!: isCont_lfilter)
+  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq_isCont]) (auto intro!: isCont_lfilter)
 
 lemma lfilter'_LNil_I[simp]: "(\<forall>x \<in> lset xs. \<not> P x) \<Longrightarrow> lfilter' P xs = LNil"
-  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
+  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq_isCont])
      (auto simp add: lfinite_eq_range_llist_of llist_of_eq_LNil_conv filter_empty_conv intro: isCont_lfilter dest!: lprefix_lsetD)
 
 lemma lset_lfilter': "lset (lfilter' P xs) = lset xs \<inter> {x. P x}"
-  by(rule tendsto_closed[OF closed_Collect_eq])
+  by(rule tendsto_closed[OF closed_Collect_eq_isCont])
     (auto 4 3 intro: isCont_lset isCont_lfilter isCont_inf2)
 
 lemma lfilter'_eq_LNil_iff: "lfilter' P xs = LNil \<longleftrightarrow> (\<forall>x\<in>lset xs. \<not> P x)"
@@ -353,7 +359,7 @@ lemma lfilter'_eq_LNil_iff: "lfilter' P xs = LNil \<longleftrightarrow> (\<foral
 
 lemma lfilter'_eq_lfilter: "lfilter' P xs = lfilter P xs"
 using isCont_lfilter
-proof(rule tendsto_closed[where x=xs, OF closed_Collect_eq])
+proof(rule tendsto_closed[where x=xs, OF closed_Collect_eq_isCont])
   fix ys :: "'a llist"
   assume "lfinite ys"
   thus "lfilter' P ys = lfilter P ys" by induction simp_all
@@ -381,13 +387,13 @@ lemma lconcat'_LNil: "lconcat' LNil = LNil"
   by simp
 
 lemma lconcat'_LCons [simp]: "lconcat' (LCons l xs) = lappend l (lconcat' xs)"
-  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
+  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq_isCont])
      (auto intro!: isCont_lconcat' isCont_lappend isCont_LCons)
 
 lemma lmap_lconcat: "lmap f (lconcat' xss) = lconcat' (lmap (lmap f) (xss::'a llist llist))"
-proof (rule tendsto_closed[where x=xss, OF closed_Collect_eq])
-  fix xs :: "'a llist llist" 
-  assume "lfinite xs" 
+proof (rule tendsto_closed[where x=xss, OF closed_Collect_eq_isCont])
+  fix xs :: "'a llist llist"
+  assume "lfinite xs"
   then show "lmap f (lconcat' xs) = lconcat' (lmap (lmap f) xs)"
     by (induct xs rule: lfinite.induct) (auto simp: lmap_lappend_distrib)
 qed (intro isCont_lconcat' isCont_lappend isCont_LCons continuous_ident isCont_lmap)+
@@ -428,15 +434,15 @@ lemma ldropWhile'_LNil: "ldropWhile' P LNil = LNil"
   by simp
 
 lemma ldropWhile'_LCons [simp]: "ldropWhile' P (LCons l xs) = (if P l then ldropWhile' P xs else LCons l xs)"
-  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
+  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq_isCont])
      (auto intro!: isCont_ldropWhile' isCont_If isCont_LCons)
 
 lemma "ldropWhile' P (lmap f xs) = lmap f (ldropWhile' (P \<circ> f) xs)"
-  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
+  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq_isCont])
      (auto simp add: dropWhile_map comp_def intro!: isCont_lmap isCont_ldropWhile')
 
 lemma ldropWhile'_LNil_I[simp]: "\<forall>x \<in> lset xs. P x \<Longrightarrow> ldropWhile' P xs = LNil"
-  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
+  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq_isCont])
      (auto simp add: llist_of_eq_LNil_conv intro!: isCont_lmap isCont_ldropWhile' dest!: lprefix_lsetD)
 
 lemma lnull_ldropWhile': "lnull (ldropWhile' P xs) \<longleftrightarrow> (\<forall>x \<in> lset xs. P x)" (is "?lhs \<longleftrightarrow> _")
@@ -462,7 +468,7 @@ lemma mono_edrop: "edrop n xs \<le> edrop n (xs @ ys)"
   by (induct xs arbitrary: n) (auto split: enat_cosplit)
 
 lemma edrop_mono: "xs \<le> ys \<Longrightarrow> edrop n xs \<le> edrop n ys"
-  using mono_edrop[of n xs] by (auto simp add: less_eq_list_def prefix_def) 
+  using mono_edrop[of n xs] by (auto simp add: less_eq_list_def prefix_def)
 
 definition "ldrop' n xs = Lim (at' xs) (llist_of \<circ> edrop n \<circ> list_of)"
 
@@ -479,7 +485,7 @@ lemma "ldrop' n LNil = LNil"
   by simp
 
 lemma "ldrop' n (LCons x xs) = (case n of 0 \<Rightarrow> LCons x xs | eSuc n \<Rightarrow> ldrop' n xs)"
-  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
+  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq_isCont])
      (auto intro!: isCont_ldrop' isCont_enat_case isCont_LCons split: enat_cosplit)
 
 primrec up :: "'a :: order \<Rightarrow> 'a list \<Rightarrow> 'a list" where
@@ -516,7 +522,7 @@ lemma lup_LNil: "lup a LNil = LNil"
   by simp
 
 lemma lup_LCons [simp]: "lup a (LCons x xs) = (if a < x then LCons x (lup x xs) else lup a xs)"
-  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
+  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq_isCont])
      (auto intro!: isCont_lup isCont_If isCont_LCons)
 
 lemma lset_lup: "lset (lup x xs) \<subseteq> lset xs \<inter> {y. x < y}"
@@ -590,7 +596,7 @@ fun extup extdown  :: "int \<Rightarrow> int list \<Rightarrow> int list" where
 | "extdown i [] = []"
 | "extdown i (x # xs) = (if i \<ge> x then extdown x xs else i # extup x xs)"
 
-lemma prefix_ext: 
+lemma prefix_ext:
   "prefix (extup a xs) (extup a (xs @  ys))"
   "prefix (extdown a xs) (extdown a (xs @  ys))"
   by (induction xs arbitrary: a) auto
@@ -626,11 +632,11 @@ lemma "lextup i LNil = LNil" "lextdown i LNil = LNil"
   by simp_all
 
 lemma "lextup i (LCons x xs) = (if i \<le> x then lextup x xs else LCons i (lextdown x xs))"
-  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
+  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq_isCont])
      (auto intro!: isCont_lextdown isCont_lextup isCont_If isCont_LCons)
 
 lemma "lextdown i (LCons x xs) = (if x \<le> i then lextdown x xs else LCons i (lextup x xs))"
-  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
+  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq_isCont])
      (auto intro!: isCont_lextdown isCont_lextup isCont_If isCont_LCons)
 
 lemma "lset (lextup a xs) \<subseteq> {a} \<union> lset xs"
@@ -645,7 +651,7 @@ lemma "lset (lextdown a xs) \<subseteq> {a} \<union> lset xs"
   apply (auto dest!: lprefix_lsetD set_ext[THEN set_mp])
   done
 
-lemma distinct_ext: 
+lemma distinct_ext:
   assumes "distinct xs" "a \<notin> set xs"
   shows "distinct (extup a xs)" "distinct (extdown a xs)"
   using assms set_ext
@@ -667,7 +673,7 @@ lemma elistsum_lfinite[simp]: "lfinite xs \<Longrightarrow> elistsum xs = listsu
 lemma elistsum_LNil: "elistsum LNil = 0"
   by simp
 
-context 
+context
   fixes xs :: "ereal llist"
   assumes xs: "\<And>x. x \<in> lset xs \<Longrightarrow> 0 \<le> x"
 begin
@@ -679,7 +685,7 @@ proof (rule order_tendstoI)
   fix a assume "a < ?y"
   then obtain ys where "llist_of ys \<le> xs" "a < listsum ys"
     by (auto simp: less_SUP_iff lfinite_eq_range_llist_of)
-  moreover 
+  moreover
   { fix zs assume "ys \<le> zs" "llist_of zs \<le> xs"
     then obtain ys' where zs: "zs = ys @ ys'"
       by (auto simp: prefix_def less_eq_list_def)
@@ -713,10 +719,10 @@ end
 lemma elistsum_nonneg:
   "(\<And>x. x \<in> lset xs \<Longrightarrow> 0 \<le> x) \<Longrightarrow> 0 \<le> elistsum xs"
   by (rule tendsto_le[OF at'_bot tendsto_elistsum tendsto_const])
-     (auto intro!: eventually_at'_llistI 
+     (auto intro!: eventually_at'_llistI
            simp: lprefix_conv_lappend listsum_setsum_nth setsum_nonneg lfinite_eq_range_llist_of)
 
-lemma elistsum_LCons: 
+lemma elistsum_LCons:
   assumes x: "0 \<le> x" "\<And>x. x \<in> lset xs \<Longrightarrow> 0 \<le> x" shows "elistsum (LCons x xs) = x + elistsum xs"
 proof (rule tendsto_unique_eventually[OF at'_bot])
   from x show "((\<lambda>xs. elistsum (LCons x xs)) \<longlongrightarrow> elistsum (LCons x xs)) (at' xs)"
@@ -727,7 +733,7 @@ proof (rule tendsto_unique_eventually[OF at'_bot])
     by (intro elistsum_nonneg tendsto_elistsum tendsto_add_ereal) auto
 qed
 
-lemma elistsum_lfilter': 
+lemma elistsum_lfilter':
   assumes nn: "\<And>x. x \<in> lset xs \<Longrightarrow> 0 \<le> x" shows "elistsum (lfilter' (\<lambda>x. x \<noteq> 0) xs) = elistsum xs"
 proof (rule tendsto_unique_eventually[OF at'_bot])
   show "(elistsum \<longlongrightarrow> elistsum xs) (at' xs)"
@@ -780,7 +786,7 @@ lemma "f' LNil = LNil"
   by simp
 
 lemma "f' (LCons x xs) = LCons (x * 2) (f' (f' xs))"
-  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq])
+  by (rule tendsto_closed[where x=xs, OF closed_Collect_eq_isCont])
      (auto intro!: isCont_f' isCont_LCons)
 
 end
