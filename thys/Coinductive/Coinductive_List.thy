@@ -5100,9 +5100,8 @@ abbreviation "llist_all == pred_llist"
 
 subsubsection {* Transfer rules for the Transfer package *}
 
-context
+context includes lifting_syntax
 begin
-interpretation lifting_syntax .
 
 lemma set1_pre_llist_transfer [transfer_rule]:
   "(rel_pre_llist A B ===> rel_set A) set1_pre_llist set1_pre_llist"

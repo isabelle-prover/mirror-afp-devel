@@ -711,10 +711,8 @@ qed
 
 subsection \<open>Transfer Rules\<close>
 
-context
+context includes lifting_syntax
 begin
-
-interpretation lifting_syntax .
 
 lemma product_parametric [transfer_rule]:
   "((A ===> B ===> C ===> B) ===> (A ===> rel_option B) ===> C ===> A ===> rel_option B) product product"

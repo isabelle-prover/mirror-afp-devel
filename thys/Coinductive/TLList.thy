@@ -243,9 +243,8 @@ by(simp add: reflp_def)
 
 setup_lifting Quotient_tllist reflp_tllist
 
-context
+context includes lifting_syntax
 begin
-interpretation lifting_syntax .
 
 lemma TNil_transfer [transfer_rule]:
   "(B ===> pcr_tllist A B) (Pair LNil) TNil"
@@ -835,9 +834,8 @@ abbreviation "tllist_all == pred_tllist"
 
 subsubsection {* Transfer rules for the Transfer package *}
 
-context
+context includes lifting_syntax
 begin
-interpretation lifting_syntax .
 
 lemma set1_pre_tllist_transfer [transfer_rule]:
   "(rel_pre_tllist A B C ===> rel_set A) set1_pre_tllist set1_pre_tllist"

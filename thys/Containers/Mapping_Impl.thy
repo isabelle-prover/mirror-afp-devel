@@ -37,19 +37,14 @@ by(simp_all)(transfer, rule)+
 
 declare [[code drop: Mapping.is_empty]]
 
-context
-begin
-interpretation lifting_syntax .
-
 lemma is_empty_transfer [transfer_rule]:
-  "(pcr_mapping op = op = ===> op =) (\<lambda>m. m = empty) Mapping.is_empty"
+  includes lifting_syntax
+  shows "(pcr_mapping op = op = ===> op =) (\<lambda>m. m = empty) Mapping.is_empty"
 unfolding mapping.pcr_cr_eq
 apply(rule rel_funI)
 apply(case_tac y)
 apply(simp add: Mapping.is_empty_def cr_mapping_def Mapping_inverse Mapping.keys.rep_eq)
 done
-
-end
 
 lemma is_empty_Mapping [code]:
   fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows
@@ -103,18 +98,13 @@ qed
 
 declare [[code drop: Mapping.size]]
 
-context
-begin
-interpretation lifting_syntax .
-
 lemma Mapping_size_transfer [transfer_rule]:
-  "(pcr_mapping op = op = ===> op =) (card \<circ> dom) Mapping.size"
+  includes lifting_syntax
+  shows "(pcr_mapping op = op = ===> op =) (card \<circ> dom) Mapping.size"
 apply(rule rel_funI)
 apply(case_tac y)
 apply(simp add: Mapping.size_def Mapping.keys.rep_eq Mapping_inverse mapping.pcr_cr_eq cr_mapping_def)
 done
-
-end
 
 lemma size_Mapping [code]:
   fixes t :: "('a :: ccompare, 'b) mapping_rbt" shows

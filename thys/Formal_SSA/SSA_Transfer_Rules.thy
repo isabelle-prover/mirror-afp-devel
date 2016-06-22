@@ -9,9 +9,8 @@ theory SSA_Transfer_Rules imports
   Construct_SSA_code
 begin
 
-context begin
-
-interpretation lifting_syntax .
+context includes lifting_syntax
+begin
 
 lemmas weak_All_transfer1 [transfer_rule] = iffD1 [OF right_total_alt_def2]
 lemma weak_All_transfer2 [transfer_rule]: "right_total R \<Longrightarrow> ((R ===> op =) ===> op \<longrightarrow>) All All"
@@ -58,7 +57,8 @@ end
 
 context graph_path_base begin
 
-interpretation lifting_syntax .
+context includes lifting_syntax
+begin
 
 lemma inEdges_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total A"
@@ -137,11 +137,10 @@ lemmas transfer_rules = inEdges_transfer predecessors_transfer successors_transf
 
 end
 
-context begin
-
-interpretation lifting_syntax .
+end
 
 lemma graph_Entry_transfer [transfer_rule]:
+  includes lifting_syntax
   assumes [transfer_rule]: "right_total G"
     and [transfer_rule]: "(G ===> op =) \<alpha>e1 \<alpha>e2"
     and [transfer_rule]: "(G ===> op =) \<alpha>n1 \<alpha>n2"
@@ -161,13 +160,10 @@ proof -
     unfolding graph_Entry_def [abs_def] by simp
 qed
 
-end
-
 context graph_Entry_base begin
 
-interpretation lifting_syntax .
-
 lemma dominates_transfer [transfer_rule]:
+  includes lifting_syntax
   assumes [transfer_rule]: "right_total G"
     and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
     and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
@@ -186,7 +182,8 @@ end
 
 context graph_Entry begin
 
-interpretation lifting_syntax .
+context includes lifting_syntax
+begin
 
 lemma shortestPath_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
@@ -260,10 +257,10 @@ lemmas graph_Entry_transfer =
   idom_transfer
 end
 
-context begin
-interpretation lifting_syntax .
+end
 
 lemma CFG_transfer [transfer_rule]:
+  includes lifting_syntax
   assumes [transfer_rule]: "right_total G"
     and [transfer_rule]: "(G ===> op =) \<alpha>e1 \<alpha>e2"
     and [transfer_rule]: "(G ===> op =) \<alpha>n1 \<alpha>n2"
@@ -276,10 +273,11 @@ lemma CFG_transfer [transfer_rule]:
     \<longrightarrow> SSA_CFG.CFG \<alpha>e2 \<alpha>n2 invar2 inEdges2 Entry2 defs2 uses2"
   unfolding SSA_CFG.CFG_def [abs_def] CFG_axioms_def [abs_def]
   by transfer_prover
-end
 
 context CFG_base begin
-interpretation lifting_syntax .
+
+context includes lifting_syntax
+begin
 
 lemma vars_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
@@ -340,9 +338,11 @@ lemmas CFG_transfers =
 
 end
 
+end
 
-context begin
-interpretation lifting_syntax .
+
+context includes lifting_syntax
+begin
 
 lemma CFG_Construct_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
@@ -383,7 +383,9 @@ qed
 end
 
 context CFG_Construct begin
-interpretation lifting_syntax .
+
+context includes lifting_syntax
+begin
 
 lemma phiDefNodes_aux_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
@@ -522,9 +524,12 @@ lemmas CFG_Construct_transfer_rules =
   phis'_transfer
 end
 
+end
+
 context CFG_SSA_base begin
 
-interpretation lifting_syntax .
+context includes lifting_syntax
+begin
 
 lemma phiDefs_transfer [transfer_rule]:
   assumes [transfer_rule]: "right_total G"
@@ -643,11 +648,12 @@ lemmas CFG_SSA_base_transfer_rules =
   defAss_transfer
 end
 
+end
+
 context CFG_SSA_base_code begin
 
-interpretation lifting_syntax .
-
 lemma CFG_SSA_base_code_transfer_rules [transfer_rule]:
+  includes lifting_syntax
   assumes [transfer_rule]: "right_total G"
     and [transfer_rule]: "(G ===> op =) \<alpha>e \<alpha>e2"
     and [transfer_rule]: "(G ===> op =) \<alpha>n \<alpha>n2"
@@ -671,11 +677,8 @@ done
 
 end
 
-context begin
-
-interpretation lifting_syntax .
-
 lemma CFG_SSA_transfer [transfer_rule]:
+  includes lifting_syntax
   assumes [transfer_rule]: "right_total G"
     and [transfer_rule]: "(G ===> op =) \<alpha>e1 \<alpha>e2"
     and [transfer_rule]: "(G ===> op =) \<alpha>n1 \<alpha>n2"
@@ -698,7 +701,5 @@ proof -
   }
   thus ?thesis by simp
 qed
-
-end
 
 end

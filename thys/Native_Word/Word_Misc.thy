@@ -43,13 +43,10 @@ lemma word_of_int_code [code abstract]:
 by(simp add: uint_word_of_int and_bin_mask_conv_mod)
 
 
-context begin interpretation lifting_syntax .
-
 lemma shiftl_transfer [transfer_rule]:
-  "(pcr_word ===> op = ===> pcr_word) op << op <<"
+  includes lifting_syntax
+  shows "(pcr_word ===> op = ===> pcr_word) op << op <<"
 by(auto intro!: rel_funI word_eqI simp add: word.pcr_cr_eq cr_word_def word_size nth_shiftl)
-
-end
 
 lemma set_bits_K_False [simp]: "set_bits (\<lambda>_. False) = (0 :: 'a :: len0 word)"
 by(rule word_eqI)(simp add: test_bit.eq_norm)

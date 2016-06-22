@@ -216,9 +216,8 @@ lemma lzip_llist_of_stream [simp]:
   "lzip (llist_of_stream xs) (llist_of_stream ys) = llist_of_stream (szip xs ys)"
 by(coinduction arbitrary: xs ys) auto
 
-context
+context includes lifting_syntax
 begin
-interpretation lifting_syntax .
 
 lemma lmap_infinite_transfer [transfer_rule]:
   "(op = ===> eq_onp (\<lambda>xs. \<not> lfinite xs) ===> eq_onp (\<lambda>xs. \<not> lfinite xs)) lmap lmap"

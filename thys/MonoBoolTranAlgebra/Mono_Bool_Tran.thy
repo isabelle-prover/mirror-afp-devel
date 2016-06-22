@@ -235,10 +235,8 @@ instance
 
 end
 
-context
+context includes lifting_syntax
 begin
-
-interpretation lifting_syntax .
 
 lemma [transfer_rule]:
   "(rel_set A ===> (A ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) INFIMUM INFIMUM"

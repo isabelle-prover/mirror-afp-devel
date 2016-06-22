@@ -27,14 +27,13 @@ ML_file "internalize_sort.ML"
 
 subsection \<open>Auxiliary Lemmas\<close>
 
-interpretation lifting_syntax .
-
 definition
   pred_fun :: "('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool"
 where
   [simp]: "pred_fun A B = (\<lambda>f. \<forall>x. A x \<longrightarrow> B (f x))"
 
 lemma Domainp_prod_fun_eq[relator_domain]:
+  includes lifting_syntax
   assumes 1: "left_unique T"
   shows "Domainp (T ===> S) = pred_fun (Domainp T) (Domainp S)"
 using 1 unfolding rel_fun_def Domainp_iff[abs_def] left_unique_def fun_eq_iff

@@ -177,9 +177,8 @@ declare
   list.next_def[code]
   list.unfoldr.simps[code]
 
-context
+context includes lifting_syntax
 begin
-interpretation lifting_syntax .
 
 lemma generator_has_next_transfer [transfer_rule]: 
   "(pcr_generator op = op = ===> op =) fst list.has_next"

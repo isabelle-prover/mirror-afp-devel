@@ -32,9 +32,8 @@ definition non_neg_mat :: "real ^ 'nr ^ 'nc \<Rightarrow> bool" where
   "non_neg_mat A \<equiv> (\<forall> a \<in> mat_elements_h A. a \<ge> 0)" 
 
 
-context
+context includes lifting_syntax
 begin
-interpretation lifting_syntax .
 
 lemma HMA_real_non_neg_mat [transfer_rule]:
   "((HMA_M :: complex mat \<Rightarrow> complex ^ 'nc ^ 'nr \<Rightarrow> bool) ===> op =) 

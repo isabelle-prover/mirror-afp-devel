@@ -33,7 +33,8 @@ structure Containers_Post = Named_Thms
 *}
 setup {* Containers_Post.setup *}
 
-context begin interpretation lifting_syntax .
+context includes lifting_syntax
+begin
 
 definition map_empty :: "'a \<Rightarrow> 'b option"
 where [code_unfold]: "map_empty = Map.empty"

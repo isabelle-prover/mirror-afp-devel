@@ -132,9 +132,8 @@ definition HMA_M :: "'a Matrix.mat \<Rightarrow> 'a ^ 'nc  ^ 'nr  \<Rightarrow> 
 definition HMA_I :: "nat \<Rightarrow> 'n :: finite \<Rightarrow> bool" where
   "HMA_I = (\<lambda> i a. i = to_nat a)"
 
-context
+context includes lifting_syntax
 begin
-interpretation lifting_syntax .
 
 lemma Domainp_HMA_V [transfer_domain_rule]: 
   "Domainp (HMA_V :: 'a Matrix.vec \<Rightarrow> 'a ^ 'n \<Rightarrow> bool) = (\<lambda> v. v \<in> carrier\<^sub>v (CARD('n )))"
