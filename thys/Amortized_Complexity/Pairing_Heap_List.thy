@@ -46,12 +46,6 @@ fun del_min :: "'a :: linorder heap \<Rightarrow> 'a heap" where
   "del_min None = None"
 | "del_min (Some(Hp x hs)) = pass\<^sub>2 (pass\<^sub>1 hs)"
 
-definition ld :: "nat \<Rightarrow> real" where
-"ld x = (if x = 0 then 0 else log 2 x)"
-
-lemma [simp]: "n \<noteq> 0 \<Longrightarrow> ld n = log 2 n"
-by (simp add: ld_def)
-
 fun szs :: "'a hp list \<Rightarrow> nat" where
 "szs(Hp x hsl # hsr) = szs hsl + szs hsr + 1" |
 "szs [] = 0"
@@ -78,7 +72,7 @@ abbreviation szo :: "'a heap \<Rightarrow> nat" where
 lemma \<phi>_ge0: "\<phi> hs \<ge> 0"
 by (induction hs rule: szs.induct) auto
 
-declare algebra_simps[simp] of_nat_Suc[simp]
+declare algebra_simps[simp]
 
 lemma szs_Cons[simp]: "szs(h # hs) = sz h + szs hs"
 by(cases h) simp
@@ -148,11 +142,12 @@ next
 qed simp_all
 
 
-lemma \<Delta>\<Phi>_pass1: "\<phi> (pass\<^sub>1 h) - \<phi> h \<le> 2*ld(szs h) - length h + 2"
+lemma \<Delta>\<Phi>_pass1: assumes "hs \<noteq> []"
+  shows "\<phi> (pass\<^sub>1 hs) - \<phi> hs \<le> 2 * log 2 (szs hs) - length hs + 2"
 proof - 
-  have "sum_ub h \<le> 2*ld(szs h) - length h + 2" 
-    by (induct h rule: sum_ub.induct) (simp_all add: ld_def)
-  thus ?thesis using \<Delta>\<Phi>_pass1_sum_ub[of h] by linarith
+  have "sum_ub hs \<le> 2 * log 2 (szs hs) - length hs + 2" 
+    using assms by (induct hs rule: sum_ub.induct) (simp_all)
+  thus ?thesis using \<Delta>\<Phi>_pass1_sum_ub[of hs] by linarith
 qed
 
 lemma szs_pass2: "pass\<^sub>2 hs = Some h \<Longrightarrow> szs hs = szs(hps h)+1"
@@ -160,7 +155,7 @@ apply(induction hs arbitrary: h rule: \<phi>.induct)
 apply (auto simp: merge2 split: option.split hp.split)
 done
 
-lemma \<Delta>\<Phi>_pass2: "\<Phi>o (pass\<^sub>2 hs) - \<phi> hs \<le> ld (szs hs)"
+lemma \<Delta>\<Phi>_pass2: "hs \<noteq> [] \<Longrightarrow> \<Phi>o (pass\<^sub>2 hs) - \<phi> hs \<le> log 2 (szs hs)"
 proof (induction hs)
   case (Cons h hs)
   thus ?case
@@ -170,21 +165,23 @@ proof (induction hs)
     proof (cases "pass\<^sub>2 hs")
       case [simp]: (Some h2)
       obtain y hs3 where [simp]: "h2 = Hp y hs3" by (metis hp.exhaust)
-      from szs_pass2[OF Some] Cons show ?thesis by(auto simp: add_mono)
+      from szs_pass2[OF Some] Cons show ?thesis
+        by(cases "hs=[]")(auto simp: add_mono)
     qed simp
   qed
-qed (simp add: ld_def)
+qed simp
 
-lemma \<Delta>\<Phi>\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e\<^sub>M\<^sub>i\<^sub>n:  "\<Phi>o (del_min (Some h)) - \<Phi>o (Some h) 
-  \<le> 3*ld(szs(hps h)) - length(hps h) + 2"
+lemma \<Delta>\<Phi>\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e\<^sub>M\<^sub>i\<^sub>n: assumes "hps h \<noteq> []"
+  shows "\<Phi>o (del_min (Some h)) - \<Phi>o (Some h) 
+  \<le> 3 * log 2 (szs(hps h)) - length(hps h) + 2"
 proof -
   let ?\<Delta>\<Phi>\<^sub>1 = "\<phi>(hps h) - \<Phi> h" 
   let ?\<Delta>\<Phi>\<^sub>2 = "\<Phi>o(pass\<^sub>2(pass\<^sub>1 (hps h))) - \<phi> (hps h)"
   let ?\<Delta>\<Phi> = "\<Phi>o (del_min (Some h)) - \<Phi>o (Some h)"
-  have "\<Phi>o(pass\<^sub>2(pass\<^sub>1(hps h))) - \<phi> (pass\<^sub>1(hps h)) \<le> ld (szs(hps h))" 
-    using \<Delta>\<Phi>_pass2[of "pass\<^sub>1(hps h)"] by (metis pass\<^sub>1_size)
+  have "\<Phi>o(pass\<^sub>2(pass\<^sub>1(hps h))) - \<phi> (pass\<^sub>1(hps h)) \<le> log 2 (szs(hps h))" 
+    using \<Delta>\<Phi>_pass2[of "pass\<^sub>1(hps h)"] using szs.elims assms by force
   moreover have "\<phi> (pass\<^sub>1 (hps h)) - \<phi> (hps h) \<le>  2*\<dots> - length (hps h) + 2"
-    using \<Delta>\<Phi>_pass1 by blast
+    using \<Delta>\<Phi>_pass1[OF assms] by blast
   moreover have "?\<Delta>\<Phi>\<^sub>1 \<le> 0" by (cases h) simp
   moreover have "?\<Delta>\<Phi> = ?\<Delta>\<Phi>\<^sub>1 + ?\<Delta>\<Phi>\<^sub>2" by (cases h) simp
   ultimately show ?thesis by linarith
@@ -233,9 +230,15 @@ next
         have "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 hs) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs \<le> 2 + length hs"
           by (induct hs rule: pass\<^sub>1.induct) simp_all
         hence  "t f s \<le> 1 + \<dots>" by simp
-        moreover have  "\<Phi>o (del_min s) - \<Phi>o s \<le> 3*ld(szs hs) - length hs + 2"
-          using  \<Delta>\<Phi>\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e\<^sub>M\<^sub>i\<^sub>n[of h] by simp
-        moreover have "ld(szs hs) \<le> ld (szo s + 1)" by (simp add: ld_def)
+        moreover have  "\<Phi>o (del_min s) - \<Phi>o s \<le> 3*log 2 (szo s + 1) - length hs + 2"
+        proof (cases "hs = []")
+          case False
+          hence "\<Phi>o (del_min s) - \<Phi>o s \<le> 3*log 2 (szs hs) - length hs + 2"
+            using  \<Delta>\<Phi>\<^sub>d\<^sub>e\<^sub>l\<^sub>e\<^sub>t\<^sub>e\<^sub>M\<^sub>i\<^sub>n[of h] by simp
+          also have "\<dots> \<le> 3*log 2 (szo s + 1) - length hs + 2"
+            using False szs.elims by force
+          finally show ?thesis .
+        qed simp
         ultimately show ?thesis by simp
       qed
     qed simp
