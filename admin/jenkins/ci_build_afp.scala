@@ -95,8 +95,8 @@ object profile extends isabelle.CI_Profile
   }
 
 
-  def threads = 4
-  def jobs = 2
+  def threads = 2
+  def jobs = 8
   def all = false
   def groups = List("AFP")
   def exclude = List("slow")
