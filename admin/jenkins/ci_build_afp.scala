@@ -18,7 +18,12 @@ object profile extends isabelle.CI_Profile
     import javax.activation._
 
     def send(): Unit = {
-      val session = Session.getDefaultInstance(System.getProperties())
+      val authenticator = new Authenticator() {
+        override def getPasswordAuthentication() =
+          new PasswordAuthentication(System.getProperty("mail.smtp.user"), System.getProperty("mail.smtp.password"))
+      }
+
+      val session = Session.getDefaultInstance(System.getProperties(), authenticator)
       val message = new MimeMessage(session)
       message.setFrom(new InternetAddress("ci@isabelle.systems", "Isabelle/Jenkins"))
       message.setSubject(subject)
