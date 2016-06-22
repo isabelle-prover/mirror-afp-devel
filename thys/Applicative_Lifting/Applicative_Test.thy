@@ -12,7 +12,7 @@ theory Applicative_Test imports
   Abstract_AF
 begin
 
-interpretation applicative_syntax .
+unbundle applicative_syntax
 
 subsection {* Normal form conversion *}
 

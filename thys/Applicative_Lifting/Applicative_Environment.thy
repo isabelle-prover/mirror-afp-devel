@@ -26,11 +26,9 @@ for
   set: range
 by(simp_all add: const_def apf_def rel_fun_def)
 
-experiment begin
-  interpretation applicative_syntax .
-
-  lemma "const (\<lambda>f x y. f y x) \<diamondop> f \<diamondop> x \<diamondop> y = f \<diamondop> y \<diamondop> x"
-  by applicative_lifting simp
-end
+lemma
+  includes applicative_syntax
+  shows "const (\<lambda>f x y. f y x) \<diamondop> f \<diamondop> x \<diamondop> y = f \<diamondop> y \<diamondop> x"
+by applicative_lifting simp
 
 end

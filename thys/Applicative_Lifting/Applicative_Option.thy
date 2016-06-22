@@ -35,7 +35,7 @@ for
   rel: rel_option
   set: set_option
 proof -
-  interpret applicative_syntax .
+  include applicative_syntax
   { fix x :: "'a option"
     show "pure (\<lambda>x. x) \<diamondop> x = x" by (cases x) simp_all
   next

@@ -16,7 +16,8 @@ where "ap_pmf f x = map_pmf (\<lambda>(f, x). f x) (pair_pmf f x)"
 
 adhoc_overloading Applicative.ap ap_pmf
 
-context begin interpretation applicative_syntax .
+context includes applicative_syntax
+begin
 
 lemma ap_pmf_id: "pure_pmf (\<lambda>x. x) \<diamondop> x = x"
 by(simp add: ap_pmf_def pair_return_pmf1 pmf.map_comp o_def)

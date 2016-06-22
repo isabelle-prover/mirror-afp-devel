@@ -82,7 +82,8 @@ adhoc_overloading Applicative.ap ap_dnelist
 lemma ap_pure_list [simp]: "ap_list [f] xs = map f xs"
 by(simp add: ap_list_def List.bind_def)
 
-context begin interpretation applicative_syntax .
+context includes applicative_syntax
+begin
 
 lemma ap_pure_dlist: "pure_dnelist f \<diamondop> x = Applicative_DNEList.map f x"
 by transfer simp

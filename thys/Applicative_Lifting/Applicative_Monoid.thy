@@ -53,9 +53,9 @@ apply(rule monoid_add.interchange)
 done
 
 text \<open>Test case\<close>
-context begin interpretation applicative_syntax .
-private lemma "pure_monoid_add op + \<diamondop> (x :: (nat, int) monoid_ap) \<diamondop> y = pure op + \<diamondop> y \<diamondop> x"
+lemma
+  includes applicative_syntax
+  shows "pure_monoid_add op + \<diamondop> (x :: (nat, int) monoid_ap) \<diamondop> y = pure op + \<diamondop> y \<diamondop> x"
 by(applicative_lifting comm_monoid_add) simp
-end
 
 end

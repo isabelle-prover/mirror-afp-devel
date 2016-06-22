@@ -8,7 +8,7 @@ theory Tree_Relabelling imports
   "~~/src/HOL/Library/Stream"
 begin
 
-interpretation applicative_syntax .
+unbundle applicative_syntax
 adhoc_overloading Applicative.pure pure_state
 adhoc_overloading Applicative.pure pure_option
 
@@ -152,8 +152,6 @@ for
   ap: ap_state_rev_rev
 unfolding pure_state_rev_rev_def ap_state_rev_rev_def by(transfer, applicative_nf, rule refl)+
 
-
-context begin interpretation applicative_syntax .
 lemma ap_state_rev_B: "B f \<diamondop> B x = B (pure_state (\<lambda>x f. f x) \<diamondop> x \<diamondop> f)"
 unfolding ap_state_rev_def by(fact ap_dual.abs_eq)
 
@@ -167,7 +165,6 @@ unfolding ap_state_rev_rev_def by(fact ap_dual.abs_eq)
 lemma ap_state_rev_rev_pure_B: "pure f \<diamondop> B x = B (pure_state_rev f \<diamondop> x)"
 unfolding ap_state_rev_rev_def pure_state_rev_rev_def
 by transfer(applicative_nf, rule refl)
-end
 
 text \<open>
   The formulation by Gibbons and Bird \cite{backwards} crucially depends on Kleisli composition,

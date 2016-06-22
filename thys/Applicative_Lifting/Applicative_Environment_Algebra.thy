@@ -12,7 +12,8 @@ begin
 text \<open> Link between applicative instance of the environment functor with the pointwise operations
   for the algebraic type classes \<close>
 
-context begin interpretation applicative_syntax .
+context includes applicative_syntax
+begin
 
 lemma plus_fun_af [applicative_unfold]: "f + g = pure op + \<diamondop> f \<diamondop> g"
 unfolding plus_fun_def const_def apf_def ..

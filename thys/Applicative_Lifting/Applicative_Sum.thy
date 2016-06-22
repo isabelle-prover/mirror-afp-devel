@@ -58,7 +58,7 @@ for
   ap: ap_either
   rel: "\<lambda>A. rel_sum A B"
 proof -
-  interpret applicative_syntax .
+  include applicative_syntax
   { fix f :: "('c \<Rightarrow> 'c \<Rightarrow> 'd) + 'a" and x
     show "pure (\<lambda>f x. f x x) \<diamondop> f \<diamondop> x = f \<diamondop> x \<diamondop> x"
       by (cases f x rule: sum.exhaust[case_product sum.exhaust]) simp_all

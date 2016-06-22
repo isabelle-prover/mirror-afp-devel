@@ -18,9 +18,8 @@ where
 adhoc_overloading Applicative.pure sconst
 adhoc_overloading Applicative.ap ap_stream
 
-context includes lifting_syntax
+context includes lifting_syntax applicative_syntax
 begin
-interpretation applicative_syntax .
 
 lemma ap_stream_id: "pure (\<lambda>x. x) \<diamondop> x = x"
 by (coinduction arbitrary: x) simp

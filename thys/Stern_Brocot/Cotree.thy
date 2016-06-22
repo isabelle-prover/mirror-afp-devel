@@ -108,7 +108,7 @@ where
 
 adhoc_overloading Applicative.ap ap_tree
 
-interpretation applicative_syntax .
+unbundle applicative_syntax
 
 lemma ap_tree_pure_Node [simp]:
   "pure f \<diamondop> Node x l r = Node (f x) (pure f \<diamondop> l) (pure f \<diamondop> r)"

@@ -125,7 +125,8 @@ consts
   pure :: "'a \<Rightarrow> 'b"
   ap :: "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
-locale applicative_syntax begin
+bundle applicative_syntax
+begin
   notation ap (infixl "\<diamondop>" 70)
 end
 

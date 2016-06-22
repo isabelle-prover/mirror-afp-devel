@@ -22,7 +22,8 @@ lemma ap_list_transfer[transfer_rule]:
 unfolding ap_list_def[abs_def] List.bind_def
 by transfer_prover
 
-context begin interpretation applicative_syntax .
+context includes applicative_syntax
+begin
 
 lemma cons_ap_list: "(f # fs) \<diamondop> xs = map f xs @ fs \<diamondop> xs"
 unfolding ap_list_def by (induction xs) simp_all
