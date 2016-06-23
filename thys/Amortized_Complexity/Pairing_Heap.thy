@@ -1,5 +1,4 @@
 (* Author: Hauke Brinkop *)
-
 section {* Amortized Analysis of Pairing Heaps *}
 
 subsection {* Binary Tree Representation *}
@@ -85,10 +84,10 @@ lemma pass\<^sub>2_struct: "\<exists>la a. pass\<^sub>2 (Node lx x rx) = Node la
 lemma mergepairs_pass12: "mergepairs h = pass\<^sub>2 (pass\<^sub>1 h)"
 by (induction h rule: mergepairs.induct) auto
 
-lemma \<Delta>\<Phi>\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t: "isRoot h \<Longrightarrow> \<Phi> (insert x h) - \<Phi> h \<le> log 2  (size h + 1)"
+lemma \<Delta>\<Phi>_insert: "isRoot h \<Longrightarrow> \<Phi> (insert x h) - \<Phi> h \<le> log 2  (size h + 1)"
   by (simp split: tree.splits)
 
-lemma \<Delta>\<Phi>\<^sub>m\<^sub>e\<^sub>l\<^sub>d:
+lemma \<Delta>\<Phi>_meld:
   assumes "h1 = Node lx x Leaf \<and> h2 = Node ly y Leaf" 
   shows "\<Phi> (meld h1 h2) - \<Phi> h1 - \<Phi> h2 \<le> 2*log 2 (size h1 + size h2)" 
 proof -
@@ -195,13 +194,13 @@ proof -
   ultimately show ?thesis by linarith
 qed
 
-lemma merge_isRoot: "isRoot h1 \<Longrightarrow> isRoot h2 \<Longrightarrow> isRoot (meld h1 h2)"
+lemma isRoot_meld: "isRoot h1 \<Longrightarrow> isRoot h2 \<Longrightarrow> isRoot (meld h1 h2)"
   by (simp split: tree.splits)
 
-lemma insert_isRoot: "isRoot h \<Longrightarrow> isRoot (insert x h)"
+lemma isRoot_insert: "isRoot h \<Longrightarrow> isRoot (insert x h)"
   by (simp split: tree.splits)
 
-lemma del_min_isRoot: assumes "isRoot h" shows "isRoot (del_min h)"
+lemma isRoot_del_min: assumes "isRoot h" shows "isRoot (del_min h)"
 proof (cases h)
   case [simp]: (Node lx x rx)
   have "rx = Leaf" using assms by simp
@@ -250,11 +249,11 @@ and \<Phi> = "\<Phi>"
 and U = "U"
 proof
   case goal2 thus ?case 
-    using insert_isRoot del_min_isRoot by (cases f) simp_all  
+    using isRoot_insert isRoot_del_min by (cases f) simp_all  
   case goal3 show ?case by (induct s) simp_all 
   case goal5 show ?case 
   proof (cases f)
-    case (Insert x) thus ?thesis using \<Delta>\<Phi>\<^sub>i\<^sub>n\<^sub>s\<^sub>e\<^sub>r\<^sub>t goal5 by fastforce
+    case (Insert x) thus ?thesis using \<Delta>\<Phi>_insert goal5 by fastforce
   next
     case [simp]: (Del_min)
     thus ?thesis
