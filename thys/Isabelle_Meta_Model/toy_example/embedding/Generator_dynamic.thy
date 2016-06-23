@@ -333,8 +333,8 @@ fun proof_show_gen f (thes, thes_when) st = st
        NONE
        (K I)
        []
-       (if thes_when = [] then [] else [(Attrib.empty_binding, map (fn t => (t, [])) thes_when)])
-       [(Attrib.empty_binding, [(thes, [])])]
+       (if thes_when = [] then [] else [(Binding.empty_atts, map (fn t => (t, [])) thes_when)])
+       [(Binding.empty_atts, [(thes, [])])]
        true
   |> snd
 
@@ -435,7 +435,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
           (SOME ( To_sbinding name
                 , NONE
                 , Mixfix (Input.string ("(" ^ of_semi__term abbrev ^ ")"), [], 1000, Position.no_range)), e) in
-    (snd o Specification.definition_cmd def [] [] (Attrib.empty_binding, of_semi__term e) false)
+    (snd o Specification.definition_cmd def [] [] (Binding.empty_atts, of_semi__term e) false)
     end
 | Theory_lemmas (Lemmas_simp_thm (simp, s, l)) => in_local
    (fn lthy => (snd o Specification.theorems Thm.theoremK
@@ -454,7 +454,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
 | Theory_lemma (Lemma (n, l_spec, l_apply, o_by)) => in_local
    (fn lthy =>
            Specification.theorem_cmd true Thm.theoremK NONE (K I)
-             Attrib.empty_binding [] [] (Element.Shows [((To_sbinding n, [])
+             Binding.empty_atts [] [] (Element.Shows [((To_sbinding n, [])
                                                        ,[((String.concatWith (" \<Longrightarrow> ")
                                                              (List.map of_semi__term l_spec)), [])])])
              false lthy
@@ -470,7 +470,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
                                             , if b then [[Token.make_string ("simp", Position.none)]] else [])
                                           , [(of_semi__term e, [])])])
                        l_spec)
-             (Element.Shows [(Attrib.empty_binding, [(of_semi__term concl, [])])])
+             (Element.Shows [(Binding.empty_atts, [(of_semi__term concl, [])])])
              false
         |> fold semi__command_proof l_apply
         |> (case map_filter (fn META.Command_let _ => SOME []
@@ -1109,7 +1109,7 @@ ML\<open>
 fun exec_deep (env, output_header_thy, seri_args, filename_thy, tmp_export_code, l_obj) thy0 =
   let open Generation_mode in
   let val of_arg = META.isabelle_of_compiler_env_config META.isabelle_apply I in
-  let fun def s = in_local (snd o Specification.definition_cmd NONE [] [] (Attrib.empty_binding, s) false) in
+  let fun def s = in_local (snd o Specification.definition_cmd NONE [] [] (Binding.empty_atts, s) false) in
   let val name_main = Deep.mk_free (Proof_Context.init_global thy0)
                                    Deep0.Export_code_env.Isabelle.argument_main [] in
   thy0

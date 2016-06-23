@@ -1612,8 +1612,8 @@ fun approximate_affine (name, term) lthy =
       (prec::thres::args@[qs] ~~
         (@{typ nat}::(@{typ real})::map aformT atys@[HOLogic.listT (aformT aty)]))
       approx
-    val ((approx, (_, def_raw)), lthy') = Local_Theory.define
-      ((name, NoSyn), ((Binding.empty, []), approx_raw)) lthy
+    val ((approx, (_, def_raw)), lthy') =
+      Local_Theory.define ((name, NoSyn), (Binding.empty_atts, approx_raw)) lthy
     val (_, lthy'') = Local_Theory.notes
       [((Thm.def_binding name, [Code.add_default_eqn_attrib Code.Equation]), [([def_raw], [])])] lthy'
 
