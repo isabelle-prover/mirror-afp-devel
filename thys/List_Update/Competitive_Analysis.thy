@@ -158,7 +158,12 @@ apply(simp add: bind_return_pmf)
 
 lemma T_on_embed: "T_on A s0 qs = T_on_rand (embed A) s0 qs"
 using T_deter_rand[where x="fst A s0", of s0 qs A] by(auto simp: bind_return_pmf)
+
+
+lemma T_on'_embed: "T_on' A (s0,x) qs = T_on_rand' (embed A) (return_pmf (s0,x)) qs"
+using T_deter_rand T_on_on' by metis
  
+
 lemma compet_embed: "compet A c S0 = compet_rand (embed A) c S0"
 unfolding compet_def compet_rand_def using T_on_embed by metis
 

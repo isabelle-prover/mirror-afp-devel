@@ -158,7 +158,7 @@ definition T_TS   where
 lemma T_TS_T_on: "T_on (rTS initH) init qs = T_TS init initH qs"
 unfolding T_on_as_sum T_TS_def
 apply(rule setsum.cong)
-  apply(simp)
+  apply(simp)                                                  
   unfolding t_TS_def by(simp add: t\<^sub>p_def split_def TSnopaid s_TS_def)
  
 
@@ -1034,6 +1034,7 @@ lemma TS_d: "qs \<in> Lxx x y \<Longrightarrow>
 using ts_d by auto
 
 
+
 lemma D: "qs \<in> Lxx x y \<Longrightarrow> x \<noteq> y \<Longrightarrow> h=[] \<or> (\<exists>hs. h=[x,x]@hs) \<Longrightarrow> 
       T_TS [x, y] h qs \<le> 2 * T\<^sub>p [x, y] qs (OPT2 qs [x, y]) 
       \<and> inv_TS qs x y h"
@@ -1057,6 +1058,95 @@ apply(cases "h=[]")
 
 subsection "Phase Partitioning"
  
+definition "TS_inv c x i \<equiv> (\<exists>hs. c = return_pmf ((if x=hd i then i else rev i),[x,x]@hs) )
+                      \<or> c = return_pmf ((if x=hd i then i else rev i),[])"
+
+abbreviation "TS_inv' s x i == TS_inv (return_pmf s) x i"
+
+lemma TS_inv'_det: "TS_inv' s x i = (\<exists>hs. s = ((if x=hd i then i else rev i),[x,x]@hs) )
+                      \<or> s = ((if x=hd i then i else rev i),[])"
+  unfolding TS_inv_def by auto
+
+lemma TS_inv'_det2: "TS_inv' (s,h) x i = (\<exists>hs. (s,h) = ((if x=hd i then i else rev i),[x,x]@hs) )
+                      \<or>  (s,h) = ((if x=hd i then i else rev i),[])"
+  unfolding TS_inv_def by auto
+
+
+lemma "TS_inv' (s,h) x i \<Longrightarrow>  h = [] \<or> (\<exists>hs. h = [x, x] @ hs)" 
+  unfolding TS_inv'_det2 sorry
+
+
+lemma TS_d': assumes "qs \<in> Lxx x y"
+    and xny: "x \<noteq> y" and "h = [] \<or> (\<exists>hs. h = [x, x] @ hs)"
+    and qsis: "qs \<in> lang (seq [Atom x, Atom x])"
+    shows "T_on' (rTS []) ([x,y],h) qs \<le> 2 * T\<^sub>p [x, y] qs (OPT2 qs [x, y]) "
+      and "TS_inv' (config' (rTS []) ([x,y],h) qs)  (last qs) [x, y]"
+proof -
+  from qsis have xx: "qs = [x,x]" by auto
+
+  have TS: "T_on' (rTS []) ([x,y],h) qs = 0"  
+    by (auto simp add: xx t\<^sub>p_def rTS_def Step_def TS_step_d_def step_def) 
+  then show "T_on' (rTS []) ([x,y],h) qs \<le> 2 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])" by simp
+
+  show "TS_inv' (config' (rTS []) ([x,y],h) qs)  (last qs) [x, y]"
+    unfolding TS_inv_def
+      by(simp add: xx request_first[OF xny]) 
+qed
+
+
+lemma D': assumes "\<sigma>' \<in> Lxx x y" and "x \<noteq> y" and "TS_inv' ([x, y], h) a [x, y]"
+  shows  "T_on' (rTS []) ([x, y], h) \<sigma>' \<le> 2 * T\<^sub>p [x, y] \<sigma>' (OPT2 \<sigma>' [x, y]) 
+      \<and>  TS_inv (config'_rand (embed (rTS [])) (return_pmf ([x, y], h)) \<sigma>') (last \<sigma>') [x, y]"
+proof -
+
+  from config'_embed have " config'_rand (embed (rTS [])) (return_pmf ([x, y], h)) \<sigma>' 
+      = return_pmf (Partial_Cost_Model.config' (rTS []) ([x, y], h) \<sigma>')" by blast
+
+  then have L: "TS_inv (config'_rand (embed (rTS [])) (return_pmf ([x, y], h)) \<sigma>') (last \<sigma>') [x, y]
+      = TS_inv' (config' (rTS []) ([x, y], h) \<sigma>')  (last \<sigma>') [x, y]" by auto
+
+  thm D[OF assms(1,2), unfolded T_TS_T_on[symmetric]] 
+  have "T_on' (rTS []) ([x, y], h) \<sigma>' \<le> 2 * T\<^sub>p [x, y] \<sigma>' (OPT2 \<sigma>' [x, y]) 
+      \<and>  TS_inv' (config' (rTS []) ([x, y], h) \<sigma>')  (last \<sigma>') [x, y]"  
+  apply(rule LxxI[where P="(\<lambda>x y qs. T_on' (rTS []) ([x, y], h) \<sigma>' \<le> 2 * T\<^sub>p [x, y] \<sigma>' (OPT2 \<sigma>' [x, y])
+                          \<and> TS_inv' (config' (rTS []) ([x, y], h) \<sigma>')  (last \<sigma>') [x, y])", where qs="\<sigma>'"])
+    sorry
+  then show ?thesis using L by auto
+qed
+
+theorem TS_OPT2':  "(x::nat) \<noteq> y \<Longrightarrow> set \<sigma> \<subseteq> {x,y}
+     \<Longrightarrow> T\<^sub>p_on (rTS []) [x,y] \<sigma>  \<le> 2 * real (T\<^sub>p_opt [x,y] \<sigma>) + 2"
+apply(subst T_on_embed)   
+  apply(rule Phase_partitioning_general[where P=TS_inv])
+      apply(simp)
+     apply(simp)
+    apply(simp)
+   apply(simp add: TS_inv_def rTS_def) 
+  proof (safe, goal_cases)
+    case (1 a b \<sigma>' s)
+    from 1(6) obtain h hist' where s: "s = return_pmf ([a, b], h)" 
+            and "h = [] \<or> h = [a,a]@hist'"
+      unfolding TS_inv_def apply(cases "a=hd [x,y]")
+        apply(simp) using 1 apply fast
+        apply(simp) using 1 by blast
+        
+    show ?case unfolding s T_on'_embed[symmetric]
+      using D'
+      using D T_TS_T_on 
+
+    thm T_on_embed
+    have "T\<^sub>p_on (rTS []) [a,b] \<sigma> \<le> 2 * T\<^sub>p [a, b] \<sigma> (OPT2 \<sigma> [a, b])  \<and> inv_TS \<sigma> x y h"
+      using D'
+      apply(rule D')
+        using 1 by simp_all
+    then have "real (T\<^sub>p_on MTF [a,b] \<sigma>)  \<le> 2 * T\<^sub>p [a, b] \<sigma> (OPT2 \<sigma> [a, b])" by auto
+    from this[unfolded T_on_embed] s show ?case by auto
+    show ?case sorry
+  next
+    case (2 a b \<sigma>' s)
+    show ?case sorry
+  qed
+
 theorem TS_OPT2: "(x::nat) \<noteq> y \<Longrightarrow> set \<sigma> \<subseteq> {x,y} \<Longrightarrow> h=[] \<or> (\<exists>hs. h=[x,x]@hs)
      \<Longrightarrow> T_TS [x,y] h \<sigma> \<le> 2 * T\<^sub>p [x,y] \<sigma> (OPT2 \<sigma> [x,y]) + 2"
 proof (induction "length \<sigma>" arbitrary: h \<sigma> x y rule: less_induct)

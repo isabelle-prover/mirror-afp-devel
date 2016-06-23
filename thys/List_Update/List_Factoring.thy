@@ -2241,7 +2241,6 @@ qed
 
 section "Factoring Lemma"
 
- 
 
 lemma cardofpairs: "S \<noteq> [] \<Longrightarrow> sorted S \<Longrightarrow> distinct S \<Longrightarrow> card {(x,y). x \<in> set S \<and> y\<in>set S \<and> x<y} = ((length S)*(length S-1)) / 2"
 proof (induct S rule: list_nonempty_induct)

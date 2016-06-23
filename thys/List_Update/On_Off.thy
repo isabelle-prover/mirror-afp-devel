@@ -109,7 +109,7 @@ definition T_opt :: "'state \<Rightarrow> 'request list \<Rightarrow> nat" where
 "T_opt s rs = Inf {T s rs as | as. size as = size rs}"
 
 definition compet :: "('state,'is,'request,'answer) alg_on \<Rightarrow> real \<Rightarrow> 'state set \<Rightarrow> bool" where
-"compet A c S0 = (\<forall>s0\<in>S0. \<exists>b \<ge> 0. \<forall>rs. wf s0 rs \<longrightarrow> real(T_on A s0 rs) \<le> c * T_opt s0 rs + b)"
+"compet A c S = (\<forall>s\<in>S. \<exists>b \<ge> 0. \<forall>rs. wf s rs \<longrightarrow> real(T_on A s rs) \<le> c * T_opt s rs + b)"
 
 lemma length_off[simp]: "length(off2 A s rs) = length rs"
 by (induction rs arbitrary: s) (auto split: prod.split)
