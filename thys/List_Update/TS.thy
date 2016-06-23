@@ -238,6 +238,13 @@ proof -
 qed
 
 
+lemma "T_on' (rTS h0) ([x,y],h) (xs@ys) = 
+        T_on' (rTS h0) ([x,y],h) xs
+            + T_on' (rTS h0) (config' (rTS h0) ([x, y],h) xs) ys"
+by (rule T_on'_append)  
+
+
+
 lemma splitquerylist: "T_TS init initH (xs@ys)
      = T_TS init initH xs + T_TS (s_TS init initH xs (length xs)) ((rev xs)@initH) ys"
 proof (induct ys rule: rev_induct)
@@ -289,6 +296,26 @@ qed (simp add: T_TS_def)
 subsection "Analysis of the Phases"
  
 
+
+
+definition "TS_inv c x i \<equiv> (\<exists>hs. c = return_pmf ((if x=hd i then i else rev i),[x,x]@hs) )
+                      \<or> c = return_pmf ((if x=hd i then i else rev i),[])"
+
+abbreviation "TS_inv' s x i == TS_inv (return_pmf s) x i"
+
+lemma TS_inv'_det: "TS_inv' s x i = (\<exists>hs. s = ((if x=hd i then i else rev i),[x,x]@hs) )
+                      \<or> s = ((if x=hd i then i else rev i),[])"
+  unfolding TS_inv_def by auto
+
+lemma TS_inv'_det2: "TS_inv' (s,h) x i = (\<exists>hs. (s,h) = ((if x=hd i then i else rev i),[x,x]@hs) )
+                      \<or>  (s,h) = ((if x=hd i then i else rev i),[])"
+  unfolding TS_inv_def by auto
+
+
+lemma "TS_inv' (s,h) x i \<Longrightarrow>  h = [] \<or> (\<exists>hs. h = [x, x] @ hs)" 
+  unfolding TS_inv'_det2 sorry
+
+
 definition "inv_TS qs x y h = (\<exists>x' y'. s_TS [x,y] h qs (length qs) = [x',y'] \<and> (\<exists>hs. (rev qs @ h) = [x',x']@hs))" 
 
 (*
@@ -299,6 +326,109 @@ TD_D   xx             \<rightarrow>  seq[(Atom x),(Atom x)]
 *)
 
 subsubsection "(yx)*?"
+
+
+lemma oneTS_step:
+  fixes hs x y
+  assumes "x\<noteq>y"
+  shows "TS_step_d ([x, y], x # y # hs) y = ((1, []), y # x # y # hs)"
+ using assms by(auto simp add: step_def mtf2_def swap_def TS_step_d_def before_in_def) 
+
+
+lemma oneTS_stepyx:
+  fixes hs x y 
+  shows "TS_step_d ([x, y], hs) x = ((0, []), x # hs)"
+by(auto simp add: TS_step_d_def)
+
+lemma oneTS_stepx:
+  fixes hs x y
+  assumes "x\<noteq>y"
+  shows "TS_step_d ([x, y], x # x # hs) y = ((0, []), y # x # x # hs)"
+ using assms by(auto simp add: step_def mtf2_def swap_def TS_step_d_def before_in_def) 
+
+
+
+lemma TS_yx': assumes "x \<noteq> y" "qs \<in> lang (Star(Times (Atom y) (Atom x)))"
+      "\<exists>hs. h=[x,y]@hs"
+   shows "T_on' (rTS h0) ([x,y],h) (qs@r) = length qs + T_on' (rTS h0) ([x,y],((rev qs) @h))  r
+        \<and> (\<exists>hs. ((rev qs) @h) = [x, y] @ hs)
+        \<and> config' (rTS h0) ([x, y],h) qs = ([x,y],rev qs @ h)"
+proof -
+  from assms have "qs \<in> star ({[y]} @@ {[x]})" by (simp)
+  from this assms(3) show ?thesis
+  proof (induct qs arbitrary: h rule: star_induct)
+    case Nil
+    then show ?case by(simp add: rTS_def)
+  next
+    case (append u v)
+    then have uyx: "u = [y,x]" by auto
+    from append obtain hs where a: "h = [x,y]@hs" by blast
+     
+    have "T_on' (rTS h0) ([x, y], (rev u @ h)) (v @ r) = length v + T_on' (rTS h0) ([x, y], rev v @ (rev u @ h)) r
+        \<and> (\<exists>hs. rev v @ (rev u @ h) = [x, y] @ hs)
+        \<and> config' (rTS h0) ([x, y], (rev u @ h)) v = ([x, y], rev v @ (rev u @ h))"
+        apply(simp only: uyx) apply(rule append(3)) by simp
+    then have yy: "T_on' (rTS h0) ([x, y], (rev u @ h)) (v @ r) = length v + T_on' (rTS h0) ([x, y], rev v @ (rev u @ h)) r"
+          and history: "(\<exists>hs. rev v @ (rev u @ h) = [x, y] @ hs)"
+          and state: "config' (rTS h0) ([x, y], (rev u @ h)) v = ([x, y], rev v @ (rev u @ h))" by auto
+    
+    have s0: "s_TS [x, y] h [y, x] 0 = [x,y]" unfolding s_TS_def by(simp) 
+
+    from assms(1) have hahah: " {xa. xa < y in [x, y] \<and> count_list [x] xa \<le> 1} = {x}"
+      unfolding before_in_def by auto
+ 
+
+
+    have "config' (rTS h0) ([x, y],h) u = ([x, y], x # y # x # y # hs)"
+        apply(simp add: split_def rTS_def uyx a )
+        apply(subst Step_def)
+          using assms(1) apply(simp add: oneTS_step step_def mtf2_def swap_def)
+          (* using assms(1) apply(auto simp add: step_def mtf2_def swap_def TS_step_d_def before_in_def) *)
+        apply(subst Step_def) 
+          by(simp add: step_def mtf2_def swap_def oneTS_step)  
+    then have s2: "config' (rTS h0) ([x, y],h) u =  ([x, y], ((rev u) @ h))"
+        unfolding a uyx by simp
+
+    have "config' (rTS h0) ([x, y], h) (u @ v) = 
+            config' (rTS h0) (Partial_Cost_Model.config' (rTS h0) ([x, y], h) u) v" by (rule config'_append2)
+  also
+    have "\<dots> = config' (rTS h0)  ([x, y], ((rev u) @ h)) v" by(simp only: s2)
+  also
+    have "\<dots> = ([x, y], rev (u @ v) @ h)" by (simp add: state)
+  finally
+    have alles: "config' (rTS h0) ([x, y], h) (u @ v) = ([x, y], rev (u @ v) @ h)" .
+         
+
+    have ta: "T_on' (rTS h0) ([x,y],h) u = 2"
+        unfolding rTS_def uyx a apply(simp only: T_on'.simps(2))
+          using assms(1) apply(simp add: oneTS_step)  
+          unfolding Step_def
+            apply(simp add: oneTS_step)
+            apply(simp add: step_def mtf2_def swap_def)
+            apply(simp add: oneTS_step)
+            by(simp add: t\<^sub>p_def) 
+
+  
+
+    have "T_on' (rTS h0) ([x,y],h) ((u @ v) @ r)
+            = T_on' (rTS h0) ([x,y],h) (u @ (v @ r))" by auto
+    also have "\<dots>
+        = T_on' (rTS h0) ([x,y],h) u
+            + T_on' (rTS h0) (config' (rTS h0) ([x, y],h) u) (v @ r)"
+        by(rule T_on'_append)
+    also have "\<dots> = T_on' (rTS h0) ([x,y],h) u
+          + T_on' (rTS h0) ([x, y],(rev u @ h)) (v @ r)" by(simp only: s2) 
+    also have "\<dots> = T_on' (rTS h0) ([x,y],h) u + length v + T_on' (rTS h0) ([x, y], rev v @ (rev u @ h)) r" by(simp only: yy) 
+    also have "\<dots> = 2 + length v + T_on' (rTS h0) ([x, y], rev v @ (rev u @ h)) r" by(simp only: ta) 
+    also have "\<dots> = length (u @ v) + T_on' (rTS h0) ([x, y], rev v @ (rev u @ h)) r" using uyx by auto
+    also have "\<dots> = length (u @ v) + T_on' (rTS h0) ([x, y], (rev (u @ v) @ h)) r" by auto
+    finally show ?case using history alles by simp   
+  qed
+qed
+
+
+
+
 
 lemma TS_yx: assumes "x \<noteq> y" "qs \<in> lang (Star(Times (Atom y) (Atom x)))"
       "\<exists>hs. h=[x,y]@hs"
@@ -391,6 +521,11 @@ qed
 
 subsubsection "?x"
 
+
+lemma TS_x': "T_on' (rTS h0) ([x,y],h) [x] = 0 \<and> config' (rTS h0) ([x, y],h) [x] = ([x,y], rev [x] @ h)"
+by(auto simp add: t\<^sub>p_def rTS_def TS_step_d_def Step_def step_def)
+ 
+
 lemma TS_x: assumes "x \<noteq> y" "\<exists>hs. h = [x, y] @ hs"
   shows "T_TS [x, y] h [x] = 0 \<and> TSdet [x, y] h [x] (length [x]) = ([x,y], rev [x] @ h)"
 proof -
@@ -437,6 +572,26 @@ proof -
         unfolding Step_def rTS_def by(simp add: split_def TS_step_d_def step_def) 
 
   then show ?thesis by auto
+qed 
+
+lemma TS_yy': assumes "x \<noteq> y" "\<exists>hs. h = [x, y] @ hs"
+  shows "T_on' (rTS h0) ([x,y],h) [y, y] = 1" "config' (rTS h0) ([x, y],h) [y,y] = ([y,x],rev [y,y] @ h)"
+proof -
+  from assms obtain hs where a: "h = [x,y]@hs" by blast 
+
+  from a show "T_on' (rTS h0) ([x,y],h) [y, y] = 1"
+      unfolding rTS_def 
+        using assms(1) apply(simp add: oneTS_step)  
+        unfolding Step_def
+          apply(simp add: oneTS_step)
+          apply(simp add: step_def mtf2_def swap_def)
+          apply(simp add: TS_step_d_def)
+          by(simp add: t\<^sub>p_def)   
+
+  show "config' (rTS h0) ([x, y],h) [y,y] = ([y,x],rev [y,y] @ h)"
+    unfolding rTS_def a using assms(1) apply(simp)
+      unfolding Step_def apply(simp add: oneTS_step step_def mtf2_def swap_def) 
+      by(simp add: TS_step_d_def) 
 qed
 
 
@@ -494,6 +649,81 @@ proof -
   qed
 
 subsubsection "yx(yx)*?"
+ 
+lemma TS_yxyx': assumes "x \<noteq> y" "qs \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])"
+  "(\<exists>hs. h=[x,x]@hs) \<or> index h y = length h"
+  shows "T_on' (rTS h0) ([x,y],h) (qs@r) = length qs - 1 + T_on' (rTS h0) ([x,y],rev qs @ h) r 
+        \<and> (\<exists>hs. (rev qs @ h) = [x, y] @ hs)
+            \<and> config' (rTS h0) ([x, y],h) qs = ([x,y], rev qs @ h)"
+proof - 
+  obtain u v where uu: "u \<in> lang (Times (Atom y) (Atom x))"
+                      and vv: "v \<in> lang (seq[ Star(Times (Atom y) (Atom x))])"
+                      and qsuv: "qs = u @ v" 
+                      using assms(2)
+                      by (auto simp: conc_def)  
+  from uu have uyx: "u = [y,x]" by(auto)
+
+  from qsuv uyx have vqs: "length v = length qs - 2" by auto
+  from qsuv uyx  have vqs2: "length v + 1 = length qs - 1" by auto
+
+  have firststep: "TS_step_d ([x, y], h) y = ((0, []), y # h)"
+  proof (cases "index h y = length h")
+    case True
+    then show ?thesis unfolding TS_step_d_def by(simp)
+  next
+    case False
+    with assms(3) obtain hs where a: "h = [x,x]@hs" by auto
+    then show ?thesis using assms(1) by(simp add: oneTS_stepx) 
+  qed
+
+  have s2: "config' (rTS h0) ([x,y],h) u = ([x, y], x # y # h)"
+    unfolding rTS_def uyx apply(simp add: )
+    unfolding Step_def by(simp add: firststep step_def oneTS_stepyx) 
+  
+  have ta: "T_on' (rTS h0) ([x,y],h) u = 1"
+    unfolding rTS_def uyx
+      apply(simp)
+      apply(simp add: firststep)
+        unfolding Step_def                 
+          apply(simp add: firststep step_def oneTS_stepyx )
+          using assms(1) by(simp add: t\<^sub>p_def) 
+ 
+  have ttt: 
+    "T_on' (rTS h0) ([x,y],rev u @ h) (v@r) = length v + T_on' (rTS h0) ([x,y],((rev v) @(rev u @ h)))  r
+      \<and> (\<exists>hs. ((rev v) @(rev u @ h)) = [x, y] @ hs)
+      \<and> config' (rTS h0) ([x, y],(rev u @ h)) v = ([x,y],rev v @ (rev u @ h))"
+      apply(rule TS_yx')
+    apply(fact)     
+    using vv apply(simp)
+    using uyx by(simp) 
+  then have tat: "T_on' (rTS h0) ([x,y], x # y # h) (v@r) = 
+          length v + T_on' (rTS h0) ([x,y],rev qs @ h)  r" 
+        and history:  "(\<exists>hs. (rev qs @ h) = [x, y] @ hs)"                                
+        and state: "config' (rTS h0) ([x, y], x # y # h) v = ([x,y],rev qs @ h)" using qsuv uyx
+        by auto
+    
+  have "config' (rTS h0) ([x, y], h) qs = config' (rTS h0) (config' (rTS h0) ([x, y], h) u) v"
+    unfolding qsuv by (rule config'_append2)
+also
+  have "\<dots> = ([x, y], rev qs @ h)" by(simp add: s2 state) 
+finally
+  have his: "config' (rTS h0) ([x, y], h) qs = ([x, y], rev qs @ h)" .
+
+ 
+  have "T_on' (rTS h0) ([x,y],h) (qs@r) = T_on' (rTS h0) ([x,y],h) (u @ v @ r)" using qsuv  by auto
+  also have "\<dots>
+      = T_on' (rTS h0) ([x,y],h) u + T_on' (rTS h0) (config' (rTS h0) ([x,y],h) u) (v @ r)"
+      by(rule T_on'_append) 
+  also have "\<dots> = T_on' (rTS h0) ([x,y],h) u + T_on' (rTS h0) ([x, y], x # y # h) (v @ r)" by(simp only: s2) 
+  also have "\<dots> = T_on' (rTS h0) ([x,y],h) u + length v + T_on' (rTS h0) ([x,y],rev qs @ h) r" by (simp only: tat) 
+  also have "\<dots> = 1 + length v + T_on' (rTS h0) ([x,y],rev qs @ h) r" by(simp only: ta) 
+  also have "\<dots> = length qs - 1 + T_on' (rTS h0) ([x,y],rev qs @ h) r" using vqs2 by auto
+  finally show ?thesis 
+    apply(safe)
+    using history apply(simp)
+    using his by auto                           
+qed
+
 
 lemma TS_yxyx: assumes "x \<noteq> y" "qs \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])"
   "(\<exists>hs. h=[x,x]@hs) \<or> index h y = length h"
@@ -597,8 +827,14 @@ proof -
     using history qsuv apply(simp)
     using his by auto                           
 qed
+ 
 
-
+lemma TS_xr': assumes "x \<noteq> y" "qs \<in> lang (Plus (Atom x) One)"
+   "h = [] \<or> (\<exists>hs. h = [x, x] @ hs) "
+  shows "T_on' (rTS h0) ([x,y],h) (qs@r) = T_on' (rTS h0) ([x,y],rev qs@h) r"
+          "((\<exists>hs. (rev qs @ h) = [x, x] @ hs) \<or> (rev qs @ h) = [x] \<or> (rev qs @ h)=[]) " 
+    using assms
+    by (auto simp add: T_on'_append Step_def rTS_def TS_step_d_def step_def t\<^sub>p_def) 
 
 lemma TS_xr: assumes "x \<noteq> y" "qs \<in> lang (Plus (Atom x) One)"
    "h = [] \<or> (\<exists>hs. h = [x, x] @ hs) "
@@ -628,6 +864,61 @@ qed
 
 
 subsubsection "(x+1)yx(yx)*yy"
+
+lemma ts_b': assumes "x \<noteq> y"
+  "v \<in> lang (seq[Times (Atom y) (Atom x), Star (Times (Atom y) (Atom x)), Atom y, Atom y])"
+  "(\<exists>hs. h = [x, x] @ hs) \<or> h = [x] \<or> h = []"
+  shows "T_on' (rTS h0) ([x, y], h) v = (length v - 2)
+            \<and>  (\<exists>hs. (rev v @ h) = [y,y]@hs) \<and> config' (rTS h0) ([x,y], h) v = ([y,x], rev v @ h)"
+proof -  
+  from assms have lenvmod: "length v mod 2 = 0" apply(simp)
+  proof -
+    assume "v \<in> ({[y]} @@ {[x]}) @@ star ({[y]} @@ {[x]}) @@ {[y]} @@ {[y]}"
+    then obtain p q r where pqr: "v=p@q@r" and "p\<in>({[y]} @@ {[x]})"
+              and q: "q \<in> star ({[y]} @@ {[x]})" and "r \<in> {[y]} @@ {[y]}" by (metis concE)
+    then have "p = [y,x]" "r=[y,y]" by auto
+    with pqr have a: "length v = 4+length q" by auto
+
+    from q have b: "length q mod 2 = 0"
+    apply(induct q rule: star_induct) by (auto)    
+    from a b show ?thesis by auto
+  qed
+
+  with assms(1,3) have fall: "(\<exists>hs. h = [x, x] @ hs) \<or> index h y = length h"
+    by(auto)
+
+  from assms(2) have "v \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])
+                          @@ lang (seq[Atom y, Atom y])" by (auto simp: conc_def)
+  then obtain a b where aa: "a \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])"
+                      and "b \<in> lang (seq[Atom y, Atom y])"
+                      and vab: "v = a @ b" 
+                      by(erule concE) 
+  then have bb: "b=[y,y]" by auto
+  from aa have lena: "length a > 0" by auto
+ 
+  from TS_yxyx'[OF assms(1) aa fall] have stars: "T_on' (rTS h0) ([x, y], h) (a @ b) =
+    length a - 1 + T_on' (rTS h0) ([x, y], rev a @ h) b" 
+    and history: "(\<exists>hs. rev a @ h = [x, y] @ hs)"
+    and state: "config' (rTS h0) ([x, y], h) a = ([x,y],rev a @ h)" by auto 
+ (* "T_on' (rTS h0) ([x,y],h) [y, y] = 1" "config' (rTS h0) ([x, y],h) [y,y] = ([y,x],rev [y,y] @ h)" *)
+  have suffix: "T_on' (rTS h0) ([x, y], rev a @ h) b = 1"                                                       
+     and jajajaj: "config' (rTS h0) ([x, y],rev a @ h) b = ([y,x],rev b @ rev a @ h)" unfolding bb 
+    using TS_yy' history assms(1) by auto
+
+  from stars suffix have "T_on' (rTS h0) ([x, y], h) (a @ b) = length a" using lena by auto
+  then have whatineed: "T_on' (rTS h0) ([x, y], h) v = (length v - 2)" using vab bb by auto
+    
+
+  have grgr:"config' (rTS h0) ([x, y], h) v = ([y, x], rev v @ h)"
+     unfolding vab 
+      apply(simp only: config'_append2 state jajajaj) by simp 
+
+  from history obtain hs' where "rev a @ h = [x, y] @ hs'" by auto
+  then obtain hs2 where reva: "rev a @ h = x # hs2" by auto
+
+  show ?thesis using whatineed grgr
+    by(auto simp add: reva vab bb) 
+qed
 
 
 lemma ts_b: assumes "x \<noteq> y"
@@ -1058,37 +1349,21 @@ apply(cases "h=[]")
 
 subsection "Phase Partitioning"
  
-definition "TS_inv c x i \<equiv> (\<exists>hs. c = return_pmf ((if x=hd i then i else rev i),[x,x]@hs) )
-                      \<or> c = return_pmf ((if x=hd i then i else rev i),[])"
-
-abbreviation "TS_inv' s x i == TS_inv (return_pmf s) x i"
-
-lemma TS_inv'_det: "TS_inv' s x i = (\<exists>hs. s = ((if x=hd i then i else rev i),[x,x]@hs) )
-                      \<or> s = ((if x=hd i then i else rev i),[])"
-  unfolding TS_inv_def by auto
-
-lemma TS_inv'_det2: "TS_inv' (s,h) x i = (\<exists>hs. (s,h) = ((if x=hd i then i else rev i),[x,x]@hs) )
-                      \<or>  (s,h) = ((if x=hd i then i else rev i),[])"
-  unfolding TS_inv_def by auto
-
-
-lemma "TS_inv' (s,h) x i \<Longrightarrow>  h = [] \<or> (\<exists>hs. h = [x, x] @ hs)" 
-  unfolding TS_inv'_det2 sorry
 
 
 lemma TS_d': assumes "qs \<in> Lxx x y"
     and xny: "x \<noteq> y" and "h = [] \<or> (\<exists>hs. h = [x, x] @ hs)"
     and qsis: "qs \<in> lang (seq [Atom x, Atom x])"
-    shows "T_on' (rTS []) ([x,y],h) qs \<le> 2 * T\<^sub>p [x, y] qs (OPT2 qs [x, y]) "
-      and "TS_inv' (config' (rTS []) ([x,y],h) qs)  (last qs) [x, y]"
+    shows "T_on' (rTS h0) ([x,y],h) qs \<le> 2 * T\<^sub>p [x, y] qs (OPT2 qs [x, y]) "
+      and "TS_inv' (config' (rTS h0) ([x,y],h) qs)  (last qs) [x, y]"
 proof -
   from qsis have xx: "qs = [x,x]" by auto
 
-  have TS: "T_on' (rTS []) ([x,y],h) qs = 0"  
+  have TS: "T_on' (rTS h0) ([x,y],h) qs = 0"  
     by (auto simp add: xx t\<^sub>p_def rTS_def Step_def TS_step_d_def step_def) 
-  then show "T_on' (rTS []) ([x,y],h) qs \<le> 2 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])" by simp
+  then show "T_on' (rTS h0) ([x,y],h) qs \<le> 2 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])" by simp
 
-  show "TS_inv' (config' (rTS []) ([x,y],h) qs)  (last qs) [x, y]"
+  show "TS_inv' (config' (rTS h0) ([x,y],h) qs)  (last qs) [x, y]"
     unfolding TS_inv_def
       by(simp add: xx request_first[OF xny]) 
 qed
