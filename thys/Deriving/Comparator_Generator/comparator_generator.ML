@@ -229,7 +229,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
     val bindings = tycos ~~ Ts |> map mk_pcomp
       |> map (fn (name, T) => (Binding.name name, SOME T, NoSyn))
     val ((pcomps, _, pcomp_simps), lthy) = lthy
-      |> BNF_LFP_Rec_Sugar.primrec bindings (map (fn t => ((Attrib.empty_binding, t), [], [])) eqs)
+      |> BNF_LFP_Rec_Sugar.primrec bindings (map (fn t => ((Binding.empty_atts, t), [], [])) eqs)
     val (phi, lthy) = restore_with_morphism lthy
     val pcomps = map (Morphism.term phi) pcomps
     val pcomp_simps = pcomp_simps |> map (Morphism.fact phi)
@@ -248,7 +248,7 @@ fun generate_comparators_from_bnf_fp tyco lthy =
         val abs_def = lambdas args rhs
         val name = "comparator_" ^ Long_Name.base_name tyco
         val ((comp, (_, prethm)), lthy) =
-          Local_Theory.define ((Binding.name name, NoSyn), (Attrib.empty_binding, abs_def)) lthy
+          Local_Theory.define ((Binding.name name, NoSyn), (Binding.empty_atts, abs_def)) lthy
         val eq = Logic.mk_equals (list_comb (comp, args), rhs)
         val thm = Goal.prove lthy (map (fst o dest_Free) args) [] eq (K (unfold_tac lthy [prethm]))
       in

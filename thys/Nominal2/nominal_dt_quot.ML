@@ -82,7 +82,7 @@ fun lift_raw_const qtys (qconst_name, rconst, mx', rsp_thm) lthy =
     val _ = if is_Const rhs then () else warning "The definiens is not a constant"
 
   in
-    Quotient_Def.add_quotient_def (((binding, mx), Attrib.empty_binding), (lhs, rhs)) rsp_thm  ctxt
+    Quotient_Def.add_quotient_def (((binding, mx), Binding.empty_atts), (lhs, rhs)) rsp_thm  ctxt
   end
 
 

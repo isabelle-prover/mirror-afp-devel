@@ -93,7 +93,7 @@ structure Refine_Automation :REFINE_AUTOMATION = struct
       (list_comb (Free (name,param_types ---> fastype_of t'),param_vars),t');
 
     val ((lhs_t,(_,def_thm)),lthy) 
-      = Specification.definition NONE [] [] (Attrib.empty_binding,def_t) lthy;
+      = Specification.definition NONE [] [] (Binding.empty_atts,def_t) lthy;
 
     (*val _ = tracing "xxxx";*)
     val app_t = list_comb (lhs_t, params);
