@@ -1,14 +1,11 @@
-(*=========================================================================*)
-(* Code Generation Setup for Float                                         *)
-(*=========================================================================*)
-
+(* Code Generation Setup for Float *)
 (* Author: Lei Yu, University of Cambridge *)
+
+section \<open>Code Generation Setup for Floats\<close>
 
 theory Code_Float
 imports IEEE
 begin
-
-section{*Code Generation Setup for Floats*}
 
 code_printing type_constructor float \<rightharpoonup>
   (SML) "real" and (OCaml) "float"
@@ -17,8 +14,8 @@ code_printing constant "Plus_zero :: float" \<rightharpoonup>
   (SML) "0.0" and (OCaml) "0.0"
 declare Plus_zero_def[code del]
 
-definition One :: float where
-"One = Abs_float (0, bias float_format, 0)"
+definition One :: float
+  where "One = Abs_float (0, bias float_format, 0)"
 declare One_def[code del]
 
 code_printing constant "One :: float" \<rightharpoonup>
@@ -61,17 +58,14 @@ code_printing constant "float_sqrt :: float \<Rightarrow> float" \<rightharpoonu
   (SML) "Math.sqrt" and (OCaml) "Pervasives.sqrt"
 declare sqrt_def[code del]
 
-
-(* Mapping natual numbers to floats *)
-fun float_of :: "nat \<Rightarrow> float" where
+text \<open>Mapping natual numbers to floats.\<close>
+fun float_of :: "nat \<Rightarrow> float"
+where
   "float_of 0 = Plus_zero"
-| "float_of (Suc n) = float_of n +  One "
-
+| "float_of (Suc n) = float_of n + One"
 
 lemma "float_of 2 < float_of 3 + float_of 4"
-apply eval
-done 
-
+  by eval
 
 export_code float_of in SML
 
