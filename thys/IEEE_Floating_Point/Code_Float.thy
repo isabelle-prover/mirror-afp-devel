@@ -1,4 +1,3 @@
-(* Code Generation Setup for Float *)
 (* Author: Lei Yu, University of Cambridge *)
 
 section \<open>Code Generation Setup for Floats\<close>
