@@ -13,6 +13,7 @@ session Amortized_Complexity (AFP) = HOL +
     "~~/src/HOL/Library/Tree"
 
   theories
+    Amortized_Examples
     Table
     Skew_Heap_Analysis
     Splay_Tree_Analysis
