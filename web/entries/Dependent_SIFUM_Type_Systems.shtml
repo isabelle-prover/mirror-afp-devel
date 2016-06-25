@@ -50,7 +50,7 @@ for
         <td class="abstract">
 
 
-The paper "Compositional Verification and Refinement of Concur- rent
+The paper "Compositional Verification and Refinement of Concurrent
 Value-Dependent Noninterference" by Murray et. al. (CSF 2016) presents
 a dependent security type system for compositionally verifying a
 value-dependent noninterference property, defined in (Murray, PLAS
