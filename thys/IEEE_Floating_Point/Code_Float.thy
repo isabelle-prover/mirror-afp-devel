@@ -57,7 +57,7 @@ code_printing constant "float_sqrt :: float \<Rightarrow> float" \<rightharpoonu
   (SML) "Math.sqrt" and (OCaml) "Pervasives.sqrt"
 declare sqrt_def[code del]
 
-text \<open>Mapping natual numbers to floats.\<close>
+text \<open>Mapping natural numbers to floats.\<close>
 fun float_of :: "nat \<Rightarrow> float"
 where
   "float_of 0 = Plus_zero"
