@@ -320,11 +320,7 @@ proof -
     by (auto simp: bounded_iff)
 qed
 
-
-text\<open>\label{sec:rk}\<close>
-
-subsection \<open>Definitions\<close>
-text\<open>\label{sec:rk-definition}\<close>
+subsection \<open>Definitions \label{sec:rk-definition}\<close>
 
 declare setsum.cong[fundef_cong]
 fun rk_eval :: "(nat\<Rightarrow>nat\<Rightarrow>real) \<Rightarrow> (nat\<Rightarrow>real) \<Rightarrow> (real\<times>'a::real_vector \<Rightarrow> 'a) \<Rightarrow> real \<Rightarrow> real \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a" where
@@ -363,8 +359,7 @@ definition rk2_increment where
 definition rk2 where
   "rk2 x f = grid_function (discrete_evolution (rk2_increment x f))"
 
-subsection \<open>Euler method is consistent\<close>
-text\<open>\label{sec:rk-euler-cons}\<close>
+subsection \<open>Euler method is consistent \label{sec:rk-euler-cons}\<close>
 
 lemma euler_increment:
   fixes f::"_ \<Rightarrow> 'a::real_vector"
@@ -399,8 +394,7 @@ lemma rk2_increment:
   apply (simp del: rk_eval.simps add:  field_simps)
   done
 
-subsection \<open>Set-Based Consistency of Euler Method\<close>
-text \<open>\label{sec:setconsistent}\<close>
+subsection \<open>Set-Based Consistency of Euler Method \label{sec:setconsistent}\<close>
 
 locale derivative_set_bounded =
   derivative_on_prod +
@@ -1032,8 +1026,7 @@ proof
     by (auto intro: lipschitz_subset[OF _ lipschitz_area])
 qed
 
-subsection \<open>Euler method is convergent\<close>
-text\<open>\label{sec:rk-euler-conv}\<close>
+subsection \<open>Euler method is convergent \label{sec:rk-euler-conv}\<close>
 
 locale max_step1 = grid +
   fixes t1 L B r
@@ -1050,8 +1043,7 @@ sublocale euler_convergent \<subseteq>
   convergent_one_step t0 "t0 + e" solution "euler_increment f" 1 euler_C r B' t
   by unfold_locales (simp add: grid_from)
 
-subsection \<open>Euler method on Rectangle is convergent\<close>
-text\<open>\label{sec:rk-euler-conv-on-rect}\<close>
+subsection \<open>Euler method on Rectangle is convergent \label{sec:rk-euler-conv-on-rect}\<close>
 
 locale ivp_rectangle_bounded_derivative = solution_in_cylinder "i::'a::euclidean_space ivp" e b B +
   derivative_norm_bounded T "cbox (x0 - (b + \<bar>r\<bar>) *\<^sub>R One) (x0 + (b + \<bar>r\<bar>) *\<^sub>R One)" f f' B B' for i e b r B f' B'
@@ -1107,8 +1099,7 @@ qed
 
 end
 
-subsection \<open>Stability and Convergence of Approximate Euler\<close>
-text\<open>\label{sec:rk-euler-stable}\<close>
+subsection \<open>Stability and Convergence of Approximate Euler \label{sec:rk-euler-stable}\<close>
 
 locale euler_rounded_on_rectangle =
   ivp_rectangle_bounded_derivative i e1' b r B f' B' +

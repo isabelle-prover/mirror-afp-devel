@@ -4,8 +4,8 @@ imports
   "../Numerics/Optimize_Float"
 begin
 
-subsection \<open>Oil reservoir in Affine arithmetic\<close>
-text \<open>\label{sec:exampleoil}\<close>
+subsection \<open>Oil reservoir in Affine arithmetic \label{sec:exampleoil}\<close>
+
 approximate_affine oil "\<lambda>(y::real, z::real). (z, z*z + -3 * inverse (inverse 1000 + y*y))"
 
 lemma oil_deriv_ok: fixes y::real

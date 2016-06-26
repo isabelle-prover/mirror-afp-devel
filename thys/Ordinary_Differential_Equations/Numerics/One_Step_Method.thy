@@ -1,13 +1,10 @@
-section\<open>One-Step Methods\<close>
+section \<open>One-Step Methods \label{sec:osm}\<close>
 theory One_Step_Method
 imports
   "../IVP/Initial_Value_Problem"
 begin
 
-text\<open>\label{sec:osm}\<close>
-
-subsection\<open>Grids\<close>
-text\<open>\label{sec:osm-grid}\<close>
+subsection \<open>Grids \label{sec:osm-grid}\<close>
 
 locale grid =
   fixes t::"nat \<Rightarrow> real"
@@ -84,8 +81,7 @@ end
 
 lemma (in grid) grid_interval_notempty: "t 0 \<le> t n" using grid_ge_min[of n] .
 
-subsection\<open>Definition\<close>
-text\<open>\label{sec:osm-definition}\<close>
+subsection \<open>Definition \label{sec:osm-definition}\<close>
 
 text\<open>Discrete evolution (noted \<open>\<Psi>\<close>) using incrementing function @{term incr}\<close>
 
@@ -101,8 +97,7 @@ where
 | "grid_function \<Psi> x0 t (Suc j) = \<Psi> (t (Suc j)) (t j) (grid_function \<Psi> x0 t j)"
 
 
-subsection \<open>Consistency\<close>
-text\<open>\label{sec:osm-consistent}\<close>
+subsection \<open>Consistency \label{sec:osm-consistent}\<close>
 
 definition "consistent x t T B p incr \<longleftrightarrow>
   (\<forall>h\<ge>0. t + h \<le> T \<longrightarrow> dist (x (t + h)) (discrete_evolution incr (t + h) t (x t)) \<le> B * h ^ (p + 1))"
@@ -343,8 +338,7 @@ next
   finally show ?case .
 qed
 
-subsection \<open>Consistency of order p implies convergence of order p\<close>
-text\<open>\label{sec:osm-cons-imp-conv}\<close>
+subsection \<open>Consistency of order p implies convergence of order p \label{sec:osm-cons-imp-conv}\<close>
 
 locale consistent_one_step =
   fixes t0 t1 and x::"real \<Rightarrow> 'a::euclidean_space" and incr p B r L
@@ -446,8 +440,7 @@ qed
 
 end
 
-subsection\<open>Stability\<close>
-text\<open>\label{sec:osm-stability}\<close>
+subsection \<open>Stability \label{sec:osm-stability}\<close>
 
 locale disturbed_one_step = grid +
   fixes t1 s s0 x incr p B L

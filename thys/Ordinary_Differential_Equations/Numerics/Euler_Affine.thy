@@ -1,4 +1,4 @@
-section \<open>Euler method on Affine Forms\<close>
+section \<open>Euler method on Affine Forms \label{sec:euleraform}\<close>
 theory Euler_Affine
 imports
   "~~/src/HOL/Decision_Procs/Dense_Linear_Order"
@@ -6,8 +6,6 @@ imports
   "../Library/Linear_ODE"
   Euler_Affine_Code
 begin
-
-text\<open>\label{sec:euleraform}\<close>
 
 lemma inf_le_sup_same1: "inf a (b::'a::ordered_euclidean_space) \<le> sup a d"
   by (metis inf.coboundedI1 sup.cobounded1)

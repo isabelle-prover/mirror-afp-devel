@@ -2,11 +2,9 @@ theory Picard_Lindeloef_Qualitative
 imports Initial_Value_Problem
 begin
 
-subsection \<open>Picard-Lindelöf On Open Domains\<close>
-text\<open>\label{sec:qpl}\<close>
+subsection \<open>Picard-Lindelöf On Open Domains \label{sec:qpl}\<close>
 
-subsubsection \<open>Local Solution with local Lipschitz\<close>
-text\<open>\label{sec:qpl-lipschitz}\<close>
+subsubsection \<open>Local Solution with local Lipschitz \label{sec:qpl-lipschitz}\<close>
 
 lemma cube_in_cball:
   fixes x y :: "'a::euclidean_space"
@@ -432,8 +430,7 @@ proof-
     by (auto intro!: bexI[where x=t1])
 qed
 
-subsubsection \<open>Global maximal solution with local Lipschitz\<close>
-text\<open>\label{sec:qpl-global-solution}\<close>
+subsubsection \<open>Global maximal solution with local Lipschitz \label{sec:qpl-global-solution}\<close>
 
 definition PHI where
   "PHI = {(x, t1). t0 < t1 \<and> {t0..t1} \<subseteq> T \<and> ivp.is_solution (i\<lparr>ivp_T:={t0..t1}\<rparr>) x}"

@@ -5,8 +5,8 @@ imports
   "../Numerics/Optimize_Float"
 begin
 
-subsection \<open>Example 1\<close>
-text \<open>\label{sec:example1}\<close>
+subsection \<open>Example 1 \label{sec:example1}\<close>
+
 approximate_affine e1 "\<lambda>(t::real, y::real). (1::real, y*y + - t)"
 
 lemma e1_fderiv: "((\<lambda>(t::real, y::real). (1::real, y * y + - t)) has_derivative (\<lambda>(a, b) (c, d). (0, 2 * (b * d) + - c)) x) (at x within X)"

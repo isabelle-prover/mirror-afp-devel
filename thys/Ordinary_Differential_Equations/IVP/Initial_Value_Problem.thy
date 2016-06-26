@@ -43,8 +43,7 @@ proof
     by (auto simp: dist_norm mult_left_mono)
 qed
 
-subsection \<open>Lipschitz continuity\<close>
-text\<open>\label{sec:lipschitz}\<close>
+subsection \<open>Lipschitz continuity \label{sec:lipschitz}\<close>
 
 definition lipschitz
   where "lipschitz t f L \<longleftrightarrow> (0 \<le> L \<and> (\<forall>x \<in> t. \<forall>y\<in>t. dist (f x) (f y) \<le> L * dist x y))"
@@ -520,8 +519,7 @@ proof (rule local_lipschitzI)
 qed
 
 
-subsection \<open>Solutions of IVPs\<close>
-text\<open>\label{sec:solutions}\<close>
+subsection \<open>Solutions of IVPs \label{sec:solutions}\<close>
 
 record 'a ivp =
   ivp_f :: "real \<times> 'a \<Rightarrow> 'a"
@@ -888,8 +886,7 @@ end
 sublocale ivp_on_interval \<subseteq> interval t0 t1 by unfold_locales
 sublocale ivp_on_interval_left \<subseteq> interval t1 t0 by unfold_locales
 
-subsubsection\<open>Connecting solutions\<close>
-text\<open>\label{sec:combining-solutions}\<close>
+subsubsection \<open>Connecting solutions \label{sec:combining-solutions}\<close>
 
 locale connected_solutions =
   i1?: has_solution i1 + i2?: has_solution i2 + i?: ivp i
@@ -1049,8 +1046,8 @@ qed
 
 end
 
-subsection \<open>Picard-Lindelöf on set of functions into closed set\<close>
-text\<open>\label{sec:plclosed}\<close>
+subsection \<open>Picard-Lindelöf on set of functions into closed set \label{sec:plclosed}\<close>
+
 locale continuous_rhs = fixes T X f
   assumes continuous: "continuous_on (T \<times> X) f"
 
@@ -1363,8 +1360,7 @@ proof
   show "\<exists>x. is_solution x" by blast
 qed
 
-subsubsection \<open>Unique solution\<close>
-text\<open>\label{sec:ivp-ubs}\<close>
+subsubsection \<open>Unique solution \label{sec:ivp-ubs}\<close>
 
 sublocale unique_on_bounded_closed \<subseteq> unique_solution
 proof
@@ -1538,8 +1534,7 @@ next
     by unfold_locales (auto simp del: of_nat_Suc)
 qed
 
-subsection \<open>Picard-Lindelöf for @{term "X=(\<lambda>_. UNIV)"}\<close>
-text\<open>\label{sec:pl-us}\<close>
+subsection \<open>Picard-Lindelöf for @{term "X=(\<lambda>_. UNIV)"} \label{sec:pl-us}\<close>
 
 locale unique_on_strip = ivp_on_interval + continuous_rhs T X f +
   global_lipschitz T X f L for L +
@@ -1548,8 +1543,8 @@ locale unique_on_strip = ivp_on_interval + continuous_rhs T X f +
 sublocale unique_on_strip < unique_on_closed
   using strip by unfold_locales auto
 
-subsection \<open>Picard-Lindelöf on cylindric domain\<close>
-text\<open>\label{sec:pl-rect}\<close>
+subsection \<open>Picard-Lindelöf on cylindric domain \label{sec:pl-rect}\<close>
+
 locale cylinder = ivp i for i::"'a::banach ivp" +
   fixes e b
   assumes e_pos: "e > 0"
