@@ -55,10 +55,42 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 	</tr>
 
 <tr><td class="entry">
+2016-06-26:
+<a href="entries/Category3.shtml">Category Theory with Adjunctions and Limits</a>
+<br>Author:
+Eugene W. Stark
+</td></tr>
+
+<tr><td class="entry">
+2016-06-26:
+<a href="entries/Card_Multisets.shtml">Cardinality of Multisets</a>
+<br>Author:
+Lukas Bulwahn
+</td></tr>
+
+<tr><td class="entry">
+2016-06-25:
+<a href="entries/Dependent_SIFUM_Type_Systems.shtml">A Dependent Security Type System for Concurrent Imperative Programs</a>
+<br>Author:
+<a href="http://people.eng.unimelb.edu.au/tobym/">Toby Murray</a>,
+Robert Sison,
+Edward Pierzchalski and 
+Christine Rizkallah
+</td></tr>
+
+<tr><td class="entry">
 2016-06-21:
 <a href="entries/Catalan_Numbers.shtml">Catalan Numbers</a>
 <br>Author:
 <a href="http://in.tum.de/~eberlm">Manuel Eberl</a>
+</td></tr>
+
+<tr><td class="entry">
+2016-06-18:
+<a href="entries/Algebraic_VCs.shtml">Program Construction and Verification Components Based on Kleene Algebra</a>
+<br>Author:
+Victor B. F. Gomes and 
+Georg Struth
 </td></tr>
 
 <tr><td class="entry">

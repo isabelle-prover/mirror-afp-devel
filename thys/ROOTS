@@ -1,3 +1,4 @@
+Algebraic_VCs
 Affine_Arithmetic
 Akra_Bazzi
 Amortized_Complexity
@@ -25,11 +26,13 @@ BytecodeLogicJmlTypes
 Card_Number_Partitions
 CCS
 Call_Arity
+Card_Multisets
 Cartan_FP
 Case_Labeling
 Catalan_Numbers
 Category
 Category2
+Category3
 Cauchy
 CAVA_Automata
 CAVA_LTL_Modelchecker
@@ -60,6 +63,7 @@ Datatype_Order_Generator
 Decreasing-Diagrams
 Decreasing-Diagrams-II
 Density_Compiler
+Dependent_SIFUM_Type_Systems
 Depth-First-Search
 Derangements
 Deriving

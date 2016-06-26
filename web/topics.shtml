@@ -199,6 +199,7 @@
 <strong>Type Systems:</strong>&nbsp;<a href="entries/MiniML.shtml">MiniML</a> &nbsp;
 <a href="entries/Possibilistic_Noninterference.shtml">Possibilistic_Noninterference</a> &nbsp;
 <a href="entries/SIFUM_Type_Systems.shtml">SIFUM_Type_Systems</a> &nbsp;
+<a href="entries/Dependent_SIFUM_Type_Systems.shtml">Dependent_SIFUM_Type_Systems</a> &nbsp;
 <a href="entries/Strong_Security.shtml">Strong_Security</a> &nbsp;
 <a href="entries/WHATandWHERE_Security.shtml">WHATandWHERE_Security</a> &nbsp;
 <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
@@ -260,6 +261,7 @@
 <a href="entries/Inductive_Confidentiality.shtml">Inductive_Confidentiality</a> &nbsp;
 <a href="entries/Possibilistic_Noninterference.shtml">Possibilistic_Noninterference</a> &nbsp;
 <a href="entries/SIFUM_Type_Systems.shtml">SIFUM_Type_Systems</a> &nbsp;
+<a href="entries/Dependent_SIFUM_Type_Systems.shtml">Dependent_SIFUM_Type_Systems</a> &nbsp;
 <a href="entries/Strong_Security.shtml">Strong_Security</a> &nbsp;
 <a href="entries/WHATandWHERE_Security.shtml">WHATandWHERE_Security</a> &nbsp;
 <a href="entries/VolpanoSmith.shtml">VolpanoSmith</a> &nbsp;
@@ -318,6 +320,7 @@
 <h3>Algebra</h3>
 
 <div class="list">
+<a href="entries/Algebraic_VCs.shtml">Algebraic_VCs</a> &nbsp;
 <a href="entries/Multirelations.shtml">Multirelations</a> &nbsp;
 <a href="entries/Residuated_Lattices.shtml">Residuated_Lattices</a> &nbsp;
 <a href="entries/PseudoHoops.shtml">PseudoHoops</a> &nbsp;
@@ -440,6 +443,7 @@
 
 <div class="list">
 <a href="entries/Card_Equiv_Relations.shtml">Card_Equiv_Relations</a> &nbsp;
+<a href="entries/Card_Multisets.shtml">Card_Multisets</a> &nbsp;
 <a href="entries/Card_Partitions.shtml">Card_Partitions</a> &nbsp;
 <a href="entries/Card_Number_Partitions.shtml">Card_Number_Partitions</a> &nbsp;
 <a href="entries/Well_Quasi_Orders.shtml">Well_Quasi_Orders</a> &nbsp;
@@ -458,6 +462,7 @@
 <h3>Category Theory</h3>
 
 <div class="list">
+<a href="entries/Category3.shtml">Category3</a> &nbsp;
 <a href="entries/Category.shtml">Category</a> &nbsp;
 <a href="entries/Category2.shtml">Category2</a> &nbsp;
 </div>

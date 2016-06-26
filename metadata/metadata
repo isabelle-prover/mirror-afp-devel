@@ -1,3 +1,23 @@
+[Algebraic_VCs]
+title = Program Construction and Verification Components Based on Kleene Algebra
+author = Victor B. F. Gomes <mailto:victor.gomes@cl.cam.ac.uk>, Georg Struth <mailto:g.struth@sheffield.ac.uk>
+notify = victor.gomes@cl.cam.ac.uk, g.struth@sheffield.ac.uk
+date = 2016-06-18
+topic = Mathematics/Algebra
+abstract = 
+  Variants of Kleene algebra support program construction and
+  verification by algebraic reasoning. This entry provides a
+  verification component for Hoare logic based on Kleene algebra with
+  tests, verification components for weakest preconditions and strongest
+  postconditions based on Kleene algebra with domain and a component for
+  step-wise refinement based on refinement Kleene algebra with tests. In
+  addition to these components for the partial correctness of while
+  programs, a verification component for total correctness based on
+  divergence Kleene algebras and one for (partial correctness) of
+  recursive programs based on domain quantales are provided. Finally we
+  have integrated memory models for programs with pointers and a program
+  trace semantics into the weakest precondition component.
+
 [Card_Equiv_Relations]
 title = Cardinality of Equivalence Relations
 author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
@@ -18,6 +38,70 @@ abstract =
   observation and the results on equivalence relations, we show that the
   cardinality of partial equivalence relations over a finite set of
   cardinality n is equal to the n+1-th Bell number.
+
+[Category3]
+title = Category Theory with Adjunctions and Limits
+author = Eugene W. Stark <mailto:stark@cs.stonybrook.edu>
+notify = stark@cs.stonybrook.edu
+date = 2016-06-26
+topic = Mathematics/Category Theory
+abstract = 
+  This article attempts to develop a usable framework for doing category
+  theory in Isabelle/HOL.  Our point of view, which to some extent
+  differs from that of the previous AFP articles on the subject, is to
+  try to explore how category theory can be done efficaciously within
+  HOL, rather than trying to match exactly the way things are done using
+  a traditional approach.  To this end, we define the notion of category
+  in an "object-free" style, in which a category is represented by a
+  single partial composition operation on arrows.  This way of defining
+  categories provides some advantages in the context of HOL, including
+  the ability to avoid the use of records and the possibility of
+  defining functors and natural transformations simply as certain
+  functions on arrows, rather than as composite objects.  We define
+  various constructions associated with the basic notions, including:
+  dual category, product category, functor category, discrete category,
+  free category, functor composition, and horizontal and vertical
+  composite of natural transformations.  A "set category" locale is
+  defined that axiomatizes the notion "category of all sets at a type
+  and all functions between them," and a fairly extensive set of
+  properties of set categories is derived from the locale assumptions.
+  The notion of a set category is used to prove the Yoneda Lemma in a
+  general setting of a category equipped with a "hom embedding," which
+  maps arrows of the category to the "universe" of the set category.  We
+  also give a treatment of adjunctions, defining adjunctions via left
+  and right adjoint functors, natural bijections between hom-sets, and
+  unit and counit natural transformations, and showing the equivalence
+  of these definitions.  We also develop the theory of limits, including
+  representations of functors, diagrams and cones, and diagonal
+  functors.  We show that right adjoint functors preserve limits, and
+  that limits can be constructed via products and equalizers.  We
+  characterize the conditions under which limits exist in a set
+  category. We also examine the case of limits in a functor category,
+  ultimately culminating in a proof that the Yoneda embedding preserves
+  limits.
+
+[Card_Multisets]
+title = Cardinality of Multisets
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+notify = lukas.bulwahn@gmail.com
+date = 2016-06-26
+topic = Mathematics/Combinatorics
+abstract = 
+  <p>This entry provides three lemmas to count the number of multisets
+  of a given size and finite carrier set. The first lemma provides a
+  cardinality formula assuming that the multiset's elements are chosen
+  from the given carrier set. The latter two lemmas provide formulas
+  assuming that the multiset's elements also cover the given carrier
+  set, i.e., each element of the carrier set occurs in the multiset at
+  least once.</p>  <p>The proof of the first lemma uses the argument of
+  the recurrence relation for counting multisets. The proof of the
+  second lemma is straightforward, and the proof of the third lemma is
+  easily obtained using the first cardinality lemma. A challenge for the
+  formalization is the derivation of the required induction rule, which
+  is a special combination of the induction rules for finite sets and
+  natural numbers. The induction rule is derived by defining a suitable
+  inductive predicate and transforming the predicate's induction
+  rule.</p>
 
 [Posix-Lexing]
 title = POSIX Lexing with Derivatives of Regular Expressions
@@ -2014,6 +2098,23 @@ abstract = Research in information-flow security aims at developing methods to
 	concurrent programs via rely-guarantee-style reasoning.  We present an
 	Isabelle/HOL formalization of the concepts and proofs of this approach.
 notify = grewe@cs.tu-darmstadt.de
+
+[Dependent_SIFUM_Type_Systems]
+title = A Dependent Security Type System for Concurrent Imperative Programs
+author = Toby Murray <http://people.eng.unimelb.edu.au/tobym/>, Robert Sison<>, Edward Pierzchalski<>, Christine Rizkallah<>
+notify = toby.murray@unimelb.edu.au
+date = 2016-06-25
+topic = Computer Science/Security, Computer Science/Programming Languages/Type Systems
+abstract = 
+  The paper "Compositional Verification and Refinement of Concurrent
+  Value-Dependent Noninterference" by Murray et. al. (CSF 2016) presents
+  a dependent security type system for compositionally verifying a
+  value-dependent noninterference property, defined in (Murray, PLAS
+  2015), for concurrent programs. This development formalises that
+  security definition, the type system and its soundness proof, and
+  demonstrates its application on some small examples. It was derived
+  from the SIFUM_Type_Systems AFP entry, by Sylvia Grewe, Heiko Mantel
+  and Daniel Schoepe, and whose structure it inherits.
 
 [Strong_Security]
 title = A Formalization of Strong Security
