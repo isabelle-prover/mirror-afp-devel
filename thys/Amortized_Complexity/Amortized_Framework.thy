@@ -8,11 +8,13 @@ text{* This theory provides a framework for amortized analysis. *}
 
 datatype 'a rose_tree = T 'a "'a rose_tree list"
 
+declare length_Suc_conv [simp]
+
 locale Amortized =
 fixes arity :: "'op \<Rightarrow> nat"
 fixes exec :: "'op \<Rightarrow> 's list \<Rightarrow> 's"
 fixes inv :: "'s \<Rightarrow> bool"
-fixes t :: "'op \<Rightarrow> 's list \<Rightarrow> real"
+fixes t :: "'op \<Rightarrow> 's list \<Rightarrow> nat"
 fixes \<Phi> :: "'s \<Rightarrow> real"
 fixes U :: "'op \<Rightarrow> 's list \<Rightarrow> real"
 assumes inv_exec: "\<lbrakk>\<forall>s \<in> set ss. inv s; length ss = arity f \<rbrakk> \<Longrightarrow> inv(exec f ss)"
