@@ -497,9 +497,10 @@ proof (rule local_lipschitzI)
   then obtain B where B: "B > 0" "\<And>s y. s \<in> cball t v \<Longrightarrow> y \<in> cball x u \<Longrightarrow> norm (f' (s, y)) \<le> B"
     by (auto dest!: compact_imp_bounded simp: bounded_pos simp del: mem_cball)
 
-  {
-    fix s assume s: "s \<in> cball t v"
-    also note \<open>\<dots> \<subseteq> T\<close>
+  have lipschitz: "lipschitz (cball x (min u v) \<inter> X) (f s) B" if s: "s \<in> cball t v" for s
+  proof -
+    note s
+    also note \<open>cball t v \<subseteq> T\<close>
     finally
     have deriv: "\<forall>y\<in>cball x u. (f s has_derivative blinfun_apply (f' (s, y))) (at y within cball x u)"
       using \<open>_ \<subseteq> X\<close>
@@ -510,10 +511,10 @@ proof (rule local_lipschitzI)
       using s that
       by (intro differentiable_bound[OF convex_cball deriv])
         (auto intro!: B  simp: norm_blinfun.rep_eq[symmetric])
-    then have "lipschitz (cball x (min u v) \<inter> X) (f s) B"
+    then show ?thesis
       using \<open>0 < B\<close>
       by (auto intro!: lipschitzI simp: dist_norm)
-  } note lipschitz = this
+  qed
   show "\<exists>u>0. \<exists>L. \<forall>t\<in>cball t u \<inter> T. lipschitz (cball x u \<inter> X) (f t) L"
     by (force intro: exI[where x="min u v"] exI[where x=B] intro!: lipschitz simp: u v)
 qed
@@ -1197,10 +1198,11 @@ proof (rule lipschitzI)
     assume "z \<in> bcontfun" and z_defined: "z \<in> (T \<rightarrow> X)"
     from bcontfunE[OF \<open>y \<in> bcontfun\<close>] have y: "continuous_on UNIV y" by auto
     from bcontfunE[OF \<open>z \<in> bcontfun\<close>] have z: "continuous_on UNIV z" by auto
-    {
-      fix t
-      assume t_bounds: "t0 \<le> t" "t \<le> t1"
-        \<comment>\<open>Instances of \<open>continuous_on_subset\<close>\<close>
+    have *: "norm (P_inner y t - P_inner z t)
+        \<le> L * (t1 - t0) * norm (Abs_bcontfun y - Abs_bcontfun z)"
+      if t_bounds: "t0 \<le> t" "t \<le> t1" for t
+      \<comment>\<open>Instances of \<open>continuous_on_subset\<close>\<close>
+    proof -
       have y_cont: "continuous_on {t0..t} (\<lambda>t. y t)" using y
         by (auto intro:continuous_on_subset)
       have "continuous_on {t0..t1} (\<lambda>t. f (t, y t))"
@@ -1240,10 +1242,8 @@ proof (rule lipschitzI)
       also have "... \<le> L * (t1 - t0) * norm (Abs_bcontfun y - Abs_bcontfun z)"
         using t_bounds zero_le_dist L_nonneg
         by (auto intro!: mult_right_mono mult_left_mono)
-      finally
-      have "norm (P_inner y t - P_inner z t)
-        \<le> L * (t1 - t0) * norm (Abs_bcontfun y - Abs_bcontfun z)" .
-    } note * = this
+      finally show ?thesis .
+    qed
     have "dist (P (Abs_bcontfun y)) (P (Abs_bcontfun z)) \<le>
       L * (t1 - t0) * dist (Abs_bcontfun y) (Abs_bcontfun z)"
       unfolding P_def dist_norm ext_cont_def
@@ -1415,8 +1415,8 @@ next
     show ?case by simp unfold_locales
   next
     case (Suc n)
-    def nb \<equiv> "real (Suc n) * b"
-    def snb \<equiv> "real (Suc (Suc n)) * b"
+    define nb where "nb = real (Suc n) * b"
+    define snb where "snb = real (Suc (Suc n)) * b"
     note Suc = Suc[simplified nb_def[symmetric] snb_def[symmetric]]
     from \<open>b > 0\<close> nb_def snb_def have nbs_nonneg: "0 < snb" "0 < nb"
       by (simp_all add: zero_less_mult_iff)
@@ -1428,8 +1428,8 @@ next
         by (simp add: ac_simps snb_def nb_def)
       thus ?thesis by (simp add: field_simps of_nat_Suc)
     qed
-    def i1 \<equiv> "i\<lparr>ivp_T := {t0..t0 + nb}\<rparr>"
-    def T1 \<equiv> "t0 + nb"
+    define i1 where "i1 = i\<lparr>ivp_T := {t0..t0 + nb}\<rparr>"
+    define T1 where "T1 = t0 + nb"
     interpret ivp1: ivp_on_interval i1 T1
       using iv_defined \<open>nb > 0\<close> by unfold_locales (auto simp: i1_def T1_def)
     interpret ivp1: unique_solution i1
@@ -1437,9 +1437,9 @@ next
     interpret ivp1_cl: unique_on_closed i1 "t0 + nb"
       using nb_le_snb nbs_nonneg Suc continuous lipschitz closed self_mapping
       by unfold_locales (auto simp: i1_def interval intro: continuous_on_subset)
-    def i2 \<equiv> "i\<lparr>ivp_t0:=t0+nb, ivp_T:={t0 + nb..t0+snb},
+    define i2 where "i2 = i\<lparr>ivp_t0:=t0+nb, ivp_T:={t0 + nb..t0+snb},
       ivp_x0:=ivp1.solution (t0 + nb)\<rparr>"
-    def T2 \<equiv> "t0 + snb"
+    define T2 where "T2 = t0 + snb"
     interpret ivp2: ivp_on_interval i2 T2
       using nbs_nonneg \<open>nb < snb\<close> ivp1.solution_in_D
       by unfold_locales (auto simp: i1_def i2_def T2_def)
@@ -1500,13 +1500,13 @@ next
       using bL Suc(2) nbs_nonneg interval continuous lipschitz closed
       by unfold_locales
         (auto intro: continuous_on_subset simp: ac_simps i1_def i2_def T2_def)
-    def i \<equiv> "i\<lparr>ivp_T := {t0..t0 + real (Suc (Suc n)) * b}\<rparr>"
-    def T \<equiv> "t0 + real (Suc (Suc n)) * b"
-    interpret i: ivp i
+    define i' where "i' = i\<lparr>ivp_T := {t0..t0 + real (Suc (Suc n)) * b}\<rparr>"
+    define T where "T = t0 + real (Suc (Suc n)) * b"
+    interpret i: ivp i'
     proof
-      show "ivp_t0 i \<in> ivp_T i" "ivp_x0 i \<in> ivp_X i"
+      show "ivp_t0 i' \<in> ivp_T i'" "ivp_x0 i' \<in> ivp_X i'"
         using ivp1.iv_defined \<open>0 \<le> b\<close>
-        by (auto simp: i_def i1_def nb_def intro!: mult_nonneg_nonneg)
+        by (auto simp: i'_def i1_def nb_def intro!: mult_nonneg_nonneg)
     qed
     have *: "ivp_T i1 \<inter> ivp_T i2 = {T1}"
       using nbs_nonneg
@@ -1515,7 +1515,7 @@ next
         simp del: of_nat_Suc)
     have nb_le_snb: "t0 + real (Suc n) * b \<le> t0 + real (Suc (Suc n)) * b"
       using \<open>b > 0\<close> by auto
-    interpret ivp_c: connected_unique_solutions i i1 i2 T1
+    interpret ivp_c: connected_unique_solutions i' i1 i2 T1
       apply unfold_locales
       unfolding *
       using \<open>b > 0\<close> iv_defined ivp1.is_solutionD[OF ivp1.is_solution_solution]
@@ -1524,10 +1524,10 @@ next
         ivp2.is_solution_solution
          nbs_nonneg
         add_increasing2[of "real (Suc n) * b" "t0 + real (Suc n) * b"]
-      by (auto simp: i1_def i2_def i_def T1_def T2_def T_def snb_def nb_def
+      by (auto simp: i1_def i2_def i'_def T1_def T2_def T_def snb_def nb_def
         simp del: of_nat_Suc
         intro!: order_trans[OF _ nb_le_snb])
-    show ?case unfolding i_def[symmetric] by unfold_locales
+    show ?case unfolding i'_def[symmetric] by unfold_locales
   qed
   show "unique_solution i"
     using i'.solution i'.unique_solution interval(1)[symmetric] i'.interval[symmetric]
@@ -1589,7 +1589,7 @@ next
       using e_pos e_bounded using \<open>b > 0\<close> \<open>B > 0\<close> \<open>t \<in> T\<close>
       by (auto simp: field_simps interval abs_real_def)
        (metis add_right_mono distrib_left mult_le_cancel_left_pos order_trans)+
-    def b\<equiv>"B * abs (t - t0)"
+    define b where "b = B * abs (t - t0)"
     have "b > 0" using \<open>t0 \<noteq> t\<close> by (auto intro!: mult_pos_pos simp: algebra_simps b_def \<open>B > 0\<close>)
     have subs: "closed_segment t0 t \<subseteq> {t0 - e..t0 + e}"
       using interval \<open>t \<in> T\<close> by (auto simp: closed_segment_real)
@@ -1619,9 +1619,9 @@ next
           (op * B has_vector_derivative B) (at x within open_segment t0 s))"
         by (auto intro!: continuous_intros derivative_eq_intros
           simp: has_vector_derivative_def)
-      {
-        fix ss assume ss: "ss \<in> open_segment t0 s"
-        with st have "ss \<in> closed_segment t0 t" by auto
+      have bnd: "norm (f (ss, y ss)) \<le> B" if ss: "ss \<in> open_segment t0 s" for ss
+      proof -
+        from st ss have "ss \<in> closed_segment t0 t" by auto
         have less_b: "norm (x ss - x t0) < b"
         proof (rule ccontr)
           assume "\<not> norm (x ss - x t0) < b"
@@ -1630,14 +1630,14 @@ next
           show False using ss \<open>s \<noteq> t0\<close>
             by (auto simp: dist_real_def open_segment_real split_ifs)
         qed
-        have "norm (f (ss, y ss)) \<le> B"
+        show ?thesis
           apply (rule norm_f)
           subgoal using ss st subs interval by auto
           subgoal using ss st b_less less_b
             by (intro y_bounded)
               (auto simp: cylinder dist_norm b_def init norm_minus_commute)
           done
-      } note bnd = this
+      qed
       have subs: "open_segment t0 s \<subseteq> open_segment t0 t" using s_bound \<open>s \<noteq> t0\<close>
         by (auto simp: closed_segment_real open_segment_real)
       with differentiable_bound_general_open_segment[OF cont bnd_cont

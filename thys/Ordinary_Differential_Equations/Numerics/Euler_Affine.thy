@@ -140,17 +140,15 @@ lemma picard_approx:
   assumes ivl: "t0 \<le> t1"
   shows "x0 + integral {t0..t1} (\<lambda>t. ode (x t)) \<in> {x0 + (t1 - t0) *\<^sub>R l .. x0 + (t1 - t0) *\<^sub>R u}"
 proof -
-  {
-    fix t::real
-    assume "0 \<le> t" "t \<le> 1"
-    hence "t * (t1 - t0) \<le> t1 - t0" using ivl
-      by (auto intro!: mult_left_le_one_le )
-    hence "t0 + t * (t1 - t0) \<le> t1"
+  have segment[simp]: "t0 + t * (t1 - t0) \<le> t1" if "0 \<le> t" "t \<le> 1" for t::real
+  proof -
+    from that have "t * (t1 - t0) \<le> t1 - t0"
+      using ivl by (auto intro!: mult_left_le_one_le )
+    then show ?thesis
       by (simp add: algebra_simps)
-  } note segment[simp] = this
-  {
-    fix t::real
-    assume t: "t \<in> {0 .. 1}"
+  qed
+  have ode_lu: "ode (x (t0 + t * (t1 - t0))) \<in> {l..u}" if t: "t \<in> {0 .. 1}" for t::real
+  proof -
     have "ode (x (t0 + t * (t1 - t0))) \<in> set_of_appr Y"
       unfolding set_of_apprs_set_of_appr[symmetric]
       apply (rule set_of_apprs_Cons)
@@ -159,8 +157,8 @@ proof -
       using t ivl
       by (auto intro!: x_in ode_approx simp: set_of_apprs_set_of_appr)
     also from bb inf_of_appr sup_of_appr have "set_of_appr Y \<subseteq> {l..u}" by auto
-    finally have "ode (x (t0 + t * (t1 - t0))) \<in> {l..u}" .
-  } note ode_lu = this
+    finally show ?thesis .
+  qed
   have cont_ode_x: "continuous_on {t0..t1} (\<lambda>xa. ode (x xa))"
     using ivl
     by (auto intro!: has_derivative_continuous_on[OF fderiv] continuous_on_compose2[of _ ode _ x] cont)
@@ -633,10 +631,9 @@ lemma euler_consistent_solution:
     op *\<^sub>R ((t1' - t0)\<^sup>2 / 2) ` {inf_of_appr D..sup_of_appr D}"
   using euler_consistent_solution'[simplified solution_t0', OF assms] .
 
-lemma error_overapproximation:
-  shows  "solution (t0 + h) \<in> set_of_appr RES"
+lemma error_overapproximation: "solution (t0 + h) \<in> set_of_appr RES"
 proof -
-  def euler_res \<equiv> "discrete_evolution (euler_increment f) (t0 + h) t0 x0"
+  define euler_res where "euler_res = discrete_evolution (euler_increment f) (t0 + h) t0 x0"
   have step_ok: "t0 + h \<in> {t0 .. t1}" using step_eq pos_step by auto
   from this have "solution (t0 + h) \<in> {euler_res + (h^2 / 2) *\<^sub>R inf_of_appr D .. euler_res + (h^2 / 2) *\<^sub>R sup_of_appr D}"
     using euler_consistent_solution[OF step_ok] step_eq
@@ -679,7 +676,7 @@ lemma error_overapproximation_ivl:
   assumes h': "h' \<in> {0..h}"
   shows "solution (t0 + h') \<in> set_of_appr RES_ivl"
 proof -
-  def euler_res \<equiv> "discrete_evolution (euler_increment f) (t0 + h') t0 x0"
+  define euler_res where "euler_res = discrete_evolution (euler_increment f) (t0 + h') t0 x0"
   have step_ok: "t0 + h' \<in> {t0 .. t1}" using step_eq pos_step assms by auto
 
   have "solution (t0 + h') \<in> {euler_res + (h'^2 / 2) *\<^sub>R inf_of_appr D .. euler_res + (h'^2 / 2) *\<^sub>R sup_of_appr D}"
@@ -756,8 +753,9 @@ proof (unfold_locales)
     open_contains_cball[of "(ivp_X ?ivp)"] \<open>open (ivp_X ?ivp)\<close>
   obtain u v where uv: "cball t u \<subseteq> (ivp_T ?ivp)" "cball x v \<subseteq> (ivp_X ?ivp)" "u > 0" "v > 0"
     by blast
-  def w \<equiv> "min u v"
-  have "cball t w \<subseteq> (ivp_T ?ivp)" "cball x w \<subseteq> (ivp_X ?ivp)" "w > 0" using uv by (auto simp: w_def)
+  define w where "w = min u v"
+  have "cball t w \<subseteq> (ivp_T ?ivp)" "cball x w \<subseteq> (ivp_X ?ivp)" "w > 0"
+    using uv by (auto simp: w_def)
   have "cball t w = {t - w .. t + w}" by (auto simp: dist_real_def)
   from cbox_in_cball'[OF \<open>w > 0\<close>] obtain w' where w':
     "w'>0" "w' \<le> w" "\<And>y. y\<in>{x - setsum (op *\<^sub>R w') Basis..x + setsum (op *\<^sub>R w') Basis} \<Longrightarrow> y \<in> cball x w"
@@ -789,20 +787,17 @@ proof -
   from unique_on_open_global
   interpret uo: unique_on_open "global_ivp t0 x0" .
   from uo.global_solution guess J . note J=this
-  def max_ivp \<equiv> "
+  define max_ivp where "max_ivp =
     \<lparr>ivp_f = (\<lambda>(t, x). ode x),
     ivp_t0 = t0, ivp_x0 = x0,
     ivp_T = J,
     ivp_X = UNIV\<rparr>"
   from J(6) interpret max_ivp: unique_solution max_ivp
     by (auto simp: global_ivp_def max_ivp_def)
-  {
-    fix t1 x
-    assume "ivp.is_solution (euler_ivp t0 x0 t1) x"
-    hence "\<And>t. t\<in>{t0 .. t1} \<Longrightarrow> x t = ivp.solution max_ivp t"
-      using J(7)[where K2="{t0 .. t1}"]
-      by (auto simp: euler_ivp_def global_ivp_def max_ivp_def is_interval_closed_interval)
-  } note solution_eqI = this
+  have solution_eqI: "\<And>t. t\<in>{t0 .. t1} \<Longrightarrow> x t = ivp.solution max_ivp t"
+    if "ivp.is_solution (euler_ivp t0 x0 t1) x" for t1 x
+    using J(7)[where K2="{t0 .. t1}"] that
+    by (auto simp: euler_ivp_def global_ivp_def max_ivp_def is_interval_closed_interval)
   interpret euler: unique_solution "(euler_ivp t0 x0 t1)"
   proof
     fix y t
@@ -814,12 +809,9 @@ proof -
   show "unique_solution (euler_ivp t0 x0 t1)" proof qed
   have step_eq_euler: "\<And>t. t \<in> {t0 .. t1} \<Longrightarrow> solution t = euler.solution t"
     by (auto intro!: euler.unique_solution step_solves_euler)
-  {
-    fix t assume "t \<in> {t0 .. t1}"
-    thus "euler.solution t \<in> set_of_appr RES_ivl"
-      using error_overapproximation_ivl[of "t - t0"] \<open>t0 \<le> t1\<close> step_eq step_eq_euler
-      by auto
-  }
+  show "euler.solution t \<in> set_of_appr RES_ivl" if "t \<in> {t0 .. t1}" for t
+    using error_overapproximation_ivl[of "t - t0"] \<open>t0 \<le> t1\<close> step_eq step_eq_euler that
+    by auto
   show "euler.solution t1 \<in> set_of_appr RES"
     using error_overapproximation \<open>t0 \<le> t1\<close> step_eq step_eq_euler
     by (auto simp add:  step_ivp_def)
