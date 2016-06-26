@@ -652,7 +652,7 @@ next
       fix c' mds' mem'
       def lc \<equiv> "\<langle>While e c \<otimes> annos, mds\<^sub>2, mem\<rangle>"
       assume "\<langle>c', mds', mem'\<rangle> \<in> loc_reach lc"
-      thus "\<forall> x. (x \<in> mds' GuarNoReadOrWrite \<longrightarrow> doesnt_read_or_modify c' x) \<and>
+      thus "\<forall>x. (x \<in> mds' GuarNoReadOrWrite \<longrightarrow> doesnt_read_or_modify c' x) \<and>
                  (x \<in> mds' GuarNoWrite \<longrightarrow> doesnt_modify c' x)"
         apply (simp add: lc_def)
         apply (drule while_loc_reach)
@@ -688,13 +688,14 @@ next
               (x \<in> mds' GuarNoWrite \<longrightarrow> doesnt_modify c' x)"
           by (simp, metis stop_doesnt_access)
       next
+        fix x
         assume "\<exists>c'' mem'' mds\<^sub>3.
             c' = c'' ;; While e c \<and>
             mds\<^sub>3 \<le> mdsa \<and>
             \<langle>c'', mds', mem'\<rangle>
             \<in> loc_reach \<langle>c, mds\<^sub>3, mem''\<rangle>"
         from this obtain
-         c'' x mem'' mds\<^sub>3
+         c'' mem'' mds\<^sub>3
         where "mds\<^sub>3 \<le> mdsa" and [simp]: "c' = c'' ;; While e c"
         and "\<langle>c'', mds', mem'\<rangle> \<in> loc_reach \<langle>c, mds\<^sub>3, mem''\<rangle>" by blast
         thus "(x \<in> mds' GuarNoReadOrWrite \<longrightarrow> doesnt_read_or_modify c' x) \<and>

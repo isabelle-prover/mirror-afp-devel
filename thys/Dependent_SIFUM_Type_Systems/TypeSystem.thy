@@ -266,9 +266,7 @@ lemma to_total_type_wellformed:
 lemma Un_type_wellformed:
   "\<forall>t\<in>ts. type_wellformed t \<Longrightarrow> type_wellformed (\<Union> ts)"
   apply(clarsimp simp: type_wellformed_def | safe)+
-  apply(fastforce simp: \<C>_def)
-  done
-  
+  by(fastforce simp: \<C>_def elim!: subsetCE)
 
 inductive 
   type_aexpr :: "('Var,'BExp) TyEnv \<Rightarrow> 'AExp \<Rightarrow> 'BExp Type \<Rightarrow> bool" ("_ \<turnstile>\<^sub>a _ \<in> _" [120, 120, 120] 1000)
@@ -2277,7 +2275,7 @@ lemma R1_equiv_entailment:
   context_equiv \<Gamma>' P' \<Gamma>'' \<Longrightarrow> P' \<turnstile> P'' \<Longrightarrow>
   \<forall>mds. tyenv_wellformed mds \<Gamma>' \<S>' P' \<longrightarrow> tyenv_wellformed mds \<Gamma>'' \<S>' P'' \<Longrightarrow>
    \<langle>c, mds, mem\<rangle> \<R>\<^sup>1\<^bsub>\<Gamma>'',\<S>',P''\<^esub> \<langle>c', mds', mem'\<rangle>"
-  using assms apply(induct rule: \<R>\<^sub>1.induct)
+  apply(induct rule: \<R>\<^sub>1.induct)
   apply(rule \<R>\<^sub>1.intro)
        apply(blast intro: sub context_equiv_refl pred_entailment_refl)+
   done
@@ -2287,7 +2285,7 @@ lemma R3_equiv_entailment:
     context_equiv \<Gamma>' P' \<Gamma>'' \<Longrightarrow> P' \<turnstile> P'' \<Longrightarrow> 
   \<forall>mds. tyenv_wellformed mds \<Gamma>' \<S>' P' \<longrightarrow> tyenv_wellformed mds \<Gamma>'' \<S>' P'' \<Longrightarrow>
   \<langle>c, mds, mem\<rangle> \<R>\<^sup>3\<^bsub>\<Gamma>'',\<S>',P''\<^esub> \<langle>c', mds', mem'\<rangle>"
-  using assms apply(induct rule: \<R>\<^sub>3_aux.induct)
+  apply(induct rule: \<R>\<^sub>3_aux.induct)
    apply(erule \<R>\<^sub>3_aux.intro\<^sub>1)
    apply(blast intro: sub context_equiv_refl tyenv_wellformed_subset subset_entailment)
   apply(erule \<R>\<^sub>3_aux.intro\<^sub>3)
@@ -2299,7 +2297,7 @@ lemma R_equiv_entailment:
     context_equiv \<Gamma>' P' \<Gamma>'' \<Longrightarrow> P' \<turnstile> P'' \<Longrightarrow> 
   \<forall>mds. tyenv_wellformed mds \<Gamma>' \<S>' P' \<longrightarrow> tyenv_wellformed mds \<Gamma>'' \<S>' P'' \<Longrightarrow>
   lc\<^sub>1 \<R>\<^sup>u\<^bsub>\<Gamma>'',\<S>',P''\<^esub> lc\<^sub>2"
-  using assms apply(induct rule: \<R>.induct)
+  apply(induct rule: \<R>.induct)
    apply clarsimp
    apply(rule \<R>.intro\<^sub>1)
    apply(fastforce intro: R1_equiv_entailment)
@@ -3908,7 +3906,7 @@ lemma typed_secure:
   apply (clarsimp simp: com_sifum_secure_def low_indistinguishable_def)
   apply (erule type_soundness)
       apply(erule of_mds_tyenv_wellformed)
-     apply(auto simp: to_total_def split: split_if simp: \<Gamma>_of_mds_def low_mds_eq_def)[1]
+     apply(auto simp: to_total_def split: if_split simp: \<Gamma>_of_mds_def low_mds_eq_def)[1]
     apply(fastforce simp: pred_def type_max_def)
    apply(fastforce simp: pred_def)
   by(rule \<Gamma>_of_mds_tyenv_sec)

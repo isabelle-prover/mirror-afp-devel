@@ -23,11 +23,11 @@ next
     from this have "mset_set (set_mset (M + {#x#})) = mset_set (set_mset M)"
       by (simp add: insert_absorb)
     from this add.hyps show ?thesis
-      using mset_le_add_left subset_mset.dual_order.trans by fastforce
+      using subset_mset.order.trans by fastforce
   next
     assume "\<not> x \<in># M"
     from this add.hyps have "{#x#} + mset_set (set_mset M) \<subseteq># M + {#x#}"
-      by (metis add.commute mset_le_mono_add_right_cancel)
+      by (simp add: insert_subset_eq_iff)
     from this \<open>\<not> x \<in># M\<close> show ?thesis by simp
   qed
 qed
@@ -209,7 +209,7 @@ proof -
       from this have "M = M - mset_set A + mset_set A"
         by (auto simp add: mset_set_set_mset_subseteq subset_mset.diff_add)
       moreover from \<open>M \<in> ?S\<close> have "M - mset_set A \<in> ?T"
-        by (auto simp add: mset_set_set_mset_subseteq size_Diff_submset size_mset_set_eq_card)
+        by (auto simp add: mset_set_set_mset_subseteq size_Diff_submset size_mset_set_eq_card in_diffD)
       ultimately show "M \<in> ?f ` ?T" by auto
     qed
   next

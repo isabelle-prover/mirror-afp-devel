@@ -180,8 +180,7 @@ where
 thm swap_vars_def
 lemma \<C>_simp[simp]:
   "\<C> = {control_X, control_Y, control_Z}"
-  by(auto simp: \<C>_def \<C>_vars_def split: if_splits)
-
+  by (fastforce simp: \<C>_def \<C>_vars_def image_def split: if_splits)
   
 lemma type_aexpr_Load:
   "v \<notin> dom \<Gamma> \<Longrightarrow> type_aexpr \<Gamma> (Load v) (dma_type v)"
