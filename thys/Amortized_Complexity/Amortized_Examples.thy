@@ -24,7 +24,7 @@ fun incr :: "bool list \<Rightarrow> bool list" where
 "incr (False#bs) = True # bs" |
 "incr (True#bs) = False # incr bs"
 
-fun t\<^sub>i\<^sub>n\<^sub>c\<^sub>r :: "bool list \<Rightarrow> real" where
+fun t\<^sub>i\<^sub>n\<^sub>c\<^sub>r :: "bool list \<Rightarrow> nat" where
 "t\<^sub>i\<^sub>n\<^sub>c\<^sub>r [] = 1" |
 "t\<^sub>i\<^sub>n\<^sub>c\<^sub>r (False#bs) = 1" |
 "t\<^sub>i\<^sub>n\<^sub>c\<^sub>r (True#bs) = t\<^sub>i\<^sub>n\<^sub>c\<^sub>r bs + 1"
@@ -41,7 +41,7 @@ fun exec :: "ops \<Rightarrow> bool list list \<Rightarrow> bool list" where
 "exec Empty [] = []" |
 "exec Incr [bs] = incr bs"
 
-fun t :: "ops \<Rightarrow> bool list list \<Rightarrow> real" where
+fun t :: "ops \<Rightarrow> bool list list \<Rightarrow> nat" where
 "t Empty _ = 1" |
 "t Incr [bs] = t\<^sub>i\<^sub>n\<^sub>c\<^sub>r bs"
 
@@ -55,8 +55,7 @@ next
 next
   case (3 f) thus ?case by(cases f)(auto simp: \<Phi>_def)
 next
-  case 4 thus ?case
-    using a_incr by(auto simp: length_Suc_conv \<Phi>_def split: ops.split)
+  case 4 thus ?case using a_incr by(auto simp: \<Phi>_def split: ops.split)
 qed
 
 end (* Bin_Counter *)
@@ -79,7 +78,7 @@ fun exec :: "'a ops \<Rightarrow> 'a list list \<Rightarrow> 'a list" where
 "exec (Push x) [xs] = x # xs" |
 "exec (Pop n) [xs] = drop n xs"
 
-fun t :: "'a ops \<Rightarrow> 'a list list \<Rightarrow> real" where
+fun t :: "'a ops \<Rightarrow> 'a list list \<Rightarrow> nat" where
 "t Empty _ = 1" |
 "t (Push x) _ = 1" |
 "t (Pop n) [xs] = min n (length xs)"
@@ -95,7 +94,7 @@ next
 next
   case (3 f) thus ?case by (cases f) auto
 next
-  case 4 thus ?case by (auto simp: length_Suc_conv split: ops.split)
+  case 4 thus ?case by (auto split: ops.split)
 qed
 
 end (* Multipop *)
@@ -118,7 +117,7 @@ fun exec :: "ops \<Rightarrow> tab list \<Rightarrow> tab" where
 "exec Empty [] = (0::nat,0::nat)" |
 "exec Ins [(n,l)] = (n+1, if n<l then l else if l=0 then 1 else 2*l)"
 
-fun t :: "ops \<Rightarrow> tab list \<Rightarrow> real" where
+fun t :: "ops \<Rightarrow> tab list \<Rightarrow> nat" where
 "t Empty _ = 1" |
 "t Ins [(n,l)] = (if n<l then 1 else n+1)"
 
@@ -128,15 +127,13 @@ and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> l < 2*n"
 and t = t and \<Phi> = "\<lambda>(n,l). 2*n - l"
 and U = "\<lambda>f _. case f of Empty \<Rightarrow> 1 | Ins \<Rightarrow> 3"
 proof (standard, goal_cases)
-  case (1 _ f) thus ?case
-    by(cases f) (auto simp: length_Suc_conv split: if_splits)
+  case (1 _ f) thus ?case by(cases f) (auto split: if_splits)
 next
   case 2 thus ?case by(auto split: prod.splits)
 next
   case (3 f) thus ?case by(cases f)(auto split: if_splits)
 next
-  case 4 thus ?case
-    by (auto simp: length_Suc_conv split: ops.split) linarith
+  case 4 thus ?case by (auto split: ops.split) linarith
 qed
 
 end (* Dyn_Tab1 *)
@@ -178,7 +175,7 @@ fun exec :: "ops \<Rightarrow> tab list \<Rightarrow> tab" where
 "exec Ins [s] = ins s" |
 "exec _ _ = (0,0)" (* otherwise fun goes wrong with odd error msg *)
 
-fun t :: "ops \<Rightarrow> tab list \<Rightarrow> real" where
+fun t :: "ops \<Rightarrow> tab list \<Rightarrow> nat" where
 "t Empty _ = 1" |
 "t Ins [(n,l)] = (if n<l then 1 else n+1)"
 
@@ -196,8 +193,7 @@ proof (standard, goal_cases)
     case Empty thus ?thesis using 1 by auto
   next
     case [simp]: Ins
-    obtain n l where [simp]: "ss = [(n,l)]"
-      using 1(2) by (auto simp: length_Suc_conv)
+    obtain n l where [simp]: "ss = [(n,l)]" using 1(2) by (auto)
     show ?thesis
     proof cases
       assume "l=0" thus ?thesis using 1 ac
@@ -244,8 +240,7 @@ next
     case Empty thus ?thesis using 4(2) by simp
   next
     case [simp]: Ins
-    obtain n l where [simp]: "ss = [(n,l)]"
-      using 4(2) by (auto simp: length_Suc_conv)
+    obtain n l where [simp]: "ss = [(n,l)]" using 4(2) by (auto)
     show ?thesis
     proof cases
       assume "l=0" thus ?thesis using 4 by (simp)
@@ -294,7 +289,7 @@ fun exec :: "ops \<Rightarrow> tab list \<Rightarrow> tab" where
 "exec Ins [(n,l)] = (n+1, if n<l then l else if l=0 then 1 else 2*l)" |
 "exec Del [(n,l)] = (n-1, if n=1 then 0 else if 4*(n - 1)<l then l div 2 else l)"
 
-fun t :: "ops \<Rightarrow> tab list \<Rightarrow> real" where
+fun t :: "ops \<Rightarrow> tab list \<Rightarrow> nat" where
 "t Empty _ = 1" |
 "t Ins [(n,l)] = (if n<l then 1 else n+1)" |
 "t Del [(n,l)] = (if n=1 then 1 else if 4*(n - 1)<l then n else 1)"
@@ -305,15 +300,14 @@ and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> l \<le> 4*n"
 and t = t and \<Phi> = "(\<lambda>(n,l). if 2*n < l then l/2 - n else 2*n - l)"
 and U = "\<lambda>f _. case f of Empty \<Rightarrow> 1 | Ins \<Rightarrow> 3 | Del \<Rightarrow> 2"
 proof (standard, goal_cases)
-  case (1 _ f) thus ?case
-    by (cases f) (auto simp: length_Suc_conv split: if_splits)
+  case (1 _ f) thus ?case by (cases f) (auto split: if_splits)
 next
   case 2 thus ?case by(auto split: prod.splits)
 next
   case (3 f) thus ?case by(cases f)(auto)
 next
-  case (4 _ f) thus ?case apply(cases f)
-    by (auto simp: field_simps length_Suc_conv split: prod.splits)
+  case (4 _ f) thus ?case
+    by (cases f)(auto simp: field_simps split: prod.splits)
 qed
 
 end (* Dyn_Tab3 *)
@@ -340,7 +334,7 @@ fun exec :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> 'a queue" where
 "exec (Enq x) [(xs,ys)] = (x#xs,ys)" |
 "exec Deq [(xs,ys)] = (if ys = [] then ([], tl(rev xs)) else (xs,tl ys))"
 
-fun t :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> real" where
+fun t :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> nat" where
 "t Empty _ = 1" |
 "t (Enq x) [(xs,ys)] = 1" |
 "t Deq [(xs,ys)] = (if ys = [] then length xs else 0)"
@@ -356,7 +350,7 @@ next
 next
   case (3 f) thus ?case by (cases f) auto
 next
-  case 4 thus ?case by(auto simp: length_Suc_conv split: ops.split)
+  case 4 thus ?case by(auto split: ops.split)
 qed
 
 end (* Queue *)
@@ -381,11 +375,10 @@ fun exec :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> 'a queue" where
 "exec (Enq x) [(xs,ys)] = balance(x#xs,ys)" |
 "exec Deq [(xs,ys)] = balance (xs, tl ys)"
 
-fun t :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> real" where
+fun t :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> nat" where
 "t Empty _ = 1" |
 "t (Enq x) [(xs,ys)] = 1 + (if size xs + 1 \<le> size ys then 0 else size xs + 1 + size ys)" |
 "t Deq [(xs,ys)] = (if size xs \<le> size ys - 1 then 0 else size xs + (size ys - 1))"
-
 
 interpretation Amortized
 where arity = arity and exec = exec
@@ -393,15 +386,13 @@ and inv = "\<lambda>(xs,ys). size xs \<le> size ys"
 and t = t and \<Phi> = "\<lambda>(xs,ys). 2 * size xs"
 and U = "\<lambda>f _. case f of Empty \<Rightarrow> 1 | Enq _ \<Rightarrow> 3 | Deq \<Rightarrow> 0"
 proof (standard, goal_cases)
-  case (1 _ f) thus ?case
-    by (cases f) (auto simp: length_Suc_conv split: if_splits)
+  case (1 _ f) thus ?case by (cases f) (auto split: if_splits)
 next
   case 2 thus ?case by (auto)
 next
   case (3 f) thus ?case by (cases f) (auto)
 next
-  case (4 _ f) thus ?case
-    by(cases f) (auto simp: length_Suc_conv split: prod.splits)
+  case (4 _ f) thus ?case by(cases f) (auto split: prod.splits)
 qed
 
 end (* Queue2 *)
