@@ -497,9 +497,10 @@ proof (rule local_lipschitzI)
   then obtain B where B: "B > 0" "\<And>s y. s \<in> cball t v \<Longrightarrow> y \<in> cball x u \<Longrightarrow> norm (f' (s, y)) \<le> B"
     by (auto dest!: compact_imp_bounded simp: bounded_pos simp del: mem_cball)
 
-  {
-    fix s assume s: "s \<in> cball t v"
-    also note \<open>\<dots> \<subseteq> T\<close>
+  have lipschitz: "lipschitz (cball x (min u v) \<inter> X) (f s) B" if s: "s \<in> cball t v" for s
+  proof -
+    note s
+    also note \<open>cball t v \<subseteq> T\<close>
     finally
     have deriv: "\<forall>y\<in>cball x u. (f s has_derivative blinfun_apply (f' (s, y))) (at y within cball x u)"
       using \<open>_ \<subseteq> X\<close>
@@ -510,10 +511,10 @@ proof (rule local_lipschitzI)
       using s that
       by (intro differentiable_bound[OF convex_cball deriv])
         (auto intro!: B  simp: norm_blinfun.rep_eq[symmetric])
-    then have "lipschitz (cball x (min u v) \<inter> X) (f s) B"
+    then show ?thesis
       using \<open>0 < B\<close>
       by (auto intro!: lipschitzI simp: dist_norm)
-  } note lipschitz = this
+  qed
   show "\<exists>u>0. \<exists>L. \<forall>t\<in>cball t u \<inter> T. lipschitz (cball x u \<inter> X) (f t) L"
     by (force intro: exI[where x="min u v"] exI[where x=B] intro!: lipschitz simp: u v)
 qed
@@ -1197,10 +1198,11 @@ proof (rule lipschitzI)
     assume "z \<in> bcontfun" and z_defined: "z \<in> (T \<rightarrow> X)"
     from bcontfunE[OF \<open>y \<in> bcontfun\<close>] have y: "continuous_on UNIV y" by auto
     from bcontfunE[OF \<open>z \<in> bcontfun\<close>] have z: "continuous_on UNIV z" by auto
-    {
-      fix t
-      assume t_bounds: "t0 \<le> t" "t \<le> t1"
-        \<comment>\<open>Instances of \<open>continuous_on_subset\<close>\<close>
+    have *: "norm (P_inner y t - P_inner z t)
+        \<le> L * (t1 - t0) * norm (Abs_bcontfun y - Abs_bcontfun z)"
+      if t_bounds: "t0 \<le> t" "t \<le> t1" for t
+      \<comment>\<open>Instances of \<open>continuous_on_subset\<close>\<close>
+    proof -
       have y_cont: "continuous_on {t0..t} (\<lambda>t. y t)" using y
         by (auto intro:continuous_on_subset)
       have "continuous_on {t0..t1} (\<lambda>t. f (t, y t))"
@@ -1240,10 +1242,8 @@ proof (rule lipschitzI)
       also have "... \<le> L * (t1 - t0) * norm (Abs_bcontfun y - Abs_bcontfun z)"
         using t_bounds zero_le_dist L_nonneg
         by (auto intro!: mult_right_mono mult_left_mono)
-      finally
-      have "norm (P_inner y t - P_inner z t)
-        \<le> L * (t1 - t0) * norm (Abs_bcontfun y - Abs_bcontfun z)" .
-    } note * = this
+      finally show ?thesis .
+    qed
     have "dist (P (Abs_bcontfun y)) (P (Abs_bcontfun z)) \<le>
       L * (t1 - t0) * dist (Abs_bcontfun y) (Abs_bcontfun z)"
       unfolding P_def dist_norm ext_cont_def
@@ -1619,9 +1619,9 @@ next
           (op * B has_vector_derivative B) (at x within open_segment t0 s))"
         by (auto intro!: continuous_intros derivative_eq_intros
           simp: has_vector_derivative_def)
-      {
-        fix ss assume ss: "ss \<in> open_segment t0 s"
-        with st have "ss \<in> closed_segment t0 t" by auto
+      have bnd: "norm (f (ss, y ss)) \<le> B" if ss: "ss \<in> open_segment t0 s" for ss
+      proof -
+        from st ss have "ss \<in> closed_segment t0 t" by auto
         have less_b: "norm (x ss - x t0) < b"
         proof (rule ccontr)
           assume "\<not> norm (x ss - x t0) < b"
@@ -1630,14 +1630,14 @@ next
           show False using ss \<open>s \<noteq> t0\<close>
             by (auto simp: dist_real_def open_segment_real split_ifs)
         qed
-        have "norm (f (ss, y ss)) \<le> B"
+        show ?thesis
           apply (rule norm_f)
           subgoal using ss st subs interval by auto
           subgoal using ss st b_less less_b
             by (intro y_bounded)
               (auto simp: cylinder dist_norm b_def init norm_minus_commute)
           done
-      } note bnd = this
+      qed
       have subs: "open_segment t0 s \<subseteq> open_segment t0 t" using s_bound \<open>s \<noteq> t0\<close>
         by (auto simp: closed_segment_real open_segment_real)
       with differentiable_bound_general_open_segment[OF cont bnd_cont

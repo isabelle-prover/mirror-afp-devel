@@ -106,17 +106,18 @@ proof -
   obtain d::real where d: "d > 0"
     "\<And>x. x \<noteq> (t0, x0) \<Longrightarrow> dist x (t0, x0) < d \<Longrightarrow> dist (f x) (f (t0, x0)) < 1"
     by (auto simp: eventually_at)
-  {
-    fix t x assume "t \<in> cball t0 (d/3)" "x \<in> cball x0 (d/3)"
-    hence "norm (f (t, x) - f (t0, x0)) < 1"
+  have bound: "norm (f (t, x)) \<le> norm (f (t0, x0)) + 1"
+    if "t \<in> cball t0 (d/3)" "x \<in> cball x0 (d/3)" for t x
+  proof -
+    from that have "norm (f (t, x) - f (t0, x0)) < 1"
       using \<open>0 < d\<close>
       unfolding dist_norm[symmetric]
       apply (cases "(t, x) = (t0, x0)", force)
       by (rule d) (auto simp: dist_commute dist_prod_def
         intro!: le_less_trans[OF sqrt_sum_squares_le_sum_abs])
-    hence "norm (f (t, x)) \<le> norm (f (t0, x0)) + 1"
+    then show ?thesis
       by norm
-  } note bound = this
+  qed
   have "norm (f (t0, x0)) + 1 \<ge> 1"
     "eventually (\<lambda>e. \<forall>x \<in> cball t0 e \<times> cball x0 e.
       norm (f x) \<le> norm (f (t0, x0)) + 1) (at_right 0)"
@@ -281,9 +282,9 @@ proof -
     unique_on_cylinder "i\<lparr>ivp_T := cball t0 (t * e), ivp_X := cball x0 e\<rparr>"
       "t * e" e B L "cball x0 e"
     by simp
-  {
-    fix s assume "s \<in> cball t0 (t * e)"
-    hence "abs (s - t0) \<le> abs (t * e )"
+  have cylinder_le: "B * \<bar>s - t0\<bar> \<le> e" if "s \<in> cball t0 (t * e)" for s
+  proof -
+    from that have "abs (s - t0) \<le> abs (t * e)"
       by (auto simp: cball_def dist_real_def)
     hence "B * \<bar>s - t0\<bar> \<le> B * abs (t * e)"
       using * e uc.B_nonneg
@@ -292,10 +293,10 @@ proof -
     also have "abs (t * e) = t * e"
       using * e by simp
     also note uc.e_bounded
-    finally have "B * \<bar>s - t0\<bar> \<le> e"
+    finally show ?thesis
       using uc.B_nonneg e
       by (cases "B = 0") (auto)
-  } note cylinder_le = this
+  qed
   show ?thesis
     apply (rule exI[where x="t * e"])
     apply (rule conjI)
@@ -366,12 +367,11 @@ proof -
     (is "_ = ?j")
     by simp
   finally interpret up: unique_solution ?j .
-  {
-    fix s
+  have cylinder_le: "B * (s - t0) \<le> e" if "s \<in> cball t0 (t * e)" for s
+  proof -
     have "s - t0 \<le> abs (s - t0)" by simp
     also
-    assume "s \<in> cball t0 (t * e)"
-    hence "abs (s - t0) \<le> abs (t * e )"
+    from that have "abs (s - t0) \<le> abs (t * e )"
       by (auto simp: cball_def dist_real_def)
     hence "B * \<bar>s - t0\<bar> \<le> B * abs (t * e)"
       using * e uc.B_nonneg
@@ -380,10 +380,10 @@ proof -
     also have "abs (t * e) = t * e"
       using * e by simp
     also note uc.e_bounded
-    finally have "B * (s - t0) \<le> e"
+    finally show ?thesis
       using uc.B_nonneg e
       by (cases "B = 0") (auto)
-  } note cylinder_le = this
+  qed
   show ?thesis
     apply (rule bexI[where x="t0 + t * e"])
     subgoal
@@ -468,17 +468,16 @@ proof -
   thus "t0 \<in> J"
     using \<open>(a, b) \<in> PHI\<close>
     by (auto simp: J_def intro!: bexI[where x="(a, b)"])
-  {
-    fix x y t t1
-    assume
-      "ivp.is_solution (i\<lparr>ivp_T:={t0..t1}\<rparr>) x"
+  have sol_eq: "x t = y t"
+    if "ivp.is_solution (i\<lparr>ivp_T:={t0..t1}\<rparr>) x"
       "ivp.is_solution (i\<lparr>ivp_T:={t0..t1}\<rparr>) y"
       "t \<in> {t0..t1}" "t0<t1" "{t0..t1} \<subseteq> T"
-    moreover
-    hence "(x, t1) \<in> PHI" "(y, t1) \<in> PHI"
+    for x y t t1
+  proof -
+    from that have "(x, t1) \<in> PHI" "(y, t1) \<in> PHI"
       by (auto simp: PHI)
-    ultimately have "x t = y t" using E by force
-  } note sol_eq = this
+    with that show ?thesis using E by force
+  qed
   from E have E: "\<forall>xT \<in> PHI. \<forall>yU \<in> PHI. \<forall>t \<in> {t0..snd xT} \<inter> {t0..snd yU}.
     (fst xT) t = (fst yU) t" by force
   have J: "(\<Union>(x, t1)\<in>PHI. {t0..t1}) = (\<Union>xT\<in>PHI. {t0..snd xT})"
@@ -507,75 +506,67 @@ proof -
     by auto
   hence equal: "\<forall>s\<in>PHI. \<forall>t \<in> {t0..snd s}. y t = fst s t" using J_def PHI_def
     by simp
-  {
-    fix x
-    assume "x \<in> J"
-    have "\<exists>s\<in>PHI. x < snd s"
-    proof -
-      obtain s where s: "s \<in> PHI" "x \<le> snd s" using \<open>x \<in> J\<close>
-        by (force simp add: PHI_def J_def)
-      def i1 \<equiv> "i\<lparr>ivp_T:={t0..snd s}\<rparr>"
-      interpret i1: ivp i1
-        using s iv_defined \<open>x \<in> J\<close>
-        by unfold_locales (auto simp: PHI_def J_def i1_def)
-      from \<open>s \<in> PHI\<close> have "t0 < snd s" by (simp add: PHI)
-      from \<open>s \<in> PHI\<close> have "{t0..snd s} \<subseteq> T" by (simp add: PHI)
-      from \<open>s \<in> PHI\<close> have "i1.is_solution (fst s)" by (simp add: PHI i1_def)
-      then interpret i1: unique_solution i1
-      proof (intro i1.unique_solutionI, simp)
-        fix y t
-        assume "i1.is_solution y"
-        assume "t \<in> i1.T"
-        hence "t \<in> {t0..snd s}" by (simp add: i1_def)
-        with sol_eq \<open>i1.is_solution (fst s)\<close> \<open>i1.is_solution y\<close>
-          \<open>t0 < snd s\<close> \<open>{t0..snd s} \<subseteq> T\<close>
-        show "y t = fst s t" by (simp add: i1_def)
-      qed
-      show ?thesis
-      proof (cases "x = snd s")
-        assume "x = snd s"
-        def i2' \<equiv> "i\<lparr>ivp_t0:=snd s, ivp_x0:=fst s (snd s)\<rparr>"
-        interpret i2': unique_on_open i2'
-          using iv_defined \<open>x \<in> J\<close> continuous openT openX local_lipschitz
-            i1.is_solutionD(3)[OF \<open>i1.is_solution (fst s)\<close>] \<open>s \<in> PHI\<close>
-          by unfold_locales (auto simp: PHI i1_def i2'_def)
-        from i2'.exists_unique_solution_legacy[where t_max = "snd s + 1"]
-        obtain t1 u where t1u: "t1 > snd s" "{snd s..t1} \<subseteq> T" "0 < u"
-          "cball (fst s (snd s)) u \<subseteq> ivp_X i2'"
-          "\<And>X. cball (fst s (snd s)) u \<subseteq> X \<Longrightarrow>
-            unique_solution
-              (i\<lparr>ivp_t0:=snd s, ivp_x0:=fst s (snd s), ivp_T:={snd s..t1},
-                ivp_X := X\<rparr>)"
-           by (auto simp: i2'_def)
-        def i2 \<equiv> "i\<lparr>ivp_t0:=snd s, ivp_x0:=fst s (snd s), ivp_T:={snd s..t1}\<rparr>"
-        interpret i2: unique_solution i2 using t1u(5)[OF t1u(4)]
-          by (simp add: i2_def i2'_def)
-        def ic \<equiv> "i\<lparr>ivp_T:={t0..t1}\<rparr>"
-        interpret ic: ivp_on_interval ic t1
-          using iv_defined \<open>t1 > snd s\<close> \<open>snd s > t0\<close>
-          by unfold_locales (auto simp: ic_def)
-        interpret ic: connected_unique_solutions ic i1 i2 "snd s"
-          using i1.unique_solution[OF \<open>i1.is_solution (fst s)\<close>]
-            \<open>snd s > t0\<close> \<open>t1 > snd s\<close>
-            i1.is_solution_solution
-            i2.is_solution_solution
-            i1.is_solutionD[OF i1.is_solution_solution]
-            i2.is_solutionD[OF i2.is_solution_solution]
-          by unfold_locales (auto simp: i1_def i2_def ic_def)
-        have "(ic.solution, t1) \<in> PHI"
-          using \<open>t0 < snd s\<close> \<open>{t0..snd s} \<subseteq> T\<close> t1u(1-4) ic.is_solution_solution
-          by (force simp add: PHI ic_def)
-        thus ?thesis using \<open>x = snd s\<close>  \<open>snd s < t1\<close> by force
-      qed (insert s, force)
+  have continuable: "\<exists>s\<in>PHI. x < snd s" if "x \<in> J" for x
+  proof -
+    obtain s where s: "s \<in> PHI" "x \<le> snd s" using \<open>x \<in> J\<close>
+      by (force simp add: PHI_def J_def)
+    def i1 \<equiv> "i\<lparr>ivp_T:={t0..snd s}\<rparr>"
+    interpret i1: ivp i1
+      using s iv_defined \<open>x \<in> J\<close>
+      by unfold_locales (auto simp: PHI_def J_def i1_def)
+    from \<open>s \<in> PHI\<close> have "t0 < snd s" by (simp add: PHI)
+    from \<open>s \<in> PHI\<close> have "{t0..snd s} \<subseteq> T" by (simp add: PHI)
+    from \<open>s \<in> PHI\<close> have "i1.is_solution (fst s)" by (simp add: PHI i1_def)
+    then interpret i1: unique_solution i1
+    proof (intro i1.unique_solutionI, simp)
+      fix y t
+      assume "i1.is_solution y"
+      assume "t \<in> i1.T"
+      hence "t \<in> {t0..snd s}" by (simp add: i1_def)
+      with sol_eq \<open>i1.is_solution (fst s)\<close> \<open>i1.is_solution y\<close>
+        \<open>t0 < snd s\<close> \<open>{t0..snd s} \<subseteq> T\<close>
+      show "y t = fst s t" by (simp add: i1_def)
     qed
-  } note continuable=this
+    show ?thesis
+    proof (cases "x = snd s")
+      assume "x = snd s"
+      def i2' \<equiv> "i\<lparr>ivp_t0:=snd s, ivp_x0:=fst s (snd s)\<rparr>"
+      interpret i2': unique_on_open i2'
+        using iv_defined \<open>x \<in> J\<close> continuous openT openX local_lipschitz
+          i1.is_solutionD(3)[OF \<open>i1.is_solution (fst s)\<close>] \<open>s \<in> PHI\<close>
+        by unfold_locales (auto simp: PHI i1_def i2'_def)
+      from i2'.exists_unique_solution_legacy[where t_max = "snd s + 1"]
+      obtain t1 u where t1u: "t1 > snd s" "{snd s..t1} \<subseteq> T" "0 < u"
+        "cball (fst s (snd s)) u \<subseteq> ivp_X i2'"
+        "\<And>X. cball (fst s (snd s)) u \<subseteq> X \<Longrightarrow>
+          unique_solution
+            (i\<lparr>ivp_t0:=snd s, ivp_x0:=fst s (snd s), ivp_T:={snd s..t1},
+              ivp_X := X\<rparr>)"
+         by (auto simp: i2'_def)
+      def i2 \<equiv> "i\<lparr>ivp_t0:=snd s, ivp_x0:=fst s (snd s), ivp_T:={snd s..t1}\<rparr>"
+      interpret i2: unique_solution i2 using t1u(5)[OF t1u(4)]
+        by (simp add: i2_def i2'_def)
+      def ic \<equiv> "i\<lparr>ivp_T:={t0..t1}\<rparr>"
+      interpret ic: ivp_on_interval ic t1
+        using iv_defined \<open>t1 > snd s\<close> \<open>snd s > t0\<close>
+        by unfold_locales (auto simp: ic_def)
+      interpret ic: connected_unique_solutions ic i1 i2 "snd s"
+        using i1.unique_solution[OF \<open>i1.is_solution (fst s)\<close>]
+          \<open>snd s > t0\<close> \<open>t1 > snd s\<close>
+          i1.is_solution_solution
+          i2.is_solution_solution
+          i1.is_solutionD[OF i1.is_solution_solution]
+          i2.is_solutionD[OF i2.is_solution_solution]
+        by unfold_locales (auto simp: i1_def i2_def ic_def)
+      have "(ic.solution, t1) \<in> PHI"
+        using \<open>t0 < snd s\<close> \<open>{t0..snd s} \<subseteq> T\<close> t1u(1-4) ic.is_solution_solution
+        by (force simp add: PHI ic_def)
+      thus ?thesis using \<open>x = snd s\<close>  \<open>snd s < t1\<close> by force
+    qed (insert s, force)
+  qed
 
-  {
-    fix x a b
-    assume "(a, b) \<in> PHI" "t0 \<le> x" "x \<le> b"
-    hence "x \<in> J"
-      by (force simp: PHI_def J_def)
-  } note inJ = this
+  have inJ: "x \<in> J" if "(a, b) \<in> PHI" "t0 \<le> x" "x \<le> b" for x a b
+    using that by (force simp: PHI_def J_def)
   show "J = real_of_ereal ` {t0..<M}"
     unfolding J_def M_def
     by safe
@@ -1024,18 +1015,20 @@ proof -
       unfolding J(1) J'(1) split image_Un
       by simp
     also
-    {
+    have right_ivl: "real_of_ereal ` {ereal t0..<M} = (if M = \<infinity> then {t0..} else {t0..<real_of_ereal M})"
+    proof -
       have "{ereal t0..<M} = {ereal t0} \<union> {ereal t0 <..< M}"
         using \<open>t0 \<in> J\<close> J'(5) J(1) by auto
       also have "real_of_ereal ` \<dots> = (if M = \<infinity> then {t0 ..} else {t0 ..<real_of_ereal M})"
         using \<open>t0 < M\<close>
         by (cases M) (auto simp add: real_atLeastGreaterThan_eq)
-      finally
-      have "real_of_ereal ` {ereal t0..<M} = (if M = \<infinity> then {t0..} else {t0..<real_of_ereal M})"
+      finally show ?thesis
         by (simp add: J)
-    } note right_ivl = this
+    qed
     also
-    {
+    have left_ivl: "op - (2 * t0) ` real_of_ereal ` {ereal t0..<M'} =
+      (if M' = \<infinity> then {..t0} else {2 * t0 - real_of_ereal M'<..t0})"
+    proof -
       have "{ereal t0..<M'} = {ereal t0} \<union> {ereal t0<..<M'}"
         using J'(1, 5)  by auto
       also have "real_of_ereal ` \<dots> = (if M' = \<infinity> then {t0 ..} else {t0 ..<real_of_ereal M'})"
@@ -1044,10 +1037,8 @@ proof -
       also have "op - (2 * t0) ` \<dots> =
         (if M' = \<infinity> then {.. t0} else {2 * t0 - real_of_ereal M' <.. t0})"
         by simp
-      finally have "op - (2 * t0) ` real_of_ereal ` {ereal t0..<M'} =
-        (if M' = \<infinity> then {..t0} else {2 * t0 - real_of_ereal M'<..t0})"
-        .
-    } note left_ivl = this
+      finally show ?thesis .
+    qed
     also have
       "(if M = \<infinity> then {t0..} else {t0..<real_of_ereal M}) \<union>
        (if M' = \<infinity> then {..t0} else {2 * t0 - real_of_ereal M'<..t0}) =

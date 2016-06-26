@@ -275,16 +275,15 @@ proof -
     assume x0': "x0' \<in> cball x0 e'"
     let ?i' = "existence_ivp \<lparr>ivp_x0 := x0', ivp_T := cball t0 (t * e'),
       ivp_X := cball x0' e'\<rparr>"
-    {
-      fix b
-      assume d: "dist x0' b \<le> e'"
+    have triangle: "dist x0 b \<le> e" if d: "dist x0' b \<le> e'" for b
+    proof -
       have "dist x0 b \<le> dist x0 x0' + dist x0' b"
         by (rule dist_triangle)
       also have "\<dots> \<le> e' + e'"
         using x0' d by simp
       also have "\<dots> \<le> e" by (simp add: e'_def)
-      finally have "dist x0 b \<le> e" .
-    } note triangle = this
+      finally show ?thesis .
+    qed
     have subs1: "cball t0 (t * e') \<subseteq> cball t0 (t * e)"
       and subs2: "cball x0' e' \<subseteq> cball x0 e"
       and subs: "cball t0 (t * e') \<times> cball x0' e' \<subseteq> cball t0 (t * e) \<times> cball x0 e"
@@ -782,9 +781,9 @@ next
       intro!: order_trans[OF _ mult_right_mono[of K "K + 1"]])
   from assms have inX: "y0 \<in> X" "z0 \<in> X" by auto
   def v \<equiv> "\<lambda>t. norm (flow t0 y0 t - flow t0 z0 t)"
-  {
-    fix s
-    assume s: "s \<in> {t0 .. t}" hence "s \<ge> t0" by auto
+  have le: "v s \<le> v t0 + K' *  integral {t0 .. s} (\<lambda>t. v t)" if s: "s \<in> {t0 .. t}" for s
+  proof -
+    from s have "s \<ge> t0" by auto
     with s
       ivl_subset_existence_ivl[OF \<open>t0 \<in> T\<close> \<open>y0 \<in> X\<close> y0]
       ivl_subset_existence_ivl[OF \<open>t0 \<in> T\<close>  \<open>z0 \<in> X\<close> z0]
@@ -804,7 +803,7 @@ next
       unfolding v_def
       by (auto simp: algebra_simps flow_fixed_point[OF \<open>s \<ge> t0\<close> y0' \<open>t0 \<in> T\<close> \<open>y0 \<in> X\<close>]
         flow_fixed_point[OF \<open>s \<ge> t0\<close> z0' \<open>t0 \<in> T\<close> \<open>z0 \<in> X\<close>] integral_diff)
-    have "v s \<le> v t0 + K' *  integral {t0 .. s} (\<lambda>t. v t)"
+    show ?thesis
       using ivl_subset_existence_ivl[OF \<open>t0 \<in> T\<close> \<open>y0 \<in> X\<close> y0']
         ivl_subset_existence_ivl[OF \<open>t0 \<in> T\<close> \<open>z0 \<in> X\<close> z0'] s
       by (subst integral_mult)
@@ -813,7 +812,7 @@ next
             integrable_continuous_real continuous_intros
             continuous_at_imp_continuous_on flow_continuous f_flow_continuous
             lipschitz_norm_leI[OF \<open>_ \<Longrightarrow> lipschitz _ _ K'\<close>] remain)
-  } note le = this
+  qed
   have cont: "continuous_on {t0..t} v"
     using ivl_subset_existence_ivl[OF \<open>t0 \<in> T\<close> \<open>y0 \<in> X\<close> y0]
       ivl_subset_existence_ivl[OF \<open>t0 \<in> T\<close> \<open>z0 \<in> X\<close> z0] inX
@@ -861,11 +860,13 @@ proof cases
 next
   have "y0 \<in> X" "z0 \<in> X" using assms by auto
   let ?m = "\<lambda>t. 2 * t0 - t"
-  {
-    fix s y0 Y assume "y0 \<in> X"
-      and remain: "\<And>s. s \<in> closed_segment t0 t \<Longrightarrow> flow t0 y0 s \<in> Y"
-      and y0: "t \<in> existence_ivl t0 y0"
-      and s: "s \<in> {t0 .. 2 * t0 - t}"
+  have remain_rev: "ll_on_open.flow (\<lambda>t. - f (2 * t0 - t)) (?m ` T) X t0 y0 s \<in> Y"
+    if "y0 \<in> X"
+    and remain: "\<And>s. s \<in> closed_segment t0 t \<Longrightarrow> flow t0 y0 s \<in> Y"
+    and y0: "t \<in> existence_ivl t0 y0"
+    and s: "s \<in> {t0 .. 2 * t0 - t}"
+    for s y0 Y
+  proof -
     have "ll_on_open.flow (\<lambda>t. - f (2 * t0 - t)) (?m ` T) X t0 y0 s =
       ll_on_open.flow (\<lambda>t. - f (2 * t0 - t)) (?m ` T) X t0 y0 (2 * t0 - (2 * t0 - s))"
       by simp
@@ -880,9 +881,8 @@ next
     qed fact+
     also have "\<dots> \<in> Y"
       using s by (simp add: closed_segment_real remain)
-    finally
-    have "ll_on_open.flow (\<lambda>t. - f (2 * t0 - t)) (?m ` T) X t0 y0 s \<in> Y" .
-  } note remain_rev = this
+    finally show ?thesis  .
+  qed
   interpret rev: ll_on_open "(\<lambda>t. - f (2 * t0 - t))" "?m ` T" ..
   assume "\<not> t \<ge> t0"
   then have "norm (rev.flow t0 y0 (2 * t0 - t) - rev.flow t0 z0 (2 * t0 - t)) \<le>
@@ -926,9 +926,8 @@ proof -
     note * = maximal_existence_flow[OF \<open>t0 \<in> T\<close> \<open>y \<in> X\<close> is_solution_on_superset_domain[OF is_solution_solution],
       where K = "cball t0 t", simplified existence_ivp_def, simplified, OF subs,
         OF y refl less_imp_le[OF \<open>0 < t\<close>] subsT]
-    from * have "cball t0 t \<subseteq> existence_ivl t0 y"
+    from * have eivl: "cball t0 t \<subseteq> existence_ivl t0 y"
       by simp
-    note eivl = this
     {
       fix s::real assume s: "s \<in> cball t0 t"
       from *(2)[of s] this have "flow t0 y s = solution s"
@@ -955,15 +954,17 @@ proof -
       simp: split_beta')
   then obtain B where B: "\<And>s y. s \<in> cball t0 t \<Longrightarrow> y \<in> cball x0 (2 * u) \<Longrightarrow> norm (f s y) \<le> B" "B > 0"
     by (auto simp: bounded_pos cball_def)
-  {
-    fix s::real and x1 assume s: "s \<in> cball t0 t" and x1: "x1 \<in> cball x0 u"
+  have flow_in_cball: "flow t0 x1 s \<in> cball x0 (2 * u)"
+    if s: "s \<in> cball t0 t" and x1: "x1 \<in> cball x0 u"
+    for s::real and x1
+  proof -
     from *(2)[OF x1 s] have "flow t0 x1 s \<in> cball x1 u" .
     also have "\<dots> \<subseteq> cball x0 (2 * u)"
       using x1
       by (auto intro!: dist_triangle_le[OF add_mono, of _ x1 u _ u, simplified]
         simp: dist_commute)
-    finally have "flow t0 x1 s \<in> cball x0 (2 * u)" .
-  } note flow_in_cball = this
+    finally show ?thesis .
+  qed
   have "lipschitz (cball t0 t\<times>cball x0 u) (\<lambda>(t, x). flow t0 x t) (B + exp ((L + 1) * \<bar>t\<bar>))"
   proof (rule lipschitzI, safe)
     fix t1 t2 :: real and x1 x2
@@ -1098,9 +1099,10 @@ proof (atomize_elim, rule ccontr, auto)
       simp: split_beta subset_iff)
   then obtain M where M: "\<And>t x. t \<in> {t0 .. b} \<Longrightarrow> x \<in> K \<Longrightarrow> norm (f t x) \<le> M" "M > 0"
     by (force simp: bounded_pos)
-  {
-    fix t1 t2
-    assume H: "t1 \<in> existence_ivl t0 x0" "t2 \<in> existence_ivl t0 x0" "t0 \<le> t1" "t0 \<le> t2"
+  have dist_flow_le: "dist (flow t0 x0 t1) (flow t0 x0 t2) \<le> M * abs (t2 - t1)"
+    if H: "t1 \<in> existence_ivl t0 x0" "t2 \<in> existence_ivl t0 x0" "t0 \<le> t1" "t0 \<le> t2"
+    for t1 t2
+  proof -
     {
       fix t1 t2
       assume t1: "t1 \<in> existence_ivl t0 x0"
@@ -1129,9 +1131,9 @@ proof (atomize_elim, rule ccontr, auto)
       finally have "dist (flow t0 x0 t2) (flow t0 x0 t1) \<le> M * (t2 - t1)"
         by (simp add: dist_norm)
     } from this[of t1 t2] this[of t2 t1] H
-    have "dist (flow t0 x0 t1) (flow t0 x0 t2) \<le> M * abs (t2 - t1)"
+    show ?thesis
       by (auto simp: abs_real_def dist_commute not_less less_eq_real_def)
-  } note dist_flow_le = this
+  qed
     \<comment> "TODO: Cauchy really needed in the following?"
 
   have "Cauchy ?f"
@@ -1279,9 +1281,10 @@ proof (atomize_elim, rule ccontr, auto)
   qed
 
   def u \<equiv> "\<lambda>t. if t < b then flow t0 x0 t else x1"
-  {
-    fix s assume s: "t0 < s" "s < b"
-    hence "s \<in> interior {t0 .. b}"
+  have u_below_b: "(u \<longlongrightarrow> u s) (at s within {t0..b})"
+    if s: "t0 < s" "s < b" for s
+  proof -
+    from s have "s \<in> interior {t0 .. b}"
       by (simp add: interior_atLeastAtMost)
     hence "at s within {t0 .. b} = at s"
       by (subst at_within_interior) auto
@@ -1295,8 +1298,8 @@ proof (atomize_elim, rule ccontr, auto)
       using s
       by (intro filterlim_mono_eventually[OF tendsto_eq_rhs[OF flow_tendsto] order.refl])
         (auto simp add: iv_in in_existence_ivlI u_def)
-    finally have "(u \<longlongrightarrow> u s) (at s within {t0..b})" .
-  } note u_below_b = this
+    finally show ?thesis .
+  qed
   have "((\<lambda>t. u t) \<longlongrightarrow> u b) (at b within {t0 .. b})"
     by (rule filterlim_mono_eventually[OF tendsto_eq_rhs[OF flow_at_b] order.refl])
       (auto simp: eventually_at_filter u_def)
@@ -1320,12 +1323,11 @@ proof (atomize_elim, rule ccontr, auto)
   hence u_cont: "continuous_on {t0 .. b} u"
     by (auto simp: continuous_on)
   moreover
-  {
-    fix t assume t: "t0 \<le> t" "t < b"
-    hence "u t = x0 + integral {t0 .. t} (\<lambda>s. f s (u s))"
-      by (subst integral_spike[where s="{b}" and g = "\<lambda>s. f s (flow t0 x0 s)"])
-        (auto simp: u_def flow_fixed_point iv_in not_less in_existence_ivlI)
-  } note u_fixed_point = this
+  have u_fixed_point: "u t = x0 + integral {t0 .. t} (\<lambda>s. f s (u s))"
+    if "t0 \<le> t" "t < b" for t
+    using that
+    by (subst integral_spike[where s="{b}" and g = "\<lambda>s. f s (flow t0 x0 s)"])
+      (auto simp: u_def flow_fixed_point iv_in not_less in_existence_ivlI)
   have cont: "continuous_on {t0 .. b} (\<lambda>s. f s (u s))"
     using \<open>{t0 .. b} \<subseteq> T\<close>
     by (safe intro!: continuous_intros u_cont)
@@ -1690,15 +1692,15 @@ proof -
   hence d: "0 < d" "d \<le> e" "d \<le> e * exp (-K * (b - t0))"
     using e by auto
 
-  {
-    fix t assume "t0 \<le> t" "t \<le> b"
-    hence "d * exp (K * (t - t0)) \<le> d * exp (K * (b - t0))"
+  have d_times_exp_le: "d * exp (K * (t - t0)) \<le> e" if "t0 \<le> t" "t \<le> b" for t
+  proof -
+    from that have "d * exp (K * (t - t0)) \<le> d * exp (K * (b - t0))"
       using \<open>0 \<le> K\<close> \<open>0 < d\<close>
       by (auto intro!: mult_left_mono)
     also have "d * exp (K * (b - t0)) \<le> e"
       using d by (auto simp: exp_minus divide_simps)
-    finally have "d * exp (K * (t - t0)) \<le> e" .
-  } note d_times_exp_le = this
+    finally show ?thesis .
+  qed
   have "ball x0 d \<subseteq> X" using d \<open>A \<subseteq> X\<close>
     by (auto simp: A_def dist_commute intro!: infdist_le2[where a=x0])
   {
@@ -1744,29 +1746,27 @@ proof -
             "e \<le> infdist (flow t0 y t') seg"
             "t0 \<le> t'" "t' \<le> t"
             by (auto simp: vimage_def Ball_def) metis
-          {
-            fix s assume s: "s \<in> {t0 .. t'}"
-            hence "s \<in> closed_segment t0 b"
+          have flow_in: "flow t0 x0 s \<in> A" if s: "s \<in> {t0 .. t'}" for s
+          proof -
+            from s have "s \<in> closed_segment t0 b"
               using \<open>t \<le> b\<close> t' by (auto simp: closed_segment_real)
-            hence "flow t0 x0 s \<in> A"
-              using s \<open>e > 0\<close> by (auto simp: seg_def A_def)
-          } note flow_in = this
-          {
-            assume "t' = t0"
-            hence "flow t0 y t' \<in> A"
-              using y d iv_in
-              by (auto simp:  A_def \<open>y \<in> X\<close> infdist_le2[where a=x0] dist_commute)
-          } moreover {
-            fix s assume s: "s \<in> {t0 ..< t'}"
-            hence "s \<in> closed_segment t0 b"
+            then show ?thesis using s \<open>e > 0\<close> by (auto simp: seg_def A_def)
+          qed
+          have "flow t0 y t' \<in> A" if "t' = t0"
+            using y d iv_in that
+            by (auto simp:  A_def \<open>y \<in> X\<close> infdist_le2[where a=x0] dist_commute)
+          moreover
+          have left_of_in: "flow t0 y s \<in> A" if s: "s \<in> {t0 ..< t'}" for s
+          proof -
+            from s have "s \<in> closed_segment t0 b"
               using \<open>t \<le> b\<close> t' by (auto simp: closed_segment_real)
             from t'(1)[of s]
             have "t' > s \<Longrightarrow> t0 \<le> s \<Longrightarrow> s \<le> t \<Longrightarrow> e > infdist (flow t0 y s) seg"
               by force
-            hence "flow t0 y s \<in> A"
+            then show ?thesis
               using s t' \<open>e > 0\<close> by (auto simp: seg_def A_def)
-          } moreover
-          note left_of_in = this
+          qed
+          moreover
           have "closed A" using \<open>compact A\<close> by (auto simp: compact_eq_bounded_closed)
           have "((\<lambda>s. flow t0 y s) \<longlongrightarrow> flow t0 y t') (at_left t')"
             using ivl_subset_existence_ivl[OF \<open>t0 \<in> T\<close> \<open>y \<in> X\<close> t(2)] t' \<open>y \<in> X\<close> iv_in
@@ -1781,8 +1781,8 @@ proof -
               unfolding eventually_at_filter
               by eventually_elim (auto intro!: left_of_in)
           qed simp
-          ultimately have flow_y_in: "\<And>s. s \<in> {t0 .. t'} \<Longrightarrow> flow t0 y s \<in> A"
-            by (case_tac "s = t'") auto
+          ultimately have flow_y_in: "s \<in> {t0 .. t'} \<Longrightarrow> flow t0 y s \<in> A" for s
+            by (cases "s = t'") auto
           have
             "t0 \<le> t'"
             "t' \<le> t"
@@ -1981,9 +1981,10 @@ proof -
   from dK(3,4) have "\<And>y. y \<in> ball x0 d \<Longrightarrow> ?mirror (?mirror b) \<in> existence_ivl t0 y"
     by (subst rev_existence_ivl_eq[symmetric]) (auto simp: iv_in)
   then have 4: "\<And>y. y \<in> ball x0 d \<Longrightarrow> b \<in> existence_ivl t0 y" by simp
-  {
-    fix t y assume yt: "y \<in> ball x0 d" "t \<in> {b .. t0}"
-    with dK(3) have yx0: "y \<in> X" "x0 \<in> ball x0 d" using \<open>d > 0\<close> by auto
+  have 5: "dist (flow t0 x0 t) (flow t0 y t) \<le> dist x0 y * exp (K * abs (t - t0))"
+    if yt: "y \<in> ball x0 d" "t \<in> {b .. t0}" for t y
+  proof -
+    from dK(3) yt have yx0: "y \<in> X" "x0 \<in> ball x0 d" using \<open>d > 0\<close> by auto
     from yt yx0 rev.closed_segment_subset_existence_ivl[OF t0' _ dK(4)[OF yt(1)]]
     have "2 * t0 - t \<in> rev.existence_ivl t0 y"
       by (auto simp: closed_segment_real)
@@ -1992,13 +1993,14 @@ proof -
     have "2 * t0 - t \<in> rev.existence_ivl t0 x0"
       by (auto simp: closed_segment_real)
     ultimately
-    have "dist (flow t0 x0 t) (flow t0 y t) \<le> dist x0 y * exp (K * abs (t - t0))"
+    show ?thesis
       using yt dK(5)[of y "2 * t0 - t"] rev_flow_eq[OF iv_in, of "2 * t0 - t"]
         rev_flow_eq[OF \<open>t0 \<in> T\<close> \<open>y \<in> X\<close>, of "2 * t0 - t"]
       by (auto simp: dist_commute closed_segment_real)
-  } note 5 = this
-  {
-    fix e::real assume "0 < e"
+  qed
+  have 6: "eventually (\<lambda>y. \<forall>t\<in>{b .. t0}. dist (flow t0 x0 t) (flow t0 y t) < e) (at x0)"
+    if "0 < e" for e :: real
+  proof -
     have "eventually (\<lambda>y. y \<in> ball x0 d) (at x0)"
       using \<open>d > 0\<close> by (rule eventually_at_in_ball)
     hence "eventually (\<lambda>y. \<forall>t\<in>{t0..2 * t0 - b}. dist (rev.flow t0 x0 t) (rev.flow t0 y t)
@@ -2014,9 +2016,9 @@ proof -
     moreover
     note dK(6)[OF \<open>0 < e\<close>]
     ultimately
-    have "eventually (\<lambda>y. \<forall>t\<in>{b .. t0}. dist (flow t0 x0 t) (flow t0 y t) < e) (at x0)"
+    show ?thesis
       by eventually_elim (auto simp: dest: bspec[where x="2 * t0 - t" for t])
-  } note 6 = this
+  qed
   from dK(1-3) 4 5 6 show ?thesis ..
 qed
 
@@ -2139,8 +2141,9 @@ proof (safe intro!: topological_space_class.openI continuous_at_imp_continuous_o
   qed
   ultimately show "\<exists>T. open T \<and> (x, t) \<in> T \<and> T \<subseteq> Sigma X (existence_ivl t0)"
     by blast
-  {
-    fix eps :: real assume "eps > 0"
+  have **: "\<forall>\<^sub>F s in at 0. norm (flow t0 (x + fst s) (t + snd s) - flow t0 x t) < 2 * eps"
+    if "eps > 0" for eps :: real
+  proof -
     have " \<forall>\<^sub>F s in at 0. norm (flow t0 (x + fst s) (t + snd s) - flow t0 x t) =
       norm (flow t0 (x + fst s) (t + snd s) - flow t0 x (t + snd s) +
         (flow t0 x (t + snd s) - flow t0 x t))"
@@ -2170,7 +2173,7 @@ proof (safe intro!: topological_space_class.openI continuous_at_imp_continuous_o
     hence "\<forall>\<^sub>F h::('a * _) in at 0. norm (flow t0 x (t + snd h) - flow t0 x t) < eps"
       by (rule eventually_at_snd) (simp add: \<open>eps > 0\<close>)
     ultimately
-    have "\<forall>\<^sub>F s in at 0. norm (flow t0 (x + fst s) (t + snd s) - flow t0 x t) < 2 * eps"
+    show ?thesis
     proof eventually_elim
       case (elim s)
       note elim(1)
@@ -2185,14 +2188,13 @@ proof (safe intro!: topological_space_class.openI continuous_at_imp_continuous_o
       finally
       show ?case by simp
     qed
-  } note ** = this
-  {
-    fix eps::real assume "eps > 0"
-    hence "eps / 2 > 0" by simp
-    from **[OF this]
-    have *: "\<forall>\<^sub>F s in at 0. norm (flow t0 (x + fst s) (t + snd s) - flow t0 x t) < eps"
-      by auto
-  } note * = this
+  qed
+  have *: "\<forall>\<^sub>F s in at 0. norm (flow t0 (x + fst s) (t + snd s) - flow t0 x t) < eps"
+    if "eps > 0" for eps::real
+  proof -
+    from that have "eps / 2 > 0" by simp
+    from **[OF this] show ?thesis by auto
+  qed
   show "isCont (\<lambda>(x, y). flow t0 x y) (x, t)"
     unfolding isCont_iff
     by (rule LIM_zero_cancel)
@@ -2235,11 +2237,15 @@ proof -
     def K \<equiv> "cball (0::'a) ?r"
     have K: "compact K" "K \<subseteq> X"
       by (auto simp: K_def \<open>X = UNIV\<close>)
-    {
-      fix t assume t: "t \<in> existence_ivl t0 x0"  and le: "tm \<le> t" "t \<le> tM"
-      {
-        fix s assume sc: "s \<in> closed_segment t0 t"
-        then have s: "s \<in> existence_ivl t0 x0" and le: "tm \<le> s" "s \<le> tM" using t le sc
+    have flow_compact: "flow t0 x0 t \<in> K"
+      if t: "t \<in> existence_ivl t0 x0"  and le: "tm \<le> t" "t \<le> tM" for t
+    proof -
+      have "norm (flow t0 x0 s) \<le> norm x0 + norm (t0 - t) * M + 1 +
+            L * integral (closed_segment t0 s) (\<lambda>t. norm (flow t0 x0 t))"
+        if sc: "s \<in> closed_segment t0 t" for s
+      proof -
+        from sc have s: "s \<in> existence_ivl t0 x0" and le: "tm \<le> s" "s \<le> tM"
+          using t le sc
           using closed_segment_subset_existence_ivl iv_in(1) iv_in(2)
           apply -
           subgoal by force
@@ -2266,9 +2272,8 @@ proof -
         also have "norm (t0 - s) * M \<le> norm (t0 - t) * M "
           using nle \<open>M > 0\<close> by auto
         also have "\<dots> \<le> \<dots> + 1" by simp
-        finally have "norm (flow t0 x0 s) \<le> norm x0 + norm (t0 - t) * M + 1 +
-            L * integral (closed_segment t0 s) (\<lambda>t. norm (flow t0 x0 t))" by simp
-      }
+        finally show ?thesis by simp
+      qed
       then have "norm (flow t0 x0 t) \<le> (norm x0 + norm (t0 - t) * M + 1) * exp (L * \<bar>t - t0\<bar>)"
         using closed_segment_subset_existence_ivl[OF iv_in t]
         by (intro gronwall_more_general_segment[where a=t0 and b = t and t = t])
@@ -2278,9 +2283,9 @@ proof -
       also have "\<dots> \<le> ?r"
         using le tmtM
         by (auto simp: less_imp_le \<open>0 < M\<close> \<open>0 < L\<close> abs_minus_commute intro!: mult_mono)
-      finally
-      have "flow t0 x0 t \<in> K" by (simp add: dist_norm K_def)
-    } note flow_compact = this
+      finally show ?thesis
+       by (simp add: dist_norm K_def)
+    qed
 
     have "{tm..tM} \<subseteq> existence_ivl t0 x0"
       using tmtM tm \<open>x0 \<in> X\<close> \<open>compact K\<close> \<open>K \<subseteq> X\<close> mem_is_intervalI[OF \<open>is_interval T\<close> \<open>tm \<in> T\<close> \<open>tM \<in> T\<close>]
@@ -3427,12 +3432,13 @@ proof-
              \<open>?g s \<le> ?C + N * integral {a..b} ?g\<close>
            for \<open>{a..b} = {0..s}\<close> or \<open>{a..b} = {s..0}\<close> for some \<open>s \<in> J\<close>.
            We can then apply Grönwall's inequality to obtain a true bound for \<open>?g\<close>. \<close>
-        {
-          fix s a b assume s_def: "s \<in> {a..b}"
-            and J'_def: "{a..b} \<subseteq> J"
-            and ab_cases: "(a = 0 \<and> b = s) \<or> (a = s \<and> b = 0)"
-          hence "s \<in> J" by auto
-
+        have g_bound: "?g s \<le> ?C + N * integral {a..b} ?g"
+          if s_def: "s \<in> {a..b}"
+          and J'_def: "{a..b} \<subseteq> J"
+          and ab_cases: "(a = 0 \<and> b = s) \<or> (a = s \<and> b = 0)"
+          for s a b
+        proof -
+          from that have "s \<in> J" by auto
 
           have s_in_existence_ivl_x0: "s \<in> existence_ivl x0"
             using J_in_existence \<open>s \<in> J\<close> by auto
@@ -3442,25 +3448,21 @@ proof-
             using s_in_existence_ivl
             by (simp add: dist_norm)
 
-          text \<open> Prove continuities beforehand. \<close>
+          text \<open>Prove continuities beforehand.\<close>
           note continuous_on_0_s[continuous_intros] = continuous_on_subset[OF _ \<open>{a..b} \<subseteq> J\<close>]
 
-          have[continuous_intros]: "continuous_on J (XX x0)"
+          have [continuous_intros]: "continuous_on J (XX x0)"
             apply(rule continuous_on_subset[OF _ J_in_existence])
             using flow_continuous_on[OF x0_def]
             by (simp add: XX_def)
 
-          {
-            fix z S
-            assume assms: "x0 + z \<in> X" "S \<subseteq> existence_ivl (x0 + z)"
-            have "continuous_on S (\<lambda>s. f (Y z s))"
-            proof(rule continuous_on_subset[OF _ assms(2)])
-              show "continuous_on (existence_ivl (x0 + z)) (\<lambda>s. f (Y z s))"
-                using assms
-                by (auto intro!: continuous_intros flow_in_domain flow_continuous_on simp: Y_def)
-            qed
-          }
-          note [continuous_intros] = this
+          have [continuous_intros]: "continuous_on S (\<lambda>s. f (Y z s))"
+            if "x0 + z \<in> X" "S \<subseteq> existence_ivl (x0 + z)" for z S
+          proof (rule continuous_on_subset[OF _ that(2)])
+            show "continuous_on (existence_ivl (x0 + z)) (\<lambda>s. f (Y z s))"
+              using that
+              by (auto intro!: continuous_intros flow_in_domain flow_continuous_on simp: Y_def)
+          qed
 
           have [continuous_intros]: "continuous_on J (\<lambda>s. f (XX x0 s))"
             by(rule continuous_on_subset[OF _ J_in_existence])
@@ -3620,10 +3622,9 @@ proof-
               by (auto simp: integral_const_real J_def(1))
             finally show "?r1 \<le> ?C" .
           qed
-          finally have "?g s \<le> ?C + N * integral {a..b} ?g"
+          finally show ?thesis
             by simp
-        }
-        note g_bound = this
+        qed
         have g_continuous: "continuous_on J ?g"
           using J_in_existence_ivl[OF x_in_ball] J_in_existence
           using J_def(1) U_continuous
@@ -3913,9 +3914,10 @@ proof (safe intro!: tendstoI)
         subgoal using dxy by simp
         done
     qed
-    {
-      fix s assume s: "s \<in> ?T \<inter> twoR.existence_ivl 0 id_blinfun"
-      then have s_less: "\<bar>s\<bar> < \<bar>t\<bar> + \<bar>dt\<bar> + 1"
+    have less_e: "norm (W x s - both.Y s) < e"
+      if s: "s \<in> ?T \<inter> twoR.existence_ivl 0 id_blinfun" for s
+    proof -
+      from s have s_less: "\<bar>s\<bar> < \<bar>t\<bar> + \<bar>dt\<bar> + 1"
         by (auto simp: dist_real_def)
       note both.norm_X_Y_bound[rule_format, OF s]
       also have "d / K * (exp (K * \<bar>s\<bar>) - 1) =
@@ -3949,8 +3951,8 @@ proof (safe intro!: tendstoI)
         subgoal using \<open>?T \<subseteq> existence_ivl x\<close> by blast
         subgoal by (rule s)
         done
-      finally have "norm (W x s - both.Y s) < e" .
-    } note less_e = this
+      finally show ?thesis .
+    qed
 
     have "e < dx" using \<open>dx > 0\<close> by (auto simp: e_def)
 
@@ -4005,9 +4007,9 @@ proof (safe intro!: tendstoI)
         by (force simp: \<open>x \<in> X\<close> intro!: bexI[where x=0])
       done
     finally have "?T \<subseteq> existence_ivl y" .
-    {
-      fix s assume s: "s \<in> ?T"
-      then have "s \<in> ?T \<inter> twoR.existence_ivl 0 id_blinfun" using T_subset by force
+    have "norm (W x s - W y s) < e" if s: "s \<in> ?T" for s
+    proof -
+      from s have "s \<in> ?T \<inter> twoR.existence_ivl 0 id_blinfun" using T_subset by force
       from less_e[OF this] have "norm (W x s - both.Y s) < e" .
       also have "two.flow 0 id_blinfun s = twoR.flow 0 id_blinfun s"
         apply (rule two.maximal_existence_flow[OF _ _ _ refl, where K="?T"])
@@ -4038,8 +4040,8 @@ proof (safe intro!: tendstoI)
       then have "both.Y s = W y s"
         unfolding both.Y_def W_def[OF \<open>y \<in> X\<close>]
         by simp
-      finally have "norm (W x s - W y s) < e" .
-    }
+      finally show ?thesis .
+    qed
   } note cont_data = this
   have "\<forall>\<^sub>F (y, s) in at (x, t) within ?S. dist x y < d'"
     unfolding at_within_open[OF \<open>(x, t) \<in> ?S\<close> open_state_space] UNIV_Times_UNIV[symmetric]

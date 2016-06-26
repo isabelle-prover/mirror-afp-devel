@@ -442,9 +442,9 @@ next
   let ?p = "(\<lambda>t. f' (t, x t) (1, f (t, x t)))"
   def diff \<equiv> "\<lambda>n::nat. if n = 0 then x else if n = 1 then \<lambda>t. f (t, x t) else ?p"
   have diff_0[simp]: "diff 0 = x" by (simp add: diff_def)
-  {
-    fix m::nat and ta::real
-    assume mta: "m < 2" "t \<le> ta" "ta \<le> t + h"
+  have diff: "(diff m has_vector_derivative diff (Suc m) ta) (at ta within {t..t + h})"
+    if mta: "m < 2" "t \<le> ta" "ta \<le> t + h" for m::nat and ta::real
+  proof -
     have image_subset: "(\<lambda>xa. (xa, x xa)) ` {t..u} \<subseteq> {t..u} \<times> X"
       using assms by auto
     note has_derivative_in_compose[where f="(\<lambda>xa. (xa, x xa))" and g = f, derivative_intros]
@@ -456,10 +456,10 @@ next
     have "((\<lambda>t. f (t, x t)) has_vector_derivative f' (ta, x ta) (1, f (ta, x ta))) (at ta within {t..u})"
       unfolding has_vector_derivative_def
       using assms ht mta by (auto intro!: derivative_eq_intros)
-    hence "(diff m has_vector_derivative diff (Suc m) ta) (at ta within {t..t + h})"
+    then show ?thesis
       using mta ht
       by (auto simp: diff_def intro!: has_vector_derivative_within_subset[OF _ subset] x')
-  } note diff = this
+  qed
 
   from taylor_has_integral[of 2 diff x t "t + h", OF _ _ diff] \<open>0 \<le> h\<close>
   have taylor: "((\<lambda>xa. (t + h - xa) *\<^sub>R f' (xa, x xa) (1, f (xa, x xa))) has_integral x (t + h) - (x t + h *\<^sub>R f (t, x t))) {t..t + h}"
@@ -608,9 +608,9 @@ next
   def diff \<equiv> "\<lambda>n::nat. if n = 0 then x else if n = 1 then \<lambda>t. f (t, x t) else if n = 2 then ?p
     else ?q"
   have diff_0[simp]: "diff 0 = x" by (simp add: diff_def)
-  {
-    fix m::nat and ta::real
-    assume mta: "m < 3" "t \<le> ta" "ta \<le> t + h"
+  have diff: "(diff m has_vector_derivative diff (Suc m) ta) (at ta within {t..t + h})"
+    if mta: "m < 3" "t \<le> ta" "ta \<le> t + h" for m::nat and ta::real
+  proof -
     have image_subset: "(\<lambda>xa. (xa, x xa)) ` {t..u} \<subseteq> {t..u} \<times> X"
       using assms by auto
     note has_derivative_in_compose[where f="(\<lambda>xa. (xa, x xa))" and g = f, derivative_intros]
@@ -624,10 +624,10 @@ next
       unfolding has_vector_derivative_def
       using assms ht mta T x
       by (force intro!: derivative_eq_intros has_derivative_within_subset[OF f'])
-    hence "(diff m has_vector_derivative diff (Suc m) ta) (at ta within {t..t + h})"
+    then show ?thesis
       using mta ht
       by (auto simp: diff_def intro!: has_vector_derivative_within_subset[OF _ subset] x' p')
-  } note diff = this
+  qed
 
   from taylor_has_integral[of 3 diff x t "t + h", OF _ _ diff]
   have
@@ -667,17 +667,16 @@ next
     by (rule fundamental_theorem_of_calculus)
       (auto intro!: derivative_eq_intros
         simp: has_vector_derivative_def power2_eq_square algebra_simps)
-  {
-    fix x h::"real*'a"
-    assume line_in: "(\<lambda>s. x + s *\<^sub>R h) ` {0..1} \<subseteq> T \<times> X"
-    hence *: "y \<in> T \<times> X" if "y \<in> closed_segment x (x + h)" for y
+  have f_taylor: "((\<lambda>s. (1 - s) *\<^sub>R f'' (x + s *\<^sub>R h) h h) has_integral f (x + h) - f x - f' x $ h) {0..1}"
+    if line_in: "(\<lambda>s. x + s *\<^sub>R h) ` {0..1} \<subseteq> T \<times> X" for x h::"real*'a"
+  proof -
+    from that have *: "y \<in> T \<times> X" if "y \<in> closed_segment x (x + h)" for y
       using that
       by (force simp: closed_segment_def algebra_simps
         intro: image_eqI[where x = "1 - x" for x])
-    from multivariate_taylor2[OF f' f'', OF * *, of x "x + h"]
-    have "((\<lambda>s. (1 - s) *\<^sub>R f'' (x + s *\<^sub>R h) h h) has_integral f (x + h) - f x - f' x $ h) {0..1}"
+    from multivariate_taylor2[OF f' f'', OF * *, of x "x + h"] show ?thesis
       by simp
-  } note f_taylor = this
+  qed
 
   let ?k = "\<lambda>t. f ((t, x t) + (h * p) *\<^sub>R (1, f (t, x t)))"
 

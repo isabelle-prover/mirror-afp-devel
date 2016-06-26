@@ -37,21 +37,21 @@ proof goal_cases
   moreover
   have Dg0: "Dg 0 = g" by (auto simp add: Dg_def Df_Nil g_def)
   moreover
-  {
-    fix m::nat and t::real
-    assume "m < n" "0 \<le> t" "t \<le> 1"
-    hence [intro]: "line t \<in> ?G" using assms
+  have DgSuc: "(Dg m has_vector_derivative Dg (Suc m) t) (at t within {0..1})"
+    if "m < n" "0 \<le> t" "t \<le> 1" for m::nat and t::real
+  proof -
+    from that have [intro]: "line t \<in> ?G" using assms
       by (auto simp: segment_eq)
     note [derivative_intros] = has_derivative_compose[OF _ Df_Cons]
     interpret Df: linear "(\<lambda>d. Df (line t) (d#replicate m H))"
       by (auto intro!: has_derivative_linear derivative_intros \<open>m < n\<close>)
     note [derivative_intros] =
       has_derivative_compose[OF _ line_deriv]
-    have "(Dg m has_vector_derivative Dg (Suc m) t) (at t within {0..1})"
+    show ?thesis
       using Df.scaleR \<open>m < n\<close>
       by (auto simp: Dg_def has_vector_derivative_def g_def
          intro!: derivative_eq_intros)
-  } note DgSuc = this
+  qed
   ultimately
   have g_taylor: "(i has_integral g 1 - (\<Sum>i<n. ((1 - 0) ^ i / fact i) *\<^sub>R Dg i 0)) {0 .. 1}"
     unfolding i_def Dg_def line_def
@@ -78,14 +78,12 @@ proof -
     | [d1, d2] \<Rightarrow> f'' x d1 d2"
   have Df_Nil: "\<And>a. Df a [] = f a"
     by (auto simp: Df_def)
-  {
-    fix a::'a and ds::"'a list"
-    assume "a \<in> ?G" "length ds < 2"
-    hence "((\<lambda>a. Df a ds) has_derivative (\<lambda>d. Df a (d # ds))) (at a)"
-      by (cases ds)
-         (auto simp add: Df_def assms blinfun.zero_right
-          intro!: derivative_eq_intros)
-  } note Df_Cons = this
+  have Df_Cons: "((\<lambda>a. Df a ds) has_derivative (\<lambda>d. Df a (d # ds))) (at a)"
+    if "a \<in> ?G" "length ds < 2" for a::'a and ds::"'a list"
+    using that
+    by (cases ds)
+       (auto simp add: Df_def assms blinfun.zero_right
+        intro!: derivative_eq_intros)
   from multivariate_taylor_has_integral[of 2 Df f a "x - a", OF _ Df_Nil Df_Cons]
   show ?thesis
     by (simp add: assms numeral_eq_Suc Df_def algebra_simps)
@@ -112,20 +110,20 @@ proof -
     | [d1, d2, d3] \<Rightarrow> f''' x d1 d2 d3"
   have Df_Nil: "\<And>a. Df a [] = f a"
     by (auto simp: Df_def)
-  {
-    fix a::'a and ds::"'a list"
-    assume "a \<in> ?G" "length ds < 3"
-    then consider "ds = []" | "\<exists>d1. ds = [d1]" | "\<exists>d1 d2. ds = [d1, d2]"
+  have Df_Cons: "((\<lambda>a. Df a ds) has_derivative (\<lambda>d. Df a (d # ds))) (at a)"
+    if "a \<in> ?G" "length ds < 3" for a::'a and ds::"'a list"
+  proof -
+    from that consider "ds = []" | "\<exists>d1. ds = [d1]" | "\<exists>d1 d2. ds = [d1, d2]"
       apply (cases ds)
       subgoal by simp
       subgoal for d ds by (cases ds) auto
       done
-    then have "((\<lambda>a. Df a ds) has_derivative (\<lambda>d. Df a (d # ds))) (at a)"
+    then show ?thesis
       apply cases
       using \<open>a \<in> ?G\<close>
       by (auto simp add: Df_def assms blinfun.zero_right
           intro!: derivative_eq_intros)
-  } note Df_Cons = this
+  qed
   from multivariate_taylor_has_integral[of 3 Df f a "x - a", OF _ Df_Nil Df_Cons]
   show ?thesis
     by (simp add: assms numeral_eq_Suc Df_def algebra_simps)
@@ -187,17 +185,13 @@ proof -
         qed
       qed
     qed
-    {
-      fix P
-      assume "P a" "eventually P (at a within G)"
-      from filter_ij'I[OF this] have "eventually (\<lambda>x. \<forall>t\<in>{0..1}. P (?ij t x)) ?F"
+    have filter_ijI: "eventually (\<lambda>x. \<forall>t\<in>{0..1}. P (?ij t x)) ?F"
+      if "P a" "eventually P (at a within G)" for P
+      using filter_ij'I[OF that] 
         by eventually_elim (force dest: bspec[where x=1])
-    } note filter_ijI = this
-    {
-      fix P assume "P a" "eventually P (at a within G)"
-      from filter_ij'I[OF this] have "eventually (\<lambda>x. \<forall>t\<in>{0..1}. P (?i t x)) ?F"
-        by eventually_elim force
-    } note filter_iI = this
+    have filter_iI: "eventually (\<lambda>x. \<forall>t\<in>{0..1}. P (?i t x)) ?F"
+      if "P a" "eventually P (at a within G)" for P
+      using filter_ij'I[OF that] by eventually_elim force
     {
       from second_fderiv[of i, simplified has_derivative_iff_norm, THEN conjunct2,
         THEN tendstoD, OF \<open>0 < e\<close>]
@@ -225,17 +219,17 @@ proof -
         note has_derivative_subset[OF _ ijsub, derivative_intros]
         note has_derivative_subset[OF _ isub, derivative_intros]
         let ?g' = "\<lambda>t. (\<lambda>ua. u *\<^sub>R ua *\<^sub>R (f' (?ij t u) i - (f' (?i t u) i)))"
-        {
-          fix t::real assume "t \<in> {0..1}"
-          with elim have linear_f': "\<And>c x. f' (?ij t u) (c *\<^sub>R x) = c *\<^sub>R f' (?ij t u) x"
+        have g': "((?g u) has_derivative ?g' t) (at t within {0..1})" if "t \<in> {0..1}" for t::real
+        proof -
+          from elim that have linear_f': "\<And>c x. f' (?ij t u) (c *\<^sub>R x) = c *\<^sub>R f' (?ij t u) x"
               "\<And>c x. f' (?i t u) (c *\<^sub>R x) = c *\<^sub>R f' (?i t u) x"
             using linear_cmul[OF has_derivative_linear, OF first_fderiv] by auto
-          have "((?g u) has_derivative ?g' t) (at t within {0..1})"
+          show ?thesis
             using elim \<open>t \<in> {0..1}\<close>
             by (auto intro!: derivative_eq_intros has_derivative_in_compose[of  "\<lambda>t. ?ij t u" _ _ _ f]
                 has_derivative_in_compose[of  "\<lambda>t. ?i t u" _ _ _ f]
               simp: linear_f' scaleR_diff_right mult.commute)
-        } note g' = this
+        qed
         from elim(1) \<open>i \<noteq> 0\<close> \<open>j \<noteq> 0\<close> \<open>0 < e\<close> have f'ij: "\<And>t. t \<in> {0..1} \<Longrightarrow>
             norm (f' (a + (t * u) *\<^sub>R i + u *\<^sub>R j) i - f' a i - f'' ((t * u) *\<^sub>R i + u *\<^sub>R j) i) \<le>
             e * norm ((t * u) *\<^sub>R i + u *\<^sub>R j)"
@@ -314,9 +308,8 @@ proof -
       qed
     }
   } note wlog = this
-  {
-    fix e t::real
-    assume "0 < e"
+  have e': "norm (f'' j i - f'' i j) \<le> e * (5 * norm j + 5 * norm i)" if "0 < e" for e t::real
+  proof -
     have "B i j = B j i" using \<open>i \<noteq> j\<close> by (force simp: B_def)+
     with assms \<open>B i j \<subseteq> G\<close> have "j \<noteq> i" "B j i \<subseteq> G" by (auto simp:)
     from wlog[OF \<open>0 < e\<close> \<open>i \<noteq> j\<close> \<open>i \<noteq> 0\<close> \<open>j \<noteq> 0\<close> \<open>B i j \<subseteq> G\<close>]
@@ -344,18 +337,18 @@ proof -
     hence "eventually (\<lambda>u. norm ((f'' j i - f'' i j)) \<le> e * (5 * norm j + 5 * norm i)) ?F"
       unfolding mult_le_cancel_left eventually_at_filter
       by eventually_elim auto
-    hence "norm (f'' j i - f'' i j) \<le> e * (5 * norm j + 5 * norm i)"
+    then show ?thesis
       by (auto simp add:eventually_at dist_norm dest!: bspec[where x="d/2" for d])
-  } note e' = this
-  {
-    fix e::real assume "0 < e"
+  qed
+  have e: "norm (f'' j i - f'' i j) < e" if "0 < e" for e::real
+  proof -
     let ?e = "e/2/(5 * norm j + 5 * norm i)"
     have "?e > 0" using \<open>0 < e\<close> \<open>i \<noteq> 0\<close> \<open>j \<noteq> 0\<close> by (auto intro!: divide_pos_pos add_pos_pos)
     from e'[OF this] have "norm (f'' j i - f'' i j) \<le> ?e * (5 * norm j + 5 * norm i)" .
     also have "\<dots> = e / 2" using \<open>i \<noteq> 0\<close> \<open>j \<noteq> 0\<close> by (auto simp: ac_simps add_nonneg_eq_0_iff)
     also have "\<dots> < e" using \<open>0 < e\<close> by simp
-    finally have "norm (f'' j i - f'' i j) < e" .
-  } note e = this
+    finally show ?thesis .
+  qed
   have "norm (f'' j i - f'' i j) = 0"
   proof (rule ccontr)
     assume "norm (f'' j i - f'' i j) \<noteq> 0"
