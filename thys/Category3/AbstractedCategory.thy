@@ -109,7 +109,7 @@ begin
     shows "category comp"
     proof -
       interpret category comp
-        using assms comp_def C.not_arr_null C.arr_comp C.dom_comp C.cod_comp comp_null(2) rep_abs
+        using comp_def C.not_arr_null C.arr_comp C.dom_comp C.cod_comp comp_null(2) rep_abs
         apply unfold_locales
         (* 6 *) apply (metis abstracted_category.domain_closed abstracted_category_axioms)
         (* 5 *) apply (metis abstracted_category.domain_closed abstracted_category_axioms)

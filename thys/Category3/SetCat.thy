@@ -807,7 +807,7 @@ begin
             have "UP ` Dom a = UP ` Dom b" using a b ab set_char by blast
             hence "Dom a = Dom b" using inj_UP inj_image_eq_iff by metis
             thus "a = b"
-              using assms ide_char by (metis a b dom_char ideD(1) ideD(2))
+              using ide_char by (metis a b dom_char ideD(1) ideD(2))
           qed
           next
           fix f f' :: "'a arr"
@@ -965,7 +965,7 @@ begin
         fix t' :: "'a arr"
         assume "t' \<in> Collect (category.terminal comp)"
         thus "(UP o \<phi>) ((?\<psi> o DOWN) t') = t'"
-          using assms(2) by (metis UNIV_I UP_DOWN bij_betw_imageE comp_apply f_inv_into_f)
+          using assms(2) by (metis UNIV_I UP_DOWN bij_betw_def comp_apply f_inv_into_f)
       qed
       thus ?thesis
         using assms(1) set_category_is_categorical [of S SetCat.comp "UP o \<phi>"] is_set_category 

@@ -88,7 +88,7 @@ begin
 
     lemma is_discrete:
     shows "ide f \<longleftrightarrow> arr f"
-      using assms arr_char ide_char by auto
+      using arr_char ide_char by auto
 
   end
 

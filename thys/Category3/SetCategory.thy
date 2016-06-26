@@ -775,7 +775,7 @@ begin
     lemma \<phi>_img_\<psi>_img:
     assumes "A' \<subseteq> S'.Univ"
     shows "\<phi> ` \<psi> ` A' = A'"
-      using assms bij_\<phi> by (metis bij_betw_imageE image_inv_into_cancel)
+      using assms bij_\<phi> by (simp add: bij_betw_def image_inv_into_cancel)
   
     text{*
       The object map @{term \<Phi>o} of a functor from @{term S} to @{term S'}.
@@ -787,9 +787,12 @@ begin
     lemma set_\<Phi>o:
     assumes "S.ide a"
     shows "S'.set (\<Phi>o a) = \<phi> ` S.set a"
-      using assms \<Phi>o_def bij_\<phi> S.set_subset_Univ S'.set_mkIde CollectI bij_betw_imageE image_mono
-            restrict_apply'
+    proof -
+      from assms have "S.set a \<subseteq> S.Univ" by simp
+      then show ?thesis
+      using S'.set_mkIde \<Phi>o_def assms bij_\<phi> bij_betw_def image_mono mem_Collect_eq restrict_def
       by (metis (no_types, lifting))
+    qed
 
     lemma \<Phi>o_preserves_ide:
     assumes "S.ide a"
@@ -2000,7 +2003,7 @@ begin
       hence 1: "bij_betw img (hom unity a) (set a)"
         using assms bij_betw_points_and_set by auto
       hence "img ` (hom unity a) = set a"
-        by (simp add: bij_betw_imageE)
+        by (simp add: bij_betw_def)
       moreover have "hom unity a = {THE x. x \<in> hom unity a}"
         using assms theI' [of "\<lambda>x. x \<in> hom unity a"] by auto
       ultimately have "set a = {img (THE x. x \<in> hom unity a)}"

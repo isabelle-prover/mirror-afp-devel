@@ -715,7 +715,7 @@ begin
     proof (cases "C.arr f")
       assume f: "C.arr f"
       hence "C.dom f = Some (Id (Dom (the f)))"
-        using assms unit_Some_Id
+        using unit_Some_Id
         by (simp add: Obj_Dom arr_char comp_def null_char C.dom_simp)
       thus ?thesis using f by auto
       next
@@ -728,7 +728,7 @@ begin
     proof (cases "C.arr f")
       assume f: "C.arr f"
       hence "C.cod f = Some (Id (Cod (the f)))"
-        using assms by (metis C.comp_cod_arr C.dom_cod arr_char comp_def dom_char)
+        by (metis C.comp_cod_arr C.dom_cod arr_char comp_def dom_char)
       thus ?thesis using f by auto
       next
       assume "\<not>C.arr f"
@@ -738,7 +738,7 @@ begin
     lemma comp_char:
     shows "comp g f = (if f \<noteq> None \<and> g \<noteq> None \<and> Seq (the g) (the f)
                        then Some (Comp (the g) (the f)) else None)"
-      using assms comp_def by simp
+      using comp_def by simp
 
     text{*
       The objects of the classical category are in bijective correspondence with

@@ -163,7 +163,7 @@ begin
     lemma mkArr_not_Null:
     shows "mkArr x y p \<noteq> Null \<longleftrightarrow> G.path x y p"
       using mkArr_def
-      by (metis Abs_arr_inverse Null_def UNIV_I assms option.distinct(1))
+      by (metis Abs_arr_inverse Null_def UNIV_I option.distinct(1))
 
     lemma Dom_mkArr [simp]:
     assumes "mkArr x y p \<noteq> Null"
@@ -742,7 +742,7 @@ begin
     lemma dom_simp [simp]:
     shows "dom One = One"
     and "\<lbrakk>arr f; f \<noteq> One\<rbrakk> \<Longrightarrow> dom f = Zero"
-      using assms dom_char ide_char by auto
+      using dom_char ide_char by auto
 
     lemma cod_char:
     shows "cod f = (if ide f then f else if arr f then One else null)"
@@ -754,7 +754,7 @@ begin
     lemma cod_simp [simp]:
     shows "cod Zero = Zero"
     and "\<lbrakk>arr f; f \<noteq> Zero\<rbrakk> \<Longrightarrow> cod f = One"
-      using assms cod_char ide_char by auto
+      using cod_char ide_char by auto
 
     lemma seq_char:
     shows "seq g f \<longleftrightarrow> arr g \<and> arr f \<and> ((f = Zero \<and> g \<noteq> One) \<or> (f \<noteq> Zero \<and> g = One))"
