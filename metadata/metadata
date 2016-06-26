@@ -39,6 +39,47 @@ abstract =
   cardinality of partial equivalence relations over a finite set of
   cardinality n is equal to the n+1-th Bell number.
 
+[Category3]
+title = Category Theory with Adjunctions and Limits
+author = Eugene W. Stark <mailto:stark@cs.stonybrook.edu>
+notify = stark@cs.stonybrook.edu
+date = 2016-06-26
+topic = Mathematics/Category Theory
+abstract = 
+  This article attempts to develop a usable framework for doing category
+  theory in Isabelle/HOL.  Our point of view, which to some extent
+  differs from that of the previous AFP articles on the subject, is to
+  try to explore how category theory can be done efficaciously within
+  HOL, rather than trying to match exactly the way things are done using
+  a traditional approach.  To this end, we define the notion of category
+  in an "object-free" style, in which a category is represented by a
+  single partial composition operation on arrows.  This way of defining
+  categories provides some advantages in the context of HOL, including
+  the ability to avoid the use of records and the possibility of
+  defining functors and natural transformations simply as certain
+  functions on arrows, rather than as composite objects.  We define
+  various constructions associated with the basic notions, including:
+  dual category, product category, functor category, discrete category,
+  free category, functor composition, and horizontal and vertical
+  composite of natural transformations.  A "set category" locale is
+  defined that axiomatizes the notion "category of all sets at a type
+  and all functions between them," and a fairly extensive set of
+  properties of set categories is derived from the locale assumptions.
+  The notion of a set category is used to prove the Yoneda Lemma in a
+  general setting of a category equipped with a "hom embedding," which
+  maps arrows of the category to the "universe" of the set category.  We
+  also give a treatment of adjunctions, defining adjunctions via left
+  and right adjoint functors, natural bijections between hom-sets, and
+  unit and counit natural transformations, and showing the equivalence
+  of these definitions.  We also develop the theory of limits, including
+  representations of functors, diagrams and cones, and diagonal
+  functors.  We show that right adjoint functors preserve limits, and
+  that limits can be constructed via products and equalizers.  We
+  characterize the conditions under which limits exist in a set
+  category. We also examine the case of limits in a functor category,
+  ultimately culminating in a proof that the Yoneda embedding preserves
+  limits.
+
 [Card_Multisets]
 title = Cardinality of Multisets
 author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
