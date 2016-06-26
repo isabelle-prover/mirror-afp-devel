@@ -2,7 +2,7 @@ theory Picard_Lindeloef_Qualitative
 imports Initial_Value_Problem
 begin
 
-subsection \<open>Picard-Lindeloef On Open Domains\<close>
+subsection \<open>Picard-Lindelöf On Open Domains\<close>
 text\<open>\label{sec:qpl}\<close>
 
 subsubsection \<open>Local Solution with local Lipschitz\<close>

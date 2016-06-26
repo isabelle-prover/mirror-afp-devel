@@ -1049,7 +1049,7 @@ qed
 
 end
 
-subsection \<open>Picard-Lindeloef on set of functions into closed set\<close>
+subsection \<open>Picard-Lindelöf on set of functions into closed set\<close>
 text\<open>\label{sec:plclosed}\<close>
 locale continuous_rhs = fixes T X f
   assumes continuous: "continuous_on (T \<times> X) f"
@@ -1538,7 +1538,7 @@ next
     by unfold_locales (auto simp del: of_nat_Suc)
 qed
 
-subsection \<open>Picard-Lindeloef for @{term "X=(\<lambda>_. UNIV)"}\<close>
+subsection \<open>Picard-Lindelöf for @{term "X=(\<lambda>_. UNIV)"}\<close>
 text\<open>\label{sec:pl-us}\<close>
 
 locale unique_on_strip = ivp_on_interval + continuous_rhs T X f +
@@ -1548,7 +1548,7 @@ locale unique_on_strip = ivp_on_interval + continuous_rhs T X f +
 sublocale unique_on_strip < unique_on_closed
   using strip by unfold_locales auto
 
-subsection \<open>Picard-Lindeloef on cylindric domain\<close>
+subsection \<open>Picard-Lindelöf on cylindric domain\<close>
 text\<open>\label{sec:pl-rect}\<close>
 locale cylinder = ivp i for i::"'a::banach ivp" +
   fixes e b
