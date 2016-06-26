@@ -1415,8 +1415,8 @@ next
     show ?case by simp unfold_locales
   next
     case (Suc n)
-    def nb \<equiv> "real (Suc n) * b"
-    def snb \<equiv> "real (Suc (Suc n)) * b"
+    define nb where "nb = real (Suc n) * b"
+    define snb where "snb = real (Suc (Suc n)) * b"
     note Suc = Suc[simplified nb_def[symmetric] snb_def[symmetric]]
     from \<open>b > 0\<close> nb_def snb_def have nbs_nonneg: "0 < snb" "0 < nb"
       by (simp_all add: zero_less_mult_iff)
@@ -1428,8 +1428,8 @@ next
         by (simp add: ac_simps snb_def nb_def)
       thus ?thesis by (simp add: field_simps of_nat_Suc)
     qed
-    def i1 \<equiv> "i\<lparr>ivp_T := {t0..t0 + nb}\<rparr>"
-    def T1 \<equiv> "t0 + nb"
+    define i1 where "i1 = i\<lparr>ivp_T := {t0..t0 + nb}\<rparr>"
+    define T1 where "T1 = t0 + nb"
     interpret ivp1: ivp_on_interval i1 T1
       using iv_defined \<open>nb > 0\<close> by unfold_locales (auto simp: i1_def T1_def)
     interpret ivp1: unique_solution i1
@@ -1437,9 +1437,9 @@ next
     interpret ivp1_cl: unique_on_closed i1 "t0 + nb"
       using nb_le_snb nbs_nonneg Suc continuous lipschitz closed self_mapping
       by unfold_locales (auto simp: i1_def interval intro: continuous_on_subset)
-    def i2 \<equiv> "i\<lparr>ivp_t0:=t0+nb, ivp_T:={t0 + nb..t0+snb},
+    define i2 where "i2 = i\<lparr>ivp_t0:=t0+nb, ivp_T:={t0 + nb..t0+snb},
       ivp_x0:=ivp1.solution (t0 + nb)\<rparr>"
-    def T2 \<equiv> "t0 + snb"
+    define T2 where "T2 = t0 + snb"
     interpret ivp2: ivp_on_interval i2 T2
       using nbs_nonneg \<open>nb < snb\<close> ivp1.solution_in_D
       by unfold_locales (auto simp: i1_def i2_def T2_def)
@@ -1500,13 +1500,13 @@ next
       using bL Suc(2) nbs_nonneg interval continuous lipschitz closed
       by unfold_locales
         (auto intro: continuous_on_subset simp: ac_simps i1_def i2_def T2_def)
-    def i \<equiv> "i\<lparr>ivp_T := {t0..t0 + real (Suc (Suc n)) * b}\<rparr>"
-    def T \<equiv> "t0 + real (Suc (Suc n)) * b"
-    interpret i: ivp i
+    define i' where "i' = i\<lparr>ivp_T := {t0..t0 + real (Suc (Suc n)) * b}\<rparr>"
+    define T where "T = t0 + real (Suc (Suc n)) * b"
+    interpret i: ivp i'
     proof
-      show "ivp_t0 i \<in> ivp_T i" "ivp_x0 i \<in> ivp_X i"
+      show "ivp_t0 i' \<in> ivp_T i'" "ivp_x0 i' \<in> ivp_X i'"
         using ivp1.iv_defined \<open>0 \<le> b\<close>
-        by (auto simp: i_def i1_def nb_def intro!: mult_nonneg_nonneg)
+        by (auto simp: i'_def i1_def nb_def intro!: mult_nonneg_nonneg)
     qed
     have *: "ivp_T i1 \<inter> ivp_T i2 = {T1}"
       using nbs_nonneg
@@ -1515,7 +1515,7 @@ next
         simp del: of_nat_Suc)
     have nb_le_snb: "t0 + real (Suc n) * b \<le> t0 + real (Suc (Suc n)) * b"
       using \<open>b > 0\<close> by auto
-    interpret ivp_c: connected_unique_solutions i i1 i2 T1
+    interpret ivp_c: connected_unique_solutions i' i1 i2 T1
       apply unfold_locales
       unfolding *
       using \<open>b > 0\<close> iv_defined ivp1.is_solutionD[OF ivp1.is_solution_solution]
@@ -1524,10 +1524,10 @@ next
         ivp2.is_solution_solution
          nbs_nonneg
         add_increasing2[of "real (Suc n) * b" "t0 + real (Suc n) * b"]
-      by (auto simp: i1_def i2_def i_def T1_def T2_def T_def snb_def nb_def
+      by (auto simp: i1_def i2_def i'_def T1_def T2_def T_def snb_def nb_def
         simp del: of_nat_Suc
         intro!: order_trans[OF _ nb_le_snb])
-    show ?case unfolding i_def[symmetric] by unfold_locales
+    show ?case unfolding i'_def[symmetric] by unfold_locales
   qed
   show "unique_solution i"
     using i'.solution i'.unique_solution interval(1)[symmetric] i'.interval[symmetric]
@@ -1589,7 +1589,7 @@ next
       using e_pos e_bounded using \<open>b > 0\<close> \<open>B > 0\<close> \<open>t \<in> T\<close>
       by (auto simp: field_simps interval abs_real_def)
        (metis add_right_mono distrib_left mult_le_cancel_left_pos order_trans)+
-    def b\<equiv>"B * abs (t - t0)"
+    define b where "b = B * abs (t - t0)"
     have "b > 0" using \<open>t0 \<noteq> t\<close> by (auto intro!: mult_pos_pos simp: algebra_simps b_def \<open>B > 0\<close>)
     have subs: "closed_segment t0 t \<subseteq> {t0 - e..t0 + e}"
       using interval \<open>t \<in> T\<close> by (auto simp: closed_segment_real)

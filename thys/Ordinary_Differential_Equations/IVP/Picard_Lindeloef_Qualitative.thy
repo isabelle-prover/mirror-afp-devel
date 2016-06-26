@@ -182,7 +182,7 @@ proof -
     .
   moreover
 
-  def t \<equiv> "inverse B"
+  define t where "t = inverse B"
   have te: "\<And>e. e > 0 \<Longrightarrow> t * e > 0"
     using \<open>1 \<le> B\<close> by (auto simp: t_def field_simps)
   have t_pos: "t > 0"
@@ -510,7 +510,7 @@ proof -
   proof -
     obtain s where s: "s \<in> PHI" "x \<le> snd s" using \<open>x \<in> J\<close>
       by (force simp add: PHI_def J_def)
-    def i1 \<equiv> "i\<lparr>ivp_T:={t0..snd s}\<rparr>"
+    define i1 where "i1 = i\<lparr>ivp_T:={t0..snd s}\<rparr>"
     interpret i1: ivp i1
       using s iv_defined \<open>x \<in> J\<close>
       by unfold_locales (auto simp: PHI_def J_def i1_def)
@@ -530,7 +530,7 @@ proof -
     show ?thesis
     proof (cases "x = snd s")
       assume "x = snd s"
-      def i2' \<equiv> "i\<lparr>ivp_t0:=snd s, ivp_x0:=fst s (snd s)\<rparr>"
+      define i2' where "i2' = i\<lparr>ivp_t0:=snd s, ivp_x0:=fst s (snd s)\<rparr>"
       interpret i2': unique_on_open i2'
         using iv_defined \<open>x \<in> J\<close> continuous openT openX local_lipschitz
           i1.is_solutionD(3)[OF \<open>i1.is_solution (fst s)\<close>] \<open>s \<in> PHI\<close>
@@ -543,10 +543,10 @@ proof -
             (i\<lparr>ivp_t0:=snd s, ivp_x0:=fst s (snd s), ivp_T:={snd s..t1},
               ivp_X := X\<rparr>)"
          by (auto simp: i2'_def)
-      def i2 \<equiv> "i\<lparr>ivp_t0:=snd s, ivp_x0:=fst s (snd s), ivp_T:={snd s..t1}\<rparr>"
+      define i2 where "i2 = i\<lparr>ivp_t0:=snd s, ivp_x0:=fst s (snd s), ivp_T:={snd s..t1}\<rparr>"
       interpret i2: unique_solution i2 using t1u(5)[OF t1u(4)]
         by (simp add: i2_def i2'_def)
-      def ic \<equiv> "i\<lparr>ivp_T:={t0..t1}\<rparr>"
+      define ic where "ic = i\<lparr>ivp_T:={t0..t1}\<rparr>"
       interpret ic: ivp_on_interval ic t1
         using iv_defined \<open>t1 > snd s\<close> \<open>snd s > t0\<close>
         by unfold_locales (auto simp: ic_def)
@@ -751,7 +751,7 @@ proof safe
     with x1 i1.is_solutionD[OF y_sol] have "y x_max \<in> X"
       by (simp add: is_solution_def)
     with max have "z x_max \<in> X" by simp
-    def i3' \<equiv> "i\<lparr>ivp_t0:=x_max, ivp_x0:=y x_max\<rparr>"
+    define i3' where "i3' = i\<lparr>ivp_t0:=x_max, ivp_x0:=y x_max\<rparr>"
     interpret i3': unique_on_open i3'
       using iv_defined continuous openT openX local_lipschitz
         i1.is_solutionD(3)[OF y_sol] \<open>x_max \<in> T\<close> \<open>y x_max \<in> X\<close>
@@ -761,7 +761,7 @@ proof safe
     obtain t1 where t1: "t1 \<in>{x_max<..x1}" "{x_max..t1} \<subseteq> T" "unique_solution
       (i\<lparr>ivp_t0:=x_max, ivp_x0:=y x_max, ivp_T:={x_max..t1}\<rparr>)"
       by (auto simp: i3'_def)
-    def i3 \<equiv> "i\<lparr>ivp_t0:=x_max, ivp_x0:=y x_max, ivp_T:={x_max..t1}\<rparr>"
+    define i3 where "i3 = i\<lparr>ivp_t0:=x_max, ivp_x0:=y x_max, ivp_T:={x_max..t1}\<rparr>"
     from t1 interpret i3: unique_solution i3
       by (simp add: i3_def)
     have "x_max \<in> {x_max..t1}" using t1 by simp
@@ -807,8 +807,8 @@ lemma global_solution:
     ivp.is_solution (i\<lparr>ivp_T:=K\<rparr>) x \<Longrightarrow>
     K \<subseteq> J \<and> (\<forall>t\<in>K. x t = ivp.solution (i\<lparr>ivp_T:=J\<rparr>) t)"
 proof -
-  def M \<equiv> "SUP xt : PHI. ereal (snd xt)"
-  def J \<equiv> "(\<Union>(x, t1)\<in>PHI. {t0..t1})"
+  define M where "M = (SUP xt : PHI. ereal (snd xt))"
+  define J where "J = (\<Union>(x, t1)\<in>PHI. {t0..t1})"
   show ?thesis
   proof
     show "J = real_of_ereal ` {ereal t0 ..< M}"
@@ -830,7 +830,7 @@ proof -
     then interpret j: unique_solution "i\<lparr>ivp_T := J\<rparr>" by simp
     fix K z
     assume "K \<subseteq> T"
-    def y \<equiv> "ivp.solution (i\<lparr>ivp_T := J\<rparr>)"
+    define y where "y = ivp.solution (i\<lparr>ivp_T := J\<rparr>)"
     assume interval: "is_interval K"
     assume Inf: "t0 \<in> K" "\<And>x. x \<in> K \<Longrightarrow> t0 \<le> x"
     assume z_sol: "ivp.is_solution (i\<lparr>ivp_T := K\<rparr>) z"
@@ -840,7 +840,7 @@ proof -
     have "\<forall>x \<in> K. x \<in> J \<and> z x = y x"
     proof (rule, cases, safe)
       fix xM
-      def k1 \<equiv> "i\<lparr>ivp_T:={t0..xM}\<rparr>"
+      define k1 where "k1 = i\<lparr>ivp_T:={t0..xM}\<rparr>"
       assume xM_in: "xM \<in> K"
       assume "t0 < xM"
       then interpret k1: ivp k1 using iv_defined
@@ -867,9 +867,9 @@ proof -
       obtain t1 where t1: "t1 \<in> {xM<..xM+1}" "{xM..t1} \<subseteq> T"
         "unique_solution (i\<lparr>ivp_t0 := xM, ivp_x0 := z xM, ivp_T := {xM..t1}\<rparr>)"
         by auto
-      def k2\<equiv>"i\<lparr>ivp_t0 := xM, ivp_x0 := z xM, ivp_T := {xM..t1}\<rparr>"
+      define k2 where "k2 = i\<lparr>ivp_t0 := xM, ivp_x0 := z xM, ivp_T := {xM..t1}\<rparr>"
       from t1 interpret k2: unique_solution k2 by (simp add: k2_def)
-      def kc \<equiv> "i\<lparr>ivp_T:={t0..t1}\<rparr>"
+      define kc where "kc = i\<lparr>ivp_T:={t0..t1}\<rparr>"
       interpret kc: connected_solutions kc k1 k2 z
         using k1.is_solution_solution k2.is_solution_solution iv_defined
           \<open>k1.is_solution z\<close> \<open>t0<xM\<close> t1 k1.is_solutionD[OF \<open>k1.is_solution z\<close>]

@@ -91,7 +91,7 @@ proof (rule dense_eq0_I, cases)
   assume "G \<noteq> {}"
   from bounded obtain bnd where bnd: "\<And>y. y \<in> G \<Longrightarrow> norm y < bnd" "bnd > 0"
     by (meson bounded_pos gt_ex le_less_trans norm_ge_zero)
-  def e \<equiv> "min (e' / 2) (e' / 2 / bnd)"
+  define e where "e = min (e' / 2) (e' / 2 / bnd)"
   have e: "e > 0" using e0
     by (auto simp add: e_def intro!: divide_pos_pos \<open>bnd > 0\<close>)
   from
@@ -105,9 +105,9 @@ proof (rule dense_eq0_I, cases)
     "\<And>p. p tagged_division_of cbox a b \<Longrightarrow> d3 fine p \<Longrightarrow>
       norm ((\<Sum>(x, k)\<in>p. content k *\<^sub>R f x *\<^sub>R g x) - P) < e"
     by auto
-  def d \<equiv> "\<lambda>x. d1 x \<inter> d3 x"
+  define d where "d x = d1 x \<inter> d3 x" for x
   from d1(1) d3(1)
-  have "gauge d" by (auto simp add: d_def)
+  have "gauge d" by (auto simp add: d_def [abs_def])
   from fine_division_exists[OF this, of a b]
   obtain p where p: "p tagged_division_of cbox a b" "d fine p"
     by metis
@@ -115,7 +115,7 @@ proof (rule dense_eq0_I, cases)
   have "finite p" .
 
   from \<open>d fine p\<close> have "d1 fine p" "d3 fine p"
-    by (auto simp: d_def fine_inter)
+    by (auto simp: d_def [abs_def] fine_inter)
   have f_less: "norm ((\<Sum>(x, k)\<in>p. content k *\<^sub>R f x) - I) < e"
     (is "norm (?f - I) < _")
     by (rule d1(2)[OF p(1)]) fact
@@ -440,7 +440,7 @@ next
   have f': "\<And>t x. t \<in> ?T \<Longrightarrow> x \<in> X \<Longrightarrow> (f has_derivative f' (t, x)) (at (t, x) within (?T \<times> X))"
     using T by (intro has_derivative_subset[OF f']) auto
   let ?p = "(\<lambda>t. f' (t, x t) (1, f (t, x t)))"
-  def diff \<equiv> "\<lambda>n::nat. if n = 0 then x else if n = 1 then \<lambda>t. f (t, x t) else ?p"
+  define diff where "diff n = (if n = 0 then x else if n = 1 then \<lambda>t. f (t, x t) else ?p)" for n :: nat
   have diff_0[simp]: "diff 0 = x" by (simp add: diff_def)
   have diff: "(diff m has_vector_derivative diff (Suc m) ta) (at ta within {t..t + h})"
     if mta: "m < 2" "t \<le> ta" "ta \<le> t + h" for m::nat and ta::real
@@ -605,8 +605,8 @@ next
     by (auto intro!: derivative_eq_intros
       simp: scale_back blinfun.bilinear_simps algebra_simps
       simp del: scaleR_Pair)
-  def diff \<equiv> "\<lambda>n::nat. if n = 0 then x else if n = 1 then \<lambda>t. f (t, x t) else if n = 2 then ?p
-    else ?q"
+  define diff where "diff n =
+    (if n = 0 then x else if n = 1 then \<lambda>t. f (t, x t) else if n = 2 then ?p else ?q)" for n :: nat
   have diff_0[simp]: "diff 0 = x" by (simp add: diff_def)
   have diff: "(diff m has_vector_derivative diff (Suc m) ta) (at ta within {t..t + h})"
     if mta: "m < 3" "t \<le> ta" "ta \<le> t + h" for m::nat and ta::real

@@ -631,10 +631,9 @@ lemma euler_consistent_solution:
     op *\<^sub>R ((t1' - t0)\<^sup>2 / 2) ` {inf_of_appr D..sup_of_appr D}"
   using euler_consistent_solution'[simplified solution_t0', OF assms] .
 
-lemma error_overapproximation:
-  shows  "solution (t0 + h) \<in> set_of_appr RES"
+lemma error_overapproximation: "solution (t0 + h) \<in> set_of_appr RES"
 proof -
-  def euler_res \<equiv> "discrete_evolution (euler_increment f) (t0 + h) t0 x0"
+  define euler_res where "euler_res = discrete_evolution (euler_increment f) (t0 + h) t0 x0"
   have step_ok: "t0 + h \<in> {t0 .. t1}" using step_eq pos_step by auto
   from this have "solution (t0 + h) \<in> {euler_res + (h^2 / 2) *\<^sub>R inf_of_appr D .. euler_res + (h^2 / 2) *\<^sub>R sup_of_appr D}"
     using euler_consistent_solution[OF step_ok] step_eq
@@ -677,7 +676,7 @@ lemma error_overapproximation_ivl:
   assumes h': "h' \<in> {0..h}"
   shows "solution (t0 + h') \<in> set_of_appr RES_ivl"
 proof -
-  def euler_res \<equiv> "discrete_evolution (euler_increment f) (t0 + h') t0 x0"
+  define euler_res where "euler_res = discrete_evolution (euler_increment f) (t0 + h') t0 x0"
   have step_ok: "t0 + h' \<in> {t0 .. t1}" using step_eq pos_step assms by auto
 
   have "solution (t0 + h') \<in> {euler_res + (h'^2 / 2) *\<^sub>R inf_of_appr D .. euler_res + (h'^2 / 2) *\<^sub>R sup_of_appr D}"
@@ -754,8 +753,9 @@ proof (unfold_locales)
     open_contains_cball[of "(ivp_X ?ivp)"] \<open>open (ivp_X ?ivp)\<close>
   obtain u v where uv: "cball t u \<subseteq> (ivp_T ?ivp)" "cball x v \<subseteq> (ivp_X ?ivp)" "u > 0" "v > 0"
     by blast
-  def w \<equiv> "min u v"
-  have "cball t w \<subseteq> (ivp_T ?ivp)" "cball x w \<subseteq> (ivp_X ?ivp)" "w > 0" using uv by (auto simp: w_def)
+  define w where "w = min u v"
+  have "cball t w \<subseteq> (ivp_T ?ivp)" "cball x w \<subseteq> (ivp_X ?ivp)" "w > 0"
+    using uv by (auto simp: w_def)
   have "cball t w = {t - w .. t + w}" by (auto simp: dist_real_def)
   from cbox_in_cball'[OF \<open>w > 0\<close>] obtain w' where w':
     "w'>0" "w' \<le> w" "\<And>y. y\<in>{x - setsum (op *\<^sub>R w') Basis..x + setsum (op *\<^sub>R w') Basis} \<Longrightarrow> y \<in> cball x w"
@@ -787,7 +787,7 @@ proof -
   from unique_on_open_global
   interpret uo: unique_on_open "global_ivp t0 x0" .
   from uo.global_solution guess J . note J=this
-  def max_ivp \<equiv> "
+  define max_ivp where "max_ivp =
     \<lparr>ivp_f = (\<lambda>(t, x). ode x),
     ivp_t0 = t0, ivp_x0 = x0,
     ivp_T = J,

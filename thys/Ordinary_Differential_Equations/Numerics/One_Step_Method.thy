@@ -602,14 +602,14 @@ lemma stability:
    (grid_function (discrete_evolution incr) (x (t 0)) t j) \<le>
      B / L * (exp (L * (t1 - (t 0)) + 1) - 1) * max_stepsize j ^ p"
 proof -
-   note fg' = incr_approx
-  def s0 \<equiv> "x0' - x (t 0)"
+  note fg' = incr_approx
+  define s0 where "s0 = x0' - x (t 0)"
   hence x0': "x0' = x (t 0) + s0"
     by simp
-  def s \<equiv> "\<lambda>x xa xb. (incr' x xa xb) - incr x xa xb"
-  def incrs \<equiv> "\<lambda>h t x. incr h t x + s h t x"
+  define s where "s x xa xb = incr' x xa xb - incr x xa xb" for x xa xb
+  define incrs where "incrs h t x = incr h t x + s h t x" for h t x
   have s: "incr' = incrs"
-    by (simp add: s_def incrs_def)
+    by (simp add: s_def incrs_def [abs_def])
   interpret c: stable_one_step t1 x incr p B r L t s s0
   proof
     fix j

@@ -261,7 +261,7 @@ proof -
     unique_on_cylinder "existence_ivp \<lparr>ivp_T := cball existence_ivp.t0 (t * e),
       ivp_X := cball existence_ivp.x0 e\<rparr>" "t * e" e B L "cball existence_ivp.x0 e"
     by-assumption
-  def e' \<equiv> "e / 2"
+  define e' where "e' = e / 2"
   have lips: "\<And>t'. t' \<in> cball t0 (t * e') \<Longrightarrow> lipschitz (cball x0 (2 * e')) (f t') L" "cball x0 (2 * e') \<subseteq> X"
     using cyl.global_lipschitz.lipschitz(1) e t
     by (auto simp add: e'_def dist_real_def dest!: double_nonneg_le)
@@ -774,13 +774,13 @@ proof cases
     by simp
 next
   assume ne: "y0 \<noteq> z0"
-  def K' \<equiv> "K + 1"
+  define K' where "K' = K + 1"
   from lipschitz have "lipschitz Y (f s) K'" if "s \<in> {t0 .. t}" for s
     using that
     by (auto simp: lipschitz_def K'_def
       intro!: order_trans[OF _ mult_right_mono[of K "K + 1"]])
   from assms have inX: "y0 \<in> X" "z0 \<in> X" by auto
-  def v \<equiv> "\<lambda>t. norm (flow t0 y0 t - flow t0 z0 t)"
+  define v where "v t = norm (flow t0 y0 t - flow t0 z0 t)" for t
   have le: "v s \<le> v t0 + K' *  integral {t0 .. s} (\<lambda>t. v t)" if s: "s \<in> {t0 .. t}" for s
   proof -
     from s have "s \<ge> t0" by auto
@@ -807,7 +807,7 @@ next
       using ivl_subset_existence_ivl[OF \<open>t0 \<in> T\<close> \<open>y0 \<in> X\<close> y0']
         ivl_subset_existence_ivl[OF \<open>t0 \<in> T\<close> \<open>z0 \<in> X\<close> z0'] s
       by (subst integral_mult)
-        (auto simp: integral_mult v_def int inX \<open>t0 \<in> T\<close> simp del: integral_mult_right
+        (auto simp: integral_mult v_def [abs_def] int inX \<open>t0 \<in> T\<close> simp del: integral_mult_right
           intro!: norm_triangle_le integral_norm_bound_integral
             integrable_continuous_real continuous_intros
             continuous_at_imp_continuous_on flow_continuous f_flow_continuous
@@ -1280,7 +1280,7 @@ proof (atomize_elim, rule ccontr, auto)
     qed
   qed
 
-  def u \<equiv> "\<lambda>t. if t < b then flow t0 x0 t else x1"
+  define u where "u t = (if t < b then flow t0 x0 t else x1)" for t
   have u_below_b: "(u \<longlongrightarrow> u s) (at s within {t0..b})"
     if s: "t0 < s" "s < b" for s
   proof -
@@ -1640,7 +1640,7 @@ lemma
     "\<And>e. e > 0 \<Longrightarrow>
       eventually (\<lambda>y. \<forall>t \<in> {t0 .. b}. dist (flow t0 x0 t) (flow t0 y t) < e) (at x0)"
 proof -
-  def seg \<equiv> "(\<lambda>t. flow t0 x0 t) ` (closed_segment t0 b)"
+  define seg where "seg = (\<lambda>t. flow t0 x0 t) ` (closed_segment t0 b)"
   have [simp]: "x0 \<in> seg"
     by (auto simp: seg_def intro!: image_eqI[where x=t0] simp: closed_segment_real iv_in)
   have "seg \<noteq> {}" by (auto simp: seg_def closed_segment_real)
@@ -1659,7 +1659,7 @@ proof -
   obtain e where e: "0 < e" "{x. infdist x seg \<le> e} \<subseteq> X"
     thm compact_in_open_separated
     by (rule compact_in_open_separated)
-  def A \<equiv> "{x. infdist x seg \<le> e}"
+  define A where "A = {x. infdist x seg \<le> e}"
 
   have "A \<subseteq> X" using e by (simp add: A_def)
 
@@ -1677,7 +1677,7 @@ proof -
     by metis
   hence K': "\<And>t. t \<in> {t0 .. b} \<Longrightarrow> lipschitz A (f t) (abs K')"
     by (rule nonneg_lipschitz)
-  def K \<equiv> "abs K' + 1"
+  define K where "K = abs K' + 1"
   have "0 < K" "0 \<le> K"
     by (auto simp: K_def)
   have K: "\<And>t. t \<in> {t0 .. b} \<Longrightarrow> lipschitz A (f t) K"
@@ -1688,7 +1688,7 @@ proof -
   have [simp]: "x0 \<in> A" using \<open>0 < e\<close> by (auto simp: A_def)
 
 
-  def d \<equiv> "min e (e * exp (-K * (b - t0)))"
+  define d where "d = min e (e * exp (-K * (b - t0)))"
   hence d: "0 < d" "d \<le> e" "d \<le> e * exp (-K * (b - t0))"
     using e by auto
 
@@ -2037,8 +2037,8 @@ lemma
     "\<And>e. e > 0 \<Longrightarrow>
       eventually (\<lambda>y. \<forall>t \<in> {a .. b}. dist (flow t0 x0 t) (flow t0 y t) < e) (at x0)"
 proof -
-  def r \<equiv> "Max {t0, a, b}"
-  def l \<equiv> "Min {t0, a, b}"
+  define r where "r = Max {t0, a, b}"
+  define l where "l = Min {t0, a, b}"
   have r: "r \<ge> t0" "r \<in> existence_ivl t0 x0"
     using a b by (auto simp: max_def iv_in r_def)
   obtain dr Kr where right:
@@ -2057,8 +2057,8 @@ proof -
     "\<And>e. 0 < e \<Longrightarrow> \<forall>\<^sub>F y in at x0. \<forall>t\<in>{l .. t0}. dist (flow t0 x0 t) (flow t0 y t) < e"
     by (rule global_left_existence_interval[OF l iv_in]) blast
 
-  def d \<equiv> "min dr dl"
-  def K \<equiv> "max Kr Kl"
+  define d where "d = min dr dl"
+  define K where "K = max Kr Kl"
 
   have "0 < d" "0 < K" "ball x0 d \<subseteq> X"
     using left right by (auto simp: d_def K_def)
@@ -2227,14 +2227,14 @@ proof -
     from bnd[OF tm tM] obtain M' L'
     where bnd': "\<And>x t. x \<in> X \<Longrightarrow> tm \<le> t \<Longrightarrow> t \<le> tM \<Longrightarrow> norm (f t x) \<le> M' + L' * norm x"
       by force
-    def M \<equiv> "norm M' + 1"
-    def L \<equiv> "norm L' + 1"
+    define M where "M = norm M' + 1"
+    define L where "L = norm L' + 1"
     have bnd: "\<And>x t. x \<in> X \<Longrightarrow> tm \<le> t \<Longrightarrow> t \<le> tM \<Longrightarrow> norm (f t x) \<le> M + L * norm x"
       by (auto simp: M_def L_def intro!: bnd'[THEN order_trans] add_mono mult_mono)
     have "M > 0" "L > 0" by (auto simp: L_def M_def)
 
     let ?r = "(norm x0 + \<bar>tm - tM\<bar> * M + 1) * exp (L * \<bar>tm - tM\<bar>)"
-    def K \<equiv> "cball (0::'a) ?r"
+    define K where "K = cball (0::'a) ?r"
     have K: "compact K" "K \<subseteq> X"
       by (auto simp: K_def \<open>X = UNIV\<close>)
     have flow_compact: "flow t0 x0 t \<in> K"
@@ -2645,7 +2645,7 @@ proof -
     using na.existence_ivl_initial_time[OF UNIV_I \<open>x \<in> X\<close>]
     by (auto)
 
-  def i \<equiv> "\<lparr>ivp_f = \<lambda>(t, y). f y, ivp_t0 = 0, ivp_x0 = x, ivp_T = ?T, ivp_X = X\<rparr>"
+  define i where "i = \<lparr>ivp_f = \<lambda>(t, y). f y, ivp_t0 = 0, ivp_x0 = x, ivp_T = ?T, ivp_X = X\<rparr>"
   interpret i: ivp i
     by unfold_locales (auto simp: i_def \<open>x \<in> X\<close>)
 
@@ -2685,7 +2685,7 @@ proof -
     using na.existence_ivl_initial_time[OF UNIV_I \<open>x \<in> X\<close>]
     by auto
 
-  def i \<equiv> "\<lparr>ivp_f = \<lambda>(t, y). f y, ivp_t0 = s, ivp_x0 = x, ivp_T = ?T, ivp_X = X\<rparr>"
+  define i where "i = \<lparr>ivp_f = \<lambda>(t, y). f y, ivp_t0 = s, ivp_x0 = x, ivp_T = ?T, ivp_X = X\<rparr>"
   interpret i: ivp i
     by unfold_locales (auto simp: i_def \<open>x \<in> X\<close>)
 
@@ -3150,9 +3150,9 @@ proof-
     by (simp add: x0_def)
 
   text \<open>Find some \<open>J \<subseteq> existence_ivl x0\<close> with \<open>0 \<in> J\<close> and \<open>t \<in> J\<close>.\<close>
-  def t0\<equiv>"min 0 t"
-  def t1\<equiv>"max 0 t"
-  def J\<equiv>"{t0..t1}"
+  define t0 where "t0 = min 0 t"
+  define t1 where "t1 = max 0 t"
+  define J where "J = {t0..t1}"
 
   have "t0 \<le> 0" "0 \<le> t1" "0 \<in> J" "J \<noteq> {}" "t \<in> J" "compact J"
   and J_in_existence: "J \<subseteq> existence_ivl x0"
@@ -3261,7 +3261,7 @@ proof-
       from compact_in_open_separated[OF XX_J_props(1,2) open_domain XX_J_props(3)]
         obtain e_domain where e_domain_def: "0 < e_domain" "{x. infdist x (XX x0 ` J) \<le> e_domain} \<subseteq> X"
         by auto
-      def G\<equiv>"{x\<in>X. infdist x (XX x0 ` J) < e_domain}"
+      define G where "G = {x\<in>X. infdist x (XX x0 ` J) < e_domain}"
       have G_vimage: "G = ((\<lambda>x. infdist x (XX x0 ` J)) -` {..<e_domain}) \<inter> X"
         by (auto simp: G_def)
       have "open G" "G \<subseteq> X"
@@ -3270,10 +3270,10 @@ proof-
 
       text \<open>Define a compact subset H of G. Inside H, we can guarantee
          an upper bound on the Taylor remainder.\<close>
-      def e_domain2 \<equiv> "e_domain / 2"
+      define e_domain2 where "e_domain2 = e_domain / 2"
       have "e_domain2 > 0" "e_domain2 < e_domain" using \<open>e_domain > 0\<close>
         by (simp_all add: e_domain2_def)
-      def H\<equiv>"{x. infdist x (XX x0 ` J) \<le> e_domain2}"
+      define H where "H = {x. infdist x (XX x0 ` J) \<le> e_domain2}"
       have H_props: "H \<noteq> {}" "compact H" "H \<subseteq> G"
         proof-
           have "x0 \<in> XX x0 ` J"
@@ -3313,7 +3313,7 @@ proof-
         using continuous_on_interior[OF continuous_on_subset[OF continuous_derivative \<open>G \<subseteq> X\<close>]]
         by (simp add: interior_open[OF \<open>open G\<close>])
 
-      def e1\<equiv>"e' / (\<bar>t\<bar> * exp (K * \<bar>t\<bar>) * exp (N * \<bar>t\<bar>))"
+      define e1 where "e1 = e' / (\<bar>t\<bar> * exp (K * \<bar>t\<bar>) * exp (N * \<bar>t\<bar>))"
         \<comment> \<open> @{term e1} is the bounding term for the Taylor remainder. \<close>
       have "0 < \<bar>t\<bar>"
         using \<open>t \<noteq> 0\<close>
@@ -3345,7 +3345,7 @@ proof-
           (\<forall>t\<in>J. dist (XX x0 t) (Y (x - x0) t) < min (e_domain / 2) d_taylor)"
         by (auto simp: dist_norm)
 
-      def d\<equiv>"min u d_ivl"
+      define d where "d = min u d_ivl"
       have "0 < d" using \<open>0 < u\<close> \<open>0 < d_ivl\<close>
         by (simp add: d_def)
       hence "d \<le> u" "d \<le> d_ivl"
@@ -3811,7 +3811,7 @@ proof (safe intro!: tendstoI)
   from local_lipschitz_on_compact_implies_lipschitz[OF llc \<open>compact ?X\<close> \<open>compact ?T\<close> cont]
   obtain K' where K': "\<And>ta. ta \<in> ?T \<Longrightarrow> lipschitz ?X (op o\<^sub>L (A x ta)) K'"
     by blast
-  def K \<equiv> "abs K' + 1"
+  define K where "K = abs K' + 1"
   have "K > 0"
     by (simp add: K_def)
   have K: "\<And>ta. ta \<in> ?T \<Longrightarrow> lipschitz ?X (op o\<^sub>L (A x ta)) K"
@@ -3830,9 +3830,9 @@ proof (safe intro!: tendstoI)
   then have mem: "(t, one.flow 0 id_blinfun t, x) \<in> ?T \<times> ?X \<times> cball x dx"
     by (auto simp: \<open>0 < dx\<close> less_imp_le)
 
-  def e \<equiv> "min e' (dx / 2) / 2"
+  define e where "e = min e' (dx / 2) / 2"
   have "e > 0" using \<open>e' > 0\<close> by (auto simp: e_def \<open>0 < dx\<close>)
-  def d \<equiv> "e * K / (exp (K * (abs t + abs dt + 1)) - 1)"
+  define d where "d = e * K / (exp (K * (abs t + abs dt + 1)) - 1)"
   have "d > 0" by (auto simp: d_def intro!: mult_pos_pos divide_pos_pos \<open>0 < e\<close> \<open>K > 0\<close>)
 
   have cmpct: "compact (?T \<times> ?X \<times> cball x dx)" "compact (?T \<times> ?X)"
@@ -4117,7 +4117,7 @@ lemma
 proof -
   from open_state_space assms obtain e' where e': "e' > 0" "ball (x0, t) e' \<subseteq> Sigma X existence_ivl"
     by (force simp: open_contains_ball)
-  def e \<equiv> "e' / sqrt 2"
+  define e where "e = e' / sqrt 2"
   have "0 < e" using e' by (auto simp: e_def)
   have "ball x0 e \<times> ball t e \<subseteq> ball (x0, t) e'"
     by (auto simp: dist_prod_def real_sqrt_sum_squares_less e_def)

@@ -26,13 +26,13 @@ lemma
 proof goal_cases
   case 1
   let ?G = "closed_segment X (X + H)"
-  def line \<equiv> "(\<lambda>t. X + t *\<^sub>R H)"
+  define line where "line t = X + t *\<^sub>R H" for t
   have segment_eq: "closed_segment X (X + H) = line ` {0 .. 1}"
     by (auto simp: line_def closed_segment_def algebra_simps)
   have line_deriv: "\<And>x. (line has_derivative (\<lambda>t. t *\<^sub>R H)) (at x)"
-    by (auto intro!: derivative_eq_intros simp: line_def)
-  def g \<equiv> "f o line"
-  def Dg \<equiv> "\<lambda>(n::nat) (t::real). Df (line t) (replicate n H)"
+    by (auto intro!: derivative_eq_intros simp: line_def [abs_def])
+  define g where "g = f o line"
+  define Dg where "Dg n t = Df (line t) (replicate n H)" for n :: nat and t :: real
   note \<open>n > 0\<close>
   moreover
   have Dg0: "Dg 0 = g" by (auto simp add: Dg_def Df_Nil g_def)
@@ -49,12 +49,12 @@ proof goal_cases
       has_derivative_compose[OF _ line_deriv]
     show ?thesis
       using Df.scaleR \<open>m < n\<close>
-      by (auto simp: Dg_def has_vector_derivative_def g_def
+      by (auto simp: Dg_def [abs_def] has_vector_derivative_def g_def
          intro!: derivative_eq_intros)
   qed
   ultimately
   have g_taylor: "(i has_integral g 1 - (\<Sum>i<n. ((1 - 0) ^ i / fact i) *\<^sub>R Dg i 0)) {0 .. 1}"
-    unfolding i_def Dg_def line_def
+    unfolding i_def Dg_def [abs_def] line_def
     by (rule taylor_has_integral) auto
   then show c: ?case using \<open>n > 0\<close> by (auto simp: g_def line_def Dg_def)
   case 2 show ?case using c integral_unique by force
@@ -73,9 +73,10 @@ lemma
   shows "((\<lambda>xa. (1 - xa) *\<^sub>R f'' (a + xa *\<^sub>R (x - a)) (x - a) (x - a)) has_integral f x - f a - f' a (x - a)) {0 .. 1}"
 proof -
   let ?G = "closed_segment a x"
-  def Df \<equiv> "\<lambda>x ds. case ds of [] \<Rightarrow> f x
+  define Df where "Df x ds =
+    (case ds of [] \<Rightarrow> f x
     | [d] \<Rightarrow> f' x d
-    | [d1, d2] \<Rightarrow> f'' x d1 d2"
+    | [d1, d2] \<Rightarrow> f'' x d1 d2)" for x ds
   have Df_Nil: "\<And>a. Df a [] = f a"
     by (auto simp: Df_def)
   have Df_Cons: "((\<lambda>a. Df a ds) has_derivative (\<lambda>d. Df a (d # ds))) (at a)"
@@ -104,10 +105,11 @@ lemma
         f x - f a - f' a (x - a) - f'' a (x - a) (x - a) /\<^sub>R 2) {0..1}"
 proof -
   let ?G = "closed_segment a x"
-  def Df \<equiv> "\<lambda>x ds. case ds of [] \<Rightarrow> f x
+  define Df where "Df x ds =
+    (case ds of [] \<Rightarrow> f x
     | [d] \<Rightarrow> f' x d
     | [d1, d2] \<Rightarrow> f'' x d1 d2
-    | [d1, d2, d3] \<Rightarrow> f''' x d1 d2 d3"
+    | [d1, d2, d3] \<Rightarrow> f''' x d1 d2 d3)" for x ds
   have Df_Nil: "\<And>a. Df a [] = f a"
     by (auto simp: Df_def)
   have Df_Cons: "((\<lambda>a. Df a ds) has_derivative (\<lambda>d. Df a (d # ds))) (at a)"
@@ -143,7 +145,7 @@ lemma symmetric_second_derivative_aux:
   shows "f'' j i = f'' i j"
 proof -
   let ?F = "at_right (0::real)"
-  def B \<equiv> "\<lambda>i j. {a + s *\<^sub>R i + t *\<^sub>R j |s t. s \<in> {0..1} \<and> t \<in> {0..1}}"
+  define B where "B i j = {a + s *\<^sub>R i + t *\<^sub>R j |s t. s \<in> {0..1} \<and> t \<in> {0..1}}" for i j
   have "B i j \<subseteq> G" using assms by (auto simp: B_def)
   {
     fix e::real and i j::'a
@@ -404,9 +406,8 @@ proof -
   from assms open_interior[of G] interior_subset[of G]
   obtain e where e: "e > 0" "\<And>y. dist y a < e \<Longrightarrow> y \<in> G"
     by (force simp: open_dist)
-  def e' \<equiv> "e / 3"
-  def i' \<equiv> "e' *\<^sub>R i /\<^sub>R norm i"
-  and j' \<equiv> "e' *\<^sub>R j /\<^sub>R norm j"
+  define e' where "e' = e / 3"
+  define i' j' where "i' = e' *\<^sub>R i /\<^sub>R norm i" and "j' = e' *\<^sub>R j /\<^sub>R norm j"
   hence "norm i' \<le> e'" "norm j' \<le> e'"
     by (auto simp: field_simps e'_def \<open>0 < e\<close> less_imp_le)
   hence "\<bar>s\<bar> \<le> 1 \<Longrightarrow> \<bar>t\<bar> \<le> 1 \<Longrightarrow> norm (s *\<^sub>R i' + t *\<^sub>R j') \<le> e' + e'" for s t
@@ -442,7 +443,7 @@ lemma
 proof -
   from assms have "continuous_on G f'" by (auto intro!: continuous_at_imp_continuous_on)
   note [continuous_intros] = continuous_on_compose2[OF this]
-  def R \<equiv> "\<lambda>x z. f z - f x - f' x (z - x)"
+  define R where "R x z = f z - f x - f' x (z - x)" for x z
   from compact_in_open_separated[OF \<open>J \<noteq> {}\<close> \<open>compact J\<close> \<open>open G\<close> \<open>J \<subseteq> G\<close>]
   obtain \<eta> where \<eta>: "0 < \<eta>" "{x. infdist x J \<le> \<eta>} \<subseteq> G" (is "?J' \<subseteq> _")
     by auto
@@ -458,7 +459,7 @@ proof -
     using \<open>?seg \<subseteq> G\<close>
     by (auto intro!: compact_uniformly_continuous \<open>compact ?seg\<close> intro: continuous_on_subset)
 
-  def e' \<equiv> "e / 2"
+  define e' where "e' = e / 2"
   have "e' > 0" using \<open>e > 0\<close> by (simp add: e'_def)
   from ucont[unfolded uniformly_continuous_on_def, rule_format, OF \<open>0 < e'\<close>]
   obtain du where du:
