@@ -102,7 +102,7 @@ lemma euclid_diff:
   apply (rule ppath_aka.fbox_whilei, simp_all)
   apply (simp_all add: p2pp_def) 
   apply auto[2]
-  by (safe, metis gcd_commute_nat gcd_diff1_nat le_cases nat_less_le)
+  by (safe, metis gcd.commute gcd_diff1_nat le_cases nat_less_le)
 
 lemma varible_swap:
   "PRE (\<lambda>s. s ''x'' = a \<and> s ''y'' = b)   
@@ -165,10 +165,7 @@ lemma euclid_diff2:
          FI)
     OD)
     POST (\<lambda>s. s ''x'' = gcd x y)"
-  apply hoare
-  apply auto
-  apply (metis gcd_commute_nat gcd_diff1_nat le_cases nat_less_le)+
-done
+  by (hoare; clarsimp; metis gcd.commute gcd_diff1_nat le_cases nat_less_le)
 
 lemma varible_swap2:
   "PRE (\<lambda>s. s ''x'' = a \<and> s ''y'' = b)   

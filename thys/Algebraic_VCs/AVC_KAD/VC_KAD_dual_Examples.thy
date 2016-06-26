@@ -36,7 +36,7 @@ lemma euclid_diff:
     POST (\<lambda>s. s ''x'' = gcd x y)"
   apply (rule rel_modal_kleene_algebra.bdia_whilei, simp_all)
   apply auto[1]
-  by (metis gcd_commute_nat gcd_diff1_nat le_cases nat_less_le)
+  by (metis gcd.commute gcd_diff1_nat le_cases nat_less_le)
 
 lemma varible_swap:
   "FPRE (\<lambda>s. s ''x'' = a \<and> s ''y'' = b)   

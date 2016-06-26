@@ -48,7 +48,7 @@ lemma euclid_diff2:
     POST (\<lambda>s. s ''x'' = gcd x y)"
   apply (hoare, simp_all) 
   apply auto[1]
-  by (metis gcd_commute_nat gcd_diff1_nat le_cases nat_less_le)
+  by (metis gcd.commute gcd_diff1_nat le_cases nat_less_le)
 
 lemma integer_division2: 
   "PRE (\<lambda>s::nat store. x \<ge> 0)
