@@ -50,6 +50,13 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2016-06-26:
+<a href="entries/Card_Multisets.shtml">Cardinality of Multisets</a>
+<br>Author:
+Lukas Bulwahn
+</td></tr>
+
+<tr><td class="entry">
 2016-06-25:
 <a href="entries/Dependent_SIFUM_Type_Systems.shtml">A Dependent Security Type System for Concurrent Imperative Programs</a>
 <br>Author:
