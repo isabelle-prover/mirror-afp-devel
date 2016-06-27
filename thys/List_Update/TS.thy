@@ -254,6 +254,7 @@ lemma oneTS_stepx:
   shows "TS_step_d ([x, y], x # x # hs) y = ((0, []), y # x # x # hs)"
  using assms by(auto simp add: step_def mtf2_def swap_def TS_step_d_def before_in_def) 
 
+lemmas oneTS_steps = oneTS_stepx oneTS_stepxy oneTS_stepyx oneTS_stepy oneTS_stepyy oneTS_stepyyy oneTS_step
 
 
 section "Analysis of the Phases"
@@ -320,7 +321,7 @@ proof -
 
     have "config' (rTS h0) ([x, y],h) u = ([x, y], x # y # x # y # hs)"
         apply(simp add: split_def rTS_def uyx a ) 
-          using assms(1) by(auto simp add: Step_def oneTS_step step_def mtf2_def swap_def)
+          using assms(1) by(auto simp add: Step_def oneTS_steps step_def mtf2_def swap_def)
  
     then have s2: "config' (rTS h0) ([x, y],h) u =  ([x, y], ((rev u) @ h))"
         unfolding a uyx by simp
@@ -337,11 +338,7 @@ proof -
 
     have ta: "T_on' (rTS h0) ([x,y],h) u = 2"
         unfolding rTS_def uyx a apply(simp only: T_on'.simps(2))
-          using assms(1) apply(simp add: oneTS_step)  
-          unfolding Step_def
-            apply(simp add: oneTS_step)
-            apply(simp add: step_def mtf2_def swap_def)
-            apply(simp add: oneTS_step)
+          using assms(1) apply(auto simp add: Step_def step_def mtf2_def swap_def oneTS_steps) 
             by(simp add: t\<^sub>p_def) 
 
   
@@ -377,17 +374,12 @@ proof -
 
   from a show "T_on' (rTS h0) ([x,y],h) [y, y] = 1"
       unfolding rTS_def 
-        using assms(1) apply(simp add: oneTS_step)  
-        unfolding Step_def
-          apply(simp add: oneTS_step)
-          apply(simp add: step_def mtf2_def swap_def)
-          apply(simp add: TS_step_d_def)
-          by(simp add: t\<^sub>p_def)   
+        using assms(1) apply(auto simp add: oneTS_steps Step_def step_def mtf2_def swap_def)
+           by(simp add: t\<^sub>p_def)   
 
   show "config' (rTS h0) ([x, y],h) [y,y] = ([y,x],rev [y,y] @ h)"
-    unfolding rTS_def a using assms(1) apply(simp)
-      unfolding Step_def apply(simp add: oneTS_step step_def mtf2_def swap_def) 
-      by(simp add: TS_step_d_def) 
+    unfolding rTS_def a using assms(1)
+      by(simp add: Step_def oneTS_steps step_def mtf2_def swap_def) 
 qed
 
 subsubsection "yx(yx)*?"
@@ -415,19 +407,19 @@ proof -
   next
     case False
     with assms(3) obtain hs where a: "h = [x,x]@hs" by auto
-    then show ?thesis using assms(1) by(simp add: oneTS_stepx) 
+    then show ?thesis using assms(1) by(simp add: oneTS_steps) 
   qed
 
   have s2: "config' (rTS h0) ([x,y],h) u = ([x, y], x # y # h)"
     unfolding rTS_def uyx apply(simp add: )
-    unfolding Step_def by(simp add: firststep step_def oneTS_stepyx) 
+    unfolding Step_def by(simp add: firststep step_def oneTS_steps) 
   
   have ta: "T_on' (rTS h0) ([x,y],h) u = 1"
     unfolding rTS_def uyx
       apply(simp)
       apply(simp add: firststep)
         unfolding Step_def                 
-          apply(simp add: firststep step_def oneTS_stepyx )
+          apply(simp add: firststep step_def oneTS_steps )
           using assms(1) by(simp add: t\<^sub>p_def) 
  
   have ttt: 
@@ -615,7 +607,7 @@ proof -
   from vv have vv2: "v = [y,y]" by auto 
 
   from uu have TS_prefix: " T_on' (rTS h0) ([x, y], h) u = 0"
-    by(auto simp add: rTS_def oneTS_stepyx t\<^sub>p_def)    
+    by(auto simp add: rTS_def oneTS_steps t\<^sub>p_def)    
 
   have h_split: "rev u @ h = [] \<or> rev u @ h = [x] \<or> (\<exists> hs. rev u @ h = [x,x]@hs)"
     using assms(3) uu by(auto)
@@ -623,8 +615,7 @@ proof -
   then have e: "T_on' (rTS h0) ([x,y],rev u @ h) [y,y] = 2"
       using assms(1)                    
       apply(auto simp add: rTS_def
-              oneTS_stepxy oneTS_stepy oneTS_stepyyy oneTS_stepyy
-              oneTS_stepx
+              oneTS_steps
               Step_def step_def t\<^sub>p_def) done
         
   have conf: "config' (rTS h0) ([x, y], h) u = ([x,y], rev u @ h)"
@@ -650,8 +641,7 @@ proof -
     apply(simp only: config'_append2 conf vv2)
     using h_split
       apply(auto simp add: Step_def rTS_def
-              oneTS_stepxy oneTS_stepy oneTS_stepyyy oneTS_stepyy
-              oneTS_stepx
+              oneTS_steps
               step_def)
         by(simp_all add: mtf2_def swap_def) 
 
@@ -817,11 +807,10 @@ proof -
   then have xx: "qs = [x,x]" by auto
 
   from xny have TS: "T_on' (rTS h0) ([x, y], h) qs = 0" unfolding xx
-      by(auto simp add: Step_def step_def oneTS_stepyx rTS_def  t\<^sub>p_def) 
-
+      by(auto simp add: Step_def step_def oneTS_steps rTS_def  t\<^sub>p_def) 
 
   from xny have "config' (rTS h0) ([x, y], h) qs = ([x, y], x # x # h) "
-    by(auto simp add: xx Step_def rTS_def oneTS_stepyx step_def)
+    by(auto simp add: xx Step_def rTS_def oneTS_steps step_def)
       
   then have " TS_inv' (config' (rTS h0) ([x, y], h) qs) x [x, y]"
     by(simp add: TS_inv'_det)
@@ -837,7 +826,7 @@ proof -
   from qsis have xx: "qs = [x,x]" by auto
 
   have TS: "T_on' (rTS h0) ([x,y],h) qs = 0"  
-    by (auto simp add: xx t\<^sub>p_def rTS_def Step_def oneTS_stepyx step_def) 
+    by (auto simp add: xx t\<^sub>p_def rTS_def Step_def oneTS_steps step_def) 
   then show "T_on' (rTS h0) ([x,y],h) qs \<le> 2 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])" by simp
 
   show "TS_inv' (config' (rTS h0) ([x,y],h) qs)  (last qs) [x, y]"
@@ -2532,8 +2521,6 @@ qed (simp_all)
 lemma TS_compet: "compet_rand (embed (rTS [])) 2 {init. distinct init \<and> init \<noteq> []}"
 unfolding compet_rand_def static_def
 using TS_compet'[OF TS_pairwise] by simp
-
- 
 
  
 end
