@@ -24,11 +24,9 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">A</font>
-<font class="first">D</font>ependent
-<font class="first">S</font>ecurity
-<font class="first">T</font>ype
-<font class="first">S</font>ystem
+<h1><font class="first">C</font>ompositional
+<font class="first">S</font>ecurity-Preserving
+<font class="first">R</font>efinement
 for
 <font class="first">C</font>oncurrent
 <font class="first">I</font>mperative
@@ -38,13 +36,13 @@ for
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">A Dependent Security Type System for Concurrent Imperative Programs</td></tr>
+        <td class="data" width="80%">Compositional Security-Preserving Refinement for Concurrent Imperative Programs</td></tr>
 
     <tr><td class="datahead">Author:</td>
         <td class="data"><a href="http://people.eng.unimelb.edu.au/tobym/">Toby Murray</a>, Robert Sison, Edward Pierzchalski and <a href="https://www.mpi-inf.mpg.de/~crizkall/">Christine Rizkallah</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2016-06-25</td></tr>
+        <td class="data">2016-06-28</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
@@ -52,24 +50,21 @@ for
 
 The paper "Compositional Verification and Refinement of Concurrent
 Value-Dependent Noninterference" by Murray et. al. (CSF 2016) presents
-a dependent security type system for compositionally verifying a
-value-dependent noninterference property, defined in (Murray, PLAS
-2015), for concurrent programs. This development formalises that
-security definition, the type system and its soundness proof, and
-demonstrates its application on some small examples. It was derived
-from the SIFUM_Type_Systems AFP entry, by Sylvia Grewe, Heiko Mantel
-and Daniel Schoepe, and whose structure it inherits.
+a compositional theory of refinement for a value-dependent
+noninterference property, defined in (Murray, PLAS 2015), for
+concurrent programs. This development formalises that refinement
+theory, and demonstrates its application on some small examples.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Dependent_SIFUM_Type_Systems-AFP,
+			<pre>@article{Dependent_SIFUM_Refinement-AFP,
   author  = {Toby Murray and Robert Sison and Edward Pierzchalski and Christine Rizkallah},
-  title   = {A Dependent Security Type System for Concurrent Imperative Programs},
+  title   = {Compositional Security-Preserving Refinement for Concurrent Imperative Programs},
   journal = {Archive of Formal Proofs},
   month   = jun,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Dependent_SIFUM_Type_Systems.shtml},
+  note    = {\url{http://isa-afp.org/entries/Dependent_SIFUM_Refinement.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -79,9 +74,9 @@ and Daniel Schoepe, and whose structure it inherits.
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Dependent_SIFUM_Type_Systems.shtml">Dependent_SIFUM_Type_Systems</a></td></tr>
 
-    <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Dependent_SIFUM_Refinement.shtml">Dependent_SIFUM_Refinement</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
@@ -94,7 +89,7 @@ and Daniel Schoepe, and whose structure it inherits.
 
 <p></p>
 
-<!--#set var="name" value="Dependent_SIFUM_Type_Systems" -->
+<!--#set var="name" value="Dependent_SIFUM_Refinement" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->

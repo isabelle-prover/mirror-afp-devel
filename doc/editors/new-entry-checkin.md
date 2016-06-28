@@ -32,9 +32,7 @@ available as (public) development tar.gz's)
 Everything happens in the release branch `afp/release`.
 
 1.  unpack tar file and move new entry to `afp/release/thys`
-2.  create/adjust `config` file (template in
-    `thys/Example-Submission/config`)
-3.  make sure there is a `thys/entryname/ROOT` file and add `entryname`
+2.  make sure there is a `thys/entryname/ROOT` file and add `entryname`
     to `thys/ROOTS`. For the former see the template in
     `thys/Example-Submission/ROOT`. In particular the entry should be in
     chapter AFP, and group `(AFP)`, i.e.
@@ -44,32 +42,31 @@ Everything happens in the release branch `afp/release`.
             session foo (AFP) = bar +
 
 
-4.  to check, run in `afp/release/thys`
+3.  to check, run in `afp/release/thys`
 
-         `../admin/testall -r Isabelle20XX -c <name>`
+         ../admin/testall -r Isabelle201X -c <name>
 
      (be sure to have `ISABELLE_RELEASES` set to the path where Isabelle
     releases are kept, e.g. `/home/proj/isabelle/`)
-5.  check license headers: if the authors want the code released under
+4.  check license headers: if the authors want the code released under
     LGPL instead of BSD, each file should mention "License: LGPL" in the
     header.
-6.  `hg add` and `hg commit` the new submission
-7.  Enter data for author/abstract/index/etc in the file
+5.  `hg add` and `hg commit` the new submission
+6.  Enter data for author/abstract/index/etc in the file
     `metadata/metadata`. Make sure that your editor uses UTF-8 encoding
     for this file to preserve special characters. If the entry uses a
     new topic or category, add it to metadata/topics (make sure there is
     an empty line at the end of the file).
-8.  Generate the new web site by running `../admin/sitegen` .
-9.  Use `hg st` and `hg diff` to make sure the generated html makes
+7.  Generate the new web site by running `../admin/sitegen` .
+8.  Use `hg st` and `hg diff` to make sure the generated html makes
     sense. The diff should be small and concern the new entry only.
-10. `hg add` and `hg commit` the web site updates.
-11. finally, when you are happy with everything, `hg push` all changes
+9. `hg add` and `hg commit` the web site updates.
+10. finally, when you are happy with everything, `hg push` all changes
     to bitbucket. The publish script will refuse to publish if the
     changes aren't pushed.
-12. to publish the changes to the web, run
+11. to publish the changes to the web, run
 
-         cd ../admin
-         ./publish -r Isabelle201X <name>
+         ../admin/publish -r Isabelle201X <name>
 
     This will check out the Isabelle201X (=release) version of the
     archive from bitbucket, will run the session `name` to generate
@@ -77,7 +74,7 @@ Everything happens in the release branch `afp/release`.
     will update the web pages on the server. The script will ask before
     it copies, so you can check locally if everything is as you want it.
 
-13. That's it. Changes should show up at <http://isa-afp.org>
+12. That's it. Changes should show up at <http://isa-afp.org>
 
 **New submission in devel**
 

@@ -55,6 +55,25 @@ The main archive is available from the <a href="index.shtml">front page</a>.
 	</tr>
 
 <tr><td class="entry">
+2016-06-28:
+<a href="entries/IP_Addresses.shtml">IP Addresses</a>
+<br>Author:
+<a href="http://net.in.tum.de/~diekmann">Cornelius Diekmann</a>,
+<a href="http://liftm.de/">Julius Michaelis</a> and 
+<a href="https://www21.in.tum.de/~hupel/">Lars Hupel</a>
+</td></tr>
+
+<tr><td class="entry">
+2016-06-28:
+<a href="entries/Dependent_SIFUM_Refinement.shtml">Compositional Security-Preserving Refinement for Concurrent Imperative Programs</a>
+<br>Author:
+<a href="http://people.eng.unimelb.edu.au/tobym/">Toby Murray</a>,
+Robert Sison,
+Edward Pierzchalski and 
+<a href="https://www.mpi-inf.mpg.de/~crizkall/">Christine Rizkallah</a>
+</td></tr>
+
+<tr><td class="entry">
 2016-06-26:
 <a href="entries/Category3.shtml">Category Theory with Adjunctions and Limits</a>
 <br>Author:
@@ -75,7 +94,7 @@ Lukas Bulwahn
 <a href="http://people.eng.unimelb.edu.au/tobym/">Toby Murray</a>,
 Robert Sison,
 Edward Pierzchalski and 
-Christine Rizkallah
+<a href="https://www.mpi-inf.mpg.de/~crizkall/">Christine Rizkallah</a>
 </td></tr>
 
 <tr><td class="entry">
