@@ -906,6 +906,26 @@ date = 2012-08-05
 abstract = Squaring the circle, doubling the cube and trisecting an angle, using a compass and straightedge alone, are classic unsolved problems first posed by the ancient Greeks. All three problems were proved to be impossible in the 19th century. The following document presents the proof of the impossibility of solving the latter two problems using Isabelle/HOL, following a proof by Carrega. The proof uses elementary methods: no Galois theory or field extensions. The set of points constructible using a compass and straightedge is defined inductively. Radical expressions, which involve only square roots and arithmetic of rational numbers, are defined, and we find that all constructive points have radical coordinates. Finally, doubling the cube and trisecting certain angles requires solving certain cubic equations that can be proved to have no rational roots. The Isabelle proofs require a great many detailed calculations.
 notify = ralph.romanos@student.ecp.fr lp15@cam.ac.uk
 
+[IP_Addresses]
+title = IP Addresses
+author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de/>, Lars Hupel <https://www21.in.tum.de/~hupel/>
+notify = diekmann@net.in.tum.de
+date = 2016-06-28
+topic = Computer Science/Computer Networks
+abstract = 
+  This entry contains a definition of IP addresses and a library to work
+  with them.  Generic IP addresses are modeled as machine words of
+  arbitrary length. Derived from this generic definition, IPv4 addresses
+  are 32bit machine words, IPv6 addresses are 128bit words.
+  Additionally, IPv4 addresses can be represented in dot-decimal
+  notation and IPv6 addresses in (compressed) colon-separated notation.
+  We support toString functions and parsers for both notations. Sets of
+  IP addresses can be represented with a netmask (e.g.
+  192.168.0.0/255.255.0.0) or in CIDR notation (e.g. 192.168.0.0/16). To
+  provide executable code for set operations on IP address ranges, the
+  library includes a datatype to work on arbitrary intervals of machine
+  words.
+
 [KBPs]
 title = Knowledge-based programs
 author = Peter Gammie <http://peteg.org/>
