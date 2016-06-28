@@ -105,7 +105,7 @@ written \mbox{@{term_type "Rep_cfun (Denotational.ESem e) \<rho>"}} and defined 
 *}
 
 text{*
-The expression @{term "Denotational.EvalHeapSem_syn'' \<Gamma> \<rho>"} 
+The expression @{term "Denotational.EvalHeapSem_syn \<Gamma> \<rho>"} 
 maps the evaluation function over a heap, returning an environment:
 \begin{alignstar}
 @{thm (lhs) lookupEvalHeap'[where f = "(\<lambda> e. Denotational.ESem_syn e \<rho>)"]}
@@ -128,7 +128,7 @@ where
 @{thm (lhs) override_on_apply_in} & = @{thm (rhs) override_on_apply_in}  && \text{if } @{thm (prem 1) override_on_apply_in}.
 \end{alignstar}
 
-The semantics of the heap in the empty environment @{term "\<bottom>"} is abbreviated as @{abbrev "Denotational.HSem_bot \<Gamma>"}.
+The semantics of the heap in the empty environment @{term "\<bottom>"} is abbreviated as @{term "Denotational.AHSem_bot \<Gamma>"}.
 *}
 
 subsubsection {* Correctness and Adequacy *}
