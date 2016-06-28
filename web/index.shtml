@@ -59,6 +59,16 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 </td></tr>
 
 <tr><td class="entry">
+2016-06-28:
+<a href="entries/Dependent_SIFUM_Refinement.shtml">Compositional Security-Preserving Refinement for Concurrent Imperative Programs</a>
+<br>Author:
+<a href="http://people.eng.unimelb.edu.au/tobym/">Toby Murray</a>,
+Robert Sison,
+Edward Pierzchalski and 
+Christine Rizkallah
+</td></tr>
+
+<tr><td class="entry">
 2016-06-26:
 <a href="entries/Category3.shtml">Category Theory with Adjunctions and Limits</a>
 <br>Author:
