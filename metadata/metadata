@@ -911,7 +911,7 @@ title = IP Addresses
 author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de/>, Lars Hupel <https://www21.in.tum.de/~hupel/>
 notify = diekmann@net.in.tum.de
 date = 2016-06-28
-topic = Computer Science/Computer Networks
+topic = Computer Science/Networks
 abstract = 
   This entry contains a definition of IP addresses and a library to work
   with them.  Generic IP addresses are modeled as machine words of
