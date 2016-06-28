@@ -2121,7 +2121,7 @@ notify = grewe@cs.tu-darmstadt.de
 
 [Dependent_SIFUM_Type_Systems]
 title = A Dependent Security Type System for Concurrent Imperative Programs
-author = Toby Murray <http://people.eng.unimelb.edu.au/tobym/>, Robert Sison<>, Edward Pierzchalski<>, Christine Rizkallah<>
+author = Toby Murray <http://people.eng.unimelb.edu.au/tobym/>, Robert Sison<>, Edward Pierzchalski<>, Christine Rizkallah<https://www.mpi-inf.mpg.de/~crizkall/>
 notify = toby.murray@unimelb.edu.au
 date = 2016-06-25
 topic = Computer Science/Security, Computer Science/Programming Languages/Type Systems
@@ -2138,7 +2138,7 @@ abstract =
 
 [Dependent_SIFUM_Refinement]
 title = Compositional Security-Preserving Refinement for Concurrent Imperative Programs
-author = Toby Murray <http://people.eng.unimelb.edu.au/tobym/>, Robert Sison, Edward Pierzchalski, Christine Rizkallah
+author = Toby Murray <http://people.eng.unimelb.edu.au/tobym/>, Robert Sison<>, Edward Pierzchalski<>, Christine Rizkallah<https://www.mpi-inf.mpg.de/~crizkall/>
 notify = toby.murray@unimelb.edu.au
 date = 2016-06-28
 topic = Computer Science/Security

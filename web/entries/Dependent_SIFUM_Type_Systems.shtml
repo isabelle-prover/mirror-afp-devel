@@ -41,7 +41,7 @@ for
         <td class="data" width="80%">A Dependent Security Type System for Concurrent Imperative Programs</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://people.eng.unimelb.edu.au/tobym/">Toby Murray</a>, Robert Sison, Edward Pierzchalski and Christine Rizkallah</td></tr>
+        <td class="data"><a href="http://people.eng.unimelb.edu.au/tobym/">Toby Murray</a>, Robert Sison, Edward Pierzchalski and <a href="https://www.mpi-inf.mpg.de/~crizkall/">Christine Rizkallah</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2016-06-25</td></tr>
