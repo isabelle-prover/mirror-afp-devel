@@ -2995,7 +2995,7 @@ case (if_reg_rel c\<^sub>A x then\<^sub>A else\<^sub>A c\<^sub>C then\<^sub>C el
         apply(erule If_Reg_RefRel_HighBranchE)
         apply(erule_tac x=mem\<^sub>2\<^sub>C in allE)
         apply(erule_tac x=mem\<^sub>2\<^sub>C in allE)
-        apply(clarsimp split del: split_if simp add: neq0_conv[symmetric])
+        apply(clarsimp split del: if_split)
         by presburger
       hence "(\<langle>c\<^sub>2\<^sub>A', ?mds\<^sub>A', mem\<^sub>A_of ?mem\<^sub>2\<^sub>C'\<rangle>\<^sub>A, \<langle>?c\<^sub>2\<^sub>C', mds\<^sub>C', ?mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> RefRel_HighBranch"
       using c\<^sub>2\<^sub>C_def eval_tail\<^sub>C' mds\<^sub>C'_def

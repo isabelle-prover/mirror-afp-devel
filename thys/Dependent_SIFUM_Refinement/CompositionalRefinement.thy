@@ -107,7 +107,7 @@ lemma low_mds_eq_from_conc_to_abs:
   "conc.low_mds_eq mds mem mem' \<Longrightarrow> abs.low_mds_eq (mds\<^sub>A_of mds) (mem\<^sub>A_of mem) (mem\<^sub>A_of mem')"
   apply(clarsimp simp: abs.low_mds_eq_def conc.low_mds_eq_def mem\<^sub>A_of_def mds\<^sub>A_of_def)
   using var\<^sub>C_of_inj 
-  by (metis IntI abs.dma_\<C> control_vars_are_A_vars dma_consistent image_eqI inv_f_f rangeI)
+  by (metis IntI control_vars_are_A_vars dma_consistent image_eqI inv_f_f rangeI)
 
 definition
   var\<^sub>A_of :: "'Var\<^sub>C \<Rightarrow> 'Var\<^sub>A"
@@ -509,7 +509,7 @@ lemma R\<^sub>C_ofI:
     conc.low_mds_eq mds\<^sub>C mem\<^sub>1\<^sub>C mem\<^sub>2\<^sub>C \<Longrightarrow>
     (\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> P \<Longrightarrow>
      (\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> R\<^sub>C_of \<R>\<^sub>A \<R> P"
-  using assms unfolding R\<^sub>C_of_def by fastforce
+  unfolding R\<^sub>C_of_def by fastforce
 
 lemma R\<^sub>C_of_sym:
   assumes "sym \<R>\<^sub>A"
@@ -1501,7 +1501,7 @@ case (Cons a as)
   obtain gc''' where a: "meval_abv gc a gc'''" and as: "meval_sched as gc''' gc'" by force
   from Cons(1)[OF as Cons(3)] a
   have "gc \<rightarrow>\<^bsub>a # (as @ bs)\<^esub> gc''"
-    by (metis surjective_pairing meval_sched.simps)
+    by (metis meval_sched.simps)
   thus ?case by simp
 qed
 
