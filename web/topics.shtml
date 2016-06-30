@@ -312,6 +312,7 @@
 <a href="entries/Abstract_Completeness.shtml">Abstract_Completeness</a> &nbsp;
 <a href="entries/PropResPI.shtml">PropResPI</a> &nbsp;
 <a href="entries/Incredible_Proof_Machine.shtml">Incredible_Proof_Machine</a> &nbsp;
+<a href="entries/Resolution_FOL.shtml">Resolution_FOL</a> &nbsp;
 </div>
 
 <h3>Rewriting</h3>
@@ -320,6 +321,7 @@
 <a href="entries/Abstract-Rewriting.shtml">Abstract-Rewriting</a> &nbsp;
 <a href="entries/Decreasing-Diagrams.shtml">Decreasing-Diagrams</a> &nbsp;
 <a href="entries/Decreasing-Diagrams-II.shtml">Decreasing-Diagrams-II</a> &nbsp;
+<a href="entries/Rewriting_Z.shtml">Rewriting_Z</a> &nbsp;
 </div>
 
 <h2>Mathematics</h2>
@@ -327,6 +329,7 @@
 <h3>Algebra</h3>
 
 <div class="list">
+<a href="entries/Buildings.shtml">Buildings</a> &nbsp;
 <a href="entries/Algebraic_VCs.shtml">Algebraic_VCs</a> &nbsp;
 <a href="entries/Multirelations.shtml">Multirelations</a> &nbsp;
 <a href="entries/Residuated_Lattices.shtml">Residuated_Lattices</a> &nbsp;
@@ -417,6 +420,7 @@
 <h3>Geometry</h3>
 
 <div class="list">
+<a href="entries/Buildings.shtml">Buildings</a> &nbsp;
 <a href="entries/Triangle.shtml">Triangle</a> &nbsp;
 <a href="entries/Impossible_Geometry.shtml">Impossible_Geometry</a> &nbsp;
 <a href="entries/Tarskis_Geometry.shtml">Tarskis_Geometry</a> &nbsp;
