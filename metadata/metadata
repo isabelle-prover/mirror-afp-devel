@@ -4294,3 +4294,16 @@ abstract =
   fixed-width words, as well as an instantiation of many of these to the
   commonly used 32 and 64-bit bases.
 
+[Rewriting_Z]
+title = The Z Property
+author = Bertram Felgenhauer<>, Julian Nagele<>, Vincent van Oostrom<>, Christian Sternagel<>
+notify = bertram.felgenhauer@uibk.ac.at, julian.nagele@uibk.ac.at, c.sternagel@gmail.com
+date = 2016-06-30
+topic = Logic/Rewriting
+abstract = 
+  We formalize the Z property introduced by Dehornoy and van Oostrom.
+  First we show that for any abstract rewrite system, Z implies
+  confluence. Then we give two examples of proofs using Z: confluence of
+  lambda-calculus with respect to beta-reduction and confluence of
+  combinatory logic.
+
