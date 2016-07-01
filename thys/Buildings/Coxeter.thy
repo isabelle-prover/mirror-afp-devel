@@ -2230,10 +2230,12 @@ lemma simplex_like_special_cosets:
   assumes "X\<in>\<P>"
   shows "supset_simplex_like (\<P>.\<supseteq>X)"
 proof-
+  have image_eq_UN: "\<And>f A. f ` A = (\<Union>x\<in>A. {f x})" by blast
+
   from assms obtain w T where "w\<in>W" "T \<in> Pow S" "X = w +o \<langle>T\<rangle>"
     using special_cosets_def by auto
   thus ?thesis
-    using image_eq_UN[of "op +o w \<circ> genby"]
+    using image_eq_UN[where f= "op +o w \<circ> genby"]
           finite_genset simplex_like_pow_above_in
           OrderingSetIso.simplex_like_map[
             OF special_coset_below_in_supset_ordering_iso, of T w
@@ -2557,10 +2559,10 @@ lemma S_list_not_min_gallery_not_reduced:
   shows "\<not> reduced_word S ss"
 proof (cases "ss\<in>lists S")
   case True
-  with assms obtain a b as bs cs
+  obtain a b as bs cs
     where "ss = as@[a]@bs@[b]@cs" "listsum ss = listsum (as@bs@cs)"
-    using S_list_not_min_gallery_deletion
-    by    blast
+    using S_list_not_min_gallery_deletion [OF True assms]
+    by blast
   with True show ?thesis using not_reduced_word_for[of "as@bs@cs"] by auto
 next
   case False thus ?thesis using reduced_word_for_lists by fast
@@ -2795,7 +2797,7 @@ proof (rule seteqI)
 next
   fix u assume "u\<in>\<Union>\<Sigma>"
   from this obtain w s where "w\<in>W" "s\<in>S" "u = w +o \<langle>S-{s}\<rangle>"
-    using CoxeterComplex.vertex_conv_special_coset[OF CoxeterComplex] by fast
+    using CoxeterComplex.vertex_conv_special_coset[OF CoxeterComplex] by blast
   with assms show "u \<in> \<psi>`(\<Union>X)"
     using label_wrt_special_coset1 fundantivertex fundchamber chamberD_simplex
           W_endomorphism ChamberComplexEndomorphism.vertex_map
@@ -2878,7 +2880,7 @@ next
     using label_stab_map_bij_betw_W_chambers by fast
   hence 1: "bij_betw (op ` \<psi>) (Pow (w`\<rightarrow>C0)) (Pow z)"
     using bij_betw_imp_bij_betw_Pow by fast
-  def x: x \<equiv> "the_inv_into (Pow (w`\<rightarrow>C0)) (op ` \<psi>) y"
+  define x where x: "x \<equiv> the_inv_into (Pow (w`\<rightarrow>C0)) (op ` \<psi>) y"
   with z(2) have "x \<subseteq> w`\<rightarrow>C0" using bij_betw_the_inv_into_onto[OF 1] by auto
   with w(1) have "x\<in>X"
     using faces fundchamber_W_image_chamber chamberD_simplex

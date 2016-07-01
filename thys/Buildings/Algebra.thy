@@ -583,7 +583,7 @@ lemma even_count_lconjseq_alternating_order2:
   assumes "s+s=0" "t+t=0" "(s+t)+^k = 0"
   shows   "even (count_list (lconjseq (alternating_list (2*k) s t)) x)"
 proof-
-  def xs: xs \<equiv> "lconjseq (alternating_list (2*k) s t)"
+  define xs where xs: "xs \<equiv> lconjseq (alternating_list (2*k) s t)"
   with assms obtain as where "xs = as@as"
     using lconjseq_alternating_order2_repeats by fast
   hence "count_list xs x = 2 * (count_list as x)"
@@ -1464,7 +1464,7 @@ lemma normal_lconjby_closed:
 
 lemma normal_rconjby_closed:
   "\<lbrakk> Subgroup H; normal H; g\<in>G; h\<in>H \<rbrakk> \<Longrightarrow> rconjby g h \<in> H"
-  using assms normal_lconjby_closed[of H "-g" h] uminus_closed[of g] by auto
+  using normal_lconjby_closed[of H "-g" h] uminus_closed[of g] by auto
 
 abbreviation "normal_closure A \<equiv> \<langle>\<Union>g\<in>G. lconjby g ` A\<rangle>"
 
@@ -1582,7 +1582,7 @@ proof (rule seteqI)
     by    (fastforce simp add: add.assoc minus_add)
 next
   fix x assume "x \<in> LCoset_rel H `` {g + g'}"
-  moreover def h \<equiv> "-(g+g') + x"
+  moreover define h where "h \<equiv> -(g+g') + x"
   moreover hence "x = g + (g' + h)"
     using add.assoc[of "-g'" "-g" x] by (simp add: add.assoc minus_add)
   ultimately show "x \<in> LCoset_rel H `` {g} + LCoset_rel H `` {g'}"
@@ -2202,7 +2202,7 @@ lemma uniqueness_of_extended_map_to_freeword_hom:
   shows   "k = g"
 proof
   fix x::"'a freeword"
-  def k': k' \<equiv> "k \<circ> Abs_freeword"
+  define k' where k': "k' \<equiv> k \<circ> Abs_freeword"
   have "k' (freeword x) = g x" unfolding h_def g_def
   proof (rule uniqueness_of_extended_map_to_freeword_hom')
     from k' k(1) show "\<And>s. k' [pairtrue s] = f s" by auto
@@ -2225,8 +2225,8 @@ theorem universal_property:
   fixes f :: "'a \<Rightarrow> 'b::group_add"
   shows "\<exists>!g::'a freeword\<Rightarrow>'b. g \<circ> Abs_freeletter = f \<and> UGroupHom g"
 proof
-  def h: h \<equiv> "\<lambda>(s,b). if b then f s else - (f s)"
-  def g: g \<equiv> "\<lambda>x. listsum (map h (freeword x))"
+  define h where h: "h \<equiv> \<lambda>(s,b). if b then f s else - (f s)"
+  define g where g: "g \<equiv> \<lambda>x. listsum (map h (freeword x))"
   from g h show "g \<circ> Abs_freeletter = f \<and> UGroupHom g"
     using extend_map_to_freeword_hom1[of f] extend_map_to_freeword_hom2
     by    auto
@@ -2318,8 +2318,8 @@ proof (induct xs)
     using freeword_funlift_0[of f] genby_0_closed by simp
 next
   case (Cons x xs)
-  def y: y \<equiv> "apply_sign f x"
-  and z: z \<equiv> "freeword_funlift f (Abs_freeword xs)"
+  define y where y: "y \<equiv> apply_sign f x"
+  define z where z: "z \<equiv> freeword_funlift f (Abs_freeword xs)"
   from Cons(3) have "fst ` set xs \<subseteq> S" by simp
   with z Cons(1,2) have "z \<in> \<langle>f`S\<rangle>" using binrelchain_Cons_reduce by fast
   with y Cons(3) have "y + z \<in> \<langle>f`S\<rangle>"
@@ -2381,8 +2381,8 @@ lemma FreeGroup_diff_closed:
   assumes "x \<in> FreeGroup S" "y \<in> FreeGroup S"
   shows   "x-y \<in> FreeGroup S"
 proof-
-  def xs: xs \<equiv> "freeword x"
-  and ys: ys \<equiv> "freeword y"
+  define xs where xs: "xs \<equiv> freeword x"
+  define ys where ys: "ys \<equiv> freeword y"
   have "freeword (x-y) =
         prappend_signed_list (freeword x) (rev (map flip_signed (freeword y)))"
     by transfer simp
@@ -2478,8 +2478,8 @@ lemma uniqueness_of_restricted_lift:
   shows   "T = res_freeword_funlift f S"
 proof
   fix x
-  def F \<equiv> "res_freeword_funlift f S"
-  and u_Abs \<equiv> "\<lambda>a::'a signed. apply_sign Abs_freeletter a"
+  define F where "F \<equiv> res_freeword_funlift f S"
+  define u_Abs where "u_Abs \<equiv> \<lambda>a::'a signed. apply_sign Abs_freeletter a"
   show "T x = F x"
   proof (cases "x \<in> FreeGroup S")
     case True
@@ -2503,7 +2503,7 @@ proof
     moreover have "\<forall>a\<in>set (freeword x). T (u_Abs a) = F (u_Abs a)"
     proof
       fix a assume "a \<in> set (freeword x)"
-      moreover def b \<equiv> "Abs_freeletter (fst a)"
+      moreover define b where "b \<equiv> Abs_freeletter (fst a)"
       ultimately show "T (u_Abs a) = F (u_Abs a)"
         using F_def u_Abs_def True assms(2) FreeGroupD[of x S]
               GroupHom.im_uminus[OF assms(1)] 
@@ -2695,7 +2695,7 @@ proof
   show "T x = F x"
   proof (cases "x\<in>G")
     case True
-    def q \<equiv> "Group.natural_quotient_hom (FreeGroup S) Q"
+    define q where "q \<equiv> Group.natural_quotient_hom (FreeGroup S) Q"
     from True obtain w where "w \<in> FreeGroup S" "x = (\<lceil>FreeGroup S|w|Q\<rceil>)"
       using G_UN by fast
     with q_def have "T x = (T\<circ>q) w" "F x = (F\<circ>q) w" by auto
@@ -2945,7 +2945,7 @@ lemma reduced_word_append_reduce_contra1:
   shows   "\<not> reduced_word A (as@bs)"
 proof (cases "as \<in> lists A" "bs \<in> lists A" rule: two_cases)
   case both
-  def cs: cs \<equiv> "LEAST cs WRT length. cs \<in> lists A \<and> listsum cs = listsum as"
+  define cs where cs: "cs \<equiv> LEAST cs WRT length. cs \<in> lists A \<and> listsum cs = listsum as"
   with both(1) have "reduced_word_for A (listsum as) cs"
     using reduced_word_for_def LeastM_isLeastM_nat[of "word_for A (listsum as)"]
     by    auto
@@ -2968,7 +2968,7 @@ lemma reduced_word_append_reduce_contra2:
   shows   "\<not> reduced_word A (as@bs)"
 proof (cases "as \<in> lists A" "bs \<in> lists A" rule: two_cases)
   case both
-  def cs: cs \<equiv> "LEAST cs WRT length. cs \<in> lists A \<and> listsum cs = listsum bs"
+  define cs where cs: "cs \<equiv> LEAST cs WRT length. cs \<in> lists A \<and> listsum cs = listsum bs"
   with both(2) have "reduced_word_for A (listsum bs) cs"
     using reduced_word_for_def LeastM_isLeastM_nat[of "word_for A (listsum bs)" ]
     by    auto
@@ -3015,7 +3015,7 @@ lemma el_reduced:
   assumes "0 \<notin> A" "as \<in> lists A" "listsum as \<in> A" "reduced_word A as"
   shows "length as = 1"
 proof-
-  def n: n \<equiv> "length as"
+  define n where n: "n \<equiv> length as"
   from assms(3) obtain a where "[a]\<in>lists A" "listsum as = listsum [a]" by auto
   with n assms(1,3,4) have "n\<le>1" "n>0"
     using reduced_word_for_minimal[of A _ as "[a]"] by auto
@@ -3058,7 +3058,7 @@ lemma in_genby_reduced_letter_set:
   assumes "as \<in> lists A" "listsum as = a"
   shows   "a \<in> \<langle>reduced_letter_set A a\<rangle>"
 proof-
-  def xs: xs \<equiv> "LEAST xs WRT length. word_for A a xs"
+  define xs where xs: "xs \<equiv> LEAST xs WRT length. word_for A a xs"
   with assms have "xs \<in> lists (reduced_letter_set A a)" "listsum xs = a"
     using reduced_word_for_LeastM[of as A] reduced_word_for_listsum by auto
   thus ?thesis using genby_eq_listsums by force

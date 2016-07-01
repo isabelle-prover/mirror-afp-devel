@@ -65,7 +65,7 @@ lemma inj_on_pullback_facet:
 proof
   from assms(2) obtain v where v: "v\<notin>z" "f`x = insert v z"
     using facetrel_def[of z] by auto
-  def u \<equiv> "the_inv_into x f v" and y: y \<equiv> "{v\<in>x. f v \<in> z}"
+  define u and y where "u \<equiv> the_inv_into x f v" and y: "y \<equiv> {v\<in>x. f v \<in> z}"
   moreover with assms(2) v have "x = insert u y"
     using the_inv_into_f_eq[OF assms(1)] the_inv_into_into[OF assms(1)]
     by    auto
@@ -613,43 +613,43 @@ context ordering
 begin
 
 definition PosetComplex :: "'a set \<Rightarrow> 'a set set"
-  where "PosetComplex P \<equiv> (\<Union>x\<in>P. { {y. pseudominimal_in (P.\<preceq>x) y} })"
+  where "PosetComplex P \<equiv> (\<Union>x\<in>P. { {y. pseudominimal_in (P.\<^bold>\<le>x) y} })"
 
 lemma poset_is_SimplicialComplex:
-  assumes "\<forall>x\<in>P. simplex_like (P.\<preceq>x)"
+  assumes "\<forall>x\<in>P. simplex_like (P.\<^bold>\<le>x)"
   shows   "SimplicialComplex (PosetComplex P)"
 proof (rule SimplicialComplex.intro, rule ballI)
   fix a assume "a \<in> PosetComplex P"
-  from this obtain x where "x\<in>P" "a = {y. pseudominimal_in (P.\<preceq>x) y}"
+  from this obtain x where "x\<in>P" "a = {y. pseudominimal_in (P.\<^bold>\<le>x) y}"
     unfolding PosetComplex_def by fast
   with assms show "finite a"
-    using pseudominimal_inD1 simplex_likeD_finite finite_subset[of a "P.\<preceq>x"] by fast
+    using pseudominimal_inD1 simplex_likeD_finite finite_subset[of a "P.\<^bold>\<le>x"] by fast
 next
   fix a b assume ab: "a \<in> PosetComplex P" "b\<subseteq>a"
-  from ab(1) obtain x where x: "x\<in>P" "a = {y. pseudominimal_in (P.\<preceq>x) y}"
+  from ab(1) obtain x where x: "x\<in>P" "a = {y. pseudominimal_in (P.\<^bold>\<le>x) y}"
     unfolding PosetComplex_def by fast
   from assms x(1) obtain f and A::"nat set"
-    where fA: "OrderingSetIso less_eq less (op \<subseteq>) (op \<subset>) (P.\<preceq>x) f"
-              "f`(P.\<preceq>x) = Pow A"
-    using simplex_likeD_iso[of "P.\<preceq>x"]
+    where fA: "OrderingSetIso less_eq less (op \<subseteq>) (op \<subset>) (P.\<^bold>\<le>x) f"
+              "f`(P.\<^bold>\<le>x) = Pow A"
+    using simplex_likeD_iso[of "P.\<^bold>\<le>x"]
     by    auto
-  def x': x' \<equiv> "the_inv_into (P.\<preceq>x) f (\<Union>(f`b))"
+  define x' where x': "x' \<equiv> the_inv_into (P.\<^bold>\<le>x) f (\<Union>(f`b))"
   from fA x(2) ab(2) x' have x'_P: "x'\<in>P"
     using collect_pseudominimals_below_in_poset[of P x f] by simp
-  moreover from x fA ab(2) x' have "b = {y. pseudominimal_in (P.\<preceq>x') y}"
+  moreover from x fA ab(2) x' have "b = {y. pseudominimal_in (P.\<^bold>\<le>x') y}"
     using collect_pseudominimals_below_in_eq[of x P f] by simp
   ultimately show "b \<in> PosetComplex P" unfolding PosetComplex_def by fast
 qed
 
 definition poset_simplex_map :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set"
-  where "poset_simplex_map P x = {y. pseudominimal_in (P.\<preceq>x) y}"
+  where "poset_simplex_map P x = {y. pseudominimal_in (P.\<^bold>\<le>x) y}"
 
 lemma poset_to_PosetComplex_OrderingSetMap:
-  assumes "\<And>x. x\<in>P \<Longrightarrow> simplex_like (P.\<preceq>x)"
-  shows   "OrderingSetMap (op \<preceq>) (op \<prec>) (op \<subseteq>) (op \<subset>) P (poset_simplex_map P)"
+  assumes "\<And>x. x\<in>P \<Longrightarrow> simplex_like (P.\<^bold>\<le>x)"
+  shows   "OrderingSetMap (op \<^bold>\<le>) (op \<^bold><) (op \<subseteq>) (op \<subset>) P (poset_simplex_map P)"
 proof
   from assms
-    show  "\<And>a b. \<lbrakk> a\<in>P; b\<in>P; a\<preceq>b \<rbrakk> \<Longrightarrow>
+    show  "\<And>a b. \<lbrakk> a\<in>P; b\<in>P; a\<^bold>\<le>b \<rbrakk> \<Longrightarrow>
             poset_simplex_map P a \<subseteq> poset_simplex_map P b"
     using     simplex_like_has_bottom pseudominimal_in_below_in
     unfolding poset_simplex_map_def
@@ -666,10 +666,10 @@ text {*
 *}
 
 locale ComplexLikePoset = ordering less_eq less
-  for less_eq  :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<preceq>"  50)
-  and less     :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<prec>"  50)
+  for less_eq  :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<^bold>\<le>"  50)
+  and less     :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<^bold><"  50)
 + fixes   P :: "'a set"
-  assumes below_in_P_simplex_like: "x\<in>P \<Longrightarrow> simplex_like (P.\<preceq>x)"
+  assumes below_in_P_simplex_like: "x\<in>P \<Longrightarrow> simplex_like (P.\<^bold>\<le>x)"
   and     P_has_bottom           : "has_bottom P"
   and     P_has_glbs             : "x\<in>P \<Longrightarrow> y\<in>P \<Longrightarrow> \<exists>b. glbound_in_of P x y b"
 begin
@@ -679,7 +679,7 @@ abbreviation "smap \<equiv> poset_simplex_map P"
 lemma smap_onto_PosetComplex: "smap ` P = PosetComplex P"
   using poset_simplex_map_def PosetComplex_def by auto
 
-lemma ordsetmap_smap: "\<lbrakk> a\<in>P; b\<in>P; a\<preceq>b \<rbrakk> \<Longrightarrow> smap a \<subseteq> smap b"
+lemma ordsetmap_smap: "\<lbrakk> a\<in>P; b\<in>P; a\<^bold>\<le>b \<rbrakk> \<Longrightarrow> smap a \<subseteq> smap b"
   using OrderingSetMap.ordsetmap[
           OF poset_to_PosetComplex_OrderingSetMap, OF below_in_P_simplex_like
         ]
@@ -700,12 +700,12 @@ proof (rule inj_onI)
   next
     case False
     from this obtain z where "z \<in> smap x" by fast
-    with xy(3) have z1: "z \<in> P.\<preceq>x" "z \<in> P.\<preceq>y"
+    with xy(3) have z1: "z \<in> P.\<^bold>\<le>x" "z \<in> P.\<^bold>\<le>y"
       using pseudominimal_inD1 poset_simplex_map_def by auto
     hence "lbound_of x y z" by (auto intro: lbound_ofI)
     with z1(1) obtain b where b: "glbound_in_of P x y b"
       using xy(1,2) P_has_glbs by fast
-    moreover have "b \<in> P.\<preceq>x" "b \<in> P.\<preceq>y"
+    moreover have "b \<in> P.\<^bold>\<le>x" "b \<in> P.\<^bold>\<le>y"
       using glbound_in_ofD_in[OF b] glbound_in_of_less_eq1[OF b]
             glbound_in_of_less_eq2[OF b]
       by    auto
@@ -720,24 +720,24 @@ proof (rule inj_onI)
 qed
 
 lemma OrderingSetIso_smap:
-  "OrderingSetIso (op \<preceq>) (op \<prec>) (op \<subseteq>) (op \<subset>) P smap"
+  "OrderingSetIso (op \<^bold>\<le>) (op \<^bold><) (op \<subseteq>) (op \<subset>) P smap"
 proof (rule OrderingSetMap.isoI)
-  show "OrderingSetMap op \<preceq> op \<prec> op \<subseteq> op \<subset> P smap"
+  show "OrderingSetMap op \<^bold>\<le> op \<^bold>< op \<subseteq> op \<subset> P smap"
     using poset_simplex_map_def below_in_P_simplex_like
           poset_to_PosetComplex_OrderingSetMap
     by    simp
 next
   fix x y assume xy: "x\<in>P" "y\<in>P" "smap x \<subseteq> smap y"
-  from xy(2) have "simplex_like (P.\<preceq>y)" using below_in_P_simplex_like by fast
+  from xy(2) have "simplex_like (P.\<^bold>\<le>y)" using below_in_P_simplex_like by fast
   from this obtain g and A::"nat set"
-    where "OrderingSetIso (op \<preceq>) (op \<prec>) (op \<subseteq>) (op \<subset>) (P.\<preceq>y) g"
-          "g`(P.\<preceq>y) = Pow A"
-    using simplex_likeD_iso[of "P.\<preceq>y"]
+    where "OrderingSetIso (op \<^bold>\<le>) (op \<^bold><) (op \<subseteq>) (op \<subset>) (P.\<^bold>\<le>y) g"
+          "g`(P.\<^bold>\<le>y) = Pow A"
+    using simplex_likeD_iso[of "P.\<^bold>\<le>y"]
     by    auto
-  with xy show "x\<preceq>y"
+  with xy show "x\<^bold>\<le>y"
     using poset_simplex_map_def collect_pseudominimals_below_in_eq[of y P g]
           collect_pseudominimals_below_in_poset[of P y g]
-          inj_onD[OF inj_on_smap, of "the_inv_into (P.\<preceq>y) g (\<Union>(g ` smap x))" x]
+          inj_onD[OF inj_on_smap, of "the_inv_into (P.\<^bold>\<le>y) g (\<Union>(g ` smap x))" x]
           collect_pseudominimals_below_in_less_eq_top[of P y g A "smap x"]
     by    simp
 qed (rule inj_on_smap)

@@ -194,8 +194,11 @@ proof (rule seteqI)
   fix D assume D: "D \<in> adjacentset C"
   show "D \<in> (\<Union>v\<in>C. {D\<in>X. C-{v}\<lhd>D})"
   proof (cases "D=C")
-    case True with assms show ?thesis
-      using chamber_nempty chamberD_simplex facetrel_diff_vertex by fast
+    case True with assms
+    have "C \<noteq> {}" and "C \<in> X"
+      using chamber_nempty chamberD_simplex by auto
+    with True assms show ?thesis
+      using facetrel_diff_vertex by fastforce
   next
     case False
     from D have D': "C\<sim>D" using adjacentsetD_adj by fast

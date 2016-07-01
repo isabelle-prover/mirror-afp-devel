@@ -132,7 +132,7 @@ lemma sym_sym: "sym (A\<times>A)" by (fast intro: symI)
 lemma trans_sym: "trans (A\<times>A)" by (fast intro: transI)
 
 lemma map_prod_sym: "sym A \<Longrightarrow> sym (map_prod f f ` A)"
-  using assms symD[of A] map_prod_def by (fast intro: symI)
+  using symD[of A] map_prod_def by (fast intro: symI)
 
 abbreviation restrict1 :: "('a\<Rightarrow>'a) \<Rightarrow> 'a set \<Rightarrow> ('a\<Rightarrow>'a)"
   where "restrict1 f A \<equiv> (\<lambda>a. if a\<in>A then f a else a)"
@@ -345,7 +345,7 @@ proof (rule bijI)
   show "surj (restrict1 f A)"
   proof (rule surjI)
     fix x
-    def y \<equiv> "restrict1 (the_inv_into A f) A x"
+    define y where "y \<equiv> restrict1 (the_inv_into A f) A x"
     thus "restrict1 f A y = x"
       using the_inv_into_into[of f] bij_f f_the_inv_into_f[of f] by (cases "x\<in>A") auto
   qed
@@ -1000,13 +1000,13 @@ subsubsection {* Morphisms of posets *}
 locale OrderingSetMap =
   domain  : ordering less_eq less
 + codomain: ordering less_eq' less' 
-  for less_eq  :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<preceq>"  50)
-  and less     :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<prec>"  50)
-  and less_eq' :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix "\<preceq>*" 50)
-  and less'    :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix "\<prec>*" 50)
+  for less_eq  :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<^bold>\<le>"  50)
+  and less     :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<^bold><"  50)
+  and less_eq' :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix "\<^bold>\<le>*" 50)
+  and less'    :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix "\<^bold><*" 50)
 + fixes P :: "'a set"
   and   f :: "'a\<Rightarrow>'b"
-  assumes ordsetmap: "a\<in>P \<Longrightarrow> b\<in>P \<Longrightarrow> a \<preceq> b \<Longrightarrow> f a \<preceq>* f b"
+  assumes ordsetmap: "a\<in>P \<Longrightarrow> b\<in>P \<Longrightarrow> a \<^bold>\<le> b \<Longrightarrow> f a \<^bold>\<le>* f b"
 begin
 
 lemma comp:
@@ -1016,28 +1016,28 @@ proof (
   intro_locales, rule OrderingSetMap.axioms(2), rule assms(1), unfold_locales
 )
   from assms(2)
-    show  "\<And>a b. a \<in> P \<Longrightarrow> b \<in> P \<Longrightarrow> a \<preceq> b \<Longrightarrow> less_eq'' ((g \<circ> f) a) ((g \<circ> f) b)"
+    show  "\<And>a b. a \<in> P \<Longrightarrow> b \<in> P \<Longrightarrow> a \<^bold>\<le> b \<Longrightarrow> less_eq'' ((g \<circ> f) a) ((g \<circ> f) b)"
     using ordsetmap OrderingSetMap.ordsetmap[OF assms(1)]
     by    force
 qed
 
-lemma subset: "Q\<subseteq>P \<Longrightarrow> OrderingSetMap (op \<preceq>) (op \<prec>) (op \<preceq>*) (op \<prec>*) Q f"
+lemma subset: "Q\<subseteq>P \<Longrightarrow> OrderingSetMap (op \<^bold>\<le>) (op \<^bold><) (op \<^bold>\<le>*) (op \<^bold><*) Q f"
   using ordsetmap by unfold_locales fast
 
 lemma dual:
   "OrderingSetMap domain.greater_eq domain.greater
     codomain.greater_eq codomain.greater P f"
 proof (intro_locales, rule domain.dual, rule codomain.dual, unfold_locales)
-  from ordsetmap show "\<And>a b. a\<in>P \<Longrightarrow> b\<in>P \<Longrightarrow> a\<succeq>b \<Longrightarrow> f b \<preceq>* f a" by fast
+  from ordsetmap show "\<And>a b. a\<in>P \<Longrightarrow> b\<in>P \<Longrightarrow> a\<succeq>b \<Longrightarrow> f b \<^bold>\<le>* f a" by fast
 qed
 
 end (* context OrderingSetMap *)
 
 locale OrderingSetIso = OrderingSetMap less_eq less less_eq' less' P f
-  for less_eq  :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<preceq>"  50)
-  and less     :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<prec>"  50)
-  and less_eq' :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix "\<preceq>*" 50)
-  and less'    :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix "\<prec>*" 50)
+  for less_eq  :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<^bold>\<le>"  50)
+  and less     :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<^bold><"  50)
+  and less_eq' :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix "\<^bold>\<le>*" 50)
+  and less'    :: "'b\<Rightarrow>'b\<Rightarrow>bool" (infix "\<^bold><*" 50)
   and P :: "'a set"
   and f :: "'a\<Rightarrow>'b"
 + assumes inj               : "inj_on f P"
@@ -1047,7 +1047,7 @@ locale OrderingSetIso = OrderingSetMap less_eq less less_eq' less' P f
 abbreviation "subset_ordering_iso \<equiv> OrderingSetIso (op \<subseteq>) (op \<subset>) (op \<subseteq>) (op \<subset>)"
 
 lemma (in OrderingSetMap) isoI:
-  assumes "inj_on f P" "\<And>a b. a\<in>P \<Longrightarrow> b\<in>P \<Longrightarrow> f a \<preceq>* f b \<Longrightarrow> a \<preceq> b"
+  assumes "inj_on f P" "\<And>a b. a\<in>P \<Longrightarrow> b\<in>P \<Longrightarrow> f a \<^bold>\<le>* f b \<Longrightarrow> a \<^bold>\<le> b"
   shows   "OrderingSetIso less_eq less less_eq' less' P f"
   using   assms the_inv_into_f_f[OF assms(1)]
   by      unfold_locales auto
@@ -1072,14 +1072,14 @@ begin
 
 lemmas ordsetmap = ordsetmap
 
-lemma ordsetmap_strict: "\<lbrakk> a\<in>P; b\<in>P; a\<prec>b \<rbrakk> \<Longrightarrow> f a \<prec>* f b"
+lemma ordsetmap_strict: "\<lbrakk> a\<in>P; b\<in>P; a\<^bold><b \<rbrakk> \<Longrightarrow> f a \<^bold><* f b"
   using domain.strict_iff_order codomain.strict_iff_order ordsetmap inj
         inj_on_contraD
   by    fastforce
 
 lemmas inv_ordsetmap = OrderingSetMap.ordsetmap[OF rev_OrderingSetMap]
 
-lemma rev_ordsetmap: "\<lbrakk> a\<in>P; b\<in>P; f a \<preceq>* f b \<rbrakk> \<Longrightarrow> a \<preceq> b"
+lemma rev_ordsetmap: "\<lbrakk> a\<in>P; b\<in>P; f a \<^bold>\<le>* f b \<rbrakk> \<Longrightarrow> a \<^bold>\<le> b"
   using inv_ordsetmap the_inv_into_f_f[OF inj] by fastforce
 
 lemma inv_iso: "OrderingSetIso less_eq' less' less_eq less (f`P) (the_inv_into P f)"
@@ -1089,14 +1089,14 @@ lemma inv_iso: "OrderingSetIso less_eq' less' less_eq less (f`P) (the_inv_into P
 
 lemmas inv_ordsetmap_strict = OrderingSetIso.ordsetmap_strict[OF inv_iso]
 
-lemma rev_ordsetmap_strict: "\<lbrakk> a\<in>P; b\<in>P; f a \<prec>* f b \<rbrakk> \<Longrightarrow> a \<prec> b"
+lemma rev_ordsetmap_strict: "\<lbrakk> a\<in>P; b\<in>P; f a \<^bold><* f b \<rbrakk> \<Longrightarrow> a \<^bold>< b"
   using inv_ordsetmap_strict the_inv_into_f_f[OF inj] by fastforce
 
 lemma iso_comp:
   assumes "OrderingSetIso less_eq' less' less_eq'' less'' Q g" "f`P \<subseteq> Q"
   shows   "OrderingSetIso less_eq less less_eq'' less'' P (g\<circ>f)"
 proof (rule OrderingSetMap.isoI)
-  from assms show "OrderingSetMap op \<preceq> op \<prec> less_eq'' less'' P (g \<circ> f)"
+  from assms show "OrderingSetMap op \<^bold>\<le> op \<^bold>< less_eq'' less'' P (g \<circ> f)"
     using OrderingSetIso.axioms(1) comp by fast
   from assms(2) show "inj_on (g \<circ> f) P"
     using OrderingSetIso.inj[OF assms(1)]
@@ -1104,12 +1104,12 @@ proof (rule OrderingSetMap.isoI)
     by    fast
 next
   fix a b
-  from assms(2) show "\<lbrakk> a\<in>P; b\<in>P; less_eq'' ((g\<circ>f) a) ((g\<circ>f) b) \<rbrakk> \<Longrightarrow> a\<preceq>b"
+  from assms(2) show "\<lbrakk> a\<in>P; b\<in>P; less_eq'' ((g\<circ>f) a) ((g\<circ>f) b) \<rbrakk> \<Longrightarrow> a\<^bold>\<le>b"
     using OrderingSetIso.rev_ordsetmap[OF assms(1)] rev_ordsetmap by force
 qed
 
 lemma iso_subset:
-  "Q\<subseteq>P \<Longrightarrow> OrderingSetIso (op \<preceq>) (op \<prec>) (op \<preceq>*) (op \<prec>*) Q f"
+  "Q\<subseteq>P \<Longrightarrow> OrderingSetIso (op \<^bold>\<le>) (op \<^bold><) (op \<^bold>\<le>*) (op \<^bold><*) Q f"
   using subset[of Q] subset_inj_on[OF inj] rev_ordsetmap
   by    (blast intro: OrderingSetMap.isoI)
 
@@ -1216,27 +1216,27 @@ context ordering
 begin
 
 definition has_bottom :: "'a set \<Rightarrow> bool"
-  where "has_bottom P \<equiv> \<exists>z\<in>P. \<forall>x\<in>P. z \<preceq> x"
+  where "has_bottom P \<equiv> \<exists>z\<in>P. \<forall>x\<in>P. z \<^bold>\<le> x"
 
-lemma has_bottomI: "z\<in>P \<Longrightarrow> (\<And>x. x\<in>P \<Longrightarrow> z \<preceq> x) \<Longrightarrow> has_bottom P"
+lemma has_bottomI: "z\<in>P \<Longrightarrow> (\<And>x. x\<in>P \<Longrightarrow> z \<^bold>\<le> x) \<Longrightarrow> has_bottom P"
   using has_bottom_def by auto
 
-lemma has_uniq_bottom: "has_bottom P \<Longrightarrow> \<exists>!z\<in>P. \<forall>x\<in>P. z\<preceq>x"
+lemma has_uniq_bottom: "has_bottom P \<Longrightarrow> \<exists>!z\<in>P. \<forall>x\<in>P. z\<^bold>\<le>x"
   using has_bottom_def antisym by force
 
 definition bottom :: "'a set \<Rightarrow> 'a"
-  where "bottom P \<equiv> (THE z. z\<in>P \<and> (\<forall>x\<in>P. z\<preceq>x))"
+  where "bottom P \<equiv> (THE z. z\<in>P \<and> (\<forall>x\<in>P. z\<^bold>\<le>x))"
 
 lemma bottomD:
   assumes   "has_bottom P"
-  shows     "bottom P \<in> P" "x\<in>P \<Longrightarrow> bottom P \<preceq> x"
-  using     assms has_uniq_bottom theI'[of "\<lambda>z. z\<in>P \<and> (\<forall>x\<in>P. z\<preceq>x)"]
+  shows     "bottom P \<in> P" "x\<in>P \<Longrightarrow> bottom P \<^bold>\<le> x"
+  using     assms has_uniq_bottom theI'[of "\<lambda>z. z\<in>P \<and> (\<forall>x\<in>P. z\<^bold>\<le>x)"]
   unfolding bottom_def
   by        auto
 
-lemma bottomI: "z\<in>P \<Longrightarrow> (\<And>y. y\<in>P \<Longrightarrow> z \<preceq> y) \<Longrightarrow> z = bottom P"
+lemma bottomI: "z\<in>P \<Longrightarrow> (\<And>y. y\<in>P \<Longrightarrow> z \<^bold>\<le> y) \<Longrightarrow> z = bottom P"
   using     has_bottomI has_uniq_bottom
-            the1_equality[THEN sym, of "\<lambda>z. z\<in>P \<and> (\<forall>x\<in>P. z\<preceq>x)"]
+            the1_equality[THEN sym, of "\<lambda>z. z\<in>P \<and> (\<forall>x\<in>P. z\<^bold>\<le>x)"]
   unfolding bottom_def
   by        simp
 
@@ -1268,7 +1268,7 @@ lemma (in OrderingSetIso) pullback_has_bottom:
 proof (rule domain.has_bottomI)
   from assms show "the_inv_into P f codbot \<in> P"
     using codomain.bottomD(1) the_inv_into_into[OF inj] by fast
-  from assms show "\<And>x. x\<in>P \<Longrightarrow> the_inv_into P f codbot \<preceq> x"
+  from assms show "\<And>x. x\<in>P \<Longrightarrow> the_inv_into P f codbot \<^bold>\<le> x"
     using codomain.bottomD inv_ordsetmap[of codbot] the_inv_into_f_f[OF inj]
     by    fastforce
 qed
@@ -1290,7 +1290,7 @@ context ordering
 begin
 
 definition minimal_in :: "'a set \<Rightarrow> 'a \<Rightarrow> bool"
-  where "minimal_in P x \<equiv> x\<in>P \<and> (\<forall>z\<in>P. \<not> z \<prec> x)"
+  where "minimal_in P x \<equiv> x\<in>P \<and> (\<forall>z\<in>P. \<not> z \<^bold>< x)"
 
 definition pseudominimal_in :: "'a set \<Rightarrow> 'a \<Rightarrow> bool"
   where "pseudominimal_in P x \<equiv> minimal_in (P - {bottom P}) x"
@@ -1299,18 +1299,18 @@ definition pseudominimal_in :: "'a set \<Rightarrow> 'a \<Rightarrow> bool"
 lemma minimal_inD1: "minimal_in P x \<Longrightarrow> x\<in>P"
   using minimal_in_def by fast
 
-lemma minimal_inD2: "minimal_in P x \<Longrightarrow> z\<in>P \<Longrightarrow> \<not> z \<prec> x"
+lemma minimal_inD2: "minimal_in P x \<Longrightarrow> z\<in>P \<Longrightarrow> \<not> z \<^bold>< x"
   using minimal_in_def by fast
 
 lemma pseudominimal_inD1: "pseudominimal_in P x \<Longrightarrow> x\<in>P"
   using pseudominimal_in_def minimal_inD1 by fast
 
 lemma pseudominimal_inD2:
-  "pseudominimal_in P x \<Longrightarrow> z\<in>P \<Longrightarrow> z\<prec>x \<Longrightarrow> z = bottom P"
+  "pseudominimal_in P x \<Longrightarrow> z\<in>P \<Longrightarrow> z\<^bold><x \<Longrightarrow> z = bottom P"
   using pseudominimal_in_def minimal_inD2 by fast
 
 lemma pseudominimal_inI:
-  assumes   "x\<in>P" "x \<noteq> bottom P" "\<And>z. z\<in>P \<Longrightarrow> z\<prec>x \<Longrightarrow> z = bottom P"
+  assumes   "x\<in>P" "x \<noteq> bottom P" "\<And>z. z\<in>P \<Longrightarrow> z\<^bold><x \<Longrightarrow> z = bottom P"
   shows     "pseudominimal_in P x"
   using     assms
   unfolding pseudominimal_in_def minimal_in_def
@@ -1320,7 +1320,7 @@ lemma pseudominimal_ne_bottom: "pseudominimal_in P x \<Longrightarrow> x \<noteq
   using pseudominimal_in_def minimal_inD1 by fast
 
 lemma pseudominimal_comp:
-  "\<lbrakk> pseudominimal_in P x; pseudominimal_in P y; x\<preceq>y \<rbrakk> \<Longrightarrow> x = y"
+  "\<lbrakk> pseudominimal_in P x; pseudominimal_in P y; x\<^bold>\<le>y \<rbrakk> \<Longrightarrow> x = y"
   using pseudominimal_inD1 pseudominimal_inD2 pseudominimal_ne_bottom
         strict_iff_order[of x y]
   by    force
@@ -1350,7 +1350,7 @@ lemma no_pseudominimal_in_pow_is_empty:
 lemma (in OrderingSetIso) pseudominimal_map:
   "domain.has_bottom P \<Longrightarrow> domain.pseudominimal_in P x \<Longrightarrow>
     codomain.pseudominimal_in (f`P) (f x)"
-  using assms domain.pseudominimal_inD1 pullback_bottom
+  using domain.pseudominimal_inD1 pullback_bottom
         domain.pseudominimal_ne_bottom rev_ordsetmap_strict
         domain.pseudominimal_inD2 im_bottom
   by    (blast intro: codomain.pseudominimal_inI)
@@ -1364,8 +1364,8 @@ lemma (in OrderingSetIso) pullback_pseudominimal_in:
 
 subsubsection {* Set of elements below another *}
 
-abbreviation (in ordering) below_in :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set" (infix ".\<preceq>" 70)
-  where "P.\<preceq>x \<equiv> {y\<in>P. y\<preceq>x}"
+abbreviation (in ordering) below_in :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set" (infix ".\<^bold>\<le>" 70)
+  where "P.\<^bold>\<le>x \<equiv> {y\<in>P. y\<^bold>\<le>x}"
 
 abbreviation (in ord) below_in :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set" (infix ".\<le>" 70)
   where "P.\<le>x \<equiv> {y\<in>P. y\<le>x}"
@@ -1373,37 +1373,37 @@ abbreviation (in ord) below_in :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set"
 context ordering
 begin
 
-lemma below_in_refl: "x\<in>P \<Longrightarrow> x \<in> P.\<preceq>x"
+lemma below_in_refl: "x\<in>P \<Longrightarrow> x \<in> P.\<^bold>\<le>x"
   using refl by fast
 
-lemma below_in_singleton: "x\<in>P \<Longrightarrow> P.\<preceq>x \<subseteq> {y} \<Longrightarrow> y = x"
+lemma below_in_singleton: "x\<in>P \<Longrightarrow> P.\<^bold>\<le>x \<subseteq> {y} \<Longrightarrow> y = x"
   using below_in_refl by fast
 
-lemma bottom_in_below_in: "has_bottom P \<Longrightarrow> x\<in>P \<Longrightarrow> bottom P \<in> P.\<preceq>x"
+lemma bottom_in_below_in: "has_bottom P \<Longrightarrow> x\<in>P \<Longrightarrow> bottom P \<in> P.\<^bold>\<le>x"
   using bottomD by fast
 
 lemma below_in_singleton_is_bottom:
-  "\<lbrakk> has_bottom P; x\<in>P; P.\<preceq>x = {x} \<rbrakk> \<Longrightarrow> x = bottom P"
+  "\<lbrakk> has_bottom P; x\<in>P; P.\<^bold>\<le>x = {x} \<rbrakk> \<Longrightarrow> x = bottom P"
   using bottom_in_below_in by fast
 
 lemma bottom_below_in:
-  "has_bottom P \<Longrightarrow> x\<in>P \<Longrightarrow> bottom (P.\<preceq>x) = bottom P"
+  "has_bottom P \<Longrightarrow> x\<in>P \<Longrightarrow> bottom (P.\<^bold>\<le>x) = bottom P"
   using bottom_in_below_in by (fast intro: bottomI[THEN sym])
 
 lemma bottom_below_in_relative:
-  "\<lbrakk> has_bottom (P.\<preceq>y); x\<in>P; x\<preceq>y \<rbrakk> \<Longrightarrow> bottom (P.\<preceq>x) = bottom (P.\<preceq>y)"
+  "\<lbrakk> has_bottom (P.\<^bold>\<le>y); x\<in>P; x\<^bold>\<le>y \<rbrakk> \<Longrightarrow> bottom (P.\<^bold>\<le>x) = bottom (P.\<^bold>\<le>y)"
   using bottomD trans by (blast intro: bottomI[THEN sym])
 
 lemma has_bottom_pseudominimal_in_below_inI:
-  assumes "has_bottom P" "x\<in>P" "pseudominimal_in P y" "y\<preceq>x"
-  shows   "pseudominimal_in (P.\<preceq>x) y"
+  assumes "has_bottom P" "x\<in>P" "pseudominimal_in P y" "y\<^bold>\<le>x"
+  shows   "pseudominimal_in (P.\<^bold>\<le>x) y"
   using   assms(3,4) pseudominimal_inD1[OF assms(3)]
           pseudominimal_inD2[OF assms(3)]
           bottom_below_in[OF assms(1,2)] pseudominimal_ne_bottom
   by      (force intro: pseudominimal_inI)
 
 lemma has_bottom_pseudominimal_in_below_in:
-  assumes "has_bottom P" "x\<in>P" "pseudominimal_in (P.\<preceq>x) y"
+  assumes "has_bottom P" "x\<in>P" "pseudominimal_in (P.\<^bold>\<le>x) y"
   shows   "pseudominimal_in P y"
   using   pseudominimal_inD1[OF assms(3)]
           pseudominimal_inD2[OF assms(3)]
@@ -1413,8 +1413,8 @@ lemma has_bottom_pseudominimal_in_below_in:
   by      (force intro: pseudominimal_inI)
 
 lemma pseudominimal_in_below_in:
-  assumes   "has_bottom (P.\<preceq>y)" "x\<in>P" "x\<preceq>y" "pseudominimal_in (P.\<preceq>x) w"
-  shows     "pseudominimal_in (P.\<preceq>y) w"
+  assumes   "has_bottom (P.\<^bold>\<le>y)" "x\<in>P" "x\<^bold>\<le>y" "pseudominimal_in (P.\<^bold>\<le>x) w"
+  shows     "pseudominimal_in (P.\<^bold>\<le>y) w"
   using     assms(3) trans[of w x y] trans[of _ w x] strict_iff_order
             pseudominimal_inD1[OF assms(4)]
             pseudominimal_inD2[OF assms(4)]
@@ -1423,71 +1423,71 @@ lemma pseudominimal_in_below_in:
   by        (force intro: pseudominimal_inI)
 
 lemma collect_pseudominimals_below_in_less_eq_top:
-  assumes "OrderingSetIso less_eq less (op \<subseteq>) (op \<subset>) (P.\<preceq>x) f"
-          "f`(P.\<preceq>x) = Pow A" "a \<subseteq> {y. pseudominimal_in (P.\<preceq>x) y}"
-  defines "w \<equiv> the_inv_into (P.\<preceq>x) f (\<Union>(f`a))"
-  shows   "w \<preceq> x"
+  assumes "OrderingSetIso less_eq less (op \<subseteq>) (op \<subset>) (P.\<^bold>\<le>x) f"
+          "f`(P.\<^bold>\<le>x) = Pow A" "a \<subseteq> {y. pseudominimal_in (P.\<^bold>\<le>x) y}"
+  defines "w \<equiv> the_inv_into (P.\<^bold>\<le>x) f (\<Union>(f`a))"
+  shows   "w \<^bold>\<le> x"
 proof-
-  from assms(2,3) have "(\<Union>(f`a)) \<in> f`(P.\<preceq>x)"
+  from assms(2,3) have "(\<Union>(f`a)) \<in> f`(P.\<^bold>\<le>x)"
     using pseudominimal_inD1 by fastforce
   with assms(4) show ?thesis
-    using OrderingSetIso.inj[OF assms(1)] the_inv_into_into[of f "P.\<preceq>x"] by force
+    using OrderingSetIso.inj[OF assms(1)] the_inv_into_into[of f "P.\<^bold>\<le>x"] by force
 qed
 
 lemma collect_pseudominimals_below_in_poset:
-  assumes   "OrderingSetIso less_eq less (op \<subseteq>) (op \<subset>) (P.\<preceq>x) f"
-            "f`(P.\<preceq>x) = Pow A"
-            "a \<subseteq> {y. pseudominimal_in (P.\<preceq>x) y}"
-  defines   "w \<equiv> the_inv_into (P.\<preceq>x) f (\<Union>(f`a))"
+  assumes   "OrderingSetIso less_eq less (op \<subseteq>) (op \<subset>) (P.\<^bold>\<le>x) f"
+            "f`(P.\<^bold>\<le>x) = Pow A"
+            "a \<subseteq> {y. pseudominimal_in (P.\<^bold>\<le>x) y}"
+  defines   "w \<equiv> the_inv_into (P.\<^bold>\<le>x) f (\<Union>(f`a))"
   shows     "w \<in> P"
   using     assms(2-4) OrderingSetIso.inj[OF assms(1)] pseudominimal_inD1
-            the_inv_into_into[of f "P.\<preceq>x" "\<Union>(f`a)"]
+            the_inv_into_into[of f "P.\<^bold>\<le>x" "\<Union>(f`a)"]
   by        force
 
 lemma collect_pseudominimals_below_in_eq:
-  assumes "x\<in>P" "OrderingSetIso less_eq less (op \<subseteq>) (op \<subset>) (P.\<preceq>x) f"
-          "f`(P.\<preceq>x) = Pow A" "a \<subseteq> {y. pseudominimal_in (P.\<preceq>x) y}"
-  defines w: "w \<equiv> the_inv_into (P.\<preceq>x) f (\<Union>(f`a))"
-  shows   "a = {y. pseudominimal_in (P.\<preceq>w) y}"
+  assumes "x\<in>P" "OrderingSetIso less_eq less (op \<subseteq>) (op \<subset>) (P.\<^bold>\<le>x) f"
+          "f`(P.\<^bold>\<le>x) = Pow A" "a \<subseteq> {y. pseudominimal_in (P.\<^bold>\<le>x) y}"
+  defines w: "w \<equiv> the_inv_into (P.\<^bold>\<le>x) f (\<Union>(f`a))"
+  shows   "a = {y. pseudominimal_in (P.\<^bold>\<le>w) y}"
 proof
-  from assms(3) have has_bot_ltx: "has_bottom (P.\<preceq>x)"
+  from assms(3) have has_bot_ltx: "has_bottom (P.\<^bold>\<le>x)"
     using has_bottom_pow OrderingSetIso.pullback_has_bottom[OF assms(2)]
     by    auto
-  from assms(3,4) have Un_fa: "(\<Union>(f`a)) \<in> f`(P.\<preceq>x)"
+  from assms(3,4) have Un_fa: "(\<Union>(f`a)) \<in> f`(P.\<^bold>\<le>x)"
     using pseudominimal_inD1 by fastforce
-  from assms have w_le_x: "w\<preceq>x" and w_P: "w\<in>P"
+  from assms have w_le_x: "w\<^bold>\<le>x" and w_P: "w\<in>P"
     using collect_pseudominimals_below_in_less_eq_top
           collect_pseudominimals_below_in_poset
     by    auto
-  show "a \<subseteq> {y. pseudominimal_in (P.\<preceq>w) y}"
+  show "a \<subseteq> {y. pseudominimal_in (P.\<^bold>\<le>w) y}"
   proof
     fix y assume y: "y \<in> a"
-    show "y \<in> {y. pseudominimal_in (P.\<preceq>w) y}"
+    show "y \<in> {y. pseudominimal_in (P.\<^bold>\<le>w) y}"
     proof (rule CollectI, rule pseudominimal_inI, rule CollectI, rule conjI)
-      from y assms(4) have y_le_x: "y \<in> P.\<preceq>x" using pseudominimal_inD1 by fast
+      from y assms(4) have y_le_x: "y \<in> P.\<^bold>\<le>x" using pseudominimal_inD1 by fast
       thus "y\<in>P" by simp
-      from y w show "y \<preceq> w"
+      from y w show "y \<^bold>\<le> w"
         using y_le_x Un_fa OrderingSetIso.inv_ordsetmap[OF assms(2)]
               the_inv_into_f_f[OF OrderingSetIso.inj, OF assms(2), of y]
         by    fastforce
-      from assms(1) y assms(4) show "y \<noteq> bottom (P.\<preceq>w)"
+      from assms(1) y assms(4) show "y \<noteq> bottom (P.\<^bold>\<le>w)"
         using w_P w_le_x has_bot_ltx bottom_below_in_relative
               pseudominimal_ne_bottom
         by    fast
     next
-      fix z assume z: "z \<in> P.\<preceq>w" "z\<prec>y"
-      with y assms(4) have "z = bottom (P.\<preceq>x)"
-        using w_le_x trans pseudominimal_inD2[ of "P.\<preceq>x" y z] by fast
-      moreover from assms(1) have "bottom (P.\<preceq>w) = bottom (P.\<preceq>x)"
+      fix z assume z: "z \<in> P.\<^bold>\<le>w" "z\<^bold><y"
+      with y assms(4) have "z = bottom (P.\<^bold>\<le>x)"
+        using w_le_x trans pseudominimal_inD2[ of "P.\<^bold>\<le>x" y z] by fast
+      moreover from assms(1) have "bottom (P.\<^bold>\<le>w) = bottom (P.\<^bold>\<le>x)"
         using has_bot_ltx w_P w_le_x bottom_below_in_relative by fast
-      ultimately show "z = bottom (P.\<preceq>w)" by simp
+      ultimately show "z = bottom (P.\<^bold>\<le>w)" by simp
     qed
   qed
-  show "a \<supseteq> {y. pseudominimal_in (P.\<preceq>w) y}"
+  show "a \<supseteq> {y. pseudominimal_in (P.\<^bold>\<le>w) y}"
   proof
-    fix v assume "v \<in> {y. pseudominimal_in (P.\<preceq>w) y}"
-    hence "pseudominimal_in (P.\<preceq>w) v" by fast
-    moreover hence v_pm_ltx: "pseudominimal_in (P.\<preceq>x) v"
+    fix v assume "v \<in> {y. pseudominimal_in (P.\<^bold>\<le>w) y}"
+    hence "pseudominimal_in (P.\<^bold>\<le>w) v" by fast
+    moreover hence v_pm_ltx: "pseudominimal_in (P.\<^bold>\<le>x) v"
       using has_bot_ltx w_P w_le_x pseudominimal_in_below_in by fast
     ultimately
       have  "f v \<le> (\<Union>(f`a))"
@@ -1515,23 +1515,23 @@ context ordering
 begin
 
 definition lbound_of :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
-  where "lbound_of x y b \<equiv> b\<preceq>x \<and> b\<preceq>y"
+  where "lbound_of x y b \<equiv> b\<^bold>\<le>x \<and> b\<^bold>\<le>y"
 
-lemma lbound_ofI: "b\<preceq>x \<Longrightarrow> b\<preceq>y \<Longrightarrow> lbound_of x y b"
+lemma lbound_ofI: "b\<^bold>\<le>x \<Longrightarrow> b\<^bold>\<le>y \<Longrightarrow> lbound_of x y b"
   using lbound_of_def by fast
 
-lemma lbound_ofD1: "lbound_of x y b \<Longrightarrow> b\<preceq>x"
+lemma lbound_ofD1: "lbound_of x y b \<Longrightarrow> b\<^bold>\<le>x"
   using lbound_of_def by fast
 
-lemma lbound_ofD2: "lbound_of x y b \<Longrightarrow> b\<preceq>y"
+lemma lbound_ofD2: "lbound_of x y b \<Longrightarrow> b\<^bold>\<le>y"
   using lbound_of_def by fast
 
 definition glbound_in_of :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
   where "glbound_in_of P x y b \<equiv>
-          b\<in>P \<and> lbound_of x y b \<and> (\<forall>a\<in>P. lbound_of x y a \<longrightarrow> a\<preceq>b)"
+          b\<in>P \<and> lbound_of x y b \<and> (\<forall>a\<in>P. lbound_of x y a \<longrightarrow> a\<^bold>\<le>b)"
 
 lemma glbound_in_ofI:
-  "\<lbrakk> b\<in>P; lbound_of x y b; \<And>a. a\<in>P \<Longrightarrow> lbound_of x y a \<Longrightarrow> a\<preceq>b \<rbrakk> \<Longrightarrow>
+  "\<lbrakk> b\<in>P; lbound_of x y b; \<And>a. a\<in>P \<Longrightarrow> lbound_of x y a \<Longrightarrow> a\<^bold>\<le>b \<rbrakk> \<Longrightarrow>
     glbound_in_of P x y b"
   using glbound_in_of_def by auto
 
@@ -1542,21 +1542,21 @@ lemma glbound_in_ofD_lbound: "glbound_in_of P x y b \<Longrightarrow> lbound_of 
   using glbound_in_of_def by fast
 
 lemma glbound_in_ofD_glbound:
-  "glbound_in_of P x y b \<Longrightarrow> a\<in>P \<Longrightarrow> lbound_of x y a \<Longrightarrow> a\<preceq>b"
+  "glbound_in_of P x y b \<Longrightarrow> a\<in>P \<Longrightarrow> lbound_of x y a \<Longrightarrow> a\<^bold>\<le>b"
   using glbound_in_of_def by fast
 
-lemma glbound_in_of_less_eq1: "glbound_in_of P x y b \<Longrightarrow> b\<preceq>x"
+lemma glbound_in_of_less_eq1: "glbound_in_of P x y b \<Longrightarrow> b\<^bold>\<le>x"
   using glbound_in_ofD_lbound lbound_ofD1 by fast
 
-lemma glbound_in_of_less_eq2: "glbound_in_of P x y b \<Longrightarrow> b\<preceq>y"
+lemma glbound_in_of_less_eq2: "glbound_in_of P x y b \<Longrightarrow> b\<^bold>\<le>y"
   using glbound_in_ofD_lbound lbound_ofD2 by fast
 
 lemma pseudominimal_in_below_in_less_eq_glbound:
-  assumes "pseudominimal_in (P.\<preceq>x) w" "pseudominimal_in (P.\<preceq>y) w"
+  assumes "pseudominimal_in (P.\<^bold>\<le>x) w" "pseudominimal_in (P.\<^bold>\<le>y) w"
           "glbound_in_of P x y b"
-  shows   "w \<preceq> b"
+  shows   "w \<^bold>\<le> b"
   using assms lbound_ofI glbound_in_ofD_glbound
-        pseudominimal_inD1[of "P.\<preceq>x"] pseudominimal_inD1[of "P.\<preceq>y"]
+        pseudominimal_inD1[of "P.\<^bold>\<le>x"] pseudominimal_inD1[of "P.\<^bold>\<le>y"]
   by    fast
 
 end (* context ordering *)
@@ -1600,7 +1600,7 @@ proof-
     where fA: "OrderingSetIso less_eq less (op \<subseteq>) (op \<subset>) P f" "f`P = Pow A"
     using simplex_likeD_iso[OF assms(1)]
     by    auto
-  def e: e \<equiv> "{}:: nat set"
+  define e where e: "e \<equiv> {}:: nat set"
   with fA(2) have "e \<in> f`P" using Pow_bottom by simp
   from this obtain p where "p \<in> P" "f p = e" by fast
   have "\<And>x. \<not> order.pseudominimal_in (Pow A) {x}"
@@ -1620,8 +1620,8 @@ proof-
 qed
 
 lemma simplex_like_no_pseudominimal_in_below_in_imp_singleton:
-  "\<lbrakk> x\<in>P; simplex_like (P.\<preceq>x); \<And>z. \<not> pseudominimal_in (P.\<preceq>x) z \<rbrakk> \<Longrightarrow>
-    P.\<preceq>x = {x}"
+  "\<lbrakk> x\<in>P; simplex_like (P.\<^bold>\<le>x); \<And>z. \<not> pseudominimal_in (P.\<^bold>\<le>x) z \<rbrakk> \<Longrightarrow>
+    P.\<^bold>\<le>x = {x}"
   using simplex_like_no_pseudominimal_imp_singleton below_in_singleton[of x P]
   by    fast
 
@@ -1632,7 +1632,7 @@ lemma pseudo_simplex_like_has_bottom:
 
 lemma pseudo_simplex_like_above_pseudominimal_is_top:
   assumes "OrderingSetIso less_eq less (op \<subseteq>) (op \<subset>) P f" "f`P = Pow A" "t\<in>P"
-          "\<And>x. pseudominimal_in P x \<Longrightarrow> x \<preceq> t"
+          "\<And>x. pseudominimal_in P x \<Longrightarrow> x \<^bold>\<le> t"
   shows   "f t = A"
 proof
   from assms(2,3) show "f t \<subseteq> A" by fast
@@ -1650,9 +1650,9 @@ proof
 qed
 
 lemma pseudo_simplex_like_below_in_above_pseudominimal_is_top:
-  assumes "x\<in>P" "OrderingSetIso less_eq less (op \<subseteq>) (op \<subset>) (P.\<preceq>x) f"
-          "f`(P.\<preceq>x) = Pow A" "t \<in> P.\<preceq>x"
-          "\<And>y. pseudominimal_in (P.\<preceq>x) y \<Longrightarrow> y \<preceq> t"
+  assumes "x\<in>P" "OrderingSetIso less_eq less (op \<subseteq>) (op \<subset>) (P.\<^bold>\<le>x) f"
+          "f`(P.\<^bold>\<le>x) = Pow A" "t \<in> P.\<^bold>\<le>x"
+          "\<And>y. pseudominimal_in (P.\<^bold>\<le>x) y \<Longrightarrow> y \<^bold>\<le> t"
   shows   "t = x"
   using   assms(1,3-5)
           pseudo_simplex_like_above_pseudominimal_is_top[OF assms(2)]
@@ -1661,8 +1661,8 @@ lemma pseudo_simplex_like_below_in_above_pseudominimal_is_top:
   by      auto
 
 lemma simplex_like_below_in_above_pseudominimal_is_top:
-  assumes "x\<in>P" "simplex_like (P.\<preceq>x)" "t \<in> P.\<preceq>x"
-          "\<And>y. pseudominimal_in (P.\<preceq>x) y \<Longrightarrow> y \<preceq> t"
+  assumes "x\<in>P" "simplex_like (P.\<^bold>\<le>x)" "t \<in> P.\<^bold>\<le>x"
+          "\<And>y. pseudominimal_in (P.\<^bold>\<le>x) y \<Longrightarrow> y \<^bold>\<le> t"
   shows   "t = x"
   using assms simplex_likeD_iso
         pseudo_simplex_like_below_in_above_pseudominimal_is_top[of x P _ _ t]
@@ -1675,11 +1675,11 @@ lemma (in OrderingSetIso) simplex_like_map:
   shows   "codomain.simplex_like (f`P)"
 proof-
   obtain g::"'a \<Rightarrow> nat set" and A::"nat set"
-    where gA: "OrderingSetIso (op \<preceq>) (op \<prec>) (op \<subseteq>) (op \<subset>) P g" "g`P = Pow A"
+    where gA: "OrderingSetIso (op \<^bold>\<le>) (op \<^bold><) (op \<subseteq>) (op \<subset>) P g" "g`P = Pow A"
     using domain.simplex_likeD_iso[OF assms]
     by    auto
   from gA(1) inj
-    have  "OrderingSetIso (op \<preceq>*) (op \<prec>*) (op \<subseteq>) (op \<subset>) (f`P)
+    have  "OrderingSetIso (op \<^bold>\<le>*) (op \<^bold><*) (op \<subseteq>) (op \<subset>) (f`P)
             (g \<circ> (the_inv_into P f))"
     using OrderingSetIso.iso_comp[OF inv_iso] the_inv_into_onto
     by    fast
@@ -1695,7 +1695,7 @@ lemma (in OrderingSetIso) pullback_simplex_like:
   shows   "domain.simplex_like P"
 proof-
   obtain g::"'b \<Rightarrow> nat set" and A::"nat set"
-    where gA:  "OrderingSetIso (op \<preceq>*) (op \<prec>*) (op \<subseteq>) (op \<subset>) (f`P) g"
+    where gA:  "OrderingSetIso (op \<^bold>\<le>*) (op \<^bold><*) (op \<subseteq>) (op \<subset>) (f`P) g"
                "g`(f`P) = Pow A"
     using codomain.simplex_likeD_iso[OF assms(2)]
     by    auto
