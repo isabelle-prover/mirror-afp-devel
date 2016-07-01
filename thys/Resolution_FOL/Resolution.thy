@@ -997,7 +997,7 @@ next
 
   from asm obtain Cg where "instance_of\<^sub>l\<^sub>s Cg (std\<^sub>1 C\<^sub>1)  \<and> falsifies\<^sub>g G Cg" by auto
   moreover
-  then have "instance_of\<^sub>l\<^sub>s Cg C\<^sub>1" using inst instance_of\<^sub>l\<^sub>s_trans assms by blast
+  then have "instance_of\<^sub>l\<^sub>s Cg C\<^sub>1" using inst instance_of\<^sub>l\<^sub>s_trans by blast
   ultimately
   show "falsifies\<^sub>c G C\<^sub>1" by auto
 qed
@@ -1016,22 +1016,22 @@ next
 
   from asm obtain Cg where "instance_of\<^sub>l\<^sub>s Cg (std\<^sub>2 C\<^sub>2)  \<and> falsifies\<^sub>g G Cg" by auto
   moreover
-  then have "instance_of\<^sub>l\<^sub>s Cg C\<^sub>2" using inst instance_of\<^sub>l\<^sub>s_trans assms by blast
+  then have "instance_of\<^sub>l\<^sub>s Cg C\<^sub>2" using inst instance_of\<^sub>l\<^sub>s_trans by blast
   ultimately
   show "falsifies\<^sub>c G C\<^sub>2" by auto
 qed
 
 lemma std\<^sub>1_renames: "var_renaming_of C\<^sub>1 (std\<^sub>1 C\<^sub>1)"
 proof -
-  have "instance_of\<^sub>l\<^sub>s C\<^sub>1 (std\<^sub>1 C\<^sub>1)" using std_apart_instance_of\<^sub>l\<^sub>s1 assms by auto
-  moreover have "instance_of\<^sub>l\<^sub>s (std\<^sub>1 C\<^sub>1) C\<^sub>1" using assms unfolding instance_of\<^sub>l\<^sub>s_def by auto
+  have "instance_of\<^sub>l\<^sub>s C\<^sub>1 (std\<^sub>1 C\<^sub>1)" using std_apart_instance_of\<^sub>l\<^sub>s1 by auto
+  moreover have "instance_of\<^sub>l\<^sub>s (std\<^sub>1 C\<^sub>1) C\<^sub>1" unfolding instance_of\<^sub>l\<^sub>s_def by auto
   ultimately show "var_renaming_of C\<^sub>1 (std\<^sub>1 C\<^sub>1)" unfolding var_renaming_of_def by auto
 qed
 
 lemma std\<^sub>2_renames: "var_renaming_of C\<^sub>2 (std\<^sub>2 C\<^sub>2)"
 proof -
-  have "instance_of\<^sub>l\<^sub>s C\<^sub>2 (std\<^sub>2 C\<^sub>2)" using std_apart_instance_of\<^sub>l\<^sub>s2 assms by auto
-  moreover have "instance_of\<^sub>l\<^sub>s (std\<^sub>2 C\<^sub>2) C\<^sub>2" using assms unfolding instance_of\<^sub>l\<^sub>s_def by auto
+  have "instance_of\<^sub>l\<^sub>s C\<^sub>2 (std\<^sub>2 C\<^sub>2)" using std_apart_instance_of\<^sub>l\<^sub>s2 by auto
+  moreover have "instance_of\<^sub>l\<^sub>s (std\<^sub>2 C\<^sub>2) C\<^sub>2" unfolding instance_of\<^sub>l\<^sub>s_def by auto
   ultimately show "var_renaming_of C\<^sub>2 (std\<^sub>2 C\<^sub>2)" unfolding var_renaming_of_def by auto
 qed
 
