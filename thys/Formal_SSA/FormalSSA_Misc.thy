@@ -227,24 +227,9 @@ lemma fold_update_conv:
   (if (x \<in> set xs) then Some (g x) else m x)"
   by (induction xs arbitrary: m) auto
 
-lemma removeAll_le: "length (removeAll x xs) \<le> length xs"
-by (induction xs) auto
+lemmas removeAll_le = length_removeAll_less_eq
 
-lemma removeAll_less[intro]: "x \<in> set xs \<Longrightarrow> length (removeAll x xs) < length xs"
-proof (induction xs)
-  case Nil thus ?case by simp
-next
-  case (Cons y ys)
-  thus ?case
-  proof (cases "x=y")
-    case True
-    thus ?thesis using removeAll_le[of y ys] by simp
-  next
-    case False
-    with Cons have "length (removeAll x ys) < length ys" by simp
-    thus ?thesis by auto
-  qed
-qed
+lemmas removeAll_less [intro] = length_removeAll_less
 
 lemma removeAll_induct:
   assumes "\<And>xs. (\<And>x. x \<in> set xs \<Longrightarrow> P (removeAll x xs)) \<Longrightarrow> P xs"
