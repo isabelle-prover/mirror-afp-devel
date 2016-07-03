@@ -354,22 +354,22 @@ qed
 
 fun exec :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> 'a tree" where
 "exec Empty [] = Leaf" |
-"exec (Insert a) [h] = insert a h" |
-"exec Del_min [h] = del_min h"
+"exec (Insert a) [t] = insert a t" |
+"exec Del_min [t] = del_min t"
 
-fun t :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> nat" where
-"t Empty [] = 1" |
-"t (Insert a) [h] = t_in a h" |
-"t Del_min [h] = t_dm h"
+fun cost :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> nat" where
+"cost Empty [] = 1" |
+"cost (Insert a) [t] = t_in a t" |
+"cost Del_min [t] = t_dm t"
 
 fun U where
 "U Empty [] = 1" |
-"U (Insert _) [h] = 3 * log 2 (size1 h + 1) + 1" |
-"U Del_min [h] = 2 * \<phi> h + 1"
+"U (Insert _) [t] = 3 * log 2 (size1 t + 1) + 1" |
+"U Del_min [t] = 2 * \<phi> t + 1"
 
 interpretation Amortized
 where arity = arity and exec = exec and inv = "bst_eq"
-and t = t and \<Phi> = \<Phi> and U = U
+and cost = cost and \<Phi> = \<Phi> and U = U
 proof (standard, goal_cases)
   case (1 _ f) thus ?case
     by(cases f)
@@ -387,10 +387,10 @@ next
     case Del_min with 4 show ?thesis by(auto simp: amor_del_min)
   next
     case [simp]: (Insert x)
-    then obtain h where [simp]: "s = [h]" "bst_eq h" using 4 by auto
-    { fix l r assume 1: "partition x h = (l,r)"
-      have "log 2 (1 + size h) < log 2 (2 + size h)" by simp
-      with 1 amor_partition[OF \<open>bst_eq h\<close> 1] size_partition[OF 1] have ?thesis
+    then obtain t where [simp]: "s = [t]" "bst_eq t" using 4 by auto
+    { fix l r assume 1: "partition x t = (l,r)"
+      have "log 2 (1 + size t) < log 2 (2 + size t)" by simp
+      with 1 amor_partition[OF \<open>bst_eq t\<close> 1] size_partition[OF 1] have ?thesis
         by(simp add: t_in_def insert_def algebra_simps size1_def
              del: log_less_cancel_iff) }
     thus ?thesis by(simp add: insert_def split: prod.split)

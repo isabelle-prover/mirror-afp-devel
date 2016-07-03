@@ -109,11 +109,11 @@ fun exec :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Righta
 "exec Del_min [h] = del_min h" |
 "exec Meld [h1,h2] = meld h1 h2"
 
-fun t :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> nat" where
-"t Empty [] = 1" |
-"t (Insert a) [h] = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d (Node Leaf a Leaf) h + 1" |
-"t Del_min [h] = (case h of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> t\<^sub>m\<^sub>e\<^sub>l\<^sub>d t1 t2 + 1)" |
-"t Meld [h1,h2] = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d h1 h2 + 1"
+fun cost :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> nat" where
+"cost Empty [] = 1" |
+"cost (Insert a) [h] = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d (Node Leaf a Leaf) h + 1" |
+"cost Del_min [h] = (case h of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> t\<^sub>m\<^sub>e\<^sub>l\<^sub>d t1 t2 + 1)" |
+"cost Meld [h1,h2] = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d h1 h2 + 1"
 
 fun U where
 "U Empty [] = 1" |
@@ -123,7 +123,7 @@ fun U where
 
 interpretation Amortized
 where arity = arity and exec = exec and inv = "\<lambda>_. True"
-and t = t and \<Phi> = \<Phi> and U = U
+and cost = cost and \<Phi> = \<Phi> and U = U
 proof (standard, goal_cases)
   case 1 show ?case by simp
 next

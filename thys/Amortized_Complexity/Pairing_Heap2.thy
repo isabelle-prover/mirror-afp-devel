@@ -234,12 +234,12 @@ fun t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 :: "'a tree \<Rightarrow> nat" whe
   "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 Leaf = 1"
 | "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (Node _ _ rx) = 1 + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 rx"
 
-fun t :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> nat" where
-  "t Empty [] = 1"
-| "t Del_min [Leaf] = 1"
-| "t Del_min [Node lx _  _] = 1 + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx"
-| "t (Insert a) _ = 1"
-| "t Meld [h1,h2] = 1"
+fun cost :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> nat" where
+  "cost Empty [] = 1"
+| "cost Del_min [Leaf] = 1"
+| "cost Del_min [Node lx _  _] = 1 + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx"
+| "cost (Insert a) _ = 1"
+| "cost Meld [h1,h2] = 1"
 
 fun U :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> real" where
   "U Empty [] = 1"
@@ -248,7 +248,7 @@ fun U :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightar
 | "U Meld [h1,h2] = 2*log 2 (1 + size h1 + size h2) + 1"
 
 interpretation Amortized
-where arity = arity and exec = exec and t = t and inv = isRoot 
+where arity = arity and exec = exec and cost = cost and inv = isRoot 
 and \<Phi> = \<Phi> and U = U
 proof
   case goal1 thus ?case using isRoot_insert isRoot_del_min isRoot_meld
@@ -273,7 +273,7 @@ next
       case [simp]: (Node lx x rx)
       have "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx \<le> len lx + 2"
         by (induct lx rule: pass\<^sub>1.induct) simp_all
-      hence "t f ss \<le> \<dots> + 1" by simp 
+      hence "cost f ss \<le> \<dots> + 1" by simp 
       moreover have "\<Phi> (del_min h) - \<Phi> h \<le> 3*log 2 (1 + size h) - len lx + 2"
       proof (cases lx)
         case [simp]: (Node ly y ry) 

@@ -41,13 +41,13 @@ fun exec :: "ops \<Rightarrow> bool list list \<Rightarrow> bool list" where
 "exec Empty [] = []" |
 "exec Incr [bs] = incr bs"
 
-fun t :: "ops \<Rightarrow> bool list list \<Rightarrow> nat" where
-"t Empty _ = 1" |
-"t Incr [bs] = t\<^sub>i\<^sub>n\<^sub>c\<^sub>r bs"
+fun cost :: "ops \<Rightarrow> bool list list \<Rightarrow> nat" where
+"cost Empty _ = 1" |
+"cost Incr [bs] = t\<^sub>i\<^sub>n\<^sub>c\<^sub>r bs"
 
 interpretation Amortized
 where exec = exec and arity = arity and inv = "\<lambda>_. True"
-and t = t and \<Phi> = \<Phi> and U = "\<lambda>f _. case f of Empty \<Rightarrow> 1 | Incr \<Rightarrow> 2"
+and cost = cost and \<Phi> = \<Phi> and U = "\<lambda>f _. case f of Empty \<Rightarrow> 1 | Incr \<Rightarrow> 2"
 proof (standard, goal_cases)
   case 1 show ?case by simp
 next
@@ -78,15 +78,16 @@ fun exec :: "'a ops \<Rightarrow> 'a list list \<Rightarrow> 'a list" where
 "exec (Push x) [xs] = x # xs" |
 "exec (Pop n) [xs] = drop n xs"
 
-fun t :: "'a ops \<Rightarrow> 'a list list \<Rightarrow> nat" where
-"t Empty _ = 1" |
-"t (Push x) _ = 1" |
-"t (Pop n) [xs] = min n (length xs)"
+fun cost :: "'a ops \<Rightarrow> 'a list list \<Rightarrow> nat" where
+"cost Empty _ = 1" |
+"cost (Push x) _ = 1" |
+"cost (Pop n) [xs] = min n (length xs)"
 
 
 interpretation Amortized
 where arity = arity and exec = exec and inv = "\<lambda>_. True"
-and t = t and \<Phi> = "length" and U = "\<lambda>f _. case f of Empty \<Rightarrow> 1 | Push _ \<Rightarrow> 2 | Pop _ \<Rightarrow> 0"
+and cost = cost and \<Phi> = "length"
+and U = "\<lambda>f _. case f of Empty \<Rightarrow> 1 | Push _ \<Rightarrow> 2 | Pop _ \<Rightarrow> 0"
 proof (standard, goal_cases)
   case 1 show ?case by simp
 next
@@ -117,14 +118,14 @@ fun exec :: "ops \<Rightarrow> tab list \<Rightarrow> tab" where
 "exec Empty [] = (0::nat,0::nat)" |
 "exec Ins [(n,l)] = (n+1, if n<l then l else if l=0 then 1 else 2*l)"
 
-fun t :: "ops \<Rightarrow> tab list \<Rightarrow> nat" where
-"t Empty _ = 1" |
-"t Ins [(n,l)] = (if n<l then 1 else n+1)"
+fun cost :: "ops \<Rightarrow> tab list \<Rightarrow> nat" where
+"cost Empty _ = 1" |
+"cost Ins [(n,l)] = (if n<l then 1 else n+1)"
 
 interpretation Amortized
 where exec = exec and arity = arity
 and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> l < 2*n"
-and t = t and \<Phi> = "\<lambda>(n,l). 2*n - l"
+and cost = cost and \<Phi> = "\<lambda>(n,l). 2*n - l"
 and U = "\<lambda>f _. case f of Empty \<Rightarrow> 1 | Ins \<Rightarrow> 3"
 proof (standard, goal_cases)
   case (1 _ f) thus ?case by(cases f) (auto split: if_splits)
@@ -175,9 +176,9 @@ fun exec :: "ops \<Rightarrow> tab list \<Rightarrow> tab" where
 "exec Ins [s] = ins s" |
 "exec _ _ = (0,0)" (* otherwise fun goes wrong with odd error msg *)
 
-fun t :: "ops \<Rightarrow> tab list \<Rightarrow> nat" where
-"t Empty _ = 1" |
-"t Ins [(n,l)] = (if n<l then 1 else n+1)"
+fun cost :: "ops \<Rightarrow> tab list \<Rightarrow> nat" where
+"cost Empty _ = 1" |
+"cost Ins [(n,l)] = (if n<l then 1 else n+1)"
 
 fun \<Phi> :: "tab \<Rightarrow> real" where
 "\<Phi>(n,l) = a*n - b*l"
@@ -185,7 +186,7 @@ fun \<Phi> :: "tab \<Rightarrow> real" where
 interpretation Amortized
 where exec = exec and arity = arity
 and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> (b/a)*l \<le> n"
-and t = t and \<Phi> = \<Phi> and U = "\<lambda>f _. case f of Empty \<Rightarrow> 1 | Ins \<Rightarrow> a + 1"
+and cost = cost and \<Phi> = \<Phi> and U = "\<lambda>f _. case f of Empty \<Rightarrow> 1 | Ins \<Rightarrow> a + 1"
 proof (standard, goal_cases)
   case (1 ss f)
   show ?case
@@ -253,7 +254,7 @@ next
       next
         assume "\<not> n<l"
         hence [simp]: "n=l" using 4 by simp
-        have "t Ins [(n,l)] + \<Phi> (ins (n,l)) - \<Phi>(n,l) = l + a + 1 + (- b*ceiling(c*l)) + b*l"
+        have "cost Ins [(n,l)] + \<Phi> (ins (n,l)) - \<Phi>(n,l) = l + a + 1 + (- b*ceiling(c*l)) + b*l"
           using `l\<noteq>0`
           by(simp add: algebra_simps less_trans[of "-1::real" 0])
         also have "- b * ceiling(c*l) \<le> - b * (c*l)" by (simp add: ceiling_correct)
@@ -289,15 +290,15 @@ fun exec :: "ops \<Rightarrow> tab list \<Rightarrow> tab" where
 "exec Ins [(n,l)] = (n+1, if n<l then l else if l=0 then 1 else 2*l)" |
 "exec Del [(n,l)] = (n-1, if n=1 then 0 else if 4*(n - 1)<l then l div 2 else l)"
 
-fun t :: "ops \<Rightarrow> tab list \<Rightarrow> nat" where
-"t Empty _ = 1" |
-"t Ins [(n,l)] = (if n<l then 1 else n+1)" |
-"t Del [(n,l)] = (if n=1 then 1 else if 4*(n - 1)<l then n else 1)"
+fun cost :: "ops \<Rightarrow> tab list \<Rightarrow> nat" where
+"cost Empty _ = 1" |
+"cost Ins [(n,l)] = (if n<l then 1 else n+1)" |
+"cost Del [(n,l)] = (if n=1 then 1 else if 4*(n - 1)<l then n else 1)"
 
 interpretation Amortized
 where arity = arity and exec = exec
 and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> l \<le> 4*n"
-and t = t and \<Phi> = "(\<lambda>(n,l). if 2*n < l then l/2 - n else 2*n - l)"
+and cost = cost and \<Phi> = "(\<lambda>(n,l). if 2*n < l then l/2 - n else 2*n - l)"
 and U = "\<lambda>f _. case f of Empty \<Rightarrow> 1 | Ins \<Rightarrow> 3 | Del \<Rightarrow> 2"
 proof (standard, goal_cases)
   case (1 _ f) thus ?case by (cases f) (auto split: if_splits)
@@ -334,14 +335,14 @@ fun exec :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> 'a queue" where
 "exec (Enq x) [(xs,ys)] = (x#xs,ys)" |
 "exec Deq [(xs,ys)] = (if ys = [] then ([], tl(rev xs)) else (xs,tl ys))"
 
-fun t :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> nat" where
-"t Empty _ = 1" |
-"t (Enq x) [(xs,ys)] = 1" |
-"t Deq [(xs,ys)] = (if ys = [] then length xs else 0)"
+fun cost :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> nat" where
+"cost Empty _ = 1" |
+"cost (Enq x) [(xs,ys)] = 1" |
+"cost Deq [(xs,ys)] = (if ys = [] then length xs else 0)"
 
 interpretation Amortized
 where arity = arity and exec = exec and inv = "\<lambda>_. True"
-and t = t and \<Phi> = "\<lambda>(xs,ys). length xs"
+and cost = cost and \<Phi> = "\<lambda>(xs,ys). length xs"
 and U = "\<lambda>f _. case f of Empty \<Rightarrow> 1 | Enq _ \<Rightarrow> 2 | Deq \<Rightarrow> 0"
 proof (standard, goal_cases)
   case 1 show ?case by simp
@@ -375,15 +376,15 @@ fun exec :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> 'a queue" where
 "exec (Enq x) [(xs,ys)] = balance(x#xs,ys)" |
 "exec Deq [(xs,ys)] = balance (xs, tl ys)"
 
-fun t :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> nat" where
-"t Empty _ = 1" |
-"t (Enq x) [(xs,ys)] = 1 + (if size xs + 1 \<le> size ys then 0 else size xs + 1 + size ys)" |
-"t Deq [(xs,ys)] = (if size xs \<le> size ys - 1 then 0 else size xs + (size ys - 1))"
+fun cost :: "'a ops \<Rightarrow> 'a queue list \<Rightarrow> nat" where
+"cost Empty _ = 1" |
+"cost (Enq x) [(xs,ys)] = 1 + (if size xs + 1 \<le> size ys then 0 else size xs + 1 + size ys)" |
+"cost Deq [(xs,ys)] = (if size xs \<le> size ys - 1 then 0 else size xs + (size ys - 1))"
 
 interpretation Amortized
 where arity = arity and exec = exec
 and inv = "\<lambda>(xs,ys). size xs \<le> size ys"
-and t = t and \<Phi> = "\<lambda>(xs,ys). 2 * size xs"
+and cost = cost and \<Phi> = "\<lambda>(xs,ys). 2 * size xs"
 and U = "\<lambda>f _. case f of Empty \<Rightarrow> 1 | Enq _ \<Rightarrow> 3 | Deq \<Rightarrow> 0"
 proof (standard, goal_cases)
   case (1 _ f) thus ?case by (cases f) (auto split: if_splits)

@@ -264,7 +264,7 @@ fun U where
 
 interpretation Amortized
 where arity = arity and exec = exec and inv = bst
-and t = t\<^sub>s\<^sub>t and \<Phi> = \<Phi> and U = U
+and cost = cost and \<Phi> = \<Phi> and U = U
 proof (standard, goal_cases)
   case (1 ss f) show ?case
   proof (cases f)

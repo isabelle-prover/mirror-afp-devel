@@ -126,10 +126,10 @@ fun exec :: "'a::linorder op\<^sub>s\<^sub>t \<Rightarrow> 'a tree list \<Righta
 "exec (Insert a) [t] = Splay_Tree.insert a t" |
 "exec (Delete a) [t] = Splay_Tree.delete a t"
 
-fun t\<^sub>s\<^sub>t :: "'a::linorder op\<^sub>s\<^sub>t \<Rightarrow> 'a tree list \<Rightarrow> nat" where
-"t\<^sub>s\<^sub>t Empty [] = 1" |
-"t\<^sub>s\<^sub>t (Splay a) [t] = t_splay a t" |
-"t\<^sub>s\<^sub>t (Insert a) [t] = t_splay a t" |
-"t\<^sub>s\<^sub>t (Delete a) [t] = t_delete a t"
+fun cost :: "'a::linorder op\<^sub>s\<^sub>t \<Rightarrow> 'a tree list \<Rightarrow> nat" where
+"cost Empty [] = 1" |
+"cost (Splay a) [t] = t_splay a t" |
+"cost (Insert a) [t] = t_splay a t" |
+"cost (Delete a) [t] = t_delete a t"
 
 end
