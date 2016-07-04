@@ -28,14 +28,16 @@ instance ..
 end
 
 instantiation word :: (len) proper_interval begin
+
 fun proper_interval_word :: "'a word option \<Rightarrow> 'a word option \<Rightarrow> bool"
 where
   "proper_interval_word None None = True"
 | "proper_interval_word None (Some y) = (y \<noteq> 0)"
 | "proper_interval_word (Some x) None = (x \<noteq> max_word)"
 | "proper_interval_word (Some x) (Some y) = (x < y \<and> x \<noteq> y - 1)"
+
 instance
-proof(intro_classes)
+proof
   let ?pi = "proper_interval :: 'a word proper_interval"
   show "?pi None None = True" by simp
   fix y
@@ -51,7 +53,8 @@ proof(intro_classes)
     then obtain "x < y" "x \<noteq> y - 1" ..
     have "0 \<le> uint x" by simp
     also have "\<dots> < uint y" using `x < y` by(simp add: word_less_def)
-    finally have y: "y - 1 < y" by(simp add: word_less_def uint_sub_if' not_le)
+    finally have "0 < uint y" .
+    then have "y - 1 < y" by(simp add: word_less_def uint_sub_if' not_le)
     moreover from `0 < uint y` `x < y` `x \<noteq> y - 1`
     have "x < y - 1" by(simp add: word_less_def uint_sub_if' uint_arith_simps(3))
     ultimately show ?rhs by blast
@@ -64,6 +67,7 @@ proof(intro_classes)
   qed
   thus "?pi (Some x) (Some y) = (\<exists>z>x. z < y)" by simp
 qed
+
 end
 
 instantiation word :: (len) cproper_interval begin

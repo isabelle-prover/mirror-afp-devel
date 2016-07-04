@@ -413,9 +413,10 @@ proof -
   have "recurrent_subset_infty A = recurrent_subset_infty A \<inter> space M" using sets.sets_into_space by auto
   also have "... = A \<inter> space M - (\<Union>n. (T^^n)-`(A-recurrent_subset A) \<inter> space M)" unfolding recurrent_subset_infty_def by blast
   also have "... = A - (\<Union>n. (T^^n)--`(A-recurrent_subset A))" unfolding vimage_restr_def using sets.sets_into_space by auto
-  finally have "A - recurrent_subset_infty A \<subseteq> (\<Union>n. (T^^n)--`(A-recurrent_subset A))" by auto
-  then show "A - recurrent_subset_infty A \<in> null_sets M" using *
-     by (simp add: Diff_Diff_Int \<open>recurrent_subset_infty A = A - (\<Union>n. (T ^^ n) --` (A - recurrent_subset A))\<close> null_set_Int1)
+  finally have **: "recurrent_subset_infty A = A - (\<Union>n. (T ^^ n) --` (A - recurrent_subset A))" .
+  then have "A - recurrent_subset_infty A \<subseteq> (\<Union>n. (T^^n)--`(A-recurrent_subset A))" by auto
+  with * ** show "A - recurrent_subset_infty A \<in> null_sets M"
+     by (simp add: Diff_Diff_Int null_set_Int1)
 
   have "A \<Delta> recurrent_subset A = A - recurrent_subset A" using recurrent_subset_incl(1)[of A] by blast
   then show "A \<Delta> recurrent_subset A \<in> null_sets M" using `A - recurrent_subset A \<in> null_sets M` by auto

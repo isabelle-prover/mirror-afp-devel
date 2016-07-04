@@ -292,8 +292,9 @@ lemma funpow_dist1_eq_funcset:
 proof -
   have "y = (f ^^ funpow_dist1 f x y) x" by (metis assms(1) funpow_dist1_prop)
   also have "\<dots> = (g ^^ funpow_dist1 f x y) x" by (metis assms(2-) funpow_eq_funcset)
-  finally have "(g ^^ funpow_dist1 g x y) x = y" by (metis funpow_dist1_prop1 zero_less_Suc)
-  with \<open>y = (g ^^ _) x\<close> have gf: "funpow_dist1 g x y \<le> funpow_dist1 f x y"
+  finally have *: "y = (g ^^ funpow_dist1 f x y) x" .
+  then have "(g ^^ funpow_dist1 g x y) x = y" by (metis funpow_dist1_prop1 zero_less_Suc)
+  with * have gf: "funpow_dist1 g x y \<le> funpow_dist1 f x y"
     by (metis funpow_dist1_least not_le zero_less_Suc)
 
   have "(f ^^ funpow_dist1 g x y) x = y"
@@ -311,10 +312,10 @@ proof (cases "y \<in> orbit f x")
   moreover
   from assms have "orbit f x = orbit g x" by (rule orbit_cong0)
   moreover
-  { fix n have "(f ^^ n) x = (g ^^ n) x \<and> (f ^^ n) x \<in> A"
-      by (induct n rule: nat.induct) (insert assms, auto)
-  } ultimately
-  show ?thesis using True by (auto simp: segment_altdef funpow_dist1_eq_funcset[OF _ assms])
+  have "(f ^^ n) x = (g ^^ n) x \<and> (f ^^ n) x \<in> A" for n
+    by (induct n rule: nat.induct) (insert assms, auto)
+  ultimately show ?thesis
+    using True by (auto simp: segment_altdef funpow_dist1_eq_funcset[OF _ assms])
 next
   case False
   moreover from assms have "orbit f x = orbit g x" by (rule orbit_cong0)

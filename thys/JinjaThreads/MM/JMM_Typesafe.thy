@@ -742,7 +742,8 @@ proof -
           also have "inv_into (actions (?E n')) (?\<phi> n') (?\<phi> n'' a''') = a''"
             using a''' inj_n' a''_action by(simp)
           also note a''' also note a''
-          finally have "ws (?\<phi> n a') = ?\<phi> n' (?ws n' a'')" ..
+          finally have \<phi>_n': "?\<phi> n' (?ws n' a'') = ws (?\<phi> n a')" .
+          then have "ws (?\<phi> n a') = ?\<phi> n' (?ws n' a'')" ..
           with `?\<phi> n (?ws n a') = ws (?\<phi> n a')`[symmetric]
           have eq_ws: "?\<phi> n' (?ws n' a'') = ?\<phi> n (?ws n a')" by simp
 
@@ -754,7 +755,7 @@ proof -
           then obtain w' where w': "ws (?\<phi> n' a'') = ?\<phi> n' w'"
             and committed_w': "w' \<in> ?C n'" by blast
           from committed_w' C_n' have "w' \<in> actions (?E n')" by blast
-          hence w'_def: "w' = ?ws n' a''" using `?\<phi> n' (?ws n' a'') = ws (?\<phi> n a')` inj_n' ws_write'
+          hence w'_def: "w' = ?ws n' a''" using \<phi>_n' inj_n' ws_write'
             unfolding w' a''[symmetric] by(auto dest: inj_onD)
           with committed_w' have committed_ws'': "?ws n' a'' \<in> committed (J n')" by simp
           with committed_ws wfa_n wfa_n' eq_ws
