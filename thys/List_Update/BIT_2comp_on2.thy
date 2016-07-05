@@ -90,41 +90,7 @@ lemma BIT_inv2: "x\<noteq>y \<Longrightarrow> z\<in>{x,y} \<Longrightarrow> BIT_
 
 subsection "effect of BIT"
 
-lemma oneBIT_step3x: 
-    assumes "x\<noteq>y" "x:{x0,y0}" "y:{x0,y0}"
-    shows "(type3 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s x \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is'))))
-                = type1 [x0, y0] x y"
-proof -
-    from assms have kas2: " [x0,y0] = [x,y] \<or>  [x0,y0] = [y,x]" by auto
-    have "(type3 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s x \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is')))) 
-            = (type3 [x0, y0] x y) \<bind> (%s. Step_rand BIT x s )"
-            by (simp add: bind_assoc_pmf bind_return_pmf split_def)
-  also               
-    from  assms(1) kas2
-    have "...
-            = type1 [x0, y0] x y"
-      apply(simp add: type3_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
-      apply(safe) 
-        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type1_def)
-        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type1_def)   
-          apply smt done
-  finally 
-    show ?thesis  .
-qed 
-lemma costBIT_0y: 
-    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
-    shows
-  "E (type0 [x0, y0] x y \<bind>
-       (\<lambda>s. BIT_step s y \<bind>
-            (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) y a))))) = 1"
-using assms apply(auto)
-  apply(simp_all add: type0_def BIT_step_def bind_assoc_pmf bind_return_pmf )
-  apply(simp_all add: E_bernoulli3 t\<^sub>p_def)
-  done
+subsubsection "cost of BIT"
 
 lemma costBIT_0x: 
     assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
@@ -136,6 +102,18 @@ using assms apply(auto)
   apply(simp_all add: type0_def BIT_step_def bind_assoc_pmf bind_return_pmf )
   apply(simp_all add: E_bernoulli3 t\<^sub>p_def)
   done
+
+lemma costBIT_0y: 
+    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
+    shows
+  "E (type0 [x0, y0] x y \<bind>
+       (\<lambda>s. BIT_step s y \<bind>
+            (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) y a))))) = 1"
+using assms apply(auto)
+  apply(simp_all add: type0_def BIT_step_def bind_assoc_pmf bind_return_pmf )
+  apply(simp_all add: E_bernoulli3 t\<^sub>p_def)
+  done
+
 lemma costBIT_1x: 
     assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
     shows
@@ -158,7 +136,16 @@ using assms apply(auto)
   apply(simp_all add: E_bernoulli3 t\<^sub>p_def)
   done
   
-
+lemma costBIT_3x: 
+    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
+    shows
+  "E (type3 [x0, y0] x y \<bind>
+       (\<lambda>s. BIT_step s x \<bind>
+            (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) x a))))) = 3/4"
+using assms apply(auto)
+  apply(simp_all add: type3_def BIT_step_def bind_assoc_pmf bind_return_pmf )
+  apply(simp_all add: E_bernoulli3 t\<^sub>p_def)
+  done
 
 lemma costBIT_3y: 
     assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
@@ -166,17 +153,6 @@ lemma costBIT_3y:
   "E (type3 [x0, y0] x y \<bind>
        (\<lambda>s. BIT_step s y \<bind>
             (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) y a))))) = 1/4"
-using assms apply(auto)
-  apply(simp_all add: type3_def BIT_step_def bind_assoc_pmf bind_return_pmf )
-  apply(simp_all add: E_bernoulli3 t\<^sub>p_def)
-  done
-  
-lemma costBIT_3x: 
-    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
-    shows
-  "E (type3 [x0, y0] x y \<bind>
-       (\<lambda>s. BIT_step s x \<bind>
-            (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) x a))))) = 3/4"
 using assms apply(auto)
   apply(simp_all add: type3_def BIT_step_def bind_assoc_pmf bind_return_pmf )
   apply(simp_all add: E_bernoulli3 t\<^sub>p_def)
@@ -192,6 +168,7 @@ using assms apply(auto)
   apply(simp_all add: type4_def BIT_step_def bind_assoc_pmf bind_return_pmf )
   apply(simp_all add: E_bernoulli3 t\<^sub>p_def)
   done
+
 lemma costBIT_4y: 
     assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
     shows
@@ -203,157 +180,9 @@ using assms apply(auto)
   apply(simp_all add: E_bernoulli3 t\<^sub>p_def)
   done
 
-lemma oneBIT_step4y: 
-    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
-    shows "(type4 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s y \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is'))))
-                = type0 [x0, y0] y x"
-proof -
-    from assms have kas2: " [x0,y0] = [x,y] \<or>  [x0,y0] = [y,x]" by auto
-    have "(type4 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s y \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is')))) 
-            = (type4 [x0, y0] x y) \<bind> (%s. Step_rand BIT y s )"
-            by (simp add: bind_assoc_pmf bind_return_pmf split_def)
-  also               
-    from  assms(1) kas2
-    have "...
-            = type0 [x0, y0] y x"
-      apply(simp add: type4_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
-      apply(safe) 
-        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type0_def)
-          apply smt
-        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type0_def)   
-          done
-  finally 
-    show ?thesis  .
-qed 
 
-lemma oneBIT_step0y: 
-    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
-    shows "(type0 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s y \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is'))))
-                = type4 [x0, y0] x y"
-proof -
-    from assms have kas2: " [x0,y0] = [x,y] \<or>  [x0,y0] = [y,x]" by auto
-    have "(type0 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s y \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is')))) 
-            = (type0 [x0, y0] x y) \<bind> (%s. Step_rand BIT y s )"
-            by (simp add: bind_assoc_pmf bind_return_pmf split_def)
-  also               
-    from  assms(1) kas2
-    have "...
-            = type4 [x0, y0] x y"
-      apply(simp add: type0_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
-      apply(safe) 
-        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type4_def)
-          apply smt
-        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type4_def)   
-          done
-  finally 
-    show ?thesis  .
-qed 
+subsection "state transformation of BIT"
 
-lemma oneBIT_step3y: 
-    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
-    shows "(type3 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s y \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is'))))
-                = type0 [x0, y0] y x"
-proof -
-  from assms have kas2: " [x0,y0] = [x,y] \<or>  [x0,y0] = [y,x]" by auto       
-  from assms(1) kas2
-  show ?thesis 
-    apply(simp add: type3_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
-    apply(safe) 
-      apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type0_def)
-        apply smt
-      apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type0_def)   
-        done 
-qed 
-
-
-lemma oneBIT_step1y: 
-    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
-    shows "(type1 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s y \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is'))))
-                = type3 [x0, y0] x y"
-proof -
-    from assms have kas2: " [x0,y0] = [x,y] \<or>  [x0,y0] = [y,x]" by auto
-    have "(type1 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s y \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is')))) 
-            = (type1 [x0, y0] x y) \<bind> (%s. Step_rand BIT y s )"
-            by (simp add: bind_assoc_pmf bind_return_pmf split_def)
-  also               
-    from  assms(1) kas2
-    have "...
-            = type3 [x0, y0] x y"
-      apply(simp add: type1_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
-      apply(safe) 
-        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type3_def)
-          apply smt
-        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type3_def)   
-          done
-  finally 
-    show ?thesis  .
-qed 
-
-lemma oneBIT_step4x: 
-    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
-    shows "(type4 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s x \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is'))))
-                = type1 [x0, y0] x y"
-proof -
-    from assms have kas2: " [x0,y0] = [x,y] \<or>  [x0,y0] = [y,x]" by auto
-    have "(type4 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s x \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is')))) 
-            = (type4 [x0, y0] x y) \<bind> (%s. Step_rand BIT x s )"
-            by(simp add: bind_assoc_pmf bind_return_pmf split_def)
-  also               
-    from  assms(1) kas2
-    have "...
-            = type1 [x0, y0] x y"
-      apply(simp add: type4_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
-      apply(safe) 
-        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type1_def) 
-        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type1_def)   
-          by smt  
-  finally 
-    show ?thesis  .
-qed 
-
-lemma oneBIT_step1x: 
-    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
-    shows "(type1 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s x \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is'))))
-                = type0 [x0, y0] x y"
-proof -
-    from assms have kas2: " [x0,y0] = [x,y] \<or>  [x0,y0] = [y,x]" by auto
-    have "(type1 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s x \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is')))) 
-            = (type1 [x0, y0] x y) \<bind> (%s. Step_rand BIT x s )"
-            by(simp add: bind_assoc_pmf bind_return_pmf split_def)
-  also               
-    from  assms(1) kas2
-    have "...
-            = type0 [x0, y0] x y"
-      apply(simp add: type1_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
-      apply(safe) 
-        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type0_def) 
-        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type0_def)   
-          by smt  
-  finally 
-    show ?thesis  .
-qed 
 
 lemma oneBIT_step0x: 
     assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
@@ -361,41 +190,106 @@ lemma oneBIT_step0x:
         (\<lambda>s. BIT_step s x \<bind>
              (\<lambda>(a, is'). return_pmf (step (fst s) x a, is'))))
                 = type0 [x0, y0] x y"
-proof -
-    from assms have kas2: " [x0,y0] = [x,y] \<or>  [x0,y0] = [y,x]" by auto
-    have "(type0 [x0, y0] x y \<bind>
+  using assms
+  apply(simp add: type0_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
+  apply(safe) 
+    apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type0_def)
+    apply(rule pmf_eqI) apply(simp add: add.commute pmf_bind swap_def type0_def)   
+    done 
+
+lemma oneBIT_step0y: 
+    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
+    shows "(type0 [x0, y0] x y \<bind>
+        (\<lambda>s. BIT_step s y \<bind>
+             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is'))))
+                = type4 [x0, y0] x y"
+  using assms
+  apply(simp add: type0_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
+  apply(safe) 
+    apply(rule pmf_eqI) apply(simp add: add.commute pmf_bind swap_def type4_def)
+    apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type4_def)   
+    done 
+
+lemma oneBIT_step1x: 
+    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
+    shows "(type1 [x0, y0] x y \<bind>
         (\<lambda>s. BIT_step s x \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is')))) 
-            = (type0 [x0, y0] x y) \<bind> (%s. Step_rand BIT x s )"
-            by(simp add: bind_assoc_pmf bind_return_pmf split_def)
-  also               
-    from  assms(1) kas2
-    have "...
-            = type0 [x0, y0] x y "
-      apply(simp add: type0_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
-      apply(safe)
-        apply(rule pmf_eqI) apply(simp add: pmf_bind) 
-        apply(rule pmf_eqI) apply(simp add: pmf_bind)   
-          by smt (* sledgehammer
-proof -
-  fix i :: 'b
-  have f1: "pmf (f ([x, y], [False, True], [y, x])) i / 2 + pmf (f ([x, y], [False, False], [y, x])) i / 2 = pmf (f ([x, y], [False, False], [y, x])) i / 2 + pmf (f ([x, y], [False, True], [y, x])) i / 2"
-    by simp
-  have "pmf (f ([x, y], [True, True], [y, x])) i / 2 + pmf (f ([x, y], [True, False], [y, x])) i / 2 = pmf (f ([x, y], [True, False], [y, x])) i / 2 + pmf (f ([x, y], [True, True], [y, x])) i / 2"
-    by algebra
-  then show "(pmf (f ([x, y], [True, False], [y, x])) i / 2 + pmf (f ([x, y], [True, True], [y, x])) i / 2) / 2 + (pmf (f ([x, y], [False, False], [y, x])) i / 2 + pmf (f ([x, y], [False, True], [y, x])) i / 2) / 2 = (pmf (f ([x, y], [True, True], [y, x])) i / 2 + pmf (f ([x, y], [True, False], [y, x])) i / 2) / 2 + (pmf (f ([x, y], [False, True], [y, x])) i / 2 + pmf (f ([x, y], [False, False], [y, x])) i / 2) / 2"
-    using f1 by presburger
-qed *)
-  finally 
-    show ?thesis  .
-qed 
- 
-            
+             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is'))))
+                = type0 [x0, y0] x y"
+  using assms
+  apply(simp add: type1_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
+  apply(safe) 
+    apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type0_def)
+    apply(rule pmf_eqI) apply(simp add: add.commute pmf_bind swap_def type0_def)   
+    done 
+
+lemma oneBIT_step1y: 
+    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
+    shows "(type1 [x0, y0] x y \<bind>
+        (\<lambda>s. BIT_step s y \<bind>
+             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is'))))
+                = type3 [x0, y0] x y"
+  using assms
+  apply(simp add: type1_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
+  apply(safe) 
+    apply(rule pmf_eqI) apply(simp add: add.commute pmf_bind swap_def type3_def)
+    apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type3_def)   
+    done 
+
+lemma oneBIT_step3x: 
+    assumes "x\<noteq>y" "x:{x0,y0}" "y:{x0,y0}"
+    shows "(type3 [x0, y0] x y \<bind>
+        (\<lambda>s. BIT_step s x \<bind>
+             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is'))))
+                = type1 [x0, y0] x y"
+  using assms
+  apply(simp add: type3_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
+  apply(safe) 
+    apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type1_def)
+    apply(rule pmf_eqI) apply(simp add: add.commute pmf_bind swap_def type1_def)   
+    done
+
+lemma oneBIT_step3y: 
+    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
+    shows "(type3 [x0, y0] x y \<bind>
+        (\<lambda>s. BIT_step s y \<bind>
+             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is'))))
+                = type0 [x0, y0] y x"
+  using assms
+  apply(simp add: type3_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
+  apply(safe) 
+    apply(rule pmf_eqI) apply(simp add: add.commute pmf_bind swap_def type0_def)
+    apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type0_def)   
+    done 
+
+lemma oneBIT_step4x: 
+    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
+    shows "(type4 [x0, y0] x y \<bind>
+        (\<lambda>s. BIT_step s x \<bind>
+             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is'))))
+                = type1 [x0, y0] x y"
+  using assms
+  apply(simp add: type4_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
+  apply(safe) 
+    apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type1_def)
+    apply(rule pmf_eqI) apply(simp add: add.commute pmf_bind swap_def type1_def)   
+    done 
+
+lemma oneBIT_step4y: 
+    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
+    shows "(type4 [x0, y0] x y \<bind>
+        (\<lambda>s. BIT_step s y \<bind>
+             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is'))))
+                = type0 [x0, y0] y x"
+  using assms
+  apply(simp add: type4_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
+  apply(safe) 
+    apply(rule pmf_eqI) apply(simp add: add.commute pmf_bind swap_def type0_def)
+    apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type0_def)   
+    done 
+             
         
 section "go through the four phase types"
-
- 
- 
 
 subsection "yx"
  
