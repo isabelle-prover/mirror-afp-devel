@@ -53,7 +53,6 @@ qed
 
 subsection "types of configurations"
 
-
 definition "type0 init x y = do {
                   (a::bool) \<leftarrow> (bernoulli_pmf 0.5);
                   (b::bool) \<leftarrow> (bernoulli_pmf 0.5);
@@ -80,7 +79,6 @@ definition "type4 init x y = do {
                   return_pmf ( if ~[a,b]!(index init y) then ([x,y], ([a,b],init))
                          else ([y,x], ([a,b],init)))
                 }"
-
 
 definition "BIT_inv s x i == (s = (type0 i x (hd (filter (\<lambda>y. y\<noteq>x) i) )))"
 
@@ -180,6 +178,7 @@ using assms apply(auto)
   apply(simp_all add: E_bernoulli3 t\<^sub>p_def)
   done
 
+lemmas costBIT = costBIT_0x costBIT_0y costBIT_1x costBIT_1y costBIT_3x costBIT_3y costBIT_4x costBIT_4y
 
 subsection "state transformation of BIT"
 
@@ -287,13 +286,14 @@ lemma oneBIT_step4y:
     apply(rule pmf_eqI) apply(simp add: add.commute pmf_bind swap_def type0_def)
     apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type0_def)   
     done 
-             
+       
+lemmas oneBIT_step = oneBIT_step0x oneBIT_step0y oneBIT_step1x oneBIT_step1y oneBIT_step3x oneBIT_step3y oneBIT_step4x oneBIT_step4y      
         
 section "go through the four phase types"
 
 subsection "yx"
  
-lemma bit_yx': assumes "x \<noteq> y" 
+lemma bit_yx: assumes "x \<noteq> y" 
       and kas: "init \<in> {[x,y],[y,x]}"
       and "qs \<in> lang (Star(Times (Atom y) (Atom x))) "
    shows "T\<^sub>p_on_rand' BIT (type1 init x y) (qs@r) = 0.75 * length qs + T\<^sub>p_on_rand' BIT (type1 init x y) r 
@@ -310,28 +310,16 @@ proof -
         apply(rule append(3)) 
           apply(fact)+
           using append(2,6) by(simp_all)
-    note A=append(4)
- 
+     
     have s2: "config'_rand BIT  (type1 init x y) [y,x] = (type1 init x y)"
-      using kas
-      apply(auto)
-        using assms(1) apply(simp add: oneBIT_step1y oneBIT_step3x)
-        using assms(1) apply(simp add: oneBIT_step1y oneBIT_step3x)
-            done
+      using kas assms(1) by (auto simp add: oneBIT_step )
                              
     have ta: "T\<^sub>p_on_rand' BIT (type1 init x y) u = 1.5"
-      unfolding uyx using kas
-        apply(auto)
-          using assms(1) apply(simp_all add: oneBIT_step1y)
-          by(simp_all add: costBIT_1y costBIT_3x)                             
+      using kas assms(1)
+        by(auto simp add: uyx oneBIT_step costBIT_1y costBIT_3x)                             
        
-
-    have "config'_rand BIT  (type1 init x y) (u @ v) =
-           config'_rand BIT (config'_rand BIT (type1 init x y) u) v "
-            by (simp add: config'_rand_append)
-    also have "\<dots> = type1 init x y" by (simp only: s2 uyx yy)
-    finally have config: "config'_rand BIT  (type1 init x y) (u @ v) = type1 init x y" .
-
+    have config: "config'_rand BIT  (type1 init x y) (u @ v)
+          = type1 init x y" by (simp only: config'_rand_append s2 uyx yy)
 
     have "T\<^sub>p_on_rand' BIT (type1 init x y) (u @ (v @ r))  
         = T\<^sub>p_on_rand' BIT (type1 init x y) u  + T\<^sub>p_on_rand' BIT ( config'_rand BIT (type1 init x y)  u) (v@r) "
@@ -352,109 +340,76 @@ qed
 
 subsection "(yx)*yx"
 
-lemma bit_yxyx': assumes "x \<noteq> y" and kas: "init \<in> {[x,y],[y,x]}" and
+lemma bit_yxyx: assumes "x \<noteq> y" and kas: "init \<in> {[x,y],[y,x]}" and
       "qs \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])"
    shows "T\<^sub>p_on_rand' BIT (type0 init x y) (qs@r) = 0.75 * length qs + T\<^sub>p_on_rand' BIT (type1 init x y) r 
     \<and> config'_rand BIT (type0 init x y) qs  = (type1 init x y)"
 proof -
   obtain u v where uu: "u \<in> lang (Times (Atom y) (Atom x))"
-                      and vv: "v \<in> lang (seq[ Star(Times (Atom y) (Atom x))])"
-                      and qsuv: "qs = u @ v" 
-                      using assms(3)
-                      by (auto simp: conc_def)  
+              and vv: "v \<in> lang (seq[ Star(Times (Atom y) (Atom x))])"
+              and qsuv: "qs = u @ v" 
+  using assms(3) by (auto simp: conc_def)  
+
   from uu have uyx: "u = [y,x]" by(auto)
 
   from qsuv uyx have vqs: "length v = length qs - 2" by auto
   from qsuv uyx  have vqs2: "length v + 2 = length qs" by auto
 
-
-
-    have A: "x\<noteq>y" "init \<in> {[x,y],[y,x]}" using assms by auto
-
-
-
-   have s2: "config'_rand BIT  (type0 init x y) [y,x] = (type1 init x y)"
-      using kas
-      apply(auto)
-        using assms(1) apply(simp add: oneBIT_step0y oneBIT_step4x)
-        using assms(1) apply(simp add: oneBIT_step0y oneBIT_step4x)
-      done
-              
-                             
-    have ta: "T\<^sub>p_on_rand' BIT (type0 init x y) u = 1.5"
-      unfolding uyx using kas
-        apply(auto)
-          using assms(1) apply(simp_all add: oneBIT_step0y)
-          apply (simp_all add: costBIT_0y costBIT_4x)  done
- 
+  have s2: "config'_rand BIT  (type0 init x y) [y,x] = (type1 init x y)"
+     using kas assms(1) by(auto simp add: oneBIT_step) 
+                            
+  have ta: "T\<^sub>p_on_rand' BIT (type0 init x y) u = 1.5"
+    using kas assms(1) by (auto simp add: uyx oneBIT_step costBIT) 
                   
-    have tat: "T\<^sub>p_on_rand' BIT (type1 init x y) (v @ r) =   0.75*length v + T\<^sub>p_on_rand' BIT (type1 init x y) r
+  have tat: "T\<^sub>p_on_rand' BIT (type1 init x y) (v @ r) =   0.75*length v + T\<^sub>p_on_rand' BIT (type1 init x y) r
             \<and> config'_rand BIT (type1 init x y) v = (type1 init x y)"
-        apply(rule bit_yx')
+        apply(rule bit_yx)
       apply(fact)+
-      using vv A by(simp_all)
+      using vv by(simp_all)
 
 
-    have config: "config'_rand BIT (type0 init x y) (u @ v) =
-            type1 init x y" by(simp only: config'_rand_append s2 uyx tat)
+  have config: "config'_rand BIT (type0 init x y) (u @ v) = type1 init x y"
+    by(simp only: config'_rand_append s2 uyx tat)
      
-    have "T\<^sub>p_on_rand' BIT (type0 init x y) (u @ (v @ r)) 
-        = T\<^sub>p_on_rand' BIT (type0 init x y) u + T\<^sub>p_on_rand' BIT (config'_rand BIT (type0 init x y) u) (v@r)"
-          by (simp only: T_on_rand'_append)
-  also
-    have "\<dots> =  T\<^sub>p_on_rand' BIT (type0 init x y) u + T\<^sub>p_on_rand' BIT (type1 init x y) (v@r)"
-      by(simp only: uyx s2) 
-    also have "\<dots> = T\<^sub>p_on_rand' BIT (type0 init x y) u + 0.75*length v + T\<^sub>p_on_rand' BIT (type1 init x y) r"
-        by(simp only: tat) 
-    also have "\<dots> = 2*0.75 + 0.75*length v + T\<^sub>p_on_rand' BIT (type1 init x y) r" by(simp add: ta) 
-    also have "\<dots> = 0.75 * (2+length v) + T\<^sub>p_on_rand' BIT (type1 init x y) r"
-      by (simp add: ring_distribs del: add_2_eq_Suc' add_2_eq_Suc) 
-    also have "\<dots> = 0.75 * length (u @ v) + T\<^sub>p_on_rand' BIT (type1 init x y) r"
-      using uyx by simp
-    finally show ?thesis using qsuv config by simp
+  have "T\<^sub>p_on_rand' BIT (type0 init x y) (u @ (v @ r)) 
+        = T\<^sub>p_on_rand' BIT (type0 init x y) u + T\<^sub>p_on_rand' BIT (config'_rand BIT (type0 init x y) u) (v@r)" by (simp only: T_on_rand'_append)
+also
+  have "\<dots> =  T\<^sub>p_on_rand' BIT (type0 init x y) u + T\<^sub>p_on_rand' BIT (type1 init x y) (v@r)" by(simp only: uyx s2) 
+also
+  have "\<dots> = T\<^sub>p_on_rand' BIT (type0 init x y) u + 0.75*length v + T\<^sub>p_on_rand' BIT (type1 init x y) r" by(simp only: tat) 
+also
+  have "\<dots> = 2*0.75 + 0.75*length v + T\<^sub>p_on_rand' BIT (type1 init x y) r" by(simp add: ta) 
+also
+  have "\<dots> = 0.75 * (2+length v) + T\<^sub>p_on_rand' BIT (type1 init x y) r" by (simp add: ring_distribs del: add_2_eq_Suc' add_2_eq_Suc) 
+also
+  have "\<dots> = 0.75 * length (u @ v) + T\<^sub>p_on_rand' BIT (type1 init x y) r" using uyx by simp
+finally
+  show ?thesis using qsuv config by simp
 qed
+
   
 subsection "Phase Type A"
 
-lemma BIT_a_config': assumes "x \<noteq> y"
+lemma BIT_a: assumes "x \<noteq> y"
     " init \<in> {[x,y],[y,x]}"
    "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
-  shows  "config'_rand BIT (type0 init x y) qs = (type0 init y x)"
+  shows "config'_rand BIT (type0 init x y) qs = (type0 init y x)" (is ?C)
+    and b: "T\<^sub>p_on_rand' BIT (type0 init x y) qs = 1.5" (is ?T) 
 proof - 
   from assms(3) have alt: "qs = [x,y,y] \<or> qs = [y,y]" apply(simp) by fastforce
-  show ?thesis
-    using assms(1,2) alt
-    apply(auto)
-      apply(simp add: oneBIT_step0x oneBIT_step0y oneBIT_step4y)
-      apply(simp add: oneBIT_step0y oneBIT_step4y) 
-      apply(simp add: oneBIT_step0x oneBIT_step0y oneBIT_step4y)
-      apply(simp add: oneBIT_step0y oneBIT_step4y) done
-qed
-
-lemma BIT_a': assumes "x \<noteq> y" "init \<in> {[x,y],[y,x]}"
-    "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
-    shows
-   "T\<^sub>p_on_rand' BIT (type0 init x y) qs = 1.5"
-proof - 
-  from assms(3) have alt: "qs = [x,y,y] \<or> qs = [y,y]" apply(simp) by fastforce
-  show ?thesis
-    using assms(1,2) alt 
-    apply(auto)
-      apply(simp add: oneBIT_step0x oneBIT_step0y costBIT_0x costBIT_0y costBIT_4y)
-      apply(simp add: oneBIT_step0x oneBIT_step0y costBIT_0x costBIT_0y costBIT_4y)
-      apply(simp add: oneBIT_step0x oneBIT_step0y costBIT_0x costBIT_0y costBIT_4y)
-      apply(simp add: oneBIT_step0x oneBIT_step0y costBIT_0x costBIT_0y costBIT_4y)
-      done
+  show ?C
+    using assms(1,2) alt by (auto simp add: oneBIT_step)
+  show ?T
+    using assms(1,2) alt by(auto simp add: oneBIT_step costBIT) 
 qed
  
-lemma bit_a': assumes 
+lemma bit_a: assumes 
     "x \<noteq> y" "{x, y} = {x0, y0}" "BIT_inv s x [x0, y0]"
     "set qs \<subseteq> {x, y}" "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
  shows  
     "T\<^sub>p_on_rand' BIT s qs  \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y]) 
       \<and>  BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
 proof -
-
   from assms have f: "x0\<noteq>y0" by auto
   from assms(1,3) assms(2)[symmetric] have s: "s = type0 [x0,y0] x y"
     apply(simp add: BIT_inv2[OF f] other_def) by fast
@@ -465,9 +420,9 @@ proof -
   from assms(1,2) kas have "T\<^sub>p_on_rand' BIT s qs = 1.5"
     unfolding s 
     apply(safe)
-      apply(rule BIT_a')
+      apply(rule BIT_a)
         apply(simp) apply(simp) using assms(5) apply(simp)
-      apply(rule BIT_a')
+      apply(rule BIT_a)
         apply(simp) apply(simp) using assms(5) apply(simp)
   done
   with OPT2_A[OF assms(1,5)] have BIT: "T\<^sub>p_on_rand' BIT s qs \<le> 1.75 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])" by auto
@@ -476,45 +431,40 @@ proof -
   from assms(1,2) kas have "config'_rand BIT s qs = type0 [x0, y0] y x"
     unfolding s 
     apply(safe)
-      apply(rule BIT_a_config')
+      apply(rule BIT_a)
         apply(simp) apply(simp) using assms(5) apply(simp)
-      apply(rule BIT_a_config')
+      apply(rule BIT_a)
         apply(simp) apply(simp) using assms(5) apply(simp)
   done 
    
-   then have "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
+  then have "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
     apply(simp)
     using assms(1) kas f lqs by(auto simp add: BIT_inv2 other_def) 
 
   then show ?thesis using BIT s by simp
 qed  
 
+
 subsection "x^+.."
 
-
-lemma BIT_x': assumes "x\<noteq>y"
+lemma BIT_x: assumes "x\<noteq>y"
        "init \<in> {[x,y],[y,x]}" "qs \<in> lang (Plus (Atom x) One)"
  shows "T\<^sub>p_on_rand' BIT (type0 init x y) (qs@r) = T\<^sub>p_on_rand' BIT (type0 init x y) r 
     \<and> config'_rand BIT  (type0 init x y) qs = (type0 init x y)"
 proof - 
-  have A: "x\<noteq>y"  using assms by auto
-
   have s: "config'_rand BIT (type0 init x y) qs = type0 init x y"
-    using assms  
-      apply(auto simp add: oneBIT_step0x) done
+    using assms by (auto simp add: oneBIT_step)
 
   have t: "T\<^sub>p_on_rand' BIT (type0 init x y) qs = 0"
-    using assms
-    apply(auto simp add: costBIT_0x) done
+    using assms by (auto simp add: costBIT)
 
-  show ?thesis
-    using s t by(simp add: T_on_rand'_append)
+  show ?thesis using s t by(simp add: T_on_rand'_append)
 qed
         
 
 subsection "Phase Type B"
 
-lemma BIT_b': assumes "x \<noteq> y"
+lemma BIT_b: assumes A: "x \<noteq> y"
        "init \<in> {[x,y],[y,x]}"
     "v \<in> lang (seq [Times (Atom y) (Atom x), Star (Times (Atom y) (Atom x)), Atom y, Atom y])"
     shows "T\<^sub>p_on_rand' BIT (type0 init x y) v = 0.75 * length v - 0.5
@@ -532,8 +482,6 @@ proof -
     apply(induct q rule: star_induct) by (auto)    
     from a b show "length v mod 2 = 0" by auto
   qed
-        
-  have A: "x\<noteq>y"  using assms by auto
  
   from assms(3) have "v \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])
                           @@ lang (seq[Atom y, Atom y])" by (auto simp: conc_def)
@@ -541,41 +489,30 @@ proof -
                       and "b \<in> lang (seq[Atom y, Atom y])"
                       and vab: "v = a @ b" 
                       by(erule concE) 
-  then have bb: "b=[y,y]" by auto
-  from aa have lena: "length a > 0" by auto
+  then have bb: "b=[y,y]" by auto 
   from vab bb have lenv: "length v = length a + 2" by auto
  
-  from bit_yxyx' assms(1,2) aa have stars: "T\<^sub>p_on_rand' BIT (type0 init x y) (a @ b)  = 0.75 * length a + T\<^sub>p_on_rand' BIT (type1 init x y) b"
+  from bit_yxyx[OF assms(1,2) aa] have stars: "T\<^sub>p_on_rand' BIT (type0 init x y) (a @ b)  = 0.75 * length a + T\<^sub>p_on_rand' BIT (type1 init x y) b"
                              and s2: "config'_rand BIT (type0 init x y) a = type1 init x y"  by fast+
 
   have t: "T\<^sub>p_on_rand' BIT (type1 init x y) b = 1"
-    unfolding bb  using assms(1,2)
-      apply(auto)
-       apply(simp add: oneBIT_step1y oneBIT_step3y costBIT_1y costBIT_3y)  
-       apply(simp add: oneBIT_step1y oneBIT_step3y costBIT_1y costBIT_3y)  
-  done
+    using assms(1,2) by (auto simp add: oneBIT_step  costBIT bb)   
 
   have s: "config'_rand BIT  (type1 init x y) [y, y] = type0 init y x" 
-      using assms(1,2)
-      apply(auto) 
-       apply(simp add: oneBIT_step1y oneBIT_step3y )  
-       apply(simp add: oneBIT_step1y oneBIT_step3y )  
-  done
+    using assms(1,2) by (auto simp add: oneBIT_step) 
 
-
-    have config: "config'_rand BIT  (type0 init x y) (a @ b) =
-             type0 init y x" by (simp only: config'_rand_append s2 vab bb s)
+  have config: "config'_rand BIT (type0 init x y) (a @ b) = type0 init y x"
+    by (simp only: config'_rand_append s2 vab bb s)
  
   have calc: "3 * Suc (Suc (length a)) / 4 - 1 / 2 = 3 * (2+length a) / 4 - 1 / 2" by simp
 
   from t stars have "T\<^sub>p_on_rand' BIT (type0 init x y) (a @ b) = 0.75 * length a + 1" by auto
-  then have whatineed: "T\<^sub>p_on_rand' BIT  (type0 init x y) v = 0.75 * length v - 0.5" unfolding lenv 
-    unfolding vab
-    by(simp add: ring_distribs del: add_2_eq_Suc')
+  then have whatineed: "T\<^sub>p_on_rand' BIT  (type0 init x y) v = 0.75 * length v - 0.5"
+    unfolding lenv by(simp add: vab ring_distribs del: add_2_eq_Suc')
   with config vab show ?thesis by simp
 qed
 
-lemma bit_b': assumes "x \<noteq> y"
+lemma bit_b: assumes "x \<noteq> y"
       "init \<in> {[x,y],[y,x]}"
    "qs \<in> lang (seq[Plus (Atom x) One, Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom y, Atom y])"
  shows  "T\<^sub>p_on_rand' BIT (type0 init x y) qs \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y])"
@@ -605,13 +542,13 @@ proof -
   from vv have "v \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])
                           @@ lang (seq[Atom y, Atom y])" by (auto simp: conc_def)
   then obtain a b where aa: "a \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])"
-                      and "b \<in> lang (seq[Atom y, Atom y])"
-                      and vab: "v = a @ b" 
+                    and "b \<in> lang (seq[Atom y, Atom y])"
+                    and vab: "v = a @ b" 
                       by(erule concE)  
 
-  from BIT_x'[OF assms(1,2) uu] have u_t: "T\<^sub>p_on_rand' BIT (type0 init x y)  (u @ v)  = T\<^sub>p_on_rand' BIT (type0 init x y) v"
+  from BIT_x[OF assms(1,2) uu] have u_t: "T\<^sub>p_on_rand' BIT (type0 init x y)  (u @ v)  = T\<^sub>p_on_rand' BIT (type0 init x y) v"
       and u_c: "config'_rand BIT (type0 init x y) u = type0 init x y" by auto
-  from BIT_b'[OF assms(1,2) vv] have b_t: "T\<^sub>p_on_rand' BIT (type0 init x y) v  = 0.75 * length v - 0.5"
+  from BIT_b[OF assms(1,2) vv] have b_t: "T\<^sub>p_on_rand' BIT (type0 init x y) v  = 0.75 * length v - 0.5"
       and  b_c: "config'_rand BIT (type0 init x y) v = (type0 init y x)" by auto
  
   have BIT: "T\<^sub>p_on_rand' BIT (type0 init x y) qs  = 0.75 * length v - 0.5"
@@ -620,24 +557,19 @@ proof -
   (* OPT *)
 
   from uu have uuu: "u=[] \<or> u=[x]" by auto
-  from vv have vvv: "v \<in> lang (seq
-          [Atom y, Atom x,
-           Star (Times (Atom y) (Atom x)),
-           Atom y, Atom y])" by(auto simp: conc_def)
   have OPT: "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = (length v) div 2" apply(rule OPT2_B) by(fact)+
-
 
   from lenv have "v \<noteq> []"  "last v = y" by auto
   then have 1:  "last qs = y" using last_appendR qsuv by simp 
   then have 2: "other (last qs) x y = x" unfolding other_def by simp
 
-
-  show "T\<^sub>p_on_rand' BIT (type0 init x y) qs \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y])" using BIT OPT lenv   1 2  by auto
+  show "T\<^sub>p_on_rand' BIT (type0 init x y) qs \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y])"
+    using BIT OPT lenv 1 2 by auto
 
   (* config *)
 
-    show "config'_rand BIT  (type0 init x y) qs  =
-        type0 init y x" by (auto simp add: config'_rand_append qsuv u_c b_c)
+  show "config'_rand BIT (type0 init x y) qs = type0 init y x"
+    by (auto simp add: config'_rand_append qsuv u_c b_c)
 qed
 
 lemma bit_b'': assumes 
@@ -647,8 +579,7 @@ lemma bit_b'': assumes
  shows  
     "T\<^sub>p_on_rand' BIT s qs  \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y]) 
       \<and>  BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]" 
-proof -
-  
+proof -  
   from assms have f: "x0\<noteq>y0" by auto
   from assms(1,3) assms(2)[symmetric] have s: "s = type0 [x0,y0] x y"
     apply(simp add: BIT_inv2[OF f] other_def) by fast
@@ -659,24 +590,24 @@ proof -
   from assms(1,2) kas have BIT: "T\<^sub>p_on_rand' BIT s qs \<le> 1.75 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])"
     unfolding s 
     apply(safe)
-      apply(rule bit_b'(1))
+      apply(rule bit_b)
         apply(simp) apply(simp) using assms(5) apply(simp)
-      apply(rule bit_b'(1))
+      apply(rule bit_b)
         apply(simp) apply(simp) using assms(5) apply(simp)
   done 
 
   from assms(1,2) kas have "config'_rand BIT s qs = type0 [x0, y0] y x"
     unfolding s 
     apply(safe)
-      apply(rule bit_b'(2))
+      apply(rule bit_b)
         apply(simp) apply(simp) using assms(5) apply(simp)
-      apply(rule bit_b'(2))
+      apply(rule bit_b)
         apply(simp) apply(simp) using assms(5) apply(simp)
   done 
    
-   then have "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
+  then have "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
     apply(simp)
-    using assms(1) kas f lqs by(auto simp add: BIT_inv2 other_def) 
+    using assms(1) kas lqs by(auto simp add: BIT_inv2 other_def) 
 
   then show ?thesis using BIT s by simp
 qed
@@ -684,8 +615,7 @@ qed
 
 subsection "Phase Type C"
 
-
-lemma BIT_c': assumes "x \<noteq> y"
+lemma BIT_c: assumes "x \<noteq> y"
        "init \<in> {[x,y],[y,x]}"
     "v \<in> lang (seq [Times (Atom y) (Atom x), Star (Times (Atom y) (Atom x)), Atom x])"
     shows "T\<^sub>p_on_rand' BIT (type0 init x y) v = 0.75 * length v - 0.5
@@ -703,38 +633,29 @@ proof -
   from aa have lena: "length a > 0" by auto
   from vab bb have lenv: "length v = length a + 1" by auto
  
-  from bit_yxyx' assms(1,2) aa have stars: "T\<^sub>p_on_rand' BIT (type0 init x y) (a @ b)  = 0.75 * length a + T\<^sub>p_on_rand' BIT (type1 init x y) b"
+  from bit_yxyx assms(1,2) aa have stars: "T\<^sub>p_on_rand' BIT (type0 init x y) (a @ b)  = 0.75 * length a + T\<^sub>p_on_rand' BIT (type1 init x y) b"
                              and s2: "config'_rand BIT (type0 init x y) a = type1 init x y"  by fast+
 
   have t: "T\<^sub>p_on_rand' BIT (type1 init x y) b = 1/4"
-    unfolding bb  using assms(1,2)
-      apply(auto)
-       apply(simp add: costBIT_1x)  
-       apply(simp add: costBIT_1x)  
-  done
+    using assms(1,2) by (auto simp add: bb costBIT)  
+ 
 
   have s: "config'_rand BIT  (type1 init x y) b = type0 init x y" 
-      using assms(1,2) bb
-      apply(auto) 
-       apply(simp add: oneBIT_step1x )  
-       apply(simp add: oneBIT_step1x )  
-  done
+    using assms(1,2) by (auto simp add: bb oneBIT_step1x )    
 
 
-    have config: "config'_rand BIT  (type0 init x y) (a @ b) =
-             type0 init x y" by (simp only: config'_rand_append s2 vab s)
+  have config: "config'_rand BIT  (type0 init x y) (a @ b) = type0 init x y"
+    by (simp only: config'_rand_append s2 vab s)
  
   have calc: "3 * Suc (Suc (length a)) / 4 - 1 / 2 = 3 * (2+length a) / 4 - 1 / 2" by simp
 
   from t stars have "T\<^sub>p_on_rand' BIT (type0 init x y) (a @ b) = 0.75 * length a + 1/4" by auto
-  then have whatineed: "T\<^sub>p_on_rand' BIT  (type0 init x y) v = 0.75 * length v - 0.5" unfolding lenv 
-    unfolding vab
-    by(simp add: ring_distribs del: add_2_eq_Suc')
+  then have "T\<^sub>p_on_rand' BIT  (type0 init x y) v = 0.75 * length v - 0.5" unfolding lenv 
+    by(simp add: vab ring_distribs del: add_2_eq_Suc')
   with config vab show ?thesis by simp
 qed
-
            
-lemma bit_c': assumes "x \<noteq> y"
+lemma bit_c: assumes "x \<noteq> y"
       "init \<in> {[x,y],[y,x]}"
    "qs \<in> lang (seq[Plus (Atom x) One, Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom x])"
  shows  "T\<^sub>p_on_rand' BIT (type0 init x y) qs \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y])"
@@ -768,9 +689,9 @@ proof -
                       and vab: "v = a @ b" 
                       by(erule concE)  
 
-  from BIT_x'[OF assms(1,2) uu] have u_t: "T\<^sub>p_on_rand' BIT (type0 init x y)  (u @ v)  = T\<^sub>p_on_rand' BIT (type0 init x y) v"
+  from BIT_x[OF assms(1,2) uu] have u_t: "T\<^sub>p_on_rand' BIT (type0 init x y)  (u @ v)  = T\<^sub>p_on_rand' BIT (type0 init x y) v"
       and u_c: "config'_rand BIT (type0 init x y) u = type0 init x y" by auto
-  from BIT_c'[OF assms(1,2) vv] have b_t: "T\<^sub>p_on_rand' BIT (type0 init x y) v  = 0.75 * length v - 0.5"
+  from BIT_c[OF assms(1,2) vv] have b_t: "T\<^sub>p_on_rand' BIT (type0 init x y) v  = 0.75 * length v - 0.5"
       and  b_c: "config'_rand BIT (type0 init x y) v = (type0 init x y)" by auto
  
   have BIT: "T\<^sub>p_on_rand' BIT (type0 init x y) qs  = 0.75 * length v - 0.5"
@@ -820,8 +741,8 @@ finally
 
   (* config *)
 
-    show "config'_rand BIT  (type0 init x y) qs  =
-        type0 init x y" by (auto simp add: config'_rand_append qsuv u_c b_c)
+  show "config'_rand BIT  (type0 init x y) qs  = type0 init x y"
+    by (auto simp add: config'_rand_append qsuv u_c b_c)
 qed
 
 lemma bit_c'': assumes 
@@ -831,8 +752,7 @@ lemma bit_c'': assumes
  shows  
     "T\<^sub>p_on_rand' BIT s qs  \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y]) 
       \<and>  BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]" 
-proof -
-  
+proof -  
   from assms have f: "x0\<noteq>y0" by auto
   from assms(1,3) assms(2)[symmetric] have s: "s = type0 [x0,y0] x y"
     apply(simp add: BIT_inv2[OF f] other_def) by fast
@@ -843,39 +763,38 @@ proof -
   from assms(1,2) kas have BIT: "T\<^sub>p_on_rand' BIT s qs \<le> 1.75 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])"
     unfolding s 
     apply(safe)
-      apply(rule bit_c'(1))
+      apply(rule bit_c )
         apply(simp) apply(simp) using assms(5) apply(simp)
-      apply(rule bit_c'(1))
+      apply(rule bit_c)
         apply(simp) apply(simp) using assms(5) apply(simp)
   done 
 
   from assms(1,2) kas have "config'_rand BIT s qs = type0 [x0, y0] x y"
     unfolding s 
     apply(safe)
-      apply(rule bit_c'(2))
+      apply(rule bit_c)
         apply(simp) apply(simp) using assms(5) apply(simp)
-      apply(rule bit_c'(2))
+      apply(rule bit_c)
         apply(simp) apply(simp) using assms(5) apply(simp)
   done 
    
-   then have "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
+  then have "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
     apply(simp)
     using assms(1) kas f lqs by(auto simp add: BIT_inv2 other_def) 
 
   then show ?thesis using BIT s by simp
 qed  
  
+
 subsection "Phase Type D"
  
-lemma bit_d': assumes 
+lemma bit_d: assumes 
     "x \<noteq> y" "{x, y} = {x0, y0}" "BIT_inv s x [x0, y0]"
-    "set qs \<subseteq> {x, y}"
-  shows "qs \<in> lang (seq [Atom x, Atom x]) \<Longrightarrow>
-    T\<^sub>p_on_rand' BIT s qs \<le> 175 / 10\<^sup>2 * real (T\<^sub>p [x, y] qs (OPT2 qs [x, y])) \<and>
+    "set qs \<subseteq> {x, y}" "qs \<in> lang (seq [Atom x, Atom x])"
+  shows "T\<^sub>p_on_rand' BIT s qs \<le> 175 / 10\<^sup>2 * real (T\<^sub>p [x, y] qs (OPT2 qs [x, y])) \<and>
     BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
-proof -
-  assume "qs \<in> lang (seq [Atom x, Atom x])"
-  then have qs: "qs = [x,x]" by auto
+proof - 
+  from assms have qs: "qs = [x,x]" by auto
   then have OPT: "T\<^sub>p [x, y] qs (OPT2 qs [x, y]) = 0" by (simp add: t\<^sub>p_def step_def)
    
   from assms have f: "x0\<noteq>y0" by auto
@@ -885,29 +804,20 @@ proof -
   from assms(1,2) have kas: "[x,y] = [x0,y0] \<or> [x,y] = [y0,x0]" by auto
  
   have BIT: "T\<^sub>p_on_rand' BIT (type0 [x0,y0] x y) qs = 0"
-    unfolding qs    
-    using kas
-    apply(auto)
-    using assms(1,2) apply(simp_all add: oneBIT_step0x)
-    apply(simp_all add: type0_def bind_return_pmf bind_assoc_pmf split_def BIT_step_def t\<^sub>p_def step_def mtf2_def)
-    done
+    using kas assms(1,2) by (auto simp add: qs oneBIT_step costBIT) 
 
+  have lqs: "last qs = x" "last qs \<in> {x0,y0}" using assms(2,4) qs by auto 
 
-   have lqs: "last qs = x" "last qs \<in> {x0,y0}" using assms(2,4) qs by auto 
-
-   have inv: "config'_rand BIT s qs = type0 [x0, y0] x y"
-    unfolding qs s apply(simp )  
-    using kas
-    apply(auto)
-    using assms(1,2) apply(simp_all add: oneBIT_step0x)
-    done
+  have inv: "config'_rand BIT s qs = type0 [x0, y0] x y"
+    using kas assms(1,2) by (auto simp add: qs s  oneBIT_step0x) 
    
-   then have "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
+  then have "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
     apply(simp)
     using assms(1) kas f lqs by(auto simp add: BIT_inv2 other_def) 
     
   then show ?thesis using BIT s by(auto)
 qed
+
 
 section "Phase Partitioning"
 
@@ -917,13 +827,11 @@ lemma D'': assumes "qs \<in> Lxx a b"
  shows "T\<^sub>p_on_rand' BIT s qs \<le> 175 / 10\<^sup>2 * real (T\<^sub>p [a, b] qs (OPT2 qs [a, b])) \<and>
     BIT_inv (Partial_Cost_Model.config'_rand BIT s qs) (last qs) [x, y]"
  apply(rule LxxE[OF assms(1)])
-  apply(rule bit_d'[OF assms(2-5)]) apply(simp)
+  apply(rule bit_d[OF assms(2-5)]) apply(simp)
   apply(rule bit_b''[OF assms(2-5)]) apply(simp)
   apply(rule bit_c''[OF assms(2-5)]) apply(simp) 
-  apply(rule bit_a'[OF assms(2-5)]) apply(simp)
+  apply(rule bit_a[OF assms(2-5)]) apply(simp)
   done
-
- 
 
 theorem BIT_175comp_on_2:
     assumes "(x::nat) \<noteq> y" "set \<sigma> \<subseteq> {x,y}"     
