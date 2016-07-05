@@ -357,7 +357,7 @@ begin
       split: prod.split option.split) []
 
     apply (auto simp: pw_leof_iff refine_pw_simps pw_le_iff select_def neq_Nil_conv c.pre_defs c.impl_defs
-      split: prod.split split_if_asm) []
+      split: prod.split if_split_asm) []
 
     apply (auto simp: pw_leof_iff refine_pw_simps pw_le_iff split: prod.split) []
 

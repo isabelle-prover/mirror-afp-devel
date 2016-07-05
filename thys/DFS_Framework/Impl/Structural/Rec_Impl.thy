@@ -201,7 +201,7 @@ begin
     apply (clarsimp)
     apply (rule order_trans[OF _ bind_mono(1)[OF get_pending_fmt order_refl]])
     apply (simp add: pw_le_iff refine_pw_simps
-      split: option.splits split_if)
+      split: option.splits if_split)
     apply (simp add: pre_defs gen_cond_def)
     done
 
@@ -354,7 +354,7 @@ begin
         "nofail (choose_pending u vo s)"
         unfolding pre_defs gen_step'_def gen_cond_def
         by (auto simp: refine_pw_simps select_def 
-          split: option.splits split_if_asm)
+          split: option.splits if_split_asm)
       also have "choose_pending u vo s \<le>\<^sub>n SPEC (post_choose_pending u vo s)"
         apply (rule leof_trans[OF choose_pending_spec[OF 1 _ 3, THEN leof_strengthen_SPEC]])
         apply simp
@@ -430,7 +430,7 @@ begin
       order_trans[OF gds_cross_edge_refine]
       order_trans[OF gds_discover_refine]
     )
-    apply (simp_all split: split_if_asm)
+    apply (simp_all split: if_split_asm)
 
     using [[goals_limit = 1]]
 
@@ -462,10 +462,10 @@ begin
     subgoal 
       apply (rule SPEC_rule)
       apply (simp add: post_choose_pending_def gen_rwof'_imp_rwof
-        split: split_if_asm)
+        split: if_split_asm)
       apply (clarsimp 
         simp: gen_rwof'_imp_rwof Un_Diff
-        split: split_if_asm) []
+        split: if_split_asm) []
       apply (clarsimp simp: it_step_insert_iff neq_Nil_conv)
       apply (rule conjI)
       subgoal

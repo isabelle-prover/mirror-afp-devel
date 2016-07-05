@@ -274,7 +274,7 @@ begin
   
         (* Pending *)
         apply (rule lhs_step_bind, simp)
-        apply (simp split del: split_if)
+        apply (simp split del: if_split)
         apply (rename_tac v)
         apply (case_tac "v\<in>R")
           (* Spurious node from R *)
@@ -330,7 +330,7 @@ begin
     apply (frule (1) gen_cond_param[param_fo, THEN IdD, THEN iffD1])
     apply (simp del: graph_restrict_simps)
     unfolding gen_step_def
-    apply (simp del: graph_restrict_simps cong: if_cong option.case_cong split del: split_if)
+    apply (simp del: graph_restrict_simps cong: if_cong option.case_cong split del: if_split)
     apply (rule lhs_step_If)
       (* new_root *)
       apply (frule (1) pred_rel_simps[THEN iffD1])

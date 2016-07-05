@@ -1074,7 +1074,7 @@ context param_DFS begin
 
       apply (auto 
         simp: refine_pw_simps pw_le_iff is_discovered_def
-        split: split_if_asm
+        split: if_split_asm
         ) [2]
 
       apply (clarsimp simp: refine_pw_simps pw_le_iff is_discovered_def)
@@ -1082,7 +1082,7 @@ context param_DFS begin
       apply (auto
         simp: is_discovered_def
         simp: refine_pw_simps pw_le_iff finite_psupset_def
-        split: split_if_asm)
+        split: if_split_asm)
       done
   qed
 
