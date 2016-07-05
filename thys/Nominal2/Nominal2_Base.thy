@@ -7,7 +7,8 @@
 theory Nominal2_Base
 imports "~~/src/HOL/Library/Old_Datatype"
         "~~/src/HOL/Library/Infinite_Set"
-        "~~/src/HOL/Quotient_Examples/FSet"
+        "~~/src/HOL/Library/Multiset"
+        "~~/src/HOL/Library/FSet"
         "~~/src/HOL/Library/FinFun"
 keywords
   "atom_decl" "equivariance" :: thy_decl 
@@ -619,38 +620,40 @@ lemma permute_multiset [simp]:
 
 subsection {* Permutations for @{typ "'a fset"} *}
 
-lemma permute_fset_rsp[quot_respect]:
-  shows "(op = ===> list_eq ===> list_eq) permute permute"
-  unfolding rel_fun_def
-  by (simp add: set_eqvt[symmetric])
-
 instantiation fset :: (pt) pt
 begin
 
-quotient_definition
-  "permute_fset :: perm \<Rightarrow> 'a fset \<Rightarrow> 'a fset"
-is
-  "permute :: perm \<Rightarrow> 'a list \<Rightarrow> 'a list"
-  by (simp add: set_eqvt[symmetric])
+context includes fset.lifting begin
+lift_definition
+  "permute_fset" :: "perm \<Rightarrow> 'a fset \<Rightarrow> 'a fset"
+is "permute :: perm \<Rightarrow> 'a set \<Rightarrow> 'a set" by simp
+end
 
+context includes fset.lifting begin
 instance 
 proof
   fix x :: "'a fset" and p q :: "perm"
-  show "0 \<bullet> x = x" by (descending) (simp)
-  show "(p + q) \<bullet> x = p \<bullet> q \<bullet> x" by (descending) (simp)
+  show "0 \<bullet> x = x" by transfer simp
+  show "(p + q) \<bullet> x = p \<bullet> q \<bullet> x"  by transfer simp
 qed
+end
 
 end
 
+context includes fset.lifting
+begin
 lemma permute_fset [simp]:
   fixes S::"('a::pt) fset"
   shows "(p \<bullet> {||}) = ({||} ::('a::pt) fset)"
-  and   "(p \<bullet> insert_fset x S) = insert_fset (p \<bullet> x) (p \<bullet> S)"
-  by (lifting permute_list.simps)
+  and   "(p \<bullet> finsert x S) = finsert (p \<bullet> x) (p \<bullet> S)"
+  apply (transfer, simp add: empty_eqvt)
+  apply (transfer, simp add: insert_eqvt)
+  done
 
 lemma fset_eqvt: 
   shows "p \<bullet> (fset S) = fset (p \<bullet> S)"
-  by (lifting set_eqvt)
+  by transfer simp
+end
 
 
 subsection {* Permutations for @{typ "('a, 'b) finfun"} *}
@@ -1193,9 +1196,10 @@ lemma map_option_eqvt[eqvt]:
 
 subsubsection {* Equivariance for @{typ "'a fset"} *}
 
+context includes fset.lifting begin
 lemma in_fset_eqvt [eqvt]:
   shows "(p \<bullet> (x |\<in>| S)) = ((p \<bullet> x) |\<in>| (p \<bullet> S))"
-unfolding in_fset by simp
+  by transfer simp
 
 lemma union_fset_eqvt [eqvt]:
   shows "(p \<bullet> (S |\<union>| T)) = ((p \<bullet> S) |\<union>| (p \<bullet> T))"
@@ -1203,21 +1207,16 @@ lemma union_fset_eqvt [eqvt]:
 
 lemma inter_fset_eqvt [eqvt]:
   shows "(p \<bullet> (S |\<inter>| T)) = ((p \<bullet> S) |\<inter>| (p \<bullet> T))"
-  apply(descending)
-  unfolding list_eq_def inter_list_def
-  apply(simp)
-  done
+  by transfer simp
 
 lemma subset_fset_eqvt [eqvt]:
   shows "(p \<bullet> (S |\<subseteq>| T)) = ((p \<bullet> S) |\<subseteq>| (p \<bullet> T))"
-  apply(descending)
-  unfolding sub_list_def
-  apply(simp)
-  done
+  by transfer simp
   
 lemma map_fset_eqvt [eqvt]: 
-  shows "p \<bullet> (map_fset f S) = map_fset (p \<bullet> f) (p \<bullet> S)"
-  by (lifting map_eqvt)
+  shows "p \<bullet> (f |`| S) = (p \<bullet> f) |`| (p \<bullet> S)"
+  by transfer simp
+end
 
 subsubsection {* Equivariance for @{typ "('a, 'b) finfun"} *}
 
@@ -2206,20 +2205,20 @@ lemma fresh_empty_fset:
 unfolding fresh_def
 by (simp)
 
-lemma supp_insert_fset [simp]:
+lemma supp_finsert [simp]:
   fixes x::"'a::fs"
   and   S::"'a fset"
-  shows "supp (insert_fset x S) = supp x \<union> supp S"
+  shows "supp (finsert x S) = supp x \<union> supp S"
   apply(subst supp_fset[symmetric])
   apply(simp add: supp_of_finite_insert)
   done
 
-lemma fresh_insert_fset:
+lemma fresh_finsert:
   fixes x::"'a::fs"
   and   S::"'a fset"
-  shows "a \<sharp> insert_fset x S \<longleftrightarrow> a \<sharp> x \<and> a \<sharp> S"
+  shows "a \<sharp> finsert x S \<longleftrightarrow> a \<sharp> x \<and> a \<sharp> S"
   unfolding fresh_def
-  by (simp)
+  by simp
 
 lemma fset_finite_supp:
   fixes S::"('a::fs) fset"
