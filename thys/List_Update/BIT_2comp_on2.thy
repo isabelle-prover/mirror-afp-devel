@@ -182,13 +182,11 @@ lemmas costBIT = costBIT_0x costBIT_0y costBIT_1x costBIT_1y costBIT_3x costBIT_
 
 subsection "state transformation of BIT"
 
+abbreviation "BIT_Step s x == (s \<bind> (\<lambda>s. BIT_step s x \<bind> (\<lambda>(a, is'). return_pmf (step (fst s) x a, is'))))"
 
 lemma oneBIT_step0x: 
     assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
-    shows "(type0 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s x \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is'))))
-                = type0 [x0, y0] x y"
+    shows "BIT_Step (type0 [x0, y0] x y) x = type0 [x0, y0] x y"
   using assms
   apply(simp add: type0_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
   apply(safe) 
@@ -198,10 +196,7 @@ lemma oneBIT_step0x:
 
 lemma oneBIT_step0y: 
     assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
-    shows "(type0 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s y \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is'))))
-                = type4 [x0, y0] x y"
+    shows "BIT_Step (type0 [x0, y0] x y) y = type4 [x0, y0] x y"
   using assms
   apply(simp add: type0_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
   apply(safe) 
@@ -211,10 +206,7 @@ lemma oneBIT_step0y:
 
 lemma oneBIT_step1x: 
     assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
-    shows "(type1 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s x \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is'))))
-                = type0 [x0, y0] x y"
+    shows "BIT_Step (type1 [x0, y0] x y) x = type0 [x0, y0] x y"
   using assms
   apply(simp add: type1_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
   apply(safe) 
@@ -224,10 +216,7 @@ lemma oneBIT_step1x:
 
 lemma oneBIT_step1y: 
     assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
-    shows "(type1 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s y \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is'))))
-                = type3 [x0, y0] x y"
+    shows "BIT_Step (type1 [x0, y0] x y) y = type3 [x0, y0] x y"
   using assms
   apply(simp add: type1_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
   apply(safe) 
@@ -237,10 +226,7 @@ lemma oneBIT_step1y:
 
 lemma oneBIT_step3x: 
     assumes "x\<noteq>y" "x:{x0,y0}" "y:{x0,y0}"
-    shows "(type3 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s x \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is'))))
-                = type1 [x0, y0] x y"
+    shows "BIT_Step (type3 [x0, y0] x y) x = type1 [x0, y0] x y"
   using assms
   apply(simp add: type3_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
   apply(safe) 
@@ -250,10 +236,7 @@ lemma oneBIT_step3x:
 
 lemma oneBIT_step3y: 
     assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
-    shows "(type3 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s y \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is'))))
-                = type0 [x0, y0] y x"
+    shows "BIT_Step (type3 [x0, y0] x y) y = type0 [x0, y0] y x"
   using assms
   apply(simp add: type3_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
   apply(safe) 
@@ -263,10 +246,7 @@ lemma oneBIT_step3y:
 
 lemma oneBIT_step4x: 
     assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
-    shows "(type4 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s x \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is'))))
-                = type1 [x0, y0] x y"
+    shows "BIT_Step (type4 [x0, y0] x y) x =  type1 [x0, y0] x y"
   using assms
   apply(simp add: type4_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
   apply(safe) 
@@ -276,10 +256,7 @@ lemma oneBIT_step4x:
 
 lemma oneBIT_step4y: 
     assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
-    shows "(type4 [x0, y0] x y \<bind>
-        (\<lambda>s. BIT_step s y \<bind>
-             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is'))))
-                = type0 [x0, y0] y x"
+    shows "BIT_Step (type4 [x0, y0] x y) y = type0 [x0, y0] y x"
   using assms
   apply(simp add: type4_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
   apply(safe) 
@@ -388,6 +365,23 @@ finally
 qed
 
   
+subsection "x^+.."
+
+lemma BIT_x: assumes "x\<noteq>y"
+       "init \<in> {[x,y],[y,x]}" "qs \<in> lang (Plus (Atom x) One)"
+ shows "T\<^sub>p_on_rand' BIT (type0 init x y) (qs@r) = T\<^sub>p_on_rand' BIT (type0 init x y) r 
+    \<and> config'_rand BIT  (type0 init x y) qs = (type0 init x y)"
+proof - 
+  have s: "config'_rand BIT (type0 init x y) qs = type0 init x y"
+    using assms by (auto simp add: oneBIT_step)
+
+  have t: "T\<^sub>p_on_rand' BIT (type0 init x y) qs = 0"
+    using assms by (auto simp add: costBIT)
+
+  show ?thesis using s t by(simp add: T_on_rand'_append)
+qed
+        
+
 subsection "Phase Type A"
 
 lemma BIT_a: assumes "x \<noteq> y"
@@ -444,23 +438,6 @@ proof -
   then show ?thesis using BIT s by simp
 qed  
 
-
-subsection "x^+.."
-
-lemma BIT_x: assumes "x\<noteq>y"
-       "init \<in> {[x,y],[y,x]}" "qs \<in> lang (Plus (Atom x) One)"
- shows "T\<^sub>p_on_rand' BIT (type0 init x y) (qs@r) = T\<^sub>p_on_rand' BIT (type0 init x y) r 
-    \<and> config'_rand BIT  (type0 init x y) qs = (type0 init x y)"
-proof - 
-  have s: "config'_rand BIT (type0 init x y) qs = type0 init x y"
-    using assms by (auto simp add: oneBIT_step)
-
-  have t: "T\<^sub>p_on_rand' BIT (type0 init x y) qs = 0"
-    using assms by (auto simp add: costBIT)
-
-  show ?thesis using s t by(simp add: T_on_rand'_append)
-qed
-        
 
 subsection "Phase Type B"
 
@@ -586,7 +563,7 @@ proof -
 
   from assms(1,2) have kas: "[x,y] = [x0,y0] \<or> [x,y] = [y0,x0]" by auto
 
-  from assms have lqs: "last qs = y" by fastforce
+  from assms(5) have lqs: "last qs = y" by fastforce
   from assms(1,2) kas have BIT: "T\<^sub>p_on_rand' BIT s qs \<le> 1.75 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])"
     unfolding s 
     apply(safe)
