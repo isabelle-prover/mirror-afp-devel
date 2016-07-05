@@ -326,7 +326,7 @@ begin
   
     lemma red_stack_disjoint:
       "set (stack s) \<inter> red s = {}"
-      using s_blue_basic_invar assms
+      using s_blue_basic_invar
       unfolding blue_basic_invar_def restr_invar_def
       by auto
     
