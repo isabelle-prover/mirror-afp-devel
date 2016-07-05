@@ -80,6 +80,13 @@ definition "type3 init x y = do {
                          else ([y,x], ([a,b],init)))
                 }"
 
+definition "type4 init x y = do {
+                  (a::bool) \<leftarrow> (bernoulli_pmf 0.5);
+                  (b::bool) \<leftarrow> (bernoulli_pmf 0.5);
+                  return_pmf ( if ~[a,b]!(index init y) then ([x,y], ([a,b],init))
+                         else ([y,x], ([a,b],init)))
+                }"
+
 
 
 subsection "effect of BIT"
@@ -109,6 +116,27 @@ proof -
   finally 
     show ?thesis  .
 qed 
+lemma costBIT_0y: 
+    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
+    shows
+  "E (type0 [x0, y0] x y \<bind>
+       (\<lambda>s. BIT_step s y \<bind>
+            (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) y a))))) = 1"
+using assms apply(auto)
+  apply(simp_all add: type0_def BIT_step_def bind_assoc_pmf bind_return_pmf )
+  apply(simp_all add: E_bernoulli3 t\<^sub>p_def)
+  done
+
+lemma costBIT_0x: 
+    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
+    shows
+  "E (type0 [x0, y0] x y \<bind>
+       (\<lambda>s. BIT_step s x \<bind>
+            (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) x a))))) = 0"
+using assms apply(auto)
+  apply(simp_all add: type0_def BIT_step_def bind_assoc_pmf bind_return_pmf )
+  apply(simp_all add: E_bernoulli3 t\<^sub>p_def)
+  done
 
 
 lemma costBIT_1y: 
@@ -146,6 +174,81 @@ using assms apply(auto)
   apply(simp_all add: E_bernoulli3 t\<^sub>p_def)
   done
 
+lemma costBIT_4x: 
+    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
+    shows
+  "E (type4 [x0, y0] x y \<bind>
+       (\<lambda>s. BIT_step s x \<bind>
+            (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) x a))))) = 0.5"
+using assms apply(auto)
+  apply(simp_all add: type4_def BIT_step_def bind_assoc_pmf bind_return_pmf )
+  apply(simp_all add: E_bernoulli3 t\<^sub>p_def)
+  done
+lemma costBIT_4y: 
+    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
+    shows
+  "E (type4 [x0, y0] x y \<bind>
+       (\<lambda>s. BIT_step s y \<bind>
+            (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) y a))))) = 0.5"
+using assms apply(auto)
+  apply(simp_all add: type4_def BIT_step_def bind_assoc_pmf bind_return_pmf )
+  apply(simp_all add: E_bernoulli3 t\<^sub>p_def)
+  done
+
+lemma oneBIT_step4y: 
+    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
+    shows "(type4 [x0, y0] x y \<bind>
+        (\<lambda>s. BIT_step s y \<bind>
+             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is'))))
+                = type0 [x0, y0] y x"
+proof -
+    from assms have kas2: " [x0,y0] = [x,y] \<or>  [x0,y0] = [y,x]" by auto
+    have "(type4 [x0, y0] x y \<bind>
+        (\<lambda>s. BIT_step s y \<bind>
+             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is')))) 
+            = (type4 [x0, y0] x y) \<bind> (%s. Step_rand BIT y s )"
+            by (simp add: bind_assoc_pmf bind_return_pmf split_def)
+  also               
+    from  assms(1) kas2
+    have "...
+            = type0 [x0, y0] y x"
+      apply(simp add: type4_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
+      apply(safe) 
+        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type0_def)
+          apply smt
+        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type0_def)   
+          done
+  finally 
+    show ?thesis  .
+qed 
+
+lemma oneBIT_step0y: 
+    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
+    shows "(type0 [x0, y0] x y \<bind>
+        (\<lambda>s. BIT_step s y \<bind>
+             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is'))))
+                = type4 [x0, y0] x y"
+proof -
+    from assms have kas2: " [x0,y0] = [x,y] \<or>  [x0,y0] = [y,x]" by auto
+    have "(type0 [x0, y0] x y \<bind>
+        (\<lambda>s. BIT_step s y \<bind>
+             (\<lambda>(a, is'). return_pmf (step (fst s) y a, is')))) 
+            = (type0 [x0, y0] x y) \<bind> (%s. Step_rand BIT y s )"
+            by (simp add: bind_assoc_pmf bind_return_pmf split_def)
+  also               
+    from  assms(1) kas2
+    have "...
+            = type4 [x0, y0] x y"
+      apply(simp add: type0_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
+      apply(safe) 
+        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type4_def)
+          apply smt
+        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type4_def)   
+          done
+  finally 
+    show ?thesis  .
+qed 
+
 lemma oneBIT_step1y: 
     assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
     shows "(type1 [x0, y0] x y \<bind>
@@ -169,6 +272,32 @@ proof -
           apply smt
         apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type3_def)   
           done
+  finally 
+    show ?thesis  .
+qed 
+
+lemma oneBIT_step4x: 
+    assumes "x\<noteq>y" "{x,y}={x0,y0}"
+    shows "(type4 [x0, y0] x y \<bind>
+        (\<lambda>s. BIT_step s x \<bind>
+             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is'))))
+                = type1 [x0, y0] x y"
+proof -
+    from assms have kas2: " [x0,y0] = [x,y] \<or>  [x0,y0] = [y,x]" by auto
+    have "(type4 [x0, y0] x y \<bind>
+        (\<lambda>s. BIT_step s x \<bind>
+             (\<lambda>(a, is'). return_pmf (step (fst s) x a, is')))) 
+            = (type4 [x0, y0] x y) \<bind> (%s. Step_rand BIT x s )"
+            by(simp add: bind_assoc_pmf bind_return_pmf split_def)
+  also               
+    from  assms(1) kas2
+    have "...
+            = type1 [x0, y0] x y"
+      apply(simp add: type4_def BIT_step_def bind_assoc_pmf bind_return_pmf step_def mtf2_def)
+      apply(safe) 
+        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type1_def) 
+        apply(rule pmf_eqI) apply(simp add: pmf_bind swap_def type1_def)   
+          by smt  
   finally 
     show ?thesis  .
 qed 
@@ -199,8 +328,8 @@ proof -
     show ?thesis  .
 qed 
 
-lemma oneBIT_stepx: 
-    assumes "x\<noteq>y" "{x,y}={x0,y0}"
+lemma oneBIT_step0x: 
+    assumes "x\<noteq>y" "x : {x0,y0}" "y\<in>{x0,y0}"
     shows "(type0 [x0, y0] x y \<bind>
         (\<lambda>s. BIT_step s x \<bind>
              (\<lambda>(a, is'). return_pmf (step (fst s) x a, is'))))
@@ -492,6 +621,69 @@ qed
 
 subsection "(yx)*yx"
 
+lemma bit_yxyx': assumes "x \<noteq> y" and kas: "init \<in> {[x,y],[y,x]}" and
+      "qs \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])"
+   shows "T\<^sub>p_on_rand' BIT (type0 init x y) (qs@r) = 0.75 * length qs + T\<^sub>p_on_rand' BIT (type1 init x y) r 
+    \<and> config'_rand BIT (type0 init x y) qs  = (type1 init x y)"
+proof -
+  obtain u v where uu: "u \<in> lang (Times (Atom y) (Atom x))"
+                      and vv: "v \<in> lang (seq[ Star(Times (Atom y) (Atom x))])"
+                      and qsuv: "qs = u @ v" 
+                      using assms(3)
+                      by (auto simp: conc_def)  
+  from uu have uyx: "u = [y,x]" by(auto)
+
+  from qsuv uyx have vqs: "length v = length qs - 2" by auto
+  from qsuv uyx  have vqs2: "length v + 2 = length qs" by auto
+
+
+
+    have A: "x\<noteq>y" "init \<in> {[x,y],[y,x]}" using assms by auto
+
+
+
+   have s2: "config'_rand BIT  (type0 init x y) [y,x] = (type1 init x y)"
+      using kas
+      apply(auto)
+        using assms(1) apply(simp add: oneBIT_step0y oneBIT_step4x)
+        using assms(1) apply(simp add: oneBIT_step0y oneBIT_step4x)
+            using oneBIT_step4x[of x y y x] by blast (* why can't simp do it? *)
+              
+                             
+    have ta: "T\<^sub>p_on_rand' BIT (type0 init x y) u = 1.5"
+      unfolding uyx using kas
+        apply(auto)
+          using assms(1) apply(simp_all add: oneBIT_step0y)
+          apply (simp_all add: costBIT_0y costBIT_4x)  done
+ 
+                  
+    have tat: "T\<^sub>p_on_rand' BIT (type1 init x y) (v @ r) =   0.75*length v + T\<^sub>p_on_rand' BIT (type1 init x y) r
+            \<and> config'_rand BIT (type1 init x y) v = (type1 init x y)"
+        apply(rule bit_yx')
+      apply(fact)+
+      using vv A by(simp_all)
+
+
+    have config: "config'_rand BIT (type0 init x y) (u @ v) =
+            type1 init x y" by(simp only: config'_rand_append s2 uyx tat)
+     
+    have "T\<^sub>p_on_rand' BIT (type0 init x y) (u @ (v @ r)) 
+        = T\<^sub>p_on_rand' BIT (type0 init x y) u + T\<^sub>p_on_rand' BIT (config'_rand BIT (type0 init x y) u) (v@r)"
+          by (simp only: T_on_rand'_append)
+  also
+    have "\<dots> =  T\<^sub>p_on_rand' BIT (type0 init x y) u + T\<^sub>p_on_rand' BIT (type1 init x y) (v@r)"
+      by(simp only: uyx s2) 
+    also have "\<dots> = T\<^sub>p_on_rand' BIT (type0 init x y) u + 0.75*length v + T\<^sub>p_on_rand' BIT (type1 init x y) r"
+        by(simp only: tat) 
+    also have "\<dots> = 2*0.75 + 0.75*length v + T\<^sub>p_on_rand' BIT (type1 init x y) r" by(simp add: ta) 
+    also have "\<dots> = 0.75 * (2+length v) + T\<^sub>p_on_rand' BIT (type1 init x y) r"
+      by (simp add: ring_distribs del: add_2_eq_Suc' add_2_eq_Suc) 
+    also have "\<dots> = 0.75 * length (u @ v) + T\<^sub>p_on_rand' BIT (type1 init x y) r"
+      using uyx by simp
+    finally show ?thesis using qsuv config by simp
+qed
+
+
 lemma bit_yxyx: assumes "x \<noteq> y" "init \<in> {[x,y],[y,x]}"
       "qs \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])"
  shows "T\<^sub>p_on2 BIT (qs@r) (type0 init x y) = 0.75* length qs + T\<^sub>p_on2 BIT r (type1 init x y)
@@ -591,56 +783,78 @@ qed
  
 subsection "Phase Type A"
 
-lemma BIT_a_config: assumes "qs \<in> Lxx x y" "x \<noteq> y"
+lemma BIT_a_config': assumes "x \<noteq> y"
     " init \<in> {[x,y],[y,x]}"
    "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
-  shows  "config2 BIT qs (type0 init x y) (length qs) = (type0 init y x)"
+  shows  "config'_rand BIT (type0 init x y) qs = (type0 init y x)"
 proof - 
-  from assms(4) have alt: "qs = [x,y,y] \<or> qs = [y,y]" apply(simp) by fastforce
-  with assms(2) show ?thesis 
-    unfolding  type0_def config2_def
-    apply(cases "qs=[y,y]")
-      apply(simp add: mtf2_def step_def split_def swap_def bind_assoc_pmf bind_return_pmf BIT_step_def )
-      apply(rule pmf_eqI)
-        apply(simp only: pmf_bind)  
-          using assms(3)
-            apply(cases "init=[x,y]")
-            apply(simp_all add: swap_def) 
-
-      apply(simp add: mtf2_def step_def split_def swap_def bind_assoc_pmf bind_return_pmf BIT_step_def )
-      apply(rule pmf_eqI)
-        apply(simp only: pmf_bind)  
-          using assms(3)
-            apply(cases "init=[x,y]")
-            apply(simp_all add: swap_def) apply smt+
-    done
+  from assms(3) have alt: "qs = [x,y,y] \<or> qs = [y,y]" apply(simp) by fastforce
+  show ?thesis
+    using assms(1,2) alt
+    apply(auto)
+      apply(simp add: oneBIT_step0x oneBIT_step0y oneBIT_step4y)
+      apply(simp add: oneBIT_step0y oneBIT_step4y) 
+      apply(simp add: oneBIT_step0x oneBIT_step0y oneBIT_step4y)
+      apply(simp add: oneBIT_step0y oneBIT_step4y) done
 qed
 
-
-lemma BIT_a: "qs \<in> Lxx x y \<Longrightarrow> x \<noteq> y 
-       \<Longrightarrow> init \<in> {[x,y],[y,x]} \<Longrightarrow>
-  qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y]) \<Longrightarrow>
-   T\<^sub>p_on2 BIT qs (type0 init x y) = 1.5"
-  apply (auto simp add: conc_def  T_on_n2_def  mtf_def T\<^sub>p_on2_def type0_def)
-    apply(simp_all add: bind_return_pmf map_pmf_def bind_assoc_pmf split_def BIT_step_def t\<^sub>p_def step_def mtf2_def swap_def)
-    apply(simp_all add: E_bernoulli3)
-    apply(simp_all add: swap_def) 
-    done
-
-
-lemma bit_a: assumes "qs \<in> Lxx x y" "x \<noteq> y"
- "init \<in> {[x,y],[y,x]}"
- "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
- shows "T\<^sub>p_on2 BIT qs (type0 init x y)  \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y]) 
-    \<and> inv_BIT init qs x y"
+lemma BIT_a': assumes "x \<noteq> y" "init \<in> {[x,y],[y,x]}"
+    "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
+    shows
+   "T\<^sub>p_on_rand' BIT (type0 init x y) qs = 1.5"
+proof - 
+  from assms(3) have alt: "qs = [x,y,y] \<or> qs = [y,y]" apply(simp) by fastforce
+  show ?thesis
+    using assms(1,2) alt 
+    apply(auto)
+      apply(simp add: oneBIT_step0x oneBIT_step0y costBIT_0x costBIT_0y costBIT_4y)
+      apply(simp add: oneBIT_step0x oneBIT_step0y costBIT_0x costBIT_0y costBIT_4y)
+      apply(simp add: oneBIT_step0x oneBIT_step0y costBIT_0x costBIT_0y costBIT_4y)
+      apply(simp add: oneBIT_step0x oneBIT_step0y costBIT_0x costBIT_0y costBIT_4y)
+      done
+qed
+ 
+lemma bit_a': assumes 
+    "x \<noteq> y" "{x, y} = {x0, y0}" "BIT_inv s x [x0, y0]"
+    "set qs \<subseteq> {x, y}" "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
+ shows  
+    "T\<^sub>p_on_rand' BIT s qs  \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y]) 
+      \<and>  BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
 proof -
-  from assms have lqs: "last qs = y" by fastforce
-  from assms BIT_a have BIT: "T\<^sub>p_on2 BIT qs (type0 init x y) = 1.5" by auto
-  with OPT2_A[OF assms(2,4)] have "T\<^sub>p_on2 BIT qs (type0 init x y) \<le> 1.75 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])" by auto
-  moreover from BIT_a_config assms lqs have "inv_BIT init qs x y" unfolding inv_BIT_def by(auto simp: other_def)
-  ultimately show ?thesis by simp
-qed
 
+  from assms have f: "x0\<noteq>y0" by auto
+  from assms(1,3) assms(2)[symmetric] have s: "s = type0 [x0,y0] x y"
+    apply(simp add: BIT_inv2[OF f] other_def) by fast
+
+  from assms(1,2) have kas: "[x,y] = [x0,y0] \<or> [x,y] = [y0,x0]" by auto
+
+  from assms have lqs: "last qs = y" by fastforce
+  from assms(1,2) kas have "T\<^sub>p_on_rand' BIT s qs = 1.5"
+    unfolding s 
+    apply(safe)
+      apply(rule BIT_a')
+        apply(simp) apply(simp) using assms(5) apply(simp)
+      apply(rule BIT_a')
+        apply(simp) apply(simp) using assms(5) apply(simp)
+  done
+  with OPT2_A[OF assms(1,5)] have BIT: "T\<^sub>p_on_rand' BIT s qs \<le> 1.75 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])" by auto
+
+
+  from assms(1,2) kas have "config'_rand BIT s qs = type0 [x0, y0] y x"
+    unfolding s 
+    apply(safe)
+      apply(rule BIT_a_config')
+        apply(simp) apply(simp) using assms(5) apply(simp)
+      apply(rule BIT_a_config')
+        apply(simp) apply(simp) using assms(5) apply(simp)
+  done 
+   
+   then have "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
+    apply(simp)
+    using assms(1) kas f lqs by(auto simp add: BIT_inv2 other_def) 
+
+  then show ?thesis using BIT s by simp
+qed  
 
 subsection "x^+.."
 
@@ -1052,7 +1266,7 @@ proof -
     unfolding qs    
     using kas
     apply(auto)
-    using assms(1,2) apply(simp_all add: oneBIT_stepx)
+    using assms(1,2) apply(simp_all add: oneBIT_step0x)
     apply(simp_all add: type0_def bind_return_pmf bind_assoc_pmf split_def BIT_step_def t\<^sub>p_def step_def mtf2_def)
     done
 
@@ -1063,7 +1277,7 @@ proof -
     unfolding qs s apply(simp )  
     using kas
     apply(auto)
-    using assms(1,2) apply(simp_all add: oneBIT_stepx)
+    using assms(1,2) apply(simp_all add: oneBIT_step0x)
     done
    
    then have "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
@@ -1097,7 +1311,11 @@ lemma D'': assumes "qs \<in> Lxx a b"
  shows "T\<^sub>p_on_rand' BIT s qs \<le> 175 / 10\<^sup>2 * real (T\<^sub>p [a, b] qs (OPT2 qs [a, b])) \<and>
     BIT_inv (Partial_Cost_Model.config'_rand BIT s qs) (last qs) [x, y]"
  apply(rule LxxE[OF assms(1)])
-  apply(rule bit_d'[OF assms(2-5)])
+  apply(rule bit_d'[OF assms(2-5)]) apply(simp)
+  defer
+  defer
+  apply(rule bit_a'[OF assms(2-5)]) apply(simp)
+  
   sorry
 
 term "filter"
