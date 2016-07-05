@@ -28,6 +28,7 @@ object profile extends isabelle.CI_Profile
       message.setFrom(new InternetAddress("ci@isabelle.systems", "Isabelle/Jenkins"))
       message.setSubject(subject)
       message.setText(text, "UTF-8")
+      message.setSentDate(new java.util.Date())
 
       recipients.foreach { recipient =>
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient))
