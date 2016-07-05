@@ -50,6 +50,14 @@ A <a href="devel.shtml">development version</a> of the archive is available as w
 	</tr>
 
 <tr><td class="entry">
+2016-07-05:
+<a href="entries/DFS_Framework.shtml">A Framework for Verifying Depth-First Search Algorithms</a>
+<br>Author:
+<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a> and 
+René Neumann
+</td></tr>
+
+<tr><td class="entry">
 2016-07-01:
 <a href="entries/Buildings.shtml">Chamber Complexes, Coxeter Systems, and Buildings</a>
 <br>Author:

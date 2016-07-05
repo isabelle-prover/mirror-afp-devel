@@ -65,6 +65,7 @@
 <h3>Algorithms</h3>
 
 <div class="list">
+<a href="entries/DFS_Framework.shtml">DFS_Framework</a> &nbsp;
 <a href="entries/TortoiseHare.shtml">TortoiseHare</a> &nbsp;
 <a href="entries/Roy_Floyd_Warshall.shtml">Roy_Floyd_Warshall</a> &nbsp;
 <a href="entries/Selection_Heap_Sort.shtml">Selection_Heap_Sort</a> &nbsp;

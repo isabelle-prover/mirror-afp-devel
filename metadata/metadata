@@ -1,3 +1,27 @@
+[DFS_Framework]
+title = A Framework for Verifying Depth-First Search Algorithms
+author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>, René Neumann <mailto:neumannr@in.tum.de>
+notify = lammich@in.tum.de
+date = 2016-07-05
+topic = Computer Science/Algorithms
+abstract = 
+  <p>
+  This entry presents a framework for the modular verification of
+  DFS-based algorithms, which is described in our [CPP-2015] paper. It
+  provides a generic DFS algorithm framework, that can be parameterized
+  with user-defined actions on certain events (e.g. discovery of new
+  node).  It comes with an extensible library of invariants, which can
+  be used to derive invariants of a specific parameterization.  Using
+  refinement techniques, efficient implementations of the algorithms can
+  easily be derived. Here, the framework comes with templates for a
+  recursive and a tail-recursive implementation, and also with several
+  templates for implementing the data structures required by the DFS
+  algorithm.  Finally, this entry contains a set of re-usable DFS-based
+  algorithms, which illustrate the application of the framework.
+  </p><p>
+  [CPP-2015] Peter Lammich, René Neumann: A Framework for Verifying
+  Depth-First Search Algorithms. CPP 2015: 137-146</p>
+
 [Buildings]
 title = Chamber Complexes, Coxeter Systems, and Buildings
 author = Jeremy Sylvestre <http://ualberta.ca/~jsylvest/>
