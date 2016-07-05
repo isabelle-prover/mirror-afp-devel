@@ -131,7 +131,7 @@ fun mk_atom_fset_ty ty t =
     val atom_ty = dest_fsetT ty
     val fmap_ty = (atom_ty --> @{typ atom}) --> ty --> @{typ "atom fset"};
   in
-    Const (@{const_name map_fset}, fmap_ty) $ atom_const atom_ty $ t
+    Const (@{const_name fimage}, fmap_ty) $ atom_const atom_ty $ t
   end
 
 fun mk_atom_list_ty ty t =

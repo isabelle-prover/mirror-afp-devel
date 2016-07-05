@@ -8,8 +8,7 @@ session "Nominal2" (AFP) = HOL +
     "~~/src/HOL/Library/FinFun"
     "~~/src/HOL/Library/Infinite_Set"
     "~~/src/HOL/Library/Phantom_Type"
-	(* cannot depend on HOL-Library image because of name clash with Library/FSet: *)
-    "~~/src/HOL/Quotient_Examples/FSet"
+    "~~/src/HOL/Library/FSet"
   theories
     "Nominal2"
     "Atoms"
