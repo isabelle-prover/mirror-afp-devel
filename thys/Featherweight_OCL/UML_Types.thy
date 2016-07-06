@@ -637,13 +637,7 @@ fun outer_syntax_command command_spec theory in_local =
             end
         | SOME thy => thy)))
 
-fun in_local decl thy =
-  thy
-  |> Named_Target.init ""
-  |> decl
-  |> Local_Theory.exit_global
-
-val () = outer_syntax_command @{command_keyword Assert} Toplevel.theory in_local 
+val () = outer_syntax_command @{command_keyword Assert} Toplevel.theory Named_Target.theory_map
 val () = outer_syntax_command @{command_keyword Assert_local} (Toplevel.local_theory NONE NONE) I
 *}
 (*>*)

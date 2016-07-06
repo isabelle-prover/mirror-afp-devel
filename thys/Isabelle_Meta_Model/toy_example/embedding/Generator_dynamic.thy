@@ -157,14 +157,6 @@ structure From = struct
 end
 \<close>
 
-ML\<open>
-fun in_local decl thy =
-  thy
-  |> Named_Target.theory_init
-  |> decl
-  |> Local_Theory.exit_global
-\<close>
-
 ML\<open>fun List_mapi f = META.mapi (f o Code_Numeral.integer_of_natural)\<close>
 
 ML\<open>
@@ -524,7 +516,7 @@ structure Bind_META = struct open Bind_Isabelle
 fun all_meta aux ret = let open META open META_overload in fn
   META_semi_theories thy =>
     ret o (case thy of
-       Theories_one thy => semi__theory I in_local thy
+       Theories_one thy => semi__theory I Named_Target.theory_map thy
      | Theories_locale (data, l) => fn thy => thy
        |> (   Expression.add_locale_cmd
                 (To_sbinding (META.holThyLocale_name data))
@@ -1109,7 +1101,7 @@ ML\<open>
 fun exec_deep (env, output_header_thy, seri_args, filename_thy, tmp_export_code, l_obj) thy0 =
   let open Generation_mode in
   let val of_arg = META.isabelle_of_compiler_env_config META.isabelle_apply I in
-  let fun def s = in_local (snd o Specification.definition_cmd NONE [] [] (Binding.empty_atts, s) false) in
+  let fun def s = Named_Target.theory_map (snd o Specification.definition_cmd NONE [] [] (Binding.empty_atts, s) false) in
   let val name_main = Deep.mk_free (Proof_Context.init_global thy0)
                                    Deep0.Export_code_env.Isabelle.argument_main [] in
   thy0
