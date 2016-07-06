@@ -133,4 +133,9 @@ object profile extends isabelle.CI_Profile
     }
   }
 
+  override def select_sessions(tree: Sessions.Tree): (List[String], Sessions.Tree) =
+    tree.selection(
+      session_groups = List("AFP"),
+      exclude_session_groups = List("slow"))
+
 }
