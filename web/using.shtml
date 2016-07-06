@@ -70,6 +70,15 @@ It interacts correctly with multiple AFP installations side by side.
 <p>You can also use this method in your own work outside the AFP, you only
 need to place the AFP entries you refer to next to your development in the
 correct location in the directory hierarchy.</p>
+<p>
+If you build on one other AFP entry, your ROOT file should make this explicit:
+<pre>
+session my_session = base_session +
+</pre>
+This avoids rerunning the <tt>base_session</tt> theories by building
+on the <tt>base_session</tt> image instead. Thus running times of AFP
+regression tests are reduced!
+</p>
 
 <p>&nbsp;</p>
 
