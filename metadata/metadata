@@ -4,7 +4,7 @@ author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>, René Neu
 notify = lammich@in.tum.de
 date = 2016-07-05
 topic = Computer Science/Algorithms
-abstract = 
+abstract =
   <p>
   This entry presents a framework for the modular verification of
   DFS-based algorithms, which is described in our [CPP-2015] paper. It
@@ -28,7 +28,7 @@ author = Jeremy Sylvestre <http://ualberta.ca/~jsylvest/>
 notify = jeremy.sylvestre@ualberta.ca
 date = 2016-07-01
 topic = Mathematics/Algebra, Mathematics/Geometry
-abstract = 
+abstract =
   We provide a basic formal framework for the theory of chamber
   complexes and Coxeter systems, and for buildings as thick chamber
   complexes endowed with a system of apartments. Along the way, we
@@ -4353,7 +4353,7 @@ author = Manuel Eberl <http://in.tum.de/~eberlm>
 notify = eberlm@in.tum.de
 date = 2016-06-21
 topic = Mathematics/Combinatorics
-abstract = 
+abstract =
   <p>In this work, we define the Catalan numbers <em>C<sub>n</sub></em>
   and prove several equivalent definitions (including some closed-form
   formulae). We also show one of their applications (counting the number
@@ -4374,7 +4374,7 @@ author = Bertram Felgenhauer<>, Julian Nagele<>, Vincent van Oostrom<>, Christia
 notify = bertram.felgenhauer@uibk.ac.at, julian.nagele@uibk.ac.at, c.sternagel@gmail.com
 date = 2016-06-30
 topic = Logic/Rewriting
-abstract = 
+abstract =
   We formalize the Z property introduced by Dehornoy and van Oostrom.
   First we show that for any abstract rewrite system, Z implies
   confluence. Then we give two examples of proofs using Z: confluence of
@@ -4387,7 +4387,7 @@ author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl>
 notify = andschl@dtu.dk
 date = 2016-06-30
 topic = Logic
-abstract = 
+abstract =
   This theory is a formalization of the resolution calculus for
   first-order logic. It is proven sound and complete. The soundness
   proof uses the substitution lemma, which shows a correspondence
@@ -4419,3 +4419,21 @@ abstract =
   Blanchette, M. Fleury, A. Schlichtkrull, and D. Traytel. <a
   href="https://bitbucket.org/jasmin_blanchette/isafol">IsaFoL: Isabelle
   Formalization of Logic</a>. <a href="https://bitbucket.org/jasmin_blanchette/isafol">https://bitbucket.org/jasmin_blanchette/isafol</a>.
+
+[Multivariate_Polynomials]
+title = Multivariate Polynomials
+author = Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>, Fabian Immler <http://www.in.tum.de/~immler/>
+notify = alexander.maletzky@risc.jku.at, immler@in.tum.de
+date = 2016-07-06
+topic = Mathematics/Algebra, Computer Science/Algorithms
+abstract =
+  This formalization is concerned with multivariate polynomials over
+  various coefficient structures (semirings, rings, fields). The
+  polynomials are represented both abstractly, as coefficient functions
+  with finite support, and concretely as association lists (thus
+  allowing to perform actual computations).  All ring-theoretic
+  operations on polynomials, such as addition and multiplication, are
+  defined and shown to satisfy the usual properties. Moreover, for
+  polynomials whose corresponding type of power-products is ordered by a
+  linear (term) ordering, various additional notions, such as leading
+  power-product, leading coefficient etc., are introduced as well.

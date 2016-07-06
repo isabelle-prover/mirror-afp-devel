@@ -91,6 +91,7 @@
 <a href="entries/Formal_SSA.shtml">Formal_SSA</a> &nbsp;
 <a href="entries/ROBDD.shtml">ROBDD</a> &nbsp;
 <a href="entries/Groebner_Bases.shtml">Groebner_Bases</a> &nbsp;
+<a href="entries/Multivariate_Polynomials.shtml">Multivariate_Polynomials</a> &nbsp;
 
 <strong>Distributed:</strong>&nbsp;<a href="entries/DiskPaxos.shtml">DiskPaxos</a> &nbsp;
 <a href="entries/GenClock.shtml">GenClock</a> &nbsp;
@@ -364,6 +365,7 @@
 <a href="entries/Polynomial_Factorization.shtml">Polynomial_Factorization</a> &nbsp;
 <a href="entries/Perron_Frobenius.shtml">Perron_Frobenius</a> &nbsp;
 <a href="entries/Groebner_Bases.shtml">Groebner_Bases</a> &nbsp;
+<a href="entries/Multivariate_Polynomials.shtml">Multivariate_Polynomials</a> &nbsp;
 </div>
 
 <h3>Analysis</h3>
