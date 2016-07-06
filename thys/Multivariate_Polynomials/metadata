@@ -1,0 +1,17 @@
+[Multivariate_Polynomials]
+title = Multivariate Polynomials
+author = Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>, Fabian Immler <http://www.in.tum.de/~immler/>
+notify = alexander.maletzky@risc.jku.at, immler@in.tum.de
+date = 2016-07-06
+topic = Mathematics/Algebra, Computer Science/Algorithms
+abstract = 
+  This formalization is concerned with multivariate polynomials over
+  various coefficient structures (semirings, rings, fields). The
+  polynomials are represented both abstractly, as coefficient functions
+  with finite support, and concretely as association lists (thus
+  allowing to perform actual computations).  All ring-theoretic
+  operations on polynomials, such as addition and multiplication, are
+  defined and shown to satisfy the usual properties. Moreover, for
+  polynomials whose corresponding type of power-products is ordered by a
+  linear (term) ordering, various additional notions, such as leading
+  power-product, leading coefficient etc., are introduced as well.
