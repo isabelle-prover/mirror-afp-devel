@@ -3,7 +3,7 @@
 section \<open>Gr\"obner Bases\<close>
 
 theory Groebner_Bases
-imports Abstract_Poly Confluence
+imports "../Multivariate_Polynomials/Abstract_Poly" Confluence
 begin
 
 text \<open>This theory provides the main results about Gr\"obner bases of multivariate polynomials.
@@ -697,7 +697,7 @@ proof -
     have "coeff (monom_mult (coeff p (t1 * lp f1) / lc f1) t1 f1) (t2 * lp f2) = 0" by simp
   from coeff_minus[of p _ "t2 * lp f2"] this have c: "coeff q1 (t2 * lp f2) = coeff p (t2 * lp f2)"
     unfolding q1_def by simp
-  def q3 \<equiv> "q1 - monom_mult ((coeff q1 (t2 * lp f2)) / lc f2) t2 f2"
+  define q3 where "q3 \<equiv> q1 - monom_mult ((coeff q1 (t2 * lp f2)) / lc f2) t2 f2"
   have "red_single q1 q3 f2 t2" unfolding red_single_def
   proof (rule, fact, rule)
     from c c2 show "coeff q1 (t2 * lp f2) \<noteq> 0" by simp
@@ -944,8 +944,8 @@ proof -
         show ?thesis .
     next
       case True
-      def t \<equiv> "t2 * lp f2"
-      def l \<equiv> "lcm (lp f1) (lp f2)"
+      define t where "t \<equiv> t2 * lp f2"
+      define l where "l \<equiv> lcm (lp f1) (lp f2)"
       from dvd_lcm[of "lp f1" "lp f2"] have "(lp f1) dvd l" unfolding l_def .
       from dvd_lcm_2[of "lp f2" "lp f1"] have "(lp f2) dvd l" unfolding l_def .
       have "lp f1 dvd (t1 * lp f1)" unfolding t_def by simp
@@ -1770,7 +1770,7 @@ proof (rule wfP_chain)
         show "p \<in> f (Suc i)" by fact
       qed
     qed
-    def g \<equiv> "\<lambda>i::nat. (SOME p::('a, 'b) mpoly. p \<in> (f (Suc i)) \<and> (\<exists>q. is_red {p} q \<and> \<not> is_red (f i) q))"
+    define g where "g \<equiv> \<lambda>i::nat. (SOME p::('a, 'b) mpoly. p \<in> (f (Suc i)) \<and> (\<exists>q. is_red {p} q \<and> \<not> is_red (f i) q))"
     have a3: "\<And>i j. i < j \<Longrightarrow> \<not> lp (g i) dvd (lp (g j))"
     proof
       fix i j::nat
