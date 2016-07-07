@@ -39,82 +39,59 @@ lemma A: "(case_sum (\<lambda>e. e) (\<lambda>a. undefined)) (Inl e) = e"
 lemma B: "inj (case_sum (\<lambda>e. e) (\<lambda>a. undefined))"
   oops
 
-lemma none: "(set_pmf (bernoulli_pmf (5 / 10) \<bind>
+lemma none: "p >0 \<Longrightarrow> p < 1 \<Longrightarrow> (set_pmf (bernoulli_pmf p \<bind>
           (\<lambda>b. if b then map_pmf Inl Da else map_pmf Inr Db))
           \<inter> {f. (\<exists>e. Inl e = f)}) \<noteq> {}"
+    apply(simp add: UNIV_bool)
+      using set_pmf_not_empty by fast
+lemma none2: "p >0 \<Longrightarrow> p < 1 \<Longrightarrow>  (set_pmf (bernoulli_pmf p \<bind>
+          (\<lambda>b. if b then map_pmf Inl Da else map_pmf Inr Db))
+          \<inter> {f. (\<exists>e. Inr e = f)}) \<noteq> {}"
     apply(simp add: UNIV_bool)
       using set_pmf_not_empty by fast
 
 lemma C: "set_pmf (Proj1_pmf (Sum_pmf 0.5 Da Db)) = set_pmf Da"
 proof -
-
-    
   show ?thesis
     unfolding Sum_pmf_def Proj1_pmf_def
     apply(simp add: )
-    using none[of Da Db] apply(simp add: set_cond_pmf UNIV_bool)
+    using none[of "0.5" Da Db] apply(simp add: set_cond_pmf UNIV_bool)
       by force
 qed
 
 thm integral_measure_pmf
 
 thm pmf_cond pmf_cond[OF none]
-(*
-lemma "Proj1_pmf (Sum_pmf 0.5 Da Db) =  Da" 
+
+lemma proj1_pmf: assumes "p>0" "p<1" shows "Proj1_pmf (Sum_pmf p Da Db) =  Da" 
 proof -
 
   have kl: "\<And>e. pmf (map_pmf Inr Db) (Inl e) = 0"
     apply(simp only: pmf_eq_0_set_pmf)
     apply(simp) by blast
-
-  term "(\<integral>x. pmf M x \<partial>count_space X)"
-  term measure_pmf.prob
-  term "measure M"
-
-  have "(LINT x|count_space {f. \<exists>e. Inl e = f}.
-        measure_pmf.prob Da (Inl -` {x})) = 1"
-        sorry
-
-  have "\<And>x. Inr -` {x} = e"
-    unfolding vimage_def sorry
-
-  have "\<And>x. x\<in>{f. \<exists>e. Inl e = f} \<Longrightarrow> Inr -` {x} = {}"
-    sorry
-
-  have "(LINT x|count_space {f. \<exists>e. Inl e = f}.
-        measure_pmf.prob Db (Inr -` {x})) = 0"
-        unfolding vimage_def
-        apply(simp add: integral_pmf[symmetric]) sorry
  
-
   have ll: "measure_pmf.prob
-           (bernoulli_pmf (1 / 2) \<bind>
+           (bernoulli_pmf p \<bind>
             (\<lambda>b. if b then map_pmf Inl Da else map_pmf Inr Db))
-           {f. \<exists>e. Inl e = f} = 1/2" 
+           {f. \<exists>e. Inl e = f} = p" 
+       using assms
      apply(simp add: integral_pmf[symmetric] pmf_bind)
      apply(subst integral_add)
       using integrable_pmf apply fast
-      using integrable_pmf apply fast 
-        apply(simp)
-     using kl 
-     
-
-     unfolding bind_pmf_def bernoulli_pmf_def
-     apply(simp)   sorry
-     
-
+      using integrable_pmf apply fast  
+        by(simp add: integral_pmf) 
+      
   have E: "(cond_pmf
-       (bernoulli_pmf (5 / 10) \<bind>
+       (bernoulli_pmf p \<bind>
         (\<lambda>b. if b then map_pmf Inl Da else map_pmf Inr Db))
        {f. \<exists>e. Inl e = f}) =
     map_pmf Inl Da"
     apply(rule pmf_eqI)
       apply(subst pmf_cond)
-      using none[of Da Db] apply (simp)
-        apply(auto)
+      using none[of p Da Db] assms apply (simp)
+       using assms apply(auto)
           apply(subst pmf_bind)
-          apply(simp add: kl ll)
-        defer 
+          apply(simp add: kl ll ) 
           apply(simp only: pmf_eq_0_set_pmf) by auto
 
   have ID: "case_sum (\<lambda>e. e) (\<lambda>a. undefined) \<circ> Inl = id"
@@ -126,12 +103,51 @@ proof -
   done
 
 qed
+ 
 
-lemma proj1_pmf: "p>0 \<Longrightarrow> Proj1_pmf (Sum_pmf p Da Db) =  Da" sorry
+definition "Proj2_pmf D = map_pmf (%a. case a of Inr e \<Rightarrow> e) (cond_pmf D {f. (\<exists>e. Inr e = f)})"
 
-definition "Proj2_pmf D = map_pmf (%a. case a of Inr e \<Rightarrow> e) (cond_pmf D {f. (\<exists>e. Inl e = f)})"
+lemma proj2_pmf: assumes "p>0" "p<1" shows "Proj2_pmf (Sum_pmf p Da Db) =  Db" 
+proof -
 
-lemma proj2_pmf: "p<1 \<Longrightarrow> Proj2_pmf (Sum_pmf p Da Db) =  Db" sorry
+  have kl: "\<And>e. pmf (map_pmf Inl Da) (Inr e) = 0"
+    apply(simp only: pmf_eq_0_set_pmf)
+    apply(simp) by blast
+ 
+  have ll: "measure_pmf.prob
+           (bernoulli_pmf p \<bind>
+            (\<lambda>b. if b then map_pmf Inl Da else map_pmf Inr Db))
+           {f. \<exists>e. Inr e = f} = 1-p" 
+       using assms
+     apply(simp add: integral_pmf[symmetric] pmf_bind)
+     apply(subst integral_add)
+      using integrable_pmf apply fast
+      using integrable_pmf apply fast  
+        by(simp add: integral_pmf) 
+      
+  have E: "(cond_pmf
+       (bernoulli_pmf p \<bind>
+        (\<lambda>b. if b then map_pmf Inl Da else map_pmf Inr Db))
+       {f. \<exists>e. Inr e = f}) =
+    map_pmf Inr Db"
+    apply(rule pmf_eqI)
+      apply(subst pmf_cond)
+      using none2[of p Da Db] assms apply (simp)
+       using assms apply(auto)
+          apply(subst pmf_bind)
+          apply(simp add: kl ll ) 
+          apply(simp only: pmf_eq_0_set_pmf) by auto
+
+  have ID: "case_sum (\<lambda>e. undefined) (\<lambda>a. a) \<circ> Inr = id"
+    by fastforce
+  show ?thesis 
+    unfolding Sum_pmf_def Proj2_pmf_def
+    apply(simp only: E)
+    apply(simp add: pmf.map_comp ID)
+  done
+
+qed
+ 
 
 
 
@@ -200,8 +216,6 @@ also
 finally
   show ?thesis .
 qed
-
-*)
 
 
 end
