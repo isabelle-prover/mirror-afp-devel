@@ -644,8 +644,8 @@ subsubsection "(x+1)yy"
 
 lemma ts_a': assumes "x \<noteq> y" "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
    "h = [] \<or> (\<exists>hs. h = [x, x] @ hs)"
-  shows "T_on' (rTS h0) ([x, y], h) qs = 2
-            \<and>  TS_inv' (config' (rTS h0) ([x, y], h) qs) (last qs) [x,y]"
+  shows "TS_inv' (config' (rTS h0) ([x, y], h) qs) (last qs) [x,y]
+          \<and> T_on' (rTS h0) ([x, y], h) qs = 2"
 proof - 
   obtain u v where uu: "u \<in> lang (Plus (Atom x) One)"
         and vv: "v \<in> lang (seq[Atom y, Atom y])"
@@ -712,21 +712,100 @@ proof -
   show ?thesis using OPT ts_a'[OF assms(1,3,2)] by auto  
 qed 
 
-
-lemma TS_a'': assumes 
+(*
+lemma convert: assumes 
     "x \<noteq> y" "{x, y} = {x0, y0}" "TS_inv s x [x0, y0]"
-    "set qs \<subseteq> {x, y}" "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
+    "set qs \<subseteq> {x, y}" and inpattern: "qs \<in> Pattern" and nonempty: "qs \<noteq> []"
+   and ts_rule: "\<And>x y qs h h0. x \<noteq> y \<Longrightarrow> qs \<in> Pattern \<Longrightarrow>
+          h = [] \<or> (\<exists>hs. h = [x, x] @ hs) \<Longrightarrow>
+TS_inv' (config' (rTS h0) ([x, y], h) qs) (last qs) [x, y] \<and> T_on' (rTS h0) ([x, y], h) qs = 2"
  shows  
-    "T\<^sub>p_on_rand' (embed (rTS h0)) s qs  \<le> 2 * T\<^sub>p [x,y] qs (OPT2 qs [x,y]) 
-      \<and>  TS_inv (config'_rand (embed (rTS h0)) s qs) (last qs) [x0, y0]
+    "TS_inv (config'_rand (embed (rTS h0)) s qs) (last qs) [x0, y0]
       \<and> T\<^sub>p_on_rand' (embed (rTS h0)) s qs = 2" 
 proof -
   from assms(1,2) have kas: "(x0=x \<and> y0=y) \<or> (y0=x \<and> x0=y)" by(auto)
   then obtain h where S: "s = return_pmf ([x,y],h)" and h: "h = [] \<or> (\<exists>hs. h = [x, x] @ hs)"
     apply(rule disjE) using assms(1,3) unfolding TS_inv_def by(auto) 
+  {
+    fix x y qs h0
+    fix h:: "nat list"
+    assume A: "x \<noteq> y"
+        "qs \<in> Pattern"
+        "h = [] \<or> (\<exists>hs. h = [x, x] @ hs)"
+     
+    have "TS_inv (config'_rand (embed (rTS h0)) (return_pmf ([x, y], h)) qs) (last qs) [x, y] \<and>
+            T_on_rand' (embed (rTS h0)) (return_pmf ([x, y], h)) qs = 2"
+      apply(simp only: T_on'_embed[symmetric] config'_embed)
+      using ts_rule[OF A] by auto
+  } note b=this
+   
 
-  show ?thesis
-    using kas apply(rule disjE) sorry
+  show ?thesis unfolding S 
+    using kas apply(rule disjE)
+      apply(simp only:)
+      apply(rule b)
+        using assms apply(simp)
+        using assms apply(simp)
+        using h apply(simp)
+      apply(simp only:)
+      
+      apply(subst TS_inv_sym[of y x x y])
+        using assms(1) apply(simp)
+        apply(blast)
+        defer
+        apply(rule b)
+          using assms apply(simp)
+          using assms apply(simp)
+          using h apply(simp)
+        using last_in_set nonempty assms(4) by blast
+qed
+ *)
+
+lemma TS_a'': assumes 
+    "x \<noteq> y" "{x, y} = {x0, y0}" "TS_inv s x [x0, y0]"
+    "set qs \<subseteq> {x, y}" "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
+ shows  
+    "TS_inv (config'_rand (embed (rTS h0)) s qs) (last qs) [x0, y0]
+      \<and> T\<^sub>p_on_rand' (embed (rTS h0)) s qs = 2" 
+proof -
+  from assms(1,2) have kas: "(x0=x \<and> y0=y) \<or> (y0=x \<and> x0=y)" by(auto)
+  then obtain h where S: "s = return_pmf ([x,y],h)" and h: "h = [] \<or> (\<exists>hs. h = [x, x] @ hs)"
+    apply(rule disjE) using assms(1,3) unfolding TS_inv_def by(auto) 
+  
+  have l: "qs \<noteq> []" using assms by auto
+
+  {
+    fix x y qs h0
+    fix h:: "nat list"
+    assume A: "x \<noteq> y"
+        "qs \<in> lang (seq [question (Atom x), Atom y, Atom y])"
+        "h = [] \<or> (\<exists>hs. h = [x, x] @ hs)"
+     
+    have "TS_inv (config'_rand (embed (rTS h0)) (return_pmf ([x, y], h)) qs) (last qs) [x, y] \<and>
+            T_on_rand' (embed (rTS h0)) (return_pmf ([x, y], h)) qs = 2"
+      apply(simp only: T_on'_embed[symmetric] config'_embed)
+      using ts_a'[OF A] by auto
+  } note b=this
+   
+
+  show ?thesis unfolding S 
+    using kas apply(rule disjE)
+      apply(simp only:)
+      apply(rule b)
+        using assms apply(simp)
+        using assms apply(simp)
+        using h apply(simp)
+      apply(simp only:)
+      
+      apply(subst TS_inv_sym[of y x x y])
+        using assms(1) apply(simp)
+        apply(blast)
+        defer
+        apply(rule b)
+          using assms apply(simp)
+          using assms apply(simp)
+          using h apply(simp)
+        using last_in_set l assms(4) by blast
 qed
 
 subsubsection "x+yx(yx)*x"
@@ -795,18 +874,20 @@ proof -
       using conf apply(simp)
       by(simp add: reva vab bb)
 qed
+
+
+lemma TS_c1'': assumes 
+    "x \<noteq> y" "{x, y} = {x0, y0}" "TS_inv s x [x0, y0]"
+    "set qs \<subseteq> {x, y}"  
+   "qs \<in> lang (seq [Atom y, Atom x, Star (Times (Atom y) (Atom x)), Atom x])"
+ shows "TS_inv (config'_rand (embed (rTS h0)) s qs) (last qs) [x0, y0]
+      \<and> T_on_rand' (embed (rTS h0)) s qs = (length qs - 2)" (* right ? *)
+sorry
          
 lemma TS_c': assumes "x \<noteq> y" "h = [] \<or> (\<exists>hs. h = [x, x] @ hs)"
-  "qs
-    \<in> lang
-        (seq
-          [Plus (Atom x) rexp.One, Atom y,
-           Atom x,
-           Star (Times (Atom y) (Atom x)),
-           Atom x])"
+  "qs \<in> lang (seq [Plus (Atom x) rexp.One, Atom y, Atom x, Star (Times (Atom y) (Atom x)), Atom x])"
   shows "T_on' (rTS h0) ([x, y], h) qs
     \<le> 2 * T\<^sub>p [x, y] qs (OPT2 qs [x, y]) \<and>  TS_inv' (config' (rTS h0) ([x, y], h) qs) (last qs) [x,y]"
-
 proof -
   obtain u v where uu: "u \<in> lang (Plus (Atom x) One)"
         and vv: "v \<in> lang (seq[Times (Atom y) (Atom x), Star (Times (Atom y) (Atom x)), Atom x])"
@@ -851,15 +932,6 @@ proof -
   show ?thesis unfolding TS OPT
     by (auto simp add: conf) 
 qed
-
-
-lemma TS_c1'': assumes 
-    "x \<noteq> y" "{x, y} = {x0, y0}" "TS_inv s x [x0, y0]"
-    "set qs \<subseteq> {x, y}"  
-   "qs \<in> lang (seq [Atom y, Atom x, Star (Times (Atom y) (Atom x)), Atom x])"
- shows "TS_inv (config'_rand (embed (rTS h0)) s qs) (last qs) [x0, y0]
-      \<and> T_on_rand' (embed (rTS h0)) s qs = (length qs - 2)" (* right ? *)
-sorry
 
 lemma TS_c2'': assumes 
     "x \<noteq> y" "{x, y} = {x0, y0}" "TS_inv s x [x0, y0]"
@@ -979,12 +1051,6 @@ apply(subst T_on_embed)
 
     from `\<sigma>' \<in> Lxx a b` have "\<sigma>' \<noteq> []" using Lxx1 by fastforce
     then have l: "last \<sigma>' \<in> {x,y}" using 1(5,7) last_in_set by blast
-
-    {
-      fix n m
-    have "n \<le> 2 * m \<Longrightarrow> real n \<le> 2 * real (m)"
-        by linarith
-    }
 
     show ?case unfolding s T_on'_embed[symmetric]
       using D'[OF 1(3,4) inv, of "[]"]
