@@ -402,7 +402,8 @@ lemma bit_a: assumes
     "set qs \<subseteq> {x, y}" "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
  shows  
     "T\<^sub>p_on_rand' BIT s qs  \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y]) 
-      \<and>  BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
+      \<and>  BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]
+      \<and> T\<^sub>p_on_rand' BIT s qs = 1.5"
 proof -
   from assms have f: "x0\<noteq>y0" by auto
   from assms(1,3) assms(2)[symmetric] have s: "s = type0 [x0,y0] x y"
@@ -411,7 +412,7 @@ proof -
   from assms(1,2) have kas: "[x,y] = [x0,y0] \<or> [x,y] = [y0,x0]" by auto
 
   from assms have lqs: "last qs = y" by fastforce
-  from assms(1,2) kas have "T\<^sub>p_on_rand' BIT s qs = 1.5"
+  from assms(1,2) kas have p: "T\<^sub>p_on_rand' BIT s qs = 1.5"
     unfolding s 
     apply(safe)
       apply(rule BIT_a)
@@ -435,8 +436,16 @@ proof -
     apply(simp)
     using assms(1) kas f lqs by(auto simp add: BIT_inv2 other_def) 
 
-  then show ?thesis using BIT s by simp
+  then show ?thesis using BIT s p by simp
 qed  
+
+lemma bit_a'': " a \<noteq> b \<Longrightarrow>
+         {a, b} = {x, y} \<Longrightarrow>
+         BIT_inv s a [x, y] \<Longrightarrow>
+         set qs \<subseteq> {a, b} \<Longrightarrow>
+         qs \<in> lang (seq [question (Atom a), Atom b, Atom b]) \<Longrightarrow>
+         BIT_inv (Partial_Cost_Model.config'_rand BIT s qs) (last qs) [x, y] \<and> T\<^sub>p_on_rand' BIT s qs = 1.5"
+using bit_a[of a b x y] by blast
 
 
 subsection "Phase Type B"
@@ -444,8 +453,8 @@ subsection "Phase Type B"
 lemma BIT_b: assumes A: "x \<noteq> y"
        "init \<in> {[x,y],[y,x]}"
     "v \<in> lang (seq [Times (Atom y) (Atom x), Star (Times (Atom y) (Atom x)), Atom y, Atom y])"
-    shows "T\<^sub>p_on_rand' BIT (type0 init x y) v = 0.75 * length v - 0.5
-    \<and> config'_rand BIT  (type0 init x y) v = (type0 init y x)"
+    shows "T\<^sub>p_on_rand' BIT (type0 init x y) v = 0.75 * length v - 0.5" (is ?T)
+     and "config'_rand BIT  (type0 init x y) v = (type0 init y x)" (is ?C)
 proof -
   have lenvmod: "length v mod 2 = 0"
   proof -
@@ -484,10 +493,77 @@ proof -
   have calc: "3 * Suc (Suc (length a)) / 4 - 1 / 2 = 3 * (2+length a) / 4 - 1 / 2" by simp
 
   from t stars have "T\<^sub>p_on_rand' BIT (type0 init x y) (a @ b) = 0.75 * length a + 1" by auto
-  then have whatineed: "T\<^sub>p_on_rand' BIT  (type0 init x y) v = 0.75 * length v - 0.5"
+  then show "T\<^sub>p_on_rand' BIT  (type0 init x y) v = 0.75 * length v - 0.5"
     unfolding lenv by(simp add: vab ring_distribs del: add_2_eq_Suc')
-  with config vab show ?thesis by simp
+  from config vab show ?C by simp
 qed
+
+lemma bit_b''2: assumes 
+    "x \<noteq> y" "{x, y} = {x0, y0}" "BIT_inv s x [x0, y0]"
+    "set qs \<subseteq> {x, y}" 
+    "qs \<in> lang (seq[Atom x, Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom y, Atom y])"
+ shows "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0] \<and>
+          T\<^sub>p_on_rand' BIT s qs  = 0.75 * (length qs - 1) - 0.5"
+sorry
+
+lemma bit_b''1: assumes 
+    "x \<noteq> y" "{x, y} = {x0, y0}" "BIT_inv s x [x0, y0]"
+    "set qs \<subseteq> {x, y}" 
+    "qs \<in> lang (seq[Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom y, Atom y])"
+ shows "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0] \<and>
+          T\<^sub>p_on_rand' BIT s qs  = 0.75 * length qs - 0.5"
+proof -  
+  from assms have f: "x0\<noteq>y0" by auto
+  from assms(1,3) assms(2)[symmetric] have s: "s = type0 [x0,y0] x y"
+    apply(simp add: BIT_inv2[OF f] other_def) by fast
+
+  from assms(1,2) have kas: "[x,y] = [x0,y0] \<or> [x,y] = [y0,x0]" by auto
+
+  from assms(5) have lqs: "last qs = y" by fastforce
+  from assms(1,2) kas have BIT: "T\<^sub>p_on_rand' BIT s qs = 0.75 * length qs - 0.5"
+    unfolding s 
+    apply(safe)
+      apply(rule BIT_b)
+        apply(simp) apply(simp) using assms(5) apply(simp add: conc_assoc)
+      apply(rule BIT_b)
+        apply(simp) apply(simp) using assms(5) apply(simp add: conc_assoc)
+  done (*
+moreover
+  have "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = length qs div 2"
+    apply(rule OPT2_B[where u="[]"]) using assms by(simp_all add: conc_assoc)
+moreover
+  have "(length qs) mod 2 = 0"
+  proof -
+    from assms(5) have "qs \<in> ({[y]} @@ {[x]}) @@ star({[y]} @@ {[x]}) @@ {[y]} @@ {[y]}" by (simp add: conc_assoc)
+    then obtain p q r where pqr: "qs=p@q@r" and "p\<in>({[y]} @@ {[x]})"
+              and q: "q \<in> star ({[y]} @@ {[x]})" and "r \<in>{[y]} @@ {[y]}" by (metis concE)
+    then have rr: "p = [y,x]" "r=[y,y]" by auto
+    with pqr have a: "length qs = 4+length q" by auto
+    from q have b: "length q mod 2 = 0"
+    apply(induct q rule: star_induct) by (auto)    
+    from a b show ?thesis by auto
+  qed
+ultimately
+  show "T\<^sub>p_on_rand' BIT s qs  \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y])"
+    by auto
+*)
+
+  from assms(1,2) kas have "config'_rand BIT s qs = type0 [x0, y0] y x"
+    unfolding s 
+    apply(safe)
+      apply(rule BIT_b)
+        apply(simp) apply(simp) using assms(5) apply(simp add: conc_assoc)
+      apply(rule BIT_b)
+        apply(simp) apply(simp) using assms(5) apply(simp add: conc_assoc)
+  done 
+   
+  then have config: "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
+    apply(simp)
+    using assms(1) kas lqs by(auto simp add: BIT_inv2 other_def) 
+
+  show ?thesis using BIT config by simp
+qed
+
 
 lemma bit_b: assumes "x \<noteq> y"
       "init \<in> {[x,y],[y,x]}"
@@ -523,7 +599,7 @@ proof -
                     and vab: "v = a @ b" 
                       by(erule concE)  
 
-  from BIT_x[OF assms(1,2) uu] have u_t: "T\<^sub>p_on_rand' BIT (type0 init x y)  (u @ v)  = T\<^sub>p_on_rand' BIT (type0 init x y) v"
+  from BIT_x[OF assms(1,2) uu] have u_t: "T\<^sub>p_on_rand' BIT (type0 init x y) (u @ v)  = T\<^sub>p_on_rand' BIT (type0 init x y) v"
       and u_c: "config'_rand BIT (type0 init x y) u = type0 init x y" by auto
   from BIT_b[OF assms(1,2) vv] have b_t: "T\<^sub>p_on_rand' BIT (type0 init x y) v  = 0.75 * length v - 0.5"
       and  b_c: "config'_rand BIT (type0 init x y) v = (type0 init y x)" by auto
@@ -541,7 +617,7 @@ proof -
   then have 2: "other (last qs) x y = x" unfolding other_def by simp
 
   show "T\<^sub>p_on_rand' BIT (type0 init x y) qs \<le> 1.75 * T\<^sub>p [x,y] qs (OPT2 qs [x,y])"
-    using BIT OPT lenv 1 2 by auto
+    using BIT OPT lenv by auto
 
   (* config *)
 
@@ -589,6 +665,13 @@ proof -
   then show ?thesis using BIT s by simp
 qed
 
+lemma bit_b''': " a \<noteq> b \<Longrightarrow>
+         {a, b} = {x, y} \<Longrightarrow>
+         BIT_inv s a [x, y] \<Longrightarrow>
+         set qs \<subseteq> {a, b} \<Longrightarrow>
+         qs \<in> lang (seq[Plus (Atom x) One, Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom y, Atom y]) \<Longrightarrow>
+         BIT_inv (Partial_Cost_Model.config'_rand BIT s qs) (last qs) [x, y] \<and> T\<^sub>p_on_rand' BIT s qs = 1.5"
+using bit_a[of a b x y] oops
 
 subsection "Phase Type C"
 
@@ -761,7 +844,23 @@ proof -
 
   then show ?thesis using BIT s by simp
 qed  
- 
+
+lemma bit_c''1: assumes 
+    "x \<noteq> y" "{x, y} = {x0, y0}" "BIT_inv s x [x0, y0]"
+    "set qs \<subseteq> {x, y}" 
+    "qs \<in> lang (seq[Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom y, Atom y])"
+ shows "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0] \<and>
+          T\<^sub>p_on_rand' BIT s qs  = 0.75 * length qs - 0.5"
+sorry
+
+lemma bit_c''2: assumes 
+    "x \<noteq> y" "{x, y} = {x0, y0}" "BIT_inv s x [x0, y0]"
+    "set qs \<subseteq> {x, y}" 
+    "qs \<in> lang (seq[Atom x, Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom x])"
+ shows "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0] \<and>
+          T\<^sub>p_on_rand' BIT s qs  = 0.75 * (length qs - 1) - 0.5"
+sorry
+
 
 subsection "Phase Type D"
  
@@ -769,7 +868,8 @@ lemma bit_d: assumes
     "x \<noteq> y" "{x, y} = {x0, y0}" "BIT_inv s x [x0, y0]"
     "set qs \<subseteq> {x, y}" "qs \<in> lang (seq [Atom x, Atom x])"
   shows "T\<^sub>p_on_rand' BIT s qs \<le> 175 / 10\<^sup>2 * real (T\<^sub>p [x, y] qs (OPT2 qs [x, y])) \<and>
-    BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0]"
+    BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0] \<and>
+     T\<^sub>p_on_rand' BIT s qs = 0"
 proof - 
   from assms have qs: "qs = [x,x]" by auto
   then have OPT: "T\<^sub>p [x, y] qs (OPT2 qs [x, y]) = 0" by (simp add: t\<^sub>p_def step_def)
@@ -795,8 +895,22 @@ proof -
   then show ?thesis using BIT s by(auto)
 qed
 
+lemma bit_d': assumes 
+    "x \<noteq> y" "{x, y} = {x0, y0}" "BIT_inv s x [x0, y0]"
+    "set qs \<subseteq> {x, y}" "qs \<in> lang (seq [Atom x, Atom x])"
+  shows "BIT_inv (config'_rand BIT s qs) (last qs) [x0, y0] \<and>
+     T\<^sub>p_on_rand' BIT s qs = 0"
+using bit_d[OF assms] by blast
+
+
 
 section "Phase Partitioning"
+
+lemma BIT_inv_initial: assumes "(x::nat) \<noteq> y"
+    shows "BIT_inv (map_pmf (Pair [x, y]) (fst BIT [x, y])) x [x, y]"
+using assms(1) apply(simp add: BIT_inv2 BIT_init_def type0_def)
+      apply(simp add: map_pmf_def other_def bind_return_pmf bind_assoc_pmf)
+      using bind_commute_pmf by fast
 
 lemma D'': assumes "qs \<in> Lxx a b"
     "a \<noteq> b" "{a, b} = {x, y}" "BIT_inv s a [x, y]"
@@ -804,10 +918,10 @@ lemma D'': assumes "qs \<in> Lxx a b"
  shows "T\<^sub>p_on_rand' BIT s qs \<le> 175 / 10\<^sup>2 * real (T\<^sub>p [a, b] qs (OPT2 qs [a, b])) \<and>
     BIT_inv (Partial_Cost_Model.config'_rand BIT s qs) (last qs) [x, y]"
  apply(rule LxxE[OF assms(1)])
-  apply(rule bit_d[OF assms(2-5)]) apply(simp)
+  using bit_d[OF assms(2-5)] apply(simp)
   apply(rule bit_b''[OF assms(2-5)]) apply(simp)
   apply(rule bit_c''[OF assms(2-5)]) apply(simp) 
-  apply(rule bit_a[OF assms(2-5)]) apply(simp)
+  using bit_a[OF assms(2-5)] apply(simp)
   done
 
 theorem BIT_175comp_on_2:
@@ -816,9 +930,7 @@ theorem BIT_175comp_on_2:
 proof (rule Phase_partitioning_general[where P=BIT_inv], goal_cases)
   case 4
   show "BIT_inv (map_pmf (Pair [x, y]) (fst BIT [x, y])) x [x, y]"
-    using assms(1) apply(simp add: BIT_inv2 BIT_init_def type0_def)
-      apply(simp add: map_pmf_def other_def bind_return_pmf bind_assoc_pmf)
-      using bind_commute_pmf by fast
+   by (rule BIT_inv_initial[OF assms(1)])
 next
   case (5 a b qs s)
   then show ?case by(rule D'')

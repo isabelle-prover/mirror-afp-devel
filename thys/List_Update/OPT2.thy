@@ -572,6 +572,11 @@ proof -
 qed
   
 
+lemma OPT2_A': assumes "x \<noteq> y" "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
+  shows "real (T\<^sub>p [x,y] qs (OPT2 qs [x,y])) = 1"
+using OPT2_A[OF assms] by simp
+
+
 lemma OPT2_B: assumes "x \<noteq> y" "qs=u@v" "u=[] \<or> u=[x]" "v \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x)), Atom y, Atom y])"
   shows "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = (length v div 2)"
 proof -
@@ -611,7 +616,43 @@ proof -
   finally show ?thesis .
 qed
 
-
+lemma OPT2_B1: assumes "x \<noteq> y" "qs \<in> lang (seq[Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom y, Atom y])"
+  shows "real (T\<^sub>p [x,y] qs (OPT2 qs [x,y])) = length qs / 2"
+proof -
+  from assms(2) have qs: "qs \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x)), Atom y, Atom y])"
+    by(simp add: conc_assoc)
+  have "(length qs) mod 2 = 0"
+  proof -
+    from assms(2) have "qs \<in> ({[y]} @@ {[x]}) @@ star({[y]} @@ {[x]}) @@ {[y]} @@ {[y]}" by (simp add: conc_assoc)
+    then obtain p q r where pqr: "qs=p@q@r" and "p\<in>({[y]} @@ {[x]})"
+              and q: "q \<in> star ({[y]} @@ {[x]})" and "r \<in>{[y]} @@ {[y]}" by (metis concE)
+    then have rr: "p = [y,x]" "r=[y,y]" by auto
+    with pqr have a: "length qs = 4+length q" by auto
+    from q have b: "length q mod 2 = 0"
+    apply(induct q rule: star_induct) by (auto)    
+    from a b show ?thesis by auto
+  qed
+  with OPT2_B[where u="[]", OF assms(1) _ _ qs] show ?thesis by auto
+qed  
+  
+lemma OPT2_B2: assumes "x \<noteq> y" "qs \<in> lang (seq[Atom x, Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom y, Atom y])"
+  shows "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = ((length qs - 1) / 2)"
+proof -
+  from assms(2) obtain v where
+      qsv: "qs = [x]@v" and vv: "v \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x)), Atom y, Atom y])" by (auto simp add: conc_def)
+  have "(length v) mod 2 = 0"
+  proof -
+    from vv have "v \<in> ({[y]} @@ {[x]}) @@ star({[y]} @@ {[x]}) @@ {[y]} @@ {[y]}" by (simp add: conc_assoc)
+    then obtain p q r where pqr: "v=p@q@r" and "p\<in>({[y]} @@ {[x]})"
+              and q: "q \<in> star ({[y]} @@ {[x]})" and "r \<in>{[y]} @@ {[y]}" by (metis concE)
+    then have rr: "p = [y,x]" "r=[y,y]" by(auto simp add: conc_def)
+    with pqr have a: "length v = 4+length q" by auto
+    from q have b: "length q mod 2 = 0"
+    apply(induct q rule: star_induct) by (auto)    
+    from a b show ?thesis by auto
+  qed
+  with OPT2_B[where u="[x]", OF assms(1) qsv _ vv] qsv show ?thesis by(auto)
+qed 
 
 lemma OPT2_C: assumes "x \<noteq> y" "qs=u@v" "u=[] \<or> u=[x]" 
   and "v \<in> lang (seq[Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom x])"
@@ -652,6 +693,47 @@ proof -
   also have "\<dots> = (length v div 2)" using vv star by auto
   finally show ?thesis .
 qed
+
+lemma OPT2_C1: assumes "x \<noteq> y" "qs \<in> lang (seq[Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom x])"
+  shows "real (T\<^sub>p [x,y] qs (OPT2 qs [x,y])) = (length qs - 1) / 2"
+proof -
+  from assms(2) have qs: "qs \<in> lang (seq[Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom x])"
+    by(simp add: conc_assoc)
+  have "(length qs) mod 2 = 1"
+  proof -
+    from assms(2) have "qs \<in> ({[y]} @@ {[x]}) @@ star({[y]} @@ {[x]}) @@ {[x]}" by (simp add: conc_assoc)
+    then obtain p q r where pqr: "qs=p@q@r" and "p\<in>({[y]} @@ {[x]})"
+              and q: "q \<in> star ({[y]} @@ {[x]})" and "r \<in>{[x]}" by (metis concE)
+    then have rr: "p = [y,x]" "r=[x]" by auto
+    with pqr have a: "length qs = 3+length q" by auto
+    from q have b: "length q mod 2 = 0"
+    apply(induct q rule: star_induct) by (auto)    
+    from a b show ?thesis by auto
+  qed
+  with OPT2_C[where u="[]", OF assms(1) _ _ qs] show ?thesis apply auto
+      by (metis div_mod_equality' of_nat_mult of_nat_numeral) 
+qed  
+  
+lemma OPT2_C2: assumes "x \<noteq> y" "qs \<in> lang (seq[Atom x, Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom x])"
+  shows "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = ((length qs - 2) / 2)"
+proof -
+  from assms(2) obtain v where
+      qsv: "qs = [x]@v" and vv: "v \<in> lang (seq[Atom y, Atom x, Star(Times (Atom y) (Atom x)), Atom x])" by (auto simp add: conc_def)
+  have "(length v) mod 2 = 1"
+  proof -
+    from vv have "v \<in> ({[y]} @@ {[x]}) @@ star({[y]} @@ {[x]}) @@ {[x]}" by (simp add: conc_assoc)
+    then obtain p q r where pqr: "v=p@q@r" and "p\<in>({[y]} @@ {[x]})"
+              and q: "q \<in> star ({[y]} @@ {[x]})" and "r \<in>{[x]}" by (metis concE)
+    then have rr: "p = [y,x]" "r=[x]" by(auto simp add: conc_def)
+    with pqr have a: "length v = 3+length q" by auto
+    from q have b: "length q mod 2 = 0"
+    apply(induct q rule: star_induct) by (auto)    
+    from a b show ?thesis by auto
+  qed
+  with OPT2_C[where u="[x]", OF assms(1) qsv _ vv] qsv show ?thesis apply(auto)
+      by (metis div_mod_equality' of_nat_mult of_nat_numeral)     
+qed 
+
 
 
 lemma OPT2_ub: "set qs \<subseteq> {x,y} \<Longrightarrow> T\<^sub>p [x,y] qs (OPT2 qs [x,y]) \<le> length qs"
