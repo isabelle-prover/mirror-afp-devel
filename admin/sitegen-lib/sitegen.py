@@ -7,8 +7,8 @@
 ## This script reads a metadata file and generates the topics.shtml,
 ## index.shtml and the entry pages on isa-afp.org.
 ## 
-## For meta data documentation see ../metadata/README
-## For adding new entries see ../doc/editors/new-entry-checkin.html
+## For meta data documentation see `metadata/README`
+## For adding new entries see `doc/editors/new-entry-checkin.html`
 ## 
 
 # Cross-python compatibility
