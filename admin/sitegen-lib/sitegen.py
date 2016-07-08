@@ -28,298 +28,13 @@ import os
 import re
 from termcolor import colored
 
-
-# global config
-
-### input templates
-
-# string which will be replaced by output of a generator
-# $ denotes an (optional) parameter for the generator
-magic_str = u"<!--gen$-->"
-
-# pattern for release tarball filename
-release_pattern = """^afp-(.*)-([0-9\-]{10}).tar.gz$"""
-
-# suffix of files which will be considered as template
-template_suffix = ".tpl"
-
-# suffix of a template file will be replaced by this suffix
-output_suffix = ".shtml"
-
-### html output
-
-# wrapper for a link list of entries
-# {0}: link list
-html_topic_link_list = u"""<div class="list">\n{0}</div>\n\n"""
-
-# template for a single link to an entry on topic page, where
-# filename is the same as the display name
-# {0}: filename (without .shtml suffix) relative to 'entries' directory
-html_topic_link = u"""<a href="entries/{0}.shtml">{0}</a> &nbsp;\n"""
-
-# list of headings
-# {0}: display name of heading
-html_topic_headings = [ u"<h2>{0}</h2>\n\n", u"<h3>{0}</h3>\n\n", u"\n<strong>{0}:</strong>&nbsp;" ]
-
-# denotes the heading level (beginning with 0), after which no
-# separate html_topic_link_list will be created
-html_until_level = 1
-
-# link to an author
-# {0}: url
-# {1}: display name
-html_author_link = u"""<a href="{0}">{1}</a>"""
-
-# wrapper for each year's entries displayed on index page
-# {0}: year in YYYY format
-# {1}: entries
-html_index_year = u"""
-<p>&nbsp;</p>
-<table width="80%" class="entries">
-  <tbody>
-    <tr>
-	  <td class="head">{0}</td>
-	</tr>
-
-{1}
-
-  </tbody>
-</table>
-"""
-
-# template for an entry displayed on index page
-# {0}: date in YYYY-MM-HH format
-# {1}: filename (without .shtml suffix) relative to 'entries' directory
-# {2}: display name
-# {3}: list of html_author_link, comma-separated
-html_index_entry = u"""<tr><td class="entry">\n{0}:\n<a href="entries/{1}.shtml">{2}</a>\n<br>Author:\n{3}\n</td></tr>\n\n"""
-
-# heading wrapper on entry page
-html_entry_heading = u"<h1>{0}</h1>\n<p></p>"
-
-# capitalized word in heading on entry page
-# {0}: first character
-# {1}: other characters
-html_entry_capitalized = u"""<font class="first">{0}</font>{1}\n"""
-
-# link to license text
-# {0}: display title
-# {1}: url
-html_license_link = u"""<a href="{1}">{0}</a>"""
-
-# link to another entry
-# {0}: display title
-# {1}: url
-html_entry_link = u"""<a href="{1}">{0}</a>"""
-
-# wrapper for a text column in header
-# {0}: title (e. g. 'Change history')
-# {1}: text
-html_entry_text_wrapper = u"""
-    <tr><td class="datahead" valign="top">{0}:</td>
-        <td class="abstract">
-{1}
-        </td></tr>
-"""
-
-# wrapper for a pre-formatted text column in header
-# {0}: title (e. g. 'BibTeX')
-# {1}: text
-html_entry_pre_text_wrapper = u"""
-    <tr><td class="datahead" valign="top">{0}:</td>
-        <td class="formatted">
-			<pre>{1}</pre>
-        </td></tr>
-"""
-
-# wrapper for contributors line
-# {0} formatted contributors list
-html_contributors = u"""
-	<tr><td class="datahead">Contributors:</td>
-        <td class="data">{0}</td></tr>
-"""
-
-# wrapper for the entry header
-# {0}: title
-# {1}: author
-# {2}: contributors
-# {3}: date
-# {4}: text columns (html_entry_text_wrapper)
-# {5}: license
-# {6}: entry
-# {7}: depends-on
-# {8}: used-by
-# {{...}} is for escaping, because Py's format syntax collides with SSI
-html_entry_header_wrapper = u"""
-<table width="80%" class="data">
-  <tbody>
-    <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">{0}</td></tr>
-
-    <tr><td class="datahead">Author:</td>
-        <td class="data">{1}</td></tr>
-{2}
-    <tr><td class="datahead">Submission date:</td>
-        <td class="data">{3}</td></tr>
-{4}
-    <tr><td class="datahead">License:</td>
-        <td class="data">{5}</td></tr>
-{7}
-{8}
-
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
-
-  </tbody>
-</table>
-
-<p></p>
-
-<!--#set var="name" value="{6}" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${{name}}" -->
-"""
-
-html_entry_depends_on_wrapper = u"""
-
-    <tr><td class="datahead">Depends on:</td>
-        <td class="data">{0}</td></tr>
-"""
-
-html_entry_used_by_wrapper = u"""
-
-    <tr><td class="datahead">Used by:</td>
-        <td class="data">{0}</td></tr>
-"""
-
-# list wrapper for older releases
-# {0}: list entries
-html_entry_older_list = u"<ul>\n{0}\n</ul>"
-
-# list entry for older releases
-# {0}: isabelle release (e. g. "2009")
-# {1}: release date (e. g. "2009-04-29")
-html_entry_older_release = u"""<li>Isabelle {0}: <a href="../release/afp-<!--#echo var="name" -->-{1}.tar.gz">afp-<!--#echo var="name" -->-{1}.tar.gz</a></li>\n"""
-
-### html output
-
-# wrapper for bibtex output
-# {0}: key
-# {1}: title
-# {2}: author
-# {3}: month
-# {4}: year
-# {{...}} is for escaping, because Py's format syntax collides with SSI
-bibtex_wrapper = u"""@article{{{0}-AFP,
-  author  = {{{1}}},
-  title   = {{{2}}},
-  journal = {{Archive of Formal Proofs}},
-  month   = {3},
-  year    = {4},
-  note    = {{\\url{{http://isa-afp.org/entries/{0}.shtml}},
-            Formal proof development}},
-  ISSN    = {{2150-914x}},
-}}"""
+# modules
+from config import *
+from metadata import *
+from terminal import *
+from templates import *
 
 
-### metadata format
-
-# key : (split, processor, default)
-#   'key' denotes the key of the key-value pair in the metadata file
-#     if it ends with a '*', e. g. 'extra*' and you have two keys 'extra-foo'
-#     and 'extra-bar' in your metadata file, you will get:
-#       attributes['extra'] == { 'foo': <data>, 'bar': <data> }
-#   'split' if False, the value will be treated as a  simple string, otherwise
-#     it will be split at ','
-#   'processor' if defined, the function with this name will be called with
-#     each string (or substring if split is not None) and the result is used
-#     (notice: must be a string, because the functions are defined later in source)
-#   'default' is optional and specifies a default value, which will be treated
-#     as if it has been read from the file, i. e. is subject to splitting and
-#     processing
-attribute_schema = {
-	'topic': (True, None, None),
-	'date': (False, None, None),
-	'author': (True, "parse_author", None),
-	'contributors': (True, "parse_contributors", ""),
-	'title': (False, None, None),
-	'abstract': (False, None, None),
-	'license': (False, "parse_license", "BSD"),
-	'ignore': (True, None, ""),
-	'extra*': (False, "parse_extra", None),
-        'notify': (False, None, None)
-}
-
-### licenses
-
-# key : (title, url)
-#   'key' denotes the short name of the license (e. g. 'LGPL')
-#   'title' denotes the display title of the license (e. g. 'GNU Lesser General Public License (LGPL)')
-#   'url' contains the url of the license text
-
-licenses = {
-	'LGPL': ("GNU Lesser General Public License (LGPL)", "http://isa-afp.org/LICENSE.LGPL"),
-	'BSD': ("BSD License", "http://isa-afp.org/LICENSE"),
-}
-
-### template files
-
-# key : (path, generator, for-each)
-#   'key' denotes the filename of the template (without suffix)
-#   'path' denotes the destination sub-path for generated files
-#   'generator' denotes the name of the generating function for the data of the
-#     template. The parameters this function will get is determined by 'for-each'.
-#     You may also assume that this function never gets any ignored entry.
-#   'for-each' determines generation behaviour: if set to None, one file
-#     will be generated for all entries together and the 'generator' function will
-#     receive a list of all entries. Otherwise, a function expression
-#     is expected which gets the entry name and returns a filename to store the
-#     result in (without suffix) and the 'generator' function will get just one
-#     entry name and its attributes
-templates = {
-	'topics': ('.', "generate_topics", None),
-	'index': ('.', "generate_index", None),
-	'entry': ('./entries', "generate_entry", lambda entry: entry)
-}
-
-# end global config
-
-class Tree(object):
-	def __init__(self):
-		self.subtopics = OrderedDict()
-		self.entries = []
-
-	def add_topic(self, topic):
-		if len(topic) > 0:
-			if topic[0] not in self.subtopics:
-				tree = Tree()
-				self.subtopics[topic[0]] = tree
-			else:
-				tree = self.subtopics[topic[0]]
-			tree.add_topic(topic[1:])
-
-	def add_to_topic(self, topic, entry):
-		if len(topic) > 0:
-			if topic[0] not in self.subtopics:
-				warn(u"In entry {0}: unknown (sub)topic {1}".format(entry, topic))
-			else:
-				self.subtopics[topic[0]].add_to_topic(topic[1:], entry)
-		else:
-			self.entries.append(entry)
-
-	def __str__(self):
-		return self._to_str()
-
-	def _to_str(self, indent = 0):
-		indent_str = ' ' * indent
-		result = indent_str + str(self.entries) + "\n"
-		for subtopic, tree in self.subtopics.items():
-			result += indent_str
-			result += subtopic
-			result += "\n"
-			result += tree._to_str(indent + 2)
-		return result
 
 class Stats(object):
 	def __init__(self):
@@ -327,7 +42,7 @@ class Stats(object):
 		self.failed_tpls = 0
 		self.gens = 0
 		self.failed_gens = 0
-	
+
 	def __str__(self):
 		failed_tpl_str = "({0!s} failed)".format(self.failed_tpls) if self.failed_tpls > 0 else ""
 		failed_gen_str = "({0!s} failed)".format(self.failed_gens) if self.failed_gens > 0 else ""
@@ -341,41 +56,6 @@ class Stats(object):
 			colored(success_gen_str, 'green', attrs=['bold']),
 			colored(failed_gen_str, 'red', attrs=['bold'])
 		)
-
-def debug(message, indent = 0, title = ""):
-	if options.enable_debug:
-		if isinstance(message, list):
-			debug(title + ": [" if title else "[", indent)
-			for line in message:
-				debug(line, indent + 2)
-			debug("]", indent)
-		elif isinstance(message, dict):
-			debug(title + ": {" if title else "{", indent)
-			for key, value in message.items():
-				debug(u"{0} -> {1}".format(key, value), indent + 2)
-			debug("}", indent)
-		else:
-			if title:
-				print(u"Debug: {0}{1}: {2}".format(' ' * indent, title, message), file=stderr)
-			else:
-				print(u"Debug: {0}{1}".format(' ' * indent, message), file=stderr)
-
-def warn(message):
-	if options.enable_warnings:
-		print(colored(u"Warning: {0}".format(message), 'yellow', attrs=['bold']), file=stderr)
-
-def notice(message):
-	if options.enable_warnings:
-		print(u"Notice: {0}".format(message), file=stderr)
-
-def error(message, exception = None, abort = False):
-	print(colored(u"Error: {0}".format(message), 'red', attrs=['bold']), file=stderr)
-	if exception:
-		error("*** exception message:")
-		error(u"*** {0!s} {1!s}".format(exception, type(exception)))
-	if abort:
-		error("Fatal. Aborting")
-		exit(1)
 
 # performs a 'diff' between metadata and the actual filesystem contents
 def check_fs(meta_entries, directory):
@@ -397,13 +77,8 @@ def validate(entry, attributes):
 	sane_attributes = {}
 	missing_keys = []
 	processed_keys = set()
-	for key, (split, processor_str, default) in attribute_schema.items():
-		if processor_str:
-			if processor_str in globals():
-				processor = globals()[processor_str]
-			else:
-				error(u"In metadata: For key {0}: processor function {1} doesn't exist".format(key, processor_str), abort = True)
-		else:
+	for key, (split, processor, default) in attribute_schema.items():
+		if processor is None:
 			processor = lambda str, **kwargs: str
 		if key.endswith("*"):
 			shortkey = key[:len(key)-1]
@@ -514,248 +189,7 @@ def associate_releases(entries, versions, filename):
 	except Exception as ex:
 		error(u"In file {0}: error".format(filename), exception = ex)
 		error("Not processing releases")
-	finally:
-		debug([(entry, attributes['releases']) for entry, attributes in entries.items()], title = "Releases")
 
-def read_topics(filename):
-	tree = Tree()
-	stack = []
-	with open(filename) as input:
-		for line in input:
-			count = 0
-			while line[count] == ' ':
-				count += 1
-			if count % 2:
-				raise Exception(u"Illegal indentation at line '{0}'".format(line))
-			level = count // 2
-			if level <= len(stack):
-				stack = stack[0:level]
-			else:
-				raise Exception(u"Illegal indentation at line '{0}'".format(line))
-			stack.append(line[count:len(line)-1])
-			tree.add_topic(stack)
-	return tree
-
-# for topics page: group entries by topic
-def collect_topics(entries):
-	tree = read_topics(os.path.join(metadata_dir, "topics"))
-	for entry, attributes in entries:
-		for topic in attributes['topic']:
-			tree.add_to_topic([str.strip() for str in topic.split('/')], entry)
-	return tree
-
-# for index page: group entries by year
-def collect_years(entries):
-	extracted = [
-		(attributes['date'] if attributes['date'] != '' else 'unknown', entry, attributes)
-		for entry, attributes in entries
-	]
-	extracted.sort(key = itemgetter(0), reverse = True)
-	years = OrderedDict()
-	for date, entry, attributes in extracted:
-		key = date[0:4] if date != 'unknown' else date
-		if key in years:
-			years[key].append((entry, attributes))
-		else:
-			years[key] = [(entry, attributes)]
-	return years.items()
-
-def parse_extra(extra, **kwargs):
-	k, v = extra.split(":", 1)
-	return k.strip(), v.strip()
-
-def parse_license(license, **kwargs):
-	if license not in licenses:
-		raise ValueError(u"Unknown license {0}".formate(license))
-	return licenses[license]
-
-def parse_author(author, entry, key):
-	return parse_name_url(author, entry, key)
-
-def parse_contributors(contributor, entry, key):
-	if contributor == "":
-		return "", None
-	else:
-		return parse_name_url(contributor, entry, key)
-
-# extracts name and URL from 'name <URL>' as a pair
-def parse_name_url(name, entry, key):
-	if name.find(" and ") != -1:
-		warn(u"In entry {0}: {1} field contains 'and'. Use ',' to separate names.".format(entry, key))
-	url_start = name.find('<')
-	url_end = name.find('>')
-	if url_start != -1 and url_end != -1:
-		url = name[url_start+1:url_end].strip()
-		if url.startswith("mailto:"):
-			url = url.replace("@", " /at/ ").replace(".", " /dot/ ")
-		return name[:url_start].strip(), url
-	else:
-		notice(u"In entry {0}: no URL specified for {1} {2} ".format(entry, key, name))
-		return name, None
-
-# Extracts parts of a date, used in the bibtex files
-def month_of_date(date):
-	return "jan feb mar apr may jun jul aug sep oct nov dec".split(" ")[int(date.split("-")[1]) - 1]
-
-def year_of_date(date):
-	return date.split("-")[0]
-
-def generate_link_list(entries):
-	return ''.join([html_topic_link.format(e) for e in entries])
-
-# takes a list of author-URL pairs and formats a string, either with
-# or without email addresses
-def generate_author_list(authors, spacer, last_spacer, ignore_mail = True, ignore_url = False):
-	def _to_str(author):
-		name, url = author
-		if url and not ignore_url:
-			if url.startswith("mailto:"):
-				if ignore_mail:
-					return name
-				else:
-					return u"{0} ({1})".format(name, url[7:])
-			return html_author_link.format(url, name)
-		else:
-			return name
-
-	authors = list(map(_to_str, authors))
-	if len(authors) == 0:
-		return ""
-	elif len(authors) == 1:
-		return authors[0]
-	else:
-		return u"{0}{1}{2}".format(
-		  spacer.join(authors[:len(authors)-1]),
-		  last_spacer,
-		  authors[len(authors)-1]
-		)
-
-# HTML formatting for topics page
-def generate_topics(entries):
-	def _gen(tree, level):
-		result = ""
-		if level <= html_until_level:
-			if len(tree.entries) > 0:
-				result += html_topic_link_list.format(generate_link_list(tree.entries))
-			for topic, subtree in tree.subtopics.items():
-				result += html_topic_headings[level].format(topic)
-				if level < html_until_level:
-					result += _gen(subtree, level + 1)
-				else:
-					result += html_topic_link_list.format(_gen(subtree, level + 1))
-		else:
-			result = generate_link_list(tree.entries)
-			for topic, subtree in tree.subtopics.items():
-				result += html_topic_headings[level].format(topic)
-				result += _gen(subtree, level + 1)
-
-		return result
-
-	tree = collect_topics(entries)
-	debug(tree, title = "Entries grouped by topic")
-	return _gen(tree, 0)
-
-# HTML formatting for index page
-def generate_index(entries):
-	years = collect_years(entries)
-	debug(years, title = "Entries grouped by year")
-	result = ""
-	for year, list in years:
-		rows = ""
-		for entry, attributes in list:
-			rows += html_index_entry.format(
-				attributes['date'],
-				entry,
-				attributes['title'] if attributes['title'] != '' else entry,
-				generate_author_list(attributes['author'], ",\n", " and \n")
-			)
-		result += html_index_year.format(year, rows)
-	return result
-
-def format_entry_text(title, text):
-	return html_entry_text_wrapper.format(
-		title, "\n" + text
-	)
-
-def format_entry_pre_text(title, text):
-	return html_entry_pre_text_wrapper.format(
-		title, text
-	)
-
-def depends_on_string(deps):
-	sorted_deps = list(deps)
-	sorted_deps.sort()
-	return ', '.join(html_entry_link.format(dep, dep + ".shtml") for dep in sorted_deps)
-
-def format_depends_on(deps):
-	if len(deps) == 0:
-		return ''
-	else:
-		return html_entry_depends_on_wrapper.format(depends_on_string(deps))
-
-def format_used_by(deps):
-	if len(deps) == 0:
-		return ''
-	else:
-		# We can reuse the depends_on_string function here
-		return html_entry_used_by_wrapper.format(depends_on_string(deps))
-
-def format_opt_contributors(contributors):
-	if contributors == [("",None)]:
-		return ""
-	else:
-		return html_contributors.format(generate_author_list(contributors,
-										', ', ' and ', ignore_mail = False))
-
-# HTML formatting for entry page
-# supports the following parameters:
-#   'header' for entry header (author, title, date etc.)
-#   'older' for list of older releases
-def generate_entry(entry, attributes, param):
-	if param == "header":
-		result = ""
-		capitalized_title = ""
-		for word in [str.strip() for str in attributes['title'].split(' ')]:
-			if len(word) > 0 and word[0].isupper():
-				capitalized_title += html_entry_capitalized.format(word[0], word[1:])
-			else:
-				capitalized_title += word + "\n"
-		result += html_entry_heading.format(capitalized_title)
-
-		text_columns = format_entry_text("Abstract", attributes['abstract'])
-		text_columns += "".join([format_entry_text(k, v) for k, v in attributes['extra'].values()])
-		text_columns += format_entry_pre_text("BibTeX",
-			bibtex_wrapper.format(
-				entry,
-				generate_author_list(attributes['author'], ' and ', ' and ', ignore_url = True),
-				attributes['title'],
-				month_of_date(attributes['date']),
-				year_of_date(attributes['date']))
-		)
-
-		result += html_entry_header_wrapper.format(
-			attributes['title'],
-			generate_author_list(attributes['author'], ', ', ' and ', ignore_mail = False),
-			format_opt_contributors(attributes['contributors']),
-			attributes['date'],
-			text_columns,
-			html_license_link.format(attributes['license'][0], attributes['license'][1]),
-			entry,
-			format_depends_on(attributes['depends-on']),
-			format_used_by(attributes['used_by']),
-		)
-	elif param == "older":
-		if len(attributes['releases']) > 1:
-			str = ""
-			for version, release_dates in list(attributes['releases'].items())[1:]:
-				str += "".join(html_entry_older_release.format(version, release_date) for release_date in release_dates)
-			result = html_entry_older_list.format(str)
-		else:
-			result = "None"
-	else:
-		raise Exception("In generator 'entry': Unknown parameter "+param)
-
-	return result
 
 # look for templates in the metadata directory according to the definitions
 # in the global configuration
@@ -822,7 +256,7 @@ def read_template(template_filename):
 # opens a file, invokes the generator and writes the result
 def write_output(filename, content, generator):
 	stats.gens += 1
-	debug(u"Writing result to "+filename)
+	debug(u"Writing result to {0}".format(filename))
 	failed = False
 	try:
 		with codecs.open(filename, mode='w', encoding='UTF-8', errors='strict') as output:
@@ -862,13 +296,7 @@ def handle_template(entries, template, content):
 		else:
 			return False
 
-	dir, generator_str, for_each_func = templates[template]
-
-	if generator_str not in globals():
-		error(u"In template {0}: generator function {1} doesn't exist".format(template, generator_str))
-		return
-	else:
-		generator = globals()[generator_str]
+	dir, generator, for_each_func = templates[template]
 
 	dest_subdir = os.path.join(options.dest_dir, dir)
 	try:
@@ -966,13 +394,14 @@ def add_used_by(articles):
 
 if __name__ == "__main__":
 	parser = OptionParser(usage = "Usage: %prog [--no-warn] [--debug] [--check] [--dest=DEST_DIR] --metadata=METADATA_DIR THYS_DIR")
-	parser.add_option("--no-warn", action = "store_false", dest = "enable_warnings", default = True, help = "disable output of warnings")
+	parser.add_option("--no-warn", action = "store_false", dest = "enable_warnings", help = "disable output of warnings")
 	parser.add_option("--check", action = "store_true", dest = "do_check", help = "compare the contents of the metadata file with actual file system contents")
 	parser.add_option("--dest", action = "store", type = "string", dest = "dest_dir", help = "generate files for each template in the metadata directory")
-	parser.add_option("--debug", action = "store_true", dest = "enable_debug", default = False, help = "display debug output")
+	parser.add_option("--debug", action = "store_true", dest = "enable_debug", help = "display debug output")
 	parser.add_option("--metadata", action = "store", type = "string", dest = "metadata_dir", help = "metadata location")
 
-	(options, args) = parser.parse_args(argv)
+
+	(_, args) = parser.parse_args(argv, values = options)
 	if len(args) != 2:
 		parser.error("You must supply the theories directory. For usage, supply --help.")
 
@@ -983,7 +412,6 @@ if __name__ == "__main__":
 	entries = parse(os.path.join(metadata_dir, "metadata"))
 	versions = read_versions(os.path.join(metadata_dir, "release-dates"))
 	associate_releases(entries, versions, os.path.join(metadata_dir, "releases"))
-	debug(entries, title = "Entries from metadata file")
 	if len(entries) == 0:
 		warn("In metadata: No entries found")
 
