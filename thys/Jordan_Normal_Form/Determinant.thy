@@ -1121,7 +1121,7 @@ proof -
   also have "det ?B = (- 1) ^ n * det A1 * det A4"
     by (rule det_four_block_mat_lower_right_zero_col[OF A2 A1 A4 A30])
   also have "(-1)^n * \<dots> = (-1 * -1)^n * det A1 * det A4"
-    unfolding power_mult_distrib by simp
+    unfolding power_mult_distrib by (simp add: ac_simps)
   finally show ?thesis by simp
 qed
 
