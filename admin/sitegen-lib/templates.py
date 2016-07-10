@@ -143,20 +143,28 @@ def collect_years(entries):
 			years[key] = [(entry, attributes)]
 	return years.items()
 
-def generate_index(entries):
-	years = collect_years(entries)
-	result = ""
-	for year, list in years:
-		rows = ""
-		for entry, attributes in list:
-			rows += html_index_entry.format(
-				attributes['date'],
-				entry,
-				attributes['title'] if attributes['title'] != '' else entry,
-				generate_author_list(attributes['author'], ",\n", " and \n")
-			)
-		result += html_index_year.format(year, rows)
-	return result
+def generate_index(entries, param):
+	if param == "devel":
+		if options.is_devel():
+			return html_index_devel
+		else:
+			return html_index_stable
+	elif param == "table":
+		years = collect_years(entries)
+		result = ""
+		for year, list in years:
+			rows = ""
+			for entry, attributes in list:
+				rows += html_index_entry.format(
+					attributes['date'],
+					entry,
+					attributes['title'] if attributes['title'] != '' else entry,
+					generate_author_list(attributes['author'], ",\n", " and \n")
+				)
+			result += html_index_year.format(year, rows)
+		return result
+	else:
+		raise Exception("In generator 'index': Unknown parameter "+param)
 
 
 ### entry
@@ -265,8 +273,10 @@ def generate_entry(entry, attributes, param):
 #     is expected which gets the entry name and returns a filename to store the
 #     result in (without suffix) and the 'generator' function will get just one
 #     entry name and its attributes
+#   'devel' indicates that the generator should only be invoked when in devel
+#     mode, i.e. if a build status file is present
 templates = {
-	'topics': ('.', generate_topics, None),
-	'index': ('.', generate_index, None),
-	'entry': ('./entries', generate_entry, lambda entry: entry)
+	'topics': ('.', generate_topics, None, False),
+	'index': ('.', generate_index, None, False),
+	'entry': ('./entries', generate_entry, lambda entry: entry, False)
 }

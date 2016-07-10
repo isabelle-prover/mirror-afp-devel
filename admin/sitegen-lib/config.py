@@ -38,6 +38,21 @@ html_until_level = 1
 # {1}: display name
 html_author_link = u"""<a href="{0}">{1}</a>"""
 
+# disclaimer for devel index page
+html_index_devel = u"""
+  <strong>
+  This is the development version of the archive, referring to a recent
+  Isabelle development version. Some entries may not be in a working state, see
+  the <a href="status.shtml">status page</a> for more information.
+  The main archive is available from the <a href="http://www.isa-afp.org">front page</a>.
+  </strong>
+"""
+
+# standard header for stable AFP
+html_index_stable = u"""
+  A <a href="http://devel.isa-afp.org">development version</a> of the archive is available as well.
+"""
+
 # wrapper for each year's entries displayed on index page
 # {0}: year in YYYY format
 # {1}: entries
@@ -211,5 +226,9 @@ class Options(object):
 		self.dest_dir = None
 		self.do_check = False
 		self.metadata_dir = None
+		self.status_file = None
+	
+	def is_devel(self):
+		return self.status_file is not None
 
 options = Options()

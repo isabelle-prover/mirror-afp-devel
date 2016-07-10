@@ -196,7 +196,6 @@ def associate_releases(entries, versions, filename):
 def scan_templates(entries):
 	for template in templates.keys():
 		try:
-			stats.tpls += 1
 			template_filename = os.path.join(metadata_dir, template + template_suffix)
 			if os.path.exists(template_filename):
 				handle_template(entries, template, read_template(template_filename))
@@ -288,7 +287,11 @@ def write_output(filename, content, generator):
 # * create destination directories
 # * call write_output for each entry or for all entries together
 def handle_template(entries, template, content):
-	dir, generator, for_each_func = templates[template]
+	dir, generator, for_each_func, devel = templates[template]
+
+	if devel and not options.is_devel(): return
+
+	stats.tpls += 1
 
 	dest_subdir = os.path.join(options.dest_dir, dir)
 	try:
