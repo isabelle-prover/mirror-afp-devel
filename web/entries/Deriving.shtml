@@ -49,12 +49,14 @@ datatypes
 We provide a framework for registering automatic methods
 to derive class instances of datatypes,
 as it is possible using Haskell's ``deriving Ord, Show, ...'' feature.
+
 We further implemented such automatic methods to derive comparators, linear orders, parametrizable equality functions,
 and hash-functions which are required in the
 Isabelle Collection Framework and the Container Framework.
 Moreover, for the tactic of Blanchette to show that a datatype is countable, we implemented a
 wrapper so that this tactic becomes accessible in our framework. All of the generators are based on
 the infrastructure that is provided by the BNF-based datatype package.
+
 Our formalization was performed as part of the <a href="http://cl-informatik.uibk.ac.at/software/ceta">IsaFoR/CeTA</a> project.
 With our new tactics we could remove
 several tedious proofs for (conditional) linear orders, and conditional equality operators
@@ -88,10 +90,6 @@ within IsaFoR and the Container Framework.
         <td class="data"><a href="Algebraic_Numbers.shtml">Algebraic_Numbers</a>, <a href="CAVA_Automata.shtml">CAVA_Automata</a>, <a href="Containers.shtml">Containers</a>, <a href="Datatype_Order_Generator.shtml">Datatype_Order_Generator</a>, <a href="Formula_Derivatives.shtml">Formula_Derivatives</a>, <a href="LTL_to_GBA.shtml">LTL_to_GBA</a>, <a href="MSO_Regex_Equivalence.shtml">MSO_Regex_Equivalence</a>, <a href="Promela.shtml">Promela</a>, <a href="Show.shtml">Show</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
 
   </tbody>
 </table>
@@ -113,7 +111,6 @@ within IsaFoR and the Container Framework.
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -124,11 +121,14 @@ within IsaFoR and the Container Framework.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-<ul>
+
+
+    <tr><td class="links">Older releases: <ul>
 <li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-05-27.tar.gz">afp-<!--#echo var="name" -->-2015-05-27.tar.gz</a></li>
 
-</ul>    </td></tr>
+</ul>
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

@@ -99,10 +99,6 @@ Formalization of Logic</a>. <a href="https://bitbucket.org/jasmin_blanchette/isa
 
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
 
   </tbody>
 </table>
@@ -124,7 +120,6 @@ Formalization of Logic</a>. <a href="https://bitbucket.org/jasmin_blanchette/isa
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -135,8 +130,11 @@ Formalization of Logic</a>. <a href="https://bitbucket.org/jasmin_blanchette/isa
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-None    </td></tr>
+
+
+    <tr><td class="links">Older releases: None
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

@@ -98,10 +98,6 @@ CAVA Automata Library, Isabelle Workshop 2014.
         <td class="data"><a href="CAVA_LTL_Modelchecker.shtml">CAVA_LTL_Modelchecker</a>, <a href="DFS_Framework.shtml">DFS_Framework</a>, <a href="Gabow_SCC.shtml">Gabow_SCC</a>, <a href="LTL_to_GBA.shtml">LTL_to_GBA</a>, <a href="Promela.shtml">Promela</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
 
   </tbody>
 </table>
@@ -123,7 +119,6 @@ CAVA Automata Library, Isabelle Workshop 2014.
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -134,13 +129,16 @@ CAVA Automata Library, Isabelle Workshop 2014.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-<ul>
+
+
+    <tr><td class="links">Older releases: <ul>
 <li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-05-27.tar.gz">afp-<!--#echo var="name" -->-2015-05-27.tar.gz</a></li>
 <li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-08-28.tar.gz">afp-<!--#echo var="name" -->-2014-08-28.tar.gz</a></li>
 <li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2014-05-29.tar.gz">afp-<!--#echo var="name" -->-2014-05-29.tar.gz</a></li>
 
-</ul>    </td></tr>
+</ul>
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

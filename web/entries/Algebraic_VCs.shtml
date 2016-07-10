@@ -87,10 +87,6 @@ trace semantics into the weakest precondition component.
 
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
 
   </tbody>
 </table>
@@ -112,7 +108,6 @@ trace semantics into the weakest precondition component.
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -123,8 +118,11 @@ trace semantics into the weakest precondition component.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-None    </td></tr>
+
+
+    <tr><td class="links">Older releases: None
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

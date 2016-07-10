@@ -81,10 +81,6 @@ HOL/Nominal in the Isabelle distribution.
         <td class="data"><a href="Incompleteness.shtml">Incompleteness</a>, <a href="Launchbury.shtml">Launchbury</a>, <a href="Rewriting_Z.shtml">Rewriting_Z</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
 
   </tbody>
 </table>
@@ -106,7 +102,6 @@ HOL/Nominal in the Isabelle distribution.
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -117,8 +112,11 @@ HOL/Nominal in the Isabelle distribution.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-None    </td></tr>
+
+
+    <tr><td class="links">Older releases: None
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

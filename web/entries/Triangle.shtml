@@ -51,6 +51,7 @@ points. Building on this, we prove basic geometric properties of triangles, such
 as the Isosceles Triangle Theorem, the Law of Sines and the Law of Cosines, that
 the sum of the angles of a triangle is π, and the congruence theorems for
 triangles.
+
 The definitions and proofs were developed following those by John Harrison in
 HOL Light. However, due to Isabelle's type class system, all definitions and
 theorems in the Isabelle formalisation hold for all real inner product spaces.
@@ -75,10 +76,6 @@ theorems in the Isabelle formalisation hold for all real inner product spaces.
 
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
 
   </tbody>
 </table>
@@ -100,7 +97,6 @@ theorems in the Isabelle formalisation hold for all real inner product spaces.
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -111,11 +107,14 @@ theorems in the Isabelle formalisation hold for all real inner product spaces.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-<ul>
+
+
+    <tr><td class="links">Older releases: <ul>
 <li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2016-01-05.tar.gz">afp-<!--#echo var="name" -->-2016-01-05.tar.gz</a></li>
 
-</ul>    </td></tr>
+</ul>
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->
