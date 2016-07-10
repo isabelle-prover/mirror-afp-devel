@@ -2,11 +2,11 @@ object profile extends isabelle.CI_Profile
 {
 
   import isabelle._
-  import java.io.FileReader
+  import java.io.{FileReader, PrintWriter}
   import org.apache.commons.configuration2._
 
 
-  val isTestboard = Isabelle_System.getenv("ISABELLE_CI_TESTBOARD") == "true"
+  val is_testboard = Isabelle_System.getenv("ISABELLE_CI_TESTBOARD") == "true"
 
   val afp = Path.explode("$ISABELLE_HOME/afp")
   val afp_thys = afp + Path.explode("thys")
@@ -93,7 +93,33 @@ object profile extends isabelle.CI_Profile
         else
           Mail(text = text, subject = subject, recipients = mails).send()
       }
+
+    def results_as_json(results: Build.Results): String =
+    {
+      val entries_strings =
+        results.sessions.map { name =>
+          val result = results(name)
+
+          val status_str =
+            if (result.ok) "ok"
+            else if (results.cancelled(name)) "skipped"
+            else "failed"
+
+          s"""{"entry": "$name", "status": "$status_str"}"""
+        }
+
+      val entries_string = entries_strings.mkString("[", ",", "]")
+
+      s"""
+        {"build_data": {},
+         "entries": $entries_string
+        }
+      """
+    }
   }
+
+  val status_file = Path.explode("$ISABELLE_HOME/status.json").file
+  val can_send_mails = System.getProperties().containsKey("mail.smtp.host")
 
 
   def threads = 2
@@ -102,29 +128,37 @@ object profile extends isabelle.CI_Profile
   def select = Nil
 
   def pre_hook(args: List[String]) =
+  {
     println(s"Build for AFP id ${hg_id(afp)}")
+    if (status_file.exists())
+      status_file.delete()
+
+    if (!is_testboard && !can_send_mails)
+      println(s"Not a testboard run, but mail configuration not found.")
+  }
 
   def post_hook(results: Build.Results) = {
-    val canSendMails = System.getProperties().containsKey("mail.smtp.host")
-
-    if (!isTestboard && !canSendMails)
-      println(s"Not a testboard run, but mail configuration not found. Check ${Isabelle_System.getenv_strict("ISABELLE_CI_PROPERTIES")}.")
-
-    if (!results.ok) {
-      val metadata = {
-        val path = afp + Path.explode("metadata/metadata")
-        val ini = new INIConfiguration()
-        if (path.is_file) {
-          val reader = new FileReader(path.file)
-          ini.read(reader)
-          reader.close()
-        }
-        new Metadata(ini)
+    val metadata = {
+      val path = afp + Path.explode("metadata/metadata")
+      val ini = new INIConfiguration()
+      if (path.is_file) {
+        val reader = new FileReader(path.file)
+        ini.read(reader)
+        reader.close()
       }
+      new Metadata(ini)
+    }
 
-      for (name <- results.sessions) {
+    val writer = new PrintWriter(status_file)
+    writer.print(metadata.results_as_json(results))
+    writer.close()
+
+    if (!results.ok)
+    {
+      for (name <- results.sessions)
+      {
         val result = results(name)
-        if (!result.ok && !results.cancelled(name) && !isTestboard && canSendMails)
+        if (!result.ok && !results.cancelled(name) && !is_testboard && can_send_mails)
           metadata.notify(name, result, results.info(name))
       }
     }
