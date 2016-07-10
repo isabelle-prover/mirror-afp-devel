@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# vim: set fileencoding=utf-8 :
 
 ##
 ## Dependencies: Python 2.7 or Python 3.5
@@ -27,6 +26,7 @@ import codecs
 import os
 import re
 from termcolor import colored
+import json
 
 # modules
 from config import *
@@ -385,14 +385,34 @@ def add_used_by(entries):
 		for d in entries[entry]['depends-on']:
 			entries[d]['used_by'].add(entry)
 
+def parse_status(filename):
+	with open(filename) as input:
+		data = json.load(input)
+
+		build_data = data['build_data']
+		status = dict()
+		for entry in data['entries']:
+			status[entry['entry']] = entry['status']
+
+		return build_data, status
+
+def add_status(entries, status):
+	for e in entries:
+		if e in status:
+			entries[e]['status'] = status[e]
+		else:
+			entries[e]['status'] = "skipped"
+
+
 
 if __name__ == "__main__":
-	parser = OptionParser(usage = "Usage: %prog [--no-warn] [--debug] [--check] [--dest=DEST_DIR] --metadata=METADATA_DIR THYS_DIR")
+	parser = OptionParser(usage = "Usage: %prog [--no-warn] [--debug] [--check] [--dest=DEST_DIR] [--status=STATUS_FILE] --metadata=METADATA_DIR THYS_DIR")
 	parser.add_option("--no-warn", action = "store_false", dest = "enable_warnings", help = "disable output of warnings")
 	parser.add_option("--check", action = "store_true", dest = "do_check", help = "compare the contents of the metadata file with actual file system contents")
 	parser.add_option("--dest", action = "store", type = "string", dest = "dest_dir", help = "generate files for each template in the metadata directory")
 	parser.add_option("--debug", action = "store_true", dest = "enable_debug", help = "display debug output")
 	parser.add_option("--metadata", action = "store", type = "string", dest = "metadata_dir", help = "metadata location")
+	parser.add_option("--status", action = "store", type = "string", dest = "status_file", help = "status file location (devel)")
 
 
 	(_, args) = parser.parse_args(argv, values = options)
@@ -426,6 +446,11 @@ if __name__ == "__main__":
 
 	# perform generation
 	if options.dest_dir:
+		# parse status file
+		if options.is_devel():
+			(build_data, status) = parse_status(options.status_file)
+			add_status(entries, status)
+
 		# parse template format
 		magic_str_pos = magic_str.index("$")
 		magic_str_start = magic_str[:magic_str_pos]

@@ -192,23 +192,19 @@ def depends_on_string(deps):
 	return ', '.join(html_entry_link.format(dep, dep + ".shtml") for dep in sorted_deps)
 
 def format_depends_on(deps):
-	if len(deps) == 0:
-		return ''
-	else:
-		return html_entry_depends_on_wrapper.format(depends_on_string(deps))
+	return html_entry_depends_on_wrapper.format(depends_on_string(deps)) if len(deps) > 0 else ''
 
 def format_used_by(deps):
-	if len(deps) == 0:
-		return ''
-	else:
-		# We can reuse the depends_on_string function here
-		return html_entry_used_by_wrapper.format(depends_on_string(deps))
+	return html_entry_used_by_wrapper.format(depends_on_string(deps)) if len(deps) > 0 else ''
 
 def format_opt_contributors(contributors):
-	if contributors == [("",None)]:
+	if contributors == [("", None)]:
 		return ""
 	else:
 		return html_contributors.format(generate_author_list(contributors, ', ', ' and ', ignore_mail = False))
+
+def format_status(attributes):
+	return html_entry_status_wrapper.format(attributes['status']) if options.is_devel() else ''
 
 # HTML formatting for entry page
 # supports the following parameters:
@@ -246,8 +242,12 @@ def generate_entry(entry, attributes, param):
 			entry,
 			format_depends_on(attributes['depends-on']),
 			format_used_by(attributes['used_by']),
+			format_status(attributes)
 		)
 	elif param == "older":
+		if options.is_devel():
+			return ""
+
 		if len(attributes['releases']) > 1:
 			str = ""
 			for version, release_dates in list(attributes['releases'].items())[1:]:
@@ -255,11 +255,27 @@ def generate_entry(entry, attributes, param):
 			result = html_entry_older_list.format(str)
 		else:
 			result = "None"
+
+		result = html_entry_older_wrapper.format(result)
 	else:
 		raise Exception("In generator 'entry': Unknown parameter "+param)
 
 	return result
 
+
+### status
+
+def generate_status(entries, param):
+	if param == "header":
+		return ""
+	elif param == "table":
+		rows = ""
+		for entry, attributes in sorted(entries):
+			rows += html_status_entry.format(attributes['status'], entry)
+
+		return rows
+	else:
+		raise Exception("In generator 'status': Unknown parameter "+param)
 
 
 # key : (path, generator, for-each)
@@ -278,5 +294,6 @@ def generate_entry(entry, attributes, param):
 templates = {
 	'topics': ('.', generate_topics, None, False),
 	'index': ('.', generate_index, None, False),
-	'entry': ('./entries', generate_entry, lambda entry: entry, False)
+	'entry': ('./entries', generate_entry, lambda entry: entry, False),
+	'status': ('.', generate_status, None, True)
 }

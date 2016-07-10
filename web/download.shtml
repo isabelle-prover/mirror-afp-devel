@@ -39,17 +39,6 @@
 	href="http://sourceforge.net/projects/afp/files/">sourceforge
 	download system</a> to access older versions of the archive.</td></tr>
 
-		<tr><td class="head">Development snapshot (for development snapshot
-	of Isabelle):</td></tr>
-
-	<tr><td class="entry">
-      <!--#flastmod file="release/afp-devel.tar.gz" -->:
-      <a href="release/afp-devel.tar.gz"><tt>afp-devel.tar.gz</tt></a>     
-      [<!--#fsize file="release/afp-devel.tar.gz" -->]
-
-      [<a href="status.shtml">entry status</a>]
-  </td></tr></tr>
-
 	<tr><td class="head">Mercurial access:</td></tr>	
 
 	<tr><td class="entry">At <a href="https://bitbucket.org/isa-afp/afp-devel/">Bitbucket</a></td></tr>

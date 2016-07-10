@@ -31,7 +31,9 @@
    <tr><td>
    <h3>Test status of entries in the AFP development version</h3>
    <p>
-----
+
+<!--gen:header-->
+
    </p>
    </td></tr>
 </tbody>
@@ -39,7 +41,9 @@
 <p>&nbsp;</p>
 <table width="80%" class="entries">
   <tbody>
-----
+
+<!--gen:table-->
+
   </tbody>
 </table>
 <p>&nbsp;</p>

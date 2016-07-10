@@ -77,6 +77,11 @@ html_index_year = u"""
 # {3}: list of html_author_link, comma-separated
 html_index_entry = u"""<tr><td class="entry">\n{0}:\n<a href="entries/{1}.shtml">{2}</a>\n<br>Author:\n{3}\n</td></tr>\n\n"""
 
+# template for an entry displayed on status page
+# {0}: status string
+# {1}: filename (without .shtml suffix) relative to 'entries' directory
+html_status_entry = u"""<tr><td class="status-{0}">[{0}]</td><td class="entry"><a href="entries/{1}.shtml">{1}</a></td></tr>\n"""
+
 # heading wrapper on entry page
 html_entry_heading = u"<h1>{0}</h1>\n<p></p>"
 
@@ -130,8 +135,9 @@ html_contributors = u"""
 # {4}: text columns (html_entry_text_wrapper)
 # {5}: license
 # {6}: entry
-# {7}: depends-on
-# {8}: used-by
+# {7}: depends-on (html_entry_depends_on_wrapper)
+# {8}: used-by (html_entry_used_by_wrapper)
+# {9}: status (html_entry_status_wrapper)
 # {{...}} is for escaping, because Py's format syntax collides with SSI
 html_entry_header_wrapper = u"""
 <table width="80%" class="data">
@@ -149,11 +155,7 @@ html_entry_header_wrapper = u"""
         <td class="data">{5}</td></tr>
 {7}
 {8}
-
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+{9}
 
   </tbody>
 </table>
@@ -176,9 +178,23 @@ html_entry_used_by_wrapper = u"""
         <td class="data">{0}</td></tr>
 """
 
+# wrapper for the entry status
+# {0}: status
+html_entry_status_wrapper = u"""
+
+    <tr><td class="status-{0}">Status: [{0}]</td>
+        <td class="data">This is a development version of this entry. It might change over time and is not stable. Please refer to release versions for citations.</td></tr>
+"""
+
 # list wrapper for older releases
 # {0}: list entries
 html_entry_older_list = u"<ul>\n{0}\n</ul>"
+
+# wrapper for older releases
+html_entry_older_wrapper = u"""
+    <tr><td class="links">Older releases: {0}
+    </td></tr>
+"""
 
 # list entry for older releases
 # {0}: isabelle release (e. g. "2009")
