@@ -278,6 +278,16 @@ def generate_status(entries, param):
 		raise Exception("In generator 'status': Unknown parameter "+param)
 
 
+### download
+
+def generate_download(entries):
+	if options.is_devel():
+		return ""
+
+	else:
+		return html_download_stable
+
+
 # key : (path, generator, for-each)
 #   'key' denotes the filename of the template (without suffix)
 #   'path' denotes the destination sub-path for generated files
@@ -295,5 +305,6 @@ templates = {
 	'topics': ('.', generate_topics, None, False),
 	'index': ('.', generate_index, None, False),
 	'entry': ('./entries', generate_entry, lambda entry: entry, False),
+	'download': ('.', generate_download, None, False),
 	'status': ('.', generate_status, None, True)
 }

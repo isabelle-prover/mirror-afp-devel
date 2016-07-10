@@ -219,6 +219,14 @@ bibtex_wrapper = u"""@article{{{0}-AFP,
   ISSN    = {{2150-914x}},
 }}"""
 
+# stable download link
+html_download_stable = u"""
+  <tr><td class="head"><b>Current stable version</b> (for current Isabelle release):</td></tr>
+    <tr></tr><td class="entry">[<!--#include file="release-date.txt"-->]:
+    <a href="release/afp-current.tar.gz"><tt>afp-<!--#include file="release-date.txt"-->.tar.gz</tt></a>
+  </td></tr>
+"""
+
 
 ### licenses
 
