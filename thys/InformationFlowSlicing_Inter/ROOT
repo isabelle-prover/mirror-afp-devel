@@ -1,10 +1,9 @@
 chapter AFP
 
-session InformationFlowSlicing (AFP) = "Slicing" +
+session InformationFlowSlicing_Inter (AFP) = "HRB-Slicing" +
   options [timeout = 600]
   theories
-    LiftingIntra
-    NonInterferenceWhile
+    LiftingInter
   document_files
     "root.bib"
     "root.tex"

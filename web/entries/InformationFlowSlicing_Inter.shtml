@@ -24,46 +24,66 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">G</font>röbner
-<font class="first">B</font>ases
-<font class="first">T</font>heory
+<h1><font class="first">I</font>nter-Procedural
+<font class="first">I</font>nformation
+<font class="first">F</font>low
+<font class="first">N</font>oninterference
+via
+<font class="first">S</font>licing
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Gröbner Bases Theory</td></tr>
+        <td class="data" width="80%">Inter-Procedural Information Flow Noninterference via Slicing</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.in.tum.de/~immler/">Fabian Immler</a> and <a href="http://www.risc.jku.at/home/amaletzk">Alexander Maletzky</a></td></tr>
+        <td class="data"><a href="http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php">Daniel Wasserrab</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2016-05-02</td></tr>
+        <td class="data">2010-03-23</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
 
-This formalization is concerned with the theory of Gröbner bases in
-(commutative) multivariate polynomial rings over fields, originally
-developed by Buchberger in his 1965 PhD thesis. Apart from the
-statement and proof of the main theorem of the theory, the
-formalization also implements Buchberger's algorithm for actually
-computing Gröbner bases as a tail-recursive function, thus allowing to
-effectively decide ideal membership in finitely generated polynomial
-ideals. Furthermore, all functions can be executed on a concrete
-representation of multivariate polynomials as association lists.
+<p>
+In this contribution, we show how correctness proofs for <a
+href="Slicing.shtml">intra-</a> and <a
+href="HRB-Slicing.shtml">interprocedural slicing</a> can be used to prove
+that slicing is able to guarantee information flow noninterference.
+Moreover, we also illustrate how to lift the control flow graphs of the
+respective frameworks such that they fulfil the additional assumptions
+needed in the noninterference proofs. A detailed description of the
+intraprocedural proof and its interplay with the slicing framework can be
+found in the PLAS'09 paper by Wasserrab et al.
+</p>
+<p>
+This entry contains the part for inter-procedural slicing. See entry
+<a href="InformationFlowSlicing.shtml">InformationFlowSlicing</a>
+for the intra-procedural part.
+</p>
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2016-06-10]: The original entry <a
+href="InformationFlowSlicing.shtml">InformationFlowSlicing</a> contained both
+the <a href="InformationFlowSlicing_Inter.shtml">inter-</a> and <a
+href="InformationFlowSlicing.shtml">intra-procedural</a> case was split into
+two for easier maintenance.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Groebner_Bases-AFP,
-  author  = {Fabian Immler and Alexander Maletzky},
-  title   = {Gröbner Bases Theory},
+			<pre>@article{InformationFlowSlicing_Inter-AFP,
+  author  = {Daniel Wasserrab},
+  title   = {Inter-Procedural Information Flow Noninterference via Slicing},
   journal = {Archive of Formal Proofs},
-  month   = may,
-  year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Groebner_Bases.shtml},
+  month   = mar,
+  year    = 2010,
+  note    = {\url{http://isa-afp.org/entries/InformationFlowSlicing_Inter.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -74,7 +94,7 @@ representation of multivariate polynomials as association lists.
 
 
     <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="Abstract-Rewriting.shtml">Abstract-Rewriting</a>, <a href="Multivariate_Polynomials.shtml">Multivariate_Polynomials</a></td></tr>
+        <td class="data"><a href="HRB-Slicing.shtml">HRB-Slicing</a></td></tr>
 
 
 
@@ -88,7 +108,7 @@ representation of multivariate polynomials as association lists.
 
 <p></p>
 
-<!--#set var="name" value="Groebner_Bases" -->
+<!--#set var="name" value="InformationFlowSlicing_Inter" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->

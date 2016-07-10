@@ -76,7 +76,7 @@ After verifying <a href="Slicing.shtml">dynamic and static interprocedural slici
 
 
     <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="InformationFlowSlicing.shtml">InformationFlowSlicing</a></td></tr>
+        <td class="data"><a href="InformationFlowSlicing_Inter.shtml">InformationFlowSlicing_Inter</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
