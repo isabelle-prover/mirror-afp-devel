@@ -8,9 +8,6 @@ object profile extends isabelle.CI_Profile
 
   def threads = 8
   def jobs = 1
-  def all = false
-  def groups = List("slow")
-  def exclude = Nil
   def include = List(afp_thys)
   def select = Nil
 
@@ -19,7 +16,7 @@ object profile extends isabelle.CI_Profile
 
   def post_hook(results: Build.Results) = {}
 
-  override def select_sessions(tree: Sessions.Tree): (List[String], Sessions.Tree) =
+  def select_sessions(tree: Sessions.Tree): (List[String], Sessions.Tree) =
     tree.selection(session_groups = List("slow"))
 
 }

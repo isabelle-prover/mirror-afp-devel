@@ -98,9 +98,6 @@ object profile extends isabelle.CI_Profile
 
   def threads = 2
   def jobs = 8
-  def all = false
-  def groups = List("AFP")
-  def exclude = List("slow")
   def include = List(afp_thys)
   def select = Nil
 
@@ -133,7 +130,7 @@ object profile extends isabelle.CI_Profile
     }
   }
 
-  override def select_sessions(tree: Sessions.Tree): (List[String], Sessions.Tree) =
+  def select_sessions(tree: Sessions.Tree): (List[String], Sessions.Tree) =
     tree.selection(
       session_groups = List("AFP"),
       exclude_session_groups = List("slow"))
