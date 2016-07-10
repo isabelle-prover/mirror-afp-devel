@@ -258,8 +258,7 @@ def generate_entry(entry, attributes, param):
 #   'key' denotes the filename of the template (without suffix)
 #   'path' denotes the destination sub-path for generated files
 #   'generator' is the generating function for the data of the template. The
-#     parameters this function will get is determined by 'for-each'. You may
-#     also assume that this function never gets any ignored entry.
+#     parameters this function will get is determined by 'for-each'.
 #   'for-each' determines generation behaviour: if set to None, one file
 #     will be generated for all entries together and the 'generator' function will
 #     receive a list of all entries. Otherwise, a function expression

@@ -3,13 +3,13 @@
 
 ##
 ## Dependencies: Python 2.7 or Python 3.5
-## 
+##
 ## This script reads a metadata file and generates the topics.shtml,
 ## index.shtml and the entry pages on isa-afp.org.
-## 
+##
 ## For meta data documentation see `metadata/README`
 ## For adding new entries see `doc/editors/new-entry-checkin.html`
-## 
+##
 
 # Cross-python compatibility
 from __future__ import print_function
@@ -286,16 +286,8 @@ def write_output(filename, content, generator):
 # Steps:
 # * search the appropriate generator function
 # * create destination directories
-# * filter ignored entries
 # * call write_output for each entry or for all entries together
 def handle_template(entries, template, content):
-	def _ignore(entry, attributes):
-		if template in attributes['ignore']:
-			notice(u"In template {0}: ignoring entry {1} because ignore flag is set in metadata".format(template, entry))
-			return True
-		else:
-			return False
-
 	dir, generator, for_each_func = templates[template]
 
 	dest_subdir = os.path.join(options.dest_dir, dir)
@@ -306,15 +298,13 @@ def handle_template(entries, template, content):
 			error(u"In template {0}: directory {1} couldn't be created".format(template, dest_subdir), exception = ex)
 			return
 
-	not_ignored = [(entry, attributes) for entry, attributes in entries.items() if not _ignore(entry, attributes)]
-
 	if for_each_func:
-		for entry, attributes in not_ignored:
+		for entry, attributes in entries.items():
 			output_filename = os.path.join(dest_subdir, for_each_func(entry) + output_suffix)
 			write_output(output_filename, content, partial(generator, entry, attributes))
 	else:
 		output_filename = os.path.join(dest_subdir, template + output_suffix)
-		write_output(output_filename, content, partial(generator, not_ignored))
+		write_output(output_filename, content, partial(generator, entries.items()))
 
 def normpath(path, *paths):
 	"""Return a normalized and absolute path (depending on current working directory)"""

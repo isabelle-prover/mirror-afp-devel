@@ -54,7 +54,6 @@ attribute_schema = {
 	'title': (False, None, None),
 	'abstract': (False, None, None),
 	'license': (False, parse_license, "BSD"),
-	'ignore': (True, None, ""),
 	'extra*': (False, parse_extra, None),
 	'notify': (False, None, None)
 }
