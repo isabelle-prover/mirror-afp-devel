@@ -4,7 +4,7 @@ begin
 
 lemma card_less_if_surj_not_inj:
   "\<lbrakk> finite A; f ` A = B; \<not> inj_on f A \<rbrakk> \<Longrightarrow> card B < card A"
-by (metis assms card_image_le inj_on_iff_eq_card order_le_neq_trans)
+by (metis card_image_le inj_on_iff_eq_card order_le_neq_trans)
 
 theorem Bondy : 
   assumes "\<forall>A \<in> F. A \<subseteq> X" and "card X \<ge> 1" and "card F = card X"

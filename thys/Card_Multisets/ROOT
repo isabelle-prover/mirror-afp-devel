@@ -1,0 +1,11 @@
+chapter AFP
+
+session Card_Multisets (AFP) = "HOL-Library" +
+  options [timeout=300]
+  theories [document = false]
+    Binomial
+  theories
+    Card_Multisets
+  document_files
+    "root.bib"
+    "root.tex"

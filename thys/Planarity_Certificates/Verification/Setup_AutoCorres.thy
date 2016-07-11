@@ -103,7 +103,7 @@ context begin
 
   lemma L_ovalidNF_oreturn_NF[vcg_l]:
     shows "CTXT IC CT IC (ovalidNF (P x) (oreturn x) P)"
-    using assms unfolding LABEL_simps by wp
+    unfolding LABEL_simps by wp
 
   lemma L_ovalidNF_owhile_inv[vcg_l]:
     fixes CT IC

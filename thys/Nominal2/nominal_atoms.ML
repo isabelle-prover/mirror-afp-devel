@@ -58,9 +58,9 @@ fun add_atom_decl (name : binding, arg : binding option) (thy : theory) =
     val lthy =
       Class.instantiation ([full_tname], [], @{sort at}) thy;
     val ((_, (_, permute_ldef)), lthy) =
-      Specification.definition NONE [] ((permute_def_name, []), permute_eqn) lthy;
+      Specification.definition NONE [] [] ((permute_def_name, []), permute_eqn) lthy;
     val ((_, (_, atom_ldef)), lthy) =
-      Specification.definition NONE [] ((atom_def_name, []), atom_eqn) lthy;
+      Specification.definition NONE [] [] ((atom_def_name, []), atom_eqn) lthy;
     val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy);
     val permute_def = singleton (Proof_Context.export lthy ctxt_thy) permute_ldef;
     val atom_def = singleton (Proof_Context.export lthy ctxt_thy) atom_ldef;

@@ -553,7 +553,7 @@ proof -
     using common_range_limit assms by metis
   moreover
   have "\<And>k. project_transition_fst (suffix i \<rho> k) = (suffix i \<rho>\<^sub>1 k)"
-    unfolding assms run\<^sub>t.simps by (metis \<rho>\<^sub>1_def product_run_project_fst suffix_nth) 
+    by (simp only: assms run\<^sub>t.simps) (metis \<rho>\<^sub>1_def product_run_project_fst suffix_nth) 
   hence "project_transition_fst ` range (suffix i \<rho>) = (range (suffix i \<rho>\<^sub>1))"
     using range_composition[symmetric, of "project_transition_fst" "suffix i \<rho>"] by presburger
   moreover
@@ -580,7 +580,7 @@ proof -
     using common_range_limit assms by metis
   moreover
   have "\<And>k. project_transition_snd (suffix i \<rho> k) = (suffix i \<rho>\<^sub>2 k)"
-    unfolding assms run\<^sub>t.simps by (metis \<rho>\<^sub>2_def product_run_project_snd suffix_nth) 
+    by (simp only: assms run\<^sub>t.simps) (metis \<rho>\<^sub>2_def product_run_project_snd suffix_nth) 
   hence "project_transition_snd ` range ((suffix i \<rho>)) = (range (suffix i \<rho>\<^sub>2))"
     using range_composition[symmetric, of "project_transition_snd" "(suffix i \<rho>)"] by presburger
   moreover
@@ -711,10 +711,8 @@ qed
 
 subsection \<open>Transfer Rules\<close>
 
-context
+context includes lifting_syntax
 begin
-
-interpretation lifting_syntax .
 
 lemma product_parametric [transfer_rule]:
   "((A ===> B ===> C ===> B) ===> (A ===> rel_option B) ===> C ===> A ===> rel_option B) product product"

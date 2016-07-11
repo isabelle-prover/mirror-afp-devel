@@ -8,11 +8,12 @@ fun lift_transform :: "('a::cont_pt \<Rightarrow> exp \<Rightarrow> exp) \<Right
   where "lift_transform t Ibottom  e = e"
   |     "lift_transform t (Iup a) e = t a e"
 
-lemma lift_transform_up[simp]: "lift_transform t (up\<cdot>a) e = t a e"
-  unfolding up_def by (simp add: cont_Iup)
-
-lemma lift_transform_bot[simp]: "lift_transform t \<bottom> e = e"
-  by (metis inst_up_pcpo lift_transform.simps(1))
+lemma lift_transform_simps[simp]:
+  "lift_transform t \<bottom> e = e"
+  "lift_transform t (up\<cdot>a) e = t a e"
+  apply (metis inst_up_pcpo lift_transform.simps(1))
+  apply (simp add: up_def cont_Iup)
+  done
 
 lemma lift_transform_eqvt[eqvt]: "\<pi> \<bullet>  lift_transform t a e = lift_transform (\<pi> \<bullet> t) (\<pi> \<bullet> a) (\<pi> \<bullet> e)"
   by (cases "a") simp_all
@@ -26,7 +27,8 @@ lemma subst_lift_transform:
   shows "(lift_transform t a e)[x ::=y] = lift_transform t a (e[x ::= y])"
   using assms by (cases a) auto
 
-definition map_transform :: "('a::cont_pt \<Rightarrow> exp \<Rightarrow> exp) \<Rightarrow> (var \<Rightarrow> 'a\<^sub>\<bottom>) \<Rightarrow> heap \<Rightarrow> heap"
+definition
+  map_transform :: "('a::cont_pt \<Rightarrow> exp \<Rightarrow> exp) \<Rightarrow> (var \<Rightarrow> 'a\<^sub>\<bottom>) \<Rightarrow> heap \<Rightarrow> heap"
   where "map_transform t ae = map_ran (\<lambda> x e . lift_transform t (ae x) e)"
 
 lemma map_transform_eqvt[eqvt]: "\<pi> \<bullet> map_transform t ae = map_transform (\<pi> \<bullet> t) (\<pi> \<bullet> ae)"

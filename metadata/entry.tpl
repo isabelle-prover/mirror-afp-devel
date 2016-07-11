@@ -38,7 +38,6 @@
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -49,9 +48,9 @@
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
+
 <!--gen:older-->
-    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

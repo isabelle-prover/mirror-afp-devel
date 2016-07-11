@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# devel invocation of sitegen.py
+
+STATUS_FILE="$(readlink -f "$1")"
+shift
+
+cd $(hg root)
+admin/sitegen-lib/sitegen.py --dest=web --metadata=metadata --status="$STATUS_FILE" thys $@

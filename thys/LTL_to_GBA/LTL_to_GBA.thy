@@ -547,7 +547,6 @@ lemmas expand_name_propag__name_ident =
 lemma expand_rslt_exist_eq:
   shows "expand n_ns \<le> SPEC (expand_rslt_exist_eq n_ns)"
     (is "_ \<le> SPEC (?P n_ns)")
-  using assms
 proof (rule_tac expand_rec_rule[where \<Phi>="\<lambda>_. True"], simp, intro refine_vcg, goal_cases)
   case prems: (1 f x n ns)
   let ?r = "(name n, upd_incoming n ns)"
@@ -628,7 +627,6 @@ qed
 lemma expand_prop_exist:
   "expand n_ns \<le> SPEC (\<lambda>r. expand_assm_exist \<xi> n_ns \<longrightarrow> expand_rslt_exist \<xi> n_ns r)"
   (is "_ \<le> SPEC (?P n_ns)")
-  using assms
 proof (rule_tac expand_rec_rule[where \<Phi>="\<lambda>_. True"], simp, intro refine_vcg, goal_cases)
   case prems: (1 f x n ns)
   let ?nds = "upd_incoming n ns"
@@ -1371,7 +1369,6 @@ qed
 
 lemma create_graph__incoming_name_exist:
   "create_graph \<phi> \<le> SPEC (\<lambda>nds. \<forall>nd\<in>nds. expand_init < name nd \<and> (\<forall>nm\<in>incoming nd. nm \<noteq> expand_init \<longrightarrow> nm\<in>name ` nds))"
-  using assms
   unfolding create_graph_def
   by (intro refine_vcg,
     rule_tac order_trans,

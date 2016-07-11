@@ -8984,7 +8984,7 @@ lemma negHorbit_Hom_indVfbasis_W :
 
 lemma negHorbit_HomSet_indVfbasis_W :  
   "T \<in> GRepHomSet smult' W \<Longrightarrow> set (concat (negHorbit_homVfbasis T)) \<subseteq> W"
-  using FGModuleHomSetD_Im[OF assms] negHorbit_Hom_indVfbasis_W by fast
+  using FGModuleHomSetD_Im negHorbit_Hom_indVfbasis_W by fast
 
 definition indVfbasis :: "(('f, 'g) aezfun \<Rightarrow> 'v) list list"
   where "indVfbasis \<equiv> GRep.negHorbit_list H_rcoset_reps induced_vector Vfbasis"

@@ -458,7 +458,7 @@ qed
 lemma outpt_Inv6: 
   "\<lbrakk> outpt s = outpt s'; \<forall>p. outpt s p \<in> {chosen s, NotAnInput};
      Inv2c s; HNextPart s s' \<rbrakk> \<Longrightarrow> \<forall>p. outpt s' p \<in> {chosen s', NotAnInput}"
-  using assms and outpt_chosen
+  using outpt_chosen
   by auto
 
 theorem HStartBallot_Inv6:

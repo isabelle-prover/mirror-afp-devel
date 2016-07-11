@@ -82,7 +82,8 @@ adhoc_overloading Applicative.ap ap_dnelist
 lemma ap_pure_list [simp]: "ap_list [f] xs = map f xs"
 by(simp add: ap_list_def List.bind_def)
 
-context begin interpretation applicative_syntax .
+context includes applicative_syntax
+begin
 
 lemma ap_pure_dlist: "pure_dnelist f \<diamondop> x = Applicative_DNEList.map f x"
 by transfer simp
@@ -95,7 +96,7 @@ proof -
     by transfer simp
 
   have *: "remdups (remdups (remdups ([\<lambda>g f x. g (f x)] \<diamondop> g) \<diamondop> f) \<diamondop> x) = remdups (g \<diamondop> remdups (f \<diamondop> x))"
-    (is "?lhs = ?rhs") for g :: "('c \<Rightarrow> 'b) list" and f :: "('a \<Rightarrow> 'c) list" and x
+    (is "?lhs = ?rhs") for g :: "('b \<Rightarrow> 'c) list" and f :: "('a \<Rightarrow> 'b) list" and x
   proof -
     have "?lhs = remdups (concat (map (\<lambda>f. map f x) (remdups (concat (map (\<lambda>x. map (\<lambda>f y. x (f y)) f) g)))))"
       unfolding ap_list_def List.bind_def
@@ -103,19 +104,19 @@ proof -
     also have "\<dots> =  remdups (concat (map (\<lambda>f. map f x) (concat (map (\<lambda>x. map (\<lambda>f y. x (f y)) f) g))))"
       by(subst (1) remdups_concat_remdups[symmetric])(simp add: remdups_map_remdups remdups_concat_remdups)
     also have "\<dots> = remdups (concat (map remdups (map (\<lambda>g. map g (concat (map (\<lambda>f. map f x) f))) g)))"
-      using list.afun_comp[of g f x] unfolding remdups_concat_map
+      using list.pure_B_conv[of g f x] unfolding remdups_concat_map
       by(simp add: ap_list_def List.bind_def o_def)
     also have "\<dots> = ?rhs" unfolding ap_list_def List.bind_def
       by(subst (2) remdups_concat_map[symmetric])(simp add: o_def remdups_map_remdups)
     finally show ?thesis .
   qed
   show "pure_dnelist (\<lambda>g f x. g (f x)) \<diamondop> g \<diamondop> f \<diamondop> x = g \<diamondop> (f \<diamondop> x)"
-    for g :: "('c \<Rightarrow> 'b) dnelist" and f :: "('a \<Rightarrow> 'c) dnelist" and x
+    for g :: "('b \<Rightarrow> 'c) dnelist" and f :: "('a \<Rightarrow> 'b) dnelist" and x
     by transfer(rule *)
   show "pure_dnelist f \<diamondop> pure_dnelist x = pure_dnelist (f x)" for f :: "'a \<Rightarrow> 'b" and x
     by transfer simp
   show "f \<diamondop> pure_dnelist x = pure_dnelist (\<lambda>f. f x) \<diamondop> f" for f :: "('a \<Rightarrow> 'b) dnelist" and x
-    by transfer(simp add: list.afun_ichng)
+    by transfer(simp add: list.interchange)
 
   have *: "remdups (remdups ([\<lambda>x y. x] \<diamondop> x) \<diamondop> y) = x" if x: "distinct x" and y: "distinct y" "y \<noteq> []"
     for x :: "'b list" and y :: "'a list"

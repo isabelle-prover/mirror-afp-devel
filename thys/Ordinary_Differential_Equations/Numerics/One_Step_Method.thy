@@ -1,13 +1,10 @@
-section\<open>One-Step Methods\<close>
+section \<open>One-Step Methods \label{sec:osm}\<close>
 theory One_Step_Method
 imports
   "../IVP/Initial_Value_Problem"
 begin
 
-text\<open>\label{sec:osm}\<close>
-
-subsection\<open>Grids\<close>
-text\<open>\label{sec:osm-grid}\<close>
+subsection \<open>Grids \label{sec:osm-grid}\<close>
 
 locale grid =
   fixes t::"nat \<Rightarrow> real"
@@ -18,7 +15,6 @@ lemmas grid = steps
 
 lemma grid_ge_min:
   shows "t 0 \<le> t j"
-  using assms
 proof (induct j)
   fix j
   assume "t 0 \<le> t j"
@@ -46,7 +42,7 @@ where "stepsize j = t (Suc j) - t j"
 
 lemma grid_stepsize_nonneg:
   shows "stepsize j \<ge> 0"
-  using assms grid unfolding stepsize_def
+  using grid unfolding stepsize_def
   by (simp add: field_simps order_less_imp_le)
 
 lemma grid_stepsize_sum:
@@ -85,8 +81,7 @@ end
 
 lemma (in grid) grid_interval_notempty: "t 0 \<le> t n" using grid_ge_min[of n] .
 
-subsection\<open>Definition\<close>
-text\<open>\label{sec:osm-definition}\<close>
+subsection \<open>Definition \label{sec:osm-definition}\<close>
 
 text\<open>Discrete evolution (noted \<open>\<Psi>\<close>) using incrementing function @{term incr}\<close>
 
@@ -102,8 +97,7 @@ where
 | "grid_function \<Psi> x0 t (Suc j) = \<Psi> (t (Suc j)) (t j) (grid_function \<Psi> x0 t j)"
 
 
-subsection \<open>Consistency\<close>
-text\<open>\label{sec:osm-consistent}\<close>
+subsection \<open>Consistency \label{sec:osm-consistent}\<close>
 
 definition "consistent x t T B p incr \<longleftrightarrow>
   (\<forall>h\<ge>0. t + h \<le> T \<longrightarrow> dist (x (t + h)) (discrete_evolution incr (t + h) t (x t)) \<le> B * h ^ (p + 1))"
@@ -344,8 +338,7 @@ next
   finally show ?case .
 qed
 
-subsection \<open>Consistency of order p implies convergence of order p\<close>
-text\<open>\label{sec:osm-cons-imp-conv}\<close>
+subsection \<open>Consistency of order p implies convergence of order p \label{sec:osm-cons-imp-conv}\<close>
 
 locale consistent_one_step =
   fixes t0 t1 and x::"real \<Rightarrow> 'a::euclidean_space" and incr p B r L
@@ -393,21 +386,24 @@ lemma (in convergent_one_step) convergence:
 proof -
   from order_pos consistent_nonneg lipschitz_nonneg
   have "p > 0" "B \<ge> 0" "L \<ge> 0" by simp_all
-  {
-    fix j::nat assume "t (Suc j) \<le> t1"
-    from consistent have "dist (x (t j + stepsize j))
+  from consistent have consistence_error: "dist (x (t j + stepsize j))
       (discrete_evolution incr (t j + stepsize j) (t j) (x (t j)))
       \<le> B * (stepsize j ^ (p + 1))"
-      apply (rule consistentD [OF _ grid_stepsize_nonneg])
-      using \<open>t (Suc j) \<le> t1\<close> grid_mono[of j "Suc j"] grid_from grid_interval_notempty 
-        by (auto simp add: stepsize_def)
-  } note consistence_error = this
-  {
-    fix j::nat
-    assume "t (Suc j) \<le> t1"
-    assume in_K:
-      "dist (x (t j)) (grid_function (discrete_evolution incr) (x (t 0)) t j) \<le> \<bar>r\<bar>"
-    hence "stepsize j \<in> {0..t1 - t j}"
+    if "t (Suc j) \<le> t1" for j :: nat
+    apply (rule consistentD [OF _ grid_stepsize_nonneg])
+    using \<open>t (Suc j) \<le> t1\<close> grid_mono[of j "Suc j"] grid_from grid_interval_notempty 
+      by (auto simp add: stepsize_def)
+  have lipschitz_grid: "dist (incr (stepsize j) (t j) (x (t j)))
+    (incr (stepsize j) (t j)
+    (grid_function (discrete_evolution incr) (x (t 0)) t j))
+    \<le> L *
+    dist (x (t j))
+    (grid_function (discrete_evolution incr) (x (t 0)) t j)"
+    if "t (Suc j) \<le> t1"
+    and in_K: "dist (x (t j)) (grid_function (discrete_evolution incr) (x (t 0)) t j) \<le> \<bar>r\<bar>"
+    for j :: nat
+  proof -
+    from in_K have "stepsize j \<in> {0..t1 - t j}"
       using grid_stepsize_nonneg grid_mono \<open>t (Suc j) \<le> t1\<close>
       by (simp add: stepsize_def)
     moreover
@@ -416,19 +412,13 @@ proof -
     moreover
     hence "x (t j) \<in> cball (x (t j)) \<bar>r\<bar>" by simp
     moreover
-    hence  "grid_function (discrete_evolution incr) (x (t 0)) t j \<in>
+    hence "grid_function (discrete_evolution incr) (x (t 0)) t j \<in>
       cball (x (t j)) \<bar>r\<bar>" using in_K by simp
-    ultimately
-    have "dist (incr (stepsize j) (t j) (x (t j)))
-      (incr (stepsize j) (t j)
-      (grid_function (discrete_evolution incr) (x (t 0)) t j))
-      \<le> L *
-      dist (x (t j))
-      (grid_function (discrete_evolution incr) (x (t 0)) t j)"
+    ultimately show ?thesis
       using lipschitz_incr grid_from
       unfolding lipschitz_def
       by blast
-  } note lipschitz_grid = this
+  qed
   have
     "dist (x (t j)) (grid_function (discrete_evolution incr) (x (t 0)) t j) \<le>
     (B / L * (exp (L * (t j - t 0) + 1) - 1)) * max_stepsize j ^ p"
@@ -447,8 +437,7 @@ qed
 
 end
 
-subsection\<open>Stability\<close>
-text\<open>\label{sec:osm-stability}\<close>
+subsection \<open>Stability \label{sec:osm-stability}\<close>
 
 locale disturbed_one_step = grid +
   fixes t1 s s0 x incr p B L
@@ -484,23 +473,27 @@ lemma stability:
 proof -
   have "t 0 \<le> t1"
     by (metis assms(1) grid_ge_min order_trans)
-  {
-    fix j assume "t (Suc j) \<le> t1" from error[OF this]
-    have "stepsize j * norm (s (stepsize j) (t j)
+  have error: "norm (stepsize j *\<^sub>R s (stepsize j) (t j)
+        (grid_function (discrete_evolution incrs) (x (t 0) + s0) t j))
+      \<le> B * stepsize j ^ (p + 1)"
+    if "t (Suc j) \<le> t1" for j
+  proof -
+    from error[OF that] have "stepsize j * norm (s (stepsize j) (t j)
         (grid_function (discrete_evolution incrs) (x (t 0) + s0) t j))
        \<le> stepsize j * (B * stepsize j ^ p)"
       using grid_stepsize_nonneg
       by (auto intro: mult_left_mono simp: incrs)
-    hence "norm (stepsize j *\<^sub>R s (stepsize j) (t j)
-        (grid_function (discrete_evolution incrs) (x (t 0) + s0) t j))
-      \<le> B * stepsize j ^ (p + 1)"
+    then show ?thesis
       using grid_stepsize_nonneg
       by (simp add: field_simps)
-  } note error = this
+  qed
   interpret c1: convergent_one_step "t 0" using max_step_r
     by unfold_locales simp_all
-  { fix j assume "t (Suc j) \<le> t1"
-    hence "t j \<le> t1" using grid_mono[of j "Suc j"] by auto
+  have incr_in: "dist (x (t j)) (grid_function (discrete_evolution incr) (x (t 0)) t j) \<le> \<bar>r / 2\<bar>"
+    if "t (Suc j) \<le> t1" for j
+  proof -
+    from that have "t j \<le> t1"
+      using grid_mono[of j "Suc j"] by auto
     have "dist (x (t j)) (grid_function (discrete_evolution incr) (x (t 0)) t j)
       \<le> B / L * (exp (L * (t1 - t 0) + 1) - 1) * max_stepsize j ^ p"
       using \<open>t j \<le> t1\<close> by (rule c1.convergence)
@@ -509,17 +502,15 @@ proof -
       grid_mono \<open>t j \<le> t1\<close> t0_le
       apply (cases "L = 0", simp)
       by (intro stepsize_inverse) auto
-    finally have
-      "dist (x (t j)) (grid_function (discrete_evolution incr) (x (t 0)) t j) \<le>
-      \<bar>r / 2\<bar>" .
-  } note incr_in = this
-  { fix j assume "t (Suc j) \<le> t1"
-    note incr_in[OF this]
+    finally show ?thesis .
+  qed
+  have incr_in_r: "dist (x (t j)) (grid_function (discrete_evolution incr) (x (t 0)) t j) \<le> \<bar>r\<bar>"
+    if "t (Suc j) \<le> t1" for j
+  proof -
+    note incr_in[OF that]
     also have "\<bar>r/2\<bar> \<le> \<bar>r\<bar>" by simp
-    finally have
-      "dist (x (t j)) (grid_function (discrete_evolution incr) (x (t 0)) t j) \<le> \<bar>r\<bar>".
-  }
-  note incr_in_r = this
+    finally show ?thesis .
+  qed
   have "dist
     (grid_function (discrete_evolution incrs) (x (t 0) + s0) t j)
     (grid_function (discrete_evolution incr) (x (t 0)) t j) \<le>
@@ -611,14 +602,14 @@ lemma stability:
    (grid_function (discrete_evolution incr) (x (t 0)) t j) \<le>
      B / L * (exp (L * (t1 - (t 0)) + 1) - 1) * max_stepsize j ^ p"
 proof -
-   note fg' = incr_approx
-  def s0 \<equiv> "x0' - x (t 0)"
+  note fg' = incr_approx
+  define s0 where "s0 = x0' - x (t 0)"
   hence x0': "x0' = x (t 0) + s0"
     by simp
-  def s \<equiv> "\<lambda>x xa xb. (incr' x xa xb) - incr x xa xb"
-  def incrs \<equiv> "\<lambda>h t x. incr h t x + s h t x"
+  define s where "s x xa xb = incr' x xa xb - incr x xa xb" for x xa xb
+  define incrs where "incrs h t x = incr h t x + s h t x" for h t x
   have s: "incr' = incrs"
-    by (simp add: s_def incrs_def)
+    by (simp add: s_def incrs_def [abs_def])
   interpret c: stable_one_step t1 x incr p B r L t s s0
   proof
     fix j
@@ -629,7 +620,7 @@ proof -
              (x (t 0) + s0) t j))
           \<le> B * stepsize j ^ p"
       unfolding s_def dist_norm[symmetric]
-      unfolding dist_commute
+      apply (simp only: dist_commute)
       using \<open>t j \<le> t1\<close>
       by (rule fg')
     thus "norm

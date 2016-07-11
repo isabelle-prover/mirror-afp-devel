@@ -553,7 +553,7 @@ lemma finite_inc: "finite (inc ` X) = finite X"
   done
 
 lemma finite_deriv_deriv: "finite (deriv s) ==> finite  (deriv ` {w. ~is_axiom (s_of_ns s) & w : set (subs s)})"
-unfolding deriv by(simp)
+  by (simp only: deriv) simp
 
 definition
   init :: "nseq => bool" where

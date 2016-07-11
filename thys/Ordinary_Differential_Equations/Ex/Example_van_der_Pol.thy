@@ -4,8 +4,7 @@ imports
   "../Numerics/Optimize_Float"
 begin
 
-subsection \<open>Van der Pol oscillator\<close>
-text \<open>\label{sec:vanderpol}\<close>
+subsection \<open>Van der Pol oscillator \label{sec:vanderpol}\<close>
 
 abbreviation "vanderpol_real \<equiv> \<lambda>(x::real, y::real). (y, y * (1 + - x*x) + - x)"
 

@@ -96,20 +96,20 @@ subsubsection {* DomainHierarchyNG packing *}
 
 
 text {*Examples:*}
-definition example_TUM_net :: "vString list_graph" where
-  "example_TUM_net \<equiv> \<lparr> nodesL=[TopoS_Vertices.V ''Gateway'', TopoS_Vertices.V ''LowerSVR'', TopoS_Vertices.V ''UpperSRV''], 
+definition example_TUM_net :: "string list_graph" where
+  "example_TUM_net \<equiv> \<lparr> nodesL=[''Gateway'', ''LowerSVR'', ''UpperSRV''], 
         edgesL=[
-          (TopoS_Vertices.V ''Gateway'',TopoS_Vertices.V ''LowerSVR''), (TopoS_Vertices.V ''Gateway'',TopoS_Vertices.V ''UpperSRV''), 
-          (TopoS_Vertices.V ''LowerSVR'', TopoS_Vertices.V ''Gateway''),
-          (TopoS_Vertices.V ''UpperSRV'', TopoS_Vertices.V ''Gateway'')
+          (''Gateway'',''LowerSVR''), (''Gateway'',''UpperSRV''), 
+          (''LowerSVR'', ''Gateway''),
+          (''UpperSRV'', ''Gateway'')
         ] \<rparr>"
 value "wf_list_graph example_TUM_net"
 
-definition example_TUM_config :: "vString \<Rightarrow> domainNameTrust" where
+definition example_TUM_config :: "string \<Rightarrow> domainNameTrust" where
   "example_TUM_config \<equiv> ((\<lambda> e. default_node_properties)
-        (TopoS_Vertices.V ''Gateway'':= DN (''ACD''--''AISD''--Leaf, 1),
-         TopoS_Vertices.V ''LowerSVR'':= DN (''ACD''--''AISD''--Leaf, 0),
-         TopoS_Vertices.V ''UpperSRV'':= DN (''ACD''--Leaf, 0)
+        (''Gateway'':= DN (''ACD''--''AISD''--Leaf, 1),
+         ''LowerSVR'':= DN (''ACD''--''AISD''--Leaf, 0),
+         ''UpperSRV'':= DN (''ACD''--Leaf, 0)
        ))"
 
 definition example_TUM_hierarchy :: "domainTree" where
@@ -122,7 +122,7 @@ value "sinvar     example_TUM_net example_TUM_config"
 
 definition example_TUM_net_invalid where
 "example_TUM_net_invalid \<equiv> example_TUM_net\<lparr>edgesL :=  
-    (TopoS_Vertices.V ''LowerSRV'', TopoS_Vertices.V ''UpperSRV'')#(edgesL example_TUM_net)\<rparr>"
+    (''LowerSRV'', ''UpperSRV'')#(edgesL example_TUM_net)\<rparr>"
 
 value "verify_globals example_TUM_net_invalid example_TUM_config example_TUM_hierarchy"
 value "sinvar     example_TUM_net_invalid example_TUM_config"

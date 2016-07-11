@@ -111,7 +111,7 @@ subsection {* Basic lemmas *}
 
 lemma (in sym_digraph) graph_symmetric:
   shows "(u,v) \<in> arcs_ends G \<Longrightarrow> (v,u) \<in> arcs_ends G"
-  using assms sym_arcs by (auto simp add: symmetric_def sym_def)
+  using sym_arcs by (auto simp add: symmetric_def sym_def)
 
 lemma strongly_connectedI[intro]:
   assumes "verts G \<noteq> {}" "\<And>u v. u \<in> verts G \<Longrightarrow> v \<in> verts G \<Longrightarrow> u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v"

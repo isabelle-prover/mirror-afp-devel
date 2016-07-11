@@ -163,7 +163,7 @@ next
   moreover from REACHING_PATH(4) SL_PATH(4) have "mon fg q \<union> M \<union> Ms = mon_w fg (w1@LCall q#w2@[LRet])" by (auto simp add: mon_w_unconc)
   moreover have "(\<lambda>p. [entry fg p]) `# (P') \<le># csp1+csp2" (is "?f `# P' \<le># _") proof -
     from mset_map_le[OF S_call(6)] have "?f `# P' \<le># ?f `# P + ?f `# Ps" by (auto simp add: mset_map_union)
-    also from mset_le_mono_add[OF REACHING_PATH(3) SL_PATH(3)] have "\<dots> \<le># csp1+csp2" .
+    also from mset_subset_eq_mono_add[OF REACHING_PATH(3) SL_PATH(3)] have "\<dots> \<le># csp1+csp2" .
     finally show ?thesis .
   qed
   moreover note S_call(7)
@@ -176,7 +176,7 @@ next
   moreover from IHAPP(4) have "M=mon_w fg (w @ [LSpawn q])" by (simp add: mon_w_unconc)
   moreover have "(\<lambda>p. [entry fg p]) `# P' \<le># {#[entry fg q]#} + c'" (is "?f `# _ \<le># _") proof -
     from mset_map_le[OF S_spawn(4)] have "?f `# P' \<le># {#[entry fg q]#} + ?f `# P" by (auto simp add: mset_map_union)
-    also from mset_le_mono_add[OF _ IHAPP(3)] have "\<dots> \<le># {#[entry fg q]#} + c'" by (auto intro: IHAPP(3))
+    also from mset_subset_eq_mono_add[OF _ IHAPP(3)] have "\<dots> \<le># {#[entry fg q]#} + c'" by (auto intro: IHAPP(3))
     finally show ?thesis .
   qed
   moreover note S_spawn(5)
@@ -653,7 +653,7 @@ next
   next
     case right -- "Both nodes are reached from the spawned threads, we have to further distinguish whether both nodes are reached from the same thread or from different threads"
     then obtain s1' s2' where R_STACKS: "{#s1'#}+{#s2'#} \<le># c2'" "atU_s U s1'" "atU_s V s2'" by (unfold atUV_def) auto
-    then obtain ce2' where C2'FMT: "c2'={#s1'#}+({#s2'#}+ce2')" by (auto simp add: mset_le_exists_conv union_ac)
+    then obtain ce2' where C2'FMT: "c2'={#s1'#}+({#s2'#}+ce2')" by (auto simp add: mset_subset_eq_exists_conv union_ac)
     obtain q ceh w21 w22 ce21' ce22' where 
       REVSPLIT: "ch={#[entry fg q]#}+ceh" "{#s2'#}+ce2' = ce21'+ce22'" "w2\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" "mon fg q \<inter> (mon_c fg ceh \<union> mon_ww fg w22)={}" "mon_c fg ceh \<inter> (mon fg q \<union> mon_ww fg w21) = {}"
       "({#[entry fg q]#},w21,{#s1'#}+ce21')\<in>trcl (ntr fg)" "(ceh,w22,ce22')\<in>trcl (ntr fg)" 

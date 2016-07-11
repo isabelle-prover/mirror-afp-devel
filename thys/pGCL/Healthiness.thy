@@ -787,7 +787,7 @@ lemma wlp_Loop1:
 proof -
   let "?Z u" = "(body ;; Embed u \<^bsub>\<guillemotleft> G \<guillemotright>\<^esub>\<oplus> Skip)"
   show ?thesis
-  proof(unfold wp_eval, intro gfp_pulldown assms le_funI)
+  proof(simp only: wp_eval, intro gfp_pulldown assms le_funI)
     fix u P
     show "wlp (?Z u) P = ?Y P (u P)" by(simp add:wp_eval negate_embed)
   next
@@ -837,8 +837,7 @@ lemma wp_loop_sound:
   assumes sP: "sound P"
       and hb: "healthy (wp body)"
   shows "sound (wp do G \<longrightarrow> body od P)"
-  unfolding wp_eval
-proof(intro lfp_trans_sound sP)
+proof(simp only: wp_eval, intro lfp_trans_sound sP)
   let ?v = "\<lambda>P s. bound_of P"
   show "le_trans (wp (body ;; Embed ?v \<^bsub>\<guillemotleft> G \<guillemotright>\<^esub>\<oplus> Skip)) ?v"
     by(intro le_transI, simp add:wp_eval lfp_loop_fp[unfolded negate_embed] hb)
@@ -856,7 +855,7 @@ lemma wp_Loop1:
 proof -
   let "?Z u" = "(body ;; Embed u \<^bsub>\<guillemotleft> G \<guillemotright>\<^esub>\<oplus> Skip)"
   show ?thesis
-  proof(unfold wp_eval, intro lfp_pulldown assms le_funI sP mono_transI)
+  proof(simp only: wp_eval, intro lfp_pulldown assms le_funI sP mono_transI)
     fix u P
     show "wp (?Z u) P = ?Y P (u P)" by(simp add:wp_eval negate_embed)
   next

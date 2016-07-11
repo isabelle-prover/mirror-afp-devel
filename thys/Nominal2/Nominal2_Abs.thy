@@ -854,7 +854,7 @@ proof -
   moreover 
   { assume *: "a \<noteq> b" and **: "x = (a \<leftrightarrow> b) \<bullet> y \<and> atom a \<sharp> y"
     have "[{atom a}]set. x = [{atom a}]set. ((a \<leftrightarrow> b) \<bullet> y)" using ** by simp
-    also have "\<dots> = (a \<leftrightarrow> b) \<bullet> ([{atom b}]set. y)" by (simp add: permute_set_def assms)
+    also have "\<dots> = (a \<leftrightarrow> b) \<bullet> ([{atom b}]set. y)" by (simp add: permute_set_def)
     also have "\<dots> = [{atom b}]set. y"
       by (rule flip_fresh_fresh) (simp add: Abs_fresh_iff **, simp add: Abs_fresh_iff)
     finally have "[{atom a}]set. x = [{atom b}]set. y" .
@@ -869,7 +869,7 @@ next
   moreover
   { assume *: "a \<noteq> b" and **: "Abs_res {atom a} x = Abs_res {atom b} y"
     have #: "atom a \<sharp> Abs_res {atom b} y" by (simp add: **[symmetric] Abs_fresh_iff)
-    have "Abs_res {atom a} ((a \<leftrightarrow> b) \<bullet> y) = (a \<leftrightarrow> b) \<bullet> (Abs_res {atom b} y)" by (simp add: assms)
+    have "Abs_res {atom a} ((a \<leftrightarrow> b) \<bullet> y) = (a \<leftrightarrow> b) \<bullet> (Abs_res {atom b} y)" by simp
     also have "\<dots> = Abs_res {atom b} y"
       by (rule flip_fresh_fresh) (simp add: #, simp add: Abs_fresh_iff)
     also have "\<dots> = Abs_res {atom a} x" using ** by simp
@@ -878,7 +878,7 @@ next
   moreover 
   { assume *: "a \<noteq> b" and **: "x = (a \<leftrightarrow> b) \<bullet> y \<and> atom a \<sharp> y"
     have "Abs_res {atom a} x = Abs_res {atom a} ((a \<leftrightarrow> b) \<bullet> y)" using ** by simp
-    also have "\<dots> = (a \<leftrightarrow> b) \<bullet> Abs_res {atom b} y" by (simp add: permute_set_def assms)
+    also have "\<dots> = (a \<leftrightarrow> b) \<bullet> Abs_res {atom b} y" by (simp add: permute_set_def)
     also have "\<dots> = Abs_res {atom b} y"
       by (rule flip_fresh_fresh) (simp add: Abs_fresh_iff **, simp add: Abs_fresh_iff)
     finally have "Abs_res {atom a} x = Abs_res {atom b} y" .
@@ -893,7 +893,7 @@ next
   moreover
   { assume *: "a \<noteq> b" and **: "Abs_lst [atom a] x = Abs_lst [atom b] y"
     have #: "atom a \<sharp> Abs_lst [atom b] y" by (simp add: **[symmetric] Abs_fresh_iff)
-    have "Abs_lst [atom a] ((a \<leftrightarrow> b) \<bullet> y) = (a \<leftrightarrow> b) \<bullet> (Abs_lst [atom b] y)" by (simp add: assms)
+    have "Abs_lst [atom a] ((a \<leftrightarrow> b) \<bullet> y) = (a \<leftrightarrow> b) \<bullet> (Abs_lst [atom b] y)" by simp
     also have "\<dots> = Abs_lst [atom b] y"
       by (rule flip_fresh_fresh) (simp add: #, simp add: Abs_fresh_iff)
     also have "\<dots> = Abs_lst [atom a] x" using ** by simp
@@ -902,7 +902,7 @@ next
   moreover 
   { assume *: "a \<noteq> b" and **: "x = (a \<leftrightarrow> b) \<bullet> y \<and> atom a \<sharp> y"
     have "Abs_lst [atom a] x = Abs_lst [atom a] ((a \<leftrightarrow> b) \<bullet> y)" using ** by simp
-    also have "\<dots> = (a \<leftrightarrow> b) \<bullet> Abs_lst [atom b] y" by (simp add: assms)
+    also have "\<dots> = (a \<leftrightarrow> b) \<bullet> Abs_lst [atom b] y" by simp
     also have "\<dots> = Abs_lst [atom b] y"
       by (rule flip_fresh_fresh) (simp add: Abs_fresh_iff **, simp add: Abs_fresh_iff)
     finally have "Abs_lst [atom a] x = Abs_lst [atom b] y" .
@@ -918,7 +918,7 @@ lemma Abs1_eq_iff':
   shows "[{atom a}]set. x = [{atom b}]set. y \<longleftrightarrow> (a = b \<and> x = y) \<or> (a \<noteq> b \<and> (b \<leftrightarrow> a) \<bullet> x = y \<and> atom b \<sharp> x)"
   and   "[{atom a}]res. x = [{atom b}]res. y \<longleftrightarrow> (a = b \<and> x = y) \<or> (a \<noteq> b \<and> (b \<leftrightarrow> a) \<bullet> x = y \<and> atom b \<sharp> x)"
   and   "[[atom a]]lst. x = [[atom b]]lst. y \<longleftrightarrow> (a = b \<and> x = y) \<or> (a \<noteq> b \<and> (b \<leftrightarrow> a) \<bullet> x = y \<and> atom b \<sharp> x)"
-using assms by (auto simp: Abs1_eq_iff fresh_permute_left)
+by (auto simp: Abs1_eq_iff fresh_permute_left)
 
 
 ML {*

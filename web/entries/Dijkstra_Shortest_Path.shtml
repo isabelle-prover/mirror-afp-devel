@@ -73,10 +73,11 @@ structures from the Isabelle Collection Framework.
         <td class="data"><a href="Collections.shtml">Collections</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Formal_SSA.shtml">Formal_SSA</a>, <a href="Koenigsberg_Friendship.shtml">Koenigsberg_Friendship</a></td></tr>
+
+
 
   </tbody>
 </table>
@@ -98,7 +99,6 @@ structures from the Isabelle Collection Framework.
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -109,8 +109,9 @@ structures from the Isabelle Collection Framework.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-<ul>
+
+
+    <tr><td class="links">Older releases: <ul>
 <li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-05-27.tar.gz">afp-<!--#echo var="name" -->-2015-05-27.tar.gz</a></li>
 <li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-08-28.tar.gz">afp-<!--#echo var="name" -->-2014-08-28.tar.gz</a></li>
 <li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2013-12-11.tar.gz">afp-<!--#echo var="name" -->-2013-12-11.tar.gz</a></li>
@@ -121,7 +122,9 @@ structures from the Isabelle Collection Framework.
 <li>Isabelle 2011-1: <a href="../release/afp-<!--#echo var="name" -->-2012-03-15.tar.gz">afp-<!--#echo var="name" -->-2012-03-15.tar.gz</a></li>
 <li>Isabelle 2011-1: <a href="../release/afp-<!--#echo var="name" -->-2012-02-10.tar.gz">afp-<!--#echo var="name" -->-2012-02-10.tar.gz</a></li>
 
-</ul>    </td></tr>
+</ul>
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

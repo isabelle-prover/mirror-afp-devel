@@ -547,13 +547,13 @@ proof (auto simp:invariant_def)
   and 2:"ivs \<in> initSets s2"
   have 3:"finite ivs \<and> ivs \<noteq> {}"
   proof -
-    have "P13 (s1,s2)" using P13_invariant assms 1
+    have "P13 (s1,s2)" using P13_invariant 1
       by (metis IOA.invariant_def)
     thus ?thesis using 2 finite_subset by (auto simp add:initSets_def)
   qed
   have 4:"\<forall> av \<in> ivs . \<exists> rs \<in> pendingSeqs s1 . av = dstate s1 \<star> rs"
   proof -
-    have P8:"P8 (s1,s2)" using P8_invariant assms 1
+    have P8:"P8 (s1,s2)" using P8_invariant 1
       by (metis IOA.invariant_def)
     thus ?thesis using 2 by (auto simp add:initSets_def)
   qed
@@ -571,11 +571,11 @@ next
   fix s1 s2 t1 t2 a
   assume hyp: "P12 (s1,s2)" and trans:"(s1,s2) \<midarrow>a\<midarrow>composition\<longrightarrow> (t1,t2)"
   and reach: "reachable (composition) (s1,s2)"
-  from reach have P13:"P13 (s1,s2)" using P13_invariant and assms
+  from reach have P13:"P13 (s1,s2)" using P13_invariant
     by (metis IOA.invariant_def)
-  from reach have P14:"P14 (s1,s2)" using P14_invariant and assms
+  from reach have P14:"P14 (s1,s2)" using P14_invariant
     by (metis IOA.invariant_def)
-  show "P12 (t1,t2)" using assms and trans and hyp
+  show "P12 (t1,t2)" using trans and hyp
   proof (cases rule:trans_elim)
     case (Invoke1 i p c)
     assume "P12 (s1,s2)"
@@ -645,13 +645,13 @@ shows "invariant (composition) P19"
 proof (auto simp only:invariant_def)
   fix s1 s2
   assume 1:"reachable (composition) (s1,s2)"
-  have P4:"P4 (s1,s2)" using P4_invariant assms 1
+  have P4:"P4 (s1,s2)" using P4_invariant 1
     by (simp add:invariant_def)
   moreover
-  have P18:"P18 (s1,s2)" using P18_invariant assms 1
+  have P18:"P18 (s1,s2)" using P18_invariant 1
     by (metis IOA.invariant_def)
   moreover
-  have P11:"P11 (s1,s2)" using P11_invariant assms 1
+  have P11:"P11 (s1,s2)" using P11_invariant 1
     by (metis IOA.invariant_def) 
   moreover
   ultimately show "P19 (s1,s2)" by auto
@@ -662,15 +662,15 @@ shows "invariant (composition) P9"
 proof (auto simp only:invariant_def)
   fix s1 s2
   assume 1:"reachable (composition) (s1,s2)"
-  have P12:"P12 (s1,s2)" using P12_invariant assms 1
+  have P12:"P12 (s1,s2)" using P12_invariant 1
     by (simp add:invariant_def)
-  have P15:"P15 (s1,s2)" using P15_invariant assms 1
+  have P15:"P15 (s1,s2)" using P15_invariant 1
     by (metis IOA.invariant_def)
-  have P13:"P13 (s1,s2)" using P13_invariant assms 1
+  have P13:"P13 (s1,s2)" using P13_invariant 1
     by (metis IOA.invariant_def)
-  have P14:"P14 (s1,s2)" using P14_invariant assms 1
+  have P14:"P14 (s1,s2)" using P14_invariant 1
     by (metis IOA.invariant_def)
-  have P11:"P11 (s1,s2)" using P11_invariant assms 1
+  have P11:"P11 (s1,s2)" using P11_invariant 1
     by (metis IOA.invariant_def)
   have "initialized s2 \<Longrightarrow> dstate s1 \<preceq> \<Sqinter>(abortVals s1)" 
     using P13 P15 P14 P11 boundedI by simp 
@@ -722,7 +722,7 @@ next
     proof -
       assume "initialized t2"
       moreover
-      have "P9 (t1,t2)" using reach trans P9_invariant assms
+      have "P9 (t1,t2)" using reach trans P9_invariant
         by (metis IOA.invariant_def reachable_n)
       ultimately show ?thesis by auto
     qed
@@ -848,12 +848,12 @@ next
           assume "r \<in> set rs'"
           with 6 have "r \<in> pendingReqs s2" by (auto simp add:pendingSeqs_def)
           moreover 
-          have "P2 (s1,s2)" using reach assms P2_invariant 
+          have "P2 (s1,s2)" using reach P2_invariant 
             by (metis invariant_def)
           moreover
           have "status s2 p = Sleep"
           proof -
-            have "P6 (s1,s2)" using reach assms P6_invariant 
+            have "P6 (s1,s2)" using reach P6_invariant 
               by (metis invariant_def)
             thus ?thesis using 2 Lin2(1) by force
           qed
@@ -932,7 +932,7 @@ next
       obtain rs'' where "set rs'' \<subseteq> pendingReqs s1"
         and "\<Sqinter>ivs = dstate s1 \<star> rs''"
       proof -
-        have "P8a (s1,s2)" using reach assms P8a_invariant
+        have "P8a (s1,s2)" using reach P8a_invariant
           by (metis invariant_def)
         thus ?thesis using that using 1 2 
           by (auto simp add:initSets_def pendingSeqs_def)
@@ -949,10 +949,10 @@ next
         and 2:"status s1 p \<noteq> Aborted"
       have "fst r \<noteq> p"
       proof -
-        have "P2 (s1,s2)" using reach P2_invariant assms
+        have "P2 (s1,s2)" using reach P2_invariant
           by (metis invariant_def)
         moreover
-        have "P6 (s1,s2)" using reach P6_invariant assms
+        have "P6 (s1,s2)" using reach P6_invariant
           by (metis invariant_def)
         ultimately show ?thesis using 1 2 Reco2(1)
           by (simp add:pendingReqs_def)
@@ -964,7 +964,7 @@ next
         and 3:"status s1 p = Pending"
       have "r = pending s1 p"
       proof -
-        have "P1 (s1,s2)" using reach P1_invariant assms
+        have "P1 (s1,s2)" using reach P1_invariant
           by (metis invariant_def)
         thus ?thesis using 1 2 3
           by (auto simp add:pendingReqs_def)
@@ -981,7 +981,7 @@ next
           assume 5:"r \<in> pendingReqs s1"
           have "fst r \<noteq> p"
           proof -
-            have "P1 (s1,s2)" using reach P1_invariant assms
+            have "P1 (s1,s2)" using reach P1_invariant
               by (metis invariant_def)
             with 4 5 Reco2(1) show ?thesis 
               by (auto simp add:pendingReqs_def)
@@ -1081,10 +1081,10 @@ next
             uninitAborts_def initSets_def)
         have 4:"\<Sqinter>(abortVals s1) \<preceq> \<Sqinter>ivs"
         proof -
-          have "P11 (s1,s2)" using reach assms P11_invariant
+          have "P11 (s1,s2)" using reach P11_invariant
             by (metis invariant_def)
           moreover 
-          have "P13 (s1,s2)" using reach assms P13_invariant
+          have "P13 (s1,s2)" using reach P13_invariant
             by (metis invariant_def)
           ultimately show ?thesis using 2 3 antimono by simp
         qed
@@ -1102,7 +1102,7 @@ next
           obtain av where "abortVals t1 = abortVals s1 \<union> {av}"
             using Switch1(1) by auto
           moreover 
-          have "P13 (s1,s2)" using reach assms P13_invariant
+          have "P13 (s1,s2)" using reach P13_invariant
             by (metis invariant_def) 
           ultimately show ?thesis using False by simp
         qed
@@ -1114,7 +1114,7 @@ next
         case True
         have "abortVals t2 = {}"
         proof -
-          have "P19 (s1,s2)" using reach assms P19_invariant
+          have "P19 (s1,s2)" using reach P19_invariant
             by (metis invariant_def)
           thus ?thesis using True Switch1(1) by auto
         qed
@@ -1150,7 +1150,7 @@ shows "invariant (composition) P22"
 proof (auto simp only:invariant_def)
   fix s1 s2
   assume 1:"reachable (composition) (s1,s2)"
-  have P9:"P9 (s1,s2)" using P9_invariant assms 1
+  have P9:"P9 (s1,s2)" using P9_invariant 1
     by (simp add:invariant_def)
   show "P22 (s1,s2)"
   proof (simp only:P22.simps, rule impI)
@@ -1399,7 +1399,7 @@ proof -
         have 3:"ioa.start (composition) 
           = start (0::nat) \<times> start id1" by fastforce
         show ?thesis
-          using assms 1 2 3 by simp 
+          using 1 2 3 by simp 
       qed
     next
       fix s1 s2 t1 t2 :: "('a,'b,'c)SLin_state" and a :: "('a,'b,'c,'d)SLin_action"
@@ -1410,48 +1410,48 @@ proof -
       txt {* Lemmas and invariants *}
       have "pendingReqs s2 \<subseteq> pendingReqs u"
       proof -
-        have "P6 (s1,s2)" using reach assms P6_invariant
+        have "P6 (s1,s2)" using reach P6_invariant
           by (metis invariant_def)
         thus ?thesis
           by (force simp add:pendingReqs_def u_def)
       qed
       note lem1 = this
       have "initialized u" by (auto simp add:u_def)
-      have "P1 (s1,s2)" and "P1 (t1,t2)" using reach assms P1_invariant
+      have "P1 (s1,s2)" and "P1 (t1,t2)" using reach P1_invariant
         trans invariant_def by (metis , metis reachable_n)
-      have "P6 (s1,s2)" and "P6 (t1,t2)" using reach assms P6_invariant
+      have "P6 (s1,s2)" and "P6 (t1,t2)" using reach P6_invariant
         trans invariant_def by (metis , metis reachable_n)
-      have "P7 (s1,s2)" and "P7 (t1,t2)" using reach assms P7_invariant
+      have "P7 (s1,s2)" and "P7 (t1,t2)" using reach P7_invariant
         trans invariant_def by (metis , metis reachable_n)
-      have "P8 (s1,s2)" and "P8 (t1,t2)" using reach assms P8_invariant
+      have "P8 (s1,s2)" and "P8 (t1,t2)" using reach P8_invariant
         trans invariant_def by (metis , metis reachable_n)
-      have "P9 (s1,s2)" and "P9 (t1,t2)" using reach assms P9_invariant
+      have "P9 (s1,s2)" and "P9 (t1,t2)" using reach P9_invariant
         trans invariant_def by (metis , metis reachable_n)
-      have "P10 (s1,s2)" and "P10 (t1,t2)" using reach assms P10_invariant
+      have "P10 (s1,s2)" and "P10 (t1,t2)" using reach P10_invariant
         trans invariant_def by (metis , metis reachable_n)
-      have "P13 (s1,s2)" and "P13 (t1,t2)" using reach assms P13_invariant
+      have "P13 (s1,s2)" and "P13 (t1,t2)" using reach P13_invariant
         trans invariant_def by (metis , metis reachable_n)
-      have "P15 (s1,s2)" and "P15 (t1,t2)" using reach assms P15_invariant
+      have "P15 (s1,s2)" and "P15 (t1,t2)" using reach P15_invariant
         trans invariant_def by (metis , metis reachable_n)
-      have "P16 (s1,s2)" and "P16 (t1,t2)" using reach assms P16_invariant
+      have "P16 (s1,s2)" and "P16 (t1,t2)" using reach P16_invariant
         trans invariant_def by (metis , metis reachable_n)
-      have "P17 (s1,s2)" and "P17 (t1,t2)" using reach assms P17_invariant
+      have "P17 (s1,s2)" and "P17 (t1,t2)" using reach P17_invariant
         trans invariant_def by (metis , metis reachable_n)
-      have "P19 (s1,s2)" and "P19 (t1,t2)" using reach assms P19_invariant
+      have "P19 (s1,s2)" and "P19 (t1,t2)" using reach P19_invariant
         trans invariant_def by (metis , metis reachable_n)
-      have "P21 (s1,s2)" and "P21 (t1,t2)" using reach assms P21_invariant
+      have "P21 (s1,s2)" and "P21 (t1,t2)" using reach P21_invariant
         trans invariant_def by (metis , metis reachable_n)
-      have "P22 (s1,s2)" and "P22 (t1,t2)" using reach assms P22_invariant
+      have "P22 (s1,s2)" and "P22 (t1,t2)" using reach P22_invariant
         trans invariant_def by (metis , metis reachable_n)
-      have "P25 (s1,s2)" and "P25 (t1,t2)" using reach assms P25_invariant
+      have "P25 (s1,s2)" and "P25 (t1,t2)" using reach P25_invariant
         trans invariant_def by (metis , metis reachable_n)
-      have "P8a (s1,s2)" and "P8a (t1,t2)" using reach assms P8a_invariant
+      have "P8a (s1,s2)" and "P8a (t1,t2)" using reach P8a_invariant
         trans invariant_def by (metis , metis reachable_n)
-      have "P23 (s1,s2)" and "P23 (t1,t2)" using reach assms P23_invariant
+      have "P23 (s1,s2)" and "P23 (t1,t2)" using reach P23_invariant
         trans invariant_def by (metis , metis reachable_n)
 
       show "\<exists> e . refines e (s1,s2) a (t1,t2) (ioa 0 id2) f" 
-        using assms and trans 
+        using trans 
       proof (cases rule:trans_elim)
         case (Invoke1 i p c)
         let ?e = "(u,[(a,u')])"
@@ -1492,7 +1492,7 @@ proof -
         qed
         have 2:"a \<in> ext (ioa 0 id2)" 
         and 3:"trace (ioa.asig (ioa 0 id2)) ?e = [a]"
-          using Invoke2(2,3) assms by (auto simp add:trace_def schedule_def filter_act_def)
+          using Invoke2(2,3) by (auto simp add:trace_def schedule_def filter_act_def)
         show ?thesis using 1 2 3
           by (simp only:refines_def u_def u'_def) 
             (metis fst_conv last_state.simps(2) snd_conv)

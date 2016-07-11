@@ -82,7 +82,7 @@ proof-
       by (induction p xs ls eq gs rule: part_aux_induct) auto
   } note C = this
   note ABC = A B C
-  from ABC[of "f p" xs "[]" "[p]" "[]"] assms show ?thesis unfolding part_def
+  from ABC[of "f p" xs "[]" "[p]" "[]"] show ?thesis unfolding part_def
     by (intro prod_eqI) simp_all
 qed
 
@@ -252,7 +252,7 @@ proof-
       by (induction p xs ls eq gs rule: group_part_aux_induct) auto
   } note C = this
   note ABC = A B C
-  from ABC[of "f p" xs "[]" "p" "[]"] assms show ?thesis unfolding group_part_def
+  from ABC[of "f p" xs "[]" "p" "[]"] show ?thesis unfolding group_part_def
     by (intro prod_eqI) simp_all
 qed
 

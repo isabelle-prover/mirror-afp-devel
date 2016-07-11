@@ -163,7 +163,7 @@ next
       using af\<^sub>G_sat_core_generalized[OF \<G>\<^sub>F\<^sub>G_Only_G _ `(\<G>\<^sub>F\<^sub>G \<phi>\<^sub>2 w) \<Turnstile>\<^sub>P af\<^sub>G \<phi>\<^sub>2 (w [0 \<rightarrow> i\<^sub>2])`]
       by simp+
     thus ?case 
-      unfolding af\<^sub>G_decompose add.commute by auto
+      by (simp only: af\<^sub>G_decompose add.commute) auto
 next
   case (LTLOr \<phi>\<^sub>1 \<phi>\<^sub>2)
     thus ?case 
@@ -338,7 +338,7 @@ proof (induction \<phi>)
           hence "suffix k w \<Turnstile> \<phi>"
             using `\<forall>j\<ge>i. suffix j w \<Turnstile> \<phi>` by blast
           hence "\<PP> \<phi> {G \<psi> |\<psi>. w \<Turnstile> F G \<psi>} (suffix k w) 0"
-            using assms LTL_FG_suffix 
+            using LTL_FG_suffix 
             by (blast dest: ltl_implies_provable[unfolded \<G>\<^sub>F\<^sub>G_alt_def])
           hence "\<PP> \<phi> {G \<psi> |\<psi>. w \<Turnstile> F G \<psi>} w k"
             unfolding subsequence_shift by auto

@@ -84,7 +84,7 @@ definition maxpositions (*:: "'a::linorder list => nat list"*)
            where "maxpositions l = filterpositions2 (%x . x \<ge> Max (set l)) l"
 
 lemma lm03: "maxpositions l = [n. n\<leftarrow>[0..<size l], l!n \<ge> Max(set l)]" 
-      using assms unfolding maxpositions_def filterpositions2_def by fastforce
+      unfolding maxpositions_def filterpositions2_def by fastforce
 
 (* argmaxList takes a function and a list as arguments and looks for the positions of the elements at which the function applied to the list element is maximal, e.g., 
 for the list [9, 3, 5, 9, 13] and the function `modulo 8', the function applied to the list would give the list [1, 3, 5, 1, 5], that is, argmaxList will return [2, 4]. *)
@@ -120,7 +120,7 @@ lemma map_commutes_a: "[f n . n <- [], Q (f n)] = [x <- (map f []). Q x]"
 (* Step case where the element x is added to the list xs *)
 lemma map_commutes_b: "\<forall> x xs. ([f n . n <- xs,     Q (f n)] = [x <- (map f xs).     Q x] \<longrightarrow> 
                                 [f n . n <- (x#xs), Q (f n)] = [x <- (map f (x#xs)). Q x])" 
-      using assms by simp
+      by simp
 
 (* General case comprising the two previous cases. *)
 lemma map_commutes: fixes f::"'a => 'b" fixes Q::"'b => bool" fixes xs::"'a list" 

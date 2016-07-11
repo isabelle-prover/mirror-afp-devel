@@ -78,10 +78,7 @@ To this end, we mechanized several results on resultants, which also required us
         <td class="data"><a href="Abstract-Rewriting.shtml">Abstract-Rewriting</a>, <a href="Containers.shtml">Containers</a>, <a href="Deriving.shtml">Deriving</a>, <a href="Jordan_Normal_Form.shtml">Jordan_Normal_Form</a>, <a href="Polynomial_Factorization.shtml">Polynomial_Factorization</a>, <a href="Polynomial_Interpolation.shtml">Polynomial_Interpolation</a>, <a href="Show.shtml">Show</a>, <a href="Sturm_Sequences.shtml">Sturm_Sequences</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+
 
   </tbody>
 </table>
@@ -103,7 +100,6 @@ To this end, we mechanized several results on resultants, which also required us
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -114,11 +110,14 @@ To this end, we mechanized several results on resultants, which also required us
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-<ul>
+
+
+    <tr><td class="links">Older releases: <ul>
 <li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-12-22.tar.gz">afp-<!--#echo var="name" -->-2015-12-22.tar.gz</a></li>
 
-</ul>    </td></tr>
+</ul>
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

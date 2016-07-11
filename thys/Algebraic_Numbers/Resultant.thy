@@ -1509,7 +1509,7 @@ proof (cases "resultant p q = 0")
       using sylvester_vec_poly[OF v[unfolded m_def n_def], folded m_def n_def S_def]
       by auto
     have split: "vec_first v n @\<^sub>v vec_last v m = v"
-      using vec_first_last_append[unfolded add.commute] v by auto
+      using vec_first_last_append[simplified add.commute] v by auto
     show ?thesis
     proof(intro exI conjI)
       show "[: resultant p q :] = ?p * p + ?q * q" unfolding True using main by auto

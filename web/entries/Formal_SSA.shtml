@@ -88,10 +88,7 @@ project</a> with it.
         <td class="data"><a href="Collections.shtml">Collections</a>, <a href="Dijkstra_Shortest_Path.shtml">Dijkstra_Shortest_Path</a>, <a href="Slicing.shtml">Slicing</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+
 
   </tbody>
 </table>
@@ -113,7 +110,6 @@ project</a> with it.
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -124,11 +120,14 @@ project</a> with it.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-<ul>
+
+
+    <tr><td class="links">Older releases: <ul>
 <li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2016-02-08.tar.gz">afp-<!--#echo var="name" -->-2016-02-08.tar.gz</a></li>
 
-</ul>    </td></tr>
+</ul>
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

@@ -105,7 +105,7 @@ qed (auto simp: comp_def)
 
 lemma density_cong':
   "(\<And>x. x \<in> space M \<Longrightarrow> f x = g x) \<Longrightarrow> density M f = density M g"
-  unfolding density_def using assms
+  unfolding density_def
   by (auto dest: sets.sets_into_space intro!: nn_integral_cong measure_of_eq)
 
 lemma measurable_uniform_real[measurable]:

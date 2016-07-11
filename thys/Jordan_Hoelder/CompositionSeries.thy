@@ -179,8 +179,8 @@ proof -
   have "i + 1 < length \<GG> \<Longrightarrow> subgroup (\<GG> ! i) G"
   proof (induction "length \<GG> - (i + 2)" arbitrary: i)
     case 0
-    hence i:"i + 2 = length \<GG>" using assms by simp
-    hence ii:"i + 1 = length \<GG> - 1" using assms by force
+    hence i:"i + 2 = length \<GG>" by simp
+    hence ii:"i + 1 = length \<GG> - 1" by force
     from i normal have "\<GG> ! i \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>" by auto
     with ii last notempty show "subgroup (\<GG> ! i) G" using last_conv_nth normal_imp_subgroup by fastforce
   next
@@ -404,7 +404,7 @@ next
   have "length \<GG> > 1"
   proof (rule ccontr)
     assume "\<not> 1 < length \<GG>"
-    hence "length \<GG> = 1" by (metis add.commute nat_less_cases not_add_less1 quotients_length) 
+    hence "length \<GG> = 1" by (simp add: Suc_leI antisym notempty)
     hence "carrier G = {\<one>}" using hd last by (metis composition_series_length_one composition_series_triv_group)
     hence "order G = 1" unfolding order_def by auto
     with simple show "False" unfolding simple_group_def simple_group_axioms_def by auto

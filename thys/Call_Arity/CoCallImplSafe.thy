@@ -6,32 +6,6 @@ locale CoCallImplSafe
 begin
 sublocale CoCallAnalysisImpl.
 
-lemma ccField_CCfix: "ccField (CCfix \<Gamma>\<cdot>(ae, CCexp  e\<cdot>a)) \<subseteq> fv \<Gamma> \<union> fv e"
-  unfolding CCfix_def
-  apply simp
-  apply (rule fix_ind)
-  apply simp_all
-  apply (auto simp add: ccBindsExtra_simp ccBinds_eq ccBind_eq ccField_ccProd
-             dest: set_mp[OF ccField_CCexp]
-             dest!: set_mp[OF ccField_fup_CCexp]
-             dest: set_mp[OF map_of_Some_fv_subset]
-             dest!: elem_to_ccField
-             split: if_splits)
-  done
-
-lemma CCexp_Let_simp1[simp]:
-  "\<not> nonrec \<Gamma> \<Longrightarrow> CCexp (Let \<Gamma> e)\<cdot>n = cc_restr (- domA \<Gamma>) (CCfix \<Gamma>\<cdot>(Afix \<Gamma>\<cdot>(Aexp e\<cdot>n \<squnion> (\<lambda>_.up\<cdot>0) f|` (thunks \<Gamma>)), CCexp e\<cdot>n))"
-  unfolding CCexp_simps
-  by (rule cc_restr_intersect)  (auto dest!: set_mp[OF ccField_CCfix])
-
-lemma CCexp_Let_simp2[simp]:
-  "x \<notin> fv e \<Longrightarrow> CCexp (let x be e in exp)\<cdot>n = cc_restr (- {x}) (ccBind x e \<cdot>(Aheap_nonrec x e\<cdot>(Aexp exp\<cdot>n, CCexp exp\<cdot>n), CCexp exp\<cdot>n) \<squnion> ccProd (fv e) (ccNeighbors x (CCexp exp\<cdot>n) - (if isVal e then {} else {x})) \<squnion> CCexp exp\<cdot>n)"
-  unfolding CCexp_simps
-  by (rule cc_restr_intersect)
-     (auto simp add: ccField_ccProd ccBind_eq dest!: set_mp[OF ccField_CCexp]  set_mp[OF ccField_fup_CCexp] set_mp[OF ccField_cc_restr] set_mp[OF ccNeighbors_ccField])
-declare CCexp_simps(4)[simp del]
-declare CCexp_simps(5)[simp del]
-
 lemma ccNeighbors_Int_ccrestr: "(ccNeighbors x G \<inter> S) = ccNeighbors x (cc_restr (insert x S) G) \<inter> S"
   by transfer auto
   
@@ -57,7 +31,7 @@ next
   case 1
     with Lam
     show ?case
-      by (auto simp add: cc_restr_predCC  Diff_Int_distrib2 fv_subst_int env_restr_join env_delete_env_restr_swap[symmetric])
+      by (auto simp add: CCexp_pre_simps cc_restr_predCC  Diff_Int_distrib2 fv_subst_int env_restr_join env_delete_env_restr_swap[symmetric] simp del: CCexp_simps)
   case 2
     with Lam
     show ?case
@@ -177,9 +151,9 @@ next
   show "cc_restr S (CCexp (let x' be e in exp )[y::=x]\<cdot>a) = cc_restr S (CCexp (let x' be e in exp )\<cdot>a)"
     apply (subst subst_let_be)
       apply auto[2]
-    apply (subst (1 2) CCexp_Let_simp2)
+    apply (subst (1 2) CCexp_simps(6))
       apply fact+
-    apply (simp only:  cc_restr_twist[where S = S] )
+    apply (simp only: cc_restr_cc_delete_twist)
     apply (rule arg_cong) back
     apply (simp add:  Diff_eq ccBind_eq ABind_nonrec_eq)
     done
@@ -324,7 +298,7 @@ proof
 next
   fix y e n
   show "cc_restr (fv (Lam [y]. e)) (CCexp e\<cdot>(pred\<cdot>n)) \<sqsubseteq> CCexp (Lam [y]. e)\<cdot>n"
-    by (auto simp add: predCC_eq dest!: set_mp[OF ccField_cc_restr])
+    by (auto simp add: CCexp_pre_simps predCC_eq dest!: set_mp[OF ccField_cc_restr] simp del: CCexp_simps)
 next
   fix x y :: var and S e a
   assume "x \<notin> S"  and "y \<notin> S"
@@ -339,16 +313,13 @@ next
   fix \<Gamma> e a
   show "cc_restr (- domA \<Gamma>) (ccHeap \<Gamma> e\<cdot>a) \<sqsubseteq> CCexp (Let \<Gamma> e)\<cdot>a"
   proof(cases "nonrec \<Gamma>")
-    case [simp]: False
-    have "ccField  (ccHeap \<Gamma> e\<cdot>a) \<subseteq> fv \<Gamma> \<union> fv e"
-      unfolding ccHeap_simp1[OF False]
-      by (rule ccField_CCfix)
+    case False
     thus "cc_restr (- domA \<Gamma>) (ccHeap \<Gamma> e\<cdot>a) \<sqsubseteq> CCexp (Let \<Gamma> e)\<cdot>a"
-      by (simp add: ccHeap_simp1[OF False, symmetric])
+      by (simp add: ccHeap_simp1[OF False, symmetric] del: cc_restr_join)
   next
     case True
     thus ?thesis
-      by (auto simp add: ccHeap_simp2 Diff_eq elim!: nonrecE)
+      by (auto simp add: ccHeap_simp2 Diff_eq elim!: nonrecE simp del: cc_restr_join)
   qed
 next
   fix \<Delta> :: heap and e a

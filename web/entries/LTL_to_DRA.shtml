@@ -55,7 +55,7 @@ Recently, Javier Esparza and Jan Kretinsky proposed a new method directly transl
     <tr><td class="datahead" valign="top">Change history:</td>
         <td class="abstract">
 
-[2015-09-23]: Enable code export for the eager unfolding optimisation and reduce running time of the generated tool. Moreover, add support for the mlton SML compiler.
+[2015-09-23]: Enable code export for the eager unfolding optimisation and reduce running time of the generated tool. Moreover, add support for the mlton SML compiler.<br>
 [2016-03-24]: Make use of the LTL entry and include the simplifier.
         </td></tr>
 
@@ -81,10 +81,7 @@ Recently, Javier Esparza and Jan Kretinsky proposed a new method directly transl
         <td class="data"><a href="Boolean_Expression_Checkers.shtml">Boolean_Expression_Checkers</a>, <a href="KBPs.shtml">KBPs</a>, <a href="LTL.shtml">LTL</a>, <a href="List-Index.shtml">List-Index</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+
 
   </tbody>
 </table>
@@ -106,7 +103,6 @@ Recently, Javier Esparza and Jan Kretinsky proposed a new method directly transl
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -117,11 +113,14 @@ Recently, Javier Esparza and Jan Kretinsky proposed a new method directly transl
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-<ul>
+
+
+    <tr><td class="links">Older releases: <ul>
 <li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-09-04.tar.gz">afp-<!--#echo var="name" -->-2015-09-04.tar.gz</a></li>
 
-</ul>    </td></tr>
+</ul>
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

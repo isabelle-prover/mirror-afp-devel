@@ -122,8 +122,9 @@ next
   case (Suc k)
   show ?case 
     apply auto 
-    unfolding echelon_form_of_column_k_det_iarrays_def Let_def
-    by (auto simp add: split_beta echelon_form_of_column_k_iarrays_def Let_def Suc.hyps)
+    apply (simp only: echelon_form_of_column_k_det_iarrays_def Let_def)
+    apply (auto simp add: split_beta echelon_form_of_column_k_iarrays_def Let_def Suc.hyps)
+    done
 qed
 
 (*lemma snd_snd_snd_echelon_form_of_column_k_det:
@@ -173,11 +174,9 @@ proof (induct k)
     by (auto, metis le0 matrix_to_iarray_echelon_form_of_column_k ncols_not_0 neq0_conv 
       snd_echelon_form_of_column_k_det snd_echelon_form_of_column_k_det_eq)
   show "snd (snd (foldl (echelon_form_of_column_k_det bezout)(1, A, 0) [0..<Suc 0])) \<le> nrows A"
-    unfolding echelon_form_of_column_k_det_def
     by (simp add: fst_snd_snd_echelon_form_of_column_k_det_le_nrows)
   show "fst (snd (snd (foldl echelon_form_of_column_k_det_iarrays (1, matrix_to_iarray A, 0, bezout) [0..<Suc 0]))) =
     snd (snd (foldl (echelon_form_of_column_k_det bezout) (1, A, 0) [0..<Suc 0]))"
-    unfolding echelon_form_of_column_k_det_iarrays_def echelon_form_of_column_k_det_def
     by (auto, metis fst_snd_matrix_to_iarray_echelon_form_of_column_k le0 ncols_not_0 neq0_conv 
       snd_echelon_form_of_column_k_det snd_echelon_form_of_column_k_det_eq)
 next

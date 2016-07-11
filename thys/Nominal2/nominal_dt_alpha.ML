@@ -246,7 +246,7 @@ fun define_raw_alpha raw_dt_info bn_info bclausesss fvs lthy =
 
     val all_alpha_names = map (fn (a, ty) => ((Binding.name a, ty), NoSyn))
       (alpha_names @ alpha_bn_names ~~ alpha_tys @ alpha_bn_tys)
-    val all_alpha_intros = map (pair Attrib.empty_binding) (flat alpha_intros @ flat alpha_bn_intros)
+    val all_alpha_intros = map (pair Binding.empty_atts) (flat alpha_intros @ flat alpha_bn_intros)
 
     val (alpha_info, lthy') = lthy
       |> Inductive.add_inductive_i

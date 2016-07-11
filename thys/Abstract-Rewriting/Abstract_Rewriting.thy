@@ -1260,7 +1260,7 @@ proof (rule ccontr)
   have "chain (A^^Suc n) ?T"
   proof
     fix i show "(?T i, ?T (Suc i)) \<in> A^^Suc n" unfolding mult_Suc
-      using step [of "i * Suc n"] unfolding add.commute .
+      using step [of "i * Suc n"] by (simp only: add.commute)
   qed
   then have "\<not> SN (A^^Suc n)" unfolding SN_defs by fast
   with assms show False by simp

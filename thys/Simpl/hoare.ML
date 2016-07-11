@@ -539,7 +539,7 @@ fun dest_Guard (Const (@{const_name Language.com.Guard},_)$f$g$c) = (f,g,c,false
 
 fun add_declaration name decl thy =
   thy
-  |> Named_Target.init name
+  |> Named_Target.init NONE name
   |> Local_Theory.declaration {syntax = false, pervasive = false} decl
   |> Local_Theory.exit
   |> Proof_Context.theory_of;
@@ -888,7 +888,7 @@ fun apply_in_context thy lexp f t =
 
 fun add_abbrev loc mode name spec thy =
   thy
-  |> Named_Target.init loc
+  |> Named_Target.init NONE loc
   |> (fn lthy => let val t = Syntax.read_term (Local_Theory.target_of lthy) spec;
       in Local_Theory.abbrev mode ((Binding.name name, NoSyn), t) lthy end)
   |> #2
@@ -1060,7 +1060,7 @@ fun procedures_definition locname procs thy =
         fun add_decl_and_def lname ctxt =
             ctxt
             |> Proof_Context.theory_of
-            |> Named_Target.init lname
+            |> Named_Target.init NONE lname
             |> Local_Theory.declaration {syntax = false, pervasive = false} parameter_info_decl
             |> (fn lthy => if has_body name
                            then snd (Local_Theory.define (def lthy) lthy)
@@ -1192,7 +1192,7 @@ fun procedures_definition locname procs thy =
 
 (* outer syntax *)
 
-val var_declP  = Parse.name -- (@{keyword "::"} |-- Parse.!!! Parse.typ_group);
+val var_declP  = Parse.name -- (@{keyword "::"} |-- Parse.!!! Parse.embedded);
 val var_declP' = Parse.name >> (fn n => (n,""));
 
 val localsP = Scan.repeat var_declP;
@@ -1216,10 +1216,10 @@ val proc_decl = proc_decl_statespace >> pair Function || proc_decl_record >> pai
 
 val loc_decl = Scan.optional (@{keyword "where"} |-- localsP --| @{keyword "in"}) []
 
-val proc_body = Parse.term_group (*>> BodyTerm*)
+val proc_body = Parse.embedded (*>> BodyTerm*)
 
 
-fun proc_specs x = (Parse.!!! (Scan.repeat (Parse_Spec.thm_name ":" -- Parse.prop_group))
+fun proc_specs x = (Parse.!!! (Scan.repeat (Parse_Spec.thm_name ":" -- Parse.embedded))
     >> map (fn ((thm_name, _), prop) => (Binding.name_of thm_name, prop))) x
 
 val par_loc =

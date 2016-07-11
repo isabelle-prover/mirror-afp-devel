@@ -4,23 +4,25 @@ begin
 
 text {* Defining a substitution function on terms turned out to be slightly tricky. *}
 
-fun subst_var :: "var \<Rightarrow> var \<Rightarrow> var \<Rightarrow> var" ("_[_::v=_]" [1000,100,100] 1000)
-  where "x[y ::v= z] = (if x = y then z else x)"
+fun
+  subst_var :: "var \<Rightarrow> var \<Rightarrow> var \<Rightarrow> var" ("_[_::v=_]" [1000,100,100] 1000)
+where "x[y ::v= z] = (if x = y then z else x)"
 
 nominal_function  (default "case_sum (\<lambda>x. Inl undefined) (\<lambda>x. Inr undefined)",
-                  invariant "\<lambda> a r . (\<forall> as y z . ((a = Inr (as, y, z) \<and> atom ` domA as \<sharp>* (y, z)) \<longrightarrow> map (\<lambda>x . atom (fst x))  (Sum_Type.projr r) = map (\<lambda>x . atom (fst x)) as))")
+                  invariant "\<lambda> a r . (\<forall> \<Gamma> y z . ((a = Inr (\<Gamma>, y, z) \<and> atom ` domA \<Gamma> \<sharp>* (y, z)) \<longrightarrow> map (\<lambda>x . atom (fst x))  (Sum_Type.projr r) = map (\<lambda>x . atom (fst x)) \<Gamma>))")
   subst :: "exp \<Rightarrow> var \<Rightarrow> var \<Rightarrow> exp" ("_[_::=_]" [1000,100,100] 1000)
 and
   subst_heap :: "heap \<Rightarrow> var \<Rightarrow> var \<Rightarrow> heap" ("_[_::h=_]" [1000,100,100] 1000)
 where
-  "(Var x)[y ::= z] = Var (x[y ::v= z])"
- |"(App e v)[y ::= z] = App (e[y ::= z]) (v[y ::v= z])"
- |"atom ` domA as \<sharp>* (y,z) \<Longrightarrow> (Let as body)[y ::= z] = Let (as[y ::h= z]) (body[y ::= z])" 
- |"atom x \<sharp> (y,z) \<Longrightarrow> (Lam [x].e)[y ::= z] = Lam [x].(e[y::=z])"
- |"(Bool b)[y ::= z] = Bool b"
- |"(scrut ? e1 : e2)[y ::= z] = (scrut[y ::= z] ? e1[y ::= z] : e2[y ::= z])"
- |"[][y ::h= z] = []"
- |"((v,e)# as)[y ::h= z] = (v, e[y ::= z])# (as[y ::h= z])"
+   "(Var x)[y ::= z] = Var (x[y ::v= z])"
+ | "(App e v)[y ::= z] = App (e[y ::= z]) (v[y ::v= z])"
+ | "atom ` domA \<Gamma> \<sharp>* (y,z) \<Longrightarrow>
+     (Let \<Gamma> body)[y ::= z] = Let (\<Gamma>[y ::h= z]) (body[y ::= z])" 
+ | "atom x \<sharp> (y,z) \<Longrightarrow> (Lam [x].e)[y ::= z] = Lam [x].(e[y::=z])"
+ | "(Bool b)[y ::= z] = Bool b"
+ | "(scrut ? e1 : e2)[y ::= z] = (scrut[y ::= z] ? e1[y ::= z] : e2[y ::= z])"
+ | "[][y ::h= z] = []"
+ | "((v,e)# \<Gamma>)[y ::h= z] = (v, e[y ::= z])# (\<Gamma>[y ::h= z])"
 proof goal_cases
 
 have eqvt_at_subst: "\<And> e y z . eqvt_at subst_subst_heap_sumC (Inl (e, y, z)) \<Longrightarrow> eqvt_at (\<lambda>(a, b, c). subst a b c) (e, y, z)"
@@ -74,14 +76,14 @@ have eqvt_at_subst: "\<And> e y z . eqvt_at subst_subst_heap_sumC (Inl (e, y, z)
   apply(simp)
 done
 
-have eqvt_at_subst_heap: "\<And> as y z . eqvt_at subst_subst_heap_sumC (Inr (as, y, z)) \<Longrightarrow> eqvt_at (\<lambda>(a, b, c). subst_heap a b c) (as, y, z)"
+have eqvt_at_subst_heap: "\<And> \<Gamma> y z . eqvt_at subst_subst_heap_sumC (Inr (\<Gamma>, y, z)) \<Longrightarrow> eqvt_at (\<lambda>(a, b, c). subst_heap a b c) (\<Gamma>, y, z)"
   apply(simp add: eqvt_at_def subst_heap_def)
   apply(rule)
   apply(subst Projr_permute)
   apply(thin_tac _)+
   apply (simp add: subst_subst_heap_sumC_def)
   apply (simp add: THE_default_def)
-  apply (case_tac "Ex1 (subst_subst_heap_graph (Inr (as, y, z)))")
+  apply (case_tac "Ex1 (subst_subst_heap_graph (Inr (\<Gamma>, y, z)))")
   apply(simp)
   apply(auto)[1]
   apply (erule_tac x="x" in allE)
@@ -136,7 +138,7 @@ next case prems: (3 P x) show ?case
   qed
 qed
 
-next case (19 e y2 z2 as e2 y z as2) thus ?case
+next case (19 e y2 z2 \<Gamma> e2 y z as2) thus ?case
   apply -
   apply (drule eqvt_at_subst)+
   apply (drule eqvt_at_subst_heap)+
@@ -174,14 +176,14 @@ qed(auto)
 nominal_termination (eqvt) by lexicographic_order
 
 lemma shows
-  True and bn_subst[simp]: "domA (subst_heap as y z) = domA as"
+  True and bn_subst[simp]: "domA (subst_heap \<Gamma> y z) = domA \<Gamma>"
 by(induct rule:subst_subst_heap.induct)
   (auto simp add: exp_assn.bn_defs fresh_star_insert)
 
 
 lemma subst_noop[simp]:
-shows "e[y ::= y] = e" and "as[y::h=y]= as"
-by(induct e y y and as y y rule:subst_subst_heap.induct)
+shows "e[y ::= y] = e" and "\<Gamma>[y::h=y]= \<Gamma>"
+by(induct e y y and \<Gamma> y y rule:subst_subst_heap.induct)
   (auto simp add:fresh_star_Pair exp_assn.bn_defs)
 
 lemma subst_is_fresh[simp]:
@@ -189,24 +191,17 @@ assumes "atom y \<sharp> z"
 shows
   "atom y \<sharp> e[y ::= z]"
 and
- "atom ` domA as \<sharp>* y \<Longrightarrow> atom y \<sharp> as[y::h=z]"
+ "atom ` domA \<Gamma> \<sharp>* y \<Longrightarrow> atom y \<sharp> \<Gamma>[y::h=z]"
 using assms
-by(induct e y z and as y z rule:subst_subst_heap.induct)
+by(induct e y z and \<Gamma> y z rule:subst_subst_heap.induct)
   (auto simp add:fresh_at_base fresh_star_Pair fresh_star_insert fresh_Nil fresh_Cons pure_fresh)
 
 lemma
- subst_pres_fresh: "x \<sharp> e \<Longrightarrow> x \<sharp> z \<Longrightarrow> x \<sharp> e[y ::= z]"
+ subst_pres_fresh: "atom x \<sharp> e \<or> x = y \<Longrightarrow> atom x \<sharp> z \<Longrightarrow> atom x \<sharp> e[y ::= z]"
 and
- "x \<sharp> \<Gamma> \<Longrightarrow> x \<sharp> z \<Longrightarrow> x \<notin> atom ` domA \<Gamma> \<Longrightarrow> x \<sharp> (\<Gamma>[y ::h= z])"
+ "atom x \<sharp> \<Gamma> \<or> x = y \<Longrightarrow> atom x \<sharp> z \<Longrightarrow> x \<notin> domA \<Gamma> \<Longrightarrow> atom x \<sharp> (\<Gamma>[y ::h= z])"
 by(induct e y z and \<Gamma> y z rule:subst_subst_heap.induct)
-  (auto simp add:fresh_star_Pair exp_assn.bn_defs fresh_Cons)
-
-lemma subst_pres_fresh2:
-  "x \<sharp> y \<Longrightarrow> x \<sharp> z \<Longrightarrow> x \<sharp> e[y ::= z] \<longleftrightarrow> x \<sharp> e"
-and
- "x \<sharp> y \<Longrightarrow> x \<sharp> z \<Longrightarrow> x \<notin> atom ` domA \<Gamma> \<Longrightarrow> x \<sharp> (\<Gamma>[y ::h= z]) \<longleftrightarrow> x \<sharp> \<Gamma>"
-by (induct e y z and \<Gamma> y z rule:subst_subst_heap.induct)
-   (auto simp add:fresh_star_Pair exp_assn.bn_defs fresh_Cons fresh_Pair)
+  (auto simp add:fresh_star_Pair exp_assn.bn_defs fresh_Cons fresh_Nil pure_fresh)
 
 lemma subst_fresh_noop: "atom x \<sharp> e \<Longrightarrow> e[x ::= y] = e"
   and subst_heap_fresh_noop: "atom x \<sharp> \<Gamma> \<Longrightarrow>  \<Gamma>[x ::h= y] = \<Gamma>"
@@ -252,7 +247,7 @@ lemma subst_nil_iff[simp]: "\<Gamma>[x ::h= z] = [] \<longleftrightarrow> \<Gamm
   by (cases \<Gamma>) auto
 
 lemma subst_SmartLet[simp]:
-  "atom ` domA as \<sharp>* (y,z) \<Longrightarrow> (SmartLet as body)[y ::= z] = SmartLet (as[y ::h= z]) (body[y ::= z])"
+  "atom ` domA \<Gamma> \<sharp>* (y,z) \<Longrightarrow> (SmartLet \<Gamma> body)[y ::= z] = SmartLet (\<Gamma>[y ::h= z]) (body[y ::= z])"
   unfolding SmartLet_def by auto
 
 lemma subst_let_be[simp]:

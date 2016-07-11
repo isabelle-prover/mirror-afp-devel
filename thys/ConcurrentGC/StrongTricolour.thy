@@ -1780,7 +1780,7 @@ done
 lemma no_grey_refs_locs_subseteq_hs_in_sync_locs:
   "no_grey_refs_locs \<subseteq> hs_in_sync_locs"
 by (auto simp: no_grey_refs_locs_def black_heap_locs_def hs_in_sync_locs_def hs_done_locs_def sweep_locs_def
-         dest: prefixeq_same_cases)
+         dest: prefix_same_cases)
 
 lemma (in mut_m) handshake_sweep_mark_endD:
   "\<lbrakk> atS gc no_grey_refs_locs s; gc.handshake_invL s; handshake_phase_inv s\<down> \<rbrakk>
@@ -2053,7 +2053,7 @@ done
 
 lemma sweep_loop_sweep_locs[iff]:
   "sweep_loop_locs \<subseteq> sweep_locs"
-by (auto simp: sweep_loop_locs_def sweep_locs_def intro: append_prefixeqD)
+by (auto simp: sweep_loop_locs_def sweep_locs_def intro: append_prefixD)
 
 lemma sweep_locs_subseteq_fM_tso_empty_locs[iff]:
   "sweep_locs \<subseteq> fM_tso_empty_locs"
@@ -2067,7 +2067,7 @@ lemma sweep_loop_locs_fA_eq_locs:
   "sweep_loop_locs \<subseteq> fA_eq_locs"
 apply (simp add: sweep_loop_locs_def fA_eq_locs_def sweep_locs_def)
 apply (intro subset_insertI2)
-apply (auto intro: append_prefixeqD)
+apply (auto intro: append_prefixD)
 done
 
 lemma black_heap_locs_subseteq_fM_tso_empty_locs[iff]:
@@ -2093,7 +2093,7 @@ apply (auto simp: loc atS_simps dest: atS_mono)
 apply (clarsimp simp: atS_def)
 apply (rename_tac x)
 apply (drule_tac x=x in bspec)
-apply (auto simp: sweep_locs_def intro: append_prefixeqD)
+apply (auto simp: sweep_locs_def intro: append_prefixD)
 done
 
 lemma (in sys) gc_sweep_loop_invL[intro]:
@@ -3027,7 +3027,7 @@ by (clarsimp simp: mut_m.marked_insertions_def)
 
 lemma mut_hs_get_roots_loop_locs_subseteq_hs_get_roots:
   "mut_hs_get_roots_loop_locs \<subseteq> prefixed ''hs_get_roots_''"
-by (auto simp: mut_hs_get_roots_loop_locs_def intro: append_prefixeqD)
+by (auto simp: mut_hs_get_roots_loop_locs_def intro: append_prefixD)
 
 lemma mut_m_handshake_invL_get_roots:
   "\<lbrakk> mut_m.handshake_invL m s; atS (mutator m) mut_hs_get_roots_loop_locs s \<rbrakk>
@@ -3039,7 +3039,7 @@ done
 
 lemma subseteq_mut_mo_valid_ref_locs:
   "prefixed ''store_del_mo'' \<union> {''lop_store_ins''} \<subseteq> mut_mo_valid_ref_locs"
-by (auto simp: mut_mo_valid_ref_locs_def intro: append_prefixeqD)
+by (auto simp: mut_mo_valid_ref_locs_def intro: append_prefixD)
 
 lemma subseteq_mut_mo_valid_ref_locs2:
   "prefixed ''store_ins'' \<subseteq> mut_mo_valid_ref_locs"
@@ -3305,13 +3305,13 @@ lemma obj_fields_marked_locs_subseteq_hp_IdleMarkSweep_locs:
   "obj_fields_marked_locs \<subseteq> hp_IdleMarkSweep_locs"
 apply (clarsimp simp: obj_fields_marked_locs_def hp_IdleMarkSweep_locs_def mark_loop_locs_def)
 apply (drule mp)
-apply (auto intro: append_prefixeqD)
+apply (auto intro: append_prefixD)
 done
 
 lemma obj_fields_marked_locs_subseteq_hs_in_sync_locs:
   "obj_fields_marked_locs \<subseteq> hs_in_sync_locs"
 by (auto simp: obj_fields_marked_locs_def hs_in_sync_locs_def hs_done_locs_def
-         dest: prefixeq_same_cases)
+         dest: prefix_same_cases)
 
 lemma handshake_obj_fields_markedD:
   "\<lbrakk> atS gc obj_fields_marked_locs s; gc.handshake_invL s \<rbrakk> \<Longrightarrow> sys_ghost_handshake_phase s\<down> = hp_IdleMarkSweep \<and> All (ghost_handshake_in_sync (s\<down> sys))"
@@ -3326,13 +3326,13 @@ lemma mark_loop_mo_mark_loop_field_done_subseteq_hp_IdleMarkSweep_locs:
   "prefixed ''mark_loop_mo'' \<union> {''mark_loop_mark_field_done''} \<subseteq> hp_IdleMarkSweep_locs"
 apply (clarsimp simp: hp_IdleMarkSweep_locs_def mark_loop_locs_def)
 apply (drule mp)
-apply (auto intro: append_prefixeqD)
+apply (auto intro: append_prefixD)
 done
 
 lemma mark_loop_mo_mark_loop_field_done_subseteq_hs_in_sync_locs:
   "prefixed ''mark_loop_mo'' \<union> {''mark_loop_mark_field_done''} \<subseteq> hs_in_sync_locs"
 by (auto simp: hs_in_sync_locs_def hs_done_locs_def
-         dest: prefixeq_same_cases)
+         dest: prefix_same_cases)
 
 lemma mark_loop_mo_mark_loop_field_done_hp_phaseD:
   "\<lbrakk> atS gc (prefixed ''mark_loop_mo'' \<union> {''mark_loop_mark_field_done''}) s; gc.handshake_invL s \<rbrakk> \<Longrightarrow> sys_ghost_handshake_phase s\<down> = hp_IdleMarkSweep \<and> All (ghost_handshake_in_sync (s\<down> sys))"

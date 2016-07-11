@@ -1552,8 +1552,14 @@ next
       fst (if \<forall>m. is_zero_row_upt_k m (Suc (Suc k)) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)])) then 0
       else to_nat (GREATEST' n. \<not> is_zero_row_upt_k n (Suc (Suc k)) (snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]))) + 1,
       snd (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]))"
-      unfolding rw unfolding foldl_append unfolding foldl.simps unfolding Gauss_Jordan_column_k_def Let_def fst_foldl unfolding A'_def[symmetric]
-    proof (auto, unfold from_nat_0 from_nat_to_nat_greatest)
+      apply (simp only: rw)
+      apply (simp only: foldl_append)
+      apply (simp only: foldl.simps)
+      apply (simp only: Gauss_Jordan_column_k_def Let_def fst_foldl)
+      apply (simp only: A'_def[symmetric])
+      apply auto
+      apply (simp_all only: from_nat_0 from_nat_to_nat_greatest)
+    proof -
       fix m assume "\<forall>m. is_zero_row_upt_k m (Suc k) A'" and "\<forall>m\<ge>0. A' $ m $ from_nat (Suc k) = 0"
       thus "is_zero_row_upt_k m (Suc (Suc k)) A'" using foldl_Gauss_condition_1 by blast
     next
@@ -2273,7 +2279,7 @@ proof (rule ccontr, simp)
 assume "rank A = 0"
 hence "row_space A = {} \<or> row_space A = {0}" unfolding rank_def row_rank_def using vec.dim_zero_eq by blast
 hence "row_space A = {0}" unfolding row_space_def using vec.span_0 by blast
-hence "rows A = {} \<or> rows A = {0}" unfolding row_space_def using vec.span_0_imp_set_empty_or_0 by blast
+hence "rows A = {} \<or> rows A = {0}" unfolding row_space_def using vec.span_0_imp_set_empty_or_0 by auto
 hence "rows A = {0}" unfolding rows_def row_def by force
 hence "A = 0" unfolding rows_def row_def vec_nth_inverse
    by (auto, metis (mono_tags) mem_Collect_eq singleton_iff vec_lambda_unique zero_index)

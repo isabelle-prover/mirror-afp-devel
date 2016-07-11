@@ -12,7 +12,7 @@ text \<open>We define elementary column operations and also combine them with el
 
 theory Column_Operations
 imports
-  Gauss_Jordan
+  Gauss_Jordan_Elimination
 begin
 
 definition mat_multcol :: "nat \<Rightarrow> 'a :: semiring_1 \<Rightarrow> 'a mat \<Rightarrow> 'a mat" ("multcol") where

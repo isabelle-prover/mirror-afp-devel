@@ -188,14 +188,14 @@ definition (in gc) handshake_invL :: "('field, 'mut, 'ref) gc_pred" where
 lemma hs_get_roots_locs_subseteq_hp_IdleMarkSweep_locs:
   "hs_get_roots_locs \<subseteq> hp_IdleMarkSweep_locs"
 by (auto simp: hs_get_roots_locs_def hp_IdleMarkSweep_locs_def mark_loop_locs_def
-        intro: append_prefixeqD)
+        intro: append_prefixD)
 
 lemma hs_get_work_locs_subseteq_hp_IdleMarkSweep_locs:
   "hs_get_work_locs \<subseteq> hp_IdleMarkSweep_locs"
 apply (simp add: hs_get_work_locs_def hp_IdleMarkSweep_locs_def mark_loop_locs_def)
 apply clarsimp
 apply (drule mp)
- apply (auto intro: append_prefixeqD)[1]
+ apply (auto intro: append_prefixD)[1]
 apply auto
 done
 
@@ -324,7 +324,7 @@ simps_of_case handshake_phase_rel_simps[simp]: handshake_phase_rel_def (splits: 
 
 lemma phase_rel_invD:
   "phase_rel_inv s \<Longrightarrow> (\<forall>m. sys_ghost_handshake_in_sync m s, sys_ghost_handshake_phase s, gc_phase s, sys_phase s, tso_pending_phase gc s) \<in> phase_rel"
-using assms by (simp add: phase_rel_inv_def)
+by (simp add: phase_rel_inv_def)
 
 lemma phases_rel_Id[iff]:
   "(\<forall>m. sys_ghost_handshake_in_sync m s, sys_ghost_handshake_phase s, gc_phase s, sys_phase s, tso_pending_phase gc s) \<in> phase_rel

@@ -1715,23 +1715,24 @@ lemma pow_chain: "p_power (1\<^sub>\<sigma> + x) n \<le> p_power (1\<^sub>\<sigm
 
 lemma pow_prop: "p_power (1\<^sub>\<sigma> + x) (n + 1) = 1\<^sub>\<sigma> + x \<cdot> p_power (1\<^sub>\<sigma> + x) n" 
 proof (induct n)
-  case 0 show ?case by simp
+  case 0
+  show ?case by simp
+next
   case (Suc n)
-  have "p_power (1\<^sub>\<sigma> + x) (Suc (n + 1)) = (1\<^sub>\<sigma> + x) \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)"
-    using local.p_power.simps(2) by blast
-  also have "... = p_power (1\<^sub>\<sigma> + x) (n + 1) + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)"
-    by (metis local.s_prod_distr local.s_prod_idl)
-  also have "... = 1\<^sub>\<sigma> + x \<cdot> p_power (1\<^sub>\<sigma> + x) n + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)"
-    using Suc.hyps by auto
-  finally show ?case
+  have f1: "p_power (1\<^sub>\<sigma> + x) (Suc n + 1) = 1\<^sub>\<sigma> + x \<cdot> p_power (1\<^sub>\<sigma> + x) n + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)"
   proof -
-    have f1: "p_power (1\<^sub>\<sigma> + x) (Suc n + 1) = 1\<^sub>\<sigma> + x \<cdot> p_power (1\<^sub>\<sigma> + x) n + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)"
-      using Suc_eq_plus1 `p_power (1\<^sub>\<sigma> + x) (Suc (n + 1)) = 1\<^sub>\<sigma> + x \<cdot> p_power (1\<^sub>\<sigma> + x) n + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)` by simp
-    have "x \<cdot> p_power (1\<^sub>\<sigma> + x) (Suc n) = x \<cdot> p_power (1\<^sub>\<sigma> + x) n + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)"
-      using Suc_eq_plus1 local.less_eq_def local.s_prod_isol pow_chain by simp
-    thus ?thesis
-      using f1 by (simp add: add_ac)
+    have "p_power (1\<^sub>\<sigma> + x) (Suc (n + 1)) = (1\<^sub>\<sigma> + x) \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)"
+      using local.p_power.simps(2) by blast
+    also have "... = p_power (1\<^sub>\<sigma> + x) (n + 1) + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)"
+      by (metis local.s_prod_distr local.s_prod_idl)
+    also have "... = 1\<^sub>\<sigma> + x \<cdot> p_power (1\<^sub>\<sigma> + x) n + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)"
+      using Suc.hyps by auto
+    finally  show ?thesis
+      by simp
   qed
+  have "x \<cdot> p_power (1\<^sub>\<sigma> + x) (Suc n) = x \<cdot> p_power (1\<^sub>\<sigma> + x) n + x \<cdot> p_power (1\<^sub>\<sigma> + x) (n + 1)"
+    using Suc_eq_plus1 local.less_eq_def local.s_prod_isol pow_chain by simp
+  with f1 show ?case by (simp add: add_ac)
 qed
 
 text {* Next we verify facts from the proofs of Lemma~12.6. *}

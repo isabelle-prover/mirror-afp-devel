@@ -9,13 +9,15 @@ section {* Auxiliary Definitions and Lemmata *}
 theory Auxiliary
 imports
   Complex_Main
-  "~~/src/HOL/Library/FinFun_Syntax"
+  "~~/src/HOL/Library/FinFun"
   "~~/src/HOL/Library/Transitive_Closure_Table"
   "~~/src/HOL/Library/Predicate_Compile_Alternative_Defs"
   "~~/src/HOL/Library/Code_Char"
   "~~/src/HOL/Library/Monad_Syntax"
   "~~/src/HOL/Library/Infinite_Set"
 begin
+
+unbundle finfun_syntax
 
 (* FIXME move and possibly turn into a general simproc *)
 lemma nat_add_max_le[simp]:
@@ -257,7 +259,7 @@ by (metis replicate_Suc replicate_append_same)
 lemma map_eq_append_conv:
   "map f xs = ys @ zs \<longleftrightarrow> (\<exists>ys' zs'. map f ys' = ys \<and> map f zs' = zs \<and> xs = ys' @ zs')"
 apply(rule iffI)
- apply(metis append_eq_conv_conj append_take_drop_id assms drop_map take_map)
+ apply(metis append_eq_conv_conj append_take_drop_id drop_map take_map)
 by(clarsimp)
 
 lemma append_eq_map_conv:

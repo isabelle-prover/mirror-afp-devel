@@ -449,7 +449,6 @@ lemma aodv_proc_cases [dest]:
                                  p \<in> ctermsl (\<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V PRreq) \<or>
                                  p \<in> ctermsl (\<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V PRrep) \<or>
                                  p \<in> ctermsl (\<Gamma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V PRerr))"
-  using assms
   by (cases pn) simp_all
 
 definition \<sigma>\<^sub>A\<^sub>O\<^sub>D\<^sub>V :: "ip \<Rightarrow> (state \<times> (state, msg, pseqp, pseqp label) seqp) set"

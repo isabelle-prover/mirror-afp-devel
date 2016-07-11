@@ -209,8 +209,9 @@ next
   ultimately have fin: "finite {\<guillemotleft>r'\<guillemotright> |r'. \<exists>ys. r' \<in> toplevel_summands (lderivs ys s)}"
     by (fastforce intro: finite_subset[of _ "\<Union> (toplevel_summands ` {\<guillemotleft>lderivs xs s\<guillemotright> | xs . True})"])
   let ?X = "\<lambda>xs. {Times (lderivs ys r) s | ys. True} \<union> {r'. r' \<in> (\<Union>ys. toplevel_summands (lderivs ys s))}"
-  show ?case unfolding ACI_norm_flatten
-  proof (rule finite_surj[of "{X. \<exists>xs. X \<subseteq> ACI_norm ` ?X xs}" _ "flatten PLUS"])
+  show ?case
+  proof (simp only: ACI_norm_flatten,
+      rule finite_surj[of "{X. \<exists>xs. X \<subseteq> ACI_norm ` ?X xs}" _ "flatten PLUS"])
     show "finite {X. \<exists>xs. X \<subseteq> ACI_norm ` ?X xs}"
       using fin by (fastforce simp: image_Un elim: finite_subset[rotated] intro: finite_surj[OF Times(1), of _ "\<lambda>r. Times r \<guillemotleft>s\<guillemotright>"])
   qed (fastforce dest!: subsetD[OF toplevel_summands_lderivs_Times] intro!: imageI)
@@ -218,8 +219,9 @@ next
   case (Star r)
   let ?f = "\<lambda>f r'. Times r' (Star (f r))"
   let ?X = "{Star r} \<union> ?f id ` {r'. r' \<in> {lderivs ys r|ys. True}}"
-  show ?case unfolding ACI_norm_flatten
-  proof (rule finite_surj[of "{X. X \<subseteq> ACI_norm ` ?X}" _ "flatten PLUS"])
+  show ?case
+  proof (simp only: ACI_norm_flatten,
+      rule finite_surj[of "{X. X \<subseteq> ACI_norm ` ?X}" _ "flatten PLUS"])
     have *: "\<And>X. ACI_norm ` ?f (\<lambda>x. x) ` X = ?f ACI_norm ` ACI_norm ` X" by (auto simp: image_def)
     show "finite {X. X \<subseteq> ACI_norm ` ?X}"
       by (rule finite_Collect_subsets)

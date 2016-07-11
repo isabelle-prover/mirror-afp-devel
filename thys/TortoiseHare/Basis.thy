@@ -110,7 +110,7 @@ using assms by (simp add: valid_def)
 
 lemma assignI[wp_intro]:
   shows "\<lbrace>Q \<circ> f\<rbrace> f \<lbrace>Q\<rbrace>"
-using assms by (simp add: valid_def)
+by (simp add: valid_def)
 
 lemma whileI:
   assumes "\<lbrace>I'\<rbrace> c \<lbrace>I\<rbrace>"

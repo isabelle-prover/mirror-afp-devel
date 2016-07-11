@@ -4,28 +4,22 @@ session Algebraic_Numbers (AFP) = Pre_Algebraic_Numbers +
   description {* Algebraic Numbers *}
   options [timeout = 1200]
   theories
-    "Missing_Multiset"
-    "Missing_List"
-    "Compare_Complex"
-    "Improved_Code_Equations"
-    "Precomputation"
-    "Is_Rat_To_Rat"
-    "Ring_Hom_Poly"
-    "Order_Polynomial"
-    "Binary_Exponentiation"
-    "Explicit_Roots"
-    "Rational_Root_Test"
-    "Kronecker_Factorization"
-    "Square_Free_Factorization"
-    "Berlekamp_Hensel_Factorization"
-    "Rational_Factorization"
     "Real_Factorization"
     "Show_Real_Approx"
+    "Show_Real_Precise"
   theories
     "Algebraic_Number_Tests"
   document_files
     "root.bib"
     "root.tex"
+
+session Algebraic_Number_Lib (AFP) = Pre_Algebraic_Numbers +
+  description {* Algebraic numbers, without tests*}
+  options [timeout = 600, document = false]   
+  theories
+    "Real_Factorization"
+    "Show_Real_Approx"
+    "Show_Real_Precise"
 
 session Pre_Algebraic_Numbers (AFP) = "Polynomial_Factorization" +
   description {* Theories from other AFP-entries and Extended Theories for Matrices *}

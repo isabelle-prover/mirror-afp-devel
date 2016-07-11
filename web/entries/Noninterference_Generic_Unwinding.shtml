@@ -105,10 +105,7 @@ condition exists.
         <td class="data"><a href="Noninterference_Ipurge_Unwinding.shtml">Noninterference_Ipurge_Unwinding</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+
 
   </tbody>
 </table>
@@ -130,7 +127,6 @@ condition exists.
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -141,11 +137,14 @@ condition exists.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-<ul>
+
+
+    <tr><td class="links">Older releases: <ul>
 <li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-06-13.tar.gz">afp-<!--#echo var="name" -->-2015-06-13.tar.gz</a></li>
 
-</ul>    </td></tr>
+</ul>
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

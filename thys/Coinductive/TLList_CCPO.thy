@@ -6,10 +6,10 @@ section {* Ccpo structure for terminated lazy lists *}
 
 theory TLList_CCPO imports TLList begin
 
-context begin interpretation lifting_syntax .
-lemma Set_is_empty_parametric [transfer_rule]: "(rel_set A ===> op =) Set.is_empty Set.is_empty"
+lemma Set_is_empty_parametric [transfer_rule]:
+  includes lifting_syntax
+  shows "(rel_set A ===> op =) Set.is_empty Set.is_empty"
 by(auto simp add: rel_fun_def Set.is_empty_def dest: rel_setD1 rel_setD2)
-end
 
 lemma monotone_comp: "\<lbrakk> monotone orda ordb g; monotone ordb ordc f \<rbrakk> \<Longrightarrow> monotone orda ordc (f \<circ> g)"
 by(rule monotoneI)(simp add: monotoneD)
@@ -26,7 +26,8 @@ done
 lemma mcont_comp: "\<lbrakk> mcont luba orda lubb ordb g; mcont lubb ordb lubc ordc f \<rbrakk> \<Longrightarrow> mcont luba orda lubc ordc (f \<circ> g)"
 by(auto simp add: mcont_def intro: cont_comp monotone_comp)
 
-context begin interpretation lifting_syntax .
+context includes lifting_syntax
+begin
 
 lemma monotone_parametric [transfer_rule]:
   assumes [transfer_rule]: "bi_total A"
@@ -236,10 +237,9 @@ apply(rule arg_cong[where f=The])
 apply(auto intro: rev_image_eqI intro!: ext)
 done
 
-interpretation lifting_syntax .
-
 lemma ex_TCons_raw_parametric:
-  "(rel_set (rel_prod (llist_all2 A) B) ===> op =) (\<lambda>Y. \<exists>(xs, b) \<in> Y. \<not> lnull xs) (\<lambda>Y. \<exists>(xs, b) \<in> Y. \<not> lnull xs)"
+  includes lifting_syntax
+  shows "(rel_set (rel_prod (llist_all2 A) B) ===> op =) (\<lambda>Y. \<exists>(xs, b) \<in> Y. \<not> lnull xs) (\<lambda>Y. \<exists>(xs, b) \<in> Y. \<not> lnull xs)"
 by(auto 4 4 simp add: rel_fun_def dest: rel_setD1 rel_setD2 llist_all2_lnullD intro: rev_bexI)
 
 lift_definition ex_TCons :: "('a, 'b) tllist set \<Rightarrow> bool"
@@ -250,7 +250,8 @@ lemma ex_TCons_iff: "ex_TCons Y \<longleftrightarrow> (\<exists>xs \<in> Y. \<no
 by transfer auto
 
 lemma retain_TCons_raw_parametric:
-  "(rel_set (rel_prod (llist_all2 A) B) ===> rel_set (rel_prod (llist_all2 A) B))
+  includes lifting_syntax
+  shows "(rel_set (rel_prod (llist_all2 A) B) ===> rel_set (rel_prod (llist_all2 A) B))
     (\<lambda>A. A \<inter> {(xs, b). \<not> lnull xs}) (\<lambda>A. A \<inter> {(xs, b). \<not> lnull xs})"
 by(rule rel_funI rel_setI)+(auto 4 4 dest: llist_all2_lnullD rel_setD2 rel_setD1 intro: rev_bexI)
 
@@ -434,7 +435,8 @@ unfolding mcont_def by(auto intro: monotoneI contI )
 
 end
 
-context begin interpretation lifting_syntax .
+context includes lifting_syntax
+begin
 
 lemma rel_fun_lift:
   "(\<And>x. A (f x) (g x)) \<Longrightarrow> (op = ===> A) f g"

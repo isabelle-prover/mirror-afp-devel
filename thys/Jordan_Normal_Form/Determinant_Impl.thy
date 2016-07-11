@@ -736,31 +736,32 @@ qed
 
 lemma sub1_det:
   assumes A: "A \<in> carrier\<^sub>m n n"
-  and "sub1 q k l (r,A) = (r'',A'')"
+  and sub1: "sub1 q k l (r,A) = (r'',A'')"
   and r0: "r \<noteq> 0"
   and All0: "q \<noteq> 0"
-  and "l + k < n"
+  and l: "l + k < n"
   shows "r * det A'' = r'' * det A"
-  using assms
-proof -
-  show "sub1 q k l (r,A) = (r'',A'') \<Longrightarrow> l + k < n \<Longrightarrow> r * det A'' = r'' * det A"
-  proof (induction k arbitrary:A'' r'')
+  using sub1 l
+proof (induction k arbitrary: A'' r'')
+  case 0
+  then show ?case by auto
+next
   case (Suc k)
-    let ?rA' = "sub1 q k l (r,A)"
-    obtain r' A' where rA':"?rA' = (r',A')" by force
-    have A':"A' \<in> carrier\<^sub>m n n" using sub1_closed[OF rA'] A by auto
-    have IH: "r * det A' = r' * det A" using Suc assms rA' by auto
-    assume "sub1 q (Suc k) l (r,A) = (r'',A'')"
-    then have rA'':"mute q (Suc (l+k)) l (r',A') = (r'',A'')" using rA' by auto
-    hence lem: "r' * det A'' = r'' * det A'"
-      using assms Suc A' mute_det[OF A' rA''] by auto
-    hence "r * r' * det A'' = r * r'' * det A'" by auto
-      also from IH have "... = r'' * r' * det A" by auto
-      finally have "r * r' * det A'' div r' = r'' * r' * det A div r'" by presburger
-    moreover have "r' \<noteq> 0"
-      using r0 sub1_divisor[OF rA'] All0 Suc A by auto
-    ultimately show ?case using \<open>r * r' * det A'' = r'' * r' * det A\<close> by auto
-  qed auto
+  let ?rA' = "sub1 q k l (r,A)"
+  obtain r' A' where rA':"?rA' = (r',A')" by force
+  have A':"A' \<in> carrier\<^sub>m n n" using sub1_closed[OF rA'] A by auto
+  have IH: "r * det A' = r' * det A" using Suc assms rA' by auto
+  assume "sub1 q (Suc k) l (r,A) = (r'',A'')"
+  then have rA'':"mute q (Suc (l+k)) l (r',A') = (r'',A'')" using rA' by auto
+  hence lem: "r' * det A'' = r'' * det A'"
+    using assms Suc A' mute_det[OF A' rA''] by auto
+  hence "r * r' * det A'' = r * r'' * det A'" by auto
+  also from IH have "... = r'' * r' * det A" by auto
+  finally have *: "r * r' * det A'' = r'' * r' * det A" .
+  then have "r * r' * det A'' div r' = r'' * r' * det A div r'" by presburger
+  moreover have "r' \<noteq> 0"
+    using r0 sub1_divisor[OF rA'] All0 Suc A by auto
+  ultimately show ?case using * by auto
 qed
 
 lemma sub2_det:

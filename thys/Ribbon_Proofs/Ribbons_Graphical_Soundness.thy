@@ -545,13 +545,13 @@ next
       hence v_notin_S: "v |\<notin>| S" and v_in_V: "v |\<in>| V" by auto
       
       have v_initial_not_S: "v |\<in>| initials G - S"
-      apply (unfold G_def initials_def vertices.simps edges.simps)
-      apply (unfold fminus_iff)
-      apply (unfold conj_commute, intro conjI, rule v_notin_S)
+      apply (simp only: G_def initials_def vertices.simps edges.simps)
+      apply (simp only: fminus_iff)
+      apply (simp only: conj_commute, intro conjI, rule v_notin_S)
       apply (subgoal_tac 
         "v \<in> fset (ffilter (\<lambda>v. \<forall>e\<in>set E. v |\<notin>| thd3 e) V)")
       apply simp
-      apply (unfold filter_fset, simp, unfold conj_commute)
+      apply (simp only: filter_fset, simp, simp only: conj_commute)
       apply (intro conjI ballI notI)
       apply (insert v_in_V, simp)
       proof -
@@ -610,7 +610,8 @@ next
           bot_least funion_iff finter_finsert_left le_iff_inf 
           fminus_iff finsert_fsubset sup_ge1 v_initial_not_S)
         show "wf_ps_chain \<Pi>"
-        apply (unfold \<Pi>_def \<pi>_def x_def mk_ps_chain_cons)
+        using [[unfold_abs_def = false]]
+        apply (simp only: \<Pi>_def \<pi>_def x_def mk_ps_chain_cons)
         apply simp
         apply (unfold mk_ps_chain_ccons)
         apply (fold next_initial_ps2_vertex S'_def)
@@ -783,6 +784,7 @@ next
       show ?thesis
       proof (intro conjI)
         show "wf_ps_chain \<Pi>"
+        using [[unfold_abs_def = false]]
         apply (unfold \<Pi>_def \<pi>_def x_def mk_ps_chain_cons)
         apply simp
         apply (unfold mk_ps_chain_ccons)
@@ -995,6 +997,7 @@ next
     
     show "prov_triple (asn (\<Otimes>v|\<in>|initials (Graph V \<Lambda> E). top_ass (\<Lambda> v)), 
       foldr op ;; cs Skip, asn (\<Otimes>v|\<in>|terminals (Graph V \<Lambda> E). bot_ass (\<Lambda> v)))"
+    using [[unfold_abs_def = false]]
     apply (intro seq_fold[of _ "ps_chain_to_int_chain G \<Pi>"])
     apply (unfold len_cs)
     apply (unfold ps_chain_to_int_chain_def chainmap_preserves_length \<Pi>_def)

@@ -26,13 +26,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-section  {* Alternative Small Step Semantics *}
+section  \<open>Alternative Small Step Semantics\<close>
 
 theory AlternativeSmallStep imports HoareTotalDef
 begin
 
 
-text {* 
+text \<open>
 This is the small-step semantics, which is described and used in my PhD-thesis \cite{Schirmer-PhD}. 
 It decomposes the statement into a list of statements and finally executes the head.
 So the redex is always the head of the list. The equivalence between termination
@@ -42,10 +42,10 @@ the new small-step semantics. However, it is technically more involved since
 the configurations are more complicated. Thats why I switched to the new small-step
 semantics in the "main trunk". I keep this alternative version and the important
 proofs in this theory, so that one can compare both approaches.
-*}
+\<close>
 
 
-subsection {*Small-Step Computation: @{text "\<Gamma>\<turnstile>(cs, css, s) \<rightarrow> (cs', css', s')"}*}
+subsection \<open>Small-Step Computation: \<open>\<Gamma>\<turnstile>(cs, css, s) \<rightarrow> (cs', css', s')\<close>\<close>
 
 type_synonym ('s,'p,'f) continuation = "('s,'p,'f) com list \<times> ('s,'p,'f) com list"
  
@@ -164,7 +164,7 @@ abbreviation
   "\<Gamma>\<turnstile>cs0 \<rightarrow>\<^sup>+ cs1     == (step \<Gamma>)\<^sup>+\<^sup>+ cs0 cs1"
 
 
-subsubsection {* Structural Properties of Small Step Computations *}
+subsubsection \<open>Structural Properties of Small Step Computations\<close>
 
 lemma Fault_app_steps: "\<Gamma>\<turnstile>(cs@xs,css,Fault f) \<rightarrow>\<^sup>* (xs,css,Fault f)"
 proof (induct cs)
@@ -202,9 +202,9 @@ next
     by simp
 qed
 
-text {* We can only append commands inside a block, if execution does not
+text \<open>We can only append commands inside a block, if execution does not
         enter or exit a block.
-      *}
+\<close>
 lemma app_step:  
   assumes step: "\<Gamma>\<turnstile>(cs,css,s) \<rightarrow> (cs',css',t)"
   shows "css=css' \<Longrightarrow> \<Gamma>\<turnstile>(cs@xs,css,s) \<rightarrow> (cs'@xs,css',t)"
@@ -213,9 +213,9 @@ apply induct
 apply (simp_all del: fun_upd_apply,(blast intro: step.intros)+)
 done
 
-text {* We can append whole blocks, without interfering with the actual
+text \<open>We can append whole blocks, without interfering with the actual
         block. Outer blocks do not influence execution of
-        inner blocks. *}
+        inner blocks.\<close>
 lemma app_css_step:  
   assumes step: "\<Gamma>\<turnstile>(cs,css,s) \<rightarrow> (cs',css',t)"
   shows "\<Gamma>\<turnstile>(cs,css@xs,s) \<rightarrow> (cs',css'@xs,t)"
@@ -224,13 +224,13 @@ apply induct
 apply (simp_all del: fun_upd_apply,(blast intro: step.intros)+)
 done
 
-ML {*
+ML \<open>
   ML_Thms.bind_thm ("trancl_induct3", Split_Rule.split_rule @{context}
     (Rule_Insts.read_instantiate @{context}
       [((("a", 0), Position.none), "(ax, ay, az)"),
        ((("b", 0), Position.none), "(bx, by, bz)")] []
       @{thm tranclp_induct}));
-*}
+\<close>
 
 lemma app_css_steps:  
   assumes step: "\<Gamma>\<turnstile>(cs,css,s) \<rightarrow>\<^sup>+ (cs',css',t)"
@@ -380,7 +380,7 @@ proof -
     by auto
 qed
 
-subsubsection {* Equivalence between Big and Small-Step Semantics *}
+subsubsection \<open>Equivalence between Big and Small-Step Semantics\<close>
     
 lemma exec_impl_steps:
   assumes exec: "\<Gamma>\<turnstile>\<langle>c,s\<rangle> \<Rightarrow> t"
@@ -553,13 +553,13 @@ inductive_cases execs_elim_cases [cases set]:
  "\<Gamma>\<turnstile>\<langle>[],css,s\<rangle> \<Rightarrow> t"
  "\<Gamma>\<turnstile>\<langle>c#cs,css,s\<rangle> \<Rightarrow> t"
 
-ML {*
+ML \<open>
   ML_Thms.bind_thm ("converse_rtrancl_induct3", Split_Rule.split_rule @{context}
     (Rule_Insts.read_instantiate @{context}
       [((("a", 0), Position.none), "(cs, css, s)"),
        ((("b", 0), Position.none), "(cs', css', t)")] []
       @{thm converse_rtranclp_induct}));
-*}
+\<close>
 
 lemma execs_Fault_end: 
   assumes execs: "\<Gamma>\<turnstile>\<langle>cs,css,s\<rangle> \<Rightarrow> t" shows "s=Fault f\<Longrightarrow> t=Fault f"
@@ -700,7 +700,7 @@ corollary steps_eq_exec: "\<Gamma>\<turnstile>([c],[],s) \<rightarrow>\<^sup>* (
   by (blast intro: steps_impl_exec exec_impl_steps)
 
 
-subsection {* Infinite Computations: @{text "inf \<Gamma> cs css s"}*}
+subsection \<open>Infinite Computations: \<open>inf \<Gamma> cs css s\<close>\<close>
 
 definition inf :: 
  "[('s,'p,'f) body,('s,'p,'f) com list,('s,'p,'f) continuation list,('s,'f) xstate]
@@ -711,7 +711,7 @@ lemma not_infI: "\<lbrakk>\<And>f. \<lbrakk>f 0 = (cs,css,s); \<And>i. \<Gamma>\
                 \<Longrightarrow> \<not>inf \<Gamma> cs css s"
   by (auto simp add: inf_def)
 
-subsection {* Equivalence of Termination and Absence of Infinite Computations *}
+subsection \<open>Equivalence of Termination and Absence of Infinite Computations\<close>
 
 
 inductive "terminatess":: "[('s,'p,'f) body,('s,'p,'f) com list,
@@ -979,13 +979,13 @@ next
 qed
 
 
-ML {*
+ML \<open>
   ML_Thms.bind_thm ("rtrancl_induct3", Split_Rule.split_rule @{context}
     (Rule_Insts.read_instantiate @{context}
       [((("a", 0), Position.none), "(ax, ay, az)"),
        ((("b", 0), Position.none), "(bx, by, bz)")] []
       @{thm rtranclp_induct}));
-*}
+\<close>
 
 lemma steps_preserves_terminations: 
   assumes steps: "\<Gamma>\<turnstile>(cs,css,s) \<rightarrow>\<^sup>* (cs',css',t)" 
@@ -1745,7 +1745,7 @@ proof -
   show ?thesis
   proof (cases "\<exists>i. CS (f i) = cs \<and> CSS (f i) = css")
     case True
-    def k\<equiv>"(LEAST i. CS (f i) = cs \<and> CSS (f i) = css)"
+    define k where "k = (LEAST i. CS (f i) = cs \<and> CSS (f i) = css)"
     from True
     obtain CS_f_k: "CS (f k) = cs" and CSS_f_k: "CSS (f k) = css" 
       apply -
@@ -1827,7 +1827,7 @@ proof -
                            [(fst (last (pcss i))@cs,(snd (last (pcss i)))@cs)]@
                            css)"
       by iprover
-    def "g" \<equiv> "\<lambda>i. (pcs i, pcss i, S (f i))"
+    define g where "g i = (pcs i, pcss i, S (f i))" for i
     from pcs_pcss [rule_format, of 0] f_0
     have "g 0 = ([c],[],s)"
       by (auto split: if_split_asm simp add: CS_def CSS_def S_def g_def)
@@ -1876,7 +1876,7 @@ next
     f_0: "f 0 = (c1# c2#cs,css,Normal s)" and
     f_step: "\<forall>i. \<Gamma>\<turnstile>f i \<rightarrow> f (Suc i)"
     by (auto simp add: inf_def)
-  def g\<equiv>"\<lambda>i. case i of 0 \<Rightarrow> (Seq c1 c2#cs,css,Normal s) | Suc j \<Rightarrow> f j" 
+  define g where "g i = (case i of 0 \<Rightarrow> (Seq c1 c2#cs,css,Normal s) | Suc j \<Rightarrow> f j)" for i
   with f_0 have
     "\<Gamma>\<turnstile>g 0 \<rightarrow> g (Suc 0)"
     by (auto intro: step.intros)
@@ -1915,7 +1915,7 @@ next
     f_0: "f 0 = (c # While b c #cs,css,Normal s)" and
     f_step: "\<forall>i. \<Gamma>\<turnstile>f i \<rightarrow> f (Suc i)"
     by (auto simp add: inf_def)
-  def h\<equiv>"\<lambda>i. case i of 0 \<Rightarrow> (While b c#cs,css,Normal s) | Suc j \<Rightarrow> f j" 
+  define h where "h i = (case i of 0 \<Rightarrow> (While b c#cs,css,Normal s) | Suc j \<Rightarrow> f j)"  for i
   with b f_0 have
     "\<Gamma>\<turnstile>h 0 \<rightarrow> h (Suc 0)"
     by (auto intro: step.intros)
@@ -1952,7 +1952,7 @@ next
     f_0: "f 0 = ([c1],(cs,c2#cs)#css,Normal s)" and
     f_step: "\<forall>i. \<Gamma>\<turnstile>f i \<rightarrow> f (Suc i)"
     by (auto simp add: inf_def)
-  def h\<equiv>"\<lambda>i. case i of 0 \<Rightarrow> (Catch c1 c2#cs,css,Normal s) | Suc j \<Rightarrow> f j" 
+  define h where "h i = (case i of 0 \<Rightarrow> (Catch c1 c2#cs,css,Normal s) | Suc j \<Rightarrow> f j)"  for i
   with f_0 have
     "\<Gamma>\<turnstile>h 0 \<rightarrow> h (Suc 0)"
     by (auto intro: step.intros)
@@ -2542,7 +2542,7 @@ where
  {((t,q),(s,p)). \<Gamma>\<turnstile>the (\<Gamma> p)\<down>Normal s \<and> 
        (\<exists>css. \<Gamma>\<turnstile>([the (\<Gamma> p)],[],Normal s) \<rightarrow>\<^sup>+ ([the (\<Gamma> q)],css,Normal t))}"
 
-text {* Sequencing computations, or more exactly continuation stacks *}
+text \<open>Sequencing computations, or more exactly continuation stacks\<close>
 primrec seq:: "(nat \<Rightarrow> 'a list) \<Rightarrow> nat \<Rightarrow> 'a list"
 where
 "seq css 0 = []" |
@@ -2571,7 +2571,7 @@ proof (simp only: termi_call_steps_def wf_iff_no_infinite_down_chain,
     done
   show False
   proof -
-    from inf' -- {* Skolemization of css with axiom of choice *}
+    from inf' \<comment> \<open>Skolemization of css with axiom of choice\<close>
     have "\<exists>css. \<forall>i. \<Gamma>\<turnstile>(the (\<Gamma> (p i))) \<down> Normal (s i) \<and>
                  \<Gamma>\<turnstile>([the (\<Gamma> (p i))],[],Normal (s i)) \<rightarrow>\<^sup>+ 
                            ([the (\<Gamma> (p (Suc i)))],css i,Normal (s (Suc i)))"
@@ -2583,7 +2583,7 @@ proof (simp only: termi_call_steps_def wf_iff_no_infinite_down_chain,
       step_css: "\<forall>i. \<Gamma>\<turnstile>([the (\<Gamma> (p i))],[],Normal (s i)) \<rightarrow>\<^sup>+ 
                          ([the (\<Gamma> (p (Suc i)))],css i,Normal (s (Suc i)))"
       by blast
-    def f == "\<lambda>i. ([the (\<Gamma> (p i))], seq css i,Normal (s i)::('a,'c) xstate)"
+    define f where "f i = ([the (\<Gamma> (p i))], seq css i,Normal (s i)::('a,'c) xstate)" for i
     have "f 0 = ([the (\<Gamma> (p 0))],[],Normal (s 0))"
       by (simp add: f_def)
     moreover
@@ -2608,7 +2608,7 @@ proof (simp only: termi_call_steps_def wf_iff_no_infinite_down_chain,
   qed
 qed
 
-text {* An alternative proof using Hilbert-choice instead of axiom of choice.*}
+text \<open>An alternative proof using Hilbert-choice instead of axiom of choice.\<close>
 theorem "wf (termi_call_steps \<Gamma>)"
 proof (simp only: termi_call_steps_def wf_iff_no_infinite_down_chain,
        clarify,simp)
@@ -2631,10 +2631,10 @@ proof (simp only: termi_call_steps_def wf_iff_no_infinite_down_chain,
     done
   show "False"
   proof -
-    def CSS \<equiv> "\<lambda>i. (SOME css.  
+    define CSS where "CSS i = (SOME css.  
                       \<Gamma>\<turnstile>([the (\<Gamma> (p i))],[], Normal (s i)) \<rightarrow>\<^sup>+
-                      ([the (\<Gamma> (p (i+1)))],css,Normal (s (i+1))))"
-    def f == "\<lambda>i. ([the (\<Gamma> (p i))], seq CSS i,Normal (s i)::('a,'c) xstate)"
+                      ([the (\<Gamma> (p (i+1)))],css,Normal (s (i+1))))" for i
+    define f where "f i = ([the (\<Gamma> (p i))], seq CSS i,Normal (s i)::('a,'c) xstate)" for i
     have "f 0 = ([the (\<Gamma> (p 0))],[],Normal (s 0))"
       by (simp add: f_def)
     moreover
@@ -2980,7 +2980,7 @@ corollary terminates_iff_not_inf:
   apply (erule not_inf_impl_terminates)
   done
 
-subsection {* Completeness of Total Correctness Hoare Logic*}
+subsection \<open>Completeness of Total Correctness Hoare Logic\<close>
 
 lemma ConseqMGT: 
   assumes modif: "\<forall>Z::'a. \<Gamma>,\<Theta> \<turnstile>\<^sub>t\<^bsub>/F\<^esub> (P' Z::'a assn) c (Q' Z),(A' Z)"
@@ -3734,10 +3734,10 @@ next
 qed
 
 
-text {* To prove a procedure implementation correct it suffices to assume
+text \<open>To prove a procedure implementation correct it suffices to assume
        only the procedure specifications of procedures that actually
        occur during evaluation of the body.  
-    *}
+\<close>
 lemma Call_lemma:
  assumes 
  Call: "\<forall>q \<in> dom \<Gamma>. \<forall>Z. \<Gamma>,\<Theta> \<turnstile>\<^sub>t\<^bsub>/F\<^esub> 
@@ -3815,7 +3815,7 @@ lemma image_Un_conv: "f ` (\<Union>p\<in>dom \<Gamma>. \<Union>Z. {x p Z}) =  (\
   by (auto iff: not_None_eq)
 
 
-text {* Another proof of @{text MGT_Call}, maybe a little more readable *}
+text \<open>Another proof of \<open>MGT_Call\<close>, maybe a little more readable\<close>
 lemma 
 "\<forall>p \<in> dom \<Gamma>. \<forall>Z. 
   \<Gamma>,{} \<turnstile>\<^sub>t\<^bsub>/F\<^esub> {s. s=Z \<and> \<Gamma>\<turnstile>\<langle>Call p,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
@@ -3827,15 +3827,15 @@ proof -
   {
     fix p Z \<sigma>
     assume defined: "p \<in> dom \<Gamma>"
-    def Specs == "(\<Union>p\<in>dom \<Gamma>. \<Union>Z. 
+    define Specs where "Specs = (\<Union>p\<in>dom \<Gamma>. \<Union>Z. 
             {({s. s=Z \<and> 
               \<Gamma>\<turnstile>\<langle>Call p,Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 
               \<Gamma>\<turnstile>Call p\<down>Normal s},
              p,
              {t. \<Gamma>\<turnstile>\<langle>Call p,Normal Z\<rangle> \<Rightarrow> Normal t},
              {t. \<Gamma>\<turnstile>\<langle>Call p,Normal Z\<rangle> \<Rightarrow> Abrupt t})})"
-    def Specs_wf == "(\<lambda>p \<sigma>. (\<lambda>(P,q,Q,A). 
-                       (P \<inter> {s. ((s,q),\<sigma>,p) \<in> termi_call_steps \<Gamma>}, q, Q, A)) ` Specs)"
+    define Specs_wf where "Specs_wf p \<sigma> = (\<lambda>(P,q,Q,A). 
+                       (P \<inter> {s. ((s,q),\<sigma>,p) \<in> termi_call_steps \<Gamma>}, q, Q, A)) ` Specs" for p \<sigma>
     have "\<Gamma>,Specs_wf p \<sigma>
             \<turnstile>\<^sub>t\<^bsub>/F\<^esub>({\<sigma>} \<inter>
                  {s. s = Z \<and> \<Gamma>\<turnstile>\<langle>the (\<Gamma> p),Normal s\<rangle> \<Rightarrow>\<notin>({Stuck} \<union> Fault ` (-F)) \<and> 

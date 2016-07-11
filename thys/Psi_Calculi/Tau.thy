@@ -28,7 +28,7 @@ lemma nameTermFresh[simp]:
   and   y :: name
   
   shows "x \<sharp> (nameTerm y) = (x \<noteq> y)"
-using assms ntSupp
+using ntSupp
 by(auto simp add: fresh_def)
 
 lemma nameTermFreshChain[simp]:
@@ -36,7 +36,6 @@ lemma nameTermFreshChain[simp]:
   and   x    :: name
 
   shows "xvec \<sharp>* (nameTerm x) = x \<sharp> xvec"
-using assms
 by(induct xvec) auto
 
 definition tauPrefix :: "('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi" ("\<tau>._" [85] 85)

@@ -413,9 +413,10 @@ proof -
   have "recurrent_subset_infty A = recurrent_subset_infty A \<inter> space M" using sets.sets_into_space by auto
   also have "... = A \<inter> space M - (\<Union>n. (T^^n)-`(A-recurrent_subset A) \<inter> space M)" unfolding recurrent_subset_infty_def by blast
   also have "... = A - (\<Union>n. (T^^n)--`(A-recurrent_subset A))" unfolding vimage_restr_def using sets.sets_into_space by auto
-  finally have "A - recurrent_subset_infty A \<subseteq> (\<Union>n. (T^^n)--`(A-recurrent_subset A))" by auto
-  then show "A - recurrent_subset_infty A \<in> null_sets M" using *
-     by (simp add: Diff_Diff_Int \<open>recurrent_subset_infty A = A - (\<Union>n. (T ^^ n) --` (A - recurrent_subset A))\<close> null_set_Int1)
+  finally have **: "recurrent_subset_infty A = A - (\<Union>n. (T ^^ n) --` (A - recurrent_subset A))" .
+  then have "A - recurrent_subset_infty A \<subseteq> (\<Union>n. (T^^n)--`(A-recurrent_subset A))" by auto
+  with * ** show "A - recurrent_subset_infty A \<in> null_sets M"
+     by (simp add: Diff_Diff_Int null_set_Int1)
 
   have "A \<Delta> recurrent_subset A = A - recurrent_subset A" using recurrent_subset_incl(1)[of A] by blast
   then show "A \<Delta> recurrent_subset A \<in> null_sets M" using `A - recurrent_subset A \<in> null_sets M` by auto
@@ -689,7 +690,7 @@ next
     have "(\<lambda>n. emeasure M (K k n)) \<longlonglongrightarrow> 0" using Suc.IH K_def by simp
     hence "\<And>i. (\<lambda>n. emeasure M (K k (n-i-1))) \<longlonglongrightarrow> 0" using seq_offset_neg by auto
     hence "(\<lambda>n. (\<Sum>i\<in>{..<N}. emeasure M (K k (n-i-1)))) \<longlonglongrightarrow> 0"
-      using tendsto_setsum [where ?S = "{..<N}" and ?a = "\<lambda>_. 0"] by fastforce
+      using tendsto_setsum [of "{..<N}" _ "\<lambda>_. 0"] by fastforce
     hence "eventually (\<lambda>n. (\<Sum>i\<in>{..<N}. emeasure M (K k (n-i-1))) < e2) sequentially"
       using `e2 > 0` by (simp add: order_tendsto_iff)
     then obtain N2 where N2bound: "\<And>n. n > N2 \<Longrightarrow>  (\<Sum>i\<in>{..<N}. emeasure M (K k (n-i-1))) < e2"
@@ -884,8 +885,8 @@ proof (auto)
   assume *: "x \<in> recurrent_subset A" "return_time_function A x = 0"
   def K \<equiv> "{n::nat\<in>{1..}. (T^^n) x \<in> A}"
   have **: "return_time_function A x = Inf K"
-    using assms K_def return_time_function_def * by simp
-  have "K \<noteq> {}" using assms K_def recurrent_subset_def * by auto
+    using K_def return_time_function_def * by simp
+  have "K \<noteq> {}" using K_def recurrent_subset_def * by auto
   moreover have "0 \<notin> K" using K_def by auto
   ultimately have "Inf K >0"
     by (metis (no_types, lifting) K_def One_nat_def atLeast_iff cInf_lessD mem_Collect_eq neq0_conv not_le zero_less_Suc)
@@ -1662,7 +1663,7 @@ proof -
   ultimately have bij: "bij_betw g UNIV U" using bij_betw_def by auto
 
   def e \<equiv> "\<lambda> (i,j). d i j"
-  have pos: "\<And>x. e x \<ge> 0" using assms e_def by auto
+  have pos: "\<And>x. e x \<ge> 0" using e_def by auto
   have "(\<Sum>n. (\<Sum>i. d (i+1) (n+1+i))) = (\<Sum>n. (\<Sum>i. e(i+1, n+1+i)))" using e_def by simp
   also have "... = \<integral>\<^sup>+n. \<integral>\<^sup>+i.  e (i+1, n+1+i) \<partial>count_space UNIV  \<partial>count_space UNIV"
     using pos nn_integral_count_space_nat suminf_0_le by auto

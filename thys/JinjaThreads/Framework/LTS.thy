@@ -1171,7 +1171,6 @@ qed
 lemma \<tau>Runs_table2_into_\<tau>Runs:
   "\<tau>Runs_table2 s tlsstlss
   \<Longrightarrow> s \<Down> tmap (\<lambda>(tls, s', tl, s''). tl) (\<lambda>x. case x of Inl (tls, s') \<Rightarrow> Some s' | Inr _ \<Rightarrow> None) tlsstlss"
-using assms
 proof(coinduction arbitrary: s tlsstlss)
   case (\<tau>Runs s tlsstlss)
   thus ?case by cases(auto intro: silent_moves2_into_silent_moves inf_step_silent_move2_into_\<tau>diverge)

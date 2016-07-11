@@ -302,7 +302,7 @@ lemma subgame_ParityGame:
   shows "ParityGame (subgame V')"
 proof (unfold_locales)
   show "E\<^bsub>subgame V'\<^esub> \<subseteq> V\<^bsub>subgame V'\<^esub> \<times> V\<^bsub>subgame V'\<^esub>"
-    using subgame_Digraph[unfolded Digraph_def, OF assms] .
+    using subgame_Digraph[unfolded Digraph_def] .
   show "V0\<^bsub>subgame V'\<^esub> \<subseteq> V\<^bsub>subgame V'\<^esub>" unfolding subgame_def using valid_player0_set by auto
   show "finite (\<omega>\<^bsub>subgame V'\<^esub> ` V\<^bsub>subgame V'\<^esub>)" by simp
 qed

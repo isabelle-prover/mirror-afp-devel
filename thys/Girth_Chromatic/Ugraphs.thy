@@ -59,7 +59,7 @@ lemma uwalk_length_conv: "uwalk_length p = length p - 1"
 
 lemma all_edges_mono:
   "vs \<subseteq> ws \<Longrightarrow> all_edges vs \<subseteq> all_edges ws"
-using assms unfolding all_edges_def by auto
+unfolding all_edges_def by auto
 
 lemma all_edges_subset_Pow: "all_edges A \<subseteq> Pow A"
   by (auto simp: all_edges_def)

@@ -129,8 +129,8 @@ proof -
 qed 
 
 lemma order_code[code]: "order (a::'a::idom_divide) p = 
-  (if p = 0 then Code.abort (STR ''order of polynomial 0 undefined'') (\<lambda> _. order a p) else if poly p a \<noteq> 0 then 0 else 
-  Suc (order a (p div [: -a, 1 :])))"
+  (if p = 0 then Code.abort (STR ''order of polynomial 0 undefined'') (\<lambda> _. order a p) 
+   else if poly p a \<noteq> 0 then 0 else Suc (order a (p div [: -a, 1 :])))"
 proof (cases "p = 0")
   case False note p = this
   note order = order[OF p]

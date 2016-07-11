@@ -4,12 +4,15 @@ section \<open>Regression tests for applicative lifting\<close>
 
 theory Applicative_Test imports
   Stream_Algebra
+  Applicative_Environment
+  Applicative_List
+  Applicative_Option
   Applicative_Set
   Applicative_Sum
   Abstract_AF
 begin
 
-interpretation applicative_syntax .
+unbundle applicative_syntax
 
 subsection {* Normal form conversion *}
 
@@ -75,6 +78,12 @@ subsection {* Sum type (a.k.a. either) *}
 lemma "Inl plus \<diamondop> (x :: nat + 'e list) \<diamondop> x = Inl (\<lambda>x. 2 * x) \<diamondop> x"
 by applicative_lifting simp
 
+lemma "rel_sum (op \<le>) (op \<le>) (x :: nat + nat) (Inl Suc \<diamondop> x)"
+proof -
+  interpret either_af "op \<le> :: nat \<Rightarrow> _" by unfold_locales (rule reflpI, simp)
+  show ?thesis by applicative_lifting simp
+qed
+
 
 subsection {* Streams *}
 
@@ -134,6 +143,27 @@ definition [applicative_unfold]: "sconcat xs = smap concat xs"
 
 lemma "sconcat (lift_streams [sconst ''Hello '', sconst ''world!'']) = sconst ''Hello world!''"
 by applicative_lifting simp
+
+
+subsection {* Relators *}
+
+lemma "rel_fun (op =) (op \<le>) (const (0::nat)) x"
+by applicative_lifting simp
+
+lemma "list_all2 (op \<subseteq>) (map (\<lambda>_. {}) x) (map set x)"
+by applicative_nf simp
+
+lemma "x = Some a \<Longrightarrow> rel_option (op \<le>) (map_option (\<lambda>_. a) x) (map_option Suc x)"
+by applicative_lifting simp
+
+schematic_goal "\<forall>g f x. rel_sum ?R (op =) (ap_either f x) (ap_either (ap_either (Inl g) f) x)"
+apply applicative_lifting
+oops
+
+schematic_goal "stream_all2 ?R (?f \<diamondop> (pure ?g \<diamondop> ?x + ?y)) (?x + ?z)"
+apply applicative_lifting
+oops
+
 
 print_applicative
 

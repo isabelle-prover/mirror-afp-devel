@@ -58,7 +58,6 @@ definition diff_delta_arctan_upper_12 :: "real \<Rightarrow> real"
 lemma d_delta_arctan_upper_12:
      "((\<lambda>x. arctan_upper_12 x - arctan x) has_field_derivative diff_delta_arctan_upper_12 x) (at x)"
   unfolding arctan_upper_12_def diff_delta_arctan_upper_12_def
-  using assms
   apply (intro derivative_eq_intros,  simp_all)
   apply (auto simp: divide_simps add_nonneg_eq_0_iff, algebra)
   done

@@ -2450,7 +2450,7 @@ proof(cases "b*c = 0")
       by (metis calculation div_right_ineq mult.commute)
    with F_4 F_5 
     have F_6:"((a div c) mod b)-((a mod (b*c)) div c) = 0"
-     by (metis less_imp_diff_less less_nat_zero_code nat_dvd_not_less nat_less_cases)      
+      using less_imp_diff_less nat_dvd_not_less by blast
    from F_3 have "(y * b) - (x*b) 
                       = ((a mod (b*c)) div c) - ((a div c) mod b) "
      by auto
@@ -2468,7 +2468,7 @@ proof(cases "b*c = 0")
      by (metis calculation div_right_ineq  mult.commute)
    with F_7 F_8 
     have "((a mod (b*c)) div c) - ((a div c) mod b) = 0"
-     by (metis less_imp_diff_less less_nat_zero_code   nat_dvd_not_less nat_less_cases)      
+      by (metis F_2 cancel_comm_monoid_add_class.diff_cancel mod_if mod_mult_self3)
    with F_6 have "((a mod (b*c)) div c) = ((a div c) mod b)"
      by auto         
    then show ?thesis using False by auto 
@@ -3795,7 +3795,7 @@ shows "\<forall>m1 m2.(mat nr nc m1)
               \<and>(mat nr nc m2)
               \<and>(\<forall> j < nc. \<forall> i < nr. m1 ! j ! i = m2 ! j ! i)
                   \<longrightarrow> (m1 = m2)"
- using  assms mat_eqI by blast
+ using mat_eqI by blast
 
 
 theorem tensor_compose_condn: 

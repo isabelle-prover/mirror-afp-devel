@@ -144,12 +144,12 @@ qed
 private lemma powr_ln_powr_lower_bound:
   "a > 1 \<Longrightarrow> a \<le> x \<Longrightarrow> x \<le> b \<Longrightarrow>
      min (a powr p) (b powr p) * min (ln a powr p') (ln b powr p') \<le> x powr p * ln x powr p'"
-  using assms by (intro mult_mono powr_lower_bound) (auto intro: min.coboundedI1)
+  by (intro mult_mono powr_lower_bound) (auto intro: min.coboundedI1)
 
 private lemma powr_ln_powr_upper_bound:
   "a > 1 \<Longrightarrow> a \<le> x \<Longrightarrow> x \<le> b \<Longrightarrow>
      max (a powr p) (b powr p) * max (ln a powr p') (ln b powr p') \<ge> x powr p * ln x powr p'"
-  using assms by (intro mult_mono powr_upper_bound) (auto intro: max.coboundedI1)
+  by (intro mult_mono powr_upper_bound) (auto intro: max.coboundedI1)
 
 private lemma powr_ln_powr_upper_bound':
   "eventually (\<lambda>a. \<forall>b>a. \<exists>c. \<forall>x\<in>{a..b}. x powr p * ln x powr p' \<le> c) at_top"

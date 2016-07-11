@@ -163,14 +163,12 @@ lemma powr_mono2_ex: "0 \<le> (a::real) \<Longrightarrow> 0 \<le> x \<Longrighta
   by (cases "x = 0") (simp_all add: powr_mono2)
 
 lemma powr_lower_bound: "\<lbrakk>(l::real) > 0; l \<le> x; x \<le> u\<rbrakk> \<Longrightarrow> min (l powr z) (u powr z) \<le> x powr z"
-apply (insert assms)
 apply (cases "z \<ge> 0")
 apply (rule order.trans[OF min.cobounded1 powr_mono2], simp_all) []
 apply (rule order.trans[OF min.cobounded2 powr_mono2'], simp_all) []
 done
 
 lemma powr_upper_bound: "\<lbrakk>(l::real) > 0; l \<le> x; x \<le> u\<rbrakk> \<Longrightarrow> max (l powr z) (u powr z) \<ge> x powr z"
-apply (insert assms)
 apply (cases "z \<ge> 0")
 apply (rule order.trans[OF powr_mono2 max.cobounded2], simp_all) []
 apply (rule order.trans[OF powr_mono2' max.cobounded1], simp_all) []

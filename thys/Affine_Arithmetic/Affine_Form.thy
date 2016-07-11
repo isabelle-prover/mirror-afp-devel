@@ -270,7 +270,7 @@ lemma degree[rule_format, intro, simp]:
   shows "\<forall>j\<ge>degree x. pdevs_apply x j = 0"
   unfolding degree_def
 proof (rule LeastI_ex)
-  from assms have "\<And>j. j > Max (pdevs_domain x) \<Longrightarrow> j \<notin> (pdevs_domain x)"
+  have "\<And>j. j > Max (pdevs_domain x) \<Longrightarrow> j \<notin> (pdevs_domain x)"
     by (metis Max_less_iff all_not_in_conv less_irrefl_nat finite_pdevs_domain)
   then show "\<exists>xa. \<forall>j\<ge>xa. pdevs_apply x j = 0"
     by (auto intro!: exI[where x="Max (pdevs_domain x) + 1"])

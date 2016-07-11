@@ -1995,7 +1995,8 @@ proof -
     also have "\<dots> = enat (\<Sum>i<ra_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>)" using ra_m
       by(subst setsum_hom[symmetric, where f="enat"])(auto intro: setsum.cong simp add: zero_enat_def less_trans[where y="enat ra_m"] split_beta)
     also have "\<dots> \<le> enat (ra - ?n)" unfolding ra_conv by simp
-    finally have wa_ra: "?wa < ra" by simp
+    finally have enat_length: "enat (length (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')) + length obs) < enat (ra - length (lift_start_obs start_tid start_heap_obs))" .
+    then have wa_ra: "?wa < ra" by simp
     with ra_len have "?wa \<in> actions E" by(cases "llength E")(simp_all add: actions_def)
     moreover
     from `mthr.if.redT s'' (t', ta') s'''` `NormalAction (NewHeapElem ad CTn) \<in> set \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>`
@@ -2018,7 +2019,7 @@ proof -
       have "action_obs E ?wa = 
         snd (lnth (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E')) (length (concat (map (\<lambda>(t, y). \<lbrace>y\<rbrace>\<^bsub>o\<^esub>) ttas')) + length obs))"
         unfolding E E' by(simp add: action_obs_def lnth_lappend2)
-      also from `enat (length (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')) + length obs) < enat (ra - length (lift_start_obs start_tid start_heap_obs))` `enat (ra - ?n) < llength E''`
+      also from enat_length `enat (ra - ?n) < llength E''`
       have "\<dots> = lnth (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) E')) (length (concat (map (\<lambda>(t, y). \<lbrace>y\<rbrace>\<^bsub>o\<^esub>) ttas')) + length obs)"
         unfolding E'
         by(subst lnth_lmap[symmetric, where f=snd])(erule (1) less_trans, simp add: lmap_lconcat llist.map_comp split_def o_def)

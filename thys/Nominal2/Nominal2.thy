@@ -109,7 +109,7 @@ let
     (raw_bind bn, SOME (replace_typ dts_env ty), NoSyn)) bn_funs
   
   val bn_eqs' = map (fn (attr, trm) => 
-    ((attr, replace_term (cnstrs_env @ bn_fun_env) dts_env trm), [])) bn_eqs
+    ((attr, replace_term (cnstrs_env @ bn_fun_env) dts_env trm), [], [])) bn_eqs
 in
   (bn_funs', bn_eqs') 
 end 
@@ -727,7 +727,7 @@ val dt_parser =
 
 (* binding function parser *)
 val bnfun_parser = 
-  Scan.optional (@{keyword "binder"} |-- Parse.fixes -- Parse_Spec.where_multi_specs) ([], [])
+  Scan.optional (@{keyword "binder"} |-- Parse_Spec.specification) ([], [])
 
 (* main parser *)
 val main_parser =

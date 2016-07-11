@@ -104,8 +104,7 @@ proof -
       show ?case by force
     qed
   qed
-  with `\<And>X. \<lbrakk>X \<in> Xs; x \<in> supp X\<rbrakk> \<Longrightarrow> thesis`
-  show ?thesis by blast
+  with that show ?thesis by blast
 qed
 
 lemma supp_cart_prod_empty[simp]:
@@ -491,7 +490,6 @@ lemma freshChainSym[simp]:
   and   yvec :: "name list"
   
   shows   "xvec \<sharp>* yvec = yvec \<sharp>* xvec"
-using assms
 by(auto simp add: fresh_star_def fresh_def name_list_supp)
 
 lemmas [eqvt] = perm_cart_prod[OF pt_name_inst, OF pt_name_inst, OF at_name_inst]

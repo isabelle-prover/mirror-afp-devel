@@ -3,9 +3,7 @@ imports "../Launchbury/HOLCF-Join-Classes" Lifting
 begin
 
 typedef Arity = "UNIV :: nat set"
-  morphisms Rep_Arity to_Arity 
-  by auto
-
+  morphisms Rep_Arity to_Arity by auto
 
 setup_lifting type_definition_Arity
 
@@ -23,7 +21,6 @@ end
 
 instantiation Arity :: po
 begin
-
 lift_definition below_Arity :: "Arity \<Rightarrow> Arity \<Rightarrow> bool" is "\<lambda> x y . y \<le> x".
 
 instance
@@ -71,12 +68,10 @@ lemma pred_Arity_cont[simp]: "cont pred_Arity"
   apply (transfer, simp)
   done
 
-definition
-  inc  :: "Arity -> Arity" where
+definition inc :: "Arity \<rightarrow> Arity" where
   "inc = (\<Lambda> x. inc_Arity x)"
 
-definition
-  pred  :: "Arity -> Arity" where
+definition pred :: "Arity \<rightarrow> Arity" where
   "pred = (\<Lambda> x. pred_Arity x)"
 
 lemma inc_inj[simp]: "inc\<cdot>n = inc\<cdot>n' \<longleftrightarrow> n = n'"
@@ -98,7 +93,7 @@ lemma Rep_Arity_inc[simp]: "Rep_Arity (inc\<cdot>a') = Suc (Rep_Arity a')"
 instantiation Arity :: zero
 begin
 lift_definition zero_Arity :: Arity is 0.
-instance ..
+instance..
 end
 
 instantiation Arity :: one

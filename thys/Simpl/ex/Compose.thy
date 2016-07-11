@@ -31,14 +31,14 @@ section "Experiments on State Composition"
 
 theory Compose imports "../HoareTotalProps" begin
 
-text {*
+text \<open>
 We develop some theory to support state-space modular development of programs.
 These experiments aim at the representation of state-spaces with records.
-If we use @{text "statespaces"} instead we get this kind of compositionality for free.
-*}
+If we use \<open>statespaces\<close> instead we get this kind of compositionality for free.
+\<close>
 
 
-subsection {* Changing the State-Space *}
+subsection \<open>Changing the State-Space\<close>
 
 (* Lift a command on statespace 'b to work on statespace 'a *)
  
@@ -269,15 +269,15 @@ lemma (in lift_state_space) lift\<^sub>e_def':
 
 
 
-text {*
+text \<open>
 The problem is that @{term "(lift\<^sub>c project inject \<circ> \<Gamma>)"} is quite
 a strong premise. The problem is that @{term "\<Gamma>"} is a function here.
 A map would be better. We only have to lift those procedures in the domain
 of @{term "\<Gamma>"}:
-@{text "\<Gamma> p = Some bdy \<longrightarrow> \<Gamma>' p = Some lift\<^sub>c project inject bdy"}.
+\<open>\<Gamma> p = Some bdy \<longrightarrow> \<Gamma>' p = Some lift\<^sub>c project inject bdy\<close>.
 We then can com up with theorems that allow us to extend the domains
 of @{term \<Gamma>} and preserve validity.
-*}
+\<close>
 
 
 lemma (in lift_state_space) 
@@ -925,7 +925,7 @@ apply (rule HoarePartialDef.conseq [OF hoare_lift_modifies [OF deriv]])
 apply blast
 done
 
-subsection {* Renaming Procedures *}
+subsection \<open>Renaming Procedures\<close>
 
 primrec rename:: "('p \<Rightarrow> 'q) \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'q,'f) com"
 where

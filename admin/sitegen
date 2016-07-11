@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # standard invocation of sitegen.py
 
 cd $(hg root)
-admin/sitegen.py --dest=web --metadata=metadata thys $@
+admin/sitegen-lib/sitegen.py --dest=web --metadata=metadata thys $@

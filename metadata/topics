@@ -4,10 +4,12 @@ Computer Science
     Distributed
     Concurrent
     Online
+  Concurrency
+    Process Calculi
   Data Structures
   Functional Programming
   Games
-  Process Calculi
+  Networks
   Programming Languages
     Language Definitions
     Lambda Calculi
@@ -17,7 +19,6 @@ Computer Science
     Static Analysis
     Transformations
     Misc
-  Refinement
   System Description Languages
   Security
 Logic
@@ -33,5 +34,6 @@ Mathematics
   Graph Theory
   Combinatorics
   Category Theory
+  Physics
   Misc
 Tools

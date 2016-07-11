@@ -1256,7 +1256,7 @@ proof -
   note min_subset_q = in_set_subset[OF min_in_q]
   from mset_insertList mset_meld mset_rev mset_rem mset_filter mset_children
     multiset_diff_union_assoc[OF head_subset_min, of "?Q - ?MT"]
-    mset_le_multiset_union_diff_commute[OF min_subset_q, of "?MT"]
+    mset_subset_eq_multiset_union_diff_commute[OF min_subset_q, of "?MT"]
   show ?thesis 
     by (auto simp add: deleteMin_def Let_def union_ac findMin_def)
 qed

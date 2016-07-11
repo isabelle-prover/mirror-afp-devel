@@ -146,8 +146,9 @@ context CFG_SSA_base begin
   lemmas phiNodes_of_code = phiNodes_of_def [unfolded phis_addN_def [abs_def]]
   declare phiNodes_of_code [code]
 
-interpretation lifting_syntax .
-lemma phis_transfer [transfer_rule]: "(op = ===> pcr_mapping op = op =) phis (\<lambda>g. Mapping.Mapping (phis g))"
+lemma phis_transfer [transfer_rule]:
+  includes lifting_syntax
+  shows "(op = ===> pcr_mapping op = op =) phis (\<lambda>g. Mapping.Mapping (phis g))"
   by (auto simp: mapping.pcr_cr_eq rel_fun_def cr_mapping_def Mapping.Mapping_inverse)
 
 end

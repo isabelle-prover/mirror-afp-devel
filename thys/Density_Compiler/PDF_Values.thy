@@ -167,10 +167,10 @@ lemma inj_PairVal[simp]: "inj (\<lambda>(x, y). <| x ,  y |>)" by (auto intro: i
 lemma measurable_PairVal[measurable]:
   fixes t1 t2 :: pdf_type
   shows "case_prod PairVal \<in> measurable (t1 \<Otimes>\<^sub>M t2) (PRODUCT t1 t2)"
-using assms measurable_embed_measure2[measurable] by simp
+  using measurable_embed_measure2[measurable] by simp
 
 lemma measurable_RealVal[measurable]: "RealVal \<in> measurable borel REAL"
-  using assms measurable_embed_measure2[measurable] by simp
+  using measurable_embed_measure2[measurable] by simp
 
 lemma nn_integral_BoolVal:
   assumes "\<And>x. f (BoolVal x) \<ge> 0"
@@ -199,17 +199,17 @@ lemma nn_integral_PairVal:
   by (subst nn_integral_embed_measure) (simp_all add: split_beta' inj_on_def)
 
 lemma BOOL_E: "\<lbrakk>val_type v = BOOL; \<And>b. v = BoolVal b \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-   using assms by (cases v) auto
+  by (cases v) auto
 
 lemma PROD_E: "\<lbrakk>val_type v = PRODUCT t1 t2 ;
      \<And>a b. val_type a = t1 \<Longrightarrow> val_type b = t2 \<Longrightarrow> v = <| a, b |> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-   using assms by (cases v) auto
+  by (cases v) auto
 
 lemma REAL_E: "\<lbrakk>val_type v = REAL; \<And>b. v = RealVal b \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-   using assms by (cases v) auto
+  by (cases v) auto
 
 lemma INTEG_E: "\<lbrakk>val_type v = INTEG; \<And>i. v = IntVal i \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
-   using assms by (cases v) auto
+  by (cases v) auto
 
 lemma measurable_extract_pair'[measurable (raw)]:
   fixes t1 t2 :: pdf_type

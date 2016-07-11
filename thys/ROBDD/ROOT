@@ -1,0 +1,24 @@
+chapter AFP
+session "ROBDD" (AFP) = HOL +
+	theories[document = false]
+		"../Automatic_Refinement/Lib/Refine_Lib"
+		"../Separation_Logic_Imperative_HOL/Examples/Array_Blit"
+		"../Separation_Logic_Imperative_HOL/Sep_Main"
+		"../Separation_Logic_Imperative_HOL/Examples/Hash_Map_Impl"
+	theories
+		"Middle_Impl"
+		"Bool_Func"
+		"Conc_Impl"
+		"Abstract_Impl"
+		"BDT"
+		"Pointer_Map_Impl"
+		"Level_Collapse"
+		"Array_List"
+		"BDD_Examples"
+		"Option_Helpers"
+		"Pointer_Map"
+	theories[condition = ISABELLE_GHC]
+		BDD_Code
+	document_files
+		"root.tex"
+		"root.bib"

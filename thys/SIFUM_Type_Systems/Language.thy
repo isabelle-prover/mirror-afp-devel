@@ -229,10 +229,10 @@ lemma seq_elim [elim]:
     apply clarify
     apply (drule cxt_seq_elim)
     apply (erule disjE)
-     apply (metis cxt_to_stmt.simps(1) eval\<^sub>w.unannotated seq_elim')
+     apply (metis seq_elim')
     apply auto
    apply (metis cxt_to_stmt.simps(1) eval\<^sub>w.unannotated)
-  apply (subgoal_tac "c\<^sub>1 = c@[mu]")
+  apply (subgoal_tac "c\<^sub>1 = (c@[mu])")
    apply simp
    apply (drule cxt_seq_elim)
    apply (metis Stmt.distinct(23) cxt_stmt_seq cxt_to_stmt.simps(1) eval\<^sub>w.decl)

@@ -73,10 +73,7 @@ Isabelle/HOL.  This proof works for both finite and infinite games.
         <td class="data"><a href="Coinductive.shtml">Coinductive</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+
 
   </tbody>
 </table>
@@ -98,7 +95,6 @@ Isabelle/HOL.  This proof works for both finite and infinite games.
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -109,11 +105,14 @@ Isabelle/HOL.  This proof works for both finite and infinite games.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-<ul>
+
+
+    <tr><td class="links">Older releases: <ul>
 <li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-11-02.tar.gz">afp-<!--#echo var="name" -->-2015-11-02.tar.gz</a></li>
 
-</ul>    </td></tr>
+</ul>
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

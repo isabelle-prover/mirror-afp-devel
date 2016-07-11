@@ -45,7 +45,7 @@ chapter{* Example: The Employee Analysis Model *} (* UML part *)
 theory
   Analysis_UML
 imports
-  "../../../src/UML_Main"
+  "../../../UML_Main"
 begin
 
 text {* \label{ex:employee-analysis:uml} *}

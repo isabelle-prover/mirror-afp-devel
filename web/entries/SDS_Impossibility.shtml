@@ -1,0 +1,131 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">T</font>he
+<font class="first">I</font>ncompatibility
+of
+<font class="first">S</font>D-Efficiency
+and
+<font class="first">S</font>D-Strategy-Proofness
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">The Incompatibility of SD-Efficiency and SD-Strategy-Proofness</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data">Manuel Eberl (eberlm /at/ in /dot/ tum /dot/ de)</td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2016-05-04</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+This formalisation contains the proof that there is no anonymous and
+neutral Social Decision Scheme for at least four voters and
+alternatives that fulfils both SD-Efficiency and SD-Strategy-
+Proofness. The proof is a fully structured and quasi-human-redable
+one. It was derived from the (unstructured) SMT proof of the case for
+exactly four voters and alternatives by Brandl et al.  Their proof
+relies on an unverified translation of the original problem to SMT,
+and the proof that lifts the argument for exactly four voters and
+alternatives to the general case is also not machine-checked.  In this
+Isabelle proof, on the other hand, all of these steps are  fully
+proven and machine-checked. This is particularly important seeing as a
+previously published informal proof of a weaker statement contained a
+mistake in precisely this lifting step.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{SDS_Impossibility-AFP,
+  author  = {Manuel Eberl},
+  title   = {The Incompatibility of SD-Efficiency and SD-Strategy-Proofness},
+  journal = {Archive of Formal Proofs},
+  month   = may,
+  year    = 2016,
+  note    = {\url{http://isa-afp.org/entries/SDS_Impossibility.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+
+
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Randomised_Social_Choice.shtml">Randomised_Social_Choice</a></td></tr>
+
+
+
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="SDS_Impossibility" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+
+
+    <tr><td class="links">Older releases: None
+    </td></tr>
+
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>

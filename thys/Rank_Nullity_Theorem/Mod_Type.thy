@@ -538,7 +538,8 @@ proof
    show "\<forall>x::'a bit1. Rep_bit1 x \<in> {0::int..<int CARD('a bit1)}"
       unfolding card_bit1
       unfolding of_nat_Suc of_nat_mult
-      using Rep_bit1 [where ?'a = "'a"] unfolding int_2 unfolding add.commute ..
+      using Rep_bit1 [where ?'a = "'a"]
+      unfolding int_2 ..
    show "\<forall>x::'a bit1. Abs_bit1 (Rep_bit1 x mod int CARD('a bit1)) = x"
       by (metis Rep_bit1_inverse bit1.Rep_mod)
    show "\<forall>y::int. y \<in> {0::int..<int CARD('a bit1)}

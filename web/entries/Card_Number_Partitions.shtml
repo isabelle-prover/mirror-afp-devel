@@ -74,10 +74,11 @@ the partition function and related recurrence relations.
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Bell_Numbers_Spivey.shtml">Bell_Numbers_Spivey</a>, <a href="Euler_Partition.shtml">Euler_Partition</a></td></tr>
+
+
 
   </tbody>
 </table>
@@ -99,7 +100,6 @@ the partition function and related recurrence relations.
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -110,11 +110,14 @@ the partition function and related recurrence relations.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-<ul>
+
+
+    <tr><td class="links">Older releases: <ul>
 <li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2016-01-14.tar.gz">afp-<!--#echo var="name" -->-2016-01-14.tar.gz</a></li>
 
-</ul>    </td></tr>
+</ul>
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

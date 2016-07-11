@@ -58,7 +58,6 @@ begin
   
   lemma map_lasso_run[simp]:
     shows "run_of_lasso (map_lasso f L) = f o (run_of_lasso L)"
-    using assms
     apply (clarsimp
       simp: map_lasso_def run_of_lasso_def conc_def iter_def 
       simp: lasso_cycle_def lasso_v0_def

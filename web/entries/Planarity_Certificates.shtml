@@ -73,10 +73,7 @@ certificates for planarity (i.e., a combinatorial map) or non-planarity
         <td class="data"><a href="Case_Labeling.shtml">Case_Labeling</a>, <a href="Graph_Theory.shtml">Graph_Theory</a>, <a href="List-Index.shtml">List-Index</a>, <a href="Simpl.shtml">Simpl</a>, <a href="Transitive-Closure.shtml">Transitive-Closure</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+
 
   </tbody>
 </table>
@@ -98,7 +95,6 @@ certificates for planarity (i.e., a combinatorial map) or non-planarity
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -109,8 +105,11 @@ certificates for planarity (i.e., a combinatorial map) or non-planarity
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-None    </td></tr>
+
+
+    <tr><td class="links">Older releases: None
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

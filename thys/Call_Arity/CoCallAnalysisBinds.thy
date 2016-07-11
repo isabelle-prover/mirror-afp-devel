@@ -8,7 +8,8 @@ definition ccBind :: "var \<Rightarrow> exp \<Rightarrow> ((AEnv \<times> CoCall
   where "ccBind v e = (\<Lambda> (ae, G).  if (v--v\<notin>G) \<or> \<not> isVal e then cc_restr (fv e) (fup\<cdot>(ccExp e)\<cdot>(ae v)) else ccSquare (fv e))"
 (* paper has:  \<or> ae v = up\<cdot>0, but that is not monotone! But should give the same result. *)
 
-lemma ccBind_eq: "ccBind v e \<cdot> (ae, G) = (if (v--v\<notin>G) \<or> \<not> isVal e then cc_restr (fv e) (fup\<cdot>(ccExp e)\<cdot>(ae v)) else ccSquare (fv e))"
+lemma ccBind_eq:
+  "ccBind v e\<cdot>(ae, G) = (if v--v\<notin>G \<or> \<not> isVal e then \<G>\<^sup>\<bottom>\<^bsub>ae v\<^esub> e G|` fv e else (fv e)²)"
   unfolding ccBind_def
   apply (rule cfun_beta_Pair)
   apply (rule cont_if_else_above)
@@ -23,6 +24,9 @@ lemma ccBind_eq: "ccBind v e \<cdot> (ae, G) = (if (v--v\<notin>G) \<or> \<not> 
 
 lemma ccBind_strict[simp]: "ccBind v e \<cdot> \<bottom> = \<bottom>"
   by (auto simp add: inst_prod_pcpo ccBind_eq simp del: Pair_strict)
+
+lemma ccField_ccBind: "ccField (ccBind v e\<cdot>(ae,G)) \<subseteq> fv e"
+  by (auto simp add: ccBind_eq dest: set_mp[OF ccField_cc_restr])
 
 definition ccBinds :: "heap \<Rightarrow> ((AEnv \<times> CoCalls) \<rightarrow> CoCalls)"
   where "ccBinds \<Gamma> = (\<Lambda> i. (\<Squnion>v\<mapsto>e\<in>map_of \<Gamma>. ccBind v e\<cdot>i))"
@@ -60,15 +64,26 @@ lemma ccBinds_Cons[simp]:
 lemma ccBind_below_ccBinds: "map_of \<Gamma> x = Some e \<Longrightarrow> ccBind x e\<cdot>ae \<sqsubseteq> (ccBinds \<Gamma>\<cdot>ae)"
   by (auto simp add: ccBinds_eq)
 
+lemma ccField_ccBinds: "ccField (ccBinds \<Gamma>\<cdot>(ae,G)) \<subseteq> fv \<Gamma>"
+  by (auto simp add: ccBinds_eq dest: set_mp[OF ccField_ccBind] intro: set_mp[OF map_of_Some_fv_subset])
+
 definition ccBindsExtra :: "heap \<Rightarrow> ((AEnv \<times> CoCalls) \<rightarrow> CoCalls)"
   where "ccBindsExtra \<Gamma> = (\<Lambda> i.  snd i \<squnion> ccBinds \<Gamma> \<cdot> i  \<squnion> (\<Squnion>x\<mapsto>e\<in>map_of \<Gamma>. ccProd (fv e) (ccNeighbors x (snd i))))"
 
+lemma ccBindsExtra_simp: "ccBindsExtra \<Gamma> \<cdot> i =snd i \<squnion> ccBinds \<Gamma> \<cdot> i \<squnion> (\<Squnion>x\<mapsto>e\<in>map_of \<Gamma>. ccProd (fv e) (ccNeighbors x (snd i)))"
+  unfolding ccBindsExtra_def by simp
 
-lemma ccBindsExtra_simp: "ccBindsExtra \<Gamma> \<cdot> i = snd i \<squnion> ccBinds \<Gamma> \<cdot> i \<squnion> (\<Squnion>x\<mapsto>e\<in>map_of \<Gamma>. ccProd (fv e) (ccNeighbors x (snd i)))"
+lemma ccBindsExtra_eq: "ccBindsExtra \<Gamma>\<cdot>(ae,G) =
+  G \<squnion> ccBinds \<Gamma>\<cdot>(ae,G) \<squnion> (\<Squnion>x\<mapsto>e\<in>map_of \<Gamma>. fv e G\<times> ccNeighbors x G)"
   unfolding ccBindsExtra_def by simp
 
 lemma ccBindsExtra_strict[simp]: "ccBindsExtra \<Gamma> \<cdot> \<bottom> = \<bottom>"
   by (auto simp add: ccBindsExtra_simp inst_prod_pcpo simp del: Pair_strict)
+
+lemma ccField_ccBindsExtra:
+  "ccField (ccBindsExtra \<Gamma>\<cdot>(ae,G)) \<subseteq> fv \<Gamma> \<union> ccField G"
+  by (auto simp add: ccBindsExtra_simp elem_to_ccField
+      dest!:  set_mp[OF ccField_ccBinds]  set_mp[OF ccField_ccProd_subset] map_of_Some_fv_subset)
 
 end
 

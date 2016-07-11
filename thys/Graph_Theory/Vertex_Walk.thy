@@ -27,7 +27,6 @@ definition vwalk_length :: "'a vwalk \<Rightarrow> nat" where
 
 lemma vwalk_length_simp[simp]:
   shows "vwalk_length p = length p - 1"
-using assms
 by (induct p rule: vwalk_arcs.induct) (auto simp: vwalk_length_def)
 
 definition vwalk :: "'a vwalk \<Rightarrow> ('a,'b) pre_digraph \<Rightarrow> bool" where
@@ -642,7 +641,7 @@ proof -
     from `vpath p G` have "length p = card (set p)"
       by (auto simp add: distinct_card)
     also have "\<dots> \<le> card (verts G)"
-      using `vpath p G` and assms
+      using `vpath p G`
       by (auto intro!: card_mono elim!: vpathE)
     finally show "length p \<le> card (verts G)" .
   qed

@@ -185,7 +185,7 @@ td.status-ok {
 ;
 }
 
-td.status-FAIL {
+td.status-failed {
  text-align: center;
  vertical-align: middle;
  font: normal normal bold medium sans-serif;

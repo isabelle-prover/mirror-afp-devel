@@ -153,7 +153,6 @@ lemma mat1[simp,intro]: "mat nr nr (mat1I ze on nr)"
 unfolding mat_def mat1I_def using vec1 by auto
 
 lemma vec_plus[simp,intro]: "\<lbrakk>vec nr u; vec nr v\<rbrakk> \<Longrightarrow> vec nr (vec_plusI pl u v)"
-using assms 
 unfolding vec_plusI_def vec_def
 by auto
 
@@ -180,12 +179,11 @@ proof (simp, induct nc arbitrary: m1 m2, simp)
 qed
 
 lemma vec_map[simp,intro]: "vec nr u \<Longrightarrow> vec nr (vec_map f u)"
-using assms 
 unfolding vec_map_def vec_def
 by auto
 
 lemma mat_map[simp,intro]: "mat nr nc m \<Longrightarrow> mat nr nc (mat_map f m)"
-using assms vec_map
+using vec_map
 unfolding mat_map_def mat_def 
 by auto
 

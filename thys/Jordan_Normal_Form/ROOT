@@ -11,40 +11,41 @@ session "Jordan_Normal_Form" (AFP) = "JNF-AFP-Lib" +
     Matrix_Complexity
     Jordan_Normal_Form_Existence
     Jordan_Normal_Form_Uniqueness
+    Spectral_Radius
   document_files
     "root.bib"
     "root.tex"
 
-session "JNF-HOL-Lib" (AFP) in "~~/src/HOL/Library" = "HOL-Algebra" +
+session "JNF-HOL-Lib" (AFP) = "HOL-Algebra" +
   description {* Theories that are not part of HOL but are used by this entry *}
   options [document = false]
   theories
-    AList
-    Cardinality
-    Char_ord
-    Code_Char
-    Code_Binary_Nat
-    Code_Target_Numeral
-    DAList
-    DAList_Multiset
-    Fraction_Field
-    Fundamental_Theorem_Algebra
-    Infinite_Set
-    Lattice_Syntax
-    List_lexord
-    Mapping
-    Monad_Syntax
-    More_List
-    Multiset
-    Permutation
-    Permutations
-    Polynomial
-    IArray
-    Phantom_Type
-    Ramsey
-    RBT_Impl
-    Simps_Case_Conv
-    While_Combinator
+    "~~/src/HOL/Library/AList"
+    "~~/src/HOL/Library/Cardinality"
+    "~~/src/HOL/Library/Char_ord"
+    "~~/src/HOL/Library/Code_Char"
+    "~~/src/HOL/Library/Code_Binary_Nat"
+    "~~/src/HOL/Library/Code_Target_Numeral"
+    "~~/src/HOL/Library/DAList"
+    "~~/src/HOL/Library/DAList_Multiset"
+    "~~/src/HOL/Library/Fraction_Field"
+    "~~/src/HOL/Library/Fundamental_Theorem_Algebra"
+    "~~/src/HOL/Library/Infinite_Set"
+    "~~/src/HOL/Library/Lattice_Syntax"
+    "~~/src/HOL/Library/List_lexord"
+    "~~/src/HOL/Library/Mapping"
+    "~~/src/HOL/Library/Monad_Syntax"
+    "~~/src/HOL/Library/More_List"
+    "~~/src/HOL/Library/Multiset"
+    "~~/src/HOL/Library/Permutation"
+    "~~/src/HOL/Library/Permutations"
+    "~~/src/HOL/Library/Polynomial"
+    "~~/src/HOL/Library/IArray"
+    "~~/src/HOL/Library/Phantom_Type"
+    "~~/src/HOL/Library/Ramsey"
+    "~~/src/HOL/Library/RBT_Impl"
+    "~~/src/HOL/Library/Simps_Case_Conv"
+    "~~/src/HOL/Library/While_Combinator"
     "~~/src/HOL/Number_Theory/UniqueFactorization"
     "~~/src/HOL/Cardinals/Order_Union"
     "~~/src/HOL/Cardinals/Wellorder_Extension"

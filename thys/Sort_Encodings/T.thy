@@ -208,7 +208,7 @@ lemma map_tNN_int[simp]: "map (TE.int \<xi> \<circ> tNN) Tl = map (Ik.int \<xi>)
 unfolding list_eq_iff list_all_iff by auto
 
 lemma t_int[simp]: "TE.int \<xi> (tT T) = Ik.int \<xi> T"
-using assms by (cases T, auto)
+by (cases T, auto)
 
 lemma map_t_int[simp]: "map (TE.int \<xi> \<circ> tT) Tl = map (Ik.int \<xi>) Tl"
 unfolding list_eq_iff list_all_iff by auto
@@ -462,7 +462,7 @@ definition
 "invt \<sigma> a \<equiv> if unprot \<sigma> \<or> protFw \<sigma> then a else (SOME b. eintT \<sigma> b \<and> eintF (Tag \<sigma>) [b] = a)"
 
 lemma unprot_invt[simp]: "unprot \<sigma> \<or> protFw \<sigma> \<Longrightarrow> invt \<sigma> a = a"
-using assms unfolding invt_def by auto
+unfolding invt_def by auto
 
 lemma invt_invt_inImage:
 assumes \<sigma>: "\<not> unprot \<sigma>" "\<not> protFw \<sigma>"
@@ -535,6 +535,7 @@ next
     using i 1 l 3 unfolding intT_def by auto
   qed(insert l, auto)
   show ?case apply(cases "unprot ?r \<or> protFw ?r")
+  using [[unfold_abs_def = false]]
   unfolding Ik.int.simps TE.int.simps tT.simps unfolding intF_def using Fn 0 by auto
 qed
 
@@ -549,6 +550,7 @@ proof-
    have "intT (Ik.Ik.tpOf (Tl!i)) (Ik.int \<xi> (Tl!i))" using Ik.wt_int[OF \<xi> wt] .
   }
   thus ?thesis
+  using [[unfold_abs_def = false]]
   using assms unfolding intT_def list_all_length
   unfolding list_eq_iff apply clarsimp by (metis inImage_ntsem unprot_ntsem)
 qed
@@ -577,6 +579,7 @@ next
   have 0: "map2 ntsem ?ar (map (Ik.int \<xi>) Tl) = map (TE.int ?e\<xi> \<circ> tNN) Tl"
   unfolding ar apply(rule map_int_tNN[OF _ \<xi>]) using Fn by simp
   show ?case apply(cases "unprot ?r \<or> protFw ?r")
+  using [[unfold_abs_def = false]]
   unfolding  Ik.int.simps TE.int.simps tT.simps unfolding intF_def using Fn 0 by auto
 qed
 
@@ -591,6 +594,7 @@ proof-
    have "intT (Ik.Ik.tpOf (Tl!i)) (Ik.int \<xi> (Tl!i))" using wt_int[OF \<xi> wt] .
   }
   thus ?thesis
+  using [[unfold_abs_def = false]]
   using assms unfolding intT_def list_all_length
   unfolding list_eq_iff apply clarsimp by (metis inImage_ntsem unprot_ntsem)
 qed

@@ -2303,8 +2303,8 @@ lemma lprefix_llist_ofI:
   "\<exists>zs. ys = xs @ zs \<Longrightarrow> llist_of xs \<sqsubseteq> llist_of ys"
 by(clarsimp simp add: lappend_llist_of_llist_of[symmetric] lprefix_lappend)
 
-lemma lprefix_llist_of [simp]: "llist_of xs \<sqsubseteq> llist_of ys \<longleftrightarrow> prefixeq xs ys"
-by(auto simp add: prefixeq_def lprefix_conv_lappend)(metis lfinite_lappend lfinite_llist_of list_of_lappend list_of_llist_of lappend_llist_of_llist_of)+
+lemma lprefix_llist_of [simp]: "llist_of xs \<sqsubseteq> llist_of ys \<longleftrightarrow> prefix xs ys"
+by(auto simp add: prefix_def lprefix_conv_lappend)(metis lfinite_lappend lfinite_llist_of list_of_lappend list_of_llist_of lappend_llist_of_llist_of)+
 
 lemma llimit_induct [case_names LNil LCons limit]:
   -- {* The limit case is just an instance of admissibility *}
@@ -5100,9 +5100,8 @@ abbreviation "llist_all == pred_llist"
 
 subsubsection {* Transfer rules for the Transfer package *}
 
-context
+context includes lifting_syntax
 begin
-interpretation lifting_syntax .
 
 lemma set1_pre_llist_transfer [transfer_rule]:
   "(rel_pre_llist A B ===> rel_set A) set1_pre_llist set1_pre_llist"

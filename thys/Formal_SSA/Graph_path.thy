@@ -14,6 +14,8 @@ theory Graph_path imports
   "../Dijkstra_Shortest_Path/GraphSpec"
 begin
 
+hide_const "Omega_Words_Fun.prefix" "Omega_Words_Fun.suffix"
+
 type_synonym ('n, 'ed) edge = "('n \<times> 'ed \<times> 'n)"
 
 definition getFrom :: "('n, 'ed) edge \<Rightarrow> 'n" where
@@ -341,7 +343,7 @@ begin
   proof-
     from assms(2) obtain ns\<^sub>1 ns\<^sub>2 where "ns = ns\<^sub>1@x#ns\<^sub>2" by atomize_elim (rule split_list)
     with assms[simplified this] show thesis
-      by - (rule that, auto dest:path2_split(1) path2_split(2) intro: suffixeqI)
+      by - (rule that, auto dest:path2_split(1) path2_split(2) intro: suffixI)
   qed
 
   lemma path2_split_ex':
@@ -551,7 +553,7 @@ begin
 
   lemma path2_split_first_last:
     assumes "g \<turnstile> n-ns\<rightarrow>m" "x \<in> set ns"
-    obtains ns\<^sub>1 ns\<^sub>3 ns\<^sub>2 where "ns = ns\<^sub>1@ns\<^sub>3@ns\<^sub>2" "prefixeq (ns\<^sub>1@[x]) ns" "suffixeq (x#ns\<^sub>2) ns"
+    obtains ns\<^sub>1 ns\<^sub>3 ns\<^sub>2 where "ns = ns\<^sub>1@ns\<^sub>3@ns\<^sub>2" "prefix (ns\<^sub>1@[x]) ns" "suffix (x#ns\<^sub>2) ns"
         and "g \<turnstile> n-ns\<^sub>1@[x]\<rightarrow>x"  "x \<notin> set ns\<^sub>1"
         and "g \<turnstile> x-ns\<^sub>3\<rightarrow>x"
         and "g \<turnstile> x-x#ns\<^sub>2\<rightarrow>m" "x \<notin> set ns\<^sub>2"
@@ -563,8 +565,8 @@ begin
     show thesis
     proof (rule that[OF _ _ _ 2(1) 1(2) 4 3(2)])
       show "ns = ns\<^sub>1 @ (ns\<^sub>3 @ [x]) @ ns\<^sub>2" using 1(1) 3(1) by simp
-      show "prefixeq (ns\<^sub>1@[x]) ns" using 1 by auto
-      show "suffixeq (x#ns\<^sub>2) ns" using 1 3 by (metis suffixeq_def suffixeq_trans)
+      show "prefix (ns\<^sub>1@[x]) ns" using 1 by auto
+      show "suffix (x#ns\<^sub>2) ns" using 1 3 by (metis Sublist.suffix_def suffix_trans)
     qed
   qed
 
@@ -611,7 +613,7 @@ begin
 
   lemma path2_split_first_prop:
     assumes "g \<turnstile> n-ns\<rightarrow>m" "\<exists>x\<in>set ns. P x"
-    obtains m' ns' where "g \<turnstile> n-ns'\<rightarrow>m'" "P m'" "\<forall>x \<in> set (butlast ns'). \<not>P x" "prefixeq ns' ns"
+    obtains m' ns' where "g \<turnstile> n-ns'\<rightarrow>m'" "P m'" "\<forall>x \<in> set (butlast ns'). \<not>P x" "prefix ns' ns"
   proof-
     obtain ns'' n' ns' where 1: "ns = ns''@n'#ns'" "P n'" "\<forall>x \<in> set ns''. \<not>P x" by - (rule split_list_first_propE[OF assms(2)])
     with assms(1) have "g \<turnstile> n-ns''@[n']\<rightarrow>n'" by - (rule path2_split(1), auto)
@@ -620,33 +622,33 @@ begin
 
   lemma path2_split_last_prop:
     assumes "g \<turnstile> n-ns\<rightarrow>m" "\<exists>x\<in>set ns. P x"
-    obtains n' ns' where "g \<turnstile> n'-ns'\<rightarrow>m" "P n'" "\<forall>x \<in> set (tl ns'). \<not>P x" "suffixeq ns' ns"
+    obtains n' ns' where "g \<turnstile> n'-ns'\<rightarrow>m" "P n'" "\<forall>x \<in> set (tl ns'). \<not>P x" "suffix ns' ns"
   proof-
     obtain ns'' n' ns' where 1: "ns = ns''@n'#ns'" "P n'" "\<forall>x \<in> set ns'. \<not>P x" by - (rule split_list_last_propE[OF assms(2)])
     with assms(1) have "g \<turnstile> n'-n'#ns'\<rightarrow>m" by - (rule path2_split(2), auto)
-    with 1 show thesis by - (rule that, auto simp:suffixeq_def)
+    with 1 show thesis by - (rule that, auto simp: Sublist.suffix_def)
   qed
 
   lemma path2_prefix[elim]:
     assumes 1: "g \<turnstile> n-ns\<rightarrow>m"
-    assumes 2: "prefixeq (ns'@[m']) ns"
+    assumes 2: "prefix (ns'@[m']) ns"
     shows "g \<turnstile> n-ns'@[m']\<rightarrow>m'"
-  using assms by -(erule prefixeqE, rule path2_split, simp)
+  using assms by -(erule prefixE, rule path2_split, simp)
 
   lemma path2_prefix_ex:
     assumes "g \<turnstile> n-ns\<rightarrow>m" "m' \<in> set ns"
-    obtains ns' where "g \<turnstile> n-ns'\<rightarrow>m'" "prefixeq ns' ns" "m' \<notin> set (butlast ns')"
+    obtains ns' where "g \<turnstile> n-ns'\<rightarrow>m'" "prefix ns' ns" "m' \<notin> set (butlast ns')"
   proof-
-    from assms(2) obtain ns' where "prefixeq (ns'@[m']) ns" "m' \<notin> set ns'" by (rule prefix_split_first)
+    from assms(2) obtain ns' where "prefix (ns'@[m']) ns" "m' \<notin> set ns'" by (rule prefix_split_first)
     with assms(1) show thesis by - (rule that, auto)
   qed
 
   lemma path2_strict_prefix_ex:
     assumes "g \<turnstile> n-ns\<rightarrow>m" "m' \<in> set (butlast ns)"
-    obtains ns' where "g \<turnstile> n-ns'\<rightarrow>m'" "Sublist.prefix ns' ns" "m' \<notin> set (butlast ns')"
+    obtains ns' where "g \<turnstile> n-ns'\<rightarrow>m'" "strict_prefix ns' ns" "m' \<notin> set (butlast ns')"
   proof-
-    from assms(2) obtain ns' where ns': "prefixeq (ns'@[m']) (butlast ns)" "m' \<notin> set ns'" by (rule prefix_split_first)
-    hence "Sublist.prefix (ns'@[m']) ns" using assms by - (rule strict_prefix_butlast, auto)
+    from assms(2) obtain ns' where ns': "prefix (ns'@[m']) (butlast ns)" "m' \<notin> set ns'" by (rule prefix_split_first)
+    hence "strict_prefix (ns'@[m']) ns" using assms by - (rule strict_prefix_butlast, auto)
     with assms(1) ns'(2) show thesis by - (rule that, auto)
   qed
 
@@ -763,7 +765,7 @@ begin
     fix ns :: "'node list"
     assume p: "g \<turnstile> Entry g-ns\<rightarrow>n''"
     with part2 have "n' \<in> set ns" by - (erule dominatesE, auto)
-    then obtain as where prefix: "prefixeq (as@[n']) ns" by (auto intro:prefix_split_first)
+    then obtain as where prefix: "prefix (as@[n']) ns" by (auto intro:prefix_split_first)
     with p have "g \<turnstile> Entry g-(as@[n'])\<rightarrow>n'" by auto
     with part1 have "n \<in> set (as@[n'])" unfolding dominates_def by auto
     with prefix show "n \<in> set ns" by auto
@@ -780,11 +782,11 @@ begin
     with `invar g` obtain ns where p: "g \<turnstile> Entry g-ns\<rightarrow>n" and "n \<notin> set (butlast ns)"
       by (rule simple_Entry_path)
     with dom2 have "n' \<in> set ns" by - (erule dominatesE, auto)
-    then obtain as where prefix: "prefixeq (as@[n']) ns" by (auto intro:prefix_split_first)
+    then obtain as where prefix: "prefix (as@[n']) ns" by (auto intro:prefix_split_first)
     with p have "g \<turnstile> Entry g-as@[n']\<rightarrow>n'" by (rule path2_prefix)
     with dom1 have "n \<in> set (as@[n'])" unfolding dominates_def by auto
     with `n \<noteq> n'` have "n \<in> set as" by auto
-    with `prefixeq (as@[n']) ns` have "n \<in> set (butlast ns)" by -(erule prefixeqE, auto iff:butlast_append)
+    with `prefix (as@[n']) ns` have "n \<in> set (butlast ns)" by -(erule prefixE, auto iff:butlast_append)
     with `n \<notin> set (butlast ns)` show False..
   qed
 
@@ -1026,14 +1028,14 @@ begin
   proof-
     from assms(2,3) obtain sns where sns: "g \<turnstile> Entry g-sns\<rightarrow>m" "length sns = shortestPath g m"
       by (rule shortestPath_ex)
-    with assms(1) sns(1) obtain sns' where sns': "g \<turnstile> Entry g-sns'\<rightarrow>n" "prefixeq sns' sns" by -(erule path2_prefix_ex, auto elim:dominatesE)
+    with assms(1) sns(1) obtain sns' where sns': "g \<turnstile> Entry g-sns'\<rightarrow>n" "prefix sns' sns" by -(erule path2_prefix_ex, auto elim:dominatesE)
     hence "shortestPath g n \<le> length sns'"
       unfolding shortestPath_def by -(rule Least_le, auto)
     also have "length sns' < length sns"
     proof-
       from assms(1) sns(1) sns'(1) have "sns' \<noteq> sns" by -(drule path2_last, drule path2_last, auto)
-      with sns'(2) have "Sublist.prefix sns' sns" by auto
-      thus ?thesis by (rule prefixeq_length_less)
+      with sns'(2) have "strict_prefix sns' sns" by auto
+      thus ?thesis by (rule prefix_length_less)
     qed
     finally show ?thesis by (simp add:sns(2))
   qed
@@ -1062,34 +1064,34 @@ begin
   | EntryPath_snoc[intro]: "EntryPath g ns \<Longrightarrow> shortestPath g m = Suc (shortestPath g (last ns)) \<Longrightarrow> EntryPath g (ns@[m])"
 
   lemma[simp]:
-    assumes "EntryPath g ns" "prefixeq ns' ns" "ns' \<noteq> []"
+    assumes "EntryPath g ns" "prefix ns' ns" "ns' \<noteq> []"
     shows "EntryPath g ns'"
   using assms proof induction
     case (EntryPath_triv ns n)
     thus ?case by (cases ns', auto)
   qed auto
 
-  lemma EntryPath_suffixeq:
-    assumes "EntryPath g ns" "suffixeq ns' ns" "ns' \<noteq> []"
+  lemma EntryPath_suffix:
+    assumes "EntryPath g ns" "suffix ns' ns" "ns' \<noteq> []"
     shows "EntryPath g ns'"
   using assms proof (induction arbitrary: ns')
     case EntryPath_triv
     thus ?case
-      by (metis EntryPath.EntryPath_triv append_Nil append_is_Nil_conv list.sel(3) suffixeq_def tl_append2)
+      by (metis EntryPath.EntryPath_triv append_Nil append_is_Nil_conv list.sel(3) Sublist.suffix_def tl_append2)
   next
     case (EntryPath_snoc g ns m)
     from EntryPath_snoc.prems obtain ns'' where [simp]: "ns' = ns''@[m]"
-      by - (erule suffixeq_unsnoc, auto)
+      by - (erule suffix_unsnoc, auto)
     show ?case
     proof (cases "ns'' = []")
       case True
       thus ?thesis by auto
     next
       case False
-      from EntryPath_snoc.prems(1) have "suffixeq ns'' ns" by (auto simp: suffixeq_def)
-      with False have "last ns'' = last ns" by (auto simp: suffixeq_def)
+      from EntryPath_snoc.prems(1) have "suffix ns'' ns" by (auto simp: Sublist.suffix_def)
+      with False have "last ns'' = last ns" by (auto simp: Sublist.suffix_def)
       moreover from False have "EntryPath g ns''" using EntryPath_snoc.prems(1)
-        by - (rule EntryPath_snoc.IH, auto simp: suffixeq_def)
+        by - (rule EntryPath_snoc.IH, auto simp: Sublist.suffix_def)
       ultimately show ?thesis using EntryPath_snoc.hyps(2)
         by - (simp, rule EntryPath.EntryPath_snoc, simp_all)
     qed

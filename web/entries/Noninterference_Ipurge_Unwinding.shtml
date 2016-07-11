@@ -104,10 +104,11 @@ and trace set processes.
         <td class="data"><a href="List_Interleaving.shtml">List_Interleaving</a>, <a href="Noninterference_CSP.shtml">Noninterference_CSP</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Noninterference_Generic_Unwinding.shtml">Noninterference_Generic_Unwinding</a>, <a href="Noninterference_Inductive_Unwinding.shtml">Noninterference_Inductive_Unwinding</a>, <a href="Noninterference_Sequential_Composition.shtml">Noninterference_Sequential_Composition</a></td></tr>
+
+
 
   </tbody>
 </table>
@@ -129,7 +130,6 @@ and trace set processes.
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -140,11 +140,14 @@ and trace set processes.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-<ul>
+
+
+    <tr><td class="links">Older releases: <ul>
 <li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-06-13.tar.gz">afp-<!--#echo var="name" -->-2015-06-13.tar.gz</a></li>
 
-</ul>    </td></tr>
+</ul>
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

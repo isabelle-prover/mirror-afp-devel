@@ -360,8 +360,9 @@ proof (induction rule: arthan_wlog)
   finally show ?case .
 next
   case (nonneg x y xs)
-  def p \<equiv> "LEAST n. xs ! n \<noteq> 0"
-  def xs1 \<equiv> "replicate p 0 :: 'a list" and xs2 \<equiv> "drop (Suc p) xs"
+  define p where "p = (LEAST n. xs ! n \<noteq> 0)"
+  define xs1 :: "'a list" where "xs1 = replicate p 0"
+  define xs2 where "xs2 = drop (Suc p) xs"
   from nonneg have "xs ! (length xs - 1) \<noteq> 0" by (simp add: last_conv_nth)
   hence p_nz: "xs ! p \<noteq> 0" unfolding p_def by (rule LeastI)
   {
@@ -503,8 +504,8 @@ proof (induction xs rule: sign_changes_induct)
   show ?case
   proof (cases "xs = []")
     case False
-    def \<alpha> \<equiv> "int (sign_changes (x # y # xs)) - int (sign_changes ((x + y) # xs))" 
-    def \<beta> \<equiv> "int (sign_changes (psums (x # y # xs))) - int (sign_changes (psums ((x+y) # xs)))"
+    define \<alpha> where "\<alpha> = int (sign_changes (x # y # xs)) - int (sign_changes ((x + y) # xs))"
+    define \<beta> where "\<beta> = int (sign_changes (psums (x # y # xs))) - int (sign_changes (psums ((x+y) # xs)))"
     from nonzero False have "\<alpha> \<ge> \<beta> \<and> even (\<alpha> - \<beta>)" unfolding \<alpha>_def \<beta>_def
       by (intro arthan_aux1) auto
     from False and nonzero.prems have
@@ -543,7 +544,7 @@ lemma count_roots_with_times_root:
   assumes "p \<noteq> 0" "P (a :: 'a :: linordered_idom)"
   shows   "count_roots_with P ([:a, -1:] * p) = Suc (count_roots_with P p)"
 proof -
-  def q \<equiv> "[:a, -1:] * p"
+  define q where "q = [:a, -1:] * p"
   from assms have a: "a \<in> roots_with P q" by (simp_all add: roots_with_def q_def)
   have q_nz: "q \<noteq> 0" unfolding q_def by (rule no_zero_divisors) (simp_all add: assms)
 
@@ -675,8 +676,9 @@ lemma odd_coeff_sign_changes_imp_pos_roots:
   assumes "odd (coeff_sign_changes p)"
   obtains x where "x > 0" "poly p x = 0"
 proof -
-  def s \<equiv> "sgn (lead_coeff p)" and n \<equiv> "order 0 p"
-  def r \<equiv> "p div [:0, 1:] ^ n"
+  define s where "s = sgn (lead_coeff p)"
+  define n where "n = order 0 p"
+  define r where "r = p div [:0, 1:] ^ n"
   have p: "p = [:0, 1:] ^ n * r" unfolding r_def n_def
     using order_1[of 0 p] by (simp del: mult_pCons_left)
   from assms p have r_nz: "r \<noteq> 0" by auto
@@ -715,7 +717,7 @@ text \<open>
 lemma coeff_poly_times_one_minus_x:
   fixes g :: "'a :: linordered_idom poly"
   shows "coeff g n = (\<Sum>i\<le>n. coeff (g * [:1, -1:]) i)"
-  using assms by (induction n) simp_all
+  by (induction n) simp_all
 
 text \<open>
   We apply the previous lemma to the coefficient list of a polynomial and show: 
@@ -747,7 +749,8 @@ lemma sign_changes_poly_times_one_minus_x:
   defines "v \<equiv> coeff_sign_changes"
   shows "v ([:1, -1:] * g) - v g > 0 \<and> odd (v ([:1, -1:] * g) - v g)"
 proof -
-  def xs \<equiv> "coeffs ([:1, -1:] * g)" and ys \<equiv> "coeffs g @ [0]"
+  define xs where "xs = coeffs ([:1, -1:] * g)"
+  define ys where "ys = coeffs g @ [0]"
   have ys: "ys = psums xs"
   proof (rule Poly_times_one_minus_x_eq_psums)
     show "length xs = length ys" unfolding xs_def ys_def
@@ -809,7 +812,7 @@ lemma descartes_sign_rule_aux:
 using assms
 proof (induction p rule: poly_root_induct[where P = "\<lambda>a. a > 0"])
   case (root a p)
-  def q \<equiv> "[:a, -1:] * p"
+  define q where "q = [:a, -1:] * p"
   from root.prems have p: "p \<noteq> 0" by auto
   with root p sign_changes_poly_times_root_minus_x[of p a] 
        count_roots_with_times_root[of p "\<lambda>x. x > 0" a] show ?case by (fold q_def) fastforce
@@ -829,7 +832,7 @@ theorem descartes_sign_rule:
   assumes "p \<noteq> 0"
   shows "\<exists>d. even d \<and> coeff_sign_changes p = count_pos_roots p + d"
 proof
-  def d \<equiv> "coeff_sign_changes p - count_pos_roots p"
+  define d where "d = coeff_sign_changes p - count_pos_roots p"
   show "even d \<and> coeff_sign_changes p = count_pos_roots p + d"
     unfolding d_def using descartes_sign_rule_aux[OF assms] by auto
 qed

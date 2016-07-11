@@ -158,12 +158,9 @@ lemma llist_all2_lmirror [simp]:
   "llist_all2 P (lmirror xs) (lmirror ys) \<longleftrightarrow> llist_all2 P xs ys"
 by(blast intro: llist_all2_lmirrorI llist_all2_lmirrorD)
 
-context begin interpretation lifting_syntax .
-
 lemma lmirror_parametric [transfer_rule]:
-  "(llist_all2 A ===> llist_all2 A) lmirror lmirror"
+  includes lifting_syntax
+  shows "(llist_all2 A ===> llist_all2 A) lmirror lmirror"
 by(rule rel_funI)(rule llist_all2_lmirrorI)
-
-end
 
 end

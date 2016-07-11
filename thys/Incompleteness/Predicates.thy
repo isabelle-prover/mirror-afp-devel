@@ -1214,7 +1214,7 @@ lemma OrdP_IN_SUCC_D: "H \<turnstile> OrdP x \<Longrightarrow> H \<turnstile> SU
   by (rule cut2 [OF OrdP_IN_SUCC_D_lemma])
 
 lemma OrdP_IN_SUCC_Iff: "H \<turnstile> OrdP y \<Longrightarrow> H \<turnstile> SUCC x IN SUCC y IFF x IN y" 
-  by (metis Assume Iff_I OrdP_IN_SUCC OrdP_IN_SUCC_D assms thin1)
+  by (metis Assume Iff_I OrdP_IN_SUCC OrdP_IN_SUCC_D thin1)
 
 
 section {*The predicate @{text LstSeqP}*}

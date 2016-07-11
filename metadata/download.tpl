@@ -1,0 +1,46 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Archive of Formal Proofs</title>
+<link rel="stylesheet" type="text/css" href="front.css">
+<link rel="icon" href="images/favicon.ico" type="image/icon">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+<tbody>
+	<tr>
+	<td width="20%" align="center" valign="top">
+  <!-- navigation -->
+  <!--#include file="nav.html"-->
+	</td>
+	<td width="80%" valign="top">
+	<!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+<h1><font class="first">D</font>ownload the
+	<font class="first">A</font>rchive</h1>
+<p>&nbsp;</p>
+<table width="80%" class="descr">
+<tbody>
+
+<!--gen-->
+
+		<tr><td class="head">Older stable versions:</td></tr>
+		<tr><td class="entry">Please use the <a
+	href="http://sourceforge.net/projects/afp/files/">sourceforge
+	download system</a> to access older versions of the archive.</td></tr>
+
+	<tr><td class="head">Mercurial access:</td></tr>	
+
+	<tr><td class="entry">At <a href="https://bitbucket.org/isa-afp/afp-devel/">Bitbucket</a></td></tr>
+
+	<tr><td class="head">How to refer to AFP entries:</td></tr>	
+	<tr><td class="entry">You can refer to AFP entries by using the <a href="using.shtml">AFP as an Isabelle component</a>.</td></tr> 
+
+	</tbody></table></td> </tr> </table>
+</body>
+</html>

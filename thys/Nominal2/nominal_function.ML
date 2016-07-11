@@ -102,7 +102,7 @@ fun nominal_check_defs ctxt fixes eqs =
 
 val simp_attribs = map (Attrib.internal o K)
   [Simplifier.simp_add,
-   Code.add_default_eqn_attribute,
+   Code.add_default_eqn_attribute Code.Equation,
    Named_Theorems.add @{named_theorems nitpick_simp}]
 
 val psimp_attribs = map (Attrib.internal o K)
@@ -241,16 +241,13 @@ local
      >> (fn opts => fold apply_opt opts default)
 in
   fun nominal_function_parser default_cfg =
-      config_parser default_cfg -- Parse.fixes -- Parse_Spec.where_multi_specs
+      config_parser default_cfg -- Parse_Spec.specification
 end
 
-
-(* nominal *)
 val _ =
   Outer_Syntax.local_theory_to_proof' @{command_keyword nominal_function}
     "define general recursive nominal functions"
        (nominal_function_parser nominal_default_config
-          >> (fn ((config, fixes), statements) => nominal_function_cmd fixes statements config))
-
+          >> (fn (config, (fixes, specs)) => nominal_function_cmd fixes specs config))
 
 end

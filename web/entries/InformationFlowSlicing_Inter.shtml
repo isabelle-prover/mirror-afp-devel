@@ -1,0 +1,144 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">I</font>nter-Procedural
+<font class="first">I</font>nformation
+<font class="first">F</font>low
+<font class="first">N</font>oninterference
+via
+<font class="first">S</font>licing
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Inter-Procedural Information Flow Noninterference via Slicing</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data"><a href="http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php">Daniel Wasserrab</a></td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2010-03-23</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+
+<p>
+In this contribution, we show how correctness proofs for <a
+href="Slicing.shtml">intra-</a> and <a
+href="HRB-Slicing.shtml">interprocedural slicing</a> can be used to prove
+that slicing is able to guarantee information flow noninterference.
+Moreover, we also illustrate how to lift the control flow graphs of the
+respective frameworks such that they fulfil the additional assumptions
+needed in the noninterference proofs. A detailed description of the
+intraprocedural proof and its interplay with the slicing framework can be
+found in the PLAS'09 paper by Wasserrab et al.
+</p>
+<p>
+This entry contains the part for inter-procedural slicing. See entry
+<a href="InformationFlowSlicing.shtml">InformationFlowSlicing</a>
+for the intra-procedural part.
+</p>
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2016-06-10]: The original entry <a
+href="InformationFlowSlicing.shtml">InformationFlowSlicing</a> contained both
+the <a href="InformationFlowSlicing_Inter.shtml">inter-</a> and <a
+href="InformationFlowSlicing.shtml">intra-procedural</a> case was split into
+two for easier maintenance.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{InformationFlowSlicing_Inter-AFP,
+  author  = {Daniel Wasserrab},
+  title   = {Inter-Procedural Information Flow Noninterference via Slicing},
+  journal = {Archive of Formal Proofs},
+  month   = mar,
+  year    = 2010,
+  note    = {\url{http://isa-afp.org/entries/InformationFlowSlicing_Inter.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+
+
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="HRB-Slicing.shtml">HRB-Slicing</a></td></tr>
+
+
+
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="InformationFlowSlicing_Inter" -->
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+
+
+    <tr><td class="links">Older releases: None
+    </td></tr>
+
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>

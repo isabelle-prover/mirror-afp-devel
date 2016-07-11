@@ -509,7 +509,7 @@ lemma transfer_tau:
       by (clarsimp intro!: netmap_is_fst_netgmap')
     from \<open>(s, \<tau>, s') \<in> trans (pnet np n)\<close> have "net_ips s' = net_ips s"
       by (rule pnet_maintains_dom [THEN sym])
-    def \<sigma>' \<equiv> "\<lambda>j. if j = i then the (fst (netgmap sr s') i) else \<sigma> j"
+    define \<sigma>' where "\<sigma>' j = (if j = i then the (fst (netgmap sr s') i) else \<sigma> j)" for j
     from \<open>\<forall>j. j\<noteq>i \<longrightarrow> fst (netgmap sr s') j = fst (netgmap sr s) j\<close>
          and \<open>netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)\<close>
       have "\<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j"
@@ -525,7 +525,7 @@ lemma transfer_tau:
          \<open>net_ips s = net_tree_ips n\<close> \<open>net_ips s' = net_ips s\<close>
          \<open>netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)\<close>
       have "fst (netgmap sr s') = fst (netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s')))"
-        unfolding \<sigma>'_def by - (rule ext, clarsimp)
+        unfolding \<sigma>'_def [abs_def] by - (rule ext, clarsimp)
 
     hence "netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))"
       by (rule prod_eqI, simp)
@@ -560,7 +560,7 @@ lemma transfer_tau:
       moreover from \<open>netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))\<close>
                     \<open>ns' = NodeS ii s' R'\<close> and \<open>ii = i\<close>
         have "\<sigma>' i = fst (sr s')"
-          unfolding \<sigma>'_def by clarsimp (hypsubst_thin,
+          unfolding \<sigma>'_def [abs_def] by clarsimp (hypsubst_thin,
                                         metis (full_types, lifting) fun_upd_same option.sel)
       ultimately have "((\<sigma>, snd (sr s)), a, (\<sigma>', snd (sr s'))) \<in> trans (onp i)"
         using \<open>(s, a, s') \<in> trans (np i)\<close> by (rule trans)
@@ -724,7 +724,7 @@ lemma transfer_deliver:
       by (clarsimp intro!: netmap_is_fst_netgmap')
     from \<open>(s, i:deliver(d), s') \<in> trans (pnet np n)\<close> have "net_ips s' = net_ips s"
       by (rule pnet_maintains_dom [THEN sym])
-    def \<sigma>' \<equiv> "\<lambda>j. if j = i then the (fst (netgmap sr s') i) else \<sigma> j"
+    define \<sigma>' where "\<sigma>' j = (if j = i then the (fst (netgmap sr s') i) else \<sigma> j)" for j
     from \<open>\<forall>j. j\<noteq>i \<longrightarrow> fst (netgmap sr s') j = fst (netgmap sr s) j\<close>
          and \<open>netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)\<close>
       have "\<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j"
@@ -740,7 +740,7 @@ lemma transfer_deliver:
          \<open>net_ips s = net_tree_ips n\<close> \<open>net_ips s' = net_ips s\<close>
          \<open>netgmap sr s = netmask (net_tree_ips n) (\<sigma>, \<zeta>)\<close>
       have "fst (netgmap sr s') = fst (netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s')))"
-        unfolding \<sigma>'_def by - (rule ext, clarsimp)
+        unfolding \<sigma>'_def [abs_def] by - (rule ext, clarsimp)
 
     hence "netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s'))"
       by (rule prod_eqI, simp)
@@ -774,7 +774,7 @@ lemma transfer_deliver:
       moreover from \<open>netgmap sr ns' = netmask (net_tree_ips \<langle>ii; R\<^sub>i\<rangle>) (\<sigma>', snd (netgmap sr ns'))\<close>
                     \<open>ns' = NodeS ii s' R'\<close> and \<open>ii = i\<close>
         have "\<sigma>' i = fst (sr s')"
-          unfolding \<sigma>'_def by clarsimp (hypsubst_thin,
+          unfolding \<sigma>'_def [abs_def] by clarsimp (hypsubst_thin,
                                         metis (lifting, full_types) fun_upd_same option.sel)
       ultimately have "((\<sigma>, snd (sr s)), deliver d, (\<sigma>', snd (sr s'))) \<in> trans (onp i)"
         using \<open>(s, deliver d, s') \<in> trans (np i)\<close> by (rule trans)
@@ -1104,7 +1104,7 @@ lemma transfer_arrive:
                   and "\<forall>j. j\<notin>net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j"
                   and "netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')"
   proof atomize_elim
-    def \<sigma>' \<equiv> "\<lambda>i. if i\<in>net_tree_ips n then the (fst (netgmap sr s') i) else \<sigma> i"
+    define \<sigma>' where "\<sigma>' i = (if i\<in>net_tree_ips n then the (fst (netgmap sr s') i) else \<sigma> i)" for i
 
     from assms(2) have "net_ips s = net_tree_ips n"
       by (rule pnet_net_ips_net_tree_ips)
@@ -1115,7 +1115,7 @@ lemma transfer_arrive:
     proof (rule prod_eqI)
       from \<open>net_ips s' = net_tree_ips n\<close>
         show "fst (netgmap sr s') = fst (netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s')))"
-          unfolding \<sigma>'_def by - (rule ext, clarsimp)
+          unfolding \<sigma>'_def [abs_def] by - (rule ext, clarsimp)
     qed simp
 
     moreover with assms(1-3)
@@ -1144,7 +1144,7 @@ lemma transfer_cast:
                   and "\<forall>j. j\<notin>net_ips \<zeta> \<longrightarrow> \<sigma>' j = \<sigma> j"
                   and "netgmap sr s' = netmask (net_tree_ips n) (\<sigma>', \<zeta>')"
   proof atomize_elim
-    def \<sigma>' \<equiv> "\<lambda>i. if i\<in>net_tree_ips n then the (fst (netgmap sr s') i) else \<sigma> i"
+    define \<sigma>' where "\<sigma>' i = (if i\<in>net_tree_ips n then the (fst (netgmap sr s') i) else \<sigma> i)" for i
 
     from assms(2) have "net_ips s = net_tree_ips n" ..
     with assms(1) have "net_ips s' = net_tree_ips n"
@@ -1153,7 +1153,7 @@ lemma transfer_cast:
     proof (rule prod_eqI)
       from \<open>net_ips s' = net_tree_ips n\<close>
         show "fst (netgmap sr s') = fst (netmask (net_tree_ips n) (\<sigma>', snd (netgmap sr s')))"
-      unfolding \<sigma>'_def by - (rule ext, clarsimp simp add: some_the_fst_netgmap)
+      unfolding \<sigma>'_def [abs_def] by - (rule ext, clarsimp simp add: some_the_fst_netgmap)
     qed simp
 
     from \<open>net_ips s' = net_tree_ips n\<close> and \<open>net_ips s = net_tree_ips n\<close> 
@@ -1510,7 +1510,7 @@ lemma netmask_initmissing_netgmap:
 
 lemma snd_initmissing [simp]:
   "snd (initmissing x)= snd x"
-  using assms unfolding initmissing_def by simp
+  unfolding initmissing_def by simp
 
 lemma initmnissing_snd_netgmap [simp]:
   assumes "initmissing (netgmap sr s) = (\<sigma>, \<zeta>)"

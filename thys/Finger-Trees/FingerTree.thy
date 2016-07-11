@@ -416,8 +416,8 @@ fun viewRn :: "('e,'a::monoid_add) FingerTreeStruc \<Rightarrow> ('e,'a) ViewnRe
 lemma 
   digitToTree_inv: "is_leveln_digit n d \<Longrightarrow> is_leveln_ftree n (digitToTree d)"
   "is_measured_digit d \<Longrightarrow> is_measured_ftree (digitToTree d)" 
-  apply (insert assms, cases d,auto simp add: deep_def)
-  apply (insert assms, cases d,auto simp add: deep_def)
+  apply (cases d,auto simp add: deep_def)
+  apply (cases d,auto simp add: deep_def)
   done
 
 lemma digitToTree_list: "toList (digitToTree d) = digitToList d"
@@ -426,7 +426,7 @@ lemma digitToTree_list: "toList (digitToTree d) = digitToList d"
 lemma nodeToDigit_inv:
   "is_leveln_node (Suc n) nd \<Longrightarrow> is_leveln_digit n (nodeToDigit nd) " 
   "is_measured_node nd \<Longrightarrow> is_measured_digit (nodeToDigit nd)"
-  by (insert assms, cases nd, auto) (insert assms, cases nd, auto)
+  by (cases nd, auto) (cases nd, auto)
 
 lemma nodeToDigit_list: "digitToList (nodeToDigit nd) = nodeToList nd"
   by (cases nd,auto)

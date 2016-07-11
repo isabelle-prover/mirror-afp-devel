@@ -25,11 +25,11 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
-section {* Terminating Programs *}
+section \<open>Terminating Programs\<close>
 
 theory Termination imports Semantic begin
 
-subsection {* Inductive Characterisation: @{text "\<Gamma>\<turnstile>c\<down>s"}*}
+subsection \<open>Inductive Characterisation: \<open>\<Gamma>\<turnstile>c\<down>s\<close>\<close>
 
 inductive "terminates"::"('s,'p,'f) body \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'f) xstate \<Rightarrow> bool"
   ("_\<turnstile>_ \<down> _" [60,20,60] 89)
@@ -311,8 +311,8 @@ done
 
 
 (* ************************************************************************* *)
-subsection {* Lemmas about @{const "sequence"}, @{const "flatten"} and 
- @{const "normalize"} *}
+subsection \<open>Lemmas about @{const "sequence"}, @{const "flatten"} and 
+ @{const "normalize"}\<close>
 (* ************************************************************************ *)
 
 lemma terminates_sequence_app: 
@@ -630,7 +630,7 @@ lemma terminates_iff_terminates_normalize:
     terminates_normalize_to_terminates)
 
 (* ************************************************************************* *)
-subsection {* Lemmas about @{const "strip_guards"} *}
+subsection \<open>Lemmas about @{const "strip_guards"}\<close>
 (* ************************************************************************* *)
 
 lemma terminates_strip_guards_to_terminates: "\<And>s. \<Gamma>\<turnstile>strip_guards F c\<down>s  \<Longrightarrow> \<Gamma>\<turnstile>c\<down>s"
@@ -722,8 +722,8 @@ next
     proof (induct)
       case (WhileTrue s b' c')
       have eqs: "While b' c' = While b (strip_guards F c)" by fact
-      with `s\<in>b'` have b: "s\<in>b" by simp
-      from eqs `\<Gamma>\<turnstile>c' \<down> Normal s` have "\<Gamma>\<turnstile>strip_guards F c \<down> Normal s"
+      with \<open>s\<in>b'\<close> have b: "s\<in>b" by simp
+      from eqs \<open>\<Gamma>\<turnstile>c' \<down> Normal s\<close> have "\<Gamma>\<turnstile>strip_guards F c \<down> Normal s"
         by simp
       hence term_c: "\<Gamma>\<turnstile>c \<down> Normal s"
         by (rule hyp_c)
@@ -876,7 +876,7 @@ next
 qed (auto intro: terminates.intros)
 
 (* ************************************************************************* *)
-subsection {* Lemmas about @{term "c\<^sub>1 \<inter>\<^sub>g c\<^sub>2"} *}
+subsection \<open>Lemmas about @{term "c\<^sub>1 \<inter>\<^sub>g c\<^sub>2"}\<close>
 (* ************************************************************************* *)
 
 lemma inter_guards_terminates: 
@@ -1131,7 +1131,7 @@ proof -
 qed
 
 (* ************************************************************************* *)
-subsection {* Lemmas about @{const "mark_guards"} *}
+subsection \<open>Lemmas about @{const "mark_guards"}\<close>
 (* ************************************************************************ *)
 
 lemma terminates_to_terminates_mark_guards:
@@ -1383,7 +1383,7 @@ lemma terminates_mark_guards_to_terminates:
 
 
 (* ************************************************************************* *)
-subsection {* Lemmas about @{const "merge_guards"} *}
+subsection \<open>Lemmas about @{const "merge_guards"}\<close>
 (* ************************************************************************ *)
 
 lemma terminates_to_terminates_merge_guards:
@@ -1573,7 +1573,7 @@ theorem terminates_iff_terminates_merge_guards:
     terminates_merge_guards_to_terminates)
 
 (* ************************************************************************* *)
-subsection {* Lemmas about @{term "c\<^sub>1 \<subseteq>\<^sub>g c\<^sub>2"} *}
+subsection \<open>Lemmas about @{term "c\<^sub>1 \<subseteq>\<^sub>g c\<^sub>2"}\<close>
 (* ************************************************************************ *)
 
 lemma terminates_fewer_guards_Normal:
@@ -2004,7 +2004,7 @@ next
 qed
 
 (* ************************************************************************* *)
-subsection {* Lemmas about @{const "strip_guards"} *}
+subsection \<open>Lemmas about @{const "strip_guards"}\<close>
 (* ************************************************************************* *)
 
 lemma terminates_noFault_strip:
@@ -2149,7 +2149,7 @@ qed
 
 
 (* ************************************************************************* *)
-subsection {* Miscellaneous *}
+subsection \<open>Miscellaneous\<close>
 (* ************************************************************************* *)
 
 lemma terminates_while_lemma:

@@ -1023,7 +1023,7 @@ give the bare minimum we need.*}
 lemma ereal_sgn_abs:
   fixes l::ereal
   shows "sgn(l) * l = abs(l)"
-apply (cases l) using assms by (auto simp add: assms sgn_if ereal_less_uminus_reorder)
+apply (cases l) by (auto simp add: sgn_if ereal_less_uminus_reorder)
 
 lemma sgn_squared_ereal:
   assumes "l \<noteq> (0::ereal)"

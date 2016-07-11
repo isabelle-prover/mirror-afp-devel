@@ -821,7 +821,7 @@ next
     moreover with FExists(2) *(2) obtain p where "I\<^sub>0 = Inl p" "p < length w"
       by (auto simp: nth_Cons' split: sum.splits if_split_asm)
     ultimately have "x = enc (w, I)" "wf_interp_for_formula (w, I) (FExists \<phi>)" "length I = n"
-      "length w > 0" "satisfies (w, I) (FExists \<phi>)"using FExists(2) unfolding x
+      "length w > 0" "satisfies (w, I) (FExists \<phi>)" using FExists(2) unfolding x
       by (auto simp: map_tl nth_Cons' split: if_split_asm simp del: o_apply) (auto simp: \<pi>_def)
     thus "x \<in> lang\<^sub>M\<^sub>2\<^sub>L n (FExists \<phi>)" unfolding lang\<^sub>M\<^sub>2\<^sub>L_def by (auto intro!: exI[of _ w] exI[of _ I])
   qed

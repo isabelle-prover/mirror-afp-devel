@@ -1043,7 +1043,8 @@ proof -
       qed
     qed
   qed
-  ultimately have "base ds' p \<in> grid (base (ds \<union> ds') b) (ds \<union> ds')" unfolding base_base[OF p_spg] base_base[OF b_spg] Un_ac(3) by auto
+  ultimately have "base ds' p \<in> grid (base (ds \<union> ds') b) (ds \<union> ds')"
+    by (simp only: base_base[OF p_spg] base_base[OF b_spg] Un_ac(3))
   from grid_transitive[OF x_grid this] show ?thesis using ds_union by auto
 qed
 lemma grid_base_dim_add: assumes "ds' \<subseteq> ds" and b_spg: "b \<in> sparsegrid' dm" and p_grid: "p \<in> grid (base ds' b) ds'"
@@ -1109,7 +1110,7 @@ proof -
   moreover have "{0..<dm} - ds' = {0..<dm} - {d \<in> ds'. d < dm}" by auto
   ultimately have "x \<in> grid (start dm) ({0..<dm} - ds')" by auto
   from baseI[OF this p_xgrid] and x_grid
-  show ?thesis unfolding Un_ac(3) by auto
+  show ?thesis by (auto simp: Un_ac(3))
 qed
 
 subsection \<open> Lift Operation over all Grid Points \<close>

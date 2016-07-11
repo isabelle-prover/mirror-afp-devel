@@ -18,7 +18,8 @@ lift_definition af_ap :: "('a \<Rightarrow> 'b) af \<Rightarrow> 'a af \<Rightar
 adhoc_overloading Applicative.pure Abs_af
 adhoc_overloading Applicative.ap af_ap
 
-context begin interpretation applicative_syntax .
+context includes applicative_syntax
+begin
 
 lemma af_identity: "af_pure id \<diamondop> x = x"
 by transfer simp
@@ -43,7 +44,7 @@ applicative af
 for
   pure: af_pure
   ap: af_ap
-using af_identity af_composition af_homomorphism af_interchange
+using af_homomorphism af_composition af_identity af_interchange
 unfolding id_def comp_def[abs_def]
 .
 

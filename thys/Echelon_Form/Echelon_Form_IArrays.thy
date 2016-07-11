@@ -396,6 +396,7 @@ next
     by (metis hyp2 hyp3 nrows_def)
   qed
   show "snd (foldl (echelon_form_of_column_k bezout) (A, 0) [0..<Suc (Suc k)]) \<le> nrows A"
+    using [[unfold_abs_def = false]]
     unfolding upt_rw foldl_append unfolding List.foldl.simps apply (subst fold_rw')
     unfolding echelon_form_of_column_k_def Let_def
     using hyp3 le_antisym not_less_eq_eq unfolding nrows_def by fastforce

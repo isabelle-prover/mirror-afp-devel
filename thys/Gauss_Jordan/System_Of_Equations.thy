@@ -436,7 +436,7 @@ shows "consistent A 0" unfolding consistent_def is_solution_def using matrix_vec
 lemma dim_solution_set_0:
 fixes A::"'a::{field}^'n::{mod_type}^'rows::{mod_type}"
 shows "(vec.dim (solution_set A 0) = 0) = (solution_set A 0 = {0})"
-proof (auto)
+proof (safe, simp_all)
 show "vec.dim {0::'a^'n::{mod_type}} = 0" using vec.dim_zero_eq'[of "{0::'a^'n::{mod_type}}"] by fast
 fix x assume dim0: "vec.dim (solution_set A 0) = 0" 
 show "0 \<in> solution_set A 0" using zero_is_solution_homogeneous_system .
@@ -620,7 +620,7 @@ have s: "is_solution (fst (the (solve A b))) A b" using consistent_imp_is_soluti
 have "solution_set A b = {fst (the (solve A b))} + solution_set A 0" using solution_set_rel[OF s] .
 also have "... = {fst (the (solve A b))} + vec.span (snd (the (solve A b)))"
   unfolding set_plus_def solve_def unfolding if_P[OF con] snd_conv fst_conv 
-  proof (auto)
+  proof (safe, simp_all)
     fix b assume "b \<in> solution_set A 0"
     thus "b \<in> vec.span (basis_null_space A)" unfolding null_space_eq_solution_set[symmetric] using basis_null_space[of A] by fast
     next

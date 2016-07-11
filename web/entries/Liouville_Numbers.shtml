@@ -46,10 +46,12 @@ numbers
 Liouville numbers are a class of transcendental numbers that can be approximated
 particularly well with rational numbers. Historically, they were the first
 numbers whose transcendence was proven.
+
 In this entry, we define the concept of Liouville numbers as well as the
 standard construction to obtain Liouville numbers (including Liouville's
 constant) and we prove their most important properties: irrationality and
 transcendence.
+
 The proof is very elementary and requires only standard arithmetic, the Mean
 Value Theorem for polynomials, and the boundedness of polynomials on compact
 intervals.
@@ -73,10 +75,7 @@ intervals.
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+
 
   </tbody>
 </table>
@@ -98,7 +97,6 @@ intervals.
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -109,11 +107,14 @@ intervals.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-<ul>
+
+
+    <tr><td class="links">Older releases: <ul>
 <li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2016-01-05.tar.gz">afp-<!--#echo var="name" -->-2016-01-05.tar.gz</a></li>
 
-</ul>    </td></tr>
+</ul>
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

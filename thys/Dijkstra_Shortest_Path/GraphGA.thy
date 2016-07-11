@@ -29,8 +29,8 @@ begin
 
     {
       fix nl el
-      def g1\<equiv>"(foldl (\<lambda>g v. a v g) (e ()) nl)"
-      def g2\<equiv>"(foldl (\<lambda>g (v,e,v'). u v e v' g) g1 el)"
+      define g1 where "g1 = foldl (\<lambda>g v. a v g) (e ()) nl"
+      define g2 where "g2 = foldl (\<lambda>g (v,e,v'). u v e v' g) g1 el"
       have "invar g1 \<and> \<alpha> g1 = \<lparr> nodes = set nl, edges = {} \<rparr>"
         unfolding g1_def
         by (induct nl rule: rev_induct)

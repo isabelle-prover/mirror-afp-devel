@@ -94,7 +94,7 @@ corollary
     and choose_strategy: "strategy p (choose v)"
   using choose_works[OF assms, unfolded minimal_good_strategy_def] good_strategies by blast+
 
-corollary choose_in_Strategies: "v \<in> S \<Longrightarrow> choose v \<in> Strategies" using assms choose_good by blast
+corollary choose_in_Strategies: "v \<in> S \<Longrightarrow> choose v \<in> Strategies" using choose_good by blast
 
 lemma well_ordered_strategy_valid: "strategy p well_ordered_strategy"
 proof-

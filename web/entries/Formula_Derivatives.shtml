@@ -84,10 +84,7 @@ Coalgebraic Decision Procedure for WS1S</a> by the author.
         <td class="data"><a href="Coinductive_Languages.shtml">Coinductive_Languages</a>, <a href="Deriving.shtml">Deriving</a>, <a href="List-Index.shtml">List-Index</a>, <a href="Show.shtml">Show</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+
 
   </tbody>
 </table>
@@ -109,7 +106,6 @@ Coalgebraic Decision Procedure for WS1S</a> by the author.
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -120,11 +116,14 @@ Coalgebraic Decision Procedure for WS1S</a> by the author.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-<ul>
+
+
+    <tr><td class="links">Older releases: <ul>
 <li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-05-28.tar.gz">afp-<!--#echo var="name" -->-2015-05-28.tar.gz</a></li>
 
-</ul>    </td></tr>
+</ul>
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

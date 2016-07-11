@@ -118,10 +118,7 @@ support for non-deterministic memory allocators
         <td class="data"><a href="Coinductive.shtml">Coinductive</a>, <a href="Collections.shtml">Collections</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+
 
   </tbody>
 </table>
@@ -143,7 +140,6 @@ support for non-deterministic memory allocators
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -154,8 +150,9 @@ support for non-deterministic memory allocators
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-<ul>
+
+
+    <tr><td class="links">Older releases: <ul>
 <li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-05-27.tar.gz">afp-<!--#echo var="name" -->-2015-05-27.tar.gz</a></li>
 <li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-08-28.tar.gz">afp-<!--#echo var="name" -->-2014-08-28.tar.gz</a></li>
 <li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2013-12-11.tar.gz">afp-<!--#echo var="name" -->-2013-12-11.tar.gz</a></li>
@@ -172,7 +169,9 @@ support for non-deterministic memory allocators
 <li>Isabelle 2008: <a href="../release/afp-<!--#echo var="name" -->-2008-06-10.tar.gz">afp-<!--#echo var="name" -->-2008-06-10.tar.gz</a></li>
 <li>Isabelle 2007: <a href="../release/afp-<!--#echo var="name" -->-2007-12-03.tar.gz">afp-<!--#echo var="name" -->-2007-12-03.tar.gz</a></li>
 
-</ul>    </td></tr>
+</ul>
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

@@ -120,7 +120,6 @@ subsection\<open>Interface Between the Reflected and the Native\<close>
 
 ML\<open>
  val To_string0 = String.implode o META.to_list
- fun To_nat (Code_Numeral.Nat i) = i
 \<close>
 
 ML\<open>
@@ -128,15 +127,14 @@ structure From = struct
  val string = META.SS_base o META.ST
  val binding = string o Binding.name_of
  (*fun term ctxt s = string (XML.content_of (YXML.parse_body (Syntax.string_of_term ctxt s)))*)
- val nat = Code_Numeral.Nat
- val internal_oid = META.Oid o nat
+ val internal_oid = META.Oid o Code_Numeral.natural_of_integer
  val option = Option.map
  val list = List.map
  fun pair f1 f2 (x, y) = (f1 x, f2 y)
  fun pair3 f1 f2 f3 (x, y, z) = (f1 x, f2 y, f3 z)
 
  structure Pure = struct
- val indexname = pair string nat
+ val indexname = pair string Code_Numeral.natural_of_integer
  val class = string
  val sort = list class
  fun typ e = (fn
@@ -148,7 +146,7 @@ structure From = struct
      Const (s, t) => (META.Const o pair string typ) (s, t)
    | Free (s, t) => (META.Free o pair string typ) (s, t)
    | Var (i, t) => (META.Var o pair indexname typ) (i, t)
-   | Bound i => (META.Bound o nat) i
+   | Bound i => (META.Bound o Code_Numeral.natural_of_integer) i
    | Abs (s, ty, t) => (META.Abs o pair3 string typ term) (s, ty, t)
    | op $ (term1, term2) => (META.App o pair term term) (term1, term2)
   ) e
@@ -159,15 +157,7 @@ structure From = struct
 end
 \<close>
 
-ML\<open>
-fun in_local decl thy =
-  thy
-  |> Named_Target.theory_init
-  |> decl
-  |> Local_Theory.exit_global
-\<close>
-
-ML\<open>fun List_mapi f = META.mapi (f o To_nat)\<close>
+ML\<open>fun List_mapi f = META.mapi (f o Code_Numeral.integer_of_natural)\<close>
 
 ML\<open>
 structure Ty' = struct
@@ -299,7 +289,7 @@ fun semi__method expr = let open META open Method open META_overload in case exp
       Basic (fn ctxt => SIMPLE_METHOD' (Induct_Tacs.case_tac ctxt (of_semi__term e) [] NONE))
   | Method_blast n =>
       Basic (case n of NONE => SIMPLE_METHOD' o blast_tac
-                     | SOME lim => fn ctxt => SIMPLE_METHOD' (depth_tac ctxt (To_nat lim)))
+                     | SOME lim => fn ctxt => SIMPLE_METHOD' (depth_tac ctxt (Code_Numeral.integer_of_natural lim)))
   | Method_clarify => Basic (fn ctxt => (SIMPLE_METHOD' (fn i => CHANGED_PROP (clarify_tac ctxt i))))
   | Method_metis (l_opt, l) =>
       Basic (fn ctxt => (METHOD oo Metis_Tactic.metis_method)
@@ -335,8 +325,8 @@ fun proof_show_gen f (thes, thes_when) st = st
        NONE
        (K I)
        []
-       (if thes_when = [] then [] else [((@{binding ""}, []), map (fn t => (t, [])) thes_when)])
-       [((@{binding ""}, []), [(thes, [])])]
+       (if thes_when = [] then [] else [(Binding.empty_atts, map (fn t => (t, [])) thes_when)])
+       [(Binding.empty_atts, [(thes, [])])]
        true
   |> snd
 
@@ -408,7 +398,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
     |> Class.instantiation (tycos, [], Syntax.read_sort (Proof_Context.init_global thy) "object")
     |> fold_map (fn _ => fn thy =>
         let val ((_, (_, ty)), thy) = Specification.definition_cmd
-                                       NONE []
+                                       NONE [] []
                                        ((To_binding (To_string0 n_def ^ "_" ^ name ^ "_def"), [])
                                          , of_semi__term expr) false thy in
          (ty, thy)
@@ -420,7 +410,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
 | Theory_overloading (Overloading (n_c, e_c, n, e)) => in_theory
    (fn thy => thy
     |> Overloading.overloading_cmd [(To_string0 n_c, of_semi__term e_c, true)]
-    |> snd o Specification.definition_cmd NONE [] ((To_sbinding n, []), of_semi__term e) false
+    |> snd o Specification.definition_cmd NONE [] [] ((To_sbinding n, []), of_semi__term e) false
     |> Local_Theory.exit_global)
 | Theory_consts (Consts (n, ty, symb)) => in_theory
    (Sign.add_consts_cmd [( To_sbinding n
@@ -432,12 +422,12 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
       | Definition_where1 (name, (abbrev, prio), e) =>
           (SOME ( To_sbinding name
                 , NONE
-                , Mixfix (Input.string ("(1" ^ of_semi__term abbrev ^ ")"), [], To_nat prio, Position.no_range)), e)
+                , Mixfix (Input.string ("(1" ^ of_semi__term abbrev ^ ")"), [], Code_Numeral.integer_of_natural prio, Position.no_range)), e)
       | Definition_where2 (name, abbrev, e) =>
           (SOME ( To_sbinding name
                 , NONE
                 , Mixfix (Input.string ("(" ^ of_semi__term abbrev ^ ")"), [], 1000, Position.no_range)), e) in
-    (snd o Specification.definition_cmd def [] ((@{binding ""}, []), of_semi__term e) false)
+    (snd o Specification.definition_cmd def [] [] (Binding.empty_atts, of_semi__term e) false)
     end
 | Theory_lemmas (Lemmas_simp_thm (simp, s, l)) => in_local
    (fn lthy => (snd o Specification.theorems Thm.theoremK
@@ -455,8 +445,8 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
       false) lthy)
 | Theory_lemma (Lemma (n, l_spec, l_apply, o_by)) => in_local
    (fn lthy =>
-           Specification.theorem_cmd Thm.theoremK NONE (K I)
-             (@{binding ""}, []) [] [] (Element.Shows [((To_sbinding n, [])
+           Specification.theorem_cmd true Thm.theoremK NONE (K I)
+             Binding.empty_atts [] [] (Element.Shows [((To_sbinding n, [])
                                                        ,[((String.concatWith (" \<Longrightarrow> ")
                                                              (List.map of_semi__term l_spec)), [])])])
              false lthy
@@ -464,7 +454,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
         |> global_terminal_proof o_by)
 | Theory_lemma (Lemma_assumes (n, l_spec, concl, l_apply, o_by)) => in_local
    (fn lthy => lthy
-        |> Specification.theorem_cmd Thm.theoremK NONE (K I)
+        |> Specification.theorem_cmd true Thm.theoremK NONE (K I)
              (To_sbinding n, [])
              []
              (List.map (fn (n, (b, e)) =>
@@ -472,7 +462,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
                                             , if b then [[Token.make_string ("simp", Position.none)]] else [])
                                           , [(of_semi__term e, [])])])
                        l_spec)
-             (Element.Shows [((@{binding ""}, []),[(of_semi__term concl, [])])])
+             (Element.Shows [(Binding.empty_atts, [(of_semi__term concl, [])])])
              false
         |> fold semi__command_proof l_apply
         |> (case map_filter (fn META.Command_let _ => SOME []
@@ -486,7 +476,7 @@ fun semi__theory in_theory in_local = let open META open META_overload in (*let 
               |> fold (fn l => fold semi__command_state l o Proof.local_qed arg) l
               |> Proof.global_qed arg end))
 | Theory_axiomatization (Axiomatization (n, e)) => in_theory
-   (#2 o Specification.axiomatization_cmd [] [] [((To_sbinding n, []), [of_semi__term e])])
+   (#2 o Specification.axiomatization_cmd [] [] [] [((To_sbinding n, []), of_semi__term e)])
 | Theory_section _ => in_theory I
 | Theory_text _ => in_theory I
 | Theory_ML (SML ml) =>
@@ -526,7 +516,7 @@ structure Bind_META = struct open Bind_Isabelle
 fun all_meta aux ret = let open META open META_overload in fn
   META_semi_theories thy =>
     ret o (case thy of
-       Theories_one thy => semi__theory I in_local thy
+       Theories_one thy => semi__theory I Named_Target.theory_map thy
      | Theories_locale (data, l) => fn thy => thy
        |> (   Expression.add_locale_cmd
                 (To_sbinding (META.holThyLocale_name data))
@@ -1111,7 +1101,7 @@ ML\<open>
 fun exec_deep (env, output_header_thy, seri_args, filename_thy, tmp_export_code, l_obj) thy0 =
   let open Generation_mode in
   let val of_arg = META.isabelle_of_compiler_env_config META.isabelle_apply I in
-  let fun def s = in_local (snd o Specification.definition_cmd NONE [] ((@{binding ""}, []), s) false) in
+  let fun def s = Named_Target.theory_map (snd o Specification.definition_cmd NONE [] [] (Binding.empty_atts, s) false) in
   let val name_main = Deep.mk_free (Proof_Context.init_global thy0)
                                    Deep0.Export_code_env.Isabelle.argument_main [] in
   thy0
@@ -1297,7 +1287,7 @@ structure TOY_parse = struct
                                            | _ => Scan.fail "Syntax error")
                         || Parse.number >> (fn s => META.Mult_nat
                                                       (case Int.fromString s of
-                                                         SOME i => From.nat i
+                                                         SOME i => Code_Numeral.natural_of_integer i
                                                        | NONE => Scan.fail "Syntax error"))
   val term_base =
        Parse.number >> (META.ToyDefInteger o From.string)

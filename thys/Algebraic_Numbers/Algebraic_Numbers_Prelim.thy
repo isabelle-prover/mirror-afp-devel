@@ -95,8 +95,10 @@ lemma alg_polyD[dest]: assumes "alg_poly x p"
 definition poly_rat :: "rat \<Rightarrow> rat poly" where
   "poly_rat x = [:-x,1:]"
 
-lemma irr_monic_root_free_poly_rat[simp]: "irreducible (poly_rat x)" "monic (poly_rat x)" "root_free (poly_rat x)"
-  unfolding poly_rat_def by (rule linear_irreducible, auto simp: root_free_def)
+lemma irr_monic_root_free_poly_rat[simp]: "irreducible (poly_rat x)" 
+  "monic (poly_rat x)" "root_free (poly_rat x)"
+  "square_free (poly_rat x)"
+  unfolding poly_rat_def by (auto simp: root_free_def intro!: irreducible_square_free linear_irreducible)
 
 lemma rpoly_rat[simp]: "rpoly (poly_rat x) y = y - of_rat x" "poly_rat x \<noteq> 0"
   unfolding poly_rat_def eval_poly_def by (auto simp add: of_rat_minus)
@@ -113,66 +115,90 @@ lemma rpoly_smult_0_iff: assumes c: "c \<noteq> 0"
   using c by simp
 
 definition factors_of_rat_poly :: "factorization_mode \<Rightarrow> rat poly \<Rightarrow> rat poly list" where
-  "factors_of_rat_poly mode p = map fst (snd (factorize_rat_poly mode p))"
+  "factors_of_rat_poly mode p = map fst (snd (factorize_sf_rat_poly mode p))"
 
 lemma factors_of_rat_poly:  
   defines "rp \<equiv> rpoly :: rat poly \<Rightarrow> 'a :: field_char_0 \<Rightarrow> 'a"
   assumes "factors_of_rat_poly mode p = qs"
-  shows "\<And> q. q \<in> set qs \<Longrightarrow> monic q \<and> (mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q) \<and> 
-    (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> degree q \<le> degree p"
-  "p \<noteq> 0 \<Longrightarrow> rp p x = 0 \<longleftrightarrow> (\<exists> q \<in> set qs. rp q x = 0)" 
+  and mode: "mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p"
+  shows "\<And> q. q \<in> set qs \<Longrightarrow> monic q \<and> square_free q \<and> degree q \<noteq> 0 \<and> degree q \<le> degree p \<and> 
+    (mode \<in> {Full_Factorization, Check_Irreducible} \<longrightarrow> irreducible q) \<and> 
+    (mode = Check_Root_Free \<longrightarrow> root_free q) "
+  "p \<noteq> 0 \<Longrightarrow> rp p x = 0 \<longleftrightarrow> (\<exists> q \<in> set qs. rp q x = 0)"
+  "p \<noteq> 0 \<Longrightarrow> rp p x = 0 \<Longrightarrow> \<exists>! q \<in> set qs. rp q x = 0"
+  "distinct qs"
 proof -
-  obtain c qis where factt: "factorize_rat_poly mode p = (c,qis)" by force
+  obtain c qis where factt: "factorize_sf_rat_poly mode p = (c,qis)" by force
   from assms[unfolded factors_of_rat_poly_def factt] have qs: "qs = map fst qis" by auto
-  note fact = factorize_rat_poly[OF factt]
+  note fact = factorize_sf_rat_poly[OF factt mode]
+  have sqf: "square_free_factorization p (c, qis)" by (rule fact(1))
+  note sff = square_free_factorizationD[OF sqf]
+  note sff' = square_free_factorizationD'[OF sqf]
   {
     fix q
-    assume "q \<in> set qs"
+    assume q: "q \<in> set qs"
     then obtain i where qi: "(q,i) \<in> set qis" unfolding qs by auto
-    then obtain bef aft where qis: "qis = bef @ (q,i) # aft" unfolding in_set_conv_decomp by blast
-    from factt qi have p: "p \<noteq> 0" by auto
-    with fact(1) have zero: "c \<noteq> 0" "(\<Prod>(q, i)\<leftarrow>qis. q ^ i) \<noteq> 0" by auto
-    from fact(2)[OF qi] have q: "(mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q) \<and> 
-    (mode = Check_Root_Free \<longrightarrow> root_free q)" "i \<noteq> 0" "monic q" by auto
-    have "degree p = degree (\<Prod>(x, y)\<leftarrow>qis. x ^ y)" unfolding fact(1) degree_smult_eq using zero by simp
-    also have "\<dots> = listsum (map degree (map (\<lambda> (x,y). x ^ y) qis))"
-      by (rule degree_listprod_eq, insert zero[unfolded listprod_zero_iff], force)
-    also have "\<dots> \<ge> degree (q ^ i)" unfolding qis by auto
-    also have "degree (q ^ i) = degree q * i" 
-      by (rule degree_power_eq, insert q, auto)
-    finally have "degree q * i \<le> degree p" by auto
-    with q(2) have "degree q \<le> degree p" by (cases i, auto)
-    with q show "monic q \<and> (mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q) \<and> 
-      (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> degree q \<le> degree p" by auto
-  }
+    from split_list[OF this] obtain qis1 qis2 where qis: "qis = qis1 @ (q,i) # qis2" by auto
+    have dvd: "q dvd p" unfolding sff'(1) qis dvd_def 
+      by (intro exI[of _ "smult c (q ^ i * (\<Prod>(a, i)\<leftarrow>qis1 @  qis2. a ^ Suc i))"], auto)
+    from qi factt have p: "p \<noteq> 0" by (cases p, auto)
+    with dvd have deg: "degree q \<le> degree p" by (metis dvd_imp_degree_le)
+    from sff(2)[OF qi] have "square_free q" "degree q \<noteq> 0" by auto
+    with fact(2)[OF _ qi] deg
+    show "monic q \<and> square_free q \<and> degree q \<noteq> 0 \<and> degree q \<le> degree p \<and> 
+      (mode \<in> {Full_Factorization, Check_Irreducible} \<longrightarrow> irreducible q) \<and> 
+      (mode = Check_Root_Free \<longrightarrow> root_free q)" by auto
+  } note * = this
+  from sff'(2) have "square_free (listprod qs)" unfolding qs by auto  
+  thus "distinct qs" 
+    by (rule square_free_listprod_distinct, insert *, auto)
   assume p: "p \<noteq> 0"
-  from fact(1) p have c: "c \<noteq> 0" by auto
+  from fact(1) p have c: "c \<noteq> 0" using sff(1) by auto
   let ?r = "of_rat :: rat \<Rightarrow> 'a"
   let ?rp = "map_poly ?r"
   have rp: "\<And> x p. rp p x = 0 \<longleftrightarrow> poly (?rp p) x = 0"
     unfolding rp_def rpoly.poly_map_poly_eval_poly ..  
   interpret rp: semiring_hom ?rp by (rule rpoly.semiring_hom_map_poly)
-  have "rp p x = 0 \<longleftrightarrow> rp (\<Prod>(x, y)\<leftarrow>qis. x ^ y) x = 0" unfolding fact(1) rp
-    rpoly.map_poly_smult using c by auto
-  also have "\<dots> = (\<exists> (q,i) \<in>set qis. poly (?rp (q ^ i)) x = 0)" 
+  have "rp p x = 0 \<longleftrightarrow> rp (\<Prod>(x, y)\<leftarrow>qis. x ^ Suc y) x = 0" unfolding sff'(1)
+    unfolding rp rpoly.map_poly_smult using c by simp 
+  also have "\<dots> = (\<exists> (q,i) \<in>set qis. poly (?rp (q ^ Suc i)) x = 0)" 
     unfolding qs rp rp.hom_listprod poly_listprod_zero_iff set_map by fastforce
   also have "\<dots> = (\<exists> (q,i) \<in>set qis. poly (?rp q) x = 0)"
-    unfolding rp.hom_power poly_power_zero_iff  using fact(2) by auto
+    unfolding rp.hom_power poly_power_zero_iff by auto
   also have "\<dots> = (\<exists> q \<in> set qs. rp q x = 0)" unfolding rp qs by force
-  finally show "rp p x = 0 \<longleftrightarrow> (\<exists> q \<in> set qs. rp q x = 0)" by auto
+  finally show iff: "rp p x = 0 \<longleftrightarrow> (\<exists> q \<in> set qs. rp q x = 0)" by auto
+  assume "rp p x = 0"
+  with iff obtain q where q: "q \<in> set qs" and rtq: "rp q x = 0" by auto
+  then obtain i where qi: "(q,i) \<in> set qis" unfolding qs by auto
+  show "\<exists>! q \<in> set qs. rp q x = 0"
+  proof (intro ex1I, intro conjI, rule q, rule rtq, clarify)
+    fix r
+    assume "r \<in> set qs" and rtr: "rp r x = 0"
+    then obtain j where rj: "(r,j) \<in> set qis" unfolding qs by auto
+    from rtr rtq have "[:-x,1:] dvd ?rp q" "[:-x,1:] dvd ?rp r" unfolding rp
+      by (auto simp: poly_eq_0_iff_dvd)
+    hence "[:-x,1:] dvd gcd (?rp q) (?rp r)" by simp
+    hence "gcd (?rp q) (?rp r) = 0 \<or> degree (gcd (?rp q) (?rp r)) \<noteq> 0"
+      by (metis degree_0_id is_unit_gcd is_unit_iff_degree pCons_eq_0_iff pCons_eq_iff zero_neq_one)
+    hence "gcd q r = 0 \<or> degree (gcd q r) \<noteq> 0"
+      by (metis rpoly.degree_map_poly rpoly.map_poly_0_iff rpoly.map_poly_gcd)
+    hence "\<not> coprime q r" by auto
+    with sff(3)[OF qi rj]
+    show "r = q" by auto
+  qed
 qed
-  
 
 lemma alg_poly_factors_rat_poly: assumes p: "alg_poly x p"
+  and mode: "mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p"
   shows "\<exists> q \<in> set (factors_of_rat_poly mode p). alg_poly x q \<and> monic q 
   \<and> (mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q) \<and> 
     (mode = Check_Root_Free \<longrightarrow> root_free q) \<and> degree q \<le> degree p"
 proof -
   from alg_polyD[OF p] have p: "p \<noteq> 0" and rt: "rpoly p x = 0" by auto
-  note fact = factors_of_rat_poly[of mode p, OF refl]
-  from fact(2)[OF p, of x] rt obtain q where q: "q \<in> set (factors_of_rat_poly mode p)" and 
+  note fact = factors_of_rat_poly[OF refl mode, of mode]
+  from fact(2)[OF _ p, of x] rt obtain q where q: "q \<in> set (factors_of_rat_poly mode p)" and 
     rt: "rpoly q x = 0" by auto
-  from fact(1)[OF q] rt show ?thesis
+  from fact(1)[OF _ q] rt show ?thesis
     by (intro bexI[OF _ q], auto)
 qed
 
@@ -264,7 +290,7 @@ proof (induct p)
   finally show ?case .
 qed simp
 
-definition poly_uminus :: "'a :: field poly \<Rightarrow> 'a poly" where
+definition poly_uminus :: "'a :: field_char_0 poly \<Rightarrow> 'a poly" where
   "poly_uminus p = p \<circ>\<^sub>p [:0,-1:]"
 
 lemma degree_poly_uminus[simp]: "degree (poly_uminus p) = degree p"
@@ -290,16 +316,26 @@ qed
 definition poly_inverse :: "'a :: field poly \<Rightarrow> 'a poly" where
   [code del]: "poly_inverse p = (\<Sum> i \<le> degree p. monom (coeff p (degree p - i)) i)"
 
-lemma poly_inverse_code[code]: 
-  "poly_inverse p = (listsum (map (\<lambda> i. monom (coeff p (degree p - i)) i) [0 ..< Suc (degree p)]))"
-  (is "_ = ?r")
-proof -
-  have "poly_inverse p = setsum (\<lambda> i. monom (coeff p (degree p - i)) i) (set [0 ..< Suc (degree p)])"
-    unfolding poly_inverse_def
-    by (rule setsum.cong, auto)
-  also have "\<dots> = ?r" unfolding setsum.set_conv_list
-    by (subst distinct_remdups_id, auto)
-  finally show ?thesis .
+lemma poly_inverse_rev_coeffs[code]: 
+  "poly_inverse p = poly_of_list (rev (coeffs p))"
+proof (cases "p = 0")
+  case True
+  thus ?thesis by (auto simp: poly_inverse_def)
+next
+  case False
+  show ?thesis unfolding poly_of_list_def poly_eq_iff
+  proof 
+    fix n
+    have "coeff (poly_inverse p) n = (if n \<le> degree p then coeff p (degree p - n) else 0)"
+      unfolding poly_inverse_def coeff_setsum coeff_monom
+      by (cases "n \<le> degree p", auto, subst setsum.remove[of _ n], auto)
+    also have "\<dots> = coeff (Poly (rev (coeffs p))) n"
+      unfolding poly_inverse_def coeff_setsum coeff_monom coeff_Poly
+      by (cases "n < length (coeffs p)", 
+        auto simp: nth_default_def length_coeffs_degree[OF False], subst rev_nth,
+        auto simp: length_coeffs_degree[OF False] coeffs_nth[OF False])
+    finally show "coeff (poly_inverse p) n = coeff (Poly (rev (coeffs p))) n" .
+  qed
 qed  
 
 lemma degree_poly_inverse_le: "degree (poly_inverse p) \<le> degree p"
@@ -311,25 +347,54 @@ lemma inverse_pow_minus: assumes "x \<noteq> (0 :: 'a :: field)"
   shows "inverse x ^ n * x ^ i = inverse x ^ (n - i)" 
   using assms by (simp add: field_class.field_divide_inverse power_diff power_inverse)
 
-lemma rpoly_inverse: assumes x: "x \<noteq> 0" 
-  shows "rpoly (poly_inverse p) (inverse x) = (inverse x) ^ (degree p) * rpoly p x"
-  (is "?l = ?r")
+lemma poly_inverse: assumes x: "x \<noteq> 0"
+  shows "poly (poly_inverse p) (inverse x) = (inverse x) ^ (degree p) * poly p x" (is "?l = ?r")
 proof -
   from poly_as_sum_of_monoms[of p]
-  have id: "rpoly p x = rpoly ((\<Sum>x\<le>degree p. monom (coeff p x) x)) x" by simp
-  let ?f = "\<lambda> k. rpoly (monom (coeff p (degree p - k)) k) (inverse x)"
-  have "?r = (\<Sum>n\<le>degree p. inverse x ^ degree p * rpoly (monom (coeff p n) n) x)" 
-    unfolding id rpoly.eval_poly_setsum setsum_right_distrib by simp  
+  have id: "poly p x = poly ((\<Sum>x\<le>degree p. monom (coeff p x) x)) x" by simp
+  let ?f = "\<lambda> k. poly (monom (coeff p (degree p - k)) k) (inverse x)"
+  have "?r = (\<Sum>n\<le>degree p. inverse x ^ degree p * poly (monom (coeff p n) n) x)" 
+    unfolding id poly_setsum setsum_right_distrib by simp  
   have "?l = (\<Sum>k\<le>degree p. ?f k)"
-    unfolding poly_inverse_def rpoly.eval_poly_setsum by simp 
+    unfolding poly_inverse_def poly_setsum by simp 
   also have "\<dots> = (\<Sum>k \<le> degree p. ?f (degree p - k))"
     by (subst setsum.reindex_cong[of "\<lambda> i. degree p - i" "{..degree p}"], auto simp: inj_on_def)
      (metis (full_types) atMost_iff diff_diff_cancel diff_le_mono2 diff_zero image_iff le0)
-  also have "\<dots> = (\<Sum>n\<le>degree p. inverse x ^ degree p * rpoly (monom (coeff p n) n) x)"
-    by (rule setsum.cong, auto simp: rpoly.eval_poly_monom inverse_pow_minus[OF x])
+  also have "\<dots> = (\<Sum>n\<le>degree p. inverse x ^ degree p * poly (monom (coeff p n) n) x)"
+    by (rule setsum.cong, auto simp: poly_monom inverse_pow_minus[OF x])
   also have "\<dots> = ?r"
-    unfolding id rpoly.eval_poly_setsum setsum_right_distrib by simp  
+    unfolding id poly_setsum setsum_right_distrib by simp  
   finally show ?thesis .
+qed
+
+lemma poly_inverse_root: assumes p: "p \<noteq> 0" shows 
+  "(poly (poly_inverse p) x = 0) = (x \<noteq> 0 \<and> poly p (inverse x) = 0)"
+proof (cases "x = 0")
+  case False
+  hence ix: "inverse x \<noteq> 0" by auto
+  show ?thesis using poly_inverse[OF ix] False by auto
+next
+  case True
+  show ?thesis unfolding True poly_inverse_def poly_setsum
+    by (subst setsum.remove[of _ 0], insert p, auto simp: poly_monom)
+qed
+
+lemma (in inj_field_hom) poly_inverse_hom: 
+  "poly_inverse (map_poly hom p) = map_poly hom (poly_inverse p)"
+proof -
+  interpret poly: inj_ring_hom "map_poly hom" by (rule inj_ring_hom_map_poly)
+  show ?thesis unfolding poly_inverse_def degree_map_poly by simp
+qed
+
+
+lemma rpoly_inverse: assumes x: "(x :: 'a :: field_char_0) \<noteq> 0" 
+  shows "rpoly (poly_inverse p) (inverse x) = (inverse x) ^ (degree p) * rpoly p x" (is "?l = ?r")
+proof -
+  let ?or = "of_rat :: rat \<Rightarrow> 'a"
+  have hom: "inj_field_hom ?or" ..
+  show ?thesis
+    using poly_inverse[OF x, of "map_poly ?or p"] unfolding eval_poly_def
+    by (simp add: inj_field_hom.poly_inverse_hom[OF hom])
 qed
 
 lemma poly_inverse_0[simp]: "poly_inverse p = 0 \<longleftrightarrow> p = 0"
@@ -418,6 +483,143 @@ proof
   show False by (auto simp: eval_poly_def)
 qed
 
+locale factor_preserving = fixes f :: "'a :: field poly \<Rightarrow> 'a poly"
+  assumes deg: "degree (f q) = degree q"
+  and comp: "f (q * r) = f q * f r"
+begin
+
+lemma f0: "f 0 = 0"
+proof (rule ccontr)
+  assume f0: "f 0 \<noteq> 0"  
+  let ?x = "[:0,1 :: 'a:]"
+  have id: "f (?x * 0) = f ?x * f 0" unfolding comp ..
+  have "degree (f ?x) \<noteq> 0" unfolding deg by auto
+  hence "f ?x \<noteq> 0" by auto
+  from arg_cong[OF id, of degree, unfolded deg degree_mult_eq[OF this f0]]
+  show False by auto
+qed
+
+lemma square_free_preservation: assumes sf: "square_free (f p)"
+  shows "square_free p"
+proof (rule ccontr)
+  from sf[unfolded square_free_def] have fp0: "f p \<noteq> 0" by auto
+  with f0 have p0: "p \<noteq> 0" by auto
+  assume "\<not> square_free p"
+  with p0 obtain q where d: "degree q \<noteq> 0" and qp: "q * q dvd p" 
+    unfolding square_free_def by auto
+  then obtain r where p: "p = q * q * r" unfolding dvd_def by auto
+  from arg_cong[OF p, of f, unfolded comp] deg[of q] d 
+  have "\<exists> q. degree q \<noteq> 0 \<and> q * q dvd f p"
+    unfolding dvd_def by (auto intro: exI[of _ "f q"])
+  with sf[unfolded square_free_def] fp0 show False by auto
+qed
+
+lemma irreducible_preservation: assumes irr: "irreducible (f p)"
+  shows "irreducible p"
+proof (rule ccontr)
+  assume p: "\<not> irreducible p"
+  from irreducibleD[OF irr] have "degree (f p) \<noteq> 0" by auto
+  with deg[of p] have dp: "degree p \<noteq> 0" by auto
+  from p dp obtain q where d: "degree q \<noteq> 0" and qp: "q dvd p" and qp: "degree q < degree p"
+    unfolding irreducible_def by auto   
+  then obtain r where p: "p = q  * r" unfolding dvd_def by auto
+  from arg_cong[OF p, of f, unfolded comp] have dvd: "f q dvd f p" by auto
+  from d deg[of q] have "degree (f q) \<noteq> 0" by auto
+  from irreducibleD(2)[OF irr this] dvd have "\<not> degree (f q) < degree (f p)" by auto
+  with qp show False unfolding deg by auto
+qed
+end
+
+lemma factor_preserving_poly_uminus: "factor_preserving poly_uminus"
+  by (standard, force, auto simp: poly_uminus_def pcompose_mult)
+
+lemma poly_uminus_inv[simp]: "poly_uminus (poly_uminus p) = p"
+  unfolding poly_uminus_def
+  by (rule poly_ext, simp add: poly_pcompose)
+
+lemma poly_uminus_irreducible: assumes p: "irreducible p" 
+  shows "irreducible (poly_uminus p)"
+  by (rule factor_preserving.irreducible_preservation[OF factor_preserving_poly_uminus], simp add: p)
+
+lemma poly_uminus_square_free: assumes p: "square_free p" 
+  shows "square_free (poly_uminus p)"
+  by (rule factor_preserving.square_free_preservation[OF factor_preserving_poly_uminus], simp add: p)
+
+definition poly_add_rat :: "rat \<Rightarrow> rat poly \<Rightarrow> rat poly" where
+  "poly_add_rat r p \<equiv> p \<circ>\<^sub>p [:-r,1:]"
+
+lemma degree_poly_add_rat[simp]: "degree (poly_add_rat r p) = degree p"
+  unfolding poly_add_rat_def degree_pcompose by auto
+
+lemma rpoly_add_rat: "rpoly (poly_add_rat r p) x = rpoly p (x - of_rat r)"
+  unfolding poly_add_rat_def rpoly_poly_compose
+  by (simp add: eval_poly_def)
+
+lemma poly_add_rat_0[simp]: "poly_add_rat r p = 0 \<longleftrightarrow> p = 0"
+  unfolding poly_add_rat_def 
+  by (rule pcompose_eq_0, auto)
+
+lemma alg_poly_add_rat: assumes "alg_poly x p"
+  shows "alg_poly (of_rat r + x) (poly_add_rat r p)"
+  using assms unfolding alg_poly_def rpoly_add_rat by simp
+
+lemma factor_preserving_poly_add_rat: "factor_preserving (poly_add_rat r)"
+  by (standard, force, auto simp: poly_add_rat_def pcompose_mult)
+
+lemma poly_add_rat_inv[simp]: "poly_add_rat (-r) (poly_add_rat r p) = p"
+  unfolding poly_add_rat_def 
+  by (rule poly_ext, simp add: poly_pcompose)
+
+lemma poly_add_rat_irreducible: assumes p: "irreducible p" 
+  shows "irreducible (poly_add_rat r p)"
+  by (rule factor_preserving.irreducible_preservation[OF factor_preserving_poly_add_rat[of "-r"]],
+  simp add: p)
+
+lemma poly_add_rat_square_free: assumes p: "square_free p" 
+  shows "square_free (poly_add_rat r p)"
+  by (rule factor_preserving.square_free_preservation[OF factor_preserving_poly_add_rat[of "-r"]],
+  simp add: p)
+
+definition poly_mult_rat :: "rat \<Rightarrow> rat poly \<Rightarrow> rat poly" where
+  "poly_mult_rat r p \<equiv> p \<circ>\<^sub>p [:0,inverse r:]"
+
+lemma degree_poly_mult_rat_le: "degree (poly_mult_rat r p) \<le> degree p"
+  unfolding poly_mult_rat_def degree_pcompose by auto
+
+lemma degree_poly_mult_rat[simp]: "r \<noteq> 0 \<Longrightarrow> degree (poly_mult_rat r p) = degree p"
+  unfolding poly_mult_rat_def degree_pcompose by auto
+
+lemma rpoly_mult_rat: "rpoly (poly_mult_rat r p) x = rpoly p (x * inverse (of_rat r))"
+  unfolding poly_mult_rat_def rpoly_poly_compose
+  by (simp add: eval_poly_def)
+
+lemma poly_mult_rat_0[simp]: "r \<noteq> 0 \<Longrightarrow> poly_mult_rat r p = 0 \<longleftrightarrow> p = 0"
+  unfolding poly_mult_rat_def 
+  by (rule pcompose_eq_0, auto)
+
+lemma alg_poly_mult_rat: assumes r: "r \<noteq> 0"
+  and "alg_poly x p"
+  shows "alg_poly (of_rat r * x) (poly_mult_rat r p)"
+  using assms
+  unfolding alg_poly_def rpoly_mult_rat by (simp add: field_simps)
+
+lemma poly_mult_rat_inv[simp]: "r \<noteq> 0 \<Longrightarrow> poly_mult_rat (inverse r) (poly_mult_rat r p) = p"
+  unfolding poly_mult_rat_def 
+  by (rule poly_ext, simp add: poly_pcompose field_simps)
+
+lemma factor_preserving_poly_mult_rat: "r \<noteq> 0 \<Longrightarrow> factor_preserving (poly_mult_rat r)"
+  by (standard, force, auto simp: poly_mult_rat_def pcompose_mult)
+
+lemma poly_mult_rat_irreducible: assumes "r \<noteq> 0" "irreducible p" 
+  shows "irreducible (poly_mult_rat r p)"
+  by (rule factor_preserving.irreducible_preservation[OF factor_preserving_poly_mult_rat[of "inverse r"]],
+    insert assms, auto)
+
+lemma poly_mult_rat_square_free: assumes "r \<noteq> 0" "square_free p" 
+  shows "square_free (poly_mult_rat r p)"
+  by (rule factor_preserving.square_free_preservation[OF factor_preserving_poly_mult_rat[of "inverse r"]],
+    insert assms, auto)
+
 lemma irreducible_preservation: assumes irr: "irreducible p" and mon: "monic p"
   and x: "alg_poly x p" 
   and y: "alg_poly y q"
@@ -446,4 +648,123 @@ proof (rule ccontr)
   with deg show False by auto
 qed
 
+lemma poly_inverse_irreducible: assumes p: "irreducible p" "monic p" 
+  and x: "alg_poly x p"
+  and x0: "x \<noteq> 0"
+  shows "irreducible (poly_inverse p)"
+proof -
+  from alg_poly_inverse[OF x0 x] have y: "alg_poly (inverse x) (poly_inverse p)" .
+  from x0 have ix0: "inverse x \<noteq> 0" by auto
+  show ?thesis
+  proof (rule irreducible_preservation[OF p x y degree_poly_inverse_le])
+    fix q
+    assume "alg_poly (inverse x) q"
+    from alg_poly_inverse[OF ix0 this] have "alg_poly x (poly_inverse q)" by simp
+    with degree_poly_inverse_le
+    show " alg_poly x (poly_inverse q) \<and> degree (poly_inverse q) \<le> degree q" by auto
+  qed
+qed
+
+lemma coeff_poly_inverse_degree: "coeff (poly_inverse p) (degree p) = coeff p 0"
+  unfolding poly_inverse_def coeff_setsum
+  by (subst setsum.remove[of _ "degree p"], auto)
+
+lemma degree_poly_inverse_no_0: assumes 0: "coeff p 0 \<noteq> 0" 
+  shows "degree (poly_inverse p) = degree p"
+proof -
+  have "coeff (poly_inverse p) (degree p) \<noteq> 0"
+    unfolding coeff_poly_inverse_degree using 0 by simp
+  hence "degree p \<le> degree (poly_inverse p)" by (rule le_degree)
+  moreover have "degree (poly_inverse p) \<le> degree p" by (rule degree_poly_inverse_le)
+  ultimately show ?thesis by auto
+qed
+
+lemma degree_poly_inverse_rsquarefree_0: assumes 0: "coeff p 0 = 0" 
+  and sf: "rsquarefree p"
+  shows "Suc (degree (poly_inverse p)) = degree p"
+proof -
+  let ?ip = "poly_inverse p"
+  let ?n = "degree p"
+  from sf have p0: "p \<noteq> 0" unfolding rsquarefree_def by auto
+  from p0 have ip0: "?ip \<noteq> 0" by simp
+  from degree_poly_inverse_le[of p] have deg: "degree ?ip \<le> ?n" .
+  have "coeff ?ip ?n = 0" unfolding coeff_poly_inverse_degree 0 by simp
+  with ip0 have "degree ?ip \<noteq> ?n" by (metis leading_coeff_0_iff)
+  with deg have deg: "degree ?ip < ?n" by auto
+  then obtain n where dp: "degree p = Suc n" by (cases ?n, auto)
+  have "degree ?ip = n"
+  proof (rule ccontr)
+    assume "degree ?ip \<noteq> n" 
+    with dp deg have "degree ?ip < n" by auto
+    hence "coeff ?ip n = 0" by (rule coeff_eq_0)
+    also have "coeff ?ip n = coeff p 1" unfolding poly_inverse_def coeff_setsum dp
+      by (subst setsum.remove[of _ "Suc n"], force+, subst setsum.remove[of _ n], auto)
+    finally have 1: "coeff p 1 = 0" .
+    from 0 have "poly p 0 = 0" unfolding poly_altdef by auto
+    hence "[:0,1:] dvd p" by (simp add: dvd_iff_poly_eq_0)    
+    then obtain k where p: "p = [:0,1:] * k" unfolding dvd_def by auto
+    also have "\<dots> = monom 1 1 * k" by (simp add: x_as_monom)
+    finally have "p = monom 1 1 * k" by simp
+    from 1[unfolded this coeff_monom_mult]
+    have "coeff k 0 = 0" by simp
+    hence "poly k 0 = 0" unfolding poly_altdef by auto
+    hence "[:0,1:] dvd k" by (simp add: dvd_iff_poly_eq_0)    
+    then obtain l where k: "k = [:0,1:] * l" unfolding dvd_def by auto
+    have p: "p = [:-0,1:]^2 * l" unfolding p k by (simp add: power2_eq_square)
+    have "[:-0,1:]^2 dvd p" unfolding p by simp
+    from this[unfolded order_divides] have "p = 0 \<or> \<not> order 0 p \<le> 1" by auto
+    with sf[unfolded rsquarefree_def'] 
+    show False by auto
+  qed
+  with dp show ?thesis by auto
+qed
+
+lemma degree_poly_inverse_rsquarefree: assumes "rsquarefree p"
+  shows "degree p = (if poly p 0 = 0 then Suc (degree (poly_inverse p)) else degree (poly_inverse p))"
+proof -
+  have id: "poly p 0 = coeff p 0" unfolding poly_altdef by auto
+  show ?thesis unfolding id 
+    using degree_poly_inverse_rsquarefree_0[OF _ assms] degree_poly_inverse_no_0[of p]
+    by auto
+qed
+
+lemma poly_inverse_square_free_complex: assumes sf: "square_free (p :: complex poly)" 
+  shows "square_free (poly_inverse p)"
+proof -
+  from sf[unfolded square_free_def]
+  have p: "p \<noteq> 0" by auto
+  let ?ip = "poly_inverse p"
+  from p have ip: "?ip \<noteq> 0" by simp
+  from square_free_rsquarefree[OF sf] have sf: "rsquarefree p" .
+  from sf[unfolded rsquarefree_card_degree[OF p]] have card: "card {x. poly p x = 0} = degree p" .
+  also have "\<dots> = (if poly p 0 = 0 then Suc (degree ?ip) else degree ?ip)"
+    by (rule degree_poly_inverse_rsquarefree[OF sf])
+  also have "card {x. poly p x = 0} = (if poly p 0 = 0 then Suc (card ({x. poly p x = 0} - {0})) else
+    (card ({x. poly p x = 0} - {0})))"
+    by (cases "poly p 0 = 0", auto, subst card.remove[of _ 0], auto simp: poly_roots_finite[OF p])
+  finally have deg: "degree ?ip = card ({x. poly p x = 0} - {0})" by (auto split: if_splits)
+  have sf: "rsquarefree ?ip" unfolding rsquarefree_card_degree[OF ip] deg
+    unfolding poly_inverse_root[OF p]
+  proof (rule bij_betw_same_card[of inverse], unfold bij_betw_def inj_on_def, 
+    auto simp: image_def, goal_cases)
+    case (1 x)
+    thus ?case by (intro exI[of _ "inverse x"], auto)
+  qed
+  show ?thesis
+    by (rule rsquarefree_square_free_complex[OF sf])
+qed
+
+lemma poly_inverse_square_free: assumes p: "square_free (p :: rat poly)" 
+  shows "square_free (poly_inverse p)"
+proof -
+  let ?c = "of_rat :: rat \<Rightarrow> complex"
+  interpret c: inj_field_hom_0 ?c ..
+  have "inj_field_hom_0 ?c" ..
+  note sf_c = inj_field_hom_0.square_free_map_poly[OF this]
+  from poly_inverse_square_free_complex[OF assms[folded sf_c]]
+  have "square_free (poly_inverse (map_poly ?c p))" .
+  also have "poly_inverse (map_poly ?c p) = map_poly ?c (poly_inverse p)"
+    by (rule inj_field_hom.poly_inverse_hom, standard)
+  finally show ?thesis unfolding sf_c .
+qed
 end

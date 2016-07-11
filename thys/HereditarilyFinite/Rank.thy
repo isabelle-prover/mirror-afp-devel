@@ -37,7 +37,7 @@ proof -
 qed
 
 lemma Vset_mono: "\<lbrakk>Ord m; n \<le> m\<rbrakk> \<Longrightarrow> Vset n \<le> Vset m"
-  by (metis Ord_linear2 Vset_mono_strict Vset_non assms order.order_iff_strict
+  by (metis Ord_linear2 Vset_mono_strict Vset_non order.order_iff_strict
             order_class.order.antisym zero_le)
 
 text{*Theorem 4.2(b)*}

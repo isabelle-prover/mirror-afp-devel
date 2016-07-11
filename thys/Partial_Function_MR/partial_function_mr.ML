@@ -208,7 +208,7 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
     val lhs = glob_const $ glob_x
     val eq = HOLogic.mk_Trueprop (HOLogic.mk_eq (lhs,rhs))
     val glob_binding = Binding.name (glob_fname) 
-    val glob_attrib_binding = Attrib.empty_binding
+    val glob_attrib_binding = Binding.empty_atts
     val _ = writeln "invoking partial_function on global function"
     val lthy = Partial_Function.add_partial_function mode [(glob_binding,SOME glob_constT,NoSyn)] (glob_attrib_binding,eq) lthy
     val _ = writeln "deriving simp rules for separate functions from global function"
@@ -303,7 +303,7 @@ val mode = @{keyword "("} |-- Parse.name --| @{keyword ")"};
 
 val _ =
   Outer_Syntax.local_theory @{command_keyword partial_function_mr} "define mutually recursive partial functions"
-    ((mode -- (Parse.fixes -- Parse_Spec.where_multi_specs))
+    (mode -- Parse_Spec.specification
       >> (fn (mode, (fixes, specs)) => add_partial_function_mr_cmd mode fixes specs));
 
 end

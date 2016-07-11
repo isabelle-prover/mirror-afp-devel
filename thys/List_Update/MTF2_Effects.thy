@@ -586,7 +586,7 @@ proof (induct entf)
         = index (swap (index xs q - Suc e) (swaps [index xs q - e..<index xs q] xs)) q" 
           by auto
     also have "\<dots> = (if q = ?rest ! ?i then (Suc ?i) else if q = ?rest ! (Suc ?i) then ?i else index ?rest q)"
-        unfolding swap_def apply(simp only: arg if_True)
+        apply(simp only: swap_def arg if_True)
         apply(rule index_swap_if_distinct)
           apply(simp add: iH)
           apply(simp only: arg2)

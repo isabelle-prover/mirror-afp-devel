@@ -1,9 +1,7 @@
 chapter AFP
 
 session "Lehmer" (AFP) = "HOL-Number_Theory" +
-
   options [timeout = 3600]
-
   theories [document = false]
     "~~/src/HOL/Algebra/Coset"
     "~~/src/HOL/Algebra/AbelCoset"
@@ -11,10 +9,8 @@ session "Lehmer" (AFP) = "HOL-Number_Theory" +
     "~~/src/HOL/Algebra/RingHom"
     "~~/src/HOL/Algebra/Module"
     "~~/src/HOL/Algebra/UnivPoly"
-
   theories
     Lehmer
-
   document_files
     "root.tex"
     "root.bib"

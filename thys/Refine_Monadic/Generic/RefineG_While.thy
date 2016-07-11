@@ -168,9 +168,7 @@ lemma WHILE_mono_prover_rule[refine_mono]:
   "\<lbrakk>\<And>x. flat_ge (f x) (f' x)\<rbrakk> \<Longrightarrow> flat_ge (WHILEIT I b f s0) (WHILEIT I b f' s0)"
   unfolding WHILE_def WHILEI_def WHILEI_body_def
     WHILET_def WHILEIT_def
-  using assms apply -
-  apply (refine_mono)+
-  done
+  by refine_mono+
 
 end
 

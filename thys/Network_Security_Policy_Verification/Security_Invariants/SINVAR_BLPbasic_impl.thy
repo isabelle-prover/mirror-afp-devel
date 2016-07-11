@@ -79,50 +79,50 @@ subsubsection {* BLPbasic packing *}
     by(unfold_locales)
 
 subsubsection{* Example *}
-  definition fabNet :: "vString list_graph" where
-  "fabNet \<equiv> \<lparr> nodesL = [TopoS_Vertices.V ''Statistics'', TopoS_Vertices.V ''SensorSink'', TopoS_Vertices.V ''PresenceSensor'', TopoS_Vertices.V ''Webcam'', TopoS_Vertices.V ''TempSensor'', TopoS_Vertices.V ''FireSesnsor'',
-                     TopoS_Vertices.V ''MissionControl1'', TopoS_Vertices.V ''MissionControl2'', TopoS_Vertices.V ''Watchdog'', TopoS_Vertices.V ''Bot1'', TopoS_Vertices.V ''Bot2''], 
-              edgesL =[(TopoS_Vertices.V ''PresenceSensor'', TopoS_Vertices.V ''SensorSink''), (TopoS_Vertices.V ''Webcam'', TopoS_Vertices.V ''SensorSink''), 
-                     (TopoS_Vertices.V ''TempSensor'', TopoS_Vertices.V ''SensorSink''),  (TopoS_Vertices.V ''FireSesnsor'', TopoS_Vertices.V ''SensorSink''),
-                     (TopoS_Vertices.V ''SensorSink'', TopoS_Vertices.V ''Statistics''),
-                     (TopoS_Vertices.V ''MissionControl1'', TopoS_Vertices.V ''Bot1''), (TopoS_Vertices.V ''MissionControl1'', TopoS_Vertices.V ''Bot2''),
-                     (TopoS_Vertices.V ''MissionControl2'', TopoS_Vertices.V ''Bot2''),
-                     (TopoS_Vertices.V ''Watchdog'', TopoS_Vertices.V ''Bot1''), (TopoS_Vertices.V ''Watchdog'', TopoS_Vertices.V ''Bot2'')] \<rparr>"
+  definition fabNet :: "string list_graph" where
+  "fabNet \<equiv> \<lparr> nodesL = [''Statistics'', ''SensorSink'', ''PresenceSensor'', ''Webcam'', ''TempSensor'', ''FireSesnsor'',
+                     ''MissionControl1'', ''MissionControl2'', ''Watchdog'', ''Bot1'', ''Bot2''], 
+              edgesL =[(''PresenceSensor'', ''SensorSink''), (''Webcam'', ''SensorSink''), 
+                     (''TempSensor'', ''SensorSink''),  (''FireSesnsor'', ''SensorSink''),
+                     (''SensorSink'', ''Statistics''),
+                     (''MissionControl1'', ''Bot1''), (''MissionControl1'', ''Bot2''),
+                     (''MissionControl2'', ''Bot2''),
+                     (''Watchdog'', ''Bot1''), (''Watchdog'', ''Bot2'')] \<rparr>"
   value "wf_list_graph fabNet"
 
 
-  definition sensorProps_try1 :: "vString \<Rightarrow> privacy_level" where
-    "sensorProps_try1 \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(TopoS_Vertices.V ''PresenceSensor'' := 2, TopoS_Vertices.V ''Webcam'' := 3)"
+  definition sensorProps_try1 :: "string \<Rightarrow> privacy_level" where
+    "sensorProps_try1 \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(''PresenceSensor'' := 2, ''Webcam'' := 3)"
   value "BLP_offending_list fabNet sensorProps_try1"
   value "sinvar fabNet sensorProps_try1"
 
-  definition sensorProps_try2 :: "vString \<Rightarrow> privacy_level" where
-    "sensorProps_try2 \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(TopoS_Vertices.V ''PresenceSensor'' := 2, TopoS_Vertices.V ''Webcam'' := 3, 
-                                                       TopoS_Vertices.V ''SensorSink'' := 3)"
+  definition sensorProps_try2 :: "string \<Rightarrow> privacy_level" where
+    "sensorProps_try2 \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(''PresenceSensor'' := 2, ''Webcam'' := 3, 
+                                                       ''SensorSink'' := 3)"
   value "BLP_offending_list fabNet sensorProps_try2"
   value "sinvar fabNet sensorProps_try2"
 
-  definition sensorProps_try3 :: "vString \<Rightarrow> privacy_level" where
-    "sensorProps_try3 \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(TopoS_Vertices.V ''PresenceSensor'' := 2, TopoS_Vertices.V ''Webcam'' := 3, 
-                                                       TopoS_Vertices.V ''SensorSink'' := 3, TopoS_Vertices.V ''Statistics'' := 3)"
+  definition sensorProps_try3 :: "string \<Rightarrow> privacy_level" where
+    "sensorProps_try3 \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(''PresenceSensor'' := 2, ''Webcam'' := 3, 
+                                                       ''SensorSink'' := 3, ''Statistics'' := 3)"
   value "BLP_offending_list fabNet sensorProps_try3"
   value "sinvar fabNet sensorProps_try3"
 
   text {* Another parameter set for confidential controlling information*}
-  definition sensorProps_conf :: "vString \<Rightarrow> privacy_level" where
-    "sensorProps_conf \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(TopoS_Vertices.V ''MissionControl1'' := 1, TopoS_Vertices.V ''MissionControl2'' := 2,
-      TopoS_Vertices.V ''Bot1'' := 1, TopoS_Vertices.V ''Bot2'' := 2 )"
+  definition sensorProps_conf :: "string \<Rightarrow> privacy_level" where
+    "sensorProps_conf \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(''MissionControl1'' := 1, ''MissionControl2'' := 2,
+      ''Bot1'' := 1, ''Bot2'' := 2 )"
   value "BLP_offending_list fabNet sensorProps_conf"
   value "sinvar fabNet sensorProps_conf"
 
 
 text {* Complete example:*}
   
-  definition sensorProps_NMParams_try3 :: "(vString, nat, unit) TopoS_Params" where
-  "sensorProps_NMParams_try3 \<equiv> \<lparr> node_properties = [TopoS_Vertices.V ''PresenceSensor'' \<mapsto> 2, 
-                                                    TopoS_Vertices.V ''Webcam'' \<mapsto> 3, 
-                                                    TopoS_Vertices.V ''SensorSink'' \<mapsto> 3,
-                                                    TopoS_Vertices.V ''Statistics'' \<mapsto> 3],
+  definition sensorProps_NMParams_try3 :: "(string, nat, unit) TopoS_Params" where
+  "sensorProps_NMParams_try3 \<equiv> \<lparr> node_properties = [''PresenceSensor'' \<mapsto> 2, 
+                                                    ''Webcam'' \<mapsto> 3, 
+                                                    ''SensorSink'' \<mapsto> 3,
+                                                    ''Statistics'' \<mapsto> 3],
                                 model_global_properties = () \<rparr>"
   value "BLP_eval fabNet sensorProps_NMParams_try3"
 

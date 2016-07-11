@@ -1496,7 +1496,7 @@ lemma diag_block_mat_dim:
   "dim\<^sub>r (diag_block_mat As) = listsum (map dim\<^sub>r As)" (is "?row")
   "dim\<^sub>c (diag_block_mat As) = listsum (map dim\<^sub>c As)" (is "?col")
 proof -
-  from assms have "?row \<and> ?col"
+  have "?row \<and> ?col"
     by (induct As, auto simp: Let_def)
   thus ?row and ?col by auto
 qed
@@ -2237,5 +2237,7 @@ proof -
   qed simp
 qed
 
+lemma (in semiring_hom) vec_hom_scalar_mult: "vec\<^sub>h (ev \<odot>\<^sub>v v) = hom ev \<odot>\<^sub>v vec\<^sub>h v"
+  by (rule vec_eqI, auto)
 
 end

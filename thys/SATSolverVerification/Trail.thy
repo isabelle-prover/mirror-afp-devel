@@ -190,7 +190,6 @@ by (induct t) auto
 
 lemma markedElementIsMarkedTrue: 
   shows "(m \<in> set (markedElements M)) = ((m, True) \<in> set M)"
-using assms
 by (induct M) (auto split: if_split_asm)
 
 lemma markedElementsAppend: 

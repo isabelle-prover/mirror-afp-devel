@@ -75,19 +75,6 @@ definition berlekamp_factorization :: "GFp poly_f \<Rightarrow> GFp \<times> GFp
     in if sanity then (a,fs) else 
     Code.abort (String.implode 
        (''error in berlekamp_factorization of '' @ show_poly_f F u @ '' modulo '' @ show (characteristic F))) (\<lambda> _. (a,fs)))"
-
-definition finite_factorization :: "GFp poly_f \<Rightarrow> GFp \<times> (GFp poly_f \<times> int) list" where
-  "finite_factorization pp = (let 
-     (a,qs) = yun_factorization_f F pp; 
-     (* yun-factorization_f will deliver monic polys, so we can ignore the constants that
-        are returned by berlekamp, they will all be 1 *)
-     fs = concat (map (\<lambda> (q,i). map (\<lambda> f. (f,i)) (snd (berlekamp_factorization q))) qs);
-     sanity = True (* (pp = smult_poly_f F a (listprod_poly_f F (map (\<lambda> (p,i). power_poly_f F p i) fs))
-       \<and> list_all (\<lambda> (f,i). irreducible_GFp_poly F f) fs) *)
-     in if sanity then (a,fs) else 
-       Code.abort (String.implode 
-       (''error in finite_factorization of '' @ show_poly_f F pp @ '' modulo '' @ show (characteristic F))) 
-       (\<lambda> _. (a,fs)))"
 end
 
 context
@@ -107,8 +94,8 @@ private partial_function (tailrec) prime_for_finite_factorization_main ::
     let (np',ps') = next_primes np
       in prime_for_finite_factorization_main ps' np' f
     | (p # ps) \<Rightarrow> let F = GFp p; g = int_poly_of_list_f F f
-      in if gcd_poly_f F g (pderiv_poly_f F g) = one_poly_f F \<and> (* square_free modulo p *)
-        gcd (leading_coeff_non_zero f) (int p) = 1  (* leading coefficient will have an inverse modulo p^m *)
+      in if gcd (leading_coeff_non_zero f) (int p) = 1  (* leading coefficient will have an inverse modulo p^m *)
+         \<and> gcd_poly_f F g (pderiv_poly_f F g) = one_poly_f F (* square_free modulo p *)
       then int p else prime_for_finite_factorization_main ps np f)"
 
 definition prime_for_finite_factorization :: "int poly_f \<Rightarrow> int" where
@@ -157,7 +144,7 @@ definition pre_hensel_factorization :: "int poly_f \<Rightarrow> GFp poly_f list
      dg = degree_poly_f g;
      M = mignotte_bounds g (dg div 2);
      a = leading_coeff_non_zero g;
-     n = hensel_prime_power (nat p) (nat (2 * a * M));
+     n = hensel_prime_power (nat p) (nat (2 * abs a * M));
      f = int_poly_of_list_f F g;
      (_,fs) = berlekamp_factorization F f
      in (fs,(p,n)))"

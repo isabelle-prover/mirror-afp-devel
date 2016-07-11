@@ -53,7 +53,7 @@ using assms by (induct al rule: rev_induct) auto
 
 lemma length_unique_prefix:
   "al1 \<le> al \<Longrightarrow> al2 \<le> al \<Longrightarrow> length al1 = length al2 \<Longrightarrow> al1 = al2"
-  by (metis not_equal_is_parallel parallelE prefixeq_same_cases less_eq_list_def)
+  by (metis not_equal_is_parallel parallelE prefix_same_cases less_eq_list_def)
 
 text{* take: *}
 
@@ -64,16 +64,16 @@ using take_all by auto
 lemma take_le:
 assumes "n < length al"
 shows "take n al @ [al ! n] \<le> al"
-by (metis assms take_Suc_conv_app_nth take_is_prefixeq less_eq_list_def)
+by (metis assms take_Suc_conv_app_nth take_is_prefix less_eq_list_def)
 
-lemma list_less_iff_prefix: "a < b \<longleftrightarrow> prefix a b"
+lemma list_less_iff_prefix: "a < b \<longleftrightarrow> strict_prefix a b"
   by (metis le_less less_eq_list_def less_irrefl prefix_order.le_less prefix_order.less_irrefl)
 
 lemma take_lt:
   "n < length al \<Longrightarrow> take n al < al"
   unfolding list_less_iff_prefix
   using prefix_order.le_less[of "take n al" al]
-  by (simp add: take_is_prefixeq) (metis length_take min_absorb2 nat_le_linear not_less)
+  by (simp add: take_is_prefix) (metis length_take min_absorb2 nat_le_linear not_less)
 
 lemma le_take:
 assumes "n1 \<le> n2"
@@ -130,7 +130,7 @@ lemma lsum_mono[simp]:
 assumes "al \<le> bl"
 shows "lsum f al \<le> lsum f bl"
 proof-
-  obtain cl where bl: "bl = al @ cl" using assms unfolding prefixeq_def less_eq_list_def by blast
+  obtain cl where bl: "bl = al @ cl" using assms unfolding prefix_def less_eq_list_def by blast
   thus ?thesis unfolding bl lsum_append by simp
 qed
 
@@ -139,7 +139,7 @@ assumes f: "\<And> b. b \<in> set bl \<Longrightarrow> f b > 0" and le: "al < bl
 shows "lsum f al < lsum f bl"
 proof-
   obtain cl where bl: "bl = al @ cl" and cl: "cl \<noteq> []"
-    using assms unfolding list_less_iff_prefix prefix_def prefixeq_def by blast
+    using assms unfolding list_less_iff_prefix prefix_def strict_prefix_def by blast
   have "lsum f al < lsum f al + lsum f cl"
   using f cl unfolding bl by simp
   also have "... = lsum f bl" unfolding bl lsum_append by simp
@@ -148,7 +148,7 @@ qed
 
 lemma lsum_take[simp]:
 "lsum f (take n al) \<le> lsum f al"
-by (metis lsum_mono take_is_prefixeq less_eq_list_def)
+by (metis lsum_mono take_is_prefix less_eq_list_def)
 
 lemma less_lsum_nchotomy:
 assumes f: "\<And> a. a \<in> set al \<Longrightarrow> 0 < f a"
@@ -699,8 +699,8 @@ lemma WtFT_le_1[simp]: "WtFT cl \<le> 1" (is "?L \<le> 1")
 proof-
   let ?N = "length cl"
   have "?L \<le> setsum (\<lambda> n::nat. 1/?N) {..< ?N}"
-  unfolding WtFT_def apply(rule setsum_mono2) using assms by auto
-  also have "... \<le> 1" using assms
+  unfolding WtFT_def apply(rule setsum_mono2) by auto
+  also have "... \<le> 1"
   by (metis divide_zero le_cases neq0_conv not_one_le_zero of_nat_0 setsum_not_0 setsum_equal)
   finally show ?thesis .
 qed
@@ -718,7 +718,7 @@ lemma WtFT_lt_1[simp]: "WtFT cl \<noteq> 1 \<Longrightarrow> WtFT cl < 1"
 using WtFT_le_1 by (auto simp add: le_less)
 
 lemma lt_1_WtFT[simp]: "WtFT cl \<noteq> 1 \<Longrightarrow> 0 < 1 - WtFT cl"
-using assms le_1_WtFT by (metis le_1_WtFT eq_iff_diff_eq_0 less_eq_real_def)
+using le_1_WtFT by (metis le_1_WtFT eq_iff_diff_eq_0 less_eq_real_def)
 
 lemma notFinished_WtFT[simp]:
 assumes "n < length cl" and "\<not> finished (cl ! n)"
@@ -958,7 +958,7 @@ proof(cases "wt_cont_eff c1 s i")
 qed
 
 lemma cont_Seq_not_eq_finished[simp]: "\<not> finished c2 \<Longrightarrow> \<not> finished (cont (Seq c1 c2) s i)"
-using assms by (cases "finished (cont c1 s i)") auto
+by (cases "finished (cont c1 s i)") auto
 
 lemma cont_While_False[simp]: "tval tst s = False \<Longrightarrow> cont (While tst c) s i = Done"
 unfolding cont_def by simp
@@ -986,7 +986,7 @@ proof-
    proof(cases "wt_cont_eff c1 s i")
      case (fields _ c1' _)
      thus ?thesis
-     using assms unfolding eff_def by(cases c1') auto
+     unfolding eff_def by(cases c1') auto
    qed
   }
   thus ?thesis by auto

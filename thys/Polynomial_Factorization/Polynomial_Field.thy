@@ -142,31 +142,6 @@ fun poly_char_root_main :: "int \<Rightarrow> 'a poly_f \<Rightarrow> 'a poly_f"
 definition poly_char_root :: "'a poly_f \<Rightarrow> 'a poly_f" where
   "poly_char_root pp = poly_char_root_main 0 pp"
 
-end 
-
-(* we leave the locale only since partial_function_mr does not work within contexts *)
-partial_function_mr (tailrec) yun_factorization_main_f :: "'a ffield \<Rightarrow> nat \<Rightarrow> 'a poly_f \<Rightarrow> ('a poly_f \<times> nat) list \<Rightarrow> ('a poly_f \<times> nat) list" 
-  and yun_factorization_loop_f :: "'a ffield \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a poly_f \<Rightarrow> 'a poly_f \<Rightarrow> ('a poly_f \<times> nat) list \<Rightarrow> ('a poly_f \<times> nat) list" where
-  "yun_factorization_main_f F m f res = (let g = pderiv_poly_f F f in
-    if g = zero_poly_f then yun_factorization_main_f F (m * nat (characteristic F)) (poly_char_root F f) res
-    else let c = gcd_poly_f F f g; w = div_poly_f F f c 
-    in yun_factorization_loop_f F m 1 c w res)"
-| "yun_factorization_loop_f F m i c w res = (if w = one_poly_f F then
-      if c = one_poly_f F then res else yun_factorization_main_f F (m * nat (characteristic F)) (poly_char_root F c) res
-      else let y = gcd_poly_f F w c; z = div_poly_f F w y
-      in yun_factorization_loop_f F m (Suc i) (div_poly_f F c y) y 
-        (if z = one_poly_f F then res else (z,m * i) # res))"      
-
-context 
-  fixes F :: "'a ffield" (structure)
-begin
-definition yun_factorization_f :: "'a poly_f \<Rightarrow> ('a \<times> ('a poly_f \<times> nat)list)" where
-  "yun_factorization_f pp = (if pp = zero_poly_f then (0f,[])
-    else let 
-      a = leading_coeff_f F pp;
-      q = smult_poly_f F (inverse_f F a) pp
-      in (a, filter (\<lambda> (p,i). p \<noteq> one_poly_f F) (yun_factorization_main_f F 1 q [])))"
-
 fun poly_of_list_f :: "'a list \<Rightarrow> 'a poly_f" where
   "poly_of_list_f xs = strip_while (HOL.eq 0f) xs"
 

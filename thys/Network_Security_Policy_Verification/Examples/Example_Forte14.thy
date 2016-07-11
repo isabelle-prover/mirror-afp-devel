@@ -3,17 +3,15 @@ imports "../TopoS_Impl"
 begin
 
 
-abbreviation "V\<equiv>TopoS_Vertices.V"
 
-
-definition policy :: "vString list_graph" where
-    "policy \<equiv> \<lparr> nodesL = [V ''CC'', V ''C1'', V ''C2'', V ''IFEsrv'', V ''IFE1'', V ''IFE2'', V ''SAT'', V ''Wifi'', V ''P1'', V ''P2'' ],
-                edgesL = [(V ''CC'', V ''C1''), (V ''CC'', V ''C2''), (V ''CC'', V ''IFEsrv''), (V ''C1'', V ''CC''), 
-                          (V ''C1'', V ''C2''), (V ''C2'', V ''CC''), (V ''C2'', V ''C1''), 
-                          (V ''IFEsrv'', V ''IFE1''), (V ''IFEsrv'', V ''IFE2''), (V ''IFEsrv'', V ''SAT''), (V ''IFEsrv'', V ''Wifi''),
-                          (V ''IFE1'', V ''IFEsrv''), (V ''IFE2'', V ''IFEsrv''), 
-                          (V ''Wifi'', V ''IFEsrv''), (V ''Wifi'', V ''SAT''), (V ''Wifi'', V ''P1''),
-                          (V ''Wifi'', V ''P2''), (V ''P1'', V ''Wifi''), (V ''P1'', V ''P2''), (V ''P2'', V ''Wifi''), (V ''P2'', V ''P1'')
+definition policy :: "string list_graph" where
+    "policy \<equiv> \<lparr> nodesL = [''CC'', ''C1'', ''C2'', ''IFEsrv'', ''IFE1'', ''IFE2'', ''SAT'', ''Wifi'', ''P1'', ''P2'' ],
+                edgesL = [(''CC'', ''C1''), (''CC'', ''C2''), (''CC'', ''IFEsrv''), (''C1'', ''CC''), 
+                          (''C1'', ''C2''), (''C2'', ''CC''), (''C2'', ''C1''), 
+                          (''IFEsrv'', ''IFE1''), (''IFEsrv'', ''IFE2''), (''IFEsrv'', ''SAT''), (''IFEsrv'', ''Wifi''),
+                          (''IFE1'', ''IFEsrv''), (''IFE2'', ''IFEsrv''), 
+                          (''Wifi'', ''IFEsrv''), (''Wifi'', ''SAT''), (''Wifi'', ''P1''),
+                          (''Wifi'', ''P2''), (''P1'', ''Wifi''), (''P1'', ''P2''), (''P2'', ''Wifi''), (''P2'', ''P1'')
                           ] \<rparr>"
 
 lemma "wf_list_graph policy" by eval
@@ -22,19 +20,19 @@ lemma "wf_list_graph policy" by eval
 lemma "length (edgesL policy) = 21" by eval
 
 
-definition DomainHierarchy_m::"(vString SecurityInvariant)" where
+definition DomainHierarchy_m::"(string SecurityInvariant)" where
       "DomainHierarchy_m \<equiv> new_configured_list_SecurityInvariant SINVAR_DomainHierarchyNG_impl.SINVAR_LIB_DomainHierarchyNG \<lparr> 
           node_properties = [
-            V ''CC'' \<mapsto> DN (''aircraft''--''crew''--Leaf, 1),
-            V ''C1'' \<mapsto> DN (''aircraft''--''crew''--Leaf, 0),
-            V ''C2'' \<mapsto> DN (''aircraft''--''crew''--Leaf, 0),
-            V ''IFEsrv'' \<mapsto> DN (''aircraft''--''entertain''--Leaf, 0),
-            V ''IFE1'' \<mapsto> DN (''aircraft''--''entertain''--Leaf, 0),
-            V ''IFE2'' \<mapsto> DN (''aircraft''--''entertain''--Leaf, 0),
-            V ''SAT'' \<mapsto> DN (''aircraft''--''entertain''--''INET''--Leaf, 0),
-            V ''Wifi'' \<mapsto> DN (''aircraft''--''entertain''--''POD''--Leaf, 1),
-            V ''P1'' \<mapsto> DN (''aircraft''--''entertain''--''POD''--Leaf, 0),
-            V ''P2'' \<mapsto> DN (''aircraft''--''entertain''--''POD''--Leaf, 0)
+            ''CC'' \<mapsto> DN (''aircraft''--''crew''--Leaf, 1),
+            ''C1'' \<mapsto> DN (''aircraft''--''crew''--Leaf, 0),
+            ''C2'' \<mapsto> DN (''aircraft''--''crew''--Leaf, 0),
+            ''IFEsrv'' \<mapsto> DN (''aircraft''--''entertain''--Leaf, 0),
+            ''IFE1'' \<mapsto> DN (''aircraft''--''entertain''--Leaf, 0),
+            ''IFE2'' \<mapsto> DN (''aircraft''--''entertain''--Leaf, 0),
+            ''SAT'' \<mapsto> DN (''aircraft''--''entertain''--''INET''--Leaf, 0),
+            ''Wifi'' \<mapsto> DN (''aircraft''--''entertain''--''POD''--Leaf, 1),
+            ''P1'' \<mapsto> DN (''aircraft''--''entertain''--''POD''--Leaf, 0),
+            ''P2'' \<mapsto> DN (''aircraft''--''entertain''--''POD''--Leaf, 0)
                             ], 
                           (*At the moment, there is no check whether the assigned node_properties comply with the tree in model_global_properties*)
           model_global_properties = (
@@ -47,11 +45,11 @@ definition DomainHierarchy_m::"(vString SecurityInvariant)" where
           \<rparr>"
 
 
-definition SecurityGateway_m::"(vString SecurityInvariant)" where
+definition SecurityGateway_m::"(string SecurityInvariant)" where
   "SecurityGateway_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_SecurityGatewayExtended \<lparr> 
-          node_properties = [V ''IFEsrv'' \<mapsto> SINVAR_SecGwExt.SecurityGatewayIN,
-                             V ''IFE1'' \<mapsto> SINVAR_SecGwExt.DomainMember,
-                             V ''IFE2'' \<mapsto> SINVAR_SecGwExt.DomainMember], 
+          node_properties = [''IFEsrv'' \<mapsto> SINVAR_SecGwExt.SecurityGatewayIN,
+                             ''IFE1'' \<mapsto> SINVAR_SecGwExt.DomainMember,
+                             ''IFE2'' \<mapsto> SINVAR_SecGwExt.DomainMember], 
           model_global_properties = () 
           \<rparr>"
 
@@ -62,14 +60,14 @@ definition SecurityGateway_m::"(vString SecurityInvariant)" where
 2 - secret
 3 - topsecret
 *)
-definition BLP_m::"(vString SecurityInvariant)" where
+definition BLP_m::"(string SecurityInvariant)" where
     "BLP_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_BLPtrusted \<lparr> 
-          node_properties = [V ''CC'' \<mapsto> \<lparr> privacy_level = 2, trusted = False \<rparr>,
-                             V ''C1'' \<mapsto> \<lparr> privacy_level = 2, trusted = False \<rparr>,
-                             V ''C2'' \<mapsto> \<lparr> privacy_level = 2, trusted = False \<rparr>,
-                             V ''IFE1'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
-                             V ''IFE2'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
-                             V ''IFEsrv'' \<mapsto> \<lparr> privacy_level = 0, trusted = True \<rparr>], 
+          node_properties = [''CC'' \<mapsto> \<lparr> privacy_level = 2, trusted = False \<rparr>,
+                             ''C1'' \<mapsto> \<lparr> privacy_level = 2, trusted = False \<rparr>,
+                             ''C2'' \<mapsto> \<lparr> privacy_level = 2, trusted = False \<rparr>,
+                             ''IFE1'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
+                             ''IFE2'' \<mapsto> \<lparr> privacy_level = 1, trusted = False \<rparr>,
+                             ''IFEsrv'' \<mapsto> \<lparr> privacy_level = 0, trusted = True \<rparr>], 
           model_global_properties = () 
           \<rparr>"
 
@@ -84,7 +82,7 @@ text{*
 Visualization with a violation.
 *}
 ML{*
-visualize_graph @{context} @{term "security_invariants"} @{term "policy\<lparr>edgesL := (V ''P1'', V ''CC'')#edgesL policy\<rparr>"};
+visualize_graph @{context} @{term "security_invariants"} @{term "policy\<lparr>edgesL := (''P1'', ''CC'')#edgesL policy\<rparr>"};
 *}
 
 

@@ -8,19 +8,6 @@ theory Applicative_PMF imports
   "~~/src/HOL/Probability/Probability"
 begin
 
-lemma pair_return_pmf1: "pair_pmf (return_pmf x) y = map_pmf (Pair x) y"
-by(simp add: pair_pmf_def bind_return_pmf map_pmf_def)
-
-lemma pair_return_pmf2: "pair_pmf x (return_pmf y) = map_pmf (\<lambda>x. (x, y)) x"
-by(simp add: pair_pmf_def bind_return_pmf map_pmf_def)
-
-lemma pair_pair_pmf: "pair_pmf (pair_pmf u v) w = map_pmf (\<lambda>(x, (y, z)). ((x, y), z)) (pair_pmf u (pair_pmf v w))"
-by(simp add: pair_pmf_def bind_return_pmf map_pmf_def bind_assoc_pmf)
-
-lemma pair_commute_pmf: "pair_pmf x y = map_pmf (\<lambda>(x, y). (y, x)) (pair_pmf y x)"
-unfolding pair_pmf_def by(subst bind_commute_pmf)(simp add: map_pmf_def bind_assoc_pmf bind_return_pmf)
-
-
 abbreviation (input) pure_pmf :: "'a \<Rightarrow> 'a pmf"
 where "pure_pmf \<equiv> return_pmf"
 
@@ -29,7 +16,8 @@ where "ap_pmf f x = map_pmf (\<lambda>(f, x). f x) (pair_pmf f x)"
 
 adhoc_overloading Applicative.ap ap_pmf
 
-context begin interpretation applicative_syntax .
+context includes applicative_syntax
+begin
 
 lemma ap_pmf_id: "pure_pmf (\<lambda>x. x) \<diamondop> x = x"
 by(simp add: ap_pmf_def pair_return_pmf1 pmf.map_comp o_def)
@@ -52,11 +40,26 @@ apply(subst (2) pair_commute_pmf)
 apply(simp add: pair_map_pmf2 pmf.map_comp o_def split_def)
 done
 
+lemma ap_pmf_transfer[transfer_rule]:
+  "rel_fun (rel_pmf (rel_fun A B)) (rel_fun (rel_pmf A) (rel_pmf B)) ap_pmf ap_pmf"
+unfolding ap_pmf_def[abs_def] pair_pmf_def
+by transfer_prover
+
 applicative pmf (C, K)
 for
   pure: pure_pmf
   ap: ap_pmf
-by(rule ap_pmf_id ap_pmf_comp[unfolded o_def[abs_def]] ap_pmf_homo ap_pmf_interchange ap_pmf_C ap_pmf_K)+
+  rel: rel_pmf
+  set: set_pmf
+proof -
+  fix R :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
+  show "rel_fun R (rel_pmf R) pure_pmf pure_pmf" by transfer_prover
+next
+  fix R and f :: "('a \<Rightarrow> 'b) pmf" and g :: "('a \<Rightarrow> 'c) pmf" and x
+  assume [transfer_rule]: "rel_pmf (rel_fun (eq_on (set_pmf x)) R) f g"
+  have [transfer_rule]: "rel_pmf (eq_on (set_pmf x)) x x" by (simp add: pmf.rel_refl_strong)
+  show "rel_pmf R (ap_pmf f x) (ap_pmf g x)" by transfer_prover
+qed(rule ap_pmf_comp[unfolded o_def[abs_def]] ap_pmf_homo ap_pmf_C ap_pmf_K)+
 
 end
 

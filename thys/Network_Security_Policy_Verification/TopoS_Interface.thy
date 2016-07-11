@@ -109,11 +109,11 @@ The offending flows can be empty, even for a violated invariant.
 We provide an example, the security invariant @{term "(\<lambda>_ _. False)"}.
 As host attributes, we simply use the identity function @{const id}.
 *}
-lemma "SecurityInvariant_withOffendingFlows.set_offending_flows (\<lambda>_ _. False) \<lparr> nodes = {V ''v1''}, edges={} \<rparr> id = {}"
+lemma "SecurityInvariant_withOffendingFlows.set_offending_flows (\<lambda>_ _. False) \<lparr> nodes = {''v1''}, edges={} \<rparr> id = {}"
 by %invisible (simp add: SecurityInvariant_withOffendingFlows.set_offending_flows_def 
   SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def SecurityInvariant_withOffendingFlows.is_offending_flows_def)
 lemma "SecurityInvariant_withOffendingFlows.set_offending_flows (\<lambda>_ _. False) 
-  \<lparr> nodes = {V ''v1'', V ''v2''}, edges = {(V ''v1'', V ''v2'')} \<rparr> id = {}"
+  \<lparr> nodes = {''v1'', ''v2''}, edges = {(''v1'', ''v2'')} \<rparr> id = {}"
 by %invisible (simp add: SecurityInvariant_withOffendingFlows.set_offending_flows_def 
   SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def SecurityInvariant_withOffendingFlows.is_offending_flows_def)
 

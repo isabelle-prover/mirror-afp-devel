@@ -534,7 +534,7 @@ proof
       have "?X \<noteq> {#}" by auto
       moreover have "?X \<le># N"
         using M N M' by (simp add: add.commute [of "{#a#}"])
-          (metis Multiset.diff_le_self add.commute add_diff_cancel_right)
+          (metis Multiset.diff_subset_eq_self add.commute add_diff_cancel_right)
       moreover have "L = (N - ?X) + ?Y"
       proof (rule multiset_eqI)
         fix x :: 'a

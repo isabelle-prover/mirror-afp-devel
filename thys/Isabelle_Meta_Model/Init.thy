@@ -342,7 +342,7 @@ definition "text_of_str str =
                                       S.flatten [s, \<open> \<close>,  add_0 c, ap])
                                  str
           , \<open>[])\<close>])"
-definition' \<open>text2_of_str = String.replace_chars (\<lambda>c. S.flatten [\<open>\\<close>, \<open><\<close>, \<degree>c\<degree>, \<open>>\<close>])\<close>
+definition \<open>text2_of_str = String.replace_chars (\<lambda>c. S.flatten [\<open>\\<close>, \<open><\<close>, \<degree>c\<degree>, \<open>>\<close>])\<close>
 
 definition "textstr_of_str f_flatten f_char f_str str =
  (let str0 = String.to_list str
@@ -359,7 +359,7 @@ definition "textstr_of_str f_flatten f_char f_str str =
   else
     f_flatten (S.flatten [ \<open>(\<close>, str, \<open>)\<close> ]))"
 
-definition' \<open>escape_sml = String.replace_chars (\<lambda>x. if x = CHR 0x22 then \<open>\"\<close> else \<degree>x\<degree>)\<close>
+definition \<open>escape_sml = String.replace_chars (\<lambda>x. if x = CHR 0x22 then \<open>\"\<close> else \<degree>x\<degree>)\<close>
 definition "mk_constr_name name = (\<lambda> x. S.flatten [String.isub name, \<open>_\<close>, String.isub x])"
 definition "mk_dot s1 s2 = S.flatten [\<open>.\<close>, s1, s2]"
 definition "mk_dot_par_gen dot l_s = S.flatten [dot, \<open>(\<close>, case l_s of [] \<Rightarrow> \<open>\<close> | x # xs \<Rightarrow> S.flatten [x, S.flatten (L.map (\<lambda>s. \<open>, \<close> @@ s) xs) ], \<open>)\<close>]"

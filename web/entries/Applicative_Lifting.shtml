@@ -56,6 +56,11 @@ We declare several types from the Isabelle library as applicative functors and i
         <td class="abstract">
 
 [2016-03-03]: added formalisation of lifting with combinators<br>
+[2016-06-10]:
+implemented automatic derivation of lifted combinator reductions;
+support arbitrary lifted relations using relators;
+improved compatibility with locale interpretation
+(revision ec336f354f37)<br>
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
@@ -76,10 +81,11 @@ We declare several types from the Isabelle library as applicative functors and i
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Stern_Brocot.shtml">Stern_Brocot</a></td></tr>
+
+
 
   </tbody>
 </table>
@@ -101,7 +107,6 @@ We declare several types from the Isabelle library as applicative functors and i
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -112,11 +117,14 @@ We declare several types from the Isabelle library as applicative functors and i
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-<ul>
+
+
+    <tr><td class="links">Older releases: <ul>
 <li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-12-22.tar.gz">afp-<!--#echo var="name" -->-2015-12-22.tar.gz</a></li>
 
-</ul>    </td></tr>
+</ul>
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

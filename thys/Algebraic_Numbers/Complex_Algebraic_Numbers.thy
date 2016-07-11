@@ -442,11 +442,12 @@ proof (cases "degree p \<ge> 3")
 next
   case True
   let ?mode = Uncertified_Factorization
-  note factors_of_rat_poly = factors_of_rat_poly[of ?mode]
+  have "?mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p" by auto
+  note factors_of_rat_poly = factors_of_rat_poly[of ?mode, OF _ this]
   {
     fix q
     assume "q \<in> set (factors_of_rat_poly ?mode p)"
-    from factors_of_rat_poly(1)[OF refl this] have "q \<noteq> 0" by auto
+    from factors_of_rat_poly(1)[OF refl _ this] have "q \<noteq> 0" by auto
     from complex_roots_of_rat_poly_all[OF this]
     have "set (complex_roots_of_rat_poly_all q) = {x. rpoly q x = 0}" by auto
   } note all = this
@@ -456,7 +457,7 @@ next
   also have "\<dots> = (\<Union> ((\<lambda> p. {x. rpoly p x = 0}) ` set (factors_of_rat_poly ?mode p)))"
     using all by blast
   finally have l: "?l = (\<Union> ((\<lambda> p. {x. rpoly p x = 0}) ` set (factors_of_rat_poly ?mode p)))" .
-  show ?thesis unfolding l factors_of_rat_poly(2)[OF refl p] by auto
+  show ?thesis using l factors_of_rat_poly(2)[OF refl _ p] by auto
 qed
 
 definition roots_of_complex_main :: "complex poly \<Rightarrow> complex list" where 
@@ -599,7 +600,7 @@ proof -
         also have "\<dots> = [:-a,1:] * [:-a,1:] * q" by simp
         finally have "p = ([:-a,1:] * [:-a,1:]) * q" by simp
         hence "[:-a,1:] * [:-a,1:] dvd p" unfolding dvd_def ..
-        with `square_free p`[unfolded square_free_def, rule_format, OF `p \<noteq> 0`, of "[:-a,1:]"] 
+        with `square_free p`[unfolded square_free_def, THEN conjunct2, rule_format, of "[:-a,1:]"] 
         show False by auto
       qed
       also have "set as = {x. poly p x = 0}" unfolding as poly_listprod 

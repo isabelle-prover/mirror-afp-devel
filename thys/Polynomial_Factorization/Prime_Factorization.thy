@@ -691,7 +691,7 @@ proof -
       from this[unfolded dvd] have x: "x \<noteq> 0"  
         and "\<And> p. multiplicity p x \<le> multiplicity p n" by auto
       from this[unfolded multiplicity_nat_def]
-      have sub: "?mf x \<subseteq># ?mf n" by (metis mset_less_eqI)
+      have sub: "?mf x \<subseteq># ?mf n" by (metis mset_subset_eqI)
       have "msetprod (?mf x) = x" using x
         by (simp add: multiset_prime_factorization prime_factorization_nat)
       hence "x \<in> ?l" using sub by force

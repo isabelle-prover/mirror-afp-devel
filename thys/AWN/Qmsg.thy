@@ -57,7 +57,7 @@ lemma \<sigma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G_labels [simp]: "(\<xi>, q) \<in> 
 lemma qmsg_proc_cases [dest]:
   fixes p pn
   shows "p \<in> ctermsl (\<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G pn) \<Longrightarrow> p \<in> ctermsl (\<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G ())"
-  using assms by simp
+  by simp
 
 declare
   \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G_simps [cterms_env]

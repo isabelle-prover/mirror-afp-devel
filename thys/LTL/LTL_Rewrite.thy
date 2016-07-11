@@ -19,7 +19,7 @@ text \<open>This theory provides rewrite rules for the simplification of LTL for
     \item Syntactic Implication Checking
   \end{itemize}
   It reuses parts of LTL\_Rewrite.thy (CAVA, LTL\_TO\_GBA). Furthermore, some rules were taken from 
-  \cite{Anonymous:b6sAdKbe} and \cite{TomasBabiak:2012uz}. All functions are defined for @{type ltln}.\<close>
+  \cite{DBLP:conf/cav/SomenziB00} and \cite{DBLP:conf/tacas/BabiakKRS12}. All functions are defined for @{type ltln}.\<close>
 
 subsection \<open>Constant Eliminating Constructors\<close>
 

@@ -12,8 +12,9 @@ text \<open>We define eigenvalues, eigenvectors, and the characteristic polynomi
  
 theory Char_Poly
 imports 
-  "~~/src/HOL/Library/Fundamental_Theorem_Algebra"
+  "../Polynomial_Factorization/Fundamental_Theorem_Algebra_Factorized"
   "../Polynomial_Interpolation/Missing_Polynomial"
+  "../Polynomial_Interpolation/Ring_Hom_Poly"
   Determinant
   Complex_Main
 begin
@@ -158,6 +159,72 @@ definition char_poly :: "'a :: comm_ring_1 mat \<Rightarrow> 'a poly" where
   "char_poly A = (det (char_poly_matrix A))"    
 
 lemmas char_poly_defs = char_poly_def char_poly_matrix_def
+
+lemma (in ring_hom) char_poly_matrix_hom: assumes A: "A \<in> carrier\<^sub>m n n"
+  shows "char_poly_matrix (mat\<^sub>h A) = map\<^sub>m (map_poly hom) (char_poly_matrix A)"
+proof -
+  interpret p: ring_hom "map_poly hom" by (rule ring_hom_map_poly)
+  show ?thesis
+    unfolding char_poly_defs
+    by (rule mat_eqI, insert A, auto simp: mat_scalar_mult_def)
+qed
+
+lemma (in ring_hom) char_poly_hom: assumes A: "A \<in> carrier\<^sub>m n n"
+  shows "char_poly (map\<^sub>m hom A) = map_poly hom (char_poly A)"
+proof -
+  interpret p: ring_hom "map_poly hom" by (rule ring_hom_map_poly)
+  show ?thesis
+    unfolding char_poly_def p.hom_det[symmetric] char_poly_matrix_hom[OF A] ..
+qed
+
+context inj_ring_hom 
+begin 
+
+lemma eigenvector_hom: assumes A: "A \<in> carrier\<^sub>m n n"
+  and ev: "eigenvector A v ev"
+  shows "eigenvector (mat\<^sub>h A) (vec\<^sub>h v) (hom ev)"
+proof -
+  let ?A = "mat\<^sub>h A" 
+  let ?v = "vec\<^sub>h v"
+  let ?ev = "hom ev"
+  from ev[unfolded eigenvector_def] A
+  have v: "v \<in> carrier\<^sub>v n" "v \<noteq> \<zero>\<^sub>v n" "A \<otimes>\<^sub>m\<^sub>v v = ev \<odot>\<^sub>v v" by auto
+  from v(1) have v1: "?v \<in> carrier\<^sub>v n" by simp
+  from v(1-2) obtain i where "i < n" and "v $ i \<noteq> 0" by force
+  with v(1) have "?v $ i \<noteq> 0" by auto
+  hence v2: "?v \<noteq> \<zero>\<^sub>v n" using `i < n` v(1) by force
+  from arg_cong[OF v(3), of "vec\<^sub>h", unfolded mat_vec_mult_hom[OF A v(1)] vec_hom_scalar_mult]
+  have v3: "?A \<otimes>\<^sub>m\<^sub>v ?v = ?ev \<odot>\<^sub>v ?v" .
+  from v1 v2 v3
+  show ?thesis unfolding eigenvector_def using A by auto
+qed
+
+lemma eigenvalue_hom: assumes A: "A \<in> carrier\<^sub>m n n"
+  and ev: "eigenvalue A ev"
+  shows "eigenvalue (mat\<^sub>h A) (hom ev)"
+  using eigenvector_hom[OF A, of _ ev] ev
+  unfolding eigenvalue_def by auto
+
+lemma eigenvector_hom_rev: assumes A: "A \<in> carrier\<^sub>m n n"
+  and ev: "eigenvector (mat\<^sub>h A) (vec\<^sub>h v) (hom ev)"
+  shows "eigenvector A v ev"
+proof -
+  let ?A = "mat\<^sub>h A" 
+  let ?v = "vec\<^sub>h v"
+  let ?ev = "hom ev"
+  from ev[unfolded eigenvector_def] A
+  have v: "v \<in> carrier\<^sub>v n" "?v \<noteq> \<zero>\<^sub>v n" "?A \<otimes>\<^sub>m\<^sub>v ?v = ?ev \<odot>\<^sub>v ?v" by auto
+  from v(1-2) obtain i where "i < n" and "v $ i \<noteq> 0" by force
+  with v(1) have "v $ i \<noteq> 0" by auto
+  hence v2: "v \<noteq> \<zero>\<^sub>v n" using `i < n` v(1) by force
+  from vec_hom_inj[OF v(3)[folded mat_vec_mult_hom[OF A v(1)] vec_hom_scalar_mult]]
+  have v3: "A \<otimes>\<^sub>m\<^sub>v v = ev \<odot>\<^sub>v v" .
+  from v(1) v2 v3
+  show ?thesis unfolding eigenvector_def using A by auto
+qed
+
+end
+
 
 lemma poly_det_cong: assumes A: "A \<in> carrier\<^sub>m n n"
   and B: "B \<in> carrier\<^sub>m n n"
@@ -325,41 +392,13 @@ proof -
   qed
 qed
 
-lemma fundamental_theorem_algebra_factorized: fixes p :: "complex poly"
-  shows "\<exists> as. [:coeff p (degree p):] * (\<Prod> a \<leftarrow> as. [:- a, 1:]) = p"
-proof -
-  def n \<equiv> "degree p"
-  have "degree p = n" unfolding n_def by simp
-  thus ?thesis
-  proof (induct n arbitrary: p)
-    case (0 p)
-    hence "\<exists> c. p = [: c :]" by (cases p, auto split: if_splits)
-    thus ?case by (intro exI[of _ Nil], auto)
-  next
-    case (Suc n p)
-    have dp: "degree p = Suc n" by fact
-    hence "\<not> constant (poly p)" by (simp add: constant_degree)
-    from fundamental_theorem_of_algebra[OF this] obtain c where rt: "poly p c = 0" by auto
-    hence "[:-c,1 :] dvd p" by (simp add: dvd_iff_poly_eq_0)
-    then obtain q where p: "p = q * [: -c,1 :]" by (metis dvd_def mult.commute)
-    from `degree p = Suc n` have dq: "degree q = n" using p
-      by (metis One_nat_def Suc_eq_plus1 `\<not> constant (poly p)` add_right_cancel constant_degree 
-        degree_0 degree_1 degree_mult_eq degree_pCons_eq mult_eq_0_iff one_neq_zero one_poly_def)
-    from Suc(1)[OF this] obtain as where q: "[:coeff q (degree q):] * (\<Prod>a\<leftarrow>as. [:- a, 1:]) = q" by auto
-    have dc: "degree p = degree q + degree [: -c, 1 :]" unfolding dq dp by simp
-    have cq: "coeff q (degree q) = coeff p (degree p)" unfolding dc unfolding p coeff_mult_degree_sum unfolding dq by simp
-    show ?case using p[unfolded q[unfolded cq, symmetric]] 
-      by (intro exI[of _ "c # as"], auto simp: ac_simps)
-  qed
-qed
-
 lemma char_poly_factorized: fixes A :: "complex mat"
   assumes A: "A \<in> carrier\<^sub>m n n"
   shows "\<exists> as. char_poly A = (\<Prod> a \<leftarrow> as. [:- a, 1:]) \<and> length as = n"
 proof -
   let ?p = "char_poly A"
   from fundamental_theorem_algebra_factorized[of ?p] obtain as
-  where "[:coeff ?p (degree ?p):] * (\<Prod>a\<leftarrow>as. [:- a, 1:]) = ?p" by blast
+  where "Polynomial.smult (coeff ?p (degree ?p)) (\<Prod>a\<leftarrow>as. [:- a, 1:]) = ?p" by blast
   also have "coeff ?p (degree ?p) = 1" using degree_monic_char_poly[OF A] by simp
   finally have cA: "?p = (\<Prod>a\<leftarrow>as. [:- a, 1:])" by simp
   from degree_monic_char_poly[OF A] have "degree ?p = n" ..
@@ -394,6 +433,5 @@ proof -
     by (subst det_transpose[symmetric, OF A'], rule arg_cong[of _ _ det],
     insert A, auto)
 qed
-
     
 end

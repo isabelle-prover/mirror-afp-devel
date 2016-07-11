@@ -233,7 +233,7 @@ moreover
     from this obtain d where "d>0 & (!y : (ball x0 d). C < f y)" using `?rhs` by auto
     hence "EX T. open T & x0 : T & (!y : T. C < f y)" apply (rule_tac x="ball x0 d" in exI)
       apply (simp add: centre_in_ball) done
-  } hence "lsc_at x0 f" using assms lsc_at_ereal[of x0 f] by auto
+  } hence "lsc_at x0 f" using lsc_at_ereal[of x0 f] by auto
 }
 ultimately show ?thesis by auto
 qed
@@ -393,7 +393,7 @@ moreover
     hence "(%i. f (x i)) \<longlonglongrightarrow> - A" using tendsto_uminus_ereal[of "(%i. - f (x i))" A] by auto
     hence "(f o x) \<longlonglongrightarrow> -A" unfolding o_def by auto
     hence "f x0 >= - A" apply (subst usc_at_mem[of x0 "f" x]) using usc x_def by auto
-    hence "-f x0 <= A" unfolding ereal_uminus_le_reorder by auto
+    hence "-f x0 <= A" by (auto simp: ereal_uminus_le_reorder)
   } hence "lsc_at x0 (%x. -f x)" unfolding lsc_at_def by auto
 } ultimately show ?thesis by blast
 qed
@@ -1668,7 +1668,7 @@ have cEpi: "convex (Epigraph UNIV f)" by (metis assms convex_EpigraphI convex_UN
   hence "affine M" using vertical_line_affine by auto
   moreover have "rel_interior (Epigraph UNIV f) Int M ~= {}" using r_def M_def by auto
   ultimately have *: "closure (Epigraph UNIV f) Int M = closure (Epigraph UNIV f Int M)"
-    using convex_affine_closure_inter[of "Epigraph UNIV f" M] cEpi by auto
+    using convex_affine_closure_Int[of "Epigraph UNIV f" M] cEpi by auto
   have "Epigraph UNIV f Int M = {x} \<times> {m. f x <= ereal m}"
     unfolding Epigraph_def M_def by auto
   moreover have "closed({x} \<times> {m. f x<= ereal m})" apply (subst closed_Times)

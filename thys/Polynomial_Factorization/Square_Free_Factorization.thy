@@ -9,32 +9,190 @@ text \<open>We implemented Yun's algorithm to perform a square-free factorizatio
 We further show properties of a square-free factorization, namely that the exponents in
 the square-free factorization are exactly the orders of the roots. We also show that 
 factorizing the result of square-free factorization further will again result in a 
-square-free factorization.\<close>
+square-free factorization, and that square-free factorizations can be lifted homomorphically.\<close>
 
 theory Square_Free_Factorization
 imports 
   "../Matrix/Utility"
   Polynomial_Divisibility
   Order_Polynomial
+  Fundamental_Theorem_Algebra_Factorized
 begin
 
 hide_const Coset.order
 
 context
-  fixes ty :: "'a :: field itself"
+  assumes "SORT_CONSTRAINT('a::idom)"
 begin
 
 definition square_free :: "'a poly \<Rightarrow> bool" where 
-  "square_free p = (p \<noteq> 0 \<longrightarrow> (\<forall> q. degree q \<noteq> 0 \<longrightarrow> \<not> (q * q dvd p)))"
+  "square_free p = (p \<noteq> 0 \<and> (\<forall> q. degree q \<noteq> 0 \<longrightarrow> \<not> (q * q dvd p)))"
 
 lemma square_freeI:  
   assumes "\<And> q. degree q \<noteq> 0 \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> q * q dvd p \<Longrightarrow> False"
+  and p: "p \<noteq> 0"
   shows "square_free p" unfolding square_free_def
-proof (intro allI impI notI)
-  fix q
-  assume dq: "degree q \<noteq> 0" and dvd: "q * q dvd p"
-  from assms[OF dq _ dvd] dq show False by (cases "q = 0", auto)
+proof (intro allI conjI[OF p] impI notI, goal_cases)
+  case (1 q)
+  from assms(1)[OF 1(1) _ 1(2)] 1(1) show False by (cases "q = 0", auto)
 qed
+
+lemma irreducible_square_free: "irreducible p \<Longrightarrow> square_free p"
+proof (intro square_freeI)
+  fix q
+  show "irreducible p \<Longrightarrow> degree q \<noteq> 0 \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> q * q dvd p \<Longrightarrow> False"
+    using irreducibleD(2)[of p q] irreducibleD(1)[of p]
+    by (metis add_diff_cancel_left' degree_mult_eq degree_smult_eq 
+      dvd_mult_left irreducible_dvd_smult linorder_neqE_nat not_less0 zero_less_diff)
+qed (auto simp: irreducible_def)
+
+lemma square_free_factor: assumes dvd: "a dvd p"
+  and sf: "square_free p"
+  shows "square_free a"
+proof (intro square_freeI)
+  fix q
+  assume q: "degree q \<noteq> 0" and "q * q dvd a"
+  hence "q * q dvd p" using dvd unfolding dvd_def by (auto simp: field_simps)
+  with sf[unfolded square_free_def] q show False by auto
+qed (insert dvd sf, auto simp: square_free_def)
+
+lemma square_free_listprod_distinct: 
+  assumes sf: "square_free (listprod us)"
+  and us: "\<And> u. u \<in> set us \<Longrightarrow> degree u \<noteq> 0"
+  shows "distinct us"
+proof (rule ccontr)
+  assume "\<not> distinct us"
+  from not_distinct_decomp[OF this] obtain xs ys zs u where
+     "us = xs @ u # ys @ u # zs" by auto
+  hence dvd: "u * u dvd listprod us" and u: "u \<in> set us" by auto
+  from dvd us[OF u] sf have "listprod us = 0" unfolding square_free_def by auto
+  hence "0 \<in> set us" by (simp add: listprod_zero_iff)
+  from us[OF this] show False by auto
+qed
+end
+
+lemma coprime_pderiv_imp_square_free: assumes "coprime f (pderiv f)"
+  shows "square_free f"
+proof (rule ccontr)
+  from assms have f0: "f \<noteq> 0" by (cases f, auto)
+  assume "\<not> square_free f"
+  then obtain g where g: "degree g \<noteq> 0" and "g * g dvd f" using f0 unfolding square_free_def by auto
+  then obtain h where f: "f = g * (g * h)" unfolding dvd_def by (auto simp: ac_simps)
+  have "pderiv f = g * ((g * pderiv h + h * pderiv g) + h * pderiv g)" 
+    unfolding f pderiv_mult[of g] by (simp add: field_simps)
+  hence "g dvd pderiv f" unfolding dvd_def by blast
+  moreover have "g dvd f" unfolding f dvd_def by blast
+  ultimately have dvd: "g dvd (gcd f (pderiv f))" by simp
+  have "gcd f (pderiv f) \<noteq> 0" using f0 by simp
+  with g dvd have "degree (gcd f (pderiv f)) \<noteq> 0"
+    by (metis degree_0 is_unit_gcd is_unit_iff_degree)
+  hence "\<not> coprime f (pderiv f)" by auto
+  with assms show False by simp
+qed
+
+lemma square_free_rsquarefree: assumes f: "square_free f" 
+  shows "rsquarefree f"
+  unfolding rsquarefree_def
+proof (intro conjI allI)
+  fix x
+  show "order x f = 0 \<or> order x f = 1"
+  proof (rule ccontr)
+    assume "\<not> ?thesis"
+    then obtain n where ord: "order x f = Suc (Suc n)" 
+      by (cases "order x f"; cases "order x f - 1"; auto)
+    def p \<equiv> "[:-x,1:]"
+    from order_divides[of x "Suc (Suc 0)" f, unfolded ord]
+    have "p * p dvd f" "degree p \<noteq> 0" unfolding p_def by auto
+    hence "\<not> square_free f" using f(1) unfolding square_free_def by auto
+    with assms show False by auto
+  qed
+qed (insert f, auto simp: square_free_def)
+
+lemma square_free_setprodD: assumes sf: "square_free (\<Prod> fs)"
+  and fin: "finite fs"
+  and f: "f \<in> fs"
+  and g: "g \<in> fs"
+  and fg: "f \<noteq> g"
+  shows "coprime f g"
+proof -
+  have "(\<Prod> fs) = f * (\<Prod> (fs - {f}))"
+    by (rule setprod.remove[OF fin f])
+  also have "(\<Prod> (fs - {f})) = g * (\<Prod> (fs - {f} - {g}))"
+    by (rule setprod.remove, insert fin g fg, auto)
+  finally obtain k where sf: "square_free (f * g * k)" using sf by (simp add: ac_simps)
+  from sf[unfolded square_free_def] have 0: "f \<noteq> 0" "g \<noteq> 0" 
+    and dvd: "\<And> q. q * q dvd f * g * k \<Longrightarrow> degree q = 0"
+    by auto
+  have "gcd f g * gcd f g dvd f * g * k" by (simp add: mult_dvd_mono)
+  from dvd[OF this] have "degree (gcd f g) = 0" . 
+  moreover have "gcd f g \<noteq> 0" using 0 by auto
+  ultimately show "coprime f g" using is_unit_gcd is_unit_iff_degree by blast
+qed
+
+lemma rsquarefree_square_free_complex: assumes "rsquarefree (p :: complex poly)"
+  shows "square_free p"
+proof (rule square_freeI)
+  fix q
+  assume d: "degree q \<noteq> 0" and dvd: "q * q dvd p"
+  from d have "\<not> constant (poly q)" by (simp add: constant_degree)
+  from fundamental_theorem_of_algebra[OF this] obtain x where "poly q x = 0" by auto
+  hence "[:-x,1:] dvd q" by (simp add: poly_eq_0_iff_dvd)
+  then obtain k where q: "q = [:-x,1:] * k" unfolding dvd_def by auto
+  from dvd obtain l where p: "p = q * q * l" unfolding dvd_def by auto
+  from p[unfolded q] have "p = [:-x,1:]^2 * (k * k * l)" by algebra
+  hence "[:-x,1:]^2 dvd p" unfolding dvd_def by blast
+  from this[unfolded order_divides] have "p = 0 \<or> \<not> order x p \<le> 1" by auto
+  thus False using assms unfolding rsquarefree_def' by auto
+qed (insert assms, auto simp: rsquarefree_def)
+    
+lemma square_free_coprime_pderiv: fixes f :: "'a :: field_char_0 poly"
+  assumes "square_free f"
+  shows "coprime f (pderiv f)"
+proof (rule ccontr)
+  from assms have f: "f \<noteq> 0" unfolding square_free_def by auto
+  let ?g = "gcd f (pderiv f)"
+  def G \<equiv> ?g
+  from poly_gcd_monic[of f "pderiv f"] f have mon: "monic ?g"
+    unfolding lead_coeff_def by auto
+  assume cop: "\<not> coprime f (pderiv f)"
+  have deg: "degree G \<noteq> 0" 
+  proof (cases "degree G")
+    case 0
+    from degree0_coeffs[OF this] cop mon show ?thesis by (auto simp: G_def one_poly_def)
+  qed auto
+  have gf: "G dvd f" unfolding G_def by auto
+  have gf': "G dvd pderiv f" unfolding G_def by auto
+  from irreducible_factor[OF deg] obtain g r where g: "irreducible g" and G: "G = g * r" by auto
+  from gf have gf: "g dvd f" unfolding G by (rule dvd_mult_left)
+  from gf' have gf': "g dvd pderiv f" unfolding G by (rule dvd_mult_left)
+  have g0: "degree g \<noteq> 0" using g unfolding irreducible_def by auto
+  from gf obtain k where fgk: "f = g * k" unfolding dvd_def by auto
+  have id1: "pderiv f = g * pderiv k + k * pderiv g" unfolding fgk pderiv_mult by simp
+  from gf' obtain h where "pderiv f = g * h" unfolding dvd_def by auto
+  from id1[unfolded this] have "k * pderiv g = g * (h - pderiv k)" by (simp add: field_simps)
+  hence "g dvd k * pderiv g" unfolding dvd_def by auto
+  from irreducible_dvd_mult[OF g this] g0
+  have "g dvd k" unfolding dvd_pderiv_iff by auto
+  then obtain h where k: "k = g * h" unfolding dvd_def by auto
+  with fgk have "g * g dvd f" by auto
+  with g0 have "\<not> square_free f" unfolding square_free_def using f by auto
+  with assms show False by simp
+qed
+  
+
+lemma square_free_iff_coprime: "square_free (f :: 'a :: field_char_0 poly) = 
+  (coprime f (pderiv f))"
+  using coprime_pderiv_imp_square_free[of f] square_free_coprime_pderiv[of f] by auto
+
+context
+  assumes "SORT_CONSTRAINT('a::field)"
+begin
+
+lemma square_free_smult: "c \<noteq> 0 \<Longrightarrow> square_free (f :: 'a poly) \<Longrightarrow> square_free (smult c f)"
+  by (unfold square_free_def, insert dvd_smult_cancel[of _ c], auto)
+
+lemma square_free_smult_iff[simp]: "c \<noteq> 0 \<Longrightarrow> square_free (smult c f) = square_free (f :: 'a poly)"
+  using square_free_smult[of c f] square_free_smult[of "inverse c" "smult c f"] by auto
 
 definition square_free_factorization :: "'a poly \<Rightarrow> 'a \<times> ('a poly \<times> nat) list \<Rightarrow> bool" where
   "square_free_factorization p cbs \<equiv> case cbs of (c,bs) \<Rightarrow>
@@ -52,57 +210,18 @@ lemma square_free_factorizationD: assumes "square_free_factorization p (c,bs)"
   "distinct bs"
   using assms unfolding square_free_factorization_def split by blast+
 
-lemma irreducible_dvd_pow: fixes p :: "'a poly" 
-  assumes irr: "irreducible p"
-  shows "p dvd q ^ Suc n \<Longrightarrow> p dvd q"
-proof (induct n)
-  case (Suc n)
-  have "q ^ Suc (Suc n) = q * q ^ Suc n" by simp
-  from irreducible_dvd_mult[OF irr Suc(2)[unfolded this]] Suc(1)
-  show ?case by auto
-qed simp
-
-lemma irreducible_dvd_setprod: fixes p :: "'a poly"
-  assumes irr: "irreducible p"
-  and dvd: "p dvd setprod f as"
-  shows "\<exists> a \<in> as. p dvd f a"
+lemma square_free_factorization_listprod: assumes "square_free_factorization p (c,bs)"
+  shows "p = smult c (listprod (map (\<lambda> (a,i). a ^ Suc i) bs))"
 proof -
-  from irr[unfolded irreducible_def] have deg: "degree p \<noteq> 0" by auto
-  hence p1: "\<not> p dvd 1" unfolding dvd_def
-    by (metis degree_1 div_mult_self1_is_id div_poly_less linorder_neqE_nat mult_not_zero not_less0 zero_neq_one)
-  from dvd show ?thesis
-  proof (induct as rule: infinite_finite_induct)
-    case (insert a as)
-    hence "setprod f (insert a as) = f a * setprod f as" by auto
-    from irreducible_dvd_mult[OF irr insert(4)[unfolded this]]
-    show ?case using insert(3) by auto
-  qed (insert p1, auto)
+  note sff = square_free_factorizationD[OF assms]
+  show ?thesis unfolding sff(1) 
+    by (simp add: setprod.distinct_set_conv_list[OF sff(5)])
 qed
-
-lemma dvd_mult: fixes p :: "'a poly" 
-  assumes "p dvd q * r"
-  and "degree p \<noteq> 0" 
-shows "\<exists> s t. irreducible s \<and> p = s * t \<and> (s dvd q \<or> s dvd r)"
-proof -
-  from irreducible_factor[OF assms(2)] obtain s t
-  where irred: "irreducible s" and p: "p = s * t" by auto
-  from `p dvd q * r` p have s: "s dvd q * r" unfolding dvd_def by auto
-  from irreducible_dvd_mult[OF irred s] p irred show ?thesis by auto
-qed  
-
-(* TODO: Move *)
-lemma normalize_monic: "monic p \<Longrightarrow> normalize p = p"
-  by (simp add: normalize_poly_def)
-
-lemma poly_gcd_monic_factor:
-  "monic p \<Longrightarrow>  gcd (p * q) (p * r) = p * gcd q r"
-  by (rule gcdI [symmetric]) (simp_all add: normalize_mult normalize_monic dvd_gcd_mult)
 end
 
 subsection \<open>Yun's factorization algorithm\<close>
 context 
-  fixes type :: "'a :: field_char_0 poly itself"
-  and gcd :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly"
+  fixes Gcd :: "'a :: field_char_0 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly"
 begin
 
 partial_function (tailrec) yun_factorization_main :: 
@@ -113,11 +232,11 @@ partial_function (tailrec) yun_factorization_main ::
     else (
     let 
       dn = cn - pderiv bn;
-      an = gcd bn dn
+      an = Gcd bn dn
     in yun_factorization_main (bn div an) (dn div an) (Suc i) ((an,i) # sqr)))"
 
 definition square_free_monic_poly :: "'a poly \<Rightarrow> 'a poly" where
-  "square_free_monic_poly p = (p div (gcd p (pderiv p)))"
+  "square_free_monic_poly p = (p div (Gcd p (pderiv p)))"
 
 definition square_free_poly :: "'a poly \<Rightarrow> 'a poly" where
   "square_free_poly p = (if p = 0 then 0 else 
@@ -126,7 +245,7 @@ definition square_free_poly :: "'a poly \<Rightarrow> 'a poly" where
 definition yun_monic_factorization :: "'a poly \<Rightarrow> ('a poly \<times> nat)list" where
   "yun_monic_factorization p = (let
     pp = pderiv p;
-    u = gcd p pp;
+    u = Gcd p pp;
     b0 = p div u;
     c0 = pp div u
     in 
@@ -139,16 +258,20 @@ definition yun_factorization :: "'a poly \<Rightarrow> 'a \<times> ('a poly \<ti
       q = smult (inverse c) p
     in (c, yun_monic_factorization q)))"
 
-context
-  assumes gcd: "gcd = GCD.gcd"
-begin
+lemma yun_factorization_0[simp]: "yun_factorization 0 = (0,[])"
+  unfolding yun_factorization_def by simp
+end
 
-context
-  fixes as :: "('a poly \<times> nat) set"
+locale monic_factorization =
+  fixes as :: "('a :: field_char_0 poly \<times> nat) set"
   and p :: "'a poly"
   assumes p: "p = setprod (\<lambda> (a,i). a ^ Suc i) as"
   and fin: "finite as"
+  assumes as_distinct: "\<And> a i b j. (a,i) \<in> as \<Longrightarrow> (b,j) \<in> as \<Longrightarrow> (a,i) \<noteq> (b,j) \<Longrightarrow> a \<noteq> b"
+  and as_irred: "\<And> a i. (a,i) \<in> as \<Longrightarrow> irreducible a"
+  and as_monic: "\<And> a i. (a,i) \<in> as \<Longrightarrow> monic a"
 begin
+
 lemma poly_exp_expand: 
   "p = (setprod (\<lambda> (a,i). a ^ i) as) * setprod (\<lambda> (a,i). a) as"
   unfolding p setprod.distrib[symmetric]
@@ -181,24 +304,18 @@ proof (rule setsum.cong[OF refl])
   qed
 qed
 
-context
-  assumes as_distinct: "\<And> a i b j. (a,i) \<in> as \<Longrightarrow> (b,j) \<in> as \<Longrightarrow> (a,i) \<noteq> (b,j) \<Longrightarrow> a \<noteq> b"
-  and as_irred: "\<And> a i. (a,i) \<in> as \<Longrightarrow> irreducible a"
-  and as_monic: "\<And> a i. (a,i) \<in> as \<Longrightarrow> monic a"
-begin
-
-private lemma monic_gen: assumes "bs \<subseteq> as"
+lemma monic_gen: assumes "bs \<subseteq> as"
   shows "monic (\<Prod> (a, i) \<in> bs. a)"
   by (rule monic_setprod, insert assms as_monic, auto)
 
-private lemma nonzero_gen: assumes "bs \<subseteq> as"
+lemma nonzero_gen: assumes "bs \<subseteq> as"
   shows "(\<Prod> (a, i) \<in> bs. a) \<noteq> 0"
   using monic_gen[OF assms] by auto
 
-private lemma monic_prod: "monic ((\<Prod>(a, i)\<in>as. a ^ i))"
+lemma monic_prod: "monic ((\<Prod>(a, i)\<in>as. a ^ i))"
   by (rule monic_setprod, insert as_monic, auto intro: monic_power)
 
-private lemma coprime_generic: assumes bs: "bs \<subseteq> as"
+lemma coprime_generic: assumes bs: "bs \<subseteq> as"
   and f: "\<And> a i. (a,i) \<in> bs \<Longrightarrow> f i > 0"
   shows "coprime (\<Prod>(a, i) \<in> bs. a)
      (\<Sum>(a, i)\<in> bs. (\<Prod>(b, j)\<in> bs - {(a, i)} . b) * smult (of_nat (f i)) (pderiv a))"
@@ -206,7 +323,7 @@ private lemma coprime_generic: assumes bs: "bs \<subseteq> as"
 proof -
   have single: "?single \<noteq> 0" by (rule nonzero_gen[OF bs])
   show ?thesis
-  proof (rule gcdI [symmetric])
+  proof (rule gcdI[symmetric])
     fix k
     assume dvd: "k dvd ?single" "k dvd ?onederiv"
     note bs_monic = as_monic[OF set_mp[OF bs]]
@@ -281,8 +398,8 @@ proof -
   qed (insert `?single \<noteq> 0`, auto)
 qed
 
-private lemma pderiv_exp_gcd: 
-  "GCD.gcd p (pderiv p) = (\<Prod>(a, i)\<in>as. a ^ i)" (is "_ = ?prod")
+lemma pderiv_exp_gcd: 
+  "gcd p (pderiv p) = (\<Prod>(a, i)\<in>as. a ^ i)" (is "_ = ?prod")
 proof -
   let ?sum = "(\<Sum>(a, i)\<in>as. (\<Prod>(b, j)\<in>as - {(a, i)}. b) * smult (of_nat (Suc i)) (pderiv a))"
   let ?single = "(\<Prod>(a, i)\<in>as. a)"
@@ -291,24 +408,24 @@ proof -
   have pp: "pderiv p = ?prod * ?sum" by (rule pderiv_exp_setprod)
   have p: "p = ?prod * ?single" by (rule poly_exp_expand)
   have monic: "monic ?prod" by (rule monic_prod)
-  have gcd: "GCD.gcd ?single ?onederiv = 1" 
+  have gcd: "gcd ?single ?onederiv = 1" 
     by (rule coprime_generic, auto)
   show ?thesis unfolding pp unfolding p unfolding poly_gcd_monic_factor[OF monic] gcd by simp
 qed
 
-private lemma p_div_gcd_p_pderiv: "p div (GCD.gcd p (pderiv p)) = (\<Prod>(a, i)\<in>as. a)"
+lemma p_div_gcd_p_pderiv: "p div (gcd p (pderiv p)) = (\<Prod>(a, i)\<in>as. a)"
   unfolding pderiv_exp_gcd unfolding poly_exp_expand
   by (rule div_mult_self1_is_id, insert monic_prod, auto)
 
-private fun A B C D :: "nat \<Rightarrow> 'a poly" where
-  "A n = GCD.gcd (B n) (D n)"
-| "B 0 = p div (GCD.gcd p (pderiv p))"
+fun A B C D :: "nat \<Rightarrow> 'a poly" where
+  "A n = gcd (B n) (D n)"
+| "B 0 = p div (gcd p (pderiv p))"
 | "B (Suc n) = B n div A n"
-| "C 0 = pderiv p div (GCD.gcd p (pderiv p))"
+| "C 0 = pderiv p div (gcd p (pderiv p))"
 | "C (Suc n) = D n div A n"
 | "D n = C n - pderiv (B n)"
 
-private lemma A_B_C_D: "A n = (\<Prod> (a, i) \<in> as \<inter> UNIV \<times> {n}. a)"
+lemma A_B_C_D: "A n = (\<Prod> (a, i) \<in> as \<inter> UNIV \<times> {n}. a)"
   "B n = (\<Prod> (a, i) \<in> as - UNIV \<times> {0 ..< n}. a)"
   "C n = (\<Sum>(a, i)\<in>as - UNIV \<times> {0 ..< n}. 
     (\<Prod>(b, j)\<in>as - UNIV \<times> {0 ..< n} - {(a, i)}. b) * smult (of_nat (Suc i - n)) (pderiv a))"
@@ -325,8 +442,8 @@ proof (induct n and n and n and n rule: A_B_C_D.induct)
   let ?an = "(\<Prod> (a, i) \<in> as \<inter> UNIV \<times> {n}. a)"
   let ?bn = "(\<Prod>(a, i)\<in>as - UNIV \<times> {0..<Suc n}. a)"
   show "A n = ?an" unfolding A.simps
-  proof (rule gcdI [symmetric])
-    have monB1: "monic (B n)" unfolding Bn by (rule monic_gen) auto
+  proof (rule gcdI[symmetric, OF _ _ _ normalize_monic[OF monic_gen]])
+    have monB1: "monic (B n)" unfolding Bn by (rule monic_gen, auto)
     hence "B n \<noteq> 0" by auto
     let ?dn = "(\<Sum> (a,i)\<in>as - UNIV \<times> {0 ..< Suc n}. 
         (\<Prod>(b, j)\<in> as - UNIV \<times> {0 ..< Suc n} - {(a, i)}. b) * (smult (of_nat (i - n)) (pderiv a)))"
@@ -337,15 +454,12 @@ proof (induct n and n and n and n rule: A_B_C_D.induct)
       fix k
       assume "k dvd B n" "k dvd D n"
       from dvd_gcd_mult[OF this[unfolded Bn' Dn]]
-      have "k dvd ?an * (GCD.gcd ?bn ?dn)" .
-      also have "GCD.gcd ?bn ?dn = 1"
+      have "k dvd ?an * (gcd ?bn ?dn)" .
+      also have "gcd ?bn ?dn = 1"
         by (rule coprime_generic, auto)
       finally show "k dvd ?an" by simp
     }
-    have mon: "monic ?an"
-      by (rule monic_gen, auto)
-    thus "normalize ?an = ?an" by (simp add: normalize_monic)
-  qed
+  qed auto
 next
   case 2 (* B 0 *)
   have as: "as - UNIV \<times> {0..<0} = as" by auto
@@ -414,13 +528,13 @@ next
   qed
 qed
 
-private lemmas A = A_B_C_D(1)
-private lemmas B = A_B_C_D(2)
+lemmas A = A_B_C_D(1)
+lemmas B = A_B_C_D(2)
 
-private lemmas ABCD_simps = A.simps B.simps C.simps D.simps
+lemmas ABCD_simps = A.simps B.simps C.simps D.simps
 declare ABCD_simps[simp del]
 
-private lemma setprod_A: 
+lemma setprod_A: 
   "(\<Prod>i = 0..< n. A i ^ Suc i) = (\<Prod>(a, i)\<in> as \<inter> UNIV \<times> {0 ..< n}. a ^ Suc i)"
 proof (induct n)
   case (Suc n)
@@ -436,7 +550,7 @@ proof (induct n)
   qed (insert fin, auto)
 qed simp
 
-private lemma setprod_A_is_p_unknown: assumes "\<And> a i. (a,i) \<in> as \<Longrightarrow> i < n"
+lemma setprod_A_is_p_unknown: assumes "\<And> a i. (a,i) \<in> as \<Longrightarrow> i < n"
   shows "p = (\<Prod>i = 0..< n. A i ^ Suc i)"
 proof -
   have "p = (\<Prod>(a, i)\<in>as. a ^ Suc i)" by (rule p)
@@ -445,10 +559,10 @@ proof -
   finally show ?thesis .
 qed
 
-private definition bound :: nat where
+definition bound :: nat where
   "bound = Suc (Max (snd ` as))"
 
-private lemma bound: assumes m: "m \<ge> bound"
+lemma bound: assumes m: "m \<ge> bound"
   shows "B m = 1"
 proof -
   let ?set = "as - UNIV \<times> {0..<m}"
@@ -464,8 +578,8 @@ proof -
 qed
 
 lemma gcd_A_A: assumes "i \<noteq> j"
-  shows "GCD.gcd (A i) (A j) = 1"
-proof (rule gcdI [symmetric])
+  shows "gcd (A i) (A j) = 1"
+proof (rule gcdI[symmetric])
   fix k  
   assume dvd: "k dvd A i" "k dvd A j"
   have Ai: "A i \<noteq> 0" unfolding A
@@ -530,10 +644,10 @@ proof (rule square_freeI)
   with as_monic[OF bi] as_monic[OF ai] arg_cong[OF ba, of "\<lambda> p. coeff p (degree p)"] 
   have "a = b" unfolding coeff_smult degree_smult_eq by auto
   with neq show False by auto
-qed
+qed (insert A_monic[of i], auto)
 
 
-private lemma setprod_A_is_p_B_bound: assumes "B n = 1"
+lemma setprod_A_is_p_B_bound: assumes "B n = 1"
   shows "p = (\<Prod>i = 0..< n. A i ^ Suc i)"
 proof (rule setprod_A_is_p_unknown)
   fix a i
@@ -557,23 +671,52 @@ proof (rule setprod_A_is_p_unknown)
   qed
 qed
 
-lemma square_free_monic_poly_context: "(poly (square_free_monic_poly p) x = 0) = (poly p x = 0)"
+lemma square_free_monic_poly: "(poly (square_free_monic_poly gcd p) x = 0) = (poly p x = 0)"
 proof -
-  show ?thesis unfolding square_free_monic_poly_def unfolding gcd p_div_gcd_p_pderiv
+  show ?thesis unfolding square_free_monic_poly_def unfolding p_div_gcd_p_pderiv
     unfolding p poly_setprod setprod_zero_iff[OF fin] by force
 qed
 
-lemma yun_factorization_main: assumes "yun_factorization_main (B n) (C n) n bs = cs"
-  "set bs = {(A i, i) | i. i < n}" "distinct (map snd bs)"
-  shows "\<exists> m. set cs = {(A i, i) | i. i < m} \<and> B m = 1 \<and> distinct (map snd cs)"
+lemma yun_factorization_induct: assumes base: "\<And> bn cn. bn = 1 \<Longrightarrow> P bn cn"
+  and step: "\<And> bn cn. bn \<noteq> 1 \<Longrightarrow> P (bn div (gcd bn (cn - pderiv bn))) 
+    ((cn - pderiv bn) div (gcd bn (cn - pderiv bn))) \<Longrightarrow> P bn cn"
+  and id: "bn = p div gcd p (pderiv p)" "cn = pderiv p div gcd p (pderiv p)"
+  shows "P bn cn"
 proof -
-  let ?meas = "\<lambda> n. bound - n"
-  show ?thesis using assms 
-  proof (induct n arbitrary: bs rule: wf_induct[OF wf_measure[of ?meas]])
+  def n \<equiv> "0 :: nat"
+  let ?m = "\<lambda> n. bound - n"
+  have "P (B n) (C n)"
+  proof (induct n rule: wf_induct[OF wf_measure[of ?m]])
     case (1 n)
     note IH = 1(1)[rule_format]
-    have res: "yun_factorization_main (B n) (C n) n bs = cs" by fact
-    note res = res[unfolded yun_factorization_main.simps[of "B n"]]
+    show ?case
+    proof (cases "B n = 1")
+      case True
+      with base show ?thesis by auto
+    next
+      case False note Bn = this
+      with bound[of n] have "\<not> bound \<le> n" by auto
+      hence "(Suc n, n) \<in> measure ?m" by auto
+      note IH = IH[OF this]
+      show ?thesis
+        by (rule step[OF Bn], insert IH, simp add: D.simps C.simps B.simps A.simps)
+    qed
+  qed
+  thus ?thesis unfolding id n_def B.simps C.simps .
+qed
+
+lemma yun_factorization_main: assumes "yun_factorization_main gcd (B n) (C n) n bs = cs"
+  "set bs = {(A i, i) | i. i < n}" "distinct (map snd bs)"
+  shows "\<exists> m. set cs = {(A i, i) | i. i < m} \<and> B m = 1 \<and> distinct (map snd cs)"
+  using assms
+proof -
+  let ?m = "\<lambda> n. bound - n"
+  show ?thesis using assms 
+  proof (induct n arbitrary: bs rule: wf_induct[OF wf_measure[of ?m]])
+    case (1 n)
+    note IH = 1(1)[rule_format]
+    have res: "yun_factorization_main gcd (B n) (C n) n bs = cs" by fact
+    note res = res[unfolded yun_factorization_main.simps[of _ "B n"]]
     have bs: "set bs = {(A i, i) |i. i < n}" "distinct (map snd bs)" by fact+
     show ?case
     proof (cases "B n = 1")
@@ -583,20 +726,19 @@ proof -
     next
       case False note Bn = this
       with bound[of n] have "\<not> bound \<le> n" by auto
-      hence "(Suc n, n) \<in> measure ?meas" by auto
+      hence "(Suc n, n) \<in> measure ?m" by auto
       note IH = IH[OF this]
-      from Bn res[unfolded Let_def gcd, folded D.simps C.simps B.simps A.simps] 
-      have res: "yun_factorization_main (B (Suc n)) (C (Suc n)) (Suc n) ((A n, n) # bs) = cs"
-        by (simp add: gcd)
+      from Bn res[unfolded Let_def, folded D.simps C.simps B.simps A.simps] 
+      have res: "yun_factorization_main gcd (B (Suc n)) (C (Suc n)) (Suc n) ((A n, n) # bs) = cs"
+        by simp
       note IH = IH[OF this]
       {
         fix i 
         assume "i < Suc n" "\<not> i < n"
-        hence "i = n" by arith
-        hence "A i = A n" by simp
+        hence "n = i" by arith
       } note missing = this
       have "set ((A n, n) # bs) = {(A i, i) |i. i < Suc n}"
-        unfolding list.simps bs by (auto, insert missing)
+        unfolding list.simps bs by (auto, subst missing, auto)
       note IH = IH[OF this]
       from bs have "distinct (map snd ((A n, n) # bs))" by auto
       note IH = IH[OF this]
@@ -605,18 +747,18 @@ proof -
   qed
 qed
 
-lemma yun_monic_factorization_res: assumes res: "yun_monic_factorization p = bs"
+lemma yun_monic_factorization_res: assumes res: "yun_monic_factorization gcd p = bs"
   shows "\<exists> m. set bs = {(A i, i) | i. i < m \<and> A i \<noteq> 1} \<and> B m = 1 \<and> distinct (map snd bs)"
 proof -
   from res[unfolded yun_monic_factorization_def Let_def, 
-    unfolded gcd, folded B.simps C.simps, folded gcd]
-  obtain cs where yun: "yun_factorization_main (B 0) (C 0) 0 [] = cs" and bs: "bs = filter (\<lambda> (a,i). a \<noteq> 1) cs" 
+    folded B.simps C.simps]
+  obtain cs where yun: "yun_factorization_main gcd (B 0) (C 0) 0 [] = cs" and bs: "bs = filter (\<lambda> (a,i). a \<noteq> 1) cs" 
     by auto
   from yun_factorization_main[OF yun] show ?thesis unfolding bs
     by (auto simp: distinct_map_filter)
 qed                                                    
 
-lemma yun_monic_factorization_context: assumes yun: "yun_monic_factorization p = bs"
+lemma yun_monic_factorization: assumes yun: "yun_monic_factorization gcd p = bs"
   shows "square_free_factorization p (1,bs)" "(b,i) \<in> set bs \<Longrightarrow> monic b"
 proof -
   from yun_monic_factorization_res[OF yun]
@@ -644,7 +786,7 @@ proof -
     assume ai: "(a,i) \<in> set bs" and bj: "(b,j) \<in> set bs" and neq: "(a,i) \<noteq> (b,j)"
     hence a: "a = A i" and b: "b = A j" unfolding bs by auto
     from neq dist ai bj have neq: "i \<noteq> j" using a b by blast
-    from gcd_A_A[OF neq] have "GCD.gcd a b = 1" unfolding a b .
+    from gcd_A_A[OF neq] have "gcd a b = 1" unfolding a b .
   } note 3 = this
   have "monic p" unfolding p 
     by (rule monic_setprod, insert as_monic, auto intro: monic_power monic_mult)
@@ -655,29 +797,45 @@ proof -
   show "(b,i) \<in> set bs \<Longrightarrow> monic b" using 2 by auto
 qed
 end
-end
-end
-end
 
-lemma square_free_monic_poly: assumes monic: "monic p"
-  shows "(poly (square_free_monic_poly gcd p) x = 0) = (poly p x = 0)"
+lemma monic_factorization: assumes "monic p"
+  shows "\<exists> as. monic_factorization as p"
 proof -
-  from monic_irreducible_factorization[OF monic]
+  from monic_irreducible_factorization[OF assms]
   obtain as f where fin: "finite as" and p: "p = (\<Prod>a\<in>as. a ^ Suc (f a))" 
     and as: "as \<subseteq> {q. irreducible q \<and> monic q}"
     by auto
   def cs \<equiv> "{(a, f a) | a. a \<in> as}"
-  have fin': "finite cs" unfolding cs_def using fin by auto
-  {
-    fix a i
-    assume "(a,i) \<in> cs"
-    hence "irreducible a" "monic a" unfolding cs_def using as by auto
-  } note irr = this
-  have disj: "\<And>a i b j. (a, i) \<in> cs \<Longrightarrow> (b, j) \<in> cs \<Longrightarrow> (a, i) \<noteq> (b, j) \<Longrightarrow> a \<noteq> b" unfolding cs_def by auto
-  have p: "p = (\<Prod>(a, i)\<in>cs. a ^ Suc i)" unfolding p cs_def
-    by (rule setprod.reindex_cong, auto, auto simp: inj_on_def)
-  show ?thesis  
-    by (rule square_free_monic_poly_context[OF refl p fin' disj irr])
+  show ?thesis
+  proof (rule exI, standard)  
+    show "finite cs" unfolding cs_def using fin by auto
+    {
+      fix a i
+      assume "(a,i) \<in> cs"
+      thus "irreducible a" "monic a" unfolding cs_def using as by auto
+    } note irr = this
+    show "\<And>a i b j. (a, i) \<in> cs \<Longrightarrow> (b, j) \<in> cs \<Longrightarrow> (a, i) \<noteq> (b, j) \<Longrightarrow> a \<noteq> b" unfolding cs_def by auto
+    show "p = (\<Prod>(a, i)\<in>cs. a ^ Suc i)" unfolding p cs_def
+      by (rule setprod.reindex_cong, auto, auto simp: inj_on_def)
+  qed
+qed
+
+lemma square_free_monic_poly: assumes "monic p"
+  shows "(poly (square_free_monic_poly gcd p) x = 0) = (poly p x = 0)"
+proof -
+  from monic_factorization[OF assms] obtain as where "monic_factorization as p" ..
+  from monic_factorization.square_free_monic_poly[OF this] show ?thesis .
+qed
+
+lemma yun_factorization_induct: assumes base: "\<And> bn cn. bn = 1 \<Longrightarrow> P bn cn"
+  and step: "\<And> bn cn. bn \<noteq> 1 \<Longrightarrow> P (bn div (gcd bn (cn - pderiv bn))) 
+    ((cn - pderiv bn) div (gcd bn (cn - pderiv bn))) \<Longrightarrow> P bn cn"
+  and id: "bn = p div gcd p (pderiv p)" "cn = pderiv p div gcd p (pderiv p)"
+  and monic: "monic (p :: 'a :: field_char_0 poly)"
+  shows "P bn cn"
+proof -
+  from monic_factorization[OF monic] obtain as where "monic_factorization as p" ..
+  from monic_factorization.yun_factorization_induct[OF this base step id] show ?thesis .
 qed
 
 lemma square_free_poly: 
@@ -701,23 +859,9 @@ lemma yun_monic_factorization: assumes res: "yun_monic_factorization gcd p = bs"
   and monic: "monic p"
   shows "square_free_factorization p (1,bs)" "(b,i) \<in> set bs \<Longrightarrow> monic b"
 proof -
-  from monic_irreducible_factorization[OF monic]
-  obtain as f where fin: "finite as" and p: "p = (\<Prod>a\<in>as. a ^ Suc (f a))" 
-    and as: "as \<subseteq> {q. irreducible q \<and> monic q}"
-    by auto
-  def cs \<equiv> "{(a, f a) | a. a \<in> as}"
-  have fin': "finite cs" unfolding cs_def using fin by auto
-  {
-    fix a i
-    assume "(a,i) \<in> cs"
-    hence "irreducible a" "monic a" unfolding cs_def using as by auto
-  } note irr = this
-  have disj: "\<And>a i b j. (a, i) \<in> cs \<Longrightarrow> (b, j) \<in> cs \<Longrightarrow> (a, i) \<noteq> (b, j) \<Longrightarrow> a \<noteq> b" unfolding cs_def by auto
-  have p: "p = (\<Prod>(a, i)\<in>cs. a ^ Suc i)" unfolding p cs_def
-    by (rule setprod.reindex_cong, auto, auto simp: inj_on_def)
-  note yun = yun_monic_factorization_context[OF refl p fin' disj irr res]
-  show "square_free_factorization p (1,bs)" by (rule yun(1))
-  show "(b,i) \<in> set bs \<Longrightarrow> monic b" by (rule yun(2))
+  from monic_factorization[OF monic] obtain as where "monic_factorization as p" ..
+  from "monic_factorization.yun_monic_factorization"[OF this res]
+  show "square_free_factorization p (1,bs)" "(b,i) \<in> set bs \<Longrightarrow> monic b" .
 qed
 
 lemma square_free_factorization_smult: assumes c: "c \<noteq> 0"
@@ -882,205 +1026,341 @@ lemma square_free_factorization_root:
   using square_free_factorization_order_root[OF sff p] p
   unfolding order_root by auto
 
-lemma square_free_factor: assumes "p \<noteq> 0"
-  and dvd: "a dvd p"
-  and sf: "square_free p"
-  shows "square_free a"
-proof (intro square_freeI)
-  fix q
-  assume q: "degree q \<noteq> 0" and "q * q dvd a"
-  hence "q * q dvd p" using dvd unfolding dvd_def by (auto simp: field_simps)
-  with sf[unfolded square_free_def] q `p \<noteq> 0` show False by auto
+lemma square_free_factorizationD': 
+  assumes sf: "square_free_factorization p (c, bs)"
+  shows "p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)"
+    and "square_free (listprod (map fst bs))"
+    and "\<And> b i. (b,i) \<in> set bs \<Longrightarrow> degree b \<noteq> 0"
+    and "p = 0 \<Longrightarrow> c = 0 \<and> bs = []"
+proof -
+  note sf = square_free_factorizationD[OF sf]
+  show "p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)" unfolding sf(1) using sf(5)
+    by (simp add: setprod.distinct_set_conv_list)
+  show bs: "\<And> b i. (b,i) \<in> set bs \<Longrightarrow> degree b \<noteq> 0" using sf(2) by auto
+  show "p = 0 \<Longrightarrow> c = 0 \<and> bs = []" using sf(4) .
+  show "square_free (listprod (map fst bs))"
+  proof (rule square_freeI)
+    from bs have "\<And> b. b \<in> set (map fst bs) \<Longrightarrow> b \<noteq> 0" by fastforce
+    thus "listprod (map fst bs) \<noteq> 0" unfolding listprod_zero_iff by auto
+    fix q
+    assume "degree q \<noteq> 0" "q * q dvd listprod (map fst bs)"
+    from irreducible_factor[OF this(1)] this(2) obtain q where 
+      irr: "irreducible q" and dvd: "q * q dvd listprod (map fst bs)" unfolding dvd_def by auto
+    hence dvd': "q dvd listprod (map fst bs)" unfolding dvd_def by auto
+    from irreducible_dvd_listprod[OF irr dvd'] obtain b i where 
+      mem: "(b,i) \<in> set bs" and dvd1: "q dvd b" by auto
+    from dvd1 obtain k where b: "b = q * k" unfolding dvd_def by auto
+    from split_list[OF mem] b obtain bs1 bs2 where bs: "bs = bs1 @ (b, i) # bs2" by auto
+    from irr have q0: "q \<noteq> 0" and dq: "degree q \<noteq> 0" unfolding irreducible_def by auto
+    from sf(2)[OF mem, unfolded b] have "square_free (q * k)" by auto
+    from this[unfolded square_free_def, THEN conjunct2, rule_format, OF dq] 
+    have qk: "\<not> q dvd k" by simp
+    from dvd[unfolded bs b] have "q * q dvd q * (k * listprod (map fst (bs1 @ bs2)))"
+      by (auto simp: ac_simps)
+    with q0 have "q dvd k * listprod (map fst (bs1 @ bs2))" by auto
+    from irreducible_dvd_mult[OF irr this] qk have "q dvd listprod (map fst (bs1 @ bs2))" by auto
+    from irreducible_dvd_listprod[OF irr this] obtain b' i' where 
+      mem': "(b',i') \<in> set (bs1 @ bs2)" and dvd2: "q dvd b'" by fastforce
+    from dvd1 dvd2 have "q dvd gcd b b'" by auto
+    with dq have cop: "\<not> coprime b b'" by (metis is_unit_iff_degree q0)
+    from mem' have "(b',i') \<in> set bs" unfolding bs by auto
+    from sf(3)[OF mem this] cop have b': "(b',i') = (b,i)" by auto
+    with mem' sf(5)[unfolded bs] show False by auto
+  qed
+qed
+  
+
+lemma square_free_factorizationI': 
+  assumes prod: "p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)"
+    and sf: "square_free (listprod (map fst bs))"
+    and deg: "\<And> b i. (b,i) \<in> set bs \<Longrightarrow> degree b \<noteq> 0"
+    and 0: "p = 0 \<Longrightarrow> c = 0 \<and> bs = []"
+  shows "square_free_factorization p (c, bs)"
+  unfolding square_free_factorization_def split
+proof (intro conjI impI allI)
+  show "p = 0 \<Longrightarrow> c = 0" "p = 0 \<Longrightarrow> bs = []" using 0 by auto
+  {
+    fix b i
+    assume bi: "(b,i) \<in> set bs"
+    from deg[OF this] show "degree b \<noteq> 0" .
+    have "b dvd listprod (map fst bs)"
+      by (intro listprod_dvd, insert bi, force)
+    from square_free_factor[OF this sf] show "square_free b" .
+  }
+  show dist: "distinct bs" 
+  proof (rule ccontr)
+    assume "\<not> ?thesis"
+    from not_distinct_decomp[OF this] obtain bs1 bs2 bs3 b i where
+      bs: "bs = bs1 @ [(b,i)] @ bs2 @ [(b,i)] @ bs3" by force
+    hence "b * b dvd listprod (map fst bs)" by auto
+    with sf[unfolded square_free_def, THEN conjunct2, rule_format, of b] 
+    have db: "degree b = 0" by auto
+    from bs have "(b,i) \<in> set bs" by auto
+    from deg[OF this] db show False by auto
+  qed    
+  show "p = smult c (\<Prod>(a, i)\<in>set bs. a ^ Suc i)" unfolding prod using dist 
+    by (simp add: setprod.distinct_set_conv_list)
+  {
+    fix a i b j
+    assume ai: "(a, i) \<in> set bs" and bj: "(b, j) \<in> set bs" and diff: "(a, i) \<noteq> (b, j)"
+    from split_list[OF ai] obtain bs1 bs2 where bs: "bs = bs1 @ (a,i) # bs2" by auto
+    with bj diff have "(b,j) \<in> set (bs1 @ bs2)" by auto
+    from split_list[OF this] obtain cs1 cs2 where cs: "bs1 @ bs2 = cs1 @ (b,j) # cs2" by auto
+    have "listprod (map fst bs) = a * listprod (map fst (bs1 @ bs2))" unfolding bs by simp
+    also have "\<dots> = a * b * listprod (map fst (cs1 @ cs2))" unfolding cs by simp
+    finally obtain c where lp: "listprod (map fst bs) = a * b * c" by auto
+    from deg[OF ai] have 0: "gcd a b \<noteq> 0" by auto
+    have gcd: "gcd a b * gcd a b dvd listprod (map fst bs)" 
+      unfolding lp by (simp add: mult_dvd_mono)
+    {
+      assume "degree (gcd a b) \<noteq> 0" 
+      from sf[unfolded square_free_def, THEN conjunct2, rule_format, OF this] gcd
+      have False by simp
+    }
+    hence "degree (gcd a b) = 0" by auto
+    with 0 show "coprime a b" using is_unit_gcd is_unit_iff_degree by blast
+  }
 qed
 
-lemma square_free_factorization_factor: 
+lemma square_free_factorization_def': "square_free_factorization p (c,bs) \<longleftrightarrow>
+  (p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)) \<and>
+  (square_free (listprod (map fst bs))) \<and>
+  (\<forall> b i. (b,i) \<in> set bs \<longrightarrow> degree b \<noteq> 0) \<and>
+  (p = 0 \<longrightarrow> c = 0 \<and> bs = [])"
+  using square_free_factorizationD'[of p c bs]
+  square_free_factorizationI'[of p c bs] by blast
+
+lemma listprod_pow_suc: "(\<Prod>x\<leftarrow>bs. (x :: 'a :: comm_monoid_mult) * x ^ i) 
+  = listprod bs * listprod bs ^ i" 
+  by (induct bs, auto simp: field_simps)
+
+lemma square_free_factorization_smult_listprodI: 
+  assumes sff: "square_free_factorization p (c, bs1 @ (smult b (listprod bs),i) # bs2)"
+  and bs: "\<And> b. b \<in> set bs \<Longrightarrow> degree b \<noteq> 0"
+  shows "square_free_factorization p (c * b^(Suc i), bs1 @ map (\<lambda> b. (b,i)) bs @ bs2)"
+proof -
+  from square_free_factorizationD'(3)[OF sff, of "smult b (listprod bs)" i]
+  have b: "b \<noteq> 0" by auto
+  note sff = square_free_factorizationD'[OF sff]
+  show ?thesis
+  proof (intro square_free_factorizationI', goal_cases)
+    case 1
+    thus ?case unfolding sff(1) by (simp add: o_def field_simps smult_power listprod_pow_suc)
+  next
+    case 2
+    show ?case using sff(2) by (simp add: ac_simps o_def square_free_smult_iff[OF b])
+  next
+    case 3
+    with sff(3) bs show ?case by auto
+  next
+    case 4
+    from sff(4)[OF this] show ?case by simp
+  qed
+qed
+
+lemma square_free_factorization_further_factorization: 
+  assumes sff: "square_free_factorization p (c, bs)"
+  and bs: "\<And> b i d fs. (b,i) \<in> set bs \<Longrightarrow> f b = (d,fs) 
+    \<Longrightarrow> b = smult d (listprod fs) \<and> (\<forall> f \<in> set fs. degree f \<noteq> 0)"
+  and h: "h = (\<lambda> (b,i). case f b of (d,fs) \<Rightarrow> (d^Suc i,map (\<lambda> f. (f,i)) fs))"
+  and gs: "gs = map h bs"
+  and d: "d = c * listprod (map fst gs)"
+  and es: "es = concat (map snd gs)"
+  shows "square_free_factorization p (d, es)"
+proof -
+  note sff = square_free_factorizationD'[OF sff]
+  show ?thesis
+  proof (rule square_free_factorizationI')
+    assume "p = 0" 
+    from sff(4)[OF this] show "d = 0 \<and> es = []" unfolding d es gs by auto
+  next
+    have id: "(\<Prod>(a, i)\<leftarrow>bs. a * a ^ i) = smult (listprod (map fst gs)) (\<Prod>(a, i)\<leftarrow>es. a * a ^ i)"
+      unfolding es gs h map_map o_def using bs
+    proof (induct bs)
+      case (Cons bi bs)
+      obtain b i where bi: "bi = (b,i)" by force
+      obtain d fs where f: "f b = (d,fs)" by force
+      from Cons(2)[OF _ f, of i] have b: "b = smult d (listprod fs)" unfolding bi by auto
+      note IH = Cons(1)[OF Cons(2), of "\<lambda> _ i _ _ . i"]
+      show ?case unfolding bi
+        by (simp add: f o_def, simp add: b ac_simps, subst IH, 
+          auto simp: smult_power listprod_pow_suc ac_simps)
+    qed simp
+    show "p = smult d (\<Prod>(a, i)\<leftarrow>es. a ^ Suc i)" unfolding sff(1) using id
+      by (simp add: d)
+  next
+    fix fi i
+    assume fi: "(fi, i) \<in> set es"
+    from this[unfolded es] obtain G where G: "G \<in> snd ` set gs" and fi: "(fi,i) \<in> set G" by auto
+    from G[unfolded gs] obtain b i where bi: "(b,i) \<in> set bs" 
+      and G: "G = snd (h (b,i))" by auto 
+    obtain d fs where f: "f b = (d,fs)" by force
+    show "degree fi \<noteq> 0" 
+      by (rule bs[THEN conjunct2, rule_format, OF bi f], insert fi G f, unfold h, auto)
+  next
+    have id: "\<exists> c. listprod (map fst bs) = smult c (listprod (map fst es))"
+      unfolding es gs map_map o_def using bs
+    proof (induct bs)
+      case (Cons bi bs)
+      obtain b i where bi: "bi = (b,i)" by force
+      obtain d fs where f: "f b = (d,fs)" by force
+      from Cons(2)[OF _ f, of i] have b: "b = smult d (listprod fs)" unfolding bi by auto
+      have "\<exists>c. listprod (map fst bs) = smult c (listprod (map fst (concat (map (\<lambda>x. snd (h x)) bs))))"
+        by (rule Cons(1), rule Cons(2), auto)
+      then obtain c where 
+        IH: "listprod (map fst bs) = smult c (listprod (map fst (concat (map (\<lambda>x. snd (h x)) bs))))" by auto
+      show ?case unfolding bi
+        by (intro exI[of _ "c * d"], auto simp: b IH, auto simp: h f[unfolded b] o_def)
+    qed (intro exI[of _ 1], auto)
+    then obtain c where "listprod (map fst bs) = smult c (listprod (map fst es))" by blast
+    from sff(2)[unfolded this] show "square_free (listprod (map fst es))"
+      by (metis smult_eq_0_iff square_free_def square_free_smult_iff)
+  qed
+qed
+
+lemma square_free_factorization_listprodI: 
+  assumes sff: "square_free_factorization p (c, bs1 @ ((listprod bs),i) # bs2)"
+  and bs: "\<And> b. b \<in> set bs \<Longrightarrow> degree b \<noteq> 0"
+  shows "square_free_factorization p (c, bs1 @ map (\<lambda> b. (b,i)) bs @ bs2)"
+  using square_free_factorization_smult_listprodI[of p c bs1 1 bs i bs2] sff bs by auto
+
+lemma square_free_factorization_factorI: 
   assumes sff: "square_free_factorization p (c, bs1 @ (a,i) # bs2)"
   and r: "degree r \<noteq> 0" and s: "degree s \<noteq> 0"
   and a: "a = r * s"
   shows "square_free_factorization p (c, bs1 @ ((r,i) # (s,i) # bs2))"
+  using square_free_factorization_listprodI[of p c bs1 "[r,s]" i bs2] sff r s a by auto
+  
+lemma monic_square_free_irreducible_factorization: assumes mon: "monic (f :: 'a :: field poly)" 
+  and sf: "square_free f"
+  shows "\<exists> P. finite P \<and> f = \<Prod>P \<and> P \<subseteq> {q. irreducible q \<and> monic q}"
 proof -
-  note sff = square_free_factorizationD[OF sff]
-  let ?all = "set (bs1 @ (a,i) # bs2)"
-  let ?rem = "(set bs1 \<union> set bs2)"
-  let ?new = "bs1 @ ((r,i) # (s,i) # bs2)"
-  from sff(2)[of a i] have sfa: "square_free a" and a0: "a \<noteq> 0" by auto
-  {
-    fix b j
-    assume rem: "(b,j) \<in> ?rem" and ars: "b \<in> {a,r,s}"
-    from sff(2)[of b j] rem have db: "degree b \<noteq> 0" by auto
-    from ars have "b dvd a" unfolding a by auto
-    with db have "b dvd gcd a b" by simp
-    hence "degree (gcd a b) \<ge> degree b" using db 
-      by (metis degree_0 dvd_imp_degree_le gcd_eq_0_iff)
-    with db have "gcd a b \<noteq> 1" by auto
-    with sff(3)[of a i b j] rem have "(a,i) = (b,j)" by auto
-    with sff(5) rem have False by auto
-  } note no_mem = this
-  {
-    assume "r = s"
-    hence "r * r dvd a" unfolding a by auto
-    with sff(2)[of a i] r have False unfolding square_free_def by auto
-  } 
-  hence rs: "r \<noteq> s" by auto
-  from no_mem have ai: "(a,i) \<in> ?all" "(a,i) \<notin> ?rem" by auto
-  have "p = smult c (a ^ Suc i * (\<Prod>(a, i)\<in>set (bs1 @ (a, i) # bs2) - {(a,i)}. a ^ Suc i))"
-    unfolding sff(1)
-    by (subst setprod.remove[OF _ ai(1)], auto) 
-  also have "set (bs1 @ (a, i) # bs2) - {(a,i)} = ?rem" using ai(2) by auto
-  also have "a ^ Suc i = r ^ Suc i * s ^ Suc i" unfolding a by (simp add: field_simps)
-  also have "\<dots> * (\<Prod>(a, i)\<in>?rem. a ^ Suc i) = r ^ Suc i * (s ^ Suc i * (\<Prod>(a, i)\<in>?rem. a ^ Suc i))" by simp
-  also have "s ^ Suc i * (\<Prod>(a, i)\<in>?rem. a ^ Suc i) = (\<Prod>(a, i)\<in>insert (s,i) (?rem). a ^ Suc i)"
-    by (subst setprod.insert, insert no_mem, auto)
-  also have "r ^ Suc i * \<dots> = (\<Prod>(a, i)\<in>insert (r,i) (insert (s,i) ?rem). a ^ Suc i)"
-    by (subst setprod.insert[of _ "(r,i)"], insert no_mem rs, auto)
-  also have "insert (r,i) (insert (s,i) ?rem) = set ?new" by auto
-  finally have 1: "p = smult c (setprod (\<lambda> (a,i). a ^ Suc i) (set ?new))" by simp
-  from sff(4) have 4: "p \<noteq> 0" by auto
-  from sff(5) no_mem rs have 5: "distinct ?new" by auto
-  note sf = square_free_factor[OF a0 _ sfa]
-  from sff(2) sf[of r] sf[of s] r s 
-  have 2: "\<And> a i. (a,i) \<in> set ?new \<Longrightarrow> square_free a \<and> degree a \<noteq> 0"
-    unfolding a by auto
-  {
-    let ?g = "gcd r s"
-    assume no1: "?g \<noteq> 1"
-    from r s rs have "monic ?g"
-      using poly_gcd_monic[of r s] by (auto simp: lead_coeff_def)
-    with no1 have deg: "degree ?g \<noteq> 0" 
-      by (simp add: monic_degree_0)
-    have "?g * ?g dvd a" unfolding a 
-      using mult_dvd_mono by blast
-    with sfa deg sff(2)[of a i] have False unfolding square_free_def by auto
-  }
-  hence gcd_rs: "gcd r s = 1" "gcd s r = 1" 
-    by (auto simp: gcd.commute)
-  {
-    fix b j 
-    assume bj: "(b,j) \<in> ?rem"
-    from sff(3)[of b j a i] no_mem[OF bj] bj have gcd: "gcd b a = 1" by auto
-    hence rs: "gcd b (r * s) = 1" and sr: "gcd b (s * r) = 1" unfolding a by (auto simp: ac_simps)
-    from rs sr have br: "gcd b r = 1" and bs: "gcd b s = 1" by (simp_all add: coprime_mul_eq)
-    from br bs have "gcd r b = 1" "gcd s b = 1"
-      by (auto simp: gcd.commute)
-    note this br bs
-  } note gcd = this
-  {
-    fix a i b j
-    assume ai: "(a,i) \<in> set ?new" and bj: "(b,j) \<in> set ?new" and diff: "(a,i) \<noteq> (b,j)"
-    have "gcd a b = 1"
-    proof (rule ccontr)
-      assume not: "gcd a b \<noteq> 1"      
-      from sff(3)[OF _ _ diff] not ai bj have "(a,i) \<notin> ?rem \<or> (b,j) \<notin> ?rem" by auto
-      with gcd[of a i] gcd[of b j] not ai bj have "(a,i) \<notin> ?rem \<and> (b,j) \<notin> ?rem" by auto
-      with ai bj have abrs: "{(a,i),(b,j)} \<subseteq> {(r,i),(s,i)}" by auto
-      hence j: "j = i" by auto
-      with diff abrs gcd_rs not show False by auto
-    qed
-  } note 3 = this
-  show ?thesis unfolding square_free_factorization_def using 1 2 3 4 5 by blast
-qed
-
-function square_free_sample_optimization :: "'a :: field poly \<Rightarrow> ('a poly \<times> nat)list \<Rightarrow> ('a poly \<times> nat)list" where
-  "square_free_sample_optimization x [] = []"
-| "square_free_sample_optimization x ((a,i) # bs) = (if degree a > degree x \<and> x dvd a \<and> degree x \<noteq> 0
-  then (x, i) # square_free_sample_optimization x ((a div x,i) # bs)
-  else (a,i) # square_free_sample_optimization x bs)"
-  by pat_completeness auto
-
-termination by (relation "measures [(\<lambda> (_, bs). length bs), (\<lambda> (_, bs). degree (fst (hd bs)))]") 
-  (auto intro: degree_div_less)
-
-declare square_free_sample_optimization.simps[simp del]
-
-lemma square_free_sample_optimization: assumes "square_free_factorization p (c,as @ bs)"
-  shows "square_free_factorization p (c, as @ square_free_sample_optimization x bs)"
-  using assms
-proof (induct x bs arbitrary: as rule: square_free_sample_optimization.induct)
-  case (2 x a i bs)
-  note IH = 2(1-2)
-  note sff = 2(3)
-  let ?curr = "square_free_sample_optimization x ((a,i) # bs)"  
-  note simp = square_free_sample_optimization.simps(2)[of x a i bs]
-  show ?case
-  proof (cases "degree a > degree x \<and> x dvd a \<and> degree x \<noteq> 0")
-    case False
-    hence res: "?curr = (a,i) # square_free_sample_optimization x bs" unfolding simp by auto
-    from IH(2)[OF False, of "as @ [(a,i)]"] sff
-    show ?thesis unfolding res by simp
-  next
-    case True
-    let ?rec = "square_free_sample_optimization x ((a div x,i) # bs)"
-    from True
-    have res: "?curr = (x, i) # ?rec" unfolding simp by auto
-    from True have a0: "a \<noteq> 0" by auto
-    from True have a: "a = x * (a div x)" 
-      by (metis dvd_div_mult_self mult.commute)
-    hence "degree a = degree (x * (a div x))" by simp
-    also have "\<dots> = degree x + degree (a div x)"
-      by (rule degree_mult_eq, insert a a0, auto)
-    finally have "degree x \<noteq> 0" "degree (a div x) \<noteq> 0" using True by auto
-    from square_free_factorization_factor[OF sff this a]
-    have sff: "square_free_factorization p (c, (as @ [(x, i)]) @ (a div x, i) # bs)" by auto
-    from IH(1)[OF True this]
-    show ?thesis unfolding res by simp
+  from mon have f0: "f \<noteq> 0" by auto
+  from monic_irreducible_factorization[OF assms(1)] obtain P n where
+    P: "finite P" "P \<subseteq> {q. irreducible q \<and> monic q}" and f: "f = (\<Prod>a\<in>P. a ^ Suc (n a))" by auto
+  have *: "\<forall> a \<in> P. n a = 0"
+  proof (rule ccontr)
+    assume "\<not> ?thesis"
+    then obtain a where a: "a \<in> P" and n: "n a \<noteq> 0" by auto
+    have "f = a ^ (Suc (n a)) * (\<Prod>b\<in>P - {a}. b ^ Suc (n b))"
+      unfolding f by (rule setprod.remove[OF P(1) a])
+    with n have "a * a dvd f" by (cases "n a", auto)
+    with sf[unfolded square_free_def] f0 have "degree a = 0" by auto
+    with a P(2)[unfolded irreducible_def] show False by auto
   qed
-qed (simp add: square_free_sample_optimization.simps)
-    
-fun square_free_psamples_optimization :: "'a :: field poly list \<Rightarrow> ('a poly \<times> nat)list \<Rightarrow> ('a poly \<times> nat)list" where
-  "square_free_psamples_optimization [] bs = bs"
-| "square_free_psamples_optimization (x # xs) bs = 
-    square_free_psamples_optimization xs (square_free_sample_optimization x bs)"
-
-lemma square_free_psamples_optimization: 
-  "square_free_factorization p (c,bs) \<Longrightarrow> 
-  square_free_factorization p (c, square_free_psamples_optimization xs bs)"
-proof (induct xs arbitrary: bs)
-  case (Cons x xs bs)
-  from square_free_sample_optimization[of p c Nil bs x]
-    Cons(2) have "square_free_factorization p (c, square_free_sample_optimization x bs)" by auto
-  from Cons(1)[OF this]
-  show ?case by simp
-qed simp
-
-definition square_free_samples_optimization :: "'a :: field list \<Rightarrow> ('a poly \<times> nat)list \<Rightarrow> ('a poly \<times> nat)list" where
-  "square_free_samples_optimization xs = square_free_psamples_optimization (map (\<lambda> x. [: -x, 1 :]) xs)"
-
-lemma square_free_samples_optimization: 
-  "square_free_factorization p (c,bs) \<Longrightarrow> 
-  square_free_factorization p (c, square_free_samples_optimization xs bs)"
-  unfolding square_free_samples_optimization_def by (rule square_free_psamples_optimization)
-
-definition root_finder_optimization :: "('a :: field poly \<Rightarrow> 'a list) \<Rightarrow> ('a poly \<times> nat)list \<Rightarrow> ('a poly \<times> nat)list" where
-  "root_finder_optimization root_finder bs \<equiv> let
-    xs = [x. (a,_) <- bs, x <- root_finder a]
-    in square_free_samples_optimization xs bs"
-
-lemma root_finder_optimization: "square_free_factorization p (c,bs) \<Longrightarrow> 
-  square_free_factorization p (c, root_finder_optimization root_finder bs)"
-  unfolding root_finder_optimization_def Let_def
-  by (rule square_free_samples_optimization)
-
-(* the generic factorization algorithm. 
-  it can be feed with potential polynomial factors like $x^2 + 1$,
-  and with potential roots, and with an arbitrary root finding algorithm. *)
-definition root_finder_samples_factorization 
-  :: "('a :: field_char_0 poly \<Rightarrow> 'a list) \<Rightarrow> 'a list \<Rightarrow> 'a poly list \<Rightarrow> 'a poly \<Rightarrow> 'a \<times> ('a poly \<times> nat)list" where
-  "root_finder_samples_factorization root_finder samples psamples p \<equiv> let
-     (c,bs) = yun_factorization gcd p;
-     cs = square_free_psamples_optimization psamples bs;
-     ds = square_free_samples_optimization samples cs;
-     es = root_finder_optimization root_finder ds
-     in (c,es)"
-
-
-lemma root_finder_samples_factorization: 
-  "square_free_factorization p (root_finder_samples_factorization root_finder samples psamples p)"
-proof -
-  let ?sff = "square_free_factorization p"
-  obtain c bs where yun: "yun_factorization gcd p = (c,bs)" by force
-  from yun_factorization[OF this] have "?sff (c,bs)" by auto
-  from root_finder_optimization[OF square_free_samples_optimization[OF 
-     square_free_psamples_optimization[OF this]]]
-  show ?thesis unfolding root_finder_samples_factorization_def Let_def yun split .
+  have "f = \<Prod> P" unfolding f
+    by (rule setprod.cong[OF refl], insert *, auto)
+  with P show ?thesis by auto
 qed
+
+lemma monic_factorization_uniqueness:
+fixes P::"'a::field poly set"
+assumes finite_P: "finite P" 
+  and PQ: "\<Prod>P = \<Prod>Q" 
+  and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
+and finite_Q: "finite Q" 
+  and Q: "Q \<subseteq> {q. irreducible q \<and> monic q}"
+shows "P = Q" 
+proof (rule; rule subsetI)
+  fix x assume x: "x \<in> P"
+  have irr_x: "irreducible x" using x P by auto
+  have "\<exists>a\<in>Q. x dvd id a"
+  proof (rule irreducible_dvd_setprod)
+    show "irreducible x" using x P by auto
+    show "x dvd setprod id Q" using PQ x 
+      by (metis dvd_refl dvd_setprod finite_P id_apply setprod.cong)
+  qed
+  from this obtain a where a: "a\<in>Q" and x_dvd_a: "x dvd a" unfolding id_def by blast
+  have "x=a" using x P a Q irreducible_dvd_eq[OF irr_x _ x_dvd_a] by fast
+  thus "x \<in> Q" using a by simp
+next
+  fix x assume x: "x \<in> Q"
+  have irr_x: "irreducible x" using x Q by auto
+  have "\<exists>a\<in>P. x dvd id a"
+  proof (rule irreducible_dvd_setprod)
+    show "irreducible x" using x Q by auto
+    show "x dvd setprod id P" using PQ x 
+      by (metis dvd_refl dvd_setprod finite_Q id_apply setprod.cong)
+  qed
+  from this obtain a where a: "a\<in>P" and x_dvd_a: "x dvd a" unfolding id_def by blast
+  have "x=a" using x P a Q irreducible_dvd_eq[OF irr_x _ x_dvd_a] by fast
+  thus "x \<in> P" using a by simp
+qed
+
+
+subsection \<open>Yun factorization and homomorphisms\<close>
+lemma (in inj_field_hom_0) yun_factorization_main_hom:
+  defines hp: "hp \<equiv> map_poly hom"
+  defines hpi: "hpi \<equiv> map (\<lambda> (f,i). (hp f, i :: nat))"
+  assumes monic: "monic p" and f: "f = p div gcd p (pderiv p)" and g: "g = pderiv p div gcd p (pderiv p)"
+  shows "yun_factorization_main gcd (hp f) (hp g) i (hpi as) = hpi (yun_factorization_main gcd f g i as)"
+proof -
+  let ?P = "\<lambda> f g. \<forall> i as. yun_factorization_main gcd (hp f) (hp g) i (hpi as) = hpi (yun_factorization_main gcd f g i as)"
+  note ind = yun_factorization_induct[OF _ _ f g monic, of ?P, rule_format]
+  interpret p: inj_ring_hom hp unfolding hp by (rule inj_ring_hom_map_poly)
+  note homs = map_poly_gcd[folded hp] 
+      map_poly_pderiv[folded hp, symmetric] 
+      p.hom_minus 
+      map_poly_div[folded hp]
+  show ?thesis
+  proof (induct rule: ind)
+    case (1 f g i as)
+    show ?case unfolding yun_factorization_main.simps[of _ "hp f"] yun_factorization_main.simps[of _ f]
+      unfolding 1 by simp
+  next
+    case (2 f g i as)
+    have id: "\<And> f i fis. hpi ((f,i) # fis) = (hp f, i) # hpi fis" unfolding hpi by auto
+    show ?case unfolding yun_factorization_main.simps[of _ "hp f"] yun_factorization_main.simps[of _ f]
+      unfolding "p.hom_1_iff" if_distrib[of hpi] Let_def
+      unfolding homs[symmetric] id[symmetric]
+      unfolding 2(2) by simp
+  qed
+qed
+
+lemma square_free_square_free_factorization: 
+  "square_free p \<Longrightarrow> degree p \<noteq> 0 \<Longrightarrow> square_free_factorization p (1,[(p,0)])"
+  by (intro square_free_factorizationI', auto)
+
+lemma constant_square_free_factorization: 
+  "degree p = 0 \<Longrightarrow> square_free_factorization p (coeff p 0,[])"
+  by (drule degree0_coeffs[of p], auto simp: square_free_factorization_def one_poly_def)
+
+lemma (in inj_field_hom_0) yun_monic_factorization:
+  defines hp: "hp \<equiv> map_poly hom"
+  defines hpi: "hpi \<equiv> map (\<lambda> (f,i). (hp f, i :: nat))"
+  assumes monic: "monic f"
+  shows "yun_monic_factorization gcd (hp f) = hpi (yun_monic_factorization gcd f)"
+proof -
+  interpret p: inj_ring_hom hp unfolding hp by (rule inj_ring_hom_map_poly)
+  have hpiN: "hpi [] = []" unfolding hpi by simp
+  obtain res where "res = 
+    yun_factorization_main gcd (f div gcd f (pderiv f)) (pderiv f div gcd f (pderiv f)) 0 []" by auto
+  note homs = map_poly_gcd[folded hp] 
+      map_poly_pderiv[folded hp, symmetric] 
+      p.hom_minus 
+      map_poly_div[folded hp]
+      yun_factorization_main_hom[folded hp, folded hpi, symmetric, OF monic refl refl, of _ Nil, unfolded hpiN]
+      this   
+  show ?thesis
+    unfolding yun_monic_factorization_def Let_def
+    unfolding homs[symmetric]
+    unfolding hpi
+      by (induct res, auto)
+qed
+
+lemma (in inj_field_hom_0) yun_factorization_hom:
+  defines hp: "hp \<equiv> map_poly hom"
+  defines hpi: "hpi \<equiv> map (\<lambda> (f,i). (hp f, i :: nat))"
+  shows "yun_factorization gcd (hp f) = map_prod hom hpi (yun_factorization gcd f)"
+  unfolding yun_factorization_def if_distrib[of "map_prod hom hpi"]
+  unfolding Let_def hp hpi
+  unfolding map_poly_0_iff coeff_map_poly_hom hom_inverse[symmetric] map_poly_smult[symmetric] map_poly_mult[symmetric]
+    by (rule if_cong[OF refl], force, subst yun_monic_factorization, auto)
+
+lemma (in inj_field_hom_0) square_free_map_poly: "square_free (map_poly hom f) = square_free f"
+proof -
+  interpret inj_ring_hom "map_poly hom" by (rule inj_ring_hom_map_poly)
+  show ?thesis unfolding square_free_iff_coprime map_poly_pderiv map_poly_gcd[symmetric] by simp
+qed
+
 end

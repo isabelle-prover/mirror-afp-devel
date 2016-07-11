@@ -248,7 +248,7 @@ lemma distincts_lists_fcs: "distinct as \<Longrightarrow>distincts (lists_fcs as
   by (simp add: lists_fcs_def distincts_orbits_list)
 
 lemma face_cycle_set_ss: "a \<in> parcs G \<Longrightarrow> face_cycle_set a \<subseteq> parcs G"
-  using assms using in_face_cycle_setD with_proj_simps(2) by blast
+  using in_face_cycle_setD with_proj_simps(2) by blast
 
 lemma face_cycle_succ_neq:
   assumes "a \<in> parcs G" shows "face_cycle_succ a \<noteq> a"

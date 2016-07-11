@@ -212,13 +212,13 @@ lemma part_Un[simp]:
 assumes "part I1 P1" and "part I2 P2" and "I1 Int I2 = {}"
 shows "part (I1 Un I2) (P1 Un P2)"
   using assms unfolding part_def
-  by (metis Collect_empty_eq Union_Un_distrib Union_disjoint all_not_in_conv empty_Collect_eq
-            equals0D inf_aci(1) inf_idem mem_simps(3) mem_simps(4))
+  by (metis Union_Un_distrib Union_disjoint inf_aci(1) mem_simps(3))
 
 lemma part_Un_singl[simp]:
 assumes "part K P" and "\<And> I. I \<in> P \<Longrightarrow> I0 Int I = {}"
 shows "part (I0 Un K) ({I0} Un P)"
-using assms unfolding part_def by blast
+using assms unfolding part_def
+by (metis complete_lattice_class.Sup_insert Int_commute insert_iff insert_is_Un)
 
 lemma part_Un_singl2:
 assumes "K01 = I0 Un K1"
@@ -535,11 +535,11 @@ text{* compat: *}
 
 lemma part_emp_R[simp]:
 "part I {} \<longleftrightarrow> I = {}"
-using assms unfolding part_def by auto
+unfolding part_def by auto
 
 lemma part_emp_L[simp]:
 "part {} P \<Longrightarrow> P \<subseteq> { {} }"
-using assms unfolding part_def by auto
+unfolding part_def by auto
 
 lemma finite_partJoin[simp]:
 assumes "finite P" and "finite Q"

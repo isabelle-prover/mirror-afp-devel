@@ -256,17 +256,17 @@ unfolding part_def singlPart_def by auto
 
 lemma singlPart_inj_on[simp]:
 "inj_on (image f) (singlPart I) = inj_on f I"
-using assms unfolding inj_on_def singlPart_def
+unfolding inj_on_def singlPart_def
 apply auto
 by (metis image_insert insertI1 insert_absorb insert_code singleton_inject)
 
 lemma singlPart_surj[simp]:
 "(image f) ` (singlPart I) = (singlPart J) \<longleftrightarrow> f ` I = J"
-using assms unfolding inj_on_def singlPart_def apply auto by blast
+unfolding inj_on_def singlPart_def apply auto by blast
 
 lemma singlPart_bij_betw[simp]:
 "bij_betw (image f) (singlPart I) (singlPart J) = bij_betw f I J"
-using assms unfolding bij_betw_def by auto
+unfolding bij_betw_def by auto
 
 lemma singlPart_finite1:
 assumes "finite (singlPart I)"
@@ -1245,7 +1245,7 @@ unfolding Sretr_def matchC_C_def proof safe
   let ?ss = "%n. s" let ?tt = "%n. t"
   have N: "?N = length dl" using cldl by simp
   have sstt: "\<And> n. n < ?N \<Longrightarrow> ?ss n \<approx> ?tt n"
-  using assms st N by auto
+  using st N by auto
   let ?phi = "%n PFn. mC_C Sbis (cl ! n) (dl ! n) (?ss n) (?tt n) (fst PFn) (snd PFn)"
   {fix n assume n: "n < ?N"
    hence "cl ! n \<approx>s dl ! n" using cldl by auto
@@ -1308,7 +1308,7 @@ unfolding Sretr_def matchC_C_def proof safe
 qed
 
 lemma thetaSPar_Sbis: "thetaSPar \<subseteq> Sbis"
-using assms Sbis_raw_coind thetaSPar_Sretr by blast
+using Sbis_raw_coind thetaSPar_Sretr by blast
 
 theorem Par_Sbis[simp]:
 assumes "properL cl" and "properL dl" "SbisL cl dl"
@@ -2489,7 +2489,7 @@ unfolding ZOretr_def matchC_LC_def proof safe
   let ?N = "length cl"
   let ?ss = "%n. s" let ?tt = "%n. t"
   have N: "?N = length dl" using cldl by simp
-  have sstt: "\<And> n. n < ?N \<Longrightarrow> ?ss n \<approx> ?tt n" using assms st N by auto
+  have sstt: "\<And> n. n < ?N \<Longrightarrow> ?ss n \<approx> ?tt n" using st N by auto
   let ?phi = "%n PFn. mC_C Sbis (cl ! n) (dl ! n) (?ss n) (?tt n) (fst PFn) (snd PFn)"
   {fix n assume n: "n < ?N"
    hence "cl ! n \<approx>s dl ! n" using cldl by auto
@@ -2571,7 +2571,7 @@ unfolding ZOretr_def matchC_LC_def proof safe
 qed
 
 lemma thetaZOParT_ZObis: "thetaZOParT \<subseteq> ZObis"
-using ZObis_raw_coind thetaZOParT_ZOretr[OF assms] by auto
+using ZObis_raw_coind thetaZOParT_ZOretr by auto
 
 theorem ParT_ZObis[simp]:
 assumes "properL cl" and "properL dl" and "SbisL cl dl"

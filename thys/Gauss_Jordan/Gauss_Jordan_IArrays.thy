@@ -289,6 +289,7 @@ next
     show "fst (foldl Gauss_Jordan_column_k (0, A) [0..<Suc k]) \<le> CARD('rows)" using hyp3 unfolding nrows_def .
   qed
   show "fst (foldl Gauss_Jordan_column_k (0, A) [0..<Suc (Suc k)]) \<le> nrows A"
+    using [[unfold_abs_def = false]]
     unfolding upt_rw foldl_append unfolding List.foldl.simps apply (subst fold_rw')
     unfolding Gauss_Jordan_column_k_def Let_def
     using hyp3 le_antisym not_less_eq_eq unfolding nrows_def by fastforce

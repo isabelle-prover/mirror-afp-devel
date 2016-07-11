@@ -97,7 +97,7 @@ lemma fair_stl: "fair rs \<Longrightarrow> fair (stl rs)"
   unfolding fair_def by (metis alw.simps set_mp stl_sset subsetI)
 
 lemma sdrop_fair: "fair rs \<Longrightarrow> fair (sdrop m rs)"
-  using assms alw_sdrop unfolding fair_def by (metis alw.coinduct alw_nxt fair_def fair_stl)
+  using alw_sdrop unfolding fair_def by (metis alw.coinduct alw_nxt fair_def fair_stl)
 
 
 section{* A Fair Enumeration of the Rules *}
@@ -243,7 +243,7 @@ definition "pos rs r \<equiv> LEAST n. shd (sdrop n rs) = r"
 
 lemma pos: "\<lbrakk>fair rs; r \<in> R\<rbrakk> \<Longrightarrow> shd (sdrop (pos rs r) rs) = r"
   unfolding pos_def
-  by (rule LeastI_ex) (metis (full_types) alw.cases assms fair_def holds.simps sdrop_wait)
+  by (rule LeastI_ex) (metis (full_types) alw.cases fair_def holds.simps sdrop_wait)
 
 lemma pos_least: "shd (sdrop n rs) = r \<Longrightarrow> pos rs r \<le> n"
   unfolding pos_def by (metis (full_types) Least_le)

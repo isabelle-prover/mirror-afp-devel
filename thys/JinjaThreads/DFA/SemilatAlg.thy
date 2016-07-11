@@ -74,9 +74,8 @@ lemma list_update_le_listI [rule_format]:
    x \<sqsubseteq>\<^sub>r ys!p \<longrightarrow> semilat(A,r,f) \<longrightarrow> x\<in>A \<longrightarrow> 
    xs[p := x \<squnion>\<^sub>f xs!p] [\<sqsubseteq>\<^sub>r] ys"
 (*<*)
-  apply (unfold Listn.le_def lesub_def semilat_def)
+  apply (simp only: Listn.le_def lesub_def semilat_def)
   apply (simp add: list_all2_conv_all_nth nth_list_update)
-  apply (simp add: lesub_def)
   done
 (*>*)
 

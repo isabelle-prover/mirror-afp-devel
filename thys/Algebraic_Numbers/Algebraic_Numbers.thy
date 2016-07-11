@@ -1372,9 +1372,6 @@ proof(intro multiset_eqI)
   finally show "count ?l x = ..." by auto 
 qed
 
-lemma mset_range[simp]: "mset_set {m..<n} = mset [m..<n]"
-    by (metis mset_sorted_list_of_multiset sorted_list_of_mset_set sorted_list_of_set_range)
-
 lemma rel_mset_free:
   assumes rel: "rel_mset rel X Y" and xs: "mset xs = X"
   shows "\<exists>ys. mset ys = Y \<and> list_all2 rel xs ys"
@@ -1393,7 +1390,7 @@ proof-
   have "mset ys = mset (map (nth ys') (map f [0..<length ys']))"
    unfolding ys_def by auto
   also have "... = image_mset (nth ys') (image_mset f (mset [0..<length ys']))"
-    unfolding mset_map by auto
+    unfolding mset_map by simp
   also have "(mset [0..<length ys']) = mset_set {0..<length ys'}"
     by (metis mset_sorted_list_of_multiset sorted_list_of_mset_set sorted_list_of_set_range) 
   also have "image_mset f (...) = mset_set (f ` {..<length ys'})"
@@ -1510,7 +1507,7 @@ next
       case empty then show ?case by auto
     next
       case (add F' f)
-        from add have "f \<in># F" by (simp add: mset_le_insertD)
+        from add have "f \<in># F" by (simp add: mset_subset_eq_insertD)
         with F have "\<not> is_unit f" by auto
         then have "\<not> is_unit (msetprod F' * f)" by (simp add: is_unit_mult_iff)
         with add show ?case by auto

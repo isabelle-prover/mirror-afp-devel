@@ -559,7 +559,7 @@ fun netgmap :: "('s \<Rightarrow> 'g \<times> 'l) \<Rightarrow> 's net_state \<R
                                    (\<sigma>\<^sub>1 ++ \<sigma>\<^sub>2, SubnetS ss tt))"
 
 lemma dom_fst_netgmap [simp, intro]: "dom (fst (netgmap sr n)) = net_ips n"
-  using assms proof (induction n)
+  proof (induction n)
     fix i s R
     show "dom (fst (netgmap sr (NodeS i s R))) = net_ips (NodeS i s R)"
       by simp

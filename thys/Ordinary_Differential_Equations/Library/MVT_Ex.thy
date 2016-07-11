@@ -5,8 +5,7 @@ imports
   "../ODE_Auxiliarities"
 begin
 
-subsection \<open>(Counter)Example of Mean Value Theorem in Euclidean Space\<close>
-text \<open>\label{sec:countermvt}\<close>
+subsection \<open>(Counter)Example of Mean Value Theorem in Euclidean Space \label{sec:countermvt}\<close>
 
 text \<open>There is no exact analogon of the mean value theorem in the multivariate case!\<close>
 

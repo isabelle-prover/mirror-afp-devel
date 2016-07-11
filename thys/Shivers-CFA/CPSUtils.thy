@@ -284,7 +284,7 @@ where "NList A N \<equiv> \<Union> n \<in> N. nList A n"
 
 lemma finite_Nlist[intro]:
   "\<lbrakk> finite A; finite N \<rbrakk> \<Longrightarrow> finite (NList A N)"
-unfolding NList_def using assms by auto
+unfolding NList_def by auto
 
 definition call_list_lengths
   where "call_list_lengths p = {0,1,2,3} \<union> (\<lambda>c. case c of (App _ _ ds) \<Rightarrow> length ds | _ \<Rightarrow> 0) ` calls p"

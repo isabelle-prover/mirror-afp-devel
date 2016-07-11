@@ -1880,11 +1880,11 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
           using elemins yins by(simp add: nth_append split_def del: config'.simps)
 
       show "index ?s_Suct3 ?y = index ?s z" 
-        unfolding state_dannach unfolding step_def apply(simp add: nth_append del: config'.simps) 
+        unfolding state_dannach apply(simp add: step_def nth_append del: config'.simps) 
           using A yins by(simp add: nth_append  del: config'.simps)    
 
       show "index ?s_Suct3 z = Suc (index ?s z)"
-        unfolding state_dannach unfolding step_def apply(simp add: nth_append del: config'.simps) 
+        unfolding state_dannach apply(simp add: step_def nth_append del: config'.simps) 
           using B yins by(simp add: nth_append  del: config'.simps)        
   qed
       
@@ -1909,8 +1909,10 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
   proof(rule ccontr, goal_cases)
     case 1
     then have "x < z in ?s" using not_before_in[OF xt3 elt3] el_n_x unfolding s_TS_def by blast
-    then have "x < z in ?s_Suct3" unfolding state_dannach
-      unfolding step_def apply(simp add: nth_append del: config'.simps)
+    then have "x < z in ?s_Suct3"
+      apply (simp only: state_dannach)
+      apply (simp only: step_def)
+      apply(simp add: nth_append del: config'.simps)
       apply(rule x_stays_before_y_if_y_not_moved_to_front)
         apply(subst config_config_set) using i_in_cs assms(3) apply fastforce
         apply(subst config_config_distinct) using assms(5) apply fastforce

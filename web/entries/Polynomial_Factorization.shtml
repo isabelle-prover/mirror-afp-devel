@@ -81,10 +81,11 @@ as well as primality-testing and prime-factorization algorithms for integers.
         <td class="data"><a href="Containers.shtml">Containers</a>, <a href="Jordan_Normal_Form.shtml">Jordan_Normal_Form</a>, <a href="Matrix.shtml">Matrix</a>, <a href="Partial_Function_MR.shtml">Partial_Function_MR</a>, <a href="Polynomial_Interpolation.shtml">Polynomial_Interpolation</a>, <a href="Show.shtml">Show</a>, <a href="Sqrt_Babylonian.shtml">Sqrt_Babylonian</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="Algebraic_Numbers.shtml">Algebraic_Numbers</a>, <a href="Jordan_Normal_Form.shtml">Jordan_Normal_Form</a>, <a href="Perron_Frobenius.shtml">Perron_Frobenius</a></td></tr>
+
+
 
   </tbody>
 </table>
@@ -106,7 +107,6 @@ as well as primality-testing and prime-factorization algorithms for integers.
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -117,8 +117,11 @@ as well as primality-testing and prime-factorization algorithms for integers.
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-None    </td></tr>
+
+
+    <tr><td class="links">Older releases: None
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

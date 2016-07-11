@@ -31,6 +31,11 @@ lemma plus_tree_simps [simp]:
   "right (t + t') = right t + right t'"
 by(simp_all add: plus_tree_def)
 
+friend_of_corec plus where "t + t' = Node (root t + root t') (left t + left t') (right t + right t')"
+subgoal by(rule tree.expand; simp)
+subgoal by transfer_prover
+done
+
 instantiation tree :: (minus) minus begin
 definition [applicative_unfold]: "minus x y = pure op - \<diamondop> x \<diamondop> (y :: 'a tree)"
 instance ..

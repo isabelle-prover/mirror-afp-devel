@@ -200,9 +200,10 @@ proof (rule conjI, unfold is_basis_def, rule conjI)
   also have "... = card (columns A)" 
     by (metis card_columns_le_ncols col_rank_def col_space_def eq_iff 
       finite_columns r rank_col_rank vec.span_card_ge_dim vec.span_inc)
-  finally show c_eq: "card (columns A) = ncols A" unfolding r ..
+  finally have *: "rank A = card (columns A)" .
+  then show c_eq: "card (columns A) = ncols A" unfolding r ..
   show "vec.independent (columns A)" 
-    by (metis `rank A = card (columns A)` vec.card_eq_dim_span_indep col_rank_def 
+    by (metis * vec.card_eq_dim_span_indep col_rank_def 
       col_space_def finite_columns rank_col_rank)
   thus "vec.span (columns A) = (UNIV::('a^'n::{mod_type}) set)"
     using independent_is_basis[of "columns A"] c_eq unfolding is_basis_def ncols_def by simp  
@@ -219,9 +220,10 @@ proof -
   also have "... = card (columns A)"
     by (metis card_columns_le_ncols col_rank_def col_space_def
       eq_iff finite_columns r rank_col_rank vec.span_card_ge_dim vec.span_inc)
-  finally have c_eq: "card (columns A) = ncols A" unfolding r ..
+  finally have *: "rank A = card (columns A)" .
+  then have c_eq: "card (columns A) = ncols A" unfolding r ..
   moreover have "vec.independent (columns A)" 
-    by (metis `rank A = card (columns A)` vec.card_eq_dim_span_indep 
+    by (metis * vec.card_eq_dim_span_indep
       col_rank_def col_space_def finite_columns rank_col_rank)
   moreover have "vec.span (columns A) = col_space A" by (metis col_space_def)
   ultimately show ?thesis by simp

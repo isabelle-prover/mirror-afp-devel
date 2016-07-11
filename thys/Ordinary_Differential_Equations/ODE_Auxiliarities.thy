@@ -306,7 +306,7 @@ proof atomize_elim
   from separate_closed_compact[OF this]
   obtain d'::real where d': "d'>0" "\<And>x y. x \<notin> B \<Longrightarrow> y \<in> A \<Longrightarrow> d' \<le> dist x y"
     by auto
-  def d \<equiv> "d' / 2"
+  define d where "d = d' / 2"
   hence "d>0" "d < d'" using d' by auto
   with d' have d: "\<And>x y. x \<notin> B \<Longrightarrow> y \<in> A \<Longrightarrow> d < dist x y"
     by force

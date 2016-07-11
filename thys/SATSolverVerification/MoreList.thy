@@ -1168,7 +1168,6 @@ definition
 lemma multisetEmptyLeI:
   "multiset_le {#} a r"
 unfolding multiset_le_def
-using assms
 using one_step_implies_mult[of "a" "{#}" r "{#}"]
 by auto
 

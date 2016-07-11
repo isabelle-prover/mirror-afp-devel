@@ -417,6 +417,7 @@ show "snd (Gauss_Jordan_upt_k_det_P A 0) = snd (Gauss_Jordan_upt_k_PA A 0)"
 unfolding Gauss_Jordan_upt_k_det_P_def Gauss_Jordan_upt_k_PA_def Let_def snd_conv
 apply auto using snd_Gauss_Jordan_column_k_det_P_is_snd_Gauss_Jordan_column_k_PA by metis
 show "fst (snd (foldl Gauss_Jordan_column_k_det_P (1, 0, A) [0..<Suc 0])) = fst (snd (foldl Gauss_Jordan_column_k_PA (mat 1, 0, A) [0..<Suc 0]))"
+using [[unfold_abs_def = false]]
 unfolding Gauss_Jordan_column_k_det_P_def Gauss_Jordan_column_k_PA_def apply auto
 using fst_snd_Gauss_Jordan_column_k_det_P_eq_fst_snd_Gauss_Jordan_column_k_PA by metis
 next

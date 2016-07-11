@@ -1,4 +1,4 @@
-section \<open>Euler Method on Affine Forms: Code\<close>
+section \<open>Euler Method on Affine Forms: Code \label{sec:euleraformcode}\<close>
 theory Euler_Affine_Code
 imports
   Print
@@ -7,8 +7,6 @@ imports
   "../Numerics/Runge_Kutta"
   "../../Affine_Arithmetic/Affine_Arithmetic"
 begin
-
-text\<open>\label{sec:euleraformcode}\<close>
 
 record ('a, 'b, 'c) options =
   precision :: nat

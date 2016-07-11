@@ -527,9 +527,9 @@ corollary (in TC2) wt_instrs_ext2:
 
 corollary (in TC2) wt_instrs_ext_prefix [trans]:
   "\<lbrakk> \<turnstile> is\<^sub>1,xt\<^sub>1 [::] \<tau>s\<^sub>1@\<tau>s\<^sub>2; \<turnstile> is\<^sub>2,xt\<^sub>2 [::] \<tau>s\<^sub>3;
-     size \<tau>s\<^sub>1 = size is\<^sub>1; prefixeq \<tau>s\<^sub>3 \<tau>s\<^sub>2 \<rbrakk>
+     size \<tau>s\<^sub>1 = size is\<^sub>1; prefix \<tau>s\<^sub>3 \<tau>s\<^sub>2 \<rbrakk>
   \<Longrightarrow> \<turnstile> is\<^sub>1@is\<^sub>2, xt\<^sub>1 @ shift (size is\<^sub>1) xt\<^sub>2 [::] \<tau>s\<^sub>1@\<tau>s\<^sub>2"
-(*<*)by(bestsimp simp:prefixeq_def elim: wt_instrs_ext dest:wt_instrs_extR)(*>*)
+(*<*)by(bestsimp simp:prefix_def elim: wt_instrs_ext dest:wt_instrs_extR)(*>*)
 
 
 corollary (in TC2) wt_instrs_app:

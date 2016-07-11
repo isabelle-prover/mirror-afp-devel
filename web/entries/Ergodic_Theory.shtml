@@ -63,10 +63,7 @@ Ergodic theory is the branch of mathematics that studies the behaviour of measur
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
-<!--#set var="status" value="-STATUS-" -->
-<!--#set var="version" value="-VERSION-" -->
-<!--#set var="afp-version" value="-AFPVERSION-" -->
-<!---INCLUDE- file="devel-warning.shtml"-->
+
 
   </tbody>
 </table>
@@ -88,7 +85,6 @@ Ergodic theory is the branch of mathematics that studies the behaviour of measur
 	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
 	<a href="<!--#echo var="doc" -->">Proof document</a>
   </td>
-	<!-- link to README.hmtl if no document exists -->	
 	</tr>
     <tr>
   <td class="links">
@@ -99,8 +95,11 @@ Ergodic theory is the branch of mathematics that studies the behaviour of measur
 	<a href="<!--#echo var="tar" -->">Download this entry</a>
 	</td>
   </tr>
-    <tr><td class="links">Older releases:
-None    </td></tr>
+
+
+    <tr><td class="links">Older releases: None
+    </td></tr>
+
   </tbody>
 </table>
 <!-- entry data end -->

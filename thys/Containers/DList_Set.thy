@@ -311,9 +311,8 @@ proof transfer
   qed
 qed
 
-context
+context includes lifting_syntax
 begin
-interpretation lifting_syntax .
 
 lemma fold_transfer2 [transfer_rule]:
   assumes "is_equality A"

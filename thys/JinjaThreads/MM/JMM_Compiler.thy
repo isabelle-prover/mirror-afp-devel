@@ -172,7 +172,7 @@ theorem if_bisimJ2JVM_weak_bisim:
   shows "delay_bisimulation_diverge_final
     (red_mthr.mthr.if.redT P) (execd_mthr.mthr.if.redT (J2JVM P)) if_bisimJ2JVM if_tlsimJ2JVM 
     red_mthr.if.m\<tau>move execd_mthr.if.m\<tau>move red_mthr.mthr.if.mfinal execd_mthr.mthr.if.mfinal"
-unfolding if_bisimJ2JVM_def if_tlsimJ2JVM_def J2JVM_def o_apply
+apply (simp only: if_bisimJ2JVM_def if_tlsimJ2JVM_def J2JVM_def o_apply)
 apply(rule delay_bisimulation_diverge_final_compose)
  apply(rule FWdelay_bisimulation_diverge.mthr_delay_bisimulation_diverge_final)
  apply(rule FWdelay_bisimulation_diverge.init_fin_FWdelay_bisimulation_diverge)
@@ -260,7 +260,7 @@ proof -
     then obtain E' where E: "E = lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E'))"
       and E': "execd_mthr.if.mthr.\<tau>Runs cs E'"
       unfolding execd_mthr.if.\<E>_conv_Runs J2JVM_def o_apply by blast
-    from divfin.simulation_\<tau>Runs2[OF bisim, unfolded J2JVM_def o_apply, OF E']
+    from divfin.simulation_\<tau>Runs2[OF bisim, simplified J2JVM_def o_apply, OF E']
     obtain E'' where E'': "red_mthr.if.mthr.\<tau>Runs s E''"
       and tlsim: "tllist_all2 if_tlsimJ2JVM (option.rel_option if_bisimJ2JVM) E'' E'" by blast
     let ?E = "lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) (llist_of_tllist E''))"

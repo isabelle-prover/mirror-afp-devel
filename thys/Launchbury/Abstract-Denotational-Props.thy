@@ -150,18 +150,20 @@ case Cons
 qed auto
 
 lemma ESem_subst:
-  assumes "x \<noteq> y"
   shows "\<lbrakk> e \<rbrakk>\<^bsub>\<sigma>(x := \<sigma> y)\<^esub> = \<lbrakk> e[x::= y] \<rbrakk>\<^bsub>\<sigma>\<^esub>"
-proof-
-  have [simp]: "x \<notin> fv e[x::=y]" using assms by (auto simp add: fv_def supp_subst supp_at_base dest: set_mp[OF supp_subst]) 
+proof(cases "x = y")
+  case False
+  hence [simp]: "x \<notin> fv e[x::=y]" by (auto simp add: fv_def supp_subst supp_at_base dest: set_mp[OF supp_subst]) 
 
   have "\<lbrakk> e \<rbrakk>\<^bsub>\<sigma>(x := \<sigma> y)\<^esub> = \<lbrakk> e[x::= y] \<rbrakk>\<^bsub>\<sigma>(x := \<sigma> y)\<^esub>"
-    using assms(1)
-    by (auto intro: ESem_subst_same simp add: Rep_cfun_inverse)
+    by (rule ESem_subst_same) simp
   also have "\<dots> = \<lbrakk> e[x::= y] \<rbrakk>\<^bsub>\<sigma>\<^esub>"
     by (rule ESem_fresh_cong) simp
   finally
   show ?thesis.
+next
+  case True
+  thus ?thesis by simp
 qed
 
 end

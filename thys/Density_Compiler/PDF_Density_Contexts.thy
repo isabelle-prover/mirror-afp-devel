@@ -233,11 +233,11 @@ lemma measurable_marg_dens2:
 lemma measurable_state_measure_component:
     "x \<in> V \<Longrightarrow> (\<lambda>\<sigma>. \<sigma> x) \<in> measurable (state_measure V \<Gamma>) (stock_measure (\<Gamma> x))"
   unfolding state_measure_def
-  using assms by (auto intro!: measurable_component_singleton)
+  by (auto intro!: measurable_component_singleton)
 
 lemma measurable_dens_ctxt_measure_component:
     "x \<in> V \<Longrightarrow> (\<lambda>\<sigma>. \<sigma> x) \<in> measurable (dens_ctxt_measure (V,V',\<Gamma>,\<delta>) \<rho>) (stock_measure (\<Gamma> x))"
-  unfolding dens_ctxt_measure_def state_measure'_def state_measure_def using assms
+  unfolding dens_ctxt_measure_def state_measure'_def state_measure_def
   by (auto intro!: measurable_component_singleton)
 
 lemma space_dens_ctxt_measure_dens_ctxt_measure':

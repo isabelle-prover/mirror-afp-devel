@@ -319,9 +319,13 @@ proof -
 qed
 
 lemma E_sup_add_left:
-  assumes [measurable]: "f \<in> borel_measurable St" and nn: "0 \<le> c" "\<And>x. 0 \<le> f x"
+  assumes [measurable]: "f \<in> borel_measurable St"
   shows "E_sup s (\<lambda>x. f x + c) = E_sup s f + c"
-  by (simp add: nn nn_integral_add E_sup_def T.emeasure_space_1[simplified] ennreal_SUP_add_left)
+  by (simp add: nn_integral_add E_sup_def T.emeasure_space_1[simplified] ennreal_SUP_add_left)
+
+lemma E_sup_add_right:
+  "f \<in> borel_measurable St \<Longrightarrow> E_sup s (\<lambda>x. c + f x) = c + E_sup s f"
+  using E_sup_add_left[of f s c] by (simp add: add.commute)
 
 lemma E_sup_SUP:
   assumes [measurable]: "\<And>i. f i \<in> borel_measurable St" and [simp]: "incseq f"

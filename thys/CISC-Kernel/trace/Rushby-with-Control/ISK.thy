@@ -633,15 +633,15 @@ where "isecure_total \<equiv> NI_unrelated_total \<and> NI_indirect_sources_tota
 theorem unwinding_implies_isecure_total:
 shows isecure_total
 proof-
-  from assms unwinding_implies_isecure have secure_partial: "NI_unrelated" unfolding isecure_def by blast
-  from assms unwinding_implies_isecure have isecure1_partial: "NI_indirect_sources" unfolding isecure_def by blast
+  from unwinding_implies_isecure have secure_partial: "NI_unrelated" unfolding isecure_def by blast
+  from unwinding_implies_isecure have isecure1_partial: "NI_indirect_sources" unfolding isecure_def by blast
 
   have NI_unrelated_total: NI_unrelated_total
   proof-
     {
     fix execs a n
     assume realistic: "realistic_executions execs"
-    from assms invariant_s0 realistic run_total_equals_run[where n=n and s=s0 and execs=execs]
+    from invariant_s0 realistic run_total_equals_run[where n=n and s=s0 and execs=execs]
       have 1: "strict_equal (run n (Some s0) execs) (run_total n s0 execs)" by auto
 
     have "let s_f = run_total n s0 execs in output_f s_f a = output_f (run_total n s0 (purge execs (current s_f))) a \<and> current s_f = current (run_total n s0 (purge execs (current s_f)))"
@@ -650,7 +650,7 @@ proof-
       thus ?thesis using 1 unfolding NI_unrelated_total_def strict_equal_def by auto
     next
     case (Some s_f)
-      from realistic_purge assms invariant_s0 realistic run_total_equals_run[where n=n and s=s0 and execs="purge execs (current s_f)"]
+      from realistic_purge invariant_s0 realistic run_total_equals_run[where n=n and s=s0 and execs="purge execs (current s_f)"]
         have 2: "strict_equal (run n (Some s0) (purge execs (current s_f))) (run_total n s0 (purge execs (current s_f)))"
         by auto
       show ?thesis proof(cases "run n (Some s0) (purge execs (current s_f))")
@@ -672,7 +672,7 @@ proof-
     {
     fix execs a n
     assume realistic: "realistic_executions execs"
-    from assms invariant_s0 realistic run_total_equals_run[where n=n and s=s0 and execs=execs]
+    from invariant_s0 realistic run_total_equals_run[where n=n and s=s0 and execs=execs]
       have 1: "strict_equal (run n (Some s0) execs) (run_total n s0 execs)" by auto
 
     have "let s_f = run_total n s0 execs in output_f (run_total n s0 (ipurge_l execs (current s_f))) a = output_f (run_total n s0 (ipurge_r execs (current s_f))) a"
@@ -681,10 +681,10 @@ proof-
       thus ?thesis using 1 unfolding NI_unrelated_total_def strict_equal_def by auto
     next
     case (Some s_f)
-      from realistic_ipurge_l assms invariant_s0 realistic run_total_equals_run[where n=n and s=s0 and execs="ipurge_l execs (current s_f)"]
+      from realistic_ipurge_l invariant_s0 realistic run_total_equals_run[where n=n and s=s0 and execs="ipurge_l execs (current s_f)"]
         have 2: "strict_equal (run n (Some s0) (ipurge_l execs (current s_f))) (run_total n s0 (ipurge_l execs (current s_f)))"
         by auto
-      from realistic_ipurge_r assms invariant_s0 realistic run_total_equals_run[where n=n and s=s0 and execs="ipurge_r execs (current s_f)"]
+      from realistic_ipurge_r invariant_s0 realistic run_total_equals_run[where n=n and s=s0 and execs="ipurge_r execs (current s_f)"]
         have 3: "strict_equal (run n (Some s0) (ipurge_r execs (current s_f))) (run_total n s0 (ipurge_r execs (current s_f)))"
         by auto
        

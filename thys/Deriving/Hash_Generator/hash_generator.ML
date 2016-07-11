@@ -206,7 +206,7 @@ fun generate_hashs_from_bnf_fp tyco lthy =
     val bindings = tycos ~~ Ts |> map mk_phash
       |> map (fn (name, T) => (Binding.name name, SOME T, NoSyn))
     val ((phashs, _, phash_simps), lthy) = lthy
-      |> BNF_LFP_Rec_Sugar.primrec bindings (map (fn t => ((Attrib.empty_binding, t), [])) eqs)
+      |> BNF_LFP_Rec_Sugar.primrec bindings (map (fn t => ((Binding.empty_atts, t), [], [])) eqs)
     val (phi, lthy) = restore_with_morphism lthy
     val phashs = map (Morphism.term phi) phashs
     val phash_simps = phash_simps |> map (Morphism.fact phi)
@@ -225,7 +225,7 @@ fun generate_hashs_from_bnf_fp tyco lthy =
         val abs_def = lambdas args rhs
         val name = "hash_code_" ^ Long_Name.base_name tyco
         val ((hash, (_, prethm)), lthy) =
-          Local_Theory.define ((Binding.name name, NoSyn), (Attrib.empty_binding, abs_def)) lthy
+          Local_Theory.define ((Binding.name name, NoSyn), (Binding.empty_atts, abs_def)) lthy
         val eq = Logic.mk_equals (list_comb (hash, args), rhs)
         val thm = Goal.prove lthy (map (fst o dest_Free) args) [] eq (K (unfold_tac lthy [prethm]))
       in

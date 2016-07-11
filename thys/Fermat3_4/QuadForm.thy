@@ -1492,7 +1492,7 @@ proof -
     ultimately show ?thesis by auto
   qed
   ultimately have "[?L = (-1)^(nat m)*(-1)^(nat m)] (mod ?p)"
-    by (auto dest: zcong_scalar)
+    by (auto dest: zcong_scalar simp del: minus_one_mult_self)
   hence "[?L = (-1)^((nat m)+(nat m))] (mod ?p)" by (simp only: power_add)
   moreover have "(nat m)+(nat m) = 2*(nat m)" by auto
   ultimately have "[?L = (-1)^(2*(nat m))] (mod ?p)" by simp

@@ -15,7 +15,6 @@ primrec sqrtu :: "[real,nat] \<Rightarrow> real" where
 | "sqrtu x (Suc n) = (sqrtu x n + x/sqrtu x n) / 2"
 
 lemma sqrtu_upper: "x \<le> sqrtu x n ^ 2"
-using assms
 proof (induction n)
   case 0 show ?case
     apply (simp add: power2_eq_square)
