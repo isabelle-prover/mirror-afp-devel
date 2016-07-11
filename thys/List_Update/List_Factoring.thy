@@ -14,10 +14,9 @@ hide_const config compet
 
 section "List factoring technique"
 
+subsection "Helper functions"
 
-fun ALG :: "'a \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> ('a list * 'is) \<Rightarrow> nat" where
-  "ALG x qs i s = (if x < (qs!i) in fst s then 1::nat else 0)" 
- 
+subsubsection "Helper lemmas"
 
 lemma befaf: assumes "q\<in>set s" "distinct s"
 shows "before q s \<union> {q} \<union> after q s = set s"
@@ -34,7 +33,6 @@ proof -
   also have "\<dots> = set s" by auto
   finally show ?thesis using assms by simp
 qed
-
 
 lemma index_sum: assumes "distinct s" "q\<in>set s"
 shows "index s q = (\<Sum>e\<in>set s. if e < q in s then 1 else 0)"
@@ -71,6 +69,11 @@ proof -
 qed
 
 
+subsubsection "ALG"
+
+fun ALG :: "'a \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> ('a list * 'is) \<Rightarrow> nat" where
+  "ALG x qs i s = (if x < (qs!i) in fst s then 1::nat else 0)" 
+
 (* no paid exchanges, requested items in state (nice, quickcheck is awesome!) *)
 lemma t\<^sub>p_sumofALG: "distinct (fst s) \<Longrightarrow> snd a = [] \<Longrightarrow> (qs!i)\<in>set (fst s) 
     \<Longrightarrow> t\<^sub>p (fst s) (qs!i) a = (\<Sum>e\<in>set (fst s). ALG e qs i s)"
@@ -88,10 +91,15 @@ proof -
 qed
 
 
+subsubsection "The function steps'"
+
 fun steps' where
   "steps' s _ _ 0 = s"
 | "steps' s [] [] (Suc n) = s"
 | "steps' s (q#qs) (a#as) (Suc n) = steps' (step s q a) qs as n"
+
+lemma steps'_steps: "length as = length qs \<Longrightarrow> steps s as qs = steps' s as qs (length as)"
+by(induct arbitrary: s rule: list_induct2, simp_all)
 
 
 lemma steps'_length: "length qs = length as \<Longrightarrow> n \<le> length as
@@ -131,7 +139,7 @@ apply(induct qs as arbitrary: s  n rule: list_induct2)
 lemma steps'_append: "length qs = length as \<Longrightarrow> length qs = n \<Longrightarrow> steps' s (qs@[q]) (as@[a]) (Suc n) = step (steps' s qs as n) q a"
 apply(induct qs as arbitrary: s  n rule: list_induct2) by auto
 
-
+subsubsection "ALG'_det"
 
 definition "ALG'_det Strat qs init i x = ALG x qs i (swaps (snd (Strat!i)) (steps' init qs Strat i),())"
 
@@ -160,6 +168,7 @@ proof -
       unfolding ALG.simps tt by auto
 qed 
 
+subsubsection "ALG'"
 
 abbreviation "config'' A qs init n == config_rand A init (take n qs)"
 
@@ -168,6 +177,7 @@ thm ALG'_def
 lemma ALG'_refl: "qs!i = x \<Longrightarrow> ALG' A qs init i x = 0"
 unfolding ALG'_def by(simp add: split_def before_in_def)
  
+subsubsection "ALGxy_det"
 
 definition ALGxy_det where
   "ALGxy_det A qs init x y = (\<Sum>i\<in>{..<length qs}. (if (qs!i \<in> {y,x}) then ALG'_det A qs init i y + ALG'_det A qs init i x
@@ -194,6 +204,8 @@ proof -
   finally show ?thesis by simp
 qed
     
+subsubsection "ALGxy"
+
 definition ALGxy where
   "ALGxy A qs init x y = (\<Sum>i\<in>{..<length qs} \<inter> {i. (qs!i \<in> {y,x})}. ALG' A qs init i y + ALG' A qs init i x)"
 
@@ -250,6 +262,8 @@ proof -
   finally show ?thesis .
 qed
   
+subsection "Transformation to Blocking Cost"
+
 lemma umformung:
   fixes A :: "(('a::linorder) list,'is,'a,(nat * nat list)) alg_on_rand"
   assumes no_paid: "\<And>is s q. \<forall>((free,paid),_) \<in> (snd A (s,is) q). paid=[]"
@@ -435,7 +449,7 @@ proof -
                   ALGxy A qs init x y)"
            unfolding ALGxy_def2 by simp
      finally show ?thesis . 
-qed (* das ist gleichung 1.4 *)
+qed (* this is lemma 1.4 *)
 
 
 lemma before_in_index1:
@@ -500,43 +514,24 @@ definition "Pbefore_in x y A qs init = map_pmf (\<lambda>p. x < y in fst p) (con
 
 lemma T_on_n_no_paid:
       assumes 
-      nopaid: "\<And>l m n. map_pmf (\<lambda>x. snd (fst x)) (snd A (l, m) n) = return_pmf []" 
+      nopaid: "\<And>s n. map_pmf (\<lambda>x. snd (fst x)) (snd A s n) = return_pmf []" 
       shows "T_on_rand_n A init qs i = E (config'' A qs init i \<bind> (\<lambda>p. return_pmf (real(index (fst p) (qs ! i)))))"
-proof -
-  { fix p :: "'a list \<times> 'b"
-    have "snd A (fst p,snd p)
-       (qs ! i) \<bind>
-      (\<lambda>pa. return_pmf
-             (real(index
-               (swaps (snd (fst pa))
-                 (fst p))
-               (qs ! i) +
-              length (snd (fst pa)))))
-           =  map_pmf ((%pay. 
-             real(index (swaps pay (fst p))
-               (qs ! i) + length pay)) \<circ> (\<lambda>pa. (snd(fst pa)) ))
-               (snd A(fst p,snd p) (qs ! i))"
-               by(simp add: map_pmf_def)
-     also have "\<dots> = map_pmf (%pay. 
-             (index (swaps pay (fst p))
-               (qs ! i) + length pay)) (
-                map_pmf ((\<lambda>pa. (snd(fst pa)) ))
-               (snd A(fst p,snd p) (qs ! i)))"
-              using pmf.map_comp by metis 
-     also have "\<dots> = return_pmf (index (fst p) (qs ! i))" using nopaid[of "fst p" "snd p"]  by(auto)
-     finally have "snd A(fst p,snd p)
-       (qs ! i) \<bind>
-      (\<lambda>pa. return_pmf
-             (real(index
-               (swaps (snd (fst pa))
-                 (fst p))
-               (qs ! i)) +
-              length (snd (fst pa))))
-                = return_pmf (real(index (fst p) (qs ! i)))" by auto
-      } note brutal=this 
-  show ?thesis 
-    apply(simp add: t\<^sub>p_def split_def) 
-      using brutal  by(simp)
+proof - 
+
+  have "(\<lambda>s. snd A s (qs ! i) \<bind>
+            (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) (qs ! i) a))))
+       =
+        (\<lambda>s. (snd A s (qs ! i) \<bind> (\<lambda>x. return_pmf (snd (fst x))))
+              \<bind> (\<lambda>p. return_pmf
+               (real (index (swaps p (fst s)) (qs ! i)) +
+                real (length p))))"
+            by(simp add: t\<^sub>p_def split_def bind_return_pmf bind_assoc_pmf)
+also
+  have "\<dots> = (\<lambda>p. return_pmf (real (index (fst p) (qs ! i))))"
+    using nopaid[unfolded map_pmf_def]
+    by(simp add: split_def bind_return_pmf)
+finally
+  show ?thesis by simp
 qed
  
 lemma pairwise_property_lemma:
@@ -1070,7 +1065,7 @@ lemma before_in_swap2:
 apply(simp add:before_in_def index_swap_distinct)
 by (metis Suc_lessD Suc_lessI index_nth_id less_Suc_eq nth_mem yes)
 
-lemma geil: 
+lemma projected_paid_same_effect: 
   assumes
    d: "dist_perm s1 s1"  
   and ee: "x\<noteq>y"  
@@ -1230,7 +1225,7 @@ proof(induct n)
       using steps'_set[OF qQS] aS xyininit by simp_all
     also have "\<dots> =  x < y in (swap 0 ^^ ALG_P (snd (Strat ! n)) x y (steps' init (take n qs) (take n Strat) n))
                                     (swaps sws (steps' (Lxy init {x, y}) (Lxy (take n qs) {x, y}) Strat2 (length Strat2)))"
-       apply(rule geil)
+       apply(rule projected_paid_same_effect)
             apply(rule steps'_dist_perm)
               apply(fact qQS)
              apply(fact aS)
@@ -1426,9 +1421,9 @@ proof(induct n)
 
     (* aus der Induktionsvorraussetzung (iff) weiß ich bereits
         dass die Ordnung erhalten wird bis zum nten Schritt,
-        mit Theorem geil kann ich auch die paid exchanges abarbeiten ...*)
+        mit Theorem "projected_paid_same_effect" kann ich auch die paid exchanges abarbeiten ...*)
 
-    from geil[OF 1 Suc(5) 3 4 5, OF iff, where acs="snd (Strat ! n)"]
+    from projected_paid_same_effect[OF 1 Suc(5) 3 4 5, OF iff, where acs="snd (Strat ! n)"]
     have aaa: "x < y in ?xs'  = x < y in ?ys''" .
 
     (* ... was nun noch fehlt ist, dass die moveToFront anweisungen von Strat

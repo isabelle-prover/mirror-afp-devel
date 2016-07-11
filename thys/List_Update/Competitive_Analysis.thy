@@ -12,15 +12,13 @@ begin
 
 section "Competitive Analysis"
 
-subsection "Probability Theory in Isabelle/HOL"
-
 subsection "Competitive Analysis Formalized"
  
 type_synonym ('s,'is,'r,'a)alg_on_step = "('s * 'is  \<Rightarrow> 'r \<Rightarrow> ('a * 'is) pmf)"
 type_synonym ('s,'is)alg_on_init = "('s \<Rightarrow> 'is pmf)"
 type_synonym ('s,'is,'q,'a)alg_on_rand = "('s,'is)alg_on_init * ('s,'is,'q,'a)alg_on_step"
 
-section "classes of algorithms"
+subsubsection "classes of algorithms"
 
 
 definition deterministic_init :: "('s,'is)alg_on_init \<Rightarrow> bool" where
@@ -33,6 +31,8 @@ definition random_step :: "('s,'is,'q,'a)alg_on_step \<Rightarrow> bool" where
   "random_step S \<longleftrightarrow> ~ deterministic_step S"
 
  
+subsubsection "Randomized Online and Offline Algorithms"
+
 context On_Off
 begin
 
