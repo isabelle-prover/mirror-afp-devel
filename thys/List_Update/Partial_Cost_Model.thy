@@ -21,6 +21,7 @@ interpretation On_Off step t\<^sub>p static .
 abbreviation "T\<^sub>p == T"
 abbreviation "T\<^sub>p_opt == T_opt" 
 abbreviation "T\<^sub>p_on == T_on"
+abbreviation "T\<^sub>p_on_rand' == T_on_rand'"
 abbreviation "T\<^sub>p_on_n == T_on_n"
 abbreviation "T\<^sub>p_on_rand == T_on_rand"
 abbreviation "T\<^sub>p_on_rand_n == T_on_rand_n"

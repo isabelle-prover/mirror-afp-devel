@@ -6,7 +6,7 @@ imports Probability
 begin
 
 
-adhoc_overloading Monad_Syntax.bind bind_pmf
+(* adhoc_overloading Monad_Syntax.bind bind_pmf *)
 
 
 lemma integral_map_pmf[simp]:

@@ -115,6 +115,23 @@ proof -
  qed
 qed
 
+thm UnE
+lemma "c \<in> A \<union> B \<Longrightarrow> P"
+  apply(erule UnE) oops
+
+lemma LxxE: "qs \<in> Lxx x y
+    \<Longrightarrow> (qs \<in> lang (seq [Atom x, Atom x]) \<Longrightarrow> P x y qs)
+    \<Longrightarrow> (qs \<in> lang (seq [Plus (Atom x) rexp.One, Atom y, Atom x, Star (Times (Atom y) (Atom x)), Atom y, Atom y]) \<Longrightarrow> P x y qs)
+    \<Longrightarrow> (qs \<in> lang (seq [Plus (Atom x) rexp.One, Atom y, Atom x, Star (Times (Atom y) (Atom x)), Atom x]) \<Longrightarrow> P x y qs)
+    \<Longrightarrow> (qs \<in> lang (seq [Plus (Atom x) rexp.One, Atom y, Atom y]) \<Longrightarrow> P x y qs)
+    \<Longrightarrow> P x y qs"
+unfolding Lxx_def lastxx_is_4cases[symmetric] L_4cases_def apply(simp only: verund.simps lang.simps)
+using UnE by blast
+
+thm UnE LxxE
+
+lemma "qs \<in> Lxx x y \<Longrightarrow> P"
+apply(erule LxxE) oops
 
 lemma LxxI: "(qs \<in> lang (seq [Atom x, Atom x]) \<Longrightarrow> P x y qs)
     \<Longrightarrow> (qs \<in> lang (seq [Plus (Atom x) rexp.One, Atom y, Atom x, Star (Times (Atom y) (Atom x)), Atom y, Atom y]) \<Longrightarrow> P x y qs)
