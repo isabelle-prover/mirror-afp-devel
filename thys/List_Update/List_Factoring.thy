@@ -12,7 +12,7 @@ hide_const config compet
 
 
 
-chapter "List factoring technique"
+section "List factoring technique"
 
 
 fun ALG :: "'a \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> ('a list * 'is) \<Rightarrow> nat" where
@@ -721,7 +721,7 @@ proof -
   finally show ?thesis .
 qed
  
-section "List Factoring for OPT"
+subsection "List Factoring for OPT"
 
 
 thm ALG.simps
@@ -2239,7 +2239,7 @@ proof -
 qed
 
 
-section "Factoring Lemma"
+subsection "Factoring Lemma"
 
 
 lemma cardofpairs: "S \<noteq> [] \<Longrightarrow> sorted S \<Longrightarrow> distinct S \<Longrightarrow> card {(x,y). x \<in> set S \<and> y\<in>set S \<and> x<y} = ((length S)*(length S-1)) / 2"

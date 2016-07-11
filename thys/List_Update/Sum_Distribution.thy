@@ -3,11 +3,7 @@ imports Probability
 begin
 
 
-typ "nat + nat"
-
-
-term "case a of Inl e \<Rightarrow> e"
-term "(case_sum (\<lambda>a. undefined) (\<lambda>e. e)) a"
+section "Sum Distribution"
 
 definition "Sum_pmf p Da Db = (bernoulli_pmf p) \<bind> (%b. if b then map_pmf Inl Da else map_pmf Inr Db )"
 

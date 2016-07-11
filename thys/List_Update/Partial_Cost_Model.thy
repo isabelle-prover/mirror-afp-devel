@@ -7,7 +7,7 @@ begin
 
 
 
-subsection "partial cost model"
+section "partial cost model"
 
 definition t\<^sub>p :: "'a state \<Rightarrow> 'a \<Rightarrow> answer \<Rightarrow> nat" where
 "t\<^sub>p s q a = (let (mf,sws) = a in index (swaps sws s) q + size sws)"

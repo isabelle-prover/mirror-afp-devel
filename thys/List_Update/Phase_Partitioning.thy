@@ -2,8 +2,9 @@ theory Phase_Partitioning
 imports OPT2
 begin
 
+section "Phase Partitioning"
 
-
+subsection "Definition of Phases"
 
 definition "other a x y = (if a=x then y else x)"
 
@@ -146,7 +147,7 @@ lemma Lxx1: "xs \<in> Lxx x y \<Longrightarrow> length xs \<ge> 2"
   apply(rule LxxI[where P="(\<lambda>x y qs. length qs \<ge> 2)"])
   apply(auto) by(auto simp: conc_def)
 
-section "OPT2 Splitting"
+subsection "OPT2 Splitting"
          
 
 lemma ayay: "length qs = length as \<Longrightarrow> T\<^sub>p s (qs@[q]) (as@[a]) = T\<^sub>p s qs as + t\<^sub>p (steps s qs as) q a"
@@ -277,7 +278,7 @@ proof -
 qed
 
 
-
+subsection "Phase Partitioning lemma"
 
 
 theorem Phase_partitioning_general: 

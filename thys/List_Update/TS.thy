@@ -11,9 +11,9 @@ RExp_Var
 begin
  
 
-chapter "TS: another 2-competitve Algorithm"
+section "TS: another 2-competitve Algorithm"
  
-section "Definition of TS"
+subsection "Definition of TS"
  
 
   
@@ -208,7 +208,7 @@ lemma splitdet: "TSdet [x,y] h (u @ v) (length (u @ v))
 using TSdet_split[of "length v" v h "[x,y]" u, unfolded s_TS_def] by simp
   
  
-section "Behaviour of TS on lists of length 2"
+subsection "Behaviour of TS on lists of length 2"
 
 
 
@@ -257,7 +257,7 @@ lemma oneTS_stepx:
 lemmas oneTS_steps = oneTS_stepx oneTS_stepxy oneTS_stepyx oneTS_stepy oneTS_stepyy oneTS_stepyyy oneTS_step
 
 
-section "Analysis of the Phases"
+subsection "Analysis of the Phases"
  
 
 
@@ -1269,7 +1269,7 @@ qed
 
 
 
-section "Phase Partitioning"
+subsection "Phase Partitioning"
  
 lemma D': assumes "\<sigma>' \<in> Lxx x y" and "x \<noteq> y" and "TS_inv' ([x, y], h) x [x, y]"
   shows  "T_on' (rTS h0) ([x, y], h) \<sigma>' \<le> 2 * T\<^sub>p [x, y] \<sigma>' (OPT2 \<sigma>' [x, y]) 
@@ -1331,7 +1331,7 @@ apply(subst T_on_embed)
        done
   qed
   
-section "TS is pairwise"
+subsection "TS is pairwise"
 
  
 
@@ -2874,7 +2874,7 @@ apply(rule pairwise_property_lemma)
  
 
 
-section "TS is 2-compet"
+subsection "TS is 2-compet"
 
 
 lemma TS_compet':   "pairwise (embed (rTS [])) \<Longrightarrow> 

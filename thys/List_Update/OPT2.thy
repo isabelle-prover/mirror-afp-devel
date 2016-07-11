@@ -16,7 +16,9 @@ lemma nn_contains_Inf:
   shows "Inf S \<in> S"
 using assms Inf_nat_def LeastI by force
 
-section "Formalization of OPT2"
+section "OPT2"
+
+subsection "Definition"
 
 fun OPT2 :: "'a list \<Rightarrow> 'a list \<Rightarrow> (nat * nat list) list" where
   "OPT2 [] [x,y] = []"
@@ -136,6 +138,8 @@ unfolding step_def apply(simp only: split_def Let_def)
 apply(rule mtf2xy)
   apply(rule swapsxy) by fact+ 
 
+
+subsection "Proof of Optimality"
 
 lemma OPT2_is_lb: "set \<sigma> \<subseteq> {x,y} \<Longrightarrow> x\<noteq>y \<Longrightarrow> T\<^sub>p [x,y] \<sigma> (OPT2 \<sigma> [x,y]) \<le> T\<^sub>p_opt [x,y] \<sigma>" 
 proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
@@ -519,26 +523,6 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
                   also have "\<dots> = el" using Strat by auto
                   finally show "T\<^sub>p [x, y] (y # y # rest2) (OPT2 (y # y # rest2) [x, y]) \<le> el" .
                 qed
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           qed
         qed
      qed
@@ -556,6 +540,8 @@ lemma OPT2_is_ub: "set qs \<subseteq> {x,y} \<Longrightarrow> x\<noteq>y \<Longr
 lemma OPT2_is_opt: "set qs \<subseteq> {x,y} \<Longrightarrow> x\<noteq>y \<Longrightarrow> T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = T\<^sub>p_opt [x,y] qs"
 by (simp add: OPT2_is_lb OPT2_is_ub antisym)
 
+
+subsection "Performance on the four phase forms"
 
 lemma OPT2_A: assumes "x \<noteq> y" "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
   shows "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = 1"
@@ -870,7 +856,7 @@ next
    qed  
 qed  
  
-section "The function steps" 
+subsection "The function steps" 
  
  
 lemma steps_append: "length qs = length as \<Longrightarrow> steps s (qs@[q]) (as@[a]) = step (steps s qs as) q a"

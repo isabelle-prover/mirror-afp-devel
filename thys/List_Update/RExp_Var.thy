@@ -7,7 +7,7 @@ imports "../Regular-Sets/Equivalence_Checking"
 begin
 
 
-section {* Enabeling showing Equivalence of Regular Expression with Variables  *}
+section {* Equivalence of Regular Expression with Variables  *}
 
 (* even Atoms \<rightarrow> normal Atoms
     odd Atoms \<rightarrow> Variables *)
