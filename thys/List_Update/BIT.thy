@@ -189,7 +189,7 @@ proof -
     using config_rand by fastforce
 
   from b d have "?D \<subseteq> {x. length x = length init \<and> distinct x \<and> set x = set init} \<times> ({x. length x = length init} \<times> {init})"
-    by (smt SigmaI image_subset_iff prod.collapse subsetI)
+   by auto
   then show ?thesis
     apply (rule finite_subset)
       apply(rule finite_cartesian_product)
@@ -911,9 +911,16 @@ subsection "The Transformation"
                   case False
                   then have "?A' = (\<Sum>(xa, y)\<in>(Inv ys (s'_A n m) - {(s'_A n m ! Suc (paid_A ! n ! ?revm), s'_A n m ! (paid_A ! n ! ?revm))}
                         ). if b ! (index init y) then 2 else 1)" by auto
-                  also have "\<dots> \<le> (\<Sum>(xa, y)\<in>(Inv ys (s'_A n m)). if b ! (index init y) then 2 else 1)"
-                    by (smt Diff_empty Diff_insert0 case_prod_unfold finite_insert insert_Diff_single setsum.infinite setsum.remove)
-                    (* FIXME: avoid smt! *)
+                  also have "\<dots> \<le> (\<Sum>(xa, y)\<in>(Inv ys (s'_A n m)). if b ! (index init y) then 2 else 1)" (is "(\<Sum>(xa, y)\<in>?X-{?x}. ?g y) \<le> (\<Sum>(xa, y)\<in>?X. ?g y) ")
+                  proof (cases "?x \<in> ?X")                  
+                    case True
+                    have "(\<Sum>(xa, y)\<in>?X-{?x}. ?g y) \<le> (%(xa,y). ?g y) ?x + (\<Sum>(xa, y)\<in>?X-{?x}. ?g y)"
+                       by simp
+                    also have "\<dots> = (\<Sum>(xa, y)\<in>?X. ?g y)"
+                      apply(rule setsum.remove[symmetric])
+                        apply simp apply(fact) done
+                    finally show ?thesis .
+                  qed simp 
                   also have "\<dots> \<le> ?B" by auto
                   finally show ?thesis .
                 qed                   

@@ -222,7 +222,7 @@ proof -
 
             {assume ass: "index init x < index init y"
               then have "index (Lxy init {x,y}) x < index (Lxy init {x,y}) y"
-                using Lxy_mono[OF xyininit dinit] before_in_def by (smt a(2))
+                using Lxy_mono[OF xyininit dinit] before_in_def a(2) by force  
               with 31 32 have ix: "index (Lxy init {x,y}) x = 0"
                       and iy: "index (Lxy init {x,y}) y = 1" by auto
 
