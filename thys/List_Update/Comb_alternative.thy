@@ -265,53 +265,7 @@ next
         apply(fact bit_a'')
         apply(fact OPT2_A')
         apply(simp)
-      done  
-      (*
-      let ?D = "map_pmf con s"
-      from 5(6) obtain Da Db where Daf: "finite (set_pmf Da)"
-          and Dbf: "finite (set_pmf Db)"
-          and D: "?D = Sum_pmf 0.8 Da Db"
-                 and B: "BIT_inv Da a [x,y]" and T: "TS_inv Db a [x,y]"
-        unfolding inv_COMB_def by auto 
-         
-
-      let ?Da' = "config'_rand BIT Da qs"
-      from bit_a[OF 5(4,5) B 5(7) 4] 
-        have B': "BIT_inv ?Da' (last qs) [x, y]"
-        and B_cost: "T\<^sub>p_on_rand' BIT Da qs = 1.5" by auto
-
-      let ?Db' = "config'_rand (embed (rTS [])) Db qs"
-      (* ähnlich *) 
-      from TS_a''[OF 5(4,5) T 5(7) 4] 5
-        have T': "TS_inv ?Db' (last qs) [x, y]"
-        and T_cost: "T\<^sub>p_on_rand' (embed (rTS [])) Db qs = 2" by auto 
-
-      have "T\<^sub>p_on_rand' (COMB []) s qs
-            = 0.2 * T\<^sub>p_on_rand' (embed (rTS [])) Db qs
-                + 0.8 * T\<^sub>p_on_rand' BIT Da qs" 
-             using D apply(rule obligation2) apply(fact Daf) apply(fact Dbf) done
-    also
-      have "\<dots> = 1.6" by (simp only: B_cost T_cost) 
-    also
-      with OPT2_A[OF 5(4) 4] have BIT: "\<dots> \<le> 1.6 * T\<^sub>p [a, b] qs (OPT2 qs [a, b])" 
-        by simp
-    finally
-      have Comb_cost: "T\<^sub>p_on_rand' (COMB []) s qs \<le> 1.6 * T\<^sub>p [a, b] qs (OPT2 qs [a, b])" .
-
-      have Comb_inv: "inv_COMB (config'_rand (COMB []) s qs) (last qs) [x, y]"
-          unfolding inv_COMB_def
-          apply(rule exI[where x="?Da'"])
-          apply(rule exI[where x="?Db'"])
-            apply(safe)
-              apply(rule BIT_fin[OF Daf])
-              apply(rule TS_fin[OF Dbf])
-              apply(rule obligation1)
-              apply(fact D)
-              apply(fact B')
-              apply(fact T') done
-
-      from Comb_cost Comb_inv show ?case by simp
-      *)
+      done
     next
       case 1
       then show ?case
