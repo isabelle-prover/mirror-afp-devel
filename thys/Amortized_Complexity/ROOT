@@ -26,6 +26,7 @@ session Amortized_Complexity (AFP) = HOL +
     Pairing_Heap
     Pairing_Heap2
     Pairing_Heap_List
+    Pairing_Heap_List2
 
   document_files
     "root.tex"
