@@ -1959,7 +1959,8 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
         apply(rule xgoestofront)
           apply(fact) using el_n_x apply(simp) apply(fact)
         using i_in_cs apply(simp)
-        using  yeah i_in_cs length_take min_def not_less nth_mem  apply (smt Suc_eq_plus1 `i \<le> length cs` dual_order.strict_trans1 less_SucE)
+        using yeah i_in_cs length_take  nth_mem
+        apply (metis Suc_eq_plus1 Suc_leI min_absorb2)
         using set_take_subset assms(2) apply fast
         using assms i_in_cs  apply(simp_all ) using set_take_subset by fast
     then have ge: "\<not> z < x in s_TS init h ((as @ [x] @ bs @ [x]) @ (take (i+1) cs)) (length (as @ [x] @ bs @ [x]) + (i+1))"
