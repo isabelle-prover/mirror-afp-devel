@@ -29,8 +29,8 @@ lemma get_min_in:
 by(auto simp add: neq_Leaf_iff)
 
 lemma get_min_min:
-  "\<lbrakk> heap h; h \<noteq> Leaf \<rbrakk> \<Longrightarrow> \<forall>x \<in> set_tree h. get_min h \<le> x"
-by(auto simp add: neq_Leaf_iff)
+  "\<lbrakk> heap h; x \<in> set_tree h \<rbrakk> \<Longrightarrow> get_min h \<le> x"
+by(cases h)(auto)
 
 
 subsection "Meld"
