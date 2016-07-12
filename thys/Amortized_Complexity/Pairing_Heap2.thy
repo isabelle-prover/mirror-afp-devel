@@ -241,14 +241,14 @@ fun t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 :: "'a tree \<Rightarrow> nat" whe
 fun cost :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> nat" where
   "cost Empty [] = 1"
 | "cost Del_min [Leaf] = 1"
-| "cost Del_min [Node lx _  _] = t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx + 1"
+| "cost Del_min [Node lx _  _] = t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx"
 | "cost (Insert a) _ = 1"
 | "cost Meld _ = 1"
 
 fun U :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> real" where
   "U Empty [] = 1"
 | "U (Insert a) [h] = log 2 (size h + 1) + 1"
-| "U Del_min [h] = 3*log 2 (size h + 1) + 5"
+| "U Del_min [h] = 3*log 2 (size h + 1) + 4"
 | "U Meld [h1,h2] = 2*log 2 (size h1 + size h2 + 1) + 1"
 
 interpretation Amortized
@@ -277,7 +277,7 @@ next
       case [simp]: (Node lx x rx)
       have "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 lx) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 lx \<le> len lx + 2"
         by (induct lx rule: pass\<^sub>1.induct) simp_all
-      hence "cost f ss \<le> \<dots> + 1" by simp 
+      hence "cost f ss \<le> \<dots>" by simp 
       moreover have "\<Phi> (del_min h) - \<Phi> h \<le> 3*log 2 (size h + 1) - len lx + 2"
       proof (cases lx)
         case [simp]: (Node ly y ry) 
