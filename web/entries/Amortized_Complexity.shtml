@@ -57,6 +57,7 @@ Theorem Proving ITP 2015.
         <td class="abstract">
 
 [2015-03-17]: Added pairing heaps by Hauke Brinkop.<br>
+[2016-07-12]: Moved splay heaps from here to Splay_Tree
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>

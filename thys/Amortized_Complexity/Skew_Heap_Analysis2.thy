@@ -111,15 +111,15 @@ fun exec :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Righta
 
 fun cost :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> nat" where
 "cost Empty [] = 1" |
-"cost (Insert a) [h] = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d (Node Leaf a Leaf) h + 1" |
-"cost Del_min [h] = (case h of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> t\<^sub>m\<^sub>e\<^sub>l\<^sub>d t1 t2 + 1)" |
-"cost Meld [h1,h2] = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d h1 h2 + 1"
+"cost (Insert a) [h] = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d (Node Leaf a Leaf) h" |
+"cost Del_min [h] = (case h of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> t\<^sub>m\<^sub>e\<^sub>l\<^sub>d t1 t2)" |
+"cost Meld [h1,h2] = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d h1 h2"
 
 fun U where
 "U Empty [] = 1" |
-"U (Insert _) [h] = 3 * log 2 (size1 h + 2) + 2" |
-"U Del_min [h] = 3 * log 2 (size1 h + 2) + 4" |
-"U Meld [h1,h2] = 3 * log 2 (size1 h1 + size1 h2) + 2"
+"U (Insert _) [h] = 3 * log 2 (size1 h + 2) + 1" |
+"U Del_min [h] = 3 * log 2 (size1 h + 2) + 3" |
+"U Meld [h1,h2] = 3 * log 2 (size1 h1 + size1 h2) + 1"
 
 interpretation Amortized
 where arity = arity and exec = exec and inv = "\<lambda>_. True"

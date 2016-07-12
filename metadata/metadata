@@ -1456,8 +1456,9 @@ abstract =
 	published in the proceedings of the conference on Interactive
 	Theorem Proving ITP 2015.
 extra-history =
-	Change history:
-	[2015-03-17]: Added pairing heaps by Hauke Brinkop.<br>
+  Change history:
+  [2015-03-17]: Added pairing heaps by Hauke Brinkop.<br>
+  [2016-07-12]: Moved splay heaps from here to Splay_Tree
 notify = nipkow@in.tum.de
 
 [Dynamic_Tables]
@@ -1504,16 +1505,19 @@ notify = lp15@cam.ac.uk
 [Splay_Tree]
 title = Splay Tree
 author = Tobias Nipkow <http://in.tum.de/~nipkow/>
+notify = nipkow@in.tum.de
 date = 2014-08-12
 topic = Computer Science/Data Structures
 abstract =
-	Splay trees are self-adjusting binary search trees which were
-	invented by Sleator and Tarjan [JACM 1985].
-	This entry provides executable and verified functional splay trees.
-	<p>
-	The amortized complexity of splay trees is analyzed in the AFP entry
-	<a href="http://isa-afp.org/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
-notify = nipkow@in.tum.de
+  Splay trees are self-adjusting binary search trees which were invented by Sleator and Tarjan [JACM 1985].
+  This entry provides executable and verified functional splay trees
+  as well as the related splay heaps (due to Okasaki).
+  <p>
+  The amortized complexity of splay trees and heaps is analyzed in the AFP entry
+  <a href="http://isa-afp.org/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
+extra-history =
+  Change history:
+  [2016-07-12]: Moved splay heaps here from Amortized_Complexity
 
 [Skew_Heap]
 title = Skew Heap
