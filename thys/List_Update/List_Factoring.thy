@@ -139,7 +139,7 @@ apply(induct qs as arbitrary: s  n rule: list_induct2)
 lemma steps'_append: "length qs = length as \<Longrightarrow> length qs = n \<Longrightarrow> steps' s (qs@[q]) (as@[a]) (Suc n) = step (steps' s qs as n) q a"
 apply(induct qs as arbitrary: s  n rule: list_induct2) by auto
 
-subsubsection "ALG'_det"
+subsubsection "@{text ALG'_det}"
 
 definition "ALG'_det Strat qs init i x = ALG x qs i (swaps (snd (Strat!i)) (steps' init qs Strat i),())"
 
@@ -177,7 +177,7 @@ thm ALG'_def
 lemma ALG'_refl: "qs!i = x \<Longrightarrow> ALG' A qs init i x = 0"
 unfolding ALG'_def by(simp add: split_def before_in_def)
  
-subsubsection "ALGxy_det"
+subsubsection "@{text ALGxy_det}"
 
 definition ALGxy_det where
   "ALGxy_det A qs init x y = (\<Sum>i\<in>{..<length qs}. (if (qs!i \<in> {y,x}) then ALG'_det A qs init i y + ALG'_det A qs init i x
