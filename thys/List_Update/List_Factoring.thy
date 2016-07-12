@@ -98,7 +98,7 @@ fun steps' where
 | "steps' s [] [] (Suc n) = s"
 | "steps' s (q#qs) (a#as) (Suc n) = steps' (step s q a) qs as n"
 
-lemma steps'_steps: "length as = length qs \<Longrightarrow> steps s as qs = steps' s as qs (length as)"
+lemma steps'_steps: "length as = length qs \<Longrightarrow> steps' s as qs (length as) = steps s as qs"
 by(induct arbitrary: s rule: list_induct2, simp_all)
 
 
@@ -1823,11 +1823,6 @@ proof -
       apply(subst steps'_rests[symmetric]) using assms  by auto
   finally show ?thesis by simp
 qed
-
-lemma steps'_steps: "length qs = length Strat \<Longrightarrow> steps' s qs Strat (length qs) = steps s qs Strat"
-apply(induct qs Strat arbitrary: s rule: list_induct2)
-   by simp_all
-
 
 lemma Tp_darstellung: "length qs = length Strat
         \<Longrightarrow> T\<^sub>p init qs Strat =
