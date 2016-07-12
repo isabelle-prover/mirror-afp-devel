@@ -119,7 +119,7 @@ object profile extends isabelle.CI_Profile
   }
 
   val status_file = Path.explode("$ISABELLE_HOME/status.json").file
-  val can_send_mails = System.getProperties().containsKey("mail.smtp.host")
+  def can_send_mails = System.getProperties().containsKey("mail.smtp.host")
 
 
   def threads = 2
