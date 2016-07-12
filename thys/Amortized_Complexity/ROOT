@@ -8,9 +8,9 @@ session Amortized_Complexity (AFP) = HOL +
     "~~/src/HOL/Library/Sum_of_Squares"
     "../List-Index/List_Index"
     "../Splay_Tree/Splay_Tree"
+    "../Splay_Tree/Splay_Heap"
     "../Skew_Heap/Skew_Heap"
-    "~~/src/HOL/Library/Multiset"
-    "~~/src/HOL/Library/Tree"
+    "~~/src/HOL/Library/Tree_Multiset"
 
   theories
     Amortized_Examples
@@ -21,8 +21,8 @@ session Amortized_Complexity (AFP) = HOL +
     Splay_Tree_Analysis2
     Splay_Tree_Analysis_Optimal
     Splay_Tree_Analysis_Optimal2
-    Splay_Heap
-    Splay_Heap2
+    Splay_Heap_Analysis
+    Splay_Heap_Analysis2
     Pairing_Heap
     Pairing_Heap2
     Pairing_Heap_List
