@@ -1,11 +1,10 @@
+
+section "BIT is pairwise"
+
 theory BIT_pairwise
 imports List_Factoring BIT
 begin
   
-
-
-
-
 lemma L_sublist: "S \<subseteq> {..<length init}
   \<Longrightarrow> map_pmf (\<lambda>l. sublist l S) (Prob_Theory.bv (length init))
       = (Prob_Theory.bv (length (sublist init S)))"

@@ -1,18 +1,16 @@
 (*  Title:       List Factoring
     Author:      Max Haslbeck
 *)
+
+section "List factoring technique"
+
 theory List_Factoring
 imports
   Partial_Cost_Model
   MTF2_Effects
 begin
 
-term config
 hide_const config compet
-
-
-
-section "List factoring technique"
 
 subsection "Helper functions"
 
@@ -173,7 +171,7 @@ subsubsection "ALG'"
 abbreviation "config'' A qs init n == config_rand A init (take n qs)"
 
 definition "ALG' A qs init i x = E( map_pmf (ALG x qs i) (config'' A qs init i))"
-thm ALG'_def
+
 lemma ALG'_refl: "qs!i = x \<Longrightarrow> ALG' A qs init i x = 0"
 unfolding ALG'_def by(simp add: split_def before_in_def)
  
@@ -187,7 +185,7 @@ lemma ALGxy_det_alternativ: "ALGxy_det A qs init x y
    =  (\<Sum>i\<in>{i. i<length qs \<and> (qs!i \<in> {y,x})}. ALG'_det A qs init i y + ALG'_det A qs init i x)"
 proof -
   have f: "{i. i<length qs} = {..<length qs}" by(auto)
-  thm setsum.inter_restrict
+
   have e: "{i. i<length qs \<and> (qs!i \<in> {y,x})} = {i. i<length qs} \<inter> {i. (qs!i \<in> {y,x})}"
       by auto
   have "(\<Sum>i\<in>{i. i<length qs \<and> (qs!i \<in> {y,x})}. ALG'_det A qs init i y + ALG'_det A qs init i x)
@@ -276,7 +274,6 @@ proof -
   have config_dist: "\<forall>n. \<forall>xa \<in> set_pmf (config'' A qs init n). distinct (fst xa)"
       using dist config_rand_distinct by metis
 
-  thm setsum.cong
   have E0: "T\<^sub>p_on_rand A init qs =
         (\<Sum>i\<in>{..<length qs}. T\<^sub>p_on_rand_n A init qs i)" unfolding T_on_rand_as_sum by auto
   also have "\<dots> = 
@@ -358,7 +355,7 @@ proof -
         let ?M = "{(x,y). x\<in>set init \<and> y\<in> set init \<and> x=y}"
         have A: "?L = ?R \<union> ?M" by auto
         have B: "{} = ?R \<inter> ?M" by auto
-        thm ALG'_refl
+
         have "(\<Sum>(x,y)\<in> ?L. ?f x y) = (\<Sum>(x,y)\<in> ?R \<union> ?M. ?f x y)"
           by(simp only: A)
         also have "\<dots> = (\<Sum>(x,y)\<in> ?R. ?f x y) + (\<Sum>(x,y)\<in> ?M. ?f x y)"
@@ -396,7 +393,6 @@ proof -
                   finally show ?thesis .                  
               qed
 
-                thm setsum.union_disjoint
                 have "(\<Sum>(x,y)\<in> ?L. ?f x y) = (\<Sum>(x,y)\<in> ?R \<union> ?R'. ?f x y)"
                   by(simp only: A) 
                 also have "\<dots> = (\<Sum>(x,y)\<in> ?R. ?f x y) + (\<Sum>(x,y)\<in> ?R'. ?f x y)"
@@ -718,9 +714,6 @@ qed
  
 subsection "List Factoring for OPT"
 
-
-thm ALG.simps
-thm swap_def
 (* calculates given a list of swaps, elements x and y and a current state
   how many swaps between x and y there are *)
 fun ALG_P :: "nat list \<Rightarrow> 'a  \<Rightarrow> 'a  \<Rightarrow> 'a list \<Rightarrow> nat" where
@@ -912,7 +905,7 @@ proof -
 
   obtain rest where rest: "Strat = (take n Strat @ [Strat ! n] @ rest)" 
         using S apply(auto) using id_take_nth_drop by blast
-  thm steps'_rests
+
   have "steps' init (take n qs @ [qs ! n])
        (take n Strat @ [Strat ! n]) n
       = steps' init (take n qs)
@@ -1018,7 +1011,7 @@ proof (cases "x < y in l")
   from assms(1) have drin: "x\<in>set l" "y\<in>set l" by auto
   from assms(1,3) have b: "index l y < 2" by simp
   from a b have k: "index l x = 0" "index l y = 1" by auto 
-  thm nth_index[OF drin(1)]
+
   have g: "x = l ! 0" "y = l ! 1"
     using k nth_index assms(1) by force+ 
 
@@ -1343,7 +1336,6 @@ proof(induct n)
 
     let ?newStrat="Strat2@[(?mtf,?L)]"
 
-    thm steps'.simps
     have "?xs'' =  step ?xs (qs!n) (Strat!n)"
       unfolding tak tak2
       apply(rule steps'_append) by fact+
@@ -1762,7 +1754,6 @@ next
     apply (simp add: Lxy_def ALGxy_det_def ALG_Pxy_def T_opt_def)
     proof goal_cases
       case 1
-        thm Lxy_mono[unfolded Lxy_def]
         show ?case apply(rule Lxy_mono[unfolded Lxy_def, simplified])
           using 1 by auto
     qed
@@ -1797,10 +1788,6 @@ proof -
          + ALG_Pxy Strat qs init x y" using Tp by auto
   finally show ?thesis .
 qed
-
-
-(* similar to *)
-thm umformung
 
 lemma T_snoc: "length rs = length as
        \<Longrightarrow>  T init (rs@[r]) (as@[a])
@@ -1859,7 +1846,6 @@ proof -
 *) 
 
   (* ersten Teil umformen: *)
-  thm setsum.commute
   have "(\<Sum>i\<in>{..<length qs}.
     (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )
                 = (\<Sum>i\<in>{..<length qs}. 
@@ -1917,7 +1903,6 @@ proof -
    also have "\<dots> = (\<Sum>(x,y)\<in> {(x,y). x\<in>set init \<and> y\<in> set init}.
             (\<Sum>i\<in>{i. i<length qs \<and> qs!i=y}. ALG x qs i (?config i, ())))"
             by simp
-            thm ALG'_refl
    also have E4: "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x\<in>set init \<and> y\<in> set init \<and> x\<noteq>y}.
             (\<Sum>i\<in>{i. i<length qs \<and> qs!i=y}. ALG x qs i (?config i, ())))" (is "(\<Sum>(x,y)\<in> ?L. ?f x y) = (\<Sum>(x,y)\<in> ?R. ?f x y)")
            proof goal_cases
@@ -1925,7 +1910,6 @@ proof -
         let ?M = "{(x,y). x\<in>set init \<and> y\<in> set init \<and> x=y}"
         have A: "?L = ?R \<union> ?M" by auto
         have B: "{} = ?R \<inter> ?M" by auto
-        thm ALG'_refl
         have "(\<Sum>(x,y)\<in> ?L. ?f x y) = (\<Sum>(x,y)\<in> ?R \<union> ?M. ?f x y)"
           by(simp only: A)
         also have "\<dots> = (\<Sum>(x,y)\<in> ?R. ?f x y) + (\<Sum>(x,y)\<in> ?M. ?f x y)"
@@ -2049,13 +2033,11 @@ proof -
                + (\<Sum>i\<in>{..<length qs}. 
                (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
     by (simp add: setsum.distrib split_def) 
-  thm blockingpart
   also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. 
                          ALGxy_det Strat qs init x y)
                + (\<Sum>i\<in>{..<length qs}. 
                (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
                 by(simp only: blockingpart)
-  thm paid_part
   also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. 
                          ALGxy_det Strat qs init x y)
                + (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
@@ -2212,7 +2194,6 @@ proof -
                        and b: "length Strat = length qs"
               unfolding T_opt_def by auto
 
-  thm setsum_mono 
   have "(\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
        T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x, y})) \<le> (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
           ALGxy_det Strat qs init x y + ALG_Pxy Strat qs init x y)"
@@ -2327,9 +2308,7 @@ proof (standard, goal_cases)
 
     fix qs
     assume drin: "set qs \<subseteq> set init"
-  thm setsum_mono 
 
-  thm umf_pair
   have "T\<^sub>p_on_rand A init qs =
 (\<Sum>(x,y)\<in>{(x, y) . x \<in> set init \<and> y \<in> set init \<and> x < y}.
        T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x, y})) "
@@ -2340,7 +2319,6 @@ proof (standard, goal_cases)
   also have "\<dots> \<le> (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. c * (T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})) + b)"
         apply(rule setsum_mono)
         using on3 drin by(simp add: split_def) 
-        thm setsum_right_distrib setsum.distrib
   also have "\<dots> = c * (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})) + b*(((length init)*(length init-1)) / 2)"
   proof - 
 

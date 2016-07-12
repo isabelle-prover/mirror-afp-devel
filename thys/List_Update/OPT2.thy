@@ -1,6 +1,9 @@
 (*  Title:       Analysis of OPT2
     Author:      Max Haslbeck
 *)
+
+section "OPT2"
+
 theory OPT2
 imports 
 Partial_Cost_Model
@@ -16,7 +19,6 @@ lemma nn_contains_Inf:
   shows "Inf S \<in> S"
 using assms Inf_nat_def LeastI by force
 
-section "OPT2"
 
 subsection "Definition"
 

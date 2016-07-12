@@ -1,13 +1,12 @@
 (*  Title:       The Partial Cost Model of the List Update Problem
     Author:      Max Haslbeck
 *)
+
+section "Partial cost model"
+
 theory Partial_Cost_Model
 imports Move_to_Front
 begin
-
-
-
-section "partial cost model"
 
 definition t\<^sub>p :: "'a state \<Rightarrow> 'a \<Rightarrow> answer \<Rightarrow> nat" where
 "t\<^sub>p s q a = (let (mf,sws) = a in index (swaps sws s) q + size sws)"

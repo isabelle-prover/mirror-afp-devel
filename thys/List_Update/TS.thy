@@ -1,6 +1,9 @@
 (*  Title:       Competitive Analysis of TS
     Author:      Max Haslbeck
 *) 
+
+section "TS: another 2-competitve Algorithm"
+
 theory TS
 imports
 OPT2
@@ -11,7 +14,6 @@ RExp_Var
 begin
  
 
-section "TS: another 2-competitve Algorithm"
  
 subsection "Definition of TS"
  

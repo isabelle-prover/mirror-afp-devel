@@ -2,12 +2,11 @@
     Author:      Max Haslbeck
     Reference:   http://www4.in.tum.de/lehre/vorlesungen/theo/SS10/vorlesung.shtml p.96ff
 *)
+section {* Equivalence of Regular Expression with Variables  *}
+
 theory RExp_Var
 imports "../Regular-Sets/Equivalence_Checking"
 begin
-
-
-section {* Equivalence of Regular Expression with Variables  *}
 
 (* even Atoms \<rightarrow> normal Atoms
     odd Atoms \<rightarrow> Variables *)

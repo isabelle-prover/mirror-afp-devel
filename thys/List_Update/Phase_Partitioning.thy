@@ -1,8 +1,13 @@
+(*  Title:       Phase Partitioning
+    Author:      Max Haslbeck
+*)
+
+section "Phase Partitioning"
+
 theory Phase_Partitioning
 imports OPT2
 begin
 
-section "Phase Partitioning"
 
 subsection "Definition of Phases"
 

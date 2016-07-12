@@ -1,14 +1,19 @@
+(*  Title:       COMB
+    Author:      Max Haslbeck
+*) 
+
+section "COMB"
+
 theory Comb
-imports TS BIT_2comp_on2 BIT_pairwise Sum_Distribution
+imports TS BIT_2comp_on2 BIT_pairwise
 begin
 
 
 (*  state of BIT: bool list     bit string
     state of TS: nat list       history
 *)
-section "COMB"
 
-section "Definition of COMB"
+subsection "Definition of COMB"
 
 type_synonym CombState = "(bool list * nat list) + (nat list)" 
                           
@@ -123,12 +128,12 @@ finally
   show ?thesis .
 qed
 
-lemma BIT_config'_fin: "finite (set_pmf Da) \<Longrightarrow> finite (set_pmf (config'_rand BIT Da qs))"
+lemma BIT_config'_fin: "finite (set_pmf s) \<Longrightarrow> finite (set_pmf (config'_rand BIT s qs))"
 apply(induct qs rule: rev_induct)
   apply(simp) 
   by(simp add: config'_rand_append BIT_step_def)
 
-lemma TS_config'_fin: "finite (set_pmf Db) \<Longrightarrow> finite (set_pmf (config'_rand (embed (rTS h)) Db qs))"
+lemma TS_config'_fin: "finite (set_pmf s) \<Longrightarrow> finite (set_pmf (config'_rand (embed (rTS h)) s qs))"
 apply(induct qs rule: rev_induct)
   apply(simp) 
   by(simp add: config'_rand_append rTS_def TS_step_d_def)

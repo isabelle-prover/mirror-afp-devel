@@ -3,6 +3,8 @@
                  Max Haslbeck
 *)
 
+section "Randomized Online and Offline Algorithms"
+
 theory Competitive_Analysis
 imports
   Prob_Theory
@@ -10,7 +12,6 @@ imports
 begin
  
 
-section "Competitive Analysis"
 
 subsection "Competitive Analysis Formalized"
  

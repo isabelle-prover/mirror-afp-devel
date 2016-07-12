@@ -2,6 +2,8 @@
     Author:      Max Haslbeck
 *) 
 
+section "BIT: an Online Algorithm for the List Update Problem"
+
 theory BIT
 imports
   Bit_Strings 
@@ -38,10 +40,7 @@ proof -
 qed
 
 lemma setsum_my2: "(\<forall>x\<in>A. f x = g x) \<Longrightarrow> (\<Sum>x\<in>A. f x) = (\<Sum>x\<in>A. g x)" by auto
- 
 
-section "BIT: an Online Algorithm for the List Update Problem"
- 
 
 subsection "Definition of BIT" 
 
