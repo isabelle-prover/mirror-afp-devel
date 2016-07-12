@@ -35,48 +35,10 @@ definition TS_step_d where
       )
       ,[]), q#(snd s))"
 
-
-lemma sf_TS_step_d: "snd (fst (TS_step_d (s,is) q)) = []"
-unfolding TS_step_d_def by(simp)
-
  
 (* FIXME: generalizing regular expressions equivalence checking 
           enables relaxing the type here to 'a::linord *)
 definition rTS :: "nat list \<Rightarrow> (nat,nat list) alg_on"   where "rTS h = ((\<lambda>s. h), TS_step_d)"
- 
-fun step2 where
-  "step2 (a, is) s q = (is, step s q a)"
-
-lemma step2_splitted: "step2 S s q = (snd S, step s q (fst S))"
-apply(cases S) by(simp)
-
-
-lemma step2_1: assumes "x\<noteq>y" "q \<in> {x, y}"
-    shows "snd (step2 (a, is) [x,y] q) \<in> {[x,y], [y,x]}"
-proof -
-  have "snd (step2 (a, is) [x,y] q) = step [x,y] q a" by simp
-  also have "\<dots> \<in> {[x,y], [y,x]}" apply(rule stepxy)
-    using assms by simp_all
-  finally show ?thesis .
-qed
-
-lemma step2_xy: assumes "x\<noteq>y" "q \<in> {x, y}" "s \<in> {[x,y], [y,x]}"
-  shows "snd (step2 (a, is) s q) \<in> {[x,y], [y,x]}"
-    proof(cases "s=[x,y]")
-      case True 
-      show ?thesis unfolding True apply(rule step2_1) using assms by auto
-    next
-      case False  
-      from assms False have t: "s=[y,x]" by simp
-      have "snd (step2 (a, is) [y, x] q) \<in> {[y, x], [x, y]}" unfolding t apply(rule step2_1) using assms by auto
-      then show ?thesis unfolding t by blast
-    qed
-
-lemma step2_xy2: "x\<noteq>y \<Longrightarrow> q \<in> {x, y} \<Longrightarrow> s \<in> {[x,y], [y,x]} 
-    \<Longrightarrow> snd (step2 s' s q) \<in> {[x,y], [y,x]}"
-using step2_xy by (metis step2.elims)
-
- 
 
 fun TSstep where
   "TSstep qs n (is,s) 
@@ -108,165 +70,32 @@ by(simp add: take_Suc_conv_app_nth config_snoc)
 
 definition s_TS where "s_TS init initH qs n  = fst (TSdet init initH qs n)"
 
-lemma swap_xy: "swap i [x,y] \<in> {[x,y], [y,x]}"
-unfolding swap_def by(auto)
-
-lemma swaps_xy: "swaps sws [x,y] \<in> {[x,y], [y,x]}"
-apply (induct sws)
-  apply(simp)
-  apply(cases "swaps sws [x, y] = [x,y]")
-    using swap_xy apply(auto ) by fast+
-
-
-lemma step_xy: "step [x,y] r a \<in> { [x,y], [y,x] }"
-proof(cases "(swaps (snd a) [x, y]) = [x,y]")
-  case True
-  then show ?thesis
-    unfolding step_def mtf2_def
-   using swap_xy apply(auto simp add: split_def mtf2_def) by fast
-next
-  case False
-  with swaps_xy have "swaps (snd a) [x, y] = [y, x]" apply(simp) by fast
-  then show ?thesis
-    unfolding step_def mtf2_def
-   using swap_xy apply(auto simp add: split_def mtf2_def) by fast
-qed
-
-
-lemma s_TS_xy: "x \<noteq> y \<Longrightarrow> set xs \<subseteq> {x,y} \<Longrightarrow> i \<le> length xs
-       \<Longrightarrow> s_TS [x,y] h xs i \<in> {[x,y], [y,x]}"
-proof (induct i arbitrary: x y) 
-  case (Suc i)
-  from Suc have ixs: "i < length xs" by auto
-  from Suc have "i \<le> length xs" by simp
-  from Suc(1)[OF Suc(2) Suc(3) this] have grr: "s_TS [x,y] h xs i \<in> {[x,y], [y,x]}" by simp
-  
-
-  have yo: "(xs ! i) \<in> {x,y}" using Suc(3,4) using less_le_trans nth_mem by blast
-  show ?case unfolding s_TS_def 
-    apply(simp add: take_Suc_conv_app_nth[OF ixs] config'_snoc Step_def split_def)
-    using grr[unfolded s_TS_def]
-      apply(cases "fst (TSdet [x, y] h xs i) = [x,y]")
-        apply(simp) using step_xy apply fast
-        apply(simp) using step_xy by fast 
-qed (simp add: s_TS_def)
-  
-
 lemma sndTSdet: "n\<le>length xs \<Longrightarrow> snd (TSdet init initH xs n) = rev (take n xs) @ initH"
 apply(induct n)
   apply(simp add: rTS_def)
   by(simp add: split_def TS_step_d_def take_Suc_conv_app_nth config'_snoc Step_def rTS_def)
   
 
-
- 
-
-
-lemma TSdet_append: "n\<le>length xs \<Longrightarrow> TSdet init initH (xs@ys) n
-        = TSdet init initH xs n"
-apply(induct n) by(simp_all add: split_def nth_append)
-
-lemma TSdet_restart: "TSdet init initH (xs @ zs) (length xs)
-     = TSdet (s_TS init initH xs (length xs)) (rev xs @ initH) zs 0" 
-apply(simp add: rTS_def s_TS_def prod.exhaust sndTSdet)
-unfolding sndTSdet[of "length xs" xs initH init, symmetric, simplified]
-by(simp add: rTS_def)
- 
-lemma config'indif: "config' (\<lambda>s. a, TS_step_d) init qs
-        = config' (\<lambda>s. b, TS_step_d) init qs"
-apply(induct qs arbitrary: init) by(simp_all add: Step_def)
-
-lemma TSdet_split: "n \<le> length zs \<Longrightarrow> TSdet init initH (xs @ zs) (length xs + n)
-     = TSdet (s_TS init initH xs (length xs)) (rev xs @ initH) zs n"
-proof -
-
-
-  from sndTSdet[of "length xs" xs, simplified, unfolded rTS_def]
-    have 1: "snd (config' (\<lambda>s. initH, TS_step_d) (init, initH) xs) = rev xs @ initH" by simp 
-  
-  have "TSdet init initH (xs @ zs) (length xs + n)
-      = config' (\<lambda>s. initH, TS_step_d)
-            (config' (\<lambda>s. initH, TS_step_d) (init, initH) xs) 
-              (take n zs)" by(simp add: rTS_def config'_append2)
-  also have "\<dots> = config' (\<lambda>s. initH, TS_step_d)
-            (fst (config' (\<lambda>s. initH, TS_step_d) (init, initH) xs) ,
-              snd (config' (\<lambda>s. initH, TS_step_d) (init, initH) xs) )
-              (take n zs)" by(simp)
-  also have "\<dots> = config' (\<lambda>s. initH, TS_step_d)
-            (fst (config' (\<lambda>s. initH, TS_step_d) (init, initH) xs),
-                rev xs @ initH)
-              (take n zs)" by(simp only: 1)
-  also have "\<dots> = config' (\<lambda>s. (rev xs @ initH), TS_step_d)
-            (fst (config' (\<lambda>s. initH, TS_step_d) (init, initH) xs),
-                rev xs @ initH)
-              (take n zs)" using config'indif by blast
-  also have "\<dots> = TSdet (s_TS init initH xs (length xs)) (rev xs @ initH) zs n"
-    by(simp add: rTS_def config'_append2 s_TS_def)
-  finally show ?thesis .
-qed 
-
-lemma splitdet: "TSdet [x,y] h (u @ v) (length (u @ v))
-      = TSdet (fst (TSdet [x,y] h u (length u))) (rev u @ h) v (length v)" 
-using TSdet_split[of "length v" v h "[x,y]" u, unfolded s_TS_def] by simp
-  
- 
 subsection "Behaviour of TS on lists of length 2"
 
-
-
-lemma oneTS_step:
+lemma 
   fixes hs x y
   assumes "x\<noteq>y"
-  shows "TS_step_d ([x, y], x # y # hs) y = ((1, []), y # x # y # hs)"
- using assms by(auto simp add: step_def mtf2_def swap_def TS_step_d_def before_in_def) 
-
-lemma oneTS_stepyyy: 
-  fixes hs x y 
-  assumes "x\<noteq>y"
-  shows  "TS_step_d ([x, y], y#x#hs) y = ((Suc 0, []), y#y#x#hs)"
-  using assms apply(auto simp add: before_in_def TS_step_d_def) done
-
-lemma oneTS_stepyy:
-  fixes hs x y 
-  assumes "x\<noteq>y"
-  shows "TS_step_d ([x, y], [y]) y = ((Suc 0, []), [y, y])"
-  using assms by(auto simp add: before_in_def TS_step_d_def)
-
-
-lemma oneTS_stepy:
-  shows "TS_step_d ([x, y], []) y = ((0, []), [y])"
-by(auto simp add: TS_step_d_def)
-
-
-lemma oneTS_stepyx:
-  fixes hs x y 
-  shows "TS_step_d ([x, y], hs) x = ((0, []), x # hs)"
-by(auto simp add: TS_step_d_def)
-
-term "TS_step_d ([x, y], [x]) y"
-
-lemma
-  oneTS_stepxy:
- assumes "x\<noteq>y" shows "TS_step_d ([x, y], [x]) y =  ((0, []), [y, x])"
- using assms apply(auto simp add: TS_step_d_def) done
-
-lemma oneTS_stepx:
-  fixes hs x y
-  assumes "x\<noteq>y"
-  shows "TS_step_d ([x, y], x # x # hs) y = ((0, []), y # x # x # hs)"
- using assms by(auto simp add: step_def mtf2_def swap_def TS_step_d_def before_in_def) 
-
+  shows oneTS_step :    "TS_step_d ([x, y], x#y#hs)     y = ((1, []), y # x # y # hs)"
+    and oneTS_stepyyy:  "TS_step_d ([x, y], y#x#hs)     y = ((Suc 0, []), y#y#x#hs)"
+    and oneTS_stepx:    "TS_step_d ([x, y], x#x#hs)     y = ((0, []), y # x # x # hs)"
+    and oneTS_stepy:    "TS_step_d ([x, y], [])         y = ((0, []), [y])"
+    and oneTS_stepxy:   "TS_step_d ([x, y], [x])        y = ((0, []), [y, x])"
+    and oneTS_stepyy:   "TS_step_d ([x, y], [y])        y = ((Suc 0, []), [y, y])"
+    and oneTS_stepyx:   "TS_step_d ([x, y], hs)         x = ((0, []), x # hs)"
+    using assms by(auto simp add: step_def mtf2_def swap_def TS_step_d_def before_in_def) 
+   
 lemmas oneTS_steps = oneTS_stepx oneTS_stepxy oneTS_stepyx oneTS_stepy oneTS_stepyy oneTS_stepyyy oneTS_step
 
-
 subsection "Analysis of the Phases"
- 
-
-
 
 definition "TS_inv c x i \<equiv> (\<exists>hs. c = return_pmf ((if x=hd i then i else rev i),[x,x]@hs) )
                       \<or> c = return_pmf ((if x=hd i then i else rev i),[])"
-
 
 lemma TS_inv_sym: "a\<noteq>b \<Longrightarrow> {a,b}={x,y} \<Longrightarrow> z\<in>{x,y} \<Longrightarrow> TS_inv c z [a,b] = TS_inv c z [x,y]"
   unfolding TS_inv_def by auto
@@ -386,7 +215,7 @@ qed
 
 subsubsection "yx(yx)*?"
  
-lemma TS_yxyx': assumes "x \<noteq> y" "qs \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])"
+lemma TS_yxyx': assumes [simp]: "x \<noteq> y" and "qs \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])"
   "(\<exists>hs. h=[x,x]@hs) \<or> index h y = length h"
   shows "T_on' (rTS h0) ([x,y],h) (qs@r) = length qs - 1 + T_on' (rTS h0) ([x,y],rev qs @ h) r 
         \<and> (\<exists>hs. (rev qs @ h) = [x, y] @ hs)
@@ -409,7 +238,7 @@ proof -
   next
     case False
     with assms(3) obtain hs where a: "h = [x,x]@hs" by auto
-    then show ?thesis using assms(1) by(simp add: oneTS_steps) 
+    then show ?thesis by(simp add: oneTS_steps) 
   qed
 
   have s2: "config' (rTS h0) ([x,y],h) u = ([x, y], x # y # h)"
@@ -421,8 +250,7 @@ proof -
       apply(simp)
       apply(simp add: firststep)
         unfolding Step_def                 
-          apply(simp add: firststep step_def oneTS_steps )
-          using assms(1) by(simp add: t\<^sub>p_def) 
+          using assms(1) by (simp add: firststep step_def oneTS_steps t\<^sub>p_def) 
  
   have ttt: 
     "T_on' (rTS h0) ([x,y],rev u @ h) (v@r) = length v + T_on' (rTS h0) ([x,y],((rev v) @(rev u @ h)))  r
@@ -725,17 +553,6 @@ proof -
   from vv have vvv: "v \<in> lang (seq
           [Atom y, Atom x, Star (Times (Atom y) (Atom x)), Atom y, Atom y])" by(auto simp: conc_def)
   have OPT: "T\<^sub>p [x,y] qs (OPT2 qs [x,y]) = (length v) div 2" apply(rule OPT2_B) by(fact)+
-
-
-  have splitdet1: "TSdet [x,y] h (u @ v) (length (u @ v))
-      = TSdet (fst (TSdet [x,y] h u (length u))) (rev u @ h) v (length v)" 
-        using splitdet by auto 
-
-  have first: "fst (TSdet [x,y] h u (length u)) = [x,y]"
-    apply(cases "u=[]")
-      apply(simp add: rTS_def)
-      using uu by(simp add: rTS_def Step_def TS_step_d_def step_def)
-   
  
   have lqs: "last qs = y" using assms(3) by force
 
@@ -772,7 +589,7 @@ proof -
   from vv have vv2: "v = [y,y]" by auto 
 
   from uu have TS_prefix: " T_on' (rTS h0) ([x, y], h) u = 0"
-    by(auto simp add: rTS_def oneTS_steps t\<^sub>p_def)    
+   using assms(1) by(auto simp add: rTS_def oneTS_steps t\<^sub>p_def)    
 
   have h_split: "rev u @ h = [] \<or> rev u @ h = [x] \<or> (\<exists> hs. rev u @ h = [x,x]@hs)"
     using assms(3) uu by(auto)
@@ -828,54 +645,6 @@ proof -
   show ?thesis using OPT ts_a'[OF assms(1,3,2)] by auto  
 qed 
 
-(*
-lemma convert: assumes 
-    "x \<noteq> y" "{x, y} = {x0, y0}" "TS_inv s x [x0, y0]"
-    "set qs \<subseteq> {x, y}" and inpattern: "qs \<in> Pattern" and nonempty: "qs \<noteq> []"
-   and ts_rule: "\<And>x y qs h h0. x \<noteq> y \<Longrightarrow> qs \<in> Pattern \<Longrightarrow>
-          h = [] \<or> (\<exists>hs. h = [x, x] @ hs) \<Longrightarrow>
-TS_inv' (config' (rTS h0) ([x, y], h) qs) (last qs) [x, y] \<and> T_on' (rTS h0) ([x, y], h) qs = 2"
- shows  
-    "TS_inv (config'_rand (embed (rTS h0)) s qs) (last qs) [x0, y0]
-      \<and> T\<^sub>p_on_rand' (embed (rTS h0)) s qs = 2" 
-proof -
-  from assms(1,2) have kas: "(x0=x \<and> y0=y) \<or> (y0=x \<and> x0=y)" by(auto)
-  then obtain h where S: "s = return_pmf ([x,y],h)" and h: "h = [] \<or> (\<exists>hs. h = [x, x] @ hs)"
-    apply(rule disjE) using assms(1,3) unfolding TS_inv_def by(auto) 
-  {
-    fix x y qs h0
-    fix h:: "nat list"
-    assume A: "x \<noteq> y"
-        "qs \<in> Pattern"
-        "h = [] \<or> (\<exists>hs. h = [x, x] @ hs)"
-     
-    have "TS_inv (config'_rand (embed (rTS h0)) (return_pmf ([x, y], h)) qs) (last qs) [x, y] \<and>
-            T_on_rand' (embed (rTS h0)) (return_pmf ([x, y], h)) qs = 2"
-      apply(simp only: T_on'_embed[symmetric] config'_embed)
-      using ts_rule[OF A] by auto
-  } note b=this
-   
-
-  show ?thesis unfolding S 
-    using kas apply(rule disjE)
-      apply(simp only:)
-      apply(rule b)
-        using assms apply(simp)
-        using assms apply(simp)
-        using h apply(simp)
-      apply(simp only:)
-      
-      apply(subst TS_inv_sym[of y x x y])
-        using assms(1) apply(simp)
-        apply(blast)
-        defer
-        apply(rule b)
-          using assms apply(simp)
-          using assms apply(simp)
-          using h apply(simp)
-        using last_in_set nonempty assms(4) by blast
-qed
-*)   
 lemma TS_a'': assumes 
     "x \<noteq> y" "{x, y} = {x0, y0}" "TS_inv s x [x0, y0]"
     "set qs \<subseteq> {x, y}" "qs \<in> lang (seq [Plus (Atom x) One, Atom y, Atom y])"
@@ -971,11 +740,6 @@ proof -
   from stars suffix have "T_on' (rTS h0) ([x, y], h) (a @ b) = length a - 1" by auto
   then have whatineed: "T_on' (rTS h0) ([x, y], h) v = (length v - 2)" using vab bb by auto
 
- 
-  have splitdet2: "TSdet [x, y] (h) (a @ [x]) (length (a @ [x]))
-      = TSdet (fst (TSdet [x,y] (h) a (length a))) (rev a @ h) [x] (length [x])"
-      using splitdet[of "(h)" x y a "[x]"] by auto
- 
   have conf: "config' (rTS h0) ([x, y], h) v = ([x, y], rev v @ h)" 
     by(simp add: vab config'_append2 state suState) 
 
@@ -1211,7 +975,7 @@ proof -
   from qsis have xx: "qs = [x,x]" by auto
 
   show TS: "T_on' (rTS h0) ([x,y],h) qs = 0"  
-    by (auto simp add: xx t\<^sub>p_def rTS_def Step_def oneTS_steps step_def) 
+    using assms(1) by (auto simp add: xx t\<^sub>p_def rTS_def Step_def oneTS_steps step_def) 
   then show "T_on' (rTS h0) ([x,y],h) qs \<le> 2 * T\<^sub>p [x, y] qs (OPT2 qs [x, y])" by simp
 
   show "TS_inv' (config' (rTS h0) ([x,y],h) qs)  (last qs) [x, y]"
@@ -1344,11 +1108,9 @@ apply (induct qs rule: rev_induct) by(simp_all add: config'_snoc Step_def split_
 lemma config'_set[simp]: 
   shows "set (fst (config' A S qs)) = set (fst S)" 
 apply (induct qs rule: rev_induct) by(simp_all add: config'_snoc Step_def split_def set_step)
-
-
  
 lemma s_TS_append: "i\<le>length as \<Longrightarrow>s_TS init h (as@bs) i = s_TS init h as i"
-by (simp add: TSdet_append s_TS_def)
+by (simp add: s_TS_def)
 
 lemma s_TS_distinct: "distinct init \<Longrightarrow> i<length qs \<Longrightarrow> distinct (fst (TSdet init h qs i))"
 by(simp_all add: config_config_distinct)
@@ -1359,7 +1121,6 @@ apply(simp add: s_TS_def split_def take_Suc_conv_app_nth config_append Step_def 
   apply(subst x_stays_before_y_if_y_not_moved_to_front)
     apply(simp_all add: config_config_distinct config_config_set)
     by(auto simp: rTS_def TS_step_d_def) 
-
 
 lemma  TS_mono:
     fixes l::nat
@@ -1402,10 +1163,8 @@ proof -
       by blast
 qed
 
-
 lemma step_no_action: "step s q (0,[]) = s"
 unfolding step_def mtf2_def by simp
-
 
 lemma s_TS_set: "i \<le> length qs \<Longrightarrow> set (s_TS init h qs i) = set init"
 apply(induct i)
@@ -1413,23 +1172,15 @@ apply(induct i)
   apply(simp add: s_TS_def TSdet_Suc)
   by(simp add: split_def rTS_def Step_def step_def)
 
- 
-
 lemma count_notin2: "count_list xs x = 0 \<Longrightarrow> x \<notin> set xs"
 apply (induction xs)  apply (auto del: count_notin)
   apply(case_tac "a=x") by(simp_all)+
-
-
-
-
 
 lemma count_append: "count_list (xs@ys) x = count_list xs x + count_list ys x"
 apply(induct xs) by(simp_all)
 
 lemma count_rev: "count_list (rev xs) x = count_list xs x"
 apply(induct xs) by(simp_all add: count_append )
-
-
  
 lemma mtf2_q_passes: assumes "q \<in> set xs" "distinct xs" 
   and "index xs q - n \<le> index xs x" "index xs x < index xs q"
@@ -1446,8 +1197,7 @@ proof -
       have A: "\<dots> < index (mtf2 n q xs) x" by auto 
   finally show ?thesis unfolding before_in_def using xinxs by force
 qed
-  
-              
+                
 lemma twotox:
     assumes "count_list bs y \<le> 1"
       and "distinct init"
@@ -1569,7 +1319,6 @@ proof -
         by(simp only: append_take_drop_id)
     finally show ?thesis .
 qed
-
 
 lemma count_take: "count_list (take n cs) x \<le> count_list cs x"
 proof -
@@ -2145,7 +1894,6 @@ qed
 
 lemma nopaid: "snd (fst (TS_step_d s q)) = []" unfolding TS_step_d_def by simp
 
-
 lemma staysuntouched:
    assumes d[simp]: "distinct (fst S)"
     and x: "x \<in> set (fst S)"
@@ -2165,7 +1913,6 @@ proof(induct qs rule: rev_induct)
   finally show ?case .
 qed simp
 
-
 lemma staysuntouched':
    assumes d[simp]: "distinct init"
     and x: "x \<in> set init"
@@ -2183,7 +1930,6 @@ qed
 
 lemma projEmpty: "Lxy qs S = [] \<Longrightarrow> x \<in> S \<Longrightarrow> x \<notin> set qs"
 unfolding Lxy_def by (metis filter_empty_conv)  
-
 
 lemma Lxy_index_mono:
   assumes "x\<in>S" "y\<in>S"
@@ -2297,7 +2043,6 @@ proof -
   from split nothingin suf show ?thesis ..                          
 qed
 
-
 lemma Lxy_rev: "rev (Lxy qs S) = Lxy (rev qs) S"
 apply(induct qs)
   by(simp_all add: Lxy_def)
@@ -2328,17 +2073,11 @@ proof -
 
   from a1 a2 a3 show ?thesis ..
 qed
-  
-    
-
-  
-
 
 lemma sndTSconfig': "snd (config' (rTS initH) (init,[]) qs) = rev qs @ []"
 apply(induct qs rule: rev_induct)
   apply(simp add: rTS_def)
   by(simp add: split_def TS_step_d_def config'_snoc Step_def rTS_def)
-  
 
 lemma projxx: 
   fixes e a bs
@@ -2399,7 +2138,6 @@ proof -
        apply (metis One_nat_def add_is_1 count_list.simps(1) le_Suc_eq)
       by(simp add: mtf2_def swap_def)          
 qed
-
 
 lemma oneposs: 
    assumes "set xs = {x,y}"
@@ -2867,13 +2605,9 @@ proof -
       apply(simp) by (rule A) 
 qed
 
-
-
-
 theorem TS_pairwise: "pairwise (embed (rTS []))"
 apply(rule pairwise_property_lemma)
   apply(rule TS_pairwise') by (simp_all add: rTS_def TS_step_d_def)
- 
 
 
 subsection "TS is 2-compet"
@@ -2957,5 +2691,6 @@ lemma TS_compet: "compet_rand (embed (rTS [])) 2 {init. distinct init \<and> ini
 unfolding compet_rand_def static_def
 using TS_compet'[OF TS_pairwise] by simp
 
+unused_thms
  
 end
