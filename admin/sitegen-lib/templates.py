@@ -265,9 +265,15 @@ def generate_entry(entry, attributes, param):
 
 ### status
 
-def generate_status(entries, param):
+def generate_status(entries, param, build_data):
 	if param == "header":
-		return ""
+		return html_status_header.format(
+			build_data['isabelle_id'],
+			build_data['afp_id'],
+			build_data['time'],
+			build_data['url'],
+			build_data['job']
+		)
 	elif param == "table":
 		rows = ""
 		for entry, attributes in sorted(entries):

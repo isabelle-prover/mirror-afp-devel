@@ -32,7 +32,9 @@
    <h3>Test status of entries in the AFP development version</h3>
    <p>
 
+<table style="margin-left: 30pt;"><tbody>
 <!--gen:header-->
+</tbody></table>
 
    </p>
    </td></tr>

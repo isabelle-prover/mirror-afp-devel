@@ -77,6 +77,20 @@ html_index_year = u"""
 # {3}: list of html_author_link, comma-separated
 html_index_entry = u"""<tr><td class="entry">\n{0}:\n<a href="entries/{1}.shtml">{2}</a>\n<br>Author:\n{3}\n</td></tr>\n\n"""
 
+# template for the header on status page
+# {0}: Isabelle id
+# {1}: AFP id
+# {2}: build time
+# {3}: build URL
+# {4}: job name
+html_status_header = u"""
+ <tr><td>Isabelle revision:</td><td><a href="http://isabelle.in.tum.de/repos/isabelle/rev/{0}">{0}</a></td></tr>
+ <tr><td>AFP revision:</td><td><a href="https://bitbucket.org/isa-afp/afp-devel/commits/{1}">{1}</a></td></tr>
+ <tr><td>Build time:</td><td>{2}</td></tr>
+ <tr><td>Build URL:</td><td><a href="{3}">Jenkins</a></td></tr>
+ <tr><td>Job name:</td><td>{4}</td></tr>
+"""
+
 # template for an entry displayed on status page
 # {0}: status string
 # {1}: filename (without .shtml suffix) relative to 'entries' directory
