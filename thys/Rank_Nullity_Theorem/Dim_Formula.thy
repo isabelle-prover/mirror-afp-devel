@@ -96,7 +96,7 @@ proof (unfold inj_on_def, rule+, rule ccontr)
   fix x::'b and y::'b
   assume x: "x \<in> W" and y: "y \<in> W" and f_eq: "f x = f y" and x_not_y: "x \<noteq> y"
   have fin_yB: "finite (insert y B)" using fin_B by simp
-  have "f (x - y) = 0" by (metis diff_self f_eq lf.linear_sub)
+  have "f (x - y) = 0" by (metis diff_self f_eq lf.linear_diff)
   hence "x - y \<in> {x. f x = 0}" by simp
   hence "\<exists>g. (\<Sum>v\<in>B. scale (g v) v) = (x - y)" using span_B 
     unfolding span_finite [OF fin_B] by auto

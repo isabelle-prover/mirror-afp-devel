@@ -1,14 +1,14 @@
-(*  
-    Author:      René Thiemann 
+(*
+    Author:      René Thiemann
                  Akihisa Yamada
     License:     BSD
 *)
 section \<open>Missing Vector Spaces\<close>
 
-text \<open>This theory provides some lemmas which we required when working with vector spaces.\<close>  
+text \<open>This theory provides some lemmas which we required when working with vector spaces.\<close>
 
 theory Missing_VectorSpace
-imports 
+imports
   "../VectorSpace/VectorSpace"
 begin
 
@@ -138,7 +138,7 @@ proof
     qed
     have a'A0: "lincomb a' U = zero V"
       unfolding UAB
-      unfolding lincomb_def 
+      unfolding lincomb_def
       unfolding finsum_Un_disjoint[OF finA finB AB f'A f'B]
       unfolding finsum
       unfolding aA0[unfolded lincomb_def]
@@ -230,7 +230,7 @@ proof -
   have finEu: "finite (insert u E)" and finEv: "finite (insert v E)"
     using finE by auto
   have uE: "u \<notin> E" using usE span_mem by force
-  have vE: "v \<notin> E" 
+  have vE: "v \<notin> E"
   proof
     assume "v : E"
     hence EvE: "insert v E = E" using insert_absorb by auto
@@ -437,7 +437,7 @@ proof(induct set:finite)
         also have "... = lincomb a A" using insert by simp
         finally have "a z \<odot>\<^bsub>V\<^esub> z \<oplus>\<^bsub>V\<^esub> lincomb a (A \<union> Z) = lincomb a A".
         thus ?thesis
-          using lincomb_insert2[OF finAZ AZ a] False insert by auto 
+          using lincomb_insert2[OF finAZ AZ a] False insert by auto
     qed
 qed
 
@@ -587,10 +587,10 @@ proof
       using span_is_monotone[OF Un_upper1, of U']
       using span_is_monotone[OF Un_upper2, of W'] by auto
   ultimately
-    show "x : ?R" using span_add1[OF U'W'] by auto 
+    show "x : ?R" using span_add1[OF U'W'] by auto
 qed
 
-lemma span_union:
+lemma span_Un:
   assumes U: "U \<subseteq> carrier V" and U': "U' \<subseteq> carrier V" and UU': "span U = span U'"
       and W: "W \<subseteq> carrier V" and W': "W' \<subseteq> carrier V" and WW': "span W = span W'"
   shows "span (U \<union> W) = span (U' \<union> W')" (is "?L = ?R")
