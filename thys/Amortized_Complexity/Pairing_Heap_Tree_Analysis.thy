@@ -1,6 +1,6 @@
 (* Author: Hauke Brinkop and Tobias Nipkow *)
 
-section \<open>Amortized Analysis of Pairing Heaps\<close>
+section \<open>Pairing Heaps\<close>
 
 subsection \<open>Binary Tree Representation\<close>
 
@@ -8,7 +8,7 @@ theory Pairing_Heap_Tree_Analysis
 imports  
   "../Pairing_Heap/Pairing_Heap_Tree"
   Amortized_Framework
-  Priority_Queue_ops_meld2
+  Priority_Queue_ops_meld
   Lemmas_log
 begin
 

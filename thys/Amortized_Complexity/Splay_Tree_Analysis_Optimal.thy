@@ -1,15 +1,15 @@
-section "Splay Tree Analysis (Optimal)"
+subsection "Splay Tree Analysis (Optimal)"
 
 theory Splay_Tree_Analysis_Optimal
 imports
   Splay_Tree_Analysis_Base
-  Amor
+  Amortized_Framework
   "~~/src/HOL/Library/Sum_of_Squares"
 begin
 
 text{* This analysis follows Schoenmakers~\cite{Schoenmakers-IPL93}. *}
 
-subsection "Analysis of splay"
+subsubsection "Analysis of splay"
 
 locale Splay_Analysis =
 fixes \<alpha> :: real and \<beta> :: real
@@ -223,7 +223,7 @@ qed
 end
 
 
-subsection "Optimal Interpretation"
+subsubsection "Optimal Interpretation"
 
 lemma mult_root_eq_root:
   "n>0 \<Longrightarrow> y \<ge> 0 \<Longrightarrow> root n x * y = root n (x * (y ^ n))"
@@ -331,70 +331,80 @@ proof -
   finally show ?thesis by simp
 qed
 
-subsection "Overall analysis"
+subsubsection "Overall analysis"
 
-interpretation ST: amor
-where init = Leaf and nxt = nxt\<^sub>s\<^sub>t and inv = bst
-and t = t\<^sub>s\<^sub>t and \<Phi> = S34.\<Phi>
-and U = "\<lambda>f t. case f of
-  Splay _ \<Rightarrow> (3/2) * log 2 (size1 t) + 1 |
-  Insert _ \<Rightarrow> 2 * log 2 (size1 t) + 3/2 |
-  Delete _ \<Rightarrow> 3 * log 2 (size1 t) + 2"
+fun U where
+"U Empty [] = 1" |
+"U (Splay _) [t] = (3/2) * log 2 (size1 t) + 1" |
+"U (Insert _) [t] = 2 * log 2 (size1 t) + 3/2" |
+"U (Delete _) [t] = 3 * log 2 (size1 t) + 2"
+
+interpretation Amortized
+where arity = arity and exec = exec and inv = bst
+and cost = cost and \<Phi> = S34.\<Phi> and U = U
 proof (standard, goal_cases)
-  case 1 show ?case by simp
-next
-  case (2 _ f) show ?case
+  case (1 ss f) show ?case
   proof (cases f)
+    case Empty thus ?thesis using 1 by auto
+  next
     case (Splay a)
-    with bst_splay[OF 2, of a] show ?thesis by (auto split: tree.split)
+    then obtain t where "ss = [t]" "bst t" using 1 by auto
+    with Splay bst_splay[OF \<open>bst t\<close>, of a] show ?thesis
+      by (auto split: tree.split)
   next
     case (Insert a)
-    with bst_splay[OF 2, of a] show ?thesis
-      by (auto simp: splay_bstL[OF 2] splay_bstR[OF 2] split: tree.split)
+    then obtain t where "ss = [t]" "bst t" using 1 by auto
+    with bst_splay[OF \<open>bst t\<close>, of a] Insert show ?thesis
+      by (auto simp: splay_bstL[OF \<open>bst t\<close>] splay_bstR[OF \<open>bst t\<close>] split: tree.split)
   next
-    case [simp]: (Delete a)
-    with 2 show ?thesis by(simp add: bst_delete)
+    case (Delete a)
+    then obtain t where "ss = [t]" "bst t" using 1 by auto
+    with 1 Delete show ?thesis by(simp add: bst_delete)
   qed
 next
-  case (3 s) show ?case
-    by(induction s)(simp_all add: S34.\<phi>_def)
+  case (2 t) show ?case by(induction t)(simp_all add: S34.\<phi>_def)
 next
-  case 4 show ?case by simp
+  case (3 f) thus ?case by (cases f) auto
 next
-  case (5 s f)
+  case (4 ss f)
   show ?case (is "?l \<le> ?r")
   proof(cases f)
+    case Empty thus ?thesis using 4(2) by(simp add: S34.A_def)
+  next
     case (Splay a)
-    thus ?thesis using S34.A_ub3[OF 5] by(simp add: S34.A_def log4_log2)
+    then obtain t where "ss = [t]" "bst t" using 4 by auto
+    thus ?thesis using S34.A_ub3[OF \<open>bst t\<close>] Splay
+      by(simp add: S34.A_def log4_log2)
   next
     case [simp]: (Insert a)
+    obtain t where [simp]: "ss = [t]" and "bst t" using 4 by auto
     show ?thesis
     proof cases
-      assume "s = Leaf" thus ?thesis by(simp add: S34.\<phi>_def log4_log2)
+      assume "t = Leaf" thus ?thesis by(simp add: S34.\<phi>_def log4_log2)
     next
-      assume "s \<noteq> Leaf"
-      then obtain l e r where [simp]: "splay a s = Node l e r"
+      assume "t \<noteq> Leaf"
+      then obtain l e r where [simp]: "splay a t = Node l e r"
         by (metis tree.exhaust splay_Leaf_iff)
-      let ?t = "real(t_splay a s)"
-      let ?Plr = "S34.\<Phi> l + S34.\<Phi> r"  let ?Ps = "S34.\<Phi> s"
+      let ?t = "real(t_splay a t)"
+      let ?Plr = "S34.\<Phi> l + S34.\<Phi> r"  let ?Ps = "S34.\<Phi> t"
       let ?slr = "real(size1 l) + real(size1 r)" let ?LR = "log 2 (1 + ?slr)"
-      have opt: "?t + S34.\<Phi> (splay a s) - ?Ps  \<le> 3/2 * log 2 (real (size1 s)) + 1"
-        using S34.A_ub3[OF 5, simplified S34.A_def, of a]
+      have opt: "?t + S34.\<Phi> (splay a t) - ?Ps  \<le> 3/2 * log 2 (real (size1 t)) + 1"
+        using S34.A_ub3[OF \<open>bst t\<close>, simplified S34.A_def, of a]
         by (simp add: log4_log2)
       from less_linear[of e a]
       show ?thesis
       proof (elim disjE)
         assume "e=a"
-        have nneg: "log 2 (1 + real (size s)) \<ge> 0" by simp
-        thus ?thesis using `s \<noteq> Leaf` opt `e=a`
+        have nneg: "log 2 (1 + real (size t)) \<ge> 0" by simp
+        thus ?thesis using \<open>t \<noteq> Leaf\<close> opt \<open>e=a\<close>
           apply(simp add: field_simps) using nneg by arith
       next
         let ?L = "log 2 (real(size1 l) + 1)"
         assume "e<a" hence "e \<noteq> a" by simp
         hence "?l = (?t + ?Plr - ?Ps) + ?L / 2 + ?LR / 2"
-          using  `s \<noteq> Leaf` `e<a` by(simp add: S34.\<phi>_def log4_log2)
+          using \<open>t \<noteq> Leaf\<close> \<open>e<a\<close> by(simp add: S34.\<phi>_def log4_log2)
         also have "?t + ?Plr - ?Ps \<le> log 2 ?slr + 1"
-          using opt size_splay[of a s,symmetric]
+          using opt size_splay[of a t,symmetric]
           by(simp add: S34.\<phi>_def log4_log2)
         also have "?L/2 \<le> log 2 ?slr / 2" by(simp)
         also have "?LR/2 \<le> log 2 ?slr / 2 + 1/2"
@@ -404,14 +414,14 @@ next
             by (simp add: log_mult del:distrib_left_numeral)
           finally show ?thesis .
         qed
-        finally show ?thesis using size_splay[of a s,symmetric] by simp
+        finally show ?thesis using size_splay[of a t,symmetric] by simp
       next
         let ?R = "log 2 (2 + real(size r))"
         assume "a<e" hence "e \<noteq> a" by simp
         hence "?l = (?t + ?Plr - ?Ps) + ?R / 2 + ?LR / 2"
-          using  `s \<noteq> Leaf` `a<e` by(simp add: S34.\<phi>_def log4_log2)
+          using  \<open>t \<noteq> Leaf\<close> \<open>a<e\<close> by(simp add: S34.\<phi>_def log4_log2)
         also have "?t + ?Plr - ?Ps \<le> log 2 ?slr + 1"
-          using opt size_splay[of a s,symmetric]
+          using opt size_splay[of a t,symmetric]
           by(simp add: S34.\<phi>_def log4_log2)
         also have "?R/2 \<le> log 2 ?slr / 2" by(simp)
         also have "?LR/2 \<le> log 2 ?slr / 2 + 1/2"
@@ -421,26 +431,27 @@ next
             by (simp add: log_mult del:distrib_left_numeral)
           finally show ?thesis .
         qed
-        finally show ?thesis using size_splay[of a s,symmetric] by simp
+        finally show ?thesis using size_splay[of a t,symmetric] by simp
       qed
     qed
   next
     case [simp]: (Delete a)
+    obtain t where [simp]: "ss = [t]" and "bst t" using 4 by auto
     show ?thesis
-    proof (cases s)
+    proof (cases t)
       case Leaf thus ?thesis
         by(simp add: Splay_Tree.delete_def t_delete_def S34.\<phi>_def log4_log2)
     next
       case [simp]: (Node ls x rs)
       then obtain l e r where sp[simp]: "splay a (Node ls x rs) = Node l e r"
         by (metis tree.exhaust splay_Leaf_iff)
-      let ?t = "real(t_splay a s)"
-      let ?Plr = "S34.\<Phi> l + S34.\<Phi> r"  let ?Ps = "S34.\<Phi> s"
+      let ?t = "real(t_splay a t)"
+      let ?Plr = "S34.\<Phi> l + S34.\<Phi> r"  let ?Ps = "S34.\<Phi> t"
       let ?slr = "real(size1 l) + real(size1 r)" let ?LR = "log 2 (1 + ?slr)"
       let ?lslr = "log 2 (real (size ls) + (real (size rs) + 2))"
       have "?lslr \<ge> 0" by simp
-      have opt: "?t + S34.\<Phi> (splay a s) - ?Ps  \<le> 3/2 * log 2 (real (size1 s)) + 1"
-        using S34.A_ub3[OF 5, simplified S34.A_def, of a]
+      have opt: "?t + S34.\<Phi> (splay a t) - ?Ps  \<le> 3/2 * log 2 (real (size1 t)) + 1"
+        using S34.A_ub3[OF \<open>bst t\<close>, simplified S34.A_def, of a]
         by (simp add: log4_log2 field_simps)
       show ?thesis
       proof (cases "e=a")
@@ -461,7 +472,7 @@ next
           then obtain l' y' r' where [simp]:
             "splay_max (Node ll y lr) = Node l' y' r'"
             using splay_max_Leaf_iff tree.exhaust by blast
-          have "bst l" using bst_splay[OF 5, of a] by simp
+          have "bst l" using bst_splay[OF \<open>bst t\<close>, of a] by simp
           have "S34.\<Phi> r' \<ge> 0" apply (induction r') by (auto simp add: S34.\<phi>_def)
           have optm: "real(t_splay_max l) + S34.\<Phi> (splay_max l) - S34.\<Phi> l
             \<le> 3/2 * log 2 (real (size1 l)) + 1"

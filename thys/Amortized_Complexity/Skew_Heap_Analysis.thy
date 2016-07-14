@@ -1,10 +1,10 @@
-section "Amortized Analysis of Skew Heaps"
+section "Skew Heap"
 
 theory Skew_Heap_Analysis
 imports
   "../Skew_Heap/Skew_Heap"
   Amortized_Framework
-  Priority_Queue_ops_meld2
+  Priority_Queue_ops_meld
 begin
 
 text{* The following proof is a simplified version of the one by Kaldewaij and

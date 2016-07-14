@@ -1,10 +1,10 @@
-section "Splay Heap Analysis"
+section "Splay Heap"
 
 theory Splay_Heap_Analysis
 imports
   "../Splay_Tree/Splay_Heap"
   Amortized_Framework
-  Priority_Queue_ops2
+  Priority_Queue_ops
   Lemmas_log
 begin
 

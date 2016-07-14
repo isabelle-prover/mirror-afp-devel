@@ -6,7 +6,7 @@ theory Pairing_Heap_List2_Analysis
 imports
   "../Pairing_Heap/Pairing_Heap_List2"
   Amortized_Framework
-  Priority_Queue_ops_meld2
+  Priority_Queue_ops_meld
   Lemmas_log
 begin
 
