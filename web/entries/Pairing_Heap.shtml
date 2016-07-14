@@ -24,51 +24,49 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">A</font>mortized
-<font class="first">C</font>omplexity
-<font class="first">V</font>erified
+<h1><font class="first">P</font>airing
+<font class="first">H</font>eap
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Amortized Complexity Verified</td></tr>
+        <td class="data" width="80%">Pairing Heap</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
+        <td class="data">Hauke Brinkop (hauke /dot/ brinkop /at/ googlemail /dot/ com) and <a href="http://in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2014-07-07</td></tr>
+        <td class="data">2016-07-14</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
 
-A framework for the analysis of the amortized complexity of (functional)
-data structures is formalized in Isabelle/HOL and applied to a number of
-standard examples and to the folowing non-trivial ones: skew heaps,
-splay trees, splay heaps and pairing heaps. This work is described
-in a <a href="http://www.in.tum.de/~nipkow/pubs/itp15.html">paper</a>
-published in the proceedings of the conference on Interactive
-Theorem Proving ITP 2015.
+This library defines three different versions of pairing heaps: a
+functional version of the original design based on binary
+trees [Fredman et al. 1986], the version by Okasaki [1998] and
+a modified version of the latter that is free of structural invariants.
+<p>
+The amortized complexity of pairing heaps is analyzed in the AFP article
+<a href="http://isa-afp.org/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
         </td></tr>
 
-    <tr><td class="datahead" valign="top">Change history:</td>
+    <tr><td class="datahead" valign="top">Origin:</td>
         <td class="abstract">
 
-[2015-03-17]: Added pairing heaps by Hauke Brinkop.<br>
-[2016-07-12]: Moved splay heaps from here to Splay_Tree
+This library was extracted from Amortized Complexity and extended.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Amortized_Complexity-AFP,
-  author  = {Tobias Nipkow},
-  title   = {Amortized Complexity Verified},
+			<pre>@article{Pairing_Heap-AFP,
+  author  = {Hauke Brinkop and Tobias Nipkow},
+  title   = {Pairing Heap},
   journal = {Archive of Formal Proofs},
   month   = jul,
-  year    = 2014,
-  note    = {\url{http://isa-afp.org/entries/Amortized_Complexity.shtml},
+  year    = 2016,
+  note    = {\url{http://isa-afp.org/entries/Pairing_Heap.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -78,13 +76,9 @@ Theorem Proving ITP 2015.
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
-    <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="List-Index.shtml">List-Index</a>, <a href="Pairing_Heap.shtml">Pairing_Heap</a>, <a href="Skew_Heap.shtml">Skew_Heap</a>, <a href="Splay_Tree.shtml">Splay_Tree</a></td></tr>
-
-
 
     <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Dynamic_Tables.shtml">Dynamic_Tables</a></td></tr>
+        <td class="data"><a href="Amortized_Complexity.shtml">Amortized_Complexity</a></td></tr>
 
 
 
@@ -93,7 +87,7 @@ Theorem Proving ITP 2015.
 
 <p></p>
 
-<!--#set var="name" value="Amortized_Complexity" -->
+<!--#set var="name" value="Pairing_Heap" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -120,13 +114,7 @@ Theorem Proving ITP 2015.
   </tr>
 
 
-    <tr><td class="links">Older releases: <ul>
-<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-05-28.tar.gz">afp-<!--#echo var="name" -->-2015-05-28.tar.gz</a></li>
-<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-05-27.tar.gz">afp-<!--#echo var="name" -->-2015-05-27.tar.gz</a></li>
-<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2015-05-19.tar.gz">afp-<!--#echo var="name" -->-2015-05-19.tar.gz</a></li>
-<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-08-28.tar.gz">afp-<!--#echo var="name" -->-2014-08-28.tar.gz</a></li>
-
-</ul>
+    <tr><td class="links">Older releases: None
     </td></tr>
 
   </tbody>

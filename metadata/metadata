@@ -1534,6 +1534,22 @@ abstract =
 	<a href="http://isa-afp.org/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
 notify = nipkow@in.tum.de
 
+[Pairing_Heap]
+title = Pairing Heap
+author = Hauke Brinkop <mailto:hauke.brinkop@googlemail.com>, Tobias Nipkow <http://in.tum.de/~nipkow/>
+date = 2016-07-14
+topic = Computer Science/Data Structures
+abstract =
+  This library defines three different versions of pairing heaps: a
+  functional version of the original design based on binary
+  trees [Fredman et al. 1986], the version by Okasaki [1998] and
+  a modified version of the latter that is free of structural invariants.
+  <p>
+  The amortized complexity of pairing heaps is analyzed in the AFP article
+  <a href="http://isa-afp.org/entries/Amortized_Complexity.shtml">Amortized Complexity</a>.
+extra-0 = Origin: This library was extracted from Amortized Complexity and extended.
+notify = nipkow@in.tum.de
+
 [Priority_Queue_Braun]
 title = Priority Queues Based on Braun Trees
 author = Tobias Nipkow <http://in.tum.de/~nipkow/>
