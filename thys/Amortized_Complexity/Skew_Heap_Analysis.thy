@@ -1,7 +1,10 @@
-section{* Amortized Analysis of Skew Heaps *}
+section "Amortized Analysis of Skew Heaps"
 
 theory Skew_Heap_Analysis
-imports "../Skew_Heap/Skew_Heap" Amor Priority_Queue_ops
+imports
+  "../Skew_Heap/Skew_Heap"
+  Amortized_Framework
+  Priority_Queue_ops_meld2
 begin
 
 text{* The following proof is a simplified version of the one by Kaldewaij and
@@ -100,40 +103,48 @@ proof -
   finally show ?thesis by(simp)
 qed
 
-fun nxt\<^sub>p\<^sub>q :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
-"nxt\<^sub>p\<^sub>q (Insert a) h = Skew_Heap.insert a h" |
-"nxt\<^sub>p\<^sub>q Delmin h = del_min h"
+fun exec :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> 'a heap" where
+"exec Empty [] = Leaf" |
+"exec (Insert a) [h] = Skew_Heap.insert a h" |
+"exec Del_min [h] = del_min h" |
+"exec Meld [h1,h2] = meld h1 h2"
 
-fun t\<^sub>p\<^sub>q :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap \<Rightarrow> nat" where
-"t\<^sub>p\<^sub>q (Insert a) h = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d (Node Leaf a Leaf) h + 1" |
-"t\<^sub>p\<^sub>q Delmin h = (case h of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> t\<^sub>m\<^sub>e\<^sub>l\<^sub>d t1 t2 + 1)"
+fun cost :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> nat" where
+"cost Empty [] = 1" |
+"cost (Insert a) [h] = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d (Node Leaf a Leaf) h" |
+"cost Del_min [h] = (case h of Leaf \<Rightarrow> 1 | Node t1 a t2 \<Rightarrow> t\<^sub>m\<^sub>e\<^sub>l\<^sub>d t1 t2)" |
+"cost Meld [h1,h2] = t\<^sub>m\<^sub>e\<^sub>l\<^sub>d h1 h2"
 
+fun U where
+"U Empty [] = 1" |
+"U (Insert _) [h] = 3 * log 2 (size1 h + 2) + 1" |
+"U Del_min [h] = 3 * log 2 (size1 h + 2) + 3" |
+"U Meld [h1,h2] = 3 * log 2 (size1 h1 + size1 h2) + 1"
 
-interpretation pq: amor
-where init = "Leaf" and nxt = nxt\<^sub>p\<^sub>q
-and inv = "\<lambda>_. True"
-and t = t\<^sub>p\<^sub>q and \<Phi> = \<Phi>
-and U = "\<lambda>f h. case f of
-  Insert _ \<Rightarrow> 3 * log 2 (size1 h + 2) + 2 | Delmin \<Rightarrow> 3 * log 2 (size1 h + 2) + 4"
+interpretation Amortized
+where arity = arity and exec = exec and inv = "\<lambda>_. True"
+and cost = cost and \<Phi> = \<Phi> and U = U
 proof (standard, goal_cases)
-  case 1 show ?case by auto
+  case 1 show ?case by simp
 next
-  case 2 thus ?case by auto
+  case 2 thus ?case by simp
 next
-  case 3 thus ?case by(simp)
+  case (3 f) thus ?case by(cases f)(auto)
 next
-  case 4 show ?case by(simp)
-next
-  case (5 s f)
+  case (4 ss f)
   show ?case
   proof (cases f)
-   case (Insert a)
-   thus ?thesis using a_meld_ub[of "Node Leaf a Leaf" "s"]
-     by (simp add: numeral_eq_Suc insert_def)
+    case Empty thus ?thesis using 4(2) by (auto)
   next
-    case Del_min
+    case [simp]: (Insert a)
+    obtain h where [simp]: "ss = [h]" using 4(2) by (auto)
+    thus ?thesis using a_meld_ub[of "Node Leaf a Leaf" "h"]
+      by (simp add: numeral_eq_Suc insert_def)
+  next
+    case [simp]: Del_min
+    obtain h where [simp]: "ss = [h]" using 4(2) by (auto)
     thus ?thesis
-    proof (cases s)
+    proof (cases h)
       case Leaf with Del_min show ?thesis by simp
     next
       case (Node t1 _ t2)
@@ -142,6 +153,12 @@ next
       from Del_min Node show ?thesis using a_meld_ub[of t1 t2]
         by (simp add: size1_def)
     qed
+  next
+    case [simp]: Meld
+    obtain h1 h2 where [simp]: "ss = [h1,h2]" using 4(2) by (auto simp: numeral_eq_Suc)
+    have [arith]: "log 2 (2 + (real (size h1) + real (size h2))) \<le>
+                   log 2 (4 + (real (size h1) + real (size h2)))" by simp
+      show ?thesis using a_meld_ub[of h1 h2] by (simp add: size1_def)
   qed
 qed
 
