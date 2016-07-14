@@ -10,6 +10,7 @@ object profile extends isabelle.CI_Profile
 
   val afp = Path.explode("$ISABELLE_HOME/afp")
   val afp_thys = afp + Path.explode("thys")
+  val afp_id = hg_id(afp)
 
   case class Mail(subject: String, recipients: List[String], text: String) {
     import java.util._
@@ -72,8 +73,8 @@ object profile extends isabelle.CI_Profile
               |The following information might help you with resolving the problem.
               |
               |Build log:    ${Isabelle_System.getenv("BUILD_URL")}
-              |Isabelle ID:  ${Isabelle_System.getenv("ISABELLE_CI_REPO_ID")}
-              |AFP ID:       ${Isabelle_System.getenv("ISABELLE_CI_AFP_ID")}
+              |Isabelle ID:  $isabelle_id
+              |AFP ID:       $afp_id
               |Timeout?      ${result.timeout}
               |Exit code:    ${result.rc}
               |
@@ -108,11 +109,18 @@ object profile extends isabelle.CI_Profile
           s"""{"entry": "$name", "status": "$status_str"}"""
         }
 
-      val entries_string = entries_strings.mkString("[", ",", "]")
+      val entries_string = entries_strings.mkString("[", ",\n", "]")
 
       s"""
-        {"build_data": {},
-         "entries": $entries_string
+        {"build_data":
+          {"isabelle_id": "$isabelle_id",
+           "afp_id": "$afp_id",
+           "time": "$start_time",
+           "url": "${Isabelle_System.getenv("BUILD_URL")}",
+           "job": "${Isabelle_System.getenv("JOB_NAME")}"
+          },
+         "entries":
+           $entries_string
         }
       """
     }
@@ -129,7 +137,7 @@ object profile extends isabelle.CI_Profile
 
   def pre_hook(args: List[String]) =
   {
-    println(s"Build for AFP id ${hg_id(afp)}")
+    println(s"AFP id $afp_id")
     if (status_file.exists())
       status_file.delete()
 

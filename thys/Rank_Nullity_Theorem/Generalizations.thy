@@ -65,7 +65,7 @@ lemma linear_neg: "f (- x) = - f x"
 lemma linear_add: "f (x + y) = f x + f y"
   by (metis add)
 
-lemma linear_sub: "f (x - y) = f x - f y"
+lemma linear_diff: "f (x - y) = f x - f y"
   by (metis diff_conv_add_uminus linear_add linear_neg)  
 
 lemma linear_setsum:
@@ -103,7 +103,7 @@ proof -
   also have "\<dots> \<longleftrightarrow> (\<forall> x y. f x - f y = 0 \<longrightarrow> x - y = 0)"
     by simp
   also have "\<dots> \<longleftrightarrow> (\<forall> x y. f (x - y) = 0 \<longrightarrow> x - y = 0)"
-    by (simp add: linear_sub)
+    by (simp add: linear_diff)
   also have "\<dots> \<longleftrightarrow> (\<forall> x. f x = 0 \<longrightarrow> x = 0)"
     by auto
   finally show ?thesis .
@@ -457,7 +457,7 @@ next
 qed
 qed
 
-lemma span_union: "span (A \<union> B) = (\<lambda>(a, b). a + b) ` (span A \<times> span B)"
+lemma span_Un: "span (A \<union> B) = (\<lambda>(a, b). a + b) ` (span A \<times> span B)"
 proof (rule span_unique)
   show "A \<union> B \<subseteq> (\<lambda>(a, b). a + b) ` (span A \<times> span B)"
     by safe (force intro: span_clauses)+
@@ -497,7 +497,7 @@ qed
 lemma span_insert: "span (insert a S) = {x. \<exists>k. (x - scale k a) \<in> span S}"
 proof -
   have "span ({a} \<union> S) = {x. \<exists>k. (x - scale k a) \<in> span S}"
-    unfolding span_union span_singleton
+    unfolding span_Un span_singleton
     apply safe
     apply (rule_tac x=k in exI, simp)
     apply (erule rev_image_eqI [OF SigmaI [OF rangeI]])
@@ -1322,7 +1322,7 @@ next
     apply blast
     done
   then have "f x - k *c f a \<in> C.span (f ` b)"
-    by (metis (full_types) lf linear.linear_cmul linear.linear_sub)
+    by (metis (full_types) lf linear.linear_cmul linear.linear_diff)
   then have th: "-k *c f a \<in> C.span (f ` b)"
     using "2.prems"(5) by simp
   have xsb: "x \<in> B.span b"
@@ -1957,7 +1957,7 @@ proof -
   also have "\<dots> \<longleftrightarrow> (\<forall>x \<in> S. \<forall>y \<in> S. f x - f y = 0 \<longrightarrow> x - y = 0)"
     by simp
   also have "\<dots> \<longleftrightarrow> (\<forall>x \<in> S. \<forall>y \<in> S. f (x - y) = 0 \<longrightarrow> x - y = 0)"
-    by (simp add: linear.linear_sub[OF lf])
+    by (simp add: linear.linear_diff[OF lf])
   also have "\<dots> \<longleftrightarrow> (\<forall>x \<in> S. f x = 0 \<longrightarrow> x = 0)"
     using `subspace S` subspace_def[of S] subspace_diff[of S] by auto
   finally show ?thesis .

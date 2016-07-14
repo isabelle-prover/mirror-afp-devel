@@ -584,7 +584,7 @@ case (Cons w ws)
 
   show ?case
     using Cons(1)[OF U'def W vwU dist2 ind2] orth2
-    using span_union[OF vwU wU gram_schmidt_sub_span[OF w U dist_U] W W] by auto
+    using span_Un[OF vwU wU gram_schmidt_sub_span[OF w U dist_U] W W] by auto
     
 qed simp
 
