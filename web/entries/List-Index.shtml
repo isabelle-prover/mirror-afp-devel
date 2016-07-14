@@ -65,7 +65,7 @@ This theory provides functions for finding the index of an element in a list, by
 
 
     <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Amortized_Complexity.shtml">Amortized_Complexity</a>, <a href="Formula_Derivatives.shtml">Formula_Derivatives</a>, <a href="Jinja.shtml">Jinja</a>, <a href="LTL_to_DRA.shtml">LTL_to_DRA</a>, <a href="List_Update.shtml">List_Update</a>, <a href="MSO_Regex_Equivalence.shtml">MSO_Regex_Equivalence</a>, <a href="Planarity_Certificates.shtml">Planarity_Certificates</a>, <a href="Randomised_Social_Choice.shtml">Randomised_Social_Choice</a></td></tr>
+        <td class="data"><a href="Formula_Derivatives.shtml">Formula_Derivatives</a>, <a href="Jinja.shtml">Jinja</a>, <a href="LTL_to_DRA.shtml">LTL_to_DRA</a>, <a href="List_Update.shtml">List_Update</a>, <a href="MSO_Regex_Equivalence.shtml">MSO_Regex_Equivalence</a>, <a href="Planarity_Certificates.shtml">Planarity_Certificates</a>, <a href="Randomised_Social_Choice.shtml">Randomised_Social_Choice</a></td></tr>
 
 
 
