@@ -257,8 +257,9 @@ lemma [Presb_simps]:
   "len (downshift P) = (case len P of 0 \<Rightarrow> 0 | Suc n \<Rightarrow> n)"
   apply (auto simp: extend_def set_bit_def cut_bits_def upshift_def downshift_def test_bit_def
     len_le_iff len_eq0_iff mult.commute[of _ 2] split: nat.splits)
-   apply presburger
-  apply (metis mod_Suc n_not_Suc_n numeral_2_eq_2 parity_cases)
+   apply presburger (* FIXME Cleanup this mess *)
+   apply (metis One_nat_def Suc_eq_plus1_left add.commute div_add_self2 len.simps(1) 
+         len_pow2 mod_Suc_eq_Suc_mod nat.distinct(1) not_mod_2_eq_0_eq_1 one_mod_two_eq_one)
   done
 
 lemma Suc0_div_pow2_eq: "Suc 0 div 2 ^ i = (if i = 0 then 1 else 0)"

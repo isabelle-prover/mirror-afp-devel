@@ -396,7 +396,7 @@ apply(simp_all add: fresh_star_def)
 done
 
 lemma Abs_lst1_fcb2':
-  fixes a b :: "'a::at"
+  fixes a b :: "'a::at_base"
     and x y :: "'b :: fs"
     and c::"'c :: fs"
   assumes e: "[[atom a]]lst. x = [[atom b]]lst. y"

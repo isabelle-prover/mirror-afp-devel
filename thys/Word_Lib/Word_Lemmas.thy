@@ -11,7 +11,8 @@
 section "Lemmas with Generic Word Length"
 
 theory Word_Lemmas
-imports
+  imports
+  Complex_Main
   Aligned
   Word_Enum
 begin
@@ -4122,9 +4123,9 @@ lemma bintrunc_id:
   apply (subst bintrunc_mod2p)
   apply (rule int_mod_eq')
    apply simp+
-  apply (induct n arbitrary:m)
-   apply simp+
-  by force
+   apply (erule le_less_trans)
+   apply simp
+  done
 
 lemma shiftr1_unfold: "shiftr1 x = x >> 1"
   by (metis One_nat_def comp_apply funpow.simps(1) funpow.simps(2) id_apply shiftr_def)

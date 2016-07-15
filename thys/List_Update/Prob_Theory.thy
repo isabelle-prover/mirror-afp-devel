@@ -1,6 +1,9 @@
 (*  Title:       Definition of Expectation and Distribution of uniformly distributed bit vectors
     Author:      Max Haslbeck
 *)
+
+section "Probability Theory"
+
 theory Prob_Theory
 imports Probability 
 begin
@@ -11,12 +14,11 @@ lemma integral_map_pmf[simp]:
    unfolding map_pmf_rep_eq
  using integral_distr[of g "(measure_pmf M)" "(count_space UNIV)" f] by auto
 
-subsection "function @{text E}"
 
+subsection "function @{text E}"
 
 definition E :: "real pmf \<Rightarrow> real"  where
   "E M = (\<integral>x. x \<partial> measure_pmf M)"
-
 
 translations
   "\<integral> x. f \<partial>M" <= "CONST lebesgue_integral M (\<lambda>x. f)"
@@ -34,7 +36,6 @@ by auto
 lemma E_finite_sum: "finite (set_pmf X) \<Longrightarrow> E X = (\<Sum>x\<in>(set_pmf X). x * pmf X x)" 
 unfolding E_def apply(rule integral_measure_pmf) by (auto)
 
-
 lemma E_of_const: "E(map_pmf (\<lambda>x. y) (X::real pmf)) = y" by auto 
 
 lemma E_nonneg: 
@@ -45,8 +46,7 @@ using integral_nonneg by (simp add: AE_measure_pmf_iff integral_nonneg_AE)
 lemma E_nonneg_fun: fixes f::"'a\<Rightarrow>real"
   shows "(\<forall>x\<in>set_pmf X. 0\<le>f x) \<Longrightarrow> 0 \<le> E (map_pmf f X)"   
 using E_nonneg by auto
- 
- 
+  
 lemma E_cong:
   fixes f::"'a \<Rightarrow> real"
   shows "finite (set_pmf X) \<Longrightarrow> (\<forall>x\<in> set_pmf X. (f x) = (u x)) \<Longrightarrow> E (map_pmf f X) = E (map_pmf u X)"
@@ -82,8 +82,6 @@ unfolding E_def integral_map_pmf apply(rule integral_setsum) by (simp add: integ
 lemma E_linear_setsum_allg: "finite (set_pmf D) \<Longrightarrow> E(map_pmf (\<lambda>x. (\<Sum>i\<in> A. f i x)) D)
       = (\<Sum>i\<in> (A::'a set). E(map_pmf (f i) D))"
 unfolding E_def integral_map_pmf apply(rule integral_setsum) by (simp add: integrable_measure_pmf_finite)
-
-
 
 lemma E_finite_sum_fun: "finite (set_pmf X) \<Longrightarrow> 
     E (map_pmf f X) = (\<Sum>x\<in>set_pmf X. f x * pmf X x)"
@@ -136,75 +134,48 @@ by (simp add: len_not_in_bv pmf_eq_0_set_pmf)
 lemma bv_comp_bernoulli: "n < l
         \<Longrightarrow> map_pmf (\<lambda>y. y!n) (bv l) = bernoulli_pmf (5 / 10)"
 proof (induct n arbitrary: l)
-  fix l::nat
-  assume "0 < l"
+  case 0 
   then obtain m where "l = Suc m" by (metis Suc_pred)
-  then have "bv l = bind_pmf (bv m) (\<lambda>xs. bind_pmf (bernoulli_pmf (5 / 10)) (\<lambda>x. return_pmf (x # xs)))" by auto
-  then have "map_pmf (\<lambda>y. y!0) (bv l) 
-          = map_pmf (\<lambda>y. y!0) (bind_pmf (bv m) (\<lambda>xs. bind_pmf (bernoulli_pmf (5 / 10)) (\<lambda>x. return_pmf (x # xs))))" by auto
-  also     
-  have "\<dots> =  (bind_pmf (bv m) (\<lambda>t. bind_pmf (bernoulli_pmf (5 / 10)) (\<lambda>x. map_pmf (\<lambda>y. y!0) (return_pmf (x # t)))))" by (auto simp: map_bind_pmf)
-  also     
-  have "\<dots> =  (bind_pmf (bv m) (\<lambda>t. bind_pmf (bernoulli_pmf (5 / 10)) (\<lambda>x. (return_pmf x))))" by auto
-  also     
-  have "\<dots> =  (bind_pmf (bv m) (\<lambda>t. (bernoulli_pmf (5 / 10))))" by (auto simp: bind_return_pmf')
-  also     
-  have "\<dots> =  bernoulli_pmf (5 / 10)" by auto
-  finally show "map_pmf (\<lambda>y. y ! 0) (bv l) = bernoulli_pmf (5 / 10)" .
-next      
-  fix n l::nat
-  assume iH: "(\<And>l. n < l \<Longrightarrow> map_pmf (\<lambda>y. y ! n) (bv l) = bernoulli_pmf (5 / 10))"
-  assume snl: "Suc n < l"
-  from snl have "0 < l" by auto
+  then show "map_pmf (\<lambda>y. y!0) (bv l) =  bernoulli_pmf (5 / 10)" by (auto simp: map_pmf_def bind_return_pmf bind_assoc_pmf bind_return_pmf')
+next   
+  case (Suc n)    
+  then have "0 < l" by auto
   then obtain m where lsm: "l = Suc m" by (metis Suc_pred)
-  with snl have nltm: "n < m" by auto
+  with Suc(2) have nltm: "n < m" by auto
 
-  from lsm  have "map_pmf (\<lambda>y. y ! Suc n) (bv l)
-      = map_pmf (\<lambda>y. y ! Suc n) (bind_pmf (bv m) (\<lambda>xs. bind_pmf (bernoulli_pmf (5 / 10)) (\<lambda>x. return_pmf (x # xs))))" by auto
-  also 
-  have "\<dots> = (bind_pmf (bv m) (\<lambda>t. bind_pmf (bernoulli_pmf (5 / 10)) (\<lambda>x. map_pmf (\<lambda>y. y! Suc n) (return_pmf (x # t)))))" by (auto simp add: map_bind_pmf)
-  also 
-  have "\<dots> = (bind_pmf (bv m) (\<lambda>t. bind_pmf (bernoulli_pmf (5 / 10)) (\<lambda>x. (return_pmf (t!n)))))" by auto
-  also 
-  have "\<dots> = (bind_pmf (bv m) (\<lambda>t. return_pmf (t!n)))" by auto
-  also
-  have "\<dots> =  map_pmf (\<lambda>x. x!n) (bind_pmf (bv m) (\<lambda>t. (return_pmf t)))" by (auto simp: map_bind_pmf)
-  also
+  from lsm have "map_pmf (\<lambda>y. y ! Suc n) (bv l)
+       =  map_pmf (\<lambda>x. x!n) (bind_pmf (bv m) (\<lambda>t. (return_pmf t)))" by (auto simp: map_bind_pmf)
+also
   have "\<dots> =  map_pmf (\<lambda>x. x!n) (bv m)" by (auto simp: bind_return_pmf')
-  also
-  have "\<dots> = bernoulli_pmf (5 / 10)" by (auto simp add: iH[of m, OF nltm])
-  finally show "map_pmf (\<lambda>y. y ! Suc n) (bv l) = bernoulli_pmf (5 / 10)" .
+also
+  have "\<dots> = bernoulli_pmf (5 / 10)" by (auto simp add: Suc(1)[of m, OF nltm])
+finally
+  show ?case .
 qed
 
 lemma pmf_2elemlist: "pmf (bv (Suc 0)) ([x]) = pmf (bv 0) [] * pmf (bernoulli_pmf (5 / 10)) x"
-  unfolding bv.simps(2)[where n=0]
-  unfolding pmf_bind pmf_return
+  unfolding bv.simps(2)[where n=0] pmf_bind pmf_return
   apply (subst integral_measure_pmf[where A="{[]}"])
   apply (auto) by (cases x) auto
 
 lemma pmf_moreelemlist: "pmf (bv (Suc n)) (x#xs) = pmf (bv n) xs * pmf (bernoulli_pmf (5 / 10)) x"
-  unfolding bv.simps(2)
-  unfolding pmf_bind pmf_return
+  unfolding bv.simps(2) pmf_bind pmf_return
   apply (subst integral_measure_pmf[where A="{xs}"])
   apply auto apply (cases x) apply(auto) 
-apply (meson indicator_simps(2) list.inject singletonD)
-apply (meson indicator_simps(2) list.inject singletonD)
-apply (cases x) by(auto) 
+  apply (meson indicator_simps(2) list.inject singletonD)
+  apply (meson indicator_simps(2) list.inject singletonD)
+  apply (cases x) by(auto) 
 
 lemma list_pmf: "length xs = n \<Longrightarrow> pmf (bv n) xs = (1 / 2)^n"
 proof(induct n arbitrary: xs)
-  fix xs :: "bool list"
-  assume "length xs = 0"
+  case 0
   then have "xs = []" by auto
   then show "pmf (bv 0) xs = (1 / 2) ^ 0" by(auto)
 next 
-  fix n
-  fix xs :: "bool list"
-  assume indh: "(\<And>xs. length xs = n \<Longrightarrow> pmf (bv n) xs = (1 / 2) ^ n)"
-  assume ln: "length xs = Suc n"
+  case (Suc n xs)
   then obtain a as where split: "xs = a#as" by (metis Suc_length_conv)
-  have "length as = n" using ln split by auto
-  with indh have 1: "pmf (bv n) as = (1 / 2) ^ n" by auto
+  have "length as = n" using Suc(2) split by auto
+  with Suc(1) have 1: "pmf (bv n) as = (1 / 2) ^ n" by auto
   
   from split pmf_moreelemlist[where n=n and x=a and xs=as] have
     "pmf (bv (Suc n)) xs = pmf (bv n) as * pmf (bernoulli_pmf (5 / 10)) a" by auto
@@ -216,27 +187,22 @@ lemma bv_0_notlen: "pmf (bv n) xs = 0 \<Longrightarrow> length xs \<noteq> n "
 by(auto simp: list_pmf)
  
 lemma "length xs > n \<Longrightarrow> pmf (bv n) xs = 0"
-apply(induct n arbitrary: xs) apply(simp)
-proof -
-  fix n
-  fix xs :: "bool list"
-  assume indh: "(\<And>xs. length xs > n \<Longrightarrow> pmf (bv n) xs = 0)"
-  assume ln: "length xs > Suc n"
+proof (induct n arbitrary: xs) 
+  case (Suc n xs)
   then obtain a as where split: "xs = a#as" by (metis Suc_length_conv Suc_lessE)
-  have "length as > n" using ln split by auto
-  with indh have 1: "pmf (bv n) as = 0" by auto  
+  have "length as > n" using Suc(2) split by auto
+  with Suc(1) have 1: "pmf (bv n) as = 0" by auto  
   from split pmf_moreelemlist[where n=n and x=a and xs=as] have
     "pmf (bv (Suc n)) xs = pmf (bv n) as * pmf (bernoulli_pmf (5 / 10)) a" by auto
   then have "pmf (bv (Suc n)) xs = 0 * 1 / 2" using 1 by auto
   then show "pmf (bv (Suc n)) xs = 0" by auto
-qed
+qed simp
 
 lemma map_hd_list_pmf: "map_pmf hd (bv (Suc n)) = bernoulli_pmf (5 / 10)"
   by (simp add: map_pmf_def bind_assoc_pmf bind_return_pmf bind_return_pmf')
 
 lemma map_tl_list_pmf: "map_pmf tl (bv (Suc n)) = bv n"
   by (simp add: map_pmf_def bind_assoc_pmf bind_return_pmf bind_return_pmf' )
-
 
 
 subsection "function @{text flip}"
@@ -259,7 +225,6 @@ proof -
   moreover from Cons y2 have "flip y' Xs = Xs" by auto
   ultimately show ?case by auto
 qed simp
-
 
 lemma flip_other: "y < length X \<Longrightarrow> z < length X \<Longrightarrow> z \<noteq> y \<Longrightarrow> flip z X ! y = X ! y"
 apply(induct y arbitrary: X z) 
@@ -304,7 +269,6 @@ proof -
   from a b c show "flip (Suc y) X ! Suc y = (\<not> X ! Suc y)" by auto
 qed
 
-
 lemma flip_twice: "flip i (flip i b) = b"
 proof (cases "i < length b")
   case True
@@ -319,14 +283,10 @@ proof (cases "i < length b")
   qed
 qed (simp add: flip_out_of_bounds)
  
-
-
-
 lemma flipidiflip: "y < length X \<Longrightarrow> e < length X  \<Longrightarrow> flip e X ! y = (if e=y then ~ (X ! y) else X ! y)"
 apply(cases "e=y")
 apply(simp add: flip_itself)
 by(simp add: flip_other)
-   
 
 lemma bernoulli_Not: "map_pmf Not (bernoulli_pmf (1 / 2)) = (bernoulli_pmf (1 / 2))"
 apply(rule pmf_eqI)
@@ -346,12 +306,10 @@ next
   finally show ?case .
 qed
 
-
 lemma inv_flip_bv: "map_pmf (flip i) (bv n) = (bv n)"
-apply(induct n arbitrary: i) apply(simp)
-apply(simp) apply(simp only: map_bind_pmf)
-proof (goal_cases)
-   case (1 n i)
+proof(induct n arbitrary: i)
+   case (Suc n i)
+   note iH=this
    have "bind_pmf (bv n) (\<lambda>x. bind_pmf (bernoulli_pmf (1 / 2)) (\<lambda>xa. map_pmf (flip i) (return_pmf (xa # x))))
     = bind_pmf (bernoulli_pmf (1 / 2)) (\<lambda>xa .bind_pmf (bv n) (\<lambda>x. map_pmf (flip i) (return_pmf (xa # x))))"
     by(rule bind_commute_pmf) 
@@ -376,15 +334,13 @@ proof (goal_cases)
     also have "\<dots> = bind_pmf (bernoulli_pmf (1 / 2)) (\<lambda>xa. bind_pmf (map_pmf (flip i') (bv n)) (\<lambda>x. return_pmf (xa # x)))"
         by(auto simp add: bind_map_pmf)
     also have "\<dots> =  bind_pmf (bernoulli_pmf (1 / 2)) (\<lambda>xa. bind_pmf (bv n) (\<lambda>x. return_pmf (xa # x)))" 
-        using 1[of "i'"] by simp
+        using iH[of "i'"] by simp
     finally show ?thesis .
    qed
    also have "\<dots> = bind_pmf (bv n) (\<lambda>x. bind_pmf (bernoulli_pmf (1 / 2)) (\<lambda>xa. return_pmf (xa # x)))" 
     by(rule bind_commute_pmf)
-   finally show "bind_pmf (bv n) (\<lambda>x. bind_pmf (bernoulli_pmf (1 / 2)) (\<lambda>xa. map_pmf (flip i) (return_pmf (xa # x))))
-    = bind_pmf (bv n) (\<lambda>x. bind_pmf (bernoulli_pmf (1 / 2)) (\<lambda>xa. return_pmf (xa # x)))" .
-qed
-
+   finally show ?case by(simp add: map_pmf_def bind_assoc_pmf)
+qed simp
 
 
 subsection "Example for pmf"
@@ -401,6 +357,216 @@ unfolding twocoins_def
   unfolding pmf_bind pmf_return
   apply (subst integral_measure_pmf[where A="{True, False}"]) 
   by auto 
+
+subsection "Sum Distribution"
+
+definition "Sum_pmf p Da Db = (bernoulli_pmf p) \<bind> (%b. if b then map_pmf Inl Da else map_pmf Inr Db )"
+
+lemma b0: "bernoulli_pmf 0 = return_pmf False" 
+apply(rule pmf_eqI) apply(case_tac i)
+  by(simp_all)  
+lemma b1: "bernoulli_pmf 1 = return_pmf True" 
+apply(rule pmf_eqI) apply(case_tac i)
+  by(simp_all)  
+
+
+lemma Sum_pmf_0: "Sum_pmf 0 Da Db = map_pmf Inr Db"
+unfolding Sum_pmf_def
+apply(rule pmf_eqI) 
+  by(simp add: b0 bind_return_pmf)
+
+lemma Sum_pmf_1: "Sum_pmf 1 Da Db = map_pmf Inl Da"
+unfolding Sum_pmf_def
+apply(rule pmf_eqI) 
+  by(simp add: b1 bind_return_pmf)
+
+
+definition "Proj1_pmf D = map_pmf (%a. case a of Inl e \<Rightarrow> e) (cond_pmf D {f. (\<exists>e. Inl e = f)})"
+
+
+lemma A: "(case_sum (\<lambda>e. e) (\<lambda>a. undefined)) (Inl e) = e"
+  by(simp)
+
+lemma B: "inj (case_sum (\<lambda>e. e) (\<lambda>a. undefined))"
+  oops
+
+lemma none: "p >0 \<Longrightarrow> p < 1 \<Longrightarrow> (set_pmf (bernoulli_pmf p \<bind>
+          (\<lambda>b. if b then map_pmf Inl Da else map_pmf Inr Db))
+          \<inter> {f. (\<exists>e. Inl e = f)}) \<noteq> {}"
+    apply(simp add: UNIV_bool)
+      using set_pmf_not_empty by fast
+lemma none2: "p >0 \<Longrightarrow> p < 1 \<Longrightarrow>  (set_pmf (bernoulli_pmf p \<bind>
+          (\<lambda>b. if b then map_pmf Inl Da else map_pmf Inr Db))
+          \<inter> {f. (\<exists>e. Inr e = f)}) \<noteq> {}"
+    apply(simp add: UNIV_bool)
+      using set_pmf_not_empty by fast
+
+lemma C: "set_pmf (Proj1_pmf (Sum_pmf 0.5 Da Db)) = set_pmf Da"
+proof -
+  show ?thesis
+    unfolding Sum_pmf_def Proj1_pmf_def
+    apply(simp add: )
+    using none[of "0.5" Da Db] apply(simp add: set_cond_pmf UNIV_bool)
+      by force
+qed
+
+thm integral_measure_pmf
+
+thm pmf_cond pmf_cond[OF none]
+
+lemma proj1_pmf: assumes "p>0" "p<1" shows "Proj1_pmf (Sum_pmf p Da Db) =  Da" 
+proof -
+
+  have kl: "\<And>e. pmf (map_pmf Inr Db) (Inl e) = 0"
+    apply(simp only: pmf_eq_0_set_pmf)
+    apply(simp) by blast
+ 
+  have ll: "measure_pmf.prob
+           (bernoulli_pmf p \<bind>
+            (\<lambda>b. if b then map_pmf Inl Da else map_pmf Inr Db))
+           {f. \<exists>e. Inl e = f} = p" 
+       using assms
+     apply(simp add: integral_pmf[symmetric] pmf_bind)
+     apply(subst integral_add)
+      using integrable_pmf apply fast
+      using integrable_pmf apply fast  
+        by(simp add: integral_pmf) 
+      
+  have E: "(cond_pmf
+       (bernoulli_pmf p \<bind>
+        (\<lambda>b. if b then map_pmf Inl Da else map_pmf Inr Db))
+       {f. \<exists>e. Inl e = f}) =
+    map_pmf Inl Da"
+    apply(rule pmf_eqI)
+      apply(subst pmf_cond)
+      using none[of p Da Db] assms apply (simp)
+       using assms apply(auto)
+          apply(subst pmf_bind)
+          apply(simp add: kl ll ) 
+          apply(simp only: pmf_eq_0_set_pmf) by auto
+
+  have ID: "case_sum (\<lambda>e. e) (\<lambda>a. undefined) \<circ> Inl = id"
+    by fastforce
+  show ?thesis 
+    unfolding Sum_pmf_def Proj1_pmf_def
+    apply(simp only: E)
+    apply(simp add: pmf.map_comp ID)
+  done
+
+qed
+ 
+
+definition "Proj2_pmf D = map_pmf (%a. case a of Inr e \<Rightarrow> e) (cond_pmf D {f. (\<exists>e. Inr e = f)})"
+
+lemma proj2_pmf: assumes "p>0" "p<1" shows "Proj2_pmf (Sum_pmf p Da Db) =  Db" 
+proof -
+
+  have kl: "\<And>e. pmf (map_pmf Inl Da) (Inr e) = 0"
+    apply(simp only: pmf_eq_0_set_pmf)
+    apply(simp) by blast
+ 
+  have ll: "measure_pmf.prob
+           (bernoulli_pmf p \<bind>
+            (\<lambda>b. if b then map_pmf Inl Da else map_pmf Inr Db))
+           {f. \<exists>e. Inr e = f} = 1-p" 
+       using assms
+     apply(simp add: integral_pmf[symmetric] pmf_bind)
+     apply(subst integral_add)
+      using integrable_pmf apply fast
+      using integrable_pmf apply fast  
+        by(simp add: integral_pmf) 
+      
+  have E: "(cond_pmf
+       (bernoulli_pmf p \<bind>
+        (\<lambda>b. if b then map_pmf Inl Da else map_pmf Inr Db))
+       {f. \<exists>e. Inr e = f}) =
+    map_pmf Inr Db"
+    apply(rule pmf_eqI)
+      apply(subst pmf_cond)
+      using none2[of p Da Db] assms apply (simp)
+       using assms apply(auto)
+          apply(subst pmf_bind)
+          apply(simp add: kl ll ) 
+          apply(simp only: pmf_eq_0_set_pmf) by auto
+
+  have ID: "case_sum (\<lambda>e. undefined) (\<lambda>a. a) \<circ> Inr = id"
+    by fastforce
+  show ?thesis 
+    unfolding Sum_pmf_def Proj2_pmf_def
+    apply(simp only: E)
+    apply(simp add: pmf.map_comp ID)
+  done
+
+qed
+ 
+
+
+
+definition "invSum invA invB D x i == invA (Proj1_pmf D) x i \<and> invB (Proj2_pmf D) x i"
+
+
+lemma invSum_split: "p>0 \<Longrightarrow> p<1 \<Longrightarrow> invA Da x i \<Longrightarrow> invB Db x i \<Longrightarrow> invSum invA invB (Sum_pmf p Da Db) x i"
+by(simp add: invSum_def proj1_pmf proj2_pmf)
+
+term "(%a. case a of Inl e \<Rightarrow> Inl (fa e) | Inr e \<Rightarrow> Inr (fb e))"
+definition "f_on2 fa fb = (%a. case a of Inl e \<Rightarrow> map_pmf Inl (fa e) | Inr e \<Rightarrow> map_pmf Inr (fb e))"
+ 
+term "bind_pmf"
+
+
+lemma Sum_bind_pmf: assumes a: "bind_pmf Da fa = Da'" and b: "bind_pmf Db fb = Db'"
+  shows "bind_pmf (Sum_pmf p Da Db) (f_on2 fa fb)
+              = Sum_pmf p Da' Db'"
+proof -
+  { fix x
+  have "(if x then map_pmf Inl Da else map_pmf Inr Db) \<bind>
+                 case_sum (\<lambda>e. map_pmf Inl (fa e))
+                  (\<lambda>e. map_pmf Inr (fb e))
+            =
+        (if x then map_pmf Inl Da \<bind> case_sum (\<lambda>e. map_pmf Inl (fa e))
+                  (\<lambda>e. map_pmf Inr (fb e))
+              else map_pmf Inr Db \<bind> case_sum (\<lambda>e. map_pmf Inl (fa e))
+                  (\<lambda>e. map_pmf Inr (fb e)))"
+                  apply(simp) done
+  also
+    have "\<dots> = (if x then map_pmf Inl (bind_pmf Da fa) else map_pmf Inr (bind_pmf Db fb))"
+      by(auto simp add: map_pmf_def bind_assoc_pmf bind_return_pmf)
+  also
+    have "\<dots> = (if x then map_pmf Inl Da' else map_pmf Inr Db')"
+      using a b by simp
+  finally
+    have "(if x then map_pmf Inl Da else map_pmf Inr Db) \<bind>
+                 case_sum (\<lambda>e. map_pmf Inl (fa e))
+                  (\<lambda>e. map_pmf Inr (fb e)) = (if x then map_pmf Inl Da' else map_pmf Inr Db')" .  
+  } note gr=this
+
+
+
+  show ?thesis
+    unfolding Sum_pmf_def f_on2_def
+    apply(rule pmf_eqI) 
+    apply(case_tac i)
+    by(simp_all add: bind_return_pmf bind_assoc_pmf gr)
+qed
+
+definition "sum_map_pmf fa fb = (%a. case a of Inl e \<Rightarrow> Inl (fa e) | Inr e \<Rightarrow> Inr (fb e))"
+ 
+lemma Sum_map_pmf: assumes a: "map_pmf fa Da = Da'" and b: "map_pmf fb Db = Db'"
+  shows "map_pmf (sum_map_pmf fa fb) (Sum_pmf p Da Db) 
+              = Sum_pmf p Da' Db'"
+proof -
+  have "map_pmf (sum_map_pmf fa fb) (Sum_pmf p Da Db)
+        = bind_pmf (Sum_pmf p Da Db) (f_on2 (\<lambda>x. return_pmf (fa x)) (\<lambda>x. return_pmf (fb x)))"
+        using a b
+  unfolding map_pmf_def sum_map_pmf_def f_on2_def
+    by(auto simp add: bind_return_pmf sum.case_distrib) 
+also
+  have "\<dots> = Sum_pmf p Da' Db'"
+ using assms[unfolded map_pmf_def]  
+ by(rule Sum_bind_pmf )
+finally
+  show ?thesis .
+qed
 
 
 

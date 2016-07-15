@@ -1,5 +1,11 @@
+(*  Title:       COMB
+    Author:      Max Haslbeck
+*) 
+
+section "COMB"
+
 theory Comb
-imports TS BIT_2comp_on2 BIT_pairwise Sum_Distribution
+imports TS BIT_2comp_on2 BIT_pairwise
 begin
 
 
@@ -7,7 +13,7 @@ begin
     state of TS: nat list       history
 *)
 
-section "Definition of Comb"
+subsection "Definition of COMB"
 
 type_synonym CombState = "(bool list * nat list) + (nat list)" 
                           
@@ -35,7 +41,7 @@ definition COMB_step :: "(nat state, CombState, nat, answer) alg_on_step" where
 definition "COMB h = (COMB_init h, COMB_step)"
  
 
-section "Comb 1.6-compet on 2 elements"
+subsection "Comb 1.6-competitive on 2 elements"
  
 abbreviation "noc == (%x. case x of Inl (s,is) \<Rightarrow> (s,Inl is) | Inr (s,is) \<Rightarrow> (s,Inr is) )"
 abbreviation "con == (%(s,is). case is of Inl is \<Rightarrow> Inl (s,is) | Inr is \<Rightarrow> Inr (s,is) )"
@@ -122,12 +128,12 @@ finally
   show ?thesis .
 qed
 
-lemma BIT_config'_fin: "finite (set_pmf Da) \<Longrightarrow> finite (set_pmf (config'_rand BIT Da qs))"
+lemma BIT_config'_fin: "finite (set_pmf s) \<Longrightarrow> finite (set_pmf (config'_rand BIT s qs))"
 apply(induct qs rule: rev_induct)
   apply(simp) 
   by(simp add: config'_rand_append BIT_step_def)
 
-lemma TS_config'_fin: "finite (set_pmf Db) \<Longrightarrow> finite (set_pmf (config'_rand (embed (rTS h)) Db qs))"
+lemma TS_config'_fin: "finite (set_pmf s) \<Longrightarrow> finite (set_pmf (config'_rand (embed (rTS h)) s qs))"
 apply(induct qs rule: rev_induct)
   apply(simp) 
   by(simp add: config'_rand_append rTS_def TS_step_d_def)
@@ -319,7 +325,7 @@ next
 qed (simp_all) 
 
 
-section "COMB pairwise"
+subsection "COMB pairwise"
 
 lemma config_rand_COMB: "config_rand (COMB h) init qs = do {
                     (b::bool) \<leftarrow> (bernoulli_pmf 0.8); 
@@ -385,7 +391,7 @@ next
 qed 
           
 
-section "COMB 1.6-competitive"
+subsection "COMB 1.6-competitive"
 
 lemma finite_config_TS: "finite (set_pmf (config'' (embed (rTS h)) qs init n))" (is "finite ?D")
   apply(subst config_embed)

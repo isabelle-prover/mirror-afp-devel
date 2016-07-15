@@ -1,23 +1,20 @@
 (*  Title:       List Factoring
     Author:      Max Haslbeck
 *)
+
+section "List factoring technique"
+
 theory List_Factoring
 imports
   Partial_Cost_Model
   MTF2_Effects
 begin
 
-term config
 hide_const config compet
 
+subsection "Helper functions"
 
-
-chapter "List factoring technique"
-
-
-fun ALG :: "'a \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> ('a list * 'is) \<Rightarrow> nat" where
-  "ALG x qs i s = (if x < (qs!i) in fst s then 1::nat else 0)" 
- 
+subsubsection "Helper lemmas"
 
 lemma befaf: assumes "q\<in>set s" "distinct s"
 shows "before q s \<union> {q} \<union> after q s = set s"
@@ -34,7 +31,6 @@ proof -
   also have "\<dots> = set s" by auto
   finally show ?thesis using assms by simp
 qed
-
 
 lemma index_sum: assumes "distinct s" "q\<in>set s"
 shows "index s q = (\<Sum>e\<in>set s. if e < q in s then 1 else 0)"
@@ -71,6 +67,11 @@ proof -
 qed
 
 
+subsubsection "ALG"
+
+fun ALG :: "'a \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> ('a list * 'is) \<Rightarrow> nat" where
+  "ALG x qs i s = (if x < (qs!i) in fst s then 1::nat else 0)" 
+
 (* no paid exchanges, requested items in state (nice, quickcheck is awesome!) *)
 lemma t\<^sub>p_sumofALG: "distinct (fst s) \<Longrightarrow> snd a = [] \<Longrightarrow> (qs!i)\<in>set (fst s) 
     \<Longrightarrow> t\<^sub>p (fst s) (qs!i) a = (\<Sum>e\<in>set (fst s). ALG e qs i s)"
@@ -88,10 +89,15 @@ proof -
 qed
 
 
+subsubsection "The function steps'"
+
 fun steps' where
   "steps' s _ _ 0 = s"
 | "steps' s [] [] (Suc n) = s"
 | "steps' s (q#qs) (a#as) (Suc n) = steps' (step s q a) qs as n"
+
+lemma steps'_steps: "length as = length qs \<Longrightarrow> steps' s as qs (length as) = steps s as qs"
+by(induct arbitrary: s rule: list_induct2, simp_all)
 
 
 lemma steps'_length: "length qs = length as \<Longrightarrow> n \<le> length as
@@ -131,7 +137,7 @@ apply(induct qs as arbitrary: s  n rule: list_induct2)
 lemma steps'_append: "length qs = length as \<Longrightarrow> length qs = n \<Longrightarrow> steps' s (qs@[q]) (as@[a]) (Suc n) = step (steps' s qs as n) q a"
 apply(induct qs as arbitrary: s  n rule: list_induct2) by auto
 
-
+subsubsection "@{text ALG'_det}"
 
 definition "ALG'_det Strat qs init i x = ALG x qs i (swaps (snd (Strat!i)) (steps' init qs Strat i),())"
 
@@ -160,14 +166,16 @@ proof -
       unfolding ALG.simps tt by auto
 qed 
 
+subsubsection "ALG'"
 
 abbreviation "config'' A qs init n == config_rand A init (take n qs)"
 
 definition "ALG' A qs init i x = E( map_pmf (ALG x qs i) (config'' A qs init i))"
-thm ALG'_def
+
 lemma ALG'_refl: "qs!i = x \<Longrightarrow> ALG' A qs init i x = 0"
 unfolding ALG'_def by(simp add: split_def before_in_def)
  
+subsubsection "@{text ALGxy_det}"
 
 definition ALGxy_det where
   "ALGxy_det A qs init x y = (\<Sum>i\<in>{..<length qs}. (if (qs!i \<in> {y,x}) then ALG'_det A qs init i y + ALG'_det A qs init i x
@@ -177,7 +185,7 @@ lemma ALGxy_det_alternativ: "ALGxy_det A qs init x y
    =  (\<Sum>i\<in>{i. i<length qs \<and> (qs!i \<in> {y,x})}. ALG'_det A qs init i y + ALG'_det A qs init i x)"
 proof -
   have f: "{i. i<length qs} = {..<length qs}" by(auto)
-  thm setsum.inter_restrict
+
   have e: "{i. i<length qs \<and> (qs!i \<in> {y,x})} = {i. i<length qs} \<inter> {i. (qs!i \<in> {y,x})}"
       by auto
   have "(\<Sum>i\<in>{i. i<length qs \<and> (qs!i \<in> {y,x})}. ALG'_det A qs init i y + ALG'_det A qs init i x)
@@ -194,6 +202,8 @@ proof -
   finally show ?thesis by simp
 qed
     
+subsubsection "ALGxy"
+
 definition ALGxy where
   "ALGxy A qs init x y = (\<Sum>i\<in>{..<length qs} \<inter> {i. (qs!i \<in> {y,x})}. ALG' A qs init i y + ALG' A qs init i x)"
 
@@ -250,6 +260,8 @@ proof -
   finally show ?thesis .
 qed
   
+subsection "Transformation to Blocking Cost"
+
 lemma umformung:
   fixes A :: "(('a::linorder) list,'is,'a,(nat * nat list)) alg_on_rand"
   assumes no_paid: "\<And>is s q. \<forall>((free,paid),_) \<in> (snd A (s,is) q). paid=[]"
@@ -262,7 +274,6 @@ proof -
   have config_dist: "\<forall>n. \<forall>xa \<in> set_pmf (config'' A qs init n). distinct (fst xa)"
       using dist config_rand_distinct by metis
 
-  thm setsum.cong
   have E0: "T\<^sub>p_on_rand A init qs =
         (\<Sum>i\<in>{..<length qs}. T\<^sub>p_on_rand_n A init qs i)" unfolding T_on_rand_as_sum by auto
   also have "\<dots> = 
@@ -344,7 +355,7 @@ proof -
         let ?M = "{(x,y). x\<in>set init \<and> y\<in> set init \<and> x=y}"
         have A: "?L = ?R \<union> ?M" by auto
         have B: "{} = ?R \<inter> ?M" by auto
-        thm ALG'_refl
+
         have "(\<Sum>(x,y)\<in> ?L. ?f x y) = (\<Sum>(x,y)\<in> ?R \<union> ?M. ?f x y)"
           by(simp only: A)
         also have "\<dots> = (\<Sum>(x,y)\<in> ?R. ?f x y) + (\<Sum>(x,y)\<in> ?M. ?f x y)"
@@ -382,7 +393,6 @@ proof -
                   finally show ?thesis .                  
               qed
 
-                thm setsum.union_disjoint
                 have "(\<Sum>(x,y)\<in> ?L. ?f x y) = (\<Sum>(x,y)\<in> ?R \<union> ?R'. ?f x y)"
                   by(simp only: A) 
                 also have "\<dots> = (\<Sum>(x,y)\<in> ?R. ?f x y) + (\<Sum>(x,y)\<in> ?R'. ?f x y)"
@@ -435,7 +445,7 @@ proof -
                   ALGxy A qs init x y)"
            unfolding ALGxy_def2 by simp
      finally show ?thesis . 
-qed (* das ist gleichung 1.4 *)
+qed (* this is lemma 1.4 *)
 
 
 lemma before_in_index1:
@@ -500,43 +510,24 @@ definition "Pbefore_in x y A qs init = map_pmf (\<lambda>p. x < y in fst p) (con
 
 lemma T_on_n_no_paid:
       assumes 
-      nopaid: "\<And>l m n. map_pmf (\<lambda>x. snd (fst x)) (snd A (l, m) n) = return_pmf []" 
+      nopaid: "\<And>s n. map_pmf (\<lambda>x. snd (fst x)) (snd A s n) = return_pmf []" 
       shows "T_on_rand_n A init qs i = E (config'' A qs init i \<bind> (\<lambda>p. return_pmf (real(index (fst p) (qs ! i)))))"
-proof -
-  { fix p :: "'a list \<times> 'b"
-    have "snd A (fst p,snd p)
-       (qs ! i) \<bind>
-      (\<lambda>pa. return_pmf
-             (real(index
-               (swaps (snd (fst pa))
-                 (fst p))
-               (qs ! i) +
-              length (snd (fst pa)))))
-           =  map_pmf ((%pay. 
-             real(index (swaps pay (fst p))
-               (qs ! i) + length pay)) \<circ> (\<lambda>pa. (snd(fst pa)) ))
-               (snd A(fst p,snd p) (qs ! i))"
-               by(simp add: map_pmf_def)
-     also have "\<dots> = map_pmf (%pay. 
-             (index (swaps pay (fst p))
-               (qs ! i) + length pay)) (
-                map_pmf ((\<lambda>pa. (snd(fst pa)) ))
-               (snd A(fst p,snd p) (qs ! i)))"
-              using pmf.map_comp by metis 
-     also have "\<dots> = return_pmf (index (fst p) (qs ! i))" using nopaid[of "fst p" "snd p"]  by(auto)
-     finally have "snd A(fst p,snd p)
-       (qs ! i) \<bind>
-      (\<lambda>pa. return_pmf
-             (real(index
-               (swaps (snd (fst pa))
-                 (fst p))
-               (qs ! i)) +
-              length (snd (fst pa))))
-                = return_pmf (real(index (fst p) (qs ! i)))" by auto
-      } note brutal=this 
-  show ?thesis 
-    apply(simp add: t\<^sub>p_def split_def) 
-      using brutal  by(simp)
+proof - 
+
+  have "(\<lambda>s. snd A s (qs ! i) \<bind>
+            (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) (qs ! i) a))))
+       =
+        (\<lambda>s. (snd A s (qs ! i) \<bind> (\<lambda>x. return_pmf (snd (fst x))))
+              \<bind> (\<lambda>p. return_pmf
+               (real (index (swaps p (fst s)) (qs ! i)) +
+                real (length p))))"
+            by(simp add: t\<^sub>p_def split_def bind_return_pmf bind_assoc_pmf)
+also
+  have "\<dots> = (\<lambda>p. return_pmf (real (index (fst p) (qs ! i))))"
+    using nopaid[unfolded map_pmf_def]
+    by(simp add: split_def bind_return_pmf)
+finally
+  show ?thesis by simp
 qed
  
 lemma pairwise_property_lemma:
@@ -721,11 +712,8 @@ proof -
   finally show ?thesis .
 qed
  
-section "List Factoring for OPT"
+subsection "List Factoring for OPT"
 
-
-thm ALG.simps
-thm swap_def
 (* calculates given a list of swaps, elements x and y and a current state
   how many swaps between x and y there are *)
 fun ALG_P :: "nat list \<Rightarrow> 'a  \<Rightarrow> 'a  \<Rightarrow> 'a list \<Rightarrow> nat" where
@@ -917,7 +905,7 @@ proof -
 
   obtain rest where rest: "Strat = (take n Strat @ [Strat ! n] @ rest)" 
         using S apply(auto) using id_take_nth_drop by blast
-  thm steps'_rests
+
   have "steps' init (take n qs @ [qs ! n])
        (take n Strat @ [Strat ! n]) n
       = steps' init (take n qs)
@@ -1023,7 +1011,7 @@ proof (cases "x < y in l")
   from assms(1) have drin: "x\<in>set l" "y\<in>set l" by auto
   from assms(1,3) have b: "index l y < 2" by simp
   from a b have k: "index l x = 0" "index l y = 1" by auto 
-  thm nth_index[OF drin(1)]
+
   have g: "x = l ! 0" "y = l ! 1"
     using k nth_index assms(1) by force+ 
 
@@ -1070,7 +1058,7 @@ lemma before_in_swap2:
 apply(simp add:before_in_def index_swap_distinct)
 by (metis Suc_lessD Suc_lessI index_nth_id less_Suc_eq nth_mem yes)
 
-lemma geil: 
+lemma projected_paid_same_effect: 
   assumes
    d: "dist_perm s1 s1"  
   and ee: "x\<noteq>y"  
@@ -1230,7 +1218,7 @@ proof(induct n)
       using steps'_set[OF qQS] aS xyininit by simp_all
     also have "\<dots> =  x < y in (swap 0 ^^ ALG_P (snd (Strat ! n)) x y (steps' init (take n qs) (take n Strat) n))
                                     (swaps sws (steps' (Lxy init {x, y}) (Lxy (take n qs) {x, y}) Strat2 (length Strat2)))"
-       apply(rule geil)
+       apply(rule projected_paid_same_effect)
             apply(rule steps'_dist_perm)
               apply(fact qQS)
              apply(fact aS)
@@ -1348,7 +1336,6 @@ proof(induct n)
 
     let ?newStrat="Strat2@[(?mtf,?L)]"
 
-    thm steps'.simps
     have "?xs'' =  step ?xs (qs!n) (Strat!n)"
       unfolding tak tak2
       apply(rule steps'_append) by fact+
@@ -1426,9 +1413,9 @@ proof(induct n)
 
     (* aus der Induktionsvorraussetzung (iff) weiß ich bereits
         dass die Ordnung erhalten wird bis zum nten Schritt,
-        mit Theorem geil kann ich auch die paid exchanges abarbeiten ...*)
+        mit Theorem "projected_paid_same_effect" kann ich auch die paid exchanges abarbeiten ...*)
 
-    from geil[OF 1 Suc(5) 3 4 5, OF iff, where acs="snd (Strat ! n)"]
+    from projected_paid_same_effect[OF 1 Suc(5) 3 4 5, OF iff, where acs="snd (Strat ! n)"]
     have aaa: "x < y in ?xs'  = x < y in ?ys''" .
 
     (* ... was nun noch fehlt ist, dass die moveToFront anweisungen von Strat
@@ -1767,7 +1754,6 @@ next
     apply (simp add: Lxy_def ALGxy_det_def ALG_Pxy_def T_opt_def)
     proof goal_cases
       case 1
-        thm Lxy_mono[unfolded Lxy_def]
         show ?case apply(rule Lxy_mono[unfolded Lxy_def, simplified])
           using 1 by auto
     qed
@@ -1803,10 +1789,6 @@ proof -
   finally show ?thesis .
 qed
 
-
-(* similar to *)
-thm umformung
-
 lemma T_snoc: "length rs = length as
        \<Longrightarrow>  T init (rs@[r]) (as@[a])
         = T init rs as + t\<^sub>p (steps' init rs as (length rs)) r a"
@@ -1828,11 +1810,6 @@ proof -
       apply(subst steps'_rests[symmetric]) using assms  by auto
   finally show ?thesis by simp
 qed
-
-lemma steps'_steps: "length qs = length Strat \<Longrightarrow> steps' s qs Strat (length qs) = steps s qs Strat"
-apply(induct qs Strat arbitrary: s rule: list_induct2)
-   by simp_all
-
 
 lemma Tp_darstellung: "length qs = length Strat
         \<Longrightarrow> T\<^sub>p init qs Strat =
@@ -1869,7 +1846,6 @@ proof -
 *) 
 
   (* ersten Teil umformen: *)
-  thm setsum.commute
   have "(\<Sum>i\<in>{..<length qs}.
     (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )
                 = (\<Sum>i\<in>{..<length qs}. 
@@ -1927,7 +1903,6 @@ proof -
    also have "\<dots> = (\<Sum>(x,y)\<in> {(x,y). x\<in>set init \<and> y\<in> set init}.
             (\<Sum>i\<in>{i. i<length qs \<and> qs!i=y}. ALG x qs i (?config i, ())))"
             by simp
-            thm ALG'_refl
    also have E4: "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x\<in>set init \<and> y\<in> set init \<and> x\<noteq>y}.
             (\<Sum>i\<in>{i. i<length qs \<and> qs!i=y}. ALG x qs i (?config i, ())))" (is "(\<Sum>(x,y)\<in> ?L. ?f x y) = (\<Sum>(x,y)\<in> ?R. ?f x y)")
            proof goal_cases
@@ -1935,7 +1910,6 @@ proof -
         let ?M = "{(x,y). x\<in>set init \<and> y\<in> set init \<and> x=y}"
         have A: "?L = ?R \<union> ?M" by auto
         have B: "{} = ?R \<inter> ?M" by auto
-        thm ALG'_refl
         have "(\<Sum>(x,y)\<in> ?L. ?f x y) = (\<Sum>(x,y)\<in> ?R \<union> ?M. ?f x y)"
           by(simp only: A)
         also have "\<dots> = (\<Sum>(x,y)\<in> ?R. ?f x y) + (\<Sum>(x,y)\<in> ?M. ?f x y)"
@@ -2059,13 +2033,11 @@ proof -
                + (\<Sum>i\<in>{..<length qs}. 
                (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
     by (simp add: setsum.distrib split_def) 
-  thm blockingpart
   also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. 
                          ALGxy_det Strat qs init x y)
                + (\<Sum>i\<in>{..<length qs}. 
                (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. ALG_P (snd (Strat!i)) x y (steps' init qs Strat i)) )"
                 by(simp only: blockingpart)
-  thm paid_part
   also have "\<dots> = (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. 
                          ALGxy_det Strat qs init x y)
                + (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
@@ -2222,7 +2194,6 @@ proof -
                        and b: "length Strat = length qs"
               unfolding T_opt_def by auto
 
-  thm setsum_mono 
   have "(\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
        T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x, y})) \<le> (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}.
           ALGxy_det Strat qs init x y + ALG_Pxy Strat qs init x y)"
@@ -2239,7 +2210,7 @@ proof -
 qed
 
 
-section "Factoring Lemma"
+subsection "Factoring Lemma"
 
 
 lemma cardofpairs: "S \<noteq> [] \<Longrightarrow> sorted S \<Longrightarrow> distinct S \<Longrightarrow> card {(x,y). x \<in> set S \<and> y\<in>set S \<and> x<y} = ((length S)*(length S-1)) / 2"
@@ -2337,9 +2308,7 @@ proof (standard, goal_cases)
 
     fix qs
     assume drin: "set qs \<subseteq> set init"
-  thm setsum_mono 
 
-  thm umf_pair
   have "T\<^sub>p_on_rand A init qs =
 (\<Sum>(x,y)\<in>{(x, y) . x \<in> set init \<and> y \<in> set init \<and> x < y}.
        T\<^sub>p_on_rand A (Lxy init {x,y}) (Lxy qs {x, y})) "
@@ -2350,7 +2319,6 @@ proof (standard, goal_cases)
   also have "\<dots> \<le> (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. c * (T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})) + b)"
         apply(rule setsum_mono)
         using on3 drin by(simp add: split_def) 
-        thm setsum_right_distrib setsum.distrib
   also have "\<dots> = c * (\<Sum>(x,y)\<in>{(x,y). x \<in> set init \<and> y\<in>set init \<and> x<y}. T\<^sub>p_opt (Lxy init {x,y}) (Lxy qs {x,y})) + b*(((length init)*(length init-1)) / 2)"
   proof - 
 

@@ -1,12 +1,14 @@
 (*  Title:       Effects of the function mtf2 on index and before_in
     Author:      Max Haslbeck
 *)
+
+section "Effect of mtf2"
+
 theory MTF2_Effects
 imports Move_to_Front
 begin
 
 
-section "effect of mtf2 on index and @{const before_in}"
 
 lemma difind_difelem: 
        "i < length xs \<Longrightarrow> distinct xs \<Longrightarrow> xs ! j = a \<Longrightarrow> j < length xs \<Longrightarrow> i \<noteq> j 

@@ -1,4 +1,4 @@
-theory Priority_Queue_ops_meld2
+theory Priority_Queue_ops_meld
 imports Main
 begin
 

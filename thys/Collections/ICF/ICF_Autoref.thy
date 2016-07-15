@@ -46,16 +46,16 @@ lemma [autoref_itype]:
 
 context uprio begin
   definition rel_def_internal: 
-    "rel Re Ra \<equiv> br \<alpha> invar O (Re \<rightarrow> \<langle>Ra\<rangle> option_rel)"
+    "\<And>Re Ra. rel Re Ra \<equiv> br \<alpha> invar O (Re \<rightarrow> \<langle>Ra\<rangle> option_rel)"
   lemma rel_def:
-    "\<langle>Re,Ra\<rangle>rel \<equiv> br \<alpha> invar O (Re \<rightarrow> \<langle>Ra\<rangle> option_rel)" 
+    "\<And>Re Ra. \<langle>Re,Ra\<rangle>rel \<equiv> br \<alpha> invar O (Re \<rightarrow> \<langle>Ra\<rangle> option_rel)" 
     by (simp add: rel_def_internal relAPP_def)
     
   lemma rel_id[simp]: "\<langle>Id,Id\<rangle>rel = br \<alpha> invar" 
     by (simp add: rel_def)
 
   lemma rel_sv[relator_props]: 
-    "\<lbrakk>Range Re = UNIV; single_valued Ra\<rbrakk> \<Longrightarrow> single_valued (\<langle>Re,Ra\<rangle>rel)"
+    "\<And>Re Ra. \<lbrakk>Range Re = UNIV; single_valued Ra\<rbrakk> \<Longrightarrow> single_valued (\<langle>Re,Ra\<rangle>rel)"
     unfolding rel_def by tagged_solver
 
   lemmas [autoref_rel_intf] = REL_INTFI[of rel i_prio]
@@ -67,23 +67,23 @@ lemma (in uprio) rel_alt: "\<langle>Id,Rv\<rangle>rel =
   by (auto simp: rel_def br_def dest: fun_relD)
 
 lemma (in uprio_empty) autoref_empty[autoref_rules]:
-  "PREFER_id Re \<Longrightarrow> (empty (),op_uprio_empty)\<in>\<langle>Re,Ra\<rangle>rel"
+  "\<And>Re Ra. PREFER_id Re \<Longrightarrow> (empty (),op_uprio_empty)\<in>\<langle>Re,Ra\<rangle>rel"
   by (auto simp: empty_correct rel_alt)
 
 lemma (in uprio_isEmpty) autoref_is_empty[autoref_rules]:
-  "PREFER_id Re \<Longrightarrow> (isEmpty,op_uprio_is_empty)\<in>\<langle>Re,Ra\<rangle>rel\<rightarrow>bool_rel"
+  "\<And>Re Ra. PREFER_id Re \<Longrightarrow> (isEmpty,op_uprio_is_empty)\<in>\<langle>Re,Ra\<rangle>rel\<rightarrow>bool_rel"
   by (auto simp: isEmpty_correct rel_alt intro!: ext)
 
 lemma (in uprio_prio) autoref_prio[autoref_rules]:
-  "PREFER_id Re \<Longrightarrow> (prio,op_uprio_prio)\<in>\<langle>Re,Ra\<rangle>rel\<rightarrow>Re\<rightarrow>\<langle>Ra\<rangle>option_rel"
+  "\<And>Re Ra. PREFER_id Re \<Longrightarrow> (prio,op_uprio_prio)\<in>\<langle>Re,Ra\<rangle>rel\<rightarrow>Re\<rightarrow>\<langle>Ra\<rangle>option_rel"
   by (auto simp: prio_correct rel_alt intro!: ext)
 
 lemma (in uprio_insert) autoref_insert[autoref_rules]:
-  "PREFER_id Re \<Longrightarrow> (insert,op_uprio_insert)\<in>\<langle>Re,Ra\<rangle>rel\<rightarrow>Re\<rightarrow>Ra\<rightarrow>\<langle>Re,Ra\<rangle>rel"
+  "\<And>Re Ra. PREFER_id Re \<Longrightarrow> (insert,op_uprio_insert)\<in>\<langle>Re,Ra\<rangle>rel\<rightarrow>Re\<rightarrow>Ra\<rightarrow>\<langle>Re,Ra\<rangle>rel"
   by (auto simp: insert_correct rel_alt intro!: ext)
 
 lemma (in uprio_pop) autoref_prio_pop_min[autoref_rules]:
-  "\<lbrakk>PREFER_id Re; PREFER_id Ra \<rbrakk> 
+  "\<And>Re Ra. \<lbrakk>PREFER_id Re; PREFER_id Ra \<rbrakk> 
   \<Longrightarrow> (\<lambda>s. RETURN (pop s),prio_pop_min)\<in>\<langle>Re,Ra\<rangle>rel\<rightarrow>\<langle>\<langle>Re,\<langle>Ra,\<langle>Re,Ra\<rangle>rel\<rangle>prod_rel\<rangle>prod_rel\<rangle>nres_rel"
   apply simp
   apply (intro fun_relI nres_relI)

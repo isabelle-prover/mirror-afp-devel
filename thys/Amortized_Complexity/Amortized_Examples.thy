@@ -1,4 +1,4 @@
-section "Amortized Complexity Examples"
+section "Simple Examples"
 
 theory Amortized_Examples
 imports Amortized_Framework

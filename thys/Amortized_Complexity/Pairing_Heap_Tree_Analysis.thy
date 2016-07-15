@@ -1,90 +1,41 @@
-(* Author: Hauke Brinkop (w/ Tobias Nipkow) *)
+(* Author: Hauke Brinkop and Tobias Nipkow *)
 
-section {* Amortized Analysis of Pairing Heaps *}
+section \<open>Pairing Heaps\<close>
 
-subsection {* Binary Tree Representation *}
+subsection \<open>Binary Tree Representation\<close>
 
-theory Pairing_Heap2
+theory Pairing_Heap_Tree_Analysis
 imports  
-  "~~/src/HOL/Library/Tree"
+  "../Pairing_Heap/Pairing_Heap_Tree"
   Amortized_Framework
-  Priority_Queue_ops_meld2
+  Priority_Queue_ops_meld
   Lemmas_log
 begin
 
-text{* Pairing heaps were invented by Fredman, Sedgewick, Sleator and Tarjan
-\cite{FredmanSST86}. In this theory we verify their logarithmic bound on the
-amortized complexity of pairing heaps. *}
-
-fun link :: "'a :: linorder tree \<Rightarrow> 'a tree" where
-  "link Leaf = Leaf"
-| "link (Node lx x Leaf) = Node lx x Leaf"
-| "link (Node lx x (Node ly y ry)) = 
-    (if x < y then Node (Node ly y lx) x ry else Node (Node lx x ly) y ry)"
-
-fun pass\<^sub>1 :: "'a :: linorder tree \<Rightarrow> 'a tree" where
-  "pass\<^sub>1 Leaf = Leaf"
-| "pass\<^sub>1 (Node lx x Leaf) = Node lx x Leaf" 
-| "pass\<^sub>1 (Node lx x (Node ly y ry)) = link (Node lx x (Node ly y (pass\<^sub>1 ry)))"
+text
+\<open>Verification of logarithmic bounds on the amortized complexity of
+pairing heaps \cite{FredmanSST86}.\<close>
 
 fun len :: "'a tree \<Rightarrow> nat" where 
   "len Leaf = 0"
-| "len (Node _ _ r) = len r + 1"
-
-fun pass\<^sub>2 :: "'a :: linorder tree \<Rightarrow> 'a tree" where
-  "pass\<^sub>2 Leaf = Leaf"
-| "pass\<^sub>2 (Node l x r) = link(Node l x (pass\<^sub>2 r))"
-
-fun mergepairs :: "'a :: linorder tree \<Rightarrow> 'a tree" where
-  "mergepairs Leaf = Leaf"
-| "mergepairs (Node lx x Leaf) = Node lx x Leaf" 
-| "mergepairs (Node lx x (Node ly y ry)) =
-   link (link (Node lx x (Node ly y (mergepairs ry))))"
-
-fun del_min :: "'a :: linorder tree \<Rightarrow> 'a tree" where
-  "del_min Leaf = Leaf"
-| "del_min (Node l _ Leaf) = pass\<^sub>2 (pass\<^sub>1 l)"
-
-fun meld :: "'a :: linorder tree \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-  "meld Leaf h = h"
-| "meld h Leaf = h"
-| "meld (Node lx x Leaf) (Node ly y Leaf) = link (Node lx x (Node ly y Leaf))"
-
-fun insert :: "'a \<Rightarrow> 'a :: linorder tree \<Rightarrow> 'a tree" where
-  "insert x h = meld (Node Leaf x Leaf) h"
-
-fun is_root :: "'a :: linorder tree \<Rightarrow> bool" where
-  "is_root h = (case h of Leaf \<Rightarrow> True | Node l x r \<Rightarrow> r = Leaf)"
+| "len (Node _ _ r) = 1 + len r"
 
 fun \<Phi> :: "'a tree \<Rightarrow> real" where
   "\<Phi> Leaf = 0"
-| "\<Phi> (Node l _ r) = \<Phi> l + \<Phi> r + log 2 (size l + size r + 1)"
+| "\<Phi> (Node l _ r) = \<Phi> l + \<Phi> r + log 2 (1 + size l + size r)"
 
-lemma link_size[simp]: "size (link hs) = size hs" 
-  by (cases hs rule: link.cases) simp_all
+lemma link_size[simp]: "size (link h) = size h" 
+  by (cases h rule: link.cases) simp_all
 
-lemma size_pass\<^sub>1: "size (pass\<^sub>1 hs) = size hs" 
-  by (induct hs rule: pass\<^sub>1.induct) simp_all
+lemma size_pass\<^sub>1: "size (pass\<^sub>1 h) = size h" 
+  by (induct h rule: pass\<^sub>1.induct) simp_all
 
-lemma size_pass\<^sub>2: "size (pass\<^sub>2 hs) = size hs" 
-  by (induct hs rule: pass\<^sub>2.induct) simp_all
+lemma size_pass\<^sub>2: "size (pass\<^sub>2 h) = size h" 
+  by (induct h rule: pass\<^sub>2.induct) simp_all
 
 lemma size_meld[simp]: 
   "is_root h1 \<Longrightarrow> is_root h2 \<Longrightarrow> size (meld h1 h2) = size h1 + size h2"
   by (simp split: tree.splits)
-
-lemma link_struct: "\<exists>la a. link (Node lx x (Node ly y ry)) = Node la a ry" 
-  by simp
-
-lemma pass\<^sub>1_struct: "\<exists>la a ra. pass\<^sub>1 (Node lx x rx) = Node la a ra" 
-  by (cases rx) simp_all
-
-lemma pass\<^sub>2_struct: "\<exists>la a. pass\<^sub>2 (Node lx x rx) = Node la a Leaf" 
-  by (induction rx arbitrary: x lx rule: pass\<^sub>2.induct) 
-  (simp, metis pass\<^sub>2.simps(2) link_struct)
-
-lemma mergepairs_pass12: "mergepairs hs = pass\<^sub>2 (pass\<^sub>1 hs)"
-by (induction hs rule: mergepairs.induct) auto
 
 lemma \<Delta>\<Phi>_insert: "is_root h \<Longrightarrow> \<Phi> (insert x h) - \<Phi> h \<le> log 2  (size h + 1)"
   by (simp split: tree.splits)

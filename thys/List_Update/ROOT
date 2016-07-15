@@ -7,6 +7,7 @@ session "List_Update" (AFP) = "HOL-Probability" +
     "../Regular-Sets/Equivalence_Checking"
   theories
     "Move_to_Front"
+    "Competitive_Analysis"
     "BIT"
     "TS"
     "BIT_pairwise"

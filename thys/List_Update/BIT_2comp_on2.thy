@@ -1,10 +1,15 @@
+(*  Title:       BIT is 1.75 competitive on lists of length 2
+    Author:      Max Haslbeck
+*)
+section "BIT is 1.75 competitive on lists of length 2"
+
 theory BIT_2comp_on2
 imports BIT Phase_Partitioning
 begin
 
-section "auxliary lemmas"
+subsection "auxliary lemmas"
 
-subsection "@{text E_bernoulli3}"
+subsubsection "@{text E_bernoulli3}"
 
 lemma E_bernoulli3: assumes "0<p"
     and "p<1"
@@ -51,7 +56,7 @@ proof -
 qed 
 
 
-subsection "types of configurations"
+subsubsection "types of configurations"
 
 definition "type0 init x y = do {
                   (a::bool) \<leftarrow> (bernoulli_pmf 0.5);
@@ -84,9 +89,6 @@ definition "BIT_inv s x i == (s = (type0 i x (hd (filter (\<lambda>y. y\<noteq>x
 
 lemma BIT_inv2: "x\<noteq>y \<Longrightarrow> z\<in>{x,y} \<Longrightarrow> BIT_inv s z [x,y] = (s= type0 [x,y] z (other z x y))"
   unfolding BIT_inv_def by(auto simp add: other_def)
-
-
-subsection "effect of BIT"
 
 subsubsection "cost of BIT"
 
@@ -180,7 +182,7 @@ using assms apply(auto)
 
 lemmas costBIT = costBIT_0x costBIT_0y costBIT_1x costBIT_1y costBIT_3x costBIT_3y costBIT_4x costBIT_4y
 
-subsection "state transformation of BIT"
+subsubsection "state transformation of BIT"
 
 abbreviation "BIT_Step s x == (s \<bind> (\<lambda>s. BIT_step s x \<bind> (\<lambda>(a, is'). return_pmf (step (fst s) x a, is'))))"
 
@@ -266,9 +268,9 @@ lemma oneBIT_step4y:
        
 lemmas oneBIT_step = oneBIT_step0x oneBIT_step0y oneBIT_step1x oneBIT_step1y oneBIT_step3x oneBIT_step3y oneBIT_step4x oneBIT_step4y      
         
-section "go through the four phase types"
+subsection "Analysis of the four phase forms"
 
-subsection "yx"
+subsubsection "yx"
  
 lemma bit_yx: assumes "x \<noteq> y" 
       and kas: "init \<in> {[x,y],[y,x]}"
@@ -315,7 +317,7 @@ proof -
 qed
 
 
-subsection "(yx)*yx"
+subsubsection "(yx)*yx"
 
 lemma bit_yxyx: assumes "x \<noteq> y" and kas: "init \<in> {[x,y],[y,x]}" and
       "qs \<in> lang (seq[Times (Atom y) (Atom x), Star(Times (Atom y) (Atom x))])"
@@ -365,7 +367,7 @@ finally
 qed
 
   
-subsection \<open>@{text "x^+.."}\<close>
+subsubsection \<open>@{text "x^+.."}\<close>
 
 lemma BIT_x: assumes "x\<noteq>y"
        "init \<in> {[x,y],[y,x]}" "qs \<in> lang (Plus (Atom x) One)"
@@ -382,7 +384,7 @@ proof -
 qed
         
 
-subsection "Phase Type A"
+subsubsection "Phase Form A"
 
 lemma BIT_a: assumes "x \<noteq> y"
     " init \<in> {[x,y],[y,x]}"
@@ -448,7 +450,7 @@ lemma bit_a'': " a \<noteq> b \<Longrightarrow>
 using bit_a[of a b x y] by blast
 
 
-subsection "Phase Type B"
+subsubsection "Phase Form B"
 
 lemma BIT_b: assumes A: "x \<noteq> y"
        "init \<in> {[x,y],[y,x]}"
@@ -709,7 +711,7 @@ lemma bit_b''': " a \<noteq> b \<Longrightarrow>
          BIT_inv (Partial_Cost_Model.config'_rand BIT s qs) (last qs) [x, y] \<and> T\<^sub>p_on_rand' BIT s qs = 1.5"
 using bit_a[of a b x y] oops
 
-subsection "Phase Type C"
+subsubsection "Phase Form C"
 
 lemma BIT_c: assumes "x \<noteq> y"
        "init \<in> {[x,y],[y,x]}"
@@ -984,7 +986,7 @@ proof -
 qed
 
 
-subsection "Phase Type D"
+subsubsection "Phase Form D"
  
 lemma bit_d: assumes 
     "x \<noteq> y" "{x, y} = {x0, y0}" "BIT_inv s x [x0, y0]"
@@ -1026,7 +1028,7 @@ using bit_d[OF assms] by blast
 
 
 
-section "Phase Partitioning"
+subsection "Phase Partitioning"
 
 lemma BIT_inv_initial: assumes "(x::nat) \<noteq> y"
     shows "BIT_inv (map_pmf (Pair [x, y]) (fst BIT [x, y])) x [x, y]"

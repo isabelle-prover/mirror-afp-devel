@@ -1,7 +1,11 @@
-section "Splay Tree Analysis Basics"
+section "Splay Tree"
+
+subsection "Basics"
 
 theory Splay_Tree_Analysis_Base
-imports Lemmas_log "../Splay_Tree/Splay_Tree"
+imports
+  Lemmas_log
+  "../Splay_Tree/Splay_Tree"
 begin
 
 declare size1_def[simp]
@@ -12,8 +16,6 @@ fun \<Phi> :: "'a tree \<Rightarrow> real" where
 "\<Phi> Leaf = 0" |
 "\<Phi> (Node l a r) = \<Phi> l + \<Phi> r + \<phi> (Node l a r)"
 
-
-subsection "Time"
 
 fun t_splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
 "t_splay a Leaf = 1" |
@@ -112,16 +114,24 @@ next
 qed (auto simp: le_less)
 
 
-datatype 'a op\<^sub>s\<^sub>t = Splay 'a | Insert 'a | Delete 'a
+datatype 'a op\<^sub>s\<^sub>t = Empty | Splay 'a | Insert 'a | Delete 'a
 
-fun nxt\<^sub>s\<^sub>t :: "'a::linorder op\<^sub>s\<^sub>t \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-"nxt\<^sub>s\<^sub>t (Splay a) t = splay a t" |
-"nxt\<^sub>s\<^sub>t (Insert a) t = Splay_Tree.insert a t" |
-"nxt\<^sub>s\<^sub>t (Delete a) t = Splay_Tree.delete a t"
+fun arity :: "'a::linorder op\<^sub>s\<^sub>t \<Rightarrow> nat" where
+"arity Empty = 0" |
+"arity (Splay a) = 1" |
+"arity (Insert a) = 1" |
+"arity (Delete a) = 1"
 
-fun t\<^sub>s\<^sub>t :: "'a::linorder op\<^sub>s\<^sub>t \<Rightarrow> 'a tree \<Rightarrow> real" where
-"t\<^sub>s\<^sub>t (Splay a) t = t_splay a t" |
-"t\<^sub>s\<^sub>t (Insert a) t = t_splay a t" |
-"t\<^sub>s\<^sub>t (Delete a) t = t_delete a t"
+fun exec :: "'a::linorder op\<^sub>s\<^sub>t \<Rightarrow> 'a tree list \<Rightarrow> 'a tree" where
+"exec Empty [] = Leaf" |
+"exec (Splay a) [t] = splay a t" |
+"exec (Insert a) [t] = Splay_Tree.insert a t" |
+"exec (Delete a) [t] = Splay_Tree.delete a t"
+
+fun cost :: "'a::linorder op\<^sub>s\<^sub>t \<Rightarrow> 'a tree list \<Rightarrow> nat" where
+"cost Empty [] = 1" |
+"cost (Splay a) [t] = t_splay a t" |
+"cost (Insert a) [t] = t_splay a t" |
+"cost (Delete a) [t] = t_delete a t"
 
 end

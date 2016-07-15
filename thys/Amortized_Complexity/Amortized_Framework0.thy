@@ -1,13 +1,17 @@
-section "Amortized Complexity"
+section "Amortized Complexity (Unary Operations)"
 
-theory Amor
+theory Amortized_Framework0
 imports Complex_Main
 begin
 
-text{* For the background and most of the examples see some algorithms
-textbook, for example, \cite{Cormen-Leiserson-Rivest}. *}
+text\<open>
+This theory provides a simple amortized analysis framework where all operations
+act on a single data type, i.e. no union-like operations. This is the basis of
+the ITP 2015 paper by Nipkow. Although it is superseded by the model in
+\<open>Amortized_Framework\<close> that allows arbitrarily many parameters, it is still
+of interest because of its simplicity.\<close>
 
-locale amor =
+locale Amortized =
 fixes init :: "'s"
 fixes nxt :: "'o \<Rightarrow> 's \<Rightarrow> 's"
 fixes inv :: "'s \<Rightarrow> bool"
@@ -69,7 +73,7 @@ apply(induction bs rule: incr.induct)
 apply (simp_all add: p_incr_def)
 done
 
-interpretation incr: amor
+interpretation incr: Amortized
 where init = "[]" and nxt = "%_. incr" and inv = "\<lambda>_. True"
 and t = "\<lambda>_. t\<^sub>i\<^sub>n\<^sub>c\<^sub>r" and \<Phi> = \<Phi>\<^sub>i\<^sub>n\<^sub>c\<^sub>r and U = "\<lambda>_ _. 2"
 proof
@@ -92,7 +96,7 @@ subsection "Dynamic tables: insert only"
 fun t\<^sub>i\<^sub>n\<^sub>s :: "nat \<times> nat \<Rightarrow> real" where
 "t\<^sub>i\<^sub>n\<^sub>s (n,l) = (if n<l then 1 else n+1)"
 
-interpretation ins: amor
+interpretation ins: Amortized
 where init = "(0::nat,0::nat)"
 and nxt = "\<lambda>_ (n,l). (n+1, if n<l then l else if l=0 then 1 else 2*l)"
 and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> l < 2*n"
@@ -136,7 +140,7 @@ fun "ins" :: "nat * nat \<Rightarrow> nat * nat" where
 fun pins :: "nat * nat => real" where
 "pins(n,l) = a*n - b*l"
 
-interpretation ins: amor
+interpretation ins: Amortized
 where init = "(0,0)" and nxt = "%_. ins"
 and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> (b/a)*l \<le> n"
 and t = "\<lambda>_. t\<^sub>i\<^sub>n\<^sub>s" and \<Phi> = pins and U = "\<lambda>_ _. a + 1"
@@ -234,7 +238,7 @@ fun t\<^sub>s\<^sub>t\<^sub>k:: "'a op\<^sub>s\<^sub>t\<^sub>k \<Rightarrow> 'a 
 "t\<^sub>s\<^sub>t\<^sub>k (Pop n) xs = min n (length xs)"
 
 
-interpretation stack: amor
+interpretation stack: Amortized
 where init = "[]" and nxt = nxt\<^sub>s\<^sub>t\<^sub>k and inv = "\<lambda>_. True"
 and t = t\<^sub>s\<^sub>t\<^sub>k and \<Phi> = "length" and U = "\<lambda>f _. case f of Push _ \<Rightarrow> 2 | Pop _ \<Rightarrow> 0"
 proof
@@ -267,7 +271,7 @@ fun t\<^sub>q :: "'a op\<^sub>q \<Rightarrow> 'a queue \<Rightarrow> real" where
 "t\<^sub>q Deq (xs,ys) = (if ys = [] then length xs else 0)"
 
 
-interpretation queue: amor
+interpretation queue: Amortized
 where init = "([],[])" and nxt = nxt\<^sub>q and inv = "\<lambda>_. True"
 and t = t\<^sub>q and \<Phi> = "\<lambda>(xs,ys). length xs" and U = "\<lambda>f _. case f of Enq _ \<Rightarrow> 2 | Deq \<Rightarrow> 0"
 proof
@@ -298,7 +302,7 @@ fun t_q2 :: "'a op\<^sub>q \<Rightarrow> 'a queue \<Rightarrow> real" where
 "t_q2 Deq (xs,ys) = (if size xs \<le> size ys - 1 then 0 else size xs + (size ys - 1))"
 
 
-interpretation queue2: amor
+interpretation queue2: Amortized
 where init = "([],[])" and nxt = nxt_q2
 and inv = "\<lambda>(xs,ys). size xs \<le> size ys"
 and t = t_q2 and \<Phi> = "\<lambda>(xs,ys). 2 * size xs"
@@ -331,7 +335,7 @@ fun t\<^sub>t\<^sub>b :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow>
 "t\<^sub>t\<^sub>b Ins (n,l) = (if n<l then 1 else n+1)" |
 "t\<^sub>t\<^sub>b Del (n,l) = (if n=1 then 1 else if 4*(n - 1)<l then n else 1)"
 
-interpretation tb: amor
+interpretation tb: Amortized
 where init = "(0,0)" and nxt = nxt\<^sub>t\<^sub>b
 and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> l \<le> 4*n"
 and t = t\<^sub>t\<^sub>b and \<Phi> = "(\<lambda>(n,l). if 2*n < l then l/2 - n else 2*n - l)"

@@ -1,9 +1,9 @@
-section "Splay Heap Analysis"
+section "Splay Heap"
 
 theory Splay_Heap_Analysis
 imports
   "../Splay_Tree/Splay_Heap"
-  Amor
+  Amortized_Framework
   Priority_Queue_ops
   Lemmas_log
 begin
@@ -173,41 +173,48 @@ next
   qed
 qed
 
-fun nxt\<^sub>p\<^sub>q :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
-"nxt\<^sub>p\<^sub>q (Insert a) h = insert a h" |
-"nxt\<^sub>p\<^sub>q Del_min h = del_min h"
+fun exec :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> 'a tree" where
+"exec Empty [] = Leaf" |
+"exec (Insert a) [t] = insert a t" |
+"exec Del_min [t] = del_min t"
 
-fun t\<^sub>p\<^sub>q :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree \<Rightarrow> nat" where
-"t\<^sub>p\<^sub>q (Insert a) h = t_in a h" |
-"t\<^sub>p\<^sub>q Del_min h = t_dm h"
+fun cost :: "'a::linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a tree list \<Rightarrow> nat" where
+"cost Empty [] = 1" |
+"cost (Insert a) [t] = t_in a t" |
+"cost Del_min [t] = t_dm t"
 
-interpretation splay_heap: amor
-where init = "Leaf" and nxt = "nxt\<^sub>p\<^sub>q" and inv = "bst_eq"
-and t = t\<^sub>p\<^sub>q and \<Phi> = \<Phi>
-and U = "\<lambda>f s. case f of Del_min \<Rightarrow> 2 * \<phi> s + 1 | Insert _ \<Rightarrow> 3 * log 2 (size1 s + 1) + 1"
+fun U where
+"U Empty [] = 1" |
+"U (Insert _) [t] = 3 * log 2 (size1 t + 1) + 1" |
+"U Del_min [t] = 2 * \<phi> t + 1"
+
+interpretation Amortized
+where arity = arity and exec = exec and inv = "bst_eq"
+and cost = cost and \<Phi> = \<Phi> and U = U
 proof (standard, goal_cases)
-  case 1 show ?case by simp
-next
-  case (2 _ f) thus ?case
+  case (1 _ f) thus ?case
     by(cases f)
-       (auto simp: insert_def bst_del_min dest: bst_partition split: prod.splits)
+       (auto simp: insert_def bst_del_min dest!: bst_partition split: prod.splits)
 next
-  case (3 s) show ?case by(induction s) (auto simp: size1_def)
+  case (2 h) thus ?case by(induction h) (auto simp: size1_def)
 next
-  case 4 show ?case by(simp)
+  case (3 f) thus ?case by(cases f)(auto)
 next
-  case (5 s f)
+  case (4 s f)
   show ?case
   proof (cases f)
-    case Del_min with 5 show ?thesis by(simp add: amor_del_min)
+    case Empty with 4 show ?thesis by(auto)
   next
-    case (Insert x)
-    { fix l r assume 1: "partition x s = (l,r)"
-      have "log 2 (1 + size s) < log 2 (2 + size s)" by simp
-      with 1 amor_partition[OF 5 1] size_partition[OF 1] Insert have ?thesis
+    case Del_min with 4 show ?thesis by(auto simp: amor_del_min)
+  next
+    case [simp]: (Insert x)
+    then obtain t where [simp]: "s = [t]" "bst_eq t" using 4 by auto
+    { fix l r assume 1: "partition x t = (l,r)"
+      have "log 2 (1 + size t) < log 2 (2 + size t)" by simp
+      with 1 amor_partition[OF \<open>bst_eq t\<close> 1] size_partition[OF 1] have ?thesis
         by(simp add: t_in_def insert_def algebra_simps size1_def
              del: log_less_cancel_iff) }
-    thus ?thesis using Insert by(simp add: insert_def split: prod.split)
+    thus ?thesis by(simp add: insert_def split: prod.split)
   qed
 qed
 

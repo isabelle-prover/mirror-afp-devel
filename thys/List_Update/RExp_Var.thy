@@ -2,12 +2,11 @@
     Author:      Max Haslbeck
     Reference:   http://www4.in.tum.de/lehre/vorlesungen/theo/SS10/vorlesung.shtml p.96ff
 *)
+section {* Equivalence of Regular Expression with Variables  *}
+
 theory RExp_Var
 imports "../Regular-Sets/Equivalence_Checking"
 begin
-
-
-section {* Enabeling showing Equivalence of Regular Expression with Variables  *}
 
 (* even Atoms \<rightarrow> normal Atoms
     odd Atoms \<rightarrow> Variables *)
@@ -567,25 +566,6 @@ proof -
                                           mycasexx_def mycasex_def mycasexy_def)
   finally show ?thesis .
 qed       
-thm nat.induct
  
-term "lang(mycasexxy x y)" 
-lemma ahahahha: 
-  fixes x y ::nat
-   assumes
-  "P []" and
-  "( xs\<in>lang (mycasexxy x y) \<Longrightarrow> P xs)" and
-  "( xs\<in>lang (mycasexyx x y) \<Longrightarrow> P xs)" and
-  "( xs\<in>lang (mycasexx x y) \<Longrightarrow> P xs)" and
-  "( xs\<in>lang (mycasexy x y) \<Longrightarrow> P xs)" and
-  "( xs\<in>lang (mycasex x y) \<Longrightarrow> P xs)"
-  shows
-  "set xs \<subseteq> {x,y} \<Longrightarrow> P xs"
-proof (goal_cases)
-  case 1
-  then have "xs \<in> lang (myUNIV x y)"  using myUNIV_alle by fast
-  then have "xs \<in> lang (mycases x y)" using mycases_char by auto
-  then show ?case unfolding mycases_def using assms by auto
-qed
 
 end

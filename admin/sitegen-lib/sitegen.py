@@ -193,12 +193,12 @@ def associate_releases(entries, versions, filename):
 
 # look for templates in the metadata directory according to the definitions
 # in the global configuration
-def scan_templates(entries):
+def scan_templates(entries, build_data):
 	for template in templates.keys():
 		try:
 			template_filename = os.path.join(metadata_dir, template + template_suffix)
 			if os.path.exists(template_filename):
-				handle_template(entries, template, read_template(template_filename))
+				handle_template(entries, build_data, template, read_template(template_filename))
 			else:
 				raise(Exception("File not found. Make sure the files defined in 'templates' dict exist".format(template_filename)))
 		except UnicodeDecodeError as ex:
@@ -267,7 +267,7 @@ def write_output(filename, content, generator):
 						if param == '':
 							result = generator()
 						else:
-							result = generator(param)
+							result = generator(param = param)
 					except Exception as ex:
 						failed = True
 
@@ -286,10 +286,13 @@ def write_output(filename, content, generator):
 # * search the appropriate generator function
 # * create destination directories
 # * call write_output for each entry or for all entries together
-def handle_template(entries, template, content):
+def handle_template(entries, build_data, template, content):
 	dir, generator, for_each_func, devel = templates[template]
 
 	if devel and not options.is_devel(): return
+
+	extra_args = dict()
+        if devel: extra_args['build_data'] = build_data
 
 	stats.tpls += 1
 
@@ -304,10 +307,10 @@ def handle_template(entries, template, content):
 	if for_each_func:
 		for entry, attributes in entries.items():
 			output_filename = os.path.join(dest_subdir, for_each_func(entry) + output_suffix)
-			write_output(output_filename, content, partial(generator, entry, attributes))
+			write_output(output_filename, content, partial(generator, entry, attributes, **extra_args))
 	else:
 		output_filename = os.path.join(dest_subdir, template + output_suffix)
-		write_output(output_filename, content, partial(generator, entries.items()))
+		write_output(output_filename, content, partial(generator, entries.items(), **extra_args))
 
 def normpath(path, *paths):
 	"""Return a normalized and absolute path (depending on current working directory)"""
@@ -450,6 +453,8 @@ if __name__ == "__main__":
 		if options.is_devel():
 			(build_data, status) = parse_status(options.status_file)
 			add_status(entries, status)
+                else:
+			build_data = dict()
 
 		# parse template format
 		magic_str_pos = magic_str.index("$")
@@ -457,5 +462,5 @@ if __name__ == "__main__":
 		magic_str_end = magic_str[magic_str_pos+1:]
 
 		stats = Stats()
-		scan_templates(entries)
+		scan_templates(entries, build_data)
 		print(stats)
