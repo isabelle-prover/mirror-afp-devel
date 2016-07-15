@@ -26,6 +26,7 @@
 
   <!--gen:header-->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

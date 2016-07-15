@@ -292,7 +292,7 @@ def handle_template(entries, build_data, template, content):
 	if devel and not options.is_devel(): return
 
 	extra_args = dict()
-        if devel: extra_args['build_data'] = build_data
+	if devel: extra_args['build_data'] = build_data
 
 	stats.tpls += 1
 
@@ -453,7 +453,7 @@ if __name__ == "__main__":
 		if options.is_devel():
 			(build_data, status) = parse_status(options.status_file)
 			add_status(entries, status)
-                else:
+		else:
 			build_data = dict()
 
 		# parse template format
