@@ -80,8 +80,8 @@ Random graphs are graphs with a fixed number of vertices, where each edge is pre
 <p></p>
 
 <!--#set var="name" value="Random_Graph_Subgraph_Threshold" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

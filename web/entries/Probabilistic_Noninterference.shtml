@@ -75,8 +75,8 @@ We formalize a probabilistic noninterference for a multi-threaded language with 
 <p></p>
 
 <!--#set var="name" value="Probabilistic_Noninterference" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

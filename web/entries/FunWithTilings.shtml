@@ -72,8 +72,8 @@ Tilings are defined inductively. It is shown that one form of mutilated chess bo
 <p></p>
 
 <!--#set var="name" value="FunWithTilings" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

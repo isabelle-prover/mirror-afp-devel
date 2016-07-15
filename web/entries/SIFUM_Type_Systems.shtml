@@ -93,8 +93,8 @@ Isabelle/HOL formalization of the concepts and proofs of this approach.
 <p></p>
 
 <!--#set var="name" value="SIFUM_Type_Systems" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

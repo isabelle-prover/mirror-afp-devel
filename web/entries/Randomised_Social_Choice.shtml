@@ -97,8 +97,8 @@ such as Bilinear Dominance or Pairwise Comparison.
 <p></p>
 
 <!--#set var="name" value="Randomised_Social_Choice" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

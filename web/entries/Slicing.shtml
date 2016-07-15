@@ -80,8 +80,8 @@ Slicing is a widely-used technique with applications in e.g. compiler technology
 <p></p>
 
 <!--#set var="name" value="Slicing" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

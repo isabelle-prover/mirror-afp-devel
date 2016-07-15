@@ -79,8 +79,8 @@ The reasoning stays at an abstract level by appealing to the uniqueness of solut
 <p></p>
 
 <!--#set var="name" value="Stern_Brocot" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

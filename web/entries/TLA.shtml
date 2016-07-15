@@ -94,8 +94,8 @@ new Isabelle object logic <a href="http://www.springerlink.com/content/354026160
 <p></p>
 
 <!--#set var="name" value="TLA" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

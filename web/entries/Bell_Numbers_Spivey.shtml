@@ -96,8 +96,8 @@ predicates and rules, and follows a repeating structure in its Isar proof.
 <p></p>
 
 <!--#set var="name" value="Bell_Numbers_Spivey" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

@@ -76,8 +76,8 @@ In 1975, Pratt introduced a proof system for certifying primes. He showed that a
 <p></p>
 
 <!--#set var="name" value="Pratt_Certificate" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->
