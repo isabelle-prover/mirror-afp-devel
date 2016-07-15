@@ -18,7 +18,7 @@ text \<open>We compute determinants on arbitrary rings by applying elementary ro
 theory Determinant_Impl
 imports
   "../Polynomial_Interpolation/Missing_Polynomial"
-  "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
+  "~~/src/HOL/Number_Theory/Polynomial_Factorial"
   Determinant
 begin
 
@@ -953,7 +953,7 @@ definition det_int :: "int mat \<Rightarrow> int" where
 lemma det_int[simp]: "det_int = det"
   by (intro ext, auto simp: det_int_def)
 
-definition det_field_poly :: "'a :: field poly mat \<Rightarrow> 'a poly" where
+definition det_field_poly :: "'a :: {field,euclidean_ring_gcd} poly mat \<Rightarrow> 'a poly" where
   "det_field_poly A = det_code (select_min degree) gcd_mute_fun A"
 
 lemma det_field_poly[simp]: "det_field_poly = det"

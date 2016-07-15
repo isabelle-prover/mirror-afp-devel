@@ -1,6 +1,6 @@
 (* Author: Manuel Eberl <eberlm@in.tum.de> *)
 theory Misc_Polynomial
-imports "~~/src/HOL/Library/Polynomial" "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
+imports "~~/src/HOL/Library/Polynomial" "~~/src/HOL/Number_Theory/Polynomial_Factorial"
 begin
 
 subsection {* Analysis *}
@@ -72,31 +72,6 @@ proof(clarify)
   ultimately show False by simp
 qed
 
-text {*
-  Dividing two polynomials by their gcd makes them coprime.
-*}
-lemma div_gcd_coprime_poly:
-  assumes "(p :: ('a::field) poly) \<noteq> 0 \<or> q \<noteq> 0"
-  defines [simp]: "d \<equiv> gcd p q"
-  shows "coprime (p div d) (q div d)"
-proof-
-  let ?d' = "gcd (p div d) (q div d)"
-  from assms have [simp]: "d \<noteq> 0" by simp
-  {
-    fix r assume "r dvd (p div d)" "r dvd (q div d)"
-    then obtain s t where "p div d = r * s" "q div d = r * t"
-        unfolding dvd_def by auto
-    hence "d * (p div d) = d * (r * s)" "d * (q div d) = d * (r * t)" by simp_all
-    hence A: "p = s * (r * d)" "q = t * (r * d)"
-        by (auto simp add: algebra_simps)
-    have "r * d dvd p" "r * d dvd q" by (subst A, rule dvd_triv_right)+
-    hence "d * r dvd d * 1" by (simp add: algebra_simps)
-    hence "r dvd 1" using `d \<noteq> 0` by (subst (asm) dvd_mult_cancel_left, auto)
-  }
-  hence A: "?d' dvd 1" by blast
-  then show ?thesis by simp
-qed
-
 lemma poly_div:
   assumes "poly q x \<noteq> 0" and "(q::'a :: field poly) dvd p"
   shows "poly (p div q) x = poly p x / poly q x"
@@ -111,7 +86,7 @@ qed
 
 (* TODO: make this less ugly *)
 lemma poly_div_gcd_squarefree_aux:
-  assumes "pderiv (p::('a::real_normed_field) poly) \<noteq> 0"
+  assumes "pderiv (p::('a::{field_char_0,euclidean_ring_gcd}) poly) \<noteq> 0"
   defines "d \<equiv> gcd p (pderiv p)"
   shows "coprime (p div d) (pderiv (p div d))" and
         "\<And>x. poly (p div d) x = 0 \<longleftrightarrow> poly p x = 0"
@@ -193,15 +168,27 @@ proof -
   qed
 
   then show "coprime t (pderiv t)"
-    using poly_gcd_unique [of 1 t "pderiv t"] by auto
+    by (rule coprimeI)
 qed
+
+lemma normalize_field:
+  "normalize (x :: 'a :: {field,normalization_semidom}) = (if x = 0 then 0 else 1)"
+  by (auto simp: is_unit_normalize dvd_field_iff)
+
+lemma normalize_field_eq_1 [simp]:
+  "x \<noteq> 0 \<Longrightarrow> normalize (x :: 'a :: {field,normalization_semidom}) = 1"
+  by (simp add: normalize_field)
+
+lemma unit_factor_field [simp]:
+  "unit_factor (x :: 'a :: {field,normalization_semidom}) = x"
+  by (cases "x = 0") (auto simp: is_unit_unit_factor dvd_field_iff)
 
 text {*
   Dividing a polynomial by its gcd with its derivative yields
   a squarefree polynomial with the same roots.
 *}
 lemma poly_div_gcd_squarefree:
-  assumes "(p :: ('a::real_normed_field) poly) \<noteq> 0"
+  assumes "(p :: ('a::{field_char_0,euclidean_ring_gcd}) poly) \<noteq> 0"
   defines "d \<equiv> gcd p (pderiv p)"
   shows "coprime (p div d) (pderiv (p div d))" (is ?A) and
         "\<And>x. poly (p div d) x = 0 \<longleftrightarrow> poly p x = 0" (is "\<And>x. ?B x")
@@ -216,11 +203,10 @@ proof-
       then obtain c where [simp]: "p = [:c:]" using pderiv_iszero by blast
       from assms(1) have "c \<noteq> 0" by simp
       from True have "d = smult (inverse c) p"
-          by (simp add: d_def normalize_poly_def)
+          by (simp add: d_def normalize_poly_def map_poly_pCons field_simps)
       hence "p div d = [:c:]" using `c \<noteq> 0`
           by (simp add: div_smult_right assms(1) one_poly_def[symmetric])
-      thus ?thesis using `c \<noteq> 0`
-        by (simp add: one_poly_def normalize_poly_def)
+      thus ?thesis using `c \<noteq> 0` by (simp add: normalize_const_poly one_poly_def)
   qed
   thus ?A and "\<And>x. ?B x" by simp_all
 qed

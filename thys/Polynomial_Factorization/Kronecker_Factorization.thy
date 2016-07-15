@@ -352,7 +352,7 @@ proof
   obtain a P where rp: "?p = (a,P)" by force
   from rat_to_normalized_int_poly[OF this] have deg: "degree P = degree p" by auto
   from rat_to_int_factor_normalized_int_poly[OF prod rp]
-    obtain g' where dvd: "g' dvd P" and dg: "degree g' = degree q" by force
+    obtain g' where dvd: "g' dvd P" and dg: "degree g' = degree q" by (auto intro: dvdI)
   have "kronecker_factorization_main df dp bnd P = None" 
       using none[unfolded kronecker_factorization_rat_main_def rp] by auto
   from kronecker_factorization_main_complete[OF this dp[folded deg]] dg dvd q show False by auto

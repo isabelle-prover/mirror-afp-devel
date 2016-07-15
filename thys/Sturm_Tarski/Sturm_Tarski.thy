@@ -696,7 +696,7 @@ lemma jump_coprime:
 proof -
   have "order x p = 0 \<or> order x q = 0"
    by (rule ccontr, metis (poly_guards_query) assms(2) assms(4) order_root poly_1 poly_all_0_iff_0
-     poly_eq_0_iff_dvd poly_gcd_greatest poly_gcd_zero_iff)
+     poly_eq_0_iff_dvd gcd_greatest gcd_eq_0_iff)
   hence "order x q=0" by (metis assms(1) assms(3) order_root)
   hence "order x p - order x q=order x (q * p)"
     using `p\<noteq>0` `q\<noteq>0` order_mult [of q p x] by auto
@@ -961,6 +961,7 @@ proof -
       have "cindex a b q p = setsum (\<lambda>x. sjump (p*q) x) A" unfolding A_def cindex_def
         using jump_coprime[OF `p\<noteq>0` `q\<noteq>0` _ `coprime p q`,folded mult.commute] by auto
       moreover have "coprime q p" using `coprime p q`
+      thm gcd.commute[of p]
         by (simp add: ac_simps)
       hence "cindex a b p q = setsum (\<lambda>x. sjump (p*q) x) B" unfolding B_def cindex_def
         using jump_coprime[OF `q\<noteq>0` `p\<noteq>0`] by auto
@@ -972,7 +973,7 @@ proof -
       assume "A \<inter> B\<noteq>{}"
       then obtain x where "x\<in>A" and "x\<in>B" by auto
       hence "poly p x=0" and "poly q x=0" unfolding A_def B_def by auto
-      hence "gcd p q\<noteq>1" by (metis poly_1 poly_eq_0_iff_dvd poly_gcd_greatest zero_neq_one)
+      hence "gcd p q\<noteq>1" by (metis poly_1 poly_eq_0_iff_dvd gcd_greatest zero_neq_one)
       thus False using `coprime p q` by auto
     qed
   moreover have "finite A" and "finite B"
@@ -988,8 +989,8 @@ proof -
   have "p\<noteq>0" and "q\<noteq>0" using `poly (p * q) a \<noteq>0` by auto
   def g\<equiv>"gcd p q"
   obtain p' q' where p':"p= p'*g" and q':"q=q'*g"
-    using poly_gcd_dvd1 poly_gcd_dvd2 dvd_def[of "gcd p q", simplified mult.commute] g_def by metis
-  hence "coprime p' q'" using gcd_coprime_poly `p\<noteq>0` unfolding g_def by auto
+    using gcd_dvd1 gcd_dvd2 dvd_def[of "gcd p q", simplified mult.commute] g_def by metis
+  hence "coprime p' q'" using gcd_coprime `p\<noteq>0` unfolding g_def by auto
   have "p'\<noteq>0" "q'\<noteq>0" "g \<noteq>0" using p' q' `p\<noteq>0` `q\<noteq>0` by auto
   have "?L=cindex a b q' p' + cindex a b p' q'"
     apply (simp only: p' q' mult.commute)

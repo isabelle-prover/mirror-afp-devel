@@ -1242,7 +1242,7 @@ proof-
   hence "poly (p div d) x = 0" "poly (pderiv p div d) x = 0"
       using assms(2)
       unfolding sturm_squarefree'_def Let_def d_def by auto
-  moreover from div_gcd_coprime_poly assms(1)
+  moreover from div_gcd_coprime assms(1)
       have "coprime (p div d) (pderiv p div d)" unfolding d_def by auto
   ultimately show False using coprime_imp_no_common_roots by auto
 qed
@@ -1326,7 +1326,7 @@ proof
       unfolding sturm_squarefree'_def Let_def sturm_def d_def
           by (subst sturm_aux.simps, simp)
   have coprime: "coprime ?p' (pderiv p div d)"
-      unfolding d_def using div_gcd_coprime_poly `p \<noteq> 0` by blast
+      unfolding d_def using div_gcd_coprime `p \<noteq> 0` by blast
   thus squarefree':
       "\<And>x. \<not> (poly (p div d) x = 0 \<and> poly (sturm_squarefree' p ! 1) x = 0)"
       using coprime_imp_no_common_roots by simp

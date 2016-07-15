@@ -11,9 +11,9 @@ text \<open>The theory contains some basic results on polynomials which have not
 
 theory Missing_Polynomial
 imports 
-  "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
+  "~~/src/HOL/Number_Theory/Polynomial_Factorial"
   Missing_Unsorted
-begin
+begin       
 
 subsection \<open>Basic Properties\<close>
 
@@ -253,8 +253,23 @@ subsection \<open>Monic Polynomials\<close>
 
 abbreviation monic where "monic p \<equiv> coeff p (degree p) = 1"
 
+lemma unit_factor_field [simp]: 
+  "unit_factor (x :: 'a :: {field,normalization_semidom}) = x"
+  by (cases "is_unit x") (auto simp: is_unit_unit_factor dvd_field_iff)
+
+lemma poly_gcd_monic: 
+  fixes p :: "'a :: {field,euclidean_ring_gcd} poly"
+  assumes "p \<noteq> 0 \<or> q \<noteq> 0"
+  shows   "monic (gcd p q)"
+proof -
+  from assms have "1 = unit_factor (gcd p q)" by (auto simp: unit_factor_gcd)
+  also have "\<dots> = [:lead_coeff (gcd p q):]" unfolding unit_factor_poly_def
+    by (simp add: monom_0)
+  finally show ?thesis by (simp add: one_poly_def lead_coeff_def)
+qed
+
 lemma normalize_monic: "monic p \<Longrightarrow> normalize p = p"
-  by (simp add: normalize_poly_def)
+  by (simp add: normalize_poly_def lead_coeff_def)
 
 lemma lcoeff_monic_mult: assumes monic: "monic (p :: 'a :: comm_semiring_1 poly)"
   shows "coeff (p * q) (degree p + degree q) = coeff q (degree q)"
@@ -959,11 +974,12 @@ shows "a = b"
     mult.right_neutral smult_1_left)
 
 lemma monic_gcd:
-  assumes "a \<noteq> 0 \<or> b \<noteq>0"
+  assumes "(a::'a::{field,euclidean_ring_gcd} poly) \<noteq> 0 \<or> b \<noteq>0"
   shows "monic (gcd a b)"
   by (metis assms lead_coeff_def poly_gcd_monic)
 
-lemma monic_irreducible_gcd: "monic f \<Longrightarrow> irreducible f \<Longrightarrow> gcd f u \<in> {1,f}"
+lemma monic_irreducible_gcd: 
+  "monic (f::'a::{field,euclidean_ring_gcd} poly) \<Longrightarrow> irreducible f \<Longrightarrow> gcd f u \<in> {1,f}"
   by (metis zero_neq_one gcd_dvd1 insert_iff irreducible_dvd_eq irreducible_dvd_smult 
     irreducible_smult leading_coeff_0_iff monic_degree_0 monic_gcd)
 

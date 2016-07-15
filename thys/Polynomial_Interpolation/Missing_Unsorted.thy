@@ -224,28 +224,6 @@ subclass ring_div
 
 end
 
-instantiation rat :: ring_div_field
-begin
-definition "mod_rat (x :: rat) (y :: rat) = (if y = 0 then x else 0)"
-instance
-  by (intro_classes, auto simp: mod_rat_def)
-end
-
-instantiation real :: ring_div_field
-begin
-definition "mod_real (x :: real) (y :: real) = (if y = 0 then x else 0)"
-instance
-  by (intro_classes, auto simp: mod_real_def)
-end
-
-instantiation complex :: ring_div_field
-begin
-definition "mod_complex (x :: complex) (y :: complex) = (if y = 0 then x else 0)"
-instance
-  by (intro_classes, auto simp: mod_complex_def)
-end
-
-
 (* GCD and LCM part *)
 
 lemma dvd_abs_mult_left_int[simp]: "(abs (a :: int) * y dvd x) = (a * y dvd x)"

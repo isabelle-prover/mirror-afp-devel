@@ -901,7 +901,7 @@ proof (cases rai1)
           }
           from this[OF un1(3)[unfolded True]] this[OF un2(3)]
           have "[: -?x2, 1 :] dvd gcd (?Rp p1) (?Rp p2)" by auto
-          also have "gcd (?Rp p1) (?Rp p2) = ?Rp f" unfolding f_def by (simp add: rpoly.map_poly_gcd)
+          also have "gcd (?Rp p1) (?Rp p2) = ?Rp f" unfolding f_def by (simp add: rpoly'.map_poly_gcd)
           finally have "poly (?Rp f) ?x2 = 0" by (simp add: poly_eq_0_iff_dvd)
           thus "rpoly f ?x2 = 0" by (simp add: eval_poly_def)
         qed

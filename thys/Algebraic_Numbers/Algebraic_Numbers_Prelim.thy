@@ -37,6 +37,9 @@ where
 interpretation rpoly: inj_field_hom_0 of_rat
   by (unfold_locales, auto simp: of_rat_add of_rat_mult of_rat_inverse of_rat_minus)
 
+interpretation rpoly': inj_field_hom_0' of_rat
+  by (unfold_locales, auto simp: of_rat_add of_rat_mult of_rat_inverse of_rat_minus)
+
 abbreviation real_of_rat_poly :: "rat poly \<Rightarrow> real poly" where
   "real_of_rat_poly \<equiv> map_poly real_of_rat"
 
@@ -49,7 +52,7 @@ lemma real_of_rat_poly_0[simp]: "real_of_rat_poly p = 0 \<longleftrightarrow> p 
 subsection \<open>Algebraic Numbers -- Definition, Inverse, and Roots\<close>
 
 lemma algebraic_altdef_rpoly: 
-  fixes x :: "'a :: field_char_0"
+  fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
   shows "algebraic x \<longleftrightarrow> (\<exists>p. rpoly p x = 0 \<and> p \<noteq> 0)"
 unfolding algebraic_altdef
 proof (safe, goal_cases)
@@ -118,7 +121,7 @@ definition factors_of_rat_poly :: "factorization_mode \<Rightarrow> rat poly \<R
   "factors_of_rat_poly mode p = map fst (snd (factorize_sf_rat_poly mode p))"
 
 lemma factors_of_rat_poly:  
-  defines "rp \<equiv> rpoly :: rat poly \<Rightarrow> 'a :: field_char_0 \<Rightarrow> 'a"
+  defines "rp \<equiv> rpoly :: rat poly \<Rightarrow> 'a :: {field_char_0,euclidean_ring_gcd} \<Rightarrow> 'a"
   assumes "factors_of_rat_poly mode p = qs"
   and mode: "mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p"
   shows "\<And> q. q \<in> set qs \<Longrightarrow> monic q \<and> square_free q \<and> degree q \<noteq> 0 \<and> degree q \<le> degree p \<and> 
@@ -181,14 +184,16 @@ proof -
     hence "gcd (?rp q) (?rp r) = 0 \<or> degree (gcd (?rp q) (?rp r)) \<noteq> 0"
       by (metis degree_0_id is_unit_gcd is_unit_iff_degree pCons_eq_0_iff pCons_eq_iff zero_neq_one)
     hence "gcd q r = 0 \<or> degree (gcd q r) \<noteq> 0"
-      by (metis rpoly.degree_map_poly rpoly.map_poly_0_iff rpoly.map_poly_gcd)
+      by (metis rpoly.degree_map_poly rpoly.map_poly_0_iff rpoly'.map_poly_gcd)
     hence "\<not> coprime q r" by auto
     with sff(3)[OF qi rj]
     show "r = q" by auto
   qed
 qed
 
-lemma alg_poly_factors_rat_poly: assumes p: "alg_poly x p"
+lemma alg_poly_factors_rat_poly: 
+  fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
+  assumes p: "alg_poly x p"
   and mode: "mode \<in> {Check_Irreducible, Check_Root_Free} \<Longrightarrow> square_free p"
   shows "\<exists> q \<in> set (factors_of_rat_poly mode p). alg_poly x q \<and> monic q 
   \<and> (mode = Full_Factorization \<or> mode = Check_Irreducible \<longrightarrow> irreducible q) \<and> 
@@ -202,34 +207,14 @@ proof -
     by (intro bexI[OF _ q], auto)
 qed
 
-lemma irreducible_monic_gcd: assumes "irreducible p" and "monic p"
+lemma irreducible_monic_gcd: 
+  fixes p :: "'a :: {field_char_0,euclidean_ring_gcd} poly"
+  assumes "irreducible p" and "monic p"
   shows "gcd p q \<in> {1,p}"
-proof -
-  def g \<equiv> "gcd p q"
-  note irr = irreducibleD[OF assms(1)]
-  have dvd: "g dvd p" unfolding g_def by auto
-  have mg: "monic g" unfolding g_def using \<open>monic p\<close>
-    using poly_gcd_monic[of p q] by (auto simp add: lead_coeff_def)
-  hence [simp]: "g \<noteq> 0" by auto
-  from dvd_imp_degree_le[OF dvd] irr have "degree g \<le> degree p" by force
-  with dvd irr(2)[of g] have "degree g = 0 \<or> degree g = degree p" by linarith
-  thus ?thesis
-  proof
-    assume "degree g = 0"
-    with mg have "g = 1" using monic_degree_0 by blast
-    thus ?thesis unfolding g_def by auto
-  next
-    assume deg: "degree g = degree p"
-    def d \<equiv> "p div g"
-    with dvd have p: "p = g * d" by simp
-    with deg have "degree d = 0" by (cases "d = 0") (simp_all add: degree_mult_eq)
-    then obtain d' where [simp]: "d = [:d':]" by (elim degree_eq_zeroE)
-    with p mg assms(2) have "p = g" by (simp split: if_split_asm)
-    thus ?thesis by (simp add: g_def)
-  qed
-qed
+  using assms(2,1) by (fact monic_irreducible_gcd)
 
 lemma irreducible_monic_gcd_twice: 
+  fixes p :: "'a :: {field_char_0,euclidean_ring_gcd} poly"
   assumes p: "irreducible p" "monic p" 
   and q: "irreducible q" "monic q"
   shows "gcd p q = 1 \<or> p = q"
@@ -241,7 +226,9 @@ proof (cases "gcd p q = 1")
   finally show ?thesis by auto
 qed simp
   
-lemma alg_poly_irreducible_unique: assumes "algebraic x"
+lemma alg_poly_irreducible_unique: 
+  fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
+  assumes "algebraic x"
   shows "\<exists>! p. alg_poly x p \<and> monic p \<and> irreducible p"
 proof -
   let ?p = "\<lambda> p. alg_poly x p \<and> monic p \<and> irreducible p"
@@ -266,8 +253,9 @@ proof -
       hence "[:-x,1:] dvd ?rp p" "[:-x,1:] dvd ?rp q" 
         unfolding poly_eq_0_iff_dvd by auto
       hence "[:-x,1:] dvd gcd (?rp p) (?rp q)" by (rule gcd_greatest)
-      also have "gcd (?rp p) (?rp q) = 1" 
-        unfolding rpoly.map_poly_gcd[symmetric] gcd rpoly.map_poly_1 .. 
+      also have "\<dots> = map_poly of_rat (gcd p q)"
+        by (rule rpoly'.map_poly_gcd [symmetric])
+      also have "\<dots> = 1" by (simp add: gcd)
       finally show False by (simp add: dvd_iff_poly_eq_0)
     qed
   qed
@@ -620,7 +608,9 @@ lemma poly_mult_rat_square_free: assumes "r \<noteq> 0" "square_free p"
   by (rule factor_preserving.square_free_preservation[OF factor_preserving_poly_mult_rat[of "inverse r"]],
     insert assms, auto)
 
-lemma irreducible_preservation: assumes irr: "irreducible p" and mon: "monic p"
+lemma irreducible_preservation: 
+  fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
+  assumes irr: "irreducible p" and mon: "monic p"
   and x: "alg_poly x p" 
   and y: "alg_poly y q"
   and deg: "degree p \<ge> degree q"
@@ -648,7 +638,9 @@ proof (rule ccontr)
   with deg show False by auto
 qed
 
-lemma poly_inverse_irreducible: assumes p: "irreducible p" "monic p" 
+lemma poly_inverse_irreducible: 
+  fixes x :: "'a :: {field_char_0,euclidean_ring_gcd}"
+  assumes p: "irreducible p" "monic p" 
   and x: "alg_poly x p"
   and x0: "x \<noteq> 0"
   shows "irreducible (poly_inverse p)"
@@ -758,9 +750,9 @@ lemma poly_inverse_square_free: assumes p: "square_free (p :: rat poly)"
   shows "square_free (poly_inverse p)"
 proof -
   let ?c = "of_rat :: rat \<Rightarrow> complex"
-  interpret c: inj_field_hom_0 ?c ..
-  have "inj_field_hom_0 ?c" ..
-  note sf_c = inj_field_hom_0.square_free_map_poly[OF this]
+  interpret c: inj_field_hom_0' ?c ..
+  have "inj_field_hom_0' ?c" ..
+  note sf_c = inj_field_hom_0'.square_free_map_poly[OF this]
   from poly_inverse_square_free_complex[OF assms[folded sf_c]]
   have "square_free (poly_inverse (map_poly ?c p))" .
   also have "poly_inverse (map_poly ?c p) = map_poly ?c (poly_inverse p)"

@@ -27,6 +27,14 @@ declare real_code_dels[code, code del]
 declare real_code_unfold_dels[code_unfold del]
 declare real_alg_code_eqns[code]
 
+lemma Gcd_eucl_code_abort [code]: 
+  "Gcd_eucl A = Code.abort (STR ''Gcd not supported'') (\<lambda>_. Gcd_eucl A)"
+  by simp
+
+lemma Lcm_eucl_code_abort [code]: 
+  "Lcm_eucl A = Code.abort (STR ''Gcd not supported'') (\<lambda>_. Lcm_eucl A)"
+  by simp
+
 abbreviation (input) "show_lines x \<equiv> shows_lines x Nil"
 
 fun show_factorization :: "'a :: {semiring_1,show} \<times> (('a poly \<times> nat)list) \<Rightarrow> string" where
@@ -39,31 +47,31 @@ text \<open>Determine the roots over the rational, real, and complex numbers.\<c
 definition "testpoly = [:5/2, -7/2, 1/2, -5, 7, -1, 5/2, -7/2, 1/2:]"
 definition "test = show_lines (   real_roots_of_rat_poly testpoly)"
 
-value (code) "show_lines (        roots_of_rat_poly testpoly)"
-value (code) "show_lines (   real_roots_of_rat_poly testpoly)"
-value (code) "show_lines (complex_roots_of_rat_poly testpoly)"
+value [code] "show_lines (        roots_of_rat_poly testpoly)"
+value [code] "show_lines (   real_roots_of_rat_poly testpoly)"
+value [code] "show_lines (complex_roots_of_rat_poly testpoly)"
 
 
 text \<open>Factorize polynomials over the rational, real, and complex numbers.\<close>
 
-value (code) "show_factorization (factorize_rat_poly testpoly)" 
-value (code) "show_factorization (the (factorize_real_poly testpoly))"
-value (code) "show_factorization (the (factorize_complex_poly testpoly))"
+value [code] "show_factorization (factorize_rat_poly testpoly)" 
+value [code] "show_factorization (the (factorize_real_poly testpoly))"
+value [code] "show_factorization (the (factorize_complex_poly testpoly))"
 
 text \<open>If the input is not a rational polynomial, factorization can fail.\<close>
 
-value (code) "factorize_real_poly [:sqrt(2),1,3,1:]" text \<open>fails\\\<close>
-value (code) "factorize_real_poly [:sqrt(2),1,3:]" text \<open>does not fail, reveals internal representation\\\<close>
-value (code) "show (factorize_real_poly [:sqrt(2),1,3:])" text \<open>does not fail, pretty printed\<close>
+value [code] "factorize_real_poly [:sqrt(2),1,3,1:]" text \<open>fails\\\<close>
+value [code] "factorize_real_poly [:sqrt(2),1,3:]" text \<open>does not fail, reveals internal representation\\\<close>
+value [code] "show (factorize_real_poly [:sqrt(2),1,3:])" text \<open>does not fail, pretty printed\<close>
 
 
 text \<open>A sequence of calculations.\<close>
 
-value (code) "show (- sqrt 2 - sqrt 3)"
-value (code) "root 3 4 > sqrt (root 4 3) + \<lfloor>1/10 * root 3 7\<rfloor>"
-value (code) "csqrt (4 + 3 * \<i>) \<in> \<real>"
-value (code) "show (csqrt (4 + 3 * \<i>))"
-value (code) "show (csqrt (1 + \<i>))"
+value [code] "show (- sqrt 2 - sqrt 3)"
+value [code] "root 3 4 > sqrt (root 4 3) + \<lfloor>1/10 * root 3 7\<rfloor>"
+value [code] "csqrt (4 + 3 * \<i>) \<in> \<real>"
+value [code] "show (csqrt (4 + 3 * \<i>))"
+value [code] "show (csqrt (1 + \<i>))"
 
 subsection \<open>Example Application: Compute Norms of Eigenvalues\<close>
 
@@ -83,8 +91,8 @@ definition "testmat = mat_of_rows_list 3 [
   ]"
 
 definition "spectral_radius_test = show (Max (set [ norm ev. ev \<leftarrow> eigenvalues testmat]))"
-value (code) "char_poly testmat"
-value (code) spectral_radius_test
+value [code] "char_poly testmat"
+value [code] spectral_radius_test
 
 text \<open>Since the precise show function requires validation of the factorization
   provided by the oracle, it is usually much slower than the approximative one

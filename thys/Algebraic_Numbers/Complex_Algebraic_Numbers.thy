@@ -74,7 +74,7 @@ definition root_poly_Im :: "rat poly \<Rightarrow> rat poly list" where
 lemma poly_1_2i_code_unfold[code_unfold]: "snd (rat_to_int_poly poly_1_2i) = [:1,0,4:]"
   by code_simp
 
-context inj_field_hom_0
+context inj_field_hom_0'
 begin
 lemma map_poly_pderiv: 
   "map_poly hom (pderiv p) = pderiv (map_poly hom p)"
@@ -121,11 +121,13 @@ proof
   show "p = 0" using poly_all_0_iff_0 by blast
 qed (auto simp: square_free_poly_def)
 
-lemma alg_poly_square_free_poly_eq[simp]: "alg_poly x (square_free_poly gcd p) = alg_poly x p"
-  unfolding alg_poly_def rpoly.poly_map_poly_eval_poly[symmetric] rpoly.map_poly_square_free_poly 
+lemma alg_poly_square_free_poly_eq[simp]: 
+  "alg_poly (x :: 'a :: {field_char_0,euclidean_ring_gcd}) (square_free_poly gcd p) = alg_poly x p"
+  unfolding alg_poly_def rpoly.poly_map_poly_eval_poly[symmetric] rpoly'.map_poly_square_free_poly 
     square_free_poly by simp
 
-lemma alg_poly_square_free_poly: "alg_poly x p \<Longrightarrow> alg_poly x (square_free_poly gcd p)"
+lemma alg_poly_square_free_poly: 
+  "alg_poly (x :: 'a :: {field_char_0,euclidean_ring_gcd}) p \<Longrightarrow> alg_poly x (square_free_poly gcd p)"
   by simp
 
 lemma alg_poly_root_poly: assumes "rpoly p x = 0" and p: "p \<noteq> 0"

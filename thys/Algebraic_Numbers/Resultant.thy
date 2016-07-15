@@ -2004,19 +2004,4 @@ lemma resultant_int_poly_code[code]: "resultant_int_poly = resultant_impl common
 lemma resultant_code[code]: "resultant x y = resultant_impl gcd_divisor x y"
   by simp
 
-instantiation rat :: ring_gcd
-begin
-definition gcd_rat :: "rat \<Rightarrow> rat \<Rightarrow> rat" where
-  "gcd_rat x y = (if x = 0 \<and> y = 0 then 0 else 1)"
-definition lcm_rat :: "rat \<Rightarrow> rat \<Rightarrow> rat" where
-  "lcm_rat x y = (if x = 0 \<or> y = 0 then 0 else 1)"
-definition unit_factor_rat :: "rat \<Rightarrow> rat" where
-  "unit_factor_rat x = x"
-definition normalize_rat :: "rat \<Rightarrow> rat" where 
-  "normalize_rat x = (if x = 0 then 0 else 1)"
-instance 
-by (standard, insert const_poly_dvd_1 is_unit_pCons_iff, 
-  (force simp: dvd_unit_imp_unit unit_factor_rat_def normalize_rat_def gcd_rat_def lcm_rat_def)+)
-end
-
 end

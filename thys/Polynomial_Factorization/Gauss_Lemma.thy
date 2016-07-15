@@ -517,7 +517,8 @@ proof (rule irreducibleI)
   proof
     assume "g dvd (?rp p)"
     then obtain h where pgh: "(?rp p) = g * h" unfolding dvd_def by auto
-    from rat_to_int_factor[OF pgh] obtain g' where g': "g' dvd p" and dg: "degree g' = degree g" by force
+    from rat_to_int_factor[OF pgh] obtain g' where g': "g' dvd p" and dg: "degree g' = degree g"
+      by (auto intro: dvdI)
     with irr[of g'] deg[unfolded dg] show False by auto
   qed
 qed

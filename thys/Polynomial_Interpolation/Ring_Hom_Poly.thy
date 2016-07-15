@@ -7,9 +7,9 @@ section \<open>Connecting Polynomials with Homomorphism Locales\<close>
 
 theory Ring_Hom_Poly
 imports 
+  "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
   Ring_Hom
   Missing_Polynomial
-  "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
   Rat
 begin
 
@@ -312,6 +312,9 @@ end
 lemma pdivmod_pdivmodrel: "pdivmod_rel p q r s \<longleftrightarrow> pdivmod p q = (r,s)" 
   by (metis pdivmod_def pdivmod_rel pdivmod_rel_unique prod.sel)
 
+locale inj_field_hom' = inj_field_hom hom
+  for hom :: "'a :: {field,euclidean_ring_gcd} \<Rightarrow> 'b :: {field,euclidean_ring_gcd}"
+
 context inj_field_hom
 begin
 
@@ -351,12 +354,18 @@ lemma map_poly_div: "map_poly hom (p div q) = map_poly hom p div map_poly hom q"
 lemma map_poly_mod: "map_poly hom (p mod q) = map_poly hom p mod map_poly hom q"
   using map_poly_pdivmod[of p q] unfolding pdivmod_def by simp
 
+end
+
+context inj_field_hom'
+begin
+
 lemma map_poly_gcd: "map_poly hom (gcd p q) = gcd (map_poly hom p) (map_poly hom q)"
 proof (induct p q rule: gcd_eucl.induct)
   case (1 p b)
   thus ?case
     by (cases "b = 0")
-       (simp_all add: gcd_non_0 coeff_map_poly normalize_poly_def map_poly_mod)
+       (simp_all add: gcd_non_0 coeff_map_poly normalize_poly_altdef 
+          map_poly_mod map_poly_div lead_coeff_def map_poly_compose)
 qed
   
 lemma map_poly_power: "map_poly hom (p ^ n) = (map_poly hom p) ^ n"

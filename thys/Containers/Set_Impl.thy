@@ -8,6 +8,7 @@ theory Set_Impl imports
   RBT_Set2
   Closure_Set
   Containers_Generator
+  Complex_Main
 begin
 
 section {* Different implementations of sets *}
@@ -314,6 +315,8 @@ declare [[code drop:
   the_elem
   Pow
   setsum
+  Gcd
+  Lcm
   Product_Type.product
   Id_on
   Image
@@ -1383,7 +1386,7 @@ by(unfold_locales)(simp add: fun_eq_iff add.left_commute)
 
 lemma setsum_code [code]:
   "setsum f A = (if finite A then set_fold_cfc (setsum_cfc f) 0 A else 0)"
-by transfer(simp add: setsum.eq_fold)
+  by transfer(simp add: setsum.eq_fold)
 
 lemma product_code [code]:
   fixes dxs :: "'a :: ceq set_dlist"

@@ -9,7 +9,7 @@ section{*Rings*}
 theory Rings2
 imports
    "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
-   "~~/src/HOL/Number_Theory/Euclidean_Algorithm"
+   "~~/src/HOL/Number_Theory/Polynomial_Factorial"
 begin
 
 subsection{*Previous lemmas and results*}
@@ -993,16 +993,7 @@ qed
 
 end
 
-subclass (in euclidean_ring) pid_div
-proof qed
-
-instance int :: pir_div
-proof
-qed
-
-instance poly :: (field) pir_div
-proof
-qed
+subclass (in euclidean_ring) pid_div ..
 
 
 subsection{*More gcd structures*}
@@ -1022,6 +1013,7 @@ subsection{*Field*}
 text{*Proving that any field is a euclidean domain. There are alternatives to do this,
 see @{url "https://lists.cam.ac.uk/pipermail/cl-isabelle-users/2014-October/msg00034.html"}*}
 
+(* TODO Remove *)
 class field_euclidean = field + euclidean_ring +
   assumes "euclidean_size = (\<lambda>i. if i = 0 then 0 else 1::nat)"
   and "normalisation_factor = id"

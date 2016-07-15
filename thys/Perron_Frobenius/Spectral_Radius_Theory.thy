@@ -166,7 +166,7 @@ proof (rule perron_frobenius_spectral_radius[OF A nonneg]; intro allI impI)
   fix x :: complex
   assume x: "norm x = 1"
   have A0: "char_poly A \<noteq> 0" using degree_monic_char_poly[OF A] by auto
-  interpret inj_field_hom_0 ?cr by (standard, auto)
+  interpret inj_field_hom_0' ?cr by (standard, auto)
   from A0 have cp0: "?cp \<noteq> 0" by auto
   obtain ox where ox: "order x ?cp = ox" by blast
   note sff = square_free_factorization_order_root[OF yun_factorization(1)[OF 

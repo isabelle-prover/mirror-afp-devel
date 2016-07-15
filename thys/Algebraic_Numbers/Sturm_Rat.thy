@@ -114,7 +114,7 @@ lemma count_roots_interval_rat: assumes sf: "square_free p"
   shows "root_info_cond (count_roots_interval_rat p) p"
 proof -
   have sf: "square_free (real_of_rat_poly p)"
-    by (subst inj_field_hom_0.square_free_map_poly, unfold_locales, rule sf)
+    by (subst inj_field_hom_0'.square_free_map_poly, unfold_locales, rule sf)
   from sf have p: "p \<noteq> 0" unfolding square_free_def by auto
   show ?thesis
   using count_roots_interval_sf_rat[OF p]
@@ -157,7 +157,7 @@ definition sturm_squarefree_rat where
 lemma sturm_squarefree_rat: "sturm_squarefree (real_of_rat_poly p) 
   = map real_of_rat_poly (sturm_squarefree_rat p)"
   unfolding sturm_squarefree_rat_def sturm_squarefree_def gcd_rat_poly
-    rpoly.map_poly_gcd[symmetric] rpoly.map_poly_div[symmetric] rpoly.map_poly_pderiv sturm_rat ..
+    rpoly'.map_poly_gcd[symmetric] rpoly.map_poly_div[symmetric] rpoly.map_poly_pderiv sturm_rat ..
 
 definition poly_inf_rat :: "rat poly \<Rightarrow> rat" where 
   "poly_inf_rat p \<equiv> sgn (coeff p (degree p))"

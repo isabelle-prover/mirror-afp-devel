@@ -36,7 +36,9 @@ qed
 declare primitive_prs.simps[simp del]
 
 lemma normalize_content_1: "(normalize_content p :: int poly) \<noteq> 0 \<Longrightarrow> content (normalize_content p) = 1" 
-  using content_normalize_content_1 by force
+  using content_normalize_content_1[of p]
+  by (cases "p = 0") auto
+  
   
 lemma primitive_prs: assumes "h = primitive_prs f g"
   "g \<noteq> 0 \<Longrightarrow> content g = 1"
@@ -139,8 +141,15 @@ definition gcd_rat_poly :: "rat poly \<Rightarrow> rat poly \<Rightarrow> rat po
      h = map_poly rat_of_int (gcd_int_poly f' g')
    in smult (inverse (coeff h (degree h))) h)"
 
-lemma normalize_smult: "a \<noteq> 0 \<Longrightarrow> normalize (smult a p) = normalize p"
-  by (simp add: normalize_poly_def  field_simps)
+lemma normalize_smult: 
+  assumes "a \<noteq> (0::'a::{field,euclidean_ring_gcd})"
+  shows   "normalize (smult a p) = normalize p"
+proof -
+  have "smult a p = [:a:] * p" by simp
+  also from assms have "normalize \<dots> = normalize p"
+    by (subst normalize_mult) (simp_all add: normalize_const_poly is_unit_normalize dvd_field_iff)
+  finally show ?thesis .
+qed
 
 lemma gcd_rat_poly[simp]: "gcd_rat_poly = gcd"
 proof (intro ext)
@@ -170,7 +179,8 @@ proof (intro ext)
     thus dvd_g: "?gcd dvd g"
       by (metis dvdE inverse_zero_imp_zero lc_def leading_coeff_neq_0 mult_eq_0_iff smult_dvd_iff)
     show "normalize ?gcd = ?gcd"
-      by (cases "lc = 0") (simp_all add: normalize_poly_def field_simps lc_def)
+      by (cases "lc = 0") (simp_all add: normalize_poly_altdef lead_coeff_def 
+                             one_poly_def [symmetric] field_simps lc_def)
     fix k
     assume dvd: "k dvd f" "k dvd g"
     obtain k' c where kck: "rat_to_normalized_int_poly k = (c,k')" by force

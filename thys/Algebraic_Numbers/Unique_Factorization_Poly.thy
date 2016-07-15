@@ -15,6 +15,36 @@ imports
   "../Polynomial_Factorization/Polynomial_Divisibility"
   "../Polynomial_Factorization/Unique_Factorization_Domain"
 begin
+  
+instantiation fract :: (idom) euclidean_ring
+begin
+
+definition [simp]: "normalize_fract = (normalize_field :: 'a fract \<Rightarrow> _)"
+definition [simp]: "unit_factor_fract = (unit_factor_field :: 'a fract \<Rightarrow> _)"
+definition [simp]: "euclidean_size_fract = (euclidean_size_field :: 'a fract \<Rightarrow> _)"
+definition [simp]: "mod_fract = (mod_field :: 'a fract \<Rightarrow> _)"
+
+instance by standard (simp_all add: dvd_field_iff divide_simps)
+
+end
+
+instantiation fract :: (idom) euclidean_ring_gcd
+begin
+
+definition gcd_fract :: "'a fract \<Rightarrow> 'a fract \<Rightarrow> 'a fract" where
+  "gcd_fract = gcd_eucl"
+definition lcm_fract :: "'a fract \<Rightarrow> 'a fract \<Rightarrow> 'a fract" where
+  "lcm_fract = lcm_eucl"
+definition Gcd_fract :: "'a fract set \<Rightarrow> 'a fract" where
+ "Gcd_fract = Gcd_eucl"
+definition Lcm_fract :: "'a fract set \<Rightarrow> 'a fract" where
+ "Lcm_fract = Lcm_eucl"
+
+instance
+  by standard (simp_all add: gcd_fract_def lcm_fract_def Gcd_fract_def Lcm_fract_def)
+
+end
+
 
 lemmas irreducible_def = Divisibility.irreducible_def
 abbreviation irreducible where "irreducible \<equiv> Divisibility.irreducible mk_monoid"

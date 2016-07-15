@@ -65,7 +65,15 @@ proof -
         def p \<equiv> "q * [:- ?ri y, 1:] + [:c:]"
         have id: "horner_composition (c # cs) (?mri xs) = p" 
           unfolding cs xs q_def p_def by simp
-        from Cons(2)[unfolded id] have coeff: "\<And> i. coeff p i \<in> \<int>" using range_coeff[of p] by force
+        have coeff: "coeff p i \<in> \<int>" for i
+        proof (cases "coeff p i \<in> set (coeffs p)")
+          case True
+          with Cons(2)[unfolded id] show ?thesis by blast
+        next
+          case False
+          hence "coeff p i = 0" using range_coeff[of p] by blast
+          thus ?thesis by simp
+        qed
         {
           fix i
           let ?f = "\<lambda> j. coeff [:- ?ri y, 1:] j * coeff q (Suc i - j)"
@@ -111,7 +119,8 @@ proof -
             thus ?thesis by simp
           qed
         } note coeff_q = this
-        hence "set (coeffs q) \<subseteq> \<int>" using range_coeff[of q] by force
+        hence "set (coeffs q) \<subseteq> \<int>" by (auto simp: coeffs_def)
+        
         from Cons(1)[OF this[unfolded q_def]] Cons(3) xs have IH: "set cs \<subseteq> \<int>" by auto
         def r \<equiv> "coeff q 0 * (- ?ri y)"
         have r: "r \<in> \<int>" using coeff_q[of 0] unfolding r_def by auto

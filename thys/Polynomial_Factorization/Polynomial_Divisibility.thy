@@ -23,7 +23,7 @@ imports
 begin
 
 context
-  fixes ty :: "'a :: field itself"
+  fixes ty :: "'a :: {field,euclidean_ring_gcd} itself"
 begin
 
 abbreviation "poly_monoid \<equiv> mk_monoid::'a poly monoid" 
@@ -148,113 +148,11 @@ proof (cases "q * r = 0")
 qed auto
 end
 
-lemma dvd_gcd_mult: fixes p :: "'a :: field poly"
+lemma dvd_gcd_mult: fixes p :: "'a :: semiring_gcd"
   assumes dvd: "k dvd p * q" "k dvd p * r"
   shows "k dvd p * gcd q r"
-proof (cases "p = 0")
-  case False note p = this
-  show ?thesis
-  proof (cases "r = 0")
-    case True
-    thus ?thesis using p assms 
-      by (cases "q = 0") (auto simp: dvd_smult gcd_non_0 normalize_poly_def)
-  next
-    case False note r = this
-    show ?thesis
-    proof (cases "q = 0")
-      case True
-      thus ?thesis using p r assms by (auto simp: dvd_smult gcd_non_0 normalize_poly_def)
-    next
-      case False note q = this
-      from q r have gcd: "gcd q r \<noteq> 0" by auto
-      def g \<equiv> "gcd q r"
-      have g: "g \<noteq> 0" unfolding g_def using gcd .
-      obtain t where qq: "q = g * t" using gcd_dvd1[of q r] unfolding g_def dvd_def by auto
-      obtain s where rr: "r = g * s" using gcd_dvd2[of q r] unfolding g_def dvd_def by auto
-      from qq q have t: "t \<noteq> 0" by auto
-      from rr r have s: "s \<noteq> 0" by auto
-      let ?C = "carrier poly_monoid"
-      let ?fac = "wfactors poly_monoid"
-      let ?f = "fmset poly_monoid"
-      have pq: "p * q \<noteq> 0" using p q by auto
-      have pr: "p * r \<noteq> 0" using p r by auto
-      have pg: "p * g \<noteq> 0" using p g by auto
-      from dvd p r have k: "k \<noteq> 0" by auto
-      interpret factorial_monoid poly_monoid by (rule factorial_monoid_field_poly)
-      note ex = wfactors_exist[unfolded mk_monoid_simps]
-      from ex[OF p] obtain P where PC: "set P \<subseteq> ?C" and Pp: "?fac P p" by auto
-      from ex[OF q] obtain Q where QC: "set Q \<subseteq> ?C" and Qq: "?fac Q q" by auto
-      from ex[OF r] obtain R where RC: "set R \<subseteq> ?C" and Rr: "?fac R r" by auto
-      from ex[OF g] obtain G where GC: "set G \<subseteq> ?C" and Gg: "?fac G g" by auto
-      from ex[OF k] obtain K where KC: "set K \<subseteq> ?C" and Kk: "?fac K k" by auto
-      from ex[OF s] obtain S where SC: "set S \<subseteq> ?C" and Ss: "?fac S s" by auto
-      from ex[OF t] obtain T where TC: "set T \<subseteq> ?C" and Tt: "?fac T t" by auto
-      from ex[OF pq] obtain PQ where PQ: "set PQ \<subseteq> ?C" and Pq: "?fac PQ (p * q)" by auto
-      from ex[OF pr] obtain PR where PR: "set PR \<subseteq> ?C" and Pr: "?fac PR (p * r)" by auto
-      from ex[OF pg] obtain PG where PG: "set PG \<subseteq> ?C" and Pg: "?fac PG (p * g)" by auto
-      note mult = mult_wfactors_fmset[unfolded mk_monoid_simps]
-      from mult[OF Gg Ss, folded rr, OF Rr g s GC SC RC]
-      have fR: "?f R = ?f G + ?f S" .
-      from mult[OF Gg Tt, folded qq, OF Qq g t GC TC QC]
-      have fQ: "?f Q = ?f G + ?f T" .
-      from mult[OF Pp Gg Pg p g PC GC PG]
-      have fPG: "?f PG = ?f P + ?f G" .
-      from mult[OF Pp Qq Pq p q PC QC PQ]
-      have fPQ: "?f PQ = ?f P + ?f Q" .
-      from mult[OF Pp Rr Pr p r PC RC PR]
-      have fPR: "?f PR = ?f P + ?f R" .
-      note div = divides_as_fmsubset[unfolded mk_monoid_simps]
-      note fac = Polynomial_Divisibility.factorid_carrier
-      from div[OF Kk Pq k pq KC PQ] dvd(1)
-      have le1: "?f K \<le># ?f PQ" using fac[OF k pq] using [[simp_trace]] by simp
-      from div[OF Kk Pr k pr KC PR] dvd(2)
-      have le2: "?f K \<le># ?f PR" using fac[OF k pr] by simp
-      from le1 le2 have "?f K \<le># ?f PQ #\<inter> ?f PR" by simp
-      also have "\<dots> =  ?f P + ?f G + (?f S #\<inter> ?f T)"
-        unfolding fPQ fPG fQ fPR fR unfolding multiset_eq_iff
-        by (auto simp: ac_simps)
-      also have "?f S #\<inter> ?f T = {#}"
-      proof (rule ccontr)
-        assume "\<not> ?thesis"
-        then obtain a where "a \<in># ?f S #\<inter> ?f T" 
-          by (auto dest!: multi_nonempty_split intro: that)
-        hence a: "a \<in># ?f S" "a \<in># ?f T" by auto
-        from a(1)[unfolded fmset_def in_multiset_in_set] 
-          obtain a1 where a1: "a1 \<in> set S" and aa: "assocs poly_monoid a1 = a" by auto
-        from a(2)[unfolded fmset_def in_multiset_in_set] 
-          obtain a2 where a2: "a2 \<in> set T" and a: "a = assocs poly_monoid a2" by auto
-        from SC a1 have a10: "a1 \<noteq> 0" using mk_monoid_simps by auto
-        from TC a2 have a20: "a2 \<noteq> 0" using mk_monoid_simps by auto
-        from Ss a1 have "Divisibility.irreducible poly_monoid a1"
-          unfolding wfactors_def by auto
-        hence deg_a1: "degree a1 \<noteq> 0" using a10 
-          unfolding Divisibility.irreducible_def Polynomial_Divisibility.poly_Units by auto
-        from assocs_eqD[OF aa[unfolded a], unfolded mk_monoid_simps, OF a20 a10]            
-        have "a2 \<sim>\<^bsub>poly_monoid\<^esub> a1" .
-        from this[unfolded associated_def] a10 a20 have "a2 dvd a1" "a1 dvd a2"
-          by (auto simp: fac)
-        then obtain a3 where a12: "a2 = a1 * a3" unfolding dvd_def by auto
-        with a20 a10 have a30: "a3 \<noteq> 0" by auto
-        from wfactors_dividesI[OF Ss SC _ a1] a10 s have a1s: "a1 dvd s" 
-          by (simp add: fac)
-        from wfactors_dividesI[OF Tt TC _ a2] a20 t have a2t: "a2 dvd t" 
-          by (simp add: fac)
-        hence a1t: "a1 dvd t" unfolding a12 dvd_def by auto
-        from a1t a1s have "g * a1 dvd q" "g * a1 dvd r" unfolding qq rr by auto
-        hence "g * a1 dvd g" unfolding g_def by auto
-        then obtain h where id: "g * a1 * h = g" unfolding dvd_def by auto
-        with g have "h \<noteq> 0" by auto
-        with arg_cong[OF id, of degree] g a10
-        have "degree a1 = 0" by (simp add: degree_mult_eq)
-        with deg_a1 show False by simp
-      qed
-      finally have "?f K \<le># ?f PG" unfolding fPG by simp 
-      with div[OF Kk Pg k pg KC PG] fac[OF k pg]
-      have "k dvd p * g" by simp
-      thus "k dvd p * gcd q r" unfolding g_def by auto
-    qed
-  qed
-qed auto
+  by (rule dvd_trans, rule gcd_greatest[OF dvd])
+     (auto intro!: mult_dvd_mono simp: gcd_mult_left)
 
 lemma poly_gcd_monic_factor:
   "monic p \<Longrightarrow>  gcd (p * q) (p * r) = p * gcd q r"
@@ -269,7 +167,7 @@ hide_fact (open) Divisibility.irreducible_def
 hide_const (open) irreducible
 
 context
-  assumes "SORT_CONSTRAINT('a :: field)"
+  assumes "SORT_CONSTRAINT('a :: {field,euclidean_ring_gcd})"
 begin
 
 lemma irreducible_dvd_pow: fixes p :: "'a poly" 

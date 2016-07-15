@@ -655,19 +655,20 @@ qed
 
 subsection \<open>Summary: Closure Properties of Algebraic Numbers\<close>
 
-lemma algebraic_alg_polyI: "alg_poly x p \<Longrightarrow> algebraic x"
+lemma algebraic_alg_polyI: "alg_poly x p \<Longrightarrow> algebraic (x::'a::{field_char_0,euclidean_ring_gcd})"
   unfolding alg_poly_def algebraic_altdef_rpoly by auto
 
-lemma algebraic_alg_polyE: "algebraic x \<Longrightarrow> (\<And> p. alg_poly x p \<Longrightarrow> P) \<Longrightarrow> P"
+lemma algebraic_alg_polyE: 
+    "algebraic x \<Longrightarrow> (\<And> p. alg_poly (x::'a::{field_char_0,euclidean_ring_gcd}) p \<Longrightarrow> P) \<Longrightarrow> P"
   unfolding algebraic_altdef_rpoly alg_poly_def by auto
 
-lemma algebraic_of_rat: "algebraic (of_rat x)"
+lemma algebraic_of_rat: "algebraic (of_rat x::'a::{field_char_0,euclidean_ring_gcd})"
   by (rule algebraic_alg_polyI[OF alg_poly_of_rat])
 
-lemma algebraic_uminus: "algebraic x \<Longrightarrow> algebraic (-x)"
+lemma algebraic_uminus: "algebraic (x::'a::{field_char_0,euclidean_ring_gcd}) \<Longrightarrow> algebraic (-x)"
   by (elim algebraic_alg_polyE, rule algebraic_alg_polyI[OF alg_poly_uminus])
 
-lemma algebraic_inverse: "algebraic x \<Longrightarrow> algebraic (inverse x)"
+lemma algebraic_inverse: "algebraic (x::'a::{field_char_0,euclidean_ring_gcd}) \<Longrightarrow> algebraic (inverse x)"
 proof (cases "x = 0")
   case False
   thus "algebraic x \<Longrightarrow> algebraic (inverse x)" 
@@ -701,7 +702,8 @@ proof -
   show ?thesis by (cases "n = 0", force, cases "n > 0", force, cases "n < 0", auto)
 qed
 
-lemma algebraic_nth_root: "n \<noteq> 0 \<Longrightarrow> algebraic x \<Longrightarrow> y^n = x \<Longrightarrow> algebraic y"
+lemma algebraic_nth_root: 
+    "n \<noteq> 0 \<Longrightarrow> algebraic (x::'a::{field_char_0,euclidean_ring_gcd}) \<Longrightarrow> y^n = x \<Longrightarrow> algebraic y"
   by (elim algebraic_alg_polyE, rule algebraic_alg_polyI[OF alg_poly_nth_root], auto)
 
 subsection {* Interfacing UFD properties *}
@@ -1650,7 +1652,7 @@ proof -
   qed
 qed
 
-lemma algebraic_plus: fixes x :: "'a :: field_char_0"
+lemma algebraic_plus: fixes x :: "'a::{field_char_0,euclidean_ring_gcd}"
   shows "algebraic x \<Longrightarrow> algebraic y \<Longrightarrow> algebraic (x + y)"
   by (elim algebraic_alg_polyE, rule algebraic_alg_polyI[OF alg_poly_add])
 

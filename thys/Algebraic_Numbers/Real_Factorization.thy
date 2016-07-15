@@ -134,7 +134,7 @@ proof -
       by (subst coeffs_map_poly, auto)
     with p have q': "set (coeffs (smult d ?q)) \<subseteq> \<real>" by auto
     from d p0 have d0: "d \<noteq> 0" by auto
-    interpret c: inj_field_hom_0 ?c by (unfold_locales, auto)
+    interpret c: inj_field_hom_0' ?c by (unfold_locales, auto)
     have "smult d ?q = [:d:] * ?q" by auto
     from real_poly_factor[OF q'[unfolded this]] d0 d
     have q: "set (coeffs ?q) \<subseteq> \<real>" by auto 

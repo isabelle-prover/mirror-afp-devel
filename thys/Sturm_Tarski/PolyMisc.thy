@@ -4,7 +4,7 @@
 
 theory PolyMisc imports
   Complex_Main 
-  "~~/src/HOL/Library/Polynomial_GCD_euclidean"
+  "~~/src/HOL/Number_Theory/Polynomial_Factorial"
 begin
 
 section{*Misc*}
@@ -140,46 +140,15 @@ proof -
   ultimately show ?thesis by linarith
 qed
 
-lemma div_gcd_coprime_poly:
-  fixes p q::"'a::field poly"
-  assumes nz: "p \<noteq> 0 \<or> q \<noteq> 0"
-  shows "coprime (p div gcd p q) (q div gcd p q)"
-proof -
-  def g \<equiv> "gcd p q"
-  def p' \<equiv> "p div g" and  q' \<equiv> "q div g"
-  def g' \<equiv> "gcd p' q'"
-  have "g dvd p" "g dvd q" "g' dvd p'" "g' dvd q'"  unfolding g_def g'_def by simp_all
-  then obtain kp kq kp' kq' where
-      kab: "p = g * kp" "q = g * kq" "p' = g' * kp'" "q' = g' * kq'"
-    unfolding dvd_def g_def g'_def by blast
-  hence "g * p' = (g * g') * kp'" "g * q' = (g * g') * kq'" by simp_all
-  then have dvdgg':"g * g' dvd p" "g* g' dvd q"
-    using dvd_def dvd_mult_div_cancel [OF `g dvd p`,folded p'_def]
-      dvd_mult_div_cancel [OF `g dvd q`,folded q'_def]
-    by auto
-  hence "g * g' dvd g" using poly_gcd_greatest g_def by auto
-  hence "degree g + degree g' \<le> degree g"
-    using degree_mult_eq nz dvd_imp_degree_le
-    by (metis degree_0 g_def monoid_add_class.add.right_neutral order_refl poly_gcd_zero_iff)
-  hence "degree g'=0" by auto
-  moreover have "coeff g' (degree g') = 1" 
-    using poly_gcd_monic[of p' q',folded g'_def] nz unfolding p'_def q'_def 
-    by (metis `g dvd p` `g dvd q` dvd_div_mult_self mult_eq_0_iff)
-  ultimately have "g'=1" by (metis coeff_1 coeff_eq_0 neq0_conv poly_eq_iff) 
-  thus ?thesis unfolding g'_def p'_def q'_def g_def .
-qed
-
-lemma gcd_coprime_poly:
-  fixes p q::"'a::field poly"
+lemma gcd_coprime:
+  fixes p q::"'a::semiring_gcd"
   assumes nz: "p \<noteq> 0 \<or> q \<noteq> 0" and p': "p = p' * gcd p q" and
     q': "q = q' * gcd p q"
   shows "coprime p' q'"
 proof -
-  have "p' = p div gcd p q" 
-    using p' nz by (metis div_mult_self2_is_id poly_gcd_zero_iff)
-  moreover have "q'= q div gcd p q"   
-    using q' nz by (metis div_mult_self2_is_id poly_gcd_zero_iff)
-  ultimately show ?thesis using div_gcd_coprime_poly[OF nz] by auto
+  have "1 * gcd p q = gcd q' p' * gcd p q" 
+    by (subst p', subst (2) q', subst gcd_mult_right) simp_all
+  with assms show ?thesis by (subst (asm) mult_right_cancel) (auto simp: gcd.commute)
 qed
 
 
@@ -216,7 +185,7 @@ next
     next
       case False
       hence "lead_coeff (-p) > 0" and "lead_coeff p < 0" unfolding lead_coeff_minus
-        using leading_coeff_neq_0[OF `p\<noteq>0`,folded lead_coeff_def] by auto
+        using leading_coeff_neq_0[OF `p\<noteq>0`,folded lead_coeff_def] by linarith+
       then obtain n where "\<forall>x\<ge>n. lead_coeff p \<ge> poly p x"
         using poly_pinfty_gt_lc[of "-p"] unfolding lead_coeff_minus by auto
       thus ?thesis using `lead_coeff p<0` that[of n] unfolding sgn_pos_inf_def by fastforce

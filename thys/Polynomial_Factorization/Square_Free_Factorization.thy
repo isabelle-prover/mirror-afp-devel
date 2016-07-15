@@ -85,7 +85,7 @@ proof (rule ccontr)
   ultimately have dvd: "g dvd (gcd f (pderiv f))" by simp
   have "gcd f (pderiv f) \<noteq> 0" using f0 by simp
   with g dvd have "degree (gcd f (pderiv f)) \<noteq> 0"
-    by (metis degree_0 is_unit_gcd is_unit_iff_degree)
+    by (simp add: assms poly_dvd_1)
   hence "\<not> coprime f (pderiv f)" by auto
   with assms show False by simp
 qed
@@ -108,7 +108,9 @@ proof (intro conjI allI)
   qed
 qed (insert f, auto simp: square_free_def)
 
-lemma square_free_setprodD: assumes sf: "square_free (\<Prod> fs)"
+lemma square_free_setprodD: 
+  fixes fs :: "'a :: {field,euclidean_ring_gcd} poly set"
+  assumes sf: "square_free (\<Prod> fs)"
   and fin: "finite fs"
   and f: "f \<in> fs"
   and g: "g \<in> fs"
@@ -126,7 +128,7 @@ proof -
   have "gcd f g * gcd f g dvd f * g * k" by (simp add: mult_dvd_mono)
   from dvd[OF this] have "degree (gcd f g) = 0" . 
   moreover have "gcd f g \<noteq> 0" using 0 by auto
-  ultimately show "coprime f g" using is_unit_gcd is_unit_iff_degree by blast
+  ultimately show "coprime f g" using is_unit_gcd[of f g] is_unit_iff_degree[of "gcd f g"] by simp    
 qed
 
 lemma rsquarefree_square_free_complex: assumes "rsquarefree (p :: complex poly)"
@@ -145,7 +147,8 @@ proof (rule square_freeI)
   thus False using assms unfolding rsquarefree_def' by auto
 qed (insert assms, auto simp: rsquarefree_def)
     
-lemma square_free_coprime_pderiv: fixes f :: "'a :: field_char_0 poly"
+lemma square_free_coprime_pderiv: 
+  fixes f :: "'a :: {field_char_0,euclidean_ring_gcd} poly"
   assumes "square_free f"
   shows "coprime f (pderiv f)"
 proof (rule ccontr)
@@ -180,12 +183,13 @@ proof (rule ccontr)
 qed
   
 
-lemma square_free_iff_coprime: "square_free (f :: 'a :: field_char_0 poly) = 
-  (coprime f (pderiv f))"
+lemma square_free_iff_coprime: 
+  "square_free (f :: 'a :: {field_char_0,euclidean_ring_gcd} poly) = 
+     (coprime f (pderiv f))"
   using coprime_pderiv_imp_square_free[of f] square_free_coprime_pderiv[of f] by auto
 
 context
-  assumes "SORT_CONSTRAINT('a::field)"
+  assumes "SORT_CONSTRAINT('a::{field,euclidean_ring_gcd})"
 begin
 
 lemma square_free_smult: "c \<noteq> 0 \<Longrightarrow> square_free (f :: 'a poly) \<Longrightarrow> square_free (smult c f)"
@@ -221,7 +225,7 @@ end
 
 subsection \<open>Yun's factorization algorithm\<close>
 context 
-  fixes Gcd :: "'a :: field_char_0 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly"
+  fixes Gcd :: "'a :: {field_char_0,euclidean_ring_gcd} poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly"
 begin
 
 partial_function (tailrec) yun_factorization_main :: 
@@ -263,7 +267,7 @@ lemma yun_factorization_0[simp]: "yun_factorization 0 = (0,[])"
 end
 
 locale monic_factorization =
-  fixes as :: "('a :: field_char_0 poly \<times> nat) set"
+  fixes as :: "('a :: {field_char_0,euclidean_ring_gcd} poly \<times> nat) set"
   and p :: "'a poly"
   assumes p: "p = setprod (\<lambda> (a,i). a ^ Suc i) as"
   and fin: "finite as"
@@ -315,7 +319,8 @@ lemma nonzero_gen: assumes "bs \<subseteq> as"
 lemma monic_prod: "monic ((\<Prod>(a, i)\<in>as. a ^ i))"
   by (rule monic_setprod, insert as_monic, auto intro: monic_power)
 
-lemma coprime_generic: assumes bs: "bs \<subseteq> as"
+lemma coprime_generic: 
+  assumes bs: "bs \<subseteq> as"
   and f: "\<And> a i. (a,i) \<in> bs \<Longrightarrow> f i > 0"
   shows "coprime (\<Prod>(a, i) \<in> bs. a)
      (\<Sum>(a, i)\<in> bs. (\<Prod>(b, j)\<in> bs - {(a, i)} . b) * smult (of_nat (f i)) (pderiv a))"
@@ -831,7 +836,7 @@ lemma yun_factorization_induct: assumes base: "\<And> bn cn. bn = 1 \<Longrighta
   and step: "\<And> bn cn. bn \<noteq> 1 \<Longrightarrow> P (bn div (gcd bn (cn - pderiv bn))) 
     ((cn - pderiv bn) div (gcd bn (cn - pderiv bn))) \<Longrightarrow> P bn cn"
   and id: "bn = p div gcd p (pderiv p)" "cn = pderiv p div gcd p (pderiv p)"
-  and monic: "monic (p :: 'a :: field_char_0 poly)"
+  and monic: "monic (p :: 'a :: {field_char_0,euclidean_ring_gcd} poly)"
   shows "P bn cn"
 proof -
   from monic_factorization[OF monic] obtain as where "monic_factorization as p" ..
@@ -1254,7 +1259,7 @@ proof -
 qed
 
 lemma monic_factorization_uniqueness:
-fixes P::"'a::field poly set"
+fixes P::"'a::{field,euclidean_ring_gcd} poly set"
 assumes finite_P: "finite P" 
   and PQ: "\<Prod>P = \<Prod>Q" 
   and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
@@ -1289,7 +1294,14 @@ qed
 
 
 subsection \<open>Yun factorization and homomorphisms\<close>
-lemma (in inj_field_hom_0) yun_factorization_main_hom:
+
+locale inj_field_hom_0' = inj_field_hom hom
+  for hom :: "'a :: {field_char_0,euclidean_ring_gcd} \<Rightarrow> 'b :: {field_char_0,euclidean_ring_gcd}"
+begin
+  sublocale inj_field_hom' ..
+end
+
+lemma (in inj_field_hom_0') yun_factorization_main_hom:
   defines hp: "hp \<equiv> map_poly hom"
   defines hpi: "hpi \<equiv> map (\<lambda> (f,i). (hp f, i :: nat))"
   assumes monic: "monic p" and f: "f = p div gcd p (pderiv p)" and g: "g = pderiv p div gcd p (pderiv p)"
@@ -1325,7 +1337,7 @@ lemma constant_square_free_factorization:
   "degree p = 0 \<Longrightarrow> square_free_factorization p (coeff p 0,[])"
   by (drule degree0_coeffs[of p], auto simp: square_free_factorization_def one_poly_def)
 
-lemma (in inj_field_hom_0) yun_monic_factorization:
+lemma (in inj_field_hom_0') yun_monic_factorization:
   defines hp: "hp \<equiv> map_poly hom"
   defines hpi: "hpi \<equiv> map (\<lambda> (f,i). (hp f, i :: nat))"
   assumes monic: "monic f"
@@ -1348,7 +1360,7 @@ proof -
       by (induct res, auto)
 qed
 
-lemma (in inj_field_hom_0) yun_factorization_hom:
+lemma (in inj_field_hom_0') yun_factorization_hom:
   defines hp: "hp \<equiv> map_poly hom"
   defines hpi: "hpi \<equiv> map (\<lambda> (f,i). (hp f, i :: nat))"
   shows "yun_factorization gcd (hp f) = map_prod hom hpi (yun_factorization gcd f)"
@@ -1357,7 +1369,7 @@ lemma (in inj_field_hom_0) yun_factorization_hom:
   unfolding map_poly_0_iff coeff_map_poly_hom hom_inverse[symmetric] map_poly_smult[symmetric] map_poly_mult[symmetric]
     by (rule if_cong[OF refl], force, subst yun_monic_factorization, auto)
 
-lemma (in inj_field_hom_0) square_free_map_poly: "square_free (map_poly hom f) = square_free f"
+lemma (in inj_field_hom_0') square_free_map_poly: "square_free (map_poly hom f) = square_free f"
 proof -
   interpret inj_ring_hom "map_poly hom" by (rule inj_ring_hom_map_poly)
   show ?thesis unfolding square_free_iff_coprime map_poly_pderiv map_poly_gcd[symmetric] by simp
