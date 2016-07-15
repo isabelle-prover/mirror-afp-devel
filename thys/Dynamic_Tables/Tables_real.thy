@@ -1,5 +1,5 @@
 theory Tables_real
-imports "../Amortized_Complexity/Amor"
+imports "../Amortized_Complexity/Amortized_Framework0"
 begin
 
 (* Final version with l :: real *)
@@ -219,7 +219,7 @@ fun invar where
 
 abbreviation "U \<equiv> \<lambda>f _. case f of Ins \<Rightarrow> ai+1 | Del \<Rightarrow> ad+1"
 
-interpretation tb: amor
+interpretation tb: Amortized
   where init = "(0,l0)" and nxt = nxt
   and inv = invar
   and t = t and \<Phi> = \<Phi>
