@@ -1,6 +1,7 @@
 chapter AFP
 
 session "Probabilistic_System_Zoo" (AFP) = "HOL-Probability" +
+  options [timeout = 600]
   theories [document = false]
     Nonempty_Bounded_Set
     "~~/src/HOL/Eisbach/Eisbach"
@@ -11,6 +12,7 @@ session "Probabilistic_System_Zoo" (AFP) = "HOL-Probability" +
     "root.tex"
 
 session "Probabilistic_System_Zoo-BNFs" (AFP) = "HOL-Multivariate_Analysis" +
+  options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Probability/Giry_Monad"
     "~~/src/HOL/Library/Multiset"
@@ -24,6 +26,7 @@ session "Probabilistic_System_Zoo-BNFs" (AFP) = "HOL-Multivariate_Analysis" +
     "root.tex"
 
 session "Probabilistic_System_Zoo-Non_BNFs" (AFP) = "HOL-Probability" +
+  options [timeout = 600]
   theories [document = false]
     Nonempty_Bounded_Set
     "~~/src/HOL/Eisbach/Eisbach"

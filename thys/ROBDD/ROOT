@@ -1,6 +1,7 @@
 chapter AFP
 session "ROBDD" (AFP) = HOL +
-	theories[document = false]
+  options [timeout = 600]
+	theories [document = false]
 		"../Automatic_Refinement/Lib/Refine_Lib"
 		"../Separation_Logic_Imperative_HOL/Examples/Array_Blit"
 		"../Separation_Logic_Imperative_HOL/Sep_Main"

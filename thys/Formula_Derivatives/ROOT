@@ -1,6 +1,7 @@
 chapter AFP
 
 session "Formula_Derivatives" (AFP) = "HOL-Library" +
+  options [timeout = 600]
   theories [document = false]
     While_Default
     FSet_More
@@ -21,7 +22,7 @@ session "Formula_Derivatives" (AFP) = "HOL-Library" +
     "root.tex"
 
 session "Formula_Derivatives-Examples" (AFP) = "Formula_Derivatives" +
-  options [document = false]
+  options [document = false, timeout = 600]
   theories
     WS1S_Examples
     WS1S_Alt_Examples

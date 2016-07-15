@@ -6,6 +6,7 @@ session "Selection_Heap_Sort" (AFP) = "HOL-Library" +
     
     Verification of Functional Selection and Heap Sort Using Locales.
   *}
+  options [timeout = 300]
   theories
     Sort
     RemoveMax

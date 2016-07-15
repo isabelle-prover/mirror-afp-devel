@@ -18,7 +18,7 @@ session "Jordan_Normal_Form" (AFP) = "JNF-AFP-Lib" +
 
 session "JNF-HOL-Lib" (AFP) = "HOL-Algebra" +
   description {* Theories that are not part of HOL but are used by this entry *}
-  options [document = false]
+  options [document = false, timeout = 600]
   theories
     "~~/src/HOL/Library/AList"
     "~~/src/HOL/Library/Cardinality"
@@ -52,7 +52,7 @@ session "JNF-HOL-Lib" (AFP) = "HOL-Algebra" +
 
 session "JNF-AFP-Lib" (AFP) = "JNF-HOL-Lib" +
   description {* Theories from the Archive of Formal Proofs that are used by this entry *}
-  options [document = false]
+  options [document = false, timeout = 600]
   theories
     "../Containers/Set_Impl"
     "../Gauss_Jordan/IArray_Haskell"

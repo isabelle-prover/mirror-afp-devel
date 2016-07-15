@@ -1,7 +1,7 @@
 chapter AFP
 
 session CAVA_buildchain1 = "LTL_to_GBA" +
-  options [document = false]
+  options [document = false, timeout = 600]
   theories "../Gabow_SCC/All_Of_Gabow_SCC"
 
 (*session CAVA_buildchain2 = CAVA_buildchain1 +
@@ -9,7 +9,7 @@ session CAVA_buildchain1 = "LTL_to_GBA" +
   theories "../Nested_DFS/All_Of_Nested_DFS"*)
 
 session CAVA_buildchain3 = CAVA_buildchain1 +
-  options [document = false]
+  options [document = false, timeout = 1200]
   theories "../Promela/All_Of_Promela"
 
 session CAVA_LTL_Modelchecker (AFP) = CAVA_buildchain3 +

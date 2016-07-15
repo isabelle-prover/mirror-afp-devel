@@ -1,13 +1,9 @@
 chapter AFP
 
-(* Session name, add to AFP group, list base session: *)
 session Trie (AFP) = HOL +
-
-(* The top-level theories of the submission: *)
-  theories [timeout = 600]
+  options [timeout = 600]
+  theories
     Tries
-    
-(* Dependencies on document source files: *)
   document_files
     "root.bib"
     "root.tex"
