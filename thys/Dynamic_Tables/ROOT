@@ -1,9 +1,7 @@
 chapter AFP
 
-session Dynamic_Tables (AFP) = HOL +
+session Dynamic_Tables (AFP) = Amortized_Complexity +
   options [timeout = 600]
-  theories [document = false]
-    "../Amortized_Complexity/Amor"
   theories
     Tables_nat
   document_files

@@ -167,7 +167,7 @@ by(simp)
 
 abbreviation "U \<equiv> \<lambda>f _. case f of Ins \<Rightarrow> ai+1 + f1'*ad | Del \<Rightarrow> ad+1 + f2'*ai"
 
-interpretation tb: amor
+interpretation tb: Amortized
   where init = "(0,l0)" and nxt = nxt
   and inv = invar
   and t = t and \<Phi> = \<Phi>
@@ -358,7 +358,7 @@ by(simp)
 
 abbreviation "U \<equiv> \<lambda>f _. case f of Ins \<Rightarrow> ai+1 | Del \<Rightarrow> ad+1"
 
-interpretation tb: amor
+interpretation tb: Amortized
   where init = "(0,l0)" and nxt = nxt
   and inv = invar
   and t = t and \<Phi> = \<Phi>
