@@ -3,6 +3,7 @@ object profile extends isabelle.CI_Profile
 
   import isabelle._
   import java.io.{FileReader, PrintWriter}
+  import scala.sys.process._
   import org.apache.commons.configuration2._
 
 
@@ -145,32 +146,44 @@ object profile extends isabelle.CI_Profile
       println(s"Not a testboard run, but mail configuration not found.")
   }
 
-  def post_hook(results: Build.Results) = {
-    val metadata = {
-      val path = afp + Path.explode("metadata/metadata")
-      val ini = new INIConfiguration()
-      if (path.is_file) {
-        val reader = new FileReader(path.file)
-        ini.read(reader)
-        reader.close()
-      }
-      new Metadata(ini)
-    }
-
-    val writer = new PrintWriter(status_file)
-    writer.print(metadata.results_as_json(results))
-    writer.close()
-
-    if (!results.ok)
+  def post_hook(results: Build.Results) =
+    if (!is_testboard)
     {
-      for (name <- results.sessions)
-      {
-        val result = results(name)
-        if (!result.ok && !results.cancelled(name) && !is_testboard && can_send_mails)
-          metadata.notify(name, result, results.info(name))
+      val metadata = {
+        val path = afp + Path.explode("metadata/metadata")
+        val ini = new INIConfiguration()
+        if (path.is_file) {
+          val reader = new FileReader(path.file)
+          ini.read(reader)
+          reader.close()
+        }
+        new Metadata(ini)
       }
+
+      print_section("SITEGEN")
+      println("Writing status file ...")
+      val writer = new PrintWriter(status_file)
+      writer.print(metadata.results_as_json(results))
+      writer.close()
+      println("Running sitegen ...")
+
+      val script = afp + Path.explode("admin/sitegen-devel")
+      val sitegen_result = List(script.file.toString, status_file.toString).!
+      if (sitegen_result > 0)
+        println("sitegen failed")
+
+      if (!results.ok)
+      {
+        for (name <- results.sessions)
+        {
+          val result = results(name)
+          if (!result.ok && !results.cancelled(name) && !is_testboard && can_send_mails)
+            metadata.notify(name, result, results.info(name))
+        }
+      }
+
+      print_section("COMPLETED")
     }
-  }
 
   def select_sessions(tree: Sessions.Tree): (List[String], Sessions.Tree) =
     tree.selection(
