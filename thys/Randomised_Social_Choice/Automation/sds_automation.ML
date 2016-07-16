@@ -326,7 +326,7 @@ fun find_sd_inefficient_supports_cmd ts lthy =
     |> flat
     |> Pretty.block
     |> Pretty.string_of
-    |> Output.information o Active.sendback_markup []
+    |> Output.information o Active.sendback_markup_command
   end
 
 fun prove_sd_inefficient_supports_cmd thm xs lthy =

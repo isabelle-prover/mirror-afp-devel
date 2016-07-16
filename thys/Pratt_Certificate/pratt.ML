@@ -152,8 +152,8 @@ fun pratt_tac cert ctxt i =
         Pretty.blk (2, [pretty_cert cert]), Pretty.str ")"]
       |> Pretty.blk o pair 4
       |> Pretty.string_of
-      |> Active.sendback_markup []
-      |> (fn s => "To repeat this proof with a pre-computed certificate, use:\n" ^ s)
+      |> Active.sendback_markup_command
+      |> prefix "To repeat this proof with a pre-computed certificate, use:\n"
       |> Output.information
     fun certify p =
       case cert of

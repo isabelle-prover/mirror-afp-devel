@@ -1135,7 +1135,7 @@ fun exec_deep (env, output_header_thy, seri_args, filename_thy, tmp_export_code,
          (case (output_header_thy, filename_thy) of
             (SOME _, SOME _) => s
           | _ => String.concat (map ( (fn s => s ^ "\n")
-                                    o Active.sendback_markup [Markup.padding_command]
+                                    o Active.sendback_markup_command
                                     o trim_line)
              (String.tokens (fn c => c = META.char_escape) s))) in
        fold (fn (out, err) => K ( writeln (Markup.markup Markup.keyword2 err)
