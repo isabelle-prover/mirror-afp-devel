@@ -1,0 +1,8 @@
+chapter AFP
+
+session "Surprise_Paradox" (AFP) = Incompleteness +
+  theories
+    Surprise_Paradox
+  document_files
+    "root.bib"
+    "root.tex"

@@ -24,40 +24,41 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">G</font>ödel's
-<font class="first">I</font>ncompleteness
-<font class="first">T</font>heorems
+<h1><font class="first">S</font>urprise
+<font class="first">P</font>aradox
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Gödel's Incompleteness Theorems</td></tr>
+        <td class="data" width="80%">Surprise Paradox</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://www.cl.cam.ac.uk/~lp15/">Lawrence C. Paulson</a></td></tr>
+        <td class="data"><a href="http://pp.ipd.kit.edu/~breitner/">Joachim Breitner</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2013-11-17</td></tr>
+        <td class="data">2016-07-17</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-Gödel's two incompleteness theorems are formalised, following a careful  <a href="http://journals.impan.gov.pl/dm/Inf/422-0-1.html">presentation</a> by Swierczkowski, in the theory of <a href="HereditarilyFinite.shtml">hereditarily finite sets</a>. This represents the first ever machine-assisted proof of the second incompleteness theorem. Compared with traditional formalisations using Peano arithmetic (see e.g. Boolos), coding is simpler, with no need to formalise the notion
-of multiplication (let alone that of a prime number)
-in the formalised calculus upon which the theorem is based.
-However, other technical problems had to be solved in order to complete the argument.
+
+In 1964, Fitch showed that the paradox of the surprise hanging can be
+resolved by showing that the judge’s verdict is inconsistent. His
+formalization builds on Gödel’s coding of provability.  In this
+theory, we reproduce his proof in Isabelle, building on Paulson’s
+formalisation of Gödel’s incompleteness theorems.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Incompleteness-AFP,
-  author  = {Lawrence C. Paulson},
-  title   = {Gödel's Incompleteness Theorems},
+			<pre>@article{Surprise_Paradox-AFP,
+  author  = {Joachim Breitner},
+  title   = {Surprise Paradox},
   journal = {Archive of Formal Proofs},
-  month   = nov,
-  year    = 2013,
-  note    = {\url{http://isa-afp.org/entries/Incompleteness.shtml},
+  month   = jul,
+  year    = 2016,
+  note    = {\url{http://isa-afp.org/entries/Surprise_Paradox.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -68,12 +69,8 @@ However, other technical problems had to be solved in order to complete the argu
 
 
     <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="HereditarilyFinite.shtml">HereditarilyFinite</a>, <a href="Nominal2.shtml">Nominal2</a></td></tr>
+        <td class="data"><a href="Incompleteness.shtml">Incompleteness</a></td></tr>
 
-
-
-    <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Surprise_Paradox.shtml">Surprise_Paradox</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
@@ -86,7 +83,7 @@ However, other technical problems had to be solved in order to complete the argu
 
 <p></p>
 
-<!--#set var="name" value="Incompleteness" -->
+<!--#set var="name" value="Surprise_Paradox" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -113,14 +110,7 @@ However, other technical problems had to be solved in order to complete the argu
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-<ul>
-<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-05-27.tar.gz">afp-<!--#echo var="name" -->-2015-05-27.tar.gz</a></li>
-<li>Isabelle 2014: <a href="../release/afp-<!--#echo var="name" -->-2014-08-28.tar.gz">afp-<!--#echo var="name" -->-2014-08-28.tar.gz</a></li>
-<li>Isabelle 2013-2: <a href="../release/afp-<!--#echo var="name" -->-2013-12-11.tar.gz">afp-<!--#echo var="name" -->-2013-12-11.tar.gz</a></li>
-<li>Isabelle 2013-1: <a href="../release/afp-<!--#echo var="name" -->-2013-12-02.tar.gz">afp-<!--#echo var="name" -->-2013-12-02.tar.gz</a></li>
-<li>Isabelle 2013-1: <a href="../release/afp-<!--#echo var="name" -->-2013-11-17.tar.gz">afp-<!--#echo var="name" -->-2013-11-17.tar.gz</a></li>
-
-</ul>    </td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
