@@ -115,8 +115,8 @@ In particular, the new definitions allow for projecting away ghost variables as 
 <p></p>
 
 <!--#set var="name" value="Refine_Monadic" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

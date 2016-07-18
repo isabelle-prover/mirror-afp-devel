@@ -1,6 +1,7 @@
 chapter AFP
 
 session Regex_Equivalence (AFP) = "HOL-Library" +
+  options [timeout = 600]
   theories [document = false]
     "../Efficient-Mergesort/Efficient_Sort"
     "../Regular-Sets/Derivatives"
@@ -13,7 +14,7 @@ session Regex_Equivalence (AFP) = "HOL-Library" +
     "root.bib"
 
 session Regex_Equivalence_Examples (AFP) = Regex_Equivalence +
-  options [document = false]
+  options [document = false, timeout = 600]
   theories
     Examples
     Benchmark

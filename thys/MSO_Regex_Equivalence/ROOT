@@ -27,7 +27,7 @@ session MSO_Regex_Equivalence (AFP) = "HOL-Library" +
     "root.bib"
 
 session "MSO_Examples" (AFP) = "MSO_Regex_Equivalence" +
-  options [document = false]
+  options [document = false, timeout = 600]
   theories
     M2L_Examples
     WS1S_Examples

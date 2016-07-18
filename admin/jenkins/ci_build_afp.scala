@@ -3,6 +3,7 @@ object profile extends isabelle.CI_Profile
 
   import isabelle._
   import java.io.{FileReader, PrintWriter}
+  import scala.sys.process._
   import org.apache.commons.configuration2._
 
 
@@ -11,6 +12,33 @@ object profile extends isabelle.CI_Profile
   val afp = Path.explode("$ISABELLE_HOME/afp")
   val afp_thys = afp + Path.explode("thys")
   val afp_id = hg_id(afp)
+
+  sealed abstract class Status(val str: String)
+  {
+    def merge(that: Status): Status = (this, that) match {
+      case (Ok, s) => s
+      case (Failed, s) => Failed
+      case (Skipped, Failed) => Failed
+      case (Skipped, s) => Skipped
+    }
+  }
+  object Status
+  {
+    def merge(statuses: List[Status]): Status =
+      statuses.foldLeft(Ok: Status)(_ merge _)
+
+    def from_results(results: Build.Results, session: String): Status =
+      if (results.cancelled(session))
+        Skipped
+      else if (results(session).ok)
+        Ok
+      else
+        Failed
+  }
+
+  case object Ok extends Status("ok")
+  case object Skipped extends Status("skipped")
+  case object Failed extends Status("failed")
 
   case class Mail(subject: String, recipients: List[String], text: String) {
     import java.util._
@@ -44,8 +72,10 @@ object profile extends isabelle.CI_Profile
     }
   }
 
-  class Metadata(ini: INIConfiguration) {
-    def maintainers(entry: String): List[String] = {
+  class Metadata(ini: INIConfiguration)
+  {
+    def maintainers(entry: String): List[String] =
+    {
       val config = ini.getSection(entry)
       val raw =
         if (config.containsKey("notify"))
@@ -55,9 +85,14 @@ object profile extends isabelle.CI_Profile
       raw.split(' ').toList.filterNot(_.isEmpty)
     }
 
+    def entry_of_session(info: Sessions.Info): Option[String] =
+      if (info.dir.dir.implode == afp_thys.implode)
+        Some(info.dir.base.implode)
+      else
+        None
+
     def notify(name: String, result: Process_Result, info: Sessions.Info): Unit =
-      if (info.dir.dir.implode == afp_thys.implode) {
-        val entry = info.dir.base.implode
+      entry_of_session(info).foreach { entry =>
         val mails = maintainers(entry)
 
         val text =
@@ -95,19 +130,20 @@ object profile extends isabelle.CI_Profile
           Mail(text = text, subject = subject, recipients = mails).send()
       }
 
+    def group_by_entry(results: Build.Results): Map[Option[String], List[String]] =
+      results.sessions.toList.map { name =>
+        entry_of_session(results.info(name)) -> name
+      }.groupBy(_._1).mapValues(_.map(_._2))
+
     def results_as_json(results: Build.Results): String =
     {
-      val entries_strings =
-        results.sessions.map { name =>
-          val result = results(name)
+      val entries_status =
+        group_by_entry(results).mapValues(sessions => Status.merge(sessions.map(Status.from_results(results, _))))
 
-          val status_str =
-            if (result.ok) "ok"
-            else if (results.cancelled(name)) "skipped"
-            else "failed"
-
-          s"""{"entry": "$name", "status": "$status_str"}"""
-        }
+      val entries_strings = entries_status.collect {
+        case (Some(entry), status) =>
+          s"""{"entry": "$entry", "status": "${status.str}"}"""
+      }
 
       val entries_string = entries_strings.mkString("[", ",\n", "]")
 
@@ -145,32 +181,44 @@ object profile extends isabelle.CI_Profile
       println(s"Not a testboard run, but mail configuration not found.")
   }
 
-  def post_hook(results: Build.Results) = {
-    val metadata = {
-      val path = afp + Path.explode("metadata/metadata")
-      val ini = new INIConfiguration()
-      if (path.is_file) {
-        val reader = new FileReader(path.file)
-        ini.read(reader)
-        reader.close()
-      }
-      new Metadata(ini)
-    }
-
-    val writer = new PrintWriter(status_file)
-    writer.print(metadata.results_as_json(results))
-    writer.close()
-
-    if (!results.ok)
+  def post_hook(results: Build.Results) =
+    if (!is_testboard)
     {
-      for (name <- results.sessions)
-      {
-        val result = results(name)
-        if (!result.ok && !results.cancelled(name) && !is_testboard && can_send_mails)
-          metadata.notify(name, result, results.info(name))
+      val metadata = {
+        val path = afp + Path.explode("metadata/metadata")
+        val ini = new INIConfiguration()
+        if (path.is_file) {
+          val reader = new FileReader(path.file)
+          ini.read(reader)
+          reader.close()
+        }
+        new Metadata(ini)
       }
+
+      print_section("SITEGEN")
+      println("Writing status file ...")
+      val writer = new PrintWriter(status_file)
+      writer.print(metadata.results_as_json(results))
+      writer.close()
+      println("Running sitegen ...")
+
+      val script = afp + Path.explode("admin/sitegen-devel")
+      val sitegen_result = List(script.file.toString, status_file.toString).!
+      if (sitegen_result > 0)
+        println("sitegen failed")
+
+      if (!results.ok)
+      {
+        for (name <- results.sessions)
+        {
+          val result = results(name)
+          if (!result.ok && !results.cancelled(name) && !is_testboard && can_send_mails)
+            metadata.notify(name, result, results.info(name))
+        }
+      }
+
+      print_section("COMPLETED")
     }
-  }
 
   def select_sessions(tree: Sessions.Tree): (List[String], Sessions.Tree) =
     tree.selection(

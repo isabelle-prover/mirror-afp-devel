@@ -86,8 +86,8 @@ transfer-package is invoked several times.
 <p></p>
 
 <!--#set var="name" value="Lifting_Definition_Option" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

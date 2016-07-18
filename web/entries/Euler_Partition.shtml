@@ -80,8 +80,8 @@ This theorem is the 45th theorem of the Top 100 Theorems list.
 <p></p>
 
 <!--#set var="name" value="Euler_Partition" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

@@ -152,7 +152,6 @@ html_contributors = u"""
 # {7}: depends-on (html_entry_depends_on_wrapper)
 # {8}: used-by (html_entry_used_by_wrapper)
 # {9}: status (html_entry_status_wrapper)
-# {{...}} is for escaping, because Py's format syntax collides with SSI
 html_entry_header_wrapper = u"""
 <table width="80%" class="data">
   <tbody>
@@ -177,7 +176,6 @@ html_entry_header_wrapper = u"""
 <p></p>
 
 <!--#set var="name" value="{6}" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${{name}}" -->
 """
 
 html_entry_depends_on_wrapper = u"""

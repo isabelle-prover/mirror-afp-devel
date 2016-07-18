@@ -82,8 +82,8 @@ A full description is found in a
 <p></p>
 
 <!--#set var="name" value="Dynamic_Tables" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

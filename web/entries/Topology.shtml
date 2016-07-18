@@ -74,8 +74,8 @@ This entry contains two theories. The first, <tt>Topology</tt>, develops the bas
 <p></p>
 
 <!--#set var="name" value="Topology" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

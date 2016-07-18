@@ -81,8 +81,8 @@ We provide a formalization of the mergesort algorithm as used in GHC's Data.List
 <p></p>
 
 <!--#set var="name" value="Efficient-Mergesort" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

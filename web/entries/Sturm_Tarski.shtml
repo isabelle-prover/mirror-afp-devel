@@ -72,8 +72,8 @@ We have formalized the Sturm-Tarski theorem (also referred as the Tarski theorem
 <p></p>
 
 <!--#set var="name" value="Sturm_Tarski" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

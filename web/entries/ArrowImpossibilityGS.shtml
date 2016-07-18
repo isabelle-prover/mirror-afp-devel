@@ -72,8 +72,8 @@ This article formalizes two proofs of Arrow's impossibility theorem due to Geana
 <p></p>
 
 <!--#set var="name" value="ArrowImpossibilityGS" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

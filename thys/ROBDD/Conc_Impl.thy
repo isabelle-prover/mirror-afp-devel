@@ -183,7 +183,7 @@ lemma iteci_rule: "
              "\<lambda>(((x1,x2),x3),x4) (r1,r2). \<forall>bddi. 
               <is_bdd_impl x4 bddi> 
                 iteci x1 x2 x3 bddi  
-              <\<lambda>r. case r of (pi, bddi') \<Rightarrow> is_bdd_impl r2 bddi' * \<up> (pi = r1)>\<^sub>t"]
+              <\<lambda>r. case r of (p\<^sub>i, bddi') \<Rightarrow> is_bdd_impl r2 bddi' * \<up> (p\<^sub>i = r1)>\<^sub>t"]
       apply auto[1]
       apply (fo_rule subst[rotated])
        apply (assumption)
@@ -323,7 +323,7 @@ lemma iteci_lu_rule: "
              "\<lambda>(((x1,x2),x3),x4) (r1,r2). \<forall>bddi.
               <is_bdd_impl x4 bddi>
                 iteci_lu x1 x2 x3 bddi  
-              <\<lambda>r. case r of (pi, bddi') \<Rightarrow> is_bdd_impl r2 bddi' * \<up> (pi = r1)>\<^sub>t"]
+              <\<lambda>r. case r of (p\<^sub>i, bddi') \<Rightarrow> is_bdd_impl r2 bddi' * \<up> (p\<^sub>i = r1)>\<^sub>t"]
       apply auto[1]
       apply (fo_rule subst[rotated])
        apply (assumption)

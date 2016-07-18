@@ -76,8 +76,8 @@ A Latin Square is a n x n table filled with integers from 1 to n where each numb
 <p></p>
 
 <!--#set var="name" value="Latin_Square" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

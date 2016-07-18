@@ -40,7 +40,7 @@ fun pretty_cases ctxt =
         (pretty_fixes fixes @ pretty_binds binds @ pretty_assumes assumes @ pretty_cases cases)]
     and pretty_cases cases = if null cases then []
       else [Pretty.big_list "subcases:" (map pretty_case cases)]
-    val cases = Proof_Context.dest_cases ctxt
+    val cases = Proof_Context.dest_cases NONE ctxt
       |> map_filter prepare
       |> Pretty.big_list "cases:"  o map (Pretty.chunks o single o pretty_case)
   in cases end

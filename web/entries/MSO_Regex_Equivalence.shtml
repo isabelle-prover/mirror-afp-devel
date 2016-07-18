@@ -102,8 +102,8 @@ The formalization is described in this <a href="http://www.in.tum.de/~nipkow/pub
 <p></p>
 
 <!--#set var="name" value="MSO_Regex_Equivalence" -->
-<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
 <!--#set var="outline" value="${binfo}/outline.pdf" -->
 <!--#set var="browse" value="${binfo}/index.html" -->

@@ -1,6 +1,7 @@
 chapter AFP
 
 session Formal_SSA (AFP) = Collections +
+  options [timeout = 1200]
   theories [document = false]
     "~~/src/HOL/Library/While_Combinator"
     "~~/src/HOL/Library/Product_Lexorder"
@@ -12,7 +13,7 @@ session Formal_SSA (AFP) = Collections +
     "~~/src/HOL/Library/Code_Target_Numeral"
     "../Slicing/While/AdditionalLemmas"
     "../Dijkstra_Shortest_Path/GraphSpec"
-  theories [timeout = 1000]
+  theories
     FormalSSA_Misc
     Serial_Rel
     Mapping_Exts

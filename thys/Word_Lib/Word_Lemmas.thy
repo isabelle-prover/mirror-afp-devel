@@ -4119,6 +4119,7 @@ lemma uint_2_id:
   done
 
 lemma bintrunc_id:
+<<<<<<< local
   "\<lbrakk>of_nat n \<ge> m; m > 0\<rbrakk> \<Longrightarrow> bintrunc n m = m"
   apply (subst bintrunc_mod2p)
   apply (rule int_mod_eq')
@@ -4126,6 +4127,18 @@ lemma bintrunc_id:
    apply (erule le_less_trans)
    apply simp
   done
+||||||| base
+  "\<lbrakk>of_nat n \<ge> m; m > 0\<rbrakk> \<Longrightarrow> bintrunc n m = m"
+  apply (subst bintrunc_mod2p)
+  apply (rule int_mod_eq')
+   apply simp+
+  apply (induct n arbitrary:m)
+   apply simp+
+  by force
+=======
+  "\<lbrakk>m \<le> of_nat n; 0 < m\<rbrakk> \<Longrightarrow> bintrunc n m = m"
+  by (simp add: bintrunc_mod2p le_less_trans int_mod_eq')
+>>>>>>> other
 
 lemma shiftr1_unfold: "shiftr1 x = x >> 1"
   by (metis One_nat_def comp_apply funpow.simps(1) funpow.simps(2) id_apply shiftr_def)
@@ -4133,7 +4146,7 @@ lemma shiftr1_unfold: "shiftr1 x = x >> 1"
 lemma shiftr1_is_div_2: "(x::('a::len) word) >> 1 = x div 2"
   apply (case_tac "len_of TYPE('a) = 1")
    apply simp
-   apply (subgoal_tac "x = 0 \<or> x = 1")
+ apply (subgoal_tac "x = 0 \<or> x = 1")
     apply (erule disjE)
      apply (clarsimp simp:word_div_def)+
    apply (metis One_nat_def less_irrefl_nat sint_1_cases)
