@@ -65,6 +65,7 @@ abbreviation gen_igbg_impl_rel_ext
   \<equiv> \<langle>\<langle>Rm,Racc\<rangle>gen_igbg_impl_rel_eext\<rangle>gen_g_impl_rel_ext "
 
 lemma gen_igbg_refine:
+  fixes Rv Re Rv0 Racc
   assumes "TERM (Rv,Re,Rv0)"
   assumes "TERM (Racc)"
   shows
@@ -201,6 +202,7 @@ abbreviation gen_igba_impl_rel_ext
     \<equiv> gen_igbg_impl_rel_ext (\<langle>Rm,Rl\<rangle>gen_igba_impl_rel_eext)"
 
 lemma gen_igba_refine:
+  fixes Rv Re Rv0 Racc Rl
   assumes "TERM (Rv,Re,Rv0)"
   assumes "TERM (Racc)"
   assumes "TERM (Rl)"
@@ -336,6 +338,7 @@ abbreviation gen_gbg_impl_rel_ext
   \<equiv> \<langle>\<langle>Rm,Rf\<rangle>gen_gbg_impl_rel_eext\<rangle>gen_g_impl_rel_ext"
 
 lemma gen_gbg_refine:
+  fixes Rv Re Rv0 Rf
   assumes "TERM (Rv,Re,Rv0)"
   assumes "TERM (Rf)"
   shows
@@ -461,6 +464,7 @@ abbreviation gen_gba_impl_rel_ext
     \<equiv> gen_gbg_impl_rel_ext (\<langle>Rm,Rl\<rangle>gen_gba_impl_rel_eext)"
 
 lemma gen_gba_refine:
+  fixes Rv Re Rv0 Racc Rl
   assumes "TERM (Rv,Re,Rv0)"
   assumes "TERM (Racc)"
   assumes "TERM (Rl)"
@@ -587,6 +591,7 @@ abbreviation gen_bg_impl_rel_ext
   \<equiv> \<langle>\<langle>Rm,Rf\<rangle>gen_bg_impl_rel_eext\<rangle>gen_g_impl_rel_ext"
 
 lemma gen_bg_refine:
+  fixes Rv Re Rv0 Rf
   assumes "TERM (Rv,Re,Rv0)"
   assumes "TERM (Rf)"
   shows
@@ -707,6 +712,7 @@ abbreviation gen_sa_impl_rel_ext
   \<equiv> \<langle>\<langle>Rm,Rf\<rangle>gen_sa_impl_rel_eext\<rangle>gen_g_impl_rel_ext"
 
 lemma gen_sa_refine:
+  fixes Rv Re Rv0
   assumes "TERM (Rv,Re,Rv0)"
   assumes "TERM (Rl)"
   shows
@@ -782,7 +788,7 @@ schematic_goal
 subsection {* Index Conversion *}
 
 schematic_goal gbg_to_idx_ext_impl_aux:
-  fixes Rv :: "('qi \<times> 'q) set"
+  fixes Re and Rv :: "('qi \<times> 'q) set"
   assumes [autoref_ga_rules]: "is_bounded_hashcode Rv eq bhc"
   assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('qi) (def_size)"
   shows "(?c, gbg_to_idx_ext :: _ \<Rightarrow> ('q, _) gb_graph_rec_scheme \<Rightarrow> _)
@@ -815,7 +821,7 @@ context begin interpretation autoref_syn .
 end
 
 schematic_goal gba_to_idx_ext_impl_aux:
-  fixes Rv :: "('qi \<times> 'q) set"
+  fixes Re and Rv :: "('qi \<times> 'q) set"
   assumes [autoref_ga_rules]: "is_bounded_hashcode Rv eq bhc"
   assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('qi) (def_size)"
   shows "(?c, gba_to_idx_ext :: _ \<Rightarrow> ('q, 'l, _) gba_rec_scheme \<Rightarrow> _)
@@ -869,6 +875,7 @@ lemma degen_impl_aux_alt: "degeneralize_ext ecnv = (
   done
 
 schematic_goal degeneralize_ext_impl_aux:
+  fixes Re Rv
   assumes [autoref_rules]: "(Gi,G) \<in> igbg_impl_rel_ext Re Rv"
   shows "(?c, degeneralize_ext) 
   \<in> (igbg_impl_rel_ext Re Rv \<rightarrow> Re') \<rightarrow> bg_impl_rel_ext Re' (Rv \<times>\<^sub>r nat_rel)"
@@ -944,6 +951,7 @@ lemma prod_impl_aux_alt:
   done
 
 schematic_goal prod_impl_aux:
+  fixes Re
   (*assumes [autoref_rules]: "(eqq,op =) \<in> Rq \<rightarrow> Rq \<rightarrow> bool_rel"
   assumes [autoref_rules]: "(eqs,op =) \<in> Rs \<rightarrow> Rs \<rightarrow> bool_rel"*)
   assumes [autoref_rules]: "(Gi,G) \<in> igba_impl_rel_ext Re Rq Rl"

@@ -49,6 +49,7 @@ lemma frv_edge_set_aimpl_correct:
   done
 
 schematic_goal frv_edge_set_impl_aux:
+  fixes R Re
   assumes [autoref_rules]: "(eq,op =)\<in>R \<rightarrow> R \<rightarrow> bool_rel"
   assumes [relator_props]: "single_valued R"
   shows "(?c, frv_edge_set_aimpl) \<in> \<langle>Re,R\<rangle>frgv_impl_rel_ext \<rightarrow> \<langle>\<langle>R \<times>\<^sub>r R\<rangle>list_set_rel\<rangle>nres_rel"
@@ -64,6 +65,7 @@ concrete_definition frv_edge_set_code for eq G uses frv_edge_set_code_aux
 lemmas [refine_transfer] = frv_edge_set_code.refine
 
 lemma frv_edge_set_autoref[autoref_rules]:
+  fixes Re R
   assumes EQ[unfolded autoref_tag_defs]: "GEN_OP eq op = (R \<rightarrow> R \<rightarrow> bool_rel)"
   assumes SV[unfolded autoref_tag_defs]: "PREFER single_valued R"
   shows "(frv_edge_set_code eq,frv_edge_set) \<in> \<langle>Re,R\<rangle>frgv_impl_rel_ext \<rightarrow> \<langle>R \<times>\<^sub>r R\<rangle>list_set_rel"
@@ -92,7 +94,7 @@ definition "frv_export G \<equiv> do {
   }"
 
 schematic_goal frv_export_impl_aux:
-  fixes R :: "('vi \<times> 'v) set"
+  fixes Re and R :: "('vi \<times> 'v) set"
   notes [autoref_tyrel] = TYRELI[where R = "\<langle>R \<times>\<^sub>r R\<rangle>list_set_rel"]
   assumes EQ[autoref_rules]: "(eq,op =)\<in>R \<rightarrow> R \<rightarrow> bool_rel"
   assumes SVR[relator_props]: "single_valued R"

@@ -326,6 +326,7 @@ abbreviation fl_rel :: "(_ \<times> ('a list \<times> 'b list) option) set" wher
 
 theorem find_lasso_tr_correct:
   -- "Correctness theorem for the constant we extracted to SML"
+  fixes Re
   assumes A: "(G_impl,G)\<in>igbg_impl_rel_ext Re Id"
   assumes B: "igb_fr_graph G"
   shows "RETURN (find_lasso_tr G_impl) 
@@ -361,6 +362,7 @@ lemma [autoref_itype]:
   by simp
 
 lemma find_lasso_spec_autoref[autoref_rules_raw]:
+  fixes Re
   assumes "SIDE_PRECOND (igb_fr_graph G)"
   assumes "PREFER_id R"
   assumes "(G_impl,G)\<in>igbg_impl_rel_ext Re R"

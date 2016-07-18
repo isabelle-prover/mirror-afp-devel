@@ -388,8 +388,8 @@ where
 text {* @{const getVar'} etc.\ do operate on name, index, \ldots directly. Lift them to use @{const VarRef} instead. *}
 
 fun liftVar where
-  "liftVar f (VarRef gl v idx) arg g p = 
-      f gl v (map_option (exprArith g p) idx) arg g p"
+  "liftVar f (VarRef gl v idx) argm g p = 
+      f gl v (map_option (exprArith g p) idx) argm g p"
 
 definition "getVar v = liftVar (\<lambda>gl v idx arg. getVar' gl v idx) v ()"
 definition "setVar = liftVar setVar'"

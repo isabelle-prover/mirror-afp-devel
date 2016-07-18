@@ -5,7 +5,7 @@
 *)
 
 section "Data refinement of representation of a file"
-theory FileRefinement imports Main CArrays ResizableArrays begin
+theory FileRefinement imports Complex_Main CArrays ResizableArrays begin
 
 text {*
   We describe a file at

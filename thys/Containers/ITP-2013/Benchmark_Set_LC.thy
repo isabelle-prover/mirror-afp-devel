@@ -82,7 +82,7 @@ instance by(intro_classes)(simp_all add: cEnum_word_def)
 end
 
 notepad begin
-  have "complete 30 40 (12345, 67899) = (32, 4294967296)" by eval
+  have "Benchmark_Set.complete 30 40 (12345, 67899) = (32, 4294967296)" by eval
 end
 
 end

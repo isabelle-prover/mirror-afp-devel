@@ -406,7 +406,7 @@ begin
   end
 
 
-  definition lasso_rel_ext_internal_def: "lasso_rel_ext Re R \<equiv> {
+  definition lasso_rel_ext_internal_def: "\<And>Re R. lasso_rel_ext Re R \<equiv> {
     (\<lparr> lasso_reach = r', lasso_va = va', lasso_cysfx = cysfx', \<dots>=m' \<rparr>, 
      \<lparr> lasso_reach = r, lasso_va = va, lasso_cysfx = cysfx, \<dots>=m \<rparr>) |
       r' r va' va cysfx' cysfx m' m. 
@@ -417,7 +417,7 @@ begin
     }"
 
 
-  lemma lasso_rel_ext_def: "\<langle>Re,R\<rangle>lasso_rel_ext = {
+  lemma lasso_rel_ext_def: "\<And> Re R. \<langle>Re,R\<rangle>lasso_rel_ext = {
     (\<lparr> lasso_reach = r', lasso_va = va', lasso_cysfx = cysfx', \<dots>=m' \<rparr>, 
      \<lparr> lasso_reach = r, lasso_va = va, lasso_cysfx = cysfx, \<dots>=m \<rparr>) |
       r' r va' va cysfx' cysfx m' m. 
@@ -429,7 +429,7 @@ begin
     unfolding lasso_rel_ext_internal_def relAPP_def by auto
 
   lemma lasso_rel_ext_sv[relator_props]: 
-    "\<lbrakk> single_valued Re; single_valued R \<rbrakk> \<Longrightarrow> single_valued (\<langle>Re,R\<rangle>lasso_rel_ext)"
+    "\<And> Re R. \<lbrakk> single_valued Re; single_valued R \<rbrakk> \<Longrightarrow> single_valued (\<langle>Re,R\<rangle>lasso_rel_ext)"
     unfolding lasso_rel_ext_def
     apply (rule single_valuedI)
     apply safe
@@ -437,7 +437,7 @@ begin
     done
 
   lemma lasso_rel_ext_id[relator_props]: 
-    "\<lbrakk> Re=Id; R=Id \<rbrakk> \<Longrightarrow> \<langle>Re,R\<rangle>lasso_rel_ext = Id"
+    "\<And>Re R. \<lbrakk> Re=Id; R=Id \<rbrakk> \<Longrightarrow> \<langle>Re,R\<rangle>lasso_rel_ext = Id"
     unfolding lasso_rel_ext_def
     apply simp
     apply safe
@@ -451,27 +451,27 @@ begin
   term lasso_reach_update
 
   lemma lasso_param[param, autoref_rules]:
-    "(lasso_reach, lasso_reach) \<in> \<langle>Re,R\<rangle>lasso_rel_ext \<rightarrow> \<langle>R\<rangle>list_rel"
-    "(lasso_va, lasso_va) \<in> \<langle>Re,R\<rangle>lasso_rel_ext \<rightarrow> R"
-    "(lasso_cysfx, lasso_cysfx) \<in> \<langle>Re,R\<rangle>lasso_rel_ext \<rightarrow> \<langle>R\<rangle>list_rel"
-    "(lasso_ext, lasso_ext) 
+    "\<And>Re R. (lasso_reach, lasso_reach) \<in> \<langle>Re,R\<rangle>lasso_rel_ext \<rightarrow> \<langle>R\<rangle>list_rel"
+    "\<And>Re R. (lasso_va, lasso_va) \<in> \<langle>Re,R\<rangle>lasso_rel_ext \<rightarrow> R"
+    "\<And>Re R. (lasso_cysfx, lasso_cysfx) \<in> \<langle>Re,R\<rangle>lasso_rel_ext \<rightarrow> \<langle>R\<rangle>list_rel"
+    "\<And>Re R. (lasso_ext, lasso_ext) 
       \<in> \<langle>R\<rangle>list_rel \<rightarrow> R \<rightarrow> \<langle>R\<rangle>list_rel \<rightarrow> Re \<rightarrow> \<langle>Re,R\<rangle>lasso_rel_ext"
-    "(lasso_reach_update, lasso_reach_update) 
+    "\<And>Re R. (lasso_reach_update, lasso_reach_update) 
       \<in> (\<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel) \<rightarrow> \<langle>Re,R\<rangle>lasso_rel_ext \<rightarrow> \<langle>Re,R\<rangle>lasso_rel_ext"
-    "(lasso_va_update, lasso_va_update) 
+    "\<And>Re R. (lasso_va_update, lasso_va_update) 
       \<in> (R\<rightarrow>R) \<rightarrow> \<langle>Re,R\<rangle>lasso_rel_ext \<rightarrow> \<langle>Re,R\<rangle>lasso_rel_ext"
-    "(lasso_cysfx_update, lasso_cysfx_update) 
+    "\<And>Re R. (lasso_cysfx_update, lasso_cysfx_update) 
       \<in> (\<langle>R\<rangle>list_rel \<rightarrow> \<langle>R\<rangle>list_rel) \<rightarrow> \<langle>Re,R\<rangle>lasso_rel_ext \<rightarrow> \<langle>Re,R\<rangle>lasso_rel_ext"
-    "(lasso.more_update, lasso.more_update) 
+    "\<And>Re R. (lasso.more_update, lasso.more_update) 
       \<in> (Re\<rightarrow>Re) \<rightarrow> \<langle>Re,R\<rangle>lasso_rel_ext \<rightarrow> \<langle>Re,R\<rangle>lasso_rel_ext"
     unfolding lasso_rel_ext_def
     by (auto dest: fun_relD)
 
 
   lemma lasso_param2[param, autoref_rules]:
-    "(lasso_v0, lasso_v0) \<in> \<langle>Re,R\<rangle>lasso_rel_ext \<rightarrow> R"
-    "(lasso_cycle, lasso_cycle) \<in> \<langle>Re,R\<rangle>lasso_rel_ext \<rightarrow> \<langle>R\<rangle>list_rel"
-    "(map_lasso, map_lasso) 
+    "\<And>Re R. (lasso_v0, lasso_v0) \<in> \<langle>Re,R\<rangle>lasso_rel_ext \<rightarrow> R"
+    "\<And>Re R. (lasso_cycle, lasso_cycle) \<in> \<langle>Re,R\<rangle>lasso_rel_ext \<rightarrow> \<langle>R\<rangle>list_rel"
+    "\<And>Re R. (map_lasso, map_lasso) 
       \<in> (R\<rightarrow>R') \<rightarrow> \<langle>Re,R\<rangle>lasso_rel_ext \<rightarrow> \<langle>unit_rel,R'\<rangle>lasso_rel_ext"
     unfolding lasso_v0_def[abs_def] lasso_cycle_def[abs_def] map_lasso_def[abs_def]
     by parametricity+

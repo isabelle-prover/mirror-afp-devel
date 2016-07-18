@@ -130,7 +130,7 @@ for something meaningful. *}
 consts 
   warn :: "String.literal \<Rightarrow> unit"
 
-abbreviation "with_warn msg exp \<equiv> let _ = warn (STR msg) in exp"
+abbreviation "with_warn msg e \<equiv> let _ = warn (STR msg) in e"
 abbreviation "the_warn opt msg \<equiv> case opt of None \<Rightarrow> () | _ \<Rightarrow> warn (STR msg)"
 
 text {* @{text usc}: "Unsupported Construct" *}

@@ -202,13 +202,13 @@ record ('vi,'ei,'v0i) gen_g_impl =
   gi_E :: 'ei
   gi_V0 :: 'v0i
 
-definition gen_g_impl_rel_ext_internal_def: "gen_g_impl_rel_ext Rm Rv Re Rv0
+definition gen_g_impl_rel_ext_internal_def: "\<And> Rm Rv Re Rv0. gen_g_impl_rel_ext Rm Rv Re Rv0
   \<equiv> { (gen_g_impl_ext Vi Ei V0i mi, graph_rec_ext V E V0 m) 
       | Vi Ei V0i mi V E V0 m. 
         (Vi,V)\<in>Rv \<and> (Ei,E)\<in>Re \<and> (V0i,V0)\<in>Rv0 \<and> (mi,m)\<in>Rm
     }"
 
-lemma gen_g_impl_rel_ext_def: "\<langle>Rm,Rv,Re,Rv0\<rangle>gen_g_impl_rel_ext
+lemma gen_g_impl_rel_ext_def: "\<And>Rm Rv Re Rv0. \<langle>Rm,Rv,Re,Rv0\<rangle>gen_g_impl_rel_ext
   \<equiv> { (gen_g_impl_ext Vi Ei V0i mi, graph_rec_ext V E V0 m) 
       | Vi Ei V0i mi V E V0 m. 
         (Vi,V)\<in>Rv \<and> (Ei,E)\<in>Re \<and> (V0i,V0)\<in>Rv0 \<and> (mi,m)\<in>Rm
@@ -216,7 +216,7 @@ lemma gen_g_impl_rel_ext_def: "\<langle>Rm,Rv,Re,Rv0\<rangle>gen_g_impl_rel_ext
   unfolding gen_g_impl_rel_ext_internal_def relAPP_def by simp
 
 lemma gen_g_impl_rel_sv[relator_props]: 
-  "\<lbrakk>single_valued Rv; single_valued Re; single_valued Rv0; single_valued Rm \<rbrakk> \<Longrightarrow> 
+  "\<And>Rm Rv Re Rv0. \<lbrakk>single_valued Rv; single_valued Re; single_valued Rv0; single_valued Rm \<rbrakk> \<Longrightarrow> 
   single_valued (\<langle>Rm,Rv,Re,Rv0\<rangle>gen_g_impl_rel_ext)"
   unfolding gen_g_impl_rel_ext_def
   apply (auto 
@@ -225,10 +225,10 @@ lemma gen_g_impl_rel_sv[relator_props]:
   done
 
 lemma gen_g_refine:
-  "(gi_V,g_V) \<in> \<langle>Rm,Rv,Re,Rv0\<rangle>gen_g_impl_rel_ext \<rightarrow> Rv"
-  "(gi_E,g_E) \<in> \<langle>Rm,Rv,Re,Rv0\<rangle>gen_g_impl_rel_ext \<rightarrow> Re"
-  "(gi_V0,g_V0) \<in> \<langle>Rm,Rv,Re,Rv0\<rangle>gen_g_impl_rel_ext \<rightarrow> Rv0"
-  "(gen_g_impl_ext, graph_rec_ext) 
+  "\<And>Rm Rv Re Rv0. (gi_V,g_V) \<in> \<langle>Rm,Rv,Re,Rv0\<rangle>gen_g_impl_rel_ext \<rightarrow> Rv"
+  "\<And>Rm Rv Re Rv0. (gi_E,g_E) \<in> \<langle>Rm,Rv,Re,Rv0\<rangle>gen_g_impl_rel_ext \<rightarrow> Re"
+  "\<And>Rm Rv Re Rv0. (gi_V0,g_V0) \<in> \<langle>Rm,Rv,Re,Rv0\<rangle>gen_g_impl_rel_ext \<rightarrow> Rv0"
+  "\<And>Rm Rv Re Rv0. (gen_g_impl_ext, graph_rec_ext) 
     \<in> Rv \<rightarrow> Re \<rightarrow> Rv0 \<rightarrow> Rm \<rightarrow> \<langle>Rm,Rv,Re,Rv0\<rangle>gen_g_impl_rel_ext"
   unfolding gen_g_impl_rel_ext_def
   by auto
@@ -485,7 +485,7 @@ end
 
 term frv_rename_ext_aimpl
 schematic_goal fr_rename_ext_impl_aux:
-  fixes Rv' :: "('vti \<times> 'vt) set"
+  fixes Re and Rv' :: "('vti \<times> 'vt) set"
   assumes [autoref_rules]: "(eq, op =) \<in> Rv' \<rightarrow> Rv' \<rightarrow> bool_rel"
   assumes [autoref_ga_rules]: "is_bounded_hashcode Rv' eq bhc"
   assumes [autoref_ga_rules]: "is_valid_def_hm_size TYPE('vti) def_size"
