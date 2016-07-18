@@ -35,7 +35,10 @@ and larger scientific developments, mechanically checked in the theorem prover
 of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/journals/afp/">dblp</a> and has an ISSN: 2150-914x. Submissions are refereed. The preferred citation style 
 is available <a href="citing.shtml">[here]</a>.
 <p>
-A <a href="devel.shtml">development version</a> of the archive is available as well.
+
+
+  A <a href="http://devel.isa-afp.org">development version</a> of the archive is available as well.
+
 </p>
 </td></tr>
 </table>
