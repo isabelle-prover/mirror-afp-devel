@@ -44,13 +44,16 @@
         <td class="abstract">
 
 
-A framework for the analysis of the amortized complexity of (functional)
+A framework for the analysis of the amortized complexity of functional
 data structures is formalized in Isabelle/HOL and applied to a number of
 standard examples and to the folowing non-trivial ones: skew heaps,
-splay trees, splay heaps and pairing heaps. This work is described
+splay trees, splay heaps and pairing heaps.
+<p>
+A preliminary version of this work (without pairing heaps) is described
 in a <a href="http://www.in.tum.de/~nipkow/pubs/itp15.html">paper</a>
 published in the proceedings of the conference on Interactive
-Theorem Proving ITP 2015 (except for pairing heaps).
+Theorem Proving ITP 2015. An extended version of this publication
+is available <a href="http://www.in.tum.de/~nipkow/pubs/jfp16.html">here</a>.
         </td></tr>
 
     <tr><td class="datahead" valign="top">Change history:</td>
