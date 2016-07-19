@@ -241,14 +241,14 @@ fun t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 :: "'a heap list \<Rightarrow> nat
 fun cost :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> nat" where
 "cost Empty _ = 1" |
 "cost Del_min [heap.Empty] = 1" |
-"cost Del_min [Hp x hs] = 1 + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 hs) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs" |
+"cost Del_min [Hp x hs] = t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 hs) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs" |
 "cost (Insert a) _ = 1" |
 "cost Meld _ = 1"
 
 fun U :: "'a :: linorder op\<^sub>p\<^sub>q \<Rightarrow> 'a heap list \<Rightarrow> real" where
 "U Empty _ = 1" |
 "U (Insert a) [h] = log 2 (size_hp h + 1) + 1" |
-"U Del_min [h] = 3*log 2 (size_hp h + 1) + 5" |
+"U Del_min [h] = 3*log 2 (size_hp h + 1) + 4" |
 "U Meld [h1,h2] = 2*log 2 (size_hp h1 + size_hp h2 + 1) + 1"
 
 interpretation pairing: Amortized
@@ -296,7 +296,7 @@ next
       case [simp]: (Hp x hs)
       have "t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>2 (pass\<^sub>1 hs) + t\<^sub>p\<^sub>a\<^sub>s\<^sub>s\<^sub>1 hs \<le> 2 + length hs"
         by (induct hs rule: pass\<^sub>1.induct) simp_all
-      hence  "cost f ss \<le> 1 + \<dots>" by simp
+      hence  "cost f ss \<le> \<dots>" by simp
       moreover have  "\<Phi> (del_min h) - \<Phi> h \<le> 3*log 2 (size_hp h + 1) - length hs + 2"
       proof (cases "hs = []")
         case False

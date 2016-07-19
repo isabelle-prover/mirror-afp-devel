@@ -71,4 +71,45 @@ end
 
 hide_const T
 
+text
+\<open>\<open>Amortized2\<close> supports the transfer of amortized analysis of one datatype
+(\<open>Amortized arity exec inv cost \<Phi> U\<close> on type \<open>'s\<close>) to an implementation
+(primed identifiers on type \<open>'t\<close>).
+Function \<open>hom\<close> is assumed to be a homomorphism from \<open>'t\<close> to \<open>'s\<close>,
+not just w.r.t. \<open>exec\<close> but also \<open>cost\<close> and \<open>U\<close>. The assumptions about
+\<open>inv'\<close> are weaker than the obvious \<open>inv' = inv \<circ> hom\<close>: the latter does
+not allow \<open>inv\<close> to be weaker than \<open>inv'\<close> (which we need in one application).\<close>
+
+locale Amortized2 = Amortized arity exec inv cost \<Phi> U
+  for arity :: "'op \<Rightarrow> nat" and exec and inv :: "'s \<Rightarrow> bool" and cost \<Phi> U +
+fixes exec' :: "'op \<Rightarrow> 't list \<Rightarrow> 't"
+fixes inv' :: "'t \<Rightarrow> bool"
+fixes cost' :: "'op \<Rightarrow> 't list \<Rightarrow> nat"
+fixes U' :: "'op \<Rightarrow> 't list \<Rightarrow> real"
+fixes hom :: "'t \<Rightarrow> 's"
+assumes exec': "\<lbrakk>\<forall>s \<in> set ts. inv' s; length ts = arity f \<rbrakk>
+  \<Longrightarrow> hom(exec' f ts) = exec f (map hom ts)"
+assumes inv_exec': "\<lbrakk>\<forall>s \<in> set ss. inv' s; length ss = arity f \<rbrakk>
+  \<Longrightarrow> inv'(exec' f ss)"
+assumes inv_hom: "inv' t \<Longrightarrow> inv (hom t)"
+assumes cost': "\<lbrakk>\<forall>s \<in> set ts. inv' s; length ts = arity f \<rbrakk>
+  \<Longrightarrow> cost' f ts = cost f (map hom ts)"
+assumes U': "\<lbrakk>\<forall>s \<in> set ts. inv' s; length ts = arity f \<rbrakk>
+  \<Longrightarrow> U' f ts = U f (map hom ts)"
+begin
+
+sublocale A': Amortized arity exec' inv' cost' "\<Phi> o hom" U'
+proof (standard, goal_cases)
+  case 1 thus ?case by(simp add: exec' inv_exec' inv_exec)
+next
+  case 2 thus ?case by(simp add: inv_hom ppos)
+next
+  case 3 thus ?case by(simp add: exec' p0 inv_exec)
+next
+  case 4 thus ?case
+    by(simp add: U exec' U' map_map[symmetric] cost' inv_exec inv_hom del: map_map)
+qed
+
+end
+
 end
