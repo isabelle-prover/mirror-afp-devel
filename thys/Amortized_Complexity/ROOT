@@ -21,6 +21,7 @@ session Amortized_Complexity (AFP) = "HOL-Library" +
     Splay_Heap_Analysis
     Pairing_Heap_Tree_Analysis
     Pairing_Heap_List1_Analysis
+    Pairing_Heap_List1_Analysis2
     Pairing_Heap_List2_Analysis
 
   document_files

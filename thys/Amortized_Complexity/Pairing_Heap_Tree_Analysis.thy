@@ -14,7 +14,7 @@ begin
 
 text
 \<open>Verification of logarithmic bounds on the amortized complexity of
-pairing heaps \cite{FredmanSST86}.\<close>
+pairing heaps \cite{FredmanSST86,Brinkop}.\<close>
 
 fun len :: "'a tree \<Rightarrow> nat" where 
   "len Leaf = 0"
