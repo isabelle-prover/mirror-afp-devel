@@ -252,6 +252,29 @@ licenses = {
 	'BSD': ("BSD License", "http://isa-afp.org/LICENSE"),
 }
 
+### statistics
+
+# FIXME: Use of global variable, Could not figure out another way to give
+# data to generate_statistics()
+
+STAT_FIGURES = dict()
+
+# wrapper for statistics
+html_statistics_text_wrapper = u"""
+<table>
+<tr><td>Number of Articles:</td><td class="statsnumber">{num_articles:,d}</td></tr>
+<tr><td>Number of Authors:</td><td class="statsnumber">{num_authors:,d}</td></tr>
+<tr><td>Number of lemmas:</td><td class="statsnumber">~{num_lemmas:,d}</td></tr>
+<tr><td>Lines of Code:</td><td class="statsnumber">~{loc:,d}</td></tr>
+</table>
+<script>
+var years = {years:s};
+var no_articles = {no_articles:s};
+var no_loc = {no_loc:s};
+var no_authors = {no_authors:s};
+var no_authors_series = {no_authors_series:s};
+</script>
+"""
 
 ### options
 

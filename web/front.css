@@ -313,3 +313,12 @@ pre.code {
   padding: 10px 2px 10px 2px;
   border-radius: 4px;
 }
+
+.chart {
+  height: 400px;
+  width: 400px;
+  background: white;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  border: 1px solid black;
+}
