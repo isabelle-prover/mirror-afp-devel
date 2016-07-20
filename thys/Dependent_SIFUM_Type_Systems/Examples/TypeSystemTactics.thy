@@ -15,9 +15,9 @@ structure Data = Proof_Data
 \<close>
 
 method_setup wrap = 
-  \<open>Method_Closure.method_text >> (fn text => fn ctxt =>
+  \<open>Method.text_closure >> (fn text => fn ctxt =>
     let
-      val morph = (Data.get ctxt);
+      val morph = Data.get ctxt;
 
       fun safe_fact thm =
         perhaps (try (Morphism.thm morph)) thm;
@@ -28,9 +28,8 @@ method_setup wrap =
          term = [Morphism.term morph],
          typ = [Morphism.typ morph]}
       
-      val text' = (Method.map_source) (map (Token.transform morph')) text;
-    in
-    Method_Closure.method_evaluate text' ctxt end)\<close>
+      val text' = Method.map_source (map (Token.transform morph')) text;
+    in Method.evaluate_runtime text' ctxt end)\<close>
 
 method_setup print_headgoal = 
   \<open>Scan.succeed (fn ctxt =>
