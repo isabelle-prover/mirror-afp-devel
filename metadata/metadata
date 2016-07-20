@@ -4514,3 +4514,16 @@ abstract =
   polynomials whose corresponding type of power-products is ordered by a
   linear (term) ordering, various additional notions, such as leading
   power-product, leading coefficient etc., are introduced as well.
+
+[Surprise_Paradox]
+title = Surprise Paradox
+author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner/>
+notify = breitner@kit.edu
+date = 2016-07-17
+topic = Logic
+abstract = 
+  In 1964, Fitch showed that the paradox of the surprise hanging can be
+  resolved by showing that the judge’s verdict is inconsistent. His
+  formalization builds on Gödel’s coding of provability.  In this
+  theory, we reproduce his proof in Isabelle, building on Paulson’s
+  formalisation of Gödel’s incompleteness theorems.
