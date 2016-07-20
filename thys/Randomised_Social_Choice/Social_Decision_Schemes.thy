@@ -140,7 +140,7 @@ qualified lemma anonymity_prefs_from_table_aux:
   assumes "R2 = prefs_from_table ys" "prefs_from_table_wf agents alts ys"
   assumes "mset (map snd xs) = mset (map snd ys)"
   shows   "sds R1 = sds R2" unfolding assms(1,3)
-  by (rule anonymity_prefs_from_table) (simp_all add: assms)
+  by (rule anonymity_prefs_from_table) (simp_all add: assms del: mset_map)
 end
 
 end

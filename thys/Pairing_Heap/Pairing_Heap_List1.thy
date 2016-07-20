@@ -110,10 +110,10 @@ lemma mset_insert: "mset_heap (insert a h) = {#a#} + mset_heap h"
 by(cases h) (auto simp add: mset_meld insert_def add_ac)
 
 lemma mset_pass1:
-  "Union_mset(mset(map mset_heap (pass\<^sub>1 hs))) = Union_mset(mset(map mset_heap hs))"
+  "Union_mset(image_mset mset_heap (mset (pass\<^sub>1 hs))) = Union_mset(mset(map mset_heap hs))"
 by(induction hs rule: pass\<^sub>1.induct)(auto simp: mset_meld add_ac)
 
-lemma mset_pass2: "mset_heap (pass\<^sub>2 hs) = Union_mset(mset(map mset_heap hs))"
+lemma mset_pass2: "mset_heap (pass\<^sub>2 hs) = Union_mset(image_mset mset_heap(mset hs))"
 by(induction hs)(auto simp: mset_meld add_ac)
 
 lemma mset_del_min: "h \<noteq> Empty \<Longrightarrow>

@@ -696,18 +696,18 @@ proof -
     by (simp_all add: prefs_from_table_wf_def)
   from agents agents' wf(1) wf(2) have "mset (map fst xs) = mset (map fst ys)"
     by (subst set_eq_iff_mset_eq_distinct [symmetric]) (simp_all add: prefs_from_table_wfD)
-  hence same_length: "length xs = length ys" by (auto dest: mset_eq_length)
+  hence same_length: "length xs = length ys" by (auto dest: mset_eq_length simp del: mset_map)
 
   from \<open>mset (map fst xs) = mset (map fst ys)\<close>
     obtain g where g: "g permutes {..<length ys}" "permute_list g (map fst ys) = map fst xs"
-    by (auto elim: mset_eq_permutation simp: same_length)
+    by (auto elim: mset_eq_permutation simp: same_length simp del: mset_map)
 
   from mset_eq g 
     have "mset (map snd ys) = mset (permute_list g (map snd ys))" by simp
   with mset_eq obtain f 
     where f: "f permutes {..<length xs}" 
              "permute_list f (permute_list g (map snd ys)) = map snd xs"
-    by (auto elim: mset_eq_permutation simp: same_length)
+    by (auto elim: mset_eq_permutation simp: same_length simp del: mset_map)
   from permutes_in_image[OF f(1)]
     have [simp]: "f x < length xs \<longleftrightarrow> x < length xs" 
                  "f x < length ys \<longleftrightarrow> x < length ys" for x by (simp_all add: same_length)
@@ -790,7 +790,7 @@ proof -
   from assms(2) obtain xs where xs: "A = set xs" "distinct xs"
     using finite_distinct_list by blast
   with assms have "mset (map f xs) = mset (map g xs)" 
-    by (simp add: mset_set_set mset_map)
+    by (simp add: mset_set_set)
   from mset_eq_permutation[OF this] obtain \<pi> where
     \<pi>: "\<pi> permutes {0..<length xs}" "permute_list \<pi> (map g xs) = map f xs"
     by (auto simp: atLeast0LessThan)

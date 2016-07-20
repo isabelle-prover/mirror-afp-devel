@@ -803,7 +803,7 @@ next
     have "eval_primfuns fs x = fold op* (map (\<lambda>f. eval_primfun f x) fs) 1"
       unfolding eval_primfuns_def by (simp add: fold_plus_listprod_rev)
     also have "fold op* (map (\<lambda>f. eval_primfun f x) fs) = fold op* (map (\<lambda>f. eval_primfun f x) gs)"
-      using 2 by (intro fold_multiset_equiv ext) (auto simp: mset_map)
+      using 2 by (intro fold_multiset_equiv ext) auto
     also have "... 1 = eval_primfuns gs x"
       unfolding eval_primfuns_def by (simp add: fold_plus_listprod_rev)
     finally show "eval_primfuns fs x = eval_primfuns gs x" .

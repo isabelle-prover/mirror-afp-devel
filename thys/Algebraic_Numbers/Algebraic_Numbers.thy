@@ -1392,7 +1392,7 @@ proof-
   have "mset ys = mset (map (nth ys') (map f [0..<length ys']))"
    unfolding ys_def by auto
   also have "... = image_mset (nth ys') (image_mset f (mset [0..<length ys']))"
-    unfolding mset_map by simp
+    by (simp add: multiset.map_comp)
   also have "(mset [0..<length ys']) = mset_set {0..<length ys'}"
     by (metis mset_sorted_list_of_multiset sorted_list_of_mset_set sorted_list_of_set_range) 
   also have "image_mset f (...) = mset_set (f ` {..<length ys'})"

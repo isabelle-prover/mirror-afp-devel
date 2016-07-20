@@ -69,8 +69,7 @@ by (auto simp: elem_list_splits_length adj_msog_def split: accent.splits)
 
 lemma msog_append: "ms_of_greek (xs @ ys) = image_mset (adj_msog [] ys) (ms_of_greek xs) +
   image_mset (adj_msog xs []) (ms_of_greek ys)"
-by (auto simp: ms_of_greek_def list_splits_append mset_map multiset.map_comp comp_def
-  prod.case_distrib)
+by (auto simp: ms_of_greek_def list_splits_append multiset.map_comp comp_def prod.case_distrib)
 
 definition nest :: "('a \<times> 'a) set \<Rightarrow> ('a greek \<times> 'a greek) set \<Rightarrow> ('a greek \<times> 'a greek) set" where
   [simp]: "nest r s = {(a,b). (ms_of_greek a, ms_of_greek b) \<in> mult (letter_less r <*lex*> s)}"

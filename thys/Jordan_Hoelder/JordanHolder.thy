@@ -75,7 +75,7 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
     hence  "length \<GG> = 0 \<or> length \<GG> = 1 \<or> length \<GG> = 2" by arith
     with comp\<GG>.notempty have  "length \<GG> = 1 \<or> length \<GG> = 2" by simp
     thus ?thesis
-    proof auto
+    proof (auto simp del: mset_map)
       -- {* First trivial case: @{text \<GG>} is the trivial group. *}
       assume "length \<GG> = Suc 0"
       hence length:"length \<GG> = 1" by simp
