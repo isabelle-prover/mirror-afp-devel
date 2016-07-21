@@ -3,8 +3,8 @@ imports
   Main 
   "~~/src/HOL/Library/FSet"
   "~~/src/HOL/Library/Stream"
-  "~~/src/HOL/Eisbach/Eisbach"
   Incredible_Signatures
+  "~~/src/HOL/Eisbach/Eisbach"
 begin
 
 text \<open>This theory contains the definition for actual proof graphs, and their various possible
