@@ -6,11 +6,11 @@ subsection \<open>Transfer rules to convert theorems from JNF to HMA and vice-ve
 
 theory HMA_Connect
 imports 
-  "~~/src/HOL/Eisbach/Eisbach" 
   "../Jordan_Normal_Form/Spectral_Radius" 
   "../Echelon_Form/Code_Cayley_Hamilton" (* defines matpow *)
   Bij_Nat
   Cancel_Card_Constraint
+  "~~/src/HOL/Eisbach/Eisbach" 
 begin
 
 text \<open>Prefer certain constants and lemmas without prefix.\<close>
