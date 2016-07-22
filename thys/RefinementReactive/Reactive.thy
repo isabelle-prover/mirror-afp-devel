@@ -2,7 +2,6 @@ theory Reactive
   imports Temporal Refinement
 begin
   section{*Reactive Systems*}
-  (*declare [[show_types]]*)
 
   text{*
     In this section we introduce reactive systems which are modeled as 
@@ -433,11 +432,11 @@ begin
                   by (metis `i = n`)
               next
                 assume "\<not> ?A"
-                then obtain j where "j < n \<and> \<not> inpt_st (\<lambda> (u, v) . \<lambda> (u', v') . r u u' OO r' v v') (u j) (u (Suc j)) (x j)"
+                then obtain j where j: "j < n \<and> \<not> inpt_st (\<lambda> (u, v) . \<lambda> (u', v') . r u u' OO r' v v') (u j) (u (Suc j)) (x j)"
                   by auto
-                moreover from this and C have "inpt_st r (fst (u j)) (fst (u (Suc j))) (x j) \<and> (\<forall>y. r (fst (u j)) (fst (u (Suc j))) (x j) y \<longrightarrow> inpt_st r' (snd (u j)) (snd (u (Suc j))) y)"
+                with C have "inpt_st r (fst (u j)) (fst (u (Suc j))) (x j) \<and> (\<forall>y. r (fst (u j)) (fst (u (Suc j))) (x j) y \<longrightarrow> inpt_st r' (snd (u j)) (snd (u (Suc j))) y)"
                   by auto
-                ultimately show ?thesis
+                with j show ?thesis
                   apply (case_tac "u j")
                   apply (case_tac "u (Suc j)")
                   apply (simp add: inpt_st_def)
@@ -462,18 +461,18 @@ begin
              assume "\<not> i < n"
              from this and `i < Suc n` have [simp]: "i = n" by simp
              show ?thesis
-               proof cases
-                assume "?A"
-                from this and A have D: "?B" by simp
+               proof (cases ?A)
+                case True
+                with A have D: "?B" by simp
                 from D and E show ?thesis
                   by (metis `i = n`)
               next
-                assume "\<not> ?A"
-                then obtain j where "j < n \<and> \<not> inpt_st (\<lambda> (u, v) . \<lambda> (u', v') . r u u' OO r' v v') (u j) (u (Suc j)) (x j)"
+                case False
+                then obtain j where j: "j < n \<and> \<not> inpt_st (\<lambda> (u, v) . \<lambda> (u', v') . r u u' OO r' v v') (u j) (u (Suc j)) (x j)"
                   by auto
-                moreover from this and C have "inpt_st r (fst (u j)) (fst (u (Suc j))) (x j) \<and> (\<forall>y. r (fst (u j)) (fst (u (Suc j))) (x j) y \<longrightarrow> inpt_st r' (snd (u j)) (snd (u (Suc j))) y)"
+                with C have "inpt_st r (fst (u j)) (fst (u (Suc j))) (x j) \<and> (\<forall>y. r (fst (u j)) (fst (u (Suc j))) (x j) y \<longrightarrow> inpt_st r' (snd (u j)) (snd (u (Suc j))) y)"
                   by auto
-                ultimately show ?thesis
+                with j show ?thesis
                   by (case_tac "u j", case_tac "u (Suc j)", simp add: inpt_st_def, metis relcompp.relcompI)
               qed
          qed

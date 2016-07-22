@@ -433,11 +433,10 @@ lemma rat_inv_eq:
   shows "a = c \<and> b = d"
 proof -
   from `b > 0` `d > 0` `Fract a b = Fract c d`
-  have "a * d = c * b" by (simp add: eq_rat)
-  moreover
+  have *: "a * d = c * b" by (simp add: eq_rat)
   from arg_cong[where f=sgn, OF this] `b > 0` `d > 0`
   have "sgn a = sgn c" by (simp add: sgn_times)
-  ultimately show ?thesis
+  with * show ?thesis
     using `b > 0` `d > 0` coprime_crossproduct_int[OF `coprime a b` `coprime c d`]
     by (simp add: abs_sgn)
 qed

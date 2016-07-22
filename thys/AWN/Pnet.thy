@@ -259,11 +259,11 @@ lemma init_mapstate_Some_aodv_init [elim]:
     fix ii R s
     assume "s \<in> init (pnet np \<langle>ii; R\<rangle>)"
        and "netmap s i = Some v"
-    from this(1) obtain ns where "s = NodeS ii ns R"
-                             and "ns \<in> init (np ii)" ..
-    moreover from this(1) and \<open>netmap s i = Some v\<close> have "i = ii"
+    from this(1) obtain ns where s: "s = NodeS ii ns R"
+      and ns: "ns \<in> init (np ii)" ..
+    from s and \<open>netmap s i = Some v\<close> have "i = ii"
       by simp (metis domI domIff)
-    ultimately show "v \<in> init (np i)"
+    with s ns show "v \<in> init (np i)"
       using \<open>netmap s i = Some v\<close> by simp
   next
     fix p1 p2 s

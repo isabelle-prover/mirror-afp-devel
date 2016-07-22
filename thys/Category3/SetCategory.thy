@@ -1464,10 +1464,10 @@ begin
     shows "incl (incl_of a b)"
     and "incl_of a b \<in> hom a b"
     proof -
-      have "set a \<subseteq> set b \<and> set b \<subseteq> Univ"
+      have *: "set a \<subseteq> set b \<and> set b \<subseteq> Univ"
         using assms incl_in_def by simp
-      moreover from this have "(\<lambda>x. x) \<in> set a \<rightarrow> set b" by auto
-      ultimately show "incl_of a b \<in> hom a b"
+      then have "(\<lambda>x. x) \<in> set a \<rightarrow> set b" by auto
+      with * show "incl_of a b \<in> hom a b"
         using assms incl_in_def mkArr_in_hom by force
       thus "incl (incl_of a b)" using incl_def by fastforce
     qed
@@ -1741,12 +1741,12 @@ begin
         proof (intro arr_eqI)
           have 0: "img x \<in> set a"
           proof -
-            have "set (img x) = Fun x ` {unity}"
+            have *: "set (img x) = Fun x ` {unity}"
               using x img_def terminal_unity terminal_char2 mem_Collect_eq set_img by force
-            moreover from this have "... \<subseteq> set a"
+            then have "... \<subseteq> set a"
               using x Fun_mapsto
               by (metis (mono_tags, lifting) mem_Collect_eq incl_in_img_cod incl_in_def)
-            ultimately show ?thesis
+            with * show ?thesis
               by (metis elem_set_implies_incl_in elem_set_implies_set_eq_singleton extensional_set 
                         image_insert image_is_empty image_subset_iff incl_in_def singleton_iff)
           qed
@@ -2245,11 +2245,11 @@ begin
               fix x
               assume x: "x \<in> Dom f"
               have "Fun f x \<in> Img f" using x by blast
-              hence "(\<exists>x'. ?P (Fun f x) x') \<and> ?G (Fun f x) = (SOME x'. ?P (Fun f x) x')"
+              hence *: "(\<exists>x'. ?P (Fun f x) x') \<and> ?G (Fun f x) = (SOME x'. ?P (Fun f x) x')"
                 by auto
-              moreover from this have "?P (Fun f x) (?G (Fun f x))"
+              then have "?P (Fun f x) (?G (Fun f x))"
                 using someI_ex [of "?P (Fun f x)"] by presburger
-              ultimately have "x = ?G (Fun f x)"
+              with * have "x = ?G (Fun f x)"
                 using assms x inj_on_def [of "Fun f" "Dom f"] by simp
               thus "x = (?G o Fun f) x" by simp
             qed

@@ -480,10 +480,10 @@ lemma node_local_deliver:
   "\<langle>i : \<zeta>\<^sub>i : R\<^sub>i\<rangle>\<^sub>o \<Turnstile>\<^sub>A (S, U \<rightarrow>) globala (\<lambda>(_, a, _). \<forall>j. j\<noteq>i \<longrightarrow> (\<forall>d. a \<noteq> j:deliver(d)))"
   proof (rule ostep_invariantI, simp)
     fix \<sigma> s a \<sigma>' s'
-    assume "(\<sigma>, s) \<in> oreachable (\<langle>i : \<zeta>\<^sub>i : R\<^sub>i\<rangle>\<^sub>o) S U"
-       and "((\<sigma>, s), a, (\<sigma>', s')) \<in> trans (\<langle>i : \<zeta>\<^sub>i : R\<^sub>i\<rangle>\<^sub>o)"
+    assume 1: "(\<sigma>, s) \<in> oreachable (\<langle>i : \<zeta>\<^sub>i : R\<^sub>i\<rangle>\<^sub>o) S U"
+       and 2: "((\<sigma>, s), a, (\<sigma>', s')) \<in> trans (\<langle>i : \<zeta>\<^sub>i : R\<^sub>i\<rangle>\<^sub>o)"
        and "S \<sigma> \<sigma>' a"
-    moreover from this(1-2) obtain \<zeta> R \<zeta>' R' where "s = NodeS i \<zeta> R" and "s' = NodeS i \<zeta>' R'" ..
+    moreover from 1 2 obtain \<zeta> R \<zeta>' R' where "s = NodeS i \<zeta> R" and "s' = NodeS i \<zeta>' R'" ..
     ultimately show "\<forall>j. j\<noteq>i \<longrightarrow> (\<forall>d. a \<noteq> j:deliver(d))"
       by (cases a) (auto simp add: onode_comps)
   qed
@@ -493,12 +493,12 @@ lemma node_tau_deliver_unchanged:
                                                      \<longrightarrow> (\<forall>j. j\<noteq>i \<longrightarrow> \<sigma>' j = \<sigma> j))"
   proof (rule ostep_invariantI, clarsimp simp only: globalasimp snd_conv fst_conv)
     fix \<sigma> s a \<sigma>' s' j
-    assume "(\<sigma>, s) \<in> oreachable (\<langle>i : \<zeta>\<^sub>i : R\<^sub>i\<rangle>\<^sub>o) S U"
-       and "((\<sigma>, s), a, (\<sigma>', s')) \<in> trans (\<langle>i : \<zeta>\<^sub>i : R\<^sub>i\<rangle>\<^sub>o)"
+    assume 1: "(\<sigma>, s) \<in> oreachable (\<langle>i : \<zeta>\<^sub>i : R\<^sub>i\<rangle>\<^sub>o) S U"
+       and 2: "((\<sigma>, s), a, (\<sigma>', s')) \<in> trans (\<langle>i : \<zeta>\<^sub>i : R\<^sub>i\<rangle>\<^sub>o)"
        and "S \<sigma> \<sigma>' a"
        and "a = \<tau> \<or> (\<exists>i d. a = i:deliver(d))"
        and "j \<noteq> i"
-    moreover from this(1-2) obtain \<zeta> R \<zeta>' R' where "s = NodeS i \<zeta> R" and "s' = NodeS i \<zeta>' R'" ..
+    moreover from 1 2 obtain \<zeta> R \<zeta>' R' where "s = NodeS i \<zeta> R" and "s' = NodeS i \<zeta>' R'" ..
     ultimately show "\<sigma>' j = \<sigma> j"
       by (cases a) (auto simp del: step_node_tau simp add: onode_comps)
   qed

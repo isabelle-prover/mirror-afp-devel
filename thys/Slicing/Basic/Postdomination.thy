@@ -555,9 +555,8 @@ proof(atomize_elim)
         \<longrightarrow> n \<in> set(sourcenodes as)"
         by simp_all
       from `targetnode ax \<in> N` k' have "k' \<in> ?N'" by blast
-      moreover
-      from this `targetnode ax \<in> N` have "?N' \<noteq> {}" by auto
-      ultimately have "k' \<le> Max ?N'" using `finite ?N'` by(fastforce intro:Max_ge)
+      with `targetnode ax \<in> N` have "?N' \<noteq> {}" by auto
+      with \<open>k' \<in> ?N'\<close> have "k' \<le> Max ?N'" using `finite ?N'` by(fastforce intro:Max_ge)
       hence "k' \<le> k" by simp
       with `targetnode ax -as'\<rightarrow>* nx` `length as \<ge> k + 1` spdAll 
       have "n \<in> set(sourcenodes as')"

@@ -601,11 +601,11 @@ begin
         let ?g = "\<phi> y' f"
         show "\<epsilon>x.is_coext y' f ?g"
         proof -
-          have "?g \<in> D.hom y' (G x)"
+          have *: "?g \<in> D.hom y' (G x)"
             using f \<phi>_mapsto [of y' f x] arrow_from_functor.arrow by fast
-          moreover from this have "C (\<epsilon> x) (F ?g) = f"
+          then have "C (\<epsilon> x) (F ?g) = f"
             using f x \<psi>_\<phi> [of y' f x] \<psi>_in_terms_of_\<epsilon> arrow_from_functor.arrow by fastforce
-          ultimately show ?thesis using \<epsilon>x.is_coext_def by auto
+          with * show ?thesis using \<epsilon>x.is_coext_def by auto
         qed
         have "\<And>g'. \<epsilon>x.is_coext y' f g' \<Longrightarrow> g' = ?g"
         proof -
@@ -657,11 +657,11 @@ begin
         let ?f = "\<psi> x' g"
         show "\<eta>y.is_ext x' g ?f"
         proof -
-          have "?f \<in> C.hom (F y) x'"
+          have *: "?f \<in> C.hom (F y) x'"
             using g \<psi>_mapsto [of x' g y] arrow_to_functor.arrow by fastforce
-          moreover from this have "D (G ?f) (\<eta> y) = g"
+          then have "D (G ?f) (\<eta> y) = g"
             using g y \<phi>_\<psi> [of x' g] \<phi>_in_terms_of_\<eta> arrow_to_functor.arrow by fastforce
-          ultimately show ?thesis using \<eta>y.is_ext_def by auto
+          with * show ?thesis using \<eta>y.is_ext_def by auto
         qed
         have "\<And>f'. \<eta>y.is_ext x' g f' \<Longrightarrow> f' = \<psi> x' g"
         proof -

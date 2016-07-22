@@ -581,10 +581,10 @@ lemma asymptotics_aux:
 proof-
   from assms x1_gt_1 have ln_x_pos: "ln x > 0" by simp
   from assms x1_pos have x_pos: "x > 0" by simp
-  from assms x0_le_x1 have "hb / ln x powr (1+e) < bs!i/2" by (intro x0_hb_bound0) simp_all
-  moreover from this hb_nonneg ln_x_pos have "(bs!i - hb * ln x powr -(1+e)) > 0"
+  from assms x0_le_x1 have *: "hb / ln x powr (1+e) < bs!i/2" by (intro x0_hb_bound0) simp_all
+  with hb_nonneg ln_x_pos have "(bs!i - hb * ln x powr -(1+e)) > 0"
     by (subst powr_minus) (simp_all add: field_simps)
-  ultimately have "0 < x * (bs!i - hb * ln x powr -(1+e))" using x_pos
+  with * have "0 < x * (bs!i - hb * ln x powr -(1+e))" using x_pos
     by (subst (asm) powr_minus, intro mult_pos_pos)
   hence A: "0 < bs!i*x - hb * x * ln x powr -(1+e)" by (simp add: algebra_simps)
 
@@ -682,10 +682,10 @@ proof-
   ultimately have "(bs!i*x + (hs!i) x) powr p * ?B \<le>
                    (bs!i*x + s*hb*x*ln x powr -(1+e)) powr p * ?B" by (rule mult_right_mono)
   also from assms e_pos pos have "?B \<le> ?B'"
-  proof-
+  proof -
     from x0_hb_bound8'[OF assms(1,2)] x0_hb_bound8[OF assms(1,2)] x0_ge_1
-      have "bs ! i * x + s*hb * x / ln x powr (1 + e) > 1" by (simp add: s_def)
-    moreover from this have "... > 0" by simp
+    have *: "bs ! i * x + s*hb * x / ln x powr (1 + e) > 1" by (simp add: s_def)
+    moreover from * have "... > 0" by simp
     moreover from x0_hb_bound7[OF assms(1,2)] x0_ge_1 have "bs ! i * x + (hs ! i) x > 1" by simp
     moreover {
       have "(hs!i) x \<le> \<bar>(hs!i) x\<bar>" by simp

@@ -289,8 +289,8 @@ next
   moreover have "P = op ` (f \<circ> the_inv_into A f) ` P"
   proof (rule set_eqI')
     fix X
-    assume "X \<in> P"
-    moreover from this mem have in_range: "\<forall>x\<in>X. x \<in> f ` A" by auto
+    assume X: "X \<in> P"
+    moreover from X mem have in_range: "\<forall>x\<in>X. x \<in> f ` A" by auto
     moreover have "X = (f \<circ> the_inv_into A f) ` X"
     proof (rule set_eqI')
       fix x

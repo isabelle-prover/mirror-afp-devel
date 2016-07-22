@@ -803,8 +803,8 @@ proof (rule ballI)+
     next_dom_events P D u (ipurge_tr_rev I D u xs) = next_dom_events P D u xs \<and>
     ref_dom_events P D u (ipurge_tr_rev I D u xs) = ref_dom_events P D u xs"
    by blast
-  moreover assume "xs \<in> traces P"
-  moreover from S and this have "ipurge_tr_rev I D u xs \<in> traces P"
+  moreover assume xs: "xs \<in> traces P"
+  moreover from S and xs have "ipurge_tr_rev I D u xs \<in> traces P"
    by (rule ipurge_tr_rev_trace)
   moreover have
    "ipurge_tr_rev I D u (ipurge_tr_rev I D u xs) = ipurge_tr_rev I D u xs"
@@ -942,16 +942,16 @@ proof (rule ballI)+
    "ipurge_tr_rev I D u xs \<in> traces P \<and> xs \<in> traces P \<and>
       ipurge_tr_rev I D u (ipurge_tr_rev I D u xs) = ipurge_tr_rev I D u xs \<longrightarrow>
     next_dom_events P D u (ipurge_tr_rev I D u xs) = next_dom_events P D u xs"
-   by blast
-  moreover assume "xs \<in> traces P"
-  moreover from S and this have "ipurge_tr_rev I D u xs \<in> traces P"
-   by (rule ipurge_tr_rev_trace)
+    by blast
+  moreover assume xs: "xs \<in> traces P"
+  moreover from S and xs have "ipurge_tr_rev I D u xs \<in> traces P"
+    by (rule ipurge_tr_rev_trace)
   moreover have
    "ipurge_tr_rev I D u (ipurge_tr_rev I D u xs) = ipurge_tr_rev I D u xs"
-   by (rule ipurge_tr_rev_idem)
+    by (rule ipurge_tr_rev_idem)
   ultimately show
    "next_dom_events P D u (ipurge_tr_rev I D u xs) = next_dom_events P D u xs"
-   by simp
+    by simp
 qed
 
 lemma d_inductive_unwinding_2:

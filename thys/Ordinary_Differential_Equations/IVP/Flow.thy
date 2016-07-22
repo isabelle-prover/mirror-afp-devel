@@ -3295,15 +3295,13 @@ proof-
           show "H \<subseteq> G"
           proof
             fix x assume "x \<in> H"
-
-            from \<open>x \<in> H\<close>
-            have "infdist x (XX x0 ` J) < e_domain"
+            then have *: "infdist x (XX x0 ` J) < e_domain"
               using \<open>0 < e_domain\<close>
               by (simp add: H_def e_domain2_def)
-            moreover from this have "x \<in> X"
+            then have "x \<in> X"
               using e_domain_def(2)
               by auto
-            ultimately show "x \<in> G"
+            with * show "x \<in> G"
               unfolding G_def
               by auto
           qed

@@ -1913,15 +1913,14 @@ proof -
   interpret ivp': ivp "i\<lparr>ivp_X:=X''\<rparr>" using iv_defined by unfold_locales auto
   show ?thesis
   proof (safe intro!: ext)
-   fix x assume "is_solution x"
-    moreover
+    fix x assume x: "is_solution x"
     from is_solutionD[OF this] solution_continuous_on[OF this]
     have "\<And>t. t \<in> subset.T \<Longrightarrow> x t \<in> subset.X"
       using segment_subset
       by (intro solution_in_subset; force intro!: continuous_on_subset
           continuous_on_subset[OF _ segment_subset]
           has_vector_derivative_within_subset[OF _ segment_subset])
-    ultimately show "subset.is_solution x"
+    with x show "subset.is_solution x"
       by (auto intro!: subset.is_solutionI dest: is_solutionD)
   qed (intro subset.is_solution_on_superset_domain superset)
 qed

@@ -849,9 +849,9 @@ proof -
       new: "(g',p') = (mkVarChannel d (apsnd \<circ> pState.vars_update) g p)" 
       by (metis prod.exhaust)
     hence "g' = fst ..." by (metis fst_conv)
-    with Cons.prems have "(g,g') \<in> gState_progress_rel prog" 
+    with Cons.prems have g_g': "(g,g') \<in> gState_progress_rel prog" 
       by (auto intro: mkVarChannel_gState_progress_rel)
-    also note Cons.IH[OF this[THEN gState_progress_rel_gState_invI2], of p']
+    also note Cons.IH[OF g_g'[THEN gState_progress_rel_gState_invI2], of p']
     finally show ?case by (auto simp add: o_def new)
   qed simp
   thus ?thesis using assms p by auto

@@ -359,10 +359,10 @@ proof
     have xs'_aux: "the (map_of xss2 j) \<in> set (map snd xss2)" by force
   with wf(3) have xs'_aux': "is_finite_weak_ranking (the (map_of xss2 j))"
     by (auto simp: prefs_from_table_wf_def)
-  hence "is_weak_ranking xs'" unfolding xs'
+  hence *: "is_weak_ranking xs'" unfolding xs'
     by (intro is_weak_ranking_map_inj permutes_inj_on[OF perm'])
        (auto simp add: is_finite_weak_ranking_def)
-  moreover from this xs'_aux' have "is_finite_weak_ranking xs'"
+  moreover from * xs'_aux' have "is_finite_weak_ranking xs'"
     by (auto simp: xs' is_finite_weak_ranking_def)
   moreover from prefs_from_table_wfD(5)[OF wf(3) xs'_aux] 
     have "\<Union>set xs' = alts" unfolding xs' 

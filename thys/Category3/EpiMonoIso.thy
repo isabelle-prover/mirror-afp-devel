@@ -242,12 +242,12 @@ begin
      shows "retraction (C e' e)"
      proof -
        from assms(1) assms(2) obtain m m'
-       where "section_retraction m e" and "section_retraction m' e'"
+       where *: "section_retraction m e" "section_retraction m' e'"
          using retraction_def by fastforce
-       moreover from this have "seq m m'"
+       then have "seq m m'"
          using assms(3)
          by (simp add: section_retractionD(1) section_retractionD(3) section_retractionD(4))
-       ultimately show ?thesis using section_retraction_compose by blast
+       with * show ?thesis using section_retraction_compose by blast
      qed
        
      lemma monos_compose:

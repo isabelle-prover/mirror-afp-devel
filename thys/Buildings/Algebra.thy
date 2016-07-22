@@ -1656,10 +1656,10 @@ lemma trivial_lcoset_perm:
   assumes "Subgroup H" "normal H" "h\<in>H"
   shows   "restrict1 (op + (LCoset_rel H `` {h})) (quotient_set H) = id"
 proof (rule ext, simp, rule impI)
-  fix x assume "x \<in> quotient_set H"
-  moreover from this obtain k where k: "k\<in>G" "x = LCoset_rel H `` {k}"
+  fix x assume x: "x \<in> quotient_set H"
+  then obtain k where k: "k\<in>G" "x = LCoset_rel H `` {k}"
     by (blast elim: LCoset_rel_quotientE)
-  ultimately have "LCoset_rel H `` {h} + x = LCoset_rel H `` {h+k}"
+  with x have "LCoset_rel H `` {h} + x = LCoset_rel H `` {h+k}"
     using assms normal_quotient_add_well_defined by auto
   with assms k show "LCoset_rel H `` {h} + x = x"
     using add_closed[of h k] lcoset_relI[of k "h+k" H]

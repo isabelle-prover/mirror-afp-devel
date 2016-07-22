@@ -625,11 +625,11 @@ begin
       have 1: "f \<noteq> None"
         using f null_char
         by (metis C.arr_def C.has_cod_def C.has_dom_def comp_def)
-      moreover from this have "Arr (the f)"
+      then have "Arr (the f)"
         using f 
         by (metis C.arr_def C.has_cod_def C.has_dom_def local.comp_def null_char)
-      ultimately show "f \<noteq> None \<and> Arr (the f)" by auto
-      next
+      with 1 show "f \<noteq> None \<and> Arr (the f)" by auto
+    next
       assume f: "f \<noteq> None \<and> Arr (the f)"
       have "Seq (the f) (Id (Dom (the f)))" using f Obj_Dom by simp
       hence "comp f (Some (Id (Dom (the f)))) \<noteq> None" using f comp_def by auto

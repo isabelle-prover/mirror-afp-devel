@@ -875,9 +875,9 @@ proof (induction xs arbitrary: ys zs, rule_tac [!] impI, simp_all)
   assume "[x] \<cong> {ys @ [x], zs, P}"
   hence B: "length [x] = length (ys @ [x]) + length zs"
    by (rule Interleaves_length)
-  have "ys = []" by (cases ys, simp, insert B, simp)
-  moreover from this have "zs = []" by (cases zs, simp, insert B, simp)
-  ultimately show "[] \<cong> {ys, zs, ?P'}" by simp
+  have ys: "ys = []" by (cases ys, simp, insert B, simp)
+  then have "zs = []" by (cases zs, simp, insert B, simp)
+  with ys show "[] \<cong> {ys, zs, ?P'}" by simp
 next
   fix w xs ys zs
   assume B: "\<And>ys zs. xs @ [x] \<cong> {ys @ [x], zs, P} \<longrightarrow> xs \<cong> {ys, zs, ?P'}"
@@ -1067,9 +1067,9 @@ proof (induction xs arbitrary: ys zs, rule_tac [!] impI, simp_all)
   assume "ws \<cong> {ys @ ws, zs, P}"
   hence B: "length ws = length (ys @ ws) + length zs"
    by (rule Interleaves_length)
-  have "ys = []" by (cases ys, simp, insert B, simp)
-  moreover from this have "zs = []" by (cases zs, simp, insert B, simp)
-  ultimately show "[] \<cong> {ys, zs, ?P'}" by simp
+  have ys: "ys = []" by (cases ys, simp, insert B, simp)
+  then have "zs = []" by (cases zs, simp, insert B, simp)
+  with ys show "[] \<cong> {ys, zs, ?P'}" by simp
 next
   fix x xs ys zs
   assume B: "\<And>ys zs. xs @ ws \<cong> {ys @ ws, zs, P} \<longrightarrow> xs \<cong> {ys, zs, ?P'}"

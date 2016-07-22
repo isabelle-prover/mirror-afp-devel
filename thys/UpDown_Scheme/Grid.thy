@@ -870,11 +870,11 @@ lemma baseE: assumes p_grid: "p \<in> sparsegrid' dm"
   and "p \<in> grid (base ds p) ds"
 proof -
   from p_grid[unfolded sparsegrid'_def]
-  have "\<exists>! x \<in> grid (start dm) ({0..<dm} - ds). p \<in> grid x ds"
+  have *: "\<exists>! x \<in> grid (start dm) ({0..<dm} - ds). p \<in> grid x ds"
     by (intro grid_split1) (auto intro: grid_union_dims)
-  moreover from this obtain x where x_eq: "x \<in> grid (start dm) ({0..<dm} - ds) \<and> p \<in> grid x ds"
+  then obtain x where x_eq: "x \<in> grid (start dm) ({0..<dm} - ds) \<and> p \<in> grid x ds"
     by auto
-  ultimately have "base ds p = x" unfolding base_def by auto
+  with * have "base ds p = x" unfolding base_def by auto
   thus "base ds p \<in> grid (start dm) ({0..<dm} - ds)" and "p \<in> grid (base ds p) ds"
     using x_eq by auto
 qed

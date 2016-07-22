@@ -449,8 +449,8 @@ lemma oreceived_msg_ok:
          intro impI, elim impE)
     fix \<sigma> \<sigma>'
     assume "msg_ok \<sigma> (msg (\<sigma> i))"
-       and "other nos_inc {i} \<sigma> \<sigma>'"
-    moreover from this(2) have "msg (\<sigma>' i) = msg (\<sigma> i)"
+       and other: "other nos_inc {i} \<sigma> \<sigma>'"
+    moreover from other have "msg (\<sigma>' i) = msg (\<sigma> i)"
       by (clarsimp elim!: otherE)
     ultimately show "msg_ok \<sigma>' (msg (\<sigma>' i))"
       by (auto)

@@ -885,17 +885,15 @@ proof (rule validI)
             Normal ` (Modif (project s)) \<union> Abrupt ` (ModifAbr (project s))"
       using valid [rule_format, of "(project s)"]
       by (auto simp add: valid_def project\<^sub>x_def)
-    hence "t \<in> Normal ` lift\<^sub>s (Modif (project s)) \<union> 
+    hence t: "t \<in> Normal ` lift\<^sub>s (Modif (project s)) \<union> 
                Abrupt ` lift\<^sub>s (ModifAbr (project s))"
       by (cases t) (auto simp add: project\<^sub>x_def lift\<^sub>s_def Compose.lift\<^sub>s_def)
-    moreover
-    from this
-    have "t \<notin> Fault ` UNIV \<union> {Stuck}"
+    then have "t \<notin> Fault ` UNIV \<union> {Stuck}"
       by (cases t) auto
     from lift_exec_inject_same [OF exec _ this]
     have "state t = inject (state (Normal s)) (project (state t))"
       by simp
-    ultimately show ?thesis
+    with t show ?thesis
       using P by auto
   qed
 qed

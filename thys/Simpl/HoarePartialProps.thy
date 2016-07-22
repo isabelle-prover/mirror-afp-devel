@@ -1878,12 +1878,12 @@ proof (rule cnvalidI)
   show "t \<in> Normal ` (Q \<inter> R) \<union> Abrupt ` (A \<inter> X)"
   proof -
     from cnvalidD [OF validF [rule_format] ctxt exec P t_noFault]
-    have "t \<in> Normal ` Q \<union> Abrupt ` A".
-    moreover from this have "t \<notin> Fault ` G"
+    have *: "t \<in> Normal ` Q \<union> Abrupt ` A".
+    then have "t \<notin> Fault ` G"
       by auto
     from cnvalidD [OF validG [rule_format] ctxt' exec P' this]
     have "t \<in> Normal ` R \<union> Abrupt ` X" .
-    ultimately show ?thesis by auto
+    with * show ?thesis by auto
   qed
 qed
 

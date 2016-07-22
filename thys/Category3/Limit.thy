@@ -3756,11 +3756,11 @@ begin
             assume t: "t \<in> set ?a"
             hence 1: "t \<in> img ` {e. e \<in> hom unity (dom f0) \<and> S f0 e = S f1 e}"
               using set_a by blast
-            have 2: "mkPoint (dom f0) t \<in> hom unity (dom f0)"
-              using 1 mkPoint_in_hom imageE mem_Collect_eq mkPoint_img(2) by auto
-            have "mkPoint (dom f0) t \<in> {e. e \<in> hom unity (dom f0) \<and> S f0 e = S f1 e}"
-              using 1 2 mkPoint_img(2) by auto
-            moreover from this have "PP.is_equalized_by (mkPoint (dom f0) t)"
+            then have 2: "mkPoint (dom f0) t \<in> hom unity (dom f0)"
+              using mkPoint_in_hom imageE mem_Collect_eq mkPoint_img(2) by auto
+            with 1 have 3: "mkPoint (dom f0) t \<in> {e. e \<in> hom unity (dom f0) \<and> S f0 e = S f1 e}"
+              using mkPoint_img(2) by auto
+            then have "PP.is_equalized_by (mkPoint (dom f0) t)"
               using CollectD par by blast
             thus "PP.mkCone (mkPoint (dom f0) t) \<in> PP.cones unity"
               using 2 PP.cone_mkCone [of "mkPoint (dom f0) t"] by simp

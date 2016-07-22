@@ -313,10 +313,10 @@ next
   ultimately show ?case using Red by(blast intro: rtranclp.rtrancl_into_rtrancl \<tau>move1TryThrow)
 next
   case (bisim1TryCatch2 e2 e' xs stk loc pc e1 C V)
-  hence "\<tau>red1r P t h (e', xs) (Throw a, loc) \<and> P,e2,h \<turnstile> (Throw a, loc) \<leftrightarrow> (stk, loc, pc, \<lfloor>a\<rfloor>)"
+  hence *: "\<tau>red1r P t h (e', xs) (Throw a, loc) \<and> P,e2,h \<turnstile> (Throw a, loc) \<leftrightarrow> (stk, loc, pc, \<lfloor>a\<rfloor>)"
     by(clarsimp simp add: match_ex_table_append matches_ex_entry_def split: if_split_asm)
       (auto simp add: match_ex_table_append compxE2_size_convs compxE2_stack_xlift_convs match_ex_table_shift_pc_None elim: meta_impE intro!: exI[where x="Suc V"])
-  moreover note \<tau>red1r_preserves_len[OF this[THEN conjunct1]]
+  moreover note \<tau>red1r_preserves_len[OF *[THEN conjunct1]]
   moreover from `\<exists>n. n + max_vars {V:Class C=None; e'} \<le> length xs \<and> \<B> (try e1 catch(C V) e2) n`
   have "V < length xs" by simp
   ultimately show ?case 

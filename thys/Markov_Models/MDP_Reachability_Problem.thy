@@ -615,7 +615,7 @@ proof -
     next
       fix s' assume s': "s' \<in> X"
       moreover
-      from desc[OF this] have "s' \<in> ?D X l" and *: "?v s' \<le> ?v (l s')" "l s' \<in> ?M s'"
+      from desc[OF s'] have "s' \<in> ?D X l" and *: "?v s' \<le> ?v (l s')" "l s' \<in> ?M s'"
         by (auto simp: l_desc_def)
       moreover have "l' s' = l s'"
         using `s' \<in> X` s by (auto simp add: l'_def)

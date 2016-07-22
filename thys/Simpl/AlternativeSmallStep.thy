@@ -660,11 +660,9 @@ next
       from execs_rest Abrupt have 
         "\<Gamma>\<turnstile>\<langle>Throw # cs,css,Normal t''\<rangle> \<Rightarrow> t"
         by (cases) auto
-      then obtain v where 
-        "\<Gamma>\<turnstile>\<langle>Throw,Normal t''\<rangle> \<Rightarrow> v" and 
-        rest: "\<Gamma>\<turnstile>\<langle>cs,css,v\<rangle> \<Rightarrow> t"
+      then obtain v where v: "\<Gamma>\<turnstile>\<langle>Throw,Normal t''\<rangle> \<Rightarrow> v" "\<Gamma>\<turnstile>\<langle>cs,css,v\<rangle> \<Rightarrow> t"
         by (clarsimp elim!: execs_elim_cases)
-      moreover from this have "v=Abrupt t''"
+      moreover from v have "v=Abrupt t''"
         by (auto elim: exec_Normal_elim_cases)
       ultimately 
       show ?thesis by (auto intro: execs.Cons)
@@ -1389,10 +1387,10 @@ next
             proof (cases "butlast (pcss i)")
               case (Cons bpcs bpcss)
               with cs''_Nil step_i_full css''
-              have "\<Gamma>\<turnstile> ([],[hd css'']@tl css'',t'') \<rightarrow> (cs',css',t')"
+              have *: "\<Gamma>\<turnstile> ([],[hd css'']@tl css'',t'') \<rightarrow> (cs',css',t')"
                 by simp
               moreover
-              from step_Nil [OF this]
+              from step_Nil [OF *]
               have css': "css'=tl css''"
                 by simp
               ultimately have 
@@ -1651,10 +1649,10 @@ next
           proof (cases "butlast pcss")
             case (Cons bpcs bpcss)
             with cs''_Nil step_i_full css''
-            have "\<Gamma>\<turnstile> ([],[hd css'']@tl css'',t'') \<rightarrow> (cs',css',t')"
+            have *: "\<Gamma>\<turnstile> ([],[hd css'']@tl css'',t'') \<rightarrow> (cs',css',t')"
               by simp
             moreover
-            from step_Nil [OF this]
+            from step_Nil [OF *]
             obtain css': "css'=tl css''" and
                    cs': "cs' = (case t'' of Abrupt s' \<Rightarrow> snd (hd css'') 
                                  | _ \<Rightarrow> fst (hd css''))"

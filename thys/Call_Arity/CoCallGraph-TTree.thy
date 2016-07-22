@@ -174,7 +174,7 @@ proof(rule ccApprox_belowI)
       case False
 
       from False Cons.prems Cons.hyps
-      have "ccFromList [x\<leftarrow>ys . x \<notin> S] \<sqsubseteq> G \<and> ccProd ((insert x seen)) (set ys) \<sqsubseteq> G"
+      have *: "ccFromList [x\<leftarrow>ys . x \<notin> S] \<sqsubseteq> G \<and> ccProd ((insert x seen)) (set ys) \<sqsubseteq> G"
         apply -
         apply (rule Cons.IH[where seen = "insert x seen"])
         apply (auto simp add: ccApprox_both join_below_iff ttree_restr_both interleave_ccFromList insert_Diff_if
@@ -182,7 +182,7 @@ proof(rule ccApprox_belowI)
                    simp add:  ccProd_insert1[where S' = "seen"])
         done
       moreover
-      from False this
+      from False *
       have "ccProd {x} (set ys) \<sqsubseteq>  G"
         by (auto simp add: insert_Diff_if ccProd_insert1[where S' = "seen"] join_below_iff)
       hence "ccProd {x} {x \<in> set ys. x \<notin> S} \<sqsubseteq> G"
@@ -328,7 +328,7 @@ proof(rule ccApprox_belowI)
         case False
   
         from False Cons.prems Cons.hyps
-        have "ccFromList [x\<leftarrow>ys . x \<notin> S] \<sqsubseteq> G \<and> ccProd ((insert x seen)) (set ys - seen_T) \<sqsubseteq> G"
+        have *: "ccFromList [x\<leftarrow>ys . x \<notin> S] \<sqsubseteq> G \<and> ccProd ((insert x seen)) (set ys - seen_T) \<sqsubseteq> G"
           apply -
           apply (rule Cons.IH[where seen = "insert x seen" and seen_T = seen_T])
           apply (auto simp add: `x \<notin> seen_T` Diff_eq ccApprox_both join_below_iff ttree_restr_both interleave_ccFromList insert_Diff_if
@@ -337,7 +337,7 @@ proof(rule ccApprox_belowI)
           done
         moreover
         {
-        from False this
+        from False *
         have "ccProd {x} (set ys - seen_T) \<sqsubseteq>  G"
           by (auto simp add: insert_Diff_if ccProd_insert1[where S' = "seen"] join_below_iff)
         hence "ccProd {x} {x \<in> set ys - seen_T. x \<notin> S} \<sqsubseteq> G"
