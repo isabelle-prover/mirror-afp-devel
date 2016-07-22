@@ -983,7 +983,7 @@ qed
 lemma is_bezout_euclid_ext: "is_bezout (euclid_ext)"
 proof (unfold is_bezout_def Let_def, clarify, intro conjI)
   fix a b p q d
-  assume e: "euclid_ext a b = (p, q, d)" find_theorems euclid_ext
+  assume e: "euclid_ext a b = (p, q, d)"
   show "p * a + q * b = d"  using euclid_ext_correct' [of a b] unfolding e by auto
   show da: "d dvd a" using euclid_ext_gcd_eucl [of a b] unfolding e using gcd_eucl_dvd1 [of a b] by simp
   show db: "d dvd b" using euclid_ext_gcd_eucl [of a b] unfolding e using gcd_eucl_dvd2 [of a b] by simp

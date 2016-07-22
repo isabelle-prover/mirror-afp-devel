@@ -46,7 +46,7 @@ lemma (in group) pq_order_unique_subgrp:
   assumes primep:"prime p" and primeq:"prime q" and pq:"p < q"
   shows "\<exists>!Q. Q \<in> (subgroups_of_size q)"
 proof -
-  from primep primeq pq have nqdvdp:"\<not> (q dvd p)" by (metis less_not_refl3 prime_def)
+  from primep primeq pq have nqdvdp:"\<not> (q dvd p)" by (metis less_not_refl3 is_prime_nat_iff)
   def calM \<equiv> "{s. s \<subseteq> carrier G \<and> card s = q ^ 1}"
   def RelM \<equiv> "{(N1, N2). N1 \<in> calM \<and> N2 \<in> calM \<and> (\<exists>g\<in>carrier G. N1 = N2 #> g)}"
   interpret syl: snd_sylow G q 1 p calM RelM
@@ -59,7 +59,7 @@ proof -
      assume P:"P \<in> subgroups_of_size q"
      have "card (subgroups_of_size q) mod q = 1" by (metis power_one_right syl.p_sylow_mod_p)     
      moreover have "card (subgroups_of_size q) dvd p" by (metis power_one_right syl.num_sylow_dvd_remainder)
-     ultimately have "card (subgroups_of_size q) = 1" using pq primep by (metis Divides.mod_less prime_def)
+     ultimately have "card (subgroups_of_size q) = 1" using pq primep by (metis Divides.mod_less is_prime_nat_iff)
      with Q P show "P = Q" by (auto simp:card_Suc_eq)
   qed
 qed
@@ -488,7 +488,7 @@ proof -
     assume i:"i = 1"
     from assms exi have "H \<lhd> G" unfolding H_def by (metis pq_order_subgrp_normal)
     hence groupGH:"group (G Mod H)" by (metis normal.factorgroup_is_group)
-    from primeq have "q \<noteq> 0" by (metis zero_not_prime_nat)
+    from primeq have "q \<noteq> 0" by (metis not_is_prime_0)
     from HsubG finite orderG have "card (rcosets H) * card H = q * p" unfolding subgroups_of_size_def using lagrange by simp
     with Hsize have "card (rcosets H) * q = q * p" unfolding subgroups_of_size_def by simp
     with `q \<noteq> 0` have "card (rcosets H) = p" by auto

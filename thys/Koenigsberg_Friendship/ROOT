@@ -28,6 +28,5 @@ session Koenigsberg_Friendship_Base = HOL +
     "~~/src/HOL/Number_Theory/Number_Theory"
     "~~/src/HOL/Number_Theory/Primes"
     "~~/src/HOL/Number_Theory/Residues"
-    "~~/src/HOL/Number_Theory/UniqueFactorization"
     "../Dijkstra_Shortest_Path/Graph"
 

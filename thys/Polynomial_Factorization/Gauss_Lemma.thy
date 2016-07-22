@@ -239,7 +239,7 @@ proof (cases "p = 0 \<or> q = 0")
       from cpq have id: "?c (p * q) = ?cpq" and cpq: "cpq > 1" unfolding cpq_def by auto
       from prime_factor_nat[of cpq] cpq obtain n where pn: "prime n" and n: "n dvd cpq" by auto
       let ?n = "int n"
-      from pn have n1: "?n > 1" unfolding prime_def by auto
+      from pn have n1: "?n > 1" unfolding is_prime_nat_iff by auto
       from n have "?n dvd ?cpq" by presburger
       from dvd_trans[OF this content_dvd[of _ "p * q", unfolded id]] 
       have n: "\<And> c. c \<in> set (coeffs (p * q)) \<Longrightarrow> ?n dvd c" by auto
@@ -291,8 +291,9 @@ proof (cases "p = 0 \<or> q = 0")
       }
       from this[of "r + s", unfolded cpq] have n: "?n dvd ?r * ?s"
         by (metis dvd_add_times_triv_left_iff mult.commute)
-      hence "n dvd (nat (abs ?r) * nat (abs ?s))"
-        using `int n dvd coeff p r * coeff q s` pn prime_dvd_mult_eq_int r s by blast      
+      with `int n dvd coeff p r * coeff q s` pn r s
+        have "n dvd (nat (abs ?r) * nat (abs ?s))"
+          by (subst (asm) (1 2) prime_dvd_mult_eq_int) simp_all
       with pn have "n dvd nat (abs ?r) \<or> n dvd nat (abs ?s)" by simp
       also have "(n dvd nat (abs ?r)) = (?n dvd ?r)" using int_dvd_iff by blast
       also have "(n dvd nat (abs ?s)) = (?n dvd ?s)" using int_dvd_iff by blast

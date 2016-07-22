@@ -46,7 +46,7 @@ session "JNF-HOL-Lib" (AFP) = "HOL-Algebra" +
     "~~/src/HOL/Library/RBT_Impl"
     "~~/src/HOL/Library/Simps_Case_Conv"
     "~~/src/HOL/Library/While_Combinator"
-    "~~/src/HOL/Number_Theory/UniqueFactorization"
+    "~~/src/HOL/Number_Theory/Primes"
     "~~/src/HOL/Cardinals/Order_Union"
     "~~/src/HOL/Cardinals/Wellorder_Extension"
 

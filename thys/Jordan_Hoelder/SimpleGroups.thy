@@ -28,13 +28,13 @@ lemma (in group) prime_order_simple:
   assumes prime:"prime (order G)"
   shows "simple_group G"
 proof
-  from prime show "1 < order G" unfolding prime_def by auto
+  from prime show "1 < order G" unfolding is_prime_nat_iff by auto
 next
   fix H
   assume "H \<lhd> G"
   hence HG:"subgroup H G" unfolding normal_def by simp
   hence "card H dvd order G" by (rule card_subgrp_dvd)
-  with prime have "card H = 1 \<or> card H = order G" unfolding prime_def by simp
+  with prime have "card H = 1 \<or> card H = order G" unfolding is_prime_nat_iff by simp
   thus "H = carrier G \<or> H = {\<one>}"
   proof
     assume "card H = 1"
@@ -43,7 +43,7 @@ next
   next
     assume "card H = order G"
     moreover from HG have "H \<subseteq> carrier G" unfolding subgroup_def by simp
-    moreover from prime have "card (carrier G) > 1" unfolding order_def prime_def..
+    moreover from prime have "card (carrier G) > 1" unfolding order_def is_prime_nat_iff ..
     hence "finite (carrier G)" by (auto simp:card_ge_0_finite)
     ultimately show ?thesis unfolding order_def by (metis card_subset_eq)
   qed

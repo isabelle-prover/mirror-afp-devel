@@ -25,24 +25,14 @@ section {* Auxiliary lemmas which might be moved into the Isabelle distribution.
 
 theory Real_Impl_Auxiliary
 imports 
-  "~~/src/HOL/Number_Theory/UniqueFactorization"
+  "~~/src/HOL/Number_Theory/Primes"
 begin
 
-lemma multiplicity_prime: assumes p: "prime (i :: nat)" and ji: "j \<noteq> i"
+lemma multiplicity_prime: 
+  assumes p: "prime (i :: nat)" and ji: "j \<noteq> i"
   shows "multiplicity j i = 0"
-proof (rule ccontr)
-  assume "\<not> ?thesis"
-  hence "multiplicity j i > 0" by auto
-  hence j: "j \<in> prime_factors i"
-    by (metis less_not_refl multiplicity_not_factor_nat)
-  hence d: "j dvd i" 
-    by (metis p prime_factors_altdef2_nat prime_gt_0_nat)
-  then obtain k where i: "i = j * k" ..
-  from j have "j \<ge> 2" 
-    by (metis prime_factors_prime_nat prime_ge_2_nat)
-  hence j1: "j \<noteq> 1" by auto
-  from i have "j dvd i" by auto
-  with j1 ji p[unfolded prime_def] show False by auto
-qed
+  using assms
+  by (metis dvd_refl is_prime_nat_iff multiplicity_eq_zero_iff 
+        multiplicity_unit_left multiplicity_zero)
 
 end

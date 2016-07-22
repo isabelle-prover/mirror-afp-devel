@@ -144,16 +144,16 @@ text {*
   holds. In particular, if $\text{Prime}(p)$ occurs in a certificate, $p$ is prime.
 *}
 
-lemma prime_factors_one[simp]: shows "prime_factors (Suc 0) = {}"
-  by (auto simp add:prime_factors_altdef2_nat)
+lemma prime_factors_one [simp]: shows "prime_factors (Suc 0) = {}"
+  by (auto simp add:prime_factors_altdef)
 
-lemma prime_factors_prime: fixes p :: nat assumes "prime p" shows "prime_factors p = {p}"
+lemma prime_factors_of_prime: fixes p :: nat assumes "prime p" shows "prime_factors p = {p}"
 proof
   have "0 < p" using assms by (simp add: prime_gt_0_nat) 
-  then show "{p} \<subseteq> prime_factors p" using assms by (auto simp add: prime_factors_altdef2_nat)
+  then show "{p} \<subseteq> prime_factors p" using assms by (auto simp add: prime_factors_altdef)
   { fix q assume "q \<in> prime_factors p"
-    then have "q dvd p" "prime q" using `0<p` by (auto simp add:prime_factors_altdef2_nat)
-    with assms have "q=p" by (auto simp: prime_def)
+    then have "q dvd p" "prime q" using `0<p` by (auto simp add:prime_factors_altdef)
+    with assms have "q=p" by (auto simp: is_prime_nat_iff)
     }
   then
   show "prime_factors p \<subseteq> {p}" by auto
@@ -181,7 +181,7 @@ proof (induction c arbitrary: p a x t)
       using Cons.IH Cons.prems `x>0` `y=Triple p a x`
       by force+
     then have "prime_factors x = prime_factors z \<union> {q}"  using `x =q*z` `x>0`
-      by (simp add:prime_factors_product_nat prime_factors_prime)
+      by (simp add: prime_factors_product prime_factors_of_prime)
     then have "(\<forall> q \<in> prime_factors x . [a^((p - 1) div q) \<noteq> 1] (mod p)) \<and> 0 < x"
       using factors_IH cong by (simp add: `x>0`)
     }
@@ -329,7 +329,7 @@ proof
   from assms show "prime p" by auto
   then show "2 \<le> p" by (auto dest: prime_gt_1_nat)
 
-  from assms show "p dvd n" by (intro prime_factors_dvd_nat)
+  from assms show "p dvd n" by (intro prime_factors_dvd)
   then show "p \<le> n" using  `0 < n` by (rule dvd_imp_le)
 qed
 
@@ -337,10 +337,7 @@ lemma prime_factors_list_prime:
   fixes n :: nat
   assumes "prime n"
   shows "\<exists> qs. prime_factors n = set qs \<and> listprod qs = n \<and> length qs = 1"
-proof -
-    have "prime_factors n = set [n]" using prime_factors_prime assms by force
-    thus ?thesis by fastforce
-qed
+  using assms by (intro exI[of _ "[n]"]) (auto simp: prime_factors_altdef intro: primes_dvd_imp_eq)
 
 lemma prime_factors_list:
   fixes n :: nat assumes "3 < n" "\<not> prime n"
@@ -358,7 +355,7 @@ proof (induction n rule: less_induct)
       moreover
       have "prime_factors (p * (n div p)) = insert p (prime_factors (n div p))"
         using `3 < n` `2 \<le> p` `p \<le> n` `prime p`
-      by (auto simp: prime_factors_product_nat div_gt_0 prime_factors_prime)
+      by (auto simp: prime_factors_product div_gt_0 prime_factors_of_prime)
       ultimately
       have "prime_factors n = set (p # qs)" "listprod (p # qs) = n" "length (p#qs) \<ge> 2"
         using `p dvd n` by (simp_all add: dvd_mult_div_cancel)
@@ -372,7 +369,7 @@ proof (induction n rule: less_induct)
       moreover
       have "prime_factors (p * (n div p)) = insert p (prime_factors (n div p))"
         using `3 < n` `2 \<le> p` `p \<le> n` `prime p`
-      by (auto simp: prime_factors_product_nat div_gt_0 prime_factors_prime)
+      by (auto simp: prime_factors_product div_gt_0 prime_factors_of_prime)
       ultimately
       have "prime_factors n = set (p # qs)" "listprod (p # qs) = n" "length (p#qs) \<ge> 2"
         using `p dvd n` by (simp_all add: dvd_mult_div_cancel)
@@ -430,8 +427,8 @@ proof
   assume "prime (p - 1)"
   have "\<not> even p" using assms by (simp add: prime_odd_nat)
   hence "2 dvd (p - 1)" by presburger
-  hence "2 \<in> prime_factors (p - 1)" using `p>3` by (auto simp: prime_factors_altdef2_nat)
-  thus False using prime_factors_prime `p>3` `prime (p - 1)` by auto
+  hence "2 \<in> prime_factors (p - 1)" using `p>3` by (auto simp: prime_factors_altdef)
+  thus False using prime_factors_of_prime `p>3` `prime (p - 1)` by auto
 qed
 
 text {*
@@ -525,7 +522,7 @@ proof (induction p rule: less_induct)
     { let ?k = "length qs"
 
       have qs_ge_2:"\<forall>q \<in> set qs . q \<ge> 2" using qs_eq
-        by (simp add: prime_factors_prime_nat prime_ge_2_nat)
+        by (auto simp add: prime_factors_prime prime_ge_2_nat prime_factors_prime)
 
       have "\<forall>x\<in>set qs. real (length (f x)) \<le> 6 * log 2 (real x) - 4" using f qs_eq by blast
       hence "length (concat ?cs) \<le> (\<Sum>q\<leftarrow>qs. 6*log 2 q - 4)" using concat_length_le
@@ -709,10 +706,10 @@ text \<open>
   30 seconds or so.
 \<close>
 
-lemma "prime 2503"
+lemma "prime (2503 :: nat)"
   by pratt
 
-lemma "prime 131059"
+lemma "prime (131059 :: nat)"
   by (pratt [131059, (131059, 2, 131058), (131059, 2, 65529), (131059, 2, 21843),
               (131059, 2, 7281), (131059, 2, 2427), (131059, 2, 809), (131059, 2, 1), 809,
               (809, 3, 808), (809, 3, 404), (809, 3, 202), (809, 3, 101), (809, 3, 1), 101,

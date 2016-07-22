@@ -41,7 +41,7 @@ lemma sigma1[simp]: "sigma(1) = 1"
 by (simp add: sigma_def)
 
 lemma prime_divisors: "prime (p::nat) \<longleftrightarrow> divisors p = {1,p} & p>1"
-by (auto simp add: divisors_def prime_def)
+  by (auto simp add: divisors_def is_prime_nat_iff)
 
 lemma prime_imp_sigma: "prime (p::nat) ==> sigma(p) = p+1"
 proof -
@@ -116,7 +116,7 @@ proof
     assume "x : {d . d dvd p^n}"
     hence "x dvd p^n" by auto
     with prime obtain "i" where  "i <= n & x = p^i" using prime_dvd_power_nat_iff prime_dvd_power_nat
-      by (auto simp only: divides_primepow)
+      by (auto simp only: divides_primepow_nat)
     hence "x = p^i & i <=n" by auto
     thus "x : { p^f | f . f<=n }" by auto
   qed
@@ -142,7 +142,7 @@ theorem sigma_primepower:
 proof -
   assume "prime p"
   hence "sigma(p^(e::nat)) = (\<Sum>i=0 .. e . p^i)"
-    by (simp add: pr_pow_div_eq_sm_pr_pow sigma_def rewrite_sum_of_powers prime_def)
+    by (simp add: pr_pow_div_eq_sm_pr_pow sigma_def rewrite_sum_of_powers is_prime_nat_iff)
   thus "(p - 1)*sigma(p^e)=p^(e+1) - 1" by (simp only: simplify_sum_of_powers)
 qed
 
@@ -180,11 +180,11 @@ proof
     assume "x : {p ^ f * b | f b. f <= n & b dvd m}"
     then obtain b f where "x = p^f*b & f <= n & b dvd m" by auto
     with `prime p` show "x : {a * b |a b. a dvd p ^ n & b dvd m}"
-      by (auto simp add: divides_primepow)
+      by (auto simp add: divides_primepow_nat)
   qed
 next
   show "{a*b |a b. a dvd p ^ n & b dvd m} <= {p^f * b |f b. f <= n & b dvd m}"
-    using `prime p` by auto (metis assms divides_primepow)
+    using `prime p` by auto (metis assms divides_primepow_nat)
 qed
 
 
@@ -203,7 +203,7 @@ proof -
   also from p have "... = (\<Sum> {p^f| f . f<=n})*(\<Sum> {b . b dvd m})"
     by (simp add: pr_pow_div_eq_sm_pr_pow)
   also from cop  have "... = (\<Sum> {p^f*b| f b . f<=n & b dvd m})"
-    by (auto simp add: prodsums_eq_sumprods prime_def)
+    by (auto simp add: prodsums_eq_sumprods is_prime_nat_iff)
   also have "... = (\<Sum> {a*b| a b . a dvd (p^n) & b dvd m})"
     by (simp add: p rewrite_for_sigma_semimultiplicative)
   finally have "?l = \<Sum>{c. c dvd (p^n*m)}" by (subst div_decomp_comp[OF cop2])

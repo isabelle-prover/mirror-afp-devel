@@ -73,10 +73,13 @@ lemma square_part_le: "square_part n \<le> n"
   by (cases "n = 0") (simp_all add: dvd_imp_le)
 
 lemma square_part_pos [simp]: "n > 0 \<Longrightarrow> square_part n > 0"
-  unfolding square_part_def using prime_gt_0_nat by (auto simp: prime_factors_altdef2_nat)
+  unfolding square_part_def using prime_gt_0_nat by (auto simp: prime_factors_altdef)
+
+lemma zero_not_in_squarefree_part [simp]: "0 \<notin> squarefree_part n"
+  unfolding squarefree_part_def by auto
 
 lemma multiplicity_squarefree_part:
-  "multiplicity p (\<Prod>(squarefree_part n)) = (if p \<in> squarefree_part n then 1 else 0)"
+  "is_prime p \<Longrightarrow> multiplicity p (\<Prod>(squarefree_part n)) = (if p \<in> squarefree_part n then 1 else 0)"
   using squarefree_part_subset[of n]
   by (intro multiplicity_prod_prime_powers_nat') auto
 
@@ -90,12 +93,12 @@ proof (rule iffI, rule multiplicity_eq_nat)
   hence "x \<noteq> 0" using squarefree_part_subset[of n] prime_gt_0_nat by (intro notI) auto
   thus x: "x > 0" by simp
   
-  fix p assume p: "prime p"
+  fix p :: nat assume p: "prime p"
   from p x have "2 * multiplicity p x = multiplicity p (x^2)" 
     by (simp add: multiplicity_power_nat)
   also from dvd have "\<dots> \<le> multiplicity p (\<Prod>(squarefree_part n))"
-    by (intro dvd_multiplicity_nat) simp_all
-  also have "\<dots> \<le> 1" using multiplicity_squarefree_part[of p n] by simp
+    by (intro dvd_imp_multiplicity_le) simp_all
+  also have "\<dots> \<le> 1" using multiplicity_squarefree_part[of p n] p by simp
   finally show "multiplicity p x = multiplicity p 1" by simp
 qed simp_all
 
@@ -122,7 +125,7 @@ proof -
   note subset = this prime
 
   have "\<Prod>A1 > 0" "\<Prod>A2 > 0" using subset(1)  prime_gt_0_nat 
-    by (auto intro!: setprod_pos dest: prime simp: prime_factors_altdef2_nat)
+    by (auto intro!: setprod_pos dest: prime simp: prime_factors_altdef)
   from n have "s1 > 0" unfolding s1_def by simp
   from assms have "s2 \<noteq> 0" by (intro notI) simp
   hence "s2 > 0" by simp
@@ -136,8 +139,8 @@ proof -
     from decomp have "m (\<Prod>A1 * s1^2) = m (\<Prod>A2 * s2^2)" unfolding A1_def s1_def
       by (simp add: A1_def s1_def squarefree_decompose)
     with p pos have eq: "m (\<Prod>A1) + 2 * m s1 = m (\<Prod>A2) + 2 * m s2"
-      by (simp add: m_def multiplicity_product_nat multiplicity_power_nat)
-    moreover from fin subset have "m (\<Prod>A1) \<le> 1" "m (\<Prod>A2) \<le> 1" unfolding m_def
+      by (simp add: m_def prime_multiplicity_mult_distrib multiplicity_power_nat)
+    moreover from fin subset p have "m (\<Prod>A1) \<le> 1" "m (\<Prod>A2) \<le> 1" unfolding m_def
       by ((subst multiplicity_prod_prime_powers_nat', auto)[])+
     ultimately show "m s1 = m s2" by linarith
     with eq show "m (\<Prod>A1) = m (\<Prod>A2)" by simp

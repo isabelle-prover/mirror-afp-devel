@@ -232,8 +232,6 @@ lemma updS_Rmi: "Rmi (updS s x r) = Rmi s"
   unfolding Rmi_def updS_Rmi_g by blast
 
 
-find_theorems dcl_update
-
 interpretation mi: bdd_impl_cmp bdd_sane Rmi tmi' fmi' ifmi' destrmi' dcl updS "op ="
 proof  -
   note s = mi_pre.les_def[simp] Rmi_def

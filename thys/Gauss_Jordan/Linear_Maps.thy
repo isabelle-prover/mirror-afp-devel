@@ -371,7 +371,7 @@ text{*Properties of @{thm "is_basis_def"}.*}
 lemma setsum_basis_eq:
   fixes X::"'a::{field}^'n^'n"
   assumes is_basis:"is_basis  (set_of_vector X)"
-  shows "setsum (\<lambda>x. f x *s x) (set_of_vector X) = setsum (\<lambda>i. f (X$i) *s (X$i)) UNIV" find_theorems "_ \<Longrightarrow> setsum ?a ?B = setsum ?b ?c"
+  shows "setsum (\<lambda>x. f x *s x) (set_of_vector X) = setsum (\<lambda>i. f (X$i) *s (X$i)) UNIV"
 proof -
 have card_set_of_vector:"card(set_of_vector X) = CARD('n)" 
   using independent_is_basis[of "set_of_vector X"] using is_basis by auto

@@ -1385,7 +1385,7 @@ proof (rule ccontr)
     by (metis Suc_eq_plus1 Suc_numeral add_One_commute eq_iff le_diff_conv numeral_le_iff  
       one_le_numeral one_plus_BitM prime_factor_nat semiring_norm(69) semiring_norm(71))
   hence p_minus_1:"p-(1::nat)+1=p" 
-    by (metis add_diff_inverse add.commute not_less_iff_gr_or_eq prime_def)
+    by (metis add_diff_inverse add.commute not_less_iff_gr_or_eq is_prime_nat_iff)
   hence *: "\<And>l::nat. card (C (l+1)) mod p=1"
     using `\<And>l::nat. card (C (l+1)) mod (k-(1::nat))=1` mod_mod_cancel[OF `p dvd (k-(1::nat))`]
       `prime p`

@@ -4,10 +4,10 @@
 *)
 
 theory SubgroupsAndNormalSubgroups
-imports
-  "Coset"
+  imports
   "../Secondary_Sylow/SndSylow"
   "SndIsomorphismGrp"
+  "Coset"
 begin
 
 section {* Preliminary lemmas *}
@@ -494,9 +494,11 @@ section  {* Flattening the type of group carriers *}
 text {* Flattening here means to convert the type of group elements from 'a set to 'a.
 This is possible whenever the empty set is not an element of the group. *}
 
+
 definition flatten where
   "flatten (G::('a set, 'b) monoid_scheme) rep = \<lparr>carrier=(rep ` (carrier G)),
-      mult=(\<lambda> x y. rep ((the_inv_into (carrier G) rep x) \<otimes>\<^bsub>G\<^esub> (the_inv_into (carrier G) rep y))), one=rep \<one>\<^bsub>G\<^esub> \<rparr>"
+      monoid.mult=(\<lambda> x y. rep ((the_inv_into (carrier G) rep x) \<otimes>\<^bsub>G\<^esub> (the_inv_into (carrier G) rep y))), 
+      one=rep \<one>\<^bsub>G\<^esub> \<rparr>"
 
 lemma flatten_set_group_hom:
   assumes group:"group G"

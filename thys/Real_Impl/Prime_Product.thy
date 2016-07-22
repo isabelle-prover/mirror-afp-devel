@@ -32,7 +32,8 @@ begin
 text {*
   Prime products are natural numbers where no prime factor occurs more than once.
 *}
-definition prime_product where "prime_product (n :: nat) = (\<forall> p. multiplicity p n \<le> 1)"
+definition prime_product 
+  where "prime_product (n :: nat) = (\<forall> p. is_prime p \<longrightarrow> multiplicity p n \<le> 1)"
 
 text {*
   The main property is that whenever $b_1$ and $b_2$ are different prime products,
@@ -82,8 +83,8 @@ lemma prime_product_factor_main: assumes "\<not> (\<exists> s. s * s = n)"
   and "prime_product_factor_main factor_sq factor_pr limit n i = (sq, p)"
   and "i \<ge> 2"
   and "\<And> j. j \<ge> 2 \<Longrightarrow> j < i \<Longrightarrow> \<not> j dvd n"
-  and "\<And> j. j < i \<Longrightarrow> multiplicity j factor_pr \<le> 1"
-  and "\<And> j. j \<ge> i \<Longrightarrow> multiplicity j factor_pr = 0"
+  and "\<And> j. prime j \<Longrightarrow> j < i \<Longrightarrow> multiplicity j factor_pr \<le> 1"
+  and "\<And> j. prime j \<Longrightarrow> j \<ge> i \<Longrightarrow> multiplicity j factor_pr = 0"
   and "factor_pr > 0"
   shows "m = sq * sq * p \<and> prime_product p"
   using assms
@@ -111,9 +112,9 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
         from prems(6)[OF 2] j False
         show "\<not> j dvd n" by (cases "j = i", auto)
       next
-        fix j
-        assume j: "j < Suc i"
-        with prems(7-8)[of j]  
+        fix j :: nat
+        assume j: "j < Suc i" "is_prime j"
+        with prems(7-8)[of j] 
         show "multiplicity j factor_pr \<le> 1" by (cases "j = i", auto)
       qed (insert prems(8-9) cond, auto)
     next
@@ -154,7 +155,7 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
         def n' \<equiv> "n div i"
         from mod True have n: "n = n' * i" by (auto simp: n'_def dvd_eq_mod_eq_0)
         have prime: "prime i" 
-          unfolding prime_def
+          unfolding is_prime_nat_iff
         proof (intro conjI allI impI)
           fix m
           assume m: "m dvd i"
@@ -172,8 +173,7 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
         note simp = simp[unfolded this if_False]
         note IH = IH(2)[OF False _ _ refl]
         from prime have "i > 0" by (simp add: prime_gt_0_nat)
-        note mult = multiplicity_product_nat[OF prems(9) this]
-        note mult_i = multiplicity_prime_nat[OF prime] multiplicity_prime[OF prime]
+
         show ?thesis
         proof (cases "sqrt_nat (n div i)")
           case (Cons s)
@@ -182,10 +182,12 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
           from arg_cong[OF Cons, of set] have s: "s * s = n div i" by auto
           have pp: "prime_product (factor_pr * i)" 
             unfolding prime_product_def
-          proof
-            fix m
-            show "multiplicity m (factor_pr * i) \<le> 1"
-              unfolding mult using prems(7)[of m] prems(8)[of m] mult_i(1) mult_i(2)[of m] by fastforce
+          proof safe
+            fix m :: nat assume m: "is_prime m"
+            consider "i < m" | "i > m" | "i = m" by force
+            thus "multiplicity m (factor_pr * i) \<le> 1"
+              by cases (insert prems(7)[of m] prems(8)[of m] prems(9) \<open>i > 0\<close> prime m,
+                          simp_all add: multiplicity_prime prime_multiplicity_mult_distrib)
           qed
           show ?thesis unfolding sq p prems(3) n unfolding n'_def s[symmetric]
             using pp by auto
@@ -211,25 +213,29 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
                 by (metis dvd_mult n n'_def mult.commute)
             qed
           next
-            fix j
-            assume "Suc i \<le> j"
+            fix j :: nat 
+            assume "Suc i \<le> j" and j_prime: "is_prime j"
             hence ij: "i \<le> j" and j: "j \<noteq> i" by auto
             have 0: "multiplicity j i = 0" using prime j by (rule multiplicity_prime)
-            show "multiplicity j (factor_pr * i) = 0" unfolding mult prems(8)[OF ij] 0 by simp
+            show "multiplicity j (factor_pr * i) = 0" 
+              unfolding prems(8)[OF j_prime ij] 0 
+              using prime j_prime j \<open> 0 < factor_pr\<close> \<open>multiplicity j factor_pr = 0\<close>
+              by (subst prime_multiplicity_mult_distrib) (auto simp: multiplicity_prime)
           next
-            fix j
-            assume "j < Suc i"
+            fix j 
+            assume "j < Suc i" and j_prime: "is_prime j"
             hence "j < i \<or> j = i" by auto
             thus "multiplicity j (factor_pr * i) \<le> 1"
             proof 
               assume "j = i"
-              with prems(8)[of i] prime show ?thesis unfolding mult
-                by (auto)
+              with prems(8)[of i] prime j_prime \<open>0 < factor_pr\<close> show ?thesis
+                by (subst prime_multiplicity_mult_distrib) auto
             next
               assume ji: "j < i"
               hence "j \<noteq> i" by auto
-              from prems(7)[OF ji] multiplicity_prime[OF prime this]
-              show ?thesis unfolding mult by auto
+              from prems(7)[OF j_prime ji] multiplicity_prime[OF prime this]
+                   prime j_prime \<open>0 < factor_pr\<close>
+              show ?thesis by (subst prime_multiplicity_mult_distrib) auto
             qed
           qed (insert prems(5,9), auto)
         qed
@@ -244,8 +250,8 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
     proof
       show "m = sq * sq * p" unfolding sq p prems(3) by simp
       show "prime_product p" unfolding prime_product_def
-      proof
-        fix m
+      proof safe
+        fix m :: nat assume m: "is_prime m"
         from prems(1) have n1: "n > 1" by (cases n, auto, case_tac nat, auto)
         hence n0: "n > 0" by auto
         have "i > limit" using False by auto
@@ -256,26 +262,24 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
           by (metis of_nat_less_iff of_nat_power [symmetric])
         {
           fix m
-          assume m: "multiplicity m n > 0"
+          assume m: "is_prime m" "multiplicity m n > 0"
           hence mp: "m \<in> prime_factors n"
-            by (metis less_not_refl multiplicity_not_factor_nat)
+            by (auto simp: prime_factors_altdef_multiplicity)
           hence md: "m dvd n" 
-            by (metis n0 prime_factors_altdef2_nat)
+            by (auto simp: n0 prime_factors_altdef)
           then obtain k where n: "n = m * k" ..
           from mp have pm: "prime m" by auto
-          hence m2: "m \<ge> 2" and m0: "m > 0" by (auto simp: prime_def)
+          hence m2: "m \<ge> 2" and m0: "m > 0" by (auto simp: is_prime_nat_iff)
           from prems(6)[OF m2] md have mi: "m \<ge> i" by force
           {
             assume "multiplicity m n \<noteq> 1"
             with m have "\<exists> k. multiplicity m n = 2 + k" by presburger
             then obtain j where mult: "multiplicity m n = 2 + j" ..
             from n0 n have k: "k > 0" by auto
-            from mult[unfolded n multiplicity_product_nat[OF m0 k]] pm 
-            have "multiplicity m k > 0" by auto
-            hence mp: "m \<in> prime_factors k"
-              by (metis less_not_refl multiplicity_not_factor_nat)
-            hence md: "m dvd k" 
-              by (metis k prime_factors_altdef2_nat)            
+            from mult m0 k n m have "multiplicity m k > 0"
+              by (auto simp: prime_multiplicity_mult_distrib)
+            with m have mp: "m \<in> prime_factors k" by (auto simp: prime_factors_altdef_multiplicity)
+            hence md: "m dvd k" by (auto simp: k prime_factors_altdef)
             then obtain l where kml: "k = m * l" ..
             note n = n[unfolded kml]
             from n have "l dvd n" by auto
@@ -291,16 +295,16 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
           have "multiplicity m n = 1 \<and> m \<ge> i" by auto
         } note n = this
         have "multiplicity m p = multiplicity m factor_pr + multiplicity m n"
-          unfolding p
-          by (rule multiplicity_product_nat[OF prems(9)], insert prems(1), cases n, auto)
+          unfolding p using prems(1,9) m \<open>n > 0\<close>
+          by (auto simp: prime_multiplicity_mult_distrib)
         also have "\<dots> \<le> 1"
         proof (cases "m < i")
           case True
-          from prems(7)[of m] n[of m] True show ?thesis by force
+          from prems(7)[of m] n[of m] True m show ?thesis by force
         next
           case False
           hence "m \<ge> i" by auto
-          from prems(8)[OF this] n[of m] show ?thesis by force
+          from prems(8)[OF m(1) this] n[of m] m show ?thesis by force
         qed
         finally show "multiplicity m p \<le> 1" .
       qed
@@ -328,7 +332,7 @@ next
   case Nil
   from arg_cong[OF Nil, of set] have nsq: "\<not> (\<exists>s. s * s = n)" by auto
   show ?thesis
-    by (rule prime_product_factor_main[OF nsq refl, of _ 1 1 2], unfold multiplicity_one_nat',
+    by (rule prime_product_factor_main[OF nsq refl, of _ 1 1 2], unfold multiplicity_one,
     insert pf[unfolded prime_product_factor_def Nil], auto)
 qed
 

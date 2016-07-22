@@ -73,7 +73,7 @@ qed
 
 lemma primekeyrewrite:
   fixes p::nat shows "\<lbrakk>prime p; p dvd (a*b);~(p dvd a)\<rbrakk> \<Longrightarrow> p dvd b"
-  apply (drule prime_dvd_mult_nat)
+  apply (subst (asm) prime_dvd_mult_nat)
   apply auto
   done
 

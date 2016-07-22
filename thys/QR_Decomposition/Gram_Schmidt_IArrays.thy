@@ -102,7 +102,7 @@ next
   also have "... = max (IArray.length (f x)) (IArray.length (setsum f F))" 
     unfolding length_plus_iarray ..
   also have "... = max (IArray.length (f x)) (Max {IArray.length (f a) |a. a \<in> F})" unfolding rw by simp
-  also have "... =  Max (insert (IArray.length (f x)) {IArray.length (f a) |a. a \<in> F})" find_theorems "max ?A (Max ?B)" 
+  also have "... =  Max (insert (IArray.length (f x)) {IArray.length (f a) |a. a \<in> F})" 
   proof(rule Max_insert[symmetric])
     show "finite {IArray.length (f x) |x. x \<in> F}" using insert.hyps(1) by auto
     show "{IArray.length (f x) |x. x \<in> F} \<noteq> {}" by (metis (lifting, mono_tags) False empty_Collect_eq ex_in_conv)

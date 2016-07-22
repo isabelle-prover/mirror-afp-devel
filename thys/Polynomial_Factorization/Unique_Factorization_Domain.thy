@@ -91,11 +91,11 @@ next
     assume prime: ?r and "x dvd a * b"
     then have "nat (abs x) dvd nat (abs a) * nat (abs b)"
       using dvd_int_unfold_dvd_nat nat_abs_mult_distrib by simp
-    from prime_dvd_mult_nat[OF prime this]
+    with prime_dvd_mult_nat[OF prime]
     show "x dvd a \<or> x dvd b" using dvd_int_unfold_dvd_nat by auto
   next
     assume ?l
-    show "Primes.prime (nat (abs x))" unfolding Primes.prime_def
+    show "Primes.prime (nat (abs x))" unfolding is_prime_nat_iff
     proof (intro conjI impI allI)
       show "1 < nat (abs x)" using False by auto
       fix m
@@ -143,12 +143,12 @@ next
       by (auto, cases "y = 0", auto)
     from dvd have dvd: "nat (abs y) dvd nat (abs x)" using dvd_int_unfold_dvd_nat by blast
     from ndvd have ndvd: "\<not> nat (abs x) dvd nat (abs y)" using dvd_int_unfold_dvd_nat by blast
-    from dvd x[unfolded Primes.prime_def] have "nat (abs y) = 1 \<or> nat (abs y) = nat (abs x)" by auto
+    from dvd x[unfolded is_prime_nat_iff] have "nat (abs y) = 1 \<or> nat (abs y) = nat (abs x)" by auto
     with ndvd have "nat (abs y) = 1" by auto
     thus "y = 1 \<or> y = -1" by auto
   next
     assume pf: "\<forall> y. properfactor y x \<longrightarrow> y = 1 \<or> y = -1"
-    have "Primes.prime (nat (abs x))" unfolding Primes.prime_def
+    have "Primes.prime (nat (abs x))" unfolding is_prime_nat_iff
     proof (intro conjI impI allI)
       show "1 < nat (abs x)" using False by auto
       fix m

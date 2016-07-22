@@ -235,7 +235,7 @@ lemma smooth_ge_Suc0: "smooth n \<Longrightarrow> n \<ge> Suc 0"
 by(cases n) simp_all
 
 lemma prime_nat_dvdD: "prime p \<Longrightarrow> (n :: nat) dvd p \<Longrightarrow> n = 1 \<or> n = p"
-unfolding prime_def by simp
+unfolding is_prime_nat_iff by simp
 
 lemma smooth_times [simp]: "smooth (x * y) \<longleftrightarrow> smooth x \<and> smooth y"
 by(auto simp add: smooth_def)
@@ -304,8 +304,9 @@ proof(induction n rule: less_induct)
     with `prime p` n have "n' < n" by(simp add: smooth_gt0 prime_gt_Suc_0_nat)
     hence n': "n' \<in> lset hamming" using `smooth n'` by(rule less.IH)
 
-    from `prime p` `p \<le> 5` have "p = 2 \<or> p = 3 \<or> p = 5"
-      by(cases "p = 0 \<or> p = 1 \<or> p = 2 \<or> p = 3 \<or> p = 4 \<or> p = 5") auto
+    from \<open>p \<le> 5\<close> have "p = 0 \<or> p = 1 \<or> p = 2 \<or> p = 3 \<or> p = 4 \<or> p = 5"
+      by presburger
+    with `prime p` have "p = 2 \<or> p = 3 \<or> p = 5" by auto
     thus ?thesis
     proof(elim disjE)
       assume "p = 2"

@@ -13,16 +13,16 @@ theorem perfect_number_theorem:
 proof                                         
   from perfect have m0: "m>0" by (auto simp add: perfect_def)
 
-  let ?n = "exponent 2 m" 
+  let ?n = "multiplicity 2 m" 
   let ?A = "m div 2^?n"
   let ?np = "(2::nat)^(?n+1) - 1"
 
-  from even m0 have n1: "?n >= 1 " by (simp add: exponent_ge)
+  from even m0 have n1: "?n >= 1 " by (simp add: multiplicity_geI)
 
-  have  "2^?n dvd m" by (rule power_exponent_dvd)
+  have  "2^?n dvd m" by (rule multiplicity_dvd)
   hence "m = 2^?n*?A" by (simp only: dvd_mult_div_cancel) 
   with m0 have mdef: "m=2^?n*?A & coprime 2 ?A"
-    by (simp add: coprime_exponent)
+    by (simp add: coprime_multiplicity)
   moreover with m0 have a0: "?A>0" by (metis nat_0_less_mult_iff)
   moreover
   { from perfect have "2*m=sigma(m)" by (simp add: perfect_def)
@@ -40,7 +40,7 @@ proof
   from formula have "?np dvd ?A * 2^(?n+1)"
     by (metis mult.commute dvd_def) 
   then have "?np dvd ?A"
-    using coprime_minus_one_nat [of "2 ^ (exponent 2 m + 1)"]
+    using coprime_minus_one_nat [of "2 ^ (multiplicity 2 m + 1)"]
     by (auto intro: coprime_dvd_mult) 
   hence bdef:       "?np*?B = ?A" by (simp add: dvd_mult_div_cancel)
   with a0 have  b0: "?B>0" by (metis gr0I mult_is_0)
@@ -73,13 +73,13 @@ theorem Euclid_book9_prop36:
   assumes p: "prime (2^(n+1) - (1::nat))"
   shows "perfect ((2^n)*(2^(n+1) - 1))"
 proof (unfold perfect_def, auto)
-  from assms show "(2::nat)*2^n > Suc 0" by (auto simp add: prime_def)
+  from assms show "(2::nat)*2^n > Suc 0" by (auto simp add: is_prime_nat_iff)
 next
   have "2 ~= ((2::nat)^(n+1) - 1)" by simp arith
   then have "coprime (2::nat) (2^(n+1) - 1)"
     by (metis p primes_coprime_nat two_is_prime_nat) 
   moreover with p have "2^(n+1) - 1 > (0::nat)"
-    by (auto simp add: prime_def)
+    by (auto simp add: is_prime_nat_iff)
   ultimately have  "sigma (2^n*(2^(n+1) - 1)) = (sigma(2^n))*(sigma(2^(n+1) - 1))"
     by (metis sigma_semimultiplicative two_is_prime_nat)
   also from assms have "... = (sigma(2^(n)))*(2^(n+1))"

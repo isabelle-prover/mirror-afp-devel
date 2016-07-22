@@ -168,15 +168,17 @@ proof
         from b1 0 have b1: "b1 > 0" "n1 > 0" "n1 * n1 > 0" by auto
         from b2 0 have b2: "b2 > 0" "n2 > 0" "n2 * n2 > 0" by auto
         {
-          fix p
-          have id1: "multiplicity p (?sq n1 * b1) mod 2 = multiplicity p b1 mod 2"
-            unfolding multiplicity_product_nat[OF b1(3,1)] multiplicity_product_nat[OF b1(2,2)]
-            by presburger
-          have id2: "multiplicity p (?sq n2 * b2) mod 2 = multiplicity p b2 mod 2"
-            unfolding multiplicity_product_nat[OF b2(3,1)] multiplicity_product_nat[OF b2(2,2)]
-            by presburger
+          fix p :: nat assume p: "is_prime p"
+          have "multiplicity p (?sq n1 * b1) = multiplicity p b1 + 2 * multiplicity p n1"
+            using b1 p by (auto simp: prime_multiplicity_mult_distrib)
+          also have "\<dots> mod 2 = multiplicity p b1 mod 2" by presburger
+          finally have id1: "multiplicity p (?sq n1 * b1) mod 2 = multiplicity p b1 mod 2" .
+          have "multiplicity p (?sq n2 * b2) = multiplicity p b2 + 2 * multiplicity p n2"
+            using b2 p by (auto simp: prime_multiplicity_mult_distrib)
+          also have "\<dots> mod 2 = multiplicity p b2 mod 2" by presburger
+          finally have id2: "multiplicity p (?sq n2 * b2) mod 2 = multiplicity p b2 mod 2" .
           from id1 id2 eq have eq: "multiplicity p b1 mod 2 = multiplicity p b2 mod 2" by simp            
-          from 1(2) 2(2) have "multiplicity p b1 \<le> 1" "multiplicity p b2 \<le> 1" 
+          from 1(2) 2(2) p have "multiplicity p b1 \<le> 1" "multiplicity p b2 \<le> 1" 
             unfolding prime_product_def by auto
           with eq have "multiplicity p b1 = multiplicity p b2" by simp
         }

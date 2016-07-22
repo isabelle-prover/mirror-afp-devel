@@ -7,30 +7,34 @@ begin
 lemma setsum_mono2_nat: "finite (B::nat set) \<Longrightarrow> A <= B \<Longrightarrow> \<Sum> A <= \<Sum> B"
   by (auto simp add: setsum_mono2)
 
+(* TODO Move *)
+lemma multiplicity_0 [simp]: "multiplicity 0 x = 0" 
+  by (cases "x = 0") (auto intro: not_dvd_imp_multiplicity_0)
+  
 
 lemma exp_is_max_div:
-   assumes m0:"m>0" and p: "prime p"
-   shows "~ p dvd (m div (p^(exponent p m)))"
+   assumes m0:"m \<noteq> 0" and p: "prime p"
+   shows "~ p dvd (m div (p^(multiplicity p m)))"
 proof (rule ccontr)
- assume "~ ~ p dvd (m div (p^(exponent p m)))"
- hence a:"p dvd (m div (p^(exponent p m)))" by auto
- from m0 have "p^(exponent p m) dvd m" by (auto simp add: power_exponent_dvd)
- with a have "p*(p^exponent p m) dvd m"
-   by (metis dvd_div_iff_mult mult_is_0)
- with p have "m=0" by (auto simp add: power_Suc_exponent_Not_dvd)
- with m0 show "False" by auto
+  assume "~ ~ p dvd (m div (p^(multiplicity p m)))"
+  hence a:"p dvd (m div (p^(multiplicity p m)))" by auto
+  from m0 have "p^(multiplicity p m) dvd m" by (auto simp add: multiplicity_dvd)
+  with a have "p^Suc (multiplicity p m) dvd m"
+    by (subst (asm) dvd_div_iff_mult) (auto simp: multiplicity_0)
+  with m0 p show False
+    by (subst (asm) power_dvd_iff_le_multiplicity) auto
 qed
 
-lemma coprime_exponent:
-  assumes "prime p" and "m > 0"
-  shows "coprime p (m div (p ^ exponent p m))"
+lemma coprime_multiplicity:
+  assumes "prime (p::nat)" and "m > 0"
+  shows "coprime p (m div (p ^ multiplicity p m))"
 proof (rule ccontr)
-  assume "\<not> coprime p (m div p ^ exponent p m)"
-  with \<open>prime p\<close> have "\<exists>q. prime q \<and> q dvd p \<and> q dvd m div p ^ exponent p m"
-    by (metis dvd_refl prime_imp_coprime_nat)
-  with \<open>prime p\<close> have "\<exists>q. q = p \<and> q dvd m div p ^ exponent p m"
-    by (metis one_not_prime_nat prime_def)
-  then have "p dvd m div p ^ exponent p m"
+  assume "\<not> coprime p (m div p ^ multiplicity p m)"
+  with \<open>prime p\<close> have "\<exists>q. prime q \<and> q dvd p \<and> q dvd m div p ^ multiplicity p m"
+    by (metis dvd_refl is_prime_imp_coprime)
+  with \<open>prime p\<close> have "\<exists>q. q = p \<and> q dvd m div p ^ multiplicity p m"
+    by (metis not_is_prime_1 is_prime_nat_iff)
+  then have "p dvd m div p ^ multiplicity p m"
     by auto
   with assms show False
     by (auto simp add: exp_is_max_div)

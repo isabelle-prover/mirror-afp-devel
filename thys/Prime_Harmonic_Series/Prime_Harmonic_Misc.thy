@@ -33,11 +33,12 @@ lemma dvd_setprodD: "finite A \<Longrightarrow> setprod f A dvd x \<Longrightarr
 
 lemma multiplicity_power_nat: 
   "prime p \<Longrightarrow> n > 0 \<Longrightarrow> multiplicity p (n ^ k :: nat) = k * multiplicity p n"
-  by (induction k) (simp_all add: multiplicity_product_nat)
+  by (induction k) (simp_all add: prime_multiplicity_mult_distrib)
 
 lemma multiplicity_prod_prime_powers_nat':
-  "finite S \<Longrightarrow> \<forall>p\<in>S. prime p \<Longrightarrow> multiplicity p (\<Prod>S) = (if p \<in> S then 1 else 0)"
-  using multiplicity_prod_prime_powers_nat[where f = "\<lambda>_. 1"] by simp
+  "finite S \<Longrightarrow> \<forall>p\<in>S. prime p \<Longrightarrow> is_prime p \<Longrightarrow> 
+     multiplicity p (\<Prod>S :: nat) = (if p \<in> S then 1 else 0)"
+  using multiplicity_prod_prime_powers[of S p "\<lambda>_. 1"] by simp
 
 lemma setprod_prime_subset:
   assumes "finite A" "finite B"
@@ -52,7 +53,7 @@ proof
 
   from x assms have "1 = multiplicity x (\<Prod>A)"
     by (subst multiplicity_prod_prime_powers_nat') simp_all
-  also from assms nonzero have "\<dots> \<le> multiplicity x (\<Prod>B)" by (intro dvd_multiplicity_nat) auto
+  also from assms nonzero have "\<dots> \<le> multiplicity x (\<Prod>B)" by (intro dvd_imp_multiplicity_le) auto
   finally have "multiplicity x (\<Prod>B) > 0" by simp
   moreover from assms x have "prime x" by simp
   ultimately show "x \<in> B" using assms(2,4)
