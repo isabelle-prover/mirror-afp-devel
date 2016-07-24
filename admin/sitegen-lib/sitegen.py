@@ -33,6 +33,7 @@ from config import *
 from metadata import *
 from terminal import *
 from templates import *
+import afpstats
 
 
 
@@ -312,82 +313,6 @@ def handle_template(entries, build_data, template, content):
 		output_filename = os.path.join(dest_subdir, template + output_suffix)
 		write_output(output_filename, content, partial(generator, entries.items(), **extra_args))
 
-def normpath(path, *paths):
-	"""Return a normalized and absolute path (depending on current working directory)"""
-	return os.path.abspath(os.path.join(path, *paths))
-
-def theory_dict(entries):
-	"""Creates a dict with .thy files as key and the corresponding theory as value"""
-	thys = dict()
-	for entry in entries:
-		for thy in entries[entry]['thys']:
-			thys[thy] = entry
-	return thys
-
-def add_theories(entries, thy_dir):
-	"""Add a set of paths to .thy files of an entry to entries[e]['thys']"""
-	for entry in entries:
-		entries[entry]['thys'] = set()
-		for root, _dirnames, filenames in os.walk(os.path.join(thy_dir, entry)):
-			for f in filenames:
-				if f.endswith(".thy"):
-					entries[entry]['thys'].add(normpath(root, f))
-
-def add_theory_dependencies(entries):
-	"""Adds dependencies by checking .thy-files"""
-	thys = theory_dict(entries)
-	pattern0 = re.compile("imports(.*?)begin", re.DOTALL)
-	for t in thys:
-		with open(t, 'r') as f:
-			content = f.read()
-		match0 = pattern0.search(content)
-		if match0 is not None:
-			# Go through imports and check if its a file in the AFP
-			# if yes, add dependency
-			imps = [normpath(os.path.dirname(t), x.strip(' \t"') + ".thy")
-				for x in match0.group(1).split()]
-			for i in imps:
-				if i in thys:
-					entries[thys[t]]['depends-on'].add(thys[i])
-
-def add_root_dependencies(entries, thy_dir):
-	"""Adds dependencies by checking ROOT files"""
-	thys = theory_dict(entries)
-	for entry in entries:
-		root = normpath(thy_dir, entry, "ROOT")
-		with open(root, 'r') as root_file:
-			root_content = root_file.read()
-		#check for imports of the form "session ... = ... (AFP) +"
-		for line in root_content.splitlines():
-			if line.startswith("session"):
-				for word in [x.strip(' \t"') for x in line.split()]:
-					if word in entries:
-						entries[entry]['depends-on'].add(word)
-		#run through every word in the root file and check if there's a corresponding AFP file
-		for word in [x.strip(' \t"') for x in root_content.split()]:
-			#catch Unicode error, since paths can only contain ASCII chars
-			try:
-				theory = normpath(thy_dir, entry, word + ".thy")
-				if theory in thys:
-					entries[entry]['depends-on'].add(thys[theory])
-			except UnicodeDecodeError:
-					pass
-
-def remove_self_imps(entries):
-	"""Remove self imports in "depends-on"-field"""
-	for entry in entries:
-		try:
-			entries[entry]['depends-on'].remove(entry)
-		except KeyError:
-			pass
-
-def add_used_by(entries):
-	for entry in entries:
-		entries[entry]['used_by'] = set()
-	for entry in entries:
-		for d in entries[entry]['depends-on']:
-			entries[d]['used_by'].add(entry)
-
 def parse_status(filename):
 	with open(filename) as input:
 		data = json.load(input)
@@ -432,13 +357,50 @@ if __name__ == "__main__":
 	if len(entries) == 0:
 		warn("In metadata: No entries found")
 
-	# generate depends-on and used-by entries
-	for e in entries: entries[e]['depends-on'] = set()
-	add_theories(entries, thys_dir)
-	add_theory_dependencies(entries)
-	add_root_dependencies(entries, thys_dir)
-	remove_self_imps(entries)
-	add_used_by(entries)
+	# generate depends-on, used-by entries, lines of code and number of lemmas
+	# by using an afp_dict object
+	afp_dict = afpstats.afp_dict(entries, thys_dir)
+	afp_dict.build_stats()
+	for e in entries:
+		entries[e]['depends-on'] = list(map(str, afp_dict[e].imports))
+		entries[e]['used-by'] = list(map(str, afp_dict[e].used))
+	loc = 0
+	num_lemmas = 0
+	for _k, a in afp_dict.items():
+		loc += a.loc
+		num_lemmas += a.lemmas
+	STAT_FIGURES['loc'] = loc
+	STAT_FIGURES['num_lemmas'] = num_lemmas
+	STAT_FIGURES['num_authors'] = len(afp_dict.authors)
+
+	# Generate data for graphs in statistics page
+	articles_years = dict()
+	loc_years = dict()
+	for _k, a in afp_dict.items():
+		try:
+			articles_years[a.publish_date.year] += 1
+		except KeyError:
+			articles_years[a.publish_date.year] = 1
+		try:
+			loc_years[a.publish_date.year] += a.loc
+		except KeyError:
+			loc_years[a.publish_date.year] = a.loc
+	author_years = dict()
+	for _k, a in afp_dict.authors.items():
+		first_year = min([e.publish_date.year for e in a.articles])
+		try:
+			author_years[first_year] += 1
+		except KeyError:
+			author_years[first_year] = 1
+	author_years_series = author_years.copy()
+	for y in sorted(articles_years)[1:]:
+		articles_years[y] += articles_years[y - 1]
+		loc_years[y] += loc_years[y - 1]
+		author_years_series[y] += author_years_series[y - 1]
+	STAT_FIGURES['articles_years'] = articles_years
+	STAT_FIGURES['loc_years'] = loc_years
+	STAT_FIGURES['author_years'] = author_years
+	STAT_FIGURES['author_years_series'] = author_years_series
 
 	# perform check
 	if options.do_check:

@@ -241,7 +241,7 @@ def generate_entry(entry, attributes, param):
 			html_license_link.format(attributes['license'][0], attributes['license'][1]),
 			entry,
 			format_depends_on(attributes['depends-on']),
-			format_used_by(attributes['used_by']),
+			format_used_by(attributes['used-by']),
 			format_status(attributes)
 		)
 	elif param == "older":
@@ -293,6 +293,38 @@ def generate_download(entries):
 	else:
 		return html_download_stable
 
+### statistics
+
+def generate_statistics(entries):
+	return html_statistics_text_wrapper.format(
+			loc = int(round(STAT_FIGURES['loc'], -2)),
+			num_articles = len(entries),
+			num_lemmas = int(round(STAT_FIGURES['num_lemmas'], -2)),
+			num_authors = STAT_FIGURES['num_authors'],
+			years = "["
+			         + ", ".join([str(y) for y in 
+			                      sorted(STAT_FIGURES['articles_years'])])
+			         + "]",
+			no_articles = "["
+			              + ", ".join([str(STAT_FIGURES['articles_years'][y])
+			                           for y
+			                           in sorted(STAT_FIGURES['articles_years'])])
+			              + "]",
+			no_loc = "["
+			         + ", ".join([str(round(STAT_FIGURES['loc_years'][y], -2))
+			                      for y in sorted(STAT_FIGURES['loc_years'])])
+			         + "]",
+			no_authors = "["
+			             + ", ".join([str(STAT_FIGURES['author_years'][y])
+			                          for y in sorted(STAT_FIGURES['author_years'])])
+			             + "]",
+			no_authors_series = "["
+			                    + ", ".join([str(STAT_FIGURES['author_years_series'][y])
+			                                 for y
+			                                 in sorted(STAT_FIGURES['author_years_series'])])
+			                    + "]"
+			)
+
 
 # key : (path, generator, for-each)
 #   'key' denotes the filename of the template (without suffix)
@@ -312,5 +344,6 @@ templates = {
 	'index': ('.', generate_index, None, False),
 	'entry': ('./entries', generate_entry, lambda entry: entry, False),
 	'download': ('.', generate_download, None, False),
-	'status': ('.', generate_status, None, True)
+	'status': ('.', generate_status, None, True),
+	'statistics': ('.', generate_statistics, None, False)
 }
