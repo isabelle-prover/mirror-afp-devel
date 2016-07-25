@@ -224,12 +224,11 @@ proof (rule iffI, erule conjE)
         by blast
     next
       case (source S)
-      assume "SourceTerm S \<longmapsto>(STCal Source Target)* P'"
-      moreover from this obtain S' where B1: "S' \<in>S P'"
+      then obtain S' where B1: "S' \<in>S P'"
         by (auto simp add: STCal_steps(1))
       hence "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> P'"
         by (simp add: indRelRTPO.source)
-      ultimately show "\<exists>Q'. SourceTerm S \<longmapsto>(STCal Source Target)* Q' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
+      with source show "\<exists>Q'. SourceTerm S \<longmapsto>(STCal Source Target)* Q' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
         by blast
     next
       case (target T1 T2)
@@ -445,12 +444,11 @@ proof (rule iffI, erule conjE)
         by blast
     next
       case (source S)
-      assume "SourceTerm S \<longmapsto>(STCal Source Target) P'"
-      moreover from this obtain S' where B1: "S' \<in>S P'"
+      then obtain S' where B1: "S' \<in>S P'"
         by (auto simp add: STCal_step(1))
       hence "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> P'"
         by (simp add: indRelRTPO.source)
-      ultimately show "\<exists>Q'. SourceTerm S \<longmapsto>(STCal Source Target) Q' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
+      with source show "\<exists>Q'. SourceTerm S \<longmapsto>(STCal Source Target) Q' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
         by blast
     next
       case (target T1 T2)
@@ -771,12 +769,11 @@ proof (rule iffI, erule conjE)
         by blast
     next
       case (source S)
-      assume "SourceTerm S \<longmapsto>(STCal Source Target)* P'"
-      moreover from this obtain S' where B1: "S' \<in>S P'"
+      then obtain S' where B1: "S' \<in>S P'"
         by (auto simp add: STCal_steps(1))
       hence "(P', P') \<in> (indRelRTPO TRel)\<inverse>"
         by (simp add: indRelRTPO.source)
-      ultimately
+      with source
       show "\<exists>Q'. SourceTerm S \<longmapsto>(STCal Source Target)* Q' \<and> (P', Q') \<in> (indRelRTPO TRel)\<inverse>"
         by blast
     next
@@ -977,12 +974,11 @@ proof (rule iffI, erule conjE)
         by blast
     next
       case (source S)
-      assume "SourceTerm S \<longmapsto>(STCal Source Target) P'"
-      moreover from this obtain S' where B1: "S' \<in>S P'"
+      then obtain S' where B1: "S' \<in>S P'"
         by (auto simp add: STCal_step(1))
       hence "(P', P') \<in> (indRelRTPO TRel)\<inverse>"
         by (simp add: indRelRTPO.source)
-      ultimately
+      with source
       show "\<exists>Q'. SourceTerm S \<longmapsto>(STCal Source Target) Q' \<and> (P', Q') \<in> (indRelRTPO TRel)\<inverse>"
         by blast
     next

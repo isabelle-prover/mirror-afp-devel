@@ -582,10 +582,10 @@ next
       let ?\<rho>' = "case_nat x \<rho>"
       have \<rho>': "?\<rho>' \<in> space (state_measure (shift_var_set (set vs')) (case_nat t' \<Gamma>))"
         using \<rho> x by (intro case_nat_in_state_measure) simp_all
-      hence "(\<integral>\<^sup>+y. ennreal (eval_cexpr f \<rho> y) * dist_dens dst y x \<partial>stock_measure t) =
+      hence *: "(\<integral>\<^sup>+y. ennreal (eval_cexpr f \<rho> y) * dist_dens dst y x \<partial>stock_measure t) =
                \<integral>\<^sup>+y. extract_real (cexpr_sem (case_nat y ?\<rho>') (?e1 *\<^sub>c ?e2)) \<partial>stock_measure t" (is "_ = ?I")
         using \<rho> x by (intro nn_integral_cong) (simp add: e1e2)
-      also from this and finite have finite': "?I < \<infinity>" by (simp add: less_top)
+      also from * and finite have finite': "?I < \<infinity>" by (simp add: less_top)
       have "?I = ennreal (eval_cexpr ?e \<rho> x)" using \<rho>' te te1 te2 vars_e1 vars_e2 nonneg_e1 nonneg_e2
         unfolding eval_cexpr_def
         by (subst cexpr_sem_integral_nonneg[OF finite'])

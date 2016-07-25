@@ -2,10 +2,8 @@ chapter AFP
 
 session "List_Interleaving" (AFP) = HOL +
   options [timeout = 600]
-
   theories
     ListInterleaving
-
   document_files
     "root.bib"
     "root.tex"

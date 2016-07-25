@@ -1916,12 +1916,11 @@ next
     next
       case False
       with exec_strip_guards_to_exec [OF exec_strip_guards_c1] noFault_c1
-      have "\<Gamma>\<turnstile>\<langle>c1,Normal s \<rangle> \<Rightarrow> s'"
+      have *: "\<Gamma>\<turnstile>\<langle>c1,Normal s \<rangle> \<Rightarrow> s'"
         by (auto simp add: final_notin_def elim!: isFaultE)
-      moreover
-      from this noFault_Seq have "\<Gamma>\<turnstile>\<langle>c2,s' \<rangle> \<Rightarrow>\<notin>Fault ` F"
+      with noFault_Seq have "\<Gamma>\<turnstile>\<langle>c2,s' \<rangle> \<Rightarrow>\<notin>Fault ` F"
         by (auto simp add: final_notin_def intro: exec.intros)
-      ultimately show ?thesis
+      with * show ?thesis
         using Seq.hyps by simp
     qed
   }
@@ -1951,12 +1950,11 @@ next
     next
       case False
       with exec_strip_guards_to_exec [OF exec_strip_guards_c] noFault_c
-      have "\<Gamma>\<turnstile>\<langle>c,Normal s \<rangle> \<Rightarrow> s'"
+      have *: "\<Gamma>\<turnstile>\<langle>c,Normal s \<rangle> \<Rightarrow> s'"
         by (auto simp add: final_notin_def elim!: isFaultE)
-      moreover
-      from this s_in_b noFault_while have "\<Gamma>\<turnstile>\<langle>While b c,s' \<rangle> \<Rightarrow>\<notin>Fault ` F"
+      with s_in_b noFault_while have "\<Gamma>\<turnstile>\<langle>While b c,s' \<rangle> \<Rightarrow>\<notin>Fault ` F"
         by (auto simp add: final_notin_def intro: exec.intros)
-      ultimately show ?thesis
+      with * show ?thesis
         using WhileTrue.hyps by simp
     qed
   }
@@ -1990,12 +1988,11 @@ next
     have "\<Gamma>\<turnstile>strip_guards F c2 \<down> Normal s'"
     proof -
       from exec_strip_guards_to_exec [OF exec_strip_guards_c1] noFault_c1
-      have "\<Gamma>\<turnstile>\<langle>c1,Normal s \<rangle> \<Rightarrow> Abrupt s'"
+      have *: "\<Gamma>\<turnstile>\<langle>c1,Normal s \<rangle> \<Rightarrow> Abrupt s'"
         by (auto simp add: final_notin_def elim!: isFaultE)
-      moreover
-      from this noFault_Catch have "\<Gamma>\<turnstile>\<langle>c2,Normal s' \<rangle> \<Rightarrow>\<notin>Fault ` F"
+      with noFault_Catch have "\<Gamma>\<turnstile>\<langle>c2,Normal s' \<rangle> \<Rightarrow>\<notin>Fault ` F"
         by (auto simp add: final_notin_def intro: exec.intros)
-      ultimately show ?thesis
+      with * show ?thesis
         using Catch.hyps by simp
     qed
   }
@@ -2048,12 +2045,11 @@ next
     next
       case False
       with exec_strip_to_exec [OF exec_strip_c1] noFault_c1
-      have "\<Gamma>\<turnstile>\<langle>c1,Normal s \<rangle> \<Rightarrow> s'"
+      have *: "\<Gamma>\<turnstile>\<langle>c1,Normal s \<rangle> \<Rightarrow> s'"
         by (auto simp add: final_notin_def elim!: isFaultE)
-      moreover
-      from this noFault_Seq have "\<Gamma>\<turnstile>\<langle>c2,s' \<rangle> \<Rightarrow>\<notin>Fault ` F"
+      with noFault_Seq have "\<Gamma>\<turnstile>\<langle>c2,s' \<rangle> \<Rightarrow>\<notin>Fault ` F"
         by (auto simp add: final_notin_def intro: exec.intros)
-      ultimately show ?thesis
+      with * show ?thesis
         using Seq.hyps by (simp del: strip_simp)
     qed
   }
@@ -2083,12 +2079,11 @@ next
     next
       case False
       with exec_strip_to_exec [OF exec_strip_c] noFault_c
-      have "\<Gamma>\<turnstile>\<langle>c,Normal s \<rangle> \<Rightarrow> s'"
+      have *: "\<Gamma>\<turnstile>\<langle>c,Normal s \<rangle> \<Rightarrow> s'"
         by (auto simp add: final_notin_def elim!: isFaultE)
-      moreover
-      from this s_in_b noFault_while have "\<Gamma>\<turnstile>\<langle>While b c,s' \<rangle> \<Rightarrow>\<notin>Fault ` F"
+      with s_in_b noFault_while have "\<Gamma>\<turnstile>\<langle>While b c,s' \<rangle> \<Rightarrow>\<notin>Fault ` F"
         by (auto simp add: final_notin_def intro: exec.intros)
-      ultimately show ?thesis
+      with * show ?thesis
         using WhileTrue.hyps by (simp del: strip_simp)
     qed
   }
@@ -2134,12 +2129,11 @@ next
     have "strip F \<Gamma>\<turnstile>c2 \<down> Normal s'"
     proof -
       from exec_strip_to_exec [OF exec_strip_c1] noFault_c1
-      have "\<Gamma>\<turnstile>\<langle>c1,Normal s \<rangle> \<Rightarrow> Abrupt s'"
+      have *: "\<Gamma>\<turnstile>\<langle>c1,Normal s \<rangle> \<Rightarrow> Abrupt s'"
         by (auto simp add: final_notin_def elim!: isFaultE)
-      moreover
-      from this noFault_Catch have "\<Gamma>\<turnstile>\<langle>c2,Normal s' \<rangle> \<Rightarrow>\<notin>Fault ` F"
+      with * noFault_Catch have "\<Gamma>\<turnstile>\<langle>c2,Normal s' \<rangle> \<Rightarrow>\<notin>Fault ` F"
         by (auto simp add: final_notin_def intro: exec.intros)
-      ultimately show ?thesis
+      with * show ?thesis
         using Catch.hyps by (simp del: strip_simp)
     qed
   }

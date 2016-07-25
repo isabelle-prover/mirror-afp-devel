@@ -1307,12 +1307,11 @@ proof
   {
     have "d dvd last (sturm p)" unfolding d_def
         by (rule sturm_gcd, simp)
-    hence "last (sturm p) = last ?ps' * d"
+    hence *: "last (sturm p) = last ?ps' * d"
         by (simp add: sturm_squarefree'_def last_map d_def dvd_div_mult_self)
-    moreover from this have "last ?ps' dvd last (sturm p)" by simp
-    moreover note dvd_imp_degree_le[OF this]
-    ultimately have "degree (last ?ps') \<le> degree (last (sturm p))"
-        using `d \<noteq> 0` by (cases "last ?ps' = 0", auto)
+    then have "last ?ps' dvd last (sturm p)" by simp
+    with * dvd_imp_degree_le[OF this] have "degree (last ?ps') \<le> degree (last (sturm p))"
+        using `d \<noteq> 0` by (cases "last ?ps' = 0") auto
     hence "degree (last ?ps') = 0" by simp
     then obtain c where "last ?ps' = [:c:]"
         by (cases "last ?ps'", simp split: if_split_asm)

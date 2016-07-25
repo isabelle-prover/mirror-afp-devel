@@ -539,9 +539,9 @@ proof-
                  (\<Sum>i<k. as!i*f2' ((ts!i) x))"
       proof (rule setsum.cong, simp, clarify)
         fix i assume i: "i < k"
-        from i x x0'_le_x1' x0'_ge_x1 have "bs!i * real x + (hs!i) x = real ((ts!i) x)"
+        from i x x0'_le_x1' x0'_ge_x1 have *: "bs!i * real x + (hs!i) x = real ((ts!i) x)"
           by (intro decomp) simp_all
-        also from i this have "abr.f' ... = f2' ((ts!i) x)"
+        also from i * have "abr.f' ... = f2' ((ts!i) x)"
           by (subst IH[of i]) (simp_all add: hs'_real)
         finally show "as!i*abr.f' (bs!i*real x+(hs!i) x) = as!i*f2' ((ts!i) x)" by simp
       qed
@@ -612,8 +612,8 @@ proof-
   define a' where "a' = real (max (nat \<lceil>a\<rceil>) 0) + 1"
   note a
   moreover have "a' \<in> \<nat>" by (auto simp: max_def a'_def)
-  moreover have "a' \<ge> a + 1" unfolding a'_def by linarith
-  moreover from this and a have "a' \<ge> A" by simp
+  moreover have *: "a' \<ge> a + 1" unfolding a'_def by linarith
+  moreover from * and a have "a' \<ge> A" by simp
   ultimately show ?thesis by (intro that[of a']) auto
 qed
 
@@ -771,9 +771,9 @@ from b_bounds bs_nonempty have "bm > 0" "bm < 1" unfolding bm_def by auto
       also have "(\<Sum>i<k. as!i*abr.f' (bs!i*real x + (hs!i) x)) = (\<Sum>i<k. as!i*f' ((ts!i) x))"
       proof (rule setsum.cong, simp, clarify)
         fix i assume i: "i < k"
-        from i x x0'_le_x1' x0'_ge_x1 have "bs!i * real x + (hs!i) x = real ((ts!i) x)"
+        from i x x0'_le_x1' x0'_ge_x1 have *: "bs!i * real x + (hs!i) x = real ((ts!i) x)"
           by (intro decomp) simp_all
-        also from i this have "abr.f' ... = f' ((ts!i) x)"
+        also from i * have "abr.f' ... = f' ((ts!i) x)"
           by (subst IH[of i]) (simp_all add: hs'_real)
         finally show "as!i*abr.f' (bs!i*real x+(hs!i) x) = as!i*f' ((ts!i) x)" by simp
       qed
@@ -831,8 +831,8 @@ proof-
   define a' where "a' = real (max (nat \<lceil>a\<rceil>) 0) + 1"
   note a
   moreover have "a' \<in> \<nat>" by (auto simp: max_def a'_def)
-  moreover have "a' \<ge> a + 1" unfolding a'_def by linarith
-  moreover from this and a have "a' > A" by simp
+  moreover have *: "a' \<ge> a + 1" unfolding a'_def by linarith
+  moreover from * and a have "a' > A" by simp
   ultimately show ?thesis by (intro that[of a']) auto
 qed
 

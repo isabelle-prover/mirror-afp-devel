@@ -801,22 +801,22 @@ proof (induction xs rule: rev_induct, simp, rule impI)
     c_tr step out s (ipurge_tr I D u (xs @ [x]))"
   proof (cases "D x \<in> sinks I D u (xs @ [x])")
     case True
-    moreover from this have "D x \<in> sinks I (c_dom D) u
+    then have "D x \<in> sinks I (c_dom D) u
       (c_tr step out s (xs @ [x]))"
      by (subst c_tr_sinks)
     hence "c_dom D (x, out (foldl step s xs) x)
       \<in> sinks I (c_dom D) u (c_tr step out s xs @ [(x, out (foldl step s xs) x)])"
      by (simp add: c_dom_def)
-    ultimately show ?thesis using C by simp
+    with True show ?thesis using C by simp
   next
-    assume D: "D x \<notin> sinks I D u (xs @ [x])"
-    moreover from this have "D x \<notin> sinks I (c_dom D) u
+    case False
+    then have "D x \<notin> sinks I (c_dom D) u
       (c_tr step out s (xs @ [x]))"
      by (subst c_tr_sinks)
     hence "c_dom D (x, out (foldl step s xs) x)
       \<notin> sinks I (c_dom D) u (c_tr step out s xs @ [(x, out (foldl step s xs) x)])"
      by (simp add: c_dom_def)
-    ultimately show ?thesis
+    with False show ?thesis
     proof (simp add: C)
       have "length xs \<in> {..<length (xs @ [x])}" by simp
       with A have "D ((xs @ [x]) ! length xs)
@@ -828,7 +828,7 @@ proof (induction xs rule: rev_induct, simp, rule impI)
         out (foldl step s (ipurge_tr I D u xs)) x = out (foldl step s xs) x"
        by simp
       thus "out (foldl step s xs) x = out (foldl step s (ipurge_tr I D u xs)) x"
-       using D by simp
+       using False by simp
     qed
   qed
 qed

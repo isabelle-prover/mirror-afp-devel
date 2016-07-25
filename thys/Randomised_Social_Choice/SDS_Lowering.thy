@@ -58,9 +58,9 @@ lemma lift_pref_profile_permute_alts:
   shows   "lift_pref_profile agents alts agents' alts' (permute_profile \<sigma> R) = 
              permute_profile \<sigma> (lift_pref_profile agents alts agents' alts' R)"
 proof -
-  from assms have "inv \<sigma> permutes alts" by (intro permutes_inv)
-  moreover from this and assms(2) have "inv \<sigma> permutes alts'" by (rule permutes_subset)
-  ultimately show ?thesis using assms permutes_inj[OF \<open>inv \<sigma> permutes alts\<close>]
+  from assms have inv: "inv \<sigma> permutes alts" by (intro permutes_inv)
+  from this assms(2) have "inv \<sigma> permutes alts'" by (rule permutes_subset)
+  with inv show ?thesis using assms permutes_inj[OF \<open>inv \<sigma> permutes alts\<close>]
     by (fastforce simp add: lift_pref_profile_def permutes_in_image
           permute_profile_def fun_eq_iff dest: injD)
 qed

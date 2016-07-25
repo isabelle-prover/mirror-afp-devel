@@ -399,9 +399,9 @@ next
   proof (cases ys, simp)
     fix a as
     assume "ys = a # as"
-    hence "l_sorted ys \<and> l_sorted (z # zs) \<and> last ys \<le> x" using I by simp
-    moreover with XZ have "l_sorted (x # z # zs)" by simp
-    ultimately show ?thesis by (simp add: l_sorted_app)
+    hence *: "l_sorted ys \<and> l_sorted (z # zs) \<and> last ys \<le> x" using I by simp
+    with XZ have "l_sorted (x # z # zs)" by simp
+    with * show ?thesis by (simp add: l_sorted_app)
   qed
 next
   fix x :: 'a and xs ys z zs
@@ -416,10 +416,10 @@ next
       show "z \<le> x" using XZ .
     next
       fix a as
-      assume "zs = a # as"
-      moreover from this have "z \<le> a \<and> l_sorted zs" using I by simp
-      moreover have "l_sorted [z]" by simp
-      ultimately show ?thesis using XZ by simp
+      assume zs: "zs = a # as"
+      then have *: "z \<le> a \<and> l_sorted zs" using I by simp
+      have "l_sorted [z]" by simp
+      with zs * show ?thesis using XZ by simp
     qed
   next
     fix a as
@@ -432,9 +432,9 @@ next
       show "l_sort_inv_1 (x # xs, ys @ [z], [])" using I' and XZ and YS by simp
     next
       fix b bs
-      assume "zs = b # bs"
-      moreover from this have "z \<le> b \<and> l_sorted zs" using I by simp
-      ultimately show ?thesis using I and I' and XZ and YS by simp
+      assume zs: "zs = b # bs"
+      then have "z \<le> b \<and> l_sorted zs" using I by simp
+      with zs show ?thesis using I and I' and XZ and YS by simp
     qed
   qed
 qed

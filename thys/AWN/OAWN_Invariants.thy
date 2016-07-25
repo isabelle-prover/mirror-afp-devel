@@ -60,9 +60,9 @@ lemma oreachable_subterms:
     fix \<sigma> p a \<sigma>' p'
     assume "(\<sigma>, p) \<in> oreachable A S U"
        and "\<exists>pn. p \<in> subterms (\<Gamma> pn)"
-       and "((\<sigma>, p), a, (\<sigma>', p')) \<in> trans A"
+       and 3: "((\<sigma>, p), a, (\<sigma>', p')) \<in> trans A"
        and "S \<sigma> \<sigma>' a"
-    moreover from this(3) and \<open>trans A = oseqp_sos \<Gamma> i\<close>
+    moreover from 3 and \<open>trans A = oseqp_sos \<Gamma> i\<close>
       have "((\<sigma>, p), a, (\<sigma>', p')) \<in> oseqp_sos \<Gamma> i" by simp
     ultimately show "\<exists>pn. p' \<in> subterms (\<Gamma> pn)"
     using \<open>wellformed \<Gamma>\<close>

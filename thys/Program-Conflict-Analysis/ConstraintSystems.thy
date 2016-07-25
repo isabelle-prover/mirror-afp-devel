@@ -660,10 +660,10 @@ next
     proof -
       from ntr_reverse_split[of ch w2 s1' "{#s2'#}+ce2'"] ntrp_valid_preserve_s[OF SPLIT(1), simplified] C2'FMT LESPLIT(4)
       obtain seh ceh w21 w22 ce21' ce22' where 
-        "ch={#seh#}+ceh" "{#s2'#}+ce2' = ce21'+ce22'" "w2\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" "mon_s fg seh \<inter> (mon_c fg ceh \<union> mon_ww fg w22)={}" "mon_c fg ceh \<inter> (mon_s fg seh \<union> mon_ww fg w21) = {}"
+        *: "ch={#seh#}+ceh" "{#s2'#}+ce2' = ce21'+ce22'" "w2\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" "mon_s fg seh \<inter> (mon_c fg ceh \<union> mon_ww fg w22)={}" "mon_c fg ceh \<inter> (mon_s fg seh \<union> mon_ww fg w21) = {}"
         "({#seh#},w21,{#s1'#}+ce21')\<in>trcl (ntr fg)" "(ceh,w22,ce22')\<in>trcl (ntr fg)" by (auto simp add: valid_unconc)
-      moreover from this(1) CHFMT[of seh] obtain q where "seh=[entry fg q]" by auto
-      ultimately have "ch={#[entry fg q]#}+ceh" "{#s2'#}+ce2' = ce21'+ce22'" "w2\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" "mon fg q \<inter> (mon_c fg ceh \<union> mon_ww fg w22)={}" "mon_c fg ceh \<inter> (mon fg q \<union> mon_ww fg w21) = {}"
+      from this(1) CHFMT[of seh] obtain q where "seh=[entry fg q]" by auto
+      with * have "ch={#[entry fg q]#}+ceh" "{#s2'#}+ce2' = ce21'+ce22'" "w2\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" "mon fg q \<inter> (mon_c fg ceh \<union> mon_ww fg w22)={}" "mon_c fg ceh \<inter> (mon fg q \<union> mon_ww fg w21) = {}"
         "({#[entry fg q]#},w21,{#s1'#}+ce21')\<in>trcl (ntr fg)" "(ceh,w22,ce22')\<in>trcl (ntr fg)" by auto
       thus thesis using that by (blast)
     qed
@@ -692,9 +692,9 @@ next
       obtain q' w22' ce22e' where REVSPLIT': "[entry fg q'] \<in># ceh" "w22'\<preceq>w22" "ce22e' \<le># ce22'" "atU V ce22e'" "({#[entry fg q']#},w22',ce22e')\<in>trcl (ntr fg)"
       proof -
         from ntr_reverse_split_atU[OF _ ATUV(2) REVSPLIT(7)] ntrp_valid_preserve_s[OF SPLIT(1), simplified] REVSPLIT(1) obtain sq'' w22' ce22e' where 
-          "sq'' \<in># ceh" "w22'\<preceq>w22" "ce22e' \<le># ce22'" "atU V ce22e'" "({#sq''#},w22',ce22e')\<in>trcl (ntr fg)" by (auto simp add: valid_unconc)
-        moreover from CHFMT[of sq''] REVSPLIT(1) this(1) obtain q' where "sq''=[entry fg q']" by auto 
-        ultimately show thesis using that by blast 
+          *: "sq'' \<in># ceh" "w22'\<preceq>w22" "ce22e' \<le># ce22'" "atU V ce22e'" "({#sq''#},w22',ce22e')\<in>trcl (ntr fg)" by (auto simp add: valid_unconc)
+        from CHFMT[of sq''] REVSPLIT(1) this(1) obtain q' where "sq''=[entry fg q']" by auto 
+        with * show thesis using that by blast 
       qed
       from ntrs.gtr2gtrp[where c="{#}", simplified, OF REVSPLIT'(5)] obtain sq'' ce22ee' ww22' where R_CONV': "ce22e' = {#sq''#}+ce22ee'" "w22'=map le_rem_s ww22'" "(([entry fg q'],{#}),ww22',(sq'',ce22ee'))\<in>trcl (ntrp fg)" by blast
       -- "From the soundness of the RU-constraint system, we get the corresponding entries"

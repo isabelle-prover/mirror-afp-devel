@@ -397,7 +397,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
       proof cases
         assume cf1: "discrCf cf1"
         moreover
-        note cf2 = ZObis_pres_discrCfR[OF this *]
+        note cf2 = ZObis_pres_discrCfR[OF cf1 *]
         from cf1 cf2 have "S cf1 = (\<lambda>bT. snd cf1 \<approx> s)" "S cf2 = (\<lambda>bT. snd cf2 \<approx> s)"
           unfolding S_def[abs_def] by (auto simp: enat_0[symmetric])
         moreover from `snd cf1 \<approx> snd cf2` have "snd cf1 \<approx> s \<longleftrightarrow> snd cf2 \<approx> s"

@@ -1082,54 +1082,54 @@ proof (simp add: rel_induct_def)
     have A: "a\<^sub>c \<in> range id" by simp
     moreover have B: "(id b\<^sub>c, a\<^sub>c) \<notin> I\<^sub>c" by (simp add: I\<^sub>c_def)
     moreover have "b\<^sub>c \<in> next_events P\<^sub>c []"
-     by (simp add: counterexample_next_events_2 T\<^sub>c_def)
+      by (simp add: counterexample_next_events_2 T\<^sub>c_def)
     ultimately have "(a\<^sub>c, [], [] @ [b\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by (rule rule_LR)
-    hence "(a\<^sub>c, [], [b\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by simp
-    moreover from this have "(id a\<^sub>c, [], [b\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by simp
+    hence C: "(a\<^sub>c, [], [b\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by simp
+    moreover from C have "(id a\<^sub>c, [], [b\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by simp
     moreover have "a\<^sub>c \<in> next_events P\<^sub>c [] \<inter> next_events P\<^sub>c [b\<^sub>c]"
-     by (simp add: counterexample_next_events_2 T\<^sub>c_def)
+      by (simp add: counterexample_next_events_2 T\<^sub>c_def)
     ultimately have "(a\<^sub>c, [] @ [a\<^sub>c], [b\<^sub>c] @ [a\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id"
-     by (rule rule_WSC)
-    hence C: "(a\<^sub>c, [a\<^sub>c], [b\<^sub>c, a\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by simp
+      by (rule rule_WSC)
+    hence D: "(a\<^sub>c, [a\<^sub>c], [b\<^sub>c, a\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by simp
     have "b\<^sub>c \<in> next_events P\<^sub>c [a\<^sub>c]"
-     by (simp add: counterexample_next_events_2 T\<^sub>c_def)
+      by (simp add: counterexample_next_events_2 T\<^sub>c_def)
     with A and B have "(a\<^sub>c, [a\<^sub>c], [a\<^sub>c] @ [b\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id"
-     by (rule rule_LR)
+      by (rule rule_LR)
     hence "(a\<^sub>c, [a\<^sub>c], [a\<^sub>c, b\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by simp
     hence "(a\<^sub>c, [a\<^sub>c, b\<^sub>c], [a\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by (rule rule_sym)
-    thus ?thesis using C by (rule rule_trans)
+    thus ?thesis using D by (rule rule_trans)
   qed
   moreover have "(id c\<^sub>c, [a\<^sub>c, b\<^sub>c], [b\<^sub>c, a\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id"
   proof simp
     have A: "c\<^sub>c \<in> range id" by simp
     moreover have B: "(id a\<^sub>c, c\<^sub>c) \<notin> I\<^sub>c" by (simp add: I\<^sub>c_def)
     moreover have C: "a\<^sub>c \<in> next_events P\<^sub>c []"
-     by (simp add: counterexample_next_events_2 T\<^sub>c_def)
+      by (simp add: counterexample_next_events_2 T\<^sub>c_def)
     ultimately have "(c\<^sub>c, [], [] @ [a\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by (rule rule_LR)
     hence D: "(c\<^sub>c, [], [a\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by simp
     have "b\<^sub>c \<in> range id" by simp
     moreover have "(id a\<^sub>c, b\<^sub>c) \<notin> I\<^sub>c" by (simp add: I\<^sub>c_def)
     ultimately have "(b\<^sub>c, [], [] @ [a\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id"
-     using C by (rule rule_LR)
+      using C by (rule rule_LR)
     hence "(id b\<^sub>c, [], [a\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by simp
     moreover have "b\<^sub>c \<in> next_events P\<^sub>c [] \<inter> next_events P\<^sub>c [a\<^sub>c]"
-     by (simp add: counterexample_next_events_2 T\<^sub>c_def)
+      by (simp add: counterexample_next_events_2 T\<^sub>c_def)
     ultimately have "(c\<^sub>c, [] @ [b\<^sub>c], [a\<^sub>c] @ [b\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id"
-     by (rule rule_WSC [OF D])
+      by (rule rule_WSC [OF D])
     hence "(c\<^sub>c, [b\<^sub>c], [a\<^sub>c, b\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by simp
     hence "(c\<^sub>c, [a\<^sub>c, b\<^sub>c], [b\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by (rule rule_sym)
     moreover have "a\<^sub>c \<in> next_events P\<^sub>c [b\<^sub>c]"
-     by (simp add: counterexample_next_events_2 T\<^sub>c_def)
+      by (simp add: counterexample_next_events_2 T\<^sub>c_def)
     with A and B have "(c\<^sub>c, [b\<^sub>c], [b\<^sub>c] @ [a\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id"
-     by (rule rule_LR)
+      by (rule rule_LR)
     hence "(c\<^sub>c, [b\<^sub>c], [b\<^sub>c, a\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by simp
     ultimately show "(c\<^sub>c, [a\<^sub>c, b\<^sub>c], [b\<^sub>c, a\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id"
-     by (rule rule_trans)
+      by (rule rule_trans)
   qed
   moreover have "c\<^sub>c \<in> next_events P\<^sub>c [a\<^sub>c, b\<^sub>c] \<inter> next_events P\<^sub>c [b\<^sub>c, a\<^sub>c]"
-   by (simp add: counterexample_next_events_2 T\<^sub>c_def)
+    by (simp add: counterexample_next_events_2 T\<^sub>c_def)
   ultimately have "(a\<^sub>c, [a\<^sub>c, b\<^sub>c] @ [c\<^sub>c], [b\<^sub>c, a\<^sub>c] @ [c\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id"
-   by (rule rule_WSC)
+    by (rule rule_WSC)
   thus "(a\<^sub>c, [a\<^sub>c, b\<^sub>c, c\<^sub>c], [b\<^sub>c, a\<^sub>c, c\<^sub>c]) \<in> rel_induct_aux P\<^sub>c I\<^sub>c id" by simp
 qed
 

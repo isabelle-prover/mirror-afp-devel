@@ -1360,18 +1360,18 @@ proof -
       case (Cons z zs')
       with A(3,4) xs ys have *:
         "\<not> P (a, z) \<or> \<not> P (y, a)" "successive P (arcs a a (z # zs' @ i # j # ys' @ [y]))"
-      by simp+
+        by simp_all
       from successive_decomp[OF _ this(2,1)] ys Cons arcs_decomp have **:
         "successive P (arcs i i (j # ys @ a # zs))"
-      by fastforce
+        by fastforce
       from Cons have "zs \<noteq> []" by auto
       then obtain w ws where ws: "zs = ws @ [w]" by (induction zs) auto
       with A(3,4) xs ys have *:
         "successive P (arcs a a (ws @ [w] @ i # j # ys' @ [y]))"
-      by simp
-      moreover from successive_successors[OF _ this] have "\<not> P (w, i) \<or> \<not> P (i, j)" by auto
-      ultimately show ?thesis
-      by (metis ** append_is_Nil_conv last.simps last_append list.distinct(2) list.sel(1)
+        by simp
+      from successive_successors[OF _ *] have "\<not> P (w, i) \<or> \<not> P (i, j)" by auto
+      with * show ?thesis
+        by (metis ** append_is_Nil_conv last.simps last_append list.distinct(2) list.sel(1)
                 successive_arcs_extend_last ws) 
     qed
   qed

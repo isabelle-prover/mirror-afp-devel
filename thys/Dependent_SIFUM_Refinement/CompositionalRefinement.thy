@@ -1522,19 +1522,19 @@ lemma conc_respects_priv:
   shows "x\<^sub>C \<notin> (snd (cms\<^sub>C ! n)) GuarNoWrite \<and> x\<^sub>C \<notin> (snd (cms\<^sub>C ! n)) GuarNoReadOrWrite"
 proof -
   from sound_mode_use\<^sub>A have "abs.respects_own_guarantees (cms\<^sub>A ! n)"
-    using  nlen len_eq abs.locally_sound_respects_guarantees 
+    using nlen len_eq abs.locally_sound_respects_guarantees 
     unfolding abs.sound_mode_use_def list_all_length
     by fastforce
-  with in_\<R>n have "conc.respects_own_guarantees (cms\<^sub>C ! n)"
+  with in_\<R>n have 1: "conc.respects_own_guarantees (cms\<^sub>C ! n)"
     using preserves
     unfolding preserves_local_guarantee_compliance_def
     by metis
-  moreover with eval\<^sub>C modified\<^sub>C have "\<not> conc.doesnt_modify (fst (cms\<^sub>C ! n)) x\<^sub>C"
+  with eval\<^sub>C modified\<^sub>C have 2: "\<not> conc.doesnt_modify (fst (cms\<^sub>C ! n)) x\<^sub>C"
     unfolding conc.doesnt_modify_def
     by (metis surjective_pairing)
-  moreover from this have "\<not> conc.doesnt_read_or_modify (fst (cms\<^sub>C ! n)) x\<^sub>C"
+  then have "\<not> conc.doesnt_read_or_modify (fst (cms\<^sub>C ! n)) x\<^sub>C"
     using conc.doesnt_read_or_modify_doesnt_modify by metis
-  ultimately show ?thesis
+  with 1 2 show ?thesis
     unfolding conc.respects_own_guarantees_def 
     by metis
 qed

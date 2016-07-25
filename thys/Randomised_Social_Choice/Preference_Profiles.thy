@@ -237,10 +237,10 @@ lemma pareto_losersE:
   assumes "x \<in> pareto_losers R"
   obtains y where "y \<in> carrier" "y \<succ>[Pareto(R)] x"
 proof -
-  from assms obtain y where "y \<succ>[Pareto(R)] x" unfolding pareto_losers_def by blast
-  moreover from this Pareto.not_outside[of x y] have "y \<in> carrier" 
+  from assms obtain y where y: "y \<succ>[Pareto(R)] x" unfolding pareto_losers_def by blast
+  with Pareto.not_outside[of x y] have "y \<in> carrier" 
     by (simp add: strongly_preferred_def)
-  ultimately show ?thesis using that by blast
+  with y show ?thesis using that by blast
 qed
 
 end

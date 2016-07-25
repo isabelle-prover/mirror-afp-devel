@@ -695,10 +695,10 @@ proof(rule iffI)
     from `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` cs
     have "\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>" by(auto dest: ts_okD)
     from mexec_eq_mexecd[OF wf `\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>`] `mexec P t (x, shr s) ta (x', m')`
-    have "mexecd P t (x, shr s) ta (x', m')" by simp
-    moreover from lifting_wf.redT_updTs_preserves[OF lifting_wf_correct_state_d[OF wf] cs, OF this `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`] `thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>`
+    have *: "mexecd P t (x, shr s) ta (x', m')" by simp
+    with lifting_wf.redT_updTs_preserves[OF lifting_wf_correct_state_d[OF wf] cs, OF this `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`] `thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>`
     have "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'" by simp
-    ultimately show ?thesis using normal 
+    with * show ?thesis using normal 
       by(cases s')(erule execd_mthr.redT_normal, auto)
   next
     case acquire thus ?thesis

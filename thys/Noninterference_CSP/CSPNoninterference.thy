@@ -413,18 +413,17 @@ next
     (if (u, D x') \<in> I \<or> (\<exists>v \<in> ?d'. (v, D x') \<in> I)
     then insert (D x') ?d'
     else ?d')"
-   by (simp only: sinks.simps)
+    by (simp only: sinks.simps)
   show "sinks I D u (x # xs @ [x']) = sinks I D u (xs @ [x'])"
   proof (cases "(u, D x') \<in> I \<or> (\<exists>v \<in> ?d. (v, D x') \<in> I)")
-    assume "(u, D x') \<in> I \<or> (\<exists>v \<in> ?d. (v, D x') \<in> I)"
-    moreover with B and C have "sinks I D u (x # xs @ [x']) =
-      insert (D x') ?d"
-     by simp
-    ultimately show ?thesis by simp
+    case True
+    with B and C have "sinks I D u (x # xs @ [x']) = insert (D x') ?d"
+      by simp
+    with True show ?thesis by simp
   next
-    assume "\<not> ((u, D x') \<in> I \<or> (\<exists>v \<in> ?d. (v, D x') \<in> I))"
-    moreover with B and C have "sinks I D u (x # xs @ [x']) = ?d" by simp
-    ultimately show ?thesis by simp
+    case False
+    with B and C have "sinks I D u (x # xs @ [x']) = ?d" by simp
+    with False show ?thesis by simp
   qed
 qed
 

@@ -38,7 +38,7 @@ proof -
     by (subst integral_measure_pmf[OF finite_carrier])
        (auto simp: lotteries_on_def)
   also have carrier: "carrier = \<Union>set (weak_ranking le)" by (simp add: weak_ranking_Union)
-  also from this have finite: "finite A" if "A \<in> set (weak_ranking le)" for A
+  also from carrier have finite: "finite A" if "A \<in> set (weak_ranking le)" for A
     using that by (blast intro!: finite_subset[OF _ finite_carrier, of A])
   hence "(\<Sum>a\<in>\<Union>set (weak_ranking le). u a * pmf p a) = 
            (\<Sum>A\<leftarrow>weak_ranking le. \<Sum>a\<in>A. u a * pmf p a)" (is "_ = listsum ?xs")

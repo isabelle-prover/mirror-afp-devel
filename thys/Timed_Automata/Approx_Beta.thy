@@ -2132,14 +2132,14 @@ proof (goal_cases)
   then have "Z \<subseteq> V" unfolding V'_def by auto
   from alpha_beta_steps[OF 1(1,3,2,4)] obtain Z''' where *:
     "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>\<^sub>\<alpha>* \<langle>l',Z'''\<rangle>" "Z' \<subseteq> Z'''"
-  by blast
+    by blast
   from alpha_interp.steps_z_alpha_closure_involutive[OF *(1) 1(3) \<open>Z \<subseteq> V\<close>] obtain Z'' where
-    "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>* \<langle>l',Z''\<rangle>" "Closure\<^sub>\<alpha> Z''' \<subseteq> Closure\<^sub>\<alpha> Z''" "Z'' \<subseteq> Z'''"
-  by blast
-  moreover with alpha_interp.closure_subs[OF alpha_interp.steps_z_alpha_V[OF *(1) \<open>Z \<subseteq> V\<close>]] 1(5)
-                alpha_interp.cla_empty_iff[OF alpha_interp.steps_z_V, OF this(1) \<open>Z \<subseteq> V\<close>] *(2)
+    Z'': "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>* \<langle>l',Z''\<rangle>" "Closure\<^sub>\<alpha> Z''' \<subseteq> Closure\<^sub>\<alpha> Z''" "Z'' \<subseteq> Z'''"
+    by blast
+  with alpha_interp.closure_subs[OF alpha_interp.steps_z_alpha_V[OF *(1) \<open>Z \<subseteq> V\<close>]] 1(5)
+    alpha_interp.cla_empty_iff[OF alpha_interp.steps_z_V, OF this(1) \<open>Z \<subseteq> V\<close>] *(2)
   have "Z'' \<noteq> {}" by auto
-  ultimately show ?thesis by auto
+  with Z'' show ?thesis by auto
 qed
 
 subsubsection \<open>Completeness\<close>

@@ -627,8 +627,8 @@ next
         by(rule List.list_all2_mono)(rule addr_loc_type_hext_mono[OF _ hext])
       moreover note calculation }
     from heap_copies_progress[OF this]
-    obtain obs' h''' where "heap_copies a a' als H'' obs' h'''" by blast
-    moreover note heap_copies_length[OF this]
+    obtain obs' h''' where *: "heap_copies a a' als H'' obs' h'''" by blast
+    moreover note heap_copies_length[OF *]
     moreover note heap_copy_loc_length[OF copy']
     moreover note heap_copies_length[OF `heap_copies a a' als h' obs h''`]
     ultimately show ?thesis using True by(auto intro!: heap_copies.Cons exI simp add: nth_append)

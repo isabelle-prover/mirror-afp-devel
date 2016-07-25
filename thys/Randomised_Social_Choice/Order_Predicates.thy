@@ -397,8 +397,8 @@ proof safe
   show "distinct xs"
   proof (subst distinct_conv_nth, safe)
     fix i j assume ij: "i < length xs" "j < length xs" "i \<noteq> j" "xs ! i = xs ! j"
-    moreover from this have "xs ! i \<inter> xs ! j = {}" by (intro is_weak_rankingD wf)
-    ultimately have "xs ! i = {}" by simp
+    then have "xs ! i \<inter> xs ! j = {}" by (intro is_weak_rankingD wf)
+    with ij have "xs ! i = {}" by simp
     with ij have "{} \<in> set xs" by (auto simp: set_conv_nth)
     moreover from wf ij have "{} \<notin> set xs" by (intro is_weak_ranking_nonempty wf)
     ultimately show False by contradiction

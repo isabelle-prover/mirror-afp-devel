@@ -1361,12 +1361,12 @@ next
   moreover have "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
                  \<and> rel_weakly_respects_barbs Rel (STCalWB SWB TWB)"
     apply (rule exI) using C1 C7 by blast
-  hence "enc_weakly_respects_barbs"
+  hence D1: "enc_weakly_respects_barbs"
       using enc_weakly_respects_barbs_iff_source_target_rel
     by simp
-  moreover hence "enc_weakly_respects_barb_set {success}"
+  moreover from D1 have "enc_weakly_respects_barb_set {success}"
     by simp
-  moreover have "rel_weakly_respects_barbs TRel TWB"
+  moreover have D2: "rel_weakly_respects_barbs TRel TWB"
   proof auto
     fix TP TQ x TP'
     assume "(TP, TQ) \<in> TRel"
@@ -1398,7 +1398,7 @@ next
         using STCalWB_reachesBarbST
       by blast
   qed
-  moreover from this have "rel_weakly_respects_barb_set TRel TWB {success}"
+  moreover from D2 have "rel_weakly_respects_barb_set TRel TWB {success}"
     by blast
   ultimately show "weakly_operational_corresponding TRel \<and> preorder TRel
    \<and> weak_reduction_correspondence_simulation TRel Target

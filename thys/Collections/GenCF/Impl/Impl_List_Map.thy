@@ -56,11 +56,11 @@ next
   from A have "finite (map_to_set m')" by (simp add: finite_map_to_set)
   from finite_distinct_list[OF this]
       obtain l' where l'_props: "distinct l'" "set l' = map_to_set m'" by blast
-  hence "distinct (map fst l')"
+  hence *: "distinct (map fst l')"
       by (force simp: distinct_map inj_on_def map_to_set_def)
-  moreover from map_of_map_to_set[OF this] and l'_props 
+  from map_of_map_to_set[OF this] and l'_props 
       have  "map_of l' = m'" by simp
-  ultimately have "(l',m') \<in> br map_of list_map_invar"
+  with * have "(l',m') \<in> br map_of list_map_invar"
       unfolding br_def list_map_invar_def o_def by simp
 
   moreover from B and C and l'_props 
@@ -520,21 +520,19 @@ unfolding is_map_to_list_def is_map_to_sorted_list_def
 proof (clarify)
   fix l m'
   assume "(l,m') \<in> \<langle>Rk,Rv\<rangle>list_map_rel"
-  then obtain l' where "(l,l')\<in>\<langle>\<langle>Rk,Rv\<rangle>prod_rel\<rangle>list_rel" 
-      and "(l',m')\<in>br map_of list_map_invar" 
-      unfolding list_map_rel_def by blast
-  moreover from this have "RETURN l' \<le> it_to_sorted_list 
-                               (key_rel (\<lambda>_ _. True)) (map_to_set m')"
+  then obtain l' where *: "(l,l')\<in>\<langle>\<langle>Rk,Rv\<rangle>prod_rel\<rangle>list_rel" "(l',m')\<in>br map_of list_map_invar" 
+    unfolding list_map_rel_def by blast
+  then have "RETURN l' \<le> it_to_sorted_list (key_rel (\<lambda>_ _. True)) (map_to_set m')"
       unfolding it_to_sorted_list_def
       apply (intro refine_vcg)
       unfolding br_def list_map_invar_def key_rel_def[abs_def]
       apply (auto intro: distinct_mapI simp: map_to_set_map_of)
       done
-  ultimately show 
+  with * show
       "\<exists>l'. (list_map_to_list l, l') \<in> \<langle>\<langle>Rk, Rv\<rangle>prod_rel\<rangle>list_rel \<and>
             RETURN l' \<le> it_to_sorted_list (key_rel (\<lambda>_ _. True)) 
                              (map_to_set m')"
-       unfolding list_map_to_list_def by force
+    unfolding list_map_to_list_def by force
 qed
 
 lemma pi_list_map[icf_proper_iteratorI]: 

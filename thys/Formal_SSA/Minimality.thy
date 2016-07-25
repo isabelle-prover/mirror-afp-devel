@@ -31,10 +31,10 @@ begin
       proof (rule, rule, rule)
         fix x' y'
         assume 2: "x' \<in> set (butlast xs)" "y' \<in> set (butlast ys)" and[simp]: "x' = y'"
-        from 2(1) obtain j where "xs ! j = x'" "j < length xs - 1" by (rule butlast_idx)
-        moreover from this have "j < length xs" by simp
-        moreover from 2(2) obtain k where "ys ! k = y'" "k < length ys - 1" by (rule butlast_idx)
-        moreover from this have "k < length ys" by simp
+        from 2(1) obtain j where j: "xs ! j = x'" "j < length xs - 1" by (rule butlast_idx)
+        moreover from j have "j < length xs" by simp
+        moreover from 2(2) obtain k where k: "ys ! k = y'" "k < length ys - 1" by (rule butlast_idx)
+        moreover from k have "k < length ys" by simp
         ultimately show False using 1[THEN bspec[where x=j], THEN bspec[where x=k]] by auto
       qed
     next

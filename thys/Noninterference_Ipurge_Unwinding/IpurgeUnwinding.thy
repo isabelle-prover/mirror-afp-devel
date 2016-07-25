@@ -746,8 +746,8 @@ proof (induction xs, simp, rule impI)
     (\<exists>v \<in> sources_aux I D U zs. (D x, v) \<in> I)"
   proof (cases "\<exists>v \<in> sources_aux I D U xs. (D x', v) \<in> I")
     case True
-    moreover from this have "x' = x" using B by simp
-    ultimately have "x' # xs = x # xs \<and>
+    then have "x' = x" using B by simp
+    with True have "x' # xs = x # xs \<and>
       ipurge_tr_rev_aux I D (sources_aux I D U (x # xs)) [] = [] \<and>
       (\<exists>v \<in> sources_aux I D U xs. (D x, v) \<in> I)"
      by simp
@@ -758,17 +758,17 @@ proof (induction xs, simp, rule impI)
     with A have "\<exists>ys zs. xs = ys @ x # zs \<and>
       ipurge_tr_rev_aux I D (sources_aux I D U (x # zs)) ys = [] \<and>
       (\<exists>v \<in> sources_aux I D U zs. (D x, v) \<in> I)" ..
-    then obtain ys and zs where "xs = ys @ x # zs \<and>
+    then obtain ys and zs where xs: "xs = ys @ x # zs \<and>
       ipurge_tr_rev_aux I D (sources_aux I D U (x # zs)) ys = [] \<and>
       (\<exists>v \<in> sources_aux I D U zs. (D x, v) \<in> I)"
      by blast
-    moreover from this have
+    then have
       "\<not> (\<exists>v \<in> sources_aux I D (sources_aux I D U (x # zs)) ys. (D x', v) \<in> I)"
      using False by (simp add: sources_aux_append)
     hence "ipurge_tr_rev_aux I D (sources_aux I D U (x # zs)) (x' # ys) =
       ipurge_tr_rev_aux I D (sources_aux I D U (x # zs)) ys"
      by simp
-    ultimately have "x' # xs = (x' # ys) @ x # zs \<and>
+    with xs have "x' # xs = (x' # ys) @ x # zs \<and>
       ipurge_tr_rev_aux I D (sources_aux I D U (x # zs)) (x' # ys) = [] \<and>
       (\<exists>v \<in> sources_aux I D U zs. (D x, v) \<in> I)"
      by (simp del: sources_aux.simps)
@@ -959,8 +959,8 @@ proof (induction xs arbitrary: ys, simp, rule impI, (erule conjE)+)
   show "ys = take (the (offset 0 x (x' # xs))) (x' # xs)"
   proof (cases ys)
     case Nil
-    moreover from this have "x' = x" using B by simp
-    ultimately show ?thesis by simp
+    then have "x' = x" using B by simp
+    with Nil show ?thesis by simp
   next
     case (Cons y ys')
     hence E: "xs = ys' @ x # zs" using B by simp
@@ -1027,15 +1027,14 @@ proof (induction xs, simp, simp only: append_Cons, rule impI)
       ipurge_tr_rev_aux I D (sources_aux I D U (x # ws)) vs = [] \<and>
       (\<exists>v \<in> sources_aux I D U ws. (D x, v) \<in> I)"
      by (rule ipurge_tr_rev_aux_first)
-    then obtain vs and ws where "x # xs @ ys = vs @ x # ws \<and>
+    then obtain vs and ws where *: "x # xs @ ys = vs @ x # ws \<and>
       ipurge_tr_rev_aux I D (sources_aux I D U (x # ws)) vs = [] \<and>
       (\<exists>v \<in> sources_aux I D U ws. (D x, v) \<in> I)"
      by blast
-    moreover from this have
-     "vs = take (the (offset 0 x (x # xs @ ys))) (x # xs @ ys)"
-     by (rule ipurge_tr_rev_aux_first_offset)
+    then have "vs = take (the (offset 0 x (x # xs @ ys))) (x # xs @ ys)"
+      by (rule ipurge_tr_rev_aux_first_offset)
     hence "vs = []" by simp
-    ultimately have "\<exists>v \<in> sources_aux I D U (xs @ ys). (D x, v) \<in> I" by simp
+    with * have "\<exists>v \<in> sources_aux I D U (xs @ ys). (D x, v) \<in> I" by simp
     hence "ipurge_tr_rev_aux I D U (xs @ ys) = ipurge_tr_rev_aux I D V xs"
      using C by simp
     with A show ?thesis ..
@@ -1051,14 +1050,14 @@ proof (induction xs, simp, simp only: append_Cons, rule impI)
         ipurge_tr_rev_aux I D (sources_aux I D V (x # ws)) vs = [] \<and>
         (\<exists>v \<in> sources_aux I D V ws. (D x, v) \<in> I)"
        by (rule ipurge_tr_rev_aux_first)
-      then obtain vs and ws where "x # xs = vs @ x # ws \<and>
+      then obtain vs and ws where *: "x # xs = vs @ x # ws \<and>
         ipurge_tr_rev_aux I D (sources_aux I D V (x # ws)) vs = [] \<and>
         (\<exists>v \<in> sources_aux I D V ws. (D x, v) \<in> I)"
        by blast
-      moreover from this have "vs = take (the (offset 0 x (x # xs))) (x # xs)"
-       by (rule ipurge_tr_rev_aux_first_offset)
+      then have "vs = take (the (offset 0 x (x # xs))) (x # xs)"
+        by (rule ipurge_tr_rev_aux_first_offset)
       hence "vs = []" by simp
-      ultimately have "\<exists>v \<in> sources_aux I D V xs. (D x, v) \<in> I" by simp
+      with * have "\<exists>v \<in> sources_aux I D V xs. (D x, v) \<in> I" by simp
       thus False using False by contradiction
     qed
     ultimately have "ipurge_tr_rev_aux I D U (xs @ ys) =
@@ -1945,17 +1944,17 @@ lemma secure_implies_failure_consistency_aux [rule_format]:
     ipurge_tr_rev_aux I D (D ` (X \<union> set zs)) ys = [] \<longrightarrow> (xs @ zs, X) \<in> failures P"
 proof (induction ys rule: rev_induct, simp_all, (rule impI)+)
   fix y ys
-  assume "ipurge_tr_rev_aux I D (D ` (X \<union> set zs)) (ys @ [y]) = []"
-  moreover from this have A: "\<not> (\<exists>v \<in> D ` (X \<union> set zs). (D y, v) \<in> I)"
-   by (cases "\<exists>v \<in> D ` (X \<union> set zs). (D y, v) \<in> I",
-    simp_all add: ipurge_tr_rev_aux_append)
-  ultimately have B: "ipurge_tr_rev_aux I D (D ` (X \<union> set zs)) ys = []"
-   by (simp add: ipurge_tr_rev_aux_append)
+  assume *: "ipurge_tr_rev_aux I D (D ` (X \<union> set zs)) (ys @ [y]) = []"
+  then have A: "\<not> (\<exists>v \<in> D ` (X \<union> set zs). (D y, v) \<in> I)"
+    by (cases "\<exists>v \<in> D ` (X \<union> set zs). (D y, v) \<in> I",
+        simp_all add: ipurge_tr_rev_aux_append)
+  with * have B: "ipurge_tr_rev_aux I D (D ` (X \<union> set zs)) ys = []"
+    by (simp add: ipurge_tr_rev_aux_append)
   assume "(xs @ ys @ y # zs, X) \<in> failures P"
   hence "(y # zs, X) \<in> futures P (xs @ ys)" by (simp add: futures_def)
   hence "(ipurge_tr I D (D y) zs, ipurge_ref I D (D y) zs X)
     \<in> futures P (xs @ ys)"
-   using S by (simp add: secure_def)
+    using S by (simp add: secure_def)
   moreover have "ipurge_tr I D (D y) zs = zs" using A by (simp add: ipurge_tr_all)
   moreover have "ipurge_ref I D (D y) zs X = X" using A by (rule ipurge_ref_all)
   ultimately have "(zs, X) \<in> futures P (xs @ ys)" by simp
@@ -1965,7 +1964,7 @@ proof (induction ys rule: rev_induct, simp_all, (rule impI)+)
     (xs @ zs, X) \<in> failures P"
   hence "ipurge_tr_rev_aux I D (D ` (X \<union> set zs)) ys = [] \<longrightarrow>
     (xs @ zs, X) \<in> failures P"
-   using C ..
+    using C ..
   thus "(xs @ zs, X) \<in> failures P" using B ..
 qed
 

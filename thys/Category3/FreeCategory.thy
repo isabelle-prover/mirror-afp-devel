@@ -265,14 +265,14 @@ begin
       next
       fix f g h
       assume gf: "comp g f \<noteq> null" and hgf: "comp h (comp g f) \<noteq> null"
-      have "isArr h \<and> isArr g"
+      have isArr: "isArr h \<and> isArr g"
         using gf hgf by (metis comp_def null_char)
-      moreover from this have "Dom h = Cod g"
+      then have "Dom h = Cod g"
         using gf hgf Cod_mkArr [of "Dom g" "Cod g" "Path g"]
         by (metis (full_types) Cod_mkArr comp_def null_char)
-      ultimately show "comp h g \<noteq> null"
+      with isArr show "comp h g \<noteq> null"
         using comp_def null_char mkArr_not_Null G.path_concat by auto
-      next
+    next
       fix f g h
       assume gf: "comp g f \<noteq> null" and hg: "comp h g \<noteq> null"
       have 1: "isArr h \<and> isArr g \<and> isArr f \<and> Dom h = Cod g \<and> Dom g = Cod f"
@@ -441,13 +441,13 @@ begin
       show "arr f \<Longrightarrow> f \<in> mkIde ` Obj"
       proof -
         assume f: "arr f"
-        obtain A where "A \<in> Obj \<and> Rep_arr f = FC.mkArr A A []"
+        obtain A where A: "A \<in> Obj \<and> Rep_arr f = FC.mkArr A A []"
           using f AC.arr_char [of f] FC_arr_char [of "Rep_arr f"]
                 FC.ide_char FC_seq_char FC.Dom_in_Obj FC.arr_char FC.dom_char comp_def FC.ideD(3)
           by auto
-        moreover from this have "f = mkIde A"
+        then have "f = mkIde A"
           by (metis Rep_arr_inverse mkIde_def)
-        ultimately show ?thesis by auto
+        with A show ?thesis by auto
       qed
       show "f \<in> mkIde ` Obj \<Longrightarrow> arr f"
         using FC_arr_char mkIde_def AC.arr_char AC.domain_closed AC.rep_abs FC.arr_empty

@@ -292,7 +292,7 @@ proof (induction "length xs" arbitrary: xs rule: less_induct)
           by (auto simp add: x y sign_changes_Cons_Cons_same zero_less_mult_iff)
       next
         assume xy: "x*y < 0"
-        moreover from this have "sgn x = - sgn y" by (auto simp: mult_less_0_iff)
+        moreover from xy have "sgn x = - sgn y" by (auto simp: mult_less_0_iff)
         moreover have "even (sign_changes (y # xs'')) \<longleftrightarrow> 
                          sgn (hd (y # xs'')) = sgn (last (y # xs''))"
           using xy less.prems by (intro less) (auto simp: x y)

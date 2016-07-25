@@ -599,11 +599,11 @@ lemma steps_z_alpha_sound:
 proof goal_cases
   case 1
   from steps_z_alpha_closure_involutive[OF 1(1-3)] obtain Z'' where
-    "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>* \<langle>l',Z''\<rangle>" "Closure\<^sub>\<alpha> Z' \<subseteq> Closure\<^sub>\<alpha> Z''" "Z'' \<subseteq> Z'"
-  by blast
-  moreover with 1(4) cla_empty_iff[OF steps_z_alpha_V[OF 1(1)], OF 1(3)]
+    Z'': "A \<turnstile> \<langle>l, Z\<rangle> \<leadsto>* \<langle>l',Z''\<rangle>" "Closure\<^sub>\<alpha> Z' \<subseteq> Closure\<^sub>\<alpha> Z''" "Z'' \<subseteq> Z'"
+    by blast
+  with 1(4) cla_empty_iff[OF steps_z_alpha_V[OF 1(1)], OF 1(3)]
     cla_empty_iff[OF steps_z_V, OF this(1) 1(3)] have "Z'' \<noteq> {}" by auto
-  ultimately show ?case by auto
+  with Z'' show ?case by auto
 qed
 
 lemma step_z_mono:

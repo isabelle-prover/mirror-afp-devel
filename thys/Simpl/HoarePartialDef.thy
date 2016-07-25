@@ -176,12 +176,11 @@ proof (rule nvalidI)
   next
     case False
     with exec P validn
-    have "t' \<in> Normal ` Q \<union> Abrupt ` A"
+    have *: "t' \<in> Normal ` Q \<union> Abrupt ` A"
       by (auto simp add: nvalid_def)
-    moreover
-    from this t' have "t'=t"
+    with t' have "t'=t"
       by auto
-    ultimately show ?thesis
+    with * show ?thesis
       by simp
   qed
 qed
@@ -209,12 +208,11 @@ proof (rule validI)
   next
     case False
     with exec P valid
-    have "t' \<in> Normal ` Q \<union> Abrupt ` A"
+    have *: "t' \<in> Normal ` Q \<union> Abrupt ` A"
       by (auto simp add: valid_def)
-    moreover
-    from this t' have "t'=t"
+    with t' have "t'=t"
       by auto
-    ultimately show ?thesis
+    with * show ?thesis
       by simp
   qed
 qed

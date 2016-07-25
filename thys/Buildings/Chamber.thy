@@ -2934,12 +2934,12 @@ qed
 lemma the_wall_betw_self_empty: "the_wall_betw C C = {}"
 proof-
   {
-    assume "the_wall_betw C C \<noteq> {}"
-    moreover from this obtain f g
+    assume *: "the_wall_betw C C \<noteq> {}"
+    then obtain f g
       where "(f,g)\<in>foldpairs" "the_wall_betw C C = {f\<turnstile>\<C>,g\<turnstile>\<C>}"
       using the_wall_betw_nempty(1)[of C C]
       by    blast
-    ultimately have False
+    with * have False
       using the_wall_betw_nempty(2)[of C C] foldpairs_def
             OpposedThinChamberComplexFoldings.halfchsys_decomp(2)[
               of X

@@ -86,9 +86,9 @@ lemma reachable_subterms:
     fix \<xi> p a \<xi>' p'
     assume "(\<xi>, p) \<in> reachable A I"
        and "\<exists>pn. p \<in> subterms (\<Gamma> pn)"
-       and "((\<xi>, p), a, (\<xi>', p')) \<in> trans A"
+       and *: "((\<xi>, p), a, (\<xi>', p')) \<in> trans A"
        and "I a"
-    moreover from this(3) and assms(3) have "((\<xi>, p), a, (\<xi>', p')) \<in> seqp_sos \<Gamma>" by simp
+    moreover from * and assms(3) have "((\<xi>, p), a, (\<xi>', p')) \<in> seqp_sos \<Gamma>" by simp
     ultimately show "\<exists>pn. p' \<in> subterms (\<Gamma> pn)"
     using \<open>wellformed \<Gamma>\<close>
       by (auto elim: seqp_sos_subterms)
