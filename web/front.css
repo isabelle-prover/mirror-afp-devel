@@ -318,7 +318,10 @@ pre.code {
   height: 400px;
   width: 400px;
   background: white;
-  margin-top: 20px;
-  margin-bottom: 40px;
+  margin: 20px auto 40px auto;
   border: 1px solid black;
+}
+
+#most_used td {
+  padding: 0 10px 0 0;
 }
