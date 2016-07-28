@@ -1,8 +1,9 @@
 section {* \isaheader{Generic Compare Algorithms} *}
 theory Gen_Comp
 imports 
-  "../Intf/Intf_Comp" 
+  "../Intf/Intf_Comp"
   "../../../Automatic_Refinement/Automatic_Refinement"
+  "~~/src/HOL/Library/Product_Lexorder"
 begin
 
 subsection {* Order for Product *}

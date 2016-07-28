@@ -19,7 +19,6 @@ imports Main
   "~~/src/HOL/Library/Multiset"
   "~~/src/HOL/ex/Quicksort"
   "~~/src/HOL/Library/Option_ord"
-  "~~/src/HOL/Library/Product_Lexorder"
   "~~/src/HOL/Library/Infinite_Set"
   "List_More"
 begin
