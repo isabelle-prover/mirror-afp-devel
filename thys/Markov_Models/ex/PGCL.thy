@@ -206,7 +206,7 @@ proof (rule antisym)
   also have "\<dots> = lfp ?F s"
     by (rewrite lfp_rolling[symmetric, of "\<lambda>F s. if g s then F (c, s) else f s"  "\<lambda>F s. step.E_inf s (r F)"])
        (auto simp: mono_def le_fun_def sup_apply[abs_def] if_distrib[of "max 0"] max.coboundedI2 max.absorb2
-                intro!: step.E_inf_mono mono_r cong del: if_cong)
+                intro!: step.E_inf_mono mono_r cong del: if_weak_cong)
   finally show "step.E_inf (While g c, s) (r f) \<le> \<dots>"
     .
 qed
