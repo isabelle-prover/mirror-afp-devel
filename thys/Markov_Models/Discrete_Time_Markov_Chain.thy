@@ -409,7 +409,7 @@ lemma measurable_walk[measurable]: "walk s \<in> measurable D S"
 proof -
   note measurable_compose[OF measurable_snth, intro!]
   note measurable_compose[OF measurable_component_singleton, intro!]
-  note if_cong[cong del]
+  note if_weak_cong[cong del]
   note measurable_g = measurable_compose_countable'[OF _ _ countable_reachable]
 
   def n \<equiv> "0::nat"
@@ -483,7 +483,7 @@ proof -
   also have "\<dots> = (\<integral>\<^sup>+d. (\<integral>\<^sup>+\<omega>. f (d s ## walk (d s) \<omega>) * indicator {t. t \<in> K s} (d s) \<partial>D) \<partial>\<Pi>\<^sub>M i\<in>UNIV. K i)"
     apply (rule nn_integral_cong_AE)
     apply (subst walk.ctr)
-    apply (simp cong del: if_cong)
+    apply (simp cong del: if_weak_cong)
     apply (intro UNIV_I AE_component)
     apply (auto simp: AE_measure_pmf_iff)
     done

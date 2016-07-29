@@ -219,7 +219,7 @@ lemma Extend_SNOC[Presb_simps]: "\<lbrakk>#\<^sub>V \<AA> = length x; len P \<le
     SNOC (extend k (test_bit P (Length \<AA>)) x) (Extend k 0 \<AA> (cut_bits (Length \<AA>) P))"
   apply transfer
   apply (auto simp: cut_bits_def extend_def test_bit_def nth_Cons' max_absorb1 len_le_iff
-    split: if_splits cong del: if_cong)
+    split: if_splits cong del: if_weak_cong)
    apply (metis mod_less mod_mult2_eq One_nat_def add.commute mult.commute mult.left_neutral power_Suc2)
   apply (metis (no_types) mod_less mod_mult2_eq One_nat_def mod_div_equality2 mod_div_trivial mod_mod_trivial mult.commute parity_cases)
   done
@@ -352,7 +352,7 @@ lemma scalar_product_Nil2[simp]: "scalar_product xs [] = 0"
 
 lemma scalar_product_Cons[simp]:
   "scalar_product xs (y # ys) = (case xs of x # xs \<Rightarrow> x * y + scalar_product xs ys | [] \<Rightarrow> 0)"
-  by (cases xs) (simp, auto simp: scalar_product_def cong del: if_cong)
+  by (cases xs) (simp, auto simp: scalar_product_def cong del: if_weak_cong)
 
 lemma scalar_product_append[simp]: "scalar_product ns (xs @ ys) =
   scalar_product (take (length xs) ns) xs + scalar_product (drop (length xs) ns) ys"
@@ -378,7 +378,8 @@ qed
 
 lemma scalar_product_eq0: "\<forall>c\<in>set ns. c = 0 \<Longrightarrow> scalar_product ns is = 0"
 proof (induct "is" arbitrary: "ns")
-  case Cons then show ?case by (cases ns) (auto simp: scalar_product_def cong del: if_cong)
+  case Cons
+  then show ?case by (cases ns) (auto simp: scalar_product_def cong del: if_weak_cong)
 qed (simp add: scalar_product_def)
 
 lemma nullable0_satisfies0[Presb_simps]: "Length \<AA> = 0 \<Longrightarrow> nullable0 a = \<AA> \<Turnstile>0 a"

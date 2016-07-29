@@ -8162,7 +8162,7 @@ next
       by(auto simp add: tailmarked_def headmarked_def nth_Cons split: nat.split)
     hence "{i. i < length p \<and> inmarked (p ! i)} \<union> {i. i < length (x # butlast p) \<and> outmarked ((x # butlast p) ! i)} = {i. i < length p}"
       (is "?in \<union> ?out = _") using nNil
-      by(force simp add: nth_Cons' nth_butlast elim: meta_allE[where x=0] cong del: nat.case_cong)
+      by(force simp add: nth_Cons' nth_butlast elim: meta_allE[where x=0] cong del: old.nat.case_cong_weak)
     hence "length p + 2 = card (?in \<union> ?out) + 2" by simp
     also have "\<dots> \<le> (card ?in + 1) + (card ?out + 1)" by(simp add: card_Un_le)
     also have "card ?in = card ((\<lambda>i. Inl (i + 1) :: _ + nat) ` ?in)"
