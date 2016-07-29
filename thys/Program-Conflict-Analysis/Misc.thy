@@ -512,7 +512,7 @@ subsubsection {* Pointwise ordering *}
   lemma mset_le_single_conv1[simp]: "(M+{#a#} \<le># {#b#}) = (M={#} \<and> a=b)"
   proof (auto) 
     assume A: "M+{#a#} \<le># {#b#}" thus "a=b" by (auto dest: mset_le_decr_left2)
-    with A mset_subset_eq_mono_add_right_cancel[of M "{#a#}" "{#}", simplified] show "M={#}" by blast
+    with A show "M={#}" by simp
   qed
   
   lemma mset_le_single_conv2[simp]: "({#a#}+M \<le># {#b#}) = (M={#} \<and> a=b)"
