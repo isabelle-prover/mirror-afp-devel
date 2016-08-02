@@ -34,15 +34,15 @@
 
 
 <table>
-<tr><td>Number of Articles:</td><td class="statsnumber">295</td></tr>
+<tr><td>Number of Articles:</td><td class="statsnumber">296</td></tr>
 <tr><td>Number of Authors:</td><td class="statsnumber">213</td></tr>
-<tr><td>Number of lemmas:</td><td class="statsnumber">~79,100</td></tr>
-<tr><td>Lines of Code:</td><td class="statsnumber">~1,331,900</td></tr>
+<tr><td>Number of lemmas:</td><td class="statsnumber">~79,700</td></tr>
+<tr><td>Lines of Code:</td><td class="statsnumber">~1,351,600</td></tr>
 </table>
 <script>
 var years = [2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016];
-var no_articles = [14, 22, 29, 37, 52, 64, 86, 103, 128, 151, 208, 253, 295];
-var no_loc = [61100.0, 96900.0, 131400.0, 235500.0, 350400.0, 432300.0, 493900.0, 544700.0, 692100.0, 781300.0, 974600.0, 1147200.0, 1331900.0];
+var no_articles = [14, 22, 29, 37, 52, 64, 86, 103, 128, 151, 208, 253, 296];
+var no_loc = [61100.0, 96900.0, 131400.0, 235500.0, 350400.0, 432300.0, 493900.0, 544700.0, 711100.0, 800400.0, 994100.0, 1166700.0, 1351600.0];
 var no_authors = [14, 11, 6, 6, 10, 6, 20, 12, 17, 16, 37, 20, 38];
 var no_authors_series = [14, 25, 31, 37, 47, 53, 73, 85, 102, 118, 155, 175, 213];
 </script>

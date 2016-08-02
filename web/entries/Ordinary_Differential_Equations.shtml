@@ -43,14 +43,32 @@
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-We formalize initial value problems (IVPs) of ODEs and prove the existence of a unique solution, i.e. the Picard-Lindelöf theorem. We introduce general one-step methods for numerical approximation of the solution and provide an analysis regarding the local and global error of one-step methods. We give an executable specification of the Euler method to approximate the solution of IVPs and prove an explicit bound for the global error. We use arbitrary-precision floating-point numbers and also handle rounding errors when we truncate the numbers for efficiency reasons.
+
+<p>Session HOL-ODE formalizes ordinary differential equations (ODEs) and initial value
+problems. This work comprises proofs for local and global existence of unique solutions
+(Picard-Lindelöf theorem). Moreover, it contains a formalization of the (continuous or even
+differentiable) dependency of the flow on initial conditions as the <i>flow</i> of ODEs.</p>
+<p>
+Not in the generated document are the following sessions:
+<ul>
+<li> HOL-ODE-Refinement:
+Intermediate session combining \texttt{HOL-ODE} and Lammich's (automatic) refinement framework.</li>
+<li> HOL-ODE-Numerics:
+Rigorous numerical algorithms for computing enclosures of solutions based on Runge-Kutta methods
+and affine arithmetic. Reachability analysis with splitting and reduction at hyperplanes.</li>
+<li> HOL-ODE-Examples:
+Applications of the numerical algorithms to concrete systems of ODEs (e.g., van der Pol and Lorenz
+attractor).</li>
+</ul>
+</p>
         </td></tr>
 
     <tr><td class="datahead" valign="top">Change history:</td>
         <td class="abstract">
 
 [2014-02-13]: added an implementation of the Euler method based on affine arithmetic<br>
-[2016-04-14]: added flow and variational equation
+[2016-04-14]: added flow and variational equation<br>
+[2016-08-03]: numerical algorithms for reachability analysis (using second-order Runge-Kutta methods, splitting, and reduction) implemented using Lammich's framework for automatic refinement
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
@@ -72,7 +90,7 @@ We formalize initial value problems (IVPs) of ODEs and prove the existence of a 
 
 
     <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="Affine_Arithmetic.shtml">Affine_Arithmetic</a></td></tr>
+        <td class="data"><a href="Affine_Arithmetic.shtml">Affine_Arithmetic</a>, <a href="Automatic_Refinement.shtml">Automatic_Refinement</a>, <a href="Collections.shtml">Collections</a>, <a href="Refine_Monadic.shtml">Refine_Monadic</a>, <a href="Show.shtml">Show</a></td></tr>
 
 
 
