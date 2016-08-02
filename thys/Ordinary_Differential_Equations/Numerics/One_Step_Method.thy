@@ -1,4 +1,4 @@
-section \<open>One-Step Methods \label{sec:osm}\<close>
+section\<open>One-Step Methods\<close>
 theory One_Step_Method
 imports
   "../IVP/Initial_Value_Problem"
@@ -302,11 +302,14 @@ next
     - max_stepsize j ^ p * B / L"
     using \<open>B \<ge> 0\<close> grid_stepsize_nonneg \<open>p > 0\<close> \<open>L\<ge>0\<close>
     apply (cases "L \<noteq> 0")
-     apply (simp add: field_simps)
-    apply (cases "max_stepsize j = 0")
-     apply simp
-    by (metis IH1 abs_not_less_zero abs_of_pos divide_zero_left less_eq_real_def max_stepsize_nonneg
-      mult_zero_right real_root_zero)
+    subgoal by (simp add: field_simps)
+    subgoal
+      apply (cases "max_stepsize j = 0")
+      subgoal by simp
+      subgoal by (metis IH1 abs_not_less_zero abs_of_pos divide_zero_left less_eq_real_def max_stepsize_nonneg
+            mult_zero_right real_root_zero)
+      done
+    done
   also
   have "B * (max_stepsize j ^ p * (exp (L * (t j - t 0) + 1) *
     (1 + L * (t (Suc j) - t j)))) / L
@@ -329,7 +332,7 @@ next
   finally
   have "dist (x t (Suc j)) (grid_function (discrete_evolution \<psi>) x0 t (Suc j))
     \<le> B / L * (exp (L * (t (Suc j) - t 0) + 1) - 1) *
-    max_stepsize j ^ p" by (simp add: algebra_simps field_simps)
+    max_stepsize j ^ p" by (simp add: algebra_simps)
   also have "... \<le> B / L * (exp (L * (t (Suc j) - t 0) + 1) - 1) *
     max_stepsize (Suc j) ^ p"
     using \<open>B\<ge>0\<close>\<open>L\<ge>0\<close> max_stepsize_nonneg
@@ -365,8 +368,8 @@ proof -
   also
   have "... \<le> root p (\<bar>s\<bar> * L / B / (exp (L * (t1 - t 0) + 1) - 1))"
     using assms
-    apply (cases "B = 0", simp)
-    apply (cases "L = 0", simp)
+    apply (cases "B = 0", force)
+    apply (cases "L = 0", force)
     by (auto simp add: mult_le_cancel_left1
              intro!: divide_right_mono add_increasing mult_left_mono)
   finally
@@ -389,10 +392,10 @@ proof -
   from consistent have consistence_error: "dist (x (t j + stepsize j))
       (discrete_evolution incr (t j + stepsize j) (t j) (x (t j)))
       \<le> B * (stepsize j ^ (p + 1))"
-    if "t (Suc j) \<le> t1" for j :: nat
+      if "t (Suc j) \<le> t1" for j :: nat
     apply (rule consistentD [OF _ grid_stepsize_nonneg])
-    using \<open>t (Suc j) \<le> t1\<close> grid_mono[of j "Suc j"] grid_from grid_interval_notempty 
-      by (auto simp add: stepsize_def)
+    using \<open>t (Suc j) \<le> t1\<close> grid_mono[of j "Suc j"] grid_from grid_interval_notempty
+    by (auto simp add: stepsize_def)
   have lipschitz_grid: "dist (incr (stepsize j) (t j) (x (t j)))
     (incr (stepsize j) (t j)
     (grid_function (discrete_evolution incr) (x (t 0)) t j))
@@ -407,14 +410,15 @@ proof -
       using grid_stepsize_nonneg grid_mono \<open>t (Suc j) \<le> t1\<close>
       by (simp add: stepsize_def)
     moreover
-    have "t j \<in> {t 0..t1}" using grid[of j] \<open>t (Suc j) \<le> t1\<close>
+    have t: "t j \<in> {t 0..t1}" using grid[of j] \<open>t (Suc j) \<le> t1\<close>
       grid_mono[of j "Suc j"] grid_ge_min by simp
     moreover
-    hence "x (t j) \<in> cball (x (t j)) \<bar>r\<bar>" by simp
+    have "x (t j) \<in> cball (x (t j)) \<bar>r\<bar>" by simp
     moreover
-    hence "grid_function (discrete_evolution incr) (x (t 0)) t j \<in>
-      cball (x (t j)) \<bar>r\<bar>" using in_K by simp
-    ultimately show ?thesis
+    have  "grid_function (discrete_evolution incr) (x (t 0)) t j \<in>
+      cball (x (t j)) \<bar>r\<bar>" using in_K mem_cball by blast
+    ultimately
+    show ?thesis
       using lipschitz_incr grid_from
       unfolding lipschitz_def
       by blast
@@ -500,7 +504,7 @@ proof -
     also have "... \<le> \<bar>r/2\<bar>" using max_stepsize_nonneg grid_interval_notempty max_step
       consistent_nonneg lipschitz_nonneg order_pos
       grid_mono \<open>t j \<le> t1\<close> t0_le
-      apply (cases "L = 0", simp)
+      apply (cases "L = 0", force)
       by (intro stepsize_inverse) auto
     finally show ?thesis .
   qed
@@ -561,7 +565,7 @@ proof -
         grid_ge_min
         grid_stepsize_nonneg
         grid_mono[of j]
-      by (intro lipschitz_incr[THEN lipschitzD]) (auto simp: stepsize_def)
+      by (intro lipschitz_incr[THEN lipschitzD]) (auto simp: stepsize_def mem_cball)
   next
     show "dist (grid_function (discrete_evolution incrs) (x (t 0) + s0) t 0)
       (x (t 0))
@@ -602,12 +606,12 @@ lemma stability:
    (grid_function (discrete_evolution incr) (x (t 0)) t j) \<le>
      B / L * (exp (L * (t1 - (t 0)) + 1) - 1) * max_stepsize j ^ p"
 proof -
-  note fg' = incr_approx
-  define s0 where "s0 = x0' - x (t 0)"
+   note fg' = incr_approx
+  define s0 where "s0 \<equiv> x0' - x (t 0)"
   hence x0': "x0' = x (t 0) + s0"
     by simp
-  define s where "s x xa xb = incr' x xa xb - incr x xa xb" for x xa xb
-  define incrs where "incrs h t x = incr h t x + s h t x" for h t x
+  define s where "s \<equiv> \<lambda>x xa xb. (incr' x xa xb) - incr x xa xb"
+  define incrs where "incrs \<equiv> \<lambda>h t x. incr h t x + s h t x"
   have s: "incr' = incrs"
     by (simp add: s_def incrs_def [abs_def])
   interpret c: stable_one_step t1 x incr p B r L t s s0
@@ -620,10 +624,8 @@ proof -
              (x (t 0) + s0) t j))
           \<le> B * stepsize j ^ p"
       unfolding s_def dist_norm[symmetric]
-      apply (simp only: dist_commute)
-      using \<open>t j \<le> t1\<close>
-      by (rule fg')
-    thus "norm
+      by (simp only: dist_commute fg'[OF \<open>t j \<le> t1\<close>])
+    then show "norm
          (s (stepsize j) (t j)
            (grid_function (discrete_evolution (\<lambda>h t x. incr h t x + s h t x))
              (x (t 0) + s0) (\<lambda>x. (t x)) j))

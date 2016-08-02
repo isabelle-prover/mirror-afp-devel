@@ -3,6 +3,97 @@ theory Initial_Value_Problem
 imports "../ODE_Auxiliarities"
 begin
 
+lemma closed_segment_translation_zero: "z \<in> {z + a--z + b} \<longleftrightarrow> 0 \<in> {a -- b}"
+  by (metis add.right_neutral closed_segment_translation_eq)
+
+lemma closed_segment_subset_interval: "is_interval T \<Longrightarrow> a \<in> T \<Longrightarrow> b \<in> T \<Longrightarrow> closed_segment a b \<subseteq> T"
+  by (rule closed_segment_subset) (auto intro!: closed_segment_subset is_interval_convex)
+
+definition half_open_segment::"'a::real_vector \<Rightarrow> 'a \<Rightarrow> 'a set" ("(1{_--<_})")
+  where "half_open_segment a b = {a -- b} - {b}"
+
+lemma half_open_segment_real:
+  fixes a b::real
+  shows "{a --< b} = (if a \<le> b then {a ..< b} else {b <.. a})"
+  by (auto simp: half_open_segment_def closed_segment_real)
+
+lemma closure_half_open_segment:
+  fixes a b::real
+  shows "closure {a --< b} = (if a = b then {} else {a -- b})"
+  unfolding closed_segment_real if_distrib half_open_segment_real
+  unfolding cond_application_beta
+  by simp
+
+lemma half_open_segment_subset[intro, simp]:
+  "{t0--<t1} \<subseteq> {t0 -- t1}"
+  "x \<in> {t0--<t1} \<Longrightarrow> x \<in> {t0 -- t1}"
+  by (auto simp: half_open_segment_def)
+
+lemma half_open_segment_closed_segmentI:
+  "t \<in> {t0 -- t1} \<Longrightarrow> t \<noteq> t1 \<Longrightarrow> t \<in> {t0 --< t1}"
+  by (auto simp: half_open_segment_def)
+
+lemma islimpt_half_open_segment:
+  fixes t0 t1 s::real
+  assumes "t0 \<noteq> t1" "s \<in> {t0--t1}"
+  shows "s islimpt {t0--<t1}"
+proof -
+  have "s islimpt {t0..<t1}" if "t0 \<le> s" "s \<le> t1" for s
+  proof -
+    have *: "{t0..<t1} - {s} = {t0..<s} \<union> {s<..<t1}"
+      using that by auto
+    show ?thesis
+      using that \<open>t0 \<noteq> t1\<close> *
+      by (cases "t0 = s") (auto simp: islimpt_in_closure)
+  qed
+  moreover have "s islimpt {t1<..t0}" if "t1 \<le> s" "s \<le> t0" for s
+  proof -
+    have *: "{t1<..t0} - {s} = {t1<..<s} \<union> {s<..t0}"
+      using that by auto
+    show ?thesis
+      using that \<open>t0 \<noteq> t1\<close> *
+      by (cases "t0 = s") (auto simp: islimpt_in_closure)
+  qed
+  ultimately show ?thesis using assms
+    by (auto simp: half_open_segment_real closed_segment_real)
+qed
+
+lemma
+  mem_half_open_segment_eventually_in_closed_segment:
+  fixes t::real
+  assumes "t \<in> {t0--<t1'}"
+  shows "\<forall>\<^sub>F t1' in at t1' within {t0--<t1'}. t \<in> {t0--t1'}"
+  unfolding half_open_segment_real
+proof (split if_split, safe)
+  assume le: "t0 \<le> t1'"
+  with assms have t: "t0 \<le> t" "t < t1'"
+    by (auto simp: half_open_segment_real)
+  then have "\<forall>\<^sub>F t1' in at t1' within {t0..<t1'}. t0 \<le> t"
+    by simp
+  moreover
+  from tendsto_ident_at \<open>t < t1'\<close>
+  have "\<forall>\<^sub>F t1' in at t1' within {t0..<t1'}. t < t1'"
+    by (rule order_tendstoD)
+  ultimately show "\<forall>\<^sub>F t1' in at t1' within {t0..<t1'}. t \<in> {t0--t1'}"
+    by eventually_elim (auto simp add: closed_segment_real)
+next
+  assume le: "\<not> t0 \<le> t1'"
+  with assms have t: "t \<le> t0" "t1' < t"
+    by (auto simp: half_open_segment_real)
+  then have "\<forall>\<^sub>F t1' in at t1' within {t1'<..t0}. t \<le> t0"
+    by simp
+  moreover
+  from tendsto_ident_at \<open>t1' < t\<close>
+  have "\<forall>\<^sub>F t1' in at t1' within {t1'<..t0}. t1' < t"
+    by (rule order_tendstoD)
+  ultimately show "\<forall>\<^sub>F t1' in at t1' within {t1'<..t0}. t \<in> {t0--t1'}"
+    by eventually_elim (auto simp add: closed_segment_real)
+qed
+
+lemma closed_segment_half_open_segment_subsetI:
+  fixes x::real shows "x \<in> {t0--<t1} \<Longrightarrow> {t0--x} \<subseteq> {t0--<t1}"
+  by (auto simp: half_open_segment_real closed_segment_real split: if_split_asm)
+
 lemma dist_component_le:
   fixes x y::"'a::euclidean_space"
   assumes "i \<in> Basis"
@@ -21,7 +112,7 @@ lemma cball_in_cbox:
 proof safe
   fix x i::'a assume "i \<in> Basis" "x \<in> cball y r"
   with dist_component_le[OF \<open>i \<in> Basis\<close>, of y x]
-  have "dist (y \<bullet> i) (x \<bullet> i) \<le> r" by simp
+  have "dist (y \<bullet> i) (x \<bullet> i) \<le> r" by (simp add: mem_cball)
   thus "(y - setsum (op *\<^sub>R r) Basis) \<bullet> i \<le> x \<bullet> i"
     "x \<bullet> i \<le> (y + setsum (op *\<^sub>R r) Basis) \<bullet> i"
     by (auto simp add: inner_diff_left inner_add_left inner_setsum_left
@@ -40,10 +131,12 @@ proof
   hence "infnorm x \<le> r"
     by (auto simp: infnorm_def mem_box intro!: cSup_least)
   finally show "x \<in> cball 0 (sqrt(DIM('a)) * r)"
-    by (auto simp: dist_norm mult_left_mono)
+    by (auto simp: dist_norm mult_left_mono mem_cball)
 qed
 
-subsection \<open>Lipschitz continuity \label{sec:lipschitz}\<close>
+
+subsection \<open>Lipschitz continuity\<close>\<comment>\<open>TODO: move to \<open>Multivariate_Analysis\<close>?!\<close>
+text\<open>\label{sec:lipschitz}\<close>
 
 definition lipschitz
   where "lipschitz t f L \<longleftrightarrow> (0 \<le> L \<and> (\<forall>x \<in> t. \<forall>y\<in>t. dist (f x) (f y) \<le> L * dist x y))"
@@ -65,12 +158,25 @@ lemma lipschitz_nonneg:
   shows "0 \<le> L"
 using assms unfolding lipschitz_def by auto
 
+lemma lipschitz_mono:
+  assumes "lipschitz D f M"
+  assumes "D' \<subseteq> D" "M \<le> L"
+  shows "lipschitz D' f L"
+proof (rule lipschitzI)
+  from lipschitz_nonneg[OF assms(1)] \<open>M \<le> L\<close> show "0 \<le> L" by simp
+  fix x y assume "x \<in> D'" "y \<in> D'"
+  then have "x \<in> D" "y \<in> D" using \<open>D' \<subseteq> D\<close> by auto
+  from lipschitzD[OF assms(1) this] have "dist (f x) (f y) \<le> M * dist x y" .
+  also have "\<dots> \<le> L * dist x y"
+    by (auto intro!: mult_right_mono \<open>M \<le> L\<close>)
+  finally show "dist (f x) (f y) \<le> L * dist x y" .
+qed
+
 lemma lipschitz_subset:
   assumes "lipschitz D f L"
   assumes "D' \<subseteq> D"
   shows "lipschitz D' f L"
-  using lipschitzD[OF assms(1)] lipschitz_nonneg[OF assms(1)] assms(2)
-  by (auto intro!: lipschitzI)
+  using lipschitz_mono[OF assms order_refl] .
 
 lemma lipschitz_imp_continuous:
   assumes "lipschitz X f L"
@@ -144,7 +250,45 @@ proof (auto simp: lipschitz_def, goal_cases)
   finally show ?case by (simp add: lipschitz_nonneg[OF assms])
 qed
 
+lemma lipschitz_uniformly_continuous_on:
+  assumes "lipschitz X f L"
+  shows "uniformly_continuous_on X f"
+  unfolding uniformly_continuous_on_def
+proof safe
+  fix e::real
+  assume "0 < e"
+  define L' where "L' \<equiv> L + 1"
+  have "L' > 0" using lipschitz_nonneg[OF assms] by (simp add: L'_def)
+  from assms have l: "lipschitz X f L'"
+    by (rule lipschitz_mono) (auto simp: L'_def)
+  show "\<exists>d>0. \<forall>x\<in>X. \<forall>x'\<in>X. dist x' x < d \<longrightarrow> dist (f x') (f x) < e"
+    using lipschitzD[OF l] \<open>L' > 0\<close> \<open>0 < e\<close>
+    by (force intro!: exI[where x="e/L'"] simp: field_simps)
+qed
+
+lemma bounded_derivative_imp_lipschitz:
+  assumes "\<And>x. x \<in> X \<Longrightarrow> (f has_derivative f' x) (at x within X)"
+  assumes convex: "convex X"
+  assumes "\<And>x. x \<in> X \<Longrightarrow> onorm (f' x) \<le> C" "0 \<le> C"
+  shows "lipschitz X f C"
+proof (rule lipschitzI)
+  show "\<And>x y. x \<in> X \<Longrightarrow> y \<in> X \<Longrightarrow> dist (f x) (f y) \<le> C * dist x y"
+    by (auto intro!: assms differentiable_bound[unfolded dist_norm[symmetric], OF convex])
+qed fact
+
+lemma bounded_vderiv_on_imp_lipschitz:
+  assumes "(f has_vderiv_on f') X"
+  assumes convex: "convex X"
+  assumes "\<And>x. x \<in> X \<Longrightarrow> norm (f' x) \<le> C" "0 \<le> C"
+  shows "lipschitz X f C"
+  using assms
+  by (auto simp: has_vderiv_on_def has_vector_derivative_def onorm_scaleR_left onorm_id
+    intro!: bounded_derivative_imp_lipschitz[where f' = "\<lambda>x d. d *\<^sub>R f' x"])
+
+
 subsection \<open>Local Lipschitz continuity (uniformly for a family of functions)\<close>
+
+text \<open>TODO: distinguish local Lipschitz continuity and uniform local Lipschitz continuity\<close>
 
 definition local_lipschitz::
   "'a::metric_space set \<Rightarrow> 'b::metric_space set \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> 'c::metric_space) \<Rightarrow> bool"
@@ -184,7 +328,7 @@ proof safe
     by (auto simp: continuous_on_def)
   then show "(f t \<longlongrightarrow> f t x) (at x within X)"
     using \<open>x \<in> ball x u\<close>
-    by (rule tendsto_within_nhd) auto
+    by (rule tendsto_within_nhd) (auto simp: ball_subset_cball)
 qed
 
 lemma
@@ -206,7 +350,7 @@ proof (rule local_lipschitzI)
   show "\<exists>u>0. \<exists>L. \<forall>t\<in>cball t u \<inter> T. lipschitz (cball x u \<inter> X) (f (g t)) L"
     using d \<open>0 < u\<close>
     by (fastforce intro: exI[where x="(min d u)/2"] exI[where x=L]
-      intro!: less_imp_le[OF d(2)] lipschitz_subset[OF l] simp: dist_commute)
+      intro!: less_imp_le[OF d(2)] lipschitz_subset[OF l] simp: dist_commute mem_ball mem_cball)
 qed
 
 context
@@ -272,7 +416,7 @@ proof (safe, simp)
     finally have "dist x a < u" .
     then have "x \<in> cball a u \<inter> T"
       using \<open>x \<in> T\<close>
-      by (auto simp: dist_commute)
+      by (auto simp: dist_commute mem_cball)
     have "dist (f x y) (f a b) \<le> dist (f x y) (f x b) + dist (f x b) (f a b)"
       by (rule dist_triangle)
     also have "dist (f x y) (f x b) \<le> (abs L + 1) * dist y b"
@@ -280,7 +424,7 @@ proof (safe, simp)
       subgoal by fact
       subgoal
         using \<open>y \<in> X\<close> \<open>dist y b < u\<close>
-        by (simp add: dist_commute)
+        by (simp add: dist_commute mem_cball)
       subgoal
         using \<open>0 < u\<close> \<open>b \<in> X\<close>
         by (simp add: )
@@ -321,9 +465,10 @@ proof -
     have lx: "(x o (rx o ry o rt)) \<longlonglongrightarrow> lx" (is "?x \<longlonglongrightarrow> _")
       and ly: "(y o (rx o ry o rt)) \<longlonglongrightarrow> ly" (is "?y \<longlonglongrightarrow> _")
       and lt: "(t o (rx o ry o rt)) \<longlonglongrightarrow> lt" (is "?t \<longlonglongrightarrow> _")
-      apply (simp add: LIMSEQ_subseq_LIMSEQ o_assoc lt'(2))
-      apply (simp add: LIMSEQ_subseq_LIMSEQ ly'(3) o_assoc lt'(2))
-      by (simp add: o_assoc lt'(3))
+      subgoal by (simp add: LIMSEQ_subseq_LIMSEQ o_assoc lt'(2))
+      subgoal by (simp add: LIMSEQ_subseq_LIMSEQ ly'(3) o_assoc lt'(2))
+      subgoal by (simp add: o_assoc lt'(3))
+      done
     hence "(\<lambda>n. dist (?y n) (?x n)) \<longlonglongrightarrow> dist ly lx"
       by (metis tendsto_dist)
     moreover
@@ -340,7 +485,7 @@ proof -
           compact_Times \<open>compact X\<close> \<open>compact T\<close> cont)
       have "norm (dist (?y n) (?x n)) = dist (?y n) (?x n)" by simp
       also
-      with elim d[of "rx (ry (rt n))"]
+      from this elim d[of "rx (ry (rt n))"]
       have "\<dots> < dist (f (?t n) (?y n)) (f (?t n) (?x n)) / rx (ry (rt (n)))"
         using lx'(2) ly'(2) lt'(2) \<open>0 < rx _\<close>
         by (auto simp add: divide_simps algebra_simps subseq_def)
@@ -356,7 +501,8 @@ proof -
     qed
     with _ have "(\<lambda>n. dist (?y n) (?x n)) \<longlonglongrightarrow> 0"
       by (rule tendsto_0_le)
-        (metis tendsto_divide_0[OF tendsto_const] filterlim_at_top_imp_at_infinity filterlim_real_sequentially)
+        (metis tendsto_divide_0[OF tendsto_const] filterlim_at_top_imp_at_infinity
+          filterlim_real_sequentially)
     ultimately have "lx = ly"
       using LIMSEQ_unique by fastforce
     with assms lx' have "lx \<in> X" by auto
@@ -369,7 +515,7 @@ proof -
       "eventually (\<lambda>n. ?t n \<in> ball lt u) sequentially"
       "eventually (\<lambda>n. ?y n \<in> ball lx u) sequentially"
       "eventually (\<lambda>n. ?x n \<in> ball lx u) sequentially"
-      by (auto simp: dist_commute Lim)
+      by (auto simp: dist_commute Lim mem_ball)
     moreover have "eventually (\<lambda>n. n > L) sequentially"
       by (metis filterlim_at_top_dense filterlim_real_sequentially)
     ultimately
@@ -379,7 +525,7 @@ proof -
       hence "dist (f (?t n) (?y n)) (f (?t n) (?x n)) \<le> L * dist (?y n) (?x n)"
         using assms xy t
         unfolding dist_norm[symmetric]
-        by (intro lipschitzD[OF L(2)]) auto
+        by (intro lipschitzD[OF L(2)]) (auto simp: mem_ball mem_cball)
       also have "\<dots> \<le> n * dist (?y n) (?x n)"
         using elim by (intro mult_right_mono) auto
       also have "\<dots> \<le> rx (ry (rt n)) * dist (?y n) (?x n)"
@@ -444,7 +590,7 @@ proof (rule local_lipschitzI)
     by metis
   then show "\<exists>u>0. \<exists>L. \<forall>t\<in>cball t u \<inter> A. lipschitz (cball x u \<inter> B) (\<lambda>b. (f t b, g t b)) L"
     by (intro exI[where x="min u v"])
-      (force intro: lipschitz_subset intro!: lipschitz_PairI)
+      (force intro: lipschitz_subset intro!: lipschitz_PairI simp: mem_cball)
 qed
 
 lemma lipschitz_constI: "lipschitz A (\<lambda>x. c) 0"
@@ -495,7 +641,7 @@ proof (rule local_lipschitzI)
   then have "compact (f' ` (cball t v \<times> cball x u))"
     by (auto intro!: compact_continuous_image continuous_on_subset[OF cont_f'])
   then obtain B where B: "B > 0" "\<And>s y. s \<in> cball t v \<Longrightarrow> y \<in> cball x u \<Longrightarrow> norm (f' (s, y)) \<le> B"
-    by (auto dest!: compact_imp_bounded simp: bounded_pos simp del: mem_cball)
+    by (auto dest!: compact_imp_bounded simp: bounded_pos simp: mem_ball)
 
   have lipschitz: "lipschitz (cball x (min u v) \<inter> X) (f s) B" if s: "s \<in> cball t v" for s
   proof -
@@ -510,604 +656,759 @@ proof (rule local_lipschitzI)
       for y z
       using s that
       by (intro differentiable_bound[OF convex_cball deriv])
-        (auto intro!: B  simp: norm_blinfun.rep_eq[symmetric])
+        (auto intro!: B  simp: norm_blinfun.rep_eq[symmetric] mem_cball)
     then show ?thesis
       using \<open>0 < B\<close>
-      by (auto intro!: lipschitzI simp: dist_norm)
+      by (auto intro!: lipschitzI simp: dist_norm mem_cball)
   qed
   show "\<exists>u>0. \<exists>L. \<forall>t\<in>cball t u \<inter> T. lipschitz (cball x u \<inter> X) (f t) L"
-    by (force intro: exI[where x="min u v"] exI[where x=B] intro!: lipschitz simp: u v)
+    by (force intro: exI[where x="min u v"] exI[where x=B] intro!: lipschitz simp: u v mem_cball)
 qed
 
 
 subsection \<open>Solutions of IVPs \label{sec:solutions}\<close>
 
-record 'a ivp =
-  ivp_f :: "real \<times> 'a \<Rightarrow> 'a"
-  ivp_t0 :: "real"
-  ivp_x0 :: "'a"
-  ivp_T :: "real set"
-  ivp_X :: "'a set"
+definition
+  solves_ode :: "(real \<Rightarrow> 'a::real_normed_vector) \<Rightarrow> (real \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> real set \<Rightarrow> 'a set \<Rightarrow> bool"
+  (infix "(solves'_ode)" 50)
+where
+  "(y solves_ode f) T X \<longleftrightarrow> (y has_vderiv_on (\<lambda>t. f t (y t))) T \<and> y \<in> T \<rightarrow> X"
 
-locale ivp =
-  fixes i::"'a::banach ivp"
-  assumes iv_defined: "ivp_t0 i \<in> ivp_T i" "ivp_x0 i \<in> ivp_X i"
-begin
-
-abbreviation "t0 \<equiv> ivp_t0 i"
-abbreviation "x0 \<equiv> ivp_x0 i"
-abbreviation "T \<equiv> ivp_T i"
-abbreviation "X \<equiv> ivp_X i"
-abbreviation "f \<equiv> ivp_f i"
-
-definition is_solution where "is_solution x \<longleftrightarrow>
-  x t0 = x0 \<and>
-  (\<forall>t\<in>T.
-    (x has_vector_derivative f (t, x t))
-      (at t within T) \<and>
-     x t \<in> X)"
-
-definition "solution = (SOME x. is_solution x)"
-
-lemma is_solutionD:
-  assumes "is_solution x"
-  shows
-  "x t0 = x0"
-  "\<And>t. t \<in> T \<Longrightarrow> (x has_vector_derivative f (t, x t)) (at t within T)"
-  "\<And>t. t \<in> T \<Longrightarrow> x t \<in> X"
+lemma solves_odeI:
+  assumes solves_ode_vderivD: "(y has_vderiv_on (\<lambda>t. f t (y t))) T"
+    and solves_ode_domainD: "\<And>t. t \<in> T \<Longrightarrow> y t \<in> X"
+  shows "(y solves_ode f) T X"
   using assms
-  by (auto simp: is_solution_def)
+  by (auto simp: solves_ode_def)
 
-lemma solution_continuous_on[intro, simp]:
-  assumes "is_solution x"
-  shows "continuous_on T x"
-using is_solutionD[OF assms]
-by (auto intro!: differentiable_imp_continuous_on
-  simp add: differentiable_on_def differentiable_def has_vector_derivative_def)
-  blast
-
-lemma is_solutionI[intro]:
-  assumes "x t0 = x0"
-  assumes "\<And>t. t \<in> T \<Longrightarrow>
-    (x has_vector_derivative f (t, x t)) (at t within T)"
-  assumes "\<And>t. t \<in> T \<Longrightarrow> x t \<in> X"
-  shows "is_solution x"
+lemma solves_odeD:
+  assumes "(y solves_ode f) T X"
+  shows solves_ode_vderivD: "(y has_vderiv_on (\<lambda>t. f t (y t))) T"
+    and solves_ode_domainD: "\<And>t. t \<in> T \<Longrightarrow> y t \<in> X"
   using assms
-  unfolding is_solution_def by simp
+  by (auto simp: solves_ode_def)
 
-lemma is_solution_cong:
+lemma solves_ode_continuous_on: "(y solves_ode f) T X \<Longrightarrow> continuous_on T y"
+  by (auto intro!: vderiv_on_continuous_on simp: solves_ode_def)
+
+lemma solves_ode_congI:
+  assumes "(x solves_ode f) T X"
   assumes "\<And>t. t \<in> T \<Longrightarrow> x t = y t"
-  shows "is_solution x = is_solution y"
-proof -
-  { fix t assume "t \<in> T"
-    hence "(y has_vector_derivative f (t, y t)) (at t within T) =
-      (x has_vector_derivative f (t, y t)) (at t within T)"
-      using assms
-      by (subst has_vector_derivative_cong) auto }
-  thus ?thesis using assms iv_defined by (auto simp: is_solution_def)
-qed
-
-lemma solution_on_subset:
-  assumes "t0 \<in> T'"
-  assumes "T' \<subseteq> T"
-  assumes "is_solution x"
-  shows "ivp.is_solution (i\<lparr>ivp_T := T'\<rparr>) x"
-proof -
-  interpret ivp': ivp "i\<lparr>ivp_T := T'\<rparr>" using assms iv_defined
-    by unfold_locales simp_all
-  show ?thesis
-  using assms is_solutionD[OF \<open>is_solution x\<close>]
-  by (intro ivp'.is_solutionI) (auto intro:
-    has_vector_derivative_within_subset[where s="T"])
-qed
-
-lemma solution_on_subset':
-  assumes "t0 \<in> ivp_T i'"
-  assumes "ivp_T i' \<subseteq> T"
-  assumes "is_solution x"
-  assumes "i' = i\<lparr>ivp_T:=ivp_T i'\<rparr>"
-  shows "ivp.is_solution i' x"
-  by (subst assms) (auto intro!: solution_on_subset assms)
-
-lemma is_solution_on_superset_domain:
-  assumes "is_solution y"
-  assumes "X \<subseteq> X'"
-  shows "ivp.is_solution (i \<lparr>ivp_X := X'\<rparr>) y"
-proof -
-  interpret ivp': ivp "i\<lparr>ivp_X:=X'\<rparr>" using assms iv_defined
-    by unfold_locales auto
-  show ?thesis
+  assumes "\<And>t. t \<in> T \<Longrightarrow> f t (x t) = g t (x t)"
+  assumes "T = S" "X = Y"
+  shows "(y solves_ode g) S Y"
   using assms
-  by (auto simp: is_solution_def ivp'.is_solution_def)
+  by (auto simp: solves_ode_def Pi_iff)
+
+lemma solves_ode_cong[cong]:
+  assumes "\<And>t. t \<in> T \<Longrightarrow> x t = y t"
+  assumes "\<And>t. t \<in> T \<Longrightarrow> f t (x t) = g t (x t)"
+  assumes "T = S" "X = Y"
+  shows "(x solves_ode f) T X \<longleftrightarrow> (y solves_ode g) S Y"
+  using assms
+  by (auto simp: solves_ode_def Pi_iff)
+
+lemma solves_ode_on_subset:
+  assumes "(x solves_ode f) S Y"
+  assumes "T \<subseteq> S" "Y \<subseteq> X"
+  shows "(x solves_ode f) T X"
+  using assms
+  by (auto simp: solves_ode_def has_vderiv_on_subset)
+
+lemma preflect_solution:
+  assumes "t0 \<in> T"
+  assumes sol: "((\<lambda>t. x (preflect t0 t)) solves_ode (\<lambda>t x. - f (preflect t0 t) x)) (preflect t0 ` T) X"
+  shows "(x solves_ode f) T X"
+proof (rule solves_odeI)
+  from solves_odeD[OF sol]
+  have xm_deriv: "(x o preflect t0 has_vderiv_on (\<lambda>t. - f (preflect t0 t) (x (preflect t0 t)))) (preflect t0 ` T)"
+    and xm_mem: "t \<in> preflect t0 ` T \<Longrightarrow> x (preflect t0 t) \<in> X" for t
+    by simp_all
+  have "(x o preflect t0 o preflect t0 has_vderiv_on (\<lambda>t. f t (x t))) T"
+    apply (rule has_vderiv_on_eq_rhs)
+    apply (rule has_vderiv_on_compose)
+    apply (rule xm_deriv)
+    apply (auto simp: preflect_def intro!: derivative_intros)
+    done
+  then show "(x has_vderiv_on (\<lambda>t. f t (x t))) T"
+    by (simp add: preflect_def)
+  show "x t \<in> X" if "t \<in> T" for t
+    using that xm_mem[of "preflect t0 t"]
+    by (auto simp: preflect_def)
 qed
 
-lemma restriction_of_solution:
-  assumes "t1 \<in> T'"
-  assumes "x t1 \<in> X"
-  assumes "T' \<subseteq> T"
-  assumes x_sol: "is_solution x"
-  shows "ivp.is_solution (i\<lparr>ivp_t0:=t1, ivp_x0:=x t1, ivp_T:=T'\<rparr>) x"
-proof -
-  interpret ivp': ivp "i\<lparr>ivp_t0:=t1, ivp_x0:=x t1, ivp_T:=T'\<rparr>"
-    using assms iv_defined is_solutionD[OF x_sol]
-    by unfold_locales simp_all
-  show ?thesis
-    using is_solutionD[OF x_sol] assms
-    by (intro ivp'.is_solutionI)
-      (auto intro: has_vector_derivative_within_subset[where t=T' and s=T])
-qed
+lemma solution_preflect:
+  assumes "t0 \<in> T"
+  assumes sol: "(x solves_ode f) T X"
+  shows "((\<lambda>t. x (preflect t0 t)) solves_ode (\<lambda>t x. - f (preflect t0 t) x)) (preflect t0 ` T) X"
+  using sol \<open>t0 \<in> T\<close>
+  by (simp_all add: preflect_def image_image preflect_solution[of t0])
 
-lemma mirror_solution:
-  defines "mirror \<equiv> \<lambda>t. 2 * t0 - t"
-  defines "mi \<equiv> i\<lparr>ivp_f := (\<lambda>(t, x). - f (mirror t, x)), ivp_T := mirror ` T\<rparr>"
-  assumes sol: "is_solution x"
-  shows "ivp.is_solution mi (x o mirror)"
-proof -
-  interpret mi: ivp mi
-    using iv_defined
-    by unfold_locales (auto simp: mi_def mirror_def)
-  show ?thesis
-    using is_solutionD[OF sol]
-  proof (intro mi.is_solutionI)
-    fix t
-    assume "t \<in> mi.T"
-    from is_solutionD[OF sol]
-    have *: "\<And>t. t \<in> T \<Longrightarrow>
-      (x has_derivative (\<lambda>a. a *\<^sub>R f (t, x t))) (at t within T)"
-      by (auto simp: has_vector_derivative_def)
-    show "(x o mirror has_vector_derivative mi.f (t, (x o mirror) t))
-        (at t within mi.T)"
-      using \<open>t \<in> mi.T\<close>
-      by (auto simp: mi_def mirror_def has_vector_derivative_def
-        intro!: derivative_eq_intros has_derivative_subset[OF *])
-  qed (auto simp: mirror_def mi_def)
-qed
-
-lemma solution_mirror:
-  defines "mirror \<equiv> \<lambda>t. 2 * t0 - t"
-  defines "mi \<equiv> i\<lparr>ivp_f := (\<lambda>(t, x). - f (mirror t, x)), ivp_T := mirror ` T\<rparr>"
-  assumes misol: "ivp.is_solution mi (x o mirror)"
-  shows "is_solution x"
-proof -
-  interpret mi: ivp mi
-    using iv_defined
-    by unfold_locales (auto simp: mi_def mirror_def)
-  have "op - (2 * t0) ` op - (2 * t0) ` T = T"
-    "x o (\<lambda>t. 2 * t0 - t) o (\<lambda>t. 2 * t0 - t) = x"
-    by force+
-  thus ?thesis
-    using mi.mirror_solution[of "x o mirror"] misol
-    by (auto simp: mirror_def mi_def)
-qed
-
-lemma solution_mirror_eq:
-  defines "mirror \<equiv> \<lambda>t. 2 * t0 - t"
-  defines "mi \<equiv> i\<lparr>ivp_f := (\<lambda>(t, x). - f (mirror t, x)), ivp_T := mirror ` T\<rparr>"
-  shows "is_solution x \<longleftrightarrow> ivp.is_solution mi (x o mirror)"
-  using solution_mirror[of x] mirror_solution[of x]
-  by (auto simp add: mirror_def mi_def)
+lemma solution_eq_preflect_solution:
+  assumes "t0 \<in> T"
+  shows "(x solves_ode f) T X \<longleftrightarrow> ((\<lambda>t. x (preflect t0 t)) solves_ode (\<lambda>t x. - f (preflect t0 t) x)) (preflect t0 ` T) X"
+  using solution_preflect[OF \<open>t0 \<in> T\<close>] preflect_solution[OF \<open>t0 \<in> T\<close>]
+  by blast
 
 lemma shift_autonomous_solution:
-  assumes "is_solution y"
-  assumes "x = y o (\<lambda>t.(t + ivp_t0 i - ivp_t0 j))"
-  assumes "\<And>s t x. ivp_f i (s, x) = ivp_f i (t, x)"
-  assumes "ivp_f j = ivp_f i"
-  assumes "ivp_x0 j = ivp_x0 i"
-  assumes "ivp_X j = ivp_X i"
-  assumes "ivp_T j = op + (ivp_t0 j - ivp_t0 i) ` ivp_T i"
-  shows "ivp.is_solution j x"
-proof -
-  interpret j: ivp j
-    using iv_defined
-    by (unfold_locales) (auto simp: assms)
-  have image_collapse:
-    "(\<lambda>t. t + t0 - ivp_t0 j) ` op + (ivp_t0 j - t0) ` T = ivp_T i"
-    by force
-  have deriv_id: "\<And>x F. ((\<lambda>t. t + ivp_t0 i - ivp_t0 j) has_vector_derivative 1) F"
-    by (auto intro!: derivative_eq_intros simp: has_vector_derivative_def)
-  show ?thesis
-    using is_solutionD[OF assms(1)]
-    by (intro j.is_solutionI;
-      force
-        simp: assms image_collapse
-        intro: deriv_id vector_diff_chain_within[THEN vector_derivative_eq_rhs])
-qed
-
-lemma shift_initial_value:
-  assumes "is_solution y"
-  assumes "ivp_t0 j \<in> ivp_T j"
-  assumes "ivp_f j = ivp_f i"
-  assumes "ivp_x0 j = y (ivp_t0 j)"
-  assumes "ivp_X j = ivp_X i"
-  assumes "ivp_T j \<subseteq> ivp_T i"
-  shows "ivp.is_solution j y"
-proof -
-  interpret j: ivp j
-    using iv_defined is_solutionD(3)[OF assms(1)] assms
-    by (unfold_locales) auto
-  show ?thesis
-    using is_solutionD[OF assms(1)] assms
-    by (auto intro!: j.is_solutionI
-      has_vector_derivative_within_subset[where t="j.T" and s = T])
-qed
-
-end
-
-locale has_solution = ivp +
-  assumes exists_solution: "\<exists>x. is_solution x"
-begin
-
-lemma is_solution_solution[intro, simp]:
-  shows "is_solution solution"
-  using exists_solution unfolding solution_def by (rule someI_ex)
-
-lemma solution:
-  shows solution_t0: "solution t0 = x0"
-    and solution_has_deriv: "\<And>t. t \<in> T \<Longrightarrow>
-      (solution has_vector_derivative f (t, solution t)) (at t within T)"
-    and solution_in_D: "\<And>t. t \<in> T \<Longrightarrow> solution t \<in> X"
-  using is_solution_solution unfolding is_solution_def by auto
-
-lemma has_solution_moved:
-  assumes "ivp_t0 j \<in> ivp_T j"
-  assumes "ivp_x0 j = ivp.solution i (ivp_t0 j)"
-  assumes "ivp_X j = ivp_X i"
-  assumes "ivp_T j \<subseteq> ivp_T i"
-  assumes "ivp_f j = ivp_f i"
-  shows "has_solution j"
-  by (metis assms(1) assms(2) assms(3) assms(4) assms(5) has_solution_axioms.intro has_solution_def
-    is_solutionD(3) is_solution_solution ivp.intro set_mp shift_initial_value)
-
-end
-
-lemma (in ivp) singleton_has_solutionI:
-  assumes "T = {t0}"
-  shows "has_solution i"
-  by unfold_locales (auto simp: has_vector_derivative_def assms
-    intro!: has_derivative_singletonI bounded_linear_scaleR_left
-    iv_defined exI[where x="\<lambda>x. x0"])
-
-locale unique_solution = has_solution +
-  assumes unique_solution: "\<And>y t. is_solution y \<Longrightarrow> t \<in> T \<Longrightarrow> y t = solution t"
-    \<comment>"TODO: stronger uniqueness: assume @{term is_solution} without restriction
-      to @{term X} and allow for shorter time intervals"
-
-lemma (in ivp) unique_solutionI:
-  assumes "is_solution x"
-  assumes "\<And>y t. is_solution y \<Longrightarrow> t \<in> T \<Longrightarrow> y t = x t"
-  shows "unique_solution i"
-proof
-  show "\<exists>x. is_solution x" using assms by blast
-  then interpret has_solution by unfold_locales
-  fix y t
-  assume "is_solution y" "t\<in>T"
-  from assms(2)[OF this] assms(2)[OF is_solution_solution \<open>t \<in> T\<close>]
-  show "y t = solution t" by simp
-qed
-
-lemma (in ivp) singleton_unique_solutionI:
-  assumes "T = {t0}"
-  shows "unique_solution i"
-  by (metis assms has_solution.is_solution_solution is_solutionD(1) singletonD
-    singleton_has_solutionI unique_solutionI)
-
-lemma (in unique_solution) shift_autonomous_unique_solution:
-  assumes "x = y o (\<lambda>t.(t + ivp_t0 i - ivp_t0 j))"
-  assumes "\<And>s t x. ivp_f i (s, x) = ivp_f i (t, x)"
-  assumes "ivp_f j = ivp_f i"
-  assumes "ivp_x0 j = ivp_x0 i"
-  assumes "ivp_X j = ivp_X i"
-  assumes "ivp_T j = op + (ivp_t0 j - ivp_t0 i) ` ivp_T i"
-  shows "unique_solution j"
-proof
-  interpret j: ivp j
-    using iv_defined
-    by unfold_locales (auto simp: assms)
-  show "j.t0 \<in> j.T" "j.x0 \<in> j.X" using j.iv_defined by auto
-  show "\<exists>x. ivp.is_solution j x"
-    by (auto simp: assms
-      intro!: exI shift_autonomous_solution[OF is_solution_solution])
-  then interpret j: has_solution j by unfold_locales
-  fix t y assume t: "t \<in> j.T" and y_sol: "j.is_solution y"
-  from t have ts: "t + t0 - j.t0 \<in> T" by (auto simp: assms)
-  from y_sol have "is_solution (y o (op + (j.t0 - t0)))"
-    by (rule j.shift_autonomous_solution) (force simp: o_def algebra_simps assms)+
-  note unique_solution[OF this ts]
-  moreover
-  from j.is_solution_solution have "is_solution (j.solution o (op + (j.t0 - t0)))"
-    by (rule j.shift_autonomous_solution) (force simp: o_def algebra_simps assms)+
-  note unique_solution[OF this ts]
-  ultimately
-  show "y t = j.solution t"
-    by simp
-qed
-
-locale interval = fixes a b assumes interval_notempty: "a \<le> b"
-
-locale ivp_on_interval = ivp + interval t0 t1 for t1 +
-  assumes interval: "T = {t0..t1}"
-begin
-
-lemma is_solution_ext_cont:
-  assumes "continuous_on T x"
-  shows "is_solution (ext_cont x t0 t1) = is_solution x"
-  using assms iv_defined interval by (intro is_solution_cong) simp_all
-
-lemma solution_fixed_point:
-  assumes x: "is_solution x" and t: "t \<in> T"
-  shows "x0 + integral {t0..t} (\<lambda>t. f (t, x t)) = x t"
-proof -
-  from is_solutionD(2)[OF x] t
-  have "\<forall>ta\<in>{t0 .. t}.
-      (x has_vector_derivative f (ta, x ta))
-      (at ta within {t0..t})"
-    by (auto simp: interval intro:
-      has_vector_derivative_within_subset[where s=T])
-  hence "((\<lambda>t. f (t, x t)) has_integral x t - x t0)
-      {t0..t}"
-    using t by (auto simp: interval
-      intro!: fundamental_theorem_of_calculus)
-  from this[THEN integral_unique]
-  show "x0 + integral {t0..t} (\<lambda>t. f (t, x t)) = x t"
-    by (simp add: is_solutionD[OF x])
-qed
-
-end
-
-locale ivp_on_interval_left = ivp + interval t1 t0 for t1 +
-  assumes interval: "T = {t1..t0}"
-begin
-
-lemma is_solution_ext_cont:
-  assumes "continuous_on T x"
-  shows "is_solution (ext_cont x t1 t0) = is_solution x"
-  using assms iv_defined interval by (intro is_solution_cong) simp_all
-
-lemma solution_fixed_point:
-  assumes x: "is_solution x" and t: "t \<in> T"
-  shows "x0 - integral {t..t0} (\<lambda>t. f (t, x t)) = x t"
-proof -
-  from is_solutionD(2)[OF x] t
-  have "\<forall>ta\<in>{t..t0}.
-      (x has_vector_derivative f (ta, x ta))
-      (at ta within {t..t0})"
-    by (auto simp: interval intro:
-      has_vector_derivative_within_subset[where s=T])
-  hence "((\<lambda>t. f (t, x t)) has_integral x t0 - x t)
-      {t..t0}"
-    using t by (auto simp: interval
-      intro!: fundamental_theorem_of_calculus)
-  from this[THEN integral_unique]
-  show "x0 - integral {t..t0} (\<lambda>t. f (t, x t)) = x t"
-    by (simp add: is_solutionD[OF x])
-qed
-
-end
-
-sublocale ivp_on_interval \<subseteq> interval t0 t1 by unfold_locales
-sublocale ivp_on_interval_left \<subseteq> interval t1 t0 by unfold_locales
-
-subsubsection \<open>Connecting solutions \label{sec:combining-solutions}\<close>
-
-locale connected_solutions =
-  i1?: has_solution i1 + i2?: has_solution i2 + i?: ivp i
-  for i::"('a::banach) ivp" and i1::"'a ivp"
-  and i2::"'a ivp" +
-  fixes y
-  assumes sol1: "i1.is_solution y"
-  assumes iv_on:
-    "i.t0 \<notin> i1.T \<Longrightarrow> i2.solution i.t0 = i.x0"
-    "i.t0 \<in> i1.T \<Longrightarrow> y i.t0 = i.x0"
-  assumes conn_x: "\<And>t. t \<in> i1.T \<inter> i2.T \<Longrightarrow> y t = i2.solution t"
-  assumes conn_f: "\<And>t. t \<in> i1.T \<inter> i2.T \<Longrightarrow> i1.f (t, y t) = i2.f (t, y t)"
-  assumes conn_T: "closure i1.T \<inter> closure i2.T \<subseteq> i1.T"
-    "closure i1.T \<inter> closure i2.T \<subseteq> i2.T"
-  assumes f: "f = (\<lambda>(t, x). if t \<in> i1.T then i1.f (t, x) else i2.f (t, x))"
-  assumes interval: "T = i1.T \<union> i2.T"
-  assumes dom:"X = i1.X" "X = i2.X"
-begin
-
-lemma T_subsets:
-  shows T1_subset: "i1.T \<subseteq> T"
-  and T2_subset: "i2.T \<subseteq> T"
-  subgoal by (metis Un_commute Un_upper2 interval)
-  subgoal by (metis inf_sup_ord(4) interval)
+  assumes sol: "(x solves_ode f) T X"
+  assumes auto: "\<And>s t. s \<in> T \<Longrightarrow> f s (x s) = f t (x s)"
+  shows "((\<lambda>t. x (t + t0)) solves_ode f) ((\<lambda>t. t - t0) ` T) X"
+  using solves_odeD[OF sol]
+  apply (intro solves_odeI)
+  apply (rule has_vderiv_on_compose'[of x, THEN has_vderiv_on_eq_rhs])
+  apply (auto simp: image_image intro!: auto derivative_intros)
   done
 
-definition connection where
-  "connection t = (if t \<in> i1.T then y t else i2.solution t)"
+lemma solves_ode_singleton: "y t0 \<in> X \<Longrightarrow> (y solves_ode f) {t0} X"
+  by (auto intro!: solves_odeI has_vderiv_on_singleton)
 
-lemma is_solution_connection: "is_solution connection"
-proof standard
-  show "connection i.t0 = i.x0" "\<And>t. t \<in> i.T \<Longrightarrow> connection t \<in> i.X"
-    by (auto simp: connection_def iv_on connection_def[abs_def]
-      has_vector_derivative_def interval
-      i2.is_solutionD[OF i2.is_solution_solution, simplified dom(2)[symmetric]]
-      i1.is_solutionD[OF sol1, simplified dom(1)[symmetric]])
-  fix t
-  assume "t \<in> T"
-  have FDERIV_y:
-    "\<And>t. t \<in> i1.T \<Longrightarrow>
-      (y has_derivative (\<lambda>a. a *\<^sub>R i1.f (t, y t)))
-      (at t within i1.T)"
-    using i1.is_solutionD[OF sol1]
-    by (auto simp: has_vector_derivative_def)
-  have FDERIV_2:
-    "\<And>t. t \<in> i2.T \<Longrightarrow>
-      (i2.solution has_derivative (\<lambda>a. a *\<^sub>R i2.f (t, i2.solution t)))
-      (at t within i2.T)"
-    using i2.is_solutionD[OF i2.is_solution_solution]
-    by (auto simp: has_vector_derivative_def)
-  show
-    "(connection has_vector_derivative i.f (t, connection t)) (at t within i.T)"
-    unfolding connection_def[abs_def] interval has_vector_derivative_def
-    apply (rule has_derivative_subset[where s="i1.T \<union> i2.T"])
-    proof (rule has_derivative_If[where t="i2.T", THEN has_derivative_eq_rhs, OF has_derivative_subset has_derivative_subset])
-      from FDERIV_y FDERIV_2
-      show "t \<in> i1.T \<union> closure i1.T \<inter> closure i2.T \<Longrightarrow> (y has_derivative (\<lambda>a. a *\<^sub>R i1.f (t, y t))) (at t within i1.T)"
-        and "t \<in> i2.T \<union> closure i1.T \<inter> closure i2.T \<Longrightarrow> (i2.solution has_derivative (\<lambda>a. a *\<^sub>R i2.f (t, i2.solution t))) (at t within i2.T)" for t
-        using conn_T
-        by auto
-    qed (insert conn_T conn_f conn_T \<open>t \<in> T\<close>, auto simp: conn_x f interval)
+subsubsection\<open>Connecting solutions\<close>
+text\<open>\label{sec:combining-solutions}\<close>
+
+lemma connection_solves_ode:
+  assumes x: "(x solves_ode f) T X"
+  assumes y: "(y solves_ode g) S Y"
+  assumes conn_T: "closure S \<inter> closure T \<subseteq> T"
+  assumes conn_S: "closure S \<inter> closure T \<subseteq> S"
+  assumes conn_x: "\<And>t. t \<in> closure S \<Longrightarrow> t \<in> closure T \<Longrightarrow> x t = y t"
+  assumes conn_f: "\<And>t. t \<in> closure S \<Longrightarrow> t \<in> closure T \<Longrightarrow> f t (y t) = g t (y t)"
+  shows "((\<lambda>t. if t \<in> T then x t else y t) solves_ode (\<lambda>t. if t \<in> T then f t else g t)) (T \<union> S) (X \<union> Y)"
+proof (rule solves_odeI)
+  from solves_odeD(2)[OF x] solves_odeD(2)[OF y]
+  show "t \<in> T \<union> S \<Longrightarrow> (if t \<in> T then x t else y t) \<in> X \<union> Y" for t
+    by auto
+  show "((\<lambda>t. if t \<in> T then x t else y t) has_vderiv_on (\<lambda>t. (if t \<in> T then f t else g t) (if t \<in> T then x t else y t))) (T \<union> S)"
+    apply (rule has_vderiv_on_If[OF refl, THEN has_vderiv_on_eq_rhs])
+    unfolding Un_absorb2[OF conn_T] Un_absorb2[OF conn_S]
+    apply (rule solves_odeD(1)[OF x])
+    apply (rule solves_odeD(1)[OF y])
+    apply (simp_all add: conn_T conn_S Un_absorb2 conn_x conn_f)
+    done
 qed
 
-lemma connection_eq_solution2: "t \<in> i2.T \<Longrightarrow> connection t = i2.solution t"
-  by (auto simp: connection_def conn_x)
+lemma solves_ode_on_union_closed:
+  assumes x: "(x solves_ode f) T X"
+  assumes y: "(x solves_ode f) S Y"
+  assumes conn_T: "closure S \<inter> closure T \<subseteq> T"
+  assumes conn_S: "closure S \<inter> closure T \<subseteq> S"
+  shows "(x solves_ode f) (T \<union> S) (X \<union> Y)"
+  using connection_solves_ode[OF assms]
+  by simp
 
-end
 
-sublocale connected_solutions \<subseteq> has_solution using is_solution_connection
-  by unfold_locales auto
+subsection \<open>unique solution with initial value\<close>
 
-locale connected_unique_solutions =
-  i1?: unique_solution i1 + i2?: unique_solution i2 +
-  connected_solutions i i1 i2 "i1.solution"
-  for i::"'a::banach ivp" and i1::"'a ivp"
-  and i2::"'a ivp" +
-  fixes t1::real
-  assumes inter_T: "i1.T \<inter> i2.T = {t1}"
-  assumes initial_times: "i2.t0 = t1" "i.t0 = i1.t0"
+definition
+  usolves_ode_from :: "(real \<Rightarrow> 'a::real_normed_vector) \<Rightarrow> (real \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> real \<Rightarrow> real set \<Rightarrow> 'a set \<Rightarrow> bool"
+  ("((_) usolves'_ode (_) from (_))" [10, 10, 10] 10)
+  \<comment>\<open>TODO: no idea about mixfix and precedences, check this!\<close>
+where
+  "(y usolves_ode f from t0) T X \<longleftrightarrow> (y solves_ode f) T X \<and> t0 \<in> T \<and> is_interval T \<and>
+    (\<forall>z T'. t0 \<in> T' \<and> is_interval T' \<and> T' \<subseteq> T \<and> (z solves_ode f) T' X \<longrightarrow> z t0 = y t0 \<longrightarrow> (\<forall>t \<in> T'. z t = y t))"
+
+text \<open>uniqueness of solution can depend on domain \<open>X\<close>:\<close>
+
+lemma
+  "((\<lambda>_. 0::real) usolves_ode (\<lambda>_. sqrt) from 0) {0..} {0}"
+    "((\<lambda>t. t\<^sup>2 / 4) solves_ode (\<lambda>_. sqrt)) {0..} {0..}"
+    "(\<lambda>t. t\<^sup>2 / 4) 0 = (\<lambda>_. 0::real) 0"
+  by (auto intro!: derivative_eq_intros
+    simp: has_vderiv_on_def has_vector_derivative_def usolves_ode_from_def solves_ode_def
+      is_interval_ci real_sqrt_divide)
+
+text \<open>TODO: show that if solution stays in interior, then domain can be enlarged! (?)\<close>
+
+lemma usolves_odeD:
+  assumes "(y usolves_ode f from t0) T X"
+  shows "(y solves_ode f) T X"
+    and "t0 \<in> T"
+    and "is_interval T"
+    and "\<And>z T' t. t0 \<in> T' \<Longrightarrow> is_interval T' \<Longrightarrow> T' \<subseteq> T \<Longrightarrow>(z solves_ode f) T' X \<Longrightarrow> z t0 = y t0 \<Longrightarrow> t \<in> T' \<Longrightarrow> z t = y t"
+  using assms
+  unfolding usolves_ode_from_def
+  by blast+
+
+lemma usolves_ode_rawI:
+  assumes "(y solves_ode f) T X" "t0 \<in> T" "is_interval T"
+  assumes "\<And>z T' t. t0 \<in> T' \<Longrightarrow> is_interval T' \<Longrightarrow> T' \<subseteq> T \<Longrightarrow> (z solves_ode f) T' X \<Longrightarrow> z t0 = y t0 \<Longrightarrow> t \<in> T' \<Longrightarrow> z t = y t"
+  shows "(y usolves_ode f from t0) T X"
+  using assms
+  unfolding usolves_ode_from_def
+  by blast
+
+lemma usolves_odeI:
+  assumes "(y solves_ode f) T X" "t0 \<in> T" "is_interval T"
+  assumes usol: "\<And>z t. {t0 -- t} \<subseteq> T \<Longrightarrow> (z solves_ode f) {t0 -- t} X \<Longrightarrow> z t0 = y t0 \<Longrightarrow> z t = y t"
+  shows "(y usolves_ode f from t0) T X"
+proof (rule usolves_ode_rawI; fact?)
+  fix z T' t
+  assume T': "t0 \<in> T'" "is_interval T'" "T' \<subseteq> T"
+    and z: "(z solves_ode f) T' X" and iv: "z t0 = y t0" and t: "t \<in> T'"
+  have subset_T': "{t0 -- t} \<subseteq> T'"
+    by (rule closed_segment_subset_interval; fact)
+  with z have sol_cs: "(z solves_ode f) {t0 -- t} X"
+    by (rule solves_ode_on_subset[OF _ _ order_refl])
+  from subset_T' have subset_T: "{t0 -- t} \<subseteq> T"
+    using \<open>T' \<subseteq> T\<close> by simp
+  from usol[OF subset_T sol_cs iv]
+  show "z t = y t" by simp
+qed
+
+lemma is_interval_singleton[intro,simp]: "is_interval {t0}"
+  by (auto simp: is_interval_def intro!: euclidean_eqI[where 'a='a])
+
+lemma usolves_ode_singleton: "x t0 \<in> X \<Longrightarrow> (x usolves_ode f from t0) {t0} X"
+  by (auto intro!: usolves_odeI solves_ode_singleton)
+
+lemma usolves_ode_congI:
+  assumes x: "(x usolves_ode f from t0) T X"
+  assumes "\<And>t. t \<in> T \<Longrightarrow> x t = y t"
+  assumes "\<And>t y. t \<in> T \<Longrightarrow> y \<in> X \<Longrightarrow> f t y = g t y"\<comment>\<open>TODO: weaken this assumption?!\<close>
+  assumes "t0 = s0"
+  assumes "T = S"
+  assumes "X = Y"
+  shows "(y usolves_ode g from s0) S Y"
+proof (rule usolves_ode_rawI)
+  from assms x have "(y solves_ode f) S Y"
+    by (auto simp add: usolves_ode_from_def)
+  then show "(y solves_ode g) S Y"
+    by (rule solves_ode_congI) (use assms in \<open>auto simp: usolves_ode_from_def dest!: solves_ode_domainD\<close>)
+  from assms show "s0 \<in> S" "is_interval S"
+    by (auto simp add: usolves_ode_from_def)
+next
+  fix z T' t
+  assume hyps: "s0 \<in> T'" "is_interval T'" "T' \<subseteq> S" "(z solves_ode g) T' Y" "z s0 = y s0" "t \<in> T'"
+  from \<open>(z solves_ode g) T' Y\<close>
+  have zsol: "(z solves_ode f) T' Y"
+    by (rule solves_ode_congI) (use assms hyps in \<open>auto dest!: solves_ode_domainD\<close>)
+  have "z t = x t"
+    by (rule x[THEN usolves_odeD(4),where T' = T'])
+      (use zsol \<open>s0 \<in> T'\<close> \<open>is_interval T'\<close> \<open>T' \<subseteq> S\<close> \<open>T = S\<close> \<open>z s0 = y s0\<close> \<open>t \<in> T'\<close> assms in auto)
+  also have "y t = x t" using assms \<open>t \<in> T'\<close> \<open>T' \<subseteq> S\<close> \<open>T = S\<close> by auto
+  finally show "z t = y t" by simp
+qed
+
+
+lemma usolves_ode_cong[cong]:
+  assumes "\<And>t. t \<in> T \<Longrightarrow> x t = y t"
+  assumes "\<And>t y. t \<in> T \<Longrightarrow> y \<in> X \<Longrightarrow> f t y = g t y"\<comment>\<open>TODO: weaken this assumption?!\<close>
+  assumes "t0 = s0"
+  assumes "T = S"
+  assumes "X = Y"
+  shows "(x usolves_ode f from t0) T X \<longleftrightarrow> (y usolves_ode g from s0) S Y"
+  apply (rule iffI)
+  subgoal by (rule usolves_ode_congI[OF _ assms]; assumption)
+  subgoal by (metis assms(1) assms(2) assms(3) assms(4) assms(5) usolves_ode_congI)
+  done
+
+lemma shift_autonomous_unique_solution:
+  assumes usol: "(x usolves_ode f from t0) T X"
+  assumes auto: "\<And>s t x. x \<in> X \<Longrightarrow> f s x = f t x"
+  shows "((\<lambda>t. x (t + t0 - t1)) usolves_ode f from t1) (op + (t1 - t0) ` T) X"
+proof (rule usolves_ode_rawI)
+  from usolves_odeD[OF usol]
+  have sol: "(x solves_ode f) T X"
+    and "t0 \<in> T"
+    and "is_interval T"
+    and unique: "t0 \<in> T' \<Longrightarrow> is_interval T' \<Longrightarrow> T' \<subseteq> T \<Longrightarrow> (z solves_ode f) T' X \<Longrightarrow> z t0 = x t0 \<Longrightarrow> t \<in> T' \<Longrightarrow> z t = x t"
+    for z T' t
+    by blast+
+  have "(\<lambda>t. t + t1 - t0) = op + (t1 - t0)"
+    by (auto simp add: algebra_simps)
+  with shift_autonomous_solution[OF sol auto, of "t0 - t1"] solves_odeD[OF sol]
+  show "((\<lambda>t. x (t + t0 - t1)) solves_ode f) (op + (t1 - t0) ` T) X"
+    by (simp add: algebra_simps)
+  from \<open>t0 \<in> T\<close> show "t1 \<in> op + (t1 - t0) ` T" by auto
+  from \<open>is_interval T\<close>
+  show "is_interval (op + (t1 - t0) ` T)"
+    by simp
+  fix z T' t
+  assume z: "(z solves_ode f) T' X"
+    and t0': "t1 \<in> T'" "T' \<subseteq> op + (t1 - t0) ` T"
+    and shift: "z t1 = x (t1 + t0 - t1)"
+    and t: "t \<in> T'"
+    and ivl: "is_interval T'"
+
+  let ?z = "(\<lambda>t. z (t + (t1 - t0)))"
+
+  have "(?z solves_ode f) ((\<lambda>t. t - (t1 - t0)) ` T') X"
+    apply (rule shift_autonomous_solution[OF z, of "t1 - t0"])
+    using solves_odeD[OF z]
+    by (auto intro!: auto)
+  with _ _ _ have "?z ((t + (t0 - t1))) = x (t + (t0 - t1))"
+    apply (rule unique[where z = ?z ])
+    using shift t t0' ivl
+    by auto
+  then show "z t = x (t + t0 - t1)"
+    by (simp add: algebra_simps)
+qed
+
+lemma three_intervals_lemma:
+  fixes a b c::real
+  assumes a: "a \<in> A - B"
+    and b: "b \<in> B - A"
+    and c: "c \<in> A \<inter> B"
+    and iA: "is_interval A" and iB: "is_interval B"
+    and aI: "a \<in> I"
+    and bI: "b \<in> I"
+    and iI: "is_interval I"
+  shows "c \<in> I"
+  apply (rule mem_is_intervalI[OF iI aI bI])
+  using iA iB
+  apply (auto simp: is_interval_def)
+  apply (metis Diff_iff Int_iff a b c le_cases)
+  apply (metis Diff_iff Int_iff a b c le_cases)
+  done
+
+lemma connection_usolves_ode:
+  assumes x: "(x usolves_ode f from tx) T X"
+  assumes y: "\<And>t. t \<in> closure S \<inter> closure T \<Longrightarrow> (y usolves_ode g from t) S X"
+  assumes conn_T: "closure S \<inter> closure T \<subseteq> T"
+  assumes conn_S: "closure S \<inter> closure T \<subseteq> S"
+  assumes conn_t: "t \<in> closure S \<inter> closure T"
+  assumes conn_x: "\<And>t. t \<in> closure S \<Longrightarrow> t \<in> closure T \<Longrightarrow> x t = y t"
+  assumes conn_f: "\<And>t x. t \<in> closure S \<Longrightarrow> t \<in> closure T \<Longrightarrow> x \<in> X \<Longrightarrow> f t x = g t x"
+  shows "((\<lambda>t. if t \<in> T then x t else y t) usolves_ode (\<lambda>t. if t \<in> T then f t else g t) from tx) (T \<union> S) X"
+  apply (rule usolves_ode_rawI)
+  apply (subst Un_absorb[of X, symmetric])
+  apply (rule connection_solves_ode[OF usolves_odeD(1)[OF x] usolves_odeD(1)[OF y[OF conn_t]] conn_T conn_S conn_x conn_f])
+  subgoal by assumption
+  subgoal by assumption
+  subgoal by assumption
+  subgoal by assumption
+  subgoal using solves_odeD(2)[OF usolves_odeD(1)[OF x]] conn_T by (auto simp add: conn_x[symmetric])
+  subgoal using usolves_odeD(2)[OF x] by auto
+  subgoal using usolves_odeD(3)[OF x] usolves_odeD(3)[OF y]
+    apply (rule is_real_interval_union)
+    using conn_T conn_S conn_t by auto
+  subgoal premises prems for z TS' s
+  proof -
+    from \<open>(z solves_ode _) _ _\<close>
+    have "(z solves_ode (\<lambda>t. if t \<in> T then f t else g t)) (T \<inter> TS') X"
+      by (rule solves_ode_on_subset) auto
+    then have z_f: "(z solves_ode f) (T \<inter> TS') X"
+      by (subst solves_ode_cong) auto
+
+    from prems(4)
+    have "(z solves_ode (\<lambda>t. if t \<in> T then f t else g t)) (S \<inter> TS') X"
+      by (rule solves_ode_on_subset) auto
+    then have z_g: "(z solves_ode g) (S \<inter> TS') X"
+      apply (rule solves_ode_congI)
+      subgoal by simp
+      subgoal by clarsimp (meson closure_subset conn_f contra_subsetD prems(4) solves_ode_domainD)
+      subgoal by simp
+      subgoal by simp
+      done
+    have "tx \<in> T" using assms using usolves_odeD(2)[OF x] by auto
+
+    have "z tx = x tx" using assms prems
+      by (simp add: \<open>tx \<in> T\<close>)
+
+    from usolves_odeD(4)[OF x _ _ _ \<open>(z solves_ode f) _ _\<close>, of s] prems
+    have "z s = x s" if "s \<in> T" using that \<open>tx \<in> T\<close> \<open>z tx = x tx\<close>
+      by (auto simp: is_interval_inter usolves_odeD(3)[OF x] \<open>is_interval TS'\<close>)
+
+    moreover
+
+    {
+      assume "s \<notin> T"
+      then have "s \<in> S" using prems assms by auto
+      {
+        assume "tx \<notin> S"
+        then have "tx \<in> T - S" using \<open>tx \<in> T\<close> by simp
+        moreover have "s \<in> S - T" using \<open>s \<notin> T\<close> \<open>s \<in> S\<close> by blast
+        ultimately have "t \<in> TS'"
+          apply (rule three_intervals_lemma)
+          subgoal using assms by auto
+          subgoal using usolves_odeD(3)[OF x] .
+          subgoal using usolves_odeD(3)[OF y[OF conn_t]] .
+          subgoal using \<open>tx \<in> TS'\<close> .
+          subgoal using \<open>s \<in> TS'\<close> .
+          subgoal using \<open>is_interval TS'\<close> .
+          done
+        with assms have t: "t \<in> closure S \<inter> closure T \<inter> TS'" by simp
+
+        then have "t \<in> S" "t \<in> T" "t \<in> TS'" using assms by auto
+        have "z t = x t"
+          apply (rule usolves_odeD(4)[OF x _ _ _ z_f, of t])
+          using \<open>t \<in> TS'\<close> \<open>t \<in> T\<close> prems assms \<open>tx \<in> T\<close> usolves_odeD(3)[OF x]
+          by (auto intro!: is_interval_inter)
+        with assms have "z t = y t" using t by auto
+
+        from usolves_odeD(4)[OF y[OF conn_t] _ _ _ z_g, of s] prems
+        have "z s = y s" using \<open>s \<notin> T\<close> assms \<open>z t = y t\<close> t \<open>t \<in> S\<close>
+          \<open>is_interval TS'\<close> usolves_odeD(3)[OF y[OF conn_t]]
+          by (auto simp: is_interval_inter)
+      } moreover {
+        assume "tx \<in> S"
+        with prems closure_subset \<open>tx \<in> T\<close>
+        have tx: "tx \<in> closure S \<inter> closure T \<inter> TS'" by force
+
+        then have "tx \<in> S" "tx \<in> T" "tx \<in> TS'" using assms by auto
+        have "z tx = x tx"
+          apply (rule usolves_odeD(4)[OF x _ _ _ z_f, of tx])
+          using \<open>tx \<in> TS'\<close> \<open>tx \<in> T\<close> prems assms \<open>tx \<in> T\<close> usolves_odeD(3)[OF x]
+          by (auto intro!: is_interval_inter)
+        with assms have "z tx = y tx" using tx by auto
+
+        from usolves_odeD(4)[OF y[where t=tx] _ _ _ z_g, of s] prems
+        have "z s = y s" using \<open>s \<notin> T\<close> assms \<open>z tx = y tx\<close> tx \<open>tx \<in> S\<close>
+          \<open>is_interval TS'\<close> usolves_odeD(3)[OF y]
+          by (auto simp: is_interval_inter)
+      } ultimately have "z s = y s" by blast
+    }
+    ultimately
+    show "z s = (if s \<in> T then x s else y s)" by simp
+  qed
+  done
+
+lemma usolves_ode_union_closed:
+  assumes x: "(x usolves_ode f from tx) T X"
+  assumes y: "\<And>t. t \<in> closure S \<inter> closure T \<Longrightarrow> (x usolves_ode f from t) S X"
+  assumes conn_T: "closure S \<inter> closure T \<subseteq> T"
+  assumes conn_S: "closure S \<inter> closure T \<subseteq> S"
+  assumes conn_t: "t \<in> closure S \<inter> closure T"
+  shows "(x usolves_ode f from tx) (T \<union> S) X"
+  using connection_usolves_ode[OF assms] by simp
+
+lemma usolves_ode_solves_odeI:
+  assumes "(x usolves_ode f from tx) T X"
+  assumes "(y solves_ode f) T X" "y tx = x tx"
+  shows "(y usolves_ode f from tx) T X"
+  using assms(1)
+  apply (rule usolves_ode_congI)
+  subgoal using assms by (metis set_eq_subset usolves_odeD(2) usolves_odeD(3) usolves_odeD(4))
+  by auto
+
+
+subsection \<open>ivp on interval\<close>
+
+context
+  fixes t0 t1::real and T
+  defines "T \<equiv> closed_segment t0 t1"
 begin
 
-sublocale unique_solution
-proof (intro unique_solutionI)
-  show "is_solution connection" using is_solution_connection .
-  fix y t
-  assume "is_solution y" "t \<in> T"
-  have "i1.is_solution y"
-  proof (intro i1.is_solutionI)
-    fix ta
-    assume "ta \<in> i1.T"
-    hence "ta \<in> T" using T1_subset by auto
-    from is_solutionD(2)[OF \<open>is_solution y\<close> this]
-    have "(y has_vector_derivative i1.f (ta, y ta)) (at ta within T)"
-      using \<open>ta \<in> i1.T\<close> by (simp add: f)
-    thus "(y has_vector_derivative i1.f (ta, y ta)) (at ta within i1.T)"
-      using T1_subset
-      by (rule has_vector_derivative_within_subset)
-    show "y ta \<in> i1.X" using is_solutionD(3)[OF \<open>is_solution y\<close> \<open>ta \<in> T\<close>]
-      by (simp add: dom)
-  next
-    have "connection i1.t0 = i1.solution i1.t0"
-      using i1.iv_defined
-      by (auto simp: connection_def)
-    show "y i1.t0 = i1.x0"
-      using is_solutionD(1)[OF \<open>is_solution y\<close>]
-      using i1.iv_defined(1) initial_times i1.solution_t0 iv_on(2)
-      by auto
-  qed
-  have "i2.is_solution y"
-  proof (intro i2.is_solutionI)
-    show "y (i2.t0) = i2.x0"
-      by (metis Int_lower1 \<open>ivp.is_solution i1 y\<close> conn_x i1.unique_solution
-        i2.solution_t0 initial_times(1) insertI1 inter_T rev_subsetD)
-    fix ta
-    assume "ta \<in> i2.T"
-    hence "ta \<in> T" using T2_subset by auto
-    from is_solutionD(2)[OF \<open>is_solution y\<close> this]
-    have "(y has_vector_derivative i2.f (ta, y ta)) (at ta within T)"
-      using \<open>ta \<in> i2.T\<close> conn_f conn_T
-      apply (auto simp: f)
-      by (metis (poly_guards_query) \<open>ivp.is_solution i1 y\<close> i1.unique_solution)
-    thus "(y has_vector_derivative i2.f (ta, y ta)) (at ta within i2.T)"
-      using T2_subset
-      by (rule has_vector_derivative_within_subset)
-    show "y ta \<in> i2.X" using is_solutionD(3)[OF \<open>is_solution y\<close> \<open>ta \<in> T\<close>]
-      using dom by simp
-  qed
-  from i1.unique_solution[OF \<open>i1.is_solution y\<close>, of t]
-    i2.unique_solution[OF \<open>i2.is_solution y\<close>, of t]
-  show "y t = connection t"
-    using \<open>t \<in> T\<close>
-    by (auto simp: connection_def interval)
-qed
+lemma is_solution_ext_cont:
+  "continuous_on T x \<Longrightarrow> (ext_cont x (min t0 t1) (max t0 t1) solves_ode f) T X = (x solves_ode f) T X"
+  by (rule solves_ode_cong) (auto simp add: T_def min_def max_def closed_segment_real)
 
-lemma connection_eq_solution: "\<And>t. t \<in> T \<Longrightarrow> connection t = solution t"
-  by (rule unique_solution is_solution_connection)+
-
-lemma solution1_eq_solution:
-  assumes "t \<in> i1.T"
-  shows "i1.solution t = solution t"
+lemma solution_fixed_point:
+  fixes x:: "real \<Rightarrow> 'a::banach"
+  assumes x: "(x solves_ode f) T X" and t: "t \<in> T"
+  shows "x t0 + ivl_integral t0 t (\<lambda>t. f t (x t)) = x t"
 proof -
-  from T1_subset assms have "t \<in> T" by auto
-  from connection_eq_solution[OF \<open>t \<in> T\<close>] assms
-  show ?thesis
-    by (simp add: connection_def)
+  from solves_odeD(1)[OF x, unfolded T_def]
+  have "(x has_vderiv_on (\<lambda>t. f t (x t))) (closed_segment t0 t)"
+    by (rule has_vderiv_on_subset) (insert \<open>t \<in> T\<close>, auto simp: closed_segment_real T_def)
+  from fundamental_theorem_of_calculus_ivl_integral[OF this]
+  have "((\<lambda>t. f t (x t)) has_ivl_integral x t - x t0) t0 t" .
+  from this[THEN ivl_integral_unique]
+  show ?thesis by simp
 qed
 
-lemma solution2_eq_solution:
-  assumes "t \<in> i2.T"
-  shows "i2.solution t = solution t"
+lemma solution_fixed_point_left:
+  fixes x:: "real \<Rightarrow> 'a::banach"
+  assumes x: "(x solves_ode f) T X" and t: "t \<in> T"
+  shows "x t1 - ivl_integral t t1 (\<lambda>t. f t (x t)) = x t"
 proof -
-  from T2_subset assms have "t \<in> T" by auto
-  from connection_eq_solution[OF \<open>t \<in> T\<close>] assms conn_x i2.solution_t0
-  show ?thesis
-    by (simp add: connection_def split_ifs)
+  from solves_odeD(1)[OF x, unfolded T_def]
+  have "(x has_vderiv_on (\<lambda>t. f t (x t))) (closed_segment t t1)"
+    by (rule has_vderiv_on_subset) (insert \<open>t \<in> T\<close>, auto simp: closed_segment_real T_def)
+  from fundamental_theorem_of_calculus_ivl_integral[OF this]
+  have "((\<lambda>t. f t (x t)) has_ivl_integral x t1 - x t) t t1" .
+  from this[THEN ivl_integral_unique]
+  show ?thesis by simp
 qed
+
+lemma solution_fixed_pointI:
+  fixes x:: "real \<Rightarrow> 'a::banach"
+  assumes cont_f: "continuous_on (T \<times> X) (\<lambda>(t, x). f t x)"
+  assumes cont_x: "continuous_on T x"
+  assumes defined: "\<And>t. t \<in> T \<Longrightarrow> x t \<in> X"
+  assumes fp: "\<And>t. t \<in> T \<Longrightarrow> x t = x t0 + ivl_integral t0 t (\<lambda>t. f t (x t))"
+  shows "(x solves_ode f) T X"
+proof (rule solves_odeI)
+  note [continuous_intros] = continuous_on_compose_Pair[OF cont_f]
+  have "((\<lambda>t. x t0 + ivl_integral t0 t (\<lambda>t. f t (x t))) has_vderiv_on (\<lambda>t. f t (x t))) T"
+    using cont_x defined
+    by (auto intro!: derivative_eq_intros ivl_integral_has_vector_derivative
+      continuous_intros
+      simp: has_vderiv_on_def T_def)
+  with fp show "(x has_vderiv_on (\<lambda>t. f t (x t))) T" by simp
+qed (simp add: defined)
 
 end
 
-subsection \<open>Picard-Lindelöf on set of functions into closed set \label{sec:plclosed}\<close>
+lemma solves_ode_half_open_segment_continuation:
+  fixes f::"real \<Rightarrow> 'a \<Rightarrow> 'a::banach"
+  assumes ode: "(x solves_ode f) {t0 --< t1} X"
+  assumes continuous: "continuous_on ({t0 -- t1} \<times> X) (\<lambda>(t, x). f t x)"
+  assumes "compact X"
+  assumes "t0 \<noteq> t1"
+  obtains l where
+    "(x \<longlongrightarrow> l) (at t1 within {t0 --< t1})"
+    "((\<lambda>t. if t = t1 then l else x t) solves_ode f) {t0 -- t1} X"
+proof -
+  note [continuous_intros] = continuous_on_compose_Pair[OF continuous]
+  have "compact ((\<lambda>(t, x). f t x) ` ({t0 -- t1} \<times> X))"
+    by (auto intro!: compact_continuous_image continuous_intros compact_Times \<open>compact X\<close>
+      simp: split_beta)
+  then obtain B where "B > 0" and B: "\<And>t x. t \<in> {t0 -- t1} \<Longrightarrow> x \<in> X \<Longrightarrow> norm (f t x) \<le> B"
+    by (auto dest!: compact_imp_bounded simp: bounded_pos)
+
+  have uc: "uniformly_continuous_on {t0 --< t1} x"
+    apply (rule lipschitz_uniformly_continuous_on[where L=B])
+    apply (rule bounded_vderiv_on_imp_lipschitz)
+    apply (rule solves_odeD[OF ode])
+    using solves_odeD(2)[OF ode] \<open>0 < B\<close>
+    by (auto simp: closed_segment_real half_open_segment_real subset_iff
+      intro!: B split: if_split_asm)
+
+  have "t1 \<in> closure ({t0 --< t1})"
+    using closure_half_open_segment[of t0 t1] \<open>t0 \<noteq> t1\<close>
+    by simp
+  from uniformly_continuous_on_extension_on_closure[OF uc]
+  obtain g where uc_g: "uniformly_continuous_on {t0--t1} g"
+    and xg: "(\<And>t. t \<in> {t0 --< t1} \<Longrightarrow> x t = g t)"
+    using closure_half_open_segment[of t0 t1] \<open>t0 \<noteq> t1\<close>
+    by metis
+
+  from uc_g[THEN uniformly_continuous_imp_continuous, unfolded continuous_on_def]
+  have "(g \<longlongrightarrow> g t) (at t within {t0--t1})" if "t\<in>{t0--t1}" for t
+    using that by auto
+  then have g_tendsto: "(g \<longlongrightarrow> g t) (at t within {t0--<t1})" if "t\<in>{t0--t1}" for t
+    using that by (auto intro: tendsto_within_subset half_open_segment_subset)
+  then have x_tendsto: "(x \<longlongrightarrow> g t) (at t within {t0--<t1})" if "t\<in>{t0--t1}" for t
+    using that
+    by (subst Lim_cong_within[OF refl refl refl xg]) auto
+  then have "(x \<longlongrightarrow> g t1) (at t1 within {t0 --< t1})"
+    by auto
+  moreover
+  have nbot: "at s within {t0--<t1} \<noteq> bot" if "s \<in> {t0--t1}" for s
+    using that \<open>t0 \<noteq> t1\<close>
+    by (auto simp: trivial_limit_within islimpt_half_open_segment)
+  have g_mem: "s \<in> {t0--t1} \<Longrightarrow> g s \<in> X" for s
+    apply (rule Lim_in_closed_set[OF compact_imp_closed[OF \<open>compact X\<close>] _ _ x_tendsto])
+    using solves_odeD(2)[OF ode] \<open>t0 \<noteq> t1\<close>
+    by (auto intro!: simp: eventually_at_filter nbot)
+  have "(g solves_ode f) {t0 -- t1} X"
+    apply (rule solution_fixed_pointI[OF continuous])
+    subgoal by (auto intro!: uc_g uniformly_continuous_imp_continuous)
+    subgoal by (rule g_mem)
+    subgoal premises prems for s
+    proof -
+      {
+        fix s
+        assume s: "s \<in> {t0--<t1}"
+        with prems have subs: "{t0--s} \<subseteq> {t0--<t1}"
+          by (auto simp: half_open_segment_real closed_segment_real)
+        with ode have sol: "(x solves_ode f) ({t0--s}) X"
+          by (rule solves_ode_on_subset) (rule order_refl)
+        from subs have inner_eq: "t \<in> {t0 -- s} \<Longrightarrow> x t = g t" for t
+          by (intro xg) auto
+        from solution_fixed_point[OF sol, of s]
+        have "g t0 + ivl_integral t0 s (\<lambda>t. f t (g t)) - g s = 0"
+          using s prems \<open>t0 \<noteq> t1\<close>
+          by (auto simp: inner_eq cong: ivl_integral_cong)
+      } note fp = this
+
+      from prems have subs: "{t0--s} \<subseteq> {t0--t1}"
+        by (auto simp: closed_segment_real)
+      have int: "(\<lambda>t. f t (g t)) integrable_on {t0--t1}"
+        using prems subs
+        by (auto intro!: integrable_continuous_closed_segment continuous_intros g_mem
+          uc_g[THEN uniformly_continuous_imp_continuous, THEN continuous_on_subset])
+      note ivl_tendsto[tendsto_intros] =
+        indefinite_ivl_integral_continuous(1)[OF int, unfolded continuous_on_def, rule_format]
+
+      from subs half_open_segment_subset
+      have "((\<lambda>s. g t0 + ivl_integral t0 s (\<lambda>t. f t (g t)) - g s) \<longlongrightarrow>
+        g t0 + ivl_integral t0 s (\<lambda>t. f t (g t)) - g s) (at s within {t0 --< t1})"
+        using subs
+        by (auto intro!: tendsto_intros ivl_tendsto[THEN tendsto_within_subset]
+          g_tendsto[THEN tendsto_within_subset])
+      moreover
+      have "((\<lambda>s. g t0 + ivl_integral t0 s (\<lambda>t. f t (g t)) - g s) \<longlongrightarrow> 0) (at s within {t0 --< t1})"
+        apply (subst Lim_cong_within[OF refl refl refl, where g="\<lambda>_. 0"])
+        subgoal by (subst fp) auto
+        subgoal by simp
+        done
+      ultimately have "g t0 + ivl_integral t0 s (\<lambda>t. f t (g t)) - g s = 0"
+        using nbot prems tendsto_unique by blast
+      then show "g s = g t0 + ivl_integral t0 s (\<lambda>t. f t (g t))" by simp
+    qed
+    done
+  then have "((\<lambda>t. if t = t1 then g t1 else x t) solves_ode f) {t0--t1} X"
+    apply (rule solves_ode_congI)
+    using xg \<open>t0 \<noteq> t1\<close>
+    by (auto simp: half_open_segment_closed_segmentI)
+  ultimately show ?thesis ..
+qed
+
+
+subsection \<open>Picard-Lindeloef on set of functions into closed set\<close>
+text\<open>\label{sec:plclosed}\<close>
 
 locale continuous_rhs = fixes T X f
-  assumes continuous: "continuous_on (T \<times> X) f"
+  assumes continuous: "continuous_on (T \<times> X) (\<lambda>(t, x). f t x)"
+begin
+
+lemma continuous_rhs_comp[continuous_intros]:
+  assumes [continuous_intros]: "continuous_on S g"
+  assumes [continuous_intros]: "continuous_on S h"
+  assumes "\<And>t. t \<in> S \<Longrightarrow> g t \<in> T"
+  assumes "\<And>t. t \<in> S \<Longrightarrow> h t \<in> X"
+  shows "continuous_on S (\<lambda>x. f (g x) (h x))"
+  using continuous_on_compose_Pair[OF continuous assms(1,2)] assms(3,4)
+  by auto
+
+end
 
 locale global_lipschitz =
   fixes T X f and L::real
-  assumes lipschitz: "\<And>t. t\<in>T \<Longrightarrow> lipschitz X (\<lambda>x. f (t, x)) L"
+  assumes lipschitz: "\<And>t. t \<in> T \<Longrightarrow> lipschitz X (\<lambda>x. f t x) L"
 
 locale closed_domain =
   fixes X assumes closed: "closed X"
 
-locale self_mapping = ivp_on_interval +
-  assumes self_mapping:
-    "\<And>x t. t \<in> T \<Longrightarrow> x t0 = x0 \<Longrightarrow> x \<in> {t0..t} \<rightarrow> X \<Longrightarrow> continuous_on {t0..t} x \<Longrightarrow>
-      x0 + integral {t0..t} (\<lambda>t. f (t, x t)) \<in> X"
-
-locale unique_on_closed = self_mapping + continuous_rhs T X f +
-  closed_domain X +
-  global_lipschitz T X f L for L
+locale interval = fixes T::"real set"
+  assumes interval: "is_interval T"
 begin
+
+lemma closed_segment_subset_domain: "t0 \<in> T \<Longrightarrow> t \<in> T \<Longrightarrow> closed_segment t0 t \<subseteq> T"
+  by (simp add: closed_segment_subset_interval interval)
+
+lemma closed_segment_subset_domainI: "t0 \<in> T \<Longrightarrow> t \<in> T \<Longrightarrow> s \<in> closed_segment t0 t \<Longrightarrow> s \<in> T"
+  using closed_segment_subset_domain by force
+
+lemma convex[intro, simp]: "convex T"
+  and connected[intro, simp]: "connected T"
+  by (simp_all add: interval is_interval_connected is_interval_convex )
+
+end
+
+locale nonempty_set = fixes T assumes nonempty_set: "T \<noteq> {}"
+
+locale compact_interval = interval + nonempty_set T +
+  assumes compact_time: "compact T"
+begin
+
+definition "tmin = Inf T"
+definition "tmax = Sup T"
+
+lemma
+  shows tmin: "t \<in> T \<Longrightarrow> tmin \<le> t" "tmin \<in> T"
+    and tmax: "t \<in> T \<Longrightarrow> t \<le> tmax" "tmax \<in> T"
+  using nonempty_set
+  by (auto intro!: cInf_lower cSup_upper bounded_imp_bdd_below bounded_imp_bdd_above
+    compact_imp_bounded compact_time closed_contains_Inf closed_contains_Sup compact_imp_closed
+    simp: tmin_def tmax_def)
+
+lemma tmin_le_tmax[intro, simp]: "tmin \<le> tmax"
+  using nonempty_set tmin tmax by auto
+
+lemma T_def: "T = {tmin .. tmax}"
+  using closed_segment_subset_interval[OF interval tmin(2) tmax(2)]
+  by (auto simp: closed_segment_real subset_iff intro!: tmin tmax)
+
+end
+
+locale self_mapping = interval T for T +
+  fixes t0::real and x0 f X
+  assumes iv_defined: "t0 \<in> T" "x0 \<in> X"
+  assumes self_mapping:
+    "\<And>x t. t \<in> T \<Longrightarrow> x t0 = x0 \<Longrightarrow> x \<in> closed_segment t0 t \<rightarrow> X \<Longrightarrow>
+      continuous_on (closed_segment t0 t) x \<Longrightarrow> x t0 + ivl_integral t0 t (\<lambda>t. f t (x t)) \<in> X"
+begin
+
+sublocale nonempty_set T using iv_defined by unfold_locales auto
+
+lemma closed_segment_iv_subset_domain: "t \<in> T \<Longrightarrow> closed_segment t0 t \<subseteq> T"
+  by (simp add: closed_segment_subset_domain iv_defined)
+
+end
+
+locale unique_on_closed =
+  compact_interval T +
+  self_mapping T t0 x0 f X +
+  continuous_rhs T X f +
+  closed_domain X +
+  global_lipschitz T X f L for t0::real and T and x0::"'a::banach" and f X L
+begin
+
+lemma T_split: "T = {tmin .. t0} \<union> {t0 .. tmax}"
+  by (metis T_def atLeastAtMost_iff iv_defined(1) ivl_disj_un_two_touch(4))
 
 lemma L_nonneg: "0 \<le> L"
   by (auto intro!: lipschitz_nonneg[OF lipschitz] iv_defined)
 
 text \<open>Picard Iteration\<close>
 
-definition P_inner
-  where
-  "P_inner x t = x0 + integral {t0..t} (\<lambda>t. f (t, x t))"
+definition P_inner where "P_inner x t = x0 + ivl_integral t0 t (\<lambda>t. f  t (x t))"
 
-definition P::"(real, 'a) bcontfun \<Rightarrow> (real, 'a) bcontfun" where
-  "P x = ext_cont (P_inner x) t0 t1"
+lemma P_inner_t0[simp]: "P_inner (Rep_bcontfun g) t0 = x0"
+  by (simp add: P_inner_def)
+
+definition P::"(real, 'a) bcontfun \<Rightarrow> (real, 'a) bcontfun" where "P x = ext_cont (P_inner x) tmin tmax"
 
 lemma
   continuous_f:
-  assumes "y \<in> {t0..t} \<rightarrow> X"
-  assumes "continuous_on {t0..t} y"
+  assumes "y \<in> closed_segment t0 t \<rightarrow> X"
+  assumes "continuous_on (closed_segment t0 t) y"
   assumes "t \<in> T"
-  shows "continuous_on {t0..t} (\<lambda>t. f (t, y t))"
-  using \<open>y \<in> {t0..t} \<rightarrow> X\<close> assms interval_notempty
-  by (intro continuous_Sigma[of _ _ "\<lambda>_. X"])
-    (auto simp: interval intro: assms continuous_on_subset continuous)
+  shows "continuous_on (closed_segment t0 t) (\<lambda>t. f t (y t))"
+  using assms closed_segment_iv_subset_domain[OF \<open>t \<in> T\<close>]
+  by (auto intro!: assms continuous_intros)
 
 lemma P_inner_bcontfun:
   assumes "y \<in> T \<rightarrow> X"
   assumes y_cont: "continuous_on T y"
-  shows "(\<lambda>x. P_inner y (clamp t0 t1 x)) \<in> bcontfun"
+  shows "(\<lambda>x. P_inner y (clamp tmin tmax x)) \<in> bcontfun"
 proof -
-  show ?thesis using interval iv_defined assms
-    by (auto intro!: clamp_bcontfun continuous_intros continuous_f
-      indefinite_integral_continuous integrable_continuous_real
-      simp: P_def P_inner_def)
+  have "continuous_on {tmin .. tmax} (\<lambda>x. ivl_integral t0 x (\<lambda>t. f t (y t)))"
+    unfolding real_Icc_closed_segment[OF tmin_le_tmax]
+    using iv_defined assms T_def
+    by (intro indefinite_ivl_integral_continuous_subset integrable_continuous_closed_segment)
+      (auto intro!: continuous_intros simp: real_Icc_closed_segment)
+  then show ?thesis
+    by (auto intro!: clamp_bcontfun continuous_intros simp: P_inner_def)
 qed
+
+lemma t0_cs_tmin_tmax: "t0 \<in> {tmin--tmax}" and cs_tmin_tmax_subset: "{tmin--tmax} \<subseteq> T"
+  using iv_defined T_def closed_segment_eq_real_ivl
+  by auto
+
+lemma P_def':
+  assumes "t \<in> T"
+  assumes "\<And>t. t \<in> T \<Longrightarrow> Rep_bcontfun fixed_point t \<in> X"
+  shows "(P fixed_point) t = x0 + ivl_integral t0 t (\<lambda>x. f x (fixed_point x))"
+  apply (subst P_def)
+  apply (subst P_inner_def[abs_def])
+  apply (subst ext_cont_cancel)
+  subgoal using assms T_def by simp
+  subgoal
+    using assms iv_defined t0_cs_tmin_tmax cs_tmin_tmax_subset
+    by (auto
+        intro!: continuous_intros indefinite_ivl_integral_continuous_subset integrable_continuous_closed_segment
+        simp: real_Icc_closed_segment )
+  subgoal by simp
+  done
 
 definition "iter_space = (Abs_bcontfun ` ((T \<rightarrow> X) \<inter> bcontfun \<inter> {x. x t0 = x0}))"
 
 lemma iter_spaceI:
-  "(\<And>x. x \<in> T \<Longrightarrow> Rep_bcontfun g x \<in> X) \<Longrightarrow> g t0 = x0 \<Longrightarrow> g \<in> iter_space"
-  by (force simp add: iter_space_def Rep_bcontfun Rep_bcontfun_inverse
-    intro!: Rep_bcontfun)
+  assumes "(\<And>x. x \<in> T \<Longrightarrow> Rep_bcontfun g x \<in> X)" "g t0 = x0"
+  shows "g \<in> iter_space"
+  using assms
+  by (auto simp: iter_space_def Rep_bcontfun Rep_bcontfun_inverse
+      intro!: Rep_bcontfun image_eqI[where x="Rep_bcontfun g"])
+
+lemma iter_spaceD:
+  assumes "g \<in> iter_space"
+  shows "\<And>x. x \<in> T \<Longrightarrow> g x \<in> X" "g t0 = x0"
+  using assms
+  by (auto simp add: iter_space_def Abs_bcontfun_inverse)
 
 lemma const_in_subspace: "(\<lambda>_. x0) \<in> (T \<rightarrow> X) \<inter> bcontfun \<inter> {x. x t0 = x0}"
   by (auto intro: const_bcontfun iv_defined)
@@ -1125,66 +1426,100 @@ qed
 lemma iter_space_notempty: "iter_space \<noteq> {}"
   using const_in_subspace by (auto simp: iter_space_def)
 
+lemma clamb_in_eq[simp]: fixes a x b::real shows "a \<le> x \<Longrightarrow> x \<le> b \<Longrightarrow> clamp a b x = x"
+  by (auto simp: clamp_def)
+
 lemma P_self_mapping:
   assumes in_space: "g \<in> iter_space"
   shows "P g \<in> iter_space"
 proof (rule iter_spaceI)
-  have cont: "continuous_on (cbox t0 t1) (P_inner (Rep_bcontfun g))"
-    using assms Rep_bcontfun[of g, simplified bcontfun_def]
-    by (auto simp: interval iter_space_def Abs_bcontfun_inverse P_inner_def
-        interval_notempty
-      intro!: continuous_intros indefinite_integral_continuous
-        integrable_continuous_real continuous_f)
-  from ext_cont_cancel[OF _ cont] assms
+  from iter_spaceD[OF in_space] iv_defined
   show "Rep_bcontfun (P g) t0 = x0"
-     "\<And>t. t \<in> T \<Longrightarrow> Rep_bcontfun (P g) t \<in> X"
-    using assms Rep_bcontfun[of g, simplified bcontfun_def]
-    by (auto intro!: self_mapping simp: interval interval_notempty P_inner_def
-      P_def iter_space_def Abs_bcontfun_inverse)
+    by (auto simp: P_def')
+  from iter_spaceD[OF in_space] iv_defined
+  show "Rep_bcontfun (P g) t \<in> X" if "t \<in> T" for t
+    using that closed_segment_iv_subset_domain[OF \<open>t \<in> T\<close>]
+    by (auto simp: P_def' intro!: self_mapping)
 qed
 
+lemma continuous_on_T: "continuous_on {tmin .. tmax} g \<Longrightarrow> continuous_on T g"
+  using T_def by auto
+
+lemma T_closed_segment_subsetI[intro, simp]: "t \<in> {tmin--tmax} \<Longrightarrow> t \<in> T"
+  and T_subsetI[intro, simp]: "tmin \<le> t \<Longrightarrow> t \<le> tmax \<Longrightarrow> t \<in> T"
+  by (subst T_def, simp add: closed_segment_real)+
+
+lemma t0_mem_closed_segment[intro, simp]: "t0 \<in> {tmin--tmax}"
+  using T_def iv_defined
+  by (simp add: closed_segment_real)
+
+lemma tmin_le_t0[intro, simp]: "tmin \<le> t0"
+  and tmax_ge_t0[intro, simp]: "tmax \<ge> t0"
+  using t0_mem_closed_segment
+  unfolding closed_segment_real
+  by simp_all
+
 lemma ext_cont_solution_fixed_point:
-  assumes "is_solution x"
-  shows "P (ext_cont x t0 t1) = ext_cont x t0 t1"
+  assumes ode: "(x solves_ode f) T X"
+  assumes iv: "x t0 = x0"
+  shows "P (ext_cont x tmin tmax) = ext_cont x tmin tmax"
   unfolding P_def
 proof (rule ext_cont_cong)
-  show "P_inner (Rep_bcontfun (ext_cont x t0 t1)) t = x t" when "t \<in> {t0..t1}" for t
-    unfolding P_inner_def
-    using solution_fixed_point solution_continuous_on assms is_solutionD that
-    by (subst integral_spike[OF negligible_empty])
-       (auto simp: interval P_inner_def integral_spike[OF negligible_empty])
-qed (insert iv_defined solution_continuous_on assms is_solutionD,
-  auto simp: interval P_inner_def continuous_intros
-    indefinite_integral_continuous continuous_f)
+  show "P_inner (Rep_bcontfun (ext_cont x tmin tmax)) t = x t" if "t \<in> cbox tmin tmax" for t
+  proof -
+    from that have "t \<in> T" using T_def by simp
+    then have "{t0--t} \<subseteq> T" by (rule closed_segment_iv_subset_domain)
+    with ode have "(x solves_ode f) {t0--t} X"
+      by (rule solves_ode_on_subset) simp
+    then have "x t = x t0 + ivl_integral t0 t (\<lambda>t. f t (x t))"
+      by (rule solution_fixed_point[symmetric]) simp
+    also have "ivl_integral t0 t (\<lambda>t. f t (x t)) = ivl_integral t0 t (\<lambda>t. f t ((ext_cont x tmin tmax) t))"
+      using \<open>{t0--t} \<subseteq> T\<close> T_def
+      by (intro ivl_integral_cong) (auto simp: ext_cont_cancel solves_ode_continuous_on[OF ode])
+    finally show ?thesis by (simp add: iv P_inner_def)
+  qed
+  show "continuous_on (cbox tmin tmax) x" using solves_ode_continuous_on[OF ode] T_def by auto
+  then show "continuous_on (cbox tmin tmax) (P_inner (ext_cont x tmin tmax))"
+    using solves_odeD(2)[OF ode]
+    by (auto simp: P_inner_def real_Icc_closed_segment
+      intro!: continuous_intros indefinite_ivl_integral_continuous_subset
+        integrable_continuous_closed_segment)
+qed auto
 
 lemma
   solution_in_iter_space:
-  assumes "is_solution z"
-  shows "ext_cont z t0 t1 \<in> iter_space"
+  assumes ode: "(z solves_ode f) T X"
+  assumes iv: "z t0 = x0"
+  shows "ext_cont z tmin tmax \<in> iter_space" (is "?z \<in> _")
 proof -
-  let ?z = "ext_cont z t0 t1"
-  have "is_solution ?z"
-    using is_solution_ext_cont interval \<open>is_solution z\<close> solution_continuous_on
-    by simp
-  hence "\<And>t. t \<in> T \<Longrightarrow> ext_cont z t0 t1 t \<in> X"
-    by (auto simp add: is_solution_def)
-  thus "?z \<in> iter_space" using is_solutionD[OF \<open>is_solution z\<close>]
-    solution_continuous_on[OF \<open>is_solution z\<close>]
-    by (auto simp: interval interval_notempty intro!: iter_spaceI)
+  from T_def ode have ode: "(z solves_ode f) {tmin -- tmax} X"
+    by (simp add: closed_segment_real)
+  have "(?z solves_ode f) T X"
+    using is_solution_ext_cont[OF solves_ode_continuous_on[OF ode], of f X] ode T_def
+    by (auto simp: min_def max_def closed_segment_real)
+  then have "\<And>t. t \<in> T \<Longrightarrow> ext_cont z tmin tmax t \<in> X"
+    by (auto simp add: solves_ode_def)
+  thus "?z \<in> iter_space" using solves_odeD[OF ode] solves_ode_continuous_on[OF ode]
+    by (auto simp: iv closed_segment_real min_def max_def
+      intro!: iter_spaceI)
 qed
 
 end
 
 locale unique_on_bounded_closed = unique_on_closed +
-  assumes lipschitz_bound: "(t1 - t0) * L < 1"
+  assumes lipschitz_bound: "\<And>s t. s \<in> T \<Longrightarrow> t \<in> T \<Longrightarrow> abs (s - t) * L < 1"
 begin
 
+lemma lipschitz_bound_maxmin: "(tmax - tmin) * L < 1"
+  using lipschitz_bound[of tmax tmin]
+  by auto
+
 lemma lipschitz_P:
-  shows "lipschitz iter_space P ((t1 - t0) * L)"
+  shows "lipschitz iter_space P ((tmax - tmin) * L)"
 proof (rule lipschitzI)
   have "t0 \<in> T" by (simp add: iv_defined)
-  thus "0 \<le> (t1 - t0) * L"
-    using interval_notempty interval
+  thus "0 \<le> (tmax - tmin) * L"
+    using T_def
     by (auto intro!: mult_nonneg_nonneg lipschitz lipschitz_nonneg[OF lipschitz]
       iv_defined)
   fix y z
@@ -1196,84 +1531,77 @@ proof (rule lipschitzI)
     fix y z::"real\<Rightarrow>'a"
     assume "y \<in> bcontfun" and y_defined: "y \<in> (T \<rightarrow> X)"
     assume "z \<in> bcontfun" and z_defined: "z \<in> (T \<rightarrow> X)"
-    from bcontfunE[OF \<open>y \<in> bcontfun\<close>] have y: "continuous_on UNIV y" by auto
-    from bcontfunE[OF \<open>z \<in> bcontfun\<close>] have z: "continuous_on UNIV z" by auto
-    have *: "norm (P_inner y t - P_inner z t)
-        \<le> L * (t1 - t0) * norm (Abs_bcontfun y - Abs_bcontfun z)"
-      if t_bounds: "t0 \<le> t" "t \<le> t1" for t
-      \<comment>\<open>Instances of \<open>continuous_on_subset\<close>\<close>
-    proof -
-      have y_cont: "continuous_on {t0..t} (\<lambda>t. y t)" using y
-        by (auto intro:continuous_on_subset)
-      have "continuous_on {t0..t1} (\<lambda>t. f (t, y t))"
-        using continuous interval interval_notempty y strip y_defined
-        by (auto intro!:continuous_f intro: continuous_on_subset)
-      hence fy_cont[intro, simp]:
-        "continuous_on {t0..t} (\<lambda>t. f (t, y t))"
-        by (rule continuous_on_subset) (simp add: t_bounds)
-      have z_cont: "continuous_on {t0..t} (\<lambda>t. z t)" using z
-        by (auto intro:continuous_on_subset)
-      have "continuous_on {t0..t1} (\<lambda>t. f (t, z t))"
-        by (metis (no_types) UNIV_I continuous continuous_Sigma continuous_on_subset interval subsetI z z_defined)
-      hence fz_cont[intro, simp]:
-        "continuous_on {t0..t} (\<lambda>t. f (t, z t))"
-        by (rule continuous_on_subset) (simp add: t_bounds)
+    from bcontfunE[OF \<open>y \<in> bcontfun\<close>] have y[THEN continuous_on_compose2, continuous_intros]: "continuous_on UNIV y" by auto
+    from bcontfunE[OF \<open>z \<in> bcontfun\<close>] have z[THEN continuous_on_compose2, continuous_intros]: "continuous_on UNIV z" by auto
+    have defined: "s \<in> T" "y s \<in> X" "z s \<in> X" if "s \<in> closed_segment tmin tmax" for s
+      using y_defined z_defined that T_def
+      by (auto simp: )    {
+      note [intro, simp] = integrable_continuous_closed_segment
+      fix t
+      assume t_bounds: "t \<in> closed_segment tmin tmax"
+      then have cs_subs: "closed_segment t0 t \<subseteq> closed_segment tmin tmax"
+        by (auto simp: closed_segment_real)
+      then have cs_subs_ext: "\<And>ta. ta \<in> {t0--t} \<Longrightarrow> ta \<in> {tmin--tmax}" by auto
 
       have "norm (P_inner y t - P_inner z t) =
-        norm (integral {t0..t} (\<lambda>t. f (t, y t) - f (t, z t)))"
-        using y
-        by (auto simp add: integral_diff P_inner_def)
-      also have "... \<le> integral {t0..t} (\<lambda>t. norm (f (t, y t) - f (t, z t)))"
-        by (auto intro!: integral_norm_bound_integral continuous_intros)
-      also have "... \<le> integral {t0..t} (\<lambda>t. L * norm (y t - z t))"
-        using y_cont z_cont lipschitz t_bounds interval y_defined z_defined
-        by (intro integral_le)
-           (auto intro!: continuous_intros simp add: dist_norm lipschitz_def Pi_iff)
-      also have "... \<le> integral {t0..t} (\<lambda>t. L *
-        norm (Abs_bcontfun y - Abs_bcontfun  z))"
+        norm (ivl_integral t0 t (\<lambda>t. f t (y t) - f t (z t)))"
+        by (subst ivl_integral_diff)
+          (auto intro!: integrable_continuous_closed_segment continuous_intros defined cs_subs_ext simp: P_inner_def)
+      also have "... \<le> abs (ivl_integral t0 t (\<lambda>t. norm (f t (y t) - f t (z t))))"
+        by (rule ivl_integral_norm_bound_ivl_integral)
+          (auto intro!: ivl_integral_norm_bound_ivl_integral continuous_intros integrable_continuous_closed_segment
+            simp: defined cs_subs_ext)
+      also have "... \<le> abs (ivl_integral t0 t (\<lambda>t. L * norm (y t - z t)))"
+        using lipschitz t_bounds T_def y_defined z_defined cs_subs
+        by (intro norm_ivl_integral_le) (auto intro!: continuous_intros integrable_continuous_closed_segment
+          simp add: dist_norm lipschitz_def Pi_iff)
+      also have "... \<le> abs (ivl_integral t0 t (\<lambda>t. L * norm (Abs_bcontfun y - Abs_bcontfun  z)))"
         using norm_bounded[of "Abs_bcontfun y - Abs_bcontfun z"]
-          y_cont z_cont L_nonneg
-        by (intro integral_le) (auto intro!: continuous_intros mult_left_mono
+          L_nonneg
+        by (intro norm_ivl_integral_le) (auto intro!: continuous_intros mult_left_mono
           simp add: Abs_bcontfun_inverse[OF \<open>y \<in> bcontfun\<close>]
           Abs_bcontfun_inverse[OF \<open>z \<in> bcontfun\<close>])
       also have "... =
-        L * (t - t0) * norm (Abs_bcontfun y - Abs_bcontfun z)"
-        using t_bounds by simp
-      also have "... \<le> L * (t1 - t0) * norm (Abs_bcontfun y - Abs_bcontfun z)"
-        using t_bounds zero_le_dist L_nonneg
-        by (auto intro!: mult_right_mono mult_left_mono)
-      finally show ?thesis .
-    qed
+        L * abs (t - t0) * norm (Abs_bcontfun y - Abs_bcontfun z)"
+        using t_bounds L_nonneg by (simp add: abs_mult)
+      also have "... \<le> L * (tmax - tmin) * norm (Abs_bcontfun y - Abs_bcontfun z)"
+        using t_bounds zero_le_dist L_nonneg cs_subs tmin_le_t0 tmax_ge_t0
+        by (auto intro!: mult_right_mono mult_left_mono simp: closed_segment_real abs_real_def
+          simp del: tmin_le_t0 tmax_ge_t0 split: if_split_asm)
+      finally
+      have "norm (P_inner y t - P_inner z t)
+        \<le> L * (tmax - tmin) * norm (Abs_bcontfun y - Abs_bcontfun z)" .
+    } note * = this
     have "dist (P (Abs_bcontfun y)) (P (Abs_bcontfun z)) \<le>
-      L * (t1 - t0) * dist (Abs_bcontfun y) (Abs_bcontfun z)"
+      L * (tmax - tmin) * dist (Abs_bcontfun y) (Abs_bcontfun z)"
       unfolding P_def dist_norm ext_cont_def
         Abs_bcontfun_inverse[OF \<open>y \<in> bcontfun\<close>]
         Abs_bcontfun_inverse[OF \<open>z \<in> bcontfun\<close>]
-      using interval iv_defined \<open>y \<in> bcontfun\<close> \<open>z \<in> bcontfun\<close>
+      using T_def iv_defined \<open>y \<in> bcontfun\<close> \<open>z \<in> bcontfun\<close>
         y_defined z_defined
-        clamp_in_interval[of t0 t1] interval_notempty
+        clamp_in_interval[of "tmin" "tmax"]
       apply (intro norm_bound)
       unfolding Rep_bcontfun_minus
-      apply (subst Abs_bcontfun_inverse)
-       defer
-       apply (subst Abs_bcontfun_inverse)
-        defer
-      by (auto intro!: P_inner_bcontfun * elim!: bcontfunE
+      apply (subst Abs_bcontfun_inverse,
+        fastforce simp add: elim!: bcontfunE  intro!: P_inner_bcontfun * intro: continuous_on_subset)
+      apply (subst Abs_bcontfun_inverse,
+        fastforce simp add: elim!: bcontfunE  intro!: P_inner_bcontfun * intro: continuous_on_subset)
+      by (auto intro!: P_inner_bcontfun * elim!: bcontfunE simp: real_Icc_closed_segment
         intro: continuous_on_subset)
   }
   from this[OF Rep_bcontfun y_defined Rep_bcontfun z_defined]
-  show "dist (P y) (P z) \<le> (t1 - t0) * L * dist y z"
+  show "dist (P y) (P z) \<le> (tmax - tmin) * L * dist y z"
     unfolding Rep_bcontfun_inverse by (simp add: field_simps)
 qed
 
 
 lemma fixed_point_unique: "\<exists>!x\<in>iter_space. P x = x"
-  using lipschitz lipschitz_bound lipschitz_P interval
+  using lipschitz lipschitz_bound_maxmin lipschitz_P T_def
       complete_UNIV iv_defined
   by (intro banach_fix)
     (auto
       intro: P_self_mapping split_mult_pos_le
-      intro!: closed_iter_space iter_space_notempty
+      intro!: closed_iter_space iter_space_notempty mult_nonneg_nonneg
       simp: lipschitz_def complete_eq_closed)
 
 definition fixed_point where
@@ -1295,290 +1623,592 @@ lemma fixed_point_equality': "x \<in> iter_space \<and> P x = x \<Longrightarrow
 lemma fixed_point_equality: "x \<in> iter_space \<Longrightarrow> P x = x \<Longrightarrow> fixed_point = x"
   using fixed_point_equality'[of x] by auto
 
-lemma fixed_point_continuous: "\<And>t. continuous_on I fixed_point"
-  using bcontfunE[OF Rep_bcontfun[of fixed_point]]
-  by (auto intro: continuous_on_subset)
+lemma fixed_point_iv: "fixed_point t0 = x0"
+  and fixed_point_domain: "x \<in> T \<Longrightarrow> fixed_point x \<in> X"
+  using fixed_point
+  by (auto dest: iter_spaceD)
+
+lemma fixed_point_has_vderiv_on: "(fixed_point has_vderiv_on (\<lambda>t. f t (fixed_point t))) T"
+proof -
+  have "continuous_on {tmin--tmax} (\<lambda>x. f x (fixed_point x))"
+    using fixed_point_domain
+    by (auto intro!: continuous_intros)
+  then have "((\<lambda>u. x0 + ivl_integral t0 u (\<lambda>x. f x (fixed_point x))) has_vderiv_on (\<lambda>t. f t (fixed_point t))) {tmin -- tmax}"
+    by (auto intro!: derivative_intros ivl_integral_has_vderiv_on_subset)
+  then show ?thesis
+  proof (rule has_vderiv_eq)
+    fix t
+    assume t: "t \<in> {tmin--tmax}"
+    have "fixed_point t = P fixed_point t"
+      using fixed_point by simp
+    also have "\<dots> = x0 + ivl_integral t0 t (\<lambda>x. f x (fixed_point x))"
+      using t fixed_point_domain
+      by (auto simp: P_def')
+    finally show "x0 + ivl_integral t0 t (\<lambda>x. f x (fixed_point x)) = fixed_point t" by simp
+  qed (insert T_def, auto simp: closed_segment_real)
+qed
 
 lemma fixed_point_solution:
-  shows "is_solution fixed_point"
-proof
-  have "fixed_point t0 = P fixed_point t0"
-    unfolding fixed_point ..
-  also have "... = x0"
-    using interval iv_defined continuous fixed_point_continuous fixed_point
-    unfolding P_def P_inner_def[abs_def]
-    by (subst ext_cont_cancel)
-      (auto simp add: iter_space_def Abs_bcontfun_inverse
-        intro!: continuous_intros indefinite_integral_continuous
-          integrable_continuous_real continuous_f
-        intro: continuous_on_subset)
-  finally show "fixed_point t0 = x0" .
-next
-  fix t
-  have U: "Rep_bcontfun fixed_point \<in> Pi T (\<lambda>_. X)"
-    using fixed_point by (auto simp add: iter_space_def Abs_bcontfun_inverse)
-  assume "t \<in> T" hence t_range: "t \<in> {t0..t1}" by (simp add: interval)
-  from has_vector_derivative_const
-    integral_has_vector_derivative[OF
-      continuous_Sigma[OF U continuous fixed_point_continuous,
-        simplified interval]
-      t_range]
-  have "((\<lambda>u. x0 + integral {t0..u}
-         (\<lambda>x. f (x, fixed_point x))) has_vector_derivative
-   0 + f (t, fixed_point t))
-   (at t within {t0..t1})"
-    by (rule has_vector_derivative_add)
-  hence "((P fixed_point) has_vector_derivative
-    f (t, fixed_point t)) (at t within {t0..t1})"
-    unfolding P_def P_inner_def[abs_def]
-    using t_range
-    apply (subst has_vector_derivative_cong)
-    apply (simp_all)
-    using fixed_point fixed_point_continuous continuous interval
-    by (subst ext_cont_cancel)
-      (auto simp: iter_space_def Abs_bcontfun_inverse
-        intro!: continuous_intros indefinite_integral_continuous
-          integrable_continuous_real continuous_f
-        intro: continuous_on_subset)
+  shows "(fixed_point solves_ode f) T X"
+  using fixed_point_has_vderiv_on fixed_point_domain
+  by (rule solves_odeI)
+
+
+subsubsection \<open>Unique solution\<close>
+text\<open>\label{sec:ivp-ubs}\<close>
+
+lemma solves_ode_equals_fixed_point:
+  assumes ode: "(x solves_ode f) T X"
+  assumes iv: "x t0 = x0"
+  assumes "t \<in> T"
+  shows "x t = fixed_point t"
+proof -
+  have "ext_cont fixed_point tmin tmax t = ext_cont x tmin tmax t"
+    by (metis ode ext_cont_solution_fixed_point fixed_point_iv fixed_point_solution
+      iv solution_in_iter_space unique_on_bounded_closed.fixed_point_equality'
+      unique_on_bounded_closed_axioms)
+  then show "x t = fixed_point t"
+    using solves_ode_continuous_on[OF ode] solves_ode_continuous_on[OF fixed_point_solution] \<open>t \<in> T\<close> T_def
+    by (auto simp: closed_segment_real min_def max_def split: if_split_asm)
+qed
+
+lemma solves_ode_on_closed_segment_equals_fixed_point:
+  assumes ode: "(x solves_ode f) {t0 -- t1'} X"
+  assumes iv: "x t0 = x0"
+  assumes subset: "{t0--t1'} \<subseteq> T"
+  assumes t_mem: "t \<in> {t0--t1'}"
+  shows "x t = fixed_point t"
+proof -
+  have subsetI: "t \<in> {t0--t1'} \<Longrightarrow> t \<in> T" for t
+    using subset by auto
+  interpret s: unique_on_bounded_closed t0 "{t0--t1'}" x0 f X L
+    apply - apply unfold_locales
+    subgoal by (simp add: closed_segment_real is_interval_closed_interval)
+    subgoal by simp
+    subgoal by simp
+    subgoal by simp
+    subgoal using iv_defined by simp
+    subgoal by (intro self_mapping subsetI)
+    subgoal by (rule continuous_on_subset[OF continuous]) (auto simp: subsetI )
+    subgoal by (rule lipschitz) (auto simp: subsetI)
+    subgoal by (auto intro!: subsetI lipschitz_bound)
+    done
+  have "x t = s.fixed_point t"
+    by (rule s.solves_ode_equals_fixed_point; fact)
   moreover
-  have "fixed_point t \<in> X"
-    using fixed_point \<open>t \<in> T\<close> by (auto simp add: iter_space_def Abs_bcontfun_inverse)
-  ultimately
-  show "(fixed_point has_vector_derivative
-      f (t, fixed_point t)) (at t within T)"
-    "fixed_point t \<in> X" unfolding fixed_point interval
-    by simp_all
+  have "fixed_point t = s.fixed_point t"
+    by (intro s.solves_ode_equals_fixed_point solves_ode_on_subset[OF fixed_point_solution] assms
+      fixed_point_iv order_refl subset t_mem)
+  ultimately show ?thesis by simp
+qed
+
+lemma unique_solution:
+  assumes ivp1: "(x solves_ode f) T X" "x t0 = x0"
+  assumes ivp2: "(y solves_ode f) T X" "y t0 = x0"
+  assumes "t \<in> T"
+  shows "x t = y t"
+  using solves_ode_equals_fixed_point[OF ivp1 \<open>t \<in> T\<close>]
+    solves_ode_equals_fixed_point[OF ivp2 \<open>t \<in> T\<close>]
+  by simp
+
+lemma fixed_point_usolves_ode: "(fixed_point usolves_ode f from t0) T X"
+  apply (rule usolves_odeI[OF fixed_point_solution])
+  subgoal by (simp add: iv_defined(1))
+  subgoal by (rule interval)
+  subgoal
+    using fixed_point_iv solves_ode_on_closed_segment_equals_fixed_point
+    by auto
+  done
+
+end
+
+lemma closed_segment_Un:
+  fixes a b c::real
+  assumes "b \<in> closed_segment a c"
+  shows "closed_segment a b \<union> closed_segment b c = closed_segment a c"
+  using assms
+  by (auto simp: closed_segment_real)
+
+lemma closed_segment_closed_segment_subset:
+  fixes s::real and i::nat
+  assumes "s \<in> closed_segment a b"
+  assumes "a \<in> closed_segment c d" "b \<in> closed_segment c d"
+  shows "s \<in> closed_segment c d"
+  using assms
+  by (auto simp: closed_segment_real split: if_split_asm)
+
+
+context unique_on_closed begin
+
+context\<comment>\<open>solution until t1\<close>
+  fixes t1::real
+  assumes mem_t1: "t1 \<in> T"
+begin
+
+lemma subdivide_count_ex: "\<exists>n. L * abs (t1 - t0) / (Suc n) < 1"
+  by auto (meson add_strict_increasing less_numeral_extra(1) real_arch_simple)
+
+definition "subdivide_count = (SOME n. L * abs (t1 - t0) / Suc n < 1)"
+
+lemma subdivide_count: "L * abs (t1 - t0) / Suc subdivide_count < 1"
+  unfolding subdivide_count_def
+  using subdivide_count_ex 
+  by (rule someI_ex)
+
+lemma subdivide_lipschitz:
+  assumes "\<bar>s - t\<bar> \<le> abs (t1 - t0) / Suc subdivide_count"
+  shows "\<bar>s - t\<bar> * L < 1"
+proof -
+  from assms L_nonneg
+  have "\<bar>s - t\<bar> * L \<le> abs (t1 - t0) / Suc subdivide_count * L"
+    by (rule mult_right_mono)
+  also have "\<dots> < 1"
+    using subdivide_count
+    by (simp add: ac_simps)
+  finally show ?thesis .
+qed
+
+lemma subdivide_lipschitz_lemma:
+  assumes st: "s \<in> {a -- b}" "t \<in> {a -- b}"
+  assumes "abs (b - a) \<le> abs (t1 - t0) / Suc subdivide_count"
+  shows "\<bar>s - t\<bar> * L < 1"
+  apply (rule subdivide_lipschitz)
+  apply (rule order_trans[where y="abs (b - a)"])
+  using assms
+  by (auto simp: closed_segment_real split: if_splits)
+
+definition "step = (t1 - t0) / Suc subdivide_count"
+
+lemma last_step: "t0 + real (Suc subdivide_count) * step = t1"
+  by (auto simp: step_def)
+
+lemma step_in_segment:
+  assumes "0 \<le> i" "i \<le> real (Suc subdivide_count)"
+  shows "t0 + i * step \<in> closed_segment t0 t1"
+  unfolding closed_segment_real step_def
+proof (clarsimp, safe)
+  assume "t0 \<le> t1"
+  then have "(t1 - t0) * i \<le> (t1 - t0) * (1 + subdivide_count)"
+    using assms
+    by (auto intro!: mult_left_mono)
+  then show "t0 + i * (t1 - t0) / (1 + real subdivide_count) \<le> t1"
+    by (simp add: field_simps)
+next
+  assume "\<not>t0 \<le> t1"
+  then have "(1 + subdivide_count) * (t0 - t1) \<ge> i * (t0 - t1)"
+    using assms
+    by (auto intro!: mult_right_mono)
+  then show "t1 \<le> t0 + i * (t1 - t0) / (1 + real subdivide_count)"
+    by (simp add: field_simps)
+  show "i * (t1 - t0) / (1 + real subdivide_count) \<le> 0"
+    using \<open>\<not>t0 \<le> t1\<close>
+    by (auto simp: divide_simps mult_le_0_iff assms)
+qed (auto intro!: divide_nonneg_nonneg mult_nonneg_nonneg assms)
+
+lemma subset_T1:
+  fixes s::real and i::nat
+  assumes "s \<in> closed_segment t0 (t0 + i * step)"
+  assumes "i \<le> Suc subdivide_count"
+  shows "s \<in> {t0 -- t1}"
+  using closed_segment_closed_segment_subset assms of_nat_le_iff of_nat_0_le_iff step_in_segment
+  by blast
+
+lemma subset_T: "{t0 -- t1} \<subseteq> T" and subset_TI: "s \<in> {t0 -- t1} \<Longrightarrow> s \<in> T"
+  using closed_segment_iv_subset_domain mem_t1 by blast+
+
+primrec psolution::"nat \<Rightarrow> real \<Rightarrow> 'a" where
+  "psolution 0 t = x0"
+| "psolution (Suc i) t = unique_on_bounded_closed.fixed_point
+    (t0 + real i * step) {t0 + real i * step -- t0 + real (Suc i) * step}
+    (psolution i (t0 + real i * step)) f X t"
+
+definition "psolutions t = psolution (LEAST i. t \<in> closed_segment (t0 + real (i - 1) * step) (t0 + real i * step)) t"
+
+lemma psolutions_usolves_until_step:
+  assumes i_le: "i \<le> Suc subdivide_count"
+  shows "(psolutions usolves_ode f from t0) (closed_segment t0 (t0 + real i * step)) X"
+proof cases
+  assume "t0 = t1"
+  then have "step = 0"
+    unfolding step_def by simp
+  then show ?thesis by (simp add: psolutions_def iv_defined usolves_ode_singleton)
+next
+  assume "t0 \<noteq> t1"
+  then have "step \<noteq> 0"
+    by (simp add: step_def)
+  define S where "S \<equiv> \<lambda>i. closed_segment (t0 + real (i - 1) * step) (t0 + real i * step)"
+  have solution_eq: "psolutions \<equiv> \<lambda>t. psolution (LEAST i. t \<in> S i) t"
+    by (simp add: psolutions_def[abs_def] S_def)
+  show ?thesis
+    unfolding solution_eq
+    using i_le
+  proof (induction i)
+    case 0 then show ?case by (simp add: iv_defined usolves_ode_singleton S_def)
+  next
+    case (Suc i)
+    let ?sol = "\<lambda>t. psolution (LEAST i. t \<in> S i) t"
+    let ?pi = "t0 + real (i - Suc 0) * step" and ?i = "t0 + real i * step" and ?si = "t0 + (1 + real i) * step"
+    from Suc have ui: "(?sol usolves_ode f from t0) (closed_segment t0 (t0 + real i * step)) X"
+      by simp
+
+    from usolves_odeD(1)[OF Suc.IH] Suc
+    have IH_sol: "(?sol solves_ode f) (closed_segment t0 ?i) X"
+      by simp
+
+    have Least_eq_t0[simp]: "(LEAST n. t0 \<in> S n) = 0"
+      by (rule Least_equality) (auto simp add: S_def)
+    have Least_eq[simp]: "(LEAST n. t0 + real i * step \<in> S n) = i" for i
+      apply (rule Least_equality)
+      subgoal by (simp add: S_def)
+      subgoal
+        using \<open>step \<noteq> 0\<close>
+        by (cases "step \<ge> 0")
+          (auto simp add: S_def closed_segment_real zero_le_mult_iff split: if_split_asm)
+      done
+
+    have "y = t0 + real i * s"
+      if "t0 + (1 + real i) * s \<le> t" "t \<le> y" "y \<le> t0 + real i * s" "t0 \<le> y"
+      for y i s t
+    proof -
+      from that have "(1 + real i) * s \<le> real i * s" "0 \<le> real i * s"
+        by arith+
+      have "s + (t0 + s * real i) \<le> t \<Longrightarrow> t \<le> y \<Longrightarrow> y \<le> t0 + s * real i \<Longrightarrow> t0 \<le> y \<Longrightarrow> y = t0 + s * real i"
+        by (metis add_decreasing2 eq_iff le_add_same_cancel2 linear mult_le_0_iff of_nat_nonneg order.trans)
+      then show ?thesis using that
+        by (simp add: algebra_simps)
+    qed
+    then have segment_inter:
+      "xa = t0 + real i * step"
+      if
+      "t \<in> {t0 + real (Suc i - 1) * step--t0 + real (Suc i) * step}"
+      "xa \<in> closed_segment (t0 + real i * step) t" "xa \<in> closed_segment t0 (t0 + real i * step)"
+      for xa t
+      apply (cases "step > 0"; cases "step = 0")
+      using that
+      by (auto simp: S_def closed_segment_real split: if_split_asm)
+
+    have right_cond: "t0 \<le> t" "t \<le> t1" if "t0 + real i * step \<le> t" "t \<le> t0 + (step + real i * step)" for t
+    proof -
+      from that have "0 \<le> step" by simp
+      with last_step have "t0 \<le> t1"
+        by (metis le_add_same_cancel1 of_nat_0_le_iff zero_le_mult_iff)
+      from that have "t0 \<le> t - real i * step" by simp
+      also have "\<dots> \<le> t" using that by (auto intro!: mult_nonneg_nonneg)
+      finally show "t0 \<le> t" .
+      have "t \<le> t0 + (real (Suc i) * step)" using that by (simp add: algebra_simps)
+      also have "\<dots> \<le> t1"
+      proof -
+        have "real (Suc i) * (t1 - t0) \<le> real (Suc subdivide_count) * (t1 - t0)"
+          using Suc.prems \<open>t0 \<le> t1\<close>
+          by (auto intro!: mult_mono)
+        then show ?thesis by (simp add: divide_simps algebra_simps step_def)
+      qed
+      finally show "t \<le> t1" .
+    qed
+    have left_cond: "t1 \<le> t" "t \<le> t0" if "t0 + (step + real i * step) \<le> t" "t \<le> t0 + real i * step" for t
+    proof -
+      from that have "step \<le> 0" by simp
+      with last_step have "t1 \<le> t0"
+        by (metis add_le_same_cancel1 mult_nonneg_nonpos of_nat_0_le_iff)
+      from that have "t0 \<ge> t - real i * step" by simp
+      also have "t - real i * step \<ge> t" using that by (auto intro!: mult_nonneg_nonpos)
+      finally (xtrans) show "t \<le> t0" .
+      have "t \<ge> t0 + (real (Suc i) * step)" using that by (simp add: algebra_simps)
+      also have " t0 + (real (Suc i) * step) \<ge> t1"
+      proof -
+        have "real (Suc i) * (t0 - t1) \<le> real (Suc subdivide_count) * (t0 - t1)"
+          using Suc.prems \<open>t0 \<ge> t1\<close>
+          by (auto intro!: mult_mono)
+        then show ?thesis by (simp add: divide_simps algebra_simps step_def)
+      qed
+      finally (xtrans) show "t1 \<le> t" .
+    qed
+
+    interpret l: self_mapping "S (Suc i)" ?i "?sol ?i" f X
+    proof unfold_locales
+      show "?sol ?i \<in> X"
+        using solves_odeD(2)[OF usolves_odeD(1)[OF ui], of "?i"]
+        by (simp add: S_def)
+      fix x t assume t[unfolded S_def]: "t \<in> S (Suc i)"
+        and x: "x ?i = ?sol ?i" "x \<in> closed_segment ?i t \<rightarrow> X"
+        and cont: "continuous_on (closed_segment ?i t) x"
+
+      let ?if = "\<lambda>t. if t \<in> closed_segment t0 ?i then ?sol t else x t"
+      let ?f = "\<lambda>t. f t (?if t)"
+      have sol_mem: "?sol s \<in> X" if "s \<in> closed_segment t0 ?i" for s
+        by (auto simp: subset_T1 intro!: solves_odeD[OF IH_sol] that)
+
+      from x(1) have "x ?i + ivl_integral ?i t (\<lambda>t. f t (x t)) = ?sol ?i + ivl_integral ?i t (\<lambda>t. f t (x t))"
+        by simp
+      also have "?sol ?i = ?sol t0 + ivl_integral t0 ?i (\<lambda>t. f t (?sol t))"
+        apply (subst solution_fixed_point)
+        apply (rule usolves_odeD[OF ui])
+        by simp_all
+      also have "ivl_integral t0 ?i (\<lambda>t. f t (?sol t)) = ivl_integral t0 ?i ?f"
+        by (simp cong: ivl_integral_cong)
+      also
+      have psolution_eq: "x (t0 + real i * step) = psolution i (t0 + real i * step) \<Longrightarrow>
+        ta \<in> {t0 + real i * step--t} \<Longrightarrow>
+        ta \<in> {t0--t0 + real i * step} \<Longrightarrow> psolution (LEAST i. ta \<in> S i) ta = x ta" for ta
+        by (subst segment_inter[OF t], assumption, assumption)+ simp
+      have "ivl_integral ?i t (\<lambda>t. f t (x t)) = ivl_integral ?i t ?f"
+        by (rule ivl_integral_cong) (simp_all add: x psolution_eq)
+      also
+      from t right_cond(1) have cs: "closed_segment t0 t = closed_segment t0 ?i \<union> closed_segment ?i t"
+        by (intro closed_segment_Un[symmetric])
+          (auto simp: closed_segment_real algebra_simps mult_le_0_iff split: if_split_asm
+            intro!: segment_inter segment_inter[symmetric])
+      have cont_if: "continuous_on (closed_segment t0 t) ?if"
+        unfolding cs
+        using x Suc.prems cont t psolution_eq
+        by (auto simp: subset_T1 T_def intro!: continuous_on_cases solves_ode_continuous_on[OF IH_sol])
+      have t_mem: "t \<in> closed_segment t0 t1"
+        using x Suc.prems t
+        apply -
+        apply (rule closed_segment_closed_segment_subset, assumption)
+        apply (rule step_in_segment, force, force)
+        apply (rule step_in_segment, force, force)
+        done
+      have segment_subset: "ta \<in> {t0 + real i * step--t} \<Longrightarrow> ta \<in> {t0--t1}" for ta
+        using x Suc.prems
+        apply -
+        apply (rule closed_segment_closed_segment_subset, assumption)
+        subgoal by (rule step_in_segment; force)
+        subgoal by (rule t_mem)
+        done
+      have cont_f: "continuous_on (closed_segment t0 t) ?f"
+        apply (rule continuous_intros)
+        apply (rule continuous_intros)
+        apply (rule cont_if)
+        unfolding cs
+        using x Suc.prems
+         apply (auto simp: subset_T1 segment_subset intro!: sol_mem subset_TI)
+        done
+      have "?sol t0 + ivl_integral t0 ?i ?f + ivl_integral ?i t ?f = ?if t0 + ivl_integral t0 t ?f"
+        by (auto simp: cs intro!: ivl_integral_combine integrable_continuous_closed_segment
+          continuous_on_subset[OF cont_f])
+      also have "\<dots> \<in> X"
+        apply (rule self_mapping)
+        apply (rule subset_TI)
+        apply (rule t_mem)
+        using x cont_if
+        by (auto simp: subset_T1 Pi_iff cs intro!: sol_mem)
+      finally
+      have "x ?i + ivl_integral ?i t (\<lambda>t. ?f t) \<in> X" .
+      also have "ivl_integral ?i t (\<lambda>t. ?f t) = ivl_integral ?i t (\<lambda>t. f t (x t))"
+        apply (rule ivl_integral_cong[OF _ refl refl])
+        using x
+        by (auto simp: segment_inter psolution_eq)
+      finally
+      show "x ?i + ivl_integral ?i t (\<lambda>t. f t (x t)) \<in> X" .
+    qed (auto simp add: S_def closed_segment_real is_interval_closed_interval)
+    have "S (Suc i) \<subseteq> T"
+      unfolding S_def
+      apply (rule subsetI)
+      apply (rule subset_TI)
+    proof (cases "step = 0")
+      case False
+      fix x assume x: "x \<in> {t0 + real (Suc i - 1) * step--t0 + real (Suc i) * step}"
+      from x have nn: "((x - t0) / step) \<ge> 0"
+        using False right_cond(1)[of x] left_cond(2)[of x]
+        by (auto simp: closed_segment_real divide_simps algebra_simps split: if_splits)
+      have "t1 < t0 \<Longrightarrow> t1 \<le> x" "t1 > t0 \<Longrightarrow> x \<le> t1"
+        using x False right_cond(1,2)[of x] left_cond(1,2)[of x]
+        by (auto simp: closed_segment_real algebra_simps split: if_splits)
+      then have le: "(x - t0) / step \<le> 1 + real subdivide_count"
+        unfolding step_def
+        by (auto simp: divide_simps)
+      have "x = t0 + ((x - t0) / step) * step"
+        using False
+        by auto
+      also have "\<dots> \<in> {t0 -- t1}"
+        by (rule step_in_segment) (auto simp: nn le)
+      finally show "x \<in> {t0 -- t1}" by simp
+    qed simp
+    have algebra: "(1 + real i) * (t1 - t0) - real i * (t1 - t0) = t1 - t0"
+      by (simp only: algebra_simps)
+    interpret l: unique_on_bounded_closed ?i "S (Suc i)" "?sol ?i" f X L
+      apply unfold_locales
+      subgoal by (auto simp: S_def)
+      subgoal using \<open>S (Suc i) \<subseteq> T\<close> by (auto intro!: continuous_intros simp: split_beta')
+      subgoal using \<open>S (Suc i) \<subseteq> T\<close> by (auto intro!: lipschitz)
+      subgoal by (rule subdivide_lipschitz_lemma) (auto simp add: step_def divide_simps algebra S_def)
+      done
+    note ui
+    moreover
+    have mem_SI: "t \<in> closed_segment ?i ?si \<Longrightarrow> t \<in> S (if t = ?i then i else Suc i)" for t
+      by (auto simp: S_def)
+    have min_S: "(if t = t0 + real i * step then i else Suc i) \<le> y"
+      if "t \<in> closed_segment (t0 + real i * step) (t0 + (1 + real i) * step)"
+        "t \<in> S y"
+      for y t
+      apply (cases "t = t0 + real i * step")
+      subgoal using that \<open>step \<noteq> 0\<close>
+        by (auto simp add: S_def closed_segment_real algebra_simps zero_le_mult_iff split: if_splits )
+      subgoal premises ne
+      proof (cases)
+        assume "step > 0"
+        with that have "t0 + real i * step \<le> t" "t \<le> t0 + (1 + real i) * step"
+          "t0 + real (y - Suc 0) * step \<le> t" "t \<le> t0 + real y * step"
+          by (auto simp: closed_segment_real S_def)
+        then have "real i * step < real y * step" using \<open>step > 0\<close> ne
+          by arith
+        then show ?thesis using \<open>step > 0\<close> that by (auto simp add: closed_segment_real S_def)
+      next
+        assume "\<not> step > 0" with \<open>step \<noteq> 0\<close> have "step < 0" by simp
+        with that have "t0 + (1 + real i) * step \<le> t" "t \<le> t0 + real i * step"
+          "t0 + real y * step \<le> t" "t \<le> t0 + real (y - Suc 0) * step" using ne
+          by (auto simp: closed_segment_real S_def diff_Suc zero_le_mult_iff split: if_splits nat.splits)
+        then have "real y * step < real i * step"
+          using \<open>step < 0\<close> ne
+          by arith
+        then show ?thesis using \<open>step < 0\<close> by (auto simp add: closed_segment_real S_def)
+      qed
+      done
+    have "(?sol usolves_ode f from ?i) (closed_segment ?i ?si) X"
+      apply (subst usolves_ode_cong)
+      apply (subst Least_equality)
+      apply (rule mem_SI) apply assumption
+      apply (rule min_S) apply assumption apply assumption
+      apply (rule refl)
+      apply (rule refl)
+      apply (rule refl)
+      apply (rule refl)
+      apply (rule refl)
+      apply (subst usolves_ode_cong[where y="psolution (Suc i)"])
+      using l.fixed_point_iv[unfolded Least_eq]
+      apply (simp add: S_def; fail)
+      apply (rule refl)
+      apply (rule refl)
+      apply (rule refl)
+      apply (rule refl)
+      using l.fixed_point_usolves_ode
+      apply -
+      apply (simp)
+      apply (simp add: S_def)
+      done
+    moreover have "t \<in> {t0 + real i * step--t0 + (step + real i * step)} \<Longrightarrow>
+         t \<in> {t0--t0 + real i * step} \<Longrightarrow> t = t0 + real i * step" for t
+      by (subst segment_inter[rotated], assumption, assumption) (auto simp: algebra_simps)
+    ultimately
+    have "((\<lambda>t. if t \<in> closed_segment t0 ?i then ?sol t else ?sol t)
+      usolves_ode
+      (\<lambda>t. if t \<in> closed_segment t0 ?i then f t else f t) from t0)
+      (closed_segment t0 ?i \<union> closed_segment ?i ?si) X"
+      by (intro connection_usolves_ode[where t="?i"]) (auto simp: algebra_simps split: if_split_asm)
+    also have "closed_segment t0 ?i \<union> closed_segment ?i ?si = closed_segment t0 ?si"
+      apply (rule closed_segment_Un)
+      by (cases "step < 0")
+        (auto simp: closed_segment_real zero_le_mult_iff mult_le_0_iff
+          intro!: mult_right_mono
+          split: if_split_asm)
+    finally show ?case by simp
+  qed
+qed
+
+lemma psolutions_usolves_ode: "(psolutions usolves_ode f from t0) {t0 -- t1} X"
+proof -
+  let ?T = "closed_segment t0 (t0 + real (Suc subdivide_count) * step)"
+  have "(psolutions usolves_ode f from t0) ?T X"
+    by (rule psolutions_usolves_until_step) simp
+  also have "?T = {t0 -- t1}" unfolding last_step ..
+  finally show ?thesis .
 qed
 
 end
 
-subsubsection \<open>Existence of solution\<close>
+definition "solution t = (if t \<le> t0 then psolutions tmin t else psolutions tmax t)"
 
-sublocale unique_on_bounded_closed \<subseteq> has_solution
-proof
-  from fixed_point_solution
-  show "\<exists>x. is_solution x" by blast
-qed
+lemma solution_eq_left: "tmin \<le> t \<Longrightarrow> t \<le> t0 \<Longrightarrow> solution t = psolutions tmin t"
+  by (simp add: solution_def)
 
-subsubsection \<open>Unique solution \label{sec:ivp-ubs}\<close>
+lemma solution_eq_right: "t0 \<le> t \<Longrightarrow> t \<le> tmax \<Longrightarrow> solution t = psolutions tmax t"
+  by (simp add: solution_def psolutions_def)
 
-sublocale unique_on_bounded_closed \<subseteq> unique_solution
-proof
-  fix z t
-  assume "is_solution z"
-  with ext_cont_solution_fixed_point \<open>is_solution z\<close> is_solution_solution
-    solution_in_iter_space fixed_point_equality
-  have "ext_cont solution t0 t1 t = ext_cont z t0 t1 t" by metis
-  moreover assume "t \<in> T"
-  ultimately
-  show "z t = solution t"
-    using solution_continuous_on[OF \<open>is_solution z\<close>]
-      solution_continuous_on[OF is_solution_solution]
-    by (auto simp: interval)
-qed
-
-sublocale unique_on_closed \<subseteq> unique_solution
-proof (cases "t1 = t0")
-  assume "t1 = t0"
-  then interpret has_solution
-    using is_solution_def interval iv_defined
-    by unfold_locales (auto intro!: exI[where x="(\<lambda>t. x0)"]
-      simp add: has_vector_derivative_def
-      has_derivative_within_alt bounded_linear_scaleR_left)
-  show "unique_solution i"
-    using \<open>t1=t0\<close> interval solution_t0
-    by unfold_locales (simp add: is_solution_def)
-next
-  assume "t1 \<noteq> t0"
-  with interval iv_defined
-  have interval: "T = {t0..t1}" "t0 < t1"
-    by auto
-  obtain n::nat and b where b: "b = (t1 - t0) / (Suc n)" and bL: "L * b < 1"
-    by (rule, rule) (auto intro: order_le_less_trans real_nat_ceiling_ge simp del: of_nat_Suc)
-  then interpret i': ivp_on_interval i "t0 + (Suc n) * b"
-    using interval by unfold_locales simp_all
-  from b have "b > 0" using interval iv_defined
-    by auto
-  hence "b \<ge> 0" by simp
-  from interval have "t0 * (real (Suc n) - 1) \<le> t1 * (real (Suc n) - 1)"
-    by (cases n) auto
-  hence ble: "t0 + b \<le> t1" unfolding b by (auto simp add: field_simps)
-  have subsetbase: "t0 + (Suc n) * b \<le> t1" using i'.interval interval by auto
-
-  interpret i': unique_solution "i\<lparr>ivp_T := {t0..t0 + real (Suc n) * b}\<rparr>"
-    using subsetbase
-  proof (induct n)
-    case 0
-    then interpret sol: unique_on_bounded_closed "i\<lparr>ivp_T:={t0..t0+b}\<rparr>" "t0 + b"
-      using interval iv_defined \<open>b > 0\<close> bL continuous lipschitz closed self_mapping
-      by unfold_locales (auto intro: continuous_on_subset simp: ac_simps Pi_iff)
-    show ?case by simp unfold_locales
-  next
-    case (Suc n)
-    define nb where "nb = real (Suc n) * b"
-    define snb where "snb = real (Suc (Suc n)) * b"
-    note Suc = Suc[simplified nb_def[symmetric] snb_def[symmetric]]
-    from \<open>b > 0\<close> nb_def snb_def have nbs_nonneg: "0 < snb" "0 < nb"
-      by (simp_all add: zero_less_mult_iff)
-    with \<open>b>0\<close> have nb_le_snb: "nb < snb" using nb_def snb_def
-      by auto
-    have [simp]: "snb - nb = b"
-    proof -
-      have "snb + - (nb) = b * real (Suc (Suc n)) + - (b * real (Suc n))"
-        by (simp add: ac_simps snb_def nb_def)
-      thus ?thesis by (simp add: field_simps of_nat_Suc)
-    qed
-    define i1 where "i1 = i\<lparr>ivp_T := {t0..t0 + nb}\<rparr>"
-    define T1 where "T1 = t0 + nb"
-    interpret ivp1: ivp_on_interval i1 T1
-      using iv_defined \<open>nb > 0\<close> by unfold_locales (auto simp: i1_def T1_def)
-    interpret ivp1: unique_solution i1
-      using nb_le_snb nbs_nonneg Suc continuous lipschitz by (simp add: i1_def)
-    interpret ivp1_cl: unique_on_closed i1 "t0 + nb"
-      using nb_le_snb nbs_nonneg Suc continuous lipschitz closed self_mapping
-      by unfold_locales (auto simp: i1_def interval intro: continuous_on_subset)
-    define i2 where "i2 = i\<lparr>ivp_t0:=t0+nb, ivp_T:={t0 + nb..t0+snb},
-      ivp_x0:=ivp1.solution (t0 + nb)\<rparr>"
-    define T2 where "T2 = t0 + snb"
-    interpret ivp2: ivp_on_interval i2 T2
-      using nbs_nonneg \<open>nb < snb\<close> ivp1.solution_in_D
-      by unfold_locales (auto simp: i1_def i2_def T2_def)
-    interpret ivp2: self_mapping i2 T2
-    proof unfold_locales
-      fix x t assume t: "t \<in> ivp2.T"
-        and x: "x ivp2.t0 = ivp2.x0" "x \<in> {ivp2.t0 .. t} \<rightarrow> ivp2.X"
-        and cont: "continuous_on {ivp2.t0 .. t} x"
-      hence "t \<in> T"
-        using Suc(2) nbs_nonneg interval
-        by (simp add: i2_def)
-      let ?un = "(\<lambda>t. if t \<le> nb + t0 then ivp1.solution t else x t)"
-      let ?fun = "(\<lambda>t. f (t, ?un t))"
-      have decomp: "{t0..t} = {t0..nb + t0} \<union> {nb + t0..t}"
-        using interval_notempty t nbs_nonneg
-        by (auto simp: i2_def)
-      have un_space: "?un \<in> {t0..t} \<rightarrow> X"
-        using x ivp1.solution_in_D
-        by (auto simp: i1_def i2_def Pi_iff)
-      have cont_un: "continuous_on {t0..t} ?un"
-        using x cont
-          ivp1.solution_continuous_on[OF ivp1.is_solution_solution,
-            simplified i1_def]
-        unfolding decomp
-        by (intro continuous_on_If)
-          (auto intro: continuous_on_subset simp: i1_def i2_def ac_simps)
-      have cont_fun: "continuous_on {t0..t} ?fun"
-        using un_space cont_un \<open>t \<in> T\<close> by (rule continuous_f)
-      have "ivp.solution i1 (nb + t0) + integral {nb + t0..t} (\<lambda>xa. f (xa, x xa)) =
-        x0 + (integral {t0..nb + t0} (\<lambda>t. f (t, ivp1.solution t)) +
-          integral {nb + t0..t} (\<lambda>xa. f (xa, x xa)))"
-        using ivp1_cl.solution_fixed_point[OF ivp1.is_solution_solution] nbs_nonneg
-          ivp1_cl.P_inner_def
-        by (auto simp: i1_def ac_simps)
-      also have "integral {t0..nb + t0} (\<lambda>t. f (t, ivp1.solution t)) =
-          integral {t0..nb + t0} ?fun"
-        by (rule integral_spike[OF negligible_empty]) auto
-      also have fun2: "integral {nb + t0..t} (\<lambda>t. f (t, x t)) =
-          integral {nb + t0..t} ?fun"
-        using x
-        by (intro integral_spike[OF negligible_empty])
-          (auto simp: i1_def i2_def ac_simps)
-      also have "integral {t0..nb + t0} ?fun + integral {nb + t0..t} ?fun =
-          integral {t0..t} ?fun"
-        using t nbs_nonneg
-        by (intro integral_combine)
-          (auto simp: i2_def less_imp_le intro!: cont_fun)
-      also have "x0 + \<dots> \<in> X"
-        using \<open>t \<in> T\<close> \<open>nb > 0\<close> ivp1.is_solutionD[OF ivp1.is_solution_solution]
-        by (intro self_mapping[OF _ _ un_space cont_un])
-          (auto simp: ivp1.iv_defined i1_def)
-      also note fun2[symmetric]
-      finally
-      show "ivp2.x0 + integral {ivp2.t0 .. t} (\<lambda>t. ivp2.f (t, x t)) \<in> ivp2.X"
-        by (simp add: i1_def i2_def ac_simps)
-    qed
-    interpret ivp2: unique_on_bounded_closed i2 T2
-      using bL Suc(2) nbs_nonneg interval continuous lipschitz closed
-      by unfold_locales
-        (auto intro: continuous_on_subset simp: ac_simps i1_def i2_def T2_def)
-    define i' where "i' = i\<lparr>ivp_T := {t0..t0 + real (Suc (Suc n)) * b}\<rparr>"
-    define T where "T = t0 + real (Suc (Suc n)) * b"
-    interpret i: ivp i'
-    proof
-      show "ivp_t0 i' \<in> ivp_T i'" "ivp_x0 i' \<in> ivp_X i'"
-        using ivp1.iv_defined \<open>0 \<le> b\<close>
-        by (auto simp: i'_def i1_def nb_def intro!: mult_nonneg_nonneg)
-    qed
-    have *: "ivp_T i1 \<inter> ivp_T i2 = {T1}"
-      using nbs_nonneg
-      by (auto simp: i1_def i2_def nb_def snb_def max_def min_def T1_def not_le
-        mult_less_cancel_right sign_simps
-        simp del: of_nat_Suc)
-    have nb_le_snb: "t0 + real (Suc n) * b \<le> t0 + real (Suc (Suc n)) * b"
-      using \<open>b > 0\<close> by auto
-    interpret ivp_c: connected_unique_solutions i' i1 i2 T1
-      apply unfold_locales
-      unfolding *
-      using \<open>b > 0\<close> iv_defined ivp1.is_solutionD[OF ivp1.is_solution_solution]
-        ivp2.is_solutionD[OF ivp2.is_solution_solution]
-        ivp1.is_solution_solution
-        ivp2.is_solution_solution
-         nbs_nonneg
-        add_increasing2[of "real (Suc n) * b" "t0 + real (Suc n) * b"]
-      by (auto simp: i1_def i2_def i'_def T1_def T2_def T_def snb_def nb_def
-        simp del: of_nat_Suc
-        intro!: order_trans[OF _ nb_le_snb])
-    show ?case unfolding i'_def[symmetric] by unfold_locales
-  qed
-  show "unique_solution i"
-    using i'.solution i'.unique_solution interval(1)[symmetric] i'.interval[symmetric]
-    by unfold_locales (auto simp del: of_nat_Suc)
-qed
-
-subsection \<open>Picard-Lindelöf for @{term "X=(\<lambda>_. UNIV)"} \label{sec:pl-us}\<close>
-
-locale unique_on_strip = ivp_on_interval + continuous_rhs T X f +
-  global_lipschitz T X f L for L +
-  assumes strip: "X = UNIV"
-
-sublocale unique_on_strip < unique_on_closed
-  using strip by unfold_locales auto
-
-subsection \<open>Picard-Lindelöf on cylindric domain \label{sec:pl-rect}\<close>
-
-locale cylinder = ivp i for i::"'a::banach ivp" +
-  fixes e b
-  assumes e_pos: "e > 0"
-  assumes b_pos: "b > 0"
-  assumes interval: "T = {t0 - e .. t0 + e}"
-  assumes cylinder: "X = cball x0 b"
-
-locale solution_in_cylinder = cylinder + continuous_rhs T X f +
-  fixes B
-  assumes norm_f: "\<And>x t. t \<in> T \<Longrightarrow> x \<in> X \<Longrightarrow> norm (f (t, x)) \<le> B"
-  assumes e_bounded: "e \<le> b / B"
-begin
-
-lemma B_nonneg: "B \<ge> 0"
+lemma solution_usolves_ode: "(solution usolves_ode f from t0) T X"
 proof -
-  have "0 \<le> norm (f (t0, x0))" by simp
-  also from iv_defined norm_f have "... \<le> B" by simp
+  from psolutions_usolves_ode[OF tmin(2)] tmin_le_t0
+  have u1: "(psolutions tmin usolves_ode f from t0) {tmin .. t0} X"
+    by (auto simp: closed_segment_real split: if_splits)
+  from psolutions_usolves_ode[OF tmax(2)] tmin_le_t0
+  have u2: "(psolutions tmax usolves_ode f from t0) {t0 .. tmax} X"
+    by (auto simp: closed_segment_real split: if_splits)
+  have "(solution usolves_ode f from t0) ({tmin .. t0} \<union> {t0 .. tmax}) (X \<union> X)"
+    apply (rule usolves_ode_union_closed[where t=t0])
+    subgoal by (subst usolves_ode_cong[where y="psolutions tmin"]) (auto simp: solution_eq_left u1)
+    subgoal
+      using u2
+      by (rule usolves_ode_congI) (auto simp: solution_eq_right)
+    subgoal by simp
+    subgoal by simp
+    subgoal by simp
+    done
+  also have "{tmin .. t0} \<union> {t0 .. tmax} = T"
+    by (simp add: T_split[symmetric])
   finally show ?thesis by simp
 qed
 
-lemma closed_real_closed_segment: "\<And>a b. closed (closed_segment a b::real set)"
-  by (auto simp: closed_segment_real)
+lemma solution_solves_ode: "(solution solves_ode f) T X"
+  by (rule usolves_odeD[OF solution_usolves_ode])
+
+lemma solution_iv[simp]: "solution t0 = x0"
+  by (auto simp: solution_def psolutions_def)
+
+end
+
+
+subsection \<open>Picard-Lindeloef for @{term "X = UNIV"}\<close>
+text\<open>\label{sec:pl-us}\<close>
+
+locale unique_on_strip =
+  compact_interval T +
+  continuous_rhs T UNIV f +
+  global_lipschitz T UNIV f L
+  for t0 and T and f::"real \<Rightarrow> 'a \<Rightarrow> 'a::banach" and L +
+  assumes iv_time: "t0 \<in> T"
+begin
+
+sublocale unique_on_closed t0 T x0 f UNIV L for x0
+  by (-, unfold_locales) (auto simp: iv_time)
+
+end
+
+
+subsection \<open>Picard-Lindeloef on cylindric domain\<close>
+text\<open>\label{sec:pl-rect}\<close>
+
+locale solution_in_cylinder =
+  continuous_rhs T "cball x0 b" f +
+  compact_interval T
+  for t0 T x0 b and f::"real \<Rightarrow> 'a \<Rightarrow> 'a::banach" +
+  fixes X B
+  defines "X \<equiv> cball x0 b"
+  assumes initial_time_in: "t0 \<in> T"
+  assumes norm_f: "\<And>x t. t \<in> T \<Longrightarrow> x \<in> X \<Longrightarrow> norm (f t x) \<le> B"
+  assumes b_pos: "b \<ge> 0"
+  assumes e_bounded: "\<And>t. t \<in> T \<Longrightarrow> dist t t0 \<le> b / B"
+begin
+
+lemmas cylinder = X_def
+
+lemma B_nonneg: "B \<ge> 0"
+proof -
+  have "0 \<le> norm (f t0 x0)" by simp
+  also from b_pos norm_f have "... \<le> B" by (simp add: initial_time_in X_def)
+  finally show ?thesis by simp
+qed
 
 lemma in_bounds_derivativeI:
   assumes "t \<in> T"
   assumes init: "x t0 = x0"
   assumes cont: "continuous_on (closed_segment t0 t) x"
-  assumes solves: "\<And>s. s \<in> open_segment t0 t \<Longrightarrow> (x has_vector_derivative f (s, y s)) (at s within open_segment t0 t)"
-  assumes y_bounded: "\<And>\<xi>. \<xi>\<in>closed_segment t0 t \<Longrightarrow> x \<xi> \<in> X \<Longrightarrow> y \<xi> \<in> X"
+  assumes solves: "(x has_vderiv_on (\<lambda>s. f s (y s))) (open_segment t0 t)"
+  assumes y_bounded: "\<And>\<xi>. \<xi> \<in> closed_segment t0 t \<Longrightarrow> x \<xi> \<in> X \<Longrightarrow> y \<xi> \<in> X"
   shows "x t \<in> cball x0 (B * abs (t - t0))"
 proof cases
-  assume "b = 0 \<or> B = 0" with assms e_bounded interval e_pos have "t = t0"
+  assume "b = 0 \<or> B = 0" with assms e_bounded T_def have "t = t0"
     by auto
-  thus ?thesis using iv_defined init by simp
+  thus ?thesis using b_pos init by simp
 next
   assume "\<not>(b = 0 \<or> B = 0)"
   hence "b > 0" "B > 0" using B_nonneg b_pos by auto
@@ -1586,17 +2216,13 @@ next
   proof cases
     assume "t0 \<noteq> t"
     then have b_less: "B * abs (t - t0) \<le> b"
-      using e_pos e_bounded using \<open>b > 0\<close> \<open>B > 0\<close> \<open>t \<in> T\<close>
-      by (auto simp: field_simps interval abs_real_def)
-       (metis add_right_mono distrib_left mult_le_cancel_left_pos order_trans)+
-    define b where "b = B * abs (t - t0)"
+      using b_pos e_bounded using \<open>b > 0\<close> \<open>B > 0\<close> \<open>t \<in> T\<close>
+      by (auto simp: field_simps initial_time_in dist_real_def abs_real_def closed_segment_real split: if_split_asm)
+    define b where  "b \<equiv> B * abs (t - t0)"
     have "b > 0" using \<open>t0 \<noteq> t\<close> by (auto intro!: mult_pos_pos simp: algebra_simps b_def \<open>B > 0\<close>)
-    have subs: "closed_segment t0 t \<subseteq> {t0 - e..t0 + e}"
-      using interval \<open>t \<in> T\<close> by (auto simp: closed_segment_real)
     from cont
     have closed: "closed {s \<in> closed_segment t0 t. norm (x s - x t0) \<in> {b..}}"
-      by (intro continuous_closed_preimage continuous_intros
-        closed_real_closed_segment)
+      by (intro continuous_closed_preimage continuous_intros closed_segment)
     have exceeding: "{s \<in> closed_segment t0 t. norm (x s - x t0) \<in> {b..}} \<subseteq> {t}"
     proof (rule ccontr)
       assume "\<not>{s \<in> closed_segment t0 t. norm (x s - x t0) \<in> {b..}} \<subseteq> {t}"
@@ -1613,15 +2239,14 @@ next
         by (auto simp: closed_segment_real open_segment_real)
       from cont have cont: "continuous_on (closed_segment t0 s) x"
         by (rule continuous_on_subset)
-          (insert e_pos subs s_bound, auto simp: closed_segment_real)
+          (insert b_pos closed_segment_subset_domain s_bound, auto simp: closed_segment_real)
       have bnd_cont: "continuous_on (closed_segment t0 s) (op * B)"
-        and bnd_deriv: "(\<And>x. x \<in> open_segment t0 s \<Longrightarrow>
-          (op * B has_vector_derivative B) (at x within open_segment t0 s))"
+        and bnd_deriv: "(op * B has_vderiv_on (\<lambda>_. B)) (open_segment t0 s)"
         by (auto intro!: continuous_intros derivative_eq_intros
-          simp: has_vector_derivative_def)
-      have bnd: "norm (f (ss, y ss)) \<le> B" if ss: "ss \<in> open_segment t0 s" for ss
-      proof -
-        from st ss have "ss \<in> closed_segment t0 t" by auto
+          simp: has_vector_derivative_def has_vderiv_on_def)
+      {
+        fix ss assume ss: "ss \<in> open_segment t0 s"
+        with st have "ss \<in> closed_segment t0 t" by auto
         have less_b: "norm (x ss - x t0) < b"
         proof (rule ccontr)
           assume "\<not> norm (x ss - x t0) < b"
@@ -1630,18 +2255,18 @@ next
           show False using ss \<open>s \<noteq> t0\<close>
             by (auto simp: dist_real_def open_segment_real split_ifs)
         qed
-        show ?thesis
+        have "norm (f ss (y ss)) \<le> B"
           apply (rule norm_f)
-          subgoal using ss st subs interval by auto
+          subgoal using ss st closed_segment_subset_domain[OF initial_time_in \<open>t \<in> T\<close>] by auto
           subgoal using ss st b_less less_b
             by (intro y_bounded)
-              (auto simp: cylinder dist_norm b_def init norm_minus_commute)
+              (auto simp: X_def dist_norm b_def init norm_minus_commute mem_cball)
           done
-      qed
+      } note bnd = this
       have subs: "open_segment t0 s \<subseteq> open_segment t0 t" using s_bound \<open>s \<noteq> t0\<close>
         by (auto simp: closed_segment_real open_segment_real)
-      with differentiable_bound_general_open_segment[OF cont bnd_cont
-        has_vector_derivative_within_subset[OF solves subs] bnd_deriv bnd] st
+      with differentiable_bound_general_open_segment[OF cont bnd_cont has_vderiv_on_subset[OF solves subs]
+        bnd_deriv bnd]
       have "norm (x s - x t0) \<le> B * \<bar>s - t0\<bar>"
         by (auto simp: algebra_simps[symmetric] abs_mult B_nonneg)
       also
@@ -1669,19 +2294,19 @@ next
     proof (rule ccontr)
       assume H: "\<not> norm (x t - x t0) \<le> b"
       hence "b \<in> closed_segment (norm (x t0 - x t0)) (norm (x t - x t0))"
-        using assms interval \<open>0 < b\<close>
+        using assms T_def \<open>0 < b\<close>
         by (auto simp: closed_segment_real )
       from IVT'_closed_segment_real[OF this continuous_on_norm[OF cont_diff]]
       obtain s where s: "s \<in> closed_segment t0 t" "norm (x s - x t0) = b"
         using \<open>b > 0\<close> by auto
       have "s \<in> {s \<in> closed_segment t0 t. norm (x s - x t0) \<in> {b..}}"
-        using s \<open>t \<in> T\<close> by (auto simp: interval)
+        using s \<open>t \<in> T\<close> by (auto simp: initial_time_in)
       with mvt_result have "s = t" by blast
-      hence "s = t" using s \<open>t \<in> T\<close> by (auto simp: interval)
+      hence "s = t" using s \<open>t \<in> T\<close> by (auto simp: initial_time_in)
       with s H show False by simp
     qed
     hence "x t \<in> cball x0 b" using init
-      by (auto simp: dist_commute dist_norm[symmetric])
+      by (auto simp: dist_commute dist_norm[symmetric] mem_cball)
     thus "x t \<in> cball x0 (B * abs (t - t0))" unfolding cylinder b_def .
   qed (simp add: init[symmetric])
 qed
@@ -1690,298 +2315,164 @@ lemma in_bounds_derivative_globalI:
   assumes "t \<in> T"
   assumes init: "x t0 = x0"
   assumes cont: "continuous_on (closed_segment t0 t) x"
-  assumes solves: "\<And>s. s \<in> open_segment t0 t \<Longrightarrow>
-    (x has_vector_derivative f (s, y s)) (at s within open_segment t0 t)"
-  assumes y_bounded: "\<And>\<xi>. \<xi>\<in>(closed_segment t0 t) \<Longrightarrow> x \<xi> \<in> X \<Longrightarrow> y \<xi> \<in> X"
+  assumes solves: "(x has_vderiv_on (\<lambda>s. f s (y s))) (open_segment t0 t)"
+  assumes y_bounded: "\<And>\<xi>. \<xi> \<in> closed_segment t0 t \<Longrightarrow> x \<xi> \<in> X \<Longrightarrow> y \<xi> \<in> X"
   shows "x t \<in> X"
 proof -
   from in_bounds_derivativeI[OF assms]
   have "x t \<in> cball x0 (B * abs (t - t0))" .
   moreover have "B * abs (t - t0) \<le> b" using e_bounded b_pos B_nonneg \<open>t \<in> T\<close>
-    apply (cases "B = 0", simp)
-    subgoal
-      apply (auto simp: field_simps interval abs_real_def)
-      subgoal by (metis add_right_mono less_eq_real_def order_trans
-         real_mult_le_cancel_iff2 ring_class.ring_distribs(1))
-      subgoal by (metis add_less_same_cancel2 add_right_mono le_less_trans
-        mult_le_cancel_left_pos mult_left_mono_neg not_less
-        ring_class.ring_distribs(1) zero_le_mult_iff)
-      done
-    done
-  ultimately show ?thesis by (auto simp: cylinder)
+    by (cases "B = 0")
+      (auto simp: field_simps initial_time_in dist_real_def abs_real_def closed_segment_real split: if_splits)
+  ultimately show ?thesis by (auto simp: cylinder mem_cball)
 qed
 
 lemma integral_in_bounds:
-  assumes "t \<ge> t0" "t \<in> T" "x t0 = x0" "x \<in> {t0..t} \<rightarrow> X"
-  assumes cont: "continuous_on {t0..t} x"
-  shows "x0 + integral {t0..t} (\<lambda>t. f (t, x t)) \<in> X" (is "x0 + ?ix t \<in> X")
+  assumes "t \<in> T" "x t0 = x0" "x \<in> {t0 -- t} \<rightarrow> X"
+  assumes cont[continuous_intros]: "continuous_on ({t0 -- t}) x"
+  shows "x t0 + ivl_integral t0 t (\<lambda>t. f t (x t)) \<in> X" (is "_ + ?ix t \<in> X")
 proof cases
   assume "t = t0"
-  thus ?thesis by (auto simp: iv_defined)
+  thus ?thesis by (auto simp: cylinder b_pos assms)
 next
   assume "t \<noteq> t0"
-  have cont_f:"continuous_on {t0..t} (\<lambda>t. f (t, x t))"
+  from closed_segment_subset_domain[OF initial_time_in]
+  have cont_f:"continuous_on {t0 -- t} (\<lambda>t. f t (x t))"
     using assms
-    by (intro continuous_Sigma)
-      (auto intro: cont continuous_on_subset[OF continuous] simp: interval)
+    by (intro continuous_intros)
+      (auto intro: cont continuous_on_subset[OF continuous] simp: cylinder split: if_splits)
+  from closed_segment_subset_domain[OF initial_time_in \<open>t \<in> T\<close>]
+  have subsets: "s \<in> {t0--t} \<Longrightarrow> s \<in> T" "s \<in> open_segment t0 t \<Longrightarrow> s \<in> {t0--t}" for s
+    by (auto simp: closed_segment_real open_segment_real initial_time_in split: if_split_asm)
   show ?thesis
+    unfolding \<open>x t0 = _\<close>
     using assms \<open>t \<noteq> t0\<close>
     by (intro in_bounds_derivative_globalI[where y=x and x="\<lambda>t. x0 + ?ix t"])
-      (auto simp: interval closed_segment_real open_segment_real
-        intro!: cont_f has_vector_derivative_const
-          has_vector_derivative_within_subset[OF integral_has_vector_derivative]
+      (auto simp: initial_time_in subsets cylinder has_vderiv_on_def
+        split: if_split_asm
+        intro!: cont_f has_vector_derivative_const integrable_continuous_closed_segment
+          has_vector_derivative_within_subset[OF ivl_integral_has_vector_derivative]
           has_vector_derivative_add[THEN vector_derivative_eq_rhs]
-          continuous_intros indefinite_integral_continuous)
-qed
-
-lemma integral_in_bounds':
-  assumes "\<not> t0 \<le> t" "t \<in> T" "x t0 = x0" "x \<in> {t..t0} \<rightarrow> X"
-  assumes cont: "continuous_on {t..t0} x"
-  shows "x0 + integral {t..t0} (\<lambda>t. - f (t, x t)) \<in> X" (is "x0 + ?ix t \<in> X")
-proof cases
-  assume "t = t0"
-  thus ?thesis by (auto simp: iv_defined)
-next
-  assume "t \<noteq> t0"
-  have cont_f:"continuous_on {t .. t0} (\<lambda>t. f (t, x t))"
-    using assms
-    by (intro continuous_Sigma continuous_on_minus)
-      (auto intro: cont continuous_on_subset[OF continuous] simp: interval)
-  show ?thesis
-    using assms \<open>t \<noteq> t0\<close>
-    by (intro in_bounds_derivative_globalI[where y=x and x="\<lambda>t. x0 + ?ix t"])
-       (auto simp: interval closed_segment_real open_segment_real 
-        intro!: cont_f 
-          indefinite_integral2_continuous
-          has_vector_derivative_within_subset[OF integral2_has_vector_derivative]
-          has_vector_derivative_const
-          has_vector_derivative_diff[THEN vector_derivative_eq_rhs]
-          continuous_intros)
+          continuous_intros indefinite_ivl_integral_continuous)
 qed
 
 lemma solves_in_cone:
   assumes "t \<in> T"
   assumes init: "x t0 = x0"
   assumes cont: "continuous_on (closed_segment t0 t) x"
-  assumes solves: "\<And>s. s \<in> (open_segment t0 t) \<Longrightarrow> (x has_vector_derivative f (s, x s)) (at s within open_segment t0 t)"
+  assumes solves: "(x has_vderiv_on (\<lambda>s. f s (x s))) (open_segment t0 t)"
   shows "x t \<in> cball x0 (B * abs (t - t0))"
   using assms
   by (rule in_bounds_derivativeI)
 
 lemma is_solution_in_cone:
   assumes "t \<in> T"
-  assumes sol: "is_solution x"
+  assumes sol: "(x solves_ode f) (closed_segment t0 t) Y" and iv: "x t0 = x0"
   shows "x t \<in> cball x0 (B * abs (t - t0))"
-proof cases
-  assume "t = t0"
-  thus ?thesis by (auto simp: is_solutionD(1)[OF sol])
-next
-  assume "t \<noteq> t0"
-  have subset1: "(closed_segment t0 t) \<subseteq> T" using assms interval by (auto simp: closed_segment_real)
-  have subset2: "(open_segment t0 t) \<subseteq> T" using assms by (auto simp: open_segment_real interval)
-  from is_solutionD(1)[OF sol]
-    is_solutionD(2)[OF sol, THEN has_vector_derivative_within_subset[OF _ subset2]]
-    is_solutionD(3)[OF sol set_mp[OF subset1]]
-    solution_continuous_on[OF sol, THEN continuous_on_subset[OF _ subset1]]
-  show ?thesis
-    using assms(1) subset1 subset2 \<open>t \<noteq> t0\<close>
-    by (intro solves_in_cone[where x=x]) (auto simp: interval open_segment_real
-      at_within_open[where S="open_segment t0 t", symmetric])
+  using solves_odeD[OF sol] \<open>t \<in> T\<close>
+  by (intro solves_in_cone)
+    (auto intro!: assms vderiv_on_continuous_on segment_open_subset_closed
+      intro: has_vderiv_on_subset simp: initial_time_in)
+
+lemma cone_subset_domain:
+  assumes "t \<in> T"
+  shows "cball x0 (B * \<bar>t - t0\<bar>) \<subseteq> X"
+  using e_bounded[OF assms] B_nonneg b_pos
+  unfolding cylinder
+  by (intro subset_cball) (auto simp: dist_real_def divide_simps algebra_simps split: if_splits)
+
+lemma is_solution_in_domain:
+  assumes "t \<in> T"
+  assumes sol: "(x solves_ode f) (closed_segment t0 t) Y" and iv: "x t0 = x0"
+  shows "x t \<in> X"
+  using is_solution_in_cone[OF assms] cone_subset_domain[OF \<open>t \<in> T\<close>]
+  by (rule set_rev_mp)
+
+lemma solves_ode_on_subset_domain:
+  assumes sol: "(x solves_ode f) S Y" and iv: "x t0 = x0"
+    and ivl: "t0 \<in> S" "is_interval S" "S \<subseteq> T"
+  shows "(x solves_ode f) S X"
+proof (rule solves_odeI)
+  show "(x has_vderiv_on (\<lambda>t. f t (x t))) S" using solves_odeD(1)[OF sol] .
+  show "x s \<in> X" if s: "s \<in> S" for s
+  proof -
+    from s assms have "s \<in> T"
+      by auto
+    moreover
+    have "{t0--s} \<subseteq> S"
+      by (rule closed_segment_subset) (auto simp: s assms is_interval_convex)
+    with sol have "(x solves_ode f) {t0--s} Y"
+      using order_refl
+      by (rule solves_ode_on_subset)
+    ultimately
+    show ?thesis using iv
+      by (rule is_solution_in_domain)
+  qed
 qed
 
-end
+lemma usolves_ode_on_subset:
+  assumes x: "(x usolves_ode f from t0) T X" and iv: "x t0 = x0"
+  assumes "t0 \<in> S" "is_interval S" "S \<subseteq> T" "X \<subseteq> Y"
+  shows "(x usolves_ode f from t0) S Y"
+proof (rule usolves_odeI)
+  show "(x solves_ode f) S Y" by (rule solves_ode_on_subset[OF usolves_odeD(1)[OF x]]; fact)
+  show "t0 \<in> S" "is_interval S" by fact+
+  fix z t assume "{t0 -- t} \<subseteq> S" and z: "(z solves_ode f) {t0--t} Y" "z t0 = x t0"
+  then have "z t0 = x0" "t0 \<in> {t0--t}" "is_interval {t0--t}" "{t0--t} \<subseteq> T"
+    using iv \<open>S \<subseteq> T\<close> by (auto simp: is_interval_convex_1)
+  with z(1) have zX: "(z solves_ode f) {t0 -- t} X"
+    by (rule solves_ode_on_subset_domain)
+  show "z t = x t"
+    apply (rule usolves_odeD(4)[OF x _ _ _ zX])
+    using \<open>{t0 -- t} \<subseteq> S\<close> \<open>S \<subseteq> T\<close>
+    by (auto simp: is_interval_convex_1 \<open>z t0 = x t0\<close>)
+qed
 
-text \<open>For the numerical approximation, it is necessary that f is
-lipschitz-continuous outside the actual domain - therefore X'.\<close>
+lemma usolves_ode_on_superset_domain:
+  assumes "(x usolves_ode f from t0) T X" and iv: "x t0 = x0"
+  assumes "X \<subseteq> Y"
+  shows "(x usolves_ode f from t0) T Y"
+  using assms(1,2) usolves_odeD(2,3)[OF assms(1)] order_refl assms(3)
+  by (rule usolves_ode_on_subset)
+
+end
 
 locale unique_on_cylinder =
-  solution_in_cylinder + global_lipschitz: global_lipschitz T X' f L for L X' +
-  assumes lipschitz_on_domain: "X \<subseteq> X'"
+  solution_in_cylinder t0 T x0 b f X B +
+  global_lipschitz T X f L
+  for t0 T x0 b X f B L
 begin
 
-lemma lipschitz': "t \<in> T \<Longrightarrow> lipschitz X (\<lambda>x. f (t, x)) L" "0 \<le> L"
-  using global_lipschitz.lipschitz lipschitz_on_domain
-  by (auto intro: lipschitz_subset intro!: lipschitz_nonneg[OF global_lipschitz.lipschitz] iv_defined)
-
-sublocale unique_pos: ivp_on_interval "i \<lparr>ivp_T:={t0 .. t0 + e}\<rparr>" "t0 + e"
-  using e_pos iv_defined
-  by unfold_locales auto
-
-sublocale unique_pos: unique_on_closed "i \<lparr>ivp_T:={t0 .. t0 + e}\<rparr>" "t0 + e" L
-proof
-  show "closed unique_pos.X" by (simp_all add: cylinder closed_cball)
-  show "continuous_on (unique_pos.T \<times> unique_pos.X) unique_pos.f"
-    using continuous interval by (auto intro: continuous_on_subset)
-  fix t assume t: "t \<in> unique_pos.T" with lipschitz' interval
-  show "lipschitz unique_pos.X (\<lambda>x. unique_pos.f (t, x)) L" by simp
-  fix x
-  assume "x unique_pos.t0 = unique_pos.x0"
-    "x \<in> {unique_pos.t0 .. t} \<rightarrow> unique_pos.X"
-    "continuous_on {unique_pos.t0 .. t} x"
-  thus "unique_pos.x0 + integral {unique_pos.t0..t} (\<lambda>t. unique_pos.f (t, x t)) \<in>
-      unique_pos.X"
-    using t interval
-    by (auto intro: integral_in_bounds)
-qed
-
-sublocale unique_neg: ivp "i \<lparr>ivp_T:={t0 - e.. t0}\<rparr>"
-  using e_pos iv_defined
-  by unfold_locales auto
-
-sublocale unique_neg: unique_solution "i \<lparr>ivp_T:={t0 - e.. t0}\<rparr>"
-proof
-  let ?mirror = "\<lambda>t. 2 * t0 - t"
-  have mirror_eq: "((\<lambda>x. (2 * t0 - fst x, snd x)) ` (T \<times> X)) = T \<times> X"
-    by (auto intro: image_eqI[where x="(?mirror x, y)" for x y] simp: interval)
-  have mirror_imp: "\<And>t. t \<in> T \<Longrightarrow> ?mirror t \<in> T"
-    by (auto simp: interval)
-  have cont_mirror: "continuous_on (T \<times> X) (- f o (\<lambda>(t, x). (?mirror t, x)))"
-    apply (rule continuous_on_compose)
-    using continuous
-    by (auto simp: split_beta' mirror_eq
-      intro!: continuous_on_Pair continuous_intros)
-  interpret rev:
-    unique_on_cylinder "i \<lparr>ivp_f:=(\<lambda>(t, x). -f(?mirror t, x))\<rparr>" e b B L X'
-    apply unfold_locales
-    subgoal using iv_defined by simp
-    subgoal using iv_defined by simp
-    subgoal using e_pos by simp
-    subgoal using b_pos by simp
-    subgoal using interval by simp
-    subgoal using cylinder by simp
-    subgoal using cont_mirror by (simp add: split_beta')
-    subgoal using norm_f by (simp add: mirror_imp)
-    subgoal using e_bounded by simp
-    subgoal using global_lipschitz.lipschitz by (simp add: lipschitz_uminus mirror_imp)
-    subgoal using global_lipschitz.lipschitz lipschitz_on_domain by simp
-    done
-  have *: "op - (2 * t0) ` {t0 - e..t0} = {t0 .. t0 + e}"
-    by (auto intro!: image_eqI[where x="?mirror x" for x])
-  have "unique_neg.is_solution (rev.unique_pos.solution o ?mirror)"
-    using rev.unique_pos.is_solution_solution
-    by (simp add: unique_neg.solution_mirror_eq o_def *)
-  thus "\<exists>x. unique_neg.is_solution x" by blast
-  then interpret unique_neg: has_solution "i\<lparr>ivp_T := {t0 - e..t0}\<rparr>"
-    by unfold_locales
-  fix y t assume "t \<in> unique_neg.T" and y: "unique_neg.is_solution y"
-  hence t: "?mirror t \<in> rev.unique_pos.T" by auto
-  from unique_neg.mirror_solution[OF y]
-    unique_neg.mirror_solution[OF unique_neg.is_solution_solution]
-  have **: "rev.unique_pos.is_solution (y o ?mirror)"
-    "rev.unique_pos.is_solution (unique_neg.solution o ?mirror)"
-    by (auto simp: o_def *)
-  from rev.unique_pos.unique_solution[OF **(1) t]
-    rev.unique_pos.unique_solution[OF **(2) t]
-  show "y t = unique_neg.solution t"
-    by simp
-qed
-
-sublocale unique_solution
-proof -
-  interpret
-    connected_solutions
-      i "i\<lparr>ivp_T := {t0 - e..t0}\<rparr>" "i\<lparr>ivp_T := {t0..t0+e}\<rparr>" unique_neg.solution
-    using e_pos unique_neg.solution_t0 unique_pos.solution_t0
-    by unfold_locales (auto simp: interval)
-  interpret
-    connected_unique_solutions
-      i "i\<lparr>ivp_T := {t0 - e..t0}\<rparr>" "i\<lparr>ivp_T := {t0..t0+e}\<rparr>" t0
-    using e_pos unique_neg.solution_t0 unique_pos.solution_t0
-    by unfold_locales auto
-  show "unique_solution i" ..
-qed
-
-end
-
-locale unique_on_superset_domain = subset?: unique_solution +
-  fixes X''
-  assumes superset: "X \<subseteq> X''"
-  assumes segment_subset: "\<And>t. t \<in> T \<Longrightarrow> (closed_segment t0 t) \<subseteq> T"
-  assumes solution_in_subset: "\<And>t x. t \<in> T \<Longrightarrow> x t0 = x0 \<Longrightarrow>
-    (\<And>s. s \<in> closed_segment t0 t \<Longrightarrow>
-    (x has_vector_derivative f (s, x s)) (at s within closed_segment t0 t)) \<Longrightarrow>
-    x t \<in> X"
-begin
-
-sublocale has_solution "i\<lparr>ivp_X:=X''\<rparr>"
-  using iv_defined superset
-  by unfold_locales (auto intro!: exI[where x=solution] is_solution_on_superset_domain)
-
-lemma is_solution_eq_is_solution_on_supersetdomain:
-  shows "subset.is_solution = ivp.is_solution (i\<lparr>ivp_X:=X''\<rparr>)"
-proof -
-  interpret ivp': ivp "i\<lparr>ivp_X:=X''\<rparr>" using iv_defined by unfold_locales auto
-  show ?thesis
-  proof (safe intro!: ext)
-    fix x assume x: "is_solution x"
-    from is_solutionD[OF this] solution_continuous_on[OF this]
-    have "\<And>t. t \<in> subset.T \<Longrightarrow> x t \<in> subset.X"
-      using segment_subset
-      by (intro solution_in_subset; force intro!: continuous_on_subset
-          continuous_on_subset[OF _ segment_subset]
-          has_vector_derivative_within_subset[OF _ segment_subset])
-    with x show "subset.is_solution x"
-      by (auto intro!: subset.is_solutionI dest: is_solutionD)
-  qed (intro subset.is_solution_on_superset_domain superset)
-qed
-
-lemma sup_solution_is_solution: "is_solution x \<Longrightarrow> subset.is_solution x"
-  using superset
-  by (subst is_solution_eq_is_solution_on_supersetdomain) auto
-
-lemma solutions_eq:
-  "t \<in> T \<Longrightarrow> solution t = subset.solution t"
-  using sup_solution_is_solution
-  by (auto intro!: subset.unique_solution)
-
-sublocale unique_solution "i\<lparr>ivp_X:=X''\<rparr>"
-proof
-  fix y t
-  assume "t \<in> T" hence t: "t \<in> subset.T" by simp
-  assume sol': "is_solution y"
-  hence sol: "subset.is_solution y"
-    by (rule sup_solution_is_solution)
-  from unique_solution[OF sol t] have "y t = subset.solution t" .
-  also
-  note solutions_eq[OF \<open>t \<in> T\<close>, symmetric]
-  finally show "y t = ivp.solution (i\<lparr>ivp_X := X''\<rparr>) t" .
-qed
-
-end
-
-locale unique_of_superset =
-  sub?: has_solution +
-  super?: unique_solution "i\<lparr>ivp_X:=X'\<rparr>" for X' +
-  assumes subset: "sub.X \<subseteq> X'"
-begin
-
-lemma sub_is_solution: "super.is_solution sub.solution"
-  using sub.is_solutionD[OF sub.is_solution_solution] subset
-  by (intro is_solutionI) auto
-
-lemma sub_eq_sup_solution: "\<And>t. t \<in> T \<Longrightarrow> sub.solution t = super.solution t"
-  by (auto intro!: super.unique_solution sub_is_solution)
-
-sublocale unique_solution
-proof
-  fix y t
-  assume "sub.is_solution y"
-    and "t \<in> sub.T"
-  from this have t: "t \<in> super.T"
-    and y: "super.is_solution y"
-    by (auto intro!: sub.is_solution_on_superset_domain[OF _ subset])
-  show "y t = sub.solution t"
-    using y
-    unfolding sub_eq_sup_solution[OF t]
-    by (rule super.unique_solution[OF _ t])
-qed
+sublocale unique_on_closed t0 T x0 f X L
+  apply unfold_locales
+  subgoal by (simp add: initial_time_in)
+  subgoal by (simp add: X_def b_pos)
+  subgoal by (auto intro!: integral_in_bounds simp: initial_time_in)
+  subgoal by (auto intro!: continuous_intros simp: split_beta' X_def)
+  subgoal by (simp add: X_def)
+  done
 
 end
 
 locale derivative_on_prod =
-  fixes T X and f::"(real \<times> 'a::banach) \<Rightarrow> 'a" and f':: "real \<times> 'a \<Rightarrow> (real \<times> 'a) \<Rightarrow> 'a"
-  assumes nonempty: "T \<noteq> {}" "X \<noteq> {}"
-  assumes f': "\<And>tx. tx \<in> T \<times> X \<Longrightarrow>
-    (f has_derivative (f' tx)) (at tx within (T \<times> X))"
+  fixes T X and f::"real \<Rightarrow> 'a::banach \<Rightarrow> 'a" and f':: "real \<times> 'a \<Rightarrow> (real \<times> 'a) \<Rightarrow> 'a"
+  assumes f': "\<And>tx. tx \<in> T \<times> X \<Longrightarrow> ((\<lambda>(t, x). f t x) has_derivative (f' tx)) (at tx within (T \<times> X))"
+begin
+
+lemma f'_comp[derivative_intros]:
+  "(g has_derivative g') (at s within S) \<Longrightarrow> (h has_derivative h') (at s within S) \<Longrightarrow>
+  s \<in> S \<Longrightarrow> (\<And>x. x \<in> S \<Longrightarrow> g x \<in> T) \<Longrightarrow> (\<And>x. x \<in> S \<Longrightarrow> h x \<in> X) \<Longrightarrow>
+  ((\<lambda>x. f (g x) (h x)) has_derivative (\<lambda>y. f' (g s, h s) (g' y, h' y))) (at s within S)"
+  apply (rule has_derivative_in_compose2[OF f' _ _ has_derivative_Pair, unfolded split_beta' fst_conv snd_conv, of g h S s g' h'])
+  apply auto
+  done
+
+lemma derivative_on_prod_subset:
+  assumes "X' \<subseteq> X"
+  shows "derivative_on_prod T X' f f'"
+  using assms
+  by (unfold_locales) (auto intro!: derivative_eq_intros)
+
+end
 
 end

@@ -57,7 +57,7 @@ lemma pdevs_apply_inner_scaleR_pdevs[simp]:
   by (simp add: inner_scaleR_pdevs_def)
 
 lemma degree_inner_scaleR_pdevs_le:
-  "degree (inner_scaleR_pdevs (u - l::'a::executable_euclidean_space) One_pdevs) \<le>
+  "degree (inner_scaleR_pdevs (l::'a::executable_euclidean_space) One_pdevs) \<le>
     degree (One_pdevs::'a pdevs)"
   by (rule degree_leI) (auto simp: inner_scaleR_pdevs_def One_pdevs_raw_def)
 
@@ -172,7 +172,7 @@ proof atomize_elim
     (\<Sum>i = 0..<degree (inner_scaleR_pdevs (u - l) One_pdevs).
         (if (u - l) \<bullet> Basis_list ! i = 0 then 0
         else ((k - (1 / 2) *\<^sub>R (l + u)) \<bullet> Basis_list ! i) *\<^sub>R Basis_list ! i))"
-    using degree_inner_scaleR_pdevs_le[of u l]
+    using degree_inner_scaleR_pdevs_le[of "u - l"]
     by (intro setsum.mono_neutral_cong_right) (auto dest!: degree)
   also have "(1 / 2) *\<^sub>R (l + u) +
     (\<Sum>i = 0..<degree (inner_scaleR_pdevs (u - l) One_pdevs).
@@ -237,10 +237,11 @@ lemma inner_scaleR_pdevs_0: "inner_scaleR_pdevs 0 One_pdevs = zero_pdevs"
   unfolding inner_scaleR_pdevs_def
   by transfer (auto simp: unop_pdevs_raw_def)
 
-lemma Affine_aform_of_point: "x \<in> Affine (aform_of_point x)"
-  by (auto simp: aform_of_point_def aform_of_ivl_def Affine_def aform_val_def
-      pdevs_of_ivl_def inner_scaleR_pdevs_0 valuate_def convex_scaleR_aux algebra_simps
-      intro!: image_eqI[where x="\<lambda>_. 0"])
+lemma Affine_aform_of_point_eq[simp]: "Affine (aform_of_point p) = {p}"
+  by (simp add: Affine_aform_of_ivl aform_of_point_def)
+
+lemma mem_Affine_aform_of_point: "x \<in> Affine (aform_of_point x)"
+  by simp
 
 lemma
   aform_val_aform_of_ivl_innerE:
@@ -266,9 +267,7 @@ qed
 
 subsection \<open>Approximate Operations\<close>
 
-definition max_pdev::"'a::euclidean_space pdevs \<Rightarrow> nat \<times> 'a" where
-  "max_pdev x =
-    fold (\<lambda>x y. if infnorm (snd x) > infnorm (snd y) then x else y) (list_of_pdevs x) (0, 0)"
+definition "max_pdev x = fold (\<lambda>x y. if infnorm (snd x) > infnorm (snd y) then x else y) (list_of_pdevs x) (0, 0)"
 
 
 subsubsection \<open>set of generated endpoints\<close>
@@ -347,6 +346,16 @@ lemmas abs_pdevs_val_le_tdev' = tdev'_le[OF abs_pdevs_val_le_tdev]
 
 lemma tdev'_uminus_pdevs[simp]: "tdev' p (uminus_pdevs x) = tdev' p x"
   by (auto simp: tdev'_def o_def rev_map filter_map rev_filter list_of_pdevs_def pdevs_domain_def)
+
+abbreviation Radius::"'a::ordered_euclidean_space aform \<Rightarrow> 'a"
+  where "Radius X \<equiv> tdev (snd X)"
+
+abbreviation Radius'::"nat\<Rightarrow>'a::executable_euclidean_space aform \<Rightarrow> 'a"
+  where "Radius' p X \<equiv> tdev' p (snd X)"
+
+lemma Radius'_uminus_aform[simp]: "Radius' p (uminus_aform X) = Radius' p X"
+  by (auto simp: uminus_aform_def)
+
 
 subsubsection \<open>truncate partial deviations\<close>
 
@@ -684,19 +693,19 @@ qed
 
 subsubsection \<open>Inf/Sup\<close>
 
-definition "Inf_aform' p X = truncate_down p (fst X - tdev' p (snd X))"
+definition "Inf_aform' p X = eucl_truncate_down p (fst X - tdev' p (snd X))"
 
-definition "Sup_aform' p X = truncate_up p (fst X + tdev' p (snd X))"
+definition "Sup_aform' p X = eucl_truncate_up p (fst X + tdev' p (snd X))"
 
 lemma Inf_aform':
   shows "Inf_aform' p X \<le> Inf_aform X"
   unfolding Inf_aform_def Inf_aform'_def
-  by (auto intro!: truncate_down_le add_left_mono tdev')
+  by (auto intro!: eucl_truncate_down_le add_left_mono tdev')
 
 lemma Sup_aform':
   shows "Sup_aform X \<le> Sup_aform' p X"
   unfolding Sup_aform_def Sup_aform'_def
-  by (rule truncate_up_le add_left_mono tdev')+
+  by (rule eucl_truncate_up_le add_left_mono tdev')+
 
 lemma Inf_aform_le_Sup_aform[intro]:
   "Inf_aform X \<le> Sup_aform X"
@@ -946,6 +955,61 @@ proof atomize_elim
     by auto
 qed
 
+definition "inverse_aform p d a =
+  do {
+    let l = Inf_aform' p a;
+    let u = Sup_aform' p a;
+    if (l \<le> 0 \<and> 0 \<le> u) then None
+    else if (l \<le> 0) then (Some (uminus_aform (inverse_aform' p d (uminus_aform a))))
+    else Some (inverse_aform' p d a)
+  }"
+
+lemma eucl_truncate_up_eq_eucl_truncate_down:
+  "eucl_truncate_up p x = - (eucl_truncate_down p (- x))"
+  by (auto simp: eucl_truncate_up_def eucl_truncate_down_def truncate_up_eq_truncate_down setsum_negf)
+
+lemma inverse_aformE:
+  fixes X::"real aform"
+  assumes e: "e \<in> UNIV \<rightarrow> {-1 .. 1}"
+    and xn: "pdevs_apply (snd X) n = 0"
+    and disj: "Inf_aform' p X > 0 \<or> Sup_aform' p X < 0"
+  obtains err Y where
+    "inverse_aform p n X = Some Y"
+    "aform_val (e(n:=err)) Y = inverse (aform_val e X)"
+    "err \<in> {-1 .. 1}"
+proof -
+  {
+    assume neg: "Sup_aform' p X < 0"
+    from neg have [simp]: "Inf_aform' p X \<le> 0"
+      by (metis Inf_aform'_le_Sup_aform' dual_order.strict_trans1 less_asym not_less)
+    from neg disj have "0 < Inf_aform' p (uminus_aform X)"
+      by (auto simp: Inf_aform'_def Sup_aform'_def eucl_truncate_up_eq_eucl_truncate_down ac_simps)
+    from inverse_aform'E[OF this e(1)] xn
+    obtain err where err:
+      "aform_val (e(n := err)) (inverse_aform' p n (uminus_aform X)) =
+        inverse (aform_val e (uminus_aform X))"
+       "err \<in>{-1..1}"
+      by (auto simp: uminus_aform_def)
+    let ?Y = "uminus_aform (inverse_aform' p n (uminus_aform X))"
+    have "inverse_aform p n X = Some ?Y"
+      "aform_val (e(n:=err)) ?Y = inverse (aform_val e X)"
+      using err neg by (auto simp: inverse_aform_def)
+    from this \<open>err \<in> _\<close> have ?thesis ..
+  } moreover {
+    assume pos: "Inf_aform' p X > 0"
+    from pos have eq: "inverse_aform p n X = Some (inverse_aform' p n X)"
+      by (auto simp: inverse_aform_def)
+    from inverse_aform'E[OF pos e(1) xn]
+    obtain err where err:
+      "aform_val (e(n := err)) (inverse_aform' p n X) = inverse (aform_val e X)"
+       "err \<in> {-1..1}"
+       by auto
+    have "aform_val (e(n:=err)) (inverse_aform' p n X) = inverse (aform_val e X)"
+      using err by (auto simp: inverse_aform_def)
+    from eq this \<open>err \<in> _\<close> have ?thesis ..
+  } ultimately show ?thesis
+    using assms by auto
+qed
 
 subsection \<open>Reduction (Summarization of Coefficients)\<close>
 text \<open>\label{sec:affinesummarize}\<close>
@@ -954,6 +1018,24 @@ definition "pdevs_of_centered_ivl r = (inner_scaleR_pdevs r One_pdevs)"
 
 lemma pdevs_of_centered_ivl_eq_pdevs_of_ivl[simp]: "pdevs_of_centered_ivl r = pdevs_of_ivl (-r) r"
   by (auto simp: pdevs_of_centered_ivl_def pdevs_of_ivl_def algebra_simps intro!: pdevs_eqI)
+
+lemma filter_pdevs_raw_nonzeros: "{i. filter_pdevs_raw s f i \<noteq> 0} = {i. f i \<noteq> 0} \<inter> {x. s x (f x)}"
+  by (auto simp: filter_pdevs_raw_def)
+
+lift_definition filter_pdevs::"(nat \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a::real_vector pdevs \<Rightarrow> 'a pdevs" is filter_pdevs_raw
+  by (simp add: filter_pdevs_raw_nonzeros)
+
+lemma pdevs_apply_filter_pdevs[simp]:
+  "pdevs_apply (filter_pdevs I x) i = (if I i (pdevs_apply x i) then pdevs_apply x i else 0)"
+  by transfer (auto simp: filter_pdevs_raw_def)
+
+lemma degree_filter_pdevs_le: "degree (filter_pdevs I x) \<le> degree x"
+  by (rule degree_leI) (simp split: if_split_asm)
+
+lemma pdevs_val_filter_pdevs:
+  "pdevs_val e (filter_pdevs I x) = (\<Sum>i \<in> {..<degree x} \<inter> {i. I i (pdevs_apply x i)}. e i *\<^sub>R pdevs_apply x i)"
+  by (auto simp: pdevs_val_setsum if_distrib setsum.inter_restrict degree_filter_pdevs_le degree_gt
+    intro!: setsum.mono_neutral_cong_left split: if_split_asm)
 
 definition summarize_pdevs::
   "nat \<Rightarrow> (nat \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> 'a::executable_euclidean_space pdevs \<Rightarrow> 'a pdevs"
@@ -1048,9 +1130,7 @@ definition "split_aform_largest_uncond X =
     (let (i, x) = max_pdev (snd X) in split_aform X i)"
 
 definition "split_aform_largest p t X =
-  (let (a, b) =
-      split_aform_largest_uncond (fst X, summarize_threshold p t (degree_aform X) (snd X))
-    in [a, b])"
+  split_aform_largest_uncond (fst X, summarize_threshold p t (degree_aform X) (snd X))"
 
 
 subsection \<open>Approximating Expressions\<close>
@@ -1105,12 +1185,8 @@ where
 | "approx_realarith p (Inverse a) vs m =
     do {
       a \<leftarrow> approx_realarith p a vs m;
-      let l = Inf_aform' p a;
-      let u = Sup_aform' p a;
       let d = max m (degree (snd a));
-      if (l \<le> 0 \<and> 0 \<le> u) then None
-      else if (l \<le> 0) then (Some (uminus_aform (inverse_aform' p d (uminus_aform a))))
-      else Some (inverse_aform' p d a)}"
+      inverse_aform p d a}"
 | "approx_realarith p (Minus a) vs m =
     map_option uminus_aform (approx_realarith p a vs m)"
 | "approx_realarith p (Num f) vs m =
@@ -1122,15 +1198,6 @@ where
 
 lemma uminus_aform_uminus_aform[simp]: "uminus_aform (uminus_aform z) = (z::'a::real_vector aform)"
   by (auto intro!: prod_eqI pdevs_eqI simp: uminus_aform_def)
-
-abbreviation Radius::"'a::ordered_euclidean_space aform \<Rightarrow> 'a"
-  where "Radius X \<equiv> tdev (snd X)"
-
-abbreviation Radius'::"nat\<Rightarrow>'a::executable_euclidean_space aform \<Rightarrow> 'a"
-  where "Radius' p X \<equiv> tdev' p (snd X)"
-
-lemma Radius'_uminus_aform[simp]: "Radius' p (uminus_aform X) = Radius' p X"
-  by (auto simp: uminus_aform_def)
 
 lemma approx_realarith_Elem:
   assumes "vs = map (aform_val e') VS"
@@ -1263,45 +1330,20 @@ next
     obtain e where e: "e \<in> UNIV \<rightarrow> {-1..1}" "(\<forall>i<d. e i = e' i)" and affine_pos:
       "interpret_realarith ra vs = aform_val e Y"
       by auto
+    have "Inf_aform' p Y > 0 \<or> Sup_aform' p Y < 0"
+      using Inverse Y
+      by (auto split: if_split_asm simp: Let_def inverse_aform_def)
+    from inverse_aformE[OF e(1) d1 this]
+    obtain err Z where Z:
+      "inverse_aform p d1 Y = Some Z"
+      "aform_val (e(d1 := err)) Z = inverse (aform_val e Y)"
+      "err \<in> {- 1..1}" .
+    with Inverse(4) have "X = Z"
+      by (auto simp: d1_def Y)
     show ?case
-    proof -
-      {
-        assume neg: "Sup_aform' p Y < 0"
-        from neg have [simp]: "Inf_aform' p Y \<le> 0"
-          by (metis Inf_aform'_le_Sup_aform' dual_order.strict_trans1 less_asym not_less)
-        from neg have "0 < Inf_aform' p (uminus_aform Y)"
-          by (auto simp: Inf_aform'_def Sup_aform'_def truncate_up_eq_truncate_down ac_simps)
-        from inverse_aform'E[OF this e(1)] d1
-        obtain err where err:
-          "aform_val (e(d1 := err)) (inverse_aform' p d1 (uminus_aform Y)) =
-            inverse (aform_val e (uminus_aform Y))"
-           "err \<in>{-1..1}"
-          by (auto simp: uminus_aform_def)
-        have affine_neg: "- interpret_realarith ra vs = aform_val e (uminus_aform Y)"
-          using affine_pos by simp
-        with err have "inverse (interpret_realarith ra vs) = aform_val (e(d1:=err)) X"
-          using Inverse(4) Y neg Inverse(3)
-          by (auto simp add: Let_def d1_def)
-        with err have ?case
-          using e
-          by (auto intro!: exI[where x="e(d1:=err)"] simp: d1_def fun_upd_def)
-      } moreover {
-        assume pos: "Inf_aform' p Y > 0"
-        from pos have eq: "inverse_aform' p d1 Y = X"
-          using Inverse Y by (auto simp: d1_def)
-        from inverse_aform'E[OF pos e(1) d1]
-        obtain err where err:
-          "aform_val (e(d1 := err)) (inverse_aform' p d1 Y) = inverse (aform_val e Y)"
-           "err \<in> {-1..1}"
-           by auto
-        from err have inverse_eq: "inverse (interpret_realarith ra vs) = aform_val (e(d1 := err)) X"
-          by (simp add: eq affine_pos)
-        hence ?case
-          using err e
-          by (auto intro!: exI[where x="e(d1:=err)"] simp: d1_def fun_upd_def)
-      } ultimately show ?case using Inverse Y
-        by (auto split: if_split_asm simp: Let_def)
-    qed
+      using e \<open>err \<in> _\<close>
+      by (auto simp: affine_pos d1_def fun_upd_def \<open>X = Z\<close> Z(2)[symmetric]
+          intro!: exI[where x="e(d1:=err)"])
   qed simp
 qed
 
@@ -1461,6 +1503,13 @@ proof -
     using zipped_subset_mapped_Elem[OF e(1,3)  l1 l2 subset]
     by (auto simp: Joints2_def valuate_def intro!: exI[where x=e])
 qed
+
+lemma approx_euclarith_outer:
+  assumes "approx_euclarith_outer p t e VS = Some R"
+  assumes "vs \<in> Joints VS"
+  shows "(vs, interpret_euclarith e vs) \<in> Joints2 VS R"
+  using approx_euclarith_outer2_shift[OF assms, of vs] assms
+  by (auto simp: Joints2_def Joints_def valuate_def)
 
 lemma length_eq_NilI: "length [] = length []"
   and length_eq_ConsI: "length xs = length ys \<Longrightarrow> length (x#xs) = length (y#ys)"
@@ -1635,6 +1684,7 @@ fun approximate_affine (name, term) lthy =
     val approx_term = betapplys (approx, approx_args)
     val approx_eq = HOLogic.mk_eq (approx_term, mk_Some (aformT bty) (Free (R, aformT bty)))
       |> HOLogic.mk_Trueprop |> Thm.cterm_of lthy4
+
     val interpret_eq = HOLogic.mk_mem (HOLogic.mk_prod (vsqs, betapplys (t_in, vs)),
       Joints2_const aty bty $ VSQS $ Free (R, aformT bty))
       |> HOLogic.mk_Trueprop
@@ -1691,25 +1741,31 @@ subsection \<open>Generic operations on Affine Forms in Euclidean Space\<close>
 lemma listsum_Basis_list[simp]: "listsum (map f Basis_list) = (\<Sum>b\<in>Basis. f b)"
   by (subst listsum_distinct_conv_setsum_set) (auto simp: Basis_list distinct_Basis_list)
 
-subsubsection \<open>Adding\<close>
+subsubsection \<open> Binary operations \<close>
 
-fun add_componentwise::
-  "'a::executable_euclidean_space list \<Rightarrow> ('a, 'a) euclarith"
+fun binary_componentwise'::
+  "'a::zero list \<Rightarrow> ('a realarith \<Rightarrow> 'a realarith \<Rightarrow> 'a realarith) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ('a, 'a) euclarith"
 where
-  "add_componentwise [] = ScaleR (Num 0) 0"
-| "add_componentwise (b#bs) = AddE (ScaleR (Add (Var 0 b) (Var 1 b)) b) (add_componentwise bs)"
+  "binary_componentwise' [] f i j = ScaleR (Num 0) 0"
+| "binary_componentwise' (b#bs) f i j = AddE (ScaleR (f (Var i b) (Var j b)) b) (binary_componentwise' bs f i j)"
 
-lemma interpret_add_componentwise:
-  "interpret_euclarith (add_componentwise Bs) (x#y#ys) = (\<Sum>b\<leftarrow>Bs. ((x + y) \<bullet> b) *\<^sub>R b)"
+lemma interpret_binary_componentwise':
+  shows "interpret_euclarith (binary_componentwise' Bs f i j) xs =
+    (\<Sum>b\<leftarrow>Bs. ((interpret_realarith (f (Var i b) (Var j b)) xs) *\<^sub>R b))"
   by (induct Bs) (auto simp: algebra_simps plusE_def)
 
-lemma interpret_add_componentwise_Basis[simp]:
-  "interpret_euclarith (add_componentwise Basis_list) (x#y#ys) = x + y"
-  unfolding interpret_add_componentwise
-  by (auto simp: euclidean_representation)
+
+subsubsection \<open>Adding\<close>
+
+definition "add_ea = binary_componentwise' Basis_list Add"
+
+lemma interpret_add_ea[simp]:
+  "interpret_euclarith (add_ea i j) xs = xs!i + xs!j"
+  unfolding interpret_binary_componentwise' add_ea_def
+  by (auto simp: euclidean_representation inner_add_left[symmetric])
 
 definition "add_aform_componentwise prec tol X Y YS =
-  approx_euclarith_outer prec tol (add_componentwise Basis_list) (X # Y # YS)"
+  approx_euclarith_outer prec tol (add_ea 0 1) (X # Y # YS)"
 
 lemma
   add_aform_componentwise:
@@ -1723,25 +1779,61 @@ lemma
   by (auto simp: valuate_def Joints2_def Joints_def)
 
 
+subsubsection \<open> pointwise multiplication \<close>
+
+context euclidean_space begin
+
+definition hadamard::"'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "\<odot>" 70) where
+  "hadamard a b = (\<Sum>i\<in>Basis. ((a \<bullet> i) * (b \<bullet> i)) *\<^sub>R i)"
+
+end
+
+interpretation hadamard: comm_semiring_0_cancel "op +" "op -" 0 "op \<odot>"
+  by standard (simp_all add: hadamard_def algebra_simps setsum.distrib)
+
+lemma hadamard_inner_Basis: "c \<in> Basis \<Longrightarrow> (a \<odot> b) \<bullet> c = (a \<bullet> c) * (b \<bullet> c)"
+  by (auto simp: hadamard_def inner_setsum_left inner_Basis if_distrib setsum.delta cong: if_cong)
+
+lemma hadamard_real[simp]: "(op \<odot>::real\<Rightarrow>real\<Rightarrow>real) = op *"
+  by (force simp: hadamard_def)
+
+definition "hadamard_ea = binary_componentwise' Basis_list Mult"
+
+lemma interpret_hadamard_ea[simp]:
+  "interpret_euclarith (hadamard_ea i j) xs = (xs ! i) \<odot> (xs ! j)"
+  unfolding interpret_binary_componentwise' hadamard_ea_def hadamard_def
+  by (auto simp: euclidean_representation)
+
+
+subsubsection \<open>Unary operations\<close>
+
+fun unary_componentwise'::
+  "'a::zero list \<Rightarrow> ('a realarith \<Rightarrow> 'a realarith) \<Rightarrow> nat \<Rightarrow> ('a, 'a) euclarith"
+where
+  "unary_componentwise' [] f i = ScaleR (Num 0) 0"
+| "unary_componentwise' (b#bs) f i = AddE (ScaleR (f (Var i b)) b) (unary_componentwise' bs f i)"
+
+lemma interpret_unary_componentwise':
+  shows "interpret_euclarith (unary_componentwise' Bs f i) xs =
+    (\<Sum>b\<leftarrow>Bs. ((interpret_realarith (f (Var i b)) xs) *\<^sub>R b))"
+  by (induct Bs) (auto simp: algebra_simps plusE_def)
+
+
+subsection \<open>Scale with expression\<close>
+
+definition scaleR_ea::"'a realarith \<Rightarrow> nat \<Rightarrow> ('a, 'a::executable_euclidean_space) euclarith"
+where "scaleR_ea x i = unary_componentwise' Basis_list (Mult x) i"
+
+lemma interpret_scaleR_ea[simp]:
+  "interpret_euclarith (scaleR_ea x i) xs = interpret_realarith x xs *\<^sub>R (xs!i)"
+  unfolding scaleR_ea_def interpret_unary_componentwise' listsum_Basis_list euclidean_representation
+  by (auto simp: divide_simps intro!: euclidean_eqI[where 'a='a])
+
+
 subsubsection \<open>Scale with fraction\<close>
 
-fun scaleQ_componentwise::
-  "real \<Rightarrow> real \<Rightarrow> 'a::executable_euclidean_space list \<Rightarrow> ('a, 'a) euclarith"
-where
-  "scaleQ_componentwise x y [] = ScaleR (Num 0) 0"
-| "scaleQ_componentwise x y (b#bs) =
-    AddE (ScaleR (Mult (Mult (Num x) (Var 0 b)) (Inverse (Num y))) b) (scaleQ_componentwise x y bs)"
-
-lemma interpret_scaleQ_componentwise:
-  "interpret_euclarith (scaleQ_componentwise x z Bs) (y#ys) = (\<Sum>b\<leftarrow>Bs. (((x/z) *\<^sub>R y) \<bullet> b) *\<^sub>R b)"
-  by (induct Bs) (auto simp: algebra_simps plusE_def inverse_eq_divide)
-
-lemma interpret_scaleQ_componentwise_Basis[simp]:
-  "interpret_euclarith (scaleQ_componentwise x z Basis_list) (y#ys) = (x/z) *\<^sub>R y"
-  unfolding interpret_scaleQ_componentwise listsum_Basis_list euclidean_representation ..
-
 definition "scaleQ_aform_componentwise prec tol x z Y YS =
-  approx_euclarith_outer prec tol (scaleQ_componentwise x z Basis_list) (Y # YS)"
+  approx_euclarith_outer prec tol (scaleR_ea (Mult (Num x) (Inverse (Num z))) 0) (Y # YS)"
 
 lemma
   scaleQ_aform_componentwise:
@@ -1750,29 +1842,16 @@ lemma
   shows "(((x / z) *\<^sub>R y) # y # ys) \<in> Joints (R # Y # YS)"
   using assms
     approx_euclarith_outer2_shift[OF assms[simplified scaleQ_aform_componentwise_def], of "y#ys"]
-  by (auto simp: valuate_def Joints2_def Joints_def)
+  by (auto simp: valuate_def Joints2_def Joints_def inverse_eq_divide)
 
 
 subsubsection \<open>scale with an interval\<close>
 
-fun scaleR_ivl::
-  "'a \<Rightarrow> 'a::executable_euclidean_space list \<Rightarrow> ('a, 'a) euclarith"
-where
-  "scaleR_ivl a [] = ScaleR (Num 0) 0"
-| "scaleR_ivl a (b#bs) = AddE (ScaleR (Mult (Var 0 a) (Var 1 b)) b) (scaleR_ivl a bs)"
-
-lemma interpret_scaleR_ivl:
-  "interpret_euclarith (scaleR_ivl a Bs) (x#y#ys) = (\<Sum>b\<leftarrow>Bs. (((x\<bullet>a) *\<^sub>R y) \<bullet> b) *\<^sub>R b)"
-  by (induct Bs) (auto simp: algebra_simps plusE_def)
-
-lemma scaleR_ivl_Basis[simp]:
-  "interpret_euclarith (scaleR_ivl a Basis_list) (x#y#ys) = (x\<bullet>a) *\<^sub>R y"
-  unfolding interpret_scaleR_ivl listsum_Basis_list euclidean_representation ..
-
 definition "scaleR_aform_ivl prec tol a b Y YS =
-  approx_euclarith_outer prec tol (scaleR_ivl (hd Basis_list) Basis_list)
-    ((((a + b)/2)*\<^sub>R(hd Basis_list), pdev_upd zero_pdevs (fold max (map degree_aform (Y#YS)) 0)
-    (((b-a)/2)*\<^sub>R(hd Basis_list)))#Y # YS)"
+  (let c = hd Basis_list
+  in
+  approx_euclarith_outer prec tol (scaleR_ea (Var 0 c) 1)
+    ((((a + b)/2) *\<^sub>R c, pdev_upd zero_pdevs (fold max (map degree_aform (Y#YS)) 0) ((\<bar>b-a\<bar>/2)*\<^sub>Rc)) # Y # YS))"
 
 lemma hd_Basis_list[simp]: "hd Basis_list \<in> Basis"
   unfolding Basis_list[symmetric]
@@ -1856,38 +1935,385 @@ proof -
     by (force split: if_split_asm simp: list_all_iff)
   ultimately have Joints: "c*\<^sub>Rhd Basis_list#y#ys \<in> Joints (?ivl#Y#YS)"
     by (auto intro!: fresh_JointsI[OF assms(2) _ in_Aff])
-  with approx_euclarith_outer2_shift[OF assms(1)[simplified scaleR_aform_ivl_def] Joints,
+  with approx_euclarith_outer2_shift[OF assms(1)[simplified scaleR_aform_ivl_def Let_def] Joints,
     of "c*\<^sub>R(hd Basis_list)#y#ys"] assms
   have "(c *\<^sub>R hd Basis_list # y # ys,
-      interpret_euclarith (scaleR_ivl (hd Basis_list) Basis_list) (c *\<^sub>R hd Basis_list # y # ys))
+      interpret_euclarith (scaleR_ea (Var 0 (hd Basis_list)) 1) (c *\<^sub>R hd Basis_list # y # ys))
     \<in> Joints2 (?ivl # Y # YS) R"
     by (force simp: valuate_def Joints2_def Joints_def i_def)
   thus ?thesis
     by (auto simp: valuate_def Joints2_def Joints_def)
 qed
 
-text \<open>disjointness overapproximation\<close>
+lemma scaleR_aform_ivl_commute:
+  "scaleR_aform_ivl prec tol a b Y YS = scaleR_aform_ivl prec tol b a Y YS"
+  by (simp add: scaleR_aform_ivl_def abs_minus_commute add.commute)
 
-definition disjoint_aforms where
-  "disjoint_aforms X Y =
-    (let iX = Inf_aform X; sX = Sup_aform X; iY = Inf_aform Y; sY = Sup_aform Y
-    in list_ex (\<lambda>i. sX \<bullet> i < iY \<bullet> i \<or> sY \<bullet> i < iX \<bullet> i) Basis_list)"
+lemma
+  scaleR_aform_ivl_segment:
+  assumes "scaleR_aform_ivl prec tol a b Y YS = Some R"
+  assumes "y # ys \<in> Joints (Y#YS)"
+  assumes "c \<in> closed_segment a b"
+  shows "((c *\<^sub>R y) # y # ys) \<in> Joints (R # Y # YS)"
+  using assms scaleR_aform_ivl_commute[of prec tol "max a b" "min a b" Y YS]
+  by (auto split: if_split_asm
+      simp: closed_segment_eq_real_ivl min_def max_def
+      intro: scaleR_aform_ivl
+      dest: scaleR_aform_ivl)
 
-lemma disjoint_aforms:
-  assumes "disjoint_aforms X Y"
-  shows "Affine X \<inter> Affine Y = {}"
-proof -
-  have "Affine X \<subseteq> {Inf_aform X .. Sup_aform X}" "Affine Y \<subseteq> {Inf_aform Y .. Sup_aform Y}"
-    by (auto simp: Affine_def valuate_def Inf_aform Sup_aform)
+subsection \<open>operations on expressions\<close>
+
+definition "minus_ea = binary_componentwise' Basis_list (\<lambda>i j. Add i (Minus j))"
+definition "scaleR_eas i   j = scaleR_ea (Var i (hd Basis_list)) j"
+definition "scaleQ_eas i d j = scaleR_ea (Mult (Var i (hd Basis_list)) (Inverse (Num d))) j"
+
+lemma interpret_minus_ea[simp]:
+  "interpret_euclarith (minus_ea i j) xs = (xs ! i) - (xs ! j)"
+  unfolding interpret_binary_componentwise' minus_ea_def
+  by (auto simp: euclidean_representation inner_diff_left[symmetric])
+
+lemma interpret_scaleR_ea_Var[simp]:
+  "interpret_euclarith (scaleR_eas i j) xs = (xs ! i \<bullet> hd Basis_list) *\<^sub>R (xs ! j)"
+  by (auto simp: scaleR_eas_def)
+
+lemma interpret_scaleQ[simp]:
+  "interpret_euclarith (scaleQ_eas i d j) xs = (xs ! i \<bullet> hd Basis_list / d) *\<^sub>R xs ! j"
+  by (auto simp: scaleQ_eas_def inverse_eq_divide)
+
+subsection \<open>encoding of reals in Euclidean space\<close>
+
+definition eor::"real \<Rightarrow> 'a::ordered_euclidean_space"
+  where "eor r = r *\<^sub>R One"
+definition "roe e = e \<bullet> (hd Basis_list)"
+
+lemma roe_eor[simp]: "roe (eor r) = r"
+  by (auto simp: eor_def roe_def)
+
+lemma roe_scaleR[simp]: "roe (r *\<^sub>R One) = r"
+  by (auto simp: roe_def)
+
+lemma eor_nonneg_iff[simp]: "0 \<le> eor h \<longleftrightarrow> 0 \<le> h"
+  by (auto simp: eucl_le[where 'a='a] eor_def)
+
+lemma eor_le_iff[simp]: "eor a \<le> eor b \<longleftrightarrow> a \<le> b"
+  by (auto simp: eucl_le[where 'a='a] eor_def)
+
+lemma eor_inner_Basis_le_iff[simp]: "i \<in> Basis \<Longrightarrow> eor x \<bullet> i \<le> eor y \<bullet> i \<longleftrightarrow> x \<le> y"
+  by (auto simp: eucl_le[where 'a='a] eor_def)
+
+lemma le_roe[simp]: "eor a \<le> h \<Longrightarrow> a \<le> roe h"
+  and roe_le[simp]: "h \<le> eor a \<Longrightarrow> roe h \<le> a"
+  by (auto simp: eucl_le[where 'a = 'a] roe_def eor_def)
+
+lemma Bex_Icc_zero_scaleR_One_iff_old: "(\<forall>h\<in>{eor a .. eor b}. P (roe h)) \<longleftrightarrow> (\<forall>h\<in>{a..b}. P h)"
+proof safe
+  fix h
+  assume "h \<in> {a .. b}"
+  then have "eor h \<in> {eor a .. eor b}"
+    by (auto simp: )
   moreover
-  from assms have "{Inf_aform X .. Sup_aform X} \<inter> {Inf_aform Y .. Sup_aform Y} = {}"
-    apply (auto simp: disjoint_aforms_def Affine_def valuate_def list_ex_iff aform_val_def
-      algebra_simps eucl_le[where 'a='a])
-    apply (metis le_less_trans not_le)
-    apply (metis le_less_trans not_le)
-    done
-  ultimately show ?thesis by auto
-qed
+  assume "\<forall>h::'a\<in>{eor a .. eor b}. P (roe h)"
+  ultimately have "P (roe (eor h::'a))"
+    by (auto simp del: roe_eor)
+  then show "P h" by simp
+qed simp
+
+lemma Bex_Icc_zero_scaleR_One_iff[simp]:
+  assumes "\<And>h. P (eor (roe h)) = P h"
+  shows "Ball {eor a .. eor b} (\<lambda>h. P h) \<longleftrightarrow> (\<forall>h\<in>{a..b}. P (eor h))"
+  using assms
+  by (meson atLeastAtMost_iff eor_le_iff le_roe roe_le)
+
+definition "ra_of_ea v = Var v (hd Basis_list)"
+
+lemma interpret_ra_of_ea[simp]: "interpret_realarith (ra_of_ea v) xs = (xs ! v) \<bullet> hd Basis_list"
+  by (auto simp: ra_of_ea_def)
+
+
+subsection \<open>fresh Variables\<close>
+
+fun fresh_realarith where
+  "fresh_realarith (Add a b) x \<longleftrightarrow> fresh_realarith a x \<and> fresh_realarith b x"
+| "fresh_realarith (Mult a b) x \<longleftrightarrow> fresh_realarith a x \<and> fresh_realarith b x"
+| "fresh_realarith (Minus a) x \<longleftrightarrow> fresh_realarith a x"
+| "fresh_realarith (Inverse a) x \<longleftrightarrow> fresh_realarith a x"
+| "fresh_realarith (Num a) x \<longleftrightarrow> True"
+| "fresh_realarith (Var y b) x \<longleftrightarrow> (x \<noteq> y)"
+
+lemma fresh_realarith_subst:
+  assumes "fresh_realarith e x"
+  assumes "x < length vs"
+  shows "interpret_realarith e (vs[x:=v]) = interpret_realarith e vs"
+  using assms
+  by (induction e) auto
+
+lemma fresh_realarith_max_Var:
+  assumes "max_Var_realarith ea \<le> i"
+  shows "fresh_realarith ea i"
+  using assms
+  by (induction ea) auto
+
+fun fresh_euclarith where
+  "fresh_euclarith (AddE a b) x \<longleftrightarrow> fresh_euclarith a x \<and> fresh_euclarith b x"
+| "fresh_euclarith (ScaleR a b) x \<longleftrightarrow> fresh_realarith a x"
+
+lemma fresh_euclarith_subst:
+  assumes "fresh_euclarith ea i"
+  assumes "i < length xs"
+  shows "interpret_euclarith ea (xs[i:=x]) = interpret_euclarith ea xs"
+  using assms
+  by (induction ea) (auto simp: fresh_realarith_subst)
+
+lemma fresh_euclarith_max_Var:
+  assumes "max_Var_euclarith ea \<le> i"
+  shows "fresh_euclarith ea i"
+  using assms
+  by (induction ea) (auto simp: fresh_realarith_max_Var)
+
+lemma
+  interpret_euclarith_take_eqI:
+  assumes "take n ys = take n zs"
+  assumes "max_Var_euclarith ea \<le> n"
+  shows "interpret_euclarith ea ys = interpret_euclarith ea zs"
+  by (rule interpret_euclarith_eq_take_max_VarI) (rule take_greater_eqI[OF assms])
+
+lemma
+  interpret_realarith_fresh_eqI:
+  assumes "\<And>i. fresh_realarith ea i \<or> (i < length ys \<and> i < length zs \<and> ys ! i = zs ! i)"
+  shows "interpret_realarith ea ys = interpret_realarith ea zs"
+  using assms
+  by (induction ea) force+
+
+lemma
+  interpret_euclarith_fresh_eqI:
+  assumes "\<And>i. fresh_euclarith ea i \<or> (i < length ys \<and> i < length zs \<and> ys ! i = zs ! i)"
+  shows "interpret_euclarith ea ys = interpret_euclarith ea zs"
+  using assms
+  apply (induction ea)
+  subgoal by (force simp: interpret_realarith_fresh_eqI intro: interpret_realarith_fresh_eqI)
+  subgoal by simp (metis interpret_realarith_fresh_eqI)
+  done
+
+subsection \<open>Derivatives\<close>
+
+fun derive_realarith where
+  "derive_realarith (Add a b) x dx = Add (derive_realarith a x dx) (derive_realarith b x dx)"
+| "derive_realarith (Minus a) x dx = Minus (derive_realarith a x dx)"
+| "derive_realarith (Mult a b) x dx = Add (Mult (derive_realarith a x dx) b) (Mult a (derive_realarith b x dx))"
+| "derive_realarith (Inverse a) x dx = Minus (Mult (derive_realarith a x dx) (Inverse (Mult a a)))"
+| "derive_realarith (Var y b) x dx = (if x = y then (Var dx b) else Num 0)"
+| "derive_realarith (Num r) x dx = Num 0"
+
+fun isdiff_realarith where
+  "isdiff_realarith (Add a b) xs \<longleftrightarrow> isdiff_realarith a xs \<and> isdiff_realarith b xs"
+| "isdiff_realarith (Mult a b) xs \<longleftrightarrow> isdiff_realarith a xs \<and> isdiff_realarith b xs"
+| "isdiff_realarith (Minus a) xs \<longleftrightarrow> isdiff_realarith a xs"
+| "isdiff_realarith (Inverse a) xs \<longleftrightarrow> isdiff_realarith a xs \<and> interpret_realarith a xs \<noteq> 0"
+| "isdiff_realarith (Num a) xs \<longleftrightarrow> True"
+| "isdiff_realarith (Var y b) xs \<longleftrightarrow> True"
+
+lemma
+  assumes "\<And>i. e'' i \<le> 1"
+  assumes "\<And>i. -1 \<le> e'' i"
+  shows Inf_aform'_le: "Inf_aform' p r \<le> aform_val e'' r"
+    and Sup_aform'_le: "aform_val e'' r \<le> Sup_aform' p r"
+  by (auto intro!: order_trans[OF Inf_aform'] order_trans[OF _ Sup_aform'] Inf_aform Sup_aform
+    simp: Affine_def valuate_def intro!: image_eqI[where x=e''] assms)
+
+lemma derive_realarith:
+  assumes "fresh_realarith e j"
+  assumes "i < length vs"
+  assumes "j < length vs"
+  assumes "isdiff_realarith e vs"
+  shows "((\<lambda>x. interpret_realarith e (vs[i:=x])) has_derivative
+    (\<lambda>dx. interpret_realarith (derive_realarith e i j) (vs[j:=dx]))) (at (vs ! i))"
+  using assms
+  by (induct e) (auto intro!: derivative_eq_intros simp: fresh_realarith_subst)
+
+fun derive_euclarith where
+  "derive_euclarith (AddE a b) x dx = AddE (derive_euclarith a x dx) (derive_euclarith b x dx)"
+| "derive_euclarith (ScaleR a b) x dx = ScaleR (derive_realarith a x dx) b"
+
+fun isdiff_euclarith where
+  "isdiff_euclarith (AddE a b) x \<longleftrightarrow> isdiff_euclarith a x \<and> isdiff_euclarith b x"
+| "isdiff_euclarith (ScaleR a b) x \<longleftrightarrow> isdiff_realarith a x"
+
+fun isndiff_euclarith where
+  "isndiff_euclarith 0       _ _  _       xs \<longleftrightarrow> True"
+| "isndiff_euclarith _       _ _  []      xs \<longleftrightarrow> False"
+| "isndiff_euclarith (Suc n) e x (dx#dxs) xs \<longleftrightarrow>
+    isdiff_euclarith e xs \<and>
+    isndiff_euclarith n (derive_euclarith e x dx) x dxs xs"
+
+lemma derive_euclarith:
+  assumes "fresh_euclarith e j"
+  assumes "i < length vs"
+  assumes "j < length vs"
+  assumes "isdiff_euclarith e vs"
+  shows "((\<lambda>x. interpret_euclarith e (vs[i:=x])) has_derivative
+    (\<lambda>dx. interpret_euclarith (derive_euclarith e i j) (vs[j:=dx]))) (at (vs ! i))"
+  using assms
+  by (induct e) (auto intro!: derivative_eq_intros derive_realarith simp: plusE_def)
+
+lemma isdiff_realarithI:
+  assumes vs: "vs = map (aform_val e') VS"
+  assumes e': "e' \<in> funcset UNIV {-1 .. 1}"
+  assumes "approx_realarith p e VS d \<noteq> None"
+  assumes "\<And>V. V \<in> set VS \<Longrightarrow> degree (snd V) \<le> d"
+  shows "isdiff_realarith e vs"
+  using assms
+proof (induction e arbitrary: d)
+  case (Inverse a)
+  from \<open>approx_realarith p (Inverse a) VS d \<noteq> None\<close>
+  obtain r s
+  where Some: "approx_realarith p a VS d = Some (r, s)"
+    and nonzero: "Inf_aform' p (r, s) \<le> 0 \<and> Sup_aform' p (r, s) < 0 \<or> Inf_aform' p (r, s) > 0"
+    by (auto simp: bind_eq_Some_conv Let_def inverse_aform_def split: if_split_asm)
+  from approx_realarith_Elem[OF vs e' Some Inverse(5)]
+  obtain e'' where e'': "e'' \<in> funcset UNIV {- 1..1}"
+    and "interpret_realarith a vs = aform_val e'' (r, s)"
+    by auto
+  note this(2)
+  also have "aform_val e'' (r, s) \<in> {Inf_aform' p (r, s) .. Sup_aform' p (r, s)}"
+    using e'' by (auto intro!: Inf_aform'_le Sup_aform'_le)
+  also have "\<dots> \<subseteq> UNIV - {0}" using nonzero by auto
+  finally have "interpret_realarith a vs \<noteq> 0" by auto
+  with Some Inverse(1)[of d] Inverse(2-)
+  show ?case by auto
+qed (force simp: Let_def bind_eq_Some_conv)+
+
+lemma isdiff_euclarithI:
+  assumes vs: "vs = map (aform_val e') VS"
+  assumes e': "e' \<in> funcset UNIV {-1 .. 1}"
+  assumes "approx_euclarith p e VS d \<noteq> None"
+  assumes "\<And>V. V \<in> set VS \<Longrightarrow> degree (snd V) \<le> d"
+  shows "isdiff_euclarith e vs"
+  using assms
+  by (induction e arbitrary: d) (force intro!: isdiff_realarithI simp: bind_eq_Some_conv)+
+
+lemma fresh_realarith_derive_realarith:
+  assumes "fresh_realarith ea n"
+  assumes "fresh_realarith ea k"
+  assumes "n \<noteq> k"
+  shows "fresh_realarith (derive_realarith ea i n) k"
+  using assms
+  by (induction ea) auto
+
+lemma fresh_euclarith_derive_realarith:
+  assumes "fresh_euclarith ea n"
+  assumes "fresh_euclarith ea k"
+  assumes "n \<noteq> k"
+  shows "fresh_euclarith (derive_euclarith ea i n) k"
+  using assms
+  by (induction ea) (auto simp: fresh_realarith_derive_realarith)
+
+lemma max_Var_realarith_derive_realarith:
+  assumes "max_Var_realarith ea \<le> n"
+  shows "max_Var_realarith (derive_realarith ea i n) \<le> Suc (max i n)"
+  using assms
+  by (induction ea) auto
+
+lemma max_Var_euclarith_derive_euclarith:
+  assumes "max_Var_euclarith ea \<le> n"
+  shows "max_Var_euclarith (derive_euclarith ea i n) \<le> Suc (max i n)"
+  using assms
+  by (induction ea) (auto simp: max_Var_realarith_derive_realarith)
+
+lemma
+  isdiff_realarith_eq_take_max_VarI:
+  assumes "take (max_Var_realarith ra) ys = take (max_Var_realarith ra) zs"
+  shows "isdiff_realarith ra ys = isdiff_realarith ra zs"
+  using assms
+  by (induct ra) (auto dest: take_max_eqD interpret_realarith_eq_take_max_VarI)
+
+lemma isdiff_euclarith_eq_take_max_VarI:
+  "take (max_Var_euclarith ea) ys = take (max_Var_euclarith ea) zs \<Longrightarrow>
+    isdiff_euclarith ea ys = isdiff_euclarith ea zs"
+  by (induct ea) (auto dest!: take_max_eqD isdiff_realarith_eq_take_max_VarI)
+
+lemma
+  isdiff_euclarith_take_eqI:
+  assumes "take n ys = take n zs"
+  assumes "max_Var_euclarith ea \<le> n"
+  shows "isdiff_euclarith ea ys = isdiff_euclarith ea zs"
+  by (rule isdiff_euclarith_eq_take_max_VarI) (rule take_greater_eqI[OF assms])
+
+lemma
+  isdiff_realarith_freshI:
+  assumes "\<And>i. fresh_realarith ea i \<or> (i < length ys \<and> i < length zs \<and> ys ! i = zs ! i)"
+  assumes "isdiff_realarith ea zs"
+  shows "isdiff_realarith ea ys"
+  using assms
+  apply (induction ea)
+  subgoal by auto
+  subgoal by auto
+  subgoal by auto
+  subgoal by auto (metis interpret_realarith_fresh_eqI)
+  subgoal by auto
+  subgoal by auto
+  done
+
+lemma
+  isdiff_euclarith_freshI:
+  assumes "\<And>i. fresh_euclarith ea i \<or> (i < length ys \<and> i < length zs \<and> ys ! i = zs ! i)"
+  assumes "isdiff_euclarith ea zs"
+  shows "isdiff_euclarith ea ys"
+  using assms
+  apply (induction ea)
+  subgoal by auto
+  subgoal using isdiff_realarith_freshI by auto
+  done
+
+
+subsection \<open>Proving Formulas with AA\<close>
+
+datatype ('a, 'b) euclarithform =
+  Pos "('a, 'b) euclarith"
+| Nonneg "('a, 'b) euclarith"
+| Conj "('a, 'b) euclarithform" "('a, 'b) euclarithform"
+| Disj "('a, 'b) euclarithform" "('a, 'b) euclarithform"
+
+fun interpret_euclarithform :: "('a::real_inner, 'b::ordered_euclidean_space) euclarithform \<Rightarrow> 'a list \<Rightarrow> bool" where
+"interpret_euclarithform (Pos a) vs      = (eucl_less 0 (interpret_euclarith a vs))" |
+"interpret_euclarithform (Nonneg a) vs = (interpret_euclarith a vs \<ge> 0)" |
+"interpret_euclarithform (Conj f g) vs \<longleftrightarrow> interpret_euclarithform f vs \<and> interpret_euclarithform g vs" |
+"interpret_euclarithform (Disj f g) vs \<longleftrightarrow> interpret_euclarithform f vs \<or> interpret_euclarithform g vs"
+
+fun approx_euclarithform :: "nat \<Rightarrow> real \<Rightarrow> ('a::ordered_euclidean_space, 'b::executable_euclidean_space) euclarithform \<Rightarrow> 'a aform list \<Rightarrow> bool" where
+"approx_euclarithform p t  (Pos a) vs = (case approx_euclarith_outer p t a vs of None \<Rightarrow> False | Some a' \<Rightarrow> (eucl_less 0 (Inf_aform' p a')))" |
+"approx_euclarithform p t (Nonneg a) vs = (case approx_euclarith_outer p t a vs of None \<Rightarrow> False | Some a' \<Rightarrow> (0 \<le> Inf_aform' p a'))" |
+"approx_euclarithform p t (Conj f g) vs \<longleftrightarrow> approx_euclarithform p t f vs \<and> approx_euclarithform p t g vs" |
+"approx_euclarithform p t (Disj f g) vs \<longleftrightarrow> approx_euclarithform p t f vs \<or> approx_euclarithform p t g vs"
+
+lemma eucl_less_le_trans:
+  fixes x y::"'a :: ordered_euclidean_space"
+  shows "eucl_less x y \<Longrightarrow> y \<le> z \<Longrightarrow> eucl_less x z"
+  by (force simp: eucl_less_def eucl_le[where 'a='a])
+
+lemma approx_euclarithform:
+  assumes "xs \<in> Joints XS"
+  assumes "approx_euclarithform p t f XS"
+  shows "interpret_euclarithform f xs"
+  using assms
+  by (induction f)
+    (auto
+      split: option.split_asm
+      dest!: approx_euclarith_outer
+      elim!: Joints2E
+      intro!: eucl_less_le_trans[OF _ Inf_aform'_le] order.trans[OF _ Inf_aform'_le])
+
+primrec max_Var_euclarithform where
+  "max_Var_euclarithform (Pos a) = max_Var_euclarith a"
+| "max_Var_euclarithform (Nonneg a) = max_Var_euclarith a"
+| "max_Var_euclarithform (Conj f g) = max (max_Var_euclarithform f) (max_Var_euclarithform g)"
+| "max_Var_euclarithform (Disj f g) = max (max_Var_euclarithform f) (max_Var_euclarithform g)"
+
+definition true_euclarithform :: "nat \<Rightarrow> ('a, 'b::ordered_real_vector) euclarithform"
+  where "true_euclarithform _ = Nonneg (ScaleR (Num (real_of_float 0)) 0)"
+
+lemma interpret_euclarithform_euclarithform[simp]:
+  "interpret_euclarithform (true_euclarithform i) xs = True"
+  by (auto simp: true_euclarithform_def)
 
 end
 

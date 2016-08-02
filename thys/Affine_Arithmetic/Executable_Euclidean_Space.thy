@@ -89,9 +89,8 @@ proof -
   have "dist x (eucl_down e x) = sqrt (\<Sum>i\<in>Basis. (dist (x \<bullet> i) (eucl_down e x \<bullet> i))\<^sup>2)"
     unfolding euclidean_dist_l2[where 'a='a] setL2_def ..
   also have "\<dots> \<le> sqrt (\<Sum>i\<in>(Basis::'a set). ((2 powr of_int (- e))\<^sup>2))"
-    apply (intro real_sqrt_le_mono setsum_mono power_mono)
-    apply (auto simp: dist_real_def eucl_down_def simp del: of_int_minus)
-    by (simp add: abs_round_down_le)
+    by (intro real_sqrt_le_mono setsum_mono power_mono)
+      (auto simp: dist_real_def eucl_down_def abs_round_down_le)
   finally show ?thesis
     by (simp add: real_sqrt_mult)
 qed
@@ -141,6 +140,10 @@ declare [[code abort: "Inf::real set \<Rightarrow> real"]]
 declare [[code abort: "Sup::real set \<Rightarrow> real"]]
 declare [[code abort: "Inf::('a::Inf * 'b::Inf) set \<Rightarrow> 'a * 'b"]]
 declare [[code abort: "Sup::('a::Sup * 'b::Sup) set \<Rightarrow> 'a * 'b"]]
+
+lemma nth_Basis_list_in_Basis[simp]:
+  "n < length (Basis_list::'a::executable_euclidean_space list) \<Longrightarrow> Basis_list ! n \<in> (Basis::'a set)"
+  by (metis Basis_list nth_mem)
 
 end
 

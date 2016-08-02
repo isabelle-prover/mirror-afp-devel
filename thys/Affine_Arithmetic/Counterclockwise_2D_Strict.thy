@@ -407,26 +407,14 @@ next
     apply (metis mult.commute mult_eq_0_iff ring_class.ring_distribs(1))
     done
   with False assms \<open>snd y \<noteq> 0\<close> have yz: "snd (y + z) \<noteq> 0"
-    apply (cases x)
-    apply (cases y)
-    apply (cases z)
-    apply (auto simp add: det3_def' zero_prod_def)
-    done
+    by (cases x; cases y; cases z) (auto simp add: det3_def' zero_prod_def)
   from coll_scale[OF assms(1) assms(3)] coll_scale[OF assms(2) assms(4)]
   obtain r s where rs: "y + z = r *\<^sub>R x" "z = s *\<^sub>R y"
     by auto
   with z have "s \<noteq> 0"
-    apply (cases x)
-    apply (cases y)
-    apply (cases z)
-    apply (auto simp: zero_prod_def)
-    done
+    by (cases x; cases y; cases z) (auto simp: zero_prod_def)
   with rs z yz have "r \<noteq> 0"
-    apply (cases x)
-    apply (cases y)
-    apply (cases z)
-    apply (auto simp: zero_prod_def)
-    done
+    by (cases x; cases y; cases z) (auto simp: zero_prod_def)
   from \<open>s \<noteq> 0\<close> rs have "y = r *\<^sub>R x - z" "y = z /\<^sub>R s"
     by (auto simp: inverse_eq_divide algebra_simps)
   hence "r *\<^sub>R x - z = z /\<^sub>R s" by simp
@@ -502,8 +490,8 @@ next
     have "coll 0 y (listsum xs)"
       using \<open>y \<in> set xs\<close> cons(6)[of y] \<open>x + listsum xs \<noteq> 0\<close>
       apply (cases "y = x")
-       apply (force simp add: coll_add_cancel)
-      apply (force simp: dest!: coll_add_trans[OF _ *(1) _ *(3)])
+      subgoal by (force simp add: coll_add_cancel)
+      subgoal by (force simp: dest!: coll_add_trans[OF _ *(1) _ *(3)])
       done
   } note cl = this
   show ?case

@@ -108,8 +108,7 @@
 \newcommand{\limseq}{\xrightarrow{\hspace*{2em}}}
 \newcommand{\interpret}[1]{\ensuremath{[\![#1]\!]}}
 
-\title{Formally Verified Computation of Enclosures of Solutions of Ordinary
-Differential Equations}
+\title{Ordinary Differential Equations}
 \author{Fabian Immler}
 
 \begin{document}
@@ -118,66 +117,24 @@ Differential Equations}
 
 \begin{abstract}
 
-Ordinary differential equations (ODEs) are ubiquitous when modeling continuous
-dynamics. Classical numerical methods compute approximations of the solution,
-however without any guarantees on the quality of the approximation.
-Nevertheless, methods have been developed that are supposed to compute
-enclosures of the solution.
+Session \texttt{HOL-ODE} formalizes ordinary differential equations (ODEs) and initial value
+problems. This work comprises proofs for local and global existence of unique solutions
+(Picard-Lindelöf theorem). Moreover, it contains a formalization of the (continuous or even
+differentiable) dependency of the flow on initial conditions as the \emph{flow} of ODEs.
 
-In this paper, we demonstrate that enclosures of the solution can be verified
-with a high level of rigor: We implement a functional algorithm that computes
-enclosures of solutions of ODEs in the interactive theorem prover Isabelle/HOL,
-where we formally verify (and have mechanically checked) the safety of the
-enclosures against the existing theory of ODEs in Isabelle/HOL.
-
-Our algorithm works with dyadic rational numbers with statically fixed precision
-and is based on the well-known Euler method. We abstract discretization and
-round-off errors in the domain of affine forms. Code can be extracted from the
-verified algorithm and experiments indicate that the extracted code exhibits
-reasonable efficiency.
+Not in the generated document are the following sessions:
+\begin{itemize}
+\item \texttt{HOL-ODE-Refinement}:
+  Intermediate session combining \texttt{HOL-ODE} and Lammich's (automatic) refinement framework.
+\item \texttt{HOL-ODE-Numerics}:
+  Rigorous numerical algorithms for computing enclosures of solutions based on Runge-Kutta methods
+  and affine arithmetic. Reachability analysis with splitting and reduction at hyperplanes.
+\item \texttt{HOL-ODE-Examples}:
+  Applications of the numerical algorithms to concrete systems of ODEs (e.g., van der Pol and Lorenz
+    attractor).
+\end{itemize}
 
 \end{abstract}
-
-\section{Relations to the paper}
-
-Here we relate the contents of our NFM~2014 paper~\cite{Immler2014} with the sources you find here.
-In the following list we show which notions and theorems in the
-paper correspond to which parts of the source code. If you are (still) interested in the relations
-to our ITP~2012 paper~\cite{immlerhoelzl}, you should take a look at the document of older releases
- (before Isabelle~2013-1) of this AFP entry.
-
-\begin{enumerate}
-\item Introduction
-\item Background
-  \begin{enumerate}
-  \item Real numbers: Representation of real numbers with dyadic floats is set up in the separate
-    entry Affine Arithmetic~\cite{Immler2014b}
-  \item Euclidean Space: definition in image Multivariate-Analysis
-  \item Derivatives: definition in Multivariate-Analysis
-  \item Notes on Taylor Series Expansion in Euclidean Space: A formal proof of a similar problem
-    with just the mean value theorem is given in Section~\ref{sec:countermvt}
-  \item Ordinary Differential Equations
-    \begin{itemize}
-    \item Definition~1: Definition \textit{ivp} in Section~\ref{sec:solutions}
-    \item Definition~2: Definition \textit{solution} in Section~\ref{sec:solutions}
-    \item Theorem~3: In Section~\ref{sec:plclosed} resp. Section~\ref{sec:ivp-ubs}
-    \item Theorem~4: In Section~\ref{sec:setconsistent}
-    \end{itemize}
-  \end{enumerate}
-\item Affine Arithmetic: see the separate entry Affine Arithmetic~\cite{Immler2014b}
-\item Approximation of ODEs:\\
-  Assumptions are in locales \textit{approximate-ivp} and \textit{approximate-sets} in
-  Section~\ref{sec:euleraform}
-  \begin{enumerate}
-  \item Euler Step: Definitions in locale \textit{approximate-ivp0} in Section~\ref{sec:euleraformcode} \\
-    Theorem~7 and Theorem~8 are in Lemma \textit{unique-on-euler-step}
-  \item Euler Series: Definitions in locale \textit{approximate-ivp0} in Section~\ref{sec:euleraformcode} \\
-    Theorem~9 is Lemma \textit{intervals-of-accum}
-  \end{enumerate}
-\item Experiments: Oil reservoir problem in Section~\ref{sec:exampleoil}, Second example in
-  Section~\ref{sec:example1}
-\item Conclusion
-\end{enumerate}
 
 \tableofcontents
 

@@ -4,7 +4,6 @@ imports
   "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
   "~~/src/HOL/Library/Permutation"
 begin
-text \<open>\label{sec:aforms}\<close>
 
 subsection \<open>Auxiliary developments\<close>
 
@@ -248,6 +247,51 @@ lemma Joints2E:
     "\<And>i. e i \<in> {-1..1}"
   using assms
   by atomize_elim (auto simp: Joints2_def Pi_iff valuate_ex)
+
+lemma nth_in_AffineI:
+  assumes "xs \<in> Joints XS"
+  assumes "i < length XS"
+  shows "xs ! i \<in> Affine (XS ! i)"
+  using assms by (force simp: Affine_def Joints_def valuate_def)
+
+lemma Cons_nth_in_Joints1:
+  assumes "xs \<in> Joints XS"
+  assumes "i < length XS"
+  shows "((xs ! i) # xs) \<in> Joints ((XS ! i) # XS)"
+  using assms by (force simp: Joints_def valuate_def)
+
+lemma Cons_nth_in_Joints2:
+  assumes "xs \<in> Joints XS"
+  assumes "i < length XS"
+  assumes "j < length XS"
+  shows "((xs ! i) #(xs ! j) # xs) \<in> Joints ((XS ! i)#(XS ! j) # XS)"
+  using assms by (force simp: Joints_def valuate_def)
+
+lemma Joints_swap:
+  "x#y#xs\<in>Joints (X#Y#XS) \<longleftrightarrow> y#x#xs \<in> Joints (Y#X#XS)"
+  by (force simp: Joints_def valuate_def)
+
+lemma Joints_swap_Cons_append:
+  "length xs = length XS \<Longrightarrow> x#ys@xs\<in>Joints (X#YS@XS) \<longleftrightarrow> ys@x#xs \<in> Joints (YS@X#XS)"
+  by (auto simp: Joints_def valuate_def)
+
+lemma Joints_ConsD:
+  "x#xs\<in>Joints (X#XS) \<Longrightarrow> xs \<in> Joints XS"
+  by (force simp: Joints_def valuate_def)
+
+lemma Joints_appendD1:
+  "ys@xs\<in>Joints (YS@XS) \<Longrightarrow> length xs = length XS \<Longrightarrow> xs \<in> Joints XS"
+  by (force simp: Joints_def valuate_def)
+
+lemma Joints_appendD2:
+  "ys@xs\<in>Joints (YS@XS) \<Longrightarrow> length ys = length YS \<Longrightarrow> ys \<in> Joints YS"
+  by (force simp: Joints_def valuate_def)
+
+lemma Joints_imp_length_eq: "xs \<in> Joints XS \<Longrightarrow> length xs = length XS"
+  by (auto simp: Joints_def valuate_def)
+
+lemma Joints_rotate[simp]: "xs@[x] \<in> Joints (XS @[X]) \<longleftrightarrow> x#xs \<in> Joints (X#XS)"
+  by (auto simp: Joints_def valuate_def)
 
 
 subsection \<open>Domain\<close>
@@ -565,8 +609,7 @@ definition inner2::"'a::euclidean_space \<Rightarrow> 'a \<Rightarrow> 'a \<Righ
 definition pdevs_inner2::"'a::euclidean_space pdevs \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> (real*real) pdevs"
   where "pdevs_inner2 X n l = unop_pdevs (\<lambda>x. inner2 x n l) X"
 
-lemma pdevs_apply_pdevs_inner2[simp]:
-  "pdevs_apply (pdevs_inner2 p a b) i = (pdevs_apply p i \<bullet> a, pdevs_apply p i \<bullet> b)"
+lemma pdevs_apply_pdevs_inner2[simp]: "pdevs_apply (pdevs_inner2 p a b) i = (pdevs_apply p i \<bullet> a, pdevs_apply p i \<bullet> b)"
   by (simp add: pdevs_inner2_def inner2_def zero_prod_def)
 
 definition inner2_aform::"'a::euclidean_space aform \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> (real*real) aform"
@@ -781,10 +824,26 @@ lemma independent_aform_Joints:
       independent_aform_def intro!: pdevs_val_degree_cong)
   done
 
-lemma Affine_msum_aform:
+lemma msum_aform_Joints:
   assumes "d \<ge> degree_aform X"
-  shows "Affine (msum_aform d X Y) = {x + y |x y. x \<in> Affine X \<and> y \<in> Affine Y}"
-  unfolding Affine_def valuate_def
+  assumes "\<And>X. X \<in> set XS \<Longrightarrow> d \<ge> degree_aform X"
+  assumes "(x#xs) \<in> Joints (X#XS)"
+  assumes "y \<in> Affine Y"
+  shows "((x + y)#x#xs) \<in> Joints (msum_aform d X Y#X#XS)"
+  using assms
+  unfolding Joints_def valuate_def Affine_def
+proof (safe, goal_cases)
+  case (1 e ea a b zs)
+  then show ?case
+    by (intro image_eqI[where x = "\<lambda>i. if i < d then e i else ea (i - d)"])
+      (force simp: aform_val_def pdevs_val_msum_pdevs intro!: intro!: pdevs_val_degree_cong)+
+qed
+
+lemma Joints_msum_aform:
+  assumes "d \<ge> degree_aform X"
+  assumes "\<And>Y. Y \<in> set YS \<Longrightarrow> d \<ge> degree_aform Y"
+  shows "Joints (msum_aform d X Y#YS) = {((x + y)#ys) |x y ys. y \<in> Affine Y \<and> x#ys \<in> Joints (X#YS)}"
+  unfolding Affine_def valuate_def Joints_def
 proof (safe, goal_cases)
   case (1 x e)
   thus ?case
@@ -792,11 +851,53 @@ proof (safe, goal_cases)
     by (intro exI[where x = "aform_val e X"] exI[where x = "aform_val ((\<lambda>i. e (i + d))) Y"])
       (auto simp add: aform_val_def pdevs_val_msum_pdevs)
 next
-  case (2 x xa y e ea)
+  case (2 x xa y ys e ea)
   thus ?case using assms
-    by (intro image_eqI[where x="\<lambda>i. if i < d then e i else ea (i - d)"])
-      (force simp: aform_val_def pdevs_val_msum_pdevs intro!: pdevs_val_degree_cong)+
+    by (intro image_eqI[where x="\<lambda>i. if i < d then ea i else e (i - d)"])
+       (force simp: aform_val_def pdevs_val_msum_pdevs Pi_iff intro!: pdevs_val_degree_cong)+
 qed
+
+lemma Joints_singleton_image: "Joints [x] = (\<lambda>x. [x]) ` Affine x"
+  by (auto simp: Joints_def Affine_def valuate_def)
+
+lemma Collect_extract_image: "{g (f x y) |x y. P x y} = g ` {f x y |x y. P x y}"
+  by auto
+
+lemma inj_Cons: "inj (\<lambda>x. x#xs)"
+  by (auto intro!: injI)
+
+lemma Joints_Nil[simp]: "Joints [] = {[]}"
+  by (force simp: Joints_def valuate_def)
+
+lemma msum_pdevs_zero_ident[simp]: "msum_pdevs 0 zero_pdevs x = x"
+  by transfer (auto simp: msum_pdevs_raw_def)
+
+lemma msum_aform_zero_ident[simp]: "msum_aform 0 (0, zero_pdevs) x = x"
+  by (simp add: msum_aform_def)
+
+lemma mem_Joints_singleton: "(x \<in> Joints [X]) = (\<exists>y. x = [y] \<and> y \<in> Affine X)"
+  by (auto simp: Affine_def valuate_def Joints_def)
+
+lemma singleton_mem_Joints[simp]: "[x] \<in> Joints [X] \<longleftrightarrow> x \<in> Affine X"
+  by (auto simp: mem_Joints_singleton)
+
+lemma msum_aform_Joints_without_first:
+  assumes "d \<ge> degree_aform X"
+  assumes "\<And>X. X \<in> set XS \<Longrightarrow> d \<ge> degree_aform X"
+  assumes "(x#xs) \<in> Joints (X#XS)"
+  assumes "y \<in> Affine Y"
+  assumes "z = x + y"
+  shows "z#xs \<in> Joints (msum_aform d X Y#XS)"
+  unfolding \<open>z = x + y\<close>
+  using msum_aform_Joints[OF assms(1-4)]
+  by (force simp: Joints_def valuate_def)
+
+lemma Affine_msum_aform:
+  assumes "d \<ge> degree_aform X"
+  shows "Affine (msum_aform d X Y) = {x + y |x y. x \<in> Affine X \<and> y \<in> Affine Y}"
+  using Joints_msum_aform[OF assms, of Nil Y, simplified, unfolded mem_Joints_singleton]
+  by (auto simp add: Joints_singleton_image Collect_extract_image[where g="\<lambda>x. [x]"]
+    inj_image_eq_iff[OF inj_Cons] )
 
 lemma Affine_zero_pdevs[simp]: "Affine (0, zero_pdevs) = {0}"
   by (force simp: Affine_def valuate_def aform_val_def)
@@ -1342,10 +1443,12 @@ lemma pdevs_val_filter_pdevs_eval:
 
 definition "dense_list_of_pdevs x = map (\<lambda>i. pdevs_apply x i) [0..<degree x]"
 
+subsubsection \<open>(reverse) ordered coefficients as list\<close>
+
 definition "list_of_pdevs x =
   map (\<lambda>i. (i, pdevs_apply x i)) (rev (sorted_list_of_set (pdevs_domain x)))"
 
-lemma list_of_pdevszero_pdevs[simp]: "list_of_pdevs zero_pdevs = []"
+lemma list_of_pdevs_zero_pdevs[simp]: "list_of_pdevs zero_pdevs = []"
   by (auto simp: list_of_pdevs_def)
 
 lemma listsum_list_of_pdevs: "listsum (map snd (list_of_pdevs x)) = listsum (dense_list_of_pdevs x)"

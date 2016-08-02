@@ -5,6 +5,8 @@ imports
   "~~/src/HOL/Library/Float"
 begin
 
+sledgehammer_params [fact_filter=mepo]
+
 instantiation prod :: (zero_neq_one, zero_neq_one) zero_neq_one
 begin
 
@@ -161,69 +163,6 @@ proof -
     done
 qed
 
-text \<open>TODO: use this to replace @{term "op has_derivative"}\<close>
-lift_definition has_bderivative ::
-  "('a::real_normed_vector \<Rightarrow> 'b::real_normed_vector) \<Rightarrow> ('a \<Rightarrow>\<^sub>L 'b) \<Rightarrow> 'a filter \<Rightarrow>  bool"
-  (infix "(has'_bderivative)" 50)
-  is "op has_derivative" .
-
-lemma has_bderivative_const: "((\<lambda>x. c) has_bderivative 0) F"
-  apply transfer'
-  apply (rule has_derivative_const)
-  done
-
-lemma has_bderivative_id: "((\<lambda>x. x) has_bderivative id_blinfun) F"
-  apply transfer'
-  apply (rule has_derivative_id)
-  done
-
-context bounded_bilinear
-begin
-
-lemma bderivative:
-  assumes "(f has_bderivative f') (at x within s)"
-    and "(g has_bderivative g') (at x within s)"
-  shows
-    "((\<lambda>x. prod (f x) (g x)) has_bderivative (prod_right (f x) o\<^sub>L g') + (prod_left (g x) o\<^sub>L f'))
-      (at x within s)"
-  using assms
-  by transfer (auto intro!: derivative_eq_intros FDERIV)
-
-end
-
-lemmas has_bderivative_eq_rhs = has_derivative_eq_rhs[Transfer.transferred]
-
-lemma has_bderivative_scaleR_left:
-  fixes g::"'a::real_normed_vector \<Rightarrow> real" and x::"'b::real_normed_vector"
-  assumes "(g has_bderivative g') F"
-  shows "((\<lambda>xa. g xa *\<^sub>R x) has_bderivative blinfun_scaleR g' x) F"
-  using assms
-  by transfer' (auto intro!: derivative_eq_intros)
-
-lemma has_bderivative_scaleR_right:
-  assumes "(g has_bderivative g') F"
-  shows "((\<lambda>xa. x *\<^sub>R g xa) has_bderivative x *\<^sub>R g') F"
-  using assms
-  by transfer' (rule has_derivative_scaleR_right)
-
-lemma has_bderivative_scaleR:
-  assumes "(f has_bderivative f') (at x within s)"
-  assumes "(g has_bderivative g') (at x within s)"
-  shows "((\<lambda>x. f x *\<^sub>R g x) has_bderivative f x *\<^sub>R g' + blinfun_scaleR f' (g x)) (at x within s)"
-  using assms
-  by transfer' (auto intro!: derivative_eq_intros)
-
-lemma has_bderivative_divide:
-  assumes "(f has_bderivative f') (at x within s)"
-    and "(g has_bderivative g') (at x within s)"
-    and "g x \<noteq> 0"
-  shows
-    "((\<lambda>x. f x / g x) has_bderivative
-      (blinfun_scaleR f' (g x) - f x *\<^sub>R g') /\<^sub>R (g x * g x))
-      (at x within s)"
-  using assms
-  by transfer' (auto intro!: derivative_eq_intros simp: field_simps)
-
 lemma
   has_derivative_Blinfun:
   assumes "(f has_derivative f') F"
@@ -231,15 +170,44 @@ lemma
   using assms
   by (subst bounded_linear_Blinfun_apply) auto
 
-
-lift_definition swap2_blinfun::
+lift_definition flip_blinfun::
   "('a::real_normed_vector \<Rightarrow>\<^sub>L 'b::real_normed_vector \<Rightarrow>\<^sub>L 'c::real_normed_vector) \<Rightarrow> 'b \<Rightarrow>\<^sub>L 'a \<Rightarrow>\<^sub>L 'c" is
   "\<lambda>f x y. f y x"
   using bounded_bilinear.bounded_linear_left bounded_bilinear.bounded_linear_right bounded_bilinear.flip
   by auto
 
-lemma swap2_blinfun_apply[simp]: "swap2_blinfun f a b = f b a"
+lemma flip_blinfun_apply[simp]: "flip_blinfun f a b = f b a"
   by transfer simp
+
+lemma le_norm_blinfun:
+  shows "norm (blinfun_apply f x) / norm x \<le> norm f"
+  by transfer (rule le_onorm)
+
+lemma norm_flip_blinfun[simp]: "norm (flip_blinfun x) = norm x" (is "?l = ?r")
+proof (rule antisym)
+  from order_trans[OF norm_blinfun, OF mult_right_mono, OF norm_blinfun, OF norm_ge_zero, of x]
+  show "?l \<le> ?r"
+    by (auto intro!: norm_blinfun_bound simp: ac_simps)
+  have "norm (x a b) \<le> norm (flip_blinfun x) * norm a * norm b" for a b
+  proof -
+    have "norm (x a b) / norm a \<le> norm (flip_blinfun x b)"
+      by (rule order_trans[OF _ le_norm_blinfun]) auto
+    also have "\<dots> \<le> norm (flip_blinfun x) * norm b"
+      by (rule norm_blinfun)
+    finally show ?thesis
+      by (auto simp add: divide_simps blinfun.bilinear_simps sign_simps  split: if_split_asm)
+  qed
+  then show "?r \<le> ?l"
+    by (auto intro!: norm_blinfun_bound)
+qed
+
+lemma bounded_linear_flip_blinfun[bounded_linear]: "bounded_linear flip_blinfun"
+  by unfold_locales (auto simp: blinfun.bilinear_simps intro!: blinfun_eqI exI[where x=1])
+
+lemma dist_swap2_swap2[simp]: "dist (flip_blinfun f) (flip_blinfun g) = dist f g"
+  by (metis (no_types) bounded_linear_flip_blinfun dist_blinfun_def linear_simps(2)
+    norm_flip_blinfun)
+
 
 subsection \<open>Topology\<close>
 
@@ -360,6 +328,7 @@ lemma scaleR_dist_distrib_right:
 lemma ex_norm_eq_1: "\<exists>x. norm (x::'a::euclidean_space) = 1"
   by (metis vector_choose_size zero_le_one)
 
+
 lemma open_neg_translation:
   fixes s :: "'a::real_normed_vector set"
   assumes "open s"
@@ -367,36 +336,56 @@ lemma open_neg_translation:
   using open_translation[OF open_negations[OF assms], of a]
   by (auto simp: image_image)
 
+subsection \<open>Balls\<close>
+
+text \<open>I think that @{thm mem_ball} etc. are not \<open>[simp]\<close> rules:
+  not sure that inequalities are ``simpler'' than set membership (distorts automatic reasoning
+  when only sets are involved)\<close>
+lemmas [simp del] = mem_ball mem_cball mem_sphere mem_ball_0 mem_cball_0
+
+lemma ball_subset_cball: "x \<in> ball y e \<Longrightarrow> x \<in> cball y e"
+  by (auto simp: mem_ball mem_cball)
+
+lemma ball_subset_ball: "x \<in> ball y e \<Longrightarrow> e < f \<Longrightarrow> x \<in> ball y f"
+  by (auto simp: mem_ball mem_cball)
+
+lemma cball_subset_cball: "x \<in> cball y e \<Longrightarrow> e < f \<Longrightarrow> x \<in> cball y f"
+  by (auto simp: mem_ball mem_cball)
+
+
 subsection \<open>Intervals\<close>
+
+notation closed_segment ("(1{_--_})")
 
 lemma open_closed_segment_subset: "open_segment a b \<subseteq> closed_segment a b"
   by (simp add: open_closed_segment subsetI)
 
-lemma is_interval_real_cball[simp]:
+lemma is_interval_real_cball[intro, simp]:
   fixes a b::real
   shows "is_interval (cball a b)"
   by (auto simp: is_interval_convex_1 convex_cball)
 
+lemma is_interval_closed_segment_1[intro, simp]:
+  fixes a b::real
+  shows "is_interval {a -- b}"
+  by (auto simp: is_interval_convex_1)
+
 lemma atLeastAtMost_eq_cball:
   fixes a b::real
   shows "{a .. b} = cball ((a + b)/2) ((b - a)/2)"
-  by (auto simp: dist_real_def field_simps)
+  by (auto simp: dist_real_def field_simps mem_cball)
 
 lemma greaterThanLessThan_eq_ball:
   fixes a b::real
   shows "{a <..< b} = ball ((a + b)/2) ((b - a)/2)"
-  by (auto simp: dist_real_def field_simps)
-
-lemma closure_greaterThanLessThan[simp]:
-  fixes a b::real
-  shows "a < b \<Longrightarrow> closure {a <..< b} = {a .. b}"
-  by (simp add: closure_ball greaterThanLessThan_eq_ball atLeastAtMost_eq_cball)
+  by (auto simp: dist_real_def field_simps mem_ball)
 
 lemma image_mult_atLeastAtMost:
-  "(\<lambda>x. x * c::real) ` {x..y} = (if x \<le> y then if c > 0 then {x * c .. y * c} else {y * c .. x * c} else {})"
+  "(\<lambda>x. x * c::real) ` {x..y} =
+    (if x \<le> y then if c > 0 then {x * c .. y * c} else {y * c .. x * c} else {})"
   apply (cases "c = 0")
-   apply force
-  apply (auto simp: field_simps not_less intro!: image_eqI[where x="inverse c * xa" for xa])
+  subgoal by force
+  subgoal by (auto simp: field_simps not_less intro!: image_eqI[where x="inverse c * xa" for xa])
   done
 
 lemma image_add_atLeastAtMost:
@@ -404,10 +393,12 @@ lemma image_add_atLeastAtMost:
   by (auto intro: image_eqI[where x="xa - c" for xa])
 
 lemma min_zero_mult_nonneg_le: "0 \<le> h' \<Longrightarrow> h' \<le> h \<Longrightarrow> min 0 (h * k::real) \<le> h' * k"
-  by (metis dual_order.antisym le_cases min_le_iff_disj mult_eq_0_iff mult_le_0_iff mult_right_mono_neg)
+  by (metis dual_order.antisym le_cases min_le_iff_disj mult_eq_0_iff mult_le_0_iff
+      mult_right_mono_neg)
 
 lemma max_zero_mult_nonneg_le: "0 \<le> h' \<Longrightarrow> h' \<le> h \<Longrightarrow> h' * k \<le> max 0 (h * k::real)"
-  by (metis dual_order.antisym le_cases le_max_iff_disj mult_eq_0_iff mult_right_mono zero_le_mult_iff)
+  by (metis dual_order.antisym le_cases le_max_iff_disj mult_eq_0_iff mult_right_mono
+      zero_le_mult_iff)
 
 lemmas closed_segment_real = closed_segment_eq_real_ivl
 
@@ -526,11 +517,21 @@ lemma is_interval_minus_translation'[simp]:
   using is_interval_translation[of "-c" X]
   by (metis image_cong uminus_add_conv_diff)
 
-lemma
+lemma [simp]:
   fixes a::"'a::ordered_euclidean_space"
   shows is_interval_ci: "is_interval {a..}"
     and is_interval_ic: "is_interval {..a}"
   by (force simp: is_interval_def eucl_le[where 'a='a])+
+
+lemma [simp]:
+  fixes a b::real
+  shows is_interval_1_io: "is_interval {..<a}"
+    and is_interval_1_oi: "is_interval {a<..}"
+    and is_interval_1_co: "is_interval {b..<a}"
+    and is_interval_1_oc: "is_interval {a<..b}"
+    and is_interval_1_cc: "is_interval {b..a}"
+    and is_interval_1_oo: "is_interval {b..a}"
+  by (force simp: is_interval_def)+
 
 lemma image_add_atLeast_real[simp]:
   fixes a b c::"'a::ordered_real_vector"
@@ -626,6 +627,69 @@ proof -
   finally show "dist z x \<le> b + a" by arith
 qed
 
+lemma (in linorder_topology) unbounded_connected_above_memI:
+  assumes conn: "connected S"
+  assumes nbdd: "\<not> bdd_above S"
+  assumes "t0 \<in> S"
+  assumes "t0 \<le> t"
+  shows "t \<in> S"
+proof -
+  from nbdd obtain s where "s \<in> S" "s \<ge> t" by (metis not_le less_imp_le bdd_above_def)
+  from connectedD_interval[OF conn \<open>t0 \<in> S\<close> \<open>s \<in> S\<close> \<open>t0 \<le> t\<close> \<open>t \<le> s\<close>]
+  show "t \<in> S" .
+qed
+
+lemma (in linorder_topology) unbounded_connected_below_memI:
+  assumes conn: "connected S"
+  assumes nbdd: "\<not> bdd_below S"
+  assumes "t0 \<in> S"
+  assumes "t \<le> t0"
+  shows "t \<in> S"
+proof -
+  from nbdd obtain s where "s \<in> S" "t \<ge> s" by (metis not_le less_imp_le bdd_below_def)
+  from connectedD_interval[OF conn \<open>s \<in> S\<close> \<open>t0 \<in> S\<close> \<open>s \<le> t\<close> \<open>t \<le> t0\<close>]
+  show "t \<in> S" .
+qed
+
+lemma (in linorder_topology) not_in_connected_cases:
+  assumes conn: "connected S"
+  assumes nbdd: "x \<notin> S"
+  assumes ne: "S \<noteq> {}"
+  obtains "bdd_above S" "\<And>y. y \<in> S \<Longrightarrow> x \<ge> y" | "bdd_below S" "\<And>y. y \<in> S \<Longrightarrow> x \<le> y"
+proof -
+  obtain s where "s \<in> S" using ne by blast
+  {
+    assume "s \<le> x"
+    have "False" if "x \<le> y" "y \<in> S" for y
+      using connectedD_interval[OF conn \<open>s \<in> S\<close> \<open>y \<in> S\<close> \<open>s \<le> x\<close> \<open>x \<le> y\<close>] \<open>x \<notin> S\<close>
+      by simp
+    then have wit: "y \<in> S \<Longrightarrow> x \<ge> y" for y
+      using le_cases by blast
+    then have "bdd_above S"
+      by (rule local.bdd_aboveI)
+    note this wit
+  } moreover {
+    assume "x \<le> s"
+    have "False" if "x \<ge> y" "y \<in> S" for y
+      using connectedD_interval[OF conn \<open>y \<in> S\<close> \<open>s \<in> S\<close> \<open>x \<ge> y\<close> \<open>s \<ge> x\<close> ] \<open>x \<notin> S\<close>
+      by simp
+    then have wit: "y \<in> S \<Longrightarrow> x \<le> y" for y
+      using le_cases by blast
+    then have "bdd_below S"
+      by (rule local.bdd_belowI)
+    note this wit
+  } ultimately show ?thesis
+    by (meson local.le_cases that)
+qed
+
+lemma mem_is_interval_1_I:
+  fixes a b c::real
+  assumes "is_interval S"
+  assumes "a \<in> S" "c \<in> S"
+  assumes "a \<le> b" "b \<le> c"
+  shows "b \<in> S"
+  using assms is_interval_1 by blast
+
 
 subsection \<open>Extended Real Intervals\<close>
 
@@ -637,9 +701,10 @@ lemma open_real_image:
   shows "open (real_of_ereal ` X)"
 proof -
   have "real_of_ereal ` X = ereal -` X"
-    apply (auto simp:)
-     apply (metis assms(2) assms(3) ereal_infinity_cases ereal_real')
-    using image_iff by fastforce
+    apply safe
+    subgoal by (metis assms(2) assms(3) real_of_ereal.elims vimageI)
+    subgoal using image_iff by fastforce
+    done
   thus ?thesis
     by (auto intro!: open_ereal_vimage assms)
 qed
@@ -677,9 +742,12 @@ qed
 
 lemma real_greaterThanLessThan_inter:
   "real_of_ereal ` {N<..<M::ereal} = real_of_ereal ` {-\<infinity><..<M} \<inter> real_of_ereal ` {N<..<\<infinity>}"
-  apply (auto intro!: image_eqI)
-  by (metis ereal_infinity_cases ereal_infty_less(2) ereal_less_eq(1)
-    ereal_real' less_trans not_le)
+  apply safe
+  subgoal by force
+  subgoal by force
+  subgoal for x y z
+    by (cases y; cases z) (auto intro!: image_eqI[where x=z] simp: )
+  done
 
 lemma real_atLeastGreaterThan_eq: "real_of_ereal ` {N<..<M::ereal} =
    (if N = \<infinity> then {} else
@@ -710,6 +778,110 @@ lemma real_image_ereal_ivl:
   (if a < b then (if a = - \<infinity> then if b = \<infinity> then UNIV else {..<real_of_ereal b}
   else if b = \<infinity> then {real_of_ereal a<..} else {real_of_ereal a <..< real_of_ereal b}) else {})"
   by (cases a; cases b; simp add: real_atLeastGreaterThan_eq not_less)
+
+
+lemma fixes a b c::ereal
+  shows not_inftyI: "a < b \<Longrightarrow> b < c \<Longrightarrow> abs b \<noteq> \<infinity>"
+  by force
+
+lemma
+  interval_neqs:
+  fixes r s t::real
+  shows "{r<..<s} \<noteq> {t<..}"
+    and "{r<..<s} \<noteq> {..<t}"
+    and "{r<..<ra} \<noteq> UNIV"
+    and "{r<..} \<noteq> {..<s}"
+    and "{r<..} \<noteq> UNIV"
+    and "{..<r} \<noteq> UNIV"
+    and "{} \<noteq> {r<..}"
+    and "{} \<noteq> {..<r}"
+  subgoal
+    by (metis dual_order.strict_trans greaterThanLessThan_iff greaterThan_iff gt_ex not_le order_refl)
+  subgoal
+    by (metis (no_types, hide_lams) greaterThanLessThan_empty_iff greaterThanLessThan_iff gt_ex
+        lessThan_iff minus_minus neg_less_iff_less not_less order_less_irrefl)
+  subgoal by force
+  subgoal
+    by (metis greaterThanLessThan_empty_iff greaterThanLessThan_eq greaterThan_iff inf.idem
+        lessThan_iff lessThan_non_empty less_irrefl not_le)
+  subgoal by force
+  subgoal by force
+  subgoal using greaterThan_non_empty by blast
+  subgoal using lessThan_non_empty by blast
+  done
+
+lemma greaterThanLessThan_eq_iff:
+  fixes r s t u::real
+  shows "({r<..<s} = {t<..<u}) = (r \<ge> s \<and> u \<le> t \<or> r = t \<and> s = u)"
+  by (metis cInf_greaterThanLessThan cSup_greaterThanLessThan greaterThanLessThan_empty_iff not_le)
+
+lemma real_of_ereal_image_greaterThanLessThan_iff:
+  "real_of_ereal ` {a <..< b} = real_of_ereal ` {c <..< d} \<longleftrightarrow> (a \<ge> b \<and> c \<ge> d \<or> a = c \<and> b = d)"
+  unfolding real_atLeastGreaterThan_eq
+  by (cases a; cases b; cases c; cases d;
+    simp add: greaterThanLessThan_eq_iff interval_neqs interval_neqs[symmetric])
+
+lemma uminus_image_real_of_ereal_image_greaterThanLessThan:
+  "uminus ` real_of_ereal ` {l <..< u} = real_of_ereal ` {-u <..< -l}"
+  by (force simp: algebra_simps ereal_less_uminus_reorder
+    ereal_uminus_less_reorder intro: image_eqI[where x="-x" for x])
+
+lemma add_image_real_of_ereal_image_greaterThanLessThan:
+  "op + c ` real_of_ereal ` {l <..< u} = real_of_ereal ` {c + l <..< c + u}"
+  apply safe
+  subgoal for x
+    using ereal_less_add[of c]
+    by (force simp: real_of_ereal_add add.commute)
+  subgoal for _ x
+    by (force simp: add.commute real_of_ereal_minus ereal_minus_less ereal_less_minus
+      intro: image_eqI[where x="x - c"])
+  done
+
+lemma add2_image_real_of_ereal_image_greaterThanLessThan:
+  "(\<lambda>x. x + c) ` real_of_ereal ` {l <..< u} = real_of_ereal ` {l + c <..< u + c}"
+  using add_image_real_of_ereal_image_greaterThanLessThan[of c l u]
+  by (metis add.commute image_cong)
+
+lemma minus_image_real_of_ereal_image_greaterThanLessThan:
+  "op - c ` real_of_ereal ` {l <..< u} = real_of_ereal ` {c - u <..< c - l}"
+  (is "?l = ?r")
+proof -
+  have "?l = op + c ` uminus ` real_of_ereal ` {l <..< u}" by auto
+  also note uminus_image_real_of_ereal_image_greaterThanLessThan
+  also note add_image_real_of_ereal_image_greaterThanLessThan
+  finally show ?thesis by (simp add: minus_ereal_def)
+qed
+
+lemma real_ereal_bound_lemma_up:
+  assumes "s \<in> real_of_ereal ` {a<..<b}"
+  assumes "t \<notin> real_of_ereal ` {a<..<b}"
+  assumes "s \<le> t"
+  shows "b \<noteq> \<infinity>"
+  using assms
+  apply (cases b)
+  subgoal by force
+  subgoal by (metis PInfty_neq_ereal(2) assms dual_order.strict_trans1 ereal_infty_less(1)
+    ereal_less_ereal_Ex greaterThanLessThan_empty_iff greaterThanLessThan_iff greaterThan_iff
+    image_eqI less_imp_le linordered_field_no_ub not_less order_trans
+    real_greaterThanLessThan_infinity_eq real_image_ereal_ivl real_of_ereal.simps(1))
+  subgoal by force
+  done
+
+lemma real_ereal_bound_lemma_down:
+  assumes "s \<in> real_of_ereal ` {a<..<b}"
+  assumes "t \<notin> real_of_ereal ` {a<..<b}"
+  assumes "t \<le> s"
+  shows "a \<noteq> - \<infinity>"
+  using assms
+  apply (cases b)
+  subgoal
+    apply safe
+    using assms(1)
+    apply (auto simp: real_greaterThanLessThan_minus_infinity_eq)
+    done
+  subgoal by (auto simp: real_greaterThanLessThan_minus_infinity_eq)
+  subgoal by auto
+  done
 
 
 subsection \<open>Euclidean Components\<close>
@@ -799,8 +971,7 @@ lemma Zfun_ident: "Zfun (\<lambda>x::'a::real_normed_vector. x) (at 0)"
 lemma not_in_closure_trivial_limitI:
   "x \<notin> closure s \<Longrightarrow> trivial_limit (at x within s)"
   using not_trivial_limit_within[of x s]
-  apply auto
-  by (metis Diff_empty Diff_insert0 closure_subset contra_subsetD)
+  by safe (metis Diff_empty Diff_insert0 closure_subset contra_subsetD)
 
 lemma tendsto_If:
   assumes tendsto:
@@ -896,7 +1067,7 @@ proof -
   from open_contains_cball_eq[OF assms(1)] assms(2)
   obtain e where "e > 0" "cball x e \<subseteq> X" by auto
   thus ?thesis
-    by (auto simp: eventually_at dist_real_def intro!: exI[where x=e])
+    by (auto simp: eventually_at dist_real_def mem_cball intro!: exI[where x=e])
 qed
 
 lemma filterlim_times_real_le:
@@ -960,11 +1131,15 @@ lemma eventually_at_snd:
   by (metis open_vimage_snd rangeI range_snd vimageE vimageI)
 
 lemma eventually_at_in_ball: "d > 0 \<Longrightarrow> eventually (\<lambda>y. y \<in> ball x0 d) (at x0)"
-  by (auto simp: eventually_at dist_commute intro!: exI[where x=d])
+  by (auto simp: eventually_at dist_commute mem_ball intro!: exI[where x=d])
 
 lemma seq_harmonic': "((\<lambda>n. 1 / n) \<longlongrightarrow> 0) sequentially"
   using seq_harmonic
   by (simp add: inverse_eq_divide)
+
+lemma filterlim_real_at_infinity_sequentially[tendsto_intros]:
+     "filterlim real at_infinity sequentially"
+  by (simp add: filterlim_at_top_imp_at_infinity filterlim_real_sequentially)
 
 
 subsection \<open>Continuity\<close>
@@ -1006,9 +1181,9 @@ lemma continuous_on_Pair[continuous_intros]:
 
 lemma continuous_Sigma:
   assumes defined: "y \<in> Pi T X"
-  assumes f_cont: "continuous_on (Sigma T X) f"
+  assumes f_cont: "continuous_on (Sigma T X) (\<lambda>(t, x). f t x)"
   assumes y_cont: "continuous_on T y"
-  shows "continuous_on T (\<lambda>x. f (x, y x))"
+  shows "continuous_on T (\<lambda>x. f x (y x))"
   using
     defined
     continuous_on_compose2[OF
@@ -1063,10 +1238,10 @@ lemma
     simp: continuous_on_eq_continuous_within continuous_def)
 
 lemma continuous_on_compose_Pair:
-assumes f: "continuous_on (A \<times> B) (\<lambda>(a, b). f a b)"
+assumes f: "continuous_on (Sigma A B) (\<lambda>(a, b). f a b)"
 assumes g: "continuous_on C g"
 assumes h: "continuous_on C h"
-assumes subset: "g ` C \<subseteq> A" "h ` C \<subseteq> B"
+assumes subset: "\<And>c. c \<in> C \<Longrightarrow> g c \<in> A" "\<And>c. c \<in> C \<Longrightarrow> h c \<in> B (g c)"
 shows "continuous_on C (\<lambda>c. f (g c) (h c))"
 using continuous_on_compose2[OF f continuous_on_Pair[OF g h]] subset
 by auto
@@ -1089,72 +1264,6 @@ proof -
   show ?thesis
     by (rule exI[where x=d]) (auto intro!: d simp: dist_prod_def)
 qed
-
-
-subsection \<open>Differentiability\<close>
-
-lemma differentiable_Pair [simp]:
-  "f differentiable at x within s \<Longrightarrow> g differentiable at x within s \<Longrightarrow>
-    (\<lambda>x. (f x, g x)) differentiable at x within s"
-  unfolding differentiable_def by (blast intro: has_derivative_Pair)
-
-lemma (in bounded_linear)
-  differentiable:
-  assumes "g differentiable (at x within s)"
-  shows " (\<lambda>x. f (g x)) differentiable (at x within s)"
-  using assms[simplified frechet_derivative_works]
-  by (intro differentiableI) (rule has_derivative)
-
-context begin
-private lemmas diff = bounded_linear.differentiable
-lemmas differentiable_mult_right[intro] = diff[OF bounded_linear_mult_right]
-  and differentiable_mult_left[intro]   = diff[OF bounded_linear_mult_left]
-  and differentiable_inner_right[intro] = diff[OF bounded_linear_inner_right]
-  and differentiable_inner_left[intro]  = diff[OF bounded_linear_inner_left]
-end
-
-lemma (in bounded_bilinear)
-  differentiable:
-  assumes f: "f differentiable at x within s" and g: "g differentiable at x within s"
-  shows "(\<lambda>x. prod (f x) (g x)) differentiable at x within s"
-  using assms[simplified frechet_derivative_works]
-  by (intro differentiableI) (rule FDERIV)
-
-context begin
-private lemmas bdiff = bounded_bilinear.differentiable
-lemmas differentiable_mult[intro] = bdiff[OF bounded_bilinear_mult]
-  and differentiable_scaleR[intro] = bdiff[OF bounded_bilinear_scaleR]
-end
-
-lemma differentiable_transform_within_weak:
-  assumes "x \<in> s" "\<And>x'. x'\<in>s \<Longrightarrow> g x' = f x'" "f differentiable at x within s"
-  shows "g differentiable at x within s"
-  using assms by (intro differentiable_transform_within[OF _ zero_less_one, where g=g]) auto
-
-lemma differentiable_compose_at:
-  "f differentiable (at x) \<Longrightarrow> g differentiable (at (f x)) \<Longrightarrow>
-  (\<lambda>x. g (f x)) differentiable (at x)"
-  unfolding o_def[symmetric]
-  by (rule differentiable_chain_at)
-
-lemma differentiable_compose_within:
-  "f differentiable (at x within s) \<Longrightarrow>
-  g differentiable (at(f x) within (f ` s)) \<Longrightarrow>
-  (\<lambda>x. g (f x)) differentiable (at x within s)"
-  unfolding o_def[symmetric]
-  by (rule differentiable_chain_within)
-
-lemma differentiable_setsum[intro, simp]:
-  assumes "finite s" "\<forall>a\<in>s. (f a) differentiable net"
-  shows "(\<lambda>x. setsum (\<lambda>a. f a x) s) differentiable net"
-proof -
-  from bchoice[OF assms(2)[unfolded differentiable_def]]
-  show ?thesis
-    by (auto intro!: has_derivative_setsum simp: differentiable_def)
-qed
-
-
-subsection \<open>Derivatives\<close>
 
 lemma has_derivative_in_compose2:\<comment>\<open>TODO: should there be sth like \<open>op has_derivative_on\<close>?\<close>
   assumes "\<And>x. x \<in> t \<Longrightarrow> (g has_derivative g' x) (at x within t)"
@@ -1233,107 +1342,39 @@ lemma has_vector_derivative_If:
     (if x \<in> s then f' x else g' x)) (at x within u)"
   unfolding has_vector_derivative_def assms
   using x_in
-  apply (intro has_derivative_If[THEN has_derivative_eq_rhs])
-       apply (rule f'[unfolded has_vector_derivative_def]; assumption)
-      apply (rule g'[unfolded has_vector_derivative_def]; assumption)
+  apply (intro has_derivative_If[where ?f' = "\<lambda>x a. a *\<^sub>R f' x" and ?g' = "\<lambda>x a. a *\<^sub>R g' x",
+        THEN has_derivative_eq_rhs])
+  subgoal by (rule f'[unfolded has_vector_derivative_def]; assumption)
+  subgoal by (rule g'[unfolded has_vector_derivative_def]; assumption)
   by (auto simp: assms)
 
-lemma has_derivative_If_in_closed:
-  assumes f':"\<And>x. x \<in> s \<Longrightarrow> (f has_derivative f' x) (at x within s)"
-  assumes g':"\<And>x. x \<in> t \<Longrightarrow> (g has_derivative g' x) (at x within t)"
-  assumes connect: "\<And>x. x \<in> s \<inter> t \<Longrightarrow> f x = g x" "\<And>x. x \<in> s \<inter> t \<Longrightarrow> f' x = g' x"
-  assumes "closed t" "closed s" "x \<in> s \<union> t"
-  shows "((\<lambda>x. if x \<in> s then f x else g x) has_derivative (if x \<in> s then f' x else g' x)) (at x within (s \<union> t))"
-  (is "(?if has_derivative ?if') _")
-  unfolding has_derivative_within
-proof (safe intro!: tendstoI)
-  fix e::real assume "0 < e"
-  let ?D = "\<lambda>x f f' y. (1 / norm (y - x)) *\<^sub>R (f y - (f x + f' (y - x)))"
-  have f': "x \<in> s \<Longrightarrow> ((?D x f (f' x)) \<longlongrightarrow> 0) (at x within s)"
-    and g': "x \<in> t \<Longrightarrow> ((?D x g (g' x)) \<longlongrightarrow> 0) (at x within t)"
-    using f' g' by (auto simp: has_vector_derivative_def has_derivative_within)
-  let ?thesis = "eventually (\<lambda>y. dist (?D x ?if ?if' y) 0 < e) (at x within s \<union> t)"
-  {
-    assume "x \<in> s" "x \<in> t"
-    from tendstoD[OF f'[OF \<open>x \<in> s\<close>] \<open>0 < e\<close>] tendstoD[OF g'[OF \<open>x \<in> t\<close>] \<open>0 < e\<close>]
-    have ?thesis unfolding eventually_at_filter
-      by eventually_elim (insert \<open>x \<in> s\<close> \<open>x \<in> t\<close>, auto simp: connect)
-  } moreover {
-    assume "x \<in> s" "x \<notin> t"
-    hence "eventually (\<lambda>x. x \<in> - t) (at x within s \<union> t)" using \<open>closed t\<close>
-      by (intro topological_tendstoD) (auto intro: tendsto_ident_at)
-    with tendstoD[OF f'[OF \<open>x \<in> s\<close>] \<open>0 < e\<close>] have ?thesis unfolding eventually_at_filter
-      by eventually_elim (insert \<open>x \<in> s\<close> \<open>x \<notin> t\<close>, auto simp: connect)
-  } moreover {
-    assume "x \<notin> s" hence "x \<in> t" using assms by auto
-    have "eventually (\<lambda>x. x \<in> - s) (at x within s \<union> t)" using \<open>closed s\<close> \<open>x \<notin> s\<close>
-      by (intro topological_tendstoD) (auto intro: tendsto_ident_at)
-    with tendstoD[OF g'[OF \<open>x \<in> t\<close>] \<open>0 < e\<close>] have ?thesis unfolding eventually_at_filter
-      by eventually_elim (insert \<open>x \<in> t\<close> \<open>x \<notin> s\<close>, auto simp: connect)
-  } ultimately show ?thesis by blast
-qed (insert assms, auto intro!: has_derivative_bounded_linear f' g')
 
-lemma linear_continuation:
-  assumes f':"\<And>x. x \<in> {a .. b} \<Longrightarrow>
-    (f has_vector_derivative f' x) (at x within {a .. b})"
-  assumes g':"\<And>x. x \<in> {b .. c} \<Longrightarrow>
-    (g has_vector_derivative g' x) (at x within {b .. c})"
-  assumes connect: "f b = g b" "f' b = g' b"
-  assumes x: "x \<in> {a .. c}"
-  assumes abc:"a \<le> b" "b \<le> c"
-  shows "((\<lambda>x. if x \<le> b then f x else g x) has_vector_derivative
-  (\<lambda>x. if x \<le> b then f' x else g' x) x) (at x within {a .. c})"
-  (is "(?h has_vector_derivative ?h' x) _")
-proof -
-  have un: "{a .. b} \<union> {b .. c} = {a .. c}" using assms by auto
-  note has_derivative_If_in_closed[derivative_intros]
-  note f'[simplified has_vector_derivative_def, derivative_intros]
-  note g'[simplified has_vector_derivative_def, derivative_intros]
-  have if': "((\<lambda>x. if x \<in> {a .. b} then f x else g x) has_vector_derivative
-    (\<lambda>x. if x \<le> b then f' x else g' x) x) (at x within {a .. b}\<union>{b .. c})"
-    unfolding has_vector_derivative_def
-    using assms
-    apply -
-    apply (rule derivative_eq_intros refl | assumption)+
-    by auto
-  show ?thesis
-    unfolding has_vector_derivative_def
-    by (rule has_derivative_transform[OF
-        x _ if'[simplified un has_vector_derivative_def]])
-      simp
-qed
+subsection \<open>Derivatives\<close>
 
-lemma exists_linear_continuation:
-  assumes f':"\<And>x. x \<in> {a .. b} \<Longrightarrow>
-    (f has_vector_derivative f' x) (at x within {a .. b})"
-  shows "\<exists>fc. (\<forall>x. x \<in> {a .. b} \<longrightarrow> (fc has_vector_derivative f' x) (at x)) \<and>
-    (\<forall>x. x \<in> {a .. b} \<longrightarrow> fc x = f x)"
-proof (rule, safe)
-  fix x assume "x \<in> {a .. b}" hence "a \<le> b" by simp
-  let ?line = "\<lambda>a x. f a + (x - a) *\<^sub>R f' a"
-  let ?fc = "(\<lambda>x. if x \<in> {a .. b} then f x else if x \<in> {..a} then ?line a x else ?line b x)"
-  have [simp]:
-    "\<And>x. x \<in> {a .. b} \<Longrightarrow> (b \<le> x \<longleftrightarrow> x = b)" "\<And>x. x \<in> {a .. b} \<Longrightarrow> (x \<le> a \<longleftrightarrow> x = a)"
-    "\<And>x. x \<le> a \<Longrightarrow> (b \<le> x \<longleftrightarrow> x = b)" using \<open>a \<le> b\<close> by auto
-  note [derivative_intros] =
-    has_derivative_If_in_closed
-    f'[simplified has_vector_derivative_def]
-  have "(?fc has_vector_derivative f' x) (at x within {a .. b} \<union> ({..a} \<union> {b..}))"
-    using \<open>x \<in> {a .. b}\<close> \<open>a \<le> b\<close>
-    by (auto intro!: derivative_eq_intros simp: has_vector_derivative_def
-      simp del: atMost_iff atLeastAtMost_iff)
-  moreover have "{a .. b} \<union> ({..a} \<union> {b..}) = UNIV" by auto
-  ultimately show "(?fc has_vector_derivative f' x) (at x)" by simp
-  show "?fc x = f x" using \<open>x \<in> {a .. b}\<close> by simp
-qed
+text \<open>TODO: include this into the attribute \<open>derivative_intros\<close>?\<close>
 
+lemma DERIV_compose_FDERIV:
+  fixes f::"real\<Rightarrow>real"
+  assumes "DERIV f (g x) :> f'"
+  assumes "(g has_derivative g') (at x within s)"
+  shows "((\<lambda>x. f (g x)) has_derivative (\<lambda>x. g' x * f')) (at x within s)"
+  using assms has_derivative_compose[of g g' x s f "op * f'"]
+  by (auto simp: has_field_derivative_def ac_simps)
 
-lemma Pair_has_vector_derivative:
-  assumes "(f has_vector_derivative f') (at x within s)"
-    "(g has_vector_derivative g') (at x within s)"
-  shows "((\<lambda>x. (f x, g x)) has_vector_derivative (f', g')) (at x within s)"
-  using assms
-  by (auto simp: has_vector_derivative_def intro!: derivative_eq_intros)
+lemmas has_derivative_sin[derivative_intros] = DERIV_sin[THEN DERIV_compose_FDERIV]
+  and  has_derivative_cos[derivative_intros] = DERIV_cos[THEN DERIV_compose_FDERIV]
+  and  has_derivative_exp[derivative_intros] = DERIV_exp[THEN DERIV_compose_FDERIV]
+  and  has_derivative_ln[derivative_intros] = DERIV_ln[THEN DERIV_compose_FDERIV]
+  and  has_derivative_tan[derivative_intros] = DERIV_tan[THEN DERIV_compose_FDERIV]
+
+lemma has_derivative_continuous_on:
+  "(\<And>x. x \<in> s \<Longrightarrow> (f has_derivative f' x) (at x within s)) \<Longrightarrow> continuous_on s f"
+  by (auto intro!: differentiable_imp_continuous_on differentiableI simp: differentiable_on_def)
+
+lemma has_vector_derivative_continuous_on:
+  "(\<And>x. x \<in> s \<Longrightarrow> (f has_vector_derivative f' x) (at x within s)) \<Longrightarrow> continuous_on s f"
+  by (auto intro!: differentiable_imp_continuous_on differentiableI simp: has_vector_derivative_def
+    differentiable_on_def)
 
 lemma has_vector_derivative_imp:
   assumes "x \<in> s"
@@ -1401,9 +1442,83 @@ lemma vector_derivative_within_closed_interval:
   using assms vector_derivative_within_closed_interval
   by fastforce
 
+lemma has_vector_derivative_singletonI:
+  "(y has_vector_derivative y') (at t0 within {t0})"
+  by (auto simp: has_vector_derivative_def intro!: has_derivative_singletonI bounded_linear_intros)
+
+lemma has_derivative_If_in_closed:
+  assumes f':"x \<in> s \<Longrightarrow> (f has_derivative f' x) (at x within s)"
+  assumes g':"x \<in> t \<Longrightarrow> (g has_derivative g' x) (at x within t)"
+  assumes connect: "x \<in> s \<Longrightarrow> x \<in> t \<Longrightarrow> f x = g x" "x \<in> s \<Longrightarrow> x \<in> t \<Longrightarrow> f' x = g' x"
+  assumes "closed t" "closed s" "x \<in> s \<union> t"
+  shows "((\<lambda>x. if x \<in> s then f x else g x) has_derivative (if x \<in> s then f' x else g' x)) (at x within (s \<union> t))"
+  (is "(?if has_derivative ?if') _")
+  unfolding has_derivative_within
+proof (safe intro!: tendstoI)
+  fix e::real assume "0 < e"
+  let ?D = "\<lambda>x f f' y. (1 / norm (y - x)) *\<^sub>R (f y - (f x + f' (y - x)))"
+  have f': "x \<in> s \<Longrightarrow> ((?D x f (f' x)) \<longlongrightarrow> 0) (at x within s)"
+    and g': "x \<in> t \<Longrightarrow> ((?D x g (g' x)) \<longlongrightarrow> 0) (at x within t)"
+    using f' g' by (auto simp: has_vector_derivative_def has_derivative_within)
+  let ?thesis = "eventually (\<lambda>y. dist (?D x ?if ?if' y) 0 < e) (at x within s \<union> t)"
+  {
+    assume "x \<in> s" "x \<in> t"
+    from tendstoD[OF f'[OF \<open>x \<in> s\<close>] \<open>0 < e\<close>] tendstoD[OF g'[OF \<open>x \<in> t\<close>] \<open>0 < e\<close>]
+    have ?thesis unfolding eventually_at_filter
+      by eventually_elim (insert \<open>x \<in> s\<close> \<open>x \<in> t\<close>, auto simp: connect)
+  } moreover {
+    assume "x \<in> s" "x \<notin> t"
+    hence "eventually (\<lambda>x. x \<in> - t) (at x within s \<union> t)" using \<open>closed t\<close>
+      by (intro topological_tendstoD) (auto intro: tendsto_ident_at)
+    with tendstoD[OF f'[OF \<open>x \<in> s\<close>] \<open>0 < e\<close>] have ?thesis unfolding eventually_at_filter
+      by eventually_elim (insert \<open>x \<in> s\<close> \<open>x \<notin> t\<close>, auto simp: connect)
+  } moreover {
+    assume "x \<notin> s" hence "x \<in> t" using assms by auto
+    have "eventually (\<lambda>x. x \<in> - s) (at x within s \<union> t)" using \<open>closed s\<close> \<open>x \<notin> s\<close>
+      by (intro topological_tendstoD) (auto intro: tendsto_ident_at)
+    with tendstoD[OF g'[OF \<open>x \<in> t\<close>] \<open>0 < e\<close>] have ?thesis unfolding eventually_at_filter
+      by eventually_elim (insert \<open>x \<in> t\<close> \<open>x \<notin> s\<close>, auto simp: connect)
+  } ultimately show ?thesis by blast
+qed (insert assms, auto intro!: has_derivative_bounded_linear f' g')
+
+lemma linear_continuation:
+  assumes f':"x \<in> {a .. b} \<Longrightarrow> (f has_vector_derivative f' x) (at x within {a .. b})"
+  assumes g':"x \<in> {b .. c} \<Longrightarrow> (g has_vector_derivative g' x) (at x within {b .. c})"
+  assumes connect: "f b = g b" "f' b = g' b"
+  assumes x: "x \<in> {a .. c}"
+  assumes abc:"a \<le> b" "b \<le> c"
+  shows "((\<lambda>x. if x \<le> b then f x else g x) has_vector_derivative
+  (\<lambda>x. if x \<le> b then f' x else g' x) x) (at x within {a .. c})"
+  (is "(?h has_vector_derivative ?h' x) _")
+proof -
+  have un: "{a .. b} \<union> {b .. c} = {a .. c}" using assms by auto
+  note has_derivative_If_in_closed[derivative_intros]
+  note f'[simplified has_vector_derivative_def, derivative_intros]
+  note g'[simplified has_vector_derivative_def, derivative_intros]
+  have if': "((\<lambda>x. if x \<in> {a .. b} then f x else g x) has_vector_derivative
+    (\<lambda>x. if x \<le> b then f' x else g' x) x) (at x within {a .. b}\<union>{b .. c})"
+    unfolding has_vector_derivative_def
+    using assms
+    apply -
+    apply (rule derivative_eq_intros refl | assumption)+
+    by auto
+  show ?thesis
+    unfolding has_vector_derivative_def
+    by (rule has_derivative_transform[OF
+        x _ if'[simplified un has_vector_derivative_def]])
+      simp
+qed
+
+lemma Pair_has_vector_derivative:
+  assumes "(f has_vector_derivative f') (at x within s)"
+    "(g has_vector_derivative g') (at x within s)"
+  shows "((\<lambda>x. (f x, g x)) has_vector_derivative (f', g')) (at x within s)"
+  using assms
+  by (auto simp: has_vector_derivative_def intro!: derivative_eq_intros)
+
 lemma
   has_vector_derivative_at_within_open_subset:
-  assumes "\<And>x. x \<in> T \<Longrightarrow> (f has_vector_derivative f' x) (at x within T)"
+  assumes "x \<in> T \<Longrightarrow> (f has_vector_derivative f' x) (at x within T)"
   assumes "x \<in> S" "open S" "S \<subseteq> T"
   shows "(f has_vector_derivative f' x) (at x)"
 proof -
@@ -1413,42 +1528,243 @@ proof -
     by (auto intro!: has_vector_derivative_within_subset[OF _ \<open>S \<subseteq> T\<close>] assms)
 qed
 
+lemma
+  has_vector_derivative_zero_constant:
+  assumes "convex s"
+  assumes "\<And>x. x \<in> s \<Longrightarrow> (f has_vector_derivative 0) (at x within s)"
+  obtains c where "\<And>x. x \<in> s \<Longrightarrow> f x = c"
+  using has_derivative_zero_constant[of s f] assms
+  by (auto simp: has_vector_derivative_def)
 
-text \<open>TODO: include this into the attribute \<open>derivative_intros\<close>?\<close>
 
-lemma DERIV_compose_FDERIV:
-  fixes f::"real\<Rightarrow>real"
-  assumes "DERIV f (g x) :> f'"
-  assumes "(g has_derivative g') (at x within s)"
-  shows "((\<lambda>x. f (g x)) has_derivative (\<lambda>x. g' x * f')) (at x within s)"
-  using assms has_derivative_compose[of g g' x s f "op * f'"]
-  by (auto simp: has_field_derivative_def ac_simps)
+subsection \<open>Differentiability\<close>
 
-lemmas has_derivative_sin[derivative_intros] = DERIV_sin[THEN DERIV_compose_FDERIV]
-  and  has_derivative_cos[derivative_intros] = DERIV_cos[THEN DERIV_compose_FDERIV]
-  and  has_derivative_exp[derivative_intros] = DERIV_exp[THEN DERIV_compose_FDERIV]
-  and  has_derivative_ln[derivative_intros] = DERIV_ln[THEN DERIV_compose_FDERIV]
+lemma differentiable_Pair [simp]:
+  "f differentiable at x within s \<Longrightarrow> g differentiable at x within s \<Longrightarrow>
+    (\<lambda>x. (f x, g x)) differentiable at x within s"
+  unfolding differentiable_def by (blast intro: has_derivative_Pair)
 
-lemma has_derivative_continuous_on:
-  "(\<And>x. x \<in> s \<Longrightarrow> (f has_derivative f' x) (at x within s)) \<Longrightarrow> continuous_on s f"
-  by (auto intro!: differentiable_imp_continuous_on differentiableI simp: differentiable_on_def)
+lemma (in bounded_linear)
+  differentiable:
+  assumes "g differentiable (at x within s)"
+  shows " (\<lambda>x. f (g x)) differentiable (at x within s)"
+  using assms[simplified frechet_derivative_works]
+  by (intro differentiableI) (rule has_derivative)
 
-lemma has_vector_derivative_continuous_on:
-  "(\<And>x. x \<in> s \<Longrightarrow> (f has_vector_derivative f' x) (at x within s)) \<Longrightarrow> continuous_on s f"
-  by (auto intro!: differentiable_imp_continuous_on differentiableI simp: has_vector_derivative_def
-    differentiable_on_def)
+context begin
+private lemmas diff = bounded_linear.differentiable
+lemmas differentiable_mult_right[intro] = diff[OF bounded_linear_mult_right]
+  and differentiable_mult_left[intro]   = diff[OF bounded_linear_mult_left]
+  and differentiable_inner_right[intro] = diff[OF bounded_linear_inner_right]
+  and differentiable_inner_left[intro]  = diff[OF bounded_linear_inner_left]
+end
+
+lemma (in bounded_bilinear)
+  differentiable:
+  assumes f: "f differentiable at x within s" and g: "g differentiable at x within s"
+  shows "(\<lambda>x. prod (f x) (g x)) differentiable at x within s"
+  using assms[simplified frechet_derivative_works]
+  by (intro differentiableI) (rule FDERIV)
+
+context begin
+private lemmas bdiff = bounded_bilinear.differentiable
+lemmas differentiable_mult[intro] = bdiff[OF bounded_bilinear_mult]
+  and differentiable_scaleR[intro] = bdiff[OF bounded_bilinear_scaleR]
+end
+
+lemma differentiable_transform_within_weak:
+  assumes "x \<in> s" "\<And>x'. x'\<in>s \<Longrightarrow> g x' = f x'" "f differentiable at x within s"
+  shows "g differentiable at x within s"
+  using assms by (intro differentiable_transform_within[OF _ zero_less_one, where g=g]) auto
+
+lemma differentiable_compose_at:
+  "f differentiable (at x) \<Longrightarrow> g differentiable (at (f x)) \<Longrightarrow>
+  (\<lambda>x. g (f x)) differentiable (at x)"
+  unfolding o_def[symmetric]
+  by (rule differentiable_chain_at)
+
+lemma differentiable_compose_within:
+  "f differentiable (at x within s) \<Longrightarrow>
+  g differentiable (at(f x) within (f ` s)) \<Longrightarrow>
+  (\<lambda>x. g (f x)) differentiable (at x within s)"
+  unfolding o_def[symmetric]
+  by (rule differentiable_chain_within)
+
+lemma differentiable_setsum[intro, simp]:
+  assumes "finite s" "\<forall>a\<in>s. (f a) differentiable net"
+  shows "(\<lambda>x. setsum (\<lambda>a. f a x) s) differentiable net"
+proof -
+  from bchoice[OF assms(2)[unfolded differentiable_def]]
+  show ?thesis
+    by (auto intro!: has_derivative_setsum simp: differentiable_def)
+qed
+
+
+subsection \<open>Vector derivative on a set\<close>
+  \<comment>\<open>TODO: also for the other derivatives?!\<close>
+  \<comment>\<open>TODO: move to repository and rewrite assumptions of common lemmas\<close>
+
+definition
+  has_vderiv_on :: "(real \<Rightarrow> 'a::real_normed_vector) \<Rightarrow> (real \<Rightarrow> 'a) \<Rightarrow> real set \<Rightarrow> bool"
+  (infix "(has'_vderiv'_on)" 50)
+where
+  "(f has_vderiv_on f') S \<longleftrightarrow> (\<forall>x \<in> S. (f has_vector_derivative f' x) (at x within S))"
+
+lemma has_vderiv_on_empty[intro, simp]: "(f has_vderiv_on f') {}"
+  by (auto simp: has_vderiv_on_def)
+
+lemma vderiv_on_continuous_on: "(f has_vderiv_on f') S \<Longrightarrow> continuous_on S f"
+  by (auto intro!: has_vector_derivative_continuous_on simp: has_vderiv_on_def)
+
+lemma has_vderiv_on_cong[cong]:
+  assumes "\<And>x. x \<in> S \<Longrightarrow> f x = g x"
+  assumes "\<And>x. x \<in> S \<Longrightarrow> f' x = g' x"
+  assumes "S = T"
+  shows "(f has_vderiv_on f') S = (g has_vderiv_on g') T"
+  using assms
+  by (auto simp: has_vderiv_on_def cong: has_vector_derivative_cong)
+
+lemma has_vderiv_eq:
+  assumes "(f has_vderiv_on f') S"
+  assumes "\<And>x. x \<in> S \<Longrightarrow> f x = g x"
+  assumes "\<And>x. x \<in> S \<Longrightarrow> f' x = g' x"
+  assumes "S = T"
+  shows "(g has_vderiv_on g') T"
+  using assms by simp
+
+lemma has_vderiv_on_subset:
+  assumes "(f has_vderiv_on f') S"
+  assumes "T \<subseteq> S"
+  shows "(f has_vderiv_on f') T"
+  by (meson assms(1) assms(2) contra_subsetD has_vderiv_on_def has_vector_derivative_within_subset)
+
+lemma has_vderiv_on_compose:
+  assumes "(f has_vderiv_on f') (g ` T)"
+  assumes "(g has_vderiv_on g') T"
+  shows "(f o g has_vderiv_on (\<lambda>x. g' x *\<^sub>R f' (g x))) T"
+  using assms
+  unfolding has_vderiv_on_def
+  by (auto intro!: vector_diff_chain_within)
+
+lemma has_vderiv_on_compose':
+  assumes "(f has_vderiv_on f') (g ` T)"
+  assumes "(g has_vderiv_on g') T"
+  shows "((\<lambda>x. f (g x)) has_vderiv_on (\<lambda>x. g' x *\<^sub>R f' (g x))) T"
+  using has_vderiv_on_compose[OF assms]
+  by simp
+
+lemma has_vderiv_on_compose2:
+  assumes "(f has_vderiv_on f') S"
+  assumes "(g has_vderiv_on g') T"
+  assumes "\<And>t. t \<in> T \<Longrightarrow> g t \<in> S"
+  shows "((\<lambda>x. f (g x)) has_vderiv_on (\<lambda>x. g' x *\<^sub>R f' (g x))) T"
+  using has_vderiv_on_compose[OF has_vderiv_on_subset[OF assms(1)] assms(2)] assms(3)
+  by force
+
+lemma has_vderiv_on_eq_rhs:\<comment>\<open>TODO: integrate intro \<open>derivative_eq_intros\<close>\<close>
+  "(f has_vderiv_on g') T \<Longrightarrow> (\<And>x. x \<in> T \<Longrightarrow> g' x = f' x) \<Longrightarrow> (f has_vderiv_on f') T"
+  by (auto simp: has_vderiv_on_def)
+
+lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
+  shows has_vderiv_on_id: "((\<lambda>x. x) has_vderiv_on (\<lambda>x. 1)) T"
+    and has_vderiv_on_const: "((\<lambda>x. c) has_vderiv_on (\<lambda>x. 0)) T"
+  by (auto simp: has_vderiv_on_def intro!: derivative_eq_intros)
+
+lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
+  fixes f::"real \<Rightarrow> 'a::real_normed_vector"
+  assumes "(f has_vderiv_on f') T"
+  shows has_vderiv_on_uminus: "((\<lambda>x. - f x) has_vderiv_on (\<lambda>x. - f' x)) T"
+  using assms
+  by (auto simp: has_vderiv_on_def intro!: derivative_eq_intros)
+
+lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
+  fixes f g::"real \<Rightarrow> 'a::real_normed_vector"
+  assumes "(f has_vderiv_on f') T"
+  assumes "(g has_vderiv_on g') T"
+  shows has_vderiv_on_add: "((\<lambda>x. f x + g x) has_vderiv_on (\<lambda>x. f' x + g' x)) T"
+   and has_vderiv_on_diff: "((\<lambda>x. f x - g x) has_vderiv_on (\<lambda>x. f' x - g' x)) T"
+  using assms
+  by (auto simp: has_vderiv_on_def intro!: derivative_eq_intros)
+
+lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
+  fixes f::"real \<Rightarrow> real" and g::"real \<Rightarrow> 'a::real_normed_vector"
+  assumes "(f has_vderiv_on f') T"
+  assumes "(g has_vderiv_on g') T"
+  shows has_vderiv_on_scaleR: "((\<lambda>x. f x *\<^sub>R g x) has_vderiv_on (\<lambda>x. f x *\<^sub>R g' x + f' x *\<^sub>R g x)) T"
+  using assms
+  by (auto simp: has_vderiv_on_def has_field_derivative_iff_has_vector_derivative
+    intro!: derivative_eq_intros)
+
+lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
+  fixes f g::"real \<Rightarrow> 'a::real_normed_algebra"
+  assumes "(f has_vderiv_on f') T"
+  assumes "(g has_vderiv_on g') T"
+  shows has_vderiv_on_mult: "((\<lambda>x. f x * g x) has_vderiv_on (\<lambda>x. f x * g' x + f' x * g x)) T"
+  using assms
+  by (auto simp: has_vderiv_on_def intro!: derivative_eq_intros)
+
+lemma has_vderiv_on_ln[THEN has_vderiv_on_eq_rhs, derivative_intros]:
+  fixes g::"real \<Rightarrow> real"
+  assumes "\<And>x. x \<in> s \<Longrightarrow> 0 < g x"
+  assumes "(g has_vderiv_on g') s"
+  shows "((\<lambda>x. ln (g x)) has_vderiv_on (\<lambda>x. g' x / g x)) s"
+  using assms
+  unfolding has_vderiv_on_def
+  by (auto simp: has_vderiv_on_def has_field_derivative_iff_has_vector_derivative[symmetric]
+    intro!: derivative_eq_intros)
+
+
+lemma fundamental_theorem_of_calculus':
+  fixes f :: "real \<Rightarrow> 'a::banach"
+  shows "a \<le> b \<Longrightarrow> (f has_vderiv_on f') {a .. b} \<Longrightarrow> (f' has_integral (f b - f a)) {a .. b}"
+  by (auto intro!: fundamental_theorem_of_calculus simp: has_vderiv_on_def)
+
+lemma has_vderiv_on_If:
+  assumes "U = S \<union> T"
+  assumes "(f has_vderiv_on f') (S \<union> (closure T \<inter> closure S))"
+  assumes "(g has_vderiv_on g') (T \<union> (closure T \<inter> closure S))"
+  assumes "\<And>x. x \<in> closure T \<Longrightarrow> x \<in> closure S \<Longrightarrow> f x = g x"
+  assumes "\<And>x. x \<in> closure T \<Longrightarrow> x \<in> closure S \<Longrightarrow> f' x = g' x"
+  shows "((\<lambda>t. if t \<in> S then f t else g t) has_vderiv_on (\<lambda>t. if t \<in> S then f' t else g' t)) U"
+  using assms
+  by (auto simp: has_vderiv_on_def ac_simps intro!: has_vector_derivative_If split del: if_split)
+
+lemma has_vderiv_on_singleton: "(y has_vderiv_on y') {t0}"
+  by (auto simp: has_vderiv_on_def has_vector_derivative_singletonI)
+
+lemma exists_linear_continuation:
+  assumes f':"(f has_vderiv_on f') ({a .. b})"
+  shows "\<exists>fc. (\<forall>x. x \<in> {a .. b} \<longrightarrow> (fc has_vector_derivative f' x) (at x)) \<and>
+    (\<forall>x. x \<in> {a .. b} \<longrightarrow> fc x = f x)"
+proof (rule, safe)
+  fix x assume "x \<in> {a .. b}" hence "a \<le> b" by simp
+  let ?line = "\<lambda>a x. f a + (x - a) *\<^sub>R f' a"
+  let ?fc = "(\<lambda>x. if x \<in> {a .. b} then f x else if x \<in> {..a} then ?line a x else ?line b x)"
+  have [simp]:
+    "\<And>x. x \<in> {a .. b} \<Longrightarrow> (b \<le> x \<longleftrightarrow> x = b)" "\<And>x. x \<in> {a .. b} \<Longrightarrow> (x \<le> a \<longleftrightarrow> x = a)"
+    "\<And>x. x \<le> a \<Longrightarrow> (b \<le> x \<longleftrightarrow> x = b)" using \<open>a \<le> b\<close> by auto
+  note [derivative_intros] =
+    has_derivative_If_in_closed
+    f'[simplified has_vderiv_on_def has_vector_derivative_def, rule_format]
+  have "(?fc has_vector_derivative f' x) (at x within {a .. b} \<union> ({..a} \<union> {b..}))"
+    using \<open>x \<in> {a .. b}\<close> \<open>a \<le> b\<close>
+    by (force intro!: derivative_eq_intros simp: has_vector_derivative_def
+      simp del: atMost_iff atLeastAtMost_iff)
+  moreover have "{a .. b} \<union> ({..a} \<union> {b..}) = UNIV" by auto
+  ultimately show "(?fc has_vector_derivative f' x) (at x)" by simp
+  show "?fc x = f x" using \<open>x \<in> {a .. b}\<close> by simp
+qed
 
 lemma taylor_up_within:
   assumes INIT: "n>0" "\<And>t. t \<in> {a .. b} \<Longrightarrow> diff 0 t = f t"
-  and DERIV: "\<And>m t. m < n \<Longrightarrow> a \<le> t \<Longrightarrow> t \<le> b \<Longrightarrow>
-    ((diff m) has_vector_derivative (diff (Suc m) t)) (at t within {a .. b})"
+  and DERIV: "\<And>m t. m < n \<Longrightarrow> (diff m has_vderiv_on diff (Suc m)) {a .. b}"
   and INTERV: "a \<le> c" "c < b"
   shows "\<exists>t. c < t & t < b &
              f b = (\<Sum>m<n. (diff m c / (fact m)) * (b - c)^m) +
                    (diff n t / (fact n)) * (b - c)^n"
                (is "?taylor f diff")
 proof -
-  from exists_linear_continuation[of a b, OF DERIV]
+  from exists_linear_continuation[OF DERIV]
   have "\<forall>m. \<exists>d'. m < n \<longrightarrow>
     (\<forall>x \<in> {a .. b}. (d' has_vector_derivative diff (Suc m) x) (at x) \<and> d' x = diff m x)"
     by (metis atLeastAtMost_iff)
@@ -1467,8 +1783,7 @@ qed
 lemma taylor_up_within_vector:
   fixes f::"real \<Rightarrow> 'a::euclidean_space"
   assumes INIT: "n>0" "\<And>t. t \<in> {a .. b} \<Longrightarrow> diff 0 t = f t"
-  and DERIV: "\<And>m t. m < n \<Longrightarrow> a \<le> t \<Longrightarrow> t \<le> b \<Longrightarrow>
-    ((diff m) has_vector_derivative (diff (Suc m) t)) (at t within {a .. b})"
+  and DERIV: "\<And>m t. m < n \<Longrightarrow> (diff m has_vderiv_on diff (Suc m)) {a .. b}"
   and INTERV: "a \<le> c" "c < b"
   shows "\<exists>t. (\<forall>i\<in>Basis::'a set. c < t i & t i < b) \<and>
     f b = setsum (%m. (b - c)^m *\<^sub>R (diff m c /\<^sub>R (fact m))) {..<n} +
@@ -1482,9 +1797,8 @@ proof -
     fix i::'a
     assume "i \<in> Basis"
     have DERIV_0: "\<And>t. t \<in> {a .. b} \<Longrightarrow> (diff 0) t \<bullet> i = f t \<bullet> i" using INIT by simp
-    have DERIV_Suc: "\<And>m t. m < n \<Longrightarrow> a \<le> t \<Longrightarrow> t \<le> b \<Longrightarrow>
-      ((\<lambda>t. (diff m) t \<bullet> i) has_vector_derivative (diff (Suc m) t \<bullet> i)) (at t within {a .. b})"
-      using DERIV by (auto intro!: derivative_eq_intros simp: has_vector_derivative_def)
+    have DERIV_Suc: "\<And>m t. m < n \<Longrightarrow> ((\<lambda>t. (diff m) t \<bullet> i) has_vderiv_on (\<lambda>t. diff (Suc m) t \<bullet> i)) {a .. b}"
+      using DERIV by (auto intro!: derivative_eq_intros simp: has_vector_derivative_def has_vderiv_on_def)
     from taylor_up_within[OF INIT(1) DERIV_0 DERIV_Suc INTERV]
     show "\<exists>t>c. t < b \<and> f b \<bullet> i =
       (\<Sum>m<n. diff m c \<bullet> i / (fact m) * (b - c) ^ m) +
@@ -1499,22 +1813,44 @@ proof -
   finally show ?thesis using t by (auto simp: euclidean_representation)
 qed
 
-lemma mvt_closed_segmentE:
+lemma mvt_very_simple_closed_segmentE:
   fixes f::"real\<Rightarrow>real"
-  assumes "\<And>x. x \<in> closed_segment a b \<Longrightarrow>
-    (f has_vector_derivative f' x) (at x within closed_segment a b)"
+  assumes "(f has_vderiv_on f') (closed_segment a b)"
   obtains y where "y \<in> closed_segment a b"  "f b - f a = (b - a) * f' y"
 proof cases
   assume "a \<le> b"
   with mvt_very_simple[of a b f "\<lambda>x i. i *\<^sub>R f' x"] assms
   obtain y where "y \<in> closed_segment a b"  "f b - f a = (b - a) * f' y"
-    by (auto simp: has_vector_derivative_def closed_segment_real)
+    by (auto simp: has_vector_derivative_def closed_segment_real has_vderiv_on_def)
   thus ?thesis ..
 next
   assume "\<not> a \<le> b"
   with mvt_very_simple[of b a f "\<lambda>x i. i *\<^sub>R f' x"] assms
   obtain y where "y \<in> closed_segment a b"  "f b - f a = (b - a) * f' y"
-    by (force simp: has_vector_derivative_def closed_segment_real algebra_simps)
+    by (force simp: has_vector_derivative_def has_vderiv_on_def closed_segment_real algebra_simps)
+  thus ?thesis ..
+qed
+
+
+lemma mvt_simple_closed_segmentE:
+  fixes f::"real\<Rightarrow>real"
+  assumes "(f has_vderiv_on f') (closed_segment a b)"
+  assumes "a \<noteq> b"
+  obtains y where "y \<in> open_segment a b"  "f b - f a = (b - a) * f' y"
+proof cases
+  assume "a \<le> b"
+  with assms have "a < b" by simp
+  with mvt_simple[of a b f "\<lambda>x i. i *\<^sub>R f' x"] assms
+  obtain y where "y \<in> open_segment a b"  "f b - f a = (b - a) * f' y"
+    by (auto simp: has_vector_derivative_def closed_segment_real has_vderiv_on_def open_segment_real)
+  thus ?thesis ..
+next
+  assume "\<not> a \<le> b"
+  then have "b < a" by simp
+  with mvt_simple[of b a f "\<lambda>x i. i *\<^sub>R f' x"] assms
+  obtain y where "y \<in> open_segment a b"  "f b - f a = (b - a) * f' y"
+    by (force simp: has_vector_derivative_def has_vderiv_on_def closed_segment_real algebra_simps
+      open_segment_real)
   thus ?thesis ..
 qed
 
@@ -1525,10 +1861,8 @@ lemma differentiable_bound_general_open_segment:
     and f' :: "real \<Rightarrow> 'a"
   assumes "continuous_on (closed_segment a b) f"
   assumes "continuous_on (closed_segment a b) g"
-    and "\<And>x. x \<in> open_segment a b \<Longrightarrow>
-      (f has_vector_derivative f' x) (at x within open_segment a b)"
-    and "\<And>x. x \<in> open_segment a b \<Longrightarrow>
-      (g has_vector_derivative g' x) (at x within open_segment a b)"
+    and "(f has_vderiv_on f') (open_segment a b)"
+    and "(g has_vderiv_on g') (open_segment a b)"
     and "\<And>x. x \<in> open_segment a b \<Longrightarrow> norm (f' x) \<le> g' x"
   shows "norm (f b - f a) \<le> abs (g b - g a)"
 proof -
@@ -1543,7 +1877,7 @@ proof -
       and "\<And>x. x\<in>{a<..<b} \<Longrightarrow> (f has_vector_derivative f' x) (at x)"
       and "\<And>x. x\<in>{a<..<b} \<Longrightarrow> (g has_vector_derivative g' x) (at x)"
       and "\<And>x. x\<in>{a<..<b} \<Longrightarrow> norm (f' x) \<le> g' x"
-      by (auto simp: open_segment_real closed_segment_real
+      by (auto simp: open_segment_real closed_segment_real has_vderiv_on_def
         at_within_open[where S="{a<..<b}"])
     from differentiable_bound_general[OF \<open>a < b\<close> this]
     have ?thesis by auto
@@ -1555,7 +1889,7 @@ proof -
       and "\<And>x. x\<in>{b<..<a} \<Longrightarrow> (f has_vector_derivative f' x) (at x)"
       and "\<And>x. x\<in>{b<..<a} \<Longrightarrow> (g has_vector_derivative g' x) (at x)"
       and "\<And>x. x\<in>{b<..<a} \<Longrightarrow> norm (f' x) \<le> g' x"
-      by (auto simp: open_segment_real closed_segment_real
+      by (auto simp: open_segment_real closed_segment_real has_vderiv_on_def
         at_within_open[where S="{b<..<a}"])
     from differentiable_bound_general[OF \<open>b < a\<close> this]
     have "norm (f a - f b) \<le> g a - g b" by simp
@@ -1564,10 +1898,34 @@ proof -
   } ultimately show ?thesis by arith
 qed
 
-lemma has_real_derivative_continuous_on:
-  "(\<And>x. x \<in> s \<Longrightarrow> (f has_real_derivative f' x) (at x within s)) \<Longrightarrow>
-    continuous_on s f"
-  by (metis DERIV_continuous continuous_on_eq_continuous_within)
+lemma has_vderiv_on_union:
+  assumes "(f has_vderiv_on g) (s \<union> closure s \<inter> closure t)"
+  assumes "(f has_vderiv_on g) (t \<union> closure s \<inter> closure t)"
+  shows "(f has_vderiv_on g) (s \<union> t)"
+  unfolding has_vderiv_on_def
+proof
+  fix x assume "x \<in> s \<union> t"
+  with has_vector_derivative_If[of x s t "s \<union> t" f g f g] assms
+  show "(f has_vector_derivative g x) (at x within s \<union> t)"
+    by (auto simp: has_vderiv_on_def)
+qed
+
+lemma has_vderiv_on_union_closed:
+  assumes "(f has_vderiv_on g) s"
+  assumes "(f has_vderiv_on g) t"
+  assumes "closed s" "closed t"
+  shows "(f has_vderiv_on g) (s \<union> t)"
+  using assms
+  by (auto simp: Un_absorb2 intro: has_vderiv_on_union)
+
+lemma
+  has_vderiv_on_zero_constant:
+  assumes "convex s"
+  assumes "(f has_vderiv_on (\<lambda>h. 0)) s"
+  obtains c where "\<And>x. x \<in> s \<Longrightarrow> f x = c"
+  using has_vector_derivative_zero_constant[of s f] assms
+  by (auto simp: has_vderiv_on_def)
+
 
 subsection \<open>Integration\<close>
 
@@ -1694,24 +2052,380 @@ lemma integral_has_real_derivative:
   using integral_has_vector_derivative[of a b g t] assms
   by (auto simp: has_field_derivative_iff_has_vector_derivative)
 
+lemma indefinite_integral2_continuous:
+  fixes f::"real \<Rightarrow> 'a::banach"
+  assumes "f integrable_on {a..b}"
+  shows "continuous_on {a..b} (\<lambda>x. integral {x..b} f)"
+proof -
+  have *: "integral {x..b} f = integral {a .. b} f - integral {a .. x} f" if "a \<le> x" "x \<le> b" for x
+    using integral_combine[of a x b for x, OF that assms]
+    by (simp add: algebra_simps)
+  show ?thesis
+    by (subst continuous_on_cong[OF refl *])
+      (auto intro!: continuous_intros indefinite_integral_continuous assms)
+qed
+
+theorem integral2_has_vector_derivative:
+  fixes f :: "real \<Rightarrow> 'b::banach"
+  assumes "continuous_on {a..b} f"
+    and "x \<in> {a..b}"
+  shows "((\<lambda>u. integral {u..b} f) has_vector_derivative - f x) (at x within {a..b})"
+proof -
+  have *: "integral {x..b} f = integral {a .. b} f - integral {a .. x} f" if "a \<le> x" "x \<le> b" for x
+    using integral_combine[of a x b for x, OF that integrable_continuous_real[OF assms(1)]]
+    by (simp add: algebra_simps)
+  show ?thesis
+    using \<open>x \<in> _\<close>
+    by (subst has_vector_derivative_cong[OF _ * refl refl refl])
+      (auto intro!: derivative_eq_intros indefinite_integral_continuous assms
+        integral_has_vector_derivative)
+qed
+
+lemma integral_has_real_derivative_left:
+  assumes "continuous_on {a..b} g"
+  assumes "t \<in> {a..b}"
+  shows "((\<lambda>x. integral {x..b} g) has_real_derivative -g t) (at t within {a..b})"
+  using integral2_has_vector_derivative[OF assms]
+  by (auto simp: has_field_derivative_iff_has_vector_derivative)
+
+lemma integral_eucl_le:
+  fixes f g::"'a::euclidean_space \<Rightarrow> 'b::ordered_euclidean_space"
+  assumes "f integrable_on s"
+    and "g integrable_on s"
+    and "\<And>x. x \<in> s \<Longrightarrow> f x \<le> g x"
+  shows "integral s f \<le> integral s g"
+  using assms
+  by (auto intro!: integral_component_le simp: eucl_le[where 'a='b])
+
+lemma
+  integral_ivl_bound:
+  fixes l u::"'a::ordered_euclidean_space"
+  assumes "\<And>x h'. h' \<in> {t0 .. h} \<Longrightarrow> x \<in> {t0 .. h} \<Longrightarrow> (h' - t0) *\<^sub>R f x \<in> {l .. u}"
+  assumes "t0 \<le> h"
+  assumes f_int: "f integrable_on {t0 .. h}"
+  shows "integral {t0 .. h} f \<in> {l .. u}"
+proof -
+  from assms(1)[of t0 t0] assms(2) have "0 \<in> {l .. u}" by auto
+  have "integral {t0 .. h} f = integral {t0 .. h} (\<lambda>t. if t \<in> {t0, h} then 0 else f t)"
+    by (rule integral_spike[where s="{t0, h}"]) auto
+  also
+  {
+    fix x
+    assume 1: "x \<in> {t0 <..< h}"
+    with assms have "(h - t0) *\<^sub>R f x \<in> {l .. u}" by auto
+    then have "(if x \<in> {t0, h} then 0 else f x) \<in> {l /\<^sub>R (h - t0) .. u /\<^sub>R (h - t0)}"
+      using \<open>x \<in> _\<close>
+      by (auto simp: inverse_eq_divide
+        simp: eucl_le[where 'a='a] field_simps algebra_simps)
+  }
+  then have "\<dots> \<in> {integral {t0..h} (\<lambda>_. l /\<^sub>R (h - t0)) .. integral {t0..h} (\<lambda>_. u /\<^sub>R (h - t0))}"
+    unfolding atLeastAtMost_iff
+    apply (safe intro!: integral_eucl_le)
+    using \<open>0 \<in> {l .. u}\<close>
+    apply (auto intro!: assms
+      intro: integrable_continuous_real  integrable_spike[where s="{t0, h}", OF _ _ f_int] 
+      simp: eucl_le[where 'a='a] divide_simps
+      split: if_split_asm)
+    done
+  also have "\<dots> \<subseteq> {l .. u}"
+    using assms \<open>0 \<in> {l .. u}\<close>
+    by (auto simp: inverse_eq_divide)
+  finally show ?thesis .
+qed
+
+lemma
+  add_integral_ivl_bound:
+  fixes l u::"'a::ordered_euclidean_space"
+  assumes "\<And>x h'. h' \<in> {t0 .. h} \<Longrightarrow> x \<in> {t0 .. h} \<Longrightarrow> (h' - t0) *\<^sub>R f x \<in> {l - x0 .. u - x0}"
+  assumes "t0 \<le> h"
+  assumes f_int: "f integrable_on {t0 .. h}"
+  shows "x0 + integral {t0 .. h} f \<in> {l .. u}"
+  using integral_ivl_bound[OF assms]
+  by (auto simp: algebra_simps)
+
+
+subsection \<open>interval integral\<close>
+  \<comment>\<open>TODO: move to repo ?!\<close>
+  \<comment>\<open>TODO: replace with Bochner Integral?!
+           But FTC for Bochner requires continuity and euclidean space!\<close>
+
+definition has_ivl_integral ::
+    "(real \<Rightarrow> 'b::real_normed_vector) \<Rightarrow> 'b \<Rightarrow> real \<Rightarrow> real \<Rightarrow> bool"\<comment>\<open>TODO: generalize?\<close>
+  (infixr "has'_ivl'_integral" 46)
+  where "(f has_ivl_integral y) a b \<longleftrightarrow> (if a \<le> b then (f has_integral y) {a .. b} else (f has_integral - y) {b .. a})"
+
+definition ivl_integral::"real \<Rightarrow> real \<Rightarrow> (real \<Rightarrow> 'a) \<Rightarrow> 'a::real_normed_vector"
+  where "ivl_integral a b f = integral {a .. b} f - integral {b .. a} f"
+
+lemma integral_emptyI[simp]:
+  fixes a b::real
+  shows  "a \<ge> b \<Longrightarrow> integral {a..b} f = 0" "a > b \<Longrightarrow> integral {a..b} f = 0"
+  by (cases "a = b") auto
+
+lemma ivl_integral_unique: "(f has_ivl_integral y) a b \<Longrightarrow> ivl_integral a b f = y"
+  using integral_unique[of f y "{a .. b}"] integral_unique[of f "- y" "{b .. a}"]
+  unfolding ivl_integral_def has_ivl_integral_def
+  by (auto split: if_split_asm)
+
+lemma fundamental_theorem_of_calculus_ivl_integral:
+  fixes f :: "real \<Rightarrow> 'a::banach"
+  shows "(f has_vderiv_on f') (closed_segment a b) \<Longrightarrow> (f' has_ivl_integral f b - f a) a b"
+  by (auto simp: has_ivl_integral_def closed_segment_real intro!: fundamental_theorem_of_calculus')
+
+lemma
+  fixes f :: "real \<Rightarrow> 'a::banach"
+  assumes "f integrable_on (closed_segment a b)"
+  shows indefinite_ivl_integral_continuous:
+    "continuous_on (closed_segment a b) (\<lambda>x. ivl_integral a x f)"
+    "continuous_on (closed_segment b a) (\<lambda>x. ivl_integral a x f)"
+  using assms
+  by (auto simp: ivl_integral_def closed_segment_real split: if_split_asm
+    intro!: indefinite_integral_continuous indefinite_integral2_continuous
+      continuous_intros intro: continuous_on_eq)
+
+lemma
+  fixes f :: "real \<Rightarrow> 'a::banach"
+  assumes "f integrable_on (closed_segment a b)"
+  assumes "c \<in> closed_segment a b"
+  shows indefinite_ivl_integral_continuous_subset:
+    "continuous_on (closed_segment a b) (\<lambda>x. ivl_integral c x f)"
+proof -
+  from assms have "f integrable_on {c--a}" "f integrable_on {c--b}"
+    by (auto simp: closed_segment_real integrable_on_subinterval split: if_splits)
+  then have "continuous_on (closed_segment a c \<union> closed_segment c b) (\<lambda>x. ivl_integral c x f)"
+    by (auto intro!: indefinite_ivl_integral_continuous continuous_on_closed_Un)
+  also have "closed_segment a c \<union> closed_segment c b = closed_segment a b"
+    using assms by (auto simp: closed_segment_real)
+  finally show ?thesis .
+qed
+
+lemma real_Icc_closed_segment: fixes a b::real shows "a \<le> b \<Longrightarrow> {a .. b} = closed_segment a b"
+  by (auto simp: closed_segment_real)
+
+lemma ivl_integral_zero[simp]: "ivl_integral a a f = 0"
+  by (auto simp: ivl_integral_def)
+
+lemma ivl_integral_cong:
+  assumes "\<And>x. x \<in> closed_segment a b \<Longrightarrow> g x = f x"
+  assumes "a = c" "b = d"
+  shows "ivl_integral a b f = ivl_integral c d g"
+  using assms integral_spike[of "{}" "closed_segment a b" f g]
+  by (auto simp: ivl_integral_def closed_segment_real split: if_split_asm)
+
+lemma ivl_integral_diff:
+  "f integrable_on (closed_segment s t) \<Longrightarrow> g integrable_on (closed_segment s t) \<Longrightarrow>
+    ivl_integral s t (\<lambda>x. f x - g x) = ivl_integral s t f - ivl_integral s t g"
+  using integral_diff[of f "closed_segment s t" g]
+  by (auto simp: ivl_integral_def closed_segment_real split: if_split_asm)
+
+lemma ivl_integral_norm_bound_ivl_integral:
+  fixes f :: "real \<Rightarrow> 'a::banach"
+  assumes "f integrable_on (closed_segment a b)"
+    and "g integrable_on (closed_segment a b)"
+    and "\<forall>x\<in>closed_segment a b. norm (f x) \<le> g x"
+  shows "norm (ivl_integral a b f) \<le> abs (ivl_integral a b g)"
+  using integral_norm_bound_integral[OF assms]
+  by (auto simp: ivl_integral_def closed_segment_real split: if_split_asm)
+
+lemma ivl_integral_norm_bound_integral:
+  fixes f :: "real \<Rightarrow> 'a::banach"
+  assumes "f integrable_on (closed_segment a b)"
+    and "g integrable_on (closed_segment a b)"
+    and "\<forall>x\<in>closed_segment a b. norm (f x) \<le> g x"
+  shows "norm (ivl_integral a b f) \<le> integral {a -- b} g"
+  using integral_norm_bound_integral[OF assms]
+  by (auto simp: ivl_integral_def closed_segment_real split: if_split_asm)
+
+lemma norm_ivl_integral_le:
+  fixes f :: "real \<Rightarrow> real"
+  assumes "f integrable_on (closed_segment a b)"
+    and "g integrable_on (closed_segment a b)"
+    and "\<forall>x\<in>closed_segment a b. f x \<le> g x"
+    and "\<forall>x\<in>closed_segment a b. 0 \<le> f x"
+  shows "abs (ivl_integral a b f) \<le> abs (ivl_integral a b g)"
+  using integral_le[OF assms(1-3)]
+  unfolding ivl_integral_def closed_segment_real
+  apply (split if_split_asm)
+  subgoal by (simp add: assms(1) assms(4) integral_nonneg real_Icc_closed_segment)
+  subgoal using assms
+    by (cases "a = b") (auto simp: integral_nonneg simp: closed_segment_real)
+  done
+
+lemma ivl_integral_const [simp]:
+  shows "ivl_integral a b (\<lambda>x. c) = (b - a) *\<^sub>R c"
+  by (auto simp: ivl_integral_def algebra_simps)
+
+lemma ivl_integral_has_vector_derivative:
+  fixes f :: "real \<Rightarrow> 'a::banach"
+  assumes "continuous_on (closed_segment a b) f"
+    and "x \<in> closed_segment a b"
+  shows "((\<lambda>u. ivl_integral a u f) has_vector_derivative f x) (at x within closed_segment a b)"
+proof -
+  have "((\<lambda>x. integral {x..a} f) has_vector_derivative 0) (at x within {a..b})" if "a \<le> x" "x \<le> b"
+    using assms that
+    by (subst has_vector_derivative_cong) auto
+  moreover
+  have "((\<lambda>x. integral {a..x} f) has_vector_derivative 0) (at x within {b..a})" if "b \<le> x" "x \<le> a"
+    using assms that
+    by (subst has_vector_derivative_cong) auto
+  ultimately
+  show ?thesis
+    using assms
+    by (auto simp: ivl_integral_def closed_segment_real
+        intro!: derivative_eq_intros
+        integral_has_vector_derivative[of a b f] integral_has_vector_derivative[of b a "-f"]
+        integral2_has_vector_derivative[of b a f])
+qed
+
+lemma ivl_integral_has_vderiv_on:
+  fixes f :: "real \<Rightarrow> 'a::banach"
+  assumes "continuous_on {a -- b} f"
+  shows "((\<lambda>u. ivl_integral a u f) has_vderiv_on f) {a -- b}"
+  using ivl_integral_has_vector_derivative[OF assms]
+  by (auto simp: has_vderiv_on_def)
+
+lemma ivl_integral_has_vderiv_on_subset:
+  fixes f :: "real \<Rightarrow> 'a::banach"
+  assumes "continuous_on (closed_segment a b) f"
+    and "c \<in> closed_segment a b"
+  shows "((\<lambda>u. ivl_integral c u f) has_vderiv_on f) {a -- b}"
+proof -
+  have "{c--a} \<subseteq> {a -- b}" "{c--b} \<subseteq> {a -- b}"
+    using assms by (auto simp: closed_segment_real split: if_splits)
+  then have "((\<lambda>u. ivl_integral c u f) has_vderiv_on f) ({c -- a} \<union> {c -- b})"
+    by (auto intro!: has_vderiv_on_union_closed ivl_integral_has_vderiv_on assms
+      intro: continuous_on_subset)
+  also have "{c -- a} \<union> {c -- b} = {a -- b}"
+    using assms by (auto simp: closed_segment_real split: if_splits)
+  finally show ?thesis .
+qed
+
+lemma ivl_integral_has_vector_derivative_subset:
+  fixes f :: "real \<Rightarrow> 'a::banach"
+  assumes "continuous_on (closed_segment a b) f"
+    and "x \<in> closed_segment a b"
+    and "c \<in> closed_segment a b"
+  shows "((\<lambda>u. ivl_integral c u f) has_vector_derivative f x) (at x within closed_segment a b)"
+  using ivl_integral_has_vderiv_on_subset[OF assms(1)] assms(2-)
+  by (auto simp: has_vderiv_on_def)
+
+lemma ivl_integral_combine:
+  fixes f::"real \<Rightarrow> 'a::banach"
+  assumes "f integrable_on (closed_segment a b)"
+  assumes "f integrable_on (closed_segment b c)"
+  assumes "f integrable_on (closed_segment a c)"
+  shows "ivl_integral a b f + ivl_integral b c f = ivl_integral a c f"
+proof -
+  show ?thesis
+    using assms
+      integral_combine[of a b c f]
+      integral_combine[of a c b f]
+      integral_combine[of b a c f]
+      integral_combine[of b c a f]
+      integral_combine[of c a b f]
+      integral_combine[of c b a f]
+    by (cases "a \<le> b"; cases "b \<le> c"; cases "a \<le> c")
+       (auto simp: algebra_simps ivl_integral_def closed_segment_real)
+qed
+
+lemma integral_equation_swap_initial_value:
+  fixes x::"real\<Rightarrow>'a::banach"
+  assumes "\<And>t. t \<in> closed_segment t0 t1 \<Longrightarrow> x t = x t0 + ivl_integral t0 t (\<lambda>t. f t (x t))"
+  assumes t: "t \<in> closed_segment t0 t1"
+  assumes int: "(\<lambda>t. f t (x t)) integrable_on closed_segment t0 t1"
+  shows "x t = x t1 + ivl_integral t1 t (\<lambda>t. f t (x t))"
+proof -
+  from t int have "(\<lambda>t. f t (x t)) integrable_on closed_segment t0 t"
+    "(\<lambda>t. f t (x t)) integrable_on closed_segment t t1"
+    by (auto intro: integrable_on_subinterval simp: closed_segment_real split: if_split_asm)
+  with assms(1)[of t] assms(2-)
+  have "x t - x t0 = ivl_integral t0 t1 (\<lambda>t. f t (x t)) + ivl_integral t1 t (\<lambda>t. f t (x t))"
+    by (subst ivl_integral_combine) (auto simp: closed_segment_commute)
+  then have "x t + x t1 - (x t0 + ivl_integral t0 t1 (\<lambda>t. f t (x t))) =
+    x t1 + ivl_integral t1 t (\<lambda>t. f t (x t))"
+    by (simp add: algebra_simps)
+  also have "x t0 + ivl_integral t0 t1 (\<lambda>t. f t (x t)) = x t1"
+    by (auto simp: assms(1)[symmetric])
+  finally show ?thesis  by simp
+qed
+
+lemma has_integral_nonpos:
+  fixes f :: "'n::euclidean_space \<Rightarrow> real"
+  assumes "(f has_integral i) s"
+    and "\<forall>x\<in>s. f x \<le> 0"
+  shows "i \<le> 0"
+  by (rule has_integral_nonneg[of "-f" "-i" s, simplified])
+    (auto intro!: has_integral_neg simp: fun_Compl_def assms)
+
+lemma has_ivl_integral_nonneg:
+  fixes f :: "real \<Rightarrow> real"
+  assumes "(f has_ivl_integral i) a b"
+    and "\<And>x. a \<le> x \<Longrightarrow> x \<le> b \<Longrightarrow> 0 \<le> f x"
+    and "\<And>x. b \<le> x \<Longrightarrow> x \<le> a \<Longrightarrow> f x \<le> 0"
+  shows "0 \<le> i"
+  using assms has_integral_nonneg[of f i "{a .. b}"] has_integral_nonpos[of f "-i" "{b .. a}"]
+  by (auto simp: has_ivl_integral_def Ball_def not_le split: if_split_asm)
+
+lemma has_ivl_integral_ivl_integral:
+  "f integrable_on {a -- b} \<longleftrightarrow> (f has_ivl_integral (ivl_integral a b f)) a b"
+  using has_integral_integral[of f "{a -- b}"]
+  by (auto simp: closed_segment_real has_ivl_integral_def ivl_integral_def)
+
+lemma ivl_integral_nonneg:
+  fixes f :: "real \<Rightarrow> real"
+  assumes "f integrable_on {a -- b}"
+    and "\<And>x. a \<le> x \<Longrightarrow> x \<le> b \<Longrightarrow> 0 \<le> f x"
+    and "\<And>x. b \<le> x \<Longrightarrow> x \<le> a \<Longrightarrow> f x \<le> 0"
+  shows "0 \<le> ivl_integral a b f"
+  by (rule has_ivl_integral_nonneg[OF assms(1)[unfolded has_ivl_integral_ivl_integral] assms(2-3)])
+
+lemma ivl_integral_bound:
+  fixes f::"real \<Rightarrow> 'a::banach"
+  assumes "continuous_on {a -- b} f"
+  assumes "\<And>t. t \<in> {a -- b} \<Longrightarrow> norm (f t) \<le> B"
+  shows "norm (ivl_integral a b f) \<le> B * abs (b - a)"
+  using integral_bound[of a b f B]
+    integral_bound[of b a f B]
+    assms
+  by (auto simp: closed_segment_real has_ivl_integral_def ivl_integral_def split: if_splits)
+
+lemma ivl_integral_minus_sets:
+  fixes f::"real \<Rightarrow> 'a::banach"
+  shows "f integrable_on {c -- a} \<Longrightarrow> f integrable_on {c -- b} \<Longrightarrow> f integrable_on {a -- b} \<Longrightarrow>
+    ivl_integral c a f - ivl_integral c b f = ivl_integral b a f"
+  using ivl_integral_combine[of f c b a]
+  by (auto simp: algebra_simps closed_segment_commute)
+
+lemma ivl_integral_minus_sets':
+  fixes f::"real \<Rightarrow> 'a::banach"
+  shows "f integrable_on {a -- c} \<Longrightarrow> f integrable_on {b -- c} \<Longrightarrow> f integrable_on {a -- b} \<Longrightarrow>
+    ivl_integral a c f - ivl_integral b c f = ivl_integral a b f"
+  using ivl_integral_combine[of f a b c]
+  by (auto simp: algebra_simps closed_segment_commute)
+
+
+subsection \<open>Gronwall\<close>
+
 lemma derivative_quotient_bound:
-  assumes g_deriv: "\<And>t. t \<in> {a .. b} \<Longrightarrow>
-    (g has_real_derivative g' t) (at t within {a .. b})"
+  assumes g_deriv_on: "(g has_vderiv_on g') {a .. b}"
   assumes frac_le: "\<And>t. t \<in> {a .. b} \<Longrightarrow> g' t / g t \<le> K"
   assumes g'_cont: "continuous_on {a .. b} g'"
   assumes g_pos: "\<And>t. t \<in> {a .. b} \<Longrightarrow> g t > 0"
   assumes t_in: "t \<in> {a .. b}"
   shows "g t \<le> g a * exp (K * (t - a))"
 proof -
+  have g_deriv: "\<And>t. t \<in> {a .. b} \<Longrightarrow> (g has_real_derivative g' t) (at t within {a .. b})"
+    using g_deriv_on
+    by (auto simp: has_vderiv_on_def has_field_derivative_iff_has_vector_derivative[symmetric])
   from assms have g_nonzero: "\<And>t. t \<in> {a .. b} \<Longrightarrow> g t \<noteq> 0"
     by fastforce
   have frac_integrable: "\<And>t. t \<in> {a .. b} \<Longrightarrow> (\<lambda>t. g' t / g t) integrable_on {a..t}"
     by (force simp: g_nonzero intro: assms has_field_derivative_subset[OF g_deriv]
       continuous_on_subset[OF g'_cont] continuous_intros
-      has_real_derivative_continuous_on)
+      continuous_on_subset[OF vderiv_on_continuous_on[OF g_deriv_on]])
   have "\<And>t. t \<in> {a..b} \<Longrightarrow> ((\<lambda>t. g' t / g t) has_integral ln (g t) - ln (g a)) {a .. t}"
     by (rule fundamental_theorem_of_calculus)
-      (auto intro!: derivative_eq_intros assms has_field_derivative_subset[OF assms(1)]
+      (auto intro!: derivative_eq_intros assms has_field_derivative_subset[OF g_deriv]
         simp: has_field_derivative_iff_has_vector_derivative[symmetric])
   hence *: "\<And>t. t \<in> {a .. b} \<Longrightarrow> ln (g t) - ln (g a) = integral {a .. t} (\<lambda>t. g' t / g t)"
     using integrable_integral[OF frac_integrable]
@@ -1732,23 +2446,25 @@ proof -
 qed
 
 lemma derivative_quotient_bound_left:
-  assumes g_deriv: "\<And>t. t \<in> {a .. b} \<Longrightarrow>
-    (g has_real_derivative g' t) (at t within {a .. b})"
+  assumes g_deriv_on: "(g has_vderiv_on g') {a .. b}"
   assumes frac_ge: "\<And>t. t \<in> {a .. b} \<Longrightarrow> K \<le> g' t / g t"
   assumes g'_cont: "continuous_on {a .. b} g'"
   assumes g_pos: "\<And>t. t \<in> {a .. b} \<Longrightarrow> g t > 0"
   assumes t_in: "t \<in> {a..b}"
   shows "g t \<le> g b * exp (K * (t - b))"
 proof -
+  have g_deriv: "\<And>t. t \<in> {a .. b} \<Longrightarrow> (g has_real_derivative g' t) (at t within {a .. b})"
+    using g_deriv_on
+    by (auto simp: has_vderiv_on_def has_field_derivative_iff_has_vector_derivative[symmetric])
   from assms have g_nonzero: "\<And>t. t \<in> {a..b} \<Longrightarrow> g t \<noteq> 0"
     by fastforce
   have frac_integrable: "\<And>t. t \<in> {a .. b} \<Longrightarrow> (\<lambda>t. g' t / g t) integrable_on {t..b}"
     by (force simp: g_nonzero intro: assms has_field_derivative_subset[OF g_deriv]
       continuous_on_subset[OF g'_cont] continuous_intros
-      has_real_derivative_continuous_on)
+      continuous_on_subset[OF vderiv_on_continuous_on[OF g_deriv_on]])
   have "\<And>t. t \<in> {a..b} \<Longrightarrow> ((\<lambda>t. g' t / g t) has_integral ln (g b) - ln (g t)) {t..b}"
     by (rule fundamental_theorem_of_calculus)
-      (auto intro!: derivative_eq_intros assms has_field_derivative_subset[OF assms(1)]
+      (auto intro!: derivative_eq_intros assms has_field_derivative_subset[OF g_deriv]
         simp: has_field_derivative_iff_has_vector_derivative[symmetric])
   hence *: "\<And>t. t \<in> {a..b} \<Longrightarrow> ln (g b) - ln (g t) = integral {t..b} (\<lambda>t. g' t / g t)"
     using integrable_integral[OF frac_integrable]
@@ -1785,13 +2501,14 @@ lemma gronwall_general:
   shows "g t \<le> C * exp (K * (t - a))"
 proof -
   have G_pos: "\<And>t. t \<in> {a..b} \<Longrightarrow> 0 < G t"
-    by (auto simp: G_def intro!: add_pos_nonneg mult_nonneg_nonneg integral_nonneg
+    by (auto simp: G_def intro!: add_pos_nonneg mult_nonneg_nonneg Integration.integral_nonneg
       integrable_continuous_real assms intro: less_imp_le continuous_on_subset)
   have "g t \<le> G t" using assms by auto
   also
   {
-    have "\<And>t. t \<in> {a..b} \<Longrightarrow> (G has_real_derivative K * g t) (at t within {a..b})"
-      by (auto intro!: derivative_eq_intros integral_has_real_derivative g_cont simp add: G_def)
+    have "(G has_vderiv_on (\<lambda>t. K * g t)) {a..b}"
+      by (auto intro!: derivative_eq_intros integral_has_vector_derivative g_cont
+        simp add: G_def has_vderiv_on_def)
     moreover
     {
       fix t assume "t \<in> {a..b}"
@@ -1813,42 +2530,6 @@ proof -
     by simp
 qed
 
-lemma indefinite_integral2_continuous:
-  fixes f::"real \<Rightarrow> 'a::banach"
-  assumes "f integrable_on {a..b}"
-  shows "continuous_on {a..b} (\<lambda>x. integral {x..b} f)"
-proof -
-  have *: "integral {x..b} f = integral {a .. b} f - integral {a .. x} f" if "a \<le> x" "x \<le> b" for x
-    using integral_combine[of a x b for x, OF that assms]
-    by (simp add: algebra_simps)
-  show ?thesis
-    by (subst continuous_on_cong[OF refl *])
-      (auto intro!: continuous_intros indefinite_integral_continuous assms)
-qed
-
-theorem integral2_has_vector_derivative:
-  fixes f :: "real \<Rightarrow> 'b::banach" 
-  assumes "continuous_on {a..b} f"
-    and "x \<in> {a..b}"
-  shows "((\<lambda>u. integral {u..b} f) has_vector_derivative - f x) (at x within {a..b})"
-proof -
-  have *: "integral {x..b} f = integral {a .. b} f - integral {a .. x} f" if "a \<le> x" "x \<le> b" for x
-    using integral_combine[of a x b for x, OF that integrable_continuous_real[OF assms(1)]]
-    by (simp add: algebra_simps)
-  show ?thesis
-    using \<open>x \<in> _\<close>
-    by (subst has_vector_derivative_cong[OF _ * refl refl refl])
-      (auto intro!: derivative_eq_intros indefinite_integral_continuous assms
-        integral_has_vector_derivative)
-qed
-
-lemma integral_has_real_derivative_left:
-  assumes "continuous_on {a..b} g"
-  assumes "t \<in> {a..b}"
-  shows "((\<lambda>x. integral {x..b} g) has_real_derivative -g t) (at t within {a..b})"
-  using integral2_has_vector_derivative[OF assms]
-  by (auto simp: has_field_derivative_iff_has_vector_derivative)
-
 lemma gronwall_general_left:
   fixes g K C a b and t::real
   defines "G \<equiv> \<lambda>t. C + K * integral {t..b} (\<lambda>s. g s)"
@@ -1860,13 +2541,14 @@ lemma gronwall_general_left:
   shows "g t \<le> C * exp (-K * (t - b))"
 proof -
   have G_pos: "\<And>t. t \<in> {a..b} \<Longrightarrow> 0 < G t"
-    by (auto simp: G_def intro!: add_pos_nonneg mult_nonneg_nonneg integral_nonneg
+    by (auto simp: G_def intro!: add_pos_nonneg mult_nonneg_nonneg Integration.integral_nonneg
       integrable_continuous_real assms intro: less_imp_le continuous_on_subset)
   have "g t \<le> G t" using assms by auto
   also
   {
-    have abc: "\<And>t. t \<in> {a..b} \<Longrightarrow> (G has_real_derivative -K * g t) (at t within {a..b})"
-      by (auto intro!: derivative_eq_intros integral_has_real_derivative_left g_cont simp add: G_def)
+    have "(G has_vderiv_on (\<lambda>t. -K * g t)) {a..b}"
+      by (auto intro!: derivative_eq_intros integral2_has_vector_derivative g_cont
+        simp add: G_def has_vderiv_on_def)
     moreover
     {
       fix t assume "t \<in> {a..b}"
@@ -2009,7 +2691,7 @@ proof -
     by (auto intro!: integrable_continuous_real continuous_intros)
   hence "integral {a..b} (\<lambda>x. F x *\<^sub>R g x) + integral {a..b} (\<lambda>x. f x *\<^sub>R G x) =
       integral {a..b} (\<lambda>x. F x *\<^sub>R g x + f x *\<^sub>R G x)"
-    by (rule integral_add[symmetric])
+    by (rule Integration.integral_add[symmetric])
   also
   note prod = has_vector_derivative_scaleR[OF f g, rule_format]
   have "((\<lambda>x. F x *\<^sub>R g x + f x *\<^sub>R G x) has_integral F b *\<^sub>R G b - F a *\<^sub>R G a) {a..b}"
@@ -2026,14 +2708,6 @@ qed
 
 
 subsection \<open>conditionally complete lattice\<close>
-
-lemma bounded_imp_bdd_above:
-  "bounded S \<Longrightarrow> bdd_above (S :: 'a::ordered_euclidean_space set)"
-  by (auto intro: bdd_above_mono dest!: bounded_subset_cbox)
-
-lemma bounded_imp_bdd_below:
-  "bounded S \<Longrightarrow> bdd_below (S :: 'a::ordered_euclidean_space set)"
-  by (auto intro: bdd_below_mono dest!: bounded_subset_cbox)
 
 lemma bdd_above_cmult:
   "0 \<le> (a :: 'a :: ordered_semiring) \<Longrightarrow> bdd_above S \<Longrightarrow>
@@ -2079,6 +2753,34 @@ lemma (in conditionally_complete_lattice) Sup_set_fold_sup:
   shows "Sup (set (x#xs)) = fold sup xs x"
   using local.Sup_fin.set_eq_fold local.cSup_eq_Sup_fin by auto
 
+lemma closure_contains_Sup:\<comment>\<open>TODO: reduce to @{thm closure_contains_Inf}, move!\<close>
+  fixes S :: "real set"
+  assumes "S \<noteq> {}" "bdd_above S"
+  shows "Sup S \<in> closure S"
+proof -
+  have *: "\<forall>x\<in>S. x \<le> Sup S"
+    using cSup_upper[of _ S] assms by metis
+  {
+    fix e :: real
+    assume "e > 0"
+    then have "Sup S - e < Sup S" by simp
+    from less_cSupE[OF this \<open>S \<noteq> {}\<close>] obtain x where "x \<in> S" "Sup S - e < x" .
+    with * have "\<exists>x\<in>S. dist x (Sup S) < e"
+      by (intro bexI[of _ x]) (auto simp add: dist_real_def)
+  }
+  then show ?thesis unfolding closure_approachable by auto
+qed
+
+lemma closed_contains_Sup:
+  fixes S :: "real set"
+  shows "S \<noteq> {} \<Longrightarrow> bdd_above S \<Longrightarrow> closed S \<Longrightarrow> Sup S \<in> S"
+  by (metis closure_contains_Sup closure_closed)
+
+lemma closed_subset_contains_Sup:
+  fixes A C :: "real set"
+  shows "closed C \<Longrightarrow> A \<subseteq> C \<Longrightarrow> A \<noteq> {} \<Longrightarrow> bdd_above A \<Longrightarrow> Sup A \<in> C"
+  by (metis closure_contains_Sup closure_minimal subset_eq)
+
 
 subsection \<open>Banach on type class\<close>
 
@@ -2111,16 +2813,20 @@ lemma trunc_err_eq:
 
 lemma trunc_err_le:
   "abs (trunc_err p f) \<le> snd (trunc p f)"
-  apply (auto simp: trunc_err_def trunc_def Let_def)
-   apply (metis truncate_up)
-  by (metis abs_minus_commute truncate_up)
+  by (auto simp: trunc_err_def trunc_def Let_def abs_minus_commute
+      intro: truncate_up abs_minus_commute)
+
+lemma truncate_down_err_eq_0I: "truncate_up p \<bar>f - truncate_down p f\<bar> = 0 \<Longrightarrow> truncate_down p f = f"
+  by (metis abs_le_zero_iff eq_iff_diff_eq_0 truncate_up)
+
+lemma truncate_up_err_eq_0I: "truncate_up p \<bar>truncate_up p f - f\<bar> = 0 \<Longrightarrow> truncate_up p f = f"
+  by (metis abs_le_zero_iff eq_iff_diff_eq_0 truncate_up)
 
 lemma trunc_err_eq_zero_iff:
   "trunc_err p f = 0 \<longleftrightarrow> snd (trunc p f) = 0"
-  apply (auto simp: trunc_err_def trunc_def Let_def)
-   apply (metis abs_le_zero_iff eq_iff_diff_eq_0 truncate_up)
-  apply (metis abs_le_zero_iff eq_iff_diff_eq_0 truncate_up)
-  done
+  unfolding trunc_err_def trunc_def Let_def
+  using truncate_down_err_eq_0I[of p f] truncate_up_err_eq_0I[of p f]
+  by auto
 
 lemma mantissa_Float_0[simp]: "mantissa (Float 0 e) = 0"
   by (metis real_of_float_inverse float_zero mantissa_eq_zero_iff zero_float_def)
@@ -2138,6 +2844,40 @@ proof -
   also have "\<dots> \<le> listsum (map f xs)"
     by (rule listsum_mono) (rule assms)
   finally show ?thesis .
+qed
+
+lemma
+  Ball_set_Cons[simp]: "(\<forall>a\<in>set_Cons x y. P a) \<longleftrightarrow> (\<forall>a\<in>x. \<forall>b\<in>y. P (a#b))"
+  by (auto simp: set_Cons_def)
+
+lemma set_cons_eq_empty[iff]: "set_Cons a b = {} \<longleftrightarrow> a = {} \<or> b = {}"
+  by (auto simp: set_Cons_def)
+
+lemma listset_eq_empty_iff[iff]: "listset XS = {} \<longleftrightarrow> {} \<in> set XS"
+  by (induction XS) auto
+
+lemma sing_in_sings[simp]: "[x] \<in> (\<lambda>x. [x]) ` xd \<longleftrightarrow> x \<in> xd"
+  by auto
+
+lemma those_eq_None_set_iff: "those xs = None \<longleftrightarrow> None \<in> set xs"
+  by (induction xs) (auto split: option.split)
+
+lemma those_eq_Some_lengthD: "those xs = Some ys \<Longrightarrow> length xs = length ys"
+  by (induction xs arbitrary: ys) (auto split: option.splits)
+
+lemma those_eq_Some_map_Some_iff: "those xs = Some ys \<longleftrightarrow> (xs = map Some ys)" (is "?l \<longleftrightarrow> ?r")
+proof safe
+  assume ?l
+  then have "length xs = length ys"
+    by (rule those_eq_Some_lengthD)
+  then show ?r using \<open>?l\<close>
+    by (induction xs ys rule: list_induct2) (auto split: option.splits)
+next
+  assume ?r
+  then have "length xs = length ys"
+    by simp
+  then show "those (map Some ys) = Some ys" using \<open>?r\<close>
+    by (induction xs ys rule: list_induct2) (auto split: option.splits)
 qed
 
 
@@ -2171,6 +2911,8 @@ lemmas bounded_linear_uniform_limit_intros[uniform_limit_intros] =
   bounded_linear.uniform_limit[OF bounded_linear_apply_blinfun]
   bounded_linear.uniform_limit[OF bounded_linear_blinfun_matrix]
 
+lemmas uniform_limit_subset_union = uniform_limit_on_subset[OF uniform_limit_on_union]
+
 subsection \<open>Bounded Linear Functions\<close>
 
 lift_definition comp3::\<comment>\<open>TODO: name?\<close>
@@ -2193,5 +2935,47 @@ lift_definition comp12::\<comment>\<open>TODO: name?\<close>
 
 lemma blinfun_apply_comp12[simp]: "blinfun_apply (comp12 f g) b = f (fst b) + g (snd b)"
   by (simp add: comp12.rep_eq split_beta)
+
+
+subsection \<open>point reflection\<close>
+
+definition preflect::"'a::real_vector \<Rightarrow> 'a \<Rightarrow> 'a" where "preflect \<equiv> \<lambda>t0 t. 2 *\<^sub>R t0 - t"
+
+lemma preflect_preflect[simp]: "preflect t0 (preflect t0 t) = t"
+  by (simp add: preflect_def algebra_simps)
+
+lemma preflect_preflect_image[simp]: "preflect t0 ` preflect t0 ` S = S"
+  by (simp add: image_image)
+
+lemma is_interval_preflect[simp]: "is_interval (preflect t0 ` S) \<longleftrightarrow> is_interval S"
+  by (auto simp: preflect_def[abs_def])
+
+lemma iv_in_preflect_image[intro, simp]: "t0 \<in> T \<Longrightarrow> t0 \<in> preflect t0 ` T"
+  by (auto intro!: image_eqI simp: preflect_def algebra_simps scaleR_2)
+
+lemma preflect_tendsto[tendsto_intros]:
+  fixes l::"'a::real_normed_vector"
+  shows "(g \<longlongrightarrow> l) F \<Longrightarrow> (h \<longlongrightarrow> m) F \<Longrightarrow> ((\<lambda>x. preflect (g x) (h x)) \<longlongrightarrow> preflect l m) F"
+  by (auto intro!: tendsto_eq_intros simp: preflect_def)
+
+lemma continuous_preflect[continuous_intros]:
+  fixes a::"'a::real_normed_vector"
+  shows "continuous (at a within A) (preflect t0)"
+  by (auto simp: continuous_within intro!: tendsto_intros)
+
+lemma
+  fixes t0::"'a::ordered_real_vector"
+  shows preflect_le[simp]: "t0 \<le> preflect t0 b \<longleftrightarrow> b \<le> t0"
+    and le_preflect[simp]: "preflect t0 b \<le> t0 \<longleftrightarrow> t0 \<le> b"
+    and antimono_preflect: "antimono (preflect t0)"
+    and preflect_le_preflect[simp]: "preflect t0 a \<le> preflect t0 b \<longleftrightarrow> b \<le> a"
+    and preflect_eq_cancel[simp]: "preflect t0 a = preflect t0 b \<longleftrightarrow> a = b"
+  by (auto intro!: antimonoI simp: preflect_def scaleR_2)
+
+lemma preflect_eq_point_iff[simp]: "t0 = preflect t0 s \<longleftrightarrow> t0 = s" "preflect t0 s = t0 \<longleftrightarrow> t0 = s"
+  by (auto simp: preflect_def algebra_simps scaleR_2)
+
+lemma preflect_minus_self[simp]: "preflect t0 s - t0 = t0 - s"
+  by (simp add: preflect_def scaleR_2)
 
 end

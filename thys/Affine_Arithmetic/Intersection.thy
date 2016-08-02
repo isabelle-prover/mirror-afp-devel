@@ -2060,7 +2060,7 @@ lemma intersect_segment_xline_eq_empty:
   shows "intersect_segment_xline prec (p0, p1) x = None"
   using assms
   by (cases p0, cases p1)
-    (auto simp: inter_image_empty_iff closed_segment_real split: if_split_asm)
+    (auto simp: inter_image_empty_iff closed_segment_eq_real_ivl split: if_split_asm)
 
 lemma intersect_segment_xline_le:
   assumes "intersect_segment_xline prec y xl = Some (m0, M0)"

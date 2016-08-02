@@ -41,20 +41,20 @@ lemmas [euclidean_Basis] =
   refl
   one_neq_zero
 
-lemmas [euclidean_Outer] =
-  inner_prod_def
-  inner_real_def
-
-lemmas [euclidean_Inner] = plus_prod_def scaleR_prod_def fst_conv snd_conv
+lemmas idem_simps =
+  fst_conv snd_conv
   add_0_left
   add_0_right
-  scaleR_zero_left
-  scaleR_zero_right
-  scaleR_real_1
   add_0_left
   add_0_right
   mult_zero_right
   mult_1_right
+
+lemmas [euclidean_Outer] = inner_prod_def inner_real_def idem_simps
+lemmas [euclidean_Inner] = plus_prod_def scaleR_prod_def idem_simps
+  scaleR_zero_left
+  scaleR_zero_right
+  scaleR_real_1
 
 ML \<open>
 

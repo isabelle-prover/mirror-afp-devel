@@ -63,10 +63,9 @@ lemma nlex_ccw_left: "lex x 0 \<Longrightarrow> ccw 0 (0, 1) x"
 
 interpretation ccw_system123 ccw
   apply unfold_locales
-    apply (force simp: ccw_def ccw'_def det3_def' algebra_simps)
-   apply (force simp: ccw_def ccw'_def det3_def' psi_def algebra_simps lex_sym_eq_iff)
-  apply (drule psi_disjuncts)
-  apply (force simp: ccw_def ccw'_def det3_def' algebra_simps)
+  subgoal by (force simp: ccw_def ccw'_def det3_def' algebra_simps)
+  subgoal by (force simp: ccw_def ccw'_def det3_def' psi_def algebra_simps lex_sym_eq_iff)
+  subgoal by (drule psi_disjuncts) (force simp: ccw_def ccw'_def det3_def' algebra_simps)
   done
 
 lemma lex_scaleR_nonneg: "lex a b \<Longrightarrow> r \<ge> 0 \<Longrightarrow> lex a (a + r *\<^sub>R (b - a))"
@@ -548,8 +547,8 @@ proof -
   have tsr: "coll t s r" and tsp: "coll t s p"
     by (auto simp: add_nonneg_eq_0_iff ccw'_def)
   moreover
-  hence trp: "coll t r p"
-    by (metis ccw'_subst_collinear distinct not_ccw'_eq)
+  have trp: "coll t r p"
+    by (metis ccw'_subst_collinear distinct not_ccw'_eq tsr tsp)
   ultimately have tpr: "coll t p r"
     by (auto simp: det3_def' algebra_simps)
   moreover
@@ -652,9 +651,7 @@ proof -
 qed
 
 interpretation ccw: ccw_system ccw
-  apply unfold_locales
-  apply (metis ccw_transitive_contr nondegenerate)
-  done
+  by unfold_locales (metis ccw_transitive_contr nondegenerate)
 
 lemma ccw_scaleR1:
   "det3 0 xr P \<noteq> 0 \<Longrightarrow> 0 < e \<Longrightarrow> ccw 0 xr P \<Longrightarrow> ccw 0 (e*\<^sub>Rxr) P"
@@ -921,9 +918,9 @@ lemma ccw_sorted_implies_ccw'_sortedP:
 proof (induction Ps)
   case (Cons P Ps)
   {
-    fix p assume "p \<in> set Ps"
+    fix p assume p: "p \<in> set Ps"
     moreover
-    with Cons.prems have "ccw 0 P p"
+    from p Cons.prems have "ccw 0 P p"
       by (auto elim!: linorder_list0.sortedP_Cons intro: Cons)
     ultimately
     have "ccw' 0 P p"

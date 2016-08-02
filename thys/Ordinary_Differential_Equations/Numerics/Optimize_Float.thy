@@ -8,6 +8,12 @@ begin
 lemma compute_bitlen[code]: "bitlen a = (if a > 0 then log2 a + 1 else 0)"
   by (simp add: bitlen_alt_def log2_def)
 
+lemma compute_float_plus[code]: "Float m1 e1 + Float m2 e2 =
+  (if m1 = 0 then Float m2 e2 else if m2 = 0 then Float m1 e1 else
+  if e1 \<le> e2 then Float (m1 + m2 * power_int 2 (e2 - e1)) e1
+              else Float (m2 + m1 * power_int 2 (e1 - e2)) e2)"
+  by (simp add: Float.compute_float_plus power_int_def)
+
 lemma compute_real_of_float[code]:
   "real_of_float (Float m e) = (if e \<ge> 0 then m * 2 ^ nat e else m / power_int 2 (-e))"
   unfolding power_int_def[symmetric, of 2 e]

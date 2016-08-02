@@ -129,8 +129,8 @@ lemma sortedP_right_of_last:
   shows "LE y (last zs)"
   using assms
   apply (intro sortedP_right_of_append1[of "butlast zs" "last zs" y])
-  apply (metis append_is_Nil_conv list.distinct(1) snoc_eq_iff_butlast split_list)
-  apply (metis List.insert_def append_butlast_last_id insert_Nil list.distinct(1) rotate1.simps(2)
+  subgoal by (metis append_is_Nil_conv list.distinct(1) snoc_eq_iff_butlast split_list)
+  subgoal by (metis List.insert_def append_butlast_last_id insert_Nil list.distinct(1) rotate1.simps(2)
     set_ConsD set_rotate1)
   done
 
@@ -156,8 +156,8 @@ lemma (in comm_monoid_add) listsum_distinct_selsort:
   using assms
   apply (simp add: distinct_listsum_conv_Setsum linorder_list0.distinct_selsort)
   apply (rule setsum.cong)
-  apply (simp add: linorder_list0.set_selsort)
-  apply simp
+  subgoal by (simp add: linorder_list0.set_selsort)
+  subgoal by simp
   done
 
 declare linorder_list0.sortedP_Nil_iff[code]

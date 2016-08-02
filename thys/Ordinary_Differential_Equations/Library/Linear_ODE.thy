@@ -19,43 +19,48 @@ proof -
     by (auto simp: has_vector_derivative_def o_def)
 qed
 
-locale linear_ivp = ivp i for i :: "'a::{banach,perfect_space} ivp" +
-  fixes A::"'a blinop" and s::real
-  assumes rhs: "ivp_f i = (\<lambda>(t, x). A x)"
-  assumes time: "ivp_T i = UNIV"
-  assumes domain: "ivp_X i = UNIV"
-  assumes t0: "ivp_t0 i = s"
+context
+fixes A::"'a::{banach,perfect_space} blinop"
 begin
 
-lemma exp_is_solution: "is_solution (\<lambda>t. exp ((t - t0) *\<^sub>R A) x0)"
-  by (auto intro!: is_solutionI derivative_eq_intros
-    simp: rhs domain has_vector_derivative_def blinop.bilinear_simps exp_times_scaleR_commute)
+definition "linode_solution t0 x0 = (\<lambda>t. exp ((t - t0) *\<^sub>R A) x0)"
 
-sublocale has_solution
-  by unfold_locales (rule exI[where P=is_solution, OF exp_is_solution])
+lemma linode_solution_solves_ode:
+  "(linode_solution t0 x0 solves_ode (\<lambda>_. A)) UNIV UNIV" "linode_solution t0 x0 t0 = x0"
+  by (auto intro!: solves_odeI derivative_eq_intros
+    simp: has_vector_derivative_def blinop.bilinear_simps exp_times_scaleR_commute
+      has_vderiv_on_def linode_solution_def)
 
-sublocale unique_solution
-proof(rule unique_solutionI[OF exp_is_solution])
-  fix s t assume "is_solution s" and "t \<in> T"
-  then have [derivative_intros]: "(s has_derivative (\<lambda>h. h *\<^sub>R A (s t))) (at t)" for t
-    by (auto dest!: is_solutionD(2) simp: has_vector_derivative_def rhs time)
-  have "((\<lambda>t. exp (-(t - t0) *\<^sub>R A) (s t)) has_derivative (\<lambda>_. 0)) (at t)"
+lemma "(linode_solution t0 x0 usolves_ode (\<lambda>_. A) from t0) UNIV UNIV"
+  using linode_solution_solves_ode(1)
+proof (rule usolves_odeI)
+  fix s t1
+  assume s0: "s t0 = linode_solution t0 x0 t0"
+  assume sol: "(s solves_ode (\<lambda>x. blinop_apply A)) {t0--t1} UNIV"
+
+  then have [derivative_intros]:
+    "(s has_derivative (\<lambda>h. h *\<^sub>R A (s t))) (at t within {t0 -- t1})" if "t \<in> {t0 -- t1}" for t
+    using that
+    by (auto dest!: solves_odeD(1) simp: has_vector_derivative_def has_vderiv_on_def)
+  have "((\<lambda>t. exp (-(t - t0) *\<^sub>R A) (s t)) has_derivative (\<lambda>_. 0)) (at t within {t0 -- t1})"
     (is "(?es has_derivative _) _")
-    for t
-    by (auto intro!: derivative_eq_intros simp: has_vector_derivative_def
+    if "t \<in> {t0 -- t1}" for t
+    by (auto intro!: derivative_eq_intros that simp: has_vector_derivative_def
       blinop.bilinear_simps)
-  from has_derivative_zero_constant[OF _ this]
-  obtain c where c: "?es = (\<lambda>_. c)"
-    by (auto simp: time)
-  hence "(\<lambda>t. (exp ((t - t0) *\<^sub>R A) * (exp (-((t - t0) *\<^sub>R A)))) (s t)) = (\<lambda>t. exp ((t - t0) *\<^sub>R A) c)"
-    by (metis (no_types, hide_lams) blinop_apply_times_blinop real_vector.scale_minus_left)
-  then have s_def: "s = (\<lambda>t. exp ((t - t0) *\<^sub>R A) c)"
-    by (simp add: exp_minus_inverse)
-  from \<open>is_solution s\<close> s_def t0 is_solution_def
-  have "exp ((t0 - t0) *\<^sub>R A) c = x0" by simp
+  from has_derivative_zero_constant[OF convex_closed_segment this]
+  obtain c where c: "\<And>t. t \<in> {t0 -- t1} \<Longrightarrow> ?es t = c" by auto
+  hence "(exp ((t - t0) *\<^sub>R A) * (exp (-((t - t0) *\<^sub>R A)))) (s t) = exp ((t - t0) *\<^sub>R A) c"
+    if "t \<in> {t0 -- t1}" for t
+    by (metis (no_types, hide_lams) blinop_apply_times_blinop real_vector.scale_minus_left that)
+  then have s_def: "s t = exp ((t - t0) *\<^sub>R A) c" if "t \<in> {t0 -- t1}" for t
+    by (simp add: exp_minus_inverse that)
+  from s0 s_def
+  have "exp ((t0 - t0) *\<^sub>R A) c = x0"
+    by (simp add: linode_solution_solves_ode(2))
   hence "c = x0" by (simp add: )
-  thus "s t = exp ((t - t0) *\<^sub>R A) x0" using s_def by simp
-qed
+  then show "s t1 = linode_solution t0 x0 t1"
+    using s_def[of t1] by (simp add: linode_solution_def)
+qed auto
 
 end
 

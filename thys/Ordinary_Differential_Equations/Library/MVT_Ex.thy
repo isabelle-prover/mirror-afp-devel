@@ -10,41 +10,27 @@ subsection \<open>(Counter)Example of Mean Value Theorem in Euclidean Space \lab
 text \<open>There is no exact analogon of the mean value theorem in the multivariate case!\<close>
 
 lemma MVT_wrong: assumes
-    "\<And>J a u (f::real*real\<Rightarrow>real*real).
+  "\<And>J a u (f::real*real\<Rightarrow>real*real).
       (\<And>x. FDERIV f x :> J x) \<Longrightarrow>
       (\<exists>t\<in>{0<..<1}. f (a + u) - f a = J (a + t *\<^sub>R u) u)"
   shows "False"
 proof -
   have "\<And>t::real*real. FDERIV (\<lambda>t. (cos (fst t), sin (fst t))) t :> (\<lambda>h. (- ((fst h) * sin (fst t)), (fst h) * cos (fst t)))"
     by (auto intro!: derivative_eq_intros)
-  from assms[OF this, of "(1, 1)" "(1, 1)"] obtain t::real where t: "0 < t" "t < 1" and
-    "cos 1 - cos 2 = sin (1 + t)" "sin 2 - sin 1 = cos (1 + t)"
+  from assms[OF this, of "(pi, pi)" "(pi, pi)"] obtain t::real where t: "0 < t" "t < 1" and
+    "pi * sin (t * pi) = 2" "cos (t * pi) = 0"
     by auto
-  moreover have "t \<in> {0..0.3} \<longrightarrow> cos (1 + t) > sin 2 - sin 1"
-    "t \<in> {0.3..0.7} \<longrightarrow> sin (1 + t) > cos 1 - cos 2"
-    "t \<in> {0.7..0.9} \<longrightarrow> cos (1 + t) < sin 2 - sin 1"
-    "t \<in> {0.9..1} \<longrightarrow> sin (1 + t) < cos 1 - cos 2"
-  by (approximation 80)+
-  ultimately show ?thesis by auto
-qed
-
-lemma MVT_wrong2: assumes
-    "\<And>J a u (f::real*real\<Rightarrow>real*real).
-      (\<And>x. FDERIV f x :> J x) \<Longrightarrow>
-      (\<exists>x \<in> {a..a+u}. f (a + u) - f a = J x u)"
-  shows "False"
-proof -
-  have "\<And>t::real*real. FDERIV (\<lambda>t. (cos (fst t), sin (fst t))) t :> (\<lambda>h. (- ((fst h) * sin (fst t)), (fst h) * cos (fst t)))"
-    by (auto intro!: derivative_eq_intros)
-  from assms[OF this, of "(1, 1)" "(1, 1)"] obtain x::real where x: "1 \<le> x" "x \<le> 2" and
-    "cos 2 - cos 1 = - sin x" "sin 2 - sin 1 = cos x"
-    by auto
-  moreover have
-    "x \<in> {1 .. 1.5} \<longrightarrow> cos x > sin 2 - sin 1"
-    "x \<in> {1.5 .. 1.6} \<longrightarrow> - sin x < cos 2 - cos 1"
-    "x \<in> {1.6 .. 2} \<longrightarrow> cos x < sin 2 - sin 1"
-    by (approximation 80)+
-  ultimately show ?thesis by auto
+  then obtain n where tpi: "t * pi = real_of_int n * (pi / 2)" and "odd n"
+    by (auto simp: cos_zero_iff_int)
+  then have teq: "t = real_of_int n / 2" by auto
+  then have "n = 1" using t \<open>odd n\<close> by arith
+  then have "t = 1/2" using teq by simp
+  have "sin (t * pi) = 1"
+    by (simp add: \<open>t = 1/2\<close> sin_eq_1)
+  with \<open>pi * sin (t * pi) = 2\<close>
+  have "pi = 2" by simp
+  moreover have "pi > 2" using pi_approx by simp
+  ultimately show False by simp
 qed
 
 lemma MVT_corrected:

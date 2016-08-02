@@ -302,6 +302,21 @@ proof -
     by (auto simp: bounded_iff)
 qed
 
+lemma bounded_uminus_image[simp]:
+  fixes f::"'a \<Rightarrow> 'b::real_normed_vector"
+  shows "bounded ((\<lambda>x. - f x) ` s) \<longleftrightarrow> bounded (f ` s)"
+  apply (subst (2) bounded_uminus[symmetric])
+  unfolding image_image
+  by simp
+
+lemma bounded_minus_image:
+  fixes f::"'a \<Rightarrow> 'b::real_normed_vector"
+  assumes "bounded (f ` s)"
+  assumes "bounded (g ` s)"
+  shows "bounded ((\<lambda>x. f x - g x) ` s)"
+  using bounded_plus_image[of f s "\<lambda>x. - g x"] assms
+  by simp
+
 lemma bounded_Pair_image:
   fixes f::"'a \<Rightarrow> 'b::real_normed_vector"
   fixes g::"'a \<Rightarrow> 'c::real_normed_vector"
@@ -320,12 +335,76 @@ proof -
     by (auto simp: bounded_iff)
 qed
 
-subsection \<open>Definitions \label{sec:rk-definition}\<close>
+lemma closed_scaleR_image_iff:
+  fixes f::"'a \<Rightarrow> 'b::real_normed_vector"
+  shows "closed ((\<lambda>x. r *\<^sub>R (f x)) ` R) \<longleftrightarrow> (r = 0 \<or> closed (f ` R))" (is "?l \<longleftrightarrow> _ \<or> ?r")
+proof safe
+  assume ?r
+  from closed_scaling[OF this] show ?l
+    by (auto simp: image_image)
+next
+  assume l: ?l
+  {
+    assume "r \<noteq> 0"
+    with closed_scaling[OF l, of "inverse r"]
+    have "?r"
+      by (auto simp: image_image)
+  } then show "\<not> ?r \<Longrightarrow> r = 0" by blast
+qed (simp add: image_constant_conv)
+
+lemma closed_translation_iff[simp]:
+  fixes y::"'a::real_normed_vector"
+  shows "closed ((\<lambda>x. f x + y) ` S) \<longleftrightarrow> closed (f ` S)"
+    "closed ((\<lambda>x. y + f x) ` S) \<longleftrightarrow> closed (f ` S)"
+  using closed_translation[of "f ` S" y] closed_translation[of "op + y ` f ` S" "- y"]
+  by (auto simp: add.commute image_image cong: image_cong)
+
+lemma closed_minus_translation_iff[simp]:
+  fixes y::"'a::real_normed_vector"
+  shows "closed ((\<lambda>x. f x - y) ` S) \<longleftrightarrow> closed (f ` S)"
+  using closed_translation_iff(1)[of f "- y" S]
+  by simp
+  
+lemma convex_scaleR_image_iff:
+  fixes f::"'a \<Rightarrow> 'b::real_normed_vector"
+  shows "convex ((\<lambda>x. r *\<^sub>R (f x)) ` R) \<longleftrightarrow> (r = 0 \<or> convex (f ` R))" (is "?l \<longleftrightarrow> _ \<or> ?r")
+proof safe
+  assume ?r
+  from convex_scaling[OF this] show ?l
+    by (auto simp: image_image)
+next
+  assume l: ?l
+  {
+    assume "r \<noteq> 0"
+    with convex_scaling[OF l, of "inverse r"]
+    have "?r"
+      by (auto simp: image_image)
+  } then show "\<not> ?r \<Longrightarrow> r = 0" by blast
+qed (simp add: image_constant_conv)
+
+lemma convex_translation_iff[simp]:
+  fixes y::"'a::real_normed_vector"
+  shows "convex ((\<lambda>x. f x + y) ` S) \<longleftrightarrow> convex (f ` S)"
+    "convex ((\<lambda>x. y + f x) ` S) \<longleftrightarrow> convex (f ` S)"
+  using convex_translation[of "f ` S" y] convex_translation[of "op + y ` f ` S" "- y"]
+  by (auto simp: add.commute image_image cong: image_cong)
+
+lemma convex_minus_translation_iff[simp]:
+  fixes y::"'a::real_normed_vector"
+  shows "convex ((\<lambda>x. f x - y) ` S) \<longleftrightarrow> convex (f ` S)"
+  using convex_translation_iff(1)[of f "- y" S]
+  by simp
+
+
+text\<open>\label{sec:rk}\<close>
+
+subsection \<open>Definitions\<close>
+text\<open>\label{sec:rk-definition}\<close>
 
 declare setsum.cong[fundef_cong]
-fun rk_eval :: "(nat\<Rightarrow>nat\<Rightarrow>real) \<Rightarrow> (nat\<Rightarrow>real) \<Rightarrow> (real\<times>'a::real_vector \<Rightarrow> 'a) \<Rightarrow> real \<Rightarrow> real \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a" where
+fun rk_eval :: "(nat\<Rightarrow>nat\<Rightarrow>real) \<Rightarrow> (nat\<Rightarrow>real) \<Rightarrow> (real \<Rightarrow> 'a::real_vector \<Rightarrow> 'a) \<Rightarrow> real \<Rightarrow> real \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a" where
   "rk_eval A c f t h x j =
-  f (t + h * c j, x + h *\<^sub>R (\<Sum>l=1 ..< j. A j l *\<^sub>R rk_eval A c f t h x l))"
+  f (t + h * c j) (x + h *\<^sub>R (\<Sum>l=1 ..< j. A j l *\<^sub>R rk_eval A c f t h x l))"
 
 primrec rk_eval_dynamic :: "(nat\<Rightarrow>nat\<Rightarrow>real) \<Rightarrow> (nat\<Rightarrow>real) \<Rightarrow> (real\<times>'a::{comm_monoid_add, scaleR} \<Rightarrow> 'a) \<Rightarrow> real \<Rightarrow> real \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> 'a)" where
   "rk_eval_dynamic A c f t h x 0 = (\<lambda>i. 0)"
@@ -362,31 +441,26 @@ definition rk2 where
 subsection \<open>Euler method is consistent \label{sec:rk-euler-cons}\<close>
 
 lemma euler_increment:
-  fixes f::"_ \<Rightarrow> 'a::real_vector"
-  shows "euler_increment f h t x = f (t, x)"
+  shows "euler_increment f h t x = f t x"
   unfolding euler_increment_def rk_increment_def
   by (subst rk_eval.simps) (simp del: rk_eval.simps)
 
 lemma euler_float_increment:
-  fixes f::"_ \<Rightarrow> 'a::executable_euclidean_space"
-  shows "euler_increment' e f h t x = eucl_down e (f (t, x))"
+  shows "euler_increment' e f h t x = eucl_down e (f t x)"
   unfolding euler_increment'_def rk_increment'_def
   by (subst rk_eval.simps) (simp del: rk_eval.simps)
 
 lemma euler_lipschitz:
-  fixes x::"real \<Rightarrow> real"
-  fixes f::"_ \<Rightarrow> 'a::real_normed_vector"
   assumes t: "t \<in> {t0..T}"
-  assumes lipschitz: "\<forall>t\<in>{t0..T}. lipschitz D' (\<lambda>x. f (t, x)) L"
+  assumes lipschitz: "\<forall>t\<in>{t0..T}. lipschitz D' (\<lambda>x. f t x) L"
   shows "lipschitz D' (euler_increment f h t) L"
   using t lipschitz
   by (simp add: lipschitz_def euler_increment del: One_nat_def)
 
 lemma rk2_increment:
-  fixes f::"_ \<Rightarrow> 'a::real_vector"
   shows "rk2_increment p f h t x =
-    (1 - 1 / (p * 2)) *\<^sub>R f (t, x) +
-    (1 / (p * 2)) *\<^sub>R f (t + h * p, x + (h * p) *\<^sub>R f (t, x))"
+    (1 - 1 / (p * 2)) *\<^sub>R f t x +
+    (1 / (p * 2)) *\<^sub>R f (t + h * p) (x + (h * p) *\<^sub>R f t x)"
   unfolding rk2_increment_def rk_increment_def
   apply (subst rk_eval.simps)
   apply (simp del: rk_eval.simps add: numeral_2_eq_2)
@@ -396,31 +470,22 @@ lemma rk2_increment:
 
 subsection \<open>Set-Based Consistency of Euler Method \label{sec:setconsistent}\<close>
 
-locale derivative_set_bounded =
-  derivative_on_prod +
-  fixes F F'
-  assumes f_set_bounded: "bounded F" "\<And>t x. t\<in>T \<Longrightarrow> x\<in>X \<Longrightarrow> (x, f (t, x)) \<in> F"
-  assumes f'_convex_compact: "convex F'" "compact F'" "\<And>t x d. t\<in>T \<Longrightarrow> (x, d) \<in> F \<Longrightarrow>
-    f' (t,x) (1, d) \<in> F'"
+context derivative_on_prod
 begin
-
-lemma F_nonempty: "F \<noteq> {}"
-  and F'_nonempty: "F' \<noteq> {}"
-  using nonempty
-  unfolding ex_in_conv[symmetric]
-  by (auto intro!: f_set_bounded f'_convex_compact)
 
 lemma euler_consistent_traj_set:
   fixes t
   assumes ht: "0 \<le> h" "t + h \<le> u"
   assumes T: "{t..u} \<subseteq> T"
-  assumes x': "\<And>s. s \<in> {t..u} \<Longrightarrow> (x has_vector_derivative f (s, x s)) (at s within {t..u})"
+  assumes x': "\<And>s. s \<in> {t..u} \<Longrightarrow> (x has_vector_derivative f s (x s)) (at s within {t..u})"
   assumes x: "\<And>s. s \<in> {t..u} \<Longrightarrow> x s \<in> X"
-  shows "x (t + h) - discrete_evolution (euler_increment f) (t + h) t (x t) \<in> op *\<^sub>R (h\<^sup>2 / 2) ` F'"
+  assumes R: "\<And>s. s \<in> {t..u} \<Longrightarrow>
+    discrete_evolution (euler_increment f) (t + h) t (x t) + (h\<^sup>2 / 2) *\<^sub>R (f' (s, x s)) (1, f s (x s)) \<in> R"
+  assumes bcc: "bounded R" "closed R" "convex R"
+  shows "x (t + h) \<in> R"
 proof cases
   assume "h = 0"
-  from F'_nonempty obtain f' where "f' \<in> F'" by auto
-  from this \<open>h = 0\<close> show ?thesis
+  with assms show ?thesis
     by (auto simp: discrete_evolution_def)
 next
   assume "h \<noteq> 0"
@@ -434,26 +499,29 @@ next
   from ht have subset: "{t .. t + h} \<subseteq> {t .. u}" by simp
   from \<open>t < u\<close> have "t \<in> ?T" by auto
   from \<open>t < u\<close> have tx: "t \<in> T" "x t \<in> X" using assms by auto
-  from tx assms have "0 \<le> norm (f (t, x t))" by simp
+  from tx assms have "0 \<le> norm (f t (x t))" by simp
   have x_diff: "\<And>s. s \<in> ?T \<Longrightarrow> x differentiable at s within ?T"
-    by (rule differentiableI, rule x'[simplified has_vector_derivative_def])
-  have f': "\<And>t x. t \<in> ?T \<Longrightarrow> x \<in> X \<Longrightarrow> (f has_derivative f' (t, x)) (at (t, x) within (?T \<times> X))"
-    using T by (intro has_derivative_subset[OF f']) auto
-  let ?p = "(\<lambda>t. f' (t, x t) (1, f (t, x t)))"
-  define diff where "diff n = (if n = 0 then x else if n = 1 then \<lambda>t. f (t, x t) else ?p)" for n :: nat
+    by (rule differentiableI, rule x'[simplified has_vector_derivative_def]) 
+
+  note [continuous_intros] =
+    continuous_on_compose2[OF has_derivative_continuous_on[OF f'] continuous_on_Pair, simplified]
+    continuous_on_compose2[OF has_derivative_continuous_on[OF x'[unfolded has_vector_derivative_def]], simplified]
+
+  let ?p = "(\<lambda>t. f' (t, x t) (1, f t (x t)))"
+  define diff where "diff \<equiv> \<lambda>n::nat. if n = 0 then x else if n = 1 then \<lambda>t. f t (x t) else ?p"
   have diff_0[simp]: "diff 0 = x" by (simp add: diff_def)
   have diff: "(diff m has_vector_derivative diff (Suc m) ta) (at ta within {t..t + h})"
     if mta: "m < 2" "t \<le> ta" "ta \<le> t + h" for m::nat and ta::real
   proof -
     have image_subset: "(\<lambda>xa. (xa, x xa)) ` {t..u} \<subseteq> {t..u} \<times> X"
       using assms by auto
-    note has_derivative_in_compose[where f="(\<lambda>xa. (xa, x xa))" and g = f, derivative_intros]
     note has_derivative_subset[OF _ image_subset, derivative_intros]
     note f'[derivative_intros]
     note x'[simplified has_vector_derivative_def, derivative_intros]
     have [simp]: "\<And>c x'. c *\<^sub>R f' (ta, x ta) x' = f' (ta, x ta) (c *\<^sub>R x')"
-      using mta ht assms by (auto intro!: f' linear_cmul[symmetric] has_derivative_linear)
-    have "((\<lambda>t. f (t, x t)) has_vector_derivative f' (ta, x ta) (1, f (ta, x ta))) (at ta within {t..u})"
+      using mta ht assms
+      by (force intro!: f' linear_cmul[symmetric] has_derivative_linear)
+    have f_comp': "((\<lambda>t. f t (x t)) has_vector_derivative f' (ta, x ta) (1, f ta (x ta))) (at ta within {t..u})"
       unfolding has_vector_derivative_def
       using assms ht mta by (auto intro!: derivative_eq_intros)
     then show ?thesis
@@ -462,7 +530,7 @@ next
   qed
 
   from taylor_has_integral[of 2 diff x t "t + h", OF _ _ diff] \<open>0 \<le> h\<close>
-  have taylor: "((\<lambda>xa. (t + h - xa) *\<^sub>R f' (xa, x xa) (1, f (xa, x xa))) has_integral x (t + h) - (x t + h *\<^sub>R f (t, x t))) {t..t + h}"
+  have taylor: "((\<lambda>xa. (t + h - xa) *\<^sub>R f' (xa, x xa) (1, f xa (x xa))) has_integral x (t + h) - (x t + h *\<^sub>R f t (x t))) {t..t + h}"
     by (simp add: eval_nat_numeral diff_def)
 
   have *: "h\<^sup>2 / 2 = content {t..t + h} *\<^sub>R (t + h) - (if t \<le> t + h then (t + h)\<^sup>2 / 2 - t\<^sup>2 / 2 else 0)"
@@ -475,29 +543,20 @@ next
     apply (rule has_integral_const_real)
     apply (rule has_integral_id)
     done
-  have "x (t + h) - (x t + h *\<^sub>R f (t, x t)) \<in> op *\<^sub>R (h\<^sup>2 / 2) ` F'"
-    apply (rule integral_by_parts_in_bounded_closed_convex_set[OF
-      integral taylor[unfolded interval_cbox] f'_convex_compact(3)
-      _
-      f'_convex_compact(2)[THEN compact_imp_bounded]
-      f'_convex_compact(2)[THEN compact_imp_closed]
-      f'_convex_compact(1)])
-    using assms
-    by (auto intro!: \<open>0 \<le> h\<close> simp: f_set_bounded(2) subset_eq)
-  then show ?thesis by (simp add: discrete_evolution_def euler_increment)
-qed
+  from taylor_has_integral[of 2 diff x t "t + h", OF _ _ diff] \<open>0 \<le> h\<close>
+  have taylor: "((\<lambda>xa. (t + h - xa) *\<^sub>R f' (xa, x xa) (1, f xa (x xa))) has_integral x (t + h) - (x t + h *\<^sub>R f t (x t))) {t..t + h}"
+    by (simp add: eval_nat_numeral diff_def)
 
-lemma euler_consistent_traj_set2:
-  fixes t
-  assumes ht: "0 \<le> h" "t1 \<le> u"
-  assumes T: "{t..u} \<subseteq> T"
-  assumes x': "\<And>s. s \<in> {t..u} \<Longrightarrow> (x has_vector_derivative f (s, x s)) (at s within {t..u})"
-  assumes x: "\<And>s. s \<in> {t..u} \<Longrightarrow> x s \<in> X"
-  assumes *: "t1 = t + h"
-  shows "x t1 - discrete_evolution (euler_increment f) t1 t (x t) \<in> op *\<^sub>R (h\<^sup>2 / 2) ` F'"
-  using ht T x' x
-  unfolding *
-  by (rule euler_consistent_traj_set)
+  define F' where "F' \<equiv> (\<lambda>y. (2 / h\<^sup>2) *\<^sub>R (y - discrete_evolution (euler_increment f) (t + h) t (x t))) ` R"
+  have "x (t + h) - (x t + h *\<^sub>R f t (x t)) \<in> op *\<^sub>R (h\<^sup>2 / 2) ` F'"
+    apply (rule integral_by_parts_in_bounded_closed_convex_set[OF integral taylor[unfolded interval_cbox]])
+    subgoal using R \<open>h \<noteq> 0\<close> \<open>0 \<le> h\<close> subset by (force simp: F'_def)
+    by (auto intro!: bounded_scaleR_image bounded_minus_image closed_injective_image_subspace bcc \<open>0 \<le> h\<close>
+      simp: F'_def image_constant_conv closed_scaleR_image_iff convex_scaleR_image_iff \<open>h \<noteq> 0\<close>)
+  then show ?thesis
+    using \<open>h \<noteq> 0\<close>
+    by (auto simp add: discrete_evolution_def euler_increment F'_def)
+qed
 
 end
 
@@ -505,45 +564,51 @@ lemma numeral_6_eq_6: "6 = Suc (Suc (Suc (Suc (Suc (Suc 0)))))"
   by linarith
 
 context begin
+
 interpretation blinfun_syntax .
+
+definition "heun_remainder1 x f f' f'' t h s
+  = (h ^ 3 / 6) *\<^sub>R (f'' (h * s + t, x (h * s + t)) $ (1, f (h * s + t, x (h * s + t))) $ (1, f (h * s + t, x (h * s + t))) +
+                    f' (h * s + t, x (h * s + t)) $ (0, f' (h * s + t, x (h * s + t)) $ (1, f (h * s + t, x (h * s + t)))))"
+
+definition "heun_remainder2 p x f f' f'' t h s =
+  (h ^ 3 * p / 4) *\<^sub>R f'' (t + s * h * p, x t + (s * h * p) *\<^sub>R f (t, (x t))) $ (1, f (t, (x t))) $ (1, f (t, (x t)))"
+
 lemma rk2_consistent_traj_set:
   fixes x ::"real \<Rightarrow> 'a::banach" and t
+    and f' :: "real \<times> 'a \<Rightarrow> (real \<times> 'a) \<Rightarrow>\<^sub>L 'a"
+    and g' :: "real \<times> 'a \<Rightarrow> (real \<times> 'a) \<Rightarrow> 'a"
+    and f'' :: "real \<times> 'a \<Rightarrow> (real \<times> 'a) \<Rightarrow>\<^sub>L (real \<times> 'a) \<Rightarrow>\<^sub>L 'a"
+    and g'' :: "real \<times> 'a \<Rightarrow> (real \<times> 'a) \<Rightarrow> (real \<times> 'a) \<Rightarrow>\<^sub>L 'a"
   assumes ht: "0 \<le> h" "t + h \<le> u"
-  assumes T: "{t..u} \<subseteq> T" and X0_nonempty: "X0 \<noteq> {}" and X_nonempty: "X \<noteq> {}" and convex_X: "convex X"
+  assumes T: "{t..u} \<subseteq> T" and X_nonempty: "X \<noteq> {}" and convex_X: "convex X"
   assumes x': "\<And>s. s \<in> {t..u} \<Longrightarrow> (x has_vector_derivative f (s, x s)) (at s within {t..u})"
-  assumes f': "\<And>tx. tx \<in> T \<times> X \<Longrightarrow> (f has_derivative blinfun_apply (f' tx)) (at tx)"
-  assumes f'': "\<And>tx. tx \<in> T \<times> X \<Longrightarrow>  (f' has_derivative blinfun_apply (f'' tx)) (at tx)"
+  assumes f': "\<And>tx. tx \<in> T \<times> X \<Longrightarrow> (f has_derivative g' tx) (at tx)"
+  assumes f'': "\<And>tx. tx \<in> T \<times> X \<Longrightarrow>  (f' has_derivative g'' tx) (at tx)"
+  assumes g': "\<And>tx. tx \<in> T \<times> X \<Longrightarrow> g' tx = f' tx"
+  assumes g'': "\<And>tx. tx \<in> T \<times> X \<Longrightarrow>  g'' tx = f'' tx"
   assumes f''_bounded: "bounded (f'' ` (T \<times> X))"
   assumes x: "\<And>s. s \<in> {t..u} \<Longrightarrow> x s \<in> X"
-  assumes f_set_bounded: "bounded F" "\<And>t x x0. t\<in>T \<Longrightarrow> x0 \<in> X0 \<Longrightarrow> x\<in>X \<Longrightarrow> (x0, x, f (t, x)) \<in> F"
   assumes p: "0 < p" "p \<le> 1"
-  assumes in_X0: "x t \<in> X0"
-  assumes step_in: "x t + (h * p) *\<^sub>R f (t, x t) \<in> X"
-  assumes heun_remainder_bounded:
-    "\<And>x0 xt fxt s1 s2. s1 \<in> {0 .. 1} \<Longrightarrow> s2 \<in> {0 .. 1} \<Longrightarrow> (x0, xt, fxt) \<in> F \<Longrightarrow>
-      (h ^ 3 / 6) *\<^sub>R
-       (f'' (h * s1 + t, xt) (1, fxt) (1, fxt) +
-        f' (h * s1 + t, xt) (0, f' (h * s1 + t, xt) (1, fxt))) -
-       (h ^ 3 * p / 4) *\<^sub>R
-       f'' (t + s2 * (h * p), x0 + (s2 * (h * p)) *\<^sub>R f (t, x0))
-        (1, f (t, x0))
-        (1, f (t, x0))
-       \<in> R"
+  assumes step_in: "x t + (h * p) *\<^sub>R f (t, (x t)) \<in> X"
   assumes ccR: "convex R" "closed R"
-  shows "x (t + h) - discrete_evolution (rk2_increment p f) (t + h) t (x t) \<in> R"
+  assumes R: "\<And>s1 s2. 0 \<le> s1 \<Longrightarrow> s1 \<le> 1 \<Longrightarrow> 0 \<le> s2 \<Longrightarrow> s2 \<le> 1 \<Longrightarrow>
+    discrete_evolution (rk2_increment p (\<lambda>t x. f (t, x))) (t + h) t (x t) +
+      heun_remainder1   x f f' f'' t h s1 -
+      heun_remainder2 p x f f' f'' t h s2 \<in> R"
+  shows "x (t + h) \<in> R"
 proof cases
   assume "h = 0"
-  from T ht have "t \<in> T" by auto
-  hence F_nonempty: "F \<noteq> {}" using X_nonempty X0_nonempty
-    unfolding ex_in_conv[symmetric]
-    by (force intro!: f_set_bounded)
-  with F_nonempty X_nonempty
-    \<open>h = 0\<close>
-    heun_remainder_bounded
-  have "0 \<in> R" by force
-  from this \<open>h = 0\<close> show ?thesis
-    by (auto simp: discrete_evolution_def)
+  with R[of 0 0]
+  show ?thesis
+    by (auto simp: discrete_evolution_def heun_remainder1_def heun_remainder2_def)
 next
+  have f': "\<And>tx. tx \<in> T \<times> X \<Longrightarrow> (f has_derivative blinfun_apply (f' tx)) (at tx)"
+    using f' g'
+    by simp
+  have f'': "\<And>tx. tx \<in> T \<times> X \<Longrightarrow>  (f' has_derivative blinfun_apply (f'' tx)) (at tx)"
+    using f'' g''
+    by simp
   assume "h \<noteq> 0"
   from this ht have "t < u" by simp
   have [simp]: "p \<noteq> 0" using p by simp
@@ -703,7 +768,7 @@ next
     (is "(?i has_integral _) _")
     unfolding scale_back blinfun.bilinear_simps
     by (simp add: power2_eq_square algebra_simps)
-  have rk2: "discrete_evolution (rk2_increment p f) (t + h) t (x t) =
+  have rk2: "discrete_evolution (rk2_increment p (\<lambda>t x. f (t, x))) (t + h) t (x t) =
     x t + h *\<^sub>R f (t, x t) -
     (h / (2 * p)) *\<^sub>R f (t, x t) +
     (h / (p * 2)) *\<^sub>R ?k t"
@@ -725,12 +790,12 @@ next
       del: scaleR_Pair)
   finally
   have "integral {0 .. 1} ?i =
-      (discrete_evolution (rk2_increment p f) (t + h) t (x t) -
+      (discrete_evolution (rk2_increment p (\<lambda>t x. f (t, x))) (t + h) t (x t) -
         x t - h *\<^sub>R f (t, x t) -
         (h\<^sup>2 / 2) *\<^sub>R ?p t) /\<^sub>R (h / (p * 2))"
     by (simp add: blinfun.bilinear_simps zero_prod_def[symmetric])
   with _ have "(?i has_integral
-    (discrete_evolution (rk2_increment p f) (t + h) t (x t) -
+    (discrete_evolution (rk2_increment p (\<lambda>t x. f (t, x))) (t + h) t (x t) -
       x t - h *\<^sub>R f (t, x t) -
       (h\<^sup>2 / 2) *\<^sub>R ?p t) /\<^sub>R
     (h / (p * 2))) {0 .. 1}"
@@ -742,7 +807,7 @@ next
           f'' (t + s * (h * p), x t + (s * (h * p)) *\<^sub>R f (t, x t)) $
             (1, f (t, x t)) $
             (1, f (t, x t)))) has_integral
-    (discrete_evolution (rk2_increment p f) (t + h) t (x t) -
+    (discrete_evolution (rk2_increment p (\<lambda>t x. f (t, x))) (t + h) t (x t) -
       x t - h *\<^sub>R f (t, x t) -
       (h\<^sup>2 / 2) *\<^sub>R f' (t, x t) (1, f (t, x t)))) {0 .. 1}"
     (is "(?i_dtaylor has_integral _) _")
@@ -793,7 +858,7 @@ next
          bounded_blinfun_apply_image bounded_Pair_image
          bounded_f'' bounded_f' bounded_f
          simp: image_constant[of 0])
-  have 2: "discrete_evolution (rk2_increment p f) (t + h) t (x t) -
+  have 2: "discrete_evolution (rk2_increment p (\<lambda>t x. f (t, x))) (t + h) t (x t) -
       x t - h *\<^sub>R f (t, x t) - (h\<^sup>2 / 2) *\<^sub>R f' (t, x t) $ (1, f (t, x t)) \<in>
     op *\<^sub>R (1 / 2) ` closure (convex hull
        (\<lambda>s. (h ^ 3 * p / 2) *\<^sub>R
@@ -807,7 +872,7 @@ next
     by (rule integral_by_parts_in_bounded_set[OF integral_minus discrete_taylor[unfolded interval_cbox]])
        (auto intro!: bounded_scaleR_image bounded_blinfun_apply_image 
          bounded_f''_2 simp: image_constant[of 0])
-  have "x (t + h) - discrete_evolution (rk2_increment p f) (t + h) t (x t) \<in>
+  have "x (t + h) - discrete_evolution (rk2_increment p (\<lambda>t x. f (t, x))) (t + h) t (x t) \<in>
     {a - b|a b.
    a \<in>
    closure
@@ -839,7 +904,9 @@ next
     by auto
   also note closure_minus_Collect
   also note convex_hull_minus_Collect
-  also have "closure
+  also
+  define F' where "F' \<equiv> (\<lambda>y. y - discrete_evolution (rk2_increment p (\<lambda>t x. f (t, x))) (t + h) t (x t)) ` R"
+  have "closure
     (convex hull
      {xa - y |xa y.
       xa \<in> op *\<^sub>R (1 / 3) `
@@ -856,31 +923,34 @@ next
                  f'' (t + s * (h * p), x t + (s * (h * p)) *\<^sub>R f (t, x t)) $
                  (1, f (t, x t)) $
                  (1, f (t, x t))) `
-           cbox 0 1}) \<subseteq> R"
+           cbox 0 1}) \<subseteq> F'"
     apply (rule closure_minimal)
-    subgoal
-      by (rule hull_minimal)
-        (auto intro!: heun_remainder_bounded f_set_bounded ccR line_in' in_X0)
-    subgoal by (rule ccR)
-    done
+    apply (rule hull_minimal)
+    apply (safe)
+    subgoal for _ _ _ _ _ s1 s2
+      using R[of s1 s2]
+      by (force simp: F'_def heun_remainder1_def heun_remainder2_def algebra_simps)
+    by (auto intro!: ccR simp: F'_def)
   finally
-  show "x (t + h) - discrete_evolution (rk2_increment p f) (t + h) t (x t) \<in> R" .
+  show "x (t + h) \<in> R"
+    by (auto simp: F'_def)
 qed
 
 end
 
 locale derivative_norm_bounded = derivative_on_prod T X f f' for T and X::"'a::euclidean_space set" and f f' +
   fixes B B'
+  assumes nonempty: "T \<noteq> {}" "X \<noteq> {}"
   assumes X_bounded: "bounded X"
   assumes convex: "convex T" "convex X"
-  assumes f_bounded: "\<And>t x. t\<in>T \<Longrightarrow> x\<in>X \<Longrightarrow> norm (f (t,x)) \<le> B"
+  assumes f_bounded: "\<And>t x. t\<in>T \<Longrightarrow> x\<in>X \<Longrightarrow> norm (f t x) \<le> B"
   assumes f'_bounded: "\<And>t x. t\<in>T \<Longrightarrow> x\<in>X \<Longrightarrow> onorm (f' (t,x)) \<le> B'"
 begin
 
 lemma f_bound_nonneg: "0 \<le> B"
 proof -
   from nonempty obtain t x where "t \<in> T" "x \<in> X" by auto
-  have "0 \<le> norm (f (t, x))" by simp
+  have "0 \<le> norm (f t x)" by simp
   also have "\<dots> \<le> B" by (rule f_bounded) fact+
   finally show ?thesis .
 qed
@@ -900,66 +970,69 @@ qed
 sublocale g?: global_lipschitz _ _ _ B'
 proof
   fix t assume "t \<in> T"
-  show "lipschitz X (\<lambda>x. f (t, x)) B'"
+  show "lipschitz X (f t) B'"
   proof (rule lipschitzI)
     show "0 \<le> B'" using f'_bound_nonneg .
     fix x y
     let ?I = "T \<times> X"
     have "convex ?I" by (intro convex convex_Times)
-    moreover have "\<forall>x\<in>?I. (f has_derivative f' x) (at x within ?I)" "\<forall>x\<in>?I. onorm (f' x) \<le> B'"
+    moreover have "\<forall>x\<in>?I. ((\<lambda>(t, x). f t x) has_derivative f' x) (at x within ?I)" "\<forall>x\<in>?I. onorm (f' x) \<le> B'"
       using f' f'_bounded
       by (auto simp add: intro!: f'_bounded has_derivative_linear)
     moreover assume "x \<in> X" "y \<in> X"
     with \<open>t \<in> T\<close> have "(t, x) \<in> ?I" "(t, y) \<in> ?I" by simp_all
-    ultimately have "norm (f (t, x) - f (t, y)) \<le> B' * norm ((t, x) - (t, y))"
+    ultimately have "norm ((\<lambda>(t, x). f t x) (t, x) - (\<lambda>(t, x). f t x) (t, y)) \<le> B' * norm ((t, x) - (t, y))"
       by (rule differentiable_bound)
-    thus "dist (f (t, x)) (f (t, y)) \<le> B' * dist x y"
+    then show "dist (f t x) (f t y) \<le> B' * dist x y"
       by (simp add: dist_norm norm_Pair)
   qed
 qed
 
-definition euler_C::"real" where "euler_C = (sqrt DIM('a) * (B' * (B + 1) / 2))"
+definition euler_C::"'a itself \<Rightarrow> real" where "euler_C (TYPE('a)) = (sqrt DIM('a) * (B' * (B + 1) / 2))"
 
-lemma euler_C_nonneg: "euler_C \<ge> 0"
+lemma euler_C_nonneg: "euler_C TYPE('a) \<ge> 0"
  using f_bounded f_bound_nonneg f'_bound_nonneg
  by (simp add: euler_C_def)
-
-sublocale derivative_set_bounded T X f f' "X \<times> cball 0 B"
-    "cbox (- (B' * (B + 1)) *\<^sub>R One) ((B' * (B + 1)) *\<^sub>R One)"
-proof
-  show "bounded (X \<times> cball 0 B)" using X_bounded by (auto intro!: bounded_Times)
-  show "convex (cbox (-(B' * (B + 1)) *\<^sub>R One) ((B' * (B + 1)) *\<^sub>R One::'a))"
-    "compact (cbox (-(B' * (B + 1)) *\<^sub>R One) ((B' * (B + 1)) *\<^sub>R One::'a))"
-    by (auto intro!: compact_cbox convex_box)
-  fix t x assume "t \<in> T" "x \<in> X"
-  thus "(x, f (t, x)) \<in> X \<times> cball 0 B"
-    by (auto simp: dist_norm f_bounded)
-next
-  fix t and x d::'a assume "t \<in> T" "(x, d) \<in> X \<times> cball 0 B"
-  hence "x \<in> X" "norm d \<le> B" by (auto simp: dist_norm)
-  have "norm (f' (t, x) (1, d)) \<le> onorm (f' (t, x)) * norm (1::real, d)"
-    by (auto intro!: onorm has_derivative_bounded_linear f' \<open>t \<in> T\<close> \<open>x \<in> X\<close>)
-  also have "\<dots> \<le> B' * (B + 1)"
-    by (auto intro!: mult_mono f'_bounded f_bounded \<open>t \<in> T\<close> \<open>x \<in> X\<close> f'_bound_nonneg
-      order_trans[OF norm_Pair_le] \<open>norm d \<le> B\<close>)
-  finally have "f' (t, x) (1, d) \<in> cball 0 (B' * (B + 1))"
-    by (auto simp: dist_norm)
-  also note cball_in_cbox
-  finally show "f' (t, x) (1, d) \<in> cbox (- (B' * (B + 1)) *\<^sub>R One) ((B' * (B + 1)) *\<^sub>R One)"
-    by simp
-qed
 
 lemma euler_consistent_traj:
   fixes t
   assumes T: "{t..u} \<subseteq> T"
-  assumes x': "\<And>s. s \<in> {t..u} \<Longrightarrow> (x has_vector_derivative f (s, x s)) (at s within {t..u})"
+  assumes x': "(x has_vderiv_on (\<lambda>s. f s (x s))) {t..u}"
   assumes x: "\<And>s. s \<in> {t..u} \<Longrightarrow> x s \<in> X"
-  shows "consistent x t u euler_C 1 (euler_increment f)"
+  shows "consistent x t u (euler_C (TYPE('a))) 1 (euler_increment f)"
 proof
+  from x' have x': "\<And>s. s \<in> {t..u} \<Longrightarrow> (x has_vector_derivative f s (x s)) (at s within {t..u})"
+    by (simp add: has_vderiv_on_def)
   fix h::real
   assume ht: "0 < h" "t + h \<le> u" hence "t < u" "0 < h\<^sup>2 / 2" by simp_all
-  from euler_consistent_traj_set ht T x' x
-  have "x (t + h) - discrete_evolution (euler_increment f) (t + h) t (x t) \<in>
+  let ?d = "discrete_evolution (euler_increment f) (t + h) t (x t)"
+  have "x (t + h) \<in> (\<lambda>b. ?d + (h\<^sup>2 / 2) *\<^sub>R b) ` cbox (- (B' * (B + 1)) *\<^sub>R One) ((B' * (B + 1)) *\<^sub>R One)"
+  proof (rule euler_consistent_traj_set[OF _ \<open>t + h \<le> u\<close> T x' x])
+    fix s
+    assume "s \<in> {t .. u}"
+    then have "?d + (h\<^sup>2 / 2) *\<^sub>R (f' (s, x s)) (1, f s (x s)) \<in>
+      (\<lambda>b. ?d + (h\<^sup>2 / 2) *\<^sub>R b) ` ((\<lambda>s. (f' (s, x s)) (1, f s (x s)))` {t .. u})"
+      by auto
+    also have "\<dots> \<subseteq> (\<lambda>b. ?d + (h\<^sup>2 / 2) *\<^sub>R b) ` cbox (- (B' * (B + 1)) *\<^sub>R One) ((B' * (B + 1)) *\<^sub>R One)"
+    proof (rule image_mono, safe)
+      fix s assume "s \<in> {t .. u}"
+      with T have "norm (f' (s, x s) (1, f s (x s))) \<le> onorm (f' (s, x s)) * norm (1::real, f s (x s))"
+        by (force intro!: onorm has_derivative_bounded_linear f' x)
+      also have "\<dots> \<le> B' * (B + 1)"
+        using T \<open>s \<in> _\<close>
+        by (force intro!: mult_mono f'_bounded f_bounded f'_bound_nonneg x order_trans[OF norm_Pair_le])
+      finally have "f' (s, x s) (1, f s (x s)) \<in> cball 0 (B' * (B + 1))"
+        by (auto simp: dist_norm)
+      also note cball_in_cbox
+      finally show "f' (s, x s) (1, f s (x s)) \<in> cbox (- (B' * (B + 1)) *\<^sub>R One) ((B' * (B + 1)) *\<^sub>R One)"
+        by simp
+    qed
+    finally
+    show "?d + (h\<^sup>2 / 2) *\<^sub>R (f' (s, x s)) (1, f s (x s))
+         \<in> (\<lambda>b. ?d + (h\<^sup>2 / 2) *\<^sub>R b) ` cbox (- (B' * (B + 1)) *\<^sub>R One) ((B' * (B + 1)) *\<^sub>R One)" .
+  qed (auto intro!: less_imp_le[OF \<open>0 < h\<close>] bounded_plus_image bounded_scaleR_image bounded_cbox
+    closed_scaling convex_scaling convex_box simp: image_constant_conv closed_translation_iff)
+  then have "x (t + h) - discrete_evolution (euler_increment f) (t + h) t (x t) \<in>
       op *\<^sub>R (h\<^sup>2 / 2) ` cbox (- (B' * (B + 1)) *\<^sub>R One) ((B' * (B + 1)) *\<^sub>R One)"
     by auto
   also have "\<dots> = cbox (- ((h\<^sup>2 / 2) * (B' * (B + 1))) *\<^sub>R One) (((h\<^sup>2 / 2) * (B' * (B + 1))) *\<^sub>R One)"
@@ -968,8 +1041,22 @@ proof
   also
   note centered_cbox_in_cball
   finally show "dist (x (t + h)) (discrete_evolution (euler_increment f) (t + h) t (x t))
-      \<le> euler_C * h ^ (1 + 1)"
+      \<le> euler_C(TYPE('a)) * h ^ (1 + 1)"
     by (auto simp: euler_C_def dist_norm algebra_simps norm_minus_commute power2_eq_square)
+qed
+
+lemma derivative_norm_bounded_subset:
+  assumes X'_ne: "X' \<noteq> {}" and X'_subset: "X' \<subseteq> X" and  "convex X'"
+  shows "derivative_norm_bounded T X' f f' B B'"
+proof -
+  interpret derivative_on_prod T X' f f'
+    using X'_subset
+    by (rule derivative_on_prod_subset)
+  show ?thesis
+    using X'_subset
+    by unfold_locales
+      (auto intro!: nonempty X'_ne bounded_subset[OF X_bounded X'_subset] convex f_bounded f'_bounded
+        \<open>convex X'\<close>)
 qed
 
 end
@@ -979,10 +1066,10 @@ locale grid_from = grid +
   assumes grid_min: "t0 = t 0"
 
 locale euler_consistent =
-  has_solution i +
-  derivative_norm_bounded T X' f B f' B'
-  for i::"'a::euclidean_space ivp" and t X' B f' B' +
-  fixes r e
+  derivative_norm_bounded T X' f f' B B'
+  for T f X X' B f' B' +
+  fixes solution t0 x0 r e
+  assumes sol: "(solution solves_ode f) T X" and sol_iv: "solution t0 = x0" and iv_defined: "t0 \<in> T"
   assumes domain_subset: "X \<subseteq> X'"
   assumes interval: "T = {t0 - e .. t0 + e}"
   assumes lipschitz_area: "\<And>t. t \<in> T \<Longrightarrow> cball (solution t) \<bar>r\<bar> \<subseteq> X'"
@@ -991,41 +1078,21 @@ begin
 lemma euler_consistent_solution:
   fixes t'
   assumes t': "t' \<in> {t0 .. t0 + e}"
-  shows "consistent solution t' (t0 + e) euler_C 1 (euler_increment f)"
+  shows "consistent solution t' (t0 + e) (euler_C(TYPE('a))) 1 (euler_increment f)"
 proof (rule euler_consistent_traj)
   show "{t'..t0 + e} \<subseteq> T" using t' interval by simp
+  with solves_odeD(1)[OF sol] show "(solution has_vderiv_on (\<lambda>s. f s (solution s))) {t'..t0 + e}"
+    by (rule has_vderiv_on_subset)
   fix s
-  assume "s \<in> {t'..t0 + e}" hence "s \<in> T" using \<open>{t'..t0 + e} \<subseteq> T\<close> by auto
-  show "(solution has_vector_derivative f (s, solution s)) (at s within {t'..t0 + e})"
-    by (rule has_vector_derivative_within_subset[OF _ \<open>{t'..t0 + e} \<subseteq> T\<close>]) (rule solution(2)[OF \<open>s \<in> T\<close>])
-  have "solution s \<in> ivp_X i" by (rule solution(3)[OF \<open>s \<in> T\<close>])
-  thus "solution s \<in> X'" using domain_subset ..
+  assume "s \<in> {t'..t0 + e}" with solves_odeD(2)[OF sol, of s]
+  show "solution s \<in> X'" using domain_subset \<open>{t' .. t0 + e} \<subseteq> T\<close>
+    by (auto simp: subset_iff)
 qed
 
 end
 
-sublocale euler_consistent \<subseteq>
-  consistent_one_step t0 "t0 + e" solution "euler_increment f" 1 euler_C r B'
-proof
-  show "0 < (1::nat)" by simp
-  show "0 \<le> euler_C" using euler_C_nonneg by simp
-  show "0 \<le> B'" using lipschitz_nonneg[OF lipschitz] iv_defined by simp
-  fix s x assume s: "s \<in> {t0 .. t0 + e}"
-  show "consistent solution s (t0 + e) euler_C 1 (euler_increment f)"
-    using interval s f_bounded f'_bounded f'
-      strip
-    by (intro euler_consistent_solution) auto
-  fix h
-  assume "h\<in>{0..t0 + e - s}"
-  have "lipschitz X' (euler_increment f h s) B'"
-    using s lipschitz interval strip
-    by (auto intro!: euler_lipschitz)
-  thus "lipschitz (cball (solution s) \<bar>r\<bar>) (euler_increment f h s) B'"
-    using s interval
-    by (auto intro: lipschitz_subset[OF _ lipschitz_area])
-qed
-
-subsection \<open>Euler method is convergent \label{sec:rk-euler-conv}\<close>
+subsection \<open>Euler method is convergent\<close>
+text\<open>\label{sec:rk-euler-conv}\<close>
 
 locale max_step1 = grid +
   fixes t1 L B r
@@ -1035,43 +1102,90 @@ sublocale max_step1 < max_step?: max_step t t1 1 L B r
 using max_step by unfold_locales simp_all
 
 locale euler_convergent =
-  euler_consistent + max_step1 t "t0 + e" B' euler_C r +
+  euler_consistent T f "X::'a::euclidean_space set" + max_step1 t "t0 + e" B' "euler_C(TYPE('a))" r for T f X t +
   assumes grid_from: "t0 = t 0"
 
-sublocale euler_convergent \<subseteq>
-  convergent_one_step t0 "t0 + e" solution "euler_increment f" 1 euler_C r B' t
-  by unfold_locales (simp add: grid_from)
+subsection \<open>Euler method on Rectangle is convergent\<close>
+text\<open>\label{sec:rk-euler-conv-on-rect}\<close>
 
-subsection \<open>Euler method on Rectangle is convergent \label{sec:rk-euler-conv-on-rect}\<close>
+locale ivp_rectangle_bounded_derivative =
+  solution_in_cylinder t0 T x0 b f X B +
+  outer?: derivative_norm_bounded T "cball x0 r" f f' B B' for t0 T x0 b f X B f' B' r e +
+  assumes T_def: "T \<equiv> cball t0 e"
+  assumes subset_cylinders: "b < r"
+  assumes positive_time: "0 < e"
 
-locale ivp_rectangle_bounded_derivative = solution_in_cylinder "i::'a::euclidean_space ivp" e b B +
-  derivative_norm_bounded T "cbox (x0 - (b + \<bar>r\<bar>) *\<^sub>R One) (x0 + (b + \<bar>r\<bar>) *\<^sub>R One)" f f' B B' for i e b r B f' B'
+sublocale ivp_rectangle_bounded_derivative \<subseteq> unique_on_cylinder t0 T x0 b X f B B'
+  by unfold_locales (insert subset_cylinders positive_time, auto intro!: lipschitz_subset[OF lipschitz])
 
-sublocale ivp_rectangle_bounded_derivative \<subseteq> unique_on_cylinder i e b B B'
-  "cbox (x0 - (b + \<bar>r\<bar>) *\<^sub>R One) (x0 + (b + \<bar>r\<bar>) *\<^sub>R One)"
-  using b_pos cball_in_cbox[of x0 "b + abs r"]
-  by unfold_locales (auto simp: cylinder intro!: scaleR_mono One_nonneg)
-
-sublocale ivp_rectangle_bounded_derivative \<subseteq>
-  euler_consistent i t "cbox (x0 - (b + \<bar>r\<bar>) *\<^sub>R One) (x0 + (b + \<bar>r\<bar>) *\<^sub>R One)" f' B B' r e
-proof
-  show "X \<subseteq> cbox (x0 - (b + \<bar>r\<bar>) *\<^sub>R One) (x0 + (b + \<bar>r\<bar>) *\<^sub>R One)" using lipschitz_on_domain .
-  fix t assume "t \<in> T"
-  have "cball (solution t) \<bar>r\<bar> \<subseteq> cball x0 (b + \<bar>r\<bar>)"
-    using solution_in_D[of t] cylinder \<open>t \<in> T\<close>
-    by (auto intro: cball_trans simp: interval)
-  also note cball_in_cbox
-  finally show "cball (solution t) \<bar>r\<bar> \<subseteq> cbox (x0 - (b + \<bar>r\<bar>) *\<^sub>R One) (x0 + (b + \<bar>r\<bar>) *\<^sub>R One)" .
-qed (simp_all add: interval)
+sublocale ivp_rectangle_bounded_derivative \<subseteq> euler_consistent T f X "cball x0 r" B f' B' solution t0 x0 "r - b" e
+proof -
+  interpret derivative_norm_bounded T X f f' B B'
+    using b_pos subset_cylinders
+    by (intro outer.derivative_norm_bounded_subset) (auto simp: X_def)
+  show "euler_consistent T f X (cball x0 r) B f' B' solution t0 x0 (r - b) e"
+    apply unfold_locales
+    subgoal by (rule solution_solves_ode)
+    subgoal by (rule solution_iv)
+    subgoal by (rule initial_time_in)
+    subgoal using subset_cylinders by (auto simp: X_def)
+    subgoal by (auto simp add: T_def dist_real_def)
+    subgoal premises prems for t
+    proof safe
+      fix x
+      have "dist x x0 \<le> dist x (solution t) + dist x0 (solution t)"
+        by (rule dist_triangle2)
+      also
+      assume "x \<in> cball (solution t) \<bar>r - b\<bar>"
+      then have "dist x (solution t) \<le> r - b"
+        using subset_cylinders
+        by (simp add: dist_commute)
+      also
+      have "{t0--t} \<subseteq> T" by (rule subset_T[OF prems])
+      then have "dist x0 (solution t) \<le> B * \<bar>t - t0\<bar>"
+        using subset_cylinders is_solution_in_cone[of t, OF prems solves_ode_on_subset[OF solution_solves_ode _ order_refl] solution_iv]
+        by simp
+      also have "B * abs (t - t0) \<le> b"
+        using e_bounded[OF prems] b_pos B_nonneg
+        by (auto simp: dist_real_def divide_simps ac_simps split: if_splits)
+      finally
+      show "x \<in> cball x0 r" by (simp add: dist_commute)
+    qed
+    done
+qed
 
 locale euler_on_rectangle =
-  ivp_rectangle_bounded_derivative i e b r B f' B' +
+  ivp_rectangle_bounded_derivative t0 T x0 b f X B f' B' r e +
   grid_from t t0 +
-  max_step1 t "t0 + e" B' euler_C r
-  for i::"'a::euclidean_space ivp" and t e b r B f' B'
+  max_step1 t "t0 + e" B' "outer.euler_C(TYPE('a::euclidean_space))" "r - b"
+  for t0 T x0 f X t e b r B f' B'
 
-sublocale euler_on_rectangle \<subseteq>
-  convergent?: euler_convergent i t "cbox (x0 - (b + \<bar>r\<bar>) *\<^sub>R One) (x0 + (b + \<bar>r\<bar>) *\<^sub>R One)" f' B B' r e
+sublocale euler_consistent \<subseteq>
+  consistent_one_step t0 "t0 + e" solution "euler_increment f" 1 "euler_C(TYPE('a))" r B'
+proof
+  show "0 < (1::nat)" by simp
+  show "0 \<le> euler_C(TYPE('a))" using euler_C_nonneg by simp
+  show "0 \<le> B'" using lipschitz_nonneg[OF lipschitz] iv_defined by simp
+  fix s x assume s: "s \<in> {t0 .. t0 + e}"
+  show "consistent solution s (t0 + e) (euler_C(TYPE('a))) 1 (euler_increment f)"
+    using interval s f_bounded f'_bounded f'
+      strip
+    by (intro euler_consistent_solution) auto
+  fix h
+  assume "h \<in> {0 .. t0 + e - s}"
+  have "lipschitz X' (euler_increment f h s) B'"
+    using s lipschitz interval strip
+    by (auto intro!: euler_lipschitz)
+  thus "lipschitz (cball (solution s) \<bar>r\<bar>) (euler_increment f h s) B'"
+    using s interval
+    by (auto intro: lipschitz_subset[OF _ lipschitz_area])
+qed
+
+sublocale euler_convergent \<subseteq>
+  convergent_one_step t0 "t0 + e" solution "euler_increment f" 1 "euler_C(TYPE('a))" r B' t
+  by unfold_locales (simp add: grid_from)
+
+sublocale euler_on_rectangle \<subseteq> convergent?: euler_convergent "cball x0 r" B f' B' solution t0 x0 "r - b" e T f X t
 proof unfold_locales
 qed (rule grid_min)
 
@@ -1088,7 +1202,7 @@ proof -
     \<le> sqrt DIM('a) * (B + 1) / 2 * B' / B' * ((exp (B' * e + 1) - 1) * max_stepsize j)"
     using assms convergence[OF assms] f'_bound_nonneg
     unfolding euler_C_def
-    by (simp add: euler_def grid_min[symmetric] solution_t0 ac_simps)
+    by (simp add: euler_def grid_min[symmetric] ac_simps)
   also have "\<dots> \<le> sqrt DIM('a) * (B + 1) / 2 * ((exp (B' * e + 1) - 1) * max_stepsize j)"
     using f_bound_nonneg f'_bound_nonneg
     by (auto intro!: mult_right_mono mult_nonneg_nonneg max_stepsize_nonneg add_nonneg_nonneg
@@ -1101,21 +1215,21 @@ end
 subsection \<open>Stability and Convergence of Approximate Euler \label{sec:rk-euler-stable}\<close>
 
 locale euler_rounded_on_rectangle =
-  ivp_rectangle_bounded_derivative i e1' b r B f' B' +
+  ivp_rectangle_bounded_derivative t0 T x0 b f X B f' B' r e1' +
   grid?: grid_from t t0' +
-  max_step_r_2?: max_step1 t "t0 + e2'" B' euler_C "r/2"
-  for i::"'a::executable_euclidean_space ivp" and t :: "nat \<Rightarrow> real" and t0' e1' e2'::real and x0' :: 'a
+  max_step_r_2?: max_step1 t "t0 + e2'" B' "euler_C(TYPE('a))" "(r - b)/2"
+  for t0 T x0 f and X::"'a::executable_euclidean_space set" and t :: "nat \<Rightarrow> real" and t0' e1' e2'::real and x0' :: "'a"
   and b r B f' B' +
-  fixes g::"(real\<times>'a)\<Rightarrow>'a" and e::int
+  fixes g::"real \<Rightarrow> 'a \<Rightarrow> 'a" and e::int
   assumes t0_float: "t0 = t0'"
   assumes ordered_bounds: "e1' \<le> e2'"
-  assumes approx_f_e: "\<And>j x. t j \<le> t0 + e1' \<Longrightarrow> dist (f (t j, x)) ((g (t j, x))) \<le> sqrt (DIM('a)) * 2 powr -e"
-  assumes initial_error: "dist x0 (x0') \<le> euler_C / B' * (exp 1 - 1) * stepsize 0"
-  assumes rounding_error: "\<And>j. t j \<le> t0 + e1' \<Longrightarrow> sqrt (DIM('a)) * 2 powr -e \<le> euler_C / 2 * stepsize j"
+  assumes approx_f_e: "\<And>j x. t j \<le> t0 + e1' \<Longrightarrow> dist (f (t j) x) ((g (t j) x)) \<le> sqrt (DIM('a)) * 2 powr -e"
+  assumes initial_error: "dist x0 (x0') \<le> euler_C(TYPE('a)) / B' * (exp 1 - 1) * stepsize 0"
+  assumes rounding_error: "\<And>j. t j \<le> t0 + e1' \<Longrightarrow> sqrt (DIM('a)) * 2 powr -e \<le> euler_C(TYPE('a)) / 2 * stepsize j"
 begin
 
-lemma approx_f: "t j \<le> t0 +  e1' \<Longrightarrow> dist (f (t j, x)) ((g (t j, x)))
-    \<le> euler_C / 2 * stepsize j"
+lemma approx_f: "t j \<le> t0 +  e1' \<Longrightarrow> dist (f (t j) (x)) ((g (t j) (x)))
+    \<le> euler_C(TYPE('a)) / 2 * stepsize j"
   using approx_f_e[of j x] rounding_error[of j] by auto
 
 lemma t0_le: "t 0 \<le> t0 + e1'"
@@ -1127,15 +1241,15 @@ end
 sublocale euler_rounded_on_rectangle \<subseteq> grid'?: grid_from t t0'
   using grid t0_float grid_min by unfold_locales auto
 
-sublocale euler_rounded_on_rectangle \<subseteq> max_step_r?: max_step1 t "t0 + e2'" B' euler_C r
+sublocale euler_rounded_on_rectangle \<subseteq> max_step_r?: max_step1 t "t0 + e2'" B' "euler_C(TYPE('a))" "r - b"
 proof unfold_locales
   fix j
-  assume "(t j) \<le> t0 + e2'"
-  moreover with grid_mono[of 0 j] have "t 0 \<le> t0 + e2'" by (simp add: less_eq_float_def)
+  assume *: "(t j) \<le> t0 + e2'"
+  moreover from * grid_mono[of 0 j] have "t 0 \<le> t0 + e2'" by (simp add: less_eq_float_def)
   ultimately show "max_stepsize j
-        \<le> \<bar>r\<bar> * B' / euler_C / (exp (B' * (t0 + e2' - (t 0)) + 1) - 1)"
+        \<le> \<bar>r - b\<bar> * B' / euler_C(TYPE('a)) / (exp (B' * (t0 + e2' - (t 0)) + 1) - 1)"
     using max_step_mono_r lipschitz B_nonneg f'_bound_nonneg
-    by (auto simp: less_eq_float_def euler_C_def mult_nonneg_nonneg)
+    by (auto simp: less_eq_float_def euler_C_def)
 qed
 
 lemma max_step1_mono:
@@ -1161,52 +1275,52 @@ proof -
   qed
 qed
 
-sublocale euler_rounded_on_rectangle \<subseteq> max_step_r1?: max_step1 t "t0 + e1'" B' euler_C r
+sublocale euler_rounded_on_rectangle \<subseteq> max_step_r1?: max_step1 t "t0 + e1'" B' "euler_C(TYPE('a))" "r - b"
   by (rule max_step1_mono[of t, OF t0_le add_left_mono[OF ordered_bounds] f'_bound_nonneg euler_C_nonneg])
     unfold_locales
 
-sublocale euler_rounded_on_rectangle \<subseteq> c?: euler_on_rectangle i t e1' b r B f' B'
+sublocale euler_rounded_on_rectangle \<subseteq> c?: euler_on_rectangle t0 T x0 f X t e1' b r B f' B'
   using t0_float grid_min by unfold_locales simp
 
 sublocale euler_rounded_on_rectangle \<subseteq>
-  consistent_one_step "t 0" "t0 + e1'" solution "euler_increment f" 1 euler_C r B'
+  consistent_one_step "t 0" "t0 + e1'" solution "euler_increment f" 1 "euler_C(TYPE('a))" "r - b" B'
   using consistent_nonneg consistent lipschitz_nonneg lipschitz_incr t0_float grid_min
   by unfold_locales simp_all
 
-sublocale euler_rounded_on_rectangle \<subseteq> max_step1 t "t0 + e1'" B' euler_C "r / 2"
+sublocale euler_rounded_on_rectangle \<subseteq> max_step1 t "t0 + e1'" B' "euler_C(TYPE('a))" "(r - b) / 2"
   by (rule max_step1_mono[of t, OF t0_le add_left_mono[OF ordered_bounds] f'_bound_nonneg euler_C_nonneg])
     unfold_locales
 
 sublocale euler_rounded_on_rectangle \<subseteq>
   one_step?:
-  rounded_one_step t "t0 + e1'" solution "euler_increment f" 1 euler_C r B' "euler_increment' e g" x0'
+  rounded_one_step t "t0 + e1'" solution "euler_increment f" 1 "euler_C(TYPE('a))" "r - b" B' "euler_increment' e g" x0'
 proof
   fix h j x assume "t j \<le> t0 + e1'"
   have "dist (euler_increment f (h) (t j) (x))
         ((euler_increment' e g h (t j) x)) =
-    dist (f (t j, x)) ((eucl_down e (g (t j, x))))"
+    dist (f (t j) (x)) ((eucl_down e (g (t j) (x))))"
     by (simp add: euler_increment euler_float_increment)
   also
   have "... \<le>
-    dist (f (t j, x)) ((g (t j, x))) +
-    dist ((g (t j, x))) ((eucl_down e (g (t j, x))))"
+    dist (f (t j) (x)) ((g (t j) (x))) +
+    dist ((g (t j) (x))) ((eucl_down e (g (t j) (x))))"
     by (rule dist_triangle)
   also
   from approx_f[OF \<open>t j \<le> t0 + e1'\<close>]
-  have "dist (f (t j, x)) ((g (t j, x))) \<le>
-    euler_C / 2 * stepsize j" .
+  have "dist (f (t j) (x)) ((g (t j) (x))) \<le>
+    euler_C(TYPE('a)) / 2 * stepsize j" .
   also
-  from eucl_truncate_down_correct[of "g (t j, x)" e]
-  have "dist ((g (t j, x))) ((eucl_down e (g (t j, x)))) \<le> sqrt (DIM('a)) * 2 powr - e" by simp
+  from eucl_truncate_down_correct[of "g (t j) (x)" e]
+  have "dist ((g (t j) (x))) ((eucl_down e (g (t j) (x)))) \<le> sqrt (DIM('a)) * 2 powr - e" by simp
   also
-  have "sqrt (DIM('a)) * 2 powr -e \<le> euler_C / 2 * stepsize j"
+  have "sqrt (DIM('a)) * 2 powr -e \<le> euler_C(TYPE('a)) / 2 * stepsize j"
     using rounding_error \<open>t j \<le> t0 + e1'\<close> .
   finally
-  have "dist (euler_increment f (h) (t j) (x)) ((euler_increment' e g h (t j) x)) \<le> euler_C * stepsize j"
+  have "dist (euler_increment f (h) (t j) (x)) ((euler_increment' e g h (t j) x)) \<le> euler_C(TYPE('a)) * stepsize j"
     by arith
-  thus "dist (euler_increment f h (t j) (x)) ((euler_increment' e g h (t j) x)) \<le> euler_C * stepsize j ^ 1"
+  thus "dist (euler_increment f h (t j) (x)) ((euler_increment' e g h (t j) x)) \<le> euler_C(TYPE('a)) * stepsize j ^ 1"
     by simp
-qed (insert initial_error grid_min solution_t0, simp_all)
+qed (insert initial_error, simp add: grid_min[symmetric])
 
 context euler_rounded_on_rectangle begin
 
@@ -1218,8 +1332,8 @@ proof -
   have "dist ((euler' e g x0' t j)) (euler f x0 t j) \<le>
     sqrt DIM('a) * (B + 1) / 2 * B' / B' * (exp (B' * e1' + 1) - 1) * max_stepsize j"
     using assms stability[OF assms]
-    unfolding grid_min[symmetric] solution_t0 euler_C_def
-    by (auto simp add: euler_def euler'_def t0_float)
+    unfolding grid_min[symmetric] euler_C_def sol_iv
+    by (auto simp add: euler_def euler'_def)
   also have "\<dots> \<le> sqrt DIM('a) * (B + 1) / 2 * ((exp (B' * e1' + 1) - 1) * max_stepsize j)"
     using f_bound_nonneg f'_bound_nonneg
     by (auto intro!: mult_right_mono mult_nonneg_nonneg max_stepsize_nonneg add_nonneg_nonneg

@@ -225,11 +225,11 @@ lemma ccw'_sortedP_polychain_of3:
   using assms
 proof (induct xs arbitrary: x0 u v w)
   case Nil
-  hence "ccw' 0 u v" "ccw' 0 v w" "ccw' 0 u w"
+  then have *: "ccw' 0 u v" "ccw' 0 v w" "ccw' 0 u w"
     by (auto intro!: linorder_list0.sortedP.Nil linorder_list0.sortedP.Cons
       elim!: linorder_list0.sortedP_Cons simp: ac_simps)
-  moreover hence "ccw' 0 (u + v) (u + (v + w))"
-    by (metis add.assoc ccw'.add1 ccw'.add3_self)
+  moreover have "ccw' 0 (u + v) (u + (v + w))"
+    by (metis add.assoc ccw'.add1 ccw'.add3_self *(2-))
   ultimately show ?case
     by (auto intro!: linorder_list0.sortedP.Nil linorder_list0.sortedP.Cons
       elim!: linorder_list0.sortedP_Cons simp: ac_simps ccw'.translate_origin ccw'.add3)

@@ -16,9 +16,8 @@ primrec prove_pos::"nat \<Rightarrow> nat \<Rightarrow> real \<Rightarrow> real 
     'a::executable_euclidean_space aform \<Rightarrow> bool" where
   "prove_pos 0 p t st F X = False"
 | "prove_pos (Suc i) p t st F X = (if 0 < Inf_aform' p (the (F p t X [])) then True else
-    case split_aform_largest p st X of
-      [a, b] \<Rightarrow> prove_pos i p t st F a \<and> prove_pos i p t st F b
-    | _ \<Rightarrow> False)"
+    let (a, b) = split_aform_largest p st X in prove_pos i p t st F a \<and> prove_pos i p t st F b
+    )"
 
 approximate_affine schwefel "\<lambda>(x1, x2, x3).
   (FloatR 58806 0 * inverse (FloatR 6103515625 14) +

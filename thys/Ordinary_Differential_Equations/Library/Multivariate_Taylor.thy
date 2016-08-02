@@ -492,7 +492,7 @@ proof -
     also have "f (x + (z - x)) - f x = integral {0..1} (\<lambda>t. (f' (x + t *\<^sub>R (z - x))) (z - x))"
       using \<open>dist x z < \<eta>\<close>
       by (intro mvt_integral[of "ball x \<eta>" f f' x "z - x"])
-        (auto simp: dist_norm norm_minus_commute at_within_ball \<open>0 < \<eta>\<close>
+        (auto simp: dist_norm norm_minus_commute at_within_ball \<open>0 < \<eta>\<close> mem_ball
           intro!: le_less_trans[OF mult_left_le_one_le] derivative_eq_intros dist_in_G \<open>x \<in> J\<close>)
     also have
       "(integral {0..1} (\<lambda>t. (f' (x + t *\<^sub>R (z - x))) (z - x)) - (f' x) (z - x)) =

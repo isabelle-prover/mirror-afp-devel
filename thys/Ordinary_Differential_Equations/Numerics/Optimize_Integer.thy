@@ -5,11 +5,6 @@ imports
   "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 
-text \<open>TODO: Missing? code post rule?\<close>
-
-lemma [code_post]: "int_of_integer (- 1) = - 1"
-  by simp
-
 text \<open>shallowly embed log and power\<close>
 
 definition log2::"int \<Rightarrow> int"
