@@ -796,6 +796,14 @@ lemma solves_ode_on_union_closed:
   using connection_solves_ode[OF assms]
   by simp
 
+lemma
+  solves_ode_subset_range:
+  assumes x: "(x solves_ode f) T X"
+  assumes s: "x ` T \<subseteq> Y"
+  shows "(x solves_ode f) T Y"
+  using assms
+  by (auto intro!: solves_odeI dest!: solves_odeD)
+
 
 subsection \<open>unique solution with initial value\<close>
 
@@ -1080,6 +1088,28 @@ lemma usolves_ode_solves_odeI:
   apply (rule usolves_ode_congI)
   subgoal using assms by (metis set_eq_subset usolves_odeD(2) usolves_odeD(3) usolves_odeD(4))
   by auto
+
+lemma usolves_ode_subset_range:
+  assumes x: "(x usolves_ode f from t0) T X"
+  assumes r: "x ` T \<subseteq> Y" and "Y \<subseteq> X"
+  shows "(x usolves_ode f from t0) T Y"
+proof (rule usolves_odeI)
+  note usolves_odeD[OF x]
+  show "(x solves_ode f) T Y" by (rule solves_ode_subset_range; fact)
+  show "t0 \<in> T" "is_interval T" by fact+
+  fix z t
+  assume s: "{t0 -- t} \<subseteq> T" and z: "(z solves_ode f) {t0 -- t} Y" and z0: "z t0 = x t0"
+  then have "t0 \<in> {t0 -- t}" "is_interval {t0 -- t}"
+    by auto
+  moreover note s
+  moreover have "(z solves_ode f) {t0--t} X"
+    using solves_odeD[OF z] \<open>Y \<subseteq> X\<close>
+    by (intro solves_ode_subset_range[OF z]) force
+  moreover note z0
+  moreover have "t \<in> {t0 -- t}" by simp
+  ultimately show "z t = x t"
+    by (rule usolves_odeD[OF x])
+qed
 
 
 subsection \<open>ivp on interval\<close>
