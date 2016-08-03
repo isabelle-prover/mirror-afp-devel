@@ -280,6 +280,9 @@ var no_articles = {no_articles:s};
 var no_loc = {no_loc:s};
 var no_authors = {no_authors:s};
 var no_authors_series = {no_authors_series:s};
+var all_articles = {all_articles:s};
+var years_loc_articles = {years_loc_articles:s};
+var loc_articles = {loc_articles:s};
 </script>
 """
 

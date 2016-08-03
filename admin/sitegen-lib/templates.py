@@ -332,7 +332,10 @@ def generate_statistics(entries):
 			                                 for y
 			                                 in sorted(STAT_FIGURES['author_years_series'])])
 			                    + "]",
-			most_used = most_used
+			most_used = most_used,
+			all_articles = "['" + "','".join(STAT_FIGURES['all_articles']) + "']",
+			loc_articles = "[" + ",".join(map(str, STAT_FIGURES['loc_articles'])) + "]",
+			years_loc_articles = "[" + ",".join(map(str, STAT_FIGURES['years_loc_articles'])) + "]"
 			)
 
 

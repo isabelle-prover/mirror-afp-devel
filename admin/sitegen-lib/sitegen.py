@@ -409,6 +409,19 @@ if __name__ == "__main__":
 	STAT_FIGURES['author_years'] = author_years
 	STAT_FIGURES['author_years_series'] = author_years_series
 	STAT_FIGURES['most_used10'] = most_used10
+	all_articles = sorted(afp_dict, key = lambda x: afp_dict[x].publish_date)
+	years = [2004]
+	# FIXME: All of it
+	for i in range(1, len(all_articles)):
+		if (afp_dict[all_articles[i]].publish_date.year !=
+		  afp_dict[all_articles[i - 1]].publish_date.year):
+			years.append(afp_dict[all_articles[i]].publish_date.year)
+		else:
+			years.append("")
+	years += ""
+	STAT_FIGURES['all_articles'] = all_articles
+	STAT_FIGURES['years_loc_articles'] = years
+	STAT_FIGURES['loc_articles'] = [afp_dict[a].loc for a in all_articles]
 
 	# perform check
 	if options.do_check:
