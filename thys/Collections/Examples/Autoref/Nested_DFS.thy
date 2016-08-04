@@ -1101,7 +1101,6 @@ export_code
   nat_of_integer
   integer_of_nat
   in SML module_name HPY_new
-  file "nested_dfs.sml"
 
 ML_val {*
   @{code ndfs_impl} (@{code succ_of_list_impl_int} [(1,2),(2,3),(2,7),(7,1)])
