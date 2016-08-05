@@ -6,6 +6,8 @@ afp-export-20??-??-??
 *~
 .DS_Store
 
+web/statistics.shtml
+
 thys/Tree-Automata/code/haskell/generated/Nat.hs
 thys/Tree-Automata/code/haskell/generated/Ta.hs
 thys/Tree-Automata/code/ml/generated/Ta.ML
