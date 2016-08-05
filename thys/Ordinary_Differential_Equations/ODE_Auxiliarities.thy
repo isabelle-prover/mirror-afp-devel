@@ -2123,7 +2123,7 @@ proof -
     apply (safe intro!: integral_eucl_le)
     using \<open>0 \<in> {l .. u}\<close>
     apply (auto intro!: assms
-      intro: integrable_continuous_real  integrable_spike[where s="{t0, h}", OF _ _ f_int] 
+      intro: integrable_continuous_real  integrable_spike[where s="{t0, h}", OF _ _ f_int]
       simp: eucl_le[where 'a='a] divide_simps
       split: if_split_asm)
     done
@@ -2501,7 +2501,7 @@ lemma gronwall_general:
   shows "g t \<le> C * exp (K * (t - a))"
 proof -
   have G_pos: "\<And>t. t \<in> {a..b} \<Longrightarrow> 0 < G t"
-    by (auto simp: G_def intro!: add_pos_nonneg mult_nonneg_nonneg Integration.integral_nonneg
+    by (auto simp: G_def intro!: add_pos_nonneg mult_nonneg_nonneg integral_nonneg
       integrable_continuous_real assms intro: less_imp_le continuous_on_subset)
   have "g t \<le> G t" using assms by auto
   also
@@ -2541,7 +2541,7 @@ lemma gronwall_general_left:
   shows "g t \<le> C * exp (-K * (t - b))"
 proof -
   have G_pos: "\<And>t. t \<in> {a..b} \<Longrightarrow> 0 < G t"
-    by (auto simp: G_def intro!: add_pos_nonneg mult_nonneg_nonneg Integration.integral_nonneg
+    by (auto simp: G_def intro!: add_pos_nonneg mult_nonneg_nonneg integral_nonneg
       integrable_continuous_real assms intro: less_imp_le continuous_on_subset)
   have "g t \<le> G t" using assms by auto
   also
@@ -2691,7 +2691,7 @@ proof -
     by (auto intro!: integrable_continuous_real continuous_intros)
   hence "integral {a..b} (\<lambda>x. F x *\<^sub>R g x) + integral {a..b} (\<lambda>x. f x *\<^sub>R G x) =
       integral {a..b} (\<lambda>x. F x *\<^sub>R g x + f x *\<^sub>R G x)"
-    by (rule Integration.integral_add[symmetric])
+    by (rule integral_add[symmetric])
   also
   note prod = has_vector_derivative_scaleR[OF f g, rule_format]
   have "((\<lambda>x. F x *\<^sub>R g x + f x *\<^sub>R G x) has_integral F b *\<^sub>R G b - F a *\<^sub>R G a) {a..b}"
