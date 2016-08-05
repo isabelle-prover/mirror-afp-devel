@@ -2317,7 +2317,7 @@ proof -
         show ?thesis
         proof (cases "?U = {}")
           case True
-          with T show ?thesis by (simp add: floor_nat_add_id)
+          with T show ?thesis by (simp)
         next
           case False
           from U_intv[OF False] have "0 \<le> Min ?U" "Min ?U < 1" by auto
@@ -2335,11 +2335,11 @@ proof -
         show ?thesis
         proof (cases "?L = {}")
           case True
-          with T show ?thesis by (simp add: floor_nat_add_id)
+          with T show ?thesis by (simp)
         next
           case False
           from L_intv[OF False] have "0 \<le> Max ?L" "Max ?L < 1" by auto
-          from floor_nat_add_id[OF this] T False show ?thesis by (auto, linarith)
+          from floor_nat_add_id[OF this] T False show ?thesis by (auto)
         qed
       qed
       { assume "?L \<noteq> {}" "?U \<noteq> {}"
