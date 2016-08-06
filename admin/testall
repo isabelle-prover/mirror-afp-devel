@@ -61,10 +61,10 @@ THYS="$(dirname "$0")/../thys"
 
 [ "$1" = "-?" ] && usage
 
-[ "$ISABELLE_RELEASES" == "" ] && fail "ISABELLE_RELEASES not set"
 # for dev version:
 ISABELLE_TOOL=isabelle
 # for release version:
+# [ "$ISABELLE_RELEASES" == "" ] && fail "ISABELLE_RELEASES not set"
 # ISABELLE_TOOL="$ISABELLE_RELEASES/Isabelle2016/bin/isabelle"
 check_isabelle
 
