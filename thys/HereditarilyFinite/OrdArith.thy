@@ -1,10 +1,10 @@
-chapter\<open>Addition, Sequences and their Concatenation\<close>
+chapter \<open>Addition, Sequences and their Concatenation\<close>
 
 theory OrdArith imports Rank
 begin
 
 section \<open>Generalised Addition --- Also for Ordinals\<close>
-text\<open>Source: Laurence Kirby, Addition and multiplication of sets
+text \<open>Source: Laurence Kirby, Addition and multiplication of sets
       Math. Log. Quart. 53, No. 1, 52-65 (2007) / DOI 10.1002/malq.200610026
       @{url "http://faculty.baruch.cuny.edu/lkirby/mlqarticlejan2007.pdf"}\<close>
 
@@ -30,12 +30,12 @@ lemma hadd_hinsert_right: "x @+ hinsert y z = hinsert (x @+ y) (x @+ z)"
 lemma hadd_succ_right [simp]: "x @+ succ y = succ (x @+ y)"
   by (metis hadd_hinsert_right succ_def)
 
-lemma not_add_less_right: "~ (x @+ y < x)"
+lemma not_add_less_right: "\<not> (x @+ y < x)"
   apply (induct y, auto)
   apply (metis less_supI1 hadd order_less_le)
   done
 
-lemma not_add_mem_right: "~ (x @+ y \<^bold>\<in> x)"
+lemma not_add_mem_right: "\<not> (x @+ y \<^bold>\<in> x)"
   by (metis hadd hmem_not_refl hunion_iff)
 
 lemma hadd_0_left [simp]: "0 @+ x = x"
@@ -49,6 +49,7 @@ lemma hadd_assoc: "(x @+ y) @+ z = x @+ (y @+ z)"
 
 lemma RepFun_hadd_disjoint: "x \<sqinter> RepFun y (op @+ x) = 0"
   by (metis hf_equalityI RepFun_iff hinter_iff not_add_mem_right hmem_hempty)
+
 
 subsection \<open>Cancellation laws for addition\<close>
 
@@ -91,6 +92,7 @@ lemma hadd_commute: "Ord x \<Longrightarrow> Ord y \<Longrightarrow> x @+ y = y 
 
 lemma hadd_cancel_left [simp]: "Ord x \<Longrightarrow> y @+ x = z @+ x \<longleftrightarrow> y=z"
   by (induct x rule: Ord_induct2) auto
+
 
 subsection \<open>The predecessor function\<close>
 
@@ -164,10 +166,10 @@ lemma Seq_append: "Seq s1 k1 \<Longrightarrow> Seq s2 k2 \<Longrightarrow> Seq (
   apply (metis Seq_def Seq_iff_app hdomainI hmem_shift_add_iff)
   done
 
-lemma app_hunion1: "~ x \<^bold>\<in> hdomain g \<Longrightarrow> app (f \<squnion> g) x = app f x"
+lemma app_hunion1: "x \<^bold>\<notin> hdomain g \<Longrightarrow> app (f \<squnion> g) x = app f x"
   by (auto simp: app_def) (metis hdomainI)
 
-lemma app_hunion2: "~ x \<^bold>\<in> hdomain f \<Longrightarrow> app (f \<squnion> g) x = app g x"
+lemma app_hunion2: "x \<^bold>\<notin> hdomain f \<Longrightarrow> app (f \<squnion> g) x = app g x"
   by (auto simp: app_def) (metis hdomainI)
 
 lemma Seq_append_app1: "Seq s k \<Longrightarrow> l \<^bold>\<in> k \<Longrightarrow> app (seq_append k s s') l = app s l"
@@ -178,6 +180,7 @@ lemma Seq_append_app1: "Seq s k \<Longrightarrow> l \<^bold>\<in> k \<Longrighta
 lemma Seq_append_app2: "Seq s1 k1 \<Longrightarrow> Seq s2 k2 \<Longrightarrow> l = k1 @+ j \<Longrightarrow> app (seq_append k1 s1 s2) l = app s2 j"
   by (metis seq_append_def app_hunion2 app_shift hdomain_restr hinter_iff not_add_mem_right)
 
+
 section \<open>Nonempty sequences indexed by ordinals\<close>
 
 definition OrdDom where
@@ -186,7 +189,7 @@ definition OrdDom where
 lemma OrdDom_insf: "\<lbrakk>OrdDom s; Ord k\<rbrakk> \<Longrightarrow> OrdDom (insf s (succ k) y)"
   by (auto simp: insf_def OrdDom_def)
 
-lemma OrdDom_hunion [simp]: "OrdDom (s1 \<squnion> s2) \<longleftrightarrow> OrdDom s1 & OrdDom s2"
+lemma OrdDom_hunion [simp]: "OrdDom (s1 \<squnion> s2) \<longleftrightarrow> OrdDom s1 \<and> OrdDom s2"
   by (auto simp: OrdDom_def)
 
 lemma OrdDom_hrestrict: "OrdDom s \<Longrightarrow> OrdDom (hrestrict s A)"
@@ -196,9 +199,9 @@ lemma OrdDom_shift: "\<lbrakk>OrdDom s; Ord k\<rbrakk> \<Longrightarrow> OrdDom 
   by (auto simp: OrdDom_def shift_def Ord_hadd)
 
 
-text\<open>A sequence of positive length ending with @{term y}\<close>
+text \<open>A sequence of positive length ending with @{term y}\<close>
 definition LstSeq :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
-  where "LstSeq s k y \<equiv> Seq s (succ k) & Ord k & \<langle>k,y\<rangle> \<^bold>\<in> s & OrdDom s"
+  where "LstSeq s k y \<equiv> Seq s (succ k) \<and> Ord k \<and> \<langle>k,y\<rangle> \<^bold>\<in> s \<and> OrdDom s"
 
 lemma LstSeq_imp_Seq_succ: "LstSeq s k y \<Longrightarrow> Seq s (succ k)"
   by (metis LstSeq_def)
@@ -254,6 +257,7 @@ lemma LstSeq_append:
 lemma LstSeq_app [simp]: "LstSeq s k y \<Longrightarrow> app s k = y"
   by (metis LstSeq_def Seq_imp_eq_app)
 
+
 subsection \<open>Sequence-building operators\<close>
 
 definition Builds :: "(hf \<Rightarrow> bool) \<Rightarrow> (hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool) \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
@@ -299,7 +303,8 @@ proof -
   by (auto simp: BuildSeq_def LstSeq_trunc)
 qed
 
-subsection\<open>Showing that Sequences can be Constructed\<close>
+
+subsection \<open>Showing that Sequences can be Constructed\<close>
 
 lemma Builds_insf: "Builds B C s l \<Longrightarrow> LstSeq s k z \<Longrightarrow> l \<^bold>\<in> succ k \<Longrightarrow> Builds B C (insf s (succ k) y) l"
 by (auto simp: HBall_def hmem_not_refl Builds_def app_insf_LstSeq_if simp del: succ_iff)
@@ -453,7 +458,8 @@ lemma BuildSeq_1: "B y \<Longrightarrow> BuildSeq B C \<lbrace>\<langle>0, y\<ra
 lemma BuildSeq_exI: "B t \<Longrightarrow> \<exists>s k. BuildSeq B C s k t"
   by (metis BuildSeq_1)
 
-subsection\<open>Proving Properties of Given Sequences\<close>
+
+subsection \<open>Proving Properties of Given Sequences\<close>
 
 lemma BuildSeq_succ_E:
     assumes s: "BuildSeq B C s k y"
@@ -551,7 +557,7 @@ apply (auto intro: B C)
 done
 
 
-section\<open>A Unique Predecessor for every non-empty set\<close>
+section \<open>A Unique Predecessor for every non-empty set\<close>
 
 lemma Rep_hf_0 [simp]: "Rep_hf 0 = 0"
   by (metis Abs_hf_inverse HF.HF_def UNIV_I Zero_hf_def image_empty set_encode_empty)

@@ -1,11 +1,11 @@
-chapter\<open>V-Sets, Epsilon Closure, Ranks\<close>
+chapter \<open>V-Sets, Epsilon Closure, Ranks\<close>
 
 theory Rank imports Ordinal
 begin
 
-section\<open>V-sets\<close>
+section \<open>V-sets\<close>
 
-text\<open>Definition 4.1\<close>
+text \<open>Definition 4.1\<close>
 definition Vset :: "hf \<Rightarrow> hf"
   where "Vset x = ord_rec 0 HPow (\<lambda>z. 0) x"
 
@@ -15,16 +15,16 @@ lemma Vset_0 [simp]: "Vset 0 = 0"
 lemma Vset_succ [simp]: "Ord k \<Longrightarrow> Vset (succ k) = HPow (Vset k)"
   by (simp add: Vset_def)
 
-lemma Vset_non [simp]: "~ Ord x \<Longrightarrow> Vset x = 0"
+lemma Vset_non [simp]: "\<not> Ord x \<Longrightarrow> Vset x = 0"
   by (simp add: Vset_def)
 
-text\<open>Theorem 4.2(a)\<close>
+text \<open>Theorem 4.2(a)\<close>
 lemma Vset_mono_strict:
-  assumes "Ord m" "n <: m" shows "Vset n < Vset m"
+  assumes "Ord m" "n \<^bold>\<in> m" shows "Vset n < Vset m"
 proof -
   have n: "Ord n"
     by (metis Ord_in_Ord assms)
-  hence "Ord m \<Longrightarrow> n <: m \<Longrightarrow> Vset n < Vset m"
+  hence "Ord m \<Longrightarrow> n \<^bold>\<in> m \<Longrightarrow> Vset n < Vset m"
   proof (induct n arbitrary: m rule: Ord_induct2)
     case 0 thus ?case
       by (metis HPow_iff Ord_cases Vset_0 Vset_succ hemptyE le_imp_less_or_eq zero_le)
@@ -40,7 +40,7 @@ lemma Vset_mono: "\<lbrakk>Ord m; n \<le> m\<rbrakk> \<Longrightarrow> Vset n \<
   by (metis Ord_linear2 Vset_mono_strict Vset_non order.order_iff_strict
             order_class.order.antisym zero_le)
 
-text\<open>Theorem 4.2(b)\<close>
+text \<open>Theorem 4.2(b)\<close>
 lemma Vset_Transset: "Ord m \<Longrightarrow> Transset (Vset m)"
   by (induct rule: Ord_induct2) (auto simp: Transset_def)
 
@@ -51,8 +51,8 @@ lemma Ord_inf [simp]: "Ord k \<Longrightarrow> Ord l \<Longrightarrow> Ord (k \<
   by (metis Ord_linear_le inf_absorb2 le_iff_inf)
 
 
-text\<open>Theorem 4.3\<close>
-lemma Vset_universal: "\<exists>n. Ord n & x \<^bold>\<in> Vset n"
+text \<open>Theorem 4.3\<close>
+lemma Vset_universal: "\<exists>n. Ord n \<and> x \<^bold>\<in> Vset n"
 proof (induct x rule: hf_induct)
   case 0 thus ?case
     by (metis HPow_iff Ord_0 Ord_succ Vset_succ zero_le)
@@ -70,34 +70,35 @@ next
     by (metis Ord_succ Ord_sup)
 qed
 
-section\<open>Least Ordinal Operator\<close>
 
-text\<open>Definition 4.4. For every x, let rank(x) be the least ordinal n such that...\<close>
+section \<open>Least Ordinal Operator\<close>
+
+text \<open>Definition 4.4. For every x, let rank(x) be the least ordinal n such that...\<close>
 
 lemma Ord_minimal:
-   "Ord k \<Longrightarrow> P k \<Longrightarrow> \<exists>n. Ord n & P n & (\<forall>m. Ord m & P m \<longrightarrow> n \<le> m)"
+   "Ord k \<Longrightarrow> P k \<Longrightarrow> \<exists>n. Ord n \<and> P n \<and> (\<forall>m. Ord m \<and> P m \<longrightarrow> n \<le> m)"
   by (induct k rule: Ord_induct) (metis Ord_linear2)
 
-lemma OrdLeastI: "Ord k \<Longrightarrow> P k \<Longrightarrow> P(LEAST n. Ord n & P n)"
+lemma OrdLeastI: "Ord k \<Longrightarrow> P k \<Longrightarrow> P(LEAST n. Ord n \<and> P n)"
 by (metis (lifting, no_types) Least_equality Ord_minimal)
 
-lemma OrdLeast_le: "Ord k \<Longrightarrow> P k \<Longrightarrow> (LEAST n. Ord n & P n) \<le> k"
+lemma OrdLeast_le: "Ord k \<Longrightarrow> P k \<Longrightarrow> (LEAST n. Ord n \<and> P n) \<le> k"
 by (metis (lifting, no_types) Least_equality Ord_minimal)
 
 lemma OrdLeast_Ord:
-  assumes "Ord k" "P k"shows "Ord(LEAST n. Ord n & P n)"
+  assumes "Ord k" "P k"shows "Ord(LEAST n. Ord n \<and> P n)"
 proof -
-  obtain n where "Ord n" "P n" "\<forall>m. Ord m & P m \<longrightarrow> n \<le> m"
+  obtain n where "Ord n" "P n" "\<forall>m. Ord m \<and> P m \<longrightarrow> n \<le> m"
     by (metis Ord_minimal assms)
   thus ?thesis
     by (metis (lifting) Least_equality)
 qed
 
 
-section\<open>Rank Function\<close>
+section \<open>Rank Function\<close>
 
 definition rank :: "hf \<Rightarrow> hf"
-  where "rank x = (LEAST n. Ord n & x \<^bold>\<in> Vset (succ n))"
+  where "rank x = (LEAST n. Ord n \<and> x \<^bold>\<in> Vset (succ n))"
 
 lemma [simp]: "rank 0 = 0"
   by (simp add: rank_def) (metis (lifting) HPow_iff Least_equality Ord_0 Vset_succ zero_le)
@@ -139,7 +140,7 @@ proof -
     by (metis Vset_non hemptyE)
 qed
 
-text\<open>Theorem 4.5\<close>
+text \<open>Theorem 4.5\<close>
 theorem rank_lt: "a \<^bold>\<in> b \<Longrightarrow> rank(a) < rank(b)"
   by (metis Vset_rank_lt hsubsetD le_Vset_rank)
 
@@ -176,21 +177,21 @@ qed
 lemma rank_hinsert [simp]: "rank (b \<triangleleft> a) = rank b \<squnion> succ(rank a)"
   by (metis hinsert_eq_sup rank_singleton rank_sup)
 
-text\<open>Definition 4.6. The transitive closure of @{term x} is
+text \<open>Definition 4.6. The transitive closure of @{term x} is
  the minimal transitive set @{term y} such that @{term"x\<le>y"}.\<close>
 
 
-section\<open>Epsilon Closure\<close>
+section \<open>Epsilon Closure\<close>
 
 definition
   eclose    :: "hf \<Rightarrow> hf"  where
-    "eclose X = \<Sqinter> \<lbrace>Y \<^bold>\<in> HPow(Vset (rank X)). Transset Y & X\<le>Y\<rbrace>"
+    "eclose X = \<Sqinter> \<lbrace>Y \<^bold>\<in> HPow(Vset (rank X)). Transset Y \<and> X\<le>Y\<rbrace>"
 
 lemma eclose_facts:
   shows Transset_eclose: "Transset (eclose X)"
    and  le_eclose: "X \<le> eclose X"
 proof -
-  have nz: "\<lbrace>Y \<^bold>\<in> HPow(Vset (rank X)). Transset Y & X\<le>Y\<rbrace> \<noteq> 0"
+  have nz: "\<lbrace>Y \<^bold>\<in> HPow(Vset (rank X)). Transset Y \<and> X\<le>Y\<rbrace> \<noteq> 0"
     by (simp add: eclose_def hempty_iff) (metis Ord_rank Vset_Transset le_Vset_rank order_refl)
   show "Transset (eclose X)" "X \<le> eclose X" using HInter_iff [OF nz]
     by (auto simp: eclose_def Transset_def)
@@ -199,7 +200,7 @@ qed
 lemma eclose_minimal:
   assumes Y: "Transset Y" "X\<le>Y" shows "eclose X \<le> Y"
 proof -
-  have "\<lbrace>Y \<^bold>\<in> HPow(Vset (rank X)). Transset Y & X\<le>Y\<rbrace> \<noteq> 0"
+  have "\<lbrace>Y \<^bold>\<in> HPow(Vset (rank X)). Transset Y \<and> X\<le>Y\<rbrace> \<noteq> 0"
     by (simp add: eclose_def hempty_iff) (metis Ord_rank Vset_Transset le_Vset_rank order_refl)
   moreover have "Transset (Y \<sqinter> Vset (rank X))"
     by (metis Ord_rank Transset_inf Vset_Transset Y(1))
@@ -245,7 +246,7 @@ lemma fst_in_eclose [simp]: "x \<^bold>\<in> eclose \<langle>x, y\<rangle>"
 lemma snd_in_eclose [simp]: "y \<^bold>\<in> eclose \<langle>x, y\<rangle>"
   by (metis eclose_hinsert hmem_hinsert hpair_def hunion_iff)
 
-text\<open>Theorem 4.7. rank(x) = rank(cl(x)).\<close>
+text \<open>Theorem 4.7. rank(x) = rank(cl(x)).\<close>
 lemma rank_eclose [simp]: "rank (eclose x) = rank x"
 proof (induct x rule: hf_induct)
   case 0 thus ?case by simp
@@ -255,9 +256,9 @@ next
 qed
 
 
-section\<open>Epsilon-Recursion\<close>
+section \<open>Epsilon-Recursion\<close>
 
-text\<open>Theorem 4.9.  Definition of a function by recursion on rank.\<close>
+text \<open>Theorem 4.9.  Definition of a function by recursion on rank.\<close>
 
 lemma hmem_induct [case_names step]:
   assumes ih: "\<And>x. (\<And>y. y \<^bold>\<in> x \<Longrightarrow> P y) \<Longrightarrow> P x" shows "P x"
@@ -274,11 +275,11 @@ qed
 
 definition
   hmem_rel :: "(hf * hf) set" where
-  "hmem_rel = trancl {(x,y). x <: y}"
+  "hmem_rel = trancl {(x,y). x \<^bold>\<in> y}"
 
 lemma wf_hmem_rel: "wf hmem_rel"
 proof -
-  have "wf {(x,y). x <: y}"
+  have "wf {(x,y). x \<^bold>\<in> y}"
     by (metis (full_types) hmem_induct wfPUNIVI wfP_def)
   thus ?thesis
     by (metis hmem_rel_def wf_trancl)
@@ -287,7 +288,7 @@ qed
 lemma hmem_eclose_le: "y \<^bold>\<in> x \<Longrightarrow> eclose y \<le> eclose x"
   by (metis Transset_def Transset_eclose eclose_minimal hsubsetD le_eclose)
 
-lemma hmem_rel_iff_hmem_eclose: "(x,y) \<in> hmem_rel \<longleftrightarrow> x <: eclose y"
+lemma hmem_rel_iff_hmem_eclose: "(x,y) \<in> hmem_rel \<longleftrightarrow> x \<^bold>\<in> eclose y"
 proof (unfold hmem_rel_def, rule iffI)
   assume "(x, y) \<in> trancl {(x, y). x \<^bold>\<in> y}"
   thus "x \<^bold>\<in> eclose y"
@@ -317,7 +318,7 @@ definition ecut :: "(hf \<Rightarrow> 'a) \<Rightarrow> hf \<Rightarrow> hf \<Ri
 lemma hmemrec: "hmemrec G a = G (ecut (hmemrec G) a) a"
   by (simp add: cut_def ecut_def hmem_rel_iff_hmem_eclose def_wfrec [OF hmemrec_def wf_hmem_rel])
 
-text\<open>This form avoids giant explosions in proofs.\<close>
+text \<open>This form avoids giant explosions in proofs.\<close>
 lemma def_hmemrec: "f \<equiv> hmemrec G \<Longrightarrow> f a = G (ecut (hmemrec G) a) a"
   by (metis hmemrec)
 
@@ -330,7 +331,7 @@ lemma RepFun_ecut: "y \<le> z \<Longrightarrow> RepFun y (ecut f z) = RepFun y f
   apply (metis ecut_apply le_eclose hsubsetD)
   done
 
-text\<open>Now, a stronger induction rule, for the transitive closure of membership\<close>
+text \<open>Now, a stronger induction rule, for the transitive closure of membership\<close>
 lemma hmem_rel_induct [case_names step]:
   assumes ih: "\<And>x. (\<And>y. (y,x) \<in> hmem_rel \<Longrightarrow> P y) \<Longrightarrow> P x" shows "P x"
 proof -

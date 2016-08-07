@@ -12,21 +12,21 @@ end
 
 instantiation unit :: finitary
 begin
-  definition hf_of_unit_def: "hf_of (u::unit) == 0"
+  definition hf_of_unit_def: "hf_of (u::unit) \<equiv> 0"
   instance
     by intro_classes (auto simp: inj_on_def hf_of_unit_def)
 end
 
 instantiation bool :: finitary
 begin
-  definition hf_of_bool_def: "hf_of b == if b then 1 else 0"
+  definition hf_of_bool_def: "hf_of b \<equiv> if b then 1 else 0"
   instance 
     by intro_classes (auto simp: inj_on_def hf_of_bool_def)
 end
 
 instantiation nat :: finitary
 begin
-  definition hf_of_nat_def: "hf_of == ord_of"
+  definition hf_of_nat_def: "hf_of \<equiv> ord_of"
   instance 
     by intro_classes (auto simp: inj_on_def hf_of_nat_def)
 end
@@ -34,16 +34,16 @@ end
 instantiation int :: finitary
 begin
   definition hf_of_int_def: 
-    "hf_of i == if i\<ge>(0::int) then \<langle>0, hf_of (nat i)\<rangle> else \<langle>1, hf_of (nat (-i))\<rangle>"
+    "hf_of i \<equiv> if i\<ge>(0::int) then \<langle>0, hf_of (nat i)\<rangle> else \<langle>1, hf_of (nat (-i))\<rangle>"
   instance 
     by intro_classes (auto simp: inj_on_def hf_of_int_def)
 end
 
-text\<open>Strings are char lists, and are not considered separately.\<close>
+text \<open>Strings are char lists, and are not considered separately.\<close>
 instantiation char :: finitary
 begin
   definition hf_of_char_def: 
-    "hf_of x == hf_of (nat_of_char x)"
+    "hf_of x \<equiv> hf_of (nat_of_char x)"
   instance 
     by intro_classes (auto simp: inj_on_def hf_of_char_def nat_of_char_eq_iff)
 end
@@ -51,7 +51,7 @@ end
 instantiation prod :: (finitary,finitary) finitary
 begin
   definition hf_of_prod_def: 
-    "hf_of == \<lambda>(x,y). \<langle>hf_of x, hf_of y\<rangle>"
+    "hf_of \<equiv> \<lambda>(x,y). \<langle>hf_of x, hf_of y\<rangle>"
   instance 
     by intro_classes (auto simp: inj_on_def hf_of_prod_def)
 end
@@ -59,7 +59,7 @@ end
 instantiation sum :: (finitary,finitary) finitary
 begin
   definition hf_of_sum_def: 
-    "hf_of == case_sum (HF.Inl o hf_of) (HF.Inr o hf_of)"
+    "hf_of \<equiv> case_sum (HF.Inl o hf_of) (HF.Inr o hf_of)"
   instance 
     by intro_classes (auto simp: inj_on_def hf_of_sum_def split: sum.split_asm)
 end
@@ -67,7 +67,7 @@ end
 instantiation option :: (finitary) finitary
 begin
   definition hf_of_option_def: 
-    "hf_of == case_option 0 (\<lambda>x. \<lbrace>hf_of x\<rbrace>)"
+    "hf_of \<equiv> case_option 0 (\<lambda>x. \<lbrace>hf_of x\<rbrace>)"
   instance 
     by intro_classes (auto simp: inj_on_def hf_of_option_def split: option.split_asm)
 end
@@ -88,4 +88,3 @@ begin
 end
 
 end
-

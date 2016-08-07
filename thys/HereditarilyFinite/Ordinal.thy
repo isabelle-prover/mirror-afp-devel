@@ -1,13 +1,13 @@
-chapter\<open>Ordinals, Sequences and Ordinal Recursion\<close>
+chapter \<open>Ordinals, Sequences and Ordinal Recursion\<close>
 
 theory Ordinal imports HF
 begin
 
-section\<open>Ordinals\<close>
+section \<open>Ordinals\<close>
 
-subsection\<open>Basic Definitions\<close>
+subsection \<open>Basic Definitions\<close>
 
-text\<open>Definition 2.1. We say that x is transitive if every element of x is a subset of x.\<close>
+text \<open>Definition 2.1. We say that x is transitive if every element of x is a subset of x.\<close>
 definition
   Transset  :: "hf \<Rightarrow> bool"  where
     "Transset(x) \<equiv> \<forall>y. y \<^bold>\<in> x \<longrightarrow> y \<le> x"
@@ -22,11 +22,12 @@ lemma Transset_hinsert: "Transset x \<Longrightarrow> y \<le> x \<Longrightarrow
   by (auto simp: Transset_def)
 
 
-text\<open>In HF, the ordinals are simply the natural numbers. But the definitions are the same
+text \<open>In HF, the ordinals are simply the natural numbers. But the definitions are the same
       as for transfinite ordinals.\<close>
 definition
   Ord  :: "hf \<Rightarrow> bool"  where
-    "Ord(k)      \<equiv> Transset(k) & (\<forall>x \<^bold>\<in> k. Transset(x))"
+    "Ord(k)      \<equiv> Transset(k) \<and> (\<forall>x \<^bold>\<in> k. Transset(x))"
+
 
 subsection \<open>Definition 2.2 (Successor).\<close>
 definition
@@ -39,19 +40,19 @@ lemma succ_iff [simp]: "x \<^bold>\<in> succ y \<longleftrightarrow> x=y \<or> x
 lemma succ_ne_self [simp]: "i \<noteq> succ i"
   by (metis hmem_ne succ_iff)
 
-lemma succ_notin_self: "~ succ i <: i"
+lemma succ_notin_self: "succ i \<^bold>\<notin> i"
   by (metis hmem_ne succ_iff)
 
 lemma succE [elim?]: assumes "x \<^bold>\<in> succ y" obtains "x=y" | "x \<^bold>\<in> y"
   by (metis assms succ_iff)
 
-lemma hmem_succ_ne: "succ x <: y \<Longrightarrow> x \<noteq> y"
+lemma hmem_succ_ne: "succ x \<^bold>\<in> y \<Longrightarrow> x \<noteq> y"
   by (metis hmem_not_refl succ_iff)
 
-lemma hball_succ [simp]: "(\<forall>x \<^bold>\<in> succ k. P x) \<longleftrightarrow> P k & (\<forall>x \<^bold>\<in> k. P x)"
+lemma hball_succ [simp]: "(\<forall>x \<^bold>\<in> succ k. P x) \<longleftrightarrow> P k \<and> (\<forall>x \<^bold>\<in> k. P x)"
   by (auto simp: HBall_def)
 
-lemma hbex_succ [simp]: "(\<exists>x \<^bold>\<in> succ k. P x) \<longleftrightarrow> P k | (\<exists>x \<^bold>\<in> k. P x)"
+lemma hbex_succ [simp]: "(\<exists>x \<^bold>\<in> succ k. P x) \<longleftrightarrow> P k \<or> (\<exists>x \<^bold>\<in> k. P x)"
   by (auto simp: HBex_def)
 
 lemma One_hf_eq_succ: "1 = succ 0"
@@ -84,7 +85,7 @@ lemma hmem_succ_self [simp]: "k \<^bold>\<in> succ k"
 lemma hmem_succ: "l \<^bold>\<in> k \<Longrightarrow> l \<^bold>\<in> succ k"
   by (metis succ_iff)
 
-text\<open>Theorem 2.3.\<close>
+text \<open>Theorem 2.3.\<close>
 lemma Ord_0 [iff]: "Ord 0"
   by (simp add: Ord_def Transset_def)
 
@@ -107,11 +108,12 @@ lemma hmem_0_Ord:
 lemma Ord_in_Ord: "\<lbrakk> Ord(k);  m \<^bold>\<in> k \<rbrakk>  \<Longrightarrow> Ord(m)"
   by (auto simp: Ord_def Transset_def)
 
-subsection\<open>Induction, Linearity, etc.\<close>
+
+subsection \<open>Induction, Linearity, etc.\<close>
 
 lemma Ord_induct [consumes 1, case_names step]:
   assumes k: "Ord(k)"
-      and step: "!!x.\<lbrakk> Ord(x);  \<And>y. y \<^bold>\<in> x \<Longrightarrow> P(y) \<rbrakk>  \<Longrightarrow> P(x)"
+      and step: "\<And>x.\<lbrakk> Ord(x);  \<And>y. y \<^bold>\<in> x \<Longrightarrow> P(y) \<rbrakk>  \<Longrightarrow> P(x)"
   shows "P(k)"
 proof -
   have "\<forall>m \<^bold>\<in> k. Ord(m) \<longrightarrow> P(m)"
@@ -126,8 +128,8 @@ proof -
     by (auto intro: Ord_in_Ord step)
 qed
 
-text\<open>Theorem 2.4 (Comparability of ordinals).\<close>
-lemma Ord_linear: "Ord(k) \<Longrightarrow> Ord(l) \<Longrightarrow> k\<^bold>\<in>l | k=l | l\<^bold>\<in>k"
+text \<open>Theorem 2.4 (Comparability of ordinals).\<close>
+lemma Ord_linear: "Ord(k) \<Longrightarrow> Ord(l) \<Longrightarrow> k\<^bold>\<in>l \<or> k=l \<or> l\<^bold>\<in>k"
 proof (induct k arbitrary: l rule: Ord_induct)
   case (step k)
   note step_k = step
@@ -139,7 +141,7 @@ proof (induct k arbitrary: l rule: Ord_induct)
     qed
 qed
 
-text\<open>The trichotomy law for ordinals\<close>
+text \<open>The trichotomy law for ordinals\<close>
 lemma Ord_linear_lt:
   assumes o: "Ord(k)" "Ord(l)"
   obtains (lt) "k\<^bold>\<in>l" | (eq) "k=l" | (gt) "l\<^bold>\<in>k"
@@ -158,7 +160,7 @@ by (metis Ord_linear2 OrdmemD o)
 lemma hunion_less_iff [simp]: "\<lbrakk>Ord i; Ord j\<rbrakk> \<Longrightarrow> i \<squnion> j < k \<longleftrightarrow> i<k \<and> j<k"
   by (metis Ord_linear_le le_iff_sup sup.order_iff sup.strict_boundedE)
 
-text\<open>Theorem 2.5\<close>
+text \<open>Theorem 2.5\<close>
 lemma Ord_mem_iff_lt: "Ord(k) \<Longrightarrow> Ord(l) \<Longrightarrow> k\<^bold>\<in>l \<longleftrightarrow> k < l"
   by (metis Ord_linear OrdmemD hmem_not_refl less_hf_def less_le_not_le)
 
@@ -179,20 +181,21 @@ lemma Ord_mem_succ_cases:
   shows "succ l = k \<or> succ l \<^bold>\<in> k"
   by (metis assms mem_succ_iff succ_iff)
 
-subsection\<open>Supremum and Infimum\<close>
 
-lemma Ord_Union [intro,simp]: "\<lbrakk> !!i. i\<^bold>\<in>A \<Longrightarrow> Ord(i) \<rbrakk>  \<Longrightarrow> Ord(\<Squnion> A)"
+subsection \<open>Supremum and Infimum\<close>
+
+lemma Ord_Union [intro,simp]: "\<lbrakk> \<And>i. i\<^bold>\<in>A \<Longrightarrow> Ord(i) \<rbrakk>  \<Longrightarrow> Ord(\<Squnion> A)"
   by (auto simp: Ord_def Transset_def) blast
 
-lemma Ord_Inter [intro,simp]: "\<lbrakk> !!i. i\<^bold>\<in>A \<Longrightarrow> Ord(i) \<rbrakk>  \<Longrightarrow> Ord(\<Sqinter> A)"
+lemma Ord_Inter [intro,simp]: "\<lbrakk> \<And>i. i\<^bold>\<in>A \<Longrightarrow> Ord(i) \<rbrakk>  \<Longrightarrow> Ord(\<Sqinter> A)"
   apply (case_tac "A=0", auto simp: Ord_def Transset_def)
   apply (force simp add: hf_ext)+
   done
 
-text\<open>Theorem 2.7. Every set x of ordinals is ordered by the binary relation <.
+text \<open>Theorem 2.7. Every set x of ordinals is ordered by the binary relation <.
       Moreover if x = 0 then x has a smallest and a largest element.\<close>
 
-lemma hmem_Sup_Ords: "\<lbrakk>A\<noteq>0; !!i. i\<^bold>\<in>A \<Longrightarrow> Ord(i)\<rbrakk> \<Longrightarrow> \<Squnion>A \<^bold>\<in> A"
+lemma hmem_Sup_Ords: "\<lbrakk>A\<noteq>0; \<And>i. i\<^bold>\<in>A \<Longrightarrow> Ord(i)\<rbrakk> \<Longrightarrow> \<Squnion>A \<^bold>\<in> A"
 proof (induction A rule: hf_induct)
   case 0 thus ?case  by simp
 next
@@ -204,14 +207,14 @@ next
       case (hinsert y A')
       hence UA: "\<Squnion>A \<^bold>\<in> A"
         by (metis hinsert.IH(2) hinsert.prems(2) hinsert_nonempty hmem_hinsert)
-      hence "\<Squnion>A \<le> x | x \<le> \<Squnion>A"
+      hence "\<Squnion>A \<le> x \<or> x \<le> \<Squnion>A"
         by (metis Ord_linear2 OrdmemD hinsert.prems(2) hmem_hinsert)
       thus ?thesis
         by (metis HUnion_hinsert UA le_iff_sup less_eq_insert1_iff order_refl sup.commute)
     qed
 qed
 
-lemma hmem_Inf_Ords: "\<lbrakk>A\<noteq>0; !!i. i\<^bold>\<in>A \<Longrightarrow> Ord(i)\<rbrakk> \<Longrightarrow> \<Sqinter>A \<^bold>\<in> A"
+lemma hmem_Inf_Ords: "\<lbrakk>A\<noteq>0; \<And>i. i\<^bold>\<in>A \<Longrightarrow> Ord(i)\<rbrakk> \<Longrightarrow> \<Sqinter>A \<^bold>\<in> A"
 proof (induction A rule: hf_induct)
   case 0 thus ?case  by simp
 next
@@ -223,7 +226,7 @@ next
       case (hinsert y A')
       hence IA: "\<Sqinter>A \<^bold>\<in> A"
         by (metis hinsert.IH(2) hinsert.prems(2) hinsert_nonempty hmem_hinsert)
-      hence "\<Sqinter>A \<le> x | x \<le> \<Sqinter>A"
+      hence "\<Sqinter>A \<le> x \<or> x \<le> \<Sqinter>A"
         by (metis Ord_linear2 OrdmemD hinsert.prems(2) hmem_hinsert)
       thus ?thesis
         by (metis HInter_hinsert IA hmem_hempty hmem_hinsert inf_absorb2 le_iff_inf)
@@ -269,7 +272,7 @@ lemma hpair_neq_Ord: "Ord k \<Longrightarrow> \<langle>x,y\<rangle> \<noteq> k"
 lemma hpair_neq_Ord': assumes k: "Ord k" shows "k \<noteq> \<langle>x,y\<rangle>"
   by (metis k hpair_neq_Ord)
 
-lemma Not_Ord_hpair [iff]: "~ Ord \<langle>x,y\<rangle>"
+lemma Not_Ord_hpair [iff]: "\<not> Ord \<langle>x,y\<rangle>"
   by (metis hpair_neq_Ord)
 
 lemma is_hpair [simp]: "is_hpair \<langle>x,y\<rangle>"
@@ -281,7 +284,8 @@ lemma Ord_not_hpair: "Ord x \<Longrightarrow> \<not> is_hpair x"
 lemma zero_in_succ [simp,intro]: "Ord i \<Longrightarrow> 0 \<^bold>\<in> succ i"
   by (metis succ_iff zero_in_Ord)
 
-subsection\<open>Converting Between Ordinals and Natural Numbers\<close>
+
+subsection \<open>Converting Between Ordinals and Natural Numbers\<close>
 
 fun ord_of :: "nat \<Rightarrow> hf"
   where
@@ -332,16 +336,16 @@ lemma hfset_ord_of: "hfset (ord_of n) = ord_of ` {0..<n}"
 lemma bij_betw_ord_of: "bij_betw ord_of {0..<n} (hfset (ord_of n))"
   by (simp add: bij_betw_def inj_ord_of hfset_ord_of)
 
-lemma bij_betw_ord_ofI: "bij_betw h A {0..<n} \<Longrightarrow> bij_betw (ord_of o h) A (hfset (ord_of n))"
+lemma bij_betw_ord_ofI: "bij_betw h A {0..<n} \<Longrightarrow> bij_betw (ord_of \<circ> h) A (hfset (ord_of n))"
   by (blast intro: bij_betw_ord_of bij_betw_trans)
 
 
-section\<open>Sequences and Ordinal Recursion\<close>
+section \<open>Sequences and Ordinal Recursion\<close>
 
-text\<open>Definition 3.2 (Sequence).\<close>
+text \<open>Definition 3.2 (Sequence).\<close>
 
 definition Seq :: "hf \<Rightarrow> hf \<Rightarrow> bool"
-  where "Seq s k \<longleftrightarrow> hrelation s & hfunction s & k \<le> hdomain s"
+  where "Seq s k \<longleftrightarrow> hrelation s \<and> hfunction s \<and> k \<le> hdomain s"
 
 lemma Seq_0 [iff]: "Seq 0 0"
   by (auto simp: Seq_def hrelation_def hfunction_def)
@@ -358,7 +362,7 @@ lemma Seq_restr: "Seq s (succ k) \<Longrightarrow> Seq (hrestrict s k) k"
 lemma Seq_Ord_restr: "\<lbrakk>Seq s k; l \<^bold>\<in> k; Ord k\<rbrakk> \<Longrightarrow> Seq (hrestrict s l) l"
   by (auto simp: Seq_def hfunction_restr intro: Ord_trans)
 
-lemma Seq_ins: "\<lbrakk>Seq s k; ~ k <: hdomain s\<rbrakk> \<Longrightarrow> Seq (s \<triangleleft> \<langle>k, y\<rangle>) (succ k)"
+lemma Seq_ins: "\<lbrakk>Seq s k; k \<^bold>\<notin> hdomain s\<rbrakk> \<Longrightarrow> Seq (s \<triangleleft> \<langle>k, y\<rangle>) (succ k)"
   by (auto simp: Seq_def hrelation_def succ_def hfunction_def hdomainI)
 
 definition insf :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf"
@@ -372,7 +376,7 @@ lemma Seq_insf: "Seq s k \<Longrightarrow> Seq (insf s k y) (succ k)"
   apply (force simp add: hdomain_def)
   done
 
-lemma Seq_succ_iff: "Seq s (succ k) \<longleftrightarrow> Seq s k \<and> (\<exists>y. \<langle>k, y\<rangle> <: s)"
+lemma Seq_succ_iff: "Seq s (succ k) \<longleftrightarrow> Seq s k \<and> (\<exists>y. \<langle>k, y\<rangle> \<^bold>\<in> s)"
   apply (auto simp: Seq_def hdomain_def)
   apply (metis hfst_conv, blast)
   done
@@ -383,7 +387,7 @@ lemma nonrestrictD: "a \<^bold>\<in> nonrestrict s X \<Longrightarrow> a \<^bold
 lemma hpair_in_nonrestrict_iff [simp]: "\<langle>a,b\<rangle> \<^bold>\<in> nonrestrict s X \<longleftrightarrow> \<langle>a,b\<rangle> \<^bold>\<in> s \<and> \<not> a \<^bold>\<in> X"
   by (auto simp: nonrestrict_def)
 
-lemma app_nonrestrict_Seq: "Seq s k \<Longrightarrow> ~ z <: X \<Longrightarrow> app (nonrestrict s X) z = app s z"
+lemma app_nonrestrict_Seq: "Seq s k \<Longrightarrow> z \<^bold>\<notin> X \<Longrightarrow> app (nonrestrict s X) z = app s z"
   by (auto simp: Seq_def nonrestrict_def app_def)
 
 lemma app_insf_Seq: "Seq s k \<Longrightarrow> app (insf s k y) k = y"
@@ -401,7 +405,7 @@ lemma Seq_imp_eq_app: "\<lbrakk>Seq s d; \<langle>x,y\<rangle> \<^bold>\<in> s\<
 lemma Seq_iff_app: "\<lbrakk>Seq s d; x \<^bold>\<in> d\<rbrakk> \<Longrightarrow> \<langle>x,y\<rangle> \<^bold>\<in> s \<longleftrightarrow> app s x = y"
   by (auto simp: Seq_def hdomain_def app_equality)
 
-lemma Exists_iff_app: "Seq s d \<Longrightarrow> x \<^bold>\<in> d \<Longrightarrow> (\<exists>y. \<langle>x, y\<rangle> \<^bold>\<in> s & P y) = P (app s x)"
+lemma Exists_iff_app: "Seq s d \<Longrightarrow> x \<^bold>\<in> d \<Longrightarrow> (\<exists>y. \<langle>x, y\<rangle> \<^bold>\<in> s \<and> P y) = P (app s x)"
   by (metis Seq_iff_app)
 
 lemma Ord_trans2: "\<lbrakk>i2 \<^bold>\<in> i; i \<^bold>\<in> j;  j \<^bold>\<in> k;  Ord k\<rbrakk> \<Longrightarrow> i2\<^bold>\<in>k"
@@ -410,20 +414,20 @@ lemma Ord_trans2: "\<lbrakk>i2 \<^bold>\<in> i; i \<^bold>\<in> j;  j \<^bold>\<
 definition ord_rec_Seq :: "hf \<Rightarrow> (hf \<Rightarrow> hf) \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
   where
    "ord_rec_Seq T G s k y \<longleftrightarrow>
-        (Seq s k & y = G (app s (\<Squnion>k)) & app s 0 = T &
+        (Seq s k \<and> y = G (app s (\<Squnion>k)) \<and> app s 0 = T \<and>
                    (\<forall>n. succ n \<^bold>\<in> k \<longrightarrow> app s (succ n) = G (app s n)))"
 
 lemma Seq_succ_insf:
   assumes s: "Seq s (succ k)"  shows "\<exists> y. s = insf s k y"
 proof -
-  obtain y where y: "\<langle>k, y\<rangle> <: s" by (metis Seq_succ_iff s)
-  hence yuniq: "\<forall> y'. \<langle>k, y'\<rangle> <: s \<longrightarrow> y' = y" using s
+  obtain y where y: "\<langle>k, y\<rangle> \<^bold>\<in> s" by (metis Seq_succ_iff s)
+  hence yuniq: "\<forall> y'. \<langle>k, y'\<rangle> \<^bold>\<in> s \<longrightarrow> y' = y" using s
     by (simp add: Seq_def hfunction_def)
   { fix z
-    assume z: "z <: s"
+    assume z: "z \<^bold>\<in> s"
     then obtain u v where uv: "z = \<langle>u, v\<rangle>" using s
       by (metis Seq_def hrelation_def is_hpair_def)
-    hence "z <: insf s k y"
+    hence "z \<^bold>\<in> insf s k y"
       by (metis hemptyE hmem_hinsert hpair_in_nonrestrict_iff insf_def yuniq z)
   }
   note left2right = this
@@ -436,7 +440,7 @@ qed
 
 lemma ord_rec_Seq_succ_iff:
   assumes k: "Ord k" and knz: "k \<noteq> 0"
-  shows "ord_rec_Seq T G s (succ k) z \<longleftrightarrow> (\<exists> s' y. ord_rec_Seq T G s' k y & z = G y & s = insf s' k y)"
+  shows "ord_rec_Seq T G s (succ k) z \<longleftrightarrow> (\<exists> s' y. ord_rec_Seq T G s' k y \<and> z = G y \<and> s = insf s' k y)"
 proof
   assume os: "ord_rec_Seq T G s (succ k) z"
   show "\<exists>s' y. ord_rec_Seq T G s' k y \<and> z = G y \<and> s = insf s' k y"
@@ -481,7 +485,7 @@ lemma ord_recp_functional: "ord_recp T G H x y \<Longrightarrow> ord_recp T G H 
   by (auto simp: ord_recp_def ord_rec_Seq_functional split: if_split_asm)
 
 lemma ord_recp_succ_iff:
-  assumes k: "Ord k" shows "ord_recp T G H (succ k) z \<longleftrightarrow> (\<exists>y. z = G y & ord_recp T G H k y)"
+  assumes k: "Ord k" shows "ord_recp T G H (succ k) z \<longleftrightarrow> (\<exists>y. z = G y \<and> ord_recp T G H k y)"
 proof (cases "k=0")
   case True thus ?thesis
     by (simp add: ord_recp_def ord_rec_Seq_def) (metis Seq_0 Seq_insf app_insf_Seq)
@@ -525,7 +529,7 @@ proof -
     done
 qed
 
-lemma ord_rec_non [simp]: "~ Ord x \<Longrightarrow> ord_rec T G H x = H x"
+lemma ord_rec_non [simp]: "\<not> Ord x \<Longrightarrow> ord_rec T G H x = H x"
   by (metis Ord_0 ord_rec_def ord_recp_def the_equality)
 
 end
