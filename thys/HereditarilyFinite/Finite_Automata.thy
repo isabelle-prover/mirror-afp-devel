@@ -1,11 +1,11 @@
-chapter{*An Application: Finite Automata*}
+chapter\<open>An Application: Finite Automata\<close>
 
 theory Finite_Automata imports Ordinal
 begin
 
-text {*The point of this example is that the HF sets are closed under disjoint sums and Cartesian products,
+text \<open>The point of this example is that the HF sets are closed under disjoint sums and Cartesian products,
  allowing the theory of finite state machines to be developed without issues of polymorphism 
- or any tricky encodings of states.*}
+ or any tricky encodings of states.\<close>
 
 record 'a fsm = states :: hf 
                 init :: hf 

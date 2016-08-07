@@ -1,13 +1,13 @@
-chapter{*Ordinals, Sequences and Ordinal Recursion*}
+chapter\<open>Ordinals, Sequences and Ordinal Recursion\<close>
 
 theory Ordinal imports HF
 begin
 
-section{*Ordinals*}
+section\<open>Ordinals\<close>
 
-subsection{*Basic Definitions*}
+subsection\<open>Basic Definitions\<close>
 
-text{*Definition 2.1. We say that x is transitive if every element of x is a subset of x.*}
+text\<open>Definition 2.1. We say that x is transitive if every element of x is a subset of x.\<close>
 definition
   Transset  :: "hf \<Rightarrow> bool"  where
     "Transset(x) \<equiv> \<forall>y. y \<^bold>\<in> x \<longrightarrow> y \<le> x"
@@ -22,13 +22,13 @@ lemma Transset_hinsert: "Transset x \<Longrightarrow> y \<le> x \<Longrightarrow
   by (auto simp: Transset_def)
 
 
-text{*In HF, the ordinals are simply the natural numbers. But the definitions are the same
-      as for transfinite ordinals.*}
+text\<open>In HF, the ordinals are simply the natural numbers. But the definitions are the same
+      as for transfinite ordinals.\<close>
 definition
   Ord  :: "hf \<Rightarrow> bool"  where
     "Ord(k)      \<equiv> Transset(k) & (\<forall>x \<^bold>\<in> k. Transset(x))"
 
-subsection {*Definition 2.2 (Successor).*}
+subsection \<open>Definition 2.2 (Successor).\<close>
 definition
   succ  :: "hf \<Rightarrow> hf"  where
     "succ(x)      \<equiv> hinsert x x"
@@ -84,7 +84,7 @@ lemma hmem_succ_self [simp]: "k \<^bold>\<in> succ k"
 lemma hmem_succ: "l \<^bold>\<in> k \<Longrightarrow> l \<^bold>\<in> succ k"
   by (metis succ_iff)
 
-text{*Theorem 2.3.*}
+text\<open>Theorem 2.3.\<close>
 lemma Ord_0 [iff]: "Ord 0"
   by (simp add: Ord_def Transset_def)
 
@@ -107,7 +107,7 @@ lemma hmem_0_Ord:
 lemma Ord_in_Ord: "\<lbrakk> Ord(k);  m \<^bold>\<in> k \<rbrakk>  \<Longrightarrow> Ord(m)"
   by (auto simp: Ord_def Transset_def)
 
-subsection{*Induction, Linearity, etc.*}
+subsection\<open>Induction, Linearity, etc.\<close>
 
 lemma Ord_induct [consumes 1, case_names step]:
   assumes k: "Ord(k)"
@@ -126,12 +126,12 @@ proof -
     by (auto intro: Ord_in_Ord step)
 qed
 
-text{*Theorem 2.4 (Comparability of ordinals).*}
+text\<open>Theorem 2.4 (Comparability of ordinals).\<close>
 lemma Ord_linear: "Ord(k) \<Longrightarrow> Ord(l) \<Longrightarrow> k\<^bold>\<in>l | k=l | l\<^bold>\<in>k"
 proof (induct k arbitrary: l rule: Ord_induct)
   case (step k)
   note step_k = step
-  show ?case using `Ord(l)`
+  show ?case using \<open>Ord(l)\<close>
     proof (induct l rule: Ord_induct)
       case (step l)
       thus ?case using step_k
@@ -139,7 +139,7 @@ proof (induct k arbitrary: l rule: Ord_induct)
     qed
 qed
 
-text{*The trichotomy law for ordinals*}
+text\<open>The trichotomy law for ordinals\<close>
 lemma Ord_linear_lt:
   assumes o: "Ord(k)" "Ord(l)"
   obtains (lt) "k\<^bold>\<in>l" | (eq) "k=l" | (gt) "l\<^bold>\<in>k"
@@ -158,7 +158,7 @@ by (metis Ord_linear2 OrdmemD o)
 lemma hunion_less_iff [simp]: "\<lbrakk>Ord i; Ord j\<rbrakk> \<Longrightarrow> i \<squnion> j < k \<longleftrightarrow> i<k \<and> j<k"
   by (metis Ord_linear_le le_iff_sup sup.order_iff sup.strict_boundedE)
 
-text{*Theorem 2.5*}
+text\<open>Theorem 2.5\<close>
 lemma Ord_mem_iff_lt: "Ord(k) \<Longrightarrow> Ord(l) \<Longrightarrow> k\<^bold>\<in>l \<longleftrightarrow> k < l"
   by (metis Ord_linear OrdmemD hmem_not_refl less_hf_def less_le_not_le)
 
@@ -179,7 +179,7 @@ lemma Ord_mem_succ_cases:
   shows "succ l = k \<or> succ l \<^bold>\<in> k"
   by (metis assms mem_succ_iff succ_iff)
 
-subsection{*Supremum and Infimum*}
+subsection\<open>Supremum and Infimum\<close>
 
 lemma Ord_Union [intro,simp]: "\<lbrakk> !!i. i\<^bold>\<in>A \<Longrightarrow> Ord(i) \<rbrakk>  \<Longrightarrow> Ord(\<Squnion> A)"
   by (auto simp: Ord_def Transset_def) blast
@@ -189,8 +189,8 @@ lemma Ord_Inter [intro,simp]: "\<lbrakk> !!i. i\<^bold>\<in>A \<Longrightarrow> 
   apply (force simp add: hf_ext)+
   done
 
-text{*Theorem 2.7. Every set x of ordinals is ordered by the binary relation <.
-      Moreover if x = 0 then x has a smallest and a largest element.*}
+text\<open>Theorem 2.7. Every set x of ordinals is ordered by the binary relation <.
+      Moreover if x = 0 then x has a smallest and a largest element.\<close>
 
 lemma hmem_Sup_Ords: "\<lbrakk>A\<noteq>0; !!i. i\<^bold>\<in>A \<Longrightarrow> Ord(i)\<rbrakk> \<Longrightarrow> \<Squnion>A \<^bold>\<in> A"
 proof (induction A rule: hf_induct)
@@ -281,7 +281,7 @@ lemma Ord_not_hpair: "Ord x \<Longrightarrow> \<not> is_hpair x"
 lemma zero_in_succ [simp,intro]: "Ord i \<Longrightarrow> 0 \<^bold>\<in> succ i"
   by (metis succ_iff zero_in_Ord)
 
-subsection{*Converting Between Ordinals and Natural Numbers*}
+subsection\<open>Converting Between Ordinals and Natural Numbers\<close>
 
 fun ord_of :: "nat \<Rightarrow> hf"
   where
@@ -336,9 +336,9 @@ lemma bij_betw_ord_ofI: "bij_betw h A {0..<n} \<Longrightarrow> bij_betw (ord_of
   by (blast intro: bij_betw_ord_of bij_betw_trans)
 
 
-section{*Sequences and Ordinal Recursion*}
+section\<open>Sequences and Ordinal Recursion\<close>
 
-text{*Definition 3.2 (Sequence).*}
+text\<open>Definition 3.2 (Sequence).\<close>
 
 definition Seq :: "hf \<Rightarrow> hf \<Rightarrow> bool"
   where "Seq s k \<longleftrightarrow> hrelation s & hfunction s & k \<le> hdomain s"

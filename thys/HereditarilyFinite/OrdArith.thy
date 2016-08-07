@@ -1,12 +1,12 @@
-chapter{*Addition, Sequences and their Concatenation*}
+chapter\<open>Addition, Sequences and their Concatenation\<close>
 
 theory OrdArith imports Rank
 begin
 
-section {*Generalised Addition --- Also for Ordinals *}
-text{*Source: Laurence Kirby, Addition and multiplication of sets
+section \<open>Generalised Addition --- Also for Ordinals\<close>
+text\<open>Source: Laurence Kirby, Addition and multiplication of sets
       Math. Log. Quart. 53, No. 1, 52-65 (2007) / DOI 10.1002/malq.200610026
-      @{url "http://faculty.baruch.cuny.edu/lkirby/mlqarticlejan2007.pdf"}*}
+      @{url "http://faculty.baruch.cuny.edu/lkirby/mlqarticlejan2007.pdf"}\<close>
 
 definition
   hadd      :: "hf \<Rightarrow> hf \<Rightarrow> hf"           (infixl "@+" 65)  where
@@ -50,7 +50,7 @@ lemma hadd_assoc: "(x @+ y) @+ z = x @+ (y @+ z)"
 lemma RepFun_hadd_disjoint: "x \<sqinter> RepFun y (op @+ x) = 0"
   by (metis hf_equalityI RepFun_iff hinter_iff not_add_mem_right hmem_hempty)
 
-subsection {*Cancellation laws for addition*}
+subsection \<open>Cancellation laws for addition\<close>
 
 lemma Rep_le_Cancel: "x \<squnion> RepFun y (op @+ x) \<le> x \<squnion> RepFun z (op @+ x)
                       \<Longrightarrow> RepFun y (op @+ x) \<le> RepFun z (op @+ x)"
@@ -92,7 +92,7 @@ lemma hadd_commute: "Ord x \<Longrightarrow> Ord y \<Longrightarrow> x @+ y = y 
 lemma hadd_cancel_left [simp]: "Ord x \<Longrightarrow> y @+ x = z @+ x \<longleftrightarrow> y=z"
   by (induct x rule: Ord_induct2) auto
 
-subsection {*The predecessor function*}
+subsection \<open>The predecessor function\<close>
 
 definition pred :: "hf \<Rightarrow> hf"
   where "pred x \<equiv> (THE y. succ y = x \<or> x=0 \<and> y=0)"
@@ -119,7 +119,7 @@ lemma Ord_pred_HUnion: "Ord(k) \<Longrightarrow> pred k = \<Squnion>k"
   by (metis HUnion_hempty Ordinal.Ord_pred pred_0 pred_succ)
 
 
-section {*A Concatentation Operation for Sequences*}
+section \<open>A Concatentation Operation for Sequences\<close>
 
 definition shift :: "hf \<Rightarrow> hf \<Rightarrow> hf"
   where "shift f delta = \<lbrace>v . u \<^bold>\<in> f, \<exists>n y. u = \<langle>n, y\<rangle> \<and> v = \<langle>delta @+ n, y\<rangle>\<rbrace>"
@@ -178,7 +178,7 @@ lemma Seq_append_app1: "Seq s k \<Longrightarrow> l \<^bold>\<in> k \<Longrighta
 lemma Seq_append_app2: "Seq s1 k1 \<Longrightarrow> Seq s2 k2 \<Longrightarrow> l = k1 @+ j \<Longrightarrow> app (seq_append k1 s1 s2) l = app s2 j"
   by (metis seq_append_def app_hunion2 app_shift hdomain_restr hinter_iff not_add_mem_right)
 
-section {*Nonempty sequences indexed by ordinals*}
+section \<open>Nonempty sequences indexed by ordinals\<close>
 
 definition OrdDom where
  "OrdDom r \<equiv> \<forall>x y. \<langle>x,y\<rangle> \<^bold>\<in> r \<longrightarrow> Ord x"
@@ -196,7 +196,7 @@ lemma OrdDom_shift: "\<lbrakk>OrdDom s; Ord k\<rbrakk> \<Longrightarrow> OrdDom 
   by (auto simp: OrdDom_def shift_def Ord_hadd)
 
 
-text{*A sequence of positive length ending with @{term y} *}
+text\<open>A sequence of positive length ending with @{term y}\<close>
 definition LstSeq :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
   where "LstSeq s k y \<equiv> Seq s (succ k) & Ord k & \<langle>k,y\<rangle> \<^bold>\<in> s & OrdDom s"
 
@@ -254,7 +254,7 @@ lemma LstSeq_append:
 lemma LstSeq_app [simp]: "LstSeq s k y \<Longrightarrow> app s k = y"
   by (metis LstSeq_def Seq_imp_eq_app)
 
-subsection {*Sequence-building operators*}
+subsection \<open>Sequence-building operators\<close>
 
 definition Builds :: "(hf \<Rightarrow> bool) \<Rightarrow> (hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool) \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
   where "Builds B C s l \<equiv> B (app s l) \<or> (\<exists>m \<^bold>\<in> l. \<exists>n \<^bold>\<in> l. C (app s l) (app s m) (app s n))"
@@ -299,7 +299,7 @@ proof -
   by (auto simp: BuildSeq_def LstSeq_trunc)
 qed
 
-subsection{*Showing that Sequences can be Constructed*}
+subsection\<open>Showing that Sequences can be Constructed\<close>
 
 lemma Builds_insf: "Builds B C s l \<Longrightarrow> LstSeq s k z \<Longrightarrow> l \<^bold>\<in> succ k \<Longrightarrow> Builds B C (insf s (succ k) y) l"
 by (auto simp: HBall_def hmem_not_refl Builds_def app_insf_LstSeq_if simp del: succ_iff)
@@ -453,7 +453,7 @@ lemma BuildSeq_1: "B y \<Longrightarrow> BuildSeq B C \<lbrace>\<langle>0, y\<ra
 lemma BuildSeq_exI: "B t \<Longrightarrow> \<exists>s k. BuildSeq B C s k t"
   by (metis BuildSeq_1)
 
-subsection{*Proving Properties of Given Sequences*}
+subsection\<open>Proving Properties of Given Sequences\<close>
 
 lemma BuildSeq_succ_E:
     assumes s: "BuildSeq B C s k y"
@@ -551,7 +551,7 @@ apply (auto intro: B C)
 done
 
 
-section{*A Unique Predecessor for every non-empty set*}
+section\<open>A Unique Predecessor for every non-empty set\<close>
 
 lemma Rep_hf_0 [simp]: "Rep_hf 0 = 0"
   by (metis Abs_hf_inverse HF.HF_def UNIV_I Zero_hf_def image_empty set_encode_empty)

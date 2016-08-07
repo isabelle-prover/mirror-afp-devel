@@ -39,7 +39,7 @@ begin
     by intro_classes (auto simp: inj_on_def hf_of_int_def)
 end
 
-text{*Strings are char lists, and are not considered separately.*}
+text\<open>Strings are char lists, and are not considered separately.\<close>
 instantiation char :: finitary
 begin
   definition hf_of_char_def: 

@@ -1,12 +1,12 @@
-chapter{*The Hereditarily Finite Sets*}
+chapter\<open>The Hereditarily Finite Sets\<close>
 
 theory HF imports "~~/src/HOL/Library/Nat_Bijection"
 begin
 
-text{*From "Finite sets and Gödel's Incompleteness Theorems" by S. Swierczkowski.
-      Thanks for Brian Huffman for this development, up to the cases and induct rules.*}
+text\<open>From "Finite sets and Gödel's Incompleteness Theorems" by S. Swierczkowski.
+      Thanks for Brian Huffman for this development, up to the cases and induct rules.\<close>
 
-section {* Basic Definitions and Lemmas *}
+section \<open>Basic Definitions and Lemmas\<close>
 
 typedef hf = "UNIV :: nat set" ..
 
@@ -35,7 +35,7 @@ lemma Abs_hf_0 [simp]: "Abs_hf 0 = 0"
   by (simp add: HF_def Zero_hf_def)
 
 
-text {* HF Set enumerations *}
+text \<open>HF Set enumerations\<close>
 
 abbreviation inserthf :: "hf \<Rightarrow> hf \<Rightarrow> hf"  (infixl "\<triangleleft>" 60)
   where "y \<triangleleft> x \<equiv> hinsert x y"
@@ -99,17 +99,17 @@ lemma Rep_hf_hinsert:
 lemma less_two_power: "n < 2 ^ n"
   by (induct n, auto)
 
-section{*Verifying the Axioms of HF*}
+section\<open>Verifying the Axioms of HF\<close>
 
-text{*HF1*}
+text\<open>HF1\<close>
 lemma hempty_iff: "z=0 \<longleftrightarrow> (\<forall>x. \<not> x \<^bold>\<in> z)"
   by (simp add: hf_ext)
 
-text{*HF2*}
+text\<open>HF2\<close>
 lemma hinsert_iff: "z = x \<triangleleft> y \<longleftrightarrow> (\<forall>u. u \<^bold>\<in> z \<longleftrightarrow> u \<^bold>\<in> x | u = y)"
   by (auto simp: hf_ext)
 
-text{*HF induction*}
+text\<open>HF induction\<close>
 lemma hf_induct [induct type: hf, case_names 0 hinsert]:
   assumes [simp]: "P 0"
                   "\<And>x y. \<lbrakk>P x; P y; \<not> x \<^bold>\<in> y\<rbrakk> \<Longrightarrow> P (y \<triangleleft> x)"
@@ -126,7 +126,7 @@ proof (induct z rule: wf_induct [where r="measure Rep_hf", OF wf_measure])
     qed
 qed
 
-text{*HF3*}
+text\<open>HF3\<close>
 lemma hf_induct_ax: "\<lbrakk>P 0; \<forall>x. P x \<longrightarrow> (\<forall>y. P y \<longrightarrow> P (x \<triangleleft> y))\<rbrakk> \<Longrightarrow> P x"
   by (induct x, auto)
 
@@ -146,7 +146,7 @@ lemma hmem_HF_iff [simp]: "x \<^bold>\<in> HF A \<longleftrightarrow> x \<in> A 
   apply (metis HF_def Rep_hf_inject Abs_hf_0 finite_imageD hempty_iff inj_onI set_encode_inf)
   done
 
-section {* Ordered Pairs, from ZF/ZF.thy *}
+section \<open>Ordered Pairs, from ZF/ZF.thy\<close>
 
 lemma singleton_eq_iff [iff]: "\<lbrace>a\<rbrace> = \<lbrace>b\<rbrace> \<longleftrightarrow> a=b"
   by (metis hmem_hempty hmem_hinsert)
@@ -163,10 +163,10 @@ definition hfst :: "hf \<Rightarrow> hf"
 definition hsnd :: "hf \<Rightarrow> hf"
   where "hsnd p \<equiv> THE y. \<exists>x. p = hpair x y"
 
-definition hsplit :: "[[hf, hf] \<Rightarrow> 'a, hf] \<Rightarrow> 'a::{}"  --{*for pattern-matching*}
+definition hsplit :: "[[hf, hf] \<Rightarrow> 'a, hf] \<Rightarrow> 'a::{}"  \<comment>\<open>for pattern-matching\<close>
   where "hsplit c \<equiv> %p. c (hfst p) (hsnd p)"
 
-text {* Ordered Pairs, from ZF/ZF.thy *}
+text \<open>Ordered Pairs, from ZF/ZF.thy\<close>
 
 nonterminal hfs
 syntax (ASCII)
@@ -203,11 +203,11 @@ lemma hsplit [simp]: "hsplit c \<langle>a,b\<rangle> = c a b"
   by (simp add: hsplit_def)
 
 
-section{*Unions, Comprehensions, Intersections*}
+section\<open>Unions, Comprehensions, Intersections\<close>
 
-subsection{*Unions*}
+subsection\<open>Unions\<close>
 
-text{*Theorem 1.5 (Existence of the union of two sets).*}
+text\<open>Theorem 1.5 (Existence of the union of two sets).\<close>
 lemma binary_union: "\<exists>z. \<forall>u. u \<^bold>\<in> z \<longleftrightarrow> u \<^bold>\<in> x | u \<^bold>\<in> y"
 proof (induct x rule: hf_induct)
   case 0 thus ?case by auto
@@ -215,7 +215,7 @@ next
   case (hinsert a b) thus ?case by (metis hmem_hinsert)
 qed
 
-text{*Theorem 1.6 (Existence of the union of a set of sets).*}
+text\<open>Theorem 1.6 (Existence of the union of a set of sets).\<close>
 lemma union_of_set: "\<exists>z. \<forall>u. u \<^bold>\<in> z \<longleftrightarrow> (\<exists>y. y \<^bold>\<in> x & u \<^bold>\<in> y)"
 proof (induct x rule: hf_induct)
   case 0 thus ?case by (metis hmem_hempty)
@@ -225,9 +225,9 @@ next
     by (metis hmem_hinsert binary_union [of a])
 qed
 
-subsection {* Set comprehensions *}
+subsection \<open>Set comprehensions\<close>
 
-text{*Theorem 1.7, comprehension scheme*}
+text\<open>Theorem 1.7, comprehension scheme\<close>
 lemma comprehension: "\<exists>z. \<forall>u. u \<^bold>\<in> z \<longleftrightarrow> u \<^bold>\<in> x & P u"
 proof (induct x rule: hf_induct)
   case 0 thus ?case by (metis hmem_hempty)
@@ -235,7 +235,7 @@ next
   case (hinsert a b) thus ?case by (metis hmem_hinsert)
 qed
 
-definition HCollect :: "(hf \<Rightarrow> bool) \<Rightarrow> hf \<Rightarrow> hf" -- "comprehension"
+definition HCollect :: "(hf \<Rightarrow> bool) \<Rightarrow> hf \<Rightarrow> hf" \<comment> "comprehension"
   where "HCollect P A = (THE z. \<forall>u. u \<^bold>\<in> z = (P u & u \<^bold>\<in> A))"
 
 syntax (ASCII)
@@ -262,7 +262,7 @@ lemma HCollectE:
 lemma HCollect_hempty [simp]: "HCollect P 0 = 0"
   by (simp add: hf_ext)
 
-subsection{*Union operators*}
+subsection\<open>Union operators\<close>
 
 instantiation hf :: sup
 begin
@@ -299,7 +299,7 @@ lemma HUnion_hinsert [simp]: "\<Squnion>(A \<triangleleft> a) = a \<squnion> \<S
 lemma HUnion_hunion [simp]: "\<Squnion>(A \<squnion> B) =  \<Squnion>A \<squnion> \<Squnion>B"
   by blast
 
-subsection{*Definition 1.8, Intersections*}
+subsection\<open>Definition 1.8, Intersections\<close>
 
 instantiation hf :: inf
 begin
@@ -325,7 +325,7 @@ lemma HInter_iff [simp]: "A\<noteq>0 \<Longrightarrow> hmem x (\<Sqinter> A) \<l
 lemma HInter_hinsert [simp]: "A\<noteq>0 \<Longrightarrow> \<Sqinter>(A \<triangleleft> a) = a \<sqinter> \<Sqinter>A"
   by (auto simp: hf_ext HInter_iff [OF hinsert_nonempty])
 
-subsection{*Set Difference*}
+subsection\<open>Set Difference\<close>
 
 instantiation hf :: minus
 begin
@@ -350,9 +350,9 @@ lemma hinsert_hdiff_if:
   by auto
 
 
-section{*Replacement*}
+section\<open>Replacement\<close>
 
-text{*Theorem 1.9 (Replacement Scheme).*}
+text\<open>Theorem 1.9 (Replacement Scheme).\<close>
 lemma replacement:
   "(\<forall>u v v'. u \<^bold>\<in> x \<longrightarrow> R u v \<longrightarrow> R u v' \<longrightarrow> v'=v) \<Longrightarrow> \<exists>z. \<forall>v. v \<^bold>\<in> z \<longleftrightarrow> (\<exists>u. u \<^bold>\<in> x & R u v)"
 proof (induct x rule: hf_induct)
@@ -441,9 +441,9 @@ lemma HF_HUnion: "\<lbrakk>finite A; \<And>x. x\<in>A \<Longrightarrow> finite (
   by (rule hf_equalityI) (auto)
 
 
-section{*Subset relation and the Lattice Properties*}
+section\<open>Subset relation and the Lattice Properties\<close>
 
-text{*Definition 1.10 (Subset relation).*}
+text\<open>Definition 1.10 (Subset relation).\<close>
 instantiation hf :: order
 begin
   definition less_eq_hf where "A \<le> B \<longleftrightarrow> (\<forall>x. x \<^bold>\<in> A \<longrightarrow> x \<^bold>\<in> B)"
@@ -453,21 +453,21 @@ begin
   instance by standard (auto simp: less_eq_hf_def less_hf_def)
 end
 
-subsection{*Rules for subsets*}
+subsection\<open>Rules for subsets\<close>
 
 lemma hsubsetI [intro!]:
     "(!!x. x\<^bold>\<in>A \<Longrightarrow> x\<^bold>\<in>B) \<Longrightarrow> A \<le> B"
   by (simp add: less_eq_hf_def)
 
-text{*Classical elimination rule*}
+text\<open>Classical elimination rule\<close>
 lemma hsubsetCE [elim]: "\<lbrakk> A \<le> B;  ~(c\<^bold>\<in>A) \<Longrightarrow> P;  c\<^bold>\<in>B \<Longrightarrow> P \<rbrakk>  \<Longrightarrow> P"
   by (auto simp: less_eq_hf_def)
 
-text{*Rule in Modus Ponens style*}
+text\<open>Rule in Modus Ponens style\<close>
 lemma hsubsetD [elim]: "\<lbrakk> A \<le> B;  c\<^bold>\<in>A \<rbrakk> \<Longrightarrow> c\<^bold>\<in>B"
   by (simp add: less_eq_hf_def)
 
-text{*Sometimes useful with premises in this order*}
+text\<open>Sometimes useful with premises in this order\<close>
 lemma rev_hsubsetD: "\<lbrakk> c\<^bold>\<in>A; A\<le>B \<rbrakk> \<Longrightarrow> c\<^bold>\<in>B"
   by blast
 
@@ -482,7 +482,7 @@ lemma hf_equalityE:
   by (metis order_refl)
 
 
-subsection{*Lattice properties*}
+subsection\<open>Lattice properties\<close>
 
 instantiation hf :: distrib_lattice
 begin
@@ -552,11 +552,11 @@ lemma hinter_hinsert_right: "B \<sqinter> hinsert x A = (if x \<^bold>\<in> B th
   by auto
 
 
-section{*Foundation, Cardinality, Powersets*}
+section\<open>Foundation, Cardinality, Powersets\<close>
 
-subsection{*Foundation*}
+subsection\<open>Foundation\<close>
 
-text{*Theorem 1.13: Foundation (Regularity) Property.*}
+text\<open>Theorem 1.13: Foundation (Regularity) Property.\<close>
 lemma foundation:
   assumes z: "z \<noteq> 0" shows "\<exists>w. w \<^bold>\<in> z & w \<sqinter> z = 0"
 proof -
@@ -602,9 +602,9 @@ lemma zero_notin_hpair: "~ 0 \<^bold>\<in> \<langle>x,y\<rangle>"
   by (auto simp: hpair_def)
 
 
-subsection{*Cardinality*}
+subsection\<open>Cardinality\<close>
 
-text{*First we need to hack the underlying representation*}
+text\<open>First we need to hack the underlying representation\<close>
 lemma hfset_0 [simp]: "hfset 0 = {}"
   by (metis Zero_hf_def finite.emptyI hfset_HF)
 
@@ -638,9 +638,9 @@ lemma hcard_hdiff1_less: "x \<^bold>\<in> z \<Longrightarrow> hcard (z - \<lbrac
   by (simp add: hcard_def hfset_hdiff hfset_hinsert)
      (metis card_Diff1_less finite_hfset hmem_def)
 
-subsection{*Powerset Operator*}
+subsection\<open>Powerset Operator\<close>
 
-text{*Theorem 1.11 (Existence of the power set).*}
+text\<open>Theorem 1.11 (Existence of the power set).\<close>
 lemma powerset: "\<exists>z. \<forall>u. u \<^bold>\<in> z \<longleftrightarrow> u \<le> x"
 proof (induction x rule: hf_induct)
  case 0 thus ?case
@@ -681,13 +681,13 @@ lemma HPow_mono_strict_iff [simp]: "HPow x < HPow y \<longleftrightarrow> x < y"
   by (metis HPow_mono_iff less_le_not_le)
 
 
-section{*Bounded Quantifiers*}
+section\<open>Bounded Quantifiers\<close>
 
 definition HBall :: "hf \<Rightarrow> (hf \<Rightarrow> bool) \<Rightarrow> bool" where
-  "HBall A P \<longleftrightarrow> (\<forall>x. x <: A \<longrightarrow> P x)"   -- "bounded universal quantifiers"
+  "HBall A P \<longleftrightarrow> (\<forall>x. x <: A \<longrightarrow> P x)"   \<comment> "bounded universal quantifiers"
 
 definition HBex :: "hf \<Rightarrow> (hf \<Rightarrow> bool) \<Rightarrow> bool" where
-  "HBex A P \<longleftrightarrow> (\<exists>x. x <: A \<and> P x)"   -- "bounded existential quantifiers"
+  "HBex A P \<longleftrightarrow> (\<exists>x. x <: A \<and> P x)"   \<comment> "bounded existential quantifiers"
 
 syntax (ASCII)
   "_HBall"       :: "pttrn \<Rightarrow> hf \<Rightarrow> bool \<Rightarrow> bool"      ("(3ALL _<:_./ _)" [0, 0, 10] 10)
@@ -732,11 +732,11 @@ lemma hbexE [elim!]: "EX x<:A. P x \<Longrightarrow> (!!x. x<:A \<Longrightarrow
   by (unfold HBex_def) blast
 
 lemma hball_triv [simp]: "(ALL x<:A. P) = ((EX x. x<:A) --> P)"
-  -- {* Trival rewrite rule. *}
+  \<comment> \<open>Trival rewrite rule.\<close>
   by (simp add: HBall_def)
 
 lemma hbex_triv [simp]: "(EX x<:A. P) = ((EX x. x<:A) & P)"
-  -- {* Dual form for existentials. *}
+  \<comment> \<open>Dual form for existentials.\<close>
   by (simp add: HBex_def)
 
 lemma hbex_triv_one_point1 [simp]: "(EX x<:A. x = a) = (a<:A)"
@@ -788,7 +788,7 @@ lemma hb_ex_simps [simp, no_atp]:
 lemma le_HCollect_iff: "A \<le> \<lbrace>x \<^bold>\<in> B. P x\<rbrace> \<longleftrightarrow> A \<le> B \<and> (\<forall>x \<^bold>\<in> A. P x)"
   by blast
 
-section{*Relations and Functions*}
+section\<open>Relations and Functions\<close>
 
 definition is_hpair :: "hf \<Rightarrow> bool"
   where "is_hpair z = (\<exists>x y. z = \<langle>x,y\<rangle>)"
@@ -806,7 +806,7 @@ definition hrelation :: "hf \<Rightarrow> bool"
   where "hrelation(r) = (\<forall>z. z \<^bold>\<in> r \<longrightarrow> is_hpair z)"
 
 definition hrestrict :: "hf \<Rightarrow> hf \<Rightarrow> hf"
-  --{* Restrict the relation r to the domain A *}
+  \<comment>\<open>Restrict the relation r to the domain A\<close>
   where "hrestrict r A = \<lbrace>z \<^bold>\<in> r. \<exists>x \<^bold>\<in> A. \<exists>y. z = \<langle>x,y\<rangle>\<rbrace>"
 
 definition nonrestrict :: "hf \<Rightarrow> hf \<Rightarrow> hf"
@@ -875,7 +875,7 @@ lemma hfunction_hunion: "hdomain f \<sqinter> hdomain g = 0
 lemma app_hrestrict [simp]: "x \<^bold>\<in> A \<Longrightarrow> app (hrestrict f A) x = app f x"
   by (simp add: hrestrict_def app_def)
 
-section{*Operations on families of sets*}
+section\<open>Operations on families of sets\<close>
 
 definition HLambda :: "hf \<Rightarrow> (hf \<Rightarrow> hf) \<Rightarrow> hf"
   where "HLambda A b = RepFun A (\<lambda>x. \<langle>x, b x\<rangle>)"
@@ -900,7 +900,7 @@ translations
   "SUM x<:A. B"  == "CONST HSigma A (%x. B)"
   "lam x<:A. f"  == "CONST HLambda A (%x. f)"
 
-subsection{*Rules for Unions and Intersections of families*}
+subsection\<open>Rules for Unions and Intersections of families\<close>
 
 lemma HUN_iff [simp]: "b \<^bold>\<in> (\<Squnion>x\<^bold>\<in>A. B(x)) \<longleftrightarrow> (\<exists>x\<^bold>\<in>A. b \<^bold>\<in> B(x))"
   by auto
@@ -922,7 +922,7 @@ lemma HINT_E: "\<lbrakk> b \<^bold>\<in> (\<Sqinter>x\<^bold>\<in>A. B(x));  a \
   by (auto simp: HINT_iff)
 
 
-subsection{*Generalized Cartesian product*}
+subsection\<open>Generalized Cartesian product\<close>
 
 lemma HSigma_iff [simp]: "\<langle>a,b\<rangle> \<^bold>\<in> HSigma A B \<longleftrightarrow> a \<^bold>\<in> A & b \<^bold>\<in> B(a)"
   by (force simp add: HSigma_def)
@@ -933,7 +933,7 @@ lemma HSigmaI [intro!]: "\<lbrakk> a \<^bold>\<in> A;  b \<^bold>\<in> B(a) \<rb
 lemmas HSigmaD1 = HSigma_iff [THEN iffD1, THEN conjunct1]
 lemmas HSigmaD2 = HSigma_iff [THEN iffD1, THEN conjunct2]
 
-text{*The general elimination rule*}
+text\<open>The general elimination rule\<close>
 lemma HSigmaE [elim!]:
   assumes "c \<^bold>\<in> HSigma A B"
   obtains x y where "x \<^bold>\<in> A" "y \<^bold>\<in> B(x)" "c=\<langle>x,y\<rangle>"
@@ -961,13 +961,13 @@ lemma timesI [intro!]: "\<lbrakk> a \<^bold>\<in> A;  b \<^bold>\<in> B \<rbrakk
 lemmas timesD1 = times_iff [THEN iffD1, THEN conjunct1]
 lemmas timesD2 = times_iff [THEN iffD1, THEN conjunct2]
 
-text{*The general elimination rule*}
+text\<open>The general elimination rule\<close>
 lemma timesE [elim!]:
   assumes c: "c \<^bold>\<in> A * B"
   obtains x y where "x \<^bold>\<in> A" "y \<^bold>\<in> B" "c=\<langle>x,y\<rangle>" using c
   by (auto simp: times_hf_def)
 
-text{*...and a specific one*}
+text\<open>...and a specific one\<close>
 lemma timesE2 [elim!]:
   assumes "\<langle>a,b\<rangle> \<^bold>\<in> A * B" obtains "a \<^bold>\<in> A" and "b \<^bold>\<in> B"
 using assms
@@ -987,7 +987,7 @@ begin
   instance by standard auto
 end
 
-section {*Disjoint Sum*}
+section \<open>Disjoint Sum\<close>
 
 instantiation hf :: zero_neq_one
 begin
@@ -1015,7 +1015,7 @@ lemma Inl_nonzero [simp]:"Inl x \<noteq> 0"
 lemma Inr_nonzero [simp]:"Inr x \<noteq> 0"
   by (metis Inr_def hpair_nonzero)
 
-text{* Introduction rules for the injections (as equivalences) *}
+text\<open>Introduction rules for the injections (as equivalences)\<close>
 
 lemma Inl_in_sum_iff [iff]: "Inl(a) \<^bold>\<in> A+B \<longleftrightarrow> a \<^bold>\<in> A"
   by (auto simp: sum_defs)
@@ -1023,14 +1023,14 @@ lemma Inl_in_sum_iff [iff]: "Inl(a) \<^bold>\<in> A+B \<longleftrightarrow> a \<
 lemma Inr_in_sum_iff [iff]: "Inr(b) \<^bold>\<in> A+B \<longleftrightarrow> b \<^bold>\<in> B"
   by (auto simp: sum_defs)
 
-text{*Elimination rule*}
+text\<open>Elimination rule\<close>
 
 lemma sumE [elim!]:
   assumes u: "u \<^bold>\<in> A+B"
   obtains x where "x \<^bold>\<in> A" "u=Inl(x)" | y where "y \<^bold>\<in> B" "u=Inr(y)" using u
   by (auto simp: sum_defs)
 
-text{* Injection and freeness equivalences, for rewriting *}
+text\<open>Injection and freeness equivalences, for rewriting\<close>
 
 lemma Inl_iff [iff]: "Inl(a)=Inl(b) \<longleftrightarrow> a=b"
   by (simp add: sum_defs)
