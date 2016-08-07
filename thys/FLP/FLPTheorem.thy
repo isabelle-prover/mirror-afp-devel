@@ -62,7 +62,6 @@ proof -
   proof (cases "stepReachable (last exec) msg c'")
     case True
     hence IsStepReachable: "stepReachable (last exec) msg c'" by simp
-    prf IsStepReachable
     hence "\<exists> exec' trace'. (execution trans sends start exec' trace') 
       \<and> prefixList exec exec' 
       \<and> prefixList trace trace' \<and> (last exec') = c' 
