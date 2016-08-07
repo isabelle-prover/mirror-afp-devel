@@ -909,12 +909,12 @@ syntax (ASCII)
   "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3SUM _<:_./ _)" 10)
   "_lam"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3lam _<:_./ _)" 10)
 syntax
-  "_PROD"     :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Pi>_\<^bold>\<in>_./ _)" 10)  (* FIXME \<Prod> (!?) *)
-  "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Sigma>_\<^bold>\<in>_./ _)" 10)  (* FIXME \<Sum> (!?) *)
+  "_PROD"     :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Prod>_\<^bold>\<in>_./ _)" 10)
+  "_SUM"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<Sum>_\<^bold>\<in>_./ _)" 10)
   "_lam"      :: "[pttrn, hf, hf] \<Rightarrow> hf"        ("(3\<lambda>_\<^bold>\<in>_./ _)" 10)
 translations
-  "\<Pi> x\<^bold>\<in>A. B" \<rightleftharpoons> "CONST HPi A (\<lambda>x. B)"
-  "\<Sigma> x\<^bold>\<in>A. B" \<rightleftharpoons> "CONST HSigma A (\<lambda>x. B)"
+  "\<Prod>x\<^bold>\<in>A. B" \<rightleftharpoons> "CONST HPi A (\<lambda>x. B)"
+  "\<Sum>x\<^bold>\<in>A. B" \<rightleftharpoons> "CONST HSigma A (\<lambda>x. B)"
   "\<lambda>x\<^bold>\<in>A. f"  \<rightleftharpoons> "CONST HLambda A (\<lambda>x. f)"
 
 
