@@ -63,7 +63,7 @@ function selsort where
     in (xm#selsort xs'))"
   by pat_completeness auto
 termination
-  by (relation "measure length")
+  by (relation "Wellfounded.measure length")
     (auto simp: length_remove1 intro!: fold_min_eqI1 dest!: length_pos_if_in_set)
 
 lemma in_set_selsort_eq: "x \<in> set (selsort xs) \<longleftrightarrow> x \<in> (set xs)"

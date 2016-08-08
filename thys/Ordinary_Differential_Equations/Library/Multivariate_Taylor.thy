@@ -189,7 +189,7 @@ proof -
     qed
     have filter_ijI: "eventually (\<lambda>x. \<forall>t\<in>{0..1}. P (?ij t x)) ?F"
       if "P a" "eventually P (at a within G)" for P
-      using filter_ij'I[OF that] 
+      using filter_ij'I[OF that]
         by eventually_elim (force dest: bspec[where x=1])
     have filter_iI: "eventually (\<lambda>x. \<forall>t\<in>{0..1}. P (?i t x)) ?F"
       if "P a" "eventually P (at a within G)" for P
@@ -483,7 +483,7 @@ proof -
     from \<open>dist x z < \<eta>\<close> have line_in:
       "\<And>xa. 0 \<le> xa \<Longrightarrow> xa \<le> 1 \<Longrightarrow> x + xa *\<^sub>R (z - x) \<in> G"
       "(\<lambda>xa. x + xa *\<^sub>R (z - x)) ` {0..1} \<subseteq> G"
-      by (auto intro!: dist_in_G \<open>x \<in> J\<close> le_less_trans[OF mult_left_le_one_le] 
+      by (auto intro!: dist_in_G \<open>x \<in> J\<close> le_less_trans[OF mult_left_le_one_le]
         simp: dist_norm norm_minus_commute)
 
     have "R x z = f z - f x - f' x (z - x)"
@@ -497,7 +497,7 @@ proof -
     also have
       "(integral {0..1} (\<lambda>t. (f' (x + t *\<^sub>R (z - x))) (z - x)) - (f' x) (z - x)) =
         integral {0..1} (\<lambda>t. f' (x + t *\<^sub>R (z - x)) - f' x) (z - x)"
-      by (simp add: integral_diff integral_linear[where h="\<lambda>y. blinfun_apply y (z - x)", simplified o_def]
+      by (simp add: Henstock_Kurzweil_Integration.integral_diff integral_linear[where h="\<lambda>y. blinfun_apply y (z - x)", simplified o_def]
         integrable_continuous_real continuous_intros line_in
         blinfun.bilinear_simps[symmetric])
     finally have "R x z = integral {0..1} (\<lambda>t. f' (x + t *\<^sub>R (z - x)) - f' x) (z - x)"

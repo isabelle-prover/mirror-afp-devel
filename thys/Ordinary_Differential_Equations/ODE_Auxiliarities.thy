@@ -2215,7 +2215,7 @@ lemma ivl_integral_cong:
 lemma ivl_integral_diff:
   "f integrable_on (closed_segment s t) \<Longrightarrow> g integrable_on (closed_segment s t) \<Longrightarrow>
     ivl_integral s t (\<lambda>x. f x - g x) = ivl_integral s t f - ivl_integral s t g"
-  using integral_diff[of f "closed_segment s t" g]
+  using Henstock_Kurzweil_Integration.integral_diff[of f "closed_segment s t" g]
   by (auto simp: ivl_integral_def closed_segment_real split: if_split_asm)
 
 lemma ivl_integral_norm_bound_ivl_integral:
@@ -2246,9 +2246,9 @@ lemma norm_ivl_integral_le:
   using integral_le[OF assms(1-3)]
   unfolding ivl_integral_def closed_segment_real
   apply (split if_split_asm)
-  subgoal by (simp add: assms(1) assms(4) integral_nonneg real_Icc_closed_segment)
+  subgoal by (simp add: assms(1) assms(4) Henstock_Kurzweil_Integration.integral_nonneg real_Icc_closed_segment)
   subgoal using assms
-    by (cases "a = b") (auto simp: integral_nonneg simp: closed_segment_real)
+    by (cases "a = b") (auto simp: Henstock_Kurzweil_Integration.integral_nonneg simp: closed_segment_real)
   done
 
 lemma ivl_integral_const [simp]:
@@ -2501,7 +2501,7 @@ lemma gronwall_general:
   shows "g t \<le> C * exp (K * (t - a))"
 proof -
   have G_pos: "\<And>t. t \<in> {a..b} \<Longrightarrow> 0 < G t"
-    by (auto simp: G_def intro!: add_pos_nonneg mult_nonneg_nonneg integral_nonneg
+    by (auto simp: G_def intro!: add_pos_nonneg mult_nonneg_nonneg Henstock_Kurzweil_Integration.integral_nonneg
       integrable_continuous_real assms intro: less_imp_le continuous_on_subset)
   have "g t \<le> G t" using assms by auto
   also
@@ -2541,7 +2541,7 @@ lemma gronwall_general_left:
   shows "g t \<le> C * exp (-K * (t - b))"
 proof -
   have G_pos: "\<And>t. t \<in> {a..b} \<Longrightarrow> 0 < G t"
-    by (auto simp: G_def intro!: add_pos_nonneg mult_nonneg_nonneg integral_nonneg
+    by (auto simp: G_def intro!: add_pos_nonneg mult_nonneg_nonneg Henstock_Kurzweil_Integration.integral_nonneg
       integrable_continuous_real assms intro: less_imp_le continuous_on_subset)
   have "g t \<le> G t" using assms by auto
   also
@@ -2691,7 +2691,7 @@ proof -
     by (auto intro!: integrable_continuous_real continuous_intros)
   hence "integral {a..b} (\<lambda>x. F x *\<^sub>R g x) + integral {a..b} (\<lambda>x. f x *\<^sub>R G x) =
       integral {a..b} (\<lambda>x. F x *\<^sub>R g x + f x *\<^sub>R G x)"
-    by (rule integral_add[symmetric])
+    by (rule Henstock_Kurzweil_Integration.integral_add[symmetric])
   also
   note prod = has_vector_derivative_scaleR[OF f g, rule_format]
   have "((\<lambda>x. F x *\<^sub>R g x + f x *\<^sub>R G x) has_integral F b *\<^sub>R G b - F a *\<^sub>R G a) {a..b}"

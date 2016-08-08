@@ -1,9 +1,9 @@
 (*
   File:     Catalan_Numbers.thy
   Author:   Manuel Eberl (TUM)
-  
+
   The recursive definition of Catalan numbers with a proof of several closed form
-  expressions for them using generating functions. Also contains reasonably efficient 
+  expressions for them using generating functions. Also contains reasonably efficient
   code generation and a proof of their asymptotic growth.
 *)
 
@@ -18,7 +18,7 @@ begin
 
 subsection \<open>Auxiliary lemmas\<close>
 
-lemma mult_eq_imp_eq_div: 
+lemma mult_eq_imp_eq_div:
   assumes "a * b = c" "(a :: 'a :: semiring_div) \<noteq> 0"
   shows   "b = c div a"
   by (simp add: assms(2) assms(1) [symmetric])
@@ -30,11 +30,11 @@ lemma Gamma_minus_one_half_real:
 
 lemma gbinomial_asymptotic':
   assumes "z \<notin> \<nat>"
-  shows   "(\<lambda>n. z gchoose (n + k)) \<sim> 
+  shows   "(\<lambda>n. z gchoose (n + k)) \<sim>
              (\<lambda>n. (-1)^(n+k) / (Gamma (-z) * of_nat n powr (z + 1)))"
 proof -
-  from assms have [simp]: "Gamma (-z) \<noteq> 0" 
-    by (simp_all add: Gamma_eq_zero_iff uminus_in_nonpos_Ints_iff)   
+  from assms have [simp]: "Gamma (-z) \<noteq> 0"
+    by (simp_all add: Gamma_eq_zero_iff uminus_in_nonpos_Ints_iff)
   have "filterlim (\<lambda>n. n + k) at_top at_top"
     by (intro filterlim_subseq subseq_add)
   from asymp_equivI'_const[OF gbinomial_asymptotic[of z]] assms
@@ -42,7 +42,7 @@ proof -
     by (simp add: Gamma_eq_zero_iff uminus_in_nonpos_Ints_iff field_simps)
   also have "eventually (\<lambda>n. exp ((z+1) * ln (real n)) = real n powr (z+1)) at_top"
     using eventually_gt_at_top[of 0] by eventually_elim (simp add: powr_def)
-  finally have "(\<lambda>x. z gchoose (x + k)) \<sim> 
+  finally have "(\<lambda>x. z gchoose (x + k)) \<sim>
                   (\<lambda>x. (- 1) ^ (x + k) / (Gamma (- z) * real (x + k) powr (z + 1)))"
     by (rule asymp_equiv_compose') (simp add: filterlim_subseq subseq_add)
   also have "(\<lambda>x. real (x + k) powr (z + 1)) \<sim> (\<lambda>x. real x powr (z + 1))"
@@ -55,7 +55,7 @@ qed
 subsection \<open>Definition\<close>
 
 text \<open>
-  We define Catalan numbers by their well-known recursive definition. We shall later derive 
+  We define Catalan numbers by their well-known recursive definition. We shall later derive
   a few more equivalent definitions from this one.
 \<close>
 
@@ -79,11 +79,11 @@ lemma catalan_1 [simp]: "catalan (Suc 0) = 1" by (simp add: catalan_Suc)
 (*>*)
 
 text \<open>
-  The easiest proof of the more profound properties of the Catalan numbers (such as their 
+  The easiest proof of the more profound properties of the Catalan numbers (such as their
   closed-form equation and their asymptotic growth) uses their ordinary generating function (OGF).
-  This proof is almost mechanical in the sense that it does not require `guessing' the closed 
+  This proof is almost mechanical in the sense that it does not require `guessing' the closed
   form; one can read it directly from the generating function.
-  
+
   We therefore define the OGF of the Catalan numbers ($\sum_{n=0}^\infty C_n z^n$ in standard
   mathematical notation):
 \<close>
@@ -93,9 +93,9 @@ definition "fps_catalan = Abs_fps (of_nat \<circ> catalan)"
 lemma fps_catalan_nth [simp]: "fps_catalan $ n = of_nat (catalan n)"
   by (simp add: fps_catalan_def)
 
-  
+
 text \<open>
-  Given their recursive definition, it is easy to see that the OGF of the Catalan numbers 
+  Given their recursive definition, it is easy to see that the OGF of the Catalan numbers
   satisfies the following recursive equation:
 \<close>
 lemma fps_catalan_recurrence:
@@ -109,12 +109,12 @@ qed
 text \<open>
   We can now easily solve this equation for @{term fps_catalan}: if we denote the unknown OGF as
   $F(z)$, we get $F(z) = \frac{1}{2}(1 - \sqrt{1 - 4z})$.
-  
-  Note that we do not actually use the square root as defined on real or complex numbers. 
-  Any $(1 + cz)^\alpha$ can be expressed using the formal power series whose coefficients are 
-  the generalised binomial coefficients, and thus we can do all of these transformations in a 
-  purely algebraic way: $\sqrt{1-4z} = (1+z)^{\frac{1}{2}} \circ (-4z)$ (where ${\circ}$ denotes 
-  composition of formal power series) and $(1+z)^\alpha$ has the well-known expansion 
+
+  Note that we do not actually use the square root as defined on real or complex numbers.
+  Any $(1 + cz)^\alpha$ can be expressed using the formal power series whose coefficients are
+  the generalised binomial coefficients, and thus we can do all of these transformations in a
+  purely algebraic way: $\sqrt{1-4z} = (1+z)^{\frac{1}{2}} \circ (-4z)$ (where ${\circ}$ denotes
+  composition of formal power series) and $(1+z)^\alpha$ has the well-known expansion
   $\sum_{n=0}^\infty {\alpha \choose n} z^n$.
 \<close>
 lemma fps_catalan_fps_binomial:
@@ -122,12 +122,12 @@ lemma fps_catalan_fps_binomial:
 proof (rule mult_eq_imp_eq_div)
   let ?F = "fps_catalan :: 'a fps"
   have "X * (1 + X * ?F^2) = X * ?F" by (simp only: fps_catalan_recurrence [symmetric])
-  hence "(1 / 2 - X * ?F)\<^sup>2 = - X + 1 / 4"  
+  hence "(1 / 2 - X * ?F)\<^sup>2 = - X + 1 / 4"
     by (simp add: algebra_simps power2_eq_square fps_numeral_simps)
-  also have "\<dots> = (1/2 * (fps_binomial (1/2) oo (-4*X)))^2" 
-    by (simp add: power_mult_distrib div_power fps_binomial_1 fps_binomial_power 
+  also have "\<dots> = (1/2 * (fps_binomial (1/2) oo (-4*X)))^2"
+    by (simp add: power_mult_distrib div_power fps_binomial_1 fps_binomial_power
                   fps_compose_power fps_compose_add_distrib ring_distribs)
-  finally have "1/2 - X * ?F = 1/2 * (fps_binomial (1/2) oo (-4*X))" 
+  finally have "1/2 - X * ?F = 1/2 * (fps_binomial (1/2) oo (-4*X))"
     by (rule fps_power_eqD) simp_all
   thus "X*?F = 1/2 * (1 - (fps_binomial (1/2) oo (-4*X)))" by algebra
 qed simp_all
@@ -136,7 +136,7 @@ qed simp_all
 subsection \<open>Closed-form formulae and more recurrences\<close>
 
 text \<open>
-  We can now read a closed-form formula for the Catalan numbers directly from the generating 
+  We can now read a closed-form formula for the Catalan numbers directly from the generating
   function $\frac{1}{2z}(1 - (1+z)^{\frac{1}{2}} \circ (-4z))$.
 \<close>
 theorem catalan_closed_form_gbinomial:
@@ -172,7 +172,7 @@ theorem of_nat_catalan_closed_form:
 proof -
   have "of_nat (catalan n * Suc n) = of_nat ((2*n) choose n)"
     by (subst catalan_closed_form_aux) (rule refl)
-  also have "of_nat (catalan n * Suc n) = of_nat (catalan n) * of_nat (Suc n)" 
+  also have "of_nat (catalan n * Suc n) = of_nat (catalan n) * of_nat (Suc n)"
     by (simp only: of_nat_mult)
   finally show ?thesis by (simp add: divide_simps del: of_nat_Suc)
 qed
@@ -182,14 +182,14 @@ theorem catalan_closed_form:
   by (subst catalan_closed_form_aux [symmetric]) (simp del: mult_Suc_right)
 
 text \<open>
-  The following is another nice closed-form formula for the Catalan numbers, which directly 
+  The following is another nice closed-form formula for the Catalan numbers, which directly
   follows from the previous one:
-\<close>  
+\<close>
 corollary catalan_closed_form':
   "catalan n = ((2*n) choose n) - ((2*n) choose (Suc n))"
 proof (cases n)
   case (Suc m)
-  have "real ((2*n) choose n) - real ((2*n) choose (Suc n)) = 
+  have "real ((2*n) choose n) - real ((2*n) choose (Suc n)) =
           fact (2*m+2) / (fact (m+1))^2 - fact (2*m+2) / (real (m+2) * fact (m+1) * fact m)"
     by (subst (1 2) binomial_fact) (simp_all add: Suc power2_eq_square)
   also have "\<dots> = fact (2*m+2) / ((fact (m+1))^2 * real (m+2))"
@@ -201,8 +201,8 @@ qed simp_all
 
 
 text \<open>
-  We can now easily show that the Catalan numbers also satisfy another, simpler recurrence, 
-  namely $C_{n+1} = \frac{2(2n+1)}{n+2} C_n$. We will later use this to prove code equations to 
+  We can now easily show that the Catalan numbers also satisfy another, simpler recurrence,
+  namely $C_{n+1} = \frac{2(2n+1)}{n+2} C_n$. We will later use this to prove code equations to
   compute the Catalan numbers more efficiently.
 \<close>
 lemma catalan_Suc_aux:
@@ -212,20 +212,20 @@ proof -
   proof (cases n)
     case (Suc n)
     thus ?thesis
-      by (subst (1 2) of_nat_catalan_closed_form, subst (1 2) binomial_fact) 
+      by (subst (1 2) of_nat_catalan_closed_form, subst (1 2) binomial_fact)
          (simp_all add: divide_simps)
   qed simp_all
-  hence "real ((n + 2) * catalan (Suc n)) = real (2 * (2 * n + 1) * catalan n)" 
+  hence "real ((n + 2) * catalan (Suc n)) = real (2 * (2 * n + 1) * catalan n)"
     by (simp only: mult_ac of_nat_mult)
   thus ?thesis by (simp only: of_nat_eq_iff)
 qed
 
 theorem of_nat_catalan_Suc':
-  "of_nat (catalan (Suc n)) = 
+  "of_nat (catalan (Suc n)) =
      (of_nat (2*(2*n+1)) / of_nat (n+2) * of_nat (catalan n) :: 'a :: field_char_0)"
 proof -
   have "(of_nat (2*(2*n+1)) / of_nat (n+2) * of_nat (catalan n) :: 'a) =
-          of_nat (2*(2*n + 1) * catalan n) / of_nat (n+2)" 
+          of_nat (2*(2*n + 1) * catalan n) / of_nat (n+2)"
     by (simp add: divide_simps mult_ac del: mult_Suc mult_Suc_right)
   also note catalan_Suc_aux[of n, symmetric]
   also have "of_nat ((n + 2) * catalan (Suc n)) / of_nat (n + 2) = (of_nat (catalan (Suc n)) :: 'a)"
@@ -246,15 +246,15 @@ qed
 subsection \<open>Asymptotics\<close>
 
 text \<open>
-  Using the closed form $C_n = 2 \cdot (-4)^n {\frac{1}{2} \choose n+1}$ and the fact that 
-  ${\alpha \choose n} \sim \frac{(-1)^n}{\Gamma(-\alpha) n^{\alpha + 1}}$ for any 
-  $\alpha \notin \mathbb{N}$, wwe can now easily analyse the asymptotic behaviour of the 
+  Using the closed form $C_n = 2 \cdot (-4)^n {\frac{1}{2} \choose n+1}$ and the fact that
+  ${\alpha \choose n} \sim \frac{(-1)^n}{\Gamma(-\alpha) n^{\alpha + 1}}$ for any
+  $\alpha \notin \mathbb{N}$, wwe can now easily analyse the asymptotic behaviour of the
   Catalan numbers:
 \<close>
-theorem catalan_asymptotics: 
+theorem catalan_asymptotics:
   "catalan \<sim> (\<lambda>n. 4 ^ n / (sqrt pi * n powr (3/2)))"
 proof -
-  have "catalan \<sim> (\<lambda>n. 2 * (- 4) ^ n * (1/2 gchoose (n+1)))" 
+  have "catalan \<sim> (\<lambda>n. 2 * (- 4) ^ n * (1/2 gchoose (n+1)))"
     by (subst catalan_closed_form_gbinomial) simp_all
   also have "(\<lambda>n. 1/2 gchoose (n+1)) \<sim> (\<lambda>n. (-1)^(n+1) / (Gamma (-(1/2)) * real n powr (1/2 + 1)))"
     using fraction_not_in_nats[of 2 1] by (intro asymp_equiv_intros gbinomial_asymptotic') simp_all
@@ -272,11 +272,11 @@ begin
 (*>*)
 
 text \<open>
-  It is well-known that the Catalan number $C_n$ is the number of rooted binary trees with 
-  $n$ internal nodes (where internal nodes are those with two children and external nodes 
+  It is well-known that the Catalan number $C_n$ is the number of rooted binary trees with
+  $n$ internal nodes (where internal nodes are those with two children and external nodes
   are those with no children).
-  
-  We will briefly show this here to show that the above asymptotic formula also describes the 
+
+  We will briefly show this here to show that the above asymptotic formula also describes the
   number of binary trees of a given size.
 \<close>
 
@@ -309,14 +309,14 @@ lemma finite_trees_of_size [simp,intro]: "finite (trees_of_size n)"
 lemma trees_of_size_nonempty: "trees_of_size n \<noteq> {}"
   by (induction n rule: catalan.induct) (auto simp: trees_of_size_Suc)
 
-lemma trees_of_size_disjoint: 
+lemma trees_of_size_disjoint:
   assumes "m \<noteq> n"
   shows   "trees_of_size m \<inter> trees_of_size n = {}"
   using assms by (auto simp: trees_of_size_def)
 
 theorem card_trees_of_size: "card (trees_of_size n) = catalan n"
   by (induction n rule: catalan.induct)
-     (simp_all add: catalan_Suc trees_of_size_Suc card_image inj_on_def 
+     (simp_all add: catalan_Suc trees_of_size_Suc card_image inj_on_def
         trees_of_size_disjoint times_Int_times catalan_Suc card_UN_disjoint)
 
 (*<*)
@@ -336,11 +336,11 @@ text \<open>
   In order to do this, we define a tail-recursive function that uses the recurrence
   @{thm catalan_Suc'[no_vars]}:
 \<close>
-qualified function catalan_aux where [simp del]: 
-  "catalan_aux n k acc = 
+qualified function catalan_aux where [simp del]:
+  "catalan_aux n k acc =
      (if k \<ge> n then acc else catalan_aux n (Suc k) ((acc * (2*(2*k+1))) div (k+2)))"
   by auto
-termination by (relation "measure (\<lambda>(a,b,_). a - b)") simp_all
+termination by (relation "Wellfounded.measure (\<lambda>(a,b,_). a - b)") simp_all
 
 qualified lemma catalan_aux_simps:
   "k \<ge> n \<Longrightarrow> catalan_aux n k acc = acc"

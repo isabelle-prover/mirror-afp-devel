@@ -475,8 +475,8 @@ next
       using closed_segment_subset_existence_ivl[OF y0'] closed_segment_subset_existence_ivl[OF z0'] s
         using closed_segment_closed_segment_subset[OF _ _ s, of _ t0, simplified]
       by (subst integral_mult)
-        (auto simp: integral_mult v_def int inX \<open>t0 \<in> T\<close> 
-          simp del: integral_mult_right
+        (auto simp: integral_mult v_def int inX \<open>t0 \<in> T\<close>
+          simp del: Henstock_Kurzweil_Integration.integral_mult_right
           intro!: norm_triangle_le ivl_integral_norm_bound_integral
             integrable_continuous_closed_segment continuous_intros
             continuous_at_imp_continuous_on flow_continuous f_flow_continuous
@@ -1020,9 +1020,9 @@ proof -
             integral {t0 .. s} (\<lambda>t. f t (flow t0 x0 t))) =
           norm (integral {t0 .. s} (\<lambda>t. f t (flow t0 y t) - f t (flow t0 x0 t)))"
           using closed_segment_subset_existence_ivl[of s x0] sx0 closed_segment_subset_existence_ivl[of s y] sy
-          by (subst integral_diff)
+          by (subst Henstock_Kurzweil_Integration.integral_diff)
             (auto intro!: integrable_continuous_real continuous_at_imp_continuous_on
-              f_flow_continuous 
+              f_flow_continuous
               simp: closed_segment_real)
         also have "\<dots> \<le> (integral {t0 .. s} (\<lambda>t. norm (f t (flow t0 y t) - f t (flow t0 x0 t))))"
           using closed_segment_subset_existence_ivl[of s x0] sx0 closed_segment_subset_existence_ivl[of s y] sy
@@ -1033,7 +1033,7 @@ proof -
       also have "\<dots> \<le> (integral {t0 .. s} (\<lambda>t. K * norm ((flow t0 y t) - (flow t0 x0 t))))"
           using closed_segment_subset_existence_ivl[of s x0] sx0 closed_segment_subset_existence_ivl[of s y] sy
             iv_defined s t'(3,5) \<open>s \<le> b\<close>
-          by (auto simp del: integral_mult_right intro!: integral_le integrable_continuous_real
+          by (auto simp del: Henstock_Kurzweil_Integration.integral_mult_right intro!: integral_le integrable_continuous_real
             continuous_at_imp_continuous_on lipschitz_norm_leI[OF K]
             flow_continuous f_flow_continuous continuous_intros
             simp: closed_segment_real)
@@ -1139,7 +1139,7 @@ proof -
     "ball x0 d \<subseteq> X"
     "\<And>y. y \<in> ball x0 d \<Longrightarrow> b \<in> existence_ivl t0 y"
     "\<And>t y. y \<in> ball x0 d \<Longrightarrow> t \<in> {b .. t0} \<Longrightarrow> dist (flow t0 x0 t) (flow t0 y t) \<le> dist x0 y * exp (K * abs (t - t0))"
-    by (auto simp: flow_eq_rev iv_defined ex_ivlI \<open>x0 \<in> X\<close> subset_iff 
+    by (auto simp: flow_eq_rev iv_defined ex_ivlI \<open>x0 \<in> X\<close> subset_iff
       intro!: order_trans[OF dK(5)] image_eqI[where x="preflect t0 b"])
   then show ?thesis ..
 qed
@@ -1454,7 +1454,7 @@ proof -
               mem_existence_ivl_subset)
           (auto simp: closed_segment_real split: if_splits)
         also have "\<dots> = norm x0 + norm (t0 - s) * M + L * integral (closed_segment t0 s) (\<lambda>t. norm (flow t0 x0 t))"
-          by (simp add: integral_add integrable_on_simps \<open>s \<in> existence_ivl _ _\<close>
+          by (simp add: Henstock_Kurzweil_Integration.integral_add integrable_on_simps \<open>s \<in> existence_ivl _ _\<close>
             integral_const_closed_segment abs_minus_commute)
         also have "norm (t0 - s) * M \<le> norm (t0 - t) * M "
           using nle \<open>M > 0\<close> by auto
@@ -1587,13 +1587,13 @@ proof(safe)
 
       have "XX s - Y s = integral {0..s} (\<lambda>s. F s (XX s) - G s (Y s))"
         using \<open>0 \<le> s\<close>
-        by (simp add: XX_def Y_def integral_diff integrable_on_simps ivl_integral_def
+        by (simp add: XX_def Y_def Henstock_Kurzweil_Integration.integral_diff integrable_on_simps ivl_integral_def
                F.flow_fixed_point[OF s_in_existence(1)]
                G.flow_fixed_point[OF s_in_existence(2)])
       also have "... = integral {0..s} (\<lambda>s. (F s (XX s) - F s (Y s)) + (F s (Y s) - G s (Y s)))"
         by simp
       also have "... = integral {0..s} (\<lambda>s. F s (XX s) - F s (Y s)) + integral {0..s} (\<lambda>s. F s (Y s) - G s (Y s))"
-        by (simp add: integral_diff integral_add XX_def Y_def integrable_on_simps)
+        by (simp add: Henstock_Kurzweil_Integration.integral_diff Henstock_Kurzweil_Integration.integral_add XX_def Y_def integrable_on_simps)
       finally have "?u s \<le> norm (integral {0..s} (\<lambda>s. F s (XX s) - F s (Y s))) + norm (integral {0..s} (\<lambda>s. F s (Y s) - G s (Y s)))"
         by (simp add: norm_triangle_ineq)
       also have "... \<le> integral {0..s} (\<lambda>s. norm (F s (XX s) - F s (Y s))) + integral {0..s} (\<lambda>s. norm (F s (Y s) - G s (Y s)))"
@@ -1615,7 +1615,7 @@ proof(safe)
       qed (simp_all add: t0_s_in_existence continuous_intros integrable_on_simps XX_def Y_def)
       also have "... = K * integral {0..s} (\<lambda>s. ?u s + e / K)"
         using K_pos t0_s_in_existence
-        by (simp_all add: algebra_simps integral_add XX_def Y_def continuous_intros
+        by (simp_all add: algebra_simps Henstock_Kurzweil_Integration.integral_add XX_def Y_def continuous_intros
           continuous_on_imp_absolutely_integrable_on)
       finally show "?u s + e / K \<le> e / K + K * integral {0..s} (\<lambda>s. ?u s + e / K)"
         by simp
@@ -1680,12 +1680,12 @@ proof(safe)
         by (simp add: XX_def Y_def ivl_integral_def
                F.flow_fixed_point[OF s_in_existence(1)]
                G.flow_fixed_point[OF s_in_existence(2)]
-               continuous_intros integrable_on_simps integral_diff)
+               continuous_intros integrable_on_simps Henstock_Kurzweil_Integration.integral_diff)
       also have "... = - integral {s..0} (\<lambda>s. (F s (XX s) - F s (Y s)) + (F s (Y s) - G s (Y s)))"
         by simp
       also have "... = - (integral {s..0} (\<lambda>s. F s (XX s) - F s (Y s)) + integral {s..0} (\<lambda>s. F s (Y s) - G s (Y s)))"
         using t0_s_in_existence
-        by (subst integral_add) (simp_all add: integral_add XX_def Y_def continuous_intros integrable_on_simps)
+        by (subst Henstock_Kurzweil_Integration.integral_add) (simp_all add: integral_add XX_def Y_def continuous_intros integrable_on_simps)
       finally have "?u s \<le> norm (integral {s..0} (\<lambda>s. F s (XX s) - F s (Y s))) + norm (integral {s..0} (\<lambda>s. F s (Y s) - G s (Y s)))"
         by (metis (no_types, lifting) norm_minus_cancel norm_triangle_ineq)
       also have "... \<le> integral {s..0} (\<lambda>s. norm (F s (XX s) - F s (Y s))) + integral {s..0} (\<lambda>s. norm (F s (Y s) - G s (Y s)))"
@@ -1706,7 +1706,7 @@ proof(safe)
       qed (simp_all add: t0_s_in_existence continuous_intros integrable_on_simps XX_def Y_def)
       also have "... = K * integral {s..0} (\<lambda>s. ?u s + e / K)"
         using K_pos t0_s_in_existence
-        by (simp_all add: algebra_simps integral_add t0_s_in_existence continuous_intros integrable_on_simps XX_def Y_def)
+        by (simp_all add: algebra_simps Henstock_Kurzweil_Integration.integral_add t0_s_in_existence continuous_intros integrable_on_simps XX_def Y_def)
       finally show "?u s + e / K \<le> e / K + K * integral {s..0} (\<lambda>s. ?u s + e / K)"
         by simp
     next
@@ -2364,14 +2364,14 @@ proof-
           have i1: "integral {a..b} (\<lambda>s. f (Y (x - x0) s)) - integral {a..b} (\<lambda>s. f (XX x0 s)) =
               integral {a..b} (\<lambda>s. f (Y (x - x0) s) - f (XX x0 s))"
             using J_in_existence_ivl[OF x_in_ball]
-            by (intro integral_diff[symmetric]) (auto intro!: continuous_intros)
+            by (intro Henstock_Kurzweil_Integration.integral_diff[symmetric]) (auto intro!: continuous_intros)
 
           have i2:
             "integral {a..b} (\<lambda>s. f (Y (x - x0) s) - f (XX x0 s) - (f' (XX x0 s)) (U (x - x0) s)) =
               integral {a..b} (\<lambda>s. f (Y (x - x0) s) - f (XX x0 s)) -
               integral {a..b} (\<lambda>s. f' (XX x0 s) (U (x - x0) s))"
             using J_in_existence_ivl[OF x_in_ball]
-            by (intro integral_diff[OF integrable_diff]) (auto intro!: continuous_intros)
+            by (intro Henstock_Kurzweil_Integration.integral_diff[OF Henstock_Kurzweil_Integration.integrable_diff]) (auto intro!: continuous_intros)
 
           from ab_cases
           have "?g s = norm (integral {a..b} (\<lambda>s'. f (Y (x - x0) s')) - integral {a..b} (\<lambda>s'. f (XX x0 s')) - integral {a..b} (\<lambda>s'. (f' (XX x0 s')) (U (x - x0) s')))"
@@ -2450,7 +2450,7 @@ proof-
             integral {a..b} (\<lambda>s. norm (f' (XX x0 s) (Y (x - x0) s - XX x0 s - U (x - x0) s))) +
             integral {a..b} (\<lambda>s. norm (R (XX x0 s) (Y (x - x0) s)))"
             using J_in_existence_ivl[OF x_in_ball]
-            by (auto intro!: continuous_intros integral_add)
+            by (auto intro!: continuous_intros Henstock_Kurzweil_Integration.integral_add)
           also have "... \<le> N * integral {a..b} ?g + ?C" (is "?l1 + ?r1 \<le> _")
           proof(rule add_mono)
             have "?l1 \<le> integral {a..b} (\<lambda>s. norm (f' (XX x0 s)) * norm (Y (x - x0) s - XX x0 s - U (x - x0) s))"
@@ -2649,7 +2649,7 @@ proof (safe intro!: tendstoI)
     by (intro Un_least ivl_subset_existence_ivl' ivl_subset_existence_ivl \<open>x \<in> X\<close>
       \<open>t \<in> existence_ivl0 x\<close> \<open>cball t dt \<subseteq> existence_ivl0 x\<close>)
 
-  have "compact (one.flow 0 id_blinfun ` ?T)" 
+  have "compact (one.flow 0 id_blinfun ` ?T)"
     using \<open>?T \<subseteq> _\<close> \<open>x \<in> X\<close>
       wholevar_existence_ivl_eq_existence_ivl[OF \<open>x \<in> X\<close> existence_ivl_zero[OF \<open>x \<in> X\<close>]]
     by (auto intro!: \<open>0 < dx\<close> compact_continuous_image \<open>compact ?T\<close>

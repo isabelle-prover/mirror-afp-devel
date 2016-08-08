@@ -20,16 +20,16 @@ lemma fundamental_theorem_of_calculus_real:
      (simp_all add: has_field_derivative_iff_has_vector_derivative[symmetric])
 
 lemma integral_powr:
-  "y \<noteq> -1 \<Longrightarrow> a \<le> b \<Longrightarrow> a > 0 \<Longrightarrow> integral {a..b} (\<lambda>x. x powr y :: real) = 
+  "y \<noteq> -1 \<Longrightarrow> a \<le> b \<Longrightarrow> a > 0 \<Longrightarrow> integral {a..b} (\<lambda>x. x powr y :: real) =
      inverse (y + 1) * (b powr (y + 1) - a powr (y + 1))"
   by (subst right_diff_distrib, intro integral_unique fundamental_theorem_of_calculus_real)
      (auto intro!: derivative_eq_intros)
 
 lemma integral_ln_powr_over_x:
-  "y \<noteq> -1 \<Longrightarrow> a \<le> b \<Longrightarrow> a > 1 \<Longrightarrow> integral {a..b} (\<lambda>x. ln x powr y / x :: real) = 
+  "y \<noteq> -1 \<Longrightarrow> a \<le> b \<Longrightarrow> a > 1 \<Longrightarrow> integral {a..b} (\<lambda>x. ln x powr y / x :: real) =
      inverse (y + 1) * (ln b powr (y + 1) - ln a powr (y + 1))"
   by (subst right_diff_distrib, intro integral_unique fundamental_theorem_of_calculus_real)
-     (auto intro!: derivative_eq_intros)     
+     (auto intro!: derivative_eq_intros)
 
 lemma integral_one_over_x_ln_x:
   "a \<le> b \<Longrightarrow> a > 1 \<Longrightarrow> integral {a..b} (\<lambda>x. inverse (x * ln x) :: real) = ln (ln b) - ln (ln a)"
@@ -58,7 +58,7 @@ begin
 interpretation akra_bazzi_integral "\<lambda>f a b. f integrable_on {a..b}" "\<lambda>f a b. integral {a..b} f"
   by (rule akra_bazzi_integral_kurzweil_henstock)
 
-sublocale akra_bazzi_function x\<^sub>0 x\<^sub>1 k as bs ts f "\<lambda>f a b. f integrable_on {a..b}" 
+sublocale akra_bazzi_function x\<^sub>0 x\<^sub>1 k as bs ts f "\<lambda>f a b. f integrable_on {a..b}"
             "\<lambda>f a b. integral {a..b} f" g
   using f_nonneg_base f_rec g_nonneg ex_pos_a by unfold_locales
 
@@ -74,7 +74,7 @@ private lemma g_pos:
   shows   "eventually (\<lambda>x. g x > 0) at_top"
 proof-
   from landau_omega.bigE_nonneg[OF assms(1) g_nonneg'] guess c . note c = this
-  from assms(2) c(2) show ?thesis 
+  from assms(2) c(2) show ?thesis
     by eventually_elim (rule less_le_trans[OF mult_pos_pos[OF c(1)]], simp_all)
 qed
 
@@ -83,7 +83,7 @@ private lemma f_pos:
   assumes "eventually (\<lambda>x. h x > 0) at_top"
   shows   "eventually (\<lambda>x. f x > 0) at_top"
   using g_pos[OF assms(1,2)] eventually_ge_at_top[of x\<^sub>1]
-  by (eventually_elim) (subst f_rec, insert step_ge_x0, 
+  by (eventually_elim) (subst f_rec, insert step_ge_x0,
          auto intro!: add_pos_nonneg setsum_nonneg mult_nonneg_nonneg[OF a_ge_0] f_nonneg)
 
 lemma bs_lower_bound: "\<exists>C>0. \<forall>b\<in>set bs. C < b"
@@ -96,14 +96,14 @@ proof (intro exI conjI ballI)
 qed
 
 private lemma powr_growth2:
-  "\<exists>C c2. 0 < c2 \<and> C < Min (set bs) \<and> 
+  "\<exists>C c2. 0 < c2 \<and> C < Min (set bs) \<and>
       eventually (\<lambda>x. \<forall>u\<in>{C * x..x}. c2 * x powr p' \<ge> u powr p') at_top"
 proof (intro exI conjI allI ballI)
   define C where "C = Min (set bs) / 2"
-  from b_bounds bs_nonempty have C_pos: "C > 0" unfolding C_def by auto 
+  from b_bounds bs_nonempty have C_pos: "C > 0" unfolding C_def by auto
   thus "C < Min (set bs)" unfolding C_def by simp
   show "max (C powr p') 1 > 0" by simp
-  show "eventually (\<lambda>x. \<forall>u\<in>{C * x..x}. 
+  show "eventually (\<lambda>x. \<forall>u\<in>{C * x..x}.
     max ((Min (set bs)/2) powr p') 1 * x powr p' \<ge> u powr p') at_top"
     using eventually_gt_at_top[of "0::real"] apply eventually_elim
   proof clarify
@@ -113,20 +113,20 @@ proof (intro exI conjI allI ballI)
       by (intro powr_upper_bound mult_pos_pos) simp_all
     also from u x C_pos have "max ((C*x) powr p') (x powr p') = x powr p' * max (C powr p') 1"
       by (subst max_mult_left) (simp_all add: powr_mult algebra_simps)
-    finally show "u powr p' \<le> max ((Min (set bs)/2) powr p') 1 * x powr p'" 
+    finally show "u powr p' \<le> max ((Min (set bs)/2) powr p') 1 * x powr p'"
       by (simp add: C_def algebra_simps)
   qed
 qed
 
 private lemma powr_growth1:
-  "\<exists>C c1. 0 < c1 \<and> C < Min (set bs) \<and> 
+  "\<exists>C c1. 0 < c1 \<and> C < Min (set bs) \<and>
       eventually (\<lambda>x. \<forall>u\<in>{C * x..x}. c1 * x powr p' \<le> u powr p') at_top"
 proof (intro exI conjI allI ballI)
   define C where "C = Min (set bs) / 2"
-  from b_bounds bs_nonempty have C_pos: "C > 0" unfolding C_def by auto 
+  from b_bounds bs_nonempty have C_pos: "C > 0" unfolding C_def by auto
   thus "C < Min (set bs)" unfolding C_def by simp
   from C_pos show "min (C powr p') 1 > 0" by simp
-  show "eventually (\<lambda>x. \<forall>u\<in>{C * x..x}. 
+  show "eventually (\<lambda>x. \<forall>u\<in>{C * x..x}.
           min ((Min (set bs)/2) powr p') 1 * x powr p' \<le> u powr p') at_top"
     using eventually_gt_at_top[of "0::real"] apply eventually_elim
   proof clarify
@@ -136,7 +136,7 @@ proof (intro exI conjI allI ballI)
       by (subst min_mult_left) (simp_all add: powr_mult algebra_simps)
     also from u have "u powr p' \<ge> min ((C*x) powr p') (x powr p')" using C_pos x
       by (intro powr_lower_bound mult_pos_pos) simp_all
-    finally show "u powr p' \<ge> min ((Min (set bs)/2) powr p') 1 * x powr p'" 
+    finally show "u powr p' \<ge> min ((Min (set bs)/2) powr p') 1 * x powr p'"
       by (simp add: C_def algebra_simps)
   qed
 qed
@@ -155,11 +155,11 @@ private lemma powr_ln_powr_upper_bound':
   "eventually (\<lambda>a. \<forall>b>a. \<exists>c. \<forall>x\<in>{a..b}. x powr p * ln x powr p' \<le> c) at_top"
   by (subst eventually_at_top_dense) (force intro: powr_ln_powr_upper_bound)
 
-private lemma powr_upper_bound': 
+private lemma powr_upper_bound':
   "eventually (\<lambda>a::real. \<forall>b>a. \<exists>c. \<forall>x\<in>{a..b}. x powr p' \<le> c) at_top"
   by (subst eventually_at_top_dense) (force intro: powr_upper_bound)
 
-lemmas bounds = 
+lemmas bounds =
   powr_ln_powr_lower_bound powr_ln_powr_upper_bound powr_ln_powr_upper_bound' powr_upper_bound'
 
 
@@ -172,17 +172,17 @@ proof-
   thus ?thesis by eventually_elim linarith
 qed
 
-private lemma powr_ln_powr_growth1: "\<exists>C c1. 0 < c1 \<and> C < Min (set bs) \<and> 
+private lemma powr_ln_powr_growth1: "\<exists>C c1. 0 < c1 \<and> C < Min (set bs) \<and>
   eventually (\<lambda>x. \<forall>u\<in>{C * x..x}. c1 * (x powr r * ln x powr r') \<le> u powr r * ln u powr r') at_top"
 proof (intro exI conjI)
   let ?C = "Min (set bs) / 2" and ?f = "\<lambda>x. x powr r * ln x powr r'"
   define C where "C = ?C"
-  from b_bounds have C_pos: "C > 0" unfolding C_def by simp 
+  from b_bounds have C_pos: "C > 0" unfolding C_def by simp
   let ?T = "min (C powr r) (1 powr r) * min ((1/2) powr r') (1 powr r')"
   from C_pos show "?T > 0" unfolding min_def by (auto split: if_split)
   from bs_nonempty b_bounds have C_pos: "C > 0" unfolding C_def by simp
   thus "C < Min (set bs)" by (simp add: C_def)
-  
+
   show "eventually (\<lambda>x. \<forall>u\<in>{C*x..x}. ?T * ?f x \<le> ?f u) at_top"
     using eventually_gt_at_top[of "max 1 (inverse C)"] eventually_ln_const[OF C_pos]
     apply eventually_elim
@@ -197,18 +197,18 @@ proof (intro exI conjI)
     moreover {
       note A
       also from C_pos x' u u' have "ln (C*x) \<le> ln u" by (subst ln_le_cancel_iff) simp_all
-      with x' have "ln (C*x) / ln x \<le> ln u / ln x" by (simp add: field_simps) 
+      with x' have "ln (C*x) / ln x \<le> ln u / ln x" by (simp add: field_simps)
       finally have "min ((1/2) powr r') (1 powr r') \<le> (ln u / ln x) powr r'"
-        using x u u' C_pos A by (intro powr_lower_bound) simp_all 
+        using x u u' C_pos A by (intro powr_lower_bound) simp_all
     }
-    ultimately have "?T \<le> (u/x) powr r * (ln u / ln x) powr r'" 
+    ultimately have "?T \<le> (u/x) powr r * (ln u / ln x) powr r'"
       using x_pos by (intro mult_mono) simp_all
     also from x u u' have "... = ?f u / ?f x" by (simp add: powr_divide)
     finally show "?T * ?f x \<le> ?f u" using x' by (simp add: field_simps)
   qed
 qed
 
-private lemma powr_ln_powr_growth2: "\<exists>C c1. 0 < c1 \<and> C < Min (set bs) \<and> 
+private lemma powr_ln_powr_growth2: "\<exists>C c1. 0 < c1 \<and> C < Min (set bs) \<and>
   eventually (\<lambda>x. \<forall>u\<in>{C * x..x}. c1 * (x powr r * ln x powr r') \<ge> u powr r * ln u powr r') at_top"
 proof (intro exI conjI)
   let ?C = "Min (set bs) / 2" and ?f = "\<lambda>x. x powr r * ln x powr r'"
@@ -234,10 +234,10 @@ proof (intro exI conjI)
       moreover {
         note A
         also from C_pos x' u u' have "ln (C*x) \<le> ln u" by (subst ln_le_cancel_iff) simp_all
-        with x' have "ln (C*x) / ln x \<le> ln u / ln x" by (simp add: field_simps) 
+        with x' have "ln (C*x) / ln x \<le> ln u / ln x" by (simp add: field_simps)
         finally have "(ln u / ln x) powr r' \<le> max ((1/2) powr r') (1 powr r')"
           using x u u' C_pos A by (intro powr_upper_bound) simp_all
-      } ultimately have "(u/x) powr r * (ln u / ln x) powr r' \<le> ?T" 
+      } ultimately have "(u/x) powr r * (ln u / ln x) powr r' \<le> ?T"
         using x_pos by (intro mult_mono) simp_all
     }
     finally show "?T * ?f x \<ge> ?f u" using x' by (simp add: field_simps)
@@ -256,23 +256,23 @@ private lemma master_integral:
   fixes a p p' :: real
   assumes p: "p \<noteq> p'" and a: "a > 0"
   obtains c d where "c \<noteq> 0" "p > p' \<longrightarrow> d \<noteq> 0"
-    "(\<lambda>x::nat. x powr p * (1 + integral {a..x} (\<lambda>u. u powr p' / u powr (p+1)))) \<in> 
+    "(\<lambda>x::nat. x powr p * (1 + integral {a..x} (\<lambda>u. u powr p' / u powr (p+1)))) \<in>
              \<Theta>(\<lambda>x::nat. d * x powr p + c * x powr p')"
 proof-
   define e where "e = a powr (p' - p)"
   from assms have e: "e \<ge> 0" by (simp add: e_def)
   define c where "c = inverse (p' - p)"
   define d where "d = 1 - inverse (p' - p) * e"
-  have "c \<noteq> 0" and "p > p' \<longrightarrow> d \<noteq> 0" 
+  have "c \<noteq> 0" and "p > p' \<longrightarrow> d \<noteq> 0"
     using e p a unfolding c_def d_def by (auto simp: field_simps)
   thus ?thesis
     apply (rule that) apply (rule bigtheta_real_nat_transfer, rule bigthetaI_cong)
     using eventually_ge_at_top[of a]
   proof eventually_elim
     fix x assume x: "x \<ge> a"
-    hence "integral {a..x} (\<lambda>u. u powr p' / u powr (p+1)) = 
+    hence "integral {a..x} (\<lambda>u. u powr p' / u powr (p+1)) =
                integral {a..x} (\<lambda>u. u powr (p' - (p + 1)))"
-      by (intro integral_cong) (simp_all add: powr_divide2)
+      by (intro Henstock_Kurzweil_Integration.integral_cong) (simp_all add: powr_divide2)
     also have "... = inverse (p' - p) * (x powr (p' - p) - a powr (p' - p))"
       using p x0_less_x1 a x by (simp add: integral_powr)
     also have "x powr p * (1 + ...) = d * x powr p + c * x powr p'"
@@ -299,9 +299,9 @@ proof-
     using eventually_ge_at_top[of a]
   proof eventually_elim
     fix x :: real assume x: "x \<ge> a"
-    have "integral {a..x} (\<lambda>u. u powr p * ln u powr (p' - 1) / u powr (p + 1)) = 
+    have "integral {a..x} (\<lambda>u. u powr p * ln u powr (p' - 1) / u powr (p + 1)) =
           integral {a..x} (\<lambda>u. ln u powr (p' - 1) / u)" using x a x0_less_x1
-      by (intro integral_cong) (simp_all add: powr_add)
+      by (intro Henstock_Kurzweil_Integration.integral_cong) (simp_all add: powr_add)
     also have "... = inverse p' * (ln x powr p' - ln a powr p')"
       using p' x0_less_x1 a(1) x by (simp add: integral_ln_powr_over_x)
     also have "x powr p * (1 + ...) = c * x powr p + d * x powr p * ln x powr p'"
@@ -322,9 +322,9 @@ proof (rule landau_real_nat_transfer)
     apply (rule bigthetaI_cong) using eventually_ge_at_top[of a]
   proof eventually_elim
     fix x assume x: "x \<ge> a"
-    have "integral {a..x} (\<lambda>u. u powr p * ln u powr -1 / u powr (p + 1)) = 
+    have "integral {a..x} (\<lambda>u. u powr p * ln u powr -1 / u powr (p + 1)) =
           integral {a..x} (\<lambda>u. inverse (u * ln u))" using x a x0_less_x1
-      by (intro integral_cong) (simp_all add: powr_add powr_minus field_simps)
+      by (intro Henstock_Kurzweil_Integration.integral_cong) (simp_all add: powr_add powr_minus field_simps)
     also have "... = ln (ln x) - ln (ln a)"
       using x0_less_x1 a(1) x by (subst integral_one_over_x_ln_x) simp_all
     also have "x powr p * (1 + ...) = (1 - ln (ln a)) * x powr p + x powr p * ln (ln x)"
@@ -344,16 +344,16 @@ lemma master1_bigo:
   assumes less_p': "(\<Sum>i<k. as!i * bs!i powr p') > 1"
   shows "f \<in> O(\<lambda>x. real x powr p)"
 proof-
-  interpret akra_bazzi_upper x\<^sub>0 x\<^sub>1 k as bs ts f 
+  interpret akra_bazzi_upper x\<^sub>0 x\<^sub>1 k as bs ts f
     "\<lambda>f a b. f integrable_on {a..b}" "\<lambda>f a b. integral {a..b} f" g "\<lambda>x. x powr p'"
-    using assms growths g_bigo master_integrable by unfold_locales (assumption | simp)+  
+    using assms growths g_bigo master_integrable by unfold_locales (assumption | simp)+
   from less_p' have less_p: "p' < p" by (rule p_greaterI)
   from bigo_f[of "0"] guess a . note a = this
   note a(2)
   also from a(1) less_p x0_less_x1 have "p \<noteq> p'" by simp_all
   from master_integral[OF this a(1)] guess c d . note cd = this
   note cd(3)
-  also from cd(1,2) less_p 
+  also from cd(1,2) less_p
     have "(\<lambda>x::nat. d * real x powr p + c * real x powr p') \<in> \<Theta>(\<lambda>x. real x powr p)" by force
   finally show "f \<in> O(\<lambda>x::nat. x powr p)" .
 qed
@@ -365,7 +365,7 @@ lemma master1:
   assumes f_pos:  "eventually (\<lambda>x. f x > 0) at_top"
   shows "f \<in> \<Theta>(\<lambda>x. real x powr p)"
 proof (rule bigthetaI)
-  interpret akra_bazzi_lower x\<^sub>0 x\<^sub>1 k as bs ts f 
+  interpret akra_bazzi_lower x\<^sub>0 x\<^sub>1 k as bs ts f
     "\<lambda>f a b. f integrable_on {a..b}" "\<lambda>f a b. integral {a..b} f" g "\<lambda>_. 0"
     using assms(1,3) bs_lower_bound by unfold_locales (auto intro: always_eventually)
   from bigomega_f show "f \<in> \<Omega>(\<lambda>x. real x powr p)" by force
@@ -388,7 +388,7 @@ proof-
   also from a(1) p' have "p' \<noteq> 0" by simp_all
   from master_integral'[OF this a(1), of p] guess c d . note cd = this
   note cd(3)
-  also have "(\<lambda>x::nat. c * real x powr p + d * real x powr p * ln (real x) powr p') \<in> 
+  also have "(\<lambda>x::nat. c * real x powr p + d * real x powr p * ln (real x) powr p') \<in>
                  \<Theta>(\<lambda>x::nat. x powr p * ln x powr p')" using cd(1,2) p' by force
   finally show "f \<in> \<Theta>(\<lambda>x. real x powr p * ln (real x) powr p')" .
 qed
@@ -413,7 +413,7 @@ proof-
        \<Theta>(\<lambda>x::nat. c * x powr p + d * x powr p * ln x powr (p' + 1))"
     by (rule master_integral'[OF A a(1), of p]) (insert p', simp)
   note this(3)
-  also have "(\<lambda>x::nat. c * real x powr p + d * real x powr p * ln (real x) powr (p' + 1)) \<in> 
+  also have "(\<lambda>x::nat. c * real x powr p + d * real x powr p * ln (real x) powr (p' + 1)) \<in>
                  \<Theta>(\<lambda>x::nat. x powr p)" using cd(1,2) p' by force
   finally show "f \<in> \<Theta>(\<lambda>x::nat. x powr p)" .
 qed
@@ -430,7 +430,7 @@ proof-
     by (rule landau_theta.trans, intro landau_real_nat_transfer) simp
   ultimately interpret akra_bazzi x\<^sub>0 x\<^sub>1 k as bs ts f
     "\<lambda>f a b. f integrable_on {a..b}" "\<lambda>f a b. integral {a..b} f" g "\<lambda>x. x powr p * ln x powr -1"
-    using assms growths bounds master_integrable by unfold_locales (assumption | simp)+  
+    using assms growths bounds master_integrable by unfold_locales (assumption | simp)+
   from bigtheta_f[of 1] guess a . note a = this
   note a(2)
   also note master_integral''[OF a(1)]
@@ -448,14 +448,14 @@ proof-
     by (rule f_pos[OF bigthetaD2[OF g_bigtheta] eventually_nat_real])
   then interpret akra_bazzi x\<^sub>0 x\<^sub>1 k as bs ts f
     "\<lambda>f a b. f integrable_on {a..b}" "\<lambda>f a b. integral {a..b} f" g "\<lambda>x. x powr p'"
-    using assms growths bounds master_integrable by unfold_locales (assumption | simp)+  
+    using assms growths bounds master_integrable by unfold_locales (assumption | simp)+
   from p'_greater' have p'_greater: "p' > p" by (rule p_lessI)
   from bigtheta_f[of 0] guess a . note a = this
   note a(2)
   also from p'_greater have "p \<noteq> p'" by simp
   from master_integral[OF this a(1)] guess c d . note cd = this
   note cd(3)
-  also have "(\<lambda>x::nat. d * x powr p + c * x powr p') \<in> \<Theta>(\<lambda>x::real. x powr p')" 
+  also have "(\<lambda>x::nat. d * x powr p + c * x powr p') \<in> \<Theta>(\<lambda>x::real. x powr p')"
     using p'_greater cd(1,2) by force
   finally show "f \<in> \<Theta>(\<lambda>x. real x powr p')" .
 qed
