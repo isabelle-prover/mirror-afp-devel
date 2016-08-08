@@ -16,7 +16,7 @@ datatype (atoms: 'a) fm =
   TrueF | FalseF | Atom 'a | And "'a fm" "'a fm" | Or "'a fm" "'a fm" |
   Neg "'a fm" | ExQ "'a fm"
 
-notation map_fm ("map\<^bsub>fm\<^esub>")
+notation map_fm ("map\<^sub>f\<^sub>m")
 
 abbreviation Imp where "Imp \<phi>\<^sub>1 \<phi>\<^sub>2 \<equiv> Or (Neg \<phi>\<^sub>1) \<phi>\<^sub>2"
 abbreviation AllQ where "AllQ \<phi> \<equiv> Neg(ExQ(Neg \<phi>))"
@@ -44,16 +44,16 @@ abbreviation "Disj is f \<equiv> list_disj (map f is)"
 
 lemmas atoms_map_fm[simp] = fm.set_map
 
-fun amap_fm :: "('a \<Rightarrow> 'b fm) \<Rightarrow> 'a fm \<Rightarrow> 'b fm" ("amap\<^bsub>fm\<^esub>") where
-"amap\<^bsub>fm\<^esub> h TrueF = TrueF" |
-"amap\<^bsub>fm\<^esub> h FalseF = FalseF" |
-"amap\<^bsub>fm\<^esub> h (Atom a) = h a" |
-"amap\<^bsub>fm\<^esub> h (And \<phi>\<^sub>1 \<phi>\<^sub>2) = and (amap\<^bsub>fm\<^esub> h \<phi>\<^sub>1) (amap\<^bsub>fm\<^esub> h \<phi>\<^sub>2)" |
-"amap\<^bsub>fm\<^esub> h (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = or (amap\<^bsub>fm\<^esub> h \<phi>\<^sub>1) (amap\<^bsub>fm\<^esub> h \<phi>\<^sub>2)" |
-"amap\<^bsub>fm\<^esub> h (Neg \<phi>) = neg (amap\<^bsub>fm\<^esub> h \<phi>)"
+fun amap_fm :: "('a \<Rightarrow> 'b fm) \<Rightarrow> 'a fm \<Rightarrow> 'b fm" ("amap\<^sub>f\<^sub>m") where
+"amap\<^sub>f\<^sub>m h TrueF = TrueF" |
+"amap\<^sub>f\<^sub>m h FalseF = FalseF" |
+"amap\<^sub>f\<^sub>m h (Atom a) = h a" |
+"amap\<^sub>f\<^sub>m h (And \<phi>\<^sub>1 \<phi>\<^sub>2) = and (amap\<^sub>f\<^sub>m h \<phi>\<^sub>1) (amap\<^sub>f\<^sub>m h \<phi>\<^sub>2)" |
+"amap\<^sub>f\<^sub>m h (Or \<phi>\<^sub>1 \<phi>\<^sub>2) = or (amap\<^sub>f\<^sub>m h \<phi>\<^sub>1) (amap\<^sub>f\<^sub>m h \<phi>\<^sub>2)" |
+"amap\<^sub>f\<^sub>m h (Neg \<phi>) = neg (amap\<^sub>f\<^sub>m h \<phi>)"
 
 lemma amap_fm_list_disj:
-  "amap\<^bsub>fm\<^esub> h (list_disj fs) = list_disj (map (amap\<^bsub>fm\<^esub> h) fs)"
+  "amap\<^sub>f\<^sub>m h (list_disj fs) = list_disj (map (amap\<^sub>f\<^sub>m h) fs)"
 by(induct fs) (auto simp:list_disj_def or_def)
 
 fun qfree :: "'a fm \<Rightarrow> bool" where
@@ -94,7 +94,7 @@ proof -
   } thus ?thesis using assms by (fastforce simp add:list_disj_def)
 qed
 
-lemma qfree_map_fm: "qfree (map\<^bsub>fm\<^esub> f \<phi>) = qfree \<phi>"
+lemma qfree_map_fm: "qfree (map\<^sub>f\<^sub>m f \<phi>) = qfree \<phi>"
 by (induct \<phi>) simp_all
 
 lemma atoms_list_disjE:
@@ -130,7 +130,7 @@ fun nqfree :: "'a fm \<Rightarrow> bool" where
 lemma nqfree_qfree[simp]: "nqfree \<phi> \<Longrightarrow> qfree \<phi>"
 by (induct \<phi>) simp_all
 
-lemma nqfree_map_fm: "nqfree (map\<^bsub>fm\<^esub> f \<phi>) = nqfree \<phi>"
+lemma nqfree_map_fm: "nqfree (map\<^sub>f\<^sub>m f \<phi>) = nqfree \<phi>"
 by (induct \<phi>) simp_all
 
 
@@ -262,7 +262,7 @@ lemma normal_nnf: "normal \<phi> \<Longrightarrow> normal(nnf \<phi>)"
 by(induct \<phi> rule:nnf.induct) simp_all
 
 lemma normal_map_fm:
-  "\<forall>a. anormal(f a) = anormal(a) \<Longrightarrow> normal (map\<^bsub>fm\<^esub> f \<phi>) = normal \<phi>"
+  "\<forall>a. anormal(f a) = anormal(a) \<Longrightarrow> normal (map\<^sub>f\<^sub>m f \<phi>) = normal \<phi>"
 by(induct \<phi>) auto
 
 

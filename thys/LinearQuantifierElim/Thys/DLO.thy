@@ -107,10 +107,10 @@ definition "EQ f xs = {xs!k|k.
   Eq (Suc k) 0 : set(DLO.atoms\<^sub>0 f) \<or> Eq 0 (Suc k) : set(DLO.atoms\<^sub>0 f)}"
 
 
-lemma EQ_And[simp]: "EQ (And f g) xs = (EQ f xs Un EQ g xs)"
+lemma EQ_And[simp]: "EQ (And f g) xs = (EQ f xs \<union> EQ g xs)"
 by(auto simp:EQ_def)
 
-lemma EQ_Or[simp]: "EQ (Or f g) xs = (EQ f xs Un EQ g xs)"
+lemma EQ_Or[simp]: "EQ (Or f g) xs = (EQ f xs \<union> EQ g xs)"
 by(auto simp:EQ_def)
 
 lemma EQ_conv_set_ebounds:
@@ -124,7 +124,7 @@ fun asubst :: "nat \<Rightarrow> atom \<Rightarrow> atom" where
 "asubst k (Less i j) = Less (isubst k i) (isubst k j)"|
 "asubst k (Eq i j) = Eq (isubst k i) (isubst k j)"
 
-abbreviation "subst \<phi> k \<equiv> map\<^bsub>fm\<^esub> (asubst k) \<phi>"
+abbreviation "subst \<phi> k \<equiv> map\<^sub>f\<^sub>m (asubst k) \<phi>"
 
 lemma I_subst:
  "qfree f \<Longrightarrow> DLO.I (subst f k) xs = DLO.I f (xs!k # xs)"
@@ -146,7 +146,7 @@ fun amin_inf :: "atom \<Rightarrow> atom fm" where
 "amin_inf (Eq (Suc i) (Suc j)) = Atom(Eq i j)"
 
 abbreviation min_inf :: "atom fm \<Rightarrow> atom fm" ("inf\<^sub>-") where
-"inf\<^sub>- \<equiv> amap\<^bsub>fm\<^esub> amin_inf"
+"inf\<^sub>- \<equiv> amap\<^sub>f\<^sub>m amin_inf"
 
 fun aplus_inf :: "atom \<Rightarrow> atom fm" where
 "aplus_inf (Less 0 _) = FalseF" |
@@ -158,7 +158,7 @@ fun aplus_inf :: "atom \<Rightarrow> atom fm" where
 "aplus_inf (Eq (Suc i) (Suc j)) = Atom(Eq i j)"
 
 abbreviation plus_inf :: "atom fm \<Rightarrow> atom fm" ("inf\<^sub>+") where
-"inf\<^sub>+ \<equiv> amap\<^bsub>fm\<^esub> aplus_inf"
+"inf\<^sub>+ \<equiv> amap\<^sub>f\<^sub>m aplus_inf"
 
 lemma min_inf:
   "nqfree f \<Longrightarrow> \<exists>x. \<forall>y\<le>x. DLO.I (inf\<^sub>- f) xs = DLO.I f (y # xs)"
@@ -226,7 +226,9 @@ next
   thus ?case ..
 qed simp_all
 
-declare[[simp_depth_limit=2]]
+context notes [[simp_depth_limit=2]]
+begin
+
 lemma LBex:
  "\<lbrakk> nqfree f; DLO.I f (x#xs); \<not>DLO.I (inf\<^sub>- f) xs; x \<notin> EQ f xs \<rbrakk>
   \<Longrightarrow> \<exists>l\<in> LB f xs. l < x"
@@ -245,8 +247,8 @@ proof(induct f)
     by (cases a rule: aplus_inf.cases)
        (simp_all add: nth.simps EQ_def split: nat.splits)
 qed auto
-declare[[simp_depth_limit=50]]
 
+end
 
 lemma finite_LB: "finite(LB f xs)"
 proof -

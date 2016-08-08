@@ -23,7 +23,7 @@ fun asubst\<^sub>2 :: "nat \<Rightarrow> nat \<Rightarrow> atom \<Rightarrow> at
 "asubst\<^sub>2 l u (Eq _ 0) = FalseF" |
 "asubst\<^sub>2 l u (Eq (Suc i) (Suc j)) = Atom(Eq i j)"
 
-abbreviation "subst\<^sub>2 l u \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^sub>2 l u)"
+abbreviation "subst\<^sub>2 l u \<equiv> amap\<^sub>f\<^sub>m (asubst\<^sub>2 l u)"
 
 lemma I_subst\<^sub>21:
  "nqfree f \<Longrightarrow> xs!l < xs!u \<Longrightarrow> DLO.I (subst\<^sub>2 l u f) xs
@@ -44,7 +44,9 @@ lemma nolub_Or[simp]:
   "nolub (Or f g) xs l x u = (nolub f xs l x u \<and> nolub g xs l x u)"
 by(auto simp:nolub_def)
 
-declare[[simp_depth_limit=3]]
+context notes [[simp_depth_limit=3]]
+begin
+
 lemma innermost_intvl:
  "\<lbrakk> nqfree f; nolub f xs l x u; l < x; x < u; x \<notin> EQ f xs;
     DLO.I f (x#xs); l < y; y < u\<rbrakk>
@@ -97,7 +99,8 @@ proof (induct f)
 next
   case Or thus ?case by (simp add: Ball_def)(metis innermost_intvl)
 qed auto
-declare[[simp_depth_limit=50]]
+
+end
 
 definition
 "qe_interior\<^sub>1 \<phi> =
@@ -137,7 +140,7 @@ qed
 
 
 theorem I_interior1:
-assumes "nqfree \<phi>" shows "DLO.I (qe_interior\<^sub>1 \<phi>) xs = (EX x. DLO.I \<phi> (x#xs))"
+assumes "nqfree \<phi>" shows "DLO.I (qe_interior\<^sub>1 \<phi>) xs = (\<exists>x. DLO.I \<phi> (x#xs))"
   (is "?QE = ?EX")
 proof
   assume ?QE

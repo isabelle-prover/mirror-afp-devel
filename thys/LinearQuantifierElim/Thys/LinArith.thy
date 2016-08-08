@@ -118,7 +118,7 @@ fun asubst :: "real * real list \<Rightarrow> atom \<Rightarrow> atom" where
 "asubst (r,cs) (Less s []) = Less s []" |
 "asubst (r,cs) (Eq s []) = Eq s []"
 
-abbreviation "subst \<phi> rcs \<equiv> map\<^bsub>fm\<^esub> (asubst rcs) \<phi>"
+abbreviation "subst \<phi> rcs \<equiv> map\<^sub>f\<^sub>m (asubst rcs) \<phi>"
 
 definition eval :: "real * real list \<Rightarrow> real list \<Rightarrow> real" where
 "eval rcs xs = fst rcs + \<langle>snd rcs,xs\<rangle>"
@@ -285,8 +285,8 @@ next
   thus ?case ..
 qed simp_all
 
-
-declare [[simp_depth_limit = 4]]
+context notes [[simp_depth_limit = 4]]
+begin
 
 lemma LBex:
  "\<lbrakk> nqfree f; R.I f (x#xs); \<not>R.I (inf\<^sub>- f) xs; x \<notin> EQ f xs \<rbrakk>
@@ -300,7 +300,6 @@ apply(auto simp add: depends\<^sub>R_def field_simps split:if_splits list.splits
 apply fastforce+
 done
 
-
 lemma UBex:
  "\<lbrakk> nqfree f; R.I f (x#xs); \<not>R.I (inf\<^sub>+ f) xs; x \<notin> EQ f xs \<rbrakk>
   \<Longrightarrow> \<exists>u\<in> UB f xs. x < u"
@@ -313,7 +312,7 @@ apply(auto simp add: depends\<^sub>R_def field_simps split:if_splits list.splits
 apply fastforce+
 done
 
-declare [[simp_depth_limit = 50]]
+end
 
 lemma finite_LB: "finite(LB f xs)"
 proof -

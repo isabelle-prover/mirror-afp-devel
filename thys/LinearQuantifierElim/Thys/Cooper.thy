@@ -15,7 +15,7 @@ by(induct \<phi>) (auto split:if_split_asm)
 definition
 "hd_coeffs1 \<phi> =
  (let m = zlcms(map hd_coeff (Z.atoms\<^sub>0 \<phi>))
-  in And (Atom(Dvd m 0 [1])) (map\<^bsub>fm\<^esub> (hd_coeff1 m) \<phi>))"
+  in And (Atom(Dvd m 0 [1])) (map\<^sub>f\<^sub>m (hd_coeff1 m) \<phi>))"
 
 lemma I_hd_coeffs1:
 assumes "qfree \<phi>"
@@ -23,9 +23,9 @@ shows "(\<exists>x. Z.I (hd_coeffs1 \<phi>) (x#xs)) = (\<exists>x. Z.I \<phi> (x
 proof -
   let ?l = "zlcms(map hd_coeff (Z.atoms\<^sub>0 \<phi>))"
   have "?l>0" by(simp add: zlcms_pos set_atoms0_iff[OF `qfree \<phi>`])
-  have "?L = (\<exists>x. ?l dvd x+0 \<and> Z.I (map\<^bsub>fm\<^esub> (hd_coeff1 ?l) \<phi>) (x#xs))"
+  have "?L = (\<exists>x. ?l dvd x+0 \<and> Z.I (map\<^sub>f\<^sub>m (hd_coeff1 ?l) \<phi>) (x#xs))"
     by(simp add:hd_coeffs1_def)
-  also have "\<dots> = (\<exists>x. Z.I (map\<^bsub>fm\<^esub> (hd_coeff1 ?l) \<phi>) (?l*x#xs))"
+  also have "\<dots> = (\<exists>x. Z.I (map\<^sub>f\<^sub>m (hd_coeff1 ?l) \<phi>) (?l*x#xs))"
     by(rule unity_coeff_ex[THEN meta_eq_to_obj_eq,symmetric])
   also have "\<dots> = ?R"
     by(simp add: I_hd_coeff1_mult[OF `?l>0` `qfree \<phi>`] dvd_zlcms)

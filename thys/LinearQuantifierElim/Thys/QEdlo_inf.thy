@@ -24,7 +24,7 @@ fun asubst_peps :: "nat \<Rightarrow> atom \<Rightarrow> atom fm" ("asubst\<^sub
 "asubst_peps k (Eq (Suc i) (Suc j)) = Atom(Eq i j)"
 
 abbreviation subst_peps :: "atom fm \<Rightarrow> nat \<Rightarrow> atom fm" ("subst\<^sub>+") where
-"subst\<^sub>+ \<phi> k \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^sub>+ k) \<phi>"
+"subst\<^sub>+ \<phi> k \<equiv> amap\<^sub>f\<^sub>m (asubst\<^sub>+ k) \<phi>"
 
 definition "nolb \<phi> xs l x = (\<forall>y\<in>{l<..<x}. y \<notin> LB \<phi> xs)"
 
@@ -40,7 +40,9 @@ apply(clarsimp simp:nolb_def)
 apply blast
 done
 
-declare[[simp_depth_limit=3]]
+context notes [[simp_depth_limit=3]]
+begin
+
 lemma innermost_intvl:
  "\<lbrakk> nqfree \<phi>; nolb \<phi> xs l x; l < x; x \<notin> EQ \<phi> xs; DLO.I \<phi> (x#xs); l < y; y \<le> x\<rbrakk>
   \<Longrightarrow> DLO.I \<phi> (y#xs)"
@@ -88,7 +90,8 @@ next
 next
   case Or thus ?case by(simp add: Ball_def)(metis order_refl innermost_intvl)
 qed simp_all
-declare[[simp_depth_limit=50]]
+
+end
 
 lemma dense_interval:
 assumes "finite L" "l \<in> L" "l < x" "P(x::'a::dlo)"

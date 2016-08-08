@@ -19,7 +19,7 @@ fun asubst_peps :: "real * real list \<Rightarrow> atom \<Rightarrow> atom fm" (
 "asubst_peps rcs a = Atom a"
 
 abbreviation subst_peps :: "atom fm \<Rightarrow> real * real list \<Rightarrow> atom fm" ("subst\<^sub>+")
-where "subst\<^sub>+ \<phi> rcs \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^sub>+ rcs) \<phi>"
+where "subst\<^sub>+ \<phi> rcs \<equiv> amap\<^sub>f\<^sub>m (asubst\<^sub>+ rcs) \<phi>"
 
 definition "nolb f xs l x = (\<forall>y\<in>{l<..<x}. y \<notin> LB f xs)"
 
@@ -35,7 +35,8 @@ apply(clarsimp simp:nolb_def)
 apply blast
 done
 
-declare[[simp_depth_limit=4]]
+context notes [[simp_depth_limit=4]]
+begin
 
 lemma innermost_intvl:
   "\<lbrakk> nqfree f; nolb f xs l x; l < x; x \<notin> EQ f xs; R.I f (x#xs); l < y; y \<le> x\<rbrakk>
@@ -97,10 +98,10 @@ qed simp+
 
 definition "EQ2 = EQ"
 
-lemma EQ2_Or[simp]: "EQ2 (Or f g) xs = (EQ2 f xs Un EQ2 g xs)"
+lemma EQ2_Or[simp]: "EQ2 (Or f g) xs = (EQ2 f xs \<union> EQ2 g xs)"
 by(auto simp:EQ2_def)
 
-lemma EQ2_And[simp]: "EQ2 (And f g) xs = (EQ2 f xs Un EQ2 g xs)"
+lemma EQ2_And[simp]: "EQ2 (And f g) xs = (EQ2 f xs \<union> EQ2 g xs)"
 by(auto simp:EQ2_def)
 
 lemma innermost_intvl2:
@@ -147,7 +148,8 @@ next
 next
   case Or thus ?case by(simp add:Ball_def)(metis order_refl innermost_intvl2)
 qed simp_all
-declare[[simp_depth_limit=50]]
+
+end
 
 lemma I_subst_peps:
   "nqfree f \<Longrightarrow> R.I (subst\<^sub>+ f (r,cs)) xs \<Longrightarrow>

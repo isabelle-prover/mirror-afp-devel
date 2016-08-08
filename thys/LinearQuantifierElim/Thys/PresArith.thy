@@ -84,7 +84,7 @@ fun asubst :: "int \<Rightarrow> int list \<Rightarrow> atom \<Rightarrow> atom"
 "asubst i' ks' a = a"
 
 abbreviation subst :: "int \<Rightarrow> int list \<Rightarrow> atom fm \<Rightarrow> atom fm"
-where "subst i ks \<equiv> map\<^bsub>fm\<^esub> (asubst i ks)"
+where "subst i ks \<equiv> map\<^sub>f\<^sub>m (asubst i ks)"
 
 lemma IZ_asubst: "I\<^sub>Z (asubst i ks a) xs = I\<^sub>Z a ((i + \<langle>ks,xs\<rangle>) # xs)"
 apply (cases a)
@@ -275,7 +275,7 @@ qed
 
 lemma I_hd_coeff1_mult: assumes "m>0"
 shows "qfree \<phi> \<Longrightarrow> \<forall> a \<in> set(Z.atoms\<^sub>0 \<phi>). hd_coeff a dvd m \<Longrightarrow>
- Z.I (map\<^bsub>fm\<^esub> (hd_coeff1 m) \<phi>) (m*x#xs) = Z.I \<phi> (x#xs)"
+ Z.I (map\<^sub>f\<^sub>m (hd_coeff1 m) \<phi>) (m*x#xs) = Z.I \<phi> (x#xs)"
 proof(induct \<phi>)
   case (Atom a)
   thus ?case using I_hd_coeff1_mult_a[OF `m>0`] by auto

@@ -10,7 +10,7 @@ begin
 
 fun cyclerec :: "nat \<Rightarrow> nat \<Rightarrow> atom list \<Rightarrow> bool" where
 "cyclerec i j [] = (i=j)" |
-"cyclerec i j (Less m n # fs) = (j=m & cyclerec i n fs)" |
+"cyclerec i j (Less m n # fs) = (j=m \<and> cyclerec i n fs)" |
 "cyclerec i j (Eq m n # fs) = (if j=m then cyclerec i n fs
                                else if j=n then cyclerec i m fs else False)"
 
@@ -20,10 +20,10 @@ definition cycle :: "atom list \<Rightarrow> nat list \<Rightarrow> bool" where
   (case map (nth fs) is of Less i j # fs' \<Rightarrow> cyclerec i j fs' | _ \<Rightarrow> False))"
 
 definition
-"cyclic_dnf ass = (EX iss. list_all2 cycle ass iss)"
+"cyclic_dnf ass = (\<exists>iss. list_all2 cycle ass iss)"
 
 lemma refute_I:
-  "~ Logic.interpret h (Neg f) e \<Longrightarrow> Logic.interpret h f e"
+  "\<not> Logic.interpret h (Neg f) e \<Longrightarrow> Logic.interpret h f e"
 by simp
 
 lemma cyclerecD: fixes xs :: "'a :: dlo list" shows
@@ -46,7 +46,7 @@ apply fastforce
 apply fastforce
 done
 
-lemma cyclic_dnfD: "qfree f \<Longrightarrow> cyclic_dnf (dnf(DLO.nnf f)) \<Longrightarrow> ~DLO.I f xs"
+lemma cyclic_dnfD: "qfree f \<Longrightarrow> cyclic_dnf (dnf(DLO.nnf f)) \<Longrightarrow> \<not>DLO.I f xs"
 apply(subst DLO.I_nnf[unfolded nnf_def, symmetric])
 apply(subst DLO.I_dnf[symmetric])
 apply(erule DLO.nqfree_nnf[unfolded nnf_def])
