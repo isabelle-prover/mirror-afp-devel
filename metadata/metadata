@@ -1,6 +1,6 @@
 [DFS_Framework]
 title = A Framework for Verifying Depth-First Search Algorithms
-author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>, René Neumann <mailto:neumannr@in.tum.de>
+author = Peter Lammich <http://www21.in.tum.de/~lammich/>, René Neumann <mailto:neumannr@in.tum.de>
 notify = lammich@in.tum.de
 date = 2016-07-05
 topic = Computer Science/Algorithms
@@ -841,7 +841,7 @@ notify =
 
 [Dijkstra_Shortest_Path]
 title = Dijkstra's Shortest Path Algorithm
-author = Benedikt Nordhoff <mailto:b.n@wwu.de>, Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
+author = Benedikt Nordhoff <mailto:b.n@wwu.de>, Peter Lammich <http://www21.in.tum.de/~lammich/>
 topic = Computer Science/Algorithms
 date = 2012-01-30
 abstract = We implement and prove correct Dijkstra's algorithm for the
@@ -853,7 +853,7 @@ notify = lammich@in.tum.de
 
 [Refine_Monadic]
 title = Refinement for Monadic Programs
-author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
+author = Peter Lammich <http://www21.in.tum.de/~lammich/>
 topic = Computer Science/Programming Languages/Logics
 date = 2012-01-30
 abstract = We provide a framework for program and data refinement in Isabelle/HOL.
@@ -1329,7 +1329,7 @@ notify = traytel@in.tum.de
 
 [Tree-Automata]
 title = Tree Automata
-author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
+author = Peter Lammich <http://www21.in.tum.de/~lammich/>
 date = 2009-11-25
 topic = Computer Science/Automata and Formal Languages
 abstract = This work presents a machine-checked tree automata library for Standard-ML, OCaml and Haskell. The algorithms are efficient by using appropriate data structures like RB-trees. The available algorithms for non-deterministic automata include membership query, reduction, intersection, union, and emptiness check with computation of a witness for non-emptiness. The executable algorithms are derived from less-concrete, non-executable algorithms using data-refinement techniques. The concrete data structures are from the Isabelle Collections Framework. Moreover, this work contains a formalization of the class of tree-regular languages and its closure properties under set operations.
@@ -1659,7 +1659,7 @@ notify = florian.haftmann@informatik.tu-muenchen.de rene.neumann@informatik.tu-m
 
 [Binomial-Heaps]
 title = Binomial Heaps and Skew Binomial Heaps
-author = Rene Meis <mailto:rene.meis@uni-muenster.de>, Finn Nielsen <mailto:finn.nielsen@uni-muenster.de>, Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
+author = Rene Meis <mailto:rene.meis@uni-muenster.de>, Finn Nielsen <mailto:finn.nielsen@uni-muenster.de>, Peter Lammich <http://www21.in.tum.de/~lammich/>
 date = 2010-10-28
 topic = Computer Science/Data Structures
 abstract =
@@ -1677,7 +1677,7 @@ notify = peter.lammich@uni-muenster.de
 
 [Finger-Trees]
 title = Finger Trees
-author = Benedikt Nordhoff <mailto:b_nord01@uni-muenster.de>, Stefan Körner <mailto:s_koer03@uni-muenster.de>, Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
+author = Benedikt Nordhoff <mailto:b_nord01@uni-muenster.de>, Stefan Körner <mailto:s_koer03@uni-muenster.de>, Peter Lammich <http://www21.in.tum.de/~lammich/>
 date = 2010-10-28
 topic = Computer Science/Data Structures
 abstract =
@@ -1727,7 +1727,7 @@ notify = nipkow@in.tum.de
 
 [Collections]
 title = Collections Framework
-author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
+author = Peter Lammich <http://www21.in.tum.de/~lammich/>
 contributors = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Thomas Tuerk <>
 date = 2009-11-25
 topic = Computer Science/Data Structures
@@ -2203,7 +2203,7 @@ notify = kleing@cse.unsw.edu.au rafal.kolanski@nicta.com.au
 
 [Separation_Logic_Imperative_HOL]
 title = A Separation Logic Framework for Imperative HOL
-author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>, Rene Meis <mailto:rene.meis@uni-due.de>
+author = Peter Lammich <http://www21.in.tum.de/~lammich/>, Rene Meis <mailto:rene.meis@uni-due.de>
 date = 2012-11-14
 topic = Computer Science/Programming Languages/Logics
 license = BSD
@@ -2572,7 +2572,7 @@ notify = nipkow@in.tum.de
 [Program-Conflict-Analysis]
 title = Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors
 topic = Computer Science/Programming Languages/Static Analysis
-author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>, Markus Müller-Olm <http://cs.uni-muenster.de/u/mmo/>
+author = Peter Lammich <http://www21.in.tum.de/~lammich/>, Markus Müller-Olm <http://cs.uni-muenster.de/u/mmo/>
 date = 2007-12-14
 abstract = In this work we formally verify the soundness and precision of a static program analysis that detects conflicts (e. g. data races) in programs with procedures, thread creation and monitors with the Isabelle theorem prover. As common in static program analysis, our program model abstracts guarded branching by nondeterministic branching, but completely interprets the call-/return behavior of procedures, synchronization by monitors, and thread creation. The analysis is based on the observation that all conflicts already occur in a class of particularly restricted schedules. These restricted schedules are suited to constraint-system-based program analysis. The formalization is based upon a flowgraph-based program model with an operational semantics as reference point.
 notify = peter.lammich@uni-muenster.de
@@ -3503,7 +3503,7 @@ notify = lp15@cam.ac.uk
 [Native_Word]
 title = Native Word
 author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
-contributors = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>
+contributors = Peter Lammich <http://www21.in.tum.de/~lammich/>
 date = 2013-09-17
 topic = Computer Science/Data Structures
 abstract = This entry makes machine words and machine arithmetic available for code generation from Isabelle/HOL.  It provides a common abstraction that hides the differences between the different target languages.  The code generator maps these operations to the APIs of the target languages.  Apart from that, we extend the available bit operations on types int and integer, and map them to the operations in the target languages.
