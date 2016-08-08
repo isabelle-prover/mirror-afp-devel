@@ -98,10 +98,10 @@ qed simp+
 
 definition "EQ2 = EQ"
 
-lemma EQ2_Or[simp]: "EQ2 (Or f g) xs = (EQ2 f xs Un EQ2 g xs)"
+lemma EQ2_Or[simp]: "EQ2 (Or f g) xs = (EQ2 f xs \<union> EQ2 g xs)"
 by(auto simp:EQ2_def)
 
-lemma EQ2_And[simp]: "EQ2 (And f g) xs = (EQ2 f xs Un EQ2 g xs)"
+lemma EQ2_And[simp]: "EQ2 (And f g) xs = (EQ2 f xs \<union> EQ2 g xs)"
 by(auto simp:EQ2_def)
 
 lemma innermost_intvl2:

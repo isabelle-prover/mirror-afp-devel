@@ -140,7 +140,7 @@ qed
 
 
 theorem I_interior1:
-assumes "nqfree \<phi>" shows "DLO.I (qe_interior\<^sub>1 \<phi>) xs = (EX x. DLO.I \<phi> (x#xs))"
+assumes "nqfree \<phi>" shows "DLO.I (qe_interior\<^sub>1 \<phi>) xs = (\<exists>x. DLO.I \<phi> (x#xs))"
   (is "?QE = ?EX")
 proof
   assume ?QE

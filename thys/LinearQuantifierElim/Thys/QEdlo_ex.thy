@@ -41,12 +41,12 @@ apply dlo_reify
 apply (subst I_qe_dlo [symmetric])
 by eval
 
-lemma "\<forall>x y::real. \<exists>z. x < y \<longrightarrow> x < z & z < y"
+lemma "\<forall>x y::real. \<exists>z. x < y \<longrightarrow> x < z \<and> z < y"
 apply dlo_reify
 apply (subst I_qe_dlo [symmetric])
 by eval
 
-lemma "\<exists> x::real. a+b < x & x < c*d"
+lemma "\<exists> x::real. a+b < x \<and> x < c*d"
 apply dlo_reify
 apply (subst I_qe_dlo [symmetric])
 apply normalization
@@ -57,13 +57,13 @@ apply dlo_reify
 apply (subst I_qe_dlo [symmetric])
 by eval
 
-lemma "\<forall>x y::real. \<exists>z. x < y \<longrightarrow> x < z & z < y"
+lemma "\<forall>x y::real. \<exists>z. x < y \<longrightarrow> x < z \<and> z < y"
 apply dlo_reify
 apply (subst I_qe_dlo [symmetric])
 by eval
 
 (* 160 secs *)
-lemma "\<not>(\<exists>x y z. \<forall>u::real. x < x | \<not> x<u | x<y & y<z & \<not> x<z)"
+lemma "\<not>(\<exists>x y z. \<forall>u::real. x < x \<or> \<not> x<u \<or> x<y \<and> y<z \<and> \<not> x<z)"
 apply dlo_reify
 apply (subst I_qe_dlo [symmetric])
 by eval

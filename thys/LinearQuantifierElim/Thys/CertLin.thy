@@ -71,10 +71,10 @@ definition contradict :: "atom list \<Rightarrow> real list \<Rightarrow> bool" 
                   | Less r cs \<Rightarrow> r \<ge> 0 \<and> (\<forall>c\<in>set cs. c=0))"
 
 definition
-"contradict_dnf ass = (EX css. list_all2 contradict ass css)"
+"contradict_dnf ass = (\<exists>css. list_all2 contradict ass css)"
 
 lemma refute_I:
-  "~ Logic.interpret h (Neg f) e \<Longrightarrow> Logic.interpret h f e"
+  "\<not> Logic.interpret h (Neg f) e \<Longrightarrow> Logic.interpret h f e"
 by simp
 
 lemma I_R_mult_atom: "c \<ge> 0 \<Longrightarrow> I\<^sub>R a xs \<Longrightarrow> I\<^sub>R (c *\<^sub>a a) xs"
@@ -108,7 +108,7 @@ proof -
              elim:in_set_zipE)
 qed
 
-lemma cyclic_dnfD: "qfree f \<Longrightarrow> contradict_dnf (dnf(R.nnf f)) \<Longrightarrow> ~R.I f xs"
+lemma cyclic_dnfD: "qfree f \<Longrightarrow> contradict_dnf (dnf(R.nnf f)) \<Longrightarrow> \<not>R.I f xs"
 apply(subst R.I_nnf[symmetric])
 apply(subst R.I_dnf[symmetric])
 apply(erule R.nqfree_nnf)
