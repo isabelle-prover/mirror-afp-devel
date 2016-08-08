@@ -9,6 +9,7 @@ session HereditarilyFinite (AFP) = HOL +
     Rank
     Finite_Automata
     Finitary
+    OrdArith
   document_files
     "root.bib"
     "root.tex"
