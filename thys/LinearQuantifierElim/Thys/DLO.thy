@@ -107,10 +107,10 @@ definition "EQ f xs = {xs!k|k.
   Eq (Suc k) 0 : set(DLO.atoms\<^sub>0 f) \<or> Eq 0 (Suc k) : set(DLO.atoms\<^sub>0 f)}"
 
 
-lemma EQ_And[simp]: "EQ (And f g) xs = (EQ f xs Un EQ g xs)"
+lemma EQ_And[simp]: "EQ (And f g) xs = (EQ f xs \<union> EQ g xs)"
 by(auto simp:EQ_def)
 
-lemma EQ_Or[simp]: "EQ (Or f g) xs = (EQ f xs Un EQ g xs)"
+lemma EQ_Or[simp]: "EQ (Or f g) xs = (EQ f xs \<union> EQ g xs)"
 by(auto simp:EQ_def)
 
 lemma EQ_conv_set_ebounds:
