@@ -415,8 +415,7 @@ proof -
     "dist C D = 2 * radius * sin ((\<delta> - \<gamma>) / 2)"
     "dist A D = 2 * radius * sin ((\<delta> - \<alpha>) / 2)"
     "dist B C = 2 * radius * sin ((\<gamma> - \<beta>) / 2)"
-    using angle_basics \<open>radius \<ge> 0\<close>
-    by (auto simp add: dist_circle_segment)
+    using angle_basics \<open>radius \<ge> 0\<close> dist_circle_segment by (auto)
 
   have "dist A C * dist B D = 4 * radius ^ 2 * sin ((\<gamma> - \<alpha>) / 2) * sin ((\<delta> - \<beta>) / 2)"
     unfolding dist_eqs by (simp add: power2_eq_square)
