@@ -206,20 +206,6 @@ qed
 lemma snd_imageI: "(a, b) \<in> R \<Longrightarrow> b \<in> snd ` R"
   by force
 
-lemma
-  snd_Pair4I:
-  assumes "\<And>t. t \<in> S \<Longrightarrow> (a, d, e, b t) \<in> R"
-  assumes "\<And>G. (\<And>t. t \<in> S \<Longrightarrow> b t \<in> G) \<Longrightarrow> x \<in> G"
-  shows "(a, d, e, x) \<in> R"
-  using assms by auto
-
-lemma
-  snd_Pair5I:
-  assumes "\<And>t. t \<in> S \<Longrightarrow> (a, c, d, e, b t) \<in> R"
-  assumes "\<And>G. (\<And>t. t \<in> S \<Longrightarrow> b t \<in> G) \<Longrightarrow> x \<in> G"
-  shows "(a, c, d, e, x) \<in> R"
-  using assms by auto
-
 lemma in_minus_Collect: "a \<in> A \<Longrightarrow> b \<in> B \<Longrightarrow> a - b \<in> {x - y|x y. x \<in> A \<and> y \<in> B}"
   by blast
 
