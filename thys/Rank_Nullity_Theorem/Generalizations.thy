@@ -8,7 +8,7 @@ section{*Generalizations*}
 
 theory Generalizations
 imports
-  "~~/src/HOL/Multivariate_Analysis/Determinants"
+  "~~/src/HOL/Analysis/Determinants"
 begin
 
 subsection{*Generalization of parts of the HMA library*}
@@ -18,12 +18,12 @@ formalizations of both the Rank Nullity Theorem and the Gauss-Jordan algorithm a
 
 Mainly, we have carried out four kinds of generalizations:
 \begin{enumerate}
-\item Lemmas involving real vector spaces (that is, lemmas that used the @{text "real_vector"} 
+\item Lemmas involving real vector spaces (that is, lemmas that used the @{text "real_vector"}
   class) are now generalized to vector spaces over any field.
-\item Some lemmas involving euclidean spaces (the @{text "euclidean_space"} class) have been 
+\item Some lemmas involving euclidean spaces (the @{text "euclidean_space"} class) have been
   generalized to finite dimensional vector spaces.
 \item Lemmas involving real matrices have been generalized to matrices over any field.
-\item Lemmas about determinants involving the class @{text "linordered_idom"}, such as the lemma 
+\item Lemmas about determinants involving the class @{text "linordered_idom"}, such as the lemma
   @{text "det_identical_columns"}, are now proven using the class @{text "comm_ring_1"}.
 \end{enumerate}
 *}
@@ -55,9 +55,9 @@ begin
 lemma linear_0: "f 0 = 0"
   by (metis add eq_add_iff)
 
-lemma linear_cmul: "f (c *b x) = c *c (f x)" 
+lemma linear_cmul: "f (c *b x) = c *c (f x)"
   by (metis cmult)
-  
+
 lemma linear_neg: "f (- x) = - f x"
   using linear_cmul [where c="-1"]
     by (metis add add_eq_0_iff linear_0)
@@ -66,7 +66,7 @@ lemma linear_add: "f (x + y) = f x + f y"
   by (metis add)
 
 lemma linear_diff: "f (x - y) = f x - f y"
-  by (metis diff_conv_add_uminus linear_add linear_neg)  
+  by (metis diff_conv_add_uminus linear_add linear_neg)
 
 lemma linear_setsum:
   assumes fin: "finite S"
@@ -112,7 +112,7 @@ qed
 end
 
 lemma linear_iff:
-  "linear scaleB scaleC  f \<longleftrightarrow> (vector_space scaleB) \<and> (vector_space scaleC) 
+  "linear scaleB scaleC  f \<longleftrightarrow> (vector_space scaleB) \<and> (vector_space scaleC)
     \<and> (\<forall>x y. f (x + y) = f x + f y) \<and> (\<forall>c x. f (scaleB c x) = scaleC c (f x))"
   (is "linear scaleB scaleC  f \<longleftrightarrow> ?rhs")
 proof
@@ -121,7 +121,7 @@ proof
   moreover have C: "vector_space scaleC" using lf unfolding linear_def by simp
   ultimately show "?rhs" using f.linear_add f.linear_cmul by simp
 next
-  assume "?rhs" then show "linear scaleB scaleC  f" 
+  assume "?rhs" then show "linear scaleB scaleC  f"
     by (unfold_locales, auto simp add: vector_space.scale_right_distrib
     vector_space.scale_left_distrib vector_space.scale_scale vector_space.scale_one)
 qed
@@ -140,10 +140,10 @@ qed
 lemma linear_compose_sub: "linear scale scaleC f \<Longrightarrow> linear scale scaleC g \<Longrightarrow> linear scale scaleC (\<lambda>x. f x - g x)"
   unfolding linear_iff
   by (simp add: vector_space.scale_right_diff_distrib)
-    
+
 lemma linear_compose: "linear scale scaleC f \<Longrightarrow> linear scaleC scaleT  g \<Longrightarrow> linear scale scaleT  (g o f)"
   unfolding linear_iff by auto
-    
+
 context vector_space
 begin
 
@@ -156,7 +156,7 @@ lemma scale_minus1_left[simp]:
   using scale_minus_left [of 1 x] by simp
 
 definition subspace :: "'b set \<Rightarrow> bool"
-  where "subspace S \<longleftrightarrow> 0 \<in> S \<and> (\<forall>x\<in> S. \<forall>y \<in>S. x + y \<in> S) \<and> (\<forall>c. \<forall>x \<in>S. scale c x \<in>S )"  
+  where "subspace S \<longleftrightarrow> 0 \<in> S \<and> (\<forall>x\<in> S. \<forall>y \<in>S. x + y \<in> S) \<and> (\<forall>c. \<forall>x \<in>S. scale c x \<in>S )"
 definition "span (S::'b set) = (subspace hull S)"
 definition "dependent S \<longleftrightarrow> (\<exists>a \<in> S. a \<in> span (S - {a}))"
 abbreviation"independent s \<equiv> \<not> dependent s"
@@ -175,12 +175,12 @@ lemma subspace_add: "subspace S \<Longrightarrow> x \<in> S \<Longrightarrow> y 
 lemma  subspace_mul: "subspace S \<Longrightarrow> x \<in> S \<Longrightarrow> scale c x \<in> S"
   by (metis subspace_def)
 
-lemma subspace_neg: "subspace S \<Longrightarrow> x \<in> S \<Longrightarrow> - x \<in> S" 
+lemma subspace_neg: "subspace S \<Longrightarrow> x \<in> S \<Longrightarrow> - x \<in> S"
 by (metis scale_minus_left scale_one subspace_mul)
 
 lemma subspace_diff: "subspace S \<Longrightarrow> x \<in> S \<Longrightarrow> y \<in> S \<Longrightarrow> x - y \<in> S"
   by (metis diff_conv_add_uminus subspace_add subspace_neg)
-  
+
 lemma subspace_setsum:
   assumes sA: "subspace A"
     and fB: "finite B"
@@ -189,7 +189,7 @@ lemma subspace_setsum:
   using  fB f sA
   by (induct rule: finite_induct[OF fB])
     (simp add: subspace_def sA, auto simp add: sA subspace_add)
-      
+
 lemma subspace_linear_image:
   assumes lf: "linear scale scaleC f"
     and sS: "subspace S"
@@ -209,7 +209,7 @@ show ?thesis
   qed
 qed
 
-lemma subspace_linear_vimage: 
+lemma subspace_linear_vimage:
   assumes lf: "linear scale scaleC (f::'b::ab_group_add=>'c::ab_group_add)"
   and s: "vector_space.subspace scaleC S"
   shows "subspace (f -` S)"
@@ -240,31 +240,31 @@ qed
 lemma vector_space_product: "vector_space (\<lambda>x (a, b). (scale x a, scale x b))"
   by (unfold_locales, auto simp: scale_right_distrib scale_left_distrib)
 
-text {* Properties of span. *}  
-  
+text {* Properties of span. *}
+
 lemma  span_mono: "A \<subseteq> B \<Longrightarrow> span A \<subseteq> span B"
-  by (metis span_def hull_mono)  
-  
+  by (metis span_def hull_mono)
+
 lemma subspace_span: "subspace (span S)"
   unfolding span_def
   apply (rule hull_in)
   apply (simp only: subspace_def Inter_iff Int_iff subset_eq)
   apply auto
   done
-  
-  
+
+
 lemma span_clauses:
   "a \<in> S ==> a \<in> span S"
   "0 \<in> span S"
   "x\<in> span S ==> y \<in> span S ==> x + y \<in> span S"
   "x \<in> span S ==> scale c x \<in> span S"
   by (metis span_def hull_subset subset_eq) (metis subspace_span subspace_def)+
-  
+
 lemma span_unique:
   "S \<subseteq> T ==> subspace T ==> (!!T'. S \<subseteq> T' ==> subspace T' ==> T \<subseteq> T') ==> span S = T"
   unfolding span_def by (rule hull_unique)
-  
-  
+
+
 lemma span_minimal: "S \<subseteq> T ==> subspace T ==> span S \<subseteq> T"
   unfolding span_def by (rule hull_minimal)
 
@@ -287,7 +287,7 @@ lemma span_empty[simp]: "span {} = {0}"
   apply (auto simp add: subspace_def)
   done
 
-  
+
 lemma  independent_empty[intro]: "independent {}"
   by (simp add: dependent_def)
 
@@ -303,9 +303,9 @@ lemma  independent_mono: "independent A ==> B \<subseteq> A ==> independent B"
   done
 
 lemma span_subspace: "A \<subseteq> B ==> B \<le> span A ==>  subspace B ==> span A = B"
-  by (metis order_antisym span_def hull_minimal) 
-  
-  
+  by (metis order_antisym span_def hull_minimal)
+
+
 lemma span_induct':
   assumes SP: "\<forall>x \<in> S. P x"
     and P: "subspace {x. P x}"
@@ -388,7 +388,7 @@ lemma span_induct_alt:
     and x: "x \<in> span S"
   shows "h x"
   using span_induct_alt'[of h S] h0 hS x by blast
-  
+
 text {* Individual closure properties. *}
 
 lemma span_span: "span (span A) = span A"
@@ -433,18 +433,18 @@ lemma span_add_eq: "x \<in> span S ==> x + y \<in> span S \<longleftrightarrow> 
   apply simp
   apply (simp only: span_add span_sub)
   done
-  
+
 
 lemma span_linear_image:
   assumes lf: "linear scale scaleC (f::'b::ab_group_add=>'c::ab_group_add)"
-  shows "vector_space.span scaleC (f ` S) = f ` (span S)" 
+  shows "vector_space.span scaleC (f ` S) = f ` (span S)"
 proof -
 interpret B: vector_space scale using lf by (metis linear_iff)
 interpret C: vector_space scaleC using lf by (metis linear_iff)
 interpret lf: linear scale scaleC f using lf by simp
 show ?thesis
 proof (rule C.span_unique)
-  show "f ` S \<subseteq> f ` span S" 
+  show "f ` S \<subseteq> f ` span S"
     by (rule image_mono, rule span_inc)
   show "vector_space.subspace scaleC (f ` span S)"
     using lf subspace_span by (rule subspace_linear_image)
@@ -461,7 +461,7 @@ lemma span_Un: "span (A \<union> B) = (\<lambda>(a, b). a + b) ` (span A \<times
 proof (rule span_unique)
   show "A \<union> B \<subseteq> (\<lambda>(a, b). a + b) ` (span A \<times> span B)"
     by safe (force intro: span_clauses)+
-next   
+next
   have "linear (\<lambda>x (a,b). (scale x a, scale x b)) scale (\<lambda>(a, b). a + b)"
     proof (unfold linear_def linear_axioms_def, auto)
         show "vector_space (\<lambda>x (a, b). (scale x a, scale x b))" using vector_space_product .
@@ -516,7 +516,7 @@ lemma span_breakdown:
 
 lemma span_breakdown_eq: "x \<in> span (insert a S) \<longleftrightarrow> (\<exists>k. x - scale k a \<in> span S)"
   by (simp add: span_insert)
-  
+
 lemma in_span_insert:
   assumes a: "a \<in> span (insert b S)"
     and na: "a \<notin> span S"
@@ -572,8 +572,8 @@ lemma in_span_delete:
   apply blast
   apply (rule na)
   done
-  
-  
+
+
 lemma span_redundant: "x \<in> span S \<Longrightarrow> span (insert x S) = span S"
   unfolding span_def by (rule hull_redundant)
 
@@ -582,7 +582,7 @@ lemma span_trans:
     and y: "y \<in> span (insert x S)"
   shows "y \<in> span S"
   using assms by (simp only: span_redundant)
-  
+
 lemma span_insert_0[simp]: "span (insert 0 S) = span S"
   by (metis span_0 span_redundant)
 
@@ -695,9 +695,9 @@ lemma dependent_explicit:
     have th0: "?a \<in> P" "finite ?S" "?S \<subseteq> P"
       using fS SP vS by auto
     have "setsum (\<lambda>v. scale (?u v) v) ?S =
-      setsum (\<lambda>v. scale (- (inverse (u ?a))) (scale (u v) v)) S - scale (?u v) v" 
-      using fS vS uv by (simp add: setsum_diff1 field_simps)   
-    also have "\<dots> = ?a" 
+      setsum (\<lambda>v. scale (- (inverse (u ?a))) (scale (u v) v)) S - scale (?u v) v"
+      using fS vS uv by (simp add: setsum_diff1 field_simps)
+    also have "\<dots> = ?a"
       unfolding scale_setsum_right[symmetric] u using uv by simp
     finally have "setsum (\<lambda>v. scale (?u v) v) ?S = ?a" .
     with th0 have ?lhs
@@ -946,24 +946,24 @@ lemma independent_span_bound:
 
 (*The following lemmas don't appear in the library, but they are useful in my development.*)
 lemma independent_explicit:
-  "independent A = 
-  (\<forall>S \<subseteq> A. finite S \<longrightarrow> (\<forall>u. (\<Sum>v\<in>S. scale (u v) v) = 0 \<longrightarrow> (\<forall>v\<in>S. u v = 0)))" 
+  "independent A =
+  (\<forall>S \<subseteq> A. finite S \<longrightarrow> (\<forall>u. (\<Sum>v\<in>S. scale (u v) v) = 0 \<longrightarrow> (\<forall>v\<in>S. u v = 0)))"
   unfolding dependent_explicit [of A] by (simp add: disj_not2)
 
 text{*A finite set @{term "A::'a set"} for which
-  every of its linear combinations equal to zero 
-  requires every coefficient being zero, is independent:*}  
-  
+  every of its linear combinations equal to zero
+  requires every coefficient being zero, is independent:*}
+
 lemma independent_if_scalars_zero:
   assumes fin_A: "finite A"
   and sum: "\<forall>f. (\<Sum>x\<in>A. scale (f x) x) = 0 \<longrightarrow> (\<forall>x \<in> A. f x = 0)"
   shows "independent A"
 proof (unfold independent_explicit, clarify)
   fix S v and u :: "'b \<Rightarrow> 'a"
-  assume S: "S \<subseteq> A" and v: "v \<in> S" 
+  assume S: "S \<subseteq> A" and v: "v \<in> S"
   let ?g = "\<lambda>x. if x \<in> S then u x else 0"
   have "(\<Sum>v\<in>A. scale (?g v) v) = (\<Sum>v\<in>S. scale (u v) v)"
-    using S fin_A by (auto intro!: setsum.mono_neutral_cong_right) 
+    using S fin_A by (auto intro!: setsum.mono_neutral_cong_right)
   also assume "(\<Sum>v\<in>S. scale (u v) v) = 0"
   finally have "?g v = 0" using v S sum by force
   thus "u v = 0"  unfolding if_P[OF v] .
@@ -989,7 +989,7 @@ lemma independent_cart_basis:
         using xa x unfolding cart_basis_def by auto
       have "xa $ i = 0" unfolding a axis_def using a_not_i by auto
       thus "f xa * xa $ i = 0" by simp
-   qed    
+   qed
   have "0 = (\<Sum>x\<in>cart_basis. f x *s x) $ i" using eq_0 by simp
   also have "... = (\<Sum>x\<in>cart_basis. (f x *s x) $ i)" unfolding setsum_component ..
   also have "... = (\<Sum>x\<in>cart_basis. f x * (x $ i))" unfolding vector_smult_component ..
@@ -997,7 +997,7 @@ lemma independent_cart_basis:
     by (rule setsum.remove[OF finite_cart_basis x_in])
   also have "... =  f x * (x $ i)" unfolding setsum_eq_0 by simp
   also have "... = f x" unfolding x axis_def by auto
-  finally show "f x = 0" .. 
+  finally show "f x = 0" ..
 qed
 
 lemma span_cart_basis:
@@ -1009,7 +1009,7 @@ show "x \<in> vec.span (cart_basis)"
 proof (unfold vec.span_finite[OF finite_cart_basis], auto, rule exI[of _ ?f] , subst (2) vec_eq_iff, clarify)
 fix i::'b
 let ?w = "axis i (1::'a)"
-have the_eq_i: "(THE a. ?w = axis a 1) = i" 
+have the_eq_i: "(THE a. ?w = axis a 1) = i"
   by (rule the_equality, auto simp: axis_eq_axis)
 have setsum_eq_0: "(\<Sum>v\<in>(cart_basis) - {?w}. x $ (THE i. v = axis i 1) * v $ i) = 0"
   proof (rule setsum.neutral, rule ballI)
@@ -1021,13 +1021,13 @@ have setsum_eq_0: "(\<Sum>v\<in>(cart_basis) - {?w}. x $ (THE i. v = axis i 1) *
          show "xa = axis j 1" using j .
          show "\<And>i. xa = axis i 1 \<Longrightarrow> i = j" by (metis axis_eq_axis j zero_neq_one)
       qed
-     show "x $ (THE i. xa = axis i 1) * xa $ i = 0" 
-      apply (subst (2) j) 
+     show "x $ (THE i. xa = axis i 1) * xa $ i = 0"
+      apply (subst (2) j)
       unfolding the_eq_j unfolding axis_def using i_not_j by simp
    qed
-have "(\<Sum>v\<in>cart_basis. x $ (THE i. v = axis i 1) *s v) $ i = 
+have "(\<Sum>v\<in>cart_basis. x $ (THE i. v = axis i 1) *s v) $ i =
   (\<Sum>v\<in>cart_basis. (x $ (THE i. v = axis i 1) *s v) $ i)" unfolding setsum_component ..
-also have "... = (\<Sum>v\<in>cart_basis. x $ (THE i. v = axis i 1) * v $ i)" 
+also have "... = (\<Sum>v\<in>cart_basis. x $ (THE i. v = axis i 1) * v $ i)"
   unfolding vector_smult_component ..
 also have "... = x $ (THE a. ?w = axis a 1) * ?w $ i + (\<Sum>v\<in>(cart_basis) - {?w}. x $ (THE i. v = axis i 1) * v $ i)"
  by (rule setsum.remove[OF finite_cart_basis], auto simp add: cart_basis_def)
@@ -1043,7 +1043,7 @@ locale finite_dimensional_vector_space = vector_space +
   fixes Basis :: "'b set"
   assumes finite_Basis: "finite (Basis)"
   and independent_Basis: "independent (Basis)"
-  and span_Basis: "span (Basis) = UNIV"  
+  and span_Basis: "span (Basis) = UNIV"
 begin
 
 (*In the library, this is an abbreviation and it appears in the file Euclidean_Space.thy*)
@@ -1054,8 +1054,8 @@ lemma independent_bound:
   shows "independent S \<Longrightarrow> finite S \<and> card S \<le> dimension"
   using independent_span_bound[OF finite_Basis, of S]
   unfolding dimension_def span_Basis by auto
-  
-  
+
+
   lemma maximal_independent_subset_extend:
   assumes sv: "S \<subseteq> V"
     and iS: "independent S"
@@ -1101,7 +1101,7 @@ lemma maximal_independent_subset:
 end
 
 context vector_space
-begin  
+begin
 definition "dim V = (SOME n. \<exists>B. B \<subseteq> V \<and> independent B \<and> V \<subseteq> span B \<and> card B = n)"
 end
 
@@ -1112,7 +1112,7 @@ lemma basis_exists:
   unfolding dim_def some_eq_ex[of "\<lambda>n. \<exists>B. B \<subseteq> V \<and> independent B \<and> V \<subseteq> span B \<and> (card B = n)"]
   using maximal_independent_subset[of V] independent_bound
   by auto
-  
+
   lemma independent_card_le_dim:
   assumes "B \<subseteq> V"
     and "independent B"
@@ -1138,7 +1138,7 @@ lemma basis_card_eq_dim:
 lemma dim_unique:
   shows "B \<subseteq> V \<Longrightarrow> V \<subseteq> span B \<Longrightarrow> independent B \<Longrightarrow> card B = n \<Longrightarrow> dim V = n"
   by (metis basis_card_eq_dim)
-  
+
 lemma dim_UNIV:
   shows "dim UNIV = card (Basis)"
   by (metis basis_card_eq_dim independent_Basis span_Basis top_greatest)
@@ -1146,9 +1146,9 @@ lemma dim_UNIV:
 lemma dim_subset:
   shows "S \<subseteq> T \<Longrightarrow> dim S \<le> dim T"
   using basis_exists[of T] basis_exists[of S]
-  by (metis independent_card_le_dim subset_trans)  
+  by (metis independent_card_le_dim subset_trans)
 
-(*This lemma doesn't appear in the library, but it's useful in my development*)  
+(*This lemma doesn't appear in the library, but it's useful in my development*)
 lemma dim_univ_eq_dimension:
   shows "dim UNIV = dimension"
   by (metis basis_card_eq_dim dimension_def independent_Basis span_Basis top_greatest)
@@ -1220,7 +1220,7 @@ qed
 lemma card_eq_dim:
   shows "B \<subseteq> V \<Longrightarrow> card B = dim V \<Longrightarrow> finite B \<Longrightarrow> independent B \<longleftrightarrow> V \<subseteq> span B"
   by (metis order_eq_iff card_le_dim_spanning card_ge_dim_independent)
-  
+
 lemma independent_bound_general:
   shows "independent S ==> finite S \<and> card S \<le> dim S"
   by (metis independent_card_le_dim independent_bound subset_refl)
@@ -1283,7 +1283,7 @@ end
 locale two_vector_spaces_over_same_field = B?: vector_space scaleB + C?: vector_space scaleC
   for scaleB :: "('a::field => 'b::ab_group_add => 'b)" (infixr "*b" 75)
   and scaleC :: "('a => 'c::ab_group_add => 'c)" (infixr "*c" 75)
-  
+
 context two_vector_spaces_over_same_field
 begin
 
@@ -1472,7 +1472,7 @@ qed
 end
 
 (*This is a new locale, similar to the previous one, to make easier some proofs.*)
-locale two_finite_dimensional_vector_spaces_over_same_field = B?: finite_dimensional_vector_space scaleB BasisB + 
+locale two_finite_dimensional_vector_spaces_over_same_field = B?: finite_dimensional_vector_space scaleB BasisB +
   C?: finite_dimensional_vector_space scaleC BasisC
   for scaleB :: "('a::field => 'b::ab_group_add => 'b)" (infixr "*b" 75)
   and scaleC :: "('a => 'c::ab_group_add => 'c)" (infixr "*c" 75)
@@ -1508,12 +1508,12 @@ end
 
 context vector_space
 begin
-  
+
 lemma spans_image:
   assumes lf: "linear scale scaleC (f::'b=>'c::ab_group_add)"
   and VB: "V \<subseteq> span B"
   shows "f ` V \<subseteq> vector_space.span scaleC (f ` B)"
-  unfolding span_linear_image[OF lf] by (metis VB image_mono) 
+  unfolding span_linear_image[OF lf] by (metis VB image_mono)
 
 lemma subspace_kernel:
   assumes lf: "linear scale scaleC f"
@@ -1557,33 +1557,33 @@ end
 
 locale linear_between_finite_dimensional_vector_spaces =
   l?: linear scaleB scaleC f +
-  B?: finite_dimensional_vector_space scaleB BasisB + 
+  B?: finite_dimensional_vector_space scaleB BasisB +
   C?: finite_dimensional_vector_space scaleC BasisC
   for scaleB :: "('a::field => 'b::ab_group_add => 'b)" (infixr "*b" 75)
-  and scaleC :: "('a => 'c::ab_group_add => 'c)" (infixr "*c" 75) 
+  and scaleC :: "('a => 'c::ab_group_add => 'c)" (infixr "*c" 75)
   and BasisB :: "('b set)"
   and BasisC :: "('c set)"
   and f :: "('b=>'c)"
-  
+
 context linear_between_finite_dimensional_vector_spaces
 begin
 
 lemma linear_eq_stdbasis:
   assumes lg: "linear (op *b) (op *c) g"
   and fg: "\<forall>b\<in>BasisB. f b = g b"
-  shows "f = g" 
+  shows "f = g"
 proof -
   have l: "linear (op *b) (op *c) f" by unfold_locales
-  show ?thesis 
+  show ?thesis
   using B.linear_eq[OF l lg, of UNIV BasisB] fg using B.span_Basis by auto
 qed
-  
+
 lemma linear_injective_left_inverse:
   assumes fi: "inj f"
   shows "\<exists>g. linear (op *c) (op *b) g \<and> g o f = id"
 proof -
   interpret fd: two_finite_dimensional_vector_spaces_over_same_field "(op *c)" "(op *b)" BasisC BasisB
-    by unfold_locales  
+    by unfold_locales
  have lf: "linear op *b op *c f" by unfold_locales
   from fd.linear_independent_extend[OF independent_injective_image, OF B.independent_Basis, OF fi]
   obtain h:: "'c \<Rightarrow> 'b" where h: "linear (op *c) (op *b) h" "\<forall>x \<in> f ` BasisB. h x = inv f x"
@@ -1591,20 +1591,20 @@ proof -
   from h(2) have th: "\<forall>i\<in>BasisB. (h \<circ> f) i = id i"
     using inv_o_cancel[OF fi, unfolded fun_eq_iff id_def o_def]
     by auto
-  interpret l_hg: linear_between_finite_dimensional_vector_spaces "op *b" "op *b" BasisB BasisB "(h \<circ> f)" 
+  interpret l_hg: linear_between_finite_dimensional_vector_spaces "op *b" "op *b" BasisB BasisB "(h \<circ> f)"
   apply (unfold_locales) using linear_compose[OF lf h(1)] unfolding linear_iff by fast+
   show ?thesis
     using h(1)  l_hg.linear_eq_stdbasis[OF B.linear_id th] by blast
 qed
 
-sublocale two_finite_dimensional_vector_spaces?: two_finite_dimensional_vector_spaces_over_same_field 
+sublocale two_finite_dimensional_vector_spaces?: two_finite_dimensional_vector_spaces_over_same_field
 by unfold_locales
 
 lemma linear_surjective_right_inverse:
   assumes sf: "surj f"
   shows "\<exists>g. linear (op *c) (op *b) g \<and> f o g = id"
 proof -
-  interpret lh: two_finite_dimensional_vector_spaces_over_same_field "op *c" "op *b" BasisC BasisB 
+  interpret lh: two_finite_dimensional_vector_spaces_over_same_field "op *c" "op *b" BasisC BasisB
     by unfold_locales
   have lf: "linear (op *b) (op *c) f" by unfold_locales
   from lh.linear_independent_extend[OF independent_Basis]
@@ -1651,7 +1651,7 @@ proof -
     done
   from th show ?thesis
     unfolding span_linear_image[OF lf] surj_def
-    using B(3) by auto 
+    using B(3) by auto
 qed
 
 
@@ -1720,7 +1720,7 @@ proof -
   show ?thesis
   unfolding isomorphism_expand[symmetric]
   using lbfdvs.linear_surjective_right_inverse
-  using linear_injective_imp_surjective 
+  using linear_injective_imp_surjective
   by (metis comp_assoc comp_id fi lbfdvs.linear_injective_left_inverse lf)
 qed
 
@@ -1733,7 +1733,7 @@ lemma linear_surjective_isomorphism:
   interpret lbfdvs: linear_between_finite_dimensional_vector_spaces scale scale Basis Basis f
     apply (unfold_locales) apply (simp add:  lf linear.linear_cmul linear.linear_add)
     by (metis lf linear.linear_add)
-  show ?thesis  
+  show ?thesis
   unfolding isomorphism_expand[symmetric]
     using lbfdvs.linear_surjective_right_inverse[OF sf]
    using lbfdvs.linear_injective_left_inverse[OF linear_surjective_imp_injective[OF lf sf]]
@@ -1762,16 +1762,16 @@ end
 
 (*Some interpretations:*)
 interpretation vec: finite_dimensional_vector_space "op *s" "(cart_basis)"
-  by (unfold_locales, auto simp add: finite_cart_basis independent_cart_basis span_cart_basis) 
-  
-lemma matrix_vector_mul_linear_between_finite_dimensional_vector_spaces: 
-  "linear_between_finite_dimensional_vector_spaces (op *s) (op *s) 
+  by (unfold_locales, auto simp add: finite_cart_basis independent_cart_basis span_cart_basis)
+
+lemma matrix_vector_mul_linear_between_finite_dimensional_vector_spaces:
+  "linear_between_finite_dimensional_vector_spaces (op *s) (op *s)
     (cart_basis) (cart_basis) (\<lambda>x. A *v (x::'a::{field} ^ _))"
-  by (unfold_locales) 
+  by (unfold_locales)
     (auto simp add: linear_iff2 matrix_vector_mult_def vec_eq_iff
       field_simps setsum_right_distrib setsum.distrib)
 
-interpretation euclidean_space: 
+interpretation euclidean_space:
   finite_dimensional_vector_space "scaleR :: real => 'a => 'a::{euclidean_space}" "Basis"
 proof
   have v: "vector_space (scaleR :: real => 'a => 'a::{euclidean_space})" by (unfold_locales)
@@ -1793,17 +1793,17 @@ qed
 
 lemma vector_mul_lcancel[simp]: "a *s x = a *s y \<longleftrightarrow> a = (0::'a::{field}) \<or> x = y"
   by (metis eq_iff_diff_eq_0 vector_mul_eq_0 vector_ssub_ldistrib)
-  
+
 lemma vector_mul_lcancel_imp: "a \<noteq> (0::'a::{field}) ==>  a *s x = a *s y ==> (x = y)"
   by (metis vector_mul_lcancel)
-  
+
 lemma linear_componentwise:
   fixes f:: "'a::field ^'m \<Rightarrow> 'a ^ 'n"
   assumes lf: "linear (op *s) (op *s) f"
   shows "(f x)$j = setsum (\<lambda>i. (x$i) * (f (axis i 1)$j)) (UNIV :: 'm set)" (is "?lhs = ?rhs")
 proof -
   interpret lf: linear "(op *s)" "(op *s)" f
-    using lf .   
+    using lf .
   let ?M = "(UNIV :: 'm set)"
   let ?N = "(UNIV :: 'n set)"
   have fM: "finite ?M" by simp
@@ -1818,15 +1818,15 @@ qed
 lemma matrix_vector_mul_linear: "linear (op *s) (op *s) (\<lambda>x. A *v (x::'a::{field} ^ _))"
   by (simp add: linear_iff2 matrix_vector_mult_def vec_eq_iff
       field_simps setsum_right_distrib setsum.distrib)
-  
+
 (*Two new interpretations*)
-interpretation vec: linear "op *s" "op *s" "(\<lambda>x. A *v (x::'a::{field} ^ _))" 
+interpretation vec: linear "op *s" "op *s" "(\<lambda>x. A *v (x::'a::{field} ^ _))"
   using matrix_vector_mul_linear .
-  
-interpretation vec: linear_between_finite_dimensional_vector_spaces "op *s" "op *s" 
+
+interpretation vec: linear_between_finite_dimensional_vector_spaces "op *s" "op *s"
   "(cart_basis)" "(cart_basis)" "(op *v A)"
   by unfold_locales
-  
+
 lemma matrix_works:
   assumes lf: "linear (op *s) (op *s) f"
   shows "matrix f *v x = f (x::'a::field ^ 'n)"
@@ -1834,22 +1834,22 @@ lemma matrix_works:
   apply clarify
   apply (rule linear_componentwise[OF lf, symmetric])
   done
-      
+
 lemma matrix_vector_mul: "linear (op *s) (op *s) f ==> f = (\<lambda>x. matrix f *v (x::'a::{field}^ 'n))"
   by (simp add: ext matrix_works)
-  
+
 lemma matrix_of_matrix_vector_mul: "matrix(\<lambda>x. A *v (x :: 'a::{field} ^ 'n)) = A"
   by (simp add: matrix_eq matrix_vector_mul_linear matrix_works)
-  
+
 lemma matrix_compose:
   assumes lf: "linear (op *s) (op *s) (f::'a::{field}^'n \<Rightarrow> 'a^'m)"
     and lg: "linear (op *s) (op *s) (g::'a^'m \<Rightarrow> 'a^_)"
   shows "matrix (g o f) = matrix g ** matrix f"
   using lf lg linear_compose[OF lf lg] matrix_works[OF linear_compose[OF lf lg]]
   by (simp add: matrix_eq matrix_works matrix_vector_mul_assoc[symmetric] o_def)
-  
+
 lemma matrix_left_invertible_injective:
-  "(\<exists>B. (B::'a::{field}^'m^'n) ** (A::'a::{field}^'n^'m) = mat 1) 
+  "(\<exists>B. (B::'a::{field}^'m^'n) ** (A::'a::{field}^'n^'m) = mat 1)
     \<longleftrightarrow> (\<forall>x y. A *v x = A *v y \<longrightarrow> x = y)"
 proof -
   { fix B:: "'a^'m^'n" and x y assume B: "B ** A = mat 1" and xy: "A *v x = A*v y"
@@ -1874,7 +1874,7 @@ lemma matrix_left_invertible_ker:
   unfolding matrix_left_invertible_injective
   using vec.linear_injective_0[of A]
   by (simp add: inj_on_def)
-  
+
   lemma matrix_left_invertible_independent_columns:
   fixes A :: "'a::{field}^'n^'m"
   shows "(\<exists>(B::'a ^'m^'n). B ** A = mat 1) \<longleftrightarrow>
@@ -1903,7 +1903,7 @@ proof -
   ultimately show ?thesis unfolding matrix_left_invertible_ker by auto
 qed
 
-  
+
 lemma matrix_right_invertible_independent_rows:
   fixes A :: "'a::{field}^'n^'m"
   shows "(\<exists>(B::'a^'m^'n). A ** B = mat 1) \<longleftrightarrow>
@@ -1975,7 +1975,7 @@ lemma setsum_constant_scaleR:
 
 context finite_dimensional_vector_space
 begin
-  
+
 lemma indep_card_eq_dim_span:
   assumes "independent B"
   shows "finite B \<and> card B = dim (span B)"
@@ -2015,13 +2015,13 @@ context vector_space
 begin
 lemma subspace_Inter: "\<forall>s \<in> f. subspace s \<Longrightarrow> subspace (Inter f)"
   unfolding subspace_def by auto
-  
+
 lemma span_eq[simp]: "span s = s \<longleftrightarrow> subspace s"
   unfolding span_def by (rule hull_eq) (rule subspace_Inter)
 end
 
 context finite_dimensional_vector_space
-begin  
+begin
 lemma subspace_dim_equal:
   assumes "subspace S"
     and "subspace T"
@@ -2038,7 +2038,7 @@ proof -
   have "dim S = dim T"
     using assms dim_subset[of S T] by auto
   then have "T \<subseteq> span B"
-    using card_eq_dim[of B T] B  assms 
+    using card_eq_dim[of B T] B  assms
     by (metis independent_bound_general subset_trans)
   then show ?thesis
     using assms `span B = S` by auto
@@ -2064,21 +2064,21 @@ let ?S2="{(?t_jk \<circ> p) |p. p \<in>?S1}"
 let ?f="\<lambda>p. of_int (sign p) * (\<Prod>i\<in>UNIV. A $ i $ p i)"
 let ?g="\<lambda>p. ?t_jk \<circ> p"
 have g_S1: "?S2 = ?g` ?S1" by auto
-have inj_g: "inj_on ?g ?S1" 
+have inj_g: "inj_on ?g ?S1"
   proof (unfold inj_on_def, auto)
       fix x y assume x: "x permutes ?U" and even_x: "evenperm x"
         and y: "y permutes ?U" and even_y: "evenperm y" and eq: "?t_jk \<circ> x = ?t_jk \<circ> y"
       show "x = y" by (metis (hide_lams, no_types) comp_assoc eq id_comp swap_id_idempotent)
   qed
 have tjk_permutes: "?t_jk permutes ?U" unfolding permutes_def swap_id_eq by (auto,metis)
-have tjk_eq: "\<forall>i l. A $ i $ ?t_jk l  =  A $ i $ l" 
-  using r jk 
+have tjk_eq: "\<forall>i l. A $ i $ ?t_jk l  =  A $ i $ l"
+  using r jk
   unfolding column_def vec_eq_iff swap_id_eq by fastforce
 have sign_tjk: "sign ?t_jk = -1" using sign_swap_id[of j k] jk by auto
   {fix x
    assume x: "x\<in> ?S1"
    have "sign (?t_jk \<circ> x) = sign (?t_jk) * sign x"
-    by (metis (lifting) finite_class.finite_UNIV mem_Collect_eq 
+    by (metis (lifting) finite_class.finite_UNIV mem_Collect_eq
         permutation_permutes permutation_swap_id sign_compose x)
    also have "... = - sign x" using sign_tjk by simp
    also have "... \<noteq> sign x" unfolding sign_def by simp
@@ -2086,22 +2086,22 @@ have sign_tjk: "sign ?t_jk = -1" using sign_swap_id[of j k] jk by auto
    by (auto, metis (lifting, full_types) mem_Collect_eq x)
   }
 hence disjoint: "?S1 \<inter> ?S2 = {}" by (auto, metis sign_def)
-have PU_decomposition: "?PU = ?S1 \<union> ?S2" 
+have PU_decomposition: "?PU = ?S1 \<union> ?S2"
   proof (auto)
     fix x
-    assume x: "x permutes ?U" and "\<forall>p. p permutes ?U \<longrightarrow> x = Fun.swap j k id \<circ> p \<longrightarrow> \<not> evenperm p"    
-    from this obtain p where p: "p permutes UNIV" and x_eq: "x = Fun.swap j k id \<circ> p" 
+    assume x: "x permutes ?U" and "\<forall>p. p permutes ?U \<longrightarrow> x = Fun.swap j k id \<circ> p \<longrightarrow> \<not> evenperm p"
+    from this obtain p where p: "p permutes UNIV" and x_eq: "x = Fun.swap j k id \<circ> p"
       and odd_p: "\<not> evenperm p"
-      by (metis (no_types) comp_assoc id_comp inv_swap_id permutes_compose 
+      by (metis (no_types) comp_assoc id_comp inv_swap_id permutes_compose
           permutes_inv_o(1) tjk_permutes)
     thus "evenperm x"
-      by (metis evenperm_comp evenperm_swap finite_class.finite_UNIV 
+      by (metis evenperm_comp evenperm_swap finite_class.finite_UNIV
         jk permutation_permutes permutation_swap_id)
    next
    fix p assume p: "p permutes ?U"
    show "Fun.swap j k id \<circ> p permutes UNIV" by (metis p permutes_compose tjk_permutes)
 qed
-have "setsum ?f ?S2 = setsum ((\<lambda>p. of_int (sign p) * (\<Prod>i\<in>UNIV. A $ i $ p i)) 
+have "setsum ?f ?S2 = setsum ((\<lambda>p. of_int (sign p) * (\<Prod>i\<in>UNIV. A $ i $ p i))
   \<circ> op \<circ> (Fun.swap j k id)) {p \<in> {p. p permutes UNIV}. evenperm p}"
     unfolding g_S1 by (rule setsum.reindex[OF inj_g])
 also have "... = setsum (\<lambda>p. of_int (sign (?t_jk \<circ> p)) * (\<Prod>i\<in>UNIV. A $ i $ p i)) ?S1"
@@ -2110,18 +2110,18 @@ also have "... = setsum (\<lambda>p. - ?f p) ?S1"
   proof (rule setsum.cong, auto)
      fix x assume x: "x permutes ?U"
      and even_x: "evenperm x"
-     hence perm_x: "permutation x" and perm_tjk: "permutation ?t_jk" 
+     hence perm_x: "permutation x" and perm_tjk: "permutation ?t_jk"
       using permutation_permutes[of x] permutation_permutes[of ?t_jk] permutation_swap_id
       by (metis finite_code)+
-     have "(sign (?t_jk \<circ> x)) = - (sign x)" 
+     have "(sign (?t_jk \<circ> x)) = - (sign x)"
       unfolding sign_compose[OF perm_tjk perm_x] sign_tjk by auto
-     thus "of_int (sign (?t_jk \<circ> x)) * (\<Prod>i\<in>UNIV. A $ i $ x i) 
+     thus "of_int (sign (?t_jk \<circ> x)) * (\<Prod>i\<in>UNIV. A $ i $ x i)
       = - (of_int (sign x) * (\<Prod>i\<in>UNIV. A $ i $ x i))"
       by auto
   qed
 also have "...= - setsum ?f ?S1" unfolding setsum_negf ..
 finally have *: "setsum ?f ?S2 = - setsum ?f ?S1" .
-have "det A = (\<Sum>p | p permutes UNIV. of_int (sign p) * (\<Prod>i\<in>UNIV. A $ i $ p i))" 
+have "det A = (\<Sum>p | p permutes UNIV. of_int (sign p) * (\<Prod>i\<in>UNIV. A $ i $ p i))"
   unfolding det_def ..
 also have "...= setsum ?f ?S1 + setsum ?f ?S2"
   by (subst PU_decomposition, rule setsum.union_disjoint[OF _ _ disjoint], auto)
@@ -2140,7 +2140,7 @@ lemma det_identical_rows:
   apply (rule det_identical_columns[OF ij])
   apply (metis column_transpose r)
   done
-  
+
 (*The following two lemmas appear in the library with the restriction:
 
   lemma det_zero_row:
@@ -2150,8 +2150,8 @@ lemma det_identical_rows:
 
 Now I will do the proof over a field in general. But that is not a generalization, since integers
 are not a field, although they satisfy {idom, ring_char_0}. Nevertheless, in my case I'll work with
-Z/Z2 (the field of integers modulo 2), which are a field but not a {idom, ring_char_0}.*)  
-  
+Z/Z2 (the field of integers modulo 2), which are a field but not a {idom, ring_char_0}.*)
+
 lemma det_zero_row:
   fixes A :: "'a::{field}^'n^'n"
   assumes r: "row i A = 0"
@@ -2161,8 +2161,8 @@ lemma det_zero_row:
   apply (rule setsum.neutral)
   apply (auto)
   done
-  
-  
+
+
 lemma det_zero_column:
   fixes A :: "'a::{field}^'n^'n"
   assumes r: "column i A = 0"
@@ -2171,7 +2171,7 @@ lemma det_zero_column:
   apply (rule det_zero_row [of i])
   apply (metis row_transpose r)
   done
-  
+
 lemma det_row_operation:
   fixes A :: "'a::{comm_ring_1}^'n^'n"
   assumes ij: "i \<noteq> j"
@@ -2184,7 +2184,7 @@ proof -
   show ?thesis
     unfolding det_row_add [of i] det_row_mul[of i] det_identical_rows[OF ij th] th2
     by simp
-qed  
+qed
 
 lemma det_row_span:
   fixes A :: "'a::{field}^'n^'n"
@@ -2396,7 +2396,7 @@ lemma invertible_left_inverse:
   fixes A :: "'a::{field}^'n^'n"
   shows "invertible A \<longleftrightarrow> (\<exists>(B::'a^'n^'n). A** B = mat 1)"
   by (metis invertible_def matrix_left_right_inverse)
-  
+
   lemma invertible_det_nz:
   fixes A::"'a::{field}^'n^'n"
   shows "invertible A \<longleftrightarrow> det A \<noteq> 0"
@@ -2456,27 +2456,27 @@ proof -
 qed
 (********************** Here ends the generalization of Determinants.thy **********************)
 
-(*Finally, some interesting theorems and interpretations that don't appear in any file of the 
+(*Finally, some interesting theorems and interpretations that don't appear in any file of the
   library.*)
 
 locale linear_first_finite_dimensional_vector_space =
   l?: linear scaleB scaleC f +
-  B?: finite_dimensional_vector_space scaleB BasisB + 
-  C?: vector_space scaleC 
+  B?: finite_dimensional_vector_space scaleB BasisB +
+  C?: vector_space scaleC
   for scaleB :: "('a::field => 'b::ab_group_add => 'b)" (infixr "*b" 75)
-  and scaleC :: "('a => 'c::ab_group_add => 'c)" (infixr "*c" 75) 
+  and scaleC :: "('a => 'c::ab_group_add => 'c)" (infixr "*c" 75)
   and BasisB :: "('b set)"
-  and f :: "('b=>'c)"  
+  and f :: "('b=>'c)"
 
 context linear_between_finite_dimensional_vector_spaces
 begin
   sublocale lblf?: linear_first_finite_dimensional_vector_space by unfold_locales
 end
-  
+
 lemma vec_dim_card: "vec.dim (UNIV::('a::{field}^'n) set) = CARD ('n)"
 proof -
   let ?f="\<lambda>i::'n. axis i (1::'a)"
-  have "vec.dim (UNIV::('a::{field}^'n) set) = card (cart_basis::('a^'n) set)" 
+  have "vec.dim (UNIV::('a::{field}^'n) set) = card (cart_basis::('a^'n) set)"
     unfolding vec.dim_UNIV ..
   also have "... = card ({i. i\<in> UNIV}::('n) set)"
     proof (rule bij_betw_same_card[of ?f, symmetric], unfold bij_betw_def, auto)
@@ -2489,30 +2489,30 @@ proof -
     qed
   also have "... = CARD('n)" by auto
   finally show ?thesis .
-qed                   
+qed
 
-interpretation vector_space_over_itself: vector_space "op * :: 'a::field => 'a => 'a" 
+interpretation vector_space_over_itself: vector_space "op * :: 'a::field => 'a => 'a"
   by unfold_locales (simp_all add: algebra_simps)
 
-interpretation vector_space_over_itself: finite_dimensional_vector_space 
-  "op * :: 'a::field => 'a => 'a" "{1}"  
+interpretation vector_space_over_itself: finite_dimensional_vector_space
+  "op * :: 'a::field => 'a => 'a" "{1}"
 proof (unfold_locales, auto)
- (* interpret v: vector_space "op * :: 'a::field => 'a => 'a" by unfold_locales*) 
-  have v: "vector_space (op * :: 'a::field => 'a => 'a)" by unfold_locales 
+ (* interpret v: vector_space "op * :: 'a::field => 'a => 'a" by unfold_locales*)
+  have v: "vector_space (op * :: 'a::field => 'a => 'a)" by unfold_locales
   fix x::'a
-  show "x \<in> vector_space.span (op *) {1::'a}" unfolding vector_space.span_singleton[OF v] by auto  
+  show "x \<in> vector_space.span (op *) {1::'a}" unfolding vector_space.span_singleton[OF v] by auto
 qed
 
 lemma dimension_eq_1[code_unfold]: "vector_space_over_itself.dimension TYPE('a::field)= 1"
   unfolding vector_space_over_itself.dimension_def by simp
 
-interpretation complex_over_reals: finite_dimensional_vector_space "(op *\<^sub>R)::real=>complex=>complex" 
+interpretation complex_over_reals: finite_dimensional_vector_space "(op *\<^sub>R)::real=>complex=>complex"
   "{1, \<i>}"
 proof unfold_locales
 show "finite {1, \<i>}" by auto
 show "vector_space.independent (op *\<^sub>R) {1, \<i>}"
   by (metis Basis_complex_def euclidean_space.independent_Basis)
-show "vector_space.span (op *\<^sub>R) {1, \<i>} = UNIV" 
+show "vector_space.span (op *\<^sub>R) {1, \<i>} = UNIV"
   by (metis Basis_complex_def euclidean_space.span_Basis)
 qed
 
@@ -2522,23 +2522,23 @@ lemma complex_over_reals_dimension[code_unfold]:
 term "op *s"
 term "op *\<^sub>R"
 
-(* The following definition will be very useful in our formalization. The problem was that 
-  (op *\<^sub>R) has type real=>'a=>'a but (op *s) has type 'a \<Rightarrow> ('a, 'b) vec \<Rightarrow> ('a, 'b) vec, 
-  so we can't use (op *s) to multiply a matrix by a scalar.*) 
+(* The following definition will be very useful in our formalization. The problem was that
+  (op *\<^sub>R) has type real=>'a=>'a but (op *s) has type 'a \<Rightarrow> ('a, 'b) vec \<Rightarrow> ('a, 'b) vec,
+  so we can't use (op *s) to multiply a matrix by a scalar.*)
 (*
   definition matrix_scalar_mult :: "'a => ('a::semiring_1) ^'n^'m => ('a::semiring_1) ^'n^'m"
     (infixl "*k" 70)
   where "k *k A \<equiv> (\<chi> i j. k * A $ i $ j)"
 *)
 
-(*One example of the use of *\<^sub>R, *s and *k appears in the following theorem (obtained from AFP entry 
-  about Tarski's Geometry, 
+(*One example of the use of *\<^sub>R, *s and *k appears in the following theorem (obtained from AFP entry
+  about Tarski's Geometry,
   see http://isa-afp.org/browser_info/devel/AFP/Tarskis_Geometry/Linear_Algebra2.html)*)
 (*
   lemma scalar_matrix_vector_assoc:
   fixes A :: "real^('m::finite)^('n::finite)"
   shows "k *\<^sub>R (A *v v) = k *\<^sub>R A *v v"*)
-  
+
 (*Now, the generalization of the statement would be: *)
 
 (*

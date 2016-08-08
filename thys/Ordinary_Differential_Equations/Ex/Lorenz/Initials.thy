@@ -1,6 +1,6 @@
 section \<open>A candidate for a forward invariant subset of the return plane\<close>
 theory Initials
-imports Multivariate_Analysis
+imports Analysis
 begin
 
 definition INITIALS0::"(int * int) list" where

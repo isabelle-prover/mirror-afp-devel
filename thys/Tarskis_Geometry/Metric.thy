@@ -6,7 +6,7 @@
 section "Metric and semimetric spaces"
 
 theory Metric
-imports "~~/src/HOL/Multivariate_Analysis/Euclidean_Space"
+imports "~~/src/HOL/Analysis/Euclidean_Space"
 begin
 
 locale semimetric =

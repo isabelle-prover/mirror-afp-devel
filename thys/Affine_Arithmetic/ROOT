@@ -1,6 +1,6 @@
 chapter AFP
 
-session Affine_Arithmetic (AFP) = "HOL-Multivariate_Analysis" +
+session Affine_Arithmetic (AFP) = "HOL-Analysis" +
   options [timeout = 1200]
   theories [document = false]
     "~~/src/HOL/Library/Code_Target_Numeral"

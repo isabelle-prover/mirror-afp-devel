@@ -1,7 +1,7 @@
 section \<open>Multivariate Taylor\<close>
 theory Multivariate_Taylor
 imports
-  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+  "~~/src/HOL/Analysis/Analysis"
   "../ODE_Auxiliarities"
 begin
 

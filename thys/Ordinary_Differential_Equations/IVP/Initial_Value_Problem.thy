@@ -135,7 +135,7 @@ proof
 qed
 
 
-subsection \<open>Lipschitz continuity\<close>\<comment>\<open>TODO: move to \<open>Multivariate_Analysis\<close>?!\<close>
+subsection \<open>Lipschitz continuity\<close>\<comment>\<open>TODO: move to \<open>Analysis\<close>?!\<close>
 text\<open>\label{sec:lipschitz}\<close>
 
 definition lipschitz
@@ -1782,7 +1782,7 @@ definition "subdivide_count = (SOME n. L * abs (t1 - t0) / Suc n < 1)"
 
 lemma subdivide_count: "L * abs (t1 - t0) / Suc subdivide_count < 1"
   unfolding subdivide_count_def
-  using subdivide_count_ex 
+  using subdivide_count_ex
   by (rule someI_ex)
 
 lemma subdivide_lipschitz:

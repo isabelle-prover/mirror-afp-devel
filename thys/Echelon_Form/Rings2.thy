@@ -8,7 +8,7 @@ section{*Rings*}
 
 theory Rings2
 imports
-   "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+   "~~/src/HOL/Analysis/Analysis"
    "~~/src/HOL/Number_Theory/Polynomial_Factorial"
 begin
 

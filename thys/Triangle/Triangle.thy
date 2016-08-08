@@ -1,16 +1,16 @@
 (*
   File:    Triangle.thy
   Author:  Manuel Eberl <eberlm@in.tum.de>
-  
-  Sine and cosine laws, angle sum in a triangle, congruence theorems, 
+
+  Sine and cosine laws, angle sum in a triangle, congruence theorems,
   Isosceles Triangle Theorem
 *)
 
 section \<open>Basic Properties of Triangles\<close>
 theory Triangle
-imports 
+imports
   Complex_Main
-  "~~/src/HOL/Multivariate_Analysis/Topology_Euclidean_Space"
+  "~~/src/HOL/Analysis/Topology_Euclidean_Space"
   Angles
 begin
 
@@ -23,7 +23,7 @@ subsection \<open>Sine and cosine laws\<close>
 
 text \<open>
   The proof of the Law of Cosines follows trivially from the definition of the angle,
-  the definition of the norm in vector spaces with an inner product and the bilinearity 
+  the definition of the norm in vector spaces with an inner product and the bilinearity
   of the inner product.
 \<close>
 
@@ -41,7 +41,7 @@ text \<open>
   According to our definition, angles are always between $0$ and $\pi$ and therefore,
   the sign of an angle is always non-negative. We can therefore look at
   $\sin(\alpha)^2$, which we can express in terms of $\cos(\alpha)$ using the
-  identity $\sin(\alpha)^2 + \cos(\alpha)^2 = 1$. The remaining proof is then a 
+  identity $\sin(\alpha)^2 + \cos(\alpha)^2 = 1$. The remaining proof is then a
   trivial consequence of the definitions.
 \<close>
 lemma sine_law_triangle:
@@ -50,7 +50,7 @@ proof (cases "a = b")
   assume neq: "a \<noteq> b"
   show ?thesis
   proof (rule power2_eq_imp_eq)
-    from neq have "(sin (angle a b c) * dist b c) ^ 2 * dist a b ^ 2 = 
+    from neq have "(sin (angle a b c) * dist b c) ^ 2 * dist a b ^ 2 =
                      dist a b ^ 2 * dist b c ^ 2 - ((a - b) \<bullet> (c - b)) ^ 2"
       by (simp add: sin_squared_eq cos_angle dist_commute field_simps)
     also have "\<dots> = dist a b ^ 2 * dist a c ^ 2 - ((b - a) \<bullet> (c - a)) ^ 2"
@@ -98,8 +98,8 @@ private lemma eval_power: "x ^ numeral n = x * x ^ pred_numeral n"
 
 text \<open>
   The proof that the sum of the angles in a triangle is $\pi$ is somewhat more
-  involved. Following the HOL Light proof by John Harrison, we first prove 
-  that $\cos(\alpha + \beta + \gamma) = -1$ and $\alpha + \beta + \gamma \in [0;3\pi)$, 
+  involved. Following the HOL Light proof by John Harrison, we first prove
+  that $\cos(\alpha + \beta + \gamma) = -1$ and $\alpha + \beta + \gamma \in [0;3\pi)$,
   which then implies the theorem.
 
   The main work is proving $\cos(\alpha + \beta + \gamma)$. This is done using the
@@ -108,10 +108,10 @@ text \<open>
   We then use $\sin(\gamma)^2 = 1 - \cos(\gamma)^2$ to eliminate this term and apply
   the law of cosines to eliminate this term as well.
 
-  The remaining goal is a non-linear equation containing only the length of the sides 
+  The remaining goal is a non-linear equation containing only the length of the sides
   of the triangle. It can be shown by simple algebraic rewriting.
 \<close>
-lemma angle_sum_triangle: 
+lemma angle_sum_triangle:
   assumes "a \<noteq> b \<or> b \<noteq> c \<or> a \<noteq> c"
   shows   "angle c a b + angle a b c + angle b c a = pi"
 proof (rule cos_minus1_imp_pi)
@@ -120,7 +120,7 @@ proof (rule cos_minus1_imp_pi)
     case True
     thus "cos (angle c a b + angle a b c + angle b c a) = -1"
       apply (simp add: cos_add sin_add cosine_law_triangle'' field_simps
-                       sine_law_triangle''[of a b c] sine_law_triangle''[of b a c] 
+                       sine_law_triangle''[of a b c] sine_law_triangle''[of b a c]
                        angle_commute dist_commute gather_squares sin_squared_eq)
       apply (simp add: eval_power algebra_simps dist_commute)
       done
@@ -131,7 +131,7 @@ proof (rule cos_minus1_imp_pi)
     assume "\<not>(angle c a b + angle a b c + angle b c a < 3 * pi)"
     with angle_le_pi[of c a b] angle_le_pi[of a b c] angle_le_pi[of b c a]
       have A: "angle c a b = pi" "angle a b c = pi" by simp_all
-    thus False using angle_eq_pi_imp_dist_additive[of c a b] 
+    thus False using angle_eq_pi_imp_dist_additive[of c a b]
                      angle_eq_pi_imp_dist_additive[of a b c] by (simp add: dist_commute)
   qed
 qed (auto intro!: add_nonneg_nonneg angle_nonneg)
@@ -151,12 +151,12 @@ lemma similar_triangle_aa:
   assumes "angle b1 c1 a1 = angle b2 c2 a2"
   shows   "angle b1 a1 c1 = angle b2 a2 c2"
 proof -
-  from assms angle_sum_triangle[of a1 b1 c1] angle_sum_triangle[of a2 b2 c2, symmetric] 
+  from assms angle_sum_triangle[of a1 b1 c1] angle_sum_triangle[of a2 b2 c2, symmetric]
     show ?thesis by (auto simp: algebra_simps angle_commute)
 qed
 
 text \<open>
-  A triangle is defined by its three angles and the lengths of three sides up to congruence. 
+  A triangle is defined by its three angles and the lengths of three sides up to congruence.
   Two triangles are congruent if they have their angles are the same and their sides have
   the same length.
 \<close>
@@ -190,12 +190,12 @@ lemmas congruent_triangleD = congruent_triangle.sides congruent_triangle.angles
 
 text \<open>
   Given two triangles that agree on a subset of its side lengths and angles that are
-  sufficient to define a triangle uniquely up to congruence, one can conclude that they 
+  sufficient to define a triangle uniquely up to congruence, one can conclude that they
   must also agree on all remaining quantities, i.e. that they are congruent.
-  
-  The following four congruence theorems state what constitutes such a uniquely-defining 
-  subset of quantities. Each theorem states in its name which quantities are required and 
-  in which order (clockwise or counter-clockwise): an ``s'' stands for a side, 
+
+  The following four congruence theorems state what constitutes such a uniquely-defining
+  subset of quantities. Each theorem states in its name which quantities are required and
+  in which order (clockwise or counter-clockwise): an ``s'' stands for a side,
   an ``a'' stands for an angle.
 
   The lemma ``congruent-triangleI-sas, for example, requires that two adjacent sides and the
@@ -209,11 +209,11 @@ lemma congruent_triangleI_sss:
   assumes "dist a1 c1 = dist a2 c2"
   shows   "congruent_triangle a1 b1 c1 a2 b2 c2"
 proof -
-  have A: "angle a1 b1 c1 = angle a2 b2 c2" 
+  have A: "angle a1 b1 c1 = angle a2 b2 c2"
     if "dist a1 b1 = dist a2 b2" "dist b1 c1 = dist b2 c2" "dist a1 c1 = dist a2 c2"
     for a1 b1 c1 :: 'a and a2 b2 c2 :: 'b
   proof -
-    from that cosine_law_triangle''[of a1 b1 c1] cosine_law_triangle''[of a2 b2 c2] 
+    from that cosine_law_triangle''[of a1 b1 c1] cosine_law_triangle''[of a2 b2 c2]
       show ?thesis by (intro cos_angle_eqD) (simp add: dist_commute)
   qed
   from assms show ?thesis by unfold_locales (auto intro!: A simp: dist_commute)
@@ -229,7 +229,7 @@ lemma congruent_triangleI_sas:
 proof (rule congruent_triangleI_sss)
   show "dist a1 c1 = dist a2 c2"
   proof (rule power2_eq_imp_eq)
-    from cosine_law_triangle[of a1 c1 b1] cosine_law_triangle[of a2 c2 b2] assms 
+    from cosine_law_triangle[of a1 c1 b1] cosine_law_triangle[of a2 c2 b2] assms
       show "(dist a1 c1)\<^sup>2 = (dist a2 c2)\<^sup>2" by (simp add: dist_commute)
   qed simp_all
 qed fact+
@@ -248,7 +248,7 @@ proof (rule congruent_triangleI_sas)
   have A: "angle c1 a1 b1 = angle c2 a2 b2" using neq neq' assms
     using angle_sum_triangle[of a1 b1 c1] angle_sum_triangle[of a2 b2 c2]
     by simp
-  from assms have B: "angle b1 a1 c1 \<in> {0<..<pi}" 
+  from assms have B: "angle b1 a1 c1 \<in> {0<..<pi}"
     by (intro not_collinear_angle) (simp_all add: insert_commute)
   from sine_law_triangle[of c1 a1 b1] sine_law_triangle[of c2 a2 b2] assms A B
     show "dist b1 c1 = dist b2 c2"
@@ -275,8 +275,8 @@ lemmas congruent_triangle_asa = congruent_triangleD[OF congruent_triangleI_asa]
 subsection \<open>Isosceles Triangle Theorem\<close>
 
 text \<open>
-  We now prove the Isosceles Triangle Theorem: in a triangle where two sides have 
-  the same length, the two angles that are adjacent to only one of the two sides 
+  We now prove the Isosceles Triangle Theorem: in a triangle where two sides have
+  the same length, the two angles that are adjacent to only one of the two sides
   must be equal.
 \<close>
 lemma isosceles_triangle:
@@ -286,7 +286,7 @@ lemma isosceles_triangle:
 
 
 text \<open>
-  For the non-degenerate case (i.e. the three points are not collinear), We also 
+  For the non-degenerate case (i.e. the three points are not collinear), We also
   prove the converse.
 \<close>
 lemma isosceles_triangle_converse:

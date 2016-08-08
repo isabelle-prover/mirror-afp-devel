@@ -16,7 +16,7 @@ imports
   "../../Collections/GenCF/Gen/Gen_Hash"
   "../../Collections/Lib/Code_Target_ICF"
   "../../Automatic_Refinement/Lib/Refine_Lib"
-  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+  "~~/src/HOL/Analysis/Analysis"
 begin
 
   text \<open>TODO: need to keep in sync with \<open>../../Collections/GenCF/CenCF\<close> ...\<close>

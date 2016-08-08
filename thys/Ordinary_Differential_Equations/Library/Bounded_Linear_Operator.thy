@@ -1,7 +1,7 @@
 section \<open>Bounded Linear Operator\<close>
 theory Bounded_Linear_Operator
 imports
-  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+  "~~/src/HOL/Analysis/Analysis"
 begin
 
 typedef (overloaded) 'a blinop = "UNIV::('a, 'a) blinfun set"
@@ -26,7 +26,7 @@ lift_definition minus_blinop :: "'a blinop \<Rightarrow> 'a blinop \<Rightarrow>
 lift_definition dist_blinop :: "'a blinop \<Rightarrow> 'a blinop \<Rightarrow> real" is dist .
 
 definition uniformity_blinop :: "('a blinop \<times> 'a blinop) filter" where
-  "uniformity_blinop = (INF e:{0<..}. principal {(x, y). dist x y < e})" 
+  "uniformity_blinop = (INF e:{0<..}. principal {(x, y). dist x y < e})"
 
 definition open_blinop :: "'a blinop set \<Rightarrow> bool" where
   "open_blinop U = (\<forall>x\<in>U. \<forall>\<^sub>F (x', y) in uniformity. x' = x \<longrightarrow> y \<in> U)"

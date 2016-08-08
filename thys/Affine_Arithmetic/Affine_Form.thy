@@ -1,7 +1,7 @@
 section \<open>Affine Form\<close>
 theory Affine_Form
 imports
-  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+  "~~/src/HOL/Analysis/Analysis"
   "~~/src/HOL/Library/Permutation"
 begin
 

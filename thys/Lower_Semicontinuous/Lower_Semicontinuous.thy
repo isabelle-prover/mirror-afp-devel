@@ -5,7 +5,7 @@
 section {* Lower semicontinuous functions *}
 
 theory Lower_Semicontinuous
-imports Multivariate_Analysis
+imports "~~/src/HOL/Analysis/Analysis"
 begin
 
 subsection{* Relative interior in one dimension *}

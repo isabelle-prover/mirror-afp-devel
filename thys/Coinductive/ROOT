@@ -13,7 +13,7 @@ session Coinductive (AFP) = "HOL-Library" +
     "~~/src/HOL/Library/Quotient_Set"
     "~~/src/HOL/Library/Quotient_Sum"
     "~~/src/HOL/Library/Simps_Case_Conv"
-    "~~/src/HOL/Multivariate_Analysis/Extended_Real_Limits"
+    "~~/src/HOL/Analysis/Extended_Real_Limits"
     "~~/src/HOL/Number_Theory/Primes"
   theories
     Coinductive

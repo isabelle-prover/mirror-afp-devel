@@ -4,7 +4,7 @@ section \<open>Ptolemy's Theorem\<close>
 
 theory Ptolemys_Theorem
 imports
-  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+  "~~/src/HOL/Analysis/Analysis"
 begin
 
 subsection \<open>Preliminaries\<close>

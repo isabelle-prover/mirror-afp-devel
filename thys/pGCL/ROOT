@@ -1,6 +1,6 @@
 chapter AFP
 
-session pGCL (AFP) = "HOL-Multivariate_Analysis" +
+session pGCL (AFP) = "HOL-Analysis" +
   options [timeout = 300]
   theories
     pGCL

@@ -14,8 +14,8 @@ session "Perron_Frobenius" (AFP) = "Pre_Perron_Frobenius" +
 session "Pre_Perron_Frobenius" (AFP) = "Jordan_Normal_Form" +
   options [document = false, timeout = 1200]
   theories
-    "~~/src/HOL/Multivariate_Analysis/Brouwer_Fixpoint"
-    "~~/src/HOL/Multivariate_Analysis/Cartesian_Euclidean_Space"
+    "~~/src/HOL/Analysis/Brouwer_Fixpoint"
+    "~~/src/HOL/Analysis/Cartesian_Euclidean_Space"
     "~~/src/HOL/Eisbach/Eisbach"
     "../Echelon_Form/Code_Cayley_Hamilton"
     "../Jordan_Normal_Form/Spectral_Radius"

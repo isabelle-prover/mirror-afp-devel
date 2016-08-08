@@ -6,7 +6,7 @@ section {* CCPO topologies *}
 
 theory CCPO_Topology
 imports
-  "~~/src/HOL/Multivariate_Analysis/Extended_Real_Limits"
+  "~~/src/HOL/Analysis/Extended_Real_Limits"
   "../Coinductive_Nat"
 begin
 
@@ -22,7 +22,7 @@ abbreviation (in order) "chain \<equiv> Complete_Partial_Order.chain op \<le>"
 lemma (in linorder) chain_linorder: "chain C"
   by (simp add: chain_def linear)
 
-lemma continuous_add_ereal: 
+lemma continuous_add_ereal:
   assumes "0 \<le> t"
   shows "continuous_on {-\<infinity>::ereal <..} (\<lambda>x. t + x)"
 proof (subst continuous_on_open_vimage, (intro open_greaterThan allI impI)+)
@@ -46,7 +46,7 @@ proof (subst continuous_on_open_vimage, (intro open_greaterThan allI impI)+)
   qed (insert `0 \<le> t`, auto)
 qed
 
-lemma tendsto_add_ereal: 
+lemma tendsto_add_ereal:
   "0 \<le> x \<Longrightarrow> 0 \<le> y \<Longrightarrow> (f \<longlongrightarrow> y) F \<Longrightarrow> ((\<lambda>z. x + f z :: ereal) \<longlongrightarrow> x + y) F"
   apply (rule tendsto_compose[where f=f])
   using continuous_add_ereal[where t=x]
@@ -232,7 +232,7 @@ lemma tendsto_ccpoI:
   shows "(\<And>C. chain C \<Longrightarrow> C \<noteq> {} \<Longrightarrow> chain (f ` C) \<and> f (Sup C) = Sup (f`C)) \<Longrightarrow> f \<midarrow>x\<rightarrow> f x"
   by (intro tendsto_open_vimage) (auto simp: open_ccpo)
 
-lemma tendsto_mcont: 
+lemma tendsto_mcont:
   assumes mcont: "mcont Sup op \<le> Sup op \<le> (f :: 'a :: ccpo_topology \<Rightarrow> 'b :: ccpo_topology)"
   shows "f \<midarrow>l\<rightarrow> f l"
 proof (intro tendsto_ccpoI conjI)
@@ -266,7 +266,7 @@ proof
   show "open A = (\<forall>C. chain C \<longrightarrow> C \<noteq> {} \<longrightarrow> \<Squnion>C \<in> A \<longrightarrow> C \<inter> A \<noteq> {})"
   proof (intro iffI allI impI)
     fix C x assume "open A" "chain C" "C \<noteq> {}" "\<Squnion>C \<in> A"
-    
+
     show "C \<inter> A \<noteq> {}"
     proof cases
       assume "\<Squnion>C = \<infinity>"
@@ -329,7 +329,7 @@ lemmas tendsto_sup1[THEN tendsto_compose, tendsto_intros] =
 lemma isCont_If: "isCont f x \<Longrightarrow> isCont g x \<Longrightarrow> isCont (\<lambda>x. if Q then f x else g x) x"
   by (cases Q) auto
 
-lemma isCont_enat_case: "isCont (f (epred n)) x \<Longrightarrow> isCont g x \<Longrightarrow> isCont (\<lambda>x. co.case_enat (g x) (\<lambda>n. f n x) n) x" 
+lemma isCont_enat_case: "isCont (f (epred n)) x \<Longrightarrow> isCont g x \<Longrightarrow> isCont (\<lambda>x. co.case_enat (g x) (\<lambda>n. f n x) n) x"
   by (cases n rule: enat_coexhaust) auto
 
 end

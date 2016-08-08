@@ -1,15 +1,14 @@
 (*
   File:    Angles.thy
   Author:  Manuel Eberl <eberlm@in.tum.de>
-  
+
   Definition of angles between vectors and between three points.
 *)
 
 section \<open>Definition of angles\<close>
 theory Angles
 imports
-  Complex_Main
-  "~~/src/HOL/Multivariate_Analysis/Topology_Euclidean_Space"
+  "~~/src/HOL/Analysis/Analysis"
 begin
 
 lemma collinear_translate_iff: "collinear ((op + a) ` A) \<longleftrightarrow> collinear A"
@@ -25,7 +24,7 @@ definition angle where
 lemma angle_altdef: "angle a b c = arccos ((a - b) \<bullet> (c - b) / (dist a b * dist c b))"
   by (simp add: angle_def vangle_def dist_norm)
 
-lemma vangle_0_left [simp]: "vangle 0 v = pi / 2" 
+lemma vangle_0_left [simp]: "vangle 0 v = pi / 2"
   and vangle_0_right [simp]: "vangle u 0 = pi / 2"
   by (simp_all add: vangle_def)
 
@@ -35,7 +34,7 @@ lemma vangle_refl [simp]: "u \<noteq> 0 \<Longrightarrow> vangle u u = 0"
 lemma angle_refl [simp]: "angle a a b = pi / 2" "angle a b b = pi / 2"
   by (simp_all add: angle_def)
 
-lemma angle_refl_mid [simp]: "a \<noteq> b \<Longrightarrow> angle a b a = 0" 
+lemma angle_refl_mid [simp]: "a \<noteq> b \<Longrightarrow> angle a b a = 0"
   by (simp add: angle_def)
 
 
@@ -55,7 +54,7 @@ lemma angle_commute: "angle a b c = angle c b a"
   by (simp add: angle_def vangle_commute)
 
 lemma vangle_nonneg: "vangle u v \<ge> 0" and vangle_le_pi: "vangle u v \<le> pi"
-  using Cauchy_Schwarz_ineq2[of u v] 
+  using Cauchy_Schwarz_ineq2[of u v]
   by (auto simp: vangle_def field_simps intro!: arccos_lbound arccos_ubound)
 
 lemmas vangle_bounds = vangle_nonneg vangle_le_pi
@@ -72,7 +71,7 @@ lemma sin_angle_nonneg: "sin (angle a b c) \<ge> 0"
   using angle_bounds by (rule sin_ge_zero)
 
 
-lemma vangle_eq_0D: 
+lemma vangle_eq_0D:
   assumes "vangle u v = 0"
   shows   "norm u *\<^sub>R v = norm v *\<^sub>R u"
 proof -
@@ -82,7 +81,7 @@ proof -
   thus ?thesis by (subst (asm) norm_cauchy_schwarz_eq) simp_all
 qed
 
-lemma vangle_eq_piD: 
+lemma vangle_eq_piD:
   assumes "vangle u v = pi"
   shows   "norm u *\<^sub>R v + norm v *\<^sub>R u = 0"
 proof -
@@ -114,7 +113,7 @@ lemma cos_minus1_imp_pi:
   shows   "x = pi"
 proof -
   have "cos (x - pi) = 1" by (simp add: assms)
-  then obtain n :: int where n: "of_int n = (x / pi - 1) / 2" 
+  then obtain n :: int where n: "of_int n = (x / pi - 1) / 2"
     by (subst (asm) cos_one_2pi_int) (auto simp: field_simps)
   also from assms have "\<dots> \<in> {-1<..<1}" by (auto simp: field_simps)
   finally have "n = 0" by simp
@@ -168,11 +167,11 @@ apply (auto simp: insert_commute)
 done
 
 lemma not_collinear_vangle: "\<not>collinear {0,u,v} \<Longrightarrow> vangle u v \<in> {0<..<pi}"
-  using vangle_bounds[of u v] vangle_collinear[of u v] 
+  using vangle_bounds[of u v] vangle_collinear[of u v]
   by (cases "vangle u v = 0 \<or> vangle u v = pi") auto
 
 lemma not_collinear_angle: "\<not>collinear {a,b,c} \<Longrightarrow> angle a b c \<in> {0<..<pi}"
-  using angle_bounds[of a b c] angle_collinear[of a b c] 
+  using angle_bounds[of a b c] angle_collinear[of a b c]
   by (cases "angle a b c = 0 \<or> angle a b c = pi") auto
 
 end

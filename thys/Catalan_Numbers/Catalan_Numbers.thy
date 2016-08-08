@@ -11,7 +11,7 @@ section \<open>Catalan Numbers\<close>
 theory Catalan_Numbers
 imports
   Complex_Main
-  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+  "~~/src/HOL/Analysis/Analysis"
   "~~/src/HOL/Library/Formal_Power_Series"
   "../Landau_Symbols/Landau_Symbols"
 begin

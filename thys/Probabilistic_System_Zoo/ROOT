@@ -11,7 +11,7 @@ session "Probabilistic_System_Zoo" (AFP) = "HOL-Probability" +
   document_files (in "document/Hierarchy")
     "root.tex"
 
-session "Probabilistic_System_Zoo-BNFs" (AFP) = "HOL-Multivariate_Analysis" +
+session "Probabilistic_System_Zoo-BNFs" (AFP) = "HOL-Analysis" +
   options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Probability/Giry_Monad"

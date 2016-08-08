@@ -1,5 +1,5 @@
 theory Cartan
-imports "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+imports "~~/src/HOL/Analysis/Analysis"
 
 begin
 

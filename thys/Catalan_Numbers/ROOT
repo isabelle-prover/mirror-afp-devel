@@ -1,6 +1,6 @@
 chapter AFP
 
-session Catalan_Numbers (AFP) = "HOL-Multivariate_Analysis" +
+session Catalan_Numbers (AFP) = "HOL-Analysis" +
   options [timeout=600]
   theories [document=false]
     "~~/src/HOL/Library/Formal_Power_Series"

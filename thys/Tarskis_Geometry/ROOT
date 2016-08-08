@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Tarskis_Geometry" (AFP) = "HOL-Multivariate_Analysis" +
+session "Tarskis_Geometry" (AFP) = "HOL-Analysis" +
   options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Algebra/Group"

@@ -7,7 +7,10 @@
 
 section {* Miscellaneous Mathematics *}
 
-theory Misc imports Real Multivariate_Analysis begin
+theory Misc 
+imports 
+  Analysis
+begin
 
 text_raw {* \label{s:misc} *}
 

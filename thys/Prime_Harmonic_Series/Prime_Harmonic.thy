@@ -8,8 +8,8 @@
 
 section {* The Prime Harmonic Series *}
 theory Prime_Harmonic
-imports 
-  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+imports
+  "~~/src/HOL/Analysis/Analysis"
   "~~/src/HOL/Number_Theory/Number_Theory"
   Prime_Harmonic_Misc
   Squarefree_Nat
@@ -21,7 +21,7 @@ text \<open>
   First of all, we prove the following result about rearranging a product over a set into a sum
   over all subsets of that set.
 \<close>
-lemma prime_harmonic_aux1: 
+lemma prime_harmonic_aux1:
   fixes A :: "'a :: field set"
   shows "finite A \<Longrightarrow> (\<Prod>x\<in>A. 1 + 1 / x) = (\<Sum>x\<in>Pow A. 1 / \<Prod>x)"
 proof (induction rule: finite_induct)
@@ -29,7 +29,7 @@ proof (induction rule: finite_induct)
   assume a: "a \<notin> A" and fin: "finite A"
   assume IH: "(\<Prod>x\<in>A. 1 + 1 / x) = (\<Sum>x\<in>Pow A. 1 / \<Prod>x)"
   from a and fin have "(\<Prod>x\<in>insert a A. 1 + 1 / x) = (1 + 1 / a) * (\<Prod>x\<in>A. 1 + 1 / x)" by simp
-  also from fin have "\<dots> = (\<Sum>x\<in>Pow A. 1 / \<Prod>x) + (\<Sum>x\<in>Pow A. 1 / (a * \<Prod>x))" 
+  also from fin have "\<dots> = (\<Sum>x\<in>Pow A. 1 / \<Prod>x) + (\<Sum>x\<in>Pow A. 1 / (a * \<Prod>x))"
     by (subst IH) (auto simp add: algebra_simps setsum_divide_distrib)
   also from fin a have "(\<Sum>x\<in>Pow A. 1 / (a * \<Prod>x)) = (\<Sum>x\<in>Pow A. 1 / \<Prod>(insert a x))"
     by (intro setsum.cong refl, subst setprod.insert) (auto dest: finite_subset)
@@ -42,11 +42,11 @@ proof (induction rule: finite_induct)
 qed simp
 
 text \<open>
-  Next, we prove a simple and reasonably accurate upper bound for the sum of the squares of any 
+  Next, we prove a simple and reasonably accurate upper bound for the sum of the squares of any
   subset of the natural numbers, derived by simple telescoping. Our upper bound is approximately
   1.67; the exact value is $\frac{\pi^2}{6} \approx 1.64$. (cf. Basel problem)
 \<close>
-lemma prime_harmonic_aux2: 
+lemma prime_harmonic_aux2:
   assumes "finite (A :: nat set)"
   shows   "(\<Sum>k\<in>A. 1 / (real k ^ 2)) \<le> 5/3"
 proof -
@@ -55,7 +55,7 @@ proof -
   with assms have "A \<subseteq> {0..n}" by (auto intro: order.trans[OF Max_ge])
   hence "(\<Sum>k\<in>A. 1 / (real k ^ 2)) \<le> (\<Sum>k=0..n. 1 / (real k ^ 2))" by (intro setsum_mono2) auto
   also from n have "\<dots> = 1 + (\<Sum>k=Suc 1..n. 1 / (real k ^ 2))" by (simp add: setsum_head_Suc)
-  also have "(\<Sum>k=Suc 1..n. 1 / (real k ^ 2)) \<le> 
+  also have "(\<Sum>k=Suc 1..n. 1 / (real k ^ 2)) \<le>
           (\<Sum>k=Suc 1..n. 1 / (real k ^ 2 - 1/4))" unfolding power2_eq_square
     by (intro setsum_mono divide_left_mono mult_pos_pos)
        (linarith, simp_all add: field_simps less_1_mult)
@@ -71,14 +71,14 @@ qed
 subsection \<open>Estimating the partial sums of the Prime Harmonic Series\<close>
 
 text \<open>
-  We are now ready to show our main result: the value of the partial prime harmonic sum over 
+  We are now ready to show our main result: the value of the partial prime harmonic sum over
   all primes no greater than $n$ is bounded from below by the $n$-th harmonic number
   $H_n$ minus some constant.
-  
-  In our case, this constant will be $\frac{5}{3}$. As mentioned before, using a 
-  proof of the Basel problem can improve this to $\frac{\pi^2}{6}$, but the improvement is very 
+
+  In our case, this constant will be $\frac{5}{3}$. As mentioned before, using a
+  proof of the Basel problem can improve this to $\frac{\pi^2}{6}$, but the improvement is very
   small and the proof of the Basel problem is a very complex one.
-  
+
   The exact asymptotic behaviour of the partial sums is actually $\ln (\ln n) + M$, where $M$
   is the Meissel--Mertens constant (approximately 0.261).
 \<close>
@@ -92,11 +92,11 @@ proof -
     fix n :: nat
     have "finite (P n)" by (simp add: P_def)
   } note [simp] = this
-  
+
   -- \<open>The function that combines the squarefree part and the square part\<close>
   def f \<equiv> "\<lambda>(R, s :: nat). \<Prod>R * s^2"
 
-  -- \<open>@{term f} is injective if the squarefree part contains only primes 
+  -- \<open>@{term f} is injective if the squarefree part contains only primes
       and the square part is positive.\<close>
   have inj: "inj_on f (Pow (P n)\<times>{1..n})"
   proof (rule inj_onI, clarify, rule conjI)
@@ -107,8 +107,8 @@ proof -
       by ((rule squarefree_decomposition_unique2'[of A1 s1 A2 s2],
           insert A fin, auto simp: f_def P_def set_primes_upto)[])+
   qed
-  
-  -- \<open>@{term f} hits every number between @{term "1::nat"} and @{term "n"}. It also hits a lot 
+
+  -- \<open>@{term f} hits every number between @{term "1::nat"} and @{term "n"}. It also hits a lot
       of other numbers, but we do not care about those, since we only need a lower bound.\<close>
   have surj: "{1..n} \<subseteq> f ` (Pow (P n)\<times>{1..n})"
   proof
@@ -132,7 +132,7 @@ proof -
   also have "\<dots> = (\<Sum>A\<in>Pow (P n). 1 / real (\<Prod>A)) * (\<Sum>k=1..n. 1 / (real k)^2)" unfolding f_def
     by (subst setsum_product, subst setsum.cartesian_product) (simp add: case_prod_beta)
   also have "\<dots> \<le> (\<Sum>A\<in>Pow (P n). 1 / real (\<Prod>A)) * (5/3)"
-    by (intro mult_left_mono prime_harmonic_aux2 setsum_nonneg) 
+    by (intro mult_left_mono prime_harmonic_aux2 setsum_nonneg)
        (auto simp: P_def intro!: setprod_nonneg)
   also have "(\<Sum>A\<in>Pow (P n). 1 / real (\<Prod>A)) = (\<Sum>A\<in>(op` real) ` Pow (P n). 1 / \<Prod>A)"
     by (subst setsum.reindex) (auto simp: inj_on_def inj_image_eq_iff setprod.reindex)
@@ -151,8 +151,8 @@ proof -
 qed
 
 text \<open>
-  We can use the inequality $\ln (n + 1) \le H_n$ to estimate the asymptotic growth of the partial 
-  prime harmonic series. Note that $H_n \sim \ln n + \gamma$ where $\gamma$ is the 
+  We can use the inequality $\ln (n + 1) \le H_n$ to estimate the asymptotic growth of the partial
+  prime harmonic series. Note that $H_n \sim \ln n + \gamma$ where $\gamma$ is the
   Euler--Mascheroni constant (approximately 0.577), so we lose some accuracy here.
 \<close>
 corollary prime_harmonic_lower':
@@ -160,7 +160,7 @@ corollary prime_harmonic_lower':
   shows "(\<Sum>p\<leftarrow>primes_upto n. 1 / real p) \<ge> ln (ln (n + 1)) - ln (5/3)"
 proof -
   from assms ln_le_harm[of n] have "ln (ln (real n + 1)) \<le> ln (harm n)" by simp
-  also from assms have "\<dots> - ln (5/3) \<le> (\<Sum>p\<leftarrow>primes_upto n. 1 / real p)" 
+  also from assms have "\<dots> - ln (5/3) \<le> (\<Sum>p\<leftarrow>primes_upto n. 1 / real p)"
     by (rule prime_harmonic_lower)
   finally show ?thesis by - simp
 qed
@@ -169,7 +169,7 @@ qed
 (* TODO: Not needed in Isabelle 2016 *)
 lemma Bseq_eventually_mono:
   assumes "eventually (\<lambda>n. norm (f n) \<le> norm (g n)) sequentially" "Bseq g"
-  shows   "Bseq f" 
+  shows   "Bseq f"
 proof -
   from assms(1) obtain N where N: "\<And>n. n \<ge> N \<Longrightarrow> norm (f n) \<le> norm (g n)"
     by (auto simp: eventually_at_top_linorder)
@@ -182,10 +182,10 @@ proof -
       apply (rule max.coboundedI1, force intro: order.trans[OF N K])
       done
   }
-  thus ?thesis by (blast intro: BseqI') 
+  thus ?thesis by (blast intro: BseqI')
 qed
 
-lemma Bseq_add: 
+lemma Bseq_add:
   assumes "Bseq (f :: nat \<Rightarrow> 'a :: real_normed_vector)"
   shows   "Bseq (\<lambda>x. f x + c)"
 proof -
@@ -205,27 +205,27 @@ lemma convergent_imp_Bseq: "convergent f \<Longrightarrow> Bseq f"
 (* END TODO *)
 
 text \<open>
-  We now use our last estimate to show that the prime harmonic series diverges. This is obvious, 
-  since it is bounded from below by $\ln (\ln (n + 1))$ minus some constant, which obviously 
+  We now use our last estimate to show that the prime harmonic series diverges. This is obvious,
+  since it is bounded from below by $\ln (\ln (n + 1))$ minus some constant, which obviously
   tends to infinite.
-  
-  Directly using the divergence of the harmonic series would also be possible and shorten this 
+
+  Directly using the divergence of the harmonic series would also be possible and shorten this
   proof a bit..
 \<close>
 corollary prime_harmonic_series_unbounded:
   "\<not>Bseq (\<lambda>n. \<Sum>p\<leftarrow>primes_upto n. 1 / p)" (is "\<not>Bseq ?f")
 proof
   assume "Bseq ?f"
-  hence "Bseq (\<lambda>n. ?f n + ln (5/3))" by (rule Bseq_add) 
+  hence "Bseq (\<lambda>n. ?f n + ln (5/3))" by (rule Bseq_add)
   have "Bseq (\<lambda>n. ln (ln (n + 1)))"
   proof (rule Bseq_eventually_mono)
     from eventually_ge_at_top[of "2::nat"]
       show "eventually (\<lambda>n. norm (ln (ln (n + 1))) \<le> norm (?f n + ln (5/3))) sequentially"
     proof eventually_elim
       fix n :: nat assume n: "n \<ge> 2"
-      hence "norm (ln (ln (real n + 1))) = ln (ln (real n + 1))" 
+      hence "norm (ln (ln (real n + 1))) = ln (ln (real n + 1))"
         using ln_ln_nonneg[of "real n + 1"] by simp
-      also have "\<dots> \<le> ?f n + ln (5/3)" using prime_harmonic_lower'[OF n] 
+      also have "\<dots> \<le> ?f n + ln (5/3)" using prime_harmonic_lower'[OF n]
         by (simp add: algebra_simps)
       also have "?f n + ln (5/3) \<ge> 0" by (intro add_nonneg_nonneg listsum_nonneg) simp_all
       hence "?f n + ln (5/3) = norm (?f n + ln (5/3))" by simp
@@ -233,7 +233,7 @@ proof
         by (simp add: add_ac)
     qed
   qed fact
-  then obtain k where k: "k > 0" "\<And>n. norm (ln (ln (real (n::nat) + 1))) \<le> k" 
+  then obtain k where k: "k > 0" "\<And>n. norm (ln (ln (real (n::nat) + 1))) \<le> k"
     by (auto elim!: BseqE simp: add_ac)
 
   def N \<equiv> "nat \<lceil>exp (exp k)\<rceil>"

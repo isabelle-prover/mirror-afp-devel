@@ -3,9 +3,8 @@
 *)
 
 theory Fekete
-imports Complex_Main Topological_Spaces "~~/src/HOL/Multivariate_Analysis/Operator_Norm" "~~/src/HOL/Multivariate_Analysis/Extended_Real_Limits"
-   SG_Library_Complement
-
+imports
+  SG_Library_Complement
 begin
 
 section {*Subadditive and submultiplicative sequences*}

@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Echelon_Form" (AFP)= "HOL-Multivariate_Analysis" +
+session "Echelon_Form" (AFP)= "HOL-Analysis" +
   options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Library/Code_Target_Numeral"

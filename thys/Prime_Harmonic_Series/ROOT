@@ -1,6 +1,6 @@
 chapter AFP
 
-session Prime_Harmonic_Series (AFP) = "HOL-Multivariate_Analysis" +
+session Prime_Harmonic_Series (AFP) = "HOL-Analysis" +
   options [timeout=600]
   theories [document = false]
     "~~/src/HOL/Number_Theory/Number_Theory"

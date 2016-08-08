@@ -7,7 +7,7 @@
 section {* The Master theorem *}
 theory Master_Theorem
 imports
-  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+  "~~/src/HOL/Analysis/Analysis"
   "../Landau_Symbols/Landau_Symbols"
   Akra_Bazzi_Library
   Akra_Bazzi

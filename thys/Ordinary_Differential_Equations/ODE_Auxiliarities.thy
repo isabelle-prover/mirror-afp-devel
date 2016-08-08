@@ -1,7 +1,7 @@
 section \<open>Auxiliary Lemmas\<close>
 theory ODE_Auxiliarities
 imports
-  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+  "~~/src/HOL/Analysis/Analysis"
   "~~/src/HOL/Library/Float"
 begin
 

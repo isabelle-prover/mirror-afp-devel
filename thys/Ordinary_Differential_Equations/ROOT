@@ -1,6 +1,6 @@
 chapter AFP
 
-session "HOL-ODE" (AFP) = "HOL-Multivariate_Analysis" +
+session "HOL-ODE" (AFP) = "HOL-Analysis" +
   options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Decision_Procs/Approximation"

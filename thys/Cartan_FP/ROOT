@@ -1,6 +1,6 @@
 chapter AFP
 
-session Cartan_FP (AFP) = "HOL-Multivariate_Analysis" +
+session Cartan_FP (AFP) = "HOL-Analysis" +
   description {* The Cartan Fixed Point Theorems. *}
   options [timeout = 300]
   theories

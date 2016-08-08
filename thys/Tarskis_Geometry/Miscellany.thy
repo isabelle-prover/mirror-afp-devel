@@ -10,7 +10,7 @@ section "Miscellaneous results"
 
 theory Miscellany
 imports
-  "~~/src/HOL/Multivariate_Analysis/Cartesian_Euclidean_Space"
+  "~~/src/HOL/Analysis/Cartesian_Euclidean_Space"
   Metric
 begin
 
@@ -403,7 +403,7 @@ proof -
   from equiv_class_self and `equiv A r` and `x \<in> A` have "x \<in> r``{x}" by simp
 
   from `equiv A r` and `x \<in> A` have "(x, x) \<in> r"
-    unfolding equiv_def and refl_on_def 
+    unfolding equiv_def and refl_on_def
     by simp
 
   with quotient_eqI [of A r X "r``{x}" x x]

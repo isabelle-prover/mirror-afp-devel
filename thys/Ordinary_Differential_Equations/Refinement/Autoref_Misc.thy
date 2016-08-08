@@ -2,7 +2,7 @@
 theory Autoref_Misc
 imports
   "Refine_Dflt_No_Comp"
-  Multivariate_Analysis
+  Analysis
 begin
 
 (*****************************)
@@ -33,13 +33,13 @@ primrec the_RES where "the_RES (RES X) = X"
 lemma the_RES_inv[simp]: "nofail m \<Longrightarrow> RES (the_RES m) = m"
   by (cases m) auto
 
-lemma le_SPEC_UNIV_rule [refine_vcg]: 
+lemma le_SPEC_UNIV_rule [refine_vcg]:
   "m \<le> SPEC (\<lambda>_. True) \<Longrightarrow> m \<le> RES UNIV" by auto
 
-lemma nf_inres_RES[simp]: "nf_inres (RES X) x \<longleftrightarrow> x\<in>X" 
+lemma nf_inres_RES[simp]: "nf_inres (RES X) x \<longleftrightarrow> x\<in>X"
   by (simp add: refine_pw_simps)
-  
-lemma nf_inres_SPEC[simp]: "nf_inres (SPEC \<Phi>) x \<longleftrightarrow> \<Phi> x" 
+
+lemma nf_inres_SPEC[simp]: "nf_inres (SPEC \<Phi>) x \<longleftrightarrow> \<Phi> x"
   by (simp add: refine_pw_simps)
 
 (* TODO: Move *)
@@ -52,7 +52,7 @@ lemma Let_refine':
 lemma in_nres_rel_iff: "(a,b)\<in>\<langle>R\<rangle>nres_rel \<longleftrightarrow> a \<le>\<Down>R b"
   by (auto simp: nres_rel_def)
 
-lemma inf_RETURN_RES: 
+lemma inf_RETURN_RES:
   "inf (RETURN x) (RES X) = (if x\<in>X then RETURN x else SUCCEED)"
   "inf (RES X) (RETURN x) = (if x\<in>X then RETURN x else SUCCEED)"
   by (auto simp: pw_eq_iff refine_pw_simps)
@@ -85,7 +85,7 @@ lemma case_option_refine[refine]:
   using assms by (auto split: option.split)
 
 
-definition GHOST :: "'a \<Rightarrow> 'a" 
+definition GHOST :: "'a \<Rightarrow> 'a"
   \<comment> \<open>Ghost tag to mark ghost variables in let-expressions\<close>
   where [simp]: "GHOST \<equiv> \<lambda>x. x"
 lemma GHOST_elim_Let: \<comment> \<open>Unfold rule to inline GHOST-Lets\<close>
@@ -93,19 +93,19 @@ lemma GHOST_elim_Let: \<comment> \<open>Unfold rule to inline GHOST-Lets\<close>
 
 
 
-text \<open>The following set of rules executes a step on the LHS or RHS of 
+text \<open>The following set of rules executes a step on the LHS or RHS of
   a refinement proof obligation, without changing the other side.
-  These kind of rules is useful for performing refinements with 
-  invisible steps.\<close>  
+  These kind of rules is useful for performing refinements with
+  invisible steps.\<close>
 lemma lhs_step_If:
   "\<lbrakk> b \<Longrightarrow> t \<le> m; \<not>b \<Longrightarrow> e \<le> m \<rbrakk> \<Longrightarrow> If b t e \<le> m" by simp
 
 lemma lhs_step_RES:
-  "\<lbrakk> \<And>x. x\<in>X \<Longrightarrow> RETURN x \<le> m  \<rbrakk> \<Longrightarrow> RES X \<le> m" 
+  "\<lbrakk> \<And>x. x\<in>X \<Longrightarrow> RETURN x \<le> m  \<rbrakk> \<Longrightarrow> RES X \<le> m"
   by (simp add: pw_le_iff)
 
 lemma lhs_step_SPEC:
-  "\<lbrakk> \<And>x. \<Phi> x \<Longrightarrow> RETURN x \<le> m \<rbrakk> \<Longrightarrow> SPEC (\<lambda>x. \<Phi> x) \<le> m" 
+  "\<lbrakk> \<And>x. \<Phi> x \<Longrightarrow> RETURN x \<le> m \<rbrakk> \<Longrightarrow> SPEC (\<lambda>x. \<Phi> x) \<le> m"
   by (simp add: pw_le_iff)
 
 lemma lhs_step_bind:
@@ -134,7 +134,7 @@ lemma RES_bind_choose:
   shows "m \<le> RES X \<bind> f"
   using assms by (auto simp: pw_le_iff refine_pw_simps)
 
-lemma pw_RES_bind_choose: 
+lemma pw_RES_bind_choose:
   "nofail (RES X \<bind> f) \<longleftrightarrow> (\<forall>x\<in>X. nofail (f x))"
   "inres (RES X \<bind> f) y \<longleftrightarrow> (\<exists>x\<in>X. inres (f x) y)"
   by (auto simp: refine_pw_simps)
@@ -157,7 +157,7 @@ lemma weaken_SPEC:
   by (force elim!: order_trans)
 
 
-lemma ife_FAIL_to_ASSERT_cnv: 
+lemma ife_FAIL_to_ASSERT_cnv:
   "(if \<Phi> then m else FAIL) = op_nres_ASSERT_bnd \<Phi> m"
   by (cases \<Phi>, auto)
 
@@ -210,13 +210,13 @@ end
 lemma set_relD: "(s,s')\<in>\<langle>R\<rangle>set_rel \<Longrightarrow> x\<in>s \<Longrightarrow> \<exists>x'\<in>s'. (x,x')\<in>R"
   unfolding set_rel_def by blast
 
-lemma set_relE[consumes 2]: 
+lemma set_relE[consumes 2]:
   assumes "(s,s')\<in>\<langle>R\<rangle>set_rel" "x\<in>s"
   obtains x' where "x'\<in>s'" "(x,x')\<in>R"
   using set_relD[OF assms] ..
 
-lemma param_prod': "\<lbrakk> 
-  \<And>a b a' b'. \<lbrakk>p=(a,b); p'=(a',b')\<rbrakk> \<Longrightarrow> (f a b,f' a' b')\<in>R  
+lemma param_prod': "\<lbrakk>
+  \<And>a b a' b'. \<lbrakk>p=(a,b); p'=(a',b')\<rbrakk> \<Longrightarrow> (f a b,f' a' b')\<in>R
   \<rbrakk> \<Longrightarrow> (case_prod f p, case_prod f' p')\<in>R"
   by (auto split: prod.split)
 
@@ -225,12 +225,12 @@ lemma param_prod': "\<lbrakk>
 (*****************************)
 (* Parametricity-HOL *)
 
-lemma dropWhile_param[param]: 
+lemma dropWhile_param[param]:
   "(dropWhile, dropWhile) \<in> (a \<rightarrow> bool_rel) \<rightarrow> \<langle>a\<rangle>list_rel \<rightarrow> \<langle>a\<rangle>list_rel"
   unfolding dropWhile_def by parametricity
 
 term takeWhile
-lemma takeWhile_param[param]: 
+lemma takeWhile_param[param]:
   "(takeWhile, takeWhile) \<in> (a \<rightarrow> bool_rel) \<rightarrow> \<langle>a\<rangle>list_rel \<rightarrow> \<langle>a\<rangle>list_rel"
   unfolding takeWhile_def by parametricity
 
@@ -283,10 +283,10 @@ ML \<open>
       val ctxt = Autoref_Phases.init_data ctxt
       val plain = Config.get ctxt cfg_plain
       val trans_thms = if plain then [] else @{thms the_resI}
-  
+
     in
       resolve_tac ctxt @{thms autoref_monadicI}
-      THEN' 
+      THEN'
       IF_SOLVED (Autoref_Phases.all_phases_tac ctxt)
         (RefineG_Transfer.post_transfer_tac trans_thms ctxt)
         (K all_tac) (* Autoref failed *)
@@ -297,23 +297,23 @@ ML \<open>
 
 method_setup autoref_monadic = \<open>let
     open Refine_Util Autoref_Monadic
-    val autoref_flags = 
+    val autoref_flags =
           parse_bool_config "trace" Autoref_Phases.cfg_trace
       ||  parse_bool_config "debug" Autoref_Phases.cfg_debug
       ||  parse_bool_config "plain" Autoref_Monadic.cfg_plain
 
   in
-    parse_paren_lists autoref_flags 
+    parse_paren_lists autoref_flags
     >>
     ( fn _ => fn ctxt => SIMPLE_METHOD' (
-      let 
+      let
         val ctxt = Config.put Autoref_Phases.cfg_keep_goal true ctxt
       in autoref_monadic_tac ctxt end
     ))
 
   end
 
-\<close> 
+\<close>
  "Automatic Refinement and Determinization for the Monadic Refinement Framework"
 
 (* Move to Refine Transfer *)

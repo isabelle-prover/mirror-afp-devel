@@ -1,7 +1,7 @@
 section\<open>Runge-Kutta methods\<close>
 theory Runge_Kutta
 imports
-  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+  "~~/src/HOL/Analysis/Analysis"
   One_Step_Method
   "~~/src/HOL/Library/Float"
   "../../Affine_Arithmetic/Executable_Euclidean_Space"
@@ -364,7 +364,7 @@ lemma closed_minus_translation_iff[simp]:
   shows "closed ((\<lambda>x. f x - y) ` S) \<longleftrightarrow> closed (f ` S)"
   using closed_translation_iff(1)[of f "- y" S]
   by simp
-  
+
 lemma convex_scaleR_image_iff:
   fixes f::"'a \<Rightarrow> 'b::real_normed_vector"
   shows "convex ((\<lambda>x. r *\<^sub>R (f x)) ` R) \<longleftrightarrow> (r = 0 \<or> convex (f ` R))" (is "?l \<longleftrightarrow> _ \<or> ?r")
@@ -501,7 +501,7 @@ next
   from \<open>t < u\<close> have tx: "t \<in> T" "x t \<in> X" using assms by auto
   from tx assms have "0 \<le> norm (f t (x t))" by simp
   have x_diff: "\<And>s. s \<in> ?T \<Longrightarrow> x differentiable at s within ?T"
-    by (rule differentiableI, rule x'[simplified has_vector_derivative_def]) 
+    by (rule differentiableI, rule x'[simplified has_vector_derivative_def])
 
   note [continuous_intros] =
     continuous_on_compose2[OF has_derivative_continuous_on[OF f'] continuous_on_Pair, simplified]
@@ -870,7 +870,7 @@ next
              (1, f (t, x t))) `
        cbox 0 1)"
     by (rule integral_by_parts_in_bounded_set[OF integral_minus discrete_taylor[unfolded interval_cbox]])
-       (auto intro!: bounded_scaleR_image bounded_blinfun_apply_image 
+       (auto intro!: bounded_scaleR_image bounded_blinfun_apply_image
          bounded_f''_2 simp: image_constant[of 0])
   have "x (t + h) - discrete_evolution (rk2_increment p (\<lambda>t x. f (t, x))) (t + h) t (x t) \<in>
     {a - b|a b.

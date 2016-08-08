@@ -1,15 +1,15 @@
 chapter AFP
 
-session "QR_Decomposition" (AFP) = "HOL-Multivariate_Analysis" +
+session "QR_Decomposition" (AFP) = "HOL-Analysis" +
   options [timeout = 600]
-  theories [document = false]    
+  theories [document = false]
     "~~/src/HOL/Library/Code_Target_Numeral"
     "~~/src/HOL/Library/Code_Char"
     "~~/src/HOL/Library/IArray"
     "../Real_Impl/Real_Unique_Impl"
     "../Gauss_Jordan/Examples_Gauss_Jordan_Abstract"
     "../Gauss_Jordan/Code_Real_Approx_By_Float_Haskell"
-  theories    
+  theories
     Least_Squares_Approximation
     Examples_QR_Abstract_Float
     Examples_QR_Abstract_Symbolic

@@ -1,6 +1,6 @@
 theory MVT_Ex
 imports
-  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+  "~~/src/HOL/Analysis/Analysis"
   "~~/src/HOL/Decision_Procs/Approximation"
   "../ODE_Auxiliarities"
 begin
