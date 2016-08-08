@@ -74,7 +74,7 @@ setup {* Sign.revert_abbrev "" @{const_abbrev Z.normal} *}
 
 abbreviation
 "hd_coeff_is1 a \<equiv>
-  (case a of Le _ _ \<Rightarrow> hd_coeff a : {1,-1} | _ \<Rightarrow> hd_coeff a = 1)"
+  (case a of Le _ _ \<Rightarrow> hd_coeff a \<in> {1,-1} | _ \<Rightarrow> hd_coeff a = 1)"
 
 
 fun asubst :: "int \<Rightarrow> int list \<Rightarrow> atom \<Rightarrow> atom" where
@@ -110,10 +110,10 @@ by(induct i ks a rule:asubst.induct) auto
 definition "lbounds as = [(i,ks). Le i (k#ks) \<leftarrow> as, k>0]"
 definition "ubounds as = [(i,ks). Le i (k#ks) \<leftarrow> as, k<0]"
 lemma set_lbounds:
-  "set(lbounds as) = {(i,ks)|i k ks. Le i (k#ks) : set as \<and> k>0}"
+  "set(lbounds as) = {(i,ks)|i k ks. Le i (k#ks) \<in> set as \<and> k>0}"
 by(auto simp: lbounds_def split:list.splits atom.splits if_splits)
 lemma set_ubounds:
-  "set(ubounds as) = {(i,ks)|i k ks. Le i (k#ks) : set as \<and> k<0}"
+  "set(ubounds as) = {(i,ks)|i k ks. Le i (k#ks) \<in> set as \<and> k<0}"
 by(auto simp: ubounds_def split:list.splits atom.splits if_splits)
 
 lemma lbounds_append[simp]: "lbounds(as @ bs) = lbounds as @ lbounds bs"
@@ -126,16 +126,16 @@ fun zlcms :: "int list \<Rightarrow> int" where
 "zlcms [] = 1" |
 "zlcms (i#is) = lcm i (zlcms is)"
 
-lemma dvd_zlcms: "i : set is \<Longrightarrow> i dvd zlcms is"
+lemma dvd_zlcms: "i \<in> set is \<Longrightarrow> i dvd zlcms is"
 by(induct "is") auto
 
 lemma zlcms_pos: "\<forall>i \<in> set is. i\<noteq>0 \<Longrightarrow> zlcms is > 0"
 by(induct "is")(auto simp:lcm_pos_int)
 
-lemma zlcms0_iff[simp]: "(zlcms is = 0) = (0 : set is)"
+lemma zlcms0_iff[simp]: "(zlcms is = 0) = (0 \<in> set is)"
 by (metis mod_by_0 dvd_eq_mod_eq_0 dvd_zlcms zlcms_pos less_le)
 
-lemma elem_le_zlcms: "\<forall>i \<in> set is. i \<noteq> 0 \<Longrightarrow> i : set is \<Longrightarrow> i \<le> zlcms is"
+lemma elem_le_zlcms: "\<forall>i \<in> set is. i \<noteq> 0 \<Longrightarrow> i \<in> set is \<Longrightarrow> i \<le> zlcms is"
 by (metis dvd_zlcms zdvd_imp_le zlcms_pos)
 
 

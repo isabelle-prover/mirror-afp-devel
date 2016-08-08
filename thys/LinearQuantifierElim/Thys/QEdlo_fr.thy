@@ -109,7 +109,7 @@ definition
  in list_disj (inf\<^sub>- \<phi> # inf\<^sub>+ \<phi> # intrs @ map (subst \<phi>) ebs))"
 
 lemma dense_interval:
-assumes "finite L" "finite U" "l : L" "u : U" "l < x" "x < u" "P(x::'a::dlo)"
+assumes "finite L" "finite U" "l \<in> L" "u \<in> U" "l < x" "x < u" "P(x::'a::dlo)"
 and dense: "\<And>y l u. \<lbrakk> \<forall>y\<in>{l<..<x}. y \<notin> L;  \<forall>y\<in>{x<..<u}. y \<notin> U;
                        l<x;x<u; l<y;y<u \<rbrakk> \<Longrightarrow> P y"
 shows "\<exists>l\<in>L.\<exists>u\<in>U. l<x \<and> x<u \<and> (\<forall>y\<in>{l<..<x}. y\<notin>L) \<and> (\<forall>y\<in>{x<..<u}. y\<notin>U)
@@ -117,18 +117,18 @@ shows "\<exists>l\<in>L.\<exists>u\<in>U. l<x \<and> x<u \<and> (\<forall>y\<in>
 proof -
   let ?L = "{l:L. l < x}" let ?U = "{u:U. x < u}"
   let ?ll = "Max ?L" let ?uu = "Min ?U"
-  have "?L \<noteq> {}" using `l : L` `l<x` by (blast intro:order_less_imp_le)
+  have "?L \<noteq> {}" using `l \<in> L` `l<x` by (blast intro:order_less_imp_le)
   moreover have "?U \<noteq> {}" using `u:U` `x<u` by (blast intro:order_less_imp_le)
   ultimately have "\<forall>y. ?ll<y \<and> y<x \<longrightarrow> y \<notin> L" "\<forall>y. x<y \<and> y<?uu \<longrightarrow> y \<notin> U"
     using `finite L` `finite U` by force+
-  moreover have "?ll : L"
+  moreover have "?ll \<in> L"
   proof
-    show "?ll : ?L" using `finite L` Max_in[OF _ `?L \<noteq> {}`] by simp
+    show "?ll \<in> ?L" using `finite L` Max_in[OF _ `?L \<noteq> {}`] by simp
     show "?L \<subseteq> L" by blast
   qed
-  moreover have "?uu : U"
+  moreover have "?uu \<in> U"
   proof
-    show "?uu : ?U" using `finite U` Min_in[OF _ `?U \<noteq> {}`] by simp
+    show "?uu \<in> ?U" using `finite U` Min_in[OF _ `?U \<noteq> {}`] by simp
     show "?U \<subseteq> U" by blast
   qed
   moreover have "?ll < x" using `finite L` `?L \<noteq> {}` by simp
@@ -169,22 +169,22 @@ next
   { assume "DLO.I (inf\<^sub>- \<phi>) xs \<or> DLO.I (inf\<^sub>+ \<phi>) xs"
     hence ?QE using `nqfree \<phi>` by(auto simp:qe_interior\<^sub>1_def)
   } moreover
-  { assume "EX k : ?E. DLO.I (subst \<phi> k) xs"
+  { assume "\<exists>k \<in> ?E. DLO.I (subst \<phi> k) xs"
     hence ?QE by(force simp:qe_interior\<^sub>1_def) } moreover
   { assume "\<not> DLO.I (inf\<^sub>- \<phi>) xs" and "\<not> DLO.I (inf\<^sub>+ \<phi>) xs"
     and "\<forall>k \<in> ?E. \<not> DLO.I (subst \<phi> k) xs"
     hence noE: "\<forall>e \<in> EQ \<phi> xs. \<not> DLO.I \<phi> (e#xs)"
       using `nqfree \<phi>` by (force simp:set_ebounds EQ_def I_subst)
     hence "x \<notin> EQ \<phi> xs" using x by fastforce
-    obtain l where "l : LB \<phi> xs" "l < x"
+    obtain l where "l \<in> LB \<phi> xs" "l < x"
       using LBex[OF `nqfree \<phi>` x `\<not> DLO.I(inf\<^sub>- \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
-    obtain u where "u : UB \<phi> xs" "x < u"
+    obtain u where "u \<in> UB \<phi> xs" "x < u"
       using UBex[OF `nqfree \<phi>` x `\<not> DLO.I(inf\<^sub>+ \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
     have "\<exists>l\<in>LB \<phi> xs. \<exists>u\<in>UB \<phi> xs. l<x \<and> x<u \<and> nolub \<phi> xs l x u \<and> (\<forall>y. l < y \<and> y < u \<longrightarrow> DLO.I \<phi> (y#xs))"
       using dense_interval[where P = "\<lambda>x. DLO.I \<phi> (x#xs)", OF finite_LB finite_UB `l:LB \<phi> xs` `u:UB \<phi> xs` `l<x` `x<u` x] x innermost_intvl[OF `nqfree \<phi>` _ _ _ `x \<notin> EQ \<phi> xs`]
       by (simp add:nolub_def)
     then obtain m n where
-      "Less (Suc m) 0 : set ?as" "Less 0 (Suc n) : set ?as"
+      "Less (Suc m) 0 \<in> set ?as" "Less 0 (Suc n) \<in> set ?as"
       "xs!m < x \<and> x < xs!n"
       "nolub \<phi> xs (xs!m) x (xs!n)"
       "\<forall>y. xs!m < y \<and> y < xs!n \<longrightarrow> DLO.I \<phi> (y#xs)"

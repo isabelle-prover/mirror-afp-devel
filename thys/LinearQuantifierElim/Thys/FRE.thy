@@ -21,25 +21,25 @@ definition FR\<^sub>1 :: "atom fm \<Rightarrow> atom fm" where
 
 
 lemma dense_interval:
-assumes "finite L" "finite U" "l : L" "u : U" "l < x" "x < u" "P(x::real)"
+assumes "finite L" "finite U" "l \<in> L" "u \<in> U" "l < x" "x < u" "P(x::real)"
 and dense: "\<And>y l u. \<lbrakk> \<forall>y\<in>{l<..<x}. y \<notin> L;  \<forall>y\<in>{x<..<u}. y \<notin> U;
                        l<x;x<u; l<y;y<u \<rbrakk> \<Longrightarrow> P y"
 shows "\<exists>l\<in>L.\<exists>u\<in>U. l<u \<and> (\<forall>y. l<y \<and> y<u \<longrightarrow> P y)"
 proof -
   let ?L = "{l:L. l < x}" let ?U = "{u:U. x < u}"
   let ?ll = "Max ?L" let ?uu = "Min ?U"
-  have "?L \<noteq> {}" using `l : L` `l<x` by (blast intro:order_less_imp_le)
+  have "?L \<noteq> {}" using `l \<in> L` `l<x` by (blast intro:order_less_imp_le)
   moreover have "?U \<noteq> {}" using `u:U` `x<u` by (blast intro:order_less_imp_le)
   ultimately have "\<forall>y. ?ll<y \<and> y<x \<longrightarrow> y \<notin> L" "\<forall>y. x<y \<and> y<?uu \<longrightarrow> y \<notin> U"
     using `finite L` `finite U` by force+
-  moreover have "?ll : L"
+  moreover have "?ll \<in> L"
   proof
-    show "?ll : ?L" using `finite L` Max_in[OF _ `?L \<noteq> {}`] by simp
+    show "?ll \<in> ?L" using `finite L` Max_in[OF _ `?L \<noteq> {}`] by simp
     show "?L \<subseteq> L" by blast
   qed
-  moreover have "?uu : U"
+  moreover have "?uu \<in> U"
   proof
-    show "?uu : ?U" using `finite U` Min_in[OF _ `?U \<noteq> {}`] by simp
+    show "?uu \<in> ?U" using `finite U` Min_in[OF _ `?U \<noteq> {}`] by simp
     show "?U \<subseteq> U" by blast
   qed
   moreover have "?ll < x" using `finite L` `?L \<noteq> {}` by simp
@@ -146,22 +146,22 @@ next
   { assume "R.I (inf\<^sub>- \<phi>) xs \<or> R.I (inf\<^sub>+ \<phi>) xs"
     hence ?FR by(auto simp:FR\<^sub>1_def)
   } moreover
-  { assume "x : EQ \<phi> xs"
+  { assume "x \<in> EQ \<phi> xs"
     then obtain r cs
-      where "(r,cs) : set(ebounds(R.atoms\<^sub>0 \<phi>)) \<and> x = r + \<langle>cs,xs\<rangle>"
+      where "(r,cs) \<in> set(ebounds(R.atoms\<^sub>0 \<phi>)) \<and> x = r + \<langle>cs,xs\<rangle>"
       by(force simp:set_ebounds field_simps)
     moreover hence "R.I (subst \<phi> (r,cs)) xs" using x
       by(auto simp: I_subst `nqfree \<phi>` eval_def)
     ultimately have ?FR by(force simp:FR\<^sub>1_def) } moreover
   { assume "\<not> R.I (inf\<^sub>- \<phi>) xs" and "\<not> R.I (inf\<^sub>+ \<phi>) xs" and "x \<notin> EQ \<phi> xs"
-    obtain l where "l : LB \<phi> xs" "l < x"
+    obtain l where "l \<in> LB \<phi> xs" "l < x"
       using LBex[OF `nqfree \<phi>` x `\<not> R.I (inf\<^sub>- \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
-    obtain u where "u : UB \<phi> xs" "x < u"
+    obtain u where "u \<in> UB \<phi> xs" "x < u"
       using UBex[OF `nqfree \<phi>` x `\<not> R.I (inf\<^sub>+ \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
     have "\<exists>l\<in>LB \<phi> xs. \<exists>u\<in>UB \<phi> xs. l<u \<and> (\<forall>y. l < y \<and> y < u \<longrightarrow> R.I \<phi> (y#xs))"
       using dense_interval[where P = "\<lambda>x. R.I \<phi> (x#xs)", OF finite_LB finite_UB `l:LB \<phi> xs` `u:UB \<phi> xs` `l<x` `x<u` x] x dense[OF `nqfree \<phi>` _ _ _ _ `x \<notin> EQ \<phi> xs`] by simp
     then obtain r c cs s d ds
-      where "Less r (c # cs) : set (R.atoms\<^sub>0 \<phi>)" "Less s (d # ds) : set (R.atoms\<^sub>0 \<phi>)"
+      where "Less r (c # cs) \<in> set (R.atoms\<^sub>0 \<phi>)" "Less s (d # ds) \<in> set (R.atoms\<^sub>0 \<phi>)"
           "\<And>y. (r - \<langle>cs,xs\<rangle>) / c < y \<Longrightarrow> y < (s - \<langle>ds,xs\<rangle>) / d \<Longrightarrow> R.I \<phi> (y # xs)"
         and *: "c > 0" "d < 0" "(r - \<langle>cs,xs\<rangle>) / c < (s - \<langle>ds,xs\<rangle>) / d"
       by blast

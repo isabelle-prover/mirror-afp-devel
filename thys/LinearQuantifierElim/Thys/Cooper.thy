@@ -9,7 +9,7 @@ subsection{*Cooper*}
 text{* This section formalizes Cooper's algorithm~\cite{Cooper72}. *}
 
 lemma set_atoms0_iff:
- "qfree \<phi> \<Longrightarrow> a : set(Z.atoms\<^sub>0 \<phi>) \<longleftrightarrow> a : atoms \<phi> \<and> hd_coeff a \<noteq> 0"
+ "qfree \<phi> \<Longrightarrow> a \<in> set(Z.atoms\<^sub>0 \<phi>) \<longleftrightarrow> a \<in> atoms \<phi> \<and> hd_coeff a \<noteq> 0"
 by(induct \<phi>) (auto split:if_split_asm)
 
 definition
@@ -224,7 +224,7 @@ proof
     by(simp add:zmod_zdiv_equality ac_simps eq_diff_eq)
   hence Pmod: "P x = P(x mod d)" using modd by simp
   have "P(x mod d)" using dpos P Pmod by simp
-  moreover have "x mod d : {0..d - 1}" using dpos by auto
+  moreover have "x mod d \<in> {0..d - 1}" using dpos by auto
   ultimately show ?RHS ..
 qed auto
 
@@ -303,7 +303,7 @@ apply simp
 apply(rename_tac list)apply(case_tac list) apply simp
 apply(clarsimp split:if_split_asm)
 apply(hypsubst_thin)
-apply(subgoal_tac "a : set(map hd_coeff (Z.atoms\<^sub>0 \<phi>))")
+apply(subgoal_tac "a \<in> set(map hd_coeff (Z.atoms\<^sub>0 \<phi>))")
  apply(subgoal_tac "\<forall>i\<in>set(map hd_coeff (Z.atoms\<^sub>0 \<phi>)). i \<noteq> 0")
   apply (metis dvd_zlcms mult_eq_0_iff dvd_mult_div_cancel zlcms0_iff)
  apply (simp add:set_atoms0_iff)
@@ -313,7 +313,7 @@ apply simp
 apply(rename_tac list) apply(case_tac list) apply simp
 apply(clarsimp split:if_split_asm)
 apply(hypsubst_thin)
-apply(subgoal_tac "a : set(map hd_coeff (Z.atoms\<^sub>0 \<phi>))")
+apply(subgoal_tac "a \<in> set(map hd_coeff (Z.atoms\<^sub>0 \<phi>))")
  apply(subgoal_tac "\<forall>i\<in>set(map hd_coeff (Z.atoms\<^sub>0 \<phi>)). i \<noteq> 0")
   apply (metis dvd_zlcms mult_eq_0_iff dvd_mult_div_cancel zlcms0_iff)
  apply (simp add:set_atoms0_iff)

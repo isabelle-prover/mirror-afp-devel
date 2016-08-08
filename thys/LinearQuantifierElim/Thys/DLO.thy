@@ -35,7 +35,7 @@ fun is_Less :: "atom \<Rightarrow> bool" where
 "is_Less (Less i j) = True" |
 "is_Less f = False"
 
-abbreviation "is_Eq \<equiv> Not o is_Less"
+abbreviation "is_Eq \<equiv> Not \<circ> is_Less"
 
 lemma is_Less_iff: "is_Less a = (\<exists>i j. a = Less i j)"
 by(cases a) auto
@@ -92,19 +92,19 @@ definition ubounds where "ubounds as = [i. Less 0 (Suc i) \<leftarrow> as]"
 definition ebounds where
  "ebounds as = [i. Eq (Suc i) 0 \<leftarrow> as] @ [i. Eq 0 (Suc i) \<leftarrow> as]"
 
-lemma set_lbounds: "set(lbounds as) = {i. Less (Suc i) 0 : set as}"
+lemma set_lbounds: "set(lbounds as) = {i. Less (Suc i) 0 \<in> set as}"
 by(auto simp: lbounds_def split:nat.splits atom.splits)
-lemma set_ubounds: "set(ubounds as) = {i. Less 0 (Suc i) : set as}"
+lemma set_ubounds: "set(ubounds as) = {i. Less 0 (Suc i) \<in> set as}"
 by(auto simp: ubounds_def split:nat.splits atom.splits)
 lemma set_ebounds:
-  "set(ebounds as) = {k. Eq (Suc k) 0 : set as \<or> Eq 0 (Suc k) : set as}"
+  "set(ebounds as) = {k. Eq (Suc k) 0 \<in> set as \<or> Eq 0 (Suc k) \<in> set as}"
 by(auto simp: ebounds_def split: atom.splits nat.splits)
 
 
-abbreviation "LB f xs \<equiv> {xs!i|i. Less (Suc i) 0 : set(DLO.atoms\<^sub>0 f)}"
-abbreviation "UB f xs \<equiv> {xs!i|i. Less 0 (Suc i) : set(DLO.atoms\<^sub>0 f)}"
+abbreviation "LB f xs \<equiv> {xs!i|i. Less (Suc i) 0 \<in> set(DLO.atoms\<^sub>0 f)}"
+abbreviation "UB f xs \<equiv> {xs!i|i. Less 0 (Suc i) \<in> set(DLO.atoms\<^sub>0 f)}"
 definition "EQ f xs = {xs!k|k.
-  Eq (Suc k) 0 : set(DLO.atoms\<^sub>0 f) \<or> Eq 0 (Suc k) : set(DLO.atoms\<^sub>0 f)}"
+  Eq (Suc k) 0 \<in> set(DLO.atoms\<^sub>0 f) \<or> Eq 0 (Suc k) \<in> set(DLO.atoms\<^sub>0 f)}"
 
 
 lemma EQ_And[simp]: "EQ (And f g) xs = (EQ f xs \<union> EQ g xs)"

@@ -40,7 +40,7 @@ shows "is_dnf_qe (qelim qe) as" (is "\<forall>xs. ?P xs")
 proof
   fix  xs
   let ?as0 = "filter depends\<^sub>0 as"
-  let ?as1 = "filter (Not o depends\<^sub>0) as"
+  let ?as1 = "filter (Not \<circ> depends\<^sub>0) as"
   have "I (qelim qe as) xs =
         (I (qe ?as0) xs \<and> (\<forall>a\<in>set(map decr ?as1). I\<^sub>a a xs))"
     (is "_ = (_ \<and> ?B)") by(force simp add:qelim_def)
@@ -72,7 +72,7 @@ lemma qfree_lift_dnf_qe: "(\<And>as. (\<forall>a\<in>set as. depends\<^sub>0 a) 
  \<Longrightarrow> qfree(lift_dnf_qe qe \<phi>)"
 by (induct \<phi>) (simp_all add:qelim_def)
 
-lemma qfree_lift_dnf_qe2: "qe : lists |depends\<^sub>0| \<rightarrow> |qfree|
+lemma qfree_lift_dnf_qe2: "qe \<in> lists |depends\<^sub>0| \<rightarrow> |qfree|
  \<Longrightarrow> qfree(lift_dnf_qe qe \<phi>)"
 using in_lists_conv_set[where ?'a = 'a]
 by (simp add:Pi_def qfree_lift_dnf_qe)
@@ -90,7 +90,7 @@ proof(induct \<phi> arbitrary:xs)
 qed simp_all
 
 lemma I_lift_dnf_qe2:
-assumes  "qe : lists |depends\<^sub>0| \<rightarrow> |qfree|"
+assumes  "qe \<in> lists |depends\<^sub>0| \<rightarrow> |qfree|"
 and "\<forall>as \<in> lists |depends\<^sub>0|. is_dnf_qe qe as"
 shows "I (lift_dnf_qe qe \<phi>) xs = I \<phi> xs"
 using assms in_lists_conv_set[where ?'a = 'a]
@@ -104,7 +104,7 @@ and nm: "\<forall>a \<in> set as. anormal a"
 shows "I (qelim qe as) xs = (\<exists>x. \<forall>a\<in>set as. I\<^sub>a a (x#xs))"
 proof -
   let ?as0 = "filter depends\<^sub>0 as"
-  let ?as1 = "filter (Not o depends\<^sub>0) as"
+  let ?as1 = "filter (Not \<circ> depends\<^sub>0) as"
   have "I (qelim qe as) xs =
         (I (qe ?as0) xs \<and> (\<forall>a\<in>set(map decr ?as1). I\<^sub>a a xs))"
     (is "_ = (_ \<and> ?B)") by(force simp add:qelim_def)
@@ -128,7 +128,7 @@ begin
 
 lemma anormal_atoms_qelim:
   "(\<And>as. \<forall>a \<in> set as. depends\<^sub>0 a \<and> anormal a \<Longrightarrow> normal(qe as)) \<Longrightarrow>
-   \<forall>a \<in> set as. anormal a \<Longrightarrow> a : atoms(qelim qe as) \<Longrightarrow> anormal a"
+   \<forall>a \<in> set as. anormal a \<Longrightarrow> a \<in> atoms(qelim qe as) \<Longrightarrow> anormal a"
 apply(auto simp add:qelim_def and_def normal_def split:if_split_asm)
 apply(auto simp add:anormal_decr dest!: atoms_list_conjE)
  apply(erule_tac x = "filter depends\<^sub>0 as" in meta_allE)
@@ -169,8 +169,8 @@ qed (simp_all add:normal_def)
 end
 
 lemma I_lift_dnf_qe_anormal2:
-assumes "qe : lists |depends\<^sub>0| \<rightarrow> |qfree|"
-and "qe : lists ( |depends\<^sub>0| \<inter> |anormal| ) \<rightarrow> |normal|"
+assumes "qe \<in> lists |depends\<^sub>0| \<rightarrow> |qfree|"
+and "qe \<in> lists ( |depends\<^sub>0| \<inter> |anormal| ) \<rightarrow> |normal|"
 and "\<forall>as \<in> lists( |depends\<^sub>0| \<inter> |anormal| ). is_dnf_qe qe as"
 shows "normal f \<Longrightarrow> I (lift_dnf_qe qe f) xs = I f xs"
 using assms in_lists_conv_set[where ?'a = 'a]
@@ -191,7 +191,7 @@ lemma qfree_lift_nnf_qe: "(\<And>\<phi>. nqfree \<phi> \<Longrightarrow> qfree(q
 by (induct \<phi>) (simp_all add:nqfree_nnf)
 
 lemma qfree_lift_nnf_qe2:
-  "qe : |nqfree| \<rightarrow> |qfree| \<Longrightarrow> qfree(lift_nnf_qe qe \<phi>)"
+  "qe \<in> |nqfree| \<rightarrow> |qfree| \<Longrightarrow> qfree(lift_nnf_qe qe \<phi>)"
 by(simp add:Pi_def qfree_lift_nnf_qe)
 
 lemma I_lift_nnf_qe:
@@ -204,8 +204,8 @@ proof(induct "\<phi>" arbitrary:xs)
 qed simp_all
 
 lemma I_lift_nnf_qe2:
-assumes  "qe : |nqfree| \<rightarrow> |qfree|"
-and "ALL \<phi> : |nqfree|. ALL xs. I (qe \<phi>) xs = (\<exists>x. I \<phi> (x#xs))"
+assumes  "qe \<in> |nqfree| \<rightarrow> |qfree|"
+and "\<forall>\<phi> \<in> |nqfree|. \<forall>xs. I (qe \<phi>) xs = (\<exists>x. I \<phi> (x#xs))"
 shows "I (lift_nnf_qe qe \<phi>) xs = I \<phi> xs"
 using assms by(simp add:Pi_def I_lift_nnf_qe)
 
@@ -229,9 +229,9 @@ proof(induct "\<phi>" arbitrary:xs)
 qed auto
 
 lemma I_lift_nnf_qe_normal2:
-assumes  "qe : |nqfree| \<rightarrow> |qfree|"
-and "qe : |nqfree| \<inter> |normal| \<rightarrow> |normal|"
-and "ALL \<phi> : |normal| Int |nqfree|. ALL xs. I (qe \<phi>) xs = (\<exists>x. I \<phi> (x#xs))"
+assumes  "qe \<in> |nqfree| \<rightarrow> |qfree|"
+and "qe \<in> |nqfree| \<inter> |normal| \<rightarrow> |normal|"
+and "\<forall>\<phi> \<in> |normal| \<inter> |nqfree|. \<forall>xs. I (qe \<phi>) xs = (\<exists>x. I \<phi> (x#xs))"
 shows "normal \<phi> \<Longrightarrow> I (lift_nnf_qe qe \<phi>) xs = I \<phi> xs"
 using assms by(simp add:Pi_def I_lift_nnf_qe_normal Int_def)
 
@@ -282,7 +282,7 @@ proof -
       by(simp add:lift_eq_qe_def dep qe cong:conj_cong) (metis trivial)
   next
     case (Cons eq _)
-    then have "eq : set as" "solvable\<^sub>0 eq" "\<not> trivial eq"
+    then have "eq \<in> set as" "solvable\<^sub>0 eq" "\<not> trivial eq"
       by (auto simp: filter_eq_Cons_iff)
     then obtain e where "I\<^sub>a eq (e#xs)" by(metis solvable)
     have "\<forall>a \<in> set as. I\<^sub>a a (e # xs) = I\<^sub>a (subst\<^sub>0 eq a) xs"
@@ -315,7 +315,7 @@ lemma I_lift_dnfeq_qe:
 by(simp add:lift_dnfeq_qe_def I_lift_dnf_qe qfree_lift_eq_qe I_lift_eq_qe)
 
 lemma I_lift_dnfeq_qe2:
-  "qe : lists |depends\<^sub>0| \<rightarrow> |qfree| \<Longrightarrow>
+  "qe \<in> lists |depends\<^sub>0| \<rightarrow> |qfree| \<Longrightarrow>
    (\<forall>as \<in> lists( |depends\<^sub>0| \<inter> - |solvable\<^sub>0| ). is_dnf_qe qe as) \<Longrightarrow>
    I (lift_dnfeq_qe qe \<phi>) xs = I \<phi> xs"
 using in_lists_conv_set[where ?'a = 'a]

@@ -98,14 +98,14 @@ lemma qfree_map_fm: "qfree (map\<^sub>f\<^sub>m f \<phi>) = qfree \<phi>"
 by (induct \<phi>) simp_all
 
 lemma atoms_list_disjE:
-  "a : atoms(list_disj fs) \<Longrightarrow> a : (\<Union>\<phi> \<in> set fs. atoms \<phi>)"
+  "a \<in> atoms(list_disj fs) \<Longrightarrow> a \<in> (\<Union>\<phi> \<in> set fs. atoms \<phi>)"
 apply(induct fs)
  apply (simp add:list_disj_def)
 apply (auto simp add:list_disj_def Logic.or_def split:if_split_asm)
 done
 
 lemma atoms_list_conjE:
-  "a : atoms(list_conj fs) \<Longrightarrow> a : (\<Union>\<phi> \<in> set fs. atoms \<phi>)"
+  "a \<in> atoms(list_conj fs) \<Longrightarrow> a \<in> (\<Union>\<phi> \<in> set fs. atoms \<phi>)"
 apply(induct fs)
  apply (simp add:list_conj_def)
 apply (auto simp add:list_conj_def Logic.and_def split:if_split_asm)
@@ -139,7 +139,7 @@ fun "interpret" :: "('a \<Rightarrow> 'b list \<Rightarrow> bool) \<Rightarrow> 
 "interpret h FalseF xs = False" |
 "interpret h (Atom a) xs = h a xs" |
 "interpret h (And \<phi>\<^sub>1 \<phi>\<^sub>2) xs = (interpret h \<phi>\<^sub>1 xs \<and> interpret h \<phi>\<^sub>2 xs)" |
-"interpret h (Or \<phi>\<^sub>1 \<phi>\<^sub>2) xs = (interpret h \<phi>\<^sub>1 xs | interpret h \<phi>\<^sub>2 xs)" |
+"interpret h (Or \<phi>\<^sub>1 \<phi>\<^sub>2) xs = (interpret h \<phi>\<^sub>1 xs \<or> interpret h \<phi>\<^sub>2 xs)" |
 "interpret h (Neg \<phi>) xs = (\<not> interpret h \<phi> xs)" |
 "interpret h (ExQ \<phi>) xs = (\<exists>x. interpret h \<phi> (x#xs))"
 
@@ -274,11 +274,11 @@ apply(simp_all)
 apply (blast dest:anormal_aneg)+
 done
 
-lemma atoms_dnf: "nqfree \<phi> \<Longrightarrow> as : set(dnf \<phi>) \<Longrightarrow> a : set as \<Longrightarrow> a : atoms \<phi>"
+lemma atoms_dnf: "nqfree \<phi> \<Longrightarrow> as \<in> set(dnf \<phi>) \<Longrightarrow> a \<in> set as \<Longrightarrow> a \<in> atoms \<phi>"
 by(induct \<phi> arbitrary: as a rule:nqfree.induct)(auto)
 
 lemma anormal_dnf_nnf:
-  "as : set(dnf(nnf \<phi>)) \<Longrightarrow> qfree \<phi> \<Longrightarrow> normal \<phi> \<Longrightarrow> a : set as \<Longrightarrow> anormal a"
+  "as \<in> set(dnf(nnf \<phi>)) \<Longrightarrow> qfree \<phi> \<Longrightarrow> normal \<phi> \<Longrightarrow> a \<in> set as \<Longrightarrow> anormal a"
 apply(induct \<phi> arbitrary: a as rule:nnf.induct)
             apply(simp_all add: normal_def)
     apply clarify

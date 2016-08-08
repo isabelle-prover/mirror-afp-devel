@@ -18,7 +18,7 @@ fun is_Less :: "atom \<Rightarrow> bool" where
 "is_Less (Less r rs) = True" |
 "is_Less f = False"
 
-abbreviation "is_Eq \<equiv> Not o is_Less"
+abbreviation "is_Eq \<equiv> Not \<circ> is_Less"
 
 lemma is_Less_iff: "is_Less f = (\<exists>r rs. f = Less r rs)"
 by(induct f) auto
@@ -94,22 +94,22 @@ definition "ubounds as = [(r/c, (-1/c) *\<^sub>s cs). Less r (c#cs) \<leftarrow>
 definition "ebounds as = [(r/c, (-1/c) *\<^sub>s cs). Eq r (c#cs) \<leftarrow> as, c\<noteq>0]"
 
 lemma set_lbounds:
- "set(lbounds as) = {(r/c, (-1/c) *\<^sub>s cs)|r c cs. Less r (c#cs) : set as \<and> c>0}"
+ "set(lbounds as) = {(r/c, (-1/c) *\<^sub>s cs)|r c cs. Less r (c#cs) \<in> set as \<and> c>0}"
 by(force simp: lbounds_def split:list.splits atom.splits if_splits)
 lemma set_ubounds:
- "set(ubounds as) = {(r/c, (-1/c) *\<^sub>s cs)|r c cs. Less r (c#cs) : set as \<and> c<0}"
+ "set(ubounds as) = {(r/c, (-1/c) *\<^sub>s cs)|r c cs. Less r (c#cs) \<in> set as \<and> c<0}"
 by(force simp: ubounds_def split:list.splits atom.splits if_splits)
 lemma set_ebounds:
-  "set(ebounds as) = {(r/c, (-1/c) *\<^sub>s cs)|r c cs. Eq r (c#cs) : set as \<and> c\<noteq>0}"
+  "set(ebounds as) = {(r/c, (-1/c) *\<^sub>s cs)|r c cs. Eq r (c#cs) \<in> set as \<and> c\<noteq>0}"
 by(force simp: ebounds_def split:list.splits atom.splits if_splits)
 
 
 abbreviation EQ where
-"EQ f xs \<equiv> {(r - \<langle>cs,xs\<rangle>)/c|r c cs. Eq r (c#cs) : set(R.atoms\<^sub>0 f) \<and> c\<noteq>0}"
+"EQ f xs \<equiv> {(r - \<langle>cs,xs\<rangle>)/c|r c cs. Eq r (c#cs) \<in> set(R.atoms\<^sub>0 f) \<and> c\<noteq>0}"
 abbreviation LB where
-"LB f xs \<equiv> {(r - \<langle>cs,xs\<rangle>)/c|r c cs. Less r (c#cs) : set(R.atoms\<^sub>0 f) \<and> c>0}"
+"LB f xs \<equiv> {(r - \<langle>cs,xs\<rangle>)/c|r c cs. Less r (c#cs) \<in> set(R.atoms\<^sub>0 f) \<and> c>0}"
 abbreviation UB where
-"UB f xs \<equiv> {(r - \<langle>cs,xs\<rangle>)/c|r c cs. Less r (c#cs) : set(R.atoms\<^sub>0 f) \<and> c<0}"
+"UB f xs \<equiv> {(r - \<langle>cs,xs\<rangle>)/c|r c cs. Less r (c#cs) \<in> set(R.atoms\<^sub>0 f) \<and> c<0}"
 
 
 fun asubst :: "real * real list \<Rightarrow> atom \<Rightarrow> atom" where
