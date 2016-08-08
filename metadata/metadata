@@ -4,7 +4,7 @@ author = Peter Lammich <http://cs.uni-muenster.de/sev/staff/lammich/>, René Neu
 notify = lammich@in.tum.de
 date = 2016-07-05
 topic = Computer Science/Algorithms
-abstract = 
+abstract =
   <p>
   This entry presents a framework for the modular verification of
   DFS-based algorithms, which is described in our [CPP-2015] paper. It
@@ -28,7 +28,7 @@ author = Jeremy Sylvestre <http://ualberta.ca/~jsylvest/>
 notify = jeremy.sylvestre@ualberta.ca
 date = 2016-07-01
 topic = Mathematics/Algebra, Mathematics/Geometry
-abstract = 
+abstract =
   We provide a basic formal framework for the theory of chamber
   complexes and Coxeter systems, and for buildings as thick chamber
   complexes endowed with a system of apartments. Along the way, we
@@ -889,6 +889,35 @@ extra-history =
 	In particular, the new definitions allow for projecting away ghost variables as a refinement step.<br>
 	[2014-11] New features: le-or-fail relation (leof), modular reasoning about loop invariants.
 notify = lammich@in.tum.de
+
+[Refine_Imperative_HOL]
+title = The Imperative Refinement Framework
+author = Peter Lammich <http://www21.in.tum.de/~lammich/>
+notify = lammich@in.tum.de
+date = 2016-08-08
+topic = Computer Science/Programming Languages/Transformations,Computer Science/Data Structures
+abstract =
+  We present the Imperative Refinement Framework (IRF), a tool that
+  supports a stepwise refinement based approach to imperative programs.
+  This entry is based on the material we presented in [ITP-2015,
+  CPP-2016].  It uses the Monadic Refinement Framework as a frontend for
+  the specification of the abstract programs, and Imperative/HOL as a
+  backend to generate executable imperative programs.  The IRF comes
+  with tool support to synthesize imperative programs from more
+  abstract, functional ones, using efficient imperative implementations
+  for the abstract data structures.  This entry also includes the
+  Imperative Isabelle Collection Framework (IICF), which provides a
+  library of re-usable imperative collection data structures.  Moreover,
+  this entry contains a quickstart guide and a reference manual, which
+  provide an introduction to using the IRF for Isabelle/HOL experts. It
+  also provids a collection of (partly commented) practical examples,
+  some highlights being Dijkstra's Algorithm, Nested-DFS, and a generic
+  worklist algorithm with subsumption.  Finally, this entry contains
+  benchmark scripts that compare the runtime of some examples against
+  reference implementations of the algorithms in Java and C++.
+  [ITP-2015] Peter Lammich: Refinement to Imperative/HOL. ITP 2015:
+  253--269  [CPP-2016] Peter Lammich: Refinement based verification of
+  imperative data structures. CPP 2016: 27--36
 
 [Automatic_Refinement]
 title = Automatic Data Refinement
@@ -4342,7 +4371,7 @@ author = Bertram Felgenhauer<>, Julian Nagele<>, Vincent van Oostrom<>, Christia
 notify = bertram.felgenhauer@uibk.ac.at, julian.nagele@uibk.ac.at, c.sternagel@gmail.com
 date = 2016-06-30
 topic = Logic/Rewriting
-abstract = 
+abstract =
   We formalize the Z property introduced by Dehornoy and van Oostrom.
   First we show that for any abstract rewrite system, Z implies
   confluence. Then we give two examples of proofs using Z: confluence of
@@ -4355,7 +4384,7 @@ author = Anders Schlichtkrull <https://people.compute.dtu.dk/andschl>
 notify = andschl@dtu.dk
 date = 2016-06-30
 topic = Logic
-abstract = 
+abstract =
   This theory is a formalization of the resolution calculus for
   first-order logic. It is proven sound and complete. The soundness
   proof uses the substitution lemma, which shows a correspondence
@@ -4394,7 +4423,7 @@ author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner/>
 notify = breitner@kit.edu
 date = 2016-07-17
 topic = Logic
-abstract = 
+abstract =
   In 1964, Fitch showed that the paradox of the surprise hanging can be
   resolved by showing that the judge’s verdict is inconsistent. His
   formalization builds on Gödel’s coding of provability.  In this
