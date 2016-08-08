@@ -5,6 +5,7 @@ subsection \<open>Tree relabelling\<close>
 theory Tree_Relabelling imports
   Applicative_State
   Applicative_Option
+  Applicative_PMF
   "~~/src/HOL/Library/Stream"
 begin
 
@@ -380,6 +381,61 @@ next
     unfolding leaves_simps repeatM_plus by applicative_nf simp
   also have "\<dots> = symbols (leaves (Node l r))" by(rule distinct)
   finally show "pure dlabels \<diamondop> label_tree (Node l r) = symbols (leaves (Node l r))" .
+qed
+
+end
+
+subsubsection \<open>Probabilistic tree relabelling\<close>
+
+primrec mirror :: "'a tree \<Rightarrow> 'a tree"
+where 
+  "mirror (Leaf x) = Leaf x"
+| "mirror (Node l r) = Node (mirror r) (mirror l)"
+
+datatype dir = Left | Right
+
+hide_const (open) path
+
+function (sequential) subtree :: "dir list \<Rightarrow> 'a tree \<Rightarrow> 'a tree"
+where
+  "subtree (Left # path)  (Node l r) = subtree path l"
+| "subtree (Right # path) (Node l r) = subtree path r"
+| "subtree _              (Leaf x)   = Leaf x"
+| "subtree []             t          = t"
+by pat_completeness auto
+termination by lexicographic_order
+
+adhoc_overloading Applicative.pure pure_pmf
+
+context fixes p :: "'a \<Rightarrow> 'b pmf" begin
+
+primrec plabel :: "'a tree \<Rightarrow> 'b tree pmf"
+where
+  "plabel (Leaf x)   = pure Leaf \<diamondop> p x"
+| "plabel (Node l r) = pure Node \<diamondop> plabel l \<diamondop> plabel r"
+
+lemma plabel_mirror: "plabel (mirror t) = pure mirror \<diamondop> plabel t"
+proof(induction t)
+  case (Leaf x)
+  show ?case unfolding plabel.simps mirror.simps by(applicative_lifting) simp
+next
+  case (Node t1 t2)
+  show ?case unfolding plabel.simps mirror.simps Node.IH by(applicative_lifting) simp
+qed
+
+lemma plabel_subtree: "plabel (subtree path t) = pure (subtree path) \<diamondop> plabel t"
+proof(induction path t rule: subtree.induct)
+  case Left: (1 path l r)
+  show ?case unfolding plabel.simps subtree.simps Left.IH by(applicative_lifting) simp
+next
+  case Right: (2 path l r)
+  show ?case unfolding plabel.simps subtree.simps Right.IH by(applicative_lifting) simp
+next
+  case (3 uu x)
+  show ?case unfolding plabel.simps subtree.simps by(applicative_lifting) simp
+next
+  case (4 v va)
+  show ?case unfolding plabel.simps subtree.simps by(applicative_lifting) simp
 qed
 
 end
