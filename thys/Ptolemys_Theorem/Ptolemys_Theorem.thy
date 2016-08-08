@@ -179,7 +179,7 @@ lemma nth_normalize_ge_zero_iff:
 proof
   assume "0 \<le> normalize p $ i"
   from this show "0 \<le> p $ i"
-    unfolding normalize_def by (auto split: split_if_asm simp add: zero_le_divide_iff)
+    unfolding normalize_def by (auto split: if_split_asm simp add: zero_le_divide_iff)
 next
   assume "0 \<le> p $ i"
   have "0 \<le> axis 1 (1 :: real) $ i"
@@ -197,7 +197,7 @@ lemma normalize_boundary_iff:
 proof
   assume "\<bar>normalize p $ 1\<bar> = 1"
   from this have 1: "(p $ 1) ^ 2 = norm p ^ 2"
-    unfolding normalize_def by (auto split: split_if_asm simp add: power2_eq_iff)
+    unfolding normalize_def by (auto split: if_split_asm simp add: power2_eq_iff)
   moreover have "(p $ 1) ^ 2 + (p $ 2) ^ 2 = norm p ^ 2"
     using norm_eq_on_real_2_vec by auto
   ultimately show "p $ 2 = 0" by simp
