@@ -4545,3 +4545,16 @@ abstract =
   formalization builds on Gödel’s coding of provability.  In this
   theory, we reproduce his proof in Isabelle, building on Paulson’s
   formalisation of Gödel’s incompleteness theorems.
+
+[Ptolemys_Theorem]
+title = Ptolemy's Theorem
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+notify = lukas.bulwahn@gmail.com
+date = 2016-08-07
+topic = Mathematics/Geometry
+abstract =
+  This entry provides an analytic proof to Ptolemy's Theorem using
+  polar form transformation and trigonometric identities.
+  In this formalization, we use ideas from John Harrison's HOL Light
+  formalization and the proof sketch on the Wikipedia entry of Ptolemy's Theorem.
+  This theorem is the 95th theorem of the Top 100 Theorems list.

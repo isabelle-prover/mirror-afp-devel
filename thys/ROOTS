@@ -194,14 +194,14 @@ Pairing_Heap
 Parity_Game
 Partial_Function_MR
 PCF
+Perfect-Number-Thm
 Perron_Frobenius
+Pi_Calculus
 pGCL
 Planarity_Certificates
+POPLmark-deBruijn
 Polynomial_Interpolation
 Polynomial_Factorization
-POPLmark-deBruijn
-Perfect-Number-Thm
-Pi_Calculus
 Polynomials
 Pop_Refinement
 Posix-Lexing
@@ -217,6 +217,7 @@ Promela
 PropResPI
 PseudoHoops
 Psi_Calculi
+Ptolemys_Theorem
 QR_Decomposition
 RIPEMD-160-SPARK
 ROBDD
