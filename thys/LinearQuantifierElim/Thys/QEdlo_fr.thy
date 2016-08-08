@@ -44,7 +44,9 @@ lemma nolub_Or[simp]:
   "nolub (Or f g) xs l x u = (nolub f xs l x u \<and> nolub g xs l x u)"
 by(auto simp:nolub_def)
 
-declare[[simp_depth_limit=3]]
+context notes [[simp_depth_limit=3]]
+begin
+
 lemma innermost_intvl:
  "\<lbrakk> nqfree f; nolub f xs l x u; l < x; x < u; x \<notin> EQ f xs;
     DLO.I f (x#xs); l < y; y < u\<rbrakk>
@@ -97,7 +99,8 @@ proof (induct f)
 next
   case Or thus ?case by (simp add: Ball_def)(metis innermost_intvl)
 qed auto
-declare[[simp_depth_limit=50]]
+
+end
 
 definition
 "qe_interior\<^sub>1 \<phi> =

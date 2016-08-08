@@ -285,8 +285,8 @@ next
   thus ?case ..
 qed simp_all
 
-
-declare [[simp_depth_limit = 4]]
+context notes [[simp_depth_limit = 4]]
+begin
 
 lemma LBex:
  "\<lbrakk> nqfree f; R.I f (x#xs); \<not>R.I (inf\<^sub>- f) xs; x \<notin> EQ f xs \<rbrakk>
@@ -300,7 +300,6 @@ apply(auto simp add: depends\<^sub>R_def field_simps split:if_splits list.splits
 apply fastforce+
 done
 
-
 lemma UBex:
  "\<lbrakk> nqfree f; R.I f (x#xs); \<not>R.I (inf\<^sub>+ f) xs; x \<notin> EQ f xs \<rbrakk>
   \<Longrightarrow> \<exists>u\<in> UB f xs. x < u"
@@ -313,7 +312,7 @@ apply(auto simp add: depends\<^sub>R_def field_simps split:if_splits list.splits
 apply fastforce+
 done
 
-declare [[simp_depth_limit = 50]]
+end
 
 lemma finite_LB: "finite(LB f xs)"
 proof -

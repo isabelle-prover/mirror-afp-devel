@@ -49,8 +49,6 @@ proof -
     by(blast intro!:dense greaterThanLessThan_iff[THEN iffD1])
 qed
 
-declare [[simp_depth_limit = 50]]
-
 lemma dense:
   "\<lbrakk> nqfree f; \<forall>y\<in>{l<..<x}. y \<notin> LB f xs; \<forall>y\<in>{x<..<u}. y \<notin> UB f xs;
      l < x; x < u; x \<notin> EQ f xs;  R.I f (x#xs); l < y; y < u\<rbrakk>

@@ -226,7 +226,9 @@ next
   thus ?case ..
 qed simp_all
 
-declare[[simp_depth_limit=2]]
+context notes [[simp_depth_limit=2]]
+begin
+
 lemma LBex:
  "\<lbrakk> nqfree f; DLO.I f (x#xs); \<not>DLO.I (inf\<^sub>- f) xs; x \<notin> EQ f xs \<rbrakk>
   \<Longrightarrow> \<exists>l\<in> LB f xs. l < x"
@@ -245,8 +247,8 @@ proof(induct f)
     by (cases a rule: aplus_inf.cases)
        (simp_all add: nth.simps EQ_def split: nat.splits)
 qed auto
-declare[[simp_depth_limit=50]]
 
+end
 
 lemma finite_LB: "finite(LB f xs)"
 proof -

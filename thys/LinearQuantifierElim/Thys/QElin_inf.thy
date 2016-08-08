@@ -35,7 +35,8 @@ apply(clarsimp simp:nolb_def)
 apply blast
 done
 
-declare[[simp_depth_limit=4]]
+context notes [[simp_depth_limit=4]]
+begin
 
 lemma innermost_intvl:
   "\<lbrakk> nqfree f; nolb f xs l x; l < x; x \<notin> EQ f xs; R.I f (x#xs); l < y; y \<le> x\<rbrakk>
@@ -147,7 +148,8 @@ next
 next
   case Or thus ?case by(simp add:Ball_def)(metis order_refl innermost_intvl2)
 qed simp_all
-declare[[simp_depth_limit=50]]
+
+end
 
 lemma I_subst_peps:
   "nqfree f \<Longrightarrow> R.I (subst\<^sub>+ f (r,cs)) xs \<Longrightarrow>

@@ -123,7 +123,8 @@ proof -
   finally show ?thesis .
 qed
 
-declare [[simp_depth_limit = 5]]
+context notes [[simp_depth_limit = 5]]
+begin
 
 lemma anormal_atoms_qelim:
   "(\<And>as. \<forall>a \<in> set as. depends\<^sub>0 a \<and> anormal a \<Longrightarrow> normal(qe as)) \<Longrightarrow>
@@ -150,7 +151,11 @@ proof(simp add:normal_def, induct \<phi>)
     done
 qed (simp_all add:and_def or_def neg_def Ball_def)
 
-declare [[simp_depth_limit = 9]]
+end
+
+context notes [[simp_depth_limit = 9]]
+begin
+
 lemma I_lift_dnf_qe_anormal:
 assumes "\<And>as. \<forall>a \<in> set as. depends\<^sub>0 a \<Longrightarrow> qfree(qe as)"
 and "\<And>as. \<forall>a \<in> set as. depends\<^sub>0 a \<and> anormal a \<Longrightarrow> normal(qe as)"
@@ -160,7 +165,8 @@ proof(induct f arbitrary:xs)
   case ExQ thus ?case using normal_lift_dnf_qe[of qe]
     by (simp add: assms[simplified normal_def] anormal_dnf_nnf I_qelim_anormal lem I_dnf nqfree_nnf qfree_lift_dnf_qe I_nnf normal_def)
 qed (simp_all add:normal_def)
-declare [[simp_depth_limit = 50]]
+
+end
 
 lemma I_lift_dnf_qe_anormal2:
 assumes "qe : lists |depends\<^sub>0| \<rightarrow> |qfree|"
