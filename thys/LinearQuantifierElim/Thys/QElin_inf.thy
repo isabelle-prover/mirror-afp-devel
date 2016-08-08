@@ -19,7 +19,7 @@ fun asubst_peps :: "real * real list \<Rightarrow> atom \<Rightarrow> atom fm" (
 "asubst_peps rcs a = Atom a"
 
 abbreviation subst_peps :: "atom fm \<Rightarrow> real * real list \<Rightarrow> atom fm" ("subst\<^sub>+")
-where "subst\<^sub>+ \<phi> rcs \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^sub>+ rcs) \<phi>"
+where "subst\<^sub>+ \<phi> rcs \<equiv> amap\<^sub>f\<^sub>m (asubst\<^sub>+ rcs) \<phi>"
 
 definition "nolb f xs l x = (\<forall>y\<in>{l<..<x}. y \<notin> LB f xs)"
 

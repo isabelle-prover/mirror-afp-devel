@@ -24,7 +24,7 @@ fun asubst_peps :: "nat \<Rightarrow> atom \<Rightarrow> atom fm" ("asubst\<^sub
 "asubst_peps k (Eq (Suc i) (Suc j)) = Atom(Eq i j)"
 
 abbreviation subst_peps :: "atom fm \<Rightarrow> nat \<Rightarrow> atom fm" ("subst\<^sub>+") where
-"subst\<^sub>+ \<phi> k \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^sub>+ k) \<phi>"
+"subst\<^sub>+ \<phi> k \<equiv> amap\<^sub>f\<^sub>m (asubst\<^sub>+ k) \<phi>"
 
 definition "nolb \<phi> xs l x = (\<forall>y\<in>{l<..<x}. y \<notin> LB \<phi> xs)"
 

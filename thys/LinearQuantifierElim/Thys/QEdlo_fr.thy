@@ -23,7 +23,7 @@ fun asubst\<^sub>2 :: "nat \<Rightarrow> nat \<Rightarrow> atom \<Rightarrow> at
 "asubst\<^sub>2 l u (Eq _ 0) = FalseF" |
 "asubst\<^sub>2 l u (Eq (Suc i) (Suc j)) = Atom(Eq i j)"
 
-abbreviation "subst\<^sub>2 l u \<equiv> amap\<^bsub>fm\<^esub> (asubst\<^sub>2 l u)"
+abbreviation "subst\<^sub>2 l u \<equiv> amap\<^sub>f\<^sub>m (asubst\<^sub>2 l u)"
 
 lemma I_subst\<^sub>21:
  "nqfree f \<Longrightarrow> xs!l < xs!u \<Longrightarrow> DLO.I (subst\<^sub>2 l u f) xs

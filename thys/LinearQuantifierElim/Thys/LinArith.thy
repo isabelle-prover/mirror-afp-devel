@@ -118,7 +118,7 @@ fun asubst :: "real * real list \<Rightarrow> atom \<Rightarrow> atom" where
 "asubst (r,cs) (Less s []) = Less s []" |
 "asubst (r,cs) (Eq s []) = Eq s []"
 
-abbreviation "subst \<phi> rcs \<equiv> map\<^bsub>fm\<^esub> (asubst rcs) \<phi>"
+abbreviation "subst \<phi> rcs \<equiv> map\<^sub>f\<^sub>m (asubst rcs) \<phi>"
 
 definition eval :: "real * real list \<Rightarrow> real list \<Rightarrow> real" where
 "eval rcs xs = fst rcs + \<langle>snd rcs,xs\<rangle>"
