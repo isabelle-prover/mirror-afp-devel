@@ -141,7 +141,7 @@ proof (cases "q * r = 0")
   case False
   hence q: "q \<noteq> 0" and r: "r \<noteq> 0" by auto
   from irr have p: "p \<noteq> 0" unfolding Missing_Polynomial.irreducible_def by auto
-  from factorial_monoid.irreducible_is_prime[OF factorial_monoid_field_poly irreducible_connect[OF irr],
+  from factorial_monoid.irreducible_prime[OF factorial_monoid_field_poly irreducible_connect[OF irr],
     unfolded Divisibility.prime_def Ball_def mk_monoid_simps poly_Units, OF p,
     THEN conjunct2, rule_format, OF q r] dvd show ?thesis
     using p q r by (simp add: factorid_carrier)

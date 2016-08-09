@@ -239,7 +239,7 @@ proof (cases "p = 0 \<or> q = 0")
       from cpq have id: "?c (p * q) = ?cpq" and cpq: "cpq > 1" unfolding cpq_def by auto
       from prime_factor_nat[of cpq] cpq obtain n where pn: "prime n" and n: "n dvd cpq" by auto
       let ?n = "int n"
-      from pn have n1: "?n > 1" unfolding is_prime_nat_iff by auto
+      from pn have n1: "?n > 1" unfolding prime_nat_iff by auto
       from n have "?n dvd ?cpq" by presburger
       from dvd_trans[OF this content_dvd[of _ "p * q", unfolded id]] 
       have n: "\<And> c. c \<in> set (coeffs (p * q)) \<Longrightarrow> ?n dvd c" by auto

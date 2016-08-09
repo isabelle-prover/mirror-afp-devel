@@ -79,7 +79,7 @@ lemma zero_not_in_squarefree_part [simp]: "0 \<notin> squarefree_part n"
   unfolding squarefree_part_def by auto
 
 lemma multiplicity_squarefree_part:
-  "is_prime p \<Longrightarrow> multiplicity p (\<Prod>(squarefree_part n)) = (if p \<in> squarefree_part n then 1 else 0)"
+  "prime p \<Longrightarrow> multiplicity p (\<Prod>(squarefree_part n)) = (if p \<in> squarefree_part n then 1 else 0)"
   using squarefree_part_subset[of n]
   by (intro multiplicity_prod_prime_powers_nat') auto
 
@@ -139,7 +139,7 @@ proof -
     from decomp have "m (\<Prod>A1 * s1^2) = m (\<Prod>A2 * s2^2)" unfolding A1_def s1_def
       by (simp add: A1_def s1_def squarefree_decompose)
     with p pos have eq: "m (\<Prod>A1) + 2 * m s1 = m (\<Prod>A2) + 2 * m s2"
-      by (simp add: m_def prime_multiplicity_mult_distrib multiplicity_power_nat)
+      by (simp add: m_def prime_elem_multiplicity_mult_distrib multiplicity_power_nat)
     moreover from fin subset p have "m (\<Prod>A1) \<le> 1" "m (\<Prod>A2) \<le> 1" unfolding m_def
       by ((subst multiplicity_prod_prime_powers_nat', auto)[])+
     ultimately show "m s1 = m s2" by linarith

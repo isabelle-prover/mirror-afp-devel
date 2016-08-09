@@ -238,12 +238,12 @@ lemma prime_hd_non_zero:
   fixes p::nat assumes a: "prime p" and b: "prime q" shows "hd (nat_to_bv (p*q)) ~= \<zero>"
 proof -
   have "0 < p*q"
-    by (metis a b mult_is_0 neq0_conv not_is_prime_0) 
+    by (metis a b mult_is_0 neq0_conv not_prime_0) 
   then show ?thesis using hd_one[of "p*q"] and nat_to_bv_def by auto
 qed
 
 lemma primerew: fixes p::nat shows  "\<lbrakk>m dvd p; m~=1; m~=p\<rbrakk> \<Longrightarrow> ~ prime p"
-  by (auto simp add: is_prime_nat_iff)
+  by (auto simp add: prime_nat_iff)
 
 
 lemma two_dvd_exp: "0<x \<Longrightarrow> (2::nat) dvd 2^x"
@@ -291,8 +291,8 @@ lemma odd_mul_odd: "\<lbrakk>~(2::nat) dvd p; ~2 dvd q\<rbrakk> \<Longrightarrow
 lemma prime_equal: fixes p::nat shows "\<lbrakk>prime p; prime q; 2^x=p*q\<rbrakk> \<Longrightarrow> (p=q)"
 proof -
   assume a: "prime p" and b: "prime q" and c: "2^x=p*q"
-  from a have d: "1 < p" by (simp add: is_prime_nat_iff)
-  moreover from b have e: "1<q" by (simp add: is_prime_nat_iff)
+  from a have d: "1 < p" by (simp add: prime_nat_iff)
+  moreover from b have e: "1<q" by (simp add: prime_nat_iff)
   show "p=q"
   proof (cases "p=2")
     assume p: "p=2" then have "2 dvd q" using c and exp_prod1[of q x] and e by simp

@@ -168,13 +168,13 @@ proof
         from b1 0 have b1: "b1 > 0" "n1 > 0" "n1 * n1 > 0" by auto
         from b2 0 have b2: "b2 > 0" "n2 > 0" "n2 * n2 > 0" by auto
         {
-          fix p :: nat assume p: "is_prime p"
+          fix p :: nat assume p: "prime p"
           have "multiplicity p (?sq n1 * b1) = multiplicity p b1 + 2 * multiplicity p n1"
-            using b1 p by (auto simp: prime_multiplicity_mult_distrib)
+            using b1 p by (auto simp: prime_elem_multiplicity_mult_distrib)
           also have "\<dots> mod 2 = multiplicity p b1 mod 2" by presburger
           finally have id1: "multiplicity p (?sq n1 * b1) mod 2 = multiplicity p b1 mod 2" .
           have "multiplicity p (?sq n2 * b2) = multiplicity p b2 + 2 * multiplicity p n2"
-            using b2 p by (auto simp: prime_multiplicity_mult_distrib)
+            using b2 p by (auto simp: prime_elem_multiplicity_mult_distrib)
           also have "\<dots> mod 2 = multiplicity p b2 mod 2" by presburger
           finally have id2: "multiplicity p (?sq n2 * b2) mod 2 = multiplicity p b2 mod 2" .
           from id1 id2 eq have eq: "multiplicity p b1 mod 2 = multiplicity p b2 mod 2" by simp            

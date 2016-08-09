@@ -221,7 +221,7 @@ proof (cases "p = 0 \<or> q = 0")
       then obtain f where f: "f \<in> set fs" by (cases fs, auto)
       with fs have irrf: "irreducible f" and fM: "f \<in> carrier M" unfolding factors_def by auto
       from fM have f0: "f \<noteq> 0" by auto
-      from irreducible_is_prime[OF irrf fM] have pf: "Divisibility.prime M f" .
+      from irreducible_prime[OF irrf fM] have pf: "Divisibility.prime M f" .
       note * = this[unfolded Divisibility.prime_def factor_def Units_def, simplified]
       from * f0 have no_unit: "\<And> x. x * f \<noteq> 1" by (auto simp: ac_simps)
       from * f0 have prime: "\<And> a b. f dvd a * b \<Longrightarrow> f dvd a \<or> f dvd b" unfolding dvd_def by force
@@ -717,7 +717,7 @@ proof -
         proof
           assume "degree p \<noteq> 0 \<and> irreducible (?E p) \<and> content_ff p =dff 1"
           hence deg: "degree p \<noteq> 0" and irr: "irreducible (?E p)" and ct: "content_ff p =dff 1" by auto
-          from PFM.irreducible_prime[OF _ irr] p have prime: "Divisibility.prime PFM (?E p)" by auto
+          from PFM.irreducible_prime[OF irr] p have prime: "Divisibility.prime PFM (?E p)" by auto
           note fnz = factor_idom_nz
           from q r have Eq: "?E q \<in> carrier PFM" and Er: "?E r \<in> carrier PFM" 
             and q': "?E q \<noteq> 0" and r': "?E r \<noteq> 0" and qr': "?E q * ?E r \<noteq> 0" by auto
@@ -734,7 +734,7 @@ proof -
           hence deg: "degree p = 0" and irr: "irreducible (coeff p 0)" by auto
           from degree0_coeffs[OF deg] p obtain a where p: "p = [:a:]" and a: "a \<noteq> 0" by auto
           with irr have irr: "irreducible a" and aM: "a \<in> carrier M" by auto
-          from irreducible_prime[OF aM irr] have prime: "Divisibility.prime M a" .
+          from irreducible_prime[OF irr aM] have prime: "Divisibility.prime M a" .
           from content_map_poly_embed_ff obtain cq where cq: "content_ff q = embed_ff cq" by auto
           from content_map_poly_embed_ff obtain cp where cp: "content_ff p = embed_ff cp" by auto
           from content_map_poly_embed_ff obtain cr where cr: "content_ff r = embed_ff cr" by auto
@@ -860,7 +860,7 @@ proof (intro allI impI)
       from prod[unfolded fs] have fr: "f dvd r" by auto
       from fr rp have fp: "f dvd p" by (rule comm_monoid_mult_class.dvd_trans)
       from fr rq have fq: "f dvd q" by (rule comm_monoid_mult_class.dvd_trans)
-      from irreducible_prime[OF fC irr] have pf: "Divisibility.prime M f" .
+      from irreducible_prime[OF irr fC] have pf: "Divisibility.prime M f" .
       from primeE[OF pf] have f1: "\<not> f dvd 1" unfolding units_idom_nz[OF f] by metis
       have "f dvd 1"
       proof (rule no_prime_divisor[OF fp fq])

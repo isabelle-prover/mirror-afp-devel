@@ -75,7 +75,7 @@ instantiation int :: ufd begin
 lemma Units_int: "(x \<in> Units (mk_monoid::int monoid)) = (x \<noteq> 0 \<and> (x = 1 \<or> x = -1))"
   unfolding Units_def by (auto simp: zmult_eq_1_iff) 
 
-lemma prime_int: "Divisibility.prime (mk_monoid::int monoid) (x :: int) = (x = 0 \<or> Primes.prime (nat (abs x)))" (is "?l = ?r")
+lemma prime_int: "Divisibility.prime (mk_monoid::int monoid) (x :: int) = (x = 0 \<or> Factorial_Ring.prime (nat (abs x)))" (is "?l = ?r")
 proof (cases "x = 0 \<or> x = 1 \<or> x = -1")
   case True
   thus ?thesis unfolding Divisibility.prime_def factor_idom Units_int 
@@ -84,7 +84,7 @@ next
   case False
   hence l: "?l = ((\<forall> a b. a \<noteq> 0 \<longrightarrow> b \<noteq> 0 \<longrightarrow> x dvd a * b \<longrightarrow> x dvd a \<or> x dvd b))" (is "_ = ?l") 
     unfolding Divisibility.prime_def factor_idom Units_int by auto
-  from False have r: "?r = Primes.prime (nat (abs x))" (is "_ = ?r") by simp
+  from False have r: "?r = Factorial_Ring.prime (nat (abs x))" (is "_ = ?r") by simp
   show ?thesis unfolding l r
   proof (intro iffI allI impI)
     fix a b
@@ -95,7 +95,7 @@ next
     show "x dvd a \<or> x dvd b" using dvd_int_unfold_dvd_nat by auto
   next
     assume ?l
-    show "Primes.prime (nat (abs x))" unfolding is_prime_nat_iff
+    show "Factorial_Ring.prime (nat (abs x))" unfolding prime_nat_iff
     proof (intro conjI impI allI)
       show "1 < nat (abs x)" using False by auto
       fix m
@@ -123,7 +123,7 @@ next
   qed
 qed
 
-lemma irreducible_int: "irreducible (x :: int) = (x = 0 \<or> Primes.prime (nat (abs x)))"
+lemma irreducible_int: "irreducible (x :: int) = (x = 0 \<or> Factorial_Ring.prime (nat (abs x)))"
 proof (cases "x = 0 \<or> x = 1 \<or> x = -1")
   case True
   thus ?thesis
@@ -137,18 +137,18 @@ next
   show ?thesis unfolding id
   proof (intro iffI allI impI)
     fix y
-    assume x: "x = 0 \<or> Primes.prime (nat (abs x))" and y: "properfactor y x"
-    with False have x: "Primes.prime (nat (abs x))" by auto
+    assume x: "x = 0 \<or> Factorial_Ring.prime (nat (abs x))" and y: "properfactor y x"
+    with False have x: "Factorial_Ring.prime (nat (abs x))" by auto
     from False y[unfolded properfactor_def factor_idom] have dvd: "y dvd x" and ndvd: "\<not> x dvd y" 
       by (auto, cases "y = 0", auto)
     from dvd have dvd: "nat (abs y) dvd nat (abs x)" using dvd_int_unfold_dvd_nat by blast
     from ndvd have ndvd: "\<not> nat (abs x) dvd nat (abs y)" using dvd_int_unfold_dvd_nat by blast
-    from dvd x[unfolded is_prime_nat_iff] have "nat (abs y) = 1 \<or> nat (abs y) = nat (abs x)" by auto
+    from dvd x[unfolded prime_nat_iff] have "nat (abs y) = 1 \<or> nat (abs y) = nat (abs x)" by auto
     with ndvd have "nat (abs y) = 1" by auto
     thus "y = 1 \<or> y = -1" by auto
   next
     assume pf: "\<forall> y. properfactor y x \<longrightarrow> y = 1 \<or> y = -1"
-    have "Primes.prime (nat (abs x))" unfolding is_prime_nat_iff
+    have "Factorial_Ring.prime (nat (abs x))" unfolding prime_nat_iff
     proof (intro conjI impI allI)
       show "1 < nat (abs x)" using False by auto
       fix m
@@ -163,7 +163,7 @@ next
         thus ?thesis by auto
       qed auto
     qed
-    thus "x = 0 \<or> Primes.prime (nat (abs x))" ..
+    thus "x = 0 \<or> Factorial_Ring.prime (nat (abs x))" ..
   qed
 qed
 

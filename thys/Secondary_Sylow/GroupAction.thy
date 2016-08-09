@@ -473,7 +473,7 @@ proof -
   with orderG m have "p ^ a = card N * card (stabilizer m)" by simp
   with `card N > 1` show ?thesis
     by (metis dvd_mult2 dvd_mult_cancel1 nat_dvd_not_less nat_mult_1 prime 
-          prime_dvd_power_nat prime_factor_nat is_prime_nat_iff zero_less_one) 
+          prime_dvd_power_nat prime_factor_nat prime_nat_iff zero_less_one) 
 qed
 
 text {* As a result of the last lemma the only orbits that count modulo

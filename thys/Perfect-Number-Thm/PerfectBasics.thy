@@ -31,9 +31,9 @@ lemma coprime_multiplicity:
 proof (rule ccontr)
   assume "\<not> coprime p (m div p ^ multiplicity p m)"
   with \<open>prime p\<close> have "\<exists>q. prime q \<and> q dvd p \<and> q dvd m div p ^ multiplicity p m"
-    by (metis dvd_refl is_prime_imp_coprime)
+    by (metis dvd_refl prime_imp_coprime)
   with \<open>prime p\<close> have "\<exists>q. q = p \<and> q dvd m div p ^ multiplicity p m"
-    by (metis not_is_prime_1 is_prime_nat_iff)
+    by (metis not_prime_1 prime_nat_iff)
   then have "p dvd m div p ^ multiplicity p m"
     by auto
   with assms show False

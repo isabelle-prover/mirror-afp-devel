@@ -32,7 +32,7 @@ lemma multiplicity_prime:
   assumes p: "prime (i :: nat)" and ji: "j \<noteq> i"
   shows "multiplicity j i = 0"
   using assms
-  by (metis dvd_refl is_prime_nat_iff multiplicity_eq_zero_iff 
+  by (metis dvd_refl prime_nat_iff multiplicity_eq_zero_iff 
         multiplicity_unit_left multiplicity_zero)
 
 end

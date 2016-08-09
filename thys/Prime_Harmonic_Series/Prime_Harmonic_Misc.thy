@@ -33,10 +33,10 @@ lemma dvd_setprodD: "finite A \<Longrightarrow> setprod f A dvd x \<Longrightarr
 
 lemma multiplicity_power_nat: 
   "prime p \<Longrightarrow> n > 0 \<Longrightarrow> multiplicity p (n ^ k :: nat) = k * multiplicity p n"
-  by (induction k) (simp_all add: prime_multiplicity_mult_distrib)
+  by (induction k) (simp_all add: prime_elem_multiplicity_mult_distrib)
 
 lemma multiplicity_prod_prime_powers_nat':
-  "finite S \<Longrightarrow> \<forall>p\<in>S. prime p \<Longrightarrow> is_prime p \<Longrightarrow> 
+  "finite S \<Longrightarrow> \<forall>p\<in>S. prime p \<Longrightarrow> prime p \<Longrightarrow> 
      multiplicity p (\<Prod>S :: nat) = (if p \<in> S then 1 else 0)"
   using multiplicity_prod_prime_powers[of S p "\<lambda>_. 1"] by simp
 

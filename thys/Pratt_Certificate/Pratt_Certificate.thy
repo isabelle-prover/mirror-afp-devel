@@ -153,7 +153,7 @@ proof
   then show "{p} \<subseteq> prime_factors p" using assms by (auto simp add: prime_factors_altdef)
   { fix q assume "q \<in> prime_factors p"
     then have "q dvd p" "prime q" using `0<p` by (auto simp add:prime_factors_altdef)
-    with assms have "q=p" by (auto simp: is_prime_nat_iff)
+    with assms have "q=p" by (auto simp: prime_nat_iff)
     }
   then
   show "prime_factors p \<subseteq> {p}" by auto

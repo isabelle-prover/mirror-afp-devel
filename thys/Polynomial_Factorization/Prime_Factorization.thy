@@ -119,7 +119,7 @@ qed
 lemma prime_sqrtI: assumes n: "n \<ge> 2" 
   and small: "\<And> j. 2 \<le> j \<Longrightarrow> j < i \<Longrightarrow> \<not> j dvd n"
   and i: "\<not> i * i \<le> n"
-  shows "prime (n::nat)" unfolding is_prime_nat_iff
+  shows "prime (n::nat)" unfolding prime_nat_iff
 proof (intro conjI impI allI)
   show "1 < n" using n by auto
   fix j
@@ -213,7 +213,7 @@ proof -
         hence "j mod 2 = 1" by auto
         with 2 have "i mod 2 = 0" by auto
         with i11 have "2 dvd i" "i \<noteq> 2" by auto 
-        with *(1) have False unfolding is_prime_nat_iff by auto
+        with *(1) have False unfolding prime_nat_iff by auto
       }
       moreover
       {
@@ -221,7 +221,7 @@ proof -
         hence "j mod 3 = 1" by auto
         with 3 have "i mod 3 = 0" by auto
         with i11 have "3 dvd i" "i \<noteq> 3" by auto 
-        with *(1) have False unfolding is_prime_nat_iff by auto
+        with *(1) have False unfolding prime_nat_iff by auto
       }
       moreover
       {
@@ -229,7 +229,7 @@ proof -
         hence "j mod 5 = 4" by auto
         with 5 have "i mod 5 = 0" by auto
         with i11 have "5 dvd i" "i \<noteq> 5" by auto 
-        with *(1) have False unfolding is_prime_nat_iff by auto
+        with *(1) have False unfolding prime_nat_iff by auto
       }
       ultimately have False by blast
     }
@@ -392,7 +392,7 @@ proof (induct ni arbitrary: n i "is" jj res rule: wf_induct[OF
       proof (cases "i' \<ge> n")
         case False
         hence "i' < n" by auto
-        with `i' \<ge> 2` i_n have "\<not> prime n" unfolding is_prime_nat_iff by auto
+        with `i' \<ge> 2` i_n have "\<not> prime n" unfolding prime_nat_iff by auto
         with False show ?thesis unfolding res by auto
       next
         case True
@@ -515,7 +515,7 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
       obtain n'' qs where rp: "remove_prime_factor i' (n div i') (i' # ps) = (n'',qs)" by force
       with res True 
       have res: "res = (if n'' = 1 then qs else prime_factorization_nat_main n'' jj iis qs)" by auto
-      have pi: "prime i'" unfolding is_prime_nat_iff
+      have pi: "prime i'" unfolding prime_nat_iff
       proof (intro conjI allI impI)
         show "1 < i'" using i' i by auto
         fix j
@@ -577,7 +577,7 @@ qed
 lemma prime_nat[simp]: "prime_nat n = prime n"
 proof (cases "n < 2")
   case True
-  thus ?thesis unfolding prime_nat_def is_prime_nat_iff by auto
+  thus ?thesis unfolding prime_nat_def prime_nat_iff by auto
 next
   case False
   hence n: "n \<ge> 2" by auto
@@ -633,7 +633,7 @@ lemma msetprod_multiset_prime_factorization_nat [simp]:
 
 (* TODO Move *)
 lemma prime_factorization_unique'':
-  assumes "\<And>p. p \<in># A \<Longrightarrow> is_prime p"
+  assumes "\<And>p. p \<in># A \<Longrightarrow> prime p"
   assumes "msetprod A = normalize x"
   shows   "prime_factorization x = A"
 proof -
@@ -658,7 +658,7 @@ proof -
     note pf = pf(1) pf(2)[OF False]
     show ?thesis
     proof (rule prime_factorization_unique'')
-      show "is_prime p" if "p \<in># mset (prime_factorization_nat n)" for p
+      show "prime p" if "p \<in># mset (prime_factorization_nat n)" for p
         using prime_factors_def using pf(1) that by simp
       let ?l = "\<Prod>i\<in>#prime_factorization n. i"
       let ?r = "\<Prod>i\<in>#mset (prime_factorization_nat n). i"

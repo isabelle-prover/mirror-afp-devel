@@ -73,13 +73,13 @@ theorem Euclid_book9_prop36:
   assumes p: "prime (2^(n+1) - (1::nat))"
   shows "perfect ((2^n)*(2^(n+1) - 1))"
 proof (unfold perfect_def, auto)
-  from assms show "(2::nat)*2^n > Suc 0" by (auto simp add: is_prime_nat_iff)
+  from assms show "(2::nat)*2^n > Suc 0" by (auto simp add: prime_nat_iff)
 next
   have "2 ~= ((2::nat)^(n+1) - 1)" by simp arith
   then have "coprime (2::nat) (2^(n+1) - 1)"
     by (metis p primes_coprime_nat two_is_prime_nat) 
   moreover with p have "2^(n+1) - 1 > (0::nat)"
-    by (auto simp add: is_prime_nat_iff)
+    by (auto simp add: prime_nat_iff)
   ultimately have  "sigma (2^n*(2^(n+1) - 1)) = (sigma(2^n))*(sigma(2^(n+1) - 1))"
     by (metis sigma_semimultiplicative two_is_prime_nat)
   also from assms have "... = (sigma(2^(n)))*(2^(n+1))"

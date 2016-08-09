@@ -235,7 +235,7 @@ lemma smooth_ge_Suc0: "smooth n \<Longrightarrow> n \<ge> Suc 0"
 by(cases n) simp_all
 
 lemma prime_nat_dvdD: "prime p \<Longrightarrow> (n :: nat) dvd p \<Longrightarrow> n = 1 \<or> n = p"
-unfolding is_prime_nat_iff by simp
+unfolding prime_nat_iff by simp
 
 lemma smooth_times [simp]: "smooth (x * y) \<longleftrightarrow> smooth x \<and> smooth y"
 by(auto simp add: smooth_def)

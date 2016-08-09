@@ -5079,7 +5079,7 @@ apply (thin_tac "{J. ideal R J \<and> mx \<subseteq> J} = {mx, carrier R}")
  apply simp
 done
 
-lemma (in Ring) maximal_is_prime:"maximal_ideal R mx \<Longrightarrow> prime_ideal R mx"
+lemma (in Ring) maximal_prime:"maximal_ideal R mx \<Longrightarrow> prime_ideal R mx"
 apply (cut_tac ring_is_ag)
 apply (simp add:prime_ideal_def)
 apply (simp add:maximal_ideal_ideal)
@@ -6629,7 +6629,7 @@ apply (rule subsetI)
 apply (rule subsetI)
  apply (rule contrapos_pp, simp+)
  apply (frule id_maximal_Exist, erule exE,
-        frule maximal_is_prime)
+        frule maximal_prime)
  apply (frule_tac a = I in forall_spec, assumption,
         frule_tac I = I in prime_ideal_ideal,
         frule_tac h = x and I = I in ideal_subset, assumption)
