@@ -209,6 +209,7 @@ object profile extends isabelle.CI_Profile
 
       if (!results.ok)
       {
+        print_section("NOTIFICATIONS")
         for (name <- results.sessions)
         {
           val result = results(name)
