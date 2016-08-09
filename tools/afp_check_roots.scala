@@ -13,7 +13,6 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
     println(Console.BOLD + Console.RED + string + Console.RESET)
 
   def check_timeout(tree: Sessions.Tree, selected: List[String]): Boolean =
-  {
     selected.flatMap { name =>
       val info = tree(name)
       val entry = info.dir.base.implode
@@ -32,10 +31,8 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
         }
         false
     }
-  }
 
   def check_paths(tree: Sessions.Tree, selected: List[String]): Boolean =
-  {
     selected.flatMap { name =>
       val info = tree(name)
       val dir = info.dir
@@ -54,9 +51,45 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
         }
         false
     }
-  }
 
-  // FIXME: check chapter and group
+  def check_chapter(tree: Sessions.Tree, selected: List[String]): Boolean =
+    selected.flatMap { name =>
+      val info = tree(name)
+      val entry = info.dir.base.implode
+      if (info.chapter != "AFP")
+        Some(entry)
+      else
+        None
+    }.distinct match {
+      case Nil =>
+        print_good("All entries are in the 'AFP' chapter.")
+        true
+      case offenders =>
+        print_bad("The following entries are not in the AFP chapter:")
+        offenders.foreach { entry => println(s"""  $entry""") }
+        false
+    }
+
+  def check_groups(tree: Sessions.Tree, selected: List[String]): Boolean =
+    selected.flatMap { name =>
+      val info = tree(name)
+      if (!info.groups.toSet.subsetOf(Set("AFP", "slow")) ||
+          !info.groups.contains("AFP"))
+        Some((name, info.groups))
+      else
+        None
+    } match {
+      case Nil =>
+        print_good("All sessions have correct groups.")
+        true
+      case offenders =>
+        print_bad("The following sessions have wrong groups:")
+        offenders.foreach { case (session, groups) =>
+          println(s"""  $session ${groups.mkString("{", ", ", "}")}""")
+        }
+        false
+    }
+
 
   def apply(args: List[String]): Unit =
   {
@@ -65,7 +98,9 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
 
     val checks = List(
       check_timeout(full_tree, selected),
-      check_paths(full_tree, selected))
+      check_paths(full_tree, selected),
+      check_chapter(full_tree, selected),
+      check_groups(full_tree, selected))
 
     if (checks.exists(!_))
     {
