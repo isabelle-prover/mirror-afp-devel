@@ -499,7 +499,7 @@ shows "atomic_step_precondition (atomic_step_ipc (current s) dir stage partner p
 using assms on_set_object_value
 unfolding atomic_step_precondition_def atomic_step_ipc_def ipc_precondition_def
           ev_signal_precondition_def set_object_value_def
-          by (auto split add: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits
+          by (auto split: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits
                    ev_consume_t.splits ev_wait_stage_t.splits ev_signal_stage_t.splits)
 
 lemma prec_ev_signal_dom_independent:
@@ -510,7 +510,7 @@ shows "atomic_step_precondition (atomic_step_ev_signal (current s) partner s) d 
 using assms on_set_object_value
 unfolding atomic_step_precondition_def atomic_step_ev_signal_def ipc_precondition_def
           ev_signal_precondition_def set_object_value_def
-          by (auto split add: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits
+          by (auto split: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits
                    ev_consume_t.splits ev_wait_stage_t.splits ev_signal_stage_t.splits)
 
 lemma prec_ev_wait_one_dom_independent:
@@ -521,7 +521,7 @@ shows "atomic_step_precondition (atomic_step_ev_wait_one (current s) s) d a"
 using assms on_set_object_value
 unfolding atomic_step_precondition_def atomic_step_ev_wait_one_def ipc_precondition_def
           ev_signal_precondition_def set_object_value_def
-          by (auto split add: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits
+          by (auto split: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits
                    ev_consume_t.splits ev_wait_stage_t.splits ev_signal_stage_t.splits)
 
 lemma prec_ev_wait_all_dom_independent:
@@ -532,7 +532,7 @@ shows "atomic_step_precondition (atomic_step_ev_wait_all (current s) s) d a"
 using assms on_set_object_value
 unfolding atomic_step_precondition_def atomic_step_ev_wait_all_def ipc_precondition_def
           ev_signal_precondition_def set_object_value_def
-          by (auto split add: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits
+          by (auto split: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits
                    ev_consume_t.splits ev_wait_stage_t.splits ev_signal_stage_t.splits)
 
 lemma prec_dom_independent:
@@ -541,20 +541,20 @@ using atomic_step_preserves_invariants
 rstate_invariant prec_IPC_dom_independent prec_ev_signal_dom_independent
 prec_ev_wait_all_dom_independent prec_ev_wait_one_dom_independent
 unfolding rcurrent_def rprecondition_def rstep_def atomic_step_def 
-by(auto split add: int_point_t.splits  ev_consume_t.splits ev_wait_stage_t.splits ev_signal_stage_t.splits)
+by(auto split: int_point_t.splits  ev_consume_t.splits ev_wait_stage_t.splits ev_signal_stage_t.splits)
 
 lemma ipc_precondition_after_cswitch[simp]:
 shows "ipc_precondition d dir partner page ((\<down> s)\<lparr>current := new_current\<rparr>) 
           = ipc_precondition d dir partner page (\<down> s)"
 unfolding ipc_precondition_def
-by(auto split add: ipc_direction_t.splits)
+by(auto split: ipc_direction_t.splits)
 
 lemma precondition_after_cswitch:
 shows "\<forall>s d n a. rprecondition s d a \<longrightarrow> rprecondition (rcswitch n s) d a"
 using cswitch_preserves_invariants rstate_invariant
 unfolding rprecondition_def rcswitch_def atomic_step_precondition_def
           ev_signal_precondition_def
-by (auto split add: int_point_t.splits ipc_stage_t.splits  ev_signal_stage_t.splits)
+by (auto split: int_point_t.splits ipc_stage_t.splits  ev_signal_stage_t.splits)
 
 lemma aborting_switch_independent:
 shows "\<forall>n s. raborting (rcswitch n s) = raborting s"
@@ -567,7 +567,7 @@ proof-
       using rstate_invariant cswitch_preserves_invariants ev_signal_precondition_weakly_step_consistent
             cswitch_consistency_and_respect
       unfolding aborting_def rcswitch_def 
-      apply (auto split add: int_point_t.splits ipc_stage_t.splits
+      apply (auto split: int_point_t.splits ipc_stage_t.splits
                          ev_wait_stage_t.splits ev_signal_stage_t.splits)
       apply (metis (full_types))
       by blast 
@@ -586,7 +586,7 @@ proof-
     have "rwaiting (rcswitch n s) tid a = rwaiting s tid a"
       using rstate_invariant cswitch_preserves_invariants
       unfolding waiting_def rcswitch_def
-      by(auto split add: int_point_t.splits ipc_stage_t.splits ev_wait_stage_t.splits)
+      by(auto split: int_point_t.splits ipc_stage_t.splits ev_wait_stage_t.splits)
   }
   hence "rwaiting (rcswitch n s) = rwaiting s" by auto
 }
@@ -598,14 +598,14 @@ assumes "d1 \<noteq> d2"
 shows "aborting (atomic_step_ipc d1 dir stage partner page s) d2 a = aborting s d2 a"
 unfolding atomic_step_ipc_def aborting_def set_object_value_def ipc_precondition_def
           ev_signal_precondition_def
-by(auto split add: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits
+by(auto split: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits
                    ev_signal_stage_t.splits)
 
 lemma waiting_after_IPC_step:
 assumes "d1 \<noteq> d2"
 shows "waiting (atomic_step_ipc d1 dir stage partner page s) d2 a = waiting s d2 a"
 unfolding atomic_step_ipc_def waiting_def set_object_value_def ipc_precondition_def
-by(auto split add: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits
+by(auto split: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits
                    ev_wait_stage_t.splits)
 (*
 lemma raborting_after_step:
@@ -620,7 +620,7 @@ proof-
       using not_curr aborting_after_IPC_step
             rstate_invariant atomic_ipc_preserves_invariants
       unfolding rcurrent_def  rstep_def atomic_step_def
-      by(auto split add: int_point_t.splits)
+      by(auto split: int_point_t.splits)
   }
   hence "raborting (rstep s a) d = raborting s d" by auto
 }
@@ -640,7 +640,7 @@ proof-
       using not_curr waiting_after_IPC_step
             rstate_invariant atomic_ipc_preserves_invariants
       unfolding rcurrent_def  rstep_def atomic_step_def
-      by(auto split add: int_point_t.splits)
+      by(auto split: int_point_t.splits)
   }
   hence "rwaiting (rstep s a) d = rwaiting s d" by auto
 }
@@ -664,7 +664,7 @@ proof-
     with vpeq rstate_invariant have "raborting s u a = raborting t u a"
       unfolding aborting_def rvpeq_def vpeq_def vpeq_local_def ev_signal_precondition_def
                vpeq_subj_subj_def atomic_step_invariant_def sp_subset_def rep_def
-      apply (auto split add: int_point_t.splits ipc_stage_t.splits ev_signal_stage_t.splits)
+      apply (auto split: int_point_t.splits ipc_stage_t.splits ev_signal_stage_t.splits)
       by blast
   }
   hence "raborting s u = raborting t u" by auto
@@ -687,7 +687,7 @@ proof -
       unfolding atomic_step_def atomic_step_ipc_def
                atomic_step_ev_wait_all_def atomic_step_ev_wait_one_def
                atomic_step_ev_signal_def set_object_value_def
-      by (auto split add: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits
+      by (auto split: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits
           ev_wait_stage_t.splits ev_consume_t.splits  ev_signal_stage_t.splits)
     thus "ipc_precondition tid dir partner page s = ipc_precondition tid dir partner page (atomic_step s a)
          \<and> ev_signal_precondition tid partner  s = ev_signal_precondition tid partner (atomic_step s a)"
@@ -698,7 +698,7 @@ proof -
   ultimately show ?thesis
     unfolding aborting_def rstep_def ev_signal_precondition_def
               
-    by (simp split add: int_point_t.splits ipc_stage_t.splits ev_wait_stage_t.splits
+    by (simp split: int_point_t.splits ipc_stage_t.splits ev_wait_stage_t.splits
                         ev_signal_stage_t.splits)
 qed
 
@@ -736,7 +736,7 @@ proof-
     case SK_IPC
       thus "rwaiting s u a = rwaiting t u a"
       using ipc_precondition_of_partner_consistent vpeq_involved
-      unfolding waiting_def by (auto split add: ipc_stage_t.splits)
+      unfolding waiting_def by (auto split: ipc_stage_t.splits)
     next case SK_EV_WAIT
       thus "rwaiting s u a = rwaiting t u a"
         using ev_signal_precondition_of_partner_consistent
@@ -785,7 +785,7 @@ proof-
   from d_involved prec have "rifp d (rcurrent s)"
     using ipc_precondition_ensures_ifp ev_signal_precondition_ensures_ifp rstate_invariant
     unfolding rkinvolved_def rprecondition_def atomic_step_precondition_def rcurrent_def Kernel.involved_def
-    by(cases a,simp,auto split add: int_point_t.splits ipc_stage_t.splits ev_signal_stage_t.splits)
+    by(cases a,simp,auto split: int_point_t.splits ipc_stage_t.splits ev_signal_stage_t.splits)
 }
 thus ?thesis by auto
 qed
@@ -807,6 +807,6 @@ shows "\<forall>s a. rwaiting s (rcurrent s) a \<longrightarrow> rstep s a = s"
 unfolding waiting_def rstep_def atomic_step_def atomic_step_ipc_def
           atomic_step_ev_signal_def atomic_step_ev_wait_all_def
           atomic_step_ev_wait_one_def
-  by(auto split add: int_point_t.splits ipc_stage_t.splits ev_wait_stage_t.splits)
+  by(auto split: int_point_t.splits ipc_stage_t.splits ev_wait_stage_t.splits)
 end
 

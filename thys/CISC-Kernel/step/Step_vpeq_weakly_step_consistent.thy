@@ -28,7 +28,7 @@ proof -
       case True
         thus ?A
           using eq_tid unfolding vpeq_def vpeq_subj_subj_def
-          by (simp split add: ipc_direction_t.splits)
+          by (simp split: ipc_direction_t.splits)
       next case False
         have "sp_subset s1" and "sp_subset s2"
           using inv1 inv2 unfolding atomic_step_invariant_def sp_subset_def by auto
@@ -42,7 +42,7 @@ proof -
       case True
         thus ?B
           using eq_tid unfolding vpeq_def vpeq_subj_obj_def
-          by (simp split add: ipc_direction_t.splits)
+          by (simp split: ipc_direction_t.splits)
       next case False
         have "sp_subset s1" and "sp_subset s2"
           using inv1 inv2 unfolding atomic_step_invariant_def sp_subset_def by auto
@@ -67,7 +67,7 @@ proof -
       case True
         thus ?A
           using eq_tid unfolding vpeq_def vpeq_subj_subj_def
-          by (simp split add: ipc_direction_t.splits)
+          by (simp split: ipc_direction_t.splits)
       next case False
         have "sp_subset s1" and "sp_subset s2"
           using inv1 inv2 unfolding atomic_step_invariant_def sp_subset_def by auto
@@ -272,7 +272,7 @@ proof -
           vpeq_refl
     unfolding atomic_step_def
     apply (cases ipt, auto)
-    apply  (simp split add: ev_consume_t.splits ev_wait_stage_t.splits)
-    by  (simp split add: ev_signal_stage_t.splits)
+    apply  (simp split: ev_consume_t.splits ev_wait_stage_t.splits)
+    by  (simp split: ev_signal_stage_t.splits)
    qed
 end

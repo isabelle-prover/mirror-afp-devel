@@ -90,7 +90,7 @@ apply(rule conjI)
  apply(erule wf_induct)
  apply clarify
  apply(drule unfold_while[THEN iffD1])
- apply (simp split add:if_split_asm)
+ apply (simp split: if_split_asm)
  apply blast
 apply(rule allI)
 apply(erule wf_induct)

@@ -509,7 +509,7 @@ proof -
         by (auto simp add: max_torder_def)
       with True show ?thesis
         apply (simp only: max_torder_def "domain")
-        apply auto
+        apply (auto split!: if_splits)
         apply (blast dest: total_onPD [OF to] transPD [OF trans] antisymPD [OF as] refl_onPD1 [OF refl] refl_onPD2 [OF refl] someI [where P="\<lambda>a. a \<notin> A"])+
         done
     next

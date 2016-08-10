@@ -306,7 +306,7 @@ lemma publicKey_in_initState [iff]: "Key (publicKey b A) \<in> initState B"
 text{*All public keys are visible*}
 lemma spies_pubK [iff]: "Key (publicKey b A) \<in> spies evs"
 apply (induct_tac "evs")
-apply (auto simp add: imageI knows_Cons split add: event.split)
+apply (auto simp add: imageI knows_Cons split: event.split)
 done
 
 lemmas analz_spies_pubK = spies_pubK [THEN analz.Inj]
@@ -316,14 +316,14 @@ text{*Spy sees private keys of bad agents!*}
 lemma Spy_spies_bad_privateKey [intro!]:
      "A \<in> bad ==> Key (privateKey b A) \<in> spies evs"
 apply (induct_tac "evs")
-apply (auto simp add: imageI knows_Cons split add: event.split)
+apply (auto simp add: imageI knows_Cons split: event.split)
 done
 
 text{*Spy sees long-term shared keys of bad agents!*}
 lemma Spy_spies_bad_shrK [intro!]:
      "A \<in> bad ==> Key (shrK A) \<in> spies evs"
 apply (induct_tac "evs")
-apply (simp_all add: imageI knows_Cons split add: event.split)
+apply (simp_all add: imageI knows_Cons split: event.split)
 done
 
 lemma publicKey_into_used [iff] :"Key (publicKey b A) \<in> used evs"
@@ -358,7 +358,7 @@ text{*In any trace, there is an upper bound N on the greatest nonce in use*}
 lemma Nonce_supply_lemma: "EX N. ALL n. N<=n --> Nonce n \<notin> used evs"
 apply (induct_tac "evs")
 apply (rule_tac x = 0 in exI)
-apply (simp_all (no_asm_simp) add: used_Cons split add: event.split)
+apply (simp_all (no_asm_simp) add: used_Cons split: event.split)
 apply safe
 apply (rule msg_Nonce_supply [THEN exE], blast elim!: add_leE)+
 done

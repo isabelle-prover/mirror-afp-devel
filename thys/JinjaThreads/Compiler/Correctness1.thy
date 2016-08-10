@@ -166,14 +166,14 @@ lemma sim_move01_expr:
   "sim_move01 P t ta0 (try e0 catch(C V) e2) (try e catch(C' V') e2') h xs ta (try e' catch(C' V') e2') h' xs'"
 using assms
 apply(simp_all add: sim_move01_def final_iff \<tau>red1r_Val \<tau>red1t_Val split: if_split_asm split del: if_split)
-apply(fastforce simp add: final_iff \<tau>red1r_Val \<tau>red1t_Val intro: red1_reds1.intros)+
+apply(fastforce simp add: final_iff \<tau>red1r_Val \<tau>red1t_Val split!: if_splits intro: red1_reds1.intros)+
 done
 
 lemma sim_moves01_expr:
   "sim_move01 P t ta0 e0 e h xs ta e' h' xs' \<Longrightarrow> sim_moves01 P t ta0 (e0 # es2) (e # es2') h xs ta (e' # es2') h' xs'"
   "sim_moves01 P t ta0 es0 es h xs ta es' h' xs' \<Longrightarrow> sim_moves01 P t ta0 (Val v # es0) (Val v # es) h xs ta (Val v # es') h' xs'"
 apply(simp_all add: sim_move01_def sim_moves01_def final_iff finals_iff Cons_eq_append_conv \<tau>red1t_Val \<tau>red1r_Val split: if_split_asm split del: if_split)
-apply(auto simp add: Cons_eq_append_conv \<tau>red1t_Val \<tau>red1r_Val split: if_split_asm intro: List1Red1 List1Red2 \<tau>red1t_inj_\<tau>reds1t \<tau>red1r_inj_\<tau>reds1r \<tau>reds1t_cons_\<tau>reds1t \<tau>reds1r_cons_\<tau>reds1r)
+apply(auto simp add: Cons_eq_append_conv \<tau>red1t_Val \<tau>red1r_Val split!: if_splits intro: List1Red1 List1Red2 \<tau>red1t_inj_\<tau>reds1t \<tau>red1r_inj_\<tau>reds1r \<tau>reds1t_cons_\<tau>reds1t \<tau>reds1r_cons_\<tau>reds1r)
 apply(force elim!: \<tau>red1r_inj_\<tau>reds1r List1Red1)
 apply(force elim!: \<tau>red1r_inj_\<tau>reds1r List1Red1)
 apply(force elim!: \<tau>red1r_inj_\<tau>reds1r List1Red1)
@@ -882,8 +882,8 @@ lemma sim_move10_expr:
   "sim_move10 P t ta1 (throw e1) (throw e1') (throw e) h xs ta (throw e') h' xs'"
   "sim_move10 P t ta1 (try e1 catch(C V) e2) (try e1' catch(C V) e2) (try e catch(C' V') e2') h xs ta (try e' catch(C' V') e2') h' xs'"
 using assms
-apply(simp_all add: sim_move10_def final_iff split del: if_split split add: if_split_asm)
-apply(fastforce simp add: \<tau>red0t_Val \<tau>red0r_Val intro: red_reds.intros)+
+apply(simp_all add: sim_move10_def final_iff split del: if_split split: if_split_asm)
+apply(fastforce simp: \<tau>red0t_Val \<tau>red0r_Val intro: red_reds.intros split!: if_splits)+
 done
 
 lemma sim_moves10_expr:

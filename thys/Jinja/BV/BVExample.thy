@@ -535,7 +535,7 @@ lemmas [code] = lesub_def plussub_def
 
 lemma [code]:
   "is_refT T = (case T of NT \<Rightarrow> True | Class C \<Rightarrow> True | _ \<Rightarrow> False)"
-  by (simp add: is_refT_def split add: ty.split)
+  by (simp add: is_refT_def split: ty.split)
 
 declare app\<^sub>i.simps [code]
 

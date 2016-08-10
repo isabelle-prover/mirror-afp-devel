@@ -308,7 +308,7 @@ theorem (in start_context) exec_pres_type:
   apply(rename_tac the_s M n)
   apply (clarsimp split: if_split_asm)
    apply(rule conjI)
-    apply(fastforce split: option.splits)
+    apply(fastforce split!: option.splits)
    apply fastforce
   apply(erule disjE)
    apply clarsimp
