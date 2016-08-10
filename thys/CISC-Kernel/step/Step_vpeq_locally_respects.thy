@@ -150,7 +150,7 @@ proof -
                 ev_signal_respects_policy ev_wait_one_respects_policy
                 ev_wait_all_respects_policy
     unfolding atomic_step_def
-    by (auto split add: int_point_t.splits ev_consume_t.splits ev_wait_stage_t.splits ev_signal_stage_t.splits)
+    by (auto split: int_point_t.splits ev_consume_t.splits ev_wait_stage_t.splits ev_signal_stage_t.splits)
 qed
 
 end

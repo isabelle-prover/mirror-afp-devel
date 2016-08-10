@@ -160,7 +160,7 @@ where
 | "bdd_binop f (Branch l\<^sub>1 r\<^sub>1) (Branch l\<^sub>2 r\<^sub>2) = Branch (bdd_binop f l\<^sub>1 l\<^sub>2) (bdd_binop f r\<^sub>1 r\<^sub>2)"
 
 lemma bddh_binop: "bddh n (bdd_binop f l r) = (bddh n l \<and> bddh n r)"
-  by (induct f l r arbitrary: n rule: bdd_binop.induct) (auto split add: nat.split_asm)
+  by (induct f l r arbitrary: n rule: bdd_binop.induct) (auto split: nat.split_asm)
 
 lemma bdd_lookup_binop: "\<lbrakk>bddh (length bs) l; bddh (length bs) r\<rbrakk> \<Longrightarrow>
   bdd_lookup (bdd_binop f l r) bs = f (bdd_lookup l bs) (bdd_lookup r bs)"
@@ -193,7 +193,7 @@ where
 lemma add_leaves_bdd_lookup:
   "bddh n b \<Longrightarrow> (x \<in> set (add_leaves b xs)) = ((\<exists>bs. x = bdd_lookup b bs \<and> is_alph n bs) \<or> x \<in> set xs)"
   apply (induct b arbitrary: xs n)
-  apply (auto split add: nat.split_asm)
+  apply (auto split: nat.split_asm)
   apply (rule_tac x="replicate n arbitrary" in exI)
   apply (simp add: is_alph_def)
   apply (rule_tac x="True # bs" in exI)

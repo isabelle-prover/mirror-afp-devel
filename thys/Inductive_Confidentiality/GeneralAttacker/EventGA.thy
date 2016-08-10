@@ -65,14 +65,14 @@ text{*Everybody sees what is sent on the traffic*}
 lemma Says_imp_knows [rule_format]:
      "Says A' B X \<in> set evs --> (\<forall>A. X \<in> knows A evs)"
 apply (induct_tac "evs")
-apply (simp_all (no_asm_simp) split add: event.split)
+apply (simp_all (no_asm_simp) split: event.split)
 apply auto
 done
 
 lemma Notes_imp_knows [rule_format]:
 "Notes A' X \<in> set evs --> X \<in> knows A' evs"
 apply (induct_tac "evs")
-apply (simp_all (no_asm_simp) split add: event.split)
+apply (simp_all (no_asm_simp) split: event.split)
 done
 
 
@@ -103,7 +103,7 @@ lemma knows_imp_Says_Gets_Notes_initState [rule_format]:
   Says A' B X \<in> set evs | Notes A X \<in> set evs | X \<in> initState A"
 apply (erule rev_mp)
 apply (induct_tac "evs")
-apply (simp_all (no_asm_simp) split add: event.split)
+apply (simp_all (no_asm_simp) split: event.split)
 apply auto
 done
 
@@ -116,7 +116,7 @@ lemmas usedI = parts_knows_subset_used [THEN subsetD, intro]
 
 lemma initState_into_used: "X \<in> parts (initState B) ==> X \<in> used evs"
 apply (induct_tac "evs")
-apply (simp_all add: parts_insert_knows_A split add: event.split, blast)
+apply (simp_all add: parts_insert_knows_A split: event.split, blast)
 done
 
 lemma used_Says [simp]: "used (Says A B X # evs) = parts{X} \<union> used evs"

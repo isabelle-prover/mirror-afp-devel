@@ -267,7 +267,7 @@ theorem psubst_subst [simp]:
 theorem psubstt_upd [simp]:
   "x \<notin> paramst (t::'a term) \<Longrightarrow> psubstt (f(x:=y)) t = psubstt f t"
   "x \<notin> paramsts (ts::'a term list) \<Longrightarrow> psubstts (f(x:=y)) ts = psubstts f ts"
-  by (induct t and ts rule: psubstt.induct psubstts.induct) (auto split add: sum.split)
+  by (induct t and ts rule: psubstt.induct psubstts.induct) (auto split: sum.split)
 
 theorem psubst_upd [simp]: "x \<notin> params P \<Longrightarrow> psubst (f(x:=y)) P = psubst f P"
   by (induct P) (simp_all del: fun_upd_apply)
@@ -1261,11 +1261,11 @@ where
         | Suc y \<Rightarrow> (Suc x, y))"
 
 theorem diag_le1: "fst (diag (Suc n)) < Suc n"
-  by (induct n) (simp_all add: Let_def split_def split add: nat.split)
+  by (induct n) (simp_all add: Let_def split_def split: nat.split)
 
 theorem diag_le2: "snd (diag (Suc (Suc n))) < Suc (Suc n)"
   apply (induct n)
-  apply (simp_all add: Let_def split_def split add: nat.split nat.split_asm)
+  apply (simp_all add: Let_def split_def split: nat.split nat.split_asm)
   apply (rule impI)
   apply (case_tac n)
   apply simp
@@ -1582,7 +1582,7 @@ theorem is_chain_extend: "is_chain (extend S C f)"
 
 theorem finite_paramst [simp]: "finite (paramst (t :: 'a term))"
   "finite (paramsts (ts :: 'a term list))"
-  by (induct t and ts rule: paramst.induct paramsts.induct) (simp_all split add: sum.split)
+  by (induct t and ts rule: paramst.induct paramsts.induct) (simp_all split: sum.split)
 
 theorem finite_params [simp]: "finite (params p)"
   by (induct p) simp_all

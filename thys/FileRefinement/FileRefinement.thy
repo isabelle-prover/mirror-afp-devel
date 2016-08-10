@@ -398,7 +398,7 @@ subsubsection {* Creating a File *}
 
 lemma makeCFCorrect: "abstFn makeCF = makeAF"
 by (simp add: makeCF_def makeAF_def abstFn_def cfRead_def
-    split add: bool.splits option.splits)
+    split: bool.splits option.splits)
 
 subsubsection {* File Size *}
 

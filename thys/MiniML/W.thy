@@ -46,15 +46,15 @@ lemma W_var_ge [rule_format (no_asm)]:
   "!A n S t m. W e A n  = Some (S,t,m) --> n<=m"
 apply (induct_tac "e")
 (* case Var(n) *)
-apply (simp (no_asm) split add: split_option_bind)
+apply (simp (no_asm) split: split_option_bind)
 (* case Abs e *)
-apply (simp (no_asm) split add: split_option_bind)
+apply (simp (no_asm) split: split_option_bind)
 apply (fast dest: Suc_leD)
 (* case App e1 e2 *)
-apply (simp (no_asm) split add: split_option_bind)
+apply (simp (no_asm) split: split_option_bind)
 apply (blast intro: le_SucI le_trans)
 (* case LET e1 e2 *)
-apply (simp (no_asm) split add: split_option_bind)
+apply (simp (no_asm) split: split_option_bind)
 apply (blast intro: le_trans)
 done
 
@@ -102,7 +102,7 @@ lemma new_tv_W [rule_format (no_asm)]:
                new_tv m S & new_tv m t"
 proof (induct e)
   case Var then show ?case
-    apply (simp (no_asm) split add: split_option_bind)
+    apply (simp (no_asm) split: split_option_bind)
     apply (intro strip)
     apply (drule new_tv_nth_nat_A)
     apply assumption
@@ -110,7 +110,7 @@ proof (induct e)
     done
 next
   case Abs then show ?case
-    apply (simp (no_asm) add: new_tv_subst new_tv_Suc_list split add: split_option_bind)
+    apply (simp (no_asm) add: new_tv_subst new_tv_Suc_list split: split_option_bind)
     apply (intro strip)
     apply (erule_tac x = "Suc n" in allE)
     apply (erule_tac x = " (FVar n) #A" in allE)
@@ -118,7 +118,7 @@ next
     done
 next
   case App then show ?case
-    apply (simp (no_asm) split add: split_option_bind)
+    apply (simp (no_asm) split: split_option_bind)
     apply (intro strip)
     apply (rename_tac S1 t1 n1 S2 t2 n2 S3)
     apply (erule_tac x = "n" in allE)
@@ -162,7 +162,7 @@ next
     done
 next
   case LET then show ?case
-    apply (simp (no_asm) split add: split_option_bind)
+    apply (simp (no_asm) split: split_option_bind)
     apply (intro strip)
     apply (erule allE,erule allE,erule allE,erule allE,erule allE, erule impE, assumption, erule impE, assumption) 
     apply (erule conjE)
@@ -205,7 +205,7 @@ lemma free_tv_W [rule_format (no_asm)]:
           (v:free_tv S | v:free_tv t) --> v<n --> v:free_tv A"
 proof (induct e)
   case (Var n) then show ?case
-    apply (simp (no_asm) add: free_tv_subst split add: split_option_bind)
+    apply (simp (no_asm) add: free_tv_subst split: split_option_bind)
     apply (intro strip)
     apply (case_tac "v : free_tv (A!n)")
     apply simp
@@ -215,7 +215,7 @@ proof (induct e)
     apply simp
     done
   case Abs then show ?case
-    apply (simp add: free_tv_subst split add: split_option_bind del: all_simps)
+    apply (simp add: free_tv_subst split: split_option_bind del: all_simps)
     apply (intro strip)
     apply (rename_tac S t n1 v)
     apply (erule_tac x = "Suc n" in allE)
@@ -227,7 +227,7 @@ proof (induct e)
     apply (bestsimp intro: cod_app_subst simp add: less_Suc_eq)
     done
   case App then show ?case
-    apply (simp (no_asm) split add: split_option_bind del: all_simps)
+    apply (simp (no_asm) split: split_option_bind del: all_simps)
     apply (intro strip)
     apply (rename_tac S t n1 S1 t1 n2 S2 v)
     apply (erule_tac x = "n" in allE)
@@ -263,7 +263,7 @@ proof (induct e)
     done
 next
   case LET then show ?case
-    apply (simp (no_asm) split add: split_option_bind del: all_simps)
+    apply (simp (no_asm) split: split_option_bind del: all_simps)
     apply (intro strip)
     apply (rename_tac S1 t1 n2 S2 t2 n3 v)
     apply (erule_tac x = "n" in allE)
@@ -304,7 +304,7 @@ apply (simp (no_asm) add: is_bound_typ_instance)
 apply (rule exI)
 apply (rule refl)
 (* case Abs e *)
-apply (simp add: app_subst_list split add: split_option_bind)
+apply (simp add: app_subst_list split: split_option_bind)
 apply (intro strip)
 apply (erule_tac x = " (mk_scheme (TVar n)) # A" in allE)
 apply simp
@@ -317,7 +317,7 @@ apply (erule_tac [2] notE impE, tactic "assume_tac @{context} 2")
 apply (simp (no_asm_simp))
 apply assumption
 (* case App e1 e2 *)
-apply (simp (no_asm) split add: split_option_bind)
+apply (simp (no_asm) split: split_option_bind)
 apply (intro strip)
 apply (rename_tac S1 t1 n1 S2 t2 n2 S3)
 apply (rule_tac ?t2.0 = "$ S3 t2" in has_type.AppI)
@@ -348,7 +348,7 @@ apply (erule (1) notE impE)
 apply (erule (1) notE impE)
 apply assumption
 (* case Let e1 e2 *)
-apply (simp (no_asm) split add: split_option_bind)
+apply (simp (no_asm) split: split_option_bind)
 apply (intro strip)
 (*by (rename_tac "w q m1 S1 t1 m2 S2 t n2" 1); *)
 apply (rename_tac S1 t1 m1 S2)
@@ -504,7 +504,7 @@ apply (drule_tac [2] eq_subst_scheme_list_eq_free)
  apply (fast intro: free_tv_W free_tv_le_new_tv dest: new_tv_W)
 (** LEVEL 73 **)
  prefer 2 apply (simp add: free_tv_subst dom_def)
-apply (simp (no_asm_simp) split add: split_option_bind)
+apply (simp (no_asm_simp) split: split_option_bind)
 apply safe
 apply (drule mgu_Some)
  apply fastforce  

@@ -46,7 +46,7 @@ proof -
   show ?thesis
     unfolding atomic_step_invariant_def atomic_step_precondition_def ipc_precondition_def
       sp_subset_def set_object_value_def Let_def
-    by (simp split add: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits)
+    by (simp split: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits)
 qed
 
 lemma set_thread_value_invariant:
@@ -55,7 +55,7 @@ proof -
   show ?thesis
     unfolding atomic_step_invariant_def atomic_step_precondition_def ipc_precondition_def
       sp_subset_def set_object_value_def Let_def
-    by (simp split add: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits)
+    by (simp split: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits)
 qed
 
 lemma atomic_ipc_preserves_invariants:
@@ -78,7 +78,7 @@ proof -
       show ?thesis
         using assms BUF set_object_value_invariant
         unfolding atomic_step_ipc_def
-        by (simp split add: ipc_direction_t.splits)
+        by (simp split: ipc_direction_t.splits)
     qed
 qed
 
@@ -178,7 +178,7 @@ proof -
           and set_object_value_def Let_def
           and atomic_step_ev_wait_one_def atomic_step_ev_wait_all_def
           and atomic_step_ev_signal_def
-    by (simp split add: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits 
+    by (simp split: int_point_t.splits ipc_stage_t.splits ipc_direction_t.splits 
                         ev_consume_t.splits ev_wait_stage_t.splits ev_signal_stage_t.splits)
 qed
 

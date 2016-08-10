@@ -107,7 +107,7 @@ where
 | "unique (x # xs) = (xs\<langle>fst x\<rangle>\<^sub>? = \<bottom> \<and> unique xs)"
 
 lemma assoc_set: "ps\<langle>x\<rangle>\<^sub>? = \<lfloor>y\<rfloor> \<Longrightarrow> (x, y) \<in> set ps"
-  by (induct ps) (auto split add: if_split_asm)
+  by (induct ps) (auto split: if_split_asm)
 
 lemma map_assoc_None [simp]:
   "ps\<langle>x\<rangle>\<^sub>? = \<bottom> \<Longrightarrow> map (\<lambda>(x, y). (x, f x y)) ps\<langle>x\<rangle>\<^sub>? = \<bottom>"

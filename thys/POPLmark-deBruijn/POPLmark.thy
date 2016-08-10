@@ -261,7 +261,7 @@ lemma lift_lift [simp]:
 lemma substT_substT:
   "i \<le> j \<Longrightarrow> T[Suc j \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>[i \<mapsto>\<^sub>\<tau> U[j - i \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>]\<^sub>\<tau> = T[i \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>[j \<mapsto>\<^sub>\<tau> V]\<^sub>\<tau>"
   apply (induct T arbitrary: i j U V)
-  apply (simp_all add: diff_Suc split add: nat.split)
+  apply (simp_all add: diff_Suc split: nat.split)
   apply (thin_tac "\<And>x. PROP P x" for P :: "_ \<Rightarrow> prop")
   apply (drule_tac x="Suc i" in meta_spec)
   apply (drule_tac x="Suc j" in meta_spec)
@@ -329,7 +329,7 @@ lemma map_is_TVarb:
     \<Gamma>\<langle>i\<rangle> = \<lfloor>TVarB T\<rfloor> \<Longrightarrow> \<exists>T. \<Gamma>'\<langle>i\<rangle> = \<lfloor>TVarB T\<rfloor>"
   apply (induct \<Gamma> arbitrary: \<Gamma>' T i)
   apply simp
-  apply (auto split add: nat.split_asm)
+  apply (auto split: nat.split_asm)
   apply (case_tac z)
   apply simp_all
   done
@@ -449,7 +449,7 @@ lemma wf_liftB:
   using H
   apply (induct arbitrary: i)
   apply simp
-  apply (simp split add: nat.split_asm)
+  apply (simp split: nat.split_asm)
   apply (frule_tac B="VarB T" in wf_weaken [of "[]", simplified])
   apply simp+
   apply (rename_tac nat)
@@ -475,7 +475,7 @@ theorem wf_subst:
   apply (rule impI conjI)+
   apply (erule well_formed_cases)
   apply (rule wf_TVar)
-  apply (simp split add: nat.split_asm)
+  apply (simp split: nat.split_asm)
   apply (rename_tac nat \<Delta> T nata)
   apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> nat - Suc 0")
   apply (subgoal_tac "nat - Suc \<parallel>\<Delta>\<parallel> = nata")
@@ -858,7 +858,7 @@ lemma substT_subtype: -- {* A.10 *}
   apply assumption+
   apply (rule conjI impI)+
   apply (rule SA_trans_TVar)
-  apply (simp split add: nat.split_asm)
+  apply (simp split: nat.split_asm)
   apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> i - Suc 0")
   apply (rename_tac nat)
   apply (subgoal_tac "i - Suc \<parallel>\<Delta>\<parallel> = nat")
@@ -868,7 +868,7 @@ lemma substT_subtype: -- {* A.10 *}
   apply simp
   apply (rule impI)
   apply (rule SA_trans_TVar)
-  apply (simp split add: nat.split_asm)
+  apply (simp split: nat.split_asm)
   apply (subgoal_tac "Suc (\<parallel>\<Delta>\<parallel> - Suc 0) = \<parallel>\<Delta>\<parallel>")
   apply (simp (no_asm_simp))
   apply arith
@@ -917,7 +917,7 @@ lemma subst_subtype:
   apply (rule conjI impI)+
   apply simp
   apply (rule conjI impI)+
-  apply (simp split add: nat.split_asm)
+  apply (simp split: nat.split_asm)
   apply (rule SA_trans_TVar)
   apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> i - Suc 0")
   apply (rename_tac nat)
@@ -1031,7 +1031,7 @@ lemma narrow_type: -- {* A.7 *}
   apply simp
   apply (case_tac "i = \<parallel>\<Delta>\<parallel>")
   apply simp
-  apply (simp split add: nat.split nat.split_asm)+
+  apply (simp split: nat.split nat.split_asm)+
   apply (rule T_Abs [simplified])
   apply (drule_tac x="VarB T\<^sub>1 \<Colon> \<Delta>" in meta_spec)
   apply simp
@@ -1205,7 +1205,7 @@ theorem subst_type: -- {* A.8 *}
   apply (rule wf_Top)
   apply simp
   apply (rule impI conjI)+
-  apply (simp split add: nat.split_asm)
+  apply (simp split: nat.split_asm)
   apply (rule T_Var)
   apply (erule wfE_subst)
   apply (rule wf_Top)
@@ -1260,7 +1260,7 @@ theorem substT_type: -- {* A.11 *}
   apply (erule wfE_subst)
   apply (erule wf_subtypeE)
   apply assumption
-  apply (simp split add: nat.split_asm)
+  apply (simp split: nat.split_asm)
   apply (subgoal_tac "\<parallel>\<Delta>\<parallel> \<le> i - Suc 0")
   apply (rename_tac nat)
   apply (subgoal_tac "i - Suc \<parallel>\<Delta>\<parallel> = nat")

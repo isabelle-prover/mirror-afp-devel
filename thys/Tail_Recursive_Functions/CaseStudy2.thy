@@ -600,7 +600,7 @@ next
       case 0
       have "0 \<in> {..<Suc (length ts)}" by simp
       with I have "?P 0" ..
-      thus ?thesis by (simp add: Let_def 0 split add: if_split_asm)
+      thus ?thesis by (simp add: Let_def 0 split: if_split_asm)
     next
       case (Suc m)
       have "?P n" using I and n ..
