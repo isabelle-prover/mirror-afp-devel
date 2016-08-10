@@ -4,7 +4,6 @@
 theory List_Fusion
 imports 
   Main
-  "~~/src/HOL/Coinduction"
 begin
 
 section {* Shortcut fusion for lists *}
