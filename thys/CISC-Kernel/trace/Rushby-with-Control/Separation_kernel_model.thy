@@ -743,7 +743,7 @@ proof-
         vpeq_involved vpeq vpeq_u
         unfolding waiting_def rkinvolved_def ev_signal_precondition_def
                   rvpeq_def vpeq_def vpeq_local_def
-        by (auto split         add: ipc_stage_t.splits ev_wait_stage_t.splits ev_consume_t.splits)      
+        by (auto split: ipc_stage_t.splits ev_wait_stage_t.splits ev_consume_t.splits)      
     qed (simp add: waiting_def, simp add: waiting_def) 
 }
 thus ?thesis by auto
@@ -800,7 +800,7 @@ lemma spec_of_waiting_ev_w:
 shows "\<forall>s a. rwaiting s (rcurrent s) (SK_EV_WAIT EV_WAIT EV_CONSUME_ALL) 
                \<longrightarrow> rstep s (SK_EV_WAIT EV_WAIT EV_CONSUME_ALL) = s"
  unfolding rstep_def atomic_step_def
- by (auto split  add: int_point_t.splits ipc_stage_t.splits ev_wait_stage_t.splits)
+ by (auto split: int_point_t.splits ipc_stage_t.splits ev_wait_stage_t.splits)
 
 lemma spec_of_waiting:
 shows "\<forall>s a. rwaiting s (rcurrent s) a \<longrightarrow> rstep s a = s"
