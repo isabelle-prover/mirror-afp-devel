@@ -1,6 +1,6 @@
 chapter AFP
 
-session "HOL-ODE" (AFP) = "HOL-Analysis" +
+session "Ordinary_Differential_Equations" (AFP) = "HOL-Analysis" +
   options [timeout = 600]
   theories [document = false]
     "~~/src/HOL/Decision_Procs/Approximation"
@@ -10,6 +10,11 @@ session "HOL-ODE" (AFP) = "HOL-Analysis" +
   document_files
     "root.bib"
     "root.tex"
+
+session "HOL-ODE" (AFP) = "Ordinary_Differential_Equations" +
+  options [timeout = 100, document = false]
+  theories
+    "ODE_Analysis"
 
 session "HOL-ODE-Refinement" (AFP) = "HOL-ODE" +
   options [timeout = 600, document = false]
