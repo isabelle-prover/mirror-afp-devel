@@ -651,9 +651,8 @@ global_interpretation Presb: Formula
   and automaton = "DA.automaton
     (\<lambda>a \<phi>. norm (deriv lderiv0 (a :: atom) \<phi> :: formula))"
   by standard (auto simp: Presb_simps \<sigma>_def set_n_lists distinct_n_lists
-
-  Formula_Operations.lformula.simps Formula_Operations.satisfies_gen.simps Formula_Operations.wf.simps
-  dest: satisfies0_cong split: presb.splits if_splits)
+    Formula_Operations.lformula.simps Formula_Operations.satisfies_gen.simps Formula_Operations.wf.simps
+    dest: satisfies0_cong split: presb.splits if_splits)
 
 (*Workaround for code generation*)
 lemma check_eqv_code[code]: "check_eqv idx r s =
