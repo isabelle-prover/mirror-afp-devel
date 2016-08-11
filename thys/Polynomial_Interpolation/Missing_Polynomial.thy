@@ -258,7 +258,7 @@ lemma unit_factor_field [simp]:
   by (cases "is_unit x") (auto simp: is_unit_unit_factor dvd_field_iff)
 
 lemma poly_gcd_monic: 
-  fixes p :: "'a :: {field,euclidean_ring_gcd} poly"
+  fixes p :: "'a :: {field,factorial_ring_gcd} poly"
   assumes "p \<noteq> 0 \<or> q \<noteq> 0"
   shows   "monic (gcd p q)"
 proof -
@@ -973,15 +973,10 @@ shows "a = b"
   by (metis (no_types, lifting) coeff_smult degree_smult_eq irreducibleD(1) irreducible_dvd_smult 
     mult.right_neutral smult_1_left)
 
-lemma monic_gcd:
-  assumes "(a::'a::{field,euclidean_ring_gcd} poly) \<noteq> 0 \<or> b \<noteq>0"
-  shows "monic (gcd a b)"
-  by (metis assms lead_coeff_def poly_gcd_monic)
-
 lemma monic_irreducible_gcd: 
   "monic (f::'a::{field,euclidean_ring_gcd} poly) \<Longrightarrow> irreducible f \<Longrightarrow> gcd f u \<in> {1,f}"
   by (metis zero_neq_one gcd_dvd1 insert_iff irreducible_dvd_eq irreducible_dvd_smult 
-    irreducible_smult leading_coeff_0_iff monic_degree_0 monic_gcd)
+    irreducible_smult leading_coeff_0_iff monic_degree_0 poly_gcd_monic)
 
 lemma monic_gcd_dvd: assumes fg: "f dvd g" and mon: "monic f" and gcd: "gcd g h \<in> {1,g}"
   shows "gcd f h \<in> {1,f}"
@@ -1001,6 +996,18 @@ lemma monom_power: "(monom a b)^n = monom (a^n) (b*n)"
 
 lemma poly_const_pow: "[:a:]^b = [:a^b:]"
   by (metis Groups.mult_ac(2) monom_0 monom_power mult_zero_right)
+
+lemma degree_pderiv_le: "degree (pderiv f) \<le> degree f - 1" 
+proof (rule ccontr)
+  assume "\<not> ?thesis"
+  hence ge: "degree (pderiv f) \<ge> Suc (degree f - 1)" by auto
+  hence "pderiv f \<noteq> 0" by auto
+  hence "coeff (pderiv f) (degree (pderiv f)) \<noteq> 0" by auto
+  from this[unfolded coeff_pderiv]
+  have "coeff f (Suc (degree (pderiv f))) \<noteq> 0" by auto
+  moreover have "Suc (degree (pderiv f)) > degree f" using ge by auto
+  ultimately show False by (simp add: coeff_eq_0)
+qed
 
 
 end

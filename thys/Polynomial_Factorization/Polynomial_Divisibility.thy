@@ -23,7 +23,7 @@ imports
 begin
 
 context
-  fixes ty :: "'a :: {field,euclidean_ring_gcd} itself"
+  fixes ty :: "'a :: {field,factorial_ring_gcd} itself"
 begin
 
 abbreviation "poly_monoid \<equiv> mk_monoid::'a poly monoid" 
@@ -167,7 +167,7 @@ hide_fact (open) Divisibility.irreducible_def
 hide_const (open) irreducible
 
 context
-  assumes "SORT_CONSTRAINT('a :: {field,euclidean_ring_gcd})"
+  assumes "SORT_CONSTRAINT('a :: {field,factorial_ring_gcd})"
 begin
 
 lemma irreducible_dvd_pow: fixes p :: "'a poly" 

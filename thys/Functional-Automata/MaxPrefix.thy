@@ -70,7 +70,7 @@ apply (simp (no_asm_simp))
 apply fastforce
 done
 
-declare if_split[split add]
+declare if_split[split]
 
 lemma is_maxpref_Nil[simp]:
  "~(? us. prefix us xs & P us) ==> is_maxpref P ps xs = (ps = [])"

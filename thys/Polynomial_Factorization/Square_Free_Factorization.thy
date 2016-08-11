@@ -146,18 +146,17 @@ proof (rule square_freeI)
   from this[unfolded order_divides] have "p = 0 \<or> \<not> order x p \<le> 1" by auto
   thus False using assms unfolding rsquarefree_def' by auto
 qed (insert assms, auto simp: rsquarefree_def)
-    
-lemma square_free_coprime_pderiv: 
-  fixes f :: "'a :: {field_char_0,euclidean_ring_gcd} poly"
+   
+lemma square_free_coprime_pderiv_main: fixes f :: "'a :: {field,factorial_ring_gcd} poly"
   assumes "square_free f"
-  shows "coprime f (pderiv f)"
-proof (rule ccontr)
+  and cop: "\<not> coprime f (pderiv f)"
+  shows "\<exists> g k. f = g * k \<and> degree g \<noteq> 0 \<and> pderiv g = 0"
+proof -
   from assms have f: "f \<noteq> 0" unfolding square_free_def by auto
   let ?g = "gcd f (pderiv f)"
   def G \<equiv> ?g
   from poly_gcd_monic[of f "pderiv f"] f have mon: "monic ?g"
     unfolding lead_coeff_def by auto
-  assume cop: "\<not> coprime f (pderiv f)"
   have deg: "degree G \<noteq> 0" 
   proof (cases "degree G")
     case 0
@@ -173,23 +172,40 @@ proof (rule ccontr)
   have id1: "pderiv f = g * pderiv k + k * pderiv g" unfolding fgk pderiv_mult by simp
   from gf' obtain h where "pderiv f = g * h" unfolding dvd_def by auto
   from id1[unfolded this] have "k * pderiv g = g * (h - pderiv k)" by (simp add: field_simps)
-  hence "g dvd k * pderiv g" unfolding dvd_def by auto
-  from irreducible_dvd_mult[OF g this] g0
-  have "g dvd k" unfolding dvd_pderiv_iff by auto
-  then obtain h where k: "k = g * h" unfolding dvd_def by auto
-  with fgk have "g * g dvd f" by auto
-  with g0 have "\<not> square_free f" unfolding square_free_def using f by auto
-  with assms show False by simp
+  hence dvd: "g dvd k * pderiv g" unfolding dvd_def by auto
+  {
+    assume "g dvd k" 
+    then obtain h where k: "k = g * h" unfolding dvd_def by auto
+    with fgk have "g * g dvd f" by auto
+    with g0 have "\<not> square_free f" unfolding square_free_def using f by auto
+    with assms have False by simp
+  }
+  with irreducible_dvd_mult[OF g dvd] 
+  have "g dvd pderiv g" by auto
+  from divides_degree[OF this] degree_pderiv_le[of g] g0
+  have "pderiv g = 0" by linarith
+  with fgk g0 show ?thesis by auto
 qed
-  
+
+lemma square_free_coprime_pderiv: fixes f :: "'a :: {field_char_0,factorial_ring_gcd} poly"
+  assumes "square_free f"
+  shows "coprime f (pderiv f)"
+proof (rule ccontr)
+  assume "\<not> coprime f (pderiv f)" 
+  from square_free_coprime_pderiv_main[OF assms this]
+  obtain g k where *: "f = g * k" "degree g \<noteq> 0" "pderiv g = 0" by auto
+  hence "g dvd pderiv g" by auto
+  thus False unfolding dvd_pderiv_iff using * by auto
+qed
+   
 
 lemma square_free_iff_coprime: 
-  "square_free (f :: 'a :: {field_char_0,euclidean_ring_gcd} poly) = 
+  "square_free (f :: 'a :: {field_char_0,factorial_ring_gcd} poly) = 
      (coprime f (pderiv f))"
   using coprime_pderiv_imp_square_free[of f] square_free_coprime_pderiv[of f] by auto
 
 context
-  assumes "SORT_CONSTRAINT('a::{field,euclidean_ring_gcd})"
+  assumes "SORT_CONSTRAINT('a::{field,factorial_ring_gcd})"
 begin
 
 lemma square_free_smult: "c \<noteq> 0 \<Longrightarrow> square_free (f :: 'a poly) \<Longrightarrow> square_free (smult c f)"
@@ -1259,7 +1275,7 @@ proof -
 qed
 
 lemma monic_factorization_uniqueness:
-fixes P::"'a::{field,euclidean_ring_gcd} poly set"
+fixes P::"'a::{field,factorial_ring_gcd} poly set"
 assumes finite_P: "finite P" 
   and PQ: "\<Prod>P = \<Prod>Q" 
   and P: "P \<subseteq> {q. irreducible q \<and> monic q}"

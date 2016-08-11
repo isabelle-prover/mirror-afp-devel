@@ -449,7 +449,7 @@ proof
   fix k idx and a :: ws1s and l assume "wf0 (SUC k idx) a" "LESS k l (SUC k idx)" "\<not> find0 k l a"
   then show "wf0 idx (decr0 k l a)"
     by (induct a) (unfold wf0.simps atomic.map find0.simps,
-     (transfer, force simp: dec_def split: if_splits order.splits)+) -- \<open>slow\<close>
+     (transfer, force simp: dec_def split!: if_splits order.splits)+)
 next
   fix k and a :: ws1s and l assume "lformula0 a"
   then show "lformula0 (decr0 k l a)" by (induct a) auto
@@ -475,7 +475,7 @@ next
       case Less then show ?case by (cases k) auto
     next
       case Plus_FO then show ?case
-        by (cases k) (auto simp: max_def len_def split: option.splits nat.splits)
+        by (cases k) (auto simp: max_def len_def Let_def split: option.splits nat.splits)
     next
       case Eq_FO then show ?case by (cases k) auto
     next
@@ -491,7 +491,7 @@ next
       case Subset then show ?case by (cases k) auto
     next
       case In then show ?case by (cases k) auto
-    qed (auto simp: len_def max_def split: option.splits order.splits)
+    qed (auto simp: len_def max_def split!: option.splits order.splits)
   qed
 next
   fix idx and a :: ws1s and x assume "lformula0 a" "wf0 idx a"
@@ -745,9 +745,9 @@ next
     unfolding restrict_def Restrict_def
     by (cases k) (auto simp: Formula_Operations.satisfies_gen.simps)
 qed (auto simp: Extend_commute_unsafe downshift_def upshift_def fimage_iff Suc_le_eq len_def
-  dec_def eval_def cut_def len_downshift_helper CONS_inj dest!: CONS_surj
+  dec_def eval_def cut_def len_downshift_helper dest!: CONS_surj
   dest: fMax_ge fMax_ffilter_less fMax_boundedD fsubset_fsingletonD
-  split: order.splits if_splits)
+  split!: order.splits if_splits)
 
 (*Workaround for code generation*)
 lemma check_eqv_code[code]: "check_eqv idx r s =
