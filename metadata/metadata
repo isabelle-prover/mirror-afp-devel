@@ -941,7 +941,7 @@ notify = lammich@in.tum.de
 
 [EdmondsKarp_Maxflow]
 title = Formalizing the Edmonds-Karp Algorithm
-author = Peter Lammich <mailto:lammich@in.tum.de>, S.~Reza Sefidgar
+author = Peter Lammich <mailto:lammich@in.tum.de>, S. Reza Sefidgar
 notify = lammich@in.tum.de
 date = 2016-08-12
 topic = Computer Science/Algorithms
