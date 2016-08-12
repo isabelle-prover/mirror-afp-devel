@@ -86,7 +86,7 @@ Hauke Brinkop and
 2016-07-05:
 <a href="entries/DFS_Framework.shtml">A Framework for Verifying Depth-First Search Algorithms</a>
 <br>Author:
-<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a> and 
+<a href="http://www21.in.tum.de/~lammich/">Peter Lammich</a> and 
 René Neumann
 </td></tr>
 
@@ -1418,7 +1418,7 @@ René Thiemann
 2012-11-14:
 <a href="entries/Separation_Logic_Imperative_HOL.shtml">A Separation Logic Framework for Imperative HOL</a>
 <br>Author:
-<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a> and 
+<a href="http://www21.in.tum.de/~lammich/">Peter Lammich</a> and 
 Rene Meis
 </td></tr>
 
@@ -1586,14 +1586,14 @@ René Thiemann
 <a href="entries/Dijkstra_Shortest_Path.shtml">Dijkstra's Shortest Path Algorithm</a>
 <br>Author:
 Benedikt Nordhoff and 
-<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a>
+<a href="http://www21.in.tum.de/~lammich/">Peter Lammich</a>
 </td></tr>
 
 <tr><td class="entry">
 2012-01-30:
 <a href="entries/Refine_Monadic.shtml">Refinement for Monadic Programs</a>
 <br>Author:
-<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a>
+<a href="http://www21.in.tum.de/~lammich/">Peter Lammich</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -1782,7 +1782,7 @@ René Neumann
 <br>Author:
 Rene Meis,
 Finn Nielsen and 
-<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a>
+<a href="http://www21.in.tum.de/~lammich/">Peter Lammich</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -1791,7 +1791,7 @@ Finn Nielsen and
 <br>Author:
 Benedikt Nordhoff,
 Stefan Körner and 
-<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a>
+<a href="http://www21.in.tum.de/~lammich/">Peter Lammich</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -1954,14 +1954,14 @@ Markus Reiter
 2009-11-25:
 <a href="entries/Tree-Automata.shtml">Tree Automata</a>
 <br>Author:
-<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a>
+<a href="http://www21.in.tum.de/~lammich/">Peter Lammich</a>
 </td></tr>
 
 <tr><td class="entry">
 2009-11-25:
 <a href="entries/Collections.shtml">Collections Framework</a>
 <br>Author:
-<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a>
+<a href="http://www21.in.tum.de/~lammich/">Peter Lammich</a>
 </td></tr>
 
 <tr><td class="entry">
@@ -2159,7 +2159,7 @@ Norbert Schirmer
 2007-12-14:
 <a href="entries/Program-Conflict-Analysis.shtml">Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</a>
 <br>Author:
-<a href="http://cs.uni-muenster.de/sev/staff/lammich/">Peter Lammich</a> and 
+<a href="http://www21.in.tum.de/~lammich/">Peter Lammich</a> and 
 <a href="http://cs.uni-muenster.de/u/mmo/">Markus Müller-Olm</a>
 </td></tr>
 
