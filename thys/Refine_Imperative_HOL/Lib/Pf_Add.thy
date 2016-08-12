@@ -1,5 +1,5 @@
 theory Pf_Add
-imports "../Automatic_Refinement/Lib/Misc" "~~/src/HOL/Library/Monad_Syntax"
+imports "../../Automatic_Refinement/Lib/Misc" "~~/src/HOL/Library/Monad_Syntax"
 begin
 
 lemma fun_ordI:
