@@ -53,6 +53,14 @@ is available <a href="citing.shtml">[here]</a>.
 	</tr>
 
 <tr><td class="entry">
+2016-08-12:
+<a href="entries/EdmondsKarp_Maxflow.shtml">Formalizing the Edmonds-Karp Algorithm</a>
+<br>Author:
+Peter Lammich and 
+S.~Reza Sefidgar
+</td></tr>
+
+<tr><td class="entry">
 2016-08-08:
 <a href="entries/Refine_Imperative_HOL.shtml">The Imperative Refinement Framework</a>
 <br>Author:

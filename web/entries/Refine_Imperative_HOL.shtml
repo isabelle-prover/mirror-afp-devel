@@ -91,6 +91,10 @@ imperative data structures. CPP 2016: 27--36
 
 
 
+    <tr><td class="datahead">Used by:</td>
+        <td class="data"><a href="EdmondsKarp_Maxflow.shtml">EdmondsKarp_Maxflow</a></td></tr>
+
+
 <!--#set var="status" value="-STATUS-" -->
 <!--#set var="version" value="-VERSION-" -->
 <!--#set var="afp-version" value="-AFPVERSION-" -->
