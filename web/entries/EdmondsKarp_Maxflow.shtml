@@ -36,7 +36,7 @@ the
         <td class="data" width="80%">Formalizing the Edmonds-Karp Algorithm</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data">Peter Lammich (lammich /at/ in /dot/ tum /dot/ de) and S.~Reza Sefidgar</td></tr>
+        <td class="data">Peter Lammich (lammich /at/ in /dot/ tum /dot/ de) and S. Reza Sefidgar</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2016-08-12</td></tr>
@@ -59,7 +59,7 @@ This entry is based on our ITP-2016 paper with the same title.
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{EdmondsKarp_Maxflow-AFP,
-  author  = {Peter Lammich and S.~Reza Sefidgar},
+  author  = {Peter Lammich and S. Reza Sefidgar},
   title   = {Formalizing the Edmonds-Karp Algorithm},
   journal = {Archive of Formal Proofs},
   month   = aug,
