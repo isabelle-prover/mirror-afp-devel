@@ -130,6 +130,50 @@ var myChart = new Chart(ctx, {
 });
 </script>
 
+<h4>Size of articles:</h4>
+<div style="width: 800px" class="chart">
+<canvas id="LocArticles" width="800" height="400"></canvas>
+</div>
+<script>
+var ctx = document.getElementById("LocArticles");
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: years_loc_articles,
+        datasets: [{
+            label: 'loc per article',
+            data: loc_articles,
+            backgroundColor: "rgba(101, 99, 136, 1)"
+            }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+            xAxes: [{
+                categoryPercentage: 1,
+                barPercentage: 0.9,
+                ticks: {
+                    autoSkip: false
+                }
+                }],
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        },
+        tooltips: {
+            callbacks: {
+                title: function(tooltipItem, data) {
+                       return all_articles[tooltipItem[0].index];
+                       }
+            }
+        }
+     }
+});
+</script>
+
     </td></tr>
 
   </tbody>

@@ -397,10 +397,31 @@ if __name__ == "__main__":
 		articles_years[y] += articles_years[y - 1]
 		loc_years[y] += loc_years[y - 1]
 		author_years_series[y] += author_years_series[y - 1]
+	most_used = sorted([(a.name, len(a.used)) for _k, a in afp_dict.items()],
+	                     key = lambda (x,y): (-y, x))
+	most_used10 = most_used[:10]
+	i = 10
+	while most_used10[-1][1] == most_used[i][1]:
+		most_used10.append(most_used[i])
+		i += 1
 	STAT_FIGURES['articles_years'] = articles_years
 	STAT_FIGURES['loc_years'] = loc_years
 	STAT_FIGURES['author_years'] = author_years
 	STAT_FIGURES['author_years_series'] = author_years_series
+	STAT_FIGURES['most_used10'] = most_used10
+	all_articles = sorted(afp_dict, key = lambda x: afp_dict[x].publish_date)
+	years = [2004]
+	# FIXME: All of it
+	for i in range(1, len(all_articles)):
+		if (afp_dict[all_articles[i]].publish_date.year !=
+		  afp_dict[all_articles[i - 1]].publish_date.year):
+			years.append(afp_dict[all_articles[i]].publish_date.year)
+		else:
+			years.append("")
+	years += ""
+	STAT_FIGURES['all_articles'] = all_articles
+	STAT_FIGURES['years_loc_articles'] = years
+	STAT_FIGURES['loc_articles'] = [afp_dict[a].loc for a in all_articles]
 
 	# perform check
 	if options.do_check:

@@ -267,13 +267,30 @@ html_statistics_text_wrapper = u"""
 <tr><td>Number of lemmas:</td><td class="statsnumber">~{num_lemmas:,d}</td></tr>
 <tr><td>Lines of Code:</td><td class="statsnumber">~{loc:,d}</td></tr>
 </table>
+<h4>Most used AFP articles:</h4>
+<table id="most_used">
+<tr>
+<th></th><th>Name</th><th>Used by ? articles</th>
+</tr>
+{most_used:s}
+</table>
 <script>
 var years = {years:s};
 var no_articles = {no_articles:s};
 var no_loc = {no_loc:s};
 var no_authors = {no_authors:s};
 var no_authors_series = {no_authors_series:s};
+var all_articles = {all_articles:s};
+var years_loc_articles = {years_loc_articles:s};
+var loc_articles = {loc_articles:s};
 </script>
+"""
+
+html_most_used_table_row = u"""
+<tr><td>{pos:s}</td>
+    <td><a href="entries/{name:s}.shtml">{name:s}</a></td>
+    <td>{num:d}</td>
+</tr>
 """
 
 ### options
@@ -286,7 +303,6 @@ class Options(object):
 		self.do_check = False
 		self.metadata_dir = None
 		self.status_file = None
-	
 	def is_devel(self):
 		return self.status_file is not None
 

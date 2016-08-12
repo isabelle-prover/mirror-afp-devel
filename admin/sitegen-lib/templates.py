@@ -296,6 +296,15 @@ def generate_download(entries):
 ### statistics
 
 def generate_statistics(entries):
+	i = 1
+	num_of_imports = -1
+	most_used = ""
+	# Put articles with same number of imports on same position
+	for (n, l) in STAT_FIGURES['most_used10']:
+		pos = (str(i) + "." if num_of_imports != l else "")
+		i += (1 if num_of_imports != l else 0)
+		num_of_imports = l
+		most_used += html_most_used_table_row.format(pos = pos, name = n, num = l)
 	return html_statistics_text_wrapper.format(
 			loc = int(round(STAT_FIGURES['loc'], -2)),
 			num_articles = len(entries),
@@ -322,7 +331,11 @@ def generate_statistics(entries):
 			                    + ", ".join([str(STAT_FIGURES['author_years_series'][y])
 			                                 for y
 			                                 in sorted(STAT_FIGURES['author_years_series'])])
-			                    + "]"
+			                    + "]",
+			most_used = most_used,
+			all_articles = "['" + "','".join(STAT_FIGURES['all_articles']) + "']",
+			loc_articles = "[" + ",".join(map(str, STAT_FIGURES['loc_articles'])) + "]",
+			years_loc_articles = "[" + ",".join(map(str, STAT_FIGURES['years_loc_articles'])) + "]"
 			)
 
 

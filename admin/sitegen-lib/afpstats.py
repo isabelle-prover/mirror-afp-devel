@@ -60,7 +60,7 @@ class afp_entry:
         for name, _address in entry_dict['author']:
             self.authors.add(afp_dict.authors[name])
             afp_dict.authors[name].articles.add(self)
-        self.publish_date = datetime.strptime(entry_dict['date'], "%Y-%M-%d")
+        self.publish_date = datetime.strptime(entry_dict['date'], "%Y-%m-%d")
         self.thys = set()
         for root, _dirnames, filenames in os.walk(self.path):
             for f in filenames:
