@@ -398,7 +398,7 @@ if __name__ == "__main__":
 		loc_years[y] += loc_years[y - 1]
 		author_years_series[y] += author_years_series[y - 1]
 	most_used = sorted([(a.name, len(a.used)) for _k, a in afp_dict.items()],
-	                     key = lambda (x,y): (-y, x))
+	                     key = lambda x: (-x[1], x[0]))
 	most_used10 = most_used[:10]
 	i = 10
 	while most_used10[-1][1] == most_used[i][1]:
