@@ -34,7 +34,7 @@ begin
 subsection {*
 Polynomials represented as trees
 *}
-datatype ('v,'a)tpoly = PVar 'v | PNum 'a | PSum "('v,'a)tpoly list" | PMult "('v,'a)tpoly list"
+datatype (vars_tpoly: 'v, nums_tpoly: 'a)tpoly = PVar 'v | PNum 'a | PSum "('v,'a)tpoly list" | PMult "('v,'a)tpoly list"
 
 type_synonym ('v,'a)assign = "'v \<Rightarrow> 'a"
 
