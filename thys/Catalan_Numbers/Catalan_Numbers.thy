@@ -11,6 +11,7 @@ section \<open>Catalan Numbers\<close>
 theory Catalan_Numbers
 imports
   Complex_Main
+  Catalan_Auxiliary_Integral
   "~~/src/HOL/Analysis/Analysis"
   "~~/src/HOL/Library/Formal_Power_Series"
   "../Landau_Symbols/Landau_Symbols"
@@ -241,6 +242,116 @@ proof -
   also have "\<dots> div (n+2) = catalan (Suc n)" by (simp del: mult_Suc mult_Suc_right)
   finally show ?thesis ..
 qed
+
+
+
+subsection \<open>Integral formula\<close>
+
+text \<open>
+  The recursive formula we have just proven allows us to derive an integral formula for 
+  the Catalan numbers. (Proof cf. ``An Introduction to Catalan Numbers'' by Steven Roman)
+\<close>
+
+context
+begin
+
+private definition I :: "nat \<Rightarrow> real" where
+  "I n = integral {0..4} (\<lambda>x. x powr (of_nat n - 1/2) * sqrt (4 - x))"
+
+private lemma has_integral_I0: "((\<lambda>x. x powr (-(1/2)) * sqrt (4 - x)) has_integral 2*pi) {0..4}"
+proof -
+  have "\<forall>x\<in>{0..4}-{}. x powr (-(1/2)) * sqrt (4 - x) = sqrt ((4 - x) / x)"
+    by (auto simp: powr_minus field_simps powr_half_sqrt real_sqrt_divide)
+  thus ?thesis by (rule has_integral_spike[OF negligible_empty _ catalan_aux_integral])
+qed
+
+private lemma integrable_I: 
+  "(\<lambda>x. x powr (of_nat n - 1/2) * sqrt (4 - x)) integrable_on {0..4}"
+proof (cases "n = 0")
+  case True
+  with has_integral_I0 show ?thesis by (simp add: has_integral_integrable)
+next
+  case False
+  thus ?thesis by (intro integrable_continuous_real continuous_on_mult continuous_on_powr')
+                  (auto intro!: continuous_intros)
+qed
+
+private lemma I_Suc: "I (Suc n) = real (2 * (2*n + 1)) / real (n + 2) * I n"
+proof -
+  define u' u v v' 
+    where "u' = (\<lambda>x. sqrt (4 - x :: real))" 
+      and "u = (\<lambda>x. -2/3 * (4 - x) powr (3/2 :: real))"
+      and "v = (\<lambda>x. x powr (real n + 1/2))" 
+      and "v' = (\<lambda>x. (real n + 1/2) * x powr (real n - 1/2))"
+  define c where "c = -2/3 * (real n + 1/2)"
+  define i where "i = (\<lambda>n x. x powr (real n - 1/2) * sqrt (4 - x) :: real)"
+
+  have "I (Suc n) = integral {0..4} (\<lambda>x. u' x * v x)"
+    unfolding I_def by (simp add: algebra_simps u'_def v_def)
+  have "((\<lambda>x. u' x * v x) has_integral - c * (4 * I n - I (Suc n))) {0..4}"
+  proof (rule integration_by_parts_interior[OF bounded_bilinear_mult])
+    show "continuous_on {0..4} u" unfolding u_def
+      by (intro continuous_on_powr' continuous_on_mult) (auto intro!: continuous_intros)
+    show "continuous_on {0..4} v" unfolding v_def
+      by (intro continuous_on_powr' continuous_on_mult) (auto intro!: continuous_intros)
+    fix x :: real assume x: "x \<in> {0<..<4}"
+    from x show "(u has_vector_derivative u' x) (at x)"
+      unfolding has_field_derivative_iff_has_vector_derivative [symmetric] u_def u'_def
+      by (auto intro!: derivative_eq_intros simp: field_simps powr_half_sqrt)
+    from x show "(v has_vector_derivative v' x) (at x)"
+      unfolding has_field_derivative_iff_has_vector_derivative [symmetric] v_def v'_def
+      by (auto intro!: derivative_eq_intros simp: field_simps)
+  next
+    show "((\<lambda>x. u x * v' x) has_integral u 4 * v 4 - u 0 * v 0 - - c * (4 * I n - I (Suc n))) {0..4}"
+    proof (rule has_integral_spike; (intro ballI)?)
+      fix x :: real assume x: "x \<in> {0..4}-{0}"
+      have "u x * v' x = c * ((4 - x) powr (1 + 1/2) * x powr (real n - 1/2))"
+        by (simp add: u_def v'_def c_def)
+      also from x have "(4 - x) powr (1 + 1/2) = (4 - x) * sqrt (4 - x)"
+        by (subst powr_add) (simp_all add: powr_half_sqrt)
+      also have "\<dots> * x powr (real n - 1/2) = 4 * sqrt (4 - x) * x powr (real n - 1/2) - 
+                     sqrt (4 - x) * x powr (real n - 1/2 + 1)"
+        by (subst powr_add) (insert x, simp add: field_simps)
+      also have "real n - 1/2 + 1 = real (Suc n) - 1/2" by simp
+      finally show "u x * v' x = c * (4 * i n x - i (Suc n) x)" by (simp add: i_def)
+    next
+      have "((\<lambda>x. c * (4 * i n x - i (Suc n) x)) has_integral c * (4 * I n - I (Suc n))) {0..4}"
+        unfolding i_def I_def 
+        by (intro has_integral_mult_right has_integral_sub integrable_integral integrable_I)
+      thus "((\<lambda>x. c * (4 * i n x - i (Suc n) x)) has_integral  u 4 * v 4 - u 0 * v 0 - -
+               c * (4 * I n - I (Suc n))) {0..4}" by (simp add: u_def v_def)
+    qed simp_all
+  qed simp_all
+  also have "(\<lambda>x. u' x * v x) = i (Suc n)" 
+    by (rule ext) (simp add: u'_def v_def i_def algebra_simps)
+  finally have "I (Suc n) = - c * (4 * I n - I (Suc n))" unfolding I_def i_def by blast
+  hence "(1 - c) * I (Suc n) = -4 * c * I n" by algebra
+  hence "I (Suc n) = (-4 * c) / (1 - c) * I n" by (simp add: field_simps c_def)
+  also have "(-4 * c) / (1 - c) = real (2*(2*n + 1)) / real (n + 2)" 
+    by (simp add: c_def field_simps)
+  finally show ?thesis .
+qed
+
+private lemma catalan_eq_I: "real (catalan n) = I n / (2 * pi)"
+proof (induction n)
+  case 0
+  thus ?case using has_integral_I0 by (simp add: I_def integral_unique)
+next
+  case (Suc n)
+  show ?case by (simp add: of_nat_catalan_Suc' Suc.IH I_Suc)
+qed
+
+theorem catalan_integral_form:
+  "((\<lambda>x. x powr (real n - 1 / 2) * sqrt (4 - x) / (2*pi)) 
+       has_integral real (catalan n)) {0..4}"
+proof -
+  have "((\<lambda>x. x powr (real n - 1 / 2) * sqrt (4 - x) * inverse (2*pi)) has_integral 
+           I n * inverse (2 * pi)) {0..4}" unfolding I_def
+    by (intro has_integral_mult_left integrable_integral integrable_I)
+  thus ?thesis by (simp add: catalan_eq_I field_simps)
+qed
+
+end
 
 
 subsection \<open>Asymptotics\<close>
