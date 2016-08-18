@@ -941,7 +941,7 @@ notify = lammich@in.tum.de
 
 [EdmondsKarp_Maxflow]
 title = Formalizing the Edmonds-Karp Algorithm
-author = Peter Lammich <mailto:lammich@in.tum.de>, S. Reza Sefidgar
+author = Peter Lammich <mailto:lammich@in.tum.de>, S. Reza Sefidgar<>
 notify = lammich@in.tum.de
 date = 2016-08-12
 topic = Computer Science/Algorithms
@@ -4459,4 +4459,26 @@ abstract =
   In this formalization, we use ideas from John Harrison's HOL Light
   formalization and the proof sketch on the Wikipedia entry of Ptolemy's Theorem.
   This theorem is the 95th theorem of the Top 100 Theorems list.
+
+[InfPathElimination]
+title = Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths
+author = Romain Aissat<>, Frederic Voisin<>, Burkhart Wolff <mailto: wolff@lri.fr>
+notify = wolff@lri.fr
+date = 2016-08-18
+topic = Computer Science/Programming Languages/Static Analysis
+abstract = 
+  TRACER is a tool for verifying safety properties of sequential C
+  programs. TRACER attempts at building a finite symbolic execution
+  graph which over-approximates the set of all concrete reachable states
+  and the set of feasible paths.  We present an abstract framework for
+  TRACER and similar CEGAR-like systems. The framework provides 1) a
+  graph- transformation based method for reducing the feasible paths in
+  control-flow graphs, 2) a model for symbolic execution, subsumption,
+  predicate abstraction and invariant generation. In this framework we
+  formally prove two key properties: correct construction of the
+  symbolic states and preservation of feasible paths. The framework
+  focuses on core operations, leaving to concrete prototypes to “fit in”
+  heuristics for combining them.  The accompanying paper (published in
+  ITP 2016) can be found at
+  https://www.lri.fr/∼wolff/papers/conf/2016-itp-InfPathsNSE.pdf.
 

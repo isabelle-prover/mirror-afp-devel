@@ -240,6 +240,7 @@
 <a href="entries/Shivers-CFA.shtml">Shivers-CFA</a> &nbsp;
 <a href="entries/Slicing.shtml">Slicing</a> &nbsp;
 <a href="entries/HRB-Slicing.shtml">HRB-Slicing</a> &nbsp;
+<a href="entries/InfPathElimination.shtml">InfPathElimination</a> &nbsp;
 
 <strong>Transformations:</strong>&nbsp;<a href="entries/Call_Arity.shtml">Call_Arity</a> &nbsp;
 <a href="entries/Refine_Imperative_HOL.shtml">Refine_Imperative_HOL</a> &nbsp;
