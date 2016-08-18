@@ -1,10 +1,14 @@
+section \<open>Catalan numbers\<close>
+
 theory Catalan_Auxiliary_Integral
 imports "~~/src/HOL/Analysis/Analysis"
 begin
 
+subsection \<open>Auxiliary integral\<close>
+
 text \<open>
-  We will now prove the integral $$\int\limits_0^4 \sqrt{\frac{4-x}{x}}\,\textrm{d}x = 2\pi$$
-  which is occurs in the proof for the integral formula for the Catalan numbers.
+  First, we will prove the integral $$\int\limits_0^4 \sqrt{\frac{4-x}{x}}\,\textrm{d}x = 2\pi$$
+  which occurs in the proof for the integral formula for the Catalan numbers.
 \<close>
 
 context

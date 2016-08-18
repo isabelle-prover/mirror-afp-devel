@@ -9,3 +9,4 @@ session Catalan_Numbers (AFP) = "HOL-Analysis" +
     Catalan_Numbers
   document_files
     "root.tex"
+    "root.bib"

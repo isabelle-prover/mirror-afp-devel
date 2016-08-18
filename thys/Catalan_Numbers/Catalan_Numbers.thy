@@ -7,7 +7,6 @@
   code generation and a proof of their asymptotic growth.
 *)
 
-section \<open>Catalan Numbers\<close>
 theory Catalan_Numbers
 imports
   Complex_Main
@@ -17,7 +16,7 @@ imports
   "../Landau_Symbols/Landau_Symbols"
 begin
 
-subsection \<open>Auxiliary lemmas\<close>
+subsection \<open> Other auxiliary lemmas\<close>
 
 lemma mult_eq_imp_eq_div:
   assumes "a * b = c" "(a :: 'a :: semiring_div) \<noteq> 0"
@@ -249,7 +248,7 @@ subsection \<open>Integral formula\<close>
 
 text \<open>
   The recursive formula we have just proven allows us to derive an integral formula for 
-  the Catalan numbers. (Proof cf. ``An Introduction to Catalan Numbers'' by Steven Roman)
+  the Catalan numbers. The proof was adapted from a textbook proof by Steven Roman.~\cite{catalan}
 \<close>
 
 context
