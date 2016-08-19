@@ -190,7 +190,7 @@ by (rule cong[OF cong[OF refl[of "image_mset"]] refl]) (auto split: accent.split
 lemma inv_greek_mono:
   assumes "trans r" and "(s, t) \<in> greek_less r"
   shows "(inv_greek s, inv_greek t) \<in> greek_less r"
-using assms
+using assms(2)
 proof (induct "length s + length t" arbitrary: s t rule: less_induct)
   note * = trans_lex_prod[OF trans_letter_less[OF `trans r`] trans_greek_less[of r]]
   case (less s t)
@@ -198,9 +198,9 @@ proof (induct "length s + length t" arbitrary: s t rule: less_induct)
   unfolding inv_msog_def
   proof (induct rule: mult_of_image_mset[OF * *])
     case (1 x y) thus ?case
-    by (auto intro: less(1)[OF _ `trans r`] split: prod.splits dest!: ms_of_greek_shorter)
+    by (auto intro: less(1) split: prod.splits dest!: ms_of_greek_shorter)
   next
-    case 2 thus ?case using less(3) by (subst(asm) greek_less_unfold) simp
+    case 2 thus ?case using less(2) by (subst(asm) greek_less_unfold) simp
   qed
   thus ?case by (subst greek_less_unfold) (auto simp: ms_of_greek_inv_greek)
 qed
@@ -335,12 +335,12 @@ qed
 subsection \<open>Basic Comparisons\<close>
 
 lemma pairwise_imp_mult:
-  assumes "trans r" and  "N \<noteq> {#}" and "\<forall>x \<in> set_mset M. \<exists>y \<in> set_mset N. (x, y) \<in> r"
+  assumes "N \<noteq> {#}" and "\<forall>x \<in> set_mset M. \<exists>y \<in> set_mset N. (x, y) \<in> r"
   shows "(M, N) \<in> mult r"
 using assms one_step_implies_mult[of _ _ _ "{#}"] by auto
 
 lemma singleton_greek_less:
-  assumes "trans r" and as: "snd ` set as \<subseteq> under r b"
+  assumes as: "snd ` set as \<subseteq> under r b"
   shows "(as, [(a,b)]) \<in> greek_less r"
 proof -
   {
@@ -351,13 +351,12 @@ proof -
   }
   moreover have "ms_of_greek [(a,b)] = {# ((a,b),[]) #}"
   by (auto simp: ms_of_greek_def adj_msog_def split: accent.splits)
-  ultimately show ?thesis using trans_letter_less[OF `trans r`]
+  ultimately show ?thesis
   by (subst greek_less_unfold) (auto intro!: pairwise_imp_mult)
 qed
 
 lemma peak_greek_less:
-  assumes "trans r"
-  and as: "snd ` set as \<subseteq> under r a" and b': "b' \<in> {[(Grave,b)],[]}"
+  assumes as: "snd ` set as \<subseteq> under r a" and b': "b' \<in> {[(Grave,b)],[]}"
   and cs: "snd ` set cs \<subseteq> under r a \<union> under r b" and a': "a' \<in> {[(Acute,a)],[]}"
   and bs: "snd ` set bs \<subseteq> under r b"
   shows "(as @ b' @ cs @ a' @ bs, [(Acute,a),(Grave,b)]) \<in> greek_less r"
@@ -365,9 +364,6 @@ proof -
   let ?A = "(Acute,a)" and ?B = "(Grave,b)"
   have "(ms_of_greek (as @ b' @ cs @ a' @ bs), ms_of_greek [?A,?B]) \<in> mult (letter_less r <*lex*> greek_less r)"
   proof (intro pairwise_imp_mult)
-    show "trans (letter_less r <*lex*> greek_less r)"
-    using `trans r` trans_letter_less by auto
-  next
     (* we distinguish 5 cases depending on where in xs an element e originates *)
     {
       fix e assume "e \<in> set_mset (ms_of_greek as)"
@@ -377,7 +373,7 @@ proof -
     }
     moreover {
       fix e assume "e \<in> set_mset (ms_of_greek b')"
-      with b' singleton_greek_less[OF `trans r` as] ms_of_greek_elem[of _ _ b']
+      with b' singleton_greek_less[OF as] ms_of_greek_elem[of _ _ b']
       have "(adj_msog as (cs @ a' @ bs) e, (?B,[?A])) \<in> letter_less r <*lex*> greek_less r"
       by (cases e) (fastforce simp: adj_msog_def ms_of_greek_def)
     }
@@ -390,7 +386,7 @@ proof -
     }
     moreover {
       fix e assume "e \<in> set_mset (ms_of_greek a')"
-      with a' singleton_greek_less[OF `trans r` bs] ms_of_greek_elem[of _ _ a']
+      with a' singleton_greek_less[OF bs] ms_of_greek_elem[of _ _ a']
       have "(adj_msog (as @ b' @ cs) bs e, (?A,[?B])) \<in> letter_less r <*lex*> greek_less r"
       by (cases e) (fastforce simp: adj_msog_def ms_of_greek_def)
     }
@@ -410,7 +406,7 @@ proof -
 qed
 
 lemma rcliff_greek_less1:
-  assumes "trans r"
+  assumes "trans r" (* unused assumption kept for symmetry with lcliff_greek_less1 *)
   and as: "snd ` set as \<subseteq> under r a \<inter> under r b" and b': "b' \<in> {[(Grave,b)],[]}"
   and cs: "snd ` set cs \<subseteq> under r b" and a': "a' = [(Macron,a)]"
   and bs: "snd ` set bs \<subseteq> under r b"
@@ -421,8 +417,6 @@ proof -
   by (simp_all add: ms_of_greek_def adj_msog_def)
   then have **: "ms_of_greek [(Macron, a), (Grave, b)] - {#((Macron, a), [])#} \<noteq> {#}"
   by (auto)
-  have ***: "trans (letter_less r <*lex*> greek_less r)"
-  using `trans r` trans_letter_less by auto
   (* we distinguish 5 cases depending on where in xs an element e originates *)
   {
     fix e assume "e \<in> set_mset (ms_of_greek as)"
@@ -432,7 +426,7 @@ proof -
   }
   moreover {
     fix e assume "e \<in> set_mset (ms_of_greek b')"
-    with b' singleton_greek_less[OF `trans r`] as ms_of_greek_elem[of _ _ b']
+    with b' singleton_greek_less as ms_of_greek_elem[of _ _ b']
     have "(adj_msog as (cs @ a' @ bs) e, (?B,[?A])) \<in> letter_less r <*lex*> greek_less r"
     by (cases e) (fastforce simp: adj_msog_def ms_of_greek_def)
   }
@@ -461,7 +455,7 @@ proof -
 qed
 
 lemma rcliff_greek_less2:
-  assumes "trans r"
+  assumes "trans r" (* unused assumption kept for symmetry with lcliff_greek_less2 *)
   and as: "snd ` set as \<subseteq> under r a" and b': "b' \<in> {[(Grave,b)],[]}"
   and cs: "snd ` set cs \<subseteq> under r a \<union> under r b"
   shows "(as @ b' @ cs, [(Macron,a),(Grave,b)]) \<in> greek_less r"
@@ -469,9 +463,6 @@ proof -
   let ?A = "(Macron,a)" and ?B = "(Grave,b)"
   have "(ms_of_greek (as @ b' @ cs), ms_of_greek [?A,?B]) \<in> mult (letter_less r <*lex*> greek_less r)"
   proof (intro pairwise_imp_mult)
-    show "trans (letter_less r <*lex*> greek_less r)"
-    using `trans r` trans_letter_less by auto
-  next
     (* we distinguish 3 cases depending on where in xs an element e originates *)
     {
       fix e assume "e \<in> set_mset (ms_of_greek as)"
@@ -481,7 +472,7 @@ proof -
     }
     moreover {
       fix e assume "e \<in> set_mset (ms_of_greek b')"
-      with b' singleton_greek_less[OF `trans r` as] ms_of_greek_elem[of _ _ b']
+      with b' singleton_greek_less[OF as] ms_of_greek_elem[of _ _ b']
       have "(adj_msog as (cs) e, (?B,[?A])) \<in> letter_less r <*lex*> greek_less r"
       by (cases e) (fastforce simp: adj_msog_def ms_of_greek_def)
     }
@@ -713,7 +704,7 @@ proof (intro subrelI)
           and a: "(s',t') \<in> L a" and b: "(s',u') \<in> R b" and q: "(u',v) \<in> lconv q"
         obtain js where lp: "lpeak r a b js" and js: "(t',u') \<in> lconv js" using pk[OF a b] by auto
         from lp have "(js, [(Acute,a),(Grave,b)]) \<in> greek_less r"
-        unfolding lpeak_def using peak_greek_less[OF `trans r`,of _ a _ b] by fastforce
+        unfolding lpeak_def using peak_greek_less[of _ r a _ b] by fastforce
         then have "(p @ js @ q, xs) \<in> greek_less r" unfolding xs
         by (intro greek_less_app_mono1 greek_less_app_mono2 `trans r`) auto
         moreover have "(u, v) \<in> lconv (p @ js @ q)"
