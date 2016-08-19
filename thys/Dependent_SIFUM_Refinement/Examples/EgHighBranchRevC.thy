@@ -111,9 +111,8 @@ definition
 where
   "\<C> \<equiv> \<Union>x. \<C>_vars x"
 
-sublocale sifum_example \<subseteq>  sifum_security dma \<C>_vars \<C> Stop eval\<^sub>w undefined
+sublocale sifum_example \<subseteq>  sifum_security dma \<C>_vars \<C> eval\<^sub>w undefined
   apply(unfold_locales)
-        apply(simp add: stop_no_eval)
        apply(blast intro: eval_det)
       apply(rule Var_finite)
      apply(auto simp: \<C>_vars_def dma_def \<C>_def split: if_splits)[3]
@@ -168,9 +167,8 @@ definition
 where
   "\<C>\<^sub>C \<equiv> \<Union>x. \<C>_vars x"
 
-sublocale sifum_example\<^sub>C \<subseteq>  sifum_security dma\<^sub>C \<C>_vars \<C>\<^sub>C Stop eval\<^sub>w undefined
+sublocale sifum_example\<^sub>C \<subseteq>  sifum_security dma\<^sub>C \<C>_vars \<C>\<^sub>C eval\<^sub>w undefined
   apply(unfold_locales)
-        apply(simp add: stop_no_eval)
        apply(blast intro: eval_det)
       apply(rule Var_finite)
      apply(auto simp: \<C>_vars_def dma\<^sub>C_def \<C>_def split: if_splits)[3]
@@ -816,7 +814,7 @@ where
   "var\<^sub>C_of z_var = z_mem"
 
 sublocale sifum_refinement_high_branch \<subseteq>
-  sifum_refinement dma dma\<^sub>C \<C>_vars \<C>_vars \<C> \<C>\<^sub>C Stop Stop A.eval\<^sub>w C.eval\<^sub>w undefined var\<^sub>C_of
+  sifum_refinement dma dma\<^sub>C \<C>_vars \<C>_vars \<C> \<C>\<^sub>C A.eval\<^sub>w C.eval\<^sub>w undefined var\<^sub>C_of
   apply(unfold_locales)
      apply(rule inj_onI, simp)
      apply(case_tac x)

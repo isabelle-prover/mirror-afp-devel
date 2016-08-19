@@ -16,9 +16,8 @@ where
   "Eg2_var\<^sub>C_of_Eg1 low_var = low_var\<^sub>C" |
   "Eg2_var\<^sub>C_of_Eg1 temp = temp\<^sub>C"
 
-sublocale sifum_refinement_eg1_eg2 \<subseteq> sifum_refinement dma dma\<^sub>C \<C>_vars \<C>_vars\<^sub>C \<C> \<C>\<^sub>C Stop Stop A.eval\<^sub>w C.eval\<^sub>w undefined Eg2_var\<^sub>C_of_Eg1
+sublocale sifum_refinement_eg1_eg2 \<subseteq> sifum_refinement dma dma\<^sub>C \<C>_vars \<C>_vars\<^sub>C \<C> \<C>\<^sub>C A.eval\<^sub>w C.eval\<^sub>w undefined Eg2_var\<^sub>C_of_Eg1
   apply(unfold_locales)
-            apply(rule C.stop_no_eval)
            apply(erule C.eval_det, simp)
           apply(rule C.Var_finite)
          apply(simp add:\<C>_vars\<^sub>C_def split:if_splits)

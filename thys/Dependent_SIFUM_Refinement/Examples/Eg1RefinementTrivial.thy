@@ -5,7 +5,7 @@ imports Eg1
 begin
 
 sublocale sifum_example \<subseteq>
-    sifum_refinement_same_mem dma \<C>_vars \<C> Stop Stop eval\<^sub>w eval\<^sub>w
+    sifum_refinement_same_mem dma \<C>_vars \<C> eval\<^sub>w eval\<^sub>w
       by(unfold_locales)
 
 context sifum_example begin

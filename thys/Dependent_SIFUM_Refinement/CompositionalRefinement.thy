@@ -26,16 +26,14 @@ text {*
   necessary conditions for preservation of local security simpler.
 *}
 locale sifum_refinement = 
-  abs: sifum_security dma\<^sub>A \<C>_vars\<^sub>A \<C>\<^sub>A stop\<^sub>A eval\<^sub>A some_val +
-  conc: sifum_security dma\<^sub>C \<C>_vars\<^sub>C \<C>\<^sub>C stop\<^sub>C eval\<^sub>C some_val 
+  abs: sifum_security dma\<^sub>A \<C>_vars\<^sub>A \<C>\<^sub>A eval\<^sub>A some_val +
+  conc: sifum_security dma\<^sub>C \<C>_vars\<^sub>C \<C>\<^sub>C eval\<^sub>C some_val
   for dma\<^sub>A :: "('Var\<^sub>A,'Val) Mem \<Rightarrow> 'Var\<^sub>A \<Rightarrow> Sec"
   and dma\<^sub>C :: "('Var\<^sub>C,'Val) Mem \<Rightarrow> 'Var\<^sub>C \<Rightarrow> Sec"
   and \<C>_vars\<^sub>A :: "'Var\<^sub>A \<Rightarrow> 'Var\<^sub>A set"
   and \<C>_vars\<^sub>C :: "'Var\<^sub>C \<Rightarrow> 'Var\<^sub>C set"
   and \<C>\<^sub>A :: "'Var\<^sub>A set"
   and \<C>\<^sub>C :: "'Var\<^sub>C set"
-  and stop\<^sub>A :: "'Com\<^sub>A"
-  and stop\<^sub>C :: "'Com\<^sub>C"
   and eval\<^sub>A :: "('Com\<^sub>A, 'Var\<^sub>A, 'Val) LocalConf rel"
   and eval\<^sub>C :: "('Com\<^sub>C, 'Var\<^sub>C, 'Val) LocalConf rel"
   and some_val :: "'Val" +
@@ -1174,19 +1172,17 @@ text {*
   to work with for initial experimentation.
 *}
 locale sifum_refinement_same_mem = 
-  abs: sifum_security dma \<C>_vars \<C> stop\<^sub>A eval\<^sub>A some_val +
-  conc: sifum_security dma \<C>_vars \<C> stop\<^sub>C eval\<^sub>C some_val
+  abs: sifum_security dma \<C>_vars \<C> eval\<^sub>A some_val +
+  conc: sifum_security dma \<C>_vars \<C> eval\<^sub>C some_val
   for dma :: "('Var,'Val) Mem \<Rightarrow> 'Var \<Rightarrow> Sec"
   and \<C>_vars :: "'Var \<Rightarrow> 'Var set"
   and \<C> :: "'Var set"
-  and stop\<^sub>A :: "'Com\<^sub>A"
-  and stop\<^sub>C :: "'Com\<^sub>C"
   and eval\<^sub>A :: "('Com\<^sub>A, 'Var, 'Val) LocalConf rel"
   and eval\<^sub>C :: "('Com\<^sub>C, 'Var, 'Val) LocalConf rel"
   and some_val :: "'Val" 
 
 sublocale sifum_refinement_same_mem \<subseteq> 
-          gen_refine: sifum_refinement dma dma \<C>_vars \<C>_vars \<C> \<C> stop\<^sub>A stop\<^sub>C eval\<^sub>A eval\<^sub>C some_val id
+          gen_refine: sifum_refinement dma dma \<C>_vars \<C>_vars \<C> \<C> eval\<^sub>A eval\<^sub>C some_val id
   by(unfold_locales, simp_all)
 
 context sifum_refinement_same_mem begin
@@ -1328,15 +1324,13 @@ text {*
   A locale to capture componentwise refinement of an entire system.
 *}
 locale sifum_refinement_sys = 
-  sifum_refinement dma\<^sub>A dma\<^sub>C \<C>_vars\<^sub>A \<C>_vars\<^sub>C \<C>\<^sub>A \<C>\<^sub>C stop\<^sub>A stop\<^sub>C eval\<^sub>A eval\<^sub>C some_val var\<^sub>C_of
+  sifum_refinement dma\<^sub>A dma\<^sub>C \<C>_vars\<^sub>A \<C>_vars\<^sub>C \<C>\<^sub>A \<C>\<^sub>C eval\<^sub>A eval\<^sub>C some_val var\<^sub>C_of
   for dma\<^sub>A :: "('Var\<^sub>A,'Val) Mem \<Rightarrow> 'Var\<^sub>A \<Rightarrow> Sec"
   and dma\<^sub>C :: "('Var\<^sub>C,'Val) Mem \<Rightarrow> 'Var\<^sub>C \<Rightarrow> Sec"
   and \<C>_vars\<^sub>A :: "'Var\<^sub>A \<Rightarrow> 'Var\<^sub>A set"
   and \<C>_vars\<^sub>C :: "'Var\<^sub>C \<Rightarrow> 'Var\<^sub>C set"
   and \<C>\<^sub>A :: "'Var\<^sub>A set"
   and \<C>\<^sub>C :: "'Var\<^sub>C set"
-  and stop\<^sub>A :: "'Com\<^sub>A"
-  and stop\<^sub>C :: "'Com\<^sub>C"
   and eval\<^sub>A :: "('Com\<^sub>A, 'Var\<^sub>A, 'Val) LocalConf rel"
   and eval\<^sub>C :: "('Com\<^sub>C, 'Var\<^sub>C, 'Val) LocalConf rel"
   and some_val :: "'Val"

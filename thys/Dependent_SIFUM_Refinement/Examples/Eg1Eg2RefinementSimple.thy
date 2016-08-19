@@ -583,7 +583,7 @@ proof(clarsimp simp:preserves_local_guarantee_compliance_def2)
       show ?case by (metis C.seq_stop_elim C.seq_stop_eval\<^sub>w fst_conv)
     next
     case stop_rel
-      thus ?case by (simp add: conc.stop_no_eval)
+      thus ?case by (simp add: C.stop_no_eval)
   qed
 qed
 

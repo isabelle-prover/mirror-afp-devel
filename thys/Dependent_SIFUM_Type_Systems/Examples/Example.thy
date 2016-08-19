@@ -63,9 +63,8 @@ definition
 where
   "\<C> \<equiv> \<Union>x. \<C>_vars x"
 
-sublocale sifum_example \<subseteq>  sifum_security dma \<C>_vars \<C> Stop eval\<^sub>w undefined
+sublocale sifum_example \<subseteq> sifum_security dma \<C>_vars \<C> eval\<^sub>w undefined
   apply(unfold_locales)
-       apply(simp add: stop_no_eval)
       apply(blast intro: eval_det)
      apply(rule Var_finite)
     apply(auto simp: \<C>_vars_def dma_def \<C>_def split: if_splits)

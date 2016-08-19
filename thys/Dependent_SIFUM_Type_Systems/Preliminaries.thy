@@ -57,10 +57,8 @@ locale sifum_security =
   fixes dma :: "('Var,'Val) Mem \<Rightarrow> 'Var \<Rightarrow> Sec"
   fixes \<C>_vars :: "'Var \<Rightarrow> 'Var set"
   fixes \<C> :: "'Var set" (* classification control variables *)
-  fixes stop :: "'Com"
   fixes eval :: "('Com, 'Var, 'Val) LocalConf rel"
   fixes some_val :: "'Val"
-  assumes stop_no_eval: "\<not> ((((stop, mds), mem), ((c', mds'), mem')) \<in> eval)"
   assumes deterministic: "\<lbrakk> (lc, lc') \<in> eval; (lc, lc'') \<in> eval \<rbrakk> \<Longrightarrow> lc' = lc''"
   assumes finite_memory: "finite {(x::'Var). True}"
   defines "\<C> \<equiv> \<Union>x. \<C>_vars x"

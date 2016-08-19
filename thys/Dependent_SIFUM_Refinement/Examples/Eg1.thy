@@ -119,7 +119,6 @@ where
 
 sublocale sifum_example \<subseteq>  sifum_types_assign ev\<^sub>A ev\<^sub>B aexp_vars bexp_vars dma \<C>_vars \<C>  bexp_neg dma_type FF bexp_assign
   apply(unfold_locales)
-               apply(simp add: stop_no_eval)
               apply(blast intro: eval_det)
              apply(rule Var_finite)
             apply(auto simp: \<C>_vars_def dma_def \<C>_def split: if_splits)[3]
@@ -132,7 +131,7 @@ sublocale sifum_example \<subseteq>  sifum_types_assign ev\<^sub>A ev\<^sub>B ae
   apply(auto simp: \<C>_def)
   done
 
-sublocale sifum_example \<subseteq>  sifum_security dma \<C>_vars \<C> Stop eval\<^sub>w undefined
+sublocale sifum_example \<subseteq>  sifum_security dma \<C>_vars \<C> eval\<^sub>w undefined
   by (unfold_locales)
 
 

@@ -13,7 +13,7 @@ begin
 subsection {* Typing Rules *}
 
 locale sifum_modes = 
-  sifum_lang_no_dma ev\<^sub>A ev\<^sub>B aexp_vars bexp_vars + sifum_security dma \<C>_vars \<C> Stop eval\<^sub>w undefined
+  sifum_lang_no_dma ev\<^sub>A ev\<^sub>B aexp_vars bexp_vars + sifum_security dma \<C>_vars \<C> eval\<^sub>w undefined
   for ev\<^sub>A :: "('Var, 'Val) Mem \<Rightarrow> 'AExp \<Rightarrow> 'Val"
   and ev\<^sub>B :: "('Var, 'Val) Mem \<Rightarrow> 'BExp \<Rightarrow> bool"
   and aexp_vars :: "'AExp \<Rightarrow> 'Var set"

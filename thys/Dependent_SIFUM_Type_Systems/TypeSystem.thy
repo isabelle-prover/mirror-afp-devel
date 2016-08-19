@@ -86,7 +86,7 @@ where
 end
 
 locale sifum_types =
-  sifum_lang_no_dma ev\<^sub>A ev\<^sub>B aexp_vars bexp_vars + sifum_security dma \<C>_vars \<C> Stop eval\<^sub>w undefined
+  sifum_lang_no_dma ev\<^sub>A ev\<^sub>B aexp_vars bexp_vars + sifum_security dma \<C>_vars \<C> eval\<^sub>w undefined
   for ev\<^sub>A :: "('Var, 'Val) Mem \<Rightarrow> 'AExp \<Rightarrow> 'Val"
   and ev\<^sub>B :: "('Var, 'Val) Mem \<Rightarrow> 'BExp \<Rightarrow> bool"
   and aexp_vars :: "'AExp \<Rightarrow> 'Var set"
@@ -113,7 +113,7 @@ locale sifum_types =
 (* a more specialised form of the above locale useful for the examples that provides
    a brain-dead instantiation for the assignment postcondition transformer *)
 locale sifum_types_assign =
-  sifum_lang_no_dma ev\<^sub>A ev\<^sub>B aexp_vars bexp_vars + sifum_security dma \<C>_vars \<C> Stop eval\<^sub>w undefined
+  sifum_lang_no_dma ev\<^sub>A ev\<^sub>B aexp_vars bexp_vars + sifum_security dma \<C>_vars \<C> eval\<^sub>w undefined
   for ev\<^sub>A :: "('Var, 'Val) Mem \<Rightarrow> 'AExp \<Rightarrow> 'Val"
   and ev\<^sub>B :: "('Var, 'Val) Mem \<Rightarrow> 'BExp \<Rightarrow> bool"
   and aexp_vars :: "'AExp \<Rightarrow> 'Var set"
