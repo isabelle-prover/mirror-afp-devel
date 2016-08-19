@@ -2201,6 +2201,11 @@ abstract =
   demonstrates its application on some small examples. It was derived
   from the SIFUM_Type_Systems AFP entry, by Sylvia Grewe, Heiko Mantel
   and Daniel Schoepe, and whose structure it inherits.
+extra-history =
+  Change history:
+  [2016-08-19]:
+  Removed unused "stop" parameter and "stop_no_eval" assumption from the sifum_security locale.
+  (revision dbc482d36372)
 
 [Dependent_SIFUM_Refinement]
 title = Compositional Security-Preserving Refinement for Concurrent Imperative Programs
@@ -2215,6 +2220,11 @@ abstract =
   noninterference property, defined in (Murray, PLAS 2015), for
   concurrent programs. This development formalises that refinement
   theory, and demonstrates its application on some small examples.
+extra-history =
+  Change history:
+  [2016-08-19]:
+  Removed unused "stop" parameters from the sifum_refinement locale.
+  (revision dbc482d36372)
 
 [Strong_Security]
 title = A Formalization of Strong Security
