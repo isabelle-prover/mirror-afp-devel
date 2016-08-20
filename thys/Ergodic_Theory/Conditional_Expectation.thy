@@ -14,7 +14,7 @@ definition subalgebra::"'a measure \<Rightarrow> 'a measure \<Rightarrow> bool" 
   "subalgebra M F = ((space F = space M) \<and> (sets F \<subseteq> sets M))"
 
 lemma sub_measure_space:
- assumes i: "subalgebra M F"
+  assumes i: "subalgebra M F"
   shows "measure_space (space M) (sets F) (emeasure M)"
 proof -
   have "sigma_algebra (space M) (sets F)"
@@ -31,7 +31,7 @@ definition restr_to_subalg::"'a measure \<Rightarrow> 'a measure \<Rightarrow> '
 
 lemma space_restr_to_subalg:
   "space (restr_to_subalg M F) = space M"
- unfolding restr_to_subalg_def by (simp add: space_measure_of_conv)
+  unfolding restr_to_subalg_def by (simp add: space_measure_of_conv)
 
 lemma sets_restr_to_subalg [measurable_cong]:
   assumes "subalgebra M F"
@@ -49,18 +49,13 @@ lemma null_sets_restr_to_subalg:
   assumes "subalgebra M F"
   shows "null_sets (restr_to_subalg M F) = null_sets M \<inter> sets F"
 proof
-  {
-    fix x assume *: "x \<in> null_sets (restr_to_subalg M F)"
-    then have "x \<in> null_sets M \<inter> sets F"
-      by (metis Int_iff assms emeasure_restr_to_subalg null_setsD1 null_setsD2 null_setsI sets_restr_to_subalg subalgebra_def subsetD)
-  }
+  have "x \<in> null_sets M \<inter> sets F" if "x \<in> null_sets (restr_to_subalg M F)" for x
+    by (metis that Int_iff assms emeasure_restr_to_subalg null_setsD1 null_setsD2 null_setsI
+        sets_restr_to_subalg subalgebra_def subsetD)
   then show "null_sets (restr_to_subalg M F) \<subseteq> null_sets M \<inter> sets F" by auto
 next
-  {
-    fix x assume *: "x \<in> null_sets M \<inter> sets F"
-    then have "x \<in> null_sets (restr_to_subalg M F)"
-       by (metis Int_iff assms null_setsD1 null_setsI sets_restr_to_subalg emeasure_restr_to_subalg[OF assms])
-  }
+  have "x \<in> null_sets (restr_to_subalg M F)" if "x \<in> null_sets M \<inter> sets F" for x
+    by (metis that Int_iff assms null_setsD1 null_setsI sets_restr_to_subalg emeasure_restr_to_subalg[OF assms])
   then show "null_sets M \<inter> sets F \<subseteq> null_sets (restr_to_subalg M F)" by auto
 qed
 
@@ -81,9 +76,9 @@ qed
 lemma AE_restr_to_subalg2:
   assumes "subalgebra M F"
           "AE x in M. P x" and [measurable]: "P \<in> measurable F (count_space UNIV)"
- shows "AE x in (restr_to_subalg M F). P x"
+  shows "AE x in (restr_to_subalg M F). P x"
 proof -
-  def U \<equiv> "{x \<in> space M. \<not>(P x)}"
+  define U where "U = {x \<in> space M. \<not>(P x)}"
   then have *: "U = {x \<in> space F. \<not>(P x)}" using assms(1) by (simp add: subalgebra_def)
   then have "U \<in> sets F" by simp
   then have "U \<in> sets M" using assms(1) by (meson subalgebra_def subsetD)
@@ -95,14 +90,14 @@ qed
 lemma prob_space_restr_to_subalg:
   assumes "subalgebra M F"
           "prob_space M"
-   shows "prob_space (restr_to_subalg M F)"
+  shows "prob_space (restr_to_subalg M F)"
 by (metis (no_types, lifting) assms(1) assms(2) emeasure_restr_to_subalg prob_space.emeasure_space_1 prob_spaceI
     sets.top space_restr_to_subalg subalgebra_def)
 
 lemma finite_measure_restr_to_subalg:
   assumes "subalgebra M F"
           "finite_measure M"
-   shows "finite_measure (restr_to_subalg M F)"
+  shows "finite_measure (restr_to_subalg M F)"
 by (metis (no_types, lifting) assms emeasure_restr_to_subalg finite_measure.finite_emeasure_space
     finite_measureI sets.top space_restr_to_subalg subalgebra_def infinity_ennreal_def)
 
@@ -128,9 +123,10 @@ lemma nn_integral_subalgebra2:
 proof (rule nn_integral_subalgebra)
   show "f \<in> borel_measurable (restr_to_subalg M F)"
     by (rule measurable_in_subalg[OF assms(1)]) simp
-  show "sets (restr_to_subalg M F) \<subseteq> sets M"  by (metis sets_restr_to_subalg[OF assms(1)] assms(1) subalgebra_def)
+  show "sets (restr_to_subalg M F) \<subseteq> sets M" by (metis sets_restr_to_subalg[OF assms(1)] assms(1) subalgebra_def)
   fix A assume "A \<in> sets (restr_to_subalg M F)"
-  then show "emeasure (restr_to_subalg M F) A = emeasure M A" by (metis sets_restr_to_subalg[OF assms(1)] emeasure_restr_to_subalg[OF assms(1)])
+  then show "emeasure (restr_to_subalg M F) A = emeasure M A"
+    by (metis sets_restr_to_subalg[OF assms(1)] emeasure_restr_to_subalg[OF assms(1)])
 qed (auto simp add: assms space_restr_to_subalg sets_restr_to_subalg[OF assms(1)])
 
 text{*The following is the direct transposition of \verb+integral_subalgebra+
@@ -143,7 +139,7 @@ lemma integral_subalgebra2:
   shows "(\<integral>x. f x \<partial>(restr_to_subalg M F)) = (\<integral>x. f x \<partial>M)"
 by (rule integral_subalgebra,
     metis measurable_in_subalg[OF assms(1)] assms(2),
-    auto simp add: assms space_restr_to_subalg sets_restr_to_subalg  emeasure_restr_to_subalg,
+    auto simp add: assms space_restr_to_subalg sets_restr_to_subalg emeasure_restr_to_subalg,
     meson assms(1) subalgebra_def subset_eq)
 
 lemma integrable_from_subalg:
@@ -157,7 +153,7 @@ proof (rule integrableI_bounded)
 
   have "(\<integral>\<^sup>+ x. ennreal (norm (f x)) \<partial>M) = (\<integral>\<^sup>+ x. ennreal (norm (f x)) \<partial>(restr_to_subalg M F))"
     by (rule nn_integral_subalgebra2[symmetric], auto simp add: assms)
-  also have "... < \<infinity>" using  integrable_iff_bounded assms by auto
+  also have "... < \<infinity>" using integrable_iff_bounded assms by auto
   finally show "(\<integral>\<^sup>+ x. ennreal (norm (f x)) \<partial>M) < \<infinity>" by simp
 qed
 
@@ -171,7 +167,7 @@ proof (rule integrableI_bounded)
   show "f \<in> borel_measurable (restr_to_subalg M F)" using assms(2) assms(1) by auto
   have "(\<integral>\<^sup>+ x. ennreal (norm (f x)) \<partial>(restr_to_subalg M F)) = (\<integral>\<^sup>+ x. ennreal (norm (f x)) \<partial>M)"
     by (rule nn_integral_subalgebra2, auto simp add: assms)
-  also have "... < \<infinity>" using  integrable_iff_bounded assms by auto
+  also have "... < \<infinity>" using integrable_iff_bounded assms by auto
   finally show "(\<integral>\<^sup>+ x. ennreal (norm (f x)) \<partial>(restr_to_subalg M F)) < \<infinity>" by simp
 qed
 
@@ -196,12 +192,12 @@ definition nn_cond_exp :: "'a measure \<Rightarrow> 'a measure \<Rightarrow> ('a
 where
   "nn_cond_exp M F f =
     (if f \<in> borel_measurable M \<and> subalgebra M F
-       then RN_deriv (restr_to_subalg M F) (restr_to_subalg (density M f) F)
-       else (\<lambda>_. 0))"
+        then RN_deriv (restr_to_subalg M F) (restr_to_subalg (density M f) F)
+        else (\<lambda>_. 0))"
 
 lemma
-  shows borel_measurable_nn_cond_exp [measurable]:  "nn_cond_exp M F f \<in> borel_measurable F"
-  and   borel_measurable_nn_cond_exp2 [measurable]: "nn_cond_exp M F f \<in> borel_measurable M"
+  shows borel_measurable_nn_cond_exp [measurable]: "nn_cond_exp M F f \<in> borel_measurable F"
+  and borel_measurable_nn_cond_exp2 [measurable]: "nn_cond_exp M F f \<in> borel_measurable M"
 by (simp_all add: nn_cond_exp_def)
   (metis borel_measurable_RN_deriv borel_measurable_subalgebra sets_restr_to_subalg space_restr_to_subalg subalgebra_def)
 
@@ -218,9 +214,9 @@ locale sigma_finite_subalgebra =
 
 sublocale sigma_finite_subalgebra \<subseteq> sigma_finite_measure
 proof
-  obtain A where Ap: "countable A \<and> A \<subseteq> sets (restr_to_subalg M F)  \<and> \<Union>A = space (restr_to_subalg M F) \<and> (\<forall>a\<in>A. emeasure (restr_to_subalg M F) a \<noteq> \<infinity>)"
+  obtain A where Ap: "countable A \<and> A \<subseteq> sets (restr_to_subalg M F) \<and> \<Union>A = space (restr_to_subalg M F) \<and> (\<forall>a\<in>A. emeasure (restr_to_subalg M F) a \<noteq> \<infinity>)"
     using sigma_finite_measure.sigma_finite_countable[OF sigm_fin_subalg] by auto
-  have "A \<subseteq> sets F"  using Ap sets_restr_to_subalg[OF subalg] by fastforce
+  have "A \<subseteq> sets F" using Ap sets_restr_to_subalg[OF subalg] by fastforce
   then have "A \<subseteq> sets M" using subalg subalgebra_def by force
   moreover have "\<Union>A = space M" using Ap space_restr_to_subalg by simp
   moreover have "\<forall>a\<in>A. emeasure M a \<noteq> \<infinity>" by (metis subsetD emeasure_restr_to_subalg[OF subalg] `A \<subseteq> sets F` Ap)
@@ -281,7 +277,7 @@ proof -
       by (rule absolutely_continuousI_density[unfolded absolutely_continuous_def]) auto
     ultimately have "null_sets (restr_to_subalg M F) \<subseteq> null_sets (density M g) \<inter> sets F" by auto
     moreover have "null_sets (density M g) \<inter> sets F = null_sets (restr_to_subalg (density M g) F)"
-     by (rule null_sets_restr_to_subalg[symmetric]) (metis subalg sets_density space_density subalgebra_def)
+      by (rule null_sets_restr_to_subalg[symmetric]) (metis subalg sets_density space_density subalgebra_def)
     ultimately show "null_sets (restr_to_subalg M F) \<subseteq> null_sets (restr_to_subalg (density M g) F)" by auto
   qed
 
@@ -295,19 +291,19 @@ proof -
   proof (rule sigma_finite_measure.RN_deriv_nn_integral[symmetric])
     show "sets (restr_to_subalg (density M g) F) = sets (restr_to_subalg M F)"
       by (metis subalg restr_to_subalg_def sets.sets_measure_of_eq space_density subalgebra_def)
-  qed (auto simp add: assms measurable_restrict ac measurable_in_subalg subalg  sigm_fin_subalg)
+  qed (auto simp add: assms measurable_restrict ac measurable_in_subalg subalg sigm_fin_subalg)
   also have "... = (\<integral>\<^sup>+ x. f x \<partial>(density M g))"
     by (metis nn_integral_subalgebra2 subalg assms(1) sets_density space_density subalgebra_def)
   also have "... = (\<integral>\<^sup>+ x. g x * f x \<partial>M)"
     by (rule nn_integral_density) (simp_all add: assms)
-  also have "... =   (\<integral>\<^sup>+ x. f x * g x \<partial>M)"
+  also have "... = (\<integral>\<^sup>+ x. f x * g x \<partial>M)"
     by (simp add: mult.commute)
   finally show ?thesis by simp
 qed
 
 lemma nn_cond_exp_charact:
   assumes "\<And>A. A \<in> sets F \<Longrightarrow> (\<integral>\<^sup>+ x \<in> A. f x \<partial>M) = (\<integral>\<^sup>+ x \<in> A. g x \<partial>M)" and
-          [measurable]:  "f \<in> borel_measurable M" "g \<in> borel_measurable F"
+          [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable F"
   shows "AE x in M. g x = nn_cond_exp M F f x"
 proof -
   let ?MF = "restr_to_subalg M F"
@@ -325,20 +321,20 @@ proof -
       by (simp add: nn_integral_subalgebra2 subalg)
     finally have "(\<integral>\<^sup>+ x \<in> A. g x \<partial> ?MF) = (\<integral>\<^sup>+ x \<in> A. nn_cond_exp M F f x \<partial> ?MF)" by simp
   } note * = this
-  have "AE x in ?MF. g x =  nn_cond_exp M F f x"
-   by (rule sigma_finite_measure.density_unique2)
-      (auto simp add: assms subalg  sigm_fin_subalg AE_restr_to_subalg2 *)
+  have "AE x in ?MF. g x = nn_cond_exp M F f x"
+    by (rule sigma_finite_measure.density_unique2)
+       (auto simp add: assms subalg sigm_fin_subalg AE_restr_to_subalg2 *)
   then show ?thesis using AE_restr_to_subalg[OF subalg] by simp
 qed
 
 lemma nn_cond_exp_F_meas:
-   assumes "f \<in> borel_measurable F"
-   shows "AE x in M. f x = nn_cond_exp M F f x"
+  assumes "f \<in> borel_measurable F"
+  shows "AE x in M. f x = nn_cond_exp M F f x"
 by (rule nn_cond_exp_charact) (auto simp add: assms measurable_from_subalg[OF subalg])
 
 lemma nn_cond_exp_prod:
-   assumes [measurable]: "f \<in> borel_measurable F" "g \<in> borel_measurable M"
-   shows "AE x in M. f x * nn_cond_exp M F g x = nn_cond_exp M F (\<lambda>x. f x * g x) x"
+  assumes [measurable]: "f \<in> borel_measurable F" "g \<in> borel_measurable M"
+  shows "AE x in M. f x * nn_cond_exp M F g x = nn_cond_exp M F (\<lambda>x. f x * g x) x"
 proof (rule nn_cond_exp_charact)
   have [measurable]: "f \<in> borel_measurable M" by (rule measurable_from_subalg[OF subalg assms(1)])
   show "(\<lambda>x. f x * g x) \<in> borel_measurable M" by measurable
@@ -347,26 +343,26 @@ proof (rule nn_cond_exp_charact)
   then have [measurable]: "(\<lambda>x. f x * indicator A x) \<in> borel_measurable F" by measurable
   have "\<integral>\<^sup>+x\<in>A. (f x * g x) \<partial>M = \<integral>\<^sup>+x. (f x * indicator A x) * g x \<partial>M"
     by (simp add: mult.commute mult.left_commute)
-  also have "... =  \<integral>\<^sup>+x. (f x * indicator A x) * nn_cond_exp M F g x \<partial>M"
+  also have "... = \<integral>\<^sup>+x. (f x * indicator A x) * nn_cond_exp M F g x \<partial>M"
     by (rule nn_cond_exp_intg[symmetric]) (auto simp add: assms)
   also have "... = \<integral>\<^sup>+x\<in>A. (f x * nn_cond_exp M F g x)\<partial>M"
     by (simp add: mult.commute mult.left_commute)
-  finally show "\<integral>\<^sup>+x\<in>A. (f x * g x) \<partial>M = \<integral>\<^sup>+x\<in>A. (f x *  nn_cond_exp M F g x)\<partial>M" by simp
+  finally show "\<integral>\<^sup>+x\<in>A. (f x * g x) \<partial>M = \<integral>\<^sup>+x\<in>A. (f x * nn_cond_exp M F g x)\<partial>M" by simp
 qed (auto simp add: assms)
 
 lemma nn_cond_exp_sum:
-   assumes [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
-   shows "AE x in M. nn_cond_exp M F f x + nn_cond_exp M F g x = nn_cond_exp M F (\<lambda>x. f x + g x) x"
+  assumes [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
+  shows "AE x in M. nn_cond_exp M F f x + nn_cond_exp M F g x = nn_cond_exp M F (\<lambda>x. f x + g x) x"
 proof (rule nn_cond_exp_charact)
   fix A assume [measurable]: "A \<in> sets F"
   then have "A \<in> sets M" by (meson subalg subalgebra_def subsetD)
-  have "\<integral>\<^sup>+x\<in>A. (nn_cond_exp M F f x + nn_cond_exp M F g x)\<partial>M =  (\<integral>\<^sup>+x\<in>A. nn_cond_exp M F f x \<partial>M) +  (\<integral>\<^sup>+x\<in>A. nn_cond_exp M F g x \<partial>M)"
+  have "\<integral>\<^sup>+x\<in>A. (nn_cond_exp M F f x + nn_cond_exp M F g x)\<partial>M = (\<integral>\<^sup>+x\<in>A. nn_cond_exp M F f x \<partial>M) + (\<integral>\<^sup>+x\<in>A. nn_cond_exp M F g x \<partial>M)"
     by (rule nn_set_integral_add) (auto simp add: assms `A \<in> sets M`)
-  also have "... =  (\<integral>\<^sup>+x. indicator A x * nn_cond_exp M F f x \<partial>M) +  (\<integral>\<^sup>+x. indicator A x * nn_cond_exp M F g x \<partial>M)"
+  also have "... = (\<integral>\<^sup>+x. indicator A x * nn_cond_exp M F f x \<partial>M) + (\<integral>\<^sup>+x. indicator A x * nn_cond_exp M F g x \<partial>M)"
     by (metis (no_types, lifting) mult.commute nn_integral_cong)
-  also have "... =  (\<integral>\<^sup>+x. indicator A x * f x \<partial>M) +  (\<integral>\<^sup>+x. indicator A x * g x \<partial>M)"
+  also have "... = (\<integral>\<^sup>+x. indicator A x * f x \<partial>M) + (\<integral>\<^sup>+x. indicator A x * g x \<partial>M)"
     by (simp add: nn_cond_exp_intg)
-  also have "... =  (\<integral>\<^sup>+x\<in>A. f x \<partial>M) +  (\<integral>\<^sup>+x\<in>A. g x \<partial>M)"
+  also have "... = (\<integral>\<^sup>+x\<in>A. f x \<partial>M) + (\<integral>\<^sup>+x\<in>A. g x \<partial>M)"
     by (metis (no_types, lifting) mult.commute nn_integral_cong)
   also have "... = \<integral>\<^sup>+x\<in>A. (f x + g x)\<partial>M"
     by (rule nn_set_integral_add[symmetric]) (auto simp add: assms `A \<in> sets M`)
@@ -375,11 +371,10 @@ proof (rule nn_cond_exp_charact)
 qed (auto simp add: assms)
 
 lemma nn_cond_exp_cong:
-   assumes "AE x in M. f x = g x" and
-           [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
-   shows "AE x in M. nn_cond_exp M F f x = nn_cond_exp M F g x"
+  assumes "AE x in M. f x = g x"
+      and [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
+  shows "AE x in M. nn_cond_exp M F f x = nn_cond_exp M F g x"
 proof (rule nn_cond_exp_charact)
-{
   fix A assume [measurable]: "A \<in> sets F"
   have " \<integral>\<^sup>+x\<in>A. nn_cond_exp M F f x \<partial>M = \<integral>\<^sup>+x. indicator A x * nn_cond_exp M F f x \<partial>M"
     by (simp add: mult.commute)
@@ -387,22 +382,21 @@ proof (rule nn_cond_exp_charact)
   also have "... = \<integral>\<^sup>+x\<in>A. f x \<partial>M" by (simp add: mult.commute)
   also have "... = \<integral>\<^sup>+x\<in>A. g x \<partial>M" by (rule nn_set_integral_cong[OF assms(1)])
   finally show "\<integral>\<^sup>+x\<in>A. g x \<partial>M = \<integral>\<^sup>+x\<in>A. nn_cond_exp M F f x \<partial>M" by simp
-}
 qed (auto simp add: assms)
 
 lemma nn_cond_exp_mono:
-   assumes "AE x in M. f x \<le> g x" and
-           [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
-   shows "AE x in M. nn_cond_exp M F f x \<le> nn_cond_exp M F g x"
+  assumes "AE x in M. f x \<le> g x"
+      and [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
+  shows "AE x in M. nn_cond_exp M F f x \<le> nn_cond_exp M F g x"
 proof -
-  def h \<equiv> "\<lambda>x. g x - f x"
+  define h where "h = (\<lambda>x. g x - f x)"
   have [measurable]: "h \<in> borel_measurable M" unfolding h_def by simp
   have *: "AE x in M. g x = f x + h x" unfolding h_def using assms(1) by (auto simp: ennreal_ineq_diff_add)
   have "AE x in M. nn_cond_exp M F g x = nn_cond_exp M F (\<lambda>x. f x + h x) x"
     by (rule nn_cond_exp_cong) (auto simp add: * assms)
   moreover have "AE x in M. nn_cond_exp M F f x + nn_cond_exp M F h x = nn_cond_exp M F (\<lambda>x. f x + h x) x"
     by (rule nn_cond_exp_sum) (auto simp add: assms)
-  ultimately have "AE x in M. nn_cond_exp M F g x =  nn_cond_exp M F f x + nn_cond_exp M F h x" by auto
+  ultimately have "AE x in M. nn_cond_exp M F g x = nn_cond_exp M F f x + nn_cond_exp M F h x" by auto
   then show ?thesis by force
 qed
 
@@ -415,7 +409,7 @@ proof (auto simp add: assms)
     using sigm_fin_subalg sigma_finite_measure_def by auto
   then obtain A where A:"countable A \<and> A \<subseteq> sets (restr_to_subalg M F) \<and> \<Union>A = space (restr_to_subalg M F) \<and> (\<forall>a\<in>A. emeasure (restr_to_subalg M F) a \<noteq> \<infinity>)"
     by auto
-   have "sets F \<subseteq> sets M"
+  have "sets F \<subseteq> sets M"
     by (meson assms order_trans subalgebra_def)
   then have "countable A \<and> A \<subseteq> sets (restr_to_subalg M G) \<and> \<Union>A = space (restr_to_subalg M F) \<and> (\<forall>a\<in>A. emeasure (restr_to_subalg M G) a \<noteq> \<infinity>)"
     by (metis (no_types) A assms basic_trans_rules(31) emeasure_restr_to_subalg order_trans sets_restr_to_subalg subalgebra_def)
@@ -425,7 +419,7 @@ qed
 
 lemma nn_cond_exp_nested_subalg:
   assumes "subalgebra M G" "subalgebra G F"
-    "AE x in M. f x \<ge> 0" and [measurable]:  "f \<in> borel_measurable M"
+    and [measurable]: "f \<in> borel_measurable M"
   shows "AE x in M. nn_cond_exp M F f x = nn_cond_exp M F (nn_cond_exp M G f) x"
 proof (rule nn_cond_exp_charact, auto)
   interpret G: sigma_finite_subalgebra M G by (rule nested_subalg_is_sigma_finite[OF assms(1) assms(2)])
@@ -449,15 +443,15 @@ follows readily, by taking the difference of positive and negative parts.
 One could also define a conditional expectation of vector-space valued functions, as in
 \verb+Bochner_Integral+, but since the real-valued case is the most important, and quicker to formalize, I
 concentrate on it. (It is also essential for the case of the most general Pettis integral.)
- *}
+*}
 
 definition real_cond_exp :: "'a measure \<Rightarrow> 'a measure \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> ('a \<Rightarrow> real)" where
   "real_cond_exp M F f =
     (\<lambda>x. enn2real(nn_cond_exp M F (\<lambda>x. ennreal (f x)) x) - enn2real(nn_cond_exp M F (\<lambda>x. ennreal (-f x)) x))"
 
 lemma
-  shows borel_measurable_cond_exp [measurable]:  "real_cond_exp M F f \<in> borel_measurable F"
-  and   borel_measurable_cond_exp2 [measurable]: "real_cond_exp M F f \<in> borel_measurable M"
+  shows borel_measurable_cond_exp [measurable]: "real_cond_exp M F f \<in> borel_measurable F"
+  and borel_measurable_cond_exp2 [measurable]: "real_cond_exp M F f \<in> borel_measurable M"
 unfolding real_cond_exp_def by auto
 
 context sigma_finite_subalgebra
@@ -465,10 +459,10 @@ begin
 
 lemma real_cond_exp_abs:
   assumes [measurable]: "f \<in> borel_measurable M"
-   shows "AE x in M. abs(real_cond_exp M F f x) \<le> nn_cond_exp M F (\<lambda>x. ennreal (abs(f x))) x"
+  shows "AE x in M. abs(real_cond_exp M F f x) \<le> nn_cond_exp M F (\<lambda>x. ennreal (abs(f x))) x"
 proof -
-  def fp \<equiv> "\<lambda>x. ennreal (f x)"
-  def fm \<equiv> "\<lambda>x. ennreal (- f x)"
+  define fp where "fp = (\<lambda>x. ennreal (f x))"
+  define fm where "fm = (\<lambda>x. ennreal (- f x))"
   have [measurable]: "fp \<in> borel_measurable M" "fm \<in> borel_measurable M" unfolding fp_def fm_def by auto
   have eq: "\<And>x. ennreal \<bar>f x\<bar> = fp x + fm x" unfolding fp_def fm_def by (simp add: abs_real_def ennreal_neg)
 
@@ -508,15 +502,15 @@ nonnegative conditional expectation.
 lemma real_cond_exp_intg_fpos:
   assumes "integrable M (\<lambda>x. f x * g x)" and f_pos[simp]: "\<And>x. f x \<ge> 0" and
           [measurable]: "f \<in> borel_measurable F" "g \<in> borel_measurable M"
-  shows  "integrable M (\<lambda>x. f x * real_cond_exp M F g x)"
-         "(\<integral> x. f x * real_cond_exp M F g x \<partial>M) = (\<integral> x. f x * g x \<partial>M)"
+  shows "integrable M (\<lambda>x. f x * real_cond_exp M F g x)"
+        "(\<integral> x. f x * real_cond_exp M F g x \<partial>M) = (\<integral> x. f x * g x \<partial>M)"
 proof -
   have [measurable]: "f \<in> borel_measurable M" by (rule measurable_from_subalg[OF subalg assms(3)])
-  def gp \<equiv> "\<lambda>x. ennreal (g x)"
-  def gm \<equiv> "\<lambda>x. ennreal (- g x)"
+  define gp where "gp = (\<lambda>x. ennreal (g x))"
+  define gm where "gm = (\<lambda>x. ennreal (- g x))"
   have [measurable]: "gp \<in> borel_measurable M" "gm \<in> borel_measurable M" unfolding gp_def gm_def by auto
-  def h \<equiv> "\<lambda>x. ennreal(abs(g x))"
-  have hgpgm: "\<And>x. h x = gp x + gm x" unfolding gp_def gm_def h_def  by (simp add: abs_real_def ennreal_neg)
+  define h where "h = (\<lambda>x. ennreal(abs(g x)))"
+  have hgpgm: "\<And>x. h x = gp x + gm x" unfolding gp_def gm_def h_def by (simp add: abs_real_def ennreal_neg)
   have [measurable]: "h \<in> borel_measurable M" unfolding h_def by simp
   have pos[simp]: "\<And>x. h x \<ge> 0" "\<And>x. gp x \<ge> 0" "\<And>x. gm x \<ge> 0" unfolding h_def gp_def gm_def by simp_all
   have gp_real: "\<And>x. enn2real(gp x) = max (g x) 0"
@@ -536,7 +530,7 @@ proof -
   finally have "(\<integral>\<^sup>+ x. norm(f x * max (-g x) 0) \<partial>M) < \<infinity>" by simp
   then have int2: "integrable M (\<lambda>x. f x * max (-g x) 0)" by (simp add: integrableI_bounded)
 
-  have " (\<integral>\<^sup>+x. f x * nn_cond_exp M F h x \<partial>M) =  (\<integral>\<^sup>+x. f x * h x \<partial>M)"
+  have " (\<integral>\<^sup>+x. f x * nn_cond_exp M F h x \<partial>M) = (\<integral>\<^sup>+x. f x * h x \<partial>M)"
     by (rule nn_cond_exp_intg) auto
   also have "\<dots> = \<integral>\<^sup>+ x. ennreal (f x * max (g x) 0 + f x * max (- g x) 0) \<partial>M"
     unfolding h_def
@@ -547,7 +541,7 @@ proof -
 
   have "(\<integral>\<^sup>+x. norm(f x * real_cond_exp M F g x) \<partial>M) = (\<integral>\<^sup>+x. f x * abs(real_cond_exp M F g x) \<partial>M)"
     by (simp add: abs_mult)
-  also have "... \<le>  (\<integral>\<^sup>+x. f x * nn_cond_exp M F h x \<partial>M)"
+  also have "... \<le> (\<integral>\<^sup>+x. f x * nn_cond_exp M F h x \<partial>M)"
   proof (rule nn_integral_mono_AE)
     {
       fix x assume *: "abs(real_cond_exp M F g x) \<le> nn_cond_exp M F h x"
@@ -562,7 +556,7 @@ proof -
       using real_cond_exp_abs[OF assms(4)] h_def by auto
   qed
   finally have **: "(\<integral>\<^sup>+x. norm(f x * real_cond_exp M F g x) \<partial>M) < \<infinity>" using * by auto
-  show "integrable M  (\<lambda>x. f x * real_cond_exp M F g x)"
+  show "integrable M (\<lambda>x. f x * real_cond_exp M F g x)"
     using ** by (intro integrableI_bounded) auto
 
 
@@ -600,14 +594,14 @@ proof -
       by (rule nn_integral_cong_AE)
     also have "... = (\<integral>\<^sup>+ x. f x * gp x \<partial>M)"
       by (rule nn_cond_exp_intg) (auto simp add: gp_def)
-    also have "... =  (\<integral>\<^sup>+ x. ennreal(f x * enn2real(gp x)) \<partial>M)"
+    also have "... = (\<integral>\<^sup>+ x. ennreal(f x * enn2real(gp x)) \<partial>M)"
       by (rule nn_integral_cong_AE) (auto simp: ennreal_mult gp_def)
     finally have "(\<integral>\<^sup>+ x. f x * enn2real(nn_cond_exp M F gp x) \<partial>M) = (\<integral>\<^sup>+ x. ennreal(f x * enn2real(gp x)) \<partial>M)" by simp
     then show ?thesis by simp
   qed
   also have "... = (\<integral> x. f x * enn2real(gp x) \<partial>M)"
     by (rule integral_eq_nn_integral[symmetric]) (auto simp add: gp_def)
-  finally have gp_expr: "(\<integral> x. f x * enn2real(nn_cond_exp M F gp x) \<partial>M) =  (\<integral> x. f x * enn2real(gp x) \<partial>M)" by simp
+  finally have gp_expr: "(\<integral> x. f x * enn2real(nn_cond_exp M F gp x) \<partial>M) = (\<integral> x. f x * enn2real(gp x) \<partial>M)" by simp
 
 
   have "(\<integral>\<^sup>+x. f x * nn_cond_exp M F gm x \<partial>M) \<le> (\<integral>\<^sup>+x. f x * nn_cond_exp M F h x \<partial>M)"
@@ -642,21 +636,21 @@ proof -
       using gm_fin by auto
     then have "(\<integral>\<^sup>+ x. f x * enn2real(nn_cond_exp M F gm x) \<partial>M) = (\<integral>\<^sup>+ x. f x * nn_cond_exp M F gm x \<partial>M)"
       by (rule nn_integral_cong_AE)
-    also have "... =  (\<integral>\<^sup>+ x. f x * gm x \<partial>M)"
+    also have "... = (\<integral>\<^sup>+ x. f x * gm x \<partial>M)"
       by (rule nn_cond_exp_intg) (auto simp add: gm_def)
-    also have "... =  (\<integral>\<^sup>+ x. ennreal(f x * enn2real(gm x)) \<partial>M)"
+    also have "... = (\<integral>\<^sup>+ x. ennreal(f x * enn2real(gm x)) \<partial>M)"
       by (rule nn_integral_cong_AE) (auto simp: ennreal_mult gm_def)
     finally have "(\<integral>\<^sup>+ x. f x * enn2real(nn_cond_exp M F gm x) \<partial>M) = (\<integral>\<^sup>+ x. ennreal(f x * enn2real(gm x)) \<partial>M)" by simp
     then show ?thesis by simp
   qed
   also have "... = (\<integral> x. f x * enn2real(gm x) \<partial>M)"
     by (rule integral_eq_nn_integral[symmetric]) (auto simp add: gm_def)
-  finally have gm_expr: "(\<integral> x. f x * enn2real(nn_cond_exp M F gm x) \<partial>M) =  (\<integral> x. f x * enn2real(gm x) \<partial>M)" by simp
+  finally have gm_expr: "(\<integral> x. f x * enn2real(nn_cond_exp M F gm x) \<partial>M) = (\<integral> x. f x * enn2real(gm x) \<partial>M)" by simp
 
 
-  have "(\<integral> x. f x * real_cond_exp M F g x \<partial>M) =  (\<integral> x. f x * enn2real(nn_cond_exp M F gp x) - f x * enn2real(nn_cond_exp M F gm x) \<partial>M)"
+  have "(\<integral> x. f x * real_cond_exp M F g x \<partial>M) = (\<integral> x. f x * enn2real(nn_cond_exp M F gp x) - f x * enn2real(nn_cond_exp M F gm x) \<partial>M)"
     unfolding real_cond_exp_def gp_def gm_def by (simp add: right_diff_distrib)
-  also have "... =  (\<integral> x. f x * enn2real(nn_cond_exp M F gp x) \<partial>M) -  (\<integral> x. f x * enn2real(nn_cond_exp M F gm x) \<partial>M)"
+  also have "... = (\<integral> x. f x * enn2real(nn_cond_exp M F gp x) \<partial>M) - (\<integral> x. f x * enn2real(nn_cond_exp M F gm x) \<partial>M)"
     by (rule integral_diff) (simp_all add: gp_int gm_int)
   also have "... = (\<integral> x. f x * enn2real(gp x) \<partial>M) - (\<integral> x. f x * enn2real(gm x) \<partial>M)"
     using gp_expr gm_expr by simp
@@ -673,12 +667,12 @@ qed
 lemma real_cond_exp_intg:
   assumes "integrable M (\<lambda>x. f x * g x)" and
           [measurable]: "f \<in> borel_measurable F" "g \<in> borel_measurable M"
-  shows  "integrable M (\<lambda>x. f x * real_cond_exp M F g x)"
-         "(\<integral> x. f x * real_cond_exp M F g x \<partial>M) = (\<integral> x. f x * g x \<partial>M)"
+  shows "integrable M (\<lambda>x. f x * real_cond_exp M F g x)"
+        "(\<integral> x. f x * real_cond_exp M F g x \<partial>M) = (\<integral> x. f x * g x \<partial>M)"
 proof -
   have [measurable]: "f \<in> borel_measurable M" by (rule measurable_from_subalg[OF subalg assms(2)])
-  def fp \<equiv> "\<lambda>x. max (f x) 0"
-  def fm \<equiv> "\<lambda>x. max (-f x) 0"
+  define fp where "fp = (\<lambda>x. max (f x) 0)"
+  define fm where "fm = (\<lambda>x. max (-f x) 0)"
   have [measurable]: "fp \<in> borel_measurable M" "fm \<in> borel_measurable M"
     unfolding fp_def fm_def by simp_all
   have [measurable]: "fp \<in> borel_measurable F" "fm \<in> borel_measurable F"
@@ -706,16 +700,16 @@ proof -
 
   have "integrable M (\<lambda>x. fp x * real_cond_exp M F g x - fm x * real_cond_exp M F g x)"
     using Rp(1) Rm(1) integrable_diff by simp
-  moreover have *: "\<And>x. f x * real_cond_exp M F g x =  fp x * real_cond_exp M F g x - fm x * real_cond_exp M F g x"
+  moreover have *: "\<And>x. f x * real_cond_exp M F g x = fp x * real_cond_exp M F g x - fm x * real_cond_exp M F g x"
     unfolding fp_def fm_def by (simp add: max_def)
   ultimately show "integrable M (\<lambda>x. f x * real_cond_exp M F g x)"
     by simp
 
   have "(\<integral> x. f x * real_cond_exp M F g x \<partial>M) = (\<integral> x. fp x * real_cond_exp M F g x - fm x * real_cond_exp M F g x \<partial>M)"
     using * by simp
-  also have "... =  (\<integral> x. fp x * real_cond_exp M F g x \<partial>M)  -  (\<integral> x. fm x * real_cond_exp M F g x \<partial>M)"
+  also have "... = (\<integral> x. fp x * real_cond_exp M F g x \<partial>M) - (\<integral> x. fm x * real_cond_exp M F g x \<partial>M)"
     using Rp(1) Rm(1) by simp
-  also have "... = (\<integral> x. fp x * g x \<partial>M)  -  (\<integral> x. fm x * g x \<partial>M)"
+  also have "... = (\<integral> x. fp x * g x \<partial>M) - (\<integral> x. fm x * g x \<partial>M)"
     using Rp(2) Rm(2) by simp
   also have "... = (\<integral> x. fp x * g x - fm x * g x \<partial>M)"
     using intm intp by simp
@@ -735,18 +729,18 @@ proof -
 qed
 
 lemma real_cond_exp_int:
- assumes "integrable M f"
-  shows  "integrable M (real_cond_exp M F f)" "(\<integral>x. real_cond_exp M F f x \<partial>M) = (\<integral>x. f x \<partial>M)"
+  assumes "integrable M f"
+  shows "integrable M (real_cond_exp M F f)" "(\<integral>x. real_cond_exp M F f x \<partial>M) = (\<integral>x. f x \<partial>M)"
 using real_cond_exp_intg[where ?f = "\<lambda>x. 1" and ?g = f] assms by auto
 
 lemma real_cond_exp_charact:
   assumes "\<And>A. A \<in> sets F \<Longrightarrow> (\<integral> x \<in> A. f x \<partial>M) = (\<integral> x \<in> A. g x \<partial>M)" and
-          [measurable]:  "integrable M f" "integrable M g"
-             "g \<in> borel_measurable F"
+          [measurable]: "integrable M f" "integrable M g"
+                        "g \<in> borel_measurable F"
   shows "AE x in M. g x = real_cond_exp M F f x"
 proof -
   let ?MF = "restr_to_subalg M F"
-  have "AE x in ?MF. g x =  real_cond_exp M F f x"
+  have "AE x in ?MF. g x = real_cond_exp M F f x"
   proof (rule density_unique_real)
     fix A assume "A \<in> sets ?MF"
     then have [measurable]: "A \<in> sets F" using sets_restr_to_subalg[OF subalg] by simp
@@ -756,7 +750,7 @@ proof -
     also have "... = (\<integral>x \<in> A. f x \<partial>M)" using assms(1) by simp
     also have "... = (\<integral>x. indicator A x * f x \<partial>M)" by (simp add: mult.commute)
     also have "... = (\<integral>x. indicator A x * real_cond_exp M F f x \<partial>M)"
-      apply (rule real_cond_exp_intg(2)[symmetric]) using integrable_mult_indicator[OF a assms(2)]  by (auto simp add: assms)
+      apply (rule real_cond_exp_intg(2)[symmetric]) using integrable_mult_indicator[OF a assms(2)] by (auto simp add: assms)
     also have "... = (\<integral>x \<in> A. real_cond_exp M F f x \<partial>M)" by (simp add: mult.commute)
     also have "... = (\<integral>x \<in> A. real_cond_exp M F f x \<partial> ?MF)"
       by (simp add: integral_subalgebra2 subalg)
@@ -770,21 +764,21 @@ proof -
 qed
 
 lemma real_cond_exp_F_meas:
-   assumes "integrable M f"
-           "f \<in> borel_measurable F"
-   shows "AE x in M. f x = real_cond_exp M F f x"
+  assumes "integrable M f"
+          "f \<in> borel_measurable F"
+  shows "AE x in M. f x = real_cond_exp M F f x"
 by (rule real_cond_exp_charact, auto simp add: assms measurable_from_subalg[OF subalg])
 
 lemma real_cond_exp_mult:
-   assumes [measurable]:"f \<in> borel_measurable F" "g \<in> borel_measurable M" "integrable M (\<lambda>x. f x * g x)"
-   shows "AE x in M. f x * real_cond_exp M F g x = real_cond_exp M F (\<lambda>x. f x * g x) x"
+  assumes [measurable]:"f \<in> borel_measurable F" "g \<in> borel_measurable M" "integrable M (\<lambda>x. f x * g x)"
+  shows "AE x in M. f x * real_cond_exp M F g x = real_cond_exp M F (\<lambda>x. f x * g x) x"
 proof (rule real_cond_exp_charact)
   fix A assume "A \<in> sets F"
   then have [measurable]: "(\<lambda>x. f x * indicator A x) \<in> borel_measurable F" by measurable
   have [measurable]: "A \<in> sets M" using subalg by (meson `A \<in> sets F` subalgebra_def subsetD)
   have "\<integral>x\<in>A. (f x * g x) \<partial>M = \<integral>x. (f x * indicator A x) * g x \<partial>M"
     by (simp add: mult.commute mult.left_commute)
-  also have "... =  \<integral>x. (f x * indicator A x) * real_cond_exp M F g x \<partial>M"
+  also have "... = \<integral>x. (f x * indicator A x) * real_cond_exp M F g x \<partial>M"
     apply (rule real_cond_exp_intg(2)[symmetric], auto simp add: assms)
     using integrable_mult_indicator[OF `A \<in> sets M` assms(3)] by (simp add: mult.commute mult.left_commute)
   also have "... = \<integral>x\<in>A. (f x * real_cond_exp M F g x)\<partial>M"
@@ -793,8 +787,8 @@ proof (rule real_cond_exp_charact)
 qed (auto simp add: real_cond_exp_intg(1) assms)
 
 lemma real_cond_exp_add:
-   assumes [measurable]: "integrable M f" "integrable M g"
-   shows "AE x in M. real_cond_exp M F f x + real_cond_exp M F g x = real_cond_exp M F (\<lambda>x. f x + g x) x"
+  assumes [measurable]: "integrable M f" "integrable M g"
+  shows "AE x in M. real_cond_exp M F f x + real_cond_exp M F g x = real_cond_exp M F (\<lambda>x. f x + g x) x"
 proof (rule real_cond_exp_charact)
   have "integrable M (real_cond_exp M F f)" "integrable M (real_cond_exp M F g)"
     using real_cond_exp_int(1) assms by auto
@@ -808,15 +802,15 @@ proof (rule real_cond_exp_charact)
   have intAg: "integrable M (\<lambda>x. indicator A x * g x)"
     using integrable_mult_indicator[OF `A \<in> sets M` assms(2)] by auto
 
-  have "\<integral>x\<in>A. (real_cond_exp M F f x + real_cond_exp M F g x)\<partial>M =  (\<integral>x\<in>A. real_cond_exp M F f x \<partial>M) +  (\<integral>x\<in>A. real_cond_exp M F g x \<partial>M)"
+  have "\<integral>x\<in>A. (real_cond_exp M F f x + real_cond_exp M F g x)\<partial>M = (\<integral>x\<in>A. real_cond_exp M F f x \<partial>M) + (\<integral>x\<in>A. real_cond_exp M F g x \<partial>M)"
     apply (rule set_integral_add, auto simp add: assms)
-    using  integrable_mult_indicator[OF `A \<in> sets M` real_cond_exp_int(1)[OF assms(1)]]
-           integrable_mult_indicator[OF `A \<in> sets M` real_cond_exp_int(1)[OF assms(2)]] by simp_all
-  also have "... =  (\<integral>x. indicator A x * real_cond_exp M F f x \<partial>M) +  (\<integral>x. indicator A x * real_cond_exp M F g x \<partial>M)"
+    using integrable_mult_indicator[OF `A \<in> sets M` real_cond_exp_int(1)[OF assms(1)]]
+          integrable_mult_indicator[OF `A \<in> sets M` real_cond_exp_int(1)[OF assms(2)]] by simp_all
+  also have "... = (\<integral>x. indicator A x * real_cond_exp M F f x \<partial>M) + (\<integral>x. indicator A x * real_cond_exp M F g x \<partial>M)"
     by auto
-  also have "... =  (\<integral>x. indicator A x * f x \<partial>M) +  (\<integral>x. indicator A x * g x \<partial>M)"
+  also have "... = (\<integral>x. indicator A x * f x \<partial>M) + (\<integral>x. indicator A x * g x \<partial>M)"
     using real_cond_exp_intg(2) assms `A \<in> sets F` intAf intAg by auto
-  also have "... =  (\<integral>x\<in>A. f x \<partial>M) +  (\<integral>x\<in>A. g x \<partial>M)"
+  also have "... = (\<integral>x\<in>A. f x \<partial>M) + (\<integral>x\<in>A. g x \<partial>M)"
     by auto
   also have "... = \<integral>x\<in>A. (f x + g x)\<partial>M"
     by (rule set_integral_add(2)[symmetric]) (auto simp add: assms `A \<in> sets M` intAf intAg)
@@ -825,8 +819,8 @@ proof (rule real_cond_exp_charact)
 qed (auto simp add: assms)
 
 lemma real_cond_exp_cong:
-   assumes ae: "AE x in M. f x = g x" and [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
-   shows "AE x in M. real_cond_exp M F f x = real_cond_exp M F g x"
+  assumes ae: "AE x in M. f x = g x" and [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
+  shows "AE x in M. real_cond_exp M F f x = real_cond_exp M F g x"
 proof -
   have "AE x in M. nn_cond_exp M F (\<lambda>x. ennreal (f x)) x = nn_cond_exp M F (\<lambda>x. ennreal (g x)) x"
     apply (rule nn_cond_exp_cong) using assms by auto
@@ -842,9 +836,15 @@ lemma real_cond_exp_cmult:
   shows "AE x in M. c * real_cond_exp M F f x = real_cond_exp M F (\<lambda>x. c * f x) x"
 by (rule real_cond_exp_mult[where ?f = "\<lambda>x. c" and ?g = f], auto simp add: assms borel_measurable_integrable)
 
+lemma real_cond_exp_cdiv:
+  fixes c::real
+  assumes "integrable M f"
+  shows "AE x in M. real_cond_exp M F f x / c = real_cond_exp M F (\<lambda>x. f x / c) x"
+using real_cond_exp_cmult[of _ "1/c", OF assms] by (auto simp add: divide_simps)
+
 lemma real_cond_exp_diff:
-   assumes [measurable]: "integrable M f" "integrable M g"
-   shows "AE x in M. real_cond_exp M F f x - real_cond_exp M F g x = real_cond_exp M F (\<lambda>x. f x - g x) x"
+  assumes [measurable]: "integrable M f" "integrable M g"
+  shows "AE x in M. real_cond_exp M F f x - real_cond_exp M F g x = real_cond_exp M F (\<lambda>x. f x - g x) x"
 proof -
   have "AE x in M. real_cond_exp M F (\<lambda>x. f x + (- g x)) x = real_cond_exp M F f x + real_cond_exp M F (\<lambda>x. -g x) x"
     using real_cond_exp_add[where ?f = f and ?g = "\<lambda>x. - g x"] assms by auto
@@ -857,12 +857,12 @@ lemma real_cond_exp_pos:
   assumes "AE x in M. f x \<ge> 0" and [measurable]: "f \<in> borel_measurable M"
   shows "AE x in M. real_cond_exp M F f x \<ge> 0"
 proof -
-  def g \<equiv> "\<lambda>x. max (f x) 0"
+  define g where "g = (\<lambda>x. max (f x) 0)"
   have "AE x in M. f x = g x" using assms g_def by auto
   then have *: "AE x in M. real_cond_exp M F f x = real_cond_exp M F g x" using real_cond_exp_cong g_def by auto
 
   have "\<And>x. g x \<ge> 0" unfolding g_def by simp
-  then have " (\<lambda>x. ennreal(-g x)) =  (\<lambda>x. 0)"
+  then have " (\<lambda>x. ennreal(-g x)) = (\<lambda>x. 0)"
     by (simp add: ennreal_neg)
   moreover have "AE x in M. 0 = nn_cond_exp M F (\<lambda>x. 0) x"
     by (rule nn_cond_exp_F_meas, auto)
@@ -893,8 +893,8 @@ proof -
   have pos: "AE x in M. f x \<ge> 0" using assms(1) by auto
   then have a: "AE x in M. real_cond_exp M F f x \<ge> 0" using real_cond_exp_pos by simp
 
-  def A \<equiv> "{x \<in> space M. real_cond_exp M F f x = 0}"
-  have *: "\<And>x. indicator A x * real_cond_exp M F f x = 0" unfolding A_def by auto
+  define A where "A = {x \<in> space M. real_cond_exp M F f x = 0}"
+  have *: "indicator A x * real_cond_exp M F f x = 0" for x unfolding A_def by auto
   have "A \<in> sets M" unfolding A_def using borel_measurable_cond_exp by auto
   have "A = {x \<in> space F. real_cond_exp M F f x = 0}" using subalg A_def unfolding subalgebra_def by auto
   then have "A \<in> sets F" using borel_measurable_cond_exp by auto
@@ -923,11 +923,11 @@ qed
 
 lemma real_cond_exp_nested_subalg:
   assumes "subalgebra M G" "subalgebra G F"
-     and [measurable]:  "integrable M f"
+      and [measurable]: "integrable M f"
   shows "AE x in M. real_cond_exp M F f x = real_cond_exp M F (real_cond_exp M G f) x"
 proof (rule real_cond_exp_charact)
   interpret G: sigma_finite_subalgebra M G by (rule nested_subalg_is_sigma_finite[OF assms(1) assms(2)])
-  show "integrable M (real_cond_exp M G f)" by (auto simp add: assms  G.real_cond_exp_int(1))
+  show "integrable M (real_cond_exp M G f)" by (auto simp add: assms G.real_cond_exp_int(1))
 
   fix A assume [measurable]: "A \<in> sets F"
   then have [measurable]: "A \<in> sets G" using assms(2) by (meson set_mp subalgebra_def)
@@ -949,7 +949,7 @@ proof (rule real_cond_exp_charact)
     using integrable_mult_indicator[OF `A \<in> sets M` assms(1)] by auto
   have **: "integrable M (\<lambda>x. indicator A x * real_cond_exp M F (f i) x)" for i
     using integrable_mult_indicator[OF `A \<in> sets M` real_cond_exp_int(1)[OF assms(1)]] by auto
-  have inti: "(\<integral>x. indicator A x * f i x \<partial>M) =  (\<integral>x. indicator A x * real_cond_exp M F (f i) x \<partial>M)" for i
+  have inti: "(\<integral>x. indicator A x * f i x \<partial>M) = (\<integral>x. indicator A x * real_cond_exp M F (f i) x \<partial>M)" for i
     by (rule real_cond_exp_intg(2)[symmetric], auto simp add: *)
 
   have "(\<integral>x\<in>A. (\<Sum>i\<in>I. f i x)\<partial>M) = (\<integral>x. (\<Sum>i\<in>I. indicator A x * f i x)\<partial>M)"

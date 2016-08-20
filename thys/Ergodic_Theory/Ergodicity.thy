@@ -34,7 +34,7 @@ locale ergodic_conservative_mpt = ergodic_qmpt + conservative_mpt
 sublocale ergodic_fmpt \<subseteq> ergodic_mpt
   by unfold_locales
 
-sublocale ergodic_pmpt \<subseteq>  ergodic_fmpt
+sublocale ergodic_pmpt \<subseteq> ergodic_fmpt
   by unfold_locales
 
 sublocale ergodic_fmpt \<subseteq> ergodic_conservative_mpt
@@ -46,7 +46,7 @@ sublocale ergodic_conservative_mpt \<subseteq> ergodic_conservative
 subsection {*Behavior of sets in ergodic transformations*}
 
 lemma (in ergodic_qmpt) AE_equal_preimage_then_null_or_conull:
-  assumes  [measurable]: "A \<in> sets M" and "A \<Delta> T--`A \<in> null_sets M"
+  assumes [measurable]: "A \<in> sets M" and "A \<Delta> T--`A \<in> null_sets M"
   shows "A \<in> null_sets M \<or> space M - A \<in> null_sets M"
 proof -
   obtain B where B: "B \<in> sets Invariants" "A \<Delta> B \<in> null_sets M"
@@ -70,6 +70,20 @@ proof -
   qed
 qed
 
+lemma (in ergodic_qmpt) ergodic_Tinv:
+  assumes "invertible_qmpt"
+  shows "ergodic_qmpt M Tinv"
+unfolding ergodic_qmpt_def ergodic_qmpt_axioms_def
+proof
+  show "qmpt M Tinv" using Tinv_qmpt[OF assms] by simp
+  show "\<forall>A. A \<in> sets (qmpt.Invariants M Tinv) \<longrightarrow> A \<in> null_sets M \<or> space M - A \<in> null_sets M"
+  proof (intro allI impI)
+    fix A assume "A \<in> sets (qmpt.Invariants M Tinv)"
+    then have "A \<in> sets Invariants" using Invariants_Tinv[OF assms] by simp
+    then show "A \<in> null_sets M \<or> space M - A \<in> null_sets M" using ergodic by auto
+  qed
+qed
+
 lemma (in ergodic_conservative) preimage_included_then_null_or_conull:
   assumes "A \<in> sets M" "T--`A \<subseteq> A"
   shows "A \<in> null_sets M \<or> space M - A \<in> null_sets M"
@@ -86,11 +100,12 @@ proof -
   then show ?thesis using AE_equal_preimage_then_null_or_conull assms(1) by auto
 qed
 
-lemma  (in ergodic_conservative) preimages_conull:
+lemma (in ergodic_conservative) preimages_conull:
   assumes [measurable]: "A \<in> sets M" and "emeasure M A > 0"
-  shows "space M -  (\<Union>n. (T^^n)--`A) \<in> null_sets M" "space M \<Delta> (\<Union>n. (T^^n)--`A) \<in> null_sets M"
+  shows "space M - (\<Union>n. (T^^n)--`A) \<in> null_sets M"
+        "space M \<Delta> (\<Union>n. (T^^n)--`A) \<in> null_sets M"
 proof -
-  def B \<equiv> " (\<Union>n. (T^^n)--`A)"
+  define B where "B = (\<Union>n. (T^^n)--`A)"
   then have [measurable]: "B \<in> sets M" by auto
   have "T--`B = (\<Union>n. (T^^(n+1))--`A)" unfolding B_def using T_vrestr_composed(2) by auto
   then have "T--`B \<subseteq> B" using B_def by blast
@@ -101,7 +116,7 @@ proof -
     by (metis `B \<in> sets M` emeasure_eq_0 zero_less_iff_neq_zero)
   then have "B \<notin> null_sets M" by auto
   then have i: "space M - B \<in> null_sets M" using * by auto
-  then show  "space M - (\<Union>n. (T^^n)--`A) \<in> null_sets M" using B_def by auto
+  then show "space M - (\<Union>n. (T^^n)--`A) \<in> null_sets M" using B_def by auto
 
   have "B \<subseteq> space M" using sets.sets_into_space[OF `B \<in> sets M`] by auto
   then have "space M \<Delta> B \<in> null_sets M" using i by (simp add: Diff_mono sup.absorb1)
@@ -122,16 +137,16 @@ proof (cases)
 next
   assume *: "\<not>(space M \<in> null_sets M)"
   obtain B::"'b set set" where B: "countable B" "topological_basis B" using ex_countable_basis by auto
-  def C \<equiv> "{b \<in> B. space M - f-`b \<in> null_sets M}"
+  define C where "C = {b \<in> B. space M - f-`b \<in> null_sets M}"
   then have "countable C" using `countable B` by auto
-  def Y \<equiv> "\<Inter> C"
+  define Y where "Y = \<Inter> C"
   have "space M - f-`Y = (\<Union> b\<in> C. space M - f-`b)" unfolding Y_def by auto
-  moreover have "\<And>b. b \<in> C \<Longrightarrow>  space M - f-`b \<in> null_sets M" unfolding C_def by blast
+  moreover have "\<And>b. b \<in> C \<Longrightarrow> space M - f-`b \<in> null_sets M" unfolding C_def by blast
   ultimately have i: "space M - f-`Y \<in> null_sets M" using `countable C` by (metis null_sets_UN')
   then have "f-`Y \<noteq> {}" using * by auto
   then have "Y \<noteq> {}" by auto
   then obtain y where "y \<in> Y" by auto
-  def D \<equiv> "{b \<in> B. y\<notin>b \<and> f-`b \<inter> space M \<in> null_sets M}"
+  define D where "D = {b \<in> B. y\<notin>b \<and> f-`b \<inter> space M \<in> null_sets M}"
   have "countable D" using `countable B` D_def by auto
   {
     fix z assume "z \<noteq> y"
@@ -203,9 +218,9 @@ proof -
   ultimately show "integrable M f" by (subst integrable_cong_AE[where ?g = "\<lambda>x. y"], auto)
 
   have "(\<integral>x. f x \<partial>M) = (\<integral>x. y \<partial>M)" by (subst integral_cong_AE[where ?g = "\<lambda>x. y"], auto simp add: y)
-  also have "... =  measure M (space M) *\<^sub>R y" by auto
+  also have "... = measure M (space M) *\<^sub>R y" by auto
   finally have *: "(\<integral>x. f x \<partial>M) = measure M (space M) *\<^sub>R y" by simp
-  show  "AE x in M. f x = (\<integral>x. f x \<partial>M)/\<^sub>R (measure M (space M))"
+  show "AE x in M. f x = (\<integral>x. f x \<partial>M)/\<^sub>R (measure M (space M))"
   proof (cases)
     assume "emeasure M (space M) = 0"
     then have "space M \<in> null_sets M" by auto
@@ -213,7 +228,7 @@ proof -
   next
     assume "\<not>(emeasure M (space M) = 0)"
     then have "measure M (space M) > 0" using emeasure_eq_measure measure_le_0_iff by fastforce
-    then have "y =  (\<integral>x. f x \<partial>M)/\<^sub>R (measure M (space M))" using * by auto
+    then have "y = (\<integral>x. f x \<partial>M)/\<^sub>R (measure M (space M))" using * by auto
     then show ?thesis using y by auto
   qed
 qed
@@ -239,10 +254,10 @@ by (metis divide_1 prob_space Invariants_cond_exp_is_integral_fmpt[OF assms])
 
 subsection {*Kac formula*}
 
-lemma  (in ergodic_conservative_mpt) local_time_unbounded:
+lemma (in ergodic_conservative_mpt) local_time_unbounded:
   assumes [measurable]: "A \<in> sets M" "B \<in> sets M"
-     and  "emeasure M A < \<infinity>" "emeasure M B > 0"
-   shows "(\<lambda>n. emeasure M {x \<in> (T^^n)--`A. local_time B n x < k}) \<longlonglongrightarrow> 0"
+      and "emeasure M A < \<infinity>" "emeasure M B > 0"
+  shows "(\<lambda>n. emeasure M {x \<in> (T^^n)--`A. local_time B n x < k}) \<longlonglongrightarrow> 0"
 proof (rule local_time_unbounded3)
   have "A - (\<Union>i. (T ^^ i) --` B) \<in> sets M" by auto
   moreover have "A - (\<Union>i. (T ^^ i) --` B) \<subseteq> space M - (\<Union>i. (T ^^ i) --` B)" using sets.sets_into_space[OF assms(1)] by blast
@@ -252,11 +267,11 @@ qed (simp_all add: assms)
 
 theorem (in ergodic_conservative_mpt) kac_formula:
   assumes [measurable]: "A \<in> sets M" and "emeasure M A > 0"
-   shows "(\<integral>\<^sup>+y. return_time_function A y \<partial>M) = emeasure M (space M)"
+  shows "(\<integral>\<^sup>+y. return_time_function A y \<partial>M) = emeasure M (space M)"
 proof -
   have a [measurable]: "(\<Union>n. (T^^n)--`A) \<in> sets M" by auto
-  then have "space M =  (\<Union>n. (T^^n)--`A) \<union> (space M -  (\<Union>n. (T^^n)--`A))" using sets.sets_into_space by blast
-  then have "emeasure M (space M) = emeasure M  (\<Union>n. (T^^n)--`A)"
+  then have "space M = (\<Union>n. (T^^n)--`A) \<union> (space M - (\<Union>n. (T^^n)--`A))" using sets.sets_into_space by blast
+  then have "emeasure M (space M) = emeasure M (\<Union>n. (T^^n)--`A)"
     by (metis a preimages_conull(1)[OF assms] emeasure_Un_null_set)
   moreover have "(\<integral>\<^sup>+y. return_time_function A y \<partial>M) = emeasure M (\<Union>n. (T^^n)--`A)"
     using kac_formula_nonergodic[OF assms(1)] by simp
@@ -264,9 +279,10 @@ proof -
 qed
 
 lemma (in ergodic_conservative_mpt) induced_function_integral:
-   fixes f::"'a \<Rightarrow> real"
+  fixes f::"'a \<Rightarrow> real"
   assumes [measurable]: "A \<in> sets M" "integrable M f" and "emeasure M A > 0"
-   shows "integrable M (induced_function A f)" "(\<integral>y. induced_function A f y \<partial>M) = (\<integral> x. f x \<partial>M)"
+  shows "integrable M (induced_function A f)"
+        "(\<integral>y. induced_function A f y \<partial>M) = (\<integral> x. f x \<partial>M)"
 proof -
   show "integrable M (induced_function A f)"
     using induced_function_integral_nonergodic(1)[OF assms(1) assms(2)] by auto
@@ -280,9 +296,10 @@ proof -
 qed
 
 lemma (in ergodic_conservative_mpt) induced_function_integral_restr:
-   fixes f::"'a \<Rightarrow> real"
+  fixes f::"'a \<Rightarrow> real"
   assumes [measurable]: "A \<in> sets M" "integrable M f" and "emeasure M A > 0"
-   shows "integrable (restrict_space M A) (induced_function A f)" "(\<integral>y. induced_function A f y \<partial>(restrict_space M A)) = (\<integral> x. f x \<partial>M)"
+  shows "integrable (restrict_space M A) (induced_function A f)"
+        "(\<integral>y. induced_function A f y \<partial>(restrict_space M A)) = (\<integral> x. f x \<partial>M)"
 proof -
   show "integrable (restrict_space M A) (induced_function A f)"
     using induced_function_integral_restr_nonergodic(1)[OF assms(1) assms(2)] by auto
@@ -305,55 +322,55 @@ averages of the functions.*}
 theorem (in ergodic_pmpt) birkhoff_theorem_AE:
   fixes f::"'a \<Rightarrow> real"
   assumes "integrable M f"
-   shows "AE x in M. (\<lambda>n. birkhoff_sum f n x / n) \<longlonglongrightarrow> (\<integral> x. f x \<partial>M)"
+  shows "AE x in M. (\<lambda>n. birkhoff_sum f n x / n) \<longlonglongrightarrow> (\<integral> x. f x \<partial>M)"
 proof -
   have "AE x in M. (\<lambda>n. birkhoff_sum f n x / n) \<longlonglongrightarrow> real_cond_exp M Invariants f x"
     using birkhoff_theorem_AE_nonergodic[OF assms] by simp
   moreover have "AE x in M. real_cond_exp M Invariants f x = (\<integral> x. f x \<partial>M)"
-     using Invariants_cond_exp_is_integral[OF assms] by auto
+    using Invariants_cond_exp_is_integral[OF assms] by auto
   ultimately show ?thesis by auto
 qed
 
 theorem (in ergodic_pmpt) birkhoff_theorem_L1:
   fixes f::"'a \<Rightarrow> real"
   assumes [measurable]: "integrable M f"
-   shows "(\<lambda>n. \<integral>\<^sup>+x. norm(birkhoff_sum f n x / n - (\<integral> x. f x \<partial>M)) \<partial>M) \<longlonglongrightarrow> 0"
+  shows "(\<lambda>n. \<integral>\<^sup>+x. norm(birkhoff_sum f n x / n - (\<integral> x. f x \<partial>M)) \<partial>M) \<longlonglongrightarrow> 0"
 proof -
   {
     fix n::nat
     have "AE x in M. real_cond_exp M Invariants f x = (\<integral> x. f x \<partial>M)"
       using Invariants_cond_exp_is_integral[OF assms] by auto
-    then have *: "AE x in M.  norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x)
-               = norm(birkhoff_sum f n x / n - (\<integral> x. f x \<partial>M))"
+    then have *: "AE x in M. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x)
+                = norm(birkhoff_sum f n x / n - (\<integral> x. f x \<partial>M))"
       by auto
     have "(\<integral>\<^sup>+x. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x) \<partial>M)
-               = (\<integral>\<^sup>+x. norm(birkhoff_sum f n x / n - (\<integral> x. f x \<partial>M)) \<partial>M)"
+                = (\<integral>\<^sup>+x. norm(birkhoff_sum f n x / n - (\<integral> x. f x \<partial>M)) \<partial>M)"
       apply (rule nn_integral_cong_AE ) using * by auto
   }
   moreover have "(\<lambda>n. \<integral>\<^sup>+x. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x) \<partial>M) \<longlonglongrightarrow> 0"
-    using  birkhoff_theorem_L1_nonergodic[OF assms] by auto
+    using birkhoff_theorem_L1_nonergodic[OF assms] by auto
   ultimately show ?thesis by simp
 qed
 
 theorem (in ergodic_pmpt) birkhoff_sum_small_asymp_pos:
-    fixes f::"'a \<Rightarrow> real"
+  fixes f::"'a \<Rightarrow> real"
   assumes [measurable]: "integrable M f" and "e>0"
-   shows "AE x in M. infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) .. n * (\<integral>x. f x \<partial>M) + e}}"
+  shows "AE x in M. infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) .. n * (\<integral>x. f x \<partial>M) + e}}"
 proof -
-  have "AE x in M. infinite  {n. birkhoff_sum f n x \<in> {n * real_cond_exp M Invariants f x .. n * real_cond_exp M Invariants f x + e}}"
-    using  birkhoff_sum_small_asymp_pos_nonergodic[OF assms] by simp
+  have "AE x in M. infinite {n. birkhoff_sum f n x \<in> {n * real_cond_exp M Invariants f x .. n * real_cond_exp M Invariants f x + e}}"
+    using birkhoff_sum_small_asymp_pos_nonergodic[OF assms] by simp
   moreover have "AE x in M. real_cond_exp M Invariants f x = (\<integral>x. f x \<partial>M)"
     using Invariants_cond_exp_is_integral[OF assms(1)] by auto
   ultimately show ?thesis by auto
 qed
 
-theorem  (in ergodic_pmpt) birkhoff_sum_small_asymp_neg:
-    fixes f::"'a \<Rightarrow> real"
+theorem (in ergodic_pmpt) birkhoff_sum_small_asymp_neg:
+  fixes f::"'a \<Rightarrow> real"
   assumes [measurable]: "integrable M f" and "e>0"
-   shows "AE x in M. infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) - e .. n * (\<integral>x. f x \<partial>M)}}"
+  shows "AE x in M. infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) - e .. n * (\<integral>x. f x \<partial>M)}}"
 proof -
   have "AE x in M. infinite {n. birkhoff_sum f n x \<in> {n * real_cond_exp M Invariants f x - e .. n * real_cond_exp M Invariants f x}}"
-    using  birkhoff_sum_small_asymp_neg_nonergodic[OF assms] by simp
+    using birkhoff_sum_small_asymp_neg_nonergodic[OF assms] by simp
   moreover have "AE x in M. real_cond_exp M Invariants f x = (\<integral>x. f x \<partial>M)"
     using Invariants_cond_exp_is_integral[OF assms(1)] by auto
   ultimately show ?thesis by auto
@@ -367,9 +384,9 @@ proof (rule ccontr)
   assume "\<not>((\<integral> x. f x \<partial>M) > 0)"
   then have *: "(\<integral> x. f x \<partial>M) \<le> 0" by simp
 
-  have "AE x in M.  (\<lambda>n. birkhoff_sum f n x) \<longlonglongrightarrow> \<infinity> \<and> infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) - 1 .. n* (\<integral>x. f x \<partial>M)}}"
+  have "AE x in M. (\<lambda>n. birkhoff_sum f n x) \<longlonglongrightarrow> \<infinity> \<and> infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) - 1 .. n* (\<integral>x. f x \<partial>M)}}"
     using assms(2) birkhoff_sum_small_asymp_neg[OF assms(1)] by auto
-  then obtain x where x: "(\<lambda>n. birkhoff_sum f n x) \<longlonglongrightarrow> \<infinity>" "infinite  {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) - 1 .. n* (\<integral>x. f x \<partial>M)}}"
+  then obtain x where x: "(\<lambda>n. birkhoff_sum f n x) \<longlonglongrightarrow> \<infinity>" "infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) - 1 .. n* (\<integral>x. f x \<partial>M)}}"
     using AE_False eventually_elim2 by blast
   {
     fix n assume "birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) - 1 .. n * (\<integral>x. f x \<partial>M)}"
@@ -398,7 +415,7 @@ proof (rule ccontr)
   assume "\<not>((\<integral> x. f x \<partial>M) < 0)"
   then have *: "(\<integral> x. f x \<partial>M) \<ge> 0" by simp
 
-  have "AE x in M.  (\<lambda>n. birkhoff_sum f n x) \<longlonglongrightarrow> -\<infinity> \<and> infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) .. n* (\<integral>x. f x \<partial>M) + 1}}"
+  have "AE x in M. (\<lambda>n. birkhoff_sum f n x) \<longlonglongrightarrow> -\<infinity> \<and> infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) .. n* (\<integral>x. f x \<partial>M) + 1}}"
     using assms(2) birkhoff_sum_small_asymp_pos[OF assms(1)] by auto
   then obtain x where x: "(\<lambda>n. birkhoff_sum f n x) \<longlonglongrightarrow> -\<infinity>" "infinite {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) .. n* (\<integral>x. f x \<partial>M) + 1}}"
     using AE_False eventually_elim2 by blast
@@ -429,7 +446,7 @@ proof (rule ccontr)
   assume "\<not>((\<integral> x. f x \<partial>M) \<noteq> 0)"
   then have *: "(\<integral> x. f x \<partial>M) = 0" by simp
 
-  have "AE x in M.  (\<lambda>n. abs(birkhoff_sum f n x)) \<longlonglongrightarrow> \<infinity> \<and> infinite {n. birkhoff_sum f n x \<in> {0 .. 1}}"
+  have "AE x in M. (\<lambda>n. abs(birkhoff_sum f n x)) \<longlonglongrightarrow> \<infinity> \<and> infinite {n. birkhoff_sum f n x \<in> {0 .. 1}}"
     using assms(2) birkhoff_sum_small_asymp_pos[OF assms(1)] * by auto
   then obtain x where x: "(\<lambda>n. abs(birkhoff_sum f n x)) \<longlonglongrightarrow> \<infinity>" "infinite {n. birkhoff_sum f n x \<in> {0 .. 1}}"
     using AE_False eventually_elim2 by blast

@@ -28,7 +28,7 @@ lemma upper_Banach_density_in_01:
   "upper_Banach_density A \<le> 1"
   "upper_Banach_density A \<ge> 0"
 proof -
- {
+  {
     fix n::nat assume "n>0"
     have "card(A \<inter> {..<n}) \<le> n" by (metis card_lessThan Int_lower2 card_mono finite_lessThan)
     then have "card(A \<inter> {..<n}) / n \<le> ereal 1" using `n>0` by auto
@@ -88,7 +88,7 @@ lemma lem_ge_sum:
   assumes "l>x+y"
   shows "\<exists>lx ly. l = lx + ly \<and> lx > x \<and> ly > y"
 proof -
-  def lx \<equiv> "x + (l-(x+y))/2" and ly \<equiv> "y + (l-(x+y))/2"
+  define lx ly where "lx = x + (l-(x+y))/2" and "ly = y + (l-(x+y))/2"
   have "l = lx + ly \<and> lx > x \<and> ly > y" unfolding lx_def ly_def using assms by auto
   then show ?thesis by auto
 qed
@@ -97,7 +97,7 @@ lemma upper_Banach_density_union:
   shows "upper_Banach_density (A \<union> B) \<le> upper_Banach_density A + upper_Banach_density B"
 proof -
   {
-    fix l assume "l >  upper_Banach_density A + upper_Banach_density B"
+    fix l assume "l > upper_Banach_density A + upper_Banach_density B"
     then obtain lA lB where l: "l = lA+lB" and lA: "lA > upper_Banach_density A" and lB: "lB > upper_Banach_density B"
       using lem_ge_sum by blast
     {
@@ -160,8 +160,8 @@ lemma
   assumes "upper_Banach_density (A \<Delta> B) = 0"
   shows "upper_Banach_density A = upper_Banach_density B"
 proof -
-  have "A- (A\<inter>B) \<subseteq> A \<Delta> B" "B- (A\<inter>B)  \<subseteq> A \<Delta> B"
-    using assms(1) by (auto simp add: Diff_Int  Un_infinite)
+  have "A- (A\<inter>B) \<subseteq> A \<Delta> B" "B- (A\<inter>B) \<subseteq> A \<Delta> B"
+    using assms(1) by (auto simp add: Diff_Int Un_infinite)
   then have "upper_Banach_density (A - (A\<inter>B)) = 0"
             "upper_Banach_density (B - (A\<inter>B)) = 0"
     using upper_Banach_density_subset assms(1) upper_Banach_density_in_01(3)
@@ -193,7 +193,7 @@ lemma upper_Banach_density_shift:
   fixes k::nat and l::int
   shows "ereal(upper_Banach_density A) = limsup (\<lambda>n. card(A \<inter> {k..nat(n+l)}) / n)"
 proof -
-  def C \<equiv> "k+2*nat(abs(l))+1"
+  define C where "C = k+2*nat(abs(l))+1"
   have *: "(\<lambda>n. C*(1/n)) \<longlonglongrightarrow> real C * 0"
     by (rule tendsto_mult, auto simp add: lim_1_over_n)
   have l0: "limsup (\<lambda>n. C/n) = 0"
@@ -223,7 +223,7 @@ proof -
 
   {
     fix n::nat
-    have "card ({..<k} \<union> {n-nat(abs(l))..n + nat(abs(l))}) \<le> card {..<k} + card  {n-nat(abs(l))..n + nat(abs(l))}"
+    have "card ({..<k} \<union> {n-nat(abs(l))..n + nat(abs(l))}) \<le> card {..<k} + card {n-nat(abs(l))..n + nat(abs(l))}"
       by (rule card_Un_le)
     also have "... \<le> k + 2*nat(abs(l)) + 1" by auto
     finally have *: "card ({..<k} \<union> {n-nat(abs(l))..n + nat(abs(l))}) \<le> C" unfolding C_def by blast
@@ -238,16 +238,16 @@ proof -
       by (simp add: divide_right_mono)
     also have "... = card (A \<inter> {k..nat(n+l)})/n + C/n"
       using add_divide_distrib by auto
-    finally have "card (A \<inter> {..<n}) / n \<le>  card (A \<inter> {k..nat(n+l)})/n + C/n"
+    finally have "card (A \<inter> {..<n}) / n \<le> card (A \<inter> {k..nat(n+l)})/n + C/n"
       by auto
   }
-  then have "limsup (\<lambda>n. card(A \<inter>  {..<n}) / n) \<le> limsup (\<lambda>n. card (A \<inter>  {k..nat(n+l)})/n + ereal(C/n))"
+  then have "limsup (\<lambda>n. card(A \<inter> {..<n}) / n) \<le> limsup (\<lambda>n. card (A \<inter> {k..nat(n+l)})/n + ereal(C/n))"
     by (simp add: Limsup_mono)
   also have "... \<le> limsup (\<lambda>n. card (A \<inter> {k..nat(n+l)})/n) + limsup (\<lambda>n. C/n)"
     by (rule ereal_limsup_add_mono)
-  finally have "limsup (\<lambda>n. card(A \<inter>  {..<n}) / n) \<le> limsup (\<lambda>n. card (A \<inter> {k..nat(n+l)})/n)"
+  finally have "limsup (\<lambda>n. card(A \<inter> {..<n}) / n) \<le> limsup (\<lambda>n. card (A \<inter> {k..nat(n+l)})/n)"
     using l0 by simp
-  then have "limsup (\<lambda>n. card(A \<inter>  {..<n}) / n) = limsup (\<lambda>n. card (A \<inter> {k..nat(n+l)})/n)"
+  then have "limsup (\<lambda>n. card(A \<inter> {..<n}) / n) = limsup (\<lambda>n. card (A \<inter> {k..nat(n+l)})/n)"
     using a by auto
   then show ?thesis using upper_Banach_density_in_01(1) by auto
 qed
@@ -268,7 +268,7 @@ lemma lower_Banach_density_in_01:
   "lower_Banach_density A \<le> 1"
   "lower_Banach_density A \<ge> 0"
 proof -
- {
+  {
     fix n::nat assume "n>0"
     have "card(A \<inter> {..<n}) \<le> n" by (metis card_lessThan Int_lower2 card_mono finite_lessThan)
     then have "card(A \<inter> {..<n}) / n \<le> ereal 1" using `n>0` by auto
@@ -311,10 +311,10 @@ proof -
       by (metis (no_types) Int_commute card_Diff_subset_Int card_lessThan finite_Int finite_lessThan inf_top_right)
     then have "card (A \<inter> {..<n})/n = (real n - card((UNIV-A) \<inter> {..<n})) / n"
       by (metis Int_lower2 card_lessThan card_mono finite_lessThan of_nat_diff)
-    then have "card (A \<inter> {..<n})/n =  ereal 1 - card((UNIV-A) \<inter> {..<n})/n"
+    then have "card (A \<inter> {..<n})/n = ereal 1 - card((UNIV-A) \<inter> {..<n})/n"
       using `n>0` by (simp add: diff_divide_distrib)
   }
-  then have "eventually (\<lambda>n. card (A \<inter> {..<n})/n =  ereal 1 - card((UNIV-A) \<inter> {..<n})/n) sequentially"
+  then have "eventually (\<lambda>n. card (A \<inter> {..<n})/n = ereal 1 - card((UNIV-A) \<inter> {..<n})/n) sequentially"
     by (simp add: eventually_at_top_dense)
   then have "liminf (\<lambda>n. card (A \<inter> {..<n})/n) = liminf (\<lambda>n. ereal 1 - card((UNIV-A) \<inter> {..<n})/n)"
     by (rule Liminf_eq)

@@ -4,13 +4,14 @@ session "Ergodic_Theory" (AFP) = "HOL-Probability" +
   options [timeout = 600]
   theories
     SG_Library_Complement
+    Product_Topology
     Conditional_Expectation
+    Fekete
+    Banach_Density
     Measure_Preserving_Transformations
     Recurrence
     Invariants
     Ergodicity
-    Fekete
     Kingman
-    Banach_Density
     Gouezel_Karlsson
   document_files "root.tex"
