@@ -1014,6 +1014,29 @@ abstract =
   library includes a datatype to work on arbitrary intervals of machine
   words.
 
+[Simple_Firewall]
+title = Simple Firewall
+author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de/>, Max Haslbeck<>
+notify = diekmann@net.in.tum.de, max.haslbeck@gmx.de
+date = 2016-08-24
+topic = Computer Science/Networks
+abstract = 
+  We present a simple model of a firewall. The firewall can accept or
+  drop a packet and can match on interfaces, IP addresses, protocol, and
+  ports. It was designed to feature nice mathematical properties: The
+  type of match expressions was carefully crafted such that the
+  conjunction of two match expressions is only one match expression.
+  This model is too simplistic to mirror all aspects of the real world.
+  In the upcoming entry "Iptables Semantics", we will translate the
+  Linux firewall iptables to this model.  For a fixed service (e.g. ssh,
+  http), we provide an algorithm to compute an overview of the
+  firewall's filtering behavior. The algorithm computes minimal service
+  matrices, i.e. graphs which partition the complete IPv4 and IPv6
+  address space and visualize the allowed accesses between partitions.
+  For a detailed description, see
+  <a href="http://dl.ifip.org/db/conf/networking/networking2016/1570232858.pdf">Verified iptables Firewall
+  Analysis</a>, IFIP Networking 2016.
+
 [KBPs]
 title = Knowledge-based programs
 author = Peter Gammie <http://peteg.org/>

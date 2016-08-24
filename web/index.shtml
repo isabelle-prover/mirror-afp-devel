@@ -53,6 +53,15 @@ is available <a href="citing.shtml">[here]</a>.
 	</tr>
 
 <tr><td class="entry">
+2016-08-24:
+<a href="entries/Simple_Firewall.shtml">Simple Firewall</a>
+<br>Author:
+<a href="http://net.in.tum.de/~diekmann">Cornelius Diekmann</a>,
+<a href="http://liftm.de/">Julius Michaelis</a> and 
+Max Haslbeck
+</td></tr>
+
+<tr><td class="entry">
 2016-08-18:
 <a href="entries/InfPathElimination.shtml">Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths</a>
 <br>Author:
