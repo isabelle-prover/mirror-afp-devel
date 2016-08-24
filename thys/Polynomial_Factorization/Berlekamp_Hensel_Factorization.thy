@@ -28,7 +28,6 @@ imports
 begin
 
 hide_const (open) Module.smult
-hide_const (open) Divisibility.prime
 
 context
   fixes F :: "GFp ffield" (structure)

@@ -5,148 +5,15 @@
 *)
 section \<open>Polynomial Divisibility\<close>
 
-text \<open>We make a connection to HOL/Algebra/Divisibility to get the following two lemmas.
-
-If $p$ is an irreducible polynomial and $p$ divides $q \cdot r$, then $p$ divides one of $q$ and $r$.
-
-If the polynomial $k$ divides both $p \cdot q$ and $p \cdot r$ then $k$ divides $p \cdot gcd(q,r)$.
-
-The connection was made to show that polynomials over fields are a unique factorization domain,
-and in HOL/Algebra/Divisibility there is an alternative characterization unique factorization domain,
-which eased the proof.\<close>
+text \<open>We make a connection between irreducibility of Missing-Polynomial and Factorial-Ring.
+  TODO: at the moment we have to copy a certain part since an essential lemma was declared as
+  private.\<close>
 
 
 theory Polynomial_Divisibility
 imports
   "../Polynomial_Interpolation/Missing_Polynomial"
-  Unique_Factorization_Domain
 begin
-
-context
-  fixes ty :: "'a :: {field,factorial_ring_gcd} itself"
-begin
-
-abbreviation "poly_monoid \<equiv> mk_monoid::'a poly monoid" 
-
-private lemma factor_id: "((x = 0 \<longleftrightarrow> y = 0) \<and> x dvd y)
-   = ((x = 0 \<longleftrightarrow> y = 0) \<and> (\<exists> z. z \<noteq> 0 \<and> x * z = (y :: 'a poly)))" unfolding dvd_def
-  by (auto, intro exI[of _ 1], auto)
-
-
-interpretation poly_cancel: comm_monoid_cancel poly_monoid
-  rewrites factorid: "(factor :: 'a poly \<Rightarrow> 'a poly \<Rightarrow> bool) = (\<lambda> x y. ((x = 0 \<longleftrightarrow> y = 0) \<and> x dvd y))" 
-  unfolding factor_id[symmetric]
-  by (rule comm_monoid_cancel_idom, intro ext, subst factor_idom, auto)
-
-declare poly_cancel.divides_refl [simp del]
-
-qualified lemma factorid_carrier: assumes "(a::'a poly) \<noteq> 0" "b \<noteq> 0"
-  shows "factor a b = (a dvd b)"
-  unfolding factorid using assms by auto
-
-qualified lemma poly_Units: "Units poly_monoid = {p. p \<noteq> 0 \<and> degree p = 0}"
-proof -
-  {
-    fix p q :: "'a poly"
-    assume nz: "p \<noteq> 0" "q \<noteq> 0" and pq: "p * q = 1"
-    from degree_mult_eq[OF nz, unfolded pq] have "degree p = 0" by auto
-  }
-  moreover
-  {
-    fix p :: "'a poly"
-    assume "p \<noteq> 0" "degree p = 0"
-    then obtain c where p: "p = [: c :]" by (metis degree_0_id)
-    with `p \<noteq> 0` have "c \<noteq> 0" by auto
-    hence "\<exists>q. q \<noteq> 0 \<and> q * p = 1 \<and> p * q = 1"
-      by (intro exI[of _ "[: 1/c :]"], auto simp: p one_poly_def)
-  }
-  ultimately show ?thesis
-  unfolding Units_def Bex_def by auto
-qed
-
-private lemma poly_gcd: "gcd_condition_monoid poly_monoid"
-proof (unfold_locales, unfold mk_monoid_simps)
-  fix a b :: "'a poly"
-  let ?g = "gcd a b"
-  assume a: "a \<noteq> 0" and b: "b \<noteq> 0"
-  hence g: "?g \<noteq> 0" by auto
-  note f = factorid_carrier
-  show "\<exists>c. c \<noteq> 0 \<and> c gcdof\<^bsub>local.poly_monoid\<^esub> a b"
-  proof (rule exI[of _ ?g], unfold isgcd_def f[OF g a] f[OF g b] Ball_def mk_monoid_simps, 
-    intro conjI allI impI; (elim conjE)?)
-    fix x :: "'a poly"
-    assume x: "x \<noteq> 0" and div: "x divides\<^bsub>poly_monoid\<^esub> a"
-      "x divides\<^bsub>poly_monoid\<^esub> b" 
-    hence "x dvd a" "x dvd b" unfolding f[OF x b] f[OF x a] by auto
-    hence "x dvd (gcd a b)" by (rule gcd_greatest)
-    thus "x divides\<^bsub>poly_monoid\<^esub> gcd a b" unfolding f[OF x g] .
-  qed (insert a b, auto)
-qed
-
-private lemma poly_div_chain: "divisor_chain_condition_monoid poly_monoid" 
-proof (unfold_locales, unfold mk_monoid_simps, rule wf_subset[OF wf_inv_image[OF wf_less]])
-  let ?f = "\<lambda> x :: 'a poly. degree x"
-  {
-    fix x y :: "'a poly"
-    assume x: "x \<noteq> 0" and y: "y \<noteq> 0" and fac: "properfactor x y"
-    from fac[unfolded properfactor_def factorid_carrier[OF x y] factorid_carrier[OF y x]]
-    have xy: "x dvd y" and yx: "\<not> y dvd x" by auto
-    from xy obtain z where xy: "y = x * z" unfolding dvd_def by auto
-    with y have z: "z \<noteq> 0" by auto
-    from degree_mult_eq[OF x z] have deg: "degree y = degree x + degree z" unfolding xy .
-    {
-      assume "degree z = 0"
-      then obtain c where zc: "z = [: c :]" by (metis degree_0_id)
-      with z have "c \<noteq> 0" by auto
-      have "y = smult c x" unfolding xy zc by simp
-      with `c \<noteq> 0` have "x = y * [: 1/c :]" by auto
-      with yx have False unfolding dvd_def by blast
-    }
-    with deg have "?f x < ?f y" by auto
-  }
-  thus "{(x, y). x \<noteq> 0 \<and> y \<noteq> 0 \<and> properfactor x y} \<subseteq> inv_image {(x, y). x < y} ?f"
-    by auto
-qed
-
-lemma factorial_monoid_field_poly: "factorial_monoid poly_monoid"
-  unfolding factorial_condition_two[symmetric]
-  using poly_div_chain poly_gcd by blast  
-
-qualified lemma irreducible_connect:
-  assumes irr: "Missing_Polynomial.irreducible (p::'a poly)" shows "irreducible p"
-proof -
-  from irr have deg: "degree p \<noteq> 0" and p: "p \<noteq> 0"
-    unfolding Missing_Polynomial.irreducible_def by auto
-  hence noU: "p \<notin> Units poly_monoid" unfolding poly_Units by auto
-  show ?thesis unfolding Divisibility.irreducible_def mk_monoid_simps 
-  proof (rule conjI[OF noU], intro ballI impI, unfold poly_Units mk_monoid_simps)
-    fix q
-    assume q: "q \<noteq> 0" and fac: "properfactor q p"
-    from this[unfolded properfactor_def factorid_carrier[OF p q] factorid_carrier[OF q p]]
-    have dvd: "q dvd p" and ndvd: "\<not> p dvd q" by auto
-    {
-      assume "degree q \<noteq> 0"
-      from irreducible_dvd_smult[OF this irr dvd] ndvd obtain c where "c \<noteq> 0" and "p = smult c q" by auto
-      hence q: "q = p * [: 1/c :]" by auto
-      with ndvd have False unfolding dvd_def by blast
-    }
-    thus "q \<in> {p. p \<noteq> 0 \<and> degree p = 0}" using q by auto
-  qed
-qed
-
-lemma irreducible_dvd_mult: assumes irr: "Missing_Polynomial.irreducible (p :: 'a poly)"
-  and dvd: "p dvd q * r"
-  shows "p dvd q \<or> p dvd r"
-proof (cases "q * r = 0")
-  case False
-  hence q: "q \<noteq> 0" and r: "r \<noteq> 0" by auto
-  from irr have p: "p \<noteq> 0" unfolding Missing_Polynomial.irreducible_def by auto
-  from factorial_monoid.irreducible_prime[OF factorial_monoid_field_poly irreducible_connect[OF irr],
-    unfolded Divisibility.prime_def Ball_def mk_monoid_simps poly_Units, OF p,
-    THEN conjunct2, rule_format, OF q r] dvd show ?thesis
-    using p q r by (simp add: factorid_carrier)
-qed auto
-end
 
 lemma dvd_gcd_mult: fixes p :: "'a :: semiring_gcd"
   assumes dvd: "k dvd p * q" "k dvd p * r"
@@ -158,27 +25,85 @@ lemma poly_gcd_monic_factor:
   "monic p \<Longrightarrow>  gcd (p * q) (p * r) = p * gcd q r"
   by (rule gcdI [symmetric]) (simp_all add: normalize_mult normalize_monic dvd_gcd_mult)
 
-
-hide_const (open) Divisibility.irreducible
-hide_fact (open) Divisibility.irreducibleI
-hide_fact (open) Divisibility.irreducibleD
-hide_fact (open) Divisibility.irreducible_def
-
-hide_const (open) irreducible
-
 context
-  assumes "SORT_CONSTRAINT('a :: {field,factorial_ring_gcd})"
+  assumes "SORT_CONSTRAINT('a :: field)"
+begin
+lemma irreducible_connect:
+  assumes irr: "Missing_Polynomial.irreducible (p::'a poly)" shows "Factorial_Ring.irreducible p"
+  unfolding Factorial_Ring.irreducible_def
+proof (intro conjI impI allI)
+  from irr have deg: "degree p \<noteq> 0" and p: "p \<noteq> 0"
+    unfolding Missing_Polynomial.irreducible_def by auto
+  note unit = is_unit_iff_degree[OF p]
+  from p deg show "p \<noteq> 0" "\<not> is_unit p" unfolding unit by auto
+  fix f g
+  assume pfg: "p = f * g"
+  with p have f: "f \<noteq> 0" and g: "g \<noteq> 0" by auto
+  show "is_unit f \<or> is_unit g" unfolding is_unit_iff_degree[OF f] is_unit_iff_degree[OF g]
+    using irreducibleD(2)[OF irr, unfolded pfg] deg[unfolded pfg] f g
+    using degree_mult_eq by fastforce
+qed
+
+(* TODO: this part has been copied, since the desired lemma
+  field_poly_irreducible_imp_prime below is private in
+  Polynomial_Factorial *)
+context
 begin
 
+private definition unit_factor_field_poly :: "'a :: field poly \<Rightarrow> 'a poly" where
+  "unit_factor_field_poly p = [:lead_coeff p:]"
+
+private definition normalize_field_poly :: "'a :: field poly \<Rightarrow> 'a poly" where
+  "normalize_field_poly p = smult (inverse (lead_coeff p)) p"
+
+private definition euclidean_size_field_poly :: "'a :: field poly \<Rightarrow> nat" where
+  "euclidean_size_field_poly p = (if p = 0 then 0 else 2 ^ degree p)" 
+
+private lemma dvd_field_poly: "dvd.dvd (op * :: 'a :: field poly \<Rightarrow> _) = op dvd"
+    by (intro ext) (simp_all add: dvd.dvd_def dvd_def)
+
+interpretation field_poly: 
+  euclidean_ring "op div" "op *" "op mod" "op +" "op -" 0 "1 :: 'a :: field poly" 
+    normalize_field_poly unit_factor_field_poly euclidean_size_field_poly uminus
+proof (standard, unfold dvd_field_poly)
+  fix p :: "'a poly"
+  show "unit_factor_field_poly p * normalize_field_poly p = p"
+    by (cases "p = 0") 
+       (simp_all add: unit_factor_field_poly_def normalize_field_poly_def lead_coeff_nonzero)
+next
+  fix p :: "'a poly" assume "is_unit p"
+  thus "normalize_field_poly p = 1"
+    by (elim is_unit_polyE) (auto simp: normalize_field_poly_def monom_0 one_poly_def field_simps)
+next
+  fix p :: "'a poly" assume "p \<noteq> 0"
+  thus "is_unit (unit_factor_field_poly p)"
+    by (simp add: unit_factor_field_poly_def lead_coeff_nonzero is_unit_pCons_iff)
+qed (auto simp: unit_factor_field_poly_def normalize_field_poly_def lead_coeff_mult 
+       euclidean_size_field_poly_def intro!: degree_mod_less' degree_mult_right_le)
+
+lemma field_poly_irreducible_imp_prime:
+  assumes "Factorial_Ring.irreducible (p :: 'a :: field poly)"
+  shows   "prime_elem p"
+proof -
+  have A: "class.comm_semiring_1 op * 1 op + (0 :: 'a poly)" ..
+  from field_poly.irreducible_imp_prime_elem[of p] assms
+    show ?thesis unfolding Factorial_Ring.irreducible_def prime_elem_def dvd_field_poly
+        comm_semiring_1.irreducible_def[OF A] comm_semiring_1.prime_elem_def[OF A] by blast
+  qed
+end
+  
+lemma irreducible_prime_elem:
+  assumes irr: "Missing_Polynomial.irreducible (p::'a poly)" shows "prime_elem p"
+  using field_poly_irreducible_imp_prime[OF irreducible_connect[OF irr]] .
+
+lemma irreducible_dvd_mult: assumes irr: "irreducible (p :: 'a poly)"
+  and dvd: "p dvd q * r"
+  shows "p dvd q \<or> p dvd r" using prime_elem_dvd_multD[OF irreducible_prime_elem[OF irr] dvd] .
+
 lemma irreducible_dvd_pow: fixes p :: "'a poly" 
-  assumes irr: "irreducible p"
-  shows "p dvd q ^ Suc n \<Longrightarrow> p dvd q"
-proof (induct n)
-  case (Suc n)
-  have "q ^ Suc (Suc n) = q * q ^ Suc n" by simp
-  from irreducible_dvd_mult[OF irr Suc(2)[unfolded this]] Suc(1)
-  show ?case by auto
-qed simp
+  assumes irr: "irreducible p"  
+  shows "p dvd q ^ n \<Longrightarrow> p dvd q"
+  using irreducible_prime_elem[OF irr] by (rule prime_elem_dvd_power)
 
 lemma irreducible_dvd_setprod: fixes p :: "'a poly"
   assumes irr: "irreducible p"

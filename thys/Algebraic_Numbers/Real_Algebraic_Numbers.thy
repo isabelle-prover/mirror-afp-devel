@@ -2808,7 +2808,7 @@ next
     note y = rai_condD[OF y[unfolded yt]]
     from x(1,5) have ax: "alg_poly ?x ?p1" unfolding root_cond_def alg_poly_def by simp
     from y(1,5) have ay: "alg_poly ?y ?p2" unfolding root_cond_def alg_poly_def by simp
-    from alg_poly_add[OF ax ay] have axy: "alg_poly (?x + ?y) ?p" .
+    from alg_poly_add_real[OF ax ay] have axy: "alg_poly (?x + ?y) ?p" .
     from alg_polyD[OF this] have p: "?p \<noteq> 0" and rt: "rpoly ?p (?x + ?y) = 0" .
     let ?bnd = "(\<lambda>((l1, r1), l2 :: rat, r2 :: rat). (l1 + l2, r1 + r2))"
     def bnd \<equiv> ?bnd

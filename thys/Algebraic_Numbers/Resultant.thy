@@ -17,7 +17,6 @@ imports
   "../Jordan_Normal_Form/Matrix_IArray_Impl"
   "../Jordan_Normal_Form/Determinant_Impl"
   "../Polynomial_Factorization/Rational_Factorization"
-  Unique_Factorization_Poly
   Bivariate_Polynomials
   Algebraic_Numbers_Prelim
   Binary_Exponentiation
@@ -1540,21 +1539,33 @@ qed
 
 text\<open>Corresponds to Lemma 7.2.3 of the textbook\<close>
 
+lemma coprime_mult_cross_dvd:
+  fixes p q :: "'a :: factorial_ring_gcd"
+  assumes coprime: "coprime p q" and eq: "p' * p = q' * q" and p: "p \<noteq> 0" and q: "q \<noteq> 0"
+  shows "p dvd q' \<and> q dvd p'" using assms
+  by (metis coprime_dvd_mult_iff dvd_triv_right gcd.commute)
+
+lemma not_coprime_iff_common_factor:
+  fixes p q :: "'a :: factorial_ring_gcd"
+  shows "\<not> coprime p q \<longleftrightarrow> (\<exists>r. r dvd p \<and> r dvd q \<and> \<not> r dvd 1)"
+  by (metis gcd_dvd1 gcd_dvd2 is_unit_gcd semiring_gcd_class.gcd_greatest_iff)
+
 lemma resultant_zero_imp_common_factor:
-  fixes p q :: "'a :: ufd poly"
+  fixes p q :: "'a :: factorial_ring_gcd poly"
   assumes deg: "degree p > 0 \<or> degree q > 0" and r0: "resultant p q = 0"
-  shows "\<not> coprime\<^sub>I p q"
+  shows "\<not> coprime p q"
   unfolding neq0_conv[symmetric]
 proof -
   { assume degp: "degree p > 0" and degq: "degree q > 0"
     have p0: "p \<noteq> 0" using degp by auto
     have q0: "q \<noteq> 0" using degq by auto
-    assume cop: "coprime\<^sub>I p q"
+    assume cop: "coprime p q"
     obtain p' q' where "p' * p + q' * q = 0"
       and p': "degree p' < degree q" and q': "degree q' < degree p"
       and p'0: "p' \<noteq> 0" and q'0: "q' \<noteq> 0"
       using resultant_as_nonzero_poly[OF degp degq] r0 by auto
     hence "p' * p = - q' * q" by (simp add: eq_neg_iff_add_eq_0)
+    
     from coprime_mult_cross_dvd[OF cop this p0 q0]
     have "p dvd q'" by auto
     from dvd_imp_degree_le[OF this q'0]

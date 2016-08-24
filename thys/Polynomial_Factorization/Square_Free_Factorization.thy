@@ -17,9 +17,8 @@ imports
   Polynomial_Divisibility
   Order_Polynomial
   Fundamental_Theorem_Algebra_Factorized
+  Ring_Hom_Poly
 begin
-
-hide_const Coset.order
 
 context
   assumes "SORT_CONSTRAINT('a::idom)"
