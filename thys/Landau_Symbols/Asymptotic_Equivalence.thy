@@ -103,7 +103,51 @@ lemma asymp_equiv_trans_lift2 [trans]:
   shows   "f c \<sim> b"
   using asymp_equiv_symI[OF assms(3)[OF assms(2)]] assms(1)
   by (blast intro: asymp_equiv_trans)
-  
+
+(* TODO Move *)
+lemma Lim_eventually: "eventually (\<lambda>x. f x = c) F \<Longrightarrow> filterlim f (nhds c) F"
+  by (simp add: eventually_mono eventually_nhds_x_imp_x filterlim_iff)
+
+lemma asymp_equivD_const:
+  assumes "f \<sim> (\<lambda>_. c)"
+  shows   "(f \<longlongrightarrow> c) at_top"
+proof (cases "c = 0")
+  case False
+  with tendsto_mult_right[OF asymp_equivD[OF assms], of c] show ?thesis by simp
+next
+  case True
+  with asymp_equiv_eventually_zeros[OF assms] show ?thesis
+    by (simp add: Lim_eventually)
+qed
+
+lemma asymp_equiv_refl_ev:
+  assumes "eventually (\<lambda>x. f x = g x) at_top"
+  shows   "f \<sim> g"
+  by (intro asymp_equivI Lim_eventually)
+     (insert assms, auto elim!: eventually_mono)
+
+lemma asymp_equiv_sandwich:
+  assumes "eventually (\<lambda>x. f x \<ge> 0) at_top"
+  assumes "eventually (\<lambda>x. f x \<le> g x) at_top"
+  assumes "eventually (\<lambda>x. g x \<le> h x) at_top"
+  assumes "f \<sim> h"
+  shows   "g \<sim> f" "g \<sim> h"
+proof -
+  show "g \<sim> f"
+  proof (rule asymp_equivI, rule tendsto_sandwich)
+    from assms(1-3) asymp_equiv_eventually_zeros[OF assms(4)]
+      show "eventually (\<lambda>n. (if h n = 0 \<and> f n = 0 then 1 else h n / f n) \<ge>
+                              (if g n = 0 \<and> f n = 0 then 1 else g n / f n)) at_top"
+        by eventually_elim (auto intro!: divide_right_mono)
+    from assms(1-3) asymp_equiv_eventually_zeros[OF assms(4)]
+      show "eventually (\<lambda>n. 1 \<le>
+                              (if g n = 0 \<and> f n = 0 then 1 else g n / f n)) at_top"
+        by eventually_elim (auto intro!: divide_right_mono)
+  qed (insert asymp_equiv_symI[OF assms(4)], simp_all add: asymp_equiv_def)
+  also note \<open>f \<sim> h\<close>
+  finally show "g \<sim> h" .
+qed
+
 
 context
 begin
