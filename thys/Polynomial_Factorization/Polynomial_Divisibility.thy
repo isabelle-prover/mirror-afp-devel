@@ -5,9 +5,7 @@
 *)
 section \<open>Polynomial Divisibility\<close>
 
-text \<open>We make a connection between irreducibility of Missing-Polynomial and Factorial-Ring.
-  TODO: at the moment we have to copy a certain part since an essential lemma was declared as
-  private.\<close>
+text \<open>We make a connection between irreducibility of Missing-Polynomial and Factorial-Ring.\<close>
 
 
 theory Polynomial_Divisibility
@@ -44,54 +42,6 @@ proof (intro conjI impI allI)
     using degree_mult_eq by fastforce
 qed
 
-(* TODO: this part has been copied, since the desired lemma
-  field_poly_irreducible_imp_prime below is private in
-  Polynomial_Factorial *)
-context
-begin
-
-private definition unit_factor_field_poly :: "'a :: field poly \<Rightarrow> 'a poly" where
-  "unit_factor_field_poly p = [:lead_coeff p:]"
-
-private definition normalize_field_poly :: "'a :: field poly \<Rightarrow> 'a poly" where
-  "normalize_field_poly p = smult (inverse (lead_coeff p)) p"
-
-private definition euclidean_size_field_poly :: "'a :: field poly \<Rightarrow> nat" where
-  "euclidean_size_field_poly p = (if p = 0 then 0 else 2 ^ degree p)" 
-
-private lemma dvd_field_poly: "dvd.dvd (op * :: 'a :: field poly \<Rightarrow> _) = op dvd"
-    by (intro ext) (simp_all add: dvd.dvd_def dvd_def)
-
-interpretation field_poly: 
-  euclidean_ring "op div" "op *" "op mod" "op +" "op -" 0 "1 :: 'a :: field poly" 
-    normalize_field_poly unit_factor_field_poly euclidean_size_field_poly uminus
-proof (standard, unfold dvd_field_poly)
-  fix p :: "'a poly"
-  show "unit_factor_field_poly p * normalize_field_poly p = p"
-    by (cases "p = 0") 
-       (simp_all add: unit_factor_field_poly_def normalize_field_poly_def lead_coeff_nonzero)
-next
-  fix p :: "'a poly" assume "is_unit p"
-  thus "normalize_field_poly p = 1"
-    by (elim is_unit_polyE) (auto simp: normalize_field_poly_def monom_0 one_poly_def field_simps)
-next
-  fix p :: "'a poly" assume "p \<noteq> 0"
-  thus "is_unit (unit_factor_field_poly p)"
-    by (simp add: unit_factor_field_poly_def lead_coeff_nonzero is_unit_pCons_iff)
-qed (auto simp: unit_factor_field_poly_def normalize_field_poly_def lead_coeff_mult 
-       euclidean_size_field_poly_def intro!: degree_mod_less' degree_mult_right_le)
-
-lemma field_poly_irreducible_imp_prime:
-  assumes "Factorial_Ring.irreducible (p :: 'a :: field poly)"
-  shows   "prime_elem p"
-proof -
-  have A: "class.comm_semiring_1 op * 1 op + (0 :: 'a poly)" ..
-  from field_poly.irreducible_imp_prime_elem[of p] assms
-    show ?thesis unfolding Factorial_Ring.irreducible_def prime_elem_def dvd_field_poly
-        comm_semiring_1.irreducible_def[OF A] comm_semiring_1.prime_elem_def[OF A] by blast
-  qed
-end
-  
 lemma irreducible_prime_elem:
   assumes irr: "Missing_Polynomial.irreducible (p::'a poly)" shows "prime_elem p"
   using field_poly_irreducible_imp_prime[OF irreducible_connect[OF irr]] .
