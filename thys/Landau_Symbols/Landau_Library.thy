@@ -12,6 +12,11 @@ begin
 
 subsection {* Filters *}
 
+lemma eventually_at_top_compose:
+  assumes "\<And>c. eventually (\<lambda>x. (f x:: 'a :: linorder) \<ge> c) F" "eventually P at_top"
+  shows   "eventually (\<lambda>x. P (f x)) F"
+  using assms filterlim_at_top filterlim_iff by blast
+
 lemma filterlim_abs_real: "filterlim (abs::real \<Rightarrow> real) at_top at_top"
 proof (subst filterlim_cong[OF refl refl])
   from eventually_ge_at_top[of "0::real"] show "eventually (\<lambda>x::real. \<bar>x\<bar> = x) at_top"
