@@ -13,6 +13,7 @@ theory Applicative_Functor imports
   Applicative_Stream
   Applicative_PMF
   Applicative_Star
+  Applicative_Vector
 begin
 
 print_applicative
