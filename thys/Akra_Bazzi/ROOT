@@ -1,6 +1,6 @@
 chapter AFP
 
-session Akra_Bazzi (AFP) = "HOL-Analysis" +
+session Akra_Bazzi (AFP) = "Landau_Analysis" +
   options [timeout=600]
   theories [document = false]
     "~~/src/HOL/Decision_Procs/Approximation"

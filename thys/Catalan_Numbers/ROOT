@@ -1,10 +1,9 @@
 chapter AFP
 
-session Catalan_Numbers (AFP) = "HOL-Analysis" +
+session Catalan_Numbers (AFP) = "Landau_Analysis" +
   options [timeout=600]
   theories [document=false]
     "~~/src/HOL/Library/Formal_Power_Series"
-    "../Landau_Symbols/Landau_Symbols"
   theories
     Catalan_Numbers
   document_files
