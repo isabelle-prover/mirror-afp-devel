@@ -1020,7 +1020,7 @@ author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Julius Michaelis <
 notify = diekmann@net.in.tum.de, max.haslbeck@gmx.de
 date = 2016-08-24
 topic = Computer Science/Networks
-abstract = 
+abstract =
   We present a simple model of a firewall. The firewall can accept or
   drop a packet and can match on interfaces, IP addresses, protocol, and
   ports. It was designed to feature nice mathematical properties: The
@@ -1036,6 +1036,22 @@ abstract =
   For a detailed description, see
   <a href="http://dl.ifip.org/db/conf/networking/networking2016/1570232858.pdf">Verified iptables Firewall
   Analysis</a>, IFIP Networking 2016.
+
+[Routing]
+title = Routing
+author = Julius Michaelis <http://liftm.de/>, Cornelius Diekmann <http://net.in.tum.de/~diekmann>
+notify = afp@liftm.de
+date = 2016-08-31
+topic = Computer Science/Networks
+abstract =
+  This entry contains definitions for routing with routing
+  tables/longest prefix matching.  A routing table entry is modelled as
+  a record of a prefix match, a metric, an output port, and an optional
+  next hop. A routing table is a list of entries, sorted by prefix
+  length and metric. Additionally, a parser and serializer for the
+  output of the ip-route command, a function to create a relation from
+  output port to corresponding destination IP space, and a model of a
+  Linux-style router are included.
 
 [KBPs]
 title = Knowledge-based programs
@@ -4489,7 +4505,7 @@ author = Romain Aissat<>, Frederic Voisin<>, Burkhart Wolff <mailto: wolff@lri.f
 notify = wolff@lri.fr
 date = 2016-08-18
 topic = Computer Science/Programming Languages/Static Analysis
-abstract = 
+abstract =
   TRACER is a tool for verifying safety properties of sequential C
   programs. TRACER attempts at building a finite symbolic execution
   graph which over-approximates the set of all concrete reachable states
