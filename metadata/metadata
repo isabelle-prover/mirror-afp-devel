@@ -2225,6 +2225,9 @@ extra-history =
   [2016-08-19]:
   Removed unused "stop" parameters from the sifum_refinement locale.
   (revision dbc482d36372)
+  [2016-09-02]:
+  Extended "simple" refinement theory to be usable for all bisimulations.
+  (revision 547f31c25f60)
 
 [Strong_Security]
 title = A Formalization of Strong Security
