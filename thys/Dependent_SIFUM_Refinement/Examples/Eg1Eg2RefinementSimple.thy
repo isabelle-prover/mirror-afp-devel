@@ -1102,22 +1102,23 @@ lemma RelS_Eg1Eg2_secure_refinement_simple_\<R>:
   done
 
 lemma RelS_Eg1Eg2_secure_refinement_\<R>:
-  "secure_refinement (A.\<R> \<Gamma> \<S> P) RelS_Eg1Eg2 {(x,y). (fst (fst x)) = (fst (fst y))}"
+  "secure_refinement (A.\<R> \<Gamma> \<S> P) RelS_Eg1Eg2 \<I>simple"
+  apply(rule secure_refinement_simpler)
   apply(rule secure_refinement_simple)
   apply(rule RelS_Eg1Eg2_secure_refinement_simple_\<R>)
   done
 
 lemma strong_low_bisim_mm_R\<^sub>C_of_RelS_\<R>:
-  "conc.strong_low_bisim_mm (R\<^sub>C_of (A.\<R> \<Gamma> \<S> P) RelS_Eg1Eg2 {(x,y). (fst (fst x)) = (fst (fst y))})"
+  "conc.strong_low_bisim_mm (R\<^sub>C_of (A.\<R> \<Gamma> \<S> P) RelS_Eg1Eg2 \<I>simple)"
   apply(rule R\<^sub>C_of_strong_low_bisim_mm)
     apply(rule A.\<R>_bisim)
    apply(rule RelS_Eg1Eg2_secure_refinement_\<R>)
-  apply(simp add: sym_def)
+  apply(simp add: sym_def \<I>simple_def)
   done
 
 lemma read_buffer\<^sub>C_secure:
   "conc.low_mds_eq mds\<^sub>0 mem\<^sub>1 mem\<^sub>2 \<Longrightarrow> \<exists> \<Gamma>' \<S>' P'.
-   (\<langle>C.read_buffer\<^sub>C, mds\<^sub>0, mem\<^sub>1\<rangle>\<^sub>C, \<langle>C.read_buffer\<^sub>C, mds\<^sub>0, mem\<^sub>2\<rangle>\<^sub>C) \<in> (R\<^sub>C_of (A.\<R> \<Gamma>' \<S>' P') RelS_Eg1Eg2 {(x,y). (fst (fst x)) = (fst (fst y))})"
+   (\<langle>C.read_buffer\<^sub>C, mds\<^sub>0, mem\<^sub>1\<rangle>\<^sub>C, \<langle>C.read_buffer\<^sub>C, mds\<^sub>0, mem\<^sub>2\<rangle>\<^sub>C) \<in> (R\<^sub>C_of (A.\<R> \<Gamma>' \<S>' P') RelS_Eg1Eg2 \<I>simple)"
   apply(insert A.read_buffer_typed[OF HOL.refl HOL.refl HOL.refl])
   apply clarsimp
   apply(rule_tac x=\<Gamma>' in exI)
@@ -1135,7 +1136,7 @@ lemma read_buffer\<^sub>C_secure:
   apply(rule_tac x="mem\<^sub>A_of mem\<^sub>2" in exI)
   apply(rule conjI)
    apply(rule read_buffer_RelS)
-  apply(simp add: A_of_mds\<^sub>0_is_mds\<^sub>s)
+  apply(simp add: A_of_mds\<^sub>0_is_mds\<^sub>s \<I>simple_def)
   apply(drule low_mds_eq_from_conc_to_abs)
   apply(rule A.Typed_in_\<R>, simp)
       unfolding A.tyenv_wellformed_def apply safe

@@ -48,6 +48,8 @@ locale sifum_refinement =
   assumes control_vars_are_A_vars:
     "\<C>\<^sub>C = var\<^sub>C_of ` \<C>\<^sub>A"
 
+section "General Compositional Refinement"
+
 text {*
   The type of state relations between the abstract and compiled components.
   The job of a certifying compiler will be to exhibit one of these for each
@@ -852,34 +854,195 @@ lemma R\<^sub>C_of_strong_low_bisim_mm:
    apply assumption+
   done
 
-text {*
-  An abstract program that doesn't branch on secrets can be proved secure by a bisimulation
-  that never compares different programs. We call such a bisimulation a
-  \emph{simple} bisimulation.
-*}
-definition
-   bisim_simple
-where
-  "bisim_simple \<R>\<^sub>A \<equiv> \<forall>c\<^sub>1\<^sub>A mds mem\<^sub>1\<^sub>A c\<^sub>2\<^sub>A mem\<^sub>2\<^sub>A. (\<langle>c\<^sub>1\<^sub>A,mds,mem\<^sub>1\<^sub>A\<rangle>\<^sub>A,\<langle>c\<^sub>2\<^sub>A,mds,mem\<^sub>2\<^sub>A\<rangle>\<^sub>A) \<in> \<R>\<^sub>A \<longrightarrow> 
-                                              c\<^sub>1\<^sub>A = c\<^sub>2\<^sub>A"
+section "A Simpler Proof Principle for General Compositional Refinement"
 
 text {*
-  Given a simple bisimulation @{term \<R>\<^sub>A}, this definition captures the essence of the extra
+  Here we make use of the fact that the source language we are working
+  in is assumed deterministic. This allows us to invert the direction
+  of refinement and thereby to derive a simpler condition for secure
+  compositional refinement.
+  
+  The simpler condition rests on an ordinary definition of refinement,
+  and has the user prove separately that the coupling invariant @{term P}
+  is self-preserving. This allows proofs about coupling invariant properties
+  to be disentangled from the proof of refinement itself.
+*}
+  
+text {*
+  Given a  bisimulation @{term \<R>\<^sub>A}, this definition captures the essence of the extra
   requirements on a refinement relation~@{term \<R>} needed to ensure that the refined program is
   also secure. These requirements are essentially that:
   \begin{enumerate}
     \item The enabledness of the compiled code depends only on Low abstract data;
     \item The length of the abstract program to which a single step of the concrete program
           corresponds depends only on Low abstract data;
-    \item The concrete program also does not branch on anything that is not Low abstract data.
+    \item The coupling invariant is maintained.
   \end{enumerate}
   
   The second requirement we express via the parameter~@{term abs_steps} that, given an
   abstract and corresponding concrete configuration, yields the number of execution steps of
   the abstract configuration to which a single step of the concrete configuration corresponds.
+  
+  Note that a more specialised version of this definition, fixing the coupling
+  invariant @{term P} to be the one that relates all configurations with
+  identical programs and mode states, appeared in Murray et al., CSF 2016.
+  Here we generalise the theory to support a wider class of coupling invariants.
 *}
 definition
-  simple_refinement_safe 
+  simpler_refinement_safe 
+where
+  "simpler_refinement_safe \<R>\<^sub>A \<R> P abs_steps \<equiv> 
+  \<forall>c\<^sub>1\<^sub>A mds\<^sub>A mem\<^sub>1\<^sub>A c\<^sub>2\<^sub>A mem\<^sub>2\<^sub>A c\<^sub>1\<^sub>C mds\<^sub>C mem\<^sub>1\<^sub>C c\<^sub>2\<^sub>C mem\<^sub>2\<^sub>C. (\<langle>c\<^sub>1\<^sub>A,mds\<^sub>A,mem\<^sub>1\<^sub>A\<rangle>\<^sub>A,\<langle>c\<^sub>2\<^sub>A,mds\<^sub>A,mem\<^sub>2\<^sub>A\<rangle>\<^sub>A) \<in> \<R>\<^sub>A \<and> 
+      (\<langle>c\<^sub>1\<^sub>A,mds\<^sub>A,mem\<^sub>1\<^sub>A\<rangle>\<^sub>A,\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C) \<in> \<R> \<and> (\<langle>c\<^sub>2\<^sub>A,mds\<^sub>A,mem\<^sub>2\<^sub>A\<rangle>\<^sub>A,\<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> \<R> \<and>
+       (\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> P  \<longrightarrow>
+           (stops\<^sub>C \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C = stops\<^sub>C \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<and>
+           (abs_steps \<langle>c\<^sub>1\<^sub>A,mds\<^sub>A,mem\<^sub>1\<^sub>A\<rangle>\<^sub>A \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C = abs_steps \<langle>c\<^sub>2\<^sub>A,mds\<^sub>A,mem\<^sub>2\<^sub>A\<rangle>\<^sub>A \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<and>
+           (\<forall>mds\<^sub>1\<^sub>C' mds\<^sub>2\<^sub>C' mem\<^sub>1\<^sub>C' mem\<^sub>2\<^sub>C' c\<^sub>1\<^sub>C' c\<^sub>2\<^sub>C'. \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>1\<^sub>C', mds\<^sub>1\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C  \<and>
+                                          \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C', mds\<^sub>2\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C \<longrightarrow>
+                                          (\<langle>c\<^sub>1\<^sub>C', mds\<^sub>1\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>2\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> P \<and>
+                                          mds\<^sub>1\<^sub>C' = mds\<^sub>2\<^sub>C')"
+
+definition
+  secure_refinement_simpler
+where
+  "secure_refinement_simpler \<R>\<^sub>A \<R> P abs_steps \<equiv>
+  closed_others \<R> \<and>
+  preserves_modes_mem \<R> \<and>
+  new_vars_private \<R> \<and>
+  simpler_refinement_safe \<R>\<^sub>A \<R> P abs_steps \<and>
+  conc.closed_glob_consistent P \<and>
+  (\<forall> c\<^sub>1\<^sub>A mds\<^sub>A mem\<^sub>1\<^sub>A c\<^sub>1\<^sub>C mds\<^sub>C mem\<^sub>1\<^sub>C. 
+   (\<langle> c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A \<rangle>\<^sub>A, \<langle> c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C \<rangle>\<^sub>C) \<in> \<R> \<longrightarrow>
+    (\<forall> c\<^sub>1\<^sub>C' mds\<^sub>C' mem\<^sub>1\<^sub>C'. \<langle> c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C \<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle> c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C' \<rangle>\<^sub>C \<longrightarrow>
+     (\<exists> c\<^sub>1\<^sub>A' mds\<^sub>A' mem\<^sub>1\<^sub>A'. abs.neval \<langle> c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A \<rangle>\<^sub>A (abs_steps \<langle>c\<^sub>1\<^sub>A,mds\<^sub>A,mem\<^sub>1\<^sub>A\<rangle>\<^sub>A \<langle>c\<^sub>1\<^sub>C,mds\<^sub>C,mem\<^sub>1\<^sub>C\<rangle>\<^sub>C) \<langle> c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A' \<rangle>\<^sub>A \<and>
+                   (\<langle> c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A' \<rangle>\<^sub>A, \<langle> c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C' \<rangle>\<^sub>C) \<in> \<R>)))"
+    
+lemma secure_refinement_simpler:
+  assumes rrs: "secure_refinement_simpler \<R>\<^sub>A \<R> P abs_steps"
+  shows "secure_refinement \<R>\<^sub>A \<R> P"
+  unfolding secure_refinement_def
+proof(safe)
+  from rrs show "closed_others \<R>"
+    unfolding secure_refinement_simpler_def by blast
+next
+  from rrs show "preserves_modes_mem \<R>"
+    unfolding secure_refinement_simpler_def by blast
+next
+  from rrs show "new_vars_private \<R>"
+    unfolding secure_refinement_simpler_def by blast
+next
+  fix c\<^sub>1\<^sub>A mds\<^sub>A mem\<^sub>1\<^sub>A c\<^sub>1\<^sub>C mds\<^sub>C mem\<^sub>1\<^sub>C c\<^sub>1\<^sub>C' mds\<^sub>C' mem\<^sub>1\<^sub>C'
+  let ?n = "abs_steps \<langle>c\<^sub>1\<^sub>A,mds\<^sub>A,mem\<^sub>1\<^sub>A\<rangle>\<^sub>A \<langle>c\<^sub>1\<^sub>C,mds\<^sub>C,mem\<^sub>1\<^sub>C\<rangle>\<^sub>C"
+  assume in_\<R>\<^sub>1: "(\<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C) \<in> \<R>"
+     and eval\<^sub>1\<^sub>C: "\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C"
+  with rrs obtain c\<^sub>1\<^sub>A' mds\<^sub>A' mem\<^sub>1\<^sub>A' where
+    neval\<^sub>1: "abs.neval \<langle> c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A \<rangle>\<^sub>A ?n \<langle> c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A' \<rangle>\<^sub>A" and
+    in_\<R>\<^sub>1': "(\<langle> c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A' \<rangle>\<^sub>A, \<langle> c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C' \<rangle>\<^sub>C) \<in> \<R>"
+    unfolding secure_refinement_simpler_def by metis
+  have "(\<forall>c\<^sub>2\<^sub>A mem\<^sub>2\<^sub>A c\<^sub>2\<^sub>C mem\<^sub>2\<^sub>C c\<^sub>2\<^sub>A' mem\<^sub>2\<^sub>A'.
+                (\<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A) \<in> \<R>\<^sub>A \<and>
+                (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> \<R> \<and>
+                (\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C,\<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> P \<and> sifum_security.neval eval\<^sub>A \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A ?n \<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
+                (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
+                    \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C \<and>
+                    (\<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> \<R> \<and> 
+                    (\<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C,\<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> P))"
+  proof(clarsimp)
+    fix c\<^sub>2\<^sub>A mem\<^sub>2\<^sub>A c\<^sub>2\<^sub>C mem\<^sub>2\<^sub>C c\<^sub>2\<^sub>A' mem\<^sub>2\<^sub>A'
+    assume 
+    in_\<R>\<^sub>A: "(\<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A) \<in> \<R>\<^sub>A" and 
+    in_\<R>\<^sub>2: "(\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> \<R>" and
+    neval\<^sub>2: "sifum_security.neval eval\<^sub>A \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A ?n \<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A" and
+    in_P: "(\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C,\<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> P"
+    have "\<forall>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'. \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C \<longrightarrow> (\<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> \<R> \<and> (\<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> P"
+    proof(clarify)
+      fix c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'
+      assume eval\<^sub>2\<^sub>C: "\<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C"
+      from in_\<R>\<^sub>2 eval\<^sub>2\<^sub>C in_P rrs obtain
+      c\<^sub>2\<^sub>A'' mds\<^sub>A'' mem\<^sub>2\<^sub>A'' where 
+      neval\<^sub>2': "abs.neval \<langle> c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A \<rangle>\<^sub>A (abs_steps \<langle>c\<^sub>2\<^sub>A,mds\<^sub>A,mem\<^sub>2\<^sub>A\<rangle>\<^sub>A \<langle>c\<^sub>2\<^sub>C,mds\<^sub>C,mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<langle> c\<^sub>2\<^sub>A'', mds\<^sub>A'', mem\<^sub>2\<^sub>A'' \<rangle>\<^sub>A" and
+      in_\<R>\<^sub>2': "(\<langle> c\<^sub>2\<^sub>A'', mds\<^sub>A'', mem\<^sub>2\<^sub>A'' \<rangle>\<^sub>A, \<langle> c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C' \<rangle>\<^sub>C) \<in> \<R>"
+        unfolding secure_refinement_simpler_def by blast
+      let ?n' = "(abs_steps \<langle>c\<^sub>2\<^sub>A,mds\<^sub>A,mem\<^sub>2\<^sub>A\<rangle>\<^sub>A \<langle>c\<^sub>2\<^sub>C,mds\<^sub>C,mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)"
+      from rrs have pe: "simpler_refinement_safe \<R>\<^sub>A \<R> P abs_steps"
+        unfolding secure_refinement_simpler_def by blast
+      with in_\<R>\<^sub>A in_\<R>\<^sub>1 in_\<R>\<^sub>2 in_P
+      have "?n' = ?n"
+        unfolding simpler_refinement_safe_def by fastforce
+      with neval\<^sub>2 neval\<^sub>2' abs.neval_det 
+      have [simp]: "c\<^sub>2\<^sub>A'' = c\<^sub>2\<^sub>A'"  and [simp]: "mds\<^sub>A'' = mds\<^sub>A'" and [simp]: "mem\<^sub>2\<^sub>A'' = mem\<^sub>2\<^sub>A'"
+        by auto
+      from in_\<R>\<^sub>2' have in_\<R>\<^sub>2': "(\<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> \<R>" by simp
+      from eval\<^sub>1\<^sub>C eval\<^sub>2\<^sub>C in_P have 
+      in_P': "(\<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C,\<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> P"
+        using rrs unfolding secure_refinement_simpler_def
+                            simpler_refinement_safe_def
+        using in_\<R>\<^sub>A in_\<R>\<^sub>1 in_\<R>\<^sub>2 in_P by auto
+      with in_\<R>\<^sub>2'
+      show "(\<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> \<R> \<and>
+       (\<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> P" by blast
+    qed
+    moreover have "\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'. \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C"
+    proof -
+      from rrs have pe: "simpler_refinement_safe \<R>\<^sub>A \<R> P abs_steps"
+        unfolding secure_refinement_simpler_def by blast
+      with in_\<R>\<^sub>A in_\<R>\<^sub>1 in_\<R>\<^sub>2 in_P have "stops\<^sub>C  \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C = stops\<^sub>C  \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C"
+        unfolding simpler_refinement_safe_def by blast
+      moreover from eval\<^sub>1\<^sub>C have "\<not> stops\<^sub>C  \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C"
+        unfolding stops\<^sub>C_def by blast
+      ultimately have "\<not> stops\<^sub>C  \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C"
+        by simp          
+      from this obtain c\<^sub>2\<^sub>C' mds\<^sub>C'' mem\<^sub>2\<^sub>C'' where eval\<^sub>2\<^sub>C': "\<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C',mds\<^sub>C'',mem\<^sub>2\<^sub>C''\<rangle>\<^sub>C"
+        unfolding stops\<^sub>C_def by auto
+      with pe eval\<^sub>1\<^sub>C in_\<R>\<^sub>A in_\<R>\<^sub>1 in_\<R>\<^sub>2 in_P have in_P': "(\<langle>c\<^sub>1\<^sub>C',mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C',mds\<^sub>C'', mem\<^sub>2\<^sub>C''\<rangle>\<^sub>C) \<in> P"
+                                             and [simp]: "mds\<^sub>C'' = mds\<^sub>C'"
+        unfolding simpler_refinement_safe_def  by blast+
+      from in_P' eval\<^sub>2\<^sub>C'
+      show "\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'. \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C"
+        by fastforce
+      qed
+    ultimately show 
+    "\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
+     \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C \<and> (\<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> \<R> \<and> (\<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C,
+           \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C)
+          \<in> P"
+      by blast
+  qed
+  with neval\<^sub>1 in_\<R>\<^sub>1 in_\<R>\<^sub>1' 
+  show "\<exists>n c\<^sub>1\<^sub>A' mds\<^sub>A' mem\<^sub>1\<^sub>A'.
+            sifum_security.neval eval\<^sub>A \<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A n \<langle>c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A'\<rangle>\<^sub>A \<and>
+            (\<langle>c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C) \<in> \<R> \<and>
+            (\<forall>c\<^sub>2\<^sub>A mem\<^sub>2\<^sub>A c\<^sub>2\<^sub>C mem\<^sub>2\<^sub>C c\<^sub>2\<^sub>A' mem\<^sub>2\<^sub>A'.
+                (\<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A) \<in> \<R>\<^sub>A \<and>
+                (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> \<R> \<and>
+                (\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
+                \<in> P \<and>
+                sifum_security.neval eval\<^sub>A \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A n \<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
+                (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
+                    \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C \<and>
+                    (\<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> \<R> \<and>
+                    (\<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C)
+                    \<in> P))"
+    by auto
+next
+  show "conc.closed_glob_consistent P"
+    using rrs unfolding secure_refinement_simpler_def by blast
+qed
+
+section "Simple Bisimulations and Simple Refinement"
+
+text {*
+  We derive the theory of simple refinements from Murray et al. CSF 2016 from the above
+  \emph{simpler} theory of secure refinement.
+*}
+
+definition
+   bisim_simple
+where
+  "bisim_simple \<R>\<^sub>A \<equiv> \<forall>c\<^sub>1\<^sub>A mds mem\<^sub>1\<^sub>A c\<^sub>2\<^sub>A mem\<^sub>2\<^sub>A. (\<langle>c\<^sub>1\<^sub>A,mds,mem\<^sub>1\<^sub>A\<rangle>\<^sub>A,\<langle>c\<^sub>2\<^sub>A,mds,mem\<^sub>2\<^sub>A\<rangle>\<^sub>A) \<in> \<R>\<^sub>A \<longrightarrow> 
+                                              c\<^sub>1\<^sub>A = c\<^sub>2\<^sub>A"
+definition
+  simple_refinement_safe
 where
   "simple_refinement_safe \<R>\<^sub>A \<R> abs_steps \<equiv> 
   \<forall>c\<^sub>A mds\<^sub>A mem\<^sub>1\<^sub>A mem\<^sub>2\<^sub>A c\<^sub>C mds\<^sub>C mem\<^sub>1\<^sub>C mem\<^sub>2\<^sub>C. (\<langle>c\<^sub>A,mds\<^sub>A,mem\<^sub>1\<^sub>A\<rangle>\<^sub>A,\<langle>c\<^sub>A,mds\<^sub>A,mem\<^sub>2\<^sub>A\<rangle>\<^sub>A) \<in> \<R>\<^sub>A \<and> 
@@ -890,13 +1053,6 @@ where
                                           \<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C', mds\<^sub>2\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C \<longrightarrow>
                                           c\<^sub>1\<^sub>C' = c\<^sub>2\<^sub>C' \<and> mds\<^sub>1\<^sub>C' = mds\<^sub>2\<^sub>C')"
 
-text {*
-  A proof principle for @{term secure_refinement} for abstract programs that don't branch
-  on secrets (i.e. those proved by simple bisimulations~@{term \<R>\<^sub>A}). It requires that the
-  refinement relation~@{term \<R>} satisfies the intuitive condition that every individual
-  step of the concrete program corresponds to an abstract behaviour, as well as the extra
-  conditions imposed by @{term simple_refinement_safe} as explained above.
-*}
 definition
   secure_refinement_simple
 where
@@ -911,109 +1067,51 @@ where
     (\<forall> c\<^sub>1\<^sub>C' mds\<^sub>C' mem\<^sub>1\<^sub>C'. \<langle> c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C \<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle> c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C' \<rangle>\<^sub>C \<longrightarrow>
      (\<exists> c\<^sub>1\<^sub>A' mds\<^sub>A' mem\<^sub>1\<^sub>A'. abs.neval \<langle> c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A \<rangle>\<^sub>A (abs_steps \<langle>c\<^sub>1\<^sub>A,mds\<^sub>A,mem\<^sub>1\<^sub>A\<rangle>\<^sub>A \<langle>c\<^sub>1\<^sub>C,mds\<^sub>C,mem\<^sub>1\<^sub>C\<rangle>\<^sub>C) \<langle> c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A' \<rangle>\<^sub>A \<and>
                    (\<langle> c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A' \<rangle>\<^sub>A, \<langle> c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C' \<rangle>\<^sub>C) \<in> \<R>)))"
-    
+
+definition
+  \<I>simple
+where
+  "\<I>simple \<equiv> {(\<langle>c,mds,mem\<rangle>\<^sub>C,\<langle>c',mds',mem'\<rangle>\<^sub>C)| c mds mem c' mds' mem'. c = c'}"
+
+lemma \<I>simple_closed_glob_consistent:
+  "conc.closed_glob_consistent \<I>simple"
+  by(auto simp: conc.closed_glob_consistent_def \<I>simple_def)
+  
 lemma secure_refinement_simple:
-  assumes rrs: "secure_refinement_simple \<R>\<^sub>A \<R> abs_steps"
-  shows "secure_refinement \<R>\<^sub>A \<R> {(x,y). (fst (fst x)) = (fst (fst y))}"
-  unfolding secure_refinement_def
-proof(safe)
-  from rrs show "closed_others \<R>"
-    unfolding secure_refinement_simple_def by blast
+  assumes srs: "secure_refinement_simple \<R>\<^sub>A \<R> abs_steps"
+  shows "secure_refinement_simpler \<R>\<^sub>A \<R> \<I>simple abs_steps"
+unfolding secure_refinement_simpler_def
+proof(safe | clarsimp)+
+  from srs show "closed_others \<R>"
+  unfolding secure_refinement_simple_def by blast
 next
-  from rrs show "preserves_modes_mem \<R>"
-    unfolding secure_refinement_simple_def by blast
+  from srs show "preserves_modes_mem \<R>"
+  unfolding secure_refinement_simple_def by blast
 next
-  from rrs show "new_vars_private \<R>"
-    unfolding secure_refinement_simple_def by blast
+  from srs show "new_vars_private \<R>"
+  unfolding secure_refinement_simple_def by blast
+next
+  show "conc.closed_glob_consistent \<I>simple" by (rule \<I>simple_closed_glob_consistent)
+next
+  from srs have safe: "simple_refinement_safe \<R>\<^sub>A \<R> abs_steps"
+  unfolding secure_refinement_simple_def by blast
+  from srs have simple: "bisim_simple \<R>\<^sub>A"
+  unfolding secure_refinement_simple_def by fastforce
+  
+  from safe simple show "simpler_refinement_safe \<R>\<^sub>A \<R> \<I>simple abs_steps"
+  by(fastforce simp: simpler_refinement_safe_def \<I>simple_def simple_refinement_safe_def bisim_simple_def)
 next
   fix c\<^sub>1\<^sub>A mds\<^sub>A mem\<^sub>1\<^sub>A c\<^sub>1\<^sub>C mds\<^sub>C mem\<^sub>1\<^sub>C c\<^sub>1\<^sub>C' mds\<^sub>C' mem\<^sub>1\<^sub>C'
-  let ?n = "abs_steps \<langle>c\<^sub>1\<^sub>A,mds\<^sub>A,mem\<^sub>1\<^sub>A\<rangle>\<^sub>A \<langle>c\<^sub>1\<^sub>C,mds\<^sub>C,mem\<^sub>1\<^sub>C\<rangle>\<^sub>C"
-  assume in_\<R>\<^sub>1: "(\<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C) \<in> \<R>"
-     and eval\<^sub>1\<^sub>C: "\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C"
-  with rrs obtain c\<^sub>1\<^sub>A' mds\<^sub>A' mem\<^sub>1\<^sub>A' where
-    neval\<^sub>1: "abs.neval \<langle> c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A \<rangle>\<^sub>A ?n \<langle> c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A' \<rangle>\<^sub>A" and
-    in_\<R>\<^sub>1': "(\<langle> c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A' \<rangle>\<^sub>A, \<langle> c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C' \<rangle>\<^sub>C) \<in> \<R>"
-    unfolding secure_refinement_simple_def by metis
-  from rrs have \<R>\<^sub>A_simple: "bisim_simple \<R>\<^sub>A"
-    unfolding secure_refinement_simple_def by metis 
-  have "(\<forall>c\<^sub>2\<^sub>A mem\<^sub>2\<^sub>A c\<^sub>2\<^sub>C mem\<^sub>2\<^sub>C c\<^sub>2\<^sub>A' mem\<^sub>2\<^sub>A'.
-                (\<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A) \<in> \<R>\<^sub>A \<and>
-                (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> \<R> \<and>
-                c\<^sub>1\<^sub>C = c\<^sub>2\<^sub>C \<and> sifum_security.neval eval\<^sub>A \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A ?n \<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
-                (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
-                    \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C \<and>
-                    (\<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> \<R> \<and> c\<^sub>1\<^sub>C' = c\<^sub>2\<^sub>C'))"
-  proof(clarsimp)
-    fix c\<^sub>2\<^sub>A mem\<^sub>2\<^sub>A mem\<^sub>2\<^sub>C c\<^sub>2\<^sub>A' mem\<^sub>2\<^sub>A'
-    assume 
-    in_\<R>\<^sub>A: "(\<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A) \<in> \<R>\<^sub>A" and 
-    in_\<R>\<^sub>2: "(\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> \<R>" and
-    neval\<^sub>2: "sifum_security.neval eval\<^sub>A \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A ?n \<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A"
-    from in_\<R>\<^sub>A \<R>\<^sub>A_simple have c\<^sub>2\<^sub>A_def [simp]: "c\<^sub>2\<^sub>A = c\<^sub>1\<^sub>A"
-      unfolding bisim_simple_def by blast
-    have "\<forall>mem\<^sub>2\<^sub>C'. \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C \<longrightarrow> (\<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> \<R>"
-    proof(clarify)
-      fix mem\<^sub>2\<^sub>C'
-      assume eval\<^sub>2\<^sub>C: "\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C"
-      from in_\<R>\<^sub>2 eval\<^sub>2\<^sub>C rrs obtain
-      c\<^sub>2\<^sub>A'' mds\<^sub>A'' mem\<^sub>2\<^sub>A'' where 
-      neval\<^sub>2': "abs.neval \<langle> c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A \<rangle>\<^sub>A (abs_steps \<langle>c\<^sub>2\<^sub>A,mds\<^sub>A,mem\<^sub>2\<^sub>A\<rangle>\<^sub>A \<langle>c\<^sub>1\<^sub>C,mds\<^sub>C,mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<langle> c\<^sub>2\<^sub>A'', mds\<^sub>A'', mem\<^sub>2\<^sub>A'' \<rangle>\<^sub>A" and
-      in_\<R>\<^sub>2': "(\<langle> c\<^sub>2\<^sub>A'', mds\<^sub>A'', mem\<^sub>2\<^sub>A'' \<rangle>\<^sub>A, \<langle> c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C' \<rangle>\<^sub>C) \<in> \<R>"
-        unfolding secure_refinement_simple_def by blast
-      let ?n' = "(abs_steps \<langle>c\<^sub>2\<^sub>A,mds\<^sub>A,mem\<^sub>2\<^sub>A\<rangle>\<^sub>A \<langle>c\<^sub>1\<^sub>C,mds\<^sub>C,mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)"
-      from rrs have pe: "simple_refinement_safe \<R>\<^sub>A \<R> abs_steps"
-        unfolding secure_refinement_simple_def by blast
-      with in_\<R>\<^sub>A in_\<R>\<^sub>1 in_\<R>\<^sub>2 
-      have "?n' = ?n"
-        unfolding simple_refinement_safe_def by fastforce
-      with neval\<^sub>2 neval\<^sub>2' abs.neval_det 
-      have [simp]: "c\<^sub>2\<^sub>A'' = c\<^sub>2\<^sub>A'"  and [simp]: "mds\<^sub>A'' = mds\<^sub>A'" and [simp]: "mem\<^sub>2\<^sub>A'' = mem\<^sub>2\<^sub>A'"
-        by auto
-      from in_\<R>\<^sub>2' show "(\<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> \<R>" by simp
-    qed
-    moreover have "\<exists>mem\<^sub>2\<^sub>C'. \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C"
-    proof -
-      from rrs have pe: "simple_refinement_safe \<R>\<^sub>A \<R> abs_steps"
-        unfolding secure_refinement_simple_def by blast
-      with in_\<R>\<^sub>A in_\<R>\<^sub>1 in_\<R>\<^sub>2 have "stops\<^sub>C  \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C = stops\<^sub>C  \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C"
-        unfolding simple_refinement_safe_def c\<^sub>2\<^sub>A_def by blast
-      moreover from eval\<^sub>1\<^sub>C have "\<not> stops\<^sub>C  \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C"
-        unfolding stops\<^sub>C_def by blast
-      ultimately have "\<not> stops\<^sub>C  \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C"
-        by simp          
-      from this obtain c\<^sub>2\<^sub>C' mds\<^sub>C'' mem\<^sub>2\<^sub>C'' where eval\<^sub>2\<^sub>C': "\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C',mds\<^sub>C'',mem\<^sub>2\<^sub>C''\<rangle>\<^sub>C"
-        unfolding stops\<^sub>C_def by auto
-      with pe eval\<^sub>1\<^sub>C in_\<R>\<^sub>A in_\<R>\<^sub>1 in_\<R>\<^sub>2 have [simp]: "c\<^sub>2\<^sub>C' = c\<^sub>1\<^sub>C' \<and> mds\<^sub>C'' = mds\<^sub>C'"
-        unfolding simple_refinement_safe_def c\<^sub>2\<^sub>A_def by blast
-      with eval\<^sub>2\<^sub>C'
-      show "\<exists>mem\<^sub>2\<^sub>C'. \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C"
-        by blast
-      qed
-    ultimately show 
-    "\<exists>mem\<^sub>2\<^sub>C'.
-     \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C \<and> (\<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> \<R>"
-      by blast
-  qed
-  with neval\<^sub>1 in_\<R>\<^sub>1 in_\<R>\<^sub>1' 
-  show "\<exists>n c\<^sub>1\<^sub>A' mds\<^sub>A' mem\<^sub>1\<^sub>A'.
-            sifum_security.neval eval\<^sub>A \<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A n \<langle>c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A'\<rangle>\<^sub>A \<and>
-            (\<langle>c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C) \<in> \<R> \<and>
-            (\<forall>c\<^sub>2\<^sub>A mem\<^sub>2\<^sub>A c\<^sub>2\<^sub>C mem\<^sub>2\<^sub>C c\<^sub>2\<^sub>A' mem\<^sub>2\<^sub>A'.
-                (\<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A) \<in> \<R>\<^sub>A \<and>
-                (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> \<R> \<and>
-                (\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
-                \<in> {(x, y). fst (fst x) = fst (fst y)} \<and>
-                sifum_security.neval eval\<^sub>A \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A n \<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
-                (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
-                    \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C \<and>
-                    (\<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> \<R> \<and>
-                    (\<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C)
-                    \<in> {(x, y). fst (fst x) = fst (fst y)}))"
-    by auto
-next
-  show "conc.closed_glob_consistent {(x, y). fst (fst x) = fst (fst y)}"
-    unfolding conc.closed_glob_consistent_def by auto
+  show " (\<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C) \<in> \<R> \<Longrightarrow>
+       \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C \<Longrightarrow>
+       \<exists>c\<^sub>1\<^sub>A' mds\<^sub>A' mem\<^sub>1\<^sub>A'.
+          abs.neval \<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A (abs_steps \<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C)
+           \<langle>c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A'\<rangle>\<^sub>A \<and>
+          (\<langle>c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C) \<in> \<R>"
+    using srs unfolding secure_refinement_simple_def by blast
 qed
+  
+section "Sound Mode Use Preservation"
 
 text {*
   Prove that
@@ -1164,6 +1262,8 @@ proof(clarsimp)
 qed
 
 end
+
+section "Refinement without changing the Memory Model"
 
 text {*
   Here we define a locale which restricts the refinement to be between an abstract and
@@ -1319,7 +1419,9 @@ record ('a, 'Val, 'Var\<^sub>C, 'Com\<^sub>C, 'Var\<^sub>A, 'Com\<^sub>A) compon
   \<R>\<^sub>A_rel :: "('Com\<^sub>A, 'Var\<^sub>A, 'Val) LocalConf rel" (* abstract bisimulation *)
   \<R>_rel :: "('Com\<^sub>A, 'Var\<^sub>A, 'Val, 'Com\<^sub>C, 'Var\<^sub>C) state_relation" (* refinement relation *)
   P_rel :: "('Com\<^sub>C, 'Var\<^sub>C, 'Val) LocalConf rel"
- 
+
+section "Whole System Refinement"
+
 text {*
   A locale to capture componentwise refinement of an entire system.
 *}
@@ -2015,7 +2117,7 @@ proof -
        using "2.prems"(3) gc\<^sub>C_def apply blast
       using 2 by simp
 
-    from respects'' 2(1)[OF meval_sched\<^sub>C, where gc\<^sub>A6 = gc\<^sub>A''] in_\<R>'' sound_mode_use\<^sub>A''
+    from respects'' 2(1)[OF meval_sched\<^sub>C, where gc\<^sub>A7 = gc\<^sub>A''] in_\<R>'' sound_mode_use\<^sub>A''
     obtain sched\<^sub>A gc\<^sub>A' 
     where  meval_sched\<^sub>A'': "abs.meval_sched sched\<^sub>A gc\<^sub>A'' gc\<^sub>A'" and
            in_\<R>': "(\<forall>i<length cms. ((fst gc\<^sub>A' ! i, snd gc\<^sub>A'), fst gc\<^sub>c' ! i, snd gc\<^sub>c') \<in> \<R>_rel (cms ! i))" and
