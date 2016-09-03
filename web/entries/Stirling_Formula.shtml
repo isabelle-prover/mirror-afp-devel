@@ -24,36 +24,44 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">L</font>andau
-<font class="first">S</font>ymbols
+<h1><font class="first">S</font>tirling's
+formula
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Landau Symbols</td></tr>
+        <td class="data" width="80%">Stirling's formula</td></tr>
 
     <tr><td class="datahead">Author:</td>
         <td class="data"><a href="https://in.tum.de/~eberlm">Manuel Eberl</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2015-07-14</td></tr>
+        <td class="data">2016-09-01</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
-This entry provides Landau symbols to describe and reason about the asymptotic growth of functions for sufficiently large inputs. A number of simplification procedures are provided for additional convenience: cancelling of dominated terms in sums under a Landau symbol, cancelling of common factors in products, and a decision procedure for Landau expressions containing products of powers of functions like x, ln(x), ln(ln(x)) etc.
+
+This work contains a proof of Stirling's formula both for the
+factorial n! &sim; &radic;<span style="text-decoration:
+overline">2&pi;n</span> (n/e)<sup>n</sup> on natural numbers and the
+real Gamma function &Gamma;(x) &sim; &radic;<span
+style="text-decoration: overline">2&pi;/x</span> (x/e)<sup>x</sup>.
+The proof is based on work by <a
+href="http://www.maths.lancs.ac.uk/~jameson/stirlgamma.pdf">Graham
+Jameson</a>.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Landau_Symbols-AFP,
+			<pre>@article{Stirling_Formula-AFP,
   author  = {Manuel Eberl},
-  title   = {Landau Symbols},
+  title   = {Stirling's formula},
   journal = {Archive of Formal Proofs},
-  month   = jul,
-  year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/Landau_Symbols.shtml},
+  month   = sep,
+  year    = 2016,
+  note    = {\url{http://isa-afp.org/entries/Stirling_Formula.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -63,9 +71,9 @@ This entry provides Landau symbols to describe and reason about the asymptotic g
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Landau_Symbols.shtml">Landau_Symbols</a></td></tr>
 
-    <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Akra_Bazzi.shtml">Akra_Bazzi</a>, <a href="Catalan_Numbers.shtml">Catalan_Numbers</a>, <a href="Stirling_Formula.shtml">Stirling_Formula</a></td></tr>
 
 
 
@@ -74,7 +82,7 @@ This entry provides Landau symbols to describe and reason about the asymptotic g
 
 <p></p>
 
-<!--#set var="name" value="Landau_Symbols" -->
+<!--#set var="name" value="Stirling_Formula" -->
 
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -101,10 +109,7 @@ This entry provides Landau symbols to describe and reason about the asymptotic g
   </tr>
 
 
-    <tr><td class="links">Older releases: <ul>
-<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2015-07-15.tar.gz">afp-<!--#echo var="name" -->-2015-07-15.tar.gz</a></li>
-
-</ul>
+    <tr><td class="links">Older releases: None
     </td></tr>
 
   </tbody>

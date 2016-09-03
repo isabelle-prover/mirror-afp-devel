@@ -4679,3 +4679,19 @@ abstract =
   ITP 2016) can be found at
   https://www.lri.fr/∼wolff/papers/conf/2016-itp-InfPathsNSE.pdf.
 
+[Stirling_Formula]
+title = Stirling's formula
+author = Manuel Eberl <https://in.tum.de/~eberlm>
+notify = eberlm@in.tum.de
+date = 2016-09-01
+topic = Mathematics/Analysis
+abstract = 
+  This work contains a proof of Stirling's formula both for the
+  factorial n! &sim; &radic;<span style="text-decoration:
+  overline">2&pi;n</span> (n/e)<sup>n</sup> on natural numbers and the
+  real Gamma function &Gamma;(x) &sim; &radic;<span
+  style="text-decoration: overline">2&pi;/x</span> (x/e)<sup>x</sup>.
+  The proof is based on work by <a
+  href="http://www.maths.lancs.ac.uk/~jameson/stirlgamma.pdf">Graham
+  Jameson</a>.
+
