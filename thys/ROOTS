@@ -76,6 +76,7 @@ Discrete_Summation
 DiskPaxos
 Dynamic_Tables
 Echelon_Form
+EdmondsKarp_Maxflow
 Efficient-Mergesort
 Encodability_Process_Calculi
 Ergodic_Theory
@@ -127,6 +128,7 @@ Incredible_Proof_Machine
 Inductive_Confidentiality
 InformationFlowSlicing
 InformationFlowSlicing_Inter
+InfPathElimination
 Integration
 IP_Addresses
 Isabelle_Meta_Model
@@ -228,6 +230,7 @@ Random_Graph_Subgraph_Threshold
 Rank_Nullity_Theorem
 Real_Impl
 Recursion-Theory-I
+Refine_Imperative_HOL
 RefinementReactive
 Refine_Monadic
 Regex_Equivalence
@@ -240,6 +243,7 @@ Resolution_FOL
 Rewriting_Z
 Ribbon_Proofs
 Robbins-Conjecture
+Routing
 Roy_Floyd_Warshall
 SATSolverVerification
 SDS_Impossibility
@@ -255,6 +259,7 @@ Shivers-CFA
 ShortestPath
 Show
 Simpl
+Simple_Firewall
 Skew_Heap
 Slicing
 Sort_Encodings

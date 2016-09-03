@@ -61,6 +61,14 @@ from the SIFUM_Type_Systems AFP entry, by Sylvia Grewe, Heiko Mantel
 and Daniel Schoepe, and whose structure it inherits.
         </td></tr>
 
+    <tr><td class="datahead" valign="top">Change history:</td>
+        <td class="abstract">
+
+[2016-08-19]:
+Removed unused "stop" parameter and "stop_no_eval" assumption from the sifum_security locale.
+(revision dbc482d36372)
+        </td></tr>
+
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
 			<pre>@article{Dependent_SIFUM_Type_Systems-AFP,

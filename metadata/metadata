@@ -890,6 +890,35 @@ extra-history =
 	[2014-11] New features: le-or-fail relation (leof), modular reasoning about loop invariants.
 notify = lammich@in.tum.de
 
+[Refine_Imperative_HOL]
+title = The Imperative Refinement Framework
+author = Peter Lammich <http://www21.in.tum.de/~lammich/>
+notify = lammich@in.tum.de
+date = 2016-08-08
+topic = Computer Science/Programming Languages/Transformations,Computer Science/Data Structures
+abstract =
+  We present the Imperative Refinement Framework (IRF), a tool that
+  supports a stepwise refinement based approach to imperative programs.
+  This entry is based on the material we presented in [ITP-2015,
+  CPP-2016].  It uses the Monadic Refinement Framework as a frontend for
+  the specification of the abstract programs, and Imperative/HOL as a
+  backend to generate executable imperative programs.  The IRF comes
+  with tool support to synthesize imperative programs from more
+  abstract, functional ones, using efficient imperative implementations
+  for the abstract data structures.  This entry also includes the
+  Imperative Isabelle Collection Framework (IICF), which provides a
+  library of re-usable imperative collection data structures.  Moreover,
+  this entry contains a quickstart guide and a reference manual, which
+  provide an introduction to using the IRF for Isabelle/HOL experts. It
+  also provids a collection of (partly commented) practical examples,
+  some highlights being Dijkstra's Algorithm, Nested-DFS, and a generic
+  worklist algorithm with subsumption.  Finally, this entry contains
+  benchmark scripts that compare the runtime of some examples against
+  reference implementations of the algorithms in Java and C++.
+  [ITP-2015] Peter Lammich: Refinement to Imperative/HOL. ITP 2015:
+  253--269  [CPP-2016] Peter Lammich: Refinement based verification of
+  imperative data structures. CPP 2016: 27--36
+
 [Automatic_Refinement]
 title = Automatic Data Refinement
 author = Peter Lammich <mailto:lammich@in.tum.de>
@@ -909,6 +938,23 @@ abstract = We present the Autoref tool for Isabelle/HOL, which automatically
 	Refinement and Collection Framework to provide automatic data refinement for
 	the nondeterminism monad and various collection datastructures.
 notify = lammich@in.tum.de
+
+[EdmondsKarp_Maxflow]
+title = Formalizing the Edmonds-Karp Algorithm
+author = Peter Lammich <mailto:lammich@in.tum.de>, S. Reza Sefidgar<>
+notify = lammich@in.tum.de
+date = 2016-08-12
+topic = Computer Science/Algorithms
+abstract =
+  We present a formalization of the Ford-Fulkerson method for computing
+  the maximum flow in a network. Our formal proof closely follows a
+  standard textbook proof, and is accessible even without being an
+  expert in Isabelle/HOL--- the interactive theorem prover used for the
+  formalization. We then use stepwise refinement to obtain the
+  Edmonds-Karp algorithm, and formally prove a bound on its complexity.
+  Further refinement yields a verified implementation, whose execution
+  time compares well to an unverified reference implementation in Java.
+  This entry is based on our ITP-2016 paper with the same title.
 
 [PseudoHoops]
 title = Pseudo Hoops
@@ -967,6 +1013,45 @@ abstract =
   provide executable code for set operations on IP address ranges, the
   library includes a datatype to work on arbitrary intervals of machine
   words.
+
+[Simple_Firewall]
+title = Simple Firewall
+author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de/>, Max Haslbeck<>
+notify = diekmann@net.in.tum.de, max.haslbeck@gmx.de
+date = 2016-08-24
+topic = Computer Science/Networks
+abstract =
+  We present a simple model of a firewall. The firewall can accept or
+  drop a packet and can match on interfaces, IP addresses, protocol, and
+  ports. It was designed to feature nice mathematical properties: The
+  type of match expressions was carefully crafted such that the
+  conjunction of two match expressions is only one match expression.
+  This model is too simplistic to mirror all aspects of the real world.
+  In the upcoming entry "Iptables Semantics", we will translate the
+  Linux firewall iptables to this model.  For a fixed service (e.g. ssh,
+  http), we provide an algorithm to compute an overview of the
+  firewall's filtering behavior. The algorithm computes minimal service
+  matrices, i.e. graphs which partition the complete IPv4 and IPv6
+  address space and visualize the allowed accesses between partitions.
+  For a detailed description, see
+  <a href="http://dl.ifip.org/db/conf/networking/networking2016/1570232858.pdf">Verified iptables Firewall
+  Analysis</a>, IFIP Networking 2016.
+
+[Routing]
+title = Routing
+author = Julius Michaelis <http://liftm.de/>, Cornelius Diekmann <http://net.in.tum.de/~diekmann>
+notify = afp@liftm.de
+date = 2016-08-31
+topic = Computer Science/Networks
+abstract =
+  This entry contains definitions for routing with routing
+  tables/longest prefix matching.  A routing table entry is modelled as
+  a record of a prefix match, a metric, an output port, and an optional
+  next hop. A routing table is a list of entries, sorted by prefix
+  length and metric. Additionally, a parser and serializer for the
+  output of the ip-route command, a function to create a relation from
+  output port to corresponding destination IP space, and a model of a
+  Linux-style router are included.
 
 [KBPs]
 title = Knowledge-based programs
@@ -4552,7 +4637,7 @@ author = Joachim Breitner <http://pp.ipd.kit.edu/~breitner/>
 notify = breitner@kit.edu
 date = 2016-07-17
 topic = Logic
-abstract = 
+abstract =
   In 1964, Fitch showed that the paradox of the surprise hanging can be
   resolved by showing that the judge’s verdict is inconsistent. His
   formalization builds on Gödel’s coding of provability.  In this
@@ -4571,3 +4656,26 @@ abstract =
   In this formalization, we use ideas from John Harrison's HOL Light
   formalization and the proof sketch on the Wikipedia entry of Ptolemy's Theorem.
   This theorem is the 95th theorem of the Top 100 Theorems list.
+
+[InfPathElimination]
+title = Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths
+author = Romain Aissat<>, Frederic Voisin<>, Burkhart Wolff <mailto: wolff@lri.fr>
+notify = wolff@lri.fr
+date = 2016-08-18
+topic = Computer Science/Programming Languages/Static Analysis
+abstract =
+  TRACER is a tool for verifying safety properties of sequential C
+  programs. TRACER attempts at building a finite symbolic execution
+  graph which over-approximates the set of all concrete reachable states
+  and the set of feasible paths.  We present an abstract framework for
+  TRACER and similar CEGAR-like systems. The framework provides 1) a
+  graph- transformation based method for reducing the feasible paths in
+  control-flow graphs, 2) a model for symbolic execution, subsumption,
+  predicate abstraction and invariant generation. In this framework we
+  formally prove two key properties: correct construction of the
+  symbolic states and preservation of feasible paths. The framework
+  focuses on core operations, leaving to concrete prototypes to “fit in”
+  heuristics for combining them.  The accompanying paper (published in
+  ITP 2016) can be found at
+  https://www.lri.fr/∼wolff/papers/conf/2016-itp-InfPathsNSE.pdf.
+

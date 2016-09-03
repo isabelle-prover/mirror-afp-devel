@@ -70,6 +70,7 @@
 <a href="entries/Roy_Floyd_Warshall.shtml">Roy_Floyd_Warshall</a> &nbsp;
 <a href="entries/Selection_Heap_Sort.shtml">Selection_Heap_Sort</a> &nbsp;
 <a href="entries/Dijkstra_Shortest_Path.shtml">Dijkstra_Shortest_Path</a> &nbsp;
+<a href="entries/EdmondsKarp_Maxflow.shtml">EdmondsKarp_Maxflow</a> &nbsp;
 <a href="entries/CYK.shtml">CYK</a> &nbsp;
 <a href="entries/Boolean_Expression_Checkers.shtml">Boolean_Expression_Checkers</a> &nbsp;
 <a href="entries/Depth-First-Search.shtml">Depth-First-Search</a> &nbsp;
@@ -123,6 +124,7 @@
 
 <div class="list">
 <a href="entries/List_Interleaving.shtml">List_Interleaving</a> &nbsp;
+<a href="entries/Refine_Imperative_HOL.shtml">Refine_Imperative_HOL</a> &nbsp;
 <a href="entries/Amortized_Complexity.shtml">Amortized_Complexity</a> &nbsp;
 <a href="entries/Dynamic_Tables.shtml">Dynamic_Tables</a> &nbsp;
 <a href="entries/AVL-Trees.shtml">AVL-Trees</a> &nbsp;
@@ -181,6 +183,8 @@
 
 <div class="list">
 <a href="entries/IP_Addresses.shtml">IP_Addresses</a> &nbsp;
+<a href="entries/Simple_Firewall.shtml">Simple_Firewall</a> &nbsp;
+<a href="entries/Routing.shtml">Routing</a> &nbsp;
 </div>
 
 <h3>Programming Languages</h3>
@@ -240,8 +244,10 @@
 <a href="entries/Shivers-CFA.shtml">Shivers-CFA</a> &nbsp;
 <a href="entries/Slicing.shtml">Slicing</a> &nbsp;
 <a href="entries/HRB-Slicing.shtml">HRB-Slicing</a> &nbsp;
+<a href="entries/InfPathElimination.shtml">InfPathElimination</a> &nbsp;
 
 <strong>Transformations:</strong>&nbsp;<a href="entries/Call_Arity.shtml">Call_Arity</a> &nbsp;
+<a href="entries/Refine_Imperative_HOL.shtml">Refine_Imperative_HOL</a> &nbsp;
 <a href="entries/WorkerWrapper.shtml">WorkerWrapper</a> &nbsp;
 <a href="entries/Formal_SSA.shtml">Formal_SSA</a> &nbsp;
 

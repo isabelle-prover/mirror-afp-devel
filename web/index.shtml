@@ -53,6 +53,47 @@ is available <a href="citing.shtml">[here]</a>.
 	</tr>
 
 <tr><td class="entry">
+2016-08-31:
+<a href="entries/Routing.shtml">Routing</a>
+<br>Author:
+<a href="http://liftm.de/">Julius Michaelis</a> and 
+<a href="http://net.in.tum.de/~diekmann">Cornelius Diekmann</a>
+</td></tr>
+
+<tr><td class="entry">
+2016-08-24:
+<a href="entries/Simple_Firewall.shtml">Simple Firewall</a>
+<br>Author:
+<a href="http://net.in.tum.de/~diekmann">Cornelius Diekmann</a>,
+<a href="http://liftm.de/">Julius Michaelis</a> and 
+Max Haslbeck
+</td></tr>
+
+<tr><td class="entry">
+2016-08-18:
+<a href="entries/InfPathElimination.shtml">Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths</a>
+<br>Author:
+Romain Aissat,
+Frederic Voisin and 
+Burkhart Wolff
+</td></tr>
+
+<tr><td class="entry">
+2016-08-12:
+<a href="entries/EdmondsKarp_Maxflow.shtml">Formalizing the Edmonds-Karp Algorithm</a>
+<br>Author:
+Peter Lammich and 
+S. Reza Sefidgar
+</td></tr>
+
+<tr><td class="entry">
+2016-08-08:
+<a href="entries/Refine_Imperative_HOL.shtml">The Imperative Refinement Framework</a>
+<br>Author:
+<a href="http://www21.in.tum.de/~lammich/">Peter Lammich</a>
+</td></tr>
+
+<tr><td class="entry">
 2016-08-07:
 <a href="entries/Ptolemys_Theorem.shtml">Ptolemy's Theorem</a>
 <br>Author:
