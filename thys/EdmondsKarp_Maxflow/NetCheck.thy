@@ -45,7 +45,7 @@ text \<open>
     where "ln_N el \<equiv> Max ((fst`set el) \<union> ((fst o snd)`set el)) + 1"
 
   lemma ln_\<alpha>_imp_in_set: "\<lbrakk>ln_\<alpha> el (u,v)\<noteq>(0)\<rbrakk> \<Longrightarrow> (u,v,ln_\<alpha> el (u,v))\<in>set el"
-    apply (auto simp: ln_\<alpha>_def split: split_if_asm)
+    apply (auto simp: ln_\<alpha>_def split: if_split_asm)
     apply (metis (mono_tags, lifting) someI_ex)
     done
 

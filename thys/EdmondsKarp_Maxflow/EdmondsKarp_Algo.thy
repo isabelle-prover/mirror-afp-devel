@@ -298,7 +298,7 @@ lemma card_spEdges_le:
 
 lemma card_spEdges_less:
   shows "card spEdges < card uE + 1"
-  using card_spEdges_le[OF assms] 
+  using card_spEdges_le 
   by auto
   
 

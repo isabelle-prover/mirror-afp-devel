@@ -180,7 +180,7 @@ begin
     \<Longrightarrow> nf_invar c src dst [src \<mapsto> src] {src} {} 0"            
     apply unfold_locales
     apply (auto)
-    apply (auto simp: pre_bfs_invar.Vd_def split: split_if_asm)
+    apply (auto simp: pre_bfs_invar.Vd_def split: if_split_asm)
     done
 
   lemma (in nf_invar) invar_exit:
@@ -525,7 +525,7 @@ begin
     apply refine_vcg
     apply (auto simp: it_step_insert_iff; fail) +
     apply (auto simp: it_step_insert_iff fun_neq_ext_iff map_mmupd_def 
-      split: split_if_asm) []
+      split: if_split_asm) []
     apply (auto simp: it_step_insert_iff split: bool.split; fail)
     apply (auto simp: it_step_insert_iff split: bool.split; fail)
     apply (auto simp: it_step_insert_iff split: bool.split; fail)

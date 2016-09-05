@@ -220,7 +220,7 @@ text \<open>Next, we show that the value of the augmented flow is the sum of the
   
 lemma augment_flow_value: "Flow.val c s (f\<up>f') = val + Flow.val cf s f'"
 proof -
-  interpret f'': Flow c s t "f\<up>f'" using augment_flow_presv[OF assms] . 
+  interpret f'': Flow c s t "f\<up>f'" using augment_flow_presv . 
 
   txt \<open>For this proof, we set up Isabelle's rewriting engine for rewriting of sums.
     In particular, we add lemmas to convert sums over incoming or outgoing 
@@ -262,7 +262,7 @@ txt \<open>Note, there is also an automatic proof. When creating the above
     subgoals, abusing Isabelle as a term rewriter.\<close>
 lemma "Flow.val c s (f\<up>f') = val + Flow.val cf s f'"
 proof -
-  interpret f'': Flow c s t "f\<up>f'" using augment_flow_presv[OF assms] . 
+  interpret f'': Flow c s t "f\<up>f'" using augment_flow_presv . 
 
   have aux1: "f'(u,v) = 0" if A: "(u,v)\<notin>E" "(v,u)\<notin>E" for u v
   proof -
