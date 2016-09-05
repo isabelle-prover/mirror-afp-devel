@@ -1,7 +1,6 @@
 */.*
 *.log
 */mlmon.out
-*.mlb
 *.class
 */heapmap
 */NDFS_Benchmark

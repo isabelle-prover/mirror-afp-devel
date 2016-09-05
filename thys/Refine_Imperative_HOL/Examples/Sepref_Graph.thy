@@ -34,7 +34,7 @@ private definition "graph_rel1 \<equiv> br graph_\<alpha>1 (\<lambda>_. True)"
 private definition "succ1 l i \<equiv> if i<length l then l!i else {}"
 
 private lemma succ1_refine: "(succ1,op_graph_succ) \<in> graph_rel1 \<rightarrow> Id \<rightarrow> \<langle>Id\<rangle>set_rel"
-  by (auto simp: graph_rel1_def graph_\<alpha>1_def br_def succ1_def split: split_if_asm intro!: ext)
+  by (auto simp: graph_rel1_def graph_\<alpha>1_def br_def succ1_def split: if_split_asm intro!: ext)
 
 private definition "assn2 \<equiv> array_assn (pure (\<langle>Id\<rangle>list_set_rel))"
 

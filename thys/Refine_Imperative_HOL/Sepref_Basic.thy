@@ -487,7 +487,7 @@ lemma hn_admissible:
   shows "<P> c <\<lambda>r. hn_rel Ry (INF f:A. f x) r * F>"
 proof -
   from NF obtain f where "f\<in>A" and "nofail (f x)"
-    by (simp only: refine_pw_simps INF_def) blast
+    by (simp only: refine_pw_simps) blast
 
   with E have "<P> c <\<lambda>r. hn_rel Ry (f x) r * F>" by blast
   hence W: "<P> c <\<lambda>_. true>" by (rule cons_post_rule, simp)

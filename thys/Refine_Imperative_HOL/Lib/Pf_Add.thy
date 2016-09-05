@@ -22,7 +22,7 @@ lemma mono_fun_fun_cnv:
 
 lemma fun_lub_Sup[simp]: "fun_lub Sup = Sup"
   unfolding fun_lub_def[abs_def]
-  by (auto intro!: ext simp: SUP_def image_def)
+  by (clarsimp intro!: ext; metis image_def)
 
 lemma fun_ord_le[simp]: "fun_ord op \<le> = op \<le>"
   unfolding fun_ord_def[abs_def]

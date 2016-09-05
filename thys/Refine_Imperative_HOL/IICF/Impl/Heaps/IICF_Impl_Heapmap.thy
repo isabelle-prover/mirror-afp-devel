@@ -63,7 +63,7 @@ lemma efficient_nat_div2[simp]: "efficient_nat_div2 n = n div 2"
 
     lemma hm_impl_\<alpha>_fst_eq: 
         "(x1, x2) = hm_impl1_\<alpha> (x1a, x2a) \<Longrightarrow> x1 = x1a"
-      unfolding hm_impl1_\<alpha>_def by (auto split: split_if_asm)
+      unfolding hm_impl1_\<alpha>_def by (auto split: if_split_asm)
 
 
     term hm_empty_op  
@@ -110,7 +110,7 @@ lemma efficient_nat_div2[simp]: "efficient_nat_div2 n = n div 2"
       apply (intro frefI nres_relI)
       unfolding hm_lookup_op_def hm_lookup_op'_def o_def uncurry_def
       apply refine_vcg
-      apply (auto simp: hm_impl1_rel_defs heapmap_\<alpha>_def hmr_invar_def split: split_if_asm)
+      apply (auto simp: hm_impl1_rel_defs heapmap_\<alpha>_def hmr_invar_def)
       done
 
     term hm_contains_key_op  
@@ -125,7 +125,7 @@ lemma efficient_nat_div2[simp]: "efficient_nat_div2 n = n div 2"
       apply (intro frefI nres_relI)
       unfolding hm_contains_key_op_def hm_contains_key_op'_def o_def uncurry_def PR_CONST_def
       apply refine_vcg
-      apply (auto simp: hm_impl1_rel_defs heapmap_\<alpha>_def hmr_invar_def split: split_if_asm)
+      apply (auto simp: hm_impl1_rel_defs heapmap_\<alpha>_def hmr_invar_def)
       done
 
 
@@ -162,7 +162,7 @@ lemma efficient_nat_div2[simp]: "efficient_nat_div2 n = n div 2"
       unfolding hm_exch_op'_def hm_exch_op_def
       apply (auto simp: pw_le_iff refine_pw_simps nres_rel_def
           hm_impl1_rel_def in_br_conv split: prod.splits)
-      apply (auto simp: hm_impl1_\<alpha>_def split: split_if_asm)
+      apply (auto simp: hm_impl1_\<alpha>_def)
       unfolding hm_impl1_rel_defs
       apply auto
       done
@@ -180,7 +180,7 @@ lemma efficient_nat_div2[simp]: "efficient_nat_div2 n = n div 2"
       \<in> hm_impl1_rel \<rightarrow> nat_rel \<rightarrow> \<langle>nat_rel\<rangle>nres_rel"  
       apply (intro fun_relI nres_relI)
       unfolding hm_index_op'_def hm_index_op_def hm_impl1_rel_defs
-      apply (auto simp: pw_le_iff refine_pw_simps heapmap_\<alpha>_def split: split_if_asm)
+      apply (auto simp: pw_le_iff refine_pw_simps heapmap_\<alpha>_def split: if_split_asm)
       done
 
     definition hm_update_op' where
@@ -195,7 +195,7 @@ lemma efficient_nat_div2[simp]: "efficient_nat_div2 n = n div 2"
       unfolding hm_update_op'_def hm_update_op_def
       apply (auto simp: pw_le_iff refine_pw_simps nres_rel_def
           hm_impl1_rel_def in_br_conv split: prod.splits)
-      apply (auto simp: hm_impl1_\<alpha>_def split: split_if_asm)
+      apply (auto simp: hm_impl1_\<alpha>_def)
       unfolding hm_impl1_rel_defs
       apply (auto simp: subset_code(1))
       done
@@ -234,7 +234,7 @@ lemma efficient_nat_div2[simp]: "efficient_nat_div2 n = n div 2"
       unfolding hm_butlast_op'_def hm_butlast_op_def
       apply (auto simp: pw_le_iff refine_pw_simps nres_rel_def
           hm_impl1_rel_def in_br_conv split: prod.splits)
-      apply (auto simp: hm_impl1_\<alpha>_def split: split_if_asm)
+      apply (auto simp: hm_impl1_\<alpha>_def)
       unfolding hm_impl1_rel_defs
       apply (auto simp: restrict_map_def) []
 
@@ -261,9 +261,9 @@ lemma efficient_nat_div2[simp]: "efficient_nat_div2 n = n div 2"
       apply (intro frefI hm_impl1_nres_relI[OF hm_append_op_invar])
       unfolding hm_append_op'_def hm_append_op_def
       apply (auto simp: pw_le_iff refine_pw_simps nres_rel_def
-          hm_impl1_rel_def in_br_conv split: prod.splits split_if_asm)
+          hm_impl1_rel_def in_br_conv split: prod.splits)
       unfolding hm_impl1_rel_defs
-      apply (auto simp: restrict_map_def hmr_invar_def split: prod.splits split_if_asm) 
+      apply (auto simp: restrict_map_def hmr_invar_def split: prod.splits if_split_asm) 
       done
       
     definition "hm_impl2_rel \<equiv> prod_assn (ial_assn maxsize id_assn) (array_assn id_assn)"
@@ -382,7 +382,7 @@ lemma efficient_nat_div2[simp]: "efficient_nat_div2 n = n div 2"
       apply (intro fun_relI nres_relI)
       unfolding hm_the_lookup_op'_def hm_the_lookup_op_def
       apply refine_vcg
-      apply (auto simp: hm_impl1_rel_defs heapmap_\<alpha>_def hmr_invar_def split: split_if_asm)
+      apply (auto simp: hm_impl1_rel_defs heapmap_\<alpha>_def hmr_invar_def split: if_split_asm)
       done
 
     sepref_definition hm_the_lookup_op_impl is "uncurry hm_the_lookup_op'" :: "hm_impl2_rel\<^sup>k*\<^sub>aid_assn\<^sup>k \<rightarrow>\<^sub>aid_assn"  

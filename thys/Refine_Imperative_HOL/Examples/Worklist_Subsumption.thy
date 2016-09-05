@@ -28,7 +28,8 @@ using assms unfolding take_from_mset_def by simp
 lemmas [refine_vcg] = take_from_mset_correct[THEN order.trans]
 
 
-lemma set_mset_mp: "set_mset m \<subseteq> s \<Longrightarrow> n < count m x \<Longrightarrow> x\<in>s" by auto
+lemma set_mset_mp: "set_mset m \<subseteq> s \<Longrightarrow> n < count m x \<Longrightarrow> x\<in>s" 
+  by (meson count_greater_zero_iff le_less_trans subsetCE zero_le)
 
 lemma pred_not_lt_is_zero: "(\<not> n - Suc 0 < n) \<longleftrightarrow> n=0" by auto
 
@@ -173,7 +174,7 @@ context Search_Space begin
     using assms unfolding worklist_inv_frontier_def 
     using trans 
     apply clarsimp
-    by (metis (mono_tags) UnCI UnE count_ne_remove mem_set_mset_iff)
+    by (metis Un_iff insert_DiffM mset_singletonD mset_un_cases)
 
   private lemma aux5:
     assumes
@@ -183,7 +184,7 @@ context Search_Space begin
       "start_subsumed passed wait"
     shows "start_subsumed passed (wait - {#a#})"
     using assms unfolding start_subsumed_def apply clarsimp
-    by (metis (full_types) UnCI assms(1) assms(2) count_ne_remove trans mem_set_mset_iff)
+    by (metis Un_iff insert_DiffM2 local.trans mset_right_cancel_elem)
 
   private lemma aux3:
     assumes
@@ -199,7 +200,7 @@ context Search_Space begin
 
     from assms(2,3,4) show ?thesis unfolding worklist_inv_frontier_def 
       apply auto
-      by (metis Un_iff mem_set_mset_iff mset_diff_union_cancel mset_right_cancel_elem)
+      by (metis (full_types) Un_iff insert_DiffM mset_left_cancel_elem)
   qed    
 
   private lemma aux6:
@@ -210,7 +211,7 @@ context Search_Space begin
     shows "start_subsumed (insert a passed) wait'"
   using assms unfolding start_subsumed_def 
   apply auto
-  by (metis UnCI count_ne_remove mem_set_mset_iff) 
+  by (metis UnI2 contra_subsetD insert_noteq_member mset_diff_union_cancel sup.cobounded1)
 
   lemma aux4:
     assumes "worklist_inv_frontier passed {#}" "reachable x" "start_subsumed passed {#}"
@@ -261,17 +262,21 @@ context Search_Space begin
       apply (simp; fail)
       (* State is subsumed by passed*)  
         (*Invariant*)
-        apply (auto simp: worklist_inv_def aux2 aux5 split: split_if_asm; fail)
+        apply (auto simp: worklist_inv_def aux2 aux5 
+              dest: in_diffD
+              split: if_split_asm; fail) []
         (*Variant*)
         apply (auto simp: worklist_inv_def worklist_var_def intro: finite_subset[OF _ finite_reachable]; fail)
 
       (* Insert successors to wait *)  
         (*Invariant*)
-        apply (clarsimp split: split_if_asm) (* Split on F in successors *)
+        apply (clarsimp split: if_split_asm) (* Split on F in successors *)
           (* Found final state *)
           apply (clarsimp simp: worklist_inv_def; blast intro: step_reachable; fail)
           (* No final state *)
-          apply (auto simp: worklist_inv_def step_reachable aux3 aux6 finitely_branching; fail)[]
+      apply (auto 
+        simp: worklist_inv_def step_reachable aux3 aux6 finitely_branching
+        dest: in_diffD; fail)[]
         (*Variant*)
         apply (auto simp: worklist_inv_def aux1; fail)
       (* I \<and> \<not>b \<Longrightarrow> post *)  

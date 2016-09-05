@@ -598,7 +598,7 @@ subsection \<open>ML-Level Declarations\<close>
   
           val (_,lthy) = Local_Theory.open_target lthy 
           val ((dt,(_,thm)),lthy) = Local_Theory.define 
-            ((name,Mixfix.NoSyn),((Thm.def_binding name,Code.add_default_eqn_attrib::attribs),t)) lthy;
+            ((name,Mixfix.NoSyn),((Thm.def_binding name,@{attributes [code]}@attribs),t)) lthy;
           val (lthy, lthy_old) = `Local_Theory.close_target lthy
           val phi = Proof_Context.export_morphism lthy_old lthy
           val thm = Morphism.thm phi thm
@@ -1052,10 +1052,10 @@ subsection \<open>ML-Level Declarations\<close>
       
           val parse_precond = Scan.option (@{keyword "["} |-- Parse.term --| @{keyword "]"})
       
-          val parse_fref_thm = Scan.option (@{keyword "uses"} |-- Parse.xthm)
+          val parse_fref_thm = Scan.option (@{keyword "uses"} |-- Parse.thm)
       
         in
-          val di_parser = parse_flags -- Scan.optional (Parse.binding --| @{keyword ":"}) Binding.empty -- parse_precond -- Parse.xthm -- parse_fref_thm
+          val di_parser = parse_flags -- Scan.optional (Parse.binding --| @{keyword ":"}) Binding.empty -- parse_precond -- Parse.thm -- parse_fref_thm
         end  
       
         fun di_cmd ((((flags,name), precond_raw), i_thm_raw), p_thm_raw) lthy = let

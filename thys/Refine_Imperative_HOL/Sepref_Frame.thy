@@ -309,7 +309,7 @@ structure Sepref_Frame : SEPREF_FRAME = struct
           |> Termtab.make
         ) handle
             e as (Termtab.DUP _) => (
-              tracing ("Dup heap: " ^ PolyML.makestring ct); reraise e)
+              tracing ("Dup heap: " ^ @{make_string} ct); raise e)
         
         (* Go over entries in P and try to find a partner *)
         val (Qtab,Pum) = fold (fn a => fn (Qtab,Pum) => 

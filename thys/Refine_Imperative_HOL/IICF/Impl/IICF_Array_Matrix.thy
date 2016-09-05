@@ -23,7 +23,6 @@ begin
   lemma is_amtx_bounded:
     shows "rdomp (is_amtx N M) m \<Longrightarrow> mtx_nonzero m \<subseteq> {0..<N}\<times>{0..<M}"
     unfolding rdomp_def 
-    using assms
     apply (clarsimp simp: mtx_nonzero_def is_amtx_def)
     by (meson not_less)
 
@@ -443,7 +442,7 @@ begin
       text \<open>In order to discharge preconditions, we need to prove some auxiliary lemma 
         that non-zero indexes are within range\<close>
       lemma diagonal_nonzero_ltN[simp]: "(a,b)\<in>mtx_nonzero (diagonalN k) \<Longrightarrow> a<N \<and> b<N"  
-        by (auto simp: mtx_nonzero_def diagonalN_def split: split_if_asm)
+        by (auto simp: mtx_nonzero_def diagonalN_def split: if_split_asm)
 
       private definition "init_test2 \<equiv> do {
         ASSERT (N>2); (* Ensure that the coordinate (1,2) is valid *)

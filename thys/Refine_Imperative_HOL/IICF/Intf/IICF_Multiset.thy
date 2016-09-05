@@ -133,6 +133,17 @@ lemma param_count[param]: "\<lbrakk>single_valued A; single_valued (A\<inverse>)
   apply (simp add: bi_unique_alt_def)
   done
 
+lemma param_set_mset[param]: 
+  assumes "single_valued A"  
+  shows "(set_mset, set_mset) \<in> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>set_rel"
+  apply (clarsimp simp: mset_rel_def p2rel_def set_rel_def; safe)
+  apply (metis ImageI insert_DiffM2 msed_rel_invR rel2pD union_single_eq_member)
+  apply (force simp: rel_mset_def in_set_conv_decomp rel2p_def
+      list_all2_append1 list_all2_Cons1 intro: single_valuedD[OF assms])
+  apply (force simp: rel_mset_def in_set_conv_decomp rel2p_def
+      list_all2_append1 list_all2_Cons1)
+  done
+
 definition [simp]: "mset_is_empty m \<equiv> m = {#}"
 
 lemma mset_is_empty_param[param]: "(mset_is_empty,mset_is_empty) \<in> \<langle>A\<rangle>mset_rel \<rightarrow> bool_rel"

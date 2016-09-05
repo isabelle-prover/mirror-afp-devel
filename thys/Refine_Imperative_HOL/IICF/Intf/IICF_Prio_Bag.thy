@@ -50,8 +50,7 @@ subsection \<open>Operations\<close>
       fix y' assume "y'\<in>set_mset n"
       then obtain x' where [param]: "(x',y')\<in>A" and "x'\<in>set_mset m"
         using R
-        by (metis (no_types, lifting) Un_iff insert_iff mem_set_mset_iff 
-          msed_rel_invR multi_member_split rel2p_def set_mset_single set_mset_union)
+        by (metis msed_rel_invR multi_member_split multi_member_this rel2pD union_commute)
       with P' have "prio' x \<le> prio' x'" by blast
       moreover have "(prio' x \<le> prio' x', prio y \<le> prio y') \<in> bool_rel"
         by parametricity
@@ -88,8 +87,7 @@ subsection \<open>Operations\<close>
       fix y' assume "y'\<in>set_mset n"
       then obtain x' where [param]: "(x',y')\<in>A" and "x'\<in>set_mset m"
         using R
-        by (metis (no_types, lifting) Un_iff insert_iff mem_set_mset_iff 
-          msed_rel_invR multi_member_split rel2p_def set_mset_single set_mset_union)
+        by (metis Groups.add_ac(2) insert_DiffM2 msed_rel_invR multi_member_this rel2pD)
       with P' have "prio' x \<le> prio' x'" by blast
       moreover have "(prio' x \<le> prio' x', prio y \<le> prio y') \<in> bool_rel"
         by parametricity

@@ -236,10 +236,10 @@ begin
     assumes "map_mmupd m K v k = Some x"
     obtains "k\<notin>K" "m k = Some x"
           | "k\<in>K" "x=v"
-    using assms by (auto simp: map_mmupd_def split: split_if_asm)      
+    using assms by (auto simp: map_mmupd_def split: if_split_asm)      
 
   lemma dom_mmupd[simp]: "dom (map_mmupd m K v) = dom m \<union> K"  
-    by (auto simp: map_mmupd_def split: split_if_asm)      
+    by (auto simp: map_mmupd_def split: if_split_asm)      
 
   lemma le_map_mmupd_not_dom[simp, intro!]: "m \<subseteq>\<^sub>m map_mmupd m (K-dom m) v" 
     by (auto simp: map_le_def)
@@ -943,7 +943,7 @@ fun mk_qualified basename q = Binding.qualify true basename (Binding.name q);
         val attribs = map (Attrib.check_src lthy) attribs_raw;
       
         val ((_,(_,def_thm)),lthy) = Specification.definition 
-          (SOME (fun_name,NONE,Mixfix.NoSyn),((Binding.empty,attribs),def_term)) lthy;
+          (SOME (fun_name,NONE,Mixfix.NoSyn)) [] [] ((Binding.empty,attribs),def_term) lthy;
       
         val folded_thm = Local_Defs.fold lthy [def_thm] thm';
       
@@ -1212,7 +1212,6 @@ lemma array_copy_rule[sep_heap_rules]:
     < a\<mapsto>\<^sub>al> 
       array_copy a 
     <\<lambda>a'. a\<mapsto>\<^sub>al * a'\<mapsto>\<^sub>a l>"
-  using assms
   unfolding array_copy_def
   by sep_auto
 

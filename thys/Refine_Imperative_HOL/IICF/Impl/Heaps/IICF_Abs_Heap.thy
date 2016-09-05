@@ -155,7 +155,6 @@ text \<open>
 
     lemma heap_eq_heap':
       shows "heap_invar h \<longleftrightarrow> heap_invar' h"
-      using assms 
       unfolding heap_invar_def 
       unfolding heap_invar'_def children_ge_def
       apply rule
@@ -656,7 +655,7 @@ text \<open>
       apply (fo_rule arg_cong fun_cong)+
       apply (intro ext)
       unfolding sink_op_def[symmetric]
-      apply (simp cong: if_cong split del: split_if add: Let_def)
+      apply (simp cong: if_cong split del: if_split add: Let_def)
 
       apply (auto simp: valid_def left_def right_def prio_of_op_def val_of_op_def 
         val_of_def less_imp_diff_less ASSERT_same_eq_conv nz_le_conv_less) []

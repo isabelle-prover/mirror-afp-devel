@@ -396,11 +396,11 @@ lemma b_rel_subtyping_merge_tR[sepref_frame_merge_rules]:
 
 lemma b_rel_subtyping_merge_eqA_tL[sepref_frame_merge_rules]:
   shows "hn_ctxt A x y \<or>\<^sub>A hn_ctxt (b_assn A P') x y \<Longrightarrow>\<^sub>t hn_ctxt A x y"
-  using b_rel_subtyping_merge_eqA[of A "\<lambda>_. True" x y P', simplified] assms .
+  using b_rel_subtyping_merge_eqA[of A "\<lambda>_. True" x y P', simplified] .
 
 lemma b_rel_subtyping_merge_eqA_tR[sepref_frame_merge_rules]:
   shows "hn_ctxt (b_assn A P) x y \<or>\<^sub>A hn_ctxt A x y \<Longrightarrow>\<^sub>t hn_ctxt A x y"
-  using b_rel_subtyping_merge_eqA[of A P x y "\<lambda>_. True", simplified] assms .
+  using b_rel_subtyping_merge_eqA[of A P x y "\<lambda>_. True", simplified] .
 
 (* TODO: Combinatorial explosion :( *)
 lemma b_assn_invalid_merge1: "hn_invalid (b_assn A P) x y \<or>\<^sub>A hn_invalid (b_assn A P') x y

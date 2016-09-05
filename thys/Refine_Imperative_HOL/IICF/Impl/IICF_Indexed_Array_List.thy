@@ -50,12 +50,12 @@ begin
         assume "qp!k < length l"
         hence "qp!k < length qp" using l_len by simp
         with spec[OF qp_def, of k] A show "k\<in>set l" 
-          by (auto split: split_if_asm)
+          by (auto split: if_split_asm)
       }
       {
         assume "k\<in>set l"
         thus "qp!k<length l"
-          using qp_def by (auto split: split_if_asm) []
+          using qp_def by (auto split: if_split_asm) []
       }
     qed 
 
@@ -255,7 +255,7 @@ begin
       {
         assume A: "l\<noteq>[]"
         have "ial_invar (length qp) (butlast l) (qp[l ! (length l - Suc 0) := length qp])"
-          apply default
+          apply standard
           apply clarsimp_all
           apply (auto simp: distinct_butlast) []
           using l_set apply (auto dest: in_set_butlastD) []
@@ -311,7 +311,7 @@ begin
       finally have LLEN: "length l < length qp" .
     
       have aux1[simp]: "ial_invar (length qp) (l @ [k]) (qp[k := length l])"
-        apply default
+        apply standard
         apply (clarsimp_all simp: KNL KLL)
         using KLL apply (auto simp: Suc_le_eq LLEN) []
         apply (auto simp: index_append KNL nth_list_update')
@@ -403,7 +403,7 @@ begin
       show "aial_contains k (l, qp) \<le> RETURN (k\<in>set l)"
         unfolding aial_contains_def
         apply refine_vcg
-        by (auto simp: l_len qp_def split: split_if_asm)
+        by (auto simp: l_len qp_def split: if_split_asm)
     qed    
   
     context 

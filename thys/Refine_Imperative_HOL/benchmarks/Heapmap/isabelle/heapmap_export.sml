@@ -282,8 +282,8 @@ fun test_bit x n =
 end; (*struct Bits_Integer*)
 
 structure Heapmap : sig
-  type nat
   type num
+  type nat
   val integer_of_nat : nat -> IntInf.int
   type ('a, 'b) lp
   type ('b, 'a) fingerTree
@@ -294,11 +294,9 @@ end = struct
 
 datatype typerepa = Typerep of string * typerepa list;
 
-datatype nibble = Nibble0 | Nibble1 | Nibble2 | Nibble3 | Nibble4 | Nibble5 |
-  Nibble6 | Nibble7 | Nibble8 | Nibble9 | NibbleA | NibbleB | NibbleC | NibbleD
-  | NibbleE | NibbleF;
+datatype num = One | Bit0 of num | Bit1 of num;
 
-datatype char = Char of nibble * nibble;
+datatype char = Zero_char | Char of num;
 
 datatype nat = Nat of IntInf.int;
 
@@ -321,8 +319,6 @@ val typerep_nat = {typerep = typerep_nata} : nat typerep;
 
 val heap_nat = {countable_heap = countable_nat, typerep_heap = typerep_nat} :
   nat heap;
-
-datatype num = One | Bit0 of num | Bit1 of num;
 
 val one_nata : nat = Nat (1 : IntInf.int);
 
@@ -526,8 +522,6 @@ fun rand s m =
   end;
 
 fun snd (x1, x2) = x2;
-
-fun rep_splitres A_ (Abs_splitres x) = x;
 
 fun marl_set A_ =
   (fn (a, n) => fn i => fn x => fn () => let
@@ -1138,6 +1132,8 @@ fun splitTree_aux B_ p i t =
               (annot B_ t))
       then splitTreea B_ p i (rep_FingerTree B_ t)
       else (Empty, ((raise Fail "undefined"), Empty)));
+
+fun rep_splitres A_ (Abs_splitres x) = x;
 
 fun extract_splitres_r B_ r =
   Abs_FingerTree let

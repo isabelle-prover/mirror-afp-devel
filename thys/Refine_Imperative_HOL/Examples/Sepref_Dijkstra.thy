@@ -16,7 +16,7 @@ begin
 instantiation infty :: (heap) heap
 begin
   instance 
-    apply default
+    apply standard
     apply (rule_tac x="\<lambda>Infty \<Rightarrow> 0 | Num a \<Rightarrow> to_nat a + 1" in exI)
     apply (rule injI)
     apply (auto split: infty.splits)
