@@ -538,8 +538,8 @@ subsubsection {* Union, difference and intersection *}
     ultimately show ?thesis by (auto simp add: union_ac iff add: multiset_eq_iff)
   qed
 
-  lemma mset_diff_union_cancel[simp]: "t \<in># S \<Longrightarrow> (S - {#t#}) + {#t#} = S"
-    by (auto simp add: mset_union_diff_comm union_ac)
+  lemma mset_diff_union_cancel: "t \<in># S \<Longrightarrow> (S - {#t#}) + {#t#} = S"
+    by simp
 
 (*  lemma mset_diff_diff_left: "A-B-C = A-((B::'a multiset)+C)" proof -
     have "ALL e . count (A-B-C) e = count (A-(B+C)) e" by auto
@@ -605,13 +605,13 @@ subsubsection {* Union, difference and intersection *}
     thus "{#a#} = M+{#b#}" by auto
   qed
 
-  lemma mset_union_1_elem2[simp]: "({#a#} = {#b#}+M) = (a=b & M={#})" using mset_union_1_elem1
-    by (simp add: union_ac)
+  lemma mset_union_1_elem2: "({#a#} = add_mset b M) = (a=b & M={#})" using mset_union_1_elem1
+    by simp
 
-  lemma mset_union_1_elem3[simp]: "(M+{#b#}={#a#}) = (b=a & M={#})" using mset_union_1_elem1
+  lemma mset_union_1_elem3: "(add_mset b M={#a#}) = (b=a & M={#})" using mset_union_1_elem1
     by (auto dest: sym)
 
-  lemma mset_union_1_elem4[simp]: "({#b#}+M={#a#}) = (b=a & M={#})" using mset_union_1_elem3
+  lemma mset_union_1_elem4: "(add_mset b M={#a#}) = (b=a & M={#})" using mset_union_1_elem3
     by (simp add: union_ac)
 
   lemma mset_inter_1elem1[simp]: assumes A: "~(a \<in># B)" shows "{#a#} #\<inter> B = {#}" proof (unfold multiset_inter_def)
@@ -628,8 +628,8 @@ subsubsection {* Union, difference and intersection *}
   lemmas mset_neutral_cancel1 = union_left_cancel[where N="{#}", simplified] union_right_cancel[where N="{#}", simplified]
   declare mset_neutral_cancel1[simp]
 
-  lemma mset_neutral_cancel2[simp]: "(c=n+c) = (n={#})" "(c=c+n) = (n={#})"
-    apply (auto simp add: union_ac)
+  lemma mset_neutral_cancel2: "(c=n+c) = (n={#})" "(c=c+n) = (n={#})"
+    apply auto
     done
 
 
@@ -700,7 +700,7 @@ subsubsection {* Union, difference and intersection *}
     using mset_unplusm_dist_cases[OF A[symmetric]] L R by blast
 
   lemma mset_single_cases[cases set, case_names loc env]:
-    assumes A: "{#s#}+c = {#r'#}+c'"
+    assumes A: "add_mset s c = add_mset r' c'"
     assumes CASES: "\<lbrakk>s=r'; c=c'\<rbrakk> \<Longrightarrow> P" "\<lbrakk>c'={#s#}+(c'-{#s#}); c={#r'#}+(c-{#r'#}); c-{#r'#} = c'-{#s#} \<rbrakk> \<Longrightarrow> P"
     shows "P"
   proof -
@@ -721,17 +721,17 @@ subsubsection {* Union, difference and intersection *}
   qed
 
   lemma mset_single_cases'[cases set, case_names loc env]:
-    assumes A: "{#s#}+c = {#r'#}+c'"
+    assumes A: "add_mset s c = add_mset r' c'"
     assumes CASES: "\<lbrakk>s=r'; c=c'\<rbrakk> \<Longrightarrow> P" "!!cc. \<lbrakk>c'={#s#}+cc; c={#r'#}+cc; c'-{#s#}=cc; c-{#r'#}=cc\<rbrakk> \<Longrightarrow> P"
     shows "P"
     using A  CASES by (auto elim!: mset_single_cases)
 
   lemma mset_single_cases2[cases set, case_names loc env]:
-    assumes A: "c+{#s#} = c'+{#r'#}"
+    assumes A: "add_mset s c = add_mset r' c'"
     assumes CASES: "\<lbrakk>s=r'; c=c'\<rbrakk> \<Longrightarrow> P" "\<lbrakk>c'=(c'-{#s#})+{#s#}; c=(c-{#r'#})+{#r'#}; c-{#r'#} = c'-{#s#} \<rbrakk> \<Longrightarrow> P"
     shows "P"
   proof -
-    from A have "{#s#}+c = {#r'#}+c'" by (simp add: union_ac)
+    from A have "add_mset s c = add_mset r' c'" by (simp add: union_ac)
     thus ?thesis proof (cases rule: mset_single_cases)
       case loc with CASES show ?thesis by simp
     next
@@ -740,13 +740,13 @@ subsubsection {* Union, difference and intersection *}
   qed
 
   lemma mset_single_cases2'[cases set, case_names loc env]:
-    assumes A: "c+{#s#} = c'+{#r'#}"
+    assumes A: "add_mset s c = add_mset r' c'"
     assumes CASES: "\<lbrakk>s=r'; c=c'\<rbrakk> \<Longrightarrow> P" "!!cc. \<lbrakk>c'=cc+{#s#}; c=cc+{#r'#}; c'-{#s#}=cc; c-{#r'#}=cc\<rbrakk> \<Longrightarrow> P"
     shows "P"
     using A  CASES by (auto elim!: mset_single_cases2)
 
   lemma mset_un_single_un_cases [consumes 1, case_names left right]:
-    assumes A: "A + {#a#} = B + C"
+    assumes A: "add_mset a A = B + C"
       and CASES: "a \<in># B \<Longrightarrow> A = (B - {#a#}) + C \<Longrightarrow> P"
         "a \<in># C \<Longrightarrow> A = B + (C - {#a#}) \<Longrightarrow> P" shows "P"
   proof -
@@ -774,31 +774,31 @@ subsubsection {* Union, difference and intersection *}
       proof (induct X)
         case empty thus ?case by simp
       next
-        case (add X x A B M N)
-        from add(2,3) have MN: "X+{#x#} = M+N" by simp
+        case (add x X A B M N)
+        from add(2,3) have MN: "add_mset x X = M+N" by simp
         from add(2) show ?case proof (cases rule: mset_un_single_un_cases)
           case left from MN show ?thesis proof (cases rule: mset_un_single_un_cases[case_names left' right'])
             case left' with left have "X=A-{#x#}+B" "A-{#x#}+B = M-{#x#}+N" by simp_all
             from "add.hyps"[OF this] obtain Am An Bm Bn where "A - {#x#} = Am + An" "B = Bm + Bn" "M - {#x#} = Am + Bm" "N = An + Bn" .
             hence "A - {#x#} + {#x#} = Am+{#x#} + An" "B = Bm + Bn" "M - {#x#}+{#x#} = Am+{#x#} + Bm" "N = An + Bn" by (simp_all add: union_ac)
-            with left(1) left'(1) show ?thesis using "add.prems"(3) by auto
+            with left(1) left'(1) show ?thesis using "add.prems"(3) by force
           next
             case right' with left have "X=A-{#x#}+B" "A-{#x#}+B = M+(N-{#x#})" by simp_all
             from "add.hyps"[OF this] obtain Am An Bm Bn where "A - {#x#} = Am + An" "B = Bm + Bn" "M = Am + Bm" "N-{#x#} = An + Bn" .
             hence "A - {#x#} + {#x#} = Am + (An+{#x#})" "B = Bm + Bn" "M = Am + Bm" "N - {#x#}+{#x#} = (An+{#x#}) + Bn" by (simp_all add: union_ac)
-            with left(1) right'(1) show ?thesis using "add.prems"(3) by auto
+            with left(1) right'(1) show ?thesis using "add.prems"(3) by force
           qed
         next
           case right from MN show ?thesis proof (cases rule: mset_un_single_un_cases[case_names left' right'])
             case left' with right have "X=A+(B-{#x#})" "A+(B-{#x#}) = M-{#x#}+N" by simp_all
             from "add.hyps"[OF this] obtain Am An Bm Bn where "A = Am + An" "B-{#x#} = Bm + Bn" "M - {#x#} = Am + Bm" "N = An + Bn" .
             hence "A = Am + An" "B-{#x#}+{#x#} = Bm+{#x#} + Bn" "M - {#x#}+{#x#} = Am + (Bm+{#x#})" "N = An + Bn" by (simp_all add: union_ac)
-            with right(1) left'(1) show ?thesis using "add.prems"(3) by auto
+            with right(1) left'(1) show ?thesis using "add.prems"(3) by force
           next
             case right' with right have "X=A+(B-{#x#})" "A+(B-{#x#}) = M+(N-{#x#})" by simp_all
             from "add.hyps"[OF this] obtain Am An Bm Bn where "A = Am + An" "B-{#x#} = Bm + Bn" "M = Am + Bm" "N-{#x#} = An + Bn" .
             hence "A = Am + An" "B-{#x#}+{#x#} = Bm + (Bn+{#x#})" "M = Am + Bm" "N - {#x#}+{#x#} = An + (Bn+{#x#})" by (simp_all add: union_ac)
-            with right(1) right'(1) show ?thesis using "add.prems"(3) by auto
+            with right(1) right'(1) show ?thesis using "add.prems"(3) by force
           qed
         qed
       qed
@@ -807,10 +807,10 @@ subsubsection {* Union, difference and intersection *}
 
 
 subsubsection {* Singleton multisets *}
-  lemma mset_singletonI[intro!]: "a \<in># {#a#}"
+  lemma mset_singletonI: "a \<in># {#a#}"
     by auto
 
-  lemma mset_singletonD[dest!]: "b \<in># {#a#} \<Longrightarrow> b=a"
+  lemma mset_singletonD: "b \<in># {#a#} \<Longrightarrow> b=a"
     apply(cases "a=b")
     apply(auto)
   done
@@ -824,11 +824,8 @@ lemma diff_union_single_conv2: "a \<in># J \<Longrightarrow> J + I - {#a#} = (J 
 
 lemmas diff_union_single_convs = diff_union_single_conv diff_union_single_conv2
 
-lemma mset_contains_eq: "(m \<in># M) = ({#m#}+(M-{#m#})=M)" proof (auto)
-  assume "{#m#} + (M - {#m#}) = M"
-  moreover have "m \<in># {#m#} + (M - {#m#})" by simp
-  ultimately show "m \<in># M" by simp
-qed
+lemma mset_contains_eq: "(m \<in># M) = ({#m#}+(M-{#m#})=M)"
+  using diff_single_trivial by fastforce
 
 
 subsubsection {* Pointwise ordering *}
@@ -852,14 +849,20 @@ subsubsection {* Pointwise ordering *}
     by blast
   lemma mset_le_decr_left2: "c+a\<le>#(b::'a multiset) \<Longrightarrow> a\<le>#b" using mset_le_decr_left1
     by (auto simp add: union_ac)
-  lemmas mset_le_decr_left = mset_le_decr_left1 mset_le_decr_left2
+  lemma mset_le_add_mset_decr_left1: "add_mset c a\<le>#(b::'a multiset) \<Longrightarrow> a\<le>#b"
+    by (simp add: mset_subset_eq_insertD subset_mset.dual_order.strict_implies_order)
+  lemma mset_le_add_mset_decr_left2: "add_mset c a\<le>#(b::'a multiset) \<Longrightarrow> {#c#}\<le>#b"
+    by (simp add: mset_subset_eq_insertD subset_mset.dual_order.strict_implies_order)
+  
+  lemmas mset_le_decr_left = mset_le_decr_left1 mset_le_decr_left2 mset_le_add_mset_decr_left1
+    mset_le_add_mset_decr_left2
 
   lemma mset_le_single_conv[simp]: "({#e#}\<le>#M) = (e \<in># M)"
     by (auto simp add: subseteq_mset_def Suc_le_eq)
 
   lemma mset_le_trans_elem: "\<lbrakk>e \<in># c; c \<le># c'\<rbrakk> \<Longrightarrow> e \<in># c'" using subset_mset.order_trans[of "{#e#}" c c', simplified]
     by assumption
-
+  
   lemma mset_le_subtract: "A\<le>#B \<Longrightarrow> A-C \<le># B-(C::'a multiset)"
     apply (unfold subseteq_mset_def)
     apply auto
@@ -870,12 +873,21 @@ subsubsection {* Pointwise ordering *}
 
   lemma mset_le_union: "A+B \<le># C \<Longrightarrow> A\<le>#C \<and> B\<le>#(C::'a multiset)"
     by (auto dest: mset_le_decr_left)
-
+  
+  lemma mset_le_add_mset: "add_mset x B \<le># C \<Longrightarrow> {#x#}\<le>#C \<and> B\<le>#(C::'a multiset)"
+    by (auto dest: mset_le_decr_left)
+  
   lemma mset_le_subtract_left: "A+B \<le># (X::'a multiset) \<Longrightarrow> B \<le># X-A \<and> A\<le>#X"
     by (auto dest: mset_le_subtract[of "A+B" "X" "A"] mset_le_union)
   lemma mset_le_subtract_right: "A+B \<le># (X::'a multiset) \<Longrightarrow> A \<le># X-B \<and> B\<le>#X"
     by (auto dest: mset_le_subtract[of "A+B" "X" "B"] mset_le_union)
 
+  lemma mset_le_subtract_add_mset_left: "add_mset x B \<le># (X::'a multiset) \<Longrightarrow> B \<le># X-{#x#} \<and> {#x#}\<le>#X"
+    by (auto dest: mset_le_subtract[of "add_mset x B" "X" "{#x#}"] mset_le_add_mset)
+
+  lemma mset_le_subtract_add_mset_right: "add_mset x B \<le># (X::'a multiset) \<Longrightarrow> {#x#} \<le># X-B \<and> B\<le>#X"
+    by (auto dest: mset_le_subtract[of "add_mset x B" "X" "B"] mset_le_add_mset)
+  
   lemma mset_le_addE: "\<lbrakk> xs \<le># (ys::'a multiset); !!zs. ys=xs+zs \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P" using mset_subset_eq_exists_conv
     by blast
 
@@ -892,7 +904,7 @@ subsubsection {* Pointwise ordering *}
     } moreover {
       assume C: "a \<in># A" "\<not> (b \<in># A-{#a#})"
       with A have "b \<in># B"
-        by (smt diff_union_single_conv2 mset_le_subtract_left mset_le_trans_elem mset_un_iff union_single_eq_member)
+        by (metis diff_union_single_conv2 mset_le_subtract_left mset_subset_eq_insertD mset_un_cases)
     } moreover {
       assume C: "\<not> (a \<in># A)" "b \<in># B-{#a#}"
       with A have "a \<in># B"
@@ -901,7 +913,10 @@ subsubsection {* Pointwise ordering *}
     } moreover {
       assume C: "\<not> (a \<in># A)" "\<not> (b \<in># B-{#a#})"
       with A have "a \<in># B \<and> b \<in># A"
-        by (smt diff_single_trivial mset_inter_1elem2 mset_le_single_conv mset_le_subtract_left multi_drop_mem_not_eq multiset_union_diff_commute union_ac(2))
+        apply (intro conjI)
+         apply (auto dest!: mset_subset_eq_insertD simp: insert_union_subset_iff; fail)[]
+        by (metis mset_diff_cancel1elem mset_le_subtract_left multiset_diff_union_assoc
+            single_subset_iff subset_eq_diff_conv)
     } ultimately show P using CASES by blast
   qed
 
@@ -912,25 +927,22 @@ subsubsection {* Pointwise ordering *}
     done
 
   lemma mset_union_subset_s: "{#a#}+B \<le># C \<Longrightarrow> a \<in># C \<and> B \<le># C"
-    by (auto dest: mset_union_subset)
+    by (drule mset_union_subset) simp
 
   (* TODO: Check which of these lemmas are already introduced by order-classes ! *)
   lemma mset_le_eq_refl: "a=(b::'a multiset) \<Longrightarrow> a\<le>#b"
     by simp
 
-  lemma mset_singleton_eq[simplified,simp]: "a \<in># {#b#} = (a=b)"
-    by auto -- {* The simplification is here due to the lemma @{thm [source] "Multiset.count_single"}, that will be applied first deleting any application potential for this rule*}
+  lemma mset_singleton_eq: "a \<in># {#b#} = (a=b)"
+    by auto -- {* The simplification is here due to the lemma @{thm [source] "Multiset.count_add_mset"}, that will be applied first deleting any application potential for this rule*}
   lemma mset_le_single_single[simp]: "({#a#} \<le># {#b#}) = (a=b)"
     by auto
 
-  lemma mset_le_single_conv1[simp]: "(M+{#a#} \<le># {#b#}) = (M={#} \<and> a=b)"
+  lemma mset_le_single_conv1[simp]: "(add_mset a M \<le># {#b#}) = (M={#} \<and> a=b)"
   proof (auto)
-    assume A: "M+{#a#} \<le># {#b#}" thus "a=b" by (auto dest: mset_le_decr_left2)
+    assume A: "add_mset a M \<le># {#b#}" thus "a=b" by (auto dest: mset_le_add_mset_decr_left2)
     with A show "M={#}" by simp
   qed
-
-  lemma mset_le_single_conv2[simp]: "({#a#}+M \<le># {#b#}) = (M={#} \<and> a=b)"
-    by (simp add: union_ac)
 
   lemma mset_le_single_cases[consumes 1, case_names empty singleton]: "\<lbrakk>M\<le>#{#a#}; M={#} \<Longrightarrow> P; M={#a#} \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
     by (induct M) auto
@@ -938,7 +950,8 @@ subsubsection {* Pointwise ordering *}
   lemma mset_le_distrib[consumes 1, case_names dist]: "\<lbrakk>(X::'a multiset)\<le>#A+B; !!Xa Xb. \<lbrakk>X=Xa+Xb; Xa\<le>#A; Xb\<le>#B\<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
     by (auto elim!: mset_le_addE mset_distrib)
 
-  lemma mset_le_mono_add_single: "\<lbrakk>a \<in># ys; b \<in># ws\<rbrakk> \<Longrightarrow> {#a#} + {#b#} \<le># ys + ws" using mset_subset_eq_mono_add[of "{#a#}" _ "{#b#}", simplified] .
+lemma mset_le_mono_add_single: "\<lbrakk>a \<in># ys; b \<in># ws\<rbrakk> \<Longrightarrow> {#a#} + {#b#} \<le># ys + ws"
+  by (meson mset_subset_eq_mono_add single_subset_iff)
 
   lemma mset_size1elem: "\<lbrakk>size P \<le> 1; q \<in># P\<rbrakk> \<Longrightarrow> P={#q#}"
     by (auto elim: mset_size_le1_cases)
@@ -953,7 +966,7 @@ inductive_set
   for f:: "'a \<Rightarrow> 'b"
   where
   mset_map_Set_empty: "({#},{#})\<in>mset_map_Set f"
-  | mset_map_Set_add: "(A,B)\<in>mset_map_Set f \<Longrightarrow> (A+{#a#},B+{#f a#})\<in>mset_map_Set f"
+  | mset_map_Set_add: "(A,B)\<in>mset_map_Set f \<Longrightarrow> (add_mset a A,add_mset (f a) B)\<in>mset_map_Set f"
 
 lemma mset_map_Set_empty_simps[simp]: "(({#},B)\<in>mset_map_Set f) = (B={#})" "((A,{#})\<in>mset_map_Set f) = (A={#})"
   by (auto elim: mset_map_Set.cases intro: mset_map_Set_empty)
@@ -967,10 +980,10 @@ lemma mset_map_Set_sizes: "(A,B)\<in>mset_map_Set f \<Longrightarrow> size A = s
   by (induct rule: mset_map_Set.induct) auto
 
 text {* Intuitively, this lemma allows one to choose a single image element corresponding to an original element *}
-lemma mset_map_Set_choose[cases set, case_names choice]: assumes A: "(A+{#a#},B)\<in>mset_map_Set f" "!!B'. \<lbrakk>B=B'+{#f a#}; (A,B')\<in>mset_map_Set f\<rbrakk> \<Longrightarrow> P" shows "P"
+lemma mset_map_Set_choose[cases set, case_names choice]: assumes A: "(add_mset a A,B)\<in>mset_map_Set f" "!!B'. \<lbrakk>B=B'+{#f a#}; (A,B')\<in>mset_map_Set f\<rbrakk> \<Longrightarrow> P" shows "P"
 proof -
   { fix n
-    have "\<lbrakk>size B=n; (A+{#a#},B)\<in>mset_map_Set f; !!B'. \<lbrakk>B=B'+{#f a#}; (A,B')\<in>mset_map_Set f\<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P" proof (induct n arbitrary: A a B P)
+    have "\<lbrakk>size B=n; (add_mset a A,B)\<in>mset_map_Set f; !!B'. \<lbrakk>B=B'+{#f a#}; (A,B')\<in>mset_map_Set f\<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P" proof (induct n arbitrary: A a B P)
 
     (*have "!!A a B P. \<lbrakk>size B=n; (A+{#a#},B)\<in>mset_map_Set f; !!B'. \<lbrakk>B=B'+{#f a#}; (A,B')\<in>mset_map_Set f\<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P" proof (induct n)*)
       case 0 thus ?case by simp
@@ -979,14 +992,14 @@ proof -
         case mset_map_Set_empty hence False by simp thus ?thesis ..
       next
         case (mset_map_Set_add A' B' a')
-        hence "A+{#a#}=A'+{#a'#}" by simp
+        hence "add_mset a A=add_mset a' A'" by simp
         thus ?thesis proof (cases rule: mset_single_cases2')
           case loc with mset_map_Set_add Suc.prems(3) show ?thesis by auto
         next
           case (env A'')
           from Suc.prems(1) mset_map_Set_add(2) have SIZE: "size B' = n'" by auto
-          from mset_map_Set_add env have MM: "(A'' + {#a#}, B') \<in> mset_map_Set f" by simp
-          from Suc.hyps[OF SIZE MM] obtain B'' where B'': "B'=B''+{#f a#}" "(A'',B'')\<in>mset_map_Set f" by blast
+          from mset_map_Set_add env have MM: "(add_mset a A'', B') \<in> mset_map_Set f" by simp
+          from Suc.hyps[OF SIZE MM] obtain B'' where B'': "B'=B'' + {#f a#}" "(A'',B'')\<in>mset_map_Set f" by blast
           from mset_map_Set.mset_map_Set_add[OF B''(2)] env(2) have "(A, B'' + {#f a'#}) \<in> mset_map_Set f" by simp
           moreover from B''(1) mset_map_Set_add have "B=B'' + {#f a'#} + {#f a#}" by (simp add: union_ac)
           ultimately show ?thesis using Suc.prems(3) by blast
@@ -1021,15 +1034,12 @@ lemma mset_map_empty[simp]: "f `# {#} = {#}"
   apply (rule mset_map_Set_empty)
   done
 
-lemma mset_map_add[simp]: "f `# (A+{#a#}) = f `# A + {#f a#}" "f `# ({#a#}+A) = {#f a#} + f `# A"
+lemma mset_map_add[simp]: "f `# (add_mset a A) = add_mset (f a) (f `# A)" 
   by (auto simp add: mset_map.repr union_commute intro: mset_map_Set_add mset_map.repr1)
 
 text {* Transfer some other lemmas *}
 lemma mset_map_single_rightE[consumes 1, case_names orig]: "\<lbrakk>f `# P = {#y#}; !!x. \<lbrakk> P={#x#}; f x = y \<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
   by (auto simp add: mset_map.repr elim: mset_map_Set_single_rightE)
-
-text {* And show some further equations *}
-lemma mset_map_single[simp]: "f `# {#a#} = {#f a#}" using mset_map_add(1)[where A="{#}", simplified] .
 
 lemma mset_map_union: "!!B. f `# (A+B) = f `# A + f `# B"
   by (induct A) (auto simp add: union_ac)
@@ -1043,10 +1053,10 @@ lemma mset_map_empty_eq[simp]: "(f `# P = {#}) = (P={#})" using mset_map_size[of
 lemma mset_map_le: "!!B. A \<le># B \<Longrightarrow> f `# A \<le># f `# B" proof (induct A)
   case empty thus ?case by simp
 next
-  case (add A x B)
-  hence "A\<le>#B-{#x#}" and SM: "{#x#}\<le>#B" using mset_le_subtract_right by (fastforce+)
+  case (add x A B)
+  hence "A\<le>#B-{#x#}" and SM: "{#x#}\<le>#B" using mset_le_subtract_add_mset_left[OF add(2)] by (fastforce+)
   with "add.hyps" have "f `# A \<le># f `# (B-{#x#})" by blast
-  hence "f `# (A+{#x#}) \<le># f `# (B-{#x#}) + {#f x#}" by auto
+  hence "f `# (add_mset x A) \<le># f `# (B-{#x#}) + {#f x#}" by auto
   also have "\<dots> = f `# (B-{#x#}+{#x#})" by simp
   also with SM have "\<dots> = f `# B" by simp
   finally show ?case .
@@ -1055,7 +1065,7 @@ qed
 lemma mset_map_split_orig: "!!M1 M2. \<lbrakk>f `# P = M1+M2; !!P1 P2. \<lbrakk>P=P1+P2; f `# P1 = M1; f `# P2 = M2\<rbrakk> \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
   apply (induct P)
   apply fastforce
-  apply (fastforce elim!: mset_un_single_un_cases simp add: union_ac) (* TODO: This proof need's quite long. Try to write a faster one. *)
+  apply (force elim!: mset_un_single_un_cases simp add: union_ac) (* TODO: This proof need's quite long. Try to write a faster one. *)
   done
 
 lemma mset_map_id: "\<lbrakk>!!x. f (g x) = x\<rbrakk> \<Longrightarrow> f `# g `# X = X"

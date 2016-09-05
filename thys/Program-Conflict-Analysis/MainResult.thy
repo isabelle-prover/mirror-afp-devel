@@ -33,7 +33,7 @@ proof
   assume ?lhs
   then obtain w c' where C: "({#[entry fg (main fg)]#}, w, c') \<in> trcl (tr fg)" "atUV U V c'" by (auto simp add: refpoint_eq)
   from normalize[OF C(1), of "main fg", simplified] obtain ww where "({#[entry fg (main fg)]#}, ww, c') \<in> trcl (ntr fg)" by blast
-  from ntrs.gtr2gtrp[where c="{#}", simplified, OF this] obtain s' ce' wwl where 1: "c'={#s'#}+ce'" "ww = map le_rem_s wwl" "(([entry fg (main fg)], {#}), wwl, s', ce') \<in> trcl (ntrp fg)" by blast
+  from ntrs.gtr2gtrp[where c="{#}", simplified, OF this] obtain s' ce' wwl where 1: "c'=add_mset s' ce'" "ww = map le_rem_s wwl" "(([entry fg (main fg)], {#}), wwl, s', ce') \<in> trcl (ntrp fg)" by blast
   with C(2) have 2: "atUV U V ({#s'#}+ce')" by auto
   from RUV_sound[OF 1(3) 2] show ?rhs by blast
 next

@@ -194,7 +194,7 @@ proof -
           have r: "mm lrss = mm lrs + {# ?r r - ?r l #}" unfolding Cons lr' rel_def mm_def
             by auto
           have "(mm (lr' @ lrs), mm lrss) \<in> mult1 rel'" unfolding l r mult1_def
-          proof (rule, unfold split, intro exI conjI, rule refl, rule refl, intro allI impI)
+          proof (rule, unfold split, intro exI conjI, unfold add_mset_add_single[symmetric], rule refl, rule refl, intro allI impI)
             fix d
             assume "d \<in># mm lr'"
             then obtain l' r' where d: "d = ?r r' - ?r l'" and lr': "(l',r') \<in> set lr'"

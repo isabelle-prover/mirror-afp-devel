@@ -107,12 +107,18 @@ lemma param_mset_Plus[param]: "(op+,op+)\<in>\<langle>A\<rangle>mset_rel \<right
   by (rule rel_mset_Plus_gen)
 
 
-lemma param_mset_single[param]: 
+(*lemma param_mset_single[param]: 
   "(Multiset.single,Multiset.single) \<in> A \<rightarrow> \<langle>A\<rangle>mset_rel"
   apply (rule rel2pD)
   apply (simp add: rel2p)
   apply (intro rel_funI)
-  by (rule rel_mset_single)
+  by (rule rel_mset_single)*)
+
+lemma param_mset_add[param]: "(add_mset, add_mset) \<in> A \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel"
+  apply (rule rel2pD)
+  apply (simp add: rel2p)
+  apply (intro rel_funI)
+  by (rule rel_mset_Plus)
 
 lemma param_mset_minus[param]: "\<lbrakk>single_valued A; single_valued (A\<inverse>)\<rbrakk> 
   \<Longrightarrow> (op -, op -) \<in> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel" 
@@ -137,7 +143,7 @@ lemma param_set_mset[param]:
   assumes "single_valued A"  
   shows "(set_mset, set_mset) \<in> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>set_rel"
   apply (clarsimp simp: mset_rel_def p2rel_def set_rel_def; safe)
-  apply (metis ImageI insert_DiffM2 msed_rel_invR rel2pD union_single_eq_member)
+  apply (metis ImageI insert_DiffM msed_rel_invR rel2pD union_single_eq_member)
   apply (force simp: rel_mset_def in_set_conv_decomp rel2p_def
       list_all2_append1 list_all2_Cons1 intro: single_valuedD[OF assms])
   apply (force simp: rel_mset_def in_set_conv_decomp rel2p_def
@@ -150,6 +156,7 @@ lemma mset_is_empty_param[param]: "(mset_is_empty,mset_is_empty) \<in> \<langle>
   unfolding mset_rel_def mset_is_empty_def[abs_def]
   by (auto simp: p2rel_def rel_mset_def intro: nres_relI)
   
+
 subsection \<open>Operations\<close>
   sepref_decl_op mset_empty: "{#}" :: "\<langle>A\<rangle>mset_rel" .
 
@@ -158,9 +165,9 @@ subsection \<open>Operations\<close>
     apply (rule frefI) 
     by parametricity
 
-  sepref_decl_op mset_single: "\<lambda>m. {#m#}" :: "A \<rightarrow> \<langle>A\<rangle>mset_rel" .
+  (*sepref_decl_op mset_single: "\<lambda>m. {#m#}" :: "A \<rightarrow> \<langle>A\<rangle>mset_rel" .*)
 
-  sepref_decl_op mset_insert: "\<lambda>x m. m + {#x#}" :: "A \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel" . 
+  sepref_decl_op mset_insert: "add_mset" :: "A \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel" . 
 
   sepref_decl_op mset_delete: "\<lambda>x m. m - {#x#}" :: "A \<rightarrow> \<langle>A\<rangle>mset_rel \<rightarrow> \<langle>A\<rangle>mset_rel"
     where "single_valued A" "single_valued (A\<inverse>)" .
@@ -191,7 +198,7 @@ subsection \<open>Patterns\<close>
 
 lemma [def_pat_rules]:
   "{#} \<equiv> op_mset_empty"
-  "Multiset.single$x \<equiv> op_mset_single$x"
+  "add_mset \<equiv> op_mset_insert"
   "op=$b${#} \<equiv> op_mset_is_empty$b"
   "op=${#}$b \<equiv> op_mset_is_empty$b"
   "op+$a$b \<equiv> op_mset_plus$a$b"
@@ -199,10 +206,11 @@ lemma [def_pat_rules]:
   by (auto intro!: eq_reflection simp: algebra_simps)
 
 lemma [def_pat_rules]:
-  "op+$b$(Multiset.single$x) \<equiv> op_mset_insert$x$b"
-  "op+$(Multiset.single$x)$b \<equiv> op_mset_insert$x$b"
-  "op-$b$(Multiset.single$x) \<equiv> op_mset_delete$x$b"
+  "op+$b$(add_mset$x${#}) \<equiv> op_mset_insert$x$b"
+  "op+$(add_mset$x${#})$b \<equiv> op_mset_insert$x$b"
+  "op-$b$(add_mset$x${#}) \<equiv> op_mset_delete$x$b"
   "op <$0$(count$a$x) \<equiv> op_mset_contains$x$a"
+  "op \<in>$x$(set_mset$a) \<equiv> op_mset_contains$x$a"
   by (auto intro!: eq_reflection simp: algebra_simps)
 
 

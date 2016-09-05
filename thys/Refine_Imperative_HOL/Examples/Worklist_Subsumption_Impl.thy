@@ -29,7 +29,7 @@ begin
       unfolding worklist_algo1_def add_succ1_def
       supply [[goals_limit = 1]]
       apply (rewrite in "Let \<hole> _" lso_fold_custom_empty)
-      apply (rewrite in "{#a\<^sub>0#}" lmso_fold_custom_single)
+      apply (rewrite in "{#a\<^sub>0#}" lmso_fold_custom_empty)
       unfolding take_from_mset_as_mop_mset_pick fold_lso_bex
       by sepref
 

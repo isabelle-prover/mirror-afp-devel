@@ -40,7 +40,7 @@ subsection \<open>Operations\<close>
       and "x\<in>#m"
       and P': "\<forall>x'\<in>set_mset m. prio' x \<le> prio' x'"
     hence R: "rel_mset (rel2p A) m n" by (simp add: mset_rel_def p2rel_def)
-    from \<open>x\<in>#m\<close> obtain m' where [simp]: "m=m'+{#x#}" by (blast dest: multi_member_split)
+    from multi_member_split[OF \<open>x\<in>#m\<close>] obtain m' where [simp]: "m=m'+{#x#}" by auto
   
     from msed_rel_invL[OF R[simplified]] obtain n' y where 
       [simp]: "n=n'+{#y#}" and [param, simp]: "(x,y)\<in>A" and R': "(m',n')\<in>\<langle>A\<rangle>mset_rel"
@@ -50,7 +50,7 @@ subsection \<open>Operations\<close>
       fix y' assume "y'\<in>set_mset n"
       then obtain x' where [param]: "(x',y')\<in>A" and "x'\<in>set_mset m"
         using R
-        by (metis msed_rel_invR multi_member_split multi_member_this rel2pD union_commute)
+        by (metis insert_DiffM msed_rel_invR rel2pD union_single_eq_member)
       with P' have "prio' x \<le> prio' x'" by blast
       moreover have "(prio' x \<le> prio' x', prio y \<le> prio y') \<in> bool_rel"
         by parametricity
@@ -76,7 +76,7 @@ subsection \<open>Operations\<close>
       and "x\<in>#m"
       and P': "\<forall>x'\<in>set_mset m. prio' x \<le> prio' x'"
     hence R: "rel_mset (rel2p A) m n" by (simp add: mset_rel_def p2rel_def)
-    from \<open>x\<in>#m\<close> obtain m' where [simp]: "m=m'+{#x#}" by (blast dest: multi_member_split)
+    from multi_member_split[OF \<open>x\<in>#m\<close>] obtain m' where [simp]: "m=m'+{#x#}" by auto
   
     from msed_rel_invL[OF R[simplified]] obtain n' y where 
       [simp]: "n=n'+{#y#}" and [param, simp]: "(x,y)\<in>A" and R': "(m',n')\<in>\<langle>A\<rangle>mset_rel"
@@ -87,7 +87,7 @@ subsection \<open>Operations\<close>
       fix y' assume "y'\<in>set_mset n"
       then obtain x' where [param]: "(x',y')\<in>A" and "x'\<in>set_mset m"
         using R
-        by (metis Groups.add_ac(2) insert_DiffM2 msed_rel_invR multi_member_this rel2pD)
+        by (metis msed_rel_invR mset_contains_eq rel2pD union_mset_add_mset_left union_single_eq_member)
       with P' have "prio' x \<le> prio' x'" by blast
       moreover have "(prio' x \<le> prio' x', prio y \<le> prio y') \<in> bool_rel"
         by parametricity

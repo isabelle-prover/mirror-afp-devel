@@ -11,9 +11,11 @@ begin
   lemma lmso_empty_aref: "(uncurry0 (RETURN []), uncurry0 (RETURN op_mset_empty)) \<in> unit_rel \<rightarrow>\<^sub>f \<langle>br mset (\<lambda>_. True)\<rangle>nres_rel"
     by (auto intro!: frefI nres_relI simp: in_br_conv)
     
+  (*  
   definition [simp]: "list_single x \<equiv> [x]"
   lemma lmso_single_aref: "(RETURN o list_single,RETURN o op_mset_single) \<in> Id \<rightarrow>\<^sub>f \<langle>br mset (\<lambda>_. True)\<rangle>nres_rel"  
     by (auto intro!: frefI nres_relI simp: in_br_conv)
+  *)  
 
   lemma lmso_is_empty_aref: "(RETURN o List.null, RETURN o op_mset_is_empty) \<in> br mset (\<lambda>_. True) \<rightarrow>\<^sub>f \<langle>bool_rel\<rangle>nres_rel"  
     by (auto intro!: frefI nres_relI simp: in_br_conv List.null_def split: list.split)
@@ -22,10 +24,12 @@ begin
   lemma lmso_insert_aref: "(uncurry (RETURN oo op # ), uncurry (RETURN oo op_mset_insert)) \<in> (Id \<times>\<^sub>r br mset (\<lambda>_. True)) \<rightarrow>\<^sub>f \<langle>br mset (\<lambda>_. True)\<rangle>nres_rel"  
     by (auto intro!: frefI nres_relI simp: in_br_conv)
     
+  (*  
   lemma list_single_hnr: "(return o list_single, RETURN o list_single) \<in> A\<^sup>d \<rightarrow>\<^sub>a list_assn A"  
     apply sepref_to_hoare
     apply sep_auto
     done  
+  *)
     
   definition [simp]: "hd_tl l \<equiv> (hd l, tl l)"
 
@@ -50,6 +54,7 @@ begin
     by auto
   lemmas [sepref_fr_rules] = lmso_empty_hnr[folded op_lmso_empty_def]  
 
+  (*
   sepref_decl_impl (no_register) lmso_single: list_single_hnr uses lmso_single_aref .
   definition [simp]: "op_lmso_single \<equiv> op_mset_single"
   sepref_register op_lmso_single
@@ -59,6 +64,7 @@ begin
     "mop_mset_single x = RETURN (op_lmso_single x)"
     by auto
   lemmas [sepref_fr_rules] = lmso_single_hnr[folded op_lmso_single_def]  
+ *) 
 
   lemma list_null_hnr: "(return o List.null,RETURN o List.null) \<in> (list_assn A)\<^sup>k \<rightarrow>\<^sub>a bool_assn"
     apply sepref_to_hoare

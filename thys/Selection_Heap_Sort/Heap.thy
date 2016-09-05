@@ -82,7 +82,7 @@ locale Heap =  Collection empty is_empty of_list  multiset for
   assumes is_heap_of_list: "is_heap (as_tree (of_list i))"
   assumes as_tree_empty: "as_tree t = E \<longleftrightarrow> is_empty t"
   assumes remove_max_multiset': 
-  "\<lbrakk>\<not> is_empty l; (m, l') = remove_max l\<rbrakk> \<Longrightarrow> multiset l' + {#m#} = multiset l"
+  "\<lbrakk>\<not> is_empty l; (m, l') = remove_max l\<rbrakk> \<Longrightarrow> add_mset m (multiset l') = multiset l"
   assumes remove_max_is_heap: 
   "\<lbrakk>\<not> is_empty l; is_heap (as_tree l); (m, l') = remove_max l\<rbrakk> \<Longrightarrow> 
   is_heap (as_tree l')"
@@ -100,7 +100,7 @@ proof
 next
   fix l m l'
   assume "\<not> is_empty l" "(m, l') = remove_max l" 
-  thus "multiset l' + {#m#} = multiset l"
+  thus "add_mset m (multiset l') = multiset l"
     by (rule remove_max_multiset')
 next
   fix l m l'

@@ -9,9 +9,9 @@ subsection \<open>Abstract Operations\<close>
   lemma lms_empty_aref: "([],op_mset_empty) \<in> list_mset_rel"
     unfolding list_mset_rel_def by (auto simp: in_br_conv)
 
-  definition [simp]: "list_single x \<equiv> [x]"
+  (*definition [simp]: "list_single x \<equiv> [x]"
   lemma lms_single_aref: "(list_single,op_mset_single) \<in> Id \<rightarrow> list_mset_rel"  
-    unfolding list_mset_rel_def by (auto simp: in_br_conv split: list.splits)
+    unfolding list_mset_rel_def by (auto simp: in_br_conv split: list.splits)*)
 
   lemma lms_is_empty_aref: "(is_Nil,op_mset_is_empty) \<in> list_mset_rel \<rightarrow> bool_rel"  
     unfolding list_mset_rel_def by (auto simp: in_br_conv split: list.splits)
@@ -42,8 +42,7 @@ subsection \<open>Abstract Operations\<close>
   lemma mset_list_remove1[simp]: "mset (list_remove1 x l) = mset l - {#x#}"
     apply (induction l) 
     applyS simp
-    apply1 (clarsimp simp: algebra_simps)
-    by (metis diff_union_swap union_commute)
+    by (clarsimp simp: algebra_simps)
     
   lemma lms_remove_aref: "(list_remove1, op_mset_delete) \<in> Id \<rightarrow> list_mset_rel \<rightarrow> list_mset_rel"  
     unfolding list_mset_rel_def by (auto simp: in_br_conv)
@@ -75,7 +74,7 @@ subsection \<open>Declaration of Implementations\<close>
   lemma [safe_constraint_rules]: "is_pure (list_mset_assn A)" unfolding list_mset_assn_def by simp
 
   sepref_decl_impl (no_register) lms_empty: lms_empty_aref[sepref_param] .
-  sepref_decl_impl (no_register) lms_single: lms_single_aref[sepref_param] .
+  (*sepref_decl_impl (no_register) lms_single: lms_single_aref[sepref_param] .*)
 
   definition [simp]: "op_list_mset_empty \<equiv> op_mset_empty"
   lemma lms_fold_custom_empty:
@@ -85,6 +84,7 @@ subsection \<open>Declaration of Implementations\<close>
   sepref_register op_list_mset_empty
   lemmas [sepref_fr_rules] = lms_empty_hnr[folded op_list_mset_empty_def]
 
+  (*  
   definition [simp]: "op_list_mset_single \<equiv> op_mset_single"
   lemma lms_fold_custom_single:
     "{#x#} = op_list_mset_single x"
@@ -92,7 +92,7 @@ subsection \<open>Declaration of Implementations\<close>
     by auto
   sepref_register op_list_mset_single
   lemmas [sepref_fr_rules] = lms_single_hnr[folded op_list_mset_single_def]
-
+  *)
 
   sepref_decl_impl lms_is_empty: lms_is_empty_aref[sepref_param] .
   sepref_decl_impl lms_insert: lms_insert_aref[sepref_param] .

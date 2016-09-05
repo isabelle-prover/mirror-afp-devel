@@ -40,18 +40,18 @@ lemma mulex1_empty [iff]:
 lemma mulex1_add: "mulex1 P N (M0 + {#a#}) \<Longrightarrow>
   (\<exists>M. mulex1 P M M0 \<and> N = M + {#a#}) \<or>
   (\<exists>K. (\<forall>b. b \<in># K \<longrightarrow> P b a) \<and> N = M0 + K)"
-  using less_add [of N M0 a "{(x, y). P x y}"]
+  using less_add [of N a M0 "{(x, y). P x y}"]
   by (auto simp: mulex1_def)
 
 lemma mulex1_self_add_right [simp]:
-  "mulex1 P A (A + {#a#})"
+  "mulex1 P A (add_mset a A)"
 proof -
   let ?R = "{(x, y). P x y}"
   thm mult1_def
   have "A + {#a#} = A + {#a#}" by simp
   moreover have "A = A + {#}" by simp
   moreover have "\<forall>b. b \<in># {#} \<longrightarrow> (b, a) \<in> ?R" by simp
-  ultimately have "(A, A + {#a#}) \<in> mult1 ?R"
+  ultimately have "(A, add_mset a A) \<in> mult1 ?R"
     unfolding mult1_def by blast
   then show ?thesis by (simp add: mulex1_def)
 qed
@@ -84,10 +84,10 @@ lemma mulex_on_induct [consumes 1, case_names base step, induct pred: mulex_on]:
 
 lemma mulex_on_self_add_singleton_right [simp]:
   assumes "a \<in> A" and "M \<in> multisets A"
-  shows "mulex_on P A M (M + {#a#})"
+  shows "mulex_on P A M (add_mset a M)"
 proof -
   have "mulex1 P M (M + {#a#})" by simp
-  with assms have "restrict_to (mulex1 P) (multisets A) M (M + {#a#})"
+  with assms have "restrict_to (mulex1 P) (multisets A) M (add_mset a M)"
     by (auto simp: multisets_def)
   then show ?thesis unfolding mulex_on_def by blast
 qed
@@ -110,6 +110,10 @@ lemma union_multisets_iff [iff]:
   "M + N \<in> multisets A \<longleftrightarrow> M \<in> multisets A \<and> N \<in> multisets A"
   by (auto dest: union_multisetsD)
 
+lemma add_mset_multisets_iff [iff]:
+  "add_mset a M \<in> multisets A \<longleftrightarrow> a \<in> A \<and> M \<in> multisets A"
+  unfolding add_mset_add_single[of a M] union_multisets_iff by auto
+
 lemma mulex_on_trans:
   "mulex_on P A L M \<Longrightarrow> mulex_on P A M N \<Longrightarrow> mulex_on P A L N"
   by (auto simp: mulex_on_def)
@@ -120,10 +124,10 @@ lemma transp_on_mulex_on:
   
 lemma mulex_on_add_right [simp]:
   assumes "mulex_on P A M N" and "a \<in> A"
-  shows "mulex_on P A M (N + {#a#})"
+  shows "mulex_on P A M (add_mset a N)"
 proof -
   from assms have "a \<in> A" and "N \<in> multisets A" by auto
-  then have "mulex_on P A N (N + {#a#})" by simp
+  then have "mulex_on P A N (add_mset a N)" by simp
   with \<open>mulex_on P A M N\<close> show ?thesis by (rule mulex_on_trans)
 qed
 
@@ -132,7 +136,7 @@ lemma empty_mulex_on [simp]:
   shows "mulex_on P A {#} M"
 using assms
 proof (induct M)
-  case (add M a)
+  case (add a M)
   show ?case
   proof (cases "M = {#}")
     assume "M = {#}"
@@ -151,7 +155,7 @@ proof (induct K)
   case empty
   then show ?case by (cases "K = {#}") auto
 next
-  case (add M a)
+  case (add a M)
   show ?case
   proof (cases "M = {#}")
     assume "M = {#}" with add show ?thesis by auto
@@ -172,11 +176,11 @@ proof
 next
   assume "({#x#}, {#y#}) \<in> mult1 R"
   then obtain M0 K a
-    where "{#y#} = M0 + {#a#}"
+    where "{#y#} = add_mset a M0"
     and "{#x#} = M0 + K"
     and "\<forall>b. b \<in># K \<longrightarrow> (b, a) \<in> R"
     unfolding mult1_def by blast
-  then show "(x, y) \<in> R" by (auto simp: single_is_union)
+  then show "(x, y) \<in> R" by (auto simp: add_eq_conv_diff)
 qed
 
 lemma mulex1_singleton [iff]:
@@ -202,7 +206,7 @@ lemma mulex_on_union_right [simp]:
   shows "mulex_on P F A (K + B)"
 using assms
 proof (induct K)
-  case (add K a)
+  case (add a K)
   then have "a \<in> F" and "mulex_on P F A (B + K)" by (auto simp: multisets_def ac_simps)
   then have "mulex_on P F A ((B + K) + {#a#})" by simp
   then show ?case by (simp add: ac_simps)
@@ -228,12 +232,12 @@ proof
       and "M0 \<in> ?A"
       and wf_hyp: "\<And>b. \<lbrakk>b \<in> A; P b a\<rbrakk> \<Longrightarrow> (\<forall>M. ?acc (M) \<longrightarrow> ?acc (M + {#b#}))"
       and acc_hyp: "\<forall>M. M \<in> ?A \<and> ?P M M0 \<longrightarrow> ?acc (M + {#a#})"
-    then have "M0 + {#a#} \<in> ?A" by (auto simp: multisets_def)
-    then have "?acc (M0 + {#a#})"
-    proof (rule accessible_onI [of "M0 + {#a#}"])
+    then have "add_mset a M0 \<in> ?A" by (auto simp: multisets_def)
+    then have "?acc (add_mset a M0)"
+    proof (rule accessible_onI [of "add_mset a M0"])
       fix N
       assume "N \<in> ?A"
-        and "?P N (M0 + {#a#})"
+        and "?P N (add_mset a M0)"
       then have "((\<exists>M. M \<in> ?A \<and> ?P M M0 \<and> N = M + {#a#}) \<or>
           (\<exists>K. (\<forall>b. b \<in># K \<longrightarrow> P b a) \<and> N = M0 + K))"
         using mulex1_add [of P N M0 a] by (auto simp: multisets_def)
@@ -253,12 +257,11 @@ proof
           case empty
           from M0 show "?acc (M0 + {#})" by simp
         next
-          case (add K x)
+          case (add x K)
           from add.prems have "x \<in> A" and "P x a" by (auto simp: multisets_def)
           with wf_hyp have "\<forall>M. ?acc M \<longrightarrow> ?acc (M + {#x#})" by blast
           moreover from add have "?acc (M0 + K)" by (auto simp: multisets_def)
-          ultimately have "?acc ((M0 + K) + {#x#})" by auto
-          then show "?acc (M0 + (K + {#x#}))" by (simp only: add.assoc)
+          ultimately show "?acc (M0 + (add_mset x K))" by simp
         qed
         then show "?acc N" by (simp only: N)
       qed
@@ -276,23 +279,23 @@ proof
       fix b assume "?P b {#}" then show "?acc b" by simp
     qed
   next
-    case (add M a)
+    case (add a M)
     then have "?acc M" by (auto simp: multisets_def)
     from add have "a \<in> A" by (auto simp: multisets_def)
-    with wf have "\<forall>M. ?acc M \<longrightarrow> ?acc (M + {#a#})"
+    with wf have "\<forall>M. ?acc M \<longrightarrow> ?acc (add_mset a M)"
     proof (induct)
       case (less a)
       then have r: "\<And>b. \<lbrakk>b \<in> A; P b a\<rbrakk> \<Longrightarrow> (\<forall>M. ?acc M \<longrightarrow> ?acc (M + {#b#}))" by auto
-      show "\<forall>M. ?acc M \<longrightarrow> ?acc (M + {#a#})"
+      show "\<forall>M. ?acc M \<longrightarrow> ?acc (add_mset a M)"
       proof (intro allI impI)
         fix M'
         assume "?acc M'"
         moreover then have "M' \<in> ?A" by (blast dest: accessible_on_imp_mem)
-        ultimately show "?acc (M' + {#a#})"
+        ultimately show "?acc (add_mset a M')"
           by (induct) (rule tedious_reasoning [OF _ \<open>a \<in> A\<close> _ r], auto)
       qed
     qed
-    with \<open>?acc (M)\<close> show "?acc (M + {#a#})" by blast
+    with \<open>?acc (M)\<close> show "?acc (add_mset a M)" by blast
   qed
 qed
 
@@ -340,9 +343,30 @@ lemma mulex_on_union':
   shows "mulex_on P A (M + K) (N + K)"
   using mulex_on_union [OF assms] by (simp add: ac_simps)
 
+lemma mulex_on_add_mset:
+  assumes "mulex_on P A M N" and "m \<in> A"
+  shows "mulex_on P A (add_mset m M) (add_mset m N)"
+  unfolding add_mset_add_single[of m M] add_mset_add_single[of m N]
+  apply (rule mulex_on_union')
+  using assms by auto
+
 lemma union_mulex_on_mono:
   "mulex_on P F A C \<Longrightarrow> mulex_on P F B D \<Longrightarrow> mulex_on P F (A + B) (C + D)"
   by (metis mulex_on_multisetsD mulex_on_trans mulex_on_union mulex_on_union')
+
+lemma mulex_on_add_mset':
+  assumes "P m n" and "m \<in> A" and "n \<in> A" and "M \<in> multisets A"
+  shows "mulex_on P A (add_mset m M) (add_mset n M)"
+  unfolding add_mset_add_single[of m M] add_mset_add_single[of n M]
+  apply (rule mulex_on_union)
+  using assms by (auto simp: mulex_on_def)
+
+lemma mulex_on_add_mset_mono:
+  assumes "P m n" and "m \<in> A" and "n \<in> A" and "mulex_on P A M N"
+  shows "mulex_on P A (add_mset m M) (add_mset n N)"
+  unfolding add_mset_add_single[of m M] add_mset_add_single[of n N]
+  apply (rule union_mulex_on_mono)
+  using assms by (auto simp: mulex_on_def)
 
 lemma union_mulex_on_mono1:
   "A \<in> multisets F \<Longrightarrow> (mulex_on P F)\<^sup>=\<^sup>= A C \<Longrightarrow> mulex_on P F B D \<Longrightarrow>
@@ -420,9 +444,9 @@ proof
   proof (induct M)
     case empty show ?case by simp
   next
-    case (add M a)
+    case (add a M)
     then obtain xs where "xs \<in> lists A" and "M = mset xs" by auto
-    then have "M + {#a#} = mset (a # xs)" by simp
+    then have "add_mset a M = mset (a # xs)" by simp
     moreover have "a # xs \<in> lists A" using \<open>xs \<in> lists A\<close> and add by auto
     ultimately show ?case by blast
   qed
@@ -439,9 +463,9 @@ lemma multisets_UNIV [simp]: "multisets UNIV = UNIV"
 lemma non_empty_multiset_induct [consumes 1, case_names singleton add]:
   assumes "M \<noteq> {#}"
     and "\<And>x. P {#x#}"
-    and "\<And>M x. P M \<Longrightarrow> P (M + {#x#})"
+    and "\<And>x M. P M \<Longrightarrow> P (add_mset x M)"
   shows "P M"
-  using assms by (induct M) (auto, metis union_is_single)
+  using assms by (induct M) auto
 
 lemma mulex_on_all_strict:
   assumes "X \<noteq> {#}"
@@ -453,10 +477,10 @@ proof (induction X arbitrary: Y rule: non_empty_multiset_induct)
   case (singleton x)
   then have "mulex1 P Y {#x#}"
     unfolding mulex1_def mult1_def
-    by auto (metis count_single empty_neutral(1) less_nat_zero_code singleton.prems(3))
+    by auto
   with singleton show ?case by (auto simp: mulex_on_def)
 next
-  case (add M x)
+  case (add x M)
   let ?Y = "{# y \<in># Y. \<exists>x. x \<in># M \<and> P y x #}"
   let ?Z = "Y - ?Y"
   have Y: "Y = ?Z + ?Y" by (subst multiset_eq_iff) auto
@@ -518,14 +542,14 @@ proof
       and "mulex1 P M N"
       by blast
     from \<open>mulex1 P M N\<close> obtain a M0 K
-      where N: "N = M0 + {#a#}" and M': "M = M0 + K"
+      where N: "N = add_mset a M0" and M': "M = M0 + K"
       and *: "\<forall>b. b \<in># K \<longrightarrow> P b a" unfolding mulex1_def mult1_def by blast
     have L': "L = (M - X) + Y" by (simp add: L M)
     have K: "\<forall>y. y \<in># K \<longrightarrow> (\<exists>x. x \<in># {#a#} \<and> P y x)" using * by auto
 
     txt \<open>The remainder of the proof is adapted from the proof of Lemma 2.5.4. of
     the book ``Term Rewriting and All That.''\<close>
-    let ?X = "{#a#} + (X - K)"
+    let ?X = "add_mset a (X - K)"
     let ?Y = "(K - X) + Y"
     
     have "L \<in> multisets A" and "N \<in> multisets A" by fact+
@@ -541,8 +565,8 @@ proof
         let ?c = "\<lambda>M. count M x"
         let ?ic = "\<lambda>x. int (?c x)"
         from \<open>?X \<le># N\<close> have *: "?c {#a#} + ?c (X - K) \<le> ?c N"
-          by (simp add: subseteq_mset_def)
-        from * have **: "?c (X - K) \<le> ?c M0" unfolding N by simp
+          by (auto simp add: subseteq_mset_def split: if_splits)
+        from * have **: "?c (X - K) \<le> ?c M0" unfolding N by (auto split: if_splits)
         have "?ic (N - ?X + ?Y) = int (?c N - ?c ?X) + ?ic ?Y" by simp
         also have "\<dots> = int (?c N - (?c {#a#} + ?c (X - K))) + ?ic (K - X) + ?ic Y" by simp
         also have "\<dots> = ?ic N - (?ic {#a#} + ?ic (X - K)) + ?ic (K - X) + ?ic Y"

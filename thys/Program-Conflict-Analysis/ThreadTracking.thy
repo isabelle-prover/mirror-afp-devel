@@ -16,19 +16,19 @@ text {*
 subsection "Semantic on multiset configuration"
 text {* The interleaving semantics is defined on a multiset of stacks. The thread to make the next step is nondeterministically chosen from all threads ready to make steps. *}
 definition 
-  "gtr gtrs == { ({#s#}+c,e,{#s'#}+c') | s c e s' c' . ((s,c),e,(s',c'))\<in>gtrs }"
+  "gtr gtrs == { (add_mset s c,e,add_mset s' c') | s c e s' c' . ((s,c),e,(s',c'))\<in>gtrs }"
 
-lemma gtrI_s: "((s,c),e,(s',c'))\<in>gtrs \<Longrightarrow> ({#s#}+c,e,{#s'#}+c')\<in>gtr gtrs"
+lemma gtrI_s: "((s,c),e,(s',c'))\<in>gtrs \<Longrightarrow> (add_mset s c,e,add_mset s' c')\<in>gtr gtrs"
   by (unfold gtr_def, auto)
 lemma gtrI: "((s,c),w,(s',c'))\<in>trcl gtrs 
-  \<Longrightarrow> ({#s#}+c,w,{#s'#}+c')\<in>trcl (gtr gtrs)"
+  \<Longrightarrow> (add_mset s c,w,add_mset s' c')\<in>trcl (gtr gtrs)"
   by (induct rule: trcl_pair_induct) (auto dest: gtrI_s)
 
 lemma gtrE: "\<lbrakk>
     (c,e,c')\<in>gtr T; 
-    !!s ce s' ce'. \<lbrakk> c={#s#}+ce; c'={#s'#}+ce'; ((s,ce),e,(s',ce'))\<in>T \<rbrakk> \<Longrightarrow> P 
+    !!s ce s' ce'. \<lbrakk> c=add_mset s ce; c'=add_mset s' ce'; ((s,ce),e,(s',ce'))\<in>T \<rbrakk> \<Longrightarrow> P 
   \<rbrakk> \<Longrightarrow> P"
-  by (unfold gtr_def) blast
+  by (unfold gtr_def) auto
 
 lemma gtr_empty_conf_s[simp]: 
   "({#},w,c')\<notin>gtr S" 
@@ -41,23 +41,23 @@ lemma gtr_empty_conf2[simp]: "((c,w,{#})\<in>trcl (gtr S)) \<longleftrightarrow>
 
 lemma gtr_find_thread: "\<lbrakk>
     (c,e,c')\<in>gtr gtrs; 
-    !!s ce s' ce'. \<lbrakk>c={#s#}+ce; c'={#s'#}+ce'; ((s,ce),e,(s',ce'))\<in>gtrs\<rbrakk> \<Longrightarrow> P 
+    !!s ce s' ce'. \<lbrakk>c=add_mset s ce; c'=add_mset s' ce'; ((s,ce),e,(s',ce'))\<in>gtrs\<rbrakk> \<Longrightarrow> P 
   \<rbrakk> \<Longrightarrow> P"
   by (unfold gtr_def) auto
 
 lemma gtr_step_cases[cases set, case_names loc other]: "\<lbrakk> 
-    ({#s#}+ce,e,c')\<in>gtr gtrs; 
-    !!s' ce'. \<lbrakk> c'={#s'#}+ce'; ((s,ce),e,(s',ce'))\<in>gtrs \<rbrakk> \<Longrightarrow> P;
-    !!cc ss ss' ce'. \<lbrakk> ce={#ss#}+cc; c'={#ss'#}+ce'; 
-                       ((ss,{#s#}+cc),e,(ss',ce'))\<in>gtrs \<rbrakk> \<Longrightarrow> P 
+    (add_mset s ce,e,c')\<in>gtr gtrs; 
+    !!s' ce'. \<lbrakk> c'=add_mset s' ce'; ((s,ce),e,(s',ce'))\<in>gtrs \<rbrakk> \<Longrightarrow> P;
+    !!cc ss ss' ce'. \<lbrakk> ce=add_mset ss cc; c'=add_mset ss' ce'; 
+                       ((ss,add_mset s cc),e,(ss',ce'))\<in>gtrs \<rbrakk> \<Longrightarrow> P 
   \<rbrakk> \<Longrightarrow> P" 
   by (auto elim!: gtr_find_thread mset_single_cases)
 
 lemma gtr_rev_cases[cases set, case_names loc other]: "\<lbrakk> 
-    (c,e,{#s'#}+ce')\<in>gtr gtrs; 
-    !!s ce. \<lbrakk> c={#s#}+ce; ((s,ce),e,(s',ce'))\<in>gtrs \<rbrakk> \<Longrightarrow> P;
-    !!cc ss ss' ce. \<lbrakk> c={#ss#}+ce; ce'={#ss'#}+cc; 
-                      ((ss,ce),e,(ss',{#s'#}+cc))\<in>gtrs \<rbrakk> \<Longrightarrow> P 
+    (c,e,add_mset s' ce')\<in>gtr gtrs; 
+    !!s ce. \<lbrakk> c=add_mset s ce; ((s,ce),e,(s',ce'))\<in>gtrs \<rbrakk> \<Longrightarrow> P;
+    !!cc ss ss' ce. \<lbrakk> c=add_mset ss ce; ce'=add_mset ss' cc; 
+                      ((ss,ce),e,(ss',add_mset s' cc))\<in>gtrs \<rbrakk> \<Longrightarrow> P 
   \<rbrakk> \<Longrightarrow> P" 
   by (auto elim!: gtr_find_thread mset_single_cases)
 
@@ -65,14 +65,14 @@ subsection "Invariants"
 lemma gtr_preserve_s: "\<lbrakk> 
     (c,e,c')\<in>gtr T; 
     P c; 
-    !!s c s' c' e. \<lbrakk>P ({#s#}+c); ((s,c),e,(s',c'))\<in>T\<rbrakk> \<Longrightarrow> P ({#s'#}+c') 
+    !!s c s' c' e. \<lbrakk>P (add_mset s c); ((s,c),e,(s',c'))\<in>T\<rbrakk> \<Longrightarrow> P (add_mset s' c') 
   \<rbrakk> \<Longrightarrow> P c'"
   by (unfold gtr_def) blast
 
 lemma gtr_preserve: "\<lbrakk> 
     (c,w,c')\<in>trcl (gtr T); 
     P c; 
-    !!s c s' c' e. \<lbrakk>P ({#s#}+c); ((s,c),e,(s',c'))\<in>T\<rbrakk> \<Longrightarrow> P ({#s'#}+c') 
+    !!s c s' c' e. \<lbrakk>P (add_mset s c); ((s,c),e,(s',c'))\<in>T\<rbrakk> \<Longrightarrow> P (add_mset s' c') 
   \<rbrakk> \<Longrightarrow> P c'"
   apply (induct rule: trcl.induct)
   apply simp
@@ -122,15 +122,15 @@ text {*
 *}
 
 lemma (in env_no_step) rev_cases_p[cases set, case_names loc spawn env]: 
-  assumes STEP: "(c,e,{#s'#}+ce')\<in>gtr gtrs" and
+  assumes STEP: "(c,e,add_mset s' ce')\<in>gtr gtrs" and
   LOC: "!!s ce. \<lbrakk> c={#s#}+ce; ((s,ce),e,(s',ce'))\<in>gtrs \<rbrakk> \<Longrightarrow> P" and
   SPAWN: "!!ss ss' ce csp. 
-            \<lbrakk> c={#ss#}+ce; ce'={#ss'#}+csp+ce; 
-              ((ss,ce),e,(ss',{#s'#}+csp+ce))\<in>gtrs \<rbrakk> 
+            \<lbrakk> c=add_mset ss ce; ce'=add_mset ss' (csp+ce); 
+              ((ss,ce),e,(ss',add_mset s' (csp+ce)))\<in>gtrs \<rbrakk> 
            \<Longrightarrow> P" and
   ENV: "!!ss ss' ce csp. 
-            \<lbrakk> c={#ss#}+{#s'#}+ce; ce'={#ss'#}+csp+ce; 
-              ((ss,{#s'#}+ce),e,(ss',csp+({#s'#}+ce)))\<in>gtrs \<rbrakk> 
+            \<lbrakk> c=add_mset ss (add_mset s' ce); ce'=add_mset ss' (csp+ce); 
+              ((ss,add_mset s' ce),e,(ss',csp+(add_mset s' ce)))\<in>gtrs \<rbrakk> 
            \<Longrightarrow> P"
   shows "P"
 proof (rule gtr_rev_cases[OF STEP], goal_cases)
@@ -138,7 +138,7 @@ proof (rule gtr_rev_cases[OF STEP], goal_cases)
 next
   case CASE: (2 cc ss ss' ce)
   hence CASE': "c = {#ss#} + ce" "ce' = {#ss'#} + cc" "((ss, ce), e, ss', {#s'#} + cc) \<in> gtrs" by simp_all
-  from env_no_step_s[OF CASE'(3)] obtain csp where EQ: "{#s'#}+cc = csp + ce" by blast
+  from env_no_step_s[OF CASE'(3)] obtain csp where EQ: "add_mset s' cc = csp + ce" by auto
   thus ?thesis proof (cases rule: mset_unplusm_dist_cases)
     case left note CC=this
     with CASE' have "ce'={#ss'#} + (csp-{#s'#}) + ce" by (auto simp add: union_assoc)
@@ -146,10 +146,10 @@ next
     ultimately show ?thesis using CASE'(1,3) CASE(2) SPAWN by auto
   next
     case right note CC=this
-    from CC(1) CASE'(1) have "c={#ss#}+{#s'#} + (ce - {#s'#})" by (simp add: union_assoc)
-    moreover from CC(2) CASE'(2) have "ce'={#ss'#}+csp+(ce-{#s'#})" by (simp add: union_assoc)
-    moreover from CC(2) have "{#s'#} + cc = csp+({#s'#}+(ce-{#s'#}))" by (simp add: union_ac)
-    ultimately show ?thesis using CASE'(3) CASE(3) CC(1) ENV by auto
+    from CC(1) CASE'(1) have "c=add_mset ss (add_mset s' (ce - {#s'#}))" by (simp add: union_assoc)
+    moreover from CC(2) CASE'(2) have "ce'=add_mset ss' (csp+(ce-{#s'#}))" by (simp add: union_assoc)
+    moreover from CC(2) have "add_mset s' cc = csp+(add_mset s' (ce-{#s'#}))" by (simp add: union_ac)
+    ultimately show ?thesis using CASE'(3) CASE(3) CC(1) ENV by metis
   qed
 qed
 
@@ -237,27 +237,28 @@ inductive_set
   for S
   where
   gtrp_loc: "((s,c),e,(s',c'))\<in>S \<Longrightarrow> ((s,c),LOC e,(s',c'))\<in>gtrp S"
-  | gtrp_env: "((s,{#sl#}+c),e,(s',{#sl#}+c'))\<in>S
-               \<Longrightarrow> ((sl,{#s#}+c),ENV e,(sl,{#s'#}+c'))\<in>gtrp S"
+  | gtrp_env: "((s,add_mset sl c),e,(s',add_mset sl c'))\<in>S
+               \<Longrightarrow> ((sl,add_mset s c),ENV e,(sl,add_mset s' c'))\<in>gtrp S"
 
 
 subsubsection "Relation between multiset- and loc/env-semantics"
 lemma gtrp2gtr_s: 
-  "((s,c),e,(s',c'))\<in>gtrp T \<Longrightarrow> ({#s#}+c,le_rem_s e,{#s'#}+c')\<in>gtr T" 
+  "((s,c),e,(s',c'))\<in>gtrp T \<Longrightarrow> (add_mset s c,le_rem_s e,add_mset s' c')\<in>gtr T" 
 proof (cases rule: gtrp.cases, auto intro: gtrI_s) 
-  fix c c' e ss ss' assume "((ss,{#s#}+c),e,(ss',{#s#}+c'))\<in>T"
-  hence "({#ss#}+({#s#}+c),e,{#ss'#}+({#s#}+c'))\<in>gtr T" by (auto intro: gtrI_s)
-  thus "({#s#} + ({#ss#} + c), e, {#s#} + ({#ss'#} + c')) \<in> gtr T" by (auto simp add: union_ac)
+  fix c c' e ss ss' assume "((ss,add_mset s c),e,(ss',add_mset s c'))\<in>T"
+  hence "(add_mset ss (add_mset s c),e,add_mset ss' (add_mset s c')) \<in> gtr T" by (auto intro!: gtrI_s)
+  thus "(add_mset s (add_mset ss c), e, add_mset s (add_mset ss' c')) \<in> gtr T"  by (auto simp add: add_mset_commute)
 qed
+
 
 lemma gtrp2gtr: 
   "((s,c),w,(s',c'))\<in>trcl (gtrp T) 
-  \<Longrightarrow> ({#s#}+c,map le_rem_s w,{#s'#}+c')\<in>trcl (gtr T)" 
+  \<Longrightarrow> (add_mset s c,map le_rem_s w,add_mset s' c')\<in>trcl (gtr T)" 
   by (induct rule: trcl_pair_induct) (auto dest: gtrp2gtr_s)
 
 lemma (in env_no_step) gtr2gtrp_s[cases set, case_names gtrp]: 
-  assumes A: "({#s#}+c,e,c')\<in>gtr gtrs" 
-  and CASE: "!!s' ce' ee. \<lbrakk>c'={#s'#}+ce'; e=le_rem_s ee; 
+  assumes A: "(add_mset s c,e,c')\<in>gtr gtrs" 
+  and CASE: "!!s' ce' ee. \<lbrakk>c'=add_mset s' ce'; e=le_rem_s ee; 
                           ((s,c),ee,(s',ce'))\<in>gtrp gtrs\<rbrakk> 
                          \<Longrightarrow> P"
   shows "P" 
@@ -266,26 +267,26 @@ proof (cases rule: gtr_step_cases)
   case (loc s' ce') hence "((s,c),LOC e,(s',ce'))\<in>gtrp gtrs" by (blast intro: gtrp_loc)
   with loc(1) show ?thesis by (rule_tac CASE) auto
 next
-  case (other cc ss ss' ce') from env_no_step_s[OF other(3)] obtain csp where CE'FMT: "ce'=csp + ({#s#}+cc)" .
-  with other(3) have "((ss,{#s#}+cc),e,(ss',{#s#}+(csp+cc)))\<in>gtrs" by (auto simp add: union_ac)
+  case (other cc ss ss' ce') from env_no_step_s[OF other(3)] obtain csp where CE'FMT: "ce'=csp + (add_mset s cc)" .
+  with other(3) have "((ss,add_mset s cc),e,(ss',add_mset s (csp+cc)))\<in>gtrs" by auto
   from gtrp_env[OF this] other(1) have "((s, c), ENV e, s, {#ss'#} + (csp + cc)) \<in> gtrp gtrs" by simp
   moreover from other CE'FMT have "c' = {#s#} + ({#ss'#} + (csp + cc))" by (simp add: union_ac)
   ultimately show ?thesis by (rule_tac CASE) auto
 qed
 
 lemma (in env_no_step) gtr2gtrp[cases set, case_names gtrp]: 
-  assumes A: "({#s#}+c,w,c')\<in>trcl (gtr gtrs)" 
-  and CASE: "!!s' ce' ww. \<lbrakk>c'={#s'#}+ce'; w=map le_rem_s ww; 
+  assumes A: "(add_mset s c,w,c')\<in>trcl (gtr gtrs)" 
+  and CASE: "!!s' ce' ww. \<lbrakk>c'=add_mset s' ce'; w=map le_rem_s ww; 
                            ((s,c),ww,(s',ce'))\<in>trcl (gtrp gtrs)\<rbrakk> 
                           \<Longrightarrow> P" 
   shows P 
 proof -
-  have "!!s c. ({#s#}+c,w,c')\<in>trcl (gtr gtrs) \<Longrightarrow> \<exists>s' ce' ww. c'={#s'#}+ce' \<and> w=map le_rem_s ww \<and> ((s,c),ww,(s',ce'))\<in>trcl (gtrp gtrs)" proof (induct w)
+  have "!!s c. (add_mset s c,w,c')\<in>trcl (gtr gtrs) \<Longrightarrow> \<exists>s' ce' ww. c'=add_mset s' ce' \<and> w=map le_rem_s ww \<and> ((s,c),ww,(s',ce'))\<in>trcl (gtrp gtrs)" proof (induct w)
     case Nil thus ?case by auto
   next
-    case (Cons e w) then obtain ch where SPLIT: "({#s#}+c,e,ch)\<in>gtr gtrs" "(ch,w,c')\<in>trcl (gtr gtrs)" by (fast dest: trcl_uncons)
-    from gtr2gtrp_s[OF SPLIT(1)] obtain sh ceh ee where FS: "ch = {#sh#} + ceh" "e = le_rem_s ee" "((s, c), ee, sh, ceh) \<in> gtrp gtrs" by blast
-    moreover from FS(1) SPLIT(2) Cons.hyps obtain s' ce' ww where IH: "c'={#s'#}+ce'" "w=map le_rem_s ww" "((sh,ceh),ww,(s',ce'))\<in>trcl (gtrp gtrs)" by blast
+    case (Cons e w) then obtain ch where SPLIT: "(add_mset s c,e,ch)\<in>gtr gtrs" "(ch,w,c')\<in>trcl (gtr gtrs)" by (auto dest: trcl_uncons)
+    from gtr2gtrp_s[OF SPLIT(1)] obtain sh ceh ee where FS: "ch = add_mset sh  ceh" "e = le_rem_s ee" "((s, c), ee, sh, ceh) \<in> gtrp gtrs" by blast
+    moreover from FS(1) SPLIT(2) Cons.hyps obtain s' ce' ww where IH: "c'=add_mset s' ce'" "w=map le_rem_s ww" "((sh,ceh),ww,(s',ce'))\<in>trcl (gtrp gtrs)" by blast
     ultimately have "((s,c),ee#ww,(s',ce'))\<in>trcl (gtrp gtrs)" "e#w = map le_rem_s (ee#ww)" by auto
     with IH(1) show ?case by iprover
   qed
@@ -295,22 +296,22 @@ qed
 subsubsection "Invariants"
 lemma gtrp_preserve_s: 
   assumes A: "((s,c),e,(s',c'))\<in>gtrp T" 
-  and INIT: "P ({#s#}+c)" 
-  and PRES: "!!s c s' c' e. \<lbrakk>P ({#s#}+c); ((s,c),e,(s',c'))\<in>T\<rbrakk> 
-                            \<Longrightarrow> P ({#s'#}+c')" 
-  shows "P ({#s'#}+c')" 
+  and INIT: "P (add_mset s c)" 
+  and PRES: "!!s c s' c' e. \<lbrakk>P (add_mset s c); ((s,c),e,(s',c'))\<in>T\<rbrakk> 
+                            \<Longrightarrow> P (add_mset s' c')" 
+  shows "P (add_mset s' c')" 
 proof -
-  from gtr_preserve_s[OF gtrp2gtr_s[OF A], where P=P, OF INIT] PRES show "P ({#s'#} + c')" by blast
+  from gtr_preserve_s[OF gtrp2gtr_s[OF A], where P=P, OF INIT] PRES show "P (add_mset s' c')" by blast
 qed
 
 lemma gtrp_preserve: 
   assumes A: "((s,c),w,(s',c'))\<in>trcl (gtrp T)" 
-  and INIT: "P ({#s#}+c)" 
-  and PRES: "!!s c s' c' e. \<lbrakk>P ({#s#}+c); ((s,c),e,(s',c'))\<in>T\<rbrakk> 
-                            \<Longrightarrow> P ({#s'#}+c')" 
-  shows "P ({#s'#}+c')" 
+  and INIT: "P (add_mset s c)" 
+  and PRES: "!!s c s' c' e. \<lbrakk>P (add_mset s c); ((s,c),e,(s',c'))\<in>T\<rbrakk> 
+                            \<Longrightarrow> P (add_mset s' c')" 
+  shows "P (add_mset s' c')" 
 proof -
-  from gtr_preserve[OF gtrp2gtr[OF A], where P=P, OF INIT] PRES show "P ({#s'#} + c')" by blast
+  from gtr_preserve[OF gtrp2gtr[OF A], where P=P, OF INIT] PRES show "P (add_mset s' c')" by blast
 qed
     
 

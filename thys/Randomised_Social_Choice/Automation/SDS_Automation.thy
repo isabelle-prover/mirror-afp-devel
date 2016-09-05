@@ -57,7 +57,7 @@ lemma less_or_eq_real:
 lemma multiset_Diff_single_normalize:
   fixes a c assumes "a \<noteq> c"
   shows   "({#a#} + B) - {#c#} = {#a#} + (B - {#c#})"
-  using assms by (metis diff_union_swap multiset_add_ac(2))
+  using assms by auto
 
 lemma ex_post_efficient_aux:
   assumes "prefs_from_table_wf agents alts xss" "R \<equiv> prefs_from_table xss"

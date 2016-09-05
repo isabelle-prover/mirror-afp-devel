@@ -319,7 +319,7 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
         using \<phi> \<psi>2 iso_classes_iff grp\<GG>PnMod\<HH>Pmint\<GG>Pn.is_group grpGMod\<HH>Pm.is_group grpGMod\<GG>Pn.is_group grp\<HH>PmMod\<HH>Pmint\<GG>Pn.is_group
         by metis
       also have "\<dots> = mset (map group.iso_class \<KK>butlast.quotients) + {# group.iso_class (\<HH>Pm Mod \<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)) #} + {# group.iso_class (G Mod \<HH> ! (m - 1)) #}"
-        by (metis add_eq_conv_ex)
+        by simp
       also have "\<dots> = mset (map group.iso_class ((butlast \<KK>.quotients) @ [last \<KK>.quotients])) + {# group.iso_class (G Mod \<HH> ! (m - 1)) #}"
         using \<KK>.quotients_butlast \<KK>.last_quotient `length \<KK> > 1` \<KK>sndlast Inteq\<KK>sndlast unfolding m_def by auto
       also have "\<dots> = mset (map group.iso_class \<HH>butlast.quotients) + {# group.iso_class (G Mod \<HH> ! (m - 1)) #}"

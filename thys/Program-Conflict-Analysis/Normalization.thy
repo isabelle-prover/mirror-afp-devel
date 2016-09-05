@@ -199,8 +199,8 @@ next
   then obtain ch where SPLIT: "({#[entry fg p]#},ww,ch)\<in>trcl (ntr fg)" "(ch,ee,{# u#r #}+ce)\<in>ntr fg" by (fast dest: trcl_rev_uncons) 
   -- "The last macrostep first executes a call and then a same-level path"
   from SPLIT(2) obtain q wws uh rh ceh uh' vt cet where 
-    STEPFMT: "ee=LCall q#wws" "ch={# uh#rh #}+ceh" "{# u#r #}+ce = {# vt#uh'#rh #}+cet" "((uh#rh,ceh),LCall q,(entry fg q#uh'#rh,ceh))\<in>trss fg" "(([entry fg q],ceh),wws,([vt],cet))\<in>trcl (trss fg)"
-    by (blast elim!: gtrE ntrs.cases[simplified])
+    STEPFMT: "ee=LCall q#wws" "ch=add_mset (uh#rh) ceh" "add_mset (u#r) ce = add_mset (vt#uh'#rh) cet" "((uh#rh,ceh),LCall q,(entry fg q#uh'#rh,ceh))\<in>trss fg" "(([entry fg q],ceh),wws,([vt],cet))\<in>trcl (trss fg)"
+    by (auto elim!: gtrE ntrs.cases[simplified])
   -- "Make a case distinction whether the last step was executed on the same thread as the sl/ret-path or not"
   from STEPFMT(3) show ?case proof (cases rule: mset_single_cases') 
     -- "If the sl/ret path was executed on the same thread as the last macrostep"
@@ -214,7 +214,7 @@ next
       -- "The macrostep still ends with a same-level path"
       with NEWPATH have "(([entry fg q],ceh),wws@w,([v'],ce'))\<in>trcl (trss fg)" by simp
       -- "and thus remains a valid macrostep"
-      from gtrI_s[OF ntrs_step[OF STEPFMT(4), simplified, OF this]] have "({#uh # rh#} + ceh, LCall q # wws@w, {#v' # uh' # rh#} + ce') \<in> ntr fg" .
+      from gtrI_s[OF ntrs_step[OF STEPFMT(4), simplified, OF this]] have "(add_mset (uh # rh) ceh, LCall q # wws@w, add_mset (v' # uh' # rh) ce') \<in> ntr fg" .
       -- "that we can append to the prefix of the normalized path to get our proposition"
       with STEPFMT(2) SPLIT(1) CC C'(2) have "({#[entry fg p]#},ww@[LCall q#wws@w],{# r'@r #} + ce')\<in>trcl (ntr fg)" by (auto simp add: trcl_rev_cons)
       thus ?thesis by blast
@@ -284,8 +284,8 @@ next
         moreover from trss_xchange_context[OF _ MON_CEH, of "[entry fg q]" wws "[vt]" cspt] STEPFMT(5) CETFMT(1) have 
           "(([entry fg q], {#r' @ r#} + (csp' + (ceh - {#u # r#}))), wws, [vt], cspt + ({#r' @ r#} + (csp' + (ceh - {#u # r#})))) \<in> trcl (trss fg)" by blast
         moreover note STEPFMT(1)
-        ultimately have "((uh#rh,({#r' @ r#} + (csp' + (ceh - {#u # r#})))),ee,(vt#uh'#rh,cspt+({#r' @ r#} + (csp' + (ceh - {#u # r#})))))\<in>ntrs fg" by (blast intro: ntrs.intros[simplified])
-        from gtrI_s[OF this] show ?thesis  by (simp add: union_ac)
+        ultimately have "((uh#rh,({#r' @ r#} + (csp' + (ceh - {#u # r#})))),ee,(vt#uh'#rh,cspt+({#r' @ r#} + (csp' + (ceh - {#u # r#})))))\<in>ntrs fg" by (auto intro: ntrs.intros)
+        from gtrI_s[OF this] show ?thesis by (simp add: add_mset_commute)
       qed
       -- "Finally we append the last macrostep to the normalized paths we obtained by the induction hypothesis"
       from trcl_rev_cons[OF NNPATH this] have "({#[entry fg p]#}, ww' @ [ee], {#vt # uh' # rh#} + (cspt + ({#r' @ r#} + (csp' + (ceh - {#u # r#}))))) \<in> trcl (ntr fg)" .
@@ -316,7 +316,7 @@ next
   -- "In the inductive case, we can assume that we have an already normalized path and need to append a last step"
   then obtain w' where IHP': "({# [entry fg p] #},w',c)\<in>trcl (ntr fg)" "(c,e,c')\<in>tr fg" by blast
   -- "We make explicit the thread on that this last step was executed"
-  from gtr_find_thread[OF IHP'(2)] obtain s ce s' ce' where TSTEP: "c = {#s#} + ce" "c' = {#s'#} + ce'" "((s, ce), e, (s', ce')) \<in> trss fg" by blast 
+  from gtr_find_thread[OF IHP'(2)] obtain s ce s' ce' where TSTEP: "c = add_mset s ce" "c' = add_mset s' ce'" "((s, ce), e, (s', ce')) \<in> trss fg" by blast 
   -- "The proof is done by a case distinction whether the last step was a call or not"
   {
     -- "Last step was a procedure call"
@@ -373,13 +373,13 @@ lemmas (in flowgraph) ntrs_valid_preserve = trss_valid_preserve[OF ntrs_is_trss]
 lemmas (in flowgraph) ntr_valid_preserve = tr_valid_preserve[OF ntr_is_tr]
 lemma (in flowgraph) ntrp_valid_preserve_s: 
   assumes A: "((s,c),e,(s',c'))\<in>ntrp fg" 
-  and V: "valid fg ({#s#}+c)" 
-  shows "valid fg ({#s'#}+c')"
+  and V: "valid fg (add_mset s c)" 
+  shows "valid fg (add_mset s' c')"
   using ntr_valid_preserve_s[OF gtrp2gtr_s[OF A] V] by assumption 
 lemma (in flowgraph) ntrp_valid_preserve: 
   assumes A: "((s,c),e,(s',c'))\<in>trcl (ntrp fg)" 
-  and V: "valid fg ({#s#}+c)" 
-  shows "valid fg ({#s'#}+c')"
+  and V: "valid fg (add_mset s c)" 
+  shows "valid fg (add_mset s' c')"
   using ntr_valid_preserve[OF gtrp2gtr[OF A] V] by assumption 
 
 subsubsection {* Monitors *}
@@ -488,17 +488,13 @@ lemma (in flowgraph) ntr_mon_increasing_s:
 lemma (in flowgraph) ntrp_mon_increasing_s: "((s,c),e,(s',c'))\<in>ntrp fg 
   \<Longrightarrow> mon_s fg s \<subseteq> mon_s fg s' \<and> mon_c fg c \<subseteq> mon_c fg c'"
   apply (erule gtrp.cases)
-  apply (auto dest: ntrs_mon_increasing_s simp add: mon_c_unconc)
+   apply (auto dest: ntrs_mon_increasing_s simp add: mon_c_unconc)[]
+  apply (intro conjI)
+   apply (auto dest: ntrs_mon_increasing_s simp add: mon_c_unconc)[]
+  apply (auto dest: ntrs_mon_increasing_s simp add: mon_c_unconc)[]
   apply (erule ntrs_c_cases_s)
-  apply auto
-proof -
-  fix c c' s' x csp
-  assume "{#s#} + c' = csp + ({#s#} + c)"
-  with union_left_cancel[of "{#s#}" c' "csp+c"] have "c'=csp+c" by (simp add: union_ac)
-  moreover assume "x \<in> mon_c fg c" "x \<notin> mon_c fg c'"
-  ultimately have False by (auto simp add: mon_c_unconc)
-  thus "x \<in> mon_s fg s'" ..
-qed
+  apply (auto simp: mon_c_unconc)
+  done
 
 lemma (in flowgraph) ntrp_mon_increasing: "((s,c),e,(s',c'))\<in>trcl (ntrp fg) 
   \<Longrightarrow> mon_s fg s \<subseteq> mon_s fg s' \<and> mon_c fg c \<subseteq> mon_c fg c'"
@@ -634,7 +630,7 @@ lemma (in flowgraph) ntr_add_context_s:
   and B: "mon_w fg e \<inter> mon_c fg cn = {}" 
   shows "(c+cn,e,c'+cn)\<in>ntr fg"
 proof -
-  from gtrE[OF A] obtain s ce s' ce' where NTRS: "c = {#s#} + ce" "c' = {#s'#} + ce'" "((s, ce), e, s', ce') \<in> ntrs fg" .
+  from gtrE[OF A] obtain s ce s' ce' where NTRS: "c = add_mset s ce" "c' = add_mset s' ce'" "((s, ce), e, s', ce') \<in> ntrs fg" .
   from ntrs_mon_e_no_ctx[OF NTRS(3)] B have M: "mon_w fg e \<inter> (mon_c fg (ce+cn)) = {}" by (auto simp add: mon_c_unconc)
   from ntrs_modify_context_s[OF NTRS(3) M] have "((s,ce+cn),e,(s',ce'+cn))\<in>ntrs fg" by (auto simp add: union_assoc)
   with NTRS show ?thesis by (auto simp add: union_assoc intro: gtrI_s)
@@ -656,13 +652,7 @@ lemma (in flowgraph) ntrp_add_context_s:
   "\<lbrakk> ((s,c),e,(s',c'))\<in>ntrp fg; mon_w fg (le_rem_s e) \<inter> mon_c fg cn = {} \<rbrakk> 
   \<Longrightarrow> ((s,c+cn),e,(s',c'+cn))\<in>ntrp fg"
   apply (erule gtrp.cases)
-  apply (auto dest: ntrs_add_context_s intro!: gtrp.intros)
-  apply (simp only: union_assoc)
-  apply (rule gtrp_env)
-  apply (simp only: union_assoc[symmetric])
-  apply (rule ntrs_add_context_s)
-  apply assumption+
-  done
+  by (auto dest: ntrs_add_context_s intro!: gtrp.intros)
 
 lemma (in flowgraph) ntrp_add_context: "\<lbrakk> 
     ((s,c),w,(s',c'))\<in>trcl (ntrp fg); 
@@ -877,7 +867,7 @@ lemma (in flowgraph) ntr_mon_s:
 
 lemma (in flowgraph) ntrp_mon_s: 
   assumes A: "((s,c),e,(s',c'))\<in>ntrp fg" 
-  shows "mon_c fg ({#s'#}+c') = mon_c fg ({#s#}+c) \<union> fst (\<alpha>nl fg e)"
+  shows "mon_c fg (add_mset s' c') = mon_c fg (add_mset s c) \<union> fst (\<alpha>nl fg e)"
   using ntr_mon_s[OF gtrp2gtr_s[OF A]] by (unfold \<alpha>nl_def)
 
 
@@ -906,7 +896,7 @@ next
    -- "We split a non-empty paths after the first (macro) step"
   then obtain ch where SPLIT: "(ca+cb,e,ch)\<in>ntr fg" "(ch,w,c')\<in>trcl (ntr fg)" by (fast dest: trcl_uncons)
   -- "Pick the stack that made the first step"
-  from gtrE[OF SPLIT(1)] obtain s ce sh ceh where NTRS: "ca+cb={#s#}+ce" "ch={#sh#}+ceh" "((s,ce),e,(sh,ceh))\<in>ntrs fg" . 
+  from gtrE[OF SPLIT(1)] obtain s ce sh ceh where NTRS: "ca+cb=add_mset s ce" "ch=add_mset sh ceh" "((s,ce),e,(sh,ceh))\<in>ntrs fg" . 
   -- "And separate the threads that where spawned during the first step from the ones that where already there"
   then obtain csp where CEHFMT: "ceh=csp+ce" "mon_c fg csp={}" by (auto elim!: ntrs_c_cases_s intro!: c_of_initial_no_mon) 
 
@@ -1034,8 +1024,8 @@ next
     moreover note IHAPP(2,4)
     ultimately show ?thesis by blast
   next
-    case gtrp_env then obtain e ss ce ssh ceh where CASE: "ee=ENV e" "c1+c2={#ss#}+ce" "sh=s" "ch={#ssh#}+ceh" "((ss,{#s#}+ce),e,(ssh,{#s#}+ceh))\<in>ntrs fg" by auto
-    from ntrs_c_cases_s[OF CASE(5)] obtain csp where HFMT: "{#s#}+ceh = csp + ({#s#}+ce)" "\<And>s. s \<in># csp \<Longrightarrow> \<exists>p u v. s = [entry fg p] \<and> (u, Spawn p, v) \<in> edges fg \<and> initialproc fg p" by (blast)
+    case gtrp_env then obtain e ss ce ssh ceh where CASE: "ee=ENV e" "c1+c2=add_mset ss ce" "sh=s" "ch=add_mset ssh ceh" "((ss,add_mset s ce),e,(ssh,add_mset s ceh))\<in>ntrs fg" by auto
+    from ntrs_c_cases_s[OF CASE(5)] obtain csp where HFMT: "add_mset s ceh = csp + (add_mset s ce)" "\<And>s. s \<in># csp \<Longrightarrow> \<exists>p u v. s = [entry fg p] \<and> (u, Spawn p, v) \<in> edges fg \<and> initialproc fg p" by (blast)
     from union_left_cancel[of "{#s#}" ceh "csp+ce"] HFMT(1) have CEHFMT: "ceh=csp+ce" by (auto simp add: union_ac)
     from HFMT(2) have CHNOMON: "mon_c fg csp = {}" by (blast intro!: c_of_initial_no_mon)
     from CASE(2)[symmetric] show ?thesis proof (cases rule: mset_unplusm_dist_cases)
@@ -1043,8 +1033,8 @@ next
       case left 
       with HFMT(1) CASE(4) CEHFMT have CHFMT': "ch=(csp+{#ssh#}+(c1-{#ss#})) + c2" by (simp add: union_ac)
       have VALID: "valid fg ({#s#} + (csp+{#ssh#}+(c1-{#ss#})) + c2)" proof -
-        from ntr_valid_preserve_s[OF gtrI_s, OF CASE(5)] Cons.prems(2) CASE(2) have "valid fg ({#ssh#} + ({#s#} + ceh))" by (simp add: union_assoc) (auto simp add: union_ac)
-        with left CEHFMT show ?thesis by (auto simp add: union_ac)
+        from ntr_valid_preserve_s[OF gtrI_s, OF CASE(5)] Cons.prems(2) CASE(2) have "valid fg ({#ssh#} + ({#s#} + ceh))" by (simp add: union_assoc add_mset_commute)
+        with left CEHFMT show ?thesis by (auto simp add: union_ac add_mset_commute)
       qed
       from Cons.hyps[OF _ VALID,of s' c'] CHFMT' SPLIT(2) CASE(3) obtain w1 w2 c1' c2' where IHAPP: "w \<in> w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> map ENV w2" "c' = c1' + c2'" 
         "((s, csp + {#ssh#} + (c1 - {#ss#})), w1, s', c1') \<in> trcl (ntrp fg)" "(c2, w2, c2') \<in> trcl (ntr fg)" 
@@ -1060,7 +1050,7 @@ next
       have SS: "((s,c1),ee,(s,csp + {#ssh#} + (c1 - {#ss#})))\<in>ntrp fg" proof -
         from left HFMT(1) have "{#s#}+ce={#s#}+(c1-{#ss#})+c2" "{#s#}+ceh = csp+({#s#}+(c1-{#ss#})+c2)" by (simp_all add: union_ac)
         with CASE(5) ntrs_xchange_context_s[of ss "{#s#}+(c1-{#ss#})+c2" e ssh csp fg "({#s#}+(c1-{#ss#}))"] have 
-          "((ss, {#s#} + (c1 - {#ss#})), e, ssh, {#s#} + (csp+(c1 - {#ss#}))) \<in> ntrs fg" by (auto simp add: mon_c_unconc union_ac)
+          "((ss, add_mset s (c1 - {#ss#})), e, ssh, add_mset s (csp+(c1 - {#ss#}))) \<in> ntrs fg" by (auto simp add: mon_c_unconc union_ac)
         from gtrp.gtrp_env[OF this] left(1)[symmetric] CASE(1) show ?thesis by (simp add: union_ac)
       qed
       from trcl.cons[OF this IHAPP(3)] have "((s, c1), ee # w1, s', c1') \<in> trcl (ntrp fg)" .
@@ -1075,8 +1065,8 @@ next
       case right 
       with HFMT(1) CASE(4) CEHFMT have CHFMT': "ch=c1 + (csp+{#ssh#}+(c2-{#ss#}))" by (simp add: union_ac)
       have VALID: "valid fg ({#s#} + c1 + ((csp+{#ssh#}+(c2-{#ss#}))))" proof -
-        from ntr_valid_preserve_s[OF gtrI_s, OF CASE(5)] Cons.prems(2) CASE(2) have "valid fg ({#ssh#} + ({#s#} + ceh))" by (simp add: union_assoc) (auto simp add: union_ac)
-        with right CEHFMT show ?thesis by (auto simp add: union_ac)
+        from ntr_valid_preserve_s[OF gtrI_s, OF CASE(5)] Cons.prems(2) CASE(2) have "valid fg ({#ssh#} + ({#s#} + ceh))" by  (auto simp add: union_ac add_mset_commute)
+        with right CEHFMT show ?thesis by (auto simp add: union_ac add_mset_commute)
       qed
       from Cons.hyps[OF _ VALID,of s' c'] CHFMT' SPLIT(2) CASE(3) obtain w1 w2 c1' c2' where IHAPP: "w \<in> w1 \<otimes>\<^bsub>\<alpha>nl fg\<^esub> map ENV w2" "c' = c1' + c2'" 
         "((s, c1), w1, s', c1') \<in> trcl (ntrp fg)" "(csp + {#ssh#} + (c2 - {#ss#}), w2, c2') \<in> trcl (ntr fg)" 
@@ -1259,8 +1249,8 @@ proof -
         from I(4) obtain e wb' where EE: "wb=e#wb'" "ee=ENV e" "w2'=map ENV wb'" by (cases wb, auto)
         with I(6) obtain cbh where SPLIT: "(cb,e,cbh)\<in>ntr fg" "(cbh,wb',cb')\<in>trcl (ntr fg)" by (fast dest: trcl_uncons)
         have "((s, ca + cb), ee, (s, ca + cbh)) \<in> ntrp fg" proof -
-          from gtrE[OF SPLIT(1)] obtain sb ceb sbh cebh where NTRS: "cb = {#sb#} + ceb" "cbh = {#sbh#} + cebh" "((sb, ceb), e, sbh, cebh) \<in> ntrs fg" .
-          from ntrs_add_context_s[OF NTRS(3), of "{#s#}+ca"] EE(1) I(7) have "((sb, {#s#} + (ca+ceb)), e, sbh, {#s#} + (ca+cebh)) \<in> ntrs fg" by (auto simp add: union_ac)
+          from gtrE[OF SPLIT(1)] obtain sb ceb sbh cebh where NTRS: "cb = add_mset sb ceb" "cbh = add_mset sbh cebh" "((sb, ceb), e, sbh, cebh) \<in> ntrs fg" .
+          from ntrs_add_context_s[OF NTRS(3), of "{#s#}+ca"] EE(1) I(7) have "((sb, add_mset s (ca+ceb)), e, sbh, add_mset s (ca+cebh)) \<in> ntrs fg" by (auto simp add: union_ac)
           from gtrp_env[OF this] NTRS(1,2) EE(2) show ?thesis by (simp add: union_ac)
         qed
         also have "((s,ca+cbh),w',(s',ca'+cb'))\<in>trcl (ntrp fg)" proof (rule I(3))
@@ -1302,14 +1292,14 @@ theorem (in flowgraph) ntrp_interleave:
     mon_ww fg w2 \<inter> mon_c fg ({#s#}+c1) = {})"
   apply (intro iffI)
   apply (blast intro: ntrp_split)
-  apply (auto intro!: ntrp_unsplit simp add: valid_unconc)
+  apply (auto intro!: ntrp_unsplit simp add: valid_unconc
+      mon_c_unconc)
   done
-
 
 text {* The next is a corollary of @{thm [source] flowgraph.ntrp_unsplit}, allowing us to convert a path to loc/env semantics by adding a local stack that does not make any steps. *}
 corollary (in flowgraph) ntr2ntrp: "\<lbrakk>
     (c,w,c')\<in>trcl (ntr fg); 
-    mon_c fg ({#s#}+cl) \<inter> (mon_c fg c \<union> mon_ww fg w)={}
+    mon_c fg (add_mset s cl) \<inter> (mon_c fg c \<union> mon_ww fg w)={}
   \<rbrakk> \<Longrightarrow> ((s,cl+c),map ENV w,(s,cl+c'))\<in>trcl (ntrp fg)" 
   using ntrp_unsplit[where wa="[]", simplified] by fast
 
@@ -1337,7 +1327,7 @@ next
   case (add ce s)
   -- "We split the path by this initial configuration"
   from ntr_split[OF add.prems(1,2)] obtain ce1' ce2' w1 w2 where 
-    SPLIT: "{#s'#}+ce'=ce1'+ce2'" "w\<in>w1\<otimes>\<^bsub>\<alpha>n fg\<^esub>w2" 
+    SPLIT: "add_mset s' ce'=ce1'+ce2'" "w\<in>w1\<otimes>\<^bsub>\<alpha>n fg\<^esub>w2" 
     "mon_c fg ce \<inter> (mon_s fg s\<union>mon_ww fg w1) = {}" 
     "mon_s fg s \<inter> (mon_c fg ce \<union> mon_ww fg w2) = {}" 
     "({#s#},w1,ce1')\<in>trcl (ntr fg)" 
@@ -1365,11 +1355,11 @@ next
     
     -- {* And finally we add the path from @{term s} again. This requires some monitor sorting and the associativity of the consistent interleaving operator. *}
     from cil_assoc2 [of w w1 _ w2 w22 w21] SPLIT(2) IHAPP(3) obtain wl where CASSOC: "w\<in>w21\<otimes>\<^bsub>\<alpha>n fg\<^esub>wl" "wl\<in>w1\<otimes>\<^bsub>\<alpha>n fg\<^esub>w22" by (auto simp add: cil_commute)
-    from CASSOC IHAPP(1,3,4,5) SPLIT(3,4) have COMBINE: "({#s#} + cet, wl, ce1' + ce22') \<in> trcl (ntr fg)" by (rule_tac ntr_unsplit[OF CASSOC(2) SPLIT(5) IHAPP(7)]) (auto simp add: mon_c_unconc mon_ww_cil) 
+    from CASSOC IHAPP(1,3,4,5) SPLIT(3,4) have COMBINE: "(add_mset s cet, wl, ce1' + ce22') \<in> trcl (ntr fg)" using ntr_unsplit[OF CASSOC(2) SPLIT(5) IHAPP(7)] by (auto simp add: mon_c_unconc mon_ww_cil Int_Un_distrib2) 
     moreover from CASSOC IHAPP(1,3,4,5) SPLIT(3,4) have "mon_s fg st \<inter> (mon_c fg ({#s#}+cet) \<union> mon_ww fg wl) = {}" "mon_c fg ({#s#}+cet) \<inter> (mon_s fg st \<union> mon_ww fg w21) = {}" by (auto simp add: mon_c_unconc mon_ww_cil)
     moreover from right IHAPP(1,2) have "{#s#}+ce={#st#}+({#s#}+cet)" "ce'=ce21'+(ce1'+ce22')" by (simp_all add: union_ac)
     moreover note IHAPP(6) CASSOC(1)
-    ultimately show ?thesis by blast 
+    ultimately show ?thesis by fastforce
   qed
 qed
     

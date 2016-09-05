@@ -2,8 +2,6 @@ theory TTreeAnalysisSpec
 imports TTreeAnalysisSig ArityAnalysisSpec "Cardinality-Domain-Lists"
 begin
 
-hide_const Multiset.single
-
 locale TTreeAnalysisCarrier = TTreeAnalysis + EdomArityAnalysis +
   assumes carrier_Fexp: "carrier (Texp e\<cdot>a) = edom (Aexp e\<cdot>a)"
 

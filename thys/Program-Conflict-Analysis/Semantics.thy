@@ -91,8 +91,13 @@ lemma mon_s_unconc: "mon_s fg (a@b) = mon_s fg a \<union> mon_s fg b"
 lemma mon_s_uncons[simp]: "mon_s fg (a#as) = mon_n fg a \<union> mon_s fg as"
   by (rule mon_s_unconc[where a="[a]", simplified])
 
-lemma mon_c_unconc: "mon_c fg (a+b) = mon_c fg a \<union> mon_c fg b"
+lemma mon_c_union_conc: "mon_c fg (a+b) = mon_c fg a \<union> mon_c fg b"
   by (unfold mon_c_def) auto
+
+lemma mon_c_add_mset_unconc: "mon_c fg (add_mset x b) = mon_s fg x \<union> mon_c fg b"
+  by (unfold mon_c_def) auto
+
+lemmas mon_c_unconc = mon_c_union_conc mon_c_add_mset_unconc
 
 lemma mon_cI: "\<lbrakk>s \<in># c; m\<in>mon_s fg s\<rbrakk> \<Longrightarrow> m\<in>mon_c fg c"
   by (unfold mon_c_def, auto)
@@ -121,7 +126,7 @@ subsection {* Valid configurations *}
 text_raw {*\label{sec:Semantics:validity}*}
 text {* We call a configuration {\em valid} if each monitor is owned by at most one thread. *}
 definition
-  "valid fg c == \<forall>s s'. {#s#}+{#s'#} \<le># c \<longrightarrow> mon_s fg s \<inter> mon_s fg s' = {}"
+  "valid fg c == \<forall>s s'. {#s, s'#} \<le># c \<longrightarrow> mon_s fg s \<inter> mon_s fg s' = {}"
 
 lemma valid_empty[simp, intro!]: "valid fg {#}" 
   by (unfold valid_def, auto)
@@ -136,8 +141,7 @@ lemma valid_split1:
   apply (drule mon_cD)+
   apply auto
   apply (subgoal_tac "{#s#}+{#sa#} \<le># c+c'")
-  apply (auto dest!: multi_member_split simp add: ac_simps)
-  using mset_le_incr_right2 apply blast
+  apply (auto dest!: multi_member_split)
   done
   
 lemma valid_split2: 
@@ -149,14 +153,20 @@ lemma valid_split2:
   apply (blast intro: mon_cI)+
   done
 
-lemma valid_unconc: 
+lemma valid_union_conc: 
   "valid fg (c+c') \<longleftrightarrow> (valid fg c \<and> valid fg c' \<and> mon_c fg c \<inter> mon_c fg c' = {})" 
   by (blast dest: valid_split1 valid_split2)
+
+lemma valid_add_mset_conc: 
+  "valid fg (add_mset x c') \<longleftrightarrow> (valid fg c' \<and> mon_s fg x \<inter> mon_c fg c' = {})"
+  unfolding add_mset_add_single[of x c'] valid_union_conc by (auto simp: mon_s_def)
+
+lemmas valid_unconc = valid_union_conc valid_add_mset_conc
 
 lemma valid_no_mon: "mon_c fg c = {} \<Longrightarrow> valid fg c" 
 proof (unfold valid_def, intro allI impI)
   fix s s'
-  assume A: "mon_c fg c = {}" and B: "{#s#}+{#s'#} \<le># c"
+  assume A: "mon_c fg c = {}" and B: "{#s, s'#} \<le># c"
   from mon_c_mono[OF B, of fg] A have "mon_s fg s = {}" "mon_s fg s' = {}" by (auto simp add: mon_c_unconc)
   thus "mon_s fg s \<inter> mon_s fg s' = {}" by blast
 qed
@@ -202,7 +212,10 @@ lemma atU_single[simp]: "atU U {#s#} = atU_s U s"
 lemma atU_single_top[simp]: "atU U {#u#r#} = (u\<in>U)" 
   by (auto) (* This is also done by atU_single, atU_s.simps *)
 
-lemma atU_xchange_stack: "atU U ({#u#r#}+c) \<Longrightarrow> atU U ({#u#r'#}+c)"
+lemma atU_add_mset[simp]: "atU U (add_mset c c2) = (atU_s U c \<or> atU U c2)"
+  unfolding add_mset_add_single[of c c2] atU_union by auto
+
+lemma atU_xchange_stack: "atU U (add_mset (u#r) c) \<Longrightarrow> atU U (add_mset (u#r') c)"
   by (simp)
 
 -- {* A configuration is {\em simultaneously at} @{term U} and @{term V} if it contains a stack at @{term U} and another one at @{term V} *}
@@ -228,6 +241,17 @@ lemma atUV_union[simp]: "
   apply (auto iff add: mset_le_mono_add_single)
   done
 
+lemma atUV_add_mset[simp]: "
+  atUV U V (add_mset c c2) \<longleftrightarrow>
+  (
+    (atUV U V c2) \<or>
+    (atU U {#c#} \<and> atU V c2) \<or>
+    (atU V {#c#} \<and> atU U c2)
+  )"
+  unfolding add_mset_add_single[of c c2]
+  unfolding atUV_union
+  by auto
+
 lemma atUV_union_cases[case_names left right lr rl, consumes 1]: "\<lbrakk>
     atUV U V (c1+c2); 
     atUV U V c1 \<Longrightarrow> P; 
@@ -248,19 +272,19 @@ inductive_set
 where
   -- "A base edge transforms the top node of one stack and leaves the other stacks untouched."
   refpoint_base: "\<lbrakk> (u,Base a,v)\<in>edges fg; valid fg ({#u#r#}+c) \<rbrakk> 
-    \<Longrightarrow> ({#u#r#}+c,LBase a,{#v#r#}+c)\<in>refpoint fg" |
+    \<Longrightarrow> (add_mset (u#r) c,LBase a,add_mset (v#r) c)\<in>refpoint fg" |
   -- "A call edge transforms the top node of a stack and then pushes the entry node of the called procedure onto that stack. 
       It can only be executed if all monitors the called procedure synchronizes on are available. Reentrant monitors are modeled here by
       checking availability of monitors just against the other stacks, not against the stack of the thread that executes the call. The other stacks are left untouched."
   refpoint_call: "\<lbrakk> (u,Call p,v)\<in>edges fg; valid fg ({#u#r#}+c); 
                     mon fg p \<inter> mon_c fg c = {} \<rbrakk> 
-    \<Longrightarrow> ({#u#r#}+c,LCall p, {#entry fg p#v#r#}+c)\<in>refpoint fg" |
+    \<Longrightarrow> (add_mset (u#r) c,LCall p, add_mset (entry fg p#v#r) c)\<in>refpoint fg" |
   -- "A return step pops a return node from a stack. There is no corresponding flowgraph edge for a return step. The other stacks are left untouched."
   refpoint_ret: "\<lbrakk> valid fg ({#return fg p#r#}+c) \<rbrakk> 
-    \<Longrightarrow> ({#return fg p#r#}+c,LRet,({#r#}+c))\<in>refpoint fg" |
+    \<Longrightarrow> (add_mset (return fg p#r) c,LRet,(add_mset r c))\<in>refpoint fg" |
   -- "A spawn edge transforms the top node of a stack and adds a new stack to the environment, with the entry node of the spawned procedure at the top and no stored return addresses. The other stacks are also left untouched."
-  refpoint_spawn: "\<lbrakk> (u,Spawn p,v)\<in>edges fg; valid fg ({#u#r#}+c) \<rbrakk> 
-    \<Longrightarrow> ({#u#r#}+c,LSpawn p,{#v#r#}+{#[entry fg p]#}+c)\<in>refpoint fg"
+  refpoint_spawn: "\<lbrakk> (u,Spawn p,v)\<in>edges fg; valid fg (add_mset (u#r) c) \<rbrakk> 
+    \<Longrightarrow> (add_mset (u#r) c,LSpawn p, add_mset (v#r) (add_mset [entry fg p] c))\<in>refpoint fg"
 
 text {*
   Instead of working directly with the reference point semantics, we define the operational semantics of flowgraphs by describing how a single stack is transformed in a context of environment threads, 
@@ -281,7 +305,7 @@ inductive_set
     ((u#r,c),LCall p, ((entry fg p)#v#r,c)) \<in> trss fg"
   | trss_ret: "((((return fg p)#r),c),LRet,(r,c)) \<in> trss fg"
   | trss_spawn: "\<lbrakk> (u,Spawn p,v)\<in>edges fg \<rbrakk> \<Longrightarrow> 
-    ((u#r,c),LSpawn p,(v#r,{#[entry fg p]#}+c)) \<in> trss fg"
+    ((u#r,c),LSpawn p,(v#r,add_mset [entry fg p] c)) \<in> trss fg"
 
 (* Not needed
 lemma trss_base': "\<lbrakk>(u,Base a,v)\<in>edges fg; s=u#r; s'=v#r; e=LBase a\<rbrakk> \<Longrightarrow> ((s,c), e, (s',c) ) \<in> trss fg"
@@ -304,7 +328,7 @@ subsection "Basic properties"
 subsubsection "Validity"
 text_raw{*\label{sec:Semantics:valid_preserve}*}
 lemma (in flowgraph) trss_valid_preserve_s: 
-  "\<lbrakk>valid fg ({#s#}+c); ((s,c),e,(s',c'))\<in>trss fg\<rbrakk> \<Longrightarrow> valid fg ({#s'#}+c')"
+  "\<lbrakk>valid fg (add_mset s c); ((s,c),e,(s',c'))\<in>trss fg\<rbrakk> \<Longrightarrow> valid fg (add_mset s' c')"
   apply (erule trss.cases)
   apply (simp_all add: valid_unconc mon_c_unconc)
 by (blast dest: mon_n_same_proc edges_part)+
@@ -322,11 +346,11 @@ lemma (in flowgraph) tr_valid_preserve:
   by (rule gtr_preserve[where P="valid fg"]) (auto dest: trss_valid_preserve_s)
   
 lemma (in flowgraph) trp_valid_preserve_s: 
-  "\<lbrakk>((s,c),e,(s',c'))\<in>trp fg; valid fg ({#s#}+c)\<rbrakk> \<Longrightarrow> valid fg ({#s'#}+c')"
+  "\<lbrakk>((s,c),e,(s',c'))\<in>trp fg; valid fg (add_mset s c)\<rbrakk> \<Longrightarrow> valid fg (add_mset s' c')"
   by (rule gtrp_preserve_s[where P="valid fg"]) (auto dest: trss_valid_preserve_s)
 
 lemma (in flowgraph) trp_valid_preserve: 
-  "\<lbrakk>((s,c),w,(s',c'))\<in>trcl (trp fg); valid fg ({#s#}+c)\<rbrakk> \<Longrightarrow> valid fg ({#s'#}+c')"
+  "\<lbrakk>((s,c),w,(s',c'))\<in>trcl (trp fg); valid fg ({#s#}+c)\<rbrakk> \<Longrightarrow> valid fg (add_mset s' c')"
   by (rule gtrp_preserve[where P="valid fg"]) (auto dest: trss_valid_preserve_s)
 
 
@@ -336,10 +360,10 @@ text_raw {* \label{sec:Semantics: refpoint_eq} *}
 lemma refpoint_eq_s: "valid fg c \<Longrightarrow> ((c,e,c')\<in>refpoint fg) \<longleftrightarrow> ((c,e,c')\<in>tr fg)"
   apply rule
   apply (erule refpoint.cases)
-  apply (auto intro: gtrI_s trss.intros simp add: union_assoc)
+      apply (auto intro: gtrI_s trss.intros simp add: union_assoc add_mset_commute)
   apply (erule gtrE)
   apply (erule trss.cases)
-  apply (auto intro: refpoint.intros simp add: union_assoc[symmetric])
+  apply (auto intro: refpoint.intros simp add: union_assoc[symmetric] add_mset_commute)
   done
   
 lemma (in flowgraph) refpoint_eq: 
@@ -478,7 +502,7 @@ lemma trs_step_cases[cases set, case_names NO_SPAWN SPAWN]:
 proof -
   from A show ?thesis proof (erule_tac gtr_find_thread)
     fix s ce s' ce' 
-    assume FMT: "c = {#s#} + ce" "c' = {#s'#} + ce'"
+    assume FMT: "c = add_mset s ce" "c' = add_mset s' ce'"
     assume B: "((s, ce), e, s', ce') \<in> trss fg" thus ?thesis proof (cases rule: trss_c_cases_s)
       case no_spawn thus ?thesis using FMT B by (-) (rule A_NO_SPAWN, auto)  
     next

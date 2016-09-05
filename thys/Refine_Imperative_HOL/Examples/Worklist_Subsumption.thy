@@ -174,7 +174,7 @@ context Search_Space begin
     using assms unfolding worklist_inv_frontier_def 
     using trans 
     apply clarsimp
-    by (metis Un_iff insert_DiffM mset_singletonD mset_un_cases)
+    by (metis (no_types, lifting) Un_iff count_eq_zero_iff count_single mset_contains_eq mset_un_cases)
 
   private lemma aux5:
     assumes
@@ -200,7 +200,7 @@ context Search_Space begin
 
     from assms(2,3,4) show ?thesis unfolding worklist_inv_frontier_def 
       apply auto
-      by (metis (full_types) Un_iff insert_DiffM mset_left_cancel_elem)
+      by (metis Un_iff insert_DiffM2 mset_singletonD set_mset_union)
   qed    
 
   private lemma aux6:
@@ -211,7 +211,7 @@ context Search_Space begin
     shows "start_subsumed (insert a passed) wait'"
   using assms unfolding start_subsumed_def 
   apply auto
-  by (metis UnI2 contra_subsetD insert_noteq_member mset_diff_union_cancel sup.cobounded1)
+  by (metis UnI2 contra_subsetD mset_diff_union_s_inverse mset_left_cancel_elem sup_ge1)
 
   lemma aux4:
     assumes "worklist_inv_frontier passed {#}" "reachable x" "start_subsumed passed {#}"

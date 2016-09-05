@@ -2,7 +2,6 @@ theory CoCallAnalysisSpec
 imports CoCallAritySig ArityAnalysisSpec
 begin
 
-hide_const Multiset.single
 
 locale CoCallArityEdom = CoCallArity + EdomArityAnalysis
 

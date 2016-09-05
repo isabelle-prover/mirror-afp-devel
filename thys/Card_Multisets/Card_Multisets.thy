@@ -16,7 +16,7 @@ proof (induct M)
   case empty
   show ?case by simp
 next
-  case (add M x)
+  case (add x M)
   from this show ?case
   proof (cases "x \<in># M")
     assume "x \<in># M"

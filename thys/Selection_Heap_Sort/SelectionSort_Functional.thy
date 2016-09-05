@@ -79,13 +79,12 @@ proof (induct l arbitrary: l' m m' t' rule: rev_induct)
   thus ?case
     using snoc(2)
     apply (cases "?a")
-    apply (auto split: if_split_asm, (simp add: union_lcomm union_commute)+) 
-    by (metis union_assoc)
+    by (auto split: if_split_asm) 
 qed simp
 
 lemma remove_max_mset:
   assumes "l \<noteq> []" "(m, l') = remove_max l" 
-  shows "mset l' + {#m#} = mset l"
+  shows "add_mset m (mset l') = mset l"
 using assms
 unfolding remove_max_def
 using remove_max_mset_lemma[of m l' "hd l" "[]" "tl l"]
