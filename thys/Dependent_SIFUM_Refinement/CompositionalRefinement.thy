@@ -2314,7 +2314,7 @@ proof(clarsimp)
       with GuarNoRW_x\<^sub>A j_len j_len' mds\<^sub>A_of_def x_range conc.in_restrict_modesI var\<^sub>C_of_inj
       show "x \<in> (conc.restrict_modes (map snd cms\<^sub>C) (range var\<^sub>C_of) ! j) GuarNoReadOrWrite"
         unfolding var\<^sub>A_of_def
-        by (metis (no_types, lifting) doesnt_have_mode f_inv_into_f inv_image_comp nth_map)
+        by (metis (no_types, lifting) doesnt_have_mode f_inv_into_f image_inv_f_f nth_map)
     next
       (* This argument is identical to that for AsmNoReadOrWrite *)
       fix j
@@ -2352,7 +2352,7 @@ proof(clarsimp)
       with GuarNoWrite_x\<^sub>A j_len j_len' mds\<^sub>A_of_def x_range conc.in_restrict_modesI var\<^sub>C_of_inj
       show "x \<in> (conc.restrict_modes (map snd cms\<^sub>C) (range var\<^sub>C_of) ! j) GuarNoWrite"
         unfolding var\<^sub>A_of_def
-        by (metis (no_types, lifting) doesnt_have_mode f_inv_into_f inv_image_comp nth_map)
+        by (metis (no_types, lifting) doesnt_have_mode f_inv_into_f image_inv_f_f nth_map)
     qed
 qed
 
