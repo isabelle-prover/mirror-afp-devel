@@ -798,8 +798,7 @@ next
         "multiset (T v (T v1 l1 r1) (T v2 l2 r2)) = 
          multiset (T v1 l1 r1) + {#v#} + multiset l2 + 
          {#v2#} + multiset r2"
-        by (metis (hide_lams, no_types) multiset.simps(2) 
-            union_assoc union_commute union_lcomm)
+        by simp
       moreover
       have 
         "multiset (T v1 l1 r1) + {#v#} + multiset l2 + {#v2#} + 
@@ -864,8 +863,7 @@ next
       have "multiset (T v (T v1 l1 r1) (T v2 l2 r2)) = 
               multiset (T v1 l1 r1) + {#v#} + multiset l2 + {#v2#} + 
               multiset r2"
-        by (metis (hide_lams, no_types) multiset.simps(2) 
-            union_assoc union_commute union_lcomm)
+        by simp
       moreover
       have "multiset (T v1 l1 r1) + {#v#} + multiset l2 + {#v2#} + 
             multiset r2 = 
@@ -1280,8 +1278,8 @@ proof-
       by (auto simp add: hs_remove_max_def) (metis prod.inject)
     hence "multiset t' + {#val ?t1#} = multiset t"
       using siftDown_multiset[of "set_val ?t1 ?v1"]
-      using set_val_multiset[of ?t1 ?v1] False
       using removeLeaf_multiset[of ?v1 ?t1 t] assms(2)
+      using set_val_multiset[of ?t1 ?v1] False
       by auto
     have "val ?t1 = val t"
       using False assms(2)
@@ -1324,9 +1322,9 @@ next
 next
   fix t m t'
   assume "\<not> hs_is_empty t" "(m, t') = hs_remove_max t"
-  thus "multiset t' + {#m#} = multiset t"
+  thus "add_mset m (multiset t') = multiset t"
     using hs_remove_max_multiset[of m t' t]
-    by (auto, metis union_commute)
+    by auto
 next
   fix t v' t' 
   assume "\<not> hs_is_empty t" "is_heap (id t)" "(v', t') = hs_remove_max t"

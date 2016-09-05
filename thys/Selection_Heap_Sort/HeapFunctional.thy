@@ -290,7 +290,7 @@ next
     case  True
     hence "multiset (merge (T v1 l1 r1) (T v2 l2 r2)) = 
            {#v1#} + multiset (merge l1 (T v2 l2 r2)) +  multiset r1"
-      by auto (metis union_commute)
+      by auto
     hence "multiset (merge (T v1 l1 r1) (T v2 l2 r2)) = 
            {#v1#} + multiset l1 + multiset (T v2 l2 r2) + multiset r1"
       using 3 True
@@ -299,12 +299,12 @@ next
            {#v1#} + multiset l1 + multiset r1 + multiset (T v2 l2 r2)"
       by (metis union_commute union_lcomm)
     thus ?thesis
-      by auto (metis union_commute)
+      by auto
   next
     case False
     hence "multiset (merge (T v1 l1 r1) (T v2 l2 r2)) = 
            {#v2#} + multiset (merge l2 (T v1 l1 r1)) + multiset r2"
-      by auto (metis union_commute)
+      by auto
     hence "multiset (merge (T v1 l1 r1) (T v2 l2 r2)) = 
            {#v2#} + multiset l2 + multiset r2 +  multiset (T v1 l1 r1)"
       using 3 False
@@ -386,11 +386,10 @@ next
   assume "\<not> hs_is_empty t" "(m, t') = hs_remove_max t"
   then obtain l r where "t = T m l r"
     by (metis Pair_inject Tree.exhaust hs_is_empty_def hs_remove_max.simps)
-  thus "multiset t' + {#m#} = multiset t"
+  thus "add_mset m (multiset t') = multiset t"
     using merge_multiset[of l r]
     using `(m, t') = hs_remove_max t`
-    by (metis prod.inject multiset.simps(2) hs_remove_max.simps
-        union_assoc union_commute)
+    by auto
 next
   fix t m t'
   assume "\<not> hs_is_empty t" "is_heap (id t)" "(m, t') = hs_remove_max t"

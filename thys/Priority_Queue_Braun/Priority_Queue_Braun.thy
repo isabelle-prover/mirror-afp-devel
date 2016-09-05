@@ -100,7 +100,7 @@ proof (induction t arbitrary: x t' rule: del_left.induct)
   case 1 then show ?case by simp
 next
   case "2_1" then show ?case
-    by (auto simp: ac_simps multiset_diff_union_assoc
+    by (auto simp: diff_union_swap ac_simps diff_union_single_conv
      dest!: del_left_elem split: prod.splits)
 next
   case ("2_2" l x v u w y t)
@@ -212,8 +212,7 @@ next
       using assms del_left_mset[OF del] del_left_size[OF del]
         del_left_braun[OF del]del_left_elem[OF del]
       apply (subst mset_sift_down)
-      apply (auto simp: ac_simps multiset_diff_union_assoc)
-      apply (simp_all add: multiset_eq_iff)
+      apply (auto simp: ac_simps)
       done }
   thus ?thesis by(auto split: prod.split)
 qed

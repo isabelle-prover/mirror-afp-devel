@@ -864,10 +864,10 @@ proof-
       case empty
       then show ?case by simp
   next
-      case (add \<Delta>' x)
+      case (add x \<Delta>')
       then have IH: "\<lbrakk> A \<in># M\<cdot>\<Delta>' ; \<Delta>' \<noteq> \<Empt> \<rbrakk> \<Longrightarrow> \<exists> B. A = Modal M [B]"
             and b: "A \<in># M \<cdot> (\<Delta>' \<oplus> x)" by auto
-      from b have "A \<in># M\<cdot>\<Delta>' \<or> A \<in># M\<cdot>(\<LM>x\<RM>)" by (auto simp add:modaliseMultiset_def image_mset_insert)
+      from b have "A \<in># M\<cdot>\<Delta>' \<or> A \<in># M\<cdot>(\<LM>x\<RM>)" by (auto simp add:modaliseMultiset_def)
       moreover
          {assume "A \<in># M\<cdot>\<Delta>'"
           then have "\<Delta>' \<noteq> \<Empt>" by (auto simp add:modaliseEmpty)
@@ -1208,14 +1208,12 @@ proof-
  from `r \<in> upRules \<or> r \<in> modRules2` and `r \<in> R` have "extendRule (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') r \<in> (ext R R2 M1 M2)" by auto
  moreover have "extendRule (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') r = (Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')"
           using `S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms)` and ext and `r = (ps,c)` and eq
-          by (auto simp add:extendRule_def extend_def union_ac multiset_eq_iff)
+          by (auto simp add:extendRule_def extend_def)
  ultimately have "(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> (ext R R2 M1 M2)" by simp
  have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using `Ps = map (extend S) ps` by (simp add:Ball_def)           
  have c2:"\<forall> p \<in> set ps. extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') p \<in> set Ps'" using eq by (simp add:Ball_def)
  then have eq2:"\<forall> p \<in> set Ps'. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>')" using eq
-           apply (auto simp add:Ball_def extend_def) 
-           apply (rule_tac x="\<Phi> + antec xa" in exI) apply (simp add:union_ac) 
-           by (rule_tac x="\<Psi>1 + succ xa" in exI) (simp add: union_ac)
+           by (auto simp add: extend_def) 
  have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using `Ps = map (extend S) ps` by (auto simp add:Ball_def Bex_def)
  then have "\<forall> p \<in> set Ps. \<exists> p'. p' \<in> set Ps'" using c2 by (auto simp add:Ball_def Bex_def)
  moreover have d2: "\<forall> p \<in> set Ps'. \<exists> p' \<in> set ps. p = extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') p'" using eq
@@ -1238,7 +1236,7 @@ proof-
                        using extend_def[where forms="\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms" and seq="D \<Rightarrow>* B"] by auto
                   from ant have "\<Phi>' + \<Gamma>' = (\<Phi> + \<Gamma>') + D" by (auto simp add:union_ac)
                   moreover
-                  from suc have "\<Psi>' = \<Psi>1 + B" by (auto simp add:union_ac multiset_eq_iff)
+                  from suc have "\<Psi>' = \<Psi>1 + B" by auto
                   then have "\<Psi>' + \<Delta>' = (\<Psi>1 + \<Delta>') + B" by (auto simp add:union_ac)
                   ultimately have "(\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>') = extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') (D \<Rightarrow>* B)" 
                        using extend_def[where forms="\<Phi>+\<Gamma>'\<Rightarrow>*\<Psi>1+\<Delta>'" and seq="D\<Rightarrow>*B"] by auto
@@ -1453,14 +1451,12 @@ proof-
  from `r \<in> upRules \<or> r \<in> modRules2` and `r \<in> R` have "extendRule (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') r \<in> (ext R R2 M1 M2)" by auto
  moreover have "extendRule (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') r = (Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')"
           using `S = (\<Phi>1 \<oplus> Modal M Ms \<Rightarrow>* \<Psi>)` and ext and `r = (ps,c)` and eq
-          by (auto simp add:extendRule_def extend_def union_ac multiset_eq_iff)
+          by (auto simp add:extendRule_def extend_def)
  ultimately have "(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> (ext R R2 M1 M2)" by simp
  have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using `Ps = map (extend S) ps` by (simp add:Ball_def)           
  have c2:"\<forall> p \<in> set ps. extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') p \<in> set Ps'" using eq by (simp add:Ball_def)
  then have eq2:"\<forall> p \<in> set Ps'. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>')" using eq
-           apply (auto simp add:Ball_def extend_def) 
-           apply (rule_tac x="\<Phi>1 + antec xa" in exI) apply (simp add:union_ac) 
-           by (rule_tac x="\<Psi> + succ xa" in exI) (simp add: union_ac)
+           by (auto simp add: extend_def) 
  have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using `Ps = map (extend S) ps` by (auto simp add:Ball_def Bex_def)
  then have "\<forall> p \<in> set Ps. \<exists> p'. p' \<in> set Ps'" using c2 by (auto simp add:Ball_def Bex_def)
  moreover have d2: "\<forall> p \<in> set Ps'. \<exists> p' \<in> set ps. p = extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') p'" using eq
@@ -1483,7 +1479,7 @@ proof-
                        using extend_def[where forms="\<Phi>1\<oplus> Modal M Ms \<Rightarrow>* \<Psi>" and seq="D \<Rightarrow>* B"] by auto
                   from suc have "\<Psi>' + \<Delta>' = (\<Psi> + \<Delta>') + B" by (auto simp add:union_ac)
                   moreover
-                  from ant have "\<Phi>' = \<Phi>1 + D" by (auto simp add:union_ac multiset_eq_iff)
+                  from ant have "\<Phi>' = \<Phi>1 + D" by auto
                   then have "\<Phi>' + \<Gamma>' = (\<Phi>1 + \<Gamma>') + D" by (auto simp add:union_ac)
                   ultimately have "(\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>') = extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') (D \<Rightarrow>* B)" 
                        using extend_def[where forms="\<Phi>1+\<Gamma>'\<Rightarrow>*\<Psi>+\<Delta>'" and seq="D\<Rightarrow>*B"] by auto
@@ -1629,14 +1625,7 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                   apply (rotate_tac 10) apply (drule_tac x="snd r" in meta_spec) apply simp
                   apply (elim exE) 
                   apply (insert modRule1Characterise[where Ps="fst r" and C="snd r" and R=R2 and M=M1 and N=M2])
-                  apply (auto simp add:extendRule_def extend_def)
-                  apply (insert singleton_add_means_equal) apply (rotate_tac 10)
-                  apply (drule_tac x="Compound F Fs" in meta_spec) apply (rotate_tac 13)
-                  apply (drule_tac x="M2\<cdot>\<Delta> "in meta_spec) apply (rotate_tac 13)
-                  apply (drule_tac x="Modal Fa Fsa" in meta_spec) apply auto
-                  apply (rotate_tac 13) apply (drule_tac x="Compound F Fs" in meta_spec) apply (rotate_tac 13)
-                  apply (drule_tac x="M1\<cdot>\<Gamma>" in meta_spec) apply (rotate_tac 13)
-                  apply (drule_tac x="Modal Fa Fsa" in meta_spec) by auto
+                  by (auto simp add:extendRule_def extend_def)
              with rules have "r \<in> R'" by auto
              obtain ps c where "r = (ps,c)" by (cases r) auto
              with `r \<in> upRules` obtain T Ts where sw:"c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>) \<or> 
@@ -1832,7 +1821,7 @@ txt{* \noindent  The other interesting case is where the last inference was a mo
                          by (auto simp add:union_ac)
                     then have "M2\<cdot>\<Delta>'' + \<Delta>' + \<Delta>1 = \<Delta> + \<Delta>'" by (auto simp add:union_ac) (*>*)
   ultimately have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta>+\<Delta>',m) \<in> derivable (ext R R2 M1 M2)"
-   (*<*) using ee(*>*) by auto
+   (*<*) using ee(*>*) by metis
   }
 moreover
   {assume "Modal M Ms \<in> set_mset \<Delta>1" -- "Formula is in the implicit weakening"
@@ -2221,7 +2210,7 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                          by (auto simp add:union_ac)
                     then have "M1\<cdot>\<Gamma>'' + \<Gamma>' + \<Gamma>1 = \<Gamma> + \<Gamma>'" by (auto simp add:union_ac)
                     ultimately have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta>+\<Delta>',m) \<in> derivable (ext R R2 M1 M2)"
-                         using ee by auto
+                         using ee by metis
                    }
                 moreover
                    {assume "Modal M Ms \<in> set_mset \<Gamma>1"

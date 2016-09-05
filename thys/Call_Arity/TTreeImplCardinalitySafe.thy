@@ -2,8 +2,6 @@ theory TTreeImplCardinalitySafe
 imports TTreeImplCardinality TTreeAnalysisSpec CardinalityAnalysisSpec
 begin
 
-hide_const Multiset.single
-
 lemma pathsCard_paths_nxt:  "pathsCard (paths (nxt f x)) \<sqsubseteq> record_call x\<cdot>(pathsCard (paths f))"
   apply transfer
   apply (rule pathsCard_below)

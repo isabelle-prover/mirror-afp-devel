@@ -1630,7 +1630,7 @@ lemma mset_image_fst_dep_pair_diff_split:
 proof (induct M)
   case empty thus ?case by auto
 next
-  case (add M x)
+  case (add x M)
   then obtain e' where [simp]: "x=(e',f e')"
     apply (cases x)
     apply (force)
@@ -1646,8 +1646,8 @@ next
     thus ?thesis by (simp)
   next
     case False
-    thus ?thesis 
-      by (simp add: diff_union_swap[symmetric] IH)
+    thus ?thesis
+      by (simp add: IH)
   qed
 qed
 

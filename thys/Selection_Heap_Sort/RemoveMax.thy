@@ -92,7 +92,7 @@ locale RemoveMax = Collection empty is_empty of_list  multiset for
       function {\em remove\_max} is the maximum element *}
   assumes remove_max_multiset: 
      "\<lbrakk>\<not> is_empty l; inv l; (m, l') = remove_max l\<rbrakk> \<Longrightarrow> 
-      multiset l' + {#m#} = multiset l"
+      add_mset m (multiset l') = multiset l"
   -- {*  --- Condition for multiset, ensures that nothing new is added or nothing 
       is lost after applying {\em remove\_max} function. *}
   assumes remove_max_inv: 
@@ -113,7 +113,7 @@ lemma remove_max_set:
   "\<lbrakk>\<not> is_empty l; inv l; (m, l') = remove_max l\<rbrakk> \<Longrightarrow> 
                                  set l' \<union> {m} = set l"
 using remove_max_multiset[of l m l']
-by (metis set_def set_mset_single set_mset_union)
+by (metis Un_insert_right local.set_def set_mset_add_mset_insert sup_bot_right)
 
 text{* As it is said before
 in each iteration invariant condition must be satisfied, so the {\em
@@ -215,7 +215,7 @@ proof-
              "multiset l1 + mset sl1 = multiset l + mset sl"
       thus "multiset l' + mset (m # sl1) = multiset l + mset sl"
         using remove_max_multiset[of l1 m l']
-        by (auto simp add: union_commute union_lcomm)
+        by (metis union_mset_add_mset_left union_mset_add_mset_right mset.simps(2))
     qed simp
     thus ?thesis
       using multiset_empty

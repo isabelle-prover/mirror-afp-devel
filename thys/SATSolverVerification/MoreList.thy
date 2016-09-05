@@ -1088,7 +1088,7 @@ next
         also have "\<dots> = mset (remdups a') + mset (x # removeAll x (remdups (list_diff b a')))"
           by simp
         also have "\<dots> = mset (remdups a') + {#x#} + mset (removeAll x (remdups (list_diff b a')))"
-          by (simp add: union_assoc) (simp add: union_commute)
+          by simp
         also have "\<dots> = mset (remdups a') + mset (remdups (list_diff b a'))"
         proof-
           from `x \<notin> set a'` `x \<in> set b`
@@ -1184,10 +1184,7 @@ done
 lemma multisetUnionLessMono1:
 shows
   "trans r \<Longrightarrow> (a1, a2) \<in> mult r \<Longrightarrow> (a1 + b, a2 + b) \<in> mult r"
-using union_commute[of "a1" "b"]
-using union_commute[of "a2" "b"]
-using multisetUnionLessMono2[of "r" "a1" "a2" "b"]
-by simp
+  by (metis multisetUnionLessMono2 union_commute)
 
 
 lemma multisetUnionLeMono2:

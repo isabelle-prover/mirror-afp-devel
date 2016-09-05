@@ -223,7 +223,7 @@ proof-
   then have "\<exists> \<Gamma>''. \<Gamma>' = \<Gamma>'' \<oplus> A" apply (rule_tac x="\<Gamma>' \<ominus> A" in exI) by auto
   then obtain \<Gamma>'' where eq1:"\<Gamma>' = \<Gamma>'' \<oplus> A" by blast
   from `\<Gamma> \<oplus> A = \<Gamma>' \<oplus> B` eq1 have "\<Gamma> \<oplus> A = \<Gamma>'' \<oplus> A \<oplus> B" by auto
-  then have "\<Gamma> = \<Gamma>'' \<oplus> B" by (auto simp add:multiset_eq_iff)
+  then have "\<Gamma> = \<Gamma>'' \<oplus> B" by auto
   thus ?thesis using eq1 by blast
 qed
 
@@ -896,9 +896,7 @@ proof (induct n arbitrary:\<Gamma> \<delta> rule:nat_less_induct)
                       with pms obtain m where "m \<le>n'" and "(\<Gamma> + \<Gamma>i \<oplus> Compound F Fs \<Rightarrow>* \<delta>',m) \<in> derivable R*"
                            using `p \<in> set ps` by auto
                       with IH and `n = Suc n'` and b' have "\<exists> m'\<le>m. (\<Gamma> + \<Gamma>i + \<Gamma>' \<Rightarrow>* \<delta>',m') \<in> derivable R*"
-                           apply auto apply (drule_tac x=m in spec) apply auto
-                           apply (drule_tac x="\<Gamma>+\<Gamma>i" in spec) apply (drule_tac x="\<delta>'" in spec)
-                           by (auto simp add:union_ac)
+                           by auto
                       then have "\<exists> m\<le>n'. (extend (\<Gamma> + \<Gamma>' \<Rightarrow>* \<delta>') p,m) \<in> derivable R*" using `m\<le>n'`
                            and p and `\<delta>i = Em` apply (auto simp add:extend_def union_ac) 
                            by (rule_tac x="m'" in exI) auto
@@ -979,9 +977,7 @@ proof (induct n arbitrary:\<Gamma> \<delta> rule:nat_less_induct)
                           with pms obtain m where "m \<le>n'" and "(\<Gamma>1 + \<Gamma>i \<oplus> Compound F Fs \<Rightarrow>* \<delta>,m) \<in> derivable R*"
                                using `p \<in> set ps` by auto
                           with IH and `n = Suc n'` and b' have "\<exists> m'\<le>m. (\<Gamma>1 + \<Gamma>i + \<Gamma>' \<Rightarrow>* \<delta>,m') \<in> derivable R*"
-                               apply auto apply (drule_tac x=m in spec) apply auto
-                               apply (drule_tac x="\<Gamma>1 + \<Gamma>i" in spec) apply (drule_tac x=\<delta> in spec) 
-                               by (auto simp add:union_ac)
+                               by auto
                           then have "\<exists> m\<le>n'. (extend (\<Gamma>1 + \<Gamma>' \<Rightarrow>* \<delta>) p,m) \<in> derivable R*" using `m\<le>n'`
                                and p and `\<delta>i = Em` apply (auto simp add:extend_def union_ac) 
                                by (rule_tac x="m'" in exI) auto
@@ -993,9 +989,7 @@ proof (induct n arbitrary:\<Gamma> \<delta> rule:nat_less_induct)
                           with pms obtain m where "m\<le>n'" and "(\<Gamma>1 + \<Gamma>i \<oplus> Compound F Fs \<Rightarrow>* \<delta>i,m) \<in> derivable R*"
                                using `p \<in> set ps` by auto
                           with IH and `n = Suc n'` and b' have "\<exists> m'\<le>m. (\<Gamma>1 + \<Gamma>i + \<Gamma>' \<Rightarrow>* \<delta>i,m') \<in> derivable R*"
-                               apply auto apply (drule_tac x=m in spec) apply auto
-                               apply (drule_tac x="\<Gamma>1 + \<Gamma>i" in spec) apply (drule_tac x=\<delta>i in spec) 
-                               by (auto simp add:union_ac)
+                               by auto
                           then have "\<exists> m\<le>n'. (extend (\<Gamma>1 + \<Gamma>' \<Rightarrow>* \<delta>) p,m) \<in> derivable R*" using `m\<le>n'`
                                and p and `\<delta>i \<noteq> Em` and `n = Suc n'` apply (auto simp add:extend_def union_ac)
                                apply (rule_tac x=m' in exI) by auto

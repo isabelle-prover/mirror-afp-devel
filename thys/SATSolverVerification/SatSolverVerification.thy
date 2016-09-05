@@ -2952,7 +2952,7 @@ proof-
       using removeAll_multiset[of "remdups (oppositeLiteralList C)" "l"]
       using oppositeLiteralListRemove[of "opposite l" "C"]
       using literalElListIffOppositeLiteralElOppositeLiteralList[of "l" "oppositeLiteralList C"]
-      by auto (simp add: union_commute)
+      by auto
     moreover
     have "?Y = ?Z + ?W" 
     proof-

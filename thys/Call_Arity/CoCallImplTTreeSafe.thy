@@ -2,8 +2,6 @@ theory CoCallImplTTreeSafe
 imports CoCallImplTTree CoCallAnalysisSpec TTreeAnalysisSpec
 begin
 
-hide_const Multiset.single
-
 lemma valid_lists_many_calls:
   assumes "\<not> one_call_in_path x p"
   assumes "p \<in> valid_lists S G"

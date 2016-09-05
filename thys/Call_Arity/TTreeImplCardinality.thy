@@ -2,8 +2,6 @@ theory TTreeImplCardinality
 imports TTreeAnalysisSig CardinalityAnalysisSig "Cardinality-Domain-Lists"
 begin
 
-hide_const Multiset.single
-
 context TTreeAnalysis
 begin
 

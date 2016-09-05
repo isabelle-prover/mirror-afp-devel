@@ -23,12 +23,12 @@ proof (induct)
     by (cases ys) (auto intro!: empty_mulex_on simp: multisets_def)
 next
   case (list_emb_Cons xs ys y)
-  then show ?case by (auto intro!: mulex_on_self_add_right simp: multisets_def)
+  then show ?case by (auto intro!: mulex_on_self_add_singleton_right simp: multisets_def)
 next
   case (list_emb_Cons2 x y xs ys)
   then show ?case
-    by (auto intro: union_mulex_on_mono mulex_on_union'
-             intro!: singleton_mulex_onI mulex_on_union
+    by (force intro: union_mulex_on_mono mulex_on_add_mset
+             mulex_on_add_mset' mulex_on_add_mset_mono
              simp: multisets_def)
 qed
 

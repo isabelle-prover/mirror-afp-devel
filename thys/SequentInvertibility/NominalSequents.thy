@@ -716,14 +716,12 @@ then have "extendRule (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') r 
 moreover have "extendRule (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') r = (Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')"
          using `S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> F \<nabla> [x].A)` and `extendRule S r = (Ps, \<Gamma> \<Rightarrow>* \<Delta> \<oplus> F \<nabla> [x].A)`
          and `r = (ps,c)` and eq
-         by (auto simp add:extendRule_def extend_def union_ac multiset_eq_iff)
+         by (auto simp add:extendRule_def extend_def union_ac)
 ultimately have "(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> R*" by simp
 have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using `Ps = map (extend S) ps` by (simp add:Ball_def)           
 have c2:"\<forall> p \<in> set ps. extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') p \<in> set Ps'" using eq by (simp add:Ball_def)
 then have eq2:"\<forall> p \<in> set Ps'. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>')" using eq
-          apply (auto simp add:Ball_def extend_def) 
-          apply (rule_tac x="\<Phi> + antec xa" in exI) apply (simp add:union_ac) 
-          by (rule_tac x="\<Psi>1 + succ xa" in exI) (simp add: union_ac)
+          by (auto simp add: extend_def) 
 have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using `Ps = map (extend S) ps` by (auto simp add:Ball_def Bex_def)
 then have "\<forall> p \<in> set Ps. \<exists> p'. p' \<in> set Ps'" using c2 by (auto simp add:Ball_def Bex_def)
 moreover have d2: "\<forall> p \<in> set Ps'. \<exists> p' \<in> set ps. p = extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') p'" using eq
@@ -745,7 +743,7 @@ have "\<forall> \<Phi>' \<Psi>'. (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> F \<na
                  then have ant: "\<Phi>' = \<Phi> + D" and suc: "\<Psi>' \<oplus> F \<nabla> [x].A = \<Psi>1 \<oplus> F \<nabla> [x].A + B" using extend_def by auto
                  from ant have "\<Phi>' + \<Gamma>' = (\<Phi> + \<Gamma>') + D" by (auto simp add:union_ac)
                  moreover
-                 from suc have "\<Psi>' = \<Psi>1 + B" by (auto simp add:union_ac multiset_eq_iff)
+                 from suc have "\<Psi>' = \<Psi>1 + B" by auto
                  then have "\<Psi>' + \<Delta>' = (\<Psi>1 + \<Delta>') + B" by (auto simp add:union_ac)
                  ultimately have "(\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>') = extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') (D \<Rightarrow>* B)" using extend_def by auto
                  moreover have "extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') (D \<Rightarrow>* B) \<in> set Ps'" using `p = (D \<Rightarrow>* B)` and t and c2 by auto
@@ -916,14 +914,12 @@ then have "extendRule (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') r 
 moreover have "extendRule (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') r = (Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')"
          using `S = (\<Phi>1 \<oplus> F \<nabla> [x].A \<Rightarrow>* \<Psi>)` and `extendRule S r = (Ps, \<Gamma> \<oplus> F \<nabla> [x].A \<Rightarrow>* \<Delta>)`
          and `r = (ps,c)` and eq
-         by (auto simp add:extendRule_def extend_def union_ac multiset_eq_iff)
+         by (auto simp add:extendRule_def extend_def)
 ultimately have "(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> R*" by simp
 have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using `Ps = map (extend S) ps` by (simp add:Ball_def)           
 have c2:"\<forall> p \<in> set ps. extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') p \<in> set Ps'" using eq by (simp add:Ball_def)
 then have eq2:"\<forall> p \<in> set Ps'. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>')" using eq
-          apply (auto simp add:Ball_def extend_def) 
-          apply (rule_tac x="\<Phi>1 + antec xa" in exI) apply (simp add:union_ac) 
-          by (rule_tac x="\<Psi> + succ xa" in exI) (simp add: union_ac)
+          by (auto simp add:Ball_def extend_def) 
 have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using `Ps = map (extend S) ps` by (auto simp add:Ball_def Bex_def)
 then have "\<forall> p \<in> set Ps. \<exists> p'. p' \<in> set Ps'" using c2 by (auto simp add:Ball_def Bex_def)
 moreover have d2: "\<forall> p \<in> set Ps'. \<exists> p' \<in> set ps. p = extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') p'" using eq
@@ -945,7 +941,7 @@ have "\<forall> \<Phi>' \<Psi>'. (\<Phi>' \<oplus> F \<nabla> [x].A \<Rightarrow
                  then have ant: "\<Phi>' \<oplus> F \<nabla> [x].A = \<Phi>1 \<oplus> F \<nabla> [x].A + D" and suc: "\<Psi>' = \<Psi> + B" using extend_def by auto
                  from suc have "\<Psi>' + \<Delta>' = (\<Psi> + \<Delta>') + B" by (auto simp add:union_ac)
                  moreover
-                 from ant have "\<Phi>' = \<Phi>1 + D" by (auto simp add:union_ac multiset_eq_iff)
+                 from ant have "\<Phi>' = \<Phi>1 + D" by auto
                  then have "\<Phi>' + \<Gamma>' = (\<Phi>1 + \<Gamma>') + D" by (auto simp add:union_ac)
                  ultimately have "(\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>') = extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') (D \<Rightarrow>* B)" using extend_def by auto
                  moreover have "extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') (D \<Rightarrow>* B) \<in> set Ps'" using `p = (D \<Rightarrow>* B)` and t and c2 by auto

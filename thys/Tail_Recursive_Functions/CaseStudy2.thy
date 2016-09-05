@@ -667,16 +667,16 @@ next
         assume "x \<le> t_val ((ts @ [Branch x xt Leaf]) ! 0)"
         hence "t_multiset (t_left ((ts @ [Branch x xt Leaf]) ! 0)) =
          t_multiset (Branch y yl yr)" using I1 by simp
-        thus "{#y#} + t_multiset zt + t_multiset yr =
-         {#x#} + t_multiset (t_left ((ts @ [Branch x xt Leaf]) ! 0))" using I0
-         by (simp add: ac_simps)
+        thus "add_mset y (t_multiset zt + t_multiset yr) =
+         add_mset x (t_multiset (t_left ((ts @ [Branch x xt Leaf]) ! 0)))" using I0
+         by simp
       next
         assume "\<not> x \<le> t_val ((ts @ [Branch x xt Leaf]) ! 0)"
         hence "t_multiset (t_right ((ts @ [Branch x xt Leaf]) ! 0)) =
          t_multiset (Branch y yl yr)" using I1 by simp
-        thus "{#y#} + t_multiset zt + t_multiset yr =
-         {#x#} + t_multiset (t_right ((ts @ [Branch x xt Leaf]) ! 0))" using I0
-         by (simp add: ac_simps)
+        thus "add_mset y (t_multiset zt + t_multiset yr) =
+         add_mset x (t_multiset (t_right ((ts @ [Branch x xt Leaf]) ! 0)))" using I0
+         by simp
       qed
     next
       case (Suc m)
@@ -745,16 +745,16 @@ next
         assume "x \<le> t_val ((ts @ [Branch x xt Leaf]) ! 0)"
         hence "t_multiset (t_left ((ts @ [Branch x xt Leaf]) ! 0)) =
          t_multiset (Branch y yl yr)" using I1 by simp
-        thus "{#y#} + t_multiset yl + t_multiset zt =
-         {#x#} + t_multiset (t_left ((ts @ [Branch x xt Leaf]) ! 0))" using I0
-         by (simp add: ac_simps)
+        thus "add_mset y (t_multiset yl + t_multiset zt) =
+         add_mset x (t_multiset (t_left ((ts @ [Branch x xt Leaf]) ! 0)))" using I0
+         by simp
       next
         assume "\<not> x \<le> t_val ((ts @ [Branch x xt Leaf]) ! 0)"
         hence "t_multiset (t_right ((ts @ [Branch x xt Leaf]) ! 0)) =
          t_multiset (Branch y yl yr)" using I1 by simp
-        thus "{#y#} + t_multiset yl + t_multiset zt =
-         {#x#} + t_multiset (t_right ((ts @ [Branch x xt Leaf]) ! 0))" using I0
-         by (simp add: ac_simps)
+        thus "add_mset y (t_multiset yl + t_multiset zt) =
+         add_mset x (t_multiset (t_right ((ts @ [Branch x xt Leaf]) ! 0)))" using I0
+         by simp
       qed
     next
       case (Suc m)

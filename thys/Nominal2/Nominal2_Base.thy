@@ -612,7 +612,7 @@ end
 lemma permute_multiset [simp]:
   fixes M N::"('a::pt) multiset"
   shows "(p \<bullet> {#}) = ({#} ::('a::pt) multiset)"
-  and   "(p \<bullet> {# x #}) = {# p \<bullet> x #}"
+  and   "(p \<bullet> add_mset x M) = add_mset (p \<bullet> x) (p \<bullet> M)"
   and   "(p \<bullet> (M + N)) = (p \<bullet> M) + (p \<bullet> N)"
   unfolding permute_multiset_def
   by (simp_all)

@@ -166,10 +166,9 @@ proof(induction h rule: del_min.induct)
     assume "ll \<noteq> Leaf"
     hence "get_min ll \<in># mset_tree ll"
       by (simp add: get_min_in)
-    then obtain A where "mset_tree ll = A + {#get_min ll#}"
+    then obtain A where "mset_tree ll = add_mset (get_min ll) A"
       by (blast dest: multi_member_split)
-    then show ?thesis using 3 by (auto simp add: ac_simps)
-      (simp add: multiset_eq_iff)
+    then show ?thesis using 3 by auto
   qed
 qed auto
 

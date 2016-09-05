@@ -18,8 +18,8 @@ begin
 lemma msetprod_multiset_of[simp]: "msetprod (mset xs) = listprod xs"
   by (induct xs, auto simp: ac_simps) 
 
-lemma multiset_subset_insert: "{ps. ps \<subseteq># xs + {#x#}} =
-    {ps. ps \<subseteq># xs} \<union> (\<lambda>ps. ps + {#x#}) ` {ps. ps \<subseteq># xs}" (is "?l = ?r")
+lemma multiset_subset_insert: "{ps. ps \<subseteq># add_mset x xs} =
+    {ps. ps \<subseteq># xs} \<union> add_mset x ` {ps. ps \<subseteq># xs}" (is "?l = ?r")
 proof -
   {
     fix ps
@@ -51,7 +51,7 @@ proof (induct xs)
   case (Cons x xs)
   show ?case (is "?l = ?r")
   proof -
-    have id: "?r = {ps. ps \<subseteq># mset xs} \<union> (\<lambda> ps. ps + {#x#}) ` {ps. ps \<subseteq># mset xs}"
+    have id: "?r = {ps. ps \<subseteq># mset xs} \<union> (add_mset x) ` {ps. ps \<subseteq># mset xs}"
       by (simp add: multiset_subset_insert)
     show ?thesis unfolding id Cons[symmetric]
       by (auto simp add: Let_def) (metis UnCI image_iff mset.simps(2))

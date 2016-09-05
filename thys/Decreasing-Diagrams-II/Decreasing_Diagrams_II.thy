@@ -256,8 +256,7 @@ proof (induct "length s + length t" arbitrary: s t rule: less_induct)
   moreover {
     fix N have "({# adj_msog [] s (x,[]) #} + N,{# adj_msog [] t (x,[]) #} + N) \<in>
       (mult (letter_less r <*lex*> greek_less r))\<^sup>="
-    by (auto simp: adj_msog_def less split: accent.splits intro!: mult_on_union' mult_singleton)
-  }
+    by (auto simp: adj_msog_def less split: accent.splits) }
   ultimately show ?case using transD[OF trans_mult]
   by (subst greek_less_unfold) (fastforce simp: ms_of_greek_cons)
 qed
