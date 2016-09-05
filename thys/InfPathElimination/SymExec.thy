@@ -353,7 +353,7 @@ using se_star_Cons by force
 
 lemma se_star_append :
   "se_star c1 (ls1 @ ls2) c2 = (\<exists> c. se_star c1 ls1 c \<and> se_star c ls2 c2)"
-using assms by (induct ls1 arbitrary : c1, simp_all add : se_star_Cons) blast
+by (induct ls1 arbitrary : c1, simp_all add : se_star_Cons) blast
 
 
 lemma se_star_append_one :
@@ -671,7 +671,7 @@ proof (intro iffI, goal_cases)
   using se_star_sat_imp_sat by (simp add : feasible_def se_star_Cons) blast
 next
   case 2 thus ?case 
-  using assms unfolding feasible_def se_star_Cons by blast
+  unfolding feasible_def se_star_Cons by blast
 qed
 
 
