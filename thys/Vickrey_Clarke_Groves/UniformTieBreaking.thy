@@ -490,7 +490,7 @@ corollary lm050:
 
 lemma lm051: 
   "pseudoAllocation a = {(fst pair, {y})| y pair. y \<in> snd pair & pair \<in> a}" 
-  using lm044 lm045 by (metis (full_types))
+  using lm044 lm045 by (metis (no_types))
 
 lemma lm052: 
   "{(fst pair, {y})| y pair. y \<in> snd pair & pair \<in> a} = 
