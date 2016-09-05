@@ -618,7 +618,7 @@ fun outer_syntax_command command_spec theory in_local =
       case
         lemma "code_unfold" (Specification.theorem true)
           (fn lthy => 
-            let val expr = Value.value lthy (Syntax.read_term lthy elems_concl)
+            let val expr = Value_Command.value lthy (Syntax.read_term lthy elems_concl)
                 val thy = Proof_Context.theory_of lthy
                 open HOLogic in
             if Sign.typ_equiv thy (fastype_of expr, @{typ "prop"}) then
