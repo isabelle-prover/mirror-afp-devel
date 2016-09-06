@@ -72,7 +72,7 @@ fun gen_simproc dest mk_const eq_thm ctxt ct =
           val r' = HOLogic.mk_list prodT xs;
           val x' = HOLogic.mk_list eltT ys;
           val t' = set $ (const $ r' $ x')
-          val u = Value.value ctxt t';
+          val u = Value_Command.value ctxt t';
           val eval = (t', u) |> HOLogic.mk_eq |> HOLogic.mk_Trueprop;
 
           val maybe_rule =
