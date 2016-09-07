@@ -262,7 +262,7 @@ begin
     assumes "\<not>gds_is_break gds s" "\<not>gds_is_empty_stack gds s"
     shows "gen_step s \<le> SPEC (\<lambda>s. insert v0 (gen_discovered s0) \<subseteq> gen_discovered s)"
     using assms
-    unfolding gen_step_def gen_dfs_def
+    apply (simp only: gen_step_def gen_dfs_def)
     apply (refine_rcg refine_vcg 
       order_trans[OF gds_init_refine]
       order_trans[OF gds_new_root_refine]

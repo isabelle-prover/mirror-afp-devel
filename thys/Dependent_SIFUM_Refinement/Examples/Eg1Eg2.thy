@@ -99,18 +99,20 @@ lemma NoRW\<^sub>A_implies_NoRW\<^sub>C:
    Eg2_var\<^sub>C_of_Eg1 x \<in> mds\<^sub>C AsmNoReadOrWrite"
   unfolding mds\<^sub>A_of_def
   apply clarsimp
-  unfolding Eg2_var\<^sub>C_of_Eg1_def
+  apply (simp only: Eg2_var\<^sub>C_of_Eg1_def)
   apply clarsimp
-  by (simp add: f_inv_into_f)
+  apply (simp add: f_inv_into_f)
+  done
 
 lemma NoWrite\<^sub>A_implies_NoWrite\<^sub>C:
   "x \<in> mds\<^sub>A_of mds\<^sub>C AsmNoWrite \<Longrightarrow>
    Eg2_var\<^sub>C_of_Eg1 x \<in> mds\<^sub>C AsmNoWrite"
   unfolding mds\<^sub>A_of_def
   apply clarsimp
-  unfolding Eg2_var\<^sub>C_of_Eg1_def
+  apply (simp only: Eg2_var\<^sub>C_of_Eg1_def)
   apply clarsimp
-  by (simp add: f_inv_into_f)
+  apply (simp add: f_inv_into_f)
+  done
 
 lemma assign_eval\<^sub>w_load\<^sub>A:
   shows "(\<langle>x \<leftarrow> Eg1.Load y, mds, mem\<rangle>\<^sub>A, \<langle>Stop, mds, mem (x := mem y)\<rangle>\<^sub>A) \<in> A.eval\<^sub>w"

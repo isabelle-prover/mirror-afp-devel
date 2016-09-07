@@ -999,9 +999,9 @@ begin
       in  
         case Thm.concl_of thm |> HOLogic.dest_Trueprop of
           @{mpat "(_,_)\<in>_\<rightarrow>_"} =>
-            Local_Defs.unfold ctxt @{thms fref_param1} thm
+            Local_Defs.unfold0 ctxt @{thms fref_param1} thm
             |> fconv_rule (repeat_conv (Refine_Util.ftop_conv (K (rewr_conv @{thm fref_nest})) ctxt))
-            |> Local_Defs.unfold ctxt @{thms in_CURRY_conv}
+            |> Local_Defs.unfold0 ctxt @{thms in_CURRY_conv}
         | @{mpat "(_,_)\<in>_"} => thm RS @{thm fref_param0I}   
         | _ => raise THM ("to_fref: Expected theorem of form (_,_)\<in>_",~1,[thm])
       end
@@ -1014,7 +1014,7 @@ begin
           @{mpat "Trueprop ((_,_) \<in> fref _ _ _)"} =>
             (@{thm frefD} OF [thm])
             |> forall_intr_vars
-            |> Local_Defs.unfold ctxt unf_thms
+            |> Local_Defs.unfold0 ctxt unf_thms
             |> Variable.gen_all ctxt
         | @{mpat "Trueprop ((_,_) \<in> _)"} =>
             Parametricity.fo_rule thm
@@ -1023,12 +1023,12 @@ begin
 
       fun to_hnr ctxt thm =
         (thm RS @{thm hf2hnr})
-        |> Local_Defs.unfold ctxt @{thms to_hnr_prod_fst_snd keep_drop_sels} (* Resolve fst and snd over *\<^sub>a and R\<^sup>k, R\<^sup>d *)
-        |> Local_Defs.unfold ctxt @{thms hnr_uncurry_unfold} (* Resolve products for uncurried parameters *)
-        |> Local_Defs.unfold ctxt @{thms uncurry_apply uncurry_APP assn_one_left split} (* Remove the uncurry modifiers, the emp-dummy, and unfold product cases *)
-        |> Local_Defs.unfold ctxt @{thms hn_ctxt_ctxt_fix_conv} (* Remove duplicate hn_ctxt tagging *)
-        |> Local_Defs.unfold ctxt @{thms all_to_meta imp_to_meta HOL.True_implies_equals HOL.implies_True_equals Pure.triv_forall_equality cnv_conj_to_meta} (* Convert to meta-level, remove vacuous condition *)
-        |> Local_Defs.unfold ctxt (Named_Theorems.get ctxt @{named_theorems to_hnr_post}) (* Post-Processing *)
+        |> Local_Defs.unfold0 ctxt @{thms to_hnr_prod_fst_snd keep_drop_sels} (* Resolve fst and snd over *\<^sub>a and R\<^sup>k, R\<^sup>d *)
+        |> Local_Defs.unfold0 ctxt @{thms hnr_uncurry_unfold} (* Resolve products for uncurried parameters *)
+        |> Local_Defs.unfold0 ctxt @{thms uncurry_apply uncurry_APP assn_one_left split} (* Remove the uncurry modifiers, the emp-dummy, and unfold product cases *)
+        |> Local_Defs.unfold0 ctxt @{thms hn_ctxt_ctxt_fix_conv} (* Remove duplicate hn_ctxt tagging *)
+        |> Local_Defs.unfold0 ctxt @{thms all_to_meta imp_to_meta HOL.True_implies_equals HOL.implies_True_equals Pure.triv_forall_equality cnv_conj_to_meta} (* Convert to meta-level, remove vacuous condition *)
+        |> Local_Defs.unfold0 ctxt (Named_Theorems.get ctxt @{named_theorems to_hnr_post}) (* Post-Processing *)
         |> Goal.norm_result ctxt
         |> Conv.fconv_rule Thm.eta_conversion
 
@@ -1410,7 +1410,7 @@ begin
         val thm = Thm.instantiate insts' thm
     
         (* Unfold APP tags. This is required as some APP-tags have also been unfolded by analysis *)
-        val thm = Local_Defs.unfold ctxt @{thms APP_def} thm
+        val thm = Local_Defs.unfold0 ctxt @{thms APP_def} thm
     
         (* Tactic to prove the theorem. 
           A first step uses hfrefI to get a hnr-goal.
@@ -1454,7 +1454,7 @@ begin
         val rthm = singleton (Variable.export ctxt orig_ctxt) rthm
     
         (* Post-processing *)
-        val rthm = Local_Defs.unfold ctxt (Named_Theorems.get ctxt @{named_theorems to_hfref_post}) rthm
+        val rthm = Local_Defs.unfold0 ctxt (Named_Theorems.get ctxt @{named_theorems to_hfref_post}) rthm
 
       in
         rthm
@@ -1484,7 +1484,7 @@ begin
         fun norm_fcomp_rule ctxt = let
           open PO_Normalizer Refine_Util
           val norm1 = gen_norm_rule (init_rules_of ctxt) (norm_set_of ctxt) ctxt
-          val norm2 = Local_Defs.unfold ctxt (unfold_rules_of ctxt)
+          val norm2 = Local_Defs.unfold0 ctxt (unfold_rules_of ctxt)
           val norm3 = Conv.fconv_rule (
             Simplifier.asm_full_rewrite 
               (put_simpset HOL_basic_ss ctxt addsimps simp_rules_of ctxt))
@@ -1579,7 +1579,7 @@ begin
             THEN ALLGOALS (Simplifier.asm_full_simp_tac ctxt)
             THEN trace_incomplete_transfer_tac
             THEN ALLGOALS (TRY o filter_prems_tac ctxt (K false))
-            THEN Local_Defs.unfold_tac ctxt [Drule.triv_forall_equality]
+            THEN Local_Defs.unfold0_tac ctxt [Drule.triv_forall_equality]
       
           val st' = tac st |> Seq.take 1 |> Seq.list_of
           val thm = case st' of [st'] => Goal.conclude st' | _ => raise THM("Simp_Precond: Simp-Tactic failed",~1,[st])
@@ -1592,7 +1592,7 @@ begin
              thm
           (*|> map (Simplifier.asm_full_simplify ctxt)*)
           |> Conv.fconv_rule (Object_Logic.atomize ctxt)
-          |> Local_Defs.unfold ctxt @{thms auto_weaken_pre_to_imp_nf}
+          |> Local_Defs.unfold0 ctxt @{thms auto_weaken_pre_to_imp_nf}
     
           val thm = case Thm.concl_of thm of
             @{mpat "Trueprop (_ \<longrightarrow> _)"} => thm
@@ -1608,7 +1608,7 @@ begin
           val orig_ctxt = ctxt
           val thm = Refine_Util.OF_fst @{thms auto_weaken_pre_init} [asm_rl,thm]
           val thm = 
-            Local_Defs.unfold ctxt @{thms split_tupled_all} thm
+            Local_Defs.unfold0 ctxt @{thms split_tupled_all} thm
             OF @{thms auto_weaken_pre_uncurry_start}
       
           fun rec_uncurry thm =
@@ -1631,7 +1631,7 @@ begin
             |> singleton (Variable.export ctxt orig_ctxt)
             
           val thm = thm OF [simpthm]  
-          val thm = Local_Defs.unfold ctxt @{thms prod_casesK} thm
+          val thm = Local_Defs.unfold0 ctxt @{thms prod_casesK} thm
         in
           thm
         end
@@ -1670,7 +1670,7 @@ begin
         case Thm.concl_of thm of
           @{mpat (typs) "Trueprop (_\<in>fref _ _ (_::(_ nres\<times>_)set))"} => thm
         | @{mpat "Trueprop ((_,_)\<in>fref _ _ _)"} => 
-            (thm RS @{thm ensure_fref_nresI}) |> Local_Defs.unfold ctxt @{thms ensure_fref_nres_unfold}
+            (thm RS @{thm ensure_fref_nresI}) |> Local_Defs.unfold0 ctxt @{thms ensure_fref_nres_unfold}
         | _ => raise THM("Expected fref-theorem",~1,[thm])
       end
 

@@ -405,8 +405,8 @@ subsection \<open>ML-Level Declarations\<close>
           end
       
           val thm = thm
-            |> Local_Defs.unfold ctxt xform_thms
-            |> Local_Defs.unfold ctxt rprops_thms
+            |> Local_Defs.unfold0 ctxt xform_thms
+            |> Local_Defs.unfold0 ctxt rprops_thms
       
           val insts = map (fn 
               @{mpat "Trueprop (CONSTRAINT _ (the_pure _))"} => @{thm handle_purity1}
@@ -458,7 +458,7 @@ subsection \<open>ML-Level Declarations\<close>
           end*)
 
         val simp_tupled_pre_tac = 
-          SELECT_GOAL (Local_Defs.unfold_tac ctxt @{thms prod_casesK uncurry0_hfref_post})
+          SELECT_GOAL (Local_Defs.unfold0_tac ctxt @{thms prod_casesK uncurry0_hfref_post})
           THEN' REPEAT' (EqSubst.eqsubst_tac ctxt [1] @{thms case_prod_eta})
           THEN' rtac @{thms CNV_I}
 
@@ -500,7 +500,7 @@ subsection \<open>ML-Level Declarations\<close>
           ]  
     
         val imp_pre_custom_tac = 
-          SELECT_GOAL (Local_Defs.unfold_tac ctxt @{thms and_pre_def}) THEN'
+          SELECT_GOAL (Local_Defs.unfold0_tac ctxt @{thms and_pre_def}) THEN'
           TRY o SOLVED' (SELECT_GOAL (auto_tac ctxt))
     
       in
@@ -592,7 +592,7 @@ subsection \<open>ML-Level Declarations\<close>
           val t = Syntax.check_term lthy t_pre
             (*|> Thm.cterm_of lthy
             |> Drule.mk_term
-            |> Local_Defs.unfold lthy @{thms PR_CONST_def}
+            |> Local_Defs.unfold0 lthy @{thms PR_CONST_def}
             |> Drule.dest_term
             |> Thm.term_of*)
   
@@ -654,7 +654,7 @@ subsection \<open>ML-Level Declarations\<close>
                   val rhs = @{mk_term "UNPROTECT ?c"}
                   val goal = Logic.mk_equals (lhs,rhs) |> Thm.cterm_of ctxt
                   val tac = 
-                    Local_Defs.unfold_tac ctxt @{thms APP_def UNPROTECT_def}
+                    Local_Defs.unfold0_tac ctxt @{thms APP_def UNPROTECT_def}
                     THEN ALLGOALS (simp_tac (put_simpset HOL_basic_ss ctxt))
                   val thm = Goal.prove_internal ctxt [] goal (K tac)
                     |> singleton (Variable.export ctxt lthy)
@@ -769,7 +769,7 @@ subsection \<open>ML-Level Declarations\<close>
             val alt_unfolds = @{thms mop_alt_unfolds}
               |> not specified_pre ? curry op :: pre_def_thm
 
-            val mop_alt_thm = Local_Defs.unfold lthy alt_unfolds mop_def_thm
+            val mop_alt_thm = Local_Defs.unfold0 lthy alt_unfolds mop_def_thm
               |> Refine_Util.shift_lambda_leftN op_ar
             val (_,lthy) = Local_Theory.note ((Binding.suffix_name "_alt" mop_name,@{attributes [simp]}),[mop_alt_thm]) lthy
   
@@ -784,12 +784,12 @@ subsection \<open>ML-Level Declarations\<close>
               val (x,ctxt) = Refine_Util.fix_left_tuple_from_Ts "x" Ts ctxt
               
               val mop_def_thm = mop_def_thm
-                |> Local_Defs.unfold ctxt @{thms curry_shl}
+                |> Local_Defs.unfold0 ctxt @{thms curry_shl}
               
               fun prep_thm thm = (thm OF [mop_def_thm])
                 |> Drule.infer_instantiate' ctxt [SOME (Thm.cterm_of ctxt x)]
-                |> Local_Defs.unfold ctxt @{thms uncurry_apply uncurry0_apply o_apply}
-                |> Local_Defs.unfold ctxt (def_thms @
+                |> Local_Defs.unfold0 ctxt @{thms uncurry_apply uncurry0_apply o_apply}
+                |> Local_Defs.unfold0 ctxt (def_thms @
                     @{thms Product_Type.split HOL.True_implies_equals})
                 |> singleton (Variable.export ctxt lthy)
 
@@ -831,13 +831,13 @@ subsection \<open>ML-Level Declarations\<close>
         fun after_qed [[p_thm, pp_thm]] _ (*ctxt*) = 
           let
             val _ = dbg_trace lthy "after_qed"
-            val p_thm' = p_thm |> not specified_pre ? Local_Defs.unfold lthy [pre_def_thm]
+            val p_thm' = p_thm |> not specified_pre ? Local_Defs.unfold0 lthy [pre_def_thm]
 
             val (_,lthy) = Local_Theory.note ((qname "fref" op_name,@{attributes [sepref_fref_thms]}), [p_thm']) lthy
             val (_,lthy) = Local_Theory.note ((qname "param" pre_name,@{attributes [param]}), [pp_thm]) lthy
 
             val p'_unfolds = pre_def_thm :: @{thms True_implies_equals}
-            val (_,lthy) = Local_Theory.note ((qname "fref'" op_name,[]), [Local_Defs.unfold lthy p'_unfolds p_thm]) lthy
+            val (_,lthy) = Local_Theory.note ((qname "fref'" op_name,[]), [Local_Defs.unfold0 lthy p'_unfolds p_thm]) lthy
 
   
             val lthy = case mop_data of NONE => lthy | 
@@ -853,9 +853,9 @@ subsection \<open>ML-Level Declarations\<close>
                 val ctxt = Variable.auto_fixes param_mop_t lthy 
                 
                 val tac = let
-                  val p_thm = Local_Defs.unfold ctxt @{thms PR_CONST_def} p_thm
+                  val p_thm = Local_Defs.unfold0 ctxt @{thms PR_CONST_def} p_thm
                 in
-                  Local_Defs.unfold_tac ctxt (mop_def_thm :: @{thms PR_CONST_def uncurry_curry_id uncurry_curry0_id})
+                  Local_Defs.unfold0_tac ctxt (mop_def_thm :: @{thms PR_CONST_def uncurry_curry_id uncurry_curry0_id})
                   THEN FIRSTGOAL (
                     dbg_msg_tac (Sepref_Debugging.msg_subgoal "Mop-param thm goal after unfolding") ctxt THEN'
                     resolve_tac ctxt @{thms param_mopI}
@@ -868,7 +868,7 @@ subsection \<open>ML-Level Declarations\<close>
                   |> singleton (Variable.export ctxt lthy)
   
                 val (_,lthy) = Local_Theory.note ((qname "fref" mop_name,@{attributes [sepref_fref_thms]}), [pm_thm]) lthy
-                val (_,lthy) = Local_Theory.note ((qname "fref'" mop_name,[]), [Local_Defs.unfold lthy p'_unfolds pm_thm]) lthy
+                val (_,lthy) = Local_Theory.note ((qname "fref'" mop_name,[]), [Local_Defs.unfold0 lthy p'_unfolds pm_thm]) lthy
   
   
               in
@@ -893,7 +893,7 @@ subsection \<open>ML-Level Declarations\<close>
           if flag_rawgoals then
             all_tac
           else
-            Local_Defs.unfold_tac ctxt def_thms THEN ALLGOALS (
+            Local_Defs.unfold0_tac ctxt def_thms THEN ALLGOALS (
               TRY o SOLVED' (
                 TRY o resolve_tac ctxt @{thms frefI}
                 THEN' TRY o REPEAT_ALL_NEW (ematch_tac ctxt @{thms prod_relE})
@@ -923,7 +923,7 @@ subsection \<open>ML-Level Declarations\<close>
 
       local
       
-        fun unfold_PR_CONST_tac ctxt = SELECT_GOAL (Local_Defs.unfold_tac ctxt @{thms PR_CONST_def})
+        fun unfold_PR_CONST_tac ctxt = SELECT_GOAL (Local_Defs.unfold0_tac ctxt @{thms PR_CONST_def})
 
         fun transfer_precond_rl ctxt t R = let
           (*val tfrees = Term.add_tfreesT (fastype_of t) [] 
@@ -950,7 +950,7 @@ subsection \<open>ML-Level Declarations\<close>
       
           (* Convert mop_def_thms to form uncurry^n f \<equiv> mop P g *)
           val mop_def_thms = Named_Theorems_Rev.get ctxt @{named_theorems_rev sepref_mop_def_thms}
-            |> map (Local_Defs.unfold ctxt @{thms curry_shl})
+            |> map (Local_Defs.unfold0 ctxt @{thms curry_shl})
       
           fun fail_hnr_tac _ _ = raise THM("Invalid hnr-theorem",~1,[op_thm]) 
           fun fail_mop_def_tac i st = let
@@ -983,7 +983,7 @@ subsection \<open>ML-Level Declarations\<close>
       
           (* Convert mop_def_thms to form uncurry^n f \<equiv> mop P g *)
           val mop_def_thms = Named_Theorems_Rev.get ctxt @{named_theorems_rev sepref_mop_def_thms}
-            |> map (Local_Defs.unfold ctxt @{thms curry_shl})
+            |> map (Local_Defs.unfold0 ctxt @{thms curry_shl})
       
           fun fail_hnr_tac _ _ = raise THM("Invalid hnr-theorem",~1,[mop_thm]) 
           fun fail_mop_def_tac i st = let
@@ -1034,9 +1034,9 @@ subsection \<open>ML-Level Declarations\<close>
         end
 
         fun to_IMP_LIST ctxt thm =    
-          (thm RS @{thm to_IMP_LISTI}) |> Local_Defs.unfold ctxt @{thms to_IMP_LIST}
+          (thm RS @{thm to_IMP_LISTI}) |> Local_Defs.unfold0 ctxt @{thms to_IMP_LIST}
   
-        fun from_IMP_LIST ctxt thm = thm |> Local_Defs.unfold ctxt @{thms from_IMP_LIST}  
+        fun from_IMP_LIST ctxt thm = thm |> Local_Defs.unfold0 ctxt @{thms from_IMP_LIST}  
 
       in
     
@@ -1216,7 +1216,7 @@ subsection \<open>ML-Level Declarations\<close>
               all_tac
             else
               APPLY_LIST [
-                SELECT_GOAL (Local_Defs.unfold_tac ctxt @{thms from_IMP_LIST}) THEN' TRY o SOLVED' ptac,
+                SELECT_GOAL (Local_Defs.unfold0_tac ctxt @{thms from_IMP_LIST}) THEN' TRY o SOLVED' ptac,
                 simp_precond_tac ctxt
               ] 1
             

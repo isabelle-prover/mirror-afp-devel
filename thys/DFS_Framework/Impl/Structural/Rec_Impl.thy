@@ -197,7 +197,7 @@ begin
     
   lemma gen_step'_refine: 
     "\<lbrakk>gen_rwof s; gen_cond s\<rbrakk> \<Longrightarrow> gen_step' s \<le> gen_step s"
-    unfolding gen_step'_def gen_step_def
+    apply (simp only: gen_step'_def gen_step_def)
     apply (clarsimp)
     apply (rule order_trans[OF _ bind_mono(1)[OF get_pending_fmt order_refl]])
     apply (simp add: pw_le_iff refine_pw_simps

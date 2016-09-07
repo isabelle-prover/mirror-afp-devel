@@ -276,7 +276,7 @@ structure Sepref_Translate = struct
         addsimps sepref_prep_side_simps.get ctxt*)
     in
       CONVERSION (Id_Op.unprotect_conv ctxt)
-      THEN' SELECT_GOAL (Local_Defs.unfold_tac ctxt @{thms bind_ref_tag_def})
+      THEN' SELECT_GOAL (Local_Defs.unfold0_tac ctxt @{thms bind_ref_tag_def})
       (*THEN' asm_full_simp_tac ctxt*)
     end
   
@@ -751,7 +751,7 @@ structure Sepref_Import_Param = struct
       @{mpat "Trueprop ((_,_) \<in> fref _ _ _)"} =>
         (@{thm to_import_frefD} OF [thm])
         |> forall_intr_vars
-        |> Local_Defs.unfold ctxt unf_thms
+        |> Local_Defs.unfold0 ctxt unf_thms
         |> Variable.gen_all ctxt
     | @{mpat "Trueprop ((_,_) \<in> _)"} =>
         Parametricity.fo_rule thm
@@ -773,20 +773,20 @@ structure Sepref_Import_Param = struct
     val thm = thm
       |> Conv.fconv_rule Thm.eta_conversion
       |> add_PR_CONST
-      |> Local_Defs.unfold ctxt @{thms import_param_0}
-      |> Local_Defs.unfold ctxt @{thms imp_to_meta}
+      |> Local_Defs.unfold0 ctxt @{thms import_param_0}
+      |> Local_Defs.unfold0 ctxt @{thms imp_to_meta}
       |> to_import_fo ctxt
-      |> Local_Defs.unfold ctxt @{thms import_param_1}
-      |> Local_Defs.unfold ctxt @{thms import_param_2}
+      |> Local_Defs.unfold0 ctxt @{thms import_param_1}
+      |> Local_Defs.unfold0 ctxt @{thms import_param_2}
 
     val thm = case Thm.concl_of thm of
       @{mpat "Trueprop (_\<longrightarrow>_)"} => thm RS @{thm pure_hn_refineI}
     | _ => thm RS @{thm pure_hn_refineI_no_asm}
 
-    val thm = Local_Defs.unfold ctxt @{thms import_param_3} thm
+    val thm = Local_Defs.unfold0 ctxt @{thms import_param_3} thm
       |> Conv.fconv_rule (hn_refine_concl_conv_a (K (Id_Op.protect_conv ctxt)) ctxt)
 
-    val thm = Local_Defs.unfold ctxt (Named_Theorems_Rev.get ctxt @{named_theorems_rev sepref_import_rewrite}) thm
+    val thm = Local_Defs.unfold0 ctxt (Named_Theorems_Rev.get ctxt @{named_theorems_rev sepref_import_rewrite}) thm
     val thm = Sepref_Rules.add_pure_constraints_rule ctxt thm
   in
     thm

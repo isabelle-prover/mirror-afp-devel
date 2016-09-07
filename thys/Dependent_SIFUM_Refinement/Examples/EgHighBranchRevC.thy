@@ -899,18 +899,20 @@ lemma NoRW\<^sub>A_implies_NoRW\<^sub>C:
    var\<^sub>C_of x \<in> mds\<^sub>C AsmNoReadOrWrite"
   unfolding mds\<^sub>A_of_def
   apply clarsimp
-  unfolding var\<^sub>C_of_def
+  apply (simp only: var\<^sub>C_of_def)
   apply clarsimp
-  by (simp add: f_inv_into_f)
+  apply (simp add: f_inv_into_f)
+  done
 
 lemma NoWrite\<^sub>A_implies_NoWrite\<^sub>C:
   "x \<in> mds\<^sub>A_of mds\<^sub>C AsmNoWrite \<Longrightarrow>
    var\<^sub>C_of x \<in> mds\<^sub>C AsmNoWrite"
   unfolding mds\<^sub>A_of_def
   apply clarsimp
-  unfolding var\<^sub>C_of_def
+  apply (simp only: var\<^sub>C_of_def)
   apply clarsimp
-  by (simp add: f_inv_into_f)
+  apply (simp add: f_inv_into_f)
+  done
 
 lemma if_seq_eval\<^sub>w_helper\<^sub>A:
   "(\<langle>If B T E, mds, mem\<rangle>,

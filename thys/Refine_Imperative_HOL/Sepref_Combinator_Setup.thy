@@ -90,7 +90,7 @@ context begin
            t2t T 
         |> Thm.cterm_of ctxt 
         |> Drule.mk_term
-        |> Local_Defs.unfold ctxt rew_rls
+        |> Local_Defs.unfold0 ctxt rew_rls
         |> Drule.dest_term
         |> Thm.term_of
       end

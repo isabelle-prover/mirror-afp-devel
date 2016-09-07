@@ -218,7 +218,7 @@ ML \<open>
       end*)
 
       fun unfold_abbrevs ctxt = 
-        Local_Defs.unfold ctxt (
+        Local_Defs.unfold0 ctxt (
           @{thms split_constraint_rls CONSTRAINT_def} 
           @ Named_Theorems.get ctxt @{named_theorems constraint_abbrevs}
           @ Named_Theorems.get ctxt @{named_theorems constraint_simps})

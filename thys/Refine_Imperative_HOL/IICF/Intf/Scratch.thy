@@ -97,12 +97,12 @@ lemma le_RETURN_eq_le_SPEC: "m \<le> RETURN x \<longleftrightarrow> m \<le> SPEC
     val (x,ctxt) = fix_left_tuple_from_Ts "x" Ts ctxt
                    
     val mop_def_thm = mop_def_thm
-      |> Local_Defs.unfold ctxt @{thms curry_shl}
+      |> Local_Defs.unfold0 ctxt @{thms curry_shl}
     
     val thm = (@{thm mop_spec_rl_from_def} OF [mop_def_thm])
       |> Drule.infer_instantiate' ctxt [SOME (Thm.cterm_of ctxt x)]
-      |> Local_Defs.unfold ctxt @{thms uncurry_apply uncurry0_apply o_apply}
-      |> Local_Defs.unfold ctxt @{thms op_list_nth_def pre_list_nth_def Product_Type.split}
+      |> Local_Defs.unfold0 ctxt @{thms uncurry_apply uncurry0_apply o_apply}
+      |> Local_Defs.unfold0 ctxt @{thms op_list_nth_def pre_list_nth_def Product_Type.split}
 
     val thm = thm RS @{thm order_trans}  
 
@@ -124,12 +124,12 @@ lemma le_RETURN_eq_le_SPEC: "m \<le> RETURN x \<longleftrightarrow> m \<le> SPEC
     val (x,ctxt) = fix_left_tuple_from_Ts "x" [@{typ "'b list"}, @{typ "nat"}] ctxt
                    
     val mop_def_thm = mop_def_thm
-      |> Local_Defs.unfold ctxt @{thms curry_shl}
+      |> Local_Defs.unfold0 ctxt @{thms curry_shl}
     
     val thm = (@{thm mop_spec_rl_from_def} OF [mop_def_thm])
       |> Drule.infer_instantiate' ctxt [SOME (Thm.cterm_of ctxt x)]
-      |> Local_Defs.unfold ctxt @{thms uncurry_apply uncurry0_apply o_apply}
-      |> Local_Defs.unfold ctxt @{thms op_list_nth_def pre_list_nth_def Product_Type.split}
+      |> Local_Defs.unfold0 ctxt @{thms uncurry_apply uncurry0_apply o_apply}
+      |> Local_Defs.unfold0 ctxt @{thms op_list_nth_def pre_list_nth_def Product_Type.split}
 
     val thm = thm RS @{thm order_trans}  
 

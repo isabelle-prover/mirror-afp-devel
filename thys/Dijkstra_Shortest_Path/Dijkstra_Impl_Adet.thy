@@ -297,8 +297,7 @@ begin
     shows "(?c::?'c, 
       mdijkstra
     ) \<in> ?R"
-    unfolding mdijkstra_def mdinit_def mpop_min_def[abs_def]
-      mupdate_def
+    apply (simp only: mdijkstra_def mdinit_def mpop_min_def[abs_def] mupdate_def)
 
     using [[goals_limit = 1]]
 

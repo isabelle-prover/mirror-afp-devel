@@ -295,7 +295,8 @@ done
 lemma composition_assoc: "\<sigma>\<^sub>1 \<cdot> (\<sigma>\<^sub>2 \<cdot> \<sigma>\<^sub>3) = (\<sigma>\<^sub>1 \<cdot> \<sigma>\<^sub>2) \<cdot> \<sigma>\<^sub>3" 
 proof
   fix x
-  show "(\<sigma>\<^sub>1 \<cdot> (\<sigma>\<^sub>2 \<cdot> \<sigma>\<^sub>3)) x = ((\<sigma>\<^sub>1 \<cdot> \<sigma>\<^sub>2) \<cdot> \<sigma>\<^sub>3) x" unfolding composition_def using composition_conseq2t by simp
+  show "(\<sigma>\<^sub>1 \<cdot> (\<sigma>\<^sub>2 \<cdot> \<sigma>\<^sub>3)) x = ((\<sigma>\<^sub>1 \<cdot> \<sigma>\<^sub>2) \<cdot> \<sigma>\<^sub>3) x"
+    by (simp only: composition_def composition_conseq2t)
 qed
 
 lemma empty_comp1: "(\<sigma> \<cdot> \<epsilon>) = \<sigma>" 
