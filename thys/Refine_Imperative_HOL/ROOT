@@ -44,7 +44,6 @@ session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
       "Examples/Sepref_WGraph"
 
   theories
-
     "Examples/Sepref_Chapter_Examples"
       "Examples/Sepref_All_Examples"
 
