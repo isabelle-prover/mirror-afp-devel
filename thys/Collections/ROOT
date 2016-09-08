@@ -70,7 +70,7 @@ session Collections (AFP) = Refine_Monadic +
       "GenCF/GenCF"
 
   (* ICF *)
-  theories
+  theories [checkpoint]
     "ICF/ICF_Chapter"
       "ICF/spec/ICF_Spec_Chapter"
         "ICF/spec/MapSpec"
