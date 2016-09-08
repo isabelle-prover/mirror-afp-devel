@@ -1,11 +1,9 @@
 chapter AFP
 
 session Collections (AFP) = Refine_Monadic +
-  options [timeout = 1200, 
-  document_variants = "document:outline=/proof,/ML:userguide"]
-
-  (* Prerequisites *)
+  options [timeout = 1200, document_variants = "document:outline=/proof,/ML:userguide"]
   theories [document = false]
+  (* Prerequisites *)
     "~~/src/HOL/Library/Code_Target_Numeral"
     "~~/src/HOL/Library/While_Combinator"
     "../Binomial-Heaps/BinomialHeap"
@@ -15,7 +13,6 @@ session Collections (AFP) = Refine_Monadic +
     "../Refine_Monadic/Refine_Monadic"
 
   (* Libraries and Tools *)
-  theories [document = false]
     "Lib/Sorted_List_Operations"
     "Lib/HashCode"
     "Lib/RBT_add"
@@ -32,11 +29,9 @@ session Collections (AFP) = Refine_Monadic +
     "ICF/tools/Ord_Code_Preproc"
 
   (* Deprecated *)
-  theories [document = false]
     "ICF/DatRef"
 
   (* Iterators *)
-  theories [document = false]
     "Iterator/Idx_Iterator"
     "Iterator/SetIteratorOperations"
     "Iterator/Iterator"
@@ -113,14 +108,12 @@ session Collections (AFP) = Refine_Monadic +
         "ICF/CollectionsV1"
 
   (* Overall Entry-Points *)
-  theories
     "Collections_Entrypoints_Chapter"
     "Refine_Dflt"
     "Refine_Dflt_ICF"
     "Refine_Dflt_Only_ICF"
     
   (* Userguides *)
-  theories
     "Userguides/Userguides_Chapter"
       "Userguides/Refine_Monadic_Userguide"
       "Userguides/ICF_Userguide"
