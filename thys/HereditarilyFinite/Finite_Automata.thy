@@ -10,12 +10,12 @@ text \<open>The point of this example is that the HF sets are closed under disjo
 record 'a fsm = states :: hf
                 init :: hf
                 final :: hf
-                nxt :: "hf \<Rightarrow> 'a \<Rightarrow> hf \<Rightarrow> bool"
+                "next" :: "hf \<Rightarrow> 'a \<Rightarrow> hf \<Rightarrow> bool"
 
 inductive reaches :: "['a fsm, hf, 'a list, hf] \<Rightarrow> bool"
 where
     Nil:  "st \<^bold>\<in> states fsm \<Longrightarrow> reaches fsm st [] st"
-  | Cons: "\<lbrakk>nxt fsm st x st''; reaches fsm st'' xs st'; st \<^bold>\<in> states fsm\<rbrakk> \<Longrightarrow> reaches fsm st (x#xs) st'"
+  | Cons: "\<lbrakk>next fsm st x st''; reaches fsm st'' xs st'; st \<^bold>\<in> states fsm\<rbrakk> \<Longrightarrow> reaches fsm st (x#xs) st'"
 
 declare reaches.intros [intro]
 inductive_simps reaches_Nil [simp]:  "reaches fsm st [] st'"
@@ -35,13 +35,13 @@ definition regular :: "'a list set \<Rightarrow> bool" where
   "regular S \<equiv> \<exists>fsm. S = {xs. accepts fsm xs}"
 
 definition Null where
-  "Null = \<lparr>states = 0, init = 0, final = 0, nxt = \<lambda>st x st'. False\<rparr>"
+  "Null = \<lparr>states = 0, init = 0, final = 0, next = \<lambda>st x st'. False\<rparr>"
 
 theorem regular_empty:  "regular {}"
   by (auto simp: regular_def accepts_def) (metis hempty_iff simps(2))
 
 abbreviation NullStr where
-  "NullStr \<equiv> \<lparr>states = 1, init = 1, final = 1, nxt = \<lambda>st x st'. False\<rparr>"
+  "NullStr \<equiv> \<lparr>states = 1, init = 1, final = 1, next = \<lambda>st x st'. False\<rparr>"
 
 theorem regular_emptystr:  "regular {[]}"
   apply (auto simp: regular_def accepts_def)
@@ -50,7 +50,7 @@ theorem regular_emptystr:  "regular {[]}"
   done
 
 abbreviation SingStr where
-  "SingStr a \<equiv> \<lparr>states = \<lbrace>0, 1\<rbrace>, init = \<lbrace>0\<rbrace>, final = \<lbrace>1\<rbrace>, nxt = \<lambda>st x st'. st=0 \<and> x=a \<and> st'=1\<rparr>"
+  "SingStr a \<equiv> \<lparr>states = \<lbrace>0, 1\<rbrace>, init = \<lbrace>0\<rbrace>, final = \<lbrace>1\<rbrace>, next = \<lambda>st x st'. st=0 \<and> x=a \<and> st'=1\<rparr>"
 
 theorem regular_singstr: "regular {[a]}"
   apply (auto simp: regular_def accepts_def)
@@ -61,7 +61,7 @@ theorem regular_singstr: "regular {[a]}"
 
 definition Reverse where
   "Reverse fsm = \<lparr>states = states fsm, init = final fsm, final = init fsm,
-                  nxt = \<lambda>st x st'. nxt fsm st' x st\<rparr>"
+                  next = \<lambda>st x st'. next fsm st' x st\<rparr>"
 
 lemma Reverse_Reverse_ident [simp]: "Reverse (Reverse fsm) = fsm"
   by (simp add: Reverse_def)
@@ -89,8 +89,8 @@ definition Times where
   "Times fsm1 fsm2 = \<lparr>states = states fsm1 * states fsm2,
                       init = init fsm1 * init fsm2,
                       final = final fsm1 * final fsm2,
-                      nxt = \<lambda>st x st'. (\<exists>st1 st2 st1' st2'. st = \<langle>st1,st2\<rangle> \<and> st' = \<langle>st1',st2'\<rangle> \<and>
-                                      nxt fsm1 st1 x st1' \<and> nxt fsm2 st2 x st2')\<rparr>"
+                      next = \<lambda>st x st'. (\<exists>st1 st2 st1' st2'. st = \<langle>st1,st2\<rangle> \<and> st' = \<langle>st1',st2'\<rangle> \<and>
+                                      next fsm1 st1 x st1' \<and> next fsm2 st2 x st2')\<rparr>"
 
 lemma states_Times [simp]: "states (Times fsm1 fsm2) = states fsm1 * states fsm2"
   by (simp add: Times_def)
@@ -101,15 +101,15 @@ lemma init_Times [simp]: "init (Times fsm1 fsm2) = init fsm1 * init fsm2"
 lemma final_Times [simp]: "final (Times fsm1 fsm2) = final fsm1 * final fsm2"
   by (simp add: Times_def)
 
-lemma nxt_Times: "nxt (Times fsm1 fsm2) \<langle>st1,st2\<rangle> x st' \<longleftrightarrow>
-    (\<exists>st1' st2'. st' = \<langle>st1',st2'\<rangle> \<and> nxt fsm1 st1 x st1' \<and> nxt fsm2 st2 x st2')"
+lemma next_Times: "next (Times fsm1 fsm2) \<langle>st1,st2\<rangle> x st' \<longleftrightarrow>
+    (\<exists>st1' st2'. st' = \<langle>st1',st2'\<rangle> \<and> next fsm1 st1 x st1' \<and> next fsm2 st2 x st2')"
   by (simp add: Times_def)
 
 lemma reaches_Times_iff [simp]:
      "reaches (Times fsm1 fsm2) \<langle>st1,st2\<rangle> xs \<langle>st1',st2'\<rangle> \<longleftrightarrow>
       reaches fsm1 st1 xs st1' \<and> reaches fsm2 st2 xs st2'"
 apply (induct xs arbitrary: st1 st2 st1' st2', force)
-apply (force simp add: nxt_Times Times_def reaches.Cons)
+apply (force simp add: next_Times Times_def reaches.Cons)
 done
 
 lemma accepts_Times_iff [simp]:
@@ -132,8 +132,8 @@ definition Plus where
   "Plus fsm1 fsm2 = \<lparr>states = states fsm1 + states fsm2,
                       init = init fsm1 + init fsm2,
                       final = final fsm1 + final fsm2,
-                      nxt = \<lambda>st x st'. (\<exists>st1 st1'. st = Inl st1 \<and> st' = Inl st1' \<and> nxt fsm1 st1 x st1') \<or>
-                                       (\<exists>st2 st2'. st = Inr st2 \<and> st' = Inr st2' \<and> nxt fsm2 st2 x st2')\<rparr>"
+                      next = \<lambda>st x st'. (\<exists>st1 st1'. st = Inl st1 \<and> st' = Inl st1' \<and> next fsm1 st1 x st1') \<or>
+                                       (\<exists>st2 st2'. st = Inr st2 \<and> st' = Inr st2' \<and> next fsm2 st2 x st2')\<rparr>"
 
 lemma states_Plus [simp]: "states (Plus fsm1 fsm2) = states fsm1 + states fsm2"
   by (simp add: Plus_def)
@@ -144,24 +144,24 @@ lemma init_Plus [simp]: "init (Plus fsm1 fsm2) = init fsm1 + init fsm2"
 lemma final_Plus [simp]: "final (Plus fsm1 fsm2) = final fsm1 + final fsm2"
   by (simp add: Plus_def)
 
-lemma nxt_Plus1: "nxt (Plus fsm1 fsm2) (Inl st1) x st' \<longleftrightarrow> (\<exists>st1'. st' = Inl st1' \<and> nxt fsm1 st1 x st1')"
+lemma next_Plus1: "next (Plus fsm1 fsm2) (Inl st1) x st' \<longleftrightarrow> (\<exists>st1'. st' = Inl st1' \<and> next fsm1 st1 x st1')"
   by (simp add: Plus_def)
 
-lemma nxt_Plus2: "nxt (Plus fsm1 fsm2) (Inr st2) x st' \<longleftrightarrow> (\<exists>st2'. st' = Inr st2' \<and> nxt fsm2 st2 x st2')"
+lemma next_Plus2: "next (Plus fsm1 fsm2) (Inr st2) x st' \<longleftrightarrow> (\<exists>st2'. st' = Inr st2' \<and> next fsm2 st2 x st2')"
   by (simp add: Plus_def)
 
 lemma reaches_Plus_iff1 [simp]:
      "reaches (Plus fsm1 fsm2) (Inl st1) xs st' \<longleftrightarrow>
       (\<exists>st1'. st' = Inl st1' \<and> reaches fsm1 st1 xs st1')"
 apply (induct xs arbitrary: st1, force)
-apply (force simp add: nxt_Plus1 reaches.Cons)
+apply (force simp add: next_Plus1 reaches.Cons)
 done
 
 lemma reaches_Plus_iff2 [simp]:
      "reaches (Plus fsm1 fsm2) (Inr st2) xs st' \<longleftrightarrow>
       (\<exists>st2'. st' = Inr st2' \<and> reaches fsm2 st2 xs st2')"
 apply (induct xs arbitrary: st2, force)
-apply (force simp add: nxt_Plus2 reaches.Cons)
+apply (force simp add: next_Plus2 reaches.Cons)
 done
 
 lemma reaches_Plus_iff [simp]:
@@ -169,7 +169,7 @@ lemma reaches_Plus_iff [simp]:
       (\<exists>st1 st1'. st = Inl st1 \<and> st' = Inl st1' \<and> reaches fsm1 st1 xs st1') \<or>
       (\<exists>st2 st2'. st = Inr st2 \<and> st' = Inr st2' \<and> reaches fsm2 st2 xs st2')"
 apply (induct xs arbitrary: st st', auto)
-apply (force simp add: nxt_Plus1 nxt_Plus2 Plus_def reaches.Cons)
+apply (force simp add: next_Plus1 next_Plus2 Plus_def reaches.Cons)
 apply (auto simp: Plus_def)
 done
 
