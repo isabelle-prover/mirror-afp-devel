@@ -1016,7 +1016,7 @@ abstract =
 
 [Simple_Firewall]
 title = Simple Firewall
-author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de/>, Max Haslbeck<>
+author = Cornelius Diekmann <https://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de/>, Max Haslbeck<>
 notify = diekmann@net.in.tum.de, max.haslbeck@gmx.de
 date = 2016-08-24
 topic = Computer Science/Networks
@@ -1036,6 +1036,46 @@ abstract =
   For a detailed description, see
   <a href="http://dl.ifip.org/db/conf/networking/networking2016/1570232858.pdf">Verified iptables Firewall
   Analysis</a>, IFIP Networking 2016.
+
+[Iptables_Semantics]
+title = Iptables_Semantics
+author = Cornelius Diekmann <https://net.in.tum.de/~diekmann>, Lars Hupel <https://www21.in.tum.de/~hupel/>
+notify = diekmann@net.in.tum.de, hupel@in.tum.de
+date = 2016-09-09
+topic = Networks
+abstract =
+  We present a big step semantics of the filtering behavior of the
+  Linux/netfilter iptables firewall. We provide algorithms to simplify
+  complex iptables rulests to a simple firewall model (c.f. AFP entry <a
+  href="https://www.isa-afp.org/entries/Simple_Firewall.shtml">Simple_Fi
+  rewall</a>) and to verify spoofing protection of a ruleset.
+  Internally, we embed our semantics into ternary logic, ultimately
+  supporting every iptables match condition by abstracting over
+  unknowns. Using this AFP entry and all entries it depends on, we
+  created an easy-to-use, stand-alone haskell tool called <a
+  href="http://iptables.isabelle.systems">fffuu</a>. The tool does not
+  require any input &mdash;except for the <tt>iptables-save</tt> dump of
+  the analyzed firewall&mdash; and presents interesting results about
+  the user's ruleset. Real-Word firewall errors have been uncovered, as
+  well as the correctness of rulesets has been proven with the help of
+  our tool.  For a detailed description, see: <ul> <li>C. Diekmann, L.
+  Hupel, and G. Carle, <i>Semantics-Preserving Simplification of
+  Real-World Firewall Rule Sets</i>. In 20th International Symposium on
+  Formal Methods, 2015. <a href="http://www.net.in.tum.de/fileadmin/bibt
+  ex/publications/papers/fm15_Semantics-Preserving_Simplification_of_Rea
+  l-World_Firewall_Rule_Sets.pdf">[pdf]</a> </li> <li>C. Diekmann, L.
+  Schwaighofer, and G. Carle, <i>Certifying Spoofing-Protection of
+  Firewalls</i>. In 11th International Conference on Network and Service
+  Management, 2015. <a href="http://www.net.in.tum.de/fileadmin/bibtex/p
+  ublications/papers/diekmann2015_cnsm.pdf">[pdf]</a> </li> <li>C.
+  Diekmann, J. Michaelis, M. Haslbeck, and G. Carle, <i>Verified
+  iptables Firewall Analysis</i>. In IFIP Networking, 2016. <a href="htt
+  p://dl.ifip.org/db/conf/networking/networking2016/1570232858.pdf">[pdf
+  ]</a> </li> <li>C. Diekmann, <i>Verified Firewall Ruleset Verification
+  &ndash; Math, Functional Programming, Theorem Proving, and an
+  Introduction to Isabelle/HOL</i>. In 32. Chaos Communication Congress
+  (32C3), 2015. <a href="https://media.ccc.de/v/32c3-7195-verified_firew
+  all_ruleset_verification">[recording]</a> </li> </ul>
 
 [Routing]
 title = Routing
@@ -2360,7 +2400,7 @@ author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
 notify = walter.guttmann@canterbury.ac.nz
 date = 2016-09-06
 topic = Mathematics/Algebra
-abstract = 
+abstract =
   A range of algebras between lattices and Boolean algebras generalise
   the notion of a complement. We develop a hierarchy of these
   pseudo-complemented algebras that includes Stone algebras.
@@ -4213,7 +4253,7 @@ author = Nicolas Peltier <http://membres-lig.imag.fr/peltier/>
 notify = Nicolas.Peltier@imag.fr
 date = 2016-09-06
 topic = Logic
-abstract = 
+abstract =
   We provide a formalization of a variant of the superposition
   calculus, together with formal proofs of soundness and refutational
   completeness (w.r.t. the usual redundancy criteria based on clause

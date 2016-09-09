@@ -74,7 +74,7 @@ commonly used 32 and 64-bit bases.
 
 
     <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="IP_Addresses.shtml">IP_Addresses</a></td></tr>
+        <td class="data"><a href="IP_Addresses.shtml">IP_Addresses</a>, <a href="Iptables_Semantics.shtml">Iptables_Semantics</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

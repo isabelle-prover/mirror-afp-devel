@@ -81,7 +81,7 @@ words.
 
 
     <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Routing.shtml">Routing</a>, <a href="Simple_Firewall.shtml">Simple_Firewall</a></td></tr>
+        <td class="data"><a href="Iptables_Semantics.shtml">Iptables_Semantics</a>, <a href="Routing.shtml">Routing</a>, <a href="Simple_Firewall.shtml">Simple_Firewall</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->

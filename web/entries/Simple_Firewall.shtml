@@ -34,7 +34,7 @@
         <td class="data" width="80%">Simple Firewall</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://net.in.tum.de/~diekmann">Cornelius Diekmann</a>, <a href="http://liftm.de/">Julius Michaelis</a> and Max Haslbeck</td></tr>
+        <td class="data"><a href="https://net.in.tum.de/~diekmann">Cornelius Diekmann</a>, <a href="http://liftm.de/">Julius Michaelis</a> and Max Haslbeck</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
         <td class="data">2016-08-24</td></tr>
@@ -84,7 +84,7 @@ Analysis</a>, IFIP Networking 2016.
 
 
     <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Routing.shtml">Routing</a></td></tr>
+        <td class="data"><a href="Iptables_Semantics.shtml">Iptables_Semantics</a>, <a href="Routing.shtml">Routing</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
