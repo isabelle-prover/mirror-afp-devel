@@ -300,8 +300,7 @@ proof -
   have "count {#mset_lit (subst_lit L \<sigma>)#} (mset_lit (subst_lit L \<sigma>)) = 1"
     by simp
   then show ?thesis
-    using f1 by (metis (no_types) add_gr_0 mset_ecl.simps count_union image_mset_single 
-                  image_mset_union zero_less_one)
+    by (metis (no_types, lifting) f1 image_mset_add_mset insert_iff mset_ecl.simps set_mset_add_mset_insert union_mset_add_mset_right)
   qed
 qed
 
@@ -605,7 +604,7 @@ proof -
     proof (cases)
       assume "mset_lit L = {# t,s #}"
       from this and `u \<in># (mset_lit L)` show ?thesis
-        by (metis count_single insert_DiffM2 insert_noteq_member not_gr0)  
+        by (simp add: count_single insert_DiffM2 insert_noteq_member not_gr0)
       next
       assume "\<not>mset_lit L = {# t,s #}"
       from this and def_ms_l have "mset_lit L = {# t,t,s,s #}"
@@ -691,7 +690,7 @@ proof -
   have i: "\<forall>u. (u \<in># ?M \<longrightarrow> (((?f1 u), (?f2 u)) \<in> (mult trm_ord) \<or> (?f1 u) = (?f2 u)))"
   proof ((rule allI),(rule impI))
     fix u assume "u \<in># ?M"
-    from this have "u \<in> (cl_ecl C)" using count_mset_set(3) by force 
+    from this have "u \<in> (cl_ecl C)" using count_mset_set(3) by (simp add: assms(4))
     from this and assms(1)  have "lower_on \<sigma> \<eta> (vars_of_lit u)" unfolding lower_on_def by auto
     then have "((subst_lit u \<sigma>) = (subst_lit u \<eta>)) 
       \<or> ((subst_lit u \<sigma>), (subst_lit u \<eta>)) \<in> lit_ord" 
@@ -1084,6 +1083,9 @@ qed
 text {* The following lemmata provide various ways of proving that literals are ordered, depending 
 on the relations between the terms they contain. *}
 
+lemma empty_subset_add_mset[simp]: "{#} <# add_mset x M"
+by(auto intro: subset_mset.gr_zeroI)
+
 lemma lit_ord_dominating_term:
   assumes "(s1,s2) \<in> trm_ord \<or> (s1,t2) \<in> trm_ord"
   assumes "orient_lit x1 s1 t1 p1"
@@ -1111,19 +1113,17 @@ proof -
   from this and `(s1,s2) \<in> trm_ord` have 
     s2max: "\<forall>x. (x \<in># {# t1,t1,s1,s1 #} \<longrightarrow> (x,s2) \<in> trm_ord)" 
      by auto
-   have "{# s2 #} <# {# t2,t2,s2,s2 #}" 
-      by (metis mset_less_trans multi_psub_of_add_self union_commute)  
+   have "{# s2 #} <# {# t2,t2,s2,s2 #}" by simp 
    from `{# s2 #} <# {# t2,t2,s2,s2 #}` 
-        have "( {# s2 #}, {# t2,t2,s2,s2 #} ) \<in> mult trm_ord"
-        using trm_ord_trans multiset_order_inclusion [of "{# s2 #}" "{# t2,t2,s2,s2 #}" "trm_ord"] by auto
+   have "( {# s2 #}, {# t2,t2,s2,s2 #} ) \<in> mult trm_ord"
+     using trm_ord_trans multiset_order_inclusion [of "{# s2 #}" "{# t2,t2,s2,s2 #}" "trm_ord"] by auto
   have "p1 = neg \<or> p1 = pos" using sign.exhaust by auto 
   then show ?thesis
   proof 
     assume "p1 = neg" 
     from this and `orient_lit x1 s1 t1 p1` have "x1 = (Neg (Eq t1 s1)) \<or> x1 = (Neg (Eq s1 t1))" 
       using orient_lit_def by blast
-    from this have m1: "?m1 = {# t1,t1,s1,s1 #}" using mset_lit.simps 
-      by (metis add.assoc add.commute)
+    from this have m1: "?m1 = {# t1,t1,s1,s1 #}" using mset_lit.simps by auto
 
     have "p2 = neg \<or> p2 = pos" using sign.exhaust by auto 
     then show ?thesis
@@ -1131,8 +1131,7 @@ proof -
       assume "p2 = neg"
       from this and `orient_lit x2 s2 t2 p2` have "x2 = (Neg (Eq t2 s2)) \<or> x2 = (Neg (Eq s2 t2))" 
         using orient_lit_def by blast
-      from this have m2: "?m2 = {# t2,t2,s2,s2 #}" using mset_lit.simps 
-        by (metis add.assoc add.commute)
+      from this have m2: "?m2 = {# t2,t2,s2,s2 #}" using mset_lit.simps by auto
       from s2max have "({# t1,t1,s1,s1 #}, {# s2 #}) \<in> mult trm_ord"
         using mult1_def_lemma [of "{# s2 #}" "{#}" s2 "{# t1,t1,s1,s1 #}" "{# t1,t1,s1,s1 #}" trm_ord]
         mult_def
@@ -1147,15 +1146,14 @@ proof -
       next assume "p2 = pos"
       from this and `orient_lit x2 s2 t2 p2` have "x2 = (Pos (Eq t2 s2)) \<or> x2 = (Pos (Eq s2 t2))" 
         using orient_lit_def by blast
-      from this have m2: "?m2 = {# t2,s2 #}" using mset_lit.simps 
-        by (metis add.commute)
+      from this have m2: "?m2 = {# t2,s2 #}" using mset_lit.simps by auto
       from s2max have "({# t1,t1,s1,s1 #}, {# s2 #}) \<in> mult trm_ord"
         using mult1_def_lemma [of "{# s2 #}" "{#}" s2 "{# t1,t1,s1,s1 #}" "{# t1,t1,s1,s1 #}" trm_ord]
         mult_def
         by auto  
       from this and `( {# s2 #}, {# t2,t2,s2,s2 #} ) \<in> mult trm_ord` 
         have "({# t1,t1,s1,s1 #}, {# t2,s2 #}) \<in> mult trm_ord" 
-        using mset_ordering_add1 [of "{# t1,t1,s1,s1 #}" " {# s2 #}" trm_ord t2] by (metis add.commute)
+        using mset_ordering_add1 [of "{# t1,t1,s1,s1 #}" " {# s2 #}" trm_ord t2] by (auto)
       from this and m1 and m2 show ?thesis
         using lit_ord_def by auto
    qed
@@ -1163,16 +1161,14 @@ proof -
     assume "p1 = pos" 
     from this and `orient_lit x1 s1 t1 p1` have "x1 = (Pos (Eq t1 s1)) \<or> x1 = (Pos (Eq s1 t1))" 
       using orient_lit_def by blast
-    from this have m1: "?m1 = {# t1,s1 #}" using mset_lit.simps 
-      by (metis  add.commute)
+    from this have m1: "?m1 = {# t1,s1 #}" using mset_lit.simps by auto
     have "p2 = neg \<or> p2 = pos" using sign.exhaust by auto 
     then show ?thesis
     proof
       assume "p2 = neg"
       from this and `orient_lit x2 s2 t2 p2` have "x2 = (Neg (Eq t2 s2)) \<or> x2 = (Neg (Eq s2 t2))" 
         using orient_lit_def by blast
-      from this have m2: "?m2 = {# t2,t2,s2,s2 #}" using mset_lit.simps 
-        by (metis add.assoc add.commute)
+      from this have m2: "?m2 = {# t2,t2,s2,s2 #}" using mset_lit.simps by auto
       from s2max have "({# t1,s1 #}, {# s2 #}) \<in> mult trm_ord"
         using mult1_def_lemma [of "{# s2 #}" "{#}" s2 "{# t1,s1 #}" "{# t1,s1 #}" trm_ord]
         mult_def
@@ -1186,14 +1182,13 @@ proof -
       next assume "p2 = pos"
       from this and `orient_lit x2 s2 t2 p2` have "x2 = (Pos (Eq t2 s2)) \<or> x2 = (Pos (Eq s2 t2))" 
         using orient_lit_def by blast
-      from this have m2: "?m2 = {# t2,s2 #}" using mset_lit.simps 
-        by (metis add.commute)
+      from this have m2: "?m2 = {# t2,s2 #}" using mset_lit.simps by auto
       from s2max have "({# t1,s1 #}, {# s2 #}) \<in> mult trm_ord"
         using mult1_def_lemma [of "{# s2 #}" "{#}" s2 "{# t1,s1 #}" "{# t1,s1 #}" trm_ord]
         mult_def
         by auto  
       from this have "({# t1,s1 #}, {# t2,s2 #}) \<in> mult trm_ord" 
-        using mset_ordering_add1 [of "{# t1,s1 #}" " {# s2 #}" trm_ord t2] by (metis add.commute)
+        using mset_ordering_add1 [of "{# t1,s1 #}" " {# s2 #}" trm_ord t2] by auto
       from this and m1 and m2 show ?thesis
         using lit_ord_def by auto
    qed
@@ -1221,21 +1216,18 @@ proof -
   let ?m2 = "mset_lit x2"
   from `orient_lit x1 s t1 pos` have "x1 = (Pos (Eq t1 s)) \<or> x1 = (Pos (Eq s t1))" 
       using orient_lit_def by blast
-  from this have m1: "?m1 = {# t1,s #}" using mset_lit.simps 
-      by (metis add.commute)
+  from this have m1: "?m1 = {# t1,s #}" using mset_lit.simps by auto
   from `orient_lit x2 s t2 neg` have "x2 = (Neg (Eq t2 s)) \<or> x2 = (Neg (Eq s t2))" 
         using orient_lit_def by blast
-  from this have m2: "?m2 = {# t2,t2,s,s #}" using mset_lit.simps 
-        by (metis add.assoc add.commute)
+  from this have m2: "?m2 = {# t2,t2,s,s #}" using mset_lit.simps by auto
   show ?thesis
   proof (cases)
     assume "t1 = s"
     have "({# s,s #}, {# t2,s,s #}) \<in> mult trm_ord"
         using mult1_def_lemma [of "{# t2,s,s #}" "{# s,s #}" t2 "{# s,s #}" "{#}" trm_ord]
-        mult_def 
-        by (metis add.commute add.right_neutral count_empty less_irrefl trancl.r_into_trancl) 
+        mult_def by auto
     then have "({# s,s #}, {# t2,t2,s,s #}) \<in> mult trm_ord"
-        using mset_ordering_add1 [of "{# s,s #}" " {# t2,s,s #}" trm_ord t2] by (metis add.commute)
+        using mset_ordering_add1 [of "{# s,s #}" " {# t2,s,s #}" trm_ord t2] by auto
     from this and `t1 = s` and m1 and m2 show ?thesis using lit_ord_def by auto
   next
     assume "t1 \<noteq> s"
@@ -1244,11 +1236,11 @@ proof -
      by auto
     from smax have "({# t1,s #}, {# s,s #}) \<in> mult trm_ord"
         using mult1_def_lemma [of "{# s,s #}" "{# s #}" s "{# t1,s #}" "{# t1 #}" trm_ord]
-        mult_def by (metis add.commute trancl.r_into_trancl)
+        mult_def by auto
     from this have "({# t1,s #}, {# t2,s,s #}) \<in> mult trm_ord" 
-        using mset_ordering_add1 [of "{# t1,s #}" " {# s,s #}" trm_ord t2] by (metis add.commute)
+        using mset_ordering_add1 [of "{# t1,s #}" " {# s,s #}" trm_ord t2] by auto
     from this have "({# t1,s #}, {# t2,t2,s,s #}) \<in> mult trm_ord" 
-        using mset_ordering_add1 [of "{# t1,s #}" " {# t2,s,s #}" trm_ord t2] by (metis add.commute)
+        using mset_ordering_add1 [of "{# t1,s #}" " {# t2,s,s #}" trm_ord t2] by auto
     from this and m1 and m2 show ?thesis using lit_ord_def by auto
    qed
 qed
@@ -1274,21 +1266,18 @@ proof -
   let ?m2 = "mset_lit x2"
   from `orient_lit x1 s t1 pos` have "x1 = (Pos (Eq t1 s)) \<or> x1 = (Pos (Eq s t1))" 
       using orient_lit_def by blast
-  from this have m1: "?m1 = {# t1,s #}" using mset_lit.simps 
-      by (metis add.commute)
+  from this have m1: "?m1 = {# t1,s #}" using mset_lit.simps by auto
   from `orient_lit x2 t2 s neg` have "x2 = (Neg (Eq t2 s)) \<or> x2 = (Neg (Eq s t2))" 
         using orient_lit_def by blast
-  from this have m2: "?m2 = {# t2,t2,s,s #}" using mset_lit.simps 
-        by (metis add.assoc add.commute)
+  from this have m2: "?m2 = {# t2,t2,s,s #}" using mset_lit.simps by auto
   show ?thesis
   proof (cases)
     assume "t1 = s"
     have "({# s,s #}, {# t2,s,s #}) \<in> mult trm_ord"
         using mult1_def_lemma [of "{# t2,s,s #}" "{# s,s #}" t2 "{# s,s #}" "{#}" trm_ord]
-        mult_def 
-        by (metis add.commute add.right_neutral count_empty less_irrefl trancl.r_into_trancl) 
+        mult_def by auto
     then have "({# s,s #}, {# t2,t2,s,s #}) \<in> mult trm_ord"
-        using mset_ordering_add1 [of "{# s,s #}" " {# t2,s,s #}" trm_ord t2] by (metis add.commute)
+        using mset_ordering_add1 [of "{# s,s #}" " {# t2,s,s #}" trm_ord t2] by auto
     from this and `t1 = s` and m1 and m2 show ?thesis using lit_ord_def by auto
   next
     assume "t1 \<noteq> s"
@@ -1297,11 +1286,11 @@ proof -
      by auto
     from smax have "({# t1,s #}, {# s,s #}) \<in> mult trm_ord"
         using mult1_def_lemma [of "{# s,s #}" "{# s #}" s "{# t1,s #}" "{# t1 #}" trm_ord]
-        mult_def by (metis add.commute trancl.r_into_trancl)
+        mult_def by auto
     from this have "({# t1,s #}, {# t2,s,s #}) \<in> mult trm_ord" 
-        using mset_ordering_add1 [of "{# t1,s #}" " {# s,s #}" trm_ord t2] by (metis add.commute)
+        using mset_ordering_add1 [of "{# t1,s #}" " {# s,s #}" trm_ord t2] by auto
     from this have "({# t1,s #}, {# t2,t2,s,s #}) \<in> mult trm_ord" 
-        using mset_ordering_add1 [of "{# t1,s #}" " {# t2,s,s #}" trm_ord t2] by (metis add.commute)
+        using mset_ordering_add1 [of "{# t1,s #}" " {# t2,s,s #}" trm_ord t2] by auto
     from this and m1 and m2 show ?thesis using lit_ord_def by auto
    qed
 qed
@@ -1332,35 +1321,31 @@ proof -
     assume "p = pos"
     from this and `orient_lit x1 s t1 p` have "x1 = (Pos (Eq t1 s)) \<or> x1 = (Pos (Eq s t1))" 
       using orient_lit_def by blast
-    from this have m1: "?m1 = {# t1,s #}" using mset_lit.simps 
-      by (metis add.commute)
+    from this have m1: "?m1 = {# t1,s #}" using mset_lit.simps by auto
     from `p = pos` and `orient_lit x2 s t2 p` have "x2 = (Pos (Eq t2 s)) \<or> x2 = (Pos (Eq s t2))" 
         using orient_lit_def by blast
-    from this have m2: "?m2 = {# t2,s #}" using mset_lit.simps 
-        by (metis add.commute)
+    from this have m2: "?m2 = {# t2,s #}" using mset_lit.simps  by auto
     from assms(1) have "(\<forall>b. b \<in># {#t1#} \<longrightarrow> (b, t2) \<in> trm_ord)" by auto
     then have "({# t1,s #}, {# t2,s #}) \<in> mult trm_ord"
         using mult1_def_lemma [of "{# t2,s #}" "{# s #}" t2 "{# t1,s #}" "{# t1 #}" trm_ord]
-        mult_def by (metis add.commute trancl.r_into_trancl)
+        mult_def by auto
     from this and m1 and m2 show ?thesis using lit_ord_def by auto
   next assume "p = neg"
     from this and `orient_lit x1 s t1 p` have "x1 = (Neg (Eq t1 s)) \<or> x1 = (Neg (Eq s t1))" 
       using orient_lit_def by blast
-    from this have m1: "?m1 = {# t1,t1,s,s #}" using mset_lit.simps 
-          by (metis add.commute add.left_commute)  
+    from this have m1: "?m1 = {# t1,t1,s,s #}" using mset_lit.simps by auto
     from `p = neg` and `orient_lit x2 s t2 p` have "x2 = (Neg (Eq t2 s)) \<or> x2 = (Neg (Eq s t2))" 
         using orient_lit_def by blast
-    from this have m2: "?m2 = {# t2,t2,s,s #}" using mset_lit.simps 
-          by (metis add.commute add.left_commute)  
+    from this have m2: "?m2 = {# t2,t2,s,s #}" using mset_lit.simps by auto
     from assms(1) have max: "(\<forall>b. b \<in># {#t1,t1#} \<longrightarrow> (b, t2) \<in> trm_ord)" by auto
 
     have i: "{# t2,s,s #} = {# s,s,t2 #}" by (simp add: add.commute add.left_commute) 
     have ii: "{# t1,t1,s,s #} = {# s,s,t1,t1 #}" by (simp add: add.commute add.left_commute) 
     from i and ii and max have "({# t1,t1,s,s #}, {# t2,s,s #}) \<in> mult trm_ord"
         using mult1_def_lemma [of "{# t2,s,s #}" "{# s,s #}" t2 "{# t1,t1,s,s #}" "{# t1,t1 #}" trm_ord]
-        mult_def by (metis r_into_trancl' union_assoc)
+        mult_def by auto
     then have "({# t1,t1,s,s #}, {# t2,t2,s,s #}) \<in> mult trm_ord"
-        using mset_ordering_add1 [of "{# t1,t1,s,s #}" " {# t2,s,s #}" trm_ord t2] by (metis add.commute)
+        using mset_ordering_add1 [of "{# t1,t1,s,s #}" " {# t2,s,s #}" trm_ord t2] by auto
     from this and m1 and m2 show ?thesis using lit_ord_def by auto
   qed
 qed
@@ -3003,7 +2988,7 @@ proof (rule ccontr)
    have "(\<forall>k \<in> set_mset ?K. \<exists>j \<in> set_mset ?J. (k, j) \<in> (mult trm_ord))"
    proof 
     fix k assume "k \<in> set_mset ?K"
-    from this have "k \<in># ?K" by (meson mem_set_mset_iff) 
+    from this have "k \<in># ?K" by auto
     from this obtain M' where "M' \<in># (mset_set ?C')" and "k = (mset_lit (subst_lit M' \<sigma>))"
       using image_mset_thm [of "?K"  "\<lambda>x. (mset_lit (subst_lit x \<sigma>))" "(mset_set ?C')"]
       by metis
@@ -3068,7 +3053,7 @@ proof (rule ccontr)
           `((subst t' \<sigma>),(subst t \<sigma>)) \<in> trm_ord` 
           have "(mset_lit (subst_lit L' \<sigma>),(mset_lit (subst_lit L \<sigma>))) 
             \<in> (mult trm_ord)"
-            by (simp add: one_step_implies_mult trm_ord_trans) 
+            by (metis one_step_implies_mult empty_iff insert_iff set_mset_add_mset_insert set_mset_empty)
         from this show ?thesis unfolding lit_ord_def by auto
 
       next 
@@ -3077,8 +3062,7 @@ proof (rule ccontr)
         from this and `orient_lit_inst L t s polarity \<sigma>` 
         have i: "(mset_lit (subst_lit L \<sigma>)) = {# (subst s \<sigma>), (subst s \<sigma>) #} 
           + {# (subst t \<sigma>), (subst t \<sigma>) #}"
-          unfolding orient_lit_inst_def using add.commute
-          by (metis (no_types, lifting) \<open>orient_lit (subst_lit L \<sigma>) (subst t \<sigma>) (subst s \<sigma>) polarity\<close> add.assoc mset_lit.simps(2) orient_lit_def sign.distinct(1)) 
+          unfolding orient_lit_inst_def by auto
         from  `L' = mk_lit polarity (Eq t' s)` `polarity = neg` have 
           "subst_lit L' \<sigma> = (Neg (Eq (subst t' \<sigma>) (subst s \<sigma>)))" by auto
         from this have "(mset_lit (subst_lit L' \<sigma>))
@@ -3105,8 +3089,8 @@ proof (rule ccontr)
         from this i ii `{# (subst t \<sigma>), (subst t \<sigma>) #} \<noteq> {#}`
           have "(mset_lit (subst_lit L' \<sigma>),
             (mset_lit (subst_lit L \<sigma>))) \<in> (mult trm_ord)"
-             using one_step_implies_mult  [of trm_ord "{# (subst t \<sigma>), (subst t \<sigma>) #}"
-               "{# (subst t' \<sigma>),(subst t' \<sigma>) #}" 
+             using one_step_implies_mult  [of "{# (subst t \<sigma>), (subst t \<sigma>) #}"
+               "{# (subst t' \<sigma>),(subst t' \<sigma>) #}" trm_ord
                "{# (subst s \<sigma>),(subst s \<sigma>) #}"] 
              trm_ord_trans by auto
              
@@ -3122,8 +3106,8 @@ proof (rule ccontr)
       ({#mset_lit (subst_lit x \<sigma>). x \<in># mset_set ?C #},
       {#mset_lit (subst_lit x \<sigma>). x \<in># mset_set (cl_ecl P1)#})
      \<in> mult (mult trm_ord)"
-  using  mult_trm_ord_trans one_step_implies_mult [of "mult trm_ord" "{# (mset_lit (subst_lit x \<sigma>)). x \<in># (mset_set { L }) #}"
-      "{# (mset_lit (subst_lit x \<sigma>)). x \<in># (mset_set ?C') #}" 
+  using  mult_trm_ord_trans one_step_implies_mult [of "{# (mset_lit (subst_lit x \<sigma>)). x \<in># (mset_set { L }) #}"
+      "{# (mset_lit (subst_lit x \<sigma>)). x \<in># (mset_set ?C') #}"  "mult trm_ord"
       "{# (mset_lit (subst_lit x \<sigma>)). x \<in># (mset_set ((cl_ecl P1) - { L })) #} " ] by auto
 
   from this `C' = (((cl_ecl P1) - { L }) \<union> (((cl_ecl P2) - { M }) \<union> { L' } ))` and `P1 \<in> P` 
@@ -3181,9 +3165,9 @@ proof (rule ccontr)
       ({#mset_lit (subst_lit x \<sigma>). x \<in># mset_set ?C #},
       {#mset_lit (subst_lit x \<sigma>). x \<in># mset_set (cl_ecl P1)#})
      \<in> mult (mult trm_ord)"
-  using  mult_trm_ord_trans one_step_implies_mult [of "mult trm_ord" 
+  using  mult_trm_ord_trans one_step_implies_mult [of
     "{# (mset_lit (subst_lit x \<sigma>)). x \<in># (mset_set { L1 }) #}"
-      "{# (mset_lit (subst_lit x \<sigma>)). x \<in># (mset_set ?C') #}" 
+      "{# (mset_lit (subst_lit x \<sigma>)). x \<in># (mset_set ?C') #}"  "mult trm_ord" 
       "{# (mset_lit (subst_lit x \<sigma>)). x \<in># (mset_set ((cl_ecl P1) - { L1 })) #} " ] by auto
 
   from this `Cl_P = (cl_ecl P1)` `C' = ((Cl_P - { L1 }) )` and `P1 \<in> P` 
@@ -3291,7 +3275,7 @@ proof (rule ccontr)
    have "(\<forall>k \<in> set_mset ?K. \<exists>j \<in> set_mset ?J. (k, j) \<in> (mult trm_ord))"
    proof 
     fix k assume "k \<in> set_mset ?K"
-    from this have "k \<in># ?K" by (meson mem_set_mset_iff) 
+    from this have "k \<in># ?K" by simp
     from this obtain M' where "M' \<in># (mset_set ?C')" and "k = (mset_lit (subst_lit M' \<sigma>))"
       using image_mset_thm [of "?K"  "\<lambda>x. (mset_lit (subst_lit x \<sigma>))" "(mset_set ?C')"]
       by metis
@@ -3335,9 +3319,9 @@ proof (rule ccontr)
       from this i ii `{# (subst u \<sigma>), (subst v \<sigma>) #} \<noteq> {#}`
           have "(mset_lit (subst_lit L' \<sigma>),
             (mset_lit (subst_lit L2 \<sigma>))) \<in> (mult trm_ord)"
-             using one_step_implies_mult  [of trm_ord "{# (subst u \<sigma>), (subst v \<sigma>) #}" 
+             using one_step_implies_mult  [of "{# (subst u \<sigma>), (subst v \<sigma>) #}" 
                "{#  (subst s \<sigma>),(subst s \<sigma>), (subst v \<sigma>),(subst v \<sigma>) #}" 
-               "{#}"] 
+               trm_ord "{#}"] 
              trm_ord_trans by metis
         from this `M' = L'` `k = (mset_lit (subst_lit M' \<sigma>))` show ?thesis  by auto
      qed
@@ -3348,9 +3332,9 @@ proof (rule ccontr)
       ({#mset_lit (subst_lit x \<sigma>). x \<in># mset_set ?C #},
       {#mset_lit (subst_lit x \<sigma>). x \<in># mset_set (cl_ecl P1)#})
      \<in> mult (mult trm_ord)"
-  using  mult_trm_ord_trans one_step_implies_mult [of "mult trm_ord" 
+  using  mult_trm_ord_trans one_step_implies_mult [of
       "{# (mset_lit (subst_lit x \<sigma>)). x \<in># (mset_set { L2 }) #}"
-      "{# (mset_lit (subst_lit x \<sigma>)). x \<in># (mset_set ?C') #}" 
+      "{# (mset_lit (subst_lit x \<sigma>)). x \<in># (mset_set ?C') #}"  "mult trm_ord" 
       "{# (mset_lit (subst_lit x \<sigma>)). x \<in># (mset_set ((cl_ecl P1) - { L2 })) #} " ] by metis
 
   from this `(Cl_P = (cl_ecl P1))` `C' = ( (Cl_P - { L2 }) \<union> { L' } )` and `P1 \<in> P` 
@@ -6450,20 +6434,19 @@ text {* First, we prove that no reduction is possible (otherwise the superpositi
         have "(mset_lit (subst_lit L1 \<sigma>')) \<in>#  mset_ecl (C,\<sigma>')" 
           using mset_ecl_and_mset_lit by auto 
           from this have "(mset_lit (subst_lit L1 \<sigma>')) \<in> (set_mset (mset_ecl (C,\<sigma>')))"
-            by (meson mem_set_mset_iff)
+            by simp
         have "\<forall>x. (x \<in> (set_mset (mset_ecl (D,\<sigma>'))) 
           \<longrightarrow> (\<exists>y \<in> set_mset (mset_ecl (C,\<sigma>')). (x,y) \<in> (mult trm_ord)))"
         proof ((rule allI),(rule impI))
           fix x assume "x \<in> (set_mset (mset_ecl (D,\<sigma>')))"
 
-          then have "x \<in># mset_ecl (D,\<sigma>')" by (meson mem_set_mset_iff) 
+          then have "x \<in># mset_ecl (D,\<sigma>')" by simp
           from `x \<in># mset_ecl (D,\<sigma>')` obtain x' 
             where "x' \<in># (mset_set (cl_ecl D))" 
-            and "x = (mset_lit (subst_lit x' \<sigma>'))"
-            by (metis (no_types, lifting)  mset_ecl.simps image_iff in_image_mset mem_set_mset_iff)
+            and "x = (mset_lit (subst_lit x' \<sigma>'))" by auto
               
         from `x' \<in># (mset_set (cl_ecl D))` have "x' \<in> (cl_ecl D)"
-          using count_mset_set(3) by fastforce 
+          using count_mset_set(3) by (fastforce simp: count_eq_zero_iff)
         from this 
           and `\<forall>x \<in> (cl_ecl D). 
           ( (mset_lit (subst_lit x \<sigma>')),(mset_lit (subst_lit L1 \<sigma>'))) 
@@ -6481,8 +6464,8 @@ text {* First, we prove that no reduction is possible (otherwise the superpositi
 
         from this have 
           dom: "\<And>I J K. J \<noteq> {#} \<and> (\<forall>k\<in>set_mset K. \<exists>j\<in>set_mset J. (k, j) \<in> (mult trm_ord)) \<longrightarrow>
-            (I + K, I + J) \<in> mult (mult trm_ord)" 
-            using one_step_implies_mult_aux  lit_ord_trans by metis
+          (I + K, I + J) \<in> mult (mult trm_ord)"
+          by (blast intro: one_step_implies_mult)
         from `(mset_lit (subst_lit L1 \<sigma>')) \<in>#  mset_ecl (C,\<sigma>')` 
           have "mset_ecl (C,\<sigma>') \<noteq> {#}" by auto 
         from `\<forall>x. (x \<in> (set_mset (mset_ecl (D,\<sigma>')))   

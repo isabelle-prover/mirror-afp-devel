@@ -23,7 +23,7 @@ proof (rule ccontr)
   from `\<not> ?s1 \<subset># ?s2` obtain x where "(count ?s1 x > count ?s2 x)" using subseteq_mset_def [of ?s1 ?s2]
     by (metis assms(1) assms(2) finite_set_mset_mset_set finite_subset less_imp_le 
       less_le not_le_imp_less subset_mset.le_less) 
-  from this have "count ?s1 x > 0" by auto
+  from this have "count ?s1 x > 0" by linarith
   from this and `finite E1` have "count ?s1 x = 1" and "x \<in> E1" using subseteq_mset_def by auto
   from this and assms(2) have "x \<in> E2" by auto
   from this and `finite E2` have "count ?s2 x = 1" by auto
@@ -42,8 +42,8 @@ qed
 
 lemma equal_image_mset:
   assumes "\<forall>x \<in> E. (f x) = (g x)"
-  shows "{# (f x). x \<in># (mset_set E) #} = {# (g x). x \<in># (mset_set E)  #} "
-by (metis assms count_mset_set(3) image_mset_cong neq0_conv)
+  shows "{# (f x). x \<in># (mset_set E) #} = {# (g x). x \<in># (mset_set E)  #}"
+by (meson assms count_eq_zero_iff count_mset_set(3) image_mset_cong)
 
 lemma multiset_order_inclusion:
   assumes "E <# F"
@@ -56,7 +56,7 @@ proof -
   from this assms(1) have "?G \<noteq> {#}"
     using add.right_neutral multi_psub_self by auto
   have "E = E + {#}" by auto
-  from this `F = E +?G`  `?G \<noteq> {#}` assms(2) show ?thesis  using one_step_implies_mult [of r ?G "{#}" E] by auto
+  from this `F = E +?G`  `?G \<noteq> {#}` assms(2) show ?thesis  using one_step_implies_mult [of ?G "{#}" r E] by auto
 qed
 
 lemma multiset_order_inclusion_eq:
@@ -87,7 +87,7 @@ proof -
   let ?M1' = "{# (f1 u). u \<in># ?L' #}"
   let ?M2' = "{# (f2 u). u \<in># ?L' #}"
   have "?M1' = ?M2'"
-    by (metis (mono_tags, lifting) filter_mset.rep_eq image_mset_cong less_not_refl2) 
+    by (metis (mono_tags, lifting) mem_Collect_eq multiset.map_cong0 set_mset_filter) 
   let ?M1'' = "{# (f1 u). u \<in># ?L'' #}"
   let ?M2'' = "{# (f2 u). u \<in># ?L'' #}"
   from `L = ?L' + ?L''` have "M1 = ?M1' + ?M1''" by (metis assms(1) image_mset_union) 
@@ -96,9 +96,7 @@ proof -
   proof 
     fix k assume "k \<in> set_mset ?M1''"
     from this obtain u where "k = (f1 u)" and "u \<in># ?L''" by auto
-    from `u \<in># ?L''` have "(f2 u) \<in># ?M2''"
-      by (metis (no_types, lifting) image_mset_single image_mset_union insert_DiffM2 union_single_eq_member) 
-    from this have "(f2 u) \<in> set_mset ?M2''" by (meson mem_set_mset_iff)        
+    from `u \<in># ?L''` have "(f2 u) \<in># ?M2''" by simp
     from `\<forall>u. (u \<in># ?L'' \<longrightarrow> ((f1 u),(f2 u)) \<in> r)` and `u \<in># ?L''` 
       have "((f1 u),(f2 u)) \<in> r" by auto
     from this and `k = (f1 u)` and `(f2 u) \<in> set_mset ?M2''`
@@ -114,8 +112,7 @@ proof -
   qed
   from this have  "?M2'' \<noteq> {#}" by auto
   from this and dom and `M1 = ?M1' + ?M1''` `M2 = ?M2' + ?M2''` `?M1'=?M2'` 
-    show "(M1,M2) \<in> (mult r)" using one_step_implies_mult_aux
-    by (metis (no_types, lifting))  
+  show "(M1,M2) \<in> (mult r)" by (simp add: one_step_implies_mult)
 qed
 
 lemma image_mset_ordering_eq:
@@ -133,7 +130,7 @@ proof (cases)
   let ?M1' = "{# (f1 u). u \<in># ?L' #}"
   let ?M2' = "{# (f2 u). u \<in># ?L' #}"
   have "?M1' = ?M2'"
-    by (metis (mono_tags, lifting) filter_mset.rep_eq image_mset_cong less_not_refl2) 
+    by (metis (mono_tags, lifting) mem_Collect_eq multiset.map_cong0 set_mset_filter)
   let ?M1'' = "{# (f1 u). u \<in># ?L'' #}"
   let ?M2'' = "{# (f2 u). u \<in># ?L'' #}"
   from `L = ?L' + ?L''` have "M1 = ?M1' + ?M1''" by (metis assms(1) image_mset_union) 
@@ -142,9 +139,7 @@ proof (cases)
   proof 
     fix k assume "k \<in> set_mset ?M1''"
     from this obtain u where "k = (f1 u)" and "u \<in># ?L''" by auto
-    from `u \<in># ?L''` have "(f2 u) \<in># ?M2''"
-      by (metis (no_types, lifting) image_mset_single image_mset_union insert_DiffM2 union_single_eq_member) 
-    from this have "(f2 u) \<in> set_mset ?M2''" by (meson mem_set_mset_iff)        
+    from `u \<in># ?L''` have "(f2 u) \<in># ?M2''" by simp
     from `\<forall>u. (u \<in># ?L'' \<longrightarrow> ((f1 u),(f2 u)) \<in> r)` and `u \<in># ?L''` 
       have "((f1 u),(f2 u)) \<in> r" by auto
     from this and `k = (f1 u)` and `(f2 u) \<in> set_mset ?M2''`
@@ -153,8 +148,7 @@ proof (cases)
   from `M1 \<noteq> M2` have  "?M2'' \<noteq> {#}"
     using \<open>M1 = image_mset f1 {# u \<in># L. f1 u = f2 u#} + image_mset f1 {# u \<in># L. f1 u \<noteq> f2 u#}\<close> \<open>M2 = image_mset f2 {# u \<in># L. f1 u = f2 u#} + image_mset f2 {# u \<in># L. f1 u \<noteq> f2 u#}\<close> \<open>image_mset f1 {# u \<in># L. f1 u = f2 u#} = image_mset f2 {# u \<in># L. f1 u = f2 u#}\<close> by auto 
   from this and dom and `M1 = ?M1' + ?M1''` `M2 = ?M2' + ?M2''` `?M1'=?M2'` 
-    have "(M1,M2) \<in> (mult r)" using one_step_implies_mult_aux
-    by (metis (no_types, lifting))  
+  have "(M1,M2) \<in> (mult r)" by (simp add: one_step_implies_mult)
   from this show ?thesis by auto
 qed
 
@@ -208,12 +202,12 @@ proof -
   proof ((rule allI),(rule impI))
     fix b assume "b  \<in># ?K"
     from `b  \<in># ?K` obtain b' where "b = (f b')" and "b' \<in># K"
-        by (metis insert_DiffM2 msed_map_invR union_single_eq_member) 
+      by (auto simp: insert_DiffM2 msed_map_invR union_single_eq_member)
     from `b' \<in># K` and `(\<forall>b. b \<in># K \<longrightarrow> (b, a) \<in> r)` have "(b',a) \<in> r" by auto
     from assms(1) and this and `b = (f b')` show "(b, (f a)) \<in> r" by auto
   qed
   from `?E1 = ?M0 + ?K` and `?E2 = ?M0 + {# (f a) #}` and `(\<forall>b. b \<in># ?K \<longrightarrow> (b, (f a)) \<in> r)` 
-    show "(?E1,?E2) \<in>  (mult1 r)" using mult1_def_lemma by force 
+    show "(?E1,?E2) \<in>  (mult1 r)" by (metis mult1_def_lemma)
 qed
 
 lemma monotonic_fun_mult:
@@ -273,7 +267,7 @@ proof (rule ccontr)
       using count_mset_set(1) by auto
     from this and `(count (mset_set (E \<union> { x })) y) > (count (mset_set E + {# x #}) y)` have 
       "(count (mset_set E + {# x #}) y) = 0" by auto
-    from `(count (mset_set E + {# x #}) y) = 0` have "count (mset_set E) y = 0" by auto
+    from `(count (mset_set E + {# x #}) y) = 0` have "count (mset_set E) y = 0" by (simp split: if_splits)
     from `y \<in> E` `finite E` have "count (mset_set E) y = 1" using count_mset_set(1) by auto
     from this and `count (mset_set E) y = 0` show False by auto
   qed
@@ -442,7 +436,7 @@ lemma image_mset_thm:
   assumes "E = {# (f x). x \<in># E' #}"
   assumes "x \<in># E"
   shows "\<exists> y. ((y \<in># E') \<and> x = (f y))"
-by (metis (no_types, lifting) assms image_iff in_image_mset mem_set_mset_iff)
+using assms by auto
 
 lemma split_image_mset:
   assumes "M = M1 + M2"

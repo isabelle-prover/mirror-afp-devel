@@ -106,7 +106,7 @@ abbreviation boolean_algebra_isomorphism :: "('a::boolean_algebra \<Rightarrow> 
 
 lemma sup_homomorphism_mono:
   "sup_homomorphism (f::'a::semilattice_sup \<Rightarrow> 'b::semilattice_sup) \<Longrightarrow> mono f"
-  by (metis assms le_iff_sup monoI)
+  by (metis le_iff_sup monoI)
 
 lemma sup_isomorphism_ord_isomorphism:
   assumes "sup_homomorphism (f::'a::semilattice_sup \<Rightarrow> 'b::semilattice_sup)"
