@@ -131,6 +131,7 @@ InformationFlowSlicing_Inter
 InfPathElimination
 Integration
 IP_Addresses
+Iptables_Semantics
 Isabelle_Meta_Model
 Jinja
 JinjaThreads
@@ -269,6 +270,7 @@ Sqrt_Babylonian
 Statecharts
 Stern_Brocot
 Stirling_Formula
+Stone_Algebras
 Stream_Fusion_Code
 Stream-Fusion
 Strong_Security
@@ -276,6 +278,7 @@ Sturm_Sequences
 Sturm_Tarski
 Stuttering_Equivalence
 SumSquares
+SuperCalc
 Surprise_Paradox
 TLA
 Tail_Recursive_Functions

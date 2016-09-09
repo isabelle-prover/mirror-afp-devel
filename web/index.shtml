@@ -53,6 +53,28 @@ is available <a href="citing.shtml">[here]</a>.
 	</tr>
 
 <tr><td class="entry">
+2016-09-09:
+<a href="entries/Iptables_Semantics.shtml">Iptables_Semantics</a>
+<br>Author:
+<a href="https://net.in.tum.de/~diekmann">Cornelius Diekmann</a> and 
+<a href="https://www21.in.tum.de/~hupel/">Lars Hupel</a>
+</td></tr>
+
+<tr><td class="entry">
+2016-09-06:
+<a href="entries/Stone_Algebras.shtml">Stone Algebras</a>
+<br>Author:
+<a href="http://www.cosc.canterbury.ac.nz/walter.guttmann/">Walter Guttmann</a>
+</td></tr>
+
+<tr><td class="entry">
+2016-09-06:
+<a href="entries/SuperCalc.shtml">A Variant of the Superposition Calculus</a>
+<br>Author:
+<a href="http://membres-lig.imag.fr/peltier/">Nicolas Peltier</a>
+</td></tr>
+
+<tr><td class="entry">
 2016-09-01:
 <a href="entries/Stirling_Formula.shtml">Stirling's formula</a>
 <br>Author:
@@ -71,7 +93,7 @@ is available <a href="citing.shtml">[here]</a>.
 2016-08-24:
 <a href="entries/Simple_Firewall.shtml">Simple Firewall</a>
 <br>Author:
-<a href="http://net.in.tum.de/~diekmann">Cornelius Diekmann</a>,
+<a href="https://net.in.tum.de/~diekmann">Cornelius Diekmann</a>,
 <a href="http://liftm.de/">Julius Michaelis</a> and 
 Max Haslbeck
 </td></tr>

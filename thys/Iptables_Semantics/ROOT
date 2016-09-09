@@ -1,0 +1,67 @@
+chapter AFP
+
+session Iptables_Semantics (AFP) = Routing +
+  theories[document=false]
+    "~~/src/HOL/Library/LaTeXsugar"
+    (*The Native_Word things destory the latex document! Does not compile, ...*)
+    "../Native_Word/More_Bits_Int"
+    "../Native_Word/Code_Target_Bits_Int"
+    "~~/src/HOL/Library/Code_Target_Nat"
+    "~~/src/HOL/Library/Code_Target_Int"
+    "~~/src/HOL/Library/Code_Char"
+    "../Automatic_Refinement/Lib/Misc" (* mergesort *)
+    "Common/List_Misc"
+    "Common/WordInterval_Lists"
+  theories
+    Semantics
+    "Examples/Example_Semantics"
+    Semantics_Stateful
+    Semantics_Goto
+    Call_Return_Unfolding
+    "Common/Negation_Type_DNF"
+    "Semantics_Ternary/Packet_Set"
+    "Semantics_Ternary/Semantics_Ternary"
+    Matching_Embeddings
+    Semantics_Embeddings
+    Iptables_Semantics
+    Semantics_Stateful
+    "Semantics_Ternary/Optimizing"
+    "Primitive_Matchers/No_Spoof"
+    No_Spoof_Embeddings
+    "Primitive_Matchers/Routing_IpAssmt"
+    "Primitive_Matchers/Transform"
+    "Primitive_Matchers/Primitive_Abstract"
+    "Primitive_Matchers/Code_Interface"
+    "Primitive_Matchers/Parser"
+    "Simple_Firewall/SimpleFw_Compliance"
+    "Examples/Code_haskell"
+    Documentation
+  document_files
+    "root.tex"
+    "root.bib"
+    "mathpartir.sty"
+
+
+session Iptables_Semantics_Examples (AFP slow) = Iptables_Semantics +
+   theories
+    "Examples/Parser_Test/Parser_Test"
+    "Examples/Parser_Test/Parser6_Test"
+    "Examples/Small_Examples"
+    "Examples/Fail/Ports_Fail"
+    "Examples/Contrived/Contrived_Example"
+    "Examples/Synology_Diskstation_DS414/Analyze_Synology_Diskstation"
+    "Examples/Ringofsaturn_com/Analyze_Ringofsaturn_com"
+    "Examples/SQRL_Shorewall/Analyze_SQRL_Shorewall"
+    "Examples/SQRL_Shorewall/SQRL_2015_nospoof"
+    "Examples/sns.ias.edu/SNS_IAS_Eduroam_Spoofing"
+    "Examples/medium-sized-company/Analyze_medium_sized_company"
+    "Examples/topoS_generated/Analyze_topos_generated"
+    "Examples/IPPartEval/IP_Address_Space_Examples_All_Small"
+    "Examples/IPPartEval/IP_Address_Space_Examples_All_Large"
+    "Examples/TUM_Net_Firewall/Analyze_TUM_Net_Firewall"
+    "Examples/TUM_Net_Firewall/TUM_Spoofing_new3"
+    "Examples/TUM_Net_Firewall/TUM_Simple_FW"
+  document_files
+    "root.tex"
+    "root.bib"
+    "mathpartir.sty"

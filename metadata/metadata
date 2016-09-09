@@ -1016,7 +1016,7 @@ abstract =
 
 [Simple_Firewall]
 title = Simple Firewall
-author = Cornelius Diekmann <http://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de/>, Max Haslbeck<>
+author = Cornelius Diekmann <https://net.in.tum.de/~diekmann>, Julius Michaelis <http://liftm.de/>, Max Haslbeck<>
 notify = diekmann@net.in.tum.de, max.haslbeck@gmx.de
 date = 2016-08-24
 topic = Computer Science/Networks
@@ -1036,6 +1036,29 @@ abstract =
   For a detailed description, see
   <a href="http://dl.ifip.org/db/conf/networking/networking2016/1570232858.pdf">Verified iptables Firewall
   Analysis</a>, IFIP Networking 2016.
+
+[Iptables_Semantics]
+title = Iptables_Semantics
+author = Cornelius Diekmann <https://net.in.tum.de/~diekmann>, Lars Hupel <https://www21.in.tum.de/~hupel/>
+notify = diekmann@net.in.tum.de, hupel@in.tum.de
+date = 2016-09-09
+topic = Computer Science/Networks
+abstract =
+  We present a big step semantics of the filtering behavior of the
+  Linux/netfilter iptables firewall. We provide algorithms to simplify
+  complex iptables rulests to a simple firewall model (c.f. AFP entry <a
+  href="https://www.isa-afp.org/entries/Simple_Firewall.shtml">Simple_Firewall</a>)
+  and to verify spoofing protection of a ruleset.
+  Internally, we embed our semantics into ternary logic, ultimately
+  supporting every iptables match condition by abstracting over
+  unknowns. Using this AFP entry and all entries it depends on, we
+  created an easy-to-use, stand-alone haskell tool called <a
+  href="http://iptables.isabelle.systems">fffuu</a>. The tool does not
+  require any input &mdash;except for the <tt>iptables-save</tt> dump of
+  the analyzed firewall&mdash; and presents interesting results about
+  the user's ruleset. Real-Word firewall errors have been uncovered, and
+  the correctness of rulesets has been proved, with the help of
+  our tool.
 
 [Routing]
 title = Routing
@@ -2390,6 +2413,22 @@ date = 2006-08-08
 topic = Computer Science/Programming Languages/Logics
 abstract = These therories describe Hoare logics for a number of imperative language constructs, from while-loops to mutually recursive procedures. Both partial and total correctness are treated. In particular a proof system for total correctness of recursive procedures in the presence of unbounded nondeterminism is presented.
 notify = nipkow@in.tum.de
+
+[Stone_Algebras]
+title = Stone Algebras
+author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
+notify = walter.guttmann@canterbury.ac.nz
+date = 2016-09-06
+topic = Mathematics/Algebra
+abstract =
+  A range of algebras between lattices and Boolean algebras generalise
+  the notion of a complement. We develop a hierarchy of these
+  pseudo-complemented algebras that includes Stone algebras.
+  Independently of this theory we study filters based on partial orders.
+  Both theories are combined to prove Chen and Grätzer's construction
+  theorem for Stone algebras. The latter involves extensive reasoning
+  about algebraic structures in addition to reasoning in algebraic
+  structures.
 
 [Kleene_Algebra]
 title = Kleene Algebra
@@ -4278,6 +4317,7 @@ notify = denis.lohner@kit.edu
 [PropResPI]
 title = Propositional Resolution and Prime Implicates Generation
 author = Nicolas Peltier <http://membres-lig.imag.fr/peltier/>
+notify = Nicolas.Peltier@imag.fr
 date = 2016-03-11
 topic = Logic
 abstract =
@@ -4308,7 +4348,30 @@ abstract =
 	computation of prime implicates. Building on these results, we provide
 	a procedure for computing such implicates and establish its soundness
 	and completeness.
+
+[SuperCalc]
+title = A Variant of the Superposition Calculus
+author = Nicolas Peltier <http://membres-lig.imag.fr/peltier/>
 notify = Nicolas.Peltier@imag.fr
+date = 2016-09-06
+topic = Logic
+abstract =
+  We provide a formalization of a variant of the superposition
+  calculus, together with formal proofs of soundness and refutational
+  completeness (w.r.t. the usual redundancy criteria based on clause
+  ordering). This version of the calculus uses all the standard
+  restrictions of the superposition rules, together with the following
+  refinement, inspired by the basic superposition calculus: each clause
+  is associated with a set of terms which are assumed to be in normal
+  form -- thus any application of the replacement rule on these terms is
+  blocked. The set is initially empty and terms may be added or removed
+  at each inference step. The set of terms that are assumed to be in
+  normal form includes any term introduced by previous unifiers as well
+  as any term occurring in the parent clauses at a position that is
+  smaller (according to some given ordering on positions) than a
+  previously replaced term. The standard superposition calculus
+  corresponds to the case where the set of irreducible terms is always
+  empty.
 
 [Nominal2]
 title = Nominal 2

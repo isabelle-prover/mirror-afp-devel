@@ -184,6 +184,7 @@
 <div class="list">
 <a href="entries/IP_Addresses.shtml">IP_Addresses</a> &nbsp;
 <a href="entries/Simple_Firewall.shtml">Simple_Firewall</a> &nbsp;
+<a href="entries/Iptables_Semantics.shtml">Iptables_Semantics</a> &nbsp;
 <a href="entries/Routing.shtml">Routing</a> &nbsp;
 </div>
 
@@ -321,6 +322,7 @@
 <a href="entries/HyperCTL.shtml">HyperCTL</a> &nbsp;
 <a href="entries/Abstract_Completeness.shtml">Abstract_Completeness</a> &nbsp;
 <a href="entries/PropResPI.shtml">PropResPI</a> &nbsp;
+<a href="entries/SuperCalc.shtml">SuperCalc</a> &nbsp;
 <a href="entries/Incredible_Proof_Machine.shtml">Incredible_Proof_Machine</a> &nbsp;
 <a href="entries/Resolution_FOL.shtml">Resolution_FOL</a> &nbsp;
 <a href="entries/Surprise_Paradox.shtml">Surprise_Paradox</a> &nbsp;
@@ -349,6 +351,7 @@
 <a href="entries/Impossible_Geometry.shtml">Impossible_Geometry</a> &nbsp;
 <a href="entries/Gauss-Jordan-Elim-Fun.shtml">Gauss-Jordan-Elim-Fun</a> &nbsp;
 <a href="entries/Matrix_Tensor.shtml">Matrix_Tensor</a> &nbsp;
+<a href="entries/Stone_Algebras.shtml">Stone_Algebras</a> &nbsp;
 <a href="entries/Kleene_Algebra.shtml">Kleene_Algebra</a> &nbsp;
 <a href="entries/KAT_and_DRA.shtml">KAT_and_DRA</a> &nbsp;
 <a href="entries/KAD.shtml">KAD</a> &nbsp;
