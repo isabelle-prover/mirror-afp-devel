@@ -627,20 +627,20 @@ proof -
   thus "Ball (set pf) prime" "n \<noteq> 0 \<Longrightarrow> listprod pf = n" "n = 0 \<Longrightarrow> pf = []" by auto
 qed
 
-lemma msetprod_multiset_prime_factorization_nat [simp]: 
-  "(x::nat) \<noteq> 0 \<Longrightarrow> msetprod (prime_factorization x) = x"
+lemma prod_mset_multiset_prime_factorization_nat [simp]: 
+  "(x::nat) \<noteq> 0 \<Longrightarrow> prod_mset (prime_factorization x) = x"
   by simp
 
 (* TODO Move *)
 lemma prime_factorization_unique'':
   assumes "\<And>p. p \<in># A \<Longrightarrow> prime p"
-  assumes "msetprod A = normalize x"
+  assumes "prod_mset A = normalize x"
   shows   "prime_factorization x = A"
 proof -
-  have "msetprod A \<noteq> 0" by (auto dest: assms(1))
+  have "prod_mset A \<noteq> 0" by (auto dest: assms(1))
   with assms(2) have "x \<noteq> 0" by simp
-  hence "msetprod (prime_factorization x) = msetprod A" 
-    by (simp add: assms msetprod_prime_factorization)
+  hence "prod_mset (prime_factorization x) = prod_mset A" 
+    by (simp add: assms prod_mset_prime_factorization)
   with assms show ?thesis 
     by (intro prime_factorization_unique') (auto dest: in_prime_factorization_imp_prime)
 qed
@@ -662,7 +662,7 @@ proof -
         using prime_factors_def using pf(1) that by simp
       let ?l = "\<Prod>i\<in>#prime_factorization n. i"
       let ?r = "\<Prod>i\<in>#mset (prime_factorization_nat n). i"
-      show "msetprod (mset (prime_factorization_nat n)) = normalize n"
+      show "prod_mset (mset (prime_factorization_nat n)) = normalize n"
         by (simp add: pf(2))
     qed
   qed
@@ -693,7 +693,7 @@ proof -
   let ?mf = "\<lambda> (n :: nat). prime_factorization n"
   have "?dn = listprod ` set (sublists (prime_factorization_nat n))" unfolding divisors_nat_def
     using n by auto
-  also have "\<dots> = msetprod ` mset ` set (sublists (prime_factorization_nat n))"
+  also have "\<dots> = prod_mset ` mset ` set (sublists (prime_factorization_nat n))"
     by force
   also have "mset ` set (sublists (prime_factorization_nat n))
     = { ps. ps \<subseteq># mset (prime_factorization_nat n)}" 
@@ -701,7 +701,7 @@ proof -
   also have "\<dots> = { ps. ps \<subseteq># ?mf n}"
     thm multiset_prime_factorization_code[symmetric]
     unfolding multiset_prime_factorization_nat_correct[symmetric] by auto
-  also have "msetprod ` \<dots> = {p. p dvd n}" (is "?l = ?r")
+  also have "prod_mset ` \<dots> = {p. p dvd n}" (is "?l = ?r")
   proof -
     {
       fix x
@@ -709,7 +709,7 @@ proof -
       from this[unfolded dvd] have x: "x \<noteq> 0" by auto
       from \<open>x dvd n\<close> \<open>x \<noteq> 0\<close> \<open>n \<noteq> 0\<close> have sub: "?mf x \<subseteq># ?mf n"
         by (subst prime_factorization_subset_iff_dvd) auto
-      have "msetprod (?mf x) = x" using x
+      have "prod_mset (?mf x) = x" using x
         by (simp add: prime_factorization_nat)
       hence "x \<in> ?l" using sub by force
     } 
@@ -717,8 +717,8 @@ proof -
     {
       fix x
       assume "x \<in> ?l"
-      then obtain ps where x: "x = msetprod ps" and sub: "ps \<subseteq># ?mf n" by auto
-      have "x dvd n" using msetprod_subset_imp_dvd[OF sub] n x by simp
+      then obtain ps where x: "x = prod_mset ps" and sub: "ps \<subseteq># ?mf n" by auto
+      have "x dvd n" using prod_mset_subset_imp_dvd[OF sub] n x by simp
     }
     ultimately show ?thesis by blast
   qed

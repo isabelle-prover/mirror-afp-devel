@@ -15,7 +15,7 @@ imports
 begin
 
 
-lemma msetprod_multiset_of[simp]: "msetprod (mset xs) = listprod xs"
+lemma prod_mset_multiset_of[simp]: "prod_mset (mset xs) = listprod xs"
   by (induct xs, auto simp: ac_simps) 
 
 lemma multiset_subset_insert: "{ps. ps \<subseteq># add_mset x xs} =
@@ -41,8 +41,8 @@ proof -
   thus ?thesis by auto
 qed
 
-lemma msetprod_zero: 
-  "msetprod (xs :: 'a :: {comm_monoid_mult,zero_neq_one,semiring_no_zero_divisors} multiset) = 0 
+lemma prod_mset_zero: 
+  "prod_mset (xs :: 'a :: {comm_monoid_mult,zero_neq_one,semiring_no_zero_divisors} multiset) = 0 
     \<longleftrightarrow> (0 \<in> set_mset xs)"
   by (induct xs, auto)
 
