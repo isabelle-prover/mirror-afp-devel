@@ -182,6 +182,7 @@
 <div class="list">
 <a href="entries/IP_Addresses.shtml">IP_Addresses</a> &nbsp;
 <a href="entries/Simple_Firewall.shtml">Simple_Firewall</a> &nbsp;
+<a href="entries/Iptables_Semantics.shtml">Iptables_Semantics</a> &nbsp;
 <a href="entries/Routing.shtml">Routing</a> &nbsp;
 </div>
 
