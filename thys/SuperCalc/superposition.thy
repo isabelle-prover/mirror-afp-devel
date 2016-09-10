@@ -1083,9 +1083,6 @@ qed
 text {* The following lemmata provide various ways of proving that literals are ordered, depending 
 on the relations between the terms they contain. *}
 
-lemma empty_subset_add_mset[simp]: "{#} <# add_mset x M"
-by(auto intro: subset_mset.gr_zeroI)
-
 lemma lit_ord_dominating_term:
   assumes "(s1,s2) \<in> trm_ord \<or> (s1,t2) \<in> trm_ord"
   assumes "orient_lit x1 s1 t1 p1"
