@@ -250,7 +250,7 @@ subsection\<open>Rulesets with default rules\<close>
   apply(induction rs)
    apply(simp add: has_default_def)
   apply(rename_tac r rs)
-  apply(simp add: has_default_def good_ruleset_tail split: split_if_asm)
+  apply(simp add: has_default_def good_ruleset_tail split: if_split_asm)
    apply(elim disjE)
     apply(simp add: bunch_of_lemmata_about_matches; fail)
    apply(simp add: bunch_of_lemmata_about_matches; fail)
@@ -417,12 +417,7 @@ lemma "simple_ruleset rs \<Longrightarrow> has_default rs \<Longrightarrow>
 apply(frule simple_imp_good_ruleset)
 apply(drule(1) has_default_UNIV[where \<gamma>=\<gamma>])
 apply(drule allow_set_not_inter[where \<gamma>=\<gamma>])
-(*apply(drule HOL.arg_cong[where f="\<lambda>x. - x"])
-back
-apply(simp)
-try0 now its fast*)
-by force (*>2s on my system!*)
-
-
+apply(drule HOL.arg_cong[where f="\<lambda>x. - x"]; auto; fail)
+done
 
 end

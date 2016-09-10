@@ -59,7 +59,7 @@ definition packet_set_to_set :: "('a, 'packet) match_tac \<Rightarrow> 'a packet
 lemma packet_set_to_set_alt:  "packet_set_to_set \<gamma> ps = (\<Union> ms \<in> set (packet_set_repr ps).  
   {p. \<forall> m a. (m, a) \<in> set ms \<longrightarrow> get_action_sign a (matches \<gamma> (negation_type_to_match_expr m) (get_action a) p)})"
 unfolding packet_set_to_set_def
-by fast
+by auto
 
 
 text\<open>We really have a disjunctive normal form\<close>
@@ -118,7 +118,7 @@ subsubsection\<open>Basic Set Operations\<close>
      apply(cases P1)
      apply(cases P2)
      apply(simp add: packet_set_intersect.simps)
-     apply blast
+     apply fast
     done
     
     
