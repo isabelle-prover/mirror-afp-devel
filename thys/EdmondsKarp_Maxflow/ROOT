@@ -1,12 +1,13 @@
 chapter AFP
 
-session Edka_Base = "Sepref_IICF" +
-  options [document = false]
+session Edka_Base (AFP) = "Sepref_IICF" +
+  options [document = false, timeout = 300]
   theories
     "../DFS_Framework/DFS_Framework"
     "../DFS_Framework/Examples/Reachable_Nodes"
 
 session EdmondsKarp_Maxflow (AFP) = Edka_Base +
+  options [timeout = 300]
   theories [document = false]
     Graph
     Fofu_Abs_Base
@@ -31,45 +32,3 @@ session EdmondsKarp_Maxflow (AFP) = Edka_Base +
   document_files
     "root.tex"
     "root.bib"
-
-(*
-session Edka_Document = "Edka_Base" +
-  options [
-    document = "pdf",
-    document_variants = "document:outline=/proof,/ML",
-    document_output = "generated",
-    browser_info]
-  theories [document = false]
-    Graph
-  theories [document = false]
-    Augmenting_Path_BFS
-    Fofu_Abs_Base
-    Fofu_Impl_Base
-    Refine_Add_Fofu
-  theories
-    Network
-    ResidualGraph
-    Augmenting_Flow
-    Augmenting_Path
-    Ford_Fulkerson
-    FordFulkerson_Algo
-    EdmondsKarp_Algo
-    EdmondsKarp_Impl
-  theories [document = false]
-    NetCheck
-  theories
-    Edka_Checked_Impl
-   document_files
-     "root.tex" "root.bib"
-
-*)
-
-(*session Snippets = Edka_BFS +
-   options [
-     document = "pdf",
-     document_output = "generated"]
-   theories
-     Edka_Checked_Impl
-   document_files
-     build
-*)

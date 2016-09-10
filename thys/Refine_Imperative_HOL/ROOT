@@ -1,11 +1,12 @@
 chapter AFP
 
 session Sepref_Prereq (AFP) = Collections +
-  options [document = false]
+  options [document = false, timeout = 300]
   theories [document = false]
     "../Separation_Logic_Imperative_HOL/Sep_Examples"
 
 session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
+  options [timeout = 600]
   theories [document = false]
     "Lib/Concl_Pres_Clarification"
     "Lib/Named_Theorems_Rev"
@@ -56,33 +57,12 @@ session Refine_Imperative_HOL (AFP) = Sepref_Prereq +
 
 
 (* Smaller Sessions: *)
-session Sepref_Basic = Sepref_Prereq +
-  options [document = false]
+session Sepref_Basic (AFP) = Sepref_Prereq +
+  options [document = false, timeout = 120]
   theories [document = false]
     Sepref
 
-session Sepref_IICF = Sepref_Basic +
-  options [document = false]
+session Sepref_IICF (AFP) = Sepref_Basic +
+  options [document = false, timeout = 300]
   theories [document = false]
     "IICF/IICF"
-
-(*session Imp_Datastruct_Paper = Basic_Sepref +
-  options [document = pdf,
-    document_variants = "document:outline=/proof,/ML"]
-  theories
-    "Heaps/Impl_Heap"
-    "Heaps/Impl_Heapmap"
-
-  theories [document = false]
-    "../Dijkstra_Shortest_Path/Dijkstra"
-    "../Dijkstra_Shortest_Path/Test"
-    "~~/src/HOL/Library/Code_Target_Numeral"
-    "../../DFS_Framework/Misc/DFS_Framework_Refine_Aux"
-    "Examples/Sepref_WGraph"
-
-  theories
-    "benchmarks/Heapmap/isabelle/Heapmap_Bench"
-    "benchmarks/Dijkstra/isabelle/Dijkstra_Benchmark"
-
-  document_files "root.tex"
-*)
