@@ -34,7 +34,7 @@ fun constr_terms lthy = BNF_FP_Def_Sugar.fp_sugar_of lthy
   #> the #> #fp_ctr_sugar #> #ctr_sugar #> #ctrs
 
 fun induct_thms lthy =
-  map (hd o #co_inducts o #fp_co_induct_sugar o the o BNF_FP_Def_Sugar.fp_sugar_of lthy)
+  map (hd o #co_inducts o the o #fp_co_induct_sugar o the o BNF_FP_Def_Sugar.fp_sugar_of lthy)
 
 fun case_thms lthy =
   map (#exhaust o #ctr_sugar o #fp_ctr_sugar o the o BNF_FP_Def_Sugar.fp_sugar_of lthy)
