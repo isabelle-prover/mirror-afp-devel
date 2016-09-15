@@ -1,6 +1,6 @@
 section {* Finite partial functions *}
 
-theory Finite_Map imports
+theory Finite_Map2 imports
   Main
   "~~/src/HOL/Library/FSet"
 begin
