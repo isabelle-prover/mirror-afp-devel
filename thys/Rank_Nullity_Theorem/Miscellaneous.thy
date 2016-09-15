@@ -504,34 +504,4 @@ show "a *k (b *k x) = a * b *k x"
 show"1 *k x = x" unfolding matrix_scalar_mult_def vec_eq_iff by auto
 qed
 
-subsection{*Properties about lists*}
-
-text{*The following definitions and theorems are developed in order to compute setprods. 
-  More theorems and properties can be demonstrated in a similar way to the ones
-  about @{term "sum_list"}.*}
-
-definition (in monoid_mult) listprod :: "'a list => 'a" where
-  "listprod xs = foldr times xs 1"
-
-lemma (in monoid_mult) listprod_simps [simp]:
-  "listprod [] = 1"
-  "listprod (x # xs) = x * listprod xs"
-  by (simp_all add: listprod_def)
-
-lemma (in monoid_mult) listprod_append [simp]:
-  "listprod (xs @ ys) = listprod xs * listprod ys"
-  by (induct xs) (simp_all add: mult.assoc)
-
-lemma (in comm_monoid_mult) listprod_rev [simp]:
-  "listprod (rev xs) = listprod xs"
-  by (simp add: listprod_def foldr_fold fold_rev fun_eq_iff ac_simps)
-
-lemma (in monoid_mult) listprod_distinct_conv_setprod_set:
-  "distinct xs ==> listprod (map f xs) = setprod f (set xs)"
-  by (induct xs) simp_all
-
-lemma setprod_code [code]:
-  "setprod f (set xs) = listprod (map f (remdups xs))"
-  by (simp add: listprod_distinct_conv_setprod_set)
-
 end

@@ -213,7 +213,7 @@ using matrix_to_iarray_snd_Gauss_Jordan_upt_k_det_P
 by (metis diff_less matrix_to_iarray_ncols ncols_not_0 neq0_conv zero_less_one)
 
 subsection{*Code equations*}
-definition "det_iarrays A = (let A' = Gauss_Jordan_det_P_iarrays A in listprod (map (\<lambda>i. (snd A') !! i !! i) [0..<nrows_iarray A]) / fst A')"
+definition "det_iarrays A = (let A' = Gauss_Jordan_det_P_iarrays A in prod_list (map (\<lambda>i. (snd A') !! i !! i) [0..<nrows_iarray A]) / fst A')"
 
 lemma matrix_to_iarray_det[code_unfold]:
 fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
@@ -222,10 +222,8 @@ proof -
 let ?f="(\<lambda>i. snd (Gauss_Jordan_det_P_iarrays (matrix_to_iarray A)) !! i !! i)"
 have *: "fst (Gauss_Jordan_det_P A) = fst (Gauss_Jordan_det_P_iarrays (matrix_to_iarray A))" 
   unfolding matrix_to_iarray_fst_Gauss_Jordan_det_P ..
-have "listprod (map ?f [0..<nrows_iarray (matrix_to_iarray A)]) = setprod ?f (set [0..<nrows_iarray (matrix_to_iarray A)])"
-  proof (rule listprod_distinct_conv_setprod_set)
-    show "distinct [0..<nrows_iarray (matrix_to_iarray A)]" unfolding nrows_iarray_def by auto
-   qed
+  have "prod_list (map ?f [0..<nrows_iarray (matrix_to_iarray A)]) = setprod ?f (set [0..<nrows_iarray (matrix_to_iarray A)])"
+    by (metis (no_types, lifting) distinct_upt setprod.distinct_set_conv_list)
 also have "... = (\<Prod>i\<in>UNIV. snd (Gauss_Jordan_det_P A) $ i $ i)"
   proof (rule setprod.reindex_cong[of "to_nat::('n=>nat)"])
     show "inj (to_nat::('n=>nat))" by (metis strict_mono_imp_inj_on strict_mono_to_nat)
@@ -239,7 +237,7 @@ also have "... = (\<Prod>i\<in>UNIV. snd (Gauss_Jordan_det_P A) $ i $ i)"
     unfolding matrix_to_iarray_nth ..
     qed
   finally have "(\<Prod>i\<in>UNIV. snd (Gauss_Jordan_det_P A) $ i $ i) 
-  = listprod (map (\<lambda>i. snd (Gauss_Jordan_det_P_iarrays (matrix_to_iarray A)) !! i !! i) [0..<nrows_iarray (matrix_to_iarray A)])" ..
+  = prod_list (map (\<lambda>i. snd (Gauss_Jordan_det_P_iarrays (matrix_to_iarray A)) !! i !! i) [0..<nrows_iarray (matrix_to_iarray A)])" ..
   thus ?thesis using * unfolding det_code_equation det_iarrays_def Let_def  by presburger
 qed
 
