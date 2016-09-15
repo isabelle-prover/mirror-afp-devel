@@ -73,10 +73,10 @@ subsubsection \<open>Complexity\<close>
 
 fun size_hp :: "'a heap \<Rightarrow> nat" where
 "size_hp heap.Empty = 0" |
-"size_hp (Hp x hs) = listsum(map size_hp hs) + 1"
+"size_hp (Hp x hs) = sum_list(map size_hp hs) + 1"
 
 abbreviation size_hps where
-"size_hps hs \<equiv> listsum(map size_hp hs)"
+"size_hps hs \<equiv> sum_list(map size_hp hs)"
 
 fun \<Phi>_hps :: "'a heap list \<Rightarrow> real" where
 "\<Phi>_hps [] = 0" |

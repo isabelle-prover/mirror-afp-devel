@@ -158,7 +158,7 @@ proof (induct xs arbitrary: ys)
   qed simp
 qed simp
 
-lemma listsum_0: "\<lbrakk>\<And> x. x \<in> set xs \<Longrightarrow> x = 0\<rbrakk> \<Longrightarrow> listsum xs = 0"
+lemma sum_list_0: "\<lbrakk>\<And> x. x \<in> set xs \<Longrightarrow> x = 0\<rbrakk> \<Longrightarrow> sum_list xs = 0"
   by (induct xs, auto)
 
 lemma foldr_foldr_concat: "foldr (foldr f) m a = foldr f (concat m) a"
@@ -171,18 +171,18 @@ next
     unfolding foldr_append by simp
 qed
 
-lemma listsum_double_concat: 
+lemma sum_list_double_concat: 
   fixes f :: "'b \<Rightarrow> 'c \<Rightarrow> 'a :: comm_monoid_add" and g as bs
-  shows "listsum (concat (map (\<lambda> i. map (\<lambda> j. f i j + g i j) as) bs))
-      = listsum (concat (map (\<lambda> i. map (\<lambda> j. f i j) as) bs)) + 
-        listsum (concat (map (\<lambda> i. map (\<lambda> j. g i j) as) bs))"
+  shows "sum_list (concat (map (\<lambda> i. map (\<lambda> j. f i j + g i j) as) bs))
+      = sum_list (concat (map (\<lambda> i. map (\<lambda> j. f i j) as) bs)) + 
+        sum_list (concat (map (\<lambda> i. map (\<lambda> j. g i j) as) bs))"
 proof (induct bs)
   case Nil thus ?case by simp
 next
   case (Cons b bs)
-  have id: "(\<Sum>j\<leftarrow>as. f b j + g b j) = listsum (map (f b) as) + listsum (map (g b) as)"
+  have id: "(\<Sum>j\<leftarrow>as. f b j + g b j) = sum_list (map (f b) as) + sum_list (map (g b) as)"
     by (induct as, auto simp: ac_simps)
-  show ?case unfolding list.map concat.simps listsum_append
+  show ?case unfolding list.map concat.simps sum_list_append
     unfolding Cons
     unfolding id 
     by (simp add: ac_simps)

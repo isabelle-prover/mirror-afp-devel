@@ -15,7 +15,7 @@ imports
 begin
 
 
-lemma prod_mset_multiset_of[simp]: "prod_mset (mset xs) = listprod xs"
+lemma prod_mset_multiset_of[simp]: "prod_mset (mset xs) = prod_list xs"
   by (induct xs, auto simp: ac_simps) 
 
 lemma multiset_subset_insert: "{ps. ps \<subseteq># add_mset x xs} =

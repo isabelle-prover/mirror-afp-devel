@@ -2834,15 +2834,15 @@ lemma mantissa_Float_0[simp]: "mantissa (Float 0 e) = 0"
 
 subsection \<open>Lists\<close>
 
-lemma listsum_nonneg:
+lemma sum_list_nonneg:
   assumes nn:
     "(\<And>x. x \<in> set xs \<Longrightarrow> f x \<ge> (0::'a::{monoid_add, ordered_ab_semigroup_add}))"
-  shows "0 \<le> listsum (map f xs)"
+  shows "0 \<le> sum_list (map f xs)"
 proof -
-  have "0 = listsum (map (\<lambda>_. 0) xs)"
+  have "0 = sum_list (map (\<lambda>_. 0) xs)"
     by (induct xs) auto
-  also have "\<dots> \<le> listsum (map f xs)"
-    by (rule listsum_mono) (rule assms)
+  also have "\<dots> \<le> sum_list (map f xs)"
+    by (rule sum_list_mono) (rule assms)
   finally show ?thesis .
 qed
 

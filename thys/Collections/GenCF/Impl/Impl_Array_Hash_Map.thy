@@ -379,7 +379,7 @@ proof(cases a)
   hence "card (dom (map_of (concat xs))) = length (concat xs)"
     by(rule card_dom_map_of)
   also have "length (concat xs) = foldl op + 0 (map length xs)"
-    by (simp add: length_concat foldl_conv_fold add.commute fold_plus_listsum_rev)
+    by (simp add: length_concat foldl_conv_fold add.commute fold_plus_sum_list_rev)
   also from inv
   have "\<dots> = n" unfolding foldl_map by(simp add: ahm_invar_aux_def array_foldl_foldl)
   finally show ?thesis by(simp)

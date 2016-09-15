@@ -267,7 +267,7 @@ proof -
   from A have cA: "char_poly_matrix A \<in> carrier\<^sub>m n n" by simp
   show ?thesis
     unfolding char_poly_def det_upper_triangular [OF char_poly_matrix_upper_triangular cA]
-    by (rule arg_cong[where f = listprod], unfold list_eq_iff_nth_eq, insert cA A, auto simp: mat_diag_def
+    by (rule arg_cong[where f = prod_list], unfold list_eq_iff_nth_eq, insert cA A, auto simp: mat_diag_def
       char_poly_matrix_def)
 qed
 end
@@ -358,9 +358,9 @@ proof -
     by (rule det_mult[symmetric], insert P Q, auto)
   also have "?P \<otimes>\<^sub>m ?Q = ?I" unfolding PQ[symmetric]
     by (rule map_poly_mult[symmetric, OF P Q])
-  also have "det \<dots> = listprod (mat_diag ?I)"
+  also have "det \<dots> = prod_list (mat_diag ?I)"
     by (rule det_upper_triangular[of _ n], auto)
-  also have "\<dots> = 1" unfolding listprod_diag_setprod
+  also have "\<dots> = 1" unfolding prod_list_diag_setprod
     by (rule setprod.neutral, auto simp: one_poly_def)
   finally show ?thesis by simp
 qed

@@ -7,23 +7,23 @@ begin
 
 subsection \<open>Auxiliary developments\<close>
 
-lemma listsum_mono:
+lemma sum_list_mono:
   fixes xs ys::"'a::ordered_ab_group_add list"
   shows
     "length xs = length ys \<Longrightarrow> (\<And>x y. (x, y) \<in> set (zip xs ys) \<Longrightarrow> x \<le> y) \<Longrightarrow>
-      listsum xs \<le> listsum ys"
+      sum_list xs \<le> sum_list ys"
   by (induct xs ys rule: list_induct2) (auto simp: algebra_simps intro: add_mono)
 
-lemma listsum_nth_eqI:
+lemma sum_list_nth_eqI:
   fixes xs ys::"'a::monoid_add list"
   shows
     "length xs = length ys \<Longrightarrow> (\<And>x y. (x, y) \<in> set (zip xs ys) \<Longrightarrow> x = y) \<Longrightarrow>
-      listsum xs = listsum ys"
+      sum_list xs = sum_list ys"
   by (induct xs ys rule: list_induct2) auto
 
 lemma
   fixes xs::"'a::ordered_comm_monoid_add list"
-  shows listsum_nonneg: "(\<And>x. x \<in> set xs \<Longrightarrow> x \<ge> 0) \<Longrightarrow> listsum xs \<ge> 0"
+  shows sum_list_nonneg: "(\<And>x. x \<in> set xs \<Longrightarrow> x \<ge> 0) \<Longrightarrow> sum_list xs \<ge> 0"
   by (induct xs) (auto intro!: add_nonneg_nonneg)
 
 lemma list_allI: "(\<And>x. x \<in> set xs \<Longrightarrow> P x) \<Longrightarrow> list_all P xs"
@@ -1124,8 +1124,8 @@ proof -
     by simp
 qed
 
-lemma tdev_pdevs_of_list[simp]: "tdev (pdevs_of_list xs) = listsum (map abs xs)"
-  by (auto simp: tdev_def pdevs_apply_pdevs_of_list listsum_setsum_nth
+lemma tdev_pdevs_of_list[simp]: "tdev (pdevs_of_list xs) = sum_list (map abs xs)"
+  by (auto simp: tdev_def pdevs_apply_pdevs_of_list sum_list_setsum_nth
     less_degree_pdevs_of_list_imp_less_length
     intro!: setsum.mono_neutral_cong_left degree_gt)
 
@@ -1170,18 +1170,18 @@ lemma pdevs_domain_pdevs_of_list_le: "pdevs_domain (pdevs_of_list xs) \<subseteq
   by (auto simp: pdevs_apply_pdevs_of_list split: if_split_asm)
 
 lemma pdevs_val_zip: "pdevs_val e (pdevs_of_list xs) = (\<Sum>(i,x)\<leftarrow>zip [0..<length xs] xs. e i *\<^sub>R x)"
-  by (auto simp: listsum_distinct_conv_setsum_set
+  by (auto simp: sum_list_distinct_conv_setsum_set
     in_set_zip image_fst_zip pdevs_apply_pdevs_of_list distinct_zipI1
     intro!: pdevs_val_inj_setsumI[of _ fst]
     split: if_split_asm)
 
-lemma scaleR_listsum:
+lemma scaleR_sum_list:
   fixes xs::"'a::real_vector list"
-  shows "a *\<^sub>R listsum xs = listsum (map (scaleR a) xs)"
+  shows "a *\<^sub>R sum_list xs = sum_list (map (scaleR a) xs)"
   by (induct xs) (auto simp: algebra_simps)
 
-lemma pdevs_val_const_pdevs_of_list: "pdevs_val (\<lambda>_. c) (pdevs_of_list xs) = c *\<^sub>R listsum xs"
-  unfolding pdevs_val_zip split_beta' scaleR_listsum
+lemma pdevs_val_const_pdevs_of_list: "pdevs_val (\<lambda>_. c) (pdevs_of_list xs) = c *\<^sub>R sum_list xs"
+  unfolding pdevs_val_zip split_beta' scaleR_sum_list
   by (rule arg_cong) (auto intro!: nth_equalityI)
 
 lemma pdevs_val_partition:
@@ -1207,7 +1207,7 @@ proof -
     have "pdevs_val e (pdevs_of_list xs) = (\<Sum>(i,x)\<leftarrow>?zip. e i *\<^sub>R x)"
       by (rule pdevs_val_zip)
     also have "\<dots> = (\<Sum>(i, x)\<in>set ?zip. e i *\<^sub>R x)"
-      by (simp add: listsum_distinct_conv_setsum_set distinct_zipI1)
+      by (simp add: sum_list_distinct_conv_setsum_set distinct_zipI1)
     also
     have [simp]: "set (fst part) \<inter> set (snd part) = {}"
       by (auto simp: part_def)
@@ -1219,23 +1219,23 @@ proof -
       by (auto simp: split_beta setsum_Un)
     also
     have "(\<Sum>(i, x)\<in>set (fst part). e i *\<^sub>R x) = (\<Sum>(i, x)\<leftarrow>(fst part). e i *\<^sub>R x)"
-      by (simp add: listsum_distinct_conv_setsum_set distinct_zipI1 part_def)
+      by (simp add: sum_list_distinct_conv_setsum_set distinct_zipI1 part_def)
     also have "\<dots> = (\<Sum>i<length (fst part). case (fst part ! i) of (i, x) \<Rightarrow> e i *\<^sub>R x)"
-      by (subst listsum_setsum_nth) (simp add: split_beta' atLeast0LessThan)
+      by (subst sum_list_setsum_nth) (simp add: split_beta' atLeast0LessThan)
     also have "\<dots> =
       pdevs_val (\<lambda>n. e (map fst (fst part) ! n)) (pdevs_of_list (map snd (fst part)))"
       by (force
-        simp: pdevs_val_zip listsum_distinct_conv_setsum_set distinct_zipI1 split_beta' in_set_zip
+        simp: pdevs_val_zip sum_list_distinct_conv_setsum_set distinct_zipI1 split_beta' in_set_zip
         intro!:
           setsum.reindex_cong[where l=fst] image_eqI[where x = "(x, map snd (fst part) ! x)" for x])
     also
     have "(\<Sum>(i, x)\<in>set (snd part). e i *\<^sub>R x) = (\<Sum>(i, x)\<leftarrow>(snd part). e i *\<^sub>R x)"
-      by (simp add: listsum_distinct_conv_setsum_set distinct_zipI1 part_def)
+      by (simp add: sum_list_distinct_conv_setsum_set distinct_zipI1 part_def)
     also have "\<dots> = (\<Sum>i<length (snd part). case (snd part ! i) of (i, x) \<Rightarrow> e i *\<^sub>R x)"
-      by (subst listsum_setsum_nth) (simp add: split_beta' atLeast0LessThan)
+      by (subst sum_list_setsum_nth) (simp add: split_beta' atLeast0LessThan)
     also have "\<dots> =
       pdevs_val (\<lambda>n. e (map fst (snd part) ! n)) (pdevs_of_list (map snd (snd part)))"
-      by (force simp: pdevs_val_zip listsum_distinct_conv_setsum_set distinct_zipI1 split_beta'
+      by (force simp: pdevs_val_zip sum_list_distinct_conv_setsum_set distinct_zipI1 split_beta'
         in_set_zip
         intro!: setsum.reindex_cong[where l=fst]
           image_eqI[where x = "(x, map snd (snd part) ! x)" for x])
@@ -1451,22 +1451,22 @@ definition "list_of_pdevs x =
 lemma list_of_pdevs_zero_pdevs[simp]: "list_of_pdevs zero_pdevs = []"
   by (auto simp: list_of_pdevs_def)
 
-lemma listsum_list_of_pdevs: "listsum (map snd (list_of_pdevs x)) = listsum (dense_list_of_pdevs x)"
+lemma sum_list_list_of_pdevs: "sum_list (map snd (list_of_pdevs x)) = sum_list (dense_list_of_pdevs x)"
   by (auto intro!: setsum.mono_neutral_cong_left
-    simp add: degree_gt listsum_distinct_conv_setsum_set dense_list_of_pdevs_def list_of_pdevs_def)
+    simp add: degree_gt sum_list_distinct_conv_setsum_set dense_list_of_pdevs_def list_of_pdevs_def)
 
-lemma listsum_filter_dense_list_of_pdevs[symmetric]:
-  "listsum (map snd (filter (p o snd) (list_of_pdevs x))) =
-    listsum (filter p (dense_list_of_pdevs x))"
+lemma sum_list_filter_dense_list_of_pdevs[symmetric]:
+  "sum_list (map snd (filter (p o snd) (list_of_pdevs x))) =
+    sum_list (filter p (dense_list_of_pdevs x))"
   by (auto intro!: setsum.mono_neutral_cong_left
-    simp add: degree_gt listsum_distinct_conv_setsum_set dense_list_of_pdevs_def list_of_pdevs_def
+    simp add: degree_gt sum_list_distinct_conv_setsum_set dense_list_of_pdevs_def list_of_pdevs_def
       o_def filter_map)
 
 lemma pdevs_of_list_dense_list_of_pdevs: "pdevs_of_list (dense_list_of_pdevs x) = x"
   by (auto simp: pdevs_apply_pdevs_of_list dense_list_of_pdevs_def pdevs_eqI)
 
-lemma pdevs_val_listsum: "pdevs_val (\<lambda>_. c) X = c *\<^sub>R listsum (map snd (list_of_pdevs X))"
-  by (auto simp: pdevs_val_setsum listsum_list_of_pdevs pdevs_val_const_pdevs_of_list[symmetric]
+lemma pdevs_val_sum_list: "pdevs_val (\<lambda>_. c) X = c *\<^sub>R sum_list (map snd (list_of_pdevs X))"
+  by (auto simp: pdevs_val_setsum sum_list_list_of_pdevs pdevs_val_const_pdevs_of_list[symmetric]
     pdevs_of_list_dense_list_of_pdevs)
 
 lemma list_of_pdevs_all_nonzero: "list_all (\<lambda>x. x \<noteq> 0) (map snd (list_of_pdevs xs))"
@@ -1490,10 +1490,10 @@ lemma list_of_pdevs_eq:
   using map_filter[of ?f ?P ?xs]
   by (auto simp: list_of_pdevs_def o_def sorted_list_of_pdevs_domain_eq rev_map)
 
-lemma listsum_take_pdevs_val_eq:
-  "listsum (take d xs) = pdevs_val (\<lambda>i. if i < d then 1 else 0) (pdevs_of_list xs)"
+lemma sum_list_take_pdevs_val_eq:
+  "sum_list (take d xs) = pdevs_val (\<lambda>i. if i < d then 1 else 0) (pdevs_of_list xs)"
 proof -
-  have "listsum (take d xs) = 1 *\<^sub>R listsum (take d xs)" by simp
+  have "sum_list (take d xs) = 1 *\<^sub>R sum_list (take d xs)" by simp
   also note pdevs_val_const_pdevs_of_list[symmetric]
   also have "pdevs_val (\<lambda>_. 1) (pdevs_of_list (take d xs)) =
       pdevs_val (\<lambda>i. if i < d then 1 else 0) (pdevs_of_list xs)"
@@ -1662,9 +1662,9 @@ proof -
     by (auto simp: f_def)
   moreover
   have "pdevs_val e (pdevs_of_list xs) = (\<Sum>P\<in>set xs. f P *\<^sub>R P)"
-    by (auto simp add: pdevs_val_zip f_def assms listsum_distinct_conv_setsum_set[symmetric]
+    by (auto simp add: pdevs_val_zip f_def assms sum_list_distinct_conv_setsum_set[symmetric]
       in_set_zip map_of_zip_upto2_length_eq_nth
-      intro!: listsum_nth_eqI)
+      intro!: sum_list_nth_eqI)
   ultimately show ?thesis ..
 qed
 
@@ -1692,17 +1692,17 @@ lemma list_of_pdevs_pdevs_of_list_eq:
   by (auto simp: nth_list_of_pdevs_pdevs_of_list length_list_of_pdevs_pdevs_of_list rev_nth
     intro!: nth_equalityI)
 
-lemma listsum_filter_list_of_pdevs_of_list:
+lemma sum_list_filter_list_of_pdevs_of_list:
   fixes xs::"'a::comm_monoid_add list"
   assumes "\<And>x. x \<in> set xs \<Longrightarrow> x \<noteq> 0"
-  shows "listsum (filter p (map snd (list_of_pdevs (pdevs_of_list xs)))) = listsum (filter p xs)"
+  shows "sum_list (filter p (map snd (list_of_pdevs (pdevs_of_list xs)))) = sum_list (filter p xs)"
   using assms
   by (auto simp: list_of_pdevs_pdevs_of_list_eq rev_filter[symmetric])
 
 lemma
-  listsum_partition:
+  sum_list_partition:
   fixes xs::"'a::comm_monoid_add list"
-  shows "listsum (filter p xs) + listsum (filter (Not o p) xs) = listsum xs"
+  shows "sum_list (filter p xs) + sum_list (filter (Not o p) xs) = sum_list xs"
   by (induct xs) (auto simp: ac_simps)
 
 end

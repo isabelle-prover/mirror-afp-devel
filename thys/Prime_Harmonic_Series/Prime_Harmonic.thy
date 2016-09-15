@@ -227,7 +227,7 @@ proof
         using ln_ln_nonneg[of "real n + 1"] by simp
       also have "\<dots> \<le> ?f n + ln (5/3)" using prime_harmonic_lower'[OF n]
         by (simp add: algebra_simps)
-      also have "?f n + ln (5/3) \<ge> 0" by (intro add_nonneg_nonneg listsum_nonneg) simp_all
+      also have "?f n + ln (5/3) \<ge> 0" by (intro add_nonneg_nonneg sum_list_nonneg) simp_all
       hence "?f n + ln (5/3) = norm (?f n + ln (5/3))" by simp
       finally show "norm (ln (ln (n + 1))) \<le> norm (?f n + ln (5/3))"
         by (simp add: add_ac)

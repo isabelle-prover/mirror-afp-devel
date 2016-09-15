@@ -131,7 +131,7 @@ locale al_annot = al +
   constrains \<alpha> :: "'s \<Rightarrow> ('e \<times> 'a::monoid_add) list"
   fixes annot :: "'s \<Rightarrow> 'a"
   assumes annot_correct:
-    "invar s \<Longrightarrow> (annot s) = (listsum (map snd (\<alpha> s)))"
+    "invar s \<Longrightarrow> (annot s) = (sum_list (map snd (\<alpha> s)))"
 
 subsubsection "Split by Monotone Predicate"
 locale al_splits = al + 
@@ -142,12 +142,12 @@ locale al_splits = al +
     "\<lbrakk>invar s;
        \<forall>a b. p a \<longrightarrow> p (a + b);
        \<not> p i; 
-       p (i + listsum (map snd (\<alpha> s)));
+       p (i + sum_list (map snd (\<alpha> s)));
        (splits p i s) = (l, (e,a), r)\<rbrakk> 
       \<Longrightarrow> 
         (\<alpha> s) = (\<alpha> l) @ (e,a) # (\<alpha> r)  \<and>
-        \<not> p (i + listsum (map snd (\<alpha> l)))  \<and>
-        p (i + listsum (map snd (\<alpha> l)) + a)  \<and>
+        \<not> p (i + sum_list (map snd (\<alpha> l)))  \<and>
+        p (i + sum_list (map snd (\<alpha> l)) + a)  \<and>
         invar l  \<and>
         invar r
     "
@@ -157,12 +157,12 @@ begin
     invar: "invar s" and
     mono: "\<forall>a b. p a \<longrightarrow> p (a + b)" and
     init_ff: "\<not> p i" and
-    sum_tt: "p (i + listsum (map snd (\<alpha> s)))"
+    sum_tt: "p (i + sum_list (map snd (\<alpha> s)))"
     obtains l e a r where
     "(splits p i s) = (l, (e,a), r)"
     "(\<alpha> s) = (\<alpha> l) @ (e,a) # (\<alpha> r)"
-    "\<not> p (i + listsum (map snd (\<alpha> l)))"
-    "p (i + listsum (map snd (\<alpha> l)) + a)"
+    "\<not> p (i + sum_list (map snd (\<alpha> l)))"
+    "p (i + sum_list (map snd (\<alpha> l)) + a)"
     "invar l"
     "invar r"
     using assms

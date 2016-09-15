@@ -74,7 +74,7 @@ definition prime_factorization_nat :: "nat \<Rightarrow> nat list" where
 
 definition divisors_nat :: "nat \<Rightarrow> nat list" where 
   "divisors_nat n \<equiv> if n = 0 then [] else 
-     remdups_adj (sort (map listprod (sublists (prime_factorization_nat n))))"
+     remdups_adj (sort (map prod_list (sublists (prime_factorization_nat n))))"
 
 definition divisors_int_pos :: "int \<Rightarrow> int list" where
   "divisors_int_pos x \<equiv> map int (divisors_nat (nat (abs x)))"
@@ -87,7 +87,7 @@ subsection \<open>Proofs\<close>
 lemma remove_prime_factor: assumes res: "remove_prime_factor i n ps = (m,qs)"
   and i: "i > 1"
   and n: "n \<noteq> 0"
-  shows "\<exists> rs. qs = rs @ ps \<and> n = m * listprod rs \<and> \<not> i dvd m \<and> set rs \<subseteq> {i}"
+  shows "\<exists> rs. qs = rs @ ps \<and> n = m * prod_list rs \<and> \<not> i dvd m \<and> set rs \<subseteq> {i}"
   using res n
 proof (induct n arbitrary: ps rule: less_induct)
   case (less n ps)
@@ -105,7 +105,7 @@ proof (induct n arbitrary: ps rule: less_induct)
     with `n \<noteq> 0` have n': "n' \<noteq> 0" by auto
     from True res have "remove_prime_factor i n' (i # ps) = (m,qs)" by auto
     from IH[OF this n'] obtain rs where 
-      "qs = rs @ i # ps" and "n' = m * listprod rs \<and> \<not> i dvd m \<and> set rs \<subseteq> {i}" by auto
+      "qs = rs @ i # ps" and "n' = m * prod_list rs \<and> \<not> i dvd m \<and> set rs \<subseteq> {i}" by auto
     thus ?thesis
       by (intro exI[of _ "rs @ [i]"], unfold n, auto)
   next
@@ -410,7 +410,7 @@ lemma prime_factorization_nat_main: "ni = (n,i,is) \<Longrightarrow> i \<ge> 2 \
   (\<And> j. i \<le> j \<Longrightarrow> j < jj \<Longrightarrow> prime j \<Longrightarrow> j \<in> set is) \<Longrightarrow> i \<le> jj \<Longrightarrow>
   sorted is \<Longrightarrow> distinct is \<Longrightarrow> candidate_invariant jj \<Longrightarrow> set is \<subseteq> {i..<jj} \<Longrightarrow> 
   res = prime_factorization_nat_main n jj is ps \<Longrightarrow> 
-  \<exists> qs. res = qs @ ps \<and> Ball (set qs) prime \<and> n = listprod qs"
+  \<exists> qs. res = qs @ ps \<and> Ball (set qs) prime \<and> n = prod_list qs"
 proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF 
   wf_measures[of "[\<lambda> (n,i,is). n - i, \<lambda> (n,i,is). if is = [] then 1 else 0]"]])
   case (1 ni n i "is" jj res ps)
@@ -531,7 +531,7 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
       from n id have "n' \<noteq> 0" by (cases "n = 0", auto)
       with id have "i' \<le> n" by auto
       from remove_prime_factor[OF rp[folded n'] `1 < i'` `n' \<noteq> 0`] obtain rs
-        where qs: "qs = rs @ i' # ps" and n': "n' = n'' * listprod rs" and i_n'': "\<not> i' dvd n''" 
+        where qs: "qs = rs @ i' # ps" and n': "n' = n'' * prod_list rs" and i_n'': "\<not> i' dvd n''" 
         and rs: "set rs \<subseteq> {i'}" by auto
       {
         fix j
@@ -545,8 +545,8 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
           by simp
         from i i' have "i' \<ge> 2" by simp
         from False n' `n' \<noteq> 0` have n2: "n'' \<ge> 2" by (cases "n'' = 0"; auto)
-        have lrs: "listprod rs \<noteq> 0" using n' `n' \<noteq> 0` by (cases "listprod rs = 0", auto)
-        with `i' \<ge> 2` have "listprod rs * i' \<ge> 2" by (cases "listprod rs", auto)
+        have lrs: "prod_list rs \<noteq> 0" using n' `n' \<noteq> 0` by (cases "prod_list rs = 0", auto)
+        with `i' \<ge> 2` have "prod_list rs * i' \<ge> 2" by (cases "prod_list rs", auto)
         hence nn'': "n > n''" unfolding id n' using n2 by simp
         have "i' \<noteq> n" unfolding id n' using pi False by fastforce
         with `i' \<le> n` i' have "n > i" by auto
@@ -562,7 +562,7 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
           qed (insert i_n'', auto)
         }
         from IH[OF _ n2 this iis res] less obtain ss where 
-          res: "res = ss @ qs \<and> Ball (set ss) prime \<and> n'' = listprod ss" by auto
+          res: "res = ss @ qs \<and> Ball (set ss) prime \<and> n'' = prod_list ss" by auto
         thus ?thesis unfolding id n' qs using pi rs by auto
       next
         case True
@@ -599,11 +599,11 @@ lemma prime_code[code]: "prime = prime_nat"
 lemma prime_factorization_nat: fixes n :: nat
   defines "pf \<equiv> prime_factorization_nat n"
   shows "Ball (set pf) prime"
-  and "n \<noteq> 0 \<Longrightarrow> listprod pf = n"
+  and "n \<noteq> 0 \<Longrightarrow> prod_list pf = n"
   and "n = 0 \<Longrightarrow> pf = []"
 proof -
   note pf = pf_def[unfolded prime_factorization_nat_def]
-  have "Ball (set pf) prime \<and> (n \<noteq> 0 \<longrightarrow> listprod pf = n) \<and> (n = 0 \<longrightarrow> pf = [])"
+  have "Ball (set pf) prime \<and> (n \<noteq> 0 \<longrightarrow> prod_list pf = n) \<and> (n = 0 \<longrightarrow> pf = [])"
   proof (cases "n < 2")
     case True
     thus ?thesis using pf by auto
@@ -621,10 +621,10 @@ proof -
     from pf[unfolded can] False
     have res: "pf = rev ?pfm" by simp
     from prime_factorization_nat_main[OF refl le_refl n _ _ jj cann(1-3) sub refl, of Nil] cann(4)
-    have "Ball (set ?pfm) prime" "n = listprod ?pfm" by auto
+    have "Ball (set ?pfm) prime" "n = prod_list ?pfm" by auto
     thus ?thesis unfolding res using n by auto
   qed
-  thus "Ball (set pf) prime" "n \<noteq> 0 \<Longrightarrow> listprod pf = n" "n = 0 \<Longrightarrow> pf = []" by auto
+  thus "Ball (set pf) prime" "n \<noteq> 0 \<Longrightarrow> prod_list pf = n" "n = 0 \<Longrightarrow> pf = []" by auto
 qed
 
 lemma prod_mset_multiset_prime_factorization_nat [simp]: 
@@ -691,7 +691,7 @@ proof -
   } note dvd = this
   let ?dn = "set (divisors_nat n)"
   let ?mf = "\<lambda> (n :: nat). prime_factorization n"
-  have "?dn = listprod ` set (sublists (prime_factorization_nat n))" unfolding divisors_nat_def
+  have "?dn = prod_list ` set (sublists (prime_factorization_nat n))" unfolding divisors_nat_def
     using n by auto
   also have "\<dots> = prod_mset ` mset ` set (sublists (prime_factorization_nat n))"
     by force

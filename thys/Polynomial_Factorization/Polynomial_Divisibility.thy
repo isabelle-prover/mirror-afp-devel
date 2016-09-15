@@ -72,9 +72,9 @@ proof -
   qed (insert p1, auto)
 qed
 
-lemma irreducible_dvd_listprod: fixes p :: "'a poly"
+lemma irreducible_dvd_prod_list: fixes p :: "'a poly"
   assumes irr: "irreducible p"
-  and dvd: "p dvd listprod as"
+  and dvd: "p dvd prod_list as"
   shows "\<exists> a \<in> set as. p dvd a"
 proof -
   from irr[unfolded irreducible_def] have deg: "degree p \<noteq> 0" by auto
@@ -83,7 +83,7 @@ proof -
   from dvd show ?thesis
   proof (induct as)
     case (Cons a as)
-    hence "listprod (Cons a as) = a * listprod as" by auto
+    hence "prod_list (Cons a as) = a * prod_list as" by auto
     from irreducible_dvd_mult[OF irr Cons(2)[unfolded this]] Cons(1)
     show ?case by auto
   qed (insert p1, auto)

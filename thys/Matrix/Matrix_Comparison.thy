@@ -700,28 +700,28 @@ proof -
         let ?zi = "map ?prod [0 ..< i]" 
         obtain i_d where i_d: "i_d = ?id" by auto
         obtain diff where diff: "j - i = diff" by auto
-        have "scalar_prod ?mind ?mcola = listsum ?mprod" unfolding scalar_prod unfolding z unfolding map_map o_def by simp
-        also have "... = listsum ?zi + listsum i_d"
+        have "scalar_prod ?mind ?mcola = sum_list ?mprod" unfolding scalar_prod unfolding z unfolding map_map o_def by simp
+        also have "... = sum_list ?zi + sum_list i_d"
           using upt_add_eq_append[of 0 i "d - i"] i i_d by auto
-        also have "listsum ?zi = 0"
-        proof (rule listsum_0)
+        also have "sum_list ?zi = 0"
+        proof (rule sum_list_0)
           fix x
           assume "x \<in> set ?zi"
           then obtain k where k: "k < i" and xy: "x = ?prod k" by auto
           from k xy show "x = 0" by auto
         qed
-        also have "0 + listsum i_d = listsum ?id" unfolding i_d  by simp
+        also have "0 + sum_list i_d = sum_list ?id" unfolding i_d  by simp
         also have "?id = ?ij @ ?jd"
           using upt_add_eq_append[of i "Suc j" "d - Suc j"] ji j by auto
-        also have "listsum (?ij @ ?jd) = listsum ?ij + listsum ?jd" by simp
-        also have "listsum ?jd = 0"
-        proof (rule listsum_0)
+        also have "sum_list (?ij @ ?jd) = sum_list ?ij + sum_list ?jd" by simp
+        also have "sum_list ?jd = 0"
+        proof (rule sum_list_0)
           fix x
           assume "x \<in> set ?jd"
           then obtain k where k: "Suc j \<le> k" "k < d" and xy: "x = ?prod k" by auto
           from k xy show "x = 0" by auto
         qed
-        also have "listsum ?ij + 0 = listsum ?ij" by simp
+        also have "sum_list ?ij + 0 = sum_list ?ij" by simp
         also have "?ij = map (\<lambda> k. (?fact k * ?cola k)) [i ..< Suc j]"
           by (rule map_cong, auto)
         also have "... = map (\<lambda> k. (?fact k * ?cola k)) [i ..< j] @ [?fact j]"
@@ -729,8 +729,8 @@ proof -
         also have "... = map (\<lambda> k. (?fact k * a)) [i ..< j] @ [?fact j]" (is "_ = ?zwi @ _") by auto
         also have "?zwi = map (\<lambda> k. (?fac k * a)) [0 ..< j - i]" (is "_ = ?map")
           by (rule nth_map_conv, auto)     
-        also have "listsum (?map @ [?fact j]) = listsum ?map + ?fact j" by simp
-        finally have sprod: "scalar_prod ?mind ?mcola = listsum ?map + ?fact j" .
+        also have "sum_list (?map @ [?fact j]) = sum_list ?map + ?fact j" by simp
+        finally have sprod: "scalar_prod ?mind ?mcola = sum_list ?map + ?fact j" .
         have "?fsn \<ge> scalar_prod ?mind ?mcola" (is "_ \<ge> ?z")
           unfolding sprod
           unfolding diff
@@ -973,16 +973,16 @@ qed
 
 (* linear norm is here taken only for positive matrices, so there is no demand for abs *)
 definition linear_norm :: "('a :: monoid_add)mat \<Rightarrow> 'a"
-  where "linear_norm m \<equiv> listsum (concat m)"
+  where "linear_norm m \<equiv> sum_list (concat m)"
 
 
-lemma vec_ge_listsum: fixes v1 :: "('a :: ordered_semiring_0) vec"
+lemma vec_ge_sum_list: fixes v1 :: "('a :: ordered_semiring_0) vec"
   assumes v1: "vec nr v1" and v2: "vec nr v2" and ge: "vec_ge v1 v2"
-  shows "listsum v1 \<ge> listsum v2" 
+  shows "sum_list v1 \<ge> sum_list v2" 
 proof -
   from v1 v2 have len: "length v1 = length v2" "length v2 = nr" unfolding vec_def by auto
   show ?thesis
-    by (rule listsum_ge_mono[OF len(1), unfolded len(2)], insert vec_geE[OF ge v1 v2], auto)
+    by (rule sum_list_ge_mono[OF len(1), unfolded len(2)], insert vec_geE[OF ge v1 v2], auto)
 qed
 
 lemma linear_norm_ge: fixes m1 :: "('a :: ordered_semiring_0) mat"
@@ -1000,7 +1000,7 @@ next
   note Cons = Cons[unfolded this]
   from Cons(4) have v12': "vec_ge v1 v2" and m12ge: "mat_ge m1 m2"
     unfolding mat_ge_def mat_comp_all_def vec_ge_def by auto
-  from vec_ge_listsum[OF v1 v2 v12'] have v12: "listsum v1 \<ge> listsum v2" .
+  from vec_ge_sum_list[OF v1 v2 v12'] have v12: "sum_list v1 \<ge> sum_list v2" .
   from Cons(1)[OF  m1 m2 m12ge] have m12: "linear_norm m1 \<ge> linear_norm m2" .
   from ge_trans[OF plus_left_mono[OF v12] plus_right_mono[OF m12]]
   have vm12: "linear_norm (v1 # m1) \<ge> linear_norm (v2 # m2)" unfolding linear_norm_def by simp
@@ -1062,9 +1062,9 @@ end
 context one_mono_ordered_semiring_1
 begin
 
-lemma vec_gt_listsum: fixes v1 :: "'a vec"
+lemma vec_gt_sum_list: fixes v1 :: "'a vec"
   assumes "vec nr v1" and "vec nr v2" and "vec_ge v1 v2" and "vec_pre_gtI op \<succ> (sub_vec sd v1) (sub_vec sd v2)"
-  shows "listsum v1 \<succ> listsum v2" 
+  shows "sum_list v1 \<succ> sum_list v2" 
 proof -
   note d = vec_def
   from assms
@@ -1085,12 +1085,12 @@ proof -
     thus ?case unfolding av2
     proof 
       assume "a1 \<succ> a2"
-      from compat[OF plus_right_mono[OF vec_ge_listsum[OF v1 v2 v12]] plus_gt_left_mono[OF this]] show "listsum (a1 # v1) \<succ> listsum (a2 # v2)" by simp
+      from compat[OF plus_right_mono[OF vec_ge_sum_list[OF v1 v2 v12]] plus_gt_left_mono[OF this]] show "sum_list (a1 # v1) \<succ> sum_list (a2 # v2)" by simp
     next
       assume "vec_pre_gtI op \<succ> (sub_vec sd v1) (sub_vec sd v2)"
-      from Cons(1)[OF v1 v2 v12 this] have "listsum v1 \<succ> listsum v2" .
+      from Cons(1)[OF v1 v2 v12 this] have "sum_list v1 \<succ> sum_list v2" .
       from compat[OF plus_right_mono[OF a12] plus_gt_left_mono[OF this]]
-      show "listsum (a1 # v1) \<succ> listsum (a2 # v2)" by (simp add: ac_simps)
+      show "sum_list (a1 # v1) \<succ> sum_list (a2 # v2)" by (simp add: ac_simps)
     qed
   qed
 qed
@@ -1111,7 +1111,7 @@ proof -
     from Cons(2) have v12': "vec_ge v1 v2" and m12ge: "mat_ge m1 m2"
       unfolding mat_ge_def mat_comp_all_def vec_ge_def by auto
     note IH = Cons(1)[OF m12ge m1 m2]
-    from vec_ge_listsum[OF v1 v2 v12'] have v12: "listsum v1 \<ge> listsum v2" .
+    from vec_ge_sum_list[OF v1 v2 v12'] have v12: "sum_list v1 \<ge> sum_list v2" .
     from IH have m12: "linear_norm m1 \<ge> linear_norm m2" by simp
     from ge_trans[OF plus_left_mono[OF v12] plus_right_mono[OF m12]]
     have vm12: "linear_norm (v1 # m1) \<ge> linear_norm (v2 # m2)" unfolding linear_norm_def by simp
@@ -1128,7 +1128,7 @@ proof -
         show ?thesis unfolding linear_norm_def by (simp add: ac_simps)
       next
         assume "vec_pre_gtI op \<succ> (sub_vec sd v1) (sub_vec sd v2)"
-        from compat[OF plus_right_mono[OF m12] plus_gt_left_mono[OF vec_gt_listsum[OF v1 v2 v12' this]]]
+        from compat[OF plus_right_mono[OF m12] plus_gt_left_mono[OF vec_gt_sum_list[OF v1 v2 v12' this]]]
         show ?thesis unfolding linear_norm_def by (simp add: ac_simps)
       qed
     qed
@@ -1152,7 +1152,7 @@ proof (induct nc)
 next
   case (Suc n)
   show ?case 
-    unfolding replicate.simps foldr_Cons concat.simps listsum_append Suc
+    unfolding replicate.simps foldr_Cons concat.simps sum_list_append Suc
     unfolding vec0I_def by (induct nr, auto)
 qed
 
@@ -1172,8 +1172,8 @@ next
   from Suc(2) obtain v1 m1 where vm1: "vm1 = v1 # m1" and m1: "mat nr nc m1" and v1: "vec nr v1" unfolding mat_def by (cases vm1, auto)
   from Suc(3) obtain v2 m2 where vm2: "vm2 = v2 # m2" and m2: "mat nr nc m2" and v2: "vec nr v2" unfolding mat_def by (cases vm2, auto)
   note IH = Suc(1)[OF m1 m2]
-  have "listsum (concat (mat_plus vm1 vm2)) = listsum (vec_plus v1 v2) + listsum (concat (mat_plus m1 m2))" unfolding vm1 vm2 mat_plusI_def by simp
-  also have "listsum (vec_plus v1 v2) = listsum v1 + listsum v2"
+  have "sum_list (concat (mat_plus vm1 vm2)) = sum_list (vec_plus v1 v2) + sum_list (concat (mat_plus m1 m2))" unfolding vm1 vm2 mat_plusI_def by simp
+  also have "sum_list (vec_plus v1 v2) = sum_list v1 + sum_list v2"
     using v1 v2
   proof (induct nr arbitrary: v1 v2)
     case 0
@@ -1207,7 +1207,7 @@ next
     with Suc(3)[of "Suc i"] have "\<And> j. j < nr \<Longrightarrow> bc \<ge> m ! i ! j" by auto
   } note bcm = this
   from Suc(1)[OF m bcm] have IH: "of_nat nr * of_nat nc * bc \<ge> linear_norm m" by auto
-  from v bcv have v: "of_nat nr * bc \<ge> listsum v"
+  from v bcv have v: "of_nat nr * bc \<ge> sum_list v"
   proof (induct nr arbitrary: v)
     case 0
     thus ?case unfolding vec_def using bc by (auto simp: ge_refl)
@@ -1222,14 +1222,14 @@ next
       assume "i < nr"
       with Suc(3)[of "Suc i"] have "bc \<ge> v ! i" by auto 
     } note bcv = this
-    from Suc(1)[OF v bcv] have IH: "of_nat nr * bc \<ge> listsum v" by auto
+    from Suc(1)[OF v bcv] have IH: "of_nat nr * bc \<ge> sum_list v" by auto
     have "of_nat (Suc nr) * bc = bc + of_nat nr * bc" by (simp add: field_simps)
-    also have "... \<ge> a + listsum v"
+    also have "... \<ge> a + sum_list v"
       by (rule ge_trans[OF plus_left_mono[OF a] plus_right_mono[OF IH]])
     finally show ?case unfolding av by simp
   qed
   have "of_nat nr * of_nat (Suc nc) * bc = of_nat nr * bc + of_nat nr * of_nat nc * bc" by (simp add: field_simps)
-  also have "... \<ge> listsum v + linear_norm m"
+  also have "... \<ge> sum_list v + linear_norm m"
     by (rule ge_trans[OF plus_left_mono[OF v] plus_right_mono[OF IH]])
   finally show ?case unfolding vm linear_norm_def by auto
 qed
@@ -1243,7 +1243,7 @@ proof (induct n arbitrary: m1 m2)
     by (induct m2, auto)
   with 0(3) 0(4) have m1: "m1 = []" and m2: "m2 = replicate nc []" unfolding mat_def  
     by (auto simp: vec_def)
-  have "linear_norm (mat_mult nr m1 m2) = listsum (concat (replicate nc (replicate nr (0::'a))))" unfolding m1 m2
+  have "linear_norm (mat_mult nr m1 m2) = sum_list (concat (replicate nc (replicate nr (0::'a))))" unfolding m1 m2
     by (simp add: linear_norm_def mat_multI_def matT_vec_multI_def scalar_prodI_def) 
   also have "... = 0"
   proof (induct nc)
@@ -1279,8 +1279,8 @@ next
   } note gen = this
   {
     fix f and g  :: "nat \<Rightarrow> 'a" and idx
-    have "listsum (concat (map (\<lambda> i. f i @ [g i]) idx)) = listsum (concat (map f idx)) + listsum (map g idx)" by (induct idx, auto simp: ac_simps)
-  } note listsum_concat_singleton = this
+    have "sum_list (concat (map (\<lambda> i. f i @ [g i]) idx)) = sum_list (concat (map f idx)) + sum_list (map g idx)" by (induct idx, auto simp: ac_simps)
+  } note sum_list_concat_singleton = this
   {
     fix m :: "'a mat" and nr nc
     assume m: "mat nr nc m"
@@ -1289,25 +1289,25 @@ next
   } note mat_idx = this
   let ?mni = "[ m1 ! n ! i . i \<leftarrow> [0..<nr]]"
   let ?min = "[ m2 ! i ! n . i \<leftarrow> [0..<nc]]"
-  let ?lmni = "listsum ?mni"
-  let ?lmin = "listsum ?min"
+  let ?lmni = "sum_list ?mni"
+  let ?lmin = "sum_list ?min"
   {    
     from concat_mat[OF m1]
     have "concat m1 = concat (?midx m1 nr (Suc n))" by simp
-    hence "?v m1 = listsum (concat (?midx m1 nr (Suc n)))" unfolding linear_norm_def by simp
-    also have "... = listsum (concat (?midx m1 nr n)) + listsum ?mni"
+    hence "?v m1 = sum_list (concat (?midx m1 nr (Suc n)))" unfolding linear_norm_def by simp
+    also have "... = sum_list (concat (?midx m1 nr n)) + sum_list ?mni"
       by simp
-    also have "listsum (concat (?midx m1 nr n)) = linear_norm ii1"
+    also have "sum_list (concat (?midx m1 nr n)) = linear_norm ii1"
       unfolding ii1 linear_norm_def ..
     finally have "linear_norm m1 = linear_norm ii1 + ?lmni" .
   } note vm1 = this
   {    
     from concat_mat[OF m2]
     have "concat m2 = concat (?midx m2 (Suc n) nc)" by simp
-    hence "?v m2 = listsum (concat (?midx m2 (Suc n) nc))" unfolding linear_norm_def by simp
-    also have "... = listsum (concat (map (\<lambda>i. map (op ! (m2 ! i)) [0..<n] @ [m2 ! i ! n]) [0..<nc]))" by simp
-    also have "... = listsum (concat (?midx m2 n nc)) + ?lmin" unfolding listsum_concat_singleton ..
-    also have "listsum (concat (?midx m2 n nc)) = linear_norm ii2"
+    hence "?v m2 = sum_list (concat (?midx m2 (Suc n) nc))" unfolding linear_norm_def by simp
+    also have "... = sum_list (concat (map (\<lambda>i. map (op ! (m2 ! i)) [0..<n] @ [m2 ! i ! n]) [0..<nc]))" by simp
+    also have "... = sum_list (concat (?midx m2 n nc)) + ?lmin" unfolding sum_list_concat_singleton ..
+    also have "sum_list (concat (?midx m2 n nc)) = linear_norm ii2"
       unfolding ii2 linear_norm_def ..
     finally have "linear_norm m2 = linear_norm ii2 + ?lmin" .
   } note vm2 = this
@@ -1360,7 +1360,7 @@ next
   obtain scalar where scalar: "scalar = ?scalar" by auto
   let ?mult' = "?gen nr nc scalar'"
   let ?vmii = "?v (mat_mult nr ii1 ii2)"
-  let ?rii = "listsum [m1 ! n ! j * m2 ! i ! n . i \<leftarrow> [0..<nc], j \<leftarrow> [0..<nr]]"
+  let ?rii = "sum_list [m1 ! n ! j * m2 ! i ! n . i \<leftarrow> [0..<nc], j \<leftarrow> [0..<nr]]"
   {
     have mult_mult': "?mult = ?mult'"
     proof (rule mat_eqI[OF m12 gen])
@@ -1382,16 +1382,16 @@ next
          using i j by simp
     qed
     hence "?v ?mult = ?v ?mult'" by simp
-    also have "... = listsum (concat (map (\<lambda>i. map (scalar' i) [0..<nr]) [0 ..< nc]))"
+    also have "... = sum_list (concat (map (\<lambda>i. map (scalar' i) [0..<nr]) [0 ..< nc]))"
       unfolding linear_norm_def ..
     also have "... =
-      listsum (concat (map (\<lambda>i. map (\<lambda>j. scalar_prod (row (ii1) j) (col (ii2) i))
+      sum_list (concat (map (\<lambda>i. map (\<lambda>j. scalar_prod (row (ii1) j) (col (ii2) i))
                   [0..<nr])
          [0..<nc])) +
-    ?rii" (is "_ = ?zwi + _") unfolding scalar' unfolding listsum_double_concat  ..
+    ?rii" (is "_ = ?zwi + _") unfolding scalar' unfolding sum_list_double_concat  ..
     also have "?zwi = ?vmii"
       unfolding linear_norm_def
-    proof (rule arg_cong[where f = "\<lambda> x. listsum (concat x)"], 
+    proof (rule arg_cong[where f = "\<lambda> x. sum_list (concat x)"], 
       rule mat_eqI[OF gen mat_mult[OF mat_ii1 mat_ii2]])
       fix i j
       assume i: "i < nc" and j: "j < nr"
@@ -1414,9 +1414,9 @@ next
     note m10 = mat_ge[OF m1 m10]
     note m20 = mat_ge[OF m2 m20]
     have lmin0: "?lmin \<ge> 0"
-      by (rule listsum_ge_0_nth, insert m20, auto)
+      by (rule sum_list_ge_0_nth, insert m20, auto)
     have lmni0: "?lmni \<ge> 0"
-      by (rule listsum_ge_0_nth, insert m10, auto)
+      by (rule sum_list_ge_0_nth, insert m10, auto)
     have p10: "?v (ii1) * ?lmin \<ge> 0"
       by (rule mult_ge_zero[OF ii10 lmin0])
     have p20: "?lmni * ?v (ii2) \<ge> 0"
@@ -1430,8 +1430,8 @@ next
       show ?case by simp
     next
       case (Suc nc)
-      let ?nr = "listsum (map (op ! (m1 ! n)) [0..<nr])"
-      let ?nrr = "listsum (concat (map (\<lambda>i. map (\<lambda>j. m1 ! n ! j * m2 ! i ! n) [0..<nr]) [0..<nc]))"
+      let ?nr = "sum_list (map (op ! (m1 ! n)) [0..<nr])"
+      let ?nrr = "sum_list (concat (map (\<lambda>i. map (\<lambda>j. m1 ! n ! j * m2 ! i ! n) [0..<nr]) [0..<nc]))"
       have "?nr * (\<Sum>i\<leftarrow>[0..<Suc nc]. m2 ! i ! n)
         = ?nr * ((\<Sum>i\<leftarrow>[0..<nc]. m2 ! i ! n) + m2 ! nc ! n)"
         by simp
@@ -1440,7 +1440,7 @@ next
       also have "... = ?nrr + ?nr * m2 ! nc ! n" unfolding Suc ..
       also have "?nr * m2 ! nc ! n = (\<Sum>j\<leftarrow>[0..<nr]. m1 ! n ! j * m2 ! nc ! n)" 
         by (induct nr, auto simp: field_simps)
-      also have "?nrr + ... = listsum (concat (map (\<lambda>i. map (\<lambda>j. m1 ! n ! j * m2 ! i ! n) [0..<nr]) [0..<Suc nc]))"
+      also have "?nrr + ... = sum_list (concat (map (\<lambda>i. map (\<lambda>j. m1 ! n ! j * m2 ! i ! n) [0..<nr]) [0..<Suc nc]))"
         by simp
       finally
       show ?case .

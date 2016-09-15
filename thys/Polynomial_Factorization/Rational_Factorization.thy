@@ -166,10 +166,10 @@ lemma factorize_root_free_0[simp]: "factorize_root_free 0 = (0,[])"
   unfolding factorize_root_free_def by simp
 
 lemma factorize_root_free: assumes res: "factorize_root_free p = (c,qs)" 
-  shows "p = smult c (listprod qs)" 
+  shows "p = smult c (prod_list qs)" 
   "\<And> q. q \<in> set qs \<Longrightarrow> root_free q \<and> monic q \<and> degree q \<noteq> 0"
 proof -
-  have "p = smult c (listprod qs) \<and> (\<forall> q \<in> set qs. root_free q \<and> monic q \<and> degree q \<noteq> 0)"
+  have "p = smult c (prod_list qs) \<and> (\<forall> q \<in> set qs. root_free q \<and> monic q \<and> degree q \<noteq> 0)"
   proof (cases "degree p = 0")
     case True
     thus ?thesis using res unfolding factorize_root_free_def by (auto dest: degree0_coeffs) 
@@ -180,7 +180,7 @@ proof -
     def xs \<equiv> "roots_of_rat_poly p"
     def q \<equiv> p
     obtain n  where n: "n = degree q + length xs" by auto 
-    have prod: "p = q * listprod fs" unfolding q_def fs_def by auto
+    have prod: "p = q * prod_list fs" unfolding q_def fs_def by auto
     have sub: "{x. poly q x = 0} \<subseteq> set xs" using roots_of_rat_poly[OF p0] unfolding q_def xs_def by auto
     have fs: "\<And> q. q \<in> set fs \<Longrightarrow> root_free q \<and> monic q \<and> degree q \<noteq> 0" unfolding fs_def by auto
     have res: "factorize_root_free_main q xs fs = (c,qs)" using res False 
@@ -201,8 +201,8 @@ proof -
         let ?r = "smult (inverse c) q"
         def r \<equiv> ?r
         from 0(4-5) have c: "c = coeff q (degree q)" and qs: "qs = (if r = 1 then fs else r # fs)" by (auto simp: r_def)
-        from q c qs 0(1) have c0: "c \<noteq> 0" and p: "p = smult c (listprod (r # fs))" by (auto simp: r_def)
-        from p have p: "p = smult c (listprod qs)" unfolding qs by auto 
+        from q c qs 0(1) have c0: "c \<noteq> 0" and p: "p = smult c (prod_list (r # fs))" by (auto simp: r_def)
+        from p have p: "p = smult c (prod_list qs)" unfolding qs by auto 
         from 0(2,5) c0 c have "root_free ?r" "monic ?r" 
           unfolding root_free_def by auto
         with 0(3) have "\<And> q. q \<in> set qs \<Longrightarrow> root_free q \<and> monic q \<and> degree q \<noteq> 0" unfolding qs 
@@ -225,7 +225,7 @@ proof -
             by (subst degree_mult_eq[OF q'], auto)
           hence n: "degree ?q + length ?xs < n" unfolding 0(5) by auto
           from arg_cong[OF q, of poly] 0(2) have rt: "{x. poly ?q x = 0} \<subseteq> set ?xs" by auto
-          have p: "p = ?q * listprod ?fs" unfolding listprod.Cons 0(1) mult.assoc[symmetric] q[symmetric] ..
+          have p: "p = ?q * prod_list ?fs" unfolding prod_list.Cons 0(1) mult.assoc[symmetric] q[symmetric] ..
           have "root_free ?x" unfolding root_free_def by auto
           with 0(3) have rf: "\<And> f. f \<in> set ?fs \<Longrightarrow> root_free f \<and> monic f \<and> degree f \<noteq> 0" by auto
           from True 0(4) have res: "factorize_root_free_main ?q ?xs ?fs = (c,qs)" by simp
@@ -241,7 +241,7 @@ proof -
       qed
     qed
   qed
-  thus "p = smult c (listprod qs)" 
+  thus "p = smult c (prod_list qs)" 
     "\<And> q. q \<in> set qs \<Longrightarrow> root_free q \<and> monic q \<and> degree q \<noteq> 0" by auto
 qed
 
@@ -406,7 +406,7 @@ declare factorize_rat_poly_main.simps[simp del]
 
 lemma factorize_rat_poly_main: assumes "factorize_rat_poly_main c irr ps = (d,qs)"
   and "Ball (set irr) irreducible"
-  shows "Ball (set qs) irreducible \<and> smult c (listprod (irr @ ps)) = smult d (listprod qs)"
+  shows "Ball (set qs) irreducible \<and> smult c (prod_list (irr @ ps)) = smult d (prod_list qs)"
   using assms
 proof (induct c irr ps rule: factorize_rat_poly_main.induct)
   case (1 c irr)
@@ -453,15 +453,15 @@ definition exp_const_poly :: "'a :: field \<times> 'a poly list \<Rightarrow> na
   "exp_const_poly cps n \<equiv> case cps of (c,ps) \<Rightarrow> (c ^ Suc n, map (\<lambda> p. (p,n)) ps)"
 
 lemma exp_const_poly: assumes "exp_const_poly (c,ps) n = (d,qns)"
-  shows "(smult c (listprod ps)) ^ Suc n = smult d (listprod (map (\<lambda> (q,i). q ^ Suc i) qns))"
+  shows "(smult c (prod_list ps)) ^ Suc n = smult d (prod_list (map (\<lambda> (q,i). q ^ Suc i) qns))"
   "map fst qns = ps" "snd ` set qns \<subseteq> {n}"
 proof -
   from assms[unfolded exp_const_poly_def split] have d: "d = c ^ Suc n"
     and qns: "qns = map (\<lambda>p. (p, n)) ps" by auto
   show "map fst qns = ps" unfolding qns by (rule nth_equalityI, auto)
   show "snd ` set qns \<subseteq> {n}" unfolding qns by auto
-  show "(smult c (listprod ps)) ^ Suc n = smult d (listprod (map (\<lambda> (q,i). q ^ Suc i) qns))"
-    unfolding smult_power d qns map_map o_def split listprod_power by simp
+  show "(smult c (prod_list ps)) ^ Suc n = smult d (prod_list (map (\<lambda> (q,i). q ^ Suc i) qns))"
+    unfolding smult_power d qns map_map o_def split prod_list_power by simp
 qed
 
 datatype factorization_mode = Uncertified_Factorization | Full_Factorization | Check_Irreducible
@@ -522,7 +522,7 @@ definition factorize_rat_poly_start :: "rat poly \<Rightarrow> rat \<times> (rat
     else let fact = (if mode = Full_Factorization \<or> mode = Check_Irreducible then 
       (\<lambda> p. factorize_rat_poly_main 1 [] [p]) else factorize_root_free);
       powers = map (\<lambda> (p,i). exp_const_poly (fact p) i) pi;
-      const = c * listprod (map fst powers);
+      const = c * prod_list (map fst powers);
       polys = concat (map snd powers)
       in (const, polys)"
 
@@ -550,7 +550,7 @@ proof -
     def fact \<equiv> "(if mode = Full_Factorization \<or> mode = Check_Irreducible then 
       (\<lambda> p. factorize_rat_poly_main 1 [] [p]) else factorize_root_free)"
     obtain powers where powers: "powers = map (\<lambda>(p, i). exp_const_poly (fact p) i) pi" by auto
-    from res[folded powers fact_def] False have c: "c = c1 * listprod (map fst powers)" 
+    from res[folded powers fact_def] False have c: "c = c1 * prod_list (map fst powers)" 
       and qis: "qis = concat (map snd powers)" by auto  
     show ?thesis 
     proof (intro conjI impI)
@@ -600,7 +600,7 @@ fun normalize_factorization :: "'a :: field \<times> ('a poly \<times> nat) list
   "normalize_factorization (c,pis) = (let fact = (\<lambda> p. let lc = coeff p (degree p) in 
       if lc = 1 then (1,[p]) else (lc, [smult (inverse lc) p]));
       powers = map (\<lambda> (p,i). exp_const_poly (fact p) i) pis;
-      const = c * listprod (map fst powers);
+      const = c * prod_list (map fst powers);
       polys = concat (map snd powers)
       in (const, polys))"  
 
@@ -635,7 +635,7 @@ proof -
       if lc = 1 then (1,[p]) else (lc, [smult (inverse lc) p]))"
     obtain powers where powers: "powers = map (\<lambda>(p, i). exp_const_poly (fact p) i) pis" by auto
     from fp[folded fact_def, unfolded Let_def, folded powers] False 
-    have c: "c = d * listprod (map fst powers)" 
+    have c: "c = d * prod_list (map fst powers)" 
       and qis: "qis = concat (map snd powers)" by auto
     show ?thesis
     proof (intro conjI impI)

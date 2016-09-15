@@ -3480,7 +3480,7 @@ next
   finally show ?l .
 qed
 
-lemma listsum_abs_ge_0: "(0::int) \<le> listsum (map abs ks)"
+lemma sum_list_abs_ge_0: "(0::int) \<le> sum_list (map abs ks)"
   by (induct ks) simp_all
 
 lemma zmult_div_aux1:
@@ -3548,7 +3548,7 @@ proof -
       \<bar>k\<bar> + \<bar>eval_dioph ks (map (\<lambda>x. x mod 2) xs)\<bar>"
       by (auto simp add: mult_left_mono)
     with 1 show ?case by simp
-  qed (simp_all add: listsum_abs_ge_0)
+  qed (simp_all add: sum_list_abs_ge_0)
   finally have ineq: "\<bar>(l - eval_dioph ks (map (\<lambda>x. x mod 2) xs)) div 2\<bar> \<le>
     (\<bar>l\<bar> + (\<Sum>k\<leftarrow>ks. \<bar>k\<bar>) + \<bar>?r\<bar>) div 2"
     by (simp add: zdiv_mono1)

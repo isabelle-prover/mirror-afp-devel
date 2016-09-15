@@ -120,9 +120,9 @@ lemma
 lemma polychain_of_eq_empty_iff[simp]: "polychain_of p xs = [] \<longleftrightarrow> xs = []"
   by (cases xs) (auto simp: Let_def)
 
-lemma in_set_polychain_of_imp_listsum:
+lemma in_set_polychain_of_imp_sum_list:
   assumes "z \<in> set (polychain_of Pc Ps)"
-  obtains d where "z = (Pc + listsum (take d Ps), Pc + listsum (take (Suc d) Ps))"
+  obtains d where "z = (Pc + sum_list (take d Ps), Pc + sum_list (take (Suc d) Ps))"
   using assms
   apply atomize_elim
 proof (induction Ps arbitrary: Pc z)
@@ -136,14 +136,14 @@ next
     assume "z \<in> set ((polychain_of (Pc + P) Ps))"
     from Cons.IH[OF this]
     obtain d
-    where "z = (Pc + P + listsum (take d Ps), Pc + P + listsum (take (Suc d) Ps))"
+    where "z = (Pc + P + sum_list (take d Ps), Pc + P + sum_list (take (Suc d) Ps))"
       by auto
     thus ?case
       by (auto intro!: exI[where x="Suc d"])
   qed (auto intro!: exI[where x=0])
 qed
 
-lemma last_polychain_of: "length xs > 0 \<Longrightarrow> snd (last (polychain_of p xs)) = p + listsum xs"
+lemma last_polychain_of: "length xs > 0 \<Longrightarrow> snd (last (polychain_of p xs)) = p + sum_list xs"
   by (induct xs arbitrary: p) simp_all
 
 lemma polychain_of_singleton_iff: "polychain_of p xs = [a] \<longleftrightarrow> fst a = p \<and> xs = [(snd a - p)]"
@@ -288,8 +288,8 @@ proof -
   proof
     assume x: "x \<in> set (polychain_of (Pc + P) QRRs)"
     define q where "q = snd x - fst x"
-    from Polygon.in_set_polychain_of_imp_listsum[OF x]
-    obtain d where d: "fst x = (Pc + P + listsum (take d QRRs))" by (auto simp: prod_eq_iff)
+    from Polygon.in_set_polychain_of_imp_sum_list[OF x]
+    obtain d where d: "fst x = (Pc + P + sum_list (take d QRRs))" by (auto simp: prod_eq_iff)
     from in_set_polychain_ofD[OF x]
     have q_in: "q \<in> set QRRs" by (simp add: q_def)
     define R where "R = set QRRs - {q}"
@@ -300,10 +300,10 @@ proof -
     hence "ccw' 0 q ((1 - e P) *\<^sub>R (-P))"
       using assms(1) by (subst ccw'.scaleR2_eq) (auto simp: algebra_simps)
     moreover
-    from assms(4) have "ccw' 0 q ((\<Sum>P\<in>set QRRs. e P *\<^sub>R P) - listsum (take d QRRs))"
+    from assms(4) have "ccw' 0 q ((\<Sum>P\<in>set QRRs. e P *\<^sub>R P) - sum_list (take d QRRs))"
       by (auto simp: q_def ccw'.translate_origin d)
     ultimately
-    have "ccw' 0 q ((1 - e P) *\<^sub>R (-P) + ((\<Sum>P\<in>set QRRs. e P *\<^sub>R P) - listsum (take d QRRs)))"
+    have "ccw' 0 q ((1 - e P) *\<^sub>R (-P) + ((\<Sum>P\<in>set QRRs. e P *\<^sub>R P) - sum_list (take d QRRs)))"
       by (intro ccw'.add3) auto
     thus ?thesis
       by (auto simp: ccw'.translate_origin q_def algebra_simps d)

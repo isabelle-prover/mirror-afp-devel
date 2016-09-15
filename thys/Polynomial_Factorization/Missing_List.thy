@@ -18,8 +18,8 @@ fun concat_lists :: "'a list list \<Rightarrow> 'a list list" where
 lemma concat_lists_listset: "set (concat_lists xs) = listset (map set xs)" 
   by (induct xs, auto simp: set_Cons_def)
 
-lemma listsum_concat: 
-  shows "listsum (concat ls) = listsum (map listsum ls)"
+lemma sum_list_concat: 
+  shows "sum_list (concat ls) = sum_list (map sum_list ls)"
   proof (induct ls, auto) qed
 
 

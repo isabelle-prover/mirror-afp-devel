@@ -1094,8 +1094,8 @@ end
 definition lsublist :: "'a llist \<Rightarrow> nat set \<Rightarrow> 'a llist"
 where "lsublist xs A = lmap fst (lfilter (\<lambda>(x, y). y \<in> A) (lzip xs (iterates Suc 0)))"
 
-definition (in monoid_add) llistsum :: "'a llist \<Rightarrow> 'a"
-where "llistsum xs = (if lfinite xs then listsum (list_of xs) else 0)"
+definition (in monoid_add) lsum_list :: "'a llist \<Rightarrow> 'a"
+where "lsum_list xs = (if lfinite xs then sum_list (list_of xs) else 0)"
 
 subsection {* Converting ordinary lists to lazy lists: @{term "llist_of"} *}
 
@@ -4924,32 +4924,32 @@ subsection {* @{term "llist_sum"} *}
 
 context monoid_add begin
 
-lemma llistsum_0 [simp]: "llistsum (lmap (\<lambda>_. 0) xs) = 0"
-by(simp add: llistsum_def)
+lemma lsum_list_0 [simp]: "lsum_list (lmap (\<lambda>_. 0) xs) = 0"
+by(simp add: lsum_list_def)
 
-lemma llistsum_llist_of [simp]: "llistsum (llist_of xs) = listsum xs"
-by(simp add: llistsum_def)
+lemma lsum_list_llist_of [simp]: "lsum_list (llist_of xs) = sum_list xs"
+by(simp add: lsum_list_def)
 
-lemma llistsum_lappend: "\<lbrakk> lfinite xs; lfinite ys \<rbrakk> \<Longrightarrow> llistsum (lappend xs ys) = llistsum xs + llistsum ys"
-by(simp add: llistsum_def list_of_lappend)
+lemma lsum_list_lappend: "\<lbrakk> lfinite xs; lfinite ys \<rbrakk> \<Longrightarrow> lsum_list (lappend xs ys) = lsum_list xs + lsum_list ys"
+by(simp add: lsum_list_def list_of_lappend)
 
-lemma llistsum_LNil [simp]: "llistsum LNil = 0"
-by(simp add: llistsum_def)
+lemma lsum_list_LNil [simp]: "lsum_list LNil = 0"
+by(simp add: lsum_list_def)
 
-lemma llistsum_LCons [simp]: "lfinite xs \<Longrightarrow> llistsum (LCons x xs) = x + llistsum xs"
-by(simp add: llistsum_def)
+lemma lsum_list_LCons [simp]: "lfinite xs \<Longrightarrow> lsum_list (LCons x xs) = x + lsum_list xs"
+by(simp add: lsum_list_def)
 
-lemma llistsum_inf [simp]: "\<not> lfinite xs \<Longrightarrow> llistsum xs = 0"
-by(simp add: llistsum_def)
+lemma lsum_list_inf [simp]: "\<not> lfinite xs \<Longrightarrow> lsum_list xs = 0"
+by(simp add: lsum_list_def)
 
 end
 
-lemma llistsum_mono:
+lemma lsum_list_mono:
   fixes f :: "'a \<Rightarrow> 'b :: {monoid_add, ordered_ab_semigroup_add}"
   assumes "\<And>x. x \<in> lset xs \<Longrightarrow> f x \<le> g x"
-  shows "llistsum (lmap f xs) \<le> llistsum (lmap g xs)"
+  shows "lsum_list (lmap f xs) \<le> lsum_list (lmap g xs)"
 using assms
-by(auto simp add: llistsum_def intro: listsum_mono)
+by(auto simp add: lsum_list_def intro: sum_list_mono)
 
 subsection {* 
   Alternative view on @{typ "'a llist"} as datatype 
@@ -5089,7 +5089,7 @@ lemma llist_all2_inf_llist_llist_of [simp]:
   "\<not> llist_all2 P (inf_llist f) (llist_of xs)"
 by(simp add: llist_all2_conv_lzip)
 
-lemma (in monoid_add) llistsum_infllist: "llistsum (inf_llist f) = 0"
+lemma (in monoid_add) lsum_list_infllist: "lsum_list (inf_llist f) = 0"
 by simp
 
 subsection {* Setup for lifting and transfer *}

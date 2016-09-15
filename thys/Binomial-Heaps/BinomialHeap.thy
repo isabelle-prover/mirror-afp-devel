@@ -328,8 +328,8 @@ next
   qed
 qed
 
-lemma size_queue_listsum: 
-  "size (queue_to_multiset bq) = listsum (map (size \<circ> tree_to_multiset) bq)"
+lemma size_queue_sum_list: 
+  "size (queue_to_multiset bq) = sum_list (map (size \<circ> tree_to_multiset) bq)"
   by (induct bq) simp_all
 
 text {*
@@ -346,7 +346,7 @@ next
   have size_q: 
     "size (queue_to_multiset (xs @ [x])) = 
     size (queue_to_multiset xs) + size (tree_to_multiset x)" 
-    by (simp add: size_queue_listsum)
+    by (simp add: size_queue_sum_list)
   also 
   from snoc.prems have inv_x: "tree_invar x" by (simp add: invar_def)
   hence "size (tree_to_multiset x) = 2 ^ rank x" by (simp add: size_mset_tree)

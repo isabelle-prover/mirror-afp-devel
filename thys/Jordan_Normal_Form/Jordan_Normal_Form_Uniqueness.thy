@@ -80,10 +80,10 @@ proof -
   let ?JM = "\<lambda> n_as. jordan_matrix n_as"
   let ?CM = "\<lambda> n_as. char_matrix (?JM n_as) ev"
   let ?A = "\<lambda> n_as. (?CM n_as) ^\<^sub>m k"
-  let ?n = "\<lambda> n_as. listsum (map fst n_as)"
+  let ?n = "\<lambda> n_as. sum_list (map fst n_as)"
   let ?C = "\<lambda> n_as. carrier\<^sub>m (?n n_as) (?n n_as)"
   let ?sum = "\<lambda> n_as. \<Sum> n \<leftarrow> map fst [(n, e)\<leftarrow>n_as . e = ev]. min k n"
-  let ?dim = "\<lambda> n_as. listsum (map fst n_as)"
+  let ?dim = "\<lambda> n_as. sum_list (map fst n_as)"
   let ?kdim = "\<lambda> n_as. kernel.dim (?dim n_as) (?A n_as)"
   have JM: "\<And> n_as. ?JM n_as \<in> ?C n_as" by auto
   have CM: "\<And> n_as. ?CM n_as \<in> ?C n_as" by auto
@@ -200,7 +200,7 @@ proof -
     show ?case
     proof (cases "s = ?k")
       case True
-      let ?sum = "\<lambda> k sizes. listsum (map (min k) sizes)"
+      let ?sum = "\<lambda> k sizes. sum_list (map (min k) sizes)"
       let ?len = "\<lambda> sizes. length (filter (op = ?k) sizes)"
       have len: "?len (s # sizes) = Suc (?len sizes)" unfolding True by simp
       have IH: "?len sizes = ?sum ?k sizes + ?sum ?k sizes -

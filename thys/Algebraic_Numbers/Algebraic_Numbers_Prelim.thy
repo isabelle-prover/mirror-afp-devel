@@ -152,9 +152,9 @@ proof -
       (mode \<in> {Full_Factorization, Check_Irreducible} \<longrightarrow> irreducible q) \<and> 
       (mode = Check_Root_Free \<longrightarrow> root_free q)" by auto
   } note * = this
-  from sff'(2) have "square_free (listprod qs)" unfolding qs by auto  
+  from sff'(2) have "square_free (prod_list qs)" unfolding qs by auto  
   thus "distinct qs" 
-    by (rule square_free_listprod_distinct, insert *, auto)
+    by (rule square_free_prod_list_distinct, insert *, auto)
   assume p: "p \<noteq> 0"
   from fact(1) p have c: "c \<noteq> 0" using sff(1) by auto
   let ?r = "of_rat :: rat \<Rightarrow> 'a"
@@ -165,7 +165,7 @@ proof -
   have "rp p x = 0 \<longleftrightarrow> rp (\<Prod>(x, y)\<leftarrow>qis. x ^ Suc y) x = 0" unfolding sff'(1)
     unfolding rp rpoly.map_poly_smult using c by simp 
   also have "\<dots> = (\<exists> (q,i) \<in>set qis. poly (?rp (q ^ Suc i)) x = 0)" 
-    unfolding qs rp rp.hom_listprod poly_listprod_zero_iff set_map by fastforce
+    unfolding qs rp rp.hom_prod_list poly_prod_list_zero_iff set_map by fastforce
   also have "\<dots> = (\<exists> (q,i) \<in>set qis. poly (?rp q) x = 0)"
     unfolding rp.hom_power poly_power_zero_iff by auto
   also have "\<dots> = (\<exists> q \<in> set qs. rp q x = 0)" unfolding rp qs by force

@@ -845,7 +845,7 @@ subsection {* Determinant Computation *}
 definition det_code :: "'a mat \<Rightarrow> 'a" where
   "det_code A = (if dim\<^sub>r A = dim\<^sub>c A then
      case triangulize A of (m,A') \<Rightarrow>
-       listprod (mat_diag A') div m
+       prod_list (mat_diag A') div m
    else 0)"
 
 lemma det_code[simp]: assumes sel_fun: "det_selection_fun sel_fun"
@@ -862,8 +862,8 @@ proof (cases "dim\<^sub>r A = dim\<^sub>c A")
   have A': "A' \<in> carrier\<^sub>m (dim\<^sub>r A') (dim\<^sub>r A')"
     using triangulize_closed[OF rA' A] by auto
   from tri' have tr: "triangular_to (dim\<^sub>r A') A'" by auto
-  have "det_code A = listprod (mat_diag A') div r'" using rA' True by simp
-  also have "listprod (mat_diag A') = det A'"
+  have "det_code A = prod_list (mat_diag A') div r'" using rA' True by simp
+  also have "prod_list (mat_diag A') = det A'"
     unfolding det_upper_triangular[OF tri' A'] ..
   also have "\<dots> = det A * r'" by (simp add: det')
   also have "\<dots> div r' = det A" using r'0 by auto

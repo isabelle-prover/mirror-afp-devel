@@ -360,7 +360,7 @@ lemma coll_scaleR_right_eq[simp]: "coll 0 y (r *\<^sub>R x) \<longleftrightarrow
 lemma coll_scaleR: "coll 0 x y \<Longrightarrow> coll 0 (r *\<^sub>R x) y"
   by (auto simp: det3_def' algebra_simps)
 
-lemma coll_listsum: "(\<And>y. y \<in> set ys \<Longrightarrow> coll 0 x y) \<Longrightarrow> coll 0 x (listsum ys)"
+lemma coll_sum_list: "(\<And>y. y \<in> set ys \<Longrightarrow> coll 0 x y) \<Longrightarrow> coll 0 x (sum_list ys)"
   by (induct ys) (auto intro!: coll_add)
 
 lemma scaleR_left_normalize:
@@ -438,28 +438,28 @@ lemma coll_trans:
   "coll 0 a b \<Longrightarrow> coll 0 a c \<Longrightarrow> a \<noteq> 0 \<Longrightarrow> coll 0 b c"
   by (metis coll_scale coll_scaleR)
 
-lemma listsum_posI:
+lemma sum_list_posI:
   fixes xs::"'a::ordered_comm_monoid_add list"
-  shows "(\<And>x. x \<in> set xs \<Longrightarrow> x > 0) \<Longrightarrow> xs \<noteq> [] \<Longrightarrow> listsum xs > 0"
+  shows "(\<And>x. x \<in> set xs \<Longrightarrow> x > 0) \<Longrightarrow> xs \<noteq> [] \<Longrightarrow> sum_list xs > 0"
 proof (induct xs)
   case (Cons x xs)
   thus ?case
     by (cases "xs = []") (auto intro!: add_pos_pos)
 qed simp
 
-lemma fst_listsum: "fst (listsum xs) = listsum (map fst xs)"
+lemma fst_sum_list: "fst (sum_list xs) = sum_list (map fst xs)"
   by (induct xs) auto
 
-lemma snd_listsum: "snd (listsum xs) = listsum (map snd xs)"
+lemma snd_sum_list: "snd (sum_list xs) = sum_list (map snd xs)"
   by (induct xs) auto
 
 lemma nonzero_fstI[intro, simp]: "fst x \<noteq> 0 \<Longrightarrow> x \<noteq> 0"
   and nonzero_sndI[intro, simp]: "snd x \<noteq> 0 \<Longrightarrow> x \<noteq> 0"
   by auto
 
-lemma coll_listsum_trans:
-  "xs \<noteq> [] \<Longrightarrow> coll 0 a (listsum xs) \<Longrightarrow> (\<And>x. x \<in> set xs \<Longrightarrow> coll 0 x y) \<Longrightarrow>
-    (\<And>x. x \<in> set xs \<Longrightarrow> coll 0 x (listsum xs)) \<Longrightarrow>
+lemma coll_sum_list_trans:
+  "xs \<noteq> [] \<Longrightarrow> coll 0 a (sum_list xs) \<Longrightarrow> (\<And>x. x \<in> set xs \<Longrightarrow> coll 0 x y) \<Longrightarrow>
+    (\<And>x. x \<in> set xs \<Longrightarrow> coll 0 x (sum_list xs)) \<Longrightarrow>
     (\<And>x. x \<in> set xs \<Longrightarrow> snd x > 0) \<Longrightarrow> a \<noteq> 0 \<Longrightarrow> coll 0 a y"
 proof (induct xs rule: list_nonempty_induct)
   case (single x)
@@ -469,26 +469,26 @@ proof (induct xs rule: list_nonempty_induct)
 next
   case (cons x xs)
   from cons(5)[of x] \<open>a \<noteq> 0\<close> cons(6)[of x]
-  have *: "coll 0 x (listsum xs)" "a \<noteq> 0" "x \<noteq> 0" by (force simp add: coll_add_cancel)+
-  have "0 < snd (listsum (x#xs))"
-    unfolding snd_listsum
-    by (rule listsum_posI) (auto intro!: add_pos_pos cons simp: snd_listsum)
-  hence "x + listsum xs \<noteq> 0" by simp
+  have *: "coll 0 x (sum_list xs)" "a \<noteq> 0" "x \<noteq> 0" by (force simp add: coll_add_cancel)+
+  have "0 < snd (sum_list (x#xs))"
+    unfolding snd_sum_list
+    by (rule sum_list_posI) (auto intro!: add_pos_pos cons simp: snd_sum_list)
+  hence "x + sum_list xs \<noteq> 0" by simp
   from coll_add_trans[OF cons(3)[simplified] * _ this]
-  have cH: "coll 0 a (listsum xs)"
-    by (cases "listsum xs = 0") auto
+  have cH: "coll 0 a (sum_list xs)"
+    by (cases "sum_list xs = 0") auto
   from cons(4) have cy: "(\<And>x. x \<in> set xs \<Longrightarrow> coll 0 x y)" by simp
   {
     fix y assume "y \<in> set xs"
-    hence "snd (listsum xs) > 0"
-      unfolding snd_listsum
-      by (intro listsum_posI) (auto intro!: add_pos_pos cons simp: snd_listsum)
-    hence "listsum xs \<noteq> 0" by simp
-    from cons(5)[of x] have "coll 0 x (listsum xs)"
+    hence "snd (sum_list xs) > 0"
+      unfolding snd_sum_list
+      by (intro sum_list_posI) (auto intro!: add_pos_pos cons simp: snd_sum_list)
+    hence "sum_list xs \<noteq> 0" by simp
+    from cons(5)[of x] have "coll 0 x (sum_list xs)"
       by (simp add: coll_add_cancel)
     from cons(5)[of y]
-    have "coll 0 y (listsum xs)"
-      using \<open>y \<in> set xs\<close> cons(6)[of y] \<open>x + listsum xs \<noteq> 0\<close>
+    have "coll 0 y (sum_list xs)"
+      using \<open>y \<in> set xs\<close> cons(6)[of y] \<open>x + sum_list xs \<noteq> 0\<close>
       apply (cases "y = x")
       subgoal by (force simp add: coll_add_cancel)
       subgoal by (force simp: dest!: coll_add_trans[OF _ *(1) _ *(3)])
@@ -498,10 +498,10 @@ next
     by (rule cons(2)[OF cH cy cl cons(6) \<open>a \<noteq> 0\<close>]) auto
 qed
 
-lemma listsum_coll_ex_scale:
+lemma sum_list_coll_ex_scale:
   assumes coll: "\<And>x. x \<in> set xs \<Longrightarrow> coll 0 z x"
   assumes nz: "z \<noteq> 0"
-  shows "\<exists>r. listsum xs = r *\<^sub>R z"
+  shows "\<exists>r. sum_list xs = r *\<^sub>R z"
 proof -
   {
     fix i assume i: "i < length xs"
@@ -511,12 +511,12 @@ proof -
     by metis
   have "xs = map (op ! xs) [0..<length xs]" by (simp add: map_nth)
   also have "\<dots> = map (\<lambda>i. r i *\<^sub>R z) [0..<length xs]" by (simp add: r)
-  also have "listsum \<dots> = (\<Sum>i\<leftarrow>[0..<length xs]. r i) *\<^sub>R z"
-    by (simp add: listsum_setsum_nth scaleR_setsum_left)
+  also have "sum_list \<dots> = (\<Sum>i\<leftarrow>[0..<length xs]. r i) *\<^sub>R z"
+    by (simp add: sum_list_setsum_nth scaleR_setsum_left)
   finally show ?thesis ..
 qed
 
-lemma listsum_filter_coll_ex_scale: "z \<noteq> 0 \<Longrightarrow> \<exists>r. listsum (filter (coll 0 z) zs) = r *\<^sub>R z"
-  by (rule listsum_coll_ex_scale) simp
+lemma sum_list_filter_coll_ex_scale: "z \<noteq> 0 \<Longrightarrow> \<exists>r. sum_list (filter (coll 0 z) zs) = r *\<^sub>R z"
+  by (rule sum_list_coll_ex_scale) simp
 
 end

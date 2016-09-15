@@ -231,10 +231,10 @@ proof -
   from ge_trans[OF this b] show ?thesis .
 qed
 
-lemma listsum_ge_mono: fixes as :: "('a :: ordered_semiring_0) list"
+lemma sum_list_ge_mono: fixes as :: "('a :: ordered_semiring_0) list"
   assumes "length as = length bs"
   and "\<And> i. i < length bs \<Longrightarrow> as ! i \<ge> bs ! i"
-  shows "listsum as \<ge> listsum bs"
+  shows "sum_list as \<ge> sum_list bs"
   using assms 
 proof (induct as arbitrary: bs)
   case (Nil bs)
@@ -249,27 +249,27 @@ next
     hence "Suc i < length (b # bs)" by simp
     from ge[OF this] have "as ! i \<ge> bs ! i" by simp
   }
-  from Cons(1)[OF len this] have IH: "listsum as \<ge> listsum bs" .
+  from Cons(1)[OF len this] have IH: "sum_list as \<ge> sum_list bs" .
   from ge[of 0] have ab: "a \<ge> b" by simp
   from ge_trans[OF plus_left_mono[OF ab] plus_right_mono[OF IH]]
   show ?case unfolding bbs  by simp
 qed
 
-lemma listsum_ge_0_nth: fixes xs :: "('a :: ordered_semiring_0)list"
+lemma sum_list_ge_0_nth: fixes xs :: "('a :: ordered_semiring_0)list"
   assumes ge: "\<And> i. i < length xs \<Longrightarrow> xs ! i \<ge> 0"
-  shows "listsum xs \<ge> 0"
+  shows "sum_list xs \<ge> 0"
 proof -
   let ?l = "replicate  (length xs) (0 :: 'a)"
   have "length xs = length ?l" by simp
-  from listsum_ge_mono[OF this] ge have "listsum xs \<ge> listsum ?l" by simp
-  also have "listsum ?l = 0" using listsum_0[of ?l] by auto
+  from sum_list_ge_mono[OF this] ge have "sum_list xs \<ge> sum_list ?l" by simp
+  also have "sum_list ?l = 0" using sum_list_0[of ?l] by auto
   finally show ?thesis .
 qed
 
-lemma listsum_ge_0: fixes xs :: "('a :: ordered_semiring_0)list"
+lemma sum_list_ge_0: fixes xs :: "('a :: ordered_semiring_0)list"
   assumes ge: "\<And> x. x \<in> set xs \<Longrightarrow> x \<ge> 0"
-  shows "listsum xs \<ge> 0"
-  by (rule listsum_ge_0_nth, insert ge[unfolded set_conv_nth], auto)
+  shows "sum_list xs \<ge> 0"
+  by (rule sum_list_ge_0_nth, insert ge[unfolded set_conv_nth], auto)
 
 lemma foldr_max: "a \<in> set as \<Longrightarrow> foldr max as b \<ge> (a :: 'a :: ordered_ab_semigroup)"
 proof (induct as arbitrary: b)

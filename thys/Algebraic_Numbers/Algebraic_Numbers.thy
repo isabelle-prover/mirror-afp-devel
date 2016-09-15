@@ -471,7 +471,7 @@ definition poly_x_div_y :: "'a :: comm_ring_1 poly \<Rightarrow> 'a poly poly" w
   [code del]: "poly_x_div_y p = (\<Sum> i \<le> degree p. monom (monom (coeff p i) i) (degree p - i))"
 
 lemma poly_x_div_y_code[code]: 
-  "poly_x_div_y p = (listsum (map (\<lambda> i. monom (monom (coeff p i) i) (degree p - i)) [0 ..< Suc (degree p)]))"
+  "poly_x_div_y p = (sum_list (map (\<lambda> i. monom (monom (coeff p i) i) (degree p - i)) [0 ..< Suc (degree p)]))"
   (is "_ = ?r")
 proof -
   have "poly_x_div_y p = setsum (\<lambda> i. monom (monom (coeff p i) i) (degree p - i)) (set [0 ..< Suc (degree p)])"

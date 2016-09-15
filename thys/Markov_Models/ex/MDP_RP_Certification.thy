@@ -64,7 +64,7 @@ record RP_cert =
   pos_cert :: "(nat \<times> nat) RP_sub_cert"
   neg_cert :: "nat list RP_sub_cert"
 
-definition "sparse_mult sx y = listsum (map (\<lambda>(n, x). x * y !! n) sx)"
+definition "sparse_mult sx y = sum_list (map (\<lambda>(n, x). x * y !! n) sx)"
 
 primrec lookup where
   "lookup d [] x = d"
@@ -97,7 +97,7 @@ proof -
   from `distinct (map fst xs)` have "distinct xs" "inj_on fst (set xs)"
     by (simp_all add: distinct_map)
   then have "sparse_mult xs y = (\<Sum>x\<in>set xs. snd x * y !! fst x)"
-    by (auto intro!: setsum.cong simp add: sparse_mult_def listsum_distinct_conv_setsum_set)
+    by (auto intro!: setsum.cong simp add: sparse_mult_def sum_list_distinct_conv_setsum_set)
   also have "\<dots> = (\<Sum>x\<in>set xs. lookup 0 xs (fst x) * y !! fst x)"
     by (intro setsum.cong refl arg_cong2[where f="op *"]) (simp add: lookup_in_set assms)
   also have "\<dots> = (\<Sum>x\<in>fst ` set xs. lookup 0 xs x * y !! x)"
@@ -109,15 +109,15 @@ proof -
   finally show ?thesis .
 qed
 
-lemma listsum_eq_setsum_lookup:
+lemma sum_list_eq_setsum_lookup:
   fixes xs :: "(nat \<times> 'a::comm_semiring_1) list"
   assumes "list_all (\<lambda>(n, x). n < M) xs" "distinct (map fst xs)"
-  shows "listsum (map snd xs) = (\<Sum>i<M. lookup 0 xs i)"
+  shows "sum_list (map snd xs) = (\<Sum>i<M. lookup 0 xs i)"
 proof -
   from `distinct (map fst xs)` have "distinct xs" "inj_on fst (set xs)"
     by (simp_all add: distinct_map)
-  then have "listsum (map snd xs) = (\<Sum>x\<in>set xs. snd x)"
-    by (auto intro!: setsum.cong simp add: sparse_mult_def listsum_distinct_conv_setsum_set)
+  then have "sum_list (map snd xs) = (\<Sum>x\<in>set xs. snd x)"
+    by (auto intro!: setsum.cong simp add: sparse_mult_def sum_list_distinct_conv_setsum_set)
   also have "\<dots> = (\<Sum>x\<in>set xs. lookup 0 xs (fst x))"
     by (intro setsum.cong refl arg_cong2[where f="op *"]) (simp add: lookup_in_set assms)
   also have "\<dots> = (\<Sum>x\<in>fst ` set xs. lookup 0 xs x)"
@@ -137,7 +137,7 @@ definition
     IArray.length (states2 mdp) = state_count mdp \<and>
     (\<forall>i<state_count mdp. \<not> (states1 mdp !! i \<and> states2 mdp !! i) \<and>
       list_all (\<lambda>ds. distinct (map fst ds) \<and> list_all (\<lambda>(n, x). 0 \<le> x \<and> n < state_count mdp) ds \<and>
-                     listsum (map snd ds) = 1) (distrs mdp !! i) \<and>
+                     sum_list (map snd ds) = 1) (distrs mdp !! i) \<and>
       \<not> List.null (distrs mdp !! i))"
 
 definition
@@ -177,7 +177,7 @@ lemma valid_mdp_rpD:
   shows "\<not> (states1 mdp !! i \<and> states2 mdp !! i)"
     and "\<And>ds n x. ds \<in> set (distrs mdp !! i) \<Longrightarrow> (n, x) \<in> set ds \<Longrightarrow> n < state_count mdp"
     and "\<And>ds n x. ds \<in> set (distrs mdp !! i) \<Longrightarrow> (n, x) \<in> set ds \<Longrightarrow> 0 \<le> x"
-    and "\<And>ds. ds \<in> set (distrs mdp !! i) \<Longrightarrow> listsum (map snd ds) = 1"
+    and "\<And>ds. ds \<in> set (distrs mdp !! i) \<Longrightarrow> sum_list (map snd ds) = 1"
     and "\<And>ds. ds \<in> set (distrs mdp !! i) \<Longrightarrow> distinct (map fst ds)"
     and "distrs mdp !! i \<noteq> []"
   using assms by (auto simp: valid_mdp_rp_def list_all_iff List.null_def elim!: allE[of _ i])
@@ -234,7 +234,7 @@ proof (auto split: if_split_asm simp del: IArray.sub_def)
     using valid_mdp_rpD(2,3,4,5)[OF rp n D]
     apply (subst nn_integral_count_space'[of "{..< state_count mdp}"])
     apply (auto intro: nn lookup_not_in_set simp: of_rat_setsum[symmetric] lookup_nonneg)
-    apply (subst listsum_eq_setsum_lookup[symmetric])
+    apply (subst sum_list_eq_setsum_lookup[symmetric])
     apply (auto simp: list_all_iff lookup_eq_map_of split: option.split)
     done
 next

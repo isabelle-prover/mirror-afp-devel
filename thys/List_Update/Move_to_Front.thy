@@ -922,7 +922,7 @@ proof-
     by(simp) (metis count_le_length length_cruel)
   have "?l = t ?s (last ?s) (0, sort_sws ?k ?s) + (\<Sum>x\<in>set ?s'. ?c x * (index ?sort x + 1))"
     using assms
-    apply(simp add:  adv_def T_noop listsum_map_eq_setsum_count2[OF set_cruel] Step_def
+    apply(simp add:  adv_def T_noop sum_list_map_eq_setsum_count2[OF set_cruel] Step_def
       split: prod.split)
     apply(subst (3) step_def)
     apply(simp)

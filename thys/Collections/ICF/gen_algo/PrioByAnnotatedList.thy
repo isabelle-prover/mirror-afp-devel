@@ -161,7 +161,7 @@ lemmas alprio_defs =
 subsection "Correctness"
 
 subsubsection "Auxiliary Lemmas"
-lemma listsum_split: "listsum (l @ (a::'a::monoid_add) # r) = (listsum l) + a + (listsum r)"
+lemma sum_list_split: "sum_list (l @ (a::'a::monoid_add) # r) = (sum_list l) + a + (sum_list r)"
   by (induct l) (auto simp add: add.assoc)
 
 
@@ -184,7 +184,7 @@ apply (induct z)
 apply (auto)
 done
 
-lemma ls_min: " \<forall>x \<in> set (xs:: ('e,'a::linorder) Prio list) . listsum xs \<le> x"
+lemma ls_min: " \<forall>x \<in> set (xs:: ('e,'a::linorder) Prio list) . sum_list xs \<le> x"
 proof (induct xs)
 case Nil thus ?case by auto
 next
@@ -192,13 +192,13 @@ case (Cons a ins) thus ?case
   apply (auto simp add: plus_def plesseq_def)
   apply (cases a)
   apply auto
-  apply (cases "listsum ins")
+  apply (cases "sum_list ins")
   apply auto
   apply (case_tac x)
   apply auto
   apply (cases a)
   apply auto
-  apply (cases "listsum ins")
+  apply (cases "sum_list ins")
   apply auto
   done
 qed    
@@ -217,8 +217,8 @@ lemma prio_selects_one: "a+b = a \<or> a+b=(b::('e,'a::linorder) Prio)"
   done
 
 
-lemma listsum_in_set: "(l::('x \<times> ('e,'a::linorder) Prio) list)\<noteq>[] \<Longrightarrow> 
-  listsum (map snd l) \<in> set (map snd l)"
+lemma sum_list_in_set: "(l::('x \<times> ('e,'a::linorder) Prio) list)\<noteq>[] \<Longrightarrow> 
+  sum_list (map snd l) \<in> set (map snd l)"
   apply (induct l)
   apply simp
   apply (case_tac l)
@@ -343,7 +343,7 @@ proof -
     hence " \<exists>x xs. (\<alpha> s) = x # xs" by (cases "\<alpha> s") auto
     from this obtain x xs where [simp]: "(\<alpha> s) = x # xs" by blast
     from this assms(1) have "snd x \<noteq> Infty" by (auto simp add: alprio_defs)
-    hence "listsum (map snd (\<alpha> s)) \<noteq> Infty" by (auto simp add: infadd)
+    hence "sum_list (map snd (\<alpha> s)) \<noteq> Infty" by (auto simp add: infadd)
     thus "annot s \<noteq> Infty" using annot_correct invs by simp
   qed
 qed
@@ -357,17 +357,17 @@ proof -
   interpret al_annot \<alpha> invar annot by fact
   from assms(2) have snn: "\<alpha> s \<noteq> []" by (auto simp add: alprio_defs)
   from assms(1) have invs: "invar s" by (simp add: alprio_defs)
-  hence ans: "annot s = listsum (map snd (\<alpha> s))" by (simp add: annot_correct)
+  hence ans: "annot s = sum_list (map snd (\<alpha> s))" by (simp add: annot_correct)
   let ?P = "map snd (\<alpha> s)"
   have "annot s \<in> set ?P"
-    by (unfold ans) (rule listsum_in_set[OF snn])
+    by (unfold ans) (rule sum_list_in_set[OF snn])
   then show ?thesis
     by (auto intro!: image_eqI simp add: alprio_\<alpha>_def)
 qed
 
-lemma  listsum_less_elems: "\<forall>x\<in>set xs. snd x \<noteq> Infty \<Longrightarrow>
+lemma  sum_list_less_elems: "\<forall>x\<in>set xs. snd x \<noteq> Infty \<Longrightarrow>
    \<forall>y\<in>set_mset (mset (map p_unwrap (map snd xs))).
-              snd (p_unwrap (listsum (map snd xs))) \<le> snd y"          
+              snd (p_unwrap (sum_list (map snd xs))) \<le> snd y"          
     proof (induct xs)
     case Nil thus ?case by simp
     next
@@ -375,13 +375,13 @@ lemma  listsum_less_elems: "\<forall>x\<in>set xs. snd x \<noteq> Infty \<Longri
       apply auto
       apply (cases "(snd a)" rule: p_unwrap.cases)
       apply auto
-      apply (cases "listsum (map snd as)")
+      apply (cases "sum_list (map snd as)")
       apply auto
       apply (metis linorder_linear p_min_re_neut 
         p_unwrap.simps plus_def [abs_def] snd_eqD)
       apply (auto simp add: p_unwrap_less_sum)
       apply (unfold plus_def)
-      apply (cases "(snd a, listsum (map snd as))" rule: p_min.cases)
+      apply (cases "(snd a, sum_list (map snd as))" rule: p_min.cases)
       apply auto
       apply (cases "map snd as")
       apply (auto simp add: infadd)
@@ -401,7 +401,7 @@ proof -
     apply (simp add:annot_in_set)
     apply (unfold alprio_defs)
     apply (simp add: annot_correct)
-    apply (auto simp add: listsum_less_elems)
+    apply (auto simp add: sum_list_less_elems)
     done
 qed
 
@@ -452,7 +452,7 @@ proof -
     unfolding alprio_invar_def by simp
   interpret al_annot \<alpha> invar annot by fact
   from invs have 
-    sv2: "Infty + listsum (map snd (\<alpha> s)) \<le> annot s" 
+    sv2: "Infty + sum_list (map snd (\<alpha> s)) \<le> annot s" 
     by (auto simp add: annot_correct plus_def 
       plesseq_def p_min_le_neut p_order_refl)
   note sp = splits_correct[of s "?P" Infty l e a r]
@@ -479,18 +479,18 @@ proof -
 qed
 
 
-lemma listsum_elem:
+lemma sum_list_elem:
   assumes " ins = l @ (a::('e,'a::linorder)Prio) # r"  
-  and "\<not> listsum l \<le> listsum ins"  
-  and "listsum l + a \<le> listsum ins "
-  shows " a = listsum ins"
+  and "\<not> sum_list l \<le> sum_list ins"  
+  and "sum_list l + a \<le> sum_list ins "
+  shows " a = sum_list ins"
 proof -
-  have "\<not> listsum l \<le> a" using assms prio_add_abc by simp
-  hence lpa: "listsum l + a = a" using prio_add_alb by auto
-  hence als: "a \<le> listsum ins" using assms(3) by simp
-  have "listsum ins = a + listsum r" 
-    using lpa listsum_split[of l a r] assms(1) by auto
-  thus ?thesis using prio_add_alb2[of a "listsum r"] prio_add_abc2 als  
+  have "\<not> sum_list l \<le> a" using assms prio_add_abc by simp
+  hence lpa: "sum_list l + a = a" using prio_add_alb by auto
+  hence als: "a \<le> sum_list ins" using assms(3) by simp
+  have "sum_list ins = a + sum_list r" 
+    using lpa sum_list_split[of l a r] assms(1) by auto
+  thus ?thesis using prio_add_alb2[of a "sum_list r"] prio_add_abc2 als  
     by auto
 qed
 
@@ -524,7 +524,7 @@ proof -
     unfolding alprio_invar_def by simp
   interpret al_annot \<alpha> invar annot by fact
   from invs have 
-    sv2: "Infty + listsum (map snd (\<alpha> s)) \<le> annot s" 
+    sv2: "Infty + sum_list (map snd (\<alpha> s)) \<le> annot s" 
     by (auto simp add: annot_correct plus_def 
       plesseq_def p_min_le_neut p_order_refl)
   note sp = splits_correct[of s "?P" Infty l e a r]
@@ -533,12 +533,12 @@ proof -
   from sp[OF invs dp sv1 sv2 lear] have 
     invlr: "invar l \<and> invar r" and 
     alr: "\<alpha> s = \<alpha> l @ (e, a) # \<alpha> r" and
-    anlel: "\<not> listsum (map snd (\<alpha> l)) \<le> annot s" and 
-    aneqa: "(listsum (map snd (\<alpha> l)) + a) \<le> annot s"
+    anlel: "\<not> sum_list (map snd (\<alpha> l)) \<le> annot s" and 
+    aneqa: "(sum_list (map snd (\<alpha> l)) + a) \<le> annot s"
     by (auto simp add: plus_def zero_def)
   have mapalr: "map snd (\<alpha> s) = (map snd (\<alpha> l)) @ a # (map snd (\<alpha> r))" 
     using alr by simp
-  note lsa = listsum_elem[of "map snd (\<alpha> s)" "map snd (\<alpha> l)" a "map snd (\<alpha> r)"]
+  note lsa = sum_list_elem[of "map snd (\<alpha> s)" "map snd (\<alpha> l)" a "map snd (\<alpha> r)"]
   note lsa2 = lsa[OF mapalr]
   hence a_is_annot: "a = annot s" 
     using annot_correct[OF invs] anlel aneqa by auto

@@ -114,24 +114,24 @@ proof (rule antisym[OF abs_triangle_ineq])
   show "\<bar>a\<bar> + \<bar>b\<bar> \<le> \<bar>a + b\<bar>" unfolding less_eq_prod_def ..
 qed
 
-lemma lex_listsum: "(\<And>x. x \<in> set xs \<Longrightarrow> lex x 0) \<Longrightarrow> lex (listsum xs) 0"
+lemma lex_sum_list: "(\<And>x. x \<in> set xs \<Longrightarrow> lex x 0) \<Longrightarrow> lex (sum_list xs) 0"
   by (induct xs) (auto simp: nlex_sum)
 
 lemma
-  abs_listsum_coll:
+  abs_sum_list_coll:
   assumes coll: "list_all (coll 0 x) xs"
   assumes "x \<noteq> 0"
   assumes up: "list_all (\<lambda>x. lex x 0) xs"
-  shows "abs (listsum xs) = listsum (map abs xs)"
+  shows "abs (sum_list xs) = sum_list (map abs xs)"
   using assms
 proof (induct xs)
   case (Cons y ys)
-  hence "coll 0 x y" "coll 0 x (listsum ys)"
-    by (auto simp: list_all_iff intro!: coll_listsum)
-  hence "coll 0 y (listsum ys)" using \<open>x \<noteq> 0\<close>
+  hence "coll 0 x y" "coll 0 x (sum_list ys)"
+    by (auto simp: list_all_iff intro!: coll_sum_list)
+  hence "coll 0 y (sum_list ys)" using \<open>x \<noteq> 0\<close>
     by (rule coll_trans)
-  hence "\<bar>y + listsum ys\<bar> = abs y + abs (listsum ys)" using Cons
-    by (subst abs_add_nlex) (auto simp: list_all_iff lex_listsum)
+  hence "\<bar>y + sum_list ys\<bar> = abs y + abs (sum_list ys)" using Cons
+    by (subst abs_add_nlex) (auto simp: list_all_iff lex_sum_list)
   thus ?case using Cons by simp
 qed simp
 
@@ -139,40 +139,40 @@ lemma lex_diff1: "lex (a - b) c = lex a (c + b)"
   and lex_diff2: "lex c (a - b) = lex (c + b) a"
   by (auto simp: lex_def)
 
-lemma listsum_eq_0_iff_nonpos:
+lemma sum_list_eq_0_iff_nonpos:
   fixes xs::"'a::ordered_ab_group_add list"
-  shows "list_all (\<lambda>x. x \<le> 0) xs \<Longrightarrow> listsum xs = 0 \<longleftrightarrow> (\<forall>n\<in>set xs. n = 0)"
-  by (auto simp: list_all_iff listsum_setsum_nth setsum_nonpos_eq_0_iff)
+  shows "list_all (\<lambda>x. x \<le> 0) xs \<Longrightarrow> sum_list xs = 0 \<longleftrightarrow> (\<forall>n\<in>set xs. n = 0)"
+  by (auto simp: list_all_iff sum_list_setsum_nth setsum_nonpos_eq_0_iff)
     (auto simp add: in_set_conv_nth)
 
-lemma listsum_nlex_eq_zeroI:
+lemma sum_list_nlex_eq_zeroI:
   assumes nlex: "list_all (\<lambda>x. lex x 0) xs"
-  assumes "listsum xs = 0"
+  assumes "sum_list xs = 0"
   assumes "x \<in> set xs"
   shows "x = 0"
 proof -
-  from assms(2) have z1: "listsum (map fst xs) = 0" and z2: "listsum (map snd xs) = 0"
-    by (auto simp: prod_eq_iff fst_listsum snd_listsum)
+  from assms(2) have z1: "sum_list (map fst xs) = 0" and z2: "sum_list (map snd xs) = 0"
+    by (auto simp: prod_eq_iff fst_sum_list snd_sum_list)
   from nlex have "list_all (\<lambda>x. x \<le> 0) (map fst xs)"
     by (auto simp: lex_def list_all_iff)
-  from listsum_eq_0_iff_nonpos[OF this] z1 nlex
+  from sum_list_eq_0_iff_nonpos[OF this] z1 nlex
   have
     z1': "list_all (\<lambda>x. x = 0) (map fst xs)"
     and "list_all (\<lambda>x. x \<le> 0) (map snd xs)"
     by (auto simp: list_all_iff lex_def)
-  from listsum_eq_0_iff_nonpos[OF this(2)] z2
+  from sum_list_eq_0_iff_nonpos[OF this(2)] z2
   have "list_all (\<lambda>x. x = 0) (map snd xs)" by (simp add: list_all_iff)
   with z1' show "x = 0" by (auto simp: list_all_iff zero_prod_def assms prod_eq_iff)
 qed
 
-lemma listsum_eq0I: "(\<forall>x\<in>set xs. x = 0) \<Longrightarrow> listsum xs = 0"
+lemma sum_list_eq0I: "(\<forall>x\<in>set xs. x = 0) \<Longrightarrow> sum_list xs = 0"
   by (induct xs) auto
 
-lemma listsum_nlex_eq_zero_iff:
+lemma sum_list_nlex_eq_zero_iff:
   assumes nlex: "list_all (\<lambda>x. lex x 0) xs"
-  shows "listsum xs = 0 \<longleftrightarrow> list_all (op = 0) xs"
+  shows "sum_list xs = 0 \<longleftrightarrow> list_all (op = 0) xs"
   using assms
-  by (auto intro: listsum_nlex_eq_zeroI listsum_eq0I simp: list_all_iff)
+  by (auto intro: sum_list_nlex_eq_zeroI sum_list_eq0I simp: list_all_iff)
 
 lemma
   assumes "lex p q" "lex q r" "0 \<le> a" "0 \<le> b" "0 \<le> c" "a + b + c = 1"

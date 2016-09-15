@@ -30,7 +30,7 @@ lemma jordan_block_carrier[simp]: "jordan_block n k \<in> carrier\<^sub>m n n"
   unfolding mat_carrier_def by auto
 
 lemma jordan_block_char_poly: "char_poly (jordan_block n a) = [: -a, 1:]^n"
-  unfolding char_poly_defs by (subst det_upper_triangular[of _ n], auto simp: listprod_diag_setprod)
+  unfolding char_poly_defs by (subst det_upper_triangular[of _ n], auto simp: prod_list_diag_setprod)
 
 lemma jordan_block_pow_carrier[simp]:
   "jordan_block n a ^\<^sub>m r \<in> carrier\<^sub>m n n" by auto
@@ -166,16 +166,16 @@ definition jordan_matrix :: "(nat \<times> 'a :: {zero,one})list \<Rightarrow> '
   "jordan_matrix n_as = diag_block_mat (map (\<lambda> (n,a). jordan_block n a) n_as)"
 
 lemma jordan_matrix_dim[simp]: 
-  "dim\<^sub>r (jordan_matrix n_as) = listsum (map fst n_as)"
-  "dim\<^sub>c (jordan_matrix n_as) = listsum (map fst n_as)"
+  "dim\<^sub>r (jordan_matrix n_as) = sum_list (map fst n_as)"
+  "dim\<^sub>c (jordan_matrix n_as) = sum_list (map fst n_as)"
   unfolding jordan_matrix_def
   by (subst diag_block_mat_dim, auto, (induct n_as, auto simp: Let_def)+)
 
 lemma jordan_matrix_carrier[simp]: 
-  "jordan_matrix n_as \<in> carrier\<^sub>m (listsum (map fst n_as)) (listsum (map fst n_as))"
+  "jordan_matrix n_as \<in> carrier\<^sub>m (sum_list (map fst n_as)) (sum_list (map fst n_as))"
   unfolding mat_carrier_def by auto
 
-lemma jordan_matrix_upper_triangular: "i < listsum (map fst n_as)
+lemma jordan_matrix_upper_triangular: "i < sum_list (map fst n_as)
   \<Longrightarrow> j < i \<Longrightarrow> jordan_matrix n_as $$ (i,j) = 0"
   unfolding jordan_matrix_def
   by (rule diag_block_upper_triangular, auto simp: jordan_matrix_def[symmetric])
@@ -188,14 +188,14 @@ lemma jordan_matrix_pow: "(jordan_matrix n_as) ^\<^sub>m r =
 lemma jordan_matrix_char_poly: 
   "char_poly (jordan_matrix n_as) = (\<Prod>(n, a)\<leftarrow>n_as. [:- a, 1:] ^ n)"
 proof -
-  let ?n = "listsum (map fst n_as)"
+  let ?n = "sum_list (map fst n_as)"
   have "mat_diag
-     ([:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m (listsum (map fst n_as)) \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) (jordan_matrix n_as)) =
+     ([:0, 1:] \<odot>\<^sub>m \<one>\<^sub>m (sum_list (map fst n_as)) \<oplus>\<^sub>m map\<^sub>m (\<lambda>a. [:- a:]) (jordan_matrix n_as)) =
     concat (map (\<lambda>(n, a). replicate n [:- a, 1:]) n_as)" unfolding jordan_matrix_def
   proof (induct n_as)
     case (Cons na n_as)
     obtain n a where na: "na = (n,a)" by force
-    let ?n2 = "listsum (map fst n_as)"
+    let ?n2 = "sum_list (map fst n_as)"
     note fbo = four_block_one_mat
     note mz = mat_zero_closed
     note mo = mat_one_closed
@@ -215,7 +215,7 @@ proof -
       intro nth_equalityI, auto)
     done
   qed (force simp: mat_diag_def)
-  also have "listprod ... = (\<Prod>(n, a)\<leftarrow>n_as. [:- a, 1:] ^ n)"
+  also have "prod_list ... = (\<Prod>(n, a)\<leftarrow>n_as. [:- a, 1:] ^ n)"
     by (induct n_as, auto)
   finally
   show ?thesis unfolding char_poly_defs

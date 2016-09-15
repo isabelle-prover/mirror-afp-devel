@@ -197,11 +197,11 @@ proof -
 qed
 end
 
-lemma listprod_replicate[simp]: "listprod (replicate n a) = a ^ n"
+lemma prod_list_replicate[simp]: "prod_list (replicate n a) = a ^ n"
   by (induct n, auto)
 
-lemma listprod_power: fixes xs :: "'a :: comm_monoid_mult list"
-  shows "listprod xs ^ n = (\<Prod>x\<leftarrow>xs. x ^ n)"
+lemma prod_list_power: fixes xs :: "'a :: comm_monoid_mult list"
+  shows "prod_list xs ^ n = (\<Prod>x\<leftarrow>xs. x ^ n)"
   by (induct xs, auto simp: power_mult_distrib)
 
 lemma set_upt_Suc: "{0 ..< Suc i} = insert i {0 ..< i}" by auto
@@ -359,7 +359,7 @@ proof -
   show ?thesis unfolding x y using zz by blast
 qed
 
-lemma listprod_zero_iff: "(listprod (xs :: 'a :: idom list) = 0) = (0 \<in> set xs)"
+lemma prod_list_zero_iff: "(prod_list (xs :: 'a :: idom list) = 0) = (0 \<in> set xs)"
   by (induct xs, auto)
 
 fun max_list_non_empty :: "('a :: linorder) list \<Rightarrow> 'a" where
@@ -434,11 +434,11 @@ proof (induct xs arbitrary: i)
     by (cases i, auto)
 qed simp
 
-lemma listprod_dvd: assumes "(x :: 'a :: comm_monoid_mult) \<in> set xs"
-  shows "x dvd listprod xs"
+lemma prod_list_dvd: assumes "(x :: 'a :: comm_monoid_mult) \<in> set xs"
+  shows "x dvd prod_list xs"
 proof -
   from assms[unfolded in_set_conv_decomp] obtain ys zs where xs: "xs = ys @ x # zs" by auto
-  show ?thesis unfolding xs dvd_def by (intro exI[of _ "listprod (ys @ zs)"], simp add: ac_simps)
+  show ?thesis unfolding xs dvd_def by (intro exI[of _ "prod_list (ys @ zs)"], simp add: ac_simps)
 qed
 
 lemma dvd_setprod: 
@@ -455,12 +455,12 @@ qed auto
 context
   fixes xs :: "'a :: comm_monoid_mult list"
 begin
-lemma listprod_filter: "listprod (filter f xs) * listprod (filter (\<lambda> x. \<not> f x) xs) = listprod xs"
+lemma prod_list_filter: "prod_list (filter f xs) * prod_list (filter (\<lambda> x. \<not> f x) xs) = prod_list xs"
   by (induct xs, auto simp: ac_simps)
 
-lemma listprod_partition: assumes "partition f xs = (ys, zs)"
-  shows "listprod xs = listprod ys * listprod zs"
-  using assms by (subst listprod_filter[symmetric, of f], auto simp: o_def)
+lemma prod_list_partition: assumes "partition f xs = (ys, zs)"
+  shows "prod_list xs = prod_list ys * prod_list zs"
+  using assms by (subst prod_list_filter[symmetric, of f], auto simp: o_def)
 end
 
 

@@ -2251,7 +2251,7 @@ lemma select_correct_factor_main: assumes conv: "converges_to f x"
   and old: "\<And> q ri. (q,ri) \<in> set old \<Longrightarrow> root_info.l_r ri l r \<noteq> 0"
   and un: "\<And> x :: real. (\<exists>q. q \<in> fst ` set todo \<union> fst ` set old \<and> rpoly q x = 0) \<Longrightarrow> 
     \<exists>!q. q \<in> fst ` set todo \<union> fst ` set old \<and> rpoly q x = 0"
-  and n: "n = listsum (map (\<lambda> (q,ri). root_info.l_r ri l r) old)"
+  and n: "n = sum_list (map (\<lambda> (q,ri). root_info.l_r ri l r) old)"
   shows "unique_root (q,l_fin,r_fin) \<and> (q,ri_fin) \<in> set todo \<union> set old \<and> x = the_unique_root (q,l_fin,r_fin)"
 proof -
   def orig \<equiv> "set todo \<union> set old"
@@ -2366,8 +2366,8 @@ proof -
         from 0[unfolded root_info_condD(1)[OF ri' lr]] obtain y1 where y1: "root_cond (q1,l,r) y1" 
           by (cases "Collect (root_cond (q1, l, r)) = {}", auto)
         from n1[unfolded n old'] 
-        have "?ri > 1 \<or> listsum (map (\<lambda> (q,ri). root_info.l_r ri l r) old') \<noteq> 0"
-          by (cases "listsum (map (\<lambda> (q,ri). root_info.l_r ri l r) old')", auto)
+        have "?ri > 1 \<or> sum_list (map (\<lambda> (q,ri). root_info.l_r ri l r) old') \<noteq> 0"
+          by (cases "sum_list (map (\<lambda> (q,ri). root_info.l_r ri l r) old')", auto)
         hence "\<exists> q2 ri2 y2. (q2,ri2) \<in> set old \<and> root_cond (q2,l,r) y2 \<and> y1 \<noteq> y2"
         proof
           assume "?ri > 1"
@@ -2375,7 +2375,7 @@ proof -
           from card_gt_1D[OF this] y1 obtain y2 where "root_cond (q1,l,r) y2" and "y1 \<noteq> y2" by auto
           thus ?thesis unfolding old' by auto
         next
-          assume "listsum (map (\<lambda> (q,ri). root_info.l_r ri l r) old') \<noteq> 0"
+          assume "sum_list (map (\<lambda> (q,ri). root_info.l_r ri l r) old') \<noteq> 0"
           then obtain q2 ri2 where mem: "(q2,ri2) \<in> set old'" and ri2: "root_info.l_r ri2 l r \<noteq> 0" by auto
           with q0 ri have "root_info_cond ri2 q2" unfolding old' by auto
           from ri2[unfolded root_info_condD(1)[OF this lr]] obtain y2 where y2: "root_cond (q2,l,r) y2"

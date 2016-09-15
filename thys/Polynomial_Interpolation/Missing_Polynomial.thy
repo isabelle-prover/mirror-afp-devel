@@ -108,18 +108,18 @@ next
   qed
 qed
 
-lemma degree_listsum_le: "(\<And> p . p \<in> set ps \<Longrightarrow> degree p \<le> n)
-  \<Longrightarrow> degree (listsum ps) \<le> n"
+lemma degree_sum_list_le: "(\<And> p . p \<in> set ps \<Longrightarrow> degree p \<le> n)
+  \<Longrightarrow> degree (sum_list ps) \<le> n"
 proof (induct ps)
   case (Cons p ps)
-  hence "degree (listsum ps) \<le> n" "degree p \<le> n" by auto
-  thus ?case unfolding listsum.Cons by (metis degree_add_le)
+  hence "degree (sum_list ps) \<le> n" "degree p \<le> n" by auto
+  thus ?case unfolding sum_list.Cons by (metis degree_add_le)
 qed simp
 
-lemma degree_listprod_le: "degree (listprod ps) \<le> listsum (map degree ps)"
+lemma degree_prod_list_le: "degree (prod_list ps) \<le> sum_list (map degree ps)"
 proof (induct ps)
   case (Cons p ps)
-  show ?case unfolding listprod.Cons
+  show ?case unfolding prod_list.Cons
     by (rule order.trans[OF degree_mult_le], insert Cons, auto)
 qed simp
 
@@ -133,20 +133,20 @@ lemma range_coeff: "range (coeff p) = insert 0 (set (coeffs p))"
 lemma smult_power: "(smult a p) ^ n = smult (a ^ n) (p ^ n)"
   by (induct n, auto simp: field_simps)
 
-lemma poly_listsum: "poly (listsum ps) x = listsum (map (\<lambda> p. poly p x) ps)"
+lemma poly_sum_list: "poly (sum_list ps) x = sum_list (map (\<lambda> p. poly p x) ps)"
   by (induct ps, auto)
 
-lemma poly_listprod: "poly (listprod ps) x = listprod (map (\<lambda> p. poly p x) ps)"
+lemma poly_prod_list: "poly (prod_list ps) x = prod_list (map (\<lambda> p. poly p x) ps)"
   by (induct ps, auto)
 
-lemma listsum_neutral: "(\<And> x. x \<in> set xs \<Longrightarrow> x = 0) \<Longrightarrow> listsum xs = 0"
+lemma sum_list_neutral: "(\<And> x. x \<in> set xs \<Longrightarrow> x = 0) \<Longrightarrow> sum_list xs = 0"
   by (induct xs, auto)
 
-lemma listprod_neutral: "(\<And> x. x \<in> set xs \<Longrightarrow> x = 1) \<Longrightarrow> listprod xs = 1"
+lemma prod_list_neutral: "(\<And> x. x \<in> set xs \<Longrightarrow> x = 1) \<Longrightarrow> prod_list xs = 1"
   by (induct xs, auto)
 
-lemma (in comm_monoid_mult) listprod_map_remove1:
-  "x \<in> set xs \<Longrightarrow> listprod (map f xs) = f x * listprod (map f (remove1 x xs))"
+lemma (in comm_monoid_mult) prod_list_map_remove1:
+  "x \<in> set xs \<Longrightarrow> prod_list (map f xs) = f x * prod_list (map f (remove1 x xs))"
   by (induct xs) (auto simp add: ac_simps)
 
 lemma poly_as_setsum:
@@ -410,10 +410,10 @@ proof (induct as rule: infinite_finite_induct)
   show ?case unfolding id by (rule monic_mult[OF *])
 qed auto
 
-lemma monic_listprod:
+lemma monic_prod_list:
   fixes as :: "'a :: idom poly list"
   assumes "\<And> a. a \<in> set as \<Longrightarrow> monic a"
-  shows "monic (listprod as)" using assms
+  shows "monic (prod_list as)" using assms
   by (induct as, auto intro: monic_mult)
 
 lemma monic_power:
@@ -421,8 +421,8 @@ lemma monic_power:
   shows "monic (p ^ n)"
   by (induct n, insert assms, auto intro: monic_mult)
 
-lemma monic_listprod_pow: "monic (\<Prod>(x::'a::idom, i)\<leftarrow>xis. [:- x, 1:] ^ Suc i)"
-proof (rule monic_listprod, goal_cases)
+lemma monic_prod_list_pow: "monic (\<Prod>(x::'a::idom, i)\<leftarrow>xis. [:- x, 1:] ^ Suc i)"
+proof (rule monic_prod_list, goal_cases)
   case (1 a)
   then obtain x i where a: "a = [:-x, 1:]^Suc i" by force
   show "monic a" unfolding a
@@ -904,8 +904,8 @@ lemma poly_smult_zero_iff: fixes x :: "'a :: idom"
   shows "(poly (smult a p) x = 0) = (a = 0 \<or> poly p x = 0)"
   by simp
 
-lemma poly_listprod_zero_iff: fixes x :: "'a :: idom" 
-  shows "(poly (listprod ps) x = 0) = (\<exists> p \<in> set ps. poly p x = 0)"
+lemma poly_prod_list_zero_iff: fixes x :: "'a :: idom" 
+  shows "(poly (prod_list ps) x = 0) = (\<exists> p \<in> set ps. poly p x = 0)"
   by (induct ps, auto)
 
 lemma poly_mult_zero_iff: fixes x :: "'a :: idom" 
@@ -935,12 +935,12 @@ proof -
   thus ?thesis by auto
 qed
 
-lemma degree_listprod_eq: assumes "\<And> p. p \<in> set ps \<Longrightarrow> (p :: 'a :: idom poly) \<noteq> 0"
-  shows "degree (listprod ps) = listsum (map degree ps)" using assms
+lemma degree_prod_list_eq: assumes "\<And> p. p \<in> set ps \<Longrightarrow> (p :: 'a :: idom poly) \<noteq> 0"
+  shows "degree (prod_list ps) = sum_list (map degree ps)" using assms
 proof (induct ps)
   case (Cons p ps)
-  show ?case unfolding listprod.Cons
-    by (subst degree_mult_eq, insert Cons, auto simp: listprod_zero_iff)
+  show ?case unfolding prod_list.Cons
+    by (subst degree_mult_eq, insert Cons, auto simp: prod_list_zero_iff)
 qed simp
 
 lemma degree_power_eq: assumes p: "p \<noteq> 0"
@@ -960,8 +960,8 @@ proof -
   thus ?thesis unfolding rsquarefree_def by auto
 qed
 
-lemma order_listprod: "(\<And> p. p \<in> set ps \<Longrightarrow> p \<noteq> 0) \<Longrightarrow> order x (listprod ps) = listsum (map (order x) ps)"
-  by (induct ps, auto, subst order_mult, auto simp: listprod_zero_iff)
+lemma order_prod_list: "(\<And> p. p \<in> set ps \<Longrightarrow> p \<noteq> 0) \<Longrightarrow> order x (prod_list ps) = sum_list (map (order x) ps)"
+  by (induct ps, auto, subst order_mult, auto simp: prod_list_zero_iff)
 
 lemma irreducible_dvd_eq:
 assumes "irreducible a"

@@ -1610,7 +1610,7 @@ lemma upper_triangular_deletion_mat: "upper_triangular (deletion_mat n m q)"
   
 lemma det_deletion_mat: "det (deletion_mat n m q) = 1" 
   by (subst det_upper_triangular[OF upper_triangular_deletion_mat dim_deletion_mat(3)], 
-  rule listprod_neutral, auto simp: deletion_mat_def Let_def mat_diag_def)
+  rule prod_list_neutral, auto simp: deletion_mat_def Let_def mat_diag_def)
   
 lemma deletion_mat_sylvester_mat_sub: assumes m: "m \<ge> degree (g * q + r)" 
   and n: "n \<ge> degree g"

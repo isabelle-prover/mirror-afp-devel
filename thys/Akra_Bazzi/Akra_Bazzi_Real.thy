@@ -195,10 +195,10 @@ lemma p_boundsI: "(\<Sum>i<k. as!i * bs!i powr x) \<le> 1 \<and> (\<Sum>i<k. as!
 lemma p_boundsI': "(\<Sum>i<k. as!i * bs!i powr x) < 1 \<and> (\<Sum>i<k. as!i * bs!i powr y) > 1 \<Longrightarrow> p \<in> {y<..<x}"
   by (elim conjE, drule p_lessI, drule p_greaterI, simp)
 
-lemma p_nonneg: "listsum as \<ge> 1 \<Longrightarrow> p \<ge> 0"
+lemma p_nonneg: "sum_list as \<ge> 1 \<Longrightarrow> p \<ge> 0"
 proof (rule p_geI)
-  assume "listsum as \<ge> 1"
-  also have "... = (\<Sum>i<k. as!i)" by (simp add: listsum_setsum_nth length_as atLeast0LessThan)
+  assume "sum_list as \<ge> 1"
+  also have "... = (\<Sum>i<k. as!i)" by (simp add: sum_list_setsum_nth length_as atLeast0LessThan)
   also {
     fix i assume "i < k"
     with b_bounds have "bs!i > 0" by simp

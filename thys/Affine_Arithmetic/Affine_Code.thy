@@ -224,10 +224,10 @@ lemma compute_pdevs_apply[code]: "pdevs_apply (Pdevs x) i = slist_apply x i"
 subsection \<open>Total Deviation\<close>
 
 lift_definition tdev_slist::"(nat, 'a::ordered_euclidean_space) slist \<Rightarrow> 'a" is
-  "listsum o map (abs o snd)" .
+  "sum_list o map (abs o snd)" .
 
 lemma tdev_slist_setsum: "tdev_slist xs = setsum (abs \<circ> snd) (set_slist xs)"
-  by transfer (auto simp: distinct_map listsum_distinct_conv_setsum_set[symmetric] o_def)
+  by transfer (auto simp: distinct_map sum_list_distinct_conv_setsum_set[symmetric] o_def)
 
 lemma pdevs_apply_set_slist: "x \<in> set_slist xs \<Longrightarrow> snd x = pdevs_apply (Pdevs xs) (fst x)"
   by transfer (auto simp: Pdevs_raw_def)
@@ -489,7 +489,7 @@ lemma zeros_aux: "- (\<lambda>i. if i = a then b else Pdevs_raw xs i) -` {0} \<s
 
 lemma compute_tdev'[code]:
   "tdev' p (Pdevs xs) = fold_slist (\<lambda>a b. eucl_truncate_up p (\<bar>a\<bar> + b)) xs 0"
-  unfolding tdev'_def listsum'_def compute_list_of_pdevs
+  unfolding tdev'_def sum_list'_def compute_list_of_pdevs
   by transfer (auto simp: o_def fold_map)
 
 subsection \<open>Equality\<close>

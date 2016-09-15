@@ -21,7 +21,7 @@ assumes inv_exec: "\<lbrakk>\<forall>s \<in> set ss. inv s; length ss = arity f 
 assumes ppos: "inv s \<Longrightarrow> \<Phi> s \<ge> 0"
 assumes p0: "arity f = 0 \<Longrightarrow> \<Phi> (exec f []) = 0"
 assumes U: "\<lbrakk> \<forall>s \<in> set ss. inv s; length ss = arity f \<rbrakk>
- \<Longrightarrow> cost f ss + \<Phi>(exec f ss) - listsum (map \<Phi> ss) \<le> U f ss"
+ \<Longrightarrow> cost f ss + \<Phi>(exec f ss) - sum_list (map \<Phi> ss) \<le> U f ss"
 begin
 
 fun wf :: "'op rose_tree \<Rightarrow> bool" where
@@ -34,20 +34,20 @@ lemma inv_state: "wf ot \<Longrightarrow> inv(state ot)"
 by(induction ot)(simp_all add: inv_exec)
 
 definition acost :: "'op \<Rightarrow> 's list \<Rightarrow> real" where
-"acost f ss = cost f ss + \<Phi> (exec f ss) - listsum (map \<Phi> ss)"
+"acost f ss = cost f ss + \<Phi> (exec f ss) - sum_list (map \<Phi> ss)"
 
 fun acost_sum :: "'op rose_tree \<Rightarrow> real" where
-"acost_sum (T f ts) = acost f (map state ts) + listsum (map acost_sum ts)"
+"acost_sum (T f ts) = acost f (map state ts) + sum_list (map acost_sum ts)"
 
 fun cost_sum :: "'op rose_tree \<Rightarrow> real" where
-"cost_sum (T f ts) = cost f (map state ts) + listsum (map cost_sum ts)"
+"cost_sum (T f ts) = cost f (map state ts) + sum_list (map cost_sum ts)"
 
 fun U_sum :: "'op rose_tree \<Rightarrow> real" where
-"U_sum (T f ts) = U f (map state ts) + listsum (map U_sum ts)"
+"U_sum (T f ts) = U f (map state ts) + sum_list (map U_sum ts)"
 
 lemma t_sum_a_sum: "wf ot \<Longrightarrow> cost_sum ot = acost_sum ot - \<Phi>(state ot)"
 apply(induction ot)
-apply (auto simp: acost_def p0 Let_def listsum_subtractf cong: listsum_cong)
+apply (auto simp: acost_def p0 Let_def sum_list_subtractf cong: sum_list_cong)
 apply (simp add: o_def)
 done
 
@@ -60,7 +60,7 @@ by(simp add: acost_def U)
 lemma u_sum_le_U_sum: "wf ot \<Longrightarrow> acost_sum ot \<le> U_sum ot"
 proof(induction ot)
   case (T f ts)
-  with a_le_U[of "map state ts" f] listsum_mono show ?case
+  with a_le_U[of "map state ts" f] sum_list_mono show ?case
     by (force simp: inv_state)
 qed
 

@@ -645,10 +645,10 @@ rule in @{const compR}. *}
 
 lemma termination_no_match_ML:
   "i < length ps \<Longrightarrow> rev ps ! i = C\<^sub>U nm vs
-   \<Longrightarrow> listsum (map size vs) < listsum (map size ps)"
+   \<Longrightarrow> sum_list (map size vs) < sum_list (map size ps)"
 apply(subgoal_tac "C\<^sub>U nm vs : set ps")
- apply(drule listsum_map_remove1[of _ _ size])
- apply (simp add:size_list_conv_listsum)
+ apply(drule sum_list_map_remove1[of _ _ size])
+ apply (simp add:size_list_conv_sum_list)
 apply (metis in_set_conv_nth length_rev set_rev)
 done
 
@@ -743,27 +743,27 @@ fun size' :: "ml \<Rightarrow> nat" where
 "size' (Clo f vs n) = (size' f + (\<Sum>v\<leftarrow>vs. size' v))+1" |
 "size' (apply v w) = (size' v + size' w)+1"
 
-lemma listsum_size'[simp]:
- "v \<in> set vs \<Longrightarrow> size' v < Suc(listsum (map size' vs))"
+lemma sum_list_size'[simp]:
+ "v \<in> set vs \<Longrightarrow> size' v < Suc(sum_list (map size' vs))"
 by(induct vs)(auto)
 
-corollary cor_listsum_size'[simp]:
- "v \<in> set vs \<Longrightarrow> size' v < Suc(m + listsum (map size' vs))"
-using listsum_size'[of v vs] by arith
+corollary cor_sum_list_size'[simp]:
+ "v \<in> set vs \<Longrightarrow> size' v < Suc(m + sum_list (map size' vs))"
+using sum_list_size'[of v vs] by arith
 
 lemma size'_lift_ML: "size' (lift\<^sub>M\<^sub>L k v) = size' v"
 apply(induct v arbitrary:k rule:size'.induct)
 apply simp_all
-   apply(rule arg_cong[where f = listsum])
+   apply(rule arg_cong[where f = sum_list])
    apply(rule map_ext)
    apply simp
-  apply(rule arg_cong[where f = listsum])
+  apply(rule arg_cong[where f = sum_list])
   apply(rule map_ext)
   apply simp
- apply(rule arg_cong[where f = listsum])
+ apply(rule arg_cong[where f = sum_list])
  apply(rule map_ext)
  apply simp
-apply(rule arg_cong[where f = listsum])
+apply(rule arg_cong[where f = sum_list])
 apply(rule map_ext)
 apply simp
 done
@@ -772,19 +772,19 @@ lemma size'_subst_ML[simp]:
  "\<forall>i j. size'(\<sigma> i) = 1 \<Longrightarrow> size' (subst\<^sub>M\<^sub>L \<sigma> v) = size' v"
 apply(induct v arbitrary:\<sigma> rule:size'.induct)
 apply simp_all
-    apply(rule arg_cong[where f = listsum])
+    apply(rule arg_cong[where f = sum_list])
     apply(rule map_ext)
     apply simp
    apply(erule meta_allE)
    apply(erule meta_mp)
    apply(simp add: size'_lift_ML split:nat.split)
-  apply(rule arg_cong[where f = listsum])
+  apply(rule arg_cong[where f = sum_list])
   apply(rule map_ext)
   apply simp
- apply(rule arg_cong[where f = listsum])
+ apply(rule arg_cong[where f = sum_list])
  apply(rule map_ext)
  apply simp
-apply(rule arg_cong[where f = listsum])
+apply(rule arg_cong[where f = sum_list])
 apply(rule map_ext)
 apply simp
 done
@@ -792,16 +792,16 @@ done
 lemma size'_lift[simp]: "size' (lift i v) = size' v"
 apply(induct v arbitrary:i rule:size'.induct)
 apply simp_all
-   apply(rule arg_cong[where f = listsum])
+   apply(rule arg_cong[where f = sum_list])
    apply(rule map_ext)
    apply simp
-  apply(rule arg_cong[where f = listsum])
+  apply(rule arg_cong[where f = sum_list])
   apply(rule map_ext)
   apply simp
- apply(rule arg_cong[where f = listsum])
+ apply(rule arg_cong[where f = sum_list])
  apply(rule map_ext)
  apply simp
-apply(rule arg_cong[where f = listsum])
+apply(rule arg_cong[where f = sum_list])
 apply(rule map_ext)
 apply simp
 done
@@ -1381,10 +1381,10 @@ by (induct ts arbitrary:t) auto
 
 lemma termination_no_match:
   "i < length ss \<Longrightarrow> ss ! i = C nm \<bullet>\<bullet> ts
-   \<Longrightarrow> listsum (map size_tm ts) < listsum (map size_tm ss)"
+   \<Longrightarrow> sum_list (map size_tm ts) < sum_list (map size_tm ss)"
 apply(subgoal_tac "C nm \<bullet>\<bullet> ts : set ss")
- apply(drule listsum_map_remove1[of _ _ size_tm])
-apply(simp add:size_tm_foldl_At size_list_conv_listsum)
+ apply(drule sum_list_map_remove1[of _ _ size_tm])
+apply(simp add:size_tm_foldl_At size_list_conv_sum_list)
 apply (metis in_set_conv_nth)
 done
 
@@ -1893,18 +1893,18 @@ lemma Red_term_pres_no_match_it:
     size ts' = size ts; size ns = size ts;
     no_match ps (map dterm ts)\<rbrakk>
    \<Longrightarrow> no_match ps (map dterm ts')"
-proof(induct "listsum ns" arbitrary: ts ns)
+proof(induct "sum_list ns" arbitrary: ts ns)
   case 0
   hence "\<forall>i < size ts. ns!i = 0" by simp
   with 0 show ?case by simp (metis nth_equalityI)
 next
   case (Suc n)
-  then have "listsum ns \<noteq> 0" by arith
+  then have "sum_list ns \<noteq> 0" by arith
   then obtain k l where "k<size ts" and [simp]: "ns!k = Suc l"
     by simp (metis `length ns = length ts` gr0_implies_Suc in_set_conv_nth)
   let ?ns = "ns[k := l]"
-  have "n = listsum ?ns" using `Suc n = listsum ns` `k<size ts` `size ns = size ts`
-    by (simp add:listsum_update_nat)
+  have "n = sum_list ?ns" using `Suc n = sum_list ns` `k<size ts` `size ns = size ts`
+    by (simp add:sum_list_update_nat)
   obtain t' where "ts!k \<Rightarrow> t'" "(t', ts'!k) : Red_term^^l"
     using Suc(3) `k<size ts` `size ns = size ts` `ns!k = Suc l`
     by (metis relpow_Suc_E2)
@@ -1912,7 +1912,7 @@ next
     using Suc(3) `k<size ts` `size ns = size ts`
     by (auto simp add:nth_list_update)
   note nm1 = Red_term_pres_no_match[OF `k<size ts` `ts!k \<Rightarrow> t'` `no_match ps (map dterm ts)`]
-  show ?case by(rule Suc(1)[OF `n = listsum ?ns` 1 _ _ nm1])
+  show ?case by(rule Suc(1)[OF `n = sum_list ?ns` 1 _ _ nm1])
                (simp_all add: `size ts' = size ts` `size ns = size ts`)
 qed
 
@@ -2356,16 +2356,16 @@ fun C\<^sub>Us :: "ml \<Rightarrow> bool" where
 "C\<^sub>Us(C\<^sub>U nm vs) = (size vs = arity nm \<and> (\<forall>v\<in>set vs. C\<^sub>Us v))" |
 "C\<^sub>Us _ = False"
 
-lemma size_foldl_At: "size(C nm \<bullet>\<bullet> ts) = size ts + listsum(map size ts)"
+lemma size_foldl_At: "size(C nm \<bullet>\<bullet> ts) = size ts + sum_list(map size ts)"
 by(induct ts rule:rev_induct) auto
 
 
 lemma termination_linpats:
   "i < length ts \<Longrightarrow> ts!i = C nm \<bullet>\<bullet> ts'
-   \<Longrightarrow> length ts' + listsum (map size ts') < length ts + listsum (map size ts)"
+   \<Longrightarrow> length ts' + sum_list (map size ts') < length ts + sum_list (map size ts)"
 apply(subgoal_tac "C nm \<bullet>\<bullet> ts' : set ts")
  prefer 2 apply (metis in_set_conv_nth)
-apply(drule listsum_map_remove1[of _ _ size])
+apply(drule sum_list_map_remove1[of _ _ size])
 apply(simp add:size_foldl_At)
 apply (metis gr_implies_not0 length_0_conv)
 done

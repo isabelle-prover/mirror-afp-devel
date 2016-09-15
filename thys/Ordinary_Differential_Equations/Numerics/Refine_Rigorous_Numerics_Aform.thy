@@ -26,7 +26,7 @@ definition aform_sup_inner where "aform_sup_inner optns X n = Sup_aform' (precis
 definition "support_aform optns b X = (let ia = inner_aform X b in fst X \<bullet> b + tdev' (precision optns) (snd ia))"
 
 definition "width_aform optns X =
-  (let t = tdev' (precision optns) (snd X) in listsum' (precision optns) (map (\<lambda>i. t \<bullet> i) Basis_list))"
+  (let t = tdev' (precision optns) (snd X) in sum_list' (precision optns) (map (\<lambda>i. t \<bullet> i) Basis_list))"
 
 definition "inf_aforms optns xs = (Inf_aform' (precision optns) (xs))"
 definition "sup_aforms optns xs = (Sup_aform' (precision optns) (xs))"

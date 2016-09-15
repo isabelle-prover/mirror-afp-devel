@@ -3784,8 +3784,8 @@ lemmas S_uminus = minus_unique[OF S_order2_add]
 lemma S_sym: "uminus ` S \<subseteq> S"
   using S_uminus by auto
 
-lemmas listsum_S_in_W  = listsum_lists_in_genby_sym[OF S_sym]
-lemmas W_conv_listsums = genby_sym_eq_listsums[OF S_sym]
+lemmas sum_list_S_in_W  = sum_list_lists_in_genby_sym[OF S_sym]
+lemmas W_conv_sum_lists = genby_sym_eq_sum_lists[OF S_sym]
 
 lemma S_endomorphism:
   "s\<in>S \<Longrightarrow> ChamberComplexEndomorphism X (permutation s)"
@@ -3794,7 +3794,7 @@ lemma S_endomorphism:
   by    (fastforce simp add: permutation_conv_induced_automorph)
 
 lemma S_list_endomorphism:
-  "ss\<in>lists S \<Longrightarrow> ChamberComplexEndomorphism X (permutation (listsum ss))"
+  "ss\<in>lists S \<Longrightarrow> ChamberComplexEndomorphism X (permutation (sum_list ss))"
   by  (induct ss)
       (auto simp add:
         zero_permutation.rep_eq trivial_endomorphism plus_permutation.rep_eq
@@ -3803,7 +3803,7 @@ lemma S_list_endomorphism:
 
 lemma W_endomorphism:
   "w\<in>W \<Longrightarrow> ChamberComplexEndomorphism X (permutation w)"
-  using W_conv_listsums S_list_endomorphism by auto
+  using W_conv_sum_lists S_list_endomorphism by auto
 
 lemma S_automorphism:
   "s\<in>S \<Longrightarrow> ChamberComplexAutomorphism X (permutation s)"
@@ -3812,7 +3812,7 @@ lemma S_automorphism:
   by    (fastforce simp add: permutation_conv_induced_automorph)
 
 lemma S_list_automorphism:
-  "ss\<in>lists S \<Longrightarrow> ChamberComplexAutomorphism X (permutation (listsum ss))"
+  "ss\<in>lists S \<Longrightarrow> ChamberComplexAutomorphism X (permutation (sum_list ss))"
   by  (induct ss)
       (auto simp add:
         zero_permutation.rep_eq trivial_automorphism plus_permutation.rep_eq
@@ -3821,7 +3821,7 @@ lemma S_list_automorphism:
 
 lemma W_automorphism:
   "w\<in>W \<Longrightarrow> ChamberComplexAutomorphism X (permutation w)"
-  using W_conv_listsums S_list_automorphism by auto
+  using W_conv_sum_lists S_list_automorphism by auto
 
 lemma S_respects_labels: "\<lbrakk> label_wrt B \<phi>; s\<in>S; v\<in>(\<Union>X) \<rbrakk> \<Longrightarrow> \<phi> (s \<rightarrow> v) = \<phi> v"
   using fundfoldpairs_def
@@ -3831,7 +3831,7 @@ lemma S_respects_labels: "\<lbrakk> label_wrt B \<phi>; s\<in>S; v\<in>(\<Union>
   by    (auto simp add: permutation_conv_induced_automorph)
 
 lemma S_list_respects_labels:
-  "\<lbrakk> label_wrt B \<phi>; ss\<in>lists S; v\<in>(\<Union>X) \<rbrakk> \<Longrightarrow> \<phi> (listsum ss \<rightarrow> v) = \<phi> v"
+  "\<lbrakk> label_wrt B \<phi>; ss\<in>lists S; v\<in>(\<Union>X) \<rbrakk> \<Longrightarrow> \<phi> (sum_list ss \<rightarrow> v) = \<phi> v"
   using S_endomorphism ChamberComplexEndomorphism.vertex_map[of X]
   by    (induct ss arbitrary: v rule: rev_induct)
         (auto simp add:
@@ -3840,7 +3840,7 @@ lemma S_list_respects_labels:
 
 lemma W_respects_labels:
   "\<lbrakk> label_wrt B \<phi>; w\<in>W; v\<in>(\<Union>X) \<rbrakk> \<Longrightarrow> \<phi> (w\<rightarrow>v) = \<phi> v"
-  using W_conv_listsums S_list_respects_labels[of B \<phi> _ v] by auto
+  using W_conv_sum_lists S_list_respects_labels[of B \<phi> _ v] by auto
 
 end (* context ThinChamberComplexManyFoldings *)
 
@@ -3977,13 +3977,13 @@ proof (induct ss rule: list_induct_ssnoc)
 next
   case (ssnoc ss s t)
   def Cs: Cs \<equiv> "map (\<lambda>w. w `\<rightarrow> C0) (sums ss)"
-  and D : D  \<equiv> "listsum (ss@[s]) `\<rightarrow> C0"
-  and E : E  \<equiv> "listsum (ss@[s,t]) `\<rightarrow> C0"
+  and D : D  \<equiv> "sum_list (ss@[s]) `\<rightarrow> C0"
+  and E : E  \<equiv> "sum_list (ss@[s,t]) `\<rightarrow> C0"
   with ssnoc have "gallery (Cs@[D,E])"
-    using listsum_S_in_W[of "ss@[s,t]"] listsum_S_in_W[of "ss@[s]"]
+    using sum_list_S_in_W[of "ss@[s,t]"] sum_list_S_in_W[of "ss@[s]"]
           fundchamber_W_image_chamber
-          fundchamber_WS_image_adjacent[of "listsum (ss@[s])" t]
-          listsum_append[of "ss@[s]" "[t]"]
+          fundchamber_WS_image_adjacent[of "sum_list (ss@[s])" t]
+          sum_list_append[of "ss@[s]" "[t]"]
     by    (auto intro: gallery_snocI simp add: sums_snoc)
   with Cs D E show ?case using sums_snoc[of "ss@[s]" t] by (simp add: sums_snoc)
 qed (auto simp add: gallery_def fundchamber zero_permutation.rep_eq)
@@ -4052,14 +4052,14 @@ proof (induct ss rule: list_induct_ssnoc)
 next
   case (ssnoc ss s t)
   moreover
-    def A : A  \<equiv> "listsum (ss@[s]) `\<rightarrow> C0"
-    and B : B  \<equiv> "listsum (ss@[s,t]) `\<rightarrow> C0"
+    def A : A  \<equiv> "sum_list (ss@[s]) `\<rightarrow> C0"
+    and B : B  \<equiv> "sum_list (ss@[s,t]) `\<rightarrow> C0"
   moreover with ssnoc(2) obtain f g
     where "OpposedThinChamberComplexFoldings X f g A" "B=g`A"
-    using listsum_S_in_W[of "ss@[s]"] listsum_S_in_W[of "ss@[s,t]"]
-          fundchamber_W_image_chamber listsum_append[of "ss@[s]" "[t]"]
-          fundchamber_next_WS_image_neq[of t "listsum (ss@[s])"]
-          fundchamber_WS_image_adjacent[of "listsum (ss@[s])" t]
+    using sum_list_S_in_W[of "ss@[s]"] sum_list_S_in_W[of "ss@[s,t]"]
+          fundchamber_W_image_chamber sum_list_append[of "ss@[s]" "[t]"]
+          fundchamber_next_WS_image_neq[of t "sum_list (ss@[s])"]
+          fundchamber_WS_image_adjacent[of "sum_list (ss@[s])" t]
           ex_walls[of A B]
     by    auto
   ultimately show ?case

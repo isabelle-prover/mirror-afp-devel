@@ -447,7 +447,7 @@ lemma kernel_upper_triangular: assumes A: "A \<in> carrier\<^sub>m n n"
   shows "kernel.dim n A = 0" "kernel.basis n A {}"
 proof -
   def ma \<equiv> "mat_diag A"
-  from det_upper_triangular[OF ut A] have "det A = listprod (mat_diag A)" .
+  from det_upper_triangular[OF ut A] have "det A = prod_list (mat_diag A)" .
   also have "\<dots> \<noteq> 0" using 0 unfolding ma_def[symmetric]
     by (induct ma, auto)
   finally have "det A \<noteq> 0" .

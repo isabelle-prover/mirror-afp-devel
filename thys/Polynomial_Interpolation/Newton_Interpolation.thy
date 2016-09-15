@@ -193,7 +193,7 @@ declare b.simps[simp del]
 definition newton_poly :: "nat \<Rightarrow> 'a poly" where
   "newton_poly n = b 0 n"
 
-private definition "Xij i j = listprod (map X [i ..< j])"
+private definition "Xij i j = prod_list (map X [i ..< j])"
 
 private definition "N i = Xij 0 i"
 
@@ -202,7 +202,7 @@ lemma smult_1[simp]: "smult d 1 = [:d:]"
   by (simp add: one_poly_def)
 
 private lemma newton_poly_sum: 
-  "newton_poly n = listsum (map (\<lambda> i. smult (c i) (N i)) [0 ..< Suc n])"
+  "newton_poly n = sum_list (map (\<lambda> i. smult (c i) (N i)) [0 ..< Suc n])"
   unfolding newton_poly_def N_def
 proof -
   {
@@ -226,12 +226,12 @@ proof -
         note IH = 1(1)[OF False this]
         have id2: "(\<Sum>x\<leftarrow>[Suc j..< nn]. smult (c x) (Xij (Suc j) x * X j)) =
           (\<Sum>i\<leftarrow>[Suc j..< nn]. smult (c i) (Xij j i))"
-        proof (rule arg_cong[of _ _ listsum], rule map_ext, intro impI, goal_cases)
+        proof (rule arg_cong[of _ _ sum_list], rule map_ext, intro impI, goal_cases)
           case (1 i)
           hence "Xij (Suc j) i * X j = Xij j i" by (simp add: Xij_def upt_conv_Cons)
           thus ?case by simp
         qed
-        show ?thesis unfolding b IH listsum_mult_const[symmetric]
+        show ?thesis unfolding b IH sum_list_mult_const[symmetric]
           unfolding nn_def[symmetric] id
           by (simp add: id2)
       qed
@@ -240,15 +240,15 @@ proof -
   from this[of 0] show "b 0 n = (\<Sum>i\<leftarrow>[0..<Suc n]. smult (c i) (Xij 0 i))" by simp
 qed
 
-private lemma poly_newton_poly: "poly (newton_poly n) y = listsum (map (\<lambda> i. c i * poly (N i) y) [0 ..< Suc n])"
-  unfolding newton_poly_sum poly_listsum map_map o_def by simp
+private lemma poly_newton_poly: "poly (newton_poly n) y = sum_list (map (\<lambda> i. c i * poly (N i) y) [0 ..< Suc n])"
+  unfolding newton_poly_sum poly_sum_list map_map o_def by simp
 
 private definition "pprod k i j = (\<Prod>l\<leftarrow>[i..<j]. xd k l)"
 
 private lemma poly_N_xi: "poly (N i) (x j) = pprod j 0 i"
 proof -
   have "poly (N i) (x j) = (\<Prod>l\<leftarrow>[0..<i]. xd j l)"
-    unfolding N_def Xij_def poly_listprod X_def[abs_def] map_map o_def xd_def by simp
+    unfolding N_def Xij_def poly_prod_list X_def[abs_def] map_map o_def xd_def by simp
   also have "\<dots> = pprod j 0 i" unfolding pprod_def ..
   finally show ?thesis .
 qed
@@ -269,13 +269,13 @@ proof -
 qed
 
 private lemma poly_newton_poly_xj: assumes "j \<le> n"
-  shows "poly (newton_poly n) (x j) = listsum (map (\<lambda> i. c i * poly (N i) (x j)) [0 ..< Suc j])"
+  shows "poly (newton_poly n) (x j) = sum_list (map (\<lambda> i. c i * poly (N i) (x j)) [0 ..< Suc j])"
 proof -
   from assms have id: "[0 ..< Suc n] = [0 ..< Suc j] @ [Suc j ..< Suc n]" 
     by (metis Suc_le_mono le_Suc_ex less_eq_nat.simps(1) upt_add_eq_append)
   have id2: "(\<Sum>i\<leftarrow>[Suc j..< Suc n]. c i * poly (N i) (x j)) = 0"
-    by (rule listsum_neutral, unfold poly_N_xi_cond, auto)
-  show ?thesis unfolding poly_newton_poly id map_append listsum_append id2 by simp
+    by (rule sum_list_neutral, unfold poly_N_xi_cond, auto)
+  show ?thesis unfolding poly_newton_poly id map_append sum_list_append id2 by simp
 qed
 
 declare xij_f.simps[simp del]
@@ -290,15 +290,15 @@ private lemma xd_diff: "i < j \<Longrightarrow> j \<le> n \<Longrightarrow> xd i
 text \<open>This is the key technical lemma for soundness of Newton interpolation.\<close>
 
 private lemma divided_differences_main: assumes "k \<le> n" "i < k"
-  shows "listsum (map (\<lambda> j. xij_f i (i + j) * pprod k i (i + j)) [0..<Suc k - i]) = 
-  listsum (map (\<lambda> j. xij_f (Suc i) (Suc i + j) * pprod k (Suc i) (Suc i + j)) [0..<Suc k - Suc i])"
+  shows "sum_list (map (\<lambda> j. xij_f i (i + j) * pprod k i (i + j)) [0..<Suc k - i]) = 
+  sum_list (map (\<lambda> j. xij_f (Suc i) (Suc i + j) * pprod k (Suc i) (Suc i + j)) [0..<Suc k - Suc i])"
 proof -
   let ?exp = "\<lambda> i j. xij_f i (i + j) * pprod k i (i + j)"
   def ei \<equiv> "?exp i"
   def esi \<equiv> "?exp (Suc i)"  
   let ?ki = "k - i"
-  let ?sumi = "\<lambda> xs. listsum (map ei xs)"
-  let ?sumsi = "\<lambda> xs. listsum (map esi xs)"
+  let ?sumi = "\<lambda> xs. sum_list (map ei xs)"
+  let ?sumsi = "\<lambda> xs. sum_list (map esi xs)"
   let ?mid = "\<lambda> j. xij_f i (k - j) * pprod k (Suc i) (k - j) * xd (k - j) i"
   let ?sum = "\<lambda> j. ?sumi [0 ..< ?ki - j] + ?sumsi [?ki - j ..< ?ki] + ?mid j"
   def fin \<equiv> "?ki - 1"
@@ -308,7 +308,7 @@ proof -
     id3: "k - (i + (k - Suc i)) = 1" "k - (?ki - 1) = Suc i" using assms 
     by (auto simp: Suc_diff_le upt_conv_Cons)
   have neq: "xd (Suc i) i \<noteq> 0" using xd_diff[of i "Suc i"] assms by auto
-  have "listsum (map (\<lambda> j. xij_f i (i + j) * pprod k i (i + j)) [0..<Suc k - i])
+  have "sum_list (map (\<lambda> j. xij_f i (i + j) * pprod k i (i + j)) [0..<Suc k - i])
     = ?sumi [0 ..< Suc k - i]" unfolding ei_def by simp
   also have "\<dots> = ?sumi [0 ..< ?ki] + ?sumsi [?ki ..< ?ki] + ei ?ki" 
     unfolding id by simp
@@ -366,20 +366,20 @@ proof -
   also have "esi 0 + ?sumsi [1 ..< k - i] = ?sumsi (0 # [1 ..< k - i])" by simp
   also have "0 # [1 ..< k - i] = [0 ..< Suc k - Suc i]" 
     using assms by (simp add: upt_rec)
-  also have "?sumsi \<dots> = listsum (map (\<lambda> j. xij_f (Suc i) (Suc i + j) * 
+  also have "?sumsi \<dots> = sum_list (map (\<lambda> j. xij_f (Suc i) (Suc i + j) * 
     pprod k (Suc i) (Suc i + j)) [0..<Suc k - Suc i])"
     unfolding esi_def using assms by simp
   finally show ?thesis .
 qed
 
 private lemma divided_differences: assumes kn: "k \<le> n" and ik: "i \<le> k"
-  shows "listsum (map (\<lambda> j. xij_f i (i + j) * pprod k i (i + j)) [0..<Suc k - i]) = f k"
+  shows "sum_list (map (\<lambda> j. xij_f i (i + j) * pprod k i (i + j)) [0..<Suc k - i]) = f k"
 proof -
   {
     fix ii
     assume "i + ii \<le> k"
-    hence "listsum (map (\<lambda> j. xij_f i (i + j) * pprod k i (i + j)) [0..<Suc k - i])
-      = listsum (map (\<lambda> j. xij_f (i + ii) (i + ii + j) * pprod k (i + ii) (i + ii + j)) [0..<Suc k - (i + ii)])"
+    hence "sum_list (map (\<lambda> j. xij_f i (i + j) * pprod k i (i + j)) [0..<Suc k - i])
+      = sum_list (map (\<lambda> j. xij_f (i + ii) (i + ii + j) * pprod k (i + ii) (i + ii + j)) [0..<Suc k - (i + ii)])"
     proof (induct ii)
       case (Suc ii)
       hence le1: "i + ii \<le> k" and le2: "i + ii < k" by simp_all
@@ -396,7 +396,7 @@ lemma newton_poly_sound: assumes "k \<le> n"
   shows "poly (newton_poly n) (x k) = f k"
 proof -
   have "poly (newton_poly n) (x k) = 
-    listsum (map (\<lambda> j. xij_f 0 (0 + j) * pprod k 0 (0 + j)) [0..<Suc k - 0])"
+    sum_list (map (\<lambda> j. xij_f 0 (0 + j) * pprod k 0 (0 + j)) [0..<Suc k - 0])"
     unfolding poly_newton_poly_xj[OF assms] c_def poly_N_xi by simp
   also have "\<dots> = f k"
     by (rule divided_differences[OF assms], simp)

@@ -17,7 +17,7 @@ imports
   Polynomial_Divisibility
   Order_Polynomial
   Fundamental_Theorem_Algebra_Factorized
-  Ring_Hom_Poly
+  "../Polynomial_Interpolation/Ring_Hom_Poly"
 begin
 
 context
@@ -55,17 +55,17 @@ proof (intro square_freeI)
   with sf[unfolded square_free_def] q show False by auto
 qed (insert dvd sf, auto simp: square_free_def)
 
-lemma square_free_listprod_distinct: 
-  assumes sf: "square_free (listprod us)"
+lemma square_free_prod_list_distinct: 
+  assumes sf: "square_free (prod_list us)"
   and us: "\<And> u. u \<in> set us \<Longrightarrow> degree u \<noteq> 0"
   shows "distinct us"
 proof (rule ccontr)
   assume "\<not> distinct us"
   from not_distinct_decomp[OF this] obtain xs ys zs u where
      "us = xs @ u # ys @ u # zs" by auto
-  hence dvd: "u * u dvd listprod us" and u: "u \<in> set us" by auto
-  from dvd us[OF u] sf have "listprod us = 0" unfolding square_free_def by auto
-  hence "0 \<in> set us" by (simp add: listprod_zero_iff)
+  hence dvd: "u * u dvd prod_list us" and u: "u \<in> set us" by auto
+  from dvd us[OF u] sf have "prod_list us = 0" unfolding square_free_def by auto
+  hence "0 \<in> set us" by (simp add: prod_list_zero_iff)
   from us[OF this] show False by auto
 qed
 end
@@ -229,8 +229,8 @@ lemma square_free_factorizationD: assumes "square_free_factorization p (c,bs)"
   "distinct bs"
   using assms unfolding square_free_factorization_def split by blast+
 
-lemma square_free_factorization_listprod: assumes "square_free_factorization p (c,bs)"
-  shows "p = smult c (listprod (map (\<lambda> (a,i). a ^ Suc i) bs))"
+lemma square_free_factorization_prod_list: assumes "square_free_factorization p (c,bs)"
+  shows "p = smult c (prod_list (map (\<lambda> (a,i). a ^ Suc i) bs))"
 proof -
   note sff = square_free_factorizationD[OF assms]
   show ?thesis unfolding sff(1) 
@@ -1049,7 +1049,7 @@ lemma square_free_factorization_root:
 lemma square_free_factorizationD': 
   assumes sf: "square_free_factorization p (c, bs)"
   shows "p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)"
-    and "square_free (listprod (map fst bs))"
+    and "square_free (prod_list (map fst bs))"
     and "\<And> b i. (b,i) \<in> set bs \<Longrightarrow> degree b \<noteq> 0"
     and "p = 0 \<Longrightarrow> c = 0 \<and> bs = []"
 proof -
@@ -1058,16 +1058,16 @@ proof -
     by (simp add: setprod.distinct_set_conv_list)
   show bs: "\<And> b i. (b,i) \<in> set bs \<Longrightarrow> degree b \<noteq> 0" using sf(2) by auto
   show "p = 0 \<Longrightarrow> c = 0 \<and> bs = []" using sf(4) .
-  show "square_free (listprod (map fst bs))"
+  show "square_free (prod_list (map fst bs))"
   proof (rule square_freeI)
     from bs have "\<And> b. b \<in> set (map fst bs) \<Longrightarrow> b \<noteq> 0" by fastforce
-    thus "listprod (map fst bs) \<noteq> 0" unfolding listprod_zero_iff by auto
+    thus "prod_list (map fst bs) \<noteq> 0" unfolding prod_list_zero_iff by auto
     fix q
-    assume "degree q \<noteq> 0" "q * q dvd listprod (map fst bs)"
+    assume "degree q \<noteq> 0" "q * q dvd prod_list (map fst bs)"
     from irreducible_factor[OF this(1)] this(2) obtain q where 
-      irr: "irreducible q" and dvd: "q * q dvd listprod (map fst bs)" unfolding dvd_def by auto
-    hence dvd': "q dvd listprod (map fst bs)" unfolding dvd_def by auto
-    from irreducible_dvd_listprod[OF irr dvd'] obtain b i where 
+      irr: "irreducible q" and dvd: "q * q dvd prod_list (map fst bs)" unfolding dvd_def by auto
+    hence dvd': "q dvd prod_list (map fst bs)" unfolding dvd_def by auto
+    from irreducible_dvd_prod_list[OF irr dvd'] obtain b i where 
       mem: "(b,i) \<in> set bs" and dvd1: "q dvd b" by auto
     from dvd1 obtain k where b: "b = q * k" unfolding dvd_def by auto
     from split_list[OF mem] b obtain bs1 bs2 where bs: "bs = bs1 @ (b, i) # bs2" by auto
@@ -1075,11 +1075,11 @@ proof -
     from sf(2)[OF mem, unfolded b] have "square_free (q * k)" by auto
     from this[unfolded square_free_def, THEN conjunct2, rule_format, OF dq] 
     have qk: "\<not> q dvd k" by simp
-    from dvd[unfolded bs b] have "q * q dvd q * (k * listprod (map fst (bs1 @ bs2)))"
+    from dvd[unfolded bs b] have "q * q dvd q * (k * prod_list (map fst (bs1 @ bs2)))"
       by (auto simp: ac_simps)
-    with q0 have "q dvd k * listprod (map fst (bs1 @ bs2))" by auto
-    from irreducible_dvd_mult[OF irr this] qk have "q dvd listprod (map fst (bs1 @ bs2))" by auto
-    from irreducible_dvd_listprod[OF irr this] obtain b' i' where 
+    with q0 have "q dvd k * prod_list (map fst (bs1 @ bs2))" by auto
+    from irreducible_dvd_mult[OF irr this] qk have "q dvd prod_list (map fst (bs1 @ bs2))" by auto
+    from irreducible_dvd_prod_list[OF irr this] obtain b' i' where 
       mem': "(b',i') \<in> set (bs1 @ bs2)" and dvd2: "q dvd b'" by fastforce
     from dvd1 dvd2 have "q dvd gcd b b'" by auto
     with dq have cop: "\<not> coprime b b'" by (metis is_unit_iff_degree q0)
@@ -1092,7 +1092,7 @@ qed
 
 lemma square_free_factorizationI': 
   assumes prod: "p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)"
-    and sf: "square_free (listprod (map fst bs))"
+    and sf: "square_free (prod_list (map fst bs))"
     and deg: "\<And> b i. (b,i) \<in> set bs \<Longrightarrow> degree b \<noteq> 0"
     and 0: "p = 0 \<Longrightarrow> c = 0 \<and> bs = []"
   shows "square_free_factorization p (c, bs)"
@@ -1103,8 +1103,8 @@ proof (intro conjI impI allI)
     fix b i
     assume bi: "(b,i) \<in> set bs"
     from deg[OF this] show "degree b \<noteq> 0" .
-    have "b dvd listprod (map fst bs)"
-      by (intro listprod_dvd, insert bi, force)
+    have "b dvd prod_list (map fst bs)"
+      by (intro prod_list_dvd, insert bi, force)
     from square_free_factor[OF this sf] show "square_free b" .
   }
   show dist: "distinct bs" 
@@ -1112,7 +1112,7 @@ proof (intro conjI impI allI)
     assume "\<not> ?thesis"
     from not_distinct_decomp[OF this] obtain bs1 bs2 bs3 b i where
       bs: "bs = bs1 @ [(b,i)] @ bs2 @ [(b,i)] @ bs3" by force
-    hence "b * b dvd listprod (map fst bs)" by auto
+    hence "b * b dvd prod_list (map fst bs)" by auto
     with sf[unfolded square_free_def, THEN conjunct2, rule_format, of b] 
     have db: "degree b = 0" by auto
     from bs have "(b,i) \<in> set bs" by auto
@@ -1126,11 +1126,11 @@ proof (intro conjI impI allI)
     from split_list[OF ai] obtain bs1 bs2 where bs: "bs = bs1 @ (a,i) # bs2" by auto
     with bj diff have "(b,j) \<in> set (bs1 @ bs2)" by auto
     from split_list[OF this] obtain cs1 cs2 where cs: "bs1 @ bs2 = cs1 @ (b,j) # cs2" by auto
-    have "listprod (map fst bs) = a * listprod (map fst (bs1 @ bs2))" unfolding bs by simp
-    also have "\<dots> = a * b * listprod (map fst (cs1 @ cs2))" unfolding cs by simp
-    finally obtain c where lp: "listprod (map fst bs) = a * b * c" by auto
+    have "prod_list (map fst bs) = a * prod_list (map fst (bs1 @ bs2))" unfolding bs by simp
+    also have "\<dots> = a * b * prod_list (map fst (cs1 @ cs2))" unfolding cs by simp
+    finally obtain c where lp: "prod_list (map fst bs) = a * b * c" by auto
     from deg[OF ai] have 0: "gcd a b \<noteq> 0" by auto
-    have gcd: "gcd a b * gcd a b dvd listprod (map fst bs)" 
+    have gcd: "gcd a b * gcd a b dvd prod_list (map fst bs)" 
       unfolding lp by (simp add: mult_dvd_mono)
     {
       assume "degree (gcd a b) \<noteq> 0" 
@@ -1144,28 +1144,28 @@ qed
 
 lemma square_free_factorization_def': "square_free_factorization p (c,bs) \<longleftrightarrow>
   (p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)) \<and>
-  (square_free (listprod (map fst bs))) \<and>
+  (square_free (prod_list (map fst bs))) \<and>
   (\<forall> b i. (b,i) \<in> set bs \<longrightarrow> degree b \<noteq> 0) \<and>
   (p = 0 \<longrightarrow> c = 0 \<and> bs = [])"
   using square_free_factorizationD'[of p c bs]
   square_free_factorizationI'[of p c bs] by blast
 
-lemma listprod_pow_suc: "(\<Prod>x\<leftarrow>bs. (x :: 'a :: comm_monoid_mult) * x ^ i) 
-  = listprod bs * listprod bs ^ i" 
+lemma prod_list_pow_suc: "(\<Prod>x\<leftarrow>bs. (x :: 'a :: comm_monoid_mult) * x ^ i) 
+  = prod_list bs * prod_list bs ^ i" 
   by (induct bs, auto simp: field_simps)
 
-lemma square_free_factorization_smult_listprodI: 
-  assumes sff: "square_free_factorization p (c, bs1 @ (smult b (listprod bs),i) # bs2)"
+lemma square_free_factorization_smult_prod_listI: 
+  assumes sff: "square_free_factorization p (c, bs1 @ (smult b (prod_list bs),i) # bs2)"
   and bs: "\<And> b. b \<in> set bs \<Longrightarrow> degree b \<noteq> 0"
   shows "square_free_factorization p (c * b^(Suc i), bs1 @ map (\<lambda> b. (b,i)) bs @ bs2)"
 proof -
-  from square_free_factorizationD'(3)[OF sff, of "smult b (listprod bs)" i]
+  from square_free_factorizationD'(3)[OF sff, of "smult b (prod_list bs)" i]
   have b: "b \<noteq> 0" by auto
   note sff = square_free_factorizationD'[OF sff]
   show ?thesis
   proof (intro square_free_factorizationI', goal_cases)
     case 1
-    thus ?case unfolding sff(1) by (simp add: o_def field_simps smult_power listprod_pow_suc)
+    thus ?case unfolding sff(1) by (simp add: o_def field_simps smult_power prod_list_pow_suc)
   next
     case 2
     show ?case using sff(2) by (simp add: ac_simps o_def square_free_smult_iff[OF b])
@@ -1181,10 +1181,10 @@ qed
 lemma square_free_factorization_further_factorization: 
   assumes sff: "square_free_factorization p (c, bs)"
   and bs: "\<And> b i d fs. (b,i) \<in> set bs \<Longrightarrow> f b = (d,fs) 
-    \<Longrightarrow> b = smult d (listprod fs) \<and> (\<forall> f \<in> set fs. degree f \<noteq> 0)"
+    \<Longrightarrow> b = smult d (prod_list fs) \<and> (\<forall> f \<in> set fs. degree f \<noteq> 0)"
   and h: "h = (\<lambda> (b,i). case f b of (d,fs) \<Rightarrow> (d^Suc i,map (\<lambda> f. (f,i)) fs))"
   and gs: "gs = map h bs"
-  and d: "d = c * listprod (map fst gs)"
+  and d: "d = c * prod_list (map fst gs)"
   and es: "es = concat (map snd gs)"
   shows "square_free_factorization p (d, es)"
 proof -
@@ -1194,17 +1194,17 @@ proof -
     assume "p = 0" 
     from sff(4)[OF this] show "d = 0 \<and> es = []" unfolding d es gs by auto
   next
-    have id: "(\<Prod>(a, i)\<leftarrow>bs. a * a ^ i) = smult (listprod (map fst gs)) (\<Prod>(a, i)\<leftarrow>es. a * a ^ i)"
+    have id: "(\<Prod>(a, i)\<leftarrow>bs. a * a ^ i) = smult (prod_list (map fst gs)) (\<Prod>(a, i)\<leftarrow>es. a * a ^ i)"
       unfolding es gs h map_map o_def using bs
     proof (induct bs)
       case (Cons bi bs)
       obtain b i where bi: "bi = (b,i)" by force
       obtain d fs where f: "f b = (d,fs)" by force
-      from Cons(2)[OF _ f, of i] have b: "b = smult d (listprod fs)" unfolding bi by auto
+      from Cons(2)[OF _ f, of i] have b: "b = smult d (prod_list fs)" unfolding bi by auto
       note IH = Cons(1)[OF Cons(2), of "\<lambda> _ i _ _ . i"]
       show ?case unfolding bi
         by (simp add: f o_def, simp add: b ac_simps, subst IH, 
-          auto simp: smult_power listprod_pow_suc ac_simps)
+          auto simp: smult_power prod_list_pow_suc ac_simps)
     qed simp
     show "p = smult d (\<Prod>(a, i)\<leftarrow>es. a ^ Suc i)" unfolding sff(1) using id
       by (simp add: d)
@@ -1218,38 +1218,38 @@ proof -
     show "degree fi \<noteq> 0" 
       by (rule bs[THEN conjunct2, rule_format, OF bi f], insert fi G f, unfold h, auto)
   next
-    have id: "\<exists> c. listprod (map fst bs) = smult c (listprod (map fst es))"
+    have id: "\<exists> c. prod_list (map fst bs) = smult c (prod_list (map fst es))"
       unfolding es gs map_map o_def using bs
     proof (induct bs)
       case (Cons bi bs)
       obtain b i where bi: "bi = (b,i)" by force
       obtain d fs where f: "f b = (d,fs)" by force
-      from Cons(2)[OF _ f, of i] have b: "b = smult d (listprod fs)" unfolding bi by auto
-      have "\<exists>c. listprod (map fst bs) = smult c (listprod (map fst (concat (map (\<lambda>x. snd (h x)) bs))))"
+      from Cons(2)[OF _ f, of i] have b: "b = smult d (prod_list fs)" unfolding bi by auto
+      have "\<exists>c. prod_list (map fst bs) = smult c (prod_list (map fst (concat (map (\<lambda>x. snd (h x)) bs))))"
         by (rule Cons(1), rule Cons(2), auto)
       then obtain c where 
-        IH: "listprod (map fst bs) = smult c (listprod (map fst (concat (map (\<lambda>x. snd (h x)) bs))))" by auto
+        IH: "prod_list (map fst bs) = smult c (prod_list (map fst (concat (map (\<lambda>x. snd (h x)) bs))))" by auto
       show ?case unfolding bi
         by (intro exI[of _ "c * d"], auto simp: b IH, auto simp: h f[unfolded b] o_def)
     qed (intro exI[of _ 1], auto)
-    then obtain c where "listprod (map fst bs) = smult c (listprod (map fst es))" by blast
-    from sff(2)[unfolded this] show "square_free (listprod (map fst es))"
+    then obtain c where "prod_list (map fst bs) = smult c (prod_list (map fst es))" by blast
+    from sff(2)[unfolded this] show "square_free (prod_list (map fst es))"
       by (metis smult_eq_0_iff square_free_def square_free_smult_iff)
   qed
 qed
 
-lemma square_free_factorization_listprodI: 
-  assumes sff: "square_free_factorization p (c, bs1 @ ((listprod bs),i) # bs2)"
+lemma square_free_factorization_prod_listI: 
+  assumes sff: "square_free_factorization p (c, bs1 @ ((prod_list bs),i) # bs2)"
   and bs: "\<And> b. b \<in> set bs \<Longrightarrow> degree b \<noteq> 0"
   shows "square_free_factorization p (c, bs1 @ map (\<lambda> b. (b,i)) bs @ bs2)"
-  using square_free_factorization_smult_listprodI[of p c bs1 1 bs i bs2] sff bs by auto
+  using square_free_factorization_smult_prod_listI[of p c bs1 1 bs i bs2] sff bs by auto
 
 lemma square_free_factorization_factorI: 
   assumes sff: "square_free_factorization p (c, bs1 @ (a,i) # bs2)"
   and r: "degree r \<noteq> 0" and s: "degree s \<noteq> 0"
   and a: "a = r * s"
   shows "square_free_factorization p (c, bs1 @ ((r,i) # (s,i) # bs2))"
-  using square_free_factorization_listprodI[of p c bs1 "[r,s]" i bs2] sff r s a by auto
+  using square_free_factorization_prod_listI[of p c bs1 "[r,s]" i bs2] sff r s a by auto
   
 lemma monic_square_free_irreducible_factorization: assumes mon: "monic (f :: 'a :: field poly)" 
   and sf: "square_free f"

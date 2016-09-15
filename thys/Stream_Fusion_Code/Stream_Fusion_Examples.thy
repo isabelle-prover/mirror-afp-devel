@@ -20,8 +20,8 @@ apply(simp del: id_apply) -- {* fuses *}
 by(unfold rhs_def) rule
 
 lemma fixes rhs n
-  defines "rhs \<equiv> List.maps (\<lambda>x. [Suc 0..<listsum_cons (replicate_prod x) x]) [2..<n]"
-  shows "(concat (map (\<lambda>x. [1..<listsum (replicate x x)]) [2..<n])) = rhs"
+  defines "rhs \<equiv> List.maps (\<lambda>x. [Suc 0..<sum_list_cons (replicate_prod x) x]) [2..<n]"
+  shows "(concat (map (\<lambda>x. [1..<sum_list (replicate x x)]) [2..<n])) = rhs"
 using [[simproc add: stream_fusion, stream_fusion_trace]]
 apply(simp add: concat_map_maps) -- {* fuses partially *}
 by(unfold rhs_def) rule

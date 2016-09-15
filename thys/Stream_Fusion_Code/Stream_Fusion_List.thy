@@ -459,20 +459,20 @@ by (simp add: last_cons_def last_def option.the_def)
 
 end
 
-subsubsection {* @{const listsum} *}
+subsubsection {* @{const sum_list} *}
 
 context fixes g :: "('a :: monoid_add, 's) generator" begin
 
-definition listsum_cons :: "'s \<Rightarrow> 'a"
-where [stream_fusion]: "listsum_cons s = listsum (unstream g s)"
+definition sum_list_cons :: "'s \<Rightarrow> 'a"
+where [stream_fusion]: "sum_list_cons s = sum_list (unstream g s)"
 
-lemma listsum_cons_code [code]:
-  "listsum_cons s =
+lemma sum_list_cons_code [code]:
+  "sum_list_cons s =
     (case generator g s of
       Done \<Rightarrow> 0
-    | Skip s' \<Rightarrow> listsum_cons s'
-    | Yield a s' \<Rightarrow> a + listsum_cons s')"
-by (cases "generator g s")(simp_all add: listsum_cons_def)
+    | Skip s' \<Rightarrow> sum_list_cons s'
+    | Yield a s' \<Rightarrow> a + sum_list_cons s')"
+by (cases "generator g s")(simp_all add: sum_list_cons_def)
 
 end
 
