@@ -295,7 +295,7 @@ fun landau_dominating_chain where
 primrec landau_dominating_chain' where
   "landau_dominating_chain' [] \<longleftrightarrow> True"
 | "landau_dominating_chain' (f # gs) \<longleftrightarrow>
-    landau_function_family_pair (powr_closure f) (listprod (map powr_closure gs)) (\<lambda>x. f x powr 1) \<and> 
+    landau_function_family_pair (powr_closure f) (prod_list (map powr_closure gs)) (\<lambda>x. f x powr 1) \<and> 
     landau_dominating_chain' gs"
 
 
@@ -354,14 +354,14 @@ proof (induction gs)
 qed simp_all
 
 lemma listmap_gs_in_listmap: 
-  "(\<lambda>x. \<Prod>g\<leftarrow>fs. h g x powr p g) \<in> listprod (map powr_closure (map h fs))"
+  "(\<lambda>x. \<Prod>g\<leftarrow>fs. h g x powr p g) \<in> prod_list (map powr_closure (map h fs))"
 proof-
   have "(\<lambda>x. \<Prod>g\<leftarrow>fs. h g x powr p g) = (\<Prod>g\<leftarrow>fs. (\<lambda>x. h g x powr p g))" 
     by (rule ext, induction fs) simp_all
-  also have "... \<in> listprod (map powr_closure (map h fs))"
+  also have "... \<in> prod_list (map powr_closure (map h fs))"
     apply (induction fs) 
     apply (simp add: fun_eq_iff)
-    apply (simp only: list.map listprod.Cons, rule set_times_intro)
+    apply (simp only: list.map prod_list.Cons, rule set_times_intro)
     apply simp_all
     done
   finally show ?thesis .
@@ -381,7 +381,7 @@ proof-
   next
     case (Cons g gs)
     then interpret G: landau_function_family_pair "powr_closure (get_fun g)" 
-       "listprod (map powr_closure (map get_fun gs))" "\<lambda>x. get_fun g x powr 1" by simp
+       "prod_list (map powr_closure (map get_fun gs))" "\<lambda>x. get_fun g x powr 1" by simp
     from Cons show ?case using listmap_gs_in_listmap[of get_fun _ gs]
       by (simp_all add: G.smallo_iff listmap_gs_in_listmap powr_smallo_iff powr_bigtheta_iff  
                    del: powr_zero_eq_one)
@@ -402,7 +402,7 @@ proof-
   next
     case (Cons g gs)
     then interpret G: landau_function_family_pair "powr_closure (get_fun g)" 
-       "listprod (map powr_closure (map get_fun gs))" "\<lambda>x. get_fun g x powr 1" by simp
+       "prod_list (map powr_closure (map get_fun gs))" "\<lambda>x. get_fun g x powr 1" by simp
     from Cons show ?case using listmap_gs_in_listmap[of get_fun _ gs]
       by (simp_all add: G.bigo_iff listmap_gs_in_listmap powr_smallo_iff powr_bigtheta_iff  
                    del: powr_zero_eq_one)
@@ -423,7 +423,7 @@ proof-
   next
     case (Cons g gs)
     then interpret G: landau_function_family_pair "powr_closure (get_fun g)" 
-       "listprod (map powr_closure (map get_fun gs))" "\<lambda>x. get_fun g x powr 1" by simp
+       "prod_list (map powr_closure (map get_fun gs))" "\<lambda>x. get_fun g x powr 1" by simp
     from Cons show ?case using listmap_gs_in_listmap[of get_fun _ gs]
       by (simp_all add: G.bigtheta_iff listmap_gs_in_listmap powr_smallo_iff powr_bigtheta_iff  
                    del: powr_zero_eq_one)
@@ -580,7 +580,7 @@ lemma eval_primfuns_pos: "eventually (\<lambda>x. eval_primfuns fs x > 0) at_top
 proof-
   have "eventually (\<lambda>x. \<forall>f\<in>set fs. eval_primfun f x > 0) at_top"
     by (intro eventually_ball_finite ballI eval_primfun_pos finite_set)
-  thus ?thesis unfolding eval_primfuns_def by eventually_elim (rule listprod_pos, auto)
+  thus ?thesis unfolding eval_primfuns_def by eventually_elim (rule prod_list_pos, auto)
 qed
 
 lemma eval_primfuns_nonzero: "eventually (\<lambda>x. eval_primfuns fs x \<noteq> 0) at_top"
@@ -718,8 +718,8 @@ lemma LANDAU_PROD'_fold:
   by (simp_all add: eval_primfuns_def[abs_def] BIGTHETA_CONST_def)
 
 
-lemma inverse_listprod_field: 
-  "listprod (map (\<lambda>x. inverse (f x)) xs) = inverse (listprod (map f xs :: _ :: field list))"
+lemma inverse_prod_list_field: 
+  "prod_list (map (\<lambda>x. inverse (f x)) xs) = inverse (prod_list (map f xs :: _ :: field list))"
   by (induction xs) simp_all
 
 lemma landau_prod_meta_cong:
@@ -736,7 +736,7 @@ proof-
     by (simp_all add: eval_primfuns_nonzero divide_eq1)
   finally show "f \<in> L(g) \<equiv> LANDAU_PROD L c1 c2 (map inverse_primfun fs @ gs)" 
     by (simp add: LANDAU_PROD_def eval_primfuns_def eval_inverse_primfun 
-                  divide_inverse o_def inverse_listprod_field mult_ac)
+                  divide_inverse o_def inverse_prod_list_field mult_ac)
 qed
 
 fun pos_primfun_list where
@@ -801,11 +801,11 @@ next
   proof
     fix x
     have "eval_primfuns fs x = fold op* (map (\<lambda>f. eval_primfun f x) fs) 1"
-      unfolding eval_primfuns_def by (simp add: fold_plus_listprod_rev)
+      unfolding eval_primfuns_def by (simp add: fold_plus_prod_list_rev)
     also have "fold op* (map (\<lambda>f. eval_primfun f x) fs) = fold op* (map (\<lambda>f. eval_primfun f x) gs)"
       using 2 by (intro fold_multiset_equiv ext) auto
     also have "... 1 = eval_primfuns gs x"
-      unfolding eval_primfuns_def by (simp add: fold_plus_listprod_rev)
+      unfolding eval_primfuns_def by (simp add: fold_plus_prod_list_rev)
     finally show "eval_primfuns fs x = eval_primfuns gs x" .
   qed
 qed (auto simp: fun_eq_iff eval_merge_primfun eval_primfuns_def)

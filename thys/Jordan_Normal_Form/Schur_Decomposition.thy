@@ -463,7 +463,7 @@ next
   let ?cp = "char_poly A"
   from Cons(3)
   have cp: "?cp = [: -e, 1 :] * (\<Prod>e \<leftarrow> es. [:- e, 1:])" by auto
-  have mon: "monic (\<Prod>e\<leftarrow> es. [:- e, 1:])" by (rule monic_listprod, auto)
+  have mon: "monic (\<Prod>e\<leftarrow> es. [:- e, 1:])" by (rule monic_prod_list, auto)
   have deg: "degree ?cp = Suc (degree (\<Prod>e\<leftarrow> es. [:- e, 1:]))" unfolding cp
     by (subst degree_mult_eq, insert mon, auto)
   with degree_monic_char_poly[OF A] have n: "n \<noteq> 0" by auto

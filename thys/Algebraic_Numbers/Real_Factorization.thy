@@ -49,7 +49,7 @@ next
   let ?x = "[: - x, 1 :]"
   let ?xi = "?x ^ i"
   have "monic (\<Prod>(x,i)\<leftarrow>(y, j) # yjs. [:- x, 1:] ^ Suc i)"
-    by (rule monic_listprod_pow)
+    by (rule monic_prod_list_pow)
   hence yy0: "?yj * ?yjs \<noteq> 0" by auto
   have id: "(\<Prod>(x,i)\<leftarrow>(y, j) # yjs. [:- x, 1:] ^ Suc i) = ?yj * ?yjs" by simp
   from 1(3-) have ord: "i \<le> order x (?yj * ?yjs)" and i: "i \<noteq> 0" unfolding id by auto
@@ -127,7 +127,7 @@ proof -
       by (subst degree_map_poly, simp, simp, auto simp: subst coeff_map_poly)
     also have "coeff (smult d ?q) (degree (smult d ?q)) = d * coeff ?q (degree ?q)"
       by simp
-    also have "monic ?q" by (rule monic_listprod_pow)
+    also have "monic ?q" by (rule monic_prod_list_pow)
     finally have d: "d = ?c (coeff p (degree p))" by auto
     from arg_cong[OF this, of Re, folded c] have c: "c = coeff p (degree p)" by auto
     have "set (coeffs ?p) \<subseteq> \<real>"
@@ -245,7 +245,7 @@ proof -
         have yi: "set (coeffs ?yi) \<subseteq> \<real>"
           by (rule real_poly_power, auto simp: xi)
         have mon: "monic (\<Prod>(x, i)\<leftarrow>(x, i) # xis. [:- x, 1:] ^ Suc i)"
-          by (rule monic_listprod_pow)
+          by (rule monic_prod_list_pow)
         hence xixis: "?xi * ?xis \<noteq> 0" unfolding id by auto
         from False have xxx: "xx \<noteq> x" unfolding xx by (cases x, auto)
         from prems[unfolded id] have prems: "set (coeffs (?xi * ?xis)) \<subseteq> \<real>" .

@@ -508,7 +508,7 @@ subsection{*Properties about lists*}
 
 text{*The following definitions and theorems are developed in order to compute setprods. 
   More theorems and properties can be demonstrated in a similar way to the ones
-  about @{term "listsum"}.*}
+  about @{term "sum_list"}.*}
 
 definition (in monoid_mult) listprod :: "'a list => 'a" where
   "listprod xs = foldr times xs 1"

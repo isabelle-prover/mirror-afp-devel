@@ -210,7 +210,7 @@ lemma f_nth_set:
 unfolding set_conv_nth by auto
 
 lemma nth_concat_eqI:
-  "\<lbrakk> n = listsum (map length (take i xss)) + k; i < length xss; k < length (xss ! i); x = xss ! i ! k \<rbrakk>
+  "\<lbrakk> n = sum_list (map length (take i xss)) + k; i < length xss; k < length (xss ! i); x = xss ! i ! k \<rbrakk>
   \<Longrightarrow> concat xss ! n = x"
 apply(induct xss arbitrary: n i k)
  apply simp

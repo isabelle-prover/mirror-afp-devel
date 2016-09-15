@@ -75,12 +75,12 @@ qed
 lemma SD_inefficient_support_aux:
   assumes R: "prefs_from_table_wf agents alts xss" "R \<equiv> prefs_from_table xss"
   assumes as: "as \<noteq> []" "set as \<subseteq> alts" "distinct as" "A = set as" 
-  assumes ys: "\<forall>x\<in>set (map snd ys). 0 \<le> x" "listsum (map snd ys) = 1" "set (map fst ys) \<subseteq> alts"
+  assumes ys: "\<forall>x\<in>set (map snd ys). 0 \<le> x" "sum_list (map snd ys) = 1" "set (map fst ys) \<subseteq> alts"
   assumes i: "i \<in> agents"
   assumes SD1: "\<forall>i\<in>agents. \<forall>x\<in>alts. 
-    listsum (map snd (filter (\<lambda>y. prefs_from_table xss i x (fst y)) ys)) \<ge>
+    sum_list (map snd (filter (\<lambda>y. prefs_from_table xss i x (fst y)) ys)) \<ge>
     real (length (filter (prefs_from_table xss i x) as)) / real (length as)"
-  assumes SD2: "\<exists>x\<in>alts. listsum (map snd (filter (\<lambda>y. prefs_from_table xss i x (fst y)) ys)) >
+  assumes SD2: "\<exists>x\<in>alts. sum_list (map snd (filter (\<lambda>y. prefs_from_table xss i x (fst y)) ys)) >
                         real (length (filter (prefs_from_table xss i x) as)) / real (length as)"
   shows   "sd_efficient_sds agents alts sds \<longrightarrow> (\<exists>x\<in>A. pmf (sds R) x = 0)"
 proof
@@ -94,7 +94,7 @@ proof
   {
     fix i x assume "x \<in> alts" "i \<in> agents"
     with ys' have "lottery_prob (pmf_of_list ys) (preferred_alts (R i) x) = 
-      listsum (map snd (filter (\<lambda>y. prefs_from_table xss i x (fst y)) ys))"
+      sum_list (map snd (filter (\<lambda>y. prefs_from_table xss i x (fst y)) ys))"
       by (subst measure_pmf_of_list) (simp_all add: preferred_alts_def R)
   } note A = this
   {

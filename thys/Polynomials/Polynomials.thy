@@ -103,7 +103,7 @@ proof (induct m)
 qed simp
 
 definition sum_var_list :: "'v monom \<Rightarrow> 'v \<Rightarrow> nat"
-where "sum_var_list m x \<equiv> listsum (map (\<lambda> (y,c). if x = y then c else 0) m)"
+where "sum_var_list m x \<equiv> sum_list (map (\<lambda> (y,c). if x = y then c else 0) m)"
 
 lemma sum_var_list_not: "x \<notin> fst ` set m \<Longrightarrow> sum_var_list m x = 0"
 unfolding sum_var_list_def
@@ -1188,13 +1188,13 @@ end
 subsection {* Degree of polynomials *}
 
 definition monom_degree :: "'v monom \<Rightarrow> nat" where 
-  "monom_degree xps \<equiv> listsum (map snd xps)"
+  "monom_degree xps \<equiv> sum_list (map snd xps)"
 
 definition poly_degree :: "('v,'a) poly \<Rightarrow> nat" where
   "poly_degree p \<equiv> max_list (map (\<lambda> (m,c). monom_degree m) p)"
 
 definition poly_coeff_sum :: "('v,'a :: ordered_ab_semigroup) poly \<Rightarrow> 'a" where
-  "poly_coeff_sum p \<equiv> listsum (map (\<lambda> mc. max 0 (snd mc)) p)"
+  "poly_coeff_sum p \<equiv> sum_list (map (\<lambda> mc. max 0 (snd mc)) p)"
 
 lemma monom_degree: "eval_monom (\<lambda> _. x) m = x ^ monom_degree m"
   unfolding monom_degree_def

@@ -173,18 +173,18 @@ lemma digitToList_empty: "digitToList d \<noteq> Nil"
 text {* Auxiliary lemmas *}
 lemma gmn_correct:
   assumes "is_measured_node nd"
-  shows "gmn nd = listsum (map snd (nodeToList nd))"
+  shows "gmn nd = sum_list (map snd (nodeToList nd))"
   by (insert assms, induct nd) (auto simp add: add.assoc)
 
 lemma gmd_correct:
   assumes "is_measured_digit d"
-  shows "gmd d = listsum (map snd (digitToList d))"
+  shows "gmd d = sum_list (map snd (digitToList d))"
   by (insert assms, cases d, auto simp add: gmn_correct add.assoc)
 
 lemma gmft_correct: "is_measured_ftree t 
-  \<Longrightarrow> (gmft t) = listsum (map snd (toList t))"
+  \<Longrightarrow> (gmft t) = sum_list (map snd (toList t))"
   by (induct t, auto simp add: ft_invar_def gmd_correct gmn_correct add.assoc)
-lemma gmft_correct2: "ft_invar t \<Longrightarrow> (gmft t) = listsum (map snd (toList t))"
+lemma gmft_correct2: "ft_invar t \<Longrightarrow> (gmft t) = sum_list (map snd (toList t))"
   by (simp only: ft_invar_def gmft_correct)
 
 subsection {* Operations *}
@@ -206,7 +206,7 @@ definition annot :: "('e,'a::monoid_add) FingerTreeStruc \<Rightarrow> 'a"
   where "annot t = gmft t"
 
 lemma annot_correct:
-  "ft_invar t \<Longrightarrow> annot t = listsum (map snd (toList t))"
+  "ft_invar t \<Longrightarrow> annot t = sum_list (map snd (toList t))"
   using gmft_correct
   unfolding annot_def
   by (simp add: gmft_correct2)
@@ -1291,7 +1291,7 @@ primrec gmnl:: "('e, 'a::monoid_add) Node list \<Rightarrow> 'a" where
 
 lemma gmnl_correct:
   assumes "\<forall> x \<in> set xs. is_measured_node x"
-  shows  "gmnl xs = listsum (map snd (nlistToList xs))"
+  shows  "gmnl xs = sum_list (map snd (nlistToList xs))"
   by (insert assms, induct xs) (auto simp add: add.assoc gmn_correct)
 
 lemma splitNlist_correct:" \<lbrakk>
@@ -1443,11 +1443,11 @@ proof-
     by (auto simp add: deepR_inv)
   with v1 have 
     v3: "gmft (deepR pr m sf) = 
-        listsum (map snd (digitToList pr @ toList m @ nlistToList sf))"
+        sum_list (map snd (digitToList pr @ toList m @ nlistToList sf))"
     by (auto simp add: gmft_correct)
   have 
     v4:"gmd pr + gmft m + gmnl sf = 
-        listsum (map snd (digitToList pr @ toList m @ nlistToList sf))"
+        sum_list (map snd (digitToList pr @ toList m @ nlistToList sf))"
     by (auto simp add: gmd_correct gmft_correct gmnl_correct assms add.assoc)
   with v3 show ?thesis by simp
 qed
@@ -2278,7 +2278,7 @@ subsubsection "Correctness statements"
     apply (auto simp add: FingerTreeStruc.toList_empty)
     done
 
-  lemma annot_correct: "annot t = listsum (map snd (toList t))"
+  lemma annot_correct: "annot t = sum_list (map snd (toList t))"
     apply (unfold toList_def annot_def)
     apply (simp add: FingerTreeStruc.annot_correct)
     done

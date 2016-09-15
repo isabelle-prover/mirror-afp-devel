@@ -267,13 +267,13 @@ lemma infadd: "x \<noteq> Infty \<Longrightarrow>x + y \<noteq> Infty"
   done
 
 
-lemma e_less_eq_listsum: 
-  "\<lbrakk>\<not> e_less_eq e (listsum xs)\<rbrakk> \<Longrightarrow> \<forall>x \<in> set xs. \<not> e_less_eq e x"
+lemma e_less_eq_sum_list: 
+  "\<lbrakk>\<not> e_less_eq e (sum_list xs)\<rbrakk> \<Longrightarrow> \<forall>x \<in> set xs. \<not> e_less_eq e x"
 proof (induct xs)
   case Nil thus ?case by simp
 next
   case (Cons a xs)
-  hence "\<not> e_less_eq e (listsum xs)" by (auto simp add: e_less_eq_mon)
+  hence "\<not> e_less_eq e (sum_list xs)" by (auto simp add: e_less_eq_mon)
   hence v1: "\<forall>x\<in>set xs. \<not> e_less_eq e x" using Cons.hyps by simp
   from Cons.prems have "\<not> e_less_eq e a" by (auto simp add: e_less_eq_mon)
   with v1 show "\<forall>x\<in>set (a#xs). \<not> e_less_eq e x" by simp
@@ -287,11 +287,11 @@ lemma e_less_eq_refl :
   "b \<noteq> Infty \<Longrightarrow> e_less_eq (fst (p_unwrap b)) b"
   by (cases b) auto
 
-lemma e_less_eq_listsum2:
+lemma e_less_eq_sum_list2:
   assumes 
   "\<forall>x\<in>set (\<alpha>s). snd x \<noteq> Infty"
   "((), b) \<in> set (\<alpha>s)"
-  shows "e_less_eq (fst (p_unwrap b)) (listsum (map snd (\<alpha>s)))"
+  shows "e_less_eq (fst (p_unwrap b)) (sum_list (map snd (\<alpha>s)))"
   apply(insert assms)
   apply (induct "\<alpha>s")
   apply (auto simp add: zero_def e_less_eq_mon e_less_eq_refl) 
@@ -312,9 +312,9 @@ lemma p_unwrap_less_sum: "snd (p_unwrap ((LP e aa) + b)) \<le> aa"
   apply (auto simp add: plus_def)
 done
 
-lemma  listsum_less_elems: "\<forall>x\<in>set xs. snd x \<noteq> Infty \<Longrightarrow>
+lemma  sum_list_less_elems: "\<forall>x\<in>set xs. snd x \<noteq> Infty \<Longrightarrow>
   \<forall>y\<in>set (map snd (map p_unwrap (map snd xs))).
-              snd (p_unwrap (listsum (map snd xs))) \<le> y"          
+              snd (p_unwrap (sum_list (map snd xs))) \<le> y"          
     proof (induct xs)
     case Nil thus ?case by simp
     next
@@ -322,13 +322,13 @@ lemma  listsum_less_elems: "\<forall>x\<in>set xs. snd x \<noteq> Infty \<Longri
       apply auto
       apply (cases "(snd a)" rule: p_unwrap.cases)
       apply auto
-      apply (cases "listsum (map snd as)")
+      apply (cases "sum_list (map snd as)")
       apply auto
       apply (metis linorder_linear p_min_re_neut p_unwrap.simps 
         plus_def[abs_def] snd_eqD)
       apply (auto simp add: p_unwrap_less_sum)
       apply (unfold plus_def)
-      apply (cases "(snd a, listsum (map snd as))" rule: p_min.cases)
+      apply (cases "(snd a, sum_list (map snd as))" rule: p_min.cases)
       apply auto
       apply (cases "map snd as")
       apply (auto simp add: infadd)
@@ -495,7 +495,7 @@ proof -
   proof (cases "\<alpha> s = []")
     case True
     hence "map snd (\<alpha> s) = []" by simp
-    hence "listsum (map snd (\<alpha> s)) = Infty"  
+    hence "sum_list (map snd (\<alpha> s)) = Infty"  
       by (auto simp add: zero_def)
     with invs have  "annot s = Infty" by (auto simp add: annot_correct)
     with True show ?thesis by simp
@@ -504,7 +504,7 @@ proof -
     hence " \<exists>x xs. (\<alpha> s) = x # xs" by (cases "\<alpha> s") auto
     from this obtain x xs where [simp]: "(\<alpha> s) = x # xs" by blast
     from this assms(2) have "snd x \<noteq> Infty" by (auto simp add: aluprio_defs)
-    hence "listsum (map snd (\<alpha> s)) \<noteq> Infty" by (auto simp add: infadd)
+    hence "sum_list (map snd (\<alpha> s)) \<noteq> Infty" by (auto simp add: infadd)
     thus ?thesis using annot_correct invs False by simp
   qed
 qed
@@ -516,11 +516,11 @@ lemma e_less_eq_annot:
   shows "\<forall>x \<in> set (map (fst \<circ> (p_unwrap \<circ> snd)) (\<alpha> s)). x < e"
 proof -
   interpret al_annot \<alpha> invar annot by fact
-  from assms(2) have "annot s = listsum (map snd (\<alpha> s))"
+  from assms(2) have "annot s = sum_list (map snd (\<alpha> s))"
     by (auto simp add: annot_correct)
   with assms(4) have 
     "\<forall>x \<in> set (map snd (\<alpha> s)). \<not> e_less_eq e x"
-    by (metis e_less_eq_listsum)
+    by (metis e_less_eq_sum_list)
   with assms(3) 
   show ?thesis
     by (auto simp add: e_less_eq_p_unwrap)
@@ -557,11 +557,11 @@ proof -
           by(auto simp add: sorted_append)
       next
         case prems: 2
-        hence "annot s = listsum (map snd (\<alpha> s))" 
+        hence "annot s = sum_list (map snd (\<alpha> s))" 
           by (simp add: annot_correct)
         with prems
         show ?case 
-          by (auto simp add: e_less_eq_listsum2)
+          by (auto simp add: e_less_eq_sum_list2)
       next
         case prems: 3
         hence "\<alpha> s = []" by (auto simp add: isEmpty_correct)
@@ -580,13 +580,13 @@ proof -
       have 
         v3: "invar s" 
         "\<not> e_less_eq e Infty"
-        "e_less_eq e (Infty + listsum (map snd (\<alpha> s)))"
+        "e_less_eq e (Infty + sum_list (map snd (\<alpha> s)))"
         using T1 g1asms annot_correct
         by (auto simp add: plus_def)
       have 
         v4: "\<alpha> s = \<alpha> l @ ((), lp) # \<alpha> r"  
-        "\<not> e_less_eq e (Infty + listsum (map snd (\<alpha> l)))"
-        "e_less_eq e (Infty + listsum (map snd (\<alpha> l)) + lp)"
+        "\<not> e_less_eq e (Infty + sum_list (map snd (\<alpha> l)))"
+        "e_less_eq e (Infty + sum_list (map snd (\<alpha> l)) + lp)"
         "invar l"
         "invar r"
         using v2[OF v3(1) _ v3(2) v3(3) l_lp_r] e_less_eq_mon(1) by auto
@@ -594,7 +594,7 @@ proof -
         by (metis e_less_eq_lem1)
       hence v6: "e \<le> (fst (p_unwrap lp))"
         by (cases lp) auto
-      have "(Infty + listsum (map snd (\<alpha> l))) = (annot l)"
+      have "(Infty + sum_list (map snd (\<alpha> l))) = (annot l)"
         by (metis add_0_left annot_correct v4(4) zero_def)
       hence v7:"\<not> e_less_eq e (annot l)"
         using v4(2) by simp
@@ -725,13 +725,13 @@ proof -
       have 
         v3: "invar s" 
         "\<not> e_less_eq e Infty"
-        "e_less_eq e (Infty + listsum (map snd (\<alpha> s)))"
+        "e_less_eq e (Infty + sum_list (map snd (\<alpha> s)))"
         using T1 g1asms annot_correct
         by (auto simp add: plus_def)
       have 
         v4: "\<alpha> s = \<alpha> l @ ((), lp) # \<alpha> r"  
-        "\<not> e_less_eq e (Infty + listsum (map snd (\<alpha> l)))"
-        "e_less_eq e (Infty + listsum (map snd (\<alpha> l)) + lp)"
+        "\<not> e_less_eq e (Infty + sum_list (map snd (\<alpha> l)))"
+        "e_less_eq e (Infty + sum_list (map snd (\<alpha> l)) + lp)"
         "invar l"
         "invar r"
         using v2[OF v3(1) _ v3(2) v3(3) l_lp_r] e_less_eq_mon(1) by auto
@@ -739,7 +739,7 @@ proof -
         by (metis e_less_eq_lem1)
       hence v6: "e \<le> (fst (p_unwrap lp))"
         by (cases lp) auto
-      have "(Infty + listsum (map snd (\<alpha> l))) = (annot l)"
+      have "(Infty + sum_list (map snd (\<alpha> l))) = (annot l)"
         by (metis add_0_left annot_correct v4(4) zero_def)
       hence v7:"\<not> e_less_eq e (annot l)"
         using v4(2) by simp
@@ -876,13 +876,13 @@ proof -
       have 
         v3: "invar s" 
         "\<not> e_less_eq e Infty"
-        "e_less_eq e (Infty + listsum (map snd (\<alpha> s)))"
+        "e_less_eq e (Infty + sum_list (map snd (\<alpha> s)))"
         using T1 sinv annot_correct
         by (auto simp add: plus_def)
       have 
         v4: "\<alpha> s = \<alpha> l @ ((), lp) # \<alpha> r"  
-        "\<not> e_less_eq e (Infty + listsum (map snd (\<alpha> l)))"
-        "e_less_eq e (Infty + listsum (map snd (\<alpha> l)) + lp)"
+        "\<not> e_less_eq e (Infty + sum_list (map snd (\<alpha> l)))"
+        "e_less_eq e (Infty + sum_list (map snd (\<alpha> l)) + lp)"
         "invar l"
         "invar r"
         using v2[OF v3(1) _ v3(2) v3(3) l_lp_r] e_less_eq_mon(1) by auto
@@ -890,7 +890,7 @@ proof -
         by (metis e_less_eq_lem1)
       hence v6: "e \<le> (fst (p_unwrap lp))"
         by (cases lp) auto
-      have "(Infty + listsum (map snd (\<alpha> l))) = (annot l)"
+      have "(Infty + sum_list (map snd (\<alpha> l))) = (annot l)"
         by (metis add_0_left annot_correct v4(4) zero_def)
       hence v7:"\<not> e_less_eq e (annot l)"
         using v4(2) by simp
@@ -984,11 +984,11 @@ proof -
     hence v3:
       "\<not> Infty \<le> annot s"
       by(cases "annot s") (auto simp add: plesseq_def)
-    have v4: "annot s = listsum (map snd (\<alpha> s))"
+    have v4: "annot s = sum_list (map snd (\<alpha> s))"
       by (auto simp add: annot_correct invs(1))
     hence 
       v5:
-      "(Infty + listsum (map snd (\<alpha> s))) \<le> annot s"
+      "(Infty + sum_list (map snd (\<alpha> s))) \<le> annot s"
       by (auto simp add: plus_def)
     note p_mon = p_less_eq_mon[of _ "annot s"]
     note v6 = splits_correct[OF invs(1)]
@@ -996,8 +996,8 @@ proof -
     note v7[OF _ v3 v5 l_lp_r] p_mon
     hence v8: 
       " \<alpha> s = \<alpha> l @ ((), lp) # \<alpha> r"
-      "\<not> Infty + listsum (map snd (\<alpha> l)) \<le> annot s"
-      "Infty + listsum (map snd (\<alpha> l)) + lp \<le> annot s"
+      "\<not> Infty + sum_list (map snd (\<alpha> l)) \<le> annot s"
+      "Infty + sum_list (map snd (\<alpha> l)) + lp \<le> annot s"
       "invar l"
       "invar r"
       by auto
@@ -1023,7 +1023,7 @@ proof -
       apply (cases lp)
       apply (auto simp add: plesseq_def)
       done 
-    note listsum_less_elems[OF invs(2)]
+    note sum_list_less_elems[OF invs(2)]
     hence v12: "\<forall>y\<in>set (map snd (map p_unwrap (map snd (\<alpha> s)))). a \<le> y"
       using v4 v11 by auto
     have "ran (aluprio_\<alpha> \<alpha> s) = set (map snd (map p_unwrap (map snd (\<alpha> s))))"

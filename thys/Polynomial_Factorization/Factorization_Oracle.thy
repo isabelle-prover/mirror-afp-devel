@@ -35,15 +35,15 @@ consts factorization_oracle_int_poly :: "int list \<Rightarrow> int list list"
 definition oracle_sound :: "int poly \<Rightarrow> int poly list \<Rightarrow> bool" where
   "oracle_sound p oracle_answer = (
      content p = 1 \<longrightarrow> square_free p \<longrightarrow> degree p \<noteq> 0 \<longrightarrow>
-     p = listprod oracle_answer \<and> (\<forall> f \<in> set oracle_answer. degree f \<noteq> 0))"
+     p = prod_list oracle_answer \<and> (\<forall> f \<in> set oracle_answer. degree f \<noteq> 0))"
 
 lemma oracle_soundD: "oracle_sound p oracle_answer \<Longrightarrow>
      content p = 1 \<Longrightarrow> square_free p \<Longrightarrow> degree p \<noteq> 0 \<Longrightarrow>
-     p = listprod oracle_answer \<and> (\<forall> f \<in> set oracle_answer. degree f \<noteq> 0)"
+     p = prod_list oracle_answer \<and> (\<forall> f \<in> set oracle_answer. degree f \<noteq> 0)"
    unfolding oracle_sound_def by auto
 
 definition oracle_check :: "int poly \<Rightarrow> int poly list \<Rightarrow> bool" where
-  "oracle_check p ps = (p = listprod ps \<and> (\<forall> p \<in> set ps. degree p \<noteq> 0))"
+  "oracle_check p ps = (p = prod_list ps \<and> (\<forall> p \<in> set ps. degree p \<noteq> 0))"
 
 lemma oracle_check: "oracle_check p ps \<Longrightarrow> oracle_sound p ps"
   unfolding oracle_sound_def oracle_check_def by auto
@@ -91,7 +91,7 @@ definition factorization_oracle_rat_poly :: "rat poly \<Rightarrow> rat \<times>
          (b^Suc i, map (\<lambda> f. (f,i)) fs));
      pre_result = map oracle psi;
      factors = concat (map snd pre_result);
-     b = a * listprod (map fst pre_result)
+     b = a * prod_list (map fst pre_result)
    in (b,factors))"
 
 text \<open>The wrapper ensures a valid factorization + square-free factors.\<close>
@@ -105,7 +105,7 @@ proof -
          (b^Suc i, map (\<lambda> f. (f,i)) fs))" by auto
   obtain pre_result where pre_result: "pre_result = map oracl psi" by blast
   from assms[unfolded factorization_oracle_rat_poly_def yun gcd_rat_poly split Let_def]
-  have c: "c = a * listprod (map fst pre_result)" and fs: "fs = concat (map snd pre_result)"
+  have c: "c = a * prod_list (map fst pre_result)" and fs: "fs = concat (map snd pre_result)"
     unfolding pre_result oracl by auto
   show ?thesis
   proof (rule square_free_factorization_further_factorization[OF sff _ oracl pre_result c fs])
@@ -125,11 +125,11 @@ proof -
     from sf rp(1) rp(2) have sfg: "square_free (?r g)" by simp
     hence "square_free g" unfolding square_free_def by (force simp: dvd_def)
     from oracle_soundD[OF oracle_wrapper rp(3)[OF a] this dg]
-    have id: "listprod (oracle_wrapper g) = g" and 
+    have id: "prod_list (oracle_wrapper g) = g" and 
       deg: "\<And> f. f \<in> set (oracle_wrapper g) \<Longrightarrow> degree f \<noteq> 0"
       by auto
-    show "a = smult d (listprod gs) \<and> (\<forall>f\<in>set gs. degree f \<noteq> 0)" unfolding rp(1) gs
-      using deg by (auto, subst ri.hom_listprod[symmetric], unfold id, simp)
+    show "a = smult d (prod_list gs) \<and> (\<forall>f\<in>set gs. degree f \<noteq> 0)" unfolding rp(1) gs
+      using deg by (auto, subst ri.hom_prod_list[symmetric], unfold id, simp)
   qed
 qed
   

@@ -125,54 +125,54 @@ lemma strip_while_0_nnil :
   "as \<noteq> [] \<Longrightarrow> set as \<noteq> 0 \<Longrightarrow> strip_while (op = 0) as \<noteq> []"
   by (induct as rule: rev_nonempty_induct) auto
 
-subsubsection {* @{text listsum} *}
+subsubsection {* @{text sum_list} *}
 
-lemma const_listsum :
-  "\<forall>x \<in> set xs. f x = a \<Longrightarrow> listsum (map f xs) = a * (length xs)"
+lemma const_sum_list :
+  "\<forall>x \<in> set xs. f x = a \<Longrightarrow> sum_list (map f xs) = a * (length xs)"
   by (induct xs) auto
 
-lemma listsum_prod_cong :
+lemma sum_list_prod_cong :
   "\<forall>(x,y) \<in> set xys. f x y = g x y
         \<Longrightarrow> (\<Sum>(x,y)\<leftarrow>xys. f x y) = (\<Sum>(x,y)\<leftarrow>xys. g x y)"
-  using arg_cong[of "map (case_prod f) xys" "map (case_prod g) xys" listsum] by fastforce
+  using arg_cong[of "map (case_prod f) xys" "map (case_prod g) xys" sum_list] by fastforce
 
-lemma listsum_prod_map2 :
+lemma sum_list_prod_map2 :
   "(\<Sum>(a,y)\<leftarrow>zip as (map f bs). g a y) = (\<Sum>(a,b)\<leftarrow>zip as bs. g a (f b))"
   by (induct as bs rule: list_induct2') auto
 
-lemma listsum_fun_apply : "(\<Sum>x\<leftarrow>xs. f x) y = (\<Sum>x\<leftarrow>xs. f x y)"
+lemma sum_list_fun_apply : "(\<Sum>x\<leftarrow>xs. f x) y = (\<Sum>x\<leftarrow>xs. f x y)"
   by (induct xs) auto
 
-lemma listsum_prod_fun_apply : "(\<Sum>(x,y)\<leftarrow>xys. f x y) z = (\<Sum>(x,y)\<leftarrow>xys. f x y z)"
+lemma sum_list_prod_fun_apply : "(\<Sum>(x,y)\<leftarrow>xys. f x y) z = (\<Sum>(x,y)\<leftarrow>xys. f x y z)"
   by (induct xys) auto
 
-lemma (in comm_monoid_add) listsum_plus :
+lemma (in comm_monoid_add) sum_list_plus :
   "length xs = length ys
-        \<Longrightarrow> listsum xs + listsum ys = listsum [a+b. (a,b)\<leftarrow>zip xs ys]"
+        \<Longrightarrow> sum_list xs + sum_list ys = sum_list [a+b. (a,b)\<leftarrow>zip xs ys]"
 proof (induct xs ys rule: list_induct2)
   case Cons thus ?case by (simp add: algebra_simps)
 qed simp
 
-lemma listsum_const_mult_prod :
+lemma sum_list_const_mult_prod :
   fixes f :: "'a \<Rightarrow> 'b \<Rightarrow> 'r::semiring_0"
   shows "r * (\<Sum>(x,y)\<leftarrow>xys. f x y) = (\<Sum>(x,y)\<leftarrow>xys. r * (f x y))"
-  using listsum_const_mult[of r "case_prod f"] prod.case_distrib[of "\<lambda>x. r*x" f]
+  using sum_list_const_mult[of r "case_prod f"] prod.case_distrib[of "\<lambda>x. r*x" f]
   by    simp
 
-lemma listsum_mult_const_prod :
+lemma sum_list_mult_const_prod :
   fixes f :: "'a \<Rightarrow> 'b \<Rightarrow> 'r::semiring_0"
   shows "(\<Sum>(x,y)\<leftarrow>xys. f x y) * r = (\<Sum>(x,y)\<leftarrow>xys. (f x y) * r)"
-  using listsum_mult_const[of "case_prod f" r] prod.case_distrib[of "\<lambda>x. x*r" f]
+  using sum_list_mult_const[of "case_prod f" r] prod.case_distrib[of "\<lambda>x. x*r" f]
   by    simp
 
-lemma listsum_update :
+lemma sum_list_update :
   fixes xs :: "'a::ab_group_add list"
-  shows "n < length xs \<Longrightarrow> listsum (xs[n := y]) = listsum xs - xs!n + y"
+  shows "n < length xs \<Longrightarrow> sum_list (xs[n := y]) = sum_list xs - xs!n + y"
 proof (induct xs arbitrary: n)
   case Cons thus ?case by (cases n) auto
 qed simp
 
-lemma listsum_replicate0 : "listsum (replicate n 0) = 0"
+lemma sum_list_replicate0 : "sum_list (replicate n 0) = 0"
   by (induct n) auto
 
 subsubsection {* @{text listset} *}
@@ -192,7 +192,7 @@ lemma listset_length : "xs \<in> listset Xs \<Longrightarrow> length xs = length
   unfolding listset_def set_Cons_def
   by        (induct xs Xs rule: list_induct2') auto
 
-lemma set_listsum_element :
+lemma set_sum_list_element :
   "x \<in> (\<Sum>A\<leftarrow>As. A) \<Longrightarrow> \<exists>as \<in> listset As. x = (\<Sum>a\<leftarrow>as. a)"
 proof (induct As arbitrary: x)
   case Nil hence "x = (\<Sum>a\<leftarrow>[]. a)" by simp
@@ -209,27 +209,27 @@ next
   with a_as(3) show "\<exists>bs\<in>listset (A#As). x = (\<Sum>b\<leftarrow>bs. b)" by fast
 qed
 
-lemma set_listsum_element_Cons :
+lemma set_sum_list_element_Cons :
   assumes "x \<in> (\<Sum>X\<leftarrow>(A#As). X)"
   shows   "\<exists>a as. a\<in>A \<and> as \<in> listset As \<and> x = a + (\<Sum>b\<leftarrow>as. b)"
 proof-
   from assms obtain xs where xs: "xs \<in> listset (A#As)" "x = (\<Sum>b\<leftarrow>xs. b)"
-    using set_listsum_element by fast
+    using set_sum_list_element by fast
   from xs(1) obtain a as where "a \<in> A" "as \<in> listset As" "xs = a # as"
     using listset_Cons_conv by fast
   with xs(2) show ?thesis by auto
 qed
 
-lemma listsum_listset : "as \<in> listset As \<Longrightarrow> listsum as \<in> (\<Sum>A\<leftarrow>As. A)"
+lemma sum_list_listset : "as \<in> listset As \<Longrightarrow> sum_list as \<in> (\<Sum>A\<leftarrow>As. A)"
 proof-
-  have "length as = length As \<Longrightarrow> as \<in> listset As \<Longrightarrow> listsum as \<in> (\<Sum>A\<leftarrow>As. A)"
+  have "length as = length As \<Longrightarrow> as \<in> listset As \<Longrightarrow> sum_list as \<in> (\<Sum>A\<leftarrow>As. A)"
   proof (induct as As rule: list_induct2)
     case Nil show ?case by simp
   next
     case (Cons a as A As) thus ?case
       using listset_ConsD[of a] set_plus_def by auto
   qed
-  thus "as \<in> listset As \<Longrightarrow> listsum as \<in> (\<Sum>A\<leftarrow>As. A)" using listset_length by fast
+  thus "as \<in> listset As \<Longrightarrow> sum_list as \<in> (\<Sum>A\<leftarrow>As. A)" using listset_length by fast
 qed
 
 lemma listsetI_nth :
@@ -876,26 +876,26 @@ proof
   show "a + 0 = a" by transfer simp
 qed
 
-lemma listsum_aezfun_apply [simp] :
-  "aezfun (listsum as) x = (\<Sum>a\<leftarrow>as. aezfun a x)"
+lemma sum_list_aezfun_apply [simp] :
+  "aezfun (sum_list as) x = (\<Sum>a\<leftarrow>as. aezfun a x)"
   by (induct as) auto
 
-lemma listsum_map_aezfun_apply [simp] :
+lemma sum_list_map_aezfun_apply [simp] :
   "aezfun (\<Sum>a\<leftarrow>as. f a) x = (\<Sum>a\<leftarrow>as. aezfun (f a) x)"
   by (induct as) auto
 
-lemma listsum_map_aezfun [simp] :
+lemma sum_list_map_aezfun [simp] :
   "aezfun (\<Sum>a\<leftarrow>as. f a) = (\<Sum>a\<leftarrow>as. aezfun (f a))"
-  using listsum_map_aezfun_apply[of f] listsum_fun_apply[of "aezfun \<circ> f"] by auto
+  using sum_list_map_aezfun_apply[of f] sum_list_fun_apply[of "aezfun \<circ> f"] by auto
 
-lemma listsum_prod_map_aezfun_apply :  
+lemma sum_list_prod_map_aezfun_apply :  
   "aezfun (\<Sum>(x,y)\<leftarrow>xys. f x y) a = (\<Sum>(x,y)\<leftarrow>xys. aezfun (f x y) a)"
   by (induct xys) auto
 
-lemma listsum_prod_map_aezfun :
+lemma sum_list_prod_map_aezfun :
   "aezfun (\<Sum>(x,y)\<leftarrow>xys. f x y) = (\<Sum>(x,y)\<leftarrow>xys. aezfun (f x y))"
-  using listsum_prod_map_aezfun_apply[of f]
-        listsum_prod_fun_apply[of "\<lambda>y z. aezfun (f y z)"]
+  using sum_list_prod_map_aezfun_apply[of f]
+        sum_list_prod_fun_apply[of "\<lambda>y z. aezfun (f y z)"]
   by    auto
 
 instance aezfun :: (comm_monoid_add, type) comm_monoid_add
@@ -1156,8 +1156,8 @@ proof-
       show "b \<delta> a = aezfun (b \<delta>\<delta> a)" using aezdeltafun[of b a] by simp
     qed
     with bs show "\<exists>bs. length bs = length as \<and> x = (\<Sum>(b,a)\<leftarrow>zip bs as. b \<delta>\<delta> a)"
-      using listsum_prod_cong[of "zip bs as" deltafun "\<lambda>b a. aezfun (b \<delta>\<delta> a)"]
-            listsum_prod_map_aezfun[of aezdeltafun "zip bs as"]
+      using sum_list_prod_cong[of "zip bs as" deltafun "\<lambda>b a. aezfun (b \<delta>\<delta> a)"]
+            sum_list_prod_map_aezfun[of aezdeltafun "zip bs as"]
             aezfun_transfer[of x]
       by    fastforce
   qed
@@ -1190,7 +1190,7 @@ proof-
       by    fast
     thus "\<exists>rs. length rs = length gs
                 \<and> x = (\<Sum>(r,g)\<leftarrow>zip rs gs. (r \<delta>\<delta> 0) * (1 \<delta>\<delta> g))"
-      using aezdeltafun_decomp listsum_prod_cong[
+      using aezdeltafun_decomp sum_list_prod_cong[
               of "zip rs gs" "\<lambda>r g. r \<delta>\<delta> g" "\<lambda>r g. (r \<delta>\<delta> 0) * (1 \<delta>\<delta> g)"
             ]
       by    auto
@@ -1239,9 +1239,9 @@ proof-
     where c: "c = (\<Sum>(r,a)\<leftarrow>ras. r \<delta>\<delta> a)"
     by    fast
   thus ?thesis
-    using listsum_mult_const_prod[of "\<lambda>r a. r \<delta>\<delta> a" ras] aezdelta0fun_commutes'
-          listsum_prod_cong[of ras "\<lambda>r a. r \<delta>\<delta> a * (b \<delta>\<delta> 0)" "\<lambda>r a. b \<delta>\<delta> 0 * (r \<delta>\<delta> a)"]
-          listsum_const_mult_prod[of "b \<delta>\<delta> 0" "\<lambda>r a. r \<delta>\<delta> a" ras]
+    using sum_list_mult_const_prod[of "\<lambda>r a. r \<delta>\<delta> a" ras] aezdelta0fun_commutes'
+          sum_list_prod_cong[of ras "\<lambda>r a. r \<delta>\<delta> a * (b \<delta>\<delta> 0)" "\<lambda>r a. b \<delta>\<delta> 0 * (r \<delta>\<delta> a)"]
+          sum_list_const_mult_prod[of "b \<delta>\<delta> 0" "\<lambda>r a. r \<delta>\<delta> a" ras]
     by    auto
 qed
 
@@ -1326,7 +1326,7 @@ proof-
   thus ?thesis using aezfun_transfer by auto
 qed
 
-lemma aezfun_setspan_proj_listsum : 
+lemma aezfun_setspan_proj_sum_list : 
   "aezfun_setspan_proj A (\<Sum>x\<leftarrow>xs. f x) = (\<Sum>x\<leftarrow>xs. aezfun_setspan_proj A (f x))"
 proof (induct xs)
   case Nil show ?case using aezfun_setspan_proj_zero by simp
@@ -1334,10 +1334,10 @@ next
   case (Cons x xs) thus ?case using aezfun_setspan_proj_add[of A "f x"] by simp
 qed
 
-lemma aezfun_setspan_proj_listsum_prod :
+lemma aezfun_setspan_proj_sum_list_prod :
   "aezfun_setspan_proj A (\<Sum>(x,y)\<leftarrow>xys. f x y)
         = (\<Sum>(x,y)\<leftarrow>xys. aezfun_setspan_proj A (f x y))"
-  using aezfun_setspan_proj_listsum[of A "\<lambda>xy. case_prod f xy"]
+  using aezfun_setspan_proj_sum_list[of A "\<lambda>xy. case_prod f xy"]
         prod.case_distrib[of "aezfun_setspan_proj A" f]
   by    simp
 
@@ -1391,10 +1391,10 @@ subsubsection {* General facts *}
 lemma zeroset_eqI: "0 \<in> A \<Longrightarrow> (\<And>a. a \<in> A \<Longrightarrow> a = 0) \<Longrightarrow> A = 0"
   by auto
 
-lemma listsum_sets_single : "(\<Sum>X\<leftarrow>[A]. X) = A"
+lemma sum_list_sets_single : "(\<Sum>X\<leftarrow>[A]. X) = A"
   using add_0_right[of A] by simp
 
-lemma listsum_sets_double : "(\<Sum>X\<leftarrow>[A,B]. X) = A + B"
+lemma sum_list_sets_double : "(\<Sum>X\<leftarrow>[A,B]. X) = A + B"
   using add_0_right[of B] by simp
 
 subsubsection {* Additive independence of sets *}
@@ -1407,12 +1407,12 @@ primrec add_independentS :: "'a::monoid_add set list \<Rightarrow> bool"
 lemma add_independentS_doubleI:
   assumes "\<And>b a. b\<in>B \<Longrightarrow> a\<in>A \<Longrightarrow> a + b = 0 \<Longrightarrow> a = 0"
   shows   "add_independentS [A,B]"
-  using assms listsum_sets_single[of B] by simp
+  using assms sum_list_sets_single[of B] by simp
 
 lemma add_independentS_doubleD:
   assumes "add_independentS [A,B]"
   shows   "\<And>b a. b\<in>B \<Longrightarrow> a\<in>A \<Longrightarrow> a + b = 0 \<Longrightarrow> a = 0"
-  using assms listsum_sets_single[of B] by simp
+  using assms sum_list_sets_single[of B] by simp
 
 lemma add_independentS_double_iff :
   "add_independentS [A,B] = (\<forall>b\<in>B. \<forall>a\<in>A. a + b = 0 \<longrightarrow> a = 0 )"
@@ -1490,19 +1490,19 @@ proof (induct As)
     fix b x assume bx: "b \<in> (\<Sum>X\<leftarrow>Bs. X)" "x \<in> (\<Sum>X\<leftarrow>A # As. X)" "x + b = 0"
     from bx(2) obtain a as
       where a_as: "a \<in> A" "as \<in> listset As" "x = a + (\<Sum>z\<leftarrow>as. z)"
-      using set_listsum_element_Cons
+      using set_sum_list_element_Cons
       by    fast
     from Cons(2) have "add_independentS [A,\<Sum>X\<leftarrow>As@Bs. X]"
       using add_independentS_Cons_conv_sum_right[of A "As@Bs"] by simp
     moreover from a_as(2) bx(1)
       have  "(\<Sum>z\<leftarrow>as. z) + b \<in> (\<Sum>X\<leftarrow>(As@Bs). X)"
-      using listsum_listset set_plus_intro
+      using sum_list_listset set_plus_intro
       by    auto
     ultimately have "a = 0"
       using a_as(1,3) bx(3) add_independentS_doubleD[of A _ _ a] add.assoc[of a]
       by    auto
     with a_as(2,3) bx(1,3) Cons show "x = 0"
-      using listsum_listset
+      using sum_list_listset
             add_independentS_doubleD[of "\<Sum>X\<leftarrow>As. X" "\<Sum>X\<leftarrow>Bs. X" b "\<Sum>z\<leftarrow>as. z"]
       by    auto
   qed
@@ -1531,7 +1531,7 @@ lemma inner_dirsumI :
 
 lemma inner_dirsum_doubleI :
   "M = A + B \<Longrightarrow> add_independentS [A,B] \<Longrightarrow> M = A \<oplus> B"
-  using inner_dirsumI[of M "[A,B]"] listsum_sets_double[of A] by simp
+  using inner_dirsumI[of M "[A,B]"] sum_list_sets_double[of A] by simp
 
 lemma inner_dirsumD :
   "add_independentS Ms \<Longrightarrow> (\<Oplus>M\<leftarrow>Ms. M) = (\<Sum>M\<leftarrow>Ms. M)"
@@ -1544,10 +1544,10 @@ lemma inner_dirsum_Nil : "(\<Oplus>A\<leftarrow>[]. A) = 0"
   unfolding inner_dirsum_def by simp
 
 lemma inner_dirsum_singleD : "(\<Oplus>N\<leftarrow>[M]. N) = M"
-  using inner_dirsumD[of "[M]"] listsum_sets_single[of M] by simp
+  using inner_dirsumD[of "[M]"] sum_list_sets_single[of M] by simp
 
 lemma inner_dirsum_doubleD : "add_independentS [M,N] \<Longrightarrow> M \<oplus> N = M + N"
-  using inner_dirsumD[of "[M,N]"] listsum_sets_double[of M N] by simp
+  using inner_dirsumD[of "[M,N]"] sum_list_sets_double[of M N] by simp
 
 lemma inner_dirsum_Cons :
   "add_independentS (A # As) \<Longrightarrow> (\<Oplus>X\<leftarrow>(A#As). X) = A \<oplus> (\<Oplus>X\<leftarrow>As. X)"
@@ -1573,9 +1573,9 @@ lemma add_independentS_Cons_conv_dirsum_right :
         \<and> add_independentS As)"
   using add_independentS_Cons_conv_sum_right[of A As] inner_dirsumD by auto
 
-lemma listsum_listset_dirsum : 
-  "add_independentS As \<Longrightarrow> as \<in> listset As \<Longrightarrow> listsum as \<in> (\<Oplus>A\<leftarrow>As. A)"
-  using inner_dirsumD listsum_listset by fast
+lemma sum_list_listset_dirsum : 
+  "add_independentS As \<Longrightarrow> as \<in> listset As \<Longrightarrow> sum_list as \<in> (\<Oplus>A\<leftarrow>As. A)"
+  using inner_dirsumD sum_list_listset by fast
 
 
 
@@ -1636,12 +1636,12 @@ lemma add_closed : "g \<in> G \<Longrightarrow> h \<in> G \<Longrightarrow> g + 
 lemma neg_add_closed : "g \<in> G \<Longrightarrow> h \<in> G \<Longrightarrow> -g + h \<in> G"
   using neg_closed add_closed by fast
 
-lemma listsum_closed : "set (map f as) \<subseteq> G \<Longrightarrow> (\<Sum>a\<leftarrow>as. f a) \<in> G"
+lemma sum_list_closed : "set (map f as) \<subseteq> G \<Longrightarrow> (\<Sum>a\<leftarrow>as. f a) \<in> G"
   using zero_closed add_closed by (induct as) auto
 
-lemma listsum_closed_prod :
+lemma sum_list_closed_prod :
   "set (map (case_prod f) xys) \<subseteq> G \<Longrightarrow> (\<Sum>(x,y)\<leftarrow>xys. f x y) \<in> G"
-  using listsum_closed by fast
+  using sum_list_closed by fast
 
 lemma set_plus_closed : "A \<subseteq> G \<Longrightarrow> B \<subseteq> G \<Longrightarrow> A + B \<subseteq> G"
   using set_plus_def[of A B] add_closed by force
@@ -2054,7 +2054,7 @@ lemma im_diff : "g \<in> G \<Longrightarrow> g' \<in> G \<Longrightarrow> T (g -
 lemma eq_im_imp_diff_in_Ker : "\<lbrakk> g \<in> G; h \<in> G; T g = T h \<rbrakk> \<Longrightarrow> g - h \<in> Ker"
   using im_diff kerI diff_closed[of g h] by force
 
-lemma im_listsum_prod : 
+lemma im_sum_list_prod : 
   "set (map (case_prod f) xys) \<subseteq> G
         \<Longrightarrow> T (\<Sum>(x,y)\<leftarrow>xys. f x y) = (\<Sum>(x,y)\<leftarrow>xys. T (f x y))"
 proof (induct xys)
@@ -2068,7 +2068,7 @@ next
     by auto
   ultimately have "T (\<Sum>(x,y)\<leftarrow>(xy#xys). f x y)
                         = Tf xy + (\<Sum>(x,y)\<leftarrow>xys. Tf (x,y))"
-    using Tf listsum_closed[of "case_prod f"] hom Cons by auto
+    using Tf sum_list_closed[of "case_prod f"] hom Cons by auto
   also have "\<dots> = (\<Sum>(x,y)\<leftarrow>(xy#xys). Tf (x,y))" by simp
   finally show ?case using Tf by simp
 qed
@@ -2333,19 +2333,19 @@ next
   thus "x - y \<in> H + G" using assms xy(1,2,4,5) AbGroup.diff_closed by auto
 qed
 
-lemma AbGroup_listsum :
+lemma AbGroup_sum_list :
   "(\<forall>G\<in>set Gs. AbGroup G) \<Longrightarrow> AbGroup (\<Sum>G\<leftarrow>Gs. G)"
   using trivial_Group AbGroup.intro AbGroup_set_plus
   by    (induct Gs) auto
 
-lemma AbGroup_subset_listsum :
+lemma AbGroup_subset_sum_list :
   "\<forall>G \<in> set Gs. AbGroup G \<Longrightarrow> H \<in> set Gs \<Longrightarrow> H \<subseteq> (\<Sum>G\<leftarrow>Gs. G)"
 proof (induct Gs arbitrary: H)
   case (Cons G Gs)
   show "H \<subseteq> (\<Sum>X\<leftarrow>(G#Gs). X)"
   proof (cases "H = G")
     case True with Cons(2) show ?thesis
-      using AbGroup_listsum AbGroup.subset_plus_left by auto
+      using AbGroup_sum_list AbGroup.subset_plus_left by auto
   next
     case False
     with Cons have "H \<subseteq> (\<Sum>G\<leftarrow>Gs. G)" by simp
@@ -2365,7 +2365,7 @@ proof (induct Gs arbitrary: G G')
   proof
     fix A g assume A: "A \<in> set Hs" "A \<noteq> H" and g: "g \<in> A \<inter> H"
     from A(1) g Cons(2) have "-g \<in> (\<Sum>X\<leftarrow>Hs. X)"
-      using AbGroup.neg_closed AbGroup_subset_listsum by force
+      using AbGroup.neg_closed AbGroup_subset_sum_list by force
     moreover have "g + (-g) = 0" by simp
     ultimately show "g \<in> 0" using g Cons(3) by simp
   qed
@@ -2409,7 +2409,7 @@ subsubsection {* General facts *}
 
 lemma AbGroup_inner_dirsum :
   "\<forall>G\<in>set Gs. AbGroup G \<Longrightarrow> AbGroup (\<Oplus>G\<leftarrow>Gs. G)"
-  using inner_dirsumD[of Gs] inner_dirsumD2[of Gs] AbGroup_listsum AbGroup.intro
+  using inner_dirsumD[of Gs] inner_dirsumD2[of Gs] AbGroup_sum_list AbGroup.intro
         trivial_Group
   by    (cases "add_independentS Gs") auto
 
@@ -2441,7 +2441,7 @@ qed
 lemma AbGroup_subset_inner_dirsum :
   "\<lbrakk> \<forall>G \<in> set Gs. AbGroup G; add_independentS Gs; H \<in> set Gs \<rbrakk>
         \<Longrightarrow> H \<subseteq> (\<Oplus>G\<leftarrow>Gs. G)"
-  using AbGroup_subset_listsum inner_dirsumD by fast
+  using AbGroup_subset_sum_list inner_dirsumD by fast
 
 lemma AbGroup_nth_subset_inner_dirsum :
   "\<lbrakk> \<forall>G \<in> set Gs. AbGroup G; add_independentS Gs; n < length Gs \<rbrakk>
@@ -2477,30 +2477,30 @@ qed
 
 lemma AbGroup_inner_dirsum_el_decomp_ex1 :
   "\<lbrakk> \<forall>G \<in> set Gs. AbGroup G; add_independentS Gs \<rbrakk>
-        \<Longrightarrow> \<forall>x \<in> (\<Oplus>G\<leftarrow>Gs. G). \<exists>!gs\<in>listset Gs. x = listsum gs"
+        \<Longrightarrow> \<forall>x \<in> (\<Oplus>G\<leftarrow>Gs. G). \<exists>!gs\<in>listset Gs. x = sum_list gs"
 proof (induct Gs)
   case Nil
-  have "\<And>x::'a. x \<in> (\<Oplus>H\<leftarrow>[]. H) \<Longrightarrow> \<exists>!gs\<in>listset []. x = listsum gs"
+  have "\<And>x::'a. x \<in> (\<Oplus>H\<leftarrow>[]. H) \<Longrightarrow> \<exists>!gs\<in>listset []. x = sum_list gs"
   proof
     fix x::'a assume "x \<in> (\<Oplus>G\<leftarrow>[]. G)"
     moreover def f \<equiv> "\<lambda>x::'a. []::'a list"
-    ultimately show "f x \<in> listset [] \<and> x = listsum (f x)"
+    ultimately show "f x \<in> listset [] \<and> x = sum_list (f x)"
       using inner_dirsum_Nil by auto
   next
     fix x::'a and gs
     assume  x: "x \<in> (\<Oplus>G\<leftarrow>[]. G)"
-    and    gs: "gs \<in> listset [] \<and> x = listsum gs"
+    and    gs: "gs \<in> listset [] \<and> x = sum_list gs"
     thus "gs = []" by simp
   qed
-  thus "\<forall>x::'a \<in> (\<Oplus>H\<leftarrow>[]. H). \<exists>!gs\<in>listset []. x = listsum gs" by fast
+  thus "\<forall>x::'a \<in> (\<Oplus>H\<leftarrow>[]. H). \<exists>!gs\<in>listset []. x = sum_list gs" by fast
 next
   case (Cons G Gs)
-  hence prevcase: "\<forall>x\<in>(\<Oplus>H\<leftarrow>Gs. H). \<exists>!gs\<in>listset Gs. x = listsum gs" by auto
+  hence prevcase: "\<forall>x\<in>(\<Oplus>H\<leftarrow>Gs. H). \<exists>!gs\<in>listset Gs. x = sum_list gs" by auto
   from Cons(2) have grps: "AbGroup G" "AbGroup (\<Oplus>H\<leftarrow>Gs. H)"
     using AbGroup_inner_dirsum by auto
   from Cons(3) have ind: "add_independentS [G, \<Oplus>H\<leftarrow>Gs. H]"
     using add_independentS_Cons_conv_dirsum_right by fast
-  have "\<And>x. x \<in> (\<Oplus>H\<leftarrow>(G#Gs). H) \<Longrightarrow> \<exists>!gs\<in>listset (G#Gs). x = listsum gs"
+  have "\<And>x. x \<in> (\<Oplus>H\<leftarrow>(G#Gs). H) \<Longrightarrow> \<exists>!gs\<in>listset (G#Gs). x = sum_list gs"
   proof (rule ex_ex1I)
     fix x assume "x \<in> (\<Oplus>H\<leftarrow>(G#Gs). H)"
     with Cons(3) have "x \<in> G \<oplus> (\<Oplus>H\<leftarrow>Gs. H)"
@@ -2509,17 +2509,17 @@ next
       where gh: "fst gh \<in> G" "snd gh \<in> (\<Oplus>H\<leftarrow>Gs. H)" "x = fst gh + snd gh"
       using AbGroup_inner_dirsum_el_decomp_ex1_double
       by    blast
-    from gh(2) prevcase obtain gs where gs: "gs \<in> listset Gs" "snd gh = listsum gs"
+    from gh(2) prevcase obtain gs where gs: "gs \<in> listset Gs" "snd gh = sum_list gs"
       by fast
     with gh(1) gs(1) have "fst gh # gs \<in> listset (G#Gs)"
       using set_Cons_def by fastforce
-    moreover from gh(3) gs(2) have "x = listsum (fst gh # gs)" by simp
-    ultimately show "\<exists>gs. gs \<in> listset (G#Gs) \<and> x = listsum gs" by fast
+    moreover from gh(3) gs(2) have "x = sum_list (fst gh # gs)" by simp
+    ultimately show "\<exists>gs. gs \<in> listset (G#Gs) \<and> x = sum_list gs" by fast
   next
     fix x gs hs
     assume "x \<in> (\<Oplus>H\<leftarrow>(G#Gs). H)"
-      and gs: "gs \<in> listset (G#Gs) \<and> x = listsum gs"
-      and hs: "hs \<in> listset (G#Gs) \<and> x = listsum hs"
+      and gs: "gs \<in> listset (G#Gs) \<and> x = sum_list gs"
+      and hs: "hs \<in> listset (G#Gs) \<and> x = sum_list hs"
     hence "gs \<in> set_Cons G (listset Gs)" "hs \<in> set_Cons G (listset Gs)" by auto
     from this obtain a as b bs
       where     a_as: "gs = a#as" "a\<in>G" "as \<in> listset Gs"
@@ -2527,22 +2527,22 @@ next
       unfolding set_Cons_def
       by        fast
     from a_as(3) b_bs(3) Cons(3) 
-      have  as: "listsum as \<in> (\<Oplus>H\<leftarrow>Gs. H)" and bs: "listsum bs \<in> (\<Oplus>H\<leftarrow>Gs. H)"
-      using listsum_listset_dirsum
+      have  as: "sum_list as \<in> (\<Oplus>H\<leftarrow>Gs. H)" and bs: "sum_list bs \<in> (\<Oplus>H\<leftarrow>Gs. H)"
+      using sum_list_listset_dirsum
       by    auto
     with a_as(2) b_bs(2) grps
-      have  "a - b \<in> G" "listsum as - listsum bs \<in> (\<Oplus>H\<leftarrow>Gs. H)"
+      have  "a - b \<in> G" "sum_list as - sum_list bs \<in> (\<Oplus>H\<leftarrow>Gs. H)"
       using AbGroup.diff_closed
       by    auto
     moreover from gs hs a_as(1) b_bs(1)
-      have z: "(a - b) + (listsum as - listsum bs) = 0"
+      have z: "(a - b) + (sum_list as - sum_list bs) = 0"
       by   (simp add: algebra_simps)
     ultimately have "a - b = 0" using ind add_independentS_doubleD by blast
-    with z have 1: "a = b" and z': "listsum as = listsum bs" by auto
+    with z have 1: "a = b" and z': "sum_list as = sum_list bs" by auto
     from z' prevcase as a_as(3) bs b_bs(3) have 2: "as = bs" by fast
     from 1 2 a_as(1) b_bs(1) show "gs = hs" by fast
   qed
-  thus "\<forall>x\<in>(\<Oplus>H\<leftarrow>(G#Gs). H). \<exists>!gs. gs \<in> listset (G#Gs) \<and> x = listsum gs"
+  thus "\<forall>x\<in>(\<Oplus>H\<leftarrow>(G#Gs). H). \<exists>!gs. gs \<in> listset (G#Gs) \<and> x = sum_list gs"
     by fast
 qed
 
@@ -2558,7 +2558,7 @@ proof (induct Gs arbitrary: G G')
   proof
     fix A g assume A: "A \<in> set Hs" "A \<noteq> H" and g: "g \<in> A \<inter> H"
     from A(1) g Cons(2) have "-g \<in> (\<Sum>X\<leftarrow>Hs. X)"
-      using AbGroup.neg_closed AbGroup_subset_listsum by force
+      using AbGroup.neg_closed AbGroup_subset_sum_list by force
     moreover have "g + (-g) = 0" by simp
     ultimately show "g \<in> 0" using g Cons(3) by simp
   qed
@@ -2600,7 +2600,7 @@ subsubsection {* Element decomposition and projection *}
 definition inner_dirsum_el_decomp ::
   "'g::ab_group_add set list \<Rightarrow> ('g \<Rightarrow> 'g list)" ("\<Oplus>_\<leftarrow>")
   where "\<Oplus>Gs\<leftarrow> = (\<lambda>x. if x \<in> (\<Oplus>G\<leftarrow>Gs. G)
-              then THE gs. gs \<in> listset Gs \<and> x = listsum gs else [])"
+              then THE gs. gs \<in> listset Gs \<and> x = sum_list gs else [])"
 
 abbreviation inner_dirsum_el_decomp_double ::
   "'g::ab_group_add set \<Rightarrow> 'g set \<Rightarrow> ('g \<Rightarrow> 'g list)" ("_\<oplus>_\<leftarrow>") where "G\<oplus>H\<leftarrow> \<equiv> \<Oplus>[G,H]\<leftarrow>"
@@ -2611,9 +2611,9 @@ abbreviation inner_dirsum_el_decomp_nth ::
 
 lemma AbGroup_inner_dirsum_el_decompI :
   "\<lbrakk> \<forall>G \<in> set Gs. AbGroup G; add_independentS Gs; x \<in> (\<Oplus>G\<leftarrow>Gs. G) \<rbrakk>
-        \<Longrightarrow> (\<Oplus>Gs\<leftarrow>x) \<in> listset Gs \<and> x = listsum (\<Oplus>Gs\<leftarrow>x)"
+        \<Longrightarrow> (\<Oplus>Gs\<leftarrow>x) \<in> listset Gs \<and> x = sum_list (\<Oplus>Gs\<leftarrow>x)"
   using     AbGroup_inner_dirsum_el_decomp_ex1 theI'[
-              of "\<lambda>gs. gs \<in> listset Gs \<and> x = listsum gs"
+              of "\<lambda>gs. gs \<in> listset Gs \<and> x = sum_list gs"
             ]
   unfolding inner_dirsum_el_decomp_def
   by        fastforce
@@ -2627,7 +2627,7 @@ lemma (in AbGroup) abSubgroup_inner_dirsum_el_decomp_set :
 
 lemma AbGroup_inner_dirsum_el_decomp_eq :
   "\<lbrakk> \<forall>G \<in> set Gs. AbGroup G; add_independentS Gs; x \<in> (\<Oplus>G\<leftarrow>Gs. G);
-        gs \<in> listset Gs; x = listsum gs \<rbrakk> \<Longrightarrow> (\<Oplus>Gs\<leftarrow>x) = gs"
+        gs \<in> listset Gs; x = sum_list gs \<rbrakk> \<Longrightarrow> (\<Oplus>Gs\<leftarrow>x) = gs"
   using AbGroup_inner_dirsum_el_decomp_ex1[of Gs]
         inner_dirsum_el_decomp_def[of Gs]
   by    force
@@ -2639,13 +2639,13 @@ lemma AbGroup_inner_dirsum_el_decomp_plus :
 proof-
   def xs: xs \<equiv> "(\<Oplus>Gs\<leftarrow>x)" and ys: ys \<equiv> "(\<Oplus>Gs\<leftarrow>y)"
   with assms
-    have  xy: "xs \<in> listset Gs" "x = listsum xs" "ys \<in> listset Gs" "y = listsum ys"
+    have  xy: "xs \<in> listset Gs" "x = sum_list xs" "ys \<in> listset Gs" "y = sum_list ys"
     using AbGroup_inner_dirsum_el_decompI
     by    auto
   from assms(1) xy(1,3) have "[a+b. (a,b)\<leftarrow>zip xs ys] \<in> listset Gs"
     using AbGroup.axioms listset_Group_plus_closed by fast
-  moreover from xy have "x + y = listsum [a+b. (a,b)\<leftarrow>zip xs ys]"
-    using listset_length[of xs Gs] listset_length[of ys Gs, THEN sym] listsum_plus
+  moreover from xy have "x + y = sum_list [a+b. (a,b)\<leftarrow>zip xs ys]"
+    using listset_length[of xs Gs] listset_length[of ys Gs, THEN sym] sum_list_plus
     by    simp
   ultimately show "(\<Oplus>Gs\<leftarrow>(x+y)) = [a+b. (a,b)\<leftarrow>zip xs ys]"
     using assms AbGroup_inner_dirsum AbGroup.add_closed
@@ -2678,8 +2678,8 @@ proof-
     thus ?thesis by fast
   qed
   ultimately have "xgs \<in> listset Gs" using listsetI_nth by fast
-  moreover from xgs assms(3) have "x = listsum xgs"
-    using listsum_update[of n "replicate (length Gs) 0" x] nth_replicate listsum_replicate0
+  moreover from xgs assms(3) have "x = sum_list xgs"
+    using sum_list_update[of n "replicate (length Gs) 0" x] nth_replicate sum_list_replicate0
     by    simp
   ultimately show "(\<Oplus>Gs\<leftarrow>x) = xgs"
     using assms(1,2) x xgs AbGroup_inner_dirsum_el_decomp_eq by fast
@@ -2718,7 +2718,7 @@ proof-
   proof
     fix x assume x: "x \<in> X"
     with assms(2-4) have "x = (\<Sum>i=0..< length Gs. (\<Oplus>Gs\<down>i) x)"
-      using AbGroup_inner_dirsum_el_decompI listsum_setsum_nth[of "(\<Oplus>Gs\<leftarrow>x)"]
+      using AbGroup_inner_dirsum_el_decompI sum_list_setsum_nth[of "(\<Oplus>Gs\<leftarrow>x)"]
             AbGroup_length_inner_dirsum_el_decomp
       by    fastforce
     moreover from x assms(5) have "\<forall>i<length Gs. (\<Oplus>Gs\<down>i) x = 0" by auto
@@ -2788,8 +2788,8 @@ lemmas neg_closed          = neg_closed
 lemmas diff_closed         = diff_closed
 lemmas zip_add_closed      = zip_add_closed
 lemmas setsum_closed       = AbGroup.setsum_closed[OF AbGroup]
-lemmas listsum_closed      = listsum_closed
-lemmas listsum_closed_prod = listsum_closed_prod
+lemmas sum_list_closed      = sum_list_closed
+lemmas sum_list_closed_prod = sum_list_closed_prod
 lemmas list_diff_closed    = list_diff_closed
 
 abbreviation Subring1 :: "'r set \<Rightarrow> bool" where "Subring1 S \<equiv> Ring1 S \<and> S \<subseteq> R"
@@ -2878,11 +2878,11 @@ qed
 lemma RG_aezdelta0fun_closed : "(r::'r::ring_1) \<delta>\<delta> 0 \<in> group_ring"
   using zero_closed RG_aezdeltafun_closed[of 0] by fast
 
-lemma RG_listsum_rddg_closed :
+lemma RG_sum_list_rddg_closed :
   defines RG: "RG \<equiv> group_ring :: ('r::ring_1, 'g) aezfun set"
   assumes "set (map snd rgs) \<subseteq> G"
   shows   "(\<Sum>(r,g)\<leftarrow>rgs. r \<delta>\<delta> g) \<in> RG"
-proof (rule Ring1.listsum_closed_prod)
+proof (rule Ring1.sum_list_closed_prod)
   from RG show "Ring1 RG" using Ring1_RG by fast
   from assms show "set (map (case_prod aezdeltafun) rgs) \<subseteq> RG"
     using RG_aezdeltafun_closed by fastforce
@@ -2897,7 +2897,7 @@ lemma Subgroup_imp_Subring :
   defines "FH \<equiv> Group.group_ring H"
   and     "FG \<equiv> group_ring"
   shows   "Subgroup H \<Longrightarrow> Ring1.Subring1 FG FH"
-  using   assms Group.Ring1_RG Group.RG_el_decomp_aezdeltafun RG_listsum_rddg_closed
+  using   assms Group.Ring1_RG Group.RG_el_decomp_aezdeltafun RG_sum_list_rddg_closed
   by      fast
 
 end (* context Group *)
@@ -2917,7 +2917,7 @@ begin
 abbreviation "RG_proj \<equiv> aezfun_setspan_proj G"
 
 lemmas RG_proj_in_RG        = aezfun_setspan_proj_in_setspan
-lemmas RG_proj_listsum_prod = aezfun_setspan_proj_listsum_prod[of G]
+lemmas RG_proj_sum_list_prod = aezfun_setspan_proj_sum_list_prod[of G]
 
 lemma RG_proj_mult_leftdelta' :
   fixes   r s :: "'r::{comm_monoid_add,mult_zero}"
@@ -2937,12 +2937,12 @@ proof-
     using RG_el_decomp_aezdeltafun
     by    fast
   hence "RG_proj ((r \<delta>\<delta> g) * x) = (\<Sum>(s,h)\<leftarrow>rgs. RG_proj ((r \<delta>\<delta> g) * (s \<delta>\<delta> h)))"
-    using listsum_const_mult_prod[of "r \<delta>\<delta> g" "\<lambda>s h. s \<delta>\<delta> h"] RG_proj_listsum_prod
+    using sum_list_const_mult_prod[of "r \<delta>\<delta> g" "\<lambda>s h. s \<delta>\<delta> h"] RG_proj_sum_list_prod
     by    simp
   also from assms rgs have "\<dots> = (r \<delta>\<delta> g) * RG_proj x"
     using RG_proj_mult_leftdelta'[of g r]
-          listsum_const_mult_prod[of "r \<delta>\<delta> g" "\<lambda>s h. RG_proj (s \<delta>\<delta> h)"]
-          RG_proj_listsum_prod[of "\<lambda>s h. s \<delta>\<delta> h" rgs]
+          sum_list_const_mult_prod[of "r \<delta>\<delta> g" "\<lambda>s h. RG_proj (s \<delta>\<delta> h)"]
+          RG_proj_sum_list_prod[of "\<lambda>s h. s \<delta>\<delta> h" rgs]
     by    simp
   finally show ?thesis by fast
 qed
@@ -2966,30 +2966,30 @@ proof-
     using RG_el_decomp_aezdeltafun
     by    fast
   hence "RG_proj (x * (r \<delta>\<delta> g)) = (\<Sum>(s,h)\<leftarrow>rgs. RG_proj ((s \<delta>\<delta> h) * (r \<delta>\<delta> g)))"
-    using listsum_mult_const_prod[of "\<lambda>s h. s \<delta>\<delta> h" rgs] RG_proj_listsum_prod
+    using sum_list_mult_const_prod[of "\<lambda>s h. s \<delta>\<delta> h" rgs] RG_proj_sum_list_prod
     by    simp
   with assms rgs show ?thesis
     using RG_proj_mult_rightdelta'[of g _ _ r]
-          listsum_prod_cong[of
+          sum_list_prod_cong[of
             rgs "\<lambda>s h. RG_proj ((s \<delta>\<delta> h) * (r \<delta>\<delta> g))"
             "\<lambda>s h. RG_proj (s \<delta>\<delta> h) * (r \<delta>\<delta> g)"
           ]
-          listsum_mult_const_prod[of "\<lambda>s h. RG_proj (s \<delta>\<delta> h)" rgs]
-          RG_proj_listsum_prod[of "\<lambda>s h. s \<delta>\<delta> h" rgs]
-          listsum_mult_const_prod[of "\<lambda>s h. RG_proj (s \<delta>\<delta> h)" rgs "r \<delta>\<delta> g"]
-          RG_proj_listsum_prod[of "\<lambda>s h. s \<delta>\<delta> h" rgs]
+          sum_list_mult_const_prod[of "\<lambda>s h. RG_proj (s \<delta>\<delta> h)" rgs]
+          RG_proj_sum_list_prod[of "\<lambda>s h. s \<delta>\<delta> h" rgs]
+          sum_list_mult_const_prod[of "\<lambda>s h. RG_proj (s \<delta>\<delta> h)" rgs "r \<delta>\<delta> g"]
+          RG_proj_sum_list_prod[of "\<lambda>s h. s \<delta>\<delta> h" rgs]
     by    simp
 qed
 
 lemma RG_proj_mult_right :
   "x \<in> (group_ring :: ('r::ring_1, 'g) aezfun set)
         \<Longrightarrow> RG_proj (y * x) = RG_proj y * x"
-  using RG_el_decomp_aezdeltafun listsum_const_mult_prod[of y "\<lambda>r g. r \<delta>\<delta> g"]
-        RG_proj_listsum_prod[of "\<lambda>r g. y * (r \<delta>\<delta> g)"] RG_proj_mult_rightdelta[of _ y]
-        listsum_prod_cong[
+  using RG_el_decomp_aezdeltafun sum_list_const_mult_prod[of y "\<lambda>r g. r \<delta>\<delta> g"]
+        RG_proj_sum_list_prod[of "\<lambda>r g. y * (r \<delta>\<delta> g)"] RG_proj_mult_rightdelta[of _ y]
+        sum_list_prod_cong[
           of _ "\<lambda>r g. RG_proj (y * (r \<delta>\<delta> g))" "\<lambda>r g. RG_proj y * (r \<delta>\<delta> g)"
         ]
-        listsum_const_mult_prod[of "RG_proj y" "\<lambda>r g. r \<delta>\<delta> g"]
+        sum_list_const_mult_prod[of "RG_proj y" "\<lambda>r g. r \<delta>\<delta> g"]
   by    fastforce
 
 end (* context Group *)
@@ -3126,14 +3126,14 @@ next
   case (insert a A) with assms show ?case using R_scalars.setsum_closed[of A] by simp
 qed
 
-lemma smult_listsum_distrib :
-  "r \<in> R \<Longrightarrow> set ms \<subseteq> M \<Longrightarrow> r \<cdot> (listsum ms) = (\<Sum>m\<leftarrow>ms. r \<cdot> m)"
-  using smult_zero listsum_closed[of id] by (induct ms) auto
+lemma smult_sum_list_distrib :
+  "r \<in> R \<Longrightarrow> set ms \<subseteq> M \<Longrightarrow> r \<cdot> (sum_list ms) = (\<Sum>m\<leftarrow>ms. r \<cdot> m)"
+  using smult_zero sum_list_closed[of id] by (induct ms) auto
 
-lemma listsum_prod_map_smult_distrib :
+lemma sum_list_prod_map_smult_distrib :
   "m \<in> M \<Longrightarrow> set (map (case_prod f) xys) \<subseteq> R
         \<Longrightarrow> (\<Sum>(x,y)\<leftarrow>xys. f x y) \<cdot> m = (\<Sum>(x,y)\<leftarrow>xys. f x y \<cdot> m)"
-  using zero_smult R_scalars.listsum_closed_prod[of f]
+  using zero_smult R_scalars.sum_list_closed_prod[of f]
   by    (induct xys) auto
 
 lemma RSubmoduleI :
@@ -3221,7 +3221,7 @@ next
     by    fast
 qed
 
-lemma RSubmodule_listsum :
+lemma RSubmodule_sum_list :
   "(\<forall>N\<in>set Ns. RSubmodule N) \<Longrightarrow> RSubmodule (\<Sum>N\<leftarrow>Ns. N)"
   using trivial_RSubmodule RSubmodule_set_plus
   by    (induct Ns) auto
@@ -3231,7 +3231,7 @@ lemma RSubmodule_inner_dirsum :
   shows   "RSubmodule (\<Oplus>N\<leftarrow>Ns. N)"
 proof (cases "add_independentS Ns")
   case True with assms show ?thesis
-    using RSubmodule_listsum inner_dirsumD by fastforce
+    using RSubmodule_sum_list inner_dirsumD by fastforce
 next
   case False thus ?thesis
     using inner_dirsumD2[of Ns] trivial_RSubmodule by simp
@@ -3401,7 +3401,7 @@ next
     case Nil with Suc(2) show ?thesis using lincomb_Nil smult_zero by simp
   next
     case (Cons m ms) with Suc show ?thesis
-      using lincomb_Cons set_take_subset[of k ms] listsum_closed[of id]
+      using lincomb_Cons set_take_subset[of k ms] sum_list_closed[of id]
       by    auto
   qed
 qed
@@ -3412,7 +3412,7 @@ proof-
   hence "(replicate k 0) \<bullet>\<cdot> ms = 0 \<cdot> (\<Sum>m\<leftarrow>(take k ms). m)" 
     using R_scalars.zero_closed lincomb_replicate_left by fast
   moreover from ms have "(\<Sum>m\<leftarrow>(take k ms). m) \<in> M"
-    using set_take_subset listsum_closed by fastforce
+    using set_take_subset sum_list_closed by fastforce
   ultimately show "(replicate k 0) \<bullet>\<cdot> ms = 0" using zero_smult by simp
 qed
 
@@ -4565,7 +4565,7 @@ lemma (in RModule) RModule_inner_dirsum_el_decomp_Rsmult :
   shows   "(\<Oplus>Ns\<leftarrow>(r \<cdot> x)) = [r \<cdot> m. m\<leftarrow>(\<Oplus>Ns\<leftarrow>x)]"
 proof-
   def xs: xs \<equiv> "(\<Oplus>Ns\<leftarrow>x)"
-  with assms have x: "xs \<in> listset Ns" "x = listsum xs"
+  with assms have x: "xs \<in> listset Ns" "x = sum_list xs"
     using RModule.AbGroup[of R] AbGroup_inner_dirsum_el_decompI[of Ns x]
     by    auto
   from assms(1,2,4) xs have xs_M: "set xs \<subseteq> M"
@@ -4574,8 +4574,8 @@ proof-
     by    fast
   from assms(1,3) x(1) have "[r \<cdot> m. m\<leftarrow>xs] \<in> listset Ns"
     using listset_RModule_Rsmult_closed by fast
-  moreover from x assms(3) xs_M have "r \<cdot> x = listsum [r \<cdot> m. m\<leftarrow>xs]"
-    using smult_listsum_distrib by fast
+  moreover from x assms(3) xs_M have "r \<cdot> x = sum_list [r \<cdot> m. m\<leftarrow>xs]"
+    using smult_sum_list_distrib by fast
   moreover from assms(1,3,4) have "r \<cdot> x \<in> (\<Oplus>M\<leftarrow>Ns. M)" 
     using RModule_inner_dirsum RModule.smult_closed by fast
   ultimately show "(\<Oplus>Ns\<leftarrow>(r \<cdot> x)) = [r \<cdot> m. m\<leftarrow>xs]"
@@ -5242,7 +5242,7 @@ lemmas hom             = hom
 lemmas supp            = supp
 lemmas f_map           = R_map
 lemmas im_zero         = im_zero
-lemmas im_listsum_prod = im_listsum_prod
+lemmas im_sum_list_prod = im_sum_list_prod
 lemmas additive        = additive
 lemmas GroupHom        = GroupHom
 lemmas distrib_lincomb = distrib_lincomb
@@ -5764,10 +5764,10 @@ next
   finally have calc:
     "polymap (pCons a p) = a \<cdot>\<cdot> (id\<down>V)
       + (\<Sum>(c,k)\<leftarrow>zip (coeffs p) [0..<Suc (degree p)]. c \<cdot>\<cdot> (T \<circ> (endpow k)))"
-    using listsum_prod_map2[
+    using sum_list_prod_map2[
             of "\<lambda>c S. c \<cdot>\<cdot> S" "coeffs p" "op \<circ> T" "map endpow [0..<Suc (degree p)]"
           ]
-          listsum_prod_map2[
+          sum_list_prod_map2[
             of "\<lambda>c S. c \<cdot>\<cdot> (T \<circ> S)" "coeffs p" endpow "[0..<Suc (degree p)]"
           ]
     by    simp
@@ -5779,16 +5779,16 @@ next
       with calc
         have "polymap (pCons a p) v = a \<cdot> v + (\<Sum>(c,k)
                     \<leftarrow>zip (coeffs p) [0..<Suc (degree p)]. c \<cdot> T (endpow k v))"
-        using listsum_prod_fun_apply[of "\<lambda>c k. c \<cdot>\<cdot> (T \<circ> (endpow k))"] by simp
+        using sum_list_prod_fun_apply[of "\<lambda>c k. c \<cdot>\<cdot> (T \<circ> (endpow k))"] by simp
       hence "polymap (pCons a p) v = a \<cdot> v + (coeffs p) \<bullet>\<cdot> (map T
                   (map (\<lambda>S. S v) (map endpow [0..<Suc (degree p)])))"
-        using listsum_prod_map2[
+        using sum_list_prod_map2[
                 of "\<lambda>c S. c \<cdot> T (S v)" "coeffs p" endpow "[0..<Suc (degree p)]"
               ]
-              listsum_prod_map2[
+              sum_list_prod_map2[
                 of "\<lambda>c u. c \<cdot> T u" "coeffs p" "\<lambda>S. S v" "map endpow [0..<Suc (degree p)]"
               ]
-              listsum_prod_map2[
+              sum_list_prod_map2[
                 of "\<lambda>c u. c \<cdot> u" "coeffs p" T
                    "map (\<lambda>S. S v) (map endpow [0..<Suc (degree p)])"
               ]
@@ -5801,10 +5801,10 @@ next
         by    simp
       finally show ?thesis
         using True lincomb_def
-              listsum_prod_map2[
+              sum_list_prod_map2[
                 of "\<lambda>c u. c \<cdot> u" "coeffs p" "\<lambda>S. S v" "map endpow [0..<Suc (degree p)]"
               ]
-              listsum_prod_fun_apply[of "\<lambda>c S. c \<cdot>\<cdot> S"] polymap_def 
+              sum_list_prod_fun_apply[of "\<lambda>c S. c \<cdot>\<cdot> S"] polymap_def 
               scalar_mult.lincomb_def[of end_smult]
         by    simp
     next
@@ -6097,7 +6097,7 @@ lemma length_concat_negGorbit_list :
   "length (concat (negGorbit_list gs T as)) = (length gs) * (length as)"
   using length_concat[of "negGorbit_list gs T as"]
         length_negGorbit_list_sublist[of _ gs T as]
-        const_listsum[of "negGorbit_list gs T as" length "length as"] length_negGorbit_list
+        const_sum_list[of "negGorbit_list gs T as" length "length as"] length_negGorbit_list
   by    auto
 
 lemma negGorbit_list_nth : 
@@ -6203,17 +6203,17 @@ lemma fddg_smult_decomp : "g \<in> G \<Longrightarrow> v \<in> V \<Longrightarro
         fsmult_def
   by    simp
 
-lemma listsum_aezdeltafun_smult_distrib :
+lemma sum_list_aezdeltafun_smult_distrib :
   assumes "v \<in> V" "set (map snd fgs) \<subseteq> G"
   shows   "(\<Sum>(f,g)\<leftarrow>fgs. f \<delta>\<delta> g) \<cdot> v = (\<Sum>(f,g)\<leftarrow>fgs. f \<sharp>\<cdot> g *\<cdot> v)"
 proof-
   from assms(2) have "set (map (case_prod aezdeltafun) fgs) \<subseteq> FG"
     using FG_fddg_closed by auto
   with assms(1) have "(\<Sum>(f,g)\<leftarrow>fgs. f \<delta>\<delta> g) \<cdot> v =  (\<Sum>(f,g)\<leftarrow>fgs. (f \<delta>\<delta> g) \<cdot> v)"
-    using listsum_prod_map_smult_distrib by auto
+    using sum_list_prod_map_smult_distrib by auto
   also have "\<dots> = (\<Sum>(f,g)\<leftarrow>fgs. f \<sharp>\<cdot> g *\<cdot> v)"
     using assms fddg_smult_decomp
-          listsum_prod_cong[of fgs "\<lambda> f g. (f \<delta>\<delta> g) \<cdot> v" "\<lambda> f g. f \<sharp>\<cdot> g *\<cdot> v"]
+          sum_list_prod_cong[of fgs "\<lambda> f g. (f \<delta>\<delta> g) \<cdot> v" "\<lambda> f g. f \<sharp>\<cdot> g *\<cdot> v"]
     by    fastforce
   finally show ?thesis by fast
 qed
@@ -6329,20 +6329,20 @@ proof-
   have "g *\<cdot> as \<bullet>\<sharp>\<cdot> vs = (1 \<delta>\<delta> g) \<cdot> (\<Sum>(a,v)\<leftarrow>zip as vs. a \<sharp>\<cdot> v)"
     using Gmult_def scalar_mult.lincomb_def[of fsmult] by simp
   with assms have "g *\<cdot> as \<bullet>\<sharp>\<cdot> vs
-                        = listsum (map (op \<cdot> (1 \<delta>\<delta> g) \<circ> (\<lambda>(x, y). x \<sharp>\<cdot> y)) (zip as vs))"
+                        = sum_list (map (op \<cdot> (1 \<delta>\<delta> g) \<circ> (\<lambda>(x, y). x \<sharp>\<cdot> y)) (zip as vs))"
     using set_zip_rightD fsmult_closed FG_fddg_closed[of g "1::'f"]
-          smult_listsum_distrib[of "1 \<delta>\<delta> g" "map (case_prod op \<sharp>\<cdot>) (zip as vs)"]
+          smult_sum_list_distrib[of "1 \<delta>\<delta> g" "map (case_prod op \<sharp>\<cdot>) (zip as vs)"]
           map_map[of "op \<cdot> (1 \<delta>\<delta> g)" "case_prod op \<sharp>\<cdot>" "zip as vs"]
     by    fastforce
   moreover have "op \<cdot> (1 \<delta>\<delta> g) \<circ> (\<lambda>(x, y). x \<sharp>\<cdot> y) = (\<lambda>(x,y). (1 \<delta>\<delta> g) \<cdot> (x \<sharp>\<cdot> y))"
     by auto
-  ultimately have "g *\<cdot> as \<bullet>\<sharp>\<cdot> vs = listsum (map (\<lambda>(x,y). g *\<cdot> x \<sharp>\<cdot> y) (zip as vs))"
+  ultimately have "g *\<cdot> as \<bullet>\<sharp>\<cdot> vs = sum_list (map (\<lambda>(x,y). g *\<cdot> x \<sharp>\<cdot> y) (zip as vs))"
     using Gmult_def by simp
   moreover from assms have "\<forall>(x,y) \<in> set (zip as vs). g *\<cdot> x \<sharp>\<cdot> y = x \<sharp>\<cdot> g *\<cdot> y"
     using set_zip_rightD fsmult_Gmult_comm by fastforce
   ultimately have "g *\<cdot> as \<bullet>\<sharp>\<cdot> vs
-                        = listsum (map (\<lambda>(x,y). x \<sharp>\<cdot> y) (zip as (map (Gmult g) vs)))"
-    using listsum_prod_cong listsum_prod_map2[of "\<lambda>x y. x \<sharp>\<cdot> y" as "Gmult g"]
+                        = sum_list (map (\<lambda>(x,y). x \<sharp>\<cdot> y) (zip as (map (Gmult g) vs)))"
+    using sum_list_prod_cong sum_list_prod_map2[of "\<lambda>x y. x \<sharp>\<cdot> y" as "Gmult g"]
     by    force
   thus ?thesis using scalar_mult.lincomb_def[of fsmult] by simp
 qed
@@ -6441,19 +6441,19 @@ proof
       using FG_el_decomp
       by    fast
     from fgs v have "r \<cdot> v = (\<Sum>(f,g)\<leftarrow>fgs. f \<sharp>\<cdot> g *\<cdot> v)"
-      using listsum_aezdeltafun_smult_distrib by simp
+      using sum_list_aezdeltafun_smult_distrib by simp
     moreover from v fgs(1) have "set (map (\<lambda>(f,g). f \<sharp>\<cdot> g *\<cdot> v) fgs) \<subseteq> V"
       using Gmult_closed fsmult_closed by auto
     ultimately have "T (r \<cdot> v) = (\<Sum>(f,g)\<leftarrow>fgs. T (f \<sharp>\<cdot> g *\<cdot> v))"
-      using hom VectorSpaceHom.im_listsum_prod by auto
+      using hom VectorSpaceHom.im_sum_list_prod by auto
     moreover from hom G_map fgs(1) v
       have  "\<forall>(f,g) \<in> set fgs. T (f \<sharp>\<cdot> g *\<cdot> v) = f \<sharp>\<star> g *\<star> T v"
       using Gmult_closed VectorSpaceHom.f_map[of fsmult V fsmult' T]
       by    auto
     ultimately have "T (r \<cdot> v) = (\<Sum>(f,g)\<leftarrow>fgs. f \<sharp>\<star> g *\<star> T v)"
-      using listsum_prod_cong by simp
+      using sum_list_prod_cong by simp
     with v fgs fsmult' Gmult' Im_W(2) show "T (r \<cdot> v) = r \<star> (T v)"
-      using FGModule.listsum_aezdeltafun_smult_distrib[OF Im_W(1)] by auto
+      using FGModule.sum_list_aezdeltafun_smult_distrib[OF Im_W(1)] by auto
   qed
 
 qed
@@ -7408,7 +7408,7 @@ proof
 
 qed
 
-lemma indspace_listsum_fddh: 
+lemma indspace_sum_list_fddh: 
   "\<lbrakk> fhs \<noteq> []; set (map snd fhs) \<subseteq> H; f \<in> indV \<rbrakk>
         \<Longrightarrow> f (\<Sum>(a,h)\<leftarrow>fhs. a \<delta>\<delta> h) = (\<Sum>(a,h)\<leftarrow>fhs. f (a \<delta>\<delta> h))"
 proof (induct fhs rule: list_nonempty_induct)
@@ -7427,7 +7427,7 @@ next
   moreover from prevcase(2) FH
     have  "(\<Sum>ah\<leftarrow>fhs. case_prod (\<lambda>a h. a \<delta>\<delta> h) ah) \<in> FH"
     using Supgroup.RG_aezdeltafun_closed
-          Ring1.listsum_closed[OF Ring1_FH, of "\<lambda>ah. case_prod (\<lambda>a h. a \<delta>\<delta> h) ah" fhs]
+          Ring1.sum_list_closed[OF Ring1_FH, of "\<lambda>ah. case_prod (\<lambda>a h. a \<delta>\<delta> h) ah" fhs]
     by    fastforce
   ultimately have "f (\<Sum>(a,h)\<leftarrow>fh#fhs. a \<delta>\<delta> h)
                               = f ((fst fh) \<delta>\<delta> (snd fh)) + f (\<Sum>(a,h)\<leftarrow>fhs. a \<delta>\<delta> h)"
@@ -7492,12 +7492,12 @@ proof
     from OtherTrue rhs(2) have rhs_nnil: "rhs \<noteq> []" by auto
     with assms(3,4) rhs
       have  "f x = (\<Sum>(r,h)\<leftarrow>rhs. f (r \<delta>\<delta> h))" "f' x = (\<Sum>(r,h)\<leftarrow>rhs. f' (r \<delta>\<delta> h))"
-      using indspace_listsum_fddh
+      using indspace_sum_list_fddh
       by    auto
     moreover from rhs(1) assms have "\<forall>(r,h) \<in> set rhs. f (r \<delta>\<delta> h) = f' (r \<delta>\<delta> h)"
       using indspace_el_eq_on_1ddh_imp_eq_on_rddh[of HmodG f f'] by fastforce
     ultimately show ?thesis
-      using listsum_prod_cong[of rhs "\<lambda>r h. f (r \<delta>\<delta> h)"] by simp
+      using sum_list_prod_cong[of rhs "\<lambda>r h. f (r \<delta>\<delta> h)"] by simp
   next
     case BothFalse
     with indV assms(3,4) show ?thesis
@@ -8218,10 +8218,10 @@ proof (rule FinGroupRepresentation.intro)
                     "x = (\<Sum>(b,g)\<leftarrow>zip bs gs. (b \<delta>\<delta> 0) * (1 \<delta>\<delta> g))"
           by    fast
         from bs(2) xs have "x = (\<Sum>(b,a)\<leftarrow>zip bs xs. (b \<delta>\<delta> 0) * a)"
-          using listsum_prod_map2[THEN sym] by fast
+          using sum_list_prod_map2[THEN sym] by fast
         with bs(1) xs show "x \<in> aezfun_scalar_mult.fSpan op * xs"
           using aezfun_scalar_mult.fsmultD[of "op *", THEN sym]
-                listsum_prod_cong[
+                sum_list_prod_cong[
                   of "zip bs xs" "\<lambda>b a. (b \<delta>\<delta> 0) * a"
                      "\<lambda>b a. aezfun_scalar_mult.fsmult op * b a"
                 ]
@@ -8607,7 +8607,7 @@ proof-
     with hfvss
       have "LHS = (\<Sum>(r,m)\<leftarrow>zip (css!j) (hfvss!j). (r \<currency>\<currency> m) (1 \<delta>\<delta> hs!k))"
       using length_negHorbit_list scalar_mult.lincomb_def[of induced_smult.fsmult]
-            listsum_prod_fun_apply
+            sum_list_prod_fun_apply
       by    simp
     moreover have "\<forall>(r,m) \<in> set (zip (css!j) (hfvss!j)).
                         (induced_smult.fsmult r m) (1 \<delta>\<delta> hs!k) = r \<sharp>\<cdot> m (1 \<delta>\<delta> hs!k)"
@@ -8625,11 +8625,11 @@ proof-
       "LHS = (\<Sum>(r,v)\<leftarrow>zip (css!j) vs.
             r \<sharp>\<cdot> (induced_vector v) (1 \<delta>\<delta> hs!k * (1 \<delta>\<delta> - hs!j)))"
       using FH j hfvss induced_smult.negGorbit_list_def[of hs induced_vector vs]
-            listsum_prod_cong[of _ "\<lambda>r m. (induced_smult.fsmult r m) (1 \<delta>\<delta> hs!k)"]
-            listsum_prod_map2[of
+            sum_list_prod_cong[of _ "\<lambda>r m. (induced_smult.fsmult r m) (1 \<delta>\<delta> hs!k)"]
+            sum_list_prod_map2[of
               "\<lambda>r m. r \<sharp>\<cdot> m (1 \<delta>\<delta> hs!k)" _ "Hmult (- hs!j)" "map induced_vector vs"
             ]
-            listsum_prod_map2[of "\<lambda>r v. r \<sharp>\<cdot> (Hmult (-hs!j) v) (1 \<delta>\<delta> hs!k)"]
+            sum_list_prod_map2[of "\<lambda>r v. r \<sharp>\<cdot> (Hmult (-hs!j) v) (1 \<delta>\<delta> hs!k)"]
             induced_smult.GmultD hsk_H
             Supgroup.RG_aezdeltafun_closed[of "hs!k" "1::'f"]
             rrsmultD1[of "1 \<delta>\<delta> (hs!k)"]
@@ -8639,7 +8639,7 @@ proof-
       by (simp add: algebra_simps)
     ultimately have "LHS = (\<Sum>(r,v)\<leftarrow>zip (css!j) vs.
                           r \<sharp>\<cdot> (induced_vector v) (1 \<delta>\<delta> (hs!k - hs!j)))"
-      using listsum_prod_map2 by simp
+      using sum_list_prod_map2 by simp
     moreover from FH vs
       have "\<forall>(r,v) \<in> set (zip (css!j) vs). r \<sharp>\<cdot> (induced_vector v) (1 \<delta>\<delta> (hs!k - hs!j))
                   = r \<sharp>\<cdot> (FG_proj (1 \<delta>\<delta> (hs!k - hs!j)) \<cdot> v)"
@@ -8648,7 +8648,7 @@ proof-
       by    fastforce
     ultimately have calc: "LHS = (\<Sum>(r,v)\<leftarrow>zip (css!j) vs.
                                 r \<sharp>\<cdot> (FG_proj (1 \<delta>\<delta> (hs!k - hs!j)) \<cdot> v) )"
-      using listsum_prod_cong by force
+      using sum_list_prod_cong by force
     show "LHS = (if j = k then (css!k) \<bullet>\<sharp>\<cdot> vs else 0)"
     proof (cases "j = k")
       case True
@@ -8660,7 +8660,7 @@ proof-
       moreover from vs have "\<forall>(r,v) \<in> set (zip (css!k) vs). r \<sharp>\<cdot> 1 \<sharp>\<cdot> v = r \<sharp>\<cdot> v"
         using set_zip_rightD BaseRep.fsmult_assoc by fastforce
       ultimately show ?thesis
-        using True listsum_prod_cong[of _ "\<lambda>r v. r \<sharp>\<cdot> 1 \<sharp>\<cdot> v"]
+        using True sum_list_prod_cong[of _ "\<lambda>r v. r \<sharp>\<cdot> 1 \<sharp>\<cdot> v"]
               scalar_mult.lincomb_def[of BaseRep.fsmult]
         by    simp
     next
@@ -8672,7 +8672,7 @@ proof-
       moreover from vs have "\<forall>(r,v) \<in> set (zip (css!j) vs). r \<sharp>\<cdot> (0 \<cdot> v) = 0"
         using set_zip_rightD BaseRep.zero_smult by fastforce
       ultimately have "LHS = (\<Sum>(r,v)\<leftarrow>zip (css!j) vs. (0::'v))"
-        using listsum_prod_cong[of _ "\<lambda>r v. r \<sharp>\<cdot> (0 \<cdot> v)"] by simp
+        using sum_list_prod_cong[of _ "\<lambda>r v. r \<sharp>\<cdot> (0 \<cdot> v)"] by simp
       hence "LHS = (\<Sum>rv\<leftarrow>zip (css!j) vs. case_prod (\<lambda>r v. (0::'v)) rv)" by fastforce
       with False show ?thesis by simp
     qed
@@ -8681,13 +8681,13 @@ proof-
   def terms:
     terms \<equiv> "map (\<lambda>a. case_prod (\<lambda>cs hfvs. (cs \<bullet>\<currency>\<currency> hfvs) (1 \<delta>\<delta> hs!i)) a) (zip css hfvss)"
   and LHS: LHS \<equiv> "((concat css) \<bullet>\<currency>\<currency> (concat hfvss)) (1 \<delta>\<delta> (hs!i))"
-  hence "LHS = listsum terms"
+  hence "LHS = sum_list terms"
     using scalars
           VectorSpace.lincomb_concat[OF fVectorSpace_indspace, of css hfvss]
-          listsum_prod_fun_apply
+          sum_list_prod_fun_apply
     by    simp
   hence "LHS = (\<Sum>j\<in>{0..<length terms}. terms!j)"
-    using listsum_setsum_nth[of terms] by simp
+    using sum_list_setsum_nth[of terms] by simp
   moreover from terms
     have "\<forall>j\<in>{0..<length terms}. terms!j = ((css!j) \<bullet>\<currency>\<currency> (hfvss!j)) (1 \<delta>\<delta> hs!i)"
     by   simp
@@ -9175,17 +9175,17 @@ proof (rule image_subsetI)
   also have "\<dots> = (\<Sum>(cs,hfvs)\<leftarrow>zip css indVfbasis. \<psi> T  (cs \<bullet>\<currency>\<currency> hfvs))"
     using set_zip_rightD[of _ _ css indVfbasis] indVfbasis_indV
           VectorSpace.lincomb_closed[OF GRep.fVectorSpace_indspace]
-          VectorSpaceHom.im_listsum_prod[OF T]
+          VectorSpaceHom.im_sum_list_prod[OF T]
     by    force
   finally have "\<psi> T f = (\<Sum>(cs,\<psi>Thfvs)\<leftarrow>zip css (map (map (\<psi> T)) indVfbasis).
                       cs \<bullet>\<sharp>\<star> \<psi>Thfvs)"
     using set_zip_rightD[of _ _ css indVfbasis] indVfbasis_indV
           VectorSpaceHom.distrib_lincomb[OF T] 
-          listsum_prod_cong[of
+          sum_list_prod_cong[of
             "zip css indVfbasis" "\<lambda>cs hfvs. \<psi> T (cs \<bullet>\<currency>\<currency> hfvs)" 
             "\<lambda>cs hfvs. cs \<bullet>\<sharp>\<star> (map (\<psi> T) hfvs)"
           ]
-          listsum_prod_map2[of "\<lambda>cs \<psi>Thfvs. cs \<bullet>\<sharp>\<star> \<psi>Thfvs" css "map (\<psi> T)"]
+          sum_list_prod_map2[of "\<lambda>cs \<psi>Thfvs. cs \<bullet>\<sharp>\<star> \<psi>Thfvs" css "map (\<psi> T)"]
     by    fastforce
   moreover from css(2)
     have "list_all2 (\<lambda>xs ys. length xs = length ys) css (map (map (\<psi> T)) indVfbasis)"

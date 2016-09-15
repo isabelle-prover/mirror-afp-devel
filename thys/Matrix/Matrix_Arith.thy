@@ -820,7 +820,7 @@ where "scalar_prod \<equiv> scalar_prodI zero plus times"
 abbreviation mat_mult :: "nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat"
 where "mat_mult \<equiv> mat_multI zero plus times"
 
-lemma scalar_prod: "scalar_prod v1 v2 = listsum (map (\<lambda>(x,y). x * y) (zip v1 v2))" 
+lemma scalar_prod: "scalar_prod v1 v2 = sum_list (map (\<lambda>(x,y). x * y) (zip v1 v2))" 
 proof -
   obtain z where z: "zip v1 v2 = z" by auto
   show ?thesis unfolding scalar_prodI_def z 

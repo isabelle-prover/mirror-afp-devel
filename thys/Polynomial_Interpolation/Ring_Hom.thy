@@ -48,10 +48,10 @@ lemma hom_setsum[hom_ring_simps,simp]: "hom (setsum f A) = setsum (\<lambda> x. 
 lemma hom_setprod[hom_ring_simps,simp]: "hom (setprod f A) = setprod (\<lambda>x. hom (f x)) A"
   by (induct A rule: infinite_finite_induct, auto)
 
-lemma hom_listprod[hom_ring_simps,simp]: "hom (listprod xs) = listprod (map hom xs)"
+lemma hom_prod_list[hom_ring_simps,simp]: "hom (prod_list xs) = prod_list (map hom xs)"
   by (induct xs, auto)
 
-lemma hom_listsum[hom_ring_simps,simp]: "hom (listsum xs) = listsum (map hom xs)"
+lemma hom_sum_list[hom_ring_simps,simp]: "hom (sum_list xs) = sum_list (map hom xs)"
   by (induct xs, auto)
 
 end

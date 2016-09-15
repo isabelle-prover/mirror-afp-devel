@@ -691,10 +691,10 @@ lemma ht_hash_dom_map_of_disj_drop:
   qed
   done
 
-lemma listsum_length_card_dom_map_of_concat:
+lemma sum_list_length_card_dom_map_of_concat:
   assumes "ht_hash l"
   assumes "ht_distinct l"
-  shows "listsum (map length l) = card (dom (map_of (concat l)))"
+  shows "sum_list (map length l) = card (dom (map_of (concat l)))"
   using assms
 proof -
   from ht_hash_dom_map_of_disj_drop[OF assms(1)]
@@ -739,7 +739,7 @@ lemma hm_size_rule':
   apply (cases ht)
   apply (simp add: ht_size_def)
   apply sep_auto
-  by (simp add: listsum_length_card_dom_map_of_concat)
+  by (simp add: sum_list_length_card_dom_map_of_concat)
 
 lemma hm_size_rule: 
   "<is_hashmap m ht> 

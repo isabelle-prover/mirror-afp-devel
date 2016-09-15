@@ -51,8 +51,8 @@ lemma S_relator_list: "s\<in>S \<Longrightarrow> pair_relator_list s s = [s,s]"
 lemma S_sym: "T \<subseteq> S \<Longrightarrow> uminus ` T \<subseteq> T"
   using genset_uminus by auto
 
-lemmas special_subgroup_eq_listsum =
-  genby_sym_eq_listsums[OF S_sym]
+lemmas special_subgroup_eq_sum_list =
+  genby_sym_eq_sum_lists[OF S_sym]
 lemmas genby_S_reduced_word_for_LeastM =
   reduced_word_for_genby_sym_LeastM[OF S_sym]
 lemmas in_genby_S_reduced_letter_set =
@@ -173,7 +173,7 @@ proof
   fix rs assume rs: "rs\<in>R"
   hence rs': "rs \<in> lists S" using set_alternating_list by fast
   from rs' show "rs \<in> lists (S \<union> uminus ` S)" by fast
-  from rs show "listsum rs = 0" using listsum_pair_relator_list by fast
+  from rs show "sum_list rs = 0" using sum_list_pair_relator_list by fast
   from rs' show "proper_signed_list (map (charpair S) rs)"
     using proper_signed_list_map_uniform_snd
           arg_cong[of "map (charpair S) rs" "map pairtrue rs" proper_signed_list]
@@ -309,11 +309,11 @@ text {*
   summation.
 *}
 
-lemma freeliftid_Abs_freeword_conv_listsum:
+lemma freeliftid_Abs_freeword_conv_sum_list:
   "proper_signed_list xs \<Longrightarrow> fst ` set xs \<subseteq> S \<Longrightarrow>
-    freeliftid (Abs_freeword xs) = listsum (map fst xs)"
+    freeliftid (Abs_freeword xs) = sum_list (map fst xs)"
   using freeword_funlift_Abs_freeword[of xs id] genset_uminus
-        listsum_map_cong[of xs "apply_sign id" fst]
+        sum_list_map_cong[of xs "apply_sign id" fst]
   by    fastforce
 
 end (* context PreCoxeterSystem *)
@@ -331,12 +331,12 @@ text {*
 context PreCoxeterSystem
 begin
 
-lemma listsum_pair_relator_halflist_flip:
+lemma sum_list_pair_relator_halflist_flip:
   "s\<in>S \<Longrightarrow> t\<in>S \<Longrightarrow>
-    listsum (pair_relator_halflist s t) = listsum (pair_relator_halflist t s)"
+    sum_list (pair_relator_halflist s t) = sum_list (pair_relator_halflist t s)"
   using add_order[of "s+t"] genset_order2_add
         alternating_order2_even_cancel_right[of s t "2*(relfun s t)"]
-  by    (simp add: alternating_listsum_conv_nataction add_order_add_sym)
+  by    (simp add: alternating_sum_list_conv_nataction add_order_add_sym)
 
 definition flip_altsublist_adjacent :: "'w list \<Rightarrow> 'w list \<Rightarrow> bool"
   where "flip_altsublist_adjacent ss ts
@@ -448,9 +448,9 @@ lemmas flip_altsublist_chain_length =
     of flip_altsublist_adjacent length, OF flip_altsublist_adjacent_length, simplified
   ]
 
-lemma flip_altsublist_adjacent_listsum:
+lemma flip_altsublist_adjacent_sum_list:
   assumes "ss \<in> lists S" "flip_altsublist_adjacent ss ts"
-  shows "listsum ts = listsum ss"
+  shows "sum_list ts = sum_list ss"
 proof-
   from assms(2) obtain s t as bs where stasbs:
     "ss = as @ (pair_relator_halflist s t) @ bs"
@@ -469,18 +469,18 @@ proof-
             flip_altsublist_adjacent_lists[of ss ts]
       by    auto
     with stasbs show ?thesis
-      using listsum_pair_relator_halflist_flip by simp
+      using sum_list_pair_relator_halflist_flip by simp
   qed
 qed
 
-lemma flip_altsublist_adjacent_listsum_ball:
-  "\<forall>ss\<in>lists S. \<forall>ts. flip_altsublist_adjacent ss ts \<longrightarrow> listsum ts = listsum ss"
-  using flip_altsublist_adjacent_listsum by fast
+lemma flip_altsublist_adjacent_sum_list_ball:
+  "\<forall>ss\<in>lists S. \<forall>ts. flip_altsublist_adjacent ss ts \<longrightarrow> sum_list ts = sum_list ss"
+  using flip_altsublist_adjacent_sum_list by fast
 
 lemma S_reduced_forI_flip_altsublist_adjacent:
   "S_reduced_for w ss \<Longrightarrow> flip_altsublist_adjacent ss ts \<Longrightarrow> S_reduced_for w ts"
-  using reduced_word_for_lists[of S] reduced_word_for_listsum
-        flip_altsublist_adjacent_lists flip_altsublist_adjacent_listsum
+  using reduced_word_for_lists[of S] reduced_word_for_sum_list
+        flip_altsublist_adjacent_lists flip_altsublist_adjacent_sum_list
         flip_altsublist_adjacent_length
   by    (fastforce intro: reduced_word_forI_compare)
 
@@ -589,20 +589,20 @@ lemma flip_altsublist_chain_G_in_Q:
 
 lemma alternating_S_no_flip:
   assumes "s\<in>S" "t\<in>S" "n > 0" "n < relfun s t \<or> relfun s t = 0"
-  shows   "listsum (alternating_list n s t) \<noteq> listsum (alternating_list n t s)"
+  shows   "sum_list (alternating_list n s t) \<noteq> sum_list (alternating_list n t s)"
 proof
-  assume "listsum (alternating_list n s t) = listsum (alternating_list n t s)"
-  hence "listsum (alternating_list n s t) + - listsum (alternating_list n t s) = 0"
+  assume "sum_list (alternating_list n s t) = sum_list (alternating_list n t s)"
+  hence "sum_list (alternating_list n s t) + - sum_list (alternating_list n t s) = 0"
     by simp
-  with assms(1,2) have "listsum (alternating_list (2*n) s t) = 0"
+  with assms(1,2) have "sum_list (alternating_list (2*n) s t) = 0"
     by  (cases "even n")
         (auto simp add:
-          genset_order2_add uminus_listsum_alternating_order2
-          listsum.append[THEN sym]
+          genset_order2_add uminus_sum_list_alternating_order2
+          sum_list.append[THEN sym]
           alternating_list_append mult_2
         )
   with assms(3,4) less_add_order_eq_0_contra add_order_eq0 show False
-    by (auto simp add: alternating_listsum_conv_nataction)
+    by (auto simp add: alternating_sum_list_conv_nataction)
 qed
 
 lemma exchange_alternating_not_in_alternating:
@@ -631,9 +631,9 @@ proof-
             same_length_eq_append[of altnts "xs@[x]" cs ys]
             alternating_list_Suc_Cons[of m t s]
       by    auto
-    from altnst have "listsum altnst = listsum altnts"
-      using reduced_word_for_listsum[OF assms(3)]
-            reduced_word_for_listsum[OF flip]
+    from altnst have "sum_list altnst = sum_list altnts"
+      using reduced_word_for_sum_list[OF assms(3)]
+            reduced_word_for_sum_list[OF flip]
       by    auto
     with n assms(2) altnst altnts show ?thesis
       using alternating_S_no_flip[OF s_S t_S] by fast
@@ -682,8 +682,8 @@ text {*
 context PreCoxeterSystem
 begin
 
-lemmas flip_altsublist_chain_listsum =
-  flip_altsublist_chain_funcong_Cons_snoc[OF flip_altsublist_adjacent_listsum_ball]
+lemmas flip_altsublist_chain_sum_list =
+  flip_altsublist_chain_funcong_Cons_snoc[OF flip_altsublist_adjacent_sum_list_ball]
 -- {* This lemma represents one direction in the word problem: if a word in generators can be
 transformed into another by a sequence of manipulations, each of which consists of replacing a
 half-relator subword by its reversal, then the two words sum to the same element of @{term W}. *}
@@ -701,12 +701,12 @@ proof (cases "ss=ts")
   thus ?thesis by fast
 next
   case False
-  def y: y \<equiv> "listsum ss"
+  def y: y \<equiv> "sum_list ss"
   with set_up(1) have ss: "S_reduced_for y ss"
     using reduced_word_for_imp_reduced_word reduced_word_Cons_reduce by fast
   moreover with y have ts: "S_reduced_for y ts"
-    using reduced_word_for_listsum[OF set_up(1)]
-          reduced_word_for_listsum[OF set_up(2)]
+    using reduced_word_for_sum_list[OF set_up(1)]
+          reduced_word_for_sum_list[OF set_up(2)]
           reduced_word_for_eq_length[OF set_up(1) set_up(2)]
           reduced_word_for_lists[OF set_up(2)]
     by    (auto intro: reduced_word_forI_compare)
@@ -738,13 +738,13 @@ abbreviation "\<H> \<equiv> (\<Union>w\<in>W. lconjby w ` S)" -- {* the set of r
 abbreviation "lift_signed_lconjperm \<equiv> freeword_funlift signed_lconjpermutation"
 
 lemma lconjseq_reflections: "ss\<in>lists S \<Longrightarrow> set (lconjseq ss) \<subseteq> \<H>"
-  using special_subgroup_eq_listsum[of S]
+  using special_subgroup_eq_sum_list[of S]
   by    (induct ss rule: rev_induct) (auto simp add: lconjseq_snoc)
 
 lemma deletion':
   "ss \<in> lists S \<Longrightarrow> \<not> distinct (lconjseq ss) \<Longrightarrow>
     \<exists>a b as bs cs. ss = as @ [a] @ bs @ [b] @ cs \<and>
-      listsum ss = listsum (as@bs@cs)"
+      sum_list ss = sum_list (as@bs@cs)"
 proof (induct ss)
   case (Cons s ss)
   show ?case
@@ -758,7 +758,7 @@ proof (induct ss)
     case False
     with Cons(1,2) obtain a b as bs cs where
       "s#ss = (s#as) @ [a] @ bs @ [b] @ cs"
-      "listsum (s#ss) = listsum ((s#as) @ bs @ cs)"
+      "sum_list (s#ss) = sum_list ((s#as) @ bs @ cs)"
       by    auto
     thus ?thesis by fast
   qed
@@ -771,7 +771,7 @@ proof
   assume ss: "S_reduced ss"
   from assms obtain as a bs b cs
     where decomp: "ss = as @ [a] @ bs @ [b] @ cs"
-                  "listsum ss = listsum (as@bs@cs)"
+                  "sum_list ss = sum_list (as@bs@cs)"
     using deletion'[of ss]
     by    fast
   from ss decomp assms(1) show False
@@ -846,7 +846,7 @@ proof (intro_locales, rule GroupByPresentation_S_P, unfold_locales)
               set_alternating_list[of "2*relfun s t" s t]
               signed_list_lconjaction_snd[of "pair_relator_list s t" x]
         by    fastforce
-    qed (simp add: 1 signed_list_lconjaction_fst listsum_pair_relator_list)
+    qed (simp add: 1 signed_list_lconjaction_fst sum_list_pair_relator_list)
   qed
   moreover
     have  "permutation (0::'w signed permutation) = (id::'w signed \<Rightarrow> 'w signed)"
@@ -872,7 +872,7 @@ locale PreCoxeterSystemWithDeletion = PreCoxeterSystem S
 + assumes deletion:
   "ss \<in> lists S \<Longrightarrow> \<not> reduced_word S ss \<Longrightarrow>
     \<exists>a b as bs cs. ss = as @ [a] @ bs @ [b] @ cs \<and>
-      listsum ss = listsum (as@bs@cs)"
+      sum_list ss = sum_list (as@bs@cs)"
 
 subsubsection {* Consequences of the deletion condition *}
 
@@ -880,27 +880,27 @@ context PreCoxeterSystemWithDeletion
 begin
 
 lemma deletion_reduce:
-  "ss \<in> lists S \<Longrightarrow> \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (listsum ss)"
+  "ss \<in> lists S \<Longrightarrow> \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (sum_list ss)"
 proof (cases "S_reduced ss")
   case True
   thus  "ss \<in> lists S \<Longrightarrow>
-          \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (listsum ss)"
+          \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (sum_list ss)"
     by  (force simp add: ssublists_refl)
 next
   case False
   have "ss \<in> lists S \<Longrightarrow> \<not> S_reduced ss \<Longrightarrow>
-        \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (listsum ss)"
+        \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (sum_list ss)"
   proof (induct ss rule: length_induct)
     fix xs::"'w list"
     assume xs:
       "\<forall>ys. length ys < length xs \<longrightarrow> ys \<in> lists S \<longrightarrow> \<not> S_reduced ys
-        \<longrightarrow> (\<exists>ts. ts \<in> ssublists ys \<inter> reduced_words_for S (listsum ys))"
+        \<longrightarrow> (\<exists>ts. ts \<in> ssublists ys \<inter> reduced_words_for S (sum_list ys))"
       "xs \<in> lists S" "\<not> S_reduced xs"
     from xs(2,3) obtain as a bs b cs
-      where asbscs: "xs = as@[a]@bs@[b]@cs" "listsum xs = listsum (as@bs@cs)"
+      where asbscs: "xs = as@[a]@bs@[b]@cs" "sum_list xs = sum_list (as@bs@cs)"
       using deletion[of xs]
       by    fast
-    show "\<exists>ts. ts \<in> ssublists xs \<inter> reduced_words_for S (listsum xs)"
+    show "\<exists>ts. ts \<in> ssublists xs \<inter> reduced_words_for S (sum_list xs)"
     proof (cases "S_reduced (as@bs@cs)")
       case True with asbscs xs(2) show ?thesis
         using delete2_ssublists by fastforce
@@ -911,7 +911,7 @@ next
         by    auto
       ultimately obtain ts
         where ts: "ts \<in> ssublists (as@bs@cs) \<inter>
-                    reduced_words_for S (listsum (as@bs@cs))"
+                    reduced_words_for S (sum_list (as@bs@cs))"
         using xs(1,2) asbscs(1)
         by    fast
       with asbscs show ?thesis
@@ -920,12 +920,12 @@ next
   qed
   with False
     show  "ss \<in> lists S \<Longrightarrow>
-            \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (listsum ss)"
+            \<exists>ts. ts \<in> ssublists ss \<inter> reduced_words_for S (sum_list ss)"
     by    fast
 qed
 
 lemma deletion_reduce':
-  "ss \<in> lists S \<Longrightarrow> \<exists>ts\<in>reduced_words_for S (listsum ss). set ts \<subseteq> set ss"
+  "ss \<in> lists S \<Longrightarrow> \<exists>ts\<in>reduced_words_for S (sum_list ss). set ts \<subseteq> set ss"
   using deletion_reduce[of ss] sublists_powset[of ss] by auto
 
 end (* context PreCoxeterSystemWithDeletion *)
@@ -951,18 +951,18 @@ proof-
   with assms(1) have "s#ss \<in> lists S" by simp
   with assms(3) obtain a b as bs cs
     where del:  "s#ss = as @ [a] @ bs @ [b] @ cs"
-                "listsum (s#ss) = listsum (as@bs@cs)"
+                "sum_list (s#ss) = sum_list (as@bs@cs)"
     using deletion[of "s#ss"]
     by    fastforce
   show ?thesis
   proof (cases as)
     case Nil with assms(1,2) del show ?thesis
-      using reduced_word_for_listsum add.assoc[of s s w] genset_order2_add ss_lists
+      using reduced_word_for_sum_list add.assoc[of s s w] genset_order2_add ss_lists
       by    (fastforce intro: reduced_word_forI_compare)
   next
     case (Cons d ds) with del assms(2) show ?thesis
       using ss_lists reduced_word_for_imp_reduced_word
-            reduced_word_for_minimal[of S "listsum ss" ss "ds@bs@cs"]
+            reduced_word_for_minimal[of S "sum_list ss" ss "ds@bs@cs"]
       by    fastforce
   qed
 qed
@@ -975,8 +975,8 @@ proof-
   moreover have "\<not> S_reduced (s#cs)"
   proof (rule not_reduced_word_for)
     show "as \<in> lists S" using reduced_word_for_lists[OF assms(1)] by simp
-    from assms(1,2) show "listsum as = listsum (s#cs)"
-      using s_S reduced_word_for_listsum[of S w] add.assoc[of s s] genset_order2_add
+    from assms(1,2) show "sum_list as = sum_list (s#cs)"
+      using s_S reduced_word_for_sum_list[of S w] add.assoc[of s s] genset_order2_add
       by    fastforce
     from assms(1,2) show "length as < length (s#cs)"
       using reduced_word_for_length[of S w] by fastforce
@@ -1015,8 +1015,8 @@ proof-
     case 0 with xxsys(2) show ?thesis by auto
   next
     case 1 with assms(1,4) xxsys altnst show ?thesis
-      using reduced_word_for_listsum[of S w "s#cs"]
-            reduced_word_for_listsum[of S w "t#cs"]
+      using reduced_word_for_sum_list[of S w "s#cs"]
+            reduced_word_for_sum_list[of S w "t#cs"]
       by    (cases xs) auto
   next
     case (SucSuc k)
@@ -1180,10 +1180,10 @@ proof (induct w arbitrary: ss ts rule: measure_induct_rule[of "S_length"])
   show ?case
   proof (cases ss ts rule: two_lists_cases_Cons_Cons)
     case Nil1 from Nil1(1) less(2,3) show ?thesis
-      using reduced_word_for_listsum by fastforce
+      using reduced_word_for_sum_list by fastforce
   next
     case Nil2 from Nil2(2) less(2,4) show ?thesis
-      using reduced_word_for_listsum by fastforce
+      using reduced_word_for_sum_list by fastforce
   next
     case (ConsCons a as b bs)
     show ?thesis
@@ -1242,18 +1242,18 @@ proof
   show "\<langle>T\<rangle> \<inter> S \<subseteq> T"
   proof
     fix t assume t: "t \<in> \<langle>T\<rangle> \<inter> S"
-    with assms obtain ts where ts: "ts \<in> lists T" "t = listsum ts"
-      using special_subgroup_eq_listsum[of T] by fast
+    with assms obtain ts where ts: "ts \<in> lists T" "t = sum_list ts"
+      using special_subgroup_eq_sum_list[of T] by fast
     with assms obtain us
-      where us: "reduced_word_for S (listsum ts) us" "set us \<subseteq> set ts"
+      where us: "reduced_word_for S (sum_list ts) us" "set us \<subseteq> set ts"
       using deletion_reduce'[of ts]
       by    auto
     with no_zero_genset ts(2) t have "length us = 1"
-      using reduced_word_for_lists[of S _ us] reduced_word_for_listsum[of S _ us]
+      using reduced_word_for_lists[of S _ us] reduced_word_for_sum_list[of S _ us]
             reduced_word_for_imp_reduced_word[of S _ us] el_reduced[of S]
       by    auto
     with us ts show "t\<in>T"
-      using reduced_word_for_listsum[of S _ us] by (cases us) auto
+      using reduced_word_for_sum_list[of S _ us] by (cases us) auto
   qed
   from assms show "T \<subseteq> \<langle>T\<rangle> \<inter> S" using genby_genset_subset by fast
 qed
@@ -1284,12 +1284,12 @@ lemma special_subgroup_word_length:
   assumes "T\<in>Pow S" "w\<in>\<langle>T\<rangle>"
   shows   "word_length T w = S_length w"
 proof-
-  from assms obtain ts where ts: "ts \<in> lists T" "w = listsum ts"
-    using special_subgroup_eq_listsum by auto
+  from assms obtain ts where ts: "ts \<in> lists T" "w = sum_list ts"
+    using special_subgroup_eq_sum_list by auto
   with assms(1) obtain us where "us \<in> ssublists ts" "S_reduced_for w us"
     using deletion_reduce[of ts] by fast
   with assms(1) ts(1) show ?thesis
-    using     ssublists_lists[of ts] reduced_word_for_listsum
+    using     ssublists_lists[of ts] reduced_word_for_sum_list
               isLeastM_size_subprop[of length "word_for S w" us "word_for T w"]
     unfolding reduced_word_for_def word_length_def
     by        fast
@@ -1298,15 +1298,15 @@ qed
 lemma S_subset_reduced_imp_S_reduced:
   "T\<in>Pow S \<Longrightarrow> reduced_word T ts \<Longrightarrow> S_reduced ts"
   using reduced_word_for_lists reduced_word_for_lists[of T _ ts]
-        reduced_word_for_length[of T "listsum ts" ts] special_subgroup_eq_listsum[of T]
-        special_subgroup_word_length[of T "listsum ts"]
+        reduced_word_for_length[of T "sum_list ts" ts] special_subgroup_eq_sum_list[of T]
+        special_subgroup_word_length[of T "sum_list ts"]
   by    (fastforce intro: reduced_word_forI_length)
 
 lemma smallest_genby: "T\<in>Pow S \<Longrightarrow> w\<in>\<langle>T\<rangle> \<Longrightarrow> reduced_letter_set S w \<subseteq> T"
   using genby_S_reduced_word_for_LeastM[of T]
         reduced_word_for_imp_reduced_word[of T w]
         S_subset_reduced_imp_S_reduced[of T "LeastM length (word_for T w)"]
-        reduced_word_for_listsum[of T] reduced_word_for_lists reduced_word_letter_set
+        reduced_word_for_sum_list[of T] reduced_word_for_lists reduced_word_letter_set
   by    fastforce
 
 lemma special_cosets_below_in:
@@ -1578,8 +1578,8 @@ lemma GroupPresentation_S_R: "GroupPresentation S R"
         unfold_locales, rule induced_id_inj
       )
 
-lemmas inv_induced_id_listsum =
-  GroupPresentation.inv_induced_id_listsum_S[OF GroupPresentation_S_R]
+lemmas inv_induced_id_sum_list =
+  GroupPresentation.inv_induced_id_sum_list_S[OF GroupPresentation_S_R]
 
 end (* context CoxeterSystem *)
 
@@ -1602,39 +1602,39 @@ definition flipped_reflections :: "'w \<Rightarrow> 'w set"
           {t\<in>\<H>. induced_signed_lconjperm (inv_induced_id (-w)) \<rightarrow>
             (t,True) = (rconjby w t, False)}"
 
-lemma induced_signed_lconjperm_inv_induced_id_listsum:
-  "ss \<in> lists S \<Longrightarrow> induced_signed_lconjperm (inv_induced_id (listsum ss)) =
-          listsum (map signed_lconjpermutation ss)"
+lemma induced_signed_lconjperm_inv_induced_id_sum_list:
+  "ss \<in> lists S \<Longrightarrow> induced_signed_lconjperm (inv_induced_id (sum_list ss)) =
+          sum_list (map signed_lconjpermutation ss)"
   by  (simp add:
-        inv_induced_id_listsum Abs_freelist_in_FreeGroup
-        GroupByPresentationInducedFun.induced_hom_Abs_freelist_conv_listsum[
+        inv_induced_id_sum_list Abs_freelist_in_FreeGroup
+        GroupByPresentationInducedFun.induced_hom_Abs_freelist_conv_sum_list[
           OF GroupByPresentationInducedFun_S_R_signed_lconjaction
         ]
       )
 
 lemma induced_signed_eq_lconjpermutation:
   "ss \<in> lists S \<Longrightarrow>
-    permutation (induced_signed_lconjperm (inv_induced_id (listsum ss))) =
+    permutation (induced_signed_lconjperm (inv_induced_id (sum_list ss))) =
       signed_list_lconjaction ss"
 proof (induct ss)
   case Nil
-  have "permutation (induced_signed_lconjperm (inv_induced_id (listsum []))) = id"
-    using induced_signed_lconjperm_inv_induced_id_listsum[of "[]"]
+  have "permutation (induced_signed_lconjperm (inv_induced_id (sum_list []))) = id"
+    using induced_signed_lconjperm_inv_induced_id_sum_list[of "[]"]
           zero_permutation.rep_eq
     by    simp
   thus ?case by fastforce
 next
   case (Cons s ss)
   from Cons(2)
-    have "induced_signed_lconjperm (inv_induced_id (listsum (s#ss))) =
-            signed_lconjpermutation s + listsum (map signed_lconjpermutation ss)"
-    using induced_signed_lconjperm_inv_induced_id_listsum[of "s#ss"]
+    have "induced_signed_lconjperm (inv_induced_id (sum_list (s#ss))) =
+            signed_lconjpermutation s + sum_list (map signed_lconjpermutation ss)"
+    using induced_signed_lconjperm_inv_induced_id_sum_list[of "s#ss"]
     by    simp
   with Cons(2) have
-    "permutation (induced_signed_lconjperm (inv_induced_id (listsum (s#ss)))) =
+    "permutation (induced_signed_lconjperm (inv_induced_id (sum_list (s#ss)))) =
       permutation (signed_lconjpermutation s) \<circ>
-        permutation (induced_signed_lconjperm (inv_induced_id (listsum ss)))"
-    using plus_permutation.rep_eq induced_signed_lconjperm_inv_induced_id_listsum
+        permutation (induced_signed_lconjperm (inv_induced_id (sum_list ss)))"
+    using plus_permutation.rep_eq induced_signed_lconjperm_inv_induced_id_sum_list
     by    simp
   with Cons show ?case
     using bij_signed_lconjaction[of s] Abs_permutation_inverse by fastforce
@@ -1642,12 +1642,12 @@ qed
 
 lemma flipped_reflections_odd_lconjseq:
   assumes "ss\<in>lists S"
-  shows   "flipped_reflections (listsum ss) = {t\<in>\<H>. odd (count_list (lconjseq ss) t)}"
+  shows   "flipped_reflections (sum_list ss) = {t\<in>\<H>. odd (count_list (lconjseq ss) t)}"
 proof (rule seteqI)
-  fix t assume "t \<in> flipped_reflections (listsum ss)"
+  fix t assume "t \<in> flipped_reflections (sum_list ss)"
   moreover with assms
     have  "snd (signed_list_lconjaction (rev ss) (t,True)) = False"
-    using flipped_reflections_def genset_order2_add uminus_listsum_order2
+    using flipped_reflections_def genset_order2_add uminus_sum_list_order2
           induced_signed_eq_lconjpermutation[of "rev ss"]
     by    force
   ultimately show "t \<in> {t\<in>\<H>. odd (count_list (lconjseq ss) t)}"
@@ -1658,41 +1658,41 @@ next
   fix t assume t: "t \<in> {t\<in>\<H>. odd (count_list (lconjseq ss) t)}"
   with assms
     have  "signed_list_lconjaction (rev ss) (t,True) =
-            (rconjby (listsum ss) t, False)"
+            (rconjby (sum_list ss) t, False)"
     using genset_order2_add signed_list_lconjaction_snd[of "rev ss"]
           signed_list_lconjaction_fst[of "rev ss"]
-          uminus_listsum_order2[of ss, THEN sym]
+          uminus_sum_list_order2[of ss, THEN sym]
     by    (auto intro: prod_eqI)
-  with t assms show "t \<in> flipped_reflections (listsum ss)"
+  with t assms show "t \<in> flipped_reflections (sum_list ss)"
     using induced_signed_eq_lconjpermutation[of "rev ss"] genset_order2_add
-          uminus_listsum_order2 flipped_reflections_def
+          uminus_sum_list_order2 flipped_reflections_def
     by    fastforce
 qed
 
 lemma flipped_reflections_in_lconjseq:
-  "ss\<in>lists S \<Longrightarrow> flipped_reflections (listsum ss) \<subseteq> set (lconjseq ss)"
+  "ss\<in>lists S \<Longrightarrow> flipped_reflections (sum_list ss) \<subseteq> set (lconjseq ss)"
   using flipped_reflections_odd_lconjseq odd_n0 count_notin[of _ "lconjseq ss"]
   by    fastforce
 
 lemma flipped_reflections_distinct_lconjseq_eq_lconjseq:
   assumes "ss\<in>lists S" "distinct (lconjseq ss)"
-  shows   "flipped_reflections (listsum ss) = set (lconjseq ss)"
+  shows   "flipped_reflections (sum_list ss) = set (lconjseq ss)"
 proof
-  from assms(1) show "flipped_reflections (listsum ss) \<subseteq> set (lconjseq ss)"
+  from assms(1) show "flipped_reflections (sum_list ss) \<subseteq> set (lconjseq ss)"
     using flipped_reflections_in_lconjseq by fast
-  show "flipped_reflections (listsum ss) \<supseteq> set (lconjseq ss)"
+  show "flipped_reflections (sum_list ss) \<supseteq> set (lconjseq ss)"
   proof
     fix t assume "t \<in> set (lconjseq ss)"
     moreover with assms(2) have "count_list (lconjseq ss) t = 1"
        by (simp add: distinct_count_list)
-    ultimately show "t \<in> flipped_reflections (listsum ss)"
+    ultimately show "t \<in> flipped_reflections (sum_list ss)"
       using assms(1) flipped_reflections_odd_lconjseq lconjseq_reflections
       by    fastforce
   qed
 qed
 
 lemma flipped_reflections_reduced_eq_lconjseq:
-  "S_reduced ss \<Longrightarrow> flipped_reflections (listsum ss) = set (lconjseq ss)"
+  "S_reduced ss \<Longrightarrow> flipped_reflections (sum_list ss) = set (lconjseq ss)"
   using reduced_word_for_lists[of S] S_reduced_imp_distinct_lconjseq
         flipped_reflections_distinct_lconjseq_eq_lconjseq
   by    fast
@@ -1705,7 +1705,7 @@ proof-
   with assms have "S_reduced_for w ss"
     using genby_S_reduced_word_for_LeastM by simp
   thus ?thesis
-    using reduced_word_for_listsum flipped_reflections_reduced_eq_lconjseq
+    using reduced_word_for_sum_list flipped_reflections_reduced_eq_lconjseq
           S_reduced_imp_distinct_lconjseq distinct_card length_lconjseq[of ss]
           reduced_word_for_length
     by    fastforce
@@ -1716,7 +1716,7 @@ end (* context CoxeterSystem *)
 sublocale CoxeterSystem < PreCoxeterSystemWithDeletion
 proof
   fix ss assume ss: "ss \<in> lists S" "\<not> S_reduced ss"
-  def w: w \<equiv> "listsum ss"
+  def w: w \<equiv> "sum_list ss"
   with ss(1)
     have  "distinct (lconjseq ss) \<Longrightarrow> card (flipped_reflections w) = length ss"
     by    (simp add:
@@ -1725,11 +1725,11 @@ proof
           )
   moreover from w ss have "length ss > S_length w" using word_length_lt by fast
   moreover from w ss(1) have "card (flipped_reflections w) = S_length w"
-    using special_subgroup_eq_listsum card_flipped_reflections by fast
+    using special_subgroup_eq_sum_list card_flipped_reflections by fast
   ultimately have "\<not> distinct (lconjseq ss)" by auto
   with w ss
     show  "\<exists>a b as bs cs. ss = as @ [a] @ bs @ [b] @ cs \<and>
-            listsum ss = listsum (as @ bs @ cs)"
+            sum_list ss = sum_list (as @ bs @ cs)"
     using deletion'
     by    fast
 qed
@@ -1754,7 +1754,7 @@ proof (induct ss)
   show ?case
   proof (cases "S_reduced ss")
     case True
-    def w: w \<equiv> "listsum ss"
+    def w: w \<equiv> "sum_list ss"
     with True have ss_red_w: "reduced_word_for S w ss" by fast
     moreover from Cons(2) have "s\<in>S" by simp
     ultimately obtain as bs where asbs: "reduced_word_for S w (s#as@bs)"
@@ -1786,12 +1786,12 @@ proof (induct ss)
 qed (simp add: nil_reduced_word_for_0)
 
 lemma freeliftid_kernel':
-  "ss \<in> lists S \<Longrightarrow> listsum ss = 0 \<Longrightarrow> Abs_freelist ss \<in> Q"
+  "ss \<in> lists S \<Longrightarrow> sum_list ss = 0 \<Longrightarrow> Abs_freelist ss \<in> Q"
 proof (induct ss rule: length_induct)
   fix ss
   assume step: "\<forall>ts. length ts < length ss \<longrightarrow> ts \<in> lists S \<longrightarrow>
-                listsum ts = 0 \<longrightarrow> Abs_freelist ts \<in> Q"
-  and set_up: "ss \<in> lists S" "listsum ss = 0"
+                sum_list ts = 0 \<longrightarrow> Abs_freelist ts \<in> Q"
+  and set_up: "ss \<in> lists S" "sum_list ss = 0"
   show "Abs_freelist ss \<in> Q"
   proof (cases "ss=[]")
     case True thus ?thesis
@@ -1801,20 +1801,20 @@ proof (induct ss rule: length_induct)
     case False
     with set_up obtain xss as t bs
       where xss: "flip_altsublist_chain (ss # xss @ [as@[t,t]@bs])"
-      using listsum_zero_nreduced reducible_by_flipping[of ss]
+      using sum_list_zero_nreduced reducible_by_flipping[of ss]
       by    fast
     with set_up
       have  astbs:  "length (as@[t,t]@bs) = length ss"
                     "as@[t,t]@bs \<in> lists S"
-                    "listsum (as@[t,t]@bs) = 0"
+                    "sum_list (as@[t,t]@bs) = 0"
       using flip_altsublist_chain_length[of ss xss "as@[t,t]@bs"]
-            flip_altsublist_chain_listsum[of ss xss "as@[t,t]@bs"]
+            flip_altsublist_chain_sum_list[of ss xss "as@[t,t]@bs"]
             flip_altsublist_chain_lists[of ss xss "as@[t,t]@bs"]
       by    auto
     have listsS: "as \<in> lists S" "t\<in>S" "bs\<in>lists S" using astbs(2) by auto
-    have "listsum as + (t + t + listsum bs) = 0"
+    have "sum_list as + (t + t + sum_list bs) = 0"
       using astbs(3) by (simp add: add.assoc)
-    hence "listsum (as@bs) = 0"
+    hence "sum_list (as@bs) = 0"
       using listsS(2) by (simp add: genset_order2_add)
     moreover have "length (as@bs) < length ss" using astbs(1) by simp
     moreover have "as@bs \<in> lists S" using listsS(1,3) by simp
@@ -1840,8 +1840,8 @@ lemma freeliftid_kernel:
 proof-
   from assms(2) have "freeliftid (Abs_freeword (freeword c)) = 0"
     by (simp add: freeword_inverse)
-  with assms(1) have "listsum (map fst (freeword c)) = 0"
-    using FreeGroup_def freeword freeliftid_Abs_freeword_conv_listsum by fastforce
+  with assms(1) have "sum_list (map fst (freeword c)) = 0"
+    using FreeGroup_def freeword freeliftid_Abs_freeword_conv_sum_list by fastforce
   with assms(1) show ?thesis
     using FreeGroup_def freeliftid_kernel'[of "map fst (freeword c)"]
           Q_freelist_freeword
@@ -1895,15 +1895,15 @@ next
   def Ms \<equiv> "map (\<lambda>w. w`\<rightarrow>C0) (map (op + s) (sums ts))"
   with ss
     have  C0_ms_ss_C0: "map (\<lambda>w. w`\<rightarrow>C0) (sums ss) =
-                          C0 # Ms @ [listsum ss `\<rightarrow> C0]"
+                          C0 # Ms @ [sum_list ss `\<rightarrow> C0]"
     by    (simp add: sums_snoc zero_permutation.rep_eq)
-  def rs \<equiv> "LEAST rs WRT length. word_for S (listsum ss) rs"
-  with assms(1) have rs: "rs \<in> lists S" "listsum rs = listsum ss"
-    using LeastM_natI[of "\<lambda>rs. word_for S (listsum ss) rs" ss length] by auto
+  def rs \<equiv> "LEAST rs WRT length. word_for S (sum_list ss) rs"
+  with assms(1) have rs: "rs \<in> lists S" "sum_list rs = sum_list ss"
+    using LeastM_natI[of "\<lambda>rs. word_for S (sum_list ss) rs" ss length] by auto
   show ?thesis
   proof (cases rs rule: list_cases_Cons_snoc)
     case Nil
-    hence "listsum ss `\<rightarrow> C0 = C0"
+    hence "sum_list ss `\<rightarrow> C0 = C0"
       using rs(2) by (fastforce simp add: zero_permutation.rep_eq)
     with C0_ms_ss_C0 show ?thesis by simp
   next
@@ -1913,7 +1913,7 @@ next
             fundchamber_S_image_neq_fundchamber            
       by    (fastforce intro: min_gallery_adj)
     with Single C0_ms_ss_C0 Ms_def show ?thesis
-      using rs(2) min_galleryD_min_betw[of C0 Ms "listsum ss `\<rightarrow> C0" "[]"]
+      using rs(2) min_galleryD_min_betw[of C0 Ms "sum_list ss `\<rightarrow> C0" "[]"]
             min_galleryD_gallery
       by    (fastforce simp add: length_sums)
   next
@@ -1926,7 +1926,7 @@ next
     with Cons_snoc ss Ms_def Ns_def have "length Ns < length Ms"
       by (simp add: length_sums)
     moreover from Ns_def Cons_snoc
-      have  "gallery (C0 # Ns @ [listsum ss `\<rightarrow> C0])"
+      have  "gallery (C0 # Ns @ [sum_list ss `\<rightarrow> C0])"
       using rs S_list_image_gallery[of rs]
       by    (auto simp add: sums_snoc zero_permutation.rep_eq)
     ultimately show ?thesis using C0_ms_ss_C0 not_min_galleryI_betw by auto
@@ -1938,10 +1938,10 @@ lemma S_list_not_min_gallery_double_split:
   shows
     "\<exists>f g as s bs t cs.
       (f,g)\<in>foldpairs \<and>
-      listsum as `\<rightarrow> C0 \<in> f\<turnstile>\<C> \<and>
-      listsum (as@[s]) `\<rightarrow> C0 \<in> g\<turnstile>\<C> \<and>
-      listsum (as@[s]@bs) `\<rightarrow> C0 \<in> g\<turnstile>\<C> \<and>
-      listsum (as@[s]@bs@[t]) `\<rightarrow> C0 \<in> f\<turnstile>\<C> \<and>
+      sum_list as `\<rightarrow> C0 \<in> f\<turnstile>\<C> \<and>
+      sum_list (as@[s]) `\<rightarrow> C0 \<in> g\<turnstile>\<C> \<and>
+      sum_list (as@[s]@bs) `\<rightarrow> C0 \<in> g\<turnstile>\<C> \<and>
+      sum_list (as@[s]@bs@[t]) `\<rightarrow> C0 \<in> f\<turnstile>\<C> \<and>
       ss = as@[s]@bs@[t]@cs"
 proof-
   def Cs \<equiv> "map (\<lambda>w. w`\<rightarrow>C0) (sums ss)"
@@ -1961,28 +1961,28 @@ proof-
     case True
     def bs: bs \<equiv> "[]::'a permutation list"
     from True Cs_def obtain as s t cs where
-      "ss = as@[s,t]@cs" "A = listsum as `\<rightarrow> C0" "B = listsum (as@[s]) `\<rightarrow> C0"
-      "F = listsum (as@[s,t]) `\<rightarrow> C0"
+      "ss = as@[s,t]@cs" "A = sum_list as `\<rightarrow> C0" "B = sum_list (as@[s]) `\<rightarrow> C0"
+      "F = sum_list (as@[s,t]) `\<rightarrow> C0"
       using pullback_sums_map_middle3[of "\<lambda>w. w`\<rightarrow>C0" ss As A B F Fs]
       by    auto
     with sep(1,2,4) bs have
-      "listsum as `\<rightarrow> C0 \<in> f\<turnstile>\<C>" "listsum (as@[s]) `\<rightarrow> C0 \<in> g\<turnstile>\<C>"
-      "listsum (as@[s]@bs) `\<rightarrow> C0 \<in> g\<turnstile>\<C>" "listsum (as@[s]@bs@[t]) `\<rightarrow> C0 \<in> f\<turnstile>\<C>"
+      "sum_list as `\<rightarrow> C0 \<in> f\<turnstile>\<C>" "sum_list (as@[s]) `\<rightarrow> C0 \<in> g\<turnstile>\<C>"
+      "sum_list (as@[s]@bs) `\<rightarrow> C0 \<in> g\<turnstile>\<C>" "sum_list (as@[s]@bs@[t]) `\<rightarrow> C0 \<in> f\<turnstile>\<C>"
       "ss = as@[s]@bs@[t]@cs"
       by auto
     with fg show ?thesis by blast
   next
     case False
     with Cs_def decomp_cases obtain as s bs t cs where
-      "ss = as@[s]@bs@[t]@cs" "A = listsum as `\<rightarrow> C0" "B = listsum (as@[s]) `\<rightarrow> C0"
-      "E = listsum (as@[s]@bs) `\<rightarrow> C0" "F = listsum (as@[s]@bs@[t]) `\<rightarrow> C0"
+      "ss = as@[s]@bs@[t]@cs" "A = sum_list as `\<rightarrow> C0" "B = sum_list (as@[s]) `\<rightarrow> C0"
+      "E = sum_list (as@[s]@bs) `\<rightarrow> C0" "F = sum_list (as@[s]@bs@[t]) `\<rightarrow> C0"
       using pullback_sums_map_double_middle2[
               of "\<lambda>w. w`\<rightarrow>C0" ss As A B Bs E F Fs
             ]
       by    auto
     with sep have
-      "listsum as `\<rightarrow> C0 \<in> f\<turnstile>\<C>" "listsum (as@[s]) `\<rightarrow> C0 \<in> g\<turnstile>\<C>" 
-      "listsum (as@[s]@bs) `\<rightarrow> C0 \<in> g\<turnstile>\<C>" "listsum (as@[s]@bs@[t]) `\<rightarrow> C0 \<in> f\<turnstile>\<C>" 
+      "sum_list as `\<rightarrow> C0 \<in> f\<turnstile>\<C>" "sum_list (as@[s]) `\<rightarrow> C0 \<in> g\<turnstile>\<C>" 
+      "sum_list (as@[s]@bs) `\<rightarrow> C0 \<in> g\<turnstile>\<C>" "sum_list (as@[s]@bs@[t]) `\<rightarrow> C0 \<in> f\<turnstile>\<C>" 
       "ss = as@[s]@bs@[t]@cs"
       by auto
     with fg show ?thesis by blast
@@ -1995,17 +1995,17 @@ lemma fold_end_sum_chain_fg:
   assumes fg :  "(f,g) \<in> foldpairs"
   and     as :  "as \<in> lists S"
   and     s  :  "s\<in>S"
-  and     sep:  "listsum as `\<rightarrow> C0 \<in> f\<turnstile>\<C>" "listsum (as@[s]) `\<rightarrow> C0 \<in> g\<turnstile>\<C>"
+  and     sep:  "sum_list as `\<rightarrow> C0 \<in> f\<turnstile>\<C>" "sum_list (as@[s]) `\<rightarrow> C0 \<in> g\<turnstile>\<C>"
   shows   "bs \<in>lists S \<Longrightarrow>
-            \<s> ` listsum (as@[s]@bs) `\<rightarrow> C0 = listsum (as@bs) `\<rightarrow> C0"
+            \<s> ` sum_list (as@[s]@bs) `\<rightarrow> C0 = sum_list (as@bs) `\<rightarrow> C0"
 proof-
   from fg obtain C where C: "OpposedThinChamberComplexFoldings X f g C"
     using foldpairs_def by fast
-  show "bs \<in>lists S \<Longrightarrow> \<s> ` listsum (as@[s]@bs) `\<rightarrow> C0 = listsum (as@bs) `\<rightarrow> C0"
+  show "bs \<in>lists S \<Longrightarrow> \<s> ` sum_list (as@[s]@bs) `\<rightarrow> C0 = sum_list (as@bs) `\<rightarrow> C0"
   proof (induct bs rule: rev_induct)
     case Nil
     from \<s> as s sep C show ?case
-      using listsum_S_in_W[of as] listsum_append[of as "[s]"]
+      using sum_list_S_in_W[of as] sum_list_append[of as "[s]"]
             fundchamber_WS_image_adjacent
       by    (auto simp add:
               OpposedThinChamberComplexFoldings.indaut_adj_halfchsys_im_fg
@@ -2013,12 +2013,12 @@ proof-
   next
     case (snoc b bs)
     def bC0: bC0 \<equiv> "b`\<rightarrow>C0"
-    and B: B \<equiv> "listsum (as@bs) `\<rightarrow> C0"
+    and B: B \<equiv> "sum_list (as@bs) `\<rightarrow> C0"
     def y : y  \<equiv> "C0\<inter>bC0"
-    def z : z  \<equiv> "\<s> ` listsum (as@[s]@bs) `\<rightarrow> y"
-    and z': z' \<equiv> "listsum (as@bs) `\<rightarrow> y"
+    def z : z  \<equiv> "\<s> ` sum_list (as@[s]@bs) `\<rightarrow> y"
+    and z': z' \<equiv> "sum_list (as@bs) `\<rightarrow> y"
 
-    from snoc B have B': "\<s> ` listsum (as@[s]@bs) `\<rightarrow> C0 = B" by simp
+    from snoc B have B': "\<s> ` sum_list (as@[s]@bs) `\<rightarrow> C0 = B" by simp
 
     obtain \<phi> where \<phi>: "label_wrt C0 \<phi>" using ex_label_map by fast
     from bC0 y snoc(2) obtain u where u: "bC0 = insert u y"
@@ -2026,35 +2026,35 @@ proof-
             fundchamber_S_image_neq_fundchamber
             adjacent_int_decomp[of bC0 C0]
       by    (auto simp add: Int_commute)
-    def v : v  \<equiv> "\<s> (listsum (as@[s]@bs) \<rightarrow> u)"
-    and v': v' \<equiv> "listsum (as@bs) \<rightarrow> u"
+    def v : v  \<equiv> "\<s> (sum_list (as@[s]@bs) \<rightarrow> u)"
+    and v': v' \<equiv> "sum_list (as@bs) \<rightarrow> u"
 
     from bC0 u v z v' z'
-      have  ins_vz : "\<s> ` listsum (as@[s]@bs@[b]) `\<rightarrow> C0 = insert v z"
-      and   ins_vz': "listsum (as@bs@[b]) `\<rightarrow> C0 = insert v' z'"
-      using image_insert[of "permutation (listsum (as@[s]@bs))" u y, THEN sym]
+      have  ins_vz : "\<s> ` sum_list (as@[s]@bs@[b]) `\<rightarrow> C0 = insert v z"
+      and   ins_vz': "sum_list (as@bs@[b]) `\<rightarrow> C0 = insert v' z'"
+      using image_insert[of "permutation (sum_list (as@[s]@bs))" u y, THEN sym]
             image_insert[
-              of \<s> "listsum (as@[s]@bs)\<rightarrow>u" "listsum (as@[s]@bs)`\<rightarrow>y",
+              of \<s> "sum_list (as@[s]@bs)\<rightarrow>u" "sum_list (as@[s]@bs)`\<rightarrow>y",
               THEN sym
             ]
-            image_insert[of "permutation (listsum (as@bs))" u y, THEN sym]
+            image_insert[of "permutation (sum_list (as@bs))" u y, THEN sym]
       by    (auto simp add: plus_permutation.rep_eq image_comp)
 
     from as s snoc(2) have sums:
-      "listsum (as@[s]@bs) \<in> W" "listsum (as@bs) \<in> W"
-      "listsum (as@[s]@bs@[b]) \<in> W" "listsum (as@bs@[b]) \<in> W"
-      using listsum_S_in_W[of "as@[s]@bs"] listsum_S_in_W[of "as@bs"]
-            listsum_S_in_W[of "as@[s]@bs@[b]"] listsum_S_in_W[of "as@bs@[b]"]
+      "sum_list (as@[s]@bs) \<in> W" "sum_list (as@bs) \<in> W"
+      "sum_list (as@[s]@bs@[b]) \<in> W" "sum_list (as@bs@[b]) \<in> W"
+      using sum_list_S_in_W[of "as@[s]@bs"] sum_list_S_in_W[of "as@bs"]
+            sum_list_S_in_W[of "as@[s]@bs@[b]"] sum_list_S_in_W[of "as@bs@[b]"]
       by    auto
     from u bC0 snoc(2) have "u\<in>\<Union>X"
       using fundchamber_S_chamber[of b] chamberD_simplex[of bC0] by auto
-    moreover with as s snoc(2) have "listsum (as@[s]@bs) \<rightarrow> u \<in> \<Union>X"
+    moreover with as s snoc(2) have "sum_list (as@[s]@bs) \<rightarrow> u \<in> \<Union>X"
       using sums(1)
             ChamberComplexEndomorphism.vertex_map[OF W_endomorphism]
       by    fastforce
     ultimately have "\<phi> v = \<phi> v'"
-      using \<s> v v' sums(1,2) W_respects_labels[OF \<phi>, of "listsum (as@[s]@bs)" u]
-            W_respects_labels[OF \<phi>, of "listsum (as@bs)" u]
+      using \<s> v v' sums(1,2) W_respects_labels[OF \<phi>, of "sum_list (as@[s]@bs)" u]
+            W_respects_labels[OF \<phi>, of "sum_list (as@bs)" u]
             OpposedThinChamberComplexFoldings.indaut_resplabels[
               OF C \<phi>
             ]
@@ -2062,44 +2062,44 @@ proof-
 
     moreover from \<s> have "chamber (insert v z)" "chamber (insert v' z')"
       using sums(3,4)
-            fundchamber_W_image_chamber[of "listsum (as@[s]@bs@[b])"]
+            fundchamber_W_image_chamber[of "sum_list (as@[s]@bs@[b])"]
             OpposedThinChamberComplexFoldings.indaut_chmap[
               OF C
             ]
-            fundchamber_W_image_chamber[of "listsum (as@bs@[b])"]
+            fundchamber_W_image_chamber[of "sum_list (as@bs@[b])"]
       by    (auto simp add: ins_vz[THEN sym] ins_vz'[THEN sym])
 
     moreover from y z z' bC0 B snoc(2) \<s> have "z\<lhd>B" "z'\<lhd>B"
       using B' sums(1,2) fundchamber_S_adjacent[of b]
             fundchamber_S_image_neq_fundchamber[of b]
             adjacent_int_facet1[of C0]
-            W_endomorphism[of "listsum (as@bs)"]
-            W_endomorphism[of "listsum (as@[s]@bs)"]
-            fundchamber fundchamber_W_image_chamber[of "listsum (as@[s]@bs)"]
+            W_endomorphism[of "sum_list (as@bs)"]
+            W_endomorphism[of "sum_list (as@[s]@bs)"]
+            fundchamber fundchamber_W_image_chamber[of "sum_list (as@[s]@bs)"]
             ChamberComplexEndomorphism.facet_map[of X]
             OpposedThinChamberComplexFoldings.indaut_morph[
               OF C
             ]
             ChamberComplexEndomorphism.facet_map[
-              of X \<s> "listsum (as@[s]@bs) `\<rightarrow> C0"
+              of X \<s> "sum_list (as@[s]@bs) `\<rightarrow> C0"
             ]
       by    auto
 
     moreover from snoc(2) B \<s> have "insert v z \<noteq> B" "insert v' z' \<noteq> B"
-      using listsum_append[of "as@[s]@bs" "[b]"] listsum_append[of "as@bs" "[b]"]
-            fundchamber_next_WS_image_neq[of b "listsum (as@[s]@bs)"]
-            fundchamber_next_WS_image_neq[of b "listsum (as@bs)"]
+      using sum_list_append[of "as@[s]@bs" "[b]"] sum_list_append[of "as@bs" "[b]"]
+            fundchamber_next_WS_image_neq[of b "sum_list (as@[s]@bs)"]
+            fundchamber_next_WS_image_neq[of b "sum_list (as@bs)"]
             OpposedThinChamberComplexFoldings.indaut_aut[
               OF C
             ]
             ChamberComplexAutomorphism.bij bij_is_inj B'
             inj_eq_image[
-              of \<s> "listsum (as@[s]@bs@[b]) `\<rightarrow> C0" "listsum (as@[s]@bs) `\<rightarrow> C0"
+              of \<s> "sum_list (as@[s]@bs@[b]) `\<rightarrow> C0" "sum_list (as@[s]@bs) `\<rightarrow> C0"
             ]
       by    (auto simp add: ins_vz[THEN sym] ins_vz'[THEN sym])
 
     ultimately show ?case
-      using B sums(2) fundchamber_W_image_chamber[of "listsum (as@bs)"]
+      using B sums(2) fundchamber_W_image_chamber[of "sum_list (as@bs)"]
             label_wrt_eq_on_adjacent_vertex[OF \<phi>, of v v' B z z']
       by    (auto simp add: ins_vz[THEN sym] ins_vz'[THEN sym])
   qed
@@ -2110,9 +2110,9 @@ lemma fold_end_sum_chain_gf:
   defines "\<s> \<equiv> induced_automorph f g"
   assumes fg :  "(f,g) \<in> foldpairs"
   and     "as \<in> lists S" "s\<in>S" "bs \<in>lists S"
-          "listsum as `\<rightarrow> C0 \<in> g\<turnstile>\<C>"
-          "listsum (as@[s]) `\<rightarrow> C0 \<in> f\<turnstile>\<C>"
-  shows   "\<s> ` listsum (as@[s]@bs) `\<rightarrow> C0 = listsum (as@bs) `\<rightarrow> C0"
+          "sum_list as `\<rightarrow> C0 \<in> g\<turnstile>\<C>"
+          "sum_list (as@[s]) `\<rightarrow> C0 \<in> f\<turnstile>\<C>"
+  shows   "\<s> ` sum_list (as@[s]@bs) `\<rightarrow> C0 = sum_list (as@bs) `\<rightarrow> C0"
 proof-
   from fg obtain C where C: "OpposedThinChamberComplexFoldings X f g C"
     using foldpairs_def by fast
@@ -2125,10 +2125,10 @@ qed
 lemma fold_middle_sum_chain:
   assumes fg :  "(f,g) \<in> foldpairs"
   and     S  :  "as \<in> lists S" "s\<in>S" "bs \<in> lists S" "t\<in>S" "cs \<in>lists S"
-  and     sep:  "listsum as `\<rightarrow> C0 \<in> f\<turnstile>\<C>"
-                "listsum (as@[s]) `\<rightarrow> C0 \<in> g\<turnstile>\<C>"
-                "listsum (as@[s]@bs) `\<rightarrow> C0 \<in> g\<turnstile>\<C>" "listsum (as@[s]@bs@[t]) `\<rightarrow> C0 \<in> f\<turnstile>\<C>"
-  shows   "listsum (as@[s]@bs@[t]@cs) `\<rightarrow> C0 = listsum (as@bs@cs) `\<rightarrow> C0"
+  and     sep:  "sum_list as `\<rightarrow> C0 \<in> f\<turnstile>\<C>"
+                "sum_list (as@[s]) `\<rightarrow> C0 \<in> g\<turnstile>\<C>"
+                "sum_list (as@[s]@bs) `\<rightarrow> C0 \<in> g\<turnstile>\<C>" "sum_list (as@[s]@bs@[t]) `\<rightarrow> C0 \<in> f\<turnstile>\<C>"
+  shows   "sum_list (as@[s]@bs@[t]@cs) `\<rightarrow> C0 = sum_list (as@bs@cs) `\<rightarrow> C0"
 proof-
   def \<s>: \<s> \<equiv> "induced_automorph f g"
   moreover from fg obtain C
@@ -2136,7 +2136,7 @@ proof-
     using foldpairs_def
     by    fast
   ultimately
-    have "id ` listsum (as@[s]@bs@[t]@cs) `\<rightarrow> C0 = listsum (as@bs@cs) `\<rightarrow> C0"
+    have "id ` sum_list (as@[s]@bs@[t]@cs) `\<rightarrow> C0 = sum_list (as@bs@cs) `\<rightarrow> C0"
     using fg S sep fold_end_sum_chain_gf[of f g "as@[s]@bs" t cs]
           fold_end_sum_chain_fg[of f g as s "bs@cs"]
     by    (simp add:
@@ -2150,35 +2150,35 @@ qed
 
 lemma S_list_not_min_gallery_deletion:
   fixes ss :: "'a permutation list"
-  defines w : "w \<equiv> listsum ss"
+  defines w : "w \<equiv> sum_list ss"
   assumes ss: "ss\<in>lists S" "ss\<noteq>[]" "\<not> min_gallery (map (\<lambda>w. w`\<rightarrow>C0) (sums ss))"
-  shows "\<exists>a b as bs cs. ss = as@[a]@bs@[b]@cs \<and> w = listsum (as@bs@cs)"
+  shows "\<exists>a b as bs cs. ss = as@[a]@bs@[b]@cs \<and> w = sum_list (as@bs@cs)"
 proof-
-  from w ss(1) have w_W: "w\<in>W" using listsum_S_in_W by fast
+  from w ss(1) have w_W: "w\<in>W" using sum_list_S_in_W by fast
 
   def Cs: Cs \<equiv> "map (\<lambda>w. w`\<rightarrow>C0) (sums ss)"
   from ss obtain f g as s bs t cs
     where fg    : "(f,g)\<in>foldpairs"
-    and   sep   : "listsum as `\<rightarrow> C0 \<in> f\<turnstile>\<C>"
-                  "listsum (as@[s]) `\<rightarrow> C0 \<in> g\<turnstile>\<C>"
-                  "listsum (as@[s]@bs) `\<rightarrow> C0 \<in> g\<turnstile>\<C>"
-                  "listsum (as@[s]@bs@[t]) `\<rightarrow> C0 \<in> f\<turnstile>\<C>"
+    and   sep   : "sum_list as `\<rightarrow> C0 \<in> f\<turnstile>\<C>"
+                  "sum_list (as@[s]) `\<rightarrow> C0 \<in> g\<turnstile>\<C>"
+                  "sum_list (as@[s]@bs) `\<rightarrow> C0 \<in> g\<turnstile>\<C>"
+                  "sum_list (as@[s]@bs@[t]) `\<rightarrow> C0 \<in> f\<turnstile>\<C>"
     and   decomp: "ss = as@[s]@bs@[t]@cs"
     using S_list_not_min_gallery_double_split[of ss]
     by    blast
   from fg sep decomp w ss(1)
-    have  "w`\<rightarrow>C0 = listsum (as@bs@cs) `\<rightarrow> C0"
+    have  "w`\<rightarrow>C0 = sum_list (as@bs@cs) `\<rightarrow> C0"
     using fold_middle_sum_chain
     by    auto
-  with ss(1) decomp have "w = listsum (as@bs@cs)"
-    using w_W listsum_S_in_W[of "as@bs@cs"]
+  with ss(1) decomp have "w = sum_list (as@bs@cs)"
+    using w_W sum_list_S_in_W[of "as@bs@cs"]
     by    (auto intro: inj_onD fundchamber_W_image_inj_on)
   with decomp show ?thesis by fast
 qed
 
 lemma deletion:
   "ss \<in> lists S \<Longrightarrow> \<not> reduced_word S ss \<Longrightarrow>
-    \<exists>a b as bs cs. ss = as@[a]@bs@[b]@cs \<and> listsum ss = listsum (as@bs@cs)"
+    \<exists>a b as bs cs. ss = as@[a]@bs@[b]@cs \<and> sum_list ss = sum_list (as@bs@cs)"
   using nil_reduced_word_for_0[of S] not_reduced_word_not_min_gallery
         S_list_not_min_gallery_deletion
   by    fastforce
@@ -2452,24 +2452,24 @@ lemmas gallery_overlap_join =
   SimplicialComplex.maxsimpchain_overlap_join[OF SimplicialComplex_\<Sigma>]
 
 lemma word_gallery_to_0:
-  "ss \<noteq> [] \<Longrightarrow> ss\<in> lists S \<Longrightarrow> \<exists>xs. gallery (smap {listsum ss} # xs @ [smap 0])"
+  "ss \<noteq> [] \<Longrightarrow> ss\<in> lists S \<Longrightarrow> \<exists>xs. gallery (smap {sum_list ss} # xs @ [smap 0])"
 proof (induct ss rule: rev_nonempty_induct)
   case (single s)
-  hence "gallery (smap {listsum [s]} # [] @ [smap 0])"
+  hence "gallery (smap {sum_list [s]} # [] @ [smap 0])"
     using genby_genset_closed genby_0_closed chamber_singleton
           singleton_adjacent_0 gallery_def
     by    auto
   thus ?case by fast
 next
   case (snoc s ss)
-  from snoc(2,3) obtain xs where "gallery (smap {listsum ss} # xs @ [smap 0])"
+  from snoc(2,3) obtain xs where "gallery (smap {sum_list ss} # xs @ [smap 0])"
     by auto
-  moreover from snoc(3) have "chamber (smap {listsum (ss@[s])})"
-    using special_subgroup_eq_listsum chamber_singleton by fast
+  moreover from snoc(3) have "chamber (smap {sum_list (ss@[s])})"
+    using special_subgroup_eq_sum_list chamber_singleton by fast
   ultimately
-    have  "gallery (smap {listsum (ss@[s])} #
-              (smap {listsum ss} # xs) @ [smap 0])"
-    using snoc(3) special_subgroup_eq_listsum adjacent[of "listsum ss" s]
+    have  "gallery (smap {sum_list (ss@[s])} #
+              (smap {sum_list ss} # xs) @ [smap 0])"
+    using snoc(3) special_subgroup_eq_sum_list adjacent[of "sum_list ss" s]
     by    (auto intro: gallery_CConsI)
   thus ?case by fast
 qed
@@ -2478,8 +2478,8 @@ lemma gallery_to_0:
   assumes "w\<in>W" "w\<noteq>0"
   shows   "\<exists>xs. gallery (smap {w} # xs @ [smap 0])"
 proof-
-  from assms(1) obtain ss where ss: "ss\<in>lists S" "w = listsum ss"
-    using special_subgroup_eq_listsum by auto
+  from assms(1) obtain ss where ss: "ss\<in>lists S" "w = sum_list ss"
+    using special_subgroup_eq_sum_list by auto
   with assms(2) show ?thesis using word_gallery_to_0[of ss] by fastforce
 qed
 
@@ -2560,7 +2560,7 @@ lemma S_list_not_min_gallery_not_reduced:
 proof (cases "ss\<in>lists S")
   case True
   obtain a b as bs cs
-    where "ss = as@[a]@bs@[b]@cs" "listsum ss = listsum (as@bs@cs)"
+    where "ss = as@[a]@bs@[b]@cs" "sum_list ss = sum_list (as@bs@cs)"
     using S_list_not_min_gallery_deletion [OF True assms]
     by blast
   with True show ?thesis using not_reduced_word_for[of "as@bs@cs"] by auto
@@ -2581,7 +2581,7 @@ proof-
   from v tw(1) have v_C0: "v\<in>C0" using fundantivertex by simp
   def ss \<equiv> "LEAST ss WRT length. word_for S w ss"
   moreover
-    have "reduced_word S ss \<Longrightarrow> listsum ss \<rightarrow> v = v \<Longrightarrow> listsum ss \<in> \<langle>S-{t}\<rangle>"
+    have "reduced_word S ss \<Longrightarrow> sum_list ss \<rightarrow> v = v \<Longrightarrow> sum_list ss \<in> \<langle>S-{t}\<rangle>"
   proof (induct ss)
     case (Cons s ss)
     from Cons(2) have s_S: "s\<in>S" using reduced_word_for_lists by fastforce
@@ -2599,7 +2599,7 @@ proof-
     next
       case (snoc ts t)
       def Ms \<equiv> "map (\<lambda>w. w`\<rightarrow>C0) (map (op + s) (sums ts))"
-      and Cn \<equiv> "listsum (s#ss) `\<rightarrow> C0"
+      and Cn \<equiv> "sum_list (s#ss) `\<rightarrow> C0"
       with snoc Cs_def have "Cs = C0 # Ms @ [Cn]"
         by (simp add: sums_snoc zero_permutation.rep_eq)
       with minCs Cs_def fg have "C0\<in>f\<turnstile>\<C>" "Cn\<in>g\<turnstile>\<C>"
@@ -2621,11 +2621,11 @@ proof-
               ]
         by    (simp add: permutation_conv_induced_automorph)
     qed
-    moreover from Cons(3) have "0 \<rightarrow> listsum ss \<rightarrow> v = s\<rightarrow>v"
+    moreover from Cons(3) have "0 \<rightarrow> sum_list ss \<rightarrow> v = s\<rightarrow>v"
       using s_S
       by    (simp add: plus_permutation.rep_eq S_order2_add[THEN sym])
-    ultimately have "listsum ss \<rightarrow> v = v" by (simp add: zero_permutation.rep_eq)
-    with Cons(1,2) have "listsum ss \<in> \<langle>S-{t}\<rangle>"
+    ultimately have "sum_list ss \<rightarrow> v = v" by (simp add: zero_permutation.rep_eq)
+    with Cons(1,2) have "sum_list ss \<in> \<langle>S-{t}\<rangle>"
       using reduced_word_Cons_reduce by auto
     moreover from tw(1) v have "s\<in>\<langle>S-{t}\<rangle>"
       using sv s_S genby_genset_closed[of s "S-{t}"] fundantivertex_unstable
@@ -2634,7 +2634,7 @@ proof-
   qed (simp add: genby_0_closed)
   ultimately show ?thesis
     using tw(2,3) reduced_word_for_genby_sym_LeastM[OF S_sym]
-          reduced_word_for_listsum
+          reduced_word_for_sum_list
     by    fastforce
 qed
 

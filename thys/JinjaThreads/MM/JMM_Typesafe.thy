@@ -549,7 +549,7 @@ proof(induction a arbitrary: ad al v rule: less_induct)
       let ?EE'' = "llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of ?m_E'')))"
       from m_a have "enat m_a \<le> llength E''" by simp
       hence len_EE'': "llength ?EE'' = enat (a' - n_a)"
-        by(simp add: a_sum length_concat listsum_setsum_nth atLeast0LessThan length_list_of_conv_the_enat min_def split_beta lnth_ltake)
+        by(simp add: a_sum length_concat sum_list_setsum_nth atLeast0LessThan length_list_of_conv_the_enat min_def split_beta lnth_ltake)
       have prefix: "lprefix ?EE'' (lmap snd E')" unfolding E''
         by(subst (2) E'_unfold)(simp add: lmap_lappend_distrib  lmap_lconcat llist.map_comp o_def split_def lconcat_llist_of[symmetric] lmap_llist_of[symmetric] lprefix_lappend2I del: lmap_llist_of)
       

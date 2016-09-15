@@ -2727,11 +2727,11 @@ proof -
       case (less n A cs bs)
       from less(5) have A: "A \<in> carrier\<^sub>m n n" by auto
       hence dim: "dim\<^sub>r A = n" "dim\<^sub>c A = n" by auto
-      let ?dim = "listsum (map dim\<^sub>c cs)"
+      let ?dim = "sum_list (map dim\<^sub>c cs)"
       let ?C = "diag_block_mat cs"
       def C \<equiv> ?C
       from less(6) have cs: "\<And> C. C \<in> set cs \<Longrightarrow> inv_all' uppert C \<and> ev_block (dim\<^sub>c C) C \<and> dim\<^sub>r C = dim\<^sub>c C" by auto
-      hence dimcs[simp]: "listsum (map dim\<^sub>r cs) = ?dim" by (induct cs, auto)
+      hence dimcs[simp]: "sum_list (map dim\<^sub>r cs) = ?dim" by (induct cs, auto)
       from diag_block_mat_dim[of cs, unfolded dimcs] obtain nc where C: "?C \<in> carrier\<^sub>m nc nc" unfolding mat_carrier_def by auto
       hence dimC: "dim\<^sub>r C = nc" "dim\<^sub>c C = nc" unfolding C_def by auto
       note bs = less(7)[unfolded partition_ev_blocks.simps[of A cs] Let_def dim, symmetric]

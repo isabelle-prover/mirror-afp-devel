@@ -128,7 +128,7 @@ qed
 lemma det_upper_triangular:
   assumes ut: "upper_triangular A"
   and m: "A \<in> carrier\<^sub>m n n"
-  shows "det A = listprod (mat_diag A)"
+  shows "det A = prod_list (mat_diag A)"
 proof -
   note det_def = det_def'[OF m]
   let ?U = "{0..<n}"
@@ -160,12 +160,12 @@ proof -
     by (rule setsum.remove, insert id0 fPU m, auto simp: p0)
   also have "(\<Sum> p \<in> ?PU - {id}. ?pp p) = 0"
     by (rule setsum.neutral, insert fPU, auto simp: p0)
-  finally show ?thesis using m by (auto simp: signof_id listprod_diag_setprod)
+  finally show ?thesis using m by (auto simp: signof_id prod_list_diag_setprod)
 qed
 
 lemma det_one[simp]: "det (\<one>\<^sub>m n) = 1"
 proof -
-  have "det (\<one>\<^sub>m n) = listprod (mat_diag (\<one>\<^sub>m n))"
+  have "det (\<one>\<^sub>m n) = prod_list (mat_diag (\<one>\<^sub>m n))"
     by (rule det_upper_triangular[of _ n], auto)
   also have "\<dots> = 1" by (induct n, auto)
   finally show ?thesis .
@@ -173,7 +173,7 @@ qed
 
 lemma det_zero[simp]: assumes "n > 0" shows "det (\<zero>\<^sub>m n n) = 0"
 proof -
-  have "det (\<zero>\<^sub>m n n) = listprod (mat_diag (\<zero>\<^sub>m n n))"
+  have "det (\<zero>\<^sub>m n n) = prod_list (mat_diag (\<zero>\<^sub>m n n))"
     by (rule det_upper_triangular[of _ n], auto)
   also have "\<dots> = 0" using `n > 0` by (cases n, auto)
   finally show ?thesis .
@@ -186,10 +186,10 @@ lemma det_dim_zero[simp]: "A \<in> carrier\<^sub>m 0 0 \<Longrightarrow> det A =
 lemma det_lower_triangular:
   assumes ld: "\<And>i j. i < j \<Longrightarrow> j < n \<Longrightarrow> A $$ (i,j) = 0"
   and m: "A \<in> carrier\<^sub>m n n"
-  shows "det A = listprod (mat_diag A)"
+  shows "det A = prod_list (mat_diag A)"
 proof -
   have "det A = det (transpose\<^sub>m A)" using det_transpose[OF m] by simp
-  also have "\<dots> = listprod (mat_diag (transpose\<^sub>m A))"
+  also have "\<dots> = prod_list (mat_diag (transpose\<^sub>m A))"
     by (rule det_upper_triangular, insert m ld, auto)
   finally show ?thesis using m by simp
 qed
@@ -231,7 +231,7 @@ qed
 
 lemma det_multrow_mat: assumes k: "k < n"
   shows "det (multrow_mat n k a) = a"
-proof (rule trans[OF det_lower_triangular[of n]], unfold listprod_diag_setprod)
+proof (rule trans[OF det_lower_triangular[of n]], unfold prod_list_diag_setprod)
   let ?f = "\<lambda> i. multrow_mat n k a $$ (i, i)"
   have "(\<Prod>i\<in>{0..<n}. ?f i) = ?f k * (\<Prod>i\<in>{0..<n} - {k}. ?f i)"
     by (rule setprod.remove, insert k, auto)
@@ -260,7 +260,7 @@ lemma det_addrow_mat:
   assumes l: "k \<noteq> l"
   shows "det (addrow_mat n a k l) = 1"
 proof -
-  have "det (addrow_mat n a k l) = listprod (mat_diag (addrow_mat n a k l))"
+  have "det (addrow_mat n a k l) = prod_list (mat_diag (addrow_mat n a k l))"
   proof (cases "k < l")
     case True
     show ?thesis
@@ -270,7 +270,7 @@ proof -
     show ?thesis
       by (rule det_lower_triangular[of n], insert False, auto)
   qed
-  also have "\<dots> = 1" unfolding listprod_diag_setprod
+  also have "\<dots> = 1" unfolding prod_list_diag_setprod
     by (rule setprod.neutral, insert l, auto)
   finally show ?thesis .
 qed
@@ -845,9 +845,9 @@ proof -
     have "\<forall> i. \<exists> a b. v $ i = Fraction_Field.Fract a b \<and> b \<noteq> 0" using Fract_cases[of "v $ i" for i] by metis
     from choice[OF this] obtain a where "\<forall> i. \<exists> b. v $ i = Fraction_Field.Fract (a i) b \<and> b \<noteq> 0" by metis
     from choice[OF this] obtain b where vi: "\<And> i. v $ i = Fraction_Field.Fract (a i) (b i)" and bi: "\<And> i. b i \<noteq> 0" by auto
-    def m \<equiv> "listprod (map b [0..<n])"
+    def m \<equiv> "prod_list (map b [0..<n])"
     let ?m = "?h m"
-    have m0: "m \<noteq> 0" unfolding m_def hom_0_iff listprod_zero_iff using bi by auto
+    have m0: "m \<noteq> 0" unfolding m_def hom_0_iff prod_list_zero_iff using bi by auto
     from v0[unfolded vec_eq_iff] v obtain i where i: "i < n" "v $ i \<noteq> 0" by auto
     {
       fix i

@@ -1270,7 +1270,7 @@ definition "transversal_directions f =
   do {
     I \<leftarrow> Inf_spec f;
     S \<leftarrow> Sup_spec f;
-    RETURN (listsum (map (\<lambda>b. (if I \<bullet> b \<le> 0 then if S \<bullet> b \<le> 0 then S \<bullet> b else 0 else if S \<bullet> b \<ge> 0 then I \<bullet> b else 0) *\<^sub>R b) (Basis_list::'a list)))
+    RETURN (sum_list (map (\<lambda>b. (if I \<bullet> b \<le> 0 then if S \<bullet> b \<le> 0 then S \<bullet> b else 0 else if S \<bullet> b \<ge> 0 then I \<bullet> b else 0) *\<^sub>R b) (Basis_list::'a list)))
   }"
 sublocale autoref_op_pat_def transversal_directions .
 

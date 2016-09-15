@@ -521,7 +521,7 @@ fun gen_derive_strategyproofness_conditions lthy dist_limit sds_san_thm ps =
       in
         (thm RS @{thm HOL.conjunct2})
         |> Local_Defs.unfold lthy 
-           @{thms bex_simps ball_simps HOL.simp_thms list.map listsum.Cons listsum.Nil add_0_right
+           @{thms bex_simps ball_simps HOL.simp_thms list.map sum_list.Cons sum_list.Nil add_0_right
                   less_or_eq_real}
         |> Conv.fconv_rule (Conv.top_sweep_conv 
              (eval_inverse_permutation_of_list_conv perm_thm) lthy)

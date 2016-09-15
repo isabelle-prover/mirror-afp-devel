@@ -13,21 +13,21 @@ begin
 subsection{*Improvements for computing the Gram Schmidt algorithm and QR decomposition using vecs*}
 
 text{*Essentialy, we try to avoid removing duplicates in each iteration. 
-  They will not affect the listsum since the duplicates will be the vector zero.*}
+  They will not affect the @{const sum_list} since the duplicates will be the vector zero.*}
 
 subsubsection{*New definitions*}
 
 definition "Gram_Schmidt_column_k_efficient A k 
   = (\<chi> a b. (if b = from_nat k 
-  then column b A - listsum (map (\<lambda>x. ((column b A \<bullet> x) / (x \<bullet> x)) *\<^sub>R x) 
+  then column b A - sum_list (map (\<lambda>x. ((column b A \<bullet> x) / (x \<bullet> x)) *\<^sub>R x) 
   ((map (\<lambda>n. column (from_nat n) A) [0..<to_nat b]))) else column b A) $ a)"
 
-subsubsection{*General properties about listsum*}
+subsubsection{*General properties about @{const sum_list}*}
 
-lemma listsum_remdups:
+lemma sum_list_remdups:
   assumes "!!i j. i<length xs \<and> j<length xs \<and> i \<noteq> j 
   \<and> xs ! i = xs ! j \<longrightarrow> xs ! i = 0 \<and> xs ! j = 0"
-  shows "listsum (remdups xs) = listsum xs"
+  shows "sum_list (remdups xs) = sum_list xs"
   using assms
 proof (induct xs)
   case Nil
@@ -37,32 +37,32 @@ next
   show ?case 
   proof (cases "a \<in> set (xs)")
     case False 
-    have "listsum (remdups (a # xs)) = listsum (a # (remdups xs))" by (simp add: False)
-    also have "... = a + listsum (remdups xs)" by auto
-    also have "... = a + listsum xs" using Cons.hyps Cons.prems False
+    have "sum_list (remdups (a # xs)) = sum_list (a # (remdups xs))" by (simp add: False)
+    also have "... = a + sum_list (remdups xs)" by auto
+    also have "... = a + sum_list xs" using Cons.hyps Cons.prems False
       by fastforce      
-    also have "... = listsum (a # xs)" by simp
+    also have "... = sum_list (a # xs)" by simp
     finally show ?thesis .
   next
     case True
     have a: "a=0" using Cons.hyps Cons.prems True
       by (metis Suc_less_eq add.right_neutral add_Suc_right add_gr_0 
         in_set_conv_nth lessI list.size(4) nat.simps(3) nth_Cons_0 nth_Cons_Suc)       
-    have "listsum (remdups (a # xs)) = listsum (remdups xs)" using True by auto
-    also have "... = listsum xs" using Cons.hyps Cons.prems True
+    have "sum_list (remdups (a # xs)) = sum_list (remdups xs)" using True by auto
+    also have "... = sum_list xs" using Cons.hyps Cons.prems True
       by fastforce
-    also have "... = a + listsum xs" using a by simp
-    also have "... = listsum (a # xs)" by simp
+    also have "... = a + sum_list xs" using a by simp
+    also have "... = sum_list (a # xs)" by simp
     finally show ?thesis .
   qed
 qed
 
 
-lemma listsum_remdups_2:
+lemma sum_list_remdups_2:
   fixes f:: "'a::{zero, monoid_add}\<Rightarrow>'a"
   assumes "!!i j. i<length xs \<and> j<length xs \<and> i \<noteq> j \<and> (xs ! i) = (xs ! j) 
     \<longrightarrow> f (xs ! i) = 0 \<and> f (xs ! j) = 0"
-  shows "listsum (map f (remdups xs)) = listsum (map f xs)"
+  shows "sum_list (map f (remdups xs)) = sum_list (map f xs)"
   using assms
 proof (induct xs)
   case Nil
@@ -72,25 +72,25 @@ next
   show ?case
   proof (cases "a \<in> set xs")
     case False 
-    hence "listsum (map f (remdups (a # xs))) =  listsum (map f (a # (remdups xs)))"
+    hence "sum_list (map f (remdups (a # xs))) =  sum_list (map f (a # (remdups xs)))"
       by simp
-    also have "... = listsum (f a # (map f (remdups xs)))" by auto
-    also have "... = f a + listsum (map f (remdups xs))" by auto
-    also have "... = f a + listsum (map f xs)" using Cons.prems Cons.hyps
+    also have "... = sum_list (f a # (map f (remdups xs)))" by auto
+    also have "... = f a + sum_list (map f (remdups xs))" by auto
+    also have "... = f a + sum_list (map f xs)" using Cons.prems Cons.hyps
       using id_apply by fastforce
-    also have "... =  listsum (map f (a # xs))" by auto
+    also have "... =  sum_list (map f (a # xs))" by auto
     finally show ?thesis .
   next
     case True
     have fa_0: "f a = 0" using Cons.hyps Cons.prems True
       by (metis Suc_less_eq add.right_neutral add_Suc_right add_gr_0 
         in_set_conv_nth lessI list.size(4) nth_Cons_0 nth_Cons_Suc)
-    have "listsum (map f (remdups (a # xs))) =  listsum (map f (remdups xs))"
+    have "sum_list (map f (remdups (a # xs))) =  sum_list (map f (remdups xs))"
       using True by simp
-    also have "... = listsum (map f xs)" using Cons.prems Cons.hyps
+    also have "... = sum_list (map f xs)" using Cons.prems Cons.hyps
       using id_apply by fastforce
-    also have "... = f a + listsum (map f xs)" using fa_0 by simp
-    also have "... = listsum (map f (a # xs))" by auto
+    also have "... = f a + sum_list (map f xs)" using fa_0 by simp
+    also have "... = sum_list (map f (a # xs))" by auto
     finally show ?thesis .
   qed
 qed
@@ -255,15 +255,15 @@ next
   let ?f="(\<lambda>x. (column b G \<bullet> x / (x \<bullet> x)) *\<^sub>R x)"
   let ?g="(\<lambda>n. column (from_nat n) G) "
   have proj_eq: "proj_onto (column b G) {column i G |i. i < b} 
-    = listsum (map ?f (map ?g [0..<to_nat b]))"
+    = sum_list (map ?f (map ?g [0..<to_nat b]))"
   proof -
     have "proj_onto (column b G) {column i G |i. i < b} = setsum ?f {column i G |i. i < b}" 
       unfolding proj_onto_def proj_def[abs_def] by simp
     also have "... = setsum ?f (set (map ?g [0..<to_nat b]))"
       by (rule setsum.cong, auto simp add: set_map_column[symmetric])    
-    also have "... = listsum (map ?f (remdups (map ?g [0..<to_nat b])))" unfolding setsum_code ..
-    also have "... = listsum ((map ?f ((map ?g [0..<to_nat b]))))" 
-    proof (rule listsum_remdups_2, auto)
+    also have "... = sum_list (map ?f (remdups (map ?g [0..<to_nat b])))" unfolding setsum_code ..
+    also have "... = sum_list ((map ?f ((map ?g [0..<to_nat b]))))" 
+    proof (rule sum_list_remdups_2, auto)
       fix i j assume i: "i < to_nat b"
         and j: "j < to_nat b" and ij: "i \<noteq> j"
         and col_eq: "column (from_nat i) G = column (from_nat j) G"
@@ -346,7 +346,7 @@ qed
 
 text{*This equation is now more efficient than the original definition of the algoritm, since it is not
   removing duplicates in each iteration, which is more expensive in time than adding zeros (if there appear 
-  duplicates while applying the algorithm, they are zeros and then the listsum is the same in each step).*}
+  duplicates while applying the algorithm, they are zeros and then the @{const sum_list} is the same in each step).*}
 
 lemma Gram_Schmidt_matrix_efficient[code_unfold]:
   fixes A::"real^'n::{mod_type}^'m::{mod_type}" 
@@ -368,7 +368,7 @@ subsubsection{*New definitions*}
 
 definition "Gram_Schmidt_column_k_iarrays_efficient A k = 
   tabulate2 (nrows_iarray A) (ncols_iarray A) (\<lambda>a b. let column_b_A = column_iarray b A in 
-  (if b = k then (column_b_A - listsum (map (\<lambda>x. ((column_b_A \<bullet>i x) / (x \<bullet>i x)) *\<^sub>R x) 
+  (if b = k then (column_b_A - sum_list (map (\<lambda>x. ((column_b_A \<bullet>i x) / (x \<bullet>i x)) *\<^sub>R x) 
   ((List.map (\<lambda>n. column_iarray n A) [0..<b]))))
   else column_b_A) !! a)"
 
@@ -419,10 +419,10 @@ proof -
 qed
 
 
-lemma listsum_map_vec_to_iarray:
+lemma sum_list_map_vec_to_iarray:
   assumes "xs \<noteq> []" (*If I remove this assumption, I have to prove 
   vec_to_iarray 0 = IArray [] which is false.*)
-  shows "listsum (map (vec_to_iarray \<circ> f) xs) = vec_to_iarray (listsum (map f xs))"
+  shows "sum_list (map (vec_to_iarray \<circ> f) xs) = vec_to_iarray (sum_list (map f xs))"
   using assms
 proof (induct xs)
   case Nil
@@ -432,30 +432,30 @@ next
   show ?case
   proof (cases "xs=[]")
     case True
-    have l_rw: "listsum (map (vec_to_iarray \<circ> f) xs) = IArray[]" 
+    have l_rw: "sum_list (map (vec_to_iarray \<circ> f) xs) = IArray[]" 
       unfolding True by (simp add: zero_iarray_def)
-    have "listsum (map (vec_to_iarray \<circ> f) (a # xs)) 
-      = listsum ((vec_to_iarray \<circ> f) a # map (vec_to_iarray \<circ> f) xs)"
+    have "sum_list (map (vec_to_iarray \<circ> f) (a # xs)) 
+      = sum_list ((vec_to_iarray \<circ> f) a # map (vec_to_iarray \<circ> f) xs)"
       by simp
-    also have "... = (vec_to_iarray \<circ> f) a + listsum (map (vec_to_iarray \<circ> f) xs)" by simp
+    also have "... = (vec_to_iarray \<circ> f) a + sum_list (map (vec_to_iarray \<circ> f) xs)" by simp
     also have "... = vec_to_iarray (f a) + IArray[]" unfolding l_rw by auto
     also have "... = vec_to_iarray (f a) + vec_to_iarray (0::('b,'c) vec)" 
       unfolding plus_iarray_def Let_def vec_to_iarray_def by auto
-    also have "... = vec_to_iarray (listsum (map (f) (a # xs)))" 
+    also have "... = vec_to_iarray (sum_list (map (f) (a # xs)))" 
       unfolding True unfolding plus_iarray_def Let_def vec_to_iarray_def by auto
     finally show ?thesis .
   next
     case False
-    have "listsum (map (vec_to_iarray \<circ> f) (a # xs)) 
-      = listsum ((vec_to_iarray \<circ> f) a # map (vec_to_iarray \<circ> f) xs)"
+    have "sum_list (map (vec_to_iarray \<circ> f) (a # xs)) 
+      = sum_list ((vec_to_iarray \<circ> f) a # map (vec_to_iarray \<circ> f) xs)"
       by simp
-    also have "... = (vec_to_iarray \<circ> f) a + listsum (map (vec_to_iarray \<circ> f) xs)" by simp
-    also have "... = (vec_to_iarray \<circ> f) a + vec_to_iarray (listsum (map f xs))"
+    also have "... = (vec_to_iarray \<circ> f) a + sum_list (map (vec_to_iarray \<circ> f) xs)" by simp
+    also have "... = (vec_to_iarray \<circ> f) a + vec_to_iarray (sum_list (map f xs))"
       using Cons.prems Cons.hyps False by presburger
-    also have "... = vec_to_iarray (f a) + vec_to_iarray (listsum (map f xs))" by auto
-    also have "... = vec_to_iarray (f a + (listsum (map f xs)))"
+    also have "... = vec_to_iarray (f a) + vec_to_iarray (sum_list (map f xs))" by auto
+    also have "... = vec_to_iarray (f a + (sum_list (map f xs)))"
       by (simp add: vec_to_iarray_plus)
-    also have "... = vec_to_iarray (listsum (map (f) (a # xs)))" by simp
+    also have "... = vec_to_iarray (sum_list (map (f) (a # xs)))" by simp
     finally show ?thesis .
   qed
 qed
@@ -509,7 +509,7 @@ proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto,
       have "ia = k" using f_eq by (metis assms from_nat_eq_imp_eq ia2 ncols_def)
       thus "IArray.list_of (column_iarray ia (matrix_to_iarray A)) ! i =
         column (from_nat k) A $ from_nat i -
-        listsum (map ((\<lambda>x. (column (from_nat k) A \<bullet> x / (x \<bullet> x)) *\<^sub>R x) 
+        sum_list (map ((\<lambda>x. (column (from_nat k) A \<bullet> x / (x \<bullet> x)) *\<^sub>R x) 
         \<circ> (\<lambda>n. column (from_nat n) A)) [0..<to_nat (from_nat k)]) $ from_nat i"
         using ia_neq_k by contradiction
     next
@@ -522,13 +522,13 @@ proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto,
       assume "ia = k"
       let ?f="\<lambda>x. ((column (from_nat k) A) \<bullet> (column (from_nat x) A) /
         ((column (from_nat x) A) \<bullet> (column (from_nat x) A))) *\<^sub>R (column (from_nat x) A)"
-      let ?l="listsum (map ?f [0..<k])"
+      let ?l="sum_list (map ?f [0..<k])"
       show "IArray.list_of
         (column_iarray k (matrix_to_iarray A) -
-        listsum (map ((\<lambda>x. (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x) 
+        sum_list (map ((\<lambda>x. (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x) 
         \<circ> (\<lambda>n. column_iarray n (matrix_to_iarray A))) [0..<k])) ! i =
         column (from_nat k) A $ from_nat i - 
-        listsum (map ((\<lambda>x. (column (from_nat k) A \<bullet> x / (x \<bullet> x)) *\<^sub>R x) 
+        sum_list (map ((\<lambda>x. (column (from_nat k) A \<bullet> x / (x \<bullet> x)) *\<^sub>R x) 
         \<circ> (\<lambda>n. column (from_nat n) A)) [0..<to_nat (from_nat k::'n)]) $ from_nat i"    
       proof (cases "k=0")
         case True
@@ -543,7 +543,7 @@ proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto,
         have column_rw: "column_iarray k (matrix_to_iarray A) 
           = vec_to_iarray (column (from_nat k) A)"
           by (rule vec_to_iarray_column'[symmetric, OF k])
-        have listsum_rw: "(\<Sum>x\<leftarrow>[0..<k]. (column_iarray k (matrix_to_iarray A) 
+        have sum_list_rw: "(\<Sum>x\<leftarrow>[0..<k]. (column_iarray k (matrix_to_iarray A) 
         \<bullet>i column_iarray x (matrix_to_iarray A) / (column_iarray x (matrix_to_iarray A) 
         \<bullet>i column_iarray x (matrix_to_iarray A))) *\<^sub>R column_iarray x (matrix_to_iarray A)) 
         = vec_to_iarray ?l"
@@ -551,8 +551,8 @@ proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto,
           have "(\<Sum>x\<leftarrow>[0..<k]. (column_iarray k (matrix_to_iarray A) 
           \<bullet>i column_iarray x (matrix_to_iarray A) / (column_iarray x (matrix_to_iarray A) 
           \<bullet>i column_iarray x (matrix_to_iarray A))) *\<^sub>R column_iarray x (matrix_to_iarray A)) 
-          = listsum (map (vec_to_iarray \<circ> ?f) [0..<k])"            
-          proof (unfold interv_listsum_conv_setsum_set_nat, rule setsum.cong, auto)
+          = sum_list (map (vec_to_iarray \<circ> ?f) [0..<k])"            
+          proof (unfold interv_sum_list_conv_setsum_set_nat, rule setsum.cong, auto)
             fix x assume "x<k"
             hence x: "x<ncols A" using k by auto
             show "(column_iarray k (matrix_to_iarray A) \<bullet>i column_iarray x (matrix_to_iarray A) /
@@ -563,14 +563,14 @@ proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto,
               unfolding vec_to_iarray_scaleR vec_to_iarray_inner
               unfolding column_rw unfolding vec_to_iarray_column'[OF x, symmetric] ..
           qed
-          also have "... = vec_to_iarray (listsum (map ?f [0..<k]))" 
-            by (rule listsum_map_vec_to_iarray, auto simp add: False)
+          also have "... = vec_to_iarray (sum_list (map ?f [0..<k]))" 
+            by (rule sum_list_map_vec_to_iarray, auto simp add: False)
           finally show ?thesis .   
         qed
 
         have "IArray.list_of
           (column_iarray k (matrix_to_iarray A) -
-          listsum (map ((\<lambda>x. (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x) 
+          sum_list (map ((\<lambda>x. (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x) 
           \<circ> (\<lambda>n. column_iarray n (matrix_to_iarray A))) [0..<k])) ! i = 
           (column_iarray k (matrix_to_iarray A) -
           (\<Sum>x\<leftarrow>[0..<k]. (column_iarray k (matrix_to_iarray A) \<bullet>i column_iarray x (matrix_to_iarray A) /
@@ -579,7 +579,7 @@ proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto,
           unfolding vec_to_iarray_inner tn_fn_k o_def
           unfolding IArray.sub_def[symmetric] ..
         also have "... = (vec_to_iarray (column (from_nat k) A) - vec_to_iarray ?l) !! i"
-          unfolding listsum_rw unfolding column_rw  ..
+          unfolding sum_list_rw unfolding column_rw  ..
         also have "... = ((vec_to_iarray (column (from_nat k) A)) !! i) - (vec_to_iarray ?l !! i)"
         proof (rule vec_to_iarray_minus_nth)
           show " i < IArray.length (vec_to_iarray (column (from_nat k) A))" 
@@ -591,15 +591,15 @@ proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, rule conjI, auto,
           unfolding column_rw
           by (metis (no_types, lifting) i2 nrows_def vec_to_iarray_nth) 
         also have "... = column (from_nat k) A $ from_nat i -
-          listsum (map ((\<lambda>x. (column (from_nat k) A \<bullet> x / (x \<bullet> x)) *\<^sub>R x) 
+          sum_list (map ((\<lambda>x. (column (from_nat k) A \<bullet> x / (x \<bullet> x)) *\<^sub>R x) 
           \<circ> (\<lambda>n. column (from_nat n) A)) [0..<to_nat (from_nat k::'n)]) $ from_nat i"
           unfolding o_def tn_fn_k ..
         finally show "IArray.list_of
           (column_iarray k (matrix_to_iarray A) -
-          listsum (map ((\<lambda>x. (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x) 
+          sum_list (map ((\<lambda>x. (column_iarray k (matrix_to_iarray A) \<bullet>i x / (x \<bullet>i x)) *\<^sub>R x) 
           \<circ> (\<lambda>n. column_iarray n (matrix_to_iarray A))) [0..<k])) ! i =
           column (from_nat k) A $ from_nat i -
-          listsum (map ((\<lambda>x. (column (from_nat k) A \<bullet> x / (x \<bullet> x)) *\<^sub>R x) 
+          sum_list (map ((\<lambda>x. (column (from_nat k) A \<bullet> x / (x \<bullet> x)) *\<^sub>R x) 
           \<circ> (\<lambda>n. column (from_nat n) A)) [0..<to_nat (from_nat k::'n)]) $ from_nat i" .
       qed 
     qed
@@ -668,15 +668,15 @@ lemma QR_decomposition_iarrays_efficient[code]:
 subsection{*Other code equations that improve the performance*}
 
 lemma inner_iarray_code[code]:
-  "inner_iarray A B = listsum (map (\<lambda>n. A !! n * B !! n) [0..<IArray.length A])"
+  "inner_iarray A B = sum_list (map (\<lambda>n. A !! n * B !! n) [0..<IArray.length A])"
 proof -
   have set_Eq: "{0..<IArray.length A} = set ([0..<IArray.length A])" using atLeastLessThan_upt by blast
   have "inner_iarray A B = setsum (\<lambda>n. A !! n * B !! n) {0..<IArray.length A}" 
     unfolding inner_iarray_def ..
   also have "... = setsum (\<lambda>n. A !! n * B !! n) (set [0..<IArray.length A])"
     unfolding set_Eq ..
-  also have "... = listsum (map (\<lambda>n. A !! n * B !! n) [0..<IArray.length A])"
-    unfolding setsum_set_upt_conv_listsum_nat ..
+  also have "... = sum_list (map (\<lambda>n. A !! n * B !! n) [0..<IArray.length A])"
+    unfolding setsum_set_upt_conv_sum_list_nat ..
   finally show ?thesis .
 qed
 
@@ -684,7 +684,7 @@ qed
 definition "Gram_Schmidt_column_k_iarrays_efficient2 A k = 
   tabulate2 (nrows_iarray A) (ncols_iarray A) 
   (let col_k = column_iarray k A;
-       col = (col_k - listsum (map (\<lambda>x. ((col_k \<bullet>i x) / (x \<bullet>i x)) *\<^sub>R x) 
+       col = (col_k - sum_list (map (\<lambda>x. ((col_k \<bullet>i x) / (x \<bullet>i x)) *\<^sub>R x) 
               ((List.map (\<lambda>n. column_iarray n A) [0..<k]))))
   in (\<lambda>a b. (if b = k then col else column_iarray b A) !! a))"
 

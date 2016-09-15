@@ -136,11 +136,11 @@ section \<open>Implementations\<close>
 context begin
 interpretation autoref_syn .
 
-lemma eor_impl[autoref_rules]: "(\<lambda>r. scaleR r (listsum Basis_list), eor) \<in> Id \<rightarrow> Id"
-  by (auto simp: listsum_Basis_list[symmetric] eor_def)
+lemma eor_impl[autoref_rules]: "(\<lambda>r. scaleR r (sum_list Basis_list), eor) \<in> Id \<rightarrow> Id"
+  by (auto simp: sum_list_Basis_list[symmetric] eor_def)
 
 lemma roe_impl[autoref_rules]: "(\<lambda>e. e \<bullet> (hd Basis_list), roe) \<in> Id \<rightarrow> Id"
-  by (auto simp: listsum_Basis_list[symmetric] roe_def)
+  by (auto simp: sum_list_Basis_list[symmetric] roe_def)
 
 lemma strongest_direction_autoref[autoref_rules]:
   "(strongest_direction, strongest_direction) \<in> eucl_rel \<rightarrow> eucl_rel \<times>\<^sub>r eucl_rel"
@@ -163,7 +163,7 @@ lemma [autoref_rules]:
   "(Float, Float) \<in> int_rel \<rightarrow> int_rel \<rightarrow> Id"
   "(real_of_float, real_of_float) \<in> Id \<rightarrow> eucl_rel"
   "(op *\<^sub>R, op *\<^sub>R) \<in> eucl_rel \<rightarrow> eucl_rel \<rightarrow> eucl_rel"
-  "(listsum, listsum) \<in> \<langle>eucl_rel\<rangle>list_rel \<rightarrow> eucl_rel"
+  "(sum_list, sum_list) \<in> \<langle>eucl_rel\<rangle>list_rel \<rightarrow> eucl_rel"
   "(upto, upto) \<in> int_rel \<rightarrow> int_rel \<rightarrow> \<langle>int_rel\<rangle>list_rel"
   "(list_ex, list_ex) \<in> (eucl_rel \<rightarrow> bool_rel) \<rightarrow> \<langle>eucl_rel\<rangle>list_rel \<rightarrow> bool_rel"
   "(zip, zip) \<in> \<langle>int_rel\<rangle>list_rel \<rightarrow> \<langle>int_rel\<rangle>list_rel \<rightarrow> \<langle>int_rel \<times>\<^sub>r int_rel\<rangle>list_rel"
@@ -696,7 +696,7 @@ lemma irect_rel_def[refine_rel_defs]: "\<langle>eucl_rel\<rangle>irect_rel m \<e
 lemmas [autoref_rel_intf] = REL_INTFI[of "irect_rel" "i_set"]
 
 lemma set_of_irect_notempty: "set_of_irect m is \<noteq> {}"
-  by (auto simp: set_of_irect_def in_set_zip intro!: listsum_mono scaleR_right_mono)
+  by (auto simp: set_of_irect_def in_set_zip intro!: sum_list_mono scaleR_right_mono)
 
 schematic_goal set_of_irect_impl:
   notes [simp] = set_of_irect_def

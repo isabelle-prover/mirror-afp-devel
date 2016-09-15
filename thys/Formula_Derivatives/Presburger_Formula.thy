@@ -137,7 +137,7 @@ primrec decr0 where
 
 definition scalar_product :: "nat list \<Rightarrow> int list \<Rightarrow> int" where
   "scalar_product ns is =
-     listsum (map_index (\<lambda>i b. (if i < length ns then ns ! i else 0) * b) is)"
+     sum_list (map_index (\<lambda>i b. (if i < length ns then ns ! i else 0) * b) is)"
 
 lift_definition eval_tm :: "interp \<Rightarrow> int list \<Rightarrow> int" is
   "\<lambda>(_, I). scalar_product I" .
@@ -158,8 +158,8 @@ fun lderiv0 :: "bool list \<Rightarrow> presb \<Rightarrow> formula" where
 fun rderiv0 :: "bool list \<Rightarrow> presb \<Rightarrow> formula" where
   "rderiv0 bs (Eq is i d) =
   (let
-     l = - listsum [i. i \<leftarrow> is, i < 0];
-     h = - listsum [i. i \<leftarrow> is, i > 0];
+     l = - sum_list [i. i \<leftarrow> is, i < 0];
+     h = - sum_list [i. i \<leftarrow> is, i > 0];
      d' = scalar_product bs is + 2 * d
    in if d' \<in> {min h i .. max l i} then FBase (Eq is i d') else FBool False)"
 
@@ -393,7 +393,7 @@ lemma satisfies0_cong: "wf0 (#\<^sub>V \<BB>) a \<Longrightarrow> #\<^sub>V \<AA
 proof (induct a)
   case Eq then show ?case unfolding satisfies0.simps
     by transfer (auto simp: scalar_product_def
-      intro!: arg_cong[of _ _ listsum] map_index_cong elim!: lformula0.cases)
+      intro!: arg_cong[of _ _ sum_list] map_index_cong elim!: lformula0.cases)
 qed
 
 lemma wf_lderiv0[Presb_simps]:
@@ -423,8 +423,8 @@ lemma finite_lderiv0[Presb_simps]:
   shows "finite {\<phi>. \<exists>xs. \<phi> = fold (Formula_Operations.deriv extend lderiv0) xs (FBase a)}"
 proof -
   def d \<equiv> "Formula_Operations.deriv extend lderiv0"
-  def l \<equiv> "\<lambda>is :: int list. listsum [i. i \<leftarrow> is, i < 0]"
-  def h \<equiv> "\<lambda>is :: int list. listsum [i. i \<leftarrow> is, i > 0]"
+  def l \<equiv> "\<lambda>is :: int list. sum_list [i. i \<leftarrow> is, i < 0]"
+  def h \<equiv> "\<lambda>is :: int list. sum_list [i. i \<leftarrow> is, i > 0]"
   def \<Phi> \<equiv> "\<lambda>a. (case a of
     Eq is n z \<Rightarrow> {FBase (Eq is i 0) | i . i \<in> {min (- h is) n .. max (- l is) n}} \<union>
       {FBool False :: formula})"
@@ -460,8 +460,8 @@ lemma finite_rderiv0[Presb_simps]:
   "finite {\<phi>. \<exists>xs. \<phi> = fold (Formula_Operations.deriv extend rderiv0) xs (FBase a)}"
 proof -
   def d \<equiv> "Formula_Operations.deriv extend rderiv0"
-  def l \<equiv> "\<lambda>is :: int list. listsum [i. i \<leftarrow> is, i < 0]"
-  def h \<equiv> "\<lambda>is :: int list. listsum [i. i \<leftarrow> is, i > 0]"
+  def l \<equiv> "\<lambda>is :: int list. sum_list [i. i \<leftarrow> is, i < 0]"
+  def h \<equiv> "\<lambda>is :: int list. sum_list [i. i \<leftarrow> is, i > 0]"
   def \<Phi> \<equiv> "\<lambda>a. (case a of
     Eq is n z \<Rightarrow> {FBase (Eq is n i) | i . i \<in> {min (- h is) (min n z) .. max (- l is) (max n z)}} \<union>
       {FBool False :: formula})"
@@ -532,10 +532,10 @@ lemma less_pow2: "x < 2 ^ a \<Longrightarrow> int x < 2 ^ a"
   by (metis of_nat_less_iff of_nat_numeral of_nat_power [symmetric])
 
 lemma scalar_product_upper_bound: "\<forall>x\<in>set b. len x \<le> a \<Longrightarrow>
-  scalar_product b is \<le> (2 ^ a - 1) * listsum [i. i \<leftarrow> is, i > 0]"
+  scalar_product b is \<le> (2 ^ a - 1) * sum_list [i. i \<leftarrow> is, i > 0]"
 proof (induct "is" arbitrary: b)
   case (Cons i "is")
-  then have "scalar_product (tl b) is \<le> (2 ^ a - 1) * listsum [i. i \<leftarrow> is, i > 0]"
+  then have "scalar_product (tl b) is \<le> (2 ^ a - 1) * sum_list [i. i \<leftarrow> is, i > 0]"
     by (auto simp: in_set_tlD)
   with Cons(2) show ?case
     by (auto 0 3 split: list.splits simp: len_le_iff mult_le_0_iff
@@ -544,10 +544,10 @@ proof (induct "is" arbitrary: b)
 qed simp
 
 lemma scalar_product_lower_bound: "\<forall>x\<in>set b. len x \<le> a \<Longrightarrow>
-  scalar_product b is \<ge> (2 ^ a - 1) * listsum [i. i \<leftarrow> is, i < 0]"
+  scalar_product b is \<ge> (2 ^ a - 1) * sum_list [i. i \<leftarrow> is, i < 0]"
 proof (induct "is" arbitrary: b)
   case (Cons i "is")
-  then have "scalar_product (tl b) is \<ge> (2 ^ a - 1) * listsum [i. i \<leftarrow> is, i < 0]"
+  then have "scalar_product (tl b) is \<ge> (2 ^ a - 1) * sum_list [i. i \<leftarrow> is, i < 0]"
     by (auto simp: in_set_tlD)
   with Cons(2) show ?case
     by (auto 0 3 split: list.splits simp: len_le_iff mult_le_0_iff
@@ -555,10 +555,10 @@ proof (induct "is" arbitrary: b)
       intro: add_mono elim: order_trans[OF add_mono[OF order_refl]] order_trans)
 qed simp
 
-lemma eval_tm_upper_bound: "eval_tm \<AA> is \<le> (2 ^ Length \<AA> - 1) * listsum [i. i \<leftarrow> is, i > 0]"
+lemma eval_tm_upper_bound: "eval_tm \<AA> is \<le> (2 ^ Length \<AA> - 1) * sum_list [i. i \<leftarrow> is, i > 0]"
   by transfer (auto simp: scalar_product_upper_bound)
 
-lemma eval_tm_lower_bound: "eval_tm \<AA> is \<ge> (2 ^ Length \<AA> - 1) * listsum [i. i \<leftarrow> is, i < 0]"
+lemma eval_tm_lower_bound: "eval_tm \<AA> is \<ge> (2 ^ Length \<AA> - 1) * sum_list [i. i \<leftarrow> is, i < 0]"
   by transfer (auto simp: scalar_product_lower_bound)
 
 lemma satisfies_bounded_rderiv0[Presb_simps]:
@@ -567,8 +567,8 @@ proof (induct a)
   case (Eq "is" n d)
   let ?l = "Length \<AA>"
   def d' \<equiv> "scalar_product x is + 2 * d"
-  def l \<equiv> "listsum  [i. i \<leftarrow> is, i < 0]"
-  def h \<equiv> "listsum  [i. i \<leftarrow> is, i > 0]"
+  def l \<equiv> "sum_list  [i. i \<leftarrow> is, i < 0]"
+  def h \<equiv> "sum_list  [i. i \<leftarrow> is, i > 0]"
   from Eq show ?case
   unfolding wf0.simps satisfies0.simps rderiv0.simps Let_def
   proof (split if_splits, simp only: Formula_Operations.satisfies_gen.simps satisfies0.simps

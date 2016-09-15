@@ -195,7 +195,7 @@ definition complex_roots_of_rat_poly3 :: "rat poly \<Rightarrow> complex list" w
     in 
     if n = rr then crts 
     else if n - rr = 2 then 
-    let pp = real_of_rat_poly p div (listprod (map (\<lambda> x. [:-x,1:]) rrts));
+    let pp = real_of_rat_poly p div (prod_list (map (\<lambda> x. [:-x,1:]) rrts));
         cpp = map_poly (\<lambda> r. Complex r 0) pp
       in crts @ croots2 cpp else
     let
@@ -313,7 +313,7 @@ proof -
       have id: "pp = map_poly of_real q" unfolding q_def pp_def
         by (subst map_poly_compose, auto simp: o_def)
       let ?rts = "map (\<lambda> x. [:-x,1:]) rr"
-      def rts \<equiv> "listprod ?rts"
+      def rts \<equiv> "prod_list ?rts"
       let ?c2 = "?cr (q div rts)"
       have pq: "\<And> x. rpoly p x = 0 \<longleftrightarrow> poly q x = 0" unfolding q_def by (simp add: eval_poly_def)      
       from True have 2: "degree q - card {x. poly q x = 0} = 2" unfolding pq[symmetric] 
@@ -328,7 +328,7 @@ proof -
       have len_rr: "length rr = card {x. poly q x = 0}" unfolding rr[unfolded pq, symmetric] 
         by (simp add: distinct_card)
       have rr': "\<And> r. r \<in> set rr \<Longrightarrow> poly q r = 0" using rr unfolding q_def eval_poly_def by simp
-      with dist have "q = q div listprod ?rts * listprod ?rts"
+      with dist have "q = q div prod_list ?rts * prod_list ?rts"
       proof (induct rr arbitrary: q)
         case (Cons r rr q)
         note dist = Cons(2)
@@ -371,9 +371,9 @@ proof -
       finally have r: "?r = {x. poly (?cr rts) x = 0} \<union> {x. poly ?c2 x = 0}" by auto
       also have "?cr rts = (\<Prod>x\<leftarrow>rr. ?cr [:- x, 1:])"
         unfolding rts_def 
-        by (subst semiring_hom.hom_listprod[OF cr.semiring_hom_map_poly], unfold map_map o_def, auto)
+        by (subst semiring_hom.hom_prod_list[OF cr.semiring_hom_map_poly], unfold map_map o_def, auto)
       also have "{x. poly \<dots> x = 0} = of_real ` set rr" 
-        unfolding poly_listprod_zero_iff by auto
+        unfolding poly_prod_list_zero_iff by auto
       also have "set rr = {x. poly q x = 0}" unfolding rr q_def by (simp add: eval_poly_def) 
       finally show ?thesis unfolding l by simp
     qed
@@ -585,7 +585,7 @@ proof -
     also have "?exp [(p,i)] = (\<Prod>(x, i)\<leftarrow> (map (\<lambda>r. (r, i)) ?rts). [:- x, 1:] ^ Suc i)" 
       by simp
     also have "\<dots> = (\<Prod> x \<leftarrow> ?rts. [:- x, 1:])^Suc i"
-      unfolding listprod_power by (rule arg_cong[of _ _ listprod], auto)
+      unfolding prod_list_power by (rule arg_cong[of _ _ prod_list], auto)
     also have "(\<Prod> x \<leftarrow> ?rts. [:- x, 1:]) = p" 
     proof -
       from fundamental_theorem_algebra_factorized[of p, unfolded `monic p`]
@@ -598,14 +598,14 @@ proof -
         def q \<equiv> "\<Prod>a\<leftarrow>as1 @ as2 @ as3. [:- a, 1:]"
         have "p = (\<Prod>a\<leftarrow>as. [:- a, 1:])" by fact
         also have "\<dots> = (\<Prod>a\<leftarrow>([a] @ [a]). [:- a, 1:]) * q"
-          unfolding q_def a map_append listprod.append by (simp only: ac_simps)
+          unfolding q_def a map_append prod_list.append by (simp only: ac_simps)
         also have "\<dots> = [:-a,1:] * [:-a,1:] * q" by simp
         finally have "p = ([:-a,1:] * [:-a,1:]) * q" by simp
         hence "[:-a,1:] * [:-a,1:] dvd p" unfolding dvd_def ..
         with `square_free p`[unfolded square_free_def, THEN conjunct2, rule_format, of "[:-a,1:]"] 
         show False by auto
       qed
-      also have "set as = {x. poly p x = 0}" unfolding as poly_listprod 
+      also have "set as = {x. poly p x = 0}" unfolding as poly_prod_list 
         by (simp add: o_def, induct as, auto)
       also have "\<dots> = set ?rts" unfolding set_remdups
         by (rule roots_of_complex_main[symmetric], insert p deg, auto)
@@ -703,7 +703,7 @@ proof -
     by auto
   from factorize_complex_main[OF fp] have p: "p = smult c (\<Prod>(x, i)\<leftarrow>pis. [:- x, 1:] ^ Suc i)" .
   show "p = smult c (\<Prod>(q, i)\<leftarrow>qis. q ^ i)" unfolding p qis
-    by (rule arg_cong[of _ _ "\<lambda> p. smult c (listprod p)"], auto)
+    by (rule arg_cong[of _ _ "\<lambda> p. smult c (prod_list p)"], auto)
   show "(q,i) \<in> set qis \<Longrightarrow> irreducible q \<and> i \<noteq> 0 \<and> monic q \<and> degree q = 1"
     using linear_irreducible[of q] unfolding qis by auto
 qed    

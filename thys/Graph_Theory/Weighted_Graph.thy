@@ -16,7 +16,7 @@ type_synonym 'b weight_fun = "'b \<Rightarrow> real"
 context wf_digraph begin
 
 definition awalk_cost :: "'b weight_fun \<Rightarrow> 'b awalk \<Rightarrow> real" where
-  "awalk_cost f es = listsum (map f es)"
+  "awalk_cost f es = sum_list (map f es)"
 
 lemma awalk_cost_Nil[simp]: "awalk_cost f [] = 0"
   unfolding awalk_cost_def by simp

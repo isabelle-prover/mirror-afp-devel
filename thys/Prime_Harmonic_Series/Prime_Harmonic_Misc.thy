@@ -11,7 +11,7 @@ imports
   "~~/src/HOL/Number_Theory/Number_Theory" 
 begin
 
-lemma listsum_nonneg: "\<forall>x\<in>set xs. x \<ge> 0 \<Longrightarrow> listsum xs \<ge> (0 :: 'a :: ordered_ab_group_add)"
+lemma sum_list_nonneg: "\<forall>x\<in>set xs. x \<ge> 0 \<Longrightarrow> sum_list xs \<ge> (0 :: 'a :: ordered_ab_group_add)"
   by (induction xs) auto
 
 lemma setsum_telescope':

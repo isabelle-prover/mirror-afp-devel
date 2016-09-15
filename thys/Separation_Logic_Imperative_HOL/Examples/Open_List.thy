@@ -276,7 +276,7 @@ partial_function (heap) os_sum' :: "int os_list_it \<Rightarrow> int \<Rightarro
 lemma os_sum'_rule[sep_heap_rules]: 
   "<os_is_it l p l' it> 
     os_sum' it s 
-  <\<lambda>r. os_list l p * \<up>(r = s + listsum l')>\<^sub>t"
+  <\<lambda>r. os_list l p * \<up>(r = s + sum_list l')>\<^sub>t"
 proof (induct l' arbitrary: it s)
   case Nil thus ?case
     apply (subst os_sum'.simps)
@@ -295,7 +295,7 @@ definition "os_sum p \<equiv> do {
   os_sum' it 0}"
 
 lemma os_sum_rule[sep_heap_rules]: 
-  "<os_list l p> os_sum p <\<lambda>r. os_list l p * \<up>(r=listsum l)>\<^sub>t"
+  "<os_list l p> os_sum p <\<lambda>r. os_list l p * \<up>(r=sum_list l)>\<^sub>t"
   unfolding os_sum_def
   by sep_auto
 

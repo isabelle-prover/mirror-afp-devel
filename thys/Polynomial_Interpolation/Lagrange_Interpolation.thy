@@ -16,21 +16,21 @@ begin
 
 definition lagrange_basis_poly :: "'a :: field list \<Rightarrow> 'a \<Rightarrow> 'a poly" where
   "lagrange_basis_poly xs xj \<equiv> let ys = filter (\<lambda> x. x \<noteq> xj) xs
-    in listprod (map (\<lambda> xi. smult (inverse (xj - xi)) [: - xi, 1 :]) ys)"
+    in prod_list (map (\<lambda> xi. smult (inverse (xj - xi)) [: - xi, 1 :]) ys)"
 
 definition lagrange_interpolation_poly :: "('a :: field \<times> 'a)list \<Rightarrow> 'a poly" where
   "lagrange_interpolation_poly xs_ys \<equiv> let 
     xs = map fst xs_ys
-    in listsum (map (\<lambda> (xj,yj). smult yj (lagrange_basis_poly xs xj)) xs_ys)"
+    in sum_list (map (\<lambda> (xj,yj). smult yj (lagrange_basis_poly xs xj)) xs_ys)"
 
 lemma [code]: 
   "lagrange_basis_poly xs xj = (let ys = filter (\<lambda> x. x \<noteq> xj) xs
-    in listprod (map (\<lambda> xi. let ii = inverse (xj - xi) in [: - ii * xi, ii :]) ys))"
+    in prod_list (map (\<lambda> xi. let ii = inverse (xj - xi) in [: - ii * xi, ii :]) ys))"
   unfolding lagrange_basis_poly_def Let_def by simp
 
 lemma degree_lagrange_basis_poly: "degree (lagrange_basis_poly xs xj) \<le> length (filter (\<lambda> x. x \<noteq> xj) xs)"
   unfolding lagrange_basis_poly_def Let_def
-  by (rule order.trans[OF degree_listprod_le], rule order_trans[OF listsum_mono[of _ _ "\<lambda> _. 1"]], 
+  by (rule order.trans[OF degree_prod_list_le], rule order_trans[OF sum_list_mono[of _ _ "\<lambda> _. 1"]], 
   auto simp: o_def, induct xs, auto)
 
 lemma degree_lagrange_interpolation_poly:  
@@ -47,13 +47,13 @@ proof -
   } note main = this
   show ?thesis
     unfolding lagrange_interpolation_poly_def Let_def
-    by (rule degree_listsum_le, auto, rule order_trans[OF degree_lagrange_basis_poly], insert main, auto)
+    by (rule degree_sum_list_le, auto, rule order_trans[OF degree_lagrange_basis_poly], insert main, auto)
 qed
 
 lemma lagrange_basis_poly_1: 
   "poly (lagrange_basis_poly (map fst xs_ys) x) x = 1"
-  unfolding lagrange_basis_poly_def Let_def poly_listprod
-  by (rule listprod_neutral, auto)
+  unfolding lagrange_basis_poly_def Let_def poly_prod_list
+  by (rule prod_list_neutral, auto)
   (metis field_class.field_inverse mult.commute right_diff_distrib right_minus_eq)
 
 lemma lagrange_basis_poly_0: assumes "x' \<in> set (map fst xs_ys)" and "x' \<noteq> x" 
@@ -63,7 +63,7 @@ proof -
   let ?xs = "filter (\<lambda>c. c\<noteq>x) (map fst xs_ys)"
   have mem: "?f x' \<in> set (map ?f ?xs)" using assms by auto
   show ?thesis
-    unfolding lagrange_basis_poly_def Let_def poly_listprod listprod_map_remove1[OF mem]
+    unfolding lagrange_basis_poly_def Let_def poly_prod_list prod_list_map_remove1[OF mem]
     by simp
 qed
 
@@ -75,9 +75,9 @@ proof -
   {
     fix x y
     assume xy: "(x,y) \<in> set xs_ys"
-    show "poly p x = y" unfolding p lagrange_interpolation_poly_def Let_def poly_listsum map_map o_def
-    proof (subst listsum_map_remove1[OF xy], unfold split poly_smult lagrange_basis_poly_1,
-      subst listsum_neutral)
+    show "poly p x = y" unfolding p lagrange_interpolation_poly_def Let_def poly_sum_list map_map o_def
+    proof (subst sum_list_map_remove1[OF xy], unfold split poly_smult lagrange_basis_poly_1,
+      subst sum_list_neutral)
       fix v
       assume "v \<in> set (map (\<lambda>xa. poly (case xa of (xj, yj) \<Rightarrow> smult yj (lagrange_basis_poly ?xs xj))
                                x)

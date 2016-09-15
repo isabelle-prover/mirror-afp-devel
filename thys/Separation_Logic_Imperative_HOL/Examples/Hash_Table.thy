@@ -39,7 +39,7 @@ definition ht_table :: "('k::heap \<times> 'v::heap) list list \<Rightarrow> ('k
   where "ht_table l ht = (the_array ht) \<mapsto>\<^sub>a l"
 
 definition ht_size :: "'a list list \<Rightarrow> nat \<Rightarrow> bool"
-  where "ht_size l n \<equiv> n = listsum (map length l)"
+  where "ht_size l n \<equiv> n = sum_list (map length l)"
 
 definition ht_hash :: "('k::hashable \<times> 'v) list list \<Rightarrow> bool" where
   "ht_hash l \<equiv> \<forall>i<length l. \<forall>x\<in>set (l!i).
@@ -350,12 +350,12 @@ proof -
   have "(map length (l[i := fst (ls_update k v (l ! i))]))
     = map length l[i := length (fst (ls_update k v (l ! i)))]"
     by (simp add: map_update) also
-  from listsum_update_nat[of i "map length l", simplified, OF i,
+  from sum_list_update_nat[of i "map length l", simplified, OF i,
     of "length (fst (ls_update k v (l ! i)))"]
     ls_update_length_snd_True[OF snd]
   have
-    "listsum (map length l[i := length (fst (ls_update k v (l ! i)))])
-    = listsum (map length l)" by simp
+    "sum_list (map length l[i := length (fst (ls_update k v (l ! i)))])
+    = sum_list (map length l)" by simp
   finally show ?thesis using assms by (simp add: ht_size_def assms)
 qed
 
@@ -368,12 +368,12 @@ proof -
   have "(map length (l[i := fst (ls_update k v (l ! i))]))
     = map length l[i := length (fst (ls_update k v (l ! i)))]"
     by (simp add: map_update) also
-  from listsum_update_nat[of i "map length l", simplified, OF i,
+  from sum_list_update_nat[of i "map length l", simplified, OF i,
     of "length (fst (ls_update k v (l ! i)))"]
     ls_update_length_snd_False[OF snd]
   have
-    "listsum (map length l[i := length (fst (ls_update k v (l ! i)))])
-    = Suc (listsum (map length l))" by simp
+    "sum_list (map length l[i := length (fst (ls_update k v (l ! i)))])
+    = Suc (sum_list (map length l))" by simp
   finally show ?thesis using assms by (simp add: ht_size_def assms)
 qed
 
@@ -574,11 +574,11 @@ proof -
   have "(map length (l[i := fst (ls_delete k (l ! i))]))
     = map length l[i := length (fst (ls_delete k (l ! i)))]"
     by (simp add: map_update) also
-  from listsum_update_nat[of i "map length l", simplified, OF i,
+  from sum_list_update_nat[of i "map length l", simplified, OF i,
     of "length (fst (ls_delete k (l ! i)))"]
     ls_delete_length_snd_True[OF snd] snd
-  have "listsum (map length l[i := length (fst (ls_delete k (l ! i)))])
-    = listsum (map length l) - 1"
+  have "sum_list (map length l[i := length (fst (ls_delete k (l ! i)))])
+    = sum_list (map length l) - 1"
     by (cases "length (l ! i)") (simp_all add: ls_delete_snd_set)
   finally show ?thesis using assms by (simp add: ht_size_def assms)
 qed
@@ -592,11 +592,11 @@ proof -
   have "(map length (l[i := fst (ls_delete k (l ! i))]))
     = map length l[i := length (fst (ls_delete k (l ! i)))]"
     by (simp add: map_update) also
-  from listsum_update_nat[of i "map length l", simplified, OF i,
+  from sum_list_update_nat[of i "map length l", simplified, OF i,
     of "length (fst (ls_delete k (l ! i)))"]
     ls_delete_length_snd_False[OF snd]
-  have "listsum (map length l[i := length (fst (ls_delete k (l ! i)))])
-    = listsum (map length l)" by simp
+  have "sum_list (map length l[i := length (fst (ls_delete k (l ! i)))])
+    = sum_list (map length l)" by simp
   finally show ?thesis using assms by (simp add: ht_size_def assms)
 qed
 

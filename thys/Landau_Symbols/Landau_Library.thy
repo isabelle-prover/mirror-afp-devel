@@ -92,18 +92,18 @@ lemma ln_mono: "0 < x \<Longrightarrow> 0 < y \<Longrightarrow> x \<le> y \<Long
 lemma ln_mono_strict: "0 < x \<Longrightarrow> 0 < y \<Longrightarrow> x < y \<Longrightarrow> ln (x::real) < ln y"
   by (subst ln_less_cancel_iff) simp_all
 
-lemma listprod_pos: "(\<And>x::_::linordered_semidom. x \<in> set xs \<Longrightarrow> x > 0) \<Longrightarrow> listprod xs > 0"
+lemma prod_list_pos: "(\<And>x::_::linordered_semidom. x \<in> set xs \<Longrightarrow> x > 0) \<Longrightarrow> prod_list xs > 0"
   by (induction xs) auto
 
-lemma (in monoid_mult) fold_plus_listprod_rev:
-  "fold times xs = times (listprod (rev xs))"
+lemma (in monoid_mult) fold_plus_prod_list_rev:
+  "fold times xs = times (prod_list (rev xs))"
 proof
   fix x
-  have "fold times xs x = listprod (rev xs @ [x])"
-    by (simp add: foldr_conv_fold listprod.eq_foldr)
-  also have "\<dots> = listprod (rev xs) * x"
+  have "fold times xs x = prod_list (rev xs @ [x])"
+    by (simp add: foldr_conv_fold prod_list.eq_foldr)
+  also have "\<dots> = prod_list (rev xs) * x"
     by simp
-  finally show "fold times xs x = listprod (rev xs) * x" .
+  finally show "fold times xs x = prod_list (rev xs) * x" .
 qed
 
 

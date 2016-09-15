@@ -102,7 +102,7 @@ definition prime_for_finite_factorization :: "int poly_f \<Rightarrow> int" wher
 
 definition mignotte_bounds :: "int poly_f \<Rightarrow> nat \<Rightarrow> int" where
   "mignotte_bounds p n = (let 
-    f = nat (sqrt_int_floor (listsum (map (\<lambda> a. a * a) p)));
+    f = nat (sqrt_int_floor (sum_list (map (\<lambda> a. a * a) p)));
     am = nat (abs (leading_coeff_non_zero p)) in 
     int (max_list (map (\<lambda> j. ((n-1) choose j) * f + ((n-1) choose (j-1)) * am) [0 ..< Suc n] )))"
 

@@ -100,7 +100,7 @@ proof (induct xs, simp)
 qed
 
 lemma compute_deg_pp[code]:
-  "deg (PP xs) = listsum (map snd (AList.clearjunk xs))"
+  "deg (PP xs) = sum_list (map snd (AList.clearjunk xs))"
 unfolding deg_def
 proof transfer
   fix xs::"('a * nat) list"
@@ -124,11 +124,11 @@ proof transfer
   qed
   also have "\<dots> = setsum (lookup xs) (set (map fst (AList.clearjunk xs)))"
     using clearjunk_keys_set[of xs] by simp
-  also have "\<dots> = listsum (map (lookup xs) (map fst (AList.clearjunk xs)))"
+  also have "\<dots> = sum_list (map (lookup xs) (map fst (AList.clearjunk xs)))"
     using setsum_code[of "lookup xs" "map fst (AList.clearjunk xs)"]
           distinct_remdups_id[OF distinct_clearjunk[of xs]] by simp
-  also have "\<dots> = listsum (map snd (AList.clearjunk xs))" by (simp only: eq)
-  finally show "setsum (lookup xs) UNIV = listsum (map snd (AList.clearjunk xs))" .
+  also have "\<dots> = sum_list (map snd (AList.clearjunk xs))" by (simp only: eq)
+  finally show "setsum (lookup xs) UNIV = sum_list (map snd (AList.clearjunk xs))" .
 qed
 
 lemma compute_dvd_pp:

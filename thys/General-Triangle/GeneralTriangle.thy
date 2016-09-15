@@ -21,7 +21,7 @@ definition
   "triangle =
     { l . l \<in> lists angles \<and> 
                     length l = 3 \<and>
-                    listsum l = 180 \<and>
+                    sum_list l = 180 \<and>
                     sorted l
                     }"
 

@@ -105,7 +105,7 @@ lemma lt_take: "n1 < n2 \<Longrightarrow> n2 \<le> length al \<Longrightarrow> t
 text{* lsum: *}
 
 definition lsum :: "('a \<Rightarrow> nat) \<Rightarrow> 'a list \<Rightarrow> nat" where
-"lsum f al \<equiv> listsum (map f al)"
+"lsum f al \<equiv> sum_list (map f al)"
 
 lemma lsum_simps[simp]:
  "lsum f [] = 0"

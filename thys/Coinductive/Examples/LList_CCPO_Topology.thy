@@ -664,13 +664,13 @@ lemma "ldistinct xs \<Longrightarrow> a \<notin> lset xs \<Longrightarrow> ldist
   by (rule_tac tendsto_closed[OF closed_ldistinct', OF isCont_lextup])
      (force simp: lfinite_eq_range_llist_of intro!: distinct_ext dest: ldistinct_lprefix dest: lprefix_lsetD)+
 
-definition elistsum :: "ereal llist \<Rightarrow> ereal" where
-  "elistsum xs = Lim (at' xs) (listsum \<circ> list_of)"
+definition esum_list :: "ereal llist \<Rightarrow> ereal" where
+  "esum_list xs = Lim (at' xs) (sum_list \<circ> list_of)"
 
-lemma elistsum_lfinite[simp]: "lfinite xs \<Longrightarrow> elistsum xs = listsum (list_of xs)"
-  by (simp add: elistsum_def Lim_at'_lfinite)
+lemma esum_list_lfinite[simp]: "lfinite xs \<Longrightarrow> esum_list xs = sum_list (list_of xs)"
+  by (simp add: esum_list_def Lim_at'_lfinite)
 
-lemma elistsum_LNil: "elistsum LNil = 0"
+lemma esum_list_LNil: "esum_list LNil = 0"
   by simp
 
 context
@@ -678,71 +678,71 @@ context
   assumes xs: "\<And>x. x \<in> lset xs \<Longrightarrow> 0 \<le> x"
 begin
 
-lemma elistsum_tendsto_SUP:
-  "((listsum\<circ>list_of) \<longlongrightarrow> (SUP ys : {ys. lfinite ys \<and> ys \<le> xs}. elistsum ys)) (at' xs)"
+lemma esum_list_tendsto_SUP:
+  "((sum_list\<circ>list_of) \<longlongrightarrow> (SUP ys : {ys. lfinite ys \<and> ys \<le> xs}. esum_list ys)) (at' xs)"
     (is "(_ \<longlongrightarrow> ?y) _")
 proof (rule order_tendstoI)
   fix a assume "a < ?y"
-  then obtain ys where "llist_of ys \<le> xs" "a < listsum ys"
+  then obtain ys where "llist_of ys \<le> xs" "a < sum_list ys"
     by (auto simp: less_SUP_iff lfinite_eq_range_llist_of)
   moreover
   { fix zs assume "ys \<le> zs" "llist_of zs \<le> xs"
     then obtain ys' where zs: "zs = ys @ ys'"
       by (auto simp: prefix_def less_eq_list_def)
-    with `llist_of zs \<le> xs` have nonneg: "0 \<le> listsum ys'"
-      using xs by (auto simp: lprefix_conv_lappend listsum_setsum_nth setsum_nonneg)
-    note `a < listsum ys`
-    also have "listsum ys \<le> listsum zs"
+    with `llist_of zs \<le> xs` have nonneg: "0 \<le> sum_list ys'"
+      using xs by (auto simp: lprefix_conv_lappend sum_list_setsum_nth setsum_nonneg)
+    note `a < sum_list ys`
+    also have "sum_list ys \<le> sum_list zs"
       using zs ereal_add_mono[OF order_refl nonneg] by auto
-    finally have "a < listsum zs" . }
-  ultimately show "eventually (\<lambda>x. a < (listsum\<circ>list_of) x) (at' xs)"
+    finally have "a < sum_list zs" . }
+  ultimately show "eventually (\<lambda>x. a < (sum_list\<circ>list_of) x) (at' xs)"
     unfolding eventually_at'_llist by (auto simp: lfinite_eq_range_llist_of)
 next
-  fix a assume "?y < a" then show "eventually (\<lambda>x. (listsum\<circ>list_of) x < a) (at' xs)"
+  fix a assume "?y < a" then show "eventually (\<lambda>x. (sum_list\<circ>list_of) x < a) (at' xs)"
     by (auto intro!: eventually_at'_llistI dest: SUP_lessD)
 qed
 
-lemma tendsto_elistsum: "(elistsum \<longlongrightarrow> elistsum xs) (at' xs)"
-  apply (rule filterlim_cong[where g="listsum \<circ> list_of", THEN iffD2, OF refl refl])
+lemma tendsto_esum_list: "(esum_list \<longlongrightarrow> esum_list xs) (at' xs)"
+  apply (rule filterlim_cong[where g="sum_list \<circ> list_of", THEN iffD2, OF refl refl])
   apply (rule eventually_mono[OF eventually_lfinite])
   apply simp
-  unfolding elistsum_def
+  unfolding esum_list_def
   apply (rule tendsto_LimI)
-  apply (rule elistsum_tendsto_SUP)
+  apply (rule esum_list_tendsto_SUP)
   done
 
-lemma isCont_elistsum: "isCont elistsum xs"
-  by (simp add: isCont_def filterlim_at'_list tendsto_elistsum)
+lemma isCont_esum_list: "isCont esum_list xs"
+  by (simp add: isCont_def filterlim_at'_list tendsto_esum_list)
 
 end
 
-lemma elistsum_nonneg:
-  "(\<And>x. x \<in> lset xs \<Longrightarrow> 0 \<le> x) \<Longrightarrow> 0 \<le> elistsum xs"
-  by (rule tendsto_le[OF at'_bot tendsto_elistsum tendsto_const])
+lemma esum_list_nonneg:
+  "(\<And>x. x \<in> lset xs \<Longrightarrow> 0 \<le> x) \<Longrightarrow> 0 \<le> esum_list xs"
+  by (rule tendsto_le[OF at'_bot tendsto_esum_list tendsto_const])
      (auto intro!: eventually_at'_llistI
-           simp: lprefix_conv_lappend listsum_setsum_nth setsum_nonneg lfinite_eq_range_llist_of)
+           simp: lprefix_conv_lappend sum_list_setsum_nth setsum_nonneg lfinite_eq_range_llist_of)
 
-lemma elistsum_LCons:
-  assumes x: "0 \<le> x" "\<And>x. x \<in> lset xs \<Longrightarrow> 0 \<le> x" shows "elistsum (LCons x xs) = x + elistsum xs"
+lemma esum_list_LCons:
+  assumes x: "0 \<le> x" "\<And>x. x \<in> lset xs \<Longrightarrow> 0 \<le> x" shows "esum_list (LCons x xs) = x + esum_list xs"
 proof (rule tendsto_unique_eventually[OF at'_bot])
-  from x show "((\<lambda>xs. elistsum (LCons x xs)) \<longlongrightarrow> elistsum (LCons x xs)) (at' xs)"
-    by (intro tendsto_compose[OF filterlim_at'_list[OF tendsto_elistsum] tendsto_LCons]) auto
-  show "eventually (\<lambda>xa. elistsum (LCons x xa) = x + elistsum xa) (at' xs)"
+  from x show "((\<lambda>xs. esum_list (LCons x xs)) \<longlongrightarrow> esum_list (LCons x xs)) (at' xs)"
+    by (intro tendsto_compose[OF filterlim_at'_list[OF tendsto_esum_list] tendsto_LCons]) auto
+  show "eventually (\<lambda>xa. esum_list (LCons x xa) = x + esum_list xa) (at' xs)"
     using eventually_lfinite by eventually_elim simp
-  from x show "((\<lambda>xa. x + elistsum xa) \<longlongrightarrow> x + elistsum xs) (at' xs)"
-    by (intro elistsum_nonneg tendsto_elistsum tendsto_add_ereal) auto
+  from x show "((\<lambda>xa. x + esum_list xa) \<longlongrightarrow> x + esum_list xs) (at' xs)"
+    by (intro esum_list_nonneg tendsto_esum_list tendsto_add_ereal) auto
 qed
 
-lemma elistsum_lfilter':
-  assumes nn: "\<And>x. x \<in> lset xs \<Longrightarrow> 0 \<le> x" shows "elistsum (lfilter' (\<lambda>x. x \<noteq> 0) xs) = elistsum xs"
+lemma esum_list_lfilter':
+  assumes nn: "\<And>x. x \<in> lset xs \<Longrightarrow> 0 \<le> x" shows "esum_list (lfilter' (\<lambda>x. x \<noteq> 0) xs) = esum_list xs"
 proof (rule tendsto_unique_eventually[OF at'_bot])
-  show "(elistsum \<longlongrightarrow> elistsum xs) (at' xs)"
-    using nn by (rule tendsto_elistsum)
-  from nn show "((\<lambda>xs. elistsum (lfilter' (\<lambda>x. x \<noteq> 0) xs)) \<longlongrightarrow> elistsum (lfilter' (\<lambda>x. x \<noteq> 0) xs)) (at' xs)"
-    by (intro tendsto_compose[OF filterlim_at'_list[OF tendsto_elistsum] tendsto_lfilter]) (auto simp: lset_lfilter')
-  show "eventually (\<lambda>xs. elistsum (lfilter' (\<lambda>x. x \<noteq> 0) xs) = elistsum xs) (at' xs)"
+  show "(esum_list \<longlongrightarrow> esum_list xs) (at' xs)"
+    using nn by (rule tendsto_esum_list)
+  from nn show "((\<lambda>xs. esum_list (lfilter' (\<lambda>x. x \<noteq> 0) xs)) \<longlongrightarrow> esum_list (lfilter' (\<lambda>x. x \<noteq> 0) xs)) (at' xs)"
+    by (intro tendsto_compose[OF filterlim_at'_list[OF tendsto_esum_list] tendsto_lfilter]) (auto simp: lset_lfilter')
+  show "eventually (\<lambda>xs. esum_list (lfilter' (\<lambda>x. x \<noteq> 0) xs) = esum_list xs) (at' xs)"
     using eventually_lfinite
-    by eventually_elim (simp add: listsum_map_filter[where f = "\<lambda>x. x" and P="\<lambda>x. x \<noteq> 0", simplified])
+    by eventually_elim (simp add: sum_list_map_filter[where f = "\<lambda>x. x" and P="\<lambda>x. x \<noteq> 0", simplified])
 qed
 
 function f:: "nat list \<Rightarrow> nat list" where

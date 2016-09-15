@@ -62,9 +62,9 @@ lists. We then define sum and product operations over these lists. *}
 
 subsubsection {* Sum and product definitions *}
 
-notation (input) listsum ("\<Sum>:_" [999] 998)
+notation (input) sum_list ("\<Sum>:_" [999] 998)
 
-notation (input) listprod ("\<Prod>:_" [999] 998)
+notation (input) prod_list ("\<Prod>:_" [999] 998)
 
 subsubsection {* Properties of sum and product *}
 
@@ -75,7 +75,7 @@ text {* These lemmas just state that if all the elements in a
 collection $C$ are less (greater than) than some value $m$, then the
 sum will less than (greater than) $m*length(C)$. *}
 
-lemma listsum_mono_lt [rule_format]:
+lemma sum_list_mono_lt [rule_format]:
   fixes xs::"real list"
   shows "xs \<noteq> [] \<and> (\<forall>x\<in> set xs. x < m)
          \<longrightarrow> ((\<Sum>:xs) < (m*(real (length xs))))"
@@ -107,7 +107,7 @@ next
 qed
 
 
-lemma listsum_mono_gt [rule_format]:
+lemma sum_list_mono_gt [rule_format]:
   fixes xs::"real list"
   shows "xs \<noteq> [] \<and> (\<forall>x\<in>set xs. x > m)
          \<longrightarrow> ((\<Sum>:xs) > (m*(real (length xs))))"
@@ -144,7 +144,7 @@ qed
 text {* If $a$ is in $C$ then the sum of the collection $D$ where $D$
 is $C$ with $a$ removed is the sum of $C$ minus $a$. *}
 
-lemma listsum_rmv1:
+lemma sum_list_rmv1:
   "a \<in> set xs \<Longrightarrow> \<Sum>:(remove1 a xs) = \<Sum>:xs - (a :: 'a :: ab_group_add)"
 by (induct xs) auto
 
@@ -517,7 +517,7 @@ apply simp
 apply clarsimp
 done
 
-lemma listsum_split:
+lemma sum_list_split:
   fixes xs::"real list"
   shows "\<Sum>:xs = (\<Sum>:(list_neq xs m) + \<Sum>:(list_eq xs m))"
 apply (induct xs)
@@ -525,7 +525,7 @@ apply simp
 apply clarsimp
 done
 
-lemma listprod_split:
+lemma prod_list_split:
   fixes xs::"real list"
   shows "\<Prod>:xs = (\<Prod>:(list_neq xs m) * \<Prod>:(list_eq xs m))"
 apply (induct xs)
@@ -533,7 +533,7 @@ apply simp
 apply clarsimp
 done
 
-lemma listsum_length_split:
+lemma sum_list_length_split:
   fixes xs::"real list"
   shows "length xs = length (list_neq xs m) + length (list_eq xs m)"
 apply (induct xs)
@@ -567,7 +567,7 @@ proof (rule ccontr)
   hence "\<forall>e. e : set ?neq \<longrightarrow> \<not>(e > ?m)" by blast
   hence "\<forall>e. e : set ?neq \<longrightarrow> e \<le> ?m" by (simp add: linorder_not_less)
   hence "\<forall>e. e : set ?neq \<longrightarrow> e < ?m" by (simp add:order_le_less)
-  with assms listsum_mono_lt have "(\<Sum>:?neq) < ?m * (real (length ?neq))" by blast
+  with assms sum_list_mono_lt have "(\<Sum>:?neq) < ?m * (real (length ?neq))" by blast
   hence
     "(\<Sum>:?neq) + (\<Sum>:?eq) < ?m * (real (length ?neq)) + (\<Sum>:?eq)" by simp
   also have
@@ -576,11 +576,11 @@ proof (rule ccontr)
   also have
     "\<dots> = (?m * (real (length xs)))"
       apply (subst of_nat_add [symmetric])
-      by (simp add: listsum_length_split [symmetric])
+      by (simp add: sum_list_length_split [symmetric])
   also have
     "\<dots> = \<Sum>:xs"
       by (simp add: list_sum_mean [symmetric])
-  also from not_el calculation show False by (simp only: listsum_split [symmetric])
+  also from not_el calculation show False by (simp only: sum_list_split [symmetric])
 qed
 
 lemma pick_one_lt:
@@ -600,7 +600,7 @@ proof (rule ccontr) -- "reductio ad absurdum"
   hence "\<forall>e. e : set ?neq \<longrightarrow> \<not>(e < ?m)" by blast
   hence "\<forall>e. e : set ?neq \<longrightarrow> e \<ge> ?m" by (simp add: linorder_not_less)
   hence "\<forall>e. e : set ?neq \<longrightarrow> e > ?m" by (auto simp: order_le_less)
-  with assms listsum_mono_gt have "(\<Sum>:?neq) > ?m * (real (length ?neq))" by blast
+  with assms sum_list_mono_gt have "(\<Sum>:?neq) > ?m * (real (length ?neq))" by blast
   hence
     "(\<Sum>:?neq) + (\<Sum>:?eq) > ?m * (real (length ?neq)) + (\<Sum>:?eq)" by simp
   also have
@@ -613,11 +613,11 @@ proof (rule ccontr) -- "reductio ad absurdum"
   also have
     "\<dots> = (?m * (real (length xs)))"
       apply (subst of_nat_add [symmetric])
-      by (simp add: listsum_length_split [symmetric])
+      by (simp add: sum_list_length_split [symmetric])
   also have
     "\<dots> = \<Sum>:xs"
       by (simp add: list_sum_mean [symmetric])
-  also from not_el calculation show False by (simp only: listsum_split [symmetric])
+  also from not_el calculation show False by (simp only: sum_list_split [symmetric])
 qed
 
 (* =================================================================== *)
@@ -808,21 +808,21 @@ qed
 text {* We now show that homogeneity of a non-empty collection $x$
 implies that its product is equal to @{text "(mean x)^(length x)"}. *}
 
-lemma listprod_het0:
+lemma prod_list_het0:
   shows "x\<noteq>[] \<and> het x = 0 \<Longrightarrow> \<Prod>:x = (mean x) ^ (length x)"
 proof -
   assume "x\<noteq>[] \<and> het x = 0"
   hence xne: "x\<noteq>[]" and hetx: "het x = 0" by auto
   from hetx have lz: "length (list_neq x (mean x)) = 0" unfolding het_def .
   hence "\<Prod>:(list_neq x (mean x)) = 1" by simp
-  with listprod_split have "\<Prod>:x = \<Prod>:(list_eq x (mean x))"
+  with prod_list_split have "\<Prod>:x = \<Prod>:(list_eq x (mean x))"
     apply -
     apply (drule meta_spec [of _ x])
     apply (drule meta_spec [of _ "mean x"])
     by simp
   also with list_eq_prod have
     "\<dots> = (mean x) ^ (length (list_eq x (mean x)))" by simp
-  also with calculation lz listsum_length_split have
+  also with calculation lz sum_list_length_split have
     "\<Prod>:x = (mean x) ^ (length x)"
     apply -
     apply (drule meta_spec [of _ x])
@@ -845,7 +845,7 @@ proof -
     by auto
   from posx pos_mean have mxgt0: "mean x > 0" by simp
   from xne have lxgt0: "length x > 0" by simp
-  with ass listprod_het0 have
+  with ass prod_list_het0 have
     "root (length x) (\<Prod>:x) = root (length x) ((mean x)^(length x))"
     by simp
   also from lxgt0 mxgt0 real_root_power_cancel have "\<dots> = mean x" by auto
@@ -931,9 +931,9 @@ proof -
   with mem nl lo bdef \<alpha>_mem \<beta>_mem
     have "\<Sum>:new_list = \<Sum>:xs"
       apply clarsimp
-      apply (subst listsum_rmv1)
+      apply (subst sum_list_rmv1)
         apply simp
-      apply (subst listsum_rmv1)
+      apply (subst sum_list_rmv1)
         apply simp
       apply clarsimp
     done

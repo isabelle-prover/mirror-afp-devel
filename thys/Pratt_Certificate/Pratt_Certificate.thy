@@ -268,7 +268,7 @@ text {*
 
 lemma correct_fpc:
   assumes "valid_cert xs" "p > 1"
-  assumes "listprod qs = r" "r \<noteq> 0"
+  assumes "prod_list qs = r" "r \<noteq> 0"
   assumes "\<forall> q \<in> set qs . Prime q \<in> set xs"
   assumes "\<forall> q \<in> set qs . [a^((p - 1) div q) \<noteq> 1] (mod p)"
   shows "valid_cert (build_fpc p a r qs @ xs)"
@@ -277,8 +277,8 @@ proof (induction qs arbitrary: r)
   case Nil thus ?case by auto
 next
   case (Cons y ys)
-  have "listprod ys = r div y" using Cons.prems by auto
-  then have T_in: "Triple p a (listprod ys) \<in> set (build_fpc p a (r div y) ys @ xs)"
+  have "prod_list ys = r div y" using Cons.prems by auto
+  then have T_in: "Triple p a (prod_list ys) \<in> set (build_fpc p a (r div y) ys @ xs)"
     by (cases ys) auto
 
   have "valid_cert (build_fpc p a (r div y) ys @ xs)"
@@ -300,7 +300,7 @@ proof -
 qed
 
 lemma size_pratt_fpc:
-  assumes "a \<le> p" "r \<le> p" "0 < a" "0 < r" "0 < p" "listprod qs = r"
+  assumes "a \<le> p" "r \<le> p" "0 < a" "0 < r" "0 < p" "prod_list qs = r"
   shows "\<forall>x \<in> set (build_fpc p a r qs) . size_pratt x \<le> 3 * log 2 p" using assms
 proof (induction qs arbitrary: r)
   case Nil
@@ -311,7 +311,7 @@ next
   then have "log 2 a \<le> log 2 p" "log 2 r \<le> log 2 p" by auto
   then have  "log 2 a + log 2 r \<le> 2 * log 2 p" by arith
   moreover have "r div q > 0" using Cons.prems by (fastforce intro: div_gt_0)
-  moreover hence "listprod qs = r div q" using Cons.prems(6) by auto
+  moreover hence "prod_list qs = r div q" using Cons.prems(6) by auto
   moreover have "r div q \<le> p" using `r\<le>p` div_le_dividend[of r q] by linarith
   ultimately show ?case using Cons by simp
 qed
@@ -336,12 +336,12 @@ qed
 lemma prime_factors_list_prime:
   fixes n :: nat
   assumes "prime n"
-  shows "\<exists> qs. prime_factors n = set qs \<and> listprod qs = n \<and> length qs = 1"
+  shows "\<exists> qs. prime_factors n = set qs \<and> prod_list qs = n \<and> length qs = 1"
   using assms by (intro exI[of _ "[n]"]) (auto simp: prime_factors_altdef intro: primes_dvd_imp_eq)
 
 lemma prime_factors_list:
   fixes n :: nat assumes "3 < n" "\<not> prime n"
-  shows "\<exists> qs. prime_factors n = set qs \<and> listprod qs = n \<and> length qs \<ge> 2"
+  shows "\<exists> qs. prime_factors n = set qs \<and> prod_list qs = n \<and> length qs \<ge> 2"
   using assms
 proof (induction n rule: less_induct)
   case (less n)
@@ -350,28 +350,28 @@ proof (induction n rule: less_induct)
       using `3 < n` by (auto elim: p_in_prime_factorsE)
     { assume "n div p > 3" "\<not> prime (n div p)"
       then obtain qs
-        where "prime_factors (n div p) = set qs" "listprod qs = (n div p)" "length qs \<ge> 2"
+        where "prime_factors (n div p) = set qs" "prod_list qs = (n div p)" "length qs \<ge> 2"
         using p' by atomize_elim (auto intro: less simp: div_gt_0)
       moreover
       have "prime_factors (p * (n div p)) = insert p (prime_factors (n div p))"
         using `3 < n` `2 \<le> p` `p \<le> n` `prime p`
       by (auto simp: prime_factors_product div_gt_0 prime_factors_of_prime)
       ultimately
-      have "prime_factors n = set (p # qs)" "listprod (p # qs) = n" "length (p#qs) \<ge> 2"
+      have "prime_factors n = set (p # qs)" "prod_list (p # qs) = n" "length (p#qs) \<ge> 2"
         using `p dvd n` by (simp_all add: dvd_mult_div_cancel)
       hence ?case by blast
     }
     moreover
     { assume "prime (n div p)"
       then obtain qs
-        where "prime_factors (n div p) = set qs" "listprod qs = (n div p)" "length qs = 1"
+        where "prime_factors (n div p) = set qs" "prod_list qs = (n div p)" "length qs = 1"
         using prime_factors_list_prime by blast
       moreover
       have "prime_factors (p * (n div p)) = insert p (prime_factors (n div p))"
         using `3 < n` `2 \<le> p` `p \<le> n` `prime p`
       by (auto simp: prime_factors_product div_gt_0 prime_factors_of_prime)
       ultimately
-      have "prime_factors n = set (p # qs)" "listprod (p # qs) = n" "length (p#qs) \<ge> 2"
+      have "prime_factors n = set (p # qs)" "prod_list (p # qs) = n" "length (p#qs) \<ge> 2"
         using `p dvd n` by (simp_all add: dvd_mult_div_cancel)
       hence ?case by blast
     } note case_prime = this
@@ -392,24 +392,24 @@ proof (induction n rule: less_induct)
 
 qed
 
-lemma listprod_ge:
+lemma prod_list_ge:
   fixes xs::"nat list"
   assumes "\<forall> x \<in> set xs . x \<ge> 1"
-  shows "listprod xs \<ge> 1" using assms by (induction xs) auto
+  shows "prod_list xs \<ge> 1" using assms by (induction xs) auto
 
-lemma listsum_log:
+lemma sum_list_log:
   fixes b::real
   fixes xs::"nat list"
   assumes b: "b > 0" "b \<noteq> 1"
   assumes xs:"\<forall> x \<in> set xs . x \<ge> b"
-  shows "(\<Sum>x\<leftarrow>xs. log b x) = log b (listprod xs)"
+  shows "(\<Sum>x\<leftarrow>xs. log b x) = log b (prod_list xs)"
   using assms
 proof (induction xs)
   case Nil
     thus ?case by simp
   next
   case (Cons y ys)
-    have "real (listprod ys) > 0" using listprod_ge Cons.prems by fastforce
+    have "real (prod_list ys) > 0" using prod_list_ge Cons.prems by fastforce
     thus ?case using log_mult[OF Cons.prems(1-2)] Cons by force
 qed
 
@@ -470,7 +470,7 @@ proof (induction p rule: less_induct)
     have "p \<noteq> 4" using `prime p` by auto
     hence "p - 1 > 3" using `p > 3` by auto
 
-    then obtain qs where prod_qs_eq:"listprod qs = p - 1"
+    then obtain qs where prod_qs_eq:"prod_list qs = p - 1"
         and qs_eq:"set qs = prime_factors (p - 1)" and qs_length_eq: "length qs \<ge> 2"
       using prime_factors_list[OF _ `\<not> prime (p - 1)`] by auto
     obtain f where f:"\<forall>q \<in> prime_factors (p - 1) . \<exists> c. f q = c
@@ -512,7 +512,7 @@ proof (induction p rule: less_induct)
     proof (rule correct_fpc)
       show "valid_cert (concat ?cs)"
         using cs_valid_all by (auto simp: valid_cert_concatI)
-      show "listprod qs = p - 1" by (rule prod_qs_eq)
+      show "prod_list qs = p - 1" by (rule prod_qs_eq)
       show "p - 1 \<noteq> 0" using prime_gt_1_nat[OF `prime p`] by arith
       show "\<forall> q \<in> set qs . Prime q \<in> set (concat ?cs)"
         using concat_set[of "prime_factors (p - 1)"] cs qs_eq by blast
@@ -531,8 +531,8 @@ proof (induction p rule: less_induct)
             \<le> ((\<Sum>q\<leftarrow>(map real qs). 6*log 2 q - 4) + ?k + 2)"
             by (simp add: o_def length_fpc)
       also have "\<dots> = (6*(\<Sum>q\<leftarrow>(map real qs). log 2 q) + (-4 * real ?k) + ?k + 2)"
-        by (simp add: o_def listsum_subtractf listsum_triv listsum_const_mult)
-      also have "\<dots> \<le> 6*log 2 (p - 1) - 4" using `?k\<ge>2` prod_qs_eq listsum_log[of 2 qs] qs_ge_2
+        by (simp add: o_def sum_list_subtractf sum_list_triv sum_list_const_mult)
+      also have "\<dots> \<le> 6*log 2 (p - 1) - 4" using `?k\<ge>2` prod_qs_eq sum_list_log[of 2 qs] qs_ge_2
         by force
       also have "\<dots> \<le> 6*log 2 p - 4" using log_le_cancel_iff[of 2 "p - 1" p] `p>3` by force
       ultimately have "length (Prime p # ((build_fpc p a (p - 1) qs)@ concat ?cs))

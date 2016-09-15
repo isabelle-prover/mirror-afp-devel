@@ -194,7 +194,7 @@ text_raw{*\label{thy:ex:idioms}*}
   lemma os_sum'_rule: 
     "<os_is_it l p l' it> 
     os_sum' it s 
-    <\<lambda>r. os_list l p * \<up>(r = s + listsum l')>\<^sub>t"
+    <\<lambda>r. os_list l p * \<up>(r = s + sum_list l')>\<^sub>t"
   proof (induct l' arbitrary: it s)
     case Nil thus ?case
       txt {* To unfold the definition of a partial function, we have to use 

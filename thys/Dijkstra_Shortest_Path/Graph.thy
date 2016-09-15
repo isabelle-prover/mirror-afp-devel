@@ -285,12 +285,12 @@ subsection {* Weighted Graphs *}
   locale valid_mgraph = valid_graph G for G::"('v,'w::monoid_add) graph"
 
   definition path_weight :: "('v,'w::monoid_add) path \<Rightarrow> 'w"
-    where "path_weight p \<equiv> listsum (map (fst \<circ> snd) p)"
+    where "path_weight p \<equiv> sum_list (map (fst \<circ> snd) p)"
 
   (* 
-    lemma path_weight_alt: "path_weight p \<equiv> listsum (map (fst \<circ> snd) p)"
+    lemma path_weight_alt: "path_weight p \<equiv> sum_list (map (fst \<circ> snd) p)"
     unfolding path_weight_def foldl_conv_fold
-    by (simp add: listsum_foldl)
+    by (simp add: sum_list_foldl)
   *)
 
   lemma path_weight_split[simp]:

@@ -89,9 +89,9 @@ proof -
       \<bar>((u - l) \<bullet> Basis_list ! i / 2) *\<^sub>R Basis_list ! i\<bar>)"
     by (auto simp: pdevs_apply_pdevs_of_ivl)
   also have "\<dots> = (\<Sum>b \<leftarrow> Basis_list. \<bar>((u - l) \<bullet> b / 2) *\<^sub>R b\<bar>)"
-    by (auto simp: listsum_setsum_nth)
+    by (auto simp: sum_list_setsum_nth)
   also have "\<dots> = (\<Sum>b\<in>Basis. \<bar>((u - l) \<bullet> b / 2) *\<^sub>R b\<bar>)"
-    by (auto simp: listsum_distinct_conv_setsum_set)
+    by (auto simp: sum_list_distinct_conv_setsum_set)
   also have "\<dots> = \<bar>u - l\<bar> /\<^sub>R 2"
     by (subst euclidean_representation[symmetric, of "\<bar>u - l\<bar> /\<^sub>R 2"])
       (simp add:  abs_inner abs_scaleR)
@@ -163,11 +163,11 @@ proof atomize_elim
     "?dots = (\<Sum>b \<in> Basis. (if (u - l) \<bullet> b = 0 then 0 else ((k - (1 / 2) *\<^sub>R (l + u)) \<bullet> b) *\<^sub>R b))"
     by (auto intro!: setsum.cong)
   also have "\<dots> = (\<Sum>b \<leftarrow> ?B. (if (u - l) \<bullet> b = 0 then 0 else ((k - (1 / 2) *\<^sub>R (l + u)) \<bullet> b) *\<^sub>R b))"
-    by (auto simp: listsum_distinct_conv_setsum_set)
+    by (auto simp: sum_list_distinct_conv_setsum_set)
   also have "\<dots> =
     (\<Sum>i = 0..<length ?B.
         (if (u - l) \<bullet> ?B ! i = 0 then 0 else ((k - (1 / 2) *\<^sub>R (l + u)) \<bullet> ?B ! i) *\<^sub>R ?B ! i))"
-    by (auto simp: listsum_setsum_nth)
+    by (auto simp: sum_list_setsum_nth)
   also have "\<dots> =
     (\<Sum>i = 0..<degree (inner_scaleR_pdevs (u - l) One_pdevs).
         (if (u - l) \<bullet> Basis_list ! i = 0 then 0
@@ -282,10 +282,10 @@ primrec points_of_aform where
 
 subsubsection \<open>Approximate total deviation\<close>
 
-definition listsum'::"nat \<Rightarrow> 'a list \<Rightarrow> 'a::executable_euclidean_space"
-  where "listsum' p xs = fold (\<lambda>a b. eucl_truncate_up p (a + b)) xs 0"
+definition sum_list'::"nat \<Rightarrow> 'a list \<Rightarrow> 'a::executable_euclidean_space"
+  where "sum_list' p xs = fold (\<lambda>a b. eucl_truncate_up p (a + b)) xs 0"
 
-definition "tdev' p x = listsum' p (map (abs o snd) (list_of_pdevs x))"
+definition "tdev' p x = sum_list' p (map (abs o snd) (list_of_pdevs x))"
 
 lemma
   eucl_fold_mono:
@@ -294,12 +294,12 @@ lemma
   shows "x \<le> y \<Longrightarrow> fold f xs x \<le> fold f xs y"
   by (induct xs arbitrary: x y) (auto simp: mono)
 
-lemma listsum_add_le_fold_eucl_truncate_up:
+lemma sum_list_add_le_fold_eucl_truncate_up:
   fixes z::"'a::executable_euclidean_space"
-  shows "listsum xs + z \<le> fold (\<lambda>x y. eucl_truncate_up p (x + y)) xs z"
+  shows "sum_list xs + z \<le> fold (\<lambda>x y. eucl_truncate_up p (x + y)) xs z"
 proof (induct xs arbitrary: z)
   case (Cons x xs)
-  have "listsum (x # xs) + z = listsum xs + (z + x)"
+  have "sum_list (x # xs) + z = sum_list xs + (z + x)"
     by simp
   also have "\<dots> \<le> fold (\<lambda>x y. eucl_truncate_up p (x + y)) xs (z + x)"
     using Cons by simp
@@ -308,14 +308,14 @@ proof (induct xs arbitrary: z)
   finally show ?case by simp
 qed simp
 
-lemma listsum_le_listsum':
-  "listsum xs \<le> listsum' p xs"
-  unfolding listsum'_def
-  using listsum_add_le_fold_eucl_truncate_up[of xs 0] by simp
+lemma sum_list_le_sum_list':
+  "sum_list xs \<le> sum_list' p xs"
+  unfolding sum_list'_def
+  using sum_list_add_le_fold_eucl_truncate_up[of xs 0] by simp
 
-lemma listsum'_listsum_le:
-  "y \<le> listsum xs \<Longrightarrow> y \<le> listsum' p xs"
-  by (metis listsum_le_listsum' order.trans)
+lemma sum_list'_sum_list_le:
+  "y \<le> sum_list xs \<Longrightarrow> y \<le> sum_list' p xs"
+  by (metis sum_list_le_sum_list' order.trans)
 
 lemma tdev': "tdev x \<le> tdev' p x"
   unfolding tdev'_def
@@ -323,19 +323,19 @@ proof -
   have "tdev x = (\<Sum>i = 0 ..< degree x. \<bar>pdevs_apply x i\<bar>)"
     by (auto intro!: setsum.mono_neutral_cong_left simp: tdev_def)
   also have "\<dots> = (\<Sum>i \<leftarrow> rev [0 ..< degree x]. \<bar>pdevs_apply x i\<bar>)"
-    by (metis atLeastLessThan_upt listsum_rev rev_map setsum_set_upt_conv_listsum_nat)
+    by (metis atLeastLessThan_upt sum_list_rev rev_map setsum_set_upt_conv_sum_list_nat)
   also have
-    "\<dots> = listsum (map (\<lambda>xa. \<bar>pdevs_apply x xa\<bar>) [xa\<leftarrow>rev [0..<degree x] . pdevs_apply x xa \<noteq> 0])"
+    "\<dots> = sum_list (map (\<lambda>xa. \<bar>pdevs_apply x xa\<bar>) [xa\<leftarrow>rev [0..<degree x] . pdevs_apply x xa \<noteq> 0])"
     unfolding filter_map map_map o_def
-    by (subst listsum_map_filter) auto
-  also note listsum_le_listsum'[of _ p]
+    by (subst sum_list_map_filter) auto
+  also note sum_list_le_sum_list'[of _ p]
   also have "[xa\<leftarrow>rev [0..<degree x] . pdevs_apply x xa \<noteq> 0] =
       rev (sorted_list_of_set (pdevs_domain x))"
     by (subst rev_is_rev_conv[symmetric])
       (auto simp: filter_map rev_filter intro!: sorted_distinct_set_unique
         sorted_filter[of "\<lambda>x. x", simplified] degree_gt)
   finally
-  show "tdev x \<le> listsum' p (map (abs \<circ> snd) (list_of_pdevs x))"
+  show "tdev x \<le> sum_list' p (map (abs \<circ> snd) (list_of_pdevs x))"
     by (auto simp: list_of_pdevs_def o_def rev_map filter_map rev_filter)
 qed
 
@@ -493,7 +493,7 @@ definition add_aform'::"nat \<Rightarrow> nat \<Rightarrow> 'a::executable_eucli
     (let
       z0 = trunc_bound_eucl p (fst x + fst y);
       z = trunc_bound_pdevs p (add_pdevs (snd x) (snd y))
-      in (fst z0, pdev_upd (fst z) n (listsum' p [snd z0, snd z])))"
+      in (fst z0, pdev_upd (fst z) n (sum_list' p [snd z0, snd z])))"
 
 lemma truncate_aform_error_aform_cancel:
   "aform_val e (truncate_aform p z) = aform_val e z + aform_val e (truncate_error_aform p z) "
@@ -547,7 +547,7 @@ proof atomize_elim
   have e_le: "\<bar>-(e1 + e2)\<bar> \<le> \<bar>pdevs_apply (snd (add_aform' p n X Y)) n\<bar>"
     by (auto simp: add_aform'_def Let_def assms
       intro!: order.trans[OF _ abs_ge_self] order.trans[OF abs_triangle_ineq4]
-        listsum'_listsum_le add_mono abs_e1 abs_e2)
+        sum_list'_sum_list_le add_mono abs_e1 abs_e2)
 
   have "aform_val e (add_aform X Y) = aform_val (e(n:=0)) (add_aform' p n X Y) + -(e1 + e2)"
     by (simp add: aform_val_def add_aform_def add_aform'_def Let_def e1 e2 assms)
@@ -617,7 +617,7 @@ definition mult_aform'::"nat \<Rightarrow> nat \<Rightarrow> real aform \<Righta
       w = trunc_bound_pdevs p (add_pdevs (fst u) (fst v));
       l = trunc_bound_eucl p (tdev (snd x) * tdev (snd y))
     in
-      (fst z0, pdev_upd (fst w) n (listsum' p [fst l, snd l, snd z0, snd u, snd v, snd w])))"
+      (fst z0, pdev_upd (fst w) n (sum_list' p [fst l, snd l, snd z0, snd u, snd v, snd w])))"
 
 lemma mult_aform'E:
   fixes X Y::"real aform"
@@ -663,8 +663,8 @@ proof atomize_elim
     using abs_e5
     by (auto simp add: e5)
   also have "fst ?l + snd ?l + snd ?z0 + snd ?u + snd ?v + snd ?w \<le>
-      listsum' p [fst ?l, snd ?l, snd ?z0, snd ?u, snd ?v, snd ?w]"
-    by (rule order_trans[OF _ listsum_le_listsum']) simp
+      sum_list' p [fst ?l, snd ?l, snd ?z0, snd ?u, snd ?v, snd ?w]"
+    by (rule order_trans[OF _ sum_list_le_sum_list']) simp
   also have "\<dots> \<le> \<bar>pdevs_apply (snd (mult_aform' p n X Y)) n\<bar>"
     by (simp add: mult_aform'_def Let_def assms)
   finally have err_le: "abs ?err \<le> \<bar>pdevs_apply (snd (mult_aform' p n X Y)) n\<bar>" by arith
@@ -734,7 +734,7 @@ definition inverse_aform'::"nat \<Rightarrow> nat \<Rightarrow> real aform \<Rig
     let res1 = trunc_bound_eucl p (alpha * fst X) in
     let res2 = trunc_bound_eucl p (fst res1 + zeta) in
     let zs = trunc_bound_pdevs p (scaleR_pdevs alpha (snd X)) in
-    (fst res2, pdev_upd (fst zs) n (listsum' p [delta, snd res1, snd res2, snd zs])))"
+    (fst res2, pdev_upd (fst zs) n (sum_list' p [delta, snd res1, snd res2, snd zs])))"
 
 lemma
   linear_lower:
@@ -937,7 +937,7 @@ proof atomize_elim
       unfolding inverse_aform'_def Let_def vars[symmetric]
       using \<open>0 < l\<close>
       by (auto simp add: inverse_aform'_def pdevs_apply_trunc_pdevs assms vars[symmetric]
-        intro!: order.trans[OF _ listsum'_listsum_le])
+        intro!: order.trans[OF _ sum_list'_sum_list_le])
     finally have "abs ?err \<le> abs (pdevs_apply (snd (inverse_aform' p n X)) n)" by simp
   } note err_le = this
   have "aform_val (e(n := 0)) (inverse_aform' p n X) + (- e1 - e1' - e2) +
@@ -1738,8 +1738,8 @@ val _ =
 
 subsection \<open>Generic operations on Affine Forms in Euclidean Space\<close>
 
-lemma listsum_Basis_list[simp]: "listsum (map f Basis_list) = (\<Sum>b\<in>Basis. f b)"
-  by (subst listsum_distinct_conv_setsum_set) (auto simp: Basis_list distinct_Basis_list)
+lemma sum_list_Basis_list[simp]: "sum_list (map f Basis_list) = (\<Sum>b\<in>Basis. f b)"
+  by (subst sum_list_distinct_conv_setsum_set) (auto simp: Basis_list distinct_Basis_list)
 
 subsubsection \<open> Binary operations \<close>
 
@@ -1826,7 +1826,7 @@ where "scaleR_ea x i = unary_componentwise' Basis_list (Mult x) i"
 
 lemma interpret_scaleR_ea[simp]:
   "interpret_euclarith (scaleR_ea x i) xs = interpret_realarith x xs *\<^sub>R (xs!i)"
-  unfolding scaleR_ea_def interpret_unary_componentwise' listsum_Basis_list euclidean_representation
+  unfolding scaleR_ea_def interpret_unary_componentwise' sum_list_Basis_list euclidean_representation
   by (auto simp: divide_simps intro!: euclidean_eqI[where 'a='a])
 
 

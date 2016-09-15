@@ -1148,7 +1148,7 @@ lemma mat_pow_closed[simp]: "A \<in> carrier\<^sub>m n n \<Longrightarrow> A ^\<
 definition mat_diag :: "'a mat \<Rightarrow> 'a list" where
   "mat_diag A = map (\<lambda> i. A $$ (i,i)) [0 ..< dim\<^sub>r A]"
 
-lemma listprod_diag_setprod: "listprod (mat_diag A) = (\<Prod> i = 0 ..< dim\<^sub>r A. A $$ (i,i))"
+lemma prod_list_diag_setprod: "prod_list (mat_diag A) = (\<Prod> i = 0 ..< dim\<^sub>r A. A $$ (i,i))"
   unfolding mat_diag_def 
   by (subst setprod.distinct_set_conv_list[symmetric], auto)
 
@@ -1493,8 +1493,8 @@ fun diag_block_mat :: "'a :: zero mat list \<Rightarrow> 'a mat" where
      in four_block_mat A (\<zero>\<^sub>m (dim\<^sub>r A) (dim\<^sub>c B)) (\<zero>\<^sub>m (dim\<^sub>r B) (dim\<^sub>c A)) B)"
 
 lemma diag_block_mat_dim:
-  "dim\<^sub>r (diag_block_mat As) = listsum (map dim\<^sub>r As)" (is "?row")
-  "dim\<^sub>c (diag_block_mat As) = listsum (map dim\<^sub>c As)" (is "?col")
+  "dim\<^sub>r (diag_block_mat As) = sum_list (map dim\<^sub>r As)" (is "?row")
+  "dim\<^sub>c (diag_block_mat As) = sum_list (map dim\<^sub>c As)" (is "?col")
 proof -
   have "?row \<and> ?col"
     by (induct As, auto simp: Let_def)
@@ -1528,7 +1528,7 @@ lemma diag_block_mat_square:
 by (induct As, auto simp:Let_def)
 
 lemma diag_block_mat_one[simp]: 
-  "diag_block_mat (map (\<lambda>A. \<one>\<^sub>m (dim\<^sub>r A)) As) = (\<one>\<^sub>m (listsum (map dim\<^sub>r As)))"
+  "diag_block_mat (map (\<lambda>A. \<one>\<^sub>m (dim\<^sub>r A)) As) = (\<one>\<^sub>m (sum_list (map dim\<^sub>r As)))"
   by (induct As, auto simp: Let_def)
 
 lemma diag_block_mat_elements:
@@ -1559,7 +1559,7 @@ lemma diag_block_mat_pow: assumes sq: "Ball (set As) square_mat"
 proof (induct n)
   case 0
   have "?As ^\<^sub>m 0 = \<one>\<^sub>m (dim\<^sub>r ?As)" by simp
-  also have "dim\<^sub>r ?As = listsum (map dim\<^sub>r As)"
+  also have "dim\<^sub>r ?As = sum_list (map dim\<^sub>r As)"
     using diag_block_mat_square[OF sq] unfolding diag_block_mat_dim by auto
   also have "\<one>\<^sub>m \<dots> = diag_block_mat (map (\<lambda>A. \<one>\<^sub>m (dim\<^sub>r A)) As)" by simp
   also have "\<dots> = diag_block_mat (map (\<lambda> A. A ^\<^sub>m 0) As)" by simp
@@ -1578,7 +1578,7 @@ next
       and sq3: "Ball (set (List.map (\<lambda>A. A ^\<^sub>m n \<otimes>\<^sub>m A) As)) square_mat"
       using sq by auto
     def n1 \<equiv> "dim\<^sub>r A"
-    def n2 \<equiv> "listsum (map dim\<^sub>r As)"
+    def n2 \<equiv> "sum_list (map dim\<^sub>r As)"
     from A have A: "A \<in> carrier\<^sub>m n1 n1" unfolding n1_def mat_carrier_def by simp
     have [simp]: "dim\<^sub>c (?An As) = n2" "dim\<^sub>r (?An As) = n2"
       unfolding n2_def
@@ -1613,7 +1613,7 @@ lemma diag_block_upper_triangular: assumes
 proof (induct As arbitrary: i j)
   case (Cons A As i j)
   let ?n1 = "dim\<^sub>r A"
-  let ?n2 = "listsum (map dim\<^sub>r As)"
+  let ?n2 = "sum_list (map dim\<^sub>r As)"
   from Cons have [simp]: "dim\<^sub>c A = ?n1" by simp
   from Cons have "Ball (set As) square_mat" by auto
   note [simp] = diag_block_mat_square[OF this,unfolded square_mat.simps]

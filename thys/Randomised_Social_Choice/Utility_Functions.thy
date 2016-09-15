@@ -41,7 +41,7 @@ proof -
   also from carrier have finite: "finite A" if "A \<in> set (weak_ranking le)" for A
     using that by (blast intro!: finite_subset[OF _ finite_carrier, of A])
   hence "(\<Sum>a\<in>\<Union>set (weak_ranking le). u a * pmf p a) = 
-           (\<Sum>A\<leftarrow>weak_ranking le. \<Sum>a\<in>A. u a * pmf p a)" (is "_ = listsum ?xs")
+           (\<Sum>A\<leftarrow>weak_ranking le. \<Sum>a\<in>A. u a * pmf p a)" (is "_ = sum_list ?xs")
     using weak_ranking_total_preorder
     by (subst setsum.Union_disjoint)
        (auto simp: is_weak_ranking_iff disjoint_def setsum.distinct_set_conv_list)

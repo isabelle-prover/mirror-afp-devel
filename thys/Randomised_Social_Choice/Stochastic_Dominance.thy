@@ -348,7 +348,7 @@ proof safe
   proof -
     from p have "measure_pmf.expectation p u =
                    (\<Sum>i<length xs. u (f i) * measure_pmf.prob p (xs ! i))"
-      by (simp add: f_def expected_utility_weak_ranking xs_def listsum_setsum_nth atLeast0LessThan)
+      by (simp add: f_def expected_utility_weak_ranking xs_def sum_list_setsum_nth atLeast0LessThan)
     also have "\<dots> = (\<Sum>i<length xs. u (f i) * (?pref p (f i) - ?pref' p (f i)))"
     proof (intro setsum.cong HOL.refl)
       fix i assume i: "i \<in> {..<length xs}"

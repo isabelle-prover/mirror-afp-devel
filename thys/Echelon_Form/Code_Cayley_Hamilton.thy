@@ -65,7 +65,7 @@ definition evalmat :: "'a::comm_ring_1 poly \<Rightarrow> 'a^'n^'n \<Rightarrow>
   "evalmat P A = (\<Sum> i \<in> { n::nat . n \<le> ( degree P ) } . (coeff P i) *k (matpow A i) )"
 
 lemma evalmat_code[code]:
-  "evalmat P A = listsum (map (\<lambda>i. (coeff P (nat i)) *k (matpow A (nat i)))  [0..(degree P)])"
+  "evalmat P A = sum_list (map (\<lambda>i. (coeff P (nat i)) *k (matpow A (nat i)))  [0..(degree P)])"
 proof -
   have set_rw: "int` {n. n \<le> degree P} = set[0..(degree P)]"
     by (auto, metis (poly_guards_query) image_iff mem_Collect_eq nat_0_le nat_le_iff)
@@ -73,8 +73,8 @@ proof -
     unfolding evalmat_def ..
   also have "... = (\<Sum>i\<in>set[0..(degree P)]. coeff P (nat i) *k matpow A (nat i))"
     unfolding transfer_nat_int_sum_prod unfolding set_rw ..
-  also have "... = listsum (map (\<lambda>i. (coeff P (nat i)) *k (matpow A (nat i)))  [0..(degree P)])"  
-    unfolding setsum_set_upto_conv_listsum_int ..
+  also have "... = sum_list (map (\<lambda>i. (coeff P (nat i)) *k (matpow A (nat i)))  [0..(degree P)])"  
+    unfolding setsum_set_upto_conv_sum_list_int ..
   finally show ?thesis .
 qed
 

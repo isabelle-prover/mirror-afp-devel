@@ -339,7 +339,7 @@ qed (simp add: one_poly_def)
 
 lemma real_degree_2_factorization_exists_complex: fixes p :: "complex poly"
   assumes pR: "set (coeffs p) \<subseteq> \<real>"
-  shows "\<exists> qs. p = listprod qs \<and> (\<forall> q \<in> set qs. set (coeffs q) \<subseteq> \<real> \<and> degree q \<le> 2)"
+  shows "\<exists> qs. p = prod_list qs \<and> (\<forall> q \<in> set qs. set (coeffs q) \<subseteq> \<real> \<and> degree q \<le> 2)"
 proof -
   obtain n where "degree p = n" by auto
   thus ?thesis using pR
@@ -390,8 +390,8 @@ proof -
         by (rule degree_mult_eq[OF f0 r0])
       with degf less(2) have degr: "degree r < n" by auto        
       from less(1)[OF this refl rR] obtain qs 
-        where IH: "r = listprod qs" "(\<forall>q\<in>set qs. set (coeffs q) \<subseteq> \<real> \<and> degree q \<le> 2)" by auto
-      from IH(1) have p: "p = listprod (f # qs)" unfolding p by auto
+        where IH: "r = prod_list qs" "(\<forall>q\<in>set qs. set (coeffs q) \<subseteq> \<real> \<and> degree q \<le> 2)" by auto
+      from IH(1) have p: "p = prod_list (f # qs)" unfolding p by auto
       with IH(2) fR degf show ?thesis
         by (intro exI[of _ "f # qs"], auto)
     qed
@@ -399,7 +399,7 @@ proof -
 qed
 
 lemma real_degree_2_factorization_exists: fixes p :: "real poly"
-  shows "\<exists> qs. p = listprod qs \<and> (\<forall> q \<in> set qs. degree q \<le> 2)"
+  shows "\<exists> qs. p = prod_list qs \<and> (\<forall> q \<in> set qs. degree q \<le> 2)"
 proof -
   interpret cr: inj_field_hom complex_of_real by (unfold_locales, auto)
   let ?cp = "map_poly complex_of_real"
@@ -407,17 +407,17 @@ proof -
   let ?p = "?cp p"
   have "set (coeffs ?p) \<subseteq> \<real>" unfolding cr.coeffs_map_poly by auto
   from real_degree_2_factorization_exists_complex[OF this]
-  obtain qs where p: "?p = listprod qs" and 
+  obtain qs where p: "?p = prod_list qs" and 
     qs: "\<And> q. q \<in> set qs \<Longrightarrow> set (coeffs q) \<subseteq> \<real> \<and> degree q \<le> 2" by auto
-  have p: "p = ?rp (listprod qs)" unfolding arg_cong[OF p, of ?rp, symmetric]
+  have p: "p = ?rp (prod_list qs)" unfolding arg_cong[OF p, of ?rp, symmetric]
     by (subst map_poly_compose, force+, rule sym, rule map_poly_eqI, auto)
-  from qs have "\<exists> rs. listprod qs = ?cp (listprod rs) \<and> (\<forall> r \<in> set rs. degree r \<le> 2)"
+  from qs have "\<exists> rs. prod_list qs = ?cp (prod_list rs) \<and> (\<forall> r \<in> set rs. degree r \<le> 2)"
   proof (induct qs)
     case Nil
     show ?case by (auto intro!: exI[of _ Nil] simp: one_poly_def)
   next
     case (Cons q qs)
-    then obtain rs where qs: "listprod qs = ?cp (listprod rs)"
+    then obtain rs where qs: "prod_list qs = ?cp (prod_list rs)"
       and rs: "\<And> q. q\<in>set rs \<Longrightarrow> degree q \<le> 2" by force+
     from Cons(2)[of q] have q: "set (coeffs q) \<subseteq> \<real>" and dq: "degree q \<le> 2" by auto
     def r \<equiv> "?rp q"
@@ -425,9 +425,9 @@ proof -
       by (subst map_poly_compose, force+, rule sym, rule map_poly_eqI, insert q, auto)
     have dr: "degree r \<le> 2" using dq unfolding q by (simp add: degree_map_poly)
     show ?case
-      by (rule exI[of _ "r # rs"], unfold listprod.Cons cr.map_poly_mult qs q, insert dr rs, auto)
+      by (rule exI[of _ "r # rs"], unfold prod_list.Cons cr.map_poly_mult qs q, insert dr rs, auto)
   qed
-  then obtain rs where id: "listprod qs = ?cp (listprod rs)" and deg: "\<forall> r \<in> set rs. degree r \<le> 2" by auto
+  then obtain rs where id: "prod_list qs = ?cp (prod_list rs)" and deg: "\<forall> r \<in> set rs. degree r \<le> 2" by auto
   show ?thesis unfolding p id
     by (intro exI, rule conjI[OF _ deg], subst map_poly_compose, force+, rule map_poly_eqI, auto)
 qed
@@ -437,7 +437,7 @@ lemma odd_degree_imp_real_root: assumes "odd (degree p)"
   shows "\<exists> x. poly p x = (0 :: real)"
 proof -
   from real_degree_2_factorization_exists[of p] obtain qs where
-    id: "p = listprod qs" and qs: "\<And> q. q \<in> set qs \<Longrightarrow> degree q \<le> 2" by auto
+    id: "p = prod_list qs" and qs: "\<And> q. q \<in> set qs \<Longrightarrow> degree q \<le> 2" by auto
   show ?thesis using assms qs unfolding id
   proof (induct qs)
     case (Cons q qs)
@@ -449,12 +449,12 @@ proof -
     next
       case False
       with dq have deg: "degree q = 0 \<or> degree q = 2" by arith
-      from Cons(2) have "q * listprod qs \<noteq> 0" by auto
-      hence "q \<noteq> 0" "listprod qs \<noteq> 0" by auto
+      from Cons(2) have "q * prod_list qs \<noteq> 0" by auto
+      hence "q \<noteq> 0" "prod_list qs \<noteq> 0" by auto
       from degree_mult_eq[OF this]
-      have "degree (listprod (q # qs)) = degree q + degree (listprod qs)" by simp
-      from Cons(2)[unfolded this] deg have "odd (degree (listprod qs))" by auto
-      from Cons(1)[OF this Cons(3)] obtain x where "poly (listprod qs) x = 0" by auto
+      have "degree (prod_list (q # qs)) = degree q + degree (prod_list qs)" by simp
+      from Cons(2)[unfolded this] deg have "odd (degree (prod_list qs))" by auto
+      from Cons(1)[OF this Cons(3)] obtain x where "poly (prod_list qs) x = 0" by auto
       thus ?thesis by auto
     qed
   qed simp

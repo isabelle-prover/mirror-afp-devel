@@ -115,7 +115,7 @@ lemma psums_Cons:
   by (induction xs rule: psums.induct) (simp_all add: algebra_simps)
 
 lemma last_psums: 
-  "(xs :: 'a :: monoid_add list) \<noteq> [] \<Longrightarrow> last (psums xs) = listsum xs"
+  "(xs :: 'a :: monoid_add list) \<noteq> [] \<Longrightarrow> last (psums xs) = sum_list xs"
   by (induction xs rule: psums.induct) 
      (auto simp add: add.assoc [symmetric] psums_Cons o_def)
 
@@ -317,16 +317,16 @@ text \<open>
 \<close>
 private lemma arthan_wlog [consumes 3, case_names nonneg lift]:
   fixes xs :: "'a :: {linordered_ab_group_add,sgn_if,zero_neq_one} list"
-  assumes "xs \<noteq> []" "last xs \<noteq> 0" "x + y + listsum xs = 0"
+  assumes "xs \<noteq> []" "last xs \<noteq> 0" "x + y + sum_list xs = 0"
   assumes "\<And>x y xs. xs \<noteq> [] \<Longrightarrow> last xs \<noteq> 0 \<Longrightarrow> 
-               x + y + listsum xs = 0 \<Longrightarrow> x \<ge> 0 \<Longrightarrow> P x y xs"
+               x + y + sum_list xs = 0 \<Longrightarrow> x \<ge> 0 \<Longrightarrow> P x y xs"
   assumes "\<And>x y xs. xs \<noteq> [] \<Longrightarrow> P x y xs \<Longrightarrow> P (-x) (-y) (map uminus xs)"
   shows   "P x y xs"
 proof (cases "x \<ge> 0")
   assume x: "\<not>(x \<ge> 0)"
   from assms have "map uminus xs \<noteq> []" by simp
   moreover from x assms(1,2,3) have"P (-x) (-y) (map uminus xs)"
-    using uminus_listsum_map[of "\<lambda>x. x" xs, symmetric]
+    using uminus_sum_list_map[of "\<lambda>x. x" xs, symmetric]
     by (intro assms) (auto simp: last_map algebra_simps o_def neg_eq_iff_add_eq_0)
   ultimately have "P (- (-x)) (- (-y)) (map uminus (map uminus xs))" by (rule assms)
   thus ?thesis by (simp add: o_def)
@@ -338,7 +338,7 @@ text \<open>
 \<close>
 private lemma arthan_aux1:
   fixes xs :: "'a :: {linordered_idom} list"
-  assumes "xs \<noteq> []" "last xs \<noteq> 0" "x + y + listsum xs = 0"
+  assumes "xs \<noteq> []" "last xs \<noteq> 0" "x + y + sum_list xs = 0"
   defines "v \<equiv> \<lambda>xs. int (sign_changes xs)"
   shows "v (x # y # xs) - v ((x + y) # xs) \<ge> 
              v (psums (x # y # xs)) - v (psums ((x + y) # xs)) \<and> 
@@ -495,7 +495,7 @@ text \<open>
 \<close>
 lemma arthan:
   fixes xs :: "'a :: linordered_idom list"
-  assumes "xs \<noteq> []" "last xs \<noteq> 0" "listsum xs = 0"
+  assumes "xs \<noteq> []" "last xs \<noteq> 0" "sum_list xs = 0"
   shows   "sign_changes xs > sign_changes (psums xs) \<and> 
            odd (sign_changes xs - sign_changes (psums xs))"
 using assms
@@ -762,7 +762,7 @@ proof -
         odd (sign_changes xs - sign_changes (psums xs))"
   proof (rule arthan)
     show "xs \<noteq> []" by (auto simp: xs_def nz simp del: mult_pCons_left)
-    thus "listsum xs = 0" by (simp add: last_psums [symmetric] ys [symmetric] ys_def)
+    thus "sum_list xs = 0" by (simp add: last_psums [symmetric] ys [symmetric] ys_def)
   qed (auto simp: last_coeffs_not_0 xs_def nz simp del: mult_pCons_left)
   with ys have "sign_changes ys < sign_changes xs \<and> 
                 odd (sign_changes xs - sign_changes ys)" by simp

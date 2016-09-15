@@ -133,9 +133,9 @@ lemma eval_akra_bazzi_le_list_ex:
   "list_ex P [] \<longleftrightarrow> False"
   by (auto simp: list_ex_iff)
 
-lemma eval_akra_bazzi_le_listsum:
-  "x \<le> listsum [] \<longleftrightarrow> x \<le> 0" "x \<le> listsum (y#ys) \<longleftrightarrow> x \<le> y + listsum ys"
-  "x \<le> z + listsum [] \<longleftrightarrow> x \<le> z" "x \<le> z + listsum (y#ys) \<longleftrightarrow> x \<le> z + y + listsum ys"
+lemma eval_akra_bazzi_le_sum_list:
+  "x \<le> sum_list [] \<longleftrightarrow> x \<le> 0" "x \<le> sum_list (y#ys) \<longleftrightarrow> x \<le> y + sum_list ys"
+  "x \<le> z + sum_list [] \<longleftrightarrow> x \<le> z" "x \<le> z + sum_list (y#ys) \<longleftrightarrow> x \<le> z + y + sum_list ys"
   by (simp_all add: algebra_simps)
 
 lemma atLeastLessThanE: "x \<in> {a..<b} \<Longrightarrow> (x \<ge> a \<Longrightarrow> x < b \<Longrightarrow> P) \<Longrightarrow> P" by simp

@@ -150,11 +150,11 @@ qed (insert assms, simp)
 
 end
 
-lemma (in comm_monoid_add) listsum_distinct_selsort:
+lemma (in comm_monoid_add) sum_list_distinct_selsort:
   assumes "distinct xs"
-  shows "listsum (linorder_list0.selsort LE xs) = listsum xs"
+  shows "sum_list (linorder_list0.selsort LE xs) = sum_list xs"
   using assms
-  apply (simp add: distinct_listsum_conv_Setsum linorder_list0.distinct_selsort)
+  apply (simp add: distinct_sum_list_conv_Setsum linorder_list0.distinct_selsort)
   apply (rule setsum.cong)
   subgoal by (simp add: linorder_list0.set_selsort)
   subgoal by simp
