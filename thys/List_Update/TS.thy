@@ -2,7 +2,7 @@
     Author:      Max Haslbeck
 *) 
 
-section "TS: another 2-competitve Algorithm"
+section "TS: another 2-competitive Algorithm"
 
 theory TS
 imports
@@ -2690,7 +2690,5 @@ qed (simp_all)
 lemma TS_compet: "compet_rand (embed (rTS [])) 2 {init. distinct init \<and> init \<noteq> []}"
 unfolding compet_rand_def static_def
 using TS_compet'[OF TS_pairwise] by simp
-
-unused_thms
  
 end
