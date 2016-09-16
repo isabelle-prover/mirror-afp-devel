@@ -43,7 +43,7 @@ session Iptables_Semantics (AFP) = Routing +
     "mathpartir.sty"
 
 
-session Iptables_Semantics_Examples (AFP slow) = Iptables_Semantics +
+session Iptables_Semantics_Examples (AFP slow very_slow) = Iptables_Semantics +
   options [timeout = 60000]
   theories
     "Examples/Parser_Test/Parser_Test"
