@@ -337,7 +337,10 @@ proof-
 moreover
 { assume lsc: "lsc_at x0 f"
   { fix x c assume xc_def: "x \<longlonglongrightarrow> x0 & (ALL n. f(x n)<=c)"
-    hence "liminf (f o x) <= c" using Limsup_bounded[of sequentially "f o x" c] Liminf_le_Limsup[of sequentially "f o x"] by auto
+    hence "liminf (f o x) <= c"
+      using Limsup_bounded[where F = sequentially and X = "f o x" and C = c]
+            Liminf_le_Limsup[of sequentially "f o x"]
+      by auto
     hence "f x0 <= c" using lsc xc_def lsc_imp_liminf[of x0 f x] by auto
   } hence "?rhs" by auto
 } ultimately show ?thesis by blast
