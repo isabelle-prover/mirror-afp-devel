@@ -2334,10 +2334,10 @@ proof -
 
     have "(\<lambda>i. \<integral> y. ?k i x y \<partial>count_space UNIV) sums \<integral> y. (\<Sum>i. ?k i x y) \<partial>count_space UNIV"
       using integrable_k by(rule sums_integral)(simp_all add: summable_nk summable'_k)
-    also have "\<dots> = \<integral> y. f' (x, y) \<partial>count_space UNIV" by(rule integral_cong[OF refl])(rule suminf)
+    also have "\<dots> = \<integral> y. f' (x, y) \<partial>count_space UNIV" by(rule Bochner_Integration.integral_cong[OF refl])(rule suminf)
     finally have "(\<lambda>i. \<Sum>j<i. \<integral> y. ?k j x y \<partial>count_space UNIV) \<longlonglongrightarrow> \<dots>" unfolding sums_def .
     also have "(\<lambda>i. \<Sum>j<i. \<integral> y. ?k j x y \<partial>count_space UNIV) = (\<lambda>i. \<integral> y. f_i' i (x, y) \<partial>count_space UNIV)"
-      unfolding setsum_i' by(rule ext integral_setsum[symmetric] integrable_k)+
+      unfolding setsum_i' by(rule ext Bochner_Integration.integral_setsum[symmetric] integrable_k)+
     finally have "(\<lambda>i. ennreal (\<integral> y. f_i' i (x, y) \<partial>count_space UNIV)) \<longlonglongrightarrow> ennreal (\<integral> y. f' (x, y) \<partial>count_space UNIV)" by simp
     also have "(\<lambda>i. ennreal (\<integral> y. f_i' i (x, y) \<partial>count_space UNIV)) = (\<lambda>i. d_OUT (f_i i) x)"
       unfolding d_OUT_def f_i' by(rule ext nn_integral_eq_integral[symmetric] integrable_f_i)+ simp
@@ -2349,10 +2349,10 @@ proof -
 
     have "(\<lambda>i. \<integral> y. ?k i y x \<partial>count_space UNIV) sums \<integral> y. (\<Sum>i. ?k i y x) \<partial>count_space UNIV"
       using integrable_k' by(rule sums_integral)(simp_all add: summable_nk summable'_k')
-    also have "\<dots> = \<integral> y. f' (y, x) \<partial>count_space UNIV" by(rule integral_cong[OF refl])(rule suminf)
+    also have "\<dots> = \<integral> y. f' (y, x) \<partial>count_space UNIV" by(rule Bochner_Integration.integral_cong[OF refl])(rule suminf)
     finally have "(\<lambda>i. \<Sum>j<i. \<integral> y. ?k j y x \<partial>count_space UNIV) \<longlonglongrightarrow> \<dots>" unfolding sums_def .
     also have "(\<lambda>i. \<Sum>j<i. \<integral> y. ?k j y x \<partial>count_space UNIV) = (\<lambda>i. \<integral> y. f_i' i (y, x) \<partial>count_space UNIV)"
-      unfolding setsum_i' by(rule ext integral_setsum[symmetric] integrable_k')+
+      unfolding setsum_i' by(rule ext Bochner_Integration.integral_setsum[symmetric] integrable_k')+
     finally have "(\<lambda>i. ennreal (\<integral> y. f_i' i (y, x) \<partial>count_space UNIV)) \<longlonglongrightarrow> ennreal (\<integral> y. f' (y, x) \<partial>count_space UNIV)" by simp
     also have "(\<lambda>i. ennreal (\<integral> y. f_i' i (y, x) \<partial>count_space UNIV)) = (\<lambda>i. d_IN (f_i i) x)"
       unfolding d_IN_def f_i' by(rule ext nn_integral_eq_integral[symmetric] integrable_f_i')+ simp

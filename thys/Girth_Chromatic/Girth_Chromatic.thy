@@ -585,7 +585,7 @@ proof -
 
       have "mean_short_count = (\<Sum>i=3..k. \<integral>es. card {c \<in> ucycles (?ug n es). uwalk_length c = i} \<partial> pG.P)"
         unfolding mean_short_count_def short_count_conv
-        by (subst integral_setsum) (auto intro: pG.integral_finite_singleton)
+        by (subst Bochner_Integration.integral_setsum) (auto intro: pG.integral_finite_singleton)
       also have "\<dots> = (\<Sum>i\<in>{3..k}. of_nat (fact n div fact (n - i)) * p n ^ i)"
         using A by (simp add: pG.mean_k_cycles)
       also have "\<dots> \<le> (\<Sum> i\<in>{3..k}. n ^ i * p n ^ i)"

@@ -817,7 +817,7 @@ proof -
   have "(\<integral>x. birkhoff_sum f n x \<partial>M) = (\<integral>x. (\<Sum>k\<in>{..<n}. f((T^^k) x)) \<partial>M)"
     unfolding birkhoff_sum_def by blast
   also have "... = (\<Sum>k\<in>{..<n}. (\<integral>x. f((T^^k) x) \<partial>M))"
-    by (rule integral_setsum, simp add: a)
+    by (rule Bochner_Integration.integral_setsum, simp add: a)
   also have "... = (\<Sum>k\<in>{..<n}. (\<integral>x. f x \<partial>M))" using b by simp
   also have "... = n *\<^sub>R (\<integral>x. f x \<partial>M)" by (simp add: setsum_constant_scaleR)
   finally show "(\<integral>x. birkhoff_sum f n x \<partial>M) = n *\<^sub>R (\<integral>x. f x \<partial>M)" by simp

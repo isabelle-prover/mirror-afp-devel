@@ -877,7 +877,7 @@ proof atomize_elim
           qed
           also have "\<dots> = (\<integral>s. \<Delta> s \<partial>ct' t)"
             unfolding \<Delta>_def using Pi_closed[OF ct `t\<in>S`] Pi_closed[OF ct' `t\<in>S`] ct ct'
-            by (intro integral_diff[symmetric] measure_pmf.integrable_const_bound[where B=1])
+            by (intro Bochner_Integration.integral_diff[symmetric] measure_pmf.integrable_const_bound[where B=1])
                (auto simp: AE_measure_pmf_iff real_v)
           finally show False
             by simp

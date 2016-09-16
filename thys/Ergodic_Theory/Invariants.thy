@@ -564,7 +564,7 @@ proof (rule real_cond_exp_charact)
 
   have "set_lebesgue_integral M A (f \<circ> (T^^n)) = (\<integral>x. indicator A x * f((T^^n) x) \<partial>M)" using comp_def by auto
   also have "... = (\<integral>x. indicator A ((T^^n) x) * f ((T^^n) x) \<partial>M)"
-    by (rule integral_cong, auto simp add: Invariants_func_is_invariant_n[OF ind_meas])
+    by (rule Bochner_Integration.integral_cong, auto simp add: Invariants_func_is_invariant_n[OF ind_meas])
   also have "... = (\<integral>x. indicator A x * f x \<partial>M)"
     apply (rule Tn_integral_preserving(2)) using integrable_mult_indicator[OF `A \<in> sets M` assms] by auto
   also have "... = (\<integral>x. indicator A x * real_cond_exp M Invariants f x \<partial>M)"
@@ -743,7 +743,7 @@ proof -
   proof -
     fix n
     have " (\<integral>x. F n (T x) * indicator A x \<partial>M) = (\<integral>x. (\<lambda>x. F n x * indicator A x) (T x) \<partial>M)"
-      by (rule integral_cong, auto simp add: Ainv indicator_def)
+      by (rule Bochner_Integration.integral_cong, auto simp add: Ainv indicator_def)
     also have "... = (\<integral>x. F n x * indicator A x \<partial>M)"
       by (rule T_integral_preserving, auto simp add: intFn integrable_real_mult_indicator)
     finally have i: "(\<integral>x. F n (T x) * indicator A x \<partial>M) = (\<integral>x. F n x * indicator A x \<partial>M)" by simp
@@ -751,11 +751,11 @@ proof -
     have " (\<integral>x. (F (n+1) x - F n (T x)) * indicator A x \<partial>M) = (\<integral>x. F (n+1) x * indicator A x - F n (T x) * indicator A x \<partial>M)"
       by (simp add: mult.commute right_diff_distrib)
     also have "... = (\<integral>x. F (n+1) x * indicator A x \<partial>M) - (\<integral>x. F n (T x) * indicator A x \<partial>M)"
-      by (rule integral_diff, auto simp add: intFn integrable_real_mult_indicator T_meas T_integral_preserving(1))
+      by (rule Bochner_Integration.integral_diff, auto simp add: intFn integrable_real_mult_indicator T_meas T_integral_preserving(1))
     also have "... = (\<integral>x. F (n+1) x * indicator A x \<partial>M) - (\<integral>x. F n x * indicator A x \<partial>M)"
       using i by simp
     also have "... = (\<integral>x. F (n+1) x * indicator A x - F n x * indicator A x \<partial>M)"
-      by (rule integral_diff[symmetric], auto simp add: intFn integrable_real_mult_indicator)
+      by (rule Bochner_Integration.integral_diff[symmetric], auto simp add: intFn integrable_real_mult_indicator)
     also have "... = (\<integral>x. (F (n+1) x - F n x) * indicator A x \<partial>M)"
       by (simp add: mult.commute right_diff_distrib)
     finally have *: "(\<integral>x. (F (n+1) x - F n (T x)) * indicator A x \<partial>M) = (\<integral>x. (F (n+1) x - F n x) * indicator A x \<partial>M)"

@@ -536,7 +536,7 @@ proof -
     unfolding h_def
     by (intro nn_integral_cong)(auto simp: ennreal_mult[symmetric] abs_mult split: split_max)
   also have "... < \<infinity>"
-    using integrable_add[OF int1 int2, THEN integrableD(2)] by (auto simp add: less_top)
+    using Bochner_Integration.integrable_add[OF int1 int2, THEN integrableD(2)] by (auto simp add: less_top)
   finally have *: "(\<integral>\<^sup>+x. f x * nn_cond_exp M F h x \<partial>M) < \<infinity>" by simp
 
   have "(\<integral>\<^sup>+x. norm(f x * real_cond_exp M F g x) \<partial>M) = (\<integral>\<^sup>+x. f x * abs(real_cond_exp M F g x) \<partial>M)"
@@ -651,13 +651,13 @@ proof -
   have "(\<integral> x. f x * real_cond_exp M F g x \<partial>M) = (\<integral> x. f x * enn2real(nn_cond_exp M F gp x) - f x * enn2real(nn_cond_exp M F gm x) \<partial>M)"
     unfolding real_cond_exp_def gp_def gm_def by (simp add: right_diff_distrib)
   also have "... = (\<integral> x. f x * enn2real(nn_cond_exp M F gp x) \<partial>M) - (\<integral> x. f x * enn2real(nn_cond_exp M F gm x) \<partial>M)"
-    by (rule integral_diff) (simp_all add: gp_int gm_int)
+    by (rule Bochner_Integration.integral_diff) (simp_all add: gp_int gm_int)
   also have "... = (\<integral> x. f x * enn2real(gp x) \<partial>M) - (\<integral> x. f x * enn2real(gm x) \<partial>M)"
     using gp_expr gm_expr by simp
   also have "... = (\<integral> x. f x * max (g x) 0 \<partial>M) - (\<integral> x. f x * max (-g x) 0 \<partial>M)"
     using gp_real gm_real by simp
   also have "... = (\<integral> x. f x * max (g x) 0 - f x * max (-g x) 0 \<partial>M)"
-    by (rule integral_diff[symmetric]) (simp_all add: int1 int2)
+    by (rule Bochner_Integration.integral_diff[symmetric]) (simp_all add: int1 int2)
   also have "... = (\<integral>x. f x * g x \<partial>M)"
     by (metis (mono_tags, hide_lams) diff_0 diff_zero eq_iff max.cobounded2 max_def minus_minus neg_le_0_iff_le right_diff_distrib)
   finally show "(\<integral> x. f x * real_cond_exp M F g x \<partial>M) = (\<integral>x. f x * g x \<partial>M)"
@@ -955,11 +955,11 @@ proof (rule real_cond_exp_charact)
   have "(\<integral>x\<in>A. (\<Sum>i\<in>I. f i x)\<partial>M) = (\<integral>x. (\<Sum>i\<in>I. indicator A x * f i x)\<partial>M)"
     by (simp add: setsum_right_distrib)
   also have "... = (\<Sum>i\<in>I. (\<integral>x. indicator A x * f i x \<partial>M))"
-    by (rule integral_setsum, simp add: *)
+    by (rule Bochner_Integration.integral_setsum, simp add: *)
   also have "... = (\<Sum>i\<in>I. (\<integral>x. indicator A x * real_cond_exp M F (f i) x \<partial>M))"
     using inti by auto
   also have "... = (\<integral>x. (\<Sum>i\<in>I. indicator A x * real_cond_exp M F (f i) x)\<partial>M)"
-    by (rule integral_setsum[symmetric], simp add: **)
+    by (rule Bochner_Integration.integral_setsum[symmetric], simp add: **)
   also have "... = (\<integral>x\<in>A. (\<Sum>i\<in>I. real_cond_exp M F (f i) x)\<partial>M)"
     by (simp add: setsum_right_distrib)
   finally show "(\<integral>x\<in>A. (\<Sum>i\<in>I. f i x)\<partial>M) = (\<integral>x\<in>A. (\<Sum>i\<in>I. real_cond_exp M F (f i) x)\<partial>M)" by auto

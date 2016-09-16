@@ -468,9 +468,9 @@ lemma countable_separating_set_linorder1:
 proof -
   obtain A::"'a set set" where "countable A" "topological_basis A" using ex_countable_basis by auto
   define B1 where "B1 = {(LEAST x. x \<in> U)| U. U \<in> A}"
-  then have "countable B1" using `countable A` by (simp add: simple_image)
+  then have "countable B1" using `countable A` by (simp add: Setcompr_eq_image)
   define B2 where "B2 = {(SOME x. x \<in> U)| U. U \<in> A}"
-  then have "countable B2" using `countable A` by (simp add: simple_image)
+  then have "countable B2" using `countable A` by (simp add: Setcompr_eq_image)
   have "\<exists>b \<in> B1 \<union> B2. x < b \<and> b \<le> y" if "x < y" for x y
   proof (cases)
     assume "\<exists>z. x < z \<and> z < y"
@@ -507,9 +507,9 @@ lemma countable_separating_set_linorder2:
 proof -
   obtain A::"'a set set" where "countable A" "topological_basis A" using ex_countable_basis by auto
   define B1 where "B1 = {(GREATEST x. x \<in> U) | U. U \<in> A}"
-  then have "countable B1" using `countable A` by (simp add: simple_image)
+  then have "countable B1" using `countable A` by (simp add: Setcompr_eq_image)
   define B2 where "B2 = {(SOME x. x \<in> U)| U. U \<in> A}"
-  then have "countable B2" using `countable A` by (simp add: simple_image)
+  then have "countable B2" using `countable A` by (simp add: Setcompr_eq_image)
   have "\<exists>b \<in> B1 \<union> B2. x \<le> b \<and> b < y" if "x < y" for x y
   proof (cases)
     assume "\<exists>z. x < z \<and> z < y"
@@ -1841,7 +1841,7 @@ lemma borel_measurable_Max2[measurable (raw)]:
   assumes "finite I"
     and [measurable]: "\<And>i. f i \<in> borel_measurable M"
   shows "(\<lambda>x. Max{f i x |i. i \<in> I}) \<in> borel_measurable M"
-by (simp add: borel_measurable_Max[OF assms(1), where ?f=f and ?M=M] simple_image)
+by (simp add: borel_measurable_Max[OF assms(1), where ?f=f and ?M=M] Setcompr_eq_image)
 
 lemma measurable_compose_n [measurable (raw)]:
   assumes "T \<in> measurable M M"
@@ -2610,7 +2610,7 @@ qed
 lemma set_integral_space:
   assumes "integrable M f"
   shows "(\<integral>x \<in> space M. f x \<partial>M) = (\<integral>x. f x \<partial>M)"
-by (metis (mono_tags, lifting) indicator_simps(1) integral_cong real_vector.scale_one)
+by (metis (mono_tags, lifting) indicator_simps(1) Bochner_Integration.integral_cong real_vector.scale_one)
 
 lemma null_if_pos_func_has_zero_nn_int:
   fixes f::"'a \<Rightarrow> ennreal"
@@ -2789,7 +2789,7 @@ proof -
     {
       fix n
       have "(\<integral>x. u n x \<partial>M) - (\<integral>x. f x \<partial>M) = (\<integral>x. u n x - f x \<partial>M)"
-        apply (rule integral_diff[symmetric]) using assms by auto
+        apply (rule Bochner_Integration.integral_diff[symmetric]) using assms by auto
       then have "norm((\<integral>x. u n x \<partial>M) - (\<integral>x. f x \<partial>M)) = norm (\<integral>x. u n x - f x \<partial>M)"
         by auto
       also have "... \<le> (\<integral>x. norm(u n x - f x) \<partial>M)"
@@ -2996,7 +2996,7 @@ proof -
       from le show "AE x in M. ennreal (norm (F n x - f x)) \<le> ennreal (norm (f x)) + ennreal (norm (F n x))"
         by simp
       from le2 have "(\<integral>\<^sup>+x. ennreal (norm (F n x - f x)) \<partial>M) < \<infinity>" using assms(1) assms(2)
-        by (metis has_bochner_integral_implies_finite_norm integrable.simps integrable_diff)
+        by (metis has_bochner_integral_implies_finite_norm integrable.simps Bochner_Integration.integrable_diff)
       then show "(\<integral>\<^sup>+x. ennreal (norm (F n x - f x)) \<partial>M) \<noteq> \<infinity>" by simp
     qed (auto simp add: assms)
     ultimately show "(\<integral>\<^sup>+x. G n x \<partial>M) = (\<integral>\<^sup>+x. ennreal(norm(f x)) + ennreal(norm(F n x)) \<partial>M) - (\<integral>\<^sup>+x. norm(F n x - f x) \<partial>M)"

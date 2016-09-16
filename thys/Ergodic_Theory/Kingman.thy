@@ -326,7 +326,7 @@ proof (induction n rule: nat_less_induct)
       apply (simp add: H(2))
       apply (rule integrable_Min, simp)
       using `n >1` apply auto[1]
-      apply (rule integrable_add)
+      apply (rule Bochner_Integration.integrable_add)
       using "1.IH" apply auto[1]
       apply (rule Tn_integral_preserving(1))
       using "1.IH" by (metis \<open>1 < n\<close> diff_less greaterThanLessThan_iff max_0_1(2) max_less_iff_conj)
@@ -474,9 +474,9 @@ proof -
   {
     fix n
     have "(\<integral>x. u n x / n \<partial>M) + (\<integral>x. v n x / n \<partial>M) = (\<integral>x. u n x / n + v n x / n \<partial>M)"
-      by (rule integral_add[symmetric], auto)
+      by (rule Bochner_Integration.integral_add[symmetric], auto)
     also have "... = (\<integral>x. (u n x + v n x) / n \<partial>M)"
-      by (rule integral_cong, auto simp add: add_divide_distrib)
+      by (rule Bochner_Integration.integral_cong, auto simp add: add_divide_distrib)
     finally have "ereal (\<integral>x. u n x / n \<partial>M) + (\<integral>x. v n x / n \<partial>M) = (\<integral>x. (u n x + v n x) / n \<partial>M)"
       by auto
   }
@@ -1662,7 +1662,7 @@ proof -
     have "AE x in M. real_cond_exp M Invariants (u (n+m)) x \<le> real_cond_exp M Invariants (\<lambda>x. u n x + u m ((T^^n) x)) x"
       apply (rule real_cond_exp_mono)
       using subcocycle_ineq[OF assms(1)] apply auto
-      by (rule integrable_add, auto simp add: Tn_integral_preserving)
+      by (rule Bochner_Integration.integrable_add, auto simp add: Tn_integral_preserving)
     moreover have "AE x in M. real_cond_exp M Invariants (u n) x + real_cond_exp M Invariants (\<lambda>x. u m ((T^^n) x)) x
                     = real_cond_exp M Invariants (\<lambda>x. u n x + u m ((T^^n) x)) x"
       by (rule real_cond_exp_add, auto simp add: Tn_integral_preserving)

@@ -318,7 +318,7 @@ proof -
 
   define F where "F = (\<lambda>x. abs(u 1 x) * indicator {x. abs(u 1 x) \<ge> K} x)"
   have int_F [measurable]: "integrable M F"
-    unfolding F_def apply (rule integrable_bound[where ?f = "\<lambda>x. abs(u 1 x)"])
+    unfolding F_def apply (rule Bochner_Integration.integrable_bound[where ?f = "\<lambda>x. abs(u 1 x)"])
     unfolding indicator_def by (auto simp add: int_u)
   have "(\<integral>x. F x \<partial>M) = (\<integral>x. abs(u 1 x) * indicator {x \<in> space M. abs(u 1 x) \<ge> K} x \<partial>M)"
     apply (rule integral_cong_AE) unfolding F_def by (auto simp add: indicator_def)
@@ -332,7 +332,7 @@ proof -
     unfolding F2_def using int_F int_u[of s] by auto
   have F2_pos: "F2 x \<ge> 0" for x unfolding F2_def using F_pos by auto
   have "(\<integral>x. F2 x \<partial>M) = (\<integral>x. F x \<partial>M) + (\<integral>x. abs(u s x/s) \<partial>M)"
-    unfolding F2_def apply (rule integral_add) using int_F int_u by auto
+    unfolding F2_def apply (rule Bochner_Integration.integral_add) using int_F int_u by auto
   then have F2_int: "(\<integral>x. F2 x \<partial>M) < 2 * rho"
     using F_int s_int by auto
 

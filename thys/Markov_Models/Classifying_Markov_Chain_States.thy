@@ -523,8 +523,8 @@ proof -
         indicator {\<omega>'\<in>space (T x). ev_at (HLD {y}) i \<omega>' } \<omega>' \<partial>T x)"
       by (subst prob_T_split[where n="Suc i"])
          (auto simp: ev_at_shift ev_at_HLD_single_imp_snth shift_snth diff_Suc
-               split: split_indicator nat.split intro!: integral_cong arg_cong2[where f=measure]
-               simp del: stake.simps integral_mult_right integral_mult_right_zero)
+               split: split_indicator nat.split intro!: Bochner_Integration.integral_cong arg_cong2[where f=measure]
+               simp del: stake.simps integral_mult_right_zero)
     then show "\<P>(\<omega> in T x. ev_at (HLD {y}) i \<omega> \<and> \<omega> !! n = y) = p y y (n - i) * u x y i"
       by (simp add: p_def u_def)
   qed
@@ -887,10 +887,10 @@ proof -
     also have "\<dots> = (\<integral>v. indicator {x} v + U v x * indicator (- {x}) v \<partial>K w)"
       unfolding U_def
       by (subst prob_T)
-         (auto intro!: integral_cong arg_cong2[where f=measure] AE_I2
+         (auto intro!: Bochner_Integration.integral_cong arg_cong2[where f=measure] AE_I2
                simp: ev_Stream T.prob_eq_1 split: split_indicator)
     also have "\<dots> = measure (K w) {x} + (\<integral>v. U v x * indicator (- {x}) v \<partial>K w)"
-      by (subst integral_add)
+      by (subst Bochner_Integration.integral_add)
          (auto intro!: measure_pmf.integrable_const_bound[where B=1]
                simp: abs_mult mult_le_one U_bounded(2) measure_pmf.emeasure_eq_measure)
     finally have "measure (K w) UNIV - measure (K w) {x} = (\<integral>v. U v x * indicator (- {x}) v \<partial>K w)"
@@ -900,8 +900,8 @@ proof -
     finally have "0 = (\<integral>v. indicator (- {x}) v \<partial>K w) - (\<integral>v. U v x * indicator (- {x}) v \<partial>K w)"
       by (simp add: Diff_subset measure_pmf.emeasure_eq_measure Compl_eq_Diff_UNIV)
     also have "\<dots> = (\<integral>v. (1 - U v x) * indicator (- {x}) v \<partial>K w)"
-      by (subst integral_diff[symmetric])
-         (auto intro!: measure_pmf.integrable_const_bound[where B=1] integral_cong
+      by (subst Bochner_Integration.integral_diff[symmetric])
+         (auto intro!: measure_pmf.integrable_const_bound[where B=1] Bochner_Integration.integral_cong
                simp: abs_mult mult_le_one U_bounded(2) split: split_indicator)
     also have "\<dots> \<ge> (\<integral>v. (1 - U y x) * indicator {y} v \<partial>K w)" (is "_ \<ge> ?rhs")
       using `recurrent x`
@@ -1475,7 +1475,7 @@ proof (rule pmf_eqI antisym)+
       by (intro integral_mono integrable_diff)
          (auto simp: i pmf_bind[symmetric] integrable_pmf field_simps split: split_indicator)
     also have "\<dots> = (\<integral>t. pmf N t \<partial>count_space \<Omega>) - (\<integral>t. \<integral>y. pmf (K y) t \<partial>N \<partial>count_space \<Omega>)"
-      by (subst integral_diff) (auto intro!: integrable_pmf simp: pmf_bind[symmetric])
+      by (subst Bochner_Integration.integral_diff) (auto intro!: integrable_pmf simp: pmf_bind[symmetric])
     also have "(\<integral>t. \<integral>y. pmf (K y) t \<partial>N \<partial>count_space \<Omega>) = (\<integral>y. \<integral>t. pmf (K y) t \<partial>count_space \<Omega> \<partial>N)"
       apply (intro pN.Fubini_integral integrable_iff_bounded[THEN iffD2] conjI)
       apply (auto simp add: N.nn_integral_fst[symmetric] nn_integral_eq_integral integrable_pmf)
@@ -1559,7 +1559,7 @@ proof -
                  split: split_indicator simp: integrable_p less_top[symmetric] top_unique)
       also have "\<dots> = (\<integral>x. p x y n * indicator A x \<partial>N) + measure N (C - A)"
         using ae_C `A \<subseteq> C`
-        apply (subst integral_add)
+        apply (subst Bochner_Integration.integral_add)
         apply (auto elim!: eventually_mono
                     intro!: integral_add integral_indicator p_le_1 integrable_real_mult_indicator
                     split: split_indicator simp: integrable_p less_top[symmetric] top_unique)
@@ -2276,7 +2276,7 @@ proof -
         apply (subst (1 2) KN.prob_T_split[where n="Suc i"])
         apply (simp_all add: ev_at_shift snth_Stream del: stake.simps KN.space_T)
         unfolding ev_at_shift snth_Stream
-      proof (intro integral_cong refl)
+      proof (intro Bochner_Integration.integral_cong refl)
         fix \<omega> :: "('s \<times> 's option) stream" let ?s = "\<lambda>\<omega>'. stake (Suc i) \<omega> @- \<omega>'"
         show "\<P>(\<omega>' in KN.T (\<omega> !! i). snd (?s \<omega>' !! n) = Some x \<and> ev_at (HLD D) i \<omega>) =
           \<P>(\<omega>' in KN.T (\<omega> !! i). fst (?s \<omega>' !! n) = x \<and> ev_at (HLD D) i \<omega>)"
@@ -2451,7 +2451,7 @@ proof -
     also have "\<dots> \<le> (\<integral>y. D y n \<partial>count_space C)"
       by (intro integral_mono)
          (auto split: split_indicator simp: D_def p_def disjoint_family_on_def
-               intro!: integrable_diff integrable_pmf T.integrable_measure)
+               intro!: Bochner_Integration.integrable_diff integrable_pmf T.integrable_measure)
     finally have "D y n \<le> (\<integral>y. D y n \<partial>count_space C)" . }
   note * = this
 

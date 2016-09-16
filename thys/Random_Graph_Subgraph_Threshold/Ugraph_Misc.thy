@@ -404,7 +404,7 @@ proof -
   have "integrable M (\<lambda>x. max 1 ((X x)^2))"
     using assms by auto
   then show "integrable M X"
-  proof (rule integrable_bound[OF _ _ always_eventually[OF allI]])
+  proof (rule Bochner_Integration.integrable_bound[OF _ _ always_eventually[OF allI]])
     fix x show "norm (X x) \<le> norm (max 1 ((X x)^2))"
       using abs_le_square_iff[of 1 "X x"] power_increasing[of 1 2 "abs (X x)"]
       by (auto split: split_max)

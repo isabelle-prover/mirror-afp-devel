@@ -143,7 +143,7 @@ next
     also have "\<dots> = ES.expectation ?Y"
       by simp
     also have "\<dots> = (\<Sum>H\<^sub>0' \<in> ?I. ES.expectation (?X H\<^sub>0'))"
-      by (rule integral_setsum(1)) simp
+      by (rule Bochner_Integration.integral_setsum(1)) simp
 
     --{* Each expectation is bound by $p(n)^{|E(H_0)|}$. For the proof, we ignore the fact that the
          corresponding graph has to be isomorphic to @{term H\<^sub>0}, which only increases the
