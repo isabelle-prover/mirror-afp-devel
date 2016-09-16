@@ -115,14 +115,14 @@ next
         then have gcd_p1: "gcd x (p - 1) dvd (p - 1)" "gcd x (p - 1) < p - 1"
           using gcd_le2_nat[of "p - 1" x] `2 \<le> p` by (simp, linarith)
 
-        def c \<equiv> "(p - 1) div (gcd x (p - 1))"
+        define c where "c = (p - 1) div (gcd x (p - 1))"
         then have p_1_eq: "p - 1 = gcd x (p - 1) * c" unfolding c_def using gcd_p1
           by (metis dvd_mult_div_cancel)
 
         from gcd_p1 have "1 < c" unfolding c_def by (rule One_leq_div)
         then obtain q where q_pf: "q \<in> prime_factors c"
           using prime_factors_elem by auto
-        then have "q dvd c" by (auto simp: prime_factors_dvd)
+        then have "q dvd c" by auto
 
         have "q \<in> prime_factors (p - 1)" using q_pf `1 < c` `2 \<le> p`
           by (subst p_1_eq) (simp add: prime_factors_product)
@@ -159,7 +159,7 @@ lemma converse_lehmer_weak:
       show "{a ^ i mod p | i. 0 < i \<and> i \<le> x} \<subseteq> {a ^ i mod p | i. i \<in> UNIV}" by blast
       { fix y assume y:"y \<in> {a^i mod p| i . i \<in> UNIV}"
         then obtain i where i:"y = a^i mod p" by auto
-        def q \<equiv> "i div x" def r \<equiv> "i mod x"
+        define q r where "q = i div x" and "r = i mod x"
         have "i = q*x + r" by (simp add: r_def q_def)
         hence y_q_r:"y = (((a ^ (q*x)) mod p) * ((a ^ r) mod p)) mod p"
           by (simp add: i power_add mod_mult_eq[symmetric])
@@ -202,7 +202,7 @@ lemma converse_lehmer_weak:
     hence "coprime (int a) (int p)" by (simp add: transfer_int_nat_gcd(1))
     have "phi (int p) = p - 1" using phi_prime[of p] prime_p by simp
     hence "[a^(p - 1) = 1] (mod p)" using euler_theorem[OF _ `coprime (int a) (int p)`]
-      by (simp add: of_nat_power transfer_int_nat_cong[symmetric])
+      by (simp add: transfer_int_nat_cong[symmetric])
   }
   hence "[a^(p - 1) = 1] (mod p)" using a by fastforce
   thus ?thesis using a_is_gen a by auto
@@ -220,9 +220,9 @@ theorem converse_lehmer:
     using converse_lehmer_weak[OF prime_p] by blast
   { fix q assume q:"q \<in> prime_factors (p - 1)"
     hence "0 < q \<and> q \<le> p - 1" using `p\<ge>2` 
-      by (auto simp add: dvd_nat_bounds prime_factors_dvd prime_factors_gt_0_nat)
+      by (auto simp add: dvd_nat_bounds prime_factors_gt_0_nat)
     hence "(p - 1) div q \<ge> 1" using div_le_mono[of "q" "p - 1" q] div_self[of q] by simp
-    have "q \<ge> 2" using q by (simp add: prime_factors_prime prime_ge_2_nat)
+    have "q \<ge> 2" using q by (auto intro: prime_ge_2_nat)
     hence "(p - 1) div q < p - 1" using `p \<ge> 2` by simp
     hence "[a^((p - 1) div q) \<noteq> 1] (mod p)" using a `(p - 1) div q \<ge> 1`
       by (auto simp add: Suc_diff_Suc less_eq_Suc_le)

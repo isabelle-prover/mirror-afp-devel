@@ -29,9 +29,6 @@ definition primes_1000 :: "nat list" where
   853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983,
   991, 997]"
 
-lemma [code_unfold]: "(prime :: nat \<Rightarrow> bool) = (\<lambda>p. p > 1 \<and> (\<forall>n \<in> {1<..<p}. ~ n dvd p))"
-  by (intro ext prime_nat_code)
-  
 lemma primes_1000: "primes_1000 = filter prime [0..<1001]"
   by eval
 
@@ -178,7 +175,7 @@ proof -
       fix i
       assume *: "prime i" "n \<le> i" "i < n + 30" "i \<notin> set ps"
       from n * have i11: "i \<ge> 11" by auto
-      def j \<equiv> "i - n" 
+      define j where "j = i - n" 
       have i: "i = n + j" using `n \<le> i` j_def by auto
       have "i mod 30 = (j + n) mod 30" using `n \<le> i` unfolding j_def by simp
       also have "\<dots> = (j mod 30 + n mod 30) mod 30" by presburger
@@ -265,7 +262,7 @@ proof -
   with `j \<ge> 2` have "?pf \<noteq> {}" by auto
   then obtain p where p: "p \<in> ?pf" by auto  
   hence pr: "prime p" by auto
-  def rem \<equiv> "(\<Prod>p\<in>?pf - {p}. p ^ multiplicity p j)"
+  define rem where "rem = (\<Prod>p\<in>?pf - {p}. p ^ multiplicity p j)"
   from p have mult: "multiplicity p j \<noteq> 0"
     by (auto simp: prime_factors_altdef_multiplicity)
   have "finite ?pf" by simp
@@ -593,9 +590,6 @@ next
   show ?thesis using prime_nat_main[OF refl le_refl n _ _ jj cann(1-3) sub res] cann(4) by auto
 qed
 
-lemma prime_code[code]: "prime = prime_nat"
-  by (intro ext, simp)
-
 lemma prime_factorization_nat: fixes n :: nat
   defines "pf \<equiv> prime_factorization_nat n"
   shows "Ball (set pf) prime"
@@ -642,7 +636,7 @@ proof -
   hence "prod_mset (prime_factorization x) = prod_mset A" 
     by (simp add: assms prod_mset_prime_factorization)
   with assms show ?thesis 
-    by (intro prime_factorization_unique') (auto dest: in_prime_factorization_imp_prime)
+    by (intro prime_factorization_unique') auto
 qed
 
 lemma multiset_prime_factorization_nat_correct:
@@ -659,7 +653,7 @@ proof -
     show ?thesis
     proof (rule prime_factorization_unique'')
       show "prime p" if "p \<in># mset (prime_factorization_nat n)" for p
-        using prime_factors_def using pf(1) that by simp
+        using pf(1) that by simp
       let ?l = "\<Prod>i\<in>#prime_factorization n. i"
       let ?r = "\<Prod>i\<in>#mset (prime_factorization_nat n). i"
       show "prod_mset (mset (prime_factorization_nat n)) = normalize n"
@@ -749,7 +743,7 @@ proof -
       fix y
       assume "y \<in> ?r"
       hence dvd: "y dvd x" and y0: "y > 0" by auto
-      def n \<equiv> "nat y"
+      define n where "n = nat y"
       from y0 have y: "y = int n" unfolding n_def by auto
       with dvd have "y \<in> ?l" by auto
     }

@@ -329,7 +329,7 @@ proof
   from assms show "prime p" by auto
   then show "2 \<le> p" by (auto dest: prime_gt_1_nat)
 
-  from assms show "p dvd n" by (intro prime_factors_dvd)
+  from assms show "p dvd n" by auto
   then show "p \<le> n" using  `0 < n` by (rule dvd_imp_le)
 qed
 
@@ -522,7 +522,7 @@ proof (induction p rule: less_induct)
     { let ?k = "length qs"
 
       have qs_ge_2:"\<forall>q \<in> set qs . q \<ge> 2" using qs_eq
-        by (auto simp add: prime_factors_prime prime_ge_2_nat prime_factors_prime)
+        by (auto intro: prime_ge_2_nat)
 
       have "\<forall>x\<in>set qs. real (length (f x)) \<le> 6 * log 2 (real x) - 4" using f qs_eq by blast
       hence "length (concat ?cs) \<le> (\<Sum>q\<leftarrow>qs. 6*log 2 q - 4)" using concat_length_le
@@ -668,7 +668,7 @@ next
       by (cases t rule: pratt.exhaust) auto
     with gt_1 have y': "let q = x div y in Prime q \<in> set xs \<and> [a^((p - 1) div q) \<noteq> 1] (mod p)"
       by (auto simp: cong_nat_def Let_def mod_exp_correct Suc_0_mod_eq_Suc_0_iff Suc_0_eq_Suc_0_mod_iff)
-    def q \<equiv> "x div y"
+    define q where "q = x div y"
     have "\<exists>q y. x = q * y \<and> Prime q \<in> set xs \<and> Triple p a y \<in> set xs
                      \<and> [a^((p - 1) div q) \<noteq> 1] (mod p)"
       by (rule exI[of _ q], rule exI[of _ y]) (insert t y y', auto simp: Let_def q_def)
