@@ -757,7 +757,7 @@ proof -
   show ?thesis by (auto simp: first second)
 qed
 
-lemma distinct_unique1: "distinct vs \<Longrightarrow> ram \<in> set vs \<Longrightarrow> EX! s. vs = (fst s) @ ram # (snd s)"
+lemma distinct_unique1: "distinct vs \<Longrightarrow> ram \<in> set vs \<Longrightarrow> \<exists>!s. vs = (fst s) @ ram # (snd s)"
 proof
   assume d: "distinct vs" and r: "ram \<in> set vs"
   def s  \<equiv> "splitAt ram vs" with r show  "vs = (fst s) @ ram # (snd s)"
