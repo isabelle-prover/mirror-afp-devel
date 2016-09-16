@@ -107,7 +107,7 @@ lemma mon_cD: "\<lbrakk>m\<in>mon_c fg c\<rbrakk> \<Longrightarrow> \<exists>s. 
 lemma mon_s_mono: "set s \<subseteq> set s' \<Longrightarrow> mon_s fg s \<subseteq> mon_s fg s'"
   by (unfold mon_s_def) auto
 lemma mon_c_mono: "c\<le>#c' \<Longrightarrow> mon_c fg c \<subseteq> mon_c fg c'"
-  by (unfold mon_c_def) (auto intro: mset_le_trans_elem)
+  by (unfold mon_c_def) (auto dest: mset_subset_eqD)
 
 lemma mon_w_empty[simp]: "mon_w fg [] = {}"
   by (unfold mon_w_def, auto)
@@ -412,7 +412,7 @@ proof (induct w)
   from A(2)[OF this] show P by simp
 next  
   case (Cons e w) note IHP=this
-  then obtain sh ch where SPLIT1: "((s,c),e,(sh,ch))\<in>trss fg" and SPLIT2: "((sh,ch),w,(s',c'))\<in>trcl (trss fg)" by (fast dest: trcl_uncons)
+  then obtain sh ch where SPLIT1: "((s,c),e,(sh,ch))\<in>trss fg" and SPLIT2: "((sh,ch),w,(s',c'))\<in>trcl (trss fg)" by (fastforce dest: trcl_uncons)
   from SPLIT2 show ?case proof (rule IHP(1))
     fix csp
     assume C'FMT: "c'=csp+ch" and CSPFMT: "!!s. s \<in># csp \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> (u,Spawn p, v)\<in>edges fg \<and> initialproc fg p"

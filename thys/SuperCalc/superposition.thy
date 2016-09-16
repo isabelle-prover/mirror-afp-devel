@@ -984,7 +984,7 @@ proof -
   from assms(3) have "mset_set (?f ` D) \<subseteq>#  {# (?f x). x \<in># mset_set (D) #}"
     using mset_set_mset_image by auto
   from this have ii: "{# (?g x). x \<in># mset_set (?f ` D) #} \<subseteq>#  {# (?g x). x \<in># {# (?f x). x \<in># mset_set (D) #} #}"
-    using image_subst_inclusion by auto
+    using image_mset_subseteq_mono by auto
   have "{# (?g x). x \<in># {# (?f x). x \<in># mset_set (D) #} #} = {# (?g (?f x)). x \<in># mset_set D #}"
     using mset_image_comp [of ?g ?f ]  by auto
   from this and ii have

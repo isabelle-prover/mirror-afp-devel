@@ -198,9 +198,8 @@ context Search_Space begin
       by (simp add: subset_iff) 
     with finitely_branching have [simp, intro!]: "finite (Collect (E a))" . 
 
-    from assms(2,3,4) show ?thesis unfolding worklist_inv_frontier_def 
-      apply auto
-      by (metis Un_iff insert_DiffM2 mset_singletonD set_mset_union)
+    from assms(2,3,4) show ?thesis unfolding worklist_inv_frontier_def
+      by (metis Un_iff insert_DiffM insert_iff local.refl mem_Collect_eq set_mset_add_mset_insert)
   qed    
 
   private lemma aux6:
@@ -209,9 +208,8 @@ context Search_Space begin
       "start_subsumed passed wait"
       "set_mset wait' = set_mset (wait - {#a#}) \<union> Collect (E a)"
     shows "start_subsumed (insert a passed) wait'"
-  using assms unfolding start_subsumed_def 
-  apply auto
-  by (metis UnI2 contra_subsetD mset_diff_union_s_inverse mset_left_cancel_elem sup_ge1)
+    using assms unfolding start_subsumed_def
+    by (metis Un_iff insert_DiffM insert_iff set_mset_add_mset_insert)
 
   lemma aux4:
     assumes "worklist_inv_frontier passed {#}" "reachable x" "start_subsumed passed {#}"

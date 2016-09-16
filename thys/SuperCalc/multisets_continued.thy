@@ -33,12 +33,7 @@ qed
 lemma mset_ordering_addition:
   assumes "A = B + C"
   shows "B \<subseteq># A"
-proof (rule ccontr)
-  assume "\<not> ?thesis"
-  then obtain x where "count B x > count A x" by (simp add: assms) 
-  from assms(1) have "count A x = count B x + count C x" by auto
-  from this and `count B x > count A x` show False by auto
-qed
+  using assms by simp
 
 lemma equal_image_mset:
   assumes "\<forall>x \<in> E. (f x) = (g x)"
@@ -327,7 +322,7 @@ qed
 
 lemma mset_image_comp:
   shows "{# (f x). x \<in># {# (g x). x \<in># E #} #} = {# (f (g x)). x \<in># E #}"
-by (metis (no_types, lifting) image_mset.compositionality image_mset_cong o_def)
+   by (simp add: image_mset.compositionality comp_def)
 
 lemma mset_set_mset_image:
   shows "\<And> E. card E = N \<Longrightarrow> finite E \<Longrightarrow> mset_set (g ` E) \<subseteq>#  {# (g x). x \<in># mset_set (E) #}"
@@ -442,12 +437,5 @@ lemma split_image_mset:
   assumes "M = M1 + M2"
   shows "{# (f x). x \<in># M #} = {# (f x). x \<in># M1 #} + {# (f x). x \<in># M2 #}"
 by (simp add: assms)
-
-
-lemma image_subst_inclusion:
-  assumes "E \<subseteq># F"
-  shows "{# (f x). x \<in># E #} \<subseteq>#  {# (f x). x \<in># F #}"
-by (metis assms image_mset_union subset_mset.le_iff_add)
-
 
 end

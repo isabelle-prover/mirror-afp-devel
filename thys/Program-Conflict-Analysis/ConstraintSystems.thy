@@ -110,7 +110,7 @@ next
     from mset_map_split_orig_le SLP(1) snoc.prems(3) obtain P1 P2 where PSPLIT: "P=P1+P2" "(\<lambda>p. [entry fg p]) `# P1 \<le># ct" "(\<lambda>p. [entry fg p]) `# P2 \<le># csp'" by blast
     with snoc.prems(2) have PSIZE: "size P1 \<le> k" "size P2 \<le> k" by auto
     from snoc.hyps[OF LEN(1) FC(2) PSIZE(1) PSPLIT(2)] snoc.hyps[OF LEN(2) SLP(2) PSIZE(2) PSPLIT(3)] have IHAPP: "(ut, mon_w fg w1, P1) \<in> S_cs fg k" "(return fg q, mon_w fg w2, P2) \<in> S_cs fg k" .
-    from S_call[OF FC(4) IHAPP mset_le_eq_refl[OF PSPLIT(1)] snoc.prems(2)] FC(1) CASE(1) show "(v, mon_w fg (w@[e]), P) \<in> S_cs fg k" by (auto simp add: mon_w_unconc Un_ac)
+    from S_call[OF FC(4) IHAPP subset_mset.eq_refl[OF PSPLIT(1)] snoc.prems(2)] FC(1) CASE(1) show "(v, mon_w fg (w@[e]), P) \<in> S_cs fg k" by (auto simp add: mon_w_unconc Un_ac)
   next
     case trss_spawn then obtain u q where CASE: "e=LSpawn q" "sh=[u]" "c'={#[entry fg q]#}+ch" "(u,Spawn q,v)\<in>edges fg" by auto
     from mset_map_split_orig_le CASE(3) snoc.prems(3) obtain P1 P2 where PSPLIT: "P=P1+P2" "(\<lambda>p. [entry fg p]) `# P1 \<le># {#[entry fg q]#}" "(\<lambda>p. [entry fg p]) `# P2 \<le># ch" by blast
@@ -162,7 +162,7 @@ next
   qed
   moreover from REACHING_PATH(4) SL_PATH(4) have "mon fg q \<union> M \<union> Ms = mon_w fg (w1@LCall q#w2@[LRet])" by (auto simp add: mon_w_unconc)
   moreover have "(\<lambda>p. [entry fg p]) `# (P') \<le># csp1+csp2" (is "?f `# P' \<le># _") proof -
-    from mset_map_le[OF S_call(6)] have "?f `# P' \<le># ?f `# P + ?f `# Ps" by (auto simp add: mset_map_union)
+    from image_mset_subseteq_mono[OF S_call(6)] have "?f `# P' \<le># ?f `# P + ?f `# Ps" by auto
     also from mset_subset_eq_mono_add[OF REACHING_PATH(3) SL_PATH(3)] have "\<dots> \<le># csp1+csp2" .
     finally show ?thesis .
   qed
@@ -175,7 +175,7 @@ next
   finally have "(([entry fg p], {#}), w @ [LSpawn q], [v], add_mset [entry fg q] c') \<in> trcl (trss fg)" .
   moreover from IHAPP(4) have "M=mon_w fg (w @ [LSpawn q])" by (simp add: mon_w_unconc)
   moreover have "(\<lambda>p. [entry fg p]) `# P' \<le># {#[entry fg q]#} + c'" (is "?f `# _ \<le># _") proof -
-    from mset_map_le[OF S_spawn(4)] have "?f `# P' \<le># {#[entry fg q]#} + ?f `# P" by (auto simp add: mset_map_union)
+    from image_mset_subseteq_mono[OF S_spawn(4)] have "?f `# P' \<le># {#[entry fg q]#} + ?f `# P" by auto
     also from mset_subset_eq_mono_add[OF _ IHAPP(3)] have "\<dots> \<le># {#[entry fg q]#} + c'" by (auto intro: IHAPP(3))
     finally show ?thesis .
   qed
