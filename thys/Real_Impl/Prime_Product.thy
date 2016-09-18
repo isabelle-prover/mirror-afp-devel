@@ -140,7 +140,7 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
           assume "2 \<le> j" "j < i"
           from prems(6)[OF this] have "\<not> j dvd n" by auto
           thus "\<not> j dvd n div i div i" 
-            by (metis dvd_mult n n'_def mult.assoc mult.commute)
+            by (metis dvd_mult n n'_def mult.commute)
         next
           show "\<not> (\<exists> s. s * s = n div i div i)"
           proof
@@ -264,9 +264,9 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
           fix m
           assume m: "prime m" "multiplicity m n > 0"
           hence mp: "m \<in> prime_factors n"
-            by (auto simp: prime_factors_altdef_multiplicity)
+            by (auto simp: prime_factors_multiplicity)
           hence md: "m dvd n" 
-            by (auto simp: n0 prime_factors_altdef)
+            by auto
           then obtain k where n: "n = m * k" ..
           from mp have pm: "prime m" by auto
           hence m2: "m \<ge> 2" and m0: "m > 0" by (auto simp: prime_nat_iff)
@@ -278,8 +278,9 @@ proof (induct factor_sq factor_pr limit n i rule: prime_product_factor_main.indu
             from n0 n have k: "k > 0" by auto
             from mult m0 k n m have "multiplicity m k > 0"
               by (auto simp: prime_elem_multiplicity_mult_distrib)
-            with m have mp: "m \<in> prime_factors k" by (auto simp: prime_factors_altdef_multiplicity)
-            hence md: "m dvd k" by (auto simp: k prime_factors_altdef)
+            with m have mp: "m \<in> prime_factors k"
+              by (auto simp: prime_factors_multiplicity)
+            hence md: "m dvd k" by (auto simp: k)
             then obtain l where kml: "k = m * l" ..
             note n = n[unfolded kml]
             from n have "l dvd n" by auto

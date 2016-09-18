@@ -264,7 +264,7 @@ proof -
   hence pr: "prime p" by auto
   define rem where "rem = (\<Prod>p\<in>?pf - {p}. p ^ multiplicity p j)"
   from p have mult: "multiplicity p j \<noteq> 0"
-    by (auto simp: prime_factors_altdef_multiplicity)
+    by (auto simp: prime_factors_multiplicity)
   have "finite ?pf" by simp
   have "j = (\<Prod>p\<in>?pf. p ^ multiplicity p j)" by fact
   also have "?pf = (insert p (?pf - {p}))" using p by auto

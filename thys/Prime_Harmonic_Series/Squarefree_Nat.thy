@@ -73,7 +73,7 @@ lemma square_part_le: "square_part n \<le> n"
   by (cases "n = 0") (simp_all add: dvd_imp_le)
 
 lemma square_part_pos [simp]: "n > 0 \<Longrightarrow> square_part n > 0"
-  unfolding square_part_def using prime_gt_0_nat by (auto simp: prime_factors_altdef)
+  unfolding square_part_def using prime_gt_0_nat by auto
 
 lemma zero_not_in_squarefree_part [simp]: "0 \<notin> squarefree_part n"
   unfolding squarefree_part_def by auto
@@ -125,7 +125,7 @@ proof -
   note subset = this prime
 
   have "\<Prod>A1 > 0" "\<Prod>A2 > 0" using subset(1)  prime_gt_0_nat 
-    by (auto intro!: setprod_pos dest: prime simp: prime_factors_altdef)
+    by (auto intro!: setprod_pos dest: prime)
   from n have "s1 > 0" unfolding s1_def by simp
   from assms have "s2 \<noteq> 0" by (intro notI) simp
   hence "s2 > 0" by simp

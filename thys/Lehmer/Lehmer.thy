@@ -63,7 +63,7 @@ qed
 
 lemma prime_factors_elem:
   fixes n :: nat assumes "1 < n" shows "\<exists>p. p \<in> prime_factors n"
-  using assms by (cases "prime n") (auto simp: prime_factors_altdef prime_factor_nat)
+  using assms by (cases "prime n") (auto simp: prime_factors_dvd prime_factor_nat)
 
 lemma cong_pow_1_nat:
   fixes a b :: nat assumes "[a = 1] (mod b)" shows "[a ^ x = 1] (mod b)"

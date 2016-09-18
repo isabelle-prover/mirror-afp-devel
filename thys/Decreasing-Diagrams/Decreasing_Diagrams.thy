@@ -156,7 +156,8 @@ proof (cases "set_mset J = {}")
  thus ?thesis using True unfolding mult_eq_def by auto
 next
  case False hence h:"J \<noteq> {#}" using set_mset_eq_empty_iff by auto
-  hence "(I+K,I+J)\<in> mult r" using set_mset_eq_empty_iff assms one_step_implies_mult downset_elim by fast
+  hence "(I+K,I+J)\<in> mult r" using set_mset_eq_empty_iff assms one_step_implies_mult downset_elim
+    by auto blast
   thus ?thesis unfolding mult_eq_def mult_def by auto
 qed
 

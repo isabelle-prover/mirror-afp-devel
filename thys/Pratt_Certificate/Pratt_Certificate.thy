@@ -145,19 +145,10 @@ text {*
 *}
 
 lemma prime_factors_one [simp]: shows "prime_factors (Suc 0) = {}"
-  by (auto simp add:prime_factors_altdef)
+  using prime_factorization_1 [where ?'a = nat] by simp
 
 lemma prime_factors_of_prime: fixes p :: nat assumes "prime p" shows "prime_factors p = {p}"
-proof
-  have "0 < p" using assms by (simp add: prime_gt_0_nat) 
-  then show "{p} \<subseteq> prime_factors p" using assms by (auto simp add: prime_factors_altdef)
-  { fix q assume "q \<in> prime_factors p"
-    then have "q dvd p" "prime q" using `0<p` by (auto simp add:prime_factors_altdef)
-    with assms have "q=p" by (auto simp: prime_nat_iff)
-    }
-  then
-  show "prime_factors p \<subseteq> {p}" by auto
-qed
+  using assms by (fact prime_prime_factors)
 
 theorem pratt_sound:
   assumes 1: "valid_cert c"
@@ -337,7 +328,7 @@ lemma prime_factors_list_prime:
   fixes n :: nat
   assumes "prime n"
   shows "\<exists> qs. prime_factors n = set qs \<and> prod_list qs = n \<and> length qs = 1"
-  using assms by (intro exI[of _ "[n]"]) (auto simp: prime_factors_altdef intro: primes_dvd_imp_eq)
+  using assms by (auto simp add: prime_factorization_prime intro: exI [of _ "[n]"])
 
 lemma prime_factors_list:
   fixes n :: nat assumes "3 < n" "\<not> prime n"
@@ -358,7 +349,7 @@ proof (induction n rule: less_induct)
       by (auto simp: prime_factors_product div_gt_0 prime_factors_of_prime)
       ultimately
       have "prime_factors n = set (p # qs)" "prod_list (p # qs) = n" "length (p#qs) \<ge> 2"
-        using `p dvd n` by (simp_all add: dvd_mult_div_cancel)
+        using `p dvd n` by simp_all
       hence ?case by blast
     }
     moreover
@@ -372,7 +363,7 @@ proof (induction n rule: less_induct)
       by (auto simp: prime_factors_product div_gt_0 prime_factors_of_prime)
       ultimately
       have "prime_factors n = set (p # qs)" "prod_list (p # qs) = n" "length (p#qs) \<ge> 2"
-        using `p dvd n` by (simp_all add: dvd_mult_div_cancel)
+        using `p dvd n` by simp_all
       hence ?case by blast
     } note case_prime = this
     moreover
@@ -427,7 +418,9 @@ proof
   assume "prime (p - 1)"
   have "\<not> even p" using assms by (simp add: prime_odd_nat)
   hence "2 dvd (p - 1)" by presburger
-  hence "2 \<in> prime_factors (p - 1)" using `p>3` by (auto simp: prime_factors_altdef)
+  then obtain q where "p - 1 = 2 * q" ..
+  then have "2 \<in> prime_factors (p - 1)" using `p>3`
+    by (auto simp: prime_factorization_times_prime)
   thus False using prime_factors_of_prime `p>3` `prime (p - 1)` by auto
 qed
 
