@@ -12,7 +12,7 @@ session "Perron_Frobenius" (AFP) = "Pre_Perron_Frobenius" +
     "root.tex"
 
 session "Pre_Perron_Frobenius" (AFP) = "Jordan_Normal_Form" +
-  options [document = false, timeout = 1200]
+  options [document = false, timeout = 2400]
   theories
     "~~/src/HOL/Analysis/Brouwer_Fixpoint"
     "~~/src/HOL/Analysis/Cartesian_Euclidean_Space"
