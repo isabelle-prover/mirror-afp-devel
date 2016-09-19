@@ -116,7 +116,7 @@ proof safe
   thus "(y - setsum (op *\<^sub>R r) Basis) \<bullet> i \<le> x \<bullet> i"
     "x \<bullet> i \<le> (y + setsum (op *\<^sub>R r) Basis) \<bullet> i"
     by (auto simp add: inner_diff_left inner_add_left inner_setsum_left
-      setsum_right_distrib[symmetric] setsum_inner_Basis_one \<open>i\<in>Basis\<close> dist_real_def)
+      setsum_distrib_left[symmetric] setsum_inner_Basis_one \<open>i\<in>Basis\<close> dist_real_def)
 qed
 
 lemma centered_cbox_in_cball:

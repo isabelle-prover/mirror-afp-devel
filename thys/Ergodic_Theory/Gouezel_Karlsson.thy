@@ -1051,7 +1051,7 @@ proof -
     also have "... = (\<Sum>N\<in>{..<B}. (d2 * (1/4) * B) * (1/2)^N)"
       by (auto, metis (lifting) mult.commute mult.left_commute)
     also have "... = (d2 * (1/4) * B) * (\<Sum>N\<in>{..<B}. (1/2)^N)"
-      by (rule setsum_right_distrib[symmetric])
+      by (rule setsum_distrib_left[symmetric])
     also have "... \<le> (d2 * (1/4) * B) * 2"
       apply (rule mult_left_mono) using * `d2 > 0` apply auto
       by (metis \<open>0 < d2\<close> mult_eq_0_iff mult_le_0_iff not_le of_nat_eq_0_iff of_nat_le_0_iff)

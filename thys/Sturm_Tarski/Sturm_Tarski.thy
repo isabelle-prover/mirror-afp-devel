@@ -809,7 +809,7 @@ proof (cases "{x. a< x\<and> x< b \<and> poly p x=0 }\<noteq>{}", induct "degree
             using sjump_mult[of x p' max_rp] `p\<noteq>0` unfolding p' by auto
         qed
       also have "... = max_r_sign * (\<Sum>x\<in>roots'. sjump p' x)"
-        by (metis setsum_right_distrib)
+        by (metis setsum_distrib_left)
       also have "... = max_r_sign * cross p' a b"
         proof (cases "roots'={}")
           case True
@@ -929,7 +929,7 @@ lemma cindex_smult_1:
   assumes "p\<noteq>0"
   shows "cindex a b (smult c q) p =  (sign c) * cindex a b q p"
 unfolding cindex_def
-using setsum_right_distrib[THEN sym, of "sign c" "\<lambda>x. jump q p x"
+using setsum_distrib_left[THEN sym, of "sign c" "\<lambda>x. jump q p x"
     "{x. poly p x = (0::real) \<and> a < x \<and> x < b}"] jump_smult_1[OF `p\<noteq>0`]
   by auto
 
@@ -938,7 +938,7 @@ lemma cindex_smult_2:
   assumes "p\<noteq>0" "c\<noteq> 0"
   shows "cindex a b q (smult c p) =  (sgn c) * cindex a b q p"
 unfolding cindex_def of_int_setsum jump_smult_2[OF `p\<noteq>0` `c\<noteq>0`,of q]
-using setsum_right_distrib[THEN sym, of "sgn c" "\<lambda>x. jump q p x"
+using setsum_distrib_left[THEN sym, of "sgn c" "\<lambda>x. jump q p x"
     "{x. poly p x = (0::real) \<and> a < x \<and> x < b}"]
   by (simp add: `c\<noteq>0`)
 

@@ -525,7 +525,7 @@ proof(intro healthy_parts bounded_byI nnegI le_funI, simp_all add:wp_eval)
   with sound have "(\<Sum>a\<in>supp (p s). p s a * wp (f a) P s) \<le> (\<Sum>a\<in>supp (p s). p s a * b)"
     by(blast intro:setsum_mono mult_left_mono)
   also have "... = (\<Sum>a\<in>supp (p s). p s a) * b"
-    by(simp add:setsum_left_distrib)
+    by(simp add:setsum_distrib_right)
   also {
     from bP and nP have "0 \<le> b" by(blast)
     with sub_dist have "(\<Sum>a\<in>supp (p s). p s a) * b \<le> 1 * b"
@@ -555,7 +555,7 @@ next
   have "c * (\<Sum>a\<in>supp (p s). p s a * wp (f a) P s) =
         (\<Sum>a\<in>supp (p s). p s a * (c * wp (f a) P s))"
        (is "?A = ?B")
-    by(simp add:setsum_right_distrib ac_simps)
+    by(simp add:setsum_distrib_left ac_simps)
   also from sound and pos and healthy
   have "... = (\<Sum>a\<in>supp (p s). p s a * wp (f a) (\<lambda>s. c * P s) s)"
     by(auto simp:scalingD[OF healthy_scalingD])
@@ -578,7 +578,7 @@ proof(intro nearly_healthyI unitaryI2 bounded_byI nnegI le_funI, simp_all only:w
   with sound have "(\<Sum>a\<in>supp (p s). p s a * wlp (f a) P s) \<le> (\<Sum>a\<in>supp (p s). p s a * 1)"
     by(blast intro:setsum_mono mult_left_mono)
   also have "... = (\<Sum>a\<in>supp (p s). p s a)"
-    by(simp add:setsum_left_distrib)
+    by(simp add:setsum_distrib_right)
   also note sub_dist
   finally show "(\<Sum>a\<in>supp (p s). p s a * wlp (f a) P s) \<le> 1" .
   show "0 \<le> (\<Sum>a\<in>supp (p s). p s a * wlp (f a) P s)"

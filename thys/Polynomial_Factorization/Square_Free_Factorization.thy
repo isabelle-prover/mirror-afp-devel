@@ -299,7 +299,7 @@ lemma poly_exp_expand:
 lemma pderiv_exp_setprod: 
   "pderiv p = (setprod (\<lambda> (a,i). a ^ i) as * setsum (\<lambda> (a,i). 
     setprod (\<lambda> (b,j). b) (as - {(a,i)}) * smult (of_nat (Suc i)) (pderiv a)) as)"
-  unfolding p pderiv_setprod setsum_right_distrib
+  unfolding p pderiv_setprod setsum_distrib_left
 proof (rule setsum.cong[OF refl])
   fix x
   assume "x \<in> as"
@@ -376,7 +376,7 @@ proof -
         by (subst setsum.remove[OF fin ai], auto)
       also have "setsum (\<lambda> (b,j). ?setprod b j) (bs - {(a,i)})
         = a * factor"
-        unfolding factor_def setsum_right_distrib
+        unfolding factor_def setsum_distrib_left
       proof (rule setsum.cong[OF refl])
         fix bj
         assume mem: "bj \<in> bs - {(a,i)}"
@@ -530,7 +530,7 @@ next
   also have "setsum ?f (as \<inter> UNIV \<times> {n}) = 0"
     by (rule setsum.neutral, auto)
   finally have id: "D n = setsum ?f (as - UNIV \<times> {0 ..< Suc n})" by simp
-  show ?case unfolding id setsum_right_distrib
+  show ?case unfolding id setsum_distrib_left
   proof (rule setsum.cong[OF refl])
     fix x
     assume mem: "x \<in> as - UNIV \<times> {0 ..< Suc n}"

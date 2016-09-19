@@ -74,7 +74,7 @@ proof -
   have "(\<Sum>i \<in> I. f i / x) = (\<Sum>i \<in> I. f i * (1 / x))"
     by simp
   also have "\<dots> = setsum f I * (1 / x)"
-    by (rule setsum_left_distrib[symmetric])
+    by (rule setsum_distrib_right[symmetric])
   also have "\<dots> = setsum f I / x"
     by simp
   finally show ?thesis

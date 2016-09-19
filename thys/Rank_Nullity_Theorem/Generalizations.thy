@@ -1769,7 +1769,7 @@ lemma matrix_vector_mul_linear_between_finite_dimensional_vector_spaces:
     (cart_basis) (cart_basis) (\<lambda>x. A *v (x::'a::{field} ^ _))"
   by (unfold_locales)
     (auto simp add: linear_iff2 matrix_vector_mult_def vec_eq_iff
-      field_simps setsum_right_distrib setsum.distrib)
+      field_simps setsum_distrib_left setsum.distrib)
 
 interpretation euclidean_space:
   finite_dimensional_vector_space "scaleR :: real => 'a => 'a::{euclidean_space}" "Basis"
@@ -1817,7 +1817,7 @@ qed
 
 lemma matrix_vector_mul_linear: "linear (op *s) (op *s) (\<lambda>x. A *v (x::'a::{field} ^ _))"
   by (simp add: linear_iff2 matrix_vector_mult_def vec_eq_iff
-      field_simps setsum_right_distrib setsum.distrib)
+      field_simps setsum_distrib_left setsum.distrib)
 
 (*Two new interpretations*)
 interpretation vec: linear "op *s" "op *s" "(\<lambda>x. A *v (x::'a::{field} ^ _))"

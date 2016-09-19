@@ -943,7 +943,7 @@ proof -
       (\<Sum>n< Suc N. M * (1 / 2) ^ n)"
     by (rule setsum_mono, simp add: i)
   also have "... = M * (\<Sum>n<Suc N. (1 / 2) ^ n)"
-    by (rule setsum_right_distrib[symmetric])
+    by (rule setsum_distrib_left[symmetric])
   also have "... \<le> M * (\<Sum>n. (1 / 2) ^ n)"
     by (rule mult_left_mono, rule setsum_le_suminf, auto simp add: summable_geometric_iff)
   also have "... = M * 2"

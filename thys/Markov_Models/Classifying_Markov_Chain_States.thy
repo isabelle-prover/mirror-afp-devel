@@ -542,7 +542,7 @@ lemma gf_G_eq_gf_F:
   shows "gf_G x y z = gf_F x y z * gf_G y y z"
 proof -
   have "gf_G x y z = (\<Sum>n. \<Sum>i\<le>n. p y y (n - i) * f x y i * z^n)"
-    by (simp add: gf_G_def p_eq_setsum_p_f[of x y] setsum_left_distrib)
+    by (simp add: gf_G_def p_eq_setsum_p_f[of x y] setsum_distrib_right)
   also have "\<dots> = (\<Sum>n. \<Sum>i\<le>n. (f x y i * z^i) * (p y y (n - i) * z^(n - i)))"
     by (intro arg_cong[where f=suminf] setsum.cong ext atLeast0AtMost[symmetric])
        (simp_all add: power_add[symmetric])
@@ -1378,7 +1378,7 @@ proof -
       proof (intro suminf_le summable_setsum convergence_G conv summable_geometric allI)
         fix l
         have "(\<Sum>y\<in>A n. p x y l *\<^sub>R z ^ l) = (\<Sum>y\<in>A n. p x y l) * z ^ l"
-          by (simp add: setsum_left_distrib)
+          by (simp add: setsum_distrib_right)
         also have "\<dots> \<le> z ^ l"
         proof (intro mult_left_le_one_le)
           have "(\<Sum>y\<in>A n. p x y l) = \<P>(\<omega> in T x. (x ## \<omega>) !! l \<in> A n)"
@@ -1396,7 +1396,7 @@ proof -
       then have "(\<Sum>y\<in>A n. gf_F x y z / (1 - gf_U y y z)) * (1 - z) \<le> 1"
         using z by (simp add: field_simps)
       then have "(\<Sum>y\<in>A n. gf_F x y z / (1 - gf_U y y z) * (1 - z)) \<le> 1"
-        by (simp add: setsum_left_distrib)
+        by (simp add: setsum_distrib_right)
       then show "(\<Sum>y\<in>A n. gf_F x y z * ((1 - z) / (1 - gf_U y y z))) \<le> 1"
         by simp
     qed

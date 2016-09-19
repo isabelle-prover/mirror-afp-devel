@@ -255,7 +255,7 @@ proof -
     apply (subst (1 2) emeasure_Collect_T)
     apply simp
     apply (subst (1 2) nn_integral_measure_pmf_finite)
-    apply (auto simp: E_Mix E_Init * setsum.reindex setsum_left_distrib[symmetric] divide_ennreal
+    apply (auto simp: E_Mix E_Init * setsum.reindex setsum_distrib_right[symmetric] divide_ennreal
       ennreal_times_divide[symmetric])
     done
 qed
@@ -379,7 +379,7 @@ lemma server_view: "\<P>(\<omega> in \<PP>. \<exists>j\<in>H. visit {j} {j} \<om
   using finite_J
 proof (subst T.prob_setsum[where I="H" and P="\<lambda>j. visit {j} {j}"])
   show "(\<Sum>j\<in>H. \<P>(\<omega> in \<PP>. visit {j} {j} \<omega>)) = p_j"
-    by (auto simp: measure_def emeasure_visit setsum_left_distrib[symmetric] simp del: space_T sets_T)
+    by (auto simp: measure_def emeasure_visit setsum_distrib_right[symmetric] simp del: space_T sets_T)
   show "AE x in \<PP>. (\<forall>n\<in>H. visit {n} {n} x \<longrightarrow> (\<exists>j\<in>H. visit {j} {j} x)) \<and>
                 ((\<exists>j\<in>H. visit {j} {j} x) \<longrightarrow> (\<exists>!n. n \<in> H \<and> visit {n} {n} x))"
     by (auto dest: visit_unique1)
@@ -587,7 +587,7 @@ proof -
     apply (subst nn_integral_indicator_finite)
     apply (auto simp: emeasure_measure_pmf_finite setsum.reindex next_prob_def setsum.If_cases
                       Int_absorb2 H_compl2 ennreal_mult[symmetric] setsum_nonneg
-                      setsum_right_distrib[symmetric] setsum_left_distrib[symmetric]
+                      setsum_distrib_left[symmetric] setsum_distrib_right[symmetric]
                 intro!: setsum.cong setsum_nonneg)
     apply (subst (asm) ennreal_inj)
     apply (auto intro!: mult_nonneg_nonneg setsum_nonneg setsum.mono_neutral_left elim!: negE)
@@ -634,7 +634,7 @@ proof -
   finally have *: "\<P>(\<omega> in T Start. ?V \<omega>) =
       (p_f * (1 - p_H) * p_j * (card L) / (1 - p_H * p_f)) * (\<Sum>i\<in>I. p_i i) +
       (\<Sum>i\<in>I \<inter> L. p_i i) * (1 - p_H)"
-    by (simp add: mult_ac measure_def setsum_left_distrib[symmetric] setsum_right_distrib[symmetric]
+    by (simp add: mult_ac measure_def setsum_distrib_right[symmetric] setsum_distrib_left[symmetric]
                   setsum_divide_distrib[symmetric] IJ ennreal_mult[symmetric] setsum_nonneg
                   mult_le_one ennreal_plus[symmetric]
              del: ennreal_plus)
@@ -658,7 +658,7 @@ proof -
   then have "\<P>(\<omega> in \<PP>. (\<exists>j\<in>?J. ?V j \<omega>) \<bar> ?H \<omega>) = (\<Sum>j\<in>?J. \<P>(\<omega> in \<PP>. ?V j \<omega> \<bar> ?H \<omega>))"
     by (simp add: cond_prob_def setsum_divide_distrib)
   also have "\<dots> = p_j * p_f + (1 - p_H * p_f)"
-    by (simp add: Pr_visit_before_C setsum_left_distrib[symmetric] setsum.distrib)
+    by (simp add: Pr_visit_before_C setsum_distrib_right[symmetric] setsum.distrib)
   finally show ?thesis
     by (simp add: field_simps)
 qed

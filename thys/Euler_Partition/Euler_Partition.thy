@@ -130,7 +130,7 @@ proof (induct rule: binary_induct)
 next
   case (even n)
   from this show ?case
-    by (simp add: bitset_2n setsum.reindex setsum_right_distrib[symmetric])
+    by (simp add: bitset_2n setsum.reindex setsum_distrib_left[symmetric])
 next
   case (odd n)
   have "(\<Sum>i\<in>bitset (2 * n + 1). 2 ^ i) = (\<Sum>i\<in>insert 0 (Suc ` bitset n). 2 ^ i)"
@@ -138,7 +138,7 @@ next
   also have "... = 2 ^ 0 + (\<Sum>i\<in>Suc ` bitset n. 2 ^ i)"
     by (subst setsum.insert) (auto simp add: finite_bitset)
   also have "... = 2 * n + 1"
-    using odd by (simp add: setsum.reindex setsum_right_distrib[symmetric])
+    using odd by (simp add: setsum.reindex setsum_distrib_left[symmetric])
   finally show ?case .
 qed
 
@@ -363,7 +363,7 @@ proof -
       using assms(2)[of m] finite dual_order.trans in_bitset_bound
       by (fastforce intro!: setsum.mono_neutral_cong_right)
     also have "... = (\<Sum>k\<in>bitset (p m). 2 ^ k) * m"
-      by (subst setsum_left_distrib) auto
+      by (subst setsum_distrib_right) auto
     also have "... = p m * m"
       by (auto simp add: setsum_bitset)
     finally have "(\<Sum>i | \<exists>k. i = 2 ^ k * m \<and> i \<le> n. distinct_of_odd p i * i) = p m * m" .
@@ -456,7 +456,7 @@ proof
     from 3 this have "(\<Sum>j | p (2 ^ j * i) = 1. 2 ^ j) * i = (\<Sum>x | p x = 1 \<and> oddpart x = i. 2 ^ index x) * i"
       by (auto intro: setsum.reindex_cong[where l = "index"])
     also have "... = (\<Sum>x | p x = 1 \<and> oddpart x = i. 2 ^ index x * oddpart x)"
-      by (auto simp add: setsum_left_distrib)
+      by (auto simp add: setsum_distrib_right)
     also have "... = (\<Sum>x | p x = 1 \<and> oddpart x = i. x)"
        by (simp only: index_oddpart_decomposition[symmetric])
     also have "... \<le> (\<Sum>x | p x = 1. x)"

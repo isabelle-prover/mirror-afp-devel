@@ -275,7 +275,7 @@ proof (unfold DFT_def)
     txt {* First pair of sums *}
     apply (simp add: root_cancel1)
     txt {* Second pair of sums *}
-    apply (simp add: setsum_right_distrib)
+    apply (simp add: setsum_distrib_left)
     apply (simp add: power_add)
     apply (simp add: root_cancel1)
     apply (simp add: ac_simps)
@@ -304,7 +304,7 @@ proof (unfold DFT_def)
     apply (simp add: root_unity ibound root_nonzero power_diff power_mult)
     txt {* Second pair of sums *}
     apply (simp add: mbound root_cancel2)
-    apply (simp add: setsum_right_distrib)
+    apply (simp add: setsum_distrib_left)
     apply (simp add: power_add)
     apply (simp add: root_cancel1)
     apply (simp add: power_mult)
@@ -330,7 +330,7 @@ proof (unfold IDFT_def)
     txt {* First pair of sums *}
     apply (simp add: root_cancel1)
     txt {* Second pair of sums *}
-    apply (simp add: setsum_right_distrib)
+    apply (simp add: setsum_distrib_left)
     apply (simp add: power_add)
     apply (simp add: power_divide root_nonzero)
     apply (simp add: root_cancel1)
@@ -412,7 +412,7 @@ theorem DFT_inverse:
   apply (simp only: power_divides_special [OF root_nonzero])
   apply (simp add: power_diff_rev_if root_nonzero)
   apply (simp add: setsum_divide_distrib [THEN sym]
-    setsum_left_distrib [THEN sym])
+    setsum_distrib_right [THEN sym])
   proof -
     from i_less have i_diff: "!!k. i - k < n" by arith
     have diff_i: "!!k. k < n ==> k - i < n" by arith

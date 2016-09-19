@@ -348,12 +348,12 @@ qed
 
 lemma scalar_scalar_prod_assoc[simp]: assumes v: "v\<^sub>1 \<in> carrier\<^sub>v n" "v\<^sub>2 \<in> carrier\<^sub>v n" 
   shows "(a \<odot>\<^sub>v v\<^sub>1) \<bullet> v\<^sub>2 = a * (v\<^sub>1 \<bullet> v\<^sub>2)"
-  unfolding scalar_prod_def setsum_right_distrib
+  unfolding scalar_prod_def setsum_distrib_left
   by (rule setsum.cong, insert v, auto simp: ac_simps)
 
 lemma scalar_prod_scalar_assoc[simp]: assumes v: "v\<^sub>1 \<in> carrier\<^sub>v n" "v\<^sub>2 \<in> carrier\<^sub>v n" 
   shows "v\<^sub>1 \<bullet> (a \<odot>\<^sub>v v\<^sub>2) = (a :: 'a :: comm_ring) * (v\<^sub>1 \<bullet> v\<^sub>2)"
-  unfolding scalar_prod_def setsum_right_distrib
+  unfolding scalar_prod_def setsum_distrib_left
   by (rule setsum.cong, insert v, auto simp: ac_simps)
 
 lemma scalar_prod_comm: assumes "(v\<^sub>1 :: 'a :: comm_semiring_0 vec) \<in> carrier\<^sub>v n" "v\<^sub>2 \<in> carrier\<^sub>v n" 
@@ -970,7 +970,7 @@ proof
     unfolding vec_index_vec[OF i] vec_index_vec[OF i2]
     unfolding mat_mult_vec_def vec_scalar_mult_def
     unfolding scalar_prod_def vec_index_vec[OF i]
-    by (simp add: mult.left_commute setsum_right_distrib)
+    by (simp add: mult.left_commute setsum_distrib_left)
   qed
 qed
 
@@ -982,13 +982,13 @@ proof -
   also have "\<dots> = (\<Sum>i\<in>{0..<nc}. (\<Sum>k\<in>{0..<nr}. v\<^sub>1 $ k * col A i $ k) * v\<^sub>2 $ i)"
     by (rule setsum.cong, auto)
   also have "\<dots> = (\<Sum>i\<in>{0..<nc}. (\<Sum>k\<in>{0..<nr}. v\<^sub>1 $ k * col A i $ k * v\<^sub>2 $ i))"
-    unfolding setsum_left_distrib ..
+    unfolding setsum_distrib_right ..
   also have "\<dots> = (\<Sum>k\<in>{0..<nr}. (\<Sum>i\<in>{0..<nc}. v\<^sub>1 $ k * col A i $ k * v\<^sub>2 $ i))"
     by (rule setsum.commute)
   also have "\<dots> = (\<Sum>k\<in>{0..<nr}. (\<Sum>i\<in>{0..<nc}. v\<^sub>1 $ k * (col A i $ k * v\<^sub>2 $ i)))"
     by (simp add: ac_simps)
   also have "\<dots> = (\<Sum>k\<in>{0..<nr}. v\<^sub>1 $ k * (\<Sum>i\<in>{0..<nc}. col A i $ k * v\<^sub>2 $ i))"
-    unfolding setsum_right_distrib ..
+    unfolding setsum_distrib_left ..
   also have "\<dots> = (\<Sum>k\<in>{0..<nr}. v\<^sub>1 $ k * vec nr (\<lambda>k. \<Sum>i\<in>{0..<nc}. row A k $ i * v\<^sub>2 $ i) $ k)"
     using * by auto
   also have "\<dots> = v\<^sub>1 \<bullet> vec nr (\<lambda>i. row A i \<bullet> v\<^sub>2)" unfolding scalar_prod_def using * by simp
@@ -1089,12 +1089,12 @@ lemma scalar_vec_one[simp]: "1 \<odot>\<^sub>v (v :: 'a :: semiring_1 vec) = v"
 
 lemma scalar_prod_scalar_right[simp]: 
   "dim\<^sub>v w = dim\<^sub>v v \<Longrightarrow> w \<bullet> (k \<odot>\<^sub>v v) = (k :: 'a :: comm_semiring_0) * (w \<bullet> v)"
-  unfolding scalar_prod_def setsum_right_distrib
+  unfolding scalar_prod_def setsum_distrib_left
   by (auto intro: setsum.cong simp: ac_simps)
 
 lemma scalar_prod_scalar_left[simp]: 
   "dim\<^sub>v w = dim\<^sub>v v \<Longrightarrow> (k \<odot>\<^sub>v w) \<bullet> v = (k :: 'a :: comm_semiring_0) * (w \<bullet> v)"
-  unfolding scalar_prod_def setsum_right_distrib
+  unfolding scalar_prod_def setsum_distrib_left
   by (auto intro: setsum.cong simp: ac_simps)
 
 lemma mat_mult_scalar_comm: assumes A: "A \<in> carrier\<^sub>m nr n" and B: "B \<in> carrier\<^sub>m n nc"

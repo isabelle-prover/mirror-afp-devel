@@ -53,7 +53,7 @@ proof (induct p)
         unfolding degree_pCons_eq[OF False]
         unfolding setsum_atMost_Suc_shift
         unfolding map_poly_pCons[OF pCons(1)]
-        by (simp add: pCons(2) setsum_right_distrib mult.assoc)
+        by (simp add: pCons(2) setsum_distrib_left mult.assoc)
   qed
 qed
 

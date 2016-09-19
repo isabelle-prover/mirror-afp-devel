@@ -266,7 +266,7 @@ lemma scalar_vector_matrix_assoc:
   shows "(k *\<^sub>R x) v* A = k *\<^sub>R (x v* A)"
 proof -
   { fix i
-    from setsum_right_distrib [of k "\<lambda>j. x$j * A$j$i" UNIV]
+    from setsum_distrib_left [of k "\<lambda>j. x$j * A$j$i" UNIV]
     have "(\<Sum>j\<in>UNIV. k * (x$j * A$j$i)) = k * (\<Sum>j\<in>UNIV. x$j * A$j$i)" .. }
   thus "(k *\<^sub>R x) v* A = k *\<^sub>R (x v* A)"
     unfolding vector_matrix_mult_def

@@ -59,7 +59,7 @@ qed
 lemma norm1_0_iff[simp]: "(norm1 v = 0) = (v = 0)"
   using norm1_0 norm1_nonzero by (cases "v = 0", force+)
 
-lemma norm1_scaleR[simp]: "norm1 (r *\<^sub>R v) = abs r * norm1 v" unfolding norm1_def setsum_right_distrib
+lemma norm1_scaleR[simp]: "norm1 (r *\<^sub>R v) = abs r * norm1 v" unfolding norm1_def setsum_distrib_left
   by (rule setsum.cong, auto)
 
 lemma abs_norm1[simp]: "abs (norm1 v) = norm1 v" using norm1_ge_0[of v] by arith
@@ -219,7 +219,7 @@ proof (rule convexI)
   let ?lin = "a *\<^sub>R v + b *\<^sub>R w"
   from * have 1: "norm1 v = 1" "norm1 w = 1" unfolding S_def by auto
   have "norm1 ?lin = a * norm1 v + b * norm1 w"
-    unfolding norm1_def setsum_right_distrib setsum.distrib[symmetric]
+    unfolding norm1_def setsum_distrib_left setsum.distrib[symmetric]
   proof (rule setsum.cong)
     fix i :: 'n
     from * have "v $ i \<ge> 0" "w $ i \<ge> 0" unfolding S_def by auto
@@ -288,7 +288,7 @@ proof -
     {
       fix i
       have 1: "f v $ i \<ge> 0" unfolding fv c_def[symmetric] using c ge
-        by (auto simp: matrix_vector_mult_def setsum_right_distrib B_norm intro!: setsum_nonneg)
+        by (auto simp: matrix_vector_mult_def setsum_distrib_left B_norm intro!: setsum_nonneg)
       have id1: "\<And> i. (B *v f v) $ i = c * ((B *v (B *v v)) $ i)"
         unfolding f_def c_def matrix_vect_scaleR by simp
       have id3: "\<And> i. sr * f v $ i = c * ((B *v (sr *\<^sub>R v)) $ i)"

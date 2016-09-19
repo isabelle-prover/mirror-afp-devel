@@ -711,7 +711,7 @@ proof
       have "fg (x - z) = (\<Sum>y\<in>supp f. f y * g (-y + (x - z)) )"
         using fg f_aez convolution_symm_eq_sum_over_supp_left by fastforce
       hence "fg (x - z) * h z = (\<Sum>y\<in>supp f. f y * g (-y + (x - z)) * h z )"
-        using setsum_left_distrib by simp
+        using setsum_distrib_right by simp
       thus "fg (x - z) * h z = (\<Sum>y\<in>supp f. f y * g (-y + x - z) * h z )"
         by (simp add: algebra_simps)
     qed
@@ -737,7 +737,7 @@ proof
       have "gh (-y + x) = (\<Sum>z\<in>supp h. g (-y + x - z) * h z)"
         using gh h_aez convolution_eq_sum_over_supp_right by fastforce
       hence "f y * gh (-y + x) = (\<Sum>z\<in>supp h. f y * (g (-y + x - z) * h z))"
-        using setsum_right_distrib by simp
+        using setsum_distrib_left by simp
       also have "\<dots> = (\<Sum>z\<in>supp h. f y * g (-y + x - z) * h z)"
         using triple_cong setsum.cong by simp
       finally

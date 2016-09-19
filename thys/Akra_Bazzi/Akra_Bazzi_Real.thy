@@ -967,7 +967,7 @@ proof-
       by (simp add: field_simps f_approx_def powr_minus)
     also have "c5 * x powr p * (1 + ?l) * (1 + ?int - c4*g x/x powr p) =
                  (\<Sum>i<k. (?a i * ?b i powr p) * (c5 * x powr p * (1 + ?l) * (1 + ?int - c4*g x/x powr p)))"
-      by (subst setsum_left_distrib[symmetric]) (simp add: p_props)
+      by (subst setsum_distrib_right[symmetric]) (simp add: p_props)
     also have "... \<le> (\<Sum>i<k. ?a i * f (?b i*x + ?h i x))"
     proof (intro setsum_mono, clarify)
       fix i assume i: "i < k"
@@ -1228,7 +1228,7 @@ proof-
 
     hence "?sum + g x \<le> ?sum' + g x" by simp
     also have "... = c6 * x powr p * (1 - ?l) * (1 + ?int - c3*g x/x powr p) + g x"
-      by (simp add: setsum_left_distrib[symmetric] p_props)
+      by (simp add: setsum_distrib_right[symmetric] p_props)
     also have "... = c6 * (1 - ?l) * f_approx x - (c6*c3*(1 - ?l) - 1) * g x"
       unfolding f_approx_def using x_pos by (simp add: field_simps)
     also {

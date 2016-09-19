@@ -68,7 +68,7 @@ lemma int_poly_rat_no_root_ge:
 proof -
   let ?S = "(\<Sum>i\<le>n. coeff p i * of_int a ^ i * (of_int b ^ (n - i)))"
   from \<open>b > 0\<close> have eq: "?S = of_int b ^ n * poly p (a / b)"
-    by (simp add: poly_altdef power_divide mult_ac n_def setsum_right_distrib power_diff)
+    by (simp add: poly_altdef power_divide mult_ac n_def setsum_distrib_left power_diff)
   have "?S \<in> \<int>" by (intro Ints_setsum Ints_mult assms Ints_power) simp_all
   moreover from assms have "?S \<noteq> 0" by (subst eq) auto
   ultimately have "abs ?S \<ge> 1" by (elim Ints_cases) simp

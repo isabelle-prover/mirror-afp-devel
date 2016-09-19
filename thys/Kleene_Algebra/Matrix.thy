@@ -246,7 +246,7 @@ lemma matrix_mult_assoc:
  apply (cases A)
  apply (cases B)
  apply (cases C)
- apply (simp add: setsum_left_distrib setsum_right_distrib mult.assoc)
+ apply (simp add: setsum_distrib_right setsum_distrib_left mult.assoc)
  apply (subst setsum.commute)
  apply (rule refl)
 done
@@ -280,7 +280,7 @@ lemma sqmatrix_mult_assoc:
  apply (cases A)
  apply (cases B)
  apply (cases C)
- apply (simp add: setsum_left_distrib setsum_right_distrib mult.assoc)
+ apply (simp add: setsum_distrib_right setsum_distrib_left mult.assoc)
  apply (subst setsum.commute)
  apply (rule refl)
 done

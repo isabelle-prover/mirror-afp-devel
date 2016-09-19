@@ -33,9 +33,9 @@ next
   also have "\<dots> = (\<Sum>(a, x)\<in>(S i \<times> Pi\<^sub>E I S). f a i * (\<Prod>i\<in>I. f (x i) i))"
     using insert by (force intro!: setsum.cong setprod.cong arg_cong2[where f="op *"])
   also have "\<dots> = (\<Sum>a\<in>S i. f a i * (\<Sum>x\<in>Pi\<^sub>E I S. \<Prod>i\<in>I. f (x i) i))"
-    by (simp add: setsum.cartesian_product setsum_right_distrib)
+    by (simp add: setsum.cartesian_product setsum_distrib_left)
   finally show ?case
-    using insert by (simp add: setsum_left_distrib)
+    using insert by (simp add: setsum_distrib_right)
 qed
 
 subsection {* Definition of the Gossip-Broadcast *}

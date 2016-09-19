@@ -50,7 +50,7 @@ proof -
     by (simp add: setsum.distrib)
   also have "\<dots> = (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f True) a)) * p
                   + (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f False) a )) * (1 - p)"
-    by (simp add: setsum_left_distrib)    
+    by (simp add: setsum_distrib_right)    
   also have "\<dots> = ?R" unfolding T F by simp
   finally show ?thesis .
 qed 

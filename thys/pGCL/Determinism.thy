@@ -109,7 +109,7 @@ lemma max_wp_DC:
 lemma max_wp_SetPC:
   "\<lbrakk> \<And>s a. a \<in> supp (P s) \<Longrightarrow> maximal (wp (p a)); \<And>s. (\<Sum>a\<in>supp (P s). P s a) = 1 \<rbrakk> \<Longrightarrow>
   maximal (wp (SetPC p P))"
-  by(auto simp:maximalD wp_def SetPC_def setsum_left_distrib[symmetric])
+  by(auto simp:maximalD wp_def SetPC_def setsum_distrib_right[symmetric])
 
 lemma max_wp_SetDC:
   fixes p::"'a \<Rightarrow> 's prog"

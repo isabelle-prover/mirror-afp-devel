@@ -953,7 +953,7 @@ proof (rule real_cond_exp_charact)
     by (rule real_cond_exp_intg(2)[symmetric], auto simp add: *)
 
   have "(\<integral>x\<in>A. (\<Sum>i\<in>I. f i x)\<partial>M) = (\<integral>x. (\<Sum>i\<in>I. indicator A x * f i x)\<partial>M)"
-    by (simp add: setsum_right_distrib)
+    by (simp add: setsum_distrib_left)
   also have "... = (\<Sum>i\<in>I. (\<integral>x. indicator A x * f i x \<partial>M))"
     by (rule Bochner_Integration.integral_setsum, simp add: *)
   also have "... = (\<Sum>i\<in>I. (\<integral>x. indicator A x * real_cond_exp M F (f i) x \<partial>M))"
@@ -961,7 +961,7 @@ proof (rule real_cond_exp_charact)
   also have "... = (\<integral>x. (\<Sum>i\<in>I. indicator A x * real_cond_exp M F (f i) x)\<partial>M)"
     by (rule Bochner_Integration.integral_setsum[symmetric], simp add: **)
   also have "... = (\<integral>x\<in>A. (\<Sum>i\<in>I. real_cond_exp M F (f i) x)\<partial>M)"
-    by (simp add: setsum_right_distrib)
+    by (simp add: setsum_distrib_left)
   finally show "(\<integral>x\<in>A. (\<Sum>i\<in>I. f i x)\<partial>M) = (\<integral>x\<in>A. (\<Sum>i\<in>I. real_cond_exp M F (f i) x)\<partial>M)" by auto
 qed (auto simp add: assms real_cond_exp_int(1)[OF assms(1)])
 

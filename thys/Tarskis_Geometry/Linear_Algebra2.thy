@@ -126,14 +126,14 @@ proof
   thus "span S \<subseteq> span (insert v S)" by (rule span_mono)
 qed
 
-lemma dot_setsum_right_distrib:
+lemma dot_setsum_distrib_left:
   fixes v :: "real^'n"
   shows "v \<bullet> (\<Sum> j\<in>S. w j) = (\<Sum> j\<in>S. v \<bullet> (w j))"
 proof -
   have "v \<bullet> (\<Sum> j\<in>S. w j) = (\<Sum> i\<in>UNIV. v$i * (\<Sum> j\<in>S. (w j)$i))"
     unfolding inner_vec_def
     by simp
-  also from setsum_right_distrib [where ?A = S and ?'b = real]
+  also from setsum_distrib_left [where ?A = S and ?'b = real]
   have "\<dots> = (\<Sum> i\<in>UNIV. \<Sum> j\<in>S. v$i * (w j)$i)" by simp
   also from setsum.commute [of "\<lambda> i j. v$i * (w j)$i" S UNIV]
   have "\<dots> = (\<Sum> j\<in>S. \<Sum> i\<in>UNIV. v$i * (w j)$i)" by simp
@@ -147,7 +147,7 @@ lemma orthogonal_setsum:
   assumes "\<forall> w\<in>S. orthogonal v w"
   shows "orthogonal v (\<Sum> w\<in>S. c w *s w)"
 proof -
-  from dot_setsum_right_distrib [of v]
+  from dot_setsum_distrib_left [of v]
   have "v \<bullet> (\<Sum> w\<in>S. c w *s w) = (\<Sum> w\<in>S. v \<bullet> (c w *s w))" by auto
   with inner_scaleR_right [of v]
   have "v \<bullet> (\<Sum> w\<in>S. c w *s w) = (\<Sum> w\<in>S. c w * (v \<bullet> w))"
@@ -203,7 +203,7 @@ qed
 lemma dot_scaleR_mult:
   shows "(k *\<^sub>R a) \<bullet> b = k * (a \<bullet> b)" and "a \<bullet> (k *\<^sub>R b) = k * (a \<bullet> b)"
   unfolding inner_vec_def
-  by (simp_all add: algebra_simps setsum_right_distrib)
+  by (simp_all add: algebra_simps setsum_distrib_left)
 
 lemma dependent_explicit_finite:
   fixes S :: "(('a::{real_vector,field})^'n) set"

@@ -566,11 +566,11 @@ proof -
         by (rule setsum.reindex_cong[OF inj refl], auto simp: a')
       also have "\<dots> = (\<Sum>v\<in>gen'. (\<Sum>j = 0..< nc. a v * row B i $ j * v $ j))"
         unfolding mat_mult_vec_def dimB scalar_prod_def vec_index_vec[OF i]
-        by (rule setsum.cong, insert gen'nc, auto simp: setsum_right_distrib ac_simps)
+        by (rule setsum.cong, insert gen'nc, auto simp: setsum_distrib_left ac_simps)
       also have "\<dots> = (\<Sum>j = 0 ..< nc. (\<Sum>v \<in> gen'. a v * row B i $ j * v $ j))"
         by (rule setsum.commute)
       also have "\<dots> = (\<Sum>j = 0..<nc. row B i $ j * (\<Sum>v\<in>gen'. a v * v $ j))"
-        by (rule setsum.cong, auto simp: setsum_right_distrib ac_simps)
+        by (rule setsum.cong, auto simp: setsum_distrib_left ac_simps)
       also have "\<dots> = (B \<otimes>\<^sub>m\<^sub>v AB.VKMod.lincomb a gen') $ i"
         unfolding index_mat_mult_vec[OF ii]
         unfolding scalar_prod_def dim1

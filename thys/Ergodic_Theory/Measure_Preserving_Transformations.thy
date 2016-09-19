@@ -789,7 +789,7 @@ unfolding birkhoff_sum_def by (simp add: setsum_subtractf)
 lemma birkhoff_sum_cmult:
   fixes f::"_ \<Rightarrow> real"
   shows "birkhoff_sum (\<lambda>x. c * f x) n x = c * birkhoff_sum f n x"
-unfolding birkhoff_sum_def by (simp add: setsum_right_distrib)
+unfolding birkhoff_sum_def by (simp add: setsum_distrib_left)
 
 lemma skew_product_real_iterates:
   fixes f::"'a \<Rightarrow> real"

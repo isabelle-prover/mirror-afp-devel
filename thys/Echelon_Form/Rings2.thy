@@ -63,7 +63,7 @@ qed
 
 text{*The following lemmas are presented in the library but for other type classes (semiring\_0)*}
 
-lemma setsum_right_distrib:
+lemma setsum_distrib_left:
   shows "r * setsum f A = setsum (%n. r * f n) A"
 proof (cases "finite A")
   case True
@@ -77,7 +77,7 @@ next
   case False thus ?thesis by simp
 qed
 
-lemma setsum_left_distrib:
+lemma setsum_distrib_right:
   "setsum f A * r = (\<Sum>n\<in>A. f n * r)"
 proof (cases "finite A")
   case True
@@ -386,7 +386,7 @@ proof
     fix f U r assume U: "finite U" and U_in_S: "U \<subseteq> S"
     show "\<exists>fa Ua. finite Ua \<and> Ua \<subseteq> S \<and> (\<Sum>i\<in>Ua. fa i * i) = r * (\<Sum>i\<in>U. f i * i)"
       by (rule exI[of _ "\<lambda>i. r * f i"], rule exI[of _ U])
-    (simp add: U U_in_S setsum_right_distrib mult_assoc)
+    (simp add: U U_in_S setsum_distrib_left mult_assoc)
   qed
   thus "?S \<subseteq> ?B" using S_in_B unfolding left_ideal_generated_def by auto
 next
@@ -441,7 +441,7 @@ proof
     fix f U r assume U: "finite U" and U_in_S: "U \<subseteq> S"
     show "\<exists>fa Ua. finite Ua \<and> Ua \<subseteq> S \<and> (\<Sum>i\<in>Ua. i * fa i) = (\<Sum>i\<in>U. i * f i) * r"
       by (rule exI[of _ "\<lambda>i. f i * r"], rule exI[of _ U])
-    (simp add: U U_in_S setsum_left_distrib mult_assoc)
+    (simp add: U U_in_S setsum_distrib_right mult_assoc)
   qed
   thus "?S \<subseteq> ?B" using S_in_B unfolding right_ideal_generated_def by auto
 next

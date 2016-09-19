@@ -496,7 +496,7 @@ proof-
   also have "eventually (\<lambda>x. f x * g x = poly p x) at_top"
       unfolding f_def g_def
       by (subst eventually_at_top_linorder, rule exI[of _ 1],
-          simp add: poly_altdef field_simps setsum_right_distrib power_diff)
+          simp add: poly_altdef field_simps setsum_distrib_left power_diff)
   note filterlim_cong[OF refl refl this]
   finally show ?thesis .
 qed
@@ -567,7 +567,7 @@ proof-
   also have "eventually (\<lambda>x. f x * g x = poly p x) at_bot"
       unfolding f_def g_def
       by (subst eventually_at_bot_linorder, rule exI[of _ "-1"],
-          simp add: poly_altdef field_simps setsum_right_distrib power_diff)
+          simp add: poly_altdef field_simps setsum_distrib_left power_diff)
   note filterlim_cong[OF refl refl this]
   finally show ?thesis .
 qed

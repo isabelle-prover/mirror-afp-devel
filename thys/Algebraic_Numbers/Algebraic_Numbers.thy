@@ -496,7 +496,7 @@ proof -
   have "?r = y ^ degree p * poly ((\<Sum>x\<le>degree p. monom (coeff p x) x)) (x / y)" 
     by simp
   also have "\<dots> = (\<Sum>k\<le>degree p. y ^ degree p * (coeff p k * (x / y) ^ k))" 
-    unfolding poly_setsum by (simp add: setsum_right_distrib poly_monom)
+    unfolding poly_setsum by (simp add: setsum_distrib_left poly_monom)
   also have "\<dots> = (\<Sum>k\<le>degree p. coeff p k * x ^ k * y ^ (degree p - k))" (is "_ = ?m")
     by (rule setsum.cong, insert y, auto simp: power_diff power_divide)
   finally have rm: "?r = ?m" .

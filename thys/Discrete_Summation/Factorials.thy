@@ -73,7 +73,7 @@ next
   then have "a ^ Suc n = a * (\<Sum>k = 0..n. of_nat (Stirling n k) * ffact k a)"
     by simp
   also have "\<dots> = (\<Sum>k = 0..n. of_nat (Stirling n k) * (a * ffact k a))"
-    by (simp add: setsum_right_distrib algebra_simps)
+    by (simp add: setsum_distrib_left algebra_simps)
   also have "\<dots> = (\<Sum>k = 0..n. of_nat (Stirling n k) * ffact (Suc k) a) +
     (\<Sum>k = 0..n. of_nat (Stirling n k) * (of_nat k * ffact k a))"
     by (simp add: setsum.distrib algebra_simps mult_ffact)
@@ -112,7 +112,7 @@ next
     by (simp add: ffact_Suc del: ffact.simps)
   also have "\<dots> = (\<Sum>k = 0..n. (- 1) ^ (n - k) * of_nat (stirling n k) * a ^ (Suc k)) +
     (\<Sum>k = 0..n. (- 1) * (- 1) ^ (n - k) * of_nat (n * (stirling n k)) * a ^ k)"
-    by (simp only: diff_conv_add_uminus distrib_right) (simp add: setsum_right_distrib field_simps)
+    by (simp only: diff_conv_add_uminus distrib_right) (simp add: setsum_distrib_left field_simps)
   also have "\<dots> = (\<Sum>k = 0..n. (- 1) ^ (Suc n - Suc k) * of_nat (stirling n k) * a ^ Suc k) +
   (\<Sum>k = 0..n. (- 1) ^ (Suc n - Suc k) * of_nat (n * stirling n (Suc k)) * a ^ Suc k)"
   proof -

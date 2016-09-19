@@ -703,7 +703,7 @@ proof -
   also have "\<dots> = ennreal (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) + (\<integral>\<^sup>+\<omega>. ?R \<omega> \<partial>T s)"
     using `s \<in> S`
     by (subst nn_integral_eq_sum)
-       (auto simp: field_simps setsum.distrib setsum_right_distrib[symmetric] ennreal_mult[symmetric] setsum_nonneg)
+       (auto simp: field_simps setsum.distrib setsum_distrib_left[symmetric] ennreal_mult[symmetric] setsum_nonneg)
   finally show ?thesis
     apply (simp del: reward.simps)
     apply (subst nn_integral_eq_sum[OF `s \<in> S` reward_measurable])
@@ -822,7 +822,7 @@ next
         using `s \<in> S` by (subst nn_integral_eq_sum) (auto simp: Suc)
       also have "\<dots> = ExpCumm s (Suc k)"
         using `s \<in> S`
-        by (simp add: field_simps setsum.distrib setsum_right_distrib[symmetric] ennreal_mult[symmetric]
+        by (simp add: field_simps setsum.distrib setsum_distrib_left[symmetric] ennreal_mult[symmetric]
             ennreal_plus[symmetric] setsum_nonneg del: ennreal_plus)
       finally show ?case by simp
     qed }

@@ -99,11 +99,11 @@ lemma solution_upd_but1: "\<lbrakk> ap = A p; \<forall>i j. i\<noteq>p \<longrig
 apply(clarsimp simp add: solution_def)
 apply rule
  prefer 2
- apply (simp add: field_simps setsum_subtractf setsum_right_distrib[symmetric])
+ apply (simp add: field_simps setsum_subtractf setsum_distrib_left[symmetric])
 apply(clarsimp)
 apply(case_tac "i=p")
  apply simp
-apply (auto simp add: field_simps setsum_subtractf setsum_right_distrib[symmetric] all_conj_distrib)
+apply (auto simp add: field_simps setsum_subtractf setsum_distrib_left[symmetric] all_conj_distrib)
 done
 
 subsection{* Correctness *}
@@ -171,12 +171,12 @@ qed
 lemma lem1:
   fixes f :: "'a \<Rightarrow> 'b::field"
   shows "(\<Sum>x\<in>A. f x * (a * g x)) = a * (\<Sum>x\<in>A. f x * g x)"
-  by (simp add: setsum_right_distrib field_simps)
+  by (simp add: setsum_distrib_left field_simps)
 
 lemma lem2:
   fixes f :: "'a \<Rightarrow> 'b::field"
   shows "(\<Sum>x\<in>A. f x * (g x * a)) = a * (\<Sum>x\<in>A. f x * g x)"
-  by (simp add: setsum_right_distrib field_simps)
+  by (simp add: setsum_distrib_left field_simps)
 
 subsection{* Complete *}
 
@@ -207,7 +207,7 @@ next
       ((\<Sum>j = 0..<Suc m. A i j * x j) - A i m * x m) -
       ((\<Sum>j = 0..<Suc m. A p j * x j) - A p m * x m) * A i m / A p m"
       by (simp add: field_simps setsum_subtractf setsum_divide_distrib
-                    setsum_right_distrib)
+                    setsum_distrib_left)
     also have "\<dots> = A i n - A p n * A i m / A p m"
       using A le_m
       by (simp add: solution2_def field_simps del: setsum_op_ivl_Suc)

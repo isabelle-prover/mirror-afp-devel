@@ -48,7 +48,7 @@ proof (cases n)
                ?S + 1 / (2*(real m + x + 1))" (is "_ = _ + ?b") by (simp add: Suc)
   also have "?a + ?S + (?S + ?b) = 2*?S + ?a + ?b" by (simp add: add_ac)
   also have "2 * ?S = (\<Sum>r=0..<m. 1 / (real (Suc r) + x))" 
-    unfolding setsum_right_distrib by (intro setsum.cong) (auto simp add: divide_simps)
+    unfolding setsum_distrib_left by (intro setsum.cong) (auto simp add: divide_simps)
   also have "(\<Sum>r=0..<m. 1 / (real (Suc r) + x)) = (\<Sum>r=Suc 0..<Suc m. 1 / (real r + x))"
     by (subst setsum.atLeast_Suc_lessThan_Suc_shift) simp_all
   also have "\<dots> = (\<Sum>r=1..<n. 1 / (real r + x))" unfolding m by simp

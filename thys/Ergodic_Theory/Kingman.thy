@@ -266,7 +266,7 @@ proof -
   also have "... \<le> N *(E1+E2) + (\<Sum>j<n-2*N. u N ((T^^j) x)) + N*E2"
     using J by auto
   also have "... = N * (E1+E2) + N * (\<Sum>j<n-2*N. u N ((T^^j) x) / N) + N * E2"
-    using `N>0` by (simp add: setsum_right_distrib)
+    using `N>0` by (simp add: setsum_distrib_left)
   also have "... = N*(E1 + E2 + (\<Sum>j<n-2*N. u N ((T^^j) x) / N) + E2)"
     by (simp add: distrib_left)
   finally have "u n x \<le> E1 + 2*E2 + birkhoff_sum (\<lambda>x. u N x / N) (n-2*N) x"

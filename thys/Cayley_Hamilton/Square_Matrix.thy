@@ -197,7 +197,7 @@ instance
 proof
   fix a b c :: "'a^^'b" show "a * b * c = a * (b * c)"
     by transfer
-       (auto simp: fun_eq_iff setsum_right_distrib setsum_left_distrib field_simps intro: setsum.commute)
+       (auto simp: fun_eq_iff setsum_distrib_left setsum_distrib_right field_simps intro: setsum.commute)
 qed (transfer, simp add: vec_eq_iff setsum.distrib field_simps)+
 end
 
@@ -210,10 +210,10 @@ lemma mult_diag:
   by transfer (simp add: if_distrib[where f="\<lambda>x. a * x" for a] mult.commute setsum.If_cases)
 
 lemma smult_mult1: fixes a :: "'a::comm_ring_1" shows "a *\<^sub>S (A * B) = (a *\<^sub>S A) * B"
-  by transfer (simp add: setsum_right_distrib field_simps)
+  by transfer (simp add: setsum_distrib_left field_simps)
 
 lemma smult_mult2: fixes a :: "'a::comm_ring_1" shows "a *\<^sub>S (A * B) = A * (a *\<^sub>S B)"
-  by transfer (simp add: setsum_right_distrib field_simps)
+  by transfer (simp add: setsum_distrib_left field_simps)
 
 lemma map_sq_matrix_mult:
   fixes f :: "'a::semiring_1 \<Rightarrow> 'b::semiring_1"
@@ -318,7 +318,7 @@ lemma trace_uminus[simp]: "trace (- A) = - (trace A::_::ab_group_add)"
   by transfer (simp add: setsum_negf)
 
 lemma trace_smult[simp]: "trace (s *\<^sub>S A) = (s * trace A::_::semiring_0)"
-  by transfer (simp add: setsum_right_distrib)
+  by transfer (simp add: setsum_distrib_left)
 
 lemma trace_transpose[simp]: "trace (transpose A) = trace A"
   by transfer simp
@@ -520,7 +520,7 @@ proof (transfer fixing: p)
        (auto simp: comp_assoc[symmetric] permutes_inv_o permutes_compose permutes_inv)
   with p show "(\<Sum>q | q permutes UNIV. of_int (sign q) * (\<Prod>i\<in>UNIV. A i (p (q i)))) =
       of_int (sign p) * (\<Sum>p | p permutes UNIV. of_int (sign p) * (\<Prod>i\<in>UNIV. A i (p i)))"
-    by (auto intro!: setsum.cong simp: setsum_right_distrib sign_compose permutes_inv sign_inverse permutes_UNIV_permutation)
+    by (auto intro!: setsum.cong simp: setsum_distrib_left sign_compose permutes_inv sign_inverse permutes_UNIV_permutation)
 qed
 
 lemma det_perm_rows:
@@ -533,7 +533,7 @@ lemma det_row_add: "det (upd_row M i (a + b)) = det (upd_row M i a) + det (upd_r
   by transfer (simp add: setprod.If_cases setsum.distrib[symmetric] field_simps)
 
 lemma det_row_mul: "det (upd_row M i (c *s a)) = c * det (upd_row M i a)"
-  by transfer (simp add: setprod.If_cases setsum_right_distrib field_simps)
+  by transfer (simp add: setprod.If_cases setsum_distrib_left field_simps)
 
 lemma det_row_uminus: "det (upd_row M i (- a)) = - det (upd_row M i a)"
   by (simp add: vector_sneg_minus1 det_row_mul)
@@ -616,7 +616,7 @@ lemma det_rows_setsum:
   using det_cols_setsum[of "transpose M" T a S] by (simp add: upd_cols_transpose det_transpose)
 
 lemma det_rows_mult: "det (upd_rows M T (\<lambda>i. c i *s a i)) = (\<Prod>i\<in>T. c i) * det (upd_rows M T a)"
-  by transfer (simp add: setprod.If_cases setsum_right_distrib field_simps setprod.distrib)
+  by transfer (simp add: setprod.If_cases setsum_distrib_left field_simps setprod.distrib)
 
 lemma det_cols_mult: "det (upd_cols M T (\<lambda>i. c i *s a i)) = (\<Prod>i\<in>T. c i) * det (upd_cols M T a)"
   using det_rows_mult[of "transpose M" T c a] by (simp add: det_transpose upd_rows_transpose)
@@ -645,7 +645,7 @@ proof -
   moreover have "det A = (\<Sum>p | p permutes UNIV. of_int (sign p) * (\<Prod>i\<in>UNIV. to_fun A i (p i)))"
     by transfer rule
   ultimately show ?thesis
-    by (auto simp add: det_rows_setsum det_rows_mult setsum_left_distrib det_perm_rows_If
+    by (auto simp add: det_rows_setsum det_rows_mult setsum_distrib_right det_perm_rows_If
              split: if_split_asm intro!: setsum.mono_neutral_cong_right)
 qed
 

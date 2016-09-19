@@ -56,7 +56,7 @@ proof -
   qed
   also have "\<dots> = map (\<lambda>A. u (SOME a. a \<in> A) * measure_pmf.prob p A) (weak_ranking le)"
     using finite by (intro map_cong HOL.refl)
-                    (auto simp: setsum_right_distrib measure_measure_pmf_finite)
+                    (auto simp: setsum_distrib_left measure_measure_pmf_finite)
   finally show ?thesis .
 qed
 

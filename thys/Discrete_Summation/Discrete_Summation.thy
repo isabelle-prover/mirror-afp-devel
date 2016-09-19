@@ -101,7 +101,7 @@ lemma \<Sigma>_add:
 
 lemma \<Sigma>_factor:
   "\<Sigma> (\<lambda>k. c * f k) j l = (c::'a::ring) * \<Sigma> (\<lambda>k. f k) j l"
-  by (simp add: \<Sigma>_def setsum_right_distrib)
+  by (simp add: \<Sigma>_def setsum_distrib_left)
 
 lemma \<Sigma>_concat:
   "\<Sigma> f j k + \<Sigma> f k l = \<Sigma> f j l"

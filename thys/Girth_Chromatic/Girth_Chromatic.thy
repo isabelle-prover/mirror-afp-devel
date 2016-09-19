@@ -26,7 +26,7 @@ proof induct
   moreover have "\<And>x. x \<subseteq> S \<Longrightarrow> card (insert s x) = Suc (card x)"
     using insert(1-2) by (subst card.insert) (auto dest: finite_subset)
   ultimately show ?case
-    by (simp add: setsum.reindex setsum_right_distrib[symmetric] ac_simps
+    by (simp add: setsum.reindex setsum_distrib_left[symmetric] ac_simps
                   insert.hyps setsum.union_disjoint Pow_insert)
 qed simp
 
@@ -116,7 +116,7 @@ proof -
       = (\<Sum>T \<in> cylinder S_edges A B. p^(card A + card (T - A)) * (1 - p)^(card B + card ((S_edges - B) - T)))"
     using finite_edges by (simp add: card_Un_Int)
   also have "\<dots> = ?pp A B * (\<Sum>T\<in>cylinder S_edges A B. ?pp (T - A) (S_edges - B - T))"
-    by (simp add: power_add setsum_right_distrib ac_simps)
+    by (simp add: power_add setsum_distrib_left ac_simps)
   also have "\<dots> = ?pp A B"
   proof -
     have "\<And>T. T \<in> cylinder S_edges A B \<Longrightarrow> S_edges - B - T = (S_edges - A) - B - (T - A)"

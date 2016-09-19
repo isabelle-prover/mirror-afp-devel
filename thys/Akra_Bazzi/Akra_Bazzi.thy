@@ -415,7 +415,7 @@ next
   hence "\<And>i. i < k \<Longrightarrow> as!i * (gc2 * f2' ((ts!i) x)) \<le> as!i * f ((ts!i) x)"
     using prems(1) by (intro mult_left_mono a_ge_0 prems(2)) auto
   hence "gc2 * (\<Sum>i<k. as!i*f2' ((ts!i) x)) \<le> (\<Sum>i<k. as!i*f ((ts!i) x))"
-    by (subst setsum_right_distrib, intro setsum_mono) (simp_all add: algebra_simps)
+    by (subst setsum_distrib_left, intro setsum_mono) (simp_all add: algebra_simps)
   ultimately show ?case using prems(1) gx0_ge_x1 gx0_le_gx1
     by (simp_all add: algebra_simps f_rec)
 qed
@@ -678,7 +678,7 @@ next
   hence "\<And>i. i < k \<Longrightarrow> as!i * (gc1 * f' ((ts!i) x)) \<ge> as!i * f ((ts!i) x)"
     using prems(1) by (intro mult_left_mono a_ge_0 prems(2)) auto
   hence "gc1 * (\<Sum>i<k. as!i*f' ((ts!i) x)) \<ge> (\<Sum>i<k. as!i*f ((ts!i) x))"
-    by (subst setsum_right_distrib, intro setsum_mono) (simp_all add: algebra_simps)
+    by (subst setsum_distrib_left, intro setsum_mono) (simp_all add: algebra_simps)
   ultimately show ?case using prems(1) gx3_ge_x1
     by (simp_all add: algebra_simps f_rec)
 qed

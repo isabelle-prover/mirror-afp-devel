@@ -62,7 +62,7 @@ proof (cases)
   have "?l  = (x::nat)*(\<Sum>i=0 .. n . x^i) - (\<Sum>i=0 .. n . x^i)"
     by (metis diff_mult_distrib nat_mult_1)
   also have "... = (\<Sum>i=0 .. n . x^(Suc i))    - (\<Sum>i=0 .. n . x^i)"
-    by (simp add: setsum_right_distrib)
+    by (simp add: setsum_distrib_left)
   also have "... = (\<Sum>i=Suc 0 .. Suc n . x^i)  - (\<Sum>i=0 .. n . x^i)"
     by (metis setsum_shift_bounds_cl_Suc_ivl)
   also with n0

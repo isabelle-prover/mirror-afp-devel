@@ -88,7 +88,7 @@ proof -
       by (subst euclidean_representation[symmetric]) (simp add: setsum scaleR)
     also have "norm \<dots> \<le> norm v * ?bnd"
       by (auto intro!: order.trans[OF norm_setsum] setsum_mono mult_right_mono
-        simp: setsum_right_distrib Basis_le_norm)
+        simp: setsum_distrib_left Basis_le_norm)
     finally have "norm (f' y x v) \<le> norm v * ?bnd" .
   }
   then show ?thesis by unfold_locales auto

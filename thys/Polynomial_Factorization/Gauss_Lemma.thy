@@ -275,13 +275,13 @@ proof (cases "p = 0 \<or> q = 0")
         by (rule setsum.union_disjoint, auto)
       also have "(\<Sum>i\<in>{..<r}. ?f i) = (\<Sum>i\<in>{..<r}. ?n * (?f i div ?n))"
         by (rule setsum.cong[OF refl], insert r', auto)
-      also have "\<dots> = ?n * a" unfolding setsum_right_distrib[symmetric] a_def ..
+      also have "\<dots> = ?n * a" unfolding setsum_distrib_left[symmetric] a_def ..
       also have "(\<Sum> i \<in> {r..r + s}. ?f i) = ?f r + (\<Sum> i \<in> {Suc r..r + s}. ?f i)"
         by (subst setsum.remove[of _ r], auto intro: setsum.cong)
       also have "(\<Sum> i \<in> {Suc r..r + s}. ?f i) = (\<Sum> i \<in> {Suc r..r + s}. ?n * (?f i div ?n))"
         by (rule setsum.cong[OF refl], insert s', auto)
       also have "(\<Sum> i \<in> {Suc r..r + s}. ?n * (?f i div ?n)) = ?n * b"
-        unfolding setsum_right_distrib[symmetric] b_def ..
+        unfolding setsum_distrib_left[symmetric] b_def ..
       finally have cpq: "coeff (p * q) (r + s) = ?n * (a + b) + ?r * ?s"
         by (simp add: field_simps)
       {

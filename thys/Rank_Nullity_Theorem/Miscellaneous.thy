@@ -91,7 +91,7 @@ lemma scalar_vector_matrix_assoc:
   fixes k :: "'a::{field}" and x :: "'a::{field}^'n" and A :: "'a^'m^'n"
   shows "(k *s x) v* A = k *s (x v* A)"
   unfolding vector_matrix_mult_def unfolding vec_eq_iff 
-  by (auto simp add: setsum_right_distrib, rule setsum.cong, simp_all) 
+  by (auto simp add: setsum_distrib_left, rule setsum.cong, simp_all) 
  
 
 lemma vector_scalar_matrix_ac:
@@ -99,7 +99,7 @@ lemma vector_scalar_matrix_ac:
   shows "x v* (k *k A) = k *s (x v* A)"
   using scalar_vector_matrix_assoc 
   unfolding vector_matrix_mult_def matrix_scalar_mult_def vec_eq_iff 
-  by (auto simp add: setsum_right_distrib)
+  by (auto simp add: setsum_distrib_left)
 
 lemma transpose_scalar: "transpose (k *k A) = k *k transpose A"
   unfolding transpose_def 

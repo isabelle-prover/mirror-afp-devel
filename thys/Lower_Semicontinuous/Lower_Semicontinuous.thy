@@ -910,7 +910,7 @@ lemma convex_on_ereal_subset: "convex_on t f ==> s <= t ==> convex_on s f"
 lemma convex_on_ereal_univ: "convex_on UNIV f \<longleftrightarrow> (ALL S. convex_on S f)"
   using convex_on_ereal_subset by auto
 
-lemma ereal_pos_setsum_right_distrib:
+lemma ereal_pos_setsum_distrib_left:
   fixes f :: "'a => ereal"
   assumes "r>=0" "r ~= \<infinity>"
   shows "r * setsum f A = setsum (%n. r * f n) A"
@@ -1106,7 +1106,7 @@ next
       using ereal_add_right_mono[OF ereal_mult_left_mono[of _ _ "1 - ereal (a i)",
         OF asum_le less_imp_le[OF i1]], of "(ereal (a i)) * f (y i)"] by simp
     also have "... = (SUM j : s. (1 - ereal (a i)) * (ereal (?a j) * f (y j))) + (ereal (a i)) * f (y i)"
-      unfolding ereal_pos_setsum_right_distrib[of "1 - ereal (a i)" "% j. (ereal (?a j)) * f (y j)", OF less_imp_le[OF i1] i2] by auto
+      unfolding ereal_pos_setsum_distrib_left[of "1 - ereal (a i)" "% j. (ereal (?a j)) * f (y j)", OF less_imp_le[OF i1] i2] by auto
     also have "... = (SUM j : s. (ereal (a j)) * f (y j)) + (ereal (a i)) * f (y i)" using i0 convex_on_ereal_setsum_aux by auto
     also have "... = (ereal (a i)) * f (y i) + (SUM j : s. (ereal (a j)) * f (y j))" by (simp add: add.commute)
     also have "... = (SUM j : insert i s. (ereal (a j)) * f (y j))" using insert by auto

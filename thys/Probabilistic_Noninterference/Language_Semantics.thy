@@ -1300,7 +1300,7 @@ proof-
   have "?L = setsum (%i. ?wSch * wt (cl ! n) s i) I"
   apply(rule setsum.reindex_cong[of "op + (brnL cl n)"]) using assms by auto
   also have "... = ?wSch * ?R"
-  unfolding setsum_right_distrib by simp
+  unfolding setsum_distrib_left by simp
   finally show ?thesis .
 qed
 
@@ -1308,7 +1308,7 @@ lemma setsum_wt_Par[simp]:
 assumes cl: "properL cl" and n: "n < length cl"
 shows "setsum (wt (Par cl) s) {brnL cl n ..<+ brn (cl!n)} =
        1 /(length cl) * setsum (wt (cl ! n) s) {..< brn (cl ! n)}" (is "?L = ?W * ?R")
-using assms by (simp add: setsum_right_distrib)
+using assms by (simp add: setsum_distrib_left)
 
 lemma setsum_wt_ParT_sub_WtFT_pickFT_0[simp]:
 assumes cl: "properL cl" and nf: "WtFT cl = 1"
@@ -1412,7 +1412,7 @@ proof-
   apply(rule setsum.reindex_cong[of "op + (brnL cl n)"])
   using assms by auto
   also have "... = ?w / (1 - ?wF) * ?R"
-  unfolding setsum_right_distrib by simp
+  unfolding setsum_distrib_left by simp
   finally show ?thesis .
 qed
 
@@ -1534,7 +1534,7 @@ next
       proof-
         have "(\<Sum>i<brn (cl ! n). ?v * wt (cl ! n) s i / (1 - ?wtF)) =
         ?v * (\<Sum>i<brn (cl ! n). wt (cl ! n) s i) / (1 - ?wtF)"
-        unfolding setsum_right_distrib setsum_divide_distrib by simp
+        unfolding setsum_distrib_left setsum_divide_distrib by simp
         also have "... = ?v / (1 - ?wtF)" using ParT n by simp
         finally have "(\<Sum>i<brn (cl ! n). ?v * wt (cl ! n) s i / (1 - ?wtF)) =
         ?v / (1 - ?wtF)" .

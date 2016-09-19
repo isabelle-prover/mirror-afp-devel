@@ -586,7 +586,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         unfolding integral_trans[OF cf] by (simp add: part_setsum[OF P])
       also have "\<dots> = (\<Sum>I\<in>P. ?P' I)"
         using finite_I
-        by (auto intro!: setsum.cong simp add: setsum_right_distrib setsum_nonneg_eq_0_iff W_def)
+        by (auto intro!: setsum.cong simp add: setsum_distrib_left setsum_nonneg_eq_0_iff W_def)
       also have "\<dots> = ?P' I0 + (\<Sum>I\<in>P-{I0}. ?P' I)"
         unfolding setsum.remove[OF `finite P` `I0 \<in> P`] ..
       finally have "\<P>(bT in T.T cf. S cf (Suc n) bT) = \<dots>" . }
@@ -882,11 +882,11 @@ next
       then have "?P (cont_eff cf1 a) n = ?P (cont_eff cf1 i) n" by simp }
     then have "(\<Sum>b\<in>I. wt (fst cf1) (snd cf1) b * ?P (cont_eff cf1 b) n) =
         (\<Sum>b\<in>I. wt (fst cf1) (snd cf1) b) * ?P (cont_eff cf1 i) n"
-      by (simp add: setsum_left_distrib)
+      by (simp add: setsum_distrib_right)
     also have "\<dots> = (\<Sum>b\<in>F I. wt (fst cf2) (snd cf2) b) * ?P (cont_eff cf1 i) n"
       using W `I \<in> P` by auto
     also have "\<dots> = (\<Sum>b\<in>F I. wt (fst cf2) (snd cf2) b * ?P (cont_eff cf2 b) n)"
-      using cont_d_const by (auto simp add: setsum_left_distrib)
+      using cont_d_const by (auto simp add: setsum_distrib_right)
     finally have "(\<Sum>b\<in>I. wt (fst cf1) (snd cf1) b * ?P (cont_eff cf1 b) n) = \<dots>" . }
   note sum_eq = this
 

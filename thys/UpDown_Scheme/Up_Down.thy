@@ -48,7 +48,7 @@ next
       (\<Sum> p'' \<in> ?leafs p'. \<alpha> p'' * l2_\<phi> (p'' ! d) (p' ! d)) * ?prod d p' p"
       using `p' \<in> ?subgrid d p` up `Suc d \<le> dm` p'_in_spg by auto
     also have "\<dots> = (\<Sum> p'' \<in> ?leafs p'. \<alpha> p'' * l2_\<phi> (p'' ! d) (p' ! d) * ?prod d p' p)"
-      using setsum_left_distrib by auto
+      using setsum_distrib_right by auto
     also have "\<dots> = (\<Sum> p'' \<in> ?leafs p'. \<alpha> p'' * ?prod (Suc d) p'' p)"
     proof (intro setsum.cong refl)
       fix p'' assume "p'' \<in> ?leafs p'"
@@ -106,7 +106,7 @@ next
     have "(updown' dm lm d \<alpha> p') * l2_\<phi> (p ! d) (p' !  d) = (\<Sum> p'' \<in> ?subgrid d p'. \<alpha> p'' * ?prod d p'' p') * l2_\<phi> (p ! d) (p' ! d)"
       using `p' \<in> sparsegrid dm lm` Suc by auto
     also have "\<dots> = (\<Sum> p'' \<in> ?subgrid d p'. \<alpha> p'' * ?prod d p'' p' * l2_\<phi> (p ! d) (p' ! d))"
-      using setsum_left_distrib by auto
+      using setsum_distrib_right by auto
     also have "\<dots> = (\<Sum> p'' \<in> ?subgrid d p'. \<alpha> p'' * ?prod (Suc d) p'' p)"
     proof (rule setsum.cong[OF refl])
       fix p'' assume "p'' \<in> ?subgrid d p'"
@@ -365,7 +365,7 @@ corollary
   assumes p: "p \<in> sparsegrid dm lm"
   defines "f\<^sub>\<alpha> \<equiv> \<lambda>x. (\<Sum>p\<in>sparsegrid dm lm. \<alpha> p * \<Phi> p x)"
   shows "updown dm lm \<alpha> p = (\<integral>x. f\<^sub>\<alpha> x * \<Phi> p x \<partial>(\<Pi>\<^sub>M d\<in>{..<dm}. lborel))"
-  unfolding updown[OF p] l2_def f\<^sub>\<alpha>_def setsum_left_distrib
+  unfolding updown[OF p] l2_def f\<^sub>\<alpha>_def setsum_distrib_right
   apply (intro has_bochner_integral_integral_eq[symmetric] has_bochner_integral_setsum)
   apply (subst mult.assoc)
   apply (intro has_bochner_integral_mult_right)

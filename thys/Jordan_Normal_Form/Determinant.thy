@@ -45,7 +45,7 @@ proof -
   show ?thesis
   unfolding det_def
   unfolding mat_index_scalar_mult
-  by (auto intro: setsum.cong simp: setsum_right_distrib setprod.distrib)
+  by (auto intro: setsum.cong simp: setsum_distrib_left setprod.distrib)
 qed
 
 lemma det_transpose: assumes A: "A \<in> carrier\<^sub>m n n"
@@ -209,7 +209,7 @@ proof -
     = (\<Sum> q \<in> {q . q permutes ?U}. signof (q \<circ> p) * (\<Prod> i \<in> ?U. A $$ (p i, (q \<circ> p) i)))" .
   have 2: "signof p * det A = 
     (\<Sum> q\<in>{q. q permutes ?U}. signof p * signof q * (\<Prod>i\<in> ?U. A $$ (i, q i)))"
-    unfolding det_def'[OF A] setsum_right_distrib by (simp add: ac_simps)
+    unfolding det_def'[OF A] setsum_distrib_left by (simp add: ac_simps)
   show ?thesis unfolding 1 2
   proof (rule setsum.cong, insert p A, auto)
     fix q
@@ -550,7 +550,7 @@ proof -
   have A: "mat\<^sub>r n n (\<lambda> i. c i \<odot>\<^sub>v a i) \<in> carrier\<^sub>m n n" 
   and A': "mat\<^sub>r n n (\<lambda> i. a i) \<in> carrier\<^sub>m n n" using a unfolding mat_carrier_def by auto
   show ?thesis unfolding det_def'[OF A] det_def'[OF A']
-  proof (rule trans[OF setsum.cong setsum_right_distrib[symmetric]])
+  proof (rule trans[OF setsum.cong setsum_distrib_left[symmetric]])
     fix p
     assume p: "p \<in> {p. p permutes {0..<n}}"
     have id: "(\<Prod>ia\<in>{0..<n}. mat\<^sub>r n n (\<lambda>i. c i \<odot>\<^sub>v a i) $$ (ia, p ia))
@@ -1014,7 +1014,7 @@ proof -
     by (rule setsum.neutral, intro ballI, rule setsum.neutral, intro ballI, rule zero, auto)
   also have "(\<Sum>q\<in> ?permn. prod' q) = A $$ (n,n) * (\<Sum>q\<in> ?permn. ?prod'' q)"
     unfolding prod'_def
-    by (subst setsum_right_distrib, rule setsum.cong[OF refl], auto simp: permutes_def ac_simps)
+    by (subst setsum_distrib_left, rule setsum.cong[OF refl], auto simp: permutes_def ac_simps)
   also have "A $$ (n,n) = A4 $$ (0,0)" unfolding A_def using A1 A2 A3 A4 by auto
   also have "(\<Sum>q\<in> ?permn. ?prod'' q) = (\<Sum>q\<in> ?permn. ?prod''' q)" 
     by (rule setsum.cong[OF refl], rule cong, rule setprod.cong,
@@ -1919,7 +1919,7 @@ proof -
       by (intro setsum.cong[OF refl],auto)
     also have "... = A $$ (i, j) * (-1)^(i+j) *
       ( \<Sum> q \<in> Q. signof q * (\<Prod>i''= 0 ..< l. mat_delete A i j $$ (i'', q i'')) )"
-      unfolding setsum_right_distrib by auto
+      unfolding setsum_distrib_left by auto
     also have "... = (A $$ (i, j) * (-1)^(i+j) * det (mat_delete A i j))"
       unfolding det_def'[OF mat_delete_carrier[OF A]]
       unfolding Q_def by auto

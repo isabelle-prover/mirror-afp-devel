@@ -192,13 +192,13 @@ proof(rule sublinearI, simp add:wp_eval)
   have "a * (\<Sum>a'\<in>supp (P s). P s a' * wp (p a') Q s) +
         b * (\<Sum>a'\<in>supp (P s). P s a' * wp (p a') R s) \<ominus> c =
         (\<Sum>a'\<in>supp (P s). P s a' * (a * wp (p a') Q s + b * wp (p a') R s)) \<ominus> c"
-    by(simp add:field_simps setsum_right_distrib setsum.distrib)
+    by(simp add:field_simps setsum_distrib_left setsum.distrib)
   also have "... \<le>
              (\<Sum>a'\<in>supp (P s). P s a' * (a * wp (p a') Q s + b * wp (p a') R s)) \<ominus>
              (\<Sum>a'\<in>supp (P s). P s a' * c)"
   proof(rule tminus_right_antimono)
     have "(\<Sum>a'\<in>supp (P s). P s a' * c) \<le> (\<Sum>a'\<in>supp (P s). P s a') * c"
-      by(simp add:setsum_left_distrib)
+      by(simp add:setsum_distrib_right)
     also from sum and nnc have "... \<le> 1 * c"
       by(rule mult_right_mono)
     finally show "(\<Sum>a'\<in>supp (P s). P s a' * c) \<le> c" by(simp)

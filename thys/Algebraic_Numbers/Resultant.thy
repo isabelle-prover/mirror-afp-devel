@@ -1336,7 +1336,7 @@ proof (intro exI conjI)
       apply(subst mk_poly_sylvester_upper)
       using i unfolding n_def by auto
   }
-  hence "setsum ?f {..<n} = p' * p" unfolding p'_def setsum_left_distrib by auto 
+  hence "setsum ?f {..<n} = p' * p" unfolding p'_def setsum_distrib_right by auto 
   also { fix i assume i: "i \<in> {n..<d}"
     have "?f i = monom 1 (m + n - Suc i) * c i * q"
       unfolding m_def n_def
@@ -1344,7 +1344,7 @@ proof (intro exI conjI)
       using i unfolding dmn n_def m_def by auto
   }
   hence "setsum ?f {n..<d} = (\<Sum>i=n..<d. monom 1 (m + n - Suc i) * c i) * q"
-    (is "_ = setsum ?h _ * _") unfolding setsum_left_distrib by auto
+    (is "_ = setsum ?h _ * _") unfolding setsum_distrib_right by auto
   also have "{n..<d} = (\<lambda>i. i+n) ` {0..<m}"
     unfolding dmn
     by (metis add_0_left image_add_atLeastLessThan)

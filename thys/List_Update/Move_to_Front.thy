@@ -573,7 +573,7 @@ proof -
   have "T_mtf n \<le> (\<Sum>i<n. 2*c_A i + p_A i - f_A i) - n" by (fact Sleator_Tarjan)
   also have "(\<Sum>i<n. 2*c_A i + p_A i - f_A i) \<le> (\<Sum>i<n. 2*(c_A i + p_A i))"
     by(intro setsum_mono) (simp add: p_A_def f_A_def)
-  also have "\<dots> \<le> 2* T_A n" by (simp add: setsum_right_distrib T_A_def t_A_def)
+  also have "\<dots> \<le> 2* T_A n" by (simp add: setsum_distrib_left T_A_def t_A_def)
   finally show "T_mtf n \<le> 2* T_A n - n" by auto
 qed
 
@@ -598,7 +598,7 @@ proof cases
     have "T_mtf n \<le> (\<Sum>i<n. 2*c_A i + p_A i - f_A i) - n" by(rule Sleator_Tarjan)
     also have "(\<Sum>i<n. 2*c_A i + p_A i - f_A i) \<le> (\<Sum>i<n. 2*(c_A i + p_A i))"
       by(intro setsum_mono) (simp add: p_A_def f_A_def)
-    also have "\<dots> \<le> 2 * T_A n" by (simp add: setsum_right_distrib T_A_def t_A_def)
+    also have "\<dots> \<le> 2 * T_A n" by (simp add: setsum_distrib_left T_A_def t_A_def)
     finally show ?thesis by simp
   qed
   hence "real_of_int(T_mtf n) \<le> 2 * of_int(T_A n) - n" by simp

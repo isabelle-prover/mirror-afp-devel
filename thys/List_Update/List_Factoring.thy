@@ -2340,7 +2340,7 @@ proof (standard, goal_cases)
     proof -
        have "(\<Sum>(x,y)\<in>?S. c * (?T x y) + b) =
               c * (\<Sum>(x,y)\<in>?S. (?T x y)) + (\<Sum>(x,y)\<in>?S. b)"
-              by(simp add: split_def setsum.distrib setsum_right_distrib)
+              by(simp add: split_def setsum.distrib setsum_distrib_left)
        also have "\<dots> = c * (\<Sum>(x,y)\<in>?S. (?T x y)) + b*?T2"
           using e by(simp add: split_def)
        finally show ?thesis by(simp add: split_def)

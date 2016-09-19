@@ -1877,7 +1877,7 @@ text "Approximation of the Term for Free exchanges"
       using list_pmf by auto
       also
       have "\<dots> = (\<Sum>x\<in>{l::bool list. length l = ?l}. (?insf x)) * ((1/2)^?l)"
-      by(simp only: setsum_left_distrib[where r="(1/2)^?l"])
+      by(simp only: setsum_distrib_right[where r="(1/2)^?l"])
       also
       have E5: "\<dots> = ((1/2)^?l) *(\<Sum>x\<in>{l::bool list. length l = ?l}. (?insf x))"
       by(auto)
@@ -2008,7 +2008,7 @@ proof -
   also have "\<dots> = (\<Sum>i<n. 7 / 4 * real_of_int (t_A i)) - (\<Sum>i<n. (3/4))" by (rule setsum_subtractf)
   also have "\<dots> = (\<Sum>i<n. 7 / 4 * real_of_int (t_A i)) - (3/4)*(\<Sum>i<n. 1)" by simp
   also have "\<dots> = (\<Sum>i<n. (7 / 4) * real_of_int (t_A i)) - (3/4)*n" by simp
-  also have "\<dots> =  (7 / 4) * (\<Sum>i<n. real_of_int (t_A i))  - (3/4)*n" by (simp add: setsum_right_distrib)
+  also have "\<dots> =  (7 / 4) * (\<Sum>i<n. real_of_int (t_A i))  - (3/4)*n" by (simp add: setsum_distrib_left)
   also have "\<dots> = (7 / 4) * real_of_int (\<Sum>i<n.(t_A i))  - (3/4)*n" by auto
   finally show "setsum t_BIT {..<n} \<le> 7 / 4 * real_of_int (setsum t_A {..<n})  - (3/4)*n" by auto
 qed 

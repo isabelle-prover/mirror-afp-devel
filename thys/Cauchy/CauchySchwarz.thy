@@ -136,7 +136,7 @@ proof -
   also have
     "\<dots> =
      (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (f k * g j + f j * g k)*(1/2)))"
-    by (simp add: setsum_right_distrib mult.commute)
+    by (simp add: setsum_distrib_left mult.commute)
   finally show ?thesis by (auto simp add: inverse_eq_divide)
 qed
 
@@ -241,7 +241,7 @@ proof -
         "\<dots> =
          (inverse 2)*(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}.
          (((x\<^bsub>k\<^esub>^2*y\<^bsub>j\<^esub>^2) + (x\<^bsub>j\<^esub>^2*y\<^bsub>k\<^esub>^2)) - 2*(x\<^bsub>k\<^esub>*y\<^bsub>k\<^esub>)*(x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>))))"
-        by (simp only: setsum_right_distrib)
+        by (simp only: setsum_distrib_left)
       also have
         "\<dots> =
          (inverse 2)*(\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>j\<^esub> - x\<^bsub>j\<^esub>*y\<^bsub>k\<^esub>)^2))"

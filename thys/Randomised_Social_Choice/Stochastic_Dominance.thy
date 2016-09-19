@@ -459,7 +459,7 @@ next
       hence "(\<Sum>y|le x y. pmf p y) + \<epsilon> * (\<Sum>y\<in>carrier. ?idx y * pmf p y) \<le> 
                (\<Sum>y|le x y. pmf q y) + \<epsilon> * (\<Sum>y\<in>carrier. ?idx y * pmf q y)"
         using x preferred_subset_carrier unfolding u_def
-        by (simp add: setsum.distrib finite_carrier algebra_simps Int_absorb1 setsum_right_distrib)
+        by (simp add: setsum.distrib finite_carrier algebra_simps Int_absorb1 setsum_distrib_left)
       also have "(\<Sum>y\<in>carrier. ?idx y * pmf q y) \<le> (\<Sum>y\<in>carrier. length xs * pmf q y)"
         by (intro setsum_mono mult_right_mono) (simp_all add: pmf_nonneg)
       also have "\<dots> = measure_pmf.expectation q (\<lambda>_. length xs)"
@@ -511,7 +511,7 @@ proof
     interpret u'': vnm_utility carrier le u'' unfolding u''_def by fact
     have exp_u'': "?E p u'' = ?E p u - \<epsilon> * ?E p u'" if "p \<in> lotteries_on carrier" for p using that
       by (subst (1 2 3) integral_measure_pmf[of carrier])
-         (auto simp: lotteries_on_def u''_def algebra_simps setsum_subtractf setsum_right_distrib)
+         (auto simp: lotteries_on_def u''_def algebra_simps setsum_subtractf setsum_distrib_left)
     from assms \<epsilon> have "?E p u'' > ?E q u''"
       by (simp_all add: exp_u'' algebra_simps u_eq u')
     with pq[OF u''.vnm_utility_axioms] show False by simp

@@ -342,7 +342,7 @@ proof -
   have id: "poly p x = poly ((\<Sum>x\<le>degree p. monom (coeff p x) x)) x" by simp
   let ?f = "\<lambda> k. poly (monom (coeff p (degree p - k)) k) (inverse x)"
   have "?r = (\<Sum>n\<le>degree p. inverse x ^ degree p * poly (monom (coeff p n) n) x)" 
-    unfolding id poly_setsum setsum_right_distrib by simp  
+    unfolding id poly_setsum setsum_distrib_left by simp  
   have "?l = (\<Sum>k\<le>degree p. ?f k)"
     unfolding poly_inverse_def poly_setsum by simp 
   also have "\<dots> = (\<Sum>k \<le> degree p. ?f (degree p - k))"
@@ -351,7 +351,7 @@ proof -
   also have "\<dots> = (\<Sum>n\<le>degree p. inverse x ^ degree p * poly (monom (coeff p n) n) x)"
     by (rule setsum.cong, auto simp: poly_monom inverse_pow_minus[OF x])
   also have "\<dots> = ?r"
-    unfolding id poly_setsum setsum_right_distrib by simp  
+    unfolding id poly_setsum setsum_distrib_left by simp  
   finally show ?thesis .
 qed
 
