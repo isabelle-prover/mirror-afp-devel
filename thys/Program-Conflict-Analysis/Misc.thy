@@ -286,18 +286,18 @@ subsubsection {* Union, difference and intersection *}
   proof -
     have BN_MA: "B - N = M - A"
       by (metis (no_types) add_diff_cancel_right assms(1) union_commute)
-    have H: "A = A#\<inter> C + (A - C) #\<inter> D" if "A + B = C + D" for A B C D :: "'a multiset"
+    have H: "A = A\<inter># C + (A - C) \<inter># D" if "A + B = C + D" for A B C D :: "'a multiset"
       by (metis add.commute diff_intersect_left_idem mset_subset_eq_add_left subset_eq_diff_conv
           subset_mset.add_diff_inverse subset_mset.inf_absorb1 subset_mset.inf_le1 that)
-    have A': "A = A#\<inter> M + (A - M) #\<inter> N"
+    have A': "A = A\<inter># M + (A - M) \<inter># N"
       using A(1) H by blast
-    moreover have B': "B = (B - N) #\<inter> M + B#\<inter> N"
+    moreover have B': "B = (B - N) \<inter># M + B\<inter># N"
       using A(1) H[of B A N M] by (auto simp: ac_simps)
-    moreover have "M = A #\<inter> M + (B - N) #\<inter> M"
+    moreover have "M = A \<inter># M + (B - N) \<inter># M"
       using H[of M N A B] BN_MA[symmetric] A(1) by (metis (no_types) diff_intersect_left_idem
           diff_union_cancelR multiset_inter_commute subset_mset.diff_add subset_mset.inf.cobounded1
           union_commute)
-    moreover have "N = (A - M) #\<inter> N + B #\<inter> N"
+    moreover have "N = (A - M) \<inter># N + B \<inter># N"
       by (metis A' assms(1) diff_union_cancelL inter_union_distrib_left inter_union_distrib_right
           mset_subset_eq_multiset_union_diff_commute subset_mset.inf.cobounded1 subset_mset.inf.commute)
     ultimately show P

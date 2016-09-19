@@ -339,34 +339,34 @@ lemma dm_eq: assumes i:"irrefl r" and t: "trans r" shows "dm r M = dm r (M -s dm
  using dm_subset[OF assms] unfolding dm_def ds_def diff_def by auto
 
 lemma lemma2_6_3: assumes t:"trans r" and i:"irrefl r" and "(M,N) \<in> mul_eq r"
- shows "\<exists> I' J' K' . N = I' + J' \<and> M = I' + K' \<and> J' #\<inter> K' = {#} \<and> set_mset K' \<subseteq> dm r J'"
+ shows "\<exists> I' J' K' . N = I' + J' \<and> M = I' + K' \<and> J' \<inter># K' = {#} \<and> set_mset K' \<subseteq> dm r J'"
 proof -
  from assms obtain I J K where 1:"N = I + J" and 2:"M = I + K"  and 3:"set_mset K \<subseteq> dm r J" unfolding mul_eq_def by auto
- have "set_mset (J #\<inter> K) \<subseteq> r \<down>m J" using 3 by auto
- then obtain A where "r \<down>m J = set_mset (J #\<inter> K) \<union> A"
+ have "set_mset (J \<inter># K) \<subseteq> r \<down>m J" using 3 by auto
+ then obtain A where "r \<down>m J = set_mset (J \<inter># K) \<union> A"
   by blast
- then have key: "set_mset (J -s dm r J) \<subseteq> set_mset (J - (J #\<inter> K))"
+ then have key: "set_mset (J -s dm r J) \<subseteq> set_mset (J - (J \<inter># K))"
   by clarsimp (metis Multiset.count_diff add.left_neutral add_diff_cancel_left' mem_Collect_eq not_gr0 set_mset_def)
- from 1 2 3 have "N = (I + (J #\<inter> K)) + (J - (J #\<inter> K))"
+ from 1 2 3 have "N = (I + (J \<inter># K)) + (J - (J \<inter># K))"
   by (metis diff_union_cancelL subset_mset.inf_le2 multiset_diff_union_assoc multiset_inter_commute union_commute union_lcomm)
- moreover have "M = (I + (J #\<inter> K)) + (K - (J #\<inter> K))"
+ moreover have "M = (I + (J \<inter># K)) + (K - (J \<inter># K))"
   by (metis diff_subset_eq_self diff_union_cancelL 2 multiset_diff_union_assoc multiset_inter_commute multiset_inter_def union_assoc)
- moreover have "set_mset (K-(J#\<inter>K)) \<subseteq> dm r (J-(J#\<inter>K))"
+ moreover have "set_mset (K-(J\<inter>#K)) \<subseteq> dm r (J-(J\<inter>#K))"
  proof -
-  have "set_mset (K-(J#\<inter>K)) \<subseteq> dm r J" using 3
+  have "set_mset (K-(J\<inter>#K)) \<subseteq> dm r J" using 3
     by (meson Multiset.diff_subset_eq_self mset_subset_eqD subset_eq)
   moreover have "... = dm r (J -s dm r J)" using dm_eq[OF i t] by auto
-  moreover have "... \<subseteq> dm r (J - (J #\<inter> K))" using ds_monotone[OF key] unfolding dm_def by auto
+  moreover have "... \<subseteq> dm r (J - (J \<inter># K))" using ds_monotone[OF key] unfolding dm_def by auto
   ultimately show ?thesis by auto
 qed
- moreover have "(J-(J#\<inter>K)) #\<inter> (K-(J#\<inter>K)) = {#}" by (rule multiset_eqI) auto
+ moreover have "(J-(J\<inter>#K)) \<inter># (K-(J\<inter>#K)) = {#}" by (rule multiset_eqI) auto
  ultimately show ?thesis by auto
 qed
 
 (*  (* initial proof by Bertram Felgenhauer *)
 lemma lemma2_6_3_step:
-assumes t:"trans r" and i:"irrefl r" and P:"set_mset K \<subseteq> dm r J" shows "set_mset (K-(J#\<inter>K)) \<subseteq> dm r (J-(J#\<inter>K))" proof
- fix k assume K: "k \<in> set_mset (K - (J#\<inter>K))" show "k \<in> dm r (J - (J#\<inter>K))" proof -
+assumes t:"trans r" and i:"irrefl r" and P:"set_mset K \<subseteq> dm r J" shows "set_mset (K-(J\<inter>#K)) \<subseteq> dm r (J-(J\<inter>#K))" proof
+ fix k assume K: "k \<in> set_mset (K - (J\<inter>#K))" show "k \<in> dm r (J - (J\<inter>#K))" proof -
   have k: "k \<in># K" using K by simp
   have step: "k \<in> dm r (J-K)" proof -
    {
@@ -389,20 +389,20 @@ assumes t:"trans r" and i:"irrefl r" and P:"set_mset K \<subseteq> dm r J" shows
    }
    thus ?thesis by auto
   qed
-  have eq: "J - K = J - (J #\<inter> K)" by (rule multiset_eqI) auto
+  have eq: "J - K = J - (J \<inter># K)" by (rule multiset_eqI) auto
   show ?thesis using step unfolding eq dm_def ds_def by auto
  qed
 qed
 
 lemma lemma2_6_3: assumes t: "trans r" and i: "irrefl r" and "(M,N) \<in> mul_eq r"
-shows "\<exists> I J K. N = I + J \<and> M = I + K \<and> J#\<inter>K = {#} \<and> set_mset K \<subseteq> dm r J" proof -
+shows "\<exists> I J K. N = I + J \<and> M = I + K \<and> J\<inter>#K = {#} \<and> set_mset K \<subseteq> dm r J" proof -
  from assms(1,3)
  obtain I J K where f1:"N = I + J" and f2:"M = I + K" and f3:"set_mset K \<subseteq> dm r J" unfolding mul_eq_def by fast
- hence "N = (I + (J #\<inter> K)) + (J - (J #\<inter> K))"
+ hence "N = (I + (J \<inter># K)) + (J - (J \<inter># K))"
   by (metis diff_union_cancelL inf_le2 multiset_diff_union_assoc multiset_inter_commute union_commute union_lcomm)
- moreover have "M = (I + (J #\<inter> K)) + (K - (J #\<inter> K))"
+ moreover have "M = (I + (J \<inter># K)) + (K - (J \<inter># K))"
   by (metis diff_le_self diff_union_cancelL f1 f2 f3 multiset_diff_union_assoc multiset_inter_commute multiset_inter_def union_assoc)
- moreover have "(J-(J#\<inter>K)) #\<inter> (K-(J#\<inter>K)) = {#}" by (rule multiset_eqI) auto
+ moreover have "(J-(J\<inter>#K)) \<inter># (K-(J\<inter>#K)) = {#}" by (rule multiset_eqI) auto
  ultimately show ?thesis using lemma2_6_3_step[OF t i f3] by auto
 qed
 *)
@@ -440,17 +440,17 @@ lemma lemma2_6_6_a: assumes t: "trans r" and "(M,N) \<in> mul_eq r" shows "(Q + 
 qed
 
 lemma add_left_one:
- assumes  "\<exists> I J K. add_mset q N = I + J \<and> add_mset q  M = I + K \<and> (J#\<inter>K={#}) \<and> set_mset K \<subseteq> dm r J"
+ assumes  "\<exists> I J K. add_mset q N = I + J \<and> add_mset q  M = I + K \<and> (J\<inter>#K={#}) \<and> set_mset K \<subseteq> dm r J"
  shows "\<exists> I2 J K. N = I2 + J \<and> M = I2 + K \<and> set_mset K \<subseteq> dm r J" proof -
  from assms obtain I J K where A: "{#q#} + N = I + J" and B:"{#q#} + M = I + K"
-  and C:"(J #\<inter> K = {#})" and D:"set_mset K \<subseteq> dm r J" by auto
+  and C:"(J \<inter># K = {#})" and D:"set_mset K \<subseteq> dm r J" by auto
  have "q\<in>#I" proof (cases "q \<in># I")
   case True thus ?thesis by auto
  next
   case False
   have "q \<in># J" using False A by (metis UnE multi_member_this set_mset_union) 
   moreover have "q \<in># K" using False B by (metis UnE multi_member_this set_mset_union)
-  moreover have "\<not> q \<in># (J #\<inter> K)" using C by auto
+  moreover have "\<not> q \<in># (J \<inter># K)" using C by auto
   ultimately show ?thesis by auto
  qed
  hence "\<exists> I2. I = add_mset q I2" by (metis multi_member_split union_commute)
