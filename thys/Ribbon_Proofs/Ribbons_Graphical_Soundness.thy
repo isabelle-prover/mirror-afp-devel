@@ -290,71 +290,64 @@ proof (insert assms, unfold initial_ps2_def, transfer)
     V'_def: "V' = V - fst3 e" and E'_def: "E' = removeAll e E" and 
     e_in_E: "e \<in> set E" and fst_e_in_S: "fst3 e |\<subseteq>| S" and 
     S_initials: "S |\<subseteq>| initials G" and wf_G: "wf_dia G"
+  have "thd3 e |\<inter>| initials G = {||}"
+    by (auto simp add: initials_def G_def e_in_E)
   show "make_map (initials G' - (S - fst3 e)) Top ++ make_map (S - fst3 e) Bot 
     = map_diff (make_map (initials G - S) Top ++ make_map S Bot) (fst3 e) 
         ++ make_map (thd3 e) Top" 
   apply (unfold make_map_def map_diff_def)
   apply (unfold map_add_def restrict_map_def)
   apply (unfold minus_fset)
-  apply (unfold fun_eq_iff initials_def, intro allI)
+  apply (unfold fun_eq_iff initials_def)
   apply (unfold G_def G'_def V'_def E'_def)
   apply (unfold edges.simps vertices.simps)
   apply (simp add: less_eq_fset.rep_eq fmember.rep_eq e_in_E)
-  apply (intro conjI impI)
-  apply (elim bexE conjE)
-  apply (rename_tac "f")
-  apply (subgoal_tac "thd3 e |\<inter>| initials G = {||}")
-  apply (insert S_initials, fold fset_cong)
+  apply safe
+  apply (insert \<open>thd3 e |\<inter>| initials G = {||}\<close>)[1]
+  apply (insert S_initials, fold fset_cong)[2]
   apply (unfold less_eq_fset.rep_eq initials_def filter_fset)
   apply (auto simp add: fmember.rep_eq G_def e_in_E)[1]
   apply (auto simp add: fmember.rep_eq G_def e_in_E)[1]
   apply (auto simp add: fmember.rep_eq G_def e_in_E)[1]
-  apply (auto simp add: fmember.rep_eq G_def e_in_E)[1]
-  apply (elim conjE bexE)
   apply (insert wf_G)[1] 
   apply (unfold G_def vertices.simps edges.simps)
-  apply (drule wf_dia_inv) back back 
+  apply (drule wf_dia_inv(3)) 
   apply (unfold acyclicity_def)
   apply (metis fst_e_in_S inter_fset le_iff_inf set_mp)
-  apply (elim bexE DiffE)
-  apply (unfold singleton_iff)
   apply (insert wf_G)[1] 
   apply (unfold G_def vertices.simps edges.simps)
-  apply (drule wf_dia_inv) back back back
+  apply (drule wf_dia_inv(4))
   apply (drule linearityD2)
   apply (fold fset_cong, unfold inter_fset fset_simps)
-  apply (insert e_in_E, blast)
+  apply (insert e_in_E, blast)[1]
   apply (insert wf_G)[1] 
   apply (unfold G_def vertices.simps edges.simps)
-  apply (drule wf_dia_inv) back back 
-  apply (metis (lifting) e_in_E Diff_iff G_def empty_iff fset_simps(1) 
-    finter_iff insertCI linearityD(2) notin_fset wf_G wf_dia_inv(4))
-  apply (elim bexE DiffE)
-  apply (unfold singleton_iff)
+  apply (drule wf_dia_inv(3)) 
+  apply (metis (lifting) e_in_E G_def empty_iff fset_simps(1) 
+    finter_iff linearityD(2) notin_fset wf_G wf_dia_inv(4))
   apply (insert wf_G)[1] 
   apply (unfold G_def vertices.simps edges.simps)
-  apply (drule wf_dia_inv) back back back
+  apply (drule wf_dia_inv(4))
   apply (drule linearityD2)
   apply (fold fset_cong, unfold inter_fset fset_simps)
-  apply blast
+  apply (insert e_in_E, blast)[1]
   apply (insert wf_G)[1] 
   apply (unfold G_def vertices.simps edges.simps)
-  apply (drule wf_dia_inv) back back 
-  apply (metis (lifting) e_in_E Diff_iff G_def empty_iff fset_simps(1) 
-    finter_iff insertCI linearityD(2) notin_fset wf_G wf_dia_inv(4))
-  apply (elim bexE)
+  apply (drule wf_dia_inv(3)) 
+  apply (metis (lifting) e_in_E G_def empty_iff fset_simps(1) 
+    finter_iff linearityD(2) notin_fset wf_G wf_dia_inv(4))
   apply (insert wf_G) 
   apply (unfold G_def vertices.simps edges.simps)
-  apply (drule wf_dia_inv) back back back back
+  apply (drule wf_dia_inv(5))
   apply (unfold less_eq_fset.rep_eq union_fset)
   apply auto[1]
-  apply (drule wf_dia_inv) back back back back
+  apply (drule wf_dia_inv(5))
   apply (unfold less_eq_fset.rep_eq union_fset)
   apply auto[1]
-  apply (drule wf_dia_inv) back back back back
+  apply (drule wf_dia_inv(5))
   apply (unfold less_eq_fset.rep_eq union_fset)
   apply (auto simp add: e_in_E)[1]
-  apply (drule wf_dia_inv) back back back back
+  apply (drule wf_dia_inv(5))
   apply (unfold less_eq_fset.rep_eq union_fset)
   apply (auto simp add: e_in_E)[1]
   done
