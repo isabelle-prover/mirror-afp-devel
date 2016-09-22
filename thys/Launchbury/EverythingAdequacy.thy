@@ -21,8 +21,8 @@ abbreviation map_of_syntax :: "'a::type \<Rightarrow> 'b::type \<Rightarrow> ('a
 abbreviation delete_syntax :: "heap \<Rightarrow> var \<Rightarrow> heap" ("_\\_") 
   where "delete_syntax \<Gamma> x \<equiv> delete x \<Gamma>"
 
-notation (latex output) domA ("\<^raw:\textrm{\textsf{dom}}> _")
-notation (latex output) bn ("\<^raw:\textrm{\textsf{dom}}> _")
+notation (latex output) domA ("\<^latex>\<open>\\textrm{\\textsf{dom}}\<close> _")
+notation (latex output) bn ("\<^latex>\<open>\\textrm{\\textsf{dom}}\<close> _")
 
 declare [[names_short]]
 declare [[show_question_marks = false]]

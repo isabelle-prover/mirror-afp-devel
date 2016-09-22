@@ -134,7 +134,7 @@ hide_const HOL.Let
 definition Let :: "heap \<Rightarrow> exp \<Rightarrow> exp"
   where "Let \<Gamma> e = LetA (heapToAssn \<Gamma>) e"
 
-notation (latex output) Let ("\<^raw:\textrm{\textsf{let}}> _ \<^raw:\textrm{\textsf{in}}> _")
+notation (latex output) Let ("\<^latex>\<open>\\textrm{\\textsf{let}}\<close> _ \<^latex>\<open>\\textrm{\\textsf{in}}\<close> _")
 
 abbreviation
   LetBe :: "var\<Rightarrow>exp\<Rightarrow>exp\<Rightarrow>exp" ("let _ be _ in _ " [100,100,100] 100)

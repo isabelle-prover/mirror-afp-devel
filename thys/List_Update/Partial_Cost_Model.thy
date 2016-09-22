@@ -11,7 +11,7 @@ begin
 definition t\<^sub>p :: "'a state \<Rightarrow> 'a \<Rightarrow> answer \<Rightarrow> nat" where
 "t\<^sub>p s q a = (let (mf,sws) = a in index (swaps sws s) q + size sws)"
 
-notation (latex) t\<^sub>p ("\<^raw:$t^{*}$>")
+notation (latex) t\<^sub>p ("\<^latex>\<open>$t^{*}$\<close>")
 
 lemma t\<^sub>pt: "t\<^sub>p s q a + 1 = t s q a" unfolding t\<^sub>p_def t_def by(simp add: split_def)
 

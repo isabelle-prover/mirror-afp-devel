@@ -902,8 +902,8 @@ fun export_code_cmd' seris tmp_export_code f_err filename_thy raw_cs thy =
       end)
 
 fun scan thy pos str =
-  Source.of_string str
-  |> Symbol.source
+  Symbol.explode str
+  |> Source.of_list
   |> Token.source (Thy_Header.get_keywords' thy) pos
   |> Source.exhaust;
 
