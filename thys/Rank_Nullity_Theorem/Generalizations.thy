@@ -421,17 +421,17 @@ lemma span_mul: "x \<in> span S ==> scale c x \<in> span S"
 lemma span_neg: "x \<in> span S ==> - x \<in> span S"
   by (metis subspace_neg subspace_span)
 
-lemma span_sub: "x \<in> span S ==> y \<in> span S ==> x - y \<in> span S"
+lemma span_diff: "x \<in> span S ==> y \<in> span S ==> x - y \<in> span S"
   by (metis subspace_span subspace_diff)
 
 lemma span_setsum: "finite A ==> \<forall>x \<in> A. f x \<in> span S ==> setsum f A \<in> span S"
   by (rule subspace_setsum, rule subspace_span)
 
 lemma span_add_eq: "x \<in> span S ==> x + y \<in> span S \<longleftrightarrow> y \<in> span S"
-  apply (auto simp only: span_add span_sub)
+  apply (auto simp only: span_add span_diff)
   apply (subgoal_tac "(x + y) - x \<in> span S")
   apply simp
-  apply (simp only: span_add span_sub)
+  apply (simp only: span_add span_diff)
   done
 
 
@@ -546,7 +546,7 @@ proof -
       unfolding eq' .
     from k show ?thesis
       apply (subst eq)
-      apply (rule span_sub)
+      apply (rule span_diff)
       apply (rule span_mul)
       apply (rule span_superset)
       apply blast
@@ -1381,7 +1381,7 @@ next
       assume k: "z - k *b a \<in> B.span b"
       have eq: "z - ?h z *b a - (z - k *b a) = (k - ?h z) *b a"
         by (simp add: field_simps B.scale_left_distrib [symmetric])
-      from B.span_sub[OF th0 k] have khz: "(k - ?h z) *b a \<in> B.span b"
+      from B.span_diff[OF th0 k] have khz: "(k - ?h z) *b a \<in> B.span b"
         by (simp add: eq)
       {
         assume "k \<noteq> ?h z"
