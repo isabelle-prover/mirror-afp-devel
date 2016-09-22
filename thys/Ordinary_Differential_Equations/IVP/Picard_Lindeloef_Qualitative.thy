@@ -42,7 +42,7 @@ lemma cbox_in_cball':
   shows "\<exists>b > 0. b \<le> r \<and> (\<exists>B. B = (\<Sum>i\<in>Basis. b *\<^sub>R i) \<and> (\<forall>y \<in> cbox (x - B) (x + B). y \<in> cball x r))"
 proof (rule, safe)
   have "r / sqrt (real DIM('a)) \<le> r / 1"
-    using assms DIM_positive by (intro divide_left_mono) auto
+    using assms  by (auto simp: divide_simps real_of_nat_ge_one_iff)
   thus "r / sqrt (real DIM('a)) \<le> r" by simp
 next
   let ?B = "\<Sum>i\<in>Basis. (r / sqrt (real DIM('a))) *\<^sub>R i"
@@ -67,7 +67,7 @@ next
         unfolding dist_real_def by simp
     qed (auto simp add: assms)
   qed (rule)
-qed (auto simp: assms DIM_positive)
+qed (auto simp: assms)
 
 lemma Pair1_in_Basis: "i \<in> Basis \<Longrightarrow> (i, 0) \<in> Basis"
  and Pair2_in_Basis: "i \<in> Basis \<Longrightarrow> (0, i) \<in> Basis"
