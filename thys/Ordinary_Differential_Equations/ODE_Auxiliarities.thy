@@ -238,7 +238,7 @@ lemma compact_infdist_le:
   assumes "e > 0"
   shows "compact {x. infdist x A \<le> e}"
 proof -
-  from continuous_closed_vimage[of "\<lambda>x. infdist x A" "{0..e}"]
+  from continuous_closed_vimage[of "{0..e}" "\<lambda>x. infdist x A"]
     continuous_infdist[OF continuous_ident, of _ UNIV A]
   have "closed {x. infdist x A \<le> e}" by (auto simp: vimage_def infdist_nonneg)
   moreover

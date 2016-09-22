@@ -142,7 +142,7 @@ lemma ldistinct_closure: "{xs. ldistinct xs} = closure {xs. lfinite xs \<and> ld
   by (rule closure_eq_lfinite[OF closed_ldistinct ldistinct_lprefix])
 
 lemma closed_ldistinct': "(\<And>x. isCont f x) \<Longrightarrow> closed {xs. ldistinct (f xs)}"
-  using continuous_closed_preimage_univ[of f, OF _ closed_ldistinct] by auto
+  using continuous_closed_preimage_univ[of _ f, OF closed_ldistinct] by auto
 
 lemma closed_lsorted: "closed {xs. lsorted xs}"
   unfolding closed_ccpo by (auto simp: lsorted_lSup Sup_llist_def subset_eq)
@@ -151,7 +151,7 @@ lemma lsorted_closure: "{xs. lsorted xs} = closure {xs. lfinite xs \<and> lsorte
   by (rule closure_eq_lfinite[OF closed_lsorted lsorted_lprefixD])
 
 lemma closed_lsorted': "(\<And>x. isCont f x) \<Longrightarrow> closed {xs. lsorted (f xs)}"
-  using continuous_closed_preimage_univ[of f, OF _ closed_lsorted] by auto
+  using continuous_closed_preimage_univ[of _ f, OF closed_lsorted] by auto
 
 lemma closed_in_lset: "closed {l. x \<in> lset l}"
   unfolding closed_ccpo by (auto simp add: subset_eq lset_lSup Sup_llist_def)
