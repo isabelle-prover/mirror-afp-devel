@@ -57,9 +57,11 @@ lemma hom_sum_list[hom_ring_simps,simp]: "hom (sum_list xs) = sum_list (map hom 
 end
 
 locale ring_hom = semiring_hom hom
-  for hom :: "'a :: comm_ring_1 \<Rightarrow> 'b :: comm_ring_1" +
-  assumes hom_uminus[hom_ring_simps,simp]: "hom (-x) = - (hom x)"
+  for hom :: "'a :: comm_ring_1 \<Rightarrow> 'b :: comm_ring_1"
 begin
+
+lemma hom_uminus[hom_ring_simps,simp]: "hom (-x) = - (hom x)"
+  by(unfold eq_neg_iff_add_eq_0, auto)
 
 sublocale semiring_hom..
 
@@ -90,9 +92,11 @@ begin
 end
 
 locale field_hom = ring_hom hom
-  for hom :: "'a :: field \<Rightarrow> 'b :: field" +
-  assumes hom_inverse: "hom (inverse x) = inverse (hom x)"
+  for hom :: "'a :: field \<Rightarrow> 'b :: field"
 begin
+
+lemma hom_inverse: "hom (inverse x) = inverse (hom x)"
+  by (metis hom_mult hom_one hom_zero inverse_unique inverse_zero right_inverse)
 
 lemma hom_divide: "hom (x / y) = hom x / hom y"
 proof -
