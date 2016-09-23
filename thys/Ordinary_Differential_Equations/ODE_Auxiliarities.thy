@@ -2011,8 +2011,7 @@ lemma continuous_on_imp_absolutely_integrable_on:
   fixes f::"real \<Rightarrow> 'a::banach"
   shows "continuous_on {a..b} f \<Longrightarrow>
     norm (integral {a..b} f) \<le> integral {a..b} (\<lambda>x. norm (f x))"
-  by (rule absolutely_integrable_le[OF absolutely_integrable_onI[OF
-    integrable_continuous_real integrable_continuous_real[OF continuous_on_norm]]])
+  by (intro integral_norm_bound_integral integrable_continuous_real continuous_on_norm) auto
 
 lemma integral_bound:
   fixes f::"real \<Rightarrow> 'a::banach"
