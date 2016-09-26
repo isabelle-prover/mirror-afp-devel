@@ -540,7 +540,7 @@ lemma stream_times [simp]: "stream (t * t') = stream t * stream t'"
 by(simp add: times_stream_def times_tree_def)
 
 lemma stream_mod [simp]: "stream (t mod t') = stream t mod stream t'"
-by(simp add: mod_stream_def mod_tree_def)
+by(simp add: modulo_stream_def modulo_tree_def)
 
 lemma stream_1 [simp]: "stream 1 = 1"
 by(simp add: one_tree_def one_stream_def)
@@ -716,8 +716,8 @@ subgoal by (rule stream.expand; simp add: times_stream_def)
 subgoal by transfer_prover
 done
 
-friend_of_corec mod where "t mod t' = (shd t mod shd t') ## (stl t mod stl t')"
-subgoal by (rule stream.expand; simp add: mod_stream_def)
+friend_of_corec modulo where "t mod t' = (shd t mod shd t') ## (stl t mod stl t')"
+subgoal by (rule stream.expand; simp add: modulo_stream_def)
 subgoal by transfer_prover
 done
 

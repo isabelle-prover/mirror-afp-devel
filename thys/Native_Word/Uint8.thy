@@ -29,7 +29,7 @@ declare Rep_uint8_inverse[code abstype]
 
 declare Quotient_uint8[transfer_rule]
 
-instantiation uint8 :: "{neg_numeral, Divides.div, comm_monoid_mult, comm_ring}" begin
+instantiation uint8 :: "{neg_numeral, modulo, comm_monoid_mult, comm_ring}" begin
 lift_definition zero_uint8 :: uint8 is "0" .
 lift_definition one_uint8 :: uint8 is "1" .
 lift_definition plus_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "op +" .
@@ -37,7 +37,7 @@ lift_definition minus_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" i
 lift_definition uminus_uint8 :: "uint8 \<Rightarrow> uint8" is uminus .
 lift_definition times_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "op *" .
 lift_definition divide_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "op div" .
-lift_definition mod_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "op mod" .
+lift_definition modulo_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "op mod" .
 instance by standard (transfer, simp add: algebra_simps)+
 end
 

@@ -212,10 +212,10 @@ lemma setprod_pow[simp]: "(\<Prod>i = 0..<n. p) = (p :: 'a :: comm_monoid_mult) 
 
 text \<open>For determinant computation, we require the @{class ring_div}-class.
 In order to also support rational and real numbers, we therefore provide the
-following class which defines @{const mod} for fields and will be a subclass
+following class which defines @{const modulo} for fields and will be a subclass
 of @{class ring_div}.\<close>
 
-class ring_div_field = field + div +
+class ring_div_field = field + modulo +
   assumes mod: "(x :: 'a) mod y = (if y = 0 then x else 0)"
 begin
 

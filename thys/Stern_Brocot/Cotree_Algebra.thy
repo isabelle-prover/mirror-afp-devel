@@ -65,7 +65,7 @@ by(simp_all add: times_tree_def)
 
 instance tree :: (Rings.dvd) Rings.dvd ..
 
-instantiation tree :: (Divides.div) Divides.div begin
+instantiation tree :: (modulo) modulo begin
 definition [applicative_unfold]: "x div y = pure_tree op div \<diamondop> x \<diamondop> (y :: 'a tree)"
 definition [applicative_unfold]: "x mod y = pure_tree op mod \<diamondop> x \<diamondop> (y :: 'a tree)"
 instance ..
@@ -75,7 +75,7 @@ lemma mod_tree_simps [simp]:
   "root (t mod t') = root t mod root t'"
   "left (t mod t') = left t mod left t'"
   "right (t mod t') = right t mod right t'"
-by(simp_all add: mod_tree_def)
+by(simp_all add: modulo_tree_def)
 
 
 subsubsection \<open>Algebraic instances\<close>

@@ -69,7 +69,7 @@ declare Rep_uint_inverse[code abstype]
 
 declare Quotient_uint[transfer_rule]
 
-instantiation uint :: "{neg_numeral, Divides.div, comm_monoid_mult, comm_ring}" begin
+instantiation uint :: "{neg_numeral, modulo, comm_monoid_mult, comm_ring}" begin
 lift_definition zero_uint :: uint is "0 :: dflt_size word" .
 lift_definition one_uint :: uint is "1" .
 lift_definition plus_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op + :: dflt_size word \<Rightarrow> _" .
@@ -77,7 +77,7 @@ lift_definition minus_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "o
 lift_definition uminus_uint :: "uint \<Rightarrow> uint" is uminus .
 lift_definition times_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op *" .
 lift_definition divide_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op div" .
-lift_definition mod_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op mod" .
+lift_definition modulo_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "op mod" .
 instance by standard (transfer, simp add: algebra_simps)+
 end
 

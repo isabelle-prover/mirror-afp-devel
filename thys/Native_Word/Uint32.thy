@@ -22,7 +22,7 @@ declare Rep_uint32_inverse[code abstype]
 
 declare Quotient_uint32[transfer_rule]
 
-instantiation uint32 :: "{neg_numeral, Divides.div, comm_monoid_mult, comm_ring}" begin
+instantiation uint32 :: "{neg_numeral, modulo, comm_monoid_mult, comm_ring}" begin
 lift_definition zero_uint32 :: uint32 is "0 :: 32 word" .
 lift_definition one_uint32 :: uint32 is "1" .
 lift_definition plus_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "op + :: 32 word \<Rightarrow> _" .
@@ -30,7 +30,7 @@ lift_definition minus_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint3
 lift_definition uminus_uint32 :: "uint32 \<Rightarrow> uint32" is uminus .
 lift_definition times_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "op *" .
 lift_definition divide_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "op div" .
-lift_definition mod_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "op mod" .
+lift_definition modulo_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "op mod" .
 instance by standard (transfer, simp add: algebra_simps)+
 end
 

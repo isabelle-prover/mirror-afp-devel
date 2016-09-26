@@ -682,7 +682,7 @@ code_reflect Presb
   datatypes nat and int = _ and presb = _ and aformula = _
   functions check_eqv "0::nat" "1::nat" Suc
     "plus :: nat \<Rightarrow> _" "minus :: nat \<Rightarrow> _"
-    "times :: nat \<Rightarrow> _" "divide :: nat \<Rightarrow> _" "Divides.mod :: nat \<Rightarrow> _"
+    "times :: nat \<Rightarrow> _" "divide :: nat \<Rightarrow> _" "modulo :: nat \<Rightarrow> _"
     nat_of_integer integer_of_nat
 
 end

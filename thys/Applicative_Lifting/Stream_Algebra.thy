@@ -48,7 +48,7 @@ end
 
 instance stream :: (Rings.dvd) Rings.dvd ..
 
-instantiation stream :: ("Divides.div") "Divides.div" begin
+instantiation stream :: (modulo) modulo begin
 context includes applicative_syntax begin
 definition [applicative_unfold]: "x div y = pure op div \<diamondop> x \<diamondop> (y :: 'a stream)"
 definition [applicative_unfold]: "x mod y = pure op mod \<diamondop> x \<diamondop> (y :: 'a stream)"

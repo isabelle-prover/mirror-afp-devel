@@ -156,7 +156,7 @@ done
 
 subsection {* Division *}
 
-instantiation ordinal :: "{Divides.div}"
+instantiation ordinal :: modulo
 begin
 
 definition

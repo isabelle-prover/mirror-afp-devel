@@ -13,7 +13,7 @@ subsection {* Arithmetic operations with @{typ enat} *}
 
 subsubsection {* Additional definitions *}
 
-instantiation enat :: "{Divides.div}"
+instantiation enat :: modulo
 begin
 
 definition

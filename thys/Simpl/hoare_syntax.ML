@@ -723,7 +723,7 @@ fun guard ctxt Ts (add as (Const (@{const_name Groups.plus},_) $ l $ r)) =
       guard ctxt Ts l & mk_imp (HOLogic.Not $ l,guard ctxt Ts r)
   | guard ctxt Ts (dv as (Const (@{const_name Rings.divide},_) $ l $ r)) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (not_zero r) & SOME (in_range dv) (* FIXME: Make more concrete guard...*)
-  | guard ctxt Ts (Const (@{const_name Divides.div_class.mod},_) $ l $ r) =
+  | guard ctxt Ts (Const (@{const_name Rings.modulo},_) $ l $ r) =
       guard ctxt Ts l & guard ctxt Ts r & SOME (not_zero r)
   | guard ctxt Ts (un as (Const (@{const_name Groups.uminus},_) $ n)) =
       guard ctxt Ts n & SOME (in_range un)

@@ -2007,18 +2007,8 @@ where
        (mergesort_by_rel R (snd (mergesort_by_rel_split ([], []) xs)))))"
 by auto
 termination
-  apply (relation "measure (\<lambda>(_, xs). length xs)")
-  apply (simp_all add: mergesort_by_rel_split_length)
-proof -
-  fix xs :: "'a list"
-  assume "\<not>(length xs < 2)"
-  then obtain x1 x2 xs' where xs_eq: "xs = x1 # x2 # xs'"
-    apply (cases xs, simp, rename_tac x1 xs0)
-    apply (case_tac xs0, simp, rename_tac x2 xs')
-    apply auto
-  done
-  show "length xs div 2 + length xs mod 2 < length xs" by (simp add: xs_eq)
-qed
+by (relation "measure (\<lambda>(_, xs). length xs)")
+  (simp_all add: mergesort_by_rel_split_length not_less mod_div_equality')
 
 declare mergesort_by_rel.simps [simp del]
 
