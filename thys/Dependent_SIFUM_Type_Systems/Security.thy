@@ -35,7 +35,7 @@ definition
 where
   "var_asm_not_written mds x \<equiv> x \<in> mds AsmNoWrite \<or> x \<in> mds AsmNoReadOrWrite"
 
-context sifum_security begin
+context sifum_security_init begin
 
 subsection {* Evaluation of Concurrent Programs *}
 
@@ -215,20 +215,20 @@ where
 definition 
   prog_sifum_secure_cont :: "('Com \<times> 'Var Mds) list \<Rightarrow> bool"
 where "prog_sifum_secure_cont cmds =
-  ((\<forall> mem\<^sub>1 mem\<^sub>2. mem\<^sub>1 =\<^sup>l mem\<^sub>2 \<longrightarrow>
+   (\<forall> mem\<^sub>1 mem\<^sub>2. INIT mem\<^sub>1 \<and> INIT mem\<^sub>2 \<and> mem\<^sub>1 =\<^sup>l mem\<^sub>2 \<longrightarrow>
     (\<forall> sched cms\<^sub>1' mem\<^sub>1'.
      (cmds, mem\<^sub>1) \<rightarrow>\<^bsub>sched\<^esub> (cms\<^sub>1', mem\<^sub>1') \<longrightarrow>
       (\<exists> cms\<^sub>2' mem\<^sub>2'. (cmds, mem\<^sub>2) \<rightarrow>\<^bsub>sched\<^esub> (cms\<^sub>2', mem\<^sub>2') \<and>
                       map snd cms\<^sub>1' = map snd cms\<^sub>2' \<and>
                       length cms\<^sub>2' = length cms\<^sub>1' \<and>
                       (\<forall> x. dma mem\<^sub>1' x = Low \<and> (x \<in> \<C> \<or> (\<forall> i < length cms\<^sub>1'.
-                        x \<notin> snd (cms\<^sub>1' ! i) AsmNoReadOrWrite)) \<longrightarrow> mem\<^sub>1' x = mem\<^sub>2' x)))))"
+                        x \<notin> snd (cms\<^sub>1' ! i) AsmNoReadOrWrite)) \<longrightarrow> mem\<^sub>1' x = mem\<^sub>2' x))))"
 
 (* Note that it is equivalent to the following because the 
    programming language is deterministic *)
 lemma prog_sifum_secure_cont_def2:
   "prog_sifum_secure_cont cmds \<equiv>
-  ((\<forall> mem\<^sub>1 mem\<^sub>2. mem\<^sub>1 =\<^sup>l mem\<^sub>2 \<longrightarrow>
+   (\<forall> mem\<^sub>1 mem\<^sub>2. INIT mem\<^sub>1 \<and> INIT mem\<^sub>2 \<and> mem\<^sub>1 =\<^sup>l mem\<^sub>2 \<longrightarrow>
     (\<forall> sched cms\<^sub>1' mem\<^sub>1'.
      (cmds, mem\<^sub>1) \<rightarrow>\<^bsub>sched\<^esub> (cms\<^sub>1', mem\<^sub>1') \<longrightarrow>
       (\<exists> cms\<^sub>2' mem\<^sub>2'. (cmds, mem\<^sub>2) \<rightarrow>\<^bsub>sched\<^esub> (cms\<^sub>2', mem\<^sub>2')) \<and>
@@ -236,7 +236,7 @@ lemma prog_sifum_secure_cont_def2:
                       map snd cms\<^sub>1' = map snd cms\<^sub>2' \<and>
                       length cms\<^sub>2' = length cms\<^sub>1' \<and>
                       (\<forall> x. dma mem\<^sub>1' x = Low \<and> (x \<in> \<C> \<or> (\<forall> i < length cms\<^sub>1'.
-                        x \<notin> snd (cms\<^sub>1' ! i) AsmNoReadOrWrite)) \<longrightarrow> mem\<^sub>1' x = mem\<^sub>2' x)))))"
+                        x \<notin> snd (cms\<^sub>1' ! i) AsmNoReadOrWrite)) \<longrightarrow> mem\<^sub>1' x = mem\<^sub>2' x))))"
   apply(rule eq_reflection)
   unfolding prog_sifum_secure_cont_def
   apply(rule iffI)

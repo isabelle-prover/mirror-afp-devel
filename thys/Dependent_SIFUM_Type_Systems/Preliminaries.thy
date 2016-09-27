@@ -53,12 +53,13 @@ type_synonym ('com, 'var, 'val) GlobalConf = "('com \<times> 'var Mds) list \<ti
 
 text {* A locale to fix various parametric components in Mantel et. al, and assumptions
   about them: *}
-locale sifum_security =
+locale sifum_security_init =
   fixes dma :: "('Var,'Val) Mem \<Rightarrow> 'Var \<Rightarrow> Sec"
   fixes \<C>_vars :: "'Var \<Rightarrow> 'Var set"
   fixes \<C> :: "'Var set" (* classification control variables *)
   fixes eval :: "('Com, 'Var, 'Val) LocalConf rel"
   fixes some_val :: "'Val"
+  fixes INIT :: "('Var,'Val) Mem \<Rightarrow> bool"
   assumes deterministic: "\<lbrakk> (lc, lc') \<in> eval; (lc, lc'') \<in> eval \<rbrakk> \<Longrightarrow> lc' = lc''"
   assumes finite_memory: "finite {(x::'Var). True}"
   defines "\<C> \<equiv> \<Union>x. \<C>_vars x"
@@ -66,8 +67,14 @@ locale sifum_security =
   assumes dma_\<C>_vars: "\<forall>x\<in>\<C>_vars y. mem\<^sub>1 x = mem\<^sub>2 x \<Longrightarrow> dma mem\<^sub>1 y = dma mem\<^sub>2 y"
   assumes \<C>_Low: "\<forall>x\<in>\<C>. dma mem x = Low"
 
+locale sifum_security = sifum_security_init dma \<C>_vars \<C> eval some_val "\<lambda>_.True"
+  for dma :: "('Var,'Val) Mem \<Rightarrow> 'Var \<Rightarrow> Sec"
+  and \<C>_vars :: "'Var \<Rightarrow> 'Var set"
+  and \<C> :: "'Var set" (* classification control variables *)
+  and eval :: "('Com, 'Var, 'Val) LocalConf rel"
+  and some_val :: "'Val"
 
-context sifum_security begin
+context sifum_security_init begin
 
 lemma \<C>_vars_subset_\<C>:
   "\<C>_vars x \<subseteq> \<C>"

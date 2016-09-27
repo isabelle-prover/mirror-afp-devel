@@ -942,7 +942,7 @@ next
   have "(\<forall>c\<^sub>2\<^sub>A mem\<^sub>2\<^sub>A c\<^sub>2\<^sub>C mem\<^sub>2\<^sub>C c\<^sub>2\<^sub>A' mem\<^sub>2\<^sub>A'.
                 (\<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A) \<in> \<R>\<^sub>A \<and>
                 (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> \<R> \<and>
-                (\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C,\<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> P \<and> sifum_security.neval eval\<^sub>A \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A ?n \<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
+                (\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C,\<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> P \<and> abs.neval \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A ?n \<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                 (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
                     \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C \<and>
                     (\<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> \<R> \<and> 
@@ -952,7 +952,7 @@ next
     assume 
     in_\<R>\<^sub>A: "(\<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A) \<in> \<R>\<^sub>A" and 
     in_\<R>\<^sub>2: "(\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> \<R>" and
-    neval\<^sub>2: "sifum_security.neval eval\<^sub>A \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A ?n \<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A" and
+    neval\<^sub>2: "abs.neval \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A ?n \<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A" and
     in_P: "(\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C,\<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> P"
     have "\<forall>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'. \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C \<longrightarrow> (\<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> \<R> \<and> (\<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> P"
     proof(clarify)
@@ -1010,14 +1010,14 @@ next
   qed
   with neval\<^sub>1 in_\<R>\<^sub>1 in_\<R>\<^sub>1' 
   show "\<exists>n c\<^sub>1\<^sub>A' mds\<^sub>A' mem\<^sub>1\<^sub>A'.
-            sifum_security.neval eval\<^sub>A \<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A n \<langle>c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A'\<rangle>\<^sub>A \<and>
+            abs.neval \<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A n \<langle>c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A'\<rangle>\<^sub>A \<and>
             (\<langle>c\<^sub>1\<^sub>A', mds\<^sub>A', mem\<^sub>1\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C) \<in> \<R> \<and>
             (\<forall>c\<^sub>2\<^sub>A mem\<^sub>2\<^sub>A c\<^sub>2\<^sub>C mem\<^sub>2\<^sub>C c\<^sub>2\<^sub>A' mem\<^sub>2\<^sub>A'.
                 (\<langle>c\<^sub>1\<^sub>A, mds\<^sub>A, mem\<^sub>1\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A) \<in> \<R>\<^sub>A \<and>
                 (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> \<R> \<and>
                 (\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                 \<in> P \<and>
-                sifum_security.neval eval\<^sub>A \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A n \<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
+                abs.neval \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>2\<^sub>A\<rangle>\<^sub>A n \<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                 (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
                     \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C \<leadsto>\<^sub>C \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C \<and>
                     (\<langle>c\<^sub>2\<^sub>A', mds\<^sub>A', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C', mds\<^sub>C', mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> \<R> \<and>
@@ -1172,14 +1172,14 @@ next
   case (step c\<^sub>C' mds\<^sub>C' mem\<^sub>C' c\<^sub>C'' mds\<^sub>C'' mem\<^sub>C'')
   from step(2) obtain c\<^sub>A' mds\<^sub>A' mem\<^sub>A' where 
     in_\<R>': "(\<langle>c\<^sub>A', mds\<^sub>A', mem\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>C', mds\<^sub>C', mem\<^sub>C'\<rangle>\<^sub>C) \<in> \<R>" and 
-    loc_reach\<^sub>A: "\<langle>c\<^sub>A', mds\<^sub>A', mem\<^sub>A'\<rangle>\<^sub>A \<in> sifum_security.loc_reach dma\<^sub>A eval\<^sub>A \<langle>c\<^sub>A, mds\<^sub>A, mem\<^sub>A\<rangle>\<^sub>A "
+    loc_reach\<^sub>A: "\<langle>c\<^sub>A', mds\<^sub>A', mem\<^sub>A'\<rangle>\<^sub>A \<in> abs.loc_reach \<langle>c\<^sub>A, mds\<^sub>A, mem\<^sub>A\<rangle>\<^sub>A "
     by blast
   from rr in_\<R>' step(3)
   obtain n c\<^sub>A'' mds\<^sub>A'' mem\<^sub>A'' where 
     neval\<^sub>A: "abs.neval \<langle> c\<^sub>A', mds\<^sub>A', mem\<^sub>A' \<rangle>\<^sub>A n \<langle> c\<^sub>A'', mds\<^sub>A'', mem\<^sub>A'' \<rangle>\<^sub>A" and
     in_\<R>'': "(\<langle> c\<^sub>A'', mds\<^sub>A'', mem\<^sub>A'' \<rangle>\<^sub>A, \<langle> c\<^sub>C'', mds\<^sub>C'', mem\<^sub>C'' \<rangle>\<^sub>C) \<in> \<R>"
     unfolding secure_refinement_def by blast
-  from neval\<^sub>A loc_reach\<^sub>A have "\<langle>c\<^sub>A'', mds\<^sub>A'', mem\<^sub>A''\<rangle>\<^sub>A \<in> sifum_security.loc_reach dma\<^sub>A eval\<^sub>A \<langle>c\<^sub>A, mds\<^sub>A, mem\<^sub>A\<rangle>\<^sub>A"
+  from neval\<^sub>A loc_reach\<^sub>A have "\<langle>c\<^sub>A'', mds\<^sub>A'', mem\<^sub>A''\<rangle>\<^sub>A \<in> abs.loc_reach \<langle>c\<^sub>A, mds\<^sub>A, mem\<^sub>A\<rangle>\<^sub>A"
     using abs.neval_loc_reach
     by blast
   with in_\<R>'' show ?case by blast
@@ -1187,7 +1187,7 @@ next
   case (mem_diff c\<^sub>C' mds\<^sub>C' mem\<^sub>C' mem\<^sub>C'')
   from mem_diff(2) obtain c\<^sub>A' mds\<^sub>A' mem\<^sub>A' where 
     in_\<R>': "(\<langle>c\<^sub>A', mds\<^sub>A', mem\<^sub>A'\<rangle>\<^sub>A, \<langle>c\<^sub>C', mds\<^sub>C', mem\<^sub>C'\<rangle>\<^sub>C) \<in> \<R>" and 
-    loc_reach\<^sub>A: "\<langle>c\<^sub>A', mds\<^sub>A', mem\<^sub>A'\<rangle>\<^sub>A \<in> sifum_security.loc_reach dma\<^sub>A eval\<^sub>A \<langle>c\<^sub>A, mds\<^sub>A, mem\<^sub>A\<rangle>\<^sub>A "
+    loc_reach\<^sub>A: "\<langle>c\<^sub>A', mds\<^sub>A', mem\<^sub>A'\<rangle>\<^sub>A \<in> abs.loc_reach \<langle>c\<^sub>A, mds\<^sub>A, mem\<^sub>A\<rangle>\<^sub>A "
     by blast
   from rr have mm: "preserves_modes_mem \<R>" and co: "closed_others \<R>"
     unfolding secure_refinement_def by blast+
@@ -1680,7 +1680,7 @@ proof(cases "x\<^sub>C \<in> range var\<^sub>C_of")
   from abs.neval_modifies_helper[OF neval\<^sub>An HOL.refl HOL.refl nlen\<^sub>A modified\<^sub>A]
   obtain k\<^sub>A cm\<^sub>An'' mem\<^sub>A'' cm\<^sub>An''' mem\<^sub>A''' 
   where "k\<^sub>A < m\<^sub>A" 
-    and neval\<^sub>An'': "sifum_security.neval eval\<^sub>A (cms\<^sub>A ! n, mem\<^sub>A) k\<^sub>A (cm\<^sub>An'', mem\<^sub>A'')"
+    and neval\<^sub>An'': "abs.neval (cms\<^sub>A ! n, mem\<^sub>A) k\<^sub>A (cm\<^sub>An'', mem\<^sub>A'')"
     and eval\<^sub>An'': "(cm\<^sub>An'', mem\<^sub>A'') \<leadsto>\<^sub>A (cm\<^sub>An''', mem\<^sub>A''')"
     and modified\<^sub>A'': "(mem\<^sub>A'' x\<^sub>A \<noteq> mem\<^sub>A''' x\<^sub>A \<or> dma\<^sub>A mem\<^sub>A'' x\<^sub>A \<noteq> dma\<^sub>A mem\<^sub>A''' x\<^sub>A)" by blast
   let ?c\<^sub>An'' = "fst cm\<^sub>An''"

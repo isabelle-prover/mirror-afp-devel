@@ -2217,7 +2217,7 @@ lemma refrel_helper_If_Reg_Load_exI:
     \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
    \<in> RefRel_HighBranch
   \<Longrightarrow>
-  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+  A.neval
      \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A_of mds\<^sub>C, mem\<^sub>A_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
      \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A
   \<Longrightarrow>
@@ -2259,7 +2259,7 @@ lemma refrel_helper_If_Reg_Stop_exI:
     \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
    \<in> RefRel_HighBranch
   \<Longrightarrow>
-  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+  A.neval
      \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A_of mds\<^sub>C, mem\<^sub>A_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
      \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A
   \<Longrightarrow>
@@ -2360,7 +2360,7 @@ lemma induction_full_RefRel_HighBranch:
         \<in> RefRel_HighBranch;
         (\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>1\<^sub>C', mds\<^sub>C', mem\<^sub>1\<^sub>C'\<rangle>\<^sub>C) \<in> sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B\<rbrakk>
        \<Longrightarrow> \<exists>n c\<^sub>1\<^sub>A'.
-              sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+              A.neval
                \<langle>c\<^sub>1\<^sub>A, sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>1\<^sub>C\<rangle>\<^sub>A n
                \<langle>c\<^sub>1\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of
                          mds\<^sub>C', sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>1\<^sub>C'\<rangle>\<^sub>A \<and>
@@ -2378,7 +2378,7 @@ lemma induction_full_RefRel_HighBranch:
                    \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A
                    n \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -2422,7 +2422,7 @@ case (acq_mode_rel c\<^sub>A x m tail\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A
            (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
            \<in> RefRel_HighBranch \<and>
            (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-           sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+           A.neval
             \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 1
             \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
            (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -2523,7 +2523,7 @@ case (assign_load_rel c\<^sub>A x y tail\<^sub>A c\<^sub>C tail\<^sub>C mds\<^su
                   (\<langle>c\<^sub>A, mds\<^sub>A, mem\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>A_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A) \<in> A.R \<and>
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>A_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval A.eval\<^sub>w
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>A_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 1
                    \<langle>c\<^sub>2\<^sub>A', mds\<^sub>A_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -2618,7 +2618,7 @@ case (assign_const_rel c\<^sub>A x z tail\<^sub>A c\<^sub>C tail\<^sub>C mds\<^s
                   (\<langle>c\<^sub>A, mds\<^sub>A, mem\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>A_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A) \<in> A.R \<and>
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>A_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval A.eval\<^sub>w
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, mem\<^sub>A_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 1
                    \<langle>c\<^sub>2\<^sub>A', mds\<^sub>A_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -2728,7 +2728,7 @@ case (if_reg_load_rel c\<^sub>A x then\<^sub>A else\<^sub>A c\<^sub>C then\<^sub
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -2837,7 +2837,7 @@ case (if_reg_stop_rel c\<^sub>A x then\<^sub>A else\<^sub>A c\<^sub>C then\<^sub
                   (\<langle>c\<^sub>A, mds\<^sub>A, mem\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A) \<in> A.R \<and>
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -2937,7 +2937,7 @@ case (if_reg_rel c\<^sub>A x then\<^sub>A else\<^sub>A c\<^sub>C then\<^sub>C el
                   (\<langle>c\<^sub>A, mds\<^sub>A, mem\<^sub>A\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A) \<in> A.R \<and>
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 1
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -3051,7 +3051,7 @@ case (if_then_rel_1 c\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A mds\<^sub>C mem
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -3174,7 +3174,7 @@ case (if_else_rel_1 c\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A mds\<^sub>C mem
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -3300,7 +3300,7 @@ case (if_then_rel_1' c\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A mds\<^sub>C me
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -3407,7 +3407,7 @@ case (if_else_rel_1' c\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A mds\<^sub>C me
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -3529,7 +3529,7 @@ case (if_then_rel_2 c\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A mds\<^sub>C mem
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -3649,7 +3649,7 @@ case (if_else_rel_2 c\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A mds\<^sub>C mem
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -3774,7 +3774,7 @@ case (if_then_rel_2' c\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A mds\<^sub>C me
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -3874,7 +3874,7 @@ case (if_else_rel_2' c\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A mds\<^sub>C me
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -4003,7 +4003,7 @@ case (if_then_rel_3 c\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A mds\<^sub>C mem
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -4145,7 +4145,7 @@ case (if_else_rel_3 c\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A mds\<^sub>C mem
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -4272,7 +4272,7 @@ case (if_then_rel_3' c\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A mds\<^sub>C me
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -4388,7 +4388,7 @@ case (if_else_rel_3' c\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A mds\<^sub>C me
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 0
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -4506,7 +4506,7 @@ case (if_then_rel_4 c\<^sub>A c\<^sub>C mds\<^sub>A mds\<^sub>C mem\<^sub>A mem\
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 1
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -4622,7 +4622,7 @@ case (if_else_rel_4 c\<^sub>A c\<^sub>C mds\<^sub>A mds\<^sub>C mem\<^sub>A mem\
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 1
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.
@@ -4731,7 +4731,7 @@ case (stop_seq_rel c\<^sub>A tail\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A mds
                   (\<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C)
                   \<in> RefRel_HighBranch \<and>
                   (\<langle>c\<^sub>C, mds\<^sub>C, mem\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C) \<in> rel_inv\<^sub>C \<and>
-                  sifum_security.neval (sifum_lang_no_dma.eval\<^sub>w ev\<^sub>A ev\<^sub>B)
+                  A.neval
                    \<langle>c\<^sub>2\<^sub>A, mds\<^sub>A, sifum_refinement.mem\<^sub>A_of var\<^sub>C_of mem\<^sub>2\<^sub>C\<rangle>\<^sub>A 1
                    \<langle>c\<^sub>2\<^sub>A', sifum_refinement.mds\<^sub>A_of var\<^sub>C_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A \<longrightarrow>
                   (\<exists>c\<^sub>2\<^sub>C' mem\<^sub>2\<^sub>C'.

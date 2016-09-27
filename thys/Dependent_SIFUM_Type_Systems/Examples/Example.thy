@@ -313,7 +313,7 @@ lemma \<C>_simp [simp]:
   done
 
 lemma buffer_eq:
-  "mem\<^sub>1 control_var = 0 \<Longrightarrow> buffer \<notin> mds' AsmNoReadOrWrite \<Longrightarrow> sifum_security.low_mds_eq dma \<C>_vars mds' mem\<^sub>1 mem\<^sub>2  \<Longrightarrow>
+  "mem\<^sub>1 control_var = 0 \<Longrightarrow> buffer \<notin> mds' AsmNoReadOrWrite \<Longrightarrow> low_mds_eq mds' mem\<^sub>1 mem\<^sub>2  \<Longrightarrow>
   mem\<^sub>1 buffer = mem\<^sub>2 buffer"
   apply(clarsimp simp: low_mds_eq_def)
   apply(drule spec, erule mp)
@@ -321,7 +321,7 @@ lemma buffer_eq:
   done
 
 lemma rel_inv_init:
-  "buffer \<notin> mds' AsmNoReadOrWrite \<Longrightarrow> sifum_security.low_mds_eq dma \<C>_vars mds' mem\<^sub>1 mem\<^sub>2 \<Longrightarrow>
+  "buffer \<notin> mds' AsmNoReadOrWrite \<Longrightarrow> low_mds_eq mds' mem\<^sub>1 mem\<^sub>2 \<Longrightarrow>
     (\<langle>Stop ;;
       Stmt.If (Eq control_var 0) (low_var \<leftarrow> Load temp)
        (high_var \<leftarrow> Load temp), mds', mem\<^sub>1

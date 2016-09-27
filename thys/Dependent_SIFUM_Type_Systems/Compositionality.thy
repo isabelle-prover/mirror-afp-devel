@@ -10,7 +10,7 @@ theory Compositionality
 imports Security
 begin
 
-context sifum_security
+context sifum_security_init
 begin
 
 (* Set of variables that differs between two memory states: *)
@@ -1222,7 +1222,7 @@ proof -
 
           hence "x \<notin> snd (cms\<^sub>1 ! k) GuarNoWrite \<and> x \<notin> snd (cms\<^sub>1 ! k) GuarNoReadOrWrite"
             using modified modified_r loc_modes locally_sound_mode_use_def
-            by (metis (no_types, lifting) \<open>(cms\<^sub>2, mem\<^sub>2) \<leadsto>\<^bsub>k\<^esub> (cms\<^sub>2', mem\<^sub>2')\<close> b locally_sound_respects_guarantees modes_eq nth_map sifum_security.meval_elim sifum_security.respects_own_guarantees_def sifum_security_axioms)
+            by (metis (no_types, lifting) \<open>(cms\<^sub>2, mem\<^sub>2) \<leadsto>\<^bsub>k\<^esub> (cms\<^sub>2', mem\<^sub>2')\<close> b locally_sound_respects_guarantees modes_eq nth_map meval_elim respects_own_guarantees_def sifum_security_init_axioms)
           moreover
           from sound_modes have "compatible_modes (map snd cms\<^sub>1)"
             by (metis globally_sound_modes_compatible sound_mode_use.simps)
@@ -2042,7 +2042,7 @@ qed
 
 theorem sifum_compositionality_cont:
   assumes com_secure: "list_all com_sifum_secure cmds"
-  assumes sound_modes: "\<forall> mem. sound_mode_use (cmds, mem)"
+  assumes sound_modes: "\<forall> mem. INIT mem \<longrightarrow> sound_mode_use (cmds, mem)"
   shows "prog_sifum_secure_cont cmds"
   unfolding prog_sifum_secure_cont_def
   using assms
@@ -2051,10 +2051,11 @@ proof (clarify)
   fix sched cms\<^sub>1' mem\<^sub>1'
   let ?n = "length cmds"
   let ?mems = "zip (replicate ?n mem\<^sub>1) (replicate ?n mem\<^sub>2)"
+  assume INIT\<^sub>1: "INIT mem\<^sub>1" and INIT\<^sub>2: "INIT mem\<^sub>2"
   assume low_eq: "mem\<^sub>1 =\<^sup>l mem\<^sub>2"
   with com_secure have compat:
     "makes_compatible (cmds, mem\<^sub>1) (cmds, mem\<^sub>2) ?mems"
-    by (metis compatible_refl fst_conv length_replicate map_replicate snd_conv zip_eq_conv)
+    by (metis compatible_refl fst_conv length_replicate map_replicate snd_conv zip_eq_conv INIT\<^sub>1 INIT\<^sub>2)
 
   also assume eval: "(cmds, mem\<^sub>1) \<rightarrow>\<^bsub>sched\<^esub> (cms\<^sub>1', mem\<^sub>1')"
 
@@ -2062,7 +2063,7 @@ proof (clarify)
     where p: "map snd cms\<^sub>1' = map snd cms\<^sub>2' \<and>
              (cmds, mem\<^sub>2) \<rightarrow>\<^bsub>sched\<^esub> (cms\<^sub>2', mem\<^sub>2') \<and>
              makes_compatible (cms\<^sub>1', mem\<^sub>1') (cms\<^sub>2', mem\<^sub>2') mems'"
-    using sound_modes makes_compatible_eval_sched
+    using sound_modes makes_compatible_eval_sched INIT\<^sub>1 INIT\<^sub>2
     by blast
 
   thus "\<exists> cms\<^sub>2' mem\<^sub>2'. (cmds, mem\<^sub>2) \<rightarrow>\<^bsub>sched\<^esub> (cms\<^sub>2', mem\<^sub>2') \<and>
