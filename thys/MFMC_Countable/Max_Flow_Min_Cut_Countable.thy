@@ -8996,7 +8996,7 @@ text \<open>
   @{term \<Delta>}, as the following counterexample shows.
 
   The network @{term \<Delta>} has five nodes @{term "s"}, @{term "t"}, @{term "x"}, @{term "y"} and @{term "z"}
-  and edges @{term "(s, x)"}, @{term "(x, y)"}, @{term "(y, z)"}, @{term "(y, t)"} and @{term "(t, t)"}.
+  and edges @{term "(s, x)"}, @{term "(x, y)"}, @{term "(y, z)"}, @{term "(y, t)"} and @{term "(z, t)"}.
   For @{term "web_of_network \<Delta>"}, the set @{term "S = {(x, y), (y, z)}"} is essential and A-B separating.
   (@{term "(x, y)"} is essential due to the path @{term "[(y, z)]"} and @{term "(y, z)"} is essential
   due to the path @{term "[(z, t)]"}). However, @{term S} is not a cut in @{term \<Delta>} because the node @{term y}
