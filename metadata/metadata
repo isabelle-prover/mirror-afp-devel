@@ -2314,6 +2314,9 @@ extra-history =
   [2016-08-19]:
   Removed unused "stop" parameter and "stop_no_eval" assumption from the sifum_security locale.
   (revision dbc482d36372)
+  [2016-09-27]:
+  Added security locale support for the imposition of requirements on the initial memory.
+  (revision cce4ceb74ddb)
 
 [Dependent_SIFUM_Refinement]
 title = Compositional Security-Preserving Refinement for Concurrent Imperative Programs
@@ -2334,7 +2337,7 @@ extra-history =
   Removed unused "stop" parameters from the sifum_refinement locale.
   (revision dbc482d36372)
   [2016-09-02]:
-  Extended "simple" refinement theory to be usable for all bisimulations.
+  TobyM extended "simple" refinement theory to be usable for all bisimulations.
   (revision 547f31c25f60)
 
 [Strong_Security]
