@@ -1172,7 +1172,7 @@ lemma bigomegaI_tendsto_abs:
   shows   "f \<in> \<Omega>(g)"
 proof (rule landau_omega.bigI)
   from lim have "c \<ge> 0"
-    by (rule tendsto_le_const[OF trivial_limit_at_top_linorder]) simp_all
+    by (rule tendsto_lowerbound) (simp_all add: trivial_limit_at_top_linorder)
   with c_not_0 have "c > 0" by simp
   with c_not_0 show "c/2 > 0" by simp
   from lim have ev: "\<And>\<epsilon>. \<epsilon> > 0 \<Longrightarrow> eventually (\<lambda>x. \<bar>\<bar>f x / g x\<bar> - c\<bar> < \<epsilon>) at_top"

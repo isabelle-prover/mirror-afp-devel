@@ -86,11 +86,6 @@ proof -
   note \<open>t0 < x0\<close> \<open>x0 \<le> tg\<close>
   moreover
   {
-    have "at x0 within {t0<..<x0} \<noteq> bot"
-      unfolding at_within_eq_bot_iff
-      by (simp add: \<open>t0 < x0\<close> less_imp_le)
-    moreover
-
     from v' x0_in
     have "(v has_derivative (\<lambda>x. x * v' x0)) (at x0 within {t0<..<x0})"
       by (force intro: has_derivative_within_subset simp: has_vector_derivative_def has_vderiv_on_def)
@@ -120,9 +115,14 @@ proof -
     moreover
     from evs have 2: "\<forall>\<^sub>F x in at x0 within {t0<..<x0}. (v x - w x) / norm (x - x0) + (v' x0 - w' x0) \<le> (v' x0 - w' x0)"
       by eventually_elim (auto simp: divide_simps intro!: less_imp_le x0(4))
+
+    moreover
+    have "at x0 within {t0<..<x0} \<noteq> bot"
+      by (simp add: \<open>t0 < x0\<close> at_within_eq_bot_iff less_imp_le)
+
     ultimately
     have "0 \<le> v' x0 - w' x0"
-      by (rule tendsto_ge_const)
+      by (rule tendsto_upperbound)
     then have "v' x0 \<ge> w' x0" by simp
   }
   moreover note \<open>v x0 = w x0\<close>
@@ -282,8 +282,7 @@ lemma uniform_limit_le_const:
   shows "g x \<le> h x"
 proof -
   have "\<forall>\<^sub>F i in I. f i x \<le> h x" using assms by (simp add: eventually_mono)
-  with I tendsto_uniform_limitI[OF u \<open>x \<in> X\<close>]
-  show ?thesis by (rule tendsto_ge_const)
+  then show ?thesis by (metis tendsto_upperbound I tendsto_uniform_limitI[OF u \<open>x \<in> X\<close>])
 qed
 
 lemma uniform_limit_ge_const:
@@ -295,8 +294,7 @@ lemma uniform_limit_ge_const:
   shows "h x \<le> g x"
 proof -
   have "\<forall>\<^sub>F i in I. h x \<le> f i x" using assms by (simp add: eventually_mono)
-  with I tendsto_uniform_limitI[OF u \<open>x \<in> X\<close>]
-  show ?thesis by (rule tendsto_le_const)
+  then show ?thesis by (metis tendsto_lowerbound I tendsto_uniform_limitI[OF u \<open>x \<in> X\<close>])
 qed
 
 locale ll_on_open_real = ll_on_open T f X for T f and X::"real set"

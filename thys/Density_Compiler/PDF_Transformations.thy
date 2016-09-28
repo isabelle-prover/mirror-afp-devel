@@ -206,7 +206,7 @@ proof (rule subprob_density_distr_real_eq[OF dens])
   let ?M1 = "distr (density lborel f) lborel exp" and ?M2 = "density lborel ?g"
   {
     fix x :: real assume "\<forall>i. x < inverse (Suc i)"
-    hence "x \<le> 0" by (intro tendsto_le_const[OF _ LIMSEQ_inverse_real_of_nat])
+    hence "x \<le> 0" by (intro tendsto_lowerbound[OF LIMSEQ_inverse_real_of_nat])
                      (auto intro!: always_eventually less_imp_le)
   }
   hence decomp: "{a..b} = {x\<in>{a..b}. x \<le> 0} \<union> (\<Union>i. ?A i \<inter> {a..b})" (is "_ = ?C \<union> ?D")
@@ -271,7 +271,7 @@ proof (rule subprob_density_distr_real_eq[OF dens])
   have "\<And>x. x > 0 \<Longrightarrow> \<exists>i. x \<ge> inverse (Suc i)"
   proof (rule ccontr)
     fix x :: real assume "x > 0" "\<not>(\<exists>i. x \<ge> inverse (Suc i))"
-    hence "x \<le> 0" by (intro tendsto_le_const[OF _ LIMSEQ_inverse_real_of_nat])
+    hence "x \<le> 0" by (intro tendsto_lowerbound[OF LIMSEQ_inverse_real_of_nat])
                       (auto intro!: always_eventually less_imp_le simp: not_le)
     with `x > 0` show False by simp
   qed
@@ -280,7 +280,7 @@ proof (rule subprob_density_distr_real_eq[OF dens])
   proof (rule ccontr)
     fix x :: real assume "x < 0" "\<not>(\<exists>i. x \<le> -inverse (Suc i))"
     hence "x \<ge> 0"
-      by (intro tendsto_ge_const[of sequentially], simp)
+      by (intro tendsto_upperbound, simp)
          (auto intro!: always_eventually less_imp_le LIMSEQ_inverse_real_of_nat_add_minus simp: not_le)
     with `x < 0` show False by simp
   qed

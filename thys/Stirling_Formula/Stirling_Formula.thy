@@ -291,7 +291,7 @@ private lemma p_ge_0: "x > 0 \<Longrightarrow> p n x \<ge> 0"
   by (auto simp add: p_def intro!: setsum_nonneg)
 
 private lemma P_ge_0: "x > 0 \<Longrightarrow> P x \<ge> 0"
-  by (rule tendsto_le_const[OF _ p_LIMSEQ always_eventually]) 
+  by (rule tendsto_lowerbound[OF p_LIMSEQ]) 
      (insert p_ge_0[of x], simp_all)
 
 private lemma p_upper_bound:
@@ -312,11 +312,13 @@ qed
 private lemma P_upper_bound:
   assumes "x > 0"
   shows   "P x \<le> 1/(12*x^2)"
-proof (rule tendsto_ge_const[OF _ p_LIMSEQ])
+proof (rule tendsto_upperbound)
   show "eventually (\<lambda>n. p n x \<le> 1 / (12 * x^2)) at_top"
     using eventually_gt_at_top[of 0] p_upper_bound[of x] assms 
     by (auto elim!: eventually_mono)
-qed (insert assms, simp_all)
+  show "(\<lambda>n. p n x) \<longlonglongrightarrow> P x"
+    by (simp add: assms p_LIMSEQ)
+qed auto
 
 
 text \<open>
