@@ -4584,3 +4584,26 @@ abstract =
   ITP 2016) can be found at
   https://www.lri.fr/∼wolff/papers/conf/2016-itp-InfPathsNSE.pdf.
 
+[Allen_Calculus]
+title = Allen's Interval Calculus
+author = Fadoua Ghourabi <http://www.i-eos.org/fadoua>
+notify = fadouaghourabi@gmail.com
+date = 2016-09-29
+topic = Computer Science/Qualitative_Representation/Allen_Calculus, Logic/FOL, Mathematics/Algebra/Relation_Algebra,
+abstract =
+  Allen’s interval calculus is a qualitative temporal representation of
+  time events. Allen introduced 13 binary relations that describe all
+  the possible arrangements between two events, i.e. intervals with
+  non-zero finite length. The compositions are pertinent to
+  reasoning about knowledge of time. In particular, a consistency
+  problem of relation constraints is commonly solved with a guideline
+  from these compositions. We formalize the relations together with an
+  axiomatic system. We proof the validity of the 169 compositions of
+  these relations. We also define nests as the sets of intervals that
+  share a meeting point. We prove that nests give the ordering
+  properties of points without introducing a new datatype for points.
+  [1] J.F. Allen. Maintaining Knowledge about Temporal Intervals. In
+  Commun. ACM, volume 26, pages 832–843, 1983. [2] J. F. Allen and P. J.
+  Hayes. A Common-sense Theory of Time. In Proceedings of the 9th
+  International Joint Conference on Artificial Intelligence (IJCAI’85),
+  pages 528–531, 1985.
