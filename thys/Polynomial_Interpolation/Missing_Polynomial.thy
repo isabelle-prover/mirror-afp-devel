@@ -1009,5 +1009,39 @@ proof (rule ccontr)
   ultimately show False by (simp add: coeff_eq_0)
 qed
 
+lemma map_div_is_smult_inverse: "Polynomial_Factorial.map_poly (\<lambda>x. x / (a :: 'a :: field)) p = smult (inverse a) p" 
+  unfolding smult_conv_map_poly
+  by (simp add: divide_inverse_commute)
+
+lemma normalize_poly_old_def: "normalize (f :: 'a :: {normalization_semidom,field} poly) = 
+  smult (inverse (unit_factor (lead_coeff f))) f" unfolding normalize_poly_def map_div_is_smult_inverse by simp
+
+(* was in Euclidean_Algorithm in Number_Theory before, but has been removed *)
+lemma poly_dvd_antisym:
+  fixes p q :: "'b::idom poly"
+  assumes coeff: "coeff p (degree p) = coeff q (degree q)"
+  assumes dvd1: "p dvd q" and dvd2: "q dvd p" shows "p = q"
+proof (cases "p = 0")
+  case True with coeff show "p = q" by simp
+next
+  case False with coeff have "q \<noteq> 0" by auto
+  have degree: "degree p = degree q"
+    using \<open>p dvd q\<close> \<open>q dvd p\<close> \<open>p \<noteq> 0\<close> \<open>q \<noteq> 0\<close>
+    by (intro order_antisym dvd_imp_degree_le)
+
+  from \<open>p dvd q\<close> obtain a where a: "q = p * a" ..
+  with \<open>q \<noteq> 0\<close> have "a \<noteq> 0" by auto
+  with degree a \<open>p \<noteq> 0\<close> have "degree a = 0"
+    by (simp add: degree_mult_eq)
+  with coeff a show "p = q"
+    by (cases a, auto split: if_splits)
+qed
+
+lemma coeff_f_0_code[code_unfold]: "coeff f 0 = (case coeffs f of [] \<Rightarrow> 0 | x # _ \<Rightarrow> x)" 
+  by (cases f, auto simp: cCons_def)
+
+lemma poly_compare_0_code[code_unfold]: "(f = 0) = (case coeffs f of [] \<Rightarrow> True | _ \<Rightarrow> False)" 
+  using coeffs_eq_Nil list.disc_eq_case(1) by blast
+
 
 end

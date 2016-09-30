@@ -18,9 +18,8 @@ fun concat_lists :: "'a list list \<Rightarrow> 'a list list" where
 lemma concat_lists_listset: "set (concat_lists xs) = listset (map set xs)" 
   by (induct xs, auto simp: set_Cons_def)
 
-lemma sum_list_concat: 
-  shows "sum_list (concat ls) = sum_list (map sum_list ls)"
-  proof (induct ls, auto) qed
+lemma sum_list_concat: "sum_list (concat ls) = sum_list (map sum_list ls)"
+  by (induct ls, auto)
 
 
 (* TODO: move to src/HOL/List *)
@@ -77,5 +76,31 @@ proof (induct xs rule: sorted.induct)
     qed
   qed simp
 qed simp
+
+lemma sublists_length_simple:
+  assumes "b \<in> set (sublists xs)" shows "length b \<le> length xs"
+  using assms by(induct xs arbitrary:b;auto simp:Let_def Suc_leD)
+
+lemma sublists_length_simple_False:
+  assumes "b \<in> set (sublists xs)" " length xs < length b" shows False
+  using assms sublists_length_simple by fastforce
+
+lemma empty_sublists[simp]: "[] \<in> set (sublists xs)" by (induct xs, auto simp: Let_def)
+
+lemma full_list_sublists: "{ys. ys \<in> set (sublists xs) \<and> length ys = length xs} = {xs}" 
+proof (induct xs)
+  case (Cons x xs)
+  have "?case = ({ys \<in> op # x ` set (sublists xs) \<union> set (sublists xs). 
+    length ys = Suc (length xs)} = op # x ` {xs})" (is "_ = (?l = ?r)")
+    by (auto simp: Let_def)
+  also have "?l = {ys \<in> op # x ` set (sublists xs). length ys = Suc (length xs)}" 
+    using length_sublists[of xs]
+    using sublists_length_simple_False by force
+  also have "\<dots> = op # x ` {ys \<in> set (sublists xs). length ys = length xs}"
+    by auto
+  also have "\<dots> = op # x ` {xs}" unfolding Cons by auto
+  finally show ?case by simp
+qed simp
+
 
 end

@@ -926,14 +926,20 @@ proof -
   from 1 2 show ?thesis by satx
 qed
 
+lemma (in linear_map) surj_imp_imT_carrier:
+  assumes surj: "T` (carrier V) = carrier W"
+  shows "(imT) = carrier W" 
+  by (simp add: surj im_def)
 
 subsection {* The rank-nullity (dimension) theorem*}
 
 text {*If $V$ is finite-dimensional and $T:V\to W$ is a linear map, then $\text{dim}(\text{im}(T))+
-\text{dim}(\text{ker}(T)) = \text{dim} V$.*}
-theorem (in linear_map) rank_nullity: 
+\text{dim}(\text{ker}(T)) = \text{dim} V$. Moreover, we prove that if $T$ is surjective 
+  linear-map between $V$ and $W$, where $V$ is finite-dimensional, then also $W$ is finite-dimensional. *}
+theorem (in linear_map) rank_nullity_main: 
   assumes fd: "V.fin_dim"
-  shows "(vectorspace.dim K (W.vs imT)) + (vectorspace.dim K (V.vs kerT)) = V.dim"
+  shows "(vectorspace.dim K (W.vs imT)) + (vectorspace.dim K (V.vs kerT)) = V.dim"       
+    "T ` (carrier V) = carrier W \<Longrightarrow> W.fin_dim"
 proof - 
   -- "First interpret kerT, imT as vectorspaces"
   have subs_ker: "subspace K kerT V" by (intro kerT_is_subspace)
@@ -1187,9 +1193,17 @@ independent. *}
   have C_card_im: "card C = (vectorspace.dim K (W.vs imT))"
     using C'_basis C'_card(2) C'fin im.dim_basis by auto
   from finA Abasis have  "ker.dim = card A" by (rule ker.dim_basis)
-  with C_card_im cardEq show ?thesis by auto
+  note * = this C_card_im cardEq 
+  show "(vectorspace.dim K (W.vs imT)) + (vectorspace.dim K (V.vs kerT)) = V.dim"  using * by auto
+  assume "T` (carrier V) = carrier W" 
+  from * surj_imp_imT_carrier[OF this]  
+  show "W.fin_dim" using C'_basis C'fin unfolding W.fin_dim_def im.basis_def by auto
 qed
 
+theorem (in linear_map) rank_nullity: 
+  assumes fd: "V.fin_dim"
+  shows "(vectorspace.dim K (W.vs imT)) + (vectorspace.dim K (V.vs kerT)) = V.dim"       
+  by (rule rank_nullity_main[OF fd])
 
 
 end

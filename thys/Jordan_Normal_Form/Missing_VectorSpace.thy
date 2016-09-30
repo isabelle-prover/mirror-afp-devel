@@ -1,6 +1,7 @@
 (*
     Author:      René Thiemann
                  Akihisa Yamada
+                 Jose Divasón
     License:     BSD
 *)
 section \<open>Missing Vector Spaces\<close>
@@ -610,5 +611,199 @@ proof (induct U rule: infinite_finite_induct)
 qed (auto simp: lincomb_def)
 
 end
+
+context module
+begin
+
+lemma lincomb_empty[simp]: "lincomb a {} = \<zero>\<^bsub>M\<^esub>"
+  unfolding lincomb_def by auto
+
+end
+
+context linear_map
+begin
+
+interpretation Ker: vectorspace K "(V.vs kerT)"
+  using kerT_is_subspace
+  using V.subspace_is_vs by blast
+
+interpretation im: vectorspace K "(W.vs imT)"
+  using imT_is_subspace
+  using W.subspace_is_vs by blast
+
+lemma inj_imp_Ker0:
+assumes "inj_on T (carrier V)"
+shows "carrier (V.vs kerT) = {\<zero>\<^bsub>V\<^esub>}"
+  unfolding mod_hom.ker_def
+  using assms inj_on_contraD by fastforce
+
+lemma Ke0_imp_inj:
+assumes c: "carrier (V.vs kerT) = {\<zero>\<^bsub>V\<^esub>}"
+shows "inj_on T (carrier V)"
+proof (auto simp add: inj_on_def)
+  fix x y
+  assume x: "x \<in> carrier V" and y: "y \<in> carrier V"
+  and Tx_Ty: "T x = T y" 
+  hence "T x \<ominus>\<^bsub>W\<^esub> T y = \<zero>\<^bsub>W\<^esub>" using W.module.M.minus_other_side by auto
+  hence "T (x \<ominus>\<^bsub>V\<^esub> y) = \<zero>\<^bsub>W\<^esub>" by (simp add: x y)
+  hence "x \<ominus>\<^bsub>V\<^esub> y \<in> carrier (V.vs kerT)" by (simp add: mod_hom.ker_def x y) 
+  hence "x \<ominus>\<^bsub>V\<^esub> y = \<zero>\<^bsub>V\<^esub>" using c by fast
+  thus "x = y" by (simp add: x y)
+qed
+
+corollary Ke0_iff_inj: "inj_on T (carrier V) = (carrier (V.vs kerT) = {\<zero>\<^bsub>V\<^esub>})"
+using inj_imp_Ker0 Ke0_imp_inj by auto
+
+lemma inj_imp_dim_ker0:
+assumes "inj_on T (carrier V)"
+shows "vectorspace.dim K (V.vs kerT) = 0"
+proof (unfold Ker.dim_def, rule Least_eq_0, rule exI[of _ "{}"])
+    have Ker_rw: "carrier (V.vs kerT) = {\<zero>\<^bsub>V\<^esub>}" 
+      unfolding mod_hom.ker_def
+      using assms inj_on_contraD by fastforce
+    have "finite {}" by simp 
+    moreover have "card {} = 0" by simp
+    moreover have "{} \<subseteq> carrier (V.vs kerT)" by simp
+    moreover have "Ker.gen_set {}" unfolding Ker_rw by (simp add: Ker.span_empty)
+    ultimately show "finite {} \<and> card {} = 0 \<and> {} \<subseteq> carrier (V.vs kerT) \<and> Ker.gen_set {}" by simp
+qed
+
+
+lemma surj_imp_imT_carrier:
+assumes surj: "T` (carrier V) = carrier W"
+shows "(imT) = carrier W"
+by (simp add: surj im_def) 
+
+lemma dim_eq:
+assumes fin_dim_V: "V.fin_dim"
+and i: "inj_on T (carrier V)" and surj: "T` (carrier V) = carrier W"
+shows "V.dim = W.dim"
+proof -
+  have dim0: "vectorspace.dim K (V.vs kerT) = 0" 
+    by (rule inj_imp_dim_ker0[OF i])
+  have imT_W: "(imT) = carrier W"
+    by (rule surj_imp_imT_carrier[OF surj])
+  have rnt: "vectorspace.dim K (W.vs imT) + vectorspace.dim K (V.vs kerT) = V.dim"
+    by (rule rank_nullity[OF fin_dim_V])
+  hence "V.dim = vectorspace.dim K (W.vs imT)" using dim0 by auto
+  also have "...  = W.dim" using imT_W by auto
+  finally show ?thesis using fin_dim_V by auto
+qed       
+
+
+lemma lincomb_linear_image:
+assumes inj_T: "inj_on T (carrier V)"
+assumes A_in_V: "A \<subseteq> carrier V" and a: "a \<in> (T`A) \<rightarrow> carrier K"
+assumes f: "finite A"
+shows "W.module.lincomb a (T`A) = T (V.module.lincomb (a \<circ> T) A)"
+using f using A_in_V a
+proof (induct A)
+  case empty thus ?case by auto
+next
+  case (insert x A)
+  have T_insert_rw: "T ` insert x A = insert (T x) (T` A)" by simp
+  have "W.module.lincomb a (T ` insert x A) = W.module.lincomb a (insert (T x) (T` A))" 
+    unfolding T_insert_rw ..
+  also have "... =  a (T x) \<odot>\<^bsub>W\<^esub> (T x) \<oplus>\<^bsub>W\<^esub> W.module.lincomb a (T` A)"
+  proof (rule W.lincomb_insert2)
+    show "finite (T ` A)" by (simp add: insert.hyps(1))
+    show "T ` A \<subseteq> carrier W" using insert.prems(1) by auto
+    show "a \<in> insert (T x) (T ` A) \<rightarrow> carrier K" 
+      using insert.prems(2) by blast
+    show "T x \<notin> T ` A" 
+      by (meson inj_T inj_on_image_mem_iff_alt insert.hyps(2) insert.prems(1) insert_subset)
+    show "T x \<in> carrier W" using insert.prems(1) by blast
+  qed
+  also have "... = a (T x) \<odot>\<^bsub>W\<^esub> (T x) \<oplus>\<^bsub>W\<^esub> (T (V.module.lincomb (a \<circ> T) A))"
+    using insert.hyps(3) insert.prems(1) insert.prems(2) by fastforce 
+  also have "... = T (a (T x) \<odot>\<^bsub>V\<^esub> x) \<oplus>\<^bsub>W\<^esub> (T (V.module.lincomb (a \<circ> T) A))"
+    using insert.prems(1) insert.prems(2) by auto
+  also have "... = T ((a (T x) \<odot>\<^bsub>V\<^esub> x) \<oplus>\<^bsub>V\<^esub> (V.module.lincomb (a \<circ> T) A))"
+  proof (rule T_add[symmetric])
+    show "a (T x) \<odot>\<^bsub>V\<^esub> x \<in> carrier V" using insert.prems(1) insert.prems(2) by auto
+    show "V.module.lincomb (a \<circ> T) A \<in> carrier V"
+    proof (rule V.module.lincomb_closed)
+      show "A \<subseteq> carrier V" using insert.prems(1) by blast
+      show "a \<circ> T \<in> A \<rightarrow> carrier K" using coeff_in_ring insert.prems(2) by auto
+    qed
+  qed
+  also have "... = T (V.module.lincomb (a \<circ> T) (insert x A))"
+  proof (rule arg_cong[of _ _ T])
+    have "a \<circ> T \<in> insert x A \<rightarrow> carrier K"
+      using comp_def insert.prems(2) by auto
+    then show "a (T x) \<odot>\<^bsub>V\<^esub> x \<oplus>\<^bsub>V\<^esub> V.module.lincomb (a \<circ> T) A 
+      = V.module.lincomb (a \<circ> T) (insert x A)"
+      using V.lincomb_insert2 insert.hyps(1) insert.hyps(2) insert.prems(1) by force
+  qed
+  finally show ?case .
+qed
+   
+
+
+lemma surj_fin_dim:  
+  assumes fd: "V.fin_dim" and surj: "T` (carrier V) = carrier W"
+  shows image_fin_dim: "W.fin_dim"
+    using rank_nullity_main(2)[OF fd surj] .
+
+lemma linear_inj_image_is_basis:
+assumes inj_T: "inj_on T (carrier V)" and surj: "T` (carrier V) = carrier W"
+and basis_B: "V.basis B"
+and fin_dim_V: "V.fin_dim"
+shows "W.basis (T`B)"
+proof (rule W.dim_li_is_basis)
+  have lm: "linear_map K V W T" by intro_locales
+  have inj_TB: "inj_on T B"
+    by (meson basis_B inj_T subset_inj_on V.basis_def)
+  show "W.fin_dim" by (rule surj_fin_dim[OF fin_dim_V surj])  
+  show "finite (T ` B)"
+  proof (rule finite_imageI, rule V.fin[OF fin_dim_V])
+    show "V.module.lin_indpt B" using basis_B unfolding V.basis_def by auto
+    show "B \<subseteq> carrier V" using basis_B unfolding V.basis_def by auto
+  qed
+  show "T ` B \<subseteq> carrier W" using basis_B unfolding V.basis_def by auto
+  show "W.dim \<le> card (T ` B)"
+  proof -
+    have d: "V.dim = W.dim" by (rule dim_eq[OF fin_dim_V inj_T surj])
+    have "card (T` B) = card B" by (simp add: card_image inj_TB)
+    also have "... = V.dim" using basis_B fin_dim_V V.basis_def V.dim_basis V.fin by auto
+    finally show ?thesis using d by simp
+  qed
+  show "W.module.lin_indpt (T ` B)"
+  proof (rule W.module.finite_lin_indpt2)
+     show fin_TB: "finite (T ` B)" by fact
+     show TB_W: "T ` B \<subseteq> carrier W" by fact
+     fix a assume a: "a \<in> T ` B \<rightarrow> carrier K" and lc_a: "W.module.lincomb a (T ` B) = \<zero>\<^bsub>W\<^esub>"
+     show "\<forall>v\<in>T ` B. a v = \<zero>\<^bsub>K\<^esub>" 
+     proof (rule ballI)
+      fix v assume v: "v \<in> T ` B"
+      have "W.module.lincomb a (T ` B) = T (V.module.lincomb (a \<circ> T) B)"
+      proof (rule lincomb_linear_image[OF inj_T])
+        show "B \<subseteq> carrier V" using V.vectorspace_axioms basis_B vectorspace.basis_def by blast
+        show "a \<in> T ` B \<rightarrow> carrier K" by (simp add: a)
+        show "finite B" using fin_TB finite_image_iff inj_TB by blast
+      qed
+      hence T_lincomb: "T (V.module.lincomb (a \<circ> T) B) = \<zero>\<^bsub>W\<^esub>" using lc_a by simp
+      have lincomb_0: "V.module.lincomb (a \<circ> T) B = \<zero>\<^bsub>V\<^esub>"
+      proof -
+        have "a \<circ> T \<in> B \<rightarrow> carrier K"
+          using a by auto
+        then show ?thesis
+          by (metis V.module.M.zero_closed V.module.lincomb_closed 
+            T_lincomb basis_B f0_is_0 inj_T inj_onD  V.basis_def)
+      qed 
+      have "(a \<circ> T) \<in> B \<rightarrow> {\<zero>\<^bsub>K\<^esub>}" 
+      proof (rule V.not_lindepD[OF _ _ _ _ lincomb_0])
+        show "V.module.lin_indpt B" using V.basis_def basis_B by blast
+        show "finite B" using fin_TB finite_image_iff inj_TB by auto
+        show "B \<subseteq> B" by auto
+        show "a \<circ> T \<in> B \<rightarrow> carrier K" using a by auto
+      qed
+      thus "a v = \<zero>\<^bsub>K\<^esub>" using v by auto
+    qed
+  qed
+qed
+
+end
+
 
 end

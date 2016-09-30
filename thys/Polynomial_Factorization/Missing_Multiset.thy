@@ -57,4 +57,41 @@ proof (induct xs)
       by (auto simp add: Let_def) (metis UnCI image_iff mset.simps(2))
   qed
 qed simp
+
+lemma remove1_mset: "w \<in> set vs \<Longrightarrow> mset (remove1 w vs) + {#w#} = mset vs"
+  by (induct vs, auto simp: ac_simps) 
+
+lemma fold_remove1_mset: "mset ws \<subseteq># mset vs \<Longrightarrow> mset (fold remove1 ws vs) + mset ws = mset vs" 
+proof (induct ws arbitrary: vs)
+  case (Cons w ws vs)
+  from Cons(2) have "w \<in> set vs" using set_mset_mono by force
+  from remove1_mset[OF this] have vs: "mset vs = mset (remove1 w vs) + {#w#}" by simp
+  from Cons(2)[unfolded vs] have "mset ws \<subseteq># mset (remove1 w vs)" by auto
+  from Cons(1)[OF this,symmetric]
+  show ?case unfolding vs by (simp add: ac_simps)
+qed simp
+
+lemma sublists_sub_mset: "ws \<in> set (sublists vs) \<Longrightarrow> mset ws \<subseteq># mset vs" 
+proof (induct vs arbitrary: ws)
+  case (Cons v vs Ws)
+  note mem = Cons(2)
+  note IH = Cons(1)
+  show ?case
+  proof (cases Ws)
+    case (Cons w ws)
+    show ?thesis
+    proof (cases "v = w")
+      case True
+      from mem Cons have "ws \<in> set (sublists vs)" by (auto simp: Let_def Cons_in_sublistsD[of _ ws vs])
+      from IH[OF this]
+      show ?thesis unfolding Cons True by simp
+    next
+      case False
+      with mem Cons have "Ws \<in> set (sublists vs)" by (auto simp: Let_def Cons_in_sublistsD[of _ ws vs])      
+      note IH = mset_subset_eq_count[OF IH[OF this]]
+      with IH[of v] show ?thesis by (intro mset_subset_eqI, auto, linarith) 
+    qed 
+  qed simp
+qed simp
+
 end
