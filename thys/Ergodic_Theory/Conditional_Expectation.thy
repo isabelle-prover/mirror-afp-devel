@@ -31,7 +31,7 @@ definition restr_to_subalg::"'a measure \<Rightarrow> 'a measure \<Rightarrow> '
 
 lemma space_restr_to_subalg:
   "space (restr_to_subalg M F) = space M"
-  unfolding restr_to_subalg_def by (simp add: space_measure_of_conv)
+unfolding restr_to_subalg_def by (simp add: space_measure_of_conv)
 
 lemma sets_restr_to_subalg [measurable_cong]:
   assumes "subalgebra M F"
@@ -105,6 +105,12 @@ lemma measurable_in_subalg:
   assumes "subalgebra M F"
           "f \<in> measurable F N"
   shows "f \<in> measurable (restr_to_subalg M F) N"
+by (metis measurable_cong_sets assms(2) sets_restr_to_subalg[OF assms(1)])
+
+lemma measurable_in_subalg':
+  assumes "subalgebra M F"
+          "f \<in> measurable (restr_to_subalg M F) N"
+  shows "f \<in> measurable F N"
 by (metis measurable_cong_sets assms(2) sets_restr_to_subalg[OF assms(1)])
 
 lemma measurable_from_subalg:
@@ -210,18 +216,26 @@ This means that a positive integrable function can have no meaningful conditiona
 locale sigma_finite_subalgebra =
   fixes M F::"'a measure"
   assumes subalg: "subalgebra M F"
-      and sigm_fin_subalg: "sigma_finite_measure (restr_to_subalg M F)"
+      and sigma_fin_subalg: "sigma_finite_measure (restr_to_subalg M F)"
 
-sublocale sigma_finite_subalgebra \<subseteq> sigma_finite_measure
+lemma sigma_finite_subalgebra_is_sigma_finite:
+  assumes "sigma_finite_subalgebra M F"
+  shows "sigma_finite_measure M"
 proof
+  have subalg: "subalgebra M F"
+   and sigma_fin_subalg: "sigma_finite_measure (restr_to_subalg M F)"
+    using assms unfolding sigma_finite_subalgebra_def by auto
   obtain A where Ap: "countable A \<and> A \<subseteq> sets (restr_to_subalg M F) \<and> \<Union>A = space (restr_to_subalg M F) \<and> (\<forall>a\<in>A. emeasure (restr_to_subalg M F) a \<noteq> \<infinity>)"
-    using sigma_finite_measure.sigma_finite_countable[OF sigm_fin_subalg] by auto
+    using sigma_finite_measure.sigma_finite_countable[OF sigma_fin_subalg] by fastforce
   have "A \<subseteq> sets F" using Ap sets_restr_to_subalg[OF subalg] by fastforce
   then have "A \<subseteq> sets M" using subalg subalgebra_def by force
   moreover have "\<Union>A = space M" using Ap space_restr_to_subalg by simp
   moreover have "\<forall>a\<in>A. emeasure M a \<noteq> \<infinity>" by (metis subsetD emeasure_restr_to_subalg[OF subalg] `A \<subseteq> sets F` Ap)
   ultimately show "\<exists>A. countable A \<and> A \<subseteq> sets M \<and> \<Union>A = space M \<and> (\<forall>a\<in>A. emeasure M a \<noteq> \<infinity>)" using Ap by auto
 qed
+
+sublocale sigma_finite_subalgebra \<subseteq> sigma_finite_measure
+using sigma_finite_subalgebra_is_sigma_finite sigma_finite_subalgebra_axioms by blast
 
 text {* Conditional expectations are very often used in probability spaces. This is a special case
 of the previous one, as we prove now. *}
@@ -291,7 +305,7 @@ proof -
   proof (rule sigma_finite_measure.RN_deriv_nn_integral[symmetric])
     show "sets (restr_to_subalg (density M g) F) = sets (restr_to_subalg M F)"
       by (metis subalg restr_to_subalg_def sets.sets_measure_of_eq space_density subalgebra_def)
-  qed (auto simp add: assms measurable_restrict ac measurable_in_subalg subalg sigm_fin_subalg)
+  qed (auto simp add: assms measurable_restrict ac measurable_in_subalg subalg sigma_fin_subalg)
   also have "... = (\<integral>\<^sup>+ x. f x \<partial>(density M g))"
     by (metis nn_integral_subalgebra2 subalg assms(1) sets_density space_density subalgebra_def)
   also have "... = (\<integral>\<^sup>+ x. g x * f x \<partial>M)"
@@ -323,7 +337,7 @@ proof -
   } note * = this
   have "AE x in ?MF. g x = nn_cond_exp M F f x"
     by (rule sigma_finite_measure.density_unique2)
-       (auto simp add: assms subalg sigm_fin_subalg AE_restr_to_subalg2 *)
+       (auto simp add: assms subalg sigma_fin_subalg AE_restr_to_subalg2 *)
   then show ?thesis using AE_restr_to_subalg[OF subalg] by simp
 qed
 
@@ -376,7 +390,7 @@ lemma nn_cond_exp_cong:
   shows "AE x in M. nn_cond_exp M F f x = nn_cond_exp M F g x"
 proof (rule nn_cond_exp_charact)
   fix A assume [measurable]: "A \<in> sets F"
-  have " \<integral>\<^sup>+x\<in>A. nn_cond_exp M F f x \<partial>M = \<integral>\<^sup>+x. indicator A x * nn_cond_exp M F f x \<partial>M"
+  have "\<integral>\<^sup>+x\<in>A. nn_cond_exp M F f x \<partial>M = \<integral>\<^sup>+x. indicator A x * nn_cond_exp M F f x \<partial>M"
     by (simp add: mult.commute)
   also have "... = \<integral>\<^sup>+x. indicator A x * f x \<partial>M" by (simp add: nn_cond_exp_intg assms)
   also have "... = \<integral>\<^sup>+x\<in>A. f x \<partial>M" by (simp add: mult.commute)
@@ -406,7 +420,7 @@ lemma nested_subalg_is_sigma_finite:
 unfolding sigma_finite_subalgebra_def
 proof (auto simp add: assms)
   have "\<exists>A. countable A \<and> A \<subseteq> sets (restr_to_subalg M F) \<and> \<Union>A = space (restr_to_subalg M F) \<and> (\<forall>a\<in>A. emeasure (restr_to_subalg M F) a \<noteq> \<infinity>)"
-    using sigm_fin_subalg sigma_finite_measure_def by auto
+    using sigma_fin_subalg sigma_finite_measure_def by auto
   then obtain A where A:"countable A \<and> A \<subseteq> sets (restr_to_subalg M F) \<and> \<Union>A = space (restr_to_subalg M F) \<and> (\<forall>a\<in>A. emeasure (restr_to_subalg M F) a \<noteq> \<infinity>)"
     by auto
   have "sets F \<subseteq> sets M"
@@ -530,7 +544,7 @@ proof -
   finally have "(\<integral>\<^sup>+ x. norm(f x * max (-g x) 0) \<partial>M) < \<infinity>" by simp
   then have int2: "integrable M (\<lambda>x. f x * max (-g x) 0)" by (simp add: integrableI_bounded)
 
-  have " (\<integral>\<^sup>+x. f x * nn_cond_exp M F h x \<partial>M) = (\<integral>\<^sup>+x. f x * h x \<partial>M)"
+  have "(\<integral>\<^sup>+x. f x * nn_cond_exp M F h x \<partial>M) = (\<integral>\<^sup>+x. f x * h x \<partial>M)"
     by (rule nn_cond_exp_intg) auto
   also have "\<dots> = \<integral>\<^sup>+ x. ennreal (f x * max (g x) 0 + f x * max (- g x) 0) \<partial>M"
     unfolding h_def
@@ -728,20 +742,20 @@ proof -
   then show ?thesis using real_cond_exp_intg(2)[where ?f = "indicator A" and ?g = f, symmetric] by auto
 qed
 
-lemma real_cond_exp_int:
+lemma real_cond_exp_int [intro]:
   assumes "integrable M f"
   shows "integrable M (real_cond_exp M F f)" "(\<integral>x. real_cond_exp M F f x \<partial>M) = (\<integral>x. f x \<partial>M)"
 using real_cond_exp_intg[where ?f = "\<lambda>x. 1" and ?g = f] assms by auto
 
 lemma real_cond_exp_charact:
-  assumes "\<And>A. A \<in> sets F \<Longrightarrow> (\<integral> x \<in> A. f x \<partial>M) = (\<integral> x \<in> A. g x \<partial>M)" and
-          [measurable]: "integrable M f" "integrable M g"
-                        "g \<in> borel_measurable F"
-  shows "AE x in M. g x = real_cond_exp M F f x"
+  assumes "\<And>A. A \<in> sets F \<Longrightarrow> (\<integral> x \<in> A. f x \<partial>M) = (\<integral> x \<in> A. g x \<partial>M)"
+      and [measurable]: "integrable M f" "integrable M g"
+          "g \<in> borel_measurable F"
+  shows "AE x in M. real_cond_exp M F f x = g x"
 proof -
   let ?MF = "restr_to_subalg M F"
-  have "AE x in ?MF. g x = real_cond_exp M F f x"
-  proof (rule density_unique_real)
+  have "AE x in ?MF. real_cond_exp M F f x = g x"
+  proof (rule AE_symmetric[OF density_unique_real])
     fix A assume "A \<in> sets ?MF"
     then have [measurable]: "A \<in> sets F" using sets_restr_to_subalg[OF subalg] by simp
     then have a [measurable]: "A \<in> sets M" by (meson subalg subalgebra_def subsetD)
@@ -760,18 +774,18 @@ proof -
     then show "integrable ?MF (real_cond_exp M F f)" by (metis borel_measurable_cond_exp integrable_in_subalg[OF subalg])
     show "integrable (restr_to_subalg M F) g" by (simp add: assms(3) integrable_in_subalg[OF subalg])
   qed
-  then show ?thesis using AE_restr_to_subalg[OF subalg] by simp
+  then show ?thesis using AE_restr_to_subalg[OF subalg] by auto
 qed
 
-lemma real_cond_exp_F_meas:
+lemma real_cond_exp_F_meas [intro, simp]:
   assumes "integrable M f"
           "f \<in> borel_measurable F"
-  shows "AE x in M. f x = real_cond_exp M F f x"
+  shows "AE x in M. real_cond_exp M F f x = f x"
 by (rule real_cond_exp_charact, auto simp add: assms measurable_from_subalg[OF subalg])
 
 lemma real_cond_exp_mult:
   assumes [measurable]:"f \<in> borel_measurable F" "g \<in> borel_measurable M" "integrable M (\<lambda>x. f x * g x)"
-  shows "AE x in M. f x * real_cond_exp M F g x = real_cond_exp M F (\<lambda>x. f x * g x) x"
+  shows "AE x in M. real_cond_exp M F (\<lambda>x. f x * g x) x = f x * real_cond_exp M F g x"
 proof (rule real_cond_exp_charact)
   fix A assume "A \<in> sets F"
   then have [measurable]: "(\<lambda>x. f x * indicator A x) \<in> borel_measurable F" by measurable
@@ -786,9 +800,9 @@ proof (rule real_cond_exp_charact)
   finally show "\<integral>x\<in>A. (f x * g x) \<partial>M = \<integral>x\<in>A. (f x * real_cond_exp M F g x)\<partial>M" by simp
 qed (auto simp add: real_cond_exp_intg(1) assms)
 
-lemma real_cond_exp_add:
+lemma real_cond_exp_add [intro]:
   assumes [measurable]: "integrable M f" "integrable M g"
-  shows "AE x in M. real_cond_exp M F f x + real_cond_exp M F g x = real_cond_exp M F (\<lambda>x. f x + g x) x"
+  shows "AE x in M. real_cond_exp M F (\<lambda>x. f x + g x) x = real_cond_exp M F f x + real_cond_exp M F g x"
 proof (rule real_cond_exp_charact)
   have "integrable M (real_cond_exp M F f)" "integrable M (real_cond_exp M F g)"
     using real_cond_exp_int(1) assms by auto
@@ -830,21 +844,21 @@ proof -
     unfolding real_cond_exp_def by auto
 qed
 
-lemma real_cond_exp_cmult:
+lemma real_cond_exp_cmult [intro, simp]:
   fixes c::real
   assumes "integrable M f"
-  shows "AE x in M. c * real_cond_exp M F f x = real_cond_exp M F (\<lambda>x. c * f x) x"
+  shows "AE x in M. real_cond_exp M F (\<lambda>x. c * f x) x = c * real_cond_exp M F f x"
 by (rule real_cond_exp_mult[where ?f = "\<lambda>x. c" and ?g = f], auto simp add: assms borel_measurable_integrable)
 
-lemma real_cond_exp_cdiv:
+lemma real_cond_exp_cdiv [intro, simp]:
   fixes c::real
   assumes "integrable M f"
-  shows "AE x in M. real_cond_exp M F f x / c = real_cond_exp M F (\<lambda>x. f x / c) x"
+  shows "AE x in M. real_cond_exp M F (\<lambda>x. f x / c) x = real_cond_exp M F f x / c"
 using real_cond_exp_cmult[of _ "1/c", OF assms] by (auto simp add: divide_simps)
 
-lemma real_cond_exp_diff:
+lemma real_cond_exp_diff [intro, simp]:
   assumes [measurable]: "integrable M f" "integrable M g"
-  shows "AE x in M. real_cond_exp M F f x - real_cond_exp M F g x = real_cond_exp M F (\<lambda>x. f x - g x) x"
+  shows "AE x in M. real_cond_exp M F (\<lambda>x. f x - g x) x = real_cond_exp M F f x - real_cond_exp M F g x"
 proof -
   have "AE x in M. real_cond_exp M F (\<lambda>x. f x + (- g x)) x = real_cond_exp M F f x + real_cond_exp M F (\<lambda>x. -g x) x"
     using real_cond_exp_add[where ?f = f and ?g = "\<lambda>x. - g x"] assms by auto
@@ -853,7 +867,7 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-lemma real_cond_exp_pos:
+lemma real_cond_exp_pos [intro]:
   assumes "AE x in M. f x \<ge> 0" and [measurable]: "f \<in> borel_measurable M"
   shows "AE x in M. real_cond_exp M F f x \<ge> 0"
 proof -
@@ -862,7 +876,7 @@ proof -
   then have *: "AE x in M. real_cond_exp M F f x = real_cond_exp M F g x" using real_cond_exp_cong g_def by auto
 
   have "\<And>x. g x \<ge> 0" unfolding g_def by simp
-  then have " (\<lambda>x. ennreal(-g x)) = (\<lambda>x. 0)"
+  then have "(\<lambda>x. ennreal(-g x)) = (\<lambda>x. 0)"
     by (simp add: ennreal_neg)
   moreover have "AE x in M. 0 = nn_cond_exp M F (\<lambda>x. 0) x"
     by (rule nn_cond_exp_F_meas, auto)
@@ -879,34 +893,103 @@ lemma real_cond_exp_mono:
   shows "AE x in M. real_cond_exp M F f x \<le> real_cond_exp M F g x"
 proof -
   have "AE x in M. real_cond_exp M F g x - real_cond_exp M F f x = real_cond_exp M F (\<lambda>x. g x - f x) x"
-    by (rule real_cond_exp_diff, auto simp add: assms)
+    by (rule AE_symmetric[OF real_cond_exp_diff], auto simp add: assms)
   moreover have "AE x in M. real_cond_exp M F (\<lambda>x. g x - f x) x \<ge> 0"
     by (rule real_cond_exp_pos, auto simp add: assms(1))
   ultimately have "AE x in M. real_cond_exp M F g x - real_cond_exp M F f x \<ge> 0" by auto
   then show ?thesis by auto
 qed
 
-lemma real_cond_exp_pos_strict:
-  assumes "AE x in M. f x > 0" and [measurable]: "integrable M f"
-  shows "AE x in M. real_cond_exp M F f x > 0"
+lemma real_cond_exp_gr_c:
+  assumes [measurable]: "integrable M f"
+      and "AE x in M. f x > c"
+  shows "AE x in M. real_cond_exp M F f x > c"
 proof -
-  have pos: "AE x in M. f x \<ge> 0" using assms(1) by auto
-  then have a: "AE x in M. real_cond_exp M F f x \<ge> 0" using real_cond_exp_pos by simp
+  define X where "X = {x \<in> space M. real_cond_exp M F f x \<le> c}"
+  have [measurable]: "X \<in> sets F"
+    unfolding X_def apply measurable by (metis sets.top subalg subalgebra_def)
+  then have [measurable]: "X \<in> sets M" using sets_restr_to_subalg subalg subalgebra_def by blast
+  have "emeasure M X = 0"
+  proof (rule ccontr)
+    assume "\<not>(emeasure M X) = 0"
+    have "emeasure (restr_to_subalg M F) X = emeasure M X"
+      by (simp add: emeasure_restr_to_subalg subalg)
+    then have "emeasure (restr_to_subalg M F) X > 0"
+      using `\<not>(emeasure M X) = 0` gr_zeroI by auto
+    then obtain A where "A \<in> sets (restr_to_subalg M F)" "A \<subseteq> X" "emeasure (restr_to_subalg M F) A > 0" "emeasure (restr_to_subalg M F) A < \<infinity>"
+      using sigma_fin_subalg by (metis emeasure_notin_sets ennreal_0 infinity_ennreal_def le_less_linear neq_top_trans
+      not_gr_zero order_refl sigma_finite_measure.approx_PInf_emeasure_with_finite)
+    then have [measurable]: "A \<in> sets F" using subalg sets_restr_to_subalg by blast
+    then have [measurable]: "A \<in> sets M" using sets_restr_to_subalg subalg subalgebra_def by blast
+    have Ic: "set_integrable M A (\<lambda>x. c)"
+      using \<open>emeasure (restr_to_subalg M F) A < \<infinity>\<close> emeasure_restr_to_subalg subalg by fastforce
+    have If: "set_integrable M A f"
+      by (rule integrable_mult_indicator, auto simp add: `integrable M f`)
+    have *: "(\<integral>x\<in>A. c \<partial>M) = (\<integral>x\<in>A. f x \<partial>M)"
+    proof (rule antisym)
+      show "(\<integral>x\<in>A. c \<partial>M) \<le> (\<integral>x\<in>A. f x \<partial>M)"
+        apply (rule set_integral_mono_AE) using Ic If assms(2) by auto
+      have "(\<integral>x\<in>A. f x \<partial>M) = (\<integral>x\<in>A. real_cond_exp M F f x \<partial>M)"
+        by (rule real_cond_exp_intA, auto simp add: `integrable M f`)
+      also have "... \<le> (\<integral>x\<in>A. c \<partial>M)"
+        apply (rule set_integral_mono)
+        apply (rule integrable_mult_indicator, simp, simp add: real_cond_exp_int(1)[OF `integrable M f`])
+        using Ic X_def \<open>A \<subseteq> X\<close> by auto
+      finally show "(\<integral>x\<in>A. f x \<partial>M) \<le> (\<integral>x\<in>A. c \<partial>M)" by simp
+    qed
+    have "AE x in M. indicator A x * c = indicator A x * f x"
+      apply (rule integral_ineq_eq_0_then_AE) using Ic If * apply auto
+      using assms(2) unfolding indicator_def by auto
+    then have "AE x\<in>A in M. c = f x" by auto
+    then have "AE x\<in>A in M. False" using assms(2) by auto
+    have "A \<in> null_sets M" unfolding ae_filter_def by (meson AE_iff_null_sets \<open>A \<in> sets M\<close> \<open>AE x\<in>A in M. False\<close>)
+    then show False using `emeasure (restr_to_subalg M F) A > 0`
+      by (simp add: emeasure_restr_to_subalg null_setsD1 subalg)
+  qed
+  then show ?thesis using AE_iff_null_sets[OF `X \<in> sets M`] unfolding X_def by auto
+qed
 
-  define A where "A = {x \<in> space M. real_cond_exp M F f x = 0}"
-  have *: "indicator A x * real_cond_exp M F f x = 0" for x unfolding A_def by auto
-  have "A \<in> sets M" unfolding A_def using borel_measurable_cond_exp by auto
-  have "A = {x \<in> space F. real_cond_exp M F f x = 0}" using subalg A_def unfolding subalgebra_def by auto
-  then have "A \<in> sets F" using borel_measurable_cond_exp by auto
-  then have "(\<integral>x \<in> A. f x \<partial>M) = (\<integral>x \<in> A. real_cond_exp M F f x \<partial>M)"
-    using real_cond_exp_intA assms(2) by auto
-  also have "... = 0" by (simp add: *)
-  finally have *: "(\<integral>x \<in> A. f x \<partial>M) = 0" by simp
-  have "A \<in> null_sets M"
-    apply (rule null_if_pos_func_has_zero_int[OF assms(2) `A \<in> sets M`]) using assms(1) * by auto
-  then have "AE x in M. real_cond_exp M F f x \<noteq> 0" unfolding A_def
-    by (metis (no_types, lifting) eventually_ae_filter mem_Collect_eq subsetI)
-  then show ?thesis using a by auto
+lemma real_cond_exp_less_c:
+  assumes [measurable]: "integrable M f"
+      and "AE x in M. f x < c"
+  shows "AE x in M. real_cond_exp M F f x < c"
+proof -
+  have "AE x in M. real_cond_exp M F f x = -real_cond_exp M F (\<lambda>x. -f x) x"
+    using real_cond_exp_cmult[OF `integrable M f`, of "-1"] by auto
+  moreover have "AE x in M. real_cond_exp M F (\<lambda>x. -f x) x > -c"
+    apply (rule real_cond_exp_gr_c) using assms by auto
+  ultimately show ?thesis by auto
+qed
+
+lemma real_cond_exp_ge_c:
+  assumes [measurable]: "integrable M f"
+      and "AE x in M. f x \<ge> c"
+  shows "AE x in M. real_cond_exp M F f x \<ge> c"
+proof -
+  obtain u::"nat \<Rightarrow> real" where u: "\<And>n. u n < c" "u \<longlonglongrightarrow> c"
+    using approx_from_below_dense_linorder[of "c-1" c] by auto
+  have *: "AE x in M. real_cond_exp M F f x > u n" for n::nat
+    apply (rule real_cond_exp_gr_c) using assms `u n < c` by auto
+  have "AE x in M. \<forall>n. real_cond_exp M F f x > u n"
+    by (subst AE_all_countable, auto simp add: *)
+  moreover have "real_cond_exp M F f x \<ge> c" if "\<forall>n. real_cond_exp M F f x > u n" for x
+  proof -
+    have "real_cond_exp M F f x \<ge> u n" for n using that less_imp_le by auto
+    then show ?thesis using u(2) LIMSEQ_le_const2 by blast
+  qed
+  ultimately show ?thesis by auto
+qed
+
+lemma real_cond_exp_le_c:
+  assumes [measurable]: "integrable M f"
+      and "AE x in M. f x \<le> c"
+  shows "AE x in M. real_cond_exp M F f x \<le> c"
+proof -
+  have "AE x in M. real_cond_exp M F f x = -real_cond_exp M F (\<lambda>x. -f x) x"
+    using real_cond_exp_cmult[OF `integrable M f`, of "-1"] by auto
+  moreover have "AE x in M. real_cond_exp M F (\<lambda>x. -f x) x \<ge> -c"
+    apply (rule real_cond_exp_ge_c) using assms by auto
+  ultimately show ?thesis by auto
 qed
 
 lemma real_cond_exp_mono_strict:
@@ -914,17 +997,17 @@ lemma real_cond_exp_mono_strict:
   shows "AE x in M. real_cond_exp M F f x < real_cond_exp M F g x"
 proof -
   have "AE x in M. real_cond_exp M F g x - real_cond_exp M F f x = real_cond_exp M F (\<lambda>x. g x - f x) x"
-    by (rule real_cond_exp_diff, auto simp add: assms)
+    by (rule AE_symmetric[OF real_cond_exp_diff], auto simp add: assms)
   moreover have "AE x in M. real_cond_exp M F (\<lambda>x. g x - f x) x > 0"
-    by (rule real_cond_exp_pos_strict, auto simp add: assms)
+    by (rule real_cond_exp_gr_c, auto simp add: assms)
   ultimately have "AE x in M. real_cond_exp M F g x - real_cond_exp M F f x > 0" by auto
   then show ?thesis by auto
 qed
 
-lemma real_cond_exp_nested_subalg:
+lemma real_cond_exp_nested_subalg [intro, simp]:
   assumes "subalgebra M G" "subalgebra G F"
       and [measurable]: "integrable M f"
-  shows "AE x in M. real_cond_exp M F f x = real_cond_exp M F (real_cond_exp M G f) x"
+  shows "AE x in M. real_cond_exp M F (real_cond_exp M G f) x = real_cond_exp M F f x"
 proof (rule real_cond_exp_charact)
   interpret G: sigma_finite_subalgebra M G by (rule nested_subalg_is_sigma_finite[OF assms(1) assms(2)])
   show "integrable M (real_cond_exp M G f)" by (auto simp add: assms G.real_cond_exp_int(1))
@@ -938,10 +1021,10 @@ proof (rule real_cond_exp_charact)
   finally show "set_lebesgue_integral M A (real_cond_exp M G f) = set_lebesgue_integral M A (real_cond_exp M F f)" by auto
 qed (auto simp add: assms real_cond_exp_int(1))
 
-lemma real_cond_exp_setsum:
+lemma real_cond_exp_setsum [intro, simp]:
   fixes f::"'b \<Rightarrow> 'a \<Rightarrow> real"
   assumes [measurable]: "\<And>i. integrable M (f i)"
-  shows "AE x in M. (\<Sum>i\<in>I. real_cond_exp M F (f i) x) = real_cond_exp M F (\<lambda>x. \<Sum>i\<in>I. f i x) x"
+  shows "AE x in M. real_cond_exp M F (\<lambda>x. \<Sum>i\<in>I. f i x) x = (\<Sum>i\<in>I. real_cond_exp M F (f i) x)"
 proof (rule real_cond_exp_charact)
   fix A assume [measurable]: "A \<in> sets F"
   then have A_meas [measurable]: "A \<in> sets M" by (meson set_mp subalg subalgebra_def)
@@ -964,6 +1047,286 @@ proof (rule real_cond_exp_charact)
     by (simp add: setsum_distrib_left)
   finally show "(\<integral>x\<in>A. (\<Sum>i\<in>I. f i x)\<partial>M) = (\<integral>x\<in>A. (\<Sum>i\<in>I. real_cond_exp M F (f i) x)\<partial>M)" by auto
 qed (auto simp add: assms real_cond_exp_int(1)[OF assms(1)])
+
+text {*Jensen's inequality, describing the behavior of the integral under a convex function, admits
+a version for the conditional expectation, as follows.*}
+
+theorem real_cond_exp_jensens_inequality:
+  fixes q :: "real \<Rightarrow> real"
+  assumes X: "integrable M X" "AE x in M. X x \<in> I"
+  assumes I: "I = {a <..< b} \<or> I = {a <..} \<or> I = {..< b} \<or> I = UNIV"
+  assumes q: "integrable M (\<lambda>x. q (X x))" "convex_on I q" "q \<in> borel_measurable borel"
+  shows "AE x in M. real_cond_exp M F X x \<in> I"
+        "AE x in M. q (real_cond_exp M F X x) \<le> real_cond_exp M F (\<lambda>x. q (X x)) x"
+proof -
+  have "open I" using I by auto
+  then have "interior I = I" by (simp add: interior_eq)
+  have [measurable]: "I \<in> sets borel" using I by auto
+  define phi where "phi = (\<lambda>x. Inf ((\<lambda>t. (q x - q t) / (x - t)) ` ({x<..} \<inter> I)))"
+  have **: "q (X x) \<ge> q (real_cond_exp M F X x) + phi (real_cond_exp M F X x) * (X x - real_cond_exp M F X x)"
+        if "X x \<in> I" "real_cond_exp M F X x \<in> I" for x
+    unfolding phi_def apply (rule convex_le_Inf_differential)
+    using `convex_on I q` that `interior I = I` by auto
+  text {*It is not clear that the function $\phi$ is measurable. We replace it by a version which
+        is better behaved.*}
+  define psi where "psi = (\<lambda>x. phi x * indicator I x)"
+  have A: "psi y = phi y" if "y \<in> I" for y unfolding psi_def indicator_def using that by auto
+  have *: "q (X x) \<ge> q (real_cond_exp M F X x) + psi (real_cond_exp M F X x) * (X x - real_cond_exp M F X x)"
+        if "X x \<in> I" "real_cond_exp M F X x \<in> I" for x
+    unfolding A[OF `real_cond_exp M F X x \<in> I`] using ** that by auto
+
+  note I
+  moreover have "AE x in M. real_cond_exp M F X x > a" if "I \<subseteq> {a <..}" for a
+    apply (rule real_cond_exp_gr_c) using X that by auto
+  moreover have "AE x in M. real_cond_exp M F X x < b" if "I \<subseteq> {..<b}" for b
+    apply (rule real_cond_exp_less_c) using X that by auto
+  ultimately show "AE x in M. real_cond_exp M F X x \<in> I"
+    by (elim disjE) (auto simp: subset_eq)
+  then have main_ineq: "AE x in M. q (X x) \<ge> q (real_cond_exp M F X x) + psi (real_cond_exp M F X x) * (X x - real_cond_exp M F X x)"
+    using * X(2) by auto
+
+  text {*Then, one wants to take the conditional expectation of this inequality. On the left, one gets
+         the conditional expectation of $q \circ X$. On the right, the last term vanishes, and one
+         is left with $q$ of the conditional expectation, as desired. Unfortunately, this argument only
+         works if $\psi \cdot X$ and $q(E(X | F))$ are integrable, and there is no reason why this should be true. The
+         trick is to multiply by a $F$-measurable function which is small enough to make
+         everything integrable.*}
+
+  obtain f::"'a \<Rightarrow> real" where [measurable]: "f \<in> borel_measurable (restr_to_subalg M F)"
+                               "integrable (restr_to_subalg M F) f"
+                           and f: "\<And>x. f x > 0" "\<And>x. f x \<le> 1"
+    using sigma_finite_measure.obtain_positive_integrable_function[OF sigma_fin_subalg] by metis
+  then have [measurable]: "f \<in> borel_measurable F" by (simp add: subalg)
+  then have [measurable]: "f \<in> borel_measurable M" using measurable_from_subalg[OF subalg] by blast
+  define g where "g = (\<lambda>x. f x/(1+ \<bar>psi (real_cond_exp M F X x)\<bar> + \<bar>q (real_cond_exp M F X x)\<bar>))"
+  define G where "G = (\<lambda>x. g x * psi (real_cond_exp M F X x))"
+  have g: "g x > 0" "g x \<le> 1" for x unfolding G_def g_def using f[of x] by (auto simp add: abs_mult)
+  have G: "\<bar>G x\<bar> \<le> 1" for x unfolding G_def g_def using f[of x]
+  proof (auto simp add: abs_mult)
+    have "f x * \<bar>psi (real_cond_exp M F X x)\<bar> \<le> 1 * \<bar>psi (real_cond_exp M F X x)\<bar>"
+      apply (rule mult_mono) using f[of x] by auto
+    also have "... \<le> 1 + \<bar>psi (real_cond_exp M F X x)\<bar> + \<bar>q (real_cond_exp M F X x)\<bar>" by auto
+    finally show "f x * \<bar>psi (real_cond_exp M F X x)\<bar> \<le> 1 + \<bar>psi (real_cond_exp M F X x)\<bar> + \<bar>q (real_cond_exp M F X x)\<bar>"
+      by simp
+  qed
+  have "AE x in M. g x * q (X x) \<ge> g x * (q (real_cond_exp M F X x) + psi (real_cond_exp M F X x) * (X x - real_cond_exp M F X x))"
+    using main_ineq g by (auto simp add: divide_simps)
+  then have main_G: "AE x in M. g x * q (X x) \<ge> g x * q (real_cond_exp M F X x) + G x * (X x - real_cond_exp M F X x)"
+    unfolding G_def by (auto simp add: algebra_simps)
+
+  text {*To proceed, we need to know that $\psi$ is measurable.*}
+  have phi_mono: "phi x \<le> phi y" if "x \<le> y" "x \<in> I" "y \<in> I" for x y
+  proof (cases "x < y")
+    case True
+    have "q x + phi x * (y-x) \<le> q y"
+      unfolding phi_def apply (rule convex_le_Inf_differential) using `convex_on I q` that `interior I = I` by auto
+    then have "phi x \<le> (q x - q y) / (x - y)"
+      using that `x < y` by (auto simp add: divide_simps algebra_simps)
+    moreover have "(q x - q y)/(x - y) \<le> phi y"
+    unfolding phi_def proof (rule cInf_greatest, auto)
+      fix t assume "t \<in> I" "y < t"
+      have "(q x - q y) / (x - y) \<le> (q x - q t) / (x - t)"
+        apply (rule convex_on_diff[OF q(2)]) using `y < t` `x < y` `t \<in> I` `x \<in> I` by auto
+      also have "... \<le> (q y - q t) / (y - t)"
+        apply (rule convex_on_diff[OF q(2)]) using `y < t` `x < y` `t \<in> I` `x \<in> I` by auto
+      finally show "(q x - q y) / (x - y) \<le> (q y - q t) / (y - t)" by simp
+    next
+      obtain e where "0 < e" "ball y e \<subseteq> I" using `open I` `y \<in> I` openE by blast
+      then have "y + e/2 \<in> {y<..} \<inter> I" by (auto simp: dist_real_def)
+      then show "{y<..} \<inter> I = {} \<Longrightarrow> False" by auto
+    qed
+    ultimately show "phi x \<le> phi y" by auto
+  next
+    case False
+    then have "x = y" using `x \<le> y` by auto
+    then show ?thesis by auto
+  qed
+  have [measurable]: "psi \<in> borel_measurable borel"
+    by (rule borel_measurable_piecewise_mono[of "{I, -I}"])
+       (auto simp add: psi_def indicator_def phi_mono intro: mono_onI)
+  have [measurable]: "q \<in> borel_measurable borel" using q by simp
+
+  have [measurable]: "X \<in> borel_measurable M"
+                     "real_cond_exp M F X \<in> borel_measurable F"
+                     "g \<in> borel_measurable F" "g \<in> borel_measurable M"
+                     "G \<in> borel_measurable F" "G \<in> borel_measurable M"
+    using X measurable_from_subalg[OF subalg] unfolding G_def g_def by auto
+  have int1: "integrable (restr_to_subalg M F) (\<lambda>x. g x * q (real_cond_exp M F X x))"
+    apply (rule Bochner_Integration.integrable_bound[of _ f], auto simp add: subalg `integrable (restr_to_subalg M F) f`)
+    unfolding g_def by (auto simp add: divide_simps abs_mult algebra_simps)
+  have int2: "integrable M (\<lambda>x. G x * (X x - real_cond_exp M F X x))"
+    apply (rule Bochner_Integration.integrable_bound[of _ "\<lambda>x. \<bar>X x\<bar> + \<bar>real_cond_exp M F X x\<bar>"])
+    apply (auto intro!: Bochner_Integration.integrable_add integrable_abs real_cond_exp_int `integrable M X` AE_I2)
+    using G unfolding abs_mult by (meson abs_ge_zero abs_triangle_ineq4 dual_order.trans mult_left_le_one_le)
+  have int3: "integrable M (\<lambda>x. g x * q (X x))"
+    apply (rule Bochner_Integration.integrable_bound[of _ "\<lambda>x. q(X x)"], auto simp add: q(1) abs_mult)
+    using g by (simp add: less_imp_le mult_left_le_one_le)
+
+  text {*Taking the conditional expectation of the main convexity inequality \verb+main_G+, we get
+         the following.*}
+  have "AE x in M. real_cond_exp M F (\<lambda>x. g x * q (X x)) x \<ge> real_cond_exp M F (\<lambda>x. g x * q (real_cond_exp M F X x) + G x * (X x - real_cond_exp M F X x)) x"
+    apply (rule real_cond_exp_mono[OF main_G])
+    apply (rule Bochner_Integration.integrable_add[OF integrable_from_subalg[OF subalg int1]])
+    using int2 int3 by auto
+  text {*This reduces to the desired inequality thanks to the properties of conditional expectation,
+         i.e., the conditional expectation of an $F$-measurable function is this function, and one can
+         multiply an $F$-measurable function outside of conditional expectations.
+         Since all these equalities only hold almost everywhere, we formulate them separately,
+         and then combine all of them to simplify the above equation, again almost everywhere.*}
+  moreover have "AE x in M. real_cond_exp M F (\<lambda>x. g x * q (X x)) x = g x * real_cond_exp M F (\<lambda>x. q (X x)) x"
+    by (rule real_cond_exp_mult, auto simp add: int3)
+  moreover have "AE x in M. real_cond_exp M F (\<lambda>x. g x * q (real_cond_exp M F X x) + G x * (X x - real_cond_exp M F X x)) x
+      = real_cond_exp M F (\<lambda>x. g x * q (real_cond_exp M F X x)) x + real_cond_exp M F (\<lambda>x. G x * (X x - real_cond_exp M F X x)) x"
+    by (rule real_cond_exp_add, auto simp add: integrable_from_subalg[OF subalg int1] int2)
+  moreover have "AE x in M. real_cond_exp M F (\<lambda>x. g x * q (real_cond_exp M F X x)) x = g x * q (real_cond_exp M F X x)"
+    by (rule real_cond_exp_F_meas, auto simp add: integrable_from_subalg[OF subalg int1])
+  moreover have "AE x in M. real_cond_exp M F (\<lambda>x. G x * (X x - real_cond_exp M F X x)) x = G x * real_cond_exp M F (\<lambda>x. (X x - real_cond_exp M F X x)) x"
+    by (rule real_cond_exp_mult, auto simp add: int2)
+  moreover have "AE x in M. real_cond_exp M F (\<lambda>x. (X x - real_cond_exp M F X x)) x = real_cond_exp M F X x - real_cond_exp M F (\<lambda>x. real_cond_exp M F X x) x"
+    by (rule real_cond_exp_diff, auto intro!: real_cond_exp_int `integrable M X`)
+  moreover have "AE x in M. real_cond_exp M F (\<lambda>x. real_cond_exp M F X x) x = real_cond_exp M F X x "
+    by (rule real_cond_exp_F_meas, auto intro!: real_cond_exp_int `integrable M X`)
+  ultimately have "AE x in M. g x * real_cond_exp M F (\<lambda>x. q (X x)) x \<ge> g x * q (real_cond_exp M F X x)"
+    by auto
+  then show "AE x in M. real_cond_exp M F (\<lambda>x. q (X x)) x \<ge> q (real_cond_exp M F X x)"
+    using g(1) by (auto simp add: divide_simps)
+qed
+
+text {*Jensen's inequality does not imply that $q(E(X|F))$ is integrable, as it only proves an upper
+bound for it. Indeed, this is not true in general, as the following counterexample shows:
+
+on $[1,\infty)$ with Lebesgue measure, let $F$ be the sigma-algebra generated by the intervals $[n, n+1)$
+for integer $n$. Let $q(x) = - \sqrt{x}$ for $x\geq 0$. Define $X$ which is equal to $1/n$ over
+$[n, n+1/n)$ and $2^{-n}$ on $[n+1/n, n+1)$. Then $X$ is integrable as $\sum 1/n^2 < \infty$, and
+$q(X)$ is integrable as $\sum 1/n^{3/2} < \infty$. On the other hand, $E(X|F)$ is essentially equal
+to $1/n^2$ on $[n, n+1)$ (we neglect the term $2^{-n}$, we only put it there because $X$ should take
+its values in $I=(0,\infty)$). Hence, $q(E(X|F))$ is equal to $-1/n$ on $[n, n+1)$, hence it is not
+integrable.
+
+However, this counterexample is essentially the only situation where this function is not
+integrable, as shown by the next lemma.
+*}
+
+lemma
+  fixes q :: "real \<Rightarrow> real"
+  assumes X: "integrable M X" "AE x in M. X x \<in> I"
+  assumes I: "I = {a <..< b} \<or> I = {a <..} \<or> I = {..< b} \<or> I = UNIV"
+  assumes q: "integrable M (\<lambda>x. q (X x))" "convex_on I q" "q \<in> borel_measurable borel"
+  assumes H: "emeasure M (space M) = \<infinity> \<Longrightarrow> 0 \<in> I"
+  shows "integrable M (\<lambda>x. q (real_cond_exp M F X x))"
+proof -
+  have [measurable]: "(\<lambda>x. q (real_cond_exp M F X x)) \<in> borel_measurable M"
+                     "q \<in> borel_measurable borel"
+                     "X \<in> borel_measurable M"
+    using X(1) q(3) by auto
+  have "open I" using I by auto
+  then have "interior I = I" by (simp add: interior_eq)
+
+  consider "emeasure M (space M) = 0" | "emeasure M (space M) > 0 \<and> emeasure M (space M) < \<infinity>" | "emeasure M (space M) = \<infinity>"
+    by (metis infinity_ennreal_def not_gr_zero top.not_eq_extremum)
+  then show ?thesis
+  proof (cases)
+    case 1
+    show ?thesis by (subst integrable_cong_AE[of _ _ "\<lambda>x. 0"], auto intro: emeasure_0_AE[OF 1])
+  next
+    case 2
+    interpret finite_measure M using 2 by (auto intro!: finite_measureI)
+
+    have "I \<noteq> {}"
+      using `AE x in M. X x \<in> I` 2 eventually_mono integral_less_AE_space by fastforce
+    then obtain z where "z \<in> I" by auto
+
+    define A where "A = Inf ((\<lambda>t. (q z - q t) / (z - t)) ` ({z<..} \<inter> I))"
+    have "q y \<ge> q z + A * (y - z)" if "y \<in> I" for y unfolding A_def apply (rule convex_le_Inf_differential)
+      using `z \<in> I` `y \<in> I` `interior I = I` q(2) by auto
+    then have "AE x in M. q (real_cond_exp M F X x) \<ge> q z + A * (real_cond_exp M F X x - z)"
+      using real_cond_exp_jensens_inequality(1)[OF X I q] by auto
+    moreover have "AE x in M. q (real_cond_exp M F X x) \<le> real_cond_exp M F (\<lambda>x. q (X x)) x"
+      using real_cond_exp_jensens_inequality(2)[OF X I q] by auto
+    moreover have "\<bar>a\<bar> \<le> \<bar>b\<bar> + \<bar>c\<bar>" if "b \<le> a \<and> a \<le> c" for a b c::real
+      using that by auto
+    ultimately have *: "AE x in M. \<bar>q (real_cond_exp M F X x)\<bar>
+        \<le> \<bar>real_cond_exp M F (\<lambda>x. q (X x)) x\<bar> + \<bar>q z + A * (real_cond_exp M F X x - z)\<bar>"
+      by auto
+
+    show "integrable M (\<lambda>x. q (real_cond_exp M F X x))"
+      apply (rule Bochner_Integration.integrable_bound[of _ "\<lambda>x. \<bar>real_cond_exp M F (\<lambda>x. q (X x)) x\<bar> + \<bar>q z + A * (real_cond_exp M F X x - z)\<bar>"])
+      apply (auto intro!: Bochner_Integration.integrable_add integrable_abs integrable_mult_right Bochner_Integration.integrable_diff real_cond_exp_int(1))
+      using X(1) q(1) * by auto
+  next
+    case 3
+    then have "0 \<in> I" using H finite_measure.finite_emeasure_space by auto
+    have "q(0) = 0"
+    proof (rule ccontr)
+      assume *: "\<not>(q(0) = 0)"
+      define e where "e = \<bar>q(0)\<bar> / 2"
+      then have "e > 0" using * by auto
+      have "continuous (at 0) q"
+        using q(2) `0 \<in> I` `open I` \<open>interior I = I\<close> continuous_on_interior convex_on_continuous by blast
+      then obtain d where d: "d > 0" "\<And>y. \<bar>y - 0\<bar> < d \<Longrightarrow> \<bar>q y - q 0\<bar> < e" using `e > 0`
+        by (metis continuous_at_real_range real_norm_def)
+      then have *: "\<bar>q(y)\<bar> > e" if "\<bar>y\<bar> < d" for y
+      proof -
+        have "\<bar>q 0\<bar> \<le> \<bar>q 0 - q y\<bar> + \<bar>q y\<bar>" by auto
+        also have "... < e + \<bar>q y\<bar>" using d(2) that by force
+        finally have "\<bar>q y\<bar> > \<bar>q 0\<bar> - e" by auto
+        then show ?thesis unfolding e_def by simp
+      qed
+      have "emeasure M {x \<in> space M. \<bar>X x\<bar> < d} \<le> emeasure M ({x \<in> space M. 1 \<le> ennreal(1/e) * \<bar>q(X x)\<bar>} \<inter> space M)"
+        by (rule emeasure_mono, auto simp add: * `e>0` less_imp_le ennreal_mult''[symmetric])
+      also have "... \<le> (1/e) * (\<integral>\<^sup>+x. ennreal(\<bar>q(X x)\<bar>) * indicator (space M) x \<partial>M)"
+        by (rule nn_integral_Markov_inequality, auto)
+      also have "... = (1/e) * (\<integral>\<^sup>+x. ennreal(\<bar>q(X x)\<bar>) \<partial>M)" by auto
+      also have "... = (1/e) * ennreal(\<integral>x. \<bar>q(X x)\<bar> \<partial>M)"
+        using nn_integral_eq_integral[OF integrable_abs[OF q(1)]] by auto
+      also have "... < \<infinity>"
+        by (simp add: ennreal_mult_less_top)
+      finally have A: "emeasure M {x \<in> space M. \<bar>X x\<bar> < d} < \<infinity>" by simp
+
+      have "{x \<in> space M. \<bar>X x\<bar> \<ge> d} = {x \<in> space M. 1 \<le> ennreal(1/d) * \<bar>X x\<bar>} \<inter> space M"
+        by (auto simp add: `d>0` ennreal_mult''[symmetric])
+      then have "emeasure M {x \<in> space M. \<bar>X x\<bar> \<ge> d} = emeasure M ({x \<in> space M. 1 \<le> ennreal(1/d) * \<bar>X x\<bar>} \<inter> space M)"
+        by auto
+      also have "... \<le> (1/d) * (\<integral>\<^sup>+x. ennreal(\<bar>X x\<bar>) * indicator (space M) x \<partial>M)"
+        by (rule nn_integral_Markov_inequality, auto)
+      also have "... = (1/d) * (\<integral>\<^sup>+x. ennreal(\<bar>X x\<bar>) \<partial>M)" by auto
+      also have "... = (1/d) * ennreal(\<integral>x. \<bar>X x\<bar> \<partial>M)"
+        using nn_integral_eq_integral[OF integrable_abs[OF X(1)]] by auto
+      also have "... < \<infinity>"
+        by (simp add: ennreal_mult_less_top)
+      finally have B: "emeasure M {x \<in> space M. \<bar>X x\<bar> \<ge> d} < \<infinity>" by simp
+
+      have "space M = {x \<in> space M. \<bar>X x\<bar> < d} \<union> {x \<in> space M. \<bar>X x\<bar> \<ge> d}" by auto
+      then have "emeasure M (space M) = emeasure M ({x \<in> space M. \<bar>X x\<bar> < d} \<union> {x \<in> space M. \<bar>X x\<bar> \<ge> d})"
+        by simp
+      also have "... \<le> emeasure M {x \<in> space M. \<bar>X x\<bar> < d} + emeasure M {x \<in> space M. \<bar>X x\<bar> \<ge> d}"
+        by (auto intro!: emeasure_subadditive)
+      also have "... < \<infinity>" using A B by auto
+      finally show False using `emeasure M (space M) = \<infinity>` by auto
+    qed
+
+    define A where "A = Inf ((\<lambda>t. (q 0 - q t) / (0 - t)) ` ({0<..} \<inter> I))"
+    have "q y \<ge> q 0 + A * (y - 0)" if "y \<in> I" for y unfolding A_def apply (rule convex_le_Inf_differential)
+      using `0 \<in> I` `y \<in> I` `interior I = I` q(2) by auto
+    then have "q y \<ge> A * y" if "y \<in> I" for y using `q 0 = 0` that by auto
+    then have "AE x in M. q (real_cond_exp M F X x) \<ge> A * real_cond_exp M F X x"
+      using real_cond_exp_jensens_inequality(1)[OF X I q] by auto
+    moreover have "AE x in M. q (real_cond_exp M F X x) \<le> real_cond_exp M F (\<lambda>x. q (X x)) x"
+      using real_cond_exp_jensens_inequality(2)[OF X I q] by auto
+    moreover have "\<bar>a\<bar> \<le> \<bar>b\<bar> + \<bar>c\<bar>" if "b \<le> a \<and> a \<le> c" for a b c::real
+      using that by auto
+    ultimately have *: "AE x in M. \<bar>q (real_cond_exp M F X x)\<bar>
+        \<le> \<bar>real_cond_exp M F (\<lambda>x. q (X x)) x\<bar> + \<bar>A * real_cond_exp M F X x\<bar>"
+      by auto
+
+    show "integrable M (\<lambda>x. q (real_cond_exp M F X x))"
+      apply (rule Bochner_Integration.integrable_bound[of _ "\<lambda>x. \<bar>real_cond_exp M F (\<lambda>x. q (X x)) x\<bar> + \<bar>A * real_cond_exp M F X x \<bar>"])
+      apply (auto intro!: Bochner_Integration.integrable_add integrable_abs integrable_mult_right Bochner_Integration.integrable_diff real_cond_exp_int(1))
+      using X(1) q(1) * by auto
+  qed
+qed
+
+
 
 end
 

@@ -106,10 +106,10 @@ qed
 
 subsection {*Miscellanous basic results*}
 
-lemma ind_from_1[consumes 1]:
+lemma ind_from_1 [case_names 1 Suc, consumes 1]:
   assumes "n > 0"
   assumes "P 1"
-  assumes "\<And>n. n > 0 \<Longrightarrow> P n \<Longrightarrow> P (Suc n)"
+      and "\<And>n. n > 0 \<Longrightarrow> P n \<Longrightarrow> P (Suc n)"
   shows "P n"
 proof -
   have "(n = 0) \<or> P n"
@@ -117,19 +117,11 @@ proof -
     case 0 then show ?case by auto
   next
     case (Suc k)
-    {
-      assume "Suc k = 1"
-      then have ?case using assms(2) by auto
-    }
-    also
-    {
-      assume "Suc k > 1"
-      then have "k > 0" by auto
-      then have ?case using Suc.IH assms(3) by auto
-    }
-    ultimately show ?case by arith
+    consider "Suc k = 1" | "Suc k > 1" by linarith
+    then show ?case
+      apply (cases) using assms Suc.IH by auto
   qed
-  then show ?thesis using assms(1) by auto
+  then show ?thesis using `n > 0` by auto
 qed
 
 lemma Inf_nat_def0:
@@ -152,7 +144,7 @@ lemma tends_to_real_e:
   fixes u::"nat \<Rightarrow> real"
   assumes "u \<longlonglongrightarrow> l"
           "e>0"
-  shows "\<exists>N. \<forall>n>N. abs(u n -l ) < e"
+  shows "\<exists>N. \<forall>n>N. abs(u n -l) < e"
 proof-
   have "eventually (\<lambda>n. dist (u n) l < e) sequentially" using assms tendstoD by auto
   then have "\<forall>\<^sub>F n in sequentially. abs(u n - l) < e" using dist_real_def by auto
@@ -266,10 +258,40 @@ lemma inv_fn:
   shows "inv (f^^n) = ((inv f)^^n)"
 proof -
   have "inv (f^^n) x = ((inv f)^^n) x" for x
-  apply (rule inv_into_f_eq, auto simp add: inj_fn[OF bij_is_inj[OF assms]] )
+  apply (rule inv_into_f_eq, auto simp add: inj_fn[OF bij_is_inj[OF assms]])
   using fn_o_inv_fn_is_id[OF assms, of n] by (metis comp_apply)
   then show ?thesis by auto
 qed
+
+
+subsection {*Complete-lattices.thy*}
+
+text {* We improve \verb+mono_Inf+ (in \verb+Complete_lattices.thy+) under a bijection assumption*}
+
+lemma mono_inv:
+  fixes f::"'a::linorder \<Rightarrow> 'b::linorder"
+  assumes "mono f" "bij f"
+  shows "mono (inv f)"
+proof
+  fix x y::'b assume "x \<le> y"
+  then show "inv f x \<le> inv f y"
+    by (metis (no_types, lifting) assms bij_is_surj eq_iff le_cases mono_def surj_f_inv_f)
+qed
+
+lemma mono_bij_Inf:
+  fixes f :: "'a::complete_linorder \<Rightarrow> 'b::complete_linorder"
+  assumes "mono f" "bij f"
+  shows "f (Inf A) = Inf (f`A)"
+proof -
+  have "(inv f) (Inf (f`A)) \<le> Inf ((inv f)`(f`A))"
+    using mono_Inf[OF mono_inv[OF assms], of "f`A"] by simp
+  then have "Inf (f`A) \<le> f (Inf ((inv f)`(f`A)))"
+    by (metis (no_types, lifting) assms mono_def bij_inv_eq_iff)
+  also have "... = f(Inf A)"
+    using assms by (simp add: bij_is_inj)
+  finally show ?thesis using mono_Inf[OF assms(1), of A] by auto
+qed
+
 
 subsection {*Topological-spaces.thy*}
 
@@ -324,7 +346,7 @@ qed
 lemma closed_subdiagonal:
   "closed {(x,y) | x y. x \<le> (y::'a::{linorder_topology})}"
 proof -
-  have " {(x,y) | x y. x \<le> (y::'a)} = UNIV - {(x,y) | x y. x > (y::'a)}" by auto
+  have "{(x,y) | x y. x \<le> (y::'a)} = UNIV - {(x,y) | x y. x > (y::'a)}" by auto
   then show ?thesis using open_superdiagonal closed_Diff by auto
 qed
 
@@ -358,7 +380,7 @@ qed
 lemma closed_superdiagonal:
   "closed {(x,y) | x y. x \<ge> (y::('a::{linorder_topology}))}"
 proof -
-  have " {(x,y) | x y. x \<ge> (y::'a)} = UNIV - {(x,y) | x y. x < y}" by auto
+  have "{(x,y) | x y. x \<ge> (y::'a)} = UNIV - {(x,y) | x y. x < y}" by auto
   then show ?thesis using open_subdiagonal closed_Diff by auto
 qed
 
@@ -393,16 +415,27 @@ subsection {*Series*}
 
 text {*The next lemma is a more natural reformulation of \verb+ suminf_exist_split+*}
 
-context
-  fixes f :: "nat \<Rightarrow> 'a::real_normed_vector"
-begin
-
 lemma suminf_exist_split2:
+  fixes f :: "nat \<Rightarrow> 'a::real_normed_vector"
   assumes "summable f"
   shows "(\<lambda>n. (\<Sum>k. f(k+n))) \<longlonglongrightarrow> 0"
 by (subst lim_sequentially, auto simp add: dist_norm suminf_exist_split[OF _ assms])
 
-end
+
+subsection {*Transcendental.thy*}
+
+text {*In \verb+Transcendental.thy+, the assumptions of the next two lemmas are
+$x > 0$ and $y > 0$, while large inequalities are sufficient, with the same proof.*}
+
+lemma powr_divide: "0 \<le> x \<Longrightarrow> 0 \<le> y \<Longrightarrow> (x / y) powr a = (x powr a) / (y powr a)"
+  for a b x :: real
+  apply (simp add: divide_inverse positive_imp_inverse_positive powr_mult)
+  apply (simp add: powr_def exp_minus [symmetric] exp_add [symmetric] ln_inverse)
+  done
+
+lemma powr_mult_base: "0 \<le> x \<Longrightarrow>x * x powr y = x powr (1 + y)"
+  for x :: real
+  by (auto simp: powr_add)
 
 
 subsection {*Limits*}
@@ -540,6 +573,298 @@ proof -
   moreover have "countable (B1 \<union> B2)" using `countable B1` `countable B2` by simp
   ultimately show ?thesis by auto
 qed
+
+lemma countable_separating_set_dense_linorder:
+  shows "\<exists>B::('a::{linorder_topology, dense_linorder, second_countable_topology} set). countable B \<and> (\<forall>x y. x < y \<longrightarrow> (\<exists>b \<in> B. x < b \<and> b < y))"
+proof -
+  obtain B::"'a set" where B: "countable B" "\<And>x y. x < y \<Longrightarrow> (\<exists>b \<in> B. x < b \<and> b \<le> y)"
+    using countable_separating_set_linorder1 by auto
+  have "\<exists>b \<in> B. x < b \<and> b < y" if "x < y" for x y
+  proof -
+    obtain z where "x < z" "z < y" using `x < y` dense by blast
+    then obtain b where "b \<in> B" "x < b \<and> b \<le> z" using B(2) by auto
+    then have "x < b \<and> b < y" using `z < y` by auto
+    then show ?thesis using `b \<in> B` by auto
+  qed
+  then show ?thesis using B(1) by auto
+qed
+
+lemma approx_from_above_dense_linorder:
+  fixes x::"'a::{dense_linorder, linorder_topology, first_countable_topology}"
+  assumes "x < y"
+  shows "\<exists>u. (\<forall>n. u n > x) \<and> (u \<longlonglongrightarrow> x)"
+proof -
+  obtain A :: "nat \<Rightarrow> 'a set" where A: "\<And>i. open (A i)" "\<And>i. x \<in> A i"
+                                      "\<And>F. (\<forall>n. F n \<in> A n) \<Longrightarrow> F \<longlonglongrightarrow> x"
+    by (metis first_countable_topology_class.countable_basis)
+  define u where "u = (\<lambda>n. SOME z. z \<in> A n \<and> z > x)"
+  have "\<exists>z. z \<in> U \<and> x < z" if "x \<in> U" "open U" for U
+    using open_right[OF `open U` `x \<in> U` `x < y`]
+    by (meson atLeastLessThan_iff dense less_imp_le subset_eq)
+  then have *: "u n \<in> A n \<and> x < u n" for n
+    using `x \<in> A n` `open (A n)` unfolding u_def by (metis (no_types, lifting) someI_ex)
+  then have "u \<longlonglongrightarrow> x" using A(3) by simp
+  then show ?thesis using * by auto
+qed
+
+lemma approx_from_below_dense_linorder:
+  fixes x::"'a::{dense_linorder, linorder_topology, first_countable_topology}"
+  assumes "x > y"
+  shows "\<exists>u. (\<forall>n. u n < x) \<and> (u \<longlonglongrightarrow> x)"
+proof -
+  obtain A :: "nat \<Rightarrow> 'a set" where A: "\<And>i. open (A i)" "\<And>i. x \<in> A i"
+                                      "\<And>F. (\<forall>n. F n \<in> A n) \<Longrightarrow> F \<longlonglongrightarrow> x"
+    by (metis first_countable_topology_class.countable_basis)
+  define u where "u = (\<lambda>n. SOME z. z \<in> A n \<and> z < x)"
+  have "\<exists>z. z \<in> U \<and> z < x" if "x \<in> U" "open U" for U
+    using open_left[OF `open U` `x \<in> U` `x > y`]
+    by (meson dense greaterThanAtMost_iff less_imp_le subset_eq)
+  then have *: "u n \<in> A n \<and> u n < x" for n
+    using `x \<in> A n` `open (A n)` unfolding u_def by (metis (no_types, lifting) someI_ex)
+  then have "u \<longlonglongrightarrow> x" using A(3) by simp
+  then show ?thesis using * by auto
+qed
+
+lemma Inf_as_limit:
+  fixes A::"'a::{linorder_topology, first_countable_topology, complete_linorder} set"
+  assumes "A \<noteq> {}"
+  shows "\<exists>u. (\<forall>n. u n \<in> A) \<and> u \<longlonglongrightarrow> Inf A"
+proof (cases "Inf A \<in> A")
+  case True
+  show ?thesis
+    by (rule exI[of _ "\<lambda>n. Inf A"], auto simp add: True)
+next
+  case False
+  obtain y where "y \<in> A" using assms by auto
+  then have "Inf A < y" using False Inf_lower less_le by auto
+  obtain F :: "nat \<Rightarrow> 'a set" where F: "\<And>i. open (F i)" "\<And>i. Inf A \<in> F i"
+                                       "\<And>u. (\<forall>n. u n \<in> F n) \<Longrightarrow> u \<longlonglongrightarrow> Inf A"
+    by (metis first_countable_topology_class.countable_basis)
+  define u where "u = (\<lambda>n. SOME z. z \<in> F n \<and> z \<in> A)"
+  have "\<exists>z. z \<in> U \<and> z \<in> A" if "Inf A \<in> U" "open U" for U
+  proof -
+    obtain b where "b > Inf A" "{Inf A ..<b} \<subseteq> U"
+      using open_right[OF `open U` `Inf A \<in> U` `Inf A < y`] by auto
+    obtain z where "z < b" "z \<in> A"
+      using `Inf A < b` Inf_less_iff by auto
+    then have "z \<in> {Inf A ..<b}"
+      by (simp add: Inf_lower)
+    then show ?thesis using `z \<in> A` `{Inf A ..<b} \<subseteq> U` by auto
+  qed
+  then have *: "u n \<in> F n \<and> u n \<in> A" for n
+    using `Inf A \<in> F n` `open (F n)` unfolding u_def by (metis (no_types, lifting) someI_ex)
+  then have "u \<longlonglongrightarrow> Inf A" using F(3) by simp
+  then show ?thesis using * by auto
+qed
+
+text {*A (more usable) variation around \verb+continuous_on_closure_sequentially+. The assumption
+that the spaces are metric spaces is definitely too strong, but sufficient for most applications.*}
+
+lemma continuous_on_closure_sequentially':
+  fixes f::"'a::metric_space \<Rightarrow> 'b::metric_space"
+  assumes "continuous_on (closure C) f"
+          "\<And>(n::nat). u n \<in> C"
+          "u \<longlonglongrightarrow> l"
+  shows "(\<lambda>n. f (u n)) \<longlonglongrightarrow> f l"
+proof -
+  have "l \<in> closure C" unfolding closure_sequential using assms by auto
+  then show ?thesis
+    using `continuous_on (closure C) f` unfolding comp_def continuous_on_closure_sequentially
+    using assms by auto
+qed
+
+
+subsection {*Convexity*}
+
+lemma convex_on_mean_ineq:
+  fixes f::"real \<Rightarrow> real"
+  assumes "convex_on A f" "x \<in> A" "y \<in> A"
+  shows "f ((x+y)/2) \<le> (f x + f y) / 2"
+using convex_onD[OF assms(1), of "1/2" x y] using assms by (auto simp add: divide_simps)
+
+lemma convex_on_closure:
+  assumes "convex (C::'a::real_normed_vector set)"
+          "convex_on C f"
+          "continuous_on (closure C) f"
+  shows "convex_on (closure C) f"
+proof (rule convex_onI)
+  fix x y::'a and t::real
+  assume "x \<in> closure C" "y \<in> closure C" "0 < t" "t < 1"
+  obtain u v::"nat \<Rightarrow> 'a" where *: "\<And>n. u n \<in> C" "u \<longlonglongrightarrow> x"
+                                   "\<And>n. v n \<in> C" "v \<longlonglongrightarrow> y"
+    using `x \<in> closure C` `y \<in> closure C` unfolding closure_sequential by blast
+  define w where "w = (\<lambda>n. (1-t) *\<^sub>R (u n) + t *\<^sub>R (v n))"
+  have "w n \<in> C" for n
+    using `0 < t` `t< 1` convexD[OF `convex C` *(1)[of n] *(3)[of n]] unfolding w_def by auto
+  have "w \<longlonglongrightarrow> ((1-t) *\<^sub>R x + t *\<^sub>R y)"
+    unfolding w_def using *(2) *(4) by (auto intro!: tendsto_intros)
+
+  have *: "f(w n) \<le> (1-t) * f(u n) + t * f (v n)" for n
+    using *(1) *(3) `convex_on C f` `0<t` `t<1` less_imp_le unfolding w_def
+    convex_on_alt[OF assms(1)] by (simp add: add.commute)
+  have i: "(\<lambda>n. f (w n)) \<longlonglongrightarrow> f ((1-t) *\<^sub>R x + t *\<^sub>R y)"
+    by (rule continuous_on_closure_sequentially'[OF assms(3) `\<And>n. w n \<in> C` `w \<longlonglongrightarrow> ((1-t) *\<^sub>R x + t *\<^sub>R y)`])
+  have ii: "(\<lambda>n. (1-t) * f(u n) + t * f (v n)) \<longlonglongrightarrow> (1-t) * f x + t * f y"
+    apply (auto intro!: tendsto_intros)
+    apply (rule continuous_on_closure_sequentially'[OF assms(3) `\<And>n. u n \<in> C` `u \<longlonglongrightarrow> x`])
+    apply (rule continuous_on_closure_sequentially'[OF assms(3) `\<And>n. v n \<in> C` `v \<longlonglongrightarrow> y`])
+    done
+  show "f ((1 - t) *\<^sub>R x + t *\<^sub>R y) \<le> (1 - t) * f x + t * f y"
+    apply (rule LIMSEQ_le[OF i ii]) using * by auto
+qed
+
+lemma convex_on_norm:
+  "convex_on UNIV (\<lambda>(x::'a::real_normed_vector). norm x)"
+using convex_on_dist[of UNIV "0::'a"] by auto
+
+lemma continuous_abs_powr [continuous_intros]:
+  assumes "p > 0"
+  shows "continuous_on UNIV (\<lambda>(x::real). \<bar>x\<bar> powr p)"
+apply (rule continuous_on_powr') using assms by (auto intro: continuous_intros)
+
+lemma continuous_mult_sgn [continuous_intros]:
+  fixes f::"real \<Rightarrow> real"
+  assumes "continuous_on UNIV f" "f 0 = 0"
+  shows "continuous_on UNIV (\<lambda>x. sgn x * f x)"
+proof -
+  have *: "continuous_on {0..} (\<lambda>x. sgn x * f x)"
+    apply (subst continuous_on_cong[of "{0..}" "{0..}" _ f], auto simp add: sgn_real_def assms(2))
+    by (rule continuous_on_subset[OF assms(1)], auto)
+  have **: "continuous_on {..0} (\<lambda>x. sgn x * f x)"
+    apply (subst continuous_on_cong[of "{..0}" "{..0}" _ "\<lambda>x. -f x"], auto simp add: sgn_real_def assms(2))
+    by (rule continuous_on_subset[of UNIV], auto simp add: assms intro!: continuous_intros)
+  show ?thesis
+    using continuous_on_closed_Un[OF _ _ * **] apply (auto intro: continuous_intros)
+    using continuous_on_subset by fastforce
+qed
+
+lemma DERIV_abs_powr [derivative_intros]:
+  assumes "p > (1::real)"
+  shows "DERIV (\<lambda>x. \<bar>x\<bar> powr p) x :> p * sgn x * \<bar>x\<bar> powr (p - 1)"
+proof -
+  consider "x = 0" | "x>0" | "x < 0" by linarith
+  then show ?thesis
+  proof (cases)
+    case 1
+    have "continuous_on UNIV (\<lambda>x. sgn x * \<bar>x\<bar> powr (p - 1))"
+      by (auto simp add: assms intro!:continuous_intros)
+    then have "(\<lambda>h. sgn h * \<bar>h\<bar> powr (p-1)) \<midarrow>0\<rightarrow> (\<lambda>h. sgn h * \<bar>h\<bar> powr (p-1)) 0"
+      using continuous_on_def by blast
+    moreover have "\<bar>h\<bar> powr p / h = sgn h * \<bar>h\<bar> powr (p-1)" for h
+    proof -
+      have "\<bar>h\<bar> powr p / h = sgn h * \<bar>h\<bar> powr p / \<bar>h\<bar>"
+        by (auto simp add: algebra_simps divide_simps sgn_real_def)
+      also have "... = sgn h * \<bar>h\<bar> powr (p-1)"
+        using assms apply (cases "h=0") apply (auto)
+        by (metis abs_ge_zero powr_divide2 powr_one_gt_zero_iff times_divide_eq_right)
+      finally show ?thesis by simp
+    qed
+    ultimately have "(\<lambda>h. \<bar>h\<bar> powr p / h) \<midarrow>0\<rightarrow> 0" by auto
+    then show ?thesis unfolding DERIV_def by (auto simp add: `x=0`)
+  next
+    case 2
+    have *: "\<forall>\<^sub>F y in nhds x. \<bar>y\<bar> powr p = y powr p"
+      unfolding eventually_nhds apply (rule exI[of _ "{0<..}"]) using `x > 0` by auto
+    show ?thesis
+      apply (subst DERIV_cong_ev[of _ x _ "(\<lambda>x. x powr p)" _ "p * x powr (p-1)"])
+      using `x > 0` by (auto simp add: * has_real_derivative_powr)
+  next
+    case 3
+    have *: "\<forall>\<^sub>F y in nhds x. \<bar>y\<bar> powr p = (-y) powr p"
+      unfolding eventually_nhds apply (rule exI[of _ "{..<0}"]) using `x < 0` by auto
+    show ?thesis
+      apply (subst DERIV_cong_ev[of _ x _ "(\<lambda>x. (-x) powr p)" _ "p * (- x) powr (p - real 1) * - 1"])
+      using `x < 0` apply (simp, simp add: *, simp)
+      apply (rule DERIV_fun_powr[of "\<lambda>y. -y" "-1" "x" p]) using `x < 0` by (auto simp add: derivative_intros)
+  qed
+qed
+
+lemma convex_abs_powr:
+  assumes "p \<ge> 1"
+  shows "convex_on UNIV (\<lambda>x::real. \<bar>x\<bar> powr p)"
+proof (cases "p=1")
+  case True
+  have "convex_on UNIV (\<lambda>x::real. norm x)"
+    by (rule convex_on_norm)
+  moreover have "\<bar>x\<bar> powr p = norm x" for x using True by auto
+  ultimately show ?thesis by simp
+next
+  case False
+  then have "p > 1" using assms by auto
+  define g where "g = (\<lambda>x::real. p * sgn x * \<bar>x\<bar> powr (p - 1))"
+  have *: "DERIV (\<lambda>x. \<bar>x\<bar> powr p) x :> g x" for x
+    unfolding g_def using `p>1` by (auto intro!:derivative_intros)
+  have **: "g x \<le> g y" if "x \<le> y" for x y
+  proof -
+    consider "x \<ge> 0 \<and> y \<ge> 0" | "x \<le> 0 \<and> y \<le> 0" | "x < 0 \<and> y > 0" using `x \<le> y` by linarith
+    then show ?thesis
+    proof (cases)
+      case 1
+      then show ?thesis unfolding g_def sgn_real_def using `p>1` `x \<le> y` by (auto simp add: powr_mono2)
+    next
+      case 2
+      then show ?thesis unfolding g_def sgn_real_def using `p>1` `x \<le> y` by (auto simp add: powr_mono2)
+    next
+      case 3
+      then have "g x \<le> 0" "0 \<le> g y" unfolding g_def using `p > 1` by auto
+      then show ?thesis by simp
+    qed
+  qed
+  show ?thesis
+    apply (rule convex_on_realI[of _ _ g]) using * ** by auto
+qed
+
+lemma convex_powr:
+  assumes "p \<ge> 1"
+  shows "convex_on {0..} (\<lambda>x::real. x powr p)"
+proof -
+  have "convex_on {0..} (\<lambda>x::real. \<bar>x\<bar> powr p)"
+    using convex_abs_powr[OF `p \<ge> 1`] convex_on_subset by auto
+  moreover have "\<bar>x\<bar> powr p = x powr p" if "x \<in> {0..}" for x using that by auto
+  ultimately show ?thesis by (simp add: convex_on_def)
+qed
+
+lemma convex_powr':
+  assumes "p > 0" "p \<le> 1"
+  shows "convex_on {0..} (\<lambda>x::real. - (x powr p))"
+proof -
+  have "convex_on {0<..} (\<lambda>x::real. - (x powr p))"
+    apply (rule convex_on_realI[of _ _ "\<lambda>x. -p * x powr (p-1)"])
+    apply (auto intro!:derivative_intros simp add: has_real_derivative_powr)
+    using `p > 0` `p \<le> 1` by (auto simp add: algebra_simps divide_simps powr_mono2')
+  moreover have "continuous_on {0..} (\<lambda>x::real. - (x powr p))"
+    by (rule continuous_on_minus, rule continuous_on_powr', auto simp add: `p > 0` intro!: continuous_intros)
+  moreover have "{(0::real)..} = closure {0<..}" "convex {(0::real)<..}" by auto
+  ultimately show ?thesis using convex_on_closure by metis
+qed
+
+lemma convex_fx_plus_fy_ineq:
+  fixes f::"real \<Rightarrow> real"
+  assumes "convex_on {0..} f"
+          "x \<ge> 0" "y \<ge> 0" "f 0 = 0"
+  shows "f x + f y \<le> f (x+y)"
+proof -
+  have *: "f a + f b \<le> f (a+b)" if "a \<ge> 0" "b \<ge> a" for a b
+  proof (cases "a = 0")
+    case False
+    then have "a > 0" "b > 0" using `b \<ge> a` `a \<ge> 0` by auto
+    have "(f 0 - f a) / (0 - a) \<le> (f 0 - f (a+b))/ (0 - (a+b))"
+      apply (rule convex_on_diff[OF `convex_on {0..} f`]) using `a > 0` `b > 0` by auto
+    also have "... \<le> (f b - f (a+b)) / (b - (a+b))"
+      apply (rule convex_on_diff[OF `convex_on {0..} f`]) using `a > 0` `b > 0` by auto
+    finally show ?thesis
+      using `a > 0` `b > 0` `f 0 = 0` by (auto simp add: divide_simps algebra_simps)
+  qed (simp add: `f 0 = 0`)
+  then show ?thesis
+    using `x \<ge> 0` `y \<ge> 0` by (metis add.commute le_less not_le)
+qed
+
+lemma x_plus_y_p_le_xp_plus_yp:
+  fixes p x y::real
+  assumes "p > 0" "p \<le> 1" "x \<ge> 0" "y \<ge> 0"
+  shows "(x + y) powr p \<le> x powr p + y powr p"
+using convex_fx_plus_fy_ineq[OF convex_powr'[OF `p > 0` `p \<le> 1`] `x \<ge> 0` `y \<ge> 0`] by auto
+
 
 subsection {*Liminf-Limsup.thy*}
 
@@ -882,6 +1207,20 @@ proof -
   ultimately show ?thesis by (metis (mono_tags, lifting) eventually_mono)
 qed
 
+lemma ereal_Inf_cmult:
+  assumes "c>(0::real)"
+  shows "Inf {ereal c * x |x. P x} = ereal c * Inf {x. P x}"
+proof -
+  have "(\<lambda>x::ereal. c * x) (Inf {x::ereal. P x}) = Inf ((\<lambda>x::ereal. c * x)`{x::ereal. P x})"
+    apply (rule mono_bij_Inf)
+    apply (simp add: assms ereal_mult_left_mono less_imp_le mono_def)
+    apply (rule bij_betw_byWitness[of _ "\<lambda>x. (x::ereal) / c"], auto simp add: assms ereal_mult_divide)
+    using assms ereal_divide_eq apply auto
+    done
+  then show ?thesis by (simp only: setcompr_eq_image[symmetric])
+qed
+
+
 subsubsection {*Continuity of addition*}
 
 text {*The next few lemmas remove an unnecessary assumption in \verb+tendsto_add_ereal+, culminating
@@ -939,7 +1278,7 @@ proof -
     case (real r)
     have "y < y+1" using y real by (simp add: ereal_between(1))
     then have "eventually (\<lambda>x. g x < y + 1) F" using g y order_tendsto_iff by force
-    moreover have "y+1 = ereal( real_of_ereal (y+1))" by (simp add: real)
+    moreover have "y+1 = ereal(real_of_ereal (y+1))" by (simp add: real)
     ultimately have "eventually (\<lambda>x. g x < ereal(real_of_ereal(y + 1))) F" by simp
     then show ?thesis by auto
   next
@@ -994,7 +1333,7 @@ qed
 text {* The next lemma says that the addition is continuous on ereal, except at
 the pairs $(-\infty, \infty)$ and $(\infty, -\infty)$. *}
 
-lemma tendsto_add_ereal_general:
+lemma tendsto_add_ereal_general [tendsto_intros]:
   fixes x y :: ereal
   assumes "\<not>((x=\<infinity> \<and> y=-\<infinity>) \<or> (x=-\<infinity> \<and> y=\<infinity>))"
       and f: "(f \<longlongrightarrow> x) F" and g: "(g \<longlongrightarrow> y) F"
@@ -1109,7 +1448,7 @@ lemma sgn_squared_ereal:
   shows "sgn(l) * sgn(l) = 1"
 apply (cases l) using assms by (auto simp add: one_ereal_def sgn_if)
 
-lemma tendsto_mult_ereal:
+lemma tendsto_mult_ereal [tendsto_intros]:
   fixes f g::"_ \<Rightarrow> ereal"
   assumes "(f \<longlongrightarrow> l) F" "(g \<longlongrightarrow> m) F" "\<not>((l=0 \<and> abs(m) = \<infinity>) \<or> (m=0 \<and> abs(l) = \<infinity>))"
   shows "((\<lambda>x. f x * g x) \<longlongrightarrow> l * m) F"
@@ -1142,6 +1481,12 @@ next
     by (metis mult.left_neutral sgn_squared_ereal[OF `l \<noteq> 0`] sgn_squared_ereal[OF `m \<noteq> 0`] mult.assoc mult.commute)
   ultimately show ?thesis by auto
 qed
+
+lemma tendsto_cmult_ereal_general [tendsto_intros]:
+  fixes f::"_ \<Rightarrow> ereal" and c::ereal
+  assumes "(f \<longlongrightarrow> l) F" "\<not> (l=0 \<and> abs(c) = \<infinity>)"
+  shows "((\<lambda>x. c * f x) \<longlongrightarrow> c * l) F"
+by (cases "c = 0", auto simp add: assms tendsto_mult_ereal)
 
 
 subsubsection {*Continuity of division*}
@@ -1180,7 +1525,7 @@ proof -
   qed
 qed
 
-lemma tendsto_inverse_ereal:
+lemma tendsto_inverse_ereal [tendsto_intros]:
   fixes u::"_ \<Rightarrow> ereal"
   assumes "(u \<longlongrightarrow> l) F" "l \<noteq> 0"
   shows "((\<lambda>x. 1/ u x) \<longlongrightarrow> 1/l) F"
@@ -1225,7 +1570,7 @@ next
   then show ?thesis unfolding v_def using Lim_transform_eventually[OF *] \<open> 1/l = 0 \<close> by auto
 qed
 
-lemma tendsto_divide_ereal:
+lemma tendsto_divide_ereal [tendsto_intros]:
   fixes f g::"_ \<Rightarrow> ereal"
   assumes "(f \<longlongrightarrow> l) F" "(g \<longlongrightarrow> m) F" "m \<noteq> 0" "\<not>(abs(l) = \<infinity> \<and> abs(m) = \<infinity>)"
   shows "((\<lambda>x. f x / g x) \<longlongrightarrow> l / m) F"
@@ -1242,11 +1587,11 @@ qed
 
 subsubsection {*Further limits*}
 
-lemma id_nat_ereal_tendsto_PInf:
+lemma id_nat_ereal_tendsto_PInf [tendsto_intros]:
   "(\<lambda> n::nat. real n) \<longlonglongrightarrow> \<infinity>"
 by (simp add: filterlim_real_sequentially tendsto_PInfty_eq_at_top)
 
-lemma tendsto_at_top_pseudo_inverse:
+lemma tendsto_at_top_pseudo_inverse [tendsto_intros]:
   fixes u::"nat \<Rightarrow> nat"
   assumes "LIM n sequentially. u n :> at_top"
   shows "LIM n sequentially. Inf {N. u N \<ge> n} :> at_top"
@@ -1292,7 +1637,7 @@ proof -
   then show "finite {N. u N \<le> n}" by (simp add: finite_subset)
 qed
 
-lemma tendsto_at_top_pseudo_inverse2:
+lemma tendsto_at_top_pseudo_inverse2 [tendsto_intros]:
   fixes u::"nat \<Rightarrow> nat"
   assumes "LIM n sequentially. u n :> at_top"
   shows "LIM n sequentially. Max {N. u N \<le> n} :> at_top"
@@ -1307,7 +1652,7 @@ proof -
   then show ?thesis using filterlim_at_top by auto
 qed
 
-lemma ereal_truncation_top:
+lemma ereal_truncation_top [tendsto_intros]:
   fixes x::ereal
   shows "(\<lambda>n::nat. min x n) \<longlonglongrightarrow> x"
 proof (cases x)
@@ -1326,7 +1671,7 @@ next
   then show ?thesis by auto
 qed
 
-lemma ereal_truncation_real_top:
+lemma ereal_truncation_real_top [tendsto_intros]:
   fixes x::ereal
   assumes "x \<noteq> - \<infinity>"
   shows "(\<lambda>n::nat. real_of_ereal(min x n)) \<longlonglongrightarrow> x"
@@ -1344,7 +1689,7 @@ next
   then show ?thesis using id_nat_ereal_tendsto_PInf PInf by auto
 qed (simp add: assms)
 
-lemma ereal_truncation_bottom:
+lemma ereal_truncation_bottom [tendsto_intros]:
   fixes x::ereal
   shows "(\<lambda>n::nat. max x (- real n)) \<longlonglongrightarrow> x"
 proof (cases x)
@@ -1365,7 +1710,7 @@ next
   then show ?thesis by auto
 qed
 
-lemma ereal_truncation_real_bottom:
+lemma ereal_truncation_real_bottom [tendsto_intros]:
   fixes x::ereal
   assumes "x \<noteq> \<infinity>"
   shows "(\<lambda>n::nat. real_of_ereal(max x (- real n))) \<longlonglongrightarrow> x"
@@ -1386,7 +1731,7 @@ next
 qed (simp add: assms)
 
 text {* the next one is copied from \verb+tendsto_setsum+. *}
-lemma tendsto_setsum_ereal:
+lemma tendsto_setsum_ereal [tendsto_intros]:
   fixes f :: "'a \<Rightarrow> 'b \<Rightarrow> ereal"
   assumes "\<And>i. i \<in> S \<Longrightarrow> (f i \<longlongrightarrow> a i) F"
           "\<And>i. abs(a i) \<noteq> \<infinity>"
@@ -1560,9 +1905,9 @@ lemma ereal_limsup_lim_add:
   assumes "u \<longlonglongrightarrow> a" "abs(a) \<noteq> \<infinity>"
   shows "limsup (\<lambda>n. u n + v n) = a + limsup v"
 proof -
-  have "limsup u = a" using assms(1) using tendsto_iff_Liminf_eq_Limsup trivial_limit_at_top_linorder by auto
+  have "limsup u = a" using assms(1) using tendsto_iff_Liminf_eq_Limsup trivial_limit_at_top_linorder by blast
   have "(\<lambda>n. -u n) \<longlonglongrightarrow> -a" using assms(1) by auto
-  then have "limsup (\<lambda>n. -u n) = -a" using tendsto_iff_Liminf_eq_Limsup trivial_limit_at_top_linorder by auto
+  then have "limsup (\<lambda>n. -u n) = -a" using tendsto_iff_Liminf_eq_Limsup trivial_limit_at_top_linorder by blast
 
   have "limsup (\<lambda>n. u n + v n) \<le> limsup u + limsup v"
     by (rule ereal_limsup_add_mono)
@@ -1591,10 +1936,10 @@ lemma ereal_liminf_lim_add:
   assumes "u \<longlonglongrightarrow> a" "abs(a) \<noteq> \<infinity>"
   shows "liminf (\<lambda>n. u n + v n) = a + liminf v"
 proof -
-  have "liminf u = a" using assms(1) tendsto_iff_Liminf_eq_Limsup trivial_limit_at_top_linorder by auto
+  have "liminf u = a" using assms(1) tendsto_iff_Liminf_eq_Limsup trivial_limit_at_top_linorder by blast
   then have *: "abs(liminf u) \<noteq> \<infinity>" using assms(2) by auto
   have "(\<lambda>n. -u n) \<longlonglongrightarrow> -a" using assms(1) by auto
-  then have "liminf (\<lambda>n. -u n) = -a" using tendsto_iff_Liminf_eq_Limsup trivial_limit_at_top_linorder by auto
+  then have "liminf (\<lambda>n. -u n) = -a" using tendsto_iff_Liminf_eq_Limsup trivial_limit_at_top_linorder by blast
   then have **: "abs(liminf (\<lambda>n. -u n)) \<noteq> \<infinity>" using assms(2) by auto
 
   have "liminf (\<lambda>n. u n + v n) \<ge> liminf u + liminf v"
@@ -1705,11 +2050,8 @@ proof -
   have *: "(u o s) \<longlonglongrightarrow> a" using assms(1) LIMSEQ_subseq_LIMSEQ s by auto
   have "eventually (\<lambda>n. (u o s) n > 0) sequentially" using assms(2) * order_tendsto_iff by blast
   moreover have "eventually (\<lambda>n. (u o s) n < \<infinity>) sequentially" using assms(3) * order_tendsto_iff by blast
-  moreover
-  {
-    fix n assume "(u o s) n > 0" "(u o s) n < \<infinity>"
-    then have "(w o s) n / (u o s) n = (v o s) n" unfolding w_def by (auto simp add: ereal_divide_eq)
-  }
+  moreover have "(w o s) n / (u o s) n = (v o s) n" if "(u o s) n > 0" "(u o s) n < \<infinity>" for n
+    unfolding w_def using that by (auto simp add: ereal_divide_eq)
   ultimately have "eventually (\<lambda>n. (w o s) n / (u o s) n = (v o s) n) sequentially" using eventually_elim2 by force
   moreover have "(\<lambda>n. (w o s) n / (u o s) n) \<longlonglongrightarrow> (limsup w) / a"
     apply (rule tendsto_divide_ereal[OF s(2) *]) using assms(2) assms(3) by auto
@@ -1738,11 +2080,8 @@ proof -
   have *: "(u o s) \<longlonglongrightarrow> a" using assms(1) LIMSEQ_subseq_LIMSEQ s by auto
   have "eventually (\<lambda>n. (u o s) n > 0) sequentially" using assms(2) * order_tendsto_iff by blast
   moreover have "eventually (\<lambda>n. (u o s) n < \<infinity>) sequentially" using assms(3) * order_tendsto_iff by blast
-  moreover
-  {
-    fix n assume "(u o s) n > 0" "(u o s) n < \<infinity>"
-    then have "(w o s) n / (u o s) n = (v o s) n" unfolding w_def by (auto simp add: ereal_divide_eq)
-  }
+  moreover have "(w o s) n / (u o s) n = (v o s) n" if "(u o s) n > 0" "(u o s) n < \<infinity>" for n
+    unfolding w_def using that by (auto simp add: ereal_divide_eq)
   ultimately have "eventually (\<lambda>n. (w o s) n / (u o s) n = (v o s) n) sequentially" using eventually_elim2 by force
   moreover have "(\<lambda>n. (w o s) n / (u o s) n) \<longlonglongrightarrow> (liminf w) / a"
     apply (rule tendsto_divide_ereal[OF s(2) *]) using assms(2) assms(3) by auto
@@ -1753,6 +2092,40 @@ proof -
   then show ?thesis using I unfolding w_def by auto
 qed
 
+
+subsection {*Nonnegative-extended-real.thy*}
+
+lemma e2ennreal_mult:
+  fixes a b::ereal
+  assumes "a \<ge> 0"
+  shows "e2ennreal(a * b) = e2ennreal a * e2ennreal b"
+by (metis assms e2ennreal_neg eq_onp_same_args ereal_mult_le_0_iff linear times_ennreal.abs_eq)
+
+lemma e2ennreal_mult':
+  fixes a b::ereal
+  assumes "b \<ge> 0"
+  shows "e2ennreal(a * b) = e2ennreal a * e2ennreal b"
+using e2ennreal_mult[OF assms, of a] by (simp add: mult.commute)
+
+lemma SUP_real_ennreal:
+  assumes "A \<noteq> {}" "bdd_above (f`A)"
+  shows "(SUP a:A. ennreal (f a)) = ennreal(SUP a:A. f a)"
+apply (rule antisym, simp add: SUP_least assms(2) cSUP_upper ennreal_leI)
+by (metis assms(1) ennreal_SUP ennreal_less_top le_less)
+
+lemma ennreal_Inf_cmult:
+  assumes "c>(0::real)"
+  shows "Inf {ennreal c * x |x. P x} = ennreal c * Inf {x. P x}"
+proof -
+  have "(\<lambda>x::ennreal. c * x) (Inf {x::ennreal. P x}) = Inf ((\<lambda>x::ennreal. c * x)`{x::ennreal. P x})"
+    apply (rule mono_bij_Inf)
+    apply (simp add: monoI mult_left_mono)
+    apply (rule bij_betw_byWitness[of _ "\<lambda>x. (x::ennreal) / c"], auto simp add: assms)
+    apply (metis assms ennreal_lessI ennreal_neq_top mult.commute mult_divide_eq_ennreal not_less_zero)
+    apply (metis assms divide_ennreal_def ennreal_less_zero_iff ennreal_neq_top less_irrefl mult.assoc mult.left_commute mult_divide_eq_ennreal)
+    done
+  then show ?thesis by (simp only: setcompr_eq_image[symmetric])
+qed
 
 lemma continuous_on_const_minus_ennreal:
   fixes f :: "'a :: topological_space \<Rightarrow> ennreal"
@@ -1780,6 +2153,27 @@ lemma const_minus_Liminf_ennreal:
   shows "F \<noteq> bot \<Longrightarrow> a - Liminf F f = Limsup F (\<lambda>x. a - f x)"
 by (intro Limsup_compose_continuous_antimono[symmetric])
    (auto simp: antimono_def ennreal_mono_minus continuous_on_id continuous_on_const_minus_ennreal)
+
+lemma tendsto_mult_ennreal [tendsto_intros]:
+  fixes f g::"_ \<Rightarrow> ennreal"
+  assumes "(f \<longlongrightarrow> l) F" "(g \<longlongrightarrow> m) F" "\<not>((l = 0 \<and> m = \<infinity>) \<or> (m = 0 \<and> l = \<infinity>))"
+  shows "((\<lambda>x. f x * g x) \<longlongrightarrow> l * m) F"
+proof -
+  have "((\<lambda>x. enn2ereal(f x) * enn2ereal(g x)) \<longlongrightarrow> enn2ereal l * enn2ereal m) F"
+    apply (auto intro!: tendsto_intros simp add: assms)
+    by (insert assms le_zero_eq less_eq_ennreal.rep_eq, fastforce)+
+  then have "((\<lambda>x. enn2ereal(f x * g x)) \<longlongrightarrow> enn2ereal(l * m)) F"
+    using times_ennreal.rep_eq by auto
+  then show ?thesis
+    by (auto intro!: tendsto_intros)
+qed
+
+lemma tendsto_cmult_ennreal [tendsto_intros]:
+  fixes c l::ennreal
+  assumes "\<not>(c = \<infinity> \<and> l = 0)"
+          "(f \<longlongrightarrow> l) F"
+  shows "((\<lambda>x. c * f x) \<longlongrightarrow> c * l) F"
+by (cases "c = 0", insert assms, auto intro!: tendsto_intros)
 
 
 subsection {*Indicator.thy*}
@@ -1815,18 +2209,15 @@ lemma disjoint_family_Suc2:
   assumes Suc: "\<And>n. A (Suc n) \<subseteq> A n"
   shows "disjoint_family (\<lambda>i. A i - A (Suc i))"
 proof -
-  {
-    fix m
-    have "\<And>n. A (m+n) \<subseteq> A n"
-    proof (induct m)
-      case 0 show ?case by simp
-    next
-      case (Suc m) then show ?case
-        by (metis Suc_eq_plus1 assms add.commute add.left_commute subset_trans)
-    qed
-  }
-  then have "\<And>m n. m > n \<Longrightarrow> A m \<subseteq> A n"
-    by (metis add.commute le_add_diff_inverse nat_less_le)
+  have "A (m+n) \<subseteq> A n" for m n
+  proof (induct m)
+    case 0 show ?case by simp
+  next
+    case (Suc m) then show ?case
+      by (metis Suc_eq_plus1 assms add.commute add.left_commute subset_trans)
+  qed
+  then have "A m \<subseteq> A n" if "m > n" for m n
+    by (metis that add.commute le_add_diff_inverse nat_less_le)
   then show ?thesis
     by (auto simp add: disjoint_family_on_def)
        (metis insert_absorb insert_subset le_SucE le_antisym not_le_imp_less)
@@ -1916,27 +2307,24 @@ proof -
   have [measurable]: "\<And>N i. (f N)-`(A i) \<inter> space M \<in> sets M" using A(1) by auto
   then have mes: "(\<Inter>i. \<Union>n. \<Inter>N\<in>{n..}. (f N)-`(A i) \<inter> space M) \<in> sets M" by blast
 
-  {
-    fix u::"nat \<Rightarrow> 'b"
-    have "(u \<longlonglongrightarrow> c) \<longleftrightarrow> (\<forall>i. eventually (\<lambda>n. u n \<in> A i) sequentially)"
-    proof
-      assume "u \<longlonglongrightarrow> c"
-      then have "eventually (\<lambda>n. u n \<in> A i) sequentially" for i using A(1)[of i] A(2)[of i]
-        by (simp add: topological_tendstoD)
-      then show "(\<forall>i. eventually (\<lambda>n. u n \<in> A i) sequentially)" by auto
-    next
-      assume H: "(\<forall>i. eventually (\<lambda>n. u n \<in> A i) sequentially)"
-      show "(u \<longlonglongrightarrow> c)"
-      proof (rule topological_tendstoI)
-        fix S assume "open S" "c \<in> S"
-        with A(3)[OF this] obtain i where "A i \<subseteq> S"
-          using eventually_False_sequentially eventually_mono by blast
-        moreover have "eventually (\<lambda>n. u n \<in> A i) sequentially" using H by simp
-        ultimately show "\<forall>\<^sub>F n in sequentially. u n \<in> S"
-          by (simp add: eventually_mono subset_eq)
-      qed
+  have "(u \<longlonglongrightarrow> c) \<longleftrightarrow> (\<forall>i. eventually (\<lambda>n. u n \<in> A i) sequentially)" for u::"nat \<Rightarrow> 'b"
+  proof
+    assume "u \<longlonglongrightarrow> c"
+    then have "eventually (\<lambda>n. u n \<in> A i) sequentially" for i using A(1)[of i] A(2)[of i]
+      by (simp add: topological_tendstoD)
+    then show "(\<forall>i. eventually (\<lambda>n. u n \<in> A i) sequentially)" by auto
+  next
+    assume H: "(\<forall>i. eventually (\<lambda>n. u n \<in> A i) sequentially)"
+    show "(u \<longlonglongrightarrow> c)"
+    proof (rule topological_tendstoI)
+      fix S assume "open S" "c \<in> S"
+      with A(3)[OF this] obtain i where "A i \<subseteq> S"
+        using eventually_False_sequentially eventually_mono by blast
+      moreover have "eventually (\<lambda>n. u n \<in> A i) sequentially" using H by simp
+      ultimately show "\<forall>\<^sub>F n in sequentially. u n \<in> S"
+        by (simp add: eventually_mono subset_eq)
     qed
-  }
+  qed
   then have "{x. (\<lambda>n. f n x) \<longlonglongrightarrow> c} = (\<Inter>i. \<Union>n. \<Inter>N\<in>{n..}. (f N)-`(A i))"
     by (auto simp add: atLeast_def eventually_at_top_linorder)
   then have "{x \<in> space M. (\<lambda>n. f n x) \<longlonglongrightarrow> c} = (\<Inter>i. \<Union>n. \<Inter>N\<in>{n..}. (f N)-`(A i) \<inter> space M)"
@@ -1952,7 +2340,7 @@ lemma measurable_limit2 [measurable]:
 proof -
   define w where "w = (\<lambda>n x. u n x - v x)"
   have [measurable]: "w n \<in> borel_measurable M" for n unfolding w_def by auto
-  have "((\<lambda>n. u n x) \<longlonglongrightarrow> v x ) \<longleftrightarrow> ((\<lambda>n. w n x) \<longlonglongrightarrow> 0)" for x
+  have "((\<lambda>n. u n x) \<longlonglongrightarrow> v x) \<longleftrightarrow> ((\<lambda>n. w n x) \<longlonglongrightarrow> 0)" for x
     unfolding w_def using Lim_null by auto
   then show ?thesis using measurable_limit by auto
 qed
@@ -1985,6 +2373,11 @@ lemma measurable_liminf [measurable (raw)]:
   shows "liminf A \<in> sets M"
 by (subst liminf_SUP_INF, auto)
 
+lemma measurable_abs_powr [measurable]:
+  fixes p::real
+  assumes [measurable]: "f \<in> borel_measurable M"
+  shows "(\<lambda>x. \<bar>f x\<bar> powr p) \<in> borel_measurable M"
+unfolding powr_def by auto
 
 text {* The next one is a variation around \verb+measurable_restrict_space+.*}
 
@@ -2027,6 +2420,16 @@ next
   ultimately show "f x \<in> space N" by simp
 qed
 
+text {*The next lemma holds in any second countable linorder (including ennreal or ereal for instance),
+but in the current state of the theory \verb+ borel_measurable_mono_on_fnc+ is restricted to
+reals.*}
+
+lemma borel_measurable_piecewise_mono:
+  fixes f::"real \<Rightarrow> real" and C::"real set set"
+  assumes "countable C" "\<And>c. c \<in> C \<Longrightarrow> c \<in> sets borel" "\<And>c. c \<in> C \<Longrightarrow> mono_on f c" "(\<Union>C) = UNIV"
+  shows "f \<in> borel_measurable borel"
+by (rule measurable_piecewise_restrict[of C], auto intro: borel_measurable_mono_on_fnc simp: assms)
+
 
 subsection {*Measure-Space.thy *}
 
@@ -2044,6 +2447,11 @@ proof -
 
   show ?thesis using 1 2 by (metis add.assoc add.commute)
 qed
+
+lemma emeasure_0_AE:
+  assumes "emeasure M (space M) = 0"
+  shows "AE x in M. P x"
+using eventually_ae_filter assms by blast
 
 lemma AE_E3:
   assumes "AE x in M. P x"
@@ -2070,6 +2478,15 @@ proof (cases)
   }
   ultimately show ?thesis by auto
 qed (simp)
+
+text {*The next lemma is convenient to combine with a lemma whose conclusion is of the
+form \verb+AE x in M. P x = Q x+: for such a lemma, there is no \verb+[symmetric]+ variant,
+but using \verb+AE_symmetric[OF...]+ will replace it.*}
+
+lemma AE_symmetric:
+  assumes "AE x in M. P x = Q x"
+  shows "AE x in M. Q x = P x"
+using assms by auto
 
 lemma emeasure_pos_unionE:
   assumes "\<And> (N::nat). A N \<in> sets M"
@@ -2173,6 +2590,64 @@ proof -
   have "B i \<in> sets M" "B i \<subseteq> W" "emeasure M (B i) < \<infinity>" "emeasure M (B i) > C"
     using B_meas b c d by auto
   then show ?thesis using that by blast
+qed
+
+text {*An equivalent characterization of sigma-finite spaces is the existence of integrable
+positive functions (or, still equivalently, the existence of a probability measure which is in
+the same measure class as the original measure).*}
+
+lemma (in sigma_finite_measure) obtain_positive_integrable_function:
+  obtains f::"'a \<Rightarrow> real" where
+    "f \<in> borel_measurable M"
+    "\<And>x. f x > 0"
+    "\<And>x. f x \<le> 1"
+    "integrable M f"
+proof -
+  obtain A :: "nat \<Rightarrow> 'a set" where "range A \<subseteq> sets M" "(\<Union>i. A i) = space M" "\<And>i. emeasure M (A i) \<noteq> \<infinity>"
+    using sigma_finite by auto
+  then have [measurable]:"A n \<in> sets M" for n by auto
+  define g where "g = (\<lambda>x. (\<Sum>n. (1/2)^(Suc n) * indicator (A n) x / (1+ measure M (A n))))"
+  have [measurable]: "g \<in> borel_measurable M" unfolding g_def by auto
+  have *: "summable (\<lambda>n. (1/2)^(Suc n) * indicator (A n) x / (1+ measure M (A n)))" for x
+    apply (rule summable_comparison_test'[of "\<lambda>n. (1/2)^(Suc n)" 0])
+    using power_half_series summable_def by (auto simp add: indicator_def divide_simps)
+  have "g x \<le> (\<Sum>n. (1/2)^(Suc n))" for x unfolding g_def
+    apply (rule suminf_le) using * power_half_series summable_def by (auto simp add: indicator_def divide_simps)
+  then have g_le_1: "g x \<le> 1" for x using power_half_series sums_unique by fastforce
+
+  have g_pos: "g x > 0" if "x \<in> space M" for x
+  unfolding g_def proof (subst suminf_pos_iff[OF *[of x]], auto)
+    obtain i where "x \<in> A i" using `(\<Union>i. A i) = space M` `x \<in> space M` by auto
+    then have "0 < (1 / 2) ^ Suc i * indicator (A i) x / (1 + Sigma_Algebra.measure M (A i))"
+      unfolding indicator_def apply (auto simp add: divide_simps) using measure_nonneg[of M "A i"]
+      by (auto, meson add_nonneg_nonneg linorder_not_le mult_nonneg_nonneg zero_le_numeral zero_le_one zero_le_power)
+    then show "\<exists>i. 0 < (1 / 2) ^ i * indicator (A i) x / (2 + 2 * Sigma_Algebra.measure M (A i))"
+      by auto
+  qed
+
+  have "integrable M g"
+  unfolding g_def proof (rule integrable_suminf)
+    fix n
+    show "integrable M (\<lambda>x. (1 / 2) ^ Suc n * indicator (A n) x / (1 + Sigma_Algebra.measure M (A n)))"
+      using `emeasure M (A n) \<noteq> \<infinity>`
+      by (auto intro!: integrable_mult_right integrable_divide_zero integrable_real_indicator simp add: top.not_eq_extremum)
+  next
+    show "AE x in M. summable (\<lambda>n. norm ((1 / 2) ^ Suc n * indicator (A n) x / (1 + Sigma_Algebra.measure M (A n))))"
+      using * by auto
+    show "summable (\<lambda>n. (\<integral>x. norm ((1 / 2) ^ Suc n * indicator (A n) x / (1 + Sigma_Algebra.measure M (A n))) \<partial>M))"
+      apply (rule summable_comparison_test'[of "\<lambda>n. (1/2)^(Suc n)" 0], auto)
+      using power_half_series summable_def apply auto[1]
+      apply (auto simp add: divide_simps) using measure_nonneg[of M] not_less by fastforce
+  qed
+
+  define f where "f = (\<lambda>x. if x \<in> space M then g x else 1)"
+  have "f x > 0" for x unfolding f_def using g_pos by auto
+  moreover have "f x \<le> 1" for x unfolding f_def using g_le_1 by auto
+  moreover have [measurable]: "f \<in> borel_measurable M" unfolding f_def by auto
+  moreover have "integrable M f"
+    apply (subst integrable_cong[of _ _ _ g]) unfolding f_def using `integrable M g` by auto
+  ultimately show "(\<And>f. f \<in> borel_measurable M \<Longrightarrow> (\<And>x. 0 < f x) \<Longrightarrow> (\<And>x. f x \<le> 1) \<Longrightarrow> integrable M f \<Longrightarrow> thesis) \<Longrightarrow> thesis"
+    by (meson that)
 qed
 
 lemma null_sets_inc:
@@ -2431,7 +2906,7 @@ lemma (in finite_measure) nn_integral_bounded_eq_bound_then_AE:
   shows "AE x in M. f x = c"
 proof (cases)
   assume "emeasure M (space M) = 0"
-  then show ?thesis using eventually_ae_filter by blast
+  then show ?thesis by (rule emeasure_0_AE)
 next
   assume "emeasure M (space M) \<noteq> 0"
   have fin: "AE x in M. f x \<noteq> top" using assms by (auto simp: top_unique)
@@ -2566,9 +3041,16 @@ apply (rule nn_integral_cong_AE) using assms(1) by auto
 
 lemma nn_set_integral_set_mono:
   "A \<subseteq> B \<Longrightarrow> (\<integral>\<^sup>+ x \<in> A. f x \<partial>M) \<le> (\<integral>\<^sup>+ x \<in> B. f x \<partial>M)"
-  by (auto intro!: nn_integral_mono split: split_indicator)
+by (auto intro!: nn_integral_mono split: split_indicator)
 
-lemma nn_set_integral_space:
+lemma nn_set_integral_mono:
+  assumes [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
+          "A \<in> sets M"
+      and "AE x\<in>A in M. f x \<le> g x"
+  shows "(\<integral>\<^sup>+x \<in> A. f x \<partial>M) \<le> (\<integral>\<^sup>+x \<in> A. g x \<partial>M)"
+by (auto intro!: nn_integral_mono_AE split: split_indicator simp: assms)
+
+lemma nn_set_integral_space [simp]:
   shows "(\<integral>\<^sup>+ x \<in> space M. f x \<partial>M) = (\<integral>\<^sup>+x. f x \<partial>M)"
 by (metis (mono_tags, lifting) indicator_simps(1) mult.right_neutral nn_integral_cong)
 
@@ -2639,8 +3121,61 @@ proof (rule density_unique)
     by (intro measure_eqI) (auto simp: emeasure_density intro!: density_eq)
 qed (auto simp add: assms)
 
+
 subsection {*Bochner-Integration.thy*}
 
+text {*The next two statements are useful to bound Lebesgue integrals, as they avoid one
+integrability assumption. The price to pay is that the upper function has to be nonnegative,
+but this is often true and easy to check in computations.*}
+
+lemma integral_mono_AE':
+  fixes f::"_ \<Rightarrow> real"
+  assumes "integrable M f" "AE x in M. g x \<le> f x" "AE x in M. 0 \<le> f x"
+  shows "(\<integral>x. g x \<partial>M) \<le> (\<integral>x. f x \<partial>M)"
+proof (cases "integrable M g")
+  case True
+  show ?thesis by (rule integral_mono_AE, auto simp add: assms True)
+next
+  case False
+  then have "(\<integral>x. g x \<partial>M) = 0" by (simp add: not_integrable_integral_eq)
+  also have "... \<le> (\<integral>x. f x \<partial>M)" by (simp add: integral_nonneg_AE[OF assms(3)])
+  finally show ?thesis by simp
+qed
+
+lemma integral_mono':
+  fixes f::"_ \<Rightarrow> real"
+  assumes "integrable M f" "\<And>x. x \<in> space M \<Longrightarrow> g x \<le> f x" "\<And>x. x \<in> space M \<Longrightarrow> 0 \<le> f x"
+  shows "(\<integral>x. g x \<partial>M) \<le> (\<integral>x. f x \<partial>M)"
+by (rule integral_mono_AE', insert assms, auto)
+
+text {*The next statement, named \verb+integral_norm_bound+, is available in
+\verb+Bochner_integration.thy+ with a useless measurability assumption*}
+
+lemma integral_norm_bound' [simp]:
+  fixes f :: "_ \<Rightarrow> 'a :: {banach, second_countable_topology}"
+  shows "norm (integral\<^sup>L M f) \<le> (\<integral>x. norm (f x) \<partial>M)"
+proof (cases "integrable M f")
+  case True
+  then show ?thesis using integral_norm_bound by auto
+next
+  case False
+  then have "norm (integral\<^sup>L M f) = 0" by (simp add: not_integrable_integral_eq)
+  moreover have "(\<integral>x. norm (f x) \<partial>M) \<ge> 0" by auto
+  ultimately show ?thesis by simp
+qed
+
+text {*It is also convenient to have the real version available as a simp rule.*}
+
+lemma integral_abs_bound [simp]:
+  fixes f::"'a \<Rightarrow> real"
+  shows "abs(\<integral>x. f x \<partial>M) \<le> (\<integral>x. \<bar>f x\<bar> \<partial>M)"
+using integral_norm_bound'[of M f] by auto
+
+lemma nn_integral_nonneg_infinite:
+  fixes f::"'a \<Rightarrow> real"
+  assumes "f \<in> borel_measurable M" "\<not> integrable M f" "AE x in M. f x \<ge> 0"
+  shows "(\<integral>\<^sup>+x. f x \<partial>M) = \<infinity>"
+using assms integrableI_real_bounded less_top by auto
 
 lemma integrable_Min:
   fixes f:: "_ \<Rightarrow> _ \<Rightarrow> real"
@@ -2678,7 +3213,7 @@ qed
 
 lemma integral_Markov_inequality:
   assumes [measurable]: "integrable M u" and "AE x in M. 0 \<le> u x" "0 < (c::real)"
-  shows "(emeasure M) {x\<in>space M. u x \<ge> c} \<le> (1/c) * (\<integral> x. u x \<partial>M)"
+  shows "(emeasure M) {x\<in>space M. u x \<ge> c} \<le> (1/c) * (\<integral>x. u x \<partial>M)"
 proof -
   have "(\<integral>\<^sup>+ x. ennreal(u x) * indicator (space M) x \<partial>M) \<le> (\<integral>\<^sup>+ x. u x \<partial>M)"
     by (rule nn_integral_mono_AE, auto simp add: `c>0` less_eq_real_def)
@@ -2694,7 +3229,7 @@ proof -
   also have "... \<le> ennreal(1/c) * (\<integral>\<^sup>+ x. ennreal(u x) * indicator (space M) x \<partial>M)"
     by (rule nn_integral_Markov_inequality) (auto simp add: assms)
   also have "... \<le> ennreal(1/c) * (\<integral>x. u x \<partial>M)"
-    by (rule mult_left_mono, auto simp add: * `c>0`)
+    apply (rule mult_left_mono) using * `c>0` by auto
   finally show ?thesis
     using \<open>0<c\<close> by (simp add: ennreal_mult'[symmetric])
 qed
@@ -2863,7 +3398,7 @@ proof -
     qed
     have A_fin: "emeasure M (A n) < \<infinity>" for n
       using `e > 0` A_bound[of n]
-      by (auto simp add: ennreal_mult less_top[symmetric] )
+      by (auto simp add: ennreal_mult less_top[symmetric])
 
     have A_sum: "summable (\<lambda>n. measure M (A n))"
     proof (rule summable_comparison_test'[of "\<lambda>n. (1/e) * (1/2)^n" 0])
@@ -2978,7 +3513,7 @@ proof -
   have le: "ennreal (norm (F n x - f x)) \<le> ennreal (norm (f x)) + ennreal (norm (F n x))" for n x
     by (simp add: norm_minus_commute norm_triangle_ineq4 ennreal_plus[symmetric] ennreal_minus del: ennreal_plus)
   then have le2: "(\<integral>\<^sup>+ x. ennreal (norm (F n x - f x)) \<partial>M) \<le> (\<integral>\<^sup>+ x. ennreal (norm (f x)) + ennreal (norm (F n x)) \<partial>M)" for n
-    by (intro nn_integral_mono) auto
+    by (rule nn_integral_mono)
 
   have "2 * (\<integral>\<^sup>+ x. norm(f x) \<partial>M) = (\<integral>\<^sup>+ x. liminf (\<lambda>n. ennreal (G n x)) \<partial>M)"
     by (simp add: int_liminf)
@@ -3032,5 +3567,8 @@ proof (rule Scheffe_lemma1)
   then show "integrable M (F n)" by (subst integrable_iff_bounded, simp add: assms(1)[of n])
 qed (auto simp add: assms Limsup_bounded)
 
+
+text {*There is a \verb+LIM_zero_cancel+ both in \verb+Levy+ and \verb+Limits+, with the same
+statement...*}
 
 end

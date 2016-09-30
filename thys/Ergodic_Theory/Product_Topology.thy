@@ -450,7 +450,7 @@ proof (rule continuous_on_generated_topo)
     using H(2) assms(1) `J \<subseteq> I` by auto
   ultimately show "openin T1 (f-`U \<inter> topspace T1)" by simp
 next
-  show "f ` topspace T1 \<subseteq> \<Union>{Pi\<^sub>E I X |X. (\<forall>i. openin (T i) (X i)) \<and> finite {i. X i \<noteq> topspace (T i)}}"
+  show "f `topspace T1 \<subseteq> \<Union>{Pi\<^sub>E I X |X. (\<forall>i. openin (T i) (X i)) \<and> finite {i. X i \<noteq> topspace (T i)}}"
     apply (subst topology_generated_by_topspace[symmetric])
     apply (subst product_topology_def[symmetric])
     apply (simp only: product_topology_topspace)
@@ -504,16 +504,16 @@ definition open_fun_def:
   "open U = openin (product_topology (\<lambda>i. euclidean) UNIV) U"
 
 instance proof
-  have "topspace ((product_topology (\<lambda>(i::'a). (euclidean::('b topology))) UNIV)) = UNIV"
+  have "topspace (product_topology (\<lambda>(i::'a). euclidean::('b topology)) UNIV) = UNIV"
     unfolding product_topology_topspace topspace_euclidean by auto
-  then show "open (UNIV::(('a \<Rightarrow> 'b) set))"
+  then show "open (UNIV::('a \<Rightarrow> 'b) set)"
     unfolding open_fun_def by (metis openin_topspace)
 qed (auto simp add: open_fun_def)
 
 end
 
 lemma euclidean_product_topology:
-  "euclidean = product_topology (\<lambda>i. euclidean::( ('b::topological_space)) topology) UNIV"
+  "euclidean = product_topology (\<lambda>i. euclidean::('b::topological_space) topology) UNIV"
 by (metis open_openin topology_eq open_fun_def)
 
 lemma product_topology_basis':
@@ -536,8 +536,8 @@ proof -
     proof (auto)
       fix f :: "'a \<Rightarrow> 'b" and i :: 'i
       assume a1: "i \<in> I"
-      assume a2: "\<forall>i. f i \<in> (if i \<in> x ` I then if i \<in> x ` I then \<Inter>{U ia |ia. ia \<in> I \<and> x ia = i} else UNIV else UNIV)"
-      have f3: "x i \<in> x ` I"
+      assume a2: "\<forall>i. f i \<in> (if i \<in> x`I then if i \<in> x`I then \<Inter>{U ia |ia. ia \<in> I \<and> x ia = i} else UNIV else UNIV)"
+      have f3: "x i \<in> x`I"
         using a1 by blast
       have "U i \<in> {U ia |ia. ia \<in> I \<and> x ia = x i}"
         using a1 by blast
@@ -603,7 +603,7 @@ proof -
         unfolding f_def y_def by auto
       moreover have "(y, x N) \<in> {x. (\<forall>i. x i \<in> F) \<and> (\<forall>i\<ge>N. x i = a)} \<times> F"
         unfolding y_def using H `a \<in> F` by auto
-      ultimately show "x \<in> f ` ({x. (\<forall>i. x i \<in> F) \<and> (\<forall>i\<ge>N. x i = a)} \<times> F)"
+      ultimately show "x \<in> f`({x. (\<forall>i. x i \<in> F) \<and> (\<forall>i\<ge>N. x i = a)} \<times> F)"
         by (metis (no_types, lifting) image_eqI)
     qed
     moreover have "countable ({x. (\<forall>i. x i \<in> F) \<and> (\<forall>i\<ge>N. x i = a)} \<times> F)"
@@ -638,7 +638,7 @@ proof -
       by auto
     moreover have "f = pi g"
       unfolding pi_def g_def I_def using H by fastforce
-    ultimately show "f \<in> pi ` {g. (\<forall>j. g j \<in> G) \<and> finite {j. g j \<noteq> b}}"
+    ultimately show "f \<in> pi`{g. (\<forall>j. g j \<in> G) \<and> finite {j. g j \<noteq> b}}"
       by auto
   qed
   then show ?thesis

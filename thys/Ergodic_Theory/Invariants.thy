@@ -284,7 +284,7 @@ next
   define good_set where "good_set = space M - C"
   define good_time where "good_time = (\<lambda>x. Inf {n. (T^^n) x \<in> good_set})"
   obtain y0::'b where "y0 = y0" by auto
-  define g where "g = (\<lambda>x. if (\<exists>n. (T^^n) x \<in> good_set) then f( (T^^(good_time x)) x) else y0)"
+  define g where "g = (\<lambda>x. if (\<exists>n. (T^^n) x \<in> good_set) then f((T^^(good_time x)) x) else y0)"
 
   have [measurable]: "good_set \<in> sets M" unfolding good_set_def by simp
   have [measurable]: "\<And>k. (T^^k)-` good_set \<inter> space M \<in> sets M" using Tn_meas by measurable
@@ -556,7 +556,7 @@ begin
 lemma Invariants_of_foTn:
   fixes f::"'a \<Rightarrow> real"
   assumes [measurable]: "integrable M f"
-  shows "AE x in M. real_cond_exp M Invariants f x = real_cond_exp M Invariants (f o (T^^n)) x"
+  shows "AE x in M. real_cond_exp M Invariants (f o (T^^n)) x = real_cond_exp M Invariants f x"
 proof (rule real_cond_exp_charact)
   fix A assume [measurable]: "A \<in> sets Invariants"
   then have [measurable]: "A \<in> sets M" using Invariants_in_sets by blast
@@ -593,9 +593,9 @@ proof -
 
   have "AE x in M. n * real_cond_exp M Invariants f x = (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants f x)" by auto
   moreover have "AE x in M. (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants f x) = (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants (F i) x)"
-    apply (rule AE_equal_setsum) unfolding F_def using Invariants_of_foTn[OF assms] by simp
+    apply (rule AE_symmetric[OF AE_equal_setsum]) unfolding F_def using Invariants_of_foTn[OF assms] by simp
   moreover have "AE x in M. (\<Sum>i\<in>{..<n}. real_cond_exp M Invariants (F i) x) = real_cond_exp M Invariants (\<lambda>x. \<Sum>i\<in>{..<n}. F i x) x"
-    by (rule real_cond_exp_setsum [OF *])
+    by (rule AE_symmetric[OF real_cond_exp_setsum [OF *]])
   moreover have "AE x in M. real_cond_exp M Invariants (\<lambda>x. \<Sum>i\<in>{..<n}. F i x) x = real_cond_exp M Invariants (birkhoff_sum f n) x"
     apply (rule real_cond_exp_cong) unfolding F_def using birkhoff_sum_def[symmetric] by auto
   ultimately show ?thesis by auto
@@ -742,13 +742,13 @@ proof -
   have "\<And>n. (\<integral>x. (F (n+1) x - F n (T x)) * indicator A x \<partial>M) \<ge> 0"
   proof -
     fix n
-    have " (\<integral>x. F n (T x) * indicator A x \<partial>M) = (\<integral>x. (\<lambda>x. F n x * indicator A x) (T x) \<partial>M)"
+    have "(\<integral>x. F n (T x) * indicator A x \<partial>M) = (\<integral>x. (\<lambda>x. F n x * indicator A x) (T x) \<partial>M)"
       by (rule Bochner_Integration.integral_cong, auto simp add: Ainv indicator_def)
     also have "... = (\<integral>x. F n x * indicator A x \<partial>M)"
       by (rule T_integral_preserving, auto simp add: intFn integrable_real_mult_indicator)
     finally have i: "(\<integral>x. F n (T x) * indicator A x \<partial>M) = (\<integral>x. F n x * indicator A x \<partial>M)" by simp
 
-    have " (\<integral>x. (F (n+1) x - F n (T x)) * indicator A x \<partial>M) = (\<integral>x. F (n+1) x * indicator A x - F n (T x) * indicator A x \<partial>M)"
+    have "(\<integral>x. (F (n+1) x - F n (T x)) * indicator A x \<partial>M) = (\<integral>x. F (n+1) x * indicator A x - F n (T x) * indicator A x \<partial>M)"
       by (simp add: mult.commute right_diff_distrib)
     also have "... = (\<integral>x. F (n+1) x * indicator A x \<partial>M) - (\<integral>x. F n (T x) * indicator A x \<partial>M)"
       by (rule Bochner_Integration.integral_diff, auto simp add: intFn integrable_real_mult_indicator T_meas T_integral_preserving(1))
@@ -764,7 +764,7 @@ proof -
     {
       fix x
       have "F n x \<le> F (n+1) x" unfolding F_def by (rule Max_mono, auto)
-      then have " (F (n+1) x - F n x) * indicator A x \<ge> 0" by simp
+      then have "(F (n+1) x - F n x) * indicator A x \<ge> 0" by simp
     } note a = this
     have "integral\<^sup>L M (\<lambda>x. 0) \<le> integral\<^sup>L M (\<lambda>x. (F (n+1) x - F n x) * indicator A x)"
       apply (rule integral_mono) using a by (auto simp add: intFn integrable_real_mult_indicator)
@@ -863,59 +863,101 @@ theorem birkhoff_theorem_AE_nonergodic:
   shows "AE x in M. (\<lambda>n. birkhoff_sum f n x / n) \<longlonglongrightarrow> real_cond_exp M Invariants f x"
 proof -
   {
-    fix x assume i: "limsup (\<lambda>n. ereal(birkhoff_sum f n x /n )) \<le> real_cond_exp M Invariants f x"
-             and ii: "limsup (\<lambda>n. ereal(birkhoff_sum (\<lambda>x. -f x) n x / n )) \<le> real_cond_exp M Invariants (\<lambda>x. -f x) x"
+    fix x assume i: "limsup (\<lambda>n. ereal(birkhoff_sum f n x /n)) \<le> real_cond_exp M Invariants f x"
+             and ii: "limsup (\<lambda>n. ereal(birkhoff_sum (\<lambda>x. -f x) n x / n)) \<le> real_cond_exp M Invariants (\<lambda>x. -f x) x"
              and iii: "real_cond_exp M Invariants (\<lambda>x. -f x) x = - real_cond_exp M Invariants f x"
     have "\<And>n. birkhoff_sum (\<lambda>x. -f x) n x = - birkhoff_sum f n x"
       using birkhoff_sum_cmult[where ?c = "-1" and ?f = f] by auto
-    then have "\<And>n. ereal(birkhoff_sum (\<lambda>x. -f x) n x / n ) = - ereal(birkhoff_sum f n x / n )" by auto
-    moreover have "limsup (\<lambda>n. - ereal(birkhoff_sum f n x / n )) = - liminf (\<lambda>n. ereal(birkhoff_sum f n x /n ))"
+    then have "\<And>n. ereal(birkhoff_sum (\<lambda>x. -f x) n x / n) = - ereal(birkhoff_sum f n x / n)" by auto
+    moreover have "limsup (\<lambda>n. - ereal(birkhoff_sum f n x / n)) = - liminf (\<lambda>n. ereal(birkhoff_sum f n x /n))"
       by (rule ereal_Limsup_uminus)
-    ultimately have "-liminf (\<lambda>n. ereal(birkhoff_sum f n x /n )) = limsup (\<lambda>n. ereal(birkhoff_sum (\<lambda>x. -f x) n x / n ))"
+    ultimately have "-liminf (\<lambda>n. ereal(birkhoff_sum f n x /n)) = limsup (\<lambda>n. ereal(birkhoff_sum (\<lambda>x. -f x) n x / n))"
       by simp
-    then have "-liminf (\<lambda>n. ereal(birkhoff_sum f n x /n )) \<le> - real_cond_exp M Invariants f x"
+    then have "-liminf (\<lambda>n. ereal(birkhoff_sum f n x /n)) \<le> - real_cond_exp M Invariants f x"
       using ii iii by simp
-    then have "liminf (\<lambda>n. ereal(birkhoff_sum f n x /n )) \<ge> real_cond_exp M Invariants f x"
+    then have "liminf (\<lambda>n. ereal(birkhoff_sum f n x /n)) \<ge> real_cond_exp M Invariants f x"
       by (simp add: ereal_uminus_le_reorder)
     then have "(\<lambda>n. birkhoff_sum f n x /n) \<longlonglongrightarrow> real_cond_exp M Invariants f x"
       using i by (simp add: limsup_le_liminf_real)
   } note * = this
-  moreover have "AE x in M. limsup (\<lambda>n. ereal(birkhoff_sum f n x /n )) \<le> real_cond_exp M Invariants f x"
+  moreover have "AE x in M. limsup (\<lambda>n. ereal(birkhoff_sum f n x /n)) \<le> real_cond_exp M Invariants f x"
     using birkhoff_aux2 assms by simp
-  moreover have "AE x in M. limsup (\<lambda>n. ereal(birkhoff_sum (\<lambda>x. -f x) n x / n )) \<le> real_cond_exp M Invariants (\<lambda>x. -f x) x"
+  moreover have "AE x in M. limsup (\<lambda>n. ereal(birkhoff_sum (\<lambda>x. -f x) n x / n)) \<le> real_cond_exp M Invariants (\<lambda>x. -f x) x"
     using birkhoff_aux2 assms by simp
   moreover have "AE x in M. real_cond_exp M Invariants (\<lambda>x. -f x) x = - real_cond_exp M Invariants f x"
     using real_cond_exp_cmult[where ?c = "-1"] assms by force
   ultimately show ?thesis by auto
 qed
 
-text {*FIXME: The proof we give of the next lemma is not the "good" one. The good argument is to say
-that $f$ is integrable, hence $\mu\{|f|> n\epsilon\}$ is summable (for any fixed $\epsilon$), thanks
-to the formula *: $\int |f| d\mu = \int \mu\{|f|>t\} dt$. The conclusion then follows from Borel-Cantelli.
-However, * is not available yet (it needs an integration by parts formula for measures other than
-Lebesgue).*}
+text {*If a function $f$ is integrable, then $E(f\circ T - f | I) = E(f\circ T | I) - E(f|I) = 0$.
+Hence, $S_n(f \circ T - f) / n$ converges almost everywhere to $0$, i.e., $f(T^n x)/n \to 0$.
+It is remarkable (and sometimes useful) that this holds under the weaker condition that
+$f\circ T - f$ is integrable, where this naive argument fails.*}
 
 lemma limit_foTn_over_n:
   fixes f::"'a \<Rightarrow> real"
-  assumes "integrable M f"
-  shows "AE x in M. (\<lambda>n. f((T^^n) x) / n) \<longlonglongrightarrow> 0"
+  assumes [measurable]: "f \<in> borel_measurable M"
+      and "integrable M (\<lambda>x. f(T x) - f x)"
+  shows "AE x in M. real_cond_exp M Invariants (\<lambda>x. f(T x) - f x) x = 0"
+        "AE x in M. (\<lambda>n. f((T^^n) x) / n) \<longlonglongrightarrow> 0"
 proof -
-  {
-    fix x assume *: "(\<lambda>n. birkhoff_sum f n x / n) \<longlonglongrightarrow> real_cond_exp M Invariants f x"
-    have **: "(\<lambda>n. birkhoff_sum f (n+1) x / n) \<longlonglongrightarrow> real_cond_exp M Invariants f x"
-      using tendsto_shift_1_over_n[OF *, of 1] by simp
+  define E::"nat \<Rightarrow> 'a set" where "E k = {x \<in> space M. \<bar>f x\<bar> \<le> k}" for k
+  have [measurable]: "E k \<in> sets M" for k unfolding E_def by auto
+  have *: "(\<Union>k. E k) = space M" unfolding E_def by (auto simp add: real_arch_simple)
+  define F::"nat \<Rightarrow> 'a set" where "F k = recurrent_subset_infty (E k)" for k
+  have [measurable]: "F k \<in> sets M" for k unfolding F_def by auto
+  have **: "E k - F k \<in> null_sets M" for k unfolding F_def using Poincare_recurrence_thm by auto
+  have "space M - (\<Union>k. F k) \<in> null_sets M"
+    apply (rule null_sets_inc[of "(\<Union>k. E k - F k)"]) unfolding *[symmetric] using ** by auto
+  with AE_not_in[OF this] have "AE x in M. x \<in> (\<Union>k. F k)" by auto
+  moreover have "AE x in M. (\<lambda>n. birkhoff_sum (\<lambda>x. f(T x) - f x) n x / n)
+      \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. f(T x) - f x) x"
+    by (rule birkhoff_theorem_AE_nonergodic[OF assms(2)])
+  moreover have "real_cond_exp M Invariants (\<lambda>x. f(T x) - f x) x = 0 \<and> (\<lambda>n. f((T^^n) x) / n) \<longlonglongrightarrow> 0"
+    if H: "(\<lambda>n. birkhoff_sum (\<lambda>x. f(T x) - f x) n x / n) \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. f(T x) - f x) x"
+          "x \<in> (\<Union>k. F k)" for x
+  proof -
+    have "f((T^^n) x) = birkhoff_sum (\<lambda>x. f(T x) - f x) n x + f x" for n
+      unfolding birkhoff_sum_def by (induction n, auto)
+    then have "f((T^^n) x) / n = birkhoff_sum (\<lambda>x. f(T x) - f x) n x / n + f x * (1/n)" for n
+      by (auto simp add: divide_simps)
+    moreover have "(\<lambda>n. birkhoff_sum (\<lambda>x. f(T x) - f x) n x / n + f x * (1/n)) \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. f(T x) - f x) x + f x * 0"
+      by (rule tendsto_add, simp add: H(1), rule tendsto_mult, auto simp add: lim_1_over_n)
+    ultimately have lim: "(\<lambda>n. f((T^^n) x) / n) \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. f(T x) - f x) x"
+      by auto
 
-    have "birkhoff_sum f (n+1) x/n - birkhoff_sum f n x/n = f ((T^^n) x) /n" for n
-      unfolding birkhoff_sum_def by (auto simp add: divide_simps)
-    moreover have "(\<lambda>n. birkhoff_sum f (n+1) x / n - birkhoff_sum f n x / n) \<longlonglongrightarrow>
-      real_cond_exp M Invariants f x - real_cond_exp M Invariants f x"
-      apply (rule tendsto_diff) using * ** by auto
-    ultimately have "(\<lambda>n. f ((T^^n) x) /n) \<longlonglongrightarrow> 0" by auto
-  }
-  moreover have "AE x in M. (\<lambda>n. birkhoff_sum f n x / n) \<longlonglongrightarrow> real_cond_exp M Invariants f x"
-    using birkhoff_theorem_AE_nonergodic[OF assms] by auto
-  ultimately show ?thesis by auto
+    obtain k where "x \<in> F k" using H(2) by auto
+    then have "infinite {n. (T^^n) x \<in> E k}"
+      unfolding F_def recurrent_subset_infty_inf_returns by auto
+    with infinite_enumerate[OF this] obtain r where r: "subseq r" "\<And>n. r n \<in> {n. (T^^n) x \<in> E k}"
+      by auto
+    have A: "(\<lambda>n. k * (1/r n)) \<longlonglongrightarrow> real k * 0"
+      apply (rule tendsto_mult, simp)
+      using LIMSEQ_subseq_LIMSEQ[OF lim_1_over_n `subseq r`] unfolding comp_def by auto
+    have B: "\<bar>f((T^^(r n)) x) / r n\<bar> \<le> k / (r n)" for n
+      using r(2) unfolding E_def by (auto simp add: divide_simps)
+    have "(\<lambda>n. f((T^^(r n)) x) / r n) \<longlonglongrightarrow> 0"
+      apply (rule tendsto_rabs_zero_cancel, rule tendsto_sandwich[of "\<lambda>n. 0" _ _ "\<lambda>n. k * (1/r n)"])
+      using A B by auto
+    moreover have "(\<lambda>n. f((T^^(r n)) x) / r n) \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. f(T x) - f x) x"
+      using LIMSEQ_subseq_LIMSEQ[OF lim `subseq r`] unfolding comp_def by auto
+    ultimately have *: "real_cond_exp M Invariants (\<lambda>x. f(T x) - f x) x = 0"
+      using LIMSEQ_unique by auto
+    then have "(\<lambda>n. f((T^^n) x) / n) \<longlonglongrightarrow> 0" using lim by auto
+    then show ?thesis using * by auto
+  qed
+  ultimately show "AE x in M. real_cond_exp M Invariants (\<lambda>x. f(T x) - f x) x = 0"
+                  "AE x in M. (\<lambda>n. f((T^^n) x) / n) \<longlonglongrightarrow> 0"
+    by auto
 qed
+
+lemma limit_foTn_over_n':
+  fixes f::"'a \<Rightarrow> real"
+  assumes [measurable]: "integrable M f"
+  shows "AE x in M. (\<lambda>n. f((T^^n) x) / n) \<longlonglongrightarrow> 0"
+by (rule limit_foTn_over_n, simp, rule Bochner_Integration.integrable_diff)
+   (auto intro: assms T_integral_preserving(1))
+
 
 subsubsection {*$L^1$ version of Birkhoff theorem*}
 
@@ -942,7 +984,7 @@ proof (rule Scheffe_lemma2)
   have **: "(\<integral> x. norm (real_cond_exp M Invariants f x) \<partial>M) = (\<integral> x. real_cond_exp M Invariants f x \<partial>M)"
     apply (rule integral_cong_AE) using * by auto
 
-  have "( \<integral>\<^sup>+ x. ennreal (norm (real_cond_exp M Invariants f x)) \<partial>M) = (\<integral> x. norm (real_cond_exp M Invariants f x) \<partial>M)"
+  have "(\<integral>\<^sup>+ x. ennreal (norm (real_cond_exp M Invariants f x)) \<partial>M) = (\<integral> x. norm (real_cond_exp M Invariants f x) \<partial>M)"
     by (rule nn_integral_eq_integral) (auto simp add: i)
   also have "... = (\<integral> x. real_cond_exp M Invariants f x \<partial>M)"
     using ** by simp
@@ -951,7 +993,7 @@ proof (rule Scheffe_lemma2)
   also have "... = (\<integral>x. norm(f x) \<partial>M)" using assms by auto
   also have "... = (\<integral>\<^sup>+x. norm(f x) \<partial>M)"
     by (rule nn_integral_eq_integral[symmetric], auto simp add: assms(2))
-  finally have eq: "( \<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M) = (\<integral>\<^sup>+ x. norm(f x) \<partial>M)" by simp
+  finally have eq: "(\<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M) = (\<integral>\<^sup>+ x. norm(f x) \<partial>M)" by simp
 
   {
     fix x
@@ -964,9 +1006,9 @@ proof (rule Scheffe_lemma2)
     by (simp add: nn_integral_mono)
   also have "... = n * (\<integral>\<^sup>+x. norm(f x) \<partial>M)"
     by (rule birkhoff_sum_nn_integral, auto)
-  also have "... = n * ( \<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M)"
+  also have "... = n * (\<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M)"
     using eq by simp
-  finally have *: "(\<integral>\<^sup>+x. norm(birkhoff_sum f n x) \<partial>M) \<le> n * ( \<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M)"
+  finally have *: "(\<integral>\<^sup>+x. norm(birkhoff_sum f n x) \<partial>M) \<le> n * (\<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M)"
     by simp
 
   show "(\<integral>\<^sup>+ x. ennreal (norm (birkhoff_sum f n x / real n)) \<partial>M) \<le> (\<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M)"
@@ -983,9 +1025,9 @@ proof (rule Scheffe_lemma2)
       by (simp add: `0 < n` divide_ennreal_def mult.commute)
     also have "... = (1/ennreal(real n) * (\<integral>\<^sup>+ x. ennreal (norm (birkhoff_sum f n x)) \<partial>M))"
       by (subst nn_integral_cmult) auto
-    also have "... \<le> (1/ennreal(real n)) * (ennreal(real n) * ( \<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M))"
+    also have "... \<le> (1/ennreal(real n)) * (ennreal(real n) * (\<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M))"
       using * by (intro mult_mono) (auto simp: ennreal_of_nat_eq_real_of_nat)
-    also have "... = ( \<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M)"
+    also have "... = (\<integral>\<^sup>+ x. norm (real_cond_exp M Invariants f x) \<partial>M)"
       using `n > 0`
       by (auto simp del: ennreal_1 simp add: ennreal_1[symmetric] divide_ennreal ennreal_mult[symmetric] mult.assoc[symmetric])
         simp
@@ -1008,7 +1050,7 @@ proof -
     have "\<And>x. birkhoff_sum f n x = birkhoff_sum g n x - birkhoff_sum h n x" using birkhoff_sum_diff `f = (\<lambda>x. g x - h x)` by auto
     then have "\<And>x. birkhoff_sum f n x / n = birkhoff_sum g n x / n - birkhoff_sum h n x / n" using `n > 0` by (simp add: diff_divide_distrib)
     moreover have "AE x in M. real_cond_exp M Invariants g x - real_cond_exp M Invariants h x = real_cond_exp M Invariants f x"
-      using real_cond_exp_diff g_int h_int `f = (\<lambda>x. g x - h x)` by auto
+      using AE_symmetric[OF real_cond_exp_diff] g_int h_int `f = (\<lambda>x. g x - h x)` by auto
     ultimately have "AE x in M. birkhoff_sum f n x / n - real_cond_exp M Invariants f x =
         (birkhoff_sum g n x / n - real_cond_exp M Invariants g x) - (birkhoff_sum h n x / n - real_cond_exp M Invariants h x)"
       by auto
@@ -1174,7 +1216,7 @@ proof (rule conservative_mptI)
   have n1_ineq: "n1 * (e*c-2*r*measure M (space M)) > (measure M (space M) * 2 * N + e*c*n0 - e*c)"
     using n1 pos by (simp add: pos_divide_less_eq)
 
-  define D where "D = (\<lambda>n. Dx \<times> {-r*n1-N..r*n1+N} \<inter> (?TS^^n)-`C )"
+  define D where "D = (\<lambda>n. Dx \<times> {-r*n1-N..r*n1+N} \<inter> (?TS^^n)-`C)"
   have Dn_meas [measurable]: "D n \<in> sets (M \<Otimes>\<^sub>M lborel)" for n
     unfolding D_def apply (rule TS.T_vrestr_intersec_meas(2)) using C_meas by auto
 
@@ -1305,7 +1347,7 @@ proof (rule conservative_mptI)
     then have "0 \<le> measure M (space M) * (2 * r * real n1 + 2 * real N) - e*c * (real n1- real n0 + 1)" by auto
     also have "... = (measure M (space M) * 2 * N + e*c*n0 - e*c) - n1 * (e*c-2*r*measure M (space M))"
       by algebra
-    finally have " n1 * (e*c-2*r*measure M (space M)) \<le> measure M (space M) * 2 * N + e*c*n0 - e*c"
+    finally have "n1 * (e*c-2*r*measure M (space M)) \<le> measure M (space M) * 2 * N + e*c*n0 - e*c"
       by linarith
     then show False using n1_ineq by auto
   qed
@@ -1456,7 +1498,7 @@ theorem birkhoff_sum_small_asymp_pos_nonergodic:
 proof -
   define g where "g = (\<lambda>x. f x - real_cond_exp M Invariants f x)"
   have g_meas [measurable]: "integrable M g" unfolding g_def using real_cond_exp_int(1)[OF assms(1)] assms(1) by auto
-  have "AE x in M. real_cond_exp M Invariants f x = real_cond_exp M Invariants (real_cond_exp M Invariants f) x"
+  have "AE x in M. real_cond_exp M Invariants (real_cond_exp M Invariants f) x = real_cond_exp M Invariants f x"
     by (rule real_cond_exp_F_meas, auto simp add: real_cond_exp_int(1)[OF assms(1)])
   then have *: "AE x in M. real_cond_exp M Invariants g x = 0"
     unfolding g_def using real_cond_exp_diff[OF assms(1) real_cond_exp_int(1)[OF assms(1)]] by auto
@@ -1487,7 +1529,7 @@ theorem birkhoff_sum_small_asymp_neg_nonergodic:
 proof -
   define g where "g = (\<lambda>x. real_cond_exp M Invariants f x - f x)"
   have g_meas [measurable]: "integrable M g" unfolding g_def using real_cond_exp_int(1)[OF assms(1)] assms(1) by auto
-  have "AE x in M. real_cond_exp M Invariants f x = real_cond_exp M Invariants (real_cond_exp M Invariants f) x"
+  have "AE x in M. real_cond_exp M Invariants (real_cond_exp M Invariants f) x = real_cond_exp M Invariants f x"
     by (rule real_cond_exp_F_meas, auto simp add: real_cond_exp_int(1)[OF assms(1)])
   then have *: "AE x in M. real_cond_exp M Invariants g x = 0"
     unfolding g_def using real_cond_exp_diff[OF real_cond_exp_int(1)[OF assms(1)] assms(1)] by auto
@@ -1553,8 +1595,7 @@ proof -
   moreover have "\<And>x. x \<in> recurrent_subset A \<Longrightarrow> phiA x > 0" unfolding phiA_def using return_time0 by fastforce
   ultimately have *: "AE x in MA. phiA x > 0" by auto
   have d: "AE x in MA. real_cond_exp MA A.Invariants phiA x > 0"
-    by (rule A.real_cond_exp_pos_strict, auto simp add: * `integrable MA phiA`)
-
+    by (rule A.real_cond_exp_gr_c, auto simp add: * `integrable MA phiA`)
 
   {
     fix x

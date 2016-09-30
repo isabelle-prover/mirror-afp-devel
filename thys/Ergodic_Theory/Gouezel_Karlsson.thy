@@ -63,7 +63,7 @@ proof -
   proof
     fix x assume "x \<in> G"
     then have "x \<in> space M" unfolding G_def by simp
-    have "eventually (\<lambda>n. card( {n. P x n} \<inter> {..<n}) < a * n) sequentially"
+    have "eventually (\<lambda>n. card({n. P x n} \<inter> {..<n}) < a * n) sequentially"
       using `x \<in> G` unfolding G_def using upper_Banach_density_event1 by auto
     then obtain N where "\<And>n. n \<ge> N \<Longrightarrow> card({n. P x n} \<inter> {..<n}) < a * n"
       using eventually_sequentially by auto
@@ -360,7 +360,7 @@ proof -
   moreover have "AE x in M. (\<lambda>n. birkhoff_sum F n x / n) \<longlonglongrightarrow> real_cond_exp M Invariants F x"
     by (rule birkhoff_theorem_AE_nonergodic[OF int_F])
   moreover have "AE x in M. real_cond_exp M Invariants F x + real_cond_exp M Invariants (\<lambda>x. abs(u s x / s)) x = real_cond_exp M Invariants F2 x"
-    unfolding F2_def apply (rule real_cond_exp_add) using int_u[of s] int_F int_u[of s] by auto
+    unfolding F2_def apply (rule AE_symmetric[OF real_cond_exp_add]) using int_u[of s] int_F int_u[of s] by auto
   ultimately have "AE x in M. x \<in> G" unfolding G_def by auto
   then have "emeasure M G = 1" by (simp add: emeasure_eq_1_AE)
 
@@ -461,7 +461,7 @@ proof -
       also have "... \<le> Max {u i x|i. i< s} + (\<Sum>i<n-1. abs(u s ((T^^(i* s+t))x)))
         + birkhoff_sum F ((n-1) * s+t) x - (d/2) * card(V x \<inter> {1..(n-1) * s+t}) + u s ((T^^((n-1)* s+t)) x)"
         using H `n\<ge>1` unfolding Z_def by auto
-      also have "... \<le> Max {u i x|i. i< s} + (\<Sum>i<n. abs(u s ((T^^(i* s+t))x)) )
+      also have "... \<le> Max {u i x|i. i< s} + (\<Sum>i<n. abs(u s ((T^^(i* s+t))x)))
         + birkhoff_sum F (n * s+t) x - (d/2) * card(V x \<inter> {1..n * s+t})"
         using * ** *** by auto
       also have "... \<le> Z t n x" unfolding Z_def by (auto simp add: divide_simps)
@@ -592,7 +592,7 @@ proof -
       finally have A1: "-d * ((n* s+t) - (p* s+t)) + 2 * d * s + 2 * K * s \<le> (-d/2) * card(V x \<inter> {p * s + t<.. n* s+t})"
         by simp
 
-      have " V x \<inter> {1.. n* s+t} = V x \<inter> {1..p * s + t} \<union> V x \<inter> {p * s + t<.. n* s+t}"
+      have "V x \<inter> {1.. n* s+t} = V x \<inter> {1..p * s + t} \<union> V x \<inter> {p * s + t<.. n* s+t}"
         using \<open>p * s + t + k \<le> n * s + t\<close> by auto
       then have "card (V x \<inter> {1.. n* s+t}) = card(V x \<inter> {1..p * s + t} \<union> V x \<inter> {p * s + t<.. n* s+t})"
         by auto
@@ -687,9 +687,9 @@ proof -
       apply (rule setsum_mono) using eq_t by auto
     also have "... = (\<Sum>t<s. abs(u(N* s+t) x)) + (\<Sum>t<s. Max {u i x|i. i< s} + birkhoff_sum F (n + 2* s) x) + (\<Sum>t<s. (\<Sum>i<N. abs(u s ((T^^(i* s+t))x))))"
       by (auto simp add: setsum.distrib)
-    also have "... \<le> (\<Sum>i<2* s. abs (u (n+i) x)) + s * ( Max {u i x|i. i< s} + birkhoff_sum F (n + 2* s) x) + s * birkhoff_sum (\<lambda>x. abs(u s x/ s)) (n+2* s) x"
+    also have "... \<le> (\<Sum>i<2* s. abs (u (n+i) x)) + s * (Max {u i x|i. i< s} + birkhoff_sum F (n + 2* s) x) + s * birkhoff_sum (\<lambda>x. abs(u s x/ s)) (n+2* s) x"
       using ** *** by auto
-    also have "... = s * ( (1/s) * (\<Sum>i<2* s. abs (u (n+i) x)) + Max {u i x|i. i< s} + birkhoff_sum F (n + 2* s) x + birkhoff_sum (\<lambda>x. abs(u s x/ s)) (n+2* s) x)"
+    also have "... = s * ((1/s) * (\<Sum>i<2* s. abs (u (n+i) x)) + Max {u i x|i. i< s} + birkhoff_sum F (n + 2* s) x + birkhoff_sum (\<lambda>x. abs(u s x/ s)) (n+2* s) x)"
       by (auto simp add: divide_simps mult.commute distrib_left)
     finally show ?thesis
       by auto
@@ -825,11 +825,11 @@ proof -
   have "d2/2 > 0" by simp
   obtain c0 where c0: "c0> (0::real)" "emeasure M {x \<in> space M. upper_Banach_density {n. \<exists>l \<in> {1..n}. u n x - u (n-l) x \<le> - c0 * l} < d2/2} > 1 - (d2/2)"
     using upper_density_all_times[OF `d2/2 > 0`] by blast
-  have "\<exists>N. emeasure M {x \<in> space M. \<forall>n \<ge> N. card ( {n. \<exists>l \<in> {1..n}. u n x - u (n-l) x \<le> - c0 * l} \<inter> {..<n}) < (d2/2) * n} > 1 - (d2/2)"
+  have "\<exists>N. emeasure M {x \<in> space M. \<forall>n \<ge> N. card ({n. \<exists>l \<in> {1..n}. u n x - u (n-l) x \<le> - c0 * l} \<inter> {..<n}) < (d2/2) * n} > 1 - (d2/2)"
     apply (rule upper_density_eventually_measure) using c0(2) by auto
-  then obtain N1 where N1: "emeasure M {x \<in> space M. \<forall>B \<ge> N1. card ( {n. \<exists>l \<in> {1..n}. u n x - u (n-l) x \<le> - c0 * l} \<inter> {..<B}) < (d2/2) * B} > 1 - (d2/2)"
+  then obtain N1 where N1: "emeasure M {x \<in> space M. \<forall>B \<ge> N1. card ({n. \<exists>l \<in> {1..n}. u n x - u (n-l) x \<le> - c0 * l} \<inter> {..<B}) < (d2/2) * B} > 1 - (d2/2)"
     by blast
-  define O1 where "O1 = {x \<in> space M. \<forall>B \<ge> N1. card ( {n. \<exists>l \<in> {1..n}. u n x - u (n-l) x \<le> - c0 * l} \<inter> {..<B}) < (d2/2) * B}"
+  define O1 where "O1 = {x \<in> space M. \<forall>B \<ge> N1. card ({n. \<exists>l \<in> {1..n}. u n x - u (n-l) x \<le> - c0 * l} \<inter> {..<B}) < (d2/2) * B}"
   have [measurable]: "O1 \<in> sets M" unfolding O1_def by auto
   have "emeasure M O1 > 1 - (d2/2)" unfolding O1_def using N1 by auto
 
@@ -917,7 +917,7 @@ proof -
       also have "... \<le> emeasure M {x \<in> space M. \<forall>B \<ge> Nf N. card({n. \<exists>l \<in> {Nf N..n}. u n x - u (n-l) x \<le> - (eps N) * l} \<inter> {..<B}) < (eps N) * B}"
       proof (rule emeasure_mono, auto)
         fix x n assume H: "x \<in> space M"
-                          " \<forall>n\<ge>Ne (eps N). card ({n. \<exists>l\<in>{Ne (eps N)..n}. u n x - u (n - l) x \<le> - (eps N * l)} \<inter> {..<n}) < eps N * n"
+                          "\<forall>n\<ge>Ne (eps N). card ({n. \<exists>l\<in>{Ne (eps N)..n}. u n x - u (n - l) x \<le> - (eps N * l)} \<inter> {..<n}) < eps N * n"
                           "Nf N \<le> n"
         have "card({n. \<exists>l \<in> {Nf N..n}. u n x - u (n-l) x \<le> - (eps N * l)} \<inter> {..<n}) \<le> card({n. \<exists>l \<in> {Ne(eps N)..n}. u n x - u (n-l) x \<le> -(eps N) * l} \<inter> {..<n})"
           apply (rule card_mono) using `Ne (eps N) \<le> Nf N` by auto
@@ -972,7 +972,7 @@ proof -
       then have "real l>0" by simp
       have "abs(u n x - u (n-l) x)/l \<le> M"
         unfolding M_def apply (rule Max_ge) using fin nl by auto
-      then have "abs(u n x - u (n-l) x)/l < real N " using `N>M` by simp
+      then have "abs(u n x - u (n-l) x)/l < real N" using `N>M` by simp
       then have "abs(u n x - u (n-l) x)< real N * l" using \<open>0 < real l\<close> pos_divide_less_eq by blast
       then have "u n x - u (n-l) x > - (real N * l)" by simp
     }
@@ -1060,7 +1060,7 @@ proof -
 
     have "x \<in> On 1" using `x \<in> Og` unfolding Og_def Ogood_def by auto
     then have "x \<in> O1" unfolding On_def by auto
-    have B1: "real(card( {n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B})) \<le> (d2/2) * B" for B
+    have B1: "real(card({n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B})) \<le> (d2/2) * B" for B
     proof (cases "B \<ge> N1")
       case True
       have "card({n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B})
@@ -1125,20 +1125,20 @@ proof -
     finally have *: "bad_times x \<inter> {..<B} \<subseteq> {n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B}
             \<union> (\<Union>N\<in>{2..<B}. {n \<in> {Nf N..}. \<exists>l \<in> {Nf N..n}. u n x - u (n-l) x \<le> - (eps N * l)} \<inter> {..<B})"
       unfolding bad_times_def by auto
-    have "card(bad_times x \<inter> {..<B}) \<le> card( {n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B}
+    have "card(bad_times x \<inter> {..<B}) \<le> card({n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B}
         \<union> (\<Union>N\<in>{2..<B}. {n \<in> {Nf N..}. \<exists>l \<in> {Nf N..n}. u n x - u (n-l) x \<le> - (eps N * l)} \<inter> {..<B}))"
       by (rule card_mono[OF _ *], auto)
-    also have "... \<le> card( {n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B}) +
+    also have "... \<le> card({n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B}) +
       card (\<Union>N\<in>{2..<B}. {n \<in> {Nf N..}. \<exists>l \<in> {Nf N..n}. u n x - u (n-l) x \<le> - (eps N * l)} \<inter> {..<B})"
       by (rule card_Un_le)
-    also have "... \<le> card( {n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B}) +
+    also have "... \<le> card({n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B}) +
       (\<Sum> N\<in>{2..<B}. card ({n \<in> {Nf N..}. \<exists>l \<in> {Nf N..n}. u n x - u (n-l) x \<le> - (eps N * l)} \<inter> {..<B}))"
       by (simp del: UN_simps, rule card_finite_union, auto)
     finally have "real (card(bad_times x \<inter> {..<B})) \<le>
-      real(card( {n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B})
+      real(card({n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B})
       + (\<Sum> N\<in>{2..<B}. card ({n \<in> {Nf N..}. \<exists>l \<in> {Nf N..n}. u n x - u (n-l) x \<le> - (eps N * l)} \<inter> {..<B})))"
       by (subst of_nat_le_iff, simp)
-    also have "... = real(card( {n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B}))
+    also have "... = real(card({n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B}))
       + (\<Sum> N\<in>{2..<B}. real(card ({n \<in> {Nf N..}. \<exists>l \<in> {Nf N..n}. u n x - u (n-l) x \<le> - (eps N * l)} \<inter> {..<B})))"
       by auto
     also have "... \<le> (d2/2 * B) + (\<Sum> N\<in>{2..<B}. real(card ({n \<in> {Nf N..}. \<exists>l \<in> {Nf N..n}. u n x - u (n-l) x \<le> - (eps N * l)} \<inter> {..<B})))"
@@ -1444,7 +1444,7 @@ go to the natural extension of the system, use the result there and project it b
 However, if the system is not defined on a polish space, there is no reason why it should have
 a natural extension, so we have first to project the original system on a polish space on which
 the subcocycle is defined. This system is obtained by considering the joint distribution of the
-subcocycle and all its iterates (this is indeed a polish system, as a space of function from
+subcocycle and all its iterates (this is indeed a polish system, as a space of functions from
 $\mathbb{N}^2$ to $\mathbb{R}$).*}
 
 lemma upper_density_good_direction:
@@ -1685,7 +1685,7 @@ proof -
     unfolding V_def by auto
   have a: "emeasure M V \<ge> 1 - 1 / (n + 2)" for n::nat
   proof -
-    have " 1 - 1 / (n + 2) = 1 - 1 / (real n + 2)"
+    have "1 - 1 / (n + 2) = 1 - 1 / (real n + 2)"
       by auto
     also have "... \<le> emeasure M (U (1/(real n+2)))"
       using *[of "1 / (real n + 2)"] by auto
@@ -1742,7 +1742,7 @@ proof -
     unfolding v_def using subcocycle_avg_ereal_birkhoff[OF int] kingman_theorem_nonergodic(2)[OF assms] by auto
   have "AE x in M. subcocycle_lim v x = real_cond_exp M Invariants (\<lambda>x. -subcocycle_lim u x) x"
     unfolding v_def by (rule subcocycle_lim_birkhoff[OF int])
-  moreover have "AE x in M. - subcocycle_lim u x = real_cond_exp M Invariants (\<lambda>x. - subcocycle_lim u x) x"
+  moreover have "AE x in M. real_cond_exp M Invariants (\<lambda>x. - subcocycle_lim u x) x = - subcocycle_lim u x"
     by (rule real_cond_exp_F_meas[OF int], auto)
   ultimately have AEv: "AE x in M. subcocycle_lim v x = - subcocycle_lim u x"
     by auto

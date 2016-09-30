@@ -345,7 +345,7 @@ proof -
       by auto
     have "(\<integral>\<^sup>+x. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x) \<partial>M)
                 = (\<integral>\<^sup>+x. norm(birkhoff_sum f n x / n - (\<integral> x. f x \<partial>M)) \<partial>M)"
-      apply (rule nn_integral_cong_AE ) using * by auto
+      apply (rule nn_integral_cong_AE) using * by auto
   }
   moreover have "(\<lambda>n. \<integral>\<^sup>+x. norm(birkhoff_sum f n x / n - real_cond_exp M Invariants f x) \<partial>M) \<longlonglongrightarrow> 0"
     using birkhoff_theorem_L1_nonergodic[OF assms] by auto
@@ -425,7 +425,7 @@ proof (rule ccontr)
     moreover have "n * (\<integral>x. f x \<partial>M) \<ge> 0" using * by simp
     ultimately have "birkhoff_sum f n x \<ge> 0" by simp
   }
-  then have " {n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) .. n* (\<integral>x. f x \<partial>M) + 1}} \<subseteq> {n. birkhoff_sum f n x \<ge> 0}" by auto
+  then have "{n. birkhoff_sum f n x \<in> {n * (\<integral>x. f x \<partial>M) .. n* (\<integral>x. f x \<partial>M) + 1}} \<subseteq> {n. birkhoff_sum f n x \<ge> 0}" by auto
   then have inf: "infinite {n. birkhoff_sum f n x \<ge> 0}" using x(2) finite_subset by blast
 
   have "0 > (-\<infinity>::ereal)" by auto

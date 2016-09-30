@@ -112,13 +112,13 @@ qed
 lemma subcocycle_bounded_by_birkhoff1:
   assumes "subcocycle u" "n > 0"
   shows "u n x \<le> birkhoff_sum (u 1) n x"
-proof (induction rule: ind_from_1[OF assms(2)])
+using `n > 0` proof (induction rule: ind_from_1)
   case 1
   show ?case by auto
 next
-  case (2 p)
+  case (Suc p)
   have "u (Suc p) x \<le> u p x + u 1 ((T^^p)x)" using assms(1) subcocycle_def by (metis Suc_eq_plus1)
-  then show ?case using 2 birkhoff_sum_cocycle[where ?n=p and ?m=1] \<open> p>0 \<close> by (simp add: birkhoff_sum_def)
+  then show ?case using Suc birkhoff_sum_cocycle[where ?n=p and ?m=1] \<open> p>0 \<close> by (simp add: birkhoff_sum_def)
 qed
 
 text {*It is often important to bound a cocycle $u_n(x)$ by the Birkhoff sums of $u_N/N$. Compared
@@ -150,17 +150,17 @@ proof -
   qed
 
   have Ia: "u (a*N) x \<le> (\<Sum>i<a. u N ((T^^(i * N))x))" if "a>0" for a
-  proof (induction rule: ind_from_1[OF that])
+  using that proof (induction rule: ind_from_1)
     case 1
     show ?case by auto
   next
-    case (2 a)
+    case (Suc a)
     have "u ((a+1)*N) x = u((a*N) + N) x"
       by (simp add: semiring_normalization_rules(2) semiring_normalization_rules(23))
     also have "... \<le> u(a*N) x + u N ((T^^(a*N))x)"
       using assms(1) unfolding subcocycle_def by auto
     also have "... \<le> (\<Sum>i<a. u N ((T^^(i * N))x)) + u N ((T^^(a*N))x)"
-      using 2 by auto
+      using Suc by auto
     also have "... = (\<Sum>i<a+1. u N ((T^^(i * N))x))"
       by auto
     finally show ?case by auto
@@ -756,11 +756,11 @@ proof -
     unfolding S_def TB_def by (induction n, auto, metis (mono_tags, lifting) add.commute funpow_add o_apply)
 
     have uS: "u (S n x) x \<le> (S n x) * ?F x + birkhoff_sum ?I (S n x) x * abs(?F x)" if "x \<in> A" "n>0" for x n
-    proof (induction rule: ind_from_1[OF `n>0`])
+    using `n > 0` proof (induction rule: ind_from_1)
       case 1
       show ?case unfolding S_def using bound1 by auto
     next
-      case (2 n)
+      case (Suc n)
       have *: "?F((TB^^n) x) = ?F x" apply (subst TB_pow) unfolding F_def using l_inv[OF `x\<in>A`] by auto
       have **: "S n x + t ((TB^^n) x) = S (Suc n) x" unfolding S_def by auto
       have "u (S (Suc n) x) x = u (S n x + t((TB^^n) x)) x" unfolding S_def by auto
@@ -770,7 +770,7 @@ proof -
         using TB_pow by auto
       also have "... \<le> (S n x) * ?F x + birkhoff_sum ?I (S n x) x * abs(?F x) +
                   t ((TB^^n) x) * ?F ((TB^^n) x) + birkhoff_sum ?I (t ((TB^^n) x)) ((TB^^n) x) * abs(?F ((TB^^n) x))"
-        using 2 bound1[of "((TB^^n) x)"] by auto
+        using Suc bound1[of "((TB^^n) x)"] by auto
       also have "... = (S n x) * ?F x + birkhoff_sum ?I (S n x) x * abs(?F x) +
                   t ((TB^^n) x) * ?F x + birkhoff_sum ?I (t ((TB^^n) x)) ((T^^(S n x)) x) * abs(?F x)"
         using * TB_pow by auto
@@ -1193,7 +1193,7 @@ lemma subcocycle_lim_ereal_atmost_uN_invariants:
   shows "AE x in M. subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
 proof -
   have "AE x in M. (\<lambda>n. u 1 ((T^^n) x) / n) \<longlonglongrightarrow> 0"
-    apply (rule limit_foTn_over_n) using assms(1) unfolding subcocycle_def by auto
+    apply (rule limit_foTn_over_n') using assms(1) unfolding subcocycle_def by auto
   moreover have "AE x in M. (\<lambda>n. birkhoff_sum (\<lambda>x. u N x/N) n x / n) \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
     apply (rule birkhoff_theorem_AE_nonergodic) using assms(1) unfolding subcocycle_def by auto
   moreover have "AE x in M. (\<lambda>n. u n x / n) \<longlonglongrightarrow> subcocycle_lim_ereal u x"
@@ -1601,7 +1601,7 @@ proof -
       by (simp add: max_divide_distrib_right)
     ultimately have "(\<lambda>n. max (u n x) (v n x) / n) \<longlonglongrightarrow> max (subcocycle_lim u x) (subcocycle_lim v x)"
       by auto
-    then have " subcocycle_lim (\<lambda>n x. max (u n x) (v n x)) x = max (subcocycle_lim u x) (subcocycle_lim v x)"
+    then have "subcocycle_lim (\<lambda>n x. max (u n x) (v n x)) x = max (subcocycle_lim u x) (subcocycle_lim v x)"
       using H(1) by (simp add: LIMSEQ_unique)
   }
   ultimately show "AE x in M. subcocycle_lim (\<lambda>n x. max (u n x) (v n x)) x
@@ -1663,10 +1663,10 @@ proof -
       apply (rule real_cond_exp_mono)
       using subcocycle_ineq[OF assms(1)] apply auto
       by (rule Bochner_Integration.integrable_add, auto simp add: Tn_integral_preserving)
-    moreover have "AE x in M. real_cond_exp M Invariants (u n) x + real_cond_exp M Invariants (\<lambda>x. u m ((T^^n) x)) x
-                    = real_cond_exp M Invariants (\<lambda>x. u n x + u m ((T^^n) x)) x"
+    moreover have "AE x in M. real_cond_exp M Invariants (\<lambda>x. u n x + u m ((T^^n) x)) x
+              = real_cond_exp M Invariants (u n) x + real_cond_exp M Invariants (\<lambda>x. u m ((T^^n) x)) x"
       by (rule real_cond_exp_add, auto simp add: Tn_integral_preserving)
-    moreover have "AE x in M. real_cond_exp M Invariants (u m) x = real_cond_exp M Invariants (u m \<circ> ((T^^n))) x"
+    moreover have "AE x in M. real_cond_exp M Invariants (u m \<circ> ((T^^n))) x = real_cond_exp M Invariants (u m) x"
       by (rule Invariants_of_foTn, simp)
     moreover have "AE x in M. real_cond_exp M Invariants (u m) x = real_cond_exp M Invariants (u m) ((T^^n) x)"
       using Invariants_func_is_invariant_n[symmetric, of "real_cond_exp M Invariants (u m)"] by auto
@@ -1713,7 +1713,7 @@ proof -
   moreover have "AE x in M. \<forall>n. w n x = real_cond_exp M Invariants (u n) x"
     using w(2) by simp
   moreover have "AE x in M. \<forall>n. real_cond_exp M Invariants (u n) x / n = real_cond_exp M Invariants (\<lambda>x. u n x / n) x"
-    apply (subst AE_all_countable, intro allI) using real_cond_exp_cdiv[OF int] by auto
+    apply (subst AE_all_countable, intro allI) using AE_symmetric[OF real_cond_exp_cdiv[OF int]] by auto
   moreover
   {
     fix x assume x: "\<forall>N. N > 0 \<longrightarrow> subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
@@ -1877,12 +1877,12 @@ proof -
       by (cases "N=0", auto simp add: subcocycle_lim_ereal_atmost_uN_invariants[OF assms(1)])
     have "AE x in M. \<forall>N. N > 0 \<longrightarrow> subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
       by (subst AE_all_countable, intro allI, simp add: *)
-    moreover have "AE x in M. \<forall>n. real_cond_exp M Invariants (u n) x / n = real_cond_exp M Invariants (\<lambda>x. u n x / n) x"
+    moreover have "AE x in M. \<forall>n. real_cond_exp M Invariants (\<lambda>x. u n x / n) x = real_cond_exp M Invariants (u n) x / n"
       apply (subst AE_all_countable, intro allI) using real_cond_exp_cdiv by auto
     moreover
     {
       fix x assume x: "\<forall>N. N > 0 \<longrightarrow> subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
-                      "\<forall>n. real_cond_exp M Invariants (u n) x / n = real_cond_exp M Invariants (\<lambda>x. u n x / n) x"
+                      "\<forall>n. real_cond_exp M Invariants (\<lambda>x. u n x / n) x = real_cond_exp M Invariants (u n) x / n"
       then have *: "subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (u n) x / n" if "n \<ge> 1" for n
         using that by auto
       have "subcocycle_lim_ereal u x \<le> liminf (\<lambda>n. real_cond_exp M Invariants (u n) x / n)"
@@ -2062,11 +2062,11 @@ proof -
   have int: "integrable M (u n)" for n
     using subcocycle_integrable[OF assms(1)] by simp
   interpret I: fmpt M Tinv using Tinv_fmpt[OF assms(2)] by simp
-  have *: "AE x in M. real_cond_exp M I.Invariants (u n) x
-                    = real_cond_exp M I.Invariants (\<lambda> x. u n (((Tinv)^^n) x)) x" for n
+  have *: "AE x in M. real_cond_exp M I.Invariants (\<lambda> x. u n (((Tinv)^^n) x)) x
+                  = real_cond_exp M I.Invariants (u n) x" for n
     using I.Invariants_of_foTn int unfolding o_def by simp
-  have "AE x in M. \<forall>n. real_cond_exp M I.Invariants (u n) x
-                    = real_cond_exp M I.Invariants (\<lambda> x. u n (((Tinv)^^n) x)) x"
+  have "AE x in M. \<forall>n. real_cond_exp M I.Invariants (\<lambda> x. u n (((Tinv)^^n) x)) x
+                  = real_cond_exp M I.Invariants (u n) x"
     apply (subst AE_all_countable) using * by simp
   moreover have "AE x in M. (\<lambda>n. real_cond_exp M Invariants (u n) x / n) \<longlonglongrightarrow> subcocycle_lim_ereal u x"
     using kingman_theorem_AE_nonergodic_invariant_ereal[OF `subcocycle u`] by simp
@@ -2075,8 +2075,8 @@ proof -
     using I.kingman_theorem_AE_nonergodic_invariant_ereal[OF subcocycle_u_Tinv[OF assms]] by simp
   moreover
   {
-    fix x assume H: "\<forall>n. real_cond_exp M I.Invariants (u n) x
-                      = real_cond_exp M I.Invariants (\<lambda> x. u n (((Tinv)^^n) x)) x"
+    fix x assume H: "\<forall>n. real_cond_exp M I.Invariants (\<lambda> x. u n (((Tinv)^^n) x)) x
+                      = real_cond_exp M I.Invariants (u n) x"
                     "(\<lambda>n. real_cond_exp M Invariants (u n) x / n) \<longlonglongrightarrow> subcocycle_lim_ereal u x"
                     "(\<lambda>n. real_cond_exp M I.Invariants (\<lambda> x. u n (((Tinv)^^n) x)) x / n)
                         \<longlonglongrightarrow> I.subcocycle_lim_ereal (\<lambda> n x. u n (((Tinv)^^n) x)) x"

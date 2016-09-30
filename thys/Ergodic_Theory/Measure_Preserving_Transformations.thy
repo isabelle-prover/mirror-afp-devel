@@ -371,7 +371,7 @@ next
     have "T \<in> measure_preserving M M" using assms(1) by (simp add: mpt.Tm)
 
     fix A assume [measurable]: "A \<in> sets (M \<Otimes>\<^sub>M N)"
-    then have [measurable]: "(\<lambda> (x,y). (indicator A (x,y))::ennreal ) \<in> borel_measurable (M \<Otimes>\<^sub>M N)" by auto
+    then have [measurable]: "(\<lambda> (x,y). (indicator A (x,y))::ennreal) \<in> borel_measurable (M \<Otimes>\<^sub>M N)" by auto
     then have [measurable]: "(\<lambda>x. \<integral>\<^sup>+ y. indicator A (x, y) \<partial>N) \<in> borel_measurable M"
       by simp
 
@@ -486,7 +486,7 @@ proof -
   define B where "B = A \<inter> space M"
   have "(\<lambda> x. f(g x))--` A = (\<lambda> x. f(g x)) -` B \<inter> space M"
     using B_def vimage_restr_def by blast
-  moreover have " (\<lambda> x. f(g x)) -` B \<inter> space M = g-` (f-` B \<inter> space M) \<inter> space M"
+  moreover have "(\<lambda> x. f(g x)) -` B \<inter> space M = g-` (f-` B \<inter> space M) \<inter> space M"
     using measurable_space[OF `g \<in> measurable M M`] by auto
   moreover have "g-` (f-` B \<inter> space M) \<inter> space M = g--` (f--` A)"
     using B_def vimage_restr_def by simp
@@ -954,7 +954,7 @@ proof -
   moreover
   {
     fix x assume "\<forall>n. proj (T ((T^^n) x)) = T2 (proj ((T^^n) x))"
-    then have H: " proj (T ((T^^n) x)) = T2 (proj ((T^^n) x))" for n by auto
+    then have H: "proj (T ((T^^n) x)) = T2 (proj ((T^^n) x))" for n by auto
     have "proj ((T^^n) x) = (T2^^n) (proj x)" for n
       apply (induction n) using H by auto
     then have "\<forall>n. proj ((T^^n) x) = (T2^^n) (proj x)" by auto

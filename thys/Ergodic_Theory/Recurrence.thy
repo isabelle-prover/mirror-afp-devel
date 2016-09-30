@@ -232,7 +232,7 @@ proof (unfold_locales)
     next
       case (Suc k)
       have "B(i+k+1) = (T^^(t (i+k)))-`(B (i+k)) \<inter> A" using t_def B_def next_good_set_def by simp
-      moreover have "B(i+k) \<subseteq> (T^^(s i k))-`A " using Suc.IH by simp
+      moreover have "B(i+k) \<subseteq> (T^^(s i k))-`A" using Suc.IH by simp
       ultimately have "B(i+k+1) \<subseteq> (T^^(t (i+k)))-` (T^^(s i k))-`A \<inter> A" by auto
       then have "B(i+k+1) \<subseteq> (T^^(t(i+k) + s i k))-`A \<inter> A" by (simp add: add.commute funpow_add vimage_comp)
       moreover have "t(i+k) + s i k = s i (k+1)" using s_def by simp
@@ -714,7 +714,7 @@ next
       ultimately have "emeasure M (K (Suc k) n) \<le> emeasure M (R \<union> (\<Union>i<N. K k (n-i-1)))"
         using emeasure_mono by simp
       also have "... \<le> emeasure M R + emeasure M (\<Union>i<N. K k (n-i-1))"
-        using emeasure_subadditive[where ?A = R and ?B = " (\<Union>i<N. K k (n-i-1))"] K_meas R_meas by auto
+        using emeasure_subadditive[where ?A = R and ?B = "(\<Union>i<N. K k (n-i-1))"] K_meas R_meas by auto
       also have "... \<le> emeasure M R + (\<Sum>i<N. emeasure M (K k (n-i-1)))"
         by (metis add_left_mono image_subset_iff emeasure_subadditive_finite[where ?A = "\<lambda>i. K k (n-i-1)" and ?I = "{..<N}", OF finite_lessThan[of N]] K_meas)
       also have "... \<le> e2 + (\<Sum>i<N. emeasure M (K k (n-i-1)))"
@@ -738,7 +738,7 @@ next
       then have "n>N2" "n > N" using N3_def by auto
       then have "emeasure M (K (Suc k) n) \<le> e2 + (\<Sum>i\<in>{..<N}. emeasure M (K k (n-i-1)))"
         using upper by simp
-      also have " (\<Sum>i\<in>{..<N}. emeasure M (K k (n-i-1))) < e2" using N2bound `n > N2` by auto
+      also have "(\<Sum>i\<in>{..<N}. emeasure M (K k (n-i-1))) < e2" using N2bound `n > N2` by auto
       finally have "emeasure M (K (Suc k) n) \<le> ennreal e2 + ennreal e2"
         by (simp add: add_mono)
       moreover have "ennreal e2 + ennreal e2 < e" using e2_def `e > 0`
@@ -995,7 +995,7 @@ proof -
 qed
 
 definition first_entrance_set::"'a set \<Rightarrow> nat \<Rightarrow> 'a set"
-  where "first_entrance_set A n = (T^^n) --` A - ( \<Union> i<n. (T^^i)--`A)"
+  where "first_entrance_set A n = (T^^n) --` A - (\<Union> i<n. (T^^i)--`A)"
 
 lemma first_entrance_meas [measurable]:
   assumes "A \<in> sets M"
@@ -1016,15 +1016,15 @@ lemma first_entrance_rec:
 proof -
   have A0: "A = (T^^0)--`A" by (auto simp add: assms vimage_restr_def)
 
-  have "first_entrance_set A n = (T^^n) --` A - ( \<Union> i<n. (T^^i)--`A)"
+  have "first_entrance_set A n = (T^^n) --` A - (\<Union> i<n. (T^^i)--`A)"
     using first_entrance_set_def by simp
-  then have "T--`(first_entrance_set A n) = (T^^(n+1))--`A - ( \<Union> i<n. (T^^(i+1))--`A)"
+  then have "T--`(first_entrance_set A n) = (T^^(n+1))--`A - (\<Union> i<n. (T^^(i+1))--`A)"
     using T_vrestr_composed(2) `A \<in> sets M` by simp
-  then have *: "T--`(first_entrance_set A n) - A = (T^^(n+1))--`A - (A \<union> ( \<Union> i<n. (T^^(i+1))--`A))"
+  then have *: "T--`(first_entrance_set A n) - A = (T^^(n+1))--`A - (A \<union> (\<Union> i<n. (T^^(i+1))--`A))"
     by blast
   have "(\<Union> i<n. (T^^(i+1))--`A) = (\<Union> j\<in>{1..<n+1}. (T^^j)--`A)"
     by (metis (mono_tags, lifting) UN_le_add_shift_strict SUP_cong)
-  then have "A \<union> ( \<Union> i<n. (T^^(i+1))--`A) = (\<Union> j\<in>{0..<n+1}. (T^^j)--`A)"
+  then have "A \<union> (\<Union> i<n. (T^^(i+1))--`A) = (\<Union> j\<in>{0..<n+1}. (T^^j)--`A)"
     by (metis A0 Un_commute atLeast0LessThan UN_le_eq_Un0_strict)
   then show ?thesis using * first_entrance_set_def by auto
 qed
@@ -1179,7 +1179,7 @@ proof
       qed
     qed
   }
-  then show " \<exists>N\<le>n. n = (\<Sum>i<N. return_time_function A ((induced_map A ^^ i) x))"
+  then show "\<exists>N\<le>n. n = (\<Sum>i<N. return_time_function A ((induced_map A ^^ i) x))"
     using `x \<in> A` `(T^^n) x \<in> A` by simp
 next
   assume "\<exists>N\<le>n. n = (\<Sum>i<N. return_time_function A ((induced_map A ^^ i) x))"
@@ -1517,7 +1517,7 @@ proof -
     apply (auto) using recurrent_subset_incl by auto
   have "(induced_map A)-`WB = WB"
   proof
-    show "WB \<subseteq> induced_map A -` WB " using id `WB \<inter> A = {}` by auto
+    show "WB \<subseteq> induced_map A -` WB" using id `WB \<inter> A = {}` by auto
     show "induced_map A -` WB \<subseteq> WB"
     proof
       fix x
@@ -1819,7 +1819,7 @@ proof -
     then have *: "(\<integral>\<^sup>+y \<in> D n. induced_function A f y \<partial>M) = (\<Sum>i\<in>{..<n+1}. (\<integral>\<^sup>+y \<in> D n. f((T^^i)y) \<partial>M))"
       using pos nn_integral_setsum[of "{..<n+1}", of "\<lambda>i y. f((T^^i)y) * indicator (D n) y"] by simp
     have "{..< n+1} = {..n}" by auto
-    then have " (\<Sum>i\<in>{..<n+1}. (\<integral>\<^sup>+y \<in> D n. f((T^^i)y) \<partial>M)) = (\<Sum>i\<in>{..n}. (\<integral>\<^sup>+y \<in> D n. f((T^^i)y) \<partial>M))"
+    then have "(\<Sum>i\<in>{..<n+1}. (\<integral>\<^sup>+y \<in> D n. f((T^^i)y) \<partial>M)) = (\<Sum>i\<in>{..n}. (\<integral>\<^sup>+y \<in> D n. f((T^^i)y) \<partial>M))"
       by simp
     then show "(\<integral>\<^sup>+y \<in> D n. induced_function A f y \<partial>M) = (\<Sum>i\<in>{..n}. d i n)"
       using d_def * by simp
@@ -1978,7 +1978,7 @@ proof -
   have bound: "\<And>n x. F n x \<le> ennreal n" by (simp add: F_def indicator_def ennreal_of_nat_eq_real_of_nat)
   have "\<And>n. {x \<in> space M. F n x > 0} \<subseteq> Y n" unfolding F_def using not_le by fastforce
   then have le: "\<And>n. emeasure M {x \<in> space M. F n x > 0} \<le> emeasure M (Y n)" by (metis emeasure_mono Y_meas)
-  have fin: " emeasure M {x \<in> space M. F n x > 0} < \<infinity>" for n
+  have fin: "emeasure M {x \<in> space M. F n x > 0} < \<infinity>" for n
     using Y_fin[of n] le[of n] by (simp add: less_top)
   have *: "\<And>n. (\<integral>\<^sup>+y. induced_function A (F n) y \<partial>M) = (\<integral>\<^sup>+ x \<in> (\<Union>n. (T^^n)--`A). (F n) x \<partial>M)"
     by (rule induced_function_nn_integral_aux[OF A_meas mes bound _ fin]) simp
@@ -2015,7 +2015,7 @@ proof -
     then show ?thesis
       by (simp add: inf_SUP[symmetric] ennreal_SUP_of_nat_eq_top)
   qed
-  then have "\<And>x. x \<in> space M \<Longrightarrow> (SUP n. F n x * indicator (\<Union>n. (T^^n)--`A) x ) = f x * indicator (\<Union>n. (T^^n)--`A) x"
+  then have "\<And>x. x \<in> space M \<Longrightarrow> (SUP n. F n x * indicator (\<Union>n. (T^^n)--`A) x) = f x * indicator (\<Union>n. (T^^n)--`A) x"
     by (auto simp add: indicator_def SUP_Fx)
   then have **: "(SUP n. (\<integral>\<^sup>+ x \<in> (\<Union>n. (T^^n)--`A). F n x \<partial>M)) = (\<integral>\<^sup>+ x \<in> (\<Union>n. (T^^n)--`A). f x \<partial>M)"
     by (simp add: a cong: nn_integral_cong)
@@ -2053,7 +2053,7 @@ theorem kac_formula_nonergodic:
 proof -
   define f where "f = (\<lambda>(x::'a). 1::ennreal)"
   have "\<And>x. induced_function A f x = return_time_function A x"
-    unfolding induced_function_def f_def by (simp add: )
+    unfolding induced_function_def f_def by (simp add:)
   then have "(\<integral>\<^sup>+y. return_time_function A y \<partial>M) = (\<integral>\<^sup>+y. induced_function A f y \<partial>M)" by auto
   also have "... = (\<integral>\<^sup>+ x \<in> (\<Union>n. (T^^n)--`A). f x \<partial>M)"
     by (rule induced_function_nn_integral) (auto simp add: f_def)
@@ -2096,7 +2096,7 @@ proof -
   finally have *: "(\<integral>\<^sup>+ x. (f x * indicator (\<Union>n. (T^^n)--`A) x) \<partial>M) = (\<integral>\<^sup>+x. ennreal (induced_function A f x) \<partial>M)"
     by simp
 
-  have " (\<integral> x \<in> (\<Union>n. (T^^n)--`A). f x \<partial>M) = (\<integral> x. f x * indicator (\<Union>n. (T^^n)--`A) x \<partial>M)"
+  have "(\<integral> x \<in> (\<Union>n. (T^^n)--`A). f x \<partial>M) = (\<integral> x. f x * indicator (\<Union>n. (T^^n)--`A) x \<partial>M)"
     by (simp add: mult.commute)
   also have "... = enn2real (\<integral>\<^sup>+ x. (f x * indicator (\<Union>n. (T^^n)--`A) x) \<partial>M)"
     by (rule integral_eq_nn_integral, auto simp add: f_pos)
