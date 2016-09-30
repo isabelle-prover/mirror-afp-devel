@@ -6,7 +6,6 @@ imports
   "~~/src/HOL/Library/Float"
   "../../Affine_Arithmetic/Executable_Euclidean_Space"
   "../Library/Multivariate_Taylor"
-  "~~/src/HOL/Library/Convex"
 begin
 
 subsection \<open>aux\<close>
