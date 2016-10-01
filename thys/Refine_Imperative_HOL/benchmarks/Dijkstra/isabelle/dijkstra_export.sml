@@ -829,8 +829,6 @@ fun foldli [] c f sigma = sigma
   | foldli (x :: xs) c f sigma =
     (if c sigma then foldli xs c f (f x sigma) else sigma);
 
-fun times_nat m n = Nat (IntInf.* (integer_of_nat m, integer_of_nat n));
-
 fun sgn_integer k =
   (if ((k : IntInf.int) = (0 : IntInf.int)) then (0 : IntInf.int)
     else (if IntInf.< (k, (0 : IntInf.int)) then (~1 : IntInf.int)
@@ -857,12 +855,14 @@ fun divmod_integer k l =
 
 fun snd (x1, x2) = x2;
 
-fun mod_integer k l = snd (divmod_integer k l);
+fun modulo_integer k l = snd (divmod_integer k l);
 
-fun mod_nat m n = Nat (mod_integer (integer_of_nat m) (integer_of_nat n));
+fun modulo_nat m n = Nat (modulo_integer (integer_of_nat m) (integer_of_nat n));
+
+fun times_nat m n = Nat (IntInf.* (integer_of_nat m, integer_of_nat n));
 
 fun lcg_next s =
-  mod_nat
+  modulo_nat
     (plus_nata (times_nat (nat_of_integer (81 : IntInf.int)) s)
       (nat_of_integer (173 : IntInf.int)))
     (nat_of_integer (268435456 : IntInf.int));
