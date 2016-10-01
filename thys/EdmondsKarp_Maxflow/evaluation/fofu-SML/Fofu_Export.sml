@@ -2023,16 +2023,17 @@ fun divmod_integer k l =
                                     IntInf.- (IntInf.abs l, s)))
                          end)));
 
-fun mod_integer k l = snd (divmod_integer k l);
+fun modulo_integer k l = snd (divmod_integer k l);
 
-fun mod_nat m n = Nat (mod_integer (integer_of_nat m) (integer_of_nat n));
+fun modulo_nat m n = Nat (modulo_integer (integer_of_nat m) (integer_of_nat n));
 
 fun nat_of_uint32 x =
   nat_of_integer (IntInf.fromLarge (Word32.toLargeInt x) : IntInf.int);
 
 fun nat_of_hashcode x = nat_of_uint32 x;
 
-fun bounded_hashcode_nat A_ n x = mod_nat (nat_of_hashcode (hashcode A_ x)) n;
+fun bounded_hashcode_nat A_ n x =
+  modulo_nat (nat_of_hashcode (hashcode A_ x)) n;
 
 fun array_length x = (nat_of_integer o FArray.IsabelleMapping.array_length) x;
 
@@ -2806,7 +2807,7 @@ fun divide_integer k l = fst (divmod_integer k l);
 fun divide_nat m n = Nat (divide_integer (integer_of_nat m) (integer_of_nat n));
 
 fun mtx_new A_ n m c =
-  make A_ (times_nat n m) (fn i => c (divide_nat i m, mod_nat i m));
+  make A_ (times_nat n m) (fn i => c (divide_nat i m, modulo_nat i m));
 
 fun init_cf_impl c n = mtx_new heap_int n n c;
 
