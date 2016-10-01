@@ -260,7 +260,7 @@ lemma weak_fusion: "h \<in> Apply.Disjunctive \<Longrightarrow> mono f \<Longrig
   apply (simp add: le_fun_def)
   apply (rule_tac y = "g (lfp g)" in order_trans)
   apply (rule_tac f = g in monoD, simp_all)
-  apply (rule lfp_lemma2, simp)
+  apply (simp add: lfp_unfold [symmetric])
   apply (simp add: Apply.DisjunctiveD)
   by (rule SUP_least, blast)
 
