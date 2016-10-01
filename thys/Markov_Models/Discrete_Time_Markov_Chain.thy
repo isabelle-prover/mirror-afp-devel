@@ -706,8 +706,10 @@ proof -
     finally show "?M N s \<le> 1 \<sqinter> x * (1 - ennreal ?c)"
       by (subst (asm) nn_integral_cmult_indicator) (auto simp: emeasure_Diff emeasure_pmf_single)
   qed (auto intro: Inf_greatest)
-  also have "gfp ?R \<le> 0"
-    using gfp_lemma2[OF \<open>mono ?R\<close>] assms[THEN pmf_positive]
+  also
+  from \<open>mono ?R\<close> have "gfp ?R = ?R (gfp ?R)" by (rule gfp_unfold)
+  then have "gfp ?R \<le> ?R (gfp ?R)" by simp
+  with assms[THEN pmf_positive] have "gfp ?R \<le> 0"
     by (cases "gfp ?R")
        (auto simp: top_unique inf_ennreal.rep_eq field_simps mult_le_0_iff ennreal_1[symmetric]
                    pmf_le_1 ennreal_minus ennreal_mult[symmetric] ennreal_le_iff2 inf_min min_def

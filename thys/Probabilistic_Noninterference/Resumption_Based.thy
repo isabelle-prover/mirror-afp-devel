@@ -1122,7 +1122,7 @@ using bis_incl unfolding bis_defs by auto
 lemma Sbis_prefix:
 "Sbis \<le> Sretr Sbis"
 unfolding Sbis_def
-by (metis gfp_lemma2 mono_Retr)
+using def_gfp_unfold mono_Retr(1) by blast
 
 lemma Sbis_fix:
 "Sretr Sbis = Sbis"
@@ -1418,7 +1418,7 @@ using trans_Sbis unfolding trans_def by blast
 lemma ZObis_prefix:
 "ZObis \<le> ZOretr ZObis"
 unfolding ZObis_def
-by (metis gfp_lemma2 mono_Retr)
+using def_gfp_unfold mono_Retr(2) by blast
 
 lemma ZObis_fix:
 "ZOretr ZObis = ZObis"
