@@ -305,9 +305,6 @@ lemma mono_gfp_eqI:
   apply (rule FIXP)
   done
 
-lemma lfp_le_gfp: "mono f \<Longrightarrow> lfp f \<le> gfp f"
-  by (metis gfp_upperbound lfp_lemma3)
-
 lemma lfp_le_gfp': "mono f \<Longrightarrow> lfp f x \<le> gfp f x"
   by (rule le_funD[OF lfp_le_gfp])
 

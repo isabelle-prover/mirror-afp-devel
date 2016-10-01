@@ -2176,9 +2176,6 @@ text {* The following lemma should be somewhere close to complete lattices. *}
 
 end
 
-lemma lfp_le_gfp: "mono (f:: 'a \<Rightarrow> 'a :: proto_quantale)  \<Longrightarrow> lfp f \<le> gfp f"
-  by (simp add: gfp_upperbound lfp_lemma3)
-
 lemma mono_aux: "mono (\<lambda>y. sup (z:: 'a :: proto_quantale) (x \<cdot> y))"
   by (meson mono_def order_refl pd.s_prod_isol sup.mono)
 

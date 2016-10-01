@@ -706,9 +706,6 @@ interpretation mrel_proto_quantale: proto_quantale "1\<^sub>\<sigma>" "op \<cdot
 
 text {* We reprove Corollary 13.2. because Isabelle does not pick it up from the quantale level. *}
 
-lemma lfp_le_gfp: "mono f \<Longrightarrow> lfp f \<le> gfp f"
-  by (simp add: gfp_lemma3 lfp_lowerbound)
-
 lemma iso_prop: "mono (\<lambda>X. S \<union> R \<cdot> X)"
   by (rule monoI, (clarsimp simp: mr_simp), blast)
 
