@@ -124,7 +124,7 @@ text {*
   \begin{displayquote}
     {[}If enabled, a step may{]} occur, resulting in a follower
     configuration $c^\prime$, where $c^\prime$ is obtained from $c$ by removing
-    $(p, m)$ from $\var{msgs}_c$, changing $p$’s state and adding the set of
+    $(p, m)$ from $\var{msgs}_c$, changing $p$'s state and adding the set of
     messages to $\var{msgs}_c$ according to the step transition function
     associated with $p$. We denote this by $c \xrightarrow{p,m} c^\prime$.
   \end{displayquote}

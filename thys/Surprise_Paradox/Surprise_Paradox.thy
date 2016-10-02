@@ -25,15 +25,15 @@ Or is the judge lying? But his prediction became true!
 It is an interesting exercise to try to phrase the Surprise Paradox in a rigorous manner, and
 see this might clarify things.
 
-In 1964, Frederic Fitch suggested a formulation that refines the notion of “surprise” as
-“cannot be proven from the given assumptions” @{cite fitch}. To formulate that, we need propositions that
-reference their own provability, so just as Fitch builds on Gödel’s work, we build on Paulson’s
-formalisation of Gödel’s incompleteness theorems in Isabelle @{cite Incompleteness}.
+In 1964, Frederic Fitch suggested a formulation that refines the notion of ``surprise'' as
+``cannot be proven from the given assumptions'' @{cite fitch}. To formulate that, we need propositions that
+reference their own provability, so just as Fitch builds on Gödel's work, we build on Paulson's
+formalisation of Gödel's incompleteness theorems in Isabelle @{cite Incompleteness}.
 \<close>
 
 section \<open>Excluded or\<close>
 
-text \<open>Although the proof goes through with regular disjunction, Fitch phrases the judge’s
+text \<open>Although the proof goes through with regular disjunction, Fitch phrases the judge's
 proposition using exclusive or, so we add syntax for that.\<close>
 
 abbreviation Xor :: "fm \<Rightarrow> fm \<Rightarrow> fm" (infix "XOR" 120)
@@ -42,12 +42,12 @@ abbreviation Xor :: "fm \<Rightarrow> fm \<Rightarrow> fm" (infix "XOR" 120)
 section \<open>Formulas with variables\<close>
 
 text \<open>
-In Paulson’s formalisation of terms and formulas, only terms carry variables. This is sufficient for
+In Paulson's formalisation of terms and formulas, only terms carry variables. This is sufficient for
 his purposes, because the proposition that is being diagonalised needs itself as a parameter to
 @{term_type PfP}, which does take a term (which happens to be a quoted formula).
 
 In order to stay close to Fitch, we need the diagonalised proposition to occur deeper in a quotation
-of a few logical conjunctions. Therefore, we build a small theory of formulas with variables (“holed”
+of a few logical conjunctions. Therefore, we build a small theory of formulas with variables (``holed''
 formulas). These support substituting a formula for a variable, this substitution commutes with
 quotation, and closed holed formulas can be converted to regular formulas.
 
@@ -123,7 +123,7 @@ lemma quot_closed_hfm[simp]: "closed_hfm A \<Longrightarrow> \<lceil>A\<rceil> =
 
 declare quot_hfm.simps[simp del]
 
-section \<open>Fitch’s proof\<close>
+section \<open>Fitch's proof\<close>
 
 text \<open>
 For simplicity, Fitch (and we) restrict the week to two days. Propositions @{text Q\<^sub>1} and @{text Q\<^sub>2}
@@ -137,8 +137,8 @@ context
 begin
 
   text \<open>
-  In order to define the judge’s proposition, which is self-referential, we apply the usual trick
-  of defining a proposition with a variable, and then using Gödel’s diagonalisation lemma.
+  In order to define the judge's proposition, which is self-referential, we apply the usual trick
+  of defining a proposition with a variable, and then using Gödel's diagonalisation lemma.
   \<close>
 
   definition H :: fm where
@@ -155,7 +155,7 @@ begin
   qed
 
   text \<open>
-  From now on, the lemmas are named after their number in Fitch’s paper, and correspond to his
+  From now on, the lemmas are named after their number in Fitch's paper, and correspond to his
   statements pleasingly closely.
   \<close>
 
