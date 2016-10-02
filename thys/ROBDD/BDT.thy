@@ -76,7 +76,7 @@ lemma "(f, b) \<in> bf_ifex_rel \<Longrightarrow>  b = Falseif \<longleftrightar
   unfolding bf_ifex_rel_def using roifex_Falseif_unique by auto
 
 lemma ifex_ordered_not_part: "ifex_ordered  b \<Longrightarrow> b = IF v b1 b2 \<Longrightarrow> w < v \<Longrightarrow> w \<notin> ifex_var_set b"
-	using less_asym by fastforce
+  using less_asym by fastforce
 
 lemma ro_ifex_unique: "ro_ifex x \<Longrightarrow> ro_ifex y \<Longrightarrow> (\<And>ass. val_ifex x ass = val_ifex y ass) \<Longrightarrow> x = y"
  proof(induction x arbitrary: y)
