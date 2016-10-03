@@ -1016,7 +1016,7 @@ qed (rule distr_Stream_subprob)
 lemma AE_T':
   assumes [measurable]: "Measurable.pred S P"
   shows "(AE x in T' I. P x) \<longleftrightarrow> (\<forall>s\<in>I. AE x in T s. P (s ## x))"
-  unfolding T'_def by (simp add: AE_bind[OF _ distr_Stream_subprob] AE_measure_pmf_iff AE_distr_iff)
+  unfolding T'_def by (simp add: AE_bind[OF distr_Stream_subprob] AE_measure_pmf_iff AE_distr_iff)
 
 lemma emeasure_T':
   assumes [measurable]: "X \<in> sets S"
@@ -1321,7 +1321,7 @@ proof (intro stream_space_eq_sstart)
     next
       case (Suc n) then show ?case
         apply (subst M'_eq[OF \<open>R x M\<close>])
-        apply (subst AE_bind[OF _ *[OF \<open>R x M\<close>]])
+        apply (subst AE_bind[OF *[OF \<open>R x M\<close>]])
         apply measurable
         apply (auto intro!: measurable_compose[OF measurable_snth]
                             measurable_compose[OF measurable_stl] AE_distr_iff[THEN iffD2] predE

@@ -445,7 +445,7 @@ proof-
     apply (rule measurable_compose[OF Mg measurable_return_val], rule refl)
     done
   also have "... = M \<bind> (\<lambda>x. return_val (g (f x)))"
-    apply (intro bind_cong ballI)
+    apply (intro bind_cong refl)
     apply (subst (asm) sets_eq_imp_space_eq[OF sets_M])
     apply (drule measurable_space[OF Mf])
     apply (subst bind_return_val'[where t = t' and t' = t''])
@@ -460,7 +460,7 @@ lemma bind_return_val_distr:
   shows "M \<bind> return_val \<circ> f = distr M (stock_measure t') f"
 proof-
   have "M \<bind> return_val \<circ> f = M \<bind> return (stock_measure t') \<circ> f"
-    apply (intro bind_cong ballI)
+    apply (intro bind_cong refl)
     apply (subst (asm) sets_eq_imp_space_eq[OF sets_M])
     apply (drule measurable_space[OF Mf])
     apply (simp add: return_val_def o_def)

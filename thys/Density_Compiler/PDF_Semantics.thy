@@ -632,9 +632,6 @@ primrec expr_sem :: "state \<Rightarrow> expr \<Rightarrow> val measure" where
      }"
 | "expr_sem \<sigma> (Fail t) = null_measure (stock_measure t)"
 
-lemma bind_cong_strong: "M = N \<Longrightarrow> (\<And>x. x\<in>space M =simp=> f x = g x) \<Longrightarrow> bind M f = bind N g"
-  by (auto simp: simp_implies_def intro!: bind_cong)
-
 lemma expr_sem_pair_vars: "expr_sem \<sigma> <Var x, Var y> = return_val <|\<sigma> x, \<sigma> y|>"
   by (simp add: return_val_def bind_return[where N="PRODUCT (val_type (\<sigma> x)) (val_type (\<sigma> y))"]
            cong: bind_cong_strong)
@@ -1040,7 +1037,7 @@ next
     using e1 by (simp add: et_pair.prems return_val_def A)
   also have "... \<bind> (\<lambda>v. expr_sem \<sigma> e2 \<bind> (\<lambda>w. return_val (<|v,w|>))) =
           ... \<bind> (\<lambda>v. return_val (<|v, expr_sem_rf \<sigma> e2|>))"
-  proof (intro bind_cong ballI)
+  proof (intro bind_cong refl)
     fix v assume "v \<in> space (return (stock_measure t1) (expr_sem_rf \<sigma> e1))"
     hence v: "val_type v = t1" "v \<in> type_universe t1" by (simp_all add:)
     have "expr_sem \<sigma> e2 \<bind> (\<lambda>w. return_val (<|v,w|>)) =
@@ -1048,7 +1045,7 @@ next
       using e2 by (simp add: et_pair.prems return_val_def B)
     also have "... = return (stock_measure t2) (expr_sem_rf \<sigma> e2) \<bind>
                          (\<lambda>w. return (stock_measure (PRODUCT t1 t2)) (<|v,w|>))"
-    proof (intro bind_cong ballI)
+    proof (intro bind_cong refl)
       fix w assume "w \<in> space (return (stock_measure t2) (expr_sem_rf \<sigma> e2))"
       hence w: "val_type w = t2" by (simp add:)
       thus "return_val (<|v,w|>) = return (stock_measure (PRODUCT t1 t2)) (<|v,w|>)"
@@ -1118,7 +1115,7 @@ next
     by (simp add: e1)
   also from et_let.prems
     have "... = return_val (expr_sem_rf \<sigma> e1) \<bind> (\<lambda>v. return_val (expr_sem_rf (case_nat v \<sigma>) e2))"
-    by (intro bind_cong ballI, subst e2) (auto simp: S)
+    by (intro bind_cong refl, subst e2) (auto simp: S)
   also from et_let have Me2[measurable]: "(\<lambda>\<sigma>. expr_sem_rf \<sigma> e2) \<in> measurable ?N (stock_measure t2)"
     using subset_shift_var_set by (intro measurable_expr_sem_rf) auto
   have "(\<lambda>(\<sigma>,y). case_nat y \<sigma>) \<circ> (\<lambda>y. (\<sigma>, y)) \<in> measurable (stock_measure t1) ?N"

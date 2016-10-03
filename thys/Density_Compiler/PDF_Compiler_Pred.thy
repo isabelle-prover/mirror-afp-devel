@@ -12,69 +12,6 @@ theory PDF_Compiler_Pred
 imports PDF_Semantics PDF_Density_Contexts PDF_Transformations Density_Predicates
 begin
 
-lemma density_discrete:
-  "countable A \<Longrightarrow> sets N = Set.Pow A \<Longrightarrow> (\<And>x. f x \<ge> 0) \<Longrightarrow> (\<And>x. x \<in> A \<Longrightarrow> f x = emeasure N {x}) \<Longrightarrow>
-    density (count_space A) f = N"
-  by (rule measure_eqI_countable[of _ A]) (auto simp: emeasure_density)
-
-lemma distr_density_discrete:
-  fixes f'
-  assumes "countable A"
-  assumes "f' \<in> borel_measurable M"
-  assumes "g \<in> measurable M (count_space A)"
-  defines "f \<equiv> \<lambda>x. \<integral>\<^sup>+t. (if g t = x then 1 else 0) * f' t \<partial>M"
-  assumes "\<And>x.  x \<in> space M \<Longrightarrow> g x \<in> A"
-  shows "density (count_space A) (\<lambda>x. f x) = distr (density M f') (count_space A) g"
-proof (rule density_discrete)
-  fix x assume x: "x \<in> A"
-  have "f x = \<integral>\<^sup>+t. indicator (g -` {x} \<inter> space M) t * f' t \<partial>M" (is "_ = ?I") unfolding f_def
-    by (intro nn_integral_cong) (simp split: split_indicator)
-  also from x have in_sets: "g -` {x} \<inter> space M \<in> sets M"
-    by (intro measurable_sets[OF assms(3)]) simp
-  have "?I = emeasure (density M f') (g -` {x} \<inter> space M)" unfolding f_def
-    by (subst emeasure_density[OF assms(2) in_sets], subst mult.commute) (rule refl)
-  also from assms(3) x have "... = emeasure (distr (density M f') (count_space A) g) {x}"
-    by (subst emeasure_distr) simp_all
-  finally show "f x = emeasure (distr (density M f') (count_space A) g) {x}" .
-qed (insert assms, auto)
-
-lemma bind_cong_AE:
-  assumes "M = N"
-  assumes f: "f \<in> measurable N (subprob_algebra B)"
-  assumes g: "g \<in> measurable N (subprob_algebra B)"
-  assumes ae: "AE x in N. f x = g x"
-  shows "bind M f = bind N g"
-proof cases
-  assume "space N = {}" then show ?thesis
-    using `M = N` by (simp add: bind_empty)
-next
-  assume "space N \<noteq> {}"
-  show ?thesis unfolding `M = N`
-  proof (rule measure_eqI)
-    have *: "sets (N \<bind> f) = sets B"
-      using sets_bind[OF sets_kernel[OF f] `space N \<noteq> {}`] by simp
-    then show "sets (N \<bind> f) = sets (N \<bind> g)"
-      using sets_bind[OF sets_kernel[OF g] `space N \<noteq> {}`] by auto
-    fix A assume "A \<in> sets (N \<bind> f)"
-    then have "A \<in> sets B"
-      unfolding * .
-    with ae f g `space N \<noteq> {}` show "emeasure (N \<bind> f) A = emeasure (N \<bind> g) A"
-      by (subst (1 2) emeasure_bind[where N=B]) (auto intro!: nn_integral_cong_AE)
-  qed
-qed
-
-lemma sets_bind_measurable:
-  assumes f: "f \<in> measurable M (subprob_algebra B)"
-  assumes M: "space M \<noteq> {}"
-  shows "sets (M \<bind> f) = sets B"
-  using M by (intro sets_bind[OF sets_kernel[OF f]]) auto
-
-lemma space_bind_measurable:
-  assumes f: "f \<in> measurable M (subprob_algebra B)"
-  assumes M: "space M \<noteq> {}"
-  shows "space (M \<bind> f) = space B"
-  using M by (intro space_bind[OF sets_kernel[OF f]]) auto
-
 subsection {* Density compiler predicate *}
 
 text {*
@@ -376,9 +313,9 @@ proof-
       using space_expr_sem[OF t1 vars1'[OF \<sigma>]] space_expr_sem[OF t2 vars2'[OF \<sigma>]] by simp_all
     have "expr_sem \<sigma> e \<bind> (\<lambda>x. expr_sem \<sigma> e' \<bind> (\<lambda>y. return_val <| x ,  y |>)) =
             expr_sem \<sigma> e \<bind> (\<lambda>x. return_val (expr_sem_rf \<sigma> e') \<bind> (\<lambda>y. return_val <| x ,  y |>))"
-      by (intro bind_cong ballI, subst e'[OF \<sigma>]) simp
+      by (intro bind_cong refl, subst e'[OF \<sigma>]) simp
     also have "... = expr_sem \<sigma> e \<bind> (\<lambda>x. return_val <|x , expr_sem_rf \<sigma> e'|>)" using \<sigma> vars2
-      by (intro bind_cong ballI, subst bind_return_val'[of _ t' _ ?tt'])
+      by (intro bind_cong refl, subst bind_return_val'[of _ t' _ ?tt'])
          (auto simp: vt_e' M_def space_dens_ctxt_measure
                intro!: measurable_PairVal)
     finally have "expr_sem \<sigma> e \<bind> (\<lambda>x. expr_sem \<sigma> e' \<bind> (\<lambda>y. return_val <|x,y|>)) =
@@ -387,13 +324,13 @@ proof-
   hence "M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> (oper $$ <e, e'>)) =
              M \<bind> (\<lambda>\<sigma>. (expr_sem \<sigma> e \<bind> (\<lambda>x. return_val <|x, expr_sem_rf \<sigma> e'|>))
                    \<bind> (\<lambda>x. return_val (op_sem oper x)))" (is "_ = ?T")
-    by (intro bind_cong ballI) (simp only: expr_sem.simps)
+    by (intro bind_cong refl) (simp only: expr_sem.simps)
   also have [measurable]: "\<And>\<sigma>. \<sigma> \<in> space M \<Longrightarrow> expr_sem_rf \<sigma> e' \<in> space t'"
     by (simp add: type_universe_def vt_e' del: type_universe_type)
   note [measurable] = measurable_op_sem[OF t3]
   hence  "?T = M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e \<bind> (\<lambda>x. return_val (op_sem oper <|x, expr_sem_rf \<sigma> e'|>)))"
     (is "_ = ?T")
-    by (intro bind_cong ballI, subst bind_assoc_return_val[of _ t _ ?tt' _ tr])
+    by (intro bind_cong[OF refl], subst bind_assoc_return_val[of _ t _ ?tt' _ tr])
        (auto simp: sets_expr_sem[OF t1 vars1'])
   also have eq: "\<And>\<sigma>. (\<And>x. x \<in> V' \<Longrightarrow> \<sigma> x = \<rho> x) \<Longrightarrow> expr_sem_rf \<sigma> e' = expr_sem_rf \<rho> e'"
     using vars2 by (intro expr_sem_rf_eq_on_vars) auto
@@ -778,7 +715,7 @@ next
       by (auto simp: space_dens_ctxt_measure space_PiM  PiE_iff
                      state_measure_def intro: type_universe_type)
     hence "?M1 = dens_ctxt_measure \<Y> \<rho> \<bind> (return (stock_measure t) \<circ> (\<lambda>\<sigma>. \<sigma> x))"
-      by (intro bind_cong) (simp add: return_val_def)
+      by (intro bind_cong_All) (simp add: return_val_def)
     also have "... = distr (dens_ctxt_measure \<Y> \<rho>) (stock_measure t) (\<lambda>\<sigma>. \<sigma> x)"
       using dcm.subprob_not_empty hd_var
       by (subst bind_return_distr) (auto intro!: measurable_dens_ctxt_measure_component)
@@ -867,7 +804,7 @@ next
     let ?M = "dens_ctxt_measure (V,V',\<Gamma>,\<delta>) \<rho>" and ?t = "dist_param_type dst"
     have "?M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> (Random dst e)) =
               ?M \<bind> (\<lambda>\<sigma>. return_val (expr_sem_rf \<sigma> e) \<bind> dist_measure dst)" (is "_ = ?N")
-      using hd_rand_det by (subst expr_sem.simps, intro bind_cong ballI, subst expr_sem_rf_sound)
+      using hd_rand_det by (subst expr_sem.simps, intro bind_cong refl, subst expr_sem_rf_sound)
                            (auto simp: dens_ctxt_measure_def state_measure'_def)
     also from hd_rand_det have A: "\<And>\<sigma>. \<sigma> \<in> space ?M \<Longrightarrow> val_type (expr_sem_rf \<sigma> e) = ?t"
       by (intro val_type_expr_sem_rf) (auto simp: dens_ctxt_measure_def state_measure'_def)
@@ -876,7 +813,7 @@ next
       by (intro bind_cong) (auto simp: dens_ctxt_measure_def state_measure'_def)
     also have "... = ?M \<bind> (\<lambda>\<sigma>. dist_measure dst (expr_sem_rf \<sigma> e))"
       unfolding return_val_def
-      by (intro bind_cong ballI bind_return, rule measurable_dist_measure)
+      by (intro bind_cong refl bind_return, rule measurable_dist_measure)
          (auto simp: type_universe_def A simp del: type_universe_type)
     finally have "?M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> (Random dst e)) =
                       ?M \<bind> (\<lambda>\<sigma>. dist_measure dst (expr_sem_rf \<sigma> e))" .
@@ -894,7 +831,7 @@ next
     let ?M = "dens_ctxt_measure (V,V',\<Gamma>,\<delta>) \<rho>" and ?t = "dist_param_type dst"
     have "?M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> (Random dst e)) =
               ?M \<bind> (\<lambda>\<sigma>. return_val (expr_sem_rf \<sigma> e) \<bind> dist_measure dst)" (is "_ = ?N")
-      using hd_rand_det by (subst expr_sem.simps, intro bind_cong ballI, subst expr_sem_rf_sound)
+      using hd_rand_det by (subst expr_sem.simps, intro bind_cong refl, subst expr_sem_rf_sound)
                            (auto simp: dens_ctxt_measure_def state_measure'_def)
     also from hd_rand_det have A: "\<And>\<sigma>. \<sigma> \<in> space ?M \<Longrightarrow> val_type (expr_sem_rf \<sigma> e) = ?t"
       by (intro val_type_expr_sem_rf) (auto simp: dens_ctxt_measure_def state_measure'_def)
@@ -903,7 +840,7 @@ next
       by (intro bind_cong) (auto simp: dens_ctxt_measure_def state_measure'_def)
     also have "... = ?M \<bind> (\<lambda>\<sigma>. dist_measure dst (expr_sem_rf \<sigma> e))"
       unfolding return_val_def
-      by (intro bind_cong ballI bind_return, rule measurable_dist_measure)
+      by (intro bind_cong refl bind_return, rule measurable_dist_measure)
          (auto simp: type_universe_def A simp del: type_universe_type)
     also have "has_subprob_density (?M \<bind> (\<lambda>\<sigma>. dist_measure dst (expr_sem_rf \<sigma> e))) (stock_measure t)
               (\<lambda>v. \<integral>\<^sup>+\<sigma>. dist_dens dst (expr_sem_rf (restrict \<sigma> V') e) v \<partial>?M)"
@@ -1111,7 +1048,7 @@ next
          (simp_all add: space_dens_ctxt_measure)
   qed
   also from hd_if_det.prems hd_if_det.hyps have "?P \<longleftrightarrow> ?case"
-    apply (intro has_parametrized_subprob_density_cong bind_cong ballI)
+    apply (intro has_parametrized_subprob_density_cong bind_cong refl)
     apply (subst expr_sem.simps)
     apply (subst expr_sem_rf_sound[OF tb, of "V \<union> V'", symmetric]) []
     apply (simp_all add: space_dens_ctxt_measure bind_return_val''[where M="stock_measure t"])
