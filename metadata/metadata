@@ -2707,7 +2707,7 @@ extra-history =
       href="InformationFlowSlicing.shtml">InformationFlowSlicing</a> contained both
       the <a href="InformationFlowSlicing_Inter.shtml">inter-</a> and <a
       href="InformationFlowSlicing.shtml">intra-procedural</a> case was split into
-      two for easier maintenance.    
+      two for easier maintenance.
 notify = daniel.wasserrab@kit.edu
 
 [InformationFlowSlicing_Inter]
@@ -2738,7 +2738,7 @@ extra-history =
       href="InformationFlowSlicing.shtml">InformationFlowSlicing</a> contained both
       the <a href="InformationFlowSlicing_Inter.shtml">inter-</a> and <a
       href="InformationFlowSlicing.shtml">intra-procedural</a> case was split into
-      two for easier maintenance.    
+      two for easier maintenance.
 notify = daniel.wasserrab@kit.edu
 
 [ComponentDependencies]
@@ -4627,6 +4627,19 @@ abstract =
   function. Thanks to these highly non-elementary mathematical tools,
   the proofs are very short and simple.</p>
 
+[Fisher_Yates]
+title = Fisher–Yates shuffle
+author = Manuel Eberl <https://in.tum.de/~eberlm>
+notify = eberlm@in.tum.de
+date = 2016-09-30
+topic = Computer Science/Algorithms
+abstract =
+  <p>This work defines and proves the correctness of the Fisher–Yates
+  algorithm for shuffling – i.e. producing a random permutation – of a
+  list. The algorithm proceeds by traversing the list and in
+  each step swapping the current element with a random element from the
+  remaining list.</p>
+
 [Rewriting_Z]
 title = The Z Property
 author = Bertram Felgenhauer<>, Julian Nagele<>, Vincent van Oostrom<>, Christian Sternagel<>
@@ -4751,7 +4764,7 @@ author = Manuel Eberl <https://in.tum.de/~eberlm>
 notify = eberlm@in.tum.de
 date = 2016-09-01
 topic = Mathematics/Analysis
-abstract = 
+abstract =
   This work contains a proof of Stirling's formula both for the
   factorial n! &sim; &radic;<span style="text-decoration:
   overline">2&pi;n</span> (n/e)<sup>n</sup> on natural numbers and the

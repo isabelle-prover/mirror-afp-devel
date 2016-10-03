@@ -53,8 +53,15 @@ is available <a href="citing.shtml">[here]</a>.
 	</tr>
 
 <tr><td class="entry">
+2016-09-30:
+<a href="entries/Fisher_Yates.shtml">Fisher–Yates shuffle</a>
+<br>Author:
+<a href="https://in.tum.de/~eberlm">Manuel Eberl</a>
+</td></tr>
+
+<tr><td class="entry">
 2016-09-09:
-<a href="entries/Iptables_Semantics.shtml">Iptables_Semantics</a>
+<a href="entries/Iptables_Semantics.shtml">Iptables Semantics</a>
 <br>Author:
 <a href="https://net.in.tum.de/~diekmann">Cornelius Diekmann</a> and 
 <a href="https://www21.in.tum.de/~hupel/">Lars Hupel</a>

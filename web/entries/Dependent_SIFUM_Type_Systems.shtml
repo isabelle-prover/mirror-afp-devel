@@ -67,6 +67,9 @@ and Daniel Schoepe, and whose structure it inherits.
 [2016-08-19]:
 Removed unused "stop" parameter and "stop_no_eval" assumption from the sifum_security locale.
 (revision dbc482d36372)
+[2016-09-27]:
+Added security locale support for the imposition of requirements on the initial memory.
+(revision cce4ceb74ddb)
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
