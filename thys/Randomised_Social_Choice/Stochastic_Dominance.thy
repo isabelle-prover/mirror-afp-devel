@@ -1,9 +1,9 @@
 section \<open>Stochastic Dominance\<close>
 
 theory Stochastic_Dominance
-imports 
-  Complex_Main 
-  "~~/src/HOL/Probability/Probability" 
+imports
+  Complex_Main
+  "~~/src/HOL/Probability/Probability"
   Lotteries
   Preference_Profiles
   Utility_Functions
@@ -12,12 +12,12 @@ begin
 subsection \<open>Definition of Stochastic Dominance\<close>
 
 text \<open>
-  This is the definition of stochastic dominance. It lifts a preference relation 
+  This is the definition of stochastic dominance. It lifts a preference relation
   on alternatives to the stochastic dominance ordering on lotteries.
 \<close>
 definition SD :: "'alt relation \<Rightarrow> 'alt lottery relation" where
-  "p \<succeq>[SD(R)] q \<longleftrightarrow> p \<in> lotteries_on {x. R x x} \<and> q \<in> lotteries_on {x. R x x} \<and> 
-      (\<forall>x. R x x \<longrightarrow> measure_pmf.prob p {y. y \<succeq>[R] x} \<ge> 
+  "p \<succeq>[SD(R)] q \<longleftrightarrow> p \<in> lotteries_on {x. R x x} \<and> q \<in> lotteries_on {x. R x x} \<and>
+      (\<forall>x. R x x \<longrightarrow> measure_pmf.prob p {y. y \<succeq>[R] x} \<ge>
                        measure_pmf.prob q {y. y \<succeq>[R] x})"
 
 lemma SD_empty [simp]: "SD (\<lambda>_ _. False) = (\<lambda>_ _. False)"
@@ -28,7 +28,7 @@ text \<open>
 \<close>
 lemma SD_refl: "p \<preceq>[SD(R)] p \<longleftrightarrow> p \<in> lotteries_on {x. R x x}"
   by (simp add: SD_def)
-  
+
 lemma SD_trans [simp, trans]: "p \<preceq>[SD(R)] q \<Longrightarrow> q \<preceq>[SD(R)] r \<Longrightarrow> p \<preceq>[SD(R)] r"
   unfolding SD_def by (auto intro: order.trans)
 
@@ -39,12 +39,12 @@ context preorder_on
 begin
 
 lemma SD_preorder:
-   "p \<succeq>[SD(le)] q \<longleftrightarrow> p \<in> lotteries_on carrier \<and> q \<in> lotteries_on carrier \<and> 
-      (\<forall>x\<in>carrier. measure_pmf.prob p (preferred_alts le x) \<ge> 
+   "p \<succeq>[SD(le)] q \<longleftrightarrow> p \<in> lotteries_on carrier \<and> q \<in> lotteries_on carrier \<and>
+      (\<forall>x\<in>carrier. measure_pmf.prob p (preferred_alts le x) \<ge>
                      measure_pmf.prob q (preferred_alts le x))"
-  by (simp add: SD_def preferred_alts_def carrier_eq)  
+  by (simp add: SD_def preferred_alts_def carrier_eq)
 
-lemma SD_preorderI [intro?]: 
+lemma SD_preorderI [intro?]:
   assumes "p \<in> lotteries_on carrier" "q \<in> lotteries_on carrier"
   assumes "\<And>x. x \<in> carrier \<Longrightarrow>
              measure_pmf.prob p (preferred_alts le x) \<ge> measure_pmf.prob q (preferred_alts le x)"
@@ -99,7 +99,7 @@ lemma SD_singleton_right:
 proof safe
   fix y assume SD: "q \<preceq>[SD(le)] return_pmf x" and y: "y \<in> set_pmf q"
   from y assms have [simp]: "y \<in> carrier" by (auto simp: lotteries_on_def)
-  
+
   from y have "0 < measure_pmf.prob q (preferred_alts le y)"
     by (rule measure_pmf_posI) simp_all
   also have "\<dots> \<le> measure_pmf.prob (return_pmf x) (preferred_alts le y)"
@@ -115,8 +115,8 @@ next
             measure_pmf.prob (return_pmf x) (preferred_alts le y)"
     proof (cases "y \<preceq>[le] x")
       case False
-      with A show ?thesis 
-        by (auto simp: preferred_alts_def indicator_def measure_le_0_iff 
+      with A show ?thesis
+        by (auto simp: preferred_alts_def indicator_def measure_le_0_iff
                        measure_pmf.prob_eq_0 AE_measure_pmf_iff intro: trans)
     qed (simp_all add: indicator_def preferred_alts_def)
   qed (insert assms, simp_all add: lotteries_on_def)
@@ -171,8 +171,8 @@ begin
 
 lemma SD_pref_profile:
   assumes "i \<in> agents"
-  shows   "p \<succeq>[SD(R i)] q \<longleftrightarrow> p \<in> lotteries_on alts \<and> q \<in> lotteries_on alts \<and> 
-             (\<forall>x\<in>alts. measure_pmf.prob p (preferred_alts (R i) x) \<ge> 
+  shows   "p \<succeq>[SD(R i)] q \<longleftrightarrow> p \<in> lotteries_on alts \<and> q \<in> lotteries_on alts \<and>
+             (\<forall>x\<in>alts. measure_pmf.prob p (preferred_alts (R i) x) \<ge>
                          measure_pmf.prob q (preferred_alts (R i) x))"
 proof -
   from assms interpret total_preorder_on alts "R i" by simp
@@ -181,10 +181,10 @@ proof -
   thus ?thesis by (simp add: SD_preorder preferred_alts_def)
 qed
 
-lemma SD_pref_profileI [intro?]: 
+lemma SD_pref_profileI [intro?]:
   assumes "i \<in> agents" "p \<in> lotteries_on alts" "q \<in> lotteries_on alts"
   assumes "\<And>x. x \<in> alts \<Longrightarrow>
-             measure_pmf.prob p (preferred_alts (R i) x) \<ge> 
+             measure_pmf.prob p (preferred_alts (R i) x) \<ge>
              measure_pmf.prob q (preferred_alts (R i) x)"
   shows   "p \<succeq>[SD(R i)] q"
   using assms by (simp add: SD_pref_profile)
@@ -193,7 +193,7 @@ lemma SD_pref_profileD:
   assumes "i \<in> agents" "p \<succeq>[SD(R i)] q"
   shows   "p \<in> lotteries_on alts" "q \<in> lotteries_on alts"
   and     "\<And>x. x \<in> alts \<Longrightarrow>
-             measure_pmf.prob p (preferred_alts (R i) x) \<ge> 
+             measure_pmf.prob p (preferred_alts (R i) x) \<ge>
              measure_pmf.prob q (preferred_alts (R i) x)"
   using assms by (simp_all add: SD_pref_profile)
 
@@ -203,7 +203,7 @@ end
 subsection \<open>SD efficient lotteries\<close>
 
 definition SD_efficient :: "('agent, 'alt) pref_profile \<Rightarrow> 'alt lottery \<Rightarrow> bool" where
-  SD_efficient_auxdef: 
+  SD_efficient_auxdef:
     "SD_efficient R p \<longleftrightarrow> \<not>(\<exists>q\<in>lotteries_on {x. \<exists>i. R i x x}. q \<succ>[Pareto (SD \<circ> R)] p)"
 
 context pref_profile_wf
@@ -214,7 +214,7 @@ sublocale SD: preorder_family agents "lotteries_on alts" "SD \<circ> R" unfoldin
      (simp_all add: preorder_on.SD_is_preorder' prefs_undefined')
 
 text \<open>
-  A lottery is considered SD-efficient if there is no other lottery such that 
+  A lottery is considered SD-efficient if there is no other lottery such that
   all agents weakly prefer the other lottery (w.r.t. stochastic dominance) and at least
   one agent strongly prefers the other lottery.
 \<close>
@@ -224,7 +224,7 @@ proof -
   have "SD_efficient R p \<longleftrightarrow> \<not>(\<exists>q\<in>lotteries_on {x. \<exists>i. R i x x}. q \<succ>[Pareto (SD \<circ> R)] p)"
     unfolding SD_efficient_auxdef ..
   also from nonempty_agents obtain i where i: "i \<in> agents" by blast
-  with preorder_on.refl[of alts "R i"] 
+  with preorder_on.refl[of alts "R i"]
     have "{x. \<exists>i. R i x x} = alts" by (auto intro!: exI[of _ i] not_outside)
   finally show ?thesis .
 qed
@@ -232,30 +232,30 @@ qed
 
 lemma SD_efficient_def':
   "SD_efficient R p \<longleftrightarrow>
-     \<not>(\<exists>q\<in>lotteries_on alts. (\<forall>i\<in>agents. q \<succeq>[SD(R i)] p) \<and> (\<exists>i\<in>agents. q \<succ>[SD(R i)] p))" 
+     \<not>(\<exists>q\<in>lotteries_on alts. (\<forall>i\<in>agents. q \<succeq>[SD(R i)] p) \<and> (\<exists>i\<in>agents. q \<succ>[SD(R i)] p))"
   unfolding SD_efficient_def SD.Pareto_iff strongly_preferred_def [abs_def] by auto
 
 lemma SD_inefficientI:
-  assumes "q \<in> lotteries_on alts" "\<And>i. i \<in> agents \<Longrightarrow> q \<succeq>[SD(R i)] p" 
+  assumes "q \<in> lotteries_on alts" "\<And>i. i \<in> agents \<Longrightarrow> q \<succeq>[SD(R i)] p"
           "i \<in> agents" "q \<succ>[SD(R i)] p"
-  shows   "\<not>SD_efficient R p" 
+  shows   "\<not>SD_efficient R p"
   using assms unfolding SD_efficient_def' by blast
 
 lemma SD_inefficientI':
-  assumes "q \<in> lotteries_on alts" "\<And>i. i \<in> agents \<Longrightarrow> q \<succeq>[SD(R i)] p" 
+  assumes "q \<in> lotteries_on alts" "\<And>i. i \<in> agents \<Longrightarrow> q \<succeq>[SD(R i)] p"
           "\<exists>i \<in> agents. q \<succ>[SD(R i)] p"
-  shows   "\<not>SD_efficient R p" 
+  shows   "\<not>SD_efficient R p"
   using assms unfolding SD_efficient_def' by blast
 
 lemma SD_inefficientE:
-  assumes "\<not>SD_efficient R p" 
+  assumes "\<not>SD_efficient R p"
   obtains q i where
-    "q \<in> lotteries_on alts" "\<And>i. i \<in> agents \<Longrightarrow> q \<succeq>[SD(R i)] p" 
+    "q \<in> lotteries_on alts" "\<And>i. i \<in> agents \<Longrightarrow> q \<succeq>[SD(R i)] p"
     "i \<in> agents" "q \<succ>[SD(R i)] p"
   using assms unfolding SD_efficient_def' by blast
-   
+
 lemma SD_efficientD:
-  assumes "SD_efficient R p" "q \<in> lotteries_on alts" 
+  assumes "SD_efficient R p" "q \<in> lotteries_on alts"
       and "\<And>i. i \<in> agents \<Longrightarrow> q \<succeq>[SD(R i)] p" "\<exists>i\<in>agents. \<not>(q \<preceq>[SD(R i)] p)"
   shows False
   using assms unfolding SD_efficient_def' strongly_preferred_def by blast
@@ -306,22 +306,22 @@ proof
     by (simp add: le_diff_iff')
 qed
 
-(* 
+(*
   TODO: one direction could probably be generalised to weakly consistent
   utility functions
 *)
 lemma SD_iff_expected_utilities_le:
   assumes "p \<in> lotteries_on carrier" "q \<in> lotteries_on carrier"
-  shows   "p \<preceq>[SD(le)] q \<longleftrightarrow> 
+  shows   "p \<preceq>[SD(le)] q \<longleftrightarrow>
              (\<forall>u. is_vnm_utility u \<longrightarrow> measure_pmf.expectation p u \<le> measure_pmf.expectation q u)"
-proof safe 
+proof safe
   fix u assume SD: "p \<preceq>[SD(le)] q" and is_utility: "is_vnm_utility u"
   from is_utility interpret vnm_utility carrier le u .
   def xs \<equiv> "weak_ranking le"
   have le: "is_weak_ranking xs" "le = of_weak_ranking xs"
     by (simp_all add: xs_def weak_ranking_total_preorder)
 
-  let ?pref = "\<lambda>p x. measure_pmf.prob p {y. x \<preceq>[le] y}" and 
+  let ?pref = "\<lambda>p x. measure_pmf.prob p {y. x \<preceq>[le] y}" and
       ?pref' = "\<lambda>p x. measure_pmf.prob p {y. x \<prec>[le] y}"
   def f \<equiv> "\<lambda>i. SOME x. x \<in> xs ! i"
   have xs_wf: "is_weak_ranking xs"
@@ -332,7 +332,7 @@ proof safe
   have f': "f i \<in> carrier" if "i < length xs" for i
     using that f weak_ranking_Union unfolding xs_def by (auto simp: set_conv_nth)
   def n \<equiv> "length xs - 1"
-  from assms weak_ranking_Union have carrier_nonempty: "carrier \<noteq> {}" and "xs \<noteq> []" 
+  from assms weak_ranking_Union have carrier_nonempty: "carrier \<noteq> {}" and "xs \<noteq> []"
     by (auto simp: xs_def lotteries_on_def set_pmf_not_empty)
   hence n: "length xs = Suc n" and xs_nonempty: "xs \<noteq> []" by (auto simp add: n_def)
   have SD': "?pref p (f i) \<le> ?pref q (f i)" if "i < length xs" for i
@@ -342,7 +342,7 @@ proof safe
                weak_ranking_index_unique[OF xs_wf that(2) _ f]
     by (auto simp add: le intro: f elim!: of_weak_ranking.cases intro!: of_weak_ranking.intros)
 
-  have "measure_pmf.expectation p u = 
+  have "measure_pmf.expectation p u =
           (\<Sum>i<n. (u (f i) - u (f (Suc i))) * ?pref p (f i)) + u (f n)"
     if p: "p \<in> lotteries_on carrier" for p
   proof -
@@ -352,17 +352,17 @@ proof safe
     also have "\<dots> = (\<Sum>i<length xs. u (f i) * (?pref p (f i) - ?pref' p (f i)))"
     proof (intro setsum.cong HOL.refl)
       fix i assume i: "i \<in> {..<length xs}"
-      have "?pref p (f i) - ?pref' p (f i) = 
+      have "?pref p (f i) - ?pref' p (f i) =
               measure_pmf.prob p ({y. f i \<preceq>[le] y} - {y. f i \<prec>[le] y})"
         by (subst measure_pmf.finite_measure_Diff [symmetric])
            (auto simp: strongly_preferred_def)
-      also have "{y. f i \<preceq>[le] y} - {y. f i \<prec>[le] y} = 
+      also have "{y. f i \<preceq>[le] y} - {y. f i \<prec>[le] y} =
                    {y. f i \<preceq>[le] y \<and> y \<preceq>[le] f i}" (is "_ = ?A")
         by (auto simp: strongly_preferred_def)
       also have "\<dots> = xs ! i"
       proof safe
         fix x assume le: "le (f i) x" "le x (f i)"
-        from i f show "x \<in> xs ! i" 
+        from i f show "x \<in> xs ! i"
           by (intro weak_ranking_eqclass2[OF _ _ le]) (auto simp: xs_def)
       next
         fix x assume "x \<in> xs ! i"
@@ -372,16 +372,16 @@ proof safe
       finally show "u (f i) * measure_pmf.prob p (xs ! i) =
                       u (f i) * (?pref p (f i) - ?pref' p (f i))" by simp
     qed
-    also have "\<dots> = (\<Sum>i<length xs. u (f i) * ?pref p (f i)) - 
+    also have "\<dots> = (\<Sum>i<length xs. u (f i) * ?pref p (f i)) -
                       (\<Sum>i<length xs. u (f i) * ?pref' p (f i))"
       by (simp add: setsum_subtractf ring_distribs)
-    also have "(\<Sum>i<length xs. u (f i) * ?pref p (f i)) = 
+    also have "(\<Sum>i<length xs. u (f i) * ?pref p (f i)) =
                  (\<Sum>i<n. u (f i) * ?pref p (f i)) + u (f n) * ?pref p (f n)" (is "_ = ?sum")
       by (simp add: n)
-    also have "(\<Sum>i<length xs. u (f i) * ?pref' p (f i)) = 
+    also have "(\<Sum>i<length xs. u (f i) * ?pref' p (f i)) =
                  (\<Sum>i<n. u (f (Suc i)) * ?pref' p (f (Suc i))) + u (f 0) * ?pref' p (f 0)"
       unfolding n setsum_lessThan_Suc_shift by simp
-    also have "(\<Sum>i<n. u (f (Suc i)) * ?pref' p (f (Suc i))) = 
+    also have "(\<Sum>i<n. u (f (Suc i)) * ?pref' p (f (Suc i))) =
                  (\<Sum>i<n. u (f (Suc i)) * ?pref p (f i))"
     proof (intro setsum.cong HOL.refl)
       fix i assume i: "i \<in> {..<n}"
@@ -398,7 +398,7 @@ proof safe
       qed (insert not_outside, auto simp: strongly_preferred_def)
       thus "u (f (Suc i)) * ?pref' p (f (Suc i)) = u (f (Suc i)) * ?pref p (f i)" by simp
     qed
-    also have "?sum - (\<dots> + u (f 0) * ?pref' p (f 0)) = 
+    also have "?sum - (\<dots> + u (f 0) * ?pref' p (f 0)) =
       (\<Sum>i<n. (u (f i) - u (f (Suc i))) * ?pref p (f i)) -
        u (f 0) * ?pref' p (f 0) + u (f n) * ?pref p (f n)"
          by (simp add: ring_distribs setsum_subtractf)
@@ -417,7 +417,7 @@ proof safe
   from assms[THEN this] show "measure_pmf.expectation p u \<le> measure_pmf.expectation q u"
     unfolding SD_preorder n_def using f'
     by (auto intro!: setsum_mono mult_left_mono SD' simp: utility_le_iff f_le)
-  
+
 next
   assume "\<forall>u. is_vnm_utility u \<longrightarrow> measure_pmf.expectation p u \<le> measure_pmf.expectation q u"
   hence expected_utility_le: "measure_pmf.expectation p u \<le> measure_pmf.expectation q u"
@@ -444,27 +444,27 @@ next
       proof (intro vnm_utility.add_left vnm_utility.scaled utility_weak_ranking_index)
         fix y z assume "le y z"
         thus "indicator {y. y \<succeq>[le] x} y \<le> (indicator {y. y \<succeq>[le] x} z :: real)"
-          by (auto intro: trans simp: indicator_def split: if_splits)        
+          by (auto intro: trans simp: indicator_def split: if_splits)
       qed fact+
 
       have "(\<Sum>y|le x y. pmf p y) \<le>
               (\<Sum>y|le x y. pmf p y) + \<epsilon> * (\<Sum>y\<in>carrier. ?idx y * pmf p y)"
         using \<epsilon> by (auto intro!: mult_nonneg_nonneg setsum_nonneg pmf_nonneg)
-      also from expected_utility_le is_utility have 
+      also from expected_utility_le is_utility have
         "measure_pmf.expectation p u \<le> measure_pmf.expectation q u" .
-      with assms 
+      with assms
         have "(\<Sum>a\<in>carrier. u a * pmf p a) \<le> (\<Sum>a\<in>carrier. u a * pmf q a)"
         by (subst (asm) (1 2) integral_measure_pmf[OF finite_carrier])
-           (auto simp: lotteries_on_def set_pmf_eq)
-      hence "(\<Sum>y|le x y. pmf p y) + \<epsilon> * (\<Sum>y\<in>carrier. ?idx y * pmf p y) \<le> 
+           (auto simp: lotteries_on_def set_pmf_eq ac_simps)
+      hence "(\<Sum>y|le x y. pmf p y) + \<epsilon> * (\<Sum>y\<in>carrier. ?idx y * pmf p y) \<le>
                (\<Sum>y|le x y. pmf q y) + \<epsilon> * (\<Sum>y\<in>carrier. ?idx y * pmf q y)"
         using x preferred_subset_carrier unfolding u_def
         by (simp add: setsum.distrib finite_carrier algebra_simps Int_absorb1 setsum_distrib_left)
       also have "(\<Sum>y\<in>carrier. ?idx y * pmf q y) \<le> (\<Sum>y\<in>carrier. length xs * pmf q y)"
         by (intro setsum_mono mult_right_mono) (simp_all add: pmf_nonneg)
       also have "\<dots> = measure_pmf.expectation q (\<lambda>_. length xs)"
-        using assms by (subst integral_measure_pmf[OF finite_carrier]) 
-                       (auto simp: lotteries_on_def set_pmf_eq)
+        using assms by (subst integral_measure_pmf[OF finite_carrier])
+                       (auto simp: lotteries_on_def set_pmf_eq ac_simps)
       also have "\<dots> = length xs" by simp
       also have "(\<Sum>y | le x y. pmf p y) = measure_pmf.prob p {y. le x y}"
         using finite_subset[OF preferred_subset_carrier finite_carrier]
@@ -472,7 +472,7 @@ next
       also have "(\<Sum>y | le x y. pmf q y) = measure_pmf.prob q {y. le x y}"
         using finite_subset[OF preferred_subset_carrier finite_carrier]
         by (simp add: measure_measure_pmf_finite)
-      finally show "measure_pmf.prob p {y. le x y} / length xs \<le> 
+      finally show "measure_pmf.prob p {y. le x y} / length xs \<le>
                       measure_pmf.prob q {y. le x y} / length xs + \<epsilon>"
         using \<epsilon> by (simp add: divide_simps)
     qed
@@ -486,7 +486,7 @@ qed
 
 lemma not_strict_SD_iff:
   assumes "p \<in> lotteries_on carrier" "q \<in> lotteries_on carrier"
-  shows   "\<not>(p \<prec>[SD(le)] q) \<longleftrightarrow> 
+  shows   "\<not>(p \<prec>[SD(le)] q) \<longleftrightarrow>
              (\<exists>u. is_vnm_utility u \<and> measure_pmf.expectation q u \<le> measure_pmf.expectation p u)"
 proof
   let ?E = "measure_pmf.expectation :: 'a pmf \<Rightarrow> _ \<Rightarrow> real"
@@ -500,10 +500,10 @@ proof
     with assms have pq: "?E p u \<le> ?E q u" if "is_vnm_utility u" for u
       using that by (auto simp: SD_iff_expected_utilities_le strongly_preferred_def)
     with u have u_eq: "?E p u = ?E q u" by (intro antisym) simp_all
-    from less assms obtain u' where u': "is_vnm_utility u'" "?E p u' < ?E q u'" 
+    from less assms obtain u' where u': "is_vnm_utility u'" "?E p u' < ?E q u'"
       by (auto simp: SD_iff_expected_utilities_le strongly_preferred_def not_le)
     interpret u': vnm_utility carrier le u' by fact
-    
+
     have "\<exists>\<epsilon>>0. is_vnm_utility (\<lambda>x. u x - \<epsilon> * u' x)"
       by (intro u.diff_epsilon antisym u'.utility_le)
     then guess \<epsilon> by (elim exE conjE) note \<epsilon> = this
@@ -516,12 +516,12 @@ proof
       by (simp_all add: exp_u'' algebra_simps u_eq u')
     with pq[OF u''.vnm_utility_axioms] show False by simp
   qed
-qed (insert assms utility_weak_ranking_index, 
+qed (insert assms utility_weak_ranking_index,
      auto simp: strongly_preferred_def SD_iff_expected_utilities_le not_le not_less intro: antisym)
 
 lemma strict_SD_iff:
   assumes "p \<in> lotteries_on carrier" "q \<in> lotteries_on carrier"
-  shows   "(p \<prec>[SD(le)] q) \<longleftrightarrow> 
+  shows   "(p \<prec>[SD(le)] q) \<longleftrightarrow>
              (\<forall>u. is_vnm_utility u \<longrightarrow> measure_pmf.expectation p u < measure_pmf.expectation q u)"
   using not_strict_SD_iff[OF assms] by auto
 

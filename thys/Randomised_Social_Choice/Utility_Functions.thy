@@ -18,14 +18,14 @@ lemma utility_le: "x \<preceq>[le] y \<Longrightarrow> u x \<le> u y"
 
 lemma utility_less_iff:
   "x \<in> carrier \<Longrightarrow> y \<in> carrier \<Longrightarrow> u x < u y \<longleftrightarrow> x \<prec>[le] y"
-  using utility_le_iff[of x y] utility_le_iff[of y x] 
+  using utility_le_iff[of x y] utility_le_iff[of y x]
   by (auto simp: strongly_preferred_def)
 
 lemma utility_less: "x \<prec>[le] y \<Longrightarrow> u x < u y"
   using not_outside[of x y] utility_less_iff by (simp add: strongly_preferred_def)
 
 text \<open>
-  The following lemma allows us to compute the expected utility by summing 
+  The following lemma allows us to compute the expected utility by summing
   over all indifference classes, using the fact that alternatives in the same
   indifference class must have the same utility.
 \<close>
@@ -36,11 +36,11 @@ lemma expected_utility_weak_ranking:
 proof -
   from assms have "measure_pmf.expectation p u = (\<Sum>a\<in>carrier. u a * pmf p a)"
     by (subst integral_measure_pmf[OF finite_carrier])
-       (auto simp: lotteries_on_def)
+       (auto simp: lotteries_on_def ac_simps)
   also have carrier: "carrier = \<Union>set (weak_ranking le)" by (simp add: weak_ranking_Union)
   also from carrier have finite: "finite A" if "A \<in> set (weak_ranking le)" for A
     using that by (blast intro!: finite_subset[OF _ finite_carrier, of A])
-  hence "(\<Sum>a\<in>\<Union>set (weak_ranking le). u a * pmf p a) = 
+  hence "(\<Sum>a\<in>\<Union>set (weak_ranking le). u a * pmf p a) =
            (\<Sum>A\<leftarrow>weak_ranking le. \<Sum>a\<in>A. u a * pmf p a)" (is "_ = sum_list ?xs")
     using weak_ranking_total_preorder
     by (subst setsum.Union_disjoint)
@@ -63,22 +63,22 @@ qed
 lemma scaled: "c > 0 \<Longrightarrow> vnm_utility carrier le (\<lambda>x. c * u x)"
   by unfold_locales (insert utility_le_iff, auto)
 
-lemma add_right: 
+lemma add_right:
   assumes "\<And>x y. le x y \<Longrightarrow> f x \<le> f y"
   shows   "vnm_utility carrier le (\<lambda>x. u x + f x)"
 proof
   fix x y assume xy: "x \<in> carrier" "y \<in> carrier"
-  from assms[of x y] utility_le_iff[OF xy] assms[of y x] utility_le_iff[OF xy(2,1)] 
+  from assms[of x y] utility_le_iff[OF xy] assms[of y x] utility_le_iff[OF xy(2,1)]
     show "(u x + f x \<le> u y + f y) = le x y" by auto
 qed
 
-lemma add_left: 
+lemma add_left:
   "(\<And>x y. le x y \<Longrightarrow> f x \<le> f y) \<Longrightarrow> vnm_utility carrier le (\<lambda>x. f x + u x)"
   by (subst add.commute) (rule add_right)
 
 text \<open>
-  Given a consistent utility function, any function that assigns equal values to 
-  equivalent alternatives can be added to it (scaled with a sufficiently small @{term "\<epsilon>"}), 
+  Given a consistent utility function, any function that assigns equal values to
+  equivalent alternatives can be added to it (scaled with a sufficiently small @{term "\<epsilon>"}),
   again yielding a consistent utility function.
 \<close>
 lemma add_epsilon:
@@ -88,7 +88,7 @@ proof -
   let ?A = "{(u y - u x) / (f x - f y) |x y. x \<prec>[le] y \<and> f x > f y}"
   have "?A = (\<lambda>(x,y). (u y - u x) / (f x - f y)) ` {(x,y) |x y. x \<prec>[le] y \<and> f x > f y}" by auto
   also have "finite {(x,y) |x y. x \<prec>[le] y \<and> f x > f y}"
-    by (rule finite_subset[of _ "carrier \<times> carrier"]) 
+    by (rule finite_subset[of _ "carrier \<times> carrier"])
        (insert not_outside, auto simp: strongly_preferred_def)
   hence "finite ((\<lambda>(x,y). (u y - u x) / (f x - f y)) ` {(x,y) |x y. x \<prec>[le] y \<and> f x > f y})"
     by simp
@@ -108,7 +108,7 @@ proof -
     finally show ?thesis using less by (simp add: field_simps)
   next
     assume "\<not>f x > f y"
-    with utility_less[OF xy] \<epsilon> show ?thesis 
+    with utility_less[OF xy] \<epsilon> show ?thesis
       by (simp add: algebra_simps not_less add_less_le_mono)
   qed
   have eq: "u x + \<epsilon> * f x = u y + \<epsilon> * f y" if xy: "x \<preceq>[le] y" "y \<preceq>[le] x" for x y
