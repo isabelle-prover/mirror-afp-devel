@@ -7653,12 +7653,13 @@ proof -
   have zero: "(zero_current, zero_current) \<in> Field leq"
     by(rule F_I)(simp_all add: unhindered  F_def)
 
-  have a_\<E>: "a \<in> \<E>\<^bsub>\<Gamma> \<ominus> F \<epsilon>h\<^esub> (TER\<^bsub>\<Gamma> \<ominus> F \<epsilon>h\<^esub> k)" (is "_ \<in> \<E>\<^bsub>?\<Gamma>\<^esub> ?TER")
+  have a_TER: "a \<in> TER\<^bsub>\<Gamma> \<ominus> F \<epsilon>h\<^esub> k"
     if that: "\<epsilon>h \<in> Field leq"
     and k: "current (\<Gamma> \<ominus> F \<epsilon>h) k" and k_w: "wave (\<Gamma> \<ominus> F \<epsilon>h) k"
     and less: "d_OUT (plus_current (F \<epsilon>h) k) a < weight \<Gamma> a" for \<epsilon>h k
   proof(rule ccontr)
-    assume \<E>: "\<not> ?thesis"
+    assume "\<not> ?thesis"
+    hence \<E>: "a \<notin> \<E>\<^bsub>\<Gamma> \<ominus> F \<epsilon>h\<^esub> (TER\<^bsub>\<Gamma> \<ominus> F \<epsilon>h\<^esub> k)" by auto
     from that have f: "current \<Gamma> (F \<epsilon>h)" and unhindered: "\<not> hindered (\<Gamma> \<ominus> F \<epsilon>h)"
        by(cases \<epsilon>h; simp add: f unhindered'; fail)+
 
@@ -7699,7 +7700,7 @@ proof -
 
       have "d_OUT (plus_current (F \<epsilon>h) k) x = d_OUT (F \<epsilon>h) x + d_OUT k x" for x
         by(simp add: d_OUT_def nn_integral_add)
-      then show "d_OUT zero_current a < weight ?\<Omega> a" using less a_\<E> [OF that k k_w less] a
+      then show "d_OUT zero_current a < weight ?\<Omega> a" using less a_TER[OF that k k_w less] a
         by(simp add: SINK.simps diff_gr0_ennreal)
     qed
     hence "hindered ?\<Omega>"
@@ -7745,7 +7746,7 @@ proof -
       interpret \<Omega>: countable_bipartite_web \<Omega> using k unfolding \<Omega>_def
         by(rule \<Gamma>.countable_bipartite_web_minus_web)
 
-      have a_\<E>: "a \<in> \<E>\<^bsub>\<Gamma> \<ominus> F (\<epsilon>, h)\<^esub> (TER\<^bsub>\<Gamma> \<ominus> F (\<epsilon>, h)\<^esub> k)" using that k k_w less by(rule a_\<E>)
+      have a_\<E>: "a \<in> TER\<^bsub>\<Gamma> \<ominus> F (\<epsilon>, h)\<^esub> k" using that k k_w less by(rule a_TER)
       then have weight_\<Omega>_a: "weight \<Omega> a = weight \<Gamma> a - d_OUT (F (\<epsilon>, h)) a"
         using a disjoint by(auto simp add: roofed_circ_def \<Omega>_def SINK.simps)
       then have weight_a: "0 < weight \<Omega> a" using less a_\<E>
@@ -7937,7 +7938,7 @@ proof -
     interpret \<Omega>: countable_bipartite_web \<Omega> using k unfolding \<Omega>_def
       by(rule \<Gamma>.countable_bipartite_web_minus_web)
 
-    have a_\<E>: "a \<in> \<E>\<^bsub>\<Gamma> \<ominus> F f\<^esub> (TER\<^bsub>\<Gamma> \<ominus> F f\<^esub> k)" using Field k k_w less by(rule a_\<E>)
+    have a_\<E>: "a \<in> TER\<^bsub>\<Gamma> \<ominus> F f\<^esub> k" using Field k k_w less by(rule a_TER)
     then have "weight \<Omega> a = weight \<Gamma> a - d_OUT (F f) a"
       using a disjoint by(auto simp add: roofed_circ_def \<Omega>_def SINK.simps)
     then have weight_a: "0 < weight \<Omega> a" using less a_\<E>
