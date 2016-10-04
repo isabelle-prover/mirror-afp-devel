@@ -1868,7 +1868,7 @@ text "Approximation of the Term for Free exchanges"
       also
       let ?insf="(\<lambda>x. (if x!(index init q) then k-k' else (\<Sum>j<k'. (if x!(index init (xs'!j)) then 2::real else 1))))"
       have E3: "\<dots> = (\<Sum>x\<in>(set_pmf (bv ?l)). (?insf x) * pmf (bv ?l) x)"
-      apply(rule E_finite_sum_fun) by(auto simp: bv_finite)
+        by (subst E_finite_sum_fun) (auto simp: bv_finite mult_ac)
       also
       have "\<dots> = (\<Sum>x\<in>{l::bool list. length l = ?l}. (?insf x) * pmf (bv ?l) x)"
       using bv_set by auto

@@ -33,8 +33,8 @@ by (simp add: integral_return)
 lemma E_null[simp]: "E (return_pmf 0) = 0"
 by auto
 
-lemma E_finite_sum: "finite (set_pmf X) \<Longrightarrow> E X = (\<Sum>x\<in>(set_pmf X). x * pmf X x)"
-unfolding E_def apply(rule integral_measure_pmf) by (auto)
+lemma E_finite_sum: "finite (set_pmf X) \<Longrightarrow> E X = (\<Sum>x\<in>(set_pmf X). pmf X x * x)"
+  unfolding E_def by (subst integral_measure_pmf) simp_all
 
 lemma E_of_const: "E(map_pmf (\<lambda>x. y) (X::real pmf)) = y" by auto
 
@@ -84,13 +84,13 @@ lemma E_linear_setsum_allg: "finite (set_pmf D) \<Longrightarrow> E(map_pmf (\<l
 unfolding E_def integral_map_pmf apply(rule Bochner_Integration.integral_setsum) by (simp add: integrable_measure_pmf_finite)
 
 lemma E_finite_sum_fun: "finite (set_pmf X) \<Longrightarrow>
-    E (map_pmf f X) = (\<Sum>x\<in>set_pmf X. f x * pmf X x)"
+    E (map_pmf f X) = (\<Sum>x\<in>set_pmf X. pmf X x * f x)"
 proof -
   assume finite: "finite (set_pmf X)"
   have "E (map_pmf f X) = (\<integral>x. f x \<partial>measure_pmf X)"
       unfolding E_def by auto
-  also have "\<dots> = (\<Sum>x\<in>set_pmf X. f x * pmf X x)"
-    apply(rule integral_measure_pmf) by(auto simp add: finite)
+  also have "\<dots> = (\<Sum>x\<in>set_pmf X. pmf X x * f x)"
+    by (subst integral_measure_pmf) (auto simp add: finite)
   finally show ?thesis .
 qed
 

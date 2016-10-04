@@ -23,14 +23,14 @@ proof -
     apply(subst integral_measure_pmf[of "bind_pmf (bernoulli_pmf p) f"])
       using assms apply(simp)
       using assms apply(simp add: set_pmf_bernoulli) apply blast
-      using assms by(simp add: set_pmf_bernoulli) 
+      using assms by(simp add: set_pmf_bernoulli mult_ac) 
   have F: "(\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f False) a))
             = E(f False)"
     unfolding E_def
     apply(subst integral_measure_pmf[of "bind_pmf (bernoulli_pmf p) f"])
       using assms apply(simp)
       using assms apply(simp add: set_pmf_bernoulli) apply blast
-      using assms by(simp add: set_pmf_bernoulli) 
+      using assms by(simp add: set_pmf_bernoulli mult_ac) 
 
   have "?L = (\<Sum>a\<in>(\<Union>x. set_pmf (f x)).
        a *
@@ -41,7 +41,7 @@ proof -
     using assms apply(simp)
     apply(simp)
     using assms apply(simp add: set_pmf_bernoulli )
-    by(simp add: pmf_bind)
+    by(simp add: pmf_bind mult_ac)
   also have "\<dots> = (\<Sum>a\<in>(\<Union>x. set_pmf (f x)). (a * pmf (f True) a * p)
                                     + (a * pmf (f False) a * (1 - p)))"
     apply(rule setsum.cong) apply(simp) by algebra
