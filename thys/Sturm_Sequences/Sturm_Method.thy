@@ -176,8 +176,8 @@ proof (cases "poly p a = 0 \<and> p \<noteq> 0")
                     "{a<..<a+1} \<subseteq> {x. x > a \<and> poly p x = 0}" 
           using `p = 0` by auto
       ultimately have "\<not>finite {x. x \<ge> a \<and> poly p x = 0}" 
-                     "\<not>finite {x. x > a \<and> poly p x = 0}" 
-          by (auto dest: finite_subset[of "{a<..<a+1}"])
+                      "\<not>finite {x. x > a \<and> poly p x = 0}" 
+        by (auto dest!: finite_subset[of "{a<..<a+1}"] simp: infinite_Ioo)
       thus ?thesis by simp
     next
       assume "poly p a \<noteq> 0"
@@ -213,7 +213,7 @@ proof (cases "poly p a = 0 \<and> p \<noteq> 0")
           using `p = 0` by auto
       ultimately have "\<not>finite {x. x \<le> a \<and> poly p x = 0}" 
                      "\<not>finite {x. x < a \<and> poly p x = 0}" 
-          by (auto dest: finite_subset[of "{a - 1<..<a}"])
+          by (auto dest: finite_subset[of "{a - 1<..<a}"] simp: infinite_Ioo)
       thus ?thesis by simp
     next
       assume "poly p a \<noteq> 0"
