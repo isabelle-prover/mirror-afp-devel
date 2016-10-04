@@ -1551,8 +1551,8 @@ lemma count_roots_correct:
   shows "count_roots p = card {x. poly p x = 0}" (is "_ = card ?S")
 proof (cases "p = 0")
   case True
-    with infinite_Ioo[of 0 1] finite_subset[of "{0<..<1}" ?S]
-        have "\<not>finite {x. poly p x = 0}" by force
+    with finite_subset[of "{0<..<1}" ?S]
+    have "\<not>finite {x. poly p x = 0}" by (auto simp: infinite_Ioo)
     thus ?thesis by (simp add: count_roots_def True)
 next
   case False
@@ -1577,9 +1577,9 @@ lemma count_roots_above_correct:
          (is "_ = card ?S")
 proof (cases "p = 0")
   case True
-    with infinite_Ioo[of a "a+1"] finite_subset[of "{a<..<a+1}" ?S]
-        have "\<not>finite {x. x > a \<and> poly p x = 0}" by force
-    thus ?thesis by (simp add: count_roots_above_def True)
+  with finite_subset[of "{a<..<a+1}" ?S]
+    have "\<not>finite {x. x > a \<and> poly p x = 0}" by (auto simp: infinite_Ioo subset_eq)
+  thus ?thesis by (simp add: count_roots_above_def True)
 next
   case False
   def p' \<equiv> "p div (gcd p (pderiv p))"
@@ -1604,9 +1604,8 @@ lemma count_roots_below_correct:
          (is "_ = card ?S")
 proof (cases "p = 0")
   case True
-    with infinite_Ioo[of "a - 1" a]
-         finite_subset[of "{a - 1<..<a}" ?S]
-        have "\<not>finite {x. x \<le> a \<and> poly p x = 0}" by force
+    with finite_subset[of "{a - 1<..<a}" ?S]
+        have "\<not>finite {x. x \<le> a \<and> poly p x = 0}" by (auto simp: infinite_Ioo subset_eq)
     thus ?thesis by (simp add: count_roots_below_def True)
 next
   case False
