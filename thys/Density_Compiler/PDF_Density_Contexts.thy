@@ -1049,7 +1049,7 @@ proof-
                               (M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) \<bind> (\<lambda>x. return_val (op_sem oper x))"
     unfolding M_def by (subst expr_sem.simps, intro bind_assoc[symmetric]) simp_all
   also have "... = (M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) \<bind> (\<lambda>x. return (stock_measure t') (op_sem oper x))"
-    by (intro bind_cong ballI) (simp add: return_op_sem)
+    by (intro bind_cong refl) (simp add: return_op_sem)
   also have "... = distr (M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t') (op_sem oper)"
     by (subst bind_return_distr[symmetric]) (simp_all add: o_def M_op)
   finally show ?thesis .
