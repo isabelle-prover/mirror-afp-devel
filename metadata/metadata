@@ -4589,7 +4589,7 @@ title = Allen's Interval Calculus
 author = Fadoua Ghourabi <http://www.i-eos.org/fadoua>
 notify = fadouaghourabi@gmail.com
 date = 2016-09-29
-topic = Computer Science/Qualitative_Representation/Allen_Calculus, Logic/FOL, Mathematics/Algebra/Relation_Algebra,
+topic = Logic, Mathematics/Algebra,
 abstract =
   Allen’s interval calculus is a qualitative temporal representation of
   time events. Allen introduced 13 binary relations that describe all
