@@ -188,6 +188,30 @@ lemma stopping_time_SUP_enat:
   shows "(\<And>i. stopping_time F (T i)) \<Longrightarrow> stopping_time F (SUP i. T i)"
   unfolding stopping_time_def SUP_apply SUP_le_iff by (auto intro!: pred_intros_countable)
 
+lemma less_eSuc_iff: "a < eSuc b \<longleftrightarrow> (a \<le> b \<and> a \<noteq> \<infinity>)"
+  by (cases a) auto
+
+lemma stopping_time_Inf_enat:
+  fixes F :: "enat \<Rightarrow> 'a measure"
+  assumes F: "filtration \<Omega> F"
+  assumes P: "\<And>i. Measurable.pred (F i) (P i)"
+  shows "stopping_time F (\<lambda>\<omega>. Inf {i. P i \<omega>})"
+proof (rule stopping_timeI, cases)
+  fix t :: enat assume "t = \<infinity>" then show "Measurable.pred (F t) (\<lambda>\<omega>. \<Sqinter>{i. P i \<omega>} \<le> t)"
+    by auto
+next
+  fix t :: enat assume "t \<noteq> \<infinity>"
+  moreover
+  { fix i \<omega> assume "\<Sqinter>{i. P i \<omega>} \<le> t"
+    with \<open>t \<noteq> \<infinity>\<close> have "(\<exists>i\<le>t. P i \<omega>)"
+      unfolding Inf_le_iff by (cases t) (auto elim!: allE[of _ "eSuc t"] simp: less_eSuc_iff) }
+  ultimately have *: "\<And>\<omega>. \<Sqinter>{i. P i \<omega>} \<le> t \<longleftrightarrow> (\<exists>i\<in>{..t}. P i \<omega>)"
+    by (auto intro!: Inf_lower2)
+  show "Measurable.pred (F t) (\<lambda>\<omega>. \<Sqinter>{i. P i \<omega>} \<le> t)"
+    unfolding * using filtration.sets_F_mono[OF F, of _ t] P
+    by (intro pred_intros_countable_bounded) (auto simp: pred_def filtration.space_F[OF F])
+qed
+
 lemma stopping_time_Inf_nat:
   fixes F :: "nat \<Rightarrow> 'a measure"
   assumes F: "filtration \<Omega> F"
