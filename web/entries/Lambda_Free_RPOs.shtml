@@ -1,0 +1,117 @@
+<!DOCTYPE public "-//w3c//dtd html 4.01 transitional//en"
+		"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Archive of Formal Proofs</title>
+  <link rel="stylesheet" type="text/css" href="../front.css">
+  <script src="../jquery.min.js"></script>
+  <script src="../script.js"></script>
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<table width="100%">
+  <tbody>
+    <tr>
+      <td width="20%" align="center" valign="top">
+      <!-- navigation -->
+      <!--#include file="nav.html"-->
+      </td>
+      <td width="80%" valign="top">
+      <!-- content -->
+
+<div align="center">
+<p>&nbsp;</p>
+
+<h1><font class="first">F</font>ormalization
+of
+<font class="first">R</font>ecursive
+<font class="first">P</font>ath
+<font class="first">O</font>rders
+for
+<font class="first">L</font>ambda-Free
+<font class="first">H</font>igher-Order
+<font class="first">T</font>erms
+</h1>
+<p></p>
+<table width="80%" class="data">
+  <tbody>
+    <tr><td class="datahead" width="20%">Title:</td>
+        <td class="data" width="80%">Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms</td></tr>
+
+    <tr><td class="datahead">Author:</td>
+        <td class="data"><a href="jasmin.blanchette@gmail.com">Jasmin Christian Blanchette</a>, <a href="waldmann@mpi-inf.mpg.de">Uwe Waldmann</a> and <a href="dwand@mpi-inf.mpg.de">Daniel Wand</a></td></tr>
+
+    <tr><td class="datahead">Submission date:</td>
+        <td class="data">2016-09-23</td></tr>
+
+    <tr><td class="datahead" valign="top">Abstract:</td>
+        <td class="abstract">
+
+This Isabelle/HOL formalization defines recursive path orders (RPOs) for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard RPO on first-order terms also in the presence of currying, distinguishing it from previous work. An optimized variant is formalized as well. It appears promising as the basis of a higher-order superposition calculus.
+        </td></tr>
+
+    <tr><td class="datahead" valign="top">BibTeX:</td>
+        <td class="formatted">
+			<pre>@article{Lambda_Free_RPOs-AFP,
+  author  = {Jasmin Christian Blanchette and Uwe Waldmann and Daniel Wand},
+  title   = {Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms},
+  journal = {Archive of Formal Proofs},
+  month   = sep,
+  year    = 2016,
+  note    = {\url{http://isa-afp.org/entries/Lambda_Free_RPOs.shtml},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        </td></tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+
+
+
+
+  </tbody>
+</table>
+
+<p></p>
+
+<!--#set var="name" value="Lambda_Free_RPOs" -->
+
+<!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
+<!--#set var="doc" value="${binfo}/document.pdf" -->
+<!--#set var="outline" value="${binfo}/outline.pdf" -->
+<!--#set var="browse" value="${binfo}/index.html" -->
+<!--#set var="tar" value="../release/afp-${name}-current.tar.gz" -->
+
+<table class="links">
+  <tbody>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="outline" -->">Proof outline</a><br>
+	<a href="<!--#echo var="doc" -->">Proof document</a>
+  </td>
+	</tr>
+    <tr>
+  <td class="links">
+	<a href="<!--#echo var="browse" -->">Browse theories</a>
+	</td></tr>
+    <tr>
+  <td class="links"> 
+	<a href="<!--#echo var="tar" -->">Download this entry</a>
+	</td>
+  </tr>
+
+
+    <tr><td class="links">Older releases: None
+    </td></tr>
+
+  </tbody>
+</table>
+<!-- entry data end -->
+
+</td> </tr> </table>
+
+</body>
+</html>
