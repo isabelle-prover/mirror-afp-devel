@@ -1,0 +1,12 @@
+chapter AFP
+
+session Lambda_Free_RPOs (AFP) = HOL +
+  options [timeout=600]
+  theories [document = false]
+    "~~/src/HOL/Cardinals/Wellorder_Extension"
+    "~~/src/HOL/Library/Extended_Nat"
+    "~~/src/HOL/Library/Multiset_Order"
+  theories
+    Lambda_Free_RPOs
+  document_files
+    "root.tex"

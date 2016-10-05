@@ -1,0 +1,19 @@
+This archive contains the Isabelle formalization of the results presented in
+the paper
+
+    A Lambda-Free Higher-Order Recursive Path Order
+    by Jasmin Christian Blanchette, Uwe Waldmann, and Daniel Wand
+
+The ".thy" files are Isabelle theory files. They can be processed using a
+recent development version of Isabelle (d4b89572ae71) as follows:
+
+    isabelle jedit Lambda_Free_RPOs.thy
+
+The main files are
+
+    Lambda_Free_RPO_New.thy
+    Lambda_Free_RPO_Optim.thy
+
+A PDF version of the proof is available as
+
+    document.pdf
