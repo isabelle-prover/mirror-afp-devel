@@ -946,7 +946,7 @@ proof -
     by (rule continuous_on_subset) simp
 qed
 
-lemma p_vector_derivative:
+lemma p_vector_derivative: -- \<open>Backward equation\<close>
   assumes "0 \<le> t"
   shows "(p s s' has_vector_derivative (LINT s''|count_space UNIV. R s s'' * p s'' s' t) - escape_rate s * p s s' t)
     (at t within {0..})"
