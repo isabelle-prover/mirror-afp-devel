@@ -903,7 +903,7 @@ proof -
     unfolding msetext_dersh_def Let_def mset_map
   proof (intro exI conjI)
     show "image_mset f (mset xs) = image_mset f (mset ys) - ?fY + ?fX"
-      using xs_eq[THEN arg_cong, of "image_mset f"] y_sub_ys by (simp add: image_mset_Diff)
+      using xs_eq[THEN arg_cong, of "image_mset f"] y_sub_ys by (metis image_mset_Diff image_mset_union)
   next
     obtain y where y: "\<forall>x. x \<in># X \<longrightarrow> y x \<in># Y \<and> gt (y x) x"
       using ex_y by moura

@@ -49,7 +49,7 @@ proof -
   from assms(1) have "F = E +?G"
     by (simp add: subset_mset.add_diff_inverse subset_mset_def) 
   from this assms(1) have "?G \<noteq> {#}"
-    using add.right_neutral multi_psub_self by auto
+    by fastforce
   have "E = E + {#}" by auto
   from this `F = E +?G`  `?G \<noteq> {#}` assms(2) show ?thesis  using one_step_implies_mult [of ?G "{#}" r E] by auto
 qed

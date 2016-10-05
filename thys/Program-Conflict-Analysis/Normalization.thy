@@ -259,7 +259,7 @@ next
         have "mon_n fg uh \<subseteq> mon_n fg uh'" using STEPFMT(4) by (auto elim!: trss.cases dest: mon_n_same_proc edges_part)
         moreover have "mon_c fg (ceh-{#u#r#}) \<subseteq> mon_c fg cc" proof -
           from CASE(3) CETFMT have "cc=(cspt+ceh)-{#u#r#}" by simp
-          with CC have "cc = cspt+(ceh-{#u#r#})" by (auto simp add: diff_union_single_conv)
+          with CC have "cc = cspt+(ceh-{#u#r#})" by auto
           with CSPT_NO_MON show ?thesis by (auto simp add: mon_c_unconc)
         qed
         ultimately show ?thesis using CASE(2) by (auto simp add: mon_c_unconc)
@@ -290,7 +290,7 @@ next
       -- "Finally we append the last macrostep to the normalized paths we obtained by the induction hypothesis"
       from trcl_rev_cons[OF NNPATH this] have "({#[entry fg p]#}, ww' @ [ee], {#vt # uh' # rh#} + (cspt + ({#r' @ r#} + (csp' + (ceh - {#u # r#}))))) \<in> trcl (ntr fg)" .
       -- "And show that we got the right configuration"
-      moreover from CC CETFMT CASE(3)[symmetric] CASE(2) CE'FMT(1) have "{#vt # uh' # rh#} + (cspt + ({#r' @ r#} + (csp' + (ceh - {#u # r#})))) = {# r'@r #}+ce'" by (simp add: union_ac diff_union_single_convs)
+      moreover from CC CETFMT CASE(3)[symmetric] CASE(2) CE'FMT(1) have "{#vt # uh' # rh#} + (cspt + ({#r' @ r#} + (csp' + (ceh - {#u # r#})))) = {# r'@r #}+ce'" by (simp add: union_ac)
       ultimately show ?thesis by auto
     qed
   qed

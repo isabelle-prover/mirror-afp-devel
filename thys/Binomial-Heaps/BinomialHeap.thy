@@ -811,7 +811,7 @@ qed
 lemma remove1_mset: "t \<in> set q \<Longrightarrow> 
   queue_to_multiset (remove1 t q) = 
   queue_to_multiset q - tree_to_multiset t"
-by (induct q) (auto simp: multiset_diff_union_assoc qtm_in_set_subset)
+by (induct q) (auto simp: qtm_in_set_subset)
 
 lemma remove1Prio_remove1[simp]: 
   "remove1Prio (prio (getMinTree bq)) bq = remove1 (getMinTree bq) bq"

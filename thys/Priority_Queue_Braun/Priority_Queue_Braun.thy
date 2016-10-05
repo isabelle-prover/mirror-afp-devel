@@ -100,7 +100,7 @@ proof (induction t arbitrary: x t' rule: del_left.induct)
   case 1 then show ?case by simp
 next
   case "2_1" then show ?case
-    by (auto simp: diff_union_swap ac_simps diff_union_single_conv
+    by (auto simp: diff_union_swap ac_simps
      dest!: del_left_elem split: prod.splits)
 next
   case ("2_2" l x v u w y t)

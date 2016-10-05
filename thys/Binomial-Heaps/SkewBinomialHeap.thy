@@ -1150,7 +1150,7 @@ qed
 lemma mset_remove1: "t \<in> set q \<Longrightarrow> 
   queue_to_multiset (remove1 t q) = 
   queue_to_multiset q - tree_to_multiset t"
-by (induct q) (auto simp: multiset_diff_union_assoc in_set_subset)
+by (induct q) (auto simp: in_set_subset)
 
 lemma invar_children':
   assumes "tree_invar t"

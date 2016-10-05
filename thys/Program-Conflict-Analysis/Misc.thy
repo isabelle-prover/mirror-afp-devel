@@ -392,7 +392,8 @@ lemma mset_le_subtract_add_mset_left: "add_mset x B \<le># (X::'a multiset) \<Lo
     } moreover {
       assume C: "a \<in># A" "b \<notin># A - {#a#}"
       with B A have "b \<in># B"
-        by (auto simp: insert_subset_eq_iff diff_union_single_convs)
+        by (auto simp: insert_subset_eq_iff diff_union_single_convs
+            simp del: subset_mset.add_diff_assoc2)
     } moreover {
       assume C: "a \<notin># A" "b \<in># B - {#a#}"
       with A have "a \<in># B" using B by blast
