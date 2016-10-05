@@ -4776,7 +4776,7 @@ abstract =
 
 [Lp]
 title = Lp spaces
-author = Sebastien Gouezel
+author = Sebastien Gouezel <http://www.math.sciences.univ-nantes.fr/~gouezel/>
 notify = sebastien.gouezel@univ-rennes1.fr
 date = 2016-10-05
 topic = Mathematics/Analysis
