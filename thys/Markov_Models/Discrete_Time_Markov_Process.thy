@@ -8,6 +8,10 @@ theory Discrete_Time_Markov_Process
   imports Markov_Models_Auxiliary Stopping_Time
 begin
 
+lemma distr_cong_strong:
+  "M = K \<Longrightarrow> sets N = sets L \<Longrightarrow> (\<And>x. x \<in> space M =simp=> f x = g x) \<Longrightarrow> distr M N f = distr K L g"
+  unfolding simp_implies_def by (rule distr_cong)
+
 subsection \<open>Constructing Discrete-Time Markov Processes\<close>
 
 locale discrete_Markov_process =
@@ -55,6 +59,9 @@ lemma
     and emeasure_lim_sequence_emb: "\<And>J X. finite J \<Longrightarrow> X \<in> sets (\<Pi>\<^sub>M j\<in>J. M) \<Longrightarrow>
       emeasure (lim_sequence x) (prod_emb UNIV (\<lambda>_. M) J X) =
       emeasure (Ionescu_Tulcea.CI (K' x) (\<lambda>_. M) J) X"
+    and emeasure_lim_sequence_emb_I0o: "\<And>n X. X \<in> sets (\<Pi>\<^sub>M i \<in> {0..<n}. M) \<Longrightarrow>
+      emeasure (lim_sequence x) (prod_emb UNIV (\<lambda>_. M) {0..<n} X) =
+      emeasure (Ionescu_Tulcea.C (K' x) (\<lambda>_. M) 0 n (\<lambda>x. undefined)) X"
 proof -
   interpret Ionescu_Tulcea "K' x" "\<lambda>_. M"
     using x by (rule IT_K')
@@ -63,9 +70,17 @@ proof -
   show "sets (lim_sequence x) = sets (\<Pi>\<^sub>M i\<in>UNIV. M)"
     unfolding lim_sequence_def by simp
 
-  fix J :: "nat set" and X assume "finite J" "X \<in> sets (\<Pi>\<^sub>M j\<in>J. M)"
-  then show "emeasure (lim_sequence x) (PF.emb UNIV J X) = emeasure (CI J) X"
-    unfolding lim_sequence_def by (rule lim)
+  { fix J :: "nat set" and X assume "finite J" "X \<in> sets (\<Pi>\<^sub>M j\<in>J. M)"
+    then show "emeasure (lim_sequence x) (PF.emb UNIV J X) = emeasure (CI J) X"
+      unfolding lim_sequence_def by (rule lim) }
+  note emb = this
+
+  have up_to_I0o[simp]: "up_to {0..<n} = n" for n
+    unfolding up_to_def by (rule Least_equality) auto
+
+  { fix n :: nat and X assume "X \<in> sets (\<Pi>\<^sub>M j\<in>{0..<n}. M)"
+    then show "emeasure (lim_sequence x) (PF.emb UNIV {0..<n} X) = emeasure (C 0 n (\<lambda>x. undefined)) X"
+      by (simp add: space_C emb CI_def space_PiM distr_id2 sets_C cong: distr_cong_strong) }
 qed
 
 lemma lim_sequence[measurable]: "lim_sequence \<in> M \<rightarrow>\<^sub>M prob_algebra (\<Pi>\<^sub>M i\<in>UNIV. M)"
@@ -116,10 +131,7 @@ next
     fix n :: nat and w assume "w \<in> space (M \<Otimes>\<^sub>M Pi\<^sub>M {0..<n} (\<lambda>_. M))"
     then show "(case w of (x, xa) \<Rightarrow> Ionescu_Tulcea.eP (K' x) (\<lambda>_. M) (0 + n) xa) =
       (case w of (x, xa) \<Rightarrow> distr (K' x n xa) (\<Pi>\<^sub>M i\<in>{0..<Suc n}. M) (fun_upd xa n))"
-      apply (auto simp: space_pair_measure split: prod.split)
-      apply (subst Ionescu_Tulcea.eP_def[OF IT_K'])
-      apply auto
-      done
+      by (auto simp: space_pair_measure Ionescu_Tulcea.eP_def[OF IT_K'] split: prod.split)
   next
     fix n show "(\<lambda>w. case w of (x, xa) \<Rightarrow> distr (K' x n xa) (Pi\<^sub>M {0..<Suc n} (\<lambda>i. M)) (fun_upd xa n))
          \<in> M \<Otimes>\<^sub>M Pi\<^sub>M {0..<n} (\<lambda>_. M) \<rightarrow>\<^sub>M subprob_algebra (Pi\<^sub>M {0..<Suc n} (\<lambda>_. M))"
@@ -129,10 +141,7 @@ next
       apply (rule measurable_PiM_single')
       apply (simp add: split_beta')
       subgoal for i by (cases "i = n") auto
-      subgoal
-        apply (auto simp: split_beta' Pi_iff space_pair_measure space_PiM)
-        apply (auto simp: PiE_iff Ball_def extensional_def)
-        done
+      subgoal by (auto simp: split_beta' PiE_iff extensional_def Pi_iff space_pair_measure space_PiM)
       apply (rule measurable_prob_algebraD)
       apply (rule measurable_compose[OF _ K])
       apply measurable
@@ -201,175 +210,104 @@ proof (rule measure_eqI_PiM_infinite)
 
   let ?U = "\<lambda>_::nat. undefined :: 'a"
 
-  fix J :: "nat set" and F
-  assume J: "finite J" "\<And>i. i \<in> J \<Longrightarrow> F i \<in> sets M"
-  then have Pi_F: "finite J" "Pi\<^sub>E J F \<in> sets (Pi\<^sub>M J (\<lambda>_. M))"
-    by (auto intro: sets_PiM_I_finite)
+  fix J :: "nat set" and F'
+  assume J: "finite J" "\<And>i. i \<in> J \<Longrightarrow> F' i \<in> sets M"
 
-  show "emeasure (lim_sequence x) (PF.emb UNIV J (Pi\<^sub>E J F)) =
-    emeasure (K x \<bind> (\<lambda>y. distr (lim_sequence y) (Pi\<^sub>M UNIV (\<lambda>j. M)) (case_nat y))) (PF.emb UNIV J (Pi\<^sub>E J F))"
+  define n where "n = (if J = {} then 0 else Max J)"
+  define F where "F i = (if i \<in> J then F' i else space M)" for i
+  then have F[simp, measurable]: "F i \<in> sets M" for i
+    using J by auto
+  have emb_eq: "PF.emb UNIV J (Pi\<^sub>E J F') = PF.emb UNIV {0..<Suc n} (Pi\<^sub>E {0..<Suc n} F)"
   proof cases
-    have eq: "(PF.emb UNIV {} {\<lambda>x. undefined}) = space (Pi\<^sub>M UNIV (\<lambda>_. M))"
-      by (auto simp: space_PiM prod_emb_def)
-
-    assume "J = {}" with \<open>x\<in>space M\<close> show ?thesis
-      apply (simp add: eq)
-      apply (subst (1 2) in_space_prob_algebra)
-      apply (rule measurable_space[where x=x])
-      apply (rule measurable_bind_prob_space[OF K])
-      apply (rule measurable_distr_prob_space2[OF lim_sequence])
-      apply (auto intro: measurable_space[OF lim_sequence])
-      done
+    assume "J = {}" then show ?thesis
+      by (auto simp add: n_def F_def[abs_def] prod_emb_def PiE_def)
   next
-    assume "J \<noteq> {}"
-    then obtain j where "j \<in> J" by auto
-
-    have "0 < up_to J"
-      using up_to_less[OF \<open>finite J\<close> \<open>j \<in> J\<close>] by auto
-    then obtain n where n_eq: "up_to J = Suc n"
-      by (cases "up_to J") auto
-    have "(\<forall>i\<ge>Suc n. i \<notin> J) \<and> (\<forall>j. (\<forall>i\<ge>j. i \<notin> J) \<longrightarrow> Suc n \<le> j)"
-      unfolding n_eq[symmetric] up_to_def
-      by (rule LeastI2_wellorder[where a="Suc n"]) (auto simp: n_eq[symmetric] J up_to_iff)
-    then have "n \<in> J"
-      by (metis Suc_leI Suc_n_not_le_n le_neq_implies_less)
-
-    have 2: "(\<lambda>x. case_nat x (\<lambda>_. undefined)) \<in> M \<rightarrow>\<^sub>M Pi\<^sub>M {0} (\<lambda>_. M)"
-      by (intro measurable_PiM_single') (auto split: nat.splits)
-
-    have [simp]: "sets (K x \<Otimes>\<^sub>M Pi\<^sub>M UNIV (\<lambda>j. M)) = sets (M \<Otimes>\<^sub>M Pi\<^sub>M UNIV (\<lambda>j. M))"
-      using x by (intro sets_pair_measure_cong sets_K refl)
-
-    have "lim_sequence x (PF.emb UNIV J (Pi\<^sub>E J F)) = CI J (Pi\<^sub>E J F)"
-      using x J by (intro emeasure_lim_sequence_emb sets_PiM_I_finite) auto
-    also have "\<dots> = emeasure (C 0 1 (\<lambda>_. undefined) \<bind> C (0 + 1) n) (PF.emb {0..<Suc n} J (Pi\<^sub>E J F))"
-      unfolding emeasure_CI'[OF Pi_F] n_eq by (subst split_C) auto
-    also have "\<dots> = emeasure (K x \<bind> (\<lambda>y. C 1 n (case_nat y (\<lambda>_. undefined)))) (PF.emb {0..<Suc n} J (Pi\<^sub>E J F))"
-      using step_C[OF x] by simp
-    also have "\<dots> = (\<integral>\<^sup>+ x. emeasure (C 1 n (case_nat x (\<lambda>_. undefined))) (PF.emb {0..<Suc n} J (Pi\<^sub>E J F)) \<partial>K x)"
-      using measurable_C[of 1 n, measurable del] x[THEN sets_K] Pi_F x J n_eq up_to_less[of J]
-      by (intro emeasure_bind[OF  _ measurable_compose[OF _ measurable_C]])
-         (auto simp: cong: measurable_cong_sets intro!: sets_PiM_I 2)
-    also have "\<dots> = (\<integral>\<^sup>+ y. emeasure (lim_sequence y) {\<omega> \<in> space (Pi\<^sub>M UNIV (\<lambda>j. M)). case_nat y \<omega> \<in> (PF.emb UNIV J (Pi\<^sub>E J F))} \<partial>K x)"
-    proof (intro nn_integral_cong)
-      fix y assume "y \<in> space (K x)"
-      then have y: "y \<in> space M"
-        using x by (simp add: space_K)
-      then interpret y: Ionescu_Tulcea "K' y" "\<lambda>_. M"
-        by (rule IT_K')
-
-      let ?y = "case_nat y"
-      have [simp]: "?y ?U \<in> space (Pi\<^sub>M {0} (\<lambda>i. M))"
-        using y by (auto simp: space_PiM PiE_iff extensional_def split: nat.split)
-      have yM[measurable]: "?y \<in> Pi\<^sub>M {0..<m} (\<lambda>_. M) \<rightarrow>\<^sub>M Pi\<^sub>M {0..<Suc m} (\<lambda>i. M)" for m
-        using y by (intro measurable_PiM_single') (auto simp: space_PiM PiE_iff extensional_def split: nat.split)
-
-      have eq: "C 1 m (?y ?U) = distr (y.C 0 m ?U) (\<Pi>\<^sub>M i\<in>{0..<Suc m}. M) ?y" for m
-      proof (induction m)
-        case 0 with y show ?case
-          by (simp add: PiM_empty distr_return)
-      next
-        case (Suc m)
-
-        have "C 1 (Suc m) (?y ?U) = distr (y.C 0 m ?U) (Pi\<^sub>M {0..<Suc m} (\<lambda>i. M)) ?y \<bind> eP (Suc m)"
-          using Suc by simp
-        also have "\<dots> = y.C 0 m ?U \<bind> (\<lambda>x. eP (Suc m) (?y x))"
-          by (intro bind_distr[where K="Pi\<^sub>M {0..<Suc (Suc m)} (\<lambda>_. M)"]) (simp_all add: y y.space_C y.sets_C cong: measurable_cong_sets)
-        also have "\<dots> = y.C 0 m ?U \<bind> (\<lambda>x. distr (y.eP m x) (Pi\<^sub>M {0..<Suc (Suc m)} (\<lambda>i. M)) ?y)"
-        proof (intro bind_cong refl)
-          fix \<omega>' assume \<omega>': "\<omega>' \<in> space (y.C 0 m ?U)"
-          moreover have "K' x (Suc m) (?y \<omega>') = K' y m \<omega>'"
-            by (auto simp: K'_def)
-          ultimately show "eP (Suc m) (?y \<omega>') = distr (y.eP m \<omega>') (Pi\<^sub>M {0..<Suc (Suc m)} (\<lambda>i. M)) ?y"
-            unfolding eP_def y.eP_def
-            apply (subst distr_distr)
-            subgoal
-              by simp
-            subgoal
-              by (subst measurable_cong_sets[OF y.sets_P refl])
-                 (auto simp: y.space_C intro!: measurable_fun_upd[where J="{0..<m}"] measurable_const)
-            by (auto intro!: distr_cong simp: y.space_P y.space_C fun_eq_iff split: nat.split)
-        qed
-        also have "\<dots> = distr (y.C 0 m ?U \<bind> y.eP m) (Pi\<^sub>M {0..<Suc (Suc m)} (\<lambda>i. M)) ?y"
-          by (intro distr_bind[symmetric, OF _ _ yM]) (auto simp: y.space_C y.sets_C cong: measurable_cong_sets)
-        finally show ?case
-          by simp
-      qed
-
-      let ?J = "Suc -` J"
-      let ?j = "up_to ?J"
-
-      have y': "?y ?U \<in> space (Pi\<^sub>M {0..<1} (\<lambda>i. M))"
-        by (simp add: space_PiM PiE_def y extensional_def split: nat.split)
-
-      have eq1: "case_nat y -` y.PF.emb {0..<Suc ?j}J (Pi\<^sub>E J F) \<inter> space (\<Pi>\<^sub>M i\<in>{0..<?j}. M) =
-          (if 0 \<in> J \<longrightarrow> y \<in> F 0 then PF.emb {0..<?j} ?J (Pi\<^sub>E ?J (F\<circ>Suc)) else {})"
-        unfolding set_eq_iff using y
-        by (auto simp add: prod_emb_def PiE_iff extensional_def inj_image_mem_iff space_PiM
-                 simp del: image_Suc_atLeastLessThan split: nat.split)
-
-      let ?I = "indicator (if 0 \<in> J then F 0 else space M) y"
-      have "{\<omega> \<in> space (Pi\<^sub>M UNIV (\<lambda>j. M)). ?y \<omega> \<in> (PF.emb UNIV J (Pi\<^sub>E J F))} =
-          (if 0 \<in> J \<longrightarrow> y \<in> F 0 then PF.emb UNIV ?J (Pi\<^sub>E ?J (F \<circ> Suc)) else {})"
-        using y by (auto simp: space_PiM PiE_iff prod_emb_def split: nat.split)
-      moreover have "Pi\<^sub>E ?J (F \<circ> Suc) \<in> sets (Pi\<^sub>M ?J (\<lambda>j. M))"
-        using J by (intro sets_PiM_I_finite) (auto simp: finite_vimage_Suc_iff Pi_iff)
-      ultimately have "lim_sequence y {\<omega> \<in> space (Pi\<^sub>M UNIV (\<lambda>j. M)). ?y \<omega> \<in> (PF.emb UNIV J (Pi\<^sub>E J F))} =
-        ?I * y.CI ?J (Pi\<^sub>E ?J (F \<circ> Suc))"
-        using \<open>y \<in> space M\<close> J by (simp add: emeasure_lim_sequence_emb finite_vimage_Suc_iff)
-      also have "\<dots> = ?I * y.C 0 ?j ?U (PF.emb {0..<?j} ?J (Pi\<^sub>E ?J (F \<circ> Suc)))"
-        unfolding y.CI_def using \<open>y\<in>space M\<close> J y.sets_C[of ?U 0 ?j]
-        by (subst emeasure_distr)
-           (auto simp: finite_vimage_Suc_iff y.space_C prod_emb_def space_PiM cong: measurable_cong_sets
-                 intro!: measurable_restrict_subset[OF up_to] sets_PiM_I_finite)
-      also have "\<dots> = C 1 ?j (?y ?U) (PF.emb {0..<Suc ?j} J (Pi\<^sub>E J F))"
-        apply (subst eq)
-        apply (subst emeasure_distr)
-        subgoal
-          by (simp add: y.sets_C cong: measurable_cong_sets)
-        subgoal
-          using J up_to_less[of "Suc -` J"]
-          apply (auto simp add: y.sets_C less_Suc_eq_0_disj finite_vimage_Suc_iff
-                      cong: measurable_cong_sets intro!: sets_PiM_I)
-          subgoal for x
-            by (cases x) auto
-          done
-        using y
-        apply (auto simp: y.space_C eq1)
-        done
-      also have "\<dots> = (C 1 n (case_nat y (\<lambda>_. undefined))) (PF.emb {0..<Suc n} J (Pi\<^sub>E J F))"
-      proof (cases n)
-        case 0
-        moreover then have "?j \<le> 0"
-          using n_eq up_to_iff[of J] J
-          by (subst up_to_iff) (auto simp: finite_vimage_Suc_iff)
-        ultimately show ?thesis
-          by simp
-      next
-        case (Suc n')
-        have "?j \<le> n"
-          using up_to_less[of J] n_eq
-          by (subst up_to_iff) (auto simp: finite_vimage_Suc_iff J)
-        moreover have "n' < ?j"
-          using Suc \<open>n \<in> J\<close> by (intro up_to_less) (auto simp: J finite_vimage_Suc_iff)
-        ultimately have "?j = n"
-          unfolding Suc by auto
-        then show ?thesis
-          unfolding n_eq by simp
-      qed
-      finally show "(C 1 n (case_nat y (\<lambda>_. undefined))) (PF.emb {0..<Suc n} J (Pi\<^sub>E J F)) =
-           emeasure (lim_sequence y) {\<omega> \<in> space (Pi\<^sub>M UNIV (\<lambda>j. M)). case_nat y \<omega> \<in> (PF.emb UNIV J (Pi\<^sub>E J F))}"
-        by simp
-    qed
-    also have "\<dots> = emeasure (K x \<bind> (\<lambda>y. distr (lim_sequence y) (Pi\<^sub>M UNIV (\<lambda>j. M)) (case_nat y))) (PF.emb UNIV J (Pi\<^sub>E J F))"
-      using x J
-      apply (subst emeasure_bind[OF _ _ sets_PiM_I])
-      apply (auto simp: sets_K space_K emeasure_distr space_lim_sequence sets_lim_sequence cong: measurable_cong_sets
-                  intro!: measurable_prob_algebraD measurable_distr_prob_space2[where M="Pi\<^sub>M UNIV (\<lambda>j. M)"] lim_sequence
-                    nn_integral_cong arg_cong[where f="emeasure _"])
-      done
-    finally show ?thesis .
+    assume "J \<noteq> {}" then show ?thesis
+      by (auto simp: prod_emb_def PiE_iff F_def n_def less_Suc_eq_le \<open>finite J\<close> split: if_split_asm)
   qed
+
+  have "emeasure (lim_sequence x) (PF.emb UNIV J (Pi\<^sub>E J F')) = emeasure (C 0 (Suc n) ?U) (Pi\<^sub>E {0..<Suc n} F)"
+    using x unfolding emb_eq by (rule emeasure_lim_sequence_emb_I0o) (auto intro!: sets_PiM_I_finite)
+  also have "C 0 (Suc n) ?U = K x \<bind> (\<lambda>y. C 1 n (case_nat y ?U))"
+    using split_C[of ?U 0 "Suc 0" n] step_C[OF x] by simp
+  also have "emeasure (K x \<bind> (\<lambda>y. C 1 n (case_nat y ?U))) (Pi\<^sub>E {0..<Suc n} F) =
+    (\<integral>\<^sup>+y. C 1 n (case_nat y ?U) (Pi\<^sub>E {0..<Suc n} F) \<partial>K x)"
+    using measurable_C[of 1 n, measurable del] x[THEN sets_K] F x
+    by (intro emeasure_bind[OF  _ measurable_compose[OF _ measurable_C]])
+       (auto cong: measurable_cong_sets intro!: measurable_PiM_single' split: nat.split_asm)
+  also have "\<dots> = (\<integral>\<^sup>+y. distr (lim_sequence y) (Pi\<^sub>M UNIV (\<lambda>j. M)) (case_nat y) (PF.emb UNIV J (Pi\<^sub>E J F')) \<partial>K x)"
+  proof (intro nn_integral_cong)
+    fix y assume "y \<in> space (K x)"
+    then have y: "y \<in> space M"
+      using x by (simp add: space_K)
+    then interpret y: Ionescu_Tulcea "K' y" "\<lambda>_. M"
+      by (rule IT_K')
+
+    let ?y = "case_nat y"
+    have [simp]: "?y ?U \<in> space (Pi\<^sub>M {0} (\<lambda>i. M))"
+      using y by (auto simp: space_PiM PiE_iff extensional_def split: nat.split)
+    have yM[measurable]: "?y \<in> Pi\<^sub>M {0..<m} (\<lambda>_. M) \<rightarrow>\<^sub>M Pi\<^sub>M {0..<Suc m} (\<lambda>i. M)" for m
+      using y by (intro measurable_PiM_single') (auto simp: space_PiM PiE_iff extensional_def split: nat.split)
+
+    have y': "?y ?U \<in> space (Pi\<^sub>M {0..<1} (\<lambda>i. M))"
+      by (simp add: space_PiM PiE_def y extensional_def split: nat.split)
+
+    have eq1: "?y -` Pi\<^sub>E {0..<Suc n} F \<inter> space (Pi\<^sub>M {0..<n} (\<lambda>_. M)) =
+        (if y \<in> F 0 then Pi\<^sub>E {0..<n} (F\<circ>Suc) else {})"
+      unfolding set_eq_iff using y sets.sets_into_space[OF F]
+      by (auto simp: space_PiM PiE_iff extensional_def Ball_def split: nat.split nat.split_asm)
+
+    have eq2: "?y -` PF.emb UNIV {0..<Suc n} (Pi\<^sub>E {0..<Suc n} F) \<inter> space (Pi\<^sub>M UNIV (\<lambda>_. M)) =
+        (if y \<in> F 0 then PF.emb UNIV {0..<n} (Pi\<^sub>E {0..<n} (F\<circ>Suc)) else {})"
+      unfolding set_eq_iff using y sets.sets_into_space[OF F]
+      by (auto simp: space_PiM PiE_iff prod_emb_def extensional_def Ball_def split: nat.split nat.split_asm)
+
+    let ?I = "indicator (F 0) y"
+
+    have "C 1 n (?y ?U) = distr (y.C 0 n ?U) (\<Pi>\<^sub>M i\<in>{0..<Suc n}. M) ?y"
+    proof (induction n)
+      case (Suc m)
+
+      have "C 1 (Suc m) (?y ?U) = distr (y.C 0 m ?U) (Pi\<^sub>M {0..<Suc m} (\<lambda>i. M)) ?y \<bind> eP (Suc m)"
+        using Suc by simp
+      also have "\<dots> = y.C 0 m ?U \<bind> (\<lambda>x. eP (Suc m) (?y x))"
+        by (intro bind_distr[where K="Pi\<^sub>M {0..<Suc (Suc m)} (\<lambda>_. M)"]) (simp_all add: y y.space_C y.sets_C cong: measurable_cong_sets)
+      also have "\<dots> = y.C 0 m ?U \<bind> (\<lambda>x. distr (y.eP m x) (Pi\<^sub>M {0..<Suc (Suc m)} (\<lambda>i. M)) ?y)"
+      proof (intro bind_cong refl)
+        fix \<omega>' assume \<omega>': "\<omega>' \<in> space (y.C 0 m ?U)"
+        moreover have "K' x (Suc m) (?y \<omega>') = K' y m \<omega>'"
+          by (auto simp: K'_def)
+        ultimately show "eP (Suc m) (?y \<omega>') = distr (y.eP m \<omega>') (Pi\<^sub>M {0..<Suc (Suc m)} (\<lambda>i. M)) ?y"
+          unfolding eP_def y.eP_def
+          by (subst distr_distr)
+             (auto simp: y.space_C y.sets_P split: nat.split cong: measurable_cong_sets
+                   intro!: distr_cong measurable_fun_upd[where J="{0..<m}"])
+      qed
+      also have "\<dots> = distr (y.C 0 m ?U \<bind> y.eP m) (Pi\<^sub>M {0..<Suc (Suc m)} (\<lambda>i. M)) ?y"
+        by (intro distr_bind[symmetric, OF _ _ yM]) (auto simp: y.space_C y.sets_C cong: measurable_cong_sets)
+      finally show ?case
+        by simp
+    qed (use y in \<open>simp add: PiM_empty distr_return\<close>)
+    then have "C 1 n (case_nat y ?U) (Pi\<^sub>E {0..<Suc n} F) =
+      (distr (y.C 0 n ?U) (\<Pi>\<^sub>M i\<in>{0..<Suc n}. M) ?y) (Pi\<^sub>E {0..<Suc n} F)" by simp
+    also have "\<dots> = ?I * y.C 0 n ?U (PiE {0..<n} (F \<circ> Suc))"
+      by (subst emeasure_distr) (auto simp: y.sets_C y.space_C eq1 cong: measurable_cong_sets)
+    also have "\<dots> = ?I * lim_sequence y (PF.emb UNIV {0..<n} (PiE {0..<n} (F \<circ> Suc)))"
+      using y by (simp add: emeasure_lim_sequence_emb_I0o sets_PiM_I_finite)
+    also have "\<dots> = distr (lim_sequence y) (Pi\<^sub>M UNIV (\<lambda>j. M)) ?y (PF.emb UNIV {0..<Suc n} (Pi\<^sub>E {0..<Suc n} F))"
+      using y by (subst emeasure_distr) (simp_all add: eq2 space_lim_sequence)
+    finally show "emeasure (C 1 n (case_nat y (\<lambda>_. undefined))) (Pi\<^sub>E {0..<Suc n} F) =
+        emeasure (distr (lim_sequence y) (Pi\<^sub>M UNIV (\<lambda>j. M)) (case_nat y)) (PF.emb UNIV J (Pi\<^sub>E J F'))"
+      unfolding emb_eq .
+  qed
+  also have "\<dots> =
+    emeasure (K x \<bind> (\<lambda>y. distr (lim_sequence y) (Pi\<^sub>M UNIV (\<lambda>j. M)) (case_nat y))) (PF.emb UNIV J (Pi\<^sub>E J F'))"
+    using J
+    by (subst emeasure_bind[where N="PiM UNIV (\<lambda>_. M)"])
+       (auto simp: sets_K x intro!: measurable_distr2[OF _ measurable_prob_algebraD[OF lim_sequence]] cong: measurable_cong_sets)
+  finally show "emeasure (lim_sequence x) (PF.emb UNIV J (Pi\<^sub>E J F')) =
+    emeasure (K x \<bind> (\<lambda>y. distr (lim_sequence y) (Pi\<^sub>M UNIV (\<lambda>j. M)) (case_nat y)))
+            (PF.emb UNIV J (Pi\<^sub>E J F'))" .
 qed
 
 lemma AE_lim_sequence:
