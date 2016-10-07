@@ -76,29 +76,9 @@ lemma poly_1_2i_code_unfold[code_unfold]: "snd (rat_to_int_poly poly_1_2i) = [:1
 
 context inj_field_hom_0'
 begin
-lemma map_poly_pderiv: 
-  "map_poly hom (pderiv p) = pderiv (map_poly hom p)"
-proof (induct p rule: pderiv.induct)
-  case (1 a p)
-  show ?case
-  proof (cases "p = 0")
-    case True
-    thus ?thesis by simp
-  next
-    case False
-    hence id: "(p = 0) = False" "(map_poly hom p = 0) = False" by auto
-    have id': "map_poly hom (pCons 0 (pderiv p))
-      = pCons 0 (map_poly hom (pderiv p))" 
-      by (cases "pderiv p = 0", auto)
-    show ?thesis 
-      unfolding pderiv.simps map_poly_pCons[OF disjI2[OF False]] 1[OF False, symmetric] id id' if_False map_poly_add
-      by auto
-  qed
-qed
-  
 lemma map_poly_square_free_monic_poly: 
-  "map_poly hom (square_free_monic_poly gcd p) = square_free_monic_poly gcd (map_poly hom p)"
-  unfolding square_free_monic_poly_def map_poly_div map_poly_gcd map_poly_pderiv ..
+  "map_poly hom (yun_gcd.square_free_monic_poly gcd p) = yun_gcd.square_free_monic_poly gcd (map_poly hom p)"
+  unfolding yun_gcd.square_free_monic_poly_def map_poly_div map_poly_gcd map_poly_pderiv ..
 
 lemma map_poly_square_free_poly: 
   "map_poly hom (square_free_poly gcd p) = square_free_poly gcd (map_poly hom p)"

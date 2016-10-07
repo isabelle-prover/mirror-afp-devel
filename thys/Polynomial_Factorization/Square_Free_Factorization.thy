@@ -206,13 +206,16 @@ lemma square_free_iff_coprime:
 context
   assumes "SORT_CONSTRAINT('a::{field,factorial_ring_gcd})"
 begin
-
 lemma square_free_smult: "c \<noteq> 0 \<Longrightarrow> square_free (f :: 'a poly) \<Longrightarrow> square_free (smult c f)"
   by (unfold square_free_def, insert dvd_smult_cancel[of _ c], auto)
 
 lemma square_free_smult_iff[simp]: "c \<noteq> 0 \<Longrightarrow> square_free (smult c f) = square_free (f :: 'a poly)"
   using square_free_smult[of c f] square_free_smult[of "inverse c" "smult c f"] by auto
+end
 
+context
+  assumes "SORT_CONSTRAINT('a::factorial_ring_gcd)"
+begin
 definition square_free_factorization :: "'a poly \<Rightarrow> 'a \<times> ('a poly \<times> nat) list \<Rightarrow> bool" where
   "square_free_factorization p cbs \<equiv> case cbs of (c,bs) \<Rightarrow>
     (p = smult c (\<Prod>(a, i)\<in> set bs. a ^ Suc i))
@@ -239,8 +242,8 @@ qed
 end
 
 subsection \<open>Yun's factorization algorithm\<close>
-context 
-  fixes Gcd :: "'a :: {field_char_0,euclidean_ring_gcd} poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly"
+locale yun_gcd = 
+  fixes Gcd :: "'a :: factorial_ring_gcd poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly"
 begin
 
 partial_function (tailrec) yun_factorization_main :: 
@@ -254,13 +257,6 @@ partial_function (tailrec) yun_factorization_main ::
       an = Gcd bn dn
     in yun_factorization_main (bn div an) (dn div an) (Suc i) ((an,i) # sqr)))"
 
-definition square_free_monic_poly :: "'a poly \<Rightarrow> 'a poly" where
-  "square_free_monic_poly p = (p div (Gcd p (pderiv p)))"
-
-definition square_free_poly :: "'a poly \<Rightarrow> 'a poly" where
-  "square_free_poly p = (if p = 0 then 0 else 
-     square_free_monic_poly (smult (inverse (coeff p (degree p))) p))"
-
 definition yun_monic_factorization :: "'a poly \<Rightarrow> ('a poly \<times> nat)list" where
   "yun_monic_factorization p = (let
     pp = pderiv p;
@@ -269,6 +265,24 @@ definition yun_monic_factorization :: "'a poly \<Rightarrow> ('a poly \<times> n
     c0 = pp div u
     in 
       (filter (\<lambda> (a,i). a \<noteq> 1) (yun_factorization_main b0 c0 0 [])))"
+
+definition square_free_monic_poly :: "'a poly \<Rightarrow> 'a poly" where
+  "square_free_monic_poly p = (p div (Gcd p (pderiv p)))"
+end
+
+declare yun_gcd.yun_monic_factorization_def [code] 
+declare yun_gcd.yun_factorization_main.simps [code] 
+declare yun_gcd.square_free_monic_poly_def [code]
+
+context 
+  fixes Gcd :: "'a :: {field_char_0,euclidean_ring_gcd} poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly"
+begin
+interpretation yun_gcd Gcd .
+
+definition square_free_poly :: "'a poly \<Rightarrow> 'a poly" where
+  "square_free_poly p = (if p = 0 then 0 else 
+     square_free_monic_poly (smult (inverse (coeff p (degree p))) p))"
+
 
 definition yun_factorization :: "'a poly \<Rightarrow> 'a \<times> ('a poly \<times> nat)list" where
   "yun_factorization p = (if p = 0
@@ -691,7 +705,9 @@ proof (rule setprod_A_is_p_unknown)
   qed
 qed
 
-lemma square_free_monic_poly: "(poly (square_free_monic_poly gcd p) x = 0) = (poly p x = 0)"
+interpretation yun_gcd gcd .
+
+lemma square_free_monic_poly: "(poly (square_free_monic_poly p) x = 0) = (poly p x = 0)"
 proof -
   show ?thesis unfolding square_free_monic_poly_def unfolding p_div_gcd_p_pderiv
     unfolding p poly_setprod setprod_zero_iff[OF fin] by force
@@ -725,7 +741,7 @@ proof -
   thus ?thesis unfolding id n_def B.simps C.simps .
 qed
 
-lemma yun_factorization_main: assumes "yun_factorization_main gcd (B n) (C n) n bs = cs"
+lemma yun_factorization_main: assumes "yun_factorization_main (B n) (C n) n bs = cs"
   "set bs = {(A i, i) | i. i < n}" "distinct (map snd bs)"
   shows "\<exists> m. set cs = {(A i, i) | i. i < m} \<and> B m = 1 \<and> distinct (map snd cs)"
   using assms
@@ -735,8 +751,8 @@ proof -
   proof (induct n arbitrary: bs rule: wf_induct[OF wf_measure[of ?m]])
     case (1 n)
     note IH = 1(1)[rule_format]
-    have res: "yun_factorization_main gcd (B n) (C n) n bs = cs" by fact
-    note res = res[unfolded yun_factorization_main.simps[of _ "B n"]]
+    have res: "yun_factorization_main (B n) (C n) n bs = cs" by fact
+    note res = res[unfolded yun_factorization_main.simps[of "B n"]]
     have bs: "set bs = {(A i, i) |i. i < n}" "distinct (map snd bs)" by fact+
     show ?case
     proof (cases "B n = 1")
@@ -749,7 +765,7 @@ proof -
       hence "(Suc n, n) \<in> measure ?m" by auto
       note IH = IH[OF this]
       from Bn res[unfolded Let_def, folded D.simps C.simps B.simps A.simps] 
-      have res: "yun_factorization_main gcd (B (Suc n)) (C (Suc n)) (Suc n) ((A n, n) # bs) = cs"
+      have res: "yun_factorization_main (B (Suc n)) (C (Suc n)) (Suc n) ((A n, n) # bs) = cs"
         by simp
       note IH = IH[OF this]
       {
@@ -767,19 +783,19 @@ proof -
   qed
 qed
 
-lemma yun_monic_factorization_res: assumes res: "yun_monic_factorization gcd p = bs"
+lemma yun_monic_factorization_res: assumes res: "yun_monic_factorization p = bs"
   shows "\<exists> m. set bs = {(A i, i) | i. i < m \<and> A i \<noteq> 1} \<and> B m = 1 \<and> distinct (map snd bs)"
 proof -
   from res[unfolded yun_monic_factorization_def Let_def, 
     folded B.simps C.simps]
-  obtain cs where yun: "yun_factorization_main gcd (B 0) (C 0) 0 [] = cs" and bs: "bs = filter (\<lambda> (a,i). a \<noteq> 1) cs" 
+  obtain cs where yun: "yun_factorization_main (B 0) (C 0) 0 [] = cs" and bs: "bs = filter (\<lambda> (a,i). a \<noteq> 1) cs" 
     by auto
   from yun_factorization_main[OF yun] show ?thesis unfolding bs
     by (auto simp: distinct_map_filter)
 qed                                                    
 
-lemma yun_monic_factorization: assumes yun: "yun_monic_factorization gcd p = bs"
-  shows "square_free_factorization p (1,bs)" "(b,i) \<in> set bs \<Longrightarrow> monic b"
+lemma yun_monic_factorization: assumes yun: "yun_monic_factorization p = bs"
+  shows "square_free_factorization p (1,bs)" "(b,i) \<in> set bs \<Longrightarrow> monic b" "distinct (map snd bs)" 
 proof -
   from yun_monic_factorization_res[OF yun]
   obtain m where bs: "set bs = {(A i, i) | i. i < m \<and> A i \<noteq> 1}" and B: "B m = 1" 
@@ -815,6 +831,7 @@ proof -
   show "square_free_factorization p (1,bs)" unfolding square_free_factorization_def using 1 2 3 4 5
     by auto
   show "(b,i) \<in> set bs \<Longrightarrow> monic b" using 2 by auto
+  show "distinct (map snd bs)" by fact
 qed
 end
 
@@ -840,8 +857,8 @@ proof -
   qed
 qed
 
-lemma square_free_monic_poly: assumes "monic p"
-  shows "(poly (square_free_monic_poly gcd p) x = 0) = (poly p x = 0)"
+lemma square_free_monic_poly: assumes "monic (p :: 'a :: {field_char_0, euclidean_ring_gcd} poly)"
+  shows "(poly (yun_gcd.square_free_monic_poly gcd p) x = 0) = (poly p x = 0)"
 proof -
   from monic_factorization[OF assms] obtain as where "monic_factorization as p" ..
   from monic_factorization.square_free_monic_poly[OF this] show ?thesis .
@@ -867,7 +884,7 @@ next
   case False
   let ?c = "coeff p (degree p)"
   let ?ic = "inverse ?c"
-  have id: "square_free_poly gcd p = square_free_monic_poly gcd (smult ?ic p)"
+  have id: "square_free_poly gcd p = yun_gcd.square_free_monic_poly gcd (smult ?ic p)"
     unfolding square_free_poly_def using False by auto
   from False have mon: "monic (smult ?ic p)" and ic: "?ic \<noteq> 0" by auto
   show ?thesis unfolding id square_free_monic_poly[OF mon]
@@ -875,13 +892,15 @@ next
 qed  
 
 
-lemma yun_monic_factorization: assumes res: "yun_monic_factorization gcd p = bs"
+lemma yun_monic_factorization: fixes p :: "'a :: {field_char_0,euclidean_ring_gcd} poly" 
+  assumes res: "yun_gcd.yun_monic_factorization gcd p = bs"
   and monic: "monic p"
-  shows "square_free_factorization p (1,bs)" "(b,i) \<in> set bs \<Longrightarrow> monic b"
+  shows "square_free_factorization p (1,bs)" "(b,i) \<in> set bs \<Longrightarrow> monic b" "distinct (map snd bs)" 
 proof -
   from monic_factorization[OF monic] obtain as where "monic_factorization as p" ..
   from "monic_factorization.yun_monic_factorization"[OF this res]
-  show "square_free_factorization p (1,bs)" "(b,i) \<in> set bs \<Longrightarrow> monic b" .
+  show "square_free_factorization p (1,bs)" "(b,i) \<in> set bs \<Longrightarrow> monic b" "distinct (map snd bs)" 
+    by auto
 qed
 
 lemma square_free_factorization_smult: assumes c: "c \<noteq> 0"
@@ -899,6 +918,7 @@ qed
 lemma yun_factorization: assumes res: "yun_factorization gcd p = c_bs"
   shows "square_free_factorization p c_bs" "(b,i) \<in> set (snd c_bs) \<Longrightarrow> monic b"
 proof -
+  interpret yun_gcd gcd .
   note res = res[unfolded yun_factorization_def Let_def]
   have "square_free_factorization p c_bs \<and> ((b,i) \<in> set (snd c_bs) \<longrightarrow> monic b)"
   proof (cases "p = 0")
@@ -911,10 +931,10 @@ proof -
     let ?ic = "inverse ?c"
     obtain c bs where cbs: "c_bs = (c,bs)" by force
     with False res
-    have c: "c = ?c" "?c \<noteq> 0" and fact: "yun_monic_factorization gcd (smult ?ic p) = bs" by auto
+    have c: "c = ?c" "?c \<noteq> 0" and fact: "yun_monic_factorization (smult ?ic p) = bs" by auto
     from False have mon: "monic (smult ?ic p)" by auto
     from yun_monic_factorization[OF fact mon]
-    have sff: "square_free_factorization (smult ?ic p) (1, bs)" "(b, i) \<in> set bs \<Longrightarrow> monic b" .
+    have sff: "square_free_factorization (smult ?ic p) (1, bs)" "(b, i) \<in> set bs \<Longrightarrow> monic b" by auto
     have id: "smult ?c (smult ?ic p) = p" using False by auto
     from square_free_factorization_smult[OF c(2) sff(1), unfolded id] sff
     show ?thesis unfolding cbs c by simp
@@ -922,9 +942,17 @@ proof -
   thus "square_free_factorization p c_bs" "(b,i) \<in> set (snd c_bs) \<Longrightarrow> monic b" by blast+
 qed
 
+
+lemma prod_list_pow_suc: "(\<Prod>x\<leftarrow>bs. (x :: 'a :: comm_monoid_mult) * x ^ i) 
+  = prod_list bs * prod_list bs ^ i" 
+  by (induct bs, auto simp: field_simps)
+
+context 
+  assumes "SORT_CONSTRAINT('a :: {field, factorial_ring_gcd})" 
+begin
 lemma square_free_factorization_order_root_mem: 
   assumes sff: "square_free_factorization p (c,bs)"
-    and p: "p \<noteq> 0"
+    and p: "p \<noteq> (0 :: 'a poly)"
     and ai: "(a,i) \<in> set bs" and rt: "poly a x = 0"
   shows "order x p = Suc i"
 proof -
@@ -980,7 +1008,7 @@ qed
 
 lemma square_free_factorization_order_root_no_mem: 
   assumes sff: "square_free_factorization p (c,bs)"
-    and p: "p \<noteq> 0"
+    and p: "p \<noteq> (0 :: 'a poly)"
     and no_root: "\<And> a i. (a,i) \<in> set bs \<Longrightarrow> poly a x \<noteq> 0"
   shows "order x p = 0"
 proof (rule ccontr)
@@ -1004,7 +1032,7 @@ qed
 
 lemma square_free_factorization_order_root: 
   assumes sff: "square_free_factorization p (c,bs)"
-    and p: "p \<noteq> 0"
+    and p: "p \<noteq> (0 :: 'a poly)"
   shows "order x p = i \<longleftrightarrow> (i = 0 \<and> (\<forall> a j. (a,j) \<in> set bs \<longrightarrow> poly a x \<noteq> 0) 
     \<or> (\<exists> a j. (a,j) \<in> set bs \<and> poly a x = 0 \<and> i = Suc j))" (is "?l = (?r1 \<or> ?r2)")
 proof -
@@ -1041,12 +1069,12 @@ qed
 
 lemma square_free_factorization_root: 
   assumes sff: "square_free_factorization p (c,bs)"
-    and p: "p \<noteq> 0"
+    and p: "p \<noteq> (0 :: 'a poly)"
   shows "{x. poly p x = 0} = {x. \<exists> a i. (a,i) \<in> set bs \<and> poly a x = 0}" 
   using square_free_factorization_order_root[OF sff p] p
   unfolding order_root by auto
 
-lemma square_free_factorizationD': 
+lemma square_free_factorizationD': fixes p :: "'a poly"
   assumes sf: "square_free_factorization p (c, bs)"
   shows "p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)"
     and "square_free (prod_list (map fst bs))"
@@ -1090,7 +1118,7 @@ proof -
 qed
   
 
-lemma square_free_factorizationI': 
+lemma square_free_factorizationI': fixes p :: "'a poly"
   assumes prod: "p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)"
     and sf: "square_free (prod_list (map fst bs))"
     and deg: "\<And> b i. (b,i) \<in> set bs \<Longrightarrow> degree b \<noteq> 0"
@@ -1142,7 +1170,8 @@ proof (intro conjI impI allI)
   }
 qed
 
-lemma square_free_factorization_def': "square_free_factorization p (c,bs) \<longleftrightarrow>
+lemma square_free_factorization_def': fixes p :: "'a poly"
+  shows "square_free_factorization p (c,bs) \<longleftrightarrow>
   (p = smult c (\<Prod>(a, i) \<leftarrow> bs. a ^ Suc i)) \<and>
   (square_free (prod_list (map fst bs))) \<and>
   (\<forall> b i. (b,i) \<in> set bs \<longrightarrow> degree b \<noteq> 0) \<and>
@@ -1150,11 +1179,7 @@ lemma square_free_factorization_def': "square_free_factorization p (c,bs) \<long
   using square_free_factorizationD'[of p c bs]
   square_free_factorizationI'[of p c bs] by blast
 
-lemma prod_list_pow_suc: "(\<Prod>x\<leftarrow>bs. (x :: 'a :: comm_monoid_mult) * x ^ i) 
-  = prod_list bs * prod_list bs ^ i" 
-  by (induct bs, auto simp: field_simps)
-
-lemma square_free_factorization_smult_prod_listI: 
+lemma square_free_factorization_smult_prod_listI: fixes p :: "'a poly"
   assumes sff: "square_free_factorization p (c, bs1 @ (smult b (prod_list bs),i) # bs2)"
   and bs: "\<And> b. b \<in> set bs \<Longrightarrow> degree b \<noteq> 0"
   shows "square_free_factorization p (c * b^(Suc i), bs1 @ map (\<lambda> b. (b,i)) bs @ bs2)"
@@ -1178,7 +1203,7 @@ proof -
   qed
 qed
 
-lemma square_free_factorization_further_factorization: 
+lemma square_free_factorization_further_factorization: fixes p :: "'a poly"
   assumes sff: "square_free_factorization p (c, bs)"
   and bs: "\<And> b i d fs. (b,i) \<in> set bs \<Longrightarrow> f b = (d,fs) 
     \<Longrightarrow> b = smult d (prod_list fs) \<and> (\<forall> f \<in> set fs. degree f \<noteq> 0)"
@@ -1238,20 +1263,20 @@ proof -
   qed
 qed
 
-lemma square_free_factorization_prod_listI: 
+lemma square_free_factorization_prod_listI: fixes p :: "'a poly"
   assumes sff: "square_free_factorization p (c, bs1 @ ((prod_list bs),i) # bs2)"
   and bs: "\<And> b. b \<in> set bs \<Longrightarrow> degree b \<noteq> 0"
   shows "square_free_factorization p (c, bs1 @ map (\<lambda> b. (b,i)) bs @ bs2)"
   using square_free_factorization_smult_prod_listI[of p c bs1 1 bs i bs2] sff bs by auto
 
-lemma square_free_factorization_factorI: 
+lemma square_free_factorization_factorI: fixes p :: "'a poly"
   assumes sff: "square_free_factorization p (c, bs1 @ (a,i) # bs2)"
   and r: "degree r \<noteq> 0" and s: "degree s \<noteq> 0"
   and a: "a = r * s"
   shows "square_free_factorization p (c, bs1 @ ((r,i) # (s,i) # bs2))"
   using square_free_factorization_prod_listI[of p c bs1 "[r,s]" i bs2] sff r s a by auto
   
-lemma monic_square_free_irreducible_factorization: assumes mon: "monic (f :: 'a :: field poly)" 
+lemma monic_square_free_irreducible_factorization: assumes mon: "monic (f :: 'b :: field poly)" 
   and sf: "square_free f"
   shows "\<exists> P. finite P \<and> f = \<Prod>P \<and> P \<subseteq> {q. irreducible q \<and> monic q}"
 proof -
@@ -1274,7 +1299,7 @@ proof -
 qed
 
 lemma monic_factorization_uniqueness:
-fixes P::"'a::{field,factorial_ring_gcd} poly set"
+fixes P::"'a poly set"
 assumes finite_P: "finite P" 
   and PQ: "\<Prod>P = \<Prod>Q" 
   and P: "P \<subseteq> {q. irreducible q \<and> monic q}"
@@ -1306,7 +1331,7 @@ next
   have "x=a" using x P a Q irreducible_dvd_eq[OF irr_x _ x_dvd_a] by fast
   thus "x \<in> P" using a by simp
 qed
-
+end
 
 subsection \<open>Yun factorization and homomorphisms\<close>
 
@@ -1320,9 +1345,9 @@ lemma (in inj_field_hom_0') yun_factorization_main_hom:
   defines hp: "hp \<equiv> map_poly hom"
   defines hpi: "hpi \<equiv> map (\<lambda> (f,i). (hp f, i :: nat))"
   assumes monic: "monic p" and f: "f = p div gcd p (pderiv p)" and g: "g = pderiv p div gcd p (pderiv p)"
-  shows "yun_factorization_main gcd (hp f) (hp g) i (hpi as) = hpi (yun_factorization_main gcd f g i as)"
+  shows "yun_gcd.yun_factorization_main gcd (hp f) (hp g) i (hpi as) = hpi (yun_gcd.yun_factorization_main gcd f g i as)"
 proof -
-  let ?P = "\<lambda> f g. \<forall> i as. yun_factorization_main gcd (hp f) (hp g) i (hpi as) = hpi (yun_factorization_main gcd f g i as)"
+  let ?P = "\<lambda> f g. \<forall> i as. yun_gcd.yun_factorization_main gcd (hp f) (hp g) i (hpi as) = hpi (yun_gcd.yun_factorization_main gcd f g i as)"
   note ind = yun_factorization_induct[OF _ _ f g monic, of ?P, rule_format]
   interpret p: inj_ring_hom hp unfolding hp by (rule inj_ring_hom_map_poly)
   note homs = map_poly_gcd[folded hp] 
@@ -1332,12 +1357,12 @@ proof -
   show ?thesis
   proof (induct rule: ind)
     case (1 f g i as)
-    show ?case unfolding yun_factorization_main.simps[of _ "hp f"] yun_factorization_main.simps[of _ f]
+    show ?case unfolding yun_gcd.yun_factorization_main.simps[of _ "hp f"] yun_gcd.yun_factorization_main.simps[of _ f]
       unfolding 1 by simp
   next
     case (2 f g i as)
     have id: "\<And> f i fis. hpi ((f,i) # fis) = (hp f, i) # hpi fis" unfolding hpi by auto
-    show ?case unfolding yun_factorization_main.simps[of _ "hp f"] yun_factorization_main.simps[of _ f]
+    show ?case unfolding yun_gcd.yun_factorization_main.simps[of _ "hp f"] yun_gcd.yun_factorization_main.simps[of _ f]
       unfolding "p.hom_1_iff" if_distrib[of hpi] Let_def
       unfolding homs[symmetric] id[symmetric]
       unfolding 2(2) by simp
@@ -1345,7 +1370,7 @@ proof -
 qed
 
 lemma square_free_square_free_factorization: 
-  "square_free p \<Longrightarrow> degree p \<noteq> 0 \<Longrightarrow> square_free_factorization p (1,[(p,0)])"
+  "square_free (p :: 'a :: {field,factorial_ring_gcd} poly) \<Longrightarrow> degree p \<noteq> 0 \<Longrightarrow> square_free_factorization p (1,[(p,0)])"
   by (intro square_free_factorizationI', auto)
 
 lemma constant_square_free_factorization: 
@@ -1356,12 +1381,12 @@ lemma (in inj_field_hom_0') yun_monic_factorization:
   defines hp: "hp \<equiv> map_poly hom"
   defines hpi: "hpi \<equiv> map (\<lambda> (f,i). (hp f, i :: nat))"
   assumes monic: "monic f"
-  shows "yun_monic_factorization gcd (hp f) = hpi (yun_monic_factorization gcd f)"
+  shows "yun_gcd.yun_monic_factorization gcd (hp f) = hpi (yun_gcd.yun_monic_factorization gcd f)"
 proof -
   interpret p: inj_ring_hom hp unfolding hp by (rule inj_ring_hom_map_poly)
   have hpiN: "hpi [] = []" unfolding hpi by simp
   obtain res where "res = 
-    yun_factorization_main gcd (f div gcd f (pderiv f)) (pderiv f div gcd f (pderiv f)) 0 []" by auto
+    yun_gcd.yun_factorization_main gcd (f div gcd f (pderiv f)) (pderiv f div gcd f (pderiv f)) 0 []" by auto
   note homs = map_poly_gcd[folded hp] 
       map_poly_pderiv[folded hp, symmetric] 
       p.hom_minus 
@@ -1369,7 +1394,7 @@ proof -
       yun_factorization_main_hom[folded hp, folded hpi, symmetric, OF monic refl refl, of _ Nil, unfolded hpiN]
       this   
   show ?thesis
-    unfolding yun_monic_factorization_def Let_def
+    unfolding yun_gcd.yun_monic_factorization_def Let_def
     unfolding homs[symmetric]
     unfolding hpi
       by (induct res, auto)
