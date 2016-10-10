@@ -312,6 +312,16 @@ proof (cases "p = 0 \<or> q = 0")
   finally show ?thesis by simp
 qed auto
 
+lemma content_dvd_1: assumes "content f = (1 :: int)" "g dvd f" 
+  shows "content g = 1" 
+proof -
+  from assms obtain h where f: "f = g * h" unfolding dvd_def by auto
+  from arg_cong[OF this, of content, unfolded assms gauss_lemma]
+  have "content g \<in> {-1,1}" using pos_zmult_eq_1_iff_lemma by fastforce
+  with content_ge_0_int[of g] show "content g = 1" by auto
+qed
+
+
 lemma dvd_smult_int: fixes c :: int assumes c: "c \<noteq> 0"
   and dvd: "q dvd (smult c p)"
   shows "normalize_content q dvd p"

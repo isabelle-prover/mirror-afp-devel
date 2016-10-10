@@ -1043,5 +1043,32 @@ lemma coeff_f_0_code[code_unfold]: "coeff f 0 = (case coeffs f of [] \<Rightarro
 lemma poly_compare_0_code[code_unfold]: "(f = 0) = (case coeffs f of [] \<Rightarrow> True | _ \<Rightarrow> False)" 
   using coeffs_eq_Nil list.disc_eq_case(1) by blast
 
+lemma lead_coeff_code[code]: "lead_coeff f = (let xs = coeffs f in case xs of [] \<Rightarrow> 0 | _ \<Rightarrow> last xs)"
+  by (metis (no_types, lifting) coeffs_0_eq_Nil last_coeffs_eq_coeff_degree lead_coeff_0 lead_coeff_def length_Suc_conv length_coeffs_degree list.simps(4) list.simps(5)) 
+
+lemma nth_coeffs_coeff: "i < length (coeffs f) \<Longrightarrow> coeffs f ! i = coeff f i"
+  by (metis nth_default_coeffs_eq nth_default_def)
+
+lemma degree_setprod_eq_setsum_degree:
+fixes A :: "'a set"
+and f :: "'a \<Rightarrow> 'b::field poly"
+assumes f0: "\<forall>i\<in>A. f i \<noteq> 0"
+shows "degree (\<Prod>i\<in>A. (f i)) = (\<Sum>i\<in>A. degree (f i))"
+using f0
+proof (induct A rule: infinite_finite_induct)
+  case (insert x A)
+  have "(\<Sum>i\<in>insert x A. degree (f i)) = degree (f x) + (\<Sum>i\<in>A. degree (f i))"
+    by (simp add: insert.hyps(1) insert.hyps(2))
+  also have "... = degree (f x) + degree (\<Prod>i\<in>A. (f i))"
+    by (simp add: insert.hyps insert.prems)
+  also have "... = degree (f x * (\<Prod>i\<in>A. (f i)))"
+  proof (rule degree_mult_eq[symmetric])
+    show "f x \<noteq> 0" using insert.prems by auto
+    show "setprod f A \<noteq> 0" by (simp add: insert.hyps(1) insert.prems)
+  qed
+  also have "... = degree (\<Prod>i\<in>insert x A. (f i))"
+    by (simp add: insert.hyps)
+  finally show ?case ..
+qed auto
 
 end

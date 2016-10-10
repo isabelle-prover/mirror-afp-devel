@@ -143,4 +143,39 @@ proof (cases "l < mat_dim_row_impl A")
   qed ((transfer, auto)+)
 qed simp
 
+lemma gauss_jordan_main_code[code]:
+  "gauss_jordan_main A B i j = (let nr = dim\<^sub>r A; nc = dim\<^sub>c A in
+    if i < nr \<and> j < nc then let aij = A $$ (i,j) in if aij = 0 then
+      (case [ i' . i' <- [Suc i ..< nr],  A $$ (i',j) \<noteq> 0] 
+        of [] \<Rightarrow> gauss_jordan_main A B i (Suc j)
+         | (i' # _) \<Rightarrow> gauss_jordan_main (swaprows i i' A) (swaprows i i' B) i j)
+      else if aij = 1 then let is = filter (\<lambda> i'. i' \<noteq> i) [0 ..< nr] in
+        gauss_jordan_main 
+        (eliminate_entries A A i j is) (eliminate_entries A B i j is) (Suc i) (Suc j)
+      else let iaij = inverse aij; A' = multrow i iaij A; B' = multrow i iaij B;
+        is = filter (\<lambda> i'. i' \<noteq> i) [0 ..< nr] in gauss_jordan_main 
+        (eliminate_entries A' A' i j is) (eliminate_entries A' B' i j is) (Suc i) (Suc j)
+    else (A,B))" (is "?l = ?r")
+proof -
+  note simps = gauss_jordan_main.simps[of A B i j] Let_def
+  let ?nr = "dim\<^sub>r A" 
+  let ?nc = "dim\<^sub>c A"
+  let ?A' = "multrow i (inverse (A $$ (i,j))) A" 
+  let ?B' = "multrow i (inverse (A $$ (i,j))) B" 
+  let ?is = "filter (\<lambda> i'. i' \<noteq> i) [0 ..< ?nr]"
+  show ?thesis
+  proof (cases "i < ?nr \<and> j < ?nc \<and> A $$ (i,j) \<noteq> 0 \<and> A $$ (i,j) \<noteq> 1")
+    case False
+    thus ?thesis unfolding simps by (auto split: if_splits)
+  next
+    case True
+    from True have id: "?A' $$ (i,j) = 1" by auto
+    from True have "?l = gauss_jordan_main ?A' ?B' i j" unfolding simps by (simp add: Let_def)
+    also have "\<dots> = ?r" unfolding Let_def gauss_jordan_main.simps[of ?A' ?B' i j] id
+      using True by simp
+    finally show ?thesis .
+  qed
+qed 
+
+
 end

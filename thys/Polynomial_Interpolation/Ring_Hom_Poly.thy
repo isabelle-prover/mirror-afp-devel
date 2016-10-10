@@ -381,6 +381,11 @@ lemma smult_div_poly: assumes "\<And> c. c \<in> set (coeffs p) \<Longrightarrow
   unfolding smult_map_poly div_poly_def 
   by (subst map_poly_compose, force+, subst map_poly_eqI, insert assms, auto)
 
+lemma coeff_div_poly: "coeff (div_poly a f) n = coeff f n div a" 
+  unfolding div_poly_def
+  by (rule coeff_map_poly, auto)
+
+
 interpretation ri: inj_ring_hom rat_of_int
   by (unfold_locales, auto)
 
