@@ -1,0 +1,12 @@
+chapter AFP
+
+session Chord_Segments (AFP) = "HOL-Multivariate_Analysis" +
+  options [timeout=600]
+  theories [document = false]
+    Multivariate_Analysis
+    "../Triangle/Triangle"
+  theories
+    Chord_Segments
+  document_files
+    "root.bib"
+    "root.tex"
