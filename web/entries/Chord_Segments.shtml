@@ -49,7 +49,7 @@ theorem. The theorem states that when two chords intersect each other
 inside a circle, the products of their segments are equal.  After a
 short review of existing proofs in the literature, I decided to use a
 proof approach that employs reasoning about lengths of line segments,
-the orthogonality of two lines and Pythagoras Law. Hence, one can
+the orthogonality of two lines and the Pythagoras Law. Hence, one can
 understand the formalized proof easily with the knowledge of a few
 general geometric facts that are commonly taught in high-school.  This
 theorem is the 55th theorem of the Top 100 Theorems list.
