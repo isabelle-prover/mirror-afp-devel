@@ -81,6 +81,23 @@ abstract =
   cardinality of partial equivalence relations over a finite set of
   cardinality n is equal to the n+1-th Bell number.
 
+[Chord_Segments]
+title = Intersecting Chords Theorem
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+notify = lukas.bulwahn@gmail.com
+date = 2016-10-11
+topic = Mathematics/Geometry
+abstract =
+  This entry provides a geometric proof of the intersecting chords
+  theorem. The theorem states that when two chords intersect each other
+  inside a circle, the products of their segments are equal.  After a
+  short review of existing proofs in the literature, I decided to use a
+  proof approach that employs reasoning about lengths of line segments,
+  the orthogonality of two lines and Pythagoras Law. Hence, one can
+  understand the formalized proof easily with the knowledge of a few
+  general geometric facts that are commonly taught in high-school.  This
+  theorem is the 55th theorem of the Top 100 Theorems list.
+
 [Category3]
 title = Category Theory with Adjunctions and Limits
 author = Eugene W. Stark <mailto:stark@cs.stonybrook.edu>
@@ -4589,7 +4606,7 @@ title = Allen's Interval Calculus
 author = Fadoua Ghourabi <http://www.i-eos.org/fadoua>
 notify = fadouaghourabi@gmail.com
 date = 2016-09-29
-topic = Logic, Mathematics/Algebra,
+topic = Logic, Mathematics/Algebra
 abstract =
   Allen’s interval calculus is a qualitative temporal representation of
   time events. Allen introduced 13 binary relations that describe all

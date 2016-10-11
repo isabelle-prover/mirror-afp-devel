@@ -24,47 +24,46 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">B</font>asic
-<font class="first">G</font>eometric
-<font class="first">P</font>roperties
-of
-<font class="first">T</font>riangles
+<h1><font class="first">I</font>ntersecting
+<font class="first">C</font>hords
+<font class="first">T</font>heorem
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Basic Geometric Properties of Triangles</td></tr>
+        <td class="data" width="80%">Intersecting Chords Theorem</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://in.tum.de/~eberlm">Manuel Eberl</a></td></tr>
+        <td class="data">Lukas Bulwahn (lukas /dot/ bulwahn /at/ gmail /dot/ com)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2015-12-28</td></tr>
+        <td class="data">2016-10-11</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
 
-This entry contains a definition of angles between vectors and between three
-points. Building on this, we prove basic geometric properties of triangles, such
-as the Isosceles Triangle Theorem, the Law of Sines and the Law of Cosines, that
-the sum of the angles of a triangle is π, and the congruence theorems for
-triangles.
-The definitions and proofs were developed following those by John Harrison in
-HOL Light. However, due to Isabelle's type class system, all definitions and
-theorems in the Isabelle formalisation hold for all real inner product spaces.
+This entry provides a geometric proof of the intersecting chords
+theorem. The theorem states that when two chords intersect each other
+inside a circle, the products of their segments are equal.  After a
+short review of existing proofs in the literature, I decided to use a
+proof approach that employs reasoning about lengths of line segments,
+the orthogonality of two lines and Pythagoras Law. Hence, one can
+understand the formalized proof easily with the knowledge of a few
+general geometric facts that are commonly taught in high-school.  This
+theorem is the 55th theorem of the Top 100 Theorems list.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{Triangle-AFP,
-  author  = {Manuel Eberl},
-  title   = {Basic Geometric Properties of Triangles},
+			<pre>@article{Chord_Segments-AFP,
+  author  = {Lukas Bulwahn},
+  title   = {Intersecting Chords Theorem},
   journal = {Archive of Formal Proofs},
-  month   = dec,
-  year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/Triangle.shtml},
+  month   = oct,
+  year    = 2016,
+  note    = {\url{http://isa-afp.org/entries/Chord_Segments.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -74,9 +73,9 @@ theorems in the Isabelle formalisation hold for all real inner product spaces.
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
+    <tr><td class="datahead">Depends on:</td>
+        <td class="data"><a href="Triangle.shtml">Triangle</a></td></tr>
 
-    <tr><td class="datahead">Used by:</td>
-        <td class="data"><a href="Chord_Segments.shtml">Chord_Segments</a></td></tr>
 
 
 <!--#set var="status" value="-STATUS-" -->
@@ -89,7 +88,7 @@ theorems in the Isabelle formalisation hold for all real inner product spaces.
 
 <p></p>
 
-<!--#set var="name" value="Triangle" -->
+<!--#set var="name" value="Chord_Segments" -->
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 
 <!--#set var="doc" value="${binfo}/document.pdf" -->
@@ -116,10 +115,7 @@ theorems in the Isabelle formalisation hold for all real inner product spaces.
 	</td>
   </tr>
     <tr><td class="links">Older releases:
-<ul>
-<li>Isabelle 2015: <a href="../release/afp-<!--#echo var="name" -->-2016-01-05.tar.gz">afp-<!--#echo var="name" -->-2016-01-05.tar.gz</a></li>
-
-</ul>    </td></tr>
+None    </td></tr>
   </tbody>
 </table>
 <!-- entry data end -->
