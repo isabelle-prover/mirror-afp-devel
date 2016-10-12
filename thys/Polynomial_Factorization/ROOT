@@ -22,7 +22,7 @@ session Polynomial_Factorization (AFP) = Pre_Polynomial_Factorization +
   theories
     "Factorization_Oracle"
     "Select_Berlekamp_Hensel_Factorization"
-    "Select_External_Factorization"
+    "Select_Mathematica_Factorization"
     "Select_Hybrid_Factorization"
   theories
     "Rational_Factorization"

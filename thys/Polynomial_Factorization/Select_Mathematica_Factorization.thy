@@ -1,18 +1,8 @@
-module Mathematica(mathematica_oracle) where {
+theory Select_Mathematica_Factorization
+imports Select_External_Factorization
+begin
 
--- factorization oracle via Mathematica
---
--- in order to include the oracle into the generated code, one has to 
--- replace the definition of "external_factorization_main" in the
--- generated code by the following two lines
---
---    import Mathematica;
---    external_factorization_main = mathematica_oracle; 
--- 
--- one might also need to adapt the call to Mathematica depending
--- on the installation of Mathematica
-
-
+code_printing code_module "Mathematica" => (Haskell) {*
 import System.Process;
 import System.IO.Unsafe;
 import System.IO;
@@ -22,8 +12,6 @@ binary = "/Applications/Mathematica.app/Contents/MacOS/WolframKernel";
 
 -- params to Mathematica
 params = ["-rawmode"];
-
-
 
 
 bef :: String;
@@ -94,14 +82,19 @@ next_output _ = do {
 next_input :: [Integer] -> IO ();
 next_input xs = hPutStrLn m_in (m_input xs) >> hFlush m_in;
 
-mathematica_oracle :: [Integer] -> [[Integer]];
-mathematica_oracle x = 
+factorize :: [Integer] -> [[Integer]];
+factorize x = 
     unsafePerformIO (do {
-    -- putStr "<" >> hFlush stdout;
     next_input x;
     res <- next_output ();
-    -- putStr ">" >> hFlush stdout;
     return res;
   });
 
-}
+*}
+  
+code_reserved Haskell Mathematica
+
+code_printing
+  constant external_factorization_main \<rightharpoonup> (Haskell) "Mathematica.factorize"
+
+end
