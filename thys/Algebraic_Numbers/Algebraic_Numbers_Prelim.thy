@@ -49,6 +49,15 @@ lemma poly_real_of_rat_poly: "poly (real_of_rat_poly p) = rpoly p"
 lemma real_of_rat_poly_0[simp]: "real_of_rat_poly p = 0 \<longleftrightarrow> p = 0"
   by (rule rpoly.map_poly_0_iff)
 
+lemma finite_rpoly_roots: assumes "p \<noteq> 0"
+  shows "finite {x. rpoly p x = (0 :: real)}"
+proof -
+  let ?p = "real_of_rat_poly p"
+  from assms have "?p \<noteq> 0" using real_of_rat_poly_0 by auto
+  hence "finite {x. poly ?p x = 0}" by (rule poly_roots_finite)
+  thus "finite {x. rpoly p x = (0 :: real)}" unfolding poly_real_of_rat_poly .
+qed
+
 subsection \<open>Algebraic Numbers -- Definition, Inverse, and Roots\<close>
 
 lemma algebraic_altdef_rpoly: 
