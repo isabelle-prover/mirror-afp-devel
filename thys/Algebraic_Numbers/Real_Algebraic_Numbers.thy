@@ -295,15 +295,6 @@ proof -
   qed
 qed
 
-lemma finite_rpoly_roots: assumes "p \<noteq> 0"
-  shows "finite {x. rpoly p x = (0 :: real)}"
-proof -
-  let ?p = "real_of_rat_poly p"
-  from assms have "?p \<noteq> 0" using real_of_rat_poly_0 by auto
-  hence "finite {x. poly ?p x = 0}" by (rule poly_roots_finite)
-  thus "finite {x. rpoly p x = (0 :: real)}" unfolding poly_real_of_rat_poly .
-qed
-
 lemma eval_poly_id[simp]: "eval_poly id = poly" (is "?l = ?r")
   by (intro ext, unfold eval_poly_def, auto)
 
