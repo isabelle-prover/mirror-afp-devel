@@ -1827,7 +1827,7 @@ proof(rule ccontr)
           by auto                
  with 6 have "1 \<ge> y"
           using 1 3 assms div_self less_nat_zero_code mult_zero_left 
-          mult.commute semiring_div_class.mod_div_equality'
+          mult.commute mod_div_equality3
           by auto
  then have 7:"(y = 0) \<or> (y = 1)"
           by auto
@@ -2429,7 +2429,7 @@ proof(cases "b*c = 0")
    then have F_2:"a div c = (x*b) + ((a mod (b*c)) div c)"    
        by (metis F_1 div_mult_self1_is_id mult.commute neq0_conv)
    have "\<exists>y. a div c = (y*b) + ((a div c) mod b)"
-       by (metis add.commute semiring_div_class.mod_div_equality')
+       by (metis add.commute mod_div_equality3)
    then obtain y where "a div c = (y*b) + ((a div c) mod b)"
        by auto
    with F_2 have F_3:" (x*b) + ((a mod (b*c)) div c) = (y*b) + ((a div c) mod b)"

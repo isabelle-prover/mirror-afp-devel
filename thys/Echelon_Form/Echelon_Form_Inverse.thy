@@ -30,7 +30,7 @@ lemma mult_adjugate_det: "A ** adjugate A = mat (det A)"
   by (simp add: to_vec_diag)
 
 lemma invertible_imp_matrix_inv:
-  assumes i: "invertible (A :: ('a :: {comm_ring_1,semiring_div}) ^ 'b ^ 'b)"
+  assumes i: "invertible (A :: ('a :: {comm_ring_1,euclidean_semiring}) ^ 'b ^ 'b)"
   shows "matrix_inv A = (1 div (det A)) *k adjugate A"
 proof - 
   let ?A = "adjugate A"

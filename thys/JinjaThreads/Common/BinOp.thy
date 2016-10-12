@@ -141,7 +141,7 @@ proof -
     proof(cases "sint b < 0")
       case True
       with a show ?thesis
-        by simp (metis F7 F8 eq minus_equation_iff minus_mult_minus semiring_div_class.mod_div_equality')
+        by simp (metis F7 F8 eq minus_equation_iff minus_mult_minus mod_div_equality3)
     next
       case False
       from eq have "word_of_int (- (- sint a div sint b)) * b + word_of_int (- (- sint a mod sint b)) = a"

@@ -739,8 +739,8 @@ subclass (in bezout_domain) GCD_domain
 proof
 qed
 
-class bezout_ring_div = bezout_ring + semiring_div
-class bezout_domain_div = bezout_domain + semiring_div
+class bezout_ring_div = bezout_ring + euclidean_semiring
+class bezout_domain_div = bezout_domain + euclidean_semiring
 
 subclass (in bezout_ring_div) bezout_domain_div
 proof qed
@@ -881,8 +881,8 @@ qed
 
 end
 
-class pir_div = pir + semiring_div
-class pid_div = pid + semiring_div
+class pir_div = pir + euclidean_semiring
+class pid_div = pid + euclidean_semiring
 
 subclass (in pir_div) pid_div
 proof qed
