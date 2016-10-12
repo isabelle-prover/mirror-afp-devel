@@ -1,5 +1,6 @@
 (*  
-    Author:      René Thiemann 
+    Author:      Sebastiaan Joosten
+                 René Thiemann 
                  Akihisa Yamada
     License:     BSD
 *)
@@ -94,9 +95,9 @@ qed ((transfer, auto)+)
 
 lift_definition mat_addrow_gen_impl 
   :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat_impl \<Rightarrow> 'a mat_impl" is
-  "\<lambda> ad mul a k l (nr,nc,A). if l < nr then let Ak = IArray.sub A k; Al = IArray.sub A l; Arows = IArray.list_of A;
-     Ak' = IArray.IArray (map (\<lambda> (al,ak). ad (mul a al) ak) (zip (IArray.list_of Al) (IArray.list_of Ak)));
-     A' = IArray.IArray (Arows [k := Ak'])
+  "\<lambda> ad mul a k l (nr,nc,A). if l < nr then let Ak = IArray.sub A k; Al = IArray.sub A l;
+     Ak' = IArray.of_fun (\<lambda> i. ad (mul a (Al !! i)) (Ak !! i)) (min (IArray.length Ak) (IArray.length Al));
+     A' = IArray.of_fun (\<lambda> i. if i = k then Ak' else A !! i) (IArray.length A)
      in (nr,nc,A') else (nr,nc,A)" 
 proof (goal_cases)
   case (1 ad mul a k l pp)
@@ -115,7 +116,7 @@ proof (goal_cases)
   qed
 qed
 
-lemma [code]: "mat_addrow_gen ad mul a k l (mat_impl A) = (if l < mat_dim_row_impl A then
+lemma mat_addrow_gen_impl[code]: "mat_addrow_gen ad mul a k l (mat_impl A) = (if l < mat_dim_row_impl A then
   mat_impl (mat_addrow_gen_impl ad mul a k l A) else Code.abort (STR ''index out of bounds in mat_addrow'') 
   (\<lambda> _. mat_addrow_gen ad mul a k l (mat_impl A)))" (is "?l = ?r")
 proof (cases "l < mat_dim_row_impl A")
@@ -128,7 +129,7 @@ proof (cases "l < mat_dim_row_impl A")
     proof (transfer, goal_cases)
       case (1 i ad mul a k l A j)
       obtain nr nc rows where A: "A = (nr,nc,rows)" by (cases A, auto)
-      from 1[unfolded A]
+      from 1[unfolded A Let_def]
       have nr: "length (IArray.list_of rows) = nr"
         and nc: "IArray.all (\<lambda>r. length (IArray.list_of r) = nc) rows"
         and ij: "i < nr" "j < nc" and ij': "(i < nr \<and> j < nc) = True" 
@@ -139,8 +140,8 @@ proof (cases "l < mat_dim_row_impl A")
       show ?case unfolding A prod.simps fst_conv o_def snd_conv Let_def mk_mat_def ij' if_True
         using ij nr nc l
         by (cases "k = i", auto simp: len)
-    qed
-  qed ((transfer, auto)+)
+    qed next
+  qed ((transfer, auto simp:Let_def)+)
 qed simp
 
 lemma gauss_jordan_main_code[code]:
