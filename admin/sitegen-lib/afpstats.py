@@ -1,13 +1,3 @@
-#!/usr/bin/env python
-# vim: set fileencoding=utf-8 :
-
-# Cross-python compatibility
-from __future__ import print_function
-try:
-    import configparser
-except ImportError:
-    from six.moves import configparser
-
 from datetime import datetime
 import os.path
 import re
