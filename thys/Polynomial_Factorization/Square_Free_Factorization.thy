@@ -20,11 +20,7 @@ imports
   "../Polynomial_Interpolation/Ring_Hom_Poly"
 begin
 
-context
-  assumes "SORT_CONSTRAINT('a::idom)"
-begin
-
-definition square_free :: "'a poly \<Rightarrow> bool" where 
+definition square_free :: "'a :: comm_semiring_1 poly \<Rightarrow> bool" where 
   "square_free p = (p \<noteq> 0 \<and> (\<forall> q. degree q \<noteq> 0 \<longrightarrow> \<not> (q * q dvd p)))"
 
 lemma square_freeI:  
@@ -34,6 +30,18 @@ lemma square_freeI:
 proof (intro allI conjI[OF p] impI notI, goal_cases)
   case (1 q)
   from assms(1)[OF 1(1) _ 1(2)] 1(1) show False by (cases "q = 0", auto)
+qed
+
+lemma square_free_multD:
+  assumes sf: "square_free (f * g)"
+  shows "h dvd f \<Longrightarrow> h dvd g \<Longrightarrow> degree h = 0" "square_free f" "square_free g"
+proof -
+  from sf[unfolded square_free_def] have 0: "f \<noteq> 0" "g \<noteq> 0"
+    and dvd: "\<And> q. q * q dvd f * g \<Longrightarrow> degree q = 0" by auto
+  then show "square_free f" "square_free g" by (auto simp: square_free_def)
+  assume "h dvd f" "h dvd g"
+  then have "h * h dvd f * g" by (rule mult_dvd_mono)
+  from dvd[OF this] show "degree h = 0".
 qed
 
 lemma irreducible_square_free: "irreducible p \<Longrightarrow> square_free p"
@@ -51,12 +59,12 @@ lemma square_free_factor: assumes dvd: "a dvd p"
 proof (intro square_freeI)
   fix q
   assume q: "degree q \<noteq> 0" and "q * q dvd a"
-  hence "q * q dvd p" using dvd unfolding dvd_def by (auto simp: field_simps)
+  hence "q * q dvd p" using dvd dvd_trans sf square_free_def by blast
   with sf[unfolded square_free_def] q show False by auto
 qed (insert dvd sf, auto simp: square_free_def)
 
 lemma square_free_prod_list_distinct: 
-  assumes sf: "square_free (prod_list us)"
+  assumes sf: "square_free (prod_list us :: 'a :: idom poly)"
   and us: "\<And> u. u \<in> set us \<Longrightarrow> degree u \<noteq> 0"
   shows "distinct us"
 proof (rule ccontr)
@@ -68,7 +76,6 @@ proof (rule ccontr)
   hence "0 \<in> set us" by (simp add: prod_list_zero_iff)
   from us[OF this] show False by auto
 qed
-end
 
 lemma coprime_pderiv_imp_square_free: assumes "coprime f (pderiv f)"
   shows "square_free f"
