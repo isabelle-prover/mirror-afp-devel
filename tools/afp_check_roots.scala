@@ -73,7 +73,7 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
   def check_groups(tree: Sessions.Tree, selected: List[String]): Boolean =
     selected.flatMap { name =>
       val info = tree(name)
-      if (!info.groups.toSet.subsetOf(Set("AFP", "slow")) ||
+      if (!info.groups.toSet.subsetOf(Set("AFP", "slow", "very_slow")) ||
           !info.groups.contains("AFP"))
         Some((name, info.groups))
       else
