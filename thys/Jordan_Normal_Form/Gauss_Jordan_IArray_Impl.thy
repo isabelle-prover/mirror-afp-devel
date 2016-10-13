@@ -150,15 +150,15 @@ lemma gauss_jordan_main_code[code]:
       (case [ i' . i' <- [Suc i ..< nr],  A $$ (i',j) \<noteq> 0] 
         of [] \<Rightarrow> gauss_jordan_main A B i (Suc j)
          | (i' # _) \<Rightarrow> gauss_jordan_main (swaprows i i' A) (swaprows i i' B) i j)
-      else if aij = 1 then let ais = filter (\<lambda> (ai'j,i'). i' \<noteq> i \<and> ai'j \<noteq> 0) (map (\<lambda> i'. (-A $$ (i',j), i')) [0 ..< nr]) in
+      else if aij = 1 then let v = col A j in
         gauss_jordan_main 
-        (eliminate_entries A i ais) (eliminate_entries B i ais) (Suc i) (Suc j)
+        (eliminate_entries v A i j) (eliminate_entries v B i j) (Suc i) (Suc j)
       else let iaij = inverse aij; A' = multrow i iaij A; B' = multrow i iaij B;
-        ais = filter (\<lambda> (ai'j,i'). i' \<noteq> i \<and> ai'j \<noteq> 0) (map (\<lambda> i'. (-A' $$ (i',j), i')) [0 ..< nr]) in gauss_jordan_main 
-        (eliminate_entries A' i ais) (eliminate_entries B' i ais) (Suc i) (Suc j)
+        v = col A' j in gauss_jordan_main 
+        (eliminate_entries v A' i j) (eliminate_entries v B' i j) (Suc i) (Suc j)
     else (A,B))" (is "?l = ?r")
 proof -
-  note simps = gauss_jordan_main_simps'[of A B i j] Let_def
+  note simps = gauss_jordan_main.simps[of A B i j] Let_def
   let ?nr = "dim\<^sub>r A" 
   let ?nc = "dim\<^sub>c A"
   let ?A' = "multrow i (inverse (A $$ (i,j))) A" 
@@ -171,7 +171,7 @@ proof -
     case True
     from True have id: "?A' $$ (i,j) = 1" by auto
     from True have "?l = gauss_jordan_main ?A' ?B' i j" unfolding simps by (simp add: Let_def)
-    also have "\<dots> = ?r" unfolding Let_def gauss_jordan_main_simps'[of ?A' ?B' i j] id 
+    also have "\<dots> = ?r" unfolding Let_def gauss_jordan_main.simps[of ?A' ?B' i j] id 
       using True by simp
     finally show ?thesis .
   qed
