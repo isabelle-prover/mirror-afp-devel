@@ -27,8 +27,8 @@ definition multrow_f :: "nat \<Rightarrow> 'a \<Rightarrow> 'a mat \<Rightarrow>
 definition addrow_f :: "'a \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" where
   [code_unfold]: "addrow_f = mat_addrow_gen (op +f) (op *f)"
 
-definition eliminate_entries_f :: "'a mat \<Rightarrow> 'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> 'a mat" where
-  [code_unfold]: "eliminate_entries_f = eliminate_entries_gen (op +f) (op *f) (ffield.uminus F) 0f"
+definition eliminate_entries_f :: "'a mat \<Rightarrow> nat \<Rightarrow> ('a \<times> nat) list \<Rightarrow> 'a mat" where
+  [code_unfold]: "eliminate_entries_f = eliminate_entries_gen (op +f) (op *f)"
 
 text \<open>@{const gauss_jordan} is not reused from @{theory Gauss_Jordan_Elimination}, as here we take a 
   more efficient version which only works on one matrix.\<close>
@@ -41,9 +41,10 @@ partial_function (tailrec) gauss_jordan_main_f :: "'a mat \<Rightarrow> nat \<Ri
       (case [ i' . i' <- [Suc i ..< nr],  A $$ (i',j) \<noteq> 0f] 
         of [] \<Rightarrow> gauss_jordan_main_f A i (Suc j)
          | (i' # _) \<Rightarrow> gauss_jordan_main_f (swaprows i i' A) i j)
-      else if aij = 1f then let is = filter (\<lambda> i'. i' \<noteq> i) [0 ..< nr] in
+      else if aij = 1f then let 
+        ais = filter (\<lambda> (ai'j,i'). i' \<noteq> i \<and> ai'j \<noteq> 0f) (map (\<lambda> i'. (-f A $$ (i',j), i')) [0 ..< nr]) in
         gauss_jordan_main_f 
-        (eliminate_entries_f A A i j is) (Suc i) (Suc j)
+        (eliminate_entries_f A i ais) (Suc i) (Suc j)
       else let iaij = inverse_f F aij in gauss_jordan_main_f (multrow_f i iaij A) i j
     else A)"
 end

@@ -218,61 +218,54 @@ subsection \<open>Gauss-Jordan Elimination\<close>
 context
   fixes add :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
   and times :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
-  and uminus :: "'a \<Rightarrow> 'a"
-  and zero :: "'a"
 begin
 fun eliminate_entries_gen where
-  "eliminate_entries_gen A B i j [] = B"
-| "eliminate_entries_gen A B i j (i' # is) = (let ai'j = A $$ (i',j) in if ai'j = zero 
-    then eliminate_entries_gen A B i j is
-    else eliminate_entries_gen A (mat_addrow_gen add times (uminus ai'j) i' i B) i j is)"
+  "eliminate_entries_gen B i [] = B"
+| "eliminate_entries_gen B i ((ai'j,i') # is) = ( 
+  eliminate_entries_gen (mat_addrow_gen add times ai'j i' i B) i is)"
 
-lemma dimc_eliminate_entries[simp]: "dim\<^sub>c (eliminate_entries_gen A B i j as) = dim\<^sub>c B"
-  by (induct as arbitrary: A B, auto simp: Let_def)
+lemma dimc_eliminate_entries[simp]: "dim\<^sub>c (eliminate_entries_gen B i as) = dim\<^sub>c B"
+  by (induct as arbitrary: B, auto simp: Let_def)
 
-lemma dimr_eliminate_entries[simp]: "dim\<^sub>r (eliminate_entries_gen A B i j as) = dim\<^sub>r B"
-  by (induct as arbitrary: A B, auto simp: Let_def)
+lemma dimr_eliminate_entries[simp]: "dim\<^sub>r (eliminate_entries_gen B i as) = dim\<^sub>r B"
+  by (induct as arbitrary: B, auto simp: Let_def)
 
-lemma carrier_eliminate_entries: "B \<in> carrier\<^sub>m nr nc \<Longrightarrow> eliminate_entries_gen A B i j as \<in> carrier\<^sub>m nr nc"
+lemma carrier_eliminate_entries: "B \<in> carrier\<^sub>m nr nc \<Longrightarrow> eliminate_entries_gen B i as \<in> carrier\<^sub>m nr nc"
   unfolding mat_carrier_def by simp
 end
 
-abbreviation "eliminate_entries \<equiv> eliminate_entries_gen (op +) (op *) uminus (0 :: 'a :: ring_1)"
+abbreviation "eliminate_entries \<equiv> eliminate_entries_gen (op +) (op * :: 'a :: ring_1 \<Rightarrow> 'a \<Rightarrow> 'a)"
 
-lemma Unit_prod_eliminate_entries: "i < nr \<Longrightarrow> (\<And> i'. i' \<in> set is \<Longrightarrow> i' < nr \<and> i' \<noteq> i)
-  \<Longrightarrow> \<exists> P \<in> Units (ring\<^sub>m TYPE('a :: comm_ring_1) nr b) . \<forall> B nc. B \<in> carrier\<^sub>m nr nc \<longrightarrow> eliminate_entries A B i j is = P \<otimes>\<^sub>m B" 
+lemma Unit_prod_eliminate_entries: "i < nr \<Longrightarrow> (\<And> a i'. (a, i') \<in> set is \<Longrightarrow> i' < nr \<and> i' \<noteq> i)
+  \<Longrightarrow> \<exists> P \<in> Units (ring\<^sub>m TYPE('a :: comm_ring_1) nr b) . \<forall> B nc. B \<in> carrier\<^sub>m nr nc \<longrightarrow> eliminate_entries B i is = P \<otimes>\<^sub>m B" 
 proof (induct "is")
   case Nil
   thus ?case by (intro bexI[of _ "\<one>\<^sub>m nr"], auto simp: Units_def mat_ring_def)
 next
-  case (Cons i' "is")
+  case (Cons ai' "is")
+  obtain a i' where ai': "ai' = (a,i')" by force
   let ?U = "Units (ring\<^sub>m TYPE('a) nr b)"
   interpret m: ring "ring\<^sub>m TYPE('a) nr b" by (rule mat_ring)
-  let ?a = "A $$ (i',j)"
+  from Cons(1)[OF Cons(2-3)] 
+  obtain P where P: "P \<in> ?U" and id: "\<And> B nc . B \<in> carrier\<^sub>m nr nc \<Longrightarrow> 
+    eliminate_entries B i is = P \<otimes>\<^sub>m B" by force
+  let ?Add = "addrow_mat nr a i' i"
+  have Add: "?Add \<in> ?U"
+    by (rule addrow_mat_Unit, insert Cons ai', auto)
+  from m.Units_m_closed[OF P Add] have PI: "P \<otimes>\<^sub>m ?Add \<in> ?U" unfolding mat_ring_def by simp
+  from m.Units_closed[OF P] have P: "P \<in> carrier\<^sub>m nr nr" unfolding mat_ring_def by simp
   show ?case
-  proof (cases "?a = 0")
-    case False
-    from Cons(1)[OF Cons(2-3)] 
-    obtain P where P: "P \<in> ?U" and id: "\<And> B nc . B \<in> carrier\<^sub>m nr nc \<Longrightarrow> 
-      eliminate_entries A B i j is = P \<otimes>\<^sub>m B" by force
-    let ?Add = "addrow_mat nr (- ?a) i' i"
-    have Add: "?Add \<in> ?U"
-      by (rule addrow_mat_Unit, insert Cons, auto)
-    from m.Units_m_closed[OF P Add] have PI: "P \<otimes>\<^sub>m ?Add \<in> ?U" unfolding mat_ring_def by simp
-    from m.Units_closed[OF P] have P: "P \<in> carrier\<^sub>m nr nr" unfolding mat_ring_def by simp
-    show ?thesis
-    proof (rule bexI[OF _ PI], intro allI impI)
-      fix B :: "'a mat" and nc
-      assume BB: "B \<in> carrier\<^sub>m nr nc"
-      let ?B = "addrow (- ?a) i' i B"
-      from BB have B: "?B \<in> carrier\<^sub>m nr nc" by simp
-      from id[OF B] have id: "eliminate_entries A ?B i j is = P \<otimes>\<^sub>m ?B" .
-      from False have id2: "eliminate_entries A B i j (i' # is) = eliminate_entries A ?B i j is" by simp
-      show "eliminate_entries A B i j (i' # is) = P \<otimes>\<^sub>m ?Add \<otimes>\<^sub>m B"
-        unfolding id2 id unfolding addrow_mat[OF BB Cons(2)]
-        by (rule mat_mult_assoc[symmetric, OF P _ BB], auto)
-    qed
-  qed (insert Cons, auto)
+  proof (rule bexI[OF _ PI], intro allI impI)
+    fix B :: "'a mat" and nc
+    assume BB: "B \<in> carrier\<^sub>m nr nc"
+    let ?B = "addrow a i' i B"
+    from BB have B: "?B \<in> carrier\<^sub>m nr nc" by simp
+    from id[OF B] have id: "eliminate_entries ?B i is = P \<otimes>\<^sub>m ?B" .
+    have id2: "eliminate_entries B i (ai' # is) = eliminate_entries ?B i is" unfolding ai' by simp
+    show "eliminate_entries B i (ai' # is) = P \<otimes>\<^sub>m ?Add \<otimes>\<^sub>m B"
+      unfolding id2 id unfolding addrow_mat[OF BB Cons(2)]
+      by (rule mat_mult_assoc[symmetric, OF P _ BB], auto)
+  qed
 qed
 
 function gauss_jordan_main :: "'a :: field mat \<Rightarrow> 'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<times> 'a mat" where
@@ -281,9 +274,10 @@ function gauss_jordan_main :: "'a :: field mat \<Rightarrow> 'a mat \<Rightarrow
       (case [ i' . i' <- [Suc i ..< nr],  A $$ (i',j) \<noteq> 0] 
         of [] \<Rightarrow> gauss_jordan_main A B i (Suc j)
          | (i' # _) \<Rightarrow> gauss_jordan_main (swaprows i i' A) (swaprows i i' B) i j)
-      else if aij = 1 then let is = filter (\<lambda> i'. i' \<noteq> i) [0 ..< nr] in
+      else if aij = 1 then let 
+        Ais = map (\<lambda> i'. (- A $$ (i', j), i')) (filter (\<lambda> i'. i' \<noteq> i \<and> A $$ (i',j) \<noteq> 0) [0 ..< nr]) in
         gauss_jordan_main 
-        (eliminate_entries A A i j is) (eliminate_entries A B i j is) (Suc i) (Suc j)
+        (eliminate_entries A i Ais) (eliminate_entries B i Ais) (Suc i) (Suc j)
       else let iaij = inverse aij in gauss_jordan_main (multrow i iaij A) (multrow i iaij B) i j
     else (A,B))"
   by pat_completeness auto
@@ -304,6 +298,28 @@ proof -
     show "((swaprows i i' A, swaprows i i' B, i, j), A, B, i, j) \<in> ?R" by auto
   qed auto
 qed
+
+lemma gauss_jordan_main_simps': "gauss_jordan_main A B i j = (let nr = dim\<^sub>r A; nc = dim\<^sub>c A in
+    if i < nr \<and> j < nc then let aij = A $$ (i,j) in if aij = 0 then
+      (case [ i' . i' <- [Suc i ..< nr],  A $$ (i',j) \<noteq> 0] 
+        of [] \<Rightarrow> gauss_jordan_main A B i (Suc j)
+         | (i' # _) \<Rightarrow> gauss_jordan_main (swaprows i i' A) (swaprows i i' B) i j)
+      else if aij = 1 then let 
+        Ais = filter (\<lambda> (ai'j,i'). i' \<noteq> i \<and> ai'j \<noteq> 0) (map (\<lambda> i'. (-A $$ (i',j), i')) [0 ..< nr]) in
+        gauss_jordan_main 
+        (eliminate_entries A i Ais) (eliminate_entries B i Ais) (Suc i) (Suc j)
+      else let iaij = inverse aij in gauss_jordan_main (multrow i iaij A) (multrow i iaij B) i j
+    else (A,B))"
+proof -
+  {
+    fix nr
+    have "filter (\<lambda> (ai'j,i'). i' \<noteq> i \<and> ai'j \<noteq> 0) (map (\<lambda> i'. (-A $$ (i',j), i')) nr)
+      = map (\<lambda> i'. (-A $$ (i', j), i')) (filter (\<lambda> i'. i' \<noteq> i \<and> A $$ (i',j) \<noteq> 0) nr)" 
+      by (induct nr, auto)
+  } note id = this
+  show ?thesis unfolding gauss_jordan_main.simps[of A B i j] Let_def id by simp
+qed
+
 
 definition "gauss_jordan A B \<equiv> gauss_jordan_main A B 0 0"
 
@@ -363,7 +379,9 @@ proof -
                 rule mat_mult_assoc[symmetric, OF P _ B], simp)
           next
             case True note O = this
-            let ?E = "\<lambda> B. eliminate_entries A B i j (filter (\<lambda> i'. i' \<noteq> i) [0 ..< nr])"
+            let ?is = "filter (\<lambda> i'. i' \<noteq> i \<and> A $$ (i',j) \<noteq> 0) [0 ..< nr]" 
+            let ?ais = "map (\<lambda> i'. (-A $$ (i',j), i')) ?is" 
+            let ?E = "\<lambda> B. eliminate_entries B i ?ais"
             let ?A = "?E A"
             let ?B = "?E B"
             from O nZ valid res have "gauss_jordan_main ?A ?B (Suc i) (Suc j) = (A',B')"
@@ -585,27 +603,20 @@ lemma pivot_fun_eliminate_rows: assumes p: "pivot_fun A f jj"
   and fl: "f l = jj"
   and nr: "l < nr"
   and jj: "jj \<le> nc"
-  shows "set ks \<subseteq> {0 ..< nr} \<Longrightarrow> pivot_fun (eliminate_entries B A l j ks) f jj"
+  shows "set ks \<subseteq> {0 ..< nr} \<Longrightarrow> pivot_fun (eliminate_entries A l (map (\<lambda> i'. (-B $$ (i',j), i')) ks)) f jj"
   using p d
 proof (induct ks arbitrary: A)
-  case (Cons k ks A)
+  case (Cons k ks A)  
   hence k: "k < nr" and rec: "set ks \<subseteq> {0 ..< nr}" by auto
+  let ?map = "map (\<lambda> i'. (-B $$ (i',j), i'))" 
   note IH = Cons(1)[OF rec]
   note pivot = Cons(3)
   note dim = Cons(4-5)
   let ?b = "B $$ (k, j)"
-  let ?A = "addrow (- ?b) k l A"
-  show ?case
-  proof (cases "?b = 0")
-    case True
-    with IH[OF pivot dim]
-    show ?thesis by simp
-  next
-    case False
-    hence id: "eliminate_entries B A l j (k # ks) = eliminate_entries B ?A l j ks" by simp
-    show ?thesis unfolding id
-      by (rule IH[OF pivot_fun_addrow[OF pivot dim fl k nr jj]], insert dim, auto)
-  qed
+  let ?A = "addrow (-?b) k l A"
+  have id: "eliminate_entries A l (?map (k # ks)) = eliminate_entries ?A l (?map ks)" by simp
+  show ?case unfolding id
+    by (rule IH[OF pivot_fun_addrow[OF pivot dim fl k nr jj]], insert dim, auto)
 qed simp
 
 lemma eliminate_rows_index: assumes d: "dim\<^sub>r A = nr" "dim\<^sub>c A = nc"
@@ -613,11 +624,12 @@ lemma eliminate_rows_index: assumes d: "dim\<^sub>r A = nr" "dim\<^sub>c A = nc"
   and i: "i < nr"
   shows "set ks \<subseteq> {0 ..< nr} \<Longrightarrow> distinct ks \<Longrightarrow> l \<notin> set ks \<Longrightarrow> 
     (\<And> k. k \<in> set ks \<Longrightarrow> B $$ (k,j) = A $$ (k,j)) \<Longrightarrow> B $$ (l,j) = A $$ (l,j) \<Longrightarrow>
-    eliminate_entries B A l j ks $$ (i,j) = (if i \<in> set ks then 0 else A $$ (i,j))"
+    eliminate_entries A l (map (\<lambda> i'. (-B $$ (i',j), i')) ks) $$ (i,j) = (if i \<in> set ks then 0 else A $$ (i,j))"
   using d 
 proof (induct ks arbitrary: A)
   case (Cons k ks A)
   hence k: "k < nr" and rec: "set ks \<subseteq> {0 ..< nr}" by auto
+  let ?map = "map (\<lambda> i'. (-B $$ (i',j), i'))" 
   note IH = Cons(1)[OF rec]
   from Cons(3) have dist: "distinct ks" and kks: "k \<notin> set ks" by auto
   from Cons(4) have l: "l \<noteq> k" "l \<notin> set ks" by auto
@@ -626,37 +638,29 @@ proof (induct ks arbitrary: A)
   note dim = Cons(7-8)
   let ?b = "B $$ (k, j)"
   let ?A = "addrow (- ?b) k l A"
-  show ?case
-  proof (cases "?b = 0")
-    case True
-    with IH[OF dist l(2) eq eq2 dim] eq[of k]
-    show ?thesis by simp
+  have id: "eliminate_entries A l (?map (k # ks)) = eliminate_entries ?A l (?map ks)" by simp
+  from dim have dimA: "dim\<^sub>r ?A = nr" "dim\<^sub>c ?A = nc" by auto
+  show ?case unfolding id
+  proof (subst IH[OF dist l(2) _ _ dimA])
+    show "B $$ (l, j) = ?A $$ (l, j)" unfolding eq2 using dim lj l by auto
+    fix k'
+    assume kk': "k' \<in> set ks"
+    with kks have k': "k' \<noteq> k" "k' \<in> set (k # ks)" by auto
+    show "B $$ (k', j) = ?A $$ (k', j)"
+      unfolding eq[OF k'(2)] using k'(1) dim lj rec kk' by auto
   next
-    case False
-    hence id: "eliminate_entries B A l j (k # ks) = eliminate_entries B ?A l j ks" by simp
-    from dim have dimA: "dim\<^sub>r ?A = nr" "dim\<^sub>c ?A = nc" by auto
-    show ?thesis unfolding id
-    proof (subst IH[OF dist l(2) _ _ dimA])
-      show "B $$ (l, j) = ?A $$ (l, j)" unfolding eq2 using dim lj l by auto
-      fix k'
-      assume kk': "k' \<in> set ks"
-      with kks have k': "k' \<noteq> k" "k' \<in> set (k # ks)" by auto
-      show "B $$ (k', j) = ?A $$ (k', j)"
-        unfolding eq[OF k'(2)] using k'(1) dim lj rec kk' by auto
+    show "(if i \<in> set ks then 0 else ?A $$ (i, j)) =
+      (if i \<in> set (k # ks) then 0 else A $$ (i, j))"
+    proof (cases "i \<in> set (k # ks)")
+      case False
+      thus ?thesis using False k dim i lj by auto
     next
-      show "(if i \<in> set ks then 0 else ?A $$ (i, j)) =
-        (if i \<in> set (k # ks) then 0 else A $$ (i, j))"
-      proof (cases "i \<in> set (k # ks)")
-        case False
-        thus ?thesis using False k dim i lj by auto
-      next
+      case True
+      show ?thesis
+      proof (cases "i = k")
         case True
-        show ?thesis
-        proof (cases "i = k")
-          case True
-          thus ?thesis using kks k dim i lj A by (simp add: eq2 eq)
-        qed (insert True, auto)
-      qed
+        thus ?thesis using kks k dim i lj A by (simp add: eq2 eq)
+      qed (insert True, auto)
     qed
   qed
 qed simp
@@ -743,7 +747,9 @@ proof -
           show ?thesis unfolding id using IH .
         next
           case True note O = this
-          let ?E = "\<lambda> B. eliminate_entries A B i j (filter (\<lambda> i'. i' \<noteq> i) [0 ..< nr])"
+          let ?is = "filter (\<lambda> i'. i' \<noteq> i \<and> A $$ (i',j) \<noteq> 0) [0 ..< nr]" 
+          let ?ais = "map (\<lambda> i'. (-A $$ (i',j), i')) ?is" 
+          let ?E = "\<lambda> B. eliminate_entries B i ?ais"
           let ?A = "?E A"
           let ?B = "?E B"
           def E \<equiv> ?A
