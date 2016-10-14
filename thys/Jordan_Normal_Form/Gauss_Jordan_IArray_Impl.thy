@@ -150,11 +150,11 @@ lemma gauss_jordan_main_code[code]:
       (case [ i' . i' <- [Suc i ..< nr],  A $$ (i',j) \<noteq> 0] 
         of [] \<Rightarrow> gauss_jordan_main A B i (Suc j)
          | (i' # _) \<Rightarrow> gauss_jordan_main (swaprows i i' A) (swaprows i i' B) i j)
-      else if aij = 1 then let v = col A j in
+      else if aij = 1 then let v = (\<lambda> i. A $$ (i,j)) in
         gauss_jordan_main 
         (eliminate_entries v A i j) (eliminate_entries v B i j) (Suc i) (Suc j)
       else let iaij = inverse aij; A' = multrow i iaij A; B' = multrow i iaij B;
-        v = col A' j in gauss_jordan_main 
+        v = (\<lambda> i. A' $$ (i,j)) in gauss_jordan_main 
         (eliminate_entries v A' i j) (eliminate_entries v B' i j) (Suc i) (Suc j)
     else (A,B))" (is "?l = ?r")
 proof -

@@ -225,9 +225,9 @@ context
   and times :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
 begin
 
-definition eliminate_entries_gen :: "'a vec \<Rightarrow> 'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat" where
+definition eliminate_entries_gen :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat" where
   "eliminate_entries_gen v A I J = mat (dim\<^sub>r A) (dim\<^sub>c A) (\<lambda> (i, j).
-     if i \<noteq> I then minus (A $$ (i,j)) (times (v $ i) (A $$ (I,j))) else A $$ (i,j))" 
+     if i \<noteq> I then minus (A $$ (i,j)) (times (v i) (A $$ (I,j))) else A $$ (i,j))" 
 
 lemma dim_eliminate_entries_gen[simp]: "dim\<^sub>r (eliminate_entries_gen v B i as) = dim\<^sub>r B"
   "dim\<^sub>c (eliminate_entries_gen v B i as) = dim\<^sub>c B"
@@ -248,12 +248,12 @@ abbreviation "eliminate_entries \<equiv> eliminate_entries_gen (op -) (op * :: '
 
 lemma eliminate_entries_convert: 
   assumes jA: "J < dim\<^sub>c A" and *: "I < dim\<^sub>r A" "dim\<^sub>r B = dim\<^sub>r A" 
-  shows "eliminate_entries (col A J) B I J = 
+  shows "eliminate_entries (\<lambda> i. A $$ (i,J)) B I J = 
     eliminate_entries_rec B I (map (\<lambda> i. (- A $$ (i, J), i)) (filter (\<lambda> i. i \<noteq> I) [0 ..< dim\<^sub>r A]))"
 proof -
   let ?ais = "\<lambda> is. map (\<lambda> i. (- A $$ (i, J), i)) (filter (\<lambda> i. i \<noteq> I) is)" 
   def one_go \<equiv> "\<lambda> B is. mat (dim\<^sub>r B) (dim\<^sub>c B) (\<lambda> (i, j).
-    if i \<noteq> I \<and> i \<in> set is then B $$ (i,j) - (col A J) $ i * B $$ (I,j) else B $$ (i,j))"
+    if i \<noteq> I \<and> i \<in> set is then B $$ (i,j) - (A $$ (i,J))  * B $$ (I,j) else B $$ (i,j))"
   {
     fix "is" :: "nat list" 
     assume "distinct is"     
@@ -281,7 +281,6 @@ proof -
           hence ii: "ii < dim\<^sub>r B" and jj: "jj < dim\<^sub>c B" and iiA: "ii < dim\<^sub>r A" using dim by auto
           show ?case unfolding mat_index_mat[OF ii jj] split
             mat_index_addrow(1)[OF ii jj] mat_index_addrow(1)[OF II jj]
-            col_index(1)[OF iiA jA]
             using i False by auto 
         qed auto
       next
@@ -336,7 +335,7 @@ function gauss_jordan_main :: "'a :: field mat \<Rightarrow> 'a mat \<Rightarrow
         of [] \<Rightarrow> gauss_jordan_main A B i (Suc j)
          | (i' # _) \<Rightarrow> gauss_jordan_main (swaprows i i' A) (swaprows i i' B) i j)
       else if aij = 1 then let 
-        v = col A j in
+        v = (\<lambda> i. A $$ (i,j)) in
         gauss_jordan_main 
         (eliminate_entries v A i j) (eliminate_entries v B i j) (Suc i) (Suc j)
       else let iaij = inverse aij in gauss_jordan_main (multrow i iaij A) (multrow i iaij B) i j
@@ -422,7 +421,7 @@ proof -
             case True note O = this
             let ?is = "filter (\<lambda> i'. i' \<noteq> i) [0 ..< nr]" 
             let ?ais = "map (\<lambda> i'. (-A $$ (i',j), i')) ?is" 
-            let ?E = "\<lambda> B. eliminate_entries (col A j) B i j"
+            let ?E = "\<lambda> B. eliminate_entries (\<lambda> i. A $$ (i,j)) B i j"
             let ?EE = "\<lambda> B. eliminate_entries_rec B i ?ais"
             let ?A = "?E A"
             let ?B = "?E B"
@@ -709,7 +708,7 @@ proof -
           show ?thesis unfolding id using IH .
         next
           case True note O = this
-          let ?E = "\<lambda> B. eliminate_entries (col A j) B i j" 
+          let ?E = "\<lambda> B. eliminate_entries (\<lambda> i. A $$ (i,j)) B i j" 
           let ?A = "?E A"
           let ?B = "?E B"
           def E \<equiv> ?A

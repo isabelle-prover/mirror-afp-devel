@@ -27,7 +27,7 @@ definition multrow_f :: "nat \<Rightarrow> 'a \<Rightarrow> 'a mat \<Rightarrow>
 definition addrow_f :: "'a \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" where
   [code_unfold]: "addrow_f = mat_addrow_gen (op +f) (op *f)"
 
-definition eliminate_entries_f :: "'a vec \<Rightarrow> 'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat" where
+definition eliminate_entries_f :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat" where
   [code_unfold]: "eliminate_entries_f = eliminate_entries_gen (op -f) (op *f)"
 
 text \<open>@{const gauss_jordan} is not reused from @{theory Gauss_Jordan_Elimination}, as here we take a 
@@ -42,7 +42,7 @@ partial_function (tailrec) gauss_jordan_main_f :: "'a mat \<Rightarrow> nat \<Ri
         of [] \<Rightarrow> gauss_jordan_main_f A i (Suc j)
          | (i' # _) \<Rightarrow> gauss_jordan_main_f (swaprows i i' A) i j)
       else if aij = 1f then let 
-        v = col A j in
+        v = (\<lambda> i. A $$ (i,j)) in
         gauss_jordan_main_f 
         (eliminate_entries_f v A i j) (Suc i) (Suc j)
       else let iaij = inverse_f F aij in gauss_jordan_main_f (multrow_f i iaij A) i j
