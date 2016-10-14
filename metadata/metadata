@@ -4791,3 +4791,26 @@ topic = Mathematics/Analysis
 abstract =
   Lp is the space of functions whose p-th power is integrable. It is one of the most fundamental Banach spaces that is used in analysis and probability. We develop a framework for function spaces, and then implement the Lp spaces in this framework using the existing integration theory in Isabelle/HOL. Our development contains most fundamental properties of Lp spaces, notably the Hölder and Minkowski inequalities, completeness of Lp, duality, stability under almost sure convergence, multiplication of functions in Lp and Lq, stability under conditional expectation.
 
+[Berlekamp_Zassenhaus]
+title = The Factorization Algorithm of Berlekamp and Zassenhaus
+author = Jose Divasón <http://www.unirioja.es/cu/jodivaso>, Sebastiaan Joosten <mailto:sebastiaan.joosten@uibk.ac.at>, René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
+notify = rene.thiemann@uibk.ac.at
+date = 2016-10-14
+topic = Mathematics/Algebra
+abstract =
+  <p>We formalize the Berlekamp-Zassenhaus algorithm for factoring
+  square-free integer polynomials in Isabelle/HOL. We further adapt an
+  existing formalization of Yun’s square-free factorization algorithm to
+  integer polynomials, and thus provide an efficient and certified
+  factorization algorithm for arbitrary univariate polynomials. 
+  </p>
+  <p>The algorithm first performs a factorization in the prime field GF(p) and
+  then performs computations in the integer ring modulo p^k, where both
+  p and k are determined at runtime. Since a natural modeling of these
+  structures via dependent types is not possible in Isabelle/HOL, we
+  formalize the whole algorithm using Isabelle’s recent addition of
+  local type definitions. 
+  </p>
+  <p>Through experiments we verify that our algorithm factors polynomials of degree 
+  100 within seconds.
+  </p>

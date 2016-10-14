@@ -1,0 +1,52 @@
+chapter AFP
+
+session Berlekamp_Zassenhaus (AFP) = Pre_BZ +
+  description {* Berlekamp-Zassenhaus's Factorization Algorithm *}
+  options [timeout = 1200]
+  theories
+    (* Arithmetic for Finite Fields *)
+    Finite_Field
+    Finite_Field_Record_Based
+    Arithmetic_Record_Based
+    Matrix_Record_Based
+    Poly_Mod
+    Poly_Mod_Finite_Field
+    Poly_Mod_Finite_Field_Record_Based
+    Polynomial_Record_Based
+
+    (* Berlekamp's Factorization Algorithm *)
+      Chinese_Remainder_Poly
+    Berlekamp_Type_Based
+    Berlekamp_Record_Based
+
+    (* Hensel Lifting *)
+    Hensel_Lifting_Type_Based
+    Hensel_Lifting
+      Berlekamp_Hensel
+
+    (* Zassenhaus Reconstruction *)
+      Square_Free_Int_To_Square_Free_GFp
+      Suitable_Prime
+      Degree_Bound
+      Factor_Bound
+      Sublist_Iteration
+    Reconstruction
+
+    (* An Efficient Algorithm for Integer Polynomials *)
+    Berlekamp_Zassenhaus
+    Square_Free_Factorization_Int
+    Factorize_Int_Poly
+    Factorize_Rat_Poly
+
+  document_files
+    "root.bib"
+    "root.tex" 
+
+session Pre_BZ (AFP) = "Polynomial_Factorization" +
+  options [document=false]
+  theories
+    "../Jordan_Normal_Form/Matrix_Kernel"
+    "../Algebraic_Numbers/Resultant"
+    "../Efficient-Mergesort/Efficient_Sort"
+    "~~/src/HOL/Number_Theory/Residues"
+    "../Perron_Frobenius/Types_To_Sets/Types_To_Sets"
