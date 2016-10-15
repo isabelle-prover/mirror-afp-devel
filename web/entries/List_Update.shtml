@@ -48,12 +48,14 @@ of
 
 <p>
 These theories formalize the quantitative analysis of a number of classical algorithms for the list update problem: 2-competitiveness of move-to-front, the lower bound of 2 for the competitive- ness of deterministic list update algorithms and 1.6-competitiveness of the randomized COMB algorithm, the best randomized list update algorithm known to date.
-</p>
-<p>
-An informal description is found in an accompanying
-<a href="http://www.in.tum.de/~nipkow/pubs/list_update.pdf">report</a>.
 The material is based on the first two chapters of <i>Online Computation
 and Competitive Analysis</i> by Borodin and El-Yaniv.
+</p>
+<p>
+For an informal description see the FSTTCS 2016 publication
+<a href="http://www.in.tum.de/~nipkow/pubs/fsttcs16.pdf">Verified Analysis of List Update Algorithms</a>
+by Haslbeck and Nipkow.
+report</a>.
 </p>
         </td></tr>
 
