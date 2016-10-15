@@ -219,8 +219,17 @@ private abbreviation (input) inverse where "inverse \<equiv> arith_ops_record.in
 private abbreviation (input) modulo where "modulo \<equiv> arith_ops_record.modulo ops"
 private abbreviation (input) normalize where "normalize \<equiv> arith_ops_record.normalize ops"
 
-definition eliminate_entries_i where "eliminate_entries_i \<equiv> eliminate_entries_gen minus times"
+definition eliminate_entries_gen_zero :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat" where
+  "eliminate_entries_gen_zero minu time z v A I J = mat (dim\<^sub>r A) (dim\<^sub>c A) (\<lambda> (i, j).
+     if v i \<noteq> z \<and> i \<noteq> I then minu (A $$ (i,j)) (time (v i) (A $$ (I,j))) else A $$ (i,j))" 
+  
+definition eliminate_entries_i where "eliminate_entries_i \<equiv> eliminate_entries_gen_zero minus times zero"
 definition multrow_i where "multrow_i \<equiv> mat_multrow_gen times"
+  
+lemma dim_eliminate_entries_gen_zero[simp]:
+  "dim\<^sub>r (eliminate_entries_gen_zero mm tt z v B i as) = dim\<^sub>r B"
+  "dim\<^sub>c (eliminate_entries_gen_zero mm tt z v B i as) = dim\<^sub>c B"
+  unfolding eliminate_entries_gen_zero_def by auto
 
 partial_function (tailrec) gauss_jordan_main_i :: "nat \<Rightarrow> nat \<Rightarrow> 'i mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'i mat" where
   [code]: "gauss_jordan_main_i nr nc A i j = (
@@ -253,7 +262,6 @@ begin
 lemma right_total_poly_rel[transfer_rule]: "right_total (mat_rel R)"
   using right_total_mat_rel[of R] right_total .
 
-
 lemma bi_unique_poly_rel[transfer_rule]: "bi_unique (mat_rel R)"
   using bi_unique_mat_rel[of R] bi_unique .
 
@@ -264,13 +272,26 @@ lemma multrow_i[transfer_rule]: "(op = ===> R ===> mat_rel R ===> mat_rel R)
   (multrow_i ops) multrow" 
   using multrow_transfer[of R] times unfolding multrow_i_def rel_fun_def by blast  
 
+lemma eliminate_entries_gen_zero[simp]:
+  assumes "mat_rel R A A'" "I < dim\<^sub>r A'" shows
+  "eliminate_entries_gen_zero minus times zero v A I J = eliminate_entries_gen minus times v A I J"
+  unfolding eliminate_entries_gen_def eliminate_entries_gen_zero_def
+proof(standard,goal_cases)
+  case (1 i j)
+  have d1:"DP (A $$ (I, j))" and d2:"DP (A $$ (i, j))" using assms DPR 1
+    unfolding mat_rel_def mat_dim_col_mat mat_dim_row_mat
+    by (metis Domainp.DomainI)+
+  have e1:"\<And> x. (0::'a) * x = 0" and e2:"\<And> x. x - (0::'a) = x" by auto
+  from e1[untransferred,OF d1] e2[untransferred,OF d2] 1 show ?case by auto
+qed auto
+
 lemma eliminate_entries_i: assumes  
   vs: "\<And> j. j < dim\<^sub>r B' \<Longrightarrow> R (vs j) (vs' j)" 
   and i: "i < dim\<^sub>r B'"  
   and B: "mat_rel R B B'"  
   shows "mat_rel R (eliminate_entries_i ops vs B i j) 
     (eliminate_entries vs' B' i j)"
-  unfolding eliminate_entries_i_def
+  unfolding eliminate_entries_i_def eliminate_entries_gen_zero[OF B i]
   by (rule eliminate_entries_gen_transfer, insert assms, auto simp: plus times minus)
 
 lemma gauss_jordan_main_i:  
@@ -403,5 +424,78 @@ end
 lemma list_of_vec_transfer[transfer_rule]: "(vec_rel A ===> list_all2 A) list_of_vec list_of_vec"
   unfolding rel_fun_def vec_rel_def vec_eq_iff list_all2_conv_all_nth
   by (auto, (transfer, auto)+)
+
+(* better code equation for eliminition_entries_i *)
+
+lift_definition eliminate_entries_i2 ::
+  "'a \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a mat_impl \<Rightarrow> nat \<Rightarrow> 'a mat_impl" is
+  "\<lambda> z mminus ttimes v (nr, nc, a) i'.
+   (nr,nc,let ai' = IArray.sub a i' in (IArray.of_fun (\<lambda> i. 
+     let ai = IArray.sub a i; vi'j = v i 
+     in if vi'j = z \<or> i = i' then ai
+        else 
+             IArray.of_fun (\<lambda> j. mminus (IArray.sub ai j) (ttimes vi'j (IArray.sub ai' j))) nc
+       ) nr))" 
+proof(goal_cases)
+  case (1 z mm tt  vec prod nat2)
+  thus ?case by(cases prod;cases "snd (snd prod)";auto simp:Let_def)
+qed
+
+lemma eliminate_entries_gen_zero [simp]:
+  assumes "i<(dim\<^sub>r A)" "j<(dim\<^sub>c A)" shows
+  "eliminate_entries_gen_zero mminus ttimes z v A I J $$ (i, j) =
+   (if v i = z \<or> i = I then A $$ (i,j) else mminus (A $$ (i,j)) (ttimes (v i) (A $$ (I,j))))"
+using assms unfolding eliminate_entries_gen_zero_def by(auto)
+
+
+lemma eliminate_entries_gen [simp]:
+  assumes "i<(dim\<^sub>r A)" "j<(dim\<^sub>c A)" shows
+  "eliminate_entries_gen mminus ttimes v A I J $$ (i, j) =
+   (if i = I then A $$ (i,j) else mminus (A $$ (i,j)) (ttimes (v i) (A $$ (I,j))))"
+using assms unfolding eliminate_entries_gen_def by(auto)
+
+lemma dim_mat_impl [simp]:
+  "dim\<^sub>r (mat_impl x) = mat_dim_row_impl x"
+  "dim\<^sub>c (mat_impl x) = mat_dim_col_impl x"
+  by (cases "Rep_mat_impl x";auto simp:mat_impl.rep_eq mat_dim_row_def mat_dim_col_def mat_dim_row_impl.rep_eq mat_dim_col_impl.rep_eq)+
+
+lemma dim_eliminate_entries_i2 [simp]:
+  "mat_dim_row_impl (eliminate_entries_i2 z mm tt v m i) = mat_dim_row_impl m"
+  "mat_dim_col_impl (eliminate_entries_i2 z mm tt v m i) = mat_dim_col_impl m"
+  by (transfer, auto)+
+
+lemma eliminate_entries_i2[code]:"eliminate_entries_gen_zero mm tt z v (mat_impl m) i j
+   = (if i < mat_dim_row_impl m 
+     then mat_impl (eliminate_entries_i2 z mm tt v m i)
+     else (Code.abort (STR ''index out of range in eliminate_entries'') 
+       (\<lambda> _. eliminate_entries_gen_zero mm tt z v (mat_impl m) i j)))"
+proof (cases "i < mat_dim_row_impl m")
+  case True
+  hence id: "(i < mat_dim_row_impl m) = True" by simp
+  show ?thesis unfolding id if_True
+  proof (standard;goal_cases)
+    case (1 i j)
+    have dims: "i < dim\<^sub>r (mat_impl m)" "j < dim\<^sub>c (mat_impl m)" using 1 by (auto simp:eliminate_entries_i2.rep_eq)
+    then show ?case unfolding eliminate_entries_gen_zero[OF dims] using True
+    proof(transfer, goal_cases)
+      case (1 i m j ia v z mm tt)
+      obtain nr nc M where m: "m = (nr,nc,M)" by (cases m) 
+      note 1 = 1[unfolded m, simplified]
+      have mk: "\<And> f. mk_mat nr nc f (i,j) = f (i,j)" 
+         "\<And> f. mk_mat nr nc f (ia,j) = f (ia,j)" 
+        using 1 unfolding mk_mat_def mk_vec_def by auto
+      note of_fun = of_fun_nth[OF 1(2)] of_fun_nth[OF 1(3)]
+      show ?case
+      proof (cases "i = ia")
+        case True
+        thus ?thesis unfolding m o_def Let_def split snd_conv mk of_fun by auto
+      next
+        case False
+        hence id: "(i = ia) = False" by auto
+        show ?thesis unfolding m o_def Let_def split snd_conv mk of_fun id if_False by (auto simp:1)
+      qed
+    qed  
+  qed (auto simp:eliminate_entries_i2.rep_eq)
+qed auto
 
 end
