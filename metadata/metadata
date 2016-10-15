@@ -474,7 +474,6 @@ abstract =
 	For an informal description see the FSTTCS 2016 publication
         <a href="http://www.in.tum.de/~nipkow/pubs/fsttcs16.pdf">Verified Analysis of List Update Algorithms</a>
         by Haslbeck and Nipkow.
-	report</a>.
 	</p>
 notify = nipkow@in.tum.de
 
