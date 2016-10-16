@@ -120,7 +120,7 @@ proof (cases "A = B")
   from this \<open>u \<le> 1\<close> X that show thesis by blast
 next
   assume "A = B"
-  def u \<equiv> "1::real"
+  define u :: real where "u = 1"
   from \<open>between (A, B) X\<close> \<open>A = B\<close> have "1 / 2 \<le> u" "u \<le> 1" "X = u *\<^sub>R A + (1 - u) *\<^sub>R B"
     unfolding u_def by (auto simp add: between_same)
   from this that show thesis by blast
@@ -274,7 +274,7 @@ proof (cases "A = B")
 next
   assume "A = B"
   from this show ?thesis
-    by (simp add: midpoint_refl orthogonal_clauses(1))
+    by (simp add: orthogonal_clauses(1))
 qed
 
 subsection \<open>Properties of Chord Segments\<close>
@@ -285,7 +285,7 @@ lemma chord_property:
   assumes "between (S, T) X"
   shows "dist S X * dist X T = (dist C S) ^ 2 - (dist C X) ^ 2"
 proof -
-  def M \<equiv> "midpoint S T"
+  define M where "M = midpoint S T"
   have "between (S, T) M"
     unfolding M_def by (simp add: between_midpoint(1))
   have "dist T M = dist S M"
