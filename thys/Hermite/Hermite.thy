@@ -189,11 +189,9 @@ lemma dvd_minus_eq_mod:
 
 lemma eq_mod_dvd_minus:
   fixes c::"'a::ring_div"
-  assumes "c \<noteq> 0"and "a mod c = b mod c" 
+  assumes "c \<noteq> 0" and "a mod c = b mod c" 
   shows "c dvd a - b"
-  using assms
-  by (metis (no_types, hide_lams) add.commute diff_0 diff_add_cancel 
-      diff_minus_eq_add dvd_eq_mod_eq_0 mod_0 mod_add_right_eq)
+  using assms by (simp add: dvd_eq_mod_eq_0 mod_diff_eq)
 
 lemma dvd_cong_not_eq_mod:
   fixes c::"'a::ring_div"
