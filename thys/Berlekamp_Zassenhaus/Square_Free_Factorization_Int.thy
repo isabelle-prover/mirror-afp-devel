@@ -359,7 +359,7 @@ proof -
   have "(a > 0) = (b > 0)" by (simp add: zero_less_mult_iff)
   with a b abs have "a = b" by auto
   with arg_cong[OF fg, of "\<lambda> x. x div [:b:]"] b show ?thesis
-    by (metis nonzero_mult_divide_cancel_left pCons_eq_0_iff)
+    by (metis nonzero_mult_div_cancel_left pCons_eq_0_iff)
 qed
 
 

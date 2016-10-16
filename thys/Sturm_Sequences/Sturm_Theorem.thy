@@ -425,7 +425,7 @@ next
 
               with sgn_r p_not_0 r_not_0 A B
                   have "poly r x * poly p x < 0" "poly r x \<noteq> 0"
-                  by (metis sgn_less sgn_times, metis sgn_0_0)
+                  by (metis sgn_less sgn_mult, metis sgn_0_0)
               with sgn_r show sgn_r': "sgn (poly r x) = - sgn (poly p x)"
                   apply (simp add: sgn_real_def not_le not_less
                              split: if_split_asm, intro conjI impI)

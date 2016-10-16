@@ -612,7 +612,7 @@ proof (intro sign_changes_cong, induction p)
   case (pCons c p)
   have "map sgn (coeffs (reduce_root a (pCons c p))) = 
              cCons (sgn c) (map sgn (coeffs (reduce_root a p)))"
-    using assms by (auto simp add: cCons_def sgn_0_0 sgn_times reduce_root_pCons coeffs_smult)
+    using assms by (auto simp add: cCons_def sgn_0_0 sgn_mult reduce_root_pCons coeffs_smult)
   also note pCons.IH
   also have "cCons (sgn c) (map sgn (coeffs p)) = map sgn (coeffs (pCons c p))"
     using assms by (auto simp add: cCons_def sgn_0_0)
@@ -627,7 +627,7 @@ text \<open>
 lemma coeff_sign_changes_smult: 
   assumes "a > (0 :: 'a :: linordered_idom)"
   shows   "coeff_sign_changes (smult a p) = coeff_sign_changes p"
-  using assms by (auto intro!: sign_changes_cong simp: sgn_times coeffs_smult)
+  using assms by (auto intro!: sign_changes_cong simp: sgn_mult coeffs_smult)
 
 
 context

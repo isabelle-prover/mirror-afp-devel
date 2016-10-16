@@ -171,7 +171,7 @@ lemma inverse2:"rat_poly_times B A = 1"
 
 lemma B_non_zero:"B \<noteq> 0"
  using A_non_zero mult_inv_non_zero inverse1 
-       divide_fract divide_zero_left fract_collapse(2) 
+       divide_fract div_0 fract_collapse(2) 
        monoid_mult_class.mult.left_neutral 
        mult_fract_cancel non_zero var_def2 zero_neq_one
  by (metis (hide_lams, mono_tags))

@@ -1111,7 +1111,7 @@ instance proof
     have "(1/2)^n * min (dist (x (from_nat n)) (y (from_nat n))) 1 = 0" for n
       using `dist x y = 0` unfolding dist_fun_def by (simp add: "*" suminf_eq_zero_iff)
     then have "dist (x (from_nat n)) (y (from_nat n)) = 0" for n
-      by (metis divide_zero_left min_def nonzero_mult_divide_cancel_left power_eq_0_iff
+      by (metis div_0 min_def nonzero_mult_div_cancel_left power_eq_0_iff
                 zero_eq_1_divide_iff zero_neq_numeral)
     then have "x (from_nat n) = y (from_nat n)" for n
       by auto

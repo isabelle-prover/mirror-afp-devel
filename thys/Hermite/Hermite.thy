@@ -351,7 +351,7 @@ lemma ass_function_0':
   assumes r: "ass_function ass"
   shows "(ass x div x = 0) = (x=0)"
   using assms unfolding ass_function_def pairwise_def
-  by (metis ass_function_0 associatedD2 div_self divide_zero dvd_normalize_div
+  by (metis ass_function_0 associatedD2 div_self div_by_0 dvd_normalize_div
             normalize_0 normalize_1 one_neq_zero r)
 
 
@@ -1640,7 +1640,7 @@ proof -
     have "\<forall>b ba. \<exists>bb. ba + bb * b = res b ba"
       using r unfolding res_function_def by metis
     thus ?thesis using rw unfolding image_def Hii row_add_def by auto
-      (metis (lifting) add_diff_cancel_left' div_mult_self1_is_id mult.commute mult_eq_0_iff)
+      (metis (lifting) add_diff_cancel_left' nonzero_mult_div_cancel_left mult.commute mult_eq_0_iff)
   qed
 qed
 

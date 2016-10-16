@@ -16,7 +16,7 @@ lemma div_Suc:
 proof(simp add: mod_Suc split: if_split, intro conjI impI)
   assume "Suc (m mod n) = n"
   thus "Suc m div n = Suc (m div n)"
-    by (metis Divides.mod_less Divides.mult_div_cancel diff_Suc_Suc div_mult_self2_is_id
+    by (metis Divides.mod_less Divides.mult_div_cancel diff_Suc_Suc nonzero_mult_div_cancel_right
       le_div_geq mod_Suc_eq_Suc_mod mod_self mult.commute neq0_conv not_less old.nat.distinct(2))
 next
   assume "Suc (m mod n) \<noteq> n"

@@ -601,7 +601,7 @@ proof -
   def c \<equiv> "int_of_rat (rat_of_int a / rat_of_int b)"
   have "rat_of_int a / rat_of_int b = rat_of_int c" unfolding c_def using assms(1) by simp
   hence "rat_of_int a = rat_of_int b * rat_of_int c" using assms(2)
-    by (metis divide_cancel_right nonzero_mult_divide_cancel_left of_int_eq_0_iff)
+    by (metis divide_cancel_right nonzero_mult_div_cancel_left of_int_eq_0_iff)
   hence a: "a = b * c" by (simp add: ri.hom_inj)
   from div_mod_equality[of a b 0] show "a mod b = 0" unfolding a by simp
 qed

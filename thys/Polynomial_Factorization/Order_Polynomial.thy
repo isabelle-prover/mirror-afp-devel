@@ -145,7 +145,7 @@ proof (cases "p = 0")
     have ord: "order a p = order a [: -a, 1 :] + order a q"
       using p False order_mult[of "[: -a, 1 :]" q] by auto
     have q: "p div [: -a, 1 :] = q" using False p 
-      by (metis mult_zero_left nonzero_mult_divide_cancel_left)
+      by (metis mult_zero_left nonzero_mult_div_cancel_left)
     show ?thesis unfolding ord q using False True by auto
   next
     case False

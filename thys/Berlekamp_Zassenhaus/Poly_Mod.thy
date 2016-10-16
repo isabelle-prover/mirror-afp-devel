@@ -211,7 +211,7 @@ lemma irreducible_dvd_prod_mset: fixes p :: "'a :: {field,factorial_ring_gcd} po
 proof -
   from irr[unfolded irreducible_def] have deg: "degree p \<noteq> 0" by auto
   hence p1: "\<not> p dvd 1" unfolding dvd_def
-    by (metis degree_1 div_mult_self1_is_id div_poly_less linorder_neqE_nat mult_not_zero not_less0 zero_neq_one)
+    by (metis degree_1 nonzero_mult_div_cancel_left div_poly_less linorder_neqE_nat mult_not_zero not_less0 zero_neq_one)
   from dvd show ?thesis
   proof (induct as)
     case (add a as)

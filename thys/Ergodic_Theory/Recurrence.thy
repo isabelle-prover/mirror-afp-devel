@@ -147,7 +147,7 @@ proof (rule conservative_mptI)
       obtain N::nat where "N>0" "(measure M (space M))/e<N" using `0 < e`
         by (metis divide_less_0_iff reals_Archimedean2 less_eq_real_def measure_nonneg not_gr0 not_le of_nat_0)
       then have "(measure M (space M))/N < e" using `0 < e` `N>0`
-        by (metis bounded_measure divide_zero_left le_less_trans measure_empty mult.commute pos_divide_less_eq)
+        by (metis bounded_measure div_0 le_less_trans measure_empty mult.commute pos_divide_less_eq)
       have *: "disjoint_family_on B {..<N}"
         by (meson UNIV_I `disjoint_family B` disjoint_family_on_mono subsetI)
       then have "(\<Sum>i\<in>{..<N}. measure M (B i)) \<le> measure M (space M)"

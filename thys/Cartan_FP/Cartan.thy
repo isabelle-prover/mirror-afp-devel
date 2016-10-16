@@ -416,7 +416,7 @@ proof -
     if "0 \<le> c" "\<And>x. 0 \<le> x \<Longrightarrow> x < r \<Longrightarrow> c * x < r" for c
   proof -
     have rst: "\<And>r s t::real. 0 = r \<or> s/r < t \<or> r < 0 \<or> \<not> s < r * t"
-      by (metis (no_types) mult_less_cancel_left_disj nonzero_mult_divide_cancel_left times_divide_eq_right)
+      by (metis (no_types) mult_less_cancel_left_disj nonzero_mult_div_cancel_left times_divide_eq_right)
     { assume "\<not> r < c \<and> c * (c * (c * (c * r))) < 1"
      then have "1 \<le> c \<Longrightarrow> (\<exists>r. \<not> 1 < r \<and> \<not> r < c)"
           using \<open>0 \<le> c\<close> by (metis (full_types) less_eq_real_def mult.right_neutral mult_left_mono not_less)
@@ -427,7 +427,7 @@ proof -
           using \<open>0 < r\<close> by force
       then have "1 < c \<Longrightarrow> \<not> 1 \<le> c"
         using rst \<open>0 < r\<close> that
-        by (metis divide_1 frac_less2 less_le_trans mult.commute not_le order_refl pos_divide_le_eq zero_less_one) }
+        by (metis div_by_1 frac_less2 less_le_trans mult.commute not_le order_refl pos_divide_le_eq zero_less_one) }
     ultimately show ?thesis
       by (metis (no_types) linear not_less)
   qed
@@ -470,7 +470,7 @@ proof -
       apply (simp add: dist_norm norm_mult norm_divide)
       done
     have "f(u * g z) = u * z"
-      by (metis \<open>u \<noteq> 0\<close> fugeq nonzero_mult_divide_cancel_left z times_divide_eq_right)
+      by (metis \<open>u \<noteq> 0\<close> fugeq nonzero_mult_div_cancel_left z times_divide_eq_right)
     also have "... = f (g (u * z))"
       by (metis (no_types, lifting) fg mem_ball_0 mult_cancel_right2 norm_mult nou z)
     finally have "f(u * g z) = f (g (u * z))" .

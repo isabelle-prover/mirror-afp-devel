@@ -642,7 +642,7 @@ proof -
       from dvd_imp_mult_div_cancel_left[OF coeff_0_0_implies_x_dvd[OF this]]
       have "?p = ?hx * hq" unfolding hq_def by auto
       with id' have "?hx * (?h q) = ?hx * hq" by auto
-      from arg_cong[OF this, of "\<lambda> x. x div ?hx", unfolded nonzero_mult_divide_cancel_left[OF hx]]
+      from arg_cong[OF this, of "\<lambda> x. x div ?hx", unfolded nonzero_mult_div_cancel_left[OF hx]]
       have id: "?h q = hq".
       have "?thesis = (eliminate_zero_divisors (?p div ?hx)
         = ?h (eliminate_zero_divisors (p div ?x)))"

@@ -18,7 +18,7 @@ lemma power_div_nat:
   assumes "c \<le> b"
   assumes "a > 0"
   shows  "(a :: nat) ^ b div a ^ c = a ^ (b - c)"
-by (metis assms div_mult_self2_is_id le_add_diff_inverse2 less_not_refl2 power_add power_not_zero)
+by (metis assms nonzero_mult_div_cancel_right le_add_diff_inverse2 less_not_refl2 power_add power_not_zero)
 
 subsubsection {* Additions to Groups-Big Theory *}
 
@@ -281,7 +281,7 @@ next
   from assms(1) obtain j where "p (2 ^ j * i) \<noteq> 0"
     unfolding odd_of_distinct_def by (auto split: if_split_asm) fastforce
   from assms(2)[OF this] show "i \<le> n"
-    by (metis div_le_dividend div_mult_self1_is_id le_trans power_not_zero zero_not_eq_two)
+    by (metis div_le_dividend nonzero_mult_div_cancel_left le_trans power_not_zero zero_not_eq_two)
 qed
 
 lemma distinct_of_odd:

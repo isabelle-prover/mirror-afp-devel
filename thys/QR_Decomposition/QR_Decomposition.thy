@@ -477,7 +477,7 @@ proof -
     unfolding inner_add_right ..
   also have "... = (1/(norm ?uk)) * (?uk \<bullet> ?uk)" unfolding setsum_rw by auto
   also have "... = norm ?uk"
-    by (metis abs_of_nonneg divide_eq_imp divide_zero inner_commute inner_ge_zero inner_real_def 
+    by (metis abs_of_nonneg divide_eq_imp div_by_0 inner_commute inner_ge_zero inner_real_def 
       norm_mult_vec real_inner_1_right real_norm_def times_divide_eq_right)
   finally show ?thesis ..
 qed

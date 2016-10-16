@@ -38,7 +38,7 @@ proof-
   thus "q*q dvd (q * pderiv p - p * pderiv q)" by simp
   note 0 = pderiv_mult[of q "p div q"]
   have 1: "q * (p div q) = p" 
-    by (metis assms(1) assms(2) dvd_def nonzero_mult_divide_cancel_left)
+    by (metis assms(1) assms(2) dvd_def nonzero_mult_div_cancel_left)
   have f1: "pderiv (p div q) * (q * q) div (q * q) = pderiv (p div q)"
     by simp
   have f2: "pderiv p = q * pderiv (p div q) + p div q * pderiv q"
@@ -402,7 +402,7 @@ lemma poly_inf_mult[simp]:
         "poly_neg_inf (p*q) = poly_neg_inf p * poly_neg_inf q"
 unfolding poly_inf_def poly_neg_inf_def
 by ((cases "p = 0 \<or> q = 0",auto simp: sgn_zero_iff
-         degree_mult_eq[of p q] coeff_mult_degree_sum sgn_mult)[])+
+         degree_mult_eq[of p q] coeff_mult_degree_sum Real_Vector_Spaces.sgn_mult)[])+
 
 
 lemma poly_neq_0_at_infinity:

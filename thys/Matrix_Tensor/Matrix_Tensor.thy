@@ -2427,7 +2427,7 @@ proof(cases "b*c = 0")
    then have "a div c = (((x*b)*c) div c) + ((a mod (b*c)) div c)"
        by auto
    then have F_2:"a div c = (x*b) + ((a mod (b*c)) div c)"    
-       by (metis F_1 div_mult_self1_is_id mult.commute neq0_conv)
+       by (metis F_1 nonzero_mult_div_cancel_left mult.commute neq0_conv)
    have "\<exists>y. a div c = (y*b) + ((a div c) mod b)"
        by (metis add.commute mod_div_equality3)
    then obtain y where "a div c = (y*b) + ((a div c) mod b)"
@@ -2445,7 +2445,7 @@ proof(cases "b*c = 0")
    have "b*c > (a mod (b*c))"
       by (metis False mod_less_divisor neq0_conv)
    moreover then have "(b*c) div c > (a mod (b*c)) div c"
-      by (metis F_1 div_left_ineq div_mult_self2_is_id neq0_conv)
+      by (metis F_1 div_left_ineq nonzero_mult_div_cancel_right neq0_conv)
    then have "b > (a mod (b*c)) div c"
       by (metis calculation div_right_ineq mult.commute)
    with F_4 F_5 
@@ -2463,7 +2463,7 @@ proof(cases "b*c = 0")
    have "b*c > (a mod (b*c))"
      by (metis False mod_less_divisor neq0_conv)
    moreover then have "(b*c) div c > (a mod (b*c)) div c"
-     by (metis F_1 div_left_ineq  div_mult_self2_is_id neq0_conv)
+     by (metis F_1 div_left_ineq  nonzero_mult_div_cancel_right neq0_conv)
    then have "b > (a mod (b*c)) div c"
      by (metis calculation div_right_ineq  mult.commute)
    with F_7 F_8 

@@ -132,7 +132,7 @@ proof -
       dot_scaleR_mult
       power2_eq_square
       algebra_simps)
-  also have "\<dots> = sgn (j\<^sup>2) * sgn (v \<bullet> (M *v v))" by (rule sgn_times)
+  also have "\<dots> = sgn (j\<^sup>2) * sgn (v \<bullet> (M *v v))" by (rule sgn_mult)
   also from `j\<^sup>2 > 0` have "\<dots> = sgn (v \<bullet> (M *v v))" by simp
   finally show "conic_sgn (proj2_abs v) = sgn (v \<bullet> (M *v v))" .
 qed
@@ -4803,7 +4803,7 @@ proof -
     by simp
   hence "sqrt ?pqab = ?ab + sqrt (?ab\<^sup>2 - 1)
     \<or> sqrt ?pqab = ?ab - sqrt (?ab\<^sup>2 - 1)"
-    by (simp only: nonzero_mult_divide_cancel_left [of 2])
+    by (simp only: nonzero_mult_div_cancel_left [of 2])
 
   from `are_endpoints_in_S p q a b`
   have "a \<in> hyp2" and "b \<in> hyp2" by (unfold are_endpoints_in_S_def) simp_all

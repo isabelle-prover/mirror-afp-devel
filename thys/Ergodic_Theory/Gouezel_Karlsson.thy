@@ -1077,7 +1077,7 @@ proof -
       then have "card ({n \<in> {Nf 1..}. \<exists>l\<in>{1..n}. u n x - u (n-l) x \<le> - (c0 * l)} \<inter> {..<B}) = 0"
         by auto
       also have "... \<le> (d2/2) * B"
-        by (metis \<open>0 < d2 / 2\<close> divide_le_eq divide_zero_left linordered_field_class.sign_simps(24) of_nat_0 of_nat_0_le_iff)
+        by (metis \<open>0 < d2 / 2\<close> divide_le_eq div_0 linordered_field_class.sign_simps(24) of_nat_0 of_nat_0_le_iff)
       finally show ?thesis by simp
     qed
 

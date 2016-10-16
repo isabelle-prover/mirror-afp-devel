@@ -456,7 +456,7 @@ qed
 
 lemma p_div_gcd_p_pderiv: "p div (gcd p (pderiv p)) = (\<Prod>(a, i)\<in>as. a)"
   unfolding pderiv_exp_gcd unfolding poly_exp_expand
-  by (rule div_mult_self1_is_id, insert monic_prod, auto)
+  by (rule nonzero_mult_div_cancel_left, insert monic_prod, auto)
 
 fun A B C D :: "nat \<Rightarrow> 'a poly" where
   "A n = gcd (B n) (D n)"
@@ -510,16 +510,16 @@ next
   have id: "(\<Prod>(a, i)\<in>as - UNIV \<times> {0..< n}. a) = (\<Prod>(a, i)\<in>as - UNIV \<times> {0..<Suc n}. a) * (\<Prod>(a, i)\<in>as \<inter> UNIV \<times> {n}. a)"
     by (subst setprod.union_disjoint[symmetric], auto, insert fin, auto intro: setprod.cong)
   show ?case unfolding B.simps 3 id
-    by (subst div_mult_self2_is_id[OF nonzero_gen], auto)
+    by (subst nonzero_mult_div_cancel_right[OF nonzero_gen], auto)
 next
   case 4 (* C 0 *)
   have as: "as - UNIV \<times> {0..<0} = as" "\<And> i. Suc i - 0 = Suc i" by auto
   show ?case unfolding C.simps pderiv_exp_gcd unfolding pderiv_exp_setprod as
-    by (rule div_mult_self1_is_id, insert monic_prod, auto)
+    by (rule nonzero_mult_div_cancel_left, insert monic_prod, auto)
 next
   case (5 n) (* C n *)
   show ?case unfolding C.simps 5
-    by (subst div_mult_self1_is_id, rule nonzero_gen, auto)
+    by (subst nonzero_mult_div_cancel_left, rule nonzero_gen, auto)
 next
   case (6 n) (* D n *)
   let ?f = "\<lambda> (a,i). (\<Prod>(b, j)\<in>as - UNIV \<times> {0 ..< n} - {(a, i)}. b) * (smult (of_nat (i - n)) (pderiv a))"
@@ -987,7 +987,7 @@ proof -
     hence "q dvd ?prod div q ^ Suc i"
       by (metis dvd dvd_0_left_iff dvd_div_iff_mult p0 power_Suc)
     also have "?prod div q ^ Suc i = b ^ Suc i * ?rem"
-      unfolding id by (rule div_mult_self1_is_id, insert q0, auto)
+      unfolding id by (rule nonzero_mult_div_cancel_left, insert q0, auto)
     finally have "q dvd b \<or> q dvd ?rem"
       using irreducible_dvd_mult[OF iq] irreducible_dvd_pow[OF iq] by blast
     hence False

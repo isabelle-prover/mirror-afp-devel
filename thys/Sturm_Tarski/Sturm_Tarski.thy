@@ -161,7 +161,7 @@ lemma variation_congr:
   assumes "sgn x=sgn x'" "sgn y=sgn y'"
   shows "variation x y=variation x' y'" using assms
 proof -
-  have " 0 \<le> x * y =  (0\<le> x' * y')" using assms by (metis sgn_times zero_le_sgn_iff)
+  have " 0 \<le> x * y =  (0\<le> x' * y')" using assms by (metis sgn_mult zero_le_sgn_iff)
   moreover hence "\<not> 0\<le>x * y \<Longrightarrow> x < y = (x' < y')" using assms
     by (metis less_eq_real_def mult_nonneg_nonneg mult_nonpos_nonpos not_le order.strict_trans2
       zero_le_sgn_iff)
@@ -173,11 +173,11 @@ lemma variation_mult_pos:
   shows "variation (c*x) y =variation x y" and "variation x (c*y) =variation x y"
 proof -
   have "sgn (c*x) = sgn x" using `c>0`
-    by (metis monoid_mult_class.mult.left_neutral sgn_pos sgn_times)
+    by (metis monoid_mult_class.mult.left_neutral sgn_pos sgn_mult)
   thus "variation (c*x) y =variation x y" using variation_congr by blast
 next
   have "sgn (c*y) = sgn y" using `c>0`
-    by (metis monoid_mult_class.mult.left_neutral sgn_pos sgn_times)
+    by (metis monoid_mult_class.mult.left_neutral sgn_pos sgn_mult)
   thus "variation x (c*y) =variation x y" using variation_congr by blast
 qed
 

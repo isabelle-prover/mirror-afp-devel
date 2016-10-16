@@ -1817,7 +1817,7 @@ proof -
     by (cases "q = 0", simp) (cases "degree g"; simp) 
   hence e1: "c ^ e1 = c ^ (e2 + (e1 - e2))" by simp
   from e21 arg_cong[OF id, of "\<lambda> x. (x div (c ^ e2)) div (c ^ (e1 - e2))", 
-    unfolded this power_add mult.assoc nonzero_mult_divide_cancel_left[OF c0]]
+    unfolded this power_add mult.assoc nonzero_mult_div_cancel_left[OF c0]]
   show ?thesis by auto
 qed
   

@@ -701,7 +701,7 @@ proof-
   have "?L \<le> setsum (\<lambda> n::nat. 1/?N) {..< ?N}"
   unfolding WtFT_def apply(rule setsum_mono2) by auto
   also have "... \<le> 1"
-  by (metis divide_zero le_cases neq0_conv not_one_le_zero of_nat_0 setsum_not_0 setsum_equal)
+  by (metis div_by_0 le_cases neq0_conv not_one_le_zero of_nat_0 setsum_not_0 setsum_equal)
   finally show ?thesis .
 qed
 

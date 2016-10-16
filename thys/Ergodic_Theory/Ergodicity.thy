@@ -249,7 +249,7 @@ lemma (in ergodic_pmpt) Invariants_cond_exp_is_integral:
   fixes f::"_ \<Rightarrow> real"
   assumes "integrable M f"
   shows "AE x in M. real_cond_exp M Invariants f x = (\<integral>x. f x \<partial>M)"
-by (metis divide_1 prob_space Invariants_cond_exp_is_integral_fmpt[OF assms])
+by (metis div_by_1 prob_space Invariants_cond_exp_is_integral_fmpt[OF assms])
 
 
 subsection {*Kac formula*}
