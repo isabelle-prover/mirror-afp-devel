@@ -54,7 +54,7 @@
     <p>Submissions for the Isabelle development version are also acceptable,
     but publication of the entry on the front page will be deferred until the
     next Isabelle release. In the meantime the entry will only be visible on
-    the <a href="https://devel.isa-afp.net">development pages</a>.
+    the <a href="https://devel.isa-afp.org">development pages</a>.
     In this case,
     submit your article as described above. Because your article is tested
     against the release version, this will fail (otherwise your article does
