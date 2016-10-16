@@ -25,7 +25,7 @@ next
   ultimately have "n = 0 \<or> Suc (m mod n) < n"
     by (metis Suc_lessI)
   moreover have "Suc m = n * (m div n) + Suc (m mod n)"
-    by (metis add_Suc_right mod_div_equality2)
+    by (metis add_Suc_right mult_div_mod_eq)
   ultimately show "Suc m div n = m div n"
     by (metis Divides.div_less Nat.add_0_right div_by_0 div_mult_self4)
 qed

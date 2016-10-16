@@ -204,7 +204,7 @@ by (simp add: list_slice2_def nth_append list_slice_length list_slice_nth_length
 lemma list_slice2_nth_length_eq2: "
   \<lbrakk> length xs mod k > 0; m = length xs div k \<rbrakk> \<Longrightarrow> 
   length (list_slice2 xs k ! m) = length xs mod k"
-by (simp add: list_slice2_def list_slice_length nth_append mod_div_equality')
+by (simp add: list_slice2_def list_slice_length nth_append div_mult_mod_eq')
 
 lemma list_slice2_nth_nth_eq1: "
   \<lbrakk> m < length xs div k; n < k \<rbrakk> \<Longrightarrow> 

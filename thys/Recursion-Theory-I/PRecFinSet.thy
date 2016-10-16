@@ -144,7 +144,7 @@ lemma x_div_x: "x > 0 \<Longrightarrow> (x::nat) div x = 1" by auto
 lemma div_ge: "(k::nat) \<le> m div n \<Longrightarrow> n*k \<le> m"
 proof -
   assume A: "k \<le> m div n"
-  have S1: "n * (m div n) + m mod n = m" by (rule mod_div_equality2)
+  have S1: "n * (m div n) + m mod n = m" by (rule mult_div_mod_eq)
   have S2: "0 \<le> m mod n" by auto
   from S1 S2 have S3: "n * (m div n) \<le> m" by arith
   from A have S4: "n * k \<le>  n * (m div n)" by auto

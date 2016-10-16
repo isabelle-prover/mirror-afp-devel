@@ -129,9 +129,9 @@ lemma assumes "(j::nat) div a = i div a"
       shows "j = i" 
 proof-
  have "a*(j div a) + (j mod a) = j" 
-    using mod_div_equality2 by simp
+    using mult_div_mod_eq by simp
  moreover have "a*(i div a) + (i mod a) = i"
-    using mod_div_equality2 by auto
+    using mult_div_mod_eq by auto
  ultimately show ?thesis using assms by metis
 qed  
 

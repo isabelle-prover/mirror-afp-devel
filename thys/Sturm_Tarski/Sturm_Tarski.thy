@@ -422,10 +422,10 @@ lemma sign_r_pos_mod:
   shows "sign_r_pos (q mod p) x=sign_r_pos q x"
 proof -
   have "poly (q div p * p) x=0" using `poly p x=0` poly_mult by auto
-  moreover hence "poly (q mod p) x \<noteq> 0" using `poly q x\<noteq>0` mod_div_equality
+  moreover hence "poly (q mod p) x \<noteq> 0" using `poly q x\<noteq>0` div_mult_mod_eq
     by (metis monoid_add_class.add.left_neutral poly_add)
   ultimately show ?thesis
-    by (subst (2) mod_div_equality[THEN sym,of q p], auto simp add: sign_r_pos_add)
+    by (subst (2) div_mult_mod_eq[THEN sym,of q p], auto simp add: sign_r_pos_add)
 qed
 
 lemma sign_r_pos_pderiv:
@@ -1192,7 +1192,7 @@ proof (induct "smods p q" arbitrary:p q rule:length_induct)
       assume "q\<noteq>0" "poly q a=0"
       def r2\<equiv>"- (q mod r1)"
       have "- poly r1 a = poly p a "
-        using mod_div_equality[of p q] `poly q a=0` unfolding r1_def poly_minus minus_minus
+        using div_mult_mod_eq[of p q] `poly q a=0` unfolding r1_def poly_minus minus_minus
         by (metis mod_add_self1 mod_by_0 mod_mult_self2_is_0 poly_0 poly_mult poly_add)
       hence "r1\<noteq>0" and "poly r1 a\<noteq>0" and "poly p a*poly r1 a<0" using `poly p a\<noteq>0`
         by (auto dest!: sym [of "- poly r1 a"] simp add: mult_less_0_iff)

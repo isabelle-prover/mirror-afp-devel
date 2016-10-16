@@ -150,7 +150,7 @@ proof -
     proof(cases "sint b < 0")
       case True
       with a show ?thesis
-        by simp (metis F7 F8 eq minus_equation_iff minus_mult_minus mod_div_equality3)
+        by simp (metis F7 F8 eq minus_equation_iff minus_mult_minus mod_div_mult_eq)
     next
       case False
       from eq have "word_of_int (- (- sint a div sint b)) * b + word_of_int (- (- sint a mod sint b)) = a"
@@ -209,18 +209,18 @@ proof -
   proof(cases "y \<le> x - ?q * y")
     case True
     hence "x div y mod 2 \<noteq> 0" unfolding r
-      by(metis Divides.mod_div_equality' True assms diff_is_0_eq div_le_mono mod_by_0 mod_div_trivial mod_self mod_simps(1) mult_div_cancel q)
+      by(metis Divides.div_mult_mod_eq' True assms diff_is_0_eq div_le_mono mod_by_0 mod_div_trivial mod_self mod_simps(1) mult_div_cancel q)
     hence "x div y = ?q + 1" unfolding q
       by(metis le_add_diff_inverse mod_2_not_eq_zero_eq_one_nat mod_less_eq_dividend add.commute)
     moreover hence "x mod y = ?r - y"
-      by simp(metis Divides.mod_div_equality' diff_commute diff_diff_left mult_Suc)
+      by simp(metis Divides.div_mult_mod_eq' diff_commute diff_diff_left mult_Suc)
     ultimately show ?thesis using True by(simp add: Let_def)
   next
     case False
     hence "x div y mod 2 = 0" unfolding r
       by(simp add: not_le)(metis Nat.add_0_right assms div_less div_mult_self2 mod_div_trivial mult.commute)
     hence "x div y = ?q" unfolding q by simp
-    moreover hence "x mod y = ?r" by (metis mod_div_equality')
+    moreover hence "x mod y = ?r" by (metis div_mult_mod_eq')
     ultimately show ?thesis using False by(simp add: Let_def)
   qed
 qed

@@ -62,7 +62,7 @@ lemma cong_setsum_poly [rule_format]:
 
 lemma cong_altdef_poly: "[(a::'b::field poly) = b] (mod m) = (m dvd (a - b))"
   by (metis (no_types, lifting) add_diff_cancel_left' cong_poly_def diff_eq_diff_eq 
-    dvd_div_mult_self dvd_triv_right mod_div_equality poly_mod_diff_left)
+    dvd_div_mult_self dvd_triv_right div_mult_mod_eq poly_mod_diff_left)
 
 lemma cong_iff_lin_poly: "([(a::'b::field poly) = b] (mod m)) = (\<exists>k. b = a + m * k)"
   apply (auto simp add: cong_altdef_poly dvd_def)

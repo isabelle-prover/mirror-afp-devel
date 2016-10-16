@@ -605,8 +605,8 @@ by (rule le_less_div_conv[THEN iffD2])
 
 lemma div_le_mod_le_imp_le: "
   \<lbrakk> (a::nat) div m \<le> b div m; a mod m \<le> b mod m \<rbrakk> \<Longrightarrow> a \<le> b"
-apply (rule subst[OF mod_div_equality2[of m a]])
-apply (rule subst[OF mod_div_equality2[of m b]])
+apply (rule subst[OF mult_div_mod_eq[of m a]])
+apply (rule subst[OF mult_div_mod_eq[of m b]])
 apply (rule add_le_mono)
 apply (rule mult_le_mono2)
 apply assumption+

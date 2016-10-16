@@ -478,7 +478,7 @@ proof -
         unfolding p_def using `m-l \<ge> s` `s>t` div_mod_equality' by auto
       have p2: "m-l < p* s + t + s"
         unfolding p_def using `m-l \<ge> s` `s>t`
-        mod_div_equality[of "m-l-t" s] mod_less_divisor[OF `s>0`, of "m-l-t"] by linarith
+        div_mult_mod_eq[of "m-l-t" s] mod_less_divisor[OF `s>0`, of "m-l-t"] by linarith
       then have "l \<ge> m - p* s - t -s" by auto
       then have "l \<ge> (n-1)* s + t -p* s - t- s" using m by auto
       then have "l + 2* s\<ge> (n* s+t) - (p* s+t)" by (simp add: diff_mult_distrib)

@@ -975,7 +975,7 @@ proof -
       have S4: "a < b * (a div b) + b"
       proof -
         from S1 have S4_1: "a mod b < b" by (rule mod_less_divisor)
-        also have S4_2: "b * (a div b) + a mod b = a" by (rule mod_div_equality2)
+        also have S4_2: "b * (a div b) + a mod b = a" by (rule mult_div_mod_eq)
         from S4_1 have S4_3: "b * (a div b) + a mod b < b * (a div b) + b" by arith
         from S4_2 S4_3 show ?thesis by auto
       qed
@@ -1000,7 +1000,7 @@ proof -
       with S4 have S5: "b*(z+1) \<le> b*(a div b)" by simp
       moreover have "b*(a div b) \<le> a"
       proof -
-        have "b*(a div b) + (a mod b) = a" by (rule mod_div_equality2)
+        have "b*(a div b) + (a mod b) = a" by (rule mult_div_mod_eq)
         moreover have "0 \<le> a mod b" by auto
         ultimately show ?thesis by arith
       qed
@@ -1017,7 +1017,7 @@ theorem mod_is_pr: "(\<lambda> a b. a mod b) \<in> PrimRec2"
 proof -
   have "(\<lambda> (a::nat) (b::nat). a mod b) = (\<lambda> a b. a - (a div b) * b)"
   proof (rule ext, rule ext)
-    fix a b show "(a::nat) mod b = a - (a div b) * b" by (rule mod_div_equality')
+    fix a b show "(a::nat) mod b = a - (a div b) * b" by (rule div_mult_mod_eq')
   qed
   also from div_is_pr have "(\<lambda> a b. a - (a div b) * b) \<in> PrimRec2" by prec
   ultimately show ?thesis by auto

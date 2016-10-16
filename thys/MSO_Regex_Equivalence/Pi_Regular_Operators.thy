@@ -370,7 +370,7 @@ qed
 lemma rderivs_replicate_mod: 
   assumes "\<guillemotleft>rderivs (replicate i as) r\<guillemotright> = \<guillemotleft>r\<guillemotright>" "i > 0"
   shows "\<guillemotleft>rderivs (replicate m as) r\<guillemotright> = \<guillemotleft>rderivs (replicate (m mod i) as) r\<guillemotright>" (is "?L = ?R")
-  by (subst mod_div_equality[symmetric, of m i])
+  by (subst div_mult_mod_eq[symmetric, of m i])
     (intro rderivs_replicate_mult_rest[OF assms(1)] mod_less_divisor[OF assms(2)])
 
 lemma rderivs_replicate_diff: "\<lbrakk>\<guillemotleft>rderivs (replicate i as) r\<guillemotright> = \<guillemotleft>rderivs (replicate j as) r\<guillemotright>; i > j\<rbrakk> \<Longrightarrow>

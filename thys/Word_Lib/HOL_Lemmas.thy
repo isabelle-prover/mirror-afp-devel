@@ -78,7 +78,7 @@ next
   have "a ^ n * (a ^ m div a ^ n) = a ^ m"
   proof (subst mult.commute)
     have "a ^ m = (a ^ m div a ^ n) * a ^ n + a ^ m mod a ^ n"
-      by (rule  mod_div_equality [symmetric])
+      by (rule  div_mult_mod_eq [symmetric])
 
     moreover have "a ^ m mod a ^ n = 0"
       by (subst mod_eq_0_iff, rule exI [where x = "a ^ q"],

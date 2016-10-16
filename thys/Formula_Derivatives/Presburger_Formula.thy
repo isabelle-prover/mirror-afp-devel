@@ -221,7 +221,7 @@ lemma Extend_SNOC[Presb_simps]: "\<lbrakk>#\<^sub>V \<AA> = length x; len P \<le
   apply (auto simp: cut_bits_def extend_def test_bit_def nth_Cons' max_absorb1 len_le_iff
     split: if_splits cong del: if_weak_cong)
    apply (metis mod_less mod_mult2_eq One_nat_def add.commute mult.commute mult.left_neutral power_Suc2)
-  apply (metis (no_types) mod_less mod_mult2_eq One_nat_def mod_div_equality2 mod_div_trivial mod_mod_trivial mult.commute parity_cases)
+  apply (metis (no_types) mod_less mod_mult2_eq One_nat_def mult_div_mod_eq mod_div_trivial mod_mod_trivial mult.commute parity_cases)
   done
 
 lemma odd_neq_even:

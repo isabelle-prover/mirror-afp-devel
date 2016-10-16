@@ -865,7 +865,7 @@ also
 also
   have "\<dots> = 1.75 * (length v div 2)"
   proof -
-    from mod_div_equality have "length v = length v div 2 * 2 + length v mod 2" by auto
+    from div_mult_mod_eq have "length v = length v div 2 * 2 + length v mod 2" by auto
     with lenv have "length v = length v div 2 * 2 + 1" by auto 
     then have "(length v - 1) / 2 = length v div 2" by simp
     then show ?thesis by simp

@@ -217,7 +217,7 @@ lemma exists_k_mod:
   fixes c::"'a::ring_div"
   shows "\<exists>k. a mod c = a + k * c"
   by (metis add.commute diff_add_cancel diff_minus_eq_add
-      mod_div_equality2 mult.commute mult_minus_left)
+      mult_div_mod_eq mult.commute mult_minus_left)
 
 subsection{*Units, associated and congruent relations*}
 

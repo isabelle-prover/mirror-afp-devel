@@ -299,7 +299,7 @@ proof -
     finally have "n div x^pm \<ge> x" by (auto simp: p field_simps)
     from mult_right_mono[OF this, of "x ^ pm"]
     have ge: "n div x^pm * x^pm \<ge> x^p" unfolding xp using x by auto
-    from mod_div_equality[of n "x^pm"] have "n div x^pm * x^pm = n - n mod x^pm" by arith
+    from div_mult_mod_eq[of n "x^pm"] have "n div x^pm * x^pm = n - n mod x^pm" by arith
     from ge[unfolded this]
     have le: "x^p \<le> n - n mod x^pm" .
     have ge: "n mod x^pm \<ge> 0" using n x transfer_nat_int_function_closures by auto

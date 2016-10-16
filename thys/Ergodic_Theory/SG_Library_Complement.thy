@@ -157,8 +157,8 @@ lemma nat_mod_cong:
   shows "c mod n = 0"
 proof -
   let ?k = "a mod n"
-  obtain a1 where "a = a1*n + ?k" by (metis mod_div_equality)
-  moreover obtain b1 where "b = b1*n + ?k" using assms(2) by (metis mod_div_equality)
+  obtain a1 where "a = a1*n + ?k" by (metis div_mult_mod_eq)
+  moreover obtain b1 where "b = b1*n + ?k" using assms(2) by (metis div_mult_mod_eq)
   ultimately have "a1 * n + ?k = b1 * n + ?k + c" using assms(1) by arith
   then have "c = (a1 - b1) * n" by (simp add: diff_mult_distrib)
   then show ?thesis by simp

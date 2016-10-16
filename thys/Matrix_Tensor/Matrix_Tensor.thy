@@ -1814,7 +1814,7 @@ proof(rule ccontr)
  then have 2:"(x div z)*z \<ge> y*z"
           by auto
  then have 3:"(x div z)*z + (x mod z) = z"
-          using mod_div_equality 
+          using div_mult_mod_eq 
           add_leD1 assms div_mod_equality' le_diff_conv2 mod_less_eq_dividend not_less
           by metis 
  then have 4:"(x div z)*z \<le> z"
@@ -1827,7 +1827,7 @@ proof(rule ccontr)
           by auto                
  with 6 have "1 \<ge> y"
           using 1 3 assms div_self less_nat_zero_code mult_zero_left 
-          mult.commute mod_div_equality3
+          mult.commute mod_div_mult_eq
           by auto
  then have 7:"(y = 0) \<or> (y = 1)"
           by auto
@@ -2352,13 +2352,13 @@ lemma mod_prop1:"((a::nat) mod (b*c)) mod c = (a mod c)"
   let ?x = "(a::nat) mod (b*c)"
   let ?z = "?x mod c"
   have "\<exists>m. a = m*(b*c) + ?x"
-         by (metis mod_div_equality)  
+         by (metis div_mult_mod_eq)  
   then obtain m1 where "a = m1*(b*c) + ?x"
          by auto
   then have "?x = (a - m1*(b*c))"
          by auto
   then have "\<exists>m.( ?x = m*c + ?z)"
-         using mod_eqD by (metis mod_div_equality)
+         using mod_eqD by (metis div_mult_mod_eq)
   then obtain m where "( ?x = m*c + ?z)"
          by auto
   then have "(a - m1*(b*c)) = m*c + ?z"
@@ -2429,7 +2429,7 @@ proof(cases "b*c = 0")
    then have F_2:"a div c = (x*b) + ((a mod (b*c)) div c)"    
        by (metis F_1 nonzero_mult_div_cancel_left mult.commute neq0_conv)
    have "\<exists>y. a div c = (y*b) + ((a div c) mod b)"
-       by (metis add.commute mod_div_equality3)
+       by (metis add.commute mod_div_mult_eq)
    then obtain y where "a div c = (y*b) + ((a div c) mod b)"
        by auto
    with F_2 have F_3:" (x*b) + ((a mod (b*c)) div c) = (y*b) + ((a div c) mod b)"

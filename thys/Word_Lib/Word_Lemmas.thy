@@ -2296,7 +2296,7 @@ proof -
   have "unat a div 2 ^ n * 2 ^ n \<noteq> unat a"
   proof -
     have "unat a = unat a div 2 ^ n * 2 ^ n + unat a mod 2 ^ n"
-      by (simp add: mod_div_equality)
+      by (simp add: div_mult_mod_eq)
     also have "\<dots> \<noteq> unat a div 2 ^ n * 2 ^ n" using sz anz
       by (simp add: unat_arith_simps)
     finally show ?thesis ..

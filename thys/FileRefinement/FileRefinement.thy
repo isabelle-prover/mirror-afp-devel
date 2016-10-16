@@ -263,8 +263,8 @@ done
 lemma modInequalityLemma:
   "(a::nat) ~= b & a mod c = b mod c ==> a div c ~= b div c"
 apply auto
-apply (insert mod_div_equality [of "a" "c"])
-apply (insert mod_div_equality [of "b" "c"])
+apply (insert div_mult_mod_eq [of "a" "c"])
+apply (insert div_mult_mod_eq [of "b" "c"])
 apply simp
 done
 

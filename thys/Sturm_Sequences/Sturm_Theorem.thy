@@ -949,7 +949,7 @@ proof (intro sturm_adjacent_root_aux[OF assms(1,2,3)], goal_cases)
     let ?q = "sturm p ! (i + 1)"
     let ?r = "sturm p ! (i + 2)"
     from sturm_indices[OF prems(2)] have "?p = ?p div ?q * ?q - ?r"
-        by (simp add: mod_div_equality)
+        by (simp add: div_mult_mod_eq)
     hence "poly ?p x = poly (?p div ?q * ?q - ?r) x" by simp
     hence "poly ?p x = -poly ?r x" using prems(3) by simp
     thus ?case by (simp add: sgn_minus)
@@ -1069,7 +1069,7 @@ proof-
       have "sturm p ! (i+2) = - (sturm p ! i mod sturm p ! (i+1))"
            (is "?r = - (?p mod ?q)") .
   hence "-?r = ?p mod ?q" by simp
-  with mod_div_equality[of ?p ?q] have "?p div ?q * ?q - ?r = ?p" by simp
+  with div_mult_mod_eq[of ?p ?q] have "?p div ?q * ?q - ?r = ?p" by simp
   hence "poly (?p div ?q) x * poly ?q x - poly ?r x = poly ?p x"
       by (metis poly_diff poly_mult)
   with q_0 have r_x: "poly ?r x = -poly ?p x" by simp
@@ -1212,7 +1212,7 @@ proof (intro sturm_adjacent_root_aux[OF assms(2,3,4)], goal_cases)
         unfolding r'_def r_def d_def sturm_squarefree'_def Let_def by simp
     hence r_0: "poly r x = 0" by (simp add: `r = r' * d`)
     from sturm_indices[OF i_in_range] have "q = q div r * r - s"
-        unfolding q_def r_def s_def by (simp add: mod_div_equality)
+        unfolding q_def r_def s_def by (simp add: div_mult_mod_eq)
     hence "q' = (q div r * r - s) div d" by (simp add: q'_def)
     also have "... = (q div r * r) div d - s'"
         unfolding s'_def by (simp)
@@ -1275,7 +1275,7 @@ proof-
   from sturm_indices[OF i_in_range']
       have "sturm p ! (i+2) = - (sturm p ! i mod sturm p ! (i+1))" .
   hence "-?r' = ?p' mod ?q'" by simp
-  with mod_div_equality[of ?p' ?q'] have "?p' div ?q' * ?q' - ?r' = ?p'" by simp
+  with div_mult_mod_eq[of ?p' ?q'] have "?p' div ?q' * ?q' - ?r' = ?p'" by simp
   hence "d*(?p div ?q * ?q - ?r) = d* ?p" by (simp add: pqr_simps algebra_simps)
   hence "?p div ?q * ?q - ?r = ?p" by simp
   hence "poly (?p div ?q) x * poly ?q x - poly ?r x = poly ?p x"
