@@ -169,7 +169,7 @@ proof -
           moreover have "(n - ?m) mod ?lcm < ?lcm"
             by(simp add: pos_mod_bound[OF zlcms_pos] norm)
           ultimately show "I\<^sub>Z a (?x#xs)"
-            by(simp add:zmult_div_cancel algebra_simps)
+            by(simp add:minus_mod_eq_mult_div [symmetric] algebra_simps)
         qed
         moreover
         have "set as = ?Ds \<union> ?Us" using as `?Ls = {}`

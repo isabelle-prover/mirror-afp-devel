@@ -4087,8 +4087,8 @@ apply simp
  apply (rule equalityI, assumption,
         thin_tac "Rxa Zr (lev I) \<subseteq> I")
  apply (rule subsetI)
- apply (simp add:Rxa_def, simp add:Zr_times)
- apply (cut_tac a = x and b = "lev I" in zmod_zdiv_equality)
+  apply (simp add:Rxa_def, simp add:Zr_times)
+ apply (cut_tac t = x and b = "lev I" in mult_div_mod_eq [symmetric])
  apply (subgoal_tac "x = (x div lev I) * (lev I)",
         subgoal_tac "x div lev I \<in> carrier Zr", blast)
  apply (simp add:Zr_def Zset_def)

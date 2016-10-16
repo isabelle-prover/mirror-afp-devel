@@ -105,7 +105,7 @@ proof -
       then obtain s where s: "s \<in> monoid_closure S"
         and n: "n = (nat \<circ> abs) s"
         by blast
-      from zmod_zdiv_equality' [of s m]
+      from minus_div_mult_eq_mod [symmetric, of s m]
       have "s mod int m = s - s div int m * int m"
         by auto
       also have "s - s div int m * int m \<in> monoid_closure S"

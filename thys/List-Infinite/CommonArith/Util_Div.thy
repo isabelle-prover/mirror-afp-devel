@@ -30,13 +30,13 @@ lemmas div_mult_cancel = minus_mod_eq_div_mult [symmetric]
 
 lemma mod_0_div_mult_cancel: "(n mod (m::nat) = 0) = (n div m * m = n)"
 apply (insert eq_diff_left_iff[OF mod_le_dividend le0, of n m])
-apply (simp add: mult.commute mult_div_cancel)
+apply (simp add: mult.commute minus_mod_eq_mult_div [symmetric])
 done
 
 lemma div_mult_le: "(n::nat) div m * m \<le> n"
-by (simp add: mult.commute mult_div_cancel)
+by (simp add: mult.commute minus_mod_eq_mult_div [symmetric])
 lemma less_div_Suc_mult: "0 < (m::nat) \<Longrightarrow> n < Suc (n div m) * m"
-apply (simp add: mult.commute mult_div_cancel)
+apply (simp add: mult.commute minus_mod_eq_mult_div [symmetric])
 apply (rule less_add_diff)
 by (rule mod_less_divisor)
 
@@ -98,7 +98,7 @@ done
 lemma less_mod_ge_imp_div_less: "\<lbrakk> a < (b::nat); a mod m \<ge> b mod m \<rbrakk> \<Longrightarrow> a div m < b div m"
 apply (case_tac "m = 0", simp)
 apply (rule mult_less_cancel1[of m, THEN iffD1, THEN conjunct2])
-apply (simp add: mult_div_cancel)
+apply (simp add: minus_mod_eq_mult_div [symmetric])
 apply (rule order_less_le_trans[of _ "b - a mod m"])
 apply (rule diff_less_mono)
 apply simp+
@@ -269,7 +269,7 @@ apply (case_tac "n < k * m")
 apply (simp add: linorder_not_less)
 apply (rule iffD1[OF mult_cancel1_gr0[where k=m]], assumption)
 apply (subst diff_mult_distrib2)
-apply (simp only: mult_div_cancel)
+apply (simp only: minus_mod_eq_mult_div [symmetric])
 apply (simp only: diff_commute[of _ "k*m"])
 apply (simp only: mult.commute[of m])
 apply (simp only: mod_diff_mult_self1)
@@ -551,10 +551,10 @@ apply (subgoal_tac "m \<le> n - n mod m")
  apply (drule div_le_mono[of m _ m])
  apply (simp only: div_self)
  apply (drule mult_le_mono2[of 1 _ m])
- apply (simp only: mult_1_right mult_div_cancel)
+ apply (simp only: mult_1_right minus_mod_eq_mult_div [symmetric])
 apply (drule less_imp_le_pred[of x])
 apply (drule mult_le_mono2[of x _ m])
-apply (simp add: diff_mult_distrib2 mult_div_cancel del: diff_diff_left)
+apply (simp add: diff_mult_distrib2 minus_mod_eq_mult_div [symmetric] del: diff_diff_left)
 apply (simp only: le_diff_conv2[of m])
 apply (drule le_diff_imp_le[of "m * x + m"])
 apply (simp only: mult.commute[of _ m])
@@ -991,7 +991,7 @@ subsubsection {* Some auxiliary facts about @{text div} *}
 
 lemma sub_mod_div_eq_div: "((n::nat) - n mod m) div m = n div m"
 apply (case_tac "m = 0", simp)
-apply (simp add: mult_div_cancel[symmetric])
+apply (simp add: minus_mod_eq_mult_div)
 done
 
 lemma mod_less_imp_diff_div_conv: "
@@ -1002,7 +1002,7 @@ apply (case_tac "n < m", simp)
 apply (simp only: linorder_not_less)
 apply (rule iffD1[OF split_div_lemma, symmetric], assumption)
 apply (rule conjI)
-apply (simp_all add: diff_mult_distrib2 mult_div_cancel)
+apply (simp_all add: diff_mult_distrib2 minus_mod_eq_mult_div [symmetric])
 done
 
 corollary mod_0_le_imp_diff_div_conv: "
@@ -1032,7 +1032,7 @@ done
 lemma div_le_conv: "0 < m \<Longrightarrow> n div m \<le> k = (n \<le> Suc k * m - Suc 0)"
 apply (rule iffI)
  apply (drule mult_le_mono1[of _ _ m])
- apply (simp only: mult.commute[of _ m] mult_div_cancel)
+ apply (simp only: mult.commute[of _ m] minus_mod_eq_mult_div [symmetric])
  apply (drule le_diff_conv[THEN iffD1])
  apply (rule le_trans[of _ "m * k + n mod m"], assumption)
  apply (simp add: add.commute[of m])
@@ -1113,7 +1113,7 @@ thm
   mod_le_dividend
 
 thm
-  Divides.mult_div_cancel
+  minus_mod_eq_mult_div [symmetric]
   mod_0_div_mult_cancel
   div_mult_le
   less_div_Suc_mult

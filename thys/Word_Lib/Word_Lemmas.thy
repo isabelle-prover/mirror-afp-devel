@@ -3347,7 +3347,7 @@ lemmas word_sdiv_numerals = word_sdiv_numerals_lhs[where b="numeral y" for y]
 lemma smod_int_alt_def:
      "(a::int) smod b = sgn (a) * (abs a mod abs b)"
   apply (clarsimp simp: smod_int_def sdiv_int_def)
-  apply (clarsimp simp: zmod_zdiv_equality' abs_sgn sgn_mult sgn_if sign_simps)
+  apply (clarsimp simp: minus_div_mult_eq_mod [symmetric] abs_sgn sgn_mult sgn_if sign_simps)
   done
 
 lemma smod_int_range:

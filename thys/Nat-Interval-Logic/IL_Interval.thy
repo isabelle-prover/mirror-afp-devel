@@ -250,7 +250,7 @@ by (simp add: iT_defs atLeastAtMost_def)
 lemma iMOD_iTILL_iMODb_conv: "
   r \<le> n \<Longrightarrow> [r, mod m] \<inter> [\<dots>n] = [r, mod m, (n - r) div m]"
 apply (rule set_eqI)
-apply (simp add: iT_iff mult_div_cancel)
+apply (simp add: iT_iff minus_mod_eq_mult_div [symmetric])
 apply (rule iffI)
  apply clarify
  apply (frule_tac x=x and y=n and m=m in le_imp_sub_mod_le)
@@ -1069,7 +1069,7 @@ apply (rule iMODb_trans[where c'=c'], assumption+)
 apply (frule iMODb_geD, frule div_le_mono[of x y m])
 apply (simp add: add.commute[of _ c] add.commute[of _ "m*c"])
 apply (drule mult_le_mono[OF le_refl, of _ _ m])
-apply (simp add: add_mult_distrib2 diff_mult_distrib2 mult_div_cancel)
+apply (simp add: add_mult_distrib2 diff_mult_distrib2 minus_mod_eq_mult_div [symmetric])
 apply (simp add: iMODb_iff)
 done
 
@@ -1312,7 +1312,7 @@ lemma iMODb_union: "
 apply (rule set_eqI)
 apply (simp add: iMODb_iff)
 apply (drule sym[of "r mod m"], simp)
-apply (fastforce simp: add_mult_distrib2 diff_mult_distrib2 mult_div_cancel)
+apply (fastforce simp: add_mult_distrib2 diff_mult_distrib2 minus_mod_eq_mult_div [symmetric])
 done
 
 lemma iMODb_append_union: "
@@ -1507,7 +1507,7 @@ apply (case_tac "t < r")
  apply (simp add: cut_le_Min_empty iMOD_Min)
 apply (clarsimp simp: linorder_not_less set_eq_iff i_cut_mem_iff iT_iff)
 apply (rule conj_cong, simp)+
-apply (clarsimp simp: mult_div_cancel)
+apply (clarsimp simp: minus_mod_eq_mult_div [symmetric])
 apply (drule_tac x=r and y=x in le_imp_less_or_eq, erule disjE)
  prefer 2
  apply simp
@@ -1834,7 +1834,7 @@ apply (subgoal_tac "r \<le> t + m - (t - r) mod m")
  apply (rule order_trans[of _ t], simp)
  apply (simp add: mod_cut_greater_aux_t_less less_imp_le)
 apply (rule_tac t="(r + m * c - (t + m - (t - r) mod m))" and s="m * (c - Suc ((t - r) div m))" in subst)
- apply (simp add: diff_mult_distrib2 mult_div_cancel del: diff_diff_left)
+ apply (simp add: diff_mult_distrib2 minus_mod_eq_mult_div [symmetric] del: diff_diff_left)
 apply simp
 done
 
@@ -1928,7 +1928,7 @@ apply (case_tac "r mod m = t mod m")
  apply (case_tac "t \<le> x")
   prefer 2
   apply simp
- apply (simp add: diff_mult_distrib2 mult_div_cancel mod_eq_diff_mod_0_conv add.commute[of r])
+ apply (simp add: diff_mult_distrib2 minus_mod_eq_mult_div [symmetric] mod_eq_diff_mod_0_conv add.commute[of r])
 apply (subgoal_tac "Suc ((t - Suc r) mod m) = (t - r) mod m")
  prefer 2
  apply (clarsimp simp add: diff_mod_pred mod_eq_diff_mod_0_conv)
@@ -2165,7 +2165,7 @@ lemma iMOD_inext: "t \<in> [r, mod m] \<Longrightarrow> inext t [r, mod m] = t +
 by (clarsimp simp add: inext_def iMOD_cut_greater iT_iff iT_Min iT_not_empty mod_eq_imp_diff_mod_0)
 lemma iMOD_iprev: "\<lbrakk> t \<in> [r, mod m]; r < t \<rbrakk> \<Longrightarrow> iprev t [r, mod m] = t - m"
 apply (case_tac "m = 0", simp add: iMOD_iff)
-apply (clarsimp simp add: iprev_def iMOD_cut_less iT_iff iT_Max iT_not_empty mult_div_cancel)
+apply (clarsimp simp add: iprev_def iMOD_cut_less iT_iff iT_Max iT_not_empty minus_mod_eq_mult_div [symmetric])
 apply (simp del: add_Suc_right add: add_Suc_right[symmetric] mod_eq_imp_diff_mod_eq_divisor)
 apply (simp add: less_mod_eq_imp_add_divisor_le)
 done
@@ -2185,7 +2185,7 @@ lemma iMODb_iprev: "
   \<lbrakk> t \<in> [r, mod m, c]; r < t \<rbrakk> \<Longrightarrow> 
   iprev t [r, mod m, c] = t - m"
 apply (case_tac "m = 0", simp add: iMODb_iff)
-apply (clarsimp simp add: iprev_def iMODb_cut_less iT_iff iT_Max iT_not_empty mult_div_cancel)
+apply (clarsimp simp add: iprev_def iMODb_cut_less iT_iff iT_Max iT_not_empty minus_mod_eq_mult_div [symmetric])
 apply (simp del: add_Suc_right add: add_Suc_right[symmetric] mod_eq_imp_diff_mod_eq_divisor)
 apply (simp add: less_mod_eq_imp_add_divisor_le)
 done
