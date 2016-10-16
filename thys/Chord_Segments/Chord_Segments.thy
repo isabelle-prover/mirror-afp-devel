@@ -4,7 +4,7 @@ section \<open>Intersecting Chord Theorem\<close>
 
 theory Chord_Segments
 imports
-  "~~/src/HOL/Multivariate_Analysis/Multivariate_Analysis"
+  "~~/src/HOL/Analysis/Analysis"
   "../Triangle/Triangle"
 begin
 
