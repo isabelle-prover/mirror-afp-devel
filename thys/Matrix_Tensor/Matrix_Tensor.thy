@@ -1815,7 +1815,7 @@ proof(rule ccontr)
           by auto
  then have 3:"(x div z)*z + (x mod z) = z"
           using div_mult_mod_eq 
-          add_leD1 assms div_mod_equality' le_diff_conv2 mod_less_eq_dividend not_less
+          add_leD1 assms minus_mod_eq_div_mult [symmetric] le_diff_conv2 mod_less_eq_dividend not_less
           by metis 
  then have 4:"(x div z)*z \<le> z"
           by auto

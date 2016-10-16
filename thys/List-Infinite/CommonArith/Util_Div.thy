@@ -26,7 +26,7 @@ by (rule le_trans[OF mod_le_dividend, OF diff_le_self])
 
 
 (*corollary div_mult_cancel: "m div n * n = m - m mod (n::nat)"*)
-lemmas div_mult_cancel = div_mod_equality'
+lemmas div_mult_cancel = minus_mod_eq_div_mult [symmetric]
 
 lemma mod_0_div_mult_cancel: "(n mod (m::nat) = 0) = (n div m * m = n)"
 apply (insert eq_diff_left_iff[OF mod_le_dividend le0, of n m])

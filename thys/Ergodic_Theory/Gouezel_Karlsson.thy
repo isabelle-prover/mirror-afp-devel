@@ -475,7 +475,10 @@ proof -
       then have "m-l \<ge> s" using l by auto
       define p where "p = (m-l-t) div s"
       have p1: "m-l \<ge> p* s + t"
-        unfolding p_def using `m-l \<ge> s` `s>t` div_mod_equality' by auto
+        unfolding p_def
+        using `m-l \<ge> s` `s>t`
+        minus_mod_eq_div_mult [symmetric, of "m - l - t" s]
+        by simp
       have p2: "m-l < p* s + t + s"
         unfolding p_def using `m-l \<ge> s` `s>t`
         div_mult_mod_eq[of "m-l-t" s] mod_less_divisor[OF `s>0`, of "m-l-t"] by linarith

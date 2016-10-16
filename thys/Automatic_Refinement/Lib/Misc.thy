@@ -2008,7 +2008,7 @@ where
 by auto
 termination
 by (relation "measure (\<lambda>(_, xs). length xs)")
-  (simp_all add: mergesort_by_rel_split_length not_less div_mult_mod_eq')
+  (simp_all add: mergesort_by_rel_split_length not_less minus_div_mult_eq_mod [symmetric])
 
 declare mergesort_by_rel.simps [simp del]
 

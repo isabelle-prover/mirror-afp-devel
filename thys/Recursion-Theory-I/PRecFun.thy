@@ -1017,7 +1017,7 @@ theorem mod_is_pr: "(\<lambda> a b. a mod b) \<in> PrimRec2"
 proof -
   have "(\<lambda> (a::nat) (b::nat). a mod b) = (\<lambda> a b. a - (a div b) * b)"
   proof (rule ext, rule ext)
-    fix a b show "(a::nat) mod b = a - (a div b) * b" by (rule div_mult_mod_eq')
+    fix a b show "(a::nat) mod b = a - (a div b) * b" by (rule minus_div_mult_eq_mod [symmetric])
   qed
   also from div_is_pr have "(\<lambda> a b. a - (a div b) * b) \<in> PrimRec2" by prec
   ultimately show ?thesis by auto
