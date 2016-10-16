@@ -150,9 +150,7 @@ lemma Mp_lift_modulus: assumes "f =m g"
 
 lemma Mp_ident_product: "n > 0 \<Longrightarrow> Mp f = f \<Longrightarrow> poly_mod.Mp (m * n) f = f"
   unfolding poly_eq_iff poly_mod.Mp_coeff poly_mod.M_def 
-  using Divides.pos_mod_sign div_mod_equality2 mult_less_cancel_left pos_imp_zdiv_nonneg_iff
-        zmod_zmult2_eq add.left_neutral le_less mod_0 mod_div_trivial mult_zero_right
-  by metis
+  by (auto simp add: zmod_zmult2_eq) (metis mod_div_trivial mod_0)
 
 lemma Mp_shrink_modulus: assumes "poly_mod.equivalent (m * k) f g" "k \<noteq> 0" 
   shows "f =m g" 

@@ -176,10 +176,7 @@ lemma roundup_ge_0: "0 < emBits \<Longrightarrow> 0 < x \<Longrightarrow> 0 \<le
   by (simp add: roundup)
 
 lemma roundup_le_7: "0 < emBits \<Longrightarrow> roundup emBits 8 * 8 - emBits \<le>  7"
-  apply (simp add: roundup)
-  apply (insert  div_mod_equality [of emBits 8 1])
-  apply arith
-  done
+  by (auto simp add: roundup) arith
 
 lemma roundup_nat_ge_8_help:
   "length (sha1 M) + sLen + 16 \<le> emBits \<Longrightarrow> 8 \<le> roundup emBits 8 * 8 - (length (sha1 M) + 8)"

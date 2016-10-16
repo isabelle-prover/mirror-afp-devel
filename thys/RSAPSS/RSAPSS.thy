@@ -275,7 +275,8 @@ proof -
     proof (cases "(length (nat_to_bv (p*q)) - Suc 0) mod 8 = 0")
       assume len2: "(length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0" 
       then have "(if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8 = (length (nat_to_bv (p * q)) - Suc 0) div 8 * 8" by simp
-      moreover have "(length (nat_to_bv (p * q)) - Suc 0) div 8 * 8 = (length (nat_to_bv (p * q)) - Suc 0)" using len2 by (auto simp add: div_mod_equality[of "length (nat_to_bv (p * q)) - Suc 0" 8 0])
+      moreover have "(length (nat_to_bv (p * q)) - Suc 0) div 8 * 8 = (length (nat_to_bv (p * q)) - Suc 0)" using len2
+        by auto
       ultimately show "length (nat_to_bv (p * q)) - Suc 0
         \<le> (if (length (nat_to_bv (p * q)) - Suc 0) mod 8 = 0 then (length (nat_to_bv (p * q)) - Suc 0) div 8 else (length (nat_to_bv (p * q)) - Suc 0) div 8 + 1) * 8" by simp
     next
