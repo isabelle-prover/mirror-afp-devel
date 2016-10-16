@@ -81,6 +81,23 @@ abstract =
   cardinality of partial equivalence relations over a finite set of
   cardinality n is equal to the n+1-th Bell number.
 
+[Chord_Segments]
+title = Intersecting Chords Theorem
+author = Lukas Bulwahn <mailto:lukas.bulwahn@gmail.com>
+notify = lukas.bulwahn@gmail.com
+date = 2016-10-11
+topic = Mathematics/Geometry
+abstract =
+  This entry provides a geometric proof of the intersecting chords
+  theorem. The theorem states that when two chords intersect each other
+  inside a circle, the products of their segments are equal.  After a
+  short review of existing proofs in the literature, I decided to use a
+  proof approach that employs reasoning about lengths of line segments,
+  the orthogonality of two lines and the Pythagoras Law. Hence, one can
+  understand the formalized proof easily with the knowledge of a few
+  general geometric facts that are commonly taught in high-school.  This
+  theorem is the 55th theorem of the Top 100 Theorems list.
+
 [Category3]
 title = Category Theory with Adjunctions and Limits
 author = Eugene W. Stark <mailto:stark@cs.stonybrook.edu>
@@ -449,12 +466,12 @@ date = 2016-02-17
 topic = Computer Science/Algorithms/Online
 abstract =
 	<p>
-	These theories formalize the quantitative analysis of a number of classical algorithms for the list update problem: 2-competitiveness of move-to-front, the lower bound of 2 for the competitive- ness of deterministic list update algorithms and 1.6-competitiveness of the randomized COMB algorithm, the best randomized list update algorithm known to date.
+	These theories formalize the quantitative analysis of a number of classical algorithms for the list update problem: 2-competitiveness of move-to-front, the lower bound of 2 for the competitiveness of deterministic list update algorithms and 1.6-competitiveness of the randomized COMB algorithm, the best randomized list update algorithm known to date.
 	The material is based on the first two chapters of <i>Online Computation
 	and Competitive Analysis</i> by Borodin and El-Yaniv.
 	</p>
 	<p>
-	This work is described in the FSTTCS 2016 publication
+	For an informal description see the FSTTCS 2016 publication
         <a href="http://www.in.tum.de/~nipkow/pubs/fsttcs16.html">Verified Analysis of List Update Algorithms</a>
         by Haslbeck and Nipkow.
 	</p>
@@ -4815,3 +4832,27 @@ abstract =
   <p>Through experiments we verify that our algorithm factors polynomials of degree 
   100 within seconds.
   </p>
+
+[Allen_Calculus]
+title = Allen's Interval Calculus
+author = Fadoua Ghourabi <http://www.i-eos.org/fadoua>
+notify = fadouaghourabi@gmail.com
+date = 2016-09-29
+topic = Logic, Mathematics/Algebra
+abstract =
+  Allen’s interval calculus is a qualitative temporal representation of
+  time events. Allen introduced 13 binary relations that describe all
+  the possible arrangements between two events, i.e. intervals with
+  non-zero finite length. The compositions are pertinent to
+  reasoning about knowledge of time. In particular, a consistency
+  problem of relation constraints is commonly solved with a guideline
+  from these compositions. We formalize the relations together with an
+  axiomatic system. We proof the validity of the 169 compositions of
+  these relations. We also define nests as the sets of intervals that
+  share a meeting point. We prove that nests give the ordering
+  properties of points without introducing a new datatype for points.
+  [1] J.F. Allen. Maintaining Knowledge about Temporal Intervals. In
+  Commun. ACM, volume 26, pages 832–843, 1983. [2] J. F. Allen and P. J.
+  Hayes. A Common-sense Theory of Time. In Proceedings of the 9th
+  International Joint Conference on Artificial Intelligence (IJCAI’85),
+  pages 528–531, 1985.

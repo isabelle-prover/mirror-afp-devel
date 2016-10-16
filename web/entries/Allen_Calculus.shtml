@@ -24,49 +24,53 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">A</font>nalysis
-of
-<font class="first">L</font>ist
-<font class="first">U</font>pdate
-<font class="first">A</font>lgorithms
+<h1><font class="first">A</font>llen's
+<font class="first">I</font>nterval
+<font class="first">C</font>alculus
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Analysis of List Update Algorithms</td></tr>
+        <td class="data" width="80%">Allen's Interval Calculus</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://in.tum.de/~haslbema/">Maximilian P.L. Haslbeck</a> and <a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
+        <td class="data"><a href="http://www.i-eos.org/fadoua">Fadoua Ghourabi</a></td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2016-02-17</td></tr>
+        <td class="data">2016-09-29</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
 
-<p>
-These theories formalize the quantitative analysis of a number of classical algorithms for the list update problem: 2-competitiveness of move-to-front, the lower bound of 2 for the competitiveness of deterministic list update algorithms and 1.6-competitiveness of the randomized COMB algorithm, the best randomized list update algorithm known to date.
-The material is based on the first two chapters of <i>Online Computation
-and Competitive Analysis</i> by Borodin and El-Yaniv.
-</p>
-<p>
-For an informal description see the FSTTCS 2016 publication
-<a href="http://www.in.tum.de/~nipkow/pubs/fsttcs16.html">Verified Analysis of List Update Algorithms</a>
-by Haslbeck and Nipkow.
-</p>
+Allen’s interval calculus is a qualitative temporal representation of
+time events. Allen introduced 13 binary relations that describe all
+the possible arrangements between two events, i.e. intervals with
+non-zero finite length. The compositions are pertinent to
+reasoning about knowledge of time. In particular, a consistency
+problem of relation constraints is commonly solved with a guideline
+from these compositions. We formalize the relations together with an
+axiomatic system. We proof the validity of the 169 compositions of
+these relations. We also define nests as the sets of intervals that
+share a meeting point. We prove that nests give the ordering
+properties of points without introducing a new datatype for points.
+[1] J.F. Allen. Maintaining Knowledge about Temporal Intervals. In
+Commun. ACM, volume 26, pages 832–843, 1983. [2] J. F. Allen and P. J.
+Hayes. A Common-sense Theory of Time. In Proceedings of the 9th
+International Joint Conference on Artificial Intelligence (IJCAI’85),
+pages 528–531, 1985.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{List_Update-AFP,
-  author  = {Maximilian P.L. Haslbeck and Tobias Nipkow},
-  title   = {Analysis of List Update Algorithms},
+			<pre>@article{Allen_Calculus-AFP,
+  author  = {Fadoua Ghourabi},
+  title   = {Allen's Interval Calculus},
   journal = {Archive of Formal Proofs},
-  month   = feb,
+  month   = sep,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/List_Update.shtml},
+  note    = {\url{http://isa-afp.org/entries/Allen_Calculus.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -76,10 +80,6 @@ by Haslbeck and Nipkow.
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
 
-    <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="List-Index.shtml">List-Index</a>, <a href="Regular-Sets.shtml">Regular-Sets</a></td></tr>
-
-
 
 
   </tbody>
@@ -87,7 +87,7 @@ by Haslbeck and Nipkow.
 
 <p></p>
 
-<!--#set var="name" value="List_Update" -->
+<!--#set var="name" value="Allen_Calculus" -->
 
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->

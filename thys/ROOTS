@@ -10,6 +10,7 @@ Abstract_Completeness
 Abstract-Hoare-Logics
 Abstract-Rewriting
 Algebraic_Numbers
+Allen_Calculus
 Applicative_Lifting
 ArrowImpossibilityGS
 AutoFocus-Stream
@@ -44,6 +45,7 @@ Circus
 CISC-Kernel
 Card_Equiv_Relations
 Card_Partitions
+Chord_Segments
 ClockSynchInst
 CofGroups
 Coinductive

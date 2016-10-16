@@ -24,49 +24,46 @@
 <div align="center">
 <p>&nbsp;</p>
 
-<h1><font class="first">A</font>nalysis
-of
-<font class="first">L</font>ist
-<font class="first">U</font>pdate
-<font class="first">A</font>lgorithms
+<h1><font class="first">I</font>ntersecting
+<font class="first">C</font>hords
+<font class="first">T</font>heorem
 </h1>
 <p></p>
 <table width="80%" class="data">
   <tbody>
     <tr><td class="datahead" width="20%">Title:</td>
-        <td class="data" width="80%">Analysis of List Update Algorithms</td></tr>
+        <td class="data" width="80%">Intersecting Chords Theorem</td></tr>
 
     <tr><td class="datahead">Author:</td>
-        <td class="data"><a href="http://in.tum.de/~haslbema/">Maximilian P.L. Haslbeck</a> and <a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a></td></tr>
+        <td class="data">Lukas Bulwahn (lukas /dot/ bulwahn /at/ gmail /dot/ com)</td></tr>
 
     <tr><td class="datahead">Submission date:</td>
-        <td class="data">2016-02-17</td></tr>
+        <td class="data">2016-10-11</td></tr>
 
     <tr><td class="datahead" valign="top">Abstract:</td>
         <td class="abstract">
 
 
-<p>
-These theories formalize the quantitative analysis of a number of classical algorithms for the list update problem: 2-competitiveness of move-to-front, the lower bound of 2 for the competitiveness of deterministic list update algorithms and 1.6-competitiveness of the randomized COMB algorithm, the best randomized list update algorithm known to date.
-The material is based on the first two chapters of <i>Online Computation
-and Competitive Analysis</i> by Borodin and El-Yaniv.
-</p>
-<p>
-For an informal description see the FSTTCS 2016 publication
-<a href="http://www.in.tum.de/~nipkow/pubs/fsttcs16.html">Verified Analysis of List Update Algorithms</a>
-by Haslbeck and Nipkow.
-</p>
+This entry provides a geometric proof of the intersecting chords
+theorem. The theorem states that when two chords intersect each other
+inside a circle, the products of their segments are equal.  After a
+short review of existing proofs in the literature, I decided to use a
+proof approach that employs reasoning about lengths of line segments,
+the orthogonality of two lines and the Pythagoras Law. Hence, one can
+understand the formalized proof easily with the knowledge of a few
+general geometric facts that are commonly taught in high-school.  This
+theorem is the 55th theorem of the Top 100 Theorems list.
         </td></tr>
 
     <tr><td class="datahead" valign="top">BibTeX:</td>
         <td class="formatted">
-			<pre>@article{List_Update-AFP,
-  author  = {Maximilian P.L. Haslbeck and Tobias Nipkow},
-  title   = {Analysis of List Update Algorithms},
+			<pre>@article{Chord_Segments-AFP,
+  author  = {Lukas Bulwahn},
+  title   = {Intersecting Chords Theorem},
   journal = {Archive of Formal Proofs},
-  month   = feb,
+  month   = oct,
   year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/List_Update.shtml},
+  note    = {\url{http://isa-afp.org/entries/Chord_Segments.shtml},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -77,7 +74,7 @@ by Haslbeck and Nipkow.
 
 
     <tr><td class="datahead">Depends on:</td>
-        <td class="data"><a href="List-Index.shtml">List-Index</a>, <a href="Regular-Sets.shtml">Regular-Sets</a></td></tr>
+        <td class="data"><a href="Triangle.shtml">Triangle</a></td></tr>
 
 
 
@@ -87,7 +84,7 @@ by Haslbeck and Nipkow.
 
 <p></p>
 
-<!--#set var="name" value="List_Update" -->
+<!--#set var="name" value="Chord_Segments" -->
 
 <!--#set var="binfo" value="../browser_info/current/AFP/${name}" -->
 <!--#set var="doc" value="${binfo}/document.pdf" -->
