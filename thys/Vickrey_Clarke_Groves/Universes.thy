@@ -805,7 +805,7 @@ lemma cardinalityPreservation:
   shows   "card (\<Union> XX) = sum card XX" 
   using assms is_non_overlapping_def card_Union_disjoint by fast
 
-corollary cardSetsumCommute: 
+corollary cardSumCommute: 
   assumes "XX partitions X" "finite X" "finite XX" 
   shows   "card (\<Union> XX) = sum card XX" 
   using assms cardinalityPreservation by (metis is_partition_of_def familyUnionFiniteEverySetFinite)

@@ -630,7 +630,7 @@ next
   next
     assume "x = y + sum_list (filter (coll 0 y) ys)"
     also have "lex \<dots> 0"
-      by (force intro: nlex_sum nlex_sum simp: sum_list_sum_nth
+      by (force intro: nlex_add nlex_sum simp: sum_list_sum_nth
         dest: nth_mem intro: 2(3))
     finally show ?case .
   qed

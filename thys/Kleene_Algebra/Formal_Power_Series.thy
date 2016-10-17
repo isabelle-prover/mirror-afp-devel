@@ -339,7 +339,7 @@ interesting in the context of our algebraic hierarchy, shows that
 formal power series into a Kleene algebra form a Kleene algebra. We
 have only formalised the latter approach. *}
 
-lemma Setsum_splitlist_nonempty:
+lemma Sum_splitlist_nonempty:
   "\<Sum>{f ys zs |ys zs. xs = ys @ zs} = ((f [] xs)::'a::join_semilattice_zero) + \<Sum>{f ys zs |ys zs. xs = ys @ zs \<and> ys \<noteq> []}"
 proof -
   have "{f ys zs |ys zs. xs = ys @ zs} = {f ys zs |ys zs. xs = ys @ zs \<and> ys = []} \<union> {f ys zs |ys zs. xs = ys @ zs \<and> ys \<noteq> []}"
@@ -384,7 +384,7 @@ begin
       apply (rule fps_ext)
       apply (case_tac n)
        apply (auto simp add: times_fps_def)
-      apply (simp add: add_star_eq mult.assoc[THEN sym] Setsum_splitlist_nonempty)
+      apply (simp add: add_star_eq mult.assoc[THEN sym] Sum_splitlist_nonempty)
       apply (simp add: add_star_eq join.sup_commute)
     done
     thus "1 + f \<cdot> f\<^sup>\<star> \<le> f\<^sup>\<star>"

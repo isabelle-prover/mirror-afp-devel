@@ -202,7 +202,7 @@ lemma lm014:
 corollary lm015: 
   assumes "a \<in> allAllocations N G" "finite G" 
   shows "card G = sum card (Range a)" 
-  using assms cardSetsumCommute lm013 allocationInverseRangeDomainProperty by (metis is_partition_of_def)
+  using assms cardSumCommute lm013 allocationInverseRangeDomainProperty by (metis is_partition_of_def)
 
 
 
@@ -405,7 +405,7 @@ corollary lm036:
            int (sum (maxbid a N G) (pseudoAllocation aa)) = 
          int (card (pseudoAllocation a)) - 
            int (card (pseudoAllocation aa \<inter> (pseudoAllocation a)))" 
-  using differenceSetsumVsCardinality assms by blast
+  using differenceSumVsCardinality assms by blast
 
 lemma lm037: 
   "pseudoAllocation {} = {}" 
@@ -856,7 +856,7 @@ proof -
   moreover have "finite (?p aa)" using assms lm034 lm040 by blast 
   ultimately have "real(sum ?B (?p a)) - sum ?B (?p aa) = 
                    real(card (?p a))-card(?p aa \<inter> (?p a))" 
-    using differenceSetsumVsCardinalityReal by fast
+    using differenceSumVsCardinalityReal by fast
   moreover have "... = real (card G) - card (?p aa \<inter> (?p a))" 
     using assms lm034 by (metis (lifting, mono_tags))
   ultimately show ?thesis by simp

@@ -154,7 +154,7 @@ lemma (in comm_monoid_add) sum_list_distinct_selsort:
   assumes "distinct xs"
   shows "sum_list (linorder_list0.selsort LE xs) = sum_list xs"
   using assms
-  apply (simp add: distinct_sum_list_conv_Setsum linorder_list0.distinct_selsort)
+  apply (simp add: distinct_sum_list_conv_Sum linorder_list0.distinct_selsort)
   apply (rule sum.cong)
   subgoal by (simp add: linorder_list0.set_selsort)
   subgoal by simp

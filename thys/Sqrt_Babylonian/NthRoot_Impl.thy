@@ -49,7 +49,7 @@ text {* We use a partial efficient algorithm, which does not terminate on
   guards and on which we can perform induction.
 *}
 partial_function (tailrec) log_ceil_impl :: "nat \<Rightarrow> int \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> nat" where
-  [code]: "log_ceil_impl b x prod sum = (if prod \<ge> x then sum else log_ceil_impl b x (prod * b) (sum + 1))"
+  [code]: "log_ceil_impl b x prod sm = (if prod \<ge> x then sm else log_ceil_impl b x (prod * b) (sm + 1))"
 
 definition log_ceil :: "nat \<Rightarrow> int \<Rightarrow> nat" where
   "log_ceil b x \<equiv> if b > 1 \<and> x \<ge> 0 then log_ceil_impl b x 1 0 else 0"
@@ -59,13 +59,13 @@ context
   assumes b: "b > 1"
 begin
 function log_ceil_main :: "int \<Rightarrow> int \<Rightarrow> nat \<Rightarrow> nat" where
-  "log_ceil_main x prod sum = (if prod > 0 then (if prod \<ge> x then sum else log_ceil_main x (prod * b) (sum + 1)) else 0)"
+  "log_ceil_main x prod sm = (if prod > 0 then (if prod \<ge> x then sm else log_ceil_main x (prod * b) (sm + 1)) else 0)"
   by pat_completeness auto
 
 termination by (relation "measure (\<lambda> (x,prod,sum). nat (x + 1 - prod))") (insert b, auto)
 
-lemma log_ceil_impl: "prod > 0 \<Longrightarrow> log_ceil_impl b x prod sum = log_ceil_main x prod sum"
-proof (induct x prod sum rule: log_ceil_main.induct)
+lemma log_ceil_impl: "prod > 0 \<Longrightarrow> log_ceil_impl b x prod sm = log_ceil_main x prod sm"
+proof (induct x prod sm rule: log_ceil_main.induct)
   case (1 x p s)
   hence id: "(0 < p) = True" using b by auto
   have pos: "Suc 0 < b \<Longrightarrow> 0 < p \<Longrightarrow> 0 < p * int b"

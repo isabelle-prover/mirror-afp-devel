@@ -77,7 +77,7 @@ lemma lex_scale1_zero:
     "lex 0 (v *\<^sub>R u) = (if v > 0 then lex 0 u else if v < 0 then lex u 0 else True)"
   by (auto simp: lex_def prod_eq_iff less_eq_prod_def sign_simps)
 
-lemma nlex_sum:
+lemma nlex_add:
   assumes "lex a 0" "lex b 0"
   shows "lex (a + b) 0"
   using assms by (auto simp: lex_def)
@@ -87,7 +87,7 @@ lemma nlex_sum:
   assumes "\<And>x. x \<in> X \<Longrightarrow> lex (f x) 0"
   shows "lex (sum f X) 0"
   using assms
-  by induction (auto intro!: nlex_sum)
+  by induction (auto intro!: nlex_add)
 
 lemma abs_add_nlex:
   assumes "coll 0 a b"
@@ -115,7 +115,7 @@ proof (rule antisym[OF abs_triangle_ineq])
 qed
 
 lemma lex_sum_list: "(\<And>x. x \<in> set xs \<Longrightarrow> lex x 0) \<Longrightarrow> lex (sum_list xs) 0"
-  by (induct xs) (auto simp: nlex_sum)
+  by (induct xs) (auto simp: nlex_add)
 
 lemma
   abs_sum_list_coll:

@@ -877,7 +877,7 @@ corollary subsetCardinality:
   shows "(sum (X <| Y) X) - (sum (X <| Y) Z) = card X - card (Z \<inter> X)" 
   using assms lm112 by (metis Int_absorb2 Un_upper1 card_infinite equalityE sum.infinite)
 
-corollary differenceSetsumVsCardinality: 
+corollary differenceSumVsCardinality: 
   assumes "Z \<subseteq> X \<union> Y" "finite Z" 
   shows "int (sum (X <| Y) X) - int (sum (X <| Y) Z) =  int (card X) - int (card (Z \<inter> X))" 
   using assms lm112 by (metis Int_absorb2 Un_upper1 card_infinite equalityE sum.infinite)
@@ -887,8 +887,8 @@ lemma lm113:
   "int (n::nat) = real n" 
   by simp
 
-(* same as differenceSetsumVsCardinality but for type real *)
-corollary differenceSetsumVsCardinalityReal: 
+(* same as differenceSumVsCardinality but for type real *)
+corollary differenceSumVsCardinalityReal: 
   assumes "Z\<subseteq>X\<union>Y" "finite Z" 
   shows "real (sum (X <| Y) X) - real (sum (X <| Y) Z) = 
          real (card X) - real (card (Z \<inter> X))" 
